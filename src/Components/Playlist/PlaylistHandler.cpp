@@ -48,7 +48,7 @@ using Playlist::Handler;
 
 struct Handler::Private
 {
-	DB::Connector*		db=nullptr;
+	DB::Connector*			db=nullptr;
 	PlayManagerPtr			play_manager=nullptr;
 	PlaylistCollection		playlists;
 	int						active_playlist_idx;
@@ -80,11 +80,7 @@ Handler::Handler(QObject * parent) :
 	connect(m->play_manager, &PlayManager::sig_www_track_finished, this, &Handler::www_track_finished);
 }
 
-Handler::~Handler()
-{
-	m->playlists.clear();
-}
-
+Handler::~Handler() {}
 
 void Handler::emit_cur_track_changed()
 {
@@ -259,6 +255,11 @@ int Handler::create_empty_playlist(const QString& name)
 	return create_playlist(v_md, name, true);
 }
 
+
+void Handler::shutdown()
+{
+	m->playlists.clear();
+}
 
 void Handler::clear_playlist(int pl_idx)
 {

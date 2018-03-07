@@ -123,6 +123,11 @@ struct MetaData::Private
 		return *this;
 	}
 
+	~Private()
+	{
+		genres.clear();
+	}
+
 	bool is_equal(const Private& other) const
 	{
 		return(

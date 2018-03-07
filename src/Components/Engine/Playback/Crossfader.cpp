@@ -45,7 +45,8 @@ public:
 	FaderThreadData(CrossFader* crossfader) :
 		_crossfader(crossfader)
 	{
-		reset();
+		_cycles = 0;
+		_cycle_time_ms = 0;
 	}
 
 	void set_fading_time(int fading_time)
@@ -66,7 +67,6 @@ public:
 	void abort()
 	{
 		_cycles = 0;
-		_crossfader->fader_timed_out();
 	}
 
 	void wait()
@@ -105,6 +105,8 @@ class FaderThread : public QThread
 			{
 				_ftd->wait();
 			}
+
+			sp_log(Log::Develop, this) << "Fader thread finished";
 		}
 };
 
@@ -148,10 +150,14 @@ CrossFader::CrossFader()
 CrossFader::~CrossFader()
 {
 	m->destructed = true;
-	if(m->fader)
+
+	if(m->fader_data && m->fader_data->is_active())
 	{
 		m->fader_data->abort();
+	}
 
+	if(m->fader)
+	{
 		while(m->fader->isRunning())
 		{
 			Util::sleep_ms(10);
@@ -195,7 +201,9 @@ void CrossFader::fade_in()
 	m->fade_mode = CrossFader::FadeMode::FadeIn;
 	m->fade_step = volume / (FaderThreadData::get_max_cycles() * 1.0);
 
-	sp_log(Log::Crazy, this) << "Fading in: Fade step = " << m->fade_step;
+	sp_log(Log::Crazy, this) << "Fading in: "
+		<< "Target Volume: " << volume
+		<< "Fade step: = " << m->fade_step;
 
 	set_current_volume(0.00001);
 
@@ -212,7 +220,9 @@ void CrossFader::fade_out()
 	m->fade_mode = CrossFader::FadeMode::FadeOut;
 	m->fade_step = m->volume / (FaderThreadData::get_max_cycles() * 1.0);
 
-	sp_log(Log::Crazy, this) << "Fading out: Fade step = " << m->fade_step;
+	sp_log(Log::Crazy, this) << "Fading out: "
+		<< "Volume: " << m->volume
+		<< "Fade step: = " << m->fade_step;
 
 	set_current_volume( m->volume );
 
@@ -256,6 +266,8 @@ void CrossFader::increase_volume()
 	double max_volume = Settings::instance()->get<Set::Engine_Vol>() / 100.0;
 
 	// maybe volume has changed in the meantime
+
+
 	m->fade_step = std::max(m->fade_step, m->volume / (m->fader_data->get_cycles() * 1.0));
 	m->volume += m->fade_step;
 
@@ -263,6 +275,7 @@ void CrossFader::increase_volume()
 	{
 		sp_log(Log::Develop, this) << "Max volume reached: " << m->volume;
 		abort_fader();
+		m->destructed = false;
 		return;
 	}
 
@@ -282,10 +295,14 @@ void CrossFader::decrease_volume()
 
 	if(m->volume < 0.00001)
 	{
-		sp_log(Log::Develop, this) << "Min volume reached: " << m->volume << ". Stop track";
+
+		sp_log(Log::Develop, this) <<  "Min volume reached: " << m->volume << ". Stop track";
+		sp_log(Log::Crazy, this) << "Max volume: " << max_volume;
+		sp_log(Log::Crazy, this) << "Fade step: " << m->fade_step;
 
 		abort_fader();
 		stop();
+		m->destructed = false;
 		return;
 	}
 
@@ -308,5 +325,6 @@ void CrossFader::abort_fader()
 	if(m->fader_data->is_active())
 	{
 		m->fader_data->abort();
+		Util::sleep_ms(10);
 	}
 }

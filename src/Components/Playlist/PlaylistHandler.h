@@ -115,6 +115,8 @@ namespace Playlist
 
 		public:
 
+			void shutdown();
+
 			/**
 			 * @brief clears the current visible playlist
 			 * @param pl_idx playlist index

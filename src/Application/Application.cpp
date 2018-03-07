@@ -208,6 +208,7 @@ Application::Application(int & argc, char ** argv) :
 Application::~Application()
 {
 	Engine::Handler::instance()->shutdown();
+	Playlist::Handler::instance()->shutdown();
 }
 
 bool Application::init(const QStringList& files_to_play)
