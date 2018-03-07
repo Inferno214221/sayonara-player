@@ -66,13 +66,14 @@ bool evaluate_expression(const QString& expr)
 	}
 
 	QStringList between_percents;
-	QRegExp re(".*%(.*)%.*");
+	QRegExp re("%(.*)%");
 	re.setMinimal(true);
 
 	int idx = re.indexIn(expr);
-	while(idx >= 0){
-		between_percents << re.cap(1);
-		idx = re.indexIn(expr, idx + 1);
+	while(idx >= 0 && idx < expr.size()){
+		QString cap = re.cap(1);
+		between_percents << cap;
+		idx = re.indexIn(expr, idx + 1 + cap.size());
 	}
 
 	int correct_ones = 0;
