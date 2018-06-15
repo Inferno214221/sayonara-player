@@ -103,19 +103,6 @@ Location& Location::operator=(const Location& other)
 	return *this;
 }
 
-QString Location::get_cover_directory(const QString& append_path)
-{
-	QString cover_dir = ::Util::sayonara_path("covers");
-	if(!QFile::exists(cover_dir)){
-		QDir().mkdir(cover_dir);
-	}
-
-	if(!append_path.isEmpty()){
-		cover_dir += "/" + append_path;
-	}
-
-	return ::Util::File::clean_filename(cover_dir);
-}
 
 
 Location Location::invalid_location()
@@ -149,7 +136,7 @@ Location Location::cover_location(const QString& album_name, const QString& arti
 	}
 
 	QString cover_token = Cover::Util::calc_cover_token(artist_name, album_name);
-	QString cover_path = get_cover_directory( cover_token + ".jpg" );
+	QString cover_path = Cover::Util::cover_directory( cover_token + ".jpg" );
 
 	Location ret;
 	Fetcher::Manager* cfm = Fetcher::Manager::instance();
@@ -282,7 +269,7 @@ Location Location::cover_location(const QString& artist)
 	}
 
 	QString cover_token = QString("artist_") + Cover::Util::calc_cover_token(artist, "");
-	QString cover_path = get_cover_directory(cover_token + ".jpg");
+	QString cover_path = Cover::Util::cover_directory(cover_token + ".jpg");
 
 	Location ret;
 	Fetcher::Manager* cfm = Fetcher::Manager::instance();
@@ -367,7 +354,7 @@ Location Location::cover_location(const MetaData& md)
 		QString extension = ::Util::File::get_file_extension(md.cover_download_url());
 
 		QString cover_token = Cover::Util::calc_cover_token(md.artist(), md.album());
-		QString cover_path = get_cover_directory(cover_token + "." + extension);
+		QString cover_path = Cover::Util::cover_directory(cover_token + "." + extension);
 
 		cl = cover_location(QUrl(md.cover_download_url()), cover_path);
 	}

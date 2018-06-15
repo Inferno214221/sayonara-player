@@ -20,13 +20,61 @@
 
 #include "CoverUtils.h"
 #include "Utils/Utils.h"
+#include "Utils/FileUtils.h"
+#include "Utils/Logger/Logger.h"
+#include "Components/Directories/DirectoryReader.h"
 
+#include <QDir>
+#include <QStringList>
+
+namespace FileUtils=::Util::File;
 
 QString Cover::Util::calc_cover_token(const QString& artist, const QString& album)
 {
 	QByteArray str = QString(artist.trimmed() + album.trimmed()).toLower().toUtf8();
 
-    return ::Util::calc_hash(str);
+	return ::Util::calc_hash(str);
+}
+
+QString Cover::Util::cover_directory()
+{
+	return cover_directory(QString());
+}
+
+QString Cover::Util::cover_directory(const QString& append_filename)
+{
+	QString cover_dir = ::Util::sayonara_path("covers");
+	if(!QFile::exists(cover_dir)){
+		QDir().mkdir(cover_dir);
+	}
+
+	if(!append_filename.isEmpty()){
+		cover_dir += "/" + append_filename;
+	}
+
+	return FileUtils::clean_filename(cover_dir);
 }
 
 
+void Cover::Util::delete_temp_covers()
+{
+	QDir cover_dir = QDir(cover_directory());
+
+	QStringList files, files_to_delete;
+
+	DirectoryReader reader;
+	reader.set_filter({"*.jpg", "*.png"});
+	reader.files_in_directory(cover_dir, files);
+
+	for(const QString& f : files)
+	{
+		QString pure_filename = FileUtils::get_filename_of_path(f);
+		sp_log(Log::Debug) << pure_filename;
+		if(pure_filename.startsWith("tmp"))
+		{
+			files_to_delete << f;
+		}
+	}
+
+	FileUtils::delete_files(files_to_delete);
+}

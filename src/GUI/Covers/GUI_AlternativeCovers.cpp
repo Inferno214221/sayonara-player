@@ -37,6 +37,8 @@
 #include "Components/Covers/CoverLookupAlternative.h"
 #include "Components/Covers/CoverFetchManager.h"
 #include "Components/Covers/CoverFetcherInterface.h"
+#include "Components/Covers/CoverUtils.h"
+
 #include "Components/Library/LibraryManager.h"
 
 #include "Utils/Utils.h"
@@ -58,7 +60,7 @@ using Gui::ProgressBar;
 
 struct GUI_AlternativeCovers::Private
 {
-	QStringList				filelist;
+	QStringList						filelist;
 
 	AlternativeLookup*				cl_alternative=nullptr;
 	AlternativeCoverItemModel*		model=nullptr;
@@ -138,7 +140,7 @@ GUI_AlternativeCovers::GUI_AlternativeCovers(QWidget* parent) :
 
 GUI_AlternativeCovers::~GUI_AlternativeCovers()
 {
-	delete_all_files();
+	Cover::Util::delete_temp_covers();
 
 	delete ui;
 }
@@ -168,7 +170,7 @@ void GUI_AlternativeCovers::start(const Location& cl)
 void GUI_AlternativeCovers::connect_and_start()
 {
 	reset_model();
-	delete_all_files();
+	Cover::Util::delete_temp_covers();
 
 	m->is_searching = true;
 
@@ -352,21 +354,6 @@ void GUI_AlternativeCovers::open_file_dialog()
 }
 
 
-void GUI_AlternativeCovers::delete_all_files()
-{
-	for(const QString& cover_path : ::Util::AsConst(m->filelist))
-	{
-		if(Location::is_invalid(cover_path)){
-			continue;
-		}
-
-		QFile f(cover_path);
-		f.remove();
-	}
-
-	m->filelist.clear();
-}
-
 void GUI_AlternativeCovers::init_combobox()
 {
 	bool is_text_mode = ui->rb_text_search->isChecked();
@@ -423,7 +410,7 @@ void GUI_AlternativeCovers::closeEvent(QCloseEvent *e)
 
 	m->loading_bar->hide();
 
-	delete_all_files();
+	Cover::Util::delete_temp_covers();
 
 	Dialog::closeEvent(e);
 }

@@ -360,7 +360,7 @@ const QList<Bookmark>& Bookmarks::bookmarks() const
 	return m->bookmarks;
 }
 
-int Bookmarks::get_size() const
+int Bookmarks::size() const
 {
 	return m->bookmarks.size();
 }

@@ -27,16 +27,22 @@ class QString;
  */
 namespace Cover
 {
-    namespace Util
-    {
-        /**
-         * @brief calc_cover_token calculate the hash for a cover
-         * @param artist artist name
-         * @param album album name
-         * @return hash of cover name
-         */
-        QString calc_cover_token(const QString& artist, const QString& album);
-    }
+	namespace Util
+	{
+		/**
+		 * @brief calc_cover_token calculate the hash for a cover
+		 * @param artist artist name
+		 * @param album album name
+		 * @return hash of cover name
+		 */
+		QString calc_cover_token(const QString& artist, const QString& album);
+
+		void delete_temp_covers();
+
+		QString cover_directory();
+		QString cover_directory(const QString& append_filename);
+
+	}
 }
 
 #endif // COVERHELPER_H

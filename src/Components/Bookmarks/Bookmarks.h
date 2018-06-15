@@ -127,7 +127,11 @@ public:
 	MetaData current_track() const;
 
 
-	int get_size() const;
+	/**
+	 * @brief get number of Bookmarks
+	 * @return
+	 */
+	int size() const;
 
 
 private slots:

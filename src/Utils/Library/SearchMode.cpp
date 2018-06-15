@@ -27,7 +27,7 @@
 
 using DiacMap=QMap<QString, QString>;
 
-Q_GLOBAL_STATIC(DiacMap, diacritic_chars);
+Q_GLOBAL_STATIC(DiacMap, diacritic_chars)
 
 static void init_diacritic_chars()
 {

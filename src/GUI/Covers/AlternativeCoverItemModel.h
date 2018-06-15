@@ -29,6 +29,8 @@
 #ifndef ALTERNATIVECOVERITEMMODEL_H_
 #define ALTERNATIVECOVERITEMMODEL_H_
 
+#include "Utils/Pimpl.h"
+
 #include <QModelIndex>
 #include <QAbstractTableModel>
 
@@ -36,14 +38,14 @@ struct RowColumn
 {
 	int row;
 	int col;
-    bool valid;
+	bool valid;
 
-    RowColumn()
+	RowColumn()
 	{
 		row = -1;
 		col = -1;
-        valid = false;
-    }
+		valid = false;
+	}
 };
 
 
@@ -51,9 +53,10 @@ struct RowColumn
  * @brief The AlternativeCoverItemModel class
  * @ingroup GUICovers
  */
-class AlternativeCoverItemModel : public QAbstractTableModel 
+class AlternativeCoverItemModel : public QAbstractTableModel
 {
-Q_OBJECT
+	Q_OBJECT
+	PIMPL(AlternativeCoverItemModel)
 
 public:
 	explicit AlternativeCoverItemModel(QObject* parent);
@@ -78,10 +81,6 @@ public:
 
 	RowColumn cvt_2_row_col(int idx) const ;
 	int cvt_2_idx(int row, int col) const ;
-
-
-private:
-	QStringList _pathlist;
 };
 
 #endif

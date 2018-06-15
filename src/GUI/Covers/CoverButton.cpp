@@ -24,6 +24,7 @@
 #include "Components/Covers/CoverLookup.h"
 #include "Components/Covers/CoverLocation.h"
 #include "Components/Covers/CoverChangeNotifier.h"
+#include "Components/Covers/CoverUtils.h"
 
 #include "Utils/FileUtils.h"
 #include "Utils/Utils.h"
@@ -114,7 +115,7 @@ void CoverButton::force_cover(const QPixmap &pm)
 		return;
 	}
 
-	QString tmp_path = Util::sayonara_path("covers") + "/tmp_" + Util::random_string(16) + ".png";
+	QString tmp_path = Cover::Util::cover_directory("tmp_" + Util::random_string(16) + ".png");
 
 	m->current_cover_path = Util::File::clean_filename(tmp_path);
 	m->tmp_paths << m->current_cover_path;

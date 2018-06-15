@@ -74,7 +74,6 @@ private slots:
 private:
 	void reset_model();
 	void connect_and_start();
-	void delete_all_files();
 	void init_combobox();
 
 protected:
