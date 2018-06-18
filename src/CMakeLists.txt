@@ -1,105 +1,105 @@
-PROJECT(sayonara)
+project(sayonara)
 
-INCLUDE(FindPkgConfig)
-INCLUDE(compiler.cmake)
+include(FindPkgConfig)
+include(compiler.cmake)
 
-IF(WIN32)
-	PKG_CHECK_MODULES(GIO gio-windows-2.0 REQUIRED)
-ENDIF()
+if(WIN32)
+	pkg_check_modules(GIO gio-windows-2.0 REQUIRED)
+endif()
 
-PKG_CHECK_MODULES(TAGLIB taglib>=1.6 REQUIRED)
-PKG_CHECK_MODULES(GLIB glib-2.0 REQUIRED)
-PKG_CHECK_MODULES(GOBJECT gobject-2.0 REQUIRED)
-PKG_CHECK_MODULES(GSTREAMER gstreamer-1.0 REQUIRED)
-PKG_CHECK_MODULES(GSTREAMER_BASE gstreamer-base-1.0 REQUIRED)
-PKG_CHECK_MODULES(GSTREAMER_BASE_APP gstreamer-app-1.0 REQUIRED)
+pkg_check_modules(TAGLIB taglib>=1.6 REQUIRED)
+pkg_check_modules(GLIB glib-2.0 REQUIRED)
+pkg_check_modules(GOBJECT gobject-2.0 REQUIRED)
+pkg_check_modules(GSTREAMER gstreamer-1.0 REQUIRED)
+pkg_check_modules(GSTREAMER_BASE gstreamer-base-1.0 REQUIRED)
+pkg_check_modules(GSTREAMER_BASE_APP gstreamer-app-1.0 REQUIRED)
 
-SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
-IF( NOT DEFINED CMAKE_BUILD_TYPE OR NOT CMAKE_BUILD_TYPE )
-	MESSAGE("Use standard build type \"Release\"")
-	SET(CMAKE_BUILD_TYPE "Release")
-ENDIF()
+if( NOT DEFINED CMAKE_BUILD_TYPE OR NOT CMAKE_BUILD_TYPE )
+	message("Use standard build type \"Release\"")
+	set(CMAKE_BUILD_TYPE "Release")
+endif()
 
-FIND_PACKAGE(Qt5 COMPONENTS Core Widgets Sql Network DBus Xml REQUIRED)
-FIND_PACKAGE(Qt5LinguistTools REQUIRED)
+find_package(Qt5 COMPONENTS Core Widgets Sql Network DBus Xml REQUIRED)
+find_package(Qt5LinguistTools REQUIRED)
 
-SET(CMAKE_AUTOMOC ON)
-#SET(CMAKE_AUTOUIC ON)
-SET(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_AUTOMOC ON)
+#set(CMAKE_AUTOUIC ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-INCLUDE_DIRECTORIES(${Qt5Core_INCLUDE_DIRS})
-INCLUDE_DIRECTORIES(${Qt5Widgets_INCLUDE_DIRS})
-INCLUDE_DIRECTORIES(${Qt5Xml_INCLUDE_DIRS})
-INCLUDE_DIRECTORIES(${Qt5Sql_INCLUDE_DIRS})
-INCLUDE_DIRECTORIES(${Qt5DBus_INCLUDE_DIRS})
-INCLUDE_DIRECTORIES(${Qt5Network_INCLUDE_DIRS})
-INCLUDE_DIRECTORIES(${GSTREAMER_INCLUDE_DIRS})
-INCLUDE_DIRECTORIES(${GLIB_INCLUDE_DIRS})
-INCLUDE_DIRECTORIES(${GOBJECT_INCLUDE_DIRS})
-INCLUDE_DIRECTORIES(${GSTREAMER_INCLUDE_DIRS})
-INCLUDE_DIRECTORIES(${GSTREAMER_BASE_INCLUDE_DIRS})
-INCLUDE_DIRECTORIES(${TAGLIB_INCLUDE_DIRS})
+include_directories(${Qt5Core_INCLUDE_DIRS})
+include_directories(${Qt5Widgets_INCLUDE_DIRS})
+include_directories(${Qt5Xml_INCLUDE_DIRS})
+include_directories(${Qt5Sql_INCLUDE_DIRS})
+include_directories(${Qt5DBus_INCLUDE_DIRS})
+include_directories(${Qt5Network_INCLUDE_DIRS})
+include_directories(${GSTREAMER_INCLUDE_DIRS})
+include_directories(${GLIB_INCLUDE_DIRS})
+include_directories(${GOBJECT_INCLUDE_DIRS})
+include_directories(${GSTREAMER_INCLUDE_DIRS})
+include_directories(${GSTREAMER_BASE_INCLUDE_DIRS})
+include_directories(${TAGLIB_INCLUDE_DIRS})
 
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src)
-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src)
+include_directories(${CMAKE_SOURCE_DIR}/src)
+include_directories(${CMAKE_BINARY_DIR}/src)
 
-ADD_DEFINITIONS(${Qt5Core_DEFINITIONS})
-ADD_DEFINITIONS(${QT_DEFINITIONS})
-ADD_DEFINITIONS(-DLIB_INSTALL_DIR="${CMAKE_INSTALL_PREFIX}/lib/sayonara")
+add_definitions(${Qt5Core_DEFINITIONS})
+add_definitions(${QT_DEFINITIONS})
+add_definitions(-DLIB_INSTALL_DIR="${CMAKE_INSTALL_PREFIX}/lib/sayonara")
 
-IF(WIN32)
-	MESSAGE("Windows: host Will compile without dbus and shutdown support")
+if(WIN32)
+	message("Windows: host Will compile without dbus and shutdown support")
 
-ELSE()
-	MESSAGE("No Windows: Will compile with dbus and shutdown support")
-	ADD_DEFINITIONS(-DWITH_DBUS)
-	ADD_DEFINITIONS(-DWITH_SHUTDOWN)
-	SET(WIN32 0)
-ENDIF()
+else()
+	message("No Windows: Will compile with dbus and shutdown support")
+	add_definitions(-DWITH_DBUS)
+	add_definitions(-DWITH_SHUTDOWN)
+	set(WIN32 0)
+endif()
 
-LINK_DIRECTORIES(${GSTREAMER_LIBRARY_DIRS})
+link_directories(${GSTREAMER_LIBRARY_DIRS})
 
-IF(WIN32)
-	LINK_DIRECTORIES(${GIO_LIBRARY_DIRS})
-ELSEIF(${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
-	FIND_LIBRARY(execinfo_LIB execinfo)
-	IF(NOT execinfo_LIB)
-		MESSAGE(FATAL_ERROR "FreeBSD requires execinfo library")
-	ENDIF()
-	SET(OS_LIBRARIES ${execinfo_LIB})
-ENDIF()
+if(WIN32)
+	link_directories(${GIO_LIBRARY_DIRS})
+elseif(${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
+	find_library(execinfo_LIB execinfo)
+	if(NOT execinfo_LIB)
+		message(FATAL_ERROR "FreeBSD requires execinfo library")
+	endif()
+	set(OS_LIBRARIES ${execinfo_LIB})
+endif()
 
 
-ADD_SUBDIRECTORY(Application)
-ADD_SUBDIRECTORY(GUI)
-ADD_SUBDIRECTORY(Utils)
-ADD_SUBDIRECTORY(Database)
-ADD_SUBDIRECTORY(Interfaces)
-ADD_SUBDIRECTORY(Components)
-ADD_SUBDIRECTORY(Languages)
-ADD_SUBDIRECTORY(3rdParty)
+add_subdirectory(Application)
+add_subdirectory(GUI)
+add_subdirectory(Utils)
+add_subdirectory(Database)
+add_subdirectory(Interfaces)
+add_subdirectory(Components)
+add_subdirectory(Languages)
+add_subdirectory(3rdParty)
 
-SET(SOURCES
+set(SOURCES
 	Main.cpp
 )
 
-ADD_EXECUTABLE(${PROJECT_NAME} ${SOURCES} ${QM_FILES})
+add_executable(${PROJECT_NAME} ${SOURCES} ${QM_FILES})
 
-#FILE(GLOB_RECURSE HeaderFiles "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
-#ADD_CUSTOM_TARGET(headers SOURCES ${HeaderFiles})
+#file(GLOB_RECURSE HeaderFiles "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
+#add_custom_target(headers SOURCES ${HeaderFiles})
 
-IF(WIN32)
-	SET(OS_LIBRARIES
+if(WIN32)
+	set(OS_LIBRARIES
 		api-ms-win-core-winrt-l1-1-0
 		api-ms-win-core-winrt-string-l1-1-0
 		${GIO_LIBRARIES}
 	)
-ENDIF()
+endif()
 
 
-TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+target_link_libraries(${PROJECT_NAME}
 	say_application
 	say_gui_resources
 	say_lang
@@ -107,10 +107,10 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME}
 )
 
 
-IF(WIN32)
-	INSTALL(TARGETS ${PROJECT_NAME} DESTINATION .)
-ELSE()
-	INSTALL(TARGETS ${PROJECT_NAME} DESTINATION bin)
-ENDIF()
+if(WIN32)
+	install(TARGETS ${PROJECT_NAME} DESTINATION .)
+else()
+	install(TARGETS ${PROJECT_NAME} DESTINATION bin)
+endif()
 
 

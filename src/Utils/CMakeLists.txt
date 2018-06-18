@@ -1,21 +1,21 @@
-PROJECT(say_utils)
+project(say_utils)
 
-INCLUDE(CheckIncludeFileCXX)
-CHECK_INCLUDE_FILE_CXX("cxxabi.h" HAVE_CXX_ABI)
-IF(${HAVE_CXX_ABI})
-	ADD_DEFINITIONS("-DHAVE_CXX_ABI")
-	MESSAGE("Compile with demangle")
-ELSE()
-	MESSAGE("Demangle not found")
-ENDIF()
+include(CheckIncludeFileCXX)
+check_include_file_cxx("cxxabi.h" HAVE_CXX_ABI)
+if(${HAVE_CXX_ABI})
+	add_definitions("-DHAVE_CXX_ABI")
+	message("Compile with demangle")
+else()
+	message("Demangle not found")
+endif()
 
-PKG_CHECK_MODULES(ZLIB REQUIRED zlib)
-INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIRS})
+pkg_check_modules(ZLIB REQUIRED zlib)
+include_directories(${ZLIB_INCLUDE_DIRS})
 
-FILE(GLOB_RECURSE SOURCES . *.cpp)
+file(GLOB_RECURSE SOURCES . *.cpp)
 
-ADD_LIBRARY(${PROJECT_NAME} STATIC ${SOURCES})
-TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+add_library(${PROJECT_NAME} STATIC ${SOURCES})
+target_link_libraries(${PROJECT_NAME}
 	Qt5::Core
 	Qt5::Network
 	Qt5::Xml
@@ -25,6 +25,6 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME}
 	${ZLIB_LIBRARIES}
 )
 
-IF( WITH_COTIRE )
-cotire(${PROJECT_NAME})
-ENDIF()
+if( WITH_COTIRE )
+	cotire(${PROJECT_NAME})
+endif()

@@ -1,24 +1,24 @@
-PROJECT(say_gui_covers)
+project(say_gui_covers)
 
-SET(SOURCES
+set(SOURCES
 	CoverButton.cpp
 	AlternativeCoverItemDelegate.cpp
 	AlternativeCoverItemModel.cpp
 	GUI_AlternativeCovers.cpp
 )
 
-QT5_WRAP_UI(FORMS_UIC
+qt5_wrap_ui(FORMS_UIC
 	GUI_AlternativeCovers.ui
 )
 
-ADD_LIBRARY(${PROJECT_NAME} STATIC ${SOURCES} ${FORMS_UIC})
-TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+add_library(${PROJECT_NAME} STATIC ${SOURCES} ${FORMS_UIC})
+target_link_libraries(${PROJECT_NAME}
     say_comp_covers
     say_gui_utils
 )
 
-IF( WITH_COTIRE )
+if( WITH_COTIRE )
     cotire(${PROJECT_NAME})
-ENDIF()
+endif()
 
 

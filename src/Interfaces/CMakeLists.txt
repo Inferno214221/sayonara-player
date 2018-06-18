@@ -1,7 +1,7 @@
-PROJECT(say_interfaces)
+project(say_interfaces)
 
-ADD_SUBDIRECTORY(Notification)
-ADD_SUBDIRECTORY(LibraryInterface)
-ADD_SUBDIRECTORY(PlayerPlugin)
-ADD_SUBDIRECTORY(PreferenceDialog)
-ADD_SUBDIRECTORY(RawSoundReceiver)
+add_subdirectory(Notification)
+add_subdirectory(LibraryInterface)
+add_subdirectory(PlayerPlugin)
+add_subdirectory(PreferenceDialog)
+add_subdirectory(RawSoundReceiver)

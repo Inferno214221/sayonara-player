@@ -1,15 +1,15 @@
-PROJECT(say_db)
+project(say_db)
 
-FILE(GLOB_RECURSE SOURCES . *.cpp)
+file(GLOB_RECURSE SOURCES . *.cpp)
 
-ADD_LIBRARY(${PROJECT_NAME} STATIC ${SOURCES} )
-TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+add_library(${PROJECT_NAME} STATIC ${SOURCES} )
+target_link_libraries(${PROJECT_NAME}
 	Qt5::Sql
 	say_utils
 )
 
-IF( WITH_COTIRE )
+if( WITH_COTIRE )
 	cotire(${PROJECT_NAME})
-ENDIF()
+endif()
 
 

@@ -1,15 +1,15 @@
-PROJECT(say_comp_playlist)
+project(say_comp_playlist)
 
-FILE(GLOB_RECURSE SOURCES . *.cpp)
+file(GLOB_RECURSE SOURCES . *.cpp)
 
-ADD_LIBRARY(${PROJECT_NAME} STATIC ${SOURCES})
-TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+add_library(${PROJECT_NAME} STATIC ${SOURCES})
+target_link_libraries(${PROJECT_NAME}
 	say_db
 	say_comp_playmanager
 	say_comp_directories
 )
 
-IF( WITH_COTIRE )
+if( WITH_COTIRE )
 	cotire(${PROJECT_NAME})
-ENDIF()
+endif()
 

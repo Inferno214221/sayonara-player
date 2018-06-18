@@ -1,10 +1,10 @@
-PROJECT(say_interfaces_raw_sound_receiver)
+project(say_interfaces_raw_sound_receiver)
 
-SET(SOURCES
+set(SOURCES
 	RawSoundReceiverInterface.cpp
 )
 
-ADD_LIBRARY(${PROJECT_NAME} STATIC ${SOURCES})
-TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+add_library(${PROJECT_NAME} STATIC ${SOURCES})
+target_link_libraries(${PROJECT_NAME}
     Qt5::Core
 )

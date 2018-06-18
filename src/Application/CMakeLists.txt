@@ -1,13 +1,13 @@
-PROJECT(say_application)
+project(say_application)
 
-INCLUDE_DIRECTORIES(
+include_directories(
 	${CMAKE_CURRENT_BINARY_DIR},
 	${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-FILE(GLOB_RECURSE SOURCES . *.cpp)
+file(GLOB_RECURSE SOURCES . *.cpp)
 
-SET(APPLICATION_LIBRARIES
+set(APPLICATION_LIBRARIES
 	say_gui_library
 	say_gui_directory_widget
 
@@ -19,26 +19,26 @@ SET(APPLICATION_LIBRARIES
 	say_comp_remote_control
 )
 
-IF(NOT WIN32 OR NOT DEFINED WIN32)
-	SET(APPLICATION_LIBRARIES
+if(NOT WIN32 OR NOT DEFINED WIN32)
+	set(APPLICATION_LIBRARIES
 	${APPLICATION_LIBRARIES}
 	say_comp_dbus
 	)
-ELSE()
-	SET(APPLICATION_LIBRARIES
+else()
+	set(APPLICATION_LIBRARIES
 		${APPLICATION_LIBRARIES}
 		sayonara_somafm
 		sayonara_soundcloud
 	)
-ENDIF()
+endif()
 
-ADD_LIBRARY(${PROJECT_NAME} STATIC ${SOURCES})
-TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+add_library(${PROJECT_NAME} STATIC ${SOURCES})
+target_link_libraries(${PROJECT_NAME}
 	${APPLICATION_LIBRARIES}
 )
 
-ADD_LIBRARY(sayonara_test SHARED ${SOURCES})
-TARGET_LINK_LIBRARIES(sayonara_test
+add_library(sayonara_test SHARED ${SOURCES})
+target_link_libraries(sayonara_test
 	${APPLICATION_LIBRARIES}
 	say_gui_resources
 )

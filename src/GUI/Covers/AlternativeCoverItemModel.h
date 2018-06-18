@@ -69,11 +69,9 @@ public:
 
 	Qt::ItemFlags flags(const QModelIndex &index) const override;
 
-	bool set_cover(int row, int column, const QString& cover);
+	bool add_cover(const QString& cover);
+	int cover_count() const;
 	void reset();
-
-	bool insertRows(int position, int rows, const QModelIndex &index=QModelIndex()) override;
-	bool removeRows(int position, int rows, const QModelIndex &index=QModelIndex()) override;
 
 	bool is_valid(int row, int col);
 	QSize get_cover_size(const QModelIndex& idx) const;

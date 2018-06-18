@@ -1,14 +1,14 @@
-PROJECT(say_comp_playmanager)
+project(say_comp_playmanager)
 
-INCLUDE_DIRECTORIES(
+include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}
 )
 
-FILE(GLOB_RECURSE SOURCES . *.cpp)
+file(GLOB_RECURSE SOURCES . *.cpp)
 
-ADD_LIBRARY(${PROJECT_NAME} STATIC ${SOURCES})
-TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+add_library(${PROJECT_NAME} STATIC ${SOURCES})
+target_link_libraries(${PROJECT_NAME}
 	say_utils
 	say_interfaces_notifications
 )

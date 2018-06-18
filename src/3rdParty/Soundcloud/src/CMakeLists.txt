@@ -1,21 +1,21 @@
-PROJECT(sayonara_soundcloud)
+project(sayonara_soundcloud)
 
-SET(HEADERS
+set(HEADERS
 	SoundcloudData.h
 	SoundcloudHelper.h
 	SoundcloudLibrary.h
 )
 
-SET(SOURCES
+set(SOURCES
 	SoundcloudData.cpp
 	SoundcloudHelper.cpp
 	SoundcloudLibrary.cpp
 )
 
 
-ADD_LIBRARY(${PROJECT_NAME} STATIC ${SOURCES})
+add_library(${PROJECT_NAME} STATIC ${SOURCES})
 
-TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+target_link_libraries(${PROJECT_NAME}
 	Qt5::Core
 	Qt5::Xml
 	say_comp_library

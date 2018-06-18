@@ -1,18 +1,18 @@
-PROJECT(say_comp_tagging)
+project(say_comp_tagging)
 
-FILE(GLOB_RECURSE SOURCES . *.cpp)
+file(GLOB_RECURSE SOURCES . *.cpp)
 
-INCLUDE_DIRECTORIES(${TAGLIB_INCLUDE_DIRS})
-LINK_DIRECTORIES(${TAGLIB_LIBRARY_DIRS})
+include_directories(${TAGLIB_INCLUDE_DIRS})
+link_directories(${TAGLIB_LIBRARY_DIRS})
 
-ADD_LIBRARY(${PROJECT_NAME} STATIC ${SOURCES})
-TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+add_library(${PROJECT_NAME} STATIC ${SOURCES})
+target_link_libraries(${PROJECT_NAME}
 	say_db
 	say_utils
 )
 
-IF( WITH_COTIRE )
+if( WITH_COTIRE )
 	cotire(${PROJECT_NAME})
-ENDIF()
+endif()
 
 

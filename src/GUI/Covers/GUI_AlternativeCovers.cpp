@@ -102,8 +102,7 @@ GUI_AlternativeCovers::GUI_AlternativeCovers(QWidget* parent) :
 	m->model = new AlternativeCoverItemModel(this);
 	m->delegate = new AlternativeCoverItemDelegate(this);
 
-	int n_items = m->model->rowCount() * m->model->columnCount() + 5;
-	m->cl_alternative = new AlternativeLookup(this, n_items);
+	m->cl_alternative = new AlternativeLookup(this, 20);
 
 	ui->setupUi(this);
 
@@ -278,14 +277,10 @@ void GUI_AlternativeCovers::cl_new_cover(const QString& cover_path)
 
 	int n_files = m->filelist.size();
 
-	RowColumn rc_last =     m->model->cvt_2_row_col( n_files - 1 );
-	RowColumn rc_cur_idx =  m->model->cvt_2_row_col( m->cur_idx );
-	bool is_valid =         m->model->is_valid(rc_cur_idx.row, rc_cur_idx.col);
+	m->model->add_cover(cover_path);
 
-	m->model->set_cover(rc_last.row, rc_last.col, cover_path);
-
-	ui->btn_ok->setEnabled(is_valid);
-	ui->btn_apply->setEnabled(is_valid);
+	ui->btn_ok->setEnabled(true);
+	ui->btn_apply->setEnabled(true);
 	ui->lab_status->setText( tr("%1 covers found").arg(n_files) ) ;
 }
 
@@ -346,8 +341,7 @@ void GUI_AlternativeCovers::open_file_dialog()
 	int idx = 0;
 	for(const QString& path : lst)
 	{
-		RowColumn rc = m->model->cvt_2_row_col( idx );
-		m->model->set_cover(rc.row, rc.col, path);
+		m->model->add_cover(path);
 
 		idx ++;
 	}
@@ -411,6 +405,7 @@ void GUI_AlternativeCovers::closeEvent(QCloseEvent *e)
 	m->loading_bar->hide();
 
 	Cover::Util::delete_temp_covers();
+	m->filelist.clear();
 
 	Dialog::closeEvent(e);
 }

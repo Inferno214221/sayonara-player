@@ -1,16 +1,16 @@
-PROJECT(say_interfaces_preference_dialog)
+project(say_interfaces_preference_dialog)
 
-SET(SOURCES
+set(SOURCES
 	PreferenceAction.cpp
 	PreferenceWidget.cpp
 )
 
-ADD_LIBRARY(${PROJECT_NAME} STATIC ${SOURCES})
-TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+add_library(${PROJECT_NAME} STATIC ${SOURCES})
+target_link_libraries(${PROJECT_NAME}
 	say_gui_utils
 )
 
-IF( WITH_COTIRE )
+if( WITH_COTIRE )
     cotire(${PROJECT_NAME})
-ENDIF()
+endif()
 

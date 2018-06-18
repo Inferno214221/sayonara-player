@@ -1,17 +1,17 @@
-PROJECT(say_interfaces_notifications)
+project(say_interfaces_notifications)
 
-SET(SOURCES
+set(SOURCES
 	NotificationInterface.cpp
 	NotificationHandler.cpp
 )
 
-ADD_LIBRARY(${PROJECT_NAME} STATIC ${SOURCES})
-TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+add_library(${PROJECT_NAME} STATIC ${SOURCES})
+target_link_libraries(${PROJECT_NAME}
 	say_utils
 )
 
 
-IF( WITH_COTIRE )
+if( WITH_COTIRE )
     cotire(${PROJECT_NAME})
-ENDIF()
+endif()
 

@@ -1,36 +1,36 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
-PROJECT(say_tests)
-INCLUDE(${CMAKE_SOURCE_DIR}/src/compiler.cmake)
+cmake_minimum_required(VERSION 2.8)
+project(say_tests)
+include(${CMAKE_SOURCE_DIR}/src/compiler.cmake)
 
-FIND_PACKAGE(Qt5 COMPONENTS Core Widgets Sql Network DBus Network Xml Test REQUIRED)
+find_package(Qt5 COMPONENTS Core Widgets Sql Network DBus Network Xml Test REQUIRED)
 
-SET(CMAKE_AUTOMOC ON)
-SET(CMAKE_AUTOUIC ON)
-SET(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-SET(RESOURCES
+set(RESOURCES
         resources/Test.qrc
 )
 
-INCLUDE_DIRECTORIES(${Qt5Core_INCLUDE_DIRS})
-INCLUDE_DIRECTORIES(${Qt5Widgets_INCLUDE_DIRS})
-INCLUDE_DIRECTORIES(${Qt5Xml_INCLUDE_DIRS})
-INCLUDE_DIRECTORIES(${Qt5Sql_INCLUDE_DIRS})
-INCLUDE_DIRECTORIES(${Qt5DBus_INCLUDE_DIRS})
-INCLUDE_DIRECTORIES(${Qt5Network_INCLUDE_DIRS})
-INCLUDE_DIRECTORIES(${Qt5Test_INCLUDE_DIRS})
-INCLUDE_DIRECTORIES("${CURRENT_SOURCE_DIR}/../src")
+include_directories(${Qt5Core_INCLUDE_DIRS})
+include_directories(${Qt5Widgets_INCLUDE_DIRS})
+include_directories(${Qt5Xml_INCLUDE_DIRS})
+include_directories(${Qt5Sql_INCLUDE_DIRS})
+include_directories(${Qt5DBus_INCLUDE_DIRS})
+include_directories(${Qt5Network_INCLUDE_DIRS})
+include_directories(${Qt5Test_INCLUDE_DIRS})
+include_directories("${CURRENT_SOURCE_DIR}/../src")
 
-ADD_DEFINITIONS(${Qt5Core_DEFINITIONS})
-ADD_DEFINITIONS(${QT_DEFINITIONS})
+add_definitions(${Qt5Core_DEFINITIONS})
+add_definitions(${QT_DEFINITIONS})
 
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src)
-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src)
+include_directories(${CMAKE_SOURCE_DIR}/src)
+include_directories(${CMAKE_BINARY_DIR}/src)
 
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/test)
-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/test)
+include_directories(${CMAKE_SOURCE_DIR}/test)
+include_directories(${CMAKE_BINARY_DIR}/test)
 
-INCLUDE("new_test.cmake")
+include("new_test.cmake")
 QT5_ADD_RESOURCES(RESOURCES_RCC
         ${RESOURCES}
 )

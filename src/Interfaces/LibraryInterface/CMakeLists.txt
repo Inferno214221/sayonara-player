@@ -1,14 +1,14 @@
-PROJECT(say_interfaces_libraryinterface)
+project(say_interfaces_libraryinterface)
 
-ADD_SUBDIRECTORY(LibraryContainer)
+add_subdirectory(LibraryContainer)
 
-SET(SOURCES
+set(SOURCES
     LibraryPluginHandler.cpp
 	LibraryPluginCombobox.cpp
 )
 
-ADD_LIBRARY(${PROJECT_NAME} STATIC ${SOURCES})
-TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+add_library(${PROJECT_NAME} STATIC ${SOURCES})
+target_link_libraries(${PROJECT_NAME}
     say_gui_utils
     say_gui_library
 )

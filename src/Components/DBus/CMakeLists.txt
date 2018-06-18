@@ -1,11 +1,11 @@
-PROJECT(say_comp_dbus)
+project(say_comp_dbus)
 
-INCLUDE_DIRECTORIES(
+include_directories(
 	${CMAKE_CURRENT_BINARY_DIR},
 	${CMAKE_CURRENT_SOURCE_DIR})
 
-#FILE(GLOB_RECURSE HEADERS . *.h)
-FILE(GLOB_RECURSE SOURCES . *.cpp)
+#file(GLOB_RECURSE HEADERS . *.h)
+file(GLOB_RECURSE SOURCES . *.cpp)
 
 QT5_ADD_DBUS_ADAPTOR(SOURCES
 	resources/org.mpris.MediaPlayer2.xml
@@ -43,13 +43,13 @@ QT5_ADD_DBUS_INTERFACE(SOURCES
 	gnome_settings_daemon
 )
 
-ADD_LIBRARY(${PROJECT_NAME} STATIC ${SOURCES})
-TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+add_library(${PROJECT_NAME} STATIC ${SOURCES})
+target_link_libraries(${PROJECT_NAME}
 	Qt5::Gui
 	say_interfaces_notifications
 )
 
-IF( WITH_COTIRE )
+if( WITH_COTIRE )
 	cotire(${PROJECT_NAME})
-ENDIF()
+endif()
 

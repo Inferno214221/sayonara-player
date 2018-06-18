@@ -1,11 +1,11 @@
-PROJECT(say_interfaces_library_container)
+project(say_interfaces_library_container)
 
-SET(SOURCES
+set(SOURCES
 	LibraryContainer.cpp
 )
 
-ADD_LIBRARY(${PROJECT_NAME} STATIC ${SOURCES})
-TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+add_library(${PROJECT_NAME} STATIC ${SOURCES})
+target_link_libraries(${PROJECT_NAME}
 	Qt5::Core
 	Qt5::Widgets
 )

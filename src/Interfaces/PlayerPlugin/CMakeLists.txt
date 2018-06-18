@@ -1,16 +1,16 @@
-PROJECT(say_interfaces_player_plugin)
+project(say_interfaces_player_plugin)
 
-SET(SOURCES
+set(SOURCES
 	PlayerPlugin.cpp
 	PlayerPluginHandler.cpp
 )
 
-ADD_LIBRARY(${PROJECT_NAME} STATIC ${SOURCES})
-TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+add_library(${PROJECT_NAME} STATIC ${SOURCES})
+target_link_libraries(${PROJECT_NAME}
 	say_gui_utils
 )
 
-IF( WITH_COTIRE )
+if( WITH_COTIRE )
     cotire(${PROJECT_NAME})
-ENDIF()
+endif()
 

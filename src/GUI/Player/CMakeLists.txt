@@ -1,11 +1,11 @@
-PROJECT(say_gui_player)
+project(say_gui_player)
 
-FILE(GLOB_RECURSE SOURCES . *.cpp)
-FILE(GLOB_RECURSE RAW_UI_FILES . *.ui)
+file(GLOB_RECURSE SOURCES . *.cpp)
+file(GLOB_RECURSE RAW_UI_FILES . *.ui)
 
-QT5_WRAP_UI(UI_FILES ${RAW_UI_FILES})
+qt5_wrap_ui(UI_FILES ${RAW_UI_FILES})
 
-SET(PLAYER_LIBRARIES
+set(PLAYER_LIBRARIES
 
 	say_gui_playlist
 	say_interfaces_player_plugin
@@ -14,12 +14,12 @@ SET(PLAYER_LIBRARIES
 	say_gui_plugins
 )
 
-ADD_LIBRARY(${PROJECT_NAME} STATIC ${SOURCES} ${UI_FILES})
-TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+add_library(${PROJECT_NAME} STATIC ${SOURCES} ${UI_FILES})
+target_link_libraries(${PROJECT_NAME}
 	${PLAYER_LIBRARIES}
 )
 
-IF( WITH_COTIRE )
+if( WITH_COTIRE )
 	cotire(${PROJECT_NAME})
-ENDIF()
+endif()
 

@@ -1,35 +1,35 @@
-PROJECT(say_gui_resources)
+project(say_gui_resources)
 
-ADD_SUBDIRECTORY(Icons)
+add_subdirectory(Icons)
 
-SET(RESOURCES
+set(RESOURCES
 	Icons.qrc
 )
 
-IF(WIN32)
-	SET(RESOURCES
+if(WIN32)
+	set(RESOURCES
 		${RESOURCES}
 		IconsWindows.qrc
 	)
-ENDIF()
+endif()
 
-QT5_ADD_RESOURCES(RESOURCES_RCC
+qt5_add_resources(RESOURCES_RCC
 	${RESOURCES}
 )
 
-ADD_LIBRARY(${PROJECT_NAME} STATIC ${RESOURCES_RCC})
+add_library(${PROJECT_NAME} STATIC ${RESOURCES_RCC})
 
-IF(WIN32)
-	SET(INSTALL_TARGET_PATH
+if(WIN32)
+	set(INSTALL_TARGET_PATH
 		"share"
 	)
-ELSE()
-	SET(INSTALL_TARGET_PATH
+else()
+	set(INSTALL_TARGET_PATH
 		"share/sayonara"
 	)
-ENDIF()
+endif()
 
-INSTALL(FILES "standard.css" DESTINATION ${INSTALL_TARGET_PATH})
-INSTALL(FILES "dark.css" DESTINATION ${INSTALL_TARGET_PATH})
+install(FILES "standard.css" DESTINATION ${INSTALL_TARGET_PATH})
+install(FILES "dark.css" DESTINATION ${INSTALL_TARGET_PATH})
 
 

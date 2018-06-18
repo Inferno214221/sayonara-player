@@ -1,12 +1,12 @@
-PROJECT(say_gui_shutdown_dialog)
+project(say_gui_shutdown_dialog)
 
-FILE(GLOB_RECURSE SOURCES . *.cpp)
-FILE(GLOB_RECURSE RAW_UI_FILES . *.ui)
+file(GLOB_RECURSE SOURCES . *.cpp)
+file(GLOB_RECURSE RAW_UI_FILES . *.ui)
 
-QT5_WRAP_UI(UI_FILES ${RAW_UI_FILES})
+qt5_wrap_ui(UI_FILES ${RAW_UI_FILES})
 
-ADD_LIBRARY(${PROJECT_NAME} STATIC ${SOURCES} ${UI_FILES})
-TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+add_library(${PROJECT_NAME} STATIC ${SOURCES} ${UI_FILES})
+target_link_libraries(${PROJECT_NAME}
 	say_gui_utils
 	say_comp_shutdown
 )
