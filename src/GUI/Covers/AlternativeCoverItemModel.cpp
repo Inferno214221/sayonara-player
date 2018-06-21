@@ -39,20 +39,12 @@
 #include <QIcon>
 
 #include <algorithm>
-#include <mutex>
 
 using Cover::Location;
 
 struct AlternativeCoverItemModel::Private
 {
 	QStringList pathlist;
-
-	Private() {}
-
-	void reset()
-	{
-		pathlist.clear();
-	}
 };
 
 AlternativeCoverItemModel::AlternativeCoverItemModel(QObject* parent) :
@@ -67,15 +59,12 @@ RowColumn AlternativeCoverItemModel::cvt_2_row_col(int idx) const
 {
 	RowColumn p;
 
-	if(idx < 0) {
-		p.row = -1;
-		p.col = -1;
-		p.valid = false;
+	if(idx >= 0)
+	{
+		p.row = idx / columnCount();
+		p.col = idx % columnCount();
+		p.valid = true;
 	}
-
-	p.row = idx / columnCount();
-	p.col = idx % columnCount();
-	p.valid = true;
 
 	return p;
 }
@@ -126,7 +115,8 @@ QVariant AlternativeCoverItemModel::data(const QModelIndex& index, int role) con
 		 }
 	 }
 
-	 else if(role == Qt::SizeHintRole){
+	 else if(role == Qt::SizeHintRole)
+	 {
 		const int sz = 80;
 		return QSize(sz, sz);
 	 }
@@ -183,7 +173,7 @@ void AlternativeCoverItemModel::reset()
 	beginRemoveRows(QModelIndex(), 0, rowCount());
 	endRemoveRows();
 
-	m->reset();
+	m->pathlist.clear();
 
 	emit dataChanged(index(0, 0), index(rowCount()-1, columnCount() - 1));
 }
@@ -192,7 +182,7 @@ void AlternativeCoverItemModel::reset()
 bool AlternativeCoverItemModel::is_valid(int row, int col)
 {
 	int idx = cvt_2_idx(row, col);
-	if(idx < 0 || !between(idx, m->pathlist)) {
+	if(!between(idx, m->pathlist)) {
 		return false;
 	}
 
