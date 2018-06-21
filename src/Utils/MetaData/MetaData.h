@@ -92,6 +92,9 @@ public:
 	const QString& album() const;
 	void set_album(const QString& album);
 
+	const QString& comment() const;
+	void set_comment(const QString& comment);
+
 	QString filepath() const;
 	QString set_filepath(QString filepath);
 

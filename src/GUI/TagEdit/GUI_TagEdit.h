@@ -291,7 +291,7 @@ private slots:
 	void commit_finished();
 
 
-	void rb_dont_replace_toggled(bool b);
+	void cb_replace_toggled(bool b);
 
 
 protected:

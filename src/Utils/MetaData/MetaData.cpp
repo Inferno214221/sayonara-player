@@ -62,6 +62,7 @@ struct MetaData::Private
 	HashValue		album_artist_idx;
 	HashValue		album_idx;
 	HashValue		artist_idx;
+	QString			comment;
 	QString         filepath;
 	RadioMode       radio_mode;
 
@@ -80,6 +81,7 @@ struct MetaData::Private
 		CASSIGN(album_artist_idx),
 		CASSIGN(album_idx),
 		CASSIGN(artist_idx),
+		CASSIGN(comment),
 		CASSIGN(filepath),
 		CASSIGN(radio_mode)
 	{}
@@ -91,6 +93,7 @@ struct MetaData::Private
 		CMOVE(album_artist_idx),
 		CMOVE(album_idx),
 		CMOVE(artist_idx),
+		CMOVE(comment),
 		CMOVE(filepath),
 		CMOVE(radio_mode)
 	{}
@@ -103,6 +106,7 @@ struct MetaData::Private
 		ASSIGN(album_artist_idx);
 		ASSIGN(album_idx);
 		ASSIGN(artist_idx);
+		ASSIGN(comment);
 		ASSIGN(filepath);
 		ASSIGN(radio_mode);
 
@@ -117,6 +121,7 @@ struct MetaData::Private
 		MOVE(album_artist_idx);
 		MOVE(album_idx);
 		MOVE(artist_idx);
+		MOVE(comment);
 		MOVE(filepath);
 		MOVE(radio_mode);
 
@@ -136,6 +141,7 @@ struct MetaData::Private
 			CMP(album_artist_id) &&
 			CMP(album_idx) &&
 			CMP(artist_idx) &&
+			CMP(comment) &&
 			CMP(filepath) &&
 			CMP(radio_mode)
 		);
@@ -284,7 +290,15 @@ void MetaData::set_album(const QString& album)
 	m->album_idx = hashed;
 }
 
+const QString& MetaData::comment() const
+{
+	return m->comment;
+}
 
+void MetaData::set_comment(const QString& comment)
+{
+	m->comment = comment;
+}
 
 ArtistId MetaData::album_artist_id() const
 {
@@ -446,24 +460,24 @@ bool MetaData::is_equal_deep(const MetaData& other) const
 {
 	return
 	(
-			CMP(length_ms) &&
-			CMP(filesize) &&
-			CMP(id) &&
-			CMP(artist_id) &&
-			CMP(album_id) &&
-			CMP(bitrate) &&
-			CMP(track_num) &&
-			CMP(year) &&
-			CMP(played) &&
-			CMP(is_extern) &&
-			CMP(pl_playing) &&
-			CMP(is_disabled) &&
-			CMP(rating) &&
-			CMP(discnumber) &&
-			CMP(n_discs) &&
-			CMP(library_id) &&
-			m->is_equal(*(other.m))
-				);
+		CMP(length_ms) &&
+		CMP(filesize) &&
+		CMP(id) &&
+		CMP(artist_id) &&
+		CMP(album_id) &&
+		CMP(bitrate) &&
+		CMP(track_num) &&
+		CMP(year) &&
+		CMP(played) &&
+		CMP(is_extern) &&
+		CMP(pl_playing) &&
+		CMP(is_disabled) &&
+		CMP(rating) &&
+		CMP(discnumber) &&
+		CMP(n_discs) &&
+		CMP(library_id) &&
+		m->is_equal(*(other.m))
+	);
 }
 
 const SP::Set<GenreID>& MetaData::genre_ids() const

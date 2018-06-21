@@ -167,7 +167,7 @@ bool Connector::apply_fixes()
 	QString str_version;
 	int version;
 	bool success;
-	const int LatestVersion = 16;
+	const int LatestVersion = 17;
 
 	success = settings_connector()->load_setting("version", str_version);
 	version = str_version.toInt(&success);
@@ -407,6 +407,16 @@ bool Connector::apply_fixes()
 			this->commit();
 
 			delete lib_db;
+		}
+	}
+
+	if(version < 17)
+	{
+		bool success = check_and_insert_column("tracks", "comment", "VARCHAR(1024)");
+
+		if(success)
+		{
+			settings_connector()->store_setting("version", 17);
 		}
 	}
 

@@ -93,9 +93,10 @@ void Tracks::check_track_view(LibraryId library_id)
 					"tracks.albumID AS albumID, "				// 11
 					"tracks.artistID AS artistID, "				// 12
 					"tracks.albumArtistID AS albumArtistID, "	// 13
-					"createDate, "								// 14
-					"modifyDate, "								// 15
-					"tracks.libraryID AS trackLibraryID "		// 16
+					"tracks.comment AS comment, "				// 14
+					"createDate, "								// 15
+					"modifyDate, "								// 16
+					"tracks.libraryID AS trackLibraryID "		// 17
 	;
 
 	QString view_query =
@@ -115,10 +116,10 @@ void Tracks::check_track_view(LibraryId library_id)
 			+ m->search_view + " "
 			"AS "
 			+ select + ", "
-			"albums.name AS albumName, "				// 17
-			"albums.rating AS albumRating, "			// 18
-			"artists.name AS artistName, "				// 19
-			"albumArtists.name AS albumArtistName, "	// 20
+			"albums.name AS albumName, "				// 18
+			"albums.rating AS albumRating, "			// 19
+			"artists.name AS artistName, "				// 20
+			"albumArtists.name AS albumArtistName, "	// 21
 			"(albums.cissearch || ',' || artists.cissearch || ',' || tracks.cissearch) AS allCissearch, " // 21
 			"tracks.fileCissearch AS fileCissearch "
 			"FROM tracks "
@@ -187,22 +188,25 @@ bool Tracks::db_fetch_tracks(Query& q, MetaDataList& result)
 		MetaData data;
 
 		data.id = 		 	q.value(0).toInt();
-		data.set_title(q.value(1).toString());
+		data.set_title(		q.value(1).toString());
 		data.length_ms = 	q.value(2).toInt();
 		data.year = 	 	q.value(3).toInt();
 		data.bitrate = 	 	q.value(4).toInt();
-		data.set_filepath(q.value(5).toString());
+		data.set_filepath(	q.value(5).toString());
 		data.filesize =  	q.value(6).toInt();
 		data.track_num = 	q.value(7).toInt();
-		data.set_genres(q.value(8).toString().split(","));
+		data.set_genres(	q.value(8).toString().split(","));
 		data.discnumber = 	q.value(9).toInt();
 		data.rating = 		q.value(10).toInt();
 		data.album_id =  	q.value(11).toInt();
-		data.set_album(q.value(17).toString().trimmed());
 		data.artist_id = 	q.value(12).toInt();
-		data.set_artist(q.value(19).toString().trimmed());
-		data.set_album_artist(q.value(20).toString(), q.value(13).toInt());
-		data.library_id = 	q.value(16).toInt();
+		data.set_comment(	q.value(14).toString());
+
+		data.library_id = 	q.value(17).toInt();
+		data.set_album(		q.value(18).toString().trimmed());
+		data.set_artist(	q.value(20).toString().trimmed());
+		data.set_album_artist(q.value(21).toString(), q.value(13).toInt());
+
 		data.set_db_id(module_db_id());
 
 		result.push_back(std::move(data));
@@ -737,7 +741,8 @@ bool Tracks::updateTrack(const MetaData& md)
 			  "rating=:rating, "
 			  "title=:title, "
 			  "track=:track, "
-			  "year=:year "
+			  "year=:year, "
+			  "comment=:comment "
 			  "WHERE TrackID = :trackID;");
 
 	q.bindValue(":albumArtistID",	md.album_artist_id());
@@ -758,6 +763,7 @@ bool Tracks::updateTrack(const MetaData& md)
 	q.bindValue(":track",			md.track_num);
 	q.bindValue(":trackID",			md.id);
 	q.bindValue(":year",			md.year);
+	q.bindValue(":comment",			md.comment());
 
 	if (!q.exec()) {
 		q.show_error(QString("Cannot update track ") + md.filepath());
@@ -806,9 +812,9 @@ bool Tracks::insertTrackIntoDatabase(const MetaData& md, ArtistId artist_id, Alb
 	QString file_cissearch = ::Library::Util::convert_search_string(md.filepath(), search_mode());
 	QString querytext =
 			"INSERT INTO tracks "
-			"(filename,  albumID, artistID, albumArtistID,  title,  year,  length,  track,  bitrate,  genre,  filesize,  discnumber,  rating,  cissearch, filecissearch, createdate,  modifydate,  libraryID) "
+			"(filename,  albumID, artistID, albumArtistID,  title,  year,  length,  track,  bitrate,  genre,  filesize,  discnumber,  rating,  comment,  cissearch,  filecissearch,  createdate,  modifydate,  libraryID) "
 			"VALUES "
-			"(:filename,:albumID,:artistID, :albumArtistID, :title, :year, :length, :track, :bitrate, :genre, :filesize, :discnumber, :rating, :cissearch, :filecissearch, :createdate, :modifydate, :libraryID); ";
+			"(:filename,:albumID,:artistID, :albumArtistID, :title, :year, :length, :track, :bitrate, :genre, :filesize, :discnumber, :rating, :comment, :cissearch, :filecissearch, :createdate, :modifydate, :libraryID); ";
 
 	auto current_time = Util::current_date_to_int();
 	q.prepare(querytext);
@@ -826,6 +832,7 @@ bool Tracks::insertTrackIntoDatabase(const MetaData& md, ArtistId artist_id, Alb
 	q.bindValue(":filesize",		QVariant::fromValue(md.filesize));
 	q.bindValue(":discnumber",		md.discnumber);
 	q.bindValue(":rating",			md.rating);
+	q.bindValue(":comment",			md.comment());
 	q.bindValue(":cissearch",		cissearch);
 	q.bindValue(":filecissearch",	file_cissearch);
 	q.bindValue(":createdate",		QVariant::fromValue(current_time));

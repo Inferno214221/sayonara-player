@@ -122,6 +122,7 @@ bool Tagging::Util::getMetaDataOfFile(MetaData& md, Quality quality)
 	QString album = QString::fromUtf8(tag->album().toCString(true));
 	QString title = QString::fromUtf8(tag->title().toCString(true));
 	QString genre = QString::fromUtf8(tag->genre().toCString(true));
+	QString comment = QString::fromUtf8(tag->comment().toCString(true));
 
 	QString album_artist;
 
@@ -229,6 +230,7 @@ bool Tagging::Util::getMetaDataOfFile(MetaData& md, Quality quality)
 	md.discnumber = discnumber.disc;
 	md.n_discs = discnumber.n_discs;
 	md.rating = popularimeter.get_rating();
+	md.set_comment(comment);
 
 	if(md.title().length() == 0)
 	{
@@ -262,6 +264,8 @@ bool Tagging::Util::setMetaDataOfFile(const MetaData& md)
 	TagLib::String artist(md.artist().toUtf8().data(), TagLib::String::UTF8);
 	TagLib::String title(md.title().toUtf8().data(), TagLib::String::UTF8);
 	TagLib::String genre(md.genres_to_string().toUtf8().data(), TagLib::String::UTF8);
+	TagLib::String comment(md.comment().toUtf8().data(), TagLib::String::UTF8);
+
 	TagLib::Tag* tag = f.tag();
 	TagType tag_type = tag_type_from_fileref(f);
 
@@ -271,6 +275,7 @@ bool Tagging::Util::setMetaDataOfFile(const MetaData& md)
 	tag->setGenre(genre);
 	tag->setYear(md.year);
 	tag->setTrack(md.track_num);
+	tag->setComment(comment);
 
 	Models::Popularimeter popularimeter("sayonara player", 0, 0);
 	popularimeter.set_rating(md.rating);
