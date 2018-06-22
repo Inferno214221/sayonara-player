@@ -176,7 +176,7 @@ QString DirectoryTreeView::directory_name_origin(const QModelIndex& index)
 	return m->model->filepath_origin(index);
 }
 
-QModelIndexList DirectoryTreeView::selected_items() const
+QModelIndexList DirectoryTreeView::selected_indexes() const
 {
 	QItemSelectionModel* selection_model = this->selectionModel();
 
@@ -194,7 +194,7 @@ MetaDataList DirectoryTreeView::selected_metadata() const
 
 QStringList DirectoryTreeView::selected_paths() const
 {
-	QModelIndexList selections = this->selected_items();
+	QModelIndexList selections = this->selected_indexes();
 	if(selections.isEmpty()){
 		return QStringList();
 	}
@@ -302,11 +302,11 @@ void DirectoryTreeView::mousePressEvent(QMouseEvent* event)
 		bool is_root = m->model->is_root(index);
 
 		m->context_menu->set_rename_visible(
-			(this->selected_items().size()==1) && (!is_root)
+			(this->selected_indexes().size()==1) && (!is_root)
 		);
 
 		m->context_menu->set_create_dir_visible(
-			(this->selected_items().size()==1)
+			(this->selected_indexes().size()==1)
 		);
 
 		m->context_menu->show_action(LibraryContextMenu::EntryDelete, !is_root);
@@ -316,7 +316,7 @@ void DirectoryTreeView::mousePressEvent(QMouseEvent* event)
 
 void DirectoryTreeView::create_dir_clicked()
 {
-	QModelIndexList indexes = this->selected_items();
+	QModelIndexList indexes = this->selected_indexes();
 	if(indexes.size() != 1){
 		return;
 	}
@@ -335,7 +335,7 @@ void DirectoryTreeView::create_dir_clicked()
 
 void DirectoryTreeView::rename_dir_clicked()
 {
-	QModelIndexList indexes = this->selected_items();
+	QModelIndexList indexes = this->selected_indexes();
 	if(indexes.size() != 1){
 		return;
 	}
@@ -603,9 +603,11 @@ DirectoryTreeView::DropAction DirectoryTreeView::show_drop_menu(const QPoint& po
 	return drop_action;
 }
 
+#include <algorithm>
 QMimeData* DirectoryTreeView::dragable_mimedata() const
 {
-	QModelIndexList selected_items = this->selected_items();
+	QModelIndexList selected_items = this->selected_indexes();
+
 	for(const QModelIndex& index : selected_items)
 	{
 		if(m->model->is_root(index)){

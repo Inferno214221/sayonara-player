@@ -151,7 +151,7 @@ QModelIndex SearchableViewInterface::match_index(const QString& str, SearchDirec
 }
 
 
-void SearchableViewInterface::select_match(const QString &str, SearchDirection direction)
+void SearchableViewInterface::select_match(const QString& str, SearchDirection direction)
 {
 	QModelIndex idx = match_index(str, direction);
 	if(!idx.isValid()){

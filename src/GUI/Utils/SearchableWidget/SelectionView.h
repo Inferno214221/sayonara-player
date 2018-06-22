@@ -51,7 +51,7 @@ public:
 		Items
 	};
 
-	IndexSet selected_items() const;
+	virtual IndexSet selected_items() const;
 
 protected:
 	SelectionViewInterface();

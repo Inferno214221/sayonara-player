@@ -188,6 +188,22 @@ QModelIndex CoverView::model_index_by_index(int idx) const
 	return model()->index(row, col);
 }
 
+IndexSet CoverView::selected_items() const
+{
+	QItemSelectionModel* sel_model = this->selection_model();
+	if(!sel_model){
+		return IndexSet();
+	}
+
+	QModelIndexList idx_list = sel_model->selectedIndexes();
+	IndexSet ret;
+	for(auto idx : idx_list) {
+		ret.insert(index_by_model_index(idx));
+	}
+
+	return ret;
+}
+
 
 void CoverView::change_zoom(int zoom)
 {

@@ -58,6 +58,8 @@ namespace Library
 		int index_by_model_index(const QModelIndex& idx) const override;
 		QModelIndex model_index_by_index(int idx) const override;
 
+		IndexSet selected_items() const override;
+
 	private:
 		void change_zoom(int zoom=-1);
 		void middle_clicked() override;

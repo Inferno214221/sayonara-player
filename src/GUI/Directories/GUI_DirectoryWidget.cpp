@@ -230,7 +230,7 @@ MetaDataList GUI_DirectoryWidget::info_dialog_data() const
 
 void GUI_DirectoryWidget::dir_enter_pressed()
 {
-	QModelIndexList indexes = ui->tv_dirs->selected_items();
+	QModelIndexList indexes = ui->tv_dirs->selected_indexes();
 	if(!indexes.isEmpty()){
 		ui->tv_dirs->expand(indexes.first());
 	}
@@ -265,7 +265,7 @@ void GUI_DirectoryWidget::dir_clicked(QModelIndex idx)
 
 void GUI_DirectoryWidget::dir_opened(QModelIndex idx)
 {
-	QModelIndexList selected_items = ui->tv_dirs->selected_items();
+	QModelIndexList selected_items = ui->tv_dirs->selected_indexes();
 
 	QString dir = ui->tv_dirs->directory_name_origin(idx);
 	QStringList dirs;

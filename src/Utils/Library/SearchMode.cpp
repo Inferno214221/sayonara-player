@@ -101,6 +101,7 @@ static void init_diacritic_chars()
 	diacritic_chars->insert(QString::fromUtf8("ÿ"), "y");
 }
 
+
 QString Library::Util::convert_search_string(const QString& str, Library::SearchModeMask mode, const QList<QChar>& ignored_chars)
 {
 	if(diacritic_chars->isEmpty()){
@@ -115,18 +116,16 @@ QString Library::Util::convert_search_string(const QString& str, Library::Search
 
 	if(mode & Library::NoSpecialChars)
 	{
-		QList<QChar> special_chars =
+		QString ret_tmp(ret);
+		for(QChar c : ret_tmp)
 		{
-				'.', '\'', '\"', '&', '!', '$', '+', '*', '\t', '\n', '\r', '/', '(', ')', '=', '-', '_', ';',
-				':', ',', '?', '<', '>', '[', ']', '{', '}', '@', '|', '~', '^'
-		};
+			if(ignored_chars.contains(c)){
+				continue;
+			}
 
-		for(QChar c : ignored_chars){
-			special_chars.removeAll(c);
-		}
-
-		for(QChar c : special_chars){
-			ret.remove(c);
+			if(!c.isLetterOrNumber()){
+				ret.remove(c);
+			}
 		}
 	}
 
