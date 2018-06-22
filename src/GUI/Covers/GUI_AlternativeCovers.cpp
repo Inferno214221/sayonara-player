@@ -39,20 +39,14 @@
 #include "Components/Covers/CoverFetcherInterface.h"
 #include "Components/Covers/CoverUtils.h"
 
-#include "Components/Library/LibraryManager.h"
-
 #include "Utils/Utils.h"
 #include "Utils/Message/Message.h"
 #include "Utils/Language.h"
-#include "Utils/Settings/Settings.h"
-#include "Utils/Language.h"
 
-#include <QFile>
 #include <QDir>
+#include <QFile>
 #include <QFileDialog>
 #include <QStringList>
-#include <QModelIndex>
-
 
 using Cover::AlternativeLookup;
 using Cover::Location;
@@ -60,32 +54,20 @@ using Gui::ProgressBar;
 
 struct GUI_AlternativeCovers::Private
 {
-	QStringList						filelist;
-
 	AlternativeLookup*				cl_alternative=nullptr;
 	AlternativeCoverItemModel*		model=nullptr;
 	AlternativeCoverItemDelegate*	delegate=nullptr;
 
 	ProgressBar*			loading_bar=nullptr;
 
-	int						cur_idx;
 	bool					is_searching;
 
 	Private() :
-		cur_idx(-1),
 		is_searching(false)
 	{}
 
 	~Private()
 	{
-		if(model){
-			delete model;
-		}
-
-		if(delegate){
-			delete delegate;
-		}
-
 		if(cl_alternative) {
 			cl_alternative->stop();
 		}
@@ -97,17 +79,17 @@ GUI_AlternativeCovers::GUI_AlternativeCovers(QWidget* parent) :
 	Dialog(parent)
 {
 	ui = new Ui::GUI_AlternativeCovers();
-	m = Pimpl::make<GUI_AlternativeCovers::Private>();
-
-	m->model = new AlternativeCoverItemModel(this);
-	m->delegate = new AlternativeCoverItemDelegate(this);
-
-	m->cl_alternative = new AlternativeLookup(this, 20);
-
 	ui->setupUi(this);
 
+	m = Pimpl::make<GUI_AlternativeCovers::Private>();
+
+	m->cl_alternative = new AlternativeLookup(this, 20);
 	m->loading_bar = new ProgressBar(ui->tv_images);
+
+	m->model = new AlternativeCoverItemModel(this);
 	ui->tv_images->setModel(m->model);
+
+	m->delegate = new AlternativeCoverItemDelegate(this);
 	ui->tv_images->setItemDelegate(m->delegate);
 
 	connect(ui->btn_ok, &QPushButton::clicked, this, &GUI_AlternativeCovers::ok_clicked);
@@ -139,9 +121,9 @@ GUI_AlternativeCovers::GUI_AlternativeCovers(QWidget* parent) :
 
 GUI_AlternativeCovers::~GUI_AlternativeCovers()
 {
-	Cover::Util::delete_temp_covers();
+	reset();
 
-	delete ui;
+	delete ui; ui=nullptr;
 }
 
 
@@ -157,8 +139,7 @@ void GUI_AlternativeCovers::start(const Location& cl)
 	ui->le_search->setText( cl.search_term() );
 	ui->rb_auto_search->setChecked(true);
 
-	sp_log(Log::Develop, this) << "Search alternative cover";
-	sp_log(Log::Develop, this) << cl.to_string();
+	sp_log(Log::Develop, this) << "Search alternative cover " << cl.to_string();
 
 	init_combobox();
 
@@ -168,8 +149,7 @@ void GUI_AlternativeCovers::start(const Location& cl)
 
 void GUI_AlternativeCovers::connect_and_start()
 {
-	reset_model();
-	Cover::Util::delete_temp_covers();
+	reset();
 
 	m->is_searching = true;
 
@@ -227,22 +207,12 @@ void GUI_AlternativeCovers::ok_clicked()
 
 void GUI_AlternativeCovers::apply_clicked()
 {
-	if(m->cur_idx == -1) {
-		return;
-	}
+	QModelIndex current_idx = ui->tv_images->currentIndex();
 
-	RowColumn rc = m->model->cvt_2_row_col(m->cur_idx);
-
-	QModelIndex idx = m->model->index(rc.row, rc.col);
-
-	if(!idx.isValid()) {
-		return;
-	}
-
-	QString cover_path = m->model->data(idx, Qt::UserRole).toString();
+	QString cover_path = m->model->data(current_idx, Qt::UserRole).toString();
 	QFile file(cover_path);
 
-	if(!file.exists()) {
+	if( !file.exists()) {
 		Message::warning(tr("This cover does not exist"));
 		return;
 	}
@@ -273,15 +243,11 @@ void GUI_AlternativeCovers::search_clicked()
 
 void GUI_AlternativeCovers::cl_new_cover(const QString& cover_path)
 {
-	m->filelist << cover_path;
-
-	int n_files = m->filelist.size();
-
 	m->model->add_cover(cover_path);
 
 	ui->btn_ok->setEnabled(true);
 	ui->btn_apply->setEnabled(true);
-	ui->lab_status->setText( tr("%1 covers found").arg(n_files) ) ;
+	ui->lab_status->setText( tr("%1 covers found").arg(m->model->cover_count()) ) ;
 }
 
 
@@ -290,33 +256,30 @@ void GUI_AlternativeCovers::cl_finished(bool b)
 	Q_UNUSED(b)
 
 	m->is_searching = false;
+	m->loading_bar->hide();
 
 	ui->btn_search->setText(Lang::get(Lang::SearchVerb));
-
-	m->loading_bar->hide();
 }
 
 
 void GUI_AlternativeCovers::cover_pressed(const QModelIndex& idx)
 {
-	int row = idx.row();
-	int col = idx.column();
-	QSize sz = m->model->get_cover_size(idx);
-	bool valid = m->model->is_valid(row, col);
-	m->cur_idx = m->model->cvt_2_idx(row, col);
+	bool valid = m->model->is_valid(idx);
 
 	ui->btn_ok->setEnabled(valid);
 	ui->btn_apply->setEnabled(valid);
 
+	QSize sz = m->model->cover_size(idx);
 	QString size_str = QString("%1x%2").arg(sz.width()).arg(sz.height());
 	ui->lab_img_size->setText( size_str );
 }
 
 
-void GUI_AlternativeCovers::reset_model()
+void GUI_AlternativeCovers::reset()
 {
 	m->model->reset();
 	ui->lab_status->clear();
+	Cover::Util::delete_temp_covers();
 }
 
 
@@ -336,7 +299,7 @@ void GUI_AlternativeCovers::open_file_dialog()
 		return;
 	}
 
-	reset_model();
+	reset();
 
 	int idx = 0;
 	for(const QString& path : lst)
@@ -391,8 +354,12 @@ void GUI_AlternativeCovers::init_combobox()
 void GUI_AlternativeCovers::resizeEvent(QResizeEvent *e)
 {
 	Gui::Dialog::resizeEvent(e);
-	m->loading_bar->hide();
-	m->loading_bar->show();
+
+	if(m->loading_bar->isVisible())
+	{
+		m->loading_bar->hide();
+		m->loading_bar->show();
+	}
 }
 
 
@@ -405,7 +372,6 @@ void GUI_AlternativeCovers::closeEvent(QCloseEvent *e)
 	m->loading_bar->hide();
 
 	Cover::Util::delete_temp_covers();
-	m->filelist.clear();
 
 	Dialog::closeEvent(e);
 }

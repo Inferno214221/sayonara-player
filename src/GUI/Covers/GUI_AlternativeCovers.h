@@ -72,7 +72,7 @@ private slots:
 	void cl_finished(bool);
 
 private:
-	void reset_model();
+	void reset();
 	void connect_and_start();
 	void init_combobox();
 

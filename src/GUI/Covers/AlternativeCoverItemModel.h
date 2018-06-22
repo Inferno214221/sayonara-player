@@ -70,15 +70,16 @@ public:
 	Qt::ItemFlags flags(const QModelIndex &index) const override;
 
 	bool add_cover(const QString& cover);
-	int cover_count() const;
+
 	void reset();
 
-	bool is_valid(int row, int col);
-	QSize get_cover_size(const QModelIndex& idx) const;
-
+	bool is_valid(const QModelIndex& idx) const;
 
 	RowColumn cvt_2_row_col(int idx) const ;
 	int cvt_2_idx(int row, int col) const ;
+
+	QSize cover_size(const QModelIndex& idx) const;
+	int cover_count() const;
 };
 
 #endif

@@ -30,18 +30,15 @@
 #include "Components/Covers/CoverLocation.h"
 #include "Utils/globals.h"
 #include "Utils/Utils.h"
-#include "Utils/Logger/Logger.h"
 
-#include <QModelIndex>
-#include <QVariant>
 #include <QStringList>
 #include <QPixmap>
-#include <QIcon>
 
-#include <algorithm>
+#include <mutex>
 
 using Cover::Location;
 
+static std::mutex mtx;
 struct AlternativeCoverItemModel::Private
 {
 	QStringList pathlist;
@@ -72,13 +69,15 @@ RowColumn AlternativeCoverItemModel::cvt_2_row_col(int idx) const
 
 int AlternativeCoverItemModel::cvt_2_idx(int row, int col) const
 {
-	if(row < 0 || col < 0) return -1;
+	if(row < 0 || col < 0) {
+		return -1;
+	}
 
 	return row * columnCount() + col;
 }
 
 
-int AlternativeCoverItemModel::rowCount(const QModelIndex &parent) const
+int AlternativeCoverItemModel::rowCount(const QModelIndex& parent) const
 {
 	Q_UNUSED(parent)
 
@@ -87,7 +86,7 @@ int AlternativeCoverItemModel::rowCount(const QModelIndex &parent) const
 }
 
 
-int AlternativeCoverItemModel::columnCount(const QModelIndex &parent) const
+int AlternativeCoverItemModel::columnCount(const QModelIndex& parent) const
 {
 	Q_UNUSED(parent)
 	return 5;
@@ -143,14 +142,18 @@ Qt::ItemFlags AlternativeCoverItemModel::flags(const QModelIndex &index) const
 	return QAbstractTableModel::flags(index);
 }
 
+
 bool AlternativeCoverItemModel::add_cover(const QString& cover)
 {
+	std::lock_guard<std::mutex> guard(mtx);
+	Q_UNUSED(guard)
+
 	int n_rows = rowCount();
 	m->pathlist << cover;
 
 	if(n_rows < rowCount())
 	{
-		beginInsertRows(QModelIndex(), rowCount(), rowCount() + 1);
+		beginInsertRows(QModelIndex(), n_rows, n_rows);
 		endInsertRows();
 	}
 
@@ -162,36 +165,35 @@ bool AlternativeCoverItemModel::add_cover(const QString& cover)
 	return true;
 }
 
-int AlternativeCoverItemModel::cover_count() const
-{
-	return m->pathlist.size();
-}
-
 
 void AlternativeCoverItemModel::reset()
 {
-	beginRemoveRows(QModelIndex(), 0, rowCount());
-	endRemoveRows();
+	beginRemoveRows(QModelIndex(), 0, rowCount() - 1);
 
 	m->pathlist.clear();
 
-	emit dataChanged(index(0, 0), index(rowCount()-1, columnCount() - 1));
+	endRemoveRows();
 }
 
 
-bool AlternativeCoverItemModel::is_valid(int row, int col)
+bool AlternativeCoverItemModel::is_valid(const QModelIndex& idx) const
 {
-	int idx = cvt_2_idx(row, col);
-	if(!between(idx, m->pathlist)) {
-		return false;
-	}
+	int lin_idx = cvt_2_idx(idx.row(), idx.column());
 
-	return ( !Location::is_invalid(m->pathlist[ idx ]) );
+	return ( between(lin_idx, m->pathlist)) &&
+			!Location::is_invalid(m->pathlist[lin_idx]);
 }
 
-QSize AlternativeCoverItemModel::get_cover_size(const QModelIndex& idx) const
+QSize AlternativeCoverItemModel::cover_size(const QModelIndex& idx) const
 {
 	QString cover_path = idx.data(Qt::UserRole).toString();
 	QPixmap cover(cover_path);
 	return cover.size();
 }
+
+
+int AlternativeCoverItemModel::cover_count() const
+{
+	return m->pathlist.size();
+}
+

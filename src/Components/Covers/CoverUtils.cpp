@@ -69,7 +69,6 @@ void Cover::Util::delete_temp_covers()
 	for(const QString& f : files)
 	{
 		QString pure_filename = FileUtils::get_filename_of_path(f);
-		sp_log(Log::Debug) << pure_filename;
 		if(pure_filename.startsWith("tmp"))
 		{
 			files_to_delete << f;

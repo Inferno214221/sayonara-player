@@ -45,7 +45,6 @@ struct CoverButton::Private
 	Location        search_cover_location;
 	QString			text;
 	QString			current_cover_path;
-	QStringList     tmp_paths;
 	bool            cover_forced;
 
 	Private() :
@@ -75,11 +74,7 @@ CoverButton::CoverButton(QWidget* parent) :
 			this, &CoverButton::refresh);
 }
 
-CoverButton::~CoverButton()
-{
-	Util::File::delete_files(m->tmp_paths);
-}
-
+CoverButton::~CoverButton() {}
 
 void CoverButton::set_cover_image(const QString& cover_path)
 {
@@ -118,7 +113,6 @@ void CoverButton::force_cover(const QPixmap &pm)
 	QString tmp_path = Cover::Util::cover_directory("tmp_" + Util::random_string(16) + ".png");
 
 	m->current_cover_path = Util::File::clean_filename(tmp_path);
-	m->tmp_paths << m->current_cover_path;
 	m->cover_forced = true;
 
 	pm.save(m->current_cover_path);
