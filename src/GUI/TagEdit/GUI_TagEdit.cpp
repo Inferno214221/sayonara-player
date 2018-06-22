@@ -508,7 +508,7 @@ void GUI_TagEdit::commit()
 
 	for(int i=0; i<m->tag_edit->count(); i++)
 	{
-		if(i ==m->cur_idx) continue;
+		if(i == m->cur_idx) continue;
 
 		MetaData md =m->tag_edit->metadata(i);
 
