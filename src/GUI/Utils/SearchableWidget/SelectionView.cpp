@@ -208,18 +208,17 @@ void SelectionViewInterface::clear_selection()
 IndexSet SelectionViewInterface::selected_items() const
 {
 	QItemSelectionModel* sel_model = this->selection_model();
-
 	if(!sel_model){
 		return IndexSet();
 	}
 
 	QModelIndexList idx_list = sel_model->selectedIndexes();
-	IndexSet rows;
+	IndexSet ret;
 	for(auto idx : idx_list) {
-		rows.insert(idx.row());
+		ret.insert(index_by_model_index(idx));
 	}
 
-	return rows;
+	return ret;
 }
 
 

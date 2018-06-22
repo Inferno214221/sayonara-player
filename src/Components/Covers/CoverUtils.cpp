@@ -66,7 +66,7 @@ void Cover::Util::delete_temp_covers()
 	reader.set_filter({"*.jpg", "*.png"});
 	reader.files_in_directory(cover_dir, files);
 
-	for(const QString& f : files)
+	for(const QString& f : ::Util::AsConst(files))
 	{
 		QString pure_filename = FileUtils::get_filename_of_path(f);
 		if(pure_filename.startsWith("tmp"))

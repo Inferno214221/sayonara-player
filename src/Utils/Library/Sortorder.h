@@ -21,11 +21,9 @@
 #ifndef SORTORDER_H_
 #define SORTORDER_H_
 
-#include <QtGlobal>
-
 namespace Library
 {
-	enum class SortOrder : quint8
+	enum class SortOrder : unsigned char
 	{
 		NoSorting=0,
 		ArtistNameAsc,

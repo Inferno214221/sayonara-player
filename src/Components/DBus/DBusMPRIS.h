@@ -67,27 +67,27 @@ class MediaPlayer2 :
 		explicit MediaPlayer2(QMainWindow* player, QObject *parent=nullptr);
 		~MediaPlayer2();
 
-		Q_PROPERTY(bool			CanQuit				READ CanQuit)
-		bool					CanQuit();
+		Q_PROPERTY(bool			CanQuit				READ CanQuit		CONSTANT)
+		bool					CanQuit() const;
 
-		Q_PROPERTY(bool			CanRaise			READ CanRaise)
+		Q_PROPERTY(bool			CanRaise			READ CanRaise		CONSTANT)
 		bool					CanRaise();
 
 		Q_PROPERTY(bool			HasTrackList		READ HasTrackList)
 		bool					HasTrackList();
 
 
-		Q_PROPERTY(QString		Identity			READ Identity)
+		Q_PROPERTY(QString		Identity			READ Identity		CONSTANT)
 		QString					Identity();
 
-		Q_PROPERTY(QString		DesktopEntry		READ DesktopEntry)
+		Q_PROPERTY(QString		DesktopEntry		READ DesktopEntry	CONSTANT)
 		QString					DesktopEntry();
 
-		Q_PROPERTY(QStringList	SupportedUriSchemes	READ SupportedUriSchemes)
+		Q_PROPERTY(QStringList	SupportedUriSchemes	READ SupportedUriSchemes CONSTANT)
 		QStringList				SupportedUriSchemes();
 
 
-		Q_PROPERTY(QStringList	SupportedMimeTypes	READ SupportedMimeTypes)
+		Q_PROPERTY(QStringList	SupportedMimeTypes	READ SupportedMimeTypes CONSTANT)
 		QStringList				SupportedMimeTypes();
 
 

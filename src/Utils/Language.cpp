@@ -122,7 +122,7 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 		case Date:
 			return l.tr("Date");
 		case Days:
-			return l.tr("days");
+			return l.tr("Days");
 		case DaysShort:
 			// short form of day
 			return l.tr("d");
@@ -182,7 +182,7 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 		case Genres:
 			return l.tr("Genres");
 		case Hours:
-			return l.tr("hours");
+			return l.tr("Hours");
 		case HoursShort:
 			// short form of hours
 			return l.tr("h");
@@ -213,7 +213,7 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 		case Menu:
 			return l.tr("Menu");
 		case Minutes:
-			return l.tr("minutes");
+			return l.tr("Minutes");
 		case MinutesShort:
 			// short form of minutes
 			return l.tr("m");
@@ -321,7 +321,7 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 		case Second:
 			return l.tr("2nd");
 		case Seconds:
-			return l.tr("seconds");
+			return l.tr("Seconds");
 		case SecondsShort:
 			// short form of seconds
 			return l.tr("s");
@@ -350,13 +350,13 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 		case Title:
 			return l.tr("Title");
 		case Track:
-			return l.tr("track");
+			return l.tr("Track");
 		case TrackNo:
-			return l.tr("track number");
+			return l.tr("Track number");
 		case TrackOn:
 			return l.tr("track on");
 		case Tracks:
-			return l.tr("tracks");
+			return l.tr("Tracks");
 		case Tree:
 			return l.tr("Tree");
 		case Undo:

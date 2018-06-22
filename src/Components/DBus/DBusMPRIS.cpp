@@ -213,7 +213,7 @@ void DBusMPRIS::MediaPlayer2::init()
 }
 
 
-bool DBusMPRIS::MediaPlayer2::CanQuit()
+bool DBusMPRIS::MediaPlayer2::CanQuit() const
 {
 	return true;
 }

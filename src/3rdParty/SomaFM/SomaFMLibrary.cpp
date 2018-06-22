@@ -152,8 +152,8 @@ void SomaFM::Library::soma_station_playlists_fetched(bool success)
 		cover_url = search_urls.first();
 	}
 
-	for(auto it = v_md.begin(); it != v_md.end(); it++){
-		it->set_cover_download_url(cover_url);
+	for(MetaData& md : v_md){
+		md.set_cover_download_url(cover_url);
 	}
 
 	station.set_metadata(v_md);
