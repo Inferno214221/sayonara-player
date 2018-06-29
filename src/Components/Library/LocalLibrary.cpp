@@ -42,7 +42,6 @@
 
 struct LocalLibrary::Private
 {
-	Library::Manager*		manager=nullptr;
 	Library::ReloadThread*	reload_thread=nullptr;
 	Library::Importer*		library_importer=nullptr;
 
@@ -52,7 +51,6 @@ struct LocalLibrary::Private
 	LibraryId				library_id;
 
 	Private(LibraryId library_id) :
-		manager(Library::Manager::instance()),
 		db(DB::Connector::instance()),
 		library_db(db->library_db(library_id, 0)),
 		library_id(library_id)
@@ -446,23 +444,27 @@ void LocalLibrary::change_track_rating(int idx, Rating rating)
 
 bool LocalLibrary::set_library_path(const QString& library_path)
 {
-	return m->manager->change_library_path(m->library_id, library_path);
+	Library::Manager* manager = Library::Manager::instance();
+	return manager->change_library_path(m->library_id, library_path);
 }
 
 bool LocalLibrary::set_library_name(const QString& library_name)
 {
-	return m->manager->rename_library(this->library_id(), library_name);
+	Library::Manager* manager = Library::Manager::instance();
+	return manager->rename_library(this->library_id(), library_name);
 }
 
 QString LocalLibrary::library_name() const
 {
-	Library::Info info = m->manager->library_info(this->library_id());
+	Library::Manager* manager = Library::Manager::instance();
+	Library::Info info = manager->library_info(this->library_id());
 	return info.name();
 }
 
 QString LocalLibrary::library_path() const
 {
-	Library::Info info = m->manager->library_info(this->library_id());
+	Library::Manager* manager = Library::Manager::instance();
+	Library::Info info = manager->library_info(this->library_id());
 	return info.path();
 }
 

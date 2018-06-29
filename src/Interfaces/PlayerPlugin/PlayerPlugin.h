@@ -135,11 +135,6 @@ namespace PlayerPlugin
 
 
 	public:
-		/**
-		 * @brief needed by the player ui, final
-		 * @return miminum size of plugin
-		 */
-		virtual QSize		get_size() const final;
 
 		/**
 		 * @brief needed by the player ui, final

@@ -51,8 +51,11 @@ GUI_PlayerPlugin::~GUI_PlayerPlugin()
 void GUI_PlayerPlugin::show(PlayerPlugin::Base* player_plugin)
 {
 	close_cur_plugin();
-
 	m->current_plugin = player_plugin;
+
+	if(!player_plugin){
+		return;
+	}
 
 	bool show_title = player_plugin->is_title_shown();
 
@@ -61,7 +64,6 @@ void GUI_PlayerPlugin::show(PlayerPlugin::Base* player_plugin)
 
 	ui->verticalLayout->insertWidget(1, player_plugin);
 
-	player_plugin->resize(this->width(), player_plugin->height());
 	player_plugin->show();
 
 	Widget::show();

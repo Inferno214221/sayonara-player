@@ -73,8 +73,6 @@ namespace Library
 		LocalLibrary* library_instance(LibraryId id);
 
 		static QString request_library_name(const QString& path);
-
-
 	};
 }
 

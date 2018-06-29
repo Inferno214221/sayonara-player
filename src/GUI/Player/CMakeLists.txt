@@ -10,7 +10,6 @@ set(PLAYER_LIBRARIES
 	say_gui_playlist
 	say_interfaces_player_plugin
 	say_interfaces_notifications
-	say_interfaces_preference_dialog
 	say_gui_plugins
 )
 

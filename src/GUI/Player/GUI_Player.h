@@ -21,35 +21,38 @@
 #ifndef GUI_SIMPLEPLAYER_H
 #define GUI_SIMPLEPLAYER_H
 
-#include "GUI/Player/ui_GUI_Player.h"
-
 #include "Components/PlayManager/PlayState.h"
-
 #include "Utils/Message/MessageReceiverInterface.h"
+#include "Utils/Pimpl.h"
+#include "GUI/Utils/GuiClass.h"
 #include "GUI/Utils/Widgets/Widget.h"
 
 #include <QSystemTrayIcon>
 
 class GUI_TrayIcon;
+class GUI_Logger;
 class MetaData;
 class PreferenceDialog;
-class QTranslator;
+
+class QAction;
 class QMessageBox;
-class GUI_Logger;
+class QTranslator;
+
+UI_FWD(GUI_Player)
 
 namespace PlayerPlugin
 {
-	class Base;
 	class Handler;
+	class Base;
 }
 
 class GUI_Player :
 		public Gui::MainWindow,
-		public MessageReceiverInterface,
-		private Ui::Sayonara
+		public MessageReceiverInterface
 {
 	Q_OBJECT
 	PIMPL(GUI_Player)
+	UI_CLASS(GUI_Player)
 
 signals:
 	void sig_player_closed();
@@ -58,16 +61,12 @@ public:
 	explicit GUI_Player(QTranslator* translator, QWidget *parent=nullptr);
 	~GUI_Player();
 
-	void register_player_plugin_handler(PlayerPlugin::Handler* pph);
-	void register_preference_dialog(PreferenceDialog* dialog);
+	void register_preference_dialog(QAction* dialog_action);
 	void request_shutdown();
-
-public slots:
-	void raise();
 
 
 private:
-	void init_tray_actions ();
+	void init_tray_actions();
 	void init_connections();
 	void init_sizes();
 	void init_splitter();
@@ -112,6 +111,7 @@ private slots:
 	void tray_icon_activated(QSystemTrayIcon::ActivationReason reason);
 
 	/* Plugins */
+	void plugin_added(PlayerPlugin::Base* plugin);
 	void plugin_opened();
 	void plugin_closed();
 	void plugin_action_triggered(bool b);

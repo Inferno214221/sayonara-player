@@ -67,12 +67,6 @@ namespace Library
 		 */
 		void init(const QList<Library::Container*>& containers);
 
-		/**
-		 * @brief Set the parent widget for library plugins
-		 * @param parent Parent widget
-		 */
-		void set_library_parent(QWidget* parent);
-
 
 		/**
 		 * @brief Get a list for all found plugins. The ui is not necessarily initialized

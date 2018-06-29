@@ -53,6 +53,7 @@ Base::Base(QWidget *parent) :
 {
 	m = Pimpl::make<Private>();
 
+	setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
 	connect(m->pp_action, &QAction::triggered, this, &Base::action_triggered);
 
 	hide();
@@ -88,12 +89,6 @@ QAction* Base::get_action() const
 {
 	m->pp_action->setText( this->get_display_name() );
 	return m->pp_action;
-}
-
-
-QSize Base::get_size() const
-{
-	return this->minimumSize();
 }
 
 void Base::finalize_initialization()

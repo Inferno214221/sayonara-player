@@ -50,8 +50,6 @@ class GUI_Controls :
 	UI_CLASS(GUI_Controls)
 
 private:
-	QIcon icon(Gui::Icons::IconName name);
-
 	void played();
 	void paused();
 	void stopped();
@@ -63,9 +61,8 @@ private:
 	void set_radio_mode(RadioMode radio);
 
 	void setup_volume_button(int percent);
-	void increase_volume();
-	void decrease_volume();
 
+	QString get_cur_pos_string(int val) const;
 	void set_cur_pos_label(int val);
 	void set_total_time_label(MilliSeconds total_time);
 	void set_info_labels(const MetaData &md);
@@ -96,14 +93,6 @@ public slots:
 
 private slots:
 	void playstate_changed(PlayState state);
-
-	void play_clicked();
-	void stop_clicked();
-
-	void prev_clicked();
-	void next_clicked();
-
-	void rec_clicked(bool b);
 	void rec_changed(bool b);
 
 	void buffering(int progress);
@@ -112,7 +101,6 @@ private slots:
 	void progress_moved(int val);
 	void progress_hovered(int val);
 
-	void volume_slider_moved(int val);
 	void volume_changed(int val);
 
 	void mute_button_clicked();

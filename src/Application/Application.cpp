@@ -312,7 +312,7 @@ void Application::init_preferences()
 	preferences->register_preference_dialog(new GUI_Notifications("notifications"));
 	preferences->register_preference_dialog(new GUI_LastFM("lastfm", new LastFM::Base()));
 
-	m->player->register_preference_dialog(preferences);
+	m->player->register_preference_dialog(preferences->action());
 
 	sp_log(Log::Debug, this) << "Preference dialogs loaded: " << m->timer->elapsed() << "ms";
 }
@@ -346,7 +346,7 @@ void Application::init_engine()
 void Application::init_plugins()
 {
 	sp_log(Log::Debug, this) << "Init plugins... " << m->timer->elapsed() << "ms";
-	PlayerPlugin::Handler* pph = new PlayerPlugin::Handler(this);
+	PlayerPlugin::Handler* pph = PlayerPlugin::Handler::instance();
 
 	pph->add_plugin(new GUI_LevelPainter());
 	pph->add_plugin(new GUI_Spectrum());
@@ -361,7 +361,6 @@ void Application::init_plugins()
 	pph->add_plugin(new GUI_Crossfader());
 
 	sp_log(Log::Debug, this) << "Plugins finsihed: " << m->timer->elapsed() << "ms";
-	m->player->register_player_plugin_handler(pph);
 }
 
 

@@ -532,6 +532,7 @@ QList<Library::Filter::Mode> GUI_LocalLibrary::search_options() const
 
 void GUI_LocalLibrary::showEvent(QShowEvent* e)
 {
+	return;
 	GUI_AbstractLibrary::showEvent(e);
 
 	this->lv_album()->resizeRowsToContents();

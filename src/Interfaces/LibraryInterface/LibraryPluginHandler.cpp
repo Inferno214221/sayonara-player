@@ -238,21 +238,6 @@ void PluginHandler::init_library(Container* library)
 }
 
 
-void PluginHandler::set_library_parent(QWidget* parent)
-{
-	m->library_parent = parent;
-
-	const QList<Library::Container*> containers = m->all_libraries();
-
-	for(Container* container : containers)
-	{
-		if(container->is_initialized()) {
-			container->widget()->setParent(parent);
-		}
-	}
-}
-
-
 void PluginHandler::current_library_changed(int library_idx)
 {
 	QList<Container*> libs = m->all_libraries();
@@ -292,7 +277,6 @@ void PluginHandler::set_current_library(Container* cur_library)
 	if(m->current_library)
 	{
 	   init_library(m->current_library);
-	   m->current_library->show();
 	}
 
 	_settings->set<Set::Lib_CurPlugin>(cur_library->name() );

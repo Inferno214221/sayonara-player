@@ -358,6 +358,12 @@ void PlayManager::set_muted(bool b)
 	emit sig_mute_changed(b);
 }
 
+void PlayManager::toggle_mute()
+{
+	bool muted = _settings->get<Set::Engine_Mute>();
+	set_muted(!muted);
+}
+
 void PlayManager::change_duration(MilliSeconds ms)
 {
 	m->md.length_ms = ms;

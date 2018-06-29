@@ -35,8 +35,8 @@ struct Handler::Private
 	Base*			current_plugin=nullptr;
 };
 
-Handler::Handler(QObject *parent) :
-	QObject(parent),
+Handler::Handler() :
+	QObject(),
 	SayonaraClass()
 {
 	m = Pimpl::make<Private>();
@@ -81,6 +81,8 @@ void Handler::add_plugin(Base* p)
 		m->current_plugin = p;
 		p->get_action()->setChecked(true);
 	}
+
+	emit sig_plugin_added(p);
 }
 
 void Handler::plugin_action_triggered(bool b)

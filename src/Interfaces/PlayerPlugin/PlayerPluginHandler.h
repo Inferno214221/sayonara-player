@@ -23,6 +23,7 @@
 
 #include "Utils/Settings/SayonaraClass.h"
 #include "Utils/Pimpl.h"
+#include "Utils/Singleton.h"
 
 #include <QObject>
 #include <QList>
@@ -37,14 +38,13 @@ namespace PlayerPlugin
 	{
 		Q_OBJECT
 		PIMPL(Handler)
-
-	public:
-		explicit Handler(QObject *parent=nullptr);
-		~Handler();
+		SINGLETON(Handler)
 
 	signals:
+		void sig_plugin_added(PlayerPlugin::Base* plugin);
 		void sig_plugin_closed();
 		void sig_plugin_action_triggered(bool b);
+
 
 	private:
 		void plugin_opened(Base* p);

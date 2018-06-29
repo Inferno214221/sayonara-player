@@ -267,6 +267,8 @@ public slots:
 	 */
 	void set_muted(bool b);
 
+	void toggle_mute();
+
 
 	void change_metadata(const MetaData& md);
 
