@@ -43,6 +43,12 @@
 #include "Utils/Language.h"
 #include "Utils/globals.h"
 
+#include <QTabBar>
+#include <QTabWidget>
+#include <QLayout>
+#include <QCloseEvent>
+#include <QShowEvent>
+
 
 struct GUI_InfoDialog::Private
 {
