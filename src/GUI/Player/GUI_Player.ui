@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>GUI_Player</class>
- <widget class="QMainWindow" name="GUI_Player">
+ <class>Sayonara</class>
+ <widget class="QMainWindow" name="Sayonara">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1038</width>
-    <height>814</height>
+    <width>731</width>
+    <height>372</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -54,77 +54,58 @@
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
-      <widget class="QWidget" name="layoutWidget">
-       <layout class="QVBoxLayout" name="verticalLayout">
-        <property name="spacing">
-         <number>3</number>
-        </property>
-        <item>
-         <widget class="GUI_Controls" name="controls" native="true">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>100</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="Line" name="line">
-          <property name="minimumSize">
-           <size>
-            <width>100</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="GUI_PlayerPlugin" name="plugin_widget" native="true">
-          <property name="focusPolicy">
-           <enum>Qt::ClickFocus</enum>
-          </property>
-          <property name="styleSheet">
-           <string notr="true"/>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="GUI_Playlist" name="ui_playlist" native="true">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="focusPolicy">
-           <enum>Qt::NoFocus</enum>
-          </property>
-         </widget>
-        </item>
-       </layout>
+      <property name="handleWidth">
+       <number>4</number>
+      </property>
+      <property name="childrenCollapsible">
+       <bool>false</bool>
+      </property>
+      <widget class="QSplitter" name="splitter2">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="handleWidth">
+        <number>4</number>
+       </property>
+       <property name="childrenCollapsible">
+        <bool>false</bool>
+       </property>
+       <widget class="QWidget" name="controls" native="true">
+        <layout class="QVBoxLayout" name="verticalLayout_2"/>
+       </widget>
+       <widget class="QWidget" name="layoutWidget">
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <property name="spacing">
+          <number>3</number>
+         </property>
+         <item>
+          <widget class="GUI_PlayerPlugin" name="plugin_widget" native="true">
+           <property name="focusPolicy">
+            <enum>Qt::ClickFocus</enum>
+           </property>
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="GUI_Playlist" name="ui_playlist" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
       </widget>
       <widget class="QWidget" name="library_widget" native="true">
-       <layout class="QVBoxLayout" name="library_layout">
-        <property name="spacing">
-         <number>0</number>
-        </property>
-        <property name="leftMargin">
-         <number>0</number>
-        </property>
-        <property name="topMargin">
-         <number>0</number>
-        </property>
-        <property name="rightMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
-         <number>0</number>
-        </property>
-       </layout>
+       <zorder>controls</zorder>
       </widget>
      </widget>
     </item>
@@ -244,12 +225,6 @@
    <class>GUI_PlayerPlugin</class>
    <extends>QWidget</extends>
    <header>GUI/Plugins/Generic/GUI_PlayerPlugin.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>GUI_Controls</class>
-   <extends>QWidget</extends>
-   <header>GUI/Player/GUI_Controls.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

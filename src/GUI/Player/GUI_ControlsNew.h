@@ -1,4 +1,4 @@
-/* GUI_Controls.h */
+/* GUI_ControlsNew.h */
 
 /* Copyright (C) 2011-2017  Lucio Carreras
  *
@@ -18,25 +18,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GUI_CONTROLS_H
-#define GUI_CONTROLS_H
+#ifndef GUI_CONTROLSNEW_H
+#define GUI_CONTROLSNEW_H
 
 #include "GUI_ControlsBase.h"
 
-UI_FWD(GUI_Controls)
+UI_FWD(GUI_ControlsNew)
 
 class MetaData;
 class MetaDataList;
 
-class GUI_Controls :
+class GUI_ControlsNew :
 		public GUI_ControlsBase
 {
 	Q_OBJECT
-	UI_CLASS(GUI_Controls)
+	UI_CLASS(GUI_ControlsNew)
 
 public:
-	explicit GUI_Controls(QWidget *parent=nullptr);
-	~GUI_Controls();
+	explicit GUI_ControlsNew(QWidget *parent=nullptr);
+	~GUI_ControlsNew();
 
 	// GUI_ControlsBase interface
 public:
@@ -67,6 +67,4 @@ public:
 	bool is_resizable() const override;
 };
 
-
-
-#endif // GUI_CONTROLS_H
+#endif // GUI_CONTROLSNEW_H
