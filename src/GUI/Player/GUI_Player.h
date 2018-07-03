@@ -80,6 +80,7 @@ private:
 	void show_library_changed();
 	void show_library(bool is_library_visible, bool was_library_visible=false);
 	void fullscreen_changed();
+	void controlstyle_changed();
 
 	void set_total_time_label(MilliSeconds length_ms);
 	void set_cur_pos_label(int val);

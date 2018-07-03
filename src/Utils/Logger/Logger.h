@@ -74,6 +74,7 @@ public:
 	Logger& operator << (const QStringList& lst);
 	Logger& operator << (const QByteArray& arr);
 	Logger& operator << (const QPoint& point);
+	Logger& operator << (const QSize& size);
 	Logger& operator << (const char* str);
 	Logger& operator << (const std::string& str);
 	Logger& operator << (const Log& log_type);

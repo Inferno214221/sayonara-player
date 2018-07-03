@@ -22,21 +22,26 @@
 #define SHORTCUTHANDLER_H
 
 #include <QList>
+#include <QObject>
 
 #include "Utils/Singleton.h"
 #include "Utils/Settings/SayonaraClass.h"
 #include "Utils/Pimpl.h"
 
+class ShortcutWidget;
+class QString;
 class QStringList;
 class Shortcut;
 /**
  * @brief A singleton class for retrieving shortcuts
  * @ingroup Shortcuts
  */
-class ShortcutHandler : public SayonaraClass
+class ShortcutHandler :
+	public SayonaraClass
 {
 	SINGLETON(ShortcutHandler)
-    PIMPL(ShortcutHandler)
+	PIMPL(ShortcutHandler)
+
 
 public:
 
@@ -54,11 +59,6 @@ public:
 	 */
 	void set_shortcut(const QString& identifier, const QStringList& shortcut);
 
-	/**
-	 * @brief Overwrite a shortcut
-	 * @param shortcut a shortcut instance
-	 */
-	void set_shortcut(const Shortcut& shortcut);
 
 	/**
 	 * @brief add a new shortcut instance to the handler. This is usually done
@@ -69,14 +69,16 @@ public:
 	 * if the shortcut already exists, the instance already known is returned\n
 	 * if the shortcut does not exist yet, the same shortcut as the input is returned
 	 */
-	Shortcut add(const Shortcut& shortcut);
+	Shortcut add(ShortcutWidget* parent, const QString& identifier, const QString& name, const QString& default_shortcut);
 
 
 	/**
 	 * @brief get all shortcuts
 	 * @return
 	 */
-	QList<Shortcut>	get_shortcuts() const;
+	QStringList	get_shortcuts() const;
+
+	void set_parent_deleted(ShortcutWidget* parent);
 };
 
 #endif // SHORTCUTHANDLER_H

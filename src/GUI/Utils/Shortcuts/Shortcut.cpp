@@ -47,7 +47,6 @@ Shortcut::Shortcut()
 Shortcut::Shortcut(ShortcutWidget* parent, const QString& identifier, const QString& name, const QStringList& default_shortcuts) :
 	Shortcut()
 {
-
 	m->name = name;
 	m->identifier = identifier;
 	m->parent=parent;
@@ -151,6 +150,11 @@ bool Shortcut::is_valid() const
 	return !(m->identifier.isEmpty());
 }
 
+ShortcutWidget* Shortcut::parent() const
+{
+	return m->parent;
+}
+
 
 void Shortcut::create_qt_shortcut(QWidget* parent, QObject* receiver, const char* slot)
 {
@@ -169,7 +173,8 @@ QList<QShortcut*> Shortcut::init_qt_shortcut(QWidget* parent)
 	}
 
 	const QList<QKeySequence> sequences = get_sequences();
-	for(const QKeySequence& sequence : sequences){
+	for(const QKeySequence& sequence : sequences)
+	{
 		QShortcut* shortcut = new QShortcut(parent);
 
 		shortcut->setContext(Qt::WindowShortcut);
@@ -180,19 +185,21 @@ QList<QShortcut*> Shortcut::init_qt_shortcut(QWidget* parent)
 		lst << shortcut;
 	}
 
-	ShortcutHandler::instance()->set_shortcut(*this);
+	ShortcutHandler::instance()->set_shortcut(m->identifier, m->shortcuts);
 
 	return lst;
 }
 
 
-void Shortcut::change_shortcut(const QStringList &shortcuts)
+void Shortcut::change_shortcut(const QStringList& shortcuts)
 {
-	m->shortcuts = shortcuts;
-	for(QString& str : m->shortcuts)
+	m->shortcuts.clear();
+	for(QString str : shortcuts)
 	{
 		str.replace(" +", "+");
 		str.replace("+ ", "+");
+
+		m->shortcuts << str;
 	}
 
 	foreach(QShortcut* sc, m->qt_shortcuts)
@@ -203,5 +210,5 @@ void Shortcut::change_shortcut(const QStringList &shortcuts)
 		}
 	}
 
-	ShortcutHandler::instance()->set_shortcut(*this);
+	//ShortcutHandler::instance()->set_shortcut(m->identifier, m->shortcuts);
 }

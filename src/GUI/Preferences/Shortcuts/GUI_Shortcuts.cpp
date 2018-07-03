@@ -38,10 +38,9 @@ struct GUI_Shortcuts::Private
 	QList<GUI_ShortcutEntry*>	entries;
 	QStringList					error_strings;
 
-	Private()
-	{
-		sch = ShortcutHandler::instance();
-	}
+	Private() :
+		sch(ShortcutHandler::instance())
+	{}
 };
 
 GUI_Shortcuts::GUI_Shortcuts(const QString& identifier) :
@@ -71,9 +70,10 @@ void GUI_Shortcuts::init_ui()
 
 	ui->cb_test->setVisible(false);
 
-	QList<Shortcut> shortcuts = m->sch->get_shortcuts();
+	const QStringList shortcuts = m->sch->get_shortcuts();
 
-	for(const Shortcut& shortcut : shortcuts){
+	for(const QString& shortcut : shortcuts)
+	{
 		GUI_ShortcutEntry* entry = new GUI_ShortcutEntry(shortcut);
 
 		connect(entry, &GUI_ShortcutEntry::sig_test_pressed,

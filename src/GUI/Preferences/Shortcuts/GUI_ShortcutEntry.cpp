@@ -29,18 +29,29 @@
 #include <QShortcut>
 #include <QMessageBox>
 
-GUI_ShortcutEntry::GUI_ShortcutEntry(const Shortcut& shortcut, QWidget* parent) :
-	Widget(parent),
-	_shortcut(shortcut)
+struct GUI_ShortcutEntry::Private
 {
+	ShortcutHandler*		sch=nullptr;
+	QString					identifier;
+
+	Private(const QString& identifier) :
+		sch(ShortcutHandler::instance()),
+		identifier(identifier)
+	{}
+};
+
+GUI_ShortcutEntry::GUI_ShortcutEntry(const QString& identifier, QWidget* parent) :
+	Widget(parent)
+{
+	m = Pimpl::make<Private>(identifier);
+	Shortcut sc = m->sch->get_shortcut(identifier);
+
 	ui = new Ui::GUI_ShortcutEntry();
 	ui->setupUi(this);
 
-	_sch = ShortcutHandler::instance();
-
 	ui->le_entry->setPlaceholderText(tr("Enter shortcut"));
-	ui->lab_description->setText(_shortcut.get_name());
-	ui->le_entry->setText(_shortcut.get_shortcuts().join(", "));
+	ui->lab_description->setText(sc.get_name());
+	ui->le_entry->setText(sc.get_shortcuts().join(", "));
 
 	connect(ui->btn_edit, &QPushButton::clicked, this, &GUI_ShortcutEntry::edit_clicked);
 	connect(ui->btn_default, &QPushButton::clicked, this, &GUI_ShortcutEntry::default_clicked);
@@ -68,10 +79,7 @@ void GUI_ShortcutEntry::show_sequence_error()
 
 void GUI_ShortcutEntry::commit()
 {
-	QString identifier = _shortcut.get_identifier();
-
-	_sch->set_shortcut(identifier, ui->le_entry->text().split(", "));
-	_shortcut = _sch->get_shortcut(identifier);
+	m->sch->set_shortcut(m->identifier, ui->le_entry->text().split(", "));
 }
 
 void GUI_ShortcutEntry::clear()
@@ -81,16 +89,20 @@ void GUI_ShortcutEntry::clear()
 
 void GUI_ShortcutEntry::revert()
 {
+	Shortcut sc = m->sch->get_shortcut(m->identifier);
+
 	ui->le_entry->setText(
-		_shortcut.get_shortcuts().join(", ")
+		sc.get_shortcuts().join(", ")
 	);
 }
 
 
 void GUI_ShortcutEntry::default_clicked()
 {
+	Shortcut sc = m->sch->get_shortcut(m->identifier);
+
 	ui->le_entry->setText(
-		_shortcut.get_default().join(", ")
+		sc.get_default().join(", ")
 	);
 }
 
@@ -110,7 +122,8 @@ void GUI_ShortcutEntry::language_changed()
 {
 	ui->retranslateUi(this);
 
-	ui->lab_description->setText(_shortcut.get_name());
+	Shortcut sc = m->sch->get_shortcut(m->identifier);
+	ui->lab_description->setText(sc.get_name());
 
 	ui->btn_default->setToolTip(Lang::get(Lang::Default));
 	ui->btn_edit->setToolTip(Lang::get(Lang::Edit));

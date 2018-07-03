@@ -227,8 +227,8 @@ void PlaylistTabBar::wheelEvent(QWheelEvent* e)
 void PlaylistTabBar::init_shortcuts()
 {
 	ShortcutHandler* sch = ShortcutHandler::instance();
-	Shortcut sc1 = sch->add(Shortcut(this, "add_tab", Lang::get(Lang::AddTab), "Ctrl+t"));
-	Shortcut sc2 = sch->add(Shortcut(this, "close_tab", Lang::get(Lang::CloseTab), "Ctrl+w"));
+	Shortcut sc1 = sch->add(this, "add_tab", Lang::get(Lang::AddTab), "Ctrl+t");
+	Shortcut sc2 = sch->add(this, "close_tab", Lang::get(Lang::CloseTab), "Ctrl+w");
 
 	sc1.create_qt_shortcut(this, this, SIGNAL(sig_add_tab_clicked()));
 	sc2.create_qt_shortcut(this, this, SLOT(close_pressed()));

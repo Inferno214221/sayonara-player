@@ -22,6 +22,7 @@
 
 #include "GUI/Utils/Shortcuts/Shortcut.h"
 #include "GUI/Utils/Widgets/Widget.h"
+#include "Utils/Pimpl.h"
 
 
 UI_FWD(GUI_ShortcutEntry)
@@ -37,6 +38,7 @@ class GUI_ShortcutEntry :
 {
 	Q_OBJECT
 	UI_CLASS(GUI_ShortcutEntry)
+	PIMPL(GUI_ShortcutEntry)
 
 signals:
 	/**
@@ -48,7 +50,7 @@ signals:
 	void sig_sequence_entered();
 
 public:
-	explicit GUI_ShortcutEntry(const Shortcut& shortcut, QWidget* parent=nullptr);
+	explicit GUI_ShortcutEntry(const QString& identifier, QWidget* parent=nullptr);
 	~GUI_ShortcutEntry();
 
 	QList<QKeySequence> get_sequences() const;
@@ -67,12 +69,6 @@ private slots:
 
 	void language_changed() override;
 	void skin_changed() override;
-
-
-private:
-	ShortcutHandler*		_sch=nullptr;
-	QString					_key;
-	Shortcut				_shortcut;
 };
 
 #endif // GUI_SHORTCUTENTRY_H

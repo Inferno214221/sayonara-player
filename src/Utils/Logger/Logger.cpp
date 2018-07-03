@@ -29,6 +29,7 @@
 #include <QByteArray>
 #include <QPoint>
 #include <QDateTime>
+#include <QSize>
 
 #include "LoggerUtils.h"
 
@@ -188,6 +189,7 @@ void Logger::register_log_listener(LogListener* log_listener)
 	log_listeners->push_back(log_listener);
 }
 
+
 Logger& Logger::operator << (const QString& msg)
 {
 	(*this) << msg.toLocal8Bit().constData();
@@ -213,6 +215,13 @@ Logger& Logger::operator << (const QPoint& point)
 	(*this) << "Point(" << point.x() << "," << point.y() << ")";
 	return *this;
 }
+
+Logger&Logger::operator <<(const QSize& size)
+{
+	(*this) << "Size(" << size.width() << "," << size.height() << ")";
+	return *this;
+}
+
 
 Logger& Logger::operator << (const QByteArray& arr)
 {

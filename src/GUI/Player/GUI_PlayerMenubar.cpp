@@ -226,8 +226,8 @@ void Menubar::init_connections()
 	// shortcuts
 	ShortcutHandler* sch = ShortcutHandler::instance();
 
-	Shortcut sc1 = sch->add(Shortcut(this, "quit", Lang::get(Lang::Quit), "Ctrl+q"));
-	Shortcut sc2 = sch->add(Shortcut(this, "minimize", tr("Minimize"), "Ctrl+m"));
+	Shortcut sc1 = sch->add(this, "quit", Lang::get(Lang::Quit), "Ctrl+q");
+	Shortcut sc2 = sch->add(this, "minimize", tr("Minimize"), "Ctrl+m");
 
 	sc1.create_qt_shortcut(this, this, SLOT(close_clicked()));
 	sc2.create_qt_shortcut(this, this, SLOT(minimize_clicked()));

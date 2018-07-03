@@ -703,16 +703,16 @@ void GUI_ControlsBase::setup_shortcuts()
 	ShortcutHandler* sch = ShortcutHandler::instance();
 	PlayManager* play_manager = PlayManager::instance();
 
-	Shortcut sc1 = sch->add(Shortcut(this, "play_pause", Lang::get(Lang::PlayPause), "Space"));
-	Shortcut sc2 = sch->add(Shortcut(this, "stop", Lang::get(Lang::Stop), "Ctrl + Space"));
-	Shortcut sc3 = sch->add(Shortcut(this, "next", Lang::get(Lang::NextTrack), "Ctrl + Right"));
-	Shortcut sc4 = sch->add(Shortcut(this, "prev", Lang::get(Lang::PreviousTrack), "Ctrl + Left"));
-	Shortcut sc5 = sch->add(Shortcut(this, "vol_down", Lang::get(Lang::VolumeDown), "Ctrl + -"));
-	Shortcut sc6 = sch->add(Shortcut(this, "vol_up", Lang::get(Lang::VolumeUp), "Ctrl++"));
-	Shortcut sc7 = sch->add(Shortcut(this, "seek_fwd", Lang::get(Lang::SeekForward), "Alt+Right"));
-	Shortcut sc8 = sch->add(Shortcut(this, "seek_bwd", Lang::get(Lang::SeekBackward), "Alt+Left"));
-	Shortcut sc9 = sch->add(Shortcut(this, "seek_fwd_fast", Lang::get(Lang::SeekForward).space() + "(" + Lang::get(Lang::Fast) + ")", "Shift+Right"));
-	Shortcut sc10 = sch->add(Shortcut(this, "seek_bwd_fast", Lang::get(Lang::SeekBackward).space() + "(" + Lang::get(Lang::Fast) + ")", "Shift+Left"));
+	Shortcut sc1 = sch->add(this, "play_pause", Lang::get(Lang::PlayPause), "Space");
+	Shortcut sc2 = sch->add(this, "stop", Lang::get(Lang::Stop), "Ctrl + Space");
+	Shortcut sc3 = sch->add(this, "next", Lang::get(Lang::NextTrack), "Ctrl + Right");
+	Shortcut sc4 = sch->add(this, "prev", Lang::get(Lang::PreviousTrack), "Ctrl + Left");
+	Shortcut sc5 = sch->add(this, "vol_down", Lang::get(Lang::VolumeDown), "Ctrl + -");
+	Shortcut sc6 = sch->add(this, "vol_up", Lang::get(Lang::VolumeUp), "Ctrl++");
+	Shortcut sc7 = sch->add(this, "seek_fwd", Lang::get(Lang::SeekForward), "Alt+Right");
+	Shortcut sc8 = sch->add(this, "seek_bwd", Lang::get(Lang::SeekBackward), "Alt+Left");
+	Shortcut sc9 = sch->add(this, "seek_fwd_fast", Lang::get(Lang::SeekForward).space() + "(" + Lang::get(Lang::Fast) + ")", "Shift+Right");
+	Shortcut sc10 = sch->add(this, "seek_bwd_fast", Lang::get(Lang::SeekBackward).space() + "(" + Lang::get(Lang::Fast) + ")", "Shift+Left");
 
 	sc1.create_qt_shortcut(this, play_manager, SLOT(play_pause()));
 	sc2.create_qt_shortcut(this, play_manager, SLOT(stop()));

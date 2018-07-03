@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>401</width>
+    <width>406</width>
     <height>169</height>
    </rect>
   </property>
@@ -776,12 +776,6 @@
     <layout class="QGridLayout" name="layout_cover">
      <item row="0" column="0">
       <widget class="CoverButton" name="btn_cover">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Maximum">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
        <property name="minimumSize">
         <size>
          <width>95</width>
@@ -789,6 +783,12 @@
         </size>
        </property>
        <property name="maximumSize">
+        <size>
+         <width>95</width>
+         <height>95</height>
+        </size>
+       </property>
+       <property name="baseSize">
         <size>
          <width>95</width>
          <height>95</height>

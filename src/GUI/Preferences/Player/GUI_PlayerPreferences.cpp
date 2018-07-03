@@ -67,6 +67,7 @@ bool GUI_PlayerPreferences::commit()
 	_settings->set<Set::Player_ShowTrayIcon>(ui->cb_show_tray_icon->isChecked());
 	_settings->set<Set::Player_NotifyNewVersion>(ui->cb_update_notifications->isChecked());
 	_settings->set<Set::Logger_Level>(ui->cb_logger->currentIndex());
+	_settings->set<Set::Player_ControlStyle>(ui->cb_new_style->isChecked() ? 1 : 0);
 
 	return true;
 }
@@ -80,6 +81,7 @@ void GUI_PlayerPreferences::revert()
 	ui->cb_update_notifications->setChecked(_settings->get<Set::Player_NotifyNewVersion>());
 	ui->cb_show_tray_icon->setChecked(_settings->get<Set::Player_ShowTrayIcon>());
 	ui->cb_logger->setCurrentIndex(_settings->get<Set::Logger_Level>());
+	ui->cb_new_style->setChecked(_settings->get<Set::Player_ControlStyle>());
 
 	show_tray_icon_toggled(show_tray_icon);
 }

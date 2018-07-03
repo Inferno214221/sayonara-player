@@ -64,8 +64,7 @@
 #include "GUI/Preferences/Broadcast/GUI_BroadcastSetup.h"
 #include "GUI/Preferences/Covers/GUI_Covers.h"
 #include "GUI/Preferences/Engine/GUI_EnginePreferences.h"
-#include "GUI/Preferences/Fonts/GUI_FontConfig.h"
-#include "GUI/Preferences/Icons/GUI_IconPreferences.h"
+#include "GUI/Preferences/UiPreferences/GUI_UiPreferences.h"
 #include "GUI/Preferences/Language/GUI_LanguageChooser.h"
 #include "GUI/Preferences/LastFM/GUI_LastFM.h"
 #include "GUI/Preferences/Library/GUI_LibraryPreferences.h"
@@ -293,8 +292,7 @@ void Application::init_preferences()
 
 	preferences->register_preference_dialog(new GUI_PlayerPreferences("application"));
 	preferences->register_preference_dialog(new GUI_LanguageChooser("language"));
-	preferences->register_preference_dialog(new GUI_FontConfig("fonts"));
-	preferences->register_preference_dialog(new GUI_IconPreferences("icons"));
+	preferences->register_preference_dialog(new GUI_UiPreferences("user-interface"));
 	preferences->register_preference_dialog(new GUI_Shortcuts("shortcuts"));
 
 	preferences->register_preference_dialog(new GUI_PlaylistPreferences("playlist"));

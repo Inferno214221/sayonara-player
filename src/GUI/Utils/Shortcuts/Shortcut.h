@@ -128,6 +128,8 @@ public:
 	 */
 	bool					is_valid() const;
 
+	ShortcutWidget*			parent() const;
+
 	template<typename T>
 	/**
 	 * @brief create a qt shortcut for a widget

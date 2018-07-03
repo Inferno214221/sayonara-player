@@ -27,7 +27,7 @@
  * @brief The EqSlider class
  * @ingroup Equalizer
  */
-class EqSlider : 
+class EqSlider :
 	public Gui::Slider
 {
 	Q_OBJECT
@@ -63,6 +63,8 @@ class EqSlider :
 		 * @return
 		 */
 		double get_eq_value() const;
+
+		QSize minimumSizeHint() const override;
 
 
 	protected:

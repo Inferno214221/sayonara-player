@@ -21,6 +21,7 @@
 #include "EqSlider.h"
 
 #include <QKeyEvent>
+#include <QSize>
 
 EqSlider::EqSlider(QWidget *parent) :
 	Gui::Slider(parent)
@@ -68,6 +69,11 @@ double EqSlider::get_eq_value() const
 	else {
 		return (val / 2.0);
 	}
+}
+
+QSize EqSlider::minimumSizeHint() const
+{
+	return QSize(10, 50);
 }
 
 

@@ -1,4 +1,4 @@
-/* SayonaraShortcutWidget.cpp */
+/* GUI_IconPreferences.h */
 
 /* Copyright (C) 2011-2017  Lucio Carreras
  *
@@ -18,15 +18,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ShortcutWidget.h"
-#include "Utils/Logger/Logger.h"
-#include "ShortcutHandler.h"
 
-/* Nothing in here */
 
-ShortcutWidget::ShortcutWidget() {}
+#ifndef GUI_ICONPREFERENCES_H
+#define GUI_ICONPREFERENCES_H
 
-ShortcutWidget::~ShortcutWidget()
+#include "GUI/Utils/Widgets/Widget.h"
+#include "Utils/Pimpl.h"
+
+UI_FWD(GUI_IconPreferences)
+
+class QWidget;
+class GUI_IconPreferences :
+		public Gui::Widget
 {
-	ShortcutHandler::instance()->set_parent_deleted(this);
-}
+	Q_OBJECT
+	PIMPL(GUI_IconPreferences)
+	UI_CLASS(GUI_IconPreferences)
+
+public:
+	explicit GUI_IconPreferences(QWidget* parent=nullptr);
+	virtual ~GUI_IconPreferences();
+
+protected:
+	void language_changed() override;
+
+public:
+	QString action_name() const;
+
+	bool commit();
+	void revert();
+
+private slots:
+	void theme_changed(const QString& theme);
+};
+
+#endif // GUI_ICONPREFERENCES_H

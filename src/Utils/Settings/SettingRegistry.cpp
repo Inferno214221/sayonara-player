@@ -114,6 +114,8 @@ bool SettingRegistry::init()
 	register_setting<Set::Player_Version>( "player_version", QString(SAYONARA_VERSION));
 	register_setting<Set::Player_Language>( "player_language", QString("sayonara_lang_en"));
 	register_setting<Set::Player_Style>( "player_style", 0 );
+	register_setting<Set::Player_ControlStyle>( "player_control_style", 0 );
+	register_setting<Set::Player_ShowCover>( "player_show_cover", true );
 	register_setting<Set::Player_FontName>( "player_font", QString() );
 	register_setting<Set::Player_FontSize>( "player_font_size", 10 );
 	register_setting<Set::Player_Size>( "player_size", QSize(800,600) );

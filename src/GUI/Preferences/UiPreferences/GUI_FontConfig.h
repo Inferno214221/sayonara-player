@@ -1,4 +1,3 @@
-/* GUI_IconPreferences.h */
 
 /* Copyright (C) 2011-2017  Lucio Carreras
  *
@@ -18,40 +17,46 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef GUI_FONTCONFIG_H
+#define GUI_FONTCONFIG_H
 
-
-#ifndef GUI_ICONPREFERENCES_H
-#define GUI_ICONPREFERENCES_H
-
-#include "Interfaces/PreferenceDialog/PreferenceWidget.h"
+#include "GUI/Utils/Widgets/Widget.h"
 #include "Utils/Pimpl.h"
 
-UI_FWD(GUI_IconPreferences)
+UI_FWD(GUI_FontConfig)
 
-class QWidget;
-class GUI_IconPreferences :
-		public Preferences::Base
+class QFont;
+class QFontDatabase;
+
+class GUI_FontConfig :
+		public Gui::Widget
 {
 	Q_OBJECT
-	PIMPL(GUI_IconPreferences)
-	UI_CLASS(GUI_IconPreferences)
+	UI_CLASS(GUI_FontConfig)
+	PIMPL(GUI_FontConfig)
 
 public:
-	explicit GUI_IconPreferences(const QString& identifier);
-	virtual ~GUI_IconPreferences();
+	explicit GUI_FontConfig(QWidget* parent=nullptr);
+	virtual ~GUI_FontConfig();
+
+	bool commit();
+	void revert();
+
+	QString action_name() const;
 
 protected:
-	void init_ui() override;
-	void retranslate_ui() override;
+	void language_changed() override;
 
-public:
-	QString action_name() const override;
+protected slots:
+	void default_clicked();
+	void combo_fonts_changed(const QFont& font);
+	void skin_changed() override;
 
-	bool commit() override;
-	void revert() override;
+private:
+	QStringList available_font_sizes(const QString& font_name, const QString& style=QString());
+	QStringList available_font_sizes(const QFont& font);
 
-private slots:
-	void theme_changed(const QString& theme);
+	void fill_sizes(const QStringList& sizes);
 };
 
-#endif // GUI_ICONPREFERENCES_H
+#endif // FONTCONFIG_H

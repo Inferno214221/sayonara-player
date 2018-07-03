@@ -54,24 +54,6 @@ public:
 	}
 };
 
-struct GUI_IconPreferences::Private
-{
-	QHash<QString, IconRadioButton*> rb_map;
-	QString original_theme;
-
-	Private()
-	{
-		original_theme = QIcon::themeName();
-	}
-};
-
-GUI_IconPreferences::GUI_IconPreferences(const QString& identifier) :
-	Base(identifier)
-{
-	m = Pimpl::make<Private>();
-}
-
-GUI_IconPreferences::~GUI_IconPreferences() {}
 
 static
 void add_line(QWidget* widget)
@@ -119,13 +101,26 @@ IconRadioButton* add_radio_button(const QString& text, const QString& theme_name
 	return rb;
 }
 
-void GUI_IconPreferences::init_ui()
-{
-	if(is_ui_initialized()){
-		return;
-	}
 
-	setup_parent(this, &ui);
+
+
+struct GUI_IconPreferences::Private
+{
+	QHash<QString, IconRadioButton*> rb_map;
+	QString original_theme;
+
+	Private()
+	{
+		original_theme = QIcon::themeName();
+	}
+};
+
+GUI_IconPreferences::GUI_IconPreferences(QWidget* parent) :
+	Gui::Widget(parent)
+{
+	m = Pimpl::make<Private>();
+	ui = new Ui::GUI_IconPreferences();
+	ui->setupUi(this);
 
 	QString standard_theme(Gui::Icons::standard_theme());
 
@@ -202,7 +197,9 @@ void GUI_IconPreferences::init_ui()
 	revert();
 }
 
-void GUI_IconPreferences::retranslate_ui()
+GUI_IconPreferences::~GUI_IconPreferences() {}
+
+void GUI_IconPreferences::language_changed()
 {
 	QString standard_theme(Gui::Icons::standard_theme());
 	IconRadioButton* rb = m->rb_map[standard_theme];

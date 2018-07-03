@@ -22,8 +22,11 @@
 #include "Shortcut.h"
 #include "RawShortcutMap.h"
 #include "Utils/Settings/Settings.h"
+#include "Utils/Utils.h"
 
 #include <functional>
+#include <QStringList>
+
 
 struct ShortcutHandler::Private
 {
@@ -65,33 +68,38 @@ void ShortcutHandler::set_shortcut(const QString& identifier, const QStringList&
 	_settings->set<Set::Player_Shortcuts>(rsm);
 }
 
-void ShortcutHandler::set_shortcut(const Shortcut& shortcut)
-{
-	for(auto it = m->shortcuts.begin(); it != m->shortcuts.end(); it++)
-	{
-		if(it->get_identifier() == shortcut.get_identifier()){
-			*it = shortcut;
-		}
-	}
-}
 
-Shortcut ShortcutHandler::add(const Shortcut& shortcut)
+Shortcut ShortcutHandler::add(ShortcutWidget* parent, const QString& identifier, const QString& name, const QString& default_shortcut)
 {
+	Shortcut shortcut(parent, identifier, name, default_shortcut);
+
 	if(!shortcut.is_valid()){
 		Shortcut::getInvalid();
-	}
-
-	Shortcut sc = get_shortcut(shortcut.get_identifier());
-	if(sc.is_valid()){
-		return sc;
 	}
 
 	m->shortcuts << shortcut;
 	return shortcut;
 }
 
-QList<Shortcut> ShortcutHandler::get_shortcuts() const
+QStringList ShortcutHandler::get_shortcuts() const
 {
-	return m->shortcuts;
+	QStringList ret;
+
+	for(auto sc : Util::AsConst(m->shortcuts)){
+		ret << sc.get_identifier();
+	}
+
+	return ret;
+}
+
+void ShortcutHandler::set_parent_deleted(ShortcutWidget* parent)
+{
+	QMutableListIterator<Shortcut> it(m->shortcuts);
+	while(it.hasNext()){
+		Shortcut sc = it.next();
+		if(sc.parent() == parent){
+			it.remove();
+		}
+	}
 }
 

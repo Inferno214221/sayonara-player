@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Sayonara</class>
- <widget class="QMainWindow" name="Sayonara">
+ <class>GUI_Player</class>
+ <widget class="QMainWindow" name="GUI_Player">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -71,7 +71,23 @@
         <bool>false</bool>
        </property>
        <widget class="QWidget" name="controls" native="true">
-        <layout class="QVBoxLayout" name="verticalLayout_2"/>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+        </layout>
        </widget>
        <widget class="QWidget" name="layoutWidget">
         <layout class="QVBoxLayout" name="verticalLayout">
@@ -105,6 +121,23 @@
        </widget>
       </widget>
       <widget class="QWidget" name="library_widget" native="true">
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+       </layout>
        <zorder>controls</zorder>
       </widget>
      </widget>
