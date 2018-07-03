@@ -158,7 +158,6 @@ void HeaderView::refresh_sizes(QTableView* view)
 
 	int target_width = view->width() - altogether_width;
 
-
 	if(target_width < desired_width) {
 		target_width = desired_width;
 		view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);

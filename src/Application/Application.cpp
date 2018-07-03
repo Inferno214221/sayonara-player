@@ -235,7 +235,7 @@ bool Application::init(const QStringList& files_to_play)
 												Lang::get(Lang::Version) + " " + SAYONARA_VERSION,
 												Util::share_path("logo.png"));
 	}
-
+Gui::Icons::change_theme();
 	init_single_instance_thread();
 	init_engine();
 	init_libraries();
@@ -243,12 +243,12 @@ bool Application::init(const QStringList& files_to_play)
 	init_preferences();
 
 	init_playlist(files_to_play);
-
+Gui::Icons::change_theme();
 	sp_log(Log::Debug, this) << "Time to start: " << m->timer->elapsed() << "ms";
 	delete m->timer; m->timer=nullptr;
 
 	connect(this, &Application::commitDataRequest, this, &Application::session_end_requested);
-
+Gui::Icons::change_theme();
 	return true;
 }
 

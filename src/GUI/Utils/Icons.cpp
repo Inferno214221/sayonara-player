@@ -125,7 +125,6 @@ QIcon Icons::icon(Icons::IconName spec, Icons::IconMode mode)
 	#ifdef Q_OS_WIN
 			icon = QIcon(get_win_icon_name(std_name));
 	#else
-
 			icon = QIcon::fromTheme(std_name);
 	#endif
 		}
@@ -151,13 +150,15 @@ QIcon Icons::icon(Icons::IconName spec, Icons::IconMode mode)
 
 QIcon Icons::icon(IconName spec)
 {
+	change_theme();
 	if(s_force_standard_icons){
 		return icon(spec, IconMode::ForceStdIcon);
 	}
 
-	else return icon(spec, IconMode::Automatic);
+	else {
+		return icon(spec, IconMode::Automatic);
+	}
 }
-
 
 void Icons::change_theme()
 {
@@ -166,7 +167,6 @@ void Icons::change_theme()
 
 	QIcon::setThemeName(theme);
 }
-
 
 QPixmap Icons::pixmap(Icons::IconName spec)
 {

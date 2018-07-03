@@ -9,6 +9,7 @@
 #include "GUI/Utils/Shortcuts/Shortcut.h"
 #include "GUI/Utils/Shortcuts/ShortcutHandler.h"
 #include "GUI/Utils/Style.h"
+#include "GUI/Utils/Icons.h"
 #include "GUI/Utils/PreferenceAction.h"
 #include "GUI/Utils/ContextMenu/LibraryContextMenu.h"
 
@@ -47,7 +48,6 @@ GUI_ControlsBase::GUI_ControlsBase(QWidget* parent) :
 	m = Pimpl::make<Private>();
 }
 
-
 GUI_ControlsBase::~GUI_ControlsBase() {}
 
 void GUI_ControlsBase::init()
@@ -84,6 +84,8 @@ void GUI_ControlsBase::init()
 	Set::listen<Set::Engine_SR_Active>(this, &GUI_ControlsBase::sr_active_changed);
 	Set::listen<Set::Engine_Pitch>(this, &GUI_ControlsBase::file_info_changed);
 	Set::listen<Set::Engine_SpeedActive>(this, &GUI_ControlsBase::file_info_changed, false);
+
+	skin_changed();
 }
 
 
@@ -148,30 +150,32 @@ QIcon GUI_ControlsBase::icon(Gui::Icons::IconName name)
 {
 	using namespace Gui;
 
+	Icons::change_theme();
 	Icons::IconMode mode = Icons::Automatic;
 
 	if(Style::is_dark()){
 		mode = Icons::ForceSayonaraIcon;
 	}
 
-	switch(name)
-	{
-		case Icons::Play:
-		case Icons::Pause:
-		case Icons::Stop:
-		case Icons::Next:
-		case Icons::Previous:
-		case Icons::Forward:
-		case Icons::Backward:
-		case Icons::Record:
+//	switch(name)
+//	{
+//		case Icons::Play:
+//		case Icons::Pause:
+//		case Icons::Stop:
+//		case Icons::Next:
+//		case Icons::Previous:
+//		case Icons::Forward:
+//		case Icons::Backward:
+//		case Icons::Record:
 //			mode = Icons::ForceSayonaraIcon;
 //			break;
 
-		default:
-			mode = Icons::Automatic;
-	}
+//		default:
+//			mode = Icons::Automatic;
+//	}
 
-	return Icons::icon(name, mode);
+	QIcon icon = Icons::icon(name, mode);
+	return icon;
 }
 
 void GUI_ControlsBase::played()
@@ -234,7 +238,6 @@ void GUI_ControlsBase::next_clicked()
 	PlayManager::instance()->next();
 }
 
-
 void GUI_ControlsBase::rec_clicked(bool b)
 {
 	PlayManager::instance()->record(b);
@@ -244,7 +247,6 @@ void GUI_ControlsBase::rec_changed(bool b)
 {
 	btn_rec()->setChecked(b);
 }
-
 
 void GUI_ControlsBase::buffering(int progress)
 {
@@ -274,7 +276,6 @@ void GUI_ControlsBase::buffering(int progress)
 		lab_max_time()->setVisible(false);
 	}
 
-
 	else
 	{
 		toggle_buffer_mode(false);
@@ -286,8 +287,6 @@ void GUI_ControlsBase::buffering(int progress)
 		lab_max_time()->setVisible(true);
 	}
 }
-
-
 
 void GUI_ControlsBase::progress_moved(int val)
 {
@@ -342,8 +341,6 @@ void GUI_ControlsBase::set_cur_pos_label(int val)
 	lab_current_time()->setText(cur_pos_string);
 }
 
-
-
 void GUI_ControlsBase::set_total_time_label(MilliSeconds total_time)
 {
 	QString length_str;
@@ -354,8 +351,6 @@ void GUI_ControlsBase::set_total_time_label(MilliSeconds total_time)
 	lab_max_time()->setText(length_str);
 	sli_progress()->setEnabled(total_time > 0);
 }
-
-
 
 void GUI_ControlsBase::progress_hovered(int val)
 {
@@ -472,7 +467,6 @@ void GUI_ControlsBase::id3_tags_changed(const MetaDataList& v_md_old, const Meta
 	}
 }
 
-
 void GUI_ControlsBase::md_changed(const MetaData& md)
 {
 	MetaData modified_md(md);
@@ -483,7 +477,6 @@ void GUI_ControlsBase::md_changed(const MetaData& md)
 
 	set_info_labels(modified_md);
 }
-
 
 void GUI_ControlsBase::dur_changed(const MetaData& md)
 {
@@ -502,10 +495,7 @@ void GUI_ControlsBase::br_changed(const MetaData& md)
 		QString filesize = QString::number( (double) (md.filesize / 1024) / 1024.0, 'f', 2) + " MB";
 		lab_filesize()->setText(filesize);
 	}
-
-//	lab_rating->set_rating(md.rating);
 }
-
 
 void GUI_ControlsBase::refresh_info_labels()
 {
@@ -536,7 +526,6 @@ void GUI_ControlsBase::set_info_labels(const MetaData& md)
 	elided_text = fm_artist.elidedText(md.artist(), Qt::ElideRight, lab_artist()->width());
 	lab_artist()->setText(elided_text);
 }
-
 
 void GUI_ControlsBase::file_info_changed()
 {
@@ -569,18 +558,12 @@ void GUI_ControlsBase::file_info_changed()
 		lab_filesize()->setText(sFilesize);
 	}
 	lab_filesize()->setVisible(!sFilesize.isEmpty());
-
-
-//	lab_rating()->set_rating(md.rating);
 }
 
 
 void GUI_ControlsBase::skin_changed()
 {
 	using namespace Gui;
-
-	QString stylesheet = Style::current_style();
-	this->setStyleSheet(stylesheet);
 
 	btn_fwd()->setIcon(icon(Icons::Forward));
 	btn_bwd()->setIcon(icon(Icons::Backward));
@@ -601,16 +584,6 @@ void GUI_ControlsBase::skin_changed()
 
 void GUI_ControlsBase::language_changed() {}
 
-void GUI_ControlsBase::resizeEvent(QResizeEvent* e)
-{
-	Widget::resizeEvent(e);
-	QSize icon_size = btn_cover()->size();
-	int sz = std::min(icon_size.height(), icon_size.width()) - 8;
-	icon_size.setHeight(sz);
-	icon_size.setWidth(sz);
-	btn_cover()->setIconSize(icon_size);
-	refresh_info_labels();
-}
 
 
 void GUI_ControlsBase::sr_active_changed()
@@ -777,6 +750,44 @@ QString GUI_ControlsBase::get_shortcut_text(const QString &shortcut_identifier) 
 	return "";
 }
 
+void GUI_ControlsBase::set_radio_mode(RadioMode radio)
+{
+	check_record_button_visible();
+
+	if(radio != RadioMode::Off){
+		buffering(0);
+	}
+}
+
+
+MD::Interpretation GUI_ControlsBase::metadata_interpretation() const
+{
+	return MD::Interpretation::Tracks;
+}
+
+MetaDataList GUI_ControlsBase::info_dialog_data() const
+{
+	PlayState ps = PlayManager::instance()->playstate();
+	if(ps == PlayState::Stopped){
+		return MetaDataList();
+	}
+
+	return MetaDataList(
+		PlayManager::instance()->current_track()
+	);
+}
+
+void GUI_ControlsBase::resizeEvent(QResizeEvent* e)
+{
+	Widget::resizeEvent(e);
+
+	QSize icon_size = btn_cover()->size();
+	int sz = std::min(icon_size.height(), icon_size.width()) - 8;
+	icon_size.setHeight(sz);
+	icon_size.setWidth(sz);
+	btn_cover()->setIconSize(icon_size);
+	refresh_info_labels();
+}
 
 void GUI_ControlsBase::showEvent(QShowEvent* e)
 {
@@ -812,31 +823,4 @@ void GUI_ControlsBase::contextMenuEvent(QContextMenuEvent* e)
 	}
 
 	m->context_menu->exec(e->globalPos());
-}
-
-void GUI_ControlsBase::set_radio_mode(RadioMode radio)
-{
-	check_record_button_visible();
-
-	if(radio != RadioMode::Off){
-		buffering(0);
-	}
-}
-
-
-MD::Interpretation GUI_ControlsBase::metadata_interpretation() const
-{
-	return MD::Interpretation::Tracks;
-}
-
-MetaDataList GUI_ControlsBase::info_dialog_data() const
-{
-	PlayState ps = PlayManager::instance()->playstate();
-	if(ps == PlayState::Stopped){
-		return MetaDataList();
-	}
-
-	return MetaDataList(
-		PlayManager::instance()->current_track()
-	);
 }

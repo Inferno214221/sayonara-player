@@ -158,9 +158,10 @@ QVariant AlbumModel::data(const QModelIndex& index, int role) const
 		}
 	}
 
-	else if(role == Qt::DisplayRole || role==Qt::EditRole)
+	else if(role == Qt::DisplayRole || role == Qt::EditRole)
 	{
-		switch(col) {
+		switch(col)
+		{
 			case ColumnIndex::Album::NumSongs:
 				return  QString::number(album.num_songs) + " " +
 						Lang::get(Lang::Tracks).toLower();
@@ -187,7 +188,8 @@ QVariant AlbumModel::data(const QModelIndex& index, int role) const
 
 				return QVariant(album.rating);
 
-			default: return QVariant();
+			default:
+				return QVariant();
 		}
 	}
 

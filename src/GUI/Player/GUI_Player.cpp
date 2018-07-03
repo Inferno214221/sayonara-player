@@ -39,6 +39,7 @@
 
 #include "GUI/Utils/GuiUtils.h"
 #include "GUI/Utils/Style.h"
+#include "GUI/Utils/Icons.h"
 
 #include "Interfaces/LibraryInterface/LibraryPluginHandler.h"
 #include "Interfaces/LibraryInterface/LibraryContainer/LibraryContainer.h"
@@ -94,11 +95,10 @@ GUI_Player::GUI_Player(QTranslator* translator, QWidget* parent) :
 
 	ui = new Ui::GUI_Player();
 	ui->setupUi(this);
+
 	ui->plugin_widget->setVisible(false);
 
 	Message::register_receiver(this);
-
-	Set::listen<Set::Player_ControlStyle>(this, &GUI_Player::controlstyle_changed, true);
 
 	m->menubar = new Menubar(this);
 	setMenuBar(m->menubar);
@@ -112,6 +112,7 @@ GUI_Player::GUI_Player(QTranslator* translator, QWidget* parent) :
 	init_connections();
 	init_sizes();
 	init_splitter();
+	controlstyle_changed();
 
 	if(_settings->get<Set::Player_NotifyNewVersion>())
 	{
@@ -120,11 +121,10 @@ GUI_Player::GUI_Player(QTranslator* translator, QWidget* parent) :
 		connect(awa, &AsyncWebAccess::sig_finished, this, &GUI_Player::awa_version_finished);
 	}
 
-
-
 	Set::listen<Set::Player_Fullscreen>(this, &GUI_Player::fullscreen_changed, false);
 	Set::listen<Set::Lib_Show>(this, &GUI_Player::show_library_changed, false);
 	Set::listen<SetNoDB::Player_Quit>(this, &GUI_Player::really_close, false);
+	Set::listen<Set::Player_ControlStyle>(this, &GUI_Player::controlstyle_changed, false);
 }
 
 GUI_Player::~GUI_Player()
@@ -420,7 +420,6 @@ void GUI_Player::fullscreen_changed()
 
 void GUI_Player::controlstyle_changed()
 {
-
 	if(m->controls){
 		ui->controls->layout()->removeWidget(m->controls);
 		m->controls->deleteLater();
@@ -440,8 +439,9 @@ void GUI_Player::controlstyle_changed()
 	}
 
 	ui->controls->layout()->addWidget(m->controls);
-	ui->splitter2->setSizes({target_height, this->height() - target_height});
 	m->controls->init();
+	ui->splitter2->setSizes({target_height, this->height() - target_height});
+
 }
 
 void GUI_Player::show_library_changed()

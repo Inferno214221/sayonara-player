@@ -37,15 +37,6 @@ QFrame#player_frame,
 }
 
 
-QLabel#lab_title,
-QLabel#lab_title_2,
-QLabel#lab_title_3,
-QLabel#lab_title_4,
-QLabel#lab_sayonara
-{
-        font-size: 12px;
-}
-
 QListView,
 LibraryView,
 LibraryGenreView,

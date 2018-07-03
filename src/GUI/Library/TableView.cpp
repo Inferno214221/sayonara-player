@@ -40,9 +40,9 @@ void switch_sorters(T& srcdst, T src1, T src2)
 
 struct TableView::Private
 {
+	BoolList            shown_columns;
 	HeaderView*			header=nullptr;
 	Library::SortOrder  sortorder;
-	BoolList            shown_columns;
 };
 
 TableView::TableView(QWidget* parent) :

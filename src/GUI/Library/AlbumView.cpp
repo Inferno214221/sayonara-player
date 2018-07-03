@@ -105,14 +105,14 @@ void AlbumView::save_sortorder(SortOrder s)
 	m->library->change_album_sortorder(s);
 }
 
-void AlbumView::context_menu_show(const QPoint & p)
+void AlbumView::context_menu_show(const QPoint& p)
 {
 	delete_discmenu();
 
 	TableView::context_menu_show(p);
 }
 
-void AlbumView::index_clicked(const QModelIndex &idx)
+void AlbumView::index_clicked(const QModelIndex& idx)
 {
 	if(idx.column() != static_cast<int>(ColumnIndex::Album::MultiDisc))
 	{
