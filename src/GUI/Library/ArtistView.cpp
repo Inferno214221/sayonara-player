@@ -23,7 +23,7 @@
 #include "ArtistView.h"
 
 #include "Components/Library/AbstractLibrary.h"
-#include "GUI/Library/Models/ArtistModel.h"
+#include "GUI/Library/ArtistModel.h"
 #include "GUI/Library/Utils/ColumnIndex.h"
 #include "GUI/Library/Utils/ColumnHeader.h"
 #include "GUI/Utils/Delegates/StyledItemDelegate.h"

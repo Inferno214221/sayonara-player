@@ -24,7 +24,7 @@
 
 
 #include "GUI/Directories/ui_GUI_DirectoryWidget.h"
-#include "GUI/Library/Models/TrackModel.h"
+#include "GUI/Library/TrackModel.h"
 #include "GUI/ImportDialog/GUI_ImportDialog.h"
 #include "GUI/Utils/ContextMenu/LibraryContextMenu.h"
 #include "GUI/Utils/Icons.h"

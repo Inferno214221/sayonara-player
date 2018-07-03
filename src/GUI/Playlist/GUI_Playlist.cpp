@@ -91,15 +91,13 @@ GUI_Playlist::GUI_Playlist(QWidget *parent) :
 
 GUI_Playlist::~GUI_Playlist()
 {
-	while(ui->tw_playlists->count() > 0)
-	{
-		ui->tw_playlists->removeTab(0);
-	}
-
 	while(ui->tw_playlists->count() > 1)
 	{
-		QWidget* widget = ui->tw_playlists->widget(0);
-		ui->tw_playlists->removeTab(0);
+		int last_tab = ui->tw_playlists->count() - 1;
+
+		QWidget* widget = ui->tw_playlists->widget(last_tab);
+		Handler::instance()->close_playlist(last_tab);
+		ui->tw_playlists->removeTab(last_tab);
 
 		if(widget){
 			delete widget; widget = nullptr;

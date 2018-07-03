@@ -19,7 +19,7 @@
  */
 
 #include "GUI_AbstractLibrary.h"
-#include "Views/TableView.h"
+#include "TableView.h"
 
 #include "Components/Library/AbstractLibrary.h"
 

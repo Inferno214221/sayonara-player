@@ -346,17 +346,17 @@
   <customwidget>
    <class>Library::AlbumView</class>
    <extends>QTableView</extends>
-   <header>GUI/Library/Views/AlbumView.h</header>
+   <header>GUI/Library/AlbumView.h</header>
   </customwidget>
   <customwidget>
    <class>Library::TrackView</class>
    <extends>QTableView</extends>
-   <header>GUI/Library/Views/TrackView.h</header>
+   <header>GUI/Library/TrackView.h</header>
   </customwidget>
   <customwidget>
    <class>Library::ArtistView</class>
    <extends>QTableView</extends>
-   <header>GUI/Library/Views/ArtistView.h</header>
+   <header>GUI/Library/ArtistView.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

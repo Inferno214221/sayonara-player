@@ -394,6 +394,10 @@ void Handler::set_current_index(int pl_idx)
 		return;
 	}
 
+	if(!between(pl_idx, m->playlists)){
+		return;
+	}
+
 	m->current_playlist_idx = pl_idx;
 
 	emit sig_playlist_idx_changed(pl_idx);

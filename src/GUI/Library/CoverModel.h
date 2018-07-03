@@ -21,7 +21,7 @@
 #ifndef ALBUMCOVERMODEL_H
 #define ALBUMCOVERMODEL_H
 
-#include "GUI/Library/Models/ItemModel.h"
+#include "GUI/Library/ItemModel.h"
 #include "Utils/Pimpl.h"
 
 class Album;

@@ -427,14 +427,16 @@ void GUI_Player::controlstyle_changed()
 	}
 
 	int target_height;
-	if(_settings->get<Set::Player_ControlStyle>() == 0){
+	if(_settings->get<Set::Player_ControlStyle>() == 0)
+	{
 		m->controls = new GUI_Controls(ui->controls);
 		target_height = m->controls->minimumHeight();
 	}
 
-	else {
+	else
+	{
 		m->controls = new GUI_ControlsNew(ui->controls);
-		target_height = 300;
+		target_height = (m->controls->width() * 3) / 2;
 	}
 
 	ui->controls->layout()->addWidget(m->controls);

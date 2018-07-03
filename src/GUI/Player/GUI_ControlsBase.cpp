@@ -164,7 +164,8 @@ QIcon GUI_ControlsBase::icon(Gui::Icons::IconName name)
 		case Icons::Forward:
 		case Icons::Backward:
 		case Icons::Record:
-			mode = Icons::ForceSayonaraIcon;
+//			mode = Icons::ForceSayonaraIcon;
+//			break;
 
 		default:
 			mode = Icons::Automatic;
@@ -604,7 +605,7 @@ void GUI_ControlsBase::resizeEvent(QResizeEvent* e)
 {
 	Widget::resizeEvent(e);
 	QSize icon_size = btn_cover()->size();
-	int sz = std::min(icon_size.height(), icon_size.width());
+	int sz = std::min(icon_size.height(), icon_size.width()) - 8;
 	icon_size.setHeight(sz);
 	icon_size.setWidth(sz);
 	btn_cover()->setIconSize(icon_size);

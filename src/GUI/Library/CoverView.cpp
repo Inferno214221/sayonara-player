@@ -23,8 +23,8 @@
 #include "Components/Covers/CoverChangeNotifier.h"
 #include "Components/Library/AbstractLibrary.h"
 
-#include "GUI/Library/Models/CoverModel.h"
-#include "GUI/Library/Delegates/CoverDelegate.h"
+#include "GUI/Library/CoverModel.h"
+#include "GUI/Library/CoverDelegate.h"
 #include "GUI/Utils/Widgets/ComboBox.h"
 #include "GUI/Utils/Icons.h"
 #include "GUI/Utils/ContextMenu/LibraryContextMenu.h"

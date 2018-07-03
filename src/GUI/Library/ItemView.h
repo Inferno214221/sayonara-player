@@ -34,7 +34,7 @@
 #include "GUI/Utils/SearchableWidget/SearchableView.h"
 
 #include "GUI/InfoDialog/InfoDialogContainer.h"
-#include "GUI/Library/Models/ItemModel.h"
+#include "GUI/Library/ItemModel.h"
 
 #include "Utils/MetaData/MetaDataFwd.h"
 #include "Utils/typedefs.h"

@@ -22,9 +22,11 @@
 #ifndef ALBUMCOVERVIEW_H
 #define ALBUMCOVERVIEW_H
 
-#include "GUI/Library/Views/ItemView.h"
+#include "GUI/Library/ItemView.h"
 #include "Utils/Pimpl.h"
 #include "Utils/Library/Sortorder.h"
+
+class AbstractLibrary;
 
 namespace Library
 {

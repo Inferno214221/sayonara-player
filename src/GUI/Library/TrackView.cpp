@@ -18,12 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "TrackView.h"
 
-#include "GUI/Library/Models/TrackModel.h"
-#include "GUI/Library/Delegates/RatingDelegate.h"
+#include "GUI/Library/TrackModel.h"
+#include "GUI/Library/RatingDelegate.h"
 #include "GUI/Library/Utils/ColumnHeader.h"
 #include "GUI/Library/Utils/ColumnIndex.h"
 

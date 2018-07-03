@@ -32,7 +32,7 @@
 #include "GUI/Library/InfoBox/GUI_LibraryInfoBox.h"
 #include "GUI/Library/GUI_ReloadLibraryDialog.h"
 #include "GUI/Library/Utils/LocalLibraryMenu.h"
-#include "GUI/Library/Views/CoverView.h"
+#include "GUI/Library/CoverView.h"
 
 #include "GUI/ImportDialog/GUI_ImportDialog.h"
 

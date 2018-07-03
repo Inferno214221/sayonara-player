@@ -1,4 +1,4 @@
-/* TrackModel.h */
+/* AlbumModel.h */
 
 /* Copyright (C) 2011-2017 Lucio Carreras
  *
@@ -20,46 +20,48 @@
 
 
 /*
- * TrackModel.h
+ * AlbumModel.h
  *
- *  Created on: Apr 24, 2011
+ *  Created on: Apr 26, 2011
  *      Author: Lucio Carreras
  */
 
-#ifndef LIBRARYITEMMODELTRACKS_H_
-#define LIBRARYITEMMODELTRACKS_H_
+#ifndef LIBRARYITEMMODELALBUMS_H_
+#define LIBRARYITEMMODELALBUMS_H_
 
-#include "GUI/Library/Models/ItemModel.h"
+#include "GUI/Library/ItemModel.h"
 #include "Utils/Pimpl.h"
 
-class MetaDataList;
+class AlbumList;
+
 namespace Library
 {
-	class TrackModel :
+	class AlbumModel :
 			public ItemModel
 	{
 		Q_OBJECT
+		PIMPL(AlbumModel)
 
 		public:
-			TrackModel(QObject* parent, AbstractLibrary* library);
-			virtual ~TrackModel();
+			AlbumModel(QObject* parent, AbstractLibrary* library);
+			virtual ~AlbumModel();
 
-			/** AbstractSearchTableModel **/
 			Qt::ItemFlags   flags(const QModelIndex &index) const override;
-			QVariant        data(const QModelIndex &index, int role) const override;
-			bool            setData(const QModelIndex &index, const QVariant &value, int role) override;
+			QVariant        data(const QModelIndex& index, int role) const override;
+			bool            setData(const QModelIndex& index, const QVariant& value, int role=Qt::DisplayRole) override;
 			int             rowCount(const QModelIndex &parent) const override;
 
-			/** ItemModel.h **/
-			Cover::Location cover(const IndexSet& indexes) const override;
+			Cover::Location   cover(const IndexSet& indexes) const override;
 			int             searchable_column() const override;
 			int             id_by_row(int row) override;
 			QString         searchable_string(int row) const override;
+
+
 			const IndexSet& selections() const override;
 
-		protected:
+		public:
 			const MetaDataList& mimedata_tracks() const override;
 	};
 }
 
-#endif /* LIBRARYITEMMODELTRACKS_H_ */
+#endif /* LIBRARYITEMMODELALBUMS_H_ */
