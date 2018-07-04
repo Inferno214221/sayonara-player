@@ -90,15 +90,15 @@ private:
 
 
 protected:
-
 	void resizeEvent(QResizeEvent* e) override;
 	void showEvent(QShowEvent* e) override;
 	void contextMenuEvent(QContextMenuEvent* e) override;
+	void language_changed() override;
+	void skin_changed() override;
+
 
 public:
 	QString get_shortcut_text(const QString &shortcut_identifier) const override;
-	void language_changed() override;
-	void skin_changed() override;
 
 	void file_info_changed();
 	void sr_active_changed();
@@ -109,13 +109,6 @@ public slots:
 private slots:
 	void playstate_changed(PlayState state);
 
-	void play_clicked();
-	void stop_clicked();
-
-	void prev_clicked();
-	void next_clicked();
-
-	void rec_clicked(bool b);
 	void rec_changed(bool b);
 
 	void buffering(int progress);
@@ -123,11 +116,8 @@ private slots:
 	void cur_pos_changed(MilliSeconds pos_ms);
 	void progress_moved(int val);
 	void progress_hovered(int val);
-
-	void volume_slider_moved(int val);
 	void volume_changed(int val);
 
-	void mute_button_clicked();
 	void mute_changed(bool muted);
 
 	void track_changed(const MetaData& md);

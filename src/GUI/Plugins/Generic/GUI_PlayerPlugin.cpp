@@ -62,6 +62,8 @@ void GUI_PlayerPlugin::show(PlayerPlugin::Base* player_plugin)
 	ui->header_widget->setVisible(show_title);
 	ui->lab_title->setText(player_plugin->get_display_name());
 
+	ui->verticalLayout->setSpacing(0);
+	ui->verticalLayout->setContentsMargins(0, 0, 0, 0);
 	ui->verticalLayout->insertWidget(1, player_plugin);
 
 	player_plugin->show();

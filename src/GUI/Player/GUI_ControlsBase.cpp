@@ -1,17 +1,16 @@
 #include "GUI_ControlsBase.h"
 #include "SearchSlider.h"
-#include "GUI/Utils/Widgets/ProgressBar.h"
+
 #include "GUI/Covers/CoverButton.h"
 
-#include "GUI_TrayIcon.h"
 #include "GUI/Utils/GuiUtils.h"
+#include "GUI/Utils/Style.h"
 #include "GUI/Utils/Icons.h"
 #include "GUI/Utils/Shortcuts/Shortcut.h"
 #include "GUI/Utils/Shortcuts/ShortcutHandler.h"
-#include "GUI/Utils/Style.h"
-#include "GUI/Utils/Icons.h"
 #include "GUI/Utils/PreferenceAction.h"
 #include "GUI/Utils/ContextMenu/LibraryContextMenu.h"
+#include "GUI/Utils/Widgets/ProgressBar.h"
 
 #include "Components/PlayManager/PlayManager.h"
 #include "Components/Covers/CoverLocation.h"
@@ -24,13 +23,11 @@
 #include "Utils/Language.h"
 
 #include <QToolTip>
-#include <QPushButton>
 #include <QImage>
 #include <QPixmap>
 #include <QIcon>
 #include <QDateTime>
 #include <QLabel>
-#include <QPushButton>
 
 #include <algorithm>
 
@@ -140,12 +137,6 @@ void GUI_ControlsBase::playstate_changed(PlayState state)
 }
 
 
-void GUI_ControlsBase::play_clicked()
-{
-	PlayManager::instance()->play_pause();
-}
-
-
 QIcon GUI_ControlsBase::icon(Gui::Icons::IconName name)
 {
 	using namespace Gui;
@@ -157,25 +148,7 @@ QIcon GUI_ControlsBase::icon(Gui::Icons::IconName name)
 		mode = Icons::ForceSayonaraIcon;
 	}
 
-//	switch(name)
-//	{
-//		case Icons::Play:
-//		case Icons::Pause:
-//		case Icons::Stop:
-//		case Icons::Next:
-//		case Icons::Previous:
-//		case Icons::Forward:
-//		case Icons::Backward:
-//		case Icons::Record:
-//			mode = Icons::ForceSayonaraIcon;
-//			break;
-
-//		default:
-//			mode = Icons::Automatic;
-//	}
-
-	QIcon icon = Icons::icon(name, mode);
-	return icon;
+	return Icons::icon(name, mode);
 }
 
 void GUI_ControlsBase::played()
@@ -183,18 +156,10 @@ void GUI_ControlsBase::played()
 	btn_play()->setIcon(icon(Gui::Icons::Pause));
 }
 
-
 void GUI_ControlsBase::paused()
 {
 	btn_play()->setIcon(icon(Gui::Icons::Play));
 }
-
-
-void GUI_ControlsBase::stop_clicked()
-{
-	PlayManager::instance()->stop();
-}
-
 
 void GUI_ControlsBase::stopped()
 {
@@ -224,23 +189,6 @@ void GUI_ControlsBase::stopped()
 	lab_max_time()->clear();
 
 	set_standard_cover();
-}
-
-
-void GUI_ControlsBase::prev_clicked()
-{
-	PlayManager::instance()->previous();
-}
-
-
-void GUI_ControlsBase::next_clicked()
-{
-	PlayManager::instance()->next();
-}
-
-void GUI_ControlsBase::rec_clicked(bool b)
-{
-	PlayManager::instance()->record(b);
 }
 
 void GUI_ControlsBase::rec_changed(bool b)
@@ -368,11 +316,6 @@ void GUI_ControlsBase::progress_hovered(int val)
 }
 
 
-void GUI_ControlsBase::volume_slider_moved(int val)
-{
-	PlayManager::instance()->set_volume(val);
-}
-
 void GUI_ControlsBase::volume_changed(int val)
 {
 	setup_volume_button(val);
@@ -385,7 +328,7 @@ void GUI_ControlsBase::setup_volume_button(int percent)
 
 	QIcon icon;
 
-	if (percent <= 1) {
+	if (percent <= 1 || PlayManager::instance()->is_muted()) {
 		icon = Icons::icon(Icons::VolMute);
 	}
 
@@ -424,18 +367,9 @@ void GUI_ControlsBase::change_volume_by_tick(int val)
 	}
 }
 
-void GUI_ControlsBase::mute_button_clicked()
-{
-	bool muted = PlayManager::instance()->is_muted();
-	PlayManager::instance()->set_muted(!muted);
-}
-
-
 void GUI_ControlsBase::mute_changed(bool muted)
 {
 	int val;
-	sli_volume()->setDisabled(muted);
-
 	if(muted){
 		val = 0;
 	}
@@ -446,6 +380,9 @@ void GUI_ControlsBase::mute_changed(bool muted)
 
 	sli_volume()->setValue(val);
 	setup_volume_button(val);
+
+	sli_volume()->setDisabled(muted);
+	//btn_mute()->setChecked(muted);
 }
 
 
@@ -580,6 +517,10 @@ void GUI_ControlsBase::skin_changed()
 	btn_rec()->setIcon(icon(Icons::Record));
 
 	setup_volume_button(sli_volume()->value());
+
+	btn_cover()->setContentsMargins(0,0,0,0);
+	btn_cover()->setStyleSheet("border: none; padding: 0; margin: 0;");
+
 }
 
 void GUI_ControlsBase::language_changed() {}
@@ -639,26 +580,26 @@ void GUI_ControlsBase::force_cover(const QImage& img)
 
 void GUI_ControlsBase::setup_connections()
 {
-	PlayManager* play_manager = PlayManager::instance();
+	PlayManager* pm = PlayManager::instance();
 
-	connect(btn_play(), &QPushButton::clicked, this, &GUI_ControlsBase::play_clicked);
-	connect(btn_fwd(),	&QPushButton::clicked, this, &GUI_ControlsBase::next_clicked);
-	connect(btn_bwd(),	&QPushButton::clicked, this, &GUI_ControlsBase::prev_clicked);
-	connect(btn_stop(), &QPushButton::clicked, this, &GUI_ControlsBase::stop_clicked);
-	connect(btn_mute(), &QPushButton::released, this, &GUI_ControlsBase::mute_button_clicked);
-	connect(btn_rec(), &QPushButton::clicked, this, &GUI_ControlsBase::rec_clicked);
+	connect(btn_play(), &QPushButton::clicked, pm, &PlayManager::play_pause);
+	connect(btn_fwd(),	&QPushButton::clicked, pm, &PlayManager::next);
+	connect(btn_bwd(),	&QPushButton::clicked, pm, &PlayManager::previous);
+	connect(btn_stop(), &QPushButton::clicked, pm, &PlayManager::stop);
+	connect(btn_mute(), &QPushButton::clicked, pm, &PlayManager::toggle_mute);
+	connect(btn_rec(), &QPushButton::clicked, pm, &PlayManager::record);
 
-	connect(sli_volume(), &SearchSlider::sig_slider_moved, this, &GUI_ControlsBase::volume_slider_moved);
+	connect(sli_volume(), &SearchSlider::sig_slider_moved, pm, &PlayManager::set_volume);
 	connect(sli_progress(), &SearchSlider::sig_slider_moved, this, &GUI_ControlsBase::progress_moved);
 	connect(sli_progress(), &SearchSlider::sig_slider_hovered, this, &GUI_ControlsBase::progress_hovered);
 
-	connect(play_manager, &PlayManager::sig_playstate_changed, this, &GUI_ControlsBase::playstate_changed);
-	connect(play_manager, &PlayManager::sig_track_changed, this, &GUI_ControlsBase::track_changed);
-	connect(play_manager, &PlayManager::sig_position_changed_ms, this,	&GUI_ControlsBase::cur_pos_changed);
-	connect(play_manager, &PlayManager::sig_buffer, this, &GUI_ControlsBase::buffering);
-	connect(play_manager, &PlayManager::sig_volume_changed, this, &GUI_ControlsBase::volume_changed);
-	connect(play_manager, &PlayManager::sig_mute_changed, this, &GUI_ControlsBase::mute_changed);
-	connect(play_manager, &PlayManager::sig_record, this, &GUI_ControlsBase::rec_changed);
+	connect(pm, &PlayManager::sig_playstate_changed, this, &GUI_ControlsBase::playstate_changed);
+	connect(pm, &PlayManager::sig_track_changed, this, &GUI_ControlsBase::track_changed);
+	connect(pm, &PlayManager::sig_position_changed_ms, this,	&GUI_ControlsBase::cur_pos_changed);
+	connect(pm, &PlayManager::sig_buffer, this, &GUI_ControlsBase::buffering);
+	connect(pm, &PlayManager::sig_volume_changed, this, &GUI_ControlsBase::volume_changed);
+	connect(pm, &PlayManager::sig_mute_changed, this, &GUI_ControlsBase::mute_changed);
+	connect(pm, &PlayManager::sig_record, this, &GUI_ControlsBase::rec_changed);
 
 	// engine
 	Engine::Handler* engine = Engine::Handler::instance();
@@ -785,8 +726,10 @@ void GUI_ControlsBase::resizeEvent(QResizeEvent* e)
 	int sz = std::min(icon_size.height(), icon_size.width()) - 8;
 	icon_size.setHeight(sz);
 	icon_size.setWidth(sz);
+
 	btn_cover()->setIconSize(icon_size);
 	refresh_info_labels();
+
 }
 
 void GUI_ControlsBase::showEvent(QShowEvent* e)

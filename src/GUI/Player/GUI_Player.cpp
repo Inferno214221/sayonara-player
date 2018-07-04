@@ -108,13 +108,11 @@ GUI_Player::GUI_Player(QTranslator* translator, QWidget* parent) :
 	setWindowIcon(Gui::Util::icon("logo.png"));
 	setAttribute(Qt::WA_DeleteOnClose, false);
 
-	controlstyle_changed();
-
+	init_controlstyle();
 	init_tray_actions();
 	init_connections();
 	init_sizes();
-	init_splitter();
-
+	init_main_splitter();
 
 	if(_settings->get<Set::Player_NotifyNewVersion>())
 	{
@@ -165,14 +163,14 @@ void GUI_Player::init_sizes()
 	}
 }
 
-void GUI_Player::init_splitter()
+void GUI_Player::init_main_splitter()
 {
 	ui->splitter->widget(1)->setVisible(
 		_settings->get<Set::Lib_Show>()
 	);
 
-	QByteArray splitter_state = _settings->get<Set::Player_SplitterState>();
-	if(splitter_state.size() <= 1)
+	QByteArray splitter_state_main = _settings->get<Set::Player_SplitterState>();
+	if(splitter_state_main.size() <= 1)
 	{
 		int w1 = width() / 3;
 		int w2 = width() - w1;
@@ -182,7 +180,7 @@ void GUI_Player::init_splitter()
 	}
 
 	else {
-		ui->splitter->restoreState(splitter_state);
+		ui->splitter->restoreState(splitter_state_main);
 	}
 
 	if(_settings->get<Set::Lib_Show>())
@@ -209,7 +207,8 @@ void GUI_Player::init_connections()
 	connect(play_manager, &PlayManager::sig_playstate_changed, this, &GUI_Player::playstate_changed);
 	connect(play_manager, &PlayManager::sig_error, this, &GUI_Player::play_error);
 
-	connect(ui->splitter, &QSplitter::splitterMoved, this, &GUI_Player::main_splitter_moved);
+	connect(ui->splitter, &QSplitter::splitterMoved, this, &GUI_Player::splitter_main_moved);
+	connect(ui->splitterControls, &QSplitter::splitterMoved, this, &GUI_Player::splitter_controls_moved);
 
 	connect(m->menubar, &Menubar::sig_close_clicked, this, &GUI_Player::really_close);
 	connect(m->menubar, &Menubar::sig_logger_clicked, m->logger, &GUI_Logger::show);
@@ -243,31 +242,22 @@ void GUI_Player::init_tray_actions()
 void GUI_Player::tray_icon_activated(QSystemTrayIcon::ActivationReason reason)
 {
 	bool min_to_tray = _settings->get<Set::Player_Min2Tray>();
-	switch (reason)
-	{
-		case QSystemTrayIcon::Trigger:
-			if( this->isMinimized() ||
-				!this->isVisible() ||
-				!this->isActiveWindow())
-			{
-				raise();
-			}
+	if(reason != QSystemTrayIcon::Trigger){
+		return;
+	}
 
-			else
-			{
-				if(min_to_tray) {
-					minimize_to_tray();
-				}
+	bool invisible = (this->isMinimized() || !isVisible() || !isActiveWindow());
 
-				else{
-					this->showMinimized();
-				}
-			}
+	if(invisible) {
+		raise();
+	}
 
-			break;
+	else if(min_to_tray) {
+		minimize_to_tray();
+	}
 
-		default:
-			break;
+	else {
+		showMinimized();
 	}
 }
 
@@ -282,10 +272,7 @@ void GUI_Player::current_library_changed(const QString& name)
 
 void GUI_Player::check_library_menu_action()
 {
-	QList<Library::Container*> libraries;
-
 	Library::PluginHandler* lph = Library::PluginHandler::instance();
-	libraries = lph->get_libraries();
 	if(!lph->current_library()){
 		m->menubar->show_library_action(false);
 	}
@@ -295,12 +282,10 @@ void GUI_Player::check_library_menu_action()
 	}
 }
 
-
 void GUI_Player::register_preference_dialog(QAction* dialog_action)
 {
 	m->menubar->insert_preference_action(dialog_action);
 }
-
 
 void GUI_Player::playstate_changed(PlayState state)
 {
@@ -343,13 +328,11 @@ void GUI_Player::plugin_added(PlayerPlugin::Base* plugin)
 
 void GUI_Player::plugin_action_triggered(bool b)
 {
-	if(b)
-	{
+	if(b) {
 		plugin_opened();
 	}
 
-	else
-	{
+	else {
 		plugin_closed();
 	}
 }
@@ -420,9 +403,20 @@ void GUI_Player::fullscreen_changed()
 	}
 }
 
+void GUI_Player::init_controlstyle()
+{
+	QByteArray splitter_state = _settings->get<Set::Player_SplitterControls>();
+
+	controlstyle_changed();
+
+	ui->splitterControls->restoreState(splitter_state);
+	splitter_controls_moved(0, 0);
+}
+
 void GUI_Player::controlstyle_changed()
 {
-	if(m->controls){
+	if(m->controls)
+	{
 		ui->controls->layout()->removeWidget(m->controls);
 		m->controls->deleteLater();
 	}
@@ -442,8 +436,9 @@ void GUI_Player::controlstyle_changed()
 
 	ui->controls->layout()->addWidget(m->controls);
 	m->controls->init();
-	ui->splitter2->setSizes({target_height, this->height() - target_height});
 
+	ui->splitterControls->setSizes({target_height, this->height() - target_height});
+	splitter_controls_moved(0, 0);
 }
 
 void GUI_Player::show_library_changed()
@@ -501,6 +496,25 @@ void GUI_Player::show_library(bool is_library_visible, bool was_library_visible)
 }
 
 
+
+void GUI_Player::splitter_main_moved(int pos, int idx)
+{
+	Q_UNUSED(pos) Q_UNUSED(idx)
+
+	QByteArray splitter_state = ui->splitter->saveState();
+	_settings->set<Set::Player_SplitterState>(splitter_state);
+}
+
+void GUI_Player::splitter_controls_moved(int pos, int idx)
+{
+	Q_UNUSED(pos) Q_UNUSED(idx)
+
+	QByteArray splitter_state = ui->splitterControls->saveState();
+	_settings->set<Set::Player_SplitterControls>(splitter_state);
+}
+
+
+
 void GUI_Player::skin_changed()
 {
 	QString stylesheet = Style::current_style();
@@ -519,23 +533,12 @@ void GUI_Player::minimize()
 	tray_icon_activated(QSystemTrayIcon::Trigger);
 }
 
-
-void GUI_Player::really_close()
-{
-	sp_log(Log::Info, this) << "closing player...";
-
-	Gui::MainWindow::close();
-
-	emit sig_player_closed();
-}
-
 void GUI_Player::moveEvent(QMoveEvent* e)
 {
 	Gui::MainWindow::moveEvent(e);
 
 	_settings->set<Set::Player_Pos>(pos());
 }
-
 
 void GUI_Player::resizeEvent(QResizeEvent* e)
 {
@@ -558,18 +561,6 @@ void GUI_Player::resizeEvent(QResizeEvent* e)
 
 	update();
 }
-
-
-void GUI_Player::main_splitter_moved(int pos, int idx)
-{
-	Q_UNUSED(pos)
-	Q_UNUSED(idx)
-
-	ui->splitter->setOpaqueResize(true);
-	QByteArray splitter_state = ui->splitter->saveState();
-	_settings->set<Set::Player_SplitterState>(splitter_state);
-}
-
 
 void GUI_Player::closeEvent(QCloseEvent* e)
 {
@@ -597,6 +588,14 @@ void GUI_Player::request_shutdown()
 	m->shutdown_requested = true;
 }
 
+void GUI_Player::really_close()
+{
+	sp_log(Log::Info, this) << "closing player...";
+
+	Gui::MainWindow::close();
+
+	emit sig_player_closed();
+}
 
 void GUI_Player::minimize_to_tray()
 {

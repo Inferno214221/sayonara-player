@@ -69,7 +69,7 @@ private:
 	void init_tray_actions();
 	void init_connections();
 	void init_sizes();
-	void init_splitter();
+	void init_main_splitter();
 
 	void closeEvent(QCloseEvent* e) override;
 	void resizeEvent(QResizeEvent* e) override;
@@ -80,6 +80,7 @@ private:
 	void show_library_changed();
 	void show_library(bool is_library_visible, bool was_library_visible=false);
 	void fullscreen_changed();
+	void init_controlstyle();
 	void controlstyle_changed();
 
 	void set_total_time_label(MilliSeconds length_ms);
@@ -98,7 +99,8 @@ private slots:
 	void playstate_changed(PlayState state);
 	void play_error(const QString& message);
 
-	void main_splitter_moved(int pos, int idx);
+	void splitter_main_moved(int pos, int idx);
+	void splitter_controls_moved(int pos, int idx);
 
 	void current_library_changed(const QString& name);
 	void check_library_menu_action();
