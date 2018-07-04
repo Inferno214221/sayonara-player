@@ -474,15 +474,12 @@ void GUI_Player::show_library(bool is_library_visible, bool was_library_visible)
 		}
 	}
 
-	else
+	else if(was_library_visible)
 	{
-		if(was_library_visible)
-		{
-			int library_width = ui->library_widget->width();
-			_settings->set<Set::Lib_OldWidth>(library_width);
+		int library_width = ui->library_widget->width();
+		_settings->set<Set::Lib_OldWidth>(library_width);
 
-			player_size -= QSize(library_width, 0);
-		}
+		player_size -= QSize(library_width, 0);
 	}
 
 	ui->library_widget->setVisible(is_library_visible);
@@ -496,7 +493,6 @@ void GUI_Player::show_library(bool is_library_visible, bool was_library_visible)
 }
 
 
-
 void GUI_Player::splitter_main_moved(int pos, int idx)
 {
 	Q_UNUSED(pos) Q_UNUSED(idx)
@@ -504,6 +500,7 @@ void GUI_Player::splitter_main_moved(int pos, int idx)
 	QByteArray splitter_state = ui->splitter->saveState();
 	_settings->set<Set::Player_SplitterState>(splitter_state);
 }
+
 
 void GUI_Player::splitter_controls_moved(int pos, int idx)
 {

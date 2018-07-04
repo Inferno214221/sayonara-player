@@ -382,7 +382,6 @@ void GUI_ControlsBase::mute_changed(bool muted)
 	setup_volume_button(val);
 
 	sli_volume()->setDisabled(muted);
-	//btn_mute()->setChecked(muted);
 }
 
 
