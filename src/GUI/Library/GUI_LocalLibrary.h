@@ -53,7 +53,6 @@ namespace Library
 		PIMPL(GUI_LocalLibrary)
 
 	public:
-
 		explicit GUI_LocalLibrary(LibraryId id, QWidget* parent=nullptr);
 		virtual ~GUI_LocalLibrary();
 
@@ -78,7 +77,6 @@ namespace Library
 	private slots:
 		void switch_album_view();
 
-		void disc_pressed(int disc);
 		void progress_changed(const QString& type, int progress);
 
 		void genres_reloaded();
@@ -91,9 +89,6 @@ namespace Library
 
 		void import_dirs_requested();
 		void import_files_requested();
-		void import_files(const QStringList& files);
-		void change_library_name(const QString& name);
-		void change_library_path(const QString& path);
 		void name_changed(LibraryId id);
 		void path_changed(LibraryId id);
 

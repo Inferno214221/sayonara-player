@@ -389,7 +389,7 @@ void GUI_DirectoryWidget::import_requested(LibraryId id, const QStringList& path
 	connect(library, &LocalLibrary::sig_import_dialog_requested,
 			this, &GUI_DirectoryWidget::import_dialog_requested);
 
-	library->import_files(paths, target_dir);
+	library->import_files_to(paths, target_dir);
 }
 
 void GUI_DirectoryWidget::import_dialog_requested(const QString& target_dir)

@@ -117,6 +117,7 @@ enum class SettingKey : unsigned short
 	Player_NotifyNewVersion,
 	Player_SplitterState,
 	Player_Shortcuts,
+	Player_SplitterControls,
 
 	PL_Playlist,
 	PL_LoadSavedPlaylists,
@@ -289,6 +290,7 @@ namespace Set
 	INST(bool,				Player_NotifyNewVersion)		/* check for new version on startup */
 	INST(QByteArray,		Player_SplitterState)			/* spliter state between playlist and library */
 	INST(RawShortcutMap,	Player_Shortcuts)			/* player shortcuts */
+	INST(QByteArray,		Player_SplitterControls)	/* Splitter state between controls and playlist */
 
 	INST(QStringList,		PL_Playlist)				/* old playlist: list of integers in case of library tracks, if no library track, filepath */
 	INST(bool,				PL_LoadSavedPlaylists)			/* load saved playlists on startup */

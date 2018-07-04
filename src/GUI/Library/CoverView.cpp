@@ -63,6 +63,10 @@ using namespace Library;
 
 struct CoverView::Private
 {
+
+	QStringList			zoom_actions;
+	QList<ActionPair>	sorting_actions;
+
 	AbstractLibrary*	library=nullptr;
 	CoverModel*			model=nullptr;
 	QWidget*			topbar=nullptr;
@@ -78,12 +82,10 @@ struct CoverView::Private
 	QAction*			action_zoom=nullptr;
 	QAction*			action_show_utils=nullptr;
 
-	QList<ActionPair>	sorting_actions;
-	QStringList			zoom_actions;
-
 	std::atomic<bool>	blocked;
 
 	Private(CoverView* cover_view, AbstractLibrary* library, QWidget* topbar) :
+		zoom_actions {"50", "75", "100", "125", "150", "175", "200"},
 		library(library),
 		topbar(topbar),
 		blocked(false)
@@ -94,9 +96,6 @@ struct CoverView::Private
 		label_zoom = new QLabel(topbar);
 		label_zoom->setText(Lang::get(Lang::Zoom).append(":"));
 
-		zoom_actions << "50" << "75" << "100"
-					 << "125" << "150" << "175" << "200";
-
 		combo_sorting = new Gui::ComboBox(topbar);
 		combo_sorting->setEditable(false);
 		label_sorting = new QLabel(topbar);
@@ -105,6 +104,16 @@ struct CoverView::Private
 		buffer_timer = new QTimer();
 		buffer_timer->setInterval(10);
 		buffer_timer->setSingleShot(true);
+	}
+
+	~Private()
+	{
+		while(buffer_timer->isActive()){
+			buffer_timer->stop();
+			::Util::sleep_ms(10);
+		}
+
+		delete buffer_timer; buffer_timer = nullptr;
 	}
 
 	void add_sorting_items()
@@ -154,10 +163,10 @@ CoverView::CoverView(AbstractLibrary* library, QWidget* topbar, QWidget* parent)
 	set_metadata_interpretation(MD::Interpretation::Albums);
 
 	this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-	this->setSelectionBehavior( QAbstractItemView::SelectItems );
-	this->setShowGrid(false);
-	this->setItemDelegate(new CoverDelegate(this));
 	this->setVerticalScrollMode(QAbstractItemView::ScrollPerItem);
+	this->setSelectionBehavior(QAbstractItemView::SelectItems);
+	this->setItemDelegate(new CoverDelegate(this));
+	this->setShowGrid(false);
 
 	if(horizontalHeader()){
 		horizontalHeader()->hide();
@@ -246,22 +255,6 @@ void CoverView::refresh()
 	}
 
 	m->buffer_timer->start();
-}
-
-void CoverView::language_changed()
-{
-	ItemView::language_changed();
-	init_sorting_actions();
-
-	m->combo_zoom->setToolTip(tr("Use Ctrl + mouse wheel to zoom"));
-	m->label_sorting->setText(Lang::get(Lang::SortBy));
-	m->label_zoom->setText(Lang::get(Lang::Zoom));
-
-	if(context_menu())
-	{
-		m->action_zoom->setText(Lang::get(Lang::Zoom));
-		m->action_show_utils->setText(tr("Show toolbar"));
-	}
 }
 
 void CoverView::timed_out()
@@ -515,17 +508,9 @@ void CoverView::resizeEvent(QResizeEvent* e)
 	change_zoom();
 }
 
-void CoverView::showEvent(QShowEvent* e)
-{
-	ItemView::showEvent(e);
-	refresh();
-}
-
-
 void Library::CoverView::cover_changed()
 {
 	m->model->reload();
-	refresh();
 }
 
 
@@ -547,7 +532,6 @@ void CoverView::append_clicked()
 	m->library->append_fetched_tracks();
 }
 
-
 void CoverView::double_clicked(const QModelIndex& index)
 {
 	Q_UNUSED(index)
@@ -566,7 +550,22 @@ void CoverView::selection_changed(const IndexSet& indexes)
 void CoverView::albums_ready()
 {
 	if(this->isVisible()){
-		this->refresh();
+		m->model->refresh_data();
 	}
 }
 
+void CoverView::language_changed()
+{
+	ItemView::language_changed();
+	init_sorting_actions();
+
+	m->combo_zoom->setToolTip(tr("Use Ctrl + mouse wheel to zoom"));
+	m->label_sorting->setText(Lang::get(Lang::SortBy));
+	m->label_zoom->setText(Lang::get(Lang::Zoom));
+
+	if(context_menu())
+	{
+		m->action_zoom->setText(Lang::get(Lang::Zoom));
+		m->action_show_utils->setText(tr("Show toolbar"));
+	}
+}

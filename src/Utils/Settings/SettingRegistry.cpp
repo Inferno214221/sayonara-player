@@ -130,6 +130,7 @@ bool SettingRegistry::init()
 	register_setting<Set::Player_NotifyNewVersion>( "notify_new_version", true );
 	register_setting<Set::Player_SplitterState >("splitter_state_player", QByteArray());
 	register_setting<Set::Player_Shortcuts>( "shortcuts", RawShortcutMap());
+	register_setting<Set::Player_SplitterControls>("player_splitter_controls", QByteArray());
 
 	register_setting<Set::PL_Playlist>( "playlist", QStringList() );
 	register_setting<Set::PL_LoadSavedPlaylists>( "load_saved_playlists", false );

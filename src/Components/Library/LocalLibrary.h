@@ -56,7 +56,7 @@ public slots:
 	void reload_library(bool clear_first, Library::ReloadQuality quality) override;
 
 	// emits new tracks, very similar to psl_selected_albums_changed
-	void psl_disc_pressed(int);
+	void change_current_disc(int);
 	void change_track_rating(int idx, Rating rating) override;
 
 	void refresh_artist() override;
@@ -64,7 +64,7 @@ public slots:
 	void refresh_tracks() override;
 
 	void import_files(const QStringList& files) override;
-	void import_files(const QStringList& files, const QString& target_dir);
+	void import_files_to(const QStringList& files, const QString& target_dir);
 	void merge_artists(const SP::Set<ArtistId>& artist_ids, ArtistId target_artist_id);
 	void merge_albums(const SP::Set<AlbumId>& albums_ids, AlbumId target_album_id);
 

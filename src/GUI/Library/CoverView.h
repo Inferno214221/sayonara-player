@@ -48,7 +48,6 @@ namespace Library
 	protected:
 		void wheelEvent(QWheelEvent* e) override;
 		void resizeEvent(QResizeEvent* e) override;
-		void showEvent(QShowEvent* e) override;
 
 		QStyleOptionViewItem viewOptions() const override;
 

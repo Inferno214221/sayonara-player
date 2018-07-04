@@ -138,7 +138,7 @@ void LocalLibrary::library_reloading_state_new_block()
 }
 
 
-void LocalLibrary::psl_disc_pressed(int disc)
+void LocalLibrary::change_current_disc(int disc)
 {
 	if( selected_albums().size() != 1 )
 	{
@@ -304,10 +304,10 @@ void LocalLibrary::refresh_tracks() {}
 
 void LocalLibrary::import_files(const QStringList& files)
 {
-	import_files(files, QString());
+	import_files_to(files, QString());
 }
 
-void LocalLibrary::import_files(const QStringList &files, const QString &target_dir)
+void LocalLibrary::import_files_to(const QStringList& files, const QString& target_dir)
 {
 	if(!m->library_importer){
 		m->library_importer = new Library::Importer(this);

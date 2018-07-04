@@ -82,9 +82,6 @@ namespace Library
 
 		private slots:
 			void next_hash();
-
-
-
 	};
 }
 

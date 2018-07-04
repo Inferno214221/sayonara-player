@@ -108,11 +108,13 @@ GUI_Player::GUI_Player(QTranslator* translator, QWidget* parent) :
 	setWindowIcon(Gui::Util::icon("logo.png"));
 	setAttribute(Qt::WA_DeleteOnClose, false);
 
+	controlstyle_changed();
+
 	init_tray_actions();
 	init_connections();
 	init_sizes();
 	init_splitter();
-	controlstyle_changed();
+
 
 	if(_settings->get<Set::Player_NotifyNewVersion>())
 	{

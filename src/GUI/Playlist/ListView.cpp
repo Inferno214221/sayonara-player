@@ -337,7 +337,7 @@ void PlaylistView::refresh()
 
 	QHeaderView* hh = this->horizontalHeader();
 	int viewport_width = viewport()->width();
-	int w_time = fm.width("123:23");
+	int w_time = fm.width("1888:88");
 
 	if(_settings->get<Set::PL_ShowCovers>())
 	{
@@ -373,7 +373,6 @@ MetaDataList PlaylistView::info_dialog_data() const
 {
 	return m->model->metadata(selected_items());
 }
-
 
 void PlaylistView::contextMenuEvent(QContextMenuEvent* e)
 {

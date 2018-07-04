@@ -122,10 +122,6 @@ void CoverModel::refresh_data()
 	int new_rows = rowCount();
 	int new_columns = columnCount();
 
-	if(old_columns == new_columns && old_rows == new_rows){
-		return;
-	}
-
 	if(new_columns > old_columns) {
 		add_columns(old_columns, new_columns - old_columns);
 	}
@@ -258,8 +254,6 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 
 	return QVariant();
 }
-
-
 
 
 void CoverModel::next_hash()
@@ -453,7 +447,7 @@ const MetaDataList& Library::CoverModel::mimedata_tracks() const
 	return library()->tracks();
 }
 
-const AlbumList &CoverModel::albums() const
+const AlbumList& CoverModel::albums() const
 {
 	const AbstractLibrary* al = library();
 	const AlbumList& a = al->albums();
