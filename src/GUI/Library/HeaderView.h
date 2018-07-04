@@ -42,7 +42,7 @@ namespace Library
 		void sig_columns_changed();
 
 	private:
-		void init_header_action(ColumnHeader* header, bool is_shown);
+		void init_header_action(ColumnHeaderPtr header, bool is_shown);
 
 	private slots:
 		void action_triggered(bool b);
@@ -61,7 +61,7 @@ namespace Library
 		void refresh_sizes(QTableView* view);
 
 		BoolList shown_columns() const;
-		ColumnHeader* column_header(int idx);
+		ColumnHeaderPtr column_header(int idx);
 	};
 }
 

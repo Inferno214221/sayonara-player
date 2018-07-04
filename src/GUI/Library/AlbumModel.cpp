@@ -39,18 +39,18 @@
 #include "Utils/Language.h"
 #include "Utils/Set.h"
 
-#include <QPixmap>
+#include <QImage>
 
 using namespace Library;
 
 struct AlbumModel::Private
 {
-	QPixmap		pm_single;
-	QPixmap		pm_multi;
+	QImage		pm_single;
+	QImage		pm_multi;
 
 	Private() :
-		pm_single(Gui::Util::pixmap("cd.png", QSize(14, 14))),
-		pm_multi(Gui::Util::pixmap("cds.png", QSize(16, 16)))
+		pm_single(Gui::Util::image("cd.png", QSize(14, 14))),
+		pm_multi(Gui::Util::image("cds.png", QSize(16, 16)))
 	{}
 };
 

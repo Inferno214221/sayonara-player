@@ -78,7 +78,7 @@ private:
 	QIcon current_icon() const;
 
 protected:
-	void resizeEvent(QResizeEvent* e) override;
+	void paintEvent(QPaintEvent* event) override;
 	void showEvent(QShowEvent* e) override;
 
 private slots:
@@ -89,6 +89,7 @@ private slots:
 
 public slots:
 	void refresh();
+
 };
 
 #endif

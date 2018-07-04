@@ -31,11 +31,13 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language.h"
 
+#include <QPainter>
 #include <QMenu>
 
 using Cover::Location;
 using Cover::Lookup;
 using Cover::ChangeNotfier;
+using CoverButtonBase=Gui::WidgetTemplate<QPushButton>;
 
 struct CoverButton::Private
 {
@@ -55,7 +57,6 @@ struct CoverButton::Private
 	}
 };
 
-using CoverButtonBase=Gui::WidgetTemplate<QPushButton>;
 
 CoverButton::CoverButton(QWidget* parent) :
 	CoverButtonBase(parent)
@@ -128,7 +129,7 @@ QIcon CoverButton::current_icon() const
 {
 	QIcon icon;
 	QPixmap pm = QPixmap(m->current_cover_path)
-			.scaled(this->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+			.scaled(this->iconSize(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
 	for(QIcon::Mode m : { QIcon::Mode::Normal, QIcon::Mode::Disabled, QIcon::Mode::Active, QIcon::Mode::Selected })
 	{
@@ -182,26 +183,36 @@ void CoverButton::cover_found(const Location& cl)
 }
 
 
-void CoverButton::resizeEvent(QResizeEvent* e)
-{
-	CoverButtonBase::resizeEvent(e);
-
-	QSize icon_size = this->size();
-
-	int sz = std::min(icon_size.height(), icon_size.width()) - 4;
-	icon_size = QSize(sz, sz);
-
-	this->setIconSize(icon_size);
-	this->setIcon(current_icon());
-}
-
 void CoverButton::showEvent(QShowEvent* e)
 {
-	this->setContentsMargins(0,0,0,0);
-	this->setIconSize(this->size() - QSize(4,4));
-	this->setIcon(current_icon());
 	this->setFlat(true);
 	this->setToolTip(tr("Click for searching an alternative cover"));
 
 	CoverButtonBase::showEvent(e);
 }
+
+
+
+void CoverButton::paintEvent(QPaintEvent* event)
+{
+	Q_UNUSED(event)
+
+	QPainter painter(this);
+	painter.save();
+
+	int sz = std::min(this->height(), this->width()) - 2;
+	QSize size(sz, sz);
+
+	QPixmap pm = QPixmap(m->current_cover_path)
+			.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+	int x = (this->width() - sz) / 2;
+
+	painter.drawPixmap(
+		QRect(x, 1, sz, sz),
+		pm
+	);
+
+	painter.restore();
+}
+

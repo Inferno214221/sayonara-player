@@ -63,12 +63,12 @@ void TableView::init(AbstractLibrary* library)
 {
 	init_view(library);
 
-	ColumnHeaderList headers = column_headers();
+	const ColumnHeaderList headers = column_headers();
 	m->shown_columns = visible_columns();
 	m->sortorder = sortorder();
 
 	QStringList header_names;
-	for(ColumnHeader* header : headers)
+	for(ColumnHeaderPtr header : headers)
 	{
 		header_names << header->title();
 	}
@@ -100,7 +100,7 @@ void TableView::sort_by_column(int column_idx)
 	Library::SortOrder asc_sortorder, desc_sortorder;
 
 	int idx_col = m->header->visualIndex(column_idx);
-	ColumnHeader* h = m->header->column_header(idx_col);
+	ColumnHeaderPtr h = m->header->column_header(idx_col);
 	if(!h){
 		return;
 	}
@@ -119,7 +119,7 @@ void TableView::language_changed()
 	QStringList header_names;
 	for(int i=0; i<_model->columnCount(); i++)
 	{
-		ColumnHeader* header = m->header->column_header(i);
+		ColumnHeaderPtr header = m->header->column_header(i);
 		if(header){
 			header_names << header->title();
 		}

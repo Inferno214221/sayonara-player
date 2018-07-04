@@ -67,11 +67,9 @@ ColumnHeaderList ArtistView::column_headers() const
 {
 	ColumnHeaderList columns;
 
-	ColumnHeader* ar_h0 = new ColumnHeader(ColumnHeader::Sharp, true, SortOrder::NoSorting, SortOrder::NoSorting, 20);
-	ColumnHeader* ar_h1 = new ColumnHeader(ColumnHeader::Artist, false, SortOrder::ArtistNameAsc, SortOrder::ArtistNameDesc, 1.0, 160 );
-	ColumnHeader* ar_h2 = new ColumnHeader(ColumnHeader::NumTracks, true, SortOrder::ArtistTrackcountAsc, SortOrder::ArtistTrackcountDesc, 80);
-
-	columns << ar_h0 << ar_h1 << ar_h2;
+	columns << std::make_shared<ColumnHeader>(ColumnHeader::Sharp, true, SortOrder::NoSorting, SortOrder::NoSorting, 20);
+	columns << std::make_shared<ColumnHeader>(ColumnHeader::Artist, false, SortOrder::ArtistNameAsc, SortOrder::ArtistNameDesc, 1.0, 160);
+	columns << std::make_shared<ColumnHeader>(ColumnHeader::NumTracks, true, SortOrder::ArtistTrackcountAsc, SortOrder::ArtistTrackcountDesc, 80);
 
 	return columns;
 }

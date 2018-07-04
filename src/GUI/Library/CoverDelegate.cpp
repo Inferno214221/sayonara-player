@@ -33,6 +33,8 @@ void Library::CoverDelegate::paint(
 		const QStyleOptionViewItem& option,
 		const QModelIndex& index) const
 {
+	QItemDelegate::paint(painter, option, index);
+	return;
 	painter->save();
 	int offset = 20;
 	painter->translate(0, offset);

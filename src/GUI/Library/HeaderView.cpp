@@ -65,7 +65,7 @@ QSize HeaderView::sizeHint() const
 	return size;
 }
 
-void HeaderView::init_header_action(ColumnHeader* header, bool is_shown)
+void HeaderView::init_header_action(ColumnHeaderPtr header, bool is_shown)
 {
 	QAction* action = header->action();
 	action->setChecked(is_shown);
@@ -96,7 +96,7 @@ void HeaderView::set_column_headers(const ColumnHeaderList& column_headers, cons
 
 	int i=0;
 
-	for(ColumnHeader* header : Util::AsConst(m->column_headers))
+	for(ColumnHeaderPtr header : Util::AsConst(m->column_headers))
 	{
 		if( header->sortorder_asc() == sorting) {
 			this->setSortIndicator(i, Qt::AscendingOrder);
@@ -140,7 +140,7 @@ void HeaderView::refresh_sizes(QTableView* view)
 			continue;
 		}
 
-		ColumnHeader* h = m->column_headers[col];
+		ColumnHeaderPtr h = m->column_headers[col];
 
 		if(h->size_type() == ColumnHeader::SizeType::Abs) {
 			preferred_size = h->preferred_size_abs();
@@ -173,7 +173,7 @@ void HeaderView::refresh_sizes(QTableView* view)
 		int col = m->column_headers.visible_column(i);
 		int preferred_size = 0;
 
-		ColumnHeader* h = m->column_headers[col];
+		ColumnHeaderPtr h = m->column_headers[col];
 		if(h->size_type() == ColumnHeader::SizeType::Rel) {
 			preferred_size = (h->preferred_size_rel() * target_width) / altogether_percentage;
 		}
@@ -193,7 +193,7 @@ BoolList HeaderView::refresh_active_columns()
 
 	for(int i=0; i<n_cols; i++)
 	{
-		ColumnHeader* section = m->column_headers[i];
+		ColumnHeaderPtr section = m->column_headers[i];
 		bool is_hidden = section->is_hidden();
 
 		if(is_hidden)
@@ -218,14 +218,14 @@ BoolList HeaderView::shown_columns() const
 	int n_cols = m->column_headers.size();
 
 	for(int i=0; i<n_cols; i++){
-		ColumnHeader* section = m->column_headers[i];
+		ColumnHeaderPtr section = m->column_headers[i];
 		lst.push_back(section->is_visible());
 	}
 
 	return lst;
 }
 
-ColumnHeader* HeaderView::column_header(int idx)
+ColumnHeaderPtr HeaderView::column_header(int idx)
 {
 	if(!between(idx, m->column_headers)){
 		return nullptr;
@@ -237,7 +237,7 @@ ColumnHeader* HeaderView::column_header(int idx)
 
 void HeaderView::language_changed()
 {
-	for(ColumnHeader* header : Util::AsConst(m->column_headers))
+	for(ColumnHeaderPtr header : Util::AsConst(m->column_headers))
 	{
 		header->retranslate();
 	}

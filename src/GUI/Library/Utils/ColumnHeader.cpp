@@ -135,7 +135,7 @@ ColumnHeader::SizeType ColumnHeader::size_type() const
 
 int ColumnHeaderList::visible_columns() const
 {
-	int count = std::count_if(this->begin(), this->end(), [](ColumnHeader* header){
+	int count = std::count_if(this->begin(), this->end(), [](ColumnHeaderPtr header){
 		return header->is_visible();
 	});
 
@@ -151,7 +151,7 @@ int ColumnHeaderList::visible_column(int n) const
 
 	for(int i=0; i<this->size(); i++)
 	{
-		ColumnHeader* header = this->at(i);
+		ColumnHeaderPtr header = this->at(i);
 		if(header->is_visible()){
 			n--;
 		}

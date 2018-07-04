@@ -38,7 +38,8 @@ class QPoint;
 class QChar;
 class QObject;
 class LogListener;
-
+class QRegion;
+class QMargins;
 
 enum class Log : unsigned char
 {
@@ -75,6 +76,7 @@ public:
 	Logger& operator << (const QByteArray& arr);
 	Logger& operator << (const QPoint& point);
 	Logger& operator << (const QSize& size);
+	Logger& operator << (const QRect& size);
 	Logger& operator << (const char* str);
 	Logger& operator << (const std::string& str);
 	Logger& operator << (const Log& log_type);

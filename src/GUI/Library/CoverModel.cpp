@@ -205,6 +205,7 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 				const Album& album = albums()[lin_idx];
 				QString hash = get_hash(album);
 				QPixmap p;
+
 				if(!m->pixmaps.contains(hash))
 				{
 					Location cl;

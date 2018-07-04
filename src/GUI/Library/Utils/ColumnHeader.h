@@ -31,6 +31,7 @@
 
 #include "Utils/Library/Sortorder.h"
 #include "Utils/Pimpl.h"
+#include <memory>
 
 class QAction;
 
@@ -64,11 +65,11 @@ class ColumnHeader : public QObject
 
 	private:
 		ColumnHeader(HeaderType type, bool switchable, Library::SortOrder sort_asc, Library::SortOrder sort_desc);
-		virtual ~ColumnHeader();
 
 	public:
 		ColumnHeader(HeaderType type, bool switchable, Library::SortOrder sort_asc, Library::SortOrder sort_desc, int preferred_size_abs);
 		ColumnHeader(HeaderType type, bool switchable, Library::SortOrder sort_asc, Library::SortOrder sort_desc, double preferred_size_rel, int min_size);
+		virtual ~ColumnHeader();
 
 		int preferred_size_abs() const;
 		double preferred_size_rel() const;
@@ -87,12 +88,13 @@ class ColumnHeader : public QObject
 		QString title() const;
 };
 
+using ColumnHeaderPtr = std::shared_ptr<ColumnHeader>;
 class ColumnHeaderList :
-	public QList<ColumnHeader*>
+	public QList<ColumnHeaderPtr>
 {
 	public:
-	   int visible_columns() const;
-	   int visible_column(int n) const;
+		int visible_columns() const;
+		int visible_column(int n) const;
 };
 
 #endif /* MYCOLUMNHEADER_H_ */

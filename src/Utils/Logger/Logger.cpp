@@ -30,6 +30,9 @@
 #include <QPoint>
 #include <QDateTime>
 #include <QSize>
+#include <QMargins>
+#include <QRect>
+#include <QRegion>
 
 #include "LoggerUtils.h"
 
@@ -216,9 +219,16 @@ Logger& Logger::operator << (const QPoint& point)
 	return *this;
 }
 
-Logger&Logger::operator <<(const QSize& size)
+Logger& Logger::operator <<(const QSize& size)
 {
 	(*this) << "Size(" << size.width() << "," << size.height() << ")";
+	return *this;
+}
+
+Logger& Logger::operator <<(const QRect& r)
+{
+	(*this) << "Rect(l:" << r.left() << ", r:" << r.right()
+			<< ", w:" << r.width() << ", h:" << r.height();
 	return *this;
 }
 

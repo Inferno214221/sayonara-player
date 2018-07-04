@@ -62,6 +62,32 @@ QIcon Util::icon(const QString& icon_name)
 	return icon;
 }
 
+QImage Util::image(const QString& icon_name, QSize sz, bool keep_aspect)
+{
+	QString path = icon_path(icon_name);
+	QImage image(path);
+
+	if(image.isNull()){
+		sp_log(Log::Warning, "GuiUtils") << "Pixmap " << path << " does not exist";
+	}
+
+	if(sz.width() == 0){
+		return image;
+	}
+
+	else{
+		if(keep_aspect){
+			return image.scaled(sz, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+		}
+
+		else{
+			return image.scaled(sz, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+		}
+	}
+
+	return image;
+}
+
 QPixmap Util::pixmap(const QString& icon_name, QSize sz, bool keep_aspect)
 {
 	QString path = icon_path(icon_name);

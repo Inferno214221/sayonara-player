@@ -29,6 +29,7 @@
 
 class QWidget;
 class QPixmap;
+class QImage;
 class QString;
 class QIcon;
 class QPoint;
@@ -61,6 +62,7 @@ namespace Gui
 		 * @return pixmap
 		 */
 		QPixmap pixmap(const QString& icon_name, QSize sz=QSize(0, 0), bool keep_aspect=true);
+		QImage image(const QString& icon_name, QSize sz=QSize(0, 0), bool keep_aspect=true);
 
 		/**
 		 * @brief set the applications' main window
