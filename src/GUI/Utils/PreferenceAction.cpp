@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "PreferenceAction.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language.h"
@@ -137,5 +135,5 @@ QString PlayerPreferencesAction::display_name() const
 
 QString PlayerPreferencesAction::identifier() const
 {
-	return "player";
+	return "application";
 }

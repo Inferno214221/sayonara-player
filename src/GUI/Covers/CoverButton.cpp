@@ -29,6 +29,7 @@
 #include "Utils/FileUtils.h"
 #include "Utils/Utils.h"
 #include "Utils/Settings/Settings.h"
+#include "Utils/Language.h"
 
 #include <QMenu>
 
@@ -42,10 +43,10 @@ struct CoverButton::Private
 
 	ChangeNotfier*	cover_change_notifier=nullptr;
 	Lookup*			cover_lookup=nullptr;
-	Location        search_cover_location;
+	Location		search_cover_location;
 	QString			text;
 	QString			current_cover_path;
-	bool            cover_forced;
+	bool			cover_forced;
 
 	Private() :
 		cover_forced(false)
@@ -54,9 +55,10 @@ struct CoverButton::Private
 	}
 };
 
+using CoverButtonBase=Gui::WidgetTemplate<QPushButton>;
 
 CoverButton::CoverButton(QWidget* parent) :
-	Gui::WidgetTemplate<QPushButton>(parent)
+	CoverButtonBase(parent)
 {
 	m = Pimpl::make<CoverButton::Private>();
 
@@ -64,10 +66,6 @@ CoverButton::CoverButton(QWidget* parent) :
 
 	m->current_cover_path = Location::invalid_location().preferred_path();
 	m->search_cover_location = Location::invalid_location();
-
-	this->setIconSize(this->size());
-	this->setIcon(current_icon());
-	this->setFlat(true);
 
 	connect(this, &QPushButton::clicked, this, &CoverButton::cover_button_clicked);
 	connect(m->cover_change_notifier, &Cover::ChangeNotfier::sig_covers_changed,
@@ -121,7 +119,7 @@ void CoverButton::force_cover(const QPixmap &pm)
 }
 
 
-void CoverButton::force_cover(const QImage &img)
+void CoverButton::force_cover(const QImage& img)
 {
 	force_cover(QPixmap::fromImage(img));
 }
@@ -153,7 +151,7 @@ void CoverButton::cover_button_clicked()
 
 	if(!m->alternative_covers)
 	{
-		m->alternative_covers = new GUI_AlternativeCovers(this);
+		m->alternative_covers = new GUI_AlternativeCovers(this->parentWidget());
 
 		connect(m->alternative_covers, &GUI_AlternativeCovers::sig_cover_changed,
 				this, &CoverButton::alternative_cover_fetched );
@@ -186,7 +184,24 @@ void CoverButton::cover_found(const Location& cl)
 
 void CoverButton::resizeEvent(QResizeEvent* e)
 {
-	this->setIcon(current_icon());
+	CoverButtonBase::resizeEvent(e);
 
-	QWidget::resizeEvent(e);
+	QSize icon_size = this->size();
+
+	int sz = std::min(icon_size.height(), icon_size.width()) - 4;
+	icon_size = QSize(sz, sz);
+
+	this->setIconSize(icon_size);
+	this->setIcon(current_icon());
+}
+
+void CoverButton::showEvent(QShowEvent* e)
+{
+	this->setContentsMargins(0,0,0,0);
+	this->setIconSize(this->size() - QSize(4,4));
+	this->setIcon(current_icon());
+	this->setFlat(true);
+	this->setToolTip(tr("Click for searching an alternative cover"));
+
+	CoverButtonBase::showEvent(e);
 }

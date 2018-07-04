@@ -93,9 +93,7 @@ protected:
 	void resizeEvent(QResizeEvent* e) override;
 	void showEvent(QShowEvent* e) override;
 	void contextMenuEvent(QContextMenuEvent* e) override;
-	void language_changed() override;
 	void skin_changed() override;
-
 
 public:
 	QString get_shortcut_text(const QString &shortcut_identifier) const override;

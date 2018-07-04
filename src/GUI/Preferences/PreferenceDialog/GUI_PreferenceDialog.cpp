@@ -87,8 +87,6 @@ void GUI_PreferenceDialog::show_preference(const QString& identifier)
 	}
 
 	sp_log(Log::Warning, this) << "Cannot find preference widget " << identifier;
-
-
 }
 
 

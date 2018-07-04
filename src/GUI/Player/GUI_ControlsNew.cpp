@@ -1,4 +1,5 @@
 #include "GUI_ControlsNew.h"
+#include "Utils/Settings/Settings.h"
 #include "GUI/Player/ui_GUI_ControlsNew.h"
 
 GUI_ControlsNew::GUI_ControlsNew(QWidget* parent) :
@@ -12,6 +13,7 @@ GUI_ControlsNew::~GUI_ControlsNew()
 {
 	delete ui; ui=nullptr;
 }
+
 
 QLabel* GUI_ControlsNew::lab_sayonara() const {	return ui->lab_sayonara; }
 QLabel* GUI_ControlsNew::lab_title() const { return ui->lab_title; }

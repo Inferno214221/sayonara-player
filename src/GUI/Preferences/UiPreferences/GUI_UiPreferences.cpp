@@ -34,7 +34,6 @@ bool GUI_UiPreferences::commit()
 
 	_settings->set<Set::Player_ControlStyle>(ui->cb_big_cover->isChecked() ? 1 : 0);
 	_settings->set<Set::Player_Style>(ui->cb_dark_mode->isChecked() ? 1 : 0);
-	_settings->set<Set::Player_ShowCover>(ui->cb_show_cover->isChecked());
 
 	return true;
 }
@@ -46,7 +45,6 @@ void GUI_UiPreferences::revert()
 
 	ui->cb_big_cover->setChecked(_settings->get<Set::Player_ControlStyle>() == 1);
 	ui->cb_dark_mode->setChecked(_settings->get<Set::Player_Style>() == 1);
-	ui->cb_show_cover->setChecked(_settings->get<Set::Player_ShowCover>());
 }
 
 void GUI_UiPreferences::init_ui()

@@ -104,7 +104,6 @@ enum class SettingKey : unsigned short
 	Player_FontSize,
 	Player_Style,
 	Player_ControlStyle,
-	Player_ShowCover,
 	Player_Size,
 	Player_Pos,
 	Player_Fullscreen,
@@ -275,7 +274,6 @@ namespace Set
 	INST(QString,			Player_Language)			/* language of player */
 	INST(int,				Player_Style)				/* dark or native: native = 0, dark = 1 */
 	INST(int,				Player_ControlStyle)		/* Big cover or not */
-	INST(bool,				Player_ShowCover)			/* Show cover in big cover mode */
 	INST(QString,			Player_FontName)			/* current font name */
 	INST(int,				Player_FontSize)			/* current font size */
 	INST(QSize,				Player_Size)				/* player size */

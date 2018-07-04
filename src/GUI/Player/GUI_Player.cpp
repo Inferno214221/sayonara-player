@@ -511,7 +511,6 @@ void GUI_Player::splitter_controls_moved(int pos, int idx)
 }
 
 
-
 void GUI_Player::skin_changed()
 {
 	QString stylesheet = Style::current_style();

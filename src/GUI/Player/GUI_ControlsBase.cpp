@@ -516,14 +516,7 @@ void GUI_ControlsBase::skin_changed()
 	btn_rec()->setIcon(icon(Icons::Record));
 
 	setup_volume_button(sli_volume()->value());
-
-	btn_cover()->setContentsMargins(0,0,0,0);
-	btn_cover()->setStyleSheet("border: none; padding: 0; margin: 0;");
-
 }
-
-void GUI_ControlsBase::language_changed() {}
-
 
 
 void GUI_ControlsBase::sr_active_changed()
@@ -720,15 +713,7 @@ MetaDataList GUI_ControlsBase::info_dialog_data() const
 void GUI_ControlsBase::resizeEvent(QResizeEvent* e)
 {
 	Widget::resizeEvent(e);
-
-	QSize icon_size = btn_cover()->size();
-	int sz = std::min(icon_size.height(), icon_size.width()) - 8;
-	icon_size.setHeight(sz);
-	icon_size.setWidth(sz);
-
-	btn_cover()->setIconSize(icon_size);
 	refresh_info_labels();
-
 }
 
 void GUI_ControlsBase::showEvent(QShowEvent* e)
