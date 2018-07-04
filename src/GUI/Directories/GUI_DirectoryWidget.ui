@@ -222,7 +222,7 @@
   <customwidget>
    <class>Library::TrackView</class>
    <extends>QTableView</extends>
-   <header>GUI/Library/Views/TrackView.h</header>
+   <header>GUI/Library/TrackView.h</header>
   </customwidget>
   <customwidget>
    <class>DirectoryTreeView</class>
