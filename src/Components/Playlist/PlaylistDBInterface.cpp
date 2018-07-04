@@ -29,7 +29,7 @@ using Playlist::DBInterface;
 
 struct DBInterface::Private
 {
-	DBWrapper*  playlist_db_connector=nullptr;
+	Playlist::DBWrapper*  playlist_db_connector=nullptr;
 	QString             name;
 	bool                is_temporary;
 	int                 id;
@@ -65,7 +65,6 @@ void DBInterface::set_id(int id)
 	m->id = id;
 }
 
-
 QString DBInterface::get_name() const
 {
 	return m->name;
@@ -86,7 +85,6 @@ void DBInterface::set_temporary(bool b)
 	m->is_temporary = b;
 }
 
-
 DBInterface::SaveAsAnswer DBInterface::save()
 {
 	if(!is_storable()){
@@ -97,7 +95,8 @@ DBInterface::SaveAsAnswer DBInterface::save()
 
 	DBInterface::SaveAsAnswer answer;
 
-	if(m->id >= 0){
+	if(m->id >= 0)
+	{
 		bool success;
 
 		answer = SaveAsAnswer::Error;
@@ -116,7 +115,6 @@ DBInterface::SaveAsAnswer DBInterface::save()
 	return answer;
 }
 
-
 bool DBInterface::insert_temporary_into_db()
 {
 	if(!m->is_temporary) {
@@ -126,7 +124,6 @@ bool DBInterface::insert_temporary_into_db()
 	if(!is_storable()){
 		return false;
 	}
-
 
 	const MetaDataList& v_md = playlist();
 
@@ -140,7 +137,6 @@ bool DBInterface::insert_temporary_into_db()
 
 	return true;
 }
-
 
 DBInterface::SaveAsAnswer DBInterface::save_as(const QString& name, bool force_override)
 {
@@ -210,7 +206,6 @@ DBInterface::SaveAsAnswer DBInterface::save_as(const QString& name, bool force_o
 	return SaveAsAnswer::Error;
 }
 
-
 DBInterface::SaveAsAnswer DBInterface::rename(const QString& name)
 {
 	bool success;
@@ -247,7 +242,6 @@ bool DBInterface::delete_playlist()
 	return m->playlist_db_connector->delete_playlist(m->id);
 }
 
-
 bool DBInterface::remove_from_db()
 {
 	if(!is_storable()){
@@ -266,7 +260,6 @@ bool DBInterface::remove_from_db()
 	m->is_temporary = true;
 	return success;
 }
-
 
 QString DBInterface::request_new_db_name()
 {

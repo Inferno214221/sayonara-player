@@ -153,10 +153,7 @@ struct Application::Private
 			instance_thread = nullptr;
 		}
 
-		if(plh){
-			plh->save_all_playlists();
-			plh = nullptr;
-		}
+		plh = nullptr;
 
 		if(player){
 			delete player;

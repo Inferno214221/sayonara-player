@@ -96,7 +96,6 @@ GUI_Playlist::~GUI_Playlist()
 		int last_tab = ui->tw_playlists->count() - 1;
 
 		QWidget* widget = ui->tw_playlists->widget(last_tab);
-		Handler::instance()->close_playlist(last_tab);
 		ui->tw_playlists->removeTab(last_tab);
 
 		if(widget){

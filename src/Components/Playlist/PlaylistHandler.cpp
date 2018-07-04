@@ -80,7 +80,7 @@ Handler::Handler(QObject * parent) :
 	connect(m->play_manager, &PlayManager::sig_www_track_finished, this, &Handler::www_track_finished);
 }
 
-Handler::~Handler() {}
+Handler::~Handler()	{}
 
 void Handler::emit_cur_track_changed()
 {
@@ -255,9 +255,9 @@ int Handler::create_empty_playlist(const QString& name)
 	return create_playlist(v_md, name, true);
 }
 
-
 void Handler::shutdown()
 {
+	save_all_playlists();
 	m->playlists.clear();
 }
 
@@ -475,7 +475,7 @@ void Handler::save_all_playlists()
 		m->db->transaction();
 		for(const PlaylistPtr& pl : Util::AsConst(m->playlists))
 		{
-			if(pl->is_temporary() && pl->was_changed())
+			if(pl->is_temporary() && pl->was_changed() && pl->is_storable())
 			{
 				pl->save();
 			}
