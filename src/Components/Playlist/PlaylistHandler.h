@@ -215,10 +215,6 @@ namespace Playlist
 			 */
 			QString request_new_playlist_name() const;
 
-			/**
-			 * @brief save all playlists to database. This could be done in destructor
-			 */
-			void save_all_playlists();
 
 			/**
 			 * @brief save playlist to database, overwrite old one

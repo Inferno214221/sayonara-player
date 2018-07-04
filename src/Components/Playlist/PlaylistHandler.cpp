@@ -257,7 +257,21 @@ int Handler::create_empty_playlist(const QString& name)
 
 void Handler::shutdown()
 {
-	save_all_playlists();
+	if(_settings->get<Set::PL_LoadTemporaryPlaylists>())
+	{
+		m->db->transaction();
+
+		for(const PlaylistPtr& pl : Util::AsConst(m->playlists))
+		{
+			if(pl->is_temporary() && pl->was_changed() && pl->is_storable())
+			{
+				pl->save();
+			}
+		}
+
+		m->db->commit();
+	}
+
 	m->playlists.clear();
 }
 
@@ -467,23 +481,6 @@ QString Handler::request_new_playlist_name() const
 {
 	return DBInterface::request_new_db_name();
 }
-
-void Handler::save_all_playlists()
-{
-	if(_settings->get<Set::PL_LoadTemporaryPlaylists>())
-	{
-		m->db->transaction();
-		for(const PlaylistPtr& pl : Util::AsConst(m->playlists))
-		{
-			if(pl->is_temporary() && pl->was_changed() && pl->is_storable())
-			{
-				pl->save();
-			}
-		}
-		m->db->commit();
-	}
-}
-
 
 void Handler::close_playlist(int idx)
 {
