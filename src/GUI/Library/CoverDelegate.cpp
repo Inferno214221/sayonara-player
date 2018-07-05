@@ -27,23 +27,16 @@ Library::CoverDelegate::CoverDelegate(QObject* parent) :
 
 Library::CoverDelegate::~CoverDelegate() {}
 
-
-void Library::CoverDelegate::paint(
-		QPainter* painter,
-		const QStyleOptionViewItem& option,
-		const QModelIndex& index) const
+void Library::CoverDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
-	QItemDelegate::paint(painter, option, index);
-	return;
+	const int offset = option.rect.height() / 20;
+
 	painter->save();
-	int offset = 20;
 	painter->translate(0, offset);
-	QStyleOptionViewItem option_new = option;
-	QRect rect = option.rect;
-	rect.setHeight(rect.height() - offset);
-	option_new.rect = rect;
+
+	QStyleOptionViewItem option_new(option);
+	option_new.rect.setHeight(option.rect.height() - offset);
 
 	QItemDelegate::paint(painter, option_new, index);
-
 	painter->restore();
 }

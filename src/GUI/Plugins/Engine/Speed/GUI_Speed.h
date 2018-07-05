@@ -21,7 +21,7 @@
 #ifndef GUI_SPEED_H
 #define GUI_SPEED_H
 
-#include "Interfaces/PlayerPlugin/PlayerPlugin.h"
+#include "Interfaces/PlayerPlugin/PlayerPluginBase.h"
 
 UI_FWD(GUI_Speed)
 
@@ -46,7 +46,7 @@ private slots:
 	void active_changed(bool enabled);
 	void preserve_pitch_changed(bool enabled);
 	void pitch_changed(int pitch);
-	
+
 	void revert_speed_clicked();
 	void revert_pitch_clicked();
 

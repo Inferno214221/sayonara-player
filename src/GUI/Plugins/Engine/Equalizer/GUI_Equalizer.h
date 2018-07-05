@@ -29,7 +29,7 @@
 #ifndef GUI_EQUALIZER_H_
 #define GUI_EQUALIZER_H_
 
-#include "Interfaces/PlayerPlugin/PlayerPlugin.h"
+#include "Interfaces/PlayerPlugin/PlayerPluginBase.h"
 #include "Utils/Pimpl.h"
 
 UI_FWD(GUI_Equalizer)

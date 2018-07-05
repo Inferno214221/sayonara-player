@@ -59,7 +59,7 @@ namespace PlayerPlugin
 		void add_plugin(Base* plugin);
 
 		Base*			find_plugin(const QString& name);
-		QList<Base*>	get_all_plugins() const;
+		QList<Base*>	all_plugins() const;
 		Base*			current_plugin() const;
 	};
 }

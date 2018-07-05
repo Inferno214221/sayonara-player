@@ -21,7 +21,7 @@
 #ifndef GUI_ABSTRACT_STREAM_H_
 #define GUI_ABSTRACT_STREAM_H_
 
-#include "Interfaces/PlayerPlugin/PlayerPlugin.h"
+#include "Interfaces/PlayerPlugin/PlayerPluginBase.h"
 #include "Utils/Pimpl.h"
 
 class QComboBox;

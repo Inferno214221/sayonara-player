@@ -43,20 +43,17 @@
 
 #include "Interfaces/LibraryInterface/LibraryPluginHandler.h"
 #include "Interfaces/LibraryInterface/LibraryContainer/LibraryContainer.h"
-#include "Interfaces/PlayerPlugin/PlayerPlugin.h"
+#include "Interfaces/PlayerPlugin/PlayerPluginBase.h"
 #include "Interfaces/PlayerPlugin/PlayerPluginHandler.h"
 
 #include <QTranslator>
 #include <QAction>
-#include <QShowEvent>
-#include <QCloseEvent>
-#include <QShortcut>
 #include <QKeySequence>
-#include <QVBoxLayout>
+#include <QCloseEvent>
+#include <QResizeEvent>
 
 struct GUI_Player::Private
 {
-	PlayerPlugin::Handler*		pph=nullptr;
 	Menubar*					menubar=nullptr;
 	QTranslator*				translator=nullptr;
 	GUI_Logger*					logger=nullptr;
@@ -68,7 +65,6 @@ struct GUI_Player::Private
 	bool						shutdown_requested;
 
 	Private(QTranslator* translator) :
-		pph(PlayerPlugin::Handler::instance()),
 		translator(translator),
 		shutdown_requested(false)
 	{
@@ -108,11 +104,12 @@ GUI_Player::GUI_Player(QTranslator* translator, QWidget* parent) :
 	setWindowIcon(Gui::Util::icon("logo.png"));
 	setAttribute(Qt::WA_DeleteOnClose, false);
 
-	init_controlstyle();
-	init_tray_actions();
-	init_connections();
 	init_sizes();
 	init_main_splitter();
+	init_controlstyle();
+
+	init_connections();
+	init_tray_actions();
 
 	if(_settings->get<Set::Player_NotifyNewVersion>())
 	{
@@ -134,9 +131,11 @@ GUI_Player::~GUI_Player()
 	delete ui; ui=nullptr;
 }
 
+
 void GUI_Player::init_sizes()
 {
-	if(_settings->get<Set::Player_StartInTray>()){
+	if(_settings->get<Set::Player_StartInTray>())
+	{
 		this->setHidden(true);
 	}
 
@@ -163,6 +162,7 @@ void GUI_Player::init_sizes()
 	}
 }
 
+
 void GUI_Player::init_main_splitter()
 {
 	ui->splitter->widget(1)->setVisible(
@@ -179,7 +179,8 @@ void GUI_Player::init_main_splitter()
 		_settings->set<Set::Player_SplitterState>(ui->splitter->saveState());
 	}
 
-	else {
+	else
+	{
 		ui->splitter->restoreState(splitter_state_main);
 	}
 
@@ -194,6 +195,7 @@ void GUI_Player::init_connections()
 {
 	PlayManager* play_manager = PlayManager::instance();
 	Library::PluginHandler* lph = Library::PluginHandler::instance();
+	PlayerPlugin::Handler* pph = PlayerPlugin::Handler::instance();
 
 	connect(lph, &Library::PluginHandler::sig_current_library_changed,
 			this, &GUI_Player::current_library_changed);
@@ -214,17 +216,15 @@ void GUI_Player::init_connections()
 	connect(m->menubar, &Menubar::sig_logger_clicked, m->logger, &GUI_Logger::show);
 	connect(m->menubar, &Menubar::sig_minimize_clicked, this, &GUI_Player::minimize);
 
-	connect(m->pph, &PlayerPlugin::Handler::sig_plugin_added, this, &GUI_Player::plugin_added);
-	connect(m->pph, &PlayerPlugin::Handler::sig_plugin_closed, this, &GUI_Player::plugin_closed);
-	connect(m->pph, &PlayerPlugin::Handler::sig_plugin_action_triggered, this, &GUI_Player::plugin_action_triggered);
+	connect(pph, &PlayerPlugin::Handler::sig_plugin_added, this, &GUI_Player::plugin_added);
+	connect(pph, &PlayerPlugin::Handler::sig_plugin_closed, this, &GUI_Player::plugin_closed);
+	connect(pph, &PlayerPlugin::Handler::sig_plugin_action_triggered, this, &GUI_Player::plugin_action_triggered);
 }
 
 
-/** TRAY ICON **/
 void GUI_Player::init_tray_actions()
 {
 	GUI_TrayIcon* tray_icon = new GUI_TrayIcon(this);
-	tray_icon->installEventFilter(this);
 
 	connect(tray_icon, &GUI_TrayIcon::sig_close_clicked, this, &GUI_Player::really_close);
 	connect(tray_icon, &GUI_TrayIcon::sig_show_clicked, this, &GUI_Player::raise);
@@ -262,40 +262,16 @@ void GUI_Player::tray_icon_activated(QSystemTrayIcon::ActivationReason reason)
 }
 
 
-void GUI_Player::current_library_changed(const QString& name)
-{
-	Q_UNUSED(name)
-
-	show_library_changed();
-	check_library_menu_action();
-}
-
-void GUI_Player::check_library_menu_action()
-{
-	Library::PluginHandler* lph = Library::PluginHandler::instance();
-	if(!lph->current_library()){
-		m->menubar->show_library_action(false);
-	}
-
-	else {
-		m->menubar->update_library_action(lph->current_library_menu(), lph->current_library()->display_name());
-	}
-}
-
 void GUI_Player::register_preference_dialog(QAction* dialog_action)
 {
 	m->menubar->insert_preference_action(dialog_action);
 }
 
+
 void GUI_Player::playstate_changed(PlayState state)
 {
-	switch(state)
-	{
-		case PlayState::Stopped:
-			setWindowTitle("Sayonara Player");
-			break;
-		default:
-			break;
+	if(state == PlayState::Stopped) {
+		setWindowTitle("Sayonara Player");
 	}
 }
 
@@ -310,7 +286,8 @@ void GUI_Player::play_error(const QString& message)
 
 void GUI_Player::plugin_added(PlayerPlugin::Base* plugin)
 {
-	QList<PlayerPlugin::Base*> lst = m->pph->get_all_plugins();
+	PlayerPlugin::Handler* pph = PlayerPlugin::Handler::instance();
+	QList<PlayerPlugin::Base*> lst = pph->all_plugins();
 
 	QAction* action = plugin->get_action();
 	QKeySequence ks("Ctrl+F" + QString::number(lst.size()));
@@ -319,7 +296,7 @@ void GUI_Player::plugin_added(PlayerPlugin::Base* plugin)
 
 	m->menubar->insert_player_plugin_action(action);
 
-	if(plugin == m->pph->current_plugin())
+	if(plugin == pph->current_plugin())
 	{
 		plugin_opened();
 	}
@@ -337,11 +314,14 @@ void GUI_Player::plugin_action_triggered(bool b)
 	}
 }
 
+
 void GUI_Player::plugin_opened()
 {
-	PlayerPlugin::Base* current_plugin = m->pph->current_plugin();
+	PlayerPlugin::Handler* pph = PlayerPlugin::Handler::instance();
+	PlayerPlugin::Base* current_plugin = pph->current_plugin();
 	ui->plugin_widget->show(current_plugin);
 }
+
 
 void GUI_Player::plugin_closed()
 {
@@ -361,18 +341,16 @@ void GUI_Player::awa_version_finished()
 		return;
 	}
 
-	QString new_version(awa->data());
+	QString new_version = QString(awa->data()).trimmed();
 	QString cur_version = _settings->get<Set::Player_Version>();
+
 	bool notify_new_version = _settings->get<Set::Player_NotifyNewVersion>();
 	bool dark = Style::is_dark();
-
-	new_version = new_version.trimmed();
 
 	sp_log(Log::Info, this) << "Newest Version: " << new_version;
 	sp_log(Log::Info, this) << "This Version:   " << cur_version;
 
-	QString link;
-	LINK("http://sayonara-player.com", "http://sayonara-player.com", dark, link);
+	QString link = Util::create_link("http://sayonara-player.com", dark);
 
 	if(new_version > cur_version && notify_new_version) {
 		Message::info(tr("A new version is available!") + "<br />" +  link);
@@ -381,27 +359,6 @@ void GUI_Player::awa_version_finished()
 	awa->deleteLater();
 }
 
-
-void GUI_Player::language_changed()
-{
-	QString language = _settings->get<Set::Player_Language>();
-	m->translator->load(language, Util::share_path("translations/"));
-
-	ui->retranslateUi(this);
-}
-
-void GUI_Player::fullscreen_changed()
-{
-	bool b = _settings->get<Set::Player_Fullscreen>();
-
-	if(b){
-		showFullScreen();
-	}
-
-	else {
-		showNormal();
-	}
-}
 
 void GUI_Player::init_controlstyle()
 {
@@ -413,6 +370,7 @@ void GUI_Player::init_controlstyle()
 	splitter_controls_moved(0, 0);
 }
 
+
 void GUI_Player::controlstyle_changed()
 {
 	if(m->controls)
@@ -421,25 +379,34 @@ void GUI_Player::controlstyle_changed()
 		m->controls->deleteLater();
 	}
 
-	int target_height;
+	int h = 0;
 	if(_settings->get<Set::Player_ControlStyle>() == 0)
 	{
 		m->controls = new GUI_Controls(ui->controls);
-		target_height = m->controls->minimumHeight();
 	}
 
 	else
 	{
 		m->controls = new GUI_ControlsNew(ui->controls);
-		target_height = (m->controls->width() * 3) / 2;
+		h = 350;
 	}
 
-	ui->controls->layout()->addWidget(m->controls);
 	m->controls->init();
+	ui->controls->layout()->addWidget(m->controls);
+	ui->splitterControls->setSizes({h, this->height() - h});
 
-	ui->splitterControls->setSizes({target_height, this->height() - target_height});
 	splitter_controls_moved(0, 0);
 }
+
+
+void GUI_Player::current_library_changed(const QString& name)
+{
+	Q_UNUSED(name)
+
+	show_library_changed();
+	check_library_menu_action();
+}
+
 
 void GUI_Player::show_library_changed()
 {
@@ -493,6 +460,20 @@ void GUI_Player::show_library(bool is_library_visible, bool was_library_visible)
 }
 
 
+void GUI_Player::check_library_menu_action()
+{
+	Library::PluginHandler* lph = Library::PluginHandler::instance();
+
+	if(!lph->current_library()) {
+		m->menubar->show_library_action(false);
+	}
+
+	else {
+		m->menubar->update_library_action(lph->current_library_menu(), lph->current_library()->display_name());
+	}
+}
+
+
 void GUI_Player::splitter_main_moved(int pos, int idx)
 {
 	Q_UNUSED(pos) Q_UNUSED(idx)
@@ -511,6 +492,15 @@ void GUI_Player::splitter_controls_moved(int pos, int idx)
 }
 
 
+void GUI_Player::language_changed()
+{
+	QString language = _settings->get<Set::Player_Language>();
+	m->translator->load(language, Util::share_path("translations/"));
+
+	ui->retranslateUi(this);
+}
+
+
 void GUI_Player::skin_changed()
 {
 	QString stylesheet = Style::current_style();
@@ -524,10 +514,56 @@ void GUI_Player::skin_changed()
 	}
 }
 
+
 void GUI_Player::minimize()
 {
 	tray_icon_activated(QSystemTrayIcon::Trigger);
 }
+
+
+void GUI_Player::minimize_to_tray()
+{
+	if(this->isHidden()){
+		return;
+	}
+
+	QPoint p = this->pos();
+	QSize sz = this->size();
+
+	this->hide();
+
+	_settings->set<Set::Player_Pos>(p);
+	_settings->set<Set::Player_Size>(sz);
+}
+
+
+void GUI_Player::fullscreen_changed()
+{
+	if(_settings->get<Set::Player_Fullscreen>()) {
+		showFullScreen();
+	}
+
+	else {
+		showNormal();
+	}
+}
+
+
+void GUI_Player::really_close()
+{
+	sp_log(Log::Info, this) << "closing player...";
+
+	Gui::MainWindow::close();
+
+	emit sig_player_closed();
+}
+
+
+void GUI_Player::request_shutdown()
+{
+	m->shutdown_requested = true;
+}
+
 
 void GUI_Player::moveEvent(QMoveEvent* e)
 {
@@ -535,6 +571,7 @@ void GUI_Player::moveEvent(QMoveEvent* e)
 
 	_settings->set<Set::Player_Pos>(pos());
 }
+
 
 void GUI_Player::resizeEvent(QResizeEvent* e)
 {
@@ -547,16 +584,15 @@ void GUI_Player::resizeEvent(QResizeEvent* e)
 		_settings->set<Set::Player_Fullscreen>(false);
 	}
 
-	if( !is_maximized &&
-		!this->isMaximized() &&
-		!is_fullscreen &&
-		!this->isFullScreen())
+	if( !is_maximized && !this->isMaximized() &&
+		!is_fullscreen && !this->isFullScreen())
 	{
 		_settings->set<Set::Player_Size>(this->size());
 	}
 
 	update();
 }
+
 
 void GUI_Player::closeEvent(QCloseEvent* e)
 {
@@ -577,33 +613,4 @@ void GUI_Player::closeEvent(QCloseEvent* e)
 		Gui::MainWindow::closeEvent(e);
 		emit sig_player_closed();
 	}
-}
-
-void GUI_Player::request_shutdown()
-{
-	m->shutdown_requested = true;
-}
-
-void GUI_Player::really_close()
-{
-	sp_log(Log::Info, this) << "closing player...";
-
-	Gui::MainWindow::close();
-
-	emit sig_player_closed();
-}
-
-void GUI_Player::minimize_to_tray()
-{
-	if(this->isHidden()){
-		return;
-	}
-
-	QPoint p = this->pos();
-	QSize sz = this->size();
-
-	this->hide();
-
-	_settings->set<Set::Player_Pos>(p);
-	_settings->set<Set::Player_Size>(sz);
 }

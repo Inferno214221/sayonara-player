@@ -1,4 +1,4 @@
-/* GUI_PlayerPlugin.h */
+/* GUI_PlayerPluginBase.h */
 
 /* Copyright (C) 2011-2017  Lucio Carreras
  *
@@ -19,7 +19,7 @@
  */
 
 
-/* GUI_PlayerPlugin.h */
+/* GUI_PlayerPluginBase.h */
 
 #ifndef GUI_PLAYERPLUGIN_H
 #define GUI_PLAYERPLUGIN_H

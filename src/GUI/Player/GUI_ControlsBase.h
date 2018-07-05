@@ -16,6 +16,7 @@ class QSlider;
 class QPushButton;
 class CoverButton;
 class SearchSlider;
+class RatingLabel;
 
 namespace Gui
 {
@@ -33,7 +34,7 @@ class GUI_ControlsBase :
 public:
 	GUI_ControlsBase(QWidget* parent=nullptr);
 	virtual ~GUI_ControlsBase();
-	void init();
+	virtual void init();
 
 	virtual QLabel* lab_sayonara() const=0;
 	virtual QLabel* lab_title() const=0;
@@ -46,6 +47,7 @@ public:
 	virtual QLabel* lab_copyright() const=0;
 	virtual QLabel* lab_current_time() const=0;
 	virtual QLabel* lab_max_time() const=0;
+	virtual RatingLabel* lab_rating() const;
 	virtual QWidget* widget_details() const=0;
 
 	virtual SearchSlider* sli_progress() const=0;

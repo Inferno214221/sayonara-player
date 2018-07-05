@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "PlayerPlugin.h"
+#include "PlayerPluginBase.h"
 #include "GUI/Utils/Shortcuts/Shortcut.h"
 #include "GUI/Utils/Shortcuts/ShortcutHandler.h"
 #include "Utils/Settings/Settings.h"

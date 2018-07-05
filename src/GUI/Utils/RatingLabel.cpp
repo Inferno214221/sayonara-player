@@ -117,6 +117,19 @@ void RatingLabel::paintEvent(QPaintEvent *e)
 	painter.restore();
 }
 
+QSize RatingLabel::sizeHint() const
+{
+	int	h = m->icon_size + 2;
+	int w = (m->icon_size + 2) * 5;
+
+	return QSize(w, h);
+}
+
+QSize RatingLabel::minimumSizeHint() const
+{
+	return sizeHint();
+}
+
 
 void RatingLabel::mouseMoveEvent(QMouseEvent *e)
 {
@@ -131,6 +144,7 @@ void RatingLabel::mouseMoveEvent(QMouseEvent *e)
 	Rating rating = calc_rating(e->pos());
 	this->update_rating(rating);
 }
+
 
 
 void RatingLabel::mousePressEvent(QMouseEvent *e)

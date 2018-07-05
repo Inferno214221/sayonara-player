@@ -198,7 +198,7 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 			}
 
 		case Qt::TextAlignmentRole:
-			return Qt::AlignHCenter;
+			return (int)(Qt::AlignHCenter | Qt::AlignTop);
 
 		case Qt::DecorationRole:
 			{

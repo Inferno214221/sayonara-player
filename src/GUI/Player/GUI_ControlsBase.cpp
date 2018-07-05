@@ -11,6 +11,7 @@
 #include "GUI/Utils/PreferenceAction.h"
 #include "GUI/Utils/ContextMenu/LibraryContextMenu.h"
 #include "GUI/Utils/Widgets/ProgressBar.h"
+#include "GUI/Utils/RatingLabel.h"
 
 #include "Components/PlayManager/PlayManager.h"
 #include "Components/Covers/CoverLocation.h"
@@ -85,6 +86,10 @@ void GUI_ControlsBase::init()
 	skin_changed();
 }
 
+RatingLabel*GUI_ControlsBase::lab_rating() const
+{
+	return nullptr;
+}
 
 // new track
 void GUI_ControlsBase::track_changed(const MetaData & md)
@@ -112,6 +117,11 @@ void GUI_ControlsBase::track_changed(const MetaData & md)
 	set_radio_mode( md.radio_mode() );
 
 	sli_progress()->setEnabled( (md.length_ms / 1000) > 0 );
+
+	if(lab_rating()){
+		lab_rating()->setVisible(md.radio_mode() == RadioMode::Off);
+		lab_rating()->set_rating(md.rating);
+	}
 }
 
 
@@ -189,6 +199,10 @@ void GUI_ControlsBase::stopped()
 	lab_max_time()->clear();
 
 	set_standard_cover();
+
+	if(lab_rating()){
+		lab_rating()->hide();
+	}
 }
 
 void GUI_ControlsBase::rec_changed(bool b)
@@ -390,16 +404,23 @@ void GUI_ControlsBase::mute_changed(bool muted)
 void GUI_ControlsBase::id3_tags_changed(const MetaDataList& v_md_old, const MetaDataList& v_md_new)
 {
 	PlayManager* pm = PlayManager::instance();
-	const MetaData& md = pm->current_track();
+	const MetaData& cur_md = pm->current_track();
 
-	IdxList idxs = v_md_old.findTracks(md.filepath());
-	if(!idxs.empty())
+	IdxList idxs = v_md_old.findTracks(cur_md.filepath());
+	if(idxs.empty())
 	{
-		const MetaData& md = v_md_new[idxs.first()];
-		set_info_labels(md);
-		set_cover_location(md);
+		return;
+	}
 
-		setWindowTitle(QString("Sayonara - ") + md.title());
+	const MetaData& md = v_md_new[idxs.first()];
+	set_info_labels(md);
+	set_cover_location(md);
+
+	setWindowTitle(QString("Sayonara - ") + md.title());
+
+	if(lab_rating())
+	{
+		lab_rating()->set_rating(md.rating);
 	}
 }
 
@@ -493,6 +514,7 @@ void GUI_ControlsBase::file_info_changed()
 		sFilesize = QString::number( (double) (md.filesize / 1024) / 1024.0, 'f', 2) + " MB";
 		lab_filesize()->setText(sFilesize);
 	}
+
 	lab_filesize()->setVisible(!sFilesize.isEmpty());
 }
 

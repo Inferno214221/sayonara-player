@@ -23,6 +23,7 @@
 
 #include <QLabel>
 #include <QPoint>
+#include <QSize>
 
 #include "Utils/Pimpl.h"
 
@@ -55,6 +56,9 @@ protected:
 	void mousePressEvent(QMouseEvent *ev) override;
 	void mouseReleaseEvent(QMouseEvent* ev) override;
 	void mouseMoveEvent(QMouseEvent *ev) override;
+
+	QSize sizeHint() const override;
+	QSize minimumSizeHint() const override;
 
 private:
 	void update_rating(Rating rating);

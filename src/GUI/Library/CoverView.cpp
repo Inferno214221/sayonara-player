@@ -164,7 +164,7 @@ CoverView::CoverView(AbstractLibrary* library, QWidget* topbar, QWidget* parent)
 	this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	this->setVerticalScrollMode(QAbstractItemView::ScrollPerItem);
 	this->setSelectionBehavior(QAbstractItemView::SelectItems);
-	//this->setItemDelegate(new CoverDelegate(this));
+	this->setItemDelegate(new CoverDelegate(this));
 	this->setShowGrid(false);
 
 	if(horizontalHeader()){

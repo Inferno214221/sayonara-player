@@ -52,6 +52,7 @@ public:
 	QLabel* lab_current_time() const override;
 	QLabel* lab_max_time() const override;
 	QWidget* widget_details() const override;
+	RatingLabel* lab_rating() const override;
 	SearchSlider* sli_progress() const override;
 	SearchSlider* sli_volume() const override;
 	Gui::ProgressBar* sli_buffer() const override;
@@ -65,6 +66,8 @@ public:
 
 	void toggle_buffer_mode(bool buffering) override;
 	bool is_resizable() const override;
+
+	void rating_changed_here(bool success);
 };
 
 #endif // GUI_CONTROLSNEW_H

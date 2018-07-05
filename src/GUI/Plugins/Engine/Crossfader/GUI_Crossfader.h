@@ -21,7 +21,7 @@
 #ifndef GUI_CROSSFADER_H
 #define GUI_CROSSFADER_H
 
-#include "Interfaces/PlayerPlugin/PlayerPlugin.h"
+#include "Interfaces/PlayerPlugin/PlayerPluginBase.h"
 
 UI_FWD(GUI_Crossfader)
 
@@ -41,7 +41,7 @@ public:
 private slots:
 	void slider_changed(int);
 	void active_changed(bool);
-	
+
 	void retranslate_ui() override;
 	void init_ui() override;
 };

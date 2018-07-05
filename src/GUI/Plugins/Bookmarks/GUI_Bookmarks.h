@@ -21,7 +21,7 @@
 #ifndef GUI_BOOKMARKS_H
 #define GUI_BOOKMARKS_H
 
-#include "Interfaces/PlayerPlugin/PlayerPlugin.h"
+#include "Interfaces/PlayerPlugin/PlayerPluginBase.h"
 #include "Utils/Pimpl.h"
 
 class Bookmarks;

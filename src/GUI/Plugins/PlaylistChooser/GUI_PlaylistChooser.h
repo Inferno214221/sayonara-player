@@ -21,7 +21,7 @@
 #ifndef GUIPLAYLISTCHOOSER_H_
 #define GUIPLAYLISTCHOOSER_H_
 
-#include "Interfaces/PlayerPlugin/PlayerPlugin.h"
+#include "Interfaces/PlayerPlugin/PlayerPluginBase.h"
 #include "Utils/Playlist/CustomPlaylistFwd.h"
 #include "Utils/Pimpl.h"
 

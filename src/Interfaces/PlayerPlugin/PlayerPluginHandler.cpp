@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "PlayerPlugin.h"
+#include "PlayerPluginBase.h"
 #include "PlayerPluginHandler.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Settings/Settings.h"
@@ -131,7 +131,7 @@ void Handler::language_changed()
 }
 
 
-QList<Base*> Handler::get_all_plugins() const
+QList<Base*> Handler::all_plugins() const
 {
 	return m->plugins;
 }
