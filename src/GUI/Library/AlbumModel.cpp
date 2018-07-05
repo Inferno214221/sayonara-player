@@ -40,6 +40,7 @@
 #include "Utils/Set.h"
 
 #include <QImage>
+#include <QColor>
 
 using namespace Library;
 
