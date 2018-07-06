@@ -55,6 +55,8 @@ namespace DB
 			bool updateAlbumCissearchFix();
 			bool updateArtistCissearchFix();
 			bool updateTrackCissearchFix();
+			bool updateLostArtists();
+			bool updateLostAlbums();
 
 			virtual bool apply_fixes();
 

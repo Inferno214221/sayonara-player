@@ -91,10 +91,10 @@ Connector::Connector() :
 	DB::Base(0, "", QString("player.db"), nullptr)
 {
 	m = Pimpl::make<Private>();
-	apply_fixes();
-
 	m->generic_library_database = new DB::LocalLibraryDatabase(-1);
 	m->library_dbs << m->generic_library_database;
+
+	apply_fixes();
 }
 
 Connector::~Connector() {}
@@ -162,12 +162,80 @@ bool Connector::updateTrackCissearchFix()
 	return true;
 }
 
+bool Connector::updateLostArtists()
+{
+	LibraryDatabase* lib_db = library_db(-1, 0);
+	if(!lib_db){
+		sp_log(Log::Error, this) << "Cannot find Library";
+		return false;
+	}
+
+	ArtistId id = lib_db->insertArtistIntoDatabase(QString());
+
+	const QStringList queries {
+		QString("UPDATE tracks SET artistID=:artistID WHERE artistID IN (SELECT artistID FROM artists WHERE name IS NULL);"),
+		QString("UPDATE tracks SET artistID=:artistID WHERE artistID NOT IN (SELECT artistID FROM artists);"),
+		QString("UPDATE tracks SET albumArtistID=:artistID WHERE albumArtistID IN (SELECT artistID FROM artists WHERE name IS NULL);"),
+		QString("UPDATE tracks SET albumArtistID=:artistID WHERE albumArtistID NOT IN (SELECT artistID FROM artists);"),
+		QString("DELETE FROM artists WHERE name IS NULL;")
+	};
+
+	this->transaction();
+	for(const QString& query : queries)
+	{
+		DB::Query q(db());
+		q.prepare(query);
+		q.bindValue(":artistID", id);
+		bool success = q.exec();
+		if(!success){
+			this->rollback();
+			return false;
+		}
+	}
+
+	this->commit();
+	return true;
+}
+
+bool Connector::updateLostAlbums()
+{
+	LibraryDatabase* lib_db = library_db(-1, 0);
+	if(!lib_db){
+		sp_log(Log::Error, this) << "Cannot find Library";
+		return false;
+	}
+
+	AlbumId id = lib_db->insertAlbumIntoDatabase(QString());
+
+	const QStringList queries {
+		QString("UPDATE tracks SET albumID=:albumID WHERE albumID IN (SELECT albumID FROM albums WHERE name IS NULL);"),
+		QString("UPDATE tracks SET albumID=:albumID WHERE albumID NOT IN (SELECT albumID FROM albums);"),
+		QString("DELETE FROM artists WHERE name IS NULL;")
+	};
+
+	this->transaction();
+	for(const QString& query : queries)
+	{
+		DB::Query q(db());
+		q.prepare(query);
+		q.bindValue(":albumID", id);
+		bool success = q.exec();
+		if(!success){
+			this->rollback();
+			return false;
+		}
+	}
+
+	this->commit();
+	return true;
+}
+
 bool Connector::apply_fixes()
 {
 	QString str_version;
 	int version;
 	bool success;
-	const int LatestVersion = 17;
+	const int LatestVersion = 18;
 
 	success = settings_connector()->load_setting("version", str_version);
 	version = str_version.toInt(&success);
@@ -417,6 +485,14 @@ bool Connector::apply_fixes()
 		if(success)
 		{
 			settings_connector()->store_setting("version", 17);
+		}
+	}
+
+	if(version < 18)
+	{
+		if(updateLostArtists() && updateLostAlbums())
+		{
+			settings_connector()->store_setting("version", 18);
 		}
 	}
 
