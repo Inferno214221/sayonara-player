@@ -115,8 +115,8 @@ bool Connector::updateAlbumCissearchFix()
 		QString str = "UPDATE albums SET cissearch=:cissearch WHERE albumID=:id;";
 		Query q(db());
 		q.prepare(str);
-		q.bindValue(":cissearch", album.name().toLower());
-		q.bindValue(":id", album.id);
+		q.bindValue(":cissearch",	Util::cvt_not_null(album.name().toLower()));
+		q.bindValue(":id",			album.id);
 
 		if(!q.exec()){
 			q.show_error("Cannot update album cissearch");
@@ -139,8 +139,8 @@ bool Connector::updateArtistCissearchFix()
 
 		Query q(db());
 		q.prepare(str);
-		q.bindValue(":cissearch", artist.name().toLower());
-		q.bindValue(":id", artist.id);
+		q.bindValue(":cissearch",	Util::cvt_not_null(artist.name().toLower()));
+		q.bindValue(":id",			artist.id);
 
 		if(!q.exec()){
 			q.show_error("Cannot update artist cissearch");
@@ -539,7 +539,7 @@ DB::Settings* Connector::settings_connector()
 	return m->settings_connector;
 }
 
-DB::Library*Connector::library_connector()
+DB::Library* Connector::library_connector()
 {
 	if(!m->library_connector){
 		m->library_connector = new DB::Library(this->db(), this->db_id());

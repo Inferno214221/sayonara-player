@@ -20,6 +20,7 @@
 
 #include "SearchMode.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/Utils.h"
 
 #include <QRegExp>
 #include <QMap>
@@ -157,8 +158,6 @@ QString Library::Util::convert_search_string(const QString& str, Library::Search
 		ret = cleaned_string;
 	}
 
-//	sp_log(Log::Debug, this) << "Cleaned string: " << ret;
-
-	return ret;
+	return ::Util::cvt_not_null(ret);
 }
 

@@ -123,10 +123,10 @@ bool DB::Library::insert_library(LibraryId id, const QString& library_name, cons
 	Query q(module_db());
 
 	q.prepare(query);
-	q.bindValue(":library_id", id);
-	q.bindValue(":library_name", library_name);
-	q.bindValue(":library_path", library_path);
-	q.bindValue(":library_index", index);
+	q.bindValue(":library_id",		id);
+	q.bindValue(":library_name",	Util::cvt_not_null(library_name));
+	q.bindValue(":library_path",	Util::cvt_not_null(library_path));
+	q.bindValue(":library_index",	index);
 
 	bool success = q.exec();
 
@@ -160,9 +160,9 @@ bool DB::Library::edit_library(LibraryId library_id, const QString& new_name, co
 	Query q(module_db());
 
 	q.prepare(query);
-	q.bindValue(":library_name", new_name);
-	q.bindValue(":library_path", new_path);
-	q.bindValue(":library_id", library_id);
+	q.bindValue(":library_name",	Util::cvt_not_null(new_name));
+	q.bindValue(":library_path",	Util::cvt_not_null(new_path));
+	q.bindValue(":library_id",		library_id);
 
 	bool success = q.exec();
 

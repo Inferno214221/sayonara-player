@@ -145,6 +145,10 @@ CustomMimeData* ItemModel::custom_mimedata() const
 
 bool ItemModel::is_selected(int id) const
 {
+	if(selections().contains(id)){
+		sp_log(Log::Debug, this) << "metadata with id=" << id << " is selected. ";
+
+	}
 	return selections().contains(id);
 }
 

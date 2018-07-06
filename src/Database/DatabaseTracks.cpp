@@ -123,8 +123,8 @@ void Tracks::check_track_view(LibraryId library_id)
 			"(albums.cissearch || ',' || artists.cissearch || ',' || tracks.cissearch) AS allCissearch, " // 21
 			"tracks.fileCissearch AS fileCissearch "
 			"FROM tracks "
-			"INNER JOIN albums ON tracks.albumID = albums.albumID "
-			"INNER JOIN artists ON tracks.artistID = artists.artistID "
+			"LEFT OUTER JOIN albums ON tracks.albumID = albums.albumID "
+			"LEFT OUTER JOIN artists ON tracks.artistID = artists.artistID "
 			"LEFT OUTER JOIN artists albumArtists ON tracks.albumArtistID = albumArtists.artistID ";
 	;
 
@@ -259,12 +259,11 @@ bool Tracks::getMultipleTracksByPath(const QStringList& paths, MetaDataList& v_m
 
 MetaData Tracks::getTrackByPath(const QString& path)
 {
-	Query q(this);
+	DB::Query q(this);
 
-	QString querytext = fetch_query_tracks() +
-						"WHERE filename LIKE :filename;";
+	QString querytext = fetch_query_tracks() + "WHERE filename = :filename;";
 	q.prepare(querytext);
-	q.bindValue(":filename", path);
+	q.bindValue(":filename", Util::cvt_not_null(path));
 
 	MetaData md(path);
 	md.set_db_id(module_db_id());
@@ -406,14 +405,15 @@ bool Tracks::getAllTracksByAlbum(IdList albums, MetaDataList& returndata, const 
 
 	q.prepare(querytext);
 
-	for(int i=0; i<albums.size(); i++) {
-		q.bindValue(QString(":albumid_") + QString::number(i), albums[i]);
+	for(int i=0; i<albums.size(); i++)
+	{
+		q.bindValue(QString(":albumid_%1").arg(i), albums[i]);
 	}
 
 	if( !filter.cleared() )
 	{
-		q.bindValue(":searchterm", filter.filtertext(true));
-		q.bindValue(":cissearch", filter.search_mode_filtertext(true));
+		q.bindValue(":searchterm",	Util::cvt_not_null(filter.filtertext(true)));
+		q.bindValue(":cissearch",	Util::cvt_not_null(filter.search_mode_filtertext(true)));
 	}
 
 	return db_fetch_tracks(q, returndata);
@@ -483,14 +483,14 @@ bool Tracks::getAllTracksByArtist(IdList artists, MetaDataList& returndata, cons
 	querytext = append_track_sort_string(querytext, sort);
 
 	q.prepare(querytext);
-	q.bindValue(":artist_id", QVariant(artists.first()));
+	q.bindValue(":artist_id", artists.first());
 
 	for(int i=0; i<artists.size(); i++) {
-		q.bindValue(QString(":artist_id_") + QString::number(i), artists[i]);
+		q.bindValue(QString(":artist_id_%1").arg(i), artists[i]);
 	}
 
-	q.bindValue(":searchterm", filter.filtertext(true));
-	q.bindValue(":cissearch", filter.search_mode_filtertext(true));
+	q.bindValue(":searchterm", Util::cvt_not_null(filter.filtertext(true)));
+	q.bindValue(":cissearch",  Util::cvt_not_null(filter.search_mode_filtertext(true)));
 
 	return db_fetch_tracks(q, returndata);
 }
@@ -522,8 +522,8 @@ bool Tracks::getAllTracksBySearchString(const ::Library::Filter& filter, MetaDat
 	querytext = append_track_sort_string(querytext, sort);
 	q.prepare(querytext);
 
-	q.bindValue(":searchterm", filter.filtertext(true));
-	q.bindValue(":cissearch", filter.search_mode_filtertext(true));
+	q.bindValue(":searchterm",	Util::cvt_not_null(filter.filtertext(true)));
+	q.bindValue(":cissearch",	Util::cvt_not_null(filter.search_mode_filtertext(true)));
 
 	return db_fetch_tracks(q, result);
 }
@@ -677,8 +677,12 @@ void Tracks::updateTrackCissearch()
 		QString querystring = "UPDATE tracks SET cissearch=:cissearch, filecissearch=:filecissearch WHERE trackID=:id;";
 		Query q(this);
 		q.prepare(querystring);
-		q.bindValue(":cissearch", ::Library::Util::convert_search_string(md.title(), search_mode()));
-		q.bindValue(":filecissearch", ::Library::Util::convert_search_string(md.filepath(), search_mode()));
+
+		QString cis = ::Library::Util::convert_search_string(md.title(), search_mode());
+		QString cis_file = ::Library::Util::convert_search_string(md.filepath(), search_mode());
+
+		q.bindValue(":cissearch",		Util::cvt_not_null(cis));
+		q.bindValue(":filecissearch",	Util::cvt_not_null(cis_file));
 		q.bindValue(":id", md.id);
 
 		if(!q.exec()){
@@ -749,21 +753,21 @@ bool Tracks::updateTrack(const MetaData& md)
 	q.bindValue(":albumID",			md.album_id);
 	q.bindValue(":artistID",		md.artist_id);
 	q.bindValue(":bitrate",			md.bitrate);
-	q.bindValue(":cissearch",		cissearch);
+	q.bindValue(":cissearch",		Util::cvt_not_null(cissearch));
 	q.bindValue(":discnumber",		md.discnumber);
-	q.bindValue(":filecissearch",	file_cissearch);
-	q.bindValue(":filename",		md.filepath());
+	q.bindValue(":filecissearch",	Util::cvt_not_null(file_cissearch));
+	q.bindValue(":filename",		Util::cvt_not_null(md.filepath()));
 	q.bindValue(":filesize",		QVariant::fromValue(md.filesize));
-	q.bindValue(":genre",			md.genres_to_string());
+	q.bindValue(":genre",			Util::cvt_not_null(md.genres_to_string()));
 	q.bindValue(":length",			QVariant::fromValue(md.length_ms));
 	q.bindValue(":libraryID",		md.library_id);
 	q.bindValue(":modifydate",		QVariant::fromValue(Util::current_date_to_int()));
 	q.bindValue(":rating",			md.rating);
-	q.bindValue(":title",			md.title());
+	q.bindValue(":title",			Util::cvt_not_null(md.title()));
 	q.bindValue(":track",			md.track_num);
 	q.bindValue(":trackID",			md.id);
 	q.bindValue(":year",			md.year);
-	q.bindValue(":comment",			md.comment());
+	q.bindValue(":comment",			Util::cvt_not_null(md.comment()));
 
 	if (!q.exec()) {
 		q.show_error(QString("Cannot update track ") + md.filepath());
@@ -793,7 +797,7 @@ bool Tracks::insertTrackIntoDatabase(const MetaData& md, ArtistId artist_id, Alb
 
 bool Tracks::insertTrackIntoDatabase(const MetaData& md, ArtistId artist_id, AlbumId album_id, ArtistId album_artist_id)
 {
-	Query q(this);
+	DB::Query q(this);
 
 	MetaData md_tmp = getTrackByPath( md.filepath() );
 
@@ -819,22 +823,22 @@ bool Tracks::insertTrackIntoDatabase(const MetaData& md, ArtistId artist_id, Alb
 	auto current_time = Util::current_date_to_int();
 	q.prepare(querytext);
 
-	q.bindValue(":filename",		md.filepath());
+	q.bindValue(":filename",		Util::cvt_not_null(md.filepath()));
 	q.bindValue(":albumID",			album_id);
 	q.bindValue(":artistID",		artist_id);
 	q.bindValue(":albumArtistID",	album_artist_id);
-	q.bindValue(":title",			md.title());
+	q.bindValue(":title",			Util::cvt_not_null(md.title()));
 	q.bindValue(":year",			md.year);
 	q.bindValue(":length",			QVariant::fromValue(md.length_ms));
 	q.bindValue(":track",			md.track_num);
 	q.bindValue(":bitrate",			md.bitrate);
-	q.bindValue(":genre",			md.genres_to_string());
+	q.bindValue(":genre",			Util::cvt_not_null(md.genres_to_string()));
 	q.bindValue(":filesize",		QVariant::fromValue(md.filesize));
 	q.bindValue(":discnumber",		md.discnumber);
 	q.bindValue(":rating",			md.rating);
-	q.bindValue(":comment",			md.comment());
-	q.bindValue(":cissearch",		cissearch);
-	q.bindValue(":filecissearch",	file_cissearch);
+	q.bindValue(":comment",			Util::cvt_not_null(md.comment()));
+	q.bindValue(":cissearch",		Util::cvt_not_null(cissearch));
+	q.bindValue(":filecissearch",	Util::cvt_not_null(file_cissearch));
 	q.bindValue(":createdate",		QVariant::fromValue(current_time));
 	q.bindValue(":modifydate",		QVariant::fromValue(current_time));
 	q.bindValue(":libraryID",		md.library_id);

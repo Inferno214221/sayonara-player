@@ -53,16 +53,16 @@ namespace DB
 
 			virtual bool db_fetch_artists(Query& q, ArtistList& result);
 
-			virtual int getArtistID (const QString& artist);
+			virtual ArtistId getArtistID (const QString& artist);
 			virtual bool getArtistByID(int id, Artist& artist, bool also_empty=false);
 
 			virtual bool getAllArtists(ArtistList& result, bool also_empty);
 			virtual bool getAllArtists(ArtistList& result, ::Library::SortOrder sortorder = ::Library::SortOrder::ArtistNameAsc, bool also_empty=false);
 			virtual bool getAllArtistsBySearchString(const ::Library::Filter& filter, ArtistList& result, ::Library::SortOrder sortorder = ::Library::SortOrder::ArtistNameAsc);
 
-			virtual int insertArtistIntoDatabase(const QString& artist);
-			virtual int insertArtistIntoDatabase(const Artist& artist);
-			virtual int updateArtist(const Artist& artist);
+			virtual ArtistId insertArtistIntoDatabase(const QString& artist);
+			virtual ArtistId insertArtistIntoDatabase(const Artist& artist);
+			virtual ArtistId updateArtist(const Artist& artist);
 
 			virtual void updateArtistCissearch();
 	};

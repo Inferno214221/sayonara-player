@@ -20,6 +20,7 @@
 
 #include "Database/SayonaraQuery.h"
 #include "Database/DatabaseStreams.h"
+#include "Utils/Utils.h"
 
 using DB::Streams;
 using DB::Query;
@@ -56,7 +57,7 @@ bool Streams::deleteStream(const QString& name)
 {
 	Query q(this);
 	q.prepare("DELETE FROM savedstreams WHERE name = :name;" );
-	q.bindValue(":name", name);
+	q.bindValue(":name", Util::cvt_not_null(name));
 
 	if(!q.exec()) {
 		q.show_error(QString("Could not delete stream ") + name);
@@ -72,8 +73,8 @@ bool Streams::addStream(const QString& name, const QString& url)
 	Query q(this);
 
 	q.prepare("INSERT INTO savedstreams (name, url) VALUES (:name, :url); " );
-	q.bindValue(":name", name);
-	q.bindValue(":url", url);
+	q.bindValue(":name",	Util::cvt_not_null(name));
+	q.bindValue(":url",		Util::cvt_not_null(url));
 
 	if(!q.exec()) {
 		q.show_error(QString("Could not add stream ") + name);
@@ -89,8 +90,8 @@ bool Streams::updateStreamUrl(const QString& name, const QString& url)
 	Query q(this);
 
 	q.prepare("UPDATE savedstreams SET url=:url WHERE name=:name;");
-	q.bindValue(":name", name);
-	q.bindValue(":url", url);
+	q.bindValue(":name",	Util::cvt_not_null(name));
+	q.bindValue(":url",		Util::cvt_not_null(url));
 
 	if(!q.exec()) {
 		q.show_error(QString("Could not update stream url ") + name);

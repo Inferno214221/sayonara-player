@@ -44,21 +44,17 @@ struct Editor::Private
 	BoolList				changed_md;	// indicates if metadata at idx was changed
 	QMap<int, QImage>		cover_map;
 
-	QHash<QString, ArtistId> artist_map;
-	QHash<QString, AlbumId> album_map;
+	QHash<QString, ArtistId>	artist_map;
+	QHash<QString, AlbumId>		album_map;
 
 	DB::LibraryDatabase*	ldb=nullptr;	// database of LocalLibrary
-	bool						notify;
 
 	ArtistId get_artist_id(const QString& artist_name)
 	{
 		if(artist_map.contains(artist_name)){
 			return artist_map[artist_name];
 		} else {
-			ArtistId id = ldb->getArtistID(artist_name);
-			if(id < 0){
-				id = ldb->insertArtistIntoDatabase(artist_name);
-			}
+			ArtistId id = ldb->insertArtistIntoDatabase(artist_name);
 			artist_map[artist_name] = id;
 			return id;
 		}
@@ -69,10 +65,7 @@ struct Editor::Private
 		if(album_map.contains(album_name)){
 			return album_map[album_name];
 		} else {
-			AlbumId id = ldb->getAlbumID(album_name);
-			if(id < 0){
-				id = ldb->insertAlbumIntoDatabase(album_name);
-			}
+			AlbumId id = ldb->insertAlbumIntoDatabase(album_name);
 			album_map[album_name] = id;
 			return id;
 		}
@@ -84,7 +77,6 @@ Editor::Editor(QObject *parent) :
 {
 	m = Pimpl::make<Editor::Private>();
 	m->ldb = DB::Connector::instance()->library_db(-1, 0);
-	m->notify = true;
 
 	connect(this, &QThread::finished, this, &Editor::thread_finished);
 }
@@ -208,9 +200,9 @@ void Editor::apply_artists_and_albums_to_md()
 
 		MetaData& md = m->v_md[i];
 
-		ArtistId artist_id = m->get_artist_id(md.artist());
-		AlbumId album_id = m->get_album_id(md.album());
-		ArtistId album_artist_id = m->get_artist_id(md.album_artist());
+		ArtistId artist_id =		m->get_artist_id(md.artist());
+		AlbumId album_id =			m->get_album_id(md.album());
+		ArtistId album_artist_id =	m->get_artist_id(md.album_artist());
 
 		md.album_id = album_id;
 		md.artist_id = artist_id;
@@ -261,7 +253,9 @@ void Editor::run()
 	for(i=0; i<m->v_md.count(); i++)
 	{
 		MetaData md = m->v_md[i];
-		emit sig_progress( (i * 100) / n_operations);
+		if(n_operations > 5){
+			emit sig_progress( (i * 100) / n_operations);
+		}
 
 		if( m->changed_md[i] == false ) {
 			continue;
@@ -286,7 +280,9 @@ void Editor::run()
 	{
 		int idx = it.key();
 		Tagging::Util::write_cover(m->v_md[idx], it.value());
-		emit sig_progress( (i++ * 100) / n_operations);
+		if(n_operations > 5){
+			emit sig_progress( (i++ * 100) / n_operations);
+		}
 	}
 
 	DB::Connector* db = DB::Connector::instance();
@@ -304,9 +300,7 @@ void Editor::run()
 
 void Editor::thread_finished()
 {
-	if(m->notify){
-		ChangeNotifier::instance()->change_metadata(m->v_md_before_change, m->v_md_after_change);
-	}
+	ChangeNotifier::instance()->change_metadata(m->v_md_before_change, m->v_md_after_change);
 }
 
 void Editor::commit()

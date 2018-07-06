@@ -21,6 +21,7 @@
 #include "Database/SayonaraQuery.h"
 #include "Database/DatabaseVisStyles.h"
 #include "GUI/Plugins/Engine/StyleTypes.h"
+#include "Utils/Utils.h"
 
 #include <QColor>
 
@@ -138,15 +139,23 @@ bool VisualStyles::insert_raw_color_style_to_db(const RawColorStyle& rcs)
 			")";
 
 	q.prepare(sql_str);
-	q.bindValue(":name", rcs.col_list.name);
+	q.bindValue(":name", Util::cvt_not_null(rcs.col_list.name));
 	q.bindValue(":col1", col2String(rcs.col_list.colors[0]));
 	q.bindValue(":col2", col2String(rcs.col_list.colors[1]));
 
-	if(rcs.col_list.colors.size() > 2) q.bindValue(":col3", col2String(rcs.col_list.colors[2]));
-	else q.bindValue(":col3", "");
+	if(rcs.col_list.colors.size() > 2) {
+		q.bindValue(":col3", col2String(rcs.col_list.colors[2]));
+	}
 
-	if(rcs.col_list.colors.size() > 3) q.bindValue(":col4", col2String(rcs.col_list.colors[3]));
-	else q.bindValue(":col4", "");
+	else {
+		q.bindValue(":col3", QString(""));
+	}
+
+	if(rcs.col_list.colors.size() > 3) {
+		q.bindValue(":col4", col2String(rcs.col_list.colors[3]));
+	}
+
+	else q.bindValue(":col4", QString(""));
 
 	q.bindValue(":n_bins_sp", rcs.n_bins_spectrum);
 	q.bindValue(":rect_height_sp", rcs.rect_height_spectrum);
@@ -198,15 +207,23 @@ bool VisualStyles::update_raw_color_style(const RawColorStyle& rcs)
 			" WHERE name=:name";
 
 	q.prepare(sql_str);
-	q.bindValue(":name", rcs.col_list.name);
-	q.bindValue(":col1", col2String(rcs.col_list.colors[0]));
-	q.bindValue(":col2", col2String(rcs.col_list.colors[1]));
+	q.bindValue(":name", Util::cvt_not_null(rcs.col_list.name));
+	q.bindValue(":col1", Util::cvt_not_null(col2String(rcs.col_list.colors[0])));
+	q.bindValue(":col2", Util::cvt_not_null(col2String(rcs.col_list.colors[1])));
 
-	if(rcs.col_list.colors.size() > 2) q.bindValue(":col3", col2String(rcs.col_list.colors[2]));
-	else q.bindValue(":col3", "");
+	if(rcs.col_list.colors.size() > 2) {
+		q.bindValue(":col3", col2String(rcs.col_list.colors[2]));
+	}
+	else {
+		q.bindValue(":col3", QString(""));
+	}
 
-	if(rcs.col_list.colors.size() > 3) q.bindValue(":col4", col2String(rcs.col_list.colors[3]));
-	else q.bindValue(":col4", "");
+	if(rcs.col_list.colors.size() > 3) {
+		q.bindValue(":col4", col2String(rcs.col_list.colors[3]));
+	}
+	else {
+		q.bindValue(":col4", QString(""));
+	}
 
 	q.bindValue(":n_bins_sp", rcs.n_bins_spectrum);
 	q.bindValue(":rect_height_sp", rcs.rect_height_spectrum);
@@ -233,7 +250,7 @@ bool VisualStyles::delete_raw_color_style(QString name)
 {
 	Query q(this);
 	q.prepare("DELETE FROM visualstyles WHERE name=:name;");
-	q.bindValue(":name", name);
+	q.bindValue(":name", Util::cvt_not_null(name));
 
 	if(!q.exec()) {
 		q.show_error(QString("Could not delete Raw color style ") + name);
@@ -248,7 +265,7 @@ bool VisualStyles::raw_color_style_exists(QString name)
 {
 	Query q(this);
 	q.prepare("SELECT * FROM visualstyles WHERE name=:name;");
-	q.bindValue(":name", name);
+	q.bindValue(":name", Util::cvt_not_null(name));
 
 	if(!q.exec()) {
 		q.show_error("Cannot check if raw color style exists");

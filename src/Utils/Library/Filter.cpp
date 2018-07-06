@@ -84,6 +84,10 @@ QString Filter::filtertext(bool with_percent) const
 		}
 	}
 
+	if(ret.isNull()){
+		return QString("");
+	}
+
 	return ret;
 }
 
@@ -99,6 +103,10 @@ QString Filter::search_mode_filtertext(bool with_percent) const
 		if(!ret.endsWith('%')){
 			ret.append('%');
 		}
+	}
+
+	if(ret.isNull()){
+		return QString("");
 	}
 
 	return ret;

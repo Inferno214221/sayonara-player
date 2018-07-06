@@ -23,6 +23,8 @@
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/Artist.h"
 #include "Utils/Library/Filter.h"
+#include "Utils/Logger/Logger.h"
+#include "Utils/Utils.h"
 
 using DB::Artists;
 using DB::Query;
@@ -73,7 +75,6 @@ QString Artists::fetch_query_artists(bool also_empty) const
 	if(also_empty){
 		join = " LEFT OUTER JOIN ";
 	}
-
 
 	sql += join + " " + m->track_view + " ON " + m->track_view + "." + m->artistid_field + " = artists.artistID ";
 	sql += join + " albums ON " + m->track_view + ".albumID = albums.albumID ";
@@ -137,7 +138,7 @@ bool Artists::getArtistByID(int id, Artist& artist, bool also_empty)
 				"GROUP BY artistName;";
 
 	q.prepare(query);
-	q.addBindValue(QVariant (id));
+	q.addBindValue(id);
 
 	bool success = db_fetch_artists(q, artists);
 	if(!success){
@@ -156,16 +157,18 @@ bool Artists::getArtistByID(int id, Artist& artist, bool also_empty)
 	return success;
 }
 
-int Artists::getArtistID(const QString& artist)
+ArtistId Artists::getArtistID(const QString& artist)
 {
 	Query q(this);
-	QString query = "SELECT artistID FROM artists WHERE name = ?;";
+	ArtistId artistID = -1;
 
-	int artistID = -1;
+	QString query("SELECT artistID FROM artists WHERE name = :name;");
+
 	q.prepare(query);
-	q.addBindValue(artist);
+	q.bindValue(":name", Util::cvt_not_null(artist));
 
 	if (!q.exec()) {
+		q.show_error("Cannot fetch artistID");
 		return -1;
 	}
 
@@ -232,14 +235,14 @@ bool Artists::getAllArtistsBySearchString(const Library::Filter& filter, ArtistL
 	query += _create_order_string(sortorder) + ";";
 
 	q.prepare(query);
-	q.bindValue(":searchterm", filter.filtertext(true));
-	q.bindValue(":cissearch", filter.search_mode_filtertext(true));
+	q.bindValue(":searchterm",	Util::cvt_not_null(filter.filtertext(true)));
+	q.bindValue(":cissearch",	Util::cvt_not_null(filter.search_mode_filtertext(true)));
 
 	return db_fetch_artists(q, result);
 }
 
 
-int Artists::insertArtistIntoDatabase (const QString& artist)
+ArtistId Artists::insertArtistIntoDatabase(const QString& artist)
 {
 	ArtistId id = getArtistID(artist);
 	if(id >= 0){
@@ -250,8 +253,9 @@ int Artists::insertArtistIntoDatabase (const QString& artist)
 
 	QString cissearch = Library::Util::convert_search_string(artist, search_mode());
 	q.prepare("INSERT INTO artists (name, cissearch) values (:artist, :cissearch);");
-	q.bindValue(":artist", artist);
-	q.bindValue(":cissearch", cissearch);
+
+	q.bindValue(":artist",		Util::cvt_not_null(artist));
+	q.bindValue(":cissearch",	Util::cvt_not_null(cissearch));
 
 	if (!q.exec()) {
 		q.show_error(QString("Cannot insert artist ") + artist);
@@ -261,9 +265,10 @@ int Artists::insertArtistIntoDatabase (const QString& artist)
 	return getArtistID(artist);
 }
 
-int Artists::insertArtistIntoDatabase (const Artist & artist)
+ArtistId Artists::insertArtistIntoDatabase (const Artist& artist)
 {
-	if(artist.id >= 0){
+	if(artist.id >= 0)
+	{
 		updateArtist(artist);
 		return artist.id;
 	}
@@ -272,7 +277,7 @@ int Artists::insertArtistIntoDatabase (const Artist & artist)
 }
 
 
-int Artists::updateArtist(const Artist &artist)
+ArtistId Artists::updateArtist(const Artist &artist)
 {
 	Query q(this);
 
@@ -281,9 +286,10 @@ int Artists::updateArtist(const Artist &artist)
 	QString cissearch = Library::Util::convert_search_string(artist.name(), search_mode());
 
 	q.prepare("UPDATE artists SET name = :name, cissearch = :cissearch WHERE artistID = :artist_id;");
-	q.bindValue(":name", artist.name());
-	q.bindValue(":cissearch", cissearch);
-	q.bindValue(":artist_id", artist.id);
+
+	q.bindValue(":name",		Util::cvt_not_null(artist.name()));
+	q.bindValue(":cissearch",	Util::cvt_not_null(cissearch));
+	q.bindValue(":artist_id",	artist.id);
 
 	if (!q.exec()) {
 		q.show_error(QString("Cannot insert (2) artist ") + artist.name());
@@ -307,8 +313,9 @@ void Artists::updateArtistCissearch()
 		QString str = "UPDATE artists SET cissearch=:cissearch WHERE artistID=:id;";
 		Query q(this);
 		q.prepare(str);
-		q.bindValue(":cissearch", Library::Util::convert_search_string(artist.name(), search_mode()));
-		q.bindValue(":id", artist.id);
+		QString conv_search = Library::Util::convert_search_string(artist.name(), search_mode());
+		q.bindValue(":cissearch",	Util::cvt_not_null(conv_search));
+		q.bindValue(":id",			artist.id);
 
 		if(!q.exec()){
 			q.show_error("Cannot update artist cissearch");

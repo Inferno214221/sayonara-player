@@ -148,7 +148,9 @@ namespace Library
 			for(int row=0; row < new_size; row++)
 			{
 				if(_model->is_selected(input_data[row].id)){
+					sp_log(Log::Debug, this) << "-> Select row " << row;
 					selections.insert(row);
+					break;
 				}
 			}
 

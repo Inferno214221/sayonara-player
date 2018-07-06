@@ -21,6 +21,7 @@
 #include "Database/SayonaraQuery.h"
 #include "Database/DatabasePodcasts.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/Utils.h"
 
 using DB::Podcasts;
 using DB::Query;
@@ -58,7 +59,7 @@ bool Podcasts::deletePodcast(const QString& name)
 	Query q(this);
 
 	q.prepare("DELETE FROM savedpodcasts WHERE name = :name;" );
-	q.bindValue(":name", name);
+	q.bindValue(":name", Util::cvt_not_null(name));
 
 	if(!q.exec()) {
 		q.show_error(QString("Could not delete podcast ") + name);
@@ -73,8 +74,8 @@ bool Podcasts::addPodcast(const QString& name, const QString& url)
 {
 	Query q(this);
 	q.prepare("INSERT INTO savedpodcasts (name, url) VALUES (:name, :url); " );
-	q.bindValue(":name", name);
-	q.bindValue(":url", url);
+	q.bindValue(":name",	Util::cvt_not_null(name));
+	q.bindValue(":url",		Util::cvt_not_null(url));
 
 	if(!q.exec()) {
 		sp_log(Log::Warning) << "Could not add podcast " << name << ", " << url;
@@ -91,8 +92,8 @@ bool Podcasts::updatePodcastUrl(const QString& name, const QString& url)
 	Query q(this);
 
 	q.prepare("UPDATE savedpodcasts SET url=:url WHERE name=:name;");
-	q.bindValue(":name", name);
-	q.bindValue(":url", url);
+	q.bindValue(":name",	Util::cvt_not_null(name));
+	q.bindValue(":url",		Util::cvt_not_null(url));
 
 	if(!q.exec()) {
 		q.show_error(QString("Could not update podcast url ") + name);

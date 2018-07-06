@@ -20,6 +20,7 @@
 
 #include "Database/DatabaseBookmarks.h"
 #include "Database/SayonaraQuery.h"
+#include "Utils/Utils.h"
 
 using DB::Bookmarks;
 using DB::Query;
@@ -53,13 +54,13 @@ bool Bookmarks::searchBookmarks(int track_id, QMap<Seconds, QString>& bookmarks)
 }
 
 
-bool Bookmarks::insertBookmark(int track_id, Seconds time, QString name)
+bool Bookmarks::insertBookmark(int track_id, Seconds time, const QString& name)
 {
 	Query q(this);
 	q.prepare("INSERT INTO savedbookmarks (trackid, name, timeidx) VALUES(:trackid, :name, :timeidx);");
-	q.bindValue(":trackid", track_id);
-	q.bindValue(":name", name);
-	q.bindValue(":timeidx", time);
+	q.bindValue(":trackid",	track_id);
+	q.bindValue(":name",	Util::cvt_not_null(name));
+	q.bindValue(":timeidx",	time);
 
 	if (!q.exec()){
 		q.show_error("Cannot insert bookmarks");

@@ -66,6 +66,8 @@ namespace Util
 	 */
 	QString cvt_ms_to_string(MilliSeconds msec, bool empty_zero = false, bool colon=true, bool show_days=true);
 
+	QString cvt_not_null(const QString& str);
+
 
 	/**
 	 * @brief get sayonara path in home directory

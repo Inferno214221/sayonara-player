@@ -22,6 +22,7 @@
 #include "Database/DatabaseAlbums.h"
 #include "Utils/MetaData/Album.h"
 #include "Utils/Library/Filter.h"
+#include "Utils/Utils.h"
 
 using DB::Albums;
 using DB::Query;
@@ -159,9 +160,10 @@ AlbumId Albums::getAlbumID(const QString& album)
 	int albumID = -1;
 
 	q.prepare("SELECT albumID FROM albums WHERE name = ?;");
-	q.addBindValue(album);
+	q.addBindValue(Util::cvt_not_null(album));
 
 	if(!q.exec()) {
+		q.show_error("Cannot fetch albumID");
 		return -1;
 	}
 
@@ -240,6 +242,7 @@ bool Albums::getAllAlbumsByArtist(IdList artists, AlbumList& result, const Libra
 					 ", GROUP_CONCAT(DISTINCT albumArtistName)"
 					 ", GROUP_CONCAT(DISTINCT discnumber)"
 					 " FROM " + m->search_view + " ";
+
 	QString query = select;
 
 	if( !filter.cleared() )
@@ -283,8 +286,8 @@ bool Albums::getAllAlbumsByArtist(IdList artists, AlbumList& result, const Libra
 
 	q.prepare(query);
 
-	q.bindValue(":searchterm", filter.filtertext(true));
-	q.bindValue(":cissearch", filter.search_mode_filtertext(true));
+	q.bindValue(":searchterm",	Util::cvt_not_null(filter.filtertext(true)));
+	q.bindValue(":cissearch",	Util::cvt_not_null(filter.search_mode_filtertext(true)));
 
 	for(int i=0; i<artists.size(); i++) {
 		q.bindValue(QString(":artist_id_") + QString::number(i), artists[i]);
@@ -348,8 +351,8 @@ bool Albums::getAllAlbumsBySearchString(const Library::Filter& filter, AlbumList
 	query += m->order_string(sortorder) + ";";
 
 	q.prepare(query);
-	q.bindValue(":searchterm", filter.filtertext(true));
-	q.bindValue(":cissearch", filter.search_mode_filtertext(true));
+	q.bindValue(":searchterm",	Util::cvt_not_null(filter.filtertext(true)));
+	q.bindValue(":cissearch",	Util::cvt_not_null(filter.search_mode_filtertext(true)));
 
 	return db_fetch_albums(q, result);
 }
@@ -366,10 +369,10 @@ int Albums::updateAlbum (const Album & album)
 
 	QString cissearch = Library::Util::convert_search_string(album.name(), search_mode());
 
-	q.bindValue(":id", album.id);
-	q.bindValue(":name", album.name());
-	q.bindValue(":cissearch", cissearch);
-	q.bindValue(":rating", album.rating);
+	q.bindValue(":id",			album.id);
+	q.bindValue(":name",		Util::cvt_not_null(album.name()));
+	q.bindValue(":cissearch",	Util::cvt_not_null(cissearch));
+	q.bindValue(":rating",		album.rating);
 
 	if (!q.exec()) {
 		q.show_error(QString("Cannot update album ") + album.name());
@@ -393,9 +396,10 @@ void Albums::updateAlbumCissearch()
 		QString str = "UPDATE albums SET cissearch=:cissearch WHERE albumID=:id;";
 		Query q(this);
 		QString cis = Library::Util::convert_search_string(album.name(), search_mode());
+
 		q.prepare(str);
-		q.bindValue(":cissearch", cis);
-		q.bindValue(":id", album.id);
+		q.bindValue(":cissearch",	Util::cvt_not_null(cis));
+		q.bindValue(":id",			album.id);
 
 		if(!q.exec()){
 			q.show_error("Cannot update album cissearch");
@@ -418,8 +422,8 @@ int Albums::insertAlbumIntoDatabase (const QString& album)
 
 	QString cissearch = Library::Util::convert_search_string(album, search_mode());
 	q.prepare("INSERT INTO albums (name, cissearch) values (:album, :cissearch);");
-	q.bindValue(":album", album);
-	q.bindValue(":cissearch", cissearch);
+	q.bindValue(":album",		Util::cvt_not_null(album));
+	q.bindValue(":cissearch",	Util::cvt_not_null(cissearch));
 
 	if (!q.exec()) {
 		q.show_error(QString("Cannot insert album ") + album + " to db");
@@ -440,9 +444,9 @@ int Albums::insertAlbumIntoDatabase (const Album& album)
 
 	q.prepare("INSERT INTO albums (name, cissearch, rating) values (:name, :cissearch, :rating);");
 
-	q.bindValue(":name", album.name());
-	q.bindValue(":cissearch", cissearch);
-	q.bindValue(":rating", album.rating);
+	q.bindValue(":name",		Util::cvt_not_null(album.name()));
+	q.bindValue(":cissearch",	Util::cvt_not_null(cissearch));
+	q.bindValue(":rating",		album.rating);
 
 	if (!q.exec()) {
 		q.show_error("SQL: Cannot insert album into database");

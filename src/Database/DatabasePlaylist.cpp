@@ -24,6 +24,7 @@
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Playlist/CustomPlaylist.h"
 #include "Utils/MetaData/Genre.h"
+#include "Utils/Utils.h"
 
 using DB::Query;
 
@@ -284,7 +285,7 @@ int DB::Playlist::getPlaylistIdByName(const QString& name)
 	Query q(this);
 
 	q.prepare("SELECT playlistid FROM playlists WHERE playlist = :playlist_name;");
-	q.bindValue(":playlist_name", name);
+	q.bindValue(":playlist_name", Util::cvt_not_null(name));
 
 	if(!q.exec()) {
 		q.show_error(QString("Playlist by name: Cannot fetch playlist ") + name);
@@ -317,10 +318,11 @@ bool DB::Playlist::insertTrackIntoPlaylist(const MetaData& md, int playlist_id, 
 
 
 	q.prepare(query_string);
+
 	q.bindValue(":track_id", md.id);
 	q.bindValue(":playlist_id", playlist_id);
 	q.bindValue(":position", pos);
-	q.bindValue(":filepath", md.filepath());
+	q.bindValue(":filepath", Util::cvt_not_null(md.filepath()));
 	q.bindValue(":db_id", md.db_id());
 
 	if (!q.exec()) {
@@ -343,8 +345,8 @@ int DB::Playlist::createPlaylist(QString playlist_name, bool temporary)
 	Query q(this);
 
 	q.prepare(query_string);
-	q.bindValue(":playlist_name", QVariant(playlist_name));
-	q.bindValue(":temporary", QVariant(temporary_int));
+	q.bindValue(":playlist_name",	Util::cvt_not_null(playlist_name));
+	q.bindValue(":temporary",		temporary_int);
 
 	if(!q.exec()) {
 		q.show_error("Cannot create playlist");
@@ -362,7 +364,7 @@ bool DB::Playlist::renamePlaylist(int id, const QString& new_name)
 	Query q(this);
 
 	q.prepare(query_string);
-	q.bindValue(":playlist_name", new_name);
+	q.bindValue(":playlist_name", Util::cvt_not_null(new_name));
 	q.bindValue(":id", id);
 
 	if(!q.exec()) {

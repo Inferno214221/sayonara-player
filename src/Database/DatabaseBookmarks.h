@@ -34,7 +34,7 @@ namespace DB
 		~Bookmarks();
 
 		bool searchBookmarks(int track_id, QMap<Seconds, QString>& bookmarks);
-		bool insertBookmark(int track_id, Seconds time, QString text);
+		bool insertBookmark(int track_id, Seconds time, const QString& text);
 		bool removeBookmark(int track_id, Seconds time);
 		bool removeAllBookmarks(int track_id);
 	};

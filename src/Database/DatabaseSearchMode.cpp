@@ -21,6 +21,7 @@
 #include "Database/DatabaseSearchMode.h"
 #include "Database/SayonaraQuery.h"
 #include "Utils/Settings/Settings.h"
+#include "Utils/Utils.h"
 
 using DB::SearchMode;
 
@@ -56,7 +57,7 @@ void SearchMode::init()
 
 	Query q_select(this);
 	q_select.prepare("SELECT value FROM settings WHERE key = :key;");
-	q_select.bindValue(":key", db_key);
+	q_select.bindValue(":key", Util::cvt_not_null(db_key));
 	if(q_select.exec())
 	{
 		if(q_select.next()){
@@ -91,8 +92,8 @@ void SearchMode::update_search_mode()
 
 	Query q_update(this);
 	q_update.prepare("UPDATE settings SET value=:search_mode WHERE key = :key;");
-	q_update.bindValue(":search_mode", search_mode);
-	q_update.bindValue(":key", db_key);
+	q_update.bindValue(":search_mode",	search_mode);
+	q_update.bindValue(":key",			Util::cvt_not_null(db_key));
 	if(!q_update.exec()){
 		q_update.show_error("Cannot update search mode");
 	}

@@ -127,14 +127,19 @@ void AbstractLibrary::refetch()
 
 void AbstractLibrary::refresh()
 {
+	/* Waring! Sorting after each fetch is important here! */
+	/* Do not call emit_stuff() in order to avoid double sorting */
 	IndexSet sel_artists_idx, sel_albums_idx, sel_tracks_idx;
 
 	IdSet sel_artists = m->selected_artists;
 	IdSet sel_albums = m->selected_albums;
 	IdSet sel_tracks = m->selected_tracks;
 
+	sp_log(Log::Debug, this) << "refresh(): Selected track ids" << sel_tracks;
+
 	fetch_by_filter(m->filter, true);
 
+	_artists.sort(m->sortorder.so_artists);
 	for(int i=0; i<_artists.count(); i++){
 		if(sel_artists.contains(_artists[i].id)) {
 			sel_artists_idx.insert(i);
@@ -143,6 +148,7 @@ void AbstractLibrary::refresh()
 
 	change_artist_selection(sel_artists_idx);
 
+	_albums.sort(m->sortorder.so_albums);
 	for(int i=0; i<_albums.count(); i++){
 		if(sel_albums.contains(_albums[i].id)) {
 			sel_albums_idx.insert(i);
@@ -151,6 +157,7 @@ void AbstractLibrary::refresh()
 
 	change_album_selection(sel_albums_idx);
 
+	_tracks.sort(m->sortorder.so_tracks);
 	for(int i=0; i<_tracks.count(); i++)
 	{
 		if(sel_tracks.contains(_tracks[i].id)) {
@@ -158,7 +165,9 @@ void AbstractLibrary::refresh()
 		}
 	}
 
-	emit_stuff();
+	emit sig_all_albums_loaded();
+	emit sig_all_artists_loaded();
+	emit sig_all_tracks_loaded();
 
 	if(sel_tracks_idx.size() > 0)
 	{
@@ -453,10 +462,13 @@ void AbstractLibrary::change_track_selection(const IndexSet& indexes)
 		}
 
 		const MetaData& md = _tracks[idx];
+		sp_log(Log::Debug, this) << "change_track_selection(): track at " << idx << " has id " << md.id;
 
 		m->current_tracks << md;
 		m->selected_tracks.insert(md.id);
 	}
+
+	sp_log(Log::Debug, this) << "change_track_selection(): " << m->selected_tracks;
 }
 
 
@@ -586,41 +598,10 @@ void AbstractLibrary::change_artist_sortorder(Library::SortOrder s)
 
 void AbstractLibrary::metadata_id3_changed(const MetaDataList& v_md_old, const MetaDataList& v_md_new)
 {
-	// id -> idx
-	QHash<TrackID, int> md_map;
-
-	for(int i=0; i<_tracks.count(); i++)
-	{
-		TrackID id = _tracks[i].id;
-		md_map[id] = i;
-	}
-
-	// check for new artists and albums
-	for(int i=0; i<v_md_old.count(); i++)
-	{
-		TrackID id = v_md_old[i].id;
-		ArtistId new_artist_id = v_md_new[i].artist_id;
-		AlbumId new_album_id = v_md_new[i].album_id;
-
-		if( v_md_old[i].artist_id != new_artist_id )
-		{
-			m->selected_artists.insert(new_artist_id);
-		}
-
-		if( v_md_old[i].album_id != new_album_id)
-		{
-			m->selected_albums.insert(new_album_id);
-		}
-
-		if(md_map.contains(id))
-		{
-			int val = md_map[id];
-			_tracks[val] = v_md_new[i];
-		}
-	}
+	Q_UNUSED(v_md_old)
+	Q_UNUSED(v_md_new)
 
 	refresh();
-	emit_stuff();
 }
 
 void AbstractLibrary::update_tracks(const MetaDataList& v_md)

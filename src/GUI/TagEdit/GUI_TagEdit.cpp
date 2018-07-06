@@ -389,20 +389,36 @@ void GUI_TagEdit::init_completer()
 	lib_db->getAllArtists(artists, true);
 
 	for(const Album& album : albums){
-		albumstr << album.name();
+		if(!album.name().isEmpty()){
+			albumstr << album.name();
+		}
 	}
 
 	for(const Artist& artist : artists){
-		artiststr << artist.name();
+		if(!artist.name().isEmpty()){
+			artiststr << artist.name();
+		}
 	}
 
-	Gui::Completer* album_completer = new Gui::Completer(albumstr, this);
+	if(ui->le_album->completer()){
+		ui->le_album->completer()->deleteLater();
+	}
+
+	if(ui->le_artist->completer()){
+		ui->le_artist->completer()->deleteLater();
+	}
+
+	if(ui->le_album_artist->completer()){
+		ui->le_album_artist->completer()->deleteLater();
+	}
+
+	Gui::Completer* album_completer = new Gui::Completer(albumstr, ui->le_album);
 	ui->le_album->setCompleter(album_completer);
 
-	Gui::Completer* album_artist_completer = new Gui::Completer(artiststr, this);
+	Gui::Completer* album_artist_completer = new Gui::Completer(artiststr, ui->le_album_artist);
 	ui->le_album_artist->setCompleter(album_artist_completer);
 
-	Gui::Completer* artist_completer = new Gui::Completer(artiststr, this);
+	Gui::Completer* artist_completer = new Gui::Completer(artiststr, ui->le_artist);
 	ui->le_artist->setCompleter(artist_completer);
 }
 
