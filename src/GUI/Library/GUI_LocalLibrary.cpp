@@ -354,6 +354,7 @@ void GUI_LocalLibrary::init_album_cover_view()
 
 	m->acv = new Library::CoverView(m->library, ui->cover_topbar, ui->page_cover);
 	connect(m->acv, &ItemView::sig_merge, m->library, &LocalLibrary::merge_albums);
+	connect(m->acv, &ItemView::sig_delete_clicked, this, &GUI_LocalLibrary::item_delete_clicked);
 
 	QLayout* layout = ui->page_cover->layout();
 	if(layout){
