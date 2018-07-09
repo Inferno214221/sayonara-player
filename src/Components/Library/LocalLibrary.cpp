@@ -70,7 +70,8 @@ LocalLibrary::LocalLibrary(LibraryId library_id, QObject *parent) :
 	connect(plh, &Playlist::Handler::sig_track_deletion_requested,
 			this, &LocalLibrary::delete_tracks);
 
-	Set::listen<Set::Lib_SearchMode>(this, &LocalLibrary::_sl_search_mode_changed, false);
+	Set::listen<Set::Lib_SearchMode>(this, &LocalLibrary::search_mode_changed, false);
+	Set::listen<Set::Lib_ShowAlbumArtists>(this, &LocalLibrary::show_album_artists_changed, false);
 }
 
 LocalLibrary::~LocalLibrary() {}
@@ -111,7 +112,7 @@ void LocalLibrary::reload_thread_finished()
 	emit sig_reloading_library_finished();
 }
 
-void LocalLibrary::_sl_search_mode_changed()
+void LocalLibrary::search_mode_changed()
 {
 	sp_log(Log::Debug, this) << "Updating cissearch... " << _settings->get<Set::Lib_SearchMode>();
 
@@ -120,6 +121,31 @@ void LocalLibrary::_sl_search_mode_changed()
 	m->library_db->updateTrackCissearch();
 
 	sp_log(Log::Debug, this) << "Updating cissearch finished" << _settings->get<Set::Lib_SearchMode>();
+}
+
+
+void LocalLibrary::show_album_artists_changed()
+{
+	bool show_album_artists = _settings->get<Set::Lib_ShowAlbumArtists>();
+
+	DB::LibraryDatabases dbs = m->db->library_dbs();
+	for(DB::LibraryDatabase* lib_db : dbs)
+	{
+		if(lib_db->db_id() == 0)
+		{
+			if(show_album_artists)
+			{
+				lib_db->change_artistid_field(DB::LibraryDatabase::ArtistIDField::AlbumArtistID);
+			}
+
+			else
+			{
+				lib_db->change_artistid_field(DB::LibraryDatabase::ArtistIDField::ArtistID);
+			}
+		}
+	}
+
+	refresh();
 }
 
 
@@ -408,27 +434,6 @@ void LocalLibrary::merge_albums(const SP::Set<AlbumId>& album_ids, AlbumId targe
 	tag_edit()->commit();
 }
 
-void LocalLibrary::show_album_artists_changed(bool show_album_artists)
-{
-	DB::LibraryDatabases dbs = m->db->library_dbs();
-	for(DB::LibraryDatabase* lib_db : dbs)
-	{
-		if(lib_db->db_id() == 0)
-		{
-			if(show_album_artists)
-			{
-				lib_db->change_artistid_field(DB::LibraryDatabase::ArtistIDField::AlbumArtistID);
-			}
-
-			else
-			{
-				lib_db->change_artistid_field(DB::LibraryDatabase::ArtistIDField::ArtistID);
-			}
-		}
-	}
-
-	refresh();
-}
 
 void LocalLibrary::change_track_rating(int idx, Rating rating)
 {

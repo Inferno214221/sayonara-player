@@ -57,21 +57,21 @@ using namespace Gui;
 
 struct PlaylistView::Private
 {
+	int						playlist_index;
+
 	PlaylistContextMenu*	context_menu=nullptr;
 
 	PlaylistItemModel*		model=nullptr;
 	PlaylistItemDelegate*	delegate=nullptr;
 
-	ProgressBar*            progress=nullptr;
+	ProgressBar*            progressbar=nullptr;
 
-	int						playlist_index;
 
 	Private(PlaylistPtr pl, PlaylistView* parent) :
+		playlist_index(pl->index()),
 		model(new PlaylistItemModel(pl, parent)),
 		delegate(new PlaylistItemDelegate(parent))
-	{
-		playlist_index = pl->index();
-	}
+	{}
 };
 
 PlaylistView::PlaylistView(PlaylistPtr pl, QWidget* parent) :
@@ -81,11 +81,11 @@ PlaylistView::PlaylistView(PlaylistPtr pl, QWidget* parent) :
 {
 	m = Pimpl::make<Private>(pl, this);
 
-	setObjectName("playlist_view" + QString::number(pl->index()));
-	setModel(m->model);
-	set_search_model(m->model);
-	setItemDelegate(m->delegate);
+	this->setObjectName("playlist_view" + QString::number(pl->index()));
+	this->setModel(m->model);
+	this->setItemDelegate(m->delegate);
 
+	set_search_model(m->model);
 	init_view();
 
 	new QShortcut(QKeySequence(Qt::Key_Backspace), this, SLOT(clear()), nullptr, Qt::WidgetShortcut);
@@ -243,11 +243,11 @@ void PlaylistView::handle_drop(QDropEvent* event)
 	if(!playlists.isEmpty())
 	{
 		this->setEnabled(false);
-		if(!m->progress) {
-			m->progress = new ProgressBar(this);
+		if(!m->progressbar) {
+			m->progressbar = new ProgressBar(this);
 		}
 
-		m->progress->show();
+		m->progressbar->show();
 
 		QString cover_url = MimeData::cover_url(mimedata);
 
@@ -266,7 +266,7 @@ void PlaylistView::handle_drop(QDropEvent* event)
 void PlaylistView::async_drop_finished(bool success, int async_drop_index)
 {
 	this->setEnabled(true);
-	m->progress->hide();
+	m->progressbar->hide();
 
 	StreamParser* stream_parser = dynamic_cast<StreamParser*>(sender());
 
@@ -422,7 +422,6 @@ void PlaylistView::contextMenuEvent(QContextMenuEvent* e)
 
 	SearchableTableView::contextMenuEvent(e);
 }
-
 
 void PlaylistView::mousePressEvent(QMouseEvent* event)
 {

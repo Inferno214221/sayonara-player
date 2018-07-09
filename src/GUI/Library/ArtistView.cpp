@@ -26,16 +26,21 @@
 #include "GUI/Library/ArtistModel.h"
 #include "GUI/Library/Utils/ColumnIndex.h"
 #include "GUI/Library/Utils/ColumnHeader.h"
+
 #include "GUI/Utils/Delegates/StyledItemDelegate.h"
+#include "GUI/Utils/ContextMenu/LibraryContextMenu.h"
+
 #include "Utils/Settings/Settings.h"
 #include "Utils/Library/Sorting.h"
+#include "Utils/Language.h"
 
 
 using namespace Library;
 
 struct ArtistView::Private
 {
-	AbstractLibrary* library=nullptr;
+	AbstractLibrary*	library=nullptr;
+	QAction*			album_artist_action=nullptr;
 };
 
 ArtistView::ArtistView(QWidget* parent) :
@@ -62,6 +67,25 @@ void ArtistView::init_view(AbstractLibrary* library)
 
 	Set::listen<Set::Lib_UseViewClearButton>(this, &ArtistView::use_clear_button_changed);
 }
+
+void ArtistView::init_context_menu()
+{
+	ItemView::init_context_menu();
+	LibraryContextMenu* menu = context_menu();
+
+	m->album_artist_action = new QAction(menu);
+	m->album_artist_action->setCheckable(true);
+	m->album_artist_action->setChecked(_settings->get<Set::Lib_ShowAlbumArtists>());
+	Set::listen<Set::Lib_ShowAlbumCovers>(this, &ArtistView::album_artists_changed);
+
+	connect(m->album_artist_action, &QAction::triggered, this, &ArtistView::album_artists_triggered);
+
+	QAction* action = menu->get_action(LibraryContextMenu::EntryCoverView);
+	menu->insertAction(action, m->album_artist_action);
+
+	language_changed();
+}
+
 
 ColumnHeaderList ArtistView::column_headers() const
 {
@@ -97,13 +121,19 @@ void ArtistView::save_sortorder(SortOrder s)
 	m->library->change_artist_sortorder(s);
 }
 
+void ArtistView::language_changed()
+{
+	if(m->album_artist_action){
+		m->album_artist_action->setText(Lang::get(Lang::ShowAlbumArtists));
+	}
+}
+
 void ArtistView::selection_changed(const IndexSet& indexes)
 {
 	TableView::selection_changed(indexes);
 	m->library->selected_artists_changed(indexes);
 }
 
-void ArtistView::merge_action_triggered() {}
 
 void ArtistView::play_clicked()
 {
@@ -157,4 +187,15 @@ void ArtistView::use_clear_button_changed()
 {
 	bool b = _settings->get<Set::Lib_UseViewClearButton>();
 	use_clear_button(b);
+}
+
+void ArtistView::album_artists_triggered(bool b)
+{
+	Q_UNUSED(b)
+	_settings->set<Set::Lib_ShowAlbumArtists>(m->album_artist_action->isChecked());
+}
+
+void ArtistView::album_artists_changed()
+{
+	m->album_artist_action->setChecked(_settings->get<Set::Lib_ShowAlbumArtists>());
 }

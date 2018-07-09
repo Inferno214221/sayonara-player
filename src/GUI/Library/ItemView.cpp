@@ -54,6 +54,7 @@ struct Library::ItemView::Private
 {
 	QPushButton*		btn_clear_selection=nullptr;
 	QAction*			merge_action=nullptr;
+	QAction*			album_artist_action=nullptr;
 	QMenu*				merge_menu=nullptr;
 	LibraryContextMenu*	context_menu=nullptr;
 
@@ -127,6 +128,8 @@ void ItemView::init_context_menu()
 	m->merge_menu = new QMenu(tr("Merge"), m->context_menu);
 	m->merge_action = m->context_menu->addMenu(m->merge_menu);
 	m->merge_action->setVisible(false);
+	QAction* action_clear = m->context_menu->get_action(LibraryContextMenu::EntryClearSelection);
+	m->context_menu->insertAction(action_clear, m->merge_action);
 
 	connect(m->context_menu, &LibraryContextMenu::sig_edit_clicked, this, [=](){
 		show_edit();
@@ -306,7 +309,7 @@ MD::Interpretation ItemView::metadata_interpretation() const
 
 void ItemView::merge_action_triggered()
 {
-	QAction* action = dynamic_cast<QAction*>(sender());
+	QAction* action = static_cast<QAction*>(sender());
 	int id = action->data().toInt();
 
 	IndexSet selected_items = this->selected_items();
@@ -528,8 +531,9 @@ void ItemView::contextMenuEvent(QContextMenuEvent* event)
 
 				QAction* action = new QAction(name, m->merge_menu);
 				action->setData(id);
-				m->merge_menu->addAction(action);
 				connect(action, &QAction::triggered, this, &ItemView::merge_action_triggered);
+
+				m->merge_menu->addAction(action);
 			}
 
 			m->merge_action->setVisible(n_selections > 1);

@@ -120,16 +120,15 @@ signals:
 
 
 private slots:
-	void show_covers_changed();
-	void cover_view_action_triggered();
+	void show_cover_view_changed();
+	void show_cover_triggered(bool b);
+
 
 protected:
 	QAction* init_rating_action(Rating rating, QObject* parent);
 
 	void skin_changed() override;
 	void language_changed() override;
-
-
 };
 
 #endif // LIBRARYCONTEXTMENU_H

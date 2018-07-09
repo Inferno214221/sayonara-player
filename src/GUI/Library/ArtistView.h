@@ -40,7 +40,6 @@ namespace Library
 		// ItemView interface
 		protected:
 			void selection_changed(const IndexSet& indexes) override;
-			void merge_action_triggered() override;
 			void play_next_clicked() override;
 			void middle_clicked() override;
 			void append_clicked() override;
@@ -53,16 +52,22 @@ namespace Library
 			void init_view(AbstractLibrary* library) override;
 			ColumnHeaderList column_headers() const override;
 
+			void init_context_menu() override;
+
 			BoolList visible_columns() const override;
 			void save_visible_columns(const BoolList& columns) override;
 
 			Library::SortOrder sortorder() const override;
 			void save_sortorder(Library::SortOrder s) override;
 
+			void language_changed() override;
+
 		private slots:
 			void double_clicked(const QModelIndex& index);
 			void artists_ready();
 			void use_clear_button_changed();
+			void album_artists_changed();
+			void album_artists_triggered(bool b);
 	};
 }
 

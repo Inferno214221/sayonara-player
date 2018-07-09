@@ -68,13 +68,11 @@ public slots:
 	void merge_artists(const SP::Set<ArtistId>& artist_ids, ArtistId target_artist_id);
 	void merge_albums(const SP::Set<AlbumId>& albums_ids, AlbumId target_album_id);
 
-	void show_album_artists_changed(bool show_album_artists);
-
 protected slots:
 	void library_reloading_state_new_block();
 	void reload_thread_finished();
-	void _sl_search_mode_changed();
-
+	void search_mode_changed();
+	void show_album_artists_changed();
 
 private:
 	void get_all_artists(ArtistList& artists) override;

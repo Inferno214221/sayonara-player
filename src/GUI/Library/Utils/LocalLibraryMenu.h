@@ -45,9 +45,9 @@ namespace Library
 		void sig_import_file();
 		void sig_import_folder();
 		void sig_info();
+
 		void sig_name_changed(const QString& name);
 		void sig_path_changed(const QString& path);
-		void sig_show_album_artists_changed(bool show_album_artists);
 
 	public:
 		explicit LocalLibraryMenu(const QString& name, const QString& path, QWidget* parent=nullptr);
@@ -68,15 +68,16 @@ namespace Library
 		void skin_changed() override;
 
 	private slots:
-		void show_album_cover_view_changed();
+		void show_album_covers_triggered(bool b);
+		void show_album_artists_triggered(bool b);
+
+		void show_album_covers_changed();
 		void show_album_artists_changed();
 
 		void realtime_search_changed();
 
 		void edit_clicked();
 		void edit_accepted();
-
-		void show_album_covers_changed();
 	};
 }
 

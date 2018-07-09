@@ -75,7 +75,10 @@ LibraryContextMenu::LibraryContextMenu(QWidget* parent) :
 	m->refresh_action = new QAction(this);
 	m->clear_action = new QAction(this);
 	m->clear_selection_action = new QAction(this);
+
 	m->cover_view_action = new QAction(this);
+	m->cover_view_action->setCheckable(true);
+	Set::listen<Set::Lib_ShowAlbumCovers>(this, &LibraryContextMenu::show_cover_view_changed);
 
 	m->rating_menu = new QMenu(this);
 
@@ -100,7 +103,7 @@ LibraryContextMenu::LibraryContextMenu(QWidget* parent) :
 	connect(m->refresh_action, &QAction::triggered, this, &LibraryContextMenu::sig_refresh_clicked);
 	connect(m->clear_action, &QAction::triggered, this, &LibraryContextMenu::sig_clear_clicked);
 	connect(m->clear_selection_action, &QAction::triggered, this, &LibraryContextMenu::sig_clear_selection_clicked);
-	connect(m->cover_view_action, &QAction::triggered, this, &LibraryContextMenu::cover_view_action_triggered);
+	connect(m->cover_view_action, &QAction::triggered, this, &LibraryContextMenu::show_cover_triggered);
 
 	QList<QAction*> actions;
 	actions << m->play_action
@@ -145,6 +148,8 @@ LibraryContextMenu::LibraryContextMenu(QWidget* parent) :
 	{
 		action->setVisible(action->isSeparator());
 	}
+
+
 }
 
 LibraryContextMenu::~LibraryContextMenu() {}
@@ -164,18 +169,7 @@ void LibraryContextMenu::language_changed()
 	m->clear_action->setText(Lang::get(Lang::Clear));
 	m->rating_action->setText(Lang::get(Lang::Rating));
 	m->clear_selection_action->setText(tr("Clear selection"));
-
-	bool show_covers = _settings->get<Set::Lib_ShowAlbumCovers>();
-
-	if(show_covers)
-	{
-		m->cover_view_action->setText(tr("Table view"));
-	}
-
-	else
-	{
-		m->cover_view_action->setText(tr("Cover view"));
-	}
+	m->cover_view_action->setText(tr("Cover view"));
 }
 
 
@@ -195,18 +189,6 @@ void LibraryContextMenu::skin_changed()
 	m->clear_action->setIcon(Icons::icon(Icons::Clear));
 	m->rating_action->setIcon(Icons::icon(Icons::Star));
 	m->clear_selection_action->setIcon(Icons::icon(Icons::Clear));
-
-	bool show_covers = _settings->get<Set::Lib_ShowAlbumCovers>();
-
-	if(show_covers)
-	{
-		m->cover_view_action->setIcon(Icons::icon(Icons::Table));
-	}
-
-	else
-	{
-		m->cover_view_action->setIcon(Icons::icon(Icons::Image));
-	}
 }
 
 LibraryContexMenuEntries LibraryContextMenu::get_entries() const
@@ -310,23 +292,14 @@ QAction* LibraryContextMenu::add_preference_action(PreferenceAction* action)
 	return action;
 }
 
-void LibraryContextMenu::show_covers_changed()
+void LibraryContextMenu::show_cover_view_changed()
 {
-	bool show_covers = _settings->get<Set::Lib_ShowAlbumCovers>();
-
-	if(show_covers)
-	{
-		m->cover_view_action->setText(tr("Table view"));
-	}
-
-	else
-	{
-		m->cover_view_action->setText(tr("Cover view"));
-	}
+	m->cover_view_action->setChecked(_settings->get<Set::Lib_ShowAlbumCovers>());
 }
 
-void LibraryContextMenu::cover_view_action_triggered()
+void LibraryContextMenu::show_cover_triggered(bool b)
 {
+	Q_UNUSED(b)
 	bool show_covers = _settings->get<Set::Lib_ShowAlbumCovers>();
 	_settings->set<Set::Lib_ShowAlbumCovers>(!show_covers);
 }
