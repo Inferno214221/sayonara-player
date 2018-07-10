@@ -61,9 +61,7 @@ struct GUI_LocalLibrary::Private
 	Manager*				manager = nullptr;
 	LocalLibrary*			library = nullptr;
 	GUI_ImportDialog*		ui_importer = nullptr;
-	GUI_CoverView*			acv = nullptr;
 	LocalLibraryMenu*		library_menu = nullptr;
-
 
 	Private(LibraryId id, GUI_LocalLibrary* parent)
 	{

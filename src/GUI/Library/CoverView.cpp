@@ -110,73 +110,21 @@ void CoverView::albums_ready()
 
 QList<ActionPair> CoverView::sorting_options() const
 {
-	QList<ActionPair> ret;
-	ActionPair ap;
-	ap = ActionPair(QString("%1 (%2)")
-					.arg(Lang::get(Lang::Name),
-						 Lang::get(Lang::Ascending)),
-					Library::SortOrder::AlbumNameAsc
-					);
+	using namespace Library;
 
-	ret << ap;
+	QList<ActionPair> ret
+	{
+		ActionPair(Lang::Name, Lang::Ascending, SortOrder::AlbumNameAsc),
+		ActionPair(Lang::Name, Lang::Descending, SortOrder::AlbumNameDesc),
+		ActionPair(Lang::Year, Lang::Ascending, SortOrder::AlbumYearAsc),
+		ActionPair(Lang::Year, Lang::Descending, SortOrder::AlbumYearDesc),
+		ActionPair(Lang::NumTracks, Lang::Ascending, SortOrder::AlbumTracksAsc),
+		ActionPair(Lang::NumTracks, Lang::Descending, SortOrder::AlbumTracksDesc),
+		ActionPair(Lang::Duration, Lang::Ascending, SortOrder::AlbumDurationAsc),
+		ActionPair(Lang::Duration, Lang::Descending, SortOrder::AlbumDurationDesc)
+	};
 
-	ap = ActionPair(QString("%1 (%2)")
-					.arg(Lang::get(Lang::Name),
-						 Lang::get(Lang::Descending)),
-					Library::SortOrder::AlbumNameDesc
-					);
-
-	ret << ap;
-
-	ap = ActionPair(QString("%1 (%2)")
-					.arg(Lang::get(Lang::Year),
-						 Lang::get(Lang::Ascending)),
-					Library::SortOrder::AlbumYearAsc
-					);
-
-	ret << ap;
-
-	ap = ActionPair(QString("%1 (%2)")
-					.arg(Lang::get(Lang::Year),
-						 Lang::get(Lang::Descending)),
-					Library::SortOrder::AlbumYearDesc
-					);
-
-	ret << ap;
-
-	ap = ActionPair(QString("%1 (%2)")
-					.arg(Lang::get(Lang::NumTracks),
-						 Lang::get(Lang::Ascending)),
-					Library::SortOrder::AlbumTracksAsc
-					);
-
-	ret << ap;
-
-	ap = ActionPair(QString("%1 (%2)")
-					.arg(Lang::get(Lang::NumTracks),
-						 Lang::get(Lang::Descending)),
-					Library::SortOrder::AlbumTracksDesc
-					);
-
-	ret << ap;
-
-	ap = ActionPair(QString("%1 (%2)")
-					.arg(Lang::get(Lang::Duration),
-						 Lang::get(Lang::Ascending)),
-					Library::SortOrder::AlbumDurationAsc
-					);
-
-	ret << ap;
-
-	ap = ActionPair(QString("%1 (%2)")
-					.arg(Lang::get(Lang::Duration),
-						 Lang::get(Lang::Descending)),
-					Library::SortOrder::AlbumDurationDesc
-					);
-
-	ret << ap;
 	return ret;
-
 }
 
 QStringList CoverView::zoom_actions() const

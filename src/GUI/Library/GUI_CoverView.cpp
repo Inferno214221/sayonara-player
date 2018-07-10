@@ -125,7 +125,7 @@ void GUI_CoverView::combo_zoom_changed(int idx)
 	ui->tb_view->change_zoom(ui->combo_zoom->currentText().toInt());
 }
 
-// todo: connect to signal in coverview
+
 void GUI_CoverView::zoom_changed(int zoom)
 {
 	for(int i=0; i<ui->combo_zoom->count(); i++)
