@@ -50,17 +50,18 @@ DirectoryContextMenu::DirectoryContextMenu(DirectoryContextMenu::Mode mode, QWid
 {
 	m = Pimpl::make<Private>(mode, this);
 
-	LibraryContexMenuEntries entries =
-			(LibraryContextMenu::EntryPlay |
-			LibraryContextMenu::EntryPlayNewTab |
-			LibraryContextMenu::EntryDelete |
-			LibraryContextMenu::EntryInfo |
-			LibraryContextMenu::EntryEdit |
-			LibraryContextMenu::EntryLyrics |
-			LibraryContextMenu::EntryAppend |
-			LibraryContextMenu::EntryPlayNext);
+	this->show_actions
+	(
+		(LibraryContextMenu::EntryPlay |
+		LibraryContextMenu::EntryPlayNewTab |
+		LibraryContextMenu::EntryDelete |
+		LibraryContextMenu::EntryInfo |
+		LibraryContextMenu::EntryEdit |
+		LibraryContextMenu::EntryLyrics |
+		LibraryContextMenu::EntryAppend |
+		LibraryContextMenu::EntryPlayNext)
+	);
 
-	this->show_actions(entries);
 	QAction* separator = this->addSeparator();
 
 	QAction* action	= this->get_action(LibraryContextMenu::EntryDelete);

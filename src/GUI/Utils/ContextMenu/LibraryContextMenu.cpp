@@ -191,9 +191,9 @@ void LibraryContextMenu::skin_changed()
 	m->clear_selection_action->setIcon(Icons::icon(Icons::Clear));
 }
 
-LibraryContexMenuEntries LibraryContextMenu::get_entries() const
+LibraryContextMenu::Entries LibraryContextMenu::get_entries() const
 {
-	LibraryContexMenuEntries entries = EntryNone;
+	LibraryContextMenu::Entries entries = EntryNone;
 
 	for(auto it=m->entry_action_map.cbegin(); it != m->entry_action_map.cend(); it++)
 	{
@@ -207,7 +207,7 @@ LibraryContexMenuEntries LibraryContextMenu::get_entries() const
 }
 
 
-void LibraryContextMenu::show_actions(LibraryContexMenuEntries entries)
+void LibraryContextMenu::show_actions(LibraryContextMenu::Entries entries)
 {
 	for(auto it=m->entry_action_map.cbegin(); it != m->entry_action_map.cend(); it++)
 	{
@@ -216,8 +216,9 @@ void LibraryContextMenu::show_actions(LibraryContexMenuEntries entries)
 	}
 }
 
-void LibraryContextMenu::show_action(LibraryContextMenu::Entry entry, bool visible){
-	LibraryContexMenuEntries entries = this->get_entries();
+void LibraryContextMenu::show_action(LibraryContextMenu::Entry entry, bool visible)
+{
+	LibraryContextMenu::Entries entries = this->get_entries();
 	if(visible){
 		entries |= entry;
 	}

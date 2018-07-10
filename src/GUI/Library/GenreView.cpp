@@ -107,7 +107,7 @@ bool GenreView::has_items() const
 	return (n_rows > 0);
 }
 
-void GenreView::set_local_library(LocalLibrary* library)
+void GenreView::init(LocalLibrary* library)
 {
 	m->genre_fetcher->set_local_library(library);
 }

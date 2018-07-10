@@ -33,7 +33,7 @@
 #include "GUI/Library/InfoBox/GUI_LibraryInfoBox.h"
 #include "GUI/Library/GUI_ReloadLibraryDialog.h"
 #include "GUI/Library/Utils/LocalLibraryMenu.h"
-#include "GUI/Library/CoverView.h"
+#include "GUI/Library/GUI_CoverView.h"
 
 #include "GUI/ImportDialog/GUI_ImportDialog.h"
 
@@ -61,8 +61,9 @@ struct GUI_LocalLibrary::Private
 	Manager*				manager = nullptr;
 	LocalLibrary*			library = nullptr;
 	GUI_ImportDialog*		ui_importer = nullptr;
+	GUI_CoverView*			acv = nullptr;
 	LocalLibraryMenu*		library_menu = nullptr;
-	CoverView*				acv = nullptr;
+
 
 	Private(LibraryId id, GUI_LocalLibrary* parent)
 	{
@@ -84,8 +85,13 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 
 	setup_parent(this, &ui);
 
+	ui->lv_genres->init(m->library);
+	ui->cover_view->init(m->library);
+
 	ui->pb_progress->setVisible(false);
 	ui->lab_progress->setVisible(false);
+
+	Library::ItemView* cover_view = ui->cover_view->cover_view();
 
 	int entries = (
 			LibraryContextMenu::EntryPlay |
@@ -100,6 +106,8 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 	lv_artist()->show_context_menu_actions(entries);
 	lv_album()->show_context_menu_actions(entries);
 	lv_tracks()->show_context_menu_actions(entries | LibraryContextMenu::EntryLyrics);
+	cover_view->show_context_menu_actions(entries);
+
 
 	connect(m->library, &LocalLibrary::sig_reloading_library, this, &GUI_LocalLibrary::progress_changed);
 	connect(m->library, &LocalLibrary::sig_reloading_library_finished, this, &GUI_LocalLibrary::reload_finished);
@@ -115,6 +123,9 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 
 	connect(ui->lv_album, &ItemView::sig_merge, m->library, &LocalLibrary::merge_albums);
 	connect(ui->lv_artist, &ItemView::sig_merge, m->library, &LocalLibrary::merge_artists);
+
+	connect(cover_view, &ItemView::sig_merge, m->library, &LocalLibrary::merge_albums);
+	connect(cover_view, &ItemView::sig_delete_clicked, this, &GUI_LocalLibrary::item_delete_clicked);
 
 	connect(ui->lv_genres, &QAbstractItemView::clicked, this, &GUI_LocalLibrary::genre_selection_changed);
 	connect(ui->lv_genres, &QAbstractItemView::activated, this, &GUI_LocalLibrary::genre_selection_changed);
@@ -136,9 +147,8 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 
 	setAcceptDrops(true);
 
+	genres_reloaded();
 	QTimer::singleShot(100, m->library, SLOT(load()));
-
-	ui->lv_genres->set_local_library(m->library);
 
 	Set::listen<Set::Lib_ShowAlbumCovers>(this, &GUI_LocalLibrary::switch_album_view);
 }
@@ -345,33 +355,6 @@ void GUI_LocalLibrary::splitter_genre_moved(int pos, int idx)
 }
 
 
-void GUI_LocalLibrary::init_album_cover_view()
-{
-	if(m->acv){
-		return;
-	}
-
-	m->acv = new Library::CoverView(m->library, ui->cover_topbar, ui->page_cover);
-	connect(m->acv, &ItemView::sig_merge, m->library, &LocalLibrary::merge_albums);
-	connect(m->acv, &ItemView::sig_delete_clicked, this, &GUI_LocalLibrary::item_delete_clicked);
-
-	QLayout* layout = ui->page_cover->layout();
-	if(layout){
-		layout->addWidget(m->acv);
-	}
-
-	int entries = (LibraryContextMenu::EntryInfo |
-			LibraryContextMenu::EntryEdit |
-			LibraryContextMenu::EntryDelete |
-			LibraryContextMenu::EntryPlayNext |
-			LibraryContextMenu::EntryAppend |
-			LibraryContextMenu::EntryCoverView);
-
-	m->acv->show_context_menu_actions(entries);
-	m->acv->show();
-}
-
-
 void GUI_LocalLibrary::switch_album_view()
 {
 	bool show_cover_view = _settings->get<Set::Lib_ShowAlbumCovers>();
@@ -383,10 +366,6 @@ void GUI_LocalLibrary::switch_album_view()
 
 	else
 	{
-		if(!m->acv){
-			init_album_cover_view();
-		}
-
 		if(m->library->is_loaded() && (m->library->selected_artists().size() > 0))
 		{
 			m->library->selected_artists_changed(IndexSet());

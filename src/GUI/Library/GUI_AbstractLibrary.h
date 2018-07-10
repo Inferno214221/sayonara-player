@@ -72,7 +72,6 @@ namespace Library
 		virtual void esc_pressed();
 		virtual void query_library();
 
-
 		virtual void item_delete_clicked();
 		void tracks_delete_clicked();
 		virtual void show_delete_answer(QString);

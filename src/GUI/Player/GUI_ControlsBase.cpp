@@ -749,7 +749,8 @@ void GUI_ControlsBase::contextMenuEvent(QContextMenuEvent* e)
 	if(!m->context_menu)
 	{
 		m->context_menu = new LibraryContextMenu(this);
-		m->context_menu->show_actions( (LibraryContexMenuEntries)
+		m->context_menu->show_actions
+		(
 			(LibraryContextMenu::EntryInfo |
 			LibraryContextMenu::EntryLyrics |
 			LibraryContextMenu::EntryEdit)

@@ -58,9 +58,9 @@ namespace Library
 		explicit GenreView(QWidget* parent=nullptr);
 		~GenreView();
 
+		void init(LocalLibrary* library);
 		void reload_genres();
 		bool has_items() const;
-		void set_local_library(LocalLibrary* library);
 
 	private:
 		void set_genres(const SP::Set<Genre>& genres);

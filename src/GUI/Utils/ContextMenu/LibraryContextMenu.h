@@ -26,8 +26,6 @@
 #include "GUI/Utils/Widgets/WidgetTemplate.h"
 #include "Utils/Pimpl.h"
 
-using LibraryContexMenuEntries=int;
-
 class PreferenceAction;
 class QAction;
 /**
@@ -41,10 +39,6 @@ class LibraryContextMenu :
 	PIMPL(LibraryContextMenu)
 
 public:
-	explicit LibraryContextMenu(QWidget *parent=nullptr);
-	virtual ~LibraryContextMenu();
-
-
 	/**
 	 * @brief This enum indicates which entries should be visible
 	 */
@@ -68,24 +62,31 @@ public:
 		EntryLast=(1<<14)
 	};
 
+	using Entries=uint16_t;
+
+public:
+	explicit LibraryContextMenu(QWidget *parent=nullptr);
+	virtual ~LibraryContextMenu();
+
+
 	/**
 	 * @brief get all visible entries
 	 * @return all visible entries
 	 */
-	virtual LibraryContexMenuEntries get_entries() const;
+	virtual LibraryContextMenu::Entries get_entries() const;
 
 	/**
 	 * @brief show a specific amount of Entries
 	 * @param entries bitwise combination of Entry
 	 */
-	virtual void show_actions(LibraryContexMenuEntries entries);
+	virtual void show_actions(LibraryContextMenu::Entries entries);
 
 	/**
 	 * @brief show/hide a specific Entry
 	 * @param The entry of interest
 	 * @param visible
 	 */
-	virtual void show_action(Entry entry, bool visible);
+	virtual void show_action(LibraryContextMenu::Entry entry, bool visible);
 
 	/**
 	 * @brief show all possible entries
@@ -98,7 +99,7 @@ public:
 	 */
 	void set_rating(Rating rating);
 
-	QAction* get_action(Entry entry) const;
+	QAction* get_action(LibraryContextMenu::Entry entry) const;
 
 	QAction* add_preference_action(PreferenceAction* action);
 

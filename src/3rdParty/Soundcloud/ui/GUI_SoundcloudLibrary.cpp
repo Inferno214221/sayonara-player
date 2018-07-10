@@ -31,99 +31,99 @@ using SC::GUI_ArtistSearch;
 
 struct GUI_Library::Private
 {
-    GUI_ArtistSearch*	artist_search=nullptr;
-    QMenu*              library_menu=nullptr;
+	GUI_ArtistSearch*	artist_search=nullptr;
+	QMenu*              library_menu=nullptr;
 };
 
 GUI_Library::GUI_Library(Library* library, QWidget *parent) :
-    GUI_AbstractLibrary(library, parent)
+	GUI_AbstractLibrary(library, parent)
 {
-    setup_parent(this, &ui);
-    setAcceptDrops(false);
+	setup_parent(this, &ui);
+	setAcceptDrops(false);
 
-    m = Pimpl::make<GUI_Library::Private>();
+	m = Pimpl::make<GUI_Library::Private>();
 
-    m->artist_search = new GUI_ArtistSearch(library, this);
-    m->library_menu = new QMenu(this);
+	m->artist_search = new GUI_ArtistSearch(library, this);
+	m->library_menu = new QMenu(this);
 
-    QAction* action_add_artist = m->library_menu->addAction(tr("Add artist"));
-    connect(action_add_artist, &QAction::triggered, this, &GUI_Library::btn_add_clicked);
+	QAction* action_add_artist = m->library_menu->addAction(tr("Add artist"));
+	connect(action_add_artist, &QAction::triggered, this, &GUI_Library::btn_add_clicked);
 
-    LibraryContexMenuEntries entry_mask =
-            (LibraryContextMenu::EntryPlayNext |
-             LibraryContextMenu::EntryInfo |
-             LibraryContextMenu::EntryDelete |
-             LibraryContextMenu::EntryAppend |
-             LibraryContextMenu::EntryRefresh);
+	LibraryContextMenu::Entries entry_mask =
+			(LibraryContextMenu::EntryPlayNext |
+			 LibraryContextMenu::EntryInfo |
+			 LibraryContextMenu::EntryDelete |
+			 LibraryContextMenu::EntryAppend |
+			 LibraryContextMenu::EntryRefresh);
 
-    ui->tb_title->show_context_menu_actions(entry_mask);
-    ui->lv_album->show_context_menu_actions(entry_mask);
-    ui->lv_artist->show_context_menu_actions(entry_mask);
+	ui->tb_title->show_context_menu_actions(entry_mask);
+	ui->lv_album->show_context_menu_actions(entry_mask);
+	ui->lv_artist->show_context_menu_actions(entry_mask);
 
-    library->load();
+	library->load();
 }
 
 GUI_Library::~GUI_Library()
 {
-    if(ui)
-    {
-        delete ui; ui = nullptr;
-    }
+	if(ui)
+	{
+		delete ui; ui = nullptr;
+	}
 }
 
 
 QMenu* GUI_Library::get_menu() const
 {
-    return m->library_menu;
+	return m->library_menu;
 }
 
 QFrame* GUI_Library::header_frame() const
 {
-    return ui->header_frame;
+	return ui->header_frame;
 }
 
 QList<::Library::Filter::Mode> GUI_Library::search_options() const
 {
-    return {::Library::Filter::Fulltext};
+	return {::Library::Filter::Fulltext};
 }
 
 Library::TrackDeletionMode GUI_Library::show_delete_dialog(int n_tracks)
 {
-    Q_UNUSED(n_tracks)
-    return ::Library::TrackDeletionMode::OnlyLibrary;
+	Q_UNUSED(n_tracks)
+	return ::Library::TrackDeletionMode::OnlyLibrary;
 }
 
 void GUI_Library::btn_add_clicked()
 {
-    m->artist_search->show();
+	m->artist_search->show();
 }
 
 Library::TableView* GUI_Library::lv_artist() const
 {
-    return ui->lv_artist;
+	return ui->lv_artist;
 }
 
 Library::TableView* GUI_Library::lv_album() const
 {
-    return ui->lv_album;
+	return ui->lv_album;
 }
 
 Library::TableView* GUI_Library::lv_tracks() const
 {
-    return ui->tb_title;
+	return ui->tb_title;
 }
 
 QLineEdit* GUI_Library::le_search() const
 {
-    return ui->le_search;
+	return ui->le_search;
 }
 
 void GUI_Library::showEvent(QShowEvent *e)
 {
-    GUI_AbstractLibrary::showEvent(e);
+	GUI_AbstractLibrary::showEvent(e);
 
-    this->lv_album()->resizeRowsToContents();
-    this->lv_artist()->resizeRowsToContents();
-    this->lv_tracks()->resizeRowsToContents();
+	this->lv_album()->resizeRowsToContents();
+	this->lv_artist()->resizeRowsToContents();
+	this->lv_tracks()->resizeRowsToContents();
 }
 

@@ -33,7 +33,7 @@ class PreferenceAction;
  * @brief Combination of ContextMenu::Entry values
  * @ingroup GUIHelper
  */
-using ContextMenuEntries=int;
+using ContextMenuEntries=uint16_t;
 
 /**
  * @brief A context menu with some standard actions

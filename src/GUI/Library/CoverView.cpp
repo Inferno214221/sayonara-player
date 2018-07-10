@@ -1,104 +1,45 @@
-/* AlbumCoverView.cpp */
-
-/* Copyright (C) 2011-2017  Lucio Carreras
- *
- * This file is part of sayonara player
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
-
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
-
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 #include "CoverView.h"
+#include "CoverModel.h"
+#include "CoverDelegate.h"
 
 #include "Components/Covers/CoverChangeNotifier.h"
-#include "Components/Library/AbstractLibrary.h"
+#include "Components/Library/LocalLibrary.h"
 
-#include "GUI/Library/CoverModel.h"
-#include "GUI/Library/CoverDelegate.h"
-#include "GUI/Utils/Widgets/ComboBox.h"
-#include "GUI/Utils/Icons.h"
 #include "GUI/Utils/ContextMenu/LibraryContextMenu.h"
 #include "GUI/Utils/PreferenceAction.h"
 
 #include "Utils/Library/Sorting.h"
+#include "Utils/Library/Sortorder.h"
 #include "Utils/Settings/Settings.h"
-#include "Utils/Logger/Logger.h"
 #include "Utils/Language.h"
 #include "Utils/Utils.h"
 
 #include <QHeaderView>
-#include <QWheelEvent>
 #include <QTimer>
-#include <QMenu>
-#include <QComboBox>
-#include <QLayout>
-#include <QLabel>
-#include <QFrame>
-
+#include <QWheelEvent>
 #include <atomic>
 
-struct ActionPair
-{
-	QString name;
-	Library::SortOrder so;
-
-	ActionPair() {}
-	ActionPair(const QString& name, Library::SortOrder so) :
-		name(name),
-		so(so)
-	{}
-};
-
-using namespace Library;
+using Library::CoverModel;
 
 struct CoverView::Private
 {
-	QStringList			zoom_actions;
-	QList<ActionPair>	sorting_actions;
-
-	AbstractLibrary*	library=nullptr;
+	LocalLibrary*		library=nullptr;
 	CoverModel*			model=nullptr;
-	QWidget*			topbar=nullptr;
-	Gui::ComboBox*		combo_sorting=nullptr;
-	QLabel*				label_sorting=nullptr;
-	Gui::ComboBox*		combo_zoom=nullptr;
-	QLabel*				label_zoom=nullptr;
-
-	QTimer*				buffer_timer=nullptr;
 	QMenu*				menu_sortings=nullptr;
 	QAction*			action_sorting=nullptr;
 	QMenu*				menu_zoom=nullptr;
 	QAction*			action_zoom=nullptr;
 	QAction*			action_show_utils=nullptr;
 
+	QTimer*				buffer_timer=nullptr;
+
 	std::atomic<bool>	blocked;
 
-	Private(CoverView* cover_view, AbstractLibrary* library, QWidget* topbar) :
-		zoom_actions {"50", "75", "100", "125", "150", "175", "200"},
-		library(library),
-		topbar(topbar),
+	Private(CoverView* cover_view) :
 		blocked(false)
 	{
-		model = new Library::CoverModel(cover_view, library);
-
-		combo_zoom = new Gui::ComboBox(topbar);
-		label_zoom = new QLabel(topbar);
-		label_zoom->setText(Lang::get(Lang::Zoom).append(":"));
-
-		combo_sorting = new Gui::ComboBox(topbar);
-		combo_sorting->setEditable(false);
-		label_sorting = new QLabel(topbar);
-		label_sorting->setText(Lang::get(Lang::SortBy).append(":"));
+		menu_sortings = new QMenu(cover_view);
+		menu_zoom = new QMenu(cover_view);
 
 		buffer_timer = new QTimer();
 		buffer_timer->setInterval(10);
@@ -114,88 +55,148 @@ struct CoverView::Private
 
 		delete buffer_timer; buffer_timer = nullptr;
 	}
-
-	void add_sorting_items()
-	{
-		for(const ActionPair& ap : ::Util::AsConst(sorting_actions))
-		{
-			if(combo_sorting)
-			{
-				combo_sorting->addItem(ap.name, (int) ap.so);
-			}
-
-			if(menu_sortings)
-			{
-				QAction* a = menu_sortings->addAction(ap.name);
-				a->setCheckable(true);
-				a->setData((int) ap.so);
-			}
-		}
-	}
 };
 
-CoverView::CoverView(AbstractLibrary* library, QWidget* topbar, QWidget* parent) :
-	ItemView(parent)
+CoverView::CoverView(QWidget* parent) :
+	Library::ItemView(parent)
 {
-	m = Pimpl::make<Private>(this, library, topbar);
+	m = Pimpl::make<Private>(this);
 
-	ItemView::set_item_model(m->model);
-	ItemView::set_search_model(m->model);
 
-	init_sorting_actions();
-
-	m->topbar->layout()->setContentsMargins(0, 0, 0, 0);
-	m->topbar->layout()->addWidget(m->label_sorting);
-	m->topbar->layout()->addWidget(m->combo_sorting);
-	m->topbar->layout()->addItem(new QSpacerItem(1, 1, QSizePolicy::MinimumExpanding, QSizePolicy::Maximum));
-	m->topbar->layout()->addWidget(m->label_zoom);
-	m->topbar->layout()->addWidget(m->combo_zoom);
-
-	m->topbar->setVisible(_settings->get<Set::Lib_CoverShowUtils>());
-
-	connect(m->combo_sorting, SIGNAL(activated(int)), this, SLOT(combo_sorting_changed(int)));
-	connect(m->combo_zoom, SIGNAL(activated(int)), this, SLOT(combo_zoom_changed(int)));
-	connect(this, &ItemView::doubleClicked, this, &CoverView::double_clicked);
-	connect(m->library, &AbstractLibrary::sig_all_albums_loaded, this, &CoverView::albums_ready);
-
-	set_selection_type( SelectionViewInterface::SelectionType::Items );
-	set_metadata_interpretation(MD::Interpretation::Albums);
-
-	this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-	this->setVerticalScrollMode(QAbstractItemView::ScrollPerItem);
-	this->setSelectionBehavior(QAbstractItemView::SelectItems);
-	this->setItemDelegate(new CoverDelegate(this));
-	this->setShowGrid(false);
-
-	if(horizontalHeader()){
-		horizontalHeader()->hide();
-	}
-
-	if(verticalHeader()){
-		verticalHeader()->hide();
-	}
-
-	connect(m->buffer_timer, &QTimer::timeout, this, &CoverView::timed_out, Qt::QueuedConnection);
-	Cover::ChangeNotfier* ccn = Cover::ChangeNotfier::instance();
-
-	connect(ccn, &Cover::ChangeNotfier::sig_covers_changed, this, &CoverView::cover_changed);
 }
 
 CoverView::~CoverView() {}
 
-int CoverView::index_by_model_index(const QModelIndex& idx) const
+void CoverView::init(LocalLibrary* library)
 {
-	return idx.row() * model()->columnCount() + idx.column();
+	m->library = library;
+	m->model = new Library::CoverModel(this, library);
+
+	ItemView::set_selection_type( SelectionViewInterface::SelectionType::Items );
+	ItemView::set_metadata_interpretation(MD::Interpretation::Albums);
+	ItemView::set_item_model(m->model);
+	ItemView::set_search_model(m->model);
+
+	this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	this->setVerticalScrollMode(QAbstractItemView::ScrollPerItem);
+	this->setSelectionBehavior(QAbstractItemView::SelectItems);
+	this->setItemDelegate(new Library::CoverDelegate(this));
+	this->setShowGrid(false);
+
+	if(this->horizontalHeader()){
+		this->horizontalHeader()->hide();
+	}
+
+	if(this->verticalHeader()){
+		this->verticalHeader()->hide();
+	}
+
+	init_sorting_actions();
+
+	connect(m->library, &AbstractLibrary::sig_all_albums_loaded, this, &CoverView::albums_ready);
+	connect(m->buffer_timer, &QTimer::timeout, this, &CoverView::timed_out, Qt::QueuedConnection);
+
+	Cover::ChangeNotfier* ccn = Cover::ChangeNotfier::instance();
+	connect(ccn, &Cover::ChangeNotfier::sig_covers_changed, this, &CoverView::cover_changed);
 }
 
-QModelIndex CoverView::model_index_by_index(int idx) const
+void CoverView::albums_ready()
 {
-	int row = idx / model()->columnCount();
-	int col = idx % model()->columnCount();
-
-	return model()->index(row, col);
+	if(this->isVisible())
+	{
+		m->model->refresh_data();
+	}
 }
 
+QList<ActionPair> CoverView::sorting_options() const
+{
+	QList<ActionPair> ret;
+	ActionPair ap;
+	ap = ActionPair(QString("%1 (%2)")
+					.arg(Lang::get(Lang::Name),
+						 Lang::get(Lang::Ascending)),
+					Library::SortOrder::AlbumNameAsc
+					);
+
+	ret << ap;
+
+	ap = ActionPair(QString("%1 (%2)")
+					.arg(Lang::get(Lang::Name),
+						 Lang::get(Lang::Descending)),
+					Library::SortOrder::AlbumNameDesc
+					);
+
+	ret << ap;
+
+	ap = ActionPair(QString("%1 (%2)")
+					.arg(Lang::get(Lang::Year),
+						 Lang::get(Lang::Ascending)),
+					Library::SortOrder::AlbumYearAsc
+					);
+
+	ret << ap;
+
+	ap = ActionPair(QString("%1 (%2)")
+					.arg(Lang::get(Lang::Year),
+						 Lang::get(Lang::Descending)),
+					Library::SortOrder::AlbumYearDesc
+					);
+
+	ret << ap;
+
+	ap = ActionPair(QString("%1 (%2)")
+					.arg(Lang::get(Lang::NumTracks),
+						 Lang::get(Lang::Ascending)),
+					Library::SortOrder::AlbumTracksAsc
+					);
+
+	ret << ap;
+
+	ap = ActionPair(QString("%1 (%2)")
+					.arg(Lang::get(Lang::NumTracks),
+						 Lang::get(Lang::Descending)),
+					Library::SortOrder::AlbumTracksDesc
+					);
+
+	ret << ap;
+
+	ap = ActionPair(QString("%1 (%2)")
+					.arg(Lang::get(Lang::Duration),
+						 Lang::get(Lang::Ascending)),
+					Library::SortOrder::AlbumDurationAsc
+					);
+
+	ret << ap;
+
+	ap = ActionPair(QString("%1 (%2)")
+					.arg(Lang::get(Lang::Duration),
+						 Lang::get(Lang::Descending)),
+					Library::SortOrder::AlbumDurationDesc
+					);
+
+	ret << ap;
+	return ret;
+
+}
+
+QStringList CoverView::zoom_actions() const
+{
+	return QStringList{"50", "75", "100", "125", "150", "175", "200"};
+}
+
+void CoverView::init_zoom_actions()
+{
+	m->menu_zoom->clear();
+
+	const QStringList actions = zoom_actions();
+	for(const QString& z : actions)
+	{
+		QAction* action = m->menu_zoom->addAction(z);
+		action->setCheckable(true);
+
+		connect(action, &QAction::triggered, this, &CoverView::action_zoom_triggered);
+	}
+}
 
 void CoverView::change_zoom(int zoom)
 {
@@ -207,6 +208,13 @@ void CoverView::change_zoom(int zoom)
 
 	if(force_reload){
 		zoom = m->model->zoom();
+	}
+
+	else
+	{
+		if(zoom == m->model->zoom()){
+			return;
+		}
 	}
 
 	zoom = std::min(zoom, 200);
@@ -224,15 +232,6 @@ void CoverView::change_zoom(int zoom)
 		}
 	}
 
-	for(int i=0; i<m->combo_zoom->count(); i++)
-	{
-		if(m->combo_zoom->itemText(i).toInt() >= zoom)
-		{
-			m->combo_zoom->setCurrentIndex(i);
-			break;
-		}
-	}
-
 	if(!force_reload)
 	{
 		if( zoom == m->model->zoom() )
@@ -245,53 +244,93 @@ void CoverView::change_zoom(int zoom)
 	_settings->set<Set::Lib_CoverZoom>(zoom);
 
 	refresh();
+	emit sig_zoom_changed(zoom);
 }
 
-void CoverView::refresh()
+
+void CoverView::action_zoom_triggered()
 {
-	if(m->model->rowCount() == 0){
-		return;
+	QAction* action = static_cast<QAction*>(sender());
+	int zoom = action->text().toInt();
+
+	change_zoom(action->text().toInt());
+
+	emit sig_zoom_changed(zoom);
+}
+
+
+
+void CoverView::init_sorting_actions()
+{
+	init_context_menu();
+
+	m->action_sorting->setText(Lang::get(Lang::SortBy));
+	m->menu_sortings->clear();
+
+	const QList<ActionPair> action_pairs = sorting_options();
+	for(const ActionPair& ap : action_pairs)
+	{
+		QAction* a = m->menu_sortings->addAction(ap.name);
+		a->setCheckable(true);
+		a->setData((int) ap.so);
 	}
 
-	m->buffer_timer->start();
+	Library::Sortings sortings = _settings->get<Set::Lib_Sorting>();
+	Library::SortOrder so = sortings.so_albums;
+
+	const QList<QAction*> actions = m->menu_sortings->actions();
+	for(QAction* action : actions)
+	{
+		action->setCheckable(true);
+
+		if(action->data().toInt() == (int) so){
+			action->setChecked(true);
+		}
+
+		connect(action, &QAction::triggered, this, &CoverView::action_sortorder_triggered);
+	}
 }
 
-void CoverView::timed_out()
+void CoverView::change_sortorder(Library::SortOrder so)
 {
-	if(m->blocked){
-		return;
+	const QList<QAction*> actions = m->menu_sortings->actions();
+	for(QAction* a : actions)
+	{
+		a->setChecked(a->data().toInt() == (int) so);
 	}
 
-	m->blocked = true;
-
-	this->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-	this->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-
-	m->buffer_timer->stop();
-	m->blocked = false;
+	m->library->change_album_sortorder(so);
 }
 
-QStyleOptionViewItem CoverView::viewOptions() const
+
+void CoverView::action_sortorder_triggered()
 {
-	QStyleOptionViewItem option = ItemView::viewOptions();
-	option.decorationAlignment = Qt::AlignHCenter;
-	option.displayAlignment = Qt::AlignHCenter;
-	option.decorationPosition = QStyleOptionViewItem::Top;
+	QAction* a = static_cast<QAction*>(sender());
+	Library::SortOrder so = static_cast<Library::SortOrder>(a->data().toInt());
 
-	return option;
+	change_sortorder(so);
+
+	emit sig_sortorder_changed(so);
 }
+
+
+void CoverView::cover_changed()
+{
+	m->model->reload();
+}
+
 
 void CoverView::init_context_menu()
 {
-	ItemView::init_context_menu();
-	if(m->menu_sortings){
+	if(context_menu()){
 		return;
 	}
+
+	ItemView::init_context_menu();
 
 	LibraryContextMenu* menu = context_menu();
 
 	menu->add_preference_action(new CoverPreferenceAction(menu));
-
 	menu->addSeparator();
 
 	m->action_show_utils = menu->addAction("Show utils");
@@ -310,174 +349,51 @@ void CoverView::init_context_menu()
 	language_changed();
 }
 
-void CoverView::init_sorting_actions()
+void CoverView::timed_out()
 {
-	Library::Sortings sortings = _settings->get<Set::Lib_Sorting>();
-	Library::SortOrder so = sortings.so_albums;
-
-	m->sorting_actions.clear();
-
-	m->label_sorting->setText(Lang::get(Lang::SortBy));
-
-	if(m->action_sorting){
-		m->action_sorting->setText(Lang::get(Lang::SortBy));
+	if(m->blocked){
+		return;
 	}
 
-	if(m->menu_sortings){
-		m->menu_sortings->clear();
-	}
+	m->blocked = true;
 
-	if(m->combo_sorting){
-		m->combo_sorting->clear();
-	}
+	this->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+	this->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
-	ActionPair ap;
-	ap = ActionPair(QString("%1 (%2)")
-					.arg(Lang::get(Lang::Name),
-						 Lang::get(Lang::Ascending)),
-					Library::SortOrder::AlbumNameAsc
-					);
-
-	m->sorting_actions << ap;
-
-	ap = ActionPair(QString("%1 (%2)")
-					.arg(Lang::get(Lang::Name),
-						 Lang::get(Lang::Descending)),
-					Library::SortOrder::AlbumNameDesc
-					);
-
-	m->sorting_actions << ap;
-
-	ap = ActionPair(QString("%1 (%2)")
-					.arg(Lang::get(Lang::Year),
-						 Lang::get(Lang::Ascending)),
-					Library::SortOrder::AlbumYearAsc
-					);
-
-	m->sorting_actions << ap;
-
-	ap = ActionPair(QString("%1 (%2)")
-					.arg(Lang::get(Lang::Year),
-						 Lang::get(Lang::Descending)),
-					Library::SortOrder::AlbumYearDesc
-					);
-
-	m->sorting_actions << ap;
-
-	ap = ActionPair(QString("%1 (%2)")
-					.arg(Lang::get(Lang::NumTracks),
-						 Lang::get(Lang::Ascending)),
-					Library::SortOrder::AlbumTracksAsc
-					);
-
-	m->sorting_actions << ap;
-
-	ap = ActionPair(QString("%1 (%2)")
-					.arg(Lang::get(Lang::NumTracks),
-						 Lang::get(Lang::Descending)),
-					Library::SortOrder::AlbumTracksDesc
-					);
-
-	m->sorting_actions << ap;
-
-	ap = ActionPair(QString("%1 (%2)")
-					.arg(Lang::get(Lang::Duration),
-						 Lang::get(Lang::Ascending)),
-					Library::SortOrder::AlbumDurationAsc
-					);
-
-	m->sorting_actions << ap;
-
-	ap = ActionPair(QString("%1 (%2)")
-					.arg(Lang::get(Lang::Duration),
-						 Lang::get(Lang::Descending)),
-					Library::SortOrder::AlbumDurationDesc
-					);
-
-	m->sorting_actions << ap;
-
-	m->add_sorting_items();
-
-	if(m->menu_sortings)
-	{
-		const QList<QAction*> actions = m->menu_sortings->actions();
-		for(QAction* action : actions)
-		{
-			action->setCheckable(true);
-
-			if(action->data().toInt() == (int) so){
-				action->setChecked(true);
-			}
-
-			connect(action, &QAction::triggered, this, &CoverView::menu_sorting_triggered);
-		}
-	}
+	m->buffer_timer->stop();
+	m->blocked = false;
 }
 
 
-void CoverView::change_sortorder(SortOrder so)
+void CoverView::refresh()
 {
-	const QList<QAction*> actions = m->menu_sortings->actions();
-	for(QAction* a : actions)
-	{
-		a->setChecked(a->data().toInt() == (int) so);
+	if(m->model->rowCount() == 0){
+		return;
 	}
 
-	for(int i=0; i<m->combo_sorting->count(); i++)
-	{
-		if(m->combo_sorting->itemData(i).toInt() == (int) so)
-		{
-			m->combo_sorting->setCurrentIndex(i);
-		}
-	}
-
-	m->library->change_album_sortorder(so);
+	m->buffer_timer->start();
 }
 
-void CoverView::menu_sorting_triggered()
+
+void CoverView::language_changed()
 {
-	QAction* a = static_cast<QAction*>(sender());
-	int data = a->data().toInt();
-	change_sortorder((Library::SortOrder) data);
+	init_sorting_actions();
+
+	m->action_zoom->setText(Lang::get(Lang::Zoom));
+	m->action_show_utils->setText(tr("Show toolbar"));
 }
 
-void CoverView::combo_sorting_changed(int idx)
+
+QStyleOptionViewItem CoverView::viewOptions() const
 {
-	Q_UNUSED(idx)
+	QStyleOptionViewItem option = ItemView::viewOptions();
+	option.decorationAlignment = Qt::AlignHCenter;
+	option.displayAlignment = Qt::AlignHCenter;
+	option.decorationPosition = QStyleOptionViewItem::Top;
 
-	int data = m->combo_sorting->currentData().toInt();
-	change_sortorder((Library::SortOrder) data);
+	return option;
 }
 
-
-void CoverView::init_zoom_actions()
-{
-	m->combo_zoom->addItems(m->zoom_actions);
-
-	for(const QString& z : ::Util::AsConst(m->zoom_actions))
-	{
-		QAction* action = m->menu_zoom->addAction(z);
-		action->setCheckable(true);
-
-		connect(action, &QAction::triggered, this, [=](){
-			this->change_zoom(action->text().toInt());
-		});
-	}
-}
-
-void CoverView::combo_zoom_changed(int idx)
-{
-	Q_UNUSED(idx)
-
-	change_zoom(m->combo_zoom->currentText().toInt());
-}
-
-void CoverView::show_utils_triggered()
-{
-	bool b = m->action_show_utils->isChecked();
-	m->topbar->setVisible(b);
-	_settings->set<Set::Lib_CoverShowUtils>(b);
-}
 
 void CoverView::wheelEvent(QWheelEvent* e)
 {
@@ -507,11 +423,6 @@ void CoverView::resizeEvent(QResizeEvent* e)
 	change_zoom();
 }
 
-void Library::CoverView::cover_changed()
-{
-	m->model->reload();
-}
-
 
 void CoverView::middle_clicked()
 {
@@ -539,6 +450,7 @@ void CoverView::double_clicked(const QModelIndex& index)
 
 void CoverView::selection_changed(const IndexSet& indexes)
 {
+	ItemView::selection_changed(indexes);
 	if(!m->library){
 		return;
 	}
@@ -546,25 +458,21 @@ void CoverView::selection_changed(const IndexSet& indexes)
 	m->library->selected_albums_changed(indexes);
 }
 
-void CoverView::albums_ready()
+void CoverView::show_utils_triggered(bool b)
 {
-	if(this->isVisible()){
-		m->model->refresh_data();
-	}
+	_settings->set<Set::Lib_CoverShowUtils>(b);
 }
 
-void CoverView::language_changed()
+
+int CoverView::index_by_model_index(const QModelIndex& idx) const
 {
-	ItemView::language_changed();
-	init_sorting_actions();
+	return idx.row() * model()->columnCount() + idx.column();
+}
 
-	m->combo_zoom->setToolTip(tr("Use Ctrl + mouse wheel to zoom"));
-	m->label_sorting->setText(Lang::get(Lang::SortBy));
-	m->label_zoom->setText(Lang::get(Lang::Zoom));
+QModelIndex CoverView::model_index_by_index(int idx) const
+{
+	int row = idx / model()->columnCount();
+	int col = idx % model()->columnCount();
 
-	if(context_menu())
-	{
-		m->action_zoom->setText(Lang::get(Lang::Zoom));
-		m->action_show_utils->setText(tr("Show toolbar"));
-	}
+	return model()->index(row, col);
 }

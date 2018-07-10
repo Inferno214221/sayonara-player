@@ -103,9 +103,6 @@ namespace Library
 		Library::TrackDeletionMode show_delete_dialog(int n_tracks) override;
 
 		void show_info_box();
-
-	private:
-		void init_album_cover_view();
 	};
 }
 

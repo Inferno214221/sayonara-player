@@ -383,7 +383,7 @@ void PlaylistView::contextMenuEvent(QContextMenuEvent* e)
 	QPoint pos = e->globalPos();
 	QModelIndex idx = indexAt(e->pos());
 
-	LibraryContexMenuEntries entry_mask = 0;
+	LibraryContextMenu::Entries entry_mask = 0;
 	if(row_count() > 0)	{
 		entry_mask = (LibraryContextMenu::EntryClear);
 	}
