@@ -75,7 +75,6 @@ LibraryContextMenu::LibraryContextMenu(QWidget* parent) :
 	m->refresh_action = new QAction(this);
 	m->clear_action = new QAction(this);
 	m->clear_selection_action = new QAction(this);
-
 	m->cover_view_action = new QAction(this);
 	m->cover_view_action->setCheckable(true);
 	Set::listen<Set::Lib_ShowAlbumCovers>(this, &LibraryContextMenu::show_cover_view_changed);
@@ -154,8 +153,18 @@ LibraryContextMenu::LibraryContextMenu(QWidget* parent) :
 
 LibraryContextMenu::~LibraryContextMenu() {}
 
+#include <QLocale>
 void LibraryContextMenu::language_changed()
 {
+	QString language = _settings->get<Set::Player_Language>();
+
+	QRegExp re("sayonara_lang_(.*)\\.qm");
+	re.indexIn(language);
+	QString two_country_code = re.cap(1);
+
+	QLocale loc(two_country_code);
+	QLocale::setDefault(loc);
+
 	m->info_action->setText(Lang::get(Lang::Info));
 	m->lyrics_action->setText(Lang::get(Lang::Lyrics));
 	m->edit_action->setText(Lang::get(Lang::Edit));
@@ -170,6 +179,13 @@ void LibraryContextMenu::language_changed()
 	m->rating_action->setText(Lang::get(Lang::Rating));
 	m->clear_selection_action->setText(tr("Clear selection"));
 	m->cover_view_action->setText(tr("Cover view"));
+
+	m->remove_action->setShortcut(QKeySequence(QKeySequence::Delete));
+	m->play_action->setShortcut(QKeySequence(Qt::Key_Enter));
+	m->play_new_tab_action->setShortcut(QKeySequence(Qt::ControlModifier + Qt::Key_Enter));
+	m->play_next_action->setShortcut(QKeySequence(Qt::AltModifier + Qt::Key_Enter));
+	m->append_action->setShortcut(QKeySequence(Qt::ShiftModifier + Qt::Key_Enter));
+	m->clear_selection_action->setShortcut(QKeySequence(Qt::Key_Backspace));
 }
 
 

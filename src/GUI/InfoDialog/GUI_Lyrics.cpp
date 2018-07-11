@@ -33,6 +33,7 @@
 
 #include <QWheelEvent>
 #include <QShowEvent>
+#include <QShortcut>
 
 #include <cmath>
 
@@ -122,6 +123,9 @@ void GUI_Lyrics::init()
 	connect(m->lyrics, &Lyrics::sig_lyrics_fetched, this, &GUI_Lyrics::lyrics_fetched);
 
 	prepare_lyrics();
+
+	new QShortcut(QKeySequence(Qt::ControlModifier + Qt::Key_Plus), this, SLOT(zoom_in()), nullptr, Qt::WidgetWithChildrenShortcut);
+	new QShortcut(QKeySequence(Qt::ControlModifier + Qt::Key_Minus), this, SLOT(zoom_out()), nullptr, Qt::WidgetWithChildrenShortcut);
 }
 
 
@@ -339,24 +343,4 @@ void GUI_Lyrics::wheelEvent(QWheelEvent* e)
 
 		ui->sb_zoom->setValue( ui->sb_zoom->value() + delta_zoom);
 	}
-}
-
-void GUI_Lyrics::keyPressEvent(QKeyEvent* e)
-{
-	e->ignore();
-
-	int delta_zoom = 0;
-	switch(e->key())
-	{
-		case Qt::Key_Plus:
-			delta_zoom = 10;
-			break;
-		case Qt::Key_Minus:
-			delta_zoom = -10;
-			break;
-		default:
-			break;
-	}
-
-	ui->sb_zoom->setValue( ui->sb_zoom->value() + delta_zoom);
 }

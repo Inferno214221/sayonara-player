@@ -63,7 +63,7 @@ public:
 
 	void goto_row(int row);
 
-	void remove_selected_rows();
+
 	void delete_selected_tracks();
 
 	/**
@@ -76,6 +76,7 @@ public:
 
 public slots:
 	void clear();
+	void remove_selected_rows();
 
 private:
 	void init_view();
@@ -114,6 +115,11 @@ private slots:
 	void async_drop_finished(bool success, int async_drop_index);
 	void rating_changed(Rating rating);
 	void sl_columns_changed();
+
+	void move_selected_rows_up();
+	void move_selected_rows_down();
+	void play_selected_track();
+
 
 protected:
 	// SayonaraSelectionView interface

@@ -47,10 +47,10 @@ class DiscPopupMenu : public QMenu
 	Q_OBJECT
 
 	signals:
-		void sig_disc_pressed(int);
+		void sig_disc_pressed(Disc disc);
 
 	private slots:
-		void disc_pressed(int disc);
+		void disc_pressed(Disc disc);
 
 
 	public:

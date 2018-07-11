@@ -60,7 +60,7 @@ ArtistModel::ArtistModel(QObject* parent, AbstractLibrary* library) :
 
 ArtistModel::~ArtistModel() {}
 
-int ArtistModel::id_by_row(int row)
+Id ArtistModel::id_by_row(int row)
 {
 	const ArtistList& artists = library()->artists();
 

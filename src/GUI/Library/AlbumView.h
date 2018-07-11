@@ -59,13 +59,13 @@ namespace Library
 		void save_sortorder(SortOrder s) override;
 
 		// Library::ItemView
-		void middle_clicked() override;
 		void play_clicked() override;
 		void play_new_tab_clicked() override;
 		void play_next_clicked() override;
 		void append_clicked() override;
 		void selection_changed(const IndexSet& indexes) override;
 		void refresh_clicked() override;
+		void run_merge_operation(const MergeData& mergedata) override;
 
 		void clear_discnumbers();
 		void add_discnumbers(const QList<Disc>& dns);
@@ -73,10 +73,11 @@ namespace Library
 		void delete_discmenu();
 		void init_discmenu(QModelIndex idx);
 		void show_discmenu();
-		void context_menu_show(const QPoint& p) override;
+		void show_context_menu(const QPoint& p) override;
+
+		AbstractLibrary* library() const override;
 
 	private slots:
-		void double_clicked(const QModelIndex& index);
 		void use_clear_button_changed();
 
 	public:

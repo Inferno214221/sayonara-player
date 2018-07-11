@@ -47,6 +47,11 @@ TrackView::TrackView(QWidget* parent) :
 
 TrackView::~TrackView() {}
 
+AbstractLibrary* TrackView::library() const
+{
+	return m->library;
+}
+
 void TrackView::init_view(AbstractLibrary* library)
 {
 	m->library = library;
@@ -55,11 +60,9 @@ void TrackView::init_view(AbstractLibrary* library)
 	RatingDelegate* track_delegate = new RatingDelegate(this, (int) ColumnIndex::Track::Rating, true);
 
 	this->set_item_model(track_model);
-	this->set_search_model(track_model);
 	this->setItemDelegate(track_delegate);
 	this->set_metadata_interpretation(MD::Interpretation::Tracks);
 
-	connect(this, &ItemView::doubleClicked, this, &TrackView::double_clicked);
 	connect(library, &AbstractLibrary::sig_all_tracks_loaded, this, &TrackView::tracks_ready);
 }
 
@@ -108,22 +111,10 @@ void TrackView::selection_changed(const IndexSet& lst)
 	m->library->selected_tracks_changed(lst);
 }
 
-void TrackView::double_clicked(const QModelIndex& idx)
-{
-	Q_UNUSED(idx)
-
-	m->library->prepare_current_tracks_for_playlist(false);
-}
-
-void TrackView::middle_clicked()
-{
-	TableView::middle_clicked();
-	m->library->prepare_current_tracks_for_playlist(true);
-}
 
 void TrackView::play_clicked()
 {
-	double_clicked(QModelIndex());
+	m->library->prepare_current_tracks_for_playlist(false);
 }
 
 void TrackView::play_new_tab_clicked()

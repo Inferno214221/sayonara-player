@@ -149,6 +149,9 @@ public slots:
 	virtual void delete_genre(const Genre& genre);
 	virtual void rename_genre(const Genre& genre, const Genre& new_genre);
 
+	virtual void merge_artists(const IdSet& source_ids, ArtistId target_id);
+	virtual void merge_albums(const IdSet& source_ids, AlbumId target_id);
+
 	/* Check for current selected artist if out of date and
 	 * fetch new data */
 	virtual void refresh_artist()=0;

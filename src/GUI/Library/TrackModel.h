@@ -45,16 +45,16 @@ namespace Library
 			virtual ~TrackModel();
 
 			/** AbstractSearchTableModel **/
-			Qt::ItemFlags   flags(const QModelIndex &index) const override;
-			QVariant        data(const QModelIndex &index, int role) const override;
-			bool            setData(const QModelIndex &index, const QVariant &value, int role) override;
-			int             rowCount(const QModelIndex &parent) const override;
+			Qt::ItemFlags	flags(const QModelIndex &index) const override;
+			QVariant		data(const QModelIndex &index, int role) const override;
+			bool			setData(const QModelIndex &index, const QVariant &value, int role) override;
+			int				rowCount(const QModelIndex &parent) const override;
 
 			/** ItemModel.h **/
 			Cover::Location cover(const IndexSet& indexes) const override;
-			int             searchable_column() const override;
-			int             id_by_row(int row) override;
-			QString         searchable_string(int row) const override;
+			int				searchable_column() const override;
+			Id				id_by_row(int row) override;
+			QString			searchable_string(int row) const override;
 			const IndexSet& selections() const override;
 
 		protected:

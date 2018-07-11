@@ -20,46 +20,61 @@
 
 #include "EqSlider.h"
 
-#include <QKeyEvent>
-#include <QSize>
+#include <QLabel>
+#include <QShortcut>
+
+struct EqSlider::Private
+{
+	QLabel* label=nullptr;
+	int		idx;
+
+	Private() :
+		idx(-1)
+	{}
+};
 
 EqSlider::EqSlider(QWidget *parent) :
 	Gui::Slider(parent)
 {
-	_idx = -1;
+	m = Pimpl::make<Private>();
 
 	this->setMaximum(24);
 	this->setMinimum(-24);
-	this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+	this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::MinimumExpanding);
+
+	new QShortcut(QKeySequence(Qt::Key_0), this, SLOT(set_zero()), nullptr, Qt::WidgetShortcut);
 }
 
-void  EqSlider::setData(int idx, QLabel* label){
-	_label = label;
-	_idx = idx;
-}
+EqSlider::~EqSlider() {}
 
-QLabel* EqSlider::getLabel() const
+void EqSlider::set_label(int idx, QLabel* label)
 {
-	return _label;
+	m->label = label;
+	m->idx = idx;
 }
 
-int EqSlider::getIndex() const
+QLabel* EqSlider::label() const
 {
-	return _idx;
+	return m->label;
 }
 
+int EqSlider::index() const
+{
+	return m->idx;
+}
 
 void EqSlider::sliderChange(SliderChange change)
 {
 	Gui::Slider::sliderChange(change);
 
-	if(change == QAbstractSlider::SliderValueChange){
-		emit sig_value_changed(_idx, this->get_eq_value());
+	if(change == QAbstractSlider::SliderValueChange)
+	{
+		emit sig_value_changed(m->idx, eq_value());
 	}
 }
 
 
-double EqSlider::get_eq_value() const
+double EqSlider::eq_value() const
 {
 	int val = this->value();
 	if( val > 0 ){
@@ -71,21 +86,14 @@ double EqSlider::get_eq_value() const
 	}
 }
 
+void EqSlider::set_zero()
+{
+	this->setValue(0);
+	emit sig_value_changed(m->idx, eq_value());
+}
+
 QSize EqSlider::minimumSizeHint() const
 {
 	return QSize(10, 50);
 }
 
-
-void EqSlider::keyPressEvent(QKeyEvent* e)
-{
-	if(e->key() == Qt::Key_0){
-		this->setValue(0);
-		emit sig_value_changed(_idx, this->get_eq_value());
-	}
-
-	else{
-		Gui::Slider::keyPressEvent(e);
-	}
-
-}

@@ -41,6 +41,7 @@
 #include <QInputDialog>
 #include <QStyledItemDelegate>
 #include <QTreeWidget>
+#include <QShortcut>
 
 
 using StringSet=SP::Set<QString>;
@@ -88,7 +89,11 @@ GenreView::GenreView(QWidget* parent) :
 	connect(m->genre_fetcher, &GenreFetcher::sig_genres_fetched, this, &GenreView::reload_genres);
 
 	Set::listen<Set::Lib_GenreTree>(this, &GenreView::tree_action_changed, false);
+
+	new QShortcut(QKeySequence(Qt::Key_Enter), this, SLOT(expand_current_item()), nullptr, Qt::WidgetShortcut);
+	new QShortcut(QKeySequence(Qt::Key_Return), this, SLOT(expand_current_item()), nullptr, Qt::WidgetShortcut);
 }
+
 
 GenreView::~GenreView() {}
 
@@ -122,7 +127,6 @@ void GenreView::update_finished()
 	emit sig_progress("", -1);
 }
 
-
 void GenreView::item_expanded(QTreeWidgetItem* item)
 {
 	m->expanded_items << item->text(0);
@@ -132,6 +136,21 @@ void GenreView::item_collapsed(QTreeWidgetItem* item)
 {
 	m->expanded_items.removeAll(item->text(0));
 }
+
+void GenreView::expand_current_item()
+{
+	QTreeWidgetItem* item = this->currentItem();
+	if(item)
+	{
+		if(item->isExpanded() || item->childCount() == 0){
+			emit activated(this->currentIndex());
+		}
+		else {
+			item->setExpanded(true);
+		}
+	}
+}
+
 
 void GenreView::new_pressed()
 {
@@ -403,19 +422,6 @@ void GenreView::contextMenuEvent(QContextMenuEvent* e)
 	m->context_menu->exec(e->globalPos());
 
 	QTreeView::contextMenuEvent(e);
-}
-
-
-void GenreView::keyPressEvent(QKeyEvent* e)
-{
-	if( e->key() == Qt::Key_Enter ||
-		e->key() == Qt::Key_Return)
-	{
-		QTreeWidgetItem* item = this->currentItem();
-		item->setExpanded(true);
-	}
-
-	QTreeWidget::keyPressEvent(e);
 }
 
 

@@ -24,6 +24,7 @@
 #include "Components/Library/AbstractLibrary.h"
 #include "Components/Covers/CoverLocation.h"
 #include "Components/Covers/CoverLookup.h"
+#include "Components/Covers/CoverChangeNotifier.h"
 
 #include "Utils/MetaData/Album.h"
 #include "Utils/Utils.h"
@@ -40,35 +41,38 @@ using Cover::Location;
 using Cover::Lookup;
 using Library::CoverModel;
 
+using Hash=QString;
+
 struct CoverModel::Private
 {
 	AlbumCoverFetchThread*		cover_thread=nullptr;
-	QHash<QString, QPixmap>		pixmaps;
-	QHash<QString, Location>	cover_locations;
-	QHash<QString, QModelIndex> indexes;
-	int							old_row_count;
-	int							old_column_count;
+	QHash<Hash, QPixmap>		pixmaps;
+	QHash<Hash, Location>		cover_locations;
+	QHash<Hash, QModelIndex>	indexes;
+
+	int	old_row_count;
+	int	old_column_count;
 
 	int zoom;
 	int columns;
-	int n_threads_running;
 
-	Private(QObject* parent)
+	Private(QObject* parent) :
+		old_row_count(0),
+		old_column_count(0),
+		columns(10)
 	{
 		cover_thread = new AlbumCoverFetchThread(parent);
-
-		old_row_count = 0;
-		old_column_count = 0;
 		zoom = Settings::instance()->get<Set::Lib_CoverZoom>();
-		columns = 10;
-		n_threads_running = 0;
 	}
 
 	~Private()
 	{
-		cover_thread->stop();
-		while(cover_thread->isRunning()){
-			::Util::sleep_ms(50);
+		if(cover_thread)
+		{
+			cover_thread->stop();
+			while(cover_thread->isRunning()){
+				::Util::sleep_ms(50);
+			}
 		}
 	}
 
@@ -78,7 +82,7 @@ struct CoverModel::Private
 	}
 };
 
-static QString get_hash(const Album& album)
+static Hash get_hash(const Album& album)
 {
 	return album.name() + "-" + album.id;
 }
@@ -89,14 +93,14 @@ CoverModel::CoverModel(QObject* parent, AbstractLibrary* library) :
 	m = Pimpl::make<Private>(this);
 
 	connect(m->cover_thread, &AlbumCoverFetchThread::sig_next, this, &CoverModel::next_hash);
+
+	Cover::ChangeNotfier* ccn = Cover::ChangeNotfier::instance();
+	connect(ccn, &Cover::ChangeNotfier::sig_covers_changed, this, &CoverModel::reload);
+
+	connect(library, &AbstractLibrary::sig_all_albums_loaded, this, &CoverModel::refresh_data);
 }
 
-CoverModel::~CoverModel()
-{
-	if(m->cover_thread){
-		m->cover_thread->stop();
-	}
-}
+CoverModel::~CoverModel() {}
 
 int CoverModel::rowCount(const QModelIndex& parent) const
 {
@@ -176,20 +180,20 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 		return QVariant();
 	}
 
-	int row = index.row();
-	int col = index.column();
+	const AlbumList& a = this->albums();
 
-	int n_columns = columnCount();
-	int lin_idx = (row * n_columns) + col;
-	if(lin_idx >= albums().count()){
+	int lin_idx = (index.row() *  columnCount()) + index.column();
+	if(lin_idx >= a.count()){
 		return QVariant();
 	}
+
+	const Album& album = a[lin_idx];
 
 	switch(role)
 	{
 		case Qt::DisplayRole:
 			{
-				QString name = albums()[lin_idx].name();
+				QString name = album.name();
 				if(name.trimmed().isEmpty()){
 					name = Lang::get(Lang::None);
 				}
@@ -202,9 +206,8 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 
 		case Qt::DecorationRole:
 			{
-				const Album& album = albums()[lin_idx];
-				QString hash = get_hash(album);
 				QPixmap p;
+				Hash hash = get_hash(album);
 
 				if(!m->pixmaps.contains(hash))
 				{
@@ -215,7 +218,8 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 						m->cover_locations[hash] = cl;
 					}
 
-					else {
+					else
+					{
 						cl = m->cover_locations[hash];
 					}
 
@@ -225,18 +229,24 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 						m->pixmaps[hash] = p.scaled(m->zoom, m->zoom, Qt::KeepAspectRatio);
 					}
 
-					else {
-						if(!m->cover_thread->isRunning()){
-							m->cover_thread->start();
-						}
-
+					else // search for the cover
+					{
 						m->indexes[hash] = index;
 						m->cover_thread->add_data(hash, cl);
+
+						if(!m->cover_thread->isRunning())
+						{
+							m->cover_thread->start();
+						}
 					}
 				}
 
-				else{
+				else
+				{
 					p = m->pixmaps[hash];
+
+					// Pixmap has bad quality, next time we'll search for it
+					// for this time it's sufficient
 					if(p.size().width() < m->zoom - 20)
 					{
 						m->pixmaps.remove(hash);
@@ -286,9 +296,12 @@ QModelIndex CoverModel::getNextRowIndexOf(const QString& substr, int cur_row, co
 {
 	Q_UNUSED(parent)
 
-	for(int i=0; i<albums().count(); i++)
+	const AlbumList& a = albums();
+	const int n_albums = a.count();
+
+	for(int i=0; i<n_albums; i++)
 	{
-		int idx = (i + cur_row) % albums().size();
+		int idx = (i + cur_row) % n_albums;
 		QString title = searchable_string(idx);
 		title = Library::Util::convert_search_string(title, search_mode());
 
@@ -297,7 +310,7 @@ QModelIndex CoverModel::getNextRowIndexOf(const QString& substr, int cur_row, co
 			return this->index(idx / columnCount(), idx % columnCount());
 		}
 
-		const QStringList artists = albums().at(idx).artists();
+		const QStringList artists = a[idx].artists();
 		for(const QString& artist : artists)
 		{
 			QString cvt_artist = Library::Util::convert_search_string(artist, search_mode());
@@ -315,14 +328,16 @@ QModelIndex CoverModel::getPrevRowIndexOf(const QString& substr, int row, const 
 {
 	Q_UNUSED(parent)
 
-	int len = albums().size();
-	for(int i=0; i<albums().count(); i++)
+	const AlbumList& a = albums();
+	const int n_albums = a.count();
+
+	for(int i=0; i<n_albums; i++)
 	{
 		if(row - i < 0){
-			row = len - 1;
+			row = n_albums - 1;
 		}
 
-		int idx = (row - i) % len;
+		int idx = (row - i) % n_albums;
 
 		QString title = searchable_string(idx);
 		title = Library::Util::convert_search_string(title, search_mode());
@@ -331,7 +346,7 @@ QModelIndex CoverModel::getPrevRowIndexOf(const QString& substr, int row, const 
 			return this->index(idx / columnCount(), idx % columnCount());
 		}
 
-		const QStringList artists = albums().at(idx).artists();
+		const QStringList artists = a[idx].artists();
 		for(const QString& artist : artists)
 		{
 			QString cvt_artist = Library::Util::convert_search_string(artist, search_mode());
@@ -348,7 +363,10 @@ QModelIndex CoverModel::getPrevRowIndexOf(const QString& substr, int row, const 
 int CoverModel::getNumberResults(const QString& substr)
 {
 	int ret=0;
-	for(int i=0; i<albums().count(); i++)
+	const AlbumList& a = albums();
+	const int n_albums = a.count();
+
+	for(int i=0; i<n_albums; i++)
 	{
 		QString title = searchable_string(i);
 		title = Library::Util::convert_search_string(title, search_mode());
@@ -359,7 +377,7 @@ int CoverModel::getNumberResults(const QString& substr)
 			continue;
 		}
 
-		const QStringList artists = albums().at(i).artists();
+		const QStringList artists = a[i].artists();
 		for(const QString& artist : artists)
 		{
 			QString cvt_artist = Library::Util::convert_search_string(artist, search_mode());
@@ -381,22 +399,24 @@ int CoverModel::searchable_column() const
 
 QString CoverModel::searchable_string(int idx) const
 {
-	if(idx < 0 || idx >= albums().count())
+	const AlbumList& a = albums();
+	if(idx < 0 || idx >= a.count())
 	{
 		return QString();
 	}
 
-	return albums()[idx].name();
+	return a[idx].name();
 }
 
 int CoverModel::id_by_row(int idx)
 {
-	if(idx < 0 || idx >= albums().count())
+	const AlbumList& a = albums();
+	if(idx < 0 || idx >= a.count())
 	{
 		return -1;
 	}
 
-	return albums()[idx].id;
+	return a[idx].id;
 }
 
 Location CoverModel::cover(const IndexSet& indexes) const
@@ -410,7 +430,7 @@ Location CoverModel::cover(const IndexSet& indexes) const
 		return Location::invalid_location();
 	}
 
-	QString hash = get_hash( albums().at(idx) );
+	Hash hash = get_hash( albums().at(idx) );
 	if(!m->cover_locations.contains(hash)){
 		return Location::invalid_location();
 	}
@@ -441,7 +461,6 @@ Qt::ItemFlags CoverModel::flags(const QModelIndex& index) const
 
 	return ret;
 }
-
 
 const MetaDataList& Library::CoverModel::mimedata_tracks() const
 {
@@ -478,7 +497,17 @@ void CoverModel::set_zoom(int zoom, const QSize& view_size)
 
 void CoverModel::reload()
 {
+	m->cover_thread->stop();
+
 	m->pixmaps.clear();
 	refresh_data();
+}
+
+void CoverModel::clear()
+{
+	m->cover_thread->stop();
+	m->cover_locations.clear();
+	m->pixmaps.clear();
+	m->indexes.clear();
 }
 

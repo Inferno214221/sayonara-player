@@ -74,6 +74,7 @@ namespace Library
 	private slots:
 		void item_expanded(QTreeWidgetItem* item);
 		void item_collapsed(QTreeWidgetItem* item);
+		void expand_current_item();
 
 		void progress_changed(int progress);
 		void update_finished();
@@ -85,10 +86,10 @@ namespace Library
 		void tree_action_changed();
 		void tree_action_toggled(bool b);
 
+
 	protected:
 		void language_changed() override;
 
-		void keyPressEvent(QKeyEvent* e) override;
 		void dragEnterEvent(QDragEnterEvent* e) override;
 		void dragMoveEvent(QDragMoveEvent* e) override;
 		void dragLeaveEvent(QDragLeaveEvent* e) override;

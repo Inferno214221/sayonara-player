@@ -73,7 +73,8 @@ void TableView::init(AbstractLibrary* library)
 		header_names << header->title();
 	}
 
-	_model->set_header_data(header_names);
+	ItemModel* model = item_model();
+	model->set_header_data(header_names);
 
 	m->header->set_column_headers(headers, m->shown_columns, m->sortorder);
 
@@ -116,8 +117,9 @@ void TableView::sort_by_column(int column_idx)
 
 void TableView::language_changed()
 {
+	ItemModel* model = item_model();
 	QStringList header_names;
-	for(int i=0; i<_model->columnCount(); i++)
+	for(int i=0; i<model->columnCount(); i++)
 	{
 		ColumnHeaderPtr header = m->header->column_header(i);
 		if(header){
@@ -125,7 +127,7 @@ void TableView::language_changed()
 		}
 	}
 
-	_model->set_header_data(header_names);
+	model->set_header_data(header_names);
 }
 
 
@@ -149,5 +151,5 @@ QModelIndex TableView::model_index_by_index(int idx) const
 		first_col = 1;
 	}
 
-	return _model->index(idx, first_col);
+	return item_model()->index(idx, first_col);
 }

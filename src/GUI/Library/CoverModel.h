@@ -57,8 +57,9 @@ namespace Library
 			void			refresh_data();
 
 		protected:
+			// ItemModel
 			const MetaDataList& mimedata_tracks() const override;
-			const IndexSet&	selections() const override;
+			const IndexSet&		selections() const override;
 
 			QModelIndex		getNextRowIndexOf(const QString& substr, int cur_row, const QModelIndex& parent=QModelIndex()) override;
 			QModelIndex		getPrevRowIndexOf(const QString& substr, int cur_row, const QModelIndex& parent=QModelIndex()) override;
@@ -79,6 +80,7 @@ namespace Library
 		public slots:
 			void set_zoom(int zoom, const QSize& view_size);
 			void reload();
+			void clear();
 
 		private slots:
 			void next_hash();

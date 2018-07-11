@@ -41,6 +41,7 @@ namespace Library
 		~TrackView();
 
 	private:
+		AbstractLibrary* library() const override;
 		//from Library::TableView
 		void init_view(AbstractLibrary* library) override;
 		ColumnHeaderList column_headers() const override;
@@ -54,14 +55,12 @@ namespace Library
 		// from Library::ItemView
 		void play_clicked() override;
 		void play_new_tab_clicked() override;
-		void middle_clicked() override;
 		void play_next_clicked() override;
 		void append_clicked() override;
 		void selection_changed(const IndexSet& lst) override;
 		void refresh_clicked() override;
 
 	private slots:
-		void double_clicked(const QModelIndex& idx);
 		void tracks_ready();
 	};
 }

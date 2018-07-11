@@ -59,6 +59,8 @@ protected:
 		virtual QModelIndex model_index(int row, int col, const QModelIndex& parent=QModelIndex()) const override final;
 		virtual int row_count(const QModelIndex& parent=QModelIndex()) const override final;
 		virtual int column_count(const QModelIndex& parent=QModelIndex()) const override final;
+		bool is_empty(const QModelIndex& parent=QModelIndex()) const;
+		bool has_rows(const QModelIndex& parent=QModelIndex()) const;
 
 		virtual QItemSelectionModel* selection_model() const override final;
 		virtual void set_current_index(int idx) override final;

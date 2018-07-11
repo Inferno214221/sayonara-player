@@ -491,11 +491,28 @@ void GUI_Player::splitter_controls_moved(int pos, int idx)
 	_settings->set<Set::Player_SplitterControls>(splitter_state);
 }
 
-
+#include <QRegExp>
 void GUI_Player::language_changed()
 {
 	QString language = _settings->get<Set::Player_Language>();
+
+	QRegExp re("sayonara_lang_(.*)\\.qm");
+	re.indexIn(language);
+	QString two_country_code = re.cap(1);
+
+	QLocale loc(two_country_code);
+	QLocale::setDefault(loc);
+
+	sp_log(Log::Info, this) << "Language changed: " << language << " (" << two_country_code << ")";
+	sp_log(Log::Info, this) << "Language changed: " << loc.nativeLanguageName();
+
 	m->translator->load(language, Util::share_path("translations/"));
+
+	QTranslator* t2 = new QTranslator(this);
+	QString qt_tr_file = QString("qt_%1.qm").arg(two_country_code);
+	t2->load(qt_tr_file, "/usr/share/qt5/translations/");
+
+	QApplication::installTranslator(t2);
 
 	ui->retranslateUi(this);
 }

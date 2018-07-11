@@ -179,7 +179,7 @@ int TrackModel::rowCount(const QModelIndex&) const
 }
 
 
-int TrackModel::id_by_row(int row)
+Id TrackModel::id_by_row(int row)
 {
 	const MetaDataList& tracks = library()->tracks();
 

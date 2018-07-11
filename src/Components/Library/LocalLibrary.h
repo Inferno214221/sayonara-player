@@ -65,8 +65,8 @@ public slots:
 
 	void import_files(const QStringList& files) override;
 	void import_files_to(const QStringList& files, const QString& target_dir);
-	void merge_artists(const SP::Set<ArtistId>& artist_ids, ArtistId target_artist_id);
-	void merge_albums(const SP::Set<AlbumId>& albums_ids, AlbumId target_album_id);
+	void merge_artists(const SP::Set<Id>& artist_ids, ArtistId target_artist_id) override;
+	void merge_albums(const SP::Set<Id>& albums_ids, AlbumId target_album_id) override;
 
 protected slots:
 	void library_reloading_state_new_block();

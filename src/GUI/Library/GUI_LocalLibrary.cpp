@@ -34,6 +34,7 @@
 #include "GUI/Library/GUI_ReloadLibraryDialog.h"
 #include "GUI/Library/Utils/LocalLibraryMenu.h"
 #include "GUI/Library/GUI_CoverView.h"
+#include "GUI/Library/CoverView.h"
 
 #include "GUI/ImportDialog/GUI_ImportDialog.h"
 
@@ -89,7 +90,7 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 	ui->pb_progress->setVisible(false);
 	ui->lab_progress->setVisible(false);
 
-	Library::ItemView* cover_view = ui->cover_view->cover_view();
+	CoverView* cover_view = ui->cover_view->cover_view();
 
 	int entries = (
 			LibraryContextMenu::EntryPlay |
@@ -106,7 +107,6 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 	lv_tracks()->show_context_menu_actions(entries | LibraryContextMenu::EntryLyrics);
 	cover_view->show_context_menu_actions(entries);
 
-
 	connect(m->library, &LocalLibrary::sig_reloading_library, this, &GUI_LocalLibrary::progress_changed);
 	connect(m->library, &LocalLibrary::sig_reloading_library_finished, this, &GUI_LocalLibrary::reload_finished);
 	connect(m->library, &LocalLibrary::sig_reloading_library_finished, ui->lv_genres, &GenreView::reload_genres);
@@ -115,14 +115,6 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 
 	connect(ui->lv_album, &AlbumView::sig_disc_pressed, m->library, &LocalLibrary::change_current_disc);
 
-	connect(ui->lv_album,  &AlbumView::sig_import_files, m->library, &LocalLibrary::import_files);
-	connect(ui->lv_artist, &ItemView::sig_import_files, m->library, &LocalLibrary::import_files);
-	connect(ui->tb_title,  &ItemView::sig_import_files, m->library, &LocalLibrary::import_files);
-
-	connect(ui->lv_album, &ItemView::sig_merge, m->library, &LocalLibrary::merge_albums);
-	connect(ui->lv_artist, &ItemView::sig_merge, m->library, &LocalLibrary::merge_artists);
-
-	connect(cover_view, &ItemView::sig_merge, m->library, &LocalLibrary::merge_albums);
 	connect(cover_view, &ItemView::sig_delete_clicked, this, &GUI_LocalLibrary::item_delete_clicked);
 
 	connect(ui->lv_genres, &QAbstractItemView::clicked, this, &GUI_LocalLibrary::genre_selection_changed);

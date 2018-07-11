@@ -769,3 +769,15 @@ void AbstractLibrary::rename_genre(const Genre& genre, const Genre& new_genre)
 
 	tag_edit()->commit();
 }
+
+void AbstractLibrary::merge_artists(const IdSet& source_ids, ArtistId target_id)
+{
+	Q_UNUSED(source_ids)
+	Q_UNUSED(target_id)
+}
+
+void AbstractLibrary::merge_albums(const IdSet& source_ids, AlbumId target_id)
+{
+	Q_UNUSED(source_ids)
+	Q_UNUSED(target_id)
+}

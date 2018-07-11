@@ -51,6 +51,11 @@ ArtistView::ArtistView(QWidget* parent) :
 
 ArtistView::~ArtistView() {}
 
+AbstractLibrary* ArtistView::library() const
+{
+	return m->library;
+}
+
 void ArtistView::init_view(AbstractLibrary* library)
 {
 	m->library = library;
@@ -58,11 +63,9 @@ void ArtistView::init_view(AbstractLibrary* library)
 	ArtistModel* artist_model = new ArtistModel(this, m->library);
 
 	this->set_item_model(artist_model);
-	this->set_search_model(artist_model);
 	this->setItemDelegate(new Gui::StyledItemDelegate(this));
 	this->set_metadata_interpretation(MD::Interpretation::Artists);
 
-	connect(this, &TableView::doubleClicked, this, &ArtistView::double_clicked);
 	connect(m->library, &AbstractLibrary::sig_all_artists_loaded, this, &ArtistView::artists_ready);
 
 	Set::listen<Set::Lib_UseViewClearButton>(this, &ArtistView::use_clear_button_changed);
@@ -138,7 +141,7 @@ void ArtistView::selection_changed(const IndexSet& indexes)
 void ArtistView::play_clicked()
 {
 	TableView::play_clicked();
-	emit doubleClicked(QModelIndex());
+	m->library->prepare_fetched_tracks_for_playlist(false);
 }
 
 void ArtistView::play_new_tab_clicked()
@@ -153,12 +156,6 @@ void ArtistView::play_next_clicked()
 	m->library->play_next_fetched_tracks();
 }
 
-void ArtistView::middle_clicked()
-{
-	TableView::middle_clicked();
-	m->library->prepare_fetched_tracks_for_playlist(true);
-}
-
 void ArtistView::append_clicked()
 {
 	TableView::append_clicked();
@@ -169,12 +166,6 @@ void ArtistView::refresh_clicked()
 {
 	TableView::refresh_clicked();
 	m->library->refresh_artist();
-}
-
-void ArtistView::double_clicked(const QModelIndex& index)
-{
-	Q_UNUSED(index)
-	m->library->prepare_fetched_tracks_for_playlist(false);
 }
 
 void ArtistView::artists_ready()
@@ -193,6 +184,11 @@ void ArtistView::album_artists_triggered(bool b)
 {
 	Q_UNUSED(b)
 	_settings->set<Set::Lib_ShowAlbumArtists>(m->album_artist_action->isChecked());
+}
+
+void ArtistView::run_merge_operation(const ItemView::MergeData& mergedata)
+{
+	m->library->merge_artists(mergedata.source_ids, mergedata.target_id);
 }
 
 void ArtistView::album_artists_changed()

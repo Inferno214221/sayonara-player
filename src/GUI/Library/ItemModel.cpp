@@ -145,10 +145,6 @@ CustomMimeData* ItemModel::custom_mimedata() const
 
 bool ItemModel::is_selected(int id) const
 {
-	if(selections().contains(id)){
-		sp_log(Log::Debug, this) << "metadata with id=" << id << " is selected. ";
-
-	}
 	return selections().contains(id);
 }
 
@@ -206,20 +202,10 @@ QModelIndex ItemModel::getPrevRowIndexOf(const QString& substr, int row, const Q
 
 AbstractLibrary* ItemModel::library()
 {
-	if(!m){
-		sp_log(Log::Develop, this) << "Member is zero";
-		return nullptr;
-	}
-
 	return m->library;
 }
 
 const AbstractLibrary* ItemModel::library() const
 {
-	if(!m){
-		sp_log(Log::Develop, this) << "MemberC is zero";
-		return nullptr;
-	}
-
 	return m->library;
 }

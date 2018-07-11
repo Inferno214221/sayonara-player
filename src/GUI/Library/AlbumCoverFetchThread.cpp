@@ -35,15 +35,15 @@ using Cover::Lookup;
 
 struct AlbumCoverFetchThread::Private
 {
-	QString current_hash;
-	Location current_cl;
-	QStringList hashes;
-	QList<Location> cover_locations;
+	QString				current_hash;
+	Location			current_cl;
+	QStringList			hashes;
+	QList<Location>		cover_locations;
 
-	std::atomic<bool> goon;
-	std::mutex mutex;
+	std::atomic<bool>	goon;
+	std::mutex			mutex;
 
-	bool may_run;
+	bool				may_run;
 
 	Private()
 	{
@@ -135,14 +135,21 @@ void AlbumCoverFetchThread::add_data(const QString& hash, const Location& cl)
 	if(!m->hashes.contains(hash) && (m->current_hash.compare(hash) != 0))
 	{
 		bool done = false;
-		while(!done) {
-			try {
+		while(!done)
+		{
+			try
+			{
 				std::lock_guard<std::mutex> guard(m->mutex);
+				Q_UNUSED(guard)
+
 				m->hashes.push_front(hash);
 				m->cover_locations.push_front(cl);
 				done = true;
 
-			} catch(std::exception* e) {
+			}
+
+			catch(std::exception* e)
+			{
 				sp_log(Log::Warning, this) << "2 Exception" << e->what();
 				Util::sleep_ms(10);
 			}

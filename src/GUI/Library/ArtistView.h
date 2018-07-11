@@ -39,13 +39,14 @@ namespace Library
 
 		// ItemView interface
 		protected:
+			AbstractLibrary* library() const override;
 			void selection_changed(const IndexSet& indexes) override;
 			void play_next_clicked() override;
-			void middle_clicked() override;
 			void append_clicked() override;
 			void refresh_clicked() override;
 			void play_clicked() override;
 			void play_new_tab_clicked() override;
+			void run_merge_operation(const MergeData& mergedata) override;
 
 		// TableView interface
 		protected:
@@ -63,11 +64,11 @@ namespace Library
 			void language_changed() override;
 
 		private slots:
-			void double_clicked(const QModelIndex& index);
 			void artists_ready();
 			void use_clear_button_changed();
 			void album_artists_changed();
 			void album_artists_triggered(bool b);
+
 	};
 }
 

@@ -63,7 +63,7 @@ namespace Library
 
 			virtual int				searchable_column() const=0;
 			virtual QString			searchable_string(int row) const=0;
-			virtual int				id_by_row(int row)=0;
+			virtual Id				id_by_row(int row)=0;
 			virtual Cover::Location	cover(const IndexSet& indexes) const=0;
 
 			virtual const MetaDataList&	mimedata_tracks() const=0;

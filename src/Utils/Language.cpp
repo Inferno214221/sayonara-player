@@ -200,6 +200,22 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Loading %1");
 		case InvalidChars:
 			return l.tr("Invalid characters");
+		case Key_Find:
+			return l.tr("Ctrl+f");
+		case Key_Delete:
+			return l.tr("Delete");
+		case Key_Escape:
+			return l.tr("Esc");
+		case Key_Control:
+			return l.tr("Ctrl");
+		case Key_Alt:
+			return l.tr("Alt");
+		case Key_Shift:
+			return l.tr("Shift");
+		case Key_Backspace:
+			return l.tr("Backspace");
+		case Key_Tab:
+			return l.tr("Tab");
 		case Library:
 			return l.tr("Library");
 		case LibraryPath:

@@ -64,7 +64,7 @@ struct PlaylistView::Private
 	PlaylistItemModel*		model=nullptr;
 	PlaylistItemDelegate*	delegate=nullptr;
 
-	ProgressBar*            progressbar=nullptr;
+	ProgressBar*			progressbar=nullptr;
 
 
 	Private(PlaylistPtr pl, PlaylistView* parent) :
@@ -98,6 +98,12 @@ PlaylistView::PlaylistView(PlaylistPtr pl, QWidget* parent) :
 	Set::listen<Set::PL_ShowNumbers>(this, &PlaylistView::sl_columns_changed);
 	Set::listen<Set::PL_EntryLook>(this, &PlaylistView::look_changed);
 	Set::listen<Set::PL_ShowRating>(this, &PlaylistView::refresh);
+
+	new QShortcut(QKeySequence(QKeySequence::Delete), this, SLOT(remove_selected_rows()), nullptr, Qt::WidgetShortcut);
+	new QShortcut(QKeySequence(Qt::ControlModifier + Qt::Key_Up), this, SLOT(move_selected_rows_up()), nullptr, Qt::WidgetShortcut);
+	new QShortcut(QKeySequence(Qt::ControlModifier + Qt::Key_Down), this, SLOT(move_selected_rows_down()), nullptr, Qt::WidgetShortcut);
+	new QShortcut(QKeySequence(Qt::Key_Return), this, SLOT(play_selected_track()), nullptr, Qt::WidgetShortcut);
+	new QShortcut(QKeySequence(Qt::Key_Enter), this, SLOT(play_selected_track()), nullptr, Qt::WidgetShortcut);
 
 	this->goto_row(pl->current_track_index());
 }
@@ -165,26 +171,6 @@ void PlaylistView::goto_row(int row)
 	row = std::max(row, 0);
 
 	this->scrollTo(model_index_by_index(row));
-}
-
-void PlaylistView::remove_selected_rows()
-{
-	int min_row = min_selected_item();
-
-	m->model->remove_rows(selected_items());
-	clear_selection();
-
-	if(row_count() > 0)
-	{
-		min_row = std::min(min_row, row_count() - 1);
-		select_row(min_row);
-	}
-}
-
-void PlaylistView::delete_selected_tracks()
-{
-	IndexSet selections = selected_items();
-	emit sig_delete_tracks(selections);
 }
 
 
@@ -357,12 +343,52 @@ void PlaylistView::refresh()
 	hh->resizeSection(PlaylistItemModel::ColumnName::Description, viewport_width - (w_time));
 }
 
+
+void PlaylistView::move_selected_rows_up()
+{
+	IndexSet selections = selected_items();
+	IndexSet new_selections = m->model->move_rows_up(selections);
+	select_rows(new_selections);
+}
+
+void PlaylistView::move_selected_rows_down()
+{
+	IndexSet selections = selected_items();
+	IndexSet new_selections = m->model->move_rows_down(selections);
+	select_rows(new_selections);
+}
+
+void PlaylistView::play_selected_track()
+{
+	int min_row = min_selected_item();
+	emit sig_double_clicked(min_row);
+}
+
+void PlaylistView::remove_selected_rows()
+{
+	int min_row = min_selected_item();
+
+	m->model->remove_rows(selected_items());
+	clear_selection();
+
+	if(row_count() > 0)
+	{
+		min_row = std::min(min_row, row_count() - 1);
+		select_row(min_row);
+	}
+}
+
+void PlaylistView::delete_selected_tracks()
+{
+	IndexSet selections = selected_items();
+	emit sig_delete_tracks(selections);
+}
+
 void PlaylistView::clear()
 {
 	clear_selection();
 	m->model->clear();
 }
-
 
 MD::Interpretation PlaylistView::metadata_interpretation() const
 {
@@ -461,56 +487,9 @@ void PlaylistView::mouseDoubleClickEvent(QMouseEvent* event)
 	}
 }
 
-
 void PlaylistView::keyPressEvent(QKeyEvent* event)
 {
-	if(event->matches(QKeySequence::Delete))
-	{
-		remove_selected_rows();
-		return;
-	}
-
-	bool ctrl_pressed = (event->modifiers() & Qt::ControlModifier);
-	IndexSet selections = selected_items();
 	event->setAccepted(false);
-
-	switch(event->key())
-	{
-		case Qt::Key_Up:
-			if( ctrl_pressed && !selections.isEmpty() )
-			{
-				IndexSet new_selections = m->model->move_rows_up(selections);
-				select_rows(new_selections);
-				return;
-			}
-
-			break;
-
-		case Qt::Key_Down:
-			if( ctrl_pressed && !selections.isEmpty() )
-			{
-				IndexSet new_selections = m->model->move_rows_down(selections);
-				select_rows(new_selections);
-				return;
-			}
-
-			break;
-
-		case Qt::Key_Return:
-		case Qt::Key_Enter:
-			if(!selections.isEmpty())
-			{
-				int min_row = min_selected_item();
-				emit sig_double_clicked(min_row);
-				return;
-			}
-
-			break;
-
-		default:
-			break;
-	}
-
 	SearchableTableView::keyPressEvent(event);
 }
 

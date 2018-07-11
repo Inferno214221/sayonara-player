@@ -22,7 +22,10 @@
 #define EQSLIDER_H
 
 #include "GUI/Utils/Widgets/Slider.h"
-#include <QLabel>
+#include "Utils/Pimpl.h"
+
+class QLabel;
+
 /**
  * @brief The EqSlider class
  * @ingroup Equalizer
@@ -31,49 +34,48 @@ class EqSlider :
 	public Gui::Slider
 {
 	Q_OBJECT
+	PIMPL(EqSlider)
 
 	signals:
 		void sig_value_changed(int idx, int val);
 
 	public:
 		explicit EqSlider(QWidget* parent);
-		virtual ~EqSlider() {}
+		virtual ~EqSlider();
 
 		/**
 		 * @brief sets everything the slider has to be aware about
 		 * @param idx the index of the slider
 		 * @param label the value label of the slider
 		 */
-		void setData(int idx, QLabel* label);
+		void set_label(int idx, QLabel* label);
 
 		/**
 		 * @brief get the value label
 		 * @return
 		 */
-		QLabel* getLabel() const;
+		QLabel* label() const;
 
 		/**
 		 * @brief get the index of the slider
 		 * @return
 		 */
-		int getIndex() const;
+		int index() const;
 
 		/**
 		 * @brief get the gstreamer compatible value
 		 * @return
 		 */
-		double get_eq_value() const;
+		double eq_value() const;
 
 		QSize minimumSizeHint() const override;
+
+	private slots:
+		void set_zero();
 
 
 	protected:
 		void sliderChange(SliderChange change) override;
-		void keyPressEvent(QKeyEvent* e) override;
-
-	private:
-		QLabel* _label=nullptr;
-		int		_idx;
 };
 
 #endif // EQSLIDER_H

@@ -63,7 +63,7 @@ AlbumModel::AlbumModel(QObject* parent, AbstractLibrary* library) :
 
 AlbumModel::~AlbumModel() {}
 
-int AlbumModel::id_by_row(int row)
+Id AlbumModel::id_by_row(int row)
 {
 	const AlbumList& albums = library()->albums();
 

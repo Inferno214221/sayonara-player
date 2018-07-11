@@ -39,8 +39,6 @@
 #include "Components/PlayManager/PlayState.h"
 #include "Components/Playlist/PlaylistDBInterface.h"
 
-#include <QTextEdit>
-
 class PlaylistView;
 
 UI_FWD(Playlist_Window)

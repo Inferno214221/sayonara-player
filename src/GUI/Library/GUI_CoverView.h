@@ -37,30 +37,33 @@ UI_FWD(GUI_CoverView)
 
 namespace Library
 {
-	class CoverModel;
+	class CoverView;
+
 	class GUI_CoverView :
 			public Gui::Widget
 	{
 		Q_OBJECT
 		UI_CLASS(GUI_CoverView)
 
+	signals:
+		void sig_sortorder_changed(Library::SortOrder so);
+
 	public:
 		explicit GUI_CoverView(QWidget* parent=nullptr);
 		virtual ~GUI_CoverView();
 
-		Library::ItemView* cover_view();
 		void init(LocalLibrary* library);
-
-		void refresh();
+		CoverView* cover_view() const;
 
 	protected:
 		void init_sorting_actions();
 		void init_zoom_actions();
+
 		void language_changed() override;
 
 	private:
-		void zoom_changed(int zoom);
-		void sortorder_changed(Library::SortOrder so);
+		void zoom_changed();
+		void sortorder_changed();
 
 	private slots:
 		void combo_sorting_changed(int idx);

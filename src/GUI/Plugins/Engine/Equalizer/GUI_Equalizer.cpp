@@ -102,16 +102,16 @@ void GUI_Equalizer::init_ui()
 {
 	setup_parent(this, &ui);
 
-	ui->sli_0->setData(0, ui->label);
-	ui->sli_1->setData(1, ui->label_2);
-	ui->sli_2->setData(2, ui->label_3);
-	ui->sli_3->setData(3, ui->label_4);
-	ui->sli_4->setData(4, ui->label_5);
-	ui->sli_5->setData(5, ui->label_6);
-	ui->sli_6->setData(6, ui->label_7);
-	ui->sli_7->setData(7, ui->label_8);
-	ui->sli_8->setData(8, ui->label_9);
-	ui->sli_9->setData(9, ui->label_10);
+	ui->sli_0->set_label(0, ui->label);
+	ui->sli_1->set_label(1, ui->label_2);
+	ui->sli_2->set_label(2, ui->label_3);
+	ui->sli_3->set_label(3, ui->label_4);
+	ui->sli_4->set_label(4, ui->label_5);
+	ui->sli_5->set_label(5, ui->label_6);
+	ui->sli_6->set_label(6, ui->label_7);
+	ui->sli_7->set_label(7, ui->label_8);
+	ui->sli_8->set_label(8, ui->label_9);
+	ui->sli_9->set_label(9, ui->label_10);
 
 	m->sliders.push_back(ui->sli_0);
 	m->sliders.push_back(ui->sli_1);
@@ -171,7 +171,7 @@ void GUI_Equalizer::retranslate_ui()
 void GUI_Equalizer::sli_pressed()
 {
 	EqSlider* sli = static_cast<EqSlider*>(sender());
-	int idx = sli->getIndex();
+	int idx = sli->index();
 
 	m->active_idx= idx;
 
@@ -196,7 +196,7 @@ void GUI_Equalizer::sli_changed(int idx, int new_val)
 	ui->btn_tool->show_action(ContextMenu::EntryUndo, true);
 
 	EqSlider* s = m->sliders[idx];
-	s->getLabel()->setText(calc_lab(new_val));
+	s->label()->setText(calc_lab(new_val));
 
 	m->engine->set_equalizer(idx, new_val);
 

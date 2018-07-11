@@ -34,20 +34,18 @@ GUI_CoverView::GUI_CoverView(QWidget* parent) :
 {
 	ui = new Ui::GUI_CoverView();
 	ui->setupUi(this);
-
 	ui->lab_zoom->setText(Lang::get(Lang::Zoom).append(":"));
 	ui->lab_sorting->setText(Lang::get(Lang::SortBy).append(":"));
 	ui->combo_sorting->setEditable(true);
 
 	ui->topbar->setVisible(_settings->get<Set::Lib_CoverShowUtils>());
 
-	connect(ui->tb_view, &CoverView::sig_zoom_changed, this, &GUI_CoverView::zoom_changed);
-	connect(ui->tb_view, &CoverView::sig_sortorder_changed, this, &GUI_CoverView::sortorder_changed);
-
 	connect(ui->combo_sorting, combo_activated_int, this, &GUI_CoverView::combo_sorting_changed);
 	connect(ui->combo_zoom, combo_activated_int, this, &GUI_CoverView::combo_zoom_changed);
 
 	Set::listen<Set::Lib_CoverShowUtils>(this, &GUI_CoverView::show_utils_changed, false);
+	Set::listen<Set::Lib_Sorting>(this, &GUI_CoverView::sortorder_changed, false);
+	Set::listen<Set::Lib_CoverZoom>(this, &GUI_CoverView::zoom_changed, false);
 
 	init_sorting_actions();
 	init_zoom_actions();
@@ -68,7 +66,7 @@ void GUI_CoverView::init(LocalLibrary* library)
 }
 
 
-ItemView* GUI_CoverView::cover_view()
+CoverView* GUI_CoverView::cover_view() const
 {
 	return ui->tb_view;
 }
@@ -79,13 +77,11 @@ void GUI_CoverView::init_sorting_actions()
 	ui->lab_sorting->setText(Lang::get(Lang::SortBy));
 	ui->combo_sorting->clear();
 
-	const QList<ActionPair> action_pairs = ui->tb_view->sorting_options();
+	const QList<ActionPair> action_pairs = ui->tb_view->sorting_actions();
 	for(const ActionPair& ap : action_pairs)
 	{
 		ui->combo_sorting->addItem(ap.name, (int) ap.so);
 	}
-
-	ui->tb_view->init_sorting_actions();
 }
 
 
@@ -94,12 +90,17 @@ void GUI_CoverView::combo_sorting_changed(int idx)
 	Q_UNUSED(idx)
 
 	int data = ui->combo_sorting->currentData().toInt();
-	ui->tb_view->change_sortorder((Library::SortOrder) data);
+
+	Library::SortOrder so = (Library::SortOrder) data;
+	ui->tb_view->change_sortorder(so);
 }
 
 
-void GUI_CoverView::sortorder_changed(SortOrder so)
+void GUI_CoverView::sortorder_changed()
 {
+	Library::Sortings s = _settings->get<Set::Lib_Sorting>();
+	Library::SortOrder so = s.so_albums;
+
 	for(int i=0; i<ui->combo_sorting->count(); i++)
 	{
 		if(ui->combo_sorting->itemData(i).toInt() == (int) so)
@@ -113,8 +114,6 @@ void GUI_CoverView::init_zoom_actions()
 {
 	QStringList zoom_actions = ui->tb_view->zoom_actions();
 	ui->combo_zoom->addItems(zoom_actions);
-
-	ui->tb_view->init_zoom_actions();
 }
 
 
@@ -122,12 +121,15 @@ void GUI_CoverView::combo_zoom_changed(int idx)
 {
 	Q_UNUSED(idx)
 
-	ui->tb_view->change_zoom(ui->combo_zoom->currentText().toInt());
+	int zoom = ui->combo_zoom->currentText().toInt();
+	_settings->set<Set::Lib_CoverZoom>(zoom);
+	ui->tb_view->change_zoom(zoom);
 }
 
 
-void GUI_CoverView::zoom_changed(int zoom)
+void GUI_CoverView::zoom_changed()
 {
+	int zoom = _settings->get<Set::Lib_CoverZoom>();
 	for(int i=0; i<ui->combo_zoom->count(); i++)
 	{
 		if(ui->combo_zoom->itemText(i).toInt() >= zoom)
@@ -147,10 +149,10 @@ void GUI_CoverView::show_utils_changed()
 void GUI_CoverView::language_changed()
 {
 	Gui::Widget::language_changed();
+
 	init_sorting_actions();
 
 	ui->combo_zoom->setToolTip(tr("Use Ctrl + mouse wheel to zoom"));
 	ui->lab_sorting->setText(Lang::get(Lang::SortBy));
 	ui->lab_zoom->setText(Lang::get(Lang::Zoom));
 }
-

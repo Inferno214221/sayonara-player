@@ -24,6 +24,7 @@
 #include "GUI/Library/Utils/DiscPopupMenu.h"
 #include "GUI/Library/Utils/ColumnIndex.h"
 #include "GUI/Library/Utils/ColumnHeader.h"
+#include "GUI/Utils/ContextMenu/LibraryContextMenu.h"
 #include "Utils/Settings/Settings.h"
 
 #include "Components/Library/AbstractLibrary.h"
@@ -59,14 +60,17 @@ void AlbumView::init_view(AbstractLibrary* library)
 	RatingDelegate* album_delegate = new RatingDelegate(this, (int) ColumnIndex::Album::Rating, true);
 
 	this->set_item_model(album_model);
-	this->set_search_model(album_model);
 	this->setItemDelegate(album_delegate);
 	this->set_metadata_interpretation(MD::Interpretation::Albums);
 
-	connect(this, &AlbumView::doubleClicked, this, &AlbumView::double_clicked);
 	connect(m->library, &AbstractLibrary::sig_all_albums_loaded, this, &AlbumView::albums_ready);
 
 	Set::listen<Set::Lib_UseViewClearButton>(this, &AlbumView::use_clear_button_changed);
+}
+
+AbstractLibrary* AlbumView::library() const
+{
+	return m->library;
 }
 
 ColumnHeaderList AlbumView::column_headers() const
@@ -104,12 +108,12 @@ void AlbumView::save_sortorder(SortOrder s)
 	m->library->change_album_sortorder(s);
 }
 
-void AlbumView::context_menu_show(const QPoint& p)
+void AlbumView::show_context_menu(const QPoint& p)
 {
 	delete_discmenu();
-
-	TableView::context_menu_show(p);
+	TableView::show_context_menu(p);
 }
+
 
 void AlbumView::index_clicked(const QModelIndex& idx)
 {
@@ -209,16 +213,10 @@ void AlbumView::add_discnumbers(const QList<Disc>& dns)
 	m->discnumbers << dns;
 }
 
-void AlbumView::middle_clicked()
-{
-	TableView::middle_clicked();
-	m->library->prepare_fetched_tracks_for_playlist(true);
-}
-
 void AlbumView::play_clicked()
 {
 	TableView::play_clicked();
-	emit doubleClicked(QModelIndex());
+	m->library->prepare_fetched_tracks_for_playlist(false);
 }
 
 void AlbumView::play_new_tab_clicked()
@@ -251,10 +249,9 @@ void AlbumView::refresh_clicked()
 	m->library->refresh_albums();
 }
 
-void AlbumView::double_clicked(const QModelIndex& index)
+void AlbumView::run_merge_operation(const MergeData& mergedata)
 {
-	Q_UNUSED(index)
-	m->library->prepare_fetched_tracks_for_playlist(false);
+	m->library->merge_albums(mergedata.source_ids, mergedata.target_id);
 }
 
 void AlbumView::albums_ready()

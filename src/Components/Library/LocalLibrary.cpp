@@ -358,7 +358,7 @@ void LocalLibrary::import_files_to(const QStringList& files, const QString& targ
  * this is not part of this ticket.
  */
 
-void LocalLibrary::merge_artists(const SP::Set<ArtistId>& artist_ids, ArtistId target_artist)
+void LocalLibrary::merge_artists(const SP::Set<Id>& artist_ids, ArtistId target_artist)
 {
 	if(artist_ids.isEmpty()) {
 		return;
@@ -400,7 +400,7 @@ void LocalLibrary::merge_artists(const SP::Set<ArtistId>& artist_ids, ArtistId t
 	tag_edit()->commit();
 }
 
-void LocalLibrary::merge_albums(const SP::Set<AlbumId>& album_ids, AlbumId target_album)
+void LocalLibrary::merge_albums(const SP::Set<Id>& album_ids, AlbumId target_album)
 {
 	if(album_ids.isEmpty())	{
 		return;

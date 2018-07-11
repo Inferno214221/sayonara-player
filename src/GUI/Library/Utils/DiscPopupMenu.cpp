@@ -85,7 +85,7 @@ DiscPopupMenu::~DiscPopupMenu()
 }
 
 
-void DiscPopupMenu::disc_pressed(int disc)
+void DiscPopupMenu::disc_pressed(Disc disc)
 {
 	emit sig_disc_pressed(disc);
 }

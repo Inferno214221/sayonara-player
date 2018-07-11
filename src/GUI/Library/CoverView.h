@@ -9,60 +9,63 @@ class LocalLibrary;
 class ActionPair;
 class QAction;
 
-class CoverView :
-		public Library::ItemView
+namespace Library
 {
-	Q_OBJECT
-	PIMPL(CoverView)
+	class CoverView :
+			public Library::ItemView
+	{
+		Q_OBJECT
+		PIMPL(CoverView)
 
-signals:
-	void sig_sortorder_changed(Library::SortOrder so);
-	void sig_zoom_changed(int);
+	public:
+		explicit CoverView(QWidget* parent=nullptr);
+		virtual ~CoverView();
 
-public:
-	explicit CoverView(QWidget* parent=nullptr);
-	virtual ~CoverView();
+		void init(LocalLibrary* library);
+		AbstractLibrary* library() const override;
 
-	void init(LocalLibrary* library);
+		QList<ActionPair> sorting_actions() const;
+		QStringList zoom_actions() const;
 
-	QList<ActionPair> sorting_options() const;
-	QStringList zoom_actions() const;
+		// QAbstractItemView
+		QStyleOptionViewItem viewOptions() const override;
 
-	void change_zoom(int zoom=-1);
-	void change_sortorder(Library::SortOrder so);
+		//SayonaraSelectionView
+		int index_by_model_index(const QModelIndex& idx) const override;
+		QModelIndex model_index_by_index(int idx) const override;
 
-	void init_sorting_actions();
-	void init_zoom_actions();
+		void change_zoom(int zoom=-1);
+		void change_sortorder(Library::SortOrder so);
 
-protected:
-	//SayonaraSelectionView
-	int index_by_model_index(const QModelIndex& idx) const override;
-	QModelIndex model_index_by_index(int idx) const override;
+		void init_sorting_actions();
+		void init_zoom_actions();
 
-	void init_context_menu() override;
+	protected:
+		void init_context_menu() override;
 
-	void double_clicked(const QModelIndex& index);
-	void middle_clicked() override;
-	void play_next_clicked() override;
-	void append_clicked() override;
-	void selection_changed(const IndexSet& indexes) override;
+		void language_changed() override;
+		void wheelEvent(QWheelEvent* e) override;
+		void resizeEvent(QResizeEvent* e) override;
+		void hideEvent(QHideEvent* e) override;
 
-	void language_changed() override;
-	QStyleOptionViewItem viewOptions() const override;
+	private slots:
+		void show_utils_triggered(bool b);
+		void action_sortorder_triggered();
+		void action_zoom_triggered();
+		void timer_timed_out();
 
-	void wheelEvent(QWheelEvent* e) override;
-	void resizeEvent(QResizeEvent *e) override;
+	private:
+		void timer_start();
 
-private slots:
-	void show_utils_triggered(bool b);
-	void albums_ready();
-	void action_sortorder_triggered();
-	void action_zoom_triggered();
-	void cover_changed();
-	void timed_out();
-
-private:
-	void refresh();
-};
+		// Library::ItemView
+		void play_clicked() override;
+		void play_new_tab_clicked() override;
+		void play_next_clicked() override;
+		void append_clicked() override;
+		void selection_changed(const IndexSet& indexes) override;
+		void refresh_clicked() override;
+		void run_merge_operation(const MergeData& mergedata) override;
+	};
+}
 
 #endif // COVERVIEW_H

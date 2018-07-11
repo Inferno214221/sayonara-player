@@ -47,6 +47,7 @@
 #include <QPainter>
 #include <QMimeData>
 #include <QApplication>
+#include <QShortcut>
 
 
 struct FileListView::Private
@@ -80,6 +81,9 @@ FileListView::FileListView(QWidget* parent) :
 	action->setShortcut(QKeySequence("F2"));
 	action->setShortcutContext(Qt::WidgetShortcut);
 	this->addAction(action);
+
+	new QShortcut(QKeySequence(Qt::Key_Return), this, SIGNAL(sig_enter_pressed()), nullptr, Qt::WidgetShortcut);
+	new QShortcut(QKeySequence(Qt::Key_Enter), this, SIGNAL(sig_enter_pressed()), nullptr, Qt::WidgetShortcut);
 }
 
 FileListView::~FileListView() {}
@@ -308,14 +312,6 @@ QModelIndex FileListView::model_index_by_index(int idx) const
 void FileListView::keyPressEvent(QKeyEvent *event)
 {
 	event->setAccepted(false);
-
-	if( event->key() == Qt::Key_Enter ||
-		event->key() == Qt::Key_Return)
-	{
-		event->accept();
-		emit sig_enter_pressed();
-	}
-
 	SearchableListView::keyPressEvent(event);
 }
 

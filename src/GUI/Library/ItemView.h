@@ -29,13 +29,14 @@
 #ifndef ITEM_VIEW_H_
 #define ITEM_VIEW_H_
 
+#include "ItemModel.h"
 #include "GUI/Utils/Widgets/WidgetTemplate.h"
 #include "GUI/Utils/Widgets/Dragable.h"
 #include "GUI/Utils/SearchableWidget/SearchableView.h"
 
 #include "GUI/InfoDialog/InfoDialogContainer.h"
-#include "GUI/Library/ItemModel.h"
 
+#include "Utils/Library/Sortorder.h"
 #include "Utils/MetaData/MetaDataFwd.h"
 #include "Utils/typedefs.h"
 #include "Utils/Set.h"
@@ -57,10 +58,15 @@ namespace Library
 		PIMPL(ItemView)
 
 	protected:
-		ItemModel* _model=nullptr;
+		struct MergeData
+		{
+			SP::Set<Id>	source_ids;
+			Id			target_id;
+
+			bool is_valid() const;
+		};
 
 	signals:
-		void sig_middle_button_clicked();
 		void sig_all_selected();
 		void sig_delete_clicked();
 		void sig_play_clicked();
@@ -69,7 +75,6 @@ namespace Library
 		void sig_append_clicked();
 		void sig_refresh_clicked();
 		void sig_import_files(const QStringList& files);
-		void sig_double_clicked(const IndexSet& indexes);
 		void sig_sel_changed(const IndexSet& indexes);
 		void sig_merge(const SP::Set<Id>& ids, int target_id);
 
@@ -78,6 +83,7 @@ namespace Library
 		ItemView& operator =(const ItemView& other)=delete;
 
 		using QTableView::setModel;
+		using SearchableViewInterface::set_search_model;
 
 	public:
 		explicit ItemView(QWidget* parent=nullptr);
@@ -86,8 +92,6 @@ namespace Library
 		virtual void set_item_model(ItemModel* model);
 
 		void show_context_menu_actions(int entries);
-		void add_context_action(QAction* action);
-		void remove_context_action(QAction* action);
 
 		/** Dragable **/
 		QMimeData* dragable_mimedata() const override;
@@ -106,33 +110,42 @@ namespace Library
 		// Events implemented in LibraryViewEvents.cpp
 		virtual void mousePressEvent(QMouseEvent* event) override;
 		virtual void mouseMoveEvent(QMouseEvent* event) override;
-		virtual void keyPressEvent(QKeyEvent* event) override;
 		virtual void contextMenuEvent(QContextMenuEvent* event) override;
 
 		virtual void dragEnterEvent(QDragEnterEvent *event) override;
 		virtual void dragMoveEvent(QDragMoveEvent *event) override;
 		virtual void dropEvent(QDropEvent* event) override;
 		virtual void changeEvent(QEvent* event) override;
+		virtual void keyPressEvent(QKeyEvent* event) override;
 		virtual void resizeEvent(QResizeEvent *event) override;
 
 		virtual void selectionChanged (const QItemSelection& selected, const QItemSelection& deselected ) override;
 		virtual void init_context_menu();
 		LibraryContextMenu* context_menu() const;
 
+		ItemModel* item_model() const;
+		virtual AbstractLibrary* library() const;
+
 		// InfoDialogContainer
 		virtual MD::Interpretation metadata_interpretation() const override final;
 		MetaDataList info_dialog_data() const override;
 
 		virtual void selection_changed(const IndexSet& indexes);
+		virtual void import_requested(const QStringList& files);
+
+		MergeData calc_mergedata() const;
+		virtual void run_merge_operation(const MergeData& md);
+
+
+
 
 	protected slots:
-		virtual void context_menu_show(const QPoint&);
+		virtual void show_context_menu(const QPoint&);
 		virtual void merge_action_triggered();
 		virtual void play_clicked();
 		virtual void play_new_tab_clicked();
 		virtual void play_next_clicked();
 		virtual void delete_clicked();
-		virtual void middle_clicked();
 		virtual void append_clicked();
 		virtual void refresh_clicked();
 
@@ -141,20 +154,21 @@ namespace Library
 		template < typename T, typename ModelType >
 		void fill(const T& input_data)
 		{
+			ItemModel* model = item_model();
 			int old_size, new_size;
-			_model->refresh_data(&old_size, &new_size);
+			model->refresh_data(&old_size, &new_size);
 
 			IndexSet selections;
 			for(int row=0; row < new_size; row++)
 			{
-				if(_model->is_selected(input_data[row].id)){
-					sp_log(Log::Debug, this) << "-> Select row " << row;
+				if(model->is_selected(input_data[row].id))
+				{
 					selections.insert(row);
 					break;
 				}
 			}
 
-			select_rows(selections, 0, _model->columnCount() - 1);
+			select_rows(selections, 0, model->columnCount() - 1);
 
 			if(new_size > old_size) {
 				resize_rows_to_contents(old_size, new_size - old_size);

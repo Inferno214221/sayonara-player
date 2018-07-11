@@ -111,6 +111,16 @@ int SearchableViewInterface::column_count(const QModelIndex& parent) const
 	return m->view->model()->columnCount(parent);
 }
 
+bool SearchableViewInterface::is_empty(const QModelIndex& parent) const
+{
+	return (row_count(parent) == 0);
+}
+
+bool SearchableViewInterface::has_rows(const QModelIndex& parent) const
+{
+	return (row_count(parent) > 0);
+}
+
 
 QModelIndex SearchableViewInterface::model_index(int row, int col, const QModelIndex& parent) const
 {

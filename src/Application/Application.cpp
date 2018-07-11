@@ -249,6 +249,7 @@ Gui::Icons::change_theme();
 	return true;
 }
 
+#include <QDir>
 
 void Application::init_translator()
 {
@@ -256,6 +257,7 @@ void Application::init_translator()
 
 	QString language = Settings::instance()->get<Set::Player_Language>();
 	m->translator->load(language, Util::share_path("translations"));
+
 	bool success = this->installTranslator(m->translator);
 	if(!success){
 		sp_log(Log::Warning) << "Cannot install translator";
