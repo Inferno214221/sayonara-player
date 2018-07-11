@@ -55,7 +55,7 @@
 struct GUI_Player::Private
 {
 	Menubar*					menubar=nullptr;
-	QTranslator*				translator=nullptr;
+	QList<QTranslator*>			translators;
 	GUI_Logger*					logger=nullptr;
 	GUI_TrayIcon*				tray_icon=nullptr;
 	GUI_ControlsBase*			controls=nullptr;
@@ -64,8 +64,7 @@ struct GUI_Player::Private
 	int							style;
 	bool						shutdown_requested;
 
-	Private(QTranslator* translator) :
-		translator(translator),
+	Private() :
 		shutdown_requested(false)
 	{
 		Settings* s = Settings::instance();
@@ -83,14 +82,16 @@ struct GUI_Player::Private
 };
 
 
-GUI_Player::GUI_Player(QTranslator* translator, QWidget* parent) :
+GUI_Player::GUI_Player(QWidget* parent) :
 	Gui::MainWindow(parent),
 	MessageReceiverInterface("Player Main Window")
 {
-	m = Pimpl::make<Private>(translator);
+	m = Pimpl::make<Private>();
 
 	ui = new Ui::GUI_Player();
 	ui->setupUi(this);
+
+	language_changed();
 
 	ui->plugin_widget->setVisible(false);
 
@@ -107,7 +108,6 @@ GUI_Player::GUI_Player(QTranslator* translator, QWidget* parent) :
 	init_sizes();
 	init_main_splitter();
 	init_controlstyle();
-
 	init_connections();
 	init_tray_actions();
 
@@ -491,9 +491,33 @@ void GUI_Player::splitter_controls_moved(int pos, int idx)
 	_settings->set<Set::Player_SplitterControls>(splitter_state);
 }
 
-#include <QRegExp>
+void GUI_Player::init_translator(const QString& file, const QString& dir)
+{
+	QTranslator* t = new QTranslator(this);
+	bool loaded = t->load(file, dir);
+	if(!loaded){
+		sp_log(Log::Warning, this) << "Translator " << dir << "/" << file << " could not be loaded";
+		return;
+	}
+
+	bool installed = QApplication::installTranslator(t);
+	if(!installed){
+		sp_log(Log::Warning, this) << "Translator " << dir << "/" << file << " could not be installed";
+		return;
+	}
+
+	m->translators << t;
+
+}
+
+
 void GUI_Player::language_changed()
 {
+	for(QTranslator* t : m->translators)
+	{
+		QApplication::removeTranslator(t);
+	}
+
 	QString language = _settings->get<Set::Player_Language>();
 
 	QRegExp re("sayonara_lang_(.*)\\.qm");
@@ -506,13 +530,10 @@ void GUI_Player::language_changed()
 	sp_log(Log::Info, this) << "Language changed: " << language << " (" << two_country_code << ")";
 	sp_log(Log::Info, this) << "Language changed: " << loc.nativeLanguageName();
 
-	m->translator->load(language, Util::share_path("translations/"));
+	init_translator(language, Util::share_path("translations/"));
 
-	QTranslator* t2 = new QTranslator(this);
 	QString qt_tr_file = QString("qt_%1.qm").arg(two_country_code);
-	t2->load(qt_tr_file, "/usr/share/qt5/translations/");
-
-	QApplication::installTranslator(t2);
+	init_translator(qt_tr_file, "/usr/share/qt5/translations/");
 
 	ui->retranslateUi(this);
 }

@@ -58,7 +58,7 @@ signals:
 	void sig_player_closed();
 
 public:
-	explicit GUI_Player(QTranslator* translator, QWidget *parent=nullptr);
+	explicit GUI_Player(QWidget *parent=nullptr);
 	~GUI_Player();
 
 	void register_preference_dialog(QAction* dialog_action);
@@ -66,6 +66,7 @@ public:
 
 
 private:
+	void init_translator(const QString& file, const QString& dir);
 	void init_tray_actions();
 	void init_connections();
 	void init_sizes();

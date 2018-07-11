@@ -92,7 +92,6 @@
 #include "Database/DatabaseSettings.h"
 
 #include <QTime>
-#include <QTranslator>
 #include <QSessionManager>
 
 struct Application::Private
@@ -103,7 +102,6 @@ struct Application::Private
 	Playlist::Handler*	plh=nullptr;
 	DB::Connector*		db=nullptr;
 	InstanceThread*		instance_thread=nullptr;
-	QTranslator*		translator=nullptr;
 	MetaTypeRegistry*	metatype_registry=nullptr;
 
 	bool				settings_initialized;
@@ -214,11 +212,10 @@ bool Application::init(const QStringList& files_to_play)
 	QString version = QString(SAYONARA_VERSION);
 	settings->set<Set::Player_Version>(version);
 
-	init_translator();
 	Gui::Icons::change_theme();
 	Proxy::instance()->init();
 
-	init_player(m->translator);
+	init_player();
 
 #ifdef WITH_DBUS
 	new DBusHandler(m->player, this);
@@ -232,7 +229,8 @@ bool Application::init(const QStringList& files_to_play)
 												Lang::get(Lang::Version) + " " + SAYONARA_VERSION,
 												Util::share_path("logo.png"));
 	}
-Gui::Icons::change_theme();
+
+	Gui::Icons::change_theme();
 	init_single_instance_thread();
 	init_engine();
 	init_libraries();
@@ -249,26 +247,9 @@ Gui::Icons::change_theme();
 	return true;
 }
 
-#include <QDir>
-
-void Application::init_translator()
+void Application::init_player()
 {
-	m->translator = new QTranslator(this);
-
-	QString language = Settings::instance()->get<Set::Player_Language>();
-	m->translator->load(language, Util::share_path("translations"));
-
-	bool success = this->installTranslator(m->translator);
-	if(!success){
-		sp_log(Log::Warning) << "Cannot install translator";
-		m->translator = nullptr;
-	}
-}
-
-
-void Application::init_player(QTranslator* translator)
-{
-	m->player = new GUI_Player(translator);
+	m->player = new GUI_Player();
 	Gui::Util::set_main_window(m->player);
 
 	connect(m->player, &GUI_Player::sig_player_closed, this, &QCoreApplication::quit);

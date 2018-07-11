@@ -137,6 +137,13 @@
      </item>
     </layout>
    </item>
+   <item row="0" column="0">
+    <widget class="Line" name="line">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <customwidgets>

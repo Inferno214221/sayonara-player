@@ -24,7 +24,6 @@
 #include <QApplication>
 #include "Utils/Pimpl.h"
 
-class QTranslator;
 class QStringList;
 class QSessionManager;
 
@@ -44,12 +43,11 @@ public:
 
 private:
 	void init_single_instance_thread();
-	void init_translator();
 	void init_preferences();
 	void init_libraries();
 	void init_engine();
 	void init_plugins();
-	void init_player(QTranslator* translator);
+	void init_player();
 	void init_playlist(const QStringList& files_to_play);
 
 private slots:
