@@ -491,23 +491,23 @@ void GUI_Player::splitter_controls_moved(int pos, int idx)
 	_settings->set<Set::Player_SplitterControls>(splitter_state);
 }
 
-void GUI_Player::init_translator(const QString& file, const QString& dir)
+bool GUI_Player::init_translator(const QString& file, const QString& dir)
 {
 	QTranslator* t = new QTranslator(this);
 	bool loaded = t->load(file, dir);
 	if(!loaded){
 		sp_log(Log::Warning, this) << "Translator " << dir << "/" << file << " could not be loaded";
-		return;
+		return false;
 	}
 
 	bool installed = QApplication::installTranslator(t);
 	if(!installed){
 		sp_log(Log::Warning, this) << "Translator " << dir << "/" << file << " could not be installed";
-		return;
+		return false;
 	}
 
 	m->translators << t;
-
+	return true;
 }
 
 
@@ -529,11 +529,14 @@ void GUI_Player::language_changed()
 
 	sp_log(Log::Info, this) << "Language changed: " << language << " (" << two_country_code << ")";
 	sp_log(Log::Info, this) << "Language changed: " << loc.nativeLanguageName();
-
 	init_translator(language, Util::share_path("translations/"));
 
-	QString qt_tr_file = QString("qt_%1.qm").arg(two_country_code);
-	init_translator(qt_tr_file, "/usr/share/qt5/translations/");
+	QString qt_tr_file_sayonara = QString("qt_%1.qm").arg(two_country_code);
+	bool success = init_translator(qt_tr_file_sayonara, Util::share_path("translations/"));
+	if(!success){
+		QString qt_tr_file = QString("qt_%1.qm").arg(two_country_code);
+		init_translator(qt_tr_file, "/usr/share/qt5/translations/");
+	}
 
 	ui->retranslateUi(this);
 }

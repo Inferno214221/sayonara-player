@@ -152,8 +152,8 @@ GUI_DirectoryWidget::GUI_DirectoryWidget(QWidget *parent) :
 		show_lyrics();
 	});
 
-	connect(ui->lv_files, &QListView::doubleClicked, this, &GUI_DirectoryWidget::file_dbl_clicked);
 	connect(ui->lv_files, &QListView::pressed, this, &GUI_DirectoryWidget::file_pressed);
+	connect(ui->lv_files, &QListView::doubleClicked, this, &GUI_DirectoryWidget::file_dbl_clicked);
 	connect(ui->lv_files, &FileListView::sig_import_requested, this, &GUI_DirectoryWidget::import_requested);
 	connect(ui->lv_files, &FileListView::sig_enter_pressed, this, &GUI_DirectoryWidget::file_enter_pressed);
 	connect(ui->lv_files, &FileListView::sig_append_clicked, this, &GUI_DirectoryWidget::file_append_clicked);

@@ -66,7 +66,7 @@ public:
 
 
 private:
-	void init_translator(const QString& file, const QString& dir);
+	bool init_translator(const QString& file, const QString& dir);
 	void init_tray_actions();
 	void init_connections();
 	void init_sizes();

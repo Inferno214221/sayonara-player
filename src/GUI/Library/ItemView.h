@@ -137,8 +137,6 @@ namespace Library
 		virtual void run_merge_operation(const MergeData& md);
 
 
-
-
 	protected slots:
 		virtual void show_context_menu(const QPoint&);
 		virtual void merge_action_triggered();

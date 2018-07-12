@@ -51,8 +51,9 @@ TableView::TableView(QWidget* parent) :
 	m = Pimpl::make<Private>();
 
 	m->header = new HeaderView(Qt::Horizontal, this);
-	this->setHorizontalHeader(m->header);
+	setHorizontalHeader(m->header);
 
+	connect(this, &ItemView::doubleClicked, this, &TableView::play_clicked);
 	connect(m->header, &HeaderView::sectionClicked, this, &TableView::sort_by_column);
 	connect(m->header, &HeaderView::sig_columns_changed, this, &TableView::header_actions_triggered);
 }
