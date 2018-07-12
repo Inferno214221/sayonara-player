@@ -83,7 +83,6 @@ private:
 	void init_context_menu();
 
 	// d & d
-	void clear_drag_drop_lines(int row);
 	int calc_drag_drop_line(QPoint pos);
 	void handle_drop(QDropEvent* event);
 	void handle_inner_drag_drop(int row, bool copy);
@@ -128,8 +127,6 @@ protected:
 	bool viewportEvent(QEvent *event) override;
 
 	void skin_changed() override;
-	void look_changed();
-
 };
 
 #endif /* PlaylistView_H_ */

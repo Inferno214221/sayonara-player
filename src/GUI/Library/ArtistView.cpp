@@ -62,7 +62,7 @@ void ArtistView::init_view(AbstractLibrary* library)
 
 	ArtistModel* artist_model = new ArtistModel(this, m->library);
 
-	this->set_item_model(artist_model);
+	this->set_model(artist_model);
 	this->setItemDelegate(new Gui::StyledItemDelegate(this));
 	this->set_metadata_interpretation(MD::Interpretation::Artists);
 

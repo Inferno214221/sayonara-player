@@ -62,7 +62,7 @@ GUI_Playlist::GUI_Playlist(QWidget *parent) :
 	connect(handler, &Handler::sig_playlist_created, this, &GUI_Playlist::playlist_created);
 	connect(handler, &Handler::sig_playlist_name_changed, this, &GUI_Playlist::playlist_name_changed);
 	connect(handler, &Handler::sig_new_playlist_added, this, &GUI_Playlist::playlist_added);
-	connect(handler, &Handler::sig_playlist_idx_changed, this, &GUI_Playlist::playlist_idx_changed);
+	connect(handler, &Handler::sig_current_playlist_changed, this, &GUI_Playlist::playlist_idx_changed);
 
 	PlayManager* play_manager = PlayManager::instance();
 	connect(play_manager, &PlayManager::sig_playlist_finished,	this, &GUI_Playlist::playlist_finished);
@@ -285,7 +285,8 @@ void GUI_Playlist::delete_tracks_clicked(const IndexSet& rows)
 		return;
 	}
 
-	Handler::instance()->delete_tracks(rows, deletion_mode);
+	int cur_idx = ui->tw_playlists->currentIndex();
+	Handler::instance()->delete_tracks(cur_idx, rows, deletion_mode);
 }
 
 void GUI_Playlist::playlist_name_changed(int idx)
@@ -340,17 +341,18 @@ void GUI_Playlist::playlist_idx_changed(int pl_idx)
 
 void GUI_Playlist::playlist_added(PlaylistPtr pl)
 {
-	PlaylistView* plv = new PlaylistView(pl);
-
 	int idx = pl->index();
 	QString name = pl->get_name();
 
+	PlaylistView* plv = new PlaylistView(pl, ui->tw_playlists);
+
 	ui->tw_playlists->insertTab(ui->tw_playlists->count() - 1, plv, name);
-	Handler::instance()->set_current_index(idx);
 
 	connect(plv, &PlaylistView::sig_double_clicked, this, &GUI_Playlist::double_clicked);
 	connect(plv, &PlaylistView::sig_delete_tracks, this, &GUI_Playlist::delete_tracks_clicked);
 	connect(pl.get(), &Playlist::Base::sig_items_changed, this, &GUI_Playlist::playlist_changed);
+
+	Handler::instance()->set_current_index(idx);
 }
 
 void GUI_Playlist::playlist_created(PlaylistPtr pl)
@@ -389,9 +391,6 @@ void GUI_Playlist::tab_close_playlist_clicked(int idx)
 	}
 
 	Handler::instance()->close_playlist(idx);
-	Handler::instance()->set_current_index(ui->tw_playlists->currentIndex());
-
-	set_total_time_label();
 
 	delete playlist_widget; playlist_widget = nullptr;
 }

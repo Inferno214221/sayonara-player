@@ -82,14 +82,17 @@ namespace Library
 		ItemView(const ItemView& other)=delete;
 		ItemView& operator =(const ItemView& other)=delete;
 
-		using QTableView::setModel;
-		using SearchableViewInterface::set_search_model;
+		/*using QTableView::setModel;
+		using SearchableViewInterface::set_search_model;*/
+
+		using SearchableTableView::set_model;
+
 
 	public:
 		explicit ItemView(QWidget* parent=nullptr);
 		virtual ~ItemView();
 
-		virtual void set_item_model(ItemModel* model);
+		void set_item_model(ItemModel* model);
 
 		void show_context_menu_actions(int entries);
 

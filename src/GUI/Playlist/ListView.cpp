@@ -42,9 +42,7 @@
 #include "Utils/Logger/Logger.h"
 #include "Utils/Set.h"
 #include "Utils/Settings/Settings.h"
-
 #include "Components/Playlist/AbstractPlaylist.h"
-#include "Components/Playlist/PlaylistHandler.h"
 
 #include <QShortcut>
 #include <QDropEvent>
@@ -60,17 +58,12 @@ struct PlaylistView::Private
 	int						playlist_index;
 
 	PlaylistContextMenu*	context_menu=nullptr;
-
 	PlaylistItemModel*		model=nullptr;
-	PlaylistItemDelegate*	delegate=nullptr;
-
 	ProgressBar*			progressbar=nullptr;
-
 
 	Private(PlaylistPtr pl, PlaylistView* parent) :
 		playlist_index(pl->index()),
-		model(new PlaylistItemModel(pl, parent)),
-		delegate(new PlaylistItemDelegate(parent))
+		model(new PlaylistItemModel(pl, parent))
 	{}
 };
 
@@ -82,13 +75,13 @@ PlaylistView::PlaylistView(PlaylistPtr pl, QWidget* parent) :
 	m = Pimpl::make<Private>(pl, this);
 
 	this->setObjectName("playlist_view" + QString::number(pl->index()));
-	this->setModel(m->model);
-	this->setItemDelegate(m->delegate);
 
-	set_search_model(m->model);
+/*	this->setModel(m->model);
+	this->set_search_model(m->model);*/
+	this->set_model(m->model);
+	this->setItemDelegate(new PlaylistItemDelegate(this));
+
 	init_view();
-
-	new QShortcut(QKeySequence(Qt::Key_Backspace), this, SLOT(clear()), nullptr, Qt::WidgetShortcut);
 
 	connect(m->model, &PlaylistItemModel::sig_data_ready, this, &PlaylistView::refresh);
 	connect(pl.get(), &Playlist::Base::sig_current_track_changed, this, &PlaylistView::goto_row);
@@ -96,9 +89,9 @@ PlaylistView::PlaylistView(PlaylistPtr pl, QWidget* parent) :
 	Set::listen<Set::PL_ShowNumbers>(this, &PlaylistView::sl_columns_changed);
 	Set::listen<Set::PL_ShowCovers>(this, &PlaylistView::sl_columns_changed);
 	Set::listen<Set::PL_ShowNumbers>(this, &PlaylistView::sl_columns_changed);
-	Set::listen<Set::PL_EntryLook>(this, &PlaylistView::look_changed);
 	Set::listen<Set::PL_ShowRating>(this, &PlaylistView::refresh);
 
+	new QShortcut(QKeySequence(Qt::Key_Backspace), this, SLOT(clear()), nullptr, Qt::WidgetShortcut);
 	new QShortcut(QKeySequence(QKeySequence::Delete), this, SLOT(remove_selected_rows()), nullptr, Qt::WidgetShortcut);
 	new QShortcut(QKeySequence(Qt::ControlModifier + Qt::Key_Up), this, SLOT(move_selected_rows_up()), nullptr, Qt::WidgetShortcut);
 	new QShortcut(QKeySequence(Qt::ControlModifier + Qt::Key_Down), this, SLOT(move_selected_rows_down()), nullptr, Qt::WidgetShortcut);
@@ -173,19 +166,6 @@ void PlaylistView::goto_row(int row)
 	this->scrollTo(model_index_by_index(row));
 }
 
-
-// remove the black line under the titles
-void PlaylistView::clear_drag_drop_lines(int row)
-{
-	m->delegate->set_drag_index(-1);
-
-	for(int i=0; i<m->model->columnCount(); i++)
-	{
-		update( m->model->index(row, i) );
-	}
-}
-
-
 int PlaylistView::calc_drag_drop_line(QPoint pos)
 {
 	if(pos.y() < 0) {
@@ -203,8 +183,8 @@ int PlaylistView::calc_drag_drop_line(QPoint pos)
 
 void PlaylistView::handle_drop(QDropEvent* event)
 {
-	int row = m->delegate->drag_index();
-	clear_drag_drop_lines(row);
+	int row = calc_drag_drop_line(event->pos());
+	m->model->set_drag_index(-1);
 
 	const QMimeData* mimedata = event->mimeData();
 	if(!mimedata) {
@@ -298,41 +278,6 @@ void PlaylistView::rating_changed(Rating rating)
 }
 
 
-void PlaylistView::refresh()
-{
-	bool show_rating = _settings->get<Set::PL_ShowRating>();
-	QFontMetrics fm(this->font());
-
-	int h = std::max(fm.height() + 4, 20);
-	if(show_rating){
-		h += m->delegate->rating_height();
-	}
-
-	for(int i=0; i<m->model->rowCount(); i++) {
-		verticalHeader()->resizeSection(i, h);
-	}
-
-	QHeaderView* hh = this->horizontalHeader();
-	int viewport_width = viewport()->width();
-	int w_time = fm.width("1888:88");
-
-	if(_settings->get<Set::PL_ShowCovers>())
-	{
-		int w_cov = 30;
-		viewport_width -= w_cov;
-		hh->resizeSection(PlaylistItemModel::ColumnName::Cover, w_cov);
-	}
-
-	if(_settings->get<Set::PL_ShowNumbers>())
-	{
-		int w_tn = fm.width(QString::number(m->model->rowCount() * 100));
-		viewport_width -= w_tn;
-		hh->resizeSection(PlaylistItemModel::ColumnName::TrackNumber, w_tn);
-	}
-
-	hh->resizeSection(PlaylistItemModel::ColumnName::Time, w_time);
-	hh->resizeSection(PlaylistItemModel::ColumnName::Description, viewport_width - (w_time));
-}
 
 
 void PlaylistView::move_selected_rows_up()
@@ -495,24 +440,13 @@ void PlaylistView::dragMoveEvent(QDragMoveEvent* event)
 	event->accept();						// needed for dragMove
 
 	int row = calc_drag_drop_line(event->pos());
-
-	bool is_old = m->delegate->is_drag_index(row);
-	if(!is_old)
-	{
-		clear_drag_drop_lines(m->delegate->drag_index());
-		m->delegate->set_drag_index(row);
-
-		for(int i=0; i<m->model->columnCount(); i++)
-		{
-			update( m->model->index(row, i) );
-		}
-	}
+	m->model->set_drag_index(row);
 }
 
 void PlaylistView::dragLeaveEvent(QDragLeaveEvent* event)
 {
 	event->accept();
-	clear_drag_drop_lines(m->delegate->drag_index());
+	m->model->set_drag_index(-1);
 }
 
 void PlaylistView::dropEventFromOutside(QDropEvent* event)
@@ -554,18 +488,6 @@ void PlaylistView::skin_changed()
 	refresh();
 }
 
-void PlaylistView::look_changed()
-{
-	refresh();
-	for(int r=0; r<m->model->rowCount(); r++)
-	{
-		for(int c=0; c<m->model->columnCount(); c++)
-		{
-			update( m->model->index(r, c) );
-		}
-	}
-}
-
 void PlaylistView::sl_columns_changed()
 {
 	bool show_numbers = _settings->get<Set::PL_ShowNumbers>();
@@ -575,4 +497,40 @@ void PlaylistView::sl_columns_changed()
 	horizontalHeader()->setSectionHidden(PlaylistItemModel::ColumnName::Cover, !show_covers);
 
 	refresh();
+}
+
+void PlaylistView::refresh()
+{
+	bool show_rating = _settings->get<Set::PL_ShowRating>();
+	QFontMetrics fm(this->font());
+
+	int h = std::max(fm.height() + 4, 20);
+	if(show_rating){
+		h += fm.height();
+	}
+
+	for(int i=0; i<m->model->rowCount(); i++) {
+		verticalHeader()->resizeSection(i, h);
+	}
+
+	QHeaderView* hh = this->horizontalHeader();
+	int viewport_width = viewport()->width();
+	int w_time = fm.width("1888:88");
+
+	if(_settings->get<Set::PL_ShowCovers>())
+	{
+		int w_cov = 30;
+		viewport_width -= w_cov;
+		hh->resizeSection(PlaylistItemModel::ColumnName::Cover, w_cov);
+	}
+
+	if(_settings->get<Set::PL_ShowNumbers>())
+	{
+		int w_tn = fm.width(QString::number(m->model->rowCount() * 100));
+		viewport_width -= w_tn;
+		hh->resizeSection(PlaylistItemModel::ColumnName::TrackNumber, w_tn);
+	}
+
+	hh->resizeSection(PlaylistItemModel::ColumnName::Time, w_time);
+	hh->resizeSection(PlaylistItemModel::ColumnName::Description, viewport_width - (w_time));
 }

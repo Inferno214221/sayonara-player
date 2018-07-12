@@ -148,7 +148,6 @@ bool MimeData::is_inner_drag_drop(const QMimeData* data, int target_playlist_idx
 	}
 
 	int source_idx = cmd->playlist_source_index();
-
 	if(source_idx == -1){
 		return false;
 	}

@@ -128,8 +128,7 @@ void Base::remove_tracks(const IndexSet& indexes)
 
 void Base::insert_track(const MetaData& md, int tgt)
 {
-	MetaDataList v_md(md);
-	insert_tracks(v_md, tgt);
+	insert_tracks(MetaDataList{md}, tgt);
 }
 
 

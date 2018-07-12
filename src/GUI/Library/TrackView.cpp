@@ -59,7 +59,7 @@ void TrackView::init_view(AbstractLibrary* library)
 	TrackModel* track_model = new TrackModel(this, library);
 	RatingDelegate* track_delegate = new RatingDelegate(this, (int) ColumnIndex::Track::Rating, true);
 
-	this->set_item_model(track_model);
+	this->set_model(track_model);
 	this->setItemDelegate(track_delegate);
 	this->set_metadata_interpretation(MD::Interpretation::Tracks);
 

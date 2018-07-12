@@ -69,8 +69,9 @@ FileListView::FileListView(QWidget* parent) :
 {
 	m = Pimpl::make<Private>(this);
 
-	this->setModel(m->model);
-	this->set_search_model(m->model);
+	/*this->setModel(m->model);
+	this->set_search_model(m->model);*/
+	this->set_model(m->model);
 	this->setItemDelegate(new DirectoryDelegate(this));
 	this->setSelectionMode(QAbstractItemView::ExtendedSelection);
 	this->setDragEnabled(true);

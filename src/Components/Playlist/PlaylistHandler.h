@@ -88,7 +88,7 @@ namespace Playlist
 			 * @param track_idx index in playlist
 			 * @param playlist_idx index of playlist
 			 */
-			void sig_cur_track_idx_changed(int track_idx, int playlist_idx);
+			void sig_current_track_changed(int track_idx, int playlist_idx);
 
 			/**
 			 * @brief emitted when new playlist has been added
@@ -108,7 +108,7 @@ namespace Playlist
 			void sig_saved_playlists_changed();
 
 
-			void sig_playlist_idx_changed(int idx);
+			void sig_current_playlist_changed(int idx);
 
 			void sig_track_deletion_requested(const MetaDataList& v_md, Library::TrackDeletionMode deletion_mode);
 
@@ -308,7 +308,7 @@ namespace Playlist
 			int create_empty_playlist(const QString& name);
 
 
-			void delete_tracks(const IndexSet& rows, Library::TrackDeletionMode deletion_mode);
+			void delete_tracks(int pl_idx, const IndexSet& rows, Library::TrackDeletionMode deletion_mode);
 
 
 		private slots:

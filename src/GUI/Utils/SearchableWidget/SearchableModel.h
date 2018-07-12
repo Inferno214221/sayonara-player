@@ -72,6 +72,7 @@ class SearchableModel :
 		}
 };
 
+
 using SearchableTableModel=SearchableModel<QAbstractTableModel>;
 using SearchableListModel=SearchableModel<QAbstractListModel> ;
 

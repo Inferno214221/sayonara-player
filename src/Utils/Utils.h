@@ -198,6 +198,16 @@ namespace Util
 	constexpr typename std::add_const<T>::type& AsConst(T& t) {
 		return t;
 	}
+
+	template<typename T, typename FN>
+	int indexOf(const T& container, FN fn) {
+		auto it = Util::find(container, fn);
+		if(it == container.end())
+		{
+			return -1;
+		}
+		return std::distance(container.begin(), it);
+	}
 }
 
 #endif

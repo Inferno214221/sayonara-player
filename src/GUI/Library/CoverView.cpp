@@ -72,7 +72,7 @@ void CoverView::init(LocalLibrary* library)
 
 	ItemView::set_selection_type( SelectionViewInterface::SelectionType::Items );
 	ItemView::set_metadata_interpretation(MD::Interpretation::Albums);
-	ItemView::set_item_model(m->model);
+	ItemView::set_model(m->model);
 
 	this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	this->setVerticalScrollMode(QAbstractItemView::ScrollPerItem);

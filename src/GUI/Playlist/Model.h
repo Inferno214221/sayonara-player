@@ -90,13 +90,16 @@ public:
 	void		set_current_track(int row);
 	int			current_track() const;
 
-
 	const MetaData&	metadata(int row) const;
 	MetaDataList	metadata(const IndexSet& rows) const;
 
 	QMimeData*		mimeData(const QModelIndexList& indexes) const override;
 
 	bool			has_local_media(const IndexSet& rows) const;
+	void			set_drag_index(int drag_index);
+
+private:
+	void			look_changed();
 
 private slots:
 	void			playlist_changed(int pl_idx);

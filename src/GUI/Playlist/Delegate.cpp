@@ -37,13 +37,10 @@ const static int PLAYLIST_BOLD=70;
 struct PlaylistItemDelegate::Private
 {
 	QString		entry_look;
-	int			drag_row;
 	int			rating_height;
-
 	bool		show_rating;
 
 	Private() :
-		drag_row(-1),
 		rating_height(18),
 		show_rating(false)
 	{
@@ -78,8 +75,8 @@ void PlaylistItemDelegate::paint(QPainter *painter,	const QStyleOptionViewItem &
 	int row_height = rect.height();
 
 	StyledItemDelegate::paint(painter, option, index);
-
-	if(m->drag_row == row) {
+	if(index.data(Qt::UserRole).toBool() == true)
+	{
 		int y = rect.topLeft().y() + row_height - 1;
 		painter->drawLine(QLine(rect.x(), y, rect.x() + rect.width(), y));
 	}
@@ -211,20 +208,6 @@ void PlaylistItemDelegate::paint(QPainter *painter,	const QStyleOptionViewItem &
 	painter->restore();
 }
 
-void PlaylistItemDelegate::set_drag_index(int row)
-{
-	m->drag_row = row;
-}
-
-bool PlaylistItemDelegate::is_drag_index(int row) const
-{
-	return (row == m->drag_row);
-}
-
-int PlaylistItemDelegate::drag_index() const
-{
-	return m->drag_row;
-}
 
 void PlaylistItemDelegate::sl_look_changed()
 {

@@ -67,10 +67,12 @@ struct PlaylistItemModel::Private
 {
 	QHash<AlbumId, QPixmap>	pms;
 	int						old_row_count;
+	int						drag_index;
 	PlaylistPtr				pl=nullptr;
 
 	Private(PlaylistPtr pl) :
 		old_row_count(0),
+		drag_index(-1),
 		pl(pl)
 	{}
 };
@@ -81,6 +83,8 @@ PlaylistItemModel::PlaylistItemModel(PlaylistPtr pl, QObject* parent) :
 	m = Pimpl::make<Private>(pl);
 
 	connect(m->pl.get(), &Playlist::Base::sig_items_changed, this, &PlaylistItemModel::playlist_changed);
+
+	Set::listen<Set::PL_EntryLook>(this, &PlaylistItemModel::look_changed, false);
 
 	playlist_changed(0);
 }
@@ -173,8 +177,14 @@ QVariant PlaylistItemModel::data(const QModelIndex& index, int role) const
 		}
 	}
 
+	else if(role == Qt::UserRole)
+	{
+		return (row == m->drag_index);
+	}
+
 	return QVariant();
 }
+
 
 bool PlaylistItemModel::setData(const QModelIndex& index, const QVariant& value, int role)
 {
@@ -423,29 +433,27 @@ QMimeData* PlaylistItemModel::mimeData(const QModelIndexList& indexes) const
 		return nullptr;
 	}
 
-	CustomMimeData* mimedata = new CustomMimeData(this);
+	QModelIndexList sorted(indexes);
+	Util::sort(sorted, [](const QModelIndex& idx1, const QModelIndex& idx2){
+		return (idx1.row() < idx2.row());
+	});
 
 	MetaDataList v_md;
-	v_md.reserve(indexes.size());
-
-	SP::Set<int> rows;
-	for(auto idx : indexes) {
-		rows.insert(idx.row());
-	}
-
-	for(int row : rows)
+	v_md.reserve(sorted.size());
+	for(const QModelIndex& idx : Util::AsConst(sorted))
 	{
-		if(row >= m->pl->count()){
+		if(idx.row() >= m->pl->count()){
 			continue;
 		}
 
-		v_md << m->pl->metadata(row);
+		v_md << m->pl->metadata(idx.row());
 	}
 
 	if(v_md.empty()){
 		return nullptr;
 	}
 
+	CustomMimeData* mimedata = new CustomMimeData(this);
 	mimedata->set_metadata(v_md);
 	mimedata->set_playlist_source_index(m->pl->index());
 
@@ -464,6 +472,26 @@ bool PlaylistItemModel::has_local_media(const IndexSet& rows) const
 	}
 
 	return false;
+}
+
+void PlaylistItemModel::set_drag_index(int drag_index)
+{
+	if(between(m->drag_index, rowCount()))
+	{
+		emit dataChanged(index(m->drag_index, 0), index(m->drag_index, columnCount() - 1));
+	}
+
+	m->drag_index = drag_index;
+
+	if(between(drag_index, rowCount()))
+	{
+		emit dataChanged(index(drag_index, 0), index(drag_index, columnCount() - 1));
+	}
+}
+
+void PlaylistItemModel::look_changed()
+{
+	emit dataChanged(index(0,0), index(rowCount() - 1, columnCount() - 1));
 }
 
 void PlaylistItemModel::playlist_changed(int pl_idx)

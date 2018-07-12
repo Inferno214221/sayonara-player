@@ -115,8 +115,9 @@ void ItemView::set_item_model(ItemModel* model)
 {
 	m->model = model;
 
-	SearchableTableView::setModel(model);
-	SearchableTableView::set_search_model(model);
+	/*SearchableTableView::setModel(model);
+	SearchableTableView::set_search_model(model);*/
+	SearchableTableView::set_model(model);
 }
 
 void ItemView::selectionChanged(const QItemSelection& selected, const QItemSelection& deselected )

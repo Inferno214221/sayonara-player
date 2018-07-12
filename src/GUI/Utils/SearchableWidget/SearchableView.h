@@ -22,6 +22,7 @@
 #define SEARCHABLEVIEW_H
 
 #include "GUI/Utils/SearchableWidget/SelectionView.h"
+#include "GUI/Utils/SearchableWidget/SearchableModel.h"
 #include "Utils/Pimpl.h"
 
 #include <QKeyEvent>
@@ -31,7 +32,6 @@
 
 class QAbstractItemView;
 class QItemSelectionModel;
-class SearchableModelInterface;
 
 /**
  * @brief The SearchViewInterface class
@@ -54,7 +54,7 @@ protected:
 		explicit SearchableViewInterface(QAbstractItemView* view);
 		virtual ~SearchableViewInterface();
 
-		virtual void set_search_model(SearchableModelInterface* model) final;
+		virtual void set_search_model(SearchableModelInterface* model);
 
 		virtual QModelIndex model_index(int row, int col, const QModelIndex& parent=QModelIndex()) const override final;
 		virtual int row_count(const QModelIndex& parent=QModelIndex()) const override final;
@@ -101,8 +101,29 @@ protected:
 	}
 };
 
-using SearchableTableView=SearchableView<QTableView>;
-using SearchableListView=SearchableView<QListView>;
-using SearchableTreeView=SearchableView<QTreeView>;
+template<typename T, typename Model>
+class SearchableViewWrapper : public SearchableView<T>
+{
+
+private:
+	using SearchableView<T>::setModel;
+	using SearchableView<T>::set_search_model;
+
+public:
+	using SearchableView<T>::SearchableView;
+
+	virtual void set_model(Model* model)
+	{
+		setModel(model);
+		set_search_model(model);
+	}
+
+private:
+	virtual bool implemented() const {return true;}
+};
+
+using SearchableTableView=SearchableViewWrapper<QTableView, SearchableTableModel>;
+using SearchableListView=SearchableViewWrapper<QListView, SearchableListModel>;
+using SearchableTreeView=SearchableViewWrapper<QTreeView, QAbstractItemModel>;
 
 #endif // SEARCHABLEVIEW_H
