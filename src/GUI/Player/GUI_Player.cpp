@@ -500,11 +500,16 @@ bool GUI_Player::init_translator(const QString& file, const QString& dir)
 		return false;
 	}
 
+	sp_log(Log::Warning, this) << "Translator " << dir << "/" << file << " successfully loaded";
+
+
 	bool installed = QApplication::installTranslator(t);
 	if(!installed){
 		sp_log(Log::Warning, this) << "Translator " << dir << "/" << file << " could not be installed";
 		return false;
 	}
+
+	sp_log(Log::Warning, this) << "Translator " << dir << "/" << file << " successfully installed";
 
 	m->translators << t;
 	return true;

@@ -57,8 +57,8 @@ namespace Library
 		virtual void init();
 		virtual void init_search_bar();
 
-
 	protected:
+		virtual void language_changed() override;
 		virtual void init_shortcuts();
 		virtual ::Library::TrackDeletionMode show_delete_dialog(int n_tracks)=0;
 
@@ -80,8 +80,8 @@ namespace Library
 	public slots:
 		virtual void id3_tags_changed();
 
-	protected:
 
+	protected:
 		virtual ::Library::TableView* lv_artist() const=0;
 		virtual ::Library::TableView* lv_album() const=0;
 		virtual ::Library::TableView* lv_tracks() const=0;

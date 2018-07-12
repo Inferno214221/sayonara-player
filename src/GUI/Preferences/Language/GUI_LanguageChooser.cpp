@@ -29,10 +29,39 @@
 #include <QFile>
 #include <QDir>
 #include <QRegExp>
+#include <QLocale>
+
+static QString language_name(QLocale::Language l, QLocale::Country c)
+{
+	QLocale loc(l, c);
+	return Util::cvt_str_to_very_first_upper(loc.nativeLanguageName());
+}
 
 struct GUI_LanguageChooser::Private
 {
 	QMap<QString, QString>  map;
+
+	Private()
+	{
+		map["br"] = language_name(QLocale::Portuguese, QLocale::Brazil);
+		map["cs"] = language_name(QLocale::Czech, QLocale::CzechRepublic); // QString::fromUtf8("Český");
+		map["de"] = language_name(QLocale::German, QLocale::Germany); // "Deutsch";
+		map["en"] = language_name(QLocale::English, QLocale::UnitedStates); // "English";
+		map["es"] = language_name(QLocale::Spanish, QLocale::Spain); // QString::fromUtf8("Español");
+		map["fr"] = language_name(QLocale::French, QLocale::France); // "Francais";
+		map["hu"] = language_name(QLocale::Hungarian, QLocale::Hungary); // "Magyar";
+		map["it"] = language_name(QLocale::Italian, QLocale::Italy); // "Italiano";
+		//map["ja"] = language_name(QLocale::Japanese, QLocale::Japan); // QString::fromUtf8("日本語");
+		map["nl"] = language_name(QLocale::Dutch, QLocale::Netherlands); // "Nederlands";
+		map["pl"] = language_name(QLocale::Polish, QLocale::Poland); // QString::fromUtf8("Polski");
+		map["pt"] = language_name(QLocale::Portuguese, QLocale::Portugal); // QString::fromUtf8("Português");
+		map["ro"] = language_name(QLocale::Romanian, QLocale::Romania); // QString::fromUtf8("Limba română");
+		map["ru"] = language_name(QLocale::Russian, QLocale::Russia); // QString::fromUtf8("Русский");
+		map["tr"] = language_name(QLocale::Turkish, QLocale::Turkey); // QString::fromUtf8("Türkçe");
+		map["uk"] = language_name(QLocale::Ukrainian, QLocale::Ukraine); // QString::fromUtf8("Українська");
+		map["zh_cn"] = language_name(QLocale::Chinese, QLocale::China); // QLocale::QString::fromUtf8("中文");
+		//map["da"] = language_name(QLocale::Danish, QLocale::Denmark);
+	}
 };
 
 GUI_LanguageChooser::GUI_LanguageChooser(const QString& identifier) :
@@ -83,7 +112,13 @@ void GUI_LanguageChooser::renew_combo()
 
 	QStringList filters;
 	filters << "*.qm";
-	QStringList files = dir.entryList(filters);
+	//QStringList files = dir.entryList(filters);
+
+	QStringList files;
+	for(QString key : m->map.keys())
+	{
+		files << QString("sayonara_lang_%1.qm").arg(key);
+	}
 
 	ui->combo_lang->clear();
 
@@ -129,27 +164,12 @@ void GUI_LanguageChooser::renew_combo()
 }
 
 
+
 void GUI_LanguageChooser::init_ui()
 {
 	setup_parent(this, &ui);
 
-	m->map["br"] = QString::fromUtf8("Português (Brasil)");
-	m->map["cs"] = QString::fromUtf8("Český");
-	m->map["de"] = "Deutsch";
-	m->map["en"] = "English";
-	m->map["es"] = QString::fromUtf8("Español");
-	m->map["fr"] = "Francais";
-	m->map["hu"] = "Magyar";
-	m->map["it"] = "Italiano";
-	m->map["ja"] = QString::fromUtf8("日本語");
-	m->map["nl"] = "Nederlands";
-	m->map["pl"] = QString::fromUtf8("Polski");
-	m->map["pt"] = QString::fromUtf8("Português");
-	m->map["ro"] = QString::fromUtf8("Limba română");
-	m->map["ru"] = QString::fromUtf8("Русский");
-	m->map["tr"] = QString::fromUtf8("Türkçe");
-	m->map["ua"] = QString::fromUtf8("Українська");
-	m->map["zh_cn"] = QString::fromUtf8("中文");
+
 }
 
 void GUI_LanguageChooser::showEvent(QShowEvent* e)

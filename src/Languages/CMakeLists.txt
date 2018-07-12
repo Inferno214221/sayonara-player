@@ -1,8 +1,14 @@
 project(say_lang)
 
 file(GLOB TS_FILES . *.ts)
+file(GLOB QT_QM_FILES . *.qm)
 
 qt5_add_translation(QM_FILES ${TS_FILES})
+
+set(QM_FILES
+	${QM_FILES}
+	${QT_QM_FILES}
+)
 
 if(WIN32)
 	set(TRANSLATION_TARGET_PATH

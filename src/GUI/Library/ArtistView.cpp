@@ -126,6 +126,8 @@ void ArtistView::save_sortorder(SortOrder s)
 
 void ArtistView::language_changed()
 {
+	TableView::language_changed();
+
 	if(m->album_artist_action){
 		m->album_artist_action->setText(Lang::get(Lang::ShowAlbumArtists));
 	}

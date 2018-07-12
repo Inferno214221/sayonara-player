@@ -116,6 +116,14 @@ void GUI_AbstractLibrary::init_search_bar()
 	search_mode_changed(Filter::Fulltext);
 }
 
+void GUI_AbstractLibrary::language_changed()
+{
+	Filter::Mode mode = static_cast<Filter::Mode>(m->le_search->property("search_mode").toInt());
+	QString text = Lang::get(Lang::SearchNoun) + ": " + Filter::get_text(mode);
+
+	m->le_search->setPlaceholderText(text);
+}
+
 
 void GUI_AbstractLibrary::init_shortcuts()
 {
