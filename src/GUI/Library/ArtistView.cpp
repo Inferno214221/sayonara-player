@@ -21,6 +21,7 @@
 
 
 #include "ArtistView.h"
+#include "ItemModel.h"
 
 #include "Components/Library/AbstractLibrary.h"
 #include "GUI/Library/ArtistModel.h"
@@ -62,11 +63,11 @@ void ArtistView::init_view(AbstractLibrary* library)
 
 	ArtistModel* artist_model = new ArtistModel(this, m->library);
 
-	this->set_model(artist_model);
+	this->set_item_model(artist_model);
 	this->setItemDelegate(new Gui::StyledItemDelegate(this));
 	this->set_metadata_interpretation(MD::Interpretation::Artists);
 
-	connect(m->library, &AbstractLibrary::sig_all_artists_loaded, this, &ArtistView::artists_ready);
+	connect(m->library, &AbstractLibrary::sig_all_artists_loaded, this, &ArtistView::fill);
 
 	Set::listen<Set::Lib_UseViewClearButton>(this, &ArtistView::use_clear_button_changed);
 }
@@ -168,12 +169,6 @@ void ArtistView::refresh_clicked()
 {
 	TableView::refresh_clicked();
 	m->library->refresh_artist();
-}
-
-void ArtistView::artists_ready()
-{
-	const ArtistList& artists = m->library->artists();
-	this->fill<ArtistList, ArtistModel>(artists);
 }
 
 void ArtistView::use_clear_button_changed()

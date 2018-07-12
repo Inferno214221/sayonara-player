@@ -59,11 +59,12 @@ namespace Library
 			virtual QModelIndex		getPrevRowIndexOf(const QString& substr, int row, const QModelIndex& parent=QModelIndex()) override;
 
 			virtual bool			is_selected(int id) const final;
-			virtual const IndexSet& selections() const=0;
+			virtual const SP::Set<Id>& selections() const=0;
+			virtual IndexSet		selected_rows() const;
 
 			virtual int				searchable_column() const=0;
 			virtual QString			searchable_string(int row) const=0;
-			virtual Id				id_by_row(int row)=0;
+			virtual Id				id_by_index(int row) const=0;
 			virtual Cover::Location	cover(const IndexSet& indexes) const=0;
 
 			virtual const MetaDataList&	mimedata_tracks() const=0;

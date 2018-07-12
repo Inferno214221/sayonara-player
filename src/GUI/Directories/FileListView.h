@@ -23,7 +23,6 @@
 
 #include "GUI/Utils/SearchableWidget/SearchableView.h"
 #include "GUI/Utils/Widgets/Dragable.h"
-#include "GUI/Utils/Widgets/WidgetTemplate.h"
 
 #include "Utils/Pimpl.h"
 
@@ -32,7 +31,7 @@ class MetaDataList;
 class LibraryContextMenu;
 
 class FileListView :
-		public Gui::WidgetTemplate<SearchableListView>,
+		public SearchableListView,
 		private Dragable
 {
 	Q_OBJECT

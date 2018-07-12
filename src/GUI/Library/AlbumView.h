@@ -41,7 +41,6 @@ namespace Library
 
 	protected slots:
 		void index_clicked(const QModelIndex& idx);
-		void albums_ready();
 
 	public:
 		explicit AlbumView(QWidget *parent=nullptr);
@@ -67,8 +66,6 @@ namespace Library
 		void refresh_clicked() override;
 		void run_merge_operation(const MergeData& mergedata) override;
 
-		void clear_discnumbers();
-		void add_discnumbers(const QList<Disc>& dns);
 		void calc_discmenu_point(QModelIndex idx);
 		void delete_discmenu();
 		void init_discmenu(QModelIndex idx);
@@ -79,19 +76,6 @@ namespace Library
 
 	private slots:
 		void use_clear_button_changed();
-
-	public:
-		template <typename T, typename ModelType>
-		void fill(const T& input_data)
-		{
-			clear_discnumbers();
-
-			for(const Album& album : input_data){
-				add_discnumbers(album.discnumbers);
-			}
-
-			ItemView::fill<T, ModelType>(input_data);
-		}
 	};
 }
 

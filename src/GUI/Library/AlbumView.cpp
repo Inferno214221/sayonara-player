@@ -19,6 +19,8 @@
  */
 
 #include "AlbumView.h"
+#include "ItemModel.h"
+
 #include "GUI/Library/AlbumModel.h"
 #include "GUI/Library/RatingDelegate.h"
 #include "GUI/Library/Utils/DiscPopupMenu.h"
@@ -37,7 +39,6 @@ using namespace Library;
 struct AlbumView::Private
 {
 	AbstractLibrary*		library=nullptr;
-	QList< QList<uint8_t> >	discnumbers;
 	DiscPopupMenu*			discmenu=nullptr;
 	QPoint					discmenu_point;
 };
@@ -59,11 +60,11 @@ void AlbumView::init_view(AbstractLibrary* library)
 	AlbumModel* album_model = new AlbumModel(this, m->library);
 	RatingDelegate* album_delegate = new RatingDelegate(this, (int) ColumnIndex::Album::Rating, true);
 
-	this->set_model(album_model);
+	this->set_item_model(album_model);
 	this->setItemDelegate(album_delegate);
 	this->set_metadata_interpretation(MD::Interpretation::Albums);
 
-	connect(m->library, &AbstractLibrary::sig_all_albums_loaded, this, &AlbumView::albums_ready);
+	connect(m->library, &AbstractLibrary::sig_all_albums_loaded, this, &AlbumView::fill);
 
 	Set::listen<Set::Lib_UseViewClearButton>(this, &AlbumView::use_clear_button_changed);
 }
@@ -156,24 +157,24 @@ void AlbumView::calc_discmenu_point(QModelIndex idx)
 void AlbumView::init_discmenu(QModelIndex idx)
 {
 	int row = idx.row();
-	QList<Disc> discnumbers;
 	delete_discmenu();
 
+	const Album& album = m->library->albums().at(row);
+
 	if( !idx.isValid() ||
-		(row > m->discnumbers.size()) ||
+		(row >= model()->rowCount()) ||
 		(row < 0) )
 	{
 		return;
 	}
 
-	discnumbers = m->discnumbers[row];
-	if(discnumbers.size() < 2) {
+	if(album.discnumbers.size() < 2) {
 		return;
 	}
 
 	calc_discmenu_point(idx);
 
-	m->discmenu = new DiscPopupMenu(this, discnumbers);
+	m->discmenu = new DiscPopupMenu(this, album.discnumbers);
 
 	connect(m->discmenu, &DiscPopupMenu::sig_disc_pressed, this, &AlbumView::sig_disc_pressed);
 }
@@ -202,16 +203,6 @@ void AlbumView::show_discmenu()
 	m->discmenu->popup(m->discmenu_point);
 }
 
-
-void AlbumView::clear_discnumbers()
-{
-	m->discnumbers.clear();
-}
-
-void AlbumView::add_discnumbers(const QList<Disc>& dns)
-{
-	m->discnumbers << dns;
-}
 
 void AlbumView::play_clicked()
 {
@@ -252,13 +243,6 @@ void AlbumView::refresh_clicked()
 void AlbumView::run_merge_operation(const MergeData& mergedata)
 {
 	m->library->merge_albums(mergedata.source_ids, mergedata.target_id);
-}
-
-void AlbumView::albums_ready()
-{
-	const AlbumList& albums = m->library->albums();
-
-	this->fill<AlbumList, AlbumModel>(albums);
 }
 
 void AlbumView::use_clear_button_changed()

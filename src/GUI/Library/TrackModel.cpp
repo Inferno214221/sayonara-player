@@ -179,7 +179,7 @@ int TrackModel::rowCount(const QModelIndex&) const
 }
 
 
-Id TrackModel::id_by_row(int row)
+Id TrackModel::id_by_index(int row) const
 {
 	const MetaDataList& tracks = library()->tracks();
 
@@ -237,7 +237,7 @@ int TrackModel::searchable_column() const
 }
 
 
-const IndexSet& TrackModel::selections() const
+const SP::Set<Id>& TrackModel::selections() const
 {
 	return library()->selected_tracks();
 }

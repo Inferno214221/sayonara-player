@@ -64,13 +64,11 @@ struct FileListView::Private
 };
 
 FileListView::FileListView(QWidget* parent) :
-	Gui::WidgetTemplate<SearchableListView>(parent),
+	SearchableListView(parent),
 	Dragable(this)
 {
 	m = Pimpl::make<Private>(this);
 
-	/*this->setModel(m->model);
-	this->set_search_model(m->model);*/
 	this->set_model(m->model);
 	this->setItemDelegate(new DirectoryDelegate(this));
 	this->setSelectionMode(QAbstractItemView::ExtendedSelection);

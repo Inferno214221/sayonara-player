@@ -59,11 +59,11 @@ void TrackView::init_view(AbstractLibrary* library)
 	TrackModel* track_model = new TrackModel(this, library);
 	RatingDelegate* track_delegate = new RatingDelegate(this, (int) ColumnIndex::Track::Rating, true);
 
-	this->set_model(track_model);
+	this->set_item_model(track_model);
 	this->setItemDelegate(track_delegate);
 	this->set_metadata_interpretation(MD::Interpretation::Tracks);
 
-	connect(library, &AbstractLibrary::sig_all_tracks_loaded, this, &TrackView::tracks_ready);
+	connect(library, &AbstractLibrary::sig_all_tracks_loaded, this, &TrackView::fill);
 }
 
 
@@ -140,11 +140,4 @@ void TrackView::refresh_clicked()
 {
 	TableView::refresh_clicked();
 	m->library->refresh_tracks();
-}
-
-void TrackView::tracks_ready()
-{
-	const MetaDataList& v_md = m->library->tracks();
-
-	this->fill<MetaDataList, TrackModel>(v_md);
 }

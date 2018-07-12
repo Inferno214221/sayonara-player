@@ -76,11 +76,10 @@ struct DirectoryTreeView::Private
 
 
 DirectoryTreeView::DirectoryTreeView(QWidget *parent) :
-	Gui::WidgetTemplate<SearchableTreeView>(parent),
+	SearchableTreeView(parent),
 	Dragable(this)
 {
 	m = Pimpl::make<Private>(this);
-
 
 	QString root_path = Util::sayonara_path("Libraries");
 
@@ -92,8 +91,6 @@ DirectoryTreeView::DirectoryTreeView(QWidget *parent) :
 	connect(m->file_operations, &FileOperations::sig_copy_finished, this, &DirectoryTreeView::copy_finished);
 	connect(m->file_operations, &FileOperations::sig_copy_started, this, &DirectoryTreeView::copy_started);
 
-	/*this->setModel(m->model);
-	this->set_search_model(m->model);*/
 	this->set_model(m->model);
 	this->setItemDelegate(new DirectoryDelegate(this));
 

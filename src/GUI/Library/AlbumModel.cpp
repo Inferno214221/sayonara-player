@@ -63,7 +63,7 @@ AlbumModel::AlbumModel(QObject* parent, AbstractLibrary* library) :
 
 AlbumModel::~AlbumModel() {}
 
-Id AlbumModel::id_by_row(int row)
+Id AlbumModel::id_by_index(int row) const
 {
 	const AlbumList& albums = library()->albums();
 
@@ -249,7 +249,7 @@ int AlbumModel::searchable_column() const
 }
 
 
-const IndexSet& AlbumModel::selections() const
+const SP::Set<Id>& AlbumModel::selections() const
 {
 	return library()->selected_albums();
 }

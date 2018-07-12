@@ -53,9 +53,9 @@ namespace Library
 			/** ItemModel.h **/
 			Cover::Location cover(const IndexSet& indexes) const override;
 			int				searchable_column() const override;
-			Id				id_by_row(int row) override;
+			Id				id_by_index(int row) const override;
 			QString			searchable_string(int row) const override;
-			const IndexSet& selections() const override;
+			const SP::Set<Id>& selections() const override;
 
 		protected:
 			const MetaDataList& mimedata_tracks() const override;

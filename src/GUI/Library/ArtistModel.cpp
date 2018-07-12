@@ -60,7 +60,7 @@ ArtistModel::ArtistModel(QObject* parent, AbstractLibrary* library) :
 
 ArtistModel::~ArtistModel() {}
 
-Id ArtistModel::id_by_row(int row)
+Id ArtistModel::id_by_index(int row) const
 {
 	const ArtistList& artists = library()->artists();
 
@@ -188,7 +188,7 @@ int ArtistModel::searchable_column() const
 }
 
 
-const IndexSet& ArtistModel::selections() const
+const SP::Set<Id>& ArtistModel::selections() const
 {
 	return library()->selected_artists();
 }

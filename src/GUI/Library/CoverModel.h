@@ -59,7 +59,7 @@ namespace Library
 		protected:
 			// ItemModel
 			const MetaDataList& mimedata_tracks() const override;
-			const IndexSet&		selections() const override;
+			const SP::Set<Id>&	selections() const override;
 
 			QModelIndex		getNextRowIndexOf(const QString& substr, int cur_row, const QModelIndex& parent=QModelIndex()) override;
 			QModelIndex		getPrevRowIndexOf(const QString& substr, int cur_row, const QModelIndex& parent=QModelIndex()) override;
@@ -67,7 +67,7 @@ namespace Library
 
 			int				searchable_column() const override;
 			QString			searchable_string(int idx) const override;
-			int				id_by_row(int idx) override;
+			int				id_by_index(int idx) const override;
 			Cover::Location	cover(const IndexSet& indexes) const override;
 
 		private:

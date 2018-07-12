@@ -48,7 +48,6 @@ namespace Library
 			void play_new_tab_clicked() override;
 			void run_merge_operation(const MergeData& mergedata) override;
 
-		// TableView interface
 		protected:
 			void init_view(AbstractLibrary* library) override;
 			ColumnHeaderList column_headers() const override;
@@ -64,11 +63,9 @@ namespace Library
 			void language_changed() override;
 
 		private slots:
-			void artists_ready();
 			void use_clear_button_changed();
 			void album_artists_changed();
 			void album_artists_triggered(bool b);
-
 	};
 }
 

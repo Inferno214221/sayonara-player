@@ -25,6 +25,8 @@
  */
 
 #include "ItemView.h"
+#include "ItemModel.h"
+
 #include "HeaderView.h"
 #include "Components/Library/AbstractLibrary.h"
 #include "Components/Covers/CoverLocation.h"
@@ -75,7 +77,7 @@ struct Library::ItemView::Private
 
 
 ItemView::ItemView(QWidget* parent) :
-	WidgetTemplate<SearchableTableView>(parent),
+	SearchableTableView(parent),
 	InfoDialogContainer(),
 	Dragable(this)
 {
@@ -115,8 +117,6 @@ void ItemView::set_item_model(ItemModel* model)
 {
 	m->model = model;
 
-	/*SearchableTableView::setModel(model);
-	SearchableTableView::set_search_model(model);*/
 	SearchableTableView::set_model(model);
 }
 
@@ -317,7 +317,7 @@ ItemView::MergeData ItemView::calc_mergedata() const
 	ItemModel* model = item_model();
 	for(auto idx : selected_items)
 	{
-		ret.source_ids.insert( model->id_by_row(idx) );
+		ret.source_ids.insert( model->id_by_index(idx) );
 	}
 
 	return ret;
@@ -340,6 +340,19 @@ void ItemView::play_next_clicked() { emit sig_play_next_clicked(); }
 void ItemView::delete_clicked() { emit sig_delete_clicked(); }
 void ItemView::append_clicked() { emit sig_append_clicked(); }
 void ItemView::refresh_clicked() { emit sig_refresh_clicked(); }
+
+void ItemView::fill()
+{
+	int old_size, new_size;
+	m->model->refresh_data(&old_size, &new_size);
+
+	IndexSet selections = m->model->selected_rows();
+	select_rows(selections, 0, m->model->columnCount() - 1);
+
+	if(new_size > old_size) {
+		resize_rows_to_contents(old_size, new_size - old_size);
+	}
+}
 void ItemView::selection_changed(const IndexSet& indexes) {	emit sig_sel_changed(indexes); }
 
 void ItemView::import_requested(const QStringList& files)
@@ -448,7 +461,7 @@ void ItemView::contextMenuEvent(QContextMenuEvent* event)
 			ItemModel* model = item_model();
 			for(int i : selections)
 			{
-				int id = model->id_by_row(i);
+				int id = model->id_by_index(i);
 				if(id < 0){
 					n_selections--;
 					if(n_selections <= 1) {

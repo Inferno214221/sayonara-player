@@ -29,8 +29,6 @@
 #ifndef ITEM_VIEW_H_
 #define ITEM_VIEW_H_
 
-#include "ItemModel.h"
-#include "GUI/Utils/Widgets/WidgetTemplate.h"
 #include "GUI/Utils/Widgets/Dragable.h"
 #include "GUI/Utils/SearchableWidget/SearchableView.h"
 
@@ -42,6 +40,8 @@
 #include "Utils/Set.h"
 #include "Utils/Pimpl.h"
 
+class AbstractLibrary;
+
 class LibraryContextMenu;
 class ColumnHeaderList;
 class QStringList;
@@ -49,8 +49,10 @@ class QMenu;
 
 namespace Library
 {
+	class ItemModel;
+
 	class ItemView :
-			public Gui::WidgetTemplate<SearchableTableView>,
+			public SearchableTableView,
 			public InfoDialogContainer,
 			protected Dragable
 	{
@@ -82,11 +84,7 @@ namespace Library
 		ItemView(const ItemView& other)=delete;
 		ItemView& operator =(const ItemView& other)=delete;
 
-		/*using QTableView::setModel;
-		using SearchableViewInterface::set_search_model;*/
-
 		using SearchableTableView::set_model;
-
 
 	public:
 		explicit ItemView(QWidget* parent=nullptr);
@@ -149,33 +147,9 @@ namespace Library
 		virtual void delete_clicked();
 		virtual void append_clicked();
 		virtual void refresh_clicked();
-
+		virtual void fill();
 
 	public:
-		template < typename T, typename ModelType >
-		void fill(const T& input_data)
-		{
-			ItemModel* model = item_model();
-			int old_size, new_size;
-			model->refresh_data(&old_size, &new_size);
-
-			IndexSet selections;
-			for(int row=0; row < new_size; row++)
-			{
-				if(model->is_selected(input_data[row].id))
-				{
-					selections.insert(row);
-					break;
-				}
-			}
-
-			select_rows(selections, 0, model->columnCount() - 1);
-
-			if(new_size > old_size) {
-				resize_rows_to_contents(old_size, new_size - old_size);
-			}
-		}
-
 		void resize_rows_to_contents();
 		void resize_rows_to_contents(int first_row, int count);
 	};

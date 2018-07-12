@@ -68,16 +68,13 @@ struct PlaylistView::Private
 };
 
 PlaylistView::PlaylistView(PlaylistPtr pl, QWidget* parent) :
-	Gui::WidgetTemplate<SearchableTableView>(parent),
+	SearchableTableView(parent),
 	InfoDialogContainer(),
 	Dragable(this)
 {
 	m = Pimpl::make<Private>(pl, this);
 
 	this->setObjectName("playlist_view" + QString::number(pl->index()));
-
-/*	this->setModel(m->model);
-	this->set_search_model(m->model);*/
 	this->set_model(m->model);
 	this->setItemDelegate(new PlaylistItemDelegate(this));
 

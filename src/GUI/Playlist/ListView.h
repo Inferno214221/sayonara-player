@@ -46,7 +46,7 @@
 #include <QProxyStyle>
 
 class PlaylistView :
-		public Gui::WidgetTemplate<SearchableTableView>,
+		public SearchableTableView,
 		public InfoDialogContainer,
 		private Dragable
 {

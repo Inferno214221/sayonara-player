@@ -148,6 +148,21 @@ bool ItemModel::is_selected(int id) const
 	return selections().contains(id);
 }
 
+IndexSet ItemModel::selected_rows() const
+{
+	IndexSet ret;
+
+	for(int i=0; i<rowCount(); i++)
+	{
+		Id id = id_by_index(i);
+		if(is_selected(id)){
+			ret << i;
+		}
+	}
+
+	return ret;
+}
+
 QModelIndex ItemModel::getNextRowIndexOf(const QString& substr, int row, const QModelIndex& parent)
 {
 	Q_UNUSED(parent)

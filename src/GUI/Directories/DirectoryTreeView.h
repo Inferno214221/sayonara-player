@@ -21,6 +21,7 @@
 #ifndef DIRECTORYTREEVIEW_H
 #define DIRECTORYTREEVIEW_H
 
+#include "DirectoryModel.h"
 #include "GUI/Utils/SearchableWidget/SearchableView.h"
 #include "GUI/Utils/Widgets/WidgetTemplate.h"
 #include "GUI/Utils/Widgets/Dragable.h"
@@ -28,6 +29,7 @@
 
 #include <QTreeView>
 #include <QModelIndexList>
+#include <QTreeView>
 
 class LibraryContextMenu;
 class DirectoryModel;
@@ -41,8 +43,9 @@ namespace Library
 	class Info;
 }
 
+using SearchableTreeView=Gui::WidgetTemplate<SearchableViewWrapper<QTreeView, DirectoryModel>>;
 class DirectoryTreeView :
-		public Gui::WidgetTemplate<SearchableTreeView>,
+		public SearchableTreeView,
 		protected Dragable
 {
 	Q_OBJECT

@@ -59,9 +59,6 @@ namespace Library
 		void append_clicked() override;
 		void selection_changed(const IndexSet& lst) override;
 		void refresh_clicked() override;
-
-	private slots:
-		void tracks_ready();
 	};
 }
 

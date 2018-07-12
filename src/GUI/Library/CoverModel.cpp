@@ -408,7 +408,7 @@ QString CoverModel::searchable_string(int idx) const
 	return a[idx].name();
 }
 
-int CoverModel::id_by_row(int idx)
+int CoverModel::id_by_index(int idx) const
 {
 	const AlbumList& a = albums();
 	if(idx < 0 || idx >= a.count())
@@ -474,7 +474,7 @@ const AlbumList& CoverModel::albums() const
 	return a;
 }
 
-const IndexSet& CoverModel::selections() const
+const SP::Set<Id>& CoverModel::selections() const
 {
 	return library()->selected_albums();
 }
