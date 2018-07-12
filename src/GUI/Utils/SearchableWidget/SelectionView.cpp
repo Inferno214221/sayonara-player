@@ -79,10 +79,13 @@ void SelectionViewInterface::select_rows(const IndexSet& indexes, int min_col, i
 		this->set_current_index(first_index);
 	}
 
-	min_col = std::max(0, min_col);
-	min_col = std::min(min_col, column_count() - 1);
-	max_col = std::max(0, max_col);
-	max_col = std::min(max_col, column_count() - 1);
+	if(min_col == -1 || min_col >= column_count()){
+		min_col = 0;
+	}
+
+	if(max_col == -1 || max_col >= column_count()){
+		max_col = column_count() - 1;
+	}
 
 	QItemSelection sel;
 	if(indexes.size() == 1)

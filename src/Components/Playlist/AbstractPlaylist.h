@@ -112,9 +112,9 @@ namespace Playlist
 
 			virtual void clear();
 
-			virtual void move_tracks(const IndexSet& indexes, int tgt);
+			virtual IndexSet move_tracks(const IndexSet& indexes, int tgt);
 
-			virtual void copy_tracks(const IndexSet& indexes, int tgt);
+			virtual IndexSet copy_tracks(const IndexSet& indexes, int tgt);
 
 			virtual void remove_tracks(const IndexSet& indexes);
 

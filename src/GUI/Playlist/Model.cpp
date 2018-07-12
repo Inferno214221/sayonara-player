@@ -48,8 +48,8 @@
 #include <QUrl>
 #include <QPalette>
 #include <QHash>
-#include <QMainWindow>
 #include <QPixmap>
+#include <QMainWindow>
 
 static const QChar ALBUM_SEARCH_PREFIX='%';
 static const QChar ARTIST_SEARCH_PREFIX='$';
@@ -65,7 +65,6 @@ enum class PlaylistSearchMode
 
 struct PlaylistItemModel::Private
 {
-
 	QHash<AlbumId, QPixmap>	pms;
 	int						old_row_count;
 	PlaylistPtr				pl=nullptr;
@@ -88,7 +87,7 @@ PlaylistItemModel::PlaylistItemModel(PlaylistPtr pl, QObject* parent) :
 
 PlaylistItemModel::~PlaylistItemModel() {}
 
-int PlaylistItemModel::rowCount(const QModelIndex &parent) const
+int PlaylistItemModel::rowCount(const QModelIndex& parent) const
 {
 	Q_UNUSED(parent);
 	return m->pl->count();
@@ -153,7 +152,6 @@ QVariant PlaylistItemModel::data(const QModelIndex& index, int role) const
 
 		if(col == ColumnName::TrackNumber)
 		{
-			// todo: read from settings
 			f.setBold(true);
 		}
 
@@ -206,13 +204,13 @@ Qt::ItemFlags PlaylistItemModel::flags(const QModelIndex &index) const
 		}
 	}
 
-	Qt::ItemFlags f = QAbstractTableModel::flags(index);
+	Qt::ItemFlags item_flags = QAbstractTableModel::flags(index);
 	if(index.column() == ColumnName::Description)
 	{
-		f |= Qt::ItemIsEditable;
+		item_flags |= Qt::ItemIsEditable;
 	}
 
-	return (f | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled);
+	return (item_flags | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled);
 }
 
 void PlaylistItemModel::clear()
@@ -225,9 +223,9 @@ void PlaylistItemModel::remove_rows(const IndexSet& indexes)
 	m->pl->remove_tracks(indexes);
 }
 
-void PlaylistItemModel::move_rows(const IndexSet& indexes, int target_index)
+IndexSet PlaylistItemModel::move_rows(const IndexSet& indexes, int target_index)
 {
-	m->pl->move_tracks(indexes, target_index);
+	return m->pl->move_tracks(indexes, target_index);
 }
 
 IndexSet PlaylistItemModel::move_rows_up(const IndexSet& indexes)
@@ -237,15 +235,7 @@ IndexSet PlaylistItemModel::move_rows_up(const IndexSet& indexes)
 		return IndexSet();
 	}
 
-	move_rows(indexes, min_row - 1);
-
-	IndexSet new_indexes;
-	for(int i=0; i<indexes.count(); i++)
-	{
-		new_indexes.insert(i + min_row - 1);
-	}
-
-	return new_indexes;
+	return move_rows(indexes, min_row - 1);
 }
 
 
@@ -259,20 +249,12 @@ IndexSet PlaylistItemModel::move_rows_down(const IndexSet& indexes)
 		return IndexSet();
 	}
 
-	IndexSet new_indexes;
-	move_rows(indexes, max_row + 2);
-
-	for(int i=0; i<indexes.count(); i++)
-	{
-		new_indexes.insert(i + min_row + 1);
-	}
-
-	return new_indexes;
+	return move_rows(indexes, min_row + indexes.size() + 1);
 }
 
-void PlaylistItemModel::copy_rows(const IndexSet& indexes, int target_index)
+IndexSet PlaylistItemModel::copy_rows(const IndexSet& indexes, int target_index)
 {
-	m->pl->copy_tracks(indexes, target_index);
+	return m->pl->copy_tracks(indexes, target_index);
 }
 
 void PlaylistItemModel::change_rating(const IndexSet& indexes, Rating rating)
@@ -304,12 +286,10 @@ void PlaylistItemModel::insert_tracks(const MetaDataList& v_md, int row)
 	plh->insert_tracks(v_md, row, m->pl->index());
 }
 
-
 int PlaylistItemModel::current_track() const
 {
 	return m->pl->current_track_index();
 }
-
 
 void PlaylistItemModel::set_current_track(int row)
 {
@@ -320,7 +300,6 @@ const MetaData& PlaylistItemModel::metadata(int row) const
 {
 	return m->pl->metadata(row);
 }
-
 
 MetaDataList PlaylistItemModel::metadata(const IndexSet &rows) const
 {
@@ -334,8 +313,6 @@ MetaDataList PlaylistItemModel::metadata(const IndexSet &rows) const
 
 	return v_md;
 }
-
-
 
 QModelIndex PlaylistItemModel::getPrevRowIndexOf(const QString& substr, int row, const QModelIndex& parent)
 {
@@ -351,7 +328,7 @@ QModelIndex PlaylistItemModel::getNextRowIndexOf(const QString& substr, int row,
 
 QModelIndex PlaylistItemModel::getRowIndexOf(const QString& substr, int row, bool is_forward)
 {
-	row = std::max(rowCount()-1, row);
+	row = std::min(rowCount()-1, row);
 
 	QString pure_search_string = substr;
 	PlaylistSearchMode plsm = PlaylistSearchMode::Title;
@@ -510,8 +487,8 @@ void PlaylistItemModel::playlist_changed(int pl_idx)
 	}
 
 	m->old_row_count = m->pl->count();
-	emit dataChanged(index(0,0), index(rowCount()-1, columnCount()-1));
 
+	emit dataChanged(index(0,0), index(rowCount()-1, columnCount()-1));
 	emit sig_data_ready();
 }
 

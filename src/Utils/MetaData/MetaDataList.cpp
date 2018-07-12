@@ -176,12 +176,14 @@ MetaDataList& MetaDataList::copy_tracks(const IndexSet& indexes, int tgt_idx)
 	return insert_tracks(v_md, tgt_idx);
 }
 
-
+#include "Utils/Logger/Logger.h"
 MetaDataList& MetaDataList::move_tracks(const IndexSet& indexes, int tgt_idx)
 {
+	sp_log(Log::Develop, this) << "Move " << indexes << " to " << tgt_idx;
+
 	MetaDataList v_md_to_move; 		v_md_to_move.reserve(indexes.size());
-	MetaDataList v_md_before_tgt; 	v_md_before_tgt.reserve(count() + indexes.size());
-	MetaDataList v_md_after_tgt; 	v_md_after_tgt.reserve(count() + indexes.size());
+	MetaDataList v_md_before_tgt; 	v_md_before_tgt.reserve(count());
+	MetaDataList v_md_after_tgt; 	v_md_after_tgt.reserve(count());
 
 	int i=0;
 	int n_tracks_after_cur_idx = 0;
@@ -195,17 +197,10 @@ MetaDataList& MetaDataList::move_tracks(const IndexSet& indexes, int tgt_idx)
 
 		it->pl_playing = (i == m->current_track);
 
-		bool contains_i = indexes.contains(i);
-
-		if(!contains_i) {
-			if(i<tgt_idx) {
-				v_md_before_tgt << std::move( md );
-			} else {
-				v_md_after_tgt << std::move( md );
-			}
-		} else {
+		if(indexes.contains(i))
+		{
 			contains_cur_track |= (i == m->current_track);
-			v_md_to_move << std::move( md );
+
 			if(i < m->current_track){
 				n_tracks_before_cur_idx++;
 			}
@@ -213,18 +208,32 @@ MetaDataList& MetaDataList::move_tracks(const IndexSet& indexes, int tgt_idx)
 			else if(i > m->current_track){
 				n_tracks_after_cur_idx++;
 			}
+
+			v_md_to_move << std::move( md );
+			sp_log(Log::Crazy, this) << "Track to move: " << md.title();
+		}
+
+		else if(i<tgt_idx)
+		{
+			v_md_before_tgt << std::move( md );
+			sp_log(Log::Crazy, this) << "Track before: " << md.title();
+		}
+
+		else
+		{
+			v_md_after_tgt << std::move( md );
+			sp_log(Log::Crazy, this) << "Track after: " << md.title();
 		}
 	}
 
-	int start_idx = 0;
+	auto it = this->begin();
+	std::move(v_md_before_tgt.begin(), v_md_before_tgt.end(), it);
+	it += v_md_before_tgt.count();
 
-	std::move(v_md_before_tgt.begin(), v_md_before_tgt.end(), this->begin());
-	start_idx += v_md_before_tgt.count();
+	std::move(v_md_to_move.begin(), v_md_to_move.end(), it);
+	it += v_md_to_move.count();
 
-	std::move(v_md_to_move.begin(), v_md_to_move.end(), this->begin() + start_idx);
-	start_idx += v_md_to_move.count();
-
-	std::move(v_md_after_tgt.begin(), v_md_after_tgt.end(), this->begin() + start_idx);
+	std::move(v_md_after_tgt.begin(), v_md_after_tgt.end(), it);
 
 	if(contains_cur_track) {
 		m->current_track = (n_tracks_before_cur_idx) + v_md_before_tgt.count();

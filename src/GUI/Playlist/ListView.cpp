@@ -267,32 +267,23 @@ void PlaylistView::async_drop_finished(bool success, int async_drop_index)
 
 void PlaylistView::handle_inner_drag_drop(int row, bool copy)
 {
+	IndexSet new_selected_rows;
 	IndexSet cur_selected_rows = selected_items();
 	if( cur_selected_rows.contains(row) ) {
 		return;
 	}
 
-	int n_lines_before_tgt = 0;
 	if(copy)
 	{
-		m->model->copy_rows(cur_selected_rows, row + 1);
+		new_selected_rows = m->model->copy_rows(cur_selected_rows, row + 1);
 	}
 
 	else
 	{
-		m->model->move_rows(cur_selected_rows, row + 1);
-		n_lines_before_tgt = std::count_if(cur_selected_rows.begin(), cur_selected_rows.end(), [&row](int sel){
-			return (sel < row);
-		});
+		new_selected_rows = m->model->move_rows(cur_selected_rows, row + 1);
 	}
 
-	IndexSet new_selected_rows;
-	for(int i=row; i<row + cur_selected_rows.count(); i++)
-	{
-		new_selected_rows.insert(i - n_lines_before_tgt + 1);
-	}
-
-	this->select_rows(new_selected_rows, 0, m->model->columnCount());
+	this->select_rows(new_selected_rows, 0);
 }
 
 
@@ -565,6 +556,7 @@ void PlaylistView::skin_changed()
 
 void PlaylistView::look_changed()
 {
+	refresh();
 	for(int r=0; r<m->model->rowCount(); r++)
 	{
 		for(int c=0; c<m->model->columnCount(); c++)

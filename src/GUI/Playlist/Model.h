@@ -80,10 +80,10 @@ public:
 
 	void		clear();
 	void		remove_rows(const IndexSet& rows);
-	void		move_rows(const IndexSet& rows, int target_index);
+	IndexSet	move_rows(const IndexSet& rows, int target_index);
 	IndexSet	move_rows_up(const IndexSet& rows);
 	IndexSet	move_rows_down(const IndexSet& rows);
-	void		copy_rows(const IndexSet& rows, int target_index);
+	IndexSet	copy_rows(const IndexSet& rows, int target_index);
 	void		change_rating(const IndexSet& rows, Rating rating);
 	void		insert_tracks(const MetaDataList& v_md, int row);
 

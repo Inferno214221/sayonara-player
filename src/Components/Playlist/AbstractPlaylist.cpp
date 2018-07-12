@@ -82,17 +82,40 @@ void Base::clear()
 }
 
 
-void Base::move_tracks(const IndexSet& indexes, int tgt)
+IndexSet Base::move_tracks(const IndexSet& indexes, int tgt_row)
 {
-	m->v_md.move_tracks(indexes, tgt);
+	m->v_md.move_tracks(indexes, tgt_row);
+
+	int n_lines_before_tgt = std::count_if(indexes.begin(), indexes.end(), [&tgt_row](int sel){
+		return (sel < tgt_row);
+	});
+
+	IndexSet new_track_positions;
+	for(int i=tgt_row; i<tgt_row + indexes.count(); i++)
+	{
+		new_track_positions.insert(i - n_lines_before_tgt);
+	}
+
 	set_changed(true);
+
+	return new_track_positions;
 }
 
 
-void Base::copy_tracks(const IndexSet& indexes, int tgt)
+IndexSet Base::copy_tracks(const IndexSet& indexes, int tgt)
 {
 	m->v_md.copy_tracks(indexes, tgt);
 	set_changed(true);
+
+	IndexSet new_track_positions;
+	for(int i=0; i<indexes.count(); i++)
+	{
+		new_track_positions << tgt + i;
+	}
+
+	set_changed(true);
+
+	return new_track_positions;
 }
 
 
