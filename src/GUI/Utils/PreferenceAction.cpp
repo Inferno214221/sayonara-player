@@ -124,9 +124,7 @@ QString CoverPreferenceAction::identifier() const
 
 PlayerPreferencesAction::PlayerPreferencesAction(QWidget* parent) :
 	PreferenceAction(Lang::get(Lang::Application), identifier(), parent)
-{
-
-}
+{}
 
 QString PlayerPreferencesAction::display_name() const
 {
@@ -136,4 +134,18 @@ QString PlayerPreferencesAction::display_name() const
 QString PlayerPreferencesAction::identifier() const
 {
 	return "application";
+}
+
+StreamRecorderPreferenceAction::StreamRecorderPreferenceAction(QWidget* parent) :
+	PreferenceAction(tr("Stream Recorder"), identifier(), parent)
+{}
+
+QString StreamRecorderPreferenceAction::display_name() const
+{
+	return tr("Stream Recorder");
+}
+
+QString StreamRecorderPreferenceAction::identifier() const
+{
+	return "streamrecorder";
 }

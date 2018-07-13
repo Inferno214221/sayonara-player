@@ -19,6 +19,7 @@
  */
 
 #include "MenuTool.h"
+#include "GUI/Utils/PreferenceAction.h"
 
 struct MenuToolButton::Private
 {
@@ -55,6 +56,10 @@ void MenuToolButton::register_action(QAction *action)
 	prove_enabled();
 }
 
+void MenuToolButton::register_preference_action(PreferenceAction* action)
+{
+	m->menu->add_preference_action(action);
+}
 
 void MenuToolButton::show_menu(QPoint pos)
 {

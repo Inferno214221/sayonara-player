@@ -26,6 +26,8 @@
 
 #include "GUI/Utils/ContextMenu/ContextMenu.h"
 
+class PreferenceAction;
+
 /**
  * @brief This is the little button you often see near comboboxes\n
  * It opens up a menu when clicked. The actions in the menu a configurable
@@ -56,6 +58,12 @@ public:
 	 * @param action a custom action
 	 */
 	void register_action(QAction* action);
+
+	/**
+	 * @brief Use this to add a preference Action
+	 * @param PreferenceAction for accessing preference dialog
+	 */
+	void register_preference_action(PreferenceAction* action);
 
 	/**
 	 * @brief get current visible entries in menu\n

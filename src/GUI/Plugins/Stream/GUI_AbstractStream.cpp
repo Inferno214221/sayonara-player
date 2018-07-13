@@ -95,8 +95,8 @@ void GUI_AbstractStream::init_connections()
 	setTabOrder(m->le_url, m->btn_play);
 
 	m->btn_tool->show_action(ContextMenu::EntryNew, true);
-	m->btn_tool->register_action(new StreamPreferenceAction(m->btn_tool));
-
+	m->btn_tool->register_preference_action(new StreamPreferenceAction(m->btn_tool));
+	m->btn_tool->register_preference_action(new StreamRecorderPreferenceAction(m->btn_tool));
 
 	connect(m->btn_play, &QPushButton::clicked, this, &GUI_AbstractStream::listen_clicked);
 	connect(m->btn_tool, &MenuToolButton::sig_save, this, &GUI_AbstractStream::save_clicked);

@@ -96,5 +96,13 @@ class PlayerPreferencesAction :
 		QString identifier() const override;
 };
 
+class StreamRecorderPreferenceAction :
+		public PreferenceAction
+{
+public:
+	StreamRecorderPreferenceAction(QWidget* parent);
+	QString display_name() const override;
+	QString identifier() const override;
+};
 
 #endif // PREFERENCEACTION_H
