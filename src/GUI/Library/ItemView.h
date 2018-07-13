@@ -33,6 +33,7 @@
 #include "GUI/Utils/SearchableWidget/SearchableView.h"
 
 #include "GUI/InfoDialog/InfoDialogContainer.h"
+#include "GUI/Utils/ContextMenu/LibraryContextMenu.h"
 
 #include "Utils/Library/Sortorder.h"
 #include "Utils/MetaData/MetaDataFwd.h"
@@ -92,7 +93,7 @@ namespace Library
 
 		void set_item_model(ItemModel* model);
 
-		void show_context_menu_actions(int entries);
+		void show_context_menu_actions(LibraryContextMenu::Entries entries);
 
 		/** Dragable **/
 		QMimeData* dragable_mimedata() const override;

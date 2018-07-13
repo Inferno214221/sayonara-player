@@ -101,7 +101,7 @@ ItemView::ItemView(QWidget* parent) :
 	new QShortcut(QKeySequence(Qt::AltModifier + Qt::Key_Enter), this, SLOT(play_next_clicked()), nullptr, Qt::WidgetShortcut);
 	new QShortcut(QKeySequence(Qt::ShiftModifier + Qt::Key_Return), this, SLOT(append_clicked()), nullptr, Qt::WidgetShortcut);
 	new QShortcut(QKeySequence(Qt::ShiftModifier + Qt::Key_Enter), this, SLOT(append_clicked()), nullptr, Qt::WidgetShortcut);
-	new QShortcut(QKeySequence(Qt::Key_Backspace), this, SLOT(clearSelection()));
+	new QShortcut(QKeySequence(Qt::Key_Backspace), this, SLOT(clearSelection()), nullptr, Qt::WidgetShortcut);
 }
 
 ItemView::~ItemView() {}
@@ -174,7 +174,7 @@ void ItemView::show_context_menu(const QPoint& p)
 	m->context_menu->exec(p);
 }
 
-void ItemView::show_context_menu_actions(int entries)
+void ItemView::show_context_menu_actions(LibraryContextMenu::Entries entries)
 {
 	if(!m->context_menu) {
 		init_context_menu();

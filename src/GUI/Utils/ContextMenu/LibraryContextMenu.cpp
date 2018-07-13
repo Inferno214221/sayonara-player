@@ -153,18 +153,8 @@ LibraryContextMenu::LibraryContextMenu(QWidget* parent) :
 
 LibraryContextMenu::~LibraryContextMenu() {}
 
-#include <QLocale>
 void LibraryContextMenu::language_changed()
 {
-	QString language = _settings->get<Set::Player_Language>();
-
-	QRegExp re("sayonara_lang_(.*)\\.qm");
-	re.indexIn(language);
-	QString two_country_code = re.cap(1);
-
-	QLocale loc(two_country_code);
-	QLocale::setDefault(loc);
-
 	m->info_action->setText(Lang::get(Lang::Info));
 	m->lyrics_action->setText(Lang::get(Lang::Lyrics));
 	m->edit_action->setText(Lang::get(Lang::Edit));
@@ -187,15 +177,14 @@ void LibraryContextMenu::language_changed()
 	m->append_action->setShortcut(QKeySequence(Qt::ShiftModifier + Qt::Key_Enter));
 	m->info_action->setShortcut(QKeySequence(QKeySequence::WhatsThis));
 
-	if(m->clear_action->isVisible()){
+/*	if(m->clear_action->isVisible()){
 		m->clear_action->setShortcut(QKeySequence(Qt::Key_Backspace));
 	}
 
 	else if(m->clear_selection_action->isVisible()){
 		m->clear_selection_action->setShortcut(QKeySequence(Qt::Key_Backspace));
 	}
-
-
+	*/
 }
 
 

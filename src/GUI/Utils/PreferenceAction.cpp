@@ -149,3 +149,4 @@ QString StreamRecorderPreferenceAction::identifier() const
 {
 	return "streamrecorder";
 }
+

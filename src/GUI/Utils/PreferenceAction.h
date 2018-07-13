@@ -96,6 +96,7 @@ class PlayerPreferencesAction :
 		QString identifier() const override;
 };
 
+
 class StreamRecorderPreferenceAction :
 		public PreferenceAction
 {
