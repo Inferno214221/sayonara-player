@@ -64,7 +64,6 @@ public:
 	void register_preference_dialog(QAction* dialog_action);
 	void request_shutdown();
 
-
 private:
 	bool init_translator(const QString& file, const QString& dir);
 	void init_tray_actions();

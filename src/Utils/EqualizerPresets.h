@@ -21,6 +21,7 @@
 #ifndef _EQUALIZER_PRESETS_
 #define _EQUALIZER_PRESETS_
 
+#include "Utils/Pimpl.h"
 #include <QList>
 #include <QString>
 
@@ -31,15 +32,15 @@
  */
 class EQ_Setting final
 {
-private:
-	QList<int>		_values;
-	QString			_name;
+	PIMPL(EQ_Setting)
 
 public:
 	EQ_Setting(const QString& name=QString());
-	EQ_Setting(const EQ_Setting& s);
+	EQ_Setting(const EQ_Setting& other);
 	~EQ_Setting();
-	
+
+	EQ_Setting& operator=(const EQ_Setting& s);
+
 	/**
 	 * @brief Compares the case insensitive string representation of two settings
 	 * @param s other preset

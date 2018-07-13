@@ -18,20 +18,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Utils/Logger/Logger.h"
+#include <iostream>
 #include "Utils/Settings/Settings.h"
 #include "Utils/typedefs.h"
 
 #include <array>
+#include <iterator>
 
 struct Settings::Private
 {
 	QString			version;
 	std::array<AbstrSetting*, static_cast<int>(SettingKey::Num_Setting_Keys)> settings;
+	bool			initialized;
 
 	Private()
 	{
 		std::fill(settings.begin(), settings.end(), nullptr);
+		initialized = false;
 	}
 };
 
@@ -69,27 +72,15 @@ void Settings::register_setting(AbstrSetting* s)
 
 bool Settings::check_settings()
 {
-	IntList un_init;
-
-	int i=0;
-	for(AbstrSetting* s : m->settings)
-	{
-		if(!s){
-			un_init << i;
-		}
-
-		i++;
+	if(m->initialized){
+		return true;
 	}
 
-	if( !un_init.empty() )
-	{
-		sp_log(Log::Warning, this) << "**** Settings " << un_init << " are not initialized ****";
-		return false;
-	}
+	bool has_empty = std::any_of(m->settings.begin(), m->settings.end(), [](AbstrSetting* s){
+		return (s==nullptr);
+	});
 
-	else{
-		sp_log(Log::Info, this) << "**** All settings initialized ****";
-	}
+	m->initialized = (!has_empty);
 
-	return true;
+	return m->initialized;
 }

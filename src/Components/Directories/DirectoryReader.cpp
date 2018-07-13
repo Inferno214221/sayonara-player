@@ -67,10 +67,10 @@ void DirectoryReader::files_in_directory_recursive(const QDir& base_dir_orig, QS
 {
 	QDir base_dir(base_dir_orig);
 
-	QStringList tmp_files = base_dir.entryList(m->name_filters,
+	const QStringList tmp_files = base_dir.entryList(m->name_filters,
 											   (QDir::Filters)(QDir::Files | QDir::NoDotAndDotDot));
 
-	QStringList dirs = base_dir.entryList((QDir::Filters)(QDir::Dirs | QDir::NoDotAndDotDot));
+	const QStringList dirs = base_dir.entryList((QDir::Filters)(QDir::Dirs | QDir::NoDotAndDotDot));
 
 	for(const QString& dir : dirs)
 	{
@@ -86,7 +86,7 @@ void DirectoryReader::files_in_directory_recursive(const QDir& base_dir_orig, QS
 
 void DirectoryReader::files_in_directory(const QDir& base_dir, QStringList& files) const
 {
-	QStringList tmp_files = base_dir.entryList(m->name_filters,
+	const QStringList tmp_files = base_dir.entryList(m->name_filters,
 											   (QDir::Filters)(QDir::Files | QDir::NoDotAndDotDot));
 
 	for(const QString& filename : tmp_files){
@@ -115,10 +115,10 @@ MetaDataList DirectoryReader::metadata_from_filelist(const QStringList& lst)
 
 		if(Util::File::is_dir(str))
 		{
-			QStringList files;
 			QDir dir(str);
 			dir.cd(str);
 
+			QStringList files;
 			files_in_directory_recursive(dir, files);
 			for(const QString& file : ::Util::AsConst(files)){
 				if(Util::File::is_soundfile(file)){
@@ -177,10 +177,11 @@ QStringList DirectoryReader::find_files_rec(const QDir& dir_orig, const QString&
 	}
 
 	QDir dir(dir_orig);
-	QStringList ret;
-	QStringList dirs = dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
-	QStringList files = dir.entryList(QDir::Files);
 
+	const QStringList dirs = dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+	const QStringList files = dir.entryList(QDir::Files);
+
+	QStringList ret;
 	for(const QString& d : dirs)
 	{
 		if(d.isEmpty()){

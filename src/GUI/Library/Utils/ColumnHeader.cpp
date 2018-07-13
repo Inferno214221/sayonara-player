@@ -190,6 +190,8 @@ QString ColumnHeader::title() const
 			return Lang::get(Lang::Bitrate);
 		case ColumnHeader::Filesize:
 			return Lang::get(Lang::Filesize);
+		case ColumnHeader::Discnumber:
+			return tr("#Disc");
 		default:
 			return QString();
 	}

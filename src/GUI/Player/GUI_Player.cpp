@@ -500,21 +500,15 @@ bool GUI_Player::init_translator(const QString& file, const QString& dir)
 		return false;
 	}
 
-	sp_log(Log::Warning, this) << "Translator " << dir << "/" << file << " successfully loaded";
-
-
 	bool installed = QApplication::installTranslator(t);
 	if(!installed){
 		sp_log(Log::Warning, this) << "Translator " << dir << "/" << file << " could not be installed";
 		return false;
 	}
 
-	sp_log(Log::Warning, this) << "Translator " << dir << "/" << file << " successfully installed";
-
 	m->translators << t;
 	return true;
 }
-
 
 void GUI_Player::language_changed()
 {
@@ -532,16 +526,16 @@ void GUI_Player::language_changed()
 	QLocale loc(two_country_code);
 	QLocale::setDefault(loc);
 
-	sp_log(Log::Info, this) << "Language changed: " << language << " (" << two_country_code << ")";
-	sp_log(Log::Info, this) << "Language changed: " << loc.nativeLanguageName();
+	sp_log(Log::Info, this) << "Language changed: " << loc.nativeLanguageName() << " (" << two_country_code << ")";
+
 	init_translator(language, Util::share_path("translations/"));
 
-	QString qt_tr_file_sayonara = QString("qt_%1.qm").arg(two_country_code);
+	/*QString qt_tr_file_sayonara = QString("qt_%1.qm").arg(two_country_code);
 	bool success = init_translator(qt_tr_file_sayonara, Util::share_path("translations/"));
 	if(!success){
 		QString qt_tr_file = QString("qt_%1.qm").arg(two_country_code);
 		init_translator(qt_tr_file, "/usr/share/qt5/translations/");
-	}
+	}*/
 
 	ui->retranslateUi(this);
 }

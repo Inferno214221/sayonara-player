@@ -164,28 +164,25 @@ QString Expression::calc_regex_string(const QStringList& splitted_str) const
 }
 
 
-bool Expression::update_tag(const QString& tag_str, const QString& filepath){
+bool Expression::update_tag(const QString& tag_str, const QString& filepath)
+{
 	m->cap_map.clear();
 
-	bool valid;
-	QStringList captured_texts;
 	QStringList splitted_tag_str = split_tag_string(tag_str);
 	QString regex = calc_regex_string(splitted_tag_str);
 
 	QRegExp re( regex );
 
-	int n_tags, n_caps;
-
 	re.indexIn( filepath );
 
-	captured_texts = re.capturedTexts();
+	QStringList captured_texts = re.capturedTexts();
 	captured_texts.removeAt(0);
 	captured_texts.removeAll("");
 
-	n_caps = captured_texts.size();
-	n_tags = splitted_tag_str.size();
+	int n_caps = captured_texts.size();
+	int n_tags = splitted_tag_str.size();
 
-	valid = (n_caps == n_tags);
+	bool valid = (n_caps == n_tags);
 
 	if( !valid ){
 		sp_log(Log::Warning) << regex;
@@ -201,8 +198,10 @@ bool Expression::update_tag(const QString& tag_str, const QString& filepath){
 		sp_log(Log::Warning) << "";
 	}
 
-	else{
-		for(int i=0; i<n_caps; i++){
+	else
+	{
+		for(int i=0; i<n_caps; i++)
+		{
 			Tag tag = splitted_tag_str[i];
 			QString cap = captured_texts[i];
 
@@ -220,7 +219,8 @@ bool Expression::update_tag(const QString& tag_str, const QString& filepath){
 	return valid;
 }
 
-bool Expression::check_tag(const Tag& tag, const QString& str){
+bool Expression::check_tag(const Tag& tag, const QString& str)
+{
 	if(!m->tag_regex_map.contains(tag)) {
 		return false;
 	}

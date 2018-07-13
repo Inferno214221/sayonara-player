@@ -53,6 +53,7 @@ class ColumnHeader : public QObject
 			Sharp,
 			Artist,
 			Album,
+			Discnumber,
 			Title,
 			NumTracks,
 			Duration,

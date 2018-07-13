@@ -53,11 +53,6 @@ void register_setting(const typename T::Data& default_value)
 
 bool SettingRegistry::init()
 {
-	BoolList shown_cols;
-	for(int i=0; i<10; i++){
-		shown_cols.push_back(true);
-	}
-
 	register_setting<Set::LFM_Login>("LastFM_login", StringPair("None", "None"));
 	register_setting<Set::LFM_ScrobbleTimeSec>("lfm_scrobble_time", 10);
 	register_setting<Set::LFM_Active>( "LastFM_active", false );
@@ -69,6 +64,7 @@ bool SettingRegistry::init()
 	register_setting<Set::Eq_List>( "EQ_list", EQ_Setting::get_defaults() );
 	register_setting<Set::Eq_Gauss>( "EQ_Gauss", true );
 
+	BoolList shown_cols(10); shown_cols.assign(10, true);
 	register_setting<Set::Lib_ColsTitle>( "lib_shown_cols_title", shown_cols );
 	register_setting<Set::Lib_ColsArtist>( "lib_shown_cols_artist", shown_cols );
 	register_setting<Set::Lib_ColsAlbum>( "lib_shown_cols_album", shown_cols );

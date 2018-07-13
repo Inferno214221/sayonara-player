@@ -73,7 +73,8 @@ QVariant TrackModel::data(const QModelIndex &index, int role) const
 			idx_col == ColumnIndex::Track::Bitrate ||
 			idx_col == ColumnIndex::Track::Length ||
 			idx_col == ColumnIndex::Track::Year ||
-			idx_col == ColumnIndex::Track::Filesize)
+			idx_col == ColumnIndex::Track::Filesize ||
+			idx_col == ColumnIndex::Track::Discnumber)
 		{
 			alignment |= Qt::AlignRight;
 		}
@@ -105,6 +106,9 @@ QVariant TrackModel::data(const QModelIndex &index, int role) const
 
 			case ColumnIndex::Track::Album:
 				return QVariant(md.album());
+
+			case ColumnIndex::Track::Discnumber:
+				return QVariant(tr("Disc") + " " + QString::number(md.discnumber));
 
 			case ColumnIndex::Track::Year:
 				if(md.year == 0){

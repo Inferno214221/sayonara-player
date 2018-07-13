@@ -80,7 +80,8 @@ QStringList LastFM::calc_addresses_from_website(const QByteArray& website) const
 	QStringList attributes; attributes << "mega" << "extralarge" << "large" << "";
 	QMap<QString, QString> lfm_covers;
 
-	for(int i=0; i<nodes.size(); i++){
+	for(int i=0; i<nodes.size(); i++)
+	{
 		QDomNode node = nodes.item(i);
 		QString name = node.toElement().tagName();
 		if(name.compare("image", Qt::CaseInsensitive) == 0){

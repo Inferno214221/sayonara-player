@@ -344,18 +344,16 @@ Callbacks::level_handler(GstBus * bus, GstMessage * message, gpointer data)
 	}
 
 	n_peak_elements = std::min((guint) 2, n_peak_elements);
-	for(guint i=0; i<n_peak_elements; i++) {
-		double d;
-		const GValue* val;
-
-		val = rms_arr->values + i;
+	for(guint i=0; i<n_peak_elements; i++)
+	{
+		const GValue* val = rms_arr->values + i;
 
 		if(!G_VALUE_HOLDS_DOUBLE(val)) {
 			sp_log(Log::Debug) << "Could not find a double";
 			break;
 		}
 
-		d = g_value_get_double(val);
+		double d = g_value_get_double(val);
 		if(d < 0){
 			channel_values[i] = d;
 		}

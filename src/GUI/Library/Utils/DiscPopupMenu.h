@@ -35,7 +35,7 @@ class DiscAction : public QAction
 
 	public:
 		DiscAction(QWidget* parent, Disc d);
-		virtual ~DiscAction();
+		~DiscAction();
 };
 
 
