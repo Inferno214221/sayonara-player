@@ -51,6 +51,8 @@ struct LibraryContextMenu::Private
 	QAction*	clear_selection_action=nullptr;
 	QMenu*		rating_menu=nullptr;
 
+	QAction*	preference_separator=nullptr;
+
 	bool has_preference_actions;
 
 	Private() :
@@ -297,7 +299,8 @@ QAction* LibraryContextMenu::add_preference_action(PreferenceAction* action)
 	QList<QAction*> actions;
 
 	if(!m->has_preference_actions){
-		actions << this->addSeparator();
+		m->preference_separator = this->addSeparator();
+		actions << m->preference_separator;
 	}
 
 	actions << action;
@@ -306,6 +309,11 @@ QAction* LibraryContextMenu::add_preference_action(PreferenceAction* action)
 	m->has_preference_actions = true;
 
 	return action;
+}
+
+QAction* LibraryContextMenu::before_preference_action() const
+{
+	return m->preference_separator;
 }
 
 void LibraryContextMenu::show_cover_view_changed()

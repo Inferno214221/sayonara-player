@@ -247,21 +247,24 @@ void CoverView::init_context_menu()
 	ItemView::init_context_menu();
 
 	LibraryContextMenu* menu = context_menu();
-
 	menu->add_preference_action(new CoverPreferenceAction(menu));
 	menu->addSeparator();
 
-	m->action_show_utils = menu->addAction("Show utils");
+	// insert everything before the preferences
+	QAction* sep_before_prefs = menu->before_preference_action();
+	menu->insertSeparator(sep_before_prefs);
+	m->action_show_utils = new QAction("Show utils");
 	m->action_show_utils->setCheckable(true);
 	m->action_show_utils->setChecked(_settings->get<Set::Lib_CoverShowUtils>());
 	connect(m->action_show_utils, &QAction::triggered, this, &CoverView::show_utils_triggered);
+	menu->insertAction(sep_before_prefs, m->action_show_utils);
 
 	m->menu_sortings = new QMenu(menu);
-	m->action_sorting = menu->addMenu(m->menu_sortings);
+	m->action_sorting = menu->insertMenu(sep_before_prefs, m->menu_sortings);
 	init_sorting_actions();
 
 	m->menu_zoom  = new QMenu(menu);
-	m->action_zoom = menu->addMenu(m->menu_zoom);
+	m->action_zoom = menu->insertMenu(sep_before_prefs, m->menu_zoom);
 	init_zoom_actions();
 
 	language_changed();

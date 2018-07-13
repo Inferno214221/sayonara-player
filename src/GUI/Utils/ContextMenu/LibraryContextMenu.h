@@ -102,6 +102,7 @@ public:
 	QAction* get_action(LibraryContextMenu::Entry entry) const;
 
 	QAction* add_preference_action(PreferenceAction* action);
+	QAction* before_preference_action() const;
 
 
 signals:
