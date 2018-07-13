@@ -47,21 +47,18 @@ struct GUI_Lyrics::Private
 	qreal           font_size;
 	qreal           initial_font_size;
 
-	Private()
+	Private(QObject* parent)
 	{
-		lyrics = new Lyrics();
+		lyrics = new Lyrics(parent);
 	}
 
-	~Private()
-	{
-		delete lyrics; lyrics = nullptr;
-	}
+	~Private() {}
 };
 
 GUI_Lyrics::GUI_Lyrics(QWidget *parent) :
 	Widget(parent)
 {
-	m = Pimpl::make<Private>();
+	m = Pimpl::make<Private>(this);
 }
 
 GUI_Lyrics::~GUI_Lyrics()
@@ -124,8 +121,8 @@ void GUI_Lyrics::init()
 
 	prepare_lyrics();
 
-	new QShortcut(QKeySequence(Qt::ControlModifier + Qt::Key_Plus), this, SLOT(zoom_in()), nullptr, Qt::WidgetWithChildrenShortcut);
-	new QShortcut(QKeySequence(Qt::ControlModifier + Qt::Key_Minus), this, SLOT(zoom_out()), nullptr, Qt::WidgetWithChildrenShortcut);
+	new QShortcut(QKeySequence(QKeySequence::ZoomIn), this, SLOT(zoom_in()), nullptr, Qt::WidgetWithChildrenShortcut);
+	new QShortcut(QKeySequence(QKeySequence::ZoomOut), this, SLOT(zoom_out()), nullptr, Qt::WidgetWithChildrenShortcut);
 }
 
 
@@ -161,15 +158,16 @@ void GUI_Lyrics::prepare_lyrics()
 		show_local_lyrics();
 	}
 
-	else {
-
+	else
+	{
 		bool running = m->lyrics->fetch_lyrics(
 					ui->le_artist->text(),
 					ui->le_title->text(),
 					current_server_index
 		);
 
-		if(running) {
+		if(running)
+		{
 			m->loading_bar->show();
 			m->loading_bar->setVisible(true);
 			ui->btn_search->setEnabled(false);

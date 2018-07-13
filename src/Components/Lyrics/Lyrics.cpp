@@ -106,7 +106,14 @@ void Lyrics::set_metadata(const MetaData& md)
 	m->md = md;
 	m->guess_artist_and_title();
 
-	Tagging::Util::extract_lyrics(md, m->lyric_tag_content);
+	bool has_lyrics = Tagging::Util::extract_lyrics(md, m->lyric_tag_content);
+	if(!has_lyrics){
+		sp_log(Log::Debug, this) << "Could not find lyrics in " << md.filepath();
+	}
+
+	else {
+		sp_log(Log::Debug, this) << "Lyrics found in " << md.filepath();
+	}
 }
 
 QString Lyrics::artist() const
