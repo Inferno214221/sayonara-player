@@ -193,7 +193,7 @@ void GUI_Lyrics::show_lyrics(const QString& lyrics, const QString& header, bool 
 	ui->lab_header->setText(header);
 	ui->btn_search->setEnabled(true);
 	ui->combo_servers->setEnabled(true);
-	ui->btn_save_lyrics->setEnabled(true);
+	ui->btn_save_lyrics->setEnabled(m->lyrics->is_lyric_tag_supported());
 	m->loading_bar->setVisible(false);
 }
 
@@ -201,7 +201,6 @@ void GUI_Lyrics::show_local_lyrics()
 {
 	show_lyrics(m->lyrics->local_lyrics(), m->lyrics->local_lyric_header(), false);
 }
-
 
 void GUI_Lyrics::lyrics_fetched()
 {
@@ -218,7 +217,6 @@ void GUI_Lyrics::set_metadata(const MetaData &md)
 
 	ui->le_artist->setText(m->lyrics->artist());
 	ui->le_title->setText(m->lyrics->title());
-	ui->btn_save_lyrics->setVisible(m->lyrics->is_lyric_tag_supported());
 
 	QStringList completer_entries;
 	completer_entries << md.artist() << md.album_artist();
@@ -256,9 +254,9 @@ void GUI_Lyrics::zoom(qreal font_size)
 void GUI_Lyrics::setup_sources()
 {
 	ui->combo_servers->clear();
+
 	if(m->lyrics->is_lyric_tag_available()){
 		ui->combo_servers->addItem(Lang::get(Lang::File), -1);
-		ui->combo_servers->insertSeparator(1);
 	}
 
 	int i=0;
@@ -273,7 +271,9 @@ void GUI_Lyrics::setup_sources()
 void GUI_Lyrics::choose_source()
 {
 	int new_index = 0;
-	if(!m->lyrics->is_lyric_tag_available()){
+
+	if(!m->lyrics->is_lyric_tag_available())
+	{
 		QString last_server = _settings->get<Set::Lyrics_Server>();
 		new_index = std::max(0, ui->combo_servers->findText(last_server));
 	}
@@ -293,7 +293,13 @@ void GUI_Lyrics::zoom_out()
 
 void GUI_Lyrics::set_save_button_text()
 {
-	if(m->lyrics->is_lyric_tag_available()) {
+	if(!m->lyrics->is_lyric_tag_supported())
+	{
+		ui->btn_save_lyrics->setEnabled(false);
+		ui->btn_save_lyrics->setText(tr("Save lyrics not supported"));
+	}
+
+	else if(m->lyrics->is_lyric_tag_available()) {
 		ui->btn_save_lyrics->setText(tr("Overwrite lyrics"));
 	}
 
