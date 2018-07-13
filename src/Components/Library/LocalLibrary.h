@@ -56,7 +56,7 @@ public slots:
 	void reload_library(bool clear_first, Library::ReloadQuality quality) override;
 
 	// emits new tracks, very similar to psl_selected_albums_changed
-	void change_current_disc(int);
+	void change_current_disc(Disc disc);
 	void change_track_rating(int idx, Rating rating) override;
 
 	void refresh_artist() override;

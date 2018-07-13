@@ -148,13 +148,17 @@ bool ItemModel::is_selected(int id) const
 	return selections().contains(id);
 }
 
-IndexSet ItemModel::selected_rows() const
+IndexSet ItemModel::selected_indexes() const
 {
 	IndexSet ret;
 
 	for(int i=0; i<rowCount(); i++)
 	{
 		Id id = id_by_index(i);
+		if(id < 0){
+			continue;
+		}
+
 		if(is_selected(id)){
 			ret << i;
 		}

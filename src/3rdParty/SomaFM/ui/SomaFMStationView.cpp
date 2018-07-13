@@ -33,9 +33,10 @@ int SomaFMStationView::index_by_model_index(const QModelIndex& idx) const
 	return idx.row();
 }
 
-QModelIndex SomaFMStationView::model_index_by_index(int idx) const
+ModelIndexRange SomaFMStationView::model_indexrange_by_index(int idx) const
 {
-	return this->model()->index(idx, 0);
+	QModelIndex midx = model()->index(idx, 0);
+	return ModelIndexRange(midx, midx);
 }
 
 void SomaFMStationView::keyPressEvent(QKeyEvent *e)

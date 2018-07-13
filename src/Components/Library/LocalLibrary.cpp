@@ -38,6 +38,7 @@
 #include "Utils/globals.h"
 
 #include <utility>
+#include <limits>
 #include <QTime>
 
 struct LocalLibrary::Private
@@ -163,8 +164,7 @@ void LocalLibrary::library_reloading_state_new_block()
 	m->reload_thread->goon();
 }
 
-
-void LocalLibrary::change_current_disc(int disc)
+void LocalLibrary::change_current_disc(Disc disc)
 {
 	if( selected_albums().size() != 1 )
 	{
@@ -173,7 +173,7 @@ void LocalLibrary::change_current_disc(int disc)
 
 	MetaDataList v_md;
 
-	if(disc < 0)
+	if(disc == std::numeric_limits<Disc>::max())
 	{
 		m->library_db->getAllTracksByAlbum(selected_albums().first(), _tracks, filter(), sortorder().so_tracks);
 	}

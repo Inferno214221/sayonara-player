@@ -181,6 +181,11 @@ void SelectionViewInterface::select_column(int col)
 
 void SelectionViewInterface::select_items(const IndexSet& indexes)
 {
+	if(indexes.isEmpty()){
+		this->clear_selection();
+		return;
+	}
+
 	QItemSelectionModel* sel_model = this->selection_model();
 	if(!sel_model){
 		return;
@@ -189,9 +194,8 @@ void SelectionViewInterface::select_items(const IndexSet& indexes)
 	QItemSelection sel;
 	for(int index : indexes)
 	{
-		sel.select( model_index_by_index(index),
-					model_index_by_index(index)
-		);
+		ModelIndexRange range = model_indexrange_by_index(index);
+		sel.select( range.first, range.second);
 	}
 
 	sel_model->select(sel, QItemSelectionModel::ClearAndSelect);
@@ -237,11 +241,11 @@ IndexSet SelectionViewInterface::indexes_by_model_indexes(const QModelIndexList&
 }
 
 
-QModelIndexList SelectionViewInterface::model_indexes_by_indexes(const IndexSet& idxs) const
+ModelIndexRanges SelectionViewInterface::model_indexranges_by_indexes(const IndexSet& idxs) const
 {
-	QModelIndexList lst;
+	ModelIndexRanges lst;
 	for(auto it = idxs.begin(); it != idxs.end(); it++){
-		lst << model_index_by_index(*it);
+		lst << model_indexrange_by_index(*it);
 	}
 	return lst;
 }

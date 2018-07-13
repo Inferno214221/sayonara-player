@@ -35,7 +35,7 @@ public:
 public:
 	// SayonaraSelectionView interface
 	int index_by_model_index(const QModelIndex& idx) const override;
-	QModelIndex model_index_by_index(int idx) const override;
+	ModelIndexRange model_indexrange_by_index(int idx) const override;
 
 protected:
 	void keyPressEvent(QKeyEvent *e) override;

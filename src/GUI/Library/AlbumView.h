@@ -37,7 +37,7 @@ namespace Library
 		PIMPL(AlbumView)
 
 	signals:
-		void sig_disc_pressed(int);
+		void sig_disc_pressed(Disc d);
 
 	protected slots:
 		void index_clicked(const QModelIndex& idx);

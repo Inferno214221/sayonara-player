@@ -118,15 +118,18 @@ void AlbumView::show_context_menu(const QPoint& p)
 
 void AlbumView::index_clicked(const QModelIndex& idx)
 {
-	if(idx.column() != static_cast<int>(ColumnIndex::Album::MultiDisc))
+	if(idx.column() == static_cast<int>(ColumnIndex::Album::MultiDisc))
 	{
-		return;
+		QModelIndexList selections = this->selectionModel()->selectedRows();
+		if(selections.size() == 1){
+			init_discmenu(idx);
+			show_discmenu();
+		}
 	}
 
-	QModelIndexList selections = this->selectionModel()->selectedRows();
-	if(selections.size() == 1){
-		init_discmenu(idx);
-		show_discmenu();
+	else {
+		m->library->selected_albums_changed(IndexSet());
+		m->library->selected_albums_changed(IndexSet{idx.row()});
 	}
 }
 

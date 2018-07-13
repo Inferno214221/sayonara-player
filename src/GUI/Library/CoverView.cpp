@@ -366,12 +366,12 @@ int CoverView::index_by_model_index(const QModelIndex& idx) const
 	return idx.row() * model()->columnCount() + idx.column();
 }
 
-QModelIndex CoverView::model_index_by_index(int idx) const
+ModelIndexRange CoverView::model_indexrange_by_index(int idx) const
 {
 	int row = idx / model()->columnCount();
 	int col = idx % model()->columnCount();
 
-	return model()->index(row, col);
+	return ModelIndexRange(model()->index(row, col), model()->index(row, col));
 }
 
 void CoverView::play_clicked()

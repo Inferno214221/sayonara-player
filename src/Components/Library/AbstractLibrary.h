@@ -191,7 +191,6 @@ protected:
 
 
 private:
-
 	void tag_edit_commit();
 	void set_playlist_action_after_double_click();
 

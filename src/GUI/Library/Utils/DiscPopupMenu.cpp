@@ -21,94 +21,60 @@
 #include "DiscPopupMenu.h"
 #include "GUI/Utils/GuiUtils.h"
 #include "Utils/Utils.h"
+#include "Utils/Language.h"
 
 #include <QMouseEvent>
 #include <algorithm>
 
-DiscAction::DiscAction(QWidget* parent, const QIcon& icon) :
-	QAction(icon, QString(), parent)
+DiscAction::DiscAction(QWidget* parent, Disc disc) :
+	QAction(parent)
 {
-	connect(this, &QAction::triggered, this, &DiscAction::disc_hover);
+	if(disc == std::numeric_limits<Disc>::max())
+	{
+		this->setText(Lang::get(Lang::All));
+		this->setIcon(Gui::Util::icon("cds.png"));
+	}
+
+	else {
+		this->setText(tr("Disc") + " " + QString::number(disc));
+		this->setIcon(Gui::Util::icon("cd.png"));
+	}
+
+	this->setData(disc);
+
+	connect(this, &QAction::triggered, this, [=]()
+	{
+		bool ok = false;
+		int discnumber = data().toInt(&ok);
+		if(ok){
+			emit sig_disc_pressed(discnumber);
+		}
+	});
 }
 
 DiscAction::~DiscAction() {}
 
-void DiscAction::disc_hover()
-{
-	bool ok = false;
-	int discnumber = data().toInt(&ok);
-	if(ok){
-		emit sig_disc_pressed(discnumber);
-	}
-}
-
-
 DiscPopupMenu::DiscPopupMenu(QWidget* parent, QList<Disc> discs): QMenu(parent)
 {
 	Util::sort(discs, [](Disc disc1, Disc disc2){
-		return disc1 < disc2;
+		return (disc1 < disc2);
 	});
 
-	for(int i= -1; i<discs.size(); i++)
+	for(int i=-1; i<discs.size(); i++)
 	{
-		QIcon icon;
-		QString text;
-		int data;
-
-		if(i == -1) {
-			text = "All";
-			data = -1;
-			icon = Gui::Util::icon("cds.png");
+		DiscAction* action;
+		if(i == -1){
+			action = new DiscAction(this, std::numeric_limits<Disc>::max());
 		}
 
-		else{
-			Disc disc = discs[i];
-			text = QString("Disc ") + QString::number(disc);
-			data = disc;
-			icon = Gui::Util::icon("cd.png");
+		else {
+			action = new DiscAction(this, discs[i]);
 		}
 
-		DiscAction* action = new DiscAction(this, icon);
-		connect(action, &DiscAction::sig_disc_pressed, this, &DiscPopupMenu::disc_pressed);
+		this->addAction(action);
 
-		action->setText(text);
-		action->setData(data);
-
-		addAction(action);
-		_actions << action;
+		connect(action, &DiscAction::sig_disc_pressed, this, &DiscPopupMenu::sig_disc_pressed);
 	}
 }
 
-DiscPopupMenu::~DiscPopupMenu()
-{
-	clean_up();
-}
-
-
-void DiscPopupMenu::disc_pressed(Disc disc)
-{
-	emit sig_disc_pressed(disc);
-}
-
-
-void DiscPopupMenu::mouseReleaseEvent(QMouseEvent* e)
-{
-	QMenu::mouseReleaseEvent(e);
-	hide();
-	close();
-}
-
-
-void DiscPopupMenu::clean_up()
-{
-	for(DiscAction* a : Util::AsConst(_actions))
-	{
-		if(!a) {
-			continue;
-		}
-
-		delete a; a=nullptr;
-	}
-
-	_actions.clear();
-}
+DiscPopupMenu::~DiscPopupMenu() {}

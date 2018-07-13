@@ -210,8 +210,8 @@ QItemSelectionModel* SearchableViewInterface::selection_model() const
 
 void SearchableViewInterface::set_current_index(int idx)
 {
-	QModelIndex index = model_index_by_index(idx);
-	m->view->setCurrentIndex(index);
+	ModelIndexRange range = model_indexrange_by_index(idx);
+	m->view->setCurrentIndex(range.first);
 }
 
 void SearchableViewInterface::handle_key_press(QKeyEvent* e)

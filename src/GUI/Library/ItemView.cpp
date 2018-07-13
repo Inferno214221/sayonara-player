@@ -331,11 +331,12 @@ void ItemView::refresh_clicked() { emit sig_refresh_clicked(); }
 
 void ItemView::fill()
 {
+	IndexSet selections = m->model->selected_indexes();
+
 	int old_size, new_size;
 	m->model->refresh_data(&old_size, &new_size);
 
-	IndexSet selections = m->model->selected_rows();
-	select_rows(selections, 0, m->model->columnCount() - 1);
+	select_items(selections);
 
 	if(new_size > old_size) {
 		resize_rows_to_contents(old_size, new_size - old_size);

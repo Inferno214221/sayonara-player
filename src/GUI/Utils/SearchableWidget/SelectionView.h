@@ -25,6 +25,11 @@
 #include "Utils/Pimpl.h"
 
 #include <QModelIndex>
+#include <QPair>
+#include <QList>
+
+using ModelIndexRange=QPair<QModelIndex, QModelIndex>; // top left, bottom right
+using ModelIndexRanges=QList<ModelIndexRange>;
 
 class QItemSelectionModel;
 class QKeyEvent;
@@ -82,10 +87,10 @@ protected:
 
 protected:
 	virtual int index_by_model_index(const QModelIndex& idx) const=0;
-	virtual QModelIndex model_index_by_index(int idx) const=0;
+	virtual ModelIndexRange model_indexrange_by_index(int idx) const=0;
 
 	virtual IndexSet indexes_by_model_indexes(const QModelIndexList& indexes) const;
-	virtual QModelIndexList model_indexes_by_indexes(const IndexSet& indexes) const;
+	virtual ModelIndexRanges model_indexranges_by_indexes(const IndexSet& indexes) const;
 
 protected:
 	virtual void handle_key_press(QKeyEvent* e);

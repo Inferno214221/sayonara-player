@@ -53,7 +53,7 @@ namespace Library
 
 			Cover::Location	cover(const IndexSet& indexes) const override;
 			int				searchable_column() const override;
-			Id				id_by_index(int row) const override;
+			Id				id_by_index(int index) const override;
 			QString			searchable_string(int row) const override;
 
 

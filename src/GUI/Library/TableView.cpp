@@ -145,14 +145,8 @@ int TableView::index_by_model_index(const QModelIndex& idx) const
 	return idx.row();
 }
 
-QModelIndex TableView::model_index_by_index(int idx) const
+ModelIndexRange TableView::model_indexrange_by_index(int idx) const
 {
-	int first_col = 0;
-
-	if( horizontalHeader()->isSectionHidden(0) )
-	{
-		first_col = 1;
-	}
-
-	return item_model()->index(idx, first_col);
+	return ModelIndexRange(item_model()->index(idx, 0),
+						   item_model()->index(idx, item_model()->columnCount() - 1));
 }

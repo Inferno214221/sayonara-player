@@ -377,7 +377,8 @@ void AbstractLibrary::change_album_selection(const IndexSet& indexes)
 	SP::Set<AlbumId> selected_albums;
 	bool show_album_artists = _settings->get<Set::Lib_ShowAlbumArtists>();
 
-	for(auto it=indexes.begin(); it != indexes.end(); it++){
+	for(auto it=indexes.begin(); it != indexes.end(); it++)
+	{
 		int idx = *it;
 		if(idx >= _albums.count()){
 			break;

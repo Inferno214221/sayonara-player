@@ -640,8 +640,8 @@ int DirectoryTreeView::index_by_model_index(const QModelIndex& idx) const
 	return -1;
 }
 
-QModelIndex DirectoryTreeView::model_index_by_index(int idx) const
+ModelIndexRange DirectoryTreeView::model_indexrange_by_index(int idx) const
 {
 	Q_UNUSED(idx)
-	return QModelIndex();
+	return ModelIndexRange(QModelIndex(), QModelIndex());
 }

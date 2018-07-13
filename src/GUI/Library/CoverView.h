@@ -32,7 +32,7 @@ namespace Library
 
 		//SayonaraSelectionView
 		int index_by_model_index(const QModelIndex& idx) const override;
-		QModelIndex model_index_by_index(int idx) const override;
+		ModelIndexRange model_indexrange_by_index(int idx) const override;
 
 		void change_zoom(int zoom=-1);
 		void change_sortorder(Library::SortOrder so);

@@ -60,7 +60,7 @@ namespace Library
 
 			virtual bool			is_selected(int id) const final;
 			virtual const SP::Set<Id>& selections() const=0;
-			virtual IndexSet		selected_rows() const;
+			virtual IndexSet		selected_indexes() const;
 
 			virtual int				searchable_column() const=0;
 			virtual QString			searchable_string(int row) const=0;

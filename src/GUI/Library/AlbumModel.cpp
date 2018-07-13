@@ -63,16 +63,16 @@ AlbumModel::AlbumModel(QObject* parent, AbstractLibrary* library) :
 
 AlbumModel::~AlbumModel() {}
 
-Id AlbumModel::id_by_index(int row) const
+Id AlbumModel::id_by_index(int index) const
 {
 	const AlbumList& albums = library()->albums();
 
-	if(row < 0 || row >= albums.count()){
+	if(index < 0 || index >= albums.count()){
 		return -1;
 	}
 
 	else {
-		return albums[row].id;
+		return albums[index].id;
 	}
 }
 

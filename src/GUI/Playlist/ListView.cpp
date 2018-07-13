@@ -152,7 +152,8 @@ void PlaylistView::goto_row(int row)
 	row = std::min(row, m->model->rowCount() - 1);
 	row = std::max(row, 0);
 
-	this->scrollTo(model_index_by_index(row));
+	ModelIndexRange range = model_indexrange_by_index(row);
+	this->scrollTo(range.first);
 }
 
 int PlaylistView::calc_drag_drop_line(QPoint pos)
@@ -455,9 +456,10 @@ int PlaylistView::index_by_model_index(const QModelIndex& idx) const
 	return idx.row();
 }
 
-QModelIndex PlaylistView::model_index_by_index(int idx) const
+ModelIndexRange PlaylistView::model_indexrange_by_index(int idx) const
 {
-	return m->model->index(idx, 0);
+	return ModelIndexRange(m->model->index(idx, 0),
+						   m->model->index(idx, m->model->columnCount() - 1));
 }
 
 bool PlaylistView::viewportEvent(QEvent* event)

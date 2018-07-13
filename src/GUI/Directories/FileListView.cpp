@@ -303,9 +303,9 @@ int FileListView::index_by_model_index(const QModelIndex& idx) const
 	return idx.row();
 }
 
-QModelIndex FileListView::model_index_by_index(int idx) const
+ModelIndexRange FileListView::model_indexrange_by_index(int idx) const
 {
-	return m->model->index(idx);
+	return ModelIndexRange(m->model->index(idx), m->model->index(idx));
 }
 
 void FileListView::keyPressEvent(QKeyEvent *event)

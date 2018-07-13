@@ -33,11 +33,8 @@ class DiscAction : public QAction
 	signals:
 		void sig_disc_pressed(int);
 
-	private slots:
-		void disc_hover();
-
 	public:
-		DiscAction(QWidget* parent, const QIcon& icon);
+		DiscAction(QWidget* parent, Disc d);
 		virtual ~DiscAction();
 };
 
@@ -49,21 +46,9 @@ class DiscPopupMenu : public QMenu
 	signals:
 		void sig_disc_pressed(Disc disc);
 
-	private slots:
-		void disc_pressed(Disc disc);
-
-
 	public:
 		DiscPopupMenu(QWidget* parent, QList<Disc> discs);
 		~DiscPopupMenu();
-
-	protected:
-		void mouseReleaseEvent(QMouseEvent* e);
-
-	private:
-		QList<DiscAction*> _actions;
-
-		void clean_up();
 };
 
 #endif
