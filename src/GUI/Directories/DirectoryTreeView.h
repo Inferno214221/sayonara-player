@@ -43,7 +43,7 @@ namespace Library
 	class Info;
 }
 
-using SearchableTreeView=Gui::WidgetTemplate<SearchableViewWrapper<QTreeView, DirectoryModel>>;
+using SearchableTreeView=Gui::WidgetTemplate<SearchableView<QTreeView, DirectoryModel>>;
 class DirectoryTreeView :
 		public SearchableTreeView,
 		protected Dragable

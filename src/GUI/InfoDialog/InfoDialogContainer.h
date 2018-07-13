@@ -43,20 +43,7 @@ class InfoDialogContainer
 		InfoDialogContainer();
 		virtual ~InfoDialogContainer();
 
-		/**
-		 * @brief Show the Info dialogs' info tab
-		 */
-		void show_info();
 
-		/**
-		 * @brief Show the Info dialogs' lyrics tab
-		 */
-		void show_lyrics();
-
-		/**
-		 * @brief Show the tag editor
-		 */
-		void show_edit();
 
 		/**
 		 * @brief this function should not be called from outside.
@@ -83,6 +70,22 @@ class InfoDialogContainer
 		 * @return MetaDataList
 		 */
 		virtual MetaDataList info_dialog_data() const=0;
+
+
+		/**
+		 * @brief Show the Info dialogs' info tab
+		 */
+		virtual void show_info();
+
+		/**
+		 * @brief Show the Info dialogs' lyrics tab
+		 */
+		virtual void show_lyrics();
+
+		/**
+		 * @brief Show the tag editor
+		 */
+		virtual void show_edit();
 };
 
 #endif

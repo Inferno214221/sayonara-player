@@ -185,7 +185,17 @@ void LibraryContextMenu::language_changed()
 	m->play_new_tab_action->setShortcut(QKeySequence(Qt::ControlModifier + Qt::Key_Enter));
 	m->play_next_action->setShortcut(QKeySequence(Qt::AltModifier + Qt::Key_Enter));
 	m->append_action->setShortcut(QKeySequence(Qt::ShiftModifier + Qt::Key_Enter));
-	m->clear_selection_action->setShortcut(QKeySequence(Qt::Key_Backspace));
+	m->info_action->setShortcut(QKeySequence(QKeySequence::WhatsThis));
+
+	if(m->clear_action->isVisible()){
+		m->clear_action->setShortcut(QKeySequence(Qt::Key_Backspace));
+	}
+
+	else if(m->clear_selection_action->isVisible()){
+		m->clear_selection_action->setShortcut(QKeySequence(Qt::Key_Backspace));
+	}
+
+
 }
 
 

@@ -94,6 +94,7 @@ PlaylistView::PlaylistView(PlaylistPtr pl, QWidget* parent) :
 	new QShortcut(QKeySequence(Qt::ControlModifier + Qt::Key_Down), this, SLOT(move_selected_rows_down()), nullptr, Qt::WidgetShortcut);
 	new QShortcut(QKeySequence(Qt::Key_Return), this, SLOT(play_selected_track()), nullptr, Qt::WidgetShortcut);
 	new QShortcut(QKeySequence(Qt::Key_Enter), this, SLOT(play_selected_track()), nullptr, Qt::WidgetShortcut);
+	new QShortcut(QKeySequence(QKeySequence::WhatsThis), this, SLOT(show_info()), nullptr, Qt::WidgetShortcut);
 
 	this->goto_row(pl->current_track_index());
 }
@@ -134,18 +135,9 @@ void PlaylistView::init_context_menu()
 
 	m->context_menu = new PlaylistContextMenu(this);
 
-	connect(m->context_menu, &PlaylistContextMenu::sig_info_clicked, this, [=](){
-		show_info();
-	});
-
-	connect(m->context_menu, &PlaylistContextMenu::sig_edit_clicked, this, [=](){
-		show_edit();
-	});
-
-	connect(m->context_menu, &PlaylistContextMenu::sig_lyrics_clicked, this, [=](){
-		show_lyrics();
-	});
-
+	connect(m->context_menu, &LibraryContextMenu::sig_edit_clicked, this, [=](){ show_edit(); });
+	connect(m->context_menu, &LibraryContextMenu::sig_info_clicked, this, [=](){ show_info(); });
+	connect(m->context_menu, &LibraryContextMenu::sig_lyrics_clicked, this, [=](){ show_lyrics(); });
 	connect(m->context_menu, &PlaylistContextMenu::sig_delete_clicked, this, &PlaylistView::delete_selected_tracks);
 	connect(m->context_menu, &PlaylistContextMenu::sig_remove_clicked, this, &PlaylistView::remove_selected_rows);
 	connect(m->context_menu, &PlaylistContextMenu::sig_clear_clicked, this, &PlaylistView::clear);

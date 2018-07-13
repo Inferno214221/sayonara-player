@@ -101,7 +101,7 @@ ItemView::ItemView(QWidget* parent) :
 	new QShortcut(QKeySequence(Qt::AltModifier + Qt::Key_Enter), this, SLOT(play_next_clicked()), nullptr, Qt::WidgetShortcut);
 	new QShortcut(QKeySequence(Qt::ShiftModifier + Qt::Key_Return), this, SLOT(append_clicked()), nullptr, Qt::WidgetShortcut);
 	new QShortcut(QKeySequence(Qt::ShiftModifier + Qt::Key_Enter), this, SLOT(append_clicked()), nullptr, Qt::WidgetShortcut);
-	new QShortcut(QKeySequence(Qt::Key_Backspace), this, SLOT(clearSelection()), nullptr, Qt::WidgetShortcut);
+	new QShortcut(QKeySequence(Qt::Key_Backspace), this, SLOT(clearSelection()));
 }
 
 ItemView::~ItemView() {}
@@ -150,22 +150,10 @@ void ItemView::init_context_menu()
 	QAction* action_clear = m->context_menu->get_action(LibraryContextMenu::EntryClearSelection);
 	m->context_menu->insertAction(action_clear, m->merge_action);
 
-	connect(m->context_menu, &LibraryContextMenu::sig_edit_clicked, this, [=](){
-		show_edit();
-	});
-
-	connect(m->context_menu, &LibraryContextMenu::sig_info_clicked, this, [=](){
-		show_info();
-	});
-
-	connect(m->context_menu, &LibraryContextMenu::sig_lyrics_clicked, this, [=](){
-		show_lyrics();
-	});
-
-	connect(m->context_menu, &LibraryContextMenu::sig_clear_selection_clicked, this, [=](){
-		this->clear_selection();
-	});
-
+	connect(m->context_menu, &LibraryContextMenu::sig_edit_clicked, this, [=](){ show_edit(); });
+	connect(m->context_menu, &LibraryContextMenu::sig_info_clicked, this, [=](){ show_info(); });
+	connect(m->context_menu, &LibraryContextMenu::sig_lyrics_clicked, this, [=](){ show_lyrics(); });
+	connect(m->context_menu, &LibraryContextMenu::sig_clear_selection_clicked, this, [=](){ clear_selection(); });
 	connect(m->context_menu, &LibraryContextMenu::sig_delete_clicked, this, &ItemView::delete_clicked);
 	connect(m->context_menu, &LibraryContextMenu::sig_play_clicked, this, &ItemView::play_clicked);
 	connect(m->context_menu, &LibraryContextMenu::sig_play_next_clicked, this, &ItemView::play_next_clicked);
@@ -446,11 +434,11 @@ void ItemView::contextMenuEvent(QContextMenuEvent* event)
 		m->context_menu->show_action(LibraryContextMenu::EntryLyrics, false);
 	}
 
-	bool is_right_type =
+	bool is_mergeable =
 			(m->type == MD::Interpretation::Artists ||
 			 m->type == MD::Interpretation::Albums);
 
-	if(is_right_type)
+	if(is_mergeable)
 	{
 		size_t n_selections = selections.size();
 
@@ -461,20 +449,12 @@ void ItemView::contextMenuEvent(QContextMenuEvent* event)
 			ItemModel* model = item_model();
 			for(int i : selections)
 			{
-				int id = model->id_by_index(i);
-				if(id < 0){
-					n_selections--;
-					if(n_selections <= 1) {
-						break;
-					}
-
-					continue;
-				}
-
 				QString name = item_model()->searchable_string(i);
 				name.replace("&", "&&");
 
 				QAction* action = new QAction(name, m->merge_menu);
+
+				int id = model->id_by_index(i);
 				action->setData(id);
 				connect(action, &QAction::triggered, this, &ItemView::merge_action_triggered);
 

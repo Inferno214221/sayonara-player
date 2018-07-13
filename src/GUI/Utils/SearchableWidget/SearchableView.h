@@ -69,53 +69,28 @@ protected:
 		bool is_minisearcher_active() const;
 		void set_mini_searcher_padding(int padding);
 
-protected:
+	protected:
 		virtual void select_match(const QString& str, SearchDirection direction);
 		virtual QModelIndex match_index(const QString& str, SearchDirection direction) const;
 		void handle_key_press(QKeyEvent* e) override;
 };
 
-template<typename View>
+
+template<typename View, typename Model>
 class SearchableView :
 		public View,
 		public SearchableViewInterface
 {
-private:
-	virtual void do_not_inherit_from_this_class()=0;
-
-public:
-	SearchableView(QWidget* parent=nullptr) :
-		View(parent),
-		SearchableViewInterface(this) {}
-
-	virtual ~SearchableView() {}
-
-protected:
-	void keyPressEvent(QKeyEvent* e) override
-	{
-		if(!e->isAccepted())
-		{
-			handle_key_press(e);
-			if(e->isAccepted()){
-				return;
-			}
-		}
-
-		View::keyPressEvent(e);
-	}
-};
-
-template<typename T, typename Model>
-class SearchableViewWrapper : public SearchableView<T>
-{
 	private:
-		using SearchableView<T>::setModel;
-		using SearchableView<T>::set_search_model;
-
-		virtual void do_not_inherit_from_this_class() override {}
+		using View::setModel;
+		using SearchableViewInterface::set_search_model;
 
 	public:
-		using SearchableView<T>::SearchableView;
+		SearchableView(QWidget* parent=nullptr) :
+			View(parent),
+			SearchableViewInterface(this) {}
+
+		virtual ~SearchableView() {}
 
 		virtual void set_model(Model* model)
 		{
@@ -123,12 +98,23 @@ class SearchableViewWrapper : public SearchableView<T>
 			set_search_model(model);
 		}
 
-	private:
-		virtual bool implemented() const {return true;}
+	protected:
+		void keyPressEvent(QKeyEvent* e) override
+		{
+			if(!e->isAccepted())
+			{
+				handle_key_press(e);
+				if(e->isAccepted()){
+					return;
+				}
+			}
+
+			View::keyPressEvent(e);
+		}
 };
 
-using SearchableTableView=Gui::WidgetTemplate<SearchableViewWrapper<QTableView, SearchableTableModel>>;
-using SearchableListView=Gui::WidgetTemplate<SearchableViewWrapper<QListView, SearchableListModel>>;
+using SearchableTableView=Gui::WidgetTemplate<SearchableView<QTableView, SearchableTableModel>>;
+using SearchableListView=Gui::WidgetTemplate<SearchableView<QListView, SearchableListModel>>;
 
 
 #endif // SEARCHABLEVIEW_H

@@ -74,7 +74,7 @@ protected:
 
 	void select_all();
 
-	void clear_selection();
+	virtual void clear_selection();
 	int min_selected_item() const;
 
 	virtual void set_selection_type(SelectionViewInterface::SelectionType type);
