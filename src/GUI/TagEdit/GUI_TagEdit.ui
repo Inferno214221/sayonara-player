@@ -516,7 +516,7 @@
          </property>
         </widget>
        </item>
-       <item row="6" column="3">
+       <item row="7" column="3">
         <spacer name="verticalSpacer_2">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -540,13 +540,6 @@
         <widget class="QLabel" name="label_14">
          <property name="text">
           <string>Original</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="3">
-        <widget class="QLabel" name="lab_replacement">
-         <property name="text">
-          <string>Replacement</string>
          </property>
         </widget>
        </item>
@@ -609,6 +602,20 @@
           </size>
          </property>
         </spacer>
+       </item>
+       <item row="6" column="3">
+        <widget class="QPushButton" name="btn_replacement">
+         <property name="text">
+          <string notr="true">Search</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="3">
+        <widget class="QLabel" name="lab_replacement">
+         <property name="text">
+          <string notr="true">Replace</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>

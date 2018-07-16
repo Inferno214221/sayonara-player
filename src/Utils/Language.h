@@ -164,6 +164,7 @@ public:
 		Rename,
 		Repeat1,
 		RepeatAll,
+		Replace,
 		Reset,
 		Retry,
 		Sampler,

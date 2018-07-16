@@ -312,6 +312,8 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Repeat 1");
 		case RepeatAll:
 			return l.tr("Repeat all");
+		case Replace:
+			return l.tr("Replace");
 		case Reset:
 			return l.tr("Reset");
 		case Retry:

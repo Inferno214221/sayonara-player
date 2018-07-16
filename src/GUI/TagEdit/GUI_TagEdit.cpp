@@ -108,6 +108,8 @@ GUI_TagEdit::GUI_TagEdit(QWidget* parent) :
 	connect(m->tag_edit, &Editor::sig_metadata_received, this, &GUI_TagEdit::metadata_changed);
 	connect(m->tag_edit, &Editor::finished, this, &GUI_TagEdit::commit_finished);
 
+	connect(ui->btn_replacement, &QPushButton::clicked, ui->btn_cover_replacement, &QPushButton::click);
+
 	reset();
 	metadata_changed(m->tag_edit->metadata());
 
@@ -117,6 +119,13 @@ GUI_TagEdit::GUI_TagEdit(QWidget* parent) :
 
 GUI_TagEdit::~GUI_TagEdit() {}
 
+static void set_all_text(QCheckBox* label, int n)
+{
+	QString text = Lang::get(Lang::All);
+	text += QString(" (%1)").arg(n);
+
+	label->setText(text);
+}
 
 void GUI_TagEdit::language_changed()
 {
@@ -137,19 +146,22 @@ void GUI_TagEdit::language_changed()
 	ui->lab_track_num->setText(Lang::get(Lang::TrackNo).toFirstUpper());
 	ui->lab_comment->setText(tr("Comment"));
 
-	ui->cb_album_all->setText(Lang::get(Lang::All));
-	ui->cb_artist_all->setText(Lang::get(Lang::All));
-	ui->cb_album_artist_all->setText(Lang::get(Lang::All));
-	ui->cb_genre_all->setText(Lang::get(Lang::All));
-	ui->cb_year_all->setText(Lang::get(Lang::All));
-	ui->cb_discnumber_all->setText(Lang::get(Lang::All));
-	ui->cb_rating_all->setText(Lang::get(Lang::All));
-	ui->cb_cover_all->setText(Lang::get(Lang::All));
-	ui->cb_comment_all->setText(Lang::get(Lang::All));
+	set_all_text(ui->cb_album_all, m->tag_edit->count());
+	set_all_text(ui->cb_artist_all, m->tag_edit->count());
+	set_all_text(ui->cb_album_artist_all, m->tag_edit->count());
+	set_all_text(ui->cb_genre_all, m->tag_edit->count());
+	set_all_text(ui->cb_year_all, m->tag_edit->count());
+	set_all_text(ui->cb_discnumber_all, m->tag_edit->count());
+	set_all_text(ui->cb_rating_all, m->tag_edit->count());
+	set_all_text(ui->cb_cover_all, m->tag_edit->count());
+	set_all_text(ui->cb_comment_all, m->tag_edit->count());
 
 	ui->btn_undo->setText(Lang::get(Lang::Undo));
 	ui->btn_close->setText(Lang::get(Lang::Close));
 	ui->btn_save->setText(Lang::get(Lang::Save));
+
+	ui->btn_replacement->setText(Lang::get(Lang::SearchVerb));
+	ui->lab_replacement->setText(Lang::get(Lang::Replace));
 }
 
 
@@ -577,8 +589,9 @@ void GUI_TagEdit::show_close_button(bool show)
 
 void GUI_TagEdit::show_replacement_field(bool b)
 {
-	ui->btn_cover_replacement->setVisible(b);
 	ui->lab_replacement->setVisible(b);
+	ui->btn_cover_replacement->setVisible(b);
+	ui->btn_replacement->setVisible(b);
 	ui->cb_cover_all->setVisible(b);
 	ui->cb_cover_all->setChecked(false);
 }
