@@ -126,11 +126,6 @@ void AlbumView::index_clicked(const QModelIndex& idx)
 			show_discmenu();
 		}
 	}
-
-	else {
-		m->library->selected_albums_changed(IndexSet());
-		m->library->selected_albums_changed(IndexSet{idx.row()});
-	}
 }
 
 
@@ -162,8 +157,6 @@ void AlbumView::init_discmenu(QModelIndex idx)
 	int row = idx.row();
 	delete_discmenu();
 
-	const Album& album = m->library->albums().at(row);
-
 	if( !idx.isValid() ||
 		(row >= model()->rowCount()) ||
 		(row < 0) )
@@ -171,6 +164,7 @@ void AlbumView::init_discmenu(QModelIndex idx)
 		return;
 	}
 
+	const Album& album = m->library->albums().at(row);
 	if(album.discnumbers.size() < 2) {
 		return;
 	}
@@ -180,6 +174,14 @@ void AlbumView::init_discmenu(QModelIndex idx)
 	m->discmenu = new DiscPopupMenu(this, album.discnumbers);
 
 	connect(m->discmenu, &DiscPopupMenu::sig_disc_pressed, this, &AlbumView::sig_disc_pressed);
+}
+
+void AlbumView::init_context_menu()
+{
+	ItemView::init_context_menu();
+
+	connect(context_menu(), &LibraryContextMenu::sig_show_all_tracks_of_album_clicked,
+			this, &AlbumView::sig_show_all_tracks);
 }
 
 
@@ -233,6 +235,11 @@ void AlbumView::append_clicked()
 
 void AlbumView::selection_changed(const IndexSet& indexes)
 {
+	if(context_menu())
+	{
+		context_menu()->show_action(LibraryContextMenu::EntryShowAllTracksOfAlbum, true);
+	}
+
 	TableView::selection_changed(indexes);
 	m->library->selected_albums_changed(indexes);
 }

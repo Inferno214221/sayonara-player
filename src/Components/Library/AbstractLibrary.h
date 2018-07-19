@@ -102,7 +102,7 @@ public slots:
 
 	/* selection changed */
 	virtual void selected_artists_changed(const IndexSet& indexes);
-	virtual void selected_albums_changed(const IndexSet& indexes);
+	virtual void selected_albums_changed(const IndexSet& indexes, bool ignore_artists=false);
 	virtual void selected_tracks_changed(const IndexSet& indexes);
 
 	// Those two functions are identical (1) calls (2)
@@ -196,7 +196,7 @@ private:
 
 	void change_track_selection(const IndexSet& indexes);
 	void change_artist_selection(const IndexSet& indexes);
-	void change_album_selection(const IndexSet& indexes);
+	void change_album_selection(const IndexSet& indexes, bool ignore_artists=false);
 };
 
 #endif // ABSTRACTLIBRARY_H

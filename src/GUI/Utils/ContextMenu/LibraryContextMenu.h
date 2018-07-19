@@ -59,7 +59,8 @@ public:
 		EntryCoverView=(1<<11),
 		EntryPlay=(1<<12),
 		EntryPlayNewTab=(1<<13),
-		EntryLast=(1<<14)
+		EntryShowAllTracksOfAlbum=(1<<14),
+		EntryLast=(1<<15)
 	};
 
 	using Entries=uint16_t;
@@ -119,6 +120,7 @@ signals:
 	void sig_clear_clicked();
 	void sig_rating_changed(Rating rating);
 	void sig_clear_selection_clicked();
+	void sig_show_all_tracks_of_album_clicked();
 
 
 private slots:

@@ -263,7 +263,8 @@ void AbstractLibrary::append_current_tracks()
 void AbstractLibrary::change_artist_selection(const IndexSet& indexes)
 {
 	SP::Set<ArtistId> selected_artists;
-	for(auto it=indexes.begin(); it!=indexes.end(); it++){
+	for(auto it=indexes.begin(); it!=indexes.end(); it++)
+	{
 		int idx = *it;
 		const Artist& artist = _artists[idx];
 		selected_artists.insert(artist.id);
@@ -294,6 +295,10 @@ void AbstractLibrary::change_artist_selection(const IndexSet& indexes)
 		get_all_tracks(_tracks);
 		get_all_albums(_albums);
 	}
+
+	_tracks.sort(m->sortorder.so_tracks);
+	_albums.sort(m->sortorder.so_albums);
+	_artists.sort(m->sortorder.so_artists);
 }
 
 const MetaDataList& AbstractLibrary::tracks() const
@@ -372,7 +377,7 @@ void AbstractLibrary::selected_artists_changed(const IndexSet& indexes)
 }
 
 
-void AbstractLibrary::change_album_selection(const IndexSet& indexes)
+void AbstractLibrary::change_album_selection(const IndexSet& indexes, bool ignore_artists)
 {
 	SP::Set<AlbumId> selected_albums;
 	bool show_album_artists = _settings->get<Set::Lib_ShowAlbumArtists>();
@@ -388,15 +393,15 @@ void AbstractLibrary::change_album_selection(const IndexSet& indexes)
 		selected_albums.insert(album.id);
 	}
 
-	if(selected_albums == m->selected_albums) {
+	/*if(selected_albums == m->selected_albums) {
 		return;
-	}
+	}*/
 
 	_tracks.clear();
 	m->selected_albums = selected_albums;
 
 	// only show tracks of selected album / artist
-	if(m->selected_artists.size() > 0)
+	if(m->selected_artists.size() > 0 && !ignore_artists)
 	{
 		if(m->selected_albums.size() > 0)
 		{
@@ -444,9 +449,9 @@ void AbstractLibrary::change_album_selection(const IndexSet& indexes)
 }
 
 
-void AbstractLibrary::selected_albums_changed(const IndexSet& indexes)
+void AbstractLibrary::selected_albums_changed(const IndexSet& indexes, bool ignore_artists)
 {
-	change_album_selection(indexes);
+	change_album_selection(indexes, ignore_artists);
 	emit sig_all_tracks_loaded();
 }
 

@@ -121,7 +121,7 @@ namespace Library
 		virtual void keyPressEvent(QKeyEvent* event) override;
 		virtual void resizeEvent(QResizeEvent *event) override;
 
-		virtual void selectionChanged (const QItemSelection& selected, const QItemSelection& deselected ) override;
+		virtual void selected_items_changed (const QItemSelection& selected, const QItemSelection& deselected );
 		virtual void init_context_menu();
 		LibraryContextMenu* context_menu() const;
 

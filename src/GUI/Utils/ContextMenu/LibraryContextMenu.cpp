@@ -49,6 +49,7 @@ struct LibraryContextMenu::Private
 	QAction*	rating_action=nullptr;
 	QAction*	cover_view_action=nullptr;
 	QAction*	clear_selection_action=nullptr;
+	QAction*	show_all_tracks_of_album_action=nullptr;
 	QMenu*		rating_menu=nullptr;
 
 	QAction*	preference_separator=nullptr;
@@ -79,6 +80,8 @@ LibraryContextMenu::LibraryContextMenu(QWidget* parent) :
 	m->clear_selection_action = new QAction(this);
 	m->cover_view_action = new QAction(this);
 	m->cover_view_action->setCheckable(true);
+	m->show_all_tracks_of_album_action = new QAction(this);
+
 	Set::listen<Set::Lib_ShowAlbumCovers>(this, &LibraryContextMenu::show_cover_view_changed);
 
 	m->rating_menu = new QMenu(this);
@@ -105,6 +108,7 @@ LibraryContextMenu::LibraryContextMenu(QWidget* parent) :
 	connect(m->clear_action, &QAction::triggered, this, &LibraryContextMenu::sig_clear_clicked);
 	connect(m->clear_selection_action, &QAction::triggered, this, &LibraryContextMenu::sig_clear_selection_clicked);
 	connect(m->cover_view_action, &QAction::triggered, this, &LibraryContextMenu::show_cover_triggered);
+	connect(m->show_all_tracks_of_album_action, &QAction::triggered, this, &LibraryContextMenu::sig_show_all_tracks_of_album_clicked);
 
 	QList<QAction*> actions;
 	actions << m->play_action
@@ -116,6 +120,7 @@ LibraryContextMenu::LibraryContextMenu(QWidget* parent) :
 			<< m->info_action
 			<< m->lyrics_action
 			<< m->edit_action
+			<< m->show_all_tracks_of_album_action
 			<< m->rating_action
 			<< addSeparator()
 
@@ -144,6 +149,7 @@ LibraryContextMenu::LibraryContextMenu(QWidget* parent) :
 	m->entry_action_map[EntryRating] = m->rating_action;
 	m->entry_action_map[EntryClearSelection] = m->clear_selection_action;
 	m->entry_action_map[EntryCoverView] = m->cover_view_action;
+	m->entry_action_map[EntryShowAllTracksOfAlbum] = m->show_all_tracks_of_album_action;
 
 	for(QAction* action : ::Util::AsConst(actions))
 	{
@@ -171,6 +177,7 @@ void LibraryContextMenu::language_changed()
 	m->rating_action->setText(Lang::get(Lang::Rating));
 	m->clear_selection_action->setText(tr("Clear selection"));
 	m->cover_view_action->setText(tr("Cover view"));
+	m->show_all_tracks_of_album_action->setText("Show all tracks of album");
 
 	m->remove_action->setShortcut(QKeySequence(QKeySequence::Delete));
 	m->play_action->setShortcut(QKeySequence(Qt::Key_Enter));
@@ -178,15 +185,6 @@ void LibraryContextMenu::language_changed()
 	m->play_next_action->setShortcut(QKeySequence(Qt::AltModifier + Qt::Key_Enter));
 	m->append_action->setShortcut(QKeySequence(Qt::ShiftModifier + Qt::Key_Enter));
 	m->info_action->setShortcut(QKeySequence(QKeySequence::WhatsThis));
-
-/*	if(m->clear_action->isVisible()){
-		m->clear_action->setShortcut(QKeySequence(Qt::Key_Backspace));
-	}
-
-	else if(m->clear_selection_action->isVisible()){
-		m->clear_selection_action->setShortcut(QKeySequence(Qt::Key_Backspace));
-	}
-	*/
 }
 
 

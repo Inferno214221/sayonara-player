@@ -52,6 +52,7 @@
 #include <QScrollBar>
 #include <QBoxLayout>
 #include <QHeaderView>
+#include <QItemSelectionModel>
 
 using namespace Library;
 
@@ -118,17 +119,19 @@ void ItemView::set_item_model(ItemModel* model)
 	m->model = model;
 
 	SearchableTableView::set_model(model);
+
+	QItemSelectionModel* sm = this->selectionModel();
+	connect(sm, &QItemSelectionModel::selectionChanged, this, &ItemView::selected_items_changed);
 }
 
-void ItemView::selectionChanged(const QItemSelection& selected, const QItemSelection& deselected )
+void ItemView::selected_items_changed(const QItemSelection& selected, const QItemSelection& deselected )
 {
+	Q_UNUSED(deselected)
 	show_clear_button(!selected.empty());
 
 	if(m->cur_filling) {
 		return;
 	}
-
-	SearchableTableView::selectionChanged(selected, deselected);
 
 	if(m->context_menu){
 		m->context_menu->show_action(LibraryContextMenu::EntryClearSelection, !selected.isEmpty());
@@ -136,7 +139,6 @@ void ItemView::selectionChanged(const QItemSelection& selected, const QItemSelec
 
 	selection_changed(selected_items());
 }
-
 
 // Right click stuff
 void ItemView::init_context_menu()
@@ -342,7 +344,10 @@ void ItemView::fill()
 		resize_rows_to_contents(old_size, new_size - old_size);
 	}
 }
-void ItemView::selection_changed(const IndexSet& indexes) {	emit sig_sel_changed(indexes); }
+void ItemView::selection_changed(const IndexSet& indexes)
+{
+	emit sig_sel_changed(indexes);
+}
 
 void ItemView::import_requested(const QStringList& files)
 {
