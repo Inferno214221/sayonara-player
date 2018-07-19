@@ -126,7 +126,6 @@ public:
 	 */
 	MetaData current_track() const;
 
-
 	/**
 	 * @brief get number of Bookmarks
 	 * @return

@@ -87,7 +87,7 @@ Bookmarks::~Bookmarks() {}
 void Bookmarks::sort_bookmarks()
 {
 	auto lambda = [](const Bookmark& bm1, const Bookmark& bm2){
-		return bm1.timestamp() < bm2.timestamp();
+		return (bm1.timestamp() < bm2.timestamp());
 	};
 
 	std::sort(m->bookmarks.begin(), m->bookmarks.end(), lambda);
@@ -232,11 +232,13 @@ void Bookmarks::pos_changed_ms(MilliSeconds pos_ms)
 	{
 		Seconds time = bookmark.timestamp();
 
-		if(time + 2 < m->cur_time){
+		if(time + 2 < m->cur_time)
+		{
 			m->prev_idx = i;
 		}
 
-		else if(time > m->cur_time){
+		else if(time > m->cur_time)
+		{
 			if(m->next_idx == -1){
 				m->next_idx = i;
 				break;
@@ -274,8 +276,9 @@ void Bookmarks::track_changed(const MetaData& md)
 		QString entry;
 		m->bookmarks.clear();
 
-		do{
-			QString custom_field_name = QString("Chapter") + QString::number(chapter_idx);
+		do
+		{
+			QString custom_field_name = QString("Chapter%1").arg(chapter_idx);
 
 			entry = m->md.get_custom_field(custom_field_name);
 

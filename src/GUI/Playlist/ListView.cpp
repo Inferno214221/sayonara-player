@@ -354,8 +354,9 @@ void PlaylistView::contextMenuEvent(QContextMenuEvent* e)
 	if(m->model->has_local_media(selections) )
 	{
 		entry_mask |= LibraryContextMenu::EntryEdit;
-		entry_mask |= LibraryContextMenu::EntryRating;
+		entry_mask |= PlaylistContextMenu::EntryRating;
 		entry_mask |= LibraryContextMenu::EntryDelete;
+
 
 		if(selections.size() == 1)
 		{
@@ -364,9 +365,10 @@ void PlaylistView::contextMenuEvent(QContextMenuEvent* e)
 		}
 	}
 
-	m->context_menu->set_bookmarks_visible(
-		(idx.row() == m->model->current_track()) &&
-		(idx.row() >= 0));
+	if(idx.row() == m->model->current_track() && idx.row() >= 0)
+	{
+		entry_mask |= PlaylistContextMenu::EntryBookmarks;
+	}
 
 	m->context_menu->show_actions(entry_mask);
 	m->context_menu->exec(pos);

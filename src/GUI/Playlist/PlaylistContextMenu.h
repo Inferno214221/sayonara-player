@@ -9,12 +9,35 @@ class PlaylistContextMenu :
 	Q_OBJECT
 	PIMPL(PlaylistContextMenu)
 
+signals:
+	void sig_rating_changed(Rating rating);
+
 public:
+	enum Entry
+	{
+		EntryRating=(LibraryContextMenu::EntryLast << 1),
+		EntryBookmarks=(EntryRating << 1)
+	};
+
+	using Entries=LibraryContextMenu::Entries;
+
 	explicit PlaylistContextMenu(QWidget* parent);
 	~PlaylistContextMenu();
 
-	void set_bookmarks_visible(bool b);
-	bool is_bookmarks_visible() const;
+	PlaylistContextMenu::Entries get_entries() const override;
+	void show_actions(PlaylistContextMenu::Entries entries) override;
+
+
+	/**
+	 * @brief set rating for the rating entry
+	 * @param rating from 0 to 5
+	 */
+	void set_rating(Rating rating);
+
+private:
+	QAction* init_rating_action(Rating rating, QObject* parent);
+	void language_changed() override;
+	void skin_changed() override;
 };
 
 

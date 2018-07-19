@@ -54,13 +54,11 @@ public:
 		EntryAppend=(1<<6),
 		EntryRefresh=(1<<7),
 		EntryClear=(1<<8),
-		EntryRating=(1<<9),
-		EntryClearSelection=(1<<10),
-		EntryCoverView=(1<<11),
-		EntryPlay=(1<<12),
-		EntryPlayNewTab=(1<<13),
-		EntryShowAllTracksOfAlbum=(1<<14),
-		EntryLast=(1<<15)
+		EntryClearSelection=(1<<9),
+		EntryCoverView=(1<<10),
+		EntryPlay=(1<<11),
+		EntryPlayNewTab=(1<<12),
+		EntryLast=(1<<13)
 	};
 
 	using Entries=uint16_t;
@@ -94,12 +92,6 @@ public:
 	 */
 	virtual void show_all();
 
-	/**
-	 * @brief set rating for the rating entry
-	 * @param rating from 0 to 5
-	 */
-	void set_rating(Rating rating);
-
 	QAction* get_action(LibraryContextMenu::Entry entry) const;
 
 	QAction* add_preference_action(PreferenceAction* action);
@@ -118,9 +110,7 @@ signals:
 	void sig_append_clicked();
 	void sig_refresh_clicked();
 	void sig_clear_clicked();
-	void sig_rating_changed(Rating rating);
 	void sig_clear_selection_clicked();
-	void sig_show_all_tracks_of_album_clicked();
 
 
 private slots:
@@ -129,8 +119,6 @@ private slots:
 
 
 protected:
-	QAction* init_rating_action(Rating rating, QObject* parent);
-
 	void skin_changed() override;
 	void language_changed() override;
 };

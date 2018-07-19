@@ -22,7 +22,6 @@
 
 #include "GUI/Utils/Icons.h"
 #include "GUI/Utils/GuiUtils.h"
-#include "GUI/Utils/RatingLabel.h"
 #include "GUI/Utils/PreferenceAction.h"
 
 #include "Utils/Utils.h"
@@ -46,12 +45,8 @@ struct LibraryContextMenu::Private
 	QAction*	append_action=nullptr;
 	QAction*	refresh_action=nullptr;
 	QAction*	clear_action=nullptr;
-	QAction*	rating_action=nullptr;
 	QAction*	cover_view_action=nullptr;
 	QAction*	clear_selection_action=nullptr;
-	QAction*	show_all_tracks_of_album_action=nullptr;
-	QMenu*		rating_menu=nullptr;
-
 	QAction*	preference_separator=nullptr;
 
 	bool has_preference_actions;
@@ -80,20 +75,8 @@ LibraryContextMenu::LibraryContextMenu(QWidget* parent) :
 	m->clear_selection_action = new QAction(this);
 	m->cover_view_action = new QAction(this);
 	m->cover_view_action->setCheckable(true);
-	m->show_all_tracks_of_album_action = new QAction(this);
 
 	Set::listen<Set::Lib_ShowAlbumCovers>(this, &LibraryContextMenu::show_cover_view_changed);
-
-	m->rating_menu = new QMenu(this);
-
-	QList<QAction*> rating_actions;
-	for(Rating i=0; i<=5; i++)
-	{
-		rating_actions << init_rating_action(i, m->rating_menu);
-	}
-
-	m->rating_menu->addActions(rating_actions);
-	m->rating_action = this->addMenu(m->rating_menu);
 
 	connect(m->info_action, &QAction::triggered, this, &LibraryContextMenu::sig_info_clicked);
 	connect(m->lyrics_action, &QAction::triggered, this, &LibraryContextMenu::sig_lyrics_clicked);
@@ -108,7 +91,6 @@ LibraryContextMenu::LibraryContextMenu(QWidget* parent) :
 	connect(m->clear_action, &QAction::triggered, this, &LibraryContextMenu::sig_clear_clicked);
 	connect(m->clear_selection_action, &QAction::triggered, this, &LibraryContextMenu::sig_clear_selection_clicked);
 	connect(m->cover_view_action, &QAction::triggered, this, &LibraryContextMenu::show_cover_triggered);
-	connect(m->show_all_tracks_of_album_action, &QAction::triggered, this, &LibraryContextMenu::sig_show_all_tracks_of_album_clicked);
 
 	QList<QAction*> actions;
 	actions << m->play_action
@@ -120,8 +102,6 @@ LibraryContextMenu::LibraryContextMenu(QWidget* parent) :
 			<< m->info_action
 			<< m->lyrics_action
 			<< m->edit_action
-			<< m->show_all_tracks_of_album_action
-			<< m->rating_action
 			<< addSeparator()
 
 			<< m->refresh_action
@@ -146,10 +126,8 @@ LibraryContextMenu::LibraryContextMenu(QWidget* parent) :
 	m->entry_action_map[EntryAppend] = m->append_action;
 	m->entry_action_map[EntryRefresh] = m->refresh_action;
 	m->entry_action_map[EntryClear] = m->clear_action;
-	m->entry_action_map[EntryRating] = m->rating_action;
 	m->entry_action_map[EntryClearSelection] = m->clear_selection_action;
 	m->entry_action_map[EntryCoverView] = m->cover_view_action;
-	m->entry_action_map[EntryShowAllTracksOfAlbum] = m->show_all_tracks_of_album_action;
 
 	for(QAction* action : ::Util::AsConst(actions))
 	{
@@ -174,11 +152,8 @@ void LibraryContextMenu::language_changed()
 	m->append_action->setText(Lang::get(Lang::Append));
 	m->refresh_action->setText(Lang::get(Lang::Refresh));
 	m->clear_action->setText(Lang::get(Lang::Clear));
-	m->rating_action->setText(Lang::get(Lang::Rating));
 	m->clear_selection_action->setText(tr("Clear selection"));
 	m->cover_view_action->setText(tr("Cover view"));
-	m->show_all_tracks_of_album_action->setText("Show all tracks of album");
-
 	m->remove_action->setShortcut(QKeySequence(QKeySequence::Delete));
 	m->play_action->setShortcut(QKeySequence(Qt::Key_Enter));
 	m->play_new_tab_action->setShortcut(QKeySequence(Qt::ControlModifier + Qt::Key_Enter));
@@ -202,7 +177,6 @@ void LibraryContextMenu::skin_changed()
 	m->append_action->setIcon(Icons::icon(Icons::Append));
 	m->refresh_action->setIcon(Icons::icon(Icons::Undo));
 	m->clear_action->setIcon(Icons::icon(Icons::Clear));
-	m->rating_action->setIcon(Icons::icon(Icons::Star));
 	m->clear_selection_action->setIcon(Icons::icon(Icons::Clear));
 }
 
@@ -251,39 +225,6 @@ void LibraryContextMenu::show_all()
 	for(QAction* action : actions)
 	{
 		action->setVisible(true);
-	}
-}
-
-
-QAction* LibraryContextMenu::init_rating_action(Rating rating, QObject* parent)
-{
-	QAction* action = new QAction(QString::number(rating), parent);
-	action->setData(rating);
-	action->setCheckable(true);
-
-	connect(action, &QAction::triggered, this, [=]()
-	{
-		emit sig_rating_changed(rating);
-	});
-
-	return action;
-}
-
-void LibraryContextMenu::set_rating(Rating rating)
-{
-	QList<QAction*> actions = m->rating_menu->actions();
-	for(QAction* action : actions){
-		int data = action->data().toInt();
-		action->setChecked(data == rating);
-	}
-
-	QString rating_text = Lang::get(Lang::Rating);
-	if(rating > 0){
-		m->rating_action->setText(rating_text + " (" + QString::number(rating) + ")");
-	}
-
-	else{
-		m->rating_action->setText(rating_text);
 	}
 }
 

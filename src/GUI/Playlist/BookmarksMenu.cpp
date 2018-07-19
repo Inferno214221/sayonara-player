@@ -55,7 +55,7 @@ void BookmarksMenu::bookmarks_changed()
 {
 	this->clear();
 
-	QList<Bookmark> bookmarks = m->bookmarks->bookmarks();
+	const QList<Bookmark> bookmarks = m->bookmarks->bookmarks();
 	for(const Bookmark& bookmark : bookmarks)
 	{
 		QString name = bookmark.name();

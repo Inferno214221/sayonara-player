@@ -232,11 +232,6 @@ void AlbumView::append_clicked()
 
 void AlbumView::selection_changed(const IndexSet& indexes)
 {
-	if(context_menu())
-	{
-		context_menu()->show_action(LibraryContextMenu::EntryShowAllTracksOfAlbum, true);
-	}
-
 	TableView::selection_changed(indexes);
 	m->library->selected_albums_changed(indexes);
 }
