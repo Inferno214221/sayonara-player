@@ -124,6 +124,21 @@ void ItemView::set_item_model(ItemModel* model)
 	connect(sm, &QItemSelectionModel::selectionChanged, this, &ItemView::selected_items_changed);
 }
 
+LibraryContextMenu::Entries ItemView::context_menu_entries() const
+{
+	LibraryContextMenu::Entries entries = (
+			LibraryContextMenu::EntryPlay |
+			LibraryContextMenu::EntryPlayNewTab |
+			LibraryContextMenu::EntryInfo |
+			LibraryContextMenu::EntryEdit |
+			LibraryContextMenu::EntryDelete |
+			LibraryContextMenu::EntryPlayNext |
+			LibraryContextMenu::EntryAppend |
+			LibraryContextMenu::EntryCoverView);
+
+	return entries;
+}
+
 void ItemView::selected_items_changed(const QItemSelection& selected, const QItemSelection& deselected )
 {
 	Q_UNUSED(deselected)
@@ -143,6 +158,10 @@ void ItemView::selected_items_changed(const QItemSelection& selected, const QIte
 // Right click stuff
 void ItemView::init_context_menu()
 {
+	if(m->context_menu){
+		return;
+	}
+
 	m->context_menu = new LibraryContextMenu(this);
 
 	m->merge_menu = new QMenu(tr("Merge"), m->context_menu);
@@ -163,6 +182,7 @@ void ItemView::init_context_menu()
 	connect(m->context_menu, &LibraryContextMenu::sig_append_clicked, this, &ItemView::append_clicked);
 	connect(m->context_menu, &LibraryContextMenu::sig_refresh_clicked, this, &ItemView::refresh_clicked);
 
+	this->show_context_menu_actions(context_menu_entries());
 	m->context_menu->add_preference_action(new LibraryPreferenceAction(m->context_menu));
 }
 
@@ -178,10 +198,6 @@ void ItemView::show_context_menu(const QPoint& p)
 
 void ItemView::show_context_menu_actions(LibraryContextMenu::Entries entries)
 {
-	if(!m->context_menu) {
-		init_context_menu();
-	}
-
 	m->context_menu->show_actions(entries);
 	m->context_menu->show_action(LibraryContextMenu::EntryClearSelection, !selected_items().isEmpty());
 }
@@ -344,10 +360,13 @@ void ItemView::fill()
 		resize_rows_to_contents(old_size, new_size - old_size);
 	}
 }
+
+
 void ItemView::selection_changed(const IndexSet& indexes)
 {
 	emit sig_sel_changed(indexes);
 }
+
 
 void ItemView::import_requested(const QStringList& files)
 {
@@ -356,6 +375,7 @@ void ItemView::import_requested(const QStringList& files)
 		lib->import_files(files);
 	}
 }
+
 
 void ItemView::resize_rows_to_contents()
 {
@@ -368,6 +388,7 @@ void ItemView::resize_rows_to_contents()
 		header->resizeSections(QHeaderView::ResizeToContents);
 	}
 }
+
 
 void ItemView::resize_rows_to_contents(int first_row, int count)
 {
@@ -385,7 +406,6 @@ void ItemView::resize_rows_to_contents(int first_row, int count)
 }
 
 
-// mouse events
 void ItemView::mousePressEvent(QMouseEvent* event)
 {
 	if(is_empty())
@@ -418,9 +438,8 @@ void ItemView::mouseMoveEvent(QMouseEvent* event)
 		});
 	}
 }
-// mouse events end
 
-// keyboard events
+
 void ItemView::contextMenuEvent(QContextMenuEvent* event)
 {
 	if(!m->context_menu)
@@ -512,6 +531,7 @@ void ItemView::dropEvent(QDropEvent *event)
 	import_requested(filelist);
 }
 
+
 void ItemView::changeEvent(QEvent* event)
 {
 	SearchableTableView::changeEvent(event);
@@ -522,11 +542,13 @@ void ItemView::changeEvent(QEvent* event)
 	}
 }
 
+
 void ItemView::keyPressEvent(QKeyEvent* event)
 {
 	event->setAccepted(false);
 	SearchableTableView::keyPressEvent(event);
 }
+
 
 void ItemView::resizeEvent(QResizeEvent *event)
 {

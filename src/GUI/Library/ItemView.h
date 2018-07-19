@@ -85,6 +85,8 @@ namespace Library
 		ItemView(const ItemView& other)=delete;
 		ItemView& operator =(const ItemView& other)=delete;
 
+		void show_context_menu_actions(LibraryContextMenu::Entries entries);
+
 		using SearchableTableView::set_model;
 
 	public:
@@ -93,7 +95,8 @@ namespace Library
 
 		void set_item_model(ItemModel* model);
 
-		void show_context_menu_actions(LibraryContextMenu::Entries entries);
+		virtual LibraryContextMenu::Entries context_menu_entries() const;
+
 
 		/** Dragable **/
 		QMimeData* dragable_mimedata() const override;

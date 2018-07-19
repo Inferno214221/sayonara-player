@@ -52,6 +52,8 @@ namespace Library
 		BoolList visible_columns() const override;
 		void save_visible_columns(const BoolList& lst) override;
 
+		LibraryContextMenu::Entries context_menu_entries() const override;
+
 		// from Library::ItemView
 		void play_clicked() override;
 		void play_new_tab_clicked() override;

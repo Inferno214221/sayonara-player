@@ -92,21 +92,6 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 
 	CoverView* cover_view = ui->cover_view->cover_view();
 
-	int entries = (
-			LibraryContextMenu::EntryPlay |
-			LibraryContextMenu::EntryPlayNewTab |
-			LibraryContextMenu::EntryInfo |
-			LibraryContextMenu::EntryEdit |
-			LibraryContextMenu::EntryDelete |
-			LibraryContextMenu::EntryPlayNext |
-			LibraryContextMenu::EntryAppend |
-			LibraryContextMenu::EntryCoverView);
-
-	lv_artist()->show_context_menu_actions(entries);
-	lv_album()->show_context_menu_actions(entries);
-	lv_tracks()->show_context_menu_actions(entries | LibraryContextMenu::EntryLyrics);
-	cover_view->show_context_menu_actions(entries);
-
 	connect(m->library, &LocalLibrary::sig_reloading_library, this, &GUI_LocalLibrary::progress_changed);
 	connect(m->library, &LocalLibrary::sig_reloading_library_finished, this, &GUI_LocalLibrary::reload_finished);
 	connect(m->library, &LocalLibrary::sig_reloading_library_finished, ui->lv_genres, &GenreView::reload_genres);

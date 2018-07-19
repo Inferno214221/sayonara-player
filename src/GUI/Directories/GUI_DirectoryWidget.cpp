@@ -99,15 +99,6 @@ GUI_DirectoryWidget::GUI_DirectoryWidget(QWidget *parent) :
 
 	ui->tb_title->init(m->generic_library);
 
-	int entries = (LibraryContextMenu::EntryPlayNewTab |
-			LibraryContextMenu::EntryInfo |
-			LibraryContextMenu::EntryEdit |
-			LibraryContextMenu::EntryDelete |
-			LibraryContextMenu::EntryPlayNext |
-			LibraryContextMenu::EntryAppend);
-
-	ui->tb_title->show_context_menu_actions(entries | LibraryContextMenu::EntryLyrics);
-
 	connect(ui->btn_search, &QPushButton::clicked, this, &GUI_DirectoryWidget::search_button_clicked);
 	connect(ui->le_search, &QLineEdit::returnPressed, this, &GUI_DirectoryWidget::search_button_clicked);
 	connect(ui->le_search, &QLineEdit::textChanged, this, &GUI_DirectoryWidget::search_text_edited);

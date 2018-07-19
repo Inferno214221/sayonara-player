@@ -49,17 +49,6 @@ GUI_Library::GUI_Library(Library* library, QWidget *parent) :
 	QAction* action_add_artist = m->library_menu->addAction(tr("Add artist"));
 	connect(action_add_artist, &QAction::triggered, this, &GUI_Library::btn_add_clicked);
 
-	LibraryContextMenu::Entries entry_mask =
-			(LibraryContextMenu::EntryPlayNext |
-			 LibraryContextMenu::EntryInfo |
-			 LibraryContextMenu::EntryDelete |
-			 LibraryContextMenu::EntryAppend |
-			 LibraryContextMenu::EntryRefresh);
-
-	ui->tb_title->show_context_menu_actions(entry_mask);
-	ui->lv_album->show_context_menu_actions(entry_mask);
-	ui->lv_artist->show_context_menu_actions(entry_mask);
-
 	library->load();
 }
 

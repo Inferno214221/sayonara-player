@@ -253,9 +253,11 @@ void CoverView::init_context_menu()
 	// insert everything before the preferences
 	QAction* sep_before_prefs = menu->before_preference_action();
 	menu->insertSeparator(sep_before_prefs);
-	m->action_show_utils = new QAction("Show utils");
+
+	m->action_show_utils = new QAction(menu);
 	m->action_show_utils->setCheckable(true);
 	m->action_show_utils->setChecked(_settings->get<Set::Lib_CoverShowUtils>());
+
 	connect(m->action_show_utils, &QAction::triggered, this, &CoverView::show_utils_triggered);
 	menu->insertAction(sep_before_prefs, m->action_show_utils);
 
@@ -312,6 +314,7 @@ void CoverView::language_changed()
 		init_sorting_actions();
 		m->action_zoom->setText(Lang::get(Lang::Zoom));
 		m->action_show_utils->setText(tr("Show toolbar"));
+		m->action_show_utils->setText(tr("Show utils"));
 	}
 }
 

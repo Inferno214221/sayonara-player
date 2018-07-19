@@ -179,9 +179,6 @@ void AlbumView::init_discmenu(QModelIndex idx)
 void AlbumView::init_context_menu()
 {
 	ItemView::init_context_menu();
-
-	connect(context_menu(), &LibraryContextMenu::sig_show_all_tracks_of_album_clicked,
-			this, &AlbumView::sig_show_all_tracks);
 }
 
 

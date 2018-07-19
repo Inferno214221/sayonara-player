@@ -95,6 +95,11 @@ void TrackView::save_visible_columns(const BoolList& lst)
 	_settings->set<Set::Lib_ColsTitle>(lst);
 }
 
+LibraryContextMenu::Entries TrackView::context_menu_entries() const
+{
+	return (ItemView::context_menu_entries() | LibraryContextMenu::EntryLyrics);
+}
+
 SortOrder TrackView::sortorder() const
 {
 	Sortings so = _settings->get<Set::Lib_Sorting>();
