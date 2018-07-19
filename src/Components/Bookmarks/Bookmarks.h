@@ -61,7 +61,7 @@ signals:
 
 public:
 
-	explicit Bookmarks(QObject *parent=nullptr);
+	explicit Bookmarks(bool listen_to_current_track, QObject *parent);
 	~Bookmarks();
 
 	/**
@@ -131,6 +131,8 @@ public:
 	 * @return
 	 */
 	int size() const;
+
+	void set_metadata(const MetaData& md);
 
 
 private slots:

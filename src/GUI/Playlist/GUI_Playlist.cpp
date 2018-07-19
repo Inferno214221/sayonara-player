@@ -122,6 +122,13 @@ void GUI_Playlist::clear_button_pressed(int pl_idx)
 	Handler::instance()->clear_playlist(pl_idx);
 }
 
+void GUI_Playlist::bookmark_selected(int idx, Seconds timestamp)
+{
+	Playlist::Handler* plh = Playlist::Handler::instance();
+	plh->change_track(idx, plh->current_index());
+	PlayManager::instance()->seek_abs_ms(timestamp * 1000);
+}
+
 void GUI_Playlist::add_playlist_button_pressed()
 {
 	Handler::instance()->create_empty_playlist();
@@ -350,6 +357,7 @@ void GUI_Playlist::playlist_added(PlaylistPtr pl)
 
 	connect(plv, &PlaylistView::sig_double_clicked, this, &GUI_Playlist::double_clicked);
 	connect(plv, &PlaylistView::sig_delete_tracks, this, &GUI_Playlist::delete_tracks_clicked);
+	connect(plv, &PlaylistView::sig_bookmark_pressed, this, &GUI_Playlist::bookmark_selected);
 	connect(pl.get(), &Playlist::Base::sig_items_changed, this, &GUI_Playlist::playlist_changed);
 
 	Handler::instance()->set_current_index(idx);

@@ -4,8 +4,8 @@
 #include "GUI/Utils/Icons.h"
 
 #include "Utils/Language.h"
+#include "Utils/MetaData/MetaData.h"
 
-#include "Components/PlayManager/PlayManager.h"
 
 struct PlaylistContextMenu::Private
 {
@@ -37,9 +37,7 @@ PlaylistContextMenu::PlaylistContextMenu(QWidget *parent) :
 	m->rating_menu->addActions(rating_actions);
 	m->rating_action = this->addMenu(m->rating_menu);
 
-	connect(m->bookmarks_menu, &BookmarksMenu::sig_bookmark_pressed, [](Seconds timestamp){
-		PlayManager::instance()->seek_abs_ms(timestamp * 1000);
-	});
+	connect(m->bookmarks_menu, &BookmarksMenu::sig_bookmark_pressed, this, &PlaylistContextMenu::bookmark_pressed);
 }
 
 PlaylistContextMenu::~PlaylistContextMenu() {}
@@ -63,7 +61,7 @@ void PlaylistContextMenu::show_actions(PlaylistContextMenu::Entries entries)
 	LibraryContextMenu::show_actions(entries);
 
 	m->rating_action->setVisible(entries & PlaylistContextMenu::EntryRating);
-	m->bookmarks_action->setVisible(entries & PlaylistContextMenu::EntryBookmarks);
+	m->bookmarks_action->setVisible((entries & PlaylistContextMenu::EntryBookmarks) && m->bookmarks_menu->has_bookmarks());
 }
 
 void PlaylistContextMenu::set_rating(Rating rating)
@@ -82,6 +80,11 @@ void PlaylistContextMenu::set_rating(Rating rating)
 	else{
 		m->rating_action->setText(rating_text);
 	}
+}
+
+void PlaylistContextMenu::set_metadata(const MetaData& md)
+{
+	m->bookmarks_menu->set_metadata(md);
 }
 
 QAction* PlaylistContextMenu::init_rating_action(Rating rating, QObject* parent)
@@ -109,5 +112,10 @@ void PlaylistContextMenu::skin_changed()
 {
 	using namespace Gui;
 	m->rating_action->setIcon(Icons::icon(Icons::Star));
+}
+
+void PlaylistContextMenu::bookmark_pressed(Seconds timestamp)
+{
+   emit sig_bookmark_pressed(timestamp);
 }
 

@@ -56,6 +56,7 @@ class PlaylistView :
 signals:
 	void sig_double_clicked(int row);
 	void sig_delete_tracks(const IndexSet& rows);
+	void sig_bookmark_pressed(int track_idx, Seconds timestamp);
 
 public:
 	explicit PlaylistView(PlaylistPtr pl, QWidget* parent=nullptr);

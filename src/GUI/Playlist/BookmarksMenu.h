@@ -24,6 +24,7 @@
 #include <QMenu>
 #include "Utils/Pimpl.h"
 
+class MetaData;
 class BookmarksMenu :
 	public QMenu
 {
@@ -38,6 +39,8 @@ public:
 	virtual ~BookmarksMenu();
 
 	bool has_bookmarks() const;
+	void set_metadata(const MetaData& md);
+	MetaData metadata() const;
 
 private slots:
 	void action_pressed();

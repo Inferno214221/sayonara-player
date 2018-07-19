@@ -22,6 +22,7 @@
 
 #include "Components/Bookmarks/Bookmarks.h"
 #include "Components/Bookmarks/Bookmark.h"
+#include "Utils/MetaData/MetaData.h"
 #include "Utils/Language.h"
 
 struct BookmarksMenu::Private
@@ -30,7 +31,7 @@ struct BookmarksMenu::Private
 
 	Private(BookmarksMenu* parent)
 	{
-		bookmarks = new Bookmarks(parent);
+		bookmarks = new Bookmarks(false, parent);
 	}
 };
 
@@ -49,6 +50,16 @@ BookmarksMenu::~BookmarksMenu() {}
 bool BookmarksMenu::has_bookmarks() const
 {
 	return (this->actions().size() > 0);
+}
+
+void BookmarksMenu::set_metadata(const MetaData& md)
+{
+	m->bookmarks->set_metadata(md);
+}
+
+MetaData BookmarksMenu::metadata() const
+{
+	return m->bookmarks->current_track();
 }
 
 void BookmarksMenu::bookmarks_changed()
@@ -73,6 +84,7 @@ void BookmarksMenu::action_pressed()
 {
 	QAction* action = dynamic_cast<QAction*>(sender());
 	Seconds time = (Seconds) action->data().toInt();
+
 	emit sig_bookmark_pressed(time);
 }
 

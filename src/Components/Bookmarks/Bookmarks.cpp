@@ -41,12 +41,17 @@ struct Bookmarks::Private
 	int				prev_idx;
 	int				next_idx;
 
+	Seconds	time_offset;
 	Seconds	cur_time;
 
 	Seconds	loop_start;
 	Seconds	loop_end;
 
-	Private()
+	bool	listen_to_current_track;
+
+	Private(bool listen_to_current_track) :
+		time_offset(1),
+		listen_to_current_track(listen_to_current_track)
 	{
 		play_manager = PlayManager::instance();
 		db = DB::Connector::instance()->bookmark_connector();
@@ -68,18 +73,20 @@ struct Bookmarks::Private
 };
 
 
-Bookmarks::Bookmarks(QObject *parent) :
+Bookmarks::Bookmarks(bool listen_to_current_track, QObject *parent) :
 	QObject(parent)
 {
-	m = Pimpl::make<Bookmarks::Private>();
+	m = Pimpl::make<Bookmarks::Private>(listen_to_current_track);
 
-	connect(m->play_manager, &PlayManager::sig_track_changed, this, &Bookmarks::track_changed);
-	connect(m->play_manager, &PlayManager::sig_position_changed_ms, this, &Bookmarks::pos_changed_ms);
-	connect(m->play_manager, &PlayManager::sig_playstate_changed, this, &Bookmarks::playstate_changed);
+	if(listen_to_current_track)
+	{
+		connect(m->play_manager, &PlayManager::sig_track_changed, this, &Bookmarks::track_changed);
+		connect(m->play_manager, &PlayManager::sig_position_changed_ms, this, &Bookmarks::pos_changed_ms);
+		connect(m->play_manager, &PlayManager::sig_playstate_changed, this, &Bookmarks::playstate_changed);
 
-	m->md = m->play_manager->current_track();
-
-	reload_bookmarks();
+		m->md = m->play_manager->current_track();
+		reload_bookmarks();
+	}
 }
 
 Bookmarks::~Bookmarks() {}
@@ -163,6 +170,10 @@ bool Bookmarks::remove(int idx)
 
 bool Bookmarks::jump_to(int idx)
 {
+	if(!m->listen_to_current_track){
+		return false;
+	}
+
 	if(!between(idx, m->bookmarks)){
 		return false;
 	}
@@ -182,6 +193,10 @@ bool Bookmarks::jump_to(int idx)
 
 bool Bookmarks::jump_next()
 {
+	if(!m->listen_to_current_track){
+		return false;
+	}
+
 	if( !between(m->next_idx, m->bookmarks) )
 	{
 		emit sig_next_changed(Bookmark());
@@ -196,6 +211,10 @@ bool Bookmarks::jump_next()
 
 bool Bookmarks::jump_prev()
 {
+	if(!m->listen_to_current_track){
+		return false;
+	}
+
 	if( m->prev_idx >= m->bookmarks.size() )
 	{
 		emit sig_prev_changed(Bookmark());
@@ -210,6 +229,10 @@ bool Bookmarks::jump_prev()
 
 void Bookmarks::pos_changed_ms(MilliSeconds pos_ms)
 {
+	if(!m->listen_to_current_track){
+		return;
+	}
+
 	m->cur_time = (Seconds) (pos_ms / 1000);
 
 	if( m->cur_time >= m->loop_end &&
@@ -226,13 +249,12 @@ void Bookmarks::pos_changed_ms(MilliSeconds pos_ms)
 	m->prev_idx=-1;
 	m->next_idx=-1;
 
-
 	int i=0;
 	for(Bookmark& bookmark : m->bookmarks)
 	{
 		Seconds time = bookmark.timestamp();
 
-		if(time + 2 < m->cur_time)
+		if(time + m->time_offset < m->cur_time)
 		{
 			m->prev_idx = i;
 		}
@@ -321,6 +343,10 @@ void Bookmarks::track_changed(const MetaData& md)
 
 void Bookmarks::playstate_changed(PlayState state)
 {
+	if(!m->listen_to_current_track){
+		return;
+	}
+
 	if(state == PlayState::Stopped)
 	{
 		m->reset();
@@ -366,4 +392,13 @@ const QList<Bookmark>& Bookmarks::bookmarks() const
 int Bookmarks::size() const
 {
 	return m->bookmarks.size();
+}
+
+void Bookmarks::set_metadata(const MetaData& md)
+{
+	if(m->listen_to_current_track){
+		return;
+	}
+
+	track_changed(md);
 }

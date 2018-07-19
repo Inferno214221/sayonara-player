@@ -39,6 +39,7 @@
 #include "Components/PlayManager/PlayState.h"
 #include "Components/Playlist/PlaylistDBInterface.h"
 
+class MetaData;
 class PlaylistView;
 
 UI_FWD(Playlist_Window)
@@ -101,6 +102,7 @@ private slots:
 	void add_playlist_button_pressed();
 
 	void clear_button_pressed(int pl_idx);
+	void bookmark_selected(int idx, Seconds timestamp);
 
 	// called by playmanager
 	void playstate_changed(PlayState state);

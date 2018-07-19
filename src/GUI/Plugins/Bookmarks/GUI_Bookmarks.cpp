@@ -82,7 +82,7 @@ void GUI_Bookmarks::init_ui()
 		return;
 	}
 
-	m->bookmarks = new Bookmarks(this);
+	m->bookmarks = new Bookmarks(true, this);
 
 	setup_parent(this, &ui);
 

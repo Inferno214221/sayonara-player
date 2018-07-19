@@ -141,6 +141,12 @@ void PlaylistView::init_context_menu()
 	connect(m->context_menu, &PlaylistContextMenu::sig_remove_clicked, this, &PlaylistView::remove_selected_rows);
 	connect(m->context_menu, &PlaylistContextMenu::sig_clear_clicked, this, &PlaylistView::clear);
 	connect(m->context_menu, &PlaylistContextMenu::sig_rating_changed, this, &PlaylistView::rating_changed);
+	connect(m->context_menu, &PlaylistContextMenu::sig_bookmark_pressed, this, [=](Seconds timestamp){
+		IndexSet idxs = this->selected_items();
+		if(idxs.size() > 0){
+			emit sig_bookmark_pressed(idxs.first(), timestamp);
+		}
+	});
 
 	m->context_menu->add_preference_action(new PlaylistPreferenceAction(m->context_menu));
 }
@@ -267,8 +273,6 @@ void PlaylistView::rating_changed(Rating rating)
 }
 
 
-
-
 void PlaylistView::move_selected_rows_up()
 {
 	IndexSet selections = selected_items();
@@ -365,9 +369,15 @@ void PlaylistView::contextMenuEvent(QContextMenuEvent* e)
 		}
 	}
 
-	if(idx.row() == m->model->current_track() && idx.row() >= 0)
+	if(idx.row() >= 0)
 	{
-		entry_mask |= PlaylistContextMenu::EntryBookmarks;
+		MetaData md = m->model->metadata(idx.row());
+		m->context_menu->set_metadata(md);
+
+		if(md.id >= 0)
+		{
+			entry_mask |= PlaylistContextMenu::EntryBookmarks;
+		}
 	}
 
 	m->context_menu->show_actions(entry_mask);
