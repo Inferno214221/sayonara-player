@@ -65,14 +65,6 @@ namespace Cover
 		bool fetch_cover(const Location& cl, bool also_www=true);
 
 		/**
-		 * @brief uses CoverLocation(const Album& album)
-		 * @param album Album object
-		 * @return true
-		 */
-		bool fetch_album_cover(const Album& album, bool also_www=true);
-
-
-		/**
 		 * @brief not implemented
 		 */
 		void stop() override;

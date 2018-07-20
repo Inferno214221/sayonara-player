@@ -38,60 +38,61 @@ class QByteArray;
 namespace Tagging
 {
 
-    namespace Util
-    {
-        /**
-         * @brief The Quality enum
-         */
-        enum class Quality : unsigned char
-        {
-            Fast=TagLib::AudioProperties::Fast,
-            Standard=TagLib::AudioProperties::Average,
-            Quality=TagLib::AudioProperties::Accurate,
-            Dirty
-        };
+	namespace Util
+	{
+		/**
+		 * @brief The Quality enum
+		 */
+		enum class Quality : unsigned char
+		{
+			Fast=TagLib::AudioProperties::Fast,
+			Standard=TagLib::AudioProperties::Average,
+			Quality=TagLib::AudioProperties::Accurate,
+			Dirty
+		};
 
-        enum class TagType : unsigned char
-        {
-            ID3v1=0,
-            ID3v2,
-            Xiph,
-            MP4,
-            Unsupported,
-            Unknown
-        };
-
-
-        /**
-         * @brief get metadata of file. Filepath should be given within the MetaData struct
-         * @param md MetaData that will be filled
-         * @param quality fast, normal, accurate
-         * @return true, if metadata could be filled. false else
-         */
-        bool getMetaDataOfFile(MetaData& md, Tagging::Util::Quality quality=Tagging::Util::Quality::Standard);
-
-        /**
-         * @brief writes metadata into file specivied in MetaData::_filepath
-         * @param md MetaData struct to write
-         * @return true if metadata could be written. false else
-         */
-        bool setMetaDataOfFile(const MetaData& md);
-
-        bool write_cover(const MetaData& md, const QImage& image);
-        bool write_cover(const MetaData& md, const QString& image_path);
-        bool extract_cover(const MetaData& md, QByteArray& cover_data, QString& mime_type);
-        bool is_cover_supported(const QString& filepath);
-
-        bool write_lyrics(const MetaData& md, const QString& lyrics);
-        bool extract_lyrics(const MetaData& md, QString& lyrics);
-        bool is_lyrics_supported(const QString& filepath);
-
-        bool is_valid_file(const TagLib::FileRef& f);
+		enum class TagType : unsigned char
+		{
+			ID3v1=0,
+			ID3v2,
+			Xiph,
+			MP4,
+			Unsupported,
+			Unknown
+		};
 
 
-        Tagging::Util::TagType get_tag_type(const QString& filepath);
-        QString tag_type_to_string(Tagging::Util::TagType);
-    }
+		/**
+		 * @brief get metadata of file. Filepath should be given within the MetaData struct
+		 * @param md MetaData that will be filled
+		 * @param quality fast, normal, accurate
+		 * @return true, if metadata could be filled. false else
+		 */
+		bool getMetaDataOfFile(MetaData& md, Tagging::Util::Quality quality=Tagging::Util::Quality::Standard);
+
+		/**
+		 * @brief writes metadata into file specivied in MetaData::_filepath
+		 * @param md MetaData struct to write
+		 * @return true if metadata could be written. false else
+		 */
+		bool setMetaDataOfFile(const MetaData& md);
+
+		bool write_cover(const QString& filepath, const QImage& image);
+		bool write_cover(const QString& filepath, const QString& image_path);
+		bool extract_cover(const QString& filepath, QByteArray& cover_data, QString& mime_type);
+		bool has_cover(const QString& filepath);
+		bool is_cover_supported(const QString& filepath);
+
+		bool write_lyrics(const MetaData& md, const QString& lyrics);
+		bool extract_lyrics(const MetaData& md, QString& lyrics);
+		bool is_lyrics_supported(const QString& filepath);
+
+		bool is_valid_file(const TagLib::FileRef& f);
+
+
+		Tagging::Util::TagType get_tag_type(const QString& filepath);
+		QString tag_type_to_string(Tagging::Util::TagType);
+	}
 }
 
 #endif

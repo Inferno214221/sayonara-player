@@ -141,6 +141,13 @@ namespace Cover
 		QString			to_string() const;
 
 
+		bool			has_audio_file_source() const;
+
+		QString			audio_file_source() const;
+
+		void			set_audio_file_source(const QString& audio_file_source);
+
+
 		/**
 		 * @brief creates CoverLocation by taking the md5 sum between album_name and artist_name
 		 * @param album_name Album name
@@ -211,7 +218,6 @@ namespace Cover
 		 * @return  CoverLocation object
 		 */
 		static Location invalid_location();
-
 
 
 		/**

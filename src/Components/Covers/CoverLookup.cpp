@@ -35,6 +35,7 @@
 #include "Utils/Logger/Logger.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/Album.h"
+#include "Utils/Tagging/Tagging.h"
 
 #include <QFile>
 #include <QImage>
@@ -88,11 +89,28 @@ bool Lookup::start_new_thread(const Cover::Location& cl )
 	return true;
 }
 
+#include <QPixmap>
 bool Lookup::fetch_cover(const Cover::Location& cl, bool also_www)
 {
 	sp_log(Log::Crazy, this) << cl.identifer();
+	QString cover_path = cl.cover_path();
+
+	if(cl.has_audio_file_source() && !QFile::exists(cover_path))
+	{
+		MetaData md;
+		md.set_filepath(cl.audio_file_source());
+		QString mime;
+		QByteArray data;
+
+		Tagging::Util::extract_cover(md.filepath(), data, mime);
+		QImage img = QImage::fromData(data);
+		img.save(cover_path);
+
+		sp_log(Log::Debug, this) << "Save cover from Audio file to " << cover_path;
+	}
+
 	// Look, if cover exists in .Sayonara/covers
-	if( QFile::exists(cl.cover_path()) && m->n_covers == 1 )
+	if( QFile::exists(cover_path) && m->n_covers == 1 )
 	{
 		emit sig_cover_found(cl.cover_path());
 		emit sig_finished(true);
@@ -121,13 +139,6 @@ bool Lookup::fetch_cover(const Cover::Location& cl, bool also_www)
 	}
 
 	return true;
-}
-
-
-bool Lookup::fetch_album_cover(const Album& album, bool also_www)
-{
-	Location cl = Location::cover_location(album);
-	return fetch_cover(cl, also_www);
 }
 
 

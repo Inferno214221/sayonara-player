@@ -606,7 +606,7 @@ void GUI_TagEdit::set_cover(const MetaData& md)
 {
 	QByteArray img_data;
 	QString mime_type;
-	bool has_cover = Tagging::Util::extract_cover(md, img_data, mime_type);
+	bool has_cover = Tagging::Util::extract_cover(md.filepath(), img_data, mime_type);
 
 	if(!has_cover)
 	{

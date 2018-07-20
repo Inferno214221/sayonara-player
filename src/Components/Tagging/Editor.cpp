@@ -279,7 +279,7 @@ void Editor::run()
 	for(auto it=m->cover_map.cbegin(); it != m->cover_map.cend(); it++)
 	{
 		int idx = it.key();
-		Tagging::Util::write_cover(m->v_md[idx], it.value());
+		Tagging::Util::write_cover(m->v_md[idx].filepath(), it.value());
 		if(n_operations > 5){
 			emit sig_progress( (i++ * 100) / n_operations);
 		}

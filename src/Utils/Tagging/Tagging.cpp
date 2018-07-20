@@ -326,32 +326,32 @@ bool Tagging::Util::setMetaDataOfFile(const MetaData& md)
 }
 
 
-bool Tagging::Util::write_cover(const MetaData& md, const QImage& cover)
+bool Tagging::Util::write_cover(const QString& filepath, const QImage& cover)
 {
 	bool success;
-	QString filepath = ::Util::sayonara_path() + "tmp.png";
+	QString tmp_filepath = ::Util::sayonara_path() + "tmp.png";
 
-	success = cover.save(filepath);
+	success = cover.save(tmp_filepath);
 	if(!success){
-		sp_log(Log::Warning) << "Can not save temporary cover: " << filepath;
+		sp_log(Log::Warning) << "Can not save temporary cover: " << tmp_filepath;
 		sp_log(Log::Warning) << "Is image valid? " << !cover.isNull();
 		return false;
 	}
 
-	success = write_cover(md, filepath);
-	QFile::remove(filepath);
+	success = write_cover(filepath, tmp_filepath);
+	QFile::remove(tmp_filepath);
 
 	return success;
 }
 
 
-bool Tagging::Util::write_cover(const MetaData& md, const QString& cover_image_path)
+bool Tagging::Util::write_cover(const QString& filepath, const QString& cover_image_path)
 {
 	QString error_msg = "Cannot save cover. ";
-	QString filepath = md.filepath();
+
 	TagLib::FileRef f(TagLib::FileName(filepath.toUtf8()));
 	if(!is_valid_file(f)){
-		sp_log(Log::Warning) << "Cannot open tags for " << md.filepath();
+		sp_log(Log::Warning) << "Cannot open tags for " << filepath;
 		return false;
 	}
 
@@ -378,7 +378,7 @@ bool Tagging::Util::write_cover(const MetaData& md, const QString& cover_image_p
 	}
 
 	Models::Cover cover(mime_type, data);
-	TagType tag_type = get_tag_type(md.filepath());
+	TagType tag_type = get_tag_type(filepath);
 	if(tag_type == TagType::ID3v2){
 		ID3v2::CoverFrame cover_frame(f);
 		cover_frame.write(cover);
@@ -394,18 +394,17 @@ bool Tagging::Util::write_cover(const MetaData& md, const QString& cover_image_p
 	return f.save();
 }
 
-bool Tagging::Util::extract_cover(const MetaData &md, QByteArray& cover_data, QString& mime_type)
+bool Tagging::Util::extract_cover(const QString& filepath, QByteArray& cover_data, QString& mime_type)
 {
-	QString filepath = md.filepath();
 	TagLib::FileRef f(TagLib::FileName(filepath.toUtf8()));
 
 	if(!is_valid_file(f)){
-		sp_log(Log::Warning) << "Cannot open tags for " << md.filepath();
+		sp_log(Log::Warning) << "Cannot open tags for " << filepath;
 		return false;
 	}
 
 	Models::Cover cover;
-	TagType tag_type = get_tag_type(md.filepath());
+	TagType tag_type = get_tag_type(filepath);
 	switch(tag_type){
 
 		case TagType::ID3v2:
@@ -441,11 +440,48 @@ bool Tagging::Util::extract_cover(const MetaData &md, QByteArray& cover_data, QS
 	return !(cover_data.isEmpty());
 }
 
+
+bool Tagging::Util::has_cover(const QString& filepath)
+{
+	TagLib::FileRef f(TagLib::FileName(filepath.toUtf8()));
+
+	if(!is_valid_file(f)){
+		sp_log(Log::Warning) << "Cannot open tags for " << filepath;
+		return false;
+	}
+
+	TagType tag_type = get_tag_type(filepath);
+	switch(tag_type){
+
+		case TagType::ID3v2:
+			{
+				ID3v2::CoverFrame cover_frame(f);
+				return cover_frame.is_frame_found();
+			}
+
+			break;
+
+		case TagType::MP4:
+			{
+				MP4::CoverFrame cover_frame(f.tag());
+				return cover_frame.is_frame_found();
+			}
+
+		default:
+			return false;
+	}
+
+	return false;
+}
+
+
 bool Tagging::Util::is_cover_supported(const QString& filepath)
 {
 	TagType type = get_tag_type(filepath);
 	return (type == TagType::ID3v2 || type == TagType::MP4);
 }
+
+
 
 
 
@@ -615,4 +651,5 @@ QString Tagging::Util::tag_type_to_string(TagType type)
 			return "Partially unsupported";
 	}
 }
+
 

@@ -22,6 +22,8 @@
 #include "CoverUtils.h"
 #include "CoverFetchManager.h"
 #include "LocalCoverSearcher.h"
+
+#include "Utils/Tagging/Tagging.h"
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaDataList.h"
@@ -49,6 +51,7 @@ struct Location::Private
 	QString			cover_path;		// cover_path path, in .Sayonara, where cover is stored. Ignored if local_paths are not empty
 	QStringList		local_paths;	// local_paths paths where images can be fetched from if they should not be fetched from the .Sayonara directory
 	QString			identifier;
+	QString			audio_file_source;
 
 	bool			valid;			// valid if CoverLocation object contains a valid download url
 
@@ -63,6 +66,7 @@ struct Location::Private
 		CASSIGN(cover_path),
 		CASSIGN(local_paths),
 		CASSIGN(identifier),
+		CASSIGN(audio_file_source),
 		CASSIGN(valid)
 	{}
 
@@ -74,6 +78,7 @@ struct Location::Private
 		ASSIGN(cover_path);
 		ASSIGN(local_paths);
 		ASSIGN(identifier);
+		ASSIGN(audio_file_source),
 		ASSIGN(valid);
 
 		return (*this);
@@ -104,7 +109,6 @@ Location& Location::operator=(const Location& other)
 }
 
 
-
 Location Location::invalid_location()
 {
 	Location cl;
@@ -115,6 +119,7 @@ Location Location::invalid_location()
 	cl.m->search_term = "";
 	cl.m->valid = false;
 	cl.m->identifier = "Invalid location";
+	cl.m->audio_file_source = QString();
 
 	return cl;
 }
@@ -209,6 +214,10 @@ Location Location::cover_location(const Album& album)
 
 		for(const MetaData& md : v_md)
 		{
+			if(cl.m->audio_file_source.isEmpty() && Tagging::Util::has_cover(md.filepath())) {
+				cl.m->audio_file_source = md.filepath();
+			}
+
 			cl.m->local_paths = Cover::LocalSearcher::cover_paths_from_filename(md.filepath());
 			if(!cl.m->local_paths.isEmpty()){
 				break;
@@ -318,6 +327,12 @@ Location Get_cover_location(AlbumId album_id, DbId db_id)
 
 	for(const MetaData& md : v_md)
 	{
+		if( !cl.has_audio_file_source() &&
+			Tagging::Util::has_cover(md.filepath()))
+		{
+			cl.set_audio_file_source(md.filepath());
+		}
+
 		QStringList local_paths = Cover::LocalSearcher::cover_paths_from_filename(md.filepath());
 
 		for(const QString& local_path : local_paths)
@@ -336,6 +351,10 @@ Location Get_cover_location(AlbumId album_id, DbId db_id)
 Location Location::cover_location(const MetaData& md)
 {
 	Location cl;
+
+	if(Tagging::Util::has_cover(md.filepath())) {
+		cl.m->audio_file_source = md.filepath();
+	}
 
 	if(md.album().trimmed().isEmpty() && md.artist().trimmed().isEmpty()){
 		return Location::invalid_location();
@@ -482,5 +501,20 @@ QString Location::to_string() const
 			"Preferred Path: " + preferred_path() + ", "
 			"Search Urls: " + search_urls().join(',') + ", "
 			"Search Term: " + search_term() + ", "
-			"Identifier: " + identifer();
+											  "Identifier: " + identifer();
+}
+
+bool Location::has_audio_file_source() const
+{
+	return (m->audio_file_source.size() > 0);
+}
+
+QString Location::audio_file_source() const
+{
+	return m->audio_file_source;
+}
+
+void Location::set_audio_file_source(const QString& audio_file_source)
+{
+	m->audio_file_source = audio_file_source;
 }
