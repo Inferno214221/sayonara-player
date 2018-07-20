@@ -45,7 +45,6 @@ namespace PlayerPlugin
 		void sig_plugin_closed();
 		void sig_plugin_action_triggered(bool b);
 
-
 	private:
 		void plugin_opened(Base* p);
 
@@ -57,6 +56,7 @@ namespace PlayerPlugin
 
 	public:
 		void add_plugin(Base* plugin);
+		void show_plugin(const QString& name);
 
 		Base*			find_plugin(const QString& name);
 		QList<Base*>	all_plugins() const;

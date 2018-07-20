@@ -82,7 +82,7 @@ void GUI_Bookmarks::init_ui()
 		return;
 	}
 
-	m->bookmarks = new Bookmarks(true, this);
+	m->bookmarks = new Bookmarks(this);
 
 	setup_parent(this, &ui);
 
@@ -126,7 +126,7 @@ void GUI_Bookmarks::bookmarks_changed()
 		ui->cb_bookmarks->addItem(tr("No bookmarks found"), -1);
 	}
 
-	MetaData md = m->bookmarks->current_track();
+	MetaData md = m->bookmarks->metadata();
 
 	ui->btn_tool->show_action(ContextMenu::EntryNew, (md.id >= 0) );
 	ui->btn_tool->show_action(ContextMenu::EntryDelete, !bookmarks.isEmpty() );

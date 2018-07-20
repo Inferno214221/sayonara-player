@@ -32,6 +32,7 @@
 
 // Think about CMake
 #include "Components/Library/LibraryManager.h"
+#include "Interfaces/PlayerPlugin/PlayerPluginHandler.h"
 
 #include <QFile>
 #include <QHBoxLayout>
@@ -99,6 +100,8 @@ GUI_PlaylistBottomBar::GUI_PlaylistBottomBar(QWidget *parent) :
 		btn->setMaximumSize(28, 28);
 	}
 
+	m->btn_gapless->setCheckable(false);
+
 	QLayout* layout = new QHBoxLayout(this);
 	this->setLayout(layout);
 	layout->addWidget(m->btn_rep1);
@@ -125,20 +128,14 @@ GUI_PlaylistBottomBar::GUI_PlaylistBottomBar(QWidget *parent) :
 	m->btn_append->setChecked(Playlist::Mode::isActive(m->plm.append()));
 	m->btn_dynamic->setChecked(Playlist::Mode::isActive(m->plm.dynamic()));
 	m->btn_shuffle->setChecked(Playlist::Mode::isActive(m->plm.shuffle()));
-	m->btn_gapless->setChecked(Playlist::Mode::isActive(m->plm.gapless()));
 	m->btn_shutdown->setVisible(false);
-
-	bool crossfader_active = _settings->get<Set::Engine_CrossFaderActive>();
-	bool gapless_enabled = (Playlist::Mode::isEnabled(m->plm.gapless()) && !crossfader_active);
-
-	m->btn_gapless->setEnabled(gapless_enabled) ;
 
 	connect(m->btn_rep1, &QPushButton::clicked, this, &GUI_PlaylistBottomBar::rep1_checked);
 	connect(m->btn_repAll, &QPushButton::clicked, this, &GUI_PlaylistBottomBar::rep_all_checked);
 	connect(m->btn_append, &QPushButton::released, this, &GUI_PlaylistBottomBar::playlist_mode_changed);
 	connect(m->btn_shuffle, &QPushButton::clicked, this, &GUI_PlaylistBottomBar::shuffle_checked);
 	connect(m->btn_dynamic, &QPushButton::released, this, &GUI_PlaylistBottomBar::playlist_mode_changed);
-	connect(m->btn_gapless, &QPushButton::released, this, &GUI_PlaylistBottomBar::playlist_mode_changed);
+	connect(m->btn_gapless, &QPushButton::clicked, this, &GUI_PlaylistBottomBar::gapless_clicked);
 
 	connect(m->btn_shutdown, &QPushButton::clicked, this, &GUI_PlaylistBottomBar::shutdown_clicked);
 	connect(m->shutdown, &Shutdown::sig_started, this, &GUI_PlaylistBottomBar::shutdown_started);
@@ -189,7 +186,6 @@ void GUI_PlaylistBottomBar::playlist_mode_changed()
 	plm.setRepAll(m->btn_repAll->isChecked(), m->btn_repAll->isEnabled());
 	plm.setShuffle(m->btn_shuffle->isChecked(), m->btn_shuffle->isEnabled());
 	plm.setDynamic(m->btn_dynamic->isChecked(), m->btn_dynamic->isEnabled());
-	plm.setGapless(m->btn_gapless->isChecked(), m->btn_gapless->isEnabled());
 
 	if(plm == m->plm){
 		return;
@@ -198,6 +194,11 @@ void GUI_PlaylistBottomBar::playlist_mode_changed()
 	m->plm = plm;
 
 	_settings->set<Set::PL_Mode>(m->plm);
+}
+
+void GUI_PlaylistBottomBar::gapless_clicked()
+{
+	PlayerPlugin::Handler::instance()->show_plugin("Crossfader");
 }
 
 void GUI_PlaylistBottomBar::language_changed()
@@ -229,7 +230,6 @@ void GUI_PlaylistBottomBar::s_playlist_mode_changed()
 	m->btn_repAll->setChecked(Playlist::Mode::isActive(m->plm.repAll()));
 	m->btn_shuffle->setChecked(Playlist::Mode::isActive(m->plm.shuffle()));
 	m->btn_dynamic->setChecked(Playlist::Mode::isActive(m->plm.dynamic()));
-	m->btn_gapless->setChecked(Playlist::Mode::isActive(m->plm.gapless()));
 
 	m->btn_rep1->setEnabled(Playlist::Mode::isEnabled(m->plm.rep1()));
 	m->btn_append->setEnabled(Playlist::Mode::isEnabled(m->plm.append()));

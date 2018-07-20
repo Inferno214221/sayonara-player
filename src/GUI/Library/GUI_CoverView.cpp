@@ -26,6 +26,7 @@
 #include "Utils/Library/Sorting.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language.h"
+#include "Utils/Utils.h"
 
 using namespace Library;
 
@@ -77,11 +78,13 @@ void GUI_CoverView::init_sorting_actions()
 	ui->lab_sorting->setText(Lang::get(Lang::SortBy));
 	ui->combo_sorting->clear();
 
-	const QList<ActionPair> action_pairs = ui->tb_view->sorting_actions();
+	const QList<ActionPair> action_pairs = CoverView::sorting_actions();
 	for(const ActionPair& ap : action_pairs)
 	{
 		ui->combo_sorting->addItem(ap.name, (int) ap.so);
 	}
+
+	sortorder_changed();
 }
 
 
@@ -106,14 +109,16 @@ void GUI_CoverView::sortorder_changed()
 		if(ui->combo_sorting->itemData(i).toInt() == (int) so)
 		{
 			ui->combo_sorting->setCurrentIndex(i);
+			break;
 		}
 	}
 }
 
 void GUI_CoverView::init_zoom_actions()
 {
-	QStringList zoom_actions = ui->tb_view->zoom_actions();
-	ui->combo_zoom->addItems(zoom_actions);
+	ui->combo_zoom->addItems(CoverView::zoom_actions());
+
+	zoom_changed();
 }
 
 
@@ -129,14 +134,15 @@ void GUI_CoverView::combo_zoom_changed(int idx)
 
 void GUI_CoverView::zoom_changed()
 {
+	QStringList zoom_actions = CoverView::zoom_actions();
+
 	int zoom = _settings->get<Set::Lib_CoverZoom>();
-	for(int i=0; i<ui->combo_zoom->count(); i++)
-	{
-		if(ui->combo_zoom->itemText(i).toInt() >= zoom)
-		{
-			ui->combo_zoom->setCurrentIndex(i);
-			break;
-		}
+	int idx = ::Util::indexOf(zoom_actions, [zoom](const QString& str){
+		return (str == QString::number(zoom));
+	});
+
+	if(idx >= 0){
+		ui->combo_zoom->setCurrentIndex(idx);
 	}
 }
 

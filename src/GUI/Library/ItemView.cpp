@@ -155,14 +155,25 @@ void ItemView::selected_items_changed(const QItemSelection& selected, const QIte
 	selection_changed(selected_items());
 }
 
-// Right click stuff
 void ItemView::init_context_menu()
+{
+	init_context_menu_custom_type(nullptr);
+}
+
+// Right click stuff
+void ItemView::init_context_menu_custom_type(LibraryContextMenu* menu)
 {
 	if(m->context_menu){
 		return;
 	}
 
-	m->context_menu = new LibraryContextMenu(this);
+	if(!menu){
+		m->context_menu = new LibraryContextMenu(this);
+	}
+
+	else {
+		m->context_menu = menu;
+	}
 
 	m->merge_menu = new QMenu(tr("Merge"), m->context_menu);
 	m->merge_action = m->context_menu->addMenu(m->merge_menu);

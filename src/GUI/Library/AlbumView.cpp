@@ -176,11 +176,6 @@ void AlbumView::init_discmenu(QModelIndex idx)
 	connect(m->discmenu, &DiscPopupMenu::sig_disc_pressed, this, &AlbumView::sig_disc_pressed);
 }
 
-void AlbumView::init_context_menu()
-{
-	ItemView::init_context_menu();
-}
-
 
 void AlbumView::delete_discmenu()
 {

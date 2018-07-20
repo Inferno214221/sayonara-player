@@ -22,16 +22,19 @@
 
 #include "Components/Bookmarks/Bookmarks.h"
 #include "Components/Bookmarks/Bookmark.h"
+#include "Components/PlayManager/PlayManager.h"
+#include "GUI/Utils/Icons.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/Language.h"
+#include "Interfaces/PlayerPlugin/PlayerPluginHandler.h"
 
 struct BookmarksMenu::Private
 {
-	Bookmarks*	bookmarks=nullptr;
+	BookmarksBase*	bookmarks=nullptr;
 
 	Private(BookmarksMenu* parent)
 	{
-		bookmarks = new Bookmarks(false, parent);
+		bookmarks = new BookmarksBase(parent);
 	}
 };
 
@@ -41,8 +44,6 @@ BookmarksMenu::BookmarksMenu(QWidget* parent) :
 	m = Pimpl::make<Private>(this);
 
 	this->setTitle( Lang::get(Lang::Bookmarks));
-
-	connect(m->bookmarks, &Bookmarks::sig_bookmarks_changed, this, &BookmarksMenu::bookmarks_changed);
 }
 
 BookmarksMenu::~BookmarksMenu() {}
@@ -55,15 +56,21 @@ bool BookmarksMenu::has_bookmarks() const
 void BookmarksMenu::set_metadata(const MetaData& md)
 {
 	m->bookmarks->set_metadata(md);
+
+	bookmarks_changed();
 }
 
 MetaData BookmarksMenu::metadata() const
 {
-	return m->bookmarks->current_track();
+	return m->bookmarks->metadata();
 }
 
 void BookmarksMenu::bookmarks_changed()
 {
+	for(QAction* a : this->actions()){
+		a->deleteLater();
+	}
+
 	this->clear();
 
 	const QList<Bookmark> bookmarks = m->bookmarks->bookmarks();
@@ -78,6 +85,20 @@ void BookmarksMenu::bookmarks_changed()
 		action->setData(bookmark.timestamp());
 		connect(action, &QAction::triggered, this, &BookmarksMenu::action_pressed);
 	}
+
+	this->addSeparator();
+	QAction* edit_action = new QAction(Gui::Icons::icon(Gui::Icons::Edit), Lang::get(Lang::Edit), this);
+	this->addAction(edit_action);
+
+	connect(edit_action, &QAction::triggered, [](){
+		PlayerPlugin::Handler* pph = PlayerPlugin::Handler::instance();
+		pph->show_plugin("Bookmarks");
+	});
+
+	PlayManager* pm = PlayManager::instance();
+	edit_action->setEnabled(
+		metadata().id == pm->current_track().id
+	);
 }
 
 void BookmarksMenu::action_pressed()

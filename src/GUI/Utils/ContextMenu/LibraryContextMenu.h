@@ -61,7 +61,7 @@ public:
 		EntryLast=(1<<13)
 	};
 
-	using Entries=uint16_t;
+	using Entries=uint64_t;
 
 public:
 	explicit LibraryContextMenu(QWidget *parent=nullptr);

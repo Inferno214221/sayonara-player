@@ -85,6 +85,18 @@ void Handler::add_plugin(Base* p)
 	emit sig_plugin_added(p);
 }
 
+void Handler::show_plugin(const QString& name)
+{
+	Base* plugin = find_plugin(name);
+	if(!plugin){
+		return;
+	}
+
+	sig_plugin_action_triggered(false);
+	m->current_plugin = plugin;
+	sig_plugin_action_triggered(true);
+}
+
 void Handler::plugin_action_triggered(bool b)
 {
 	Base* plugin = static_cast<Base*>(sender());

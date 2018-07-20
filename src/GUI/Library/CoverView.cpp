@@ -1,11 +1,11 @@
 #include "CoverView.h"
 #include "CoverModel.h"
 #include "CoverDelegate.h"
+#include "CoverViewContextMenu.h"
 
 #include "Components/Library/LocalLibrary.h"
 
 #include "GUI/Utils/ContextMenu/LibraryContextMenu.h"
-#include "GUI/Utils/PreferenceAction.h"
 
 #include "Utils/Library/Sorting.h"
 #include "Utils/Library/Sortorder.h"
@@ -20,33 +20,25 @@
 
 using Library::CoverView;
 using Library::CoverModel;
+using AtomicBool=std::atomic<bool>;
 
 struct CoverView::Private
 {
 	LocalLibrary*	library=nullptr;
 	CoverModel*		model=nullptr;
-	QMenu*			menu_sortings=nullptr;
-	QMenu*			menu_zoom=nullptr;
-	QAction*		action_sorting=nullptr;
-	QAction*		action_zoom=nullptr;
-	QAction*		action_show_utils=nullptr;
-
 	QTimer*			buffer_timer=nullptr;
 
-	std::atomic<bool>	blocked;
+	AtomicBool		blocked;
 
-	Private(CoverView* cover_view) :
+	Private() :
 		blocked(false)
-	{
-		menu_sortings = new QMenu(cover_view);
-		menu_zoom = new QMenu(cover_view);
-	}
+	{}
 };
 
 CoverView::CoverView(QWidget* parent) :
 	Library::ItemView(parent)
 {
-	m = Pimpl::make<Private>(this);
+	m = Pimpl::make<Private>();
 
 	connect(this, &ItemView::doubleClicked, this, &CoverView::play_clicked);
 }
@@ -94,24 +86,11 @@ AbstractLibrary* CoverView::library() const
 	return m->library;
 }
 
-QStringList CoverView::zoom_actions() const
+QStringList CoverView::zoom_actions()
 {
 	return QStringList{"50", "75", "100", "125", "150", "175", "200"};
 }
 
-void CoverView::init_zoom_actions()
-{
-	m->menu_zoom->clear();
-
-	const QStringList actions = zoom_actions();
-	for(const QString& z : actions)
-	{
-		QAction* action = m->menu_zoom->addAction(z);
-		action->setCheckable(true);
-
-		connect(action, &QAction::triggered, this, &CoverView::action_zoom_triggered);
-	}
-}
 
 void CoverView::change_zoom(int zoom)
 {
@@ -135,16 +114,9 @@ void CoverView::change_zoom(int zoom)
 	zoom = std::min(zoom, 200);
 	zoom = std::max(zoom, 50);
 
-	bool found=false;
-
-	const QList<QAction*> actions = m->menu_zoom->actions();
-	for(QAction* a : actions)
-	{
-		a->setChecked( (a->text().toInt() >= zoom) && !found );
-		if(a->text().toInt() >= zoom)
-		{
-			found = true;
-		}
+	CoverViewContextMenu* menu = static_cast<CoverViewContextMenu*>(context_menu());
+	if(menu){
+		menu->set_zoom(zoom);
 	}
 
 	if(!force_reload)
@@ -162,16 +134,7 @@ void CoverView::change_zoom(int zoom)
 }
 
 
-void CoverView::action_zoom_triggered()
-{
-	QAction* action = static_cast<QAction*>(sender());
-	int zoom = action->text().toInt();
-
-	change_zoom(zoom);
-}
-
-
-QList<ActionPair> CoverView::sorting_actions() const
+QList<ActionPair> CoverView::sorting_actions()
 {
 	using namespace Library;
 
@@ -191,50 +154,14 @@ QList<ActionPair> CoverView::sorting_actions() const
 }
 
 
-void CoverView::init_sorting_actions()
-{
-	if(!context_menu()){
-		return;
-	}
-
-	m->menu_sortings->clear();
-	m->action_sorting->setText(Lang::get(Lang::SortBy));
-
-	Library::Sortings sortings = _settings->get<Set::Lib_Sorting>();
-	Library::SortOrder so = sortings.so_albums;
-
-	const QList<ActionPair> action_pairs = sorting_actions();
-	for(const ActionPair& ap : action_pairs)
-	{
-		QAction* a = m->menu_sortings->addAction(ap.name);
-
-		a->setCheckable(true);
-		a->setChecked(ap.so == so);
-		a->setData((int) ap.so);
-
-		connect(a, &QAction::triggered, this, &CoverView::action_sortorder_triggered);
-	}
-}
-
-
 void CoverView::change_sortorder(Library::SortOrder so)
 {
-	const QList<QAction*> actions = m->menu_sortings->actions();
-	for(QAction* a : actions)
-	{
-		a->setChecked(a->data().toInt() == (int) so);
+	CoverViewContextMenu* menu = static_cast<CoverViewContextMenu*>(context_menu());
+	if(menu){
+		menu->set_sorting(so);
 	}
 
 	m->library->change_album_sortorder(so);
-}
-
-
-void CoverView::action_sortorder_triggered()
-{
-	QAction* a = static_cast<QAction*>(sender());
-	Library::SortOrder so = static_cast<Library::SortOrder>(a->data().toInt());
-
-	change_sortorder(so);
 }
 
 
@@ -244,32 +171,11 @@ void CoverView::init_context_menu()
 		return;
 	}
 
-	ItemView::init_context_menu();
+	CoverViewContextMenu* cm = new CoverViewContextMenu(this);
+	ItemView::init_context_menu_custom_type(cm);
 
-	LibraryContextMenu* menu = context_menu();
-	menu->add_preference_action(new CoverPreferenceAction(menu));
-	menu->addSeparator();
-
-	// insert everything before the preferences
-	QAction* sep_before_prefs = menu->before_preference_action();
-	menu->insertSeparator(sep_before_prefs);
-
-	m->action_show_utils = new QAction(menu);
-	m->action_show_utils->setCheckable(true);
-	m->action_show_utils->setChecked(_settings->get<Set::Lib_CoverShowUtils>());
-
-	connect(m->action_show_utils, &QAction::triggered, this, &CoverView::show_utils_triggered);
-	menu->insertAction(sep_before_prefs, m->action_show_utils);
-
-	m->menu_sortings = new QMenu(menu);
-	m->action_sorting = menu->insertMenu(sep_before_prefs, m->menu_sortings);
-	init_sorting_actions();
-
-	m->menu_zoom  = new QMenu(menu);
-	m->action_zoom = menu->insertMenu(sep_before_prefs, m->menu_zoom);
-	init_zoom_actions();
-
-	language_changed();
+	connect(cm, &CoverViewContextMenu::sig_zoom_changed, this, &CoverView::change_zoom);
+	connect(cm, &CoverViewContextMenu::sig_sorting_changed, this, &CoverView::change_sortorder);
 }
 
 
@@ -307,17 +213,7 @@ void CoverView::timer_timed_out()
 }
 
 
-void CoverView::language_changed()
-{
-	if(context_menu())
-	{
-		init_sorting_actions();
-		m->action_zoom->setText(Lang::get(Lang::Zoom));
-		m->action_show_utils->setText(tr("Show toolbar"));
-		m->action_show_utils->setText(tr("Show utils"));
-	}
-}
-
+void CoverView::language_changed() {}
 
 QStyleOptionViewItem CoverView::viewOptions() const
 {
@@ -358,12 +254,6 @@ void CoverView::hideEvent(QHideEvent* e)
 	}
 
 	ItemView::hideEvent(e);
-}
-
-
-void CoverView::show_utils_triggered(bool b)
-{
-	_settings->set<Set::Lib_CoverShowUtils>(b);
 }
 
 

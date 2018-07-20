@@ -263,6 +263,8 @@ void GUI_ControlsBase::progress_moved(int val)
 
 void GUI_ControlsBase::cur_pos_changed(MilliSeconds pos_ms)
 {
+	sp_log(Log::Develop, this) << "Current position: " << pos_ms;
+
 	MilliSeconds duration = PlayManager::instance()->duration_ms();
 	int max = sli_progress()->maximum();
 	int new_val;

@@ -39,8 +39,9 @@ public:
 	QString get_display_name() const override;
 
 private slots:
-	void slider_changed(int);
-	void active_changed(bool);
+	void slider_changed(int val);
+	void crossfader_active_changed(bool b);
+	void gapless_active_changed(bool b);
 
 	void retranslate_ui() override;
 	void init_ui() override;

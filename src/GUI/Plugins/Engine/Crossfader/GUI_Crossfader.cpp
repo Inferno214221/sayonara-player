@@ -41,53 +41,103 @@ void GUI_Crossfader::init_ui()
 {
 	setup_parent(this, &ui);
 
+
+
+	Playlist::Mode mode = _settings->get<Set::PL_Mode>();
+
+	bool gapless_active = Playlist::Mode::isActive(mode.gapless());
+	bool crossfader_active = _settings->get<Set::Engine_CrossFaderActive>();
+
 	int val = _settings->get<Set::Engine_CrossFaderTime>();
-	bool enabled = _settings->get<Set::Engine_CrossFaderActive>();
 
-	ui->cb_active->setChecked(enabled);
-	ui->sli_crossfader->setEnabled(enabled);
+	if(gapless_active && crossfader_active){
+		gapless_active = false;
+	}
+
+	if(!gapless_active && !crossfader_active){
+		crossfader_active = true;
+	}
+
+	ui->cb_gapless->setChecked(gapless_active);
+	ui->cb_crossfader->setChecked(crossfader_active);
 	ui->sli_crossfader->setValue(val);
-
 	ui->lab_crossfader->setText(QString::number(val) + " ms");
 
+	crossfader_active_changed(crossfader_active);
+	gapless_active_changed(gapless_active);
+
+	connect(ui->cb_crossfader, &QCheckBox::clicked, this, &GUI_Crossfader::crossfader_active_changed);
+	connect(ui->cb_gapless, &QCheckBox::clicked, this, &GUI_Crossfader::gapless_active_changed);
+
 	connect(ui->sli_crossfader, &QSlider::valueChanged, this, &GUI_Crossfader::slider_changed);
-	connect(ui->cb_active, &QCheckBox::toggled, this, &GUI_Crossfader::active_changed);
 }
 
 
 void GUI_Crossfader::retranslate_ui()
 {
 	ui->retranslateUi(this);
-	ui->cb_active->setText(Lang::get(Lang::Active));
-}
 
+	ui->cb_crossfader->setText(tr("Crossfader"));
+	ui->cb_gapless->setText(Lang::get(Lang::GaplessPlayback));
+}
 
 QString GUI_Crossfader::get_name() const
 {
 	return "Crossfader";
 }
 
-
 QString GUI_Crossfader::get_display_name() const
 {
-	return tr("Crossfader");
+	return tr("Crossfader") + " / " + Lang::get(Lang::GaplessPlayback);
 }
 
 
 void GUI_Crossfader::slider_changed(int val)
 {
-	ui->lab_crossfader->setText(QString::number(val) + "ms");
 	_settings->set<Set::Engine_CrossFaderTime>(val);
+
+	if(val == 0){
+		ui->lab_crossfader->setText(Lang::get(Lang::GaplessPlayback));
+	}
+
+	else {
+		ui->lab_crossfader->setText(QString::number(val) + "ms");
+	}
 }
 
 
-void GUI_Crossfader::active_changed(bool b)
+
+void GUI_Crossfader::crossfader_active_changed(bool b)
 {
+	if(b)
+	{
+		ui->cb_gapless->setChecked(false);
+		gapless_active_changed(!b);
+	}
+
+	ui->cb_crossfader->setChecked(b);
+	ui->lab_crossfader->setEnabled(b);
 	ui->sli_crossfader->setEnabled(b);
 
+	_settings->set<Set::Engine_CrossFaderActive>(b);
+}
+
+
+void GUI_Crossfader::gapless_active_changed(bool b)
+{
+	if(b)
+	{
+		ui->cb_crossfader->setChecked(false);
+		ui->lab_crossfader->setEnabled(false);
+		ui->sli_crossfader->setEnabled(false);
+
+		crossfader_active_changed(!b);
+	}
+
+	ui->cb_gapless->setChecked(b);
+
 	Playlist::Mode plm = _settings->get<Set::PL_Mode>();
-	plm.setGapless(Playlist::Mode::isActive(plm.gapless()), !b);
+	plm.setGapless(b);
 
 	_settings->set<Set::PL_Mode>(plm);
-	_settings->set<Set::Engine_CrossFaderActive>(b);
 }

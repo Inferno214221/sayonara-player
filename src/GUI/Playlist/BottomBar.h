@@ -52,6 +52,8 @@ private slots:
 	void rep_all_checked(bool checked);
 	void shuffle_checked(bool checked);
 	void playlist_mode_changed();
+	void gapless_clicked();
+
 	void language_changed() override;
 
 	void s_playlist_mode_changed();

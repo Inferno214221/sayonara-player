@@ -299,6 +299,9 @@
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
            </property>
+           <property name="maximum">
+            <number>1000</number>
+           </property>
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>

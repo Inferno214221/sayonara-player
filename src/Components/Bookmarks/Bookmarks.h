@@ -21,10 +21,9 @@
 #ifndef BOOKMARKS_H
 #define BOOKMARKS_H
 
+#include "BookmarksBase.h"
 #include "Components/PlayManager/PlayState.h"
-#include "Utils/Pimpl.h"
 
-#include <QObject>
 #include <QList>
 
 class Bookmark;
@@ -35,7 +34,7 @@ class MetaData;
  * @ingroup Bookmarks
  */
 class Bookmarks :
-		public QObject
+		public BookmarksBase
 {
 	Q_OBJECT
 	PIMPL(Bookmarks)
@@ -61,30 +60,9 @@ signals:
 
 public:
 
-	explicit Bookmarks(bool listen_to_current_track, QObject *parent);
+	explicit Bookmarks(QObject *parent);
 	~Bookmarks();
 
-	/**
-	 * @brief fetch all bookmarks for current track
-	 * @return all bookmarks for current track
-	 */
-	const QList<Bookmark>& bookmarks() const;
-
-
-	enum class CreationStatus : unsigned char
-	{
-		Success,
-		AlreadyThere,
-		NoDBTrack,
-		DBError,
-		OtherError
-	};
-
-	/**
-	 * @brief create a new bookmark for current track and current position
-	 * @return true if successful, else false
-	 */
-	Bookmarks::CreationStatus create();
 
 	/**
 	 * @brief Jump to specific bookmark
@@ -105,13 +83,6 @@ public:
 	 */
 	bool jump_prev();
 
-	/**
-	 * @brief remove single bookmark from database for current track
-	 * @param idx index
-	 * @return
-	 */
-	bool remove(int idx);
-
 
 	/**
 	 * @brief tries to set the loop between the current two indices
@@ -120,19 +91,10 @@ public:
 	 */
 	bool set_loop(bool b);
 
-	/**
-	 * @brief get the current played track
-	 * @return return current played track
-	 */
-	MetaData current_track() const;
+	BookmarksBase::CreationStatus create();
 
-	/**
-	 * @brief get number of Bookmarks
-	 * @return
-	 */
-	int size() const;
 
-	void set_metadata(const MetaData& md);
+	bool remove(int idx) override;
 
 
 private slots:
@@ -156,15 +118,14 @@ private slots:
 
 
 private:
+
+	using BookmarksBase::create;
+	using BookmarksBase::set_metadata;
+
 	/**
 	 * @brief fetch bookmarks from db and emit sig_bookmarks_changed signal
 	 */
-	void reload_bookmarks();
-
-	/**
-	 * @brief sort bookmarks by time
-	 */
-	void sort_bookmarks();
+	bool load() override;
 };
 
 #endif // BOOKMARKS_H

@@ -24,9 +24,6 @@ namespace Library
 		void init(LocalLibrary* library);
 		AbstractLibrary* library() const override;
 
-		QList<ActionPair> sorting_actions() const;
-		QStringList zoom_actions() const;
-
 		// QAbstractItemView
 		QStyleOptionViewItem viewOptions() const override;
 
@@ -37,8 +34,8 @@ namespace Library
 		void change_zoom(int zoom=-1);
 		void change_sortorder(Library::SortOrder so);
 
-		void init_sorting_actions();
-		void init_zoom_actions();
+		static QList<ActionPair> sorting_actions();
+		static QStringList zoom_actions();
 
 	protected:
 		void init_context_menu() override;
@@ -49,9 +46,6 @@ namespace Library
 		void hideEvent(QHideEvent* e) override;
 
 	private slots:
-		void show_utils_triggered(bool b);
-		void action_sortorder_triggered();
-		void action_zoom_triggered();
 		void timer_timed_out();
 
 	private:

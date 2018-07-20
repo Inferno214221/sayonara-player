@@ -304,10 +304,6 @@ void Playback::cur_pos_ms_changed(MilliSeconds pos_ms)
 		return;
 	}
 
-	if(Util::File::is_www(metadata().filepath())){
-		return;
-	}
-
 	Base::set_current_position_ms(pos_ms);
 }
 

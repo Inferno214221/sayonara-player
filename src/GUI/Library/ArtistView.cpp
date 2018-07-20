@@ -75,6 +75,7 @@ void ArtistView::init_view(AbstractLibrary* library)
 void ArtistView::init_context_menu()
 {
 	ItemView::init_context_menu();
+
 	LibraryContextMenu* menu = context_menu();
 
 	m->album_artist_action = new QAction(menu);

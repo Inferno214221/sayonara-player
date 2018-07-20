@@ -69,7 +69,6 @@ namespace Library
 		void calc_discmenu_point(QModelIndex idx);
 		void delete_discmenu();
 		void init_discmenu(QModelIndex idx);
-		void init_context_menu() override;
 
 		void show_discmenu();
 		void show_context_menu(const QPoint& p) override;

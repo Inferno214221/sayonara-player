@@ -148,6 +148,7 @@ enum class SettingKey : unsigned short
 	Engine_ShowSpectrum,
 	Engine_ShowLevel,
 	Engine_CurTrackPos_s,
+	Engine_CrossFaderOrGaplessActive,
 	Engine_CrossFaderActive,
 	Engine_CrossFaderTime,
 	Engine_Pitch,
@@ -320,7 +321,8 @@ namespace Set
 	INST(int,				Engine_SpectrumBins)			/* number of spectrum bins */
 	INST(bool,				Engine_ShowSpectrum)			/* show spectrum */
 	INST(bool,				Engine_ShowLevel)			/* show level */
-	INST(bool,				Engine_CrossFaderActive)		/* crossfader active */
+	INST(bool,				Engine_CrossFaderOrGaplessActive) /* Crossfader or gapless is active */
+	INST(bool,				Engine_CrossFaderActive)		/* crossfader, but not gapless active */
 	INST(int,				Engine_CrossFaderTime)			/* crossfader overlap time */
 	INST(int, 				Engine_Pitch)				/* hertz of a */
 	INST(bool, 				Engine_SpeedActive)			/* is speed control active? */
