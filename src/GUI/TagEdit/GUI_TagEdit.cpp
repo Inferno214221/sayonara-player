@@ -143,6 +143,7 @@ void GUI_TagEdit::language_changed()
 	ui->lab_rating_descr->setText(Lang::get(Lang::Rating));
 	ui->lab_track_num->setText(Lang::get(Lang::TrackNo).toFirstUpper());
 	ui->lab_comment->setText(tr("Comment"));
+	ui->btn_load_entire_album->setText(tr("Load complete album"));
 
 	set_all_text(ui->cb_album_all, m->tag_edit->count());
 	set_all_text(ui->cb_artist_all, m->tag_edit->count());
