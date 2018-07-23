@@ -74,7 +74,7 @@ int Standard::create_playlist(const MetaDataList& v_md)
 
 	set_changed(true);
 
-	return metadata().size();
+	return metadata().count();
 }
 
 
@@ -242,7 +242,7 @@ int Standard::calc_shuffle_track()
 	// no random track to play
 	if(left_tracks.isEmpty()){
 		if(Playlist::Mode::isActiveAndEnabled(mode().repAll())){
-			return rnd.get_number(0, metadata().size() -1);
+			return rnd.get_number(0, metadata().count() - 1);
 		}
 
 		else{

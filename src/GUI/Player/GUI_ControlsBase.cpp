@@ -263,7 +263,7 @@ void GUI_ControlsBase::progress_moved(int val)
 
 void GUI_ControlsBase::cur_pos_changed(MilliSeconds pos_ms)
 {
-	sp_log(Log::Develop, this) << "Current position: " << pos_ms;
+	sp_log(Log::Crazy, this) << "Current position: " << pos_ms;
 
 	MilliSeconds duration = PlayManager::instance()->duration_ms();
 	int max = sli_progress()->maximum();
@@ -451,7 +451,7 @@ void GUI_ControlsBase::br_changed(const MetaData& md)
 
 	if(md.filesize > 0)
 	{
-		QString filesize = QString::number( (double) (md.filesize / 1024) / 1024.0, 'f', 2) + " MB";
+		QString filesize = QString::number( static_cast<double>(md.filesize / 1024) / 1024.0, 'f', 2) + " MB";
 		lab_filesize()->setText(filesize);
 	}
 }
@@ -513,7 +513,7 @@ void GUI_ControlsBase::file_info_changed()
 	QString sFilesize;
 	if(md.filesize > 0)
 	{
-		sFilesize = QString::number( (double) (md.filesize / 1024) / 1024.0, 'f', 2) + " MB";
+		sFilesize = QString::number( static_cast<double>(md.filesize / 1024) / 1024.0, 'f', 2) + " MB";
 		lab_filesize()->setText(sFilesize);
 	}
 

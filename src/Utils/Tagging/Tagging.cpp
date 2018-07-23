@@ -328,13 +328,12 @@ bool Tagging::Util::setMetaDataOfFile(const MetaData& md)
 
 bool Tagging::Util::write_cover(const QString& filepath, const QImage& cover)
 {
-	bool success;
-	QString tmp_filepath = ::Util::sayonara_path() + "tmp.png";
+	QString tmp_filepath = ::Util::sayonara_path("tmp.png");
 
-	success = cover.save(tmp_filepath);
+	bool success = cover.save(tmp_filepath);
 	if(!success){
-		sp_log(Log::Warning) << "Can not save temporary cover: " << tmp_filepath;
-		sp_log(Log::Warning) << "Is image valid? " << !cover.isNull();
+		sp_log(Log::Warning, "Tagging") << "Can not save temporary cover: " << tmp_filepath;
+		sp_log(Log::Warning, "Tagging") << "Is image valid? " << !cover.isNull();
 		return false;
 	}
 
@@ -351,14 +350,14 @@ bool Tagging::Util::write_cover(const QString& filepath, const QString& cover_im
 
 	TagLib::FileRef f(TagLib::FileName(filepath.toUtf8()));
 	if(!is_valid_file(f)){
-		sp_log(Log::Warning) << "Cannot open tags for " << filepath;
+		sp_log(Log::Warning, "Tagging") << "Cannot open tags for " << filepath;
 		return false;
 	}
 
 	QByteArray data;
 	bool success = ::Util::File::read_file_into_byte_arr(cover_image_path, data);
 	if(data.isEmpty() || !success){
-		sp_log(Log::Warning) << error_msg << "No image data available: " << cover_image_path;
+		sp_log(Log::Warning, "Tagging") << error_msg << "No image data available: " << cover_image_path;
 		return false;
 	}
 
@@ -373,20 +372,25 @@ bool Tagging::Util::write_cover(const QString& filepath, const QString& cover_im
 	}
 
 	else{
-		sp_log(Log::Warning) << error_msg << "Unknown mimetype: '" << ext << "'";
+		sp_log(Log::Warning, "Tagging") << error_msg << "Unknown mimetype: '" << ext << "'";
 		return false;
 	}
 
 	Models::Cover cover(mime_type, data);
 	TagType tag_type = get_tag_type(filepath);
-	if(tag_type == TagType::ID3v2){
+	if(tag_type == TagType::ID3v2)
+	{
 		ID3v2::CoverFrame cover_frame(f);
-		cover_frame.write(cover);
+		if(!cover_frame.write(cover)) {
+			sp_log(Log::Warning, "Tagging") << "ID3v2 Cannot write cover";
+			return false;
+		}
 	}
 
 	else if(tag_type == TagType::MP4){
 		MP4::CoverFrame cover_frame(f.tag());
 		if(!cover_frame.write(cover)){
+			sp_log(Log::Warning, "Tagging") << "MP4 Cannot write cover";
 			return false;
 		}
 	}
@@ -413,7 +417,7 @@ bool Tagging::Util::extract_cover(const QString& filepath, QByteArray& cover_dat
 	TagLib::FileRef f(TagLib::FileName(filepath.toUtf8()));
 
 	if(!is_valid_file(f)){
-		sp_log(Log::Warning) << "Cannot open tags for " << filepath;
+		sp_log(Log::Warning, "Tagging") << "Cannot open tags for " << filepath;
 		return false;
 	}
 
@@ -460,7 +464,7 @@ bool Tagging::Util::has_cover(const QString& filepath)
 	TagLib::FileRef f(TagLib::FileName(filepath.toUtf8()));
 
 	if(!is_valid_file(f)){
-		sp_log(Log::Warning) << "Cannot open tags for " << filepath;
+		sp_log(Log::Warning, "Tagging") << "Cannot open tags for " << filepath;
 		return false;
 	}
 
@@ -504,7 +508,7 @@ bool Tagging::Util::write_lyrics(const MetaData& md, const QString& lyrics_data)
 	QString filepath = md.filepath();
 	TagLib::FileRef f(TagLib::FileName(filepath.toUtf8()));
 	if(!is_valid_file(f)){
-		sp_log(Log::Warning) << "Cannot open tags for " << md.filepath();
+		sp_log(Log::Warning, "Tagging") << "Cannot open tags for " << md.filepath();
 		return false;
 	}
 
@@ -546,7 +550,7 @@ bool Tagging::Util::extract_lyrics(const MetaData& md, QString& lyrics_data)
 	TagLib::FileRef f(TagLib::FileName(filepath.toUtf8()));
 
 	if(!is_valid_file(f)){
-		sp_log(Log::Warning) << "Cannot open tags for " << md.filepath();
+		sp_log(Log::Warning, "Tagging") << "Cannot open tags for " << md.filepath();
 		return false;
 	}
 

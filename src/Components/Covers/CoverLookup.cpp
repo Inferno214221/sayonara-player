@@ -96,7 +96,7 @@ bool Lookup::fetch_cover(const Cover::Location& cl, bool also_www)
 	QString cover_path = cl.preferred_path();
 
 	// Look, if cover exists in .Sayonara/covers
-	if( QFile::exists(cover_path) && !Cover::Location::is_invalid(cover_path) && m->n_covers == 1 )
+	if( QFile::exists(cover_path) && m->n_covers == 1 )
 	{
 		emit sig_cover_found(cover_path);
 		emit sig_finished(true);

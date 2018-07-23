@@ -154,7 +154,7 @@ MetaDataInfo::MetaDataInfo(const MetaDataList& v_md) :
 		insert_interval_info_field(InfoStrings::Year, year_min, year_max);
 	}
 
-	insert_numeric_info_field(InfoStrings::nTracks, v_md.size());
+	insert_numeric_info_field(InfoStrings::nTracks, v_md.count());
 	insert_filesize(filesize);
 	insert_playing_time(length);
 	insert_genre(genres);

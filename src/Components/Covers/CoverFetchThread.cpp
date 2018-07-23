@@ -138,7 +138,8 @@ bool FetchThread::more()
 	}
 
 	// we have all our covers
-	if(m->n_covers == m->n_covers_found){
+	if(m->n_covers == m->n_covers_found)
+	{
 		emit sig_finished(true);
 		return true;
 	}
@@ -189,7 +190,8 @@ void FetchThread::content_fetched()
 	AsyncWebAccess* awa = static_cast<AsyncWebAccess*>(sender());
 	m->active_connections.removeAll(awa);
 
-	if(awa->objectName() == m->acf->keyword()) {
+	if(awa->objectName() == m->acf->keyword())
+	{
 		if(awa->status() == AsyncWebAccess::Status::GotData)
 		{
 			QByteArray website = awa->data();
@@ -204,9 +206,12 @@ void FetchThread::content_fetched()
 void FetchThread::single_image_fetched()
 {
 	AsyncWebAccess* awa = static_cast<AsyncWebAccess*>(sender());
-	m->active_connections.removeAll(awa);
+	AsyncWebAccess::Status status = awa->status();
 
-	if(awa->status() == AsyncWebAccess::Status::GotData)
+	m->active_connections.removeAll(awa);
+	awa->deleteLater();
+
+	if(status == AsyncWebAccess::Status::GotData)
 	{
 		QImage img  = awa->image();
 
@@ -227,8 +232,6 @@ void FetchThread::single_image_fetched()
 			emit sig_finished(false);
 		}
 	}
-
-	awa->deleteLater();
 }
 
 

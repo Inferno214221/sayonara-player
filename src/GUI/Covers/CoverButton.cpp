@@ -188,6 +188,7 @@ void CoverButton::cover_found(const Location& cl)
 void CoverButton::cover_lookup_finished(bool success)
 {
 	if(!success){
+		sp_log(Log::Warning, this) << "Cover lookup finished: false";
 		set_cover_image(Location::invalid_location().preferred_path());
 	}
 }

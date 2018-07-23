@@ -84,7 +84,7 @@ struct CoverModel::Private
 
 static Hash get_hash(const Album& album)
 {
-	return album.name() + "-" + album.id;
+	return album.name() + "-" + QString::number(album.id);
 }
 
 CoverModel::CoverModel(QObject* parent, AbstractLibrary* library) :
@@ -104,12 +104,13 @@ CoverModel::~CoverModel() {}
 
 int CoverModel::rowCount(const QModelIndex& parent) const
 {
+	Q_UNUSED(parent);
+
 	if(columnCount() == 0){
 		return 0;
 	}
 
-	Q_UNUSED(parent);
-	return (albums().size() / columnCount()) + 1;
+	return (albums().count() / columnCount()) + 1;
 }
 
 int CoverModel::columnCount(const QModelIndex& parent) const
@@ -208,9 +209,6 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 			{
 				QPixmap p;
 				Hash hash = get_hash(album);
-				if(album.artists().contains("jane", Qt::CaseInsensitive)){
-					sp_log(Log::Debug, this) << "Jane album";
-				}
 
 				if(!m->pixmaps.contains(hash))
 				{
@@ -294,6 +292,7 @@ void CoverModel::next_hash()
 
 	clu->fetch_cover(cl);
 }
+
 
 QModelIndex CoverModel::getNextRowIndexOf(const QString& substr, int cur_row, const QModelIndex& parent)
 {
