@@ -103,13 +103,13 @@ void CoverButton::set_cover_location(const Location& cl)
 	m->cover_lookup->fetch_cover(cl);
 }
 
-void CoverButton::force_cover(const QPixmap &pm)
+void CoverButton::force_cover(const QPixmap& pm)
 {
 	if(!_settings->get<Set::Cover_LoadFromFile>()){
 		return;
 	}
 
-	QString tmp_path = Cover::Util::cover_directory("tmp_" + Util::random_string(16) + ".png");
+	QString tmp_path = Cover::Util::cover_directory("tmp_" + Util::random_string(16) + ".jpg");
 
 	m->current_cover_path = Util::File::clean_filename(tmp_path);
 	m->cover_forced = true;
@@ -130,6 +130,11 @@ QIcon CoverButton::current_icon() const
 	QIcon icon;
 	QPixmap pm = QPixmap(m->current_cover_path)
 			.scaled(this->iconSize(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+	if(pm.isNull()){
+		sp_log(Log::Warning, this) << "Pixmap not valid";
+		return QIcon();
+	}
 
 	for(QIcon::Mode m : { QIcon::Mode::Normal, QIcon::Mode::Disabled, QIcon::Mode::Active, QIcon::Mode::Selected })
 	{

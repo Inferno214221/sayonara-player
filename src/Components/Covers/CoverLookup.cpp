@@ -90,6 +90,8 @@ bool Lookup::start_new_thread(const Cover::Location& cl )
 }
 
 #include <QPixmap>
+#include <QImage>
+#include <QImageWriter>
 bool Lookup::fetch_cover(const Cover::Location& cl, bool also_www)
 {
 	sp_log(Log::Crazy, this) << cl.identifer();
@@ -97,16 +99,16 @@ bool Lookup::fetch_cover(const Cover::Location& cl, bool also_www)
 
 	if(cl.has_audio_file_source() && !QFile::exists(cover_path))
 	{
-		MetaData md;
-		md.set_filepath(cl.audio_file_source());
 		QString mime;
 		QByteArray data;
 
-		Tagging::Util::extract_cover(md.filepath(), data, mime);
-		QImage img = QImage::fromData(data);
-		img.save(cover_path);
+		Tagging::Util::extract_cover(cl.audio_file_source(), data, mime);
 
-		sp_log(Log::Debug, this) << "Save cover from Audio file to " << cover_path;
+		QImage img = QImage::fromData(data, mime.toLocal8Bit());
+		QImageWriter img_writer(cover_path, "jpg");
+		img_writer.write(img);
+
+		sp_log(Log::Debug, this) << "Save cover from Audio file to " << cover_path << " (" << mime << ")";
 	}
 
 	// Look, if cover exists in .Sayonara/covers
