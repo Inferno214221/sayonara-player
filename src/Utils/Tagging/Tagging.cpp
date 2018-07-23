@@ -394,6 +394,20 @@ bool Tagging::Util::write_cover(const QString& filepath, const QString& cover_im
 	return f.save();
 }
 
+QImage Tagging::Util::extract_cover(const QString& filepath)
+{
+	QByteArray data;
+	QString mime;
+
+	bool success = extract_cover(filepath, data, mime);
+	if(!success){
+		return QImage();
+	}
+
+	return QImage::fromData(data);
+}
+
+
 bool Tagging::Util::extract_cover(const QString& filepath, QByteArray& cover_data, QString& mime_type)
 {
 	TagLib::FileRef f(TagLib::FileName(filepath.toUtf8()));
@@ -651,5 +665,6 @@ QString Tagging::Util::tag_type_to_string(TagType type)
 			return "Partially unsupported";
 	}
 }
+
 
 

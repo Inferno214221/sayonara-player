@@ -140,7 +140,7 @@ Location Location::invalid_location()
 	cl.set_all_search_urls(StringMap());
 	cl.set_search_term(QString());
 	cl.set_identifier("Invalid location");
-	cl.set_audio_file_source(QString());
+	cl.set_audio_file_source(QString(), QString());
 
 	return cl;
 }
@@ -238,7 +238,7 @@ Location Location::cover_location(const Album& album)
 			{
 				if(Tagging::Util::has_cover(md.filepath()))
 				{
-					cl.set_audio_file_source(md.filepath());
+					cl.set_audio_file_source(md.filepath(), cl.cover_path());
 					has_audio_source = true;
 				}
 			}
@@ -346,20 +346,22 @@ Location Location::cover_location(const MetaData& md)
 	}
 
 	if(cl.audio_file_source().isEmpty() && Tagging::Util::has_cover(md.filepath())) {
-		cl.set_audio_file_source(md.filepath());
+		cl.set_audio_file_source(md.filepath(), cl.cover_path());
 	}
 
 	if(cl.search_urls().isEmpty()){
 		cl.set_search_urls({md.cover_download_url()});
 	}
 
-	cl.set_identifier("CL:By metadata: " + md.album() + " by " + md.artist());
-
-	const QStringList local_paths = Cover::LocalSearcher::cover_paths_from_filename(md.filepath());
-	for(const QString& lp : local_paths){
-		cl.add_local_path(lp);
+	if(cl.local_paths().isEmpty())
+	{
+		const QStringList local_paths = Cover::LocalSearcher::cover_paths_from_filename(md.filepath());
+		for(const QString& lp : local_paths){
+			cl.add_local_path(lp);
+		}
 	}
 
+	cl.set_identifier("CL:By metadata: " + md.album() + " by " + md.artist());
 	return cl;
 }
 
@@ -375,7 +377,6 @@ Location Location::cover_location(const QUrl& url, const QString& target_path)
 
 	return cl;
 }
-
 
 bool Location::valid() const
 {
@@ -399,12 +400,18 @@ QString Location::cover_path() const
 
 QString Location::preferred_path() const
 {
-	const QStringList paths = local_paths();
+	// first search for cover in track
+	if(QFile::exists(this->audio_file_source())){
+		return this->audio_file_source();
+	}
 
+	// afterwards, search for cover in the path of the track
+	const QStringList paths = local_paths();
 	if(!paths.isEmpty()){
 		return paths.at(0);
 	}
 
+	// return the calculated path
 	if(QFile::exists(this->cover_path())){
 		return this->cover_path();
 	}
@@ -490,7 +497,30 @@ QString Location::audio_file_source() const
 	return m->audio_file_source;
 }
 
-void Location::set_audio_file_source(const QString& audio_file_source)
+void Location::set_audio_file_source(const QString& audio_filepath, const QString& cover_path)
 {
-	m->audio_file_source = audio_file_source;
+	if(audio_filepath.isEmpty() || cover_path.isEmpty()){
+		return;
+	}
+
+	m->audio_file_source = QString();
+
+	if(!Tagging::Util::has_cover(audio_filepath))
+	{
+		return;
+	}
+
+	if(!QFile::exists(cover_path))
+	{
+		QImage img = Tagging::Util::extract_cover(audio_filepath);
+		if(!img.isNull())
+		{
+			img.save(cover_path);
+			m->audio_file_source = cover_path;
+		}
+	}
+
+	else {
+		m->audio_file_source = cover_path;
+	}
 }

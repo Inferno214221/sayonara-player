@@ -43,17 +43,21 @@ struct CoverButton::Private
 {
 	GUI_AlternativeCovers* 	alternative_covers=nullptr;
 
-	ChangeNotfier*	cover_change_notifier=nullptr;
 	Lookup*			cover_lookup=nullptr;
-	Location		search_cover_location;
-	QString			text;
+	Location		cover_location;
 	QString			current_cover_path;
+	QString			class_tmp_file;
 	bool			cover_forced;
 
 	Private() :
 		cover_forced(false)
 	{
-		cover_change_notifier = Cover::ChangeNotfier::instance();
+		class_tmp_file = Cover::Util::cover_directory("cb_" + Util::random_string(16) + ".jpg");
+	}
+
+	~Private()
+	{
+		::Util::File::delete_files({class_tmp_file});
 	}
 };
 
@@ -66,64 +70,54 @@ CoverButton::CoverButton(QWidget* parent) :
 	this->setObjectName("CoverButton");
 
 	m->current_cover_path = Location::invalid_location().preferred_path();
-	m->search_cover_location = Location::invalid_location();
+	m->cover_location = Location::invalid_location();
 
 	connect(this, &QPushButton::clicked, this, &CoverButton::cover_button_clicked);
-	connect(m->cover_change_notifier, &Cover::ChangeNotfier::sig_covers_changed,
-			this, &CoverButton::refresh);
+
+	Cover::ChangeNotfier* cn = Cover::ChangeNotfier::instance();
+	connect(cn, &Cover::ChangeNotfier::sig_covers_changed, this, &CoverButton::refresh);
 }
 
 CoverButton::~CoverButton() {}
-
-void CoverButton::set_cover_image(const QString& cover_path)
-{
-	m->current_cover_path = cover_path;
-	m->cover_forced = false;
-
-	this->setIcon(current_icon());
-	this->setToolTip("");
-}
 
 void CoverButton::refresh()
 {
 	this->setIcon(current_icon());
 }
 
+
+void CoverButton::set_cover_image(const QString& cover_path)
+{
+	//this->setToolTip("Cover source: " + cover_path);
+
+	m->current_cover_path = cover_path;
+	m->cover_forced = false;
+
+	this->refresh();
+}
+
+
 void CoverButton::set_cover_location(const Location& cl)
 {
-	m->search_cover_location = cl;
+	this->setToolTip("Cover source: " + cl.identifer());
+
+	m->cover_location = cl;
 	m->cover_forced = false;
 
 	if(!m->cover_lookup)
 	{
 		m->cover_lookup = new Lookup(this);
 		connect(m->cover_lookup, &Lookup::sig_cover_found, this, &CoverButton::set_cover_image);
+		connect(m->cover_lookup, &Lookup::sig_finished, this, &CoverButton::cover_lookup_finished);
 	}
 
-	m->cover_lookup->fetch_cover(cl);
-}
-
-void CoverButton::force_cover(const QPixmap& pm)
-{
-	if(!_settings->get<Set::Cover_LoadFromFile>()){
-		return;
+	bool can_fetch = m->cover_lookup->fetch_cover(cl);
+	if(!can_fetch){
+		m->current_cover_path = Cover::Location::invalid_location().preferred_path();
+		refresh();
 	}
-
-	QString tmp_path = Cover::Util::cover_directory("tmp_" + Util::random_string(16) + ".jpg");
-
-	m->current_cover_path = Util::File::clean_filename(tmp_path);
-	m->cover_forced = true;
-
-	pm.save(m->current_cover_path);
-
-	this->setIcon(current_icon());
 }
 
-
-void CoverButton::force_cover(const QImage& img)
-{
-	force_cover(QPixmap::fromImage(img));
-}
 
 QIcon CoverButton::current_icon() const
 {
@@ -163,7 +157,7 @@ void CoverButton::cover_button_clicked()
 				this, &CoverButton::alternative_cover_fetched );
 	}
 
-	m->alternative_covers->start(m->search_cover_location);
+	m->alternative_covers->start(m->cover_location);
 }
 
 
@@ -179,6 +173,8 @@ void CoverButton::alternative_cover_fetched(const Location& cl)
 
 void CoverButton::cover_found(const Location& cl)
 {
+	this->setToolTip("Cover source: " + cl.identifer());
+
 	/* If cover was forced while CoverLookup was still running */
 	if(m->cover_forced && (sender() == m->cover_lookup)) {
 		return;
@@ -187,15 +183,44 @@ void CoverButton::cover_found(const Location& cl)
 	set_cover_image(cl.cover_path());
 }
 
+void CoverButton::cover_lookup_finished(bool success)
+{
+	if(!success){
+		set_cover_image(Location::invalid_location().preferred_path());
+	}
+}
+
+
+void CoverButton::force_cover(const QPixmap& pm)
+{
+	if(!_settings->get<Set::Cover_LoadFromFile>()){
+		return;
+	}
+
+	this->setToolTip(tr("Cover source: File"));
+
+	m->current_cover_path = m->class_tmp_file;
+	m->cover_forced = true;
+
+	pm.save(m->current_cover_path);
+
+	refresh();
+}
+
+
+void CoverButton::force_cover(const QImage& img)
+{
+	force_cover(QPixmap::fromImage(img));
+}
+
 
 void CoverButton::showEvent(QShowEvent* e)
 {
 	this->setFlat(true);
-	this->setToolTip(tr("Click for searching an alternative cover"));
+	this->setToolTip(tr("Search an alternative cover"));
 
 	CoverButtonBase::showEvent(e);
 }
-
 
 
 void CoverButton::paintEvent(QPaintEvent* event)

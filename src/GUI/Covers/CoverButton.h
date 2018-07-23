@@ -85,6 +85,7 @@ private slots:
 	void cover_button_clicked();
 	void alternative_cover_fetched(const Cover::Location& cl);
 	void cover_found(const Cover::Location& cl);
+	void cover_lookup_finished(bool success);
 	void set_cover_image(const QString& cover_path);
 
 public slots:

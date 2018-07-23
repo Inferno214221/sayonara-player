@@ -208,6 +208,9 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 			{
 				QPixmap p;
 				Hash hash = get_hash(album);
+				if(album.artists().contains("jane", Qt::CaseInsensitive)){
+					sp_log(Log::Debug, this) << "Jane album";
+				}
 
 				if(!m->pixmaps.contains(hash))
 				{

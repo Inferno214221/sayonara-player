@@ -80,6 +80,7 @@ namespace Tagging
 		bool write_cover(const QString& filepath, const QImage& image);
 		bool write_cover(const QString& filepath, const QString& image_path);
 		bool extract_cover(const QString& filepath, QByteArray& cover_data, QString& mime_type);
+		QImage extract_cover(const QString& filepath);
 		bool has_cover(const QString& filepath);
 		bool is_cover_supported(const QString& filepath);
 

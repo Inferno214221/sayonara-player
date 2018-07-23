@@ -93,36 +93,12 @@ bool Lookup::start_new_thread(const Cover::Location& cl )
 
 bool Lookup::fetch_cover(const Cover::Location& cl, bool also_www)
 {
-	sp_log(Log::Crazy, this) << cl.identifer();
-	QString cover_path = cl.cover_path();
-
-	if(cl.has_audio_file_source() && !QFile::exists(cover_path))
-	{
-		QString mime;
-		QByteArray data;
-
-		Tagging::Util::extract_cover(cl.audio_file_source(), data, mime);
-
-		QImage img = QImage::fromData(data, mime.toLocal8Bit());
-		QImageWriter img_writer(cover_path, "jpg");
-		img_writer.write(img);
-
-		sp_log(Log::Debug, this) << "Save cover from Audio file to " << cover_path << " (" << mime << ")";
-	}
+	QString cover_path = cl.preferred_path();
 
 	// Look, if cover exists in .Sayonara/covers
-	if( QFile::exists(cover_path) && m->n_covers == 1 )
+	if( QFile::exists(cover_path) && !Cover::Location::is_invalid(cover_path) && m->n_covers == 1 )
 	{
-		emit sig_cover_found(cl.cover_path());
-		emit sig_finished(true);
-		return true;
-	}
-
-	QStringList local_paths = cl.local_paths();
-	// For one cover, we also can use the local cover path
-	if(!local_paths.isEmpty() && m->n_covers == 1)
-	{
-		emit sig_cover_found(local_paths.first());
+		emit sig_cover_found(cover_path);
 		emit sig_finished(true);
 		return true;
 	}
@@ -130,7 +106,8 @@ bool Lookup::fetch_cover(const Cover::Location& cl, bool also_www)
 	// we have to fetch the cover from the internet
 	if(also_www)
 	{
-		if(!start_new_thread( cl )){
+		if(!start_new_thread( cl ))
+		{
 			return false;
 		}
 	}

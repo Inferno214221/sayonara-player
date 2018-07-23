@@ -155,7 +155,7 @@ namespace Cover
 
 		QString			audio_file_source() const;
 
-		void			set_audio_file_source(const QString& audio_file_source);
+		void			set_audio_file_source(const QString& audio_file_source, const QString& cover_path);
 
 
 		/**
