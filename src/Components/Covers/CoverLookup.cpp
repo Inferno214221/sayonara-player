@@ -39,6 +39,7 @@
 
 #include <QFile>
 #include <QImage>
+#include <QImageWriter>
 #include <QStringList>
 
 using Cover::Lookup;
@@ -89,9 +90,7 @@ bool Lookup::start_new_thread(const Cover::Location& cl )
 	return true;
 }
 
-#include <QPixmap>
-#include <QImage>
-#include <QImageWriter>
+
 bool Lookup::fetch_cover(const Cover::Location& cl, bool also_www)
 {
 	sp_log(Log::Crazy, this) << cl.identifer();

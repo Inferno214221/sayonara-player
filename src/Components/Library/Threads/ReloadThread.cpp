@@ -52,24 +52,24 @@ using Library::ReloadThread;
 
 struct ReloadThread::Private
 {
-	DB::Connector*			db=nullptr;
 	QString					library_path;
-	LibraryId				library_id;
 	MetaDataList			v_md;
+	LibraryId				library_id;
 	Library::ReloadQuality	quality;
+
+	DB::Connector*			db=nullptr;
 
 	bool					paused;
 	bool					running;
 	bool					may_run;
 
-	Private()
-	{
-		paused = false;
-		running = false;
-		quality = Library::ReloadQuality::Fast;
-		db = DB::Connector::instance();
-		may_run = true;
-	}
+	Private() :
+		quality(Library::ReloadQuality::Fast),
+		db(DB::Connector::instance()),
+		paused(false),
+		running(false),
+		may_run(true)
+	{}
 };
 
 ReloadThread::ReloadThread(QObject *parent) :
@@ -186,7 +186,6 @@ bool ReloadThread::get_and_save_all_files(const QHash<QString, MetaData>& md_map
 				bool success = lib_db->store_metadata(v_md_to_store);
 				sp_log(Log::Develop, this) << "  Success? " << success;
 				v_md_to_store.clear();
-
 			}
 		}
 	}

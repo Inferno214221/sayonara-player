@@ -34,6 +34,8 @@ class Artist;
 
 namespace Cover
 {
+	using StringMap=QMap<QString, QString>;
+
 	/**
 	 * @brief The CoverLocation class
 	 * @ingroup Covers
@@ -41,6 +43,14 @@ namespace Cover
 	class Location
 	{
 		PIMPL(Location)
+
+
+	private:
+		void set_valid(bool b);
+		void set_identifier(const QString& identifier);
+		void set_cover_path(const QString& cover_path);
+		void set_all_search_urls(const StringMap& search_paths);
+
 
 	public:
 		Location();
