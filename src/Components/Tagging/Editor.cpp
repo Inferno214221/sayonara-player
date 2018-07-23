@@ -20,12 +20,17 @@
 
 #include "Editor.h"
 #include "ChangeNotifier.h"
+#include "Components/MetaDataInfo/MetaDataInfo.h"
 
 #include "Utils/Tagging/Tagging.h"
 #include "Utils/MetaData/Genre.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/globals.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/Set.h"
+#include "Utils/Library/Filter.h"
+#include "Utils/Library/Sortorder.h"
+
 #include "Database/LibraryDatabase.h"
 #include "Database/DatabaseConnector.h"
 
@@ -172,6 +177,7 @@ void Editor::set_metadata(const MetaDataList& v_md)
 	m->v_md_orig = v_md;
 
 	m->cover_map.clear();
+	m->changed_md.clear();
 	m->changed_md.assign(v_md.size(), false);
 
 	if( v_md.size() > 0) {
@@ -184,6 +190,26 @@ void Editor::set_metadata(const MetaDataList& v_md)
 bool Editor::is_cover_supported(int idx) const
 {
 	return Util::is_cover_supported( m->v_md[idx].filepath() );
+}
+
+bool Editor::can_load_entire_album() const
+{
+	MetaDataInfo info(m->v_md);
+	return (info.album_ids().count() == 1);
+}
+
+void Editor::load_entire_album()
+{
+	MetaDataInfo info(m->v_md);
+	if(info.album_ids().empty()){
+		return;
+	}
+
+	AlbumId id = info.album_ids().first();
+	MetaDataList v_md;
+
+	m->ldb->getAllTracksByAlbum(id, v_md, ::Library::Filter(), ::Library::SortOrder::TrackNumAsc);
+	set_metadata(v_md);
 }
 
 

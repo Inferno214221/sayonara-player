@@ -68,7 +68,6 @@ struct FetchThread::Private
 	{}
 };
 
-FetchThread::FetchThread() {}
 
 FetchThread::FetchThread(QObject* parent, const Location& cl, const int n_covers) :
 	QObject(parent)

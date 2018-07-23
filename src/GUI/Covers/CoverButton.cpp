@@ -88,8 +88,6 @@ void CoverButton::refresh()
 
 void CoverButton::set_cover_image(const QString& cover_path)
 {
-	//this->setToolTip("Cover source: " + cover_path);
-
 	m->current_cover_path = cover_path;
 	m->cover_forced = false;
 
@@ -144,20 +142,24 @@ QIcon CoverButton::current_icon() const
 
 void CoverButton::cover_button_clicked()
 {
-	if(m->cover_forced){
-		emit sig_rejected();
-		return;
-	}
-
-	if(!m->alternative_covers)
+	// The cover comes from the ID3 file
+	if(m->cover_forced)
 	{
-		m->alternative_covers = new GUI_AlternativeCovers(this->parentWidget());
-
-		connect(m->alternative_covers, &GUI_AlternativeCovers::sig_cover_changed,
-				this, &CoverButton::alternative_cover_fetched );
+		emit sig_rejected();
 	}
 
-	m->alternative_covers->start(m->cover_location);
+	else
+	{
+		if(!m->alternative_covers)
+		{
+			m->alternative_covers = new GUI_AlternativeCovers(this->parentWidget());
+
+			connect(m->alternative_covers, &GUI_AlternativeCovers::sig_cover_changed,
+					this, &CoverButton::alternative_cover_fetched );
+		}
+
+		m->alternative_covers->start(m->cover_location);
+	}
 }
 
 

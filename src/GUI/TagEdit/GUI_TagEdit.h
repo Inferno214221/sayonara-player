@@ -293,6 +293,8 @@ private slots:
 
 	void cb_replace_toggled(bool b);
 
+	void load_entire_album();
+
 
 protected:
 	void showEvent(QShowEvent* e) override;

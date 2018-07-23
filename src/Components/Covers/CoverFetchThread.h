@@ -38,88 +38,88 @@ class AsyncWebAccess;
 
 namespace Cover
 {
-    class Location;
+	class Location;
 
 
-    /**
-     * @brief The CoverFetchThread class, This is not a real QThread class, but behaves like one because of AsyncWebAccess
-     * @ingroup Covers
-     */
-    class FetchThread :
-            public QObject
-    {
-        Q_OBJECT
-        PIMPL(FetchThread)
+	/**
+	 * @brief The CoverFetchThread class, This is not a real QThread class, but behaves like one because of AsyncWebAccess
+	 * @ingroup Covers
+	 */
+	class FetchThread :
+			public QObject
+	{
+		Q_OBJECT
+		PIMPL(FetchThread)
 
-    signals:
-        /**
-         * @brief emitted, when thread has finished
-         * @param b true, if couvers could be fetched. false else
-         */
-        void sig_finished(bool b);
+	signals:
+		/**
+		 * @brief emitted, when thread has finished
+		 * @param b true, if couvers could be fetched. false else
+		 */
+		void sig_finished(bool b);
 
-        /**
-         * @brief emitted, when covers has been found
-         * @param cl CoverLocation including the local cover path
-         */
-        void sig_cover_found(const QString& cover_path);
-
-
-    public:
-        FetchThread();
-        FetchThread(QObject* parent, const Cover::Location& cl, const int n_covers);
-        virtual ~FetchThread();
-
-        /**
-         * @brief start fetching covers, if the url does not contain "google",
-         *   a direct link to an image is assumed and will be downloaded directly
-         * @return always true
-         */
-        bool start();
-
-        /**
-         * @brief fetch next cover
-         * @return false, if there are no more covers to fetch
-         */
-        bool more();
-
-        /**
-         * @brief stops the current search
-         */
-        void stop();
+		/**
+		 * @brief emitted, when covers has been found
+		 * @param cl CoverLocation including the local cover path
+		 */
+		void sig_cover_found(const QString& cover_path);
 
 
-    private:
-        /**
-         * @brief save_and_emit_image saves the image to disc, creates CoverLocation object and emits the sig_cover_found signal
-         * @param filepath where to save the image on disc
-         * @param img the cover image
-         */
-        void save_and_emit_image(const QString& filepath,
-                                 const QImage& img);
+	public:
+		FetchThread()=delete;
+		FetchThread(QObject* parent, const Cover::Location& cl, const int n_covers);
+		virtual ~FetchThread();
+
+		/**
+		 * @brief start fetching covers, if the url does not contain "google",
+		 *   a direct link to an image is assumed and will be downloaded directly
+		 * @return always true
+		 */
+		bool start();
+
+		/**
+		 * @brief fetch next cover
+		 * @return false, if there are no more covers to fetch
+		 */
+		bool more();
+
+		/**
+		 * @brief stops the current search
+		 */
+		void stop();
 
 
-    private slots:
-        /**
-         * @brief A single image has been fetched (reached when _n_covers was set to 1),
-         *   calls save_and_emit_image
-         * @param success indicates if image could be fetched successfully
-         */
-        void single_image_fetched();
+	private:
+		/**
+		 * @brief save_and_emit_image saves the image to disc, creates CoverLocation object and emits the sig_cover_found signal
+		 * @param filepath where to save the image on disc
+		 * @param img the cover image
+		 */
+		void save_and_emit_image(const QString& filepath,
+								 const QImage& img);
 
-        /**
-         * @brief multi_image_fetched (reached when _n_covers was set to > 1),
-         *   calls save_and_emit_image for first image;
-         * @param success indicates if images could be fetched successfully
-         */
-        void multi_image_fetched();
 
-        /**
-         * @brief The website content has been fetched
-         * @param success indicates if content could be fetched
-         */
-        void content_fetched();
-    };
+	private slots:
+		/**
+		 * @brief A single image has been fetched (reached when _n_covers was set to 1),
+		 *   calls save_and_emit_image
+		 * @param success indicates if image could be fetched successfully
+		 */
+		void single_image_fetched();
+
+		/**
+		 * @brief multi_image_fetched (reached when _n_covers was set to > 1),
+		 *   calls save_and_emit_image for first image;
+		 * @param success indicates if images could be fetched successfully
+		 */
+		void multi_image_fetched();
+
+		/**
+		 * @brief The website content has been fetched
+		 * @param success indicates if content could be fetched
+		 */
+		void content_fetched();
+	};
 }
 
 #endif /* COVERFETCHTHREAD_H_ */

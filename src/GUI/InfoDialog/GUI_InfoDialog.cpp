@@ -243,7 +243,8 @@ void GUI_InfoDialog::show(GUI_InfoDialog::Tab tab)
 	if(tab == GUI_InfoDialog::Tab::Edit)
 	{
 		MetaDataList local_md;
-		for(const MetaData& md : m->v_md){
+		for(const MetaData& md : m->v_md)
+		{
 			if(!Util::File::is_www(md.filepath())){
 				local_md << md;
 			}
@@ -265,7 +266,6 @@ void GUI_InfoDialog::show(GUI_InfoDialog::Tab tab)
 
 	Dialog::show();
 }
-
 
 void GUI_InfoDialog::prepare_cover(const Cover::Location& cl)
 {

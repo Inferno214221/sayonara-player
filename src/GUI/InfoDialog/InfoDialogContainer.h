@@ -43,8 +43,6 @@ class InfoDialogContainer
 		InfoDialogContainer();
 		virtual ~InfoDialogContainer();
 
-
-
 		/**
 		 * @brief this function should not be called from outside.
 		 * This function is triggered when the info dialog was closed.
@@ -56,6 +54,14 @@ class InfoDialogContainer
 		bool init_dialog();
 
 	protected:
+
+		enum EditTab
+		{
+			TabText,
+			TabCover,
+			TabTagsFromPath
+		};
+
 		/**
 		 * @brief get the interpretation for the metadata. Maybe a list of
 		 * metadata should be intrepeted as albums while others should be

@@ -109,11 +109,9 @@ GUI_TagEdit::GUI_TagEdit(QWidget* parent) :
 	connect(m->tag_edit, &Editor::finished, this, &GUI_TagEdit::commit_finished);
 
 	connect(ui->btn_replacement, &QPushButton::clicked, ui->btn_cover_replacement, &QPushButton::click);
+	connect(ui->btn_load_entire_album, &QPushButton::clicked, this, &GUI_TagEdit::load_entire_album);
 
-	reset();
 	metadata_changed(m->tag_edit->metadata());
-
-	language_changed();
 }
 
 
@@ -195,6 +193,9 @@ void GUI_TagEdit::metadata_changed(const MetaDataList& md)
 	Q_UNUSED(md)
 
 	reset();
+	language_changed();
+
+	ui->btn_load_entire_album->setVisible(m->tag_edit->can_load_entire_album());
 
 	m->cur_idx = 0;
 	track_idx_changed();
@@ -384,6 +385,8 @@ void GUI_TagEdit::reset()
 	ui->btn_disc_nr->setChecked(false);
 	ui->btn_track_nr->setChecked(false);
 
+	ui->btn_load_entire_album->setVisible(false);
+
 	m->cover_path_map.clear();
 	init_completer();
 }
@@ -479,8 +482,8 @@ void GUI_TagEdit::cover_all_changed(bool b)
 	}
 
 	ui->cb_replace->setEnabled(!b);
-
 	ui->btn_cover_replacement->setEnabled(!b);
+	ui->btn_replacement->setEnabled(!b);
 }
 
 void GUI_TagEdit::undo_clicked()
@@ -648,6 +651,11 @@ void GUI_TagEdit::update_cover(int idx, const QString& cover_path)
 void GUI_TagEdit::cb_replace_toggled(bool b)
 {
 	show_replacement_field(b);
+}
+
+void GUI_TagEdit::load_entire_album()
+{
+	m->tag_edit->load_entire_album();
 }
 
 

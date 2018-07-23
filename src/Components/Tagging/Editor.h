@@ -142,6 +142,10 @@ namespace Tagging
 		bool is_cover_supported(int idx) const;
 
 
+		bool can_load_entire_album() const;
+		void load_entire_album();
+
+
 	public slots:
 
 		/**

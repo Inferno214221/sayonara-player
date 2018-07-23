@@ -72,7 +72,7 @@ Lookup::~Lookup()
 
 bool Lookup::start_new_thread(const Cover::Location& cl )
 {
-	if(!cl.has_search_urls()){
+	if(!cl.has_search_urls() && cl.valid()){
 		return false;
 	}
 
