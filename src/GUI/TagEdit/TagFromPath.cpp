@@ -127,8 +127,14 @@ bool GUI_TagFromPath::replace_selected_tag_text(TagName tag_name, bool b)
 {
 	TextSelection ts = ui->le_tag->text_selection();
 
-	if(ts.selection_start < 0 && b) {
-		sp_log(Log::Debug, this) << "Nothing selected...";
+	if(ts.selection_start < 0 && b)
+	{
+		QString tag_string = Tagging::tag_name_to_string(tag_name);
+
+		Message::info(tr("Please select %1 first").arg(tag_string.toHtmlEscaped()));
+
+		sp_log(Log::Debug, this) << tag_string << ": Nothing selected...";
+
 		return false;
 	}
 

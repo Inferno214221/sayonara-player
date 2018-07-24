@@ -95,7 +95,7 @@
         </widget>
        </item>
        <item row="5" column="0" colspan="2">
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <layout class="QHBoxLayout" name="layout_search">
          <item>
           <spacer name="horizontalSpacer_3">
            <property name="orientation">
@@ -125,7 +125,7 @@
         </layout>
        </item>
        <item row="0" column="0" colspan="2">
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <layout class="QHBoxLayout" name="layout_server">
          <item>
           <widget class="QLabel" name="lab_server">
            <property name="text">

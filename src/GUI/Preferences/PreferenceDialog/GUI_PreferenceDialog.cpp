@@ -79,7 +79,10 @@ void GUI_PreferenceDialog::show_preference(const QString& identifier)
 		{
 			ui->list_preferences->setCurrentRow(i);
 			row_changed(i);
-			show();
+
+			this->setModal(true);
+			this->show();
+
 			return;
 		}
 

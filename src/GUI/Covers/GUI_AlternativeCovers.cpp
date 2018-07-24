@@ -29,6 +29,7 @@
 #include "GUI_AlternativeCovers.h"
 #include "GUI/Covers/ui_GUI_AlternativeCovers.h"
 #include "GUI/Utils/Widgets/ProgressBar.h"
+#include "GUI/Utils/PreferenceAction.h"
 
 #include "AlternativeCoverItemDelegate.h"
 #include "AlternativeCoverItemModel.h"
@@ -91,6 +92,13 @@ GUI_AlternativeCovers::GUI_AlternativeCovers(QWidget* parent) :
 
 	m->delegate = new AlternativeCoverItemDelegate(this);
 	ui->tv_images->setItemDelegate(m->delegate);
+
+	CoverPreferenceAction* cpa = new CoverPreferenceAction(this);
+	QPushButton* pref_button = cpa->create_button(this);
+	pref_button->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
+	//ui->layout_search->insertWidget(0, pref_button);
+	ui->layout_server->addWidget(pref_button);
+
 
 	connect(ui->btn_ok, &QPushButton::clicked, this, &GUI_AlternativeCovers::ok_clicked);
 	connect(ui->btn_apply, &QPushButton::clicked, this, &GUI_AlternativeCovers::apply_clicked);
@@ -155,7 +163,7 @@ void GUI_AlternativeCovers::connect_and_start()
 
 	ui->btn_ok->setEnabled(false);
 	ui->btn_apply->setEnabled(false);
-	ui->btn_search->setText( Lang::get(Lang::Stop) );
+	ui->btn_search->setText(Lang::get(Lang::Stop));
 
 	if(ui->rb_text_search->isChecked())
 	{
@@ -194,9 +202,16 @@ void GUI_AlternativeCovers::language_changed()
 	ui->retranslateUi(this);
 
 	ui->btn_ok->setText(Lang::get(Lang::OK));
-	ui->btn_search->setText(Lang::get(Lang::SearchVerb));
 	ui->btn_close->setText(Lang::get(Lang::Close));
 	ui->btn_apply->setText(Lang::get(Lang::Apply));
+
+	if(m->is_searching){
+		ui->btn_search->setText(Lang::get(Lang::Stop));
+	}
+
+	else {
+		ui->btn_search->setText(Lang::get(Lang::SearchVerb));
+	}
 }
 
 void GUI_AlternativeCovers::ok_clicked()

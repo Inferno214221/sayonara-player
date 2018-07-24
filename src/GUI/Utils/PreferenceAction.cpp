@@ -55,6 +55,16 @@ QString PreferenceAction::label() const
 	return Lang::get(Lang::Preferences) + ": " + display_name();
 }
 
+QPushButton* PreferenceAction::create_button(QWidget* parent)
+{
+	QPushButton* btn = new QPushButton(parent);
+	btn->setText(this->label());
+	btn->addAction(this);
+	connect(btn, &QPushButton::clicked, this, &QAction::triggered);
+
+	return btn;
+}
+
 QString PreferenceAction::identifier() const
 {
 	return m->identifier;

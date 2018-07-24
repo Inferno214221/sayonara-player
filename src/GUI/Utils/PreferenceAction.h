@@ -24,6 +24,8 @@
 #define PREFERENCEACTION_H
 
 #include <QAction>
+#include <QPushButton>
+
 #include "Utils/Settings/SayonaraClass.h"
 #include "Utils/Pimpl.h"
 
@@ -43,6 +45,8 @@ class PreferenceAction :
 
 		virtual QString label() const;
 		virtual QString identifier() const=0;
+
+		virtual QPushButton* create_button(QWidget* parent);
 
 	protected:
 		virtual QString display_name() const=0;
