@@ -83,25 +83,9 @@ private:
 
 
 	/**
-	 * @brief replaces text with tag or vice versa
-	 * @param t Tag of interest
-	 * @param activate if true, replace text by tag, else replace tag by original text
-	 * @return true on success, false if nothing is selected
-	 */
-	bool replace_selected_tag_text(Tag t, bool activate);
-
-
-	/**
-	 * @brief apply the entire tag expression for one specific track
-	 * @param idx track index
-	 */
-	void apply_tag(int idx);
-
-
-	/**
 	 * @brief fills track information for current index (_cur_idx)
 	 */
-	void track_idx_changed();
+	void refresh_current_track();
 
 
 	/**
@@ -138,77 +122,11 @@ private slots:
 	void prev_button_clicked();
 
 
-	/**
-	 * @brief calls apply_tag
-	 */
-	void apply_tag_clicked();
-	void apply_tag_all_clicked();
-
 
 	/**
 	 * @brief (un)sets _cover_all
 	 */
 	void cover_all_changed(bool b);
-
-
-	/**
-	 * @brief calls replace_selected_tag_text with TAG_TITLE
-	 * @param b active or not
-	 */
-	void btn_title_checked(bool b);
-
-
-	/**
-	 * @brief calls replace_selected_tag_text with TAG_ARTIST
-	 * @param b active or not
-	 */
-	void btn_artist_checked(bool b);
-
-
-	/**
-	 * @brief calls replace_selected_tag_text with TAG_ALBUM
-	 * @param b active or not
-	 */
-	void btn_album_checked(bool b);
-
-
-	/**
-	 * @brief calls replace_selected_tag_text with TAG_TRACK_NUM
-	 * @param b active or not
-	 */
-	void btn_track_nr_checked(bool b);
-
-
-	/**
-	 * @brief calls replace_selected_tag_text with TAG_DISC
-	 * @param b active or not
-	 */
-	void btn_disc_nr_checked(bool b);
-
-
-	/**
-	 * @brief calls replace_selected_tag_text with TAG_YEAR
-	 * @param b active or not
-	 */
-	void btn_year_checked(bool b);
-
-
-	/**
-	 * @brief calls webpage with help
-	 */
-	void btn_tag_help_clicked();
-
-	/**
-	 * @brief tries to apply the tag
-	 */
-	void tag_text_changed(const QString&);
-
-
-	/**
-	 * @brief sets red if not valid
-	 * @param valid if tag is valid or not
-	 */
-	void set_tag_colors(bool valid);
 
 
 	/**
@@ -235,6 +153,10 @@ private slots:
 	 */
 	void metadata_changed(const MetaDataList&);
 
+	void apply_tag_from_path();
+
+	void apply_all_tag_from_path();
+
 
 	/**
 	 * @brief triggered, when player language has been changed
@@ -249,6 +171,9 @@ private slots:
 
 	void cb_replace_toggled(bool b);
 
+	/**
+	 * @brief loads the complete album for the current track
+	 */
 	void load_entire_album();
 
 

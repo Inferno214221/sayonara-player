@@ -24,23 +24,30 @@
 #include <QMap>
 #include "Utils/Pimpl.h"
 
-#define TAG_NONE
-#define TAG_TITLE		QStringLiteral("<t>")
-#define TAG_ALBUM		QStringLiteral("<al>")
-#define TAG_ARTIST		QStringLiteral("<ar>")
-#define TAG_TRACK_NUM	QStringLiteral("<nr>")
-#define TAG_YEAR		QStringLiteral("<y>")
-#define TAG_DISC		QStringLiteral("<d>")
-#define TAG_IGNORE		QStringLiteral("<ign>")
-
 class QString;
 class QStringList;
 
-using Tag=QString;
-using ReplacedString=QString;
-
 namespace Tagging
 {
+	using TagString=QString;
+	using ReplacedString=QString;
+
+	enum TagName
+	{
+		TagNone=0,
+		TagTitle,
+		TagAlbum,
+		TagArtist,
+		TagTrackNum,
+		TagYear,
+		TagDisc,
+		TagIgnore
+	};
+
+	QMap<Tagging::TagName, TagString>	tag_name_map();
+	TagString							tag_name_to_string(Tagging::TagName name);
+	Tagging::TagName					tag_string_to_name(const TagString& tag_string);
+
 	/**
 	 * @brief The TagExpression class
 	 * @ingroup Tagging
@@ -50,7 +57,6 @@ namespace Tagging
 		PIMPL(Expression)
 
 	private:
-
 		/**
 		 * @brief prepends a "\\" before special characters
 		 * @param str string to be modified
@@ -66,6 +72,7 @@ namespace Tagging
 		 */
 		QString calc_regex_string(const QStringList& splitted_tag_str) const;
 
+
 		/**
 		 * @brief splits the tag string into normal string and tags e.g. foo<t>bar -> (foo, <t>, bar)
 		 * @param tag_str
@@ -74,30 +81,22 @@ namespace Tagging
 		QStringList split_tag_string(const QString& tag_str) const;
 
 
-	public:
-
-		Expression();
-		Expression(const QString& tag_str, const QString& filename);
-		virtual ~Expression();
-
-
 		/**
-		 * @brief fills the _cap_map
+		 * @brief fills the captured_texts
 		 * @param tag_str the tag string entered in UI
 		 * @param filepath the filepath
 		 * @return true if regular expressions can be applied to filepath, false else
 		 */
 		bool update_tag(const QString& tag_str, const QString& filepath);
 
-		/**
-		 * @brief checks, if one specific tag can be applied to the string
-		 * @param tag e.g. <t>
-		 * @param str usually the filepath
-		 * @return true on success, false else
-		 */
-		bool check_tag(const Tag& tag, const QString& str);
 
-		QMap<Tag, ReplacedString> get_tag_val_map() const;
+	public:
+		Expression()=delete;
+		Expression(const QString& tag_str, const QString& filename);
+		virtual ~Expression();
+
+		QMap<Tagging::TagName, QString> captured_tags() const;
+		bool is_valid() const;
 	};
 }
 

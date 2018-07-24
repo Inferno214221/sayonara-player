@@ -85,6 +85,9 @@ namespace Tagging
 		const MetaDataList& metadata() const;
 
 
+		bool apply_regex(const QString& regex, int idx);
+
+
 		/**
 		 * @brief Add a genre to all (changed) metdata
 		 * @param genre the genre name
@@ -103,6 +106,12 @@ namespace Tagging
 		 * @return number of tracks
 		 */
 		int count() const;
+
+
+		/**
+		 * @brief indicates if there are pending changes
+		 */
+		bool has_changes() const;
 
 
 		/**
@@ -141,9 +150,9 @@ namespace Tagging
 
 		bool is_cover_supported(int idx) const;
 
-
 		bool can_load_entire_album() const;
 		void load_entire_album();
+
 
 
 	public slots:

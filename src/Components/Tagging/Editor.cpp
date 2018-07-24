@@ -19,15 +19,17 @@
  */
 
 #include "Editor.h"
+#include "Expression.h"
 #include "ChangeNotifier.h"
 #include "Components/MetaDataInfo/MetaDataInfo.h"
 
+#include "Utils/globals.h"
+#include "Utils/Utils.h"
+#include "Utils/Set.h"
 #include "Utils/Tagging/Tagging.h"
 #include "Utils/MetaData/Genre.h"
 #include "Utils/MetaData/MetaDataList.h"
-#include "Utils/globals.h"
 #include "Utils/Logger/Logger.h"
-#include "Utils/Set.h"
 #include "Utils/Library/Filter.h"
 #include "Utils/Library/Sortorder.h"
 
@@ -105,12 +107,14 @@ void Editor::update_track(int idx, const MetaData& md)
 void Editor::undo(int idx)
 {
 	m->v_md[idx] = m->v_md_orig[idx];
+	m->changed_md[idx] = false;
 }
 
 
 void Editor::undo_all()
 {
 	m->v_md = m->v_md_orig;
+	std::fill(m->changed_md.begin(), m->changed_md.end(), false);
 }
 
 const MetaData& Editor::metadata(int idx) const
@@ -123,10 +127,67 @@ const MetaDataList& Editor::metadata() const
 	return m->v_md;
 }
 
+bool Editor::apply_regex(const QString& regex, int idx)
+{
+	if(!between(idx, m->v_md)){
+		return false;
+	}
+
+	MetaData md = m->v_md[idx];
+
+	Expression e(regex, md.filepath());
+	if(!e.is_valid()){
+		return false;
+	}
+
+	const QMap<Tagging::TagName, QString> captured_tags = e.captured_tags();
+	for(auto it=captured_tags.begin(); it != captured_tags.end(); it++)
+	{
+		Tagging::TagName key = it.key();
+		QString value = it.value();
+
+		if(key == Tagging::TagTitle) {
+			md.set_title(value);
+		}
+
+		else if(key == Tagging::TagAlbum) {
+			md.set_album(value);
+		}
+
+		else if(key == Tagging::TagArtist) {
+			md.set_artist(value);
+		}
+
+		else if(key == Tagging::TagTrackNum) {
+			md.discnumber = value.toInt();
+		}
+
+		else if(key == Tagging::TagYear) {
+			md.year = value.toInt();
+		}
+
+		else if(key == Tagging::TagDisc) {
+			md.discnumber = value.toInt();
+		}
+	}
+
+	update_track(idx, md);
+
+	return true;
+}
+
 
 int Editor::count() const
 {
-	return m->v_md.size();
+	return m->v_md.count();
+}
+
+
+bool Editor::has_changes() const
+{
+	return ::Util::contains(m->changed_md, [](bool b){
+		return (b);
+	});
 }
 
 void Editor::add_genre(int idx, const Genre& genre)
@@ -211,7 +272,6 @@ void Editor::load_entire_album()
 	m->ldb->getAllTracksByAlbum(id, v_md, ::Library::Filter(), ::Library::SortOrder::TrackNumAsc);
 	set_metadata(v_md);
 }
-
 
 
 void Editor::apply_artists_and_albums_to_md()

@@ -19,8 +19,8 @@
  */
 
 #include "GUI_TagEdit.h"
+#include "TagFromPath.h"
 #include "TagLineEdit.h"
-#include "TextSelection.h"
 
 #include "GUI/TagEdit/ui_GUI_TagEdit.h"
 
@@ -31,38 +31,32 @@
 #include "GUI/Utils/Delegates/ComboBoxDelegate.h"
 #include "GUI/Utils/Widgets/Completer.h"
 
+#include "Utils/globals.h"
 #include "Utils/Message/Message.h"
 #include "Utils/Tagging/Tagging.h"
-#include "Utils/globals.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/MetaData/Album.h"
 #include "Utils/MetaData/Artist.h"
 #include "Utils/MetaData/Genre.h"
 #include "Utils/Language.h"
-#include "Utils/Message/Message.h"
 
 #include "Database/DatabaseConnector.h"
 #include "Database/LibraryDatabase.h"
 
-#include <QDir>
-#include <QDesktopServices>
-#include <QRegExp>
-#include <QUrl>
-#include <QStringListModel>
+#include <QMap>
+#include <QStringList>
+
 
 using namespace Tagging;
 
 struct GUI_TagEdit::Private
 {
+	GUI_TagFromPath*	ui_tag_from_path=nullptr;
 	Editor*				tag_edit=nullptr;
-	Expression			tag_expression;
+
 	QMap<int, QString>	cover_path_map;
 	int					cur_idx;
-	/**
-	 * @brief _tag_str_map, key = tag, val = replaced string
-	 */
-	QMap<Tag, ReplacedString> tag_str_map;
 };
 
 GUI_TagEdit::GUI_TagEdit(QWidget* parent) :
@@ -73,14 +67,13 @@ GUI_TagEdit::GUI_TagEdit(QWidget* parent) :
 
 	m = Pimpl::make<Private>();
 	m->tag_edit = new Tagging::Editor(this);
+	m->ui_tag_from_path = new GUI_TagFromPath(ui->tab_from_path);
+	ui->tab_from_path->layout()->addWidget(m->ui_tag_from_path);
 
 	ui->tab_widget->setCurrentIndex(0);
-	ui->sw_tag_from_path->setCurrentIndex(1);
 
 	connect(ui->btn_next, &QPushButton::clicked, this, &GUI_TagEdit::next_button_clicked);
 	connect(ui->btn_prev, &QPushButton::clicked, this, &GUI_TagEdit::prev_button_clicked);
-	connect(ui->btn_apply_tag, &QPushButton::clicked, this, &GUI_TagEdit::apply_tag_clicked);
-	connect(ui->btn_apply_tag_all, &QPushButton::clicked, this, &GUI_TagEdit::apply_tag_all_clicked);
 	connect(ui->cb_replace, &QCheckBox::toggled, this, &GUI_TagEdit::cb_replace_toggled);
 
 	connect(ui->cb_album_all, &QCheckBox::toggled, ui->le_album, &QWidget::setDisabled);
@@ -93,15 +86,6 @@ GUI_TagEdit::GUI_TagEdit(QWidget* parent) :
 	connect(ui->cb_comment_all, &QCheckBox::toggled, ui->te_comment, &QWidget::setDisabled);
 
 	connect(ui->cb_cover_all, &QCheckBox::toggled, this, &GUI_TagEdit::cover_all_changed);
-	connect(ui->le_tag, &QLineEdit::textChanged, this, &GUI_TagEdit::tag_text_changed);
-
-	connect(ui->btn_title, &QPushButton::toggled, this, &GUI_TagEdit::btn_title_checked);
-	connect(ui->btn_artist, &QPushButton::toggled, this, &GUI_TagEdit::btn_artist_checked);
-	connect(ui->btn_album, &QPushButton::toggled, this, &GUI_TagEdit::btn_album_checked);
-	connect(ui->btn_track_nr, &QPushButton::toggled, this, &GUI_TagEdit::btn_track_nr_checked);
-	connect(ui->btn_year, &QPushButton::toggled, this, &GUI_TagEdit::btn_year_checked);
-	connect(ui->btn_disc_nr, &QPushButton::toggled, this, &GUI_TagEdit::btn_disc_nr_checked);
-	connect(ui->btn_tag_help, &QPushButton::clicked, this, &GUI_TagEdit::btn_tag_help_clicked);
 
 	connect(ui->btn_save, &QPushButton::clicked, this, &GUI_TagEdit::commit);
 	connect(ui->btn_undo, &QPushButton::clicked, this, &GUI_TagEdit::undo_clicked);
@@ -114,6 +98,9 @@ GUI_TagEdit::GUI_TagEdit(QWidget* parent) :
 
 	connect(ui->btn_replacement, &QPushButton::clicked, ui->btn_cover_replacement, &QPushButton::click);
 	connect(ui->btn_load_entire_album, &QPushButton::clicked, this, &GUI_TagEdit::load_entire_album);
+
+	connect(m->ui_tag_from_path, &GUI_TagFromPath::sig_apply, this, &GUI_TagEdit::apply_tag_from_path);
+	connect(m->ui_tag_from_path, &GUI_TagFromPath::sig_apply_all, this, &GUI_TagEdit::apply_all_tag_from_path);
 
 	metadata_changed(m->tag_edit->metadata());
 }
@@ -133,12 +120,6 @@ void GUI_TagEdit::language_changed()
 {
 	ui->retranslateUi(this);
 
-	ui->btn_title->setText(Lang::get(Lang::Title));
-	ui->btn_album->setText(Lang::get(Lang::Album));
-	ui->btn_artist->setText(Lang::get(Lang::Artist));
-	ui->btn_year->setText(Lang::get(Lang::Year));
-	ui->btn_track_nr->setText(Lang::get(Lang::TrackNo).toFirstUpper());
-	ui->btn_apply_tag->setText(Lang::get(Lang::Apply));
 	ui->lab_track_title->setText(Lang::get(Lang::Title));
 	ui->lab_album->setText(Lang::get(Lang::Album));
 	ui->lab_artist->setText(Lang::get(Lang::Artist));
@@ -202,18 +183,82 @@ void GUI_TagEdit::metadata_changed(const MetaDataList& md)
 	reset();
 	language_changed();
 
+
+	QStringList filepaths;
+	const MetaDataList& v_md = m->tag_edit->metadata();
+	for(const MetaData& md : v_md)
+	{
+		filepaths << md.filepath();
+	}
+
 	ui->btn_load_entire_album->setVisible(m->tag_edit->can_load_entire_album());
 
 	m->cur_idx = 0;
-	track_idx_changed();
+	refresh_current_track();
 }
 
+
+
+void GUI_TagEdit::apply_tag_from_path()
+{
+	m->ui_tag_from_path->clear_invalid_filepaths();
+
+	bool success = m->tag_edit->apply_regex(m->ui_tag_from_path->get_regex_string(), m->cur_idx);
+	if(success){
+		ui->tab_widget->setCurrentIndex(0);
+	}
+
+	refresh_current_track();
+}
+
+void GUI_TagEdit::apply_all_tag_from_path()
+{
+	m->ui_tag_from_path->clear_invalid_filepaths();
+
+	int count = m->tag_edit->count();
+	QString regex = m->ui_tag_from_path->get_regex_string();
+	QStringList invalid_filepaths;
+
+	for(int i=0; i<count; i++)
+	{
+		bool success = m->tag_edit->apply_regex(regex, i);
+		if(!success)
+		{
+			QString invalid_filepath = m->tag_edit->metadata(i).filepath();
+			invalid_filepaths << invalid_filepath;
+			m->ui_tag_from_path->add_invalid_filepath(invalid_filepath);
+		}
+	}
+
+	if(invalid_filepaths.count() > 0)
+	{
+		Message::Answer answer = Message::Answer::Yes;
+
+		QStringList not_valid_str;
+		not_valid_str << tr("Cannot apply tag for");
+		not_valid_str << "";
+		not_valid_str << tr("%1 tracks").arg(invalid_filepaths.count()) + ".";
+		not_valid_str << tr("Ignore these tracks?");
+
+		answer = Message::question_yn(not_valid_str.join("<br>"));
+		if(answer != Message::Answer::Yes)
+		{
+			m->tag_edit->undo_all();
+		}
+
+		else
+		{
+			ui->tab_widget->setCurrentIndex(0);
+		}
+	}
+
+	refresh_current_track();
+}
 
 bool GUI_TagEdit::check_idx(int idx) const
 {
-	return between(idx,m->tag_edit->count());
+	return between(idx, m->tag_edit->count());
 }
-
 
 void GUI_TagEdit::next_button_clicked()
 {
@@ -221,7 +266,7 @@ void GUI_TagEdit::next_button_clicked()
 
 	m->cur_idx++;
 
-	track_idx_changed();
+	refresh_current_track();
 }
 
 
@@ -231,12 +276,11 @@ void GUI_TagEdit::prev_button_clicked()
 
 	m->cur_idx--;
 
-	track_idx_changed();
+	refresh_current_track();
 }
 
-void GUI_TagEdit::track_idx_changed()
+void GUI_TagEdit::refresh_current_track()
 {
-	bool valid;
 	int n_tracks = m->tag_edit->count();
 
 	ui->btn_next->setEnabled(m->cur_idx >= 0 && m->cur_idx < n_tracks - 1);
@@ -247,23 +291,7 @@ void GUI_TagEdit::track_idx_changed()
 	}
 
 	MetaData md = m->tag_edit->metadata(m->cur_idx);
-
-	if(ui->le_tag->text().isEmpty()){
-		ui->le_tag->setText(md.filepath());
-	}
-
-	else if( !(	ui->btn_album->isChecked() ||
-			ui->btn_artist->isChecked() ||
-			ui->btn_title->isChecked() ||
-			ui->btn_year->isChecked() ||
-			ui->btn_disc_nr->isChecked() ||
-			ui->btn_track_nr->isChecked()))
-	{
-		ui->le_tag->setText(md.filepath());
-	}
-
-	valid = m->tag_expression.update_tag(ui->le_tag->text(), md.filepath());
-	set_tag_colors( valid );
+	m->ui_tag_from_path->set_filepath(md.filepath());
 
 	ui->le_title->setText(md.title());
 
@@ -302,13 +330,8 @@ void GUI_TagEdit::track_idx_changed()
 	if(!ui->cb_cover_all->isChecked()){
 		set_cover(md);
 
-		if(m->tag_edit->has_cover_replacement(m->cur_idx)){
-			ui->cb_replace->setChecked(true);
-		}
-
-		else{
-			ui->cb_replace->setChecked(false);
-		}
+		bool has_replacement = m->tag_edit->has_cover_replacement(m->cur_idx);
+		ui->cb_replace->setChecked(has_replacement);
 	}
 
 	bool is_cover_supported = m->tag_edit->is_cover_supported(m->cur_idx);
@@ -323,20 +346,16 @@ void GUI_TagEdit::track_idx_changed()
 	ui->lab_filepath->setText(filepath);
 
 	ui->lab_track_index->setText(
-			Lang::get(Lang::Track).toFirstUpper().space() +
-			QString::number(m->cur_idx+1 ) + "/" + QString::number( n_tracks )
+		Lang::get(Lang::Track).toFirstUpper().space() +
+		QString::number(m->cur_idx+1 ) + "/" + QString::number( n_tracks )
 	);
-
-	QString tag_type_string = Tagging::Util::tag_type_to_string(
-		Tagging::Util::get_tag_type(md.filepath())
-	);
-
-	ui->lab_tag_type->setText(tr("Tag") + ": " + tag_type_string);
 }
 
 void GUI_TagEdit::reset()
 {
 	m->cur_idx = -1;
+
+	m->ui_tag_from_path->reset();
 
 	ui->cb_album_all->setChecked(false);
 	ui->cb_artist_all->setChecked(false);
@@ -357,22 +376,18 @@ void GUI_TagEdit::reset()
 	ui->le_album_artist->clear();
 	ui->le_title->clear();
 	ui->le_genre->clear();
-	ui->le_tag->clear();
 	ui->te_comment->clear();
 	ui->sb_year->setValue(0);
 	ui->sb_discnumber->setValue(0);
 	ui->lab_rating->set_rating(0);
 	ui->sb_track_num->setValue(0);
-
 	ui->le_album->setEnabled(true);
 	ui->le_artist->setEnabled(true);
 	ui->le_album_artist->setEnabled(true);
 	ui->le_genre->setEnabled(true);
-	ui->le_tag->setEnabled(true);
 	ui->sb_year->setEnabled(true);
 	ui->sb_discnumber->setEnabled(true);
 	ui->lab_rating->setEnabled(true);
-	ui->lv_tag_from_path_files->clear();
 
 	ui->cb_replace->setChecked(false);
 
@@ -384,13 +399,6 @@ void GUI_TagEdit::reset()
 
 	ui->lab_filepath->clear();
 	ui->pb_progress->setVisible(false);
-
-	ui->btn_album->setChecked(false);
-	ui->btn_artist->setChecked(false);
-	ui->btn_title->setChecked(false);
-	ui->btn_year->setChecked(false);
-	ui->btn_disc_nr->setChecked(false);
-	ui->btn_track_nr->setChecked(false);
 
 	ui->btn_load_entire_album->setVisible(false);
 
@@ -462,13 +470,13 @@ void GUI_TagEdit::cover_all_changed(bool b)
 void GUI_TagEdit::undo_clicked()
 {
 	m->tag_edit->undo(m->cur_idx);
-	track_idx_changed();
+	refresh_current_track();
 }
 
 void GUI_TagEdit::undo_all_clicked()
 {
 	m->tag_edit->undo_all();
-	track_idx_changed();
+	refresh_current_track();
 }
 
 
@@ -503,10 +511,6 @@ void GUI_TagEdit::commit()
 	if(!ui->btn_save->isEnabled()){
 		return;
 	}
-
-	ui->btn_save->setEnabled(false);
-	ui->btn_undo->setEnabled(false);
-	ui->btn_undo_all->setEnabled(false);
 
 	write_changes(m->cur_idx);
 
@@ -628,249 +632,21 @@ void GUI_TagEdit::cb_replace_toggled(bool b)
 
 void GUI_TagEdit::load_entire_album()
 {
-	Message::Answer answer =
-	Message::question(tr("All changes will be lost") + ".\n" + Lang::get(Lang::Continue).question(), "GUI_TagEdit", Message::QuestionType::YesNo);
-
-	if(answer == Message::Answer::Yes){
-		m->tag_edit->load_entire_album();
-	}
-}
-
-
-/*** TAG ***/
-
-void GUI_TagEdit::set_tag_colors(bool valid)
-{
-	if( !valid ){
-		ui->le_tag->setStyleSheet("color: red;");
-	}
-
-	else{
-		ui->le_tag->setStyleSheet("");
-	}
-
-	ui->btn_apply_tag->setEnabled(valid);
-	ui->btn_apply_tag_all->setEnabled(valid);
-}
-
-
-void GUI_TagEdit::tag_text_changed(const QString& str)
-{
-	if( !check_idx(m->cur_idx) ) {
-		return;
-	}
-
-	bool valid;
-	MetaData md = m->tag_edit->metadata(m->cur_idx);
-
-	valid = m->tag_expression.update_tag(str, md.filepath() );
-
-	set_tag_colors( valid );
-}
-
-
-void GUI_TagEdit::apply_tag(int idx)
-{
-	if(!check_idx(idx)) {
-		return;
-	}
-
-	QMap<Tag, ReplacedString> tag_cap_map = m->tag_expression.get_tag_val_map();
-	MetaData md =m->tag_edit->metadata(idx);
-
-	for(auto it=tag_cap_map.cbegin(); it != tag_cap_map.cend(); it++)
+	if(m->tag_edit->has_changes())
 	{
-		const QString& tag = it.key();
-		const ReplacedString& cap = it.value();
+		Message::Answer answer =
+		Message::question(tr("All changes will be lost") + ".\n" + Lang::get(Lang::Continue).question(), "GUI_TagEdit", Message::QuestionType::YesNo);
 
-		if(tag.compare(TAG_TITLE) == 0){
-			md.set_title(cap);
-		}
-
-		else if(tag.compare(TAG_ALBUM) == 0){
-			md.set_album(cap);
-		}
-
-		else if(tag.compare( TAG_ARTIST) == 0){
-			md.set_artist(cap);
-		}
-
-		else if(tag.compare(TAG_TRACK_NUM) == 0){
-			md.track_num = cap.toInt();
-		}
-
-		else if(tag.compare(TAG_YEAR) == 0){
-			md.year = cap.toInt();
-		}
-
-		else if(tag.compare(TAG_DISC) == 0){
-			md.discnumber = cap.toInt();
+		if(answer == Message::Answer::No){
+			return;
 		}
 	}
 
-	m->tag_edit->update_track(idx, md);
-
-	if(idx == m->cur_idx){
-		// force gui update
-		track_idx_changed();
-	}
+	m->tag_edit->load_entire_album();
 }
-
-void GUI_TagEdit::apply_tag_clicked()
-{
-	apply_tag(m->cur_idx);
-	ui->tab_widget->setCurrentIndex(0);
-}
-
-void GUI_TagEdit::apply_tag_all_clicked()
-{
-	ui->sw_tag_from_path->setCurrentIndex(1);
-	MetaDataList v_md = m->tag_edit->metadata();
-	int n_tracks = v_md.size();
-
-	IdxList not_valid;
-	for(int i=0; i<n_tracks; i++)
-	{
-		bool valid = m->tag_expression.update_tag(ui->le_tag->text(), v_md[i].filepath() );
-
-		if(! valid )
-		{
-			not_valid << i;
-			ui->sw_tag_from_path->setCurrentIndex(0);
-		}
-	}
-
-	ui->lab_tag_from_path_warning->setVisible(!not_valid.isEmpty());
-
-	ui->lv_tag_from_path_files->clear();
-
-	for(int i=0; i<not_valid.size(); i++)
-	{
-		int not_valid_idx = not_valid[i];
-		const MetaData& md = v_md[not_valid_idx];
-
-		ui->lv_tag_from_path_files->addItem(md.filepath());
-	}
-
-	QStringList not_valid_str;
-	not_valid_str << tr("Cannot apply tag for");
-	not_valid_str << "";
-	not_valid_str << tr("%1 tracks").arg(not_valid.size()) + ".";
-	not_valid_str << tr("Ignore these tracks?");
-
-	Message::Answer answer = Message::Answer::Yes;
-	if(! not_valid.isEmpty() )
-	{
-		answer = Message::question_yn(not_valid_str.join("<br>"));
-	}
-
-	if(answer == Message::Answer::Yes)
-	{
-		for(int i=0; i<n_tracks; i++){
-			if(not_valid.contains(i)) continue;
-
-			m->tag_expression.update_tag(ui->le_tag->text(), v_md[i].filepath() );
-			apply_tag(i);
-		}
-
-		ui->tab_widget->setCurrentIndex(0);
-	}
-}
-
-
-bool GUI_TagEdit::replace_selected_tag_text(Tag t, bool b)
-{
-	TextSelection ts = ui->le_tag->text_selection();
-
-	if(ts.selection_start < 0 && b) {
-		sp_log(Log::Debug, this) << "Nothing selected...";
-		return false;
-	}
-
-	QString text = ui->le_tag->text();
-
-	// replace the string by a tag
-	if(b){
-		ReplacedString selected_text = text.mid( ts.selection_start, ts.selection_size );
-		if(!m->tag_expression.check_tag(t, selected_text)) return false;
-
-		text.replace( ts.selection_start, ts.selection_size, t );
-		ui->le_tag->setText(text);
-
-		m->tag_str_map[t] = selected_text;
-	}
-
-	// replace tag by the original string
-	else{
-		text.replace(t, m->tag_str_map[t]);
-		ui->le_tag->setText(text);
-
-		m->tag_str_map.remove(t);
-	}
-
-
-	if(check_idx(m->cur_idx)){
-		// fetch corresponding filepath and update the tag expression
-		MetaData md =m->tag_edit->metadata(m->cur_idx);
-		bool valid = m->tag_expression.update_tag(text, md.filepath() );
-
-		set_tag_colors( valid );
-	}
-
-	return true;
-}
-
-void GUI_TagEdit::btn_title_checked(bool b)
-{
-	if(!replace_selected_tag_text(TAG_TITLE, b)){
-		ui->btn_title->setChecked(false);
-	}
-}
-
-void GUI_TagEdit::btn_artist_checked(bool b)
-{
-	if(!replace_selected_tag_text(TAG_ARTIST, b)){
-		ui->btn_artist->setChecked(false);
-	}
-}
-
-void GUI_TagEdit::btn_album_checked(bool b)
-{
-	if(!replace_selected_tag_text(TAG_ALBUM, b)){
-		ui->btn_album->setChecked(false);
-	}
-}
-
-void GUI_TagEdit::btn_track_nr_checked(bool b)
-{
-	if(!replace_selected_tag_text(TAG_TRACK_NUM, b)){
-		ui->btn_track_nr->setChecked(false);
-	}
-}
-
-void GUI_TagEdit::btn_disc_nr_checked(bool b)
-{
-	if(!replace_selected_tag_text(TAG_DISC, b)){
-		ui->btn_disc_nr->setChecked(false);
-	}
-}
-
-void GUI_TagEdit::btn_year_checked(bool b)
-{
-	if(!replace_selected_tag_text(TAG_YEAR, b)){
-		ui->btn_year->setChecked(false);
-	}
-}
-
-void GUI_TagEdit::btn_tag_help_clicked()
-{
-	QUrl url(QString("http://sayonara-player.com/faq.php#tag-edit"));
-	QDesktopServices::openUrl(url);
-}
-
 
 void GUI_TagEdit::showEvent(QShowEvent *e)
 {
 	Widget::showEvent(e);
-	track_idx_changed();
+	refresh_current_track();
 }
