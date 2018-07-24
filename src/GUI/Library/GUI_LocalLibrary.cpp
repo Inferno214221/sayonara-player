@@ -51,7 +51,6 @@
 #include "Utils/Library/LibraryInfo.h"
 
 #include <QDir>
-#include <QTimer>
 #include <QFileDialog>
 #include <QStringList>
 
@@ -123,7 +122,6 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 	setAcceptDrops(true);
 
 	genres_reloaded();
-	QTimer::singleShot(100, m->library, SLOT(load()));
 
 	Set::listen<Set::Lib_ShowAlbumCovers>(this, &GUI_LocalLibrary::switch_album_view);
 }
@@ -373,6 +371,10 @@ QList<Library::Filter::Mode> GUI_LocalLibrary::search_options() const
 void GUI_LocalLibrary::showEvent(QShowEvent* e)
 {
 	GUI_AbstractLibrary::showEvent(e);
+
+	if(!m->library->is_loaded()){
+		m->library->load();
+	}
 
 	this->lv_album()->resizeRowsToContents();
 	this->lv_artist()->resizeRowsToContents();
