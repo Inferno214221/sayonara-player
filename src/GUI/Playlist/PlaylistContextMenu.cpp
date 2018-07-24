@@ -38,6 +38,8 @@ PlaylistContextMenu::PlaylistContextMenu(QWidget *parent) :
 	m->rating_action = this->addMenu(m->rating_menu);
 
 	connect(m->bookmarks_menu, &BookmarksMenu::sig_bookmark_pressed, this, &PlaylistContextMenu::bookmark_pressed);
+
+	skin_changed();
 }
 
 PlaylistContextMenu::~PlaylistContextMenu() {}
@@ -110,6 +112,8 @@ void PlaylistContextMenu::language_changed()
 
 void PlaylistContextMenu::skin_changed()
 {
+	LibraryContextMenu::skin_changed();
+
 	using namespace Gui;
 	m->rating_action->setIcon(Icons::icon(Icons::Star));
 }
