@@ -65,7 +65,9 @@ struct FetchThread::Private
 		n_covers(n_covers),
 		n_covers_found(0),
 		may_run(true)
-	{}
+	{
+		sp_log(Log::Develop, this) << "Search urls for " << cl.identifer() << ": " << cl.search_urls();
+	}
 };
 
 
@@ -167,6 +169,7 @@ bool FetchThread::more()
 		connect(awa, &AsyncWebAccess::sig_finished, this, &FetchThread::multi_image_fetched);
 	}
 
+	sp_log(Log::Develop, this) << "Fetch cover from " << address;
 	awa->run(address, Timeout);
 	m->active_connections << awa;
 

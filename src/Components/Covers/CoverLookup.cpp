@@ -72,10 +72,12 @@ Lookup::~Lookup()
 
 bool Lookup::start_new_thread(const Cover::Location& cl )
 {
-	if(!cl.has_search_urls() && cl.valid()){
+	bool has_search_urls = cl.has_search_urls();
+	if(!has_search_urls || !cl.valid()){
 		return false;
 	}
 
+	sp_log(Log::Develop, this) << cl.search_urls();
 	m->thread_running = true;
 
 	FetchThread* cft = new FetchThread(this, cl, m->n_covers);

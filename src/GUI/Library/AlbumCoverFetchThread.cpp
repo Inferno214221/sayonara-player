@@ -132,8 +132,8 @@ void AlbumCoverFetchThread::run()
 
 void AlbumCoverFetchThread::add_data(const QString& hash, const Location& cl)
 {
-	std::lock_guard<std::mutex> guard(m->mutex_add_data);
-	Q_UNUSED(guard)
+	std::lock_guard<std::mutex> g(m->mutex_add_data);
+	Q_UNUSED(g)
 
 	if(m->hashes.contains(hash) || m->current_hash.compare(hash) == 0){
 		return;
