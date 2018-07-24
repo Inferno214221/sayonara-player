@@ -24,6 +24,7 @@
 
 #include <QStringList>
 #include <QFile>
+#include <exception>
 
 using Library::Info;
 
@@ -120,7 +121,7 @@ Info Info::fromString(const QString& str)
 {
 	QStringList lst = str.split("::");
 	if(lst.size() != 3){
-		return Info();
+		throw  std::invalid_argument("Cannot convert Library::Info. Ignore");
 	}
 
 	bool ok;

@@ -67,11 +67,7 @@ Base::Base(DbId db_id, const QString& db_dir, const QString& db_name, QObject *p
 	}
 }
 
-Base::~Base()
-{
-	close_db();
-}
-
+Base::~Base() {}
 
 bool Base::is_initialized()
 {

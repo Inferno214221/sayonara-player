@@ -120,7 +120,7 @@ int Handler::load_old_playlists()
 	set_current_index(last_playlist_idx);
 
 	if(active_playlist()->count() > 0){
-		last_track_idx = std::max(loader.get_last_track_idx(), 0);
+		last_track_idx = loader.get_last_track_idx();
 	}
 
 	if(last_track_idx >= 0){

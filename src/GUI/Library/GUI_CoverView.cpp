@@ -32,9 +32,27 @@ using namespace Library;
 
 GUI_CoverView::GUI_CoverView(QWidget* parent) :
 	Gui::Widget(parent)
+{}
+
+
+GUI_CoverView::~GUI_CoverView()
 {
+	if(ui){
+		delete ui; ui=nullptr;
+	}
+}
+
+
+void GUI_CoverView::init(LocalLibrary* library)
+{
+	if(ui){
+		return;
+	}
+
 	ui = new Ui::GUI_CoverView();
 	ui->setupUi(this);
+
+	ui->tb_view->init(library);
 	ui->lab_zoom->setText(Lang::get(Lang::Zoom).append(":"));
 	ui->lab_sorting->setText(Lang::get(Lang::SortBy).append(":"));
 	ui->combo_sorting->setEditable(true);
@@ -50,26 +68,13 @@ GUI_CoverView::GUI_CoverView(QWidget* parent) :
 
 	init_sorting_actions();
 	init_zoom_actions();
+
+	connect(ui->tb_view, &ItemView::sig_delete_clicked, this, &GUI_CoverView::sig_delete_clicked);
 }
 
-
-GUI_CoverView::~GUI_CoverView()
+bool GUI_CoverView::is_initialized() const
 {
-	if(ui){
-		delete ui; ui=nullptr;
-	}
-}
-
-
-void GUI_CoverView::init(LocalLibrary* library)
-{
-	ui->tb_view->init(library);
-}
-
-
-CoverView* GUI_CoverView::cover_view() const
-{
-	return ui->tb_view;
+	return (ui != nullptr);
 }
 
 
@@ -81,7 +86,7 @@ void GUI_CoverView::init_sorting_actions()
 	const QList<ActionPair> action_pairs = CoverView::sorting_actions();
 	for(const ActionPair& ap : action_pairs)
 	{
-		ui->combo_sorting->addItem(ap.name, (int) ap.so);
+		ui->combo_sorting->addItem(ap.name, static_cast<int>(ap.so));
 	}
 
 	sortorder_changed();
@@ -94,7 +99,7 @@ void GUI_CoverView::combo_sorting_changed(int idx)
 
 	int data = ui->combo_sorting->currentData().toInt();
 
-	Library::SortOrder so = (Library::SortOrder) data;
+	Library::SortOrder so = static_cast<Library::SortOrder>(data);
 	ui->tb_view->change_sortorder(so);
 }
 
@@ -106,7 +111,7 @@ void GUI_CoverView::sortorder_changed()
 
 	for(int i=0; i<ui->combo_sorting->count(); i++)
 	{
-		if(ui->combo_sorting->itemData(i).toInt() == (int) so)
+		if(ui->combo_sorting->itemData(i).toInt() == static_cast<int>(so))
 		{
 			ui->combo_sorting->setCurrentIndex(i);
 			break;
@@ -154,6 +159,10 @@ void GUI_CoverView::show_utils_changed()
 
 void GUI_CoverView::language_changed()
 {
+	if(!ui){
+		return;
+	}
+
 	Gui::Widget::language_changed();
 
 	init_sorting_actions();

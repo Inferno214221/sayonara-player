@@ -651,7 +651,7 @@ SP::Set<Genre> Tracks::getAllGenres()
 		QString genre = q.value(0).toString();
 		QStringList subgenres = genre.split(",");
 
-		for(const QString& g: subgenres){
+		for(const QString& g : subgenres){
 			genres.insert( Genre(g) );
 		}
 	}

@@ -25,6 +25,9 @@
 #include <QStringList>
 #include "Utils/typedefs.h"
 
+#include <exception>
+#include <iostream>
+
 class QSize;
 class QString;
 class QPoint;
@@ -43,8 +46,15 @@ public:
 	}
 
 	static bool cvt_from_string(const QString& val, T& ret){
-		ret = T::fromString(val);
-		return true;
+		try {
+			ret = T::fromString(val);
+			return true;
+		}
+		catch(std::exception& e)
+		{
+			std::cerr << e.what() << std::endl;
+			return false;
+		}
 	}
 };
 
@@ -175,10 +185,16 @@ public:
 		ret.clear();
 		QStringList lst = val.split(",");
 
-		for(const QString& l : lst){
+		for(const QString& l : lst)
+		{
 			T v;
-			sc.cvt_from_string(l, v);
-			ret << v;
+			try {
+				if(sc.cvt_from_string(l, v)){
+					ret << v;
+				}
+			} catch (std::exception& e) {
+				std::cerr << e.what() << std::endl;
+			}
 		}
 
 		return true;

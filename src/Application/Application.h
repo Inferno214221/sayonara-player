@@ -50,6 +50,8 @@ private:
 	void init_player();
 	void init_playlist(const QStringList& files_to_play);
 
+	void shutdown();
+
 private slots:
 	void session_end_requested(QSessionManager& manager);
 	void create_playlist();

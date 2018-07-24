@@ -424,7 +424,6 @@ void GenreView::contextMenuEvent(QContextMenuEvent* e)
 	QTreeView::contextMenuEvent(e);
 }
 
-
 void GenreView::dragEnterEvent(QDragEnterEvent *e)
 {
 	e->accept();

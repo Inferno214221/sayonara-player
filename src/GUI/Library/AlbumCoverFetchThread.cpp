@@ -41,7 +41,7 @@ struct AlbumCoverFetchThread::Private
 	QList<Location>		cover_locations;
 
 	std::atomic<bool>	goon;
-	std::mutex			mutex;
+	std::mutex			mutex, mutex_add_data;
 
 	bool				may_run;
 
@@ -132,27 +132,31 @@ void AlbumCoverFetchThread::run()
 
 void AlbumCoverFetchThread::add_data(const QString& hash, const Location& cl)
 {
-	if(!m->hashes.contains(hash) && (m->current_hash.compare(hash) != 0))
+	std::lock_guard<std::mutex> guard(m->mutex_add_data);
+	Q_UNUSED(guard)
+
+	if(m->hashes.contains(hash) || m->current_hash.compare(hash) == 0){
+		return;
+	}
+
+	bool done = false;
+	while(!done)
 	{
-		bool done = false;
-		while(!done)
+		try
 		{
-			try
-			{
-				std::lock_guard<std::mutex> guard(m->mutex);
-				Q_UNUSED(guard)
+			std::lock_guard<std::mutex> guard(m->mutex);
+			Q_UNUSED(guard)
 
-				m->hashes.push_front(hash);
-				m->cover_locations.push_front(cl);
-				done = true;
+			m->hashes.push_front(hash);
+			m->cover_locations.push_front(cl);
+			done = true;
 
-			}
+		}
 
-			catch(std::exception* e)
-			{
-				sp_log(Log::Warning, this) << "2 Exception" << e->what();
-				Util::sleep_ms(10);
-			}
+		catch(std::exception* e)
+		{
+			sp_log(Log::Warning, this) << "2 Exception" << e->what();
+			Util::sleep_ms(10);
 		}
 	}
 }

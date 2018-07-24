@@ -185,7 +185,7 @@ int	Loader::get_last_track_idx() const
 		return -1;
 	}
 
-	n_tracks = m->playlists[m->last_playlist_idx].size();
+	n_tracks = m->playlists[m->last_playlist_idx].count();
 	if(!between(m->last_track_idx, n_tracks))
 	{
 		 return -1;

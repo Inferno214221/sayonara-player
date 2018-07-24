@@ -37,6 +37,7 @@
 #include "Components/Playlist/PlaylistHandler.h"
 #include "Components/RemoteControl/RemoteControl.h"
 #include "Components/Engine/EngineHandler.h"
+#include "Components/PlayManager/PlayManager.h"
 #include "Components/StreamPlugins/LastFM/LastFM.h"
 
 #include "Interfaces/LibraryInterface/LibraryPluginHandler.h"
@@ -105,6 +106,7 @@ struct Application::Private
 	MetaTypeRegistry*	metatype_registry=nullptr;
 
 	bool				settings_initialized;
+	bool				was_shut_down;
 
 	Private()
 	{
@@ -133,6 +135,7 @@ struct Application::Private
 #endif
 		timer = new QTime();
 		plh = Playlist::Handler::instance();
+		was_shut_down = false;
 	}
 
 	~Private()
@@ -201,8 +204,9 @@ Application::Application(int & argc, char ** argv) :
 
 Application::~Application()
 {
-	Engine::Handler::instance()->shutdown();
-	Playlist::Handler::instance()->shutdown();
+	if(!m->was_shut_down){
+		shutdown();
+	}
 }
 
 bool Application::init(const QStringList& files_to_play)
@@ -231,19 +235,19 @@ bool Application::init(const QStringList& files_to_play)
 	}
 
 	Gui::Icons::change_theme();
-	init_single_instance_thread();
+
 	init_engine();
 	init_libraries();
 	init_plugins();
 	init_preferences();
 
 	init_playlist(files_to_play);
-Gui::Icons::change_theme();
+	init_single_instance_thread();
 	sp_log(Log::Debug, this) << "Time to start: " << m->timer->elapsed() << "ms";
 	delete m->timer; m->timer=nullptr;
 
-	connect(this, &Application::commitDataRequest, this, &Application::session_end_requested);
-Gui::Icons::change_theme();
+	//connect(this, &Application::commitDataRequest, this, &Application::session_end_requested);
+
 	return true;
 }
 
@@ -360,6 +364,7 @@ void Application::init_single_instance_thread()
 void Application::session_end_requested(QSessionManager& manager)
 {
 	Q_UNUSED(manager)
+	shutdown();
 
 	if(m->db){
 		m->db->settings_connector()->store_settings();
@@ -369,6 +374,15 @@ void Application::session_end_requested(QSessionManager& manager)
 	if(m->player){
 		m->player->request_shutdown();
 	};
+}
+
+void Application::shutdown()
+{
+	Engine::Handler::instance()->shutdown();
+	Playlist::Handler::instance()->shutdown();
+	PlayManager::instance()->shutdown();
+
+	m->was_shut_down = true;
 }
 
 void Application::create_playlist()

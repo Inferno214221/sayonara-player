@@ -251,12 +251,6 @@ namespace Playlist
 			void save_playlist_to_file(int pl_idx, const QString& filename, bool relative);
 
 
-			/**
-			 * @brief load playlists of last session from database
-			 * @return number of playlists fetched
-			 */
-			int	load_old_playlists();
-
 
 			/**
 			 * @brief create a new playlist
@@ -309,6 +303,13 @@ namespace Playlist
 
 
 			void delete_tracks(int pl_idx, const IndexSet& rows, Library::TrackDeletionMode deletion_mode);
+
+		public slots:
+			/**
+			 * @brief load playlists of last session from database
+			 * @return number of playlists fetched
+			 */
+			int	load_old_playlists();
 
 
 		private slots:

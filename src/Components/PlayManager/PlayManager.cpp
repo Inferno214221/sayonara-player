@@ -125,10 +125,7 @@ PlayManager::PlayManager(QObject* parent) :
 	}
 }
 
-PlayManager::~PlayManager()
-{
-	_settings->set<Set::Engine_CurTrackPos_s>((int) (m->position_ms / 1000));
-}
+PlayManager::~PlayManager() {}
 
 PlayState PlayManager::playstate() const
 {
@@ -164,6 +161,7 @@ bool PlayManager::is_muted() const
 {
 	return _settings->get<Set::Engine_Mute>();
 }
+
 
 void PlayManager::play()
 {
@@ -407,4 +405,16 @@ void PlayManager::change_metadata(const MetaData& md)
 	}
 
 	emit sig_md_changed(md);
+}
+
+void PlayManager::shutdown()
+{
+	if(m->playstate == PlayState::Stopped){
+		_settings->set<Set::PL_LastTrack>(-1);
+		_settings->set<Set::Engine_CurTrackPos_s>(0);
+	}
+
+	else {
+		_settings->set<Set::Engine_CurTrackPos_s>((int) (m->position_ms / 1000));
+	}
 }

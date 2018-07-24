@@ -320,6 +320,9 @@ public:
 	 * @return true if muted, false else
 	 */
 	bool		is_muted() const;
+
+
+	void		shutdown();
 };
 
 using PlayManagerPtr=PlayManager*;

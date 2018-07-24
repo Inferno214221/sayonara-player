@@ -32,6 +32,11 @@ class MetaDataList;
 class LocalLibrary;
 class Genre;
 
+namespace Tagging
+{
+	class Editor;
+}
+
 class GenreFetcher :
 		public QObject
 {
@@ -43,6 +48,8 @@ signals:
 	void sig_progress(int progress);
 	void sig_finished();
 
+private:
+	Tagging::Editor* tag_edit();
 
 public:
 	explicit GenreFetcher(QObject* parent=nullptr);

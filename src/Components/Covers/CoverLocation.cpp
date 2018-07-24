@@ -345,7 +345,7 @@ Location Location::cover_location(const MetaData& md)
 		cl = cover_location(md.album(), md.artist());
 	}
 
-	if(cl.audio_file_source().isEmpty() && Tagging::Util::has_cover(md.filepath())) {
+	if(cl.audio_file_source().isEmpty() && !md.filepath().isEmpty() && Tagging::Util::has_cover(md.filepath())) {
 		cl.set_audio_file_source(md.filepath(), cl.cover_path());
 	}
 

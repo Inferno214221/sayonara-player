@@ -203,7 +203,7 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 			}
 
 		case Qt::TextAlignmentRole:
-			return (int)(Qt::AlignHCenter | Qt::AlignTop);
+			return static_cast<int>(Qt::AlignHCenter | Qt::AlignTop);
 
 		case Qt::DecorationRole:
 			{
@@ -233,6 +233,7 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 					else // search for the cover
 					{
 						m->indexes[hash] = index;
+						sp_log(Log::Develop, this) << "Add new data: " << hash << ": " << cl.preferred_path();
 						m->cover_thread->add_data(hash, cl);
 
 						if(!m->cover_thread->isRunning())
@@ -276,11 +277,18 @@ void CoverModel::next_hash()
 
 	QModelIndex idx = m->indexes[hash];
 
+	sp_log(Log::Develop, this) << "Search for new cover: " << hash;
 	Lookup* clu = new Lookup(this, 1);
 	connect(clu, &Lookup::sig_finished, this, [=](bool success)
 	{
+		sp_log(Log::Develop, this) << "Cover Lookup finished for " << hash << ": " << success;
+
 		if(success) {
 			emit dataChanged(idx, idx);
+		}
+
+		else {
+
 		}
 
 		if(acft){

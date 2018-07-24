@@ -62,6 +62,7 @@ struct SC::Library::Private
 
 	~Private()
 	{
+		scd->close_db();
 		delete scd;
 	}
 

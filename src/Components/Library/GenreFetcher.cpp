@@ -30,6 +30,8 @@
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Set.h"
 
+#include <QTimer>
+
 struct GenreFetcher::Private
 {
 	LocalLibrary*		local_library=nullptr;
@@ -49,6 +51,7 @@ struct GenreFetcher::Private
 
 		DB::Connector* db = DB::Connector::instance();
 		DB::LibraryDatabase* lib_db = db->library_db(library_id, 0);
+
 		return lib_db;
 	}
 };
@@ -57,17 +60,26 @@ GenreFetcher::GenreFetcher(QObject* parent) :
 	QObject(parent)
 {
 	m = Pimpl::make<Private>();
-	m->tag_edit = new Tagging::Editor(this);
 
 	Tagging::ChangeNotifier* mcn = Tagging::ChangeNotifier::instance();
 
 	connect(mcn, &Tagging::ChangeNotifier::sig_metadata_changed, this, &GenreFetcher::metadata_changed);
 	connect(mcn, &Tagging::ChangeNotifier::sig_metadata_deleted, this, &GenreFetcher::metadata_deleted);
-	connect(m->tag_edit, &Tagging::Editor::sig_progress, this, &GenreFetcher::sig_progress);
-	connect(m->tag_edit, &Tagging::Editor::finished, this, &GenreFetcher::tag_edit_finished);
 }
 
 GenreFetcher::~GenreFetcher() {}
+
+Tagging::Editor* GenreFetcher::tag_edit()
+{
+	if(!m->tag_edit)
+	{
+		m->tag_edit = new Tagging::Editor(this);
+		connect(m->tag_edit, &Tagging::Editor::sig_progress, this, &GenreFetcher::sig_progress);
+		connect(m->tag_edit, &Tagging::Editor::finished, this, &GenreFetcher::tag_edit_finished);
+	}
+
+	return m->tag_edit;
+}
 
 void GenreFetcher::reload_genres()
 {
@@ -116,14 +128,15 @@ void GenreFetcher::tag_edit_finished()
 
 void GenreFetcher::add_genre_to_md(const MetaDataList& v_md, const Genre& genre)
 {
-	m->tag_edit->set_metadata(v_md);
+	Tagging::Editor* te = tag_edit();
+	te->set_metadata(v_md);
 
 	for(int i=0; i<v_md.count(); i++)
 	{
-		m->tag_edit->add_genre(i, genre);
+		te->add_genre(i, genre);
 	}
 
-	m->tag_edit->commit();
+	te->commit();
 	emit sig_progress(0);
 }
 
@@ -153,8 +166,5 @@ void GenreFetcher::set_local_library(LocalLibrary* local_library)
 	connect(m->local_library, &LocalLibrary::sig_reloading_library_finished,
 			this, &GenreFetcher::reload_genres);
 
-	reload_genres();
+	QTimer::singleShot(200, this, SLOT(reload_genres()));
 }
-
-
-

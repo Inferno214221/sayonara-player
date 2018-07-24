@@ -47,13 +47,15 @@ namespace Library
 
 	signals:
 		void sig_sortorder_changed(Library::SortOrder so);
+		void sig_delete_clicked();
 
 	public:
 		explicit GUI_CoverView(QWidget* parent=nullptr);
 		virtual ~GUI_CoverView();
 
 		void init(LocalLibrary* library);
-		CoverView* cover_view() const;
+		bool is_initialized() const;
+
 
 	protected:
 		void init_sorting_actions();

@@ -51,6 +51,7 @@
 #include "Utils/Library/LibraryInfo.h"
 
 #include <QDir>
+#include <QTimer>
 #include <QFileDialog>
 #include <QStringList>
 
@@ -83,13 +84,8 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 
 	setup_parent(this, &ui);
 
-	ui->lv_genres->init(m->library);
-	ui->cover_view->init(m->library);
-
 	ui->pb_progress->setVisible(false);
 	ui->lab_progress->setVisible(false);
-
-	CoverView* cover_view = ui->cover_view->cover_view();
 
 	connect(m->library, &LocalLibrary::sig_reloading_library, this, &GUI_LocalLibrary::progress_changed);
 	connect(m->library, &LocalLibrary::sig_reloading_library_finished, this, &GUI_LocalLibrary::reload_finished);
@@ -98,9 +94,6 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 	connect(m->manager, &Manager::sig_renamed, this, &GUI_LocalLibrary::name_changed);
 
 	connect(ui->lv_album, &AlbumView::sig_disc_pressed, m->library, &LocalLibrary::change_current_disc);
-
-	connect(cover_view, &ItemView::sig_delete_clicked, this, &GUI_LocalLibrary::item_delete_clicked);
-
 	connect(ui->lv_genres, &QAbstractItemView::clicked, this, &GUI_LocalLibrary::genre_selection_changed);
 	connect(ui->lv_genres, &QAbstractItemView::activated, this, &GUI_LocalLibrary::genre_selection_changed);
 	connect(ui->lv_genres, &GenreView::sig_progress, this, &GUI_LocalLibrary::progress_changed);
@@ -121,9 +114,11 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 
 	setAcceptDrops(true);
 
-	genres_reloaded();
-
 	Set::listen<Set::Lib_ShowAlbumCovers>(this, &GUI_LocalLibrary::switch_album_view);
+
+	//QTimer::singleShot(100, m->library, SLOT(load()));
+	m->library->load();
+	ui->lv_genres->init(m->library);
 }
 
 
@@ -339,6 +334,12 @@ void GUI_LocalLibrary::switch_album_view()
 
 	else
 	{
+		if(!ui->cover_view->is_initialized())
+		{
+			ui->cover_view->init(m->library);
+			connect(ui->cover_view, &GUI_CoverView::sig_delete_clicked, this, &GUI_LocalLibrary::item_delete_clicked);
+		}
+
 		if(m->library->is_loaded() && (m->library->selected_artists().size() > 0))
 		{
 			m->library->selected_artists_changed(IndexSet());
@@ -371,10 +372,6 @@ QList<Library::Filter::Mode> GUI_LocalLibrary::search_options() const
 void GUI_LocalLibrary::showEvent(QShowEvent* e)
 {
 	GUI_AbstractLibrary::showEvent(e);
-
-	if(!m->library->is_loaded()){
-		m->library->load();
-	}
 
 	this->lv_album()->resizeRowsToContents();
 	this->lv_artist()->resizeRowsToContents();

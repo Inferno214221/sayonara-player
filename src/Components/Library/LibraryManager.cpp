@@ -207,6 +207,7 @@ void Manager::reset()
 		int index = 0;
 		for(const Library::Info& info : ::Util::AsConst(m->all_libs))
 		{
+			sp_log(Log::Info, this) << "All libraries are empty: Insert " << info.toString();
 			ldb->insert_library(info.id(), info.name(), info.path(), index);
 			index ++;
 		}
