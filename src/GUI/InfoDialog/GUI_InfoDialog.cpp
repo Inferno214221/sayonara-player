@@ -32,7 +32,6 @@
 #include "GUI/Utils/Icons.h"
 
 #include "Components/Covers/CoverLocation.h"
-#include "Components/Tagging/Editor.h"
 #include "Components/MetaDataInfo/MetaDataInfo.h"
 #include "Components/MetaDataInfo/AlbumInfo.h"
 #include "Components/MetaDataInfo/ArtistInfo.h"
@@ -178,18 +177,20 @@ void GUI_InfoDialog::tab_index_changed(GUI_InfoDialog::Tab idx)
 	switch(idx)
 	{
 		case GUI_InfoDialog::Tab::Edit:
-
 			ui->tab_widget->setCurrentWidget(m->ui_tag_edit);
+			if(m->ui_tag_edit->count() == 0)
 			{
 				MetaDataList local_md;
-				for(const MetaData& md : m->v_md){
-					if(!Util::File::is_www(md.filepath())){
+				for(const MetaData& md : m->v_md)
+				{
+					if(!Util::File::is_www(md.filepath()))
+					{
 						local_md << md;
 					}
 				}
 
 				if(local_md.size() > 0) {
-					m->ui_tag_edit->get_tag_edit()->set_metadata(local_md);
+					m->ui_tag_edit->set_metadata(local_md);
 				}
 			}
 
@@ -197,11 +198,12 @@ void GUI_InfoDialog::tab_index_changed(GUI_InfoDialog::Tab idx)
 			break;
 
 		case GUI_InfoDialog::Tab::Lyrics:
-
-			ui->tab_widget->setCurrentWidget(m->ui_lyrics);
-
-			m->ui_lyrics->set_metadata(m->v_md.first());
-			m->ui_lyrics->show();
+			if(has_metadata())
+			{
+				ui->tab_widget->setCurrentWidget(m->ui_lyrics);
+				m->ui_lyrics->set_metadata(m->v_md.first());
+				m->ui_lyrics->show();
+			}
 
 			break;
 
@@ -252,7 +254,7 @@ void GUI_InfoDialog::show(GUI_InfoDialog::Tab tab)
 
 		if(local_md.size() > 0)
 		{
-			m->ui_tag_edit->get_tag_edit()->set_metadata(local_md);
+			m->ui_tag_edit->set_metadata(local_md);
 		}
 	}
 

@@ -67,7 +67,7 @@ void CoverView::init(LocalLibrary* library)
 	ItemView::set_item_model(m->model);
 
 	this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-	this->setVerticalScrollMode(QAbstractItemView::ScrollPerItem);
+	this->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
 	this->setSelectionBehavior(QAbstractItemView::SelectItems);
 	this->setItemDelegate(new Library::CoverDelegate(this));
 	this->setShowGrid(false);

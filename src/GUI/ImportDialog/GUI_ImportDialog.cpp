@@ -22,7 +22,6 @@
 #include "GUI/ImportDialog/ui_GUI_ImportDialog.h"
 #include "GUI/TagEdit/GUI_TagEdit.h"
 
-#include "Components/Tagging/Editor.h"
 #include "Components/Library/LocalLibrary.h"
 
 #include "Utils/MetaData/MetaDataList.h"
@@ -102,7 +101,7 @@ void GUI_ImportDialog::set_metadata(const MetaDataList& v_md)
 		ui->lab_status->setText(tr("%1 tracks available").arg(v_md.size()));
 	}
 
-	m->tag_edit->get_tag_edit()->set_metadata(v_md);
+	m->tag_edit->set_metadata(v_md);
 	ui->btn_edit->setVisible( !v_md.isEmpty() );
 }
 

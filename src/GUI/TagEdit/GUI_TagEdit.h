@@ -52,12 +52,6 @@ public:
 	~GUI_TagEdit();
 
 	/**
-	 * @brief Get tag edit object
-	 * @return Tag edit object
-	 */
-	Tagging::Editor* get_tag_edit() const;
-
-	/**
 	 * @brief Commits changes to db/file
 	 */
 	void commit();
@@ -68,6 +62,9 @@ public:
 	void cancel();
 
 	void show_close_button(bool show);
+
+	void set_metadata(const MetaDataList& v_md);
+	int count() const;
 
 
 signals:
@@ -147,47 +144,6 @@ private slots:
 	void apply_tag_clicked();
 	void apply_tag_all_clicked();
 
-
-	/**
-	 * @brief (un)sets _album_all
-	 */
-	void album_all_changed(bool b);
-
-
-	/**
-	 * @brief (un)sets _artist_all
-	 */
-	void artist_all_changed(bool b);
-
-	/**
-	  * @brief (un)sets _album_artist_all
-	  */
-
-	void album_artist_all_changed(bool b);
-
-
-	/**
-	 * @brief (un)sets _genre_all
-	 */
-	void genre_all_changed(bool b);
-
-
-	/**
-	 * @brief (un)sets _year_all
-	 */
-	void year_all_changed(bool b);
-
-
-	/**
-	 * @brief (un)sets _discnumber_all
-	 */
-	void discnumber_all_changed(bool b);
-
-
-	/**
-	 * @brief (un)sets _rating_all
-	 */
-	void rating_all_changed(bool b);
 
 	/**
 	 * @brief (un)sets _cover_all

@@ -40,6 +40,8 @@
 #include "Utils/MetaData/Artist.h"
 #include "Utils/MetaData/Genre.h"
 #include "Utils/Language.h"
+#include "Utils/Message/Message.h"
+
 #include "Database/DatabaseConnector.h"
 #include "Database/LibraryDatabase.h"
 
@@ -66,14 +68,14 @@ struct GUI_TagEdit::Private
 GUI_TagEdit::GUI_TagEdit(QWidget* parent) :
 	Widget(parent)
 {
-	m = Pimpl::make<Private>();
 	ui = new Ui::GUI_TagEdit();
 	ui->setupUi(this);
 
+	m = Pimpl::make<Private>();
+	m->tag_edit = new Tagging::Editor(this);
+
 	ui->tab_widget->setCurrentIndex(0);
 	ui->sw_tag_from_path->setCurrentIndex(1);
-
-	m->tag_edit = new Tagging::Editor(this);
 
 	connect(ui->btn_next, &QPushButton::clicked, this, &GUI_TagEdit::next_button_clicked);
 	connect(ui->btn_prev, &QPushButton::clicked, this, &GUI_TagEdit::prev_button_clicked);
@@ -81,13 +83,15 @@ GUI_TagEdit::GUI_TagEdit(QWidget* parent) :
 	connect(ui->btn_apply_tag_all, &QPushButton::clicked, this, &GUI_TagEdit::apply_tag_all_clicked);
 	connect(ui->cb_replace, &QCheckBox::toggled, this, &GUI_TagEdit::cb_replace_toggled);
 
-	connect(ui->cb_album_all, &QCheckBox::toggled, this, &GUI_TagEdit::album_all_changed);
-	connect(ui->cb_artist_all, &QCheckBox::toggled, this, &GUI_TagEdit::artist_all_changed);
-	connect(ui->cb_album_artist_all, &QCheckBox::toggled, this, &GUI_TagEdit::album_artist_all_changed);
-	connect(ui->cb_genre_all, &QCheckBox::toggled, this, &GUI_TagEdit::genre_all_changed);
-	connect(ui->cb_year_all, &QCheckBox::toggled, this, &GUI_TagEdit::year_all_changed);
-	connect(ui->cb_discnumber_all, &QCheckBox::toggled, this, &GUI_TagEdit::discnumber_all_changed);
-	connect(ui->cb_rating_all, &QCheckBox::toggled, this, &GUI_TagEdit::rating_all_changed);
+	connect(ui->cb_album_all, &QCheckBox::toggled, ui->le_album, &QWidget::setDisabled);
+	connect(ui->cb_artist_all, &QCheckBox::toggled, ui->le_artist, &QWidget::setDisabled);
+	connect(ui->cb_album_artist_all, &QCheckBox::toggled, ui->le_album_artist, &QWidget::setDisabled);
+	connect(ui->cb_genre_all, &QCheckBox::toggled, ui->le_genre, &QWidget::setDisabled);
+	connect(ui->cb_year_all, &QCheckBox::toggled, ui->sb_year, &QWidget::setDisabled);
+	connect(ui->cb_discnumber_all, &QCheckBox::toggled, ui->sb_discnumber, &QWidget::setDisabled);
+	connect(ui->cb_rating_all, &QCheckBox::toggled, ui->lab_rating, &QWidget::setDisabled);
+	connect(ui->cb_comment_all, &QCheckBox::toggled, ui->te_comment, &QWidget::setDisabled);
+
 	connect(ui->cb_cover_all, &QCheckBox::toggled, this, &GUI_TagEdit::cover_all_changed);
 	connect(ui->le_tag, &QLineEdit::textChanged, this, &GUI_TagEdit::tag_text_changed);
 
@@ -163,18 +167,10 @@ void GUI_TagEdit::language_changed()
 	ui->lab_replacement->setText(Lang::get(Lang::Replace));
 }
 
-
 void GUI_TagEdit::commit_finished()
 {
 	ui->btn_save->setEnabled(true);
 }
-
-
-Editor* GUI_TagEdit::get_tag_edit() const
-{
-	return m->tag_edit;
-}
-
 
 void GUI_TagEdit::progress_changed(int val)
 {
@@ -187,6 +183,16 @@ void GUI_TagEdit::progress_changed(int val)
 	if(val < 0){
 		metadata_changed(m->tag_edit->metadata() );
 	}
+}
+
+int GUI_TagEdit::count() const
+{
+	return m->tag_edit->count();
+}
+
+void GUI_TagEdit::set_metadata(const MetaDataList& v_md)
+{
+	m->tag_edit->set_metadata(v_md);
 }
 
 void GUI_TagEdit::metadata_changed(const MetaDataList& md)
@@ -231,7 +237,7 @@ void GUI_TagEdit::prev_button_clicked()
 void GUI_TagEdit::track_idx_changed()
 {
 	bool valid;
-	int n_tracks =m->tag_edit->count();
+	int n_tracks = m->tag_edit->count();
 
 	ui->btn_next->setEnabled(m->cur_idx >= 0 && m->cur_idx < n_tracks - 1);
 	ui->btn_prev->setEnabled(m->cur_idx > 0 && m->cur_idx < n_tracks);
@@ -438,40 +444,6 @@ void GUI_TagEdit::init_completer()
 	ui->le_artist->setCompleter(artist_completer);
 }
 
-void GUI_TagEdit::album_all_changed(bool b)
-{
-	ui->le_album->setEnabled(!b);
-}
-
-void GUI_TagEdit::artist_all_changed(bool b)
-{
-	ui->le_artist->setEnabled(!b);
-}
-
-void GUI_TagEdit::album_artist_all_changed(bool b)
-{
-	ui->le_album_artist->setEnabled(!b);
-}
-
-void GUI_TagEdit::genre_all_changed(bool b)
-{
-	ui->le_genre->setEnabled(!b);
-}
-
-void GUI_TagEdit::year_all_changed(bool b)
-{
-	ui->sb_year->setEnabled(!b);
-}
-
-void GUI_TagEdit::discnumber_all_changed(bool b)
-{
-	ui->sb_discnumber->setEnabled(!b);
-}
-
-void GUI_TagEdit::rating_all_changed(bool b)
-{
-	ui->lab_rating->setEnabled(!b);
-}
 
 void GUI_TagEdit::cover_all_changed(bool b)
 {
@@ -656,7 +628,12 @@ void GUI_TagEdit::cb_replace_toggled(bool b)
 
 void GUI_TagEdit::load_entire_album()
 {
-	m->tag_edit->load_entire_album();
+	Message::Answer answer =
+	Message::question(tr("All changes will be lost") + ".\n" + Lang::get(Lang::Continue).question(), "GUI_TagEdit", Message::QuestionType::YesNo);
+
+	if(answer == Message::Answer::Yes){
+		m->tag_edit->load_entire_album();
+	}
 }
 
 
@@ -684,7 +661,7 @@ void GUI_TagEdit::tag_text_changed(const QString& str)
 	}
 
 	bool valid;
-	MetaData md =m->tag_edit->metadata(m->cur_idx);
+	MetaData md = m->tag_edit->metadata(m->cur_idx);
 
 	valid = m->tag_expression.update_tag(str, md.filepath() );
 
