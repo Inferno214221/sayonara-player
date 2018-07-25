@@ -144,6 +144,9 @@ namespace Cover
 
 		void			set_search_urls(const QStringList& urls);
 
+		void			enable_freetext_search(bool b);
+		bool			is_freetext_search_enabled() const;
+
 		/**
 		 * @brief to_string
 		 * @return

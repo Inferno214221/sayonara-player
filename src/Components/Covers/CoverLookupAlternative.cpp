@@ -94,6 +94,7 @@ void AlternativeLookup::start_text_search(const QString& search_term)
 {
 	Cover::Location cl = m->cover_location;
 	cl.set_search_term(search_term);
+	cl.enable_freetext_search(true);
 	go(cl);
 }
 
@@ -101,6 +102,7 @@ void AlternativeLookup::start_text_search(const QString& search_term, const QStr
 {
 	Cover::Location cl = m->cover_location;
 	cl.set_search_term(search_term, cover_fetcher_identifier);
+	cl.enable_freetext_search(true);
 	go(cl);
 }
 
