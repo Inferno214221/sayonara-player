@@ -18,33 +18,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef EQUALIZERHANDLER_H
 #define EQUALIZERHANDLER_H
 
-#include "Utils/Pimpl.h"
-
-struct _GstElement;
-typedef struct _GstElement GstElement;
-
-class QString;
+#include "Components/Engine/gstfwd.h"
 
 namespace Pipeline
 {
-    class EqualizerHandler
-    {
-        PIMPL(EqualizerHandler)
+	class EqualizerHandler
+	{
+		public:
+			EqualizerHandler();
+			virtual ~EqualizerHandler();
 
-    public:
-        EqualizerHandler();
-        virtual ~EqualizerHandler();
+			void init_equalizer();
+			void set_band(int idx, int val);
 
-        void init_equalizer();
-        void set_band(int, int val);
-
-        virtual GstElement* get_equalizer_element() const=0;
-    };
+			virtual GstElement* get_equalizer_element() const=0;
+	};
 }
 
 #endif // EQUALIZERHANDLER_H

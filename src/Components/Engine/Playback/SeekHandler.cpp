@@ -25,10 +25,10 @@
 
 using Pipeline::SeekHandler;
 
-struct SeekHandler::Private
+namespace Seek
 {
-	static const GstSeekFlags SeekAccurate=(GstSeekFlags)(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_ACCURATE);
-	static const GstSeekFlags SeekNearest=(GstSeekFlags)(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_ACCURATE);
+	const GstSeekFlags SeekAccurate=(GstSeekFlags)(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_ACCURATE);
+	const GstSeekFlags SeekNearest=(GstSeekFlags)(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_ACCURATE);
 
 	bool seek(GstElement* audio_src, GstSeekFlags flags, NanoSeconds ns)
 	{
@@ -52,13 +52,10 @@ struct SeekHandler::Private
 	{
 		return seek(audio_src, SeekNearest, ns);
 	}
-};
-
-SeekHandler::SeekHandler()
-{
-	m = Pimpl::make<Private>();
 }
 
+
+SeekHandler::SeekHandler() {}
 SeekHandler::~SeekHandler() {}
 
 NanoSeconds SeekHandler::seek_rel(double percent, NanoSeconds ref_ns)
@@ -78,7 +75,7 @@ NanoSeconds SeekHandler::seek_rel(double percent, NanoSeconds ref_ns)
 	}
 
 
-	if( m->seek_accurate(get_source(), new_time_ns) ) {
+	if( Seek::seek_accurate(get_source(), new_time_ns) ) {
 		return new_time_ns;
 	}
 
@@ -88,7 +85,7 @@ NanoSeconds SeekHandler::seek_rel(double percent, NanoSeconds ref_ns)
 
 NanoSeconds SeekHandler::seek_abs(NanoSeconds ns)
 {
-	if( m->seek_accurate(get_source(), ns) ) {
+	if( Seek::seek_accurate(get_source(), ns) ) {
 		return ns;
 	}
 
@@ -97,7 +94,7 @@ NanoSeconds SeekHandler::seek_abs(NanoSeconds ns)
 
 NanoSeconds SeekHandler::seek_nearest(NanoSeconds ns)
 {
-	if( m->seek_nearest(get_source(), ns) ) {
+	if( Seek::seek_nearest(get_source(), ns) ) {
 		return ns;
 	}
 

@@ -23,24 +23,22 @@
 #ifndef SEEKHANDLER_H
 #define SEEKHANDLER_H
 
-#include "Utils/Pimpl.h"
 #include "Components/Engine/gstfwd.h"
+#include "Utils/typedefs.h"
 
 namespace Pipeline
 {
 	class SeekHandler
 	{
-		PIMPL(SeekHandler)
+		public:
+			SeekHandler();
+			virtual ~SeekHandler();
 
-	public:
-		SeekHandler();
-		virtual ~SeekHandler();
+			NanoSeconds seek_rel(double percent, NanoSeconds ref_ns);
+			NanoSeconds seek_abs(NanoSeconds ns);
+			NanoSeconds seek_nearest(NanoSeconds ns);
 
-		NanoSeconds seek_rel(double percent, NanoSeconds ref_ns);
-		NanoSeconds seek_abs(NanoSeconds ns);
-		NanoSeconds seek_nearest(NanoSeconds ns);
-
-		virtual GstElement* get_source() const=0;
+			virtual GstElement* get_source() const=0;
 	};
 }
 

@@ -27,26 +27,14 @@
 
 using Pipeline::SpeedHandler;
 
-struct SpeedHandler::Private
-{
-	Settings* settings=nullptr;
-
-	Private()
-	{
-		settings = Settings::instance();
-	}
-};
-
-SpeedHandler::SpeedHandler()
-{
-	m = Pimpl::make<Private>();
-}
+SpeedHandler::SpeedHandler() {}
 
 SpeedHandler::~SpeedHandler() {}
 
 void SpeedHandler::set_speed(float speed, double pitch, bool preserve_pitch)
 {
-	if(!m->settings->get<Set::Engine_SpeedActive>())
+	Settings* s = Settings::instance();
+	if(!s->get<Set::Engine_SpeedActive>())
 	{
 		return;
 	}

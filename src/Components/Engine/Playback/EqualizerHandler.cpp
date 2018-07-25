@@ -18,39 +18,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "EqualizerHandler.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/EqualizerPresets.h"
 #include "Utils/globals.h"
 
+#include <QList>
 #include <QString>
 #include <gst/gst.h>
 
 using Pipeline::EqualizerHandler;
 
-struct EqualizerHandler::Private
-{
-	Settings* settings=nullptr;
-	Private()
-	{
-		settings = Settings::instance();
-	}
-};
-
-EqualizerHandler::EqualizerHandler()
-{
-	m = Pimpl::make<Private>();
-}
-
-
+EqualizerHandler::EqualizerHandler() {}
 EqualizerHandler::~EqualizerHandler() {}
 
 void EqualizerHandler::init_equalizer()
 {
-	int last_idx = m->settings->get<Set::Eq_Last>();
-	QList<EQ_Setting> presets = m->settings->get<Set::Eq_List>();
+	Settings* settings = Settings::instance();
+
+	int last_idx = settings->get<Set::Eq_Last>();
+	QList<EQ_Setting> presets = settings->get<Set::Eq_List>();
 	presets.push_front(EQ_Setting());
 
 	if( !between(last_idx, presets)){
