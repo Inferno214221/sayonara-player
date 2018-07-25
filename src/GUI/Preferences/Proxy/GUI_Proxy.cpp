@@ -23,6 +23,7 @@
 #include "GUI_Proxy.h"
 #include "ui_GUI_Proxy.h"
 #include "Utils/Settings/Settings.h"
+#include "Utils/Utils.h"
 
 GUI_Proxy::GUI_Proxy(const QString& identifier) :
 	Base(identifier)
@@ -65,6 +66,7 @@ bool GUI_Proxy::commit()
 	_settings->set<Set::Proxy_SavePw>(ui->cb_save_pw->isChecked());
 
 	if(ui->cb_save_pw->isChecked()) {
+
 		_settings->set<Set::Proxy_Password>(ui->le_password->text());
 	}
 	else {

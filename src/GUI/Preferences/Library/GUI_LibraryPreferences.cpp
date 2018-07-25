@@ -71,10 +71,7 @@ void GUI_LibraryPreferences::init_ui()
 	ui->tab_widget->setCurrentIndex(0);
 
 	QItemSelectionModel* sel_model = ui->lv_libs->selectionModel();
-	connect(sel_model, &QItemSelectionModel::currentChanged, this, [=](const QModelIndex& current, const QModelIndex& previous){
-		Q_UNUSED(previous)
-		current_item_changed(current.row());
-	});
+	connect(sel_model, &QItemSelectionModel::currentChanged, this, &GUI_LibraryPreferences::current_index_changed);
 
 	connect(ui->btn_new, &QPushButton::clicked, this, &GUI_LibraryPreferences::new_clicked);
 	connect(ui->btn_edit, &QPushButton::clicked, this, &GUI_LibraryPreferences::edit_clicked);
@@ -83,6 +80,8 @@ void GUI_LibraryPreferences::init_ui()
 	connect(ui->btn_down, &QPushButton::clicked, this, &GUI_LibraryPreferences::down_clicked);
 
 	revert();
+
+	current_index_changed(m->model->index(current_row()));
 }
 
 QString GUI_LibraryPreferences::action_name() const
@@ -138,17 +137,6 @@ QString GUI_LibraryPreferences::error_string() const
 	return tr("Cannot edit library");
 }
 
-
-void GUI_LibraryPreferences::current_item_changed(int row)
-{
-	ui->lab_current_path->setVisible(row >= 0);
-	if(row < 0){
-		return;
-	}
-
-	QString path = m->model->path(row);
-	ui->lab_current_path->setText(path);
-}
 
 int GUI_LibraryPreferences::current_row() const
 {
@@ -250,5 +238,24 @@ void GUI_LibraryPreferences::edit_dialog_accepted()
 	}
 
 	edit_dialog->deleteLater();
+}
+
+void GUI_LibraryPreferences::current_index_changed(const QModelIndex& idx)
+{
+	int cur_row = idx.row();
+	int row_count = ui->lv_libs->model()->rowCount();
+
+	ui->btn_up->setDisabled(cur_row <= 0 || cur_row >= row_count);
+	ui->btn_down->setDisabled(cur_row < 0 || cur_row >= row_count - 1);
+	ui->btn_delete->setDisabled(cur_row < 0 || cur_row >= row_count);
+	ui->btn_edit->setDisabled(cur_row < 0 || cur_row >= row_count);
+
+	ui->lab_current_path->setVisible(cur_row >= 0 || cur_row < row_count);
+	if(cur_row < 0 || cur_row >= row_count){
+		return;
+	}
+
+	QString path = m->model->path(cur_row);
+	ui->lab_current_path->setText(path);
 }
 

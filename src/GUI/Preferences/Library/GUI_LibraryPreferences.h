@@ -57,9 +57,9 @@ private slots:
 	void down_clicked();
 
 	void edit_dialog_accepted();
+	void current_index_changed(const QModelIndex& idx);
 
 private:
-	void current_item_changed(int row);
 	int current_row() const;
 };
 
