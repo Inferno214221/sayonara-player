@@ -38,6 +38,7 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/Crypt.h"
 
 #include "Components/PlayManager/PlayManager.h"
 #include "Components/Playlist/PlaylistHandler.h"
@@ -102,7 +103,7 @@ void Base::get_login(QString& user, QString& pw)
 {
 	StringPair user_pw = Settings::instance()->get<Set::LFM_Login>();
 	user = user_pw.first;
-	pw = user_pw.second;
+	pw = Util::Crypt::decrypt(user_pw.second);
 }
 
 

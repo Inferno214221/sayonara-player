@@ -117,6 +117,8 @@ enum class SettingKey : unsigned short
 	Player_SplitterState,
 	Player_Shortcuts,
 	Player_SplitterControls,
+	Player_PrivId,
+	Player_PublicId,
 
 	PL_Playlist,
 	PL_LoadSavedPlaylists,
@@ -223,20 +225,20 @@ namespace Set
 {
 	//typedef SettingKey<bool, SK::LFM_Active> LFM_Active_t; const LFM_Active_t LFM_Active
 	INST(bool,				LFM_Active)				/* is lastFM active? */
-	INST(int,				LFM_ScrobbleTimeSec)			/* time in sec when to scrobble */
+	INST(int,				LFM_ScrobbleTimeSec)	/* time in sec when to scrobble */
 	INST(StringPair,		LFM_Login)				/* 2-Tupel, username, password */
 
-	INST(bool,				LFM_Corrections)			/* propose lfm corrections */
+	INST(bool,				LFM_Corrections)		/* propose lfm corrections */
 	INST(bool,				LFM_ShowErrors)			/* get error message, if there are lfm problems */
 	INST(QString,			LFM_SessionKey)			/* lfm session key */
 
 	INST(int,				Eq_Last)				/* last equalizer index */
-	INST(QList<EQ_Setting>,		Eq_List)				/* All equalizers */
+	INST(QList<EQ_Setting>,		Eq_List)			/* All equalizers */
 	INST(bool,				Eq_Gauss)				/* do curve, when changing eq setting */
 
-	INST(bool,				Lib_Show)					/* show library */
+	INST(bool,				Lib_Show)				/* show library */
 	INST(QString,			Lib_Path)					// deprecated
-	INST(BoolList,			Lib_ColsTitle)				/* shown columns tracks */
+	INST(BoolList,			Lib_ColsTitle)			/* shown columns tracks */
 	INST(BoolList,			Lib_ColsArtist)			/* shown columns artist */
 	INST(BoolList,			Lib_ColsAlbum)				/* shown columns albums */
 	INST(bool,				Lib_LiveSearch)			/* library live search */
@@ -289,6 +291,8 @@ namespace Set
 	INST(QByteArray,		Player_SplitterState)			/* spliter state between playlist and library */
 	INST(RawShortcutMap,	Player_Shortcuts)			/* player shortcuts */
 	INST(QByteArray,		Player_SplitterControls)	/* Splitter state between controls and playlist */
+	INST(QByteArray,		Player_PrivId)				/* Unique identifier */
+	INST(QByteArray,		Player_PublicId)				/* Unique identifier */
 
 	INST(QStringList,		PL_Playlist)				/* old playlist: list of integers in case of library tracks, if no library track, filepath */
 	INST(bool,				PL_LoadSavedPlaylists)			/* load saved playlists on startup */

@@ -453,7 +453,6 @@ QString Util::random_string(int max_chars)
 }
 
 
-
 QString Util::cvt_not_null(const QString& str)
 {
 	if(str.isNull()){

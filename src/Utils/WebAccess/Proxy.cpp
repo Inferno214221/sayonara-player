@@ -23,6 +23,7 @@
 #include "Proxy.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Utils.h"
+#include "Utils/Crypt.h"
 #include "Utils/Logger/Logger.h"
 
 #include <QNetworkProxy>
@@ -98,7 +99,7 @@ QString Proxy::username() const
 
 QString Proxy::password() const
 {
-	return _settings->get<Set::Proxy_Password>();
+	return Util::Crypt::decrypt(_settings->get<Set::Proxy_Password>());
 }
 
 bool Proxy::active() const

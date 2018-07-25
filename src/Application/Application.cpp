@@ -212,6 +212,7 @@ Application::~Application()
 bool Application::init(const QStringList& files_to_play)
 {
 	Settings* settings = Settings::instance();
+	settings->apply_fixes();
 
 	QString version = QString(SAYONARA_VERSION);
 	settings->set<Set::Player_Version>(version);
@@ -243,7 +244,7 @@ bool Application::init(const QStringList& files_to_play)
 
 	init_playlist(files_to_play);
 	init_single_instance_thread();
-	sp_log(Log::Debug, this) << "Time to start: " << m->timer->elapsed() << "ms";
+	sp_log(Log::Debug, this) << "Initialized: " << m->timer->elapsed() << "ms";
 	delete m->timer; m->timer=nullptr;
 
 	//connect(this, &Application::commitDataRequest, this, &Application::session_end_requested);
@@ -257,6 +258,7 @@ void Application::init_player()
 	Gui::Util::set_main_window(m->player);
 
 	connect(m->player, &GUI_Player::sig_player_closed, this, &QCoreApplication::quit);
+
 	sp_log(Log::Debug, this) << "Init player: " << m->timer->elapsed() << "ms";
 }
 

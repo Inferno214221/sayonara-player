@@ -200,9 +200,6 @@ void GUI_Player::init_connections()
 	connect(lph, &Library::PluginHandler::sig_current_library_changed,
 			this, &GUI_Player::current_library_changed);
 
-	connect(lph, &Library::PluginHandler::sig_initialized,
-			this, &GUI_Player::check_library_menu_action);
-
 	connect(lph, &Library::PluginHandler::sig_libraries_changed,
 			this, &GUI_Player::check_library_menu_action);
 

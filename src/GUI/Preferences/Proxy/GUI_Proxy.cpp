@@ -24,6 +24,7 @@
 #include "ui_GUI_Proxy.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Utils.h"
+#include "Utils/Crypt.h"
 
 GUI_Proxy::GUI_Proxy(const QString& identifier) :
 	Base(identifier)
@@ -65,9 +66,12 @@ bool GUI_Proxy::commit()
 	_settings->set<Set::Proxy_Port>(ui->sb_port->value());
 	_settings->set<Set::Proxy_SavePw>(ui->cb_save_pw->isChecked());
 
-	if(ui->cb_save_pw->isChecked()) {
+	if(ui->cb_save_pw->isChecked())
+	{
+		QString pw = ui->le_password->text();
+		QString str = Util::Crypt::encrypt(pw);
 
-		_settings->set<Set::Proxy_Password>(ui->le_password->text());
+		_settings->set<Set::Proxy_Password>(str);
 	}
 	else {
 		_settings->set<Set::Proxy_Password>(QString());
@@ -85,7 +89,9 @@ void GUI_Proxy::revert()
 	ui->le_host->setText(_settings->get<Set::Proxy_Hostname>());
 	ui->sb_port->setValue(_settings->get<Set::Proxy_Port>());
 	ui->le_username->setText(_settings->get<Set::Proxy_Username>());
-	ui->le_password->setText(_settings->get<Set::Proxy_Password>());
+
+	QString pw = Util::Crypt::decrypt(_settings->get<Set::Proxy_Password>());
+	ui->le_password->setText(pw);
 	ui->cb_save_pw->setChecked(_settings->get<Set::Proxy_SavePw>());
 
 	active_toggled(active);

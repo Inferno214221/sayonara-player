@@ -40,11 +40,11 @@ StreamRecorderTest::StreamRecorderTest()
 	Util::File::remove_files_in_directory(sr_path());
 	Util::File::delete_files({sr_path()});
 
-	s->set(Set::Engine_SR_Path, sr_path());
-	s->set(SetNoDB::MP3enc_found, true);
-	s->set(Set::Engine_SR_Active, true);
-	s->set(Set::Engine_SR_SessionPath, true);
-	s->set(Set::Engine_SR_SessionPathTemplate, QString("<y><m><d>/<tn> - <t>"));
+	s->set<Set::Engine_SR_Path>(sr_path());
+	s->set<SetNoDB::MP3enc_found>(true);
+	s->set<Set::Engine_SR_Active>(true);
+	s->set<Set::Engine_SR_SessionPath>(true);
+	s->set<Set::Engine_SR_SessionPathTemplate>(QString("<y><m><d>/<tn> - <t>"));
 
 	sr = new SR::StreamRecorder(this);
 }
@@ -58,7 +58,7 @@ void StreamRecorderTest::target_path_template_test()
 {
 	int idx;
 	Settings* s = Settings::instance();
-	QString tpt = s->get(Set::Engine_SR_SessionPathTemplate);
+	QString tpt = s->get<Set::Engine_SR_SessionPathTemplate>();
 	SR::Utils::ErrorCode err = SR::Utils::validate_template(tpt, &idx);
 
 	QVERIFY(err == SR::Utils::ErrorCode::OK);

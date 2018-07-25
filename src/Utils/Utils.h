@@ -161,7 +161,6 @@ namespace Util
 	 */
 	QStringList ip_addresses();
 
-
 	/**
 	 * @brief set an environment variable. This function is platform independent
 	 * @param key variable name

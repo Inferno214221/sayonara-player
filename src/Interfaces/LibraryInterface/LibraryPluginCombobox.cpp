@@ -56,7 +56,6 @@ PluginCombobox::PluginCombobox(const QString& text, QWidget* parent) :
 	this->setIconSize(QSize(16, 16));
 	this->setFocusPolicy(Qt::ClickFocus);
 
-	connect(m->lph, &PluginHandler::sig_initialized, this, &PluginCombobox::setup_actions);
 	connect(m->lph, &PluginHandler::sig_libraries_changed, this, &PluginCombobox::setup_actions);
 	connect(m->lph, &PluginHandler::sig_current_library_changed, this, &PluginCombobox::current_library_changed);
 

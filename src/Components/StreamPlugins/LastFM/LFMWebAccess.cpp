@@ -130,8 +130,7 @@ QString WebAccess::parse_error_message(const QString& response)
 }
 
 
-UrlParams::UrlParams() :
-	QMap<QByteArray, QByteArray>() {}
+UrlParams::UrlParams() : QMap<QByteArray, QByteArray>() {}
 
 void UrlParams::append_signature()
 {

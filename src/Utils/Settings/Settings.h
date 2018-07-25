@@ -98,6 +98,9 @@ class Settings
 			SettingNotifier< KeyClass >* sn = SettingNotifier< KeyClass >::instance();
 			sn->val_changed();
 		}
+
+		void apply_fixes();
+
 };
 
 

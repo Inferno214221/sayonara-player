@@ -26,7 +26,7 @@ Models::Discnumber::Discnumber() :
 	n_discs(1)
 {}
 
-Models::Discnumber::Discnumber(Disc n_discs, Disc disc) :
+Models::Discnumber::Discnumber(Disc disc, Disc n_discs) :
 	disc(disc),
 	n_discs(n_discs)
 {}

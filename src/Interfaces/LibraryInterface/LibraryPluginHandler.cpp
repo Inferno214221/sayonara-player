@@ -199,8 +199,6 @@ void PluginHandler::init(const QList<Container*>& containers)
 	connect(manager, &Manager::sig_renamed, this, &PluginHandler::local_library_renamed);
 	connect(manager, &Manager::sig_removed, this, &PluginHandler::local_library_removed);
 	connect(manager, &Manager::sig_moved, this, &PluginHandler::local_library_moved);
-
-	emit sig_initialized();
 }
 
 

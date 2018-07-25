@@ -96,3 +96,9 @@ void MainWindow::raise()
 	msg.setArguments(args);
 	QDBusConnection::sessionBus().send(msg);*/
 }
+
+void MainWindow::showEvent(QShowEvent* e)
+{
+	WidgetTemplate<QMainWindow>::showEvent(e);
+	emit sig_shown();
+}

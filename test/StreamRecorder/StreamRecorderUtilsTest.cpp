@@ -54,15 +54,17 @@ void StreamRecorderUtilsTest::filename_test()
 
 	QString other_path = sr_path + "/" + QString("%1 %2_%3-/%4+df3-%5_%6-%7-/%8df%9.mp3")
 			.arg("Bli")
-			.arg(d.month())
-			.arg(d.year())
+			.arg(d.month(), 2, 10, QChar('0'))
+			.arg(d.year(), 4, 10, QChar('0'))
 			.arg(QDate::shortDayName(d.dayOfWeek()))
-			.arg(t.minute())
+			.arg(t.minute(), 2, 10, QChar('0'))
 			.arg("Bli")
-			.arg(d.day())
+			.arg(d.day(), 2, 10, QChar('0'))
 			.arg(QDate::longDayName(d.dayOfWeek()))
 			.arg("bla");
 
+	qDebug() << "Path1: " << path.first;
+	qDebug() << "Path2: " << other_path;
 	QVERIFY(path.first.compare(other_path) == 0);
 }
 

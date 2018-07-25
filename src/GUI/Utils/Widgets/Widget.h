@@ -66,11 +66,17 @@ namespace Gui
 	{
 		Q_OBJECT
 
+	signals:
+		void sig_shown();
+
 	public:
 		explicit MainWindow(QWidget* parent=nullptr);
 		virtual ~MainWindow();
 
 		void raise();
+
+	protected:
+		virtual void showEvent(QShowEvent *e) override;
 	};
 }
 

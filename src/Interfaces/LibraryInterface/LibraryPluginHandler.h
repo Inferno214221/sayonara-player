@@ -47,7 +47,6 @@ namespace Library
 		SINGLETON(PluginHandler)
 
 	signals:
-		void sig_initialized();
 		void sig_current_library_changed(const QString& name);
 		void sig_libraries_changed();
 
