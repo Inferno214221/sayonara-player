@@ -73,7 +73,7 @@ bool Convert::add_and_link_elements()
 {
 	bool success;
 
-	gst_bin_add_many(GST_BIN(_pipeline),
+	gst_bin_add_many(GST_BIN(pipeline()),
 		_audio_src,
 		_audio_convert,
 		_resampler,
@@ -96,7 +96,7 @@ bool Convert::configure_elements()
 
 bool Convert::set_uri(gchar* uri)
 {
-	if(!_pipeline) {
+	if(!pipeline()) {
 		return false;
 	}
 
@@ -109,7 +109,7 @@ bool Convert::set_uri(gchar* uri)
 
 bool Convert::set_target_uri(gchar* uri)
 {
-	if(!_pipeline) {
+	if(!pipeline()) {
 		return false;
 	}
 
@@ -139,7 +139,7 @@ void Convert::stop()
 
 void Convert::set_quality(LameBitrate quality)
 {
-	if(!_pipeline) return;
+	if(!pipeline()) return;
 
 	int cbr=-1;
 	double vbr=-1.0;

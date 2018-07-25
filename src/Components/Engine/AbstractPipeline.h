@@ -69,18 +69,6 @@ namespace Pipeline
 			void sig_duration_changed();
 
 		protected:
-
-			bool		_about_to_finish;
-			QString		_name;
-
-			GstBus*		_bus=nullptr;
-			GstElement* _pipeline=nullptr;
-			gchar*		_uri=nullptr;
-
-			MilliSeconds	_duration_ms;
-			MilliSeconds	_position_source_ms;
-			MilliSeconds	_position_pipeline_ms;
-
 			bool tee_connect(GstElement* tee,
 							GstPadTemplate* tee_src_pad_template,
 							 GstElement* queue,
@@ -93,6 +81,7 @@ namespace Pipeline
 			virtual bool configure_elements()=0;
 
 			virtual MilliSeconds get_about_to_finish_time() const;
+			void set_about_to_finish(bool b);
 
 		signals:
 			void sig_finished();
@@ -113,7 +102,7 @@ namespace Pipeline
 
 			virtual GstElement* get_source() const=0;
 			virtual bool		init(GstState state=GST_STATE_READY);
-			virtual GstElement* get_pipeline() const;
+			virtual GstElement* pipeline() const;
 			virtual GstState	get_state();
 			virtual void		refresh_position();
 

@@ -253,7 +253,7 @@ bool Playback::add_and_link_elements()
 	bool success;
 	GstPadTemplate* tee_src_pad_template;
 
-	gst_bin_add_many(GST_BIN(_pipeline),
+	gst_bin_add_many(GST_BIN(pipeline()),
 					 m->audio_src, m->audio_convert, m->equalizer, m->tee,
 
 					 m->eq_queue, m->volume, m->audio_sink,
@@ -291,14 +291,14 @@ bool Playback::add_and_link_elements()
 
 	/* lame branch (optional) */
 	if(m->lame){
-		gst_bin_add_many(GST_BIN(_pipeline), m->lame_queue,  m->lame_converter, m->lame_resampler, m->lame, m->lame_app_sink, nullptr);
+		gst_bin_add_many(GST_BIN(pipeline()), m->lame_queue,  m->lame_converter, m->lame_resampler, m->lame, m->lame_app_sink, nullptr);
 		success = gst_element_link_many( m->lame_queue, m->lame_converter, m->lame_resampler, m->lame, m->lame_app_sink, nullptr);
 		test_and_error_bool(success, "Engine: Cannot link lame stuff");
 	}
 
 	/* stream rippper branch (optional) */
 	if(m->file_sink){
-		gst_bin_add_many(GST_BIN(_pipeline), m->file_queue, m->file_converter, m->file_resampler, m->file_lame, m->file_sink, nullptr);
+		gst_bin_add_many(GST_BIN(pipeline()), m->file_queue, m->file_converter, m->file_resampler, m->file_lame, m->file_sink, nullptr);
 		success = gst_element_link_many( m->file_queue, m->file_converter, m->file_resampler, m->file_lame, m->file_sink, nullptr);
 		test_and_error_bool(success, "Engine: Cannot link streamripper stuff");
 	}
@@ -524,14 +524,16 @@ GstElement* Playback::get_source() const
 	return m->audio_src;
 }
 
-GstElement* Playback::get_pipeline() const
+GstElement* Playback::pipeline() const
 {
-	return _pipeline;
+	// this is needed because of ChangeablePipeline
+	return Pipeline::Base::pipeline();
 }
+
 
 void Playback::force_about_to_finish()
 {
-	_about_to_finish = true;
+	set_about_to_finish(true);
 	emit sig_about_to_finish(get_about_to_finish_time());
 }
 
@@ -543,7 +545,7 @@ bool Playback::set_uri(gchar* uri)
 
 	g_object_set(G_OBJECT(m->audio_src), "uri", uri, nullptr);
 
-	gst_element_set_state(_pipeline, GST_STATE_PAUSED);
+	gst_element_set_state(pipeline(), GST_STATE_PAUSED);
 
 	return true;
 }
@@ -629,32 +631,32 @@ void Playback::s_sink_changed()
 	}
 
 	GstState old_state, state;
-	gst_element_get_state(get_pipeline(), &old_state, nullptr, 0);
+	gst_element_get_state(pipeline(), &old_state, nullptr, 0);
 
 	state = old_state;
 
 	stop();
 	while(state != GST_STATE_NULL)
 	{
-		gst_element_get_state(get_pipeline(), &state, nullptr, 0);
+		gst_element_get_state(pipeline(), &state, nullptr, 0);
 		Util::sleep_ms(50);
 	}
 
 	NanoSeconds pos;
-	gst_element_query_position(get_pipeline(), GST_FORMAT_TIME, &pos);
+	gst_element_query_position(pipeline(), GST_FORMAT_TIME, &pos);
 
 	gst_element_unlink(m->volume, m->audio_sink);
-	gst_bin_remove(GST_BIN(get_pipeline()), m->audio_sink);
+	gst_bin_remove(GST_BIN(pipeline()), m->audio_sink);
 	m->audio_sink = e;
-	gst_bin_add(GST_BIN(get_pipeline()), m->audio_sink);
+	gst_bin_add(GST_BIN(pipeline()), m->audio_sink);
 	gst_element_link(m->volume, m->audio_sink);
 
-	gst_element_set_state(get_pipeline(), old_state);
+	gst_element_set_state(pipeline(), old_state);
 
 	state = GST_STATE_NULL;
 	while(state != old_state)
 	{
-		gst_element_get_state(get_pipeline(), &state, nullptr, 0);
+		gst_element_get_state(pipeline(), &state, nullptr, 0);
 		Util::sleep_ms(50);
 	}
 

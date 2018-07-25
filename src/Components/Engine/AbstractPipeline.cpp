@@ -33,12 +33,27 @@ using Pipeline::test_and_error_bool;
 
 struct Base::Private
 {
+	MilliSeconds	duration_ms;
+	MilliSeconds	position_source_ms;
+	MilliSeconds	position_pipeline_ms;
+
+	QString			name;
+	GstBus*			bus=nullptr;
 	Engine::Base*   engine=nullptr;
 	QTimer*         progress_timer=nullptr;
+	gchar*			uri=nullptr;
+	GstElement*		pipeline=nullptr;
+
+	bool			about_to_finish;
 	bool            initialized;
 
-	Private(Engine::Base* engine) :
+	Private(const QString& name, Engine::Base* engine) :
+		duration_ms(0),
+		position_source_ms(0),
+		position_pipeline_ms(0),
+		name(name),
 		engine(engine),
+		about_to_finish(false),
 		initialized(false)
 	{}
 
@@ -59,26 +74,15 @@ Base::Base(QString name, Engine::Base* engine, QObject* parent) :
 	QObject(parent),
 	SayonaraClass()
 {
-	m = Pimpl::make<Private>(engine);
-
-	_name = name;
-	_position_source_ms = 0;
-	_position_pipeline_ms = 0;
-	_duration_ms = 0;
-	_about_to_finish = false;
+	m = Pimpl::make<Private>(name, engine);
 }
 
 Base::~Base()
 {
-	if (_pipeline) {
-		gst_element_set_state(GST_ELEMENT(_pipeline), GST_STATE_NULL);
-		gst_object_unref (GST_OBJECT(_pipeline));
-		_pipeline = nullptr;
-	}
-
-	if (_bus){
-		//gst_object_unref (_bus);
-
+	if (m->pipeline) {
+		gst_element_set_state(GST_ELEMENT(m->pipeline), GST_STATE_NULL);
+		gst_object_unref (GST_OBJECT(m->pipeline));
+		m->pipeline = nullptr;
 	}
 }
 
@@ -91,12 +95,12 @@ bool Base::init(GstState state)
 	}
 
 	// create equalizer element
-	_pipeline = gst_pipeline_new(_name.toStdString().c_str());
-	if(!test_and_error(_pipeline, "Engine: Pipeline sucks")){
+	m->pipeline = gst_pipeline_new(m->name.toStdString().c_str());
+	if(!test_and_error(m->pipeline, "Engine: Pipeline sucks")){
 		return false;
 	}
 
-	_bus = gst_pipeline_get_bus(GST_PIPELINE(_pipeline));
+	m->bus = gst_pipeline_get_bus(GST_PIPELINE(m->pipeline));
 
 	success = create_elements();
 	if(!success) {
@@ -110,12 +114,12 @@ bool Base::init(GstState state)
 
 	configure_elements();
 
-	gst_element_set_state(_pipeline, state);
+	gst_element_set_state(m->pipeline, state);
 
 #ifdef Q_OS_WIN
-	gst_bus_set_sync_handler(_bus, Engine::Callbacks::bus_message_received, m->engine, EngineCallbacks::destroy_notify);
+	gst_bus_set_sync_handler(m->bus, Engine::Callbacks::bus_message_received, m->engine, EngineCallbacks::destroy_notify);
 #else
-	gst_bus_add_watch(_bus, Engine::Callbacks::bus_state_changed, m->engine);
+	gst_bus_add_watch(m->bus, Engine::Callbacks::bus_state_changed, m->engine);
 #endif
 
 	m->progress_timer = new QTimer(this);
@@ -142,29 +146,29 @@ void Base::refresh_position()
 	element = get_source();
 
 	if(!element){
-		element = GST_ELEMENT(_pipeline);
+		element = GST_ELEMENT(m->pipeline);
 	}
 
 	success_source = gst_element_query_position(element, GST_FORMAT_TIME, &pos_source);
-	success_pipeline = gst_element_query_position(_pipeline, GST_FORMAT_TIME, &pos_pipeline);
+	success_pipeline = gst_element_query_position(m->pipeline, GST_FORMAT_TIME, &pos_pipeline);
 
-	_position_source_ms = 0;
-	_position_pipeline_ms = 0;
+	m->position_source_ms = 0;
+	m->position_pipeline_ms = 0;
 	if(success_source) {
-		_position_source_ms = (MilliSeconds) (GST_TIME_AS_MSECONDS(pos_source));
+		m->position_source_ms = (MilliSeconds) (GST_TIME_AS_MSECONDS(pos_source));
 	}
 
 	if(success_pipeline) {
-		_position_pipeline_ms = (MilliSeconds) (GST_TIME_AS_MSECONDS(pos_pipeline));
+		m->position_pipeline_ms = (MilliSeconds) (GST_TIME_AS_MSECONDS(pos_pipeline));
 	}
 
-	emit sig_pos_changed_ms( _position_pipeline_ms );
+	emit sig_pos_changed_ms( m->position_pipeline_ms );
 }
 
 void Base::update_duration_ms(MilliSeconds duration_ms, GstElement *src)
 {
 	if(src == get_source()){
-		_duration_ms = duration_ms;
+		m->duration_ms = duration_ms;
 	}
 
 	refresh_position();
@@ -186,36 +190,36 @@ void Base::set_data(Byte* data, uint64_t size)
 
 void Base::check_about_to_finish()
 {
-	if(!_about_to_finish)
+	if(!m->about_to_finish)
 	{
-		if(_duration_ms < _position_pipeline_ms || (_duration_ms == 0))
+		if(m->duration_ms < m->position_pipeline_ms || (m->duration_ms == 0))
 		{
-			_duration_ms = m->query_duration(get_source());
+			m->duration_ms = m->query_duration(get_source());
 
-			if(_duration_ms == 0){
+			if(m->duration_ms == 0){
 				return;
 			}
 		}
 	}
 
 	MilliSeconds about_to_finish_time = get_about_to_finish_time();
-	if(!_about_to_finish)
+	if(!m->about_to_finish)
 	{
-		if(_position_pipeline_ms <= _duration_ms)
+		if(m->position_pipeline_ms <= m->duration_ms)
 		{
-			if((_duration_ms - _position_pipeline_ms) < about_to_finish_time)
+			if((m->duration_ms - m->position_pipeline_ms) < about_to_finish_time)
 			{
-				_about_to_finish = true;
+				m->about_to_finish = true;
 
-				sp_log(Log::Develop, this) << "Duration: " << _duration_ms << ", Position: " << _position_pipeline_ms;
+				sp_log(Log::Develop, this) << "Duration: " << m->duration_ms << ", Position: " << m->position_pipeline_ms;
 
-				emit sig_about_to_finish(_duration_ms - _position_pipeline_ms);
+				emit sig_about_to_finish(m->duration_ms - m->position_pipeline_ms);
 				return;
 			}
 		}
 	}
 
-	_about_to_finish = false;
+	m->about_to_finish = false;
 }
 
 MilliSeconds Base::get_time_to_go() const
@@ -225,10 +229,10 @@ MilliSeconds Base::get_time_to_go() const
 
 	element = get_source();
 	if(!element){
-		element = GST_ELEMENT(_pipeline);
+		element = GST_ELEMENT(m->pipeline);
 	}
 
-	element = GST_ELEMENT(_pipeline);
+	element = GST_ELEMENT(m->pipeline);
 
 	gst_element_query_duration(element, GST_FORMAT_TIME, &duration);
 	gst_element_query_position(element, GST_FORMAT_TIME, &position);
@@ -245,17 +249,17 @@ MilliSeconds Base::get_time_to_go() const
 
 MilliSeconds Base::get_duration_ms() const
 {
-	return _duration_ms;
+	return m->duration_ms;
 }
 
 MilliSeconds Base::get_source_position_ms() const
 {
-	return _position_source_ms;
+	return m->position_source_ms;
 }
 
 MilliSeconds Base::get_pipeline_position_ms() const
 {
-	return _position_pipeline_ms;
+	return m->position_pipeline_ms;
 }
 
 void Base::finished()
@@ -267,20 +271,20 @@ void Base::finished()
 GstState Base::get_state()
 {
 	GstState state;
-	gst_element_get_state(_pipeline, &state, nullptr, GST_MSECOND * 10);
+	gst_element_get_state(m->pipeline, &state, nullptr, GST_MSECOND * 10);
 	return state;
 }
 
 
-GstElement* Base::get_pipeline() const
+GstElement* Base::pipeline() const
 {
-	return _pipeline;
+	return m->pipeline;
 }
 
 bool Base::set_uri(gchar* uri)
 {
-	_uri = uri;
-	return (_uri != nullptr);
+	m->uri = uri;
+	return (m->uri != nullptr);
 }
 
 
@@ -347,8 +351,9 @@ Base::has_element(GstElement* e) const
 	GstObject* o = (GstObject*) e;
 	GstObject* parent = nullptr;
 
-	while(o){
-		if( o == (GstObject*) _pipeline ){
+	while(o)
+	{
+		if( o == (GstObject*) m->pipeline ){
 			if( (GstObject*) e != o ){
 				gst_object_unref(o);
 			}
@@ -373,36 +378,38 @@ MilliSeconds Base::get_about_to_finish_time() const
 	return 300;
 }
 
+void Base::set_about_to_finish(bool b)
+{
+	m->about_to_finish = b;
+}
+
 void Base::play()
 {
-	GstElement* pipeline = get_pipeline();
-	if(pipeline)
+	if(m->pipeline)
 	{
-		gst_element_set_state(pipeline, GST_STATE_PLAYING);
+		gst_element_set_state(m->pipeline, GST_STATE_PLAYING);
 	}
 }
 
 void Base::pause()
 {
-	GstElement* pipeline = get_pipeline();
-	if(pipeline)
+	if(m->pipeline)
 	{
-		gst_element_set_state(pipeline, GST_STATE_PAUSED);
+		gst_element_set_state(m->pipeline, GST_STATE_PAUSED);
 	}
 }
 
 void Base::stop()
 {
-	GstElement* pipeline = get_pipeline();
-	if(pipeline)
+	if(m->pipeline)
 	{
-		gst_element_set_state(pipeline, GST_STATE_NULL);
+		gst_element_set_state(m->pipeline, GST_STATE_NULL);
 	}
 
-	_position_source_ms = 0;
-	_position_pipeline_ms = 0;
-	_duration_ms = 0;
-	_uri = nullptr;
+	m->position_source_ms = 0;
+	m->position_pipeline_ms = 0;
+	m->duration_ms = 0;
+	m->uri = nullptr;
 }
 
 bool

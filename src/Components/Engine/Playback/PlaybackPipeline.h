@@ -55,12 +55,13 @@ namespace Pipeline
 		double get_current_volume() const override;
 
 		GstElement* get_source() const override;
-		GstElement* get_pipeline() const override;
+		GstElement* pipeline() const override;
 
 		void force_about_to_finish();
 
 		void set_spectrum_enabled(bool b);
 		void set_level_enabled(bool b);
+
 
 	public slots:
 		void play() override;

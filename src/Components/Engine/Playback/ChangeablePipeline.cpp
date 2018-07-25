@@ -78,7 +78,7 @@ src_blocked_add(GstPad* pad, GstPadProbeInfo* info, gpointer data)
 
 void Changeable::add_element(GstElement* element, GstElement* first_element, GstElement* second_element)
 {
-	GstElement* pipeline = get_pipeline();
+	GstElement* pipeline = this->pipeline();
 	gchar* element_name = gst_element_get_name(element);
 
 	sp_log(Log::Debug, this) << "Add " << element_name << " to pipeline";
@@ -184,7 +184,7 @@ src_blocked_remove(GstPad* pad, GstPadProbeInfo* info, gpointer data)
 #include <memory>
 void Changeable::remove_element(GstElement* element, GstElement* first_element, GstElement* second_element)
 {
-	GstElement* pipeline = get_pipeline();
+	GstElement* pipeline = this->pipeline();
 
 	char* element_name = gst_element_get_name(element);
 
