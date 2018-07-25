@@ -61,6 +61,7 @@ struct GUI_Player::Private
 	GUI_ControlsBase*			controls=nullptr;
 	QPoint						initial_pos;
 	QSize						initial_sz;
+	QString						current_language;
 	int							style;
 	bool						shutdown_requested;
 
@@ -509,12 +510,19 @@ bool GUI_Player::init_translator(const QString& file, const QString& dir)
 
 void GUI_Player::language_changed()
 {
+	QString language = _settings->get<Set::Player_Language>();
+	if(language == m->current_language)
+	{
+		return;
+	}
+
 	for(QTranslator* t : m->translators)
 	{
 		QApplication::removeTranslator(t);
 	}
 
-	QString language = _settings->get<Set::Player_Language>();
+	m->translators.clear();
+	m->current_language = language;
 
 	QRegExp re("sayonara_lang_(.*)\\.qm");
 	re.indexIn(language);
