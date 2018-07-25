@@ -43,6 +43,11 @@ public:
 protected:
 	void init_ui() override;
 	void retranslate_ui() override;
+
+private slots:
+	void up_clicked();
+	void down_clicked();
+	void current_row_changed(int row);
 };
 
 

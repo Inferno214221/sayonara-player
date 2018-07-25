@@ -21,12 +21,14 @@
 #include "CoverLookup.h"
 #include "CoverLookupAlternative.h"
 #include "CoverLocation.h"
+#include "CoverFetchManager.h"
 
 #include <QStringList>
 
 using Cover::AlternativeLookup;
 using Cover::Location;
 using Cover::Lookup;
+using Cover::Fetcher::Manager;
 
 struct AlternativeLookup::Private
 {
@@ -77,11 +79,22 @@ void AlternativeLookup::start()
 	go(m->cover_location);
 }
 
+
 void AlternativeLookup::start(const QString& cover_fetcher_identifier)
 {
-	Cover::Location cl = m->cover_location;
-	QMap<QString, QString> all_search_urls = m->cover_location.all_search_urls();
-	QString search_url = all_search_urls[cover_fetcher_identifier];
+	Location cl = m->cover_location;
+	QStringList search_urls = m->cover_location.search_urls();
+	QString search_url;
+
+	Manager* cfm = Manager::instance();
+	for(const QString& url : search_urls)
+	{
+		QString identifier = cfm->identifier_by_url(url);
+		if(identifier == cover_fetcher_identifier){
+			search_url = url;
+			break;
+		}
+	}
 
 	if(!search_url.isEmpty()){
 		cl.set_search_urls({search_url});
@@ -92,7 +105,7 @@ void AlternativeLookup::start(const QString& cover_fetcher_identifier)
 
 void AlternativeLookup::start_text_search(const QString& search_term)
 {
-	Cover::Location cl = m->cover_location;
+	Location cl = m->cover_location;
 	cl.set_search_term(search_term);
 	cl.enable_freetext_search(true);
 	go(cl);
@@ -100,7 +113,7 @@ void AlternativeLookup::start_text_search(const QString& search_term)
 
 void AlternativeLookup::start_text_search(const QString& search_term, const QString &cover_fetcher_identifier)
 {
-	Cover::Location cl = m->cover_location;
+	Location cl = m->cover_location;
 	cl.set_search_term(search_term, cover_fetcher_identifier);
 	cl.enable_freetext_search(true);
 	go(cl);

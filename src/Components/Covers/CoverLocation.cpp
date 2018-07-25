@@ -110,11 +110,6 @@ void Location::set_cover_path(const QString& cover_path)
 	m->cover_path = cover_path;
 }
 
-void Location::set_all_search_urls(const StringMap& search_urls)
-{
-	m->all_search_urls = search_urls;
-}
-
 Location::Location()
 {
 	qRegisterMetaType<Location>("CoverLocation");
@@ -143,7 +138,6 @@ Location Location::invalid_location()
 	cl.set_valid(false);
 	cl.set_cover_path(::Util::share_path("logo.png"));
 	cl.set_search_urls(QStringList());
-	cl.set_all_search_urls(StringMap());
 	cl.set_search_term(QString());
 	cl.set_identifier("Invalid location");
 	cl.set_audio_file_source(QString(), QString());
@@ -178,7 +172,6 @@ Location Location::cover_location(const QString& album_name, const QString& arti
 	ret.set_cover_path(cover_path);
 	ret.set_search_term(artist_name + " " + album_name);
 	ret.set_search_urls(cfm->album_addresses(artist_name, album_name));
-	ret.set_all_search_urls(cfm->all_album_addresses(artist_name, album_name));
 	ret.set_identifier("CL:By album: " + album_name + " by " + artist_name);
 
 	return ret;
@@ -301,7 +294,6 @@ Location Location::cover_location(const QString& artist)
 	ret.set_valid(true);
 	ret.set_cover_path(cover_path);
 	ret.set_search_urls(cfm->artist_addresses(artist));
-	ret.set_all_search_urls(cfm->all_artist_addresses(artist));
 	ret.set_search_term(artist);
 	ret.set_identifier("CL:By artist name: " + artist);
 
@@ -456,10 +448,6 @@ bool Location::has_search_urls() const
 	return !(m->search_urls.isEmpty());
 }
 
-const QMap<QString, QString>& Location::all_search_urls() const
-{
-	return m->all_search_urls;
-}
 
 QString Location::search_term() const
 {
@@ -474,8 +462,8 @@ void Location::set_search_term(const QString& search_term)
 	m->search_term_urls = cfm->search_addresses(search_term);
 }
 
-void Location::set_search_term(const QString &search_term,
-							   const QString &cover_fetcher_identifier)
+void Location::set_search_term(const QString& search_term,
+							   const QString& cover_fetcher_identifier)
 {
 	Fetcher::Manager* cfm = Fetcher::Manager::instance();
 

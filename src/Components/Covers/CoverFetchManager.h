@@ -63,11 +63,6 @@ namespace Fetcher
 			 */
 			void register_coverfetcher(Cover::Fetcher::Base* t);
 
-			/**
-			 * @brief activate coverfetchers by their keywords
-			 * @param coverfetchers list of cover fetcher keywords.
-			 */
-			void activate_coverfetchers(const QStringList& coverfetchers);
 
 			/**
 			 * @brief get urls for a artist search query
@@ -75,7 +70,6 @@ namespace Fetcher
 			 * @return list of urls
 			 */
 			QStringList artist_addresses(const QString& artist) const;
-			QMap<QString, QString> all_artist_addresses(const QString& artist) const;
 
 			/**
 			 * @brief get urls for a album search query
@@ -84,7 +78,6 @@ namespace Fetcher
 			 * @return list of urls
 			 */
 			QStringList album_addresses(const QString& artist, const QString& album) const;
-			QMap<QString, QString> all_album_addresses(const QString& artist, const QString& album) const;
 
 			/**
 			 * @brief get urls for a fuzzy query
@@ -107,27 +100,15 @@ namespace Fetcher
 			 * @param url cover search url
 			 * @return null, if there's no suitable CoverFetcherInterface registered
 			 */
-			Cover::Fetcher::Base* available_coverfetcher(const QString& url) const;
-
-			/**
-			 * @brief get an activated coverfetcher
-			 * @param url cover search url
-			 * @return null, if there's no suitable CoverFetcherInterface activated
-			 */
-			Cover::Fetcher::Base* active_coverfetcher(const QString& url) const;
-
+			Cover::Fetcher::Base* coverfetcher(const QString& url) const;
 
 			/**
 			 * @brief fetches all available cover fetcher
 			 * @return
 			 */
-			QList<Cover::Fetcher::Base*> available_coverfetchers() const;
+			QList<Cover::Fetcher::Base*> coverfetchers() const;
 
-			/**
-			 * @brief fetches all active cover fetchers
-			 * @return
-			 */
-			QList<Cover::Fetcher::Base*> active_coverfetchers() const;
+			QString identifier_by_url(const QString& url) const;
 
 
 		private slots:

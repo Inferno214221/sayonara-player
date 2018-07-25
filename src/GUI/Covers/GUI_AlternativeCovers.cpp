@@ -43,6 +43,7 @@
 #include "Utils/Utils.h"
 #include "Utils/Message/Message.h"
 #include "Utils/Language.h"
+#include "Utils/Settings/Settings.h"
 
 #include <QDir>
 #include <QFile>
@@ -93,12 +94,11 @@ GUI_AlternativeCovers::GUI_AlternativeCovers(QWidget* parent) :
 	m->delegate = new AlternativeCoverItemDelegate(this);
 	ui->tv_images->setItemDelegate(m->delegate);
 
+	// add preference button
 	CoverPreferenceAction* cpa = new CoverPreferenceAction(this);
 	QPushButton* pref_button = cpa->create_button(this);
 	pref_button->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
-	//ui->layout_search->insertWidget(0, pref_button);
 	ui->layout_server->addWidget(pref_button);
-
 
 	connect(ui->btn_ok, &QPushButton::clicked, this, &GUI_AlternativeCovers::ok_clicked);
 	connect(ui->btn_apply, &QPushButton::clicked, this, &GUI_AlternativeCovers::apply_clicked);
@@ -124,6 +124,8 @@ GUI_AlternativeCovers::GUI_AlternativeCovers(QWidget* parent) :
 			init_combobox();
 		}
 	});
+
+	Set::listen<Set::Cover_Server>(this, &GUI_AlternativeCovers::servers_changed, false);
 }
 
 
@@ -276,6 +278,11 @@ void GUI_AlternativeCovers::cl_finished(bool b)
 	ui->btn_search->setText(Lang::get(Lang::SearchVerb));
 }
 
+void GUI_AlternativeCovers::servers_changed()
+{
+	init_combobox();
+}
+
 
 void GUI_AlternativeCovers::cover_pressed(const QModelIndex& idx)
 {
@@ -333,31 +340,29 @@ void GUI_AlternativeCovers::init_combobox()
 	Cover::Fetcher::Manager* cfm = Cover::Fetcher::Manager::instance();
 	Cover::Location cl = m->cl_alternative->cover_location();
 
-	QList<Cover::Fetcher::Base*> active_coverfetchers = cfm->active_coverfetchers();
-	QStringList first_item_string;
-
-	for(Cover::Fetcher::Base* cfi : active_coverfetchers)
-	{
-		if(!cfi->keyword().isEmpty()){
-			first_item_string << cfi->keyword();
-		}
-	}
-
 	ui->combo_search_fetchers->clear();
-	ui->combo_search_fetchers->addItem(first_item_string.join(", "));
 
-	QList<Cover::Fetcher::Base*> available_cover_fetchers = cfm->available_coverfetchers();
-	for(const Cover::Fetcher::Base* cover_fetcher : available_cover_fetchers)
+	QList<Cover::Fetcher::Base*> cover_fetchers = cfm->coverfetchers();
+	for(const Cover::Fetcher::Base* cover_fetcher : cover_fetchers)
 	{
 		QString keyword = cover_fetcher->keyword();
+		if(keyword.isEmpty()){
+			continue;
+		}
 
 		bool suitable = false;
-		if(is_text_mode) {
+		if(is_text_mode)
+		{
 			suitable = cover_fetcher->is_search_supported();
 		}
 
-		else {
-			suitable = cl.all_search_urls().contains(keyword);
+		else
+		{
+			QStringList search_urls = cl.search_urls();
+			suitable = ::Util::contains(search_urls, [=](const QString& url){
+				QString id = cfm->identifier_by_url(url);
+				return (id == keyword);
+			});
 		}
 
 		if(suitable){

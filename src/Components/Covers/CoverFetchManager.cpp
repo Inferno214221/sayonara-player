@@ -38,7 +38,9 @@
 using namespace Cover;
 using Cover::Fetcher::Manager;
 
-static void sort_coverfetchers(QList<Fetcher::Base*>& lst, const QMap<QString, int>& cf_order)
+using SortMap=QMap<QString, int>;
+
+static void sort_coverfetchers(QList<Fetcher::Base*>& lst, const SortMap& cf_order)
 {
 	std::sort(lst.begin(), lst.end(), [&cf_order](Fetcher::Base* t1, Fetcher::Base* t2)
 	{
@@ -61,6 +63,19 @@ static void sort_coverfetchers(QList<Fetcher::Base*>& lst, const QMap<QString, i
 
 		return (rating1 > rating2);
 	});
+}
+
+static SortMap create_sortmap(const QStringList& lst)
+{
+	SortMap ret;
+
+	for(int i=0; i<lst.size(); i++)
+	{
+		QString str = lst[i];
+		ret[str] = i;
+	}
+
+	return ret;
 }
 
 
@@ -106,7 +121,6 @@ struct Manager::Private
 {
 	QMap<QString, int>		cf_order;
 	QList<Fetcher::Base*>	coverfetchers;
-	QList<Fetcher::Base*>	active_coverfetchers;
 	Fetcher::Standard*		std_cover_fetcher = nullptr;
 
 	Private()
@@ -117,8 +131,6 @@ struct Manager::Private
 	~Private()
 	{
 		std_cover_fetcher = nullptr;
-
-		active_coverfetchers.clear();
 
 		for(auto it=coverfetchers.begin(); it != coverfetchers.end(); it++)
 		{
@@ -150,7 +162,7 @@ Manager::~Manager() {}
 void Manager::register_coverfetcher(Base *t)
 {
 	Fetcher::Base* cfi = coverfetcher_by_keyword(t->keyword(), m->coverfetchers);
-	if(cfi){
+	if(cfi){ // already there
 		return;
 	}
 
@@ -158,40 +170,7 @@ void Manager::register_coverfetcher(Base *t)
 }
 
 
-void Manager::activate_coverfetchers(const QStringList& coverfetchers)
-{
-	m->active_coverfetchers.clear();
-	m->cf_order.clear();
-	m->cf_order[""] = 100;
-
-	int idx = 0;
-	for(const QString& coverfetcher : coverfetchers)
-	{
-		Fetcher::Base* cfi = coverfetcher_by_keyword(coverfetcher, m->coverfetchers);
-		if(cfi)
-		{
-			m->active_coverfetchers << cfi;
-			m->cf_order[cfi->keyword()] = idx;
-			idx++;
-		}
-	}
-
-	if(m->active_coverfetchers.isEmpty()){
-		m->active_coverfetchers << coverfetcher_by_keyword("google", m->coverfetchers);
-	}
-
-	m->active_coverfetchers << m->std_cover_fetcher;
-	sort_coverfetchers(m->active_coverfetchers, m->cf_order);
-
-	for(const Fetcher::Base* cfi : ::Util::AsConst(m->active_coverfetchers))
-	{
-		if(!cfi->keyword().isEmpty()) {
-			sp_log(Log::Debug, this) << "Active Coverfetcher: " << cfi->keyword();
-		}
-	}
-}
-
-Fetcher::Base* Manager::available_coverfetcher(const QString& url) const
+Fetcher::Base* Manager::coverfetcher(const QString& url) const
 {
 	Fetcher::Base* cfi = coverfetcher_by_url(url, m->coverfetchers);
 	if(!cfi){
@@ -201,40 +180,36 @@ Fetcher::Base* Manager::available_coverfetcher(const QString& url) const
 	return cfi;
 }
 
-Fetcher::Base* Manager::active_coverfetcher(const QString& url) const
-{
-	Fetcher::Base* cfi = coverfetcher_by_url(url, m->active_coverfetchers);
-	if(!cfi){
-		return m->std_cover_fetcher;
-	}
 
-	return cfi;
-}
-
-
-QList<Fetcher::Base*> Manager::available_coverfetchers() const
+QList<Fetcher::Base*> Manager::coverfetchers() const
 {
 	return m->coverfetchers;
 }
 
-QList<Fetcher::Base*> Manager::active_coverfetchers() const
+QString Manager::identifier_by_url(const QString& url) const
 {
-	return m->active_coverfetchers;
+	Fetcher::Base* cfi = coverfetcher(url);
+	if(cfi){
+		return cfi->keyword();
+	}
+
+	return QString();
 }
+
 
 void Manager::servers_changed()
 {
 	QStringList servers = _settings->get<Set::Cover_Server>();
-	activate_coverfetchers(servers);
+	SortMap sortmap = create_sortmap(servers);
+	sort_coverfetchers(m->coverfetchers, sortmap);
 }
-
 
 
 QStringList Manager::artist_addresses(const QString& artist) const
 {
 	QStringList urls;
 
-	for(const Fetcher::Base* cfi : ::Util::AsConst(m->active_coverfetchers))
+	for(const Fetcher::Base* cfi : ::Util::AsConst(m->coverfetchers))
 	{
 		if(cfi->is_artist_supported())
 		{
@@ -245,25 +220,12 @@ QStringList Manager::artist_addresses(const QString& artist) const
 	return urls;
 }
 
-QMap<QString, QString> Manager::all_artist_addresses(const QString &artist) const
-{
-	QMap<QString, QString> url_map;
-	for(const Fetcher::Base* cfi : ::Util::AsConst(m->coverfetchers))
-	{
-		if(cfi->is_artist_supported())
-		{
-			url_map[cfi->keyword()] = cfi->artist_address(artist);
-		}
-	}
-
-	return url_map;
-}
 
 QStringList Manager::album_addresses(const QString& artist, const QString& album) const
 {
 	QStringList urls;
 
-	for(const Fetcher::Base* cfi : ::Util::AsConst(m->active_coverfetchers))
+	for(const Fetcher::Base* cfi : ::Util::AsConst(m->coverfetchers))
 	{
 		if(cfi->is_album_supported()){
 			urls << cfi->album_address(artist, album);
@@ -273,25 +235,12 @@ QStringList Manager::album_addresses(const QString& artist, const QString& album
 	return urls;
 }
 
-QMap<QString, QString> Manager::all_album_addresses(const QString &artist, const QString &album) const
-{
-	QMap<QString, QString> url_map;
-	for(const Fetcher::Base* cfi : ::Util::AsConst(m->coverfetchers))
-	{
-		if(cfi->is_album_supported())
-		{
-			url_map[cfi->keyword()] = cfi->album_address(artist, album);
-		}
-	}
-
-	return url_map;
-}
 
 QStringList Manager::search_addresses(const QString& str) const
 {
 	QStringList urls;
 
-	for(const Fetcher::Base* cfi : ::Util::AsConst(m->active_coverfetchers))
+	for(const Fetcher::Base* cfi : ::Util::AsConst(m->coverfetchers))
 	{
 		if(cfi->is_search_supported())
 		{

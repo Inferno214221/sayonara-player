@@ -51,9 +51,9 @@ bool GUI_Covers::commit()
 	Settings* settings = Settings::instance();
 	QStringList active_items;
 
-	for(int i=0; i<ui->lv_active->count(); i++)
+	for(int i=0; i<ui->lv_cover_searchers->count(); i++)
 	{
-		QListWidgetItem* item = ui->lv_active->item(i);
+		QListWidgetItem* item = ui->lv_cover_searchers->item(i);
 		active_items << item->text();
 	}
 
@@ -66,30 +66,34 @@ bool GUI_Covers::commit()
 void GUI_Covers::revert()
 {
 	Settings* settings = Settings::instance();
-	QStringList active = settings->get<Set::Cover_Server>();
 
-	ui->lv_active->clear();
-	ui->lv_inactive->clear();
+	QStringList cover_servers = settings->get<Set::Cover_Server>();
 
-	Fetcher::Manager* cfm = Fetcher::Manager::instance();
+	Cover::Fetcher::Manager* cfm = Cover::Fetcher::Manager::instance();
+	QList<Cover::Fetcher::Base*> cover_fetchers = cfm->coverfetchers();
 
-	QList<Fetcher::Base*> cfis = cfm->available_coverfetchers();
-	for(const Fetcher::Base* cfi : cfis)
+	if(cover_servers.size() != cover_fetchers.size())
 	{
-		if(cfi->keyword().isEmpty()){
-			continue;
+		cover_servers.clear();
+		for(const Cover::Fetcher::Base* b : cover_fetchers)
+		{
+			cover_servers << b->keyword();
 		}
+	}
 
-		if(active.contains(cfi->keyword())){
-			ui->lv_active->addItem(cfi->keyword());
-		}
+	ui->lv_cover_searchers->clear();
 
-		else{
-			ui->lv_inactive->addItem(cfi->keyword());
+	for(const QString& cover_server : cover_servers)
+	{
+		if(!cover_server.isEmpty())
+		{
+			ui->lv_cover_searchers->addItem(cover_server);
 		}
 	}
 
 	ui->cb_load_covers_from_file->setChecked(settings->get<Set::Cover_LoadFromFile>());
+
+	current_row_changed(ui->lv_cover_searchers->currentRow());
 }
 
 QString GUI_Covers::action_name() const
@@ -104,11 +108,13 @@ void GUI_Covers::init_ui()
 	}
 
 	setup_parent(this, &ui);
-	ui->lv_active->clear();
-	ui->lv_inactive->clear();
 
-	ui->lv_active->setItemDelegate(new Gui::StyledItemDelegate(ui->lv_active));
-	ui->lv_inactive->setItemDelegate(new Gui::StyledItemDelegate(ui->lv_inactive));
+	ui->lv_cover_searchers->clear();
+	ui->lv_cover_searchers->setItemDelegate(new Gui::StyledItemDelegate(ui->lv_cover_searchers));
+
+	connect(ui->btn_up, &QPushButton::clicked, this, &GUI_Covers::up_clicked);
+	connect(ui->btn_down, &QPushButton::clicked, this, &GUI_Covers::down_clicked);
+	connect(ui->lv_cover_searchers, &QListWidget::currentRowChanged, this, &GUI_Covers::current_row_changed);
 
 	revert();
 }
@@ -116,6 +122,31 @@ void GUI_Covers::init_ui()
 void GUI_Covers::retranslate_ui()
 {
 	ui->retranslateUi(this);
-	ui->lab_active->setText(Lang::get(Lang::Active));
-	ui->lab_inactive->setText(Lang::get(Lang::Inactive));
+
+	ui->btn_up->setText(Lang::get(Lang::MoveUp));
+	ui->btn_down->setText(Lang::get(Lang::MoveDown));
+}
+
+void GUI_Covers::up_clicked()
+{
+	int cur_row = ui->lv_cover_searchers->currentRow();
+
+	QListWidgetItem* item = ui->lv_cover_searchers->takeItem(cur_row);
+	ui->lv_cover_searchers->insertItem(cur_row - 1, item);
+	ui->lv_cover_searchers->setCurrentRow(cur_row - 1);
+}
+
+void GUI_Covers::down_clicked()
+{
+	int cur_row = ui->lv_cover_searchers->currentRow();
+
+	QListWidgetItem* item = ui->lv_cover_searchers->takeItem(cur_row);
+	ui->lv_cover_searchers->insertItem(cur_row + 1, item);
+	ui->lv_cover_searchers->setCurrentRow(cur_row + 1);
+}
+
+void GUI_Covers::current_row_changed(int row)
+{
+	ui->btn_up->setDisabled(row <= 0 || row >= ui->lv_cover_searchers->count());
+	ui->btn_down->setDisabled(row < 0 || row >= ui->lv_cover_searchers->count() - 1);
 }

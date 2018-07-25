@@ -41,7 +41,7 @@
 
 const int Timeout = 10000;
 
-using Cover::FetchThread;
+using namespace Cover;
 
 struct FetchThread::Private
 {
@@ -104,7 +104,7 @@ bool FetchThread::start()
 	}
 
 	Fetcher::Manager* cfm = Fetcher::Manager::instance();
-	m->acf = cfm->available_coverfetcher(m->url);
+	m->acf = cfm->coverfetcher(m->url);
 
 	if(!m->acf){
 		return false;

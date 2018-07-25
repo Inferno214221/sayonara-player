@@ -49,7 +49,6 @@ namespace Cover
 		void set_valid(bool b);
 		void set_identifier(const QString& identifier);
 		void set_cover_path(const QString& cover_path);
-		void set_all_search_urls(const StringMap& search_paths);
 
 
 	public:
@@ -123,8 +122,6 @@ namespace Cover
 		 */
 		bool			has_search_urls() const;
 
-
-		const QMap<QString, QString>& all_search_urls() const;
 
 		/**
 		 * @brief Search term for a free search. As a human you would

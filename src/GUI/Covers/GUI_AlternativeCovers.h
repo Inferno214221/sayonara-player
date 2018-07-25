@@ -70,6 +70,7 @@ private slots:
 	void open_file_dialog();
 	void cl_new_cover(const QString& cover_path);
 	void cl_finished(bool);
+	void servers_changed();
 
 private:
 	void reset();
