@@ -74,7 +74,6 @@ void GUI_StreamRecorder::init_ui()
 	ui->tabWidget->setCurrentIndex(0);
 	ui->tabWidget->setTabEnabled(1, _settings->get<Set::Engine_SR_SessionPath>());
 
-
 	QList<QPair<QString, QString>> desc = StreamRecorder::Utils::descriptions();
 
 	int i=0;
@@ -101,7 +100,6 @@ void GUI_StreamRecorder::init_ui()
 		layout->addWidget(btn, row, col);
 		i++;
 	}
-
 
 	revert();
 
@@ -142,6 +140,10 @@ void GUI_StreamRecorder::sl_cb_activate_toggled(bool b)
 	ui->cb_auto_rec->setEnabled(b);
 	ui->cb_create_session_path->setEnabled(b);
 	ui->le_template->setEnabled(b);
+
+	bool create_session_path = _settings->get<Set::Engine_SR_SessionPath>();
+	ui->cb_create_session_path->setChecked(create_session_path);
+	ui->tabWidget->setTabEnabled(1, (b && create_session_path));
 }
 
 
@@ -202,7 +204,7 @@ void GUI_StreamRecorder::sl_line_edit_changed(const QString& new_text)
 
 bool GUI_StreamRecorder::commit()
 {
-	bool has_error = false;
+	bool everything_ok = true;
 
 	bool active = ui->cb_activate->isChecked();
 	QString path = ui->le_path->text();
@@ -211,31 +213,41 @@ bool GUI_StreamRecorder::commit()
 	{
 		if(!QFile::exists(path))
 		{
-			bool create_success = QDir::root().mkpath(path);
-			if(!create_success)
+			if(path.isEmpty())
 			{
-				m->error_string = path + tr(" could not be created\nPlease choose another folder");
-				has_error = true;
+				m->error_string = tr("Target path is empty").arg(path) + "\n" + tr("Please choose another directory");
+				everything_ok = false;
 			}
 
+			else if(!QDir::root().mkpath(path))
+			{
+				m->error_string = tr("%1 could not be created").arg(path) + "\n" + tr("Please choose another directory");
+				everything_ok = false;
+			}
 		}
 
-		int invalid_idx;
-		SR::Utils::ErrorCode err = SR::Utils::validate_template(ui->le_template->text().trimmed(), &invalid_idx);
-		if(err != SR::Utils::ErrorCode::OK)
+		if(everything_ok)
 		{
-			m->error_string += tr("Template path is not valid") + "\n" + SR::Utils::parse_error_code(err);
-			has_error = true;
+			int invalid_idx;
+			SR::Utils::ErrorCode err = SR::Utils::validate_template(ui->le_template->text().trimmed(), &invalid_idx);
+			if(err != SR::Utils::ErrorCode::OK)
+			{
+				m->error_string += tr("Template path is not valid") + "\n" + SR::Utils::parse_error_code(err);
+				everything_ok = false;
+			}
 		}
 	}
 
-	_settings->set<Set::Engine_SR_Active>(ui->cb_activate->isChecked());
-	_settings->set<Set::Engine_SR_Path>(path);
-	_settings->set<Set::Engine_SR_AutoRecord>(ui->cb_auto_rec->isChecked());
-	_settings->set<Set::Engine_SR_SessionPath>(ui->cb_create_session_path->isChecked());
-	_settings->set<Set::Engine_SR_SessionPathTemplate>(ui->le_template->text().trimmed());
+	if(everything_ok)
+	{
+		_settings->set<Set::Engine_SR_Active>(ui->cb_activate->isChecked());
+		_settings->set<Set::Engine_SR_Path>(path);
+		_settings->set<Set::Engine_SR_AutoRecord>(ui->cb_auto_rec->isChecked());
+		_settings->set<Set::Engine_SR_SessionPath>(ui->cb_create_session_path->isChecked());
+		_settings->set<Set::Engine_SR_SessionPathTemplate>(ui->le_template->text().trimmed());
+	}
 
-	return has_error;
+	return everything_ok;
 }
 
 void GUI_StreamRecorder::revert()
@@ -271,7 +283,8 @@ void GUI_StreamRecorder::revert()
 	if(!lame_available){
 		ui->lab_warning->setText(Lang::get(Lang::CannotFindLame));
 	}
-	else{
+
+	else {
 		ui->lab_warning->clear();
 	}
 }
