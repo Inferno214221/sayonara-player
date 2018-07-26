@@ -301,6 +301,12 @@ void GUI_AlternativeCovers::reset()
 {
 	m->model->reset();
 	ui->lab_status->clear();
+
+	if(m->cl_alternative)
+	{
+		m->cl_alternative->stop();
+	}
+
 	Cover::Util::delete_temp_covers();
 }
 

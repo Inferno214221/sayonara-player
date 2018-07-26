@@ -143,12 +143,6 @@ void GUI_InfoDialog::set_metadata(const MetaDataList& v_md, MD::Interpretation m
 {
 	m->md_interpretation = md_interpretation;
 	m->v_md = v_md;
-
-	prepare_info(md_interpretation);
-	if(ui && v_md.size() > 0)
-	{
-		m->ui_lyrics->set_metadata(v_md.first());
-	}
 }
 
 bool GUI_InfoDialog::has_metadata() const
@@ -156,64 +150,6 @@ bool GUI_InfoDialog::has_metadata() const
 	return (m->v_md.size() > 0);
 }
 
-void GUI_InfoDialog::tab_index_changed_int(int idx)
-{
-	idx = std::min( (int) GUI_InfoDialog::Tab::Edit, idx);
-	idx = std::max( (int) GUI_InfoDialog::Tab::Info, idx);
-
-	tab_index_changed( (GUI_InfoDialog::Tab) idx );
-}
-
-void GUI_InfoDialog::tab_index_changed(GUI_InfoDialog::Tab idx)
-{
-	if(!ui){
-		return;
-	}
-
-	ui->ui_info_widget->hide();
-	m->ui_lyrics->hide();
-	m->ui_tag_edit->hide();
-
-	switch(idx)
-	{
-		case GUI_InfoDialog::Tab::Edit:
-			ui->tab_widget->setCurrentWidget(m->ui_tag_edit);
-			if(m->ui_tag_edit->count() == 0)
-			{
-				MetaDataList local_md;
-				for(const MetaData& md : m->v_md)
-				{
-					if(!Util::File::is_www(md.filepath()))
-					{
-						local_md << md;
-					}
-				}
-
-				if(local_md.size() > 0) {
-					m->ui_tag_edit->set_metadata(local_md);
-				}
-			}
-
-			m->ui_tag_edit->show();
-			break;
-
-		case GUI_InfoDialog::Tab::Lyrics:
-			if(has_metadata())
-			{
-				ui->tab_widget->setCurrentWidget(m->ui_lyrics);
-				m->ui_lyrics->set_metadata(m->v_md.first());
-				m->ui_lyrics->show();
-			}
-
-			break;
-
-		default:
-			ui->tab_widget->setCurrentWidget(ui->ui_info_widget);
-			ui->ui_info_widget->show();
-			prepare_cover(m->cl);
-			break;
-	}
-}
 
 void GUI_InfoDialog::show(GUI_InfoDialog::Tab tab)
 {
@@ -226,8 +162,6 @@ void GUI_InfoDialog::show(GUI_InfoDialog::Tab tab)
 	}
 
 	QTabWidget* tab_widget = ui->tab_widget;
-
-	prepare_cover(Cover::Location::invalid_location());
 
 	bool lyric_enabled = (m->v_md.size() == 1);
 	bool tag_edit_enabled = Util::contains(m->v_md, [](const MetaData& md){
@@ -242,29 +176,7 @@ void GUI_InfoDialog::show(GUI_InfoDialog::Tab tab)
 		tab = GUI_InfoDialog::Tab::Info;
 	}
 
-	if(tab == GUI_InfoDialog::Tab::Edit)
-	{
-		MetaDataList local_md;
-		for(const MetaData& md : m->v_md)
-		{
-			if(!Util::File::is_www(md.filepath())){
-				local_md << md;
-			}
-		}
-
-		if(local_md.size() > 0)
-		{
-			m->ui_tag_edit->set_metadata(local_md);
-		}
-	}
-
-	if(tab == GUI_InfoDialog::Tab::Lyrics)
-	{
-		m->ui_lyrics->set_metadata(m->v_md.first());
-	}
-
 	tab_widget->setCurrentIndex((int) tab);
-	tab_index_changed(tab);
 
 	Dialog::show();
 }
@@ -284,32 +196,127 @@ void GUI_InfoDialog::init()
 	ui = new Ui::InfoDialog();
 	ui->setupUi(this);
 
-	QLayout* tab2_layout = ui->tab_2->layout();
-	QLayout* tab3_layout = ui->tab_3->layout();
 	QTabWidget* tab_widget = ui->tab_widget;
-
-	if(tab2_layout)
-	{
-		m->ui_lyrics = new GUI_Lyrics(ui->tab_2);
-		tab2_layout->addWidget(m->ui_lyrics);
-	}
-
-	if(tab3_layout)
-	{
-		m->ui_tag_edit = new GUI_TagEdit(ui->tab_3);
-		tab3_layout->addWidget(m->ui_tag_edit);
-	}
-
-	connect(tab_widget, &QTabWidget::currentChanged, this, &GUI_InfoDialog::tab_index_changed_int);
-	connect(m->ui_lyrics, &GUI_Lyrics::sig_closed, this, &GUI_InfoDialog::close);
-	connect(m->ui_tag_edit, &GUI_TagEdit::sig_cancelled, this, &GUI_InfoDialog::close);
-
-	ui->btn_image->setStyleSheet("QPushButton:hover {background-color: transparent;}");
-
-	tab_widget->setCurrentIndex((int) GUI_InfoDialog::Tab::Info);
 	tab_widget->setFocusPolicy(Qt::NoFocus);
 
+	connect(tab_widget, &QTabWidget::currentChanged, this, &GUI_InfoDialog::tab_index_changed_int);
+
+	ui->btn_image->setStyleSheet("QPushButton:hover {background-color: transparent;}");
+}
+
+
+void GUI_InfoDialog::init_tag_edit()
+{
+	if(!m->ui_tag_edit)
+	{
+		QLayout* tab3_layout = ui->tab_3->layout();
+		m->ui_tag_edit = new GUI_TagEdit(ui->tab_3);
+		tab3_layout->addWidget(m->ui_tag_edit);
+
+		connect(m->ui_tag_edit, &GUI_TagEdit::sig_cancelled, this, &GUI_InfoDialog::close);
+	}
+}
+
+void GUI_InfoDialog::init_lyrics()
+{
+	if(!m->ui_lyrics)
+	{
+		QLayout* tab2_layout = ui->tab_2->layout();
+		m->ui_lyrics = new GUI_Lyrics(ui->tab_2);
+		tab2_layout->addWidget(m->ui_lyrics);
+
+		connect(m->ui_lyrics, &GUI_Lyrics::sig_closed, this, &GUI_InfoDialog::close);
+	}
+}
+
+
+void GUI_InfoDialog::tab_index_changed_int(int idx)
+{
+	idx = std::min( (int) GUI_InfoDialog::Tab::Edit, idx);
+	idx = std::max( (int) GUI_InfoDialog::Tab::Info, idx);
+
+	tab_index_changed( (GUI_InfoDialog::Tab) idx );
+}
+
+
+void GUI_InfoDialog::tab_index_changed(GUI_InfoDialog::Tab idx)
+{
+	if(!ui){
+		return;
+	}
+
+	switch(idx)
+	{
+		case GUI_InfoDialog::Tab::Edit:
+			show_tag_edit_tab();
+			break;
+
+		case GUI_InfoDialog::Tab::Lyrics:
+			show_lyrics_tab();
+			break;
+
+		default:
+			show_info_tab();
+			break;
+	}
+}
+
+void GUI_InfoDialog::show_info_tab()
+{
 	prepare_info(m->md_interpretation);
+
+	ui->tab_widget->setCurrentWidget(ui->ui_info_widget);
+	ui->ui_info_widget->show();
+	prepare_cover(m->cl);
+}
+
+void GUI_InfoDialog::show_lyrics_tab()
+{
+	init_lyrics();
+
+	m->ui_lyrics->set_metadata(m->v_md.first());
+	ui->tab_widget->setCurrentWidget(m->ui_lyrics);
+	m->ui_lyrics->set_metadata(m->v_md.first());
+	m->ui_lyrics->show();
+}
+
+void GUI_InfoDialog::show_tag_edit_tab()
+{
+	MetaDataList local_md;
+	for(const MetaData& md : m->v_md)
+	{
+		if(!Util::File::is_www(md.filepath())){
+			local_md << md;
+		}
+	}
+
+	if(local_md.isEmpty())
+	{
+		ui->tab_widget->setCurrentIndex(0);
+		return;
+	}
+
+	init_tag_edit();
+
+	m->ui_tag_edit->set_metadata(local_md);
+	ui->tab_widget->setCurrentWidget(m->ui_tag_edit);
+	if(m->ui_tag_edit->count() == 0)
+	{
+		MetaDataList local_md;
+		for(const MetaData& md : m->v_md)
+		{
+			if(!Util::File::is_www(md.filepath()))
+			{
+				local_md << md;
+			}
+		}
+
+		if(local_md.size() > 0) {
+			m->ui_tag_edit->set_metadata(local_md);
+		}
+	}
+
+	m->ui_tag_edit->show();
 }
 
 
@@ -317,6 +324,7 @@ void GUI_InfoDialog::closeEvent(QCloseEvent* e)
 {
 	Dialog::closeEvent(e);
 
+	m->v_md.clear();
 	m->info_dialog_container->info_dialog_closed();
 }
 
@@ -328,3 +336,5 @@ void GUI_InfoDialog::showEvent(QShowEvent *e)
 
 	Dialog::showEvent(e);
 }
+
+

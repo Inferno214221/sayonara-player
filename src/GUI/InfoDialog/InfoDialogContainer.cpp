@@ -40,28 +40,32 @@ void InfoDialogContainer::info_dialog_closed() {}
 
 void InfoDialogContainer::show_info()
 {
-	if(init_dialog()){
+	if(init_dialog())
+	{
 		m->info_dialog->show(GUI_InfoDialog::Tab::Info);
 	}
 }
 
 void InfoDialogContainer::show_lyrics()
 {
-	if(init_dialog()){
+	if(init_dialog())
+	{
 		m->info_dialog->show(GUI_InfoDialog::Tab::Lyrics);
 	}
 }
 
 void InfoDialogContainer::show_edit()
 {
-	if(init_dialog()){
+	if(init_dialog())
+	{
 		m->info_dialog->show(GUI_InfoDialog::Tab::Edit);
 	}
 }
 
 bool InfoDialogContainer::init_dialog()
 {
-	if(!m->info_dialog){
+	if(!m->info_dialog)
+	{
 		m->info_dialog = new GUI_InfoDialog(this, Gui::Util::main_window());
 	}
 

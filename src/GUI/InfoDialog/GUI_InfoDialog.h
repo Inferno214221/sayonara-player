@@ -29,6 +29,8 @@
 #include "Utils/MetaData/MetaDataFwd.h"
 #include "Utils/Pimpl.h"
 
+class GUI_TagEdit;
+class GUI_Lyrics;
 class InfoDialogContainer;
 namespace Cover
 {
@@ -80,11 +82,20 @@ private slots:
 private:
 	void init();
 
+	void init_tag_edit();
+	void init_lyrics();
+
+	void show_info_tab();
+	void show_lyrics_tab();
+	void show_tag_edit_tab();
+
 	void prepare_cover(const Cover::Location& cover_path);
 	void prepare_info(MD::Interpretation mode);
 
 	void closeEvent(QCloseEvent *e) override;
 	void showEvent(QShowEvent *e) override;
+
+	using Gui::Dialog::show;
 };
 
 #endif /* GUI_INFODIALOG_H_ */

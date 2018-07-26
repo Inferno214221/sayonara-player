@@ -41,8 +41,6 @@ using CoverButtonBase=Gui::WidgetTemplate<QPushButton>;
 
 struct CoverButton::Private
 {
-	GUI_AlternativeCovers* 	alternative_covers=nullptr;
-
 	Lookup*			cover_lookup=nullptr;
 	Location		cover_location;
 	QString			current_cover_path;
@@ -109,12 +107,11 @@ void CoverButton::set_cover_location(const Location& cl)
 		connect(m->cover_lookup, &Lookup::sig_finished, this, &CoverButton::cover_lookup_finished);
 	}
 
-	bool can_fetch = m->cover_lookup->fetch_cover(cl);
-	if(!can_fetch){
-		m->current_cover_path = Cover::Location::invalid_location().preferred_path();
-		refresh();
-	}
+	set_cover_image(Cover::Location::invalid_location().cover_path());
+
+	m->cover_lookup->fetch_cover(cl);
 }
+
 
 
 QIcon CoverButton::current_icon() const
@@ -150,15 +147,12 @@ void CoverButton::cover_button_clicked()
 
 	else
 	{
-		if(!m->alternative_covers)
-		{
-			m->alternative_covers = new GUI_AlternativeCovers(this->parentWidget());
+		GUI_AlternativeCovers* alt_cover = new GUI_AlternativeCovers(this->parentWidget());
 
-			connect(m->alternative_covers, &GUI_AlternativeCovers::sig_cover_changed,
-					this, &CoverButton::alternative_cover_fetched );
-		}
+		connect(alt_cover, &GUI_AlternativeCovers::sig_cover_changed, this, &CoverButton::alternative_cover_fetched );
+		connect(alt_cover, &GUI_AlternativeCovers::sig_closed, alt_cover, &GUI_AlternativeCovers::deleteLater);
 
-		m->alternative_covers->start(m->cover_location);
+		alt_cover->start(m->cover_location);
 	}
 }
 
