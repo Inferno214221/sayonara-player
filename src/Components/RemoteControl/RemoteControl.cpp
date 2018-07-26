@@ -49,10 +49,10 @@ struct RemoteControl::Private
 	QMap<QByteArray, RemoteFunction>    fn_call_map;
 	QMap<QByteArray, RemoteFunctionInt> fn_int_call_map;
 
-	QTcpServer*         server=nullptr;
-	QTcpSocket*         socket=nullptr;
-	PlayManagerPtr        play_manager=nullptr;
-	Playlist::Handler*    plh=nullptr;
+	QTcpServer*			server=nullptr;
+	QTcpSocket*			socket=nullptr;
+	PlayManagerPtr		play_manager=nullptr;
+	Playlist::Handler*	plh=nullptr;
 
 	Private() :
 		initialized(false)
@@ -64,6 +64,14 @@ RemoteControl::RemoteControl(QObject *parent) :
 	SayonaraClass()
 {
 	m = Pimpl::make<Private>();
+
+	Set::listen<Set::Remote_Active>(this, &RemoteControl::active_changed);
+}
+
+RemoteControl::~RemoteControl() {}
+
+void RemoteControl::active_changed()
+{
 	m->server = new QTcpServer(this);
 
 	if(_settings->get<Set::Remote_Active>()){
@@ -72,8 +80,6 @@ RemoteControl::RemoteControl(QObject *parent) :
 
 	connect(m->server, &QTcpServer::newConnection, this, &RemoteControl::new_connection);
 }
-
-RemoteControl::~RemoteControl() {}
 
 void RemoteControl::init()
 {

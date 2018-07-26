@@ -37,7 +37,7 @@ class GUI_AbstractStream :
 	Q_OBJECT
 
 public:
-	explicit GUI_AbstractStream(AbstractStreamHandler* stream_handler, QWidget* parent=nullptr);
+	explicit GUI_AbstractStream(QWidget* parent=nullptr);
 	virtual ~GUI_AbstractStream();
 
 protected:
@@ -76,6 +76,7 @@ protected:
 	virtual QPushButton* btn_play()=0;
 	virtual MenuToolButton* btn_menu()=0;
 	virtual QLabel* lab_listen()=0;
+	virtual AbstractStreamHandler* stream_handler() const=0;
 
 
 private:

@@ -27,16 +27,16 @@
 
 struct EnginePlugin::Private
 {
-	PlayManagerPtr        play_manager=nullptr;
-	Engine::Handler*    engine=nullptr;
-	QPushButton*        btn_config=nullptr;
-	QPushButton*        btn_prev=nullptr;
-	QPushButton*        btn_next=nullptr;
-	QPushButton*        btn_close=nullptr;
+	PlayManagerPtr		play_manager=nullptr;
+	Engine::Handler*	engine=nullptr;
+	QPushButton*		btn_config=nullptr;
+	QPushButton*		btn_prev=nullptr;
+	QPushButton*		btn_next=nullptr;
+	QPushButton*		btn_close=nullptr;
 
 
-	QTimer*             timer=nullptr;
-	int                 timer_stopped;
+	QTimer*				timer=nullptr;
+	int					timer_stopped;
 
 	Private() :
 		timer_stopped(true)

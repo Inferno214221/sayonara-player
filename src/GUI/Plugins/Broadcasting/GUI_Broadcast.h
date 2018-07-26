@@ -61,6 +61,8 @@ private:
 	bool check_dismiss_visible() const;
 	bool check_dismiss_all_visible() const;
 	void update_dismiss_buttons();
+
+	void start_server();
 };
 
 #endif // GUI_BROADCAST_H

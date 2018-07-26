@@ -34,18 +34,18 @@ class GUI_Shutdown :
 	Q_OBJECT
 	UI_CLASS(GUI_Shutdown)
 
-private slots:
-	void ok_clicked();
-	void cancel_clicked();
-	void rb_after_finished_clicked(bool b);
-	void rb_after_minutes_clicked(bool b);
+	private slots:
+		void ok_clicked();
+		void cancel_clicked();
+		void rb_after_finished_clicked(bool b);
+		void rb_after_minutes_clicked(bool b);
 
-public:
-	explicit GUI_Shutdown(QWidget* parent=nullptr);
-	~GUI_Shutdown();
+	public:
+		explicit GUI_Shutdown(QWidget* parent=nullptr);
+		~GUI_Shutdown();
 
-protected:
-	void skin_changed();
+	protected:
+		void skin_changed();
 };
 
 #endif

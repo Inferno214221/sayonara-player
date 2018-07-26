@@ -46,14 +46,11 @@ namespace LastFM
 
 
 	public:
-		explicit TrackChangedThread(const QString& username=QString(), const QString& session_key=QString(), QObject* parent=nullptr);
+		explicit TrackChangedThread(QObject* parent=nullptr);
 		~TrackChangedThread();
 
-		void set_session_key(const QString& session_key);
-		void set_username(const QString& username);
-
 		void search_similar_artists(const MetaData& md);
-		void update_now_playing(const MetaData& md);
+		void update_now_playing(const QString& session_key, const MetaData& md);
 
 
 	private:

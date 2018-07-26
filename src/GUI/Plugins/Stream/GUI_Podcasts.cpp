@@ -23,7 +23,7 @@
 #include "Components/StreamPlugins/Streams/StreamHandlerPodcasts.h"
 
 GUI_Podcasts::GUI_Podcasts(QWidget *parent) :
-	GUI_AbstractStream(new StreamHandlerPodcasts(), parent)
+	GUI_AbstractStream(parent)
  {}
 
 GUI_Podcasts::~GUI_Podcasts()
@@ -60,7 +60,6 @@ QString GUI_Podcasts::get_title_fallback_name() const
 	return tr("Podcast");
 }
 
-
 QLineEdit* GUI_Podcasts::le_url()
 {
 	return ui->le_url;
@@ -84,4 +83,9 @@ MenuToolButton* GUI_Podcasts::btn_menu()
 QLabel*GUI_Podcasts::lab_listen()
 {
 	return ui->lab_listen;
+}
+
+AbstractStreamHandler* GUI_Podcasts::stream_handler() const
+{
+	return new StreamHandlerPodcasts();
 }

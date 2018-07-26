@@ -50,6 +50,7 @@ private:
 	QPushButton* btn_play() override;
 	MenuToolButton* btn_menu() override;
 	QLabel* lab_listen() override;
+	AbstractStreamHandler* stream_handler() const override;
 };
 
 #endif /* GUI_STREAM_H_ */

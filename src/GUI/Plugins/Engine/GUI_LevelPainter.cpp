@@ -49,10 +49,10 @@ using StepArray=std::array<ChannelSteps, Channels>;
 
 struct GUI_LevelPainter::Private
 {
-	ChannelArray    level;
-	StepArray       steps;
+	ChannelArray	level;
+	StepArray		steps;
 
-	float           exp_lot[600];
+	float*			exp_lot=nullptr;
 
 	void resize_steps(int n_rects)
 	{
@@ -78,7 +78,6 @@ struct GUI_LevelPainter::Private
 	{
 		steps[channel][step] = value;
 	}
-
 };
 
 
@@ -105,9 +104,9 @@ void GUI_LevelPainter::init_ui()
 		return;
 	}
 
-
 	_cur_style_idx = _settings->get<Set::Level_Style>();
 
+	m->exp_lot = new float[600];
 
 	// exp(-6.0) = 0.002478752
 	// exp(0) = 1;

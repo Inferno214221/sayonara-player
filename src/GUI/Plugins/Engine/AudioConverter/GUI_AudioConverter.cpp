@@ -35,12 +35,10 @@
 
 struct GUI_AudioConverter::Private
 {
-	Engine::Handler*    engine=nullptr;
 	Playlist::Mode		pl_mode;
 	bool				mp3_enc_available;
 
 	Private() :
-		engine(Engine::Handler::instance()),
 		mp3_enc_available(true)
 	{}
 };
@@ -251,6 +249,7 @@ void GUI_AudioConverter::cb_active_toggled(bool b)
 		return;
 	}
 
+	Engine::Handler* engine = Engine::Handler::instance();
 	if(b) {
 		QString cvt_target_path = _settings->get<Set::Engine_CovertTargetPath>();
 		QString dir = QFileDialog::getExistingDirectory(this, "Choose target directory", cvt_target_path);
@@ -259,7 +258,7 @@ void GUI_AudioConverter::cb_active_toggled(bool b)
 			_settings->set<Set::Engine_CovertTargetPath>(dir);
 			pl_mode_backup();
 
-			m->engine->start_convert();
+			engine->start_convert();
 		}
 
 		else {
@@ -271,7 +270,7 @@ void GUI_AudioConverter::cb_active_toggled(bool b)
 
 	else {
 		pl_mode_restore();
-		m->engine->end_convert();
+		engine->end_convert();
 	}
 }
 

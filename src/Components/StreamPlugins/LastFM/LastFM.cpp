@@ -57,44 +57,42 @@ using namespace LastFM;
 
 struct Base::Private
 {
-	bool						logged_in;
-	bool						active;
-	bool						scrobbled;
+	MetaData					md;
 
 	QString						username;
-	QString						auth_token;
 	QString						session_key;
 
-	TrackChangedThread*         track_changed_thread=nullptr;
-	LoginThread*				login_thread=nullptr;
+	Seconds						old_pos;
+	Seconds						old_pos_difference;
 
+	TrackChangedThread*			track_changed_thread=nullptr;
 	PlayManagerPtr				play_manager=nullptr;
 
-	Seconds				old_pos;
-	Seconds				old_pos_difference;
+	bool						logged_in;
+	bool						scrobbled;
 
-	MetaData					md;
+
+	Private(QObject* parent) :
+		track_changed_thread(new TrackChangedThread(parent)),
+		play_manager(PlayManager::instance()),
+		logged_in(false),
+		scrobbled(false)
+	{}
 };
 
 Base::Base() :
 	QObject(),
 	SayonaraClass()
 {
-	m = Pimpl::make<Base::Private>();
-	m->play_manager = PlayManager::instance();
+	m = Pimpl::make<Base::Private>(this);
 
-	m->logged_in = false;
-	m->track_changed_thread = new TrackChangedThread("", "", this);
-	m->login_thread = new LoginThread(this);
-
-	connect(m->login_thread, &LoginThread::sig_logged_in, this, &Base::sl_login_thread_finished);
-	connect(m->play_manager, &PlayManager::sig_track_changed,	this, &Base::sl_track_changed);
-	connect(m->play_manager, &PlayManager::sig_position_changed_ms, this, &Base::sl_position_ms_changed);
+	connect(m->play_manager, &PlayManager::sig_track_changed,	this, &Base::current_track_changed);
+	connect(m->play_manager, &PlayManager::sig_position_changed_ms, this, &Base::position_ms_changed);
 	connect(m->track_changed_thread, &TrackChangedThread::sig_similar_artists_available,
-			this, &Base::sl_similar_artists_available);
+			this, &Base::similar_artists_fetched);
 
-	Set::listen<Set::LFM_Login>(this, &Base::psl_login, false);
-	Set::listen<Set::LFM_Active>(this, &Base::psl_login);
+	Set::listen<Set::LFM_Login>(this, &Base::login, false);
+	Set::listen<Set::LFM_Active>(this, &Base::login);
 }
 
 Base::~Base() {}
@@ -113,31 +111,35 @@ bool Base::is_logged_in()
 }
 
 
-void Base::psl_login()
+void Base::login()
 {
-	m->active = _settings->get<Set::LFM_Active>();
-	if(!m->active){
+	bool active = _settings->get<Set::LFM_Active>();
+	if(!active){
 		return;
 	}
+
+	LoginThread* login_thread = new LoginThread(this);
+	connect(login_thread, &LoginThread::sig_logged_in, this, &Base::login_thread_finished);
 
 	QString password;
 	get_login(m->username, password);
 
-	m->logged_in = false;
-	m->login_thread->login(m->username, password);
+	login_thread->login(m->username, password);
 }
 
 
-void Base::sl_login_thread_finished(bool success)
+void Base::login_thread_finished(bool success)
 {
+	m->logged_in = success;
+
 	if(!success){
 		return;
 	}
 
-	LoginStuff login_info = m->login_thread->getLoginStuff();
+	LoginThread* login_thread = static_cast<LoginThread*>(sender());
+	LoginStuff login_info = login_thread->getLoginStuff();
 
 	m->logged_in = login_info.logged_in;
-	m->auth_token = login_info.token;
 	m->session_key = login_info.session_key;
 
 	_settings->set<Set::LFM_SessionKey>(m->session_key);
@@ -149,32 +151,35 @@ void Base::sl_login_thread_finished(bool success)
 	}
 
 	emit sig_logged_in(m->logged_in);
+
+	sender()->deleteLater();
 }
 
-void Base::sl_track_changed(const MetaData& md)
+void Base::current_track_changed(const MetaData& md)
 {
 	Playlist::Mode pl_mode = _settings->get<Set::PL_Mode>();
-	if( Playlist::Mode::isActiveAndEnabled(pl_mode.dynamic())) {
+	if( Playlist::Mode::isActiveAndEnabled(pl_mode.dynamic()))
+	{
 		m->track_changed_thread->search_similar_artists(md);
 	}
 
-	if(!m->active ) return;
-	if(!m->logged_in ) return;
+	bool active = _settings->get<Set::LFM_Active>();
+	if(!active || !m->logged_in) {
+		return;
+	}
 
 	m->md = md;
 
-	m->track_changed_thread->set_username(m->username);
-	m->track_changed_thread->set_session_key(m->session_key);
-
 	reset_scrobble();
 
-	m->track_changed_thread->update_now_playing(md);
+	m->track_changed_thread->update_now_playing(m->session_key, md);
 }
 
 
-void Base::sl_position_ms_changed(MilliSeconds pos_ms)
+void Base::position_ms_changed(MilliSeconds pos_ms)
 {
-	if(!m->active){
+	bool active = _settings->get<Set::LFM_Active>();
+	if(!active){
 		return;
 	}
 
@@ -245,7 +250,8 @@ void Base::scrobble(const MetaData& md)
 {
 	m->scrobbled = true;
 
-	if(!m->active) {
+	bool active = _settings->get<Set::LFM_Active>();
+	if(!active) {
 		return;
 	}
 
@@ -254,8 +260,8 @@ void Base::scrobble(const MetaData& md)
 	}
 
 	WebAccess* lfm_wa = new WebAccess();
-	connect(lfm_wa, &WebAccess::sig_response, this, &Base::sl_scrobble_response);
-	connect(lfm_wa, &WebAccess::sig_error, this, &Base::sl_scrobble_error);
+	connect(lfm_wa, &WebAccess::sig_response, this, &Base::scrobble_response_received);
+	connect(lfm_wa, &WebAccess::sig_error, this, &Base::scrobble_error_received);
 
 	time_t rawtime, started;
 	rawtime = time(nullptr);
@@ -282,9 +288,18 @@ void Base::scrobble(const MetaData& md)
 	lfm_wa->call_post_url(url, post_data);
 }
 
+void Base::scrobble_response_received(const QByteArray& data){
+	Q_UNUSED(data)
+}
+
+void Base::scrobble_error_received(const QString& error){
+	sp_log(Log::Warning, this) << "Scrobble: " << error;
+}
+
+
 
 // private slot
-void Base::sl_similar_artists_available(IdList artist_ids)
+void Base::similar_artists_fetched(IdList artist_ids)
 {
 	if(artist_ids.isEmpty()){
 		return;
@@ -330,10 +345,3 @@ void Base::sl_similar_artists_available(IdList artist_ids)
 	}
 }
 
-void Base::sl_scrobble_response(const QByteArray& data){
-	Q_UNUSED(data)
-}
-
-void Base::sl_scrobble_error(const QString& error){
-	sp_log(Log::Warning, this) << "Scrobble: " << error;
-}

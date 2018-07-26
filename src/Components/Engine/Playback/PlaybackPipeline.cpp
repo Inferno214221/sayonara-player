@@ -231,17 +231,17 @@ GstElement* Playback::create_audio_sink(const QString& name)
 	GstElement* ret=nullptr;
 
 	if(name == "pulse"){
-		sp_log(Log::Info, this) << "Create pulseaudio sink";
+		sp_log(Log::Debug, this) << "Create pulseaudio sink";
 		create_element(&ret, "pulsesink", name.toLocal8Bit().data());
 	}
 
 	else if(name == "alsa"){
-		sp_log(Log::Info, this) << "Create alsa sink";
+		sp_log(Log::Debug, this) << "Create alsa sink";
 		create_element(&ret, "alsasink", name.toLocal8Bit().data());
 	}
 
 	if(ret == nullptr){
-		sp_log(Log::Info, this) << "Create automatic sink";
+		sp_log(Log::Debug, this) << "Create automatic sink";
 		create_element(&ret, "autoaudiosink", name.toLocal8Bit().data());
 	}
 

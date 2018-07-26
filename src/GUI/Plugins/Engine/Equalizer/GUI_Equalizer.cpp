@@ -40,6 +40,9 @@
 #include "Utils/Language.h"
 
 #include <QLineEdit>
+#include <array>
+
+using ValueArray=std::array<int, 10>;
 
 static QString calc_lab(int val)
 {
@@ -56,15 +59,13 @@ static QString calc_lab(int val)
 
 struct GUI_Equalizer::Private
 {
-	Engine::Handler*    engine=nullptr;
 	QList<EQ_Setting>	presets;
 	QList<EqSlider*>	sliders;
 
-	int					old_val[10];
+	ValueArray			old_val;
 	int					active_idx;
 
 	Private() :
-		engine(Engine::Handler::instance()),
 		active_idx(-1)
 	{}
 
@@ -130,7 +131,7 @@ void GUI_Equalizer::init_ui()
 
 	ui->btn_tool->register_action(action_gauss);
 
-	foreach(EqSlider* s, m->sliders)
+	for(EqSlider* s : Util::AsConst(m->sliders))
 	{
 		connect(s, &EqSlider::sig_value_changed, this, &GUI_Equalizer::sli_changed);
 		connect(s, &EqSlider::sig_slider_got_focus, this, &GUI_Equalizer::sli_pressed);
@@ -198,7 +199,8 @@ void GUI_Equalizer::sli_changed(int idx, int new_val)
 	EqSlider* s = m->sliders[idx];
 	s->label()->setText(calc_lab(new_val));
 
-	m->engine->set_equalizer(idx, new_val);
+	Engine::Handler* engine = Engine::Handler::instance();
+	engine->set_equalizer(idx, new_val);
 
 	// this slider has been changed actively
 	if( idx == m->active_idx && gauss_on )
@@ -377,7 +379,8 @@ void GUI_Equalizer::btn_undo_clicked()
 
 	else
 	{
-		for(int i=0; i<m->sliders.size(); i++){
+		for(int i=0; i<m->sliders.size(); i++)
+		{
 			m->sliders[i]->setValue( m->presets[found_idx].value(i) );
 		}
 	}

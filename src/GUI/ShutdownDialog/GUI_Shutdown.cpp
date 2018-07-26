@@ -62,9 +62,7 @@ void GUI_Shutdown::ok_clicked()
 		Shutdown::instance()->shutdown_after_end();
 	}
 
-
 	close();
-	emit sig_closed();
 }
 
 void GUI_Shutdown::cancel_clicked()

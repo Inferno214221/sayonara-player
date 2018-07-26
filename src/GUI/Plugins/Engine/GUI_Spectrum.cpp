@@ -40,7 +40,7 @@
 #include <mutex>
 
 static std::mutex mtx;
-static float log_lu[1100];
+
 
 using Step=uint_fast8_t;
 using BinSteps=std::vector<Step>;
@@ -50,6 +50,7 @@ struct GUI_Spectrum::Private
 {
 	SpectrumList	spec;
 	StepArray		steps;
+	float*			log_lu=nullptr;
 };
 
 
@@ -86,9 +87,10 @@ void GUI_Spectrum::init_ui()
 
 	m->spec.resize((size_t) bins, -100.0f);
 
+	m->log_lu = new float[bins];
 	for(int i=0; i<bins; i++)
 	{
-		log_lu[i] = (std::pow(10.0f, (i / 140.0f) + 1.0f) / 8.0f) / 75.0f;
+		m->log_lu[i] = (std::pow(10.0f, (i / 140.0f) + 1.0f) / 8.0f) / 75.0f;
 	}
 
 	setup_parent(this, &ui);
@@ -231,7 +233,7 @@ void GUI_Spectrum::paintEvent(QPaintEvent* e)
 		// f_scaled: [0, 75]
 		// scaling factor of ( / 75.0) is in log_lu
 		float f_scaled = (m->spec[i] + 75.0);
-		float f = f_scaled * log_lu[i];
+		float f = f_scaled * m->log_lu[i];
 
 		// if this is one bar, how tall would it be?
 		int h =  f * widget_height;

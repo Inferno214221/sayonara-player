@@ -163,11 +163,13 @@ QIcon GUI_ControlsBase::icon(Gui::Icons::IconName name)
 
 void GUI_ControlsBase::played()
 {
+	lab_current_time()->setVisible(true);
 	btn_play()->setIcon(icon(Gui::Icons::Pause));
 }
 
 void GUI_ControlsBase::paused()
 {
+	lab_current_time()->setVisible(true);
 	btn_play()->setIcon(icon(Gui::Icons::Play));
 }
 
@@ -196,7 +198,10 @@ void GUI_ControlsBase::stopped()
 	sli_progress()->setEnabled(false);
 
 	lab_current_time()->setText("00:00");
+	lab_current_time()->hide();
+
 	lab_max_time()->clear();
+	lab_max_time()->setVisible(false);
 
 	set_standard_cover();
 
@@ -240,13 +245,14 @@ void GUI_ControlsBase::buffering(int progress)
 
 	else
 	{
+		PlayManager* pm = PlayManager::instance();
 		toggle_buffer_mode(false);
 
 		sli_buffer()->setMinimum(0);
 		sli_buffer()->setMaximum(0);
 
 		lab_current_time()->clear();
-		lab_max_time()->setVisible(true);
+		lab_max_time()->setVisible(pm->current_track().length_ms > 0);
 	}
 }
 
@@ -310,9 +316,10 @@ void GUI_ControlsBase::set_total_time_label(MilliSeconds total_time)
 	QString length_str;
 	if(total_time > 0){
 		length_str = Util::cvt_ms_to_string(total_time, true);
+		lab_max_time()->setText(length_str);
 	}
 
-	lab_max_time()->setText(length_str);
+	lab_max_time()->setVisible(total_time > 0);
 	sli_progress()->setEnabled(total_time > 0);
 }
 

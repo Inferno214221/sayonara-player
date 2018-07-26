@@ -41,13 +41,14 @@ struct GUI_PlaylistChooser::Private
 {
 	PlaylistChooser*	playlist_chooser=nullptr;
 
-	Private() :
-		playlist_chooser(new PlaylistChooser())
-	{}
+	Private() {}
 
 	~Private()
 	{
-		delete playlist_chooser; playlist_chooser = nullptr;
+		if(playlist_chooser)
+		{
+			delete playlist_chooser; playlist_chooser = nullptr;
+		}
 	}
 };
 
@@ -70,6 +71,7 @@ void GUI_PlaylistChooser::init_ui()
 {
 	setup_parent(this, &ui);
 
+	m->playlist_chooser = new PlaylistChooser();
 	connect(ui->combo_playlists, combo_activated_int, this, &GUI_PlaylistChooser::playlist_selected);
 	connect(m->playlist_chooser, &PlaylistChooser::sig_playlists_changed, this, &GUI_PlaylistChooser::playlists_changed);
 

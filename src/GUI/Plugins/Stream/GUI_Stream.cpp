@@ -24,7 +24,7 @@
 #include "Utils/Language.h"
 
 GUI_Stream::GUI_Stream(QWidget *parent) :
-	GUI_AbstractStream(new StreamHandlerStreams(), parent) {}
+	GUI_AbstractStream(parent) {}
 
 GUI_Stream::~GUI_Stream()
 {
@@ -85,4 +85,9 @@ MenuToolButton* GUI_Stream::btn_menu()
 QLabel* GUI_Stream::lab_listen()
 {
 	return ui->lab_listen;
+}
+
+AbstractStreamHandler* GUI_Stream::stream_handler() const
+{
+	return new StreamHandlerStreams();
 }

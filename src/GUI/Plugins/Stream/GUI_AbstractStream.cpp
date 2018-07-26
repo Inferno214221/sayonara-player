@@ -67,17 +67,16 @@ struct GUI_AbstractStream::Private
 	AbstractStreamHandler*	stream_handler=nullptr;
 	QMap<QString, QString>	stations;
 	bool					searching;
+
+	Private() :
+		searching(false)
+	{}
 };
 
-GUI_AbstractStream::GUI_AbstractStream(AbstractStreamHandler* stream_handler, QWidget* parent) :
+GUI_AbstractStream::GUI_AbstractStream(QWidget* parent) :
 	PlayerPlugin::Base(parent)
 {
 	m = Pimpl::make<Private>();
-	m->stream_handler = stream_handler;
-	m->searching = false;
-
-	connect(m->stream_handler, &AbstractStreamHandler::sig_too_many_urls_found,
-			this, &GUI_AbstractStream::too_many_urls_found);
 }
 
 
@@ -125,6 +124,10 @@ void GUI_AbstractStream::init_streams()
 
 void GUI_AbstractStream::init_ui()
 {
+	m->stream_handler = stream_handler();
+	connect(m->stream_handler, &AbstractStreamHandler::sig_too_many_urls_found,
+			this, &GUI_AbstractStream::too_many_urls_found);
+
 	m->btn_play->setMinimumSize(QSize(24,24));
 	m->btn_play->setMaximumSize(QSize(24,24));
 	m->btn_play->setFlat(true);

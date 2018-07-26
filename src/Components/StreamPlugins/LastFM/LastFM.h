@@ -52,15 +52,15 @@ namespace LastFM
 			void sig_logged_in(bool);
 
 		public slots:
-			void psl_login();
+			void login();
 
 		private slots:
-			void sl_login_thread_finished(bool success);
-			void sl_similar_artists_available(IdList artist_ids);
-			void sl_track_changed(const MetaData& md);
-			void sl_position_ms_changed(MilliSeconds pos_ms);
-			void sl_scrobble_response(const QByteArray& data);
-			void sl_scrobble_error(const QString& str);
+			void login_thread_finished(bool success);
+			void similar_artists_fetched(IdList artist_ids);
+			void current_track_changed(const MetaData& md);
+			void position_ms_changed(MilliSeconds pos_ms);
+			void scrobble_response_received(const QByteArray& data);
+			void scrobble_error_received(const QString& str);
 
 		public:
 			Base();

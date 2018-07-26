@@ -53,11 +53,8 @@ GUI_Broadcast::GUI_Broadcast(QWidget *parent) :
 	PlayerPlugin::Base(parent)
 {
 	m = Pimpl::make<GUI_Broadcast::Private>();
-	m->server = new StreamServer(this);
 
-	connect(m->server, &StreamServer::sig_new_connection, this, &GUI_Broadcast::connection_established);
-	connect(m->server, &StreamServer::sig_connection_closed, this, &GUI_Broadcast::connection_closed);
-	connect(m->server, &StreamServer::sig_listening, this, &GUI_Broadcast::can_listen_changed);
+	Set::listen<Set::Broadcast_Active>(this, &GUI_Broadcast::start_server);
 }
 
 
@@ -294,6 +291,19 @@ void GUI_Broadcast::update_dismiss_buttons()
 
 	m->action_dismiss->setVisible(check_dismiss_visible());
 	m->action_dismiss_all->setVisible(check_dismiss_all_visible());
+}
+
+void GUI_Broadcast::start_server()
+{
+	bool enabled = _settings->get<Set::Broadcast_Active>();
+	if(enabled && !m->server)
+	{
+		m->server = new StreamServer(this);
+
+		connect(m->server, &StreamServer::sig_new_connection, this, &GUI_Broadcast::connection_established);
+		connect(m->server, &StreamServer::sig_connection_closed, this, &GUI_Broadcast::connection_closed);
+		connect(m->server, &StreamServer::sig_listening, this, &GUI_Broadcast::can_listen_changed);
+	}
 }
 
 void GUI_Broadcast::mp3_enc_found()

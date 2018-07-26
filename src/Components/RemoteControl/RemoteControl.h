@@ -127,6 +127,8 @@ private:
 	void write_cover(const MetaData& md);
 
 	void write(const QByteArray& arr);
+
+	void active_changed();
 };
 
 #endif // REMOTECONTROL_H

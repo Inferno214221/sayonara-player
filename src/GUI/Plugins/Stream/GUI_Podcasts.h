@@ -28,12 +28,12 @@ UI_FWD(GUI_Podcasts)
 class GUI_Podcasts :
 		public GUI_AbstractStream
 {
-    Q_OBJECT
+	Q_OBJECT
 	UI_CLASS(GUI_Podcasts)
 
 public:
 	explicit GUI_Podcasts(QWidget *parent=nullptr);
-    virtual ~GUI_Podcasts();
+	virtual ~GUI_Podcasts();
 
 	QString get_name() const override;
 	QString get_display_name() const override;
@@ -51,6 +51,8 @@ private:
 	QPushButton* btn_play() override;
 	MenuToolButton* btn_menu() override;
 	QLabel* lab_listen() override;
+
+	AbstractStreamHandler* stream_handler() const override;
 };
 
 #endif // GUI_PODCASTS_H

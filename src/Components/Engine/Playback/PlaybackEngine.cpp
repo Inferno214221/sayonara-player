@@ -61,12 +61,11 @@ struct Playback::Private
 
 	bool						sr_active;
 
-	Private(QObject* parent) :
+	Private() :
 		gapless_state(GaplessState::Stopped),
 		sr_active(false)
-	{
-		stream_recorder = new StreamRecorder::StreamRecorder(parent);
-	}
+	{}
+
 
 	~Private()
 	{
@@ -76,7 +75,9 @@ struct Playback::Private
 			delete other_pipeline; other_pipeline = nullptr;
 		}
 
-		delete stream_recorder; stream_recorder = nullptr;
+		if(stream_recorder){
+			stream_recorder->deleteLater();
+		}
 	}
 
 	void change_gapless_state(GaplessState state)
@@ -98,13 +99,13 @@ struct Playback::Private
 Playback::Playback(QObject* parent) :
 	Base(Name::PlaybackEngine, parent)
 {
-	m = Pimpl::make<Private>(this);
+	m = Pimpl::make<Private>();
 }
 
 
 Playback::~Playback()
 {
-	if(m->stream_recorder->is_recording())
+	if(is_streamrecroder_recording())
 	{
 		set_streamrecorder_recording(false);
 	}
@@ -246,7 +247,8 @@ void Playback::play()
 
 	m->pipeline->play();
 
-	if(m->sr_active && m->stream_recorder->is_recording()){
+	if(is_streamrecroder_recording())
+	{
 		set_streamrecorder_recording(true);
 	}
 
@@ -265,7 +267,7 @@ void Playback::stop()
 		m->other_pipeline->stop();
 	}
 
-	if(m->sr_active && m->stream_recorder->is_recording()){
+	if(is_streamrecroder_recording()){
 		set_streamrecorder_recording(false);
 	}
 
@@ -360,6 +362,11 @@ void Playback::set_track_finished(GstElement* src)
 	}
 }
 
+bool Playback::is_streamrecroder_recording() const
+{
+	return (m->sr_active && m->stream_recorder && m->stream_recorder->is_recording());
+}
+
 
 void Playback::set_equalizer(int band, int val)
 {
@@ -418,6 +425,11 @@ void Playback::s_streamrecorder_active_changed()
 void Playback::set_streamrecorder_recording(bool b)
 {
 	QString dst_file;
+
+	if(!m->stream_recorder)
+	{
+		m->stream_recorder = new StreamRecorder::StreamRecorder(this);
+	}
 
 	if(m->stream_recorder->is_recording() != b){
 		m->stream_recorder->record(b);
@@ -494,7 +506,8 @@ void Playback::update_metadata(const MetaData& md, GstElement* src)
 
 	Base::update_metadata(md_update, src);
 
-	if(m->sr_active && m->stream_recorder->is_recording()){
+	if(is_streamrecroder_recording())
+	{
 		set_streamrecorder_recording(true);
 	}
 }

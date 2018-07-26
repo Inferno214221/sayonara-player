@@ -34,6 +34,8 @@
 
 using Engine::Handler;
 using Engine::Base;
+using Engine::Playback;
+using Engine::Convert;
 
 struct Handler::Private
 {

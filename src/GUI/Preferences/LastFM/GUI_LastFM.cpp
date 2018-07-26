@@ -98,7 +98,7 @@ bool GUI_LastFM::commit()
 	if( ui->tf_username->text().length() >= 3 &&
 		ui->tf_password->text().length() >= 3 )
 	{
-		m->lfm->psl_login();
+		m->lfm->login();
 
 		_settings->set< Set::LFM_Active>(ui->cb_activate->isChecked() );
 	}
@@ -141,7 +141,7 @@ void GUI_LastFM::btn_login_clicked()
 
 	_settings->set<Set::LFM_Login>(user_pw);
 
-	m->lfm->psl_login();
+	m->lfm->login();
 }
 
 

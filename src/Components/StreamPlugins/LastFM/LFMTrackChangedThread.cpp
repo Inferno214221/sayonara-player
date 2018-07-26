@@ -52,8 +52,7 @@ using namespace LastFM;
 struct TrackChangedThread::Private
 {
 	QString						artist;
-	QString						username;
-	QString						session_key;
+
 	QHash<QString, ArtistMatch>  sim_artists_cache;
 	MetaData					md;
 
@@ -62,12 +61,10 @@ struct TrackChangedThread::Private
 #endif
 };
 
-TrackChangedThread::TrackChangedThread(const QString& username, const QString& session_key, QObject* parent) :
+TrackChangedThread::TrackChangedThread(QObject* parent) :
 	QObject(parent)
 {
 	m = Pimpl::make<TrackChangedThread::Private>();
-	m->username = username;
-	m->session_key = session_key;
 
 	ArtistList artists;
 	DB::Connector* db = DB::Connector::instance();
@@ -83,18 +80,7 @@ TrackChangedThread::TrackChangedThread(const QString& username, const QString& s
 
 TrackChangedThread::~TrackChangedThread() {}
 
-void TrackChangedThread::set_session_key(const QString& session_key)
-{
-	m->session_key = session_key;
-}
-
-void TrackChangedThread::set_username(const QString& username)
-{
-	m->username = username;
-}
-
-
-void TrackChangedThread::update_now_playing(const MetaData& md)
+void TrackChangedThread::update_now_playing(const QString& session_key, const MetaData& md)
 {
 	m->md = md;
 
@@ -114,7 +100,7 @@ void TrackChangedThread::update_now_playing(const MetaData& md)
 	sig_data["artist"] = artist.toLocal8Bit();
 	sig_data["duration"] = QString::number(m->md.length_ms / 1000).toLocal8Bit();
 	sig_data["method"] = QString("track.updatenowplaying").toLocal8Bit();
-	sig_data["sk"] = m->session_key.toLocal8Bit();
+	sig_data["sk"] = session_key.toLocal8Bit();
 	sig_data["track"] =  title.toLocal8Bit();
 
 	sig_data.append_signature();

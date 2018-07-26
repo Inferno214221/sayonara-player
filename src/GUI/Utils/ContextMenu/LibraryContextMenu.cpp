@@ -133,8 +133,6 @@ LibraryContextMenu::LibraryContextMenu(QWidget* parent) :
 	{
 		action->setVisible(action->isSeparator());
 	}
-
-
 }
 
 LibraryContextMenu::~LibraryContextMenu() {}

@@ -22,6 +22,7 @@
 #include "PreferenceAction.h"
 
 using Preferences::Base;
+using Preferences::Action;
 
 struct Base::Private
 {

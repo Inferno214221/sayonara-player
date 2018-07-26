@@ -69,6 +69,7 @@ namespace Engine
 		void set_track_almost_finished(MilliSeconds time2go) override;
 		void set_track_finished(GstElement* src) override;
 
+		bool is_streamrecroder_recording() const;
 		void set_streamrecorder_recording(bool b);
 
 		int get_spectrum_bins() const;
