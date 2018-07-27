@@ -60,7 +60,7 @@ namespace Library
 		void goon();
 		void stop();
 		bool is_running() const;
-		void set_quality(Library::ReloadQuality quality);
+		void set_quality(ReloadQuality quality);
 		void set_library(LibraryId lib_id, const QString& library_path);
 
 	protected:

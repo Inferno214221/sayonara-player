@@ -71,6 +71,9 @@ namespace Cover
 
 		bool is_thread_running() const;
 
+		void set_user_data(void* data);
+		void* take_user_data();
+
 
 	private:
 		/**

@@ -95,6 +95,30 @@
 #include <QTime>
 #include <QSessionManager>
 
+class Measure
+{
+	QTime*		m_t;
+	QString		m_component;
+	int			m_start;
+
+public:
+	Measure(const QString& component, QTime* t) :
+		m_t(t),
+		m_component(component)
+	{
+		m_start = m_t->elapsed();
+		sp_log(Log::Debug, this) << "Init " << m_component << ": " << m_start << "ms";
+	}
+
+	~Measure()
+	{
+		int end = m_t->elapsed();
+		sp_log(Log::Debug, this) << "Init " << m_component << " finished: " << end << "ms (" << end - m_start << "ms)";
+	}
+};
+
+#define measure(c) Measure mt(c, m->timer); Q_UNUSED(mt);
+
 struct Application::Private
 {
 	QTime*				timer=nullptr;
@@ -212,21 +236,38 @@ Application::~Application()
 bool Application::init(const QStringList& files_to_play)
 {
 	Settings* settings = Settings::instance();
-	settings->apply_fixes();
+	{
+		measure("Settings")
 
-	QString version = QString(SAYONARA_VERSION);
-	settings->set<Set::Player_Version>(version);
+		settings->apply_fixes();
+		QString version = QString(SAYONARA_VERSION);
+		settings->set<Set::Player_Version>(version);
+	}
 
-	Gui::Icons::change_theme();
-	Proxy::instance()->init();
+	{
+		measure("Theme")
+		Gui::Icons::change_theme();
+	}
 
+	{
+		measure("Proxy")
+		Proxy::instance()->init();
+	}
+
+	init_engine();
 	init_player();
 
 #ifdef WITH_DBUS
-	new DBusHandler(m->player, this);
+	{
+		measure("DBUS")
+		new DBusHandler(m->player, this);
+	}
 #endif
 
-	new RemoteControl(this);
+	{
+		measure("Remote Control")
+		new RemoteControl(this);
+	}
 
 	if(settings->get<Set::Notification_Show>())
 	{
@@ -235,9 +276,7 @@ bool Application::init(const QStringList& files_to_play)
 												Util::share_path("logo.png"));
 	}
 
-	Gui::Icons::change_theme();
 
-	init_engine();
 	init_libraries();
 	init_plugins();
 	init_preferences();
@@ -254,18 +293,19 @@ bool Application::init(const QStringList& files_to_play)
 
 void Application::init_player()
 {
+	measure("Player")
+
 	m->player = new GUI_Player();
 	Gui::Util::set_main_window(m->player);
 
 	connect(m->player, &GUI_Player::sig_player_closed, this, &QCoreApplication::quit);
-
-	sp_log(Log::Debug, this) << "Init player: " << m->timer->elapsed() << "ms";
 }
 
 
 void Application::init_playlist(const QStringList& files_to_play)
 {
-	if(files_to_play.size() > 0) {
+	if(files_to_play.size() > 0)
+	{
 		QString playlist_name = m->plh->request_new_playlist_name();
 		m->plh->create_playlist(files_to_play, playlist_name);
 	}
@@ -274,6 +314,8 @@ void Application::init_playlist(const QStringList& files_to_play)
 
 void Application::init_preferences()
 {
+	measure("Preferences")
+
 	PreferenceDialog* preferences = new GUI_PreferenceDialog(m->player);
 
 	preferences->register_preference_dialog(new GUI_PlayerPreferences("application"));
@@ -297,12 +339,12 @@ void Application::init_preferences()
 	preferences->register_preference_dialog(new GUI_LastFM("lastfm", new LastFM::Base()));
 
 	m->player->register_preference_dialog(preferences->action());
-
-	sp_log(Log::Debug, this) << "Preference dialogs loaded: " << m->timer->elapsed() << "ms";
 }
 
 void Application::init_libraries()
 {
+	measure("Libraries")
+
 	Library::PluginHandler* library_plugin_loader = Library::PluginHandler::instance();
 
 	QList<Library::Container*> library_containers;
@@ -316,20 +358,20 @@ void Application::init_libraries()
 	library_containers << static_cast<Library::ContainerInterface*>(soundcloud_container);
 	library_containers << static_cast<Library::ContainerInterface*>(somafm_container);
 #endif
-	sp_log(Log::Debug, this) << "Libraries init: " << m->timer->elapsed() << "ms";
-	library_plugin_loader->init(library_containers);
 
-	sp_log(Log::Debug, this) << "Libraries loaded: " << m->timer->elapsed() << "ms";
+	library_plugin_loader->init(library_containers);
 }
 
 void Application::init_engine()
 {
+	measure("Engine")
 	Engine::Handler::instance()->init();
 }
 
 void Application::init_plugins()
 {
-	sp_log(Log::Debug, this) << "Init plugins... " << m->timer->elapsed() << "ms";
+	measure("Plugins")
+
 	PlayerPlugin::Handler* pph = PlayerPlugin::Handler::instance();
 
 	pph->add_plugin(new GUI_LevelPainter());

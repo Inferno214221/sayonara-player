@@ -30,13 +30,10 @@
 #include "Utils/Library/SearchMode.h"
 
 class QString;
-namespace Library
-{
-	class DateFilter;
-}
 
 namespace Library
 {
+	class DateFilter;
 	/**
 	 * @brief The Filter class
 	 * @ingroup LibraryHelper
@@ -65,10 +62,10 @@ namespace Library
 
 			QString filtertext(bool with_percent) const;
 			QString search_mode_filtertext(bool with_percent) const;
-			void set_filtertext(const QString& str, ::Library::SearchModeMask search_mode);
+			void set_filtertext(const QString& str, SearchModeMask search_mode);
 
-			Library::Filter::Mode mode() const;
-			void set_mode(Library::Filter::Mode mode);
+			Filter::Mode mode() const;
+			void set_mode(Filter::Mode mode);
 
 			void clear();
 			bool cleared() const;

@@ -30,14 +30,14 @@ namespace Library
 {
 	class HeaderView;
 	class TableView :
-		public Library::ItemView
+		public ItemView
 	{
 		Q_OBJECT
 		PIMPL(TableView)
 
 	signals:
 		//void sig_columns_changed();
-		void sig_sortorder_changed(Library::SortOrder);
+		void sig_sortorder_changed(SortOrder);
 
 	private:
 		TableView(const TableView& other)=delete;
@@ -56,7 +56,7 @@ namespace Library
 		virtual BoolList visible_columns() const=0;
 		virtual void save_visible_columns(const BoolList& columns)=0;
 
-		virtual Library::SortOrder sortorder() const=0;
+		virtual SortOrder sortorder() const=0;
 		virtual void save_sortorder(SortOrder s)=0;
 
 		void resizeEvent(QResizeEvent* e) override;

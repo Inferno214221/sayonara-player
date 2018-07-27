@@ -41,13 +41,12 @@ using Cover::Location;
 using Cover::Lookup;
 using Library::CoverModel;
 
-using Hash=QString;
+using Hash=AlbumCoverFetchThread::Hash;
 
 struct CoverModel::Private
 {
 	AlbumCoverFetchThread*		cover_thread=nullptr;
 	QHash<Hash, QPixmap>		pixmaps;
-	QHash<Hash, Location>		cover_locations;
 	QHash<Hash, QModelIndex>	indexes;
 
 	int	old_row_count;
@@ -80,24 +79,32 @@ struct CoverModel::Private
 	{
 		return QSize(zoom + 50, zoom + 50);
 	}
+
+	QPixmap get_pixmap(const QString& path)
+	{
+		return QPixmap(path).scaled(zoom, zoom, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+	}
+
+	void insert_pixmap(Hash hash, const QString& path)
+	{
+		pixmaps[hash] = get_pixmap(path);
+	}
 };
 
-static Hash get_hash(const Album& album)
-{
-	return album.name() + "-" + QString::number(album.id);
-}
+
 
 CoverModel::CoverModel(QObject* parent, AbstractLibrary* library) :
 	ItemModel(parent, library)
 {
 	m = Pimpl::make<Private>(this);
 
-	connect(m->cover_thread, &AlbumCoverFetchThread::sig_next, this, &CoverModel::next_hash);
-
 	Cover::ChangeNotfier* ccn = Cover::ChangeNotfier::instance();
 	connect(ccn, &Cover::ChangeNotfier::sig_covers_changed, this, &CoverModel::reload);
 
 	connect(library, &AbstractLibrary::sig_all_albums_loaded, this, &CoverModel::refresh_data);
+
+	connect(m->cover_thread, &AlbumCoverFetchThread::sig_next, this, &CoverModel::next_hash);
+	m->cover_thread->start();
 }
 
 CoverModel::~CoverModel() {}
@@ -207,55 +214,26 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 
 		case Qt::DecorationRole:
 			{
-				QPixmap p;
-				Hash hash = get_hash(album);
+				Hash hash = AlbumCoverFetchThread::get_hash(album);
+				m->indexes[hash] = index;
 
-				if(!m->pixmaps.contains(hash))
+				if(m->pixmaps.contains(hash))
 				{
-					Location cl;
-					if(!m->cover_locations.contains(hash))
-					{
-						cl = Location::cover_location(album);
-						m->cover_locations[hash] = cl;
-					}
-
-					else
-					{
-						cl = m->cover_locations[hash];
-					}
-
-					p = QPixmap(cl.preferred_path());
-					if(!Location::is_invalid(cl.preferred_path()))
-					{
-						m->pixmaps[hash] = p.scaled(m->zoom, m->zoom, Qt::KeepAspectRatio);
-					}
-
-					else // search for the cover
-					{
-						m->indexes[hash] = index;
-						sp_log(Log::Develop, this) << "Add new data: " << hash << ": " << cl.preferred_path();
-						m->cover_thread->add_data(hash, cl);
-
-						if(!m->cover_thread->isRunning())
-						{
-							m->cover_thread->start();
-						}
-					}
-				}
-
-				else
-				{
-					p = m->pixmaps[hash];
-
+					QPixmap p = m->pixmaps[hash];
 					// Pixmap has bad quality, next time we'll search for it
 					// for this time it's sufficient
-					if(p.size().width() < m->zoom - 20)
+					if(std::abs(p.size().width() - m->zoom) > 20)
 					{
-						m->pixmaps.remove(hash);
+						m->cover_thread->add_album(album);
 					}
+
+					return p;
 				}
 
-				return p.scaled(m->zoom, m->zoom, Qt::KeepAspectRatio);
+				m->cover_thread->add_album(album);
+
+				QString path = Cover::Location::invalid_location().cover_path();
+				return m->get_pixmap(path);
 			}
 
 		case Qt::SizeHintRole:
@@ -269,36 +247,59 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 }
 
 
+
+struct CoverLookupUserData
+{
+	Hash hash;
+	Location cl;
+	AlbumCoverFetchThread* acft;
+	QModelIndex idx;
+};
+
 void CoverModel::next_hash()
 {
 	AlbumCoverFetchThread* acft = dynamic_cast<AlbumCoverFetchThread*>(sender());
-	QString hash = acft->current_hash();
-	Location cl = acft->current_cover_location();
+	AlbumCoverFetchThread::HashLocationPair hlp = acft->take_current_location();
 
-	QModelIndex idx = m->indexes[hash];
+	Hash hash = hlp.first;
+	Location cl = hlp.second;
+
+	CoverLookupUserData* d = new CoverLookupUserData();
+	{
+		d->hash = hash;
+		d->cl = cl;
+		d->acft = acft;
+		d->idx =  m->indexes[hash];
+	}
 
 	sp_log(Log::Develop, this) << "Search for new cover: " << hash;
+
 	Lookup* clu = new Lookup(this, 1);
-	connect(clu, &Lookup::sig_finished, this, [=](bool success)
-	{
-		sp_log(Log::Develop, this) << "Cover Lookup finished for " << hash << ": " << success;
+	connect(clu, &Lookup::sig_finished, this, &CoverModel::cover_lookup_finished);
 
-		if(success) {
-			emit dataChanged(idx, idx);
-		}
-
-		else {
-
-		}
-
-		if(acft){
-			acft->done(success);
-		}
-
-		clu->deleteLater();
-	});
-
+	clu->set_user_data(d);
 	clu->fetch_cover(cl);
+}
+
+void CoverModel::cover_lookup_finished(bool success)
+{
+	Lookup* clu = static_cast<Lookup*>(sender());
+	CoverLookupUserData* d = static_cast<CoverLookupUserData*>(clu->take_user_data());
+
+	sp_log(Log::Develop, this) << "Cover Lookup finished for " << d->hash << ": " << success;
+
+	if(success)
+	{
+		m->insert_pixmap(d->hash, d->cl.preferred_path());
+		emit dataChanged(d->idx, d->idx);
+	}
+
+	if(d->acft){
+		d->acft->done(success);
+	}
+
+	delete d; d=nullptr;
+	clu->deleteLater();
 }
 
 
@@ -435,17 +436,16 @@ Location CoverModel::cover(const IndexSet& indexes) const
 		return Location::invalid_location();
 	}
 
+	AlbumList albums = this->albums();
+	// todo
 	int idx = indexes.first();
-	if(idx < 0 || idx >= albums().count() ){
+
+	if(idx < 0 || idx >= albums.count()){
 		return Location::invalid_location();
 	}
 
-	Hash hash = get_hash( albums().at(idx) );
-	if(!m->cover_locations.contains(hash)){
-		return Location::invalid_location();
-	}
-
-	return m->cover_locations[hash];
+	Album album = albums[idx];
+	return Cover::Location::cover_location(album);
 }
 
 
@@ -516,7 +516,6 @@ void CoverModel::reload()
 void CoverModel::clear()
 {
 	m->cover_thread->stop();
-	m->cover_locations.clear();
 	m->pixmaps.clear();
 	m->indexes.clear();
 }

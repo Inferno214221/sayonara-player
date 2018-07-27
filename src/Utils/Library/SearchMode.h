@@ -42,7 +42,7 @@ namespace Library
 
 	namespace Util
 	{
-		QString convert_search_string(const QString& str, ::Library::SearchModeMask mode, const QList<QChar>& ignored_chars=QList<QChar>());
+		QString convert_search_string(const QString& str, SearchModeMask mode, const QList<QChar>& ignored_chars=QList<QChar>());
 	}
 }
 

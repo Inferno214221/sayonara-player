@@ -46,7 +46,7 @@ namespace Library
 		UI_CLASS(GUI_CoverView)
 
 	signals:
-		void sig_sortorder_changed(Library::SortOrder so);
+		void sig_sortorder_changed(SortOrder so);
 		void sig_delete_clicked();
 
 	public:

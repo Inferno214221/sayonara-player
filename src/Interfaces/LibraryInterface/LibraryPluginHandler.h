@@ -56,7 +56,7 @@ namespace Library
 		 * or when the index has changed
 		 * @param idx
 		 */
-		void init_library(Library::Container* container);
+		void init_library(Container* container);
 
 
 	public:
@@ -64,21 +64,21 @@ namespace Library
 		 * @brief Search for plugins and add some predefined plugins
 		 * @param containers Some predefined plugins
 		 */
-		void init(const QList<Library::Container*>& containers);
+		void init(const QList<Container*>& containers);
 
 
 		/**
 		 * @brief Get a list for all found plugins. The ui is not necessarily initialized
 		 * @return list for all found library plugins
 		 */
-		QList<Library::Container*> get_libraries() const;
+		QList<Container*> get_libraries() const;
 
 		void local_library_added(LibraryId id);
 		void local_library_renamed(LibraryId id);
 		void local_library_removed(LibraryId id);
 		void local_library_moved(LibraryId id, int from, int to);
 
-		Library::Container* current_library() const;
+		Container* current_library() const;
 		QMenu* current_library_menu() const;
 
 	private slots:
@@ -86,7 +86,7 @@ namespace Library
 
 	public slots:
 		void set_current_library(const QString& name);
-		void set_current_library(Library::Container* container);
+		void set_current_library(Container* container);
 	};
 }
 

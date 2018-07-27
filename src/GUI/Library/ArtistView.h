@@ -30,7 +30,7 @@
 namespace Library
 {
 	class ArtistView :
-			public Library::TableView
+			public TableView
 	{
 		PIMPL(ArtistView)
 		public:
@@ -57,8 +57,8 @@ namespace Library
 			BoolList visible_columns() const override;
 			void save_visible_columns(const BoolList& columns) override;
 
-			Library::SortOrder sortorder() const override;
-			void save_sortorder(Library::SortOrder s) override;
+			SortOrder sortorder() const override;
+			void save_sortorder(SortOrder s) override;
 
 			void language_changed() override;
 

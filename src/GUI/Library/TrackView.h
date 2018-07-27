@@ -31,7 +31,7 @@ class AbstractLibrary;
 namespace Library
 {
 	class TrackView :
-		public Library::TableView
+		public TableView
 	{
 		Q_OBJECT
 		PIMPL(TrackView)

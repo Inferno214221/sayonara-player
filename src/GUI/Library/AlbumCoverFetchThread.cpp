@@ -26,19 +26,22 @@
 #include "Components/Covers/CoverLocation.h"
 #include "Utils/Utils.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/Utils.h"
+
+#include <QList>
+#include <QPair>
 
 #include <atomic>
 #include <mutex>
 
 using Cover::Location;
 using Cover::Lookup;
+using Hash=AlbumCoverFetchThread::Hash;
 
 struct AlbumCoverFetchThread::Private
 {
-	QString				current_hash;
-	Location			current_cl;
-	QStringList			hashes;
-	QList<Location>		cover_locations;
+	AlbumCoverFetchThread::HashAlbumList	hash_album_list;
+	AlbumCoverFetchThread::HashLocationList	hash_location_list;
 
 	std::atomic<bool>	goon;
 	std::mutex			mutex, mutex_add_data;
@@ -54,10 +57,8 @@ struct AlbumCoverFetchThread::Private
 	{
 		may_run = true;
 		goon = true;
-		hashes.clear();
-		cover_locations.clear();
-		current_hash = QString();
-		current_cl = Location();
+		hash_album_list.clear();
+		hash_location_list.clear();
 	}
 };
 
@@ -81,14 +82,14 @@ AlbumCoverFetchThread::~AlbumCoverFetchThread()
 void AlbumCoverFetchThread::run()
 {
 	m->init();
-	const int PauseBetweenRequests = 300;
+	const int PauseBetweenRequests = 10;
 	const int NumParallelRequests = 10;
 
 	while(m->may_run)
 	{
-		while(m->hashes.isEmpty() || !m->goon)
+		while(m->hash_album_list.isEmpty() || !m->goon)
 		{
-			Util::sleep_ms(PauseBetweenRequests);
+			Util::sleep_ms(300);
 			if(!m->may_run){
 				return;
 			}
@@ -102,7 +103,7 @@ void AlbumCoverFetchThread::run()
 
 		for(int i=0; i<NumParallelRequests; i++)
 		{
-			if(m->hashes.isEmpty()) {
+			if(m->hash_album_list.isEmpty()) {
 				break;
 			}
 
@@ -110,66 +111,64 @@ void AlbumCoverFetchThread::run()
 				Util::sleep_ms(PauseBetweenRequests);
 			}
 
-			try{
-				std::lock_guard<std::mutex> guard(m->mutex);
-				m->current_hash = m->hashes.takeFirst();
-				m->current_cl = m->cover_locations.takeFirst();
+			std::lock_guard<std::mutex> guard(m->mutex);
+			Q_UNUSED(guard)
 
+			HashAlbumPair hap = m->hash_album_list.takeFirst();
+			Cover::Location cl = Cover::Location::cover_location(hap.second);
+
+			m->hash_location_list.push_back(HashLocationPair(hap.first, cl));
+
+			if(m->may_run)
+			{
 				emit sig_next();
-
-			} catch(std::exception* e) {
-				sp_log(Log::Warning, this) << "1 Exception" << e->what();
-				Util::sleep_ms(PauseBetweenRequests);
 			}
 
-			if(!m->may_run){
+			else
+			{
 				return;
 			}
 		}
 	}
 }
 
-
-void AlbumCoverFetchThread::add_data(const QString& hash, const Location& cl)
+void AlbumCoverFetchThread::add_album(const Album& album)
 {
-	std::lock_guard<std::mutex> g(m->mutex_add_data);
-	Q_UNUSED(g)
+	std::lock_guard<std::mutex> g1(m->mutex_add_data);
+	Q_UNUSED(g1)
 
-	if(m->hashes.contains(hash) || m->current_hash.compare(hash) == 0){
+	QString hash = get_hash(album);
+	bool has_hash = ::Util::contains(m->hash_album_list, [hash](const HashAlbumPair& p){
+		return (p.first == hash);
+	});
+
+	if(has_hash){
 		return;
 	}
 
-	bool done = false;
-	while(!done)
-	{
-		try
-		{
-			std::lock_guard<std::mutex> guard(m->mutex);
-			Q_UNUSED(guard)
+	has_hash = ::Util::contains(m->hash_location_list, [hash](const HashLocationPair& p){
+		return (p.first == hash);
+	});
 
-			m->hashes.push_front(hash);
-			m->cover_locations.push_front(cl);
-			done = true;
-
-		}
-
-		catch(std::exception* e)
-		{
-			sp_log(Log::Warning, this) << "2 Exception" << e->what();
-			Util::sleep_ms(10);
-		}
+	if(has_hash){
+		return;
 	}
+
+	std::lock_guard<std::mutex> g2(m->mutex);
+	Q_UNUSED(g2)
+
+	m->hash_album_list.push_back(HashAlbumPair(hash, album));
+}
+
+AlbumCoverFetchThread::HashLocationPair AlbumCoverFetchThread::take_current_location()
+{
+	return m->hash_location_list.takeFirst();
 }
 
 
-QString AlbumCoverFetchThread::current_hash() const
+AlbumCoverFetchThread::Hash AlbumCoverFetchThread::get_hash(const Album& album)
 {
-	return m->current_hash;
-}
-
-Location AlbumCoverFetchThread::current_cover_location() const
-{
-	return m->current_cl;
+	return album.name() + "-" + QString::number(album.id);
 }
 
 

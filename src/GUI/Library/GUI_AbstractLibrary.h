@@ -60,7 +60,7 @@ namespace Library
 	protected:
 		virtual void language_changed() override;
 		virtual void init_shortcuts();
-		virtual ::Library::TrackDeletionMode show_delete_dialog(int n_tracks)=0;
+		virtual TrackDeletionMode show_delete_dialog(int n_tracks)=0;
 
 	protected slots:
 		virtual void _sl_live_search_changed();
@@ -68,7 +68,7 @@ namespace Library
 		virtual void search_esc_pressed();
 		virtual void search_return_pressed();
 		virtual void search_edited(const QString& searchstring);
-		virtual void search_mode_changed(::Library::Filter::Mode mode);
+		virtual void search_mode_changed(Filter::Mode mode);
 		virtual void esc_pressed();
 		virtual void query_library();
 
@@ -82,12 +82,12 @@ namespace Library
 
 
 	protected:
-		virtual ::Library::TableView* lv_artist() const=0;
-		virtual ::Library::TableView* lv_album() const=0;
-		virtual ::Library::TableView* lv_tracks() const=0;
+		virtual TableView* lv_artist() const=0;
+		virtual TableView* lv_album() const=0;
+		virtual TableView* lv_tracks() const=0;
 		virtual QLineEdit* le_search() const=0;
 
-		virtual QList<::Library::Filter::Mode> search_options() const=0;
+		virtual QList<Filter::Mode> search_options() const=0;
 
 		template<typename T, typename UI>
 		void setup_parent(T* subclass, UI** ui)

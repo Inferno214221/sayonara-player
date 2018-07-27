@@ -63,12 +63,12 @@ namespace Library
 	protected:
 		void showEvent(QShowEvent* e) override;
 
-		Library::TableView* lv_artist() const override;
-		Library::TableView* lv_album() const override;
-		Library::TableView* lv_tracks() const override;
+		TableView* lv_artist() const override;
+		TableView* lv_album() const override;
+		TableView* lv_tracks() const override;
 
 		QLineEdit* le_search() const override;
-		QList<Library::Filter::Mode> search_options() const override;
+		QList<Filter::Mode> search_options() const override;
 
 		void language_changed() override;
 		void search_esc_pressed() override;
@@ -83,8 +83,8 @@ namespace Library
 		void genre_selection_changed(const QModelIndex& index);
 
 		void reload_library_requested();
-		void reload_library_requested(Library::ReloadQuality quality);
-		void reload_library_accepted(Library::ReloadQuality quality);
+		void reload_library_requested(ReloadQuality quality);
+		void reload_library_accepted(ReloadQuality quality);
 		void reload_finished();
 
 		void import_dirs_requested();
@@ -100,7 +100,7 @@ namespace Library
 		void splitter_genre_moved(int pos, int idx);
 
 		// reimplemented from Abstract Library
-		Library::TrackDeletionMode show_delete_dialog(int n_tracks) override;
+		TrackDeletionMode show_delete_dialog(int n_tracks) override;
 
 		void show_info_box();
 	};

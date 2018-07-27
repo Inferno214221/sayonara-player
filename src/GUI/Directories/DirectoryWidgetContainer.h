@@ -29,7 +29,7 @@ namespace Library
 {
 	// for showing up in library tree
 	class DirectoryContainer :
-			public Library::Container
+			public Container
 	{
 		Q_OBJECT
 

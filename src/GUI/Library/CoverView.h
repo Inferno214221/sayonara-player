@@ -12,7 +12,7 @@ class QAction;
 namespace Library
 {
 	class CoverView :
-			public Library::ItemView
+			public ItemView
 	{
 		Q_OBJECT
 		PIMPL(CoverView)
@@ -32,7 +32,7 @@ namespace Library
 		ModelIndexRange model_indexrange_by_index(int idx) const override;
 
 		void change_zoom(int zoom=-1);
-		void change_sortorder(Library::SortOrder so);
+		void change_sortorder(SortOrder so);
 
 		static QList<ActionPair> sorting_actions();
 		static QStringList zoom_actions();

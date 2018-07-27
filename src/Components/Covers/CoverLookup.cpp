@@ -49,6 +49,7 @@ struct Lookup::Private
 {
 	int             n_covers;
 	FetchThread*    cft=nullptr;
+	void*			user_data=nullptr;
 	bool			thread_running;
 
 	Private(int n_covers) :
@@ -154,4 +155,16 @@ void Lookup::stop()
 bool Lookup::is_thread_running() const
 {
 	return (m->cft != nullptr);
+}
+
+void Lookup::set_user_data(void* data)
+{
+	m->user_data = data;
+}
+
+void* Lookup::take_user_data()
+{
+	void* data = m->user_data;
+	m->user_data = nullptr;
+	return data;
 }

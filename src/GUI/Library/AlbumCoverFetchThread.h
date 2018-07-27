@@ -25,12 +25,13 @@
 
 #include <QThread>
 #include <QModelIndex>
+#include <QPair>
 
 #include "Utils/Pimpl.h"
 
 namespace Cover
 {
-    class Location;
+	class Location;
 }
 
 class Album;
@@ -47,49 +48,51 @@ class Album;
  */
 class AlbumCoverFetchThread : public QThread
 {
-    Q_OBJECT
-    PIMPL(AlbumCoverFetchThread)
+	Q_OBJECT
+	PIMPL(AlbumCoverFetchThread)
 
 signals:
 	void sig_next();
 
 protected:
-    void run() override;
+	void run() override;
 
 public:
-    explicit AlbumCoverFetchThread(QObject* parent=nullptr);
-    ~AlbumCoverFetchThread();
+	using Hash=QString;
+
+	using HashAlbumPair = QPair<Hash, Album>;
+	using HashAlbumList = QList<HashAlbumPair>;
+	using HashLocationPair = QPair<Hash, Cover::Location>;
+	using HashLocationList = QList<HashLocationPair>;
+
+	explicit AlbumCoverFetchThread(QObject* parent=nullptr);
+	~AlbumCoverFetchThread();
 
 	/**
 	 * @brief add_data Add a new album request
 	 * @param hash hashed album info
 	 * @param cl Cover Location of the album
 	 */
-    void add_data(const QString& hash, const Cover::Location& cl);
+	void add_album(const Album& album);
+
+
+	HashLocationPair take_current_location();
+
 
 	/**
 	 * @brief done Should be called when processing of the next
 	 * cover should take place
 	 * @param success not evalutated
 	 */
-    void done(bool success);
+	void done(bool success);
 
 	/**
 	 * @brief stop Stop the thread
 	 */
 	void stop();
 
-	/**
-	 * @brief Get the current processed hash valud
-	 * @return
-	 */
-	QString current_hash() const;
 
-	/**
-	 * @brief Get the curren processed cover location
-	 * @return
-	 */
-    Cover::Location current_cover_location() const;
+	static Hash get_hash(const Album& album);
 };
 
 #endif // ALBUMCOVERFETCHTHREAD_H

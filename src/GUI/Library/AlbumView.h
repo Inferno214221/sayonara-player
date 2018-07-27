@@ -31,7 +31,7 @@ class DiscPopupMenu;
 namespace Library
 {
 	class AlbumView :
-			public Library::TableView
+			public TableView
 	{
 		Q_OBJECT
 		PIMPL(AlbumView)

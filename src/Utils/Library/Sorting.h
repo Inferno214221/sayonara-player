@@ -33,20 +33,20 @@ namespace Library
 	class Sortings
 	{
 		public:
-			Library::SortOrder so_albums;
-			Library::SortOrder so_artists;
-			Library::SortOrder so_tracks;
+			SortOrder so_albums;
+			SortOrder so_artists;
+			SortOrder so_tracks;
 
 		Sortings();
 		Sortings(const Sortings& so);
 		~Sortings();
 
-		Sortings& operator=(const Library::Sortings& other);
-		bool operator==(Library::Sortings so);
+		Sortings& operator=(const Sortings& other);
+		bool operator==(Sortings so);
 
 		QString toString() const;
 
-		static Library::Sortings fromString(const QString& str);
+		static Sortings fromString(const QString& str);
 	};
 }
 
