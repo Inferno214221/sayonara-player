@@ -105,6 +105,9 @@ public:
 	void set_album_artist(const QString& album_artist, ArtistId id=-1);
 	void set_album_artist_id(ArtistId id);
 
+	void set_radio_station(const QString& name);
+	const QString& radio_station() const;
+
 	RadioMode radio_mode() const;
 	bool is_valid() const;
 

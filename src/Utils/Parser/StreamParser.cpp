@@ -269,12 +269,14 @@ QPair<MetaDataList, PlaylistFiles> StreamParser::parse_website(const QByteArray&
 	while(idx >= 0)
 	{
 		QStringList found_urls = reg_exp.capturedTexts();
-		for(QString str : found_urls) {
+		for(QString str : found_urls)
+		{
 			QUrl found_url(str);
 			if( (str.size() > 7) &&
 				(!m->is_url_forbidden(QUrl(found_url))) )
 			{
-				if(str.startsWith("\"") || str.startsWith("'")){
+				if(str.startsWith("\"") || str.startsWith("'"))
+				{
 					str.remove(0, 1);
 				}
 
@@ -319,14 +321,14 @@ QPair<MetaDataList, PlaylistFiles> StreamParser::parse_website(const QByteArray&
 void StreamParser::tag_metadata(MetaData& md, const QString& stream_url, const QString& cover_url) const
 {
 	if(m->station_name.isEmpty()) {
-		md.set_album(stream_url);
+		md.set_radio_station(stream_url);
 		if(md.title().isEmpty()){
 			md.set_title(Lang::get(Lang::Radio));
 		}
 	}
 
 	else {
-		md.set_album(m->station_name);
+		md.set_radio_station(m->station_name);
 		if(md.title().isEmpty()){
 			md.set_title(m->station_name);
 		}

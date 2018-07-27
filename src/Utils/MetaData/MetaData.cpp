@@ -331,6 +331,17 @@ void MetaData::set_album_artist_id(ArtistId id)
 	m->album_artist_id = id;
 }
 
+void MetaData::set_radio_station(const QString& album)
+{
+	set_album(album);
+	album_id = -1;
+}
+
+const QString&MetaData::radio_station() const
+{
+	return album();
+}
+
 bool MetaData::has_album_artist() const
 {
 	return (m->album_artist_idx > 0);

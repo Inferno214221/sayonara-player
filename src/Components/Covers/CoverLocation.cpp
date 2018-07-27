@@ -228,32 +228,23 @@ Location Location::cover_location(const Album& album)
 		MetaDataList v_md;
 		lib_db->getAllTracksByAlbum(album.id, v_md);
 
-		for(const MetaData& md : v_md)
-		{
-			bool has_audio_source = (cl.audio_file_source().size() > 0);
-			bool has_local_paths = (cl.local_paths().count() > 0);
+		bool has_audio_source = (cl.audio_file_source().size() > 0);
 
-			if(!has_audio_source)
+		if(!v_md.isEmpty())
+		{
+			const MetaData& md = v_md[0];
+			if(!has_audio_source && Tagging::Util::has_cover(md.filepath()))
 			{
-				if(Tagging::Util::has_cover(md.filepath()))
-				{
-					cl.set_audio_file_source(md.filepath(), cl.cover_path());
-					has_audio_source = true;
-				}
+				cl.set_audio_file_source(md.filepath(), cl.cover_path());
 			}
 
-			if(!has_local_paths)
+			if(cl.local_paths().isEmpty())
 			{
 				const QStringList local_paths = Cover::LocalSearcher::cover_paths_from_filename(md.filepath());
 				for(const QString& local_path : local_paths)
 				{
 					cl.add_local_path(local_path);
-					has_local_paths = true;
 				}
-			}
-
-			if(has_audio_source && has_local_paths){
-				break;
 			}
 		}
 	}
