@@ -111,7 +111,7 @@ void AlbumCoverFetchThread::run()
 				Util::sleep_ms(PauseBetweenRequests);
 			}
 
-			std::lock_guard<std::mutex> guard(m->mutex);
+			std::lock_guard<std::mutex> guard(m->mutex_add_data);
 			Q_UNUSED(guard)
 
 			HashAlbumPair hap = m->hash_album_list.takeFirst();

@@ -272,7 +272,7 @@ void CoverModel::next_hash()
 		d->idx =  m->indexes[hash];
 	}
 
-	sp_log(Log::Develop, this) << "Search for new cover: " << hash;
+	//sp_log(Log::Develop, this) << "Search for new cover: " << hash;
 
 	Lookup* clu = new Lookup(this, 1);
 	connect(clu, &Lookup::sig_finished, this, &CoverModel::cover_lookup_finished);
@@ -281,25 +281,34 @@ void CoverModel::next_hash()
 	clu->fetch_cover(cl);
 }
 
+#include <mutex>
+static std::mutex mtx;
 void CoverModel::cover_lookup_finished(bool success)
 {
+	std::lock_guard<std::mutex> grd(mtx);
+	Q_UNUSED(grd);
+
 	Lookup* clu = static_cast<Lookup*>(sender());
 	CoverLookupUserData* d = static_cast<CoverLookupUserData*>(clu->take_user_data());
 
-	sp_log(Log::Develop, this) << "Cover Lookup finished for " << d->hash << ": " << success;
-
-	if(success)
+//	sp_log(Log::Develop, this) << "Cover Lookup finished for " << d->hash << ": " << success;
+	if(d || true)
 	{
-		m->insert_pixmap(d->hash, d->cl.preferred_path());
-		emit dataChanged(d->idx, d->idx);
+		if(success)
+		{
+			m->insert_pixmap(d->hash, d->cl.preferred_path());
+			emit dataChanged(d->idx, d->idx);
+		}
+
+		if(d->acft){
+			d->acft->done(success);
+		}
+
+		delete d; d=nullptr;
 	}
 
-	if(d->acft){
-		d->acft->done(success);
-	}
-
-	delete d; d=nullptr;
 	clu->deleteLater();
+
 }
 
 
