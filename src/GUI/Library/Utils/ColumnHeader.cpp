@@ -24,7 +24,8 @@
 
 #include <algorithm>
 
-using Library::SortOrder;
+using namespace Library;
+
 using SizeType=ColumnHeader::SizeType;
 using HeaderType=ColumnHeader::HeaderType;
 
@@ -64,7 +65,7 @@ ColumnHeader::ColumnHeader(HeaderType type, bool switchable, SortOrder sort_asc,
 
 ColumnHeader::~ColumnHeader() {}
 
-ColumnHeader::ColumnHeader(HeaderType type, bool switchable, Library::SortOrder sort_asc, Library::SortOrder sort_desc, int preferred_size_abs) :
+ColumnHeader::ColumnHeader(HeaderType type, bool switchable, SortOrder sort_asc, SortOrder sort_desc, int preferred_size_abs) :
 	ColumnHeader(type, switchable, sort_asc, sort_desc)
 {
 	m->preferred_size_abs = preferred_size_abs;
@@ -73,7 +74,7 @@ ColumnHeader::ColumnHeader(HeaderType type, bool switchable, Library::SortOrder 
 	m->size_type = SizeType::Abs;
 }
 
-ColumnHeader::ColumnHeader(HeaderType type, bool switchable, Library::SortOrder sort_asc, Library::SortOrder sort_desc, double preferred_size_rel, int min_size) :
+ColumnHeader::ColumnHeader(HeaderType type, bool switchable, SortOrder sort_asc, SortOrder sort_desc, double preferred_size_rel, int min_size) :
 	ColumnHeader(type, switchable, sort_asc, sort_desc)
 {
 	m->preferred_size_abs = min_size;
@@ -92,12 +93,12 @@ double ColumnHeader::preferred_size_rel() const
 	return m->preferred_size_rel;
 }
 
-Library::SortOrder ColumnHeader::sortorder_asc() const
+SortOrder ColumnHeader::sortorder_asc() const
 {
 	return	m->sort_asc;
 }
 
-Library::SortOrder ColumnHeader::sortorder_desc() const
+SortOrder ColumnHeader::sortorder_desc() const
 {
 	return m->sort_desc;
 }

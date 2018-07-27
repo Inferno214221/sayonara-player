@@ -48,6 +48,7 @@ struct CoverModel::Private
 	AlbumCoverFetchThread*		cover_thread=nullptr;
 	QHash<Hash, QPixmap>		pixmaps;
 	QHash<Hash, QModelIndex>	indexes;
+	QHash<Hash, bool>			valid_hashes;
 
 	int	old_row_count;
 	int	old_column_count;
@@ -62,6 +63,8 @@ struct CoverModel::Private
 	{
 		cover_thread = new AlbumCoverFetchThread(parent);
 		zoom = Settings::instance()->get<Set::Lib_CoverZoom>();
+
+		reset_valid_hashes();
 	}
 
 	~Private()
@@ -88,6 +91,14 @@ struct CoverModel::Private
 	void insert_pixmap(Hash hash, const QString& path)
 	{
 		pixmaps[hash] = get_pixmap(path);
+	}
+
+	void reset_valid_hashes()
+	{
+		const QList<Hash> keys = valid_hashes.keys();
+		for(const Hash& key : valid_hashes.keys()){
+			valid_hashes[key] = false;
+		}
 	}
 };
 
@@ -227,6 +238,11 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 						m->cover_thread->add_album(album);
 					}
 
+					if(m->valid_hashes[hash] == false)
+					{
+						m->cover_thread->add_album(album);
+					}
+
 					return p;
 				}
 
@@ -272,8 +288,6 @@ void CoverModel::next_hash()
 		d->idx =  m->indexes[hash];
 	}
 
-	//sp_log(Log::Develop, this) << "Search for new cover: " << hash;
-
 	Lookup* clu = new Lookup(this, 1);
 	connect(clu, &Lookup::sig_finished, this, &CoverModel::cover_lookup_finished);
 
@@ -291,8 +305,7 @@ void CoverModel::cover_lookup_finished(bool success)
 	Lookup* clu = static_cast<Lookup*>(sender());
 	CoverLookupUserData* d = static_cast<CoverLookupUserData*>(clu->take_user_data());
 
-//	sp_log(Log::Develop, this) << "Cover Lookup finished for " << d->hash << ": " << success;
-	if(d || true)
+	if(d)
 	{
 		if(success)
 		{
@@ -300,15 +313,13 @@ void CoverModel::cover_lookup_finished(bool success)
 			emit dataChanged(d->idx, d->idx);
 		}
 
-		if(d->acft){
-			d->acft->done(success);
-		}
+		m->valid_hashes[d->hash] = success;
 
+		d->acft->done(true);
 		delete d; d=nullptr;
 	}
 
 	clu->deleteLater();
-
 }
 
 
@@ -517,15 +528,18 @@ void CoverModel::set_zoom(int zoom, const QSize& view_size)
 void CoverModel::reload()
 {
 	m->cover_thread->stop();
+	m->reset_valid_hashes();
+	m->cover_thread->start();
 
-	m->pixmaps.clear();
 	refresh_data();
 }
 
 void CoverModel::clear()
 {
 	m->cover_thread->stop();
+
 	m->pixmaps.clear();
 	m->indexes.clear();
+	m->reset_valid_hashes();
 }
 

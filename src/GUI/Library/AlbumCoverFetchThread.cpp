@@ -30,6 +30,7 @@
 
 #include <QList>
 #include <QPair>
+#include <QFile>
 
 #include <atomic>
 #include <mutex>
@@ -38,14 +39,17 @@ using Cover::Location;
 using Cover::Lookup;
 using Hash=AlbumCoverFetchThread::Hash;
 
+#define LOCK_GUARD(locking_mutex) std::lock_guard<std::mutex> g(locking_mutex); Q_UNUSED(g)
+
 struct AlbumCoverFetchThread::Private
 {
 	AlbumCoverFetchThread::HashAlbumList	hash_album_list;
 	AlbumCoverFetchThread::HashLocationList	hash_location_list;
+	AlbumCoverFetchThread::HashLocationList	hash_location_online_list;
 
-	std::atomic<bool>	goon;
-	std::mutex			mutex, mutex_add_data;
+	std::mutex			mutex_album_list, mutex_location_list, mutex_goon;
 
+	std::atomic<int>	goon;
 	bool				may_run;
 
 	Private()
@@ -82,42 +86,56 @@ AlbumCoverFetchThread::~AlbumCoverFetchThread()
 void AlbumCoverFetchThread::run()
 {
 	m->init();
+
 	const int PauseBetweenRequests = 10;
-	const int NumParallelRequests = 10;
 
 	while(m->may_run)
 	{
-		while(m->hash_album_list.isEmpty() || !m->goon)
-		{
-			Util::sleep_ms(300);
-			if(!m->may_run){
-				return;
-			}
-		}
-
-		m->goon = false;
-
 		if(!m->may_run){
 			return;
 		}
 
-		for(int i=0; i<NumParallelRequests; i++)
+		int c = m->hash_album_list.count();
+		while(c == 0)
+		{
+			Util::sleep_ms(100);
+			if(!m->may_run)
+			{
+				return;
+			}
+
+			c = m->hash_album_list.count();
+		}
+
+		for(int i=0; i<c; i++)
 		{
 			if(m->hash_album_list.isEmpty()) {
 				break;
 			}
 
-			if(i > 0) {
-				Util::sleep_ms(PauseBetweenRequests);
+			HashAlbumPair hap;
+			{
+				LOCK_GUARD(m->mutex_album_list)
+				hap = m->hash_album_list.takeLast();
 			}
 
-			std::lock_guard<std::mutex> guard(m->mutex_add_data);
-			Q_UNUSED(guard)
-
-			HashAlbumPair hap = m->hash_album_list.takeFirst();
 			Cover::Location cl = Cover::Location::cover_location(hap.second);
+			{
+				LOCK_GUARD(m->mutex_location_list)
+				if(cl.has_audio_file_source() ||
+					( !Location::is_invalid(cl.preferred_path()) &&
+					  QFile::exists(cl.preferred_path())
+					)
+				  )
+				{
+					m->hash_location_list.push_back(HashLocationPair(hap.first, cl));
+				}
 
-			m->hash_location_list.push_back(HashLocationPair(hap.first, cl));
+				else
+				{
+					m->hash_location_online_list.push_back(HashLocationPair(hap.first, cl));
+				}
+			}
 
 			if(m->may_run)
 			{
@@ -134,35 +152,48 @@ void AlbumCoverFetchThread::run()
 
 void AlbumCoverFetchThread::add_album(const Album& album)
 {
-	std::lock_guard<std::mutex> g1(m->mutex_add_data);
-	Q_UNUSED(g1)
-
+	bool has_hash;
 	QString hash = get_hash(album);
-	bool has_hash = ::Util::contains(m->hash_album_list, [hash](const HashAlbumPair& p){
-		return (p.first == hash);
-	});
+
+	{
+		LOCK_GUARD(m->mutex_album_list);
+		has_hash = ::Util::contains(m->hash_album_list, [hash](const HashAlbumPair& p){
+			return (p.first == hash);
+		});
+	}
 
 	if(has_hash){
 		return;
 	}
 
-	has_hash = ::Util::contains(m->hash_location_list, [hash](const HashLocationPair& p){
-		return (p.first == hash);
-	});
+	{
+		LOCK_GUARD(m->mutex_location_list)
+		has_hash = ::Util::contains(m->hash_location_list, [hash](const HashLocationPair& p){
+			return (p.first == hash);
+		});
+	}
 
 	if(has_hash){
 		return;
 	}
 
-	std::lock_guard<std::mutex> g2(m->mutex);
-	Q_UNUSED(g2)
-
-	m->hash_album_list.push_back(HashAlbumPair(hash, album));
+	{
+		LOCK_GUARD(m->mutex_album_list);
+		m->hash_album_list.push_back(HashAlbumPair(hash, album));
+	}
 }
 
 AlbumCoverFetchThread::HashLocationPair AlbumCoverFetchThread::take_current_location()
 {
-	return m->hash_location_list.takeFirst();
+	LOCK_GUARD(m->mutex_location_list);
+	if(m->hash_location_list.count() > 0){
+		return m->hash_location_list.takeLast();
+	}
+
+	else {
+		sp_log(Log::Warning, this) << "Search online cover";
+		return m->hash_location_online_list.takeLast();
+	}
 }
 
 
@@ -176,15 +207,20 @@ void AlbumCoverFetchThread::done(bool success)
 {
 	Q_UNUSED(success)
 
-	if(m){
-		m->goon = true;
-	}
+	LOCK_GUARD(m->mutex_goon);
+	m->goon++;
+
 }
 
 void AlbumCoverFetchThread::stop()
 {
-	if(m){
-		m->may_run = false;
+	m->may_run = false;
+	while(this->isRunning()){
+		::Util::sleep_ms(20);
 	}
+
+	m->hash_album_list.clear();
+	m->hash_location_list.clear();
+	m->hash_location_online_list.clear();
 }
 

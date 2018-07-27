@@ -6,7 +6,7 @@
 #include "Utils/Library/Sortorder.h"
 
 class LocalLibrary;
-class ActionPair;
+struct ActionPair;
 class QAction;
 
 namespace Library

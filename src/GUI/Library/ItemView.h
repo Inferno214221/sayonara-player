@@ -42,14 +42,14 @@
 #include "Utils/Pimpl.h"
 
 class AbstractLibrary;
-
 class LibraryContextMenu;
-class ColumnHeaderList;
 class QStringList;
 class QMenu;
 
 namespace Library
 {
+	class ColumnHeaderList;
+
 	class ItemModel;
 
 	class ItemView :
