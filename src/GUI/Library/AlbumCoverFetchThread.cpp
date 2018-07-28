@@ -75,11 +75,8 @@ AlbumCoverFetchThread::AlbumCoverFetchThread(QObject* parent) :
 
 AlbumCoverFetchThread::~AlbumCoverFetchThread()
 {
+	sp_log(Log::Debug, this) << "Destructor called";
 	m->may_run = false;
-
-	while(this->isRunning()){
-		Util::sleep_ms(50);
-	}
 }
 
 
@@ -87,12 +84,11 @@ void AlbumCoverFetchThread::run()
 {
 	m->init();
 
-	const int PauseBetweenRequests = 10;
-
-	while(m->may_run)
+	while(true)
 	{
-		if(!m->may_run){
-			return;
+		while(!m->may_run)
+		{
+			::Util::sleep_ms(100);
 		}
 
 		int c = m->hash_album_list.count();
@@ -101,7 +97,7 @@ void AlbumCoverFetchThread::run()
 			Util::sleep_ms(100);
 			if(!m->may_run)
 			{
-				return;
+				break;
 			}
 
 			c = m->hash_album_list.count();
@@ -116,7 +112,16 @@ void AlbumCoverFetchThread::run()
 			HashAlbumPair hap;
 			{
 				LOCK_GUARD(m->mutex_album_list)
+				if(m->hash_album_list.isEmpty()){
+					continue;
+				}
+
 				hap = m->hash_album_list.takeLast();
+			}
+
+			if(!m->may_run)
+			{
+				break;
 			}
 
 			Cover::Location cl = Cover::Location::cover_location(hap.second);
@@ -137,15 +142,12 @@ void AlbumCoverFetchThread::run()
 				}
 			}
 
-			if(m->may_run)
+			if(!m->may_run)
 			{
-				emit sig_next();
+				break;
 			}
 
-			else
-			{
-				return;
-			}
+			emit sig_next();
 		}
 	}
 }
@@ -190,9 +192,13 @@ AlbumCoverFetchThread::HashLocationPair AlbumCoverFetchThread::take_current_loca
 		return m->hash_location_list.takeLast();
 	}
 
-	else {
+	else if(m->hash_location_online_list.count() > 0){
 		sp_log(Log::Warning, this) << "Search online cover";
 		return m->hash_location_online_list.takeLast();
+	}
+
+	else {
+		return AlbumCoverFetchThread::HashLocationPair();
 	}
 }
 
@@ -212,15 +218,26 @@ void AlbumCoverFetchThread::done(bool success)
 
 }
 
-void AlbumCoverFetchThread::stop()
+void AlbumCoverFetchThread::pause()
 {
 	m->may_run = false;
-	while(this->isRunning()){
-		::Util::sleep_ms(20);
+
+	{
+		LOCK_GUARD(m->mutex_album_list)
+		m->hash_album_list.clear();
 	}
 
-	m->hash_album_list.clear();
-	m->hash_location_list.clear();
-	m->hash_location_online_list.clear();
+	{
+		LOCK_GUARD(m->mutex_location_list)
+		m->hash_location_list.clear();
+		m->hash_location_online_list.clear();
+	}
 }
+
+void AlbumCoverFetchThread::resume()
+{
+	::Util::sleep_ms(100);
+	m->may_run = true;
+}
+
 

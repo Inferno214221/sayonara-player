@@ -145,6 +145,7 @@ Location Location::invalid_location()
 	return cl;
 }
 
+
 bool Location::is_invalid(const QString& cover_path)
 {
 	QString path1 = ::Util::File::clean_filename(cover_path);
@@ -379,6 +380,10 @@ QStringList Location::local_paths() const
 
 void Location::add_local_path(const QString& path)
 {
+	if(!QFile::exists(m->cover_path)){
+		::Util::File::create_symlink(path, m->cover_path);
+	}
+
 	m->local_paths << path;
 }
 
@@ -386,6 +391,26 @@ QString Location::cover_path() const
 {
 	return m->cover_path;
 }
+
+
+Location::CoverSourceType Location::get_cover_source_type() const
+{
+	QString prefered = preferred_path();
+	QDir d(prefered);
+
+	if(prefered.contains(Util::cover_directory())){
+		return CoverSourceType::SayonaraCoverDir;
+	}
+
+	else if(prefered == invalid_location().cover_path()){
+		return CoverSourceType::Invalid;
+	}
+
+	else {
+		return CoverSourceType::LocalPath;
+	}
+}
+
 
 QString Location::preferred_path() const
 {

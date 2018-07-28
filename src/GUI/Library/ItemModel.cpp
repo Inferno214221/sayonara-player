@@ -39,6 +39,7 @@ struct ItemModel::Private
 	QStringList			header_names;
 	int                 old_row_count;
 
+
 	Private(AbstractLibrary* library) :
 		library(library),
 		old_row_count(0)

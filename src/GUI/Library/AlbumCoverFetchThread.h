@@ -89,8 +89,8 @@ public:
 	/**
 	 * @brief stop Stop the thread
 	 */
-	void stop();
-
+	void pause();
+	void resume();
 
 	static Hash get_hash(const Album& album);
 };

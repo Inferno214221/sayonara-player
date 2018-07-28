@@ -95,7 +95,7 @@ void CoverButton::set_cover_image(const QString& cover_path)
 
 void CoverButton::set_cover_location(const Location& cl)
 {
-	this->setToolTip("Cover source: " + cl.identifer());
+	this->setToolTip("Cover source: " + cl.identifer() + "\n" + cl.preferred_path());
 
 	m->cover_location = cl;
 	m->cover_forced = false;
@@ -169,7 +169,7 @@ void CoverButton::alternative_cover_fetched(const Location& cl)
 
 void CoverButton::cover_found(const Location& cl)
 {
-	this->setToolTip("Cover source: " + cl.identifer());
+this->setToolTip("Cover source: " + cl.identifer() + "\n" + cl.preferred_path());
 
 	/* If cover was forced while CoverLookup was still running */
 	if(m->cover_forced && (sender() == m->cover_lookup)) {
@@ -194,7 +194,7 @@ void CoverButton::force_cover(const QPixmap& pm)
 		return;
 	}
 
-	this->setToolTip(tr("Cover source: File"));
+	this->setToolTip(tr("Cover source: Audio file"));
 
 	m->current_cover_path = m->class_tmp_file;
 	m->cover_forced = true;

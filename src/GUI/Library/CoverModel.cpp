@@ -37,6 +37,8 @@
 #include <QPixmap>
 #include <QThread>
 
+	#include <atomic>
+
 using Cover::Location;
 using Cover::Lookup;
 using Library::CoverModel;
@@ -56,10 +58,13 @@ struct CoverModel::Private
 	int zoom;
 	int columns;
 
+	std::atomic<bool>   refreshing;
+
 	Private(QObject* parent) :
 		old_row_count(0),
 		old_column_count(0),
-		columns(10)
+		columns(10),
+		refreshing(false)
 	{
 		cover_thread = new AlbumCoverFetchThread(parent);
 		zoom = Settings::instance()->get<Set::Lib_CoverZoom>();
@@ -71,7 +76,7 @@ struct CoverModel::Private
 	{
 		if(cover_thread)
 		{
-			cover_thread->stop();
+			cover_thread->exit();
 			while(cover_thread->isRunning()){
 				::Util::sleep_ms(50);
 			}
@@ -115,10 +120,22 @@ CoverModel::CoverModel(QObject* parent, AbstractLibrary* library) :
 	connect(library, &AbstractLibrary::sig_all_albums_loaded, this, &CoverModel::refresh_data);
 
 	connect(m->cover_thread, &AlbumCoverFetchThread::sig_next, this, &CoverModel::next_hash);
+	connect(m->cover_thread, &QObject::destroyed, this, [=](){
+		m->cover_thread = nullptr;
+	});
+
+	connect(m->cover_thread, &QThread::finished, this, [=](){
+		sp_log(Log::Warning, this) << "Cover Thread finished";
+		m->cover_thread = nullptr;
+	});
+
 	m->cover_thread->start();
 }
 
-CoverModel::~CoverModel() {}
+CoverModel::~CoverModel()
+{
+
+}
 
 int CoverModel::rowCount(const QModelIndex& parent) const
 {
@@ -139,6 +156,8 @@ int CoverModel::columnCount(const QModelIndex& parent) const
 
 void CoverModel::refresh_data()
 {
+	m->refreshing = true;
+
 	int old_columns = m->old_column_count;
 	int old_rows = m->old_row_count;
 
@@ -162,6 +181,8 @@ void CoverModel::refresh_data()
 	}
 
 	emit dataChanged(index(0, 0), index(rowCount() - 1, columnCount() - 1), {Qt::DisplayRole, Qt::SizeHintRole});
+
+	m->refreshing = false;
 }
 
 void CoverModel::add_rows(int row, int count)
@@ -225,6 +246,7 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 
 		case Qt::DecorationRole:
 			{
+
 				Hash hash = AlbumCoverFetchThread::get_hash(album);
 				m->indexes[hash] = index;
 
@@ -233,6 +255,7 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 					QPixmap p = m->pixmaps[hash];
 					// Pixmap has bad quality, next time we'll search for it
 					// for this time it's sufficient
+
 					if(std::abs(p.size().width() - m->zoom) > 20)
 					{
 						m->cover_thread->add_album(album);
@@ -275,7 +298,15 @@ struct CoverLookupUserData
 void CoverModel::next_hash()
 {
 	AlbumCoverFetchThread* acft = dynamic_cast<AlbumCoverFetchThread*>(sender());
+	if(!acft){
+		return;
+	}
+
 	AlbumCoverFetchThread::HashLocationPair hlp = acft->take_current_location();
+	if(hlp.first.isEmpty()){
+		acft->deleteLater();
+		return;
+	}
 
 	Hash hash = hlp.first;
 	Location cl = hlp.second;
@@ -516,10 +547,15 @@ int CoverModel::zoom() const
 
 void CoverModel::set_zoom(int zoom, const QSize& view_size)
 {
+	if(m->refreshing){
+		return;
+	}
+
 	m->zoom = zoom;
 
 	int columns = (view_size.width() / m->item_size().width());
-	if(columns > 0){
+	if(columns > 0)
+	{
 		m->columns = columns;
 		refresh_data();
 	}
@@ -527,19 +563,19 @@ void CoverModel::set_zoom(int zoom, const QSize& view_size)
 
 void CoverModel::reload()
 {
-	m->cover_thread->stop();
+	sp_log(Log::Debug, this) << "Reload cover view";
 	m->reset_valid_hashes();
-	m->cover_thread->start();
-
-	refresh_data();
+	if(!m->refreshing) {
+		refresh_data();
+	}
 }
 
 void CoverModel::clear()
 {
-	m->cover_thread->stop();
+	/*m->cover_thread->stop();
 
 	m->pixmaps.clear();
 	m->indexes.clear();
-	m->reset_valid_hashes();
+	m->reset_valid_hashes();*/
 }
 

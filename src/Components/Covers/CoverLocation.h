@@ -52,6 +52,15 @@ namespace Cover
 
 
 	public:
+
+		enum CoverSourceType
+		{
+			Invalid=0,
+			SayonaraCoverDir,
+			LocalPath,
+			AudioFile
+		};
+
 		Location();
 		~Location();
 		Location(const Location& cl);
@@ -93,6 +102,8 @@ namespace Cover
 		 * @return
 		 */
 		QString			preferred_path() const;
+
+		CoverSourceType get_cover_source_type() const;
 
 		/**
 		 * @brief Returns the standard cover path in the .Sayonara

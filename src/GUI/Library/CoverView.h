@@ -47,6 +47,7 @@ namespace Library
 
 	private slots:
 		void timer_timed_out();
+		void reload();
 
 	private:
 		void timer_start();

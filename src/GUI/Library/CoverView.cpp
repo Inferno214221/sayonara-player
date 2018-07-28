@@ -18,6 +18,8 @@
 #include <QWheelEvent>
 #include <atomic>
 
+#include <QShortcut>
+#include <QKeySequence>
 using Library::CoverView;
 using Library::CoverModel;
 using AtomicBool=std::atomic<bool>;
@@ -79,6 +81,8 @@ void CoverView::init(LocalLibrary* library)
 	if(this->verticalHeader()){
 		this->verticalHeader()->hide();
 	}
+
+	new QShortcut(QKeySequence("Ctrl+R"), this, SLOT(reload()), nullptr, Qt::WidgetShortcut);
 }
 
 AbstractLibrary* CoverView::library() const
@@ -176,6 +180,13 @@ void CoverView::init_context_menu()
 
 	connect(cm, &CoverViewContextMenu::sig_zoom_changed, this, &CoverView::change_zoom);
 	connect(cm, &CoverViewContextMenu::sig_sorting_changed, this, &CoverView::change_sortorder);
+
+	QAction* a = cm->addAction("Refresh");
+
+
+	connect(a, &QAction::triggered, m->model, [=](){
+		m->model->reload();
+	});
 }
 
 
@@ -210,6 +221,11 @@ void CoverView::timer_timed_out()
 
 	m->buffer_timer->stop();
 	m->blocked = false;
+}
+
+void CoverView::reload()
+{
+	m->model->reload();
 }
 
 
