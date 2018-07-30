@@ -26,6 +26,7 @@
 #include <QThread>
 #include <QModelIndex>
 #include <QPair>
+#include <QList>
 
 #include "Utils/Pimpl.h"
 
@@ -51,48 +52,46 @@ class AlbumCoverFetchThread : public QThread
 	Q_OBJECT
 	PIMPL(AlbumCoverFetchThread)
 
-signals:
-	void sig_next();
+	public:
+		using Hash=QString;
+		using HashAlbumPair = QPair<Hash, Album>;
+		using HashAlbumList = QList<HashAlbumPair>;
+		using HashLocationPair = QPair<Hash, Cover::Location>;
+		using HashLocationList = QList<HashLocationPair>;
 
-protected:
-	void run() override;
+	signals:
+		void sig_next();
 
-public:
-	using Hash=QString;
+	protected:
+		void run() override;
 
-	using HashAlbumPair = QPair<Hash, Album>;
-	using HashAlbumList = QList<HashAlbumPair>;
-	using HashLocationPair = QPair<Hash, Cover::Location>;
-	using HashLocationList = QList<HashLocationPair>;
+	private:
+		bool thread_create_cover_location();
 
-	explicit AlbumCoverFetchThread(QObject* parent=nullptr);
-	~AlbumCoverFetchThread();
+	public:
+			explicit AlbumCoverFetchThread(QObject* parent=nullptr);
+		~AlbumCoverFetchThread();
 
-	/**
-	 * @brief add_data Add a new album request
-	 * @param hash hashed album info
-	 * @param cl Cover Location of the album
-	 */
-	void add_album(const Album& album);
-
-
-	HashLocationPair take_current_location();
+		/**
+		 * @brief add_data Add a new album request
+		 * @param hash hashed album info
+		 * @param cl Cover Location of the album
+		 */
+		void add_album(const Album& album);
 
 
-	/**
-	 * @brief done Should be called when processing of the next
-	 * cover should take place
-	 * @param success not evalutated
-	 */
-	void done(bool success);
+		HashLocationPair take_current_location();
 
-	/**
-	 * @brief stop Stop the thread
-	 */
-	void pause();
-	void resume();
 
-	static Hash get_hash(const Album& album);
+		/**
+		 * @brief stop Stop the thread
+		 */
+		void pause();
+		void stop();
+		void resume();
+		void clear();
+
+		static Hash get_hash(const Album& album);
 };
 
 #endif // ALBUMCOVERFETCHTHREAD_H

@@ -183,7 +183,6 @@ void CoverView::init_context_menu()
 
 	QAction* a = cm->addAction("Refresh");
 
-
 	connect(a, &QAction::triggered, m->model, [=](){
 		m->model->reload();
 	});

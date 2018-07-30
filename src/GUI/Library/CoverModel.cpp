@@ -76,10 +76,8 @@ struct CoverModel::Private
 	{
 		if(cover_thread)
 		{
-			cover_thread->exit();
-			while(cover_thread->isRunning()){
-				::Util::sleep_ms(50);
-			}
+			cover_thread->stop();
+			cover_thread->wait();
 		}
 	}
 
@@ -132,10 +130,7 @@ CoverModel::CoverModel(QObject* parent, AbstractLibrary* library) :
 	m->cover_thread->start();
 }
 
-CoverModel::~CoverModel()
-{
-
-}
+CoverModel::~CoverModel() {}
 
 int CoverModel::rowCount(const QModelIndex& parent) const
 {
@@ -291,7 +286,6 @@ struct CoverLookupUserData
 {
 	Hash hash;
 	Location cl;
-	AlbumCoverFetchThread* acft;
 	QModelIndex idx;
 };
 
@@ -304,7 +298,6 @@ void CoverModel::next_hash()
 
 	AlbumCoverFetchThread::HashLocationPair hlp = acft->take_current_location();
 	if(hlp.first.isEmpty()){
-		acft->deleteLater();
 		return;
 	}
 
@@ -315,7 +308,6 @@ void CoverModel::next_hash()
 	{
 		d->hash = hash;
 		d->cl = cl;
-		d->acft = acft;
 		d->idx =  m->indexes[hash];
 	}
 
@@ -346,7 +338,6 @@ void CoverModel::cover_lookup_finished(bool success)
 
 		m->valid_hashes[d->hash] = success;
 
-		d->acft->done(true);
 		delete d; d=nullptr;
 	}
 
@@ -572,10 +563,13 @@ void CoverModel::reload()
 
 void CoverModel::clear()
 {
-	/*m->cover_thread->stop();
+	m->cover_thread->pause();
+	m->cover_thread->clear();
 
 	m->pixmaps.clear();
 	m->indexes.clear();
-	m->reset_valid_hashes();*/
+	m->reset_valid_hashes();
+
+	m->cover_thread->resume();
 }
 
