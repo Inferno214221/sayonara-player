@@ -82,7 +82,7 @@ void CoverView::init(LocalLibrary* library)
 		this->verticalHeader()->hide();
 	}
 
-	new QShortcut(QKeySequence("Ctrl+R"), this, SLOT(reload()), nullptr, Qt::WidgetShortcut);
+	new QShortcut(QKeySequence(QKeySequence::Refresh), this, SLOT(reload()), nullptr, Qt::WidgetShortcut);
 }
 
 AbstractLibrary* CoverView::library() const
@@ -180,12 +180,6 @@ void CoverView::init_context_menu()
 
 	connect(cm, &CoverViewContextMenu::sig_zoom_changed, this, &CoverView::change_zoom);
 	connect(cm, &CoverViewContextMenu::sig_sorting_changed, this, &CoverView::change_sortorder);
-
-	QAction* a = cm->addAction("Refresh");
-
-	connect(a, &QAction::triggered, m->model, [=](){
-		m->model->reload();
-	});
 }
 
 
@@ -198,7 +192,7 @@ void CoverView::timer_start()
 	if(!m->buffer_timer)
 	{
 		m->buffer_timer = new QTimer();
-		m->buffer_timer->setInterval(10);
+		m->buffer_timer->setInterval(50);
 		m->buffer_timer->setSingleShot(true);
 		connect(m->buffer_timer, &QTimer::timeout, this, &CoverView::timer_timed_out, Qt::QueuedConnection);
 	}

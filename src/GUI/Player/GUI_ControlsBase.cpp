@@ -510,10 +510,12 @@ void GUI_ControlsBase::file_info_changed()
 
 
 	QString sBitrate;
-	if(md.bitrate / 1000 > 0){
+	if(md.bitrate / 1000 > 0)
+	{
 		sBitrate = QString::number(md.bitrate / 1000) + " kBit/s";
 		lab_bitrate()->setText(sBitrate);
 	}
+
 	lab_bitrate()->setVisible(!sBitrate.isEmpty());
 
 
