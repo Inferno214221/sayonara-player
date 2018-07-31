@@ -82,19 +82,6 @@ namespace Cover
 
 
 		/**
-		 * @brief returns paths of images in the directory
-		 * where the soundfiles are located.
-		 * @return
-		 */
-		QStringList		local_paths() const;
-
-		/**
-		 * @brief adds an local path to other local paths
-		 * @param path new path
-		 */
-		void			add_local_path(const QString& path);
-
-		/**
 		 * @brief Returns the most suitable path for covers.
 		 * Usually this is the first of local_paths(). If not,
 		 * the cover_path() is taken. If this file does not exist
