@@ -88,7 +88,14 @@ struct CoverModel::Private
 
 	QPixmap get_pixmap(const QString& path)
 	{
-		return QPixmap(path).scaled(zoom, zoom, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+		QPixmap p = QPixmap(path).scaled(zoom, zoom, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+		if(p.isNull()){
+			sp_log(Log::Warning, this) << "Pixmap is null";
+			QString invalid_path = Cover::Location::invalid_location().cover_path();
+			return QPixmap(invalid_path).scaled(zoom, zoom, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+		}
+
+		return p;
 	}
 
 	void insert_pixmap(Hash hash, const QString& path)

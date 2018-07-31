@@ -39,6 +39,8 @@
 #include <QUrl>
 #include <QStringList>
 #include <QImage>
+#include <QPixmap>
+#include <QFileInfo>
 
 using Cover::Location;
 using namespace Cover::Fetcher;
@@ -241,10 +243,14 @@ Location Location::cover_location(const Album& album)
 
 			if(cl.local_paths().isEmpty())
 			{
-				const QStringList local_paths = Cover::LocalSearcher::cover_paths_from_filename(md.filepath());
-				for(const QString& local_path : local_paths)
+				QFileInfo fi(cl.cover_path());
+				if(!QFile::exists(cl.cover_path()) || !fi.isSymLink())
 				{
-					cl.add_local_path(local_path);
+					const QStringList local_paths = Cover::LocalSearcher::cover_paths_from_filename(md.filepath());
+					for(const QString& local_path : local_paths)
+					{
+						cl.add_local_path(local_path);
+					}
 				}
 			}
 		}
@@ -345,9 +351,13 @@ Location Location::cover_location(const MetaData& md)
 
 	if(cl.local_paths().isEmpty())
 	{
-		const QStringList local_paths = Cover::LocalSearcher::cover_paths_from_filename(md.filepath());
-		for(const QString& lp : local_paths){
-			cl.add_local_path(lp);
+		QFileInfo fi(cl.cover_path());
+		if(!QFile::exists(cl.cover_path()) || !fi.isSymLink())
+		{
+			const QStringList local_paths = Cover::LocalSearcher::cover_paths_from_filename(md.filepath());
+			for(const QString& lp : local_paths){
+				cl.add_local_path(lp);
+			}
 		}
 	}
 
@@ -378,10 +388,24 @@ QStringList Location::local_paths() const
 	return m->local_paths;
 }
 
+
 void Location::add_local_path(const QString& path)
 {
-	if(!QFile::exists(m->cover_path)){
-		::Util::File::create_symlink(path, m->cover_path);
+	QFileInfo info(m->cover_path);
+	if(!info.isSymLink()){
+		::Util::File::delete_files({m->cover_path});
+	}
+
+	if(!QFile::exists(m->cover_path))
+	{
+		QString ext = ::Util::File::get_file_extension(path);
+
+		if(ext.compare("jpg", Qt::CaseInsensitive) == 0)
+		{
+			QImage img = QPixmap(path).toImage();
+			img.save(path + ".jpg");
+			::Util::File::create_symlink(path + ".jpg", m->cover_path);
+		}
 	}
 
 	m->local_paths << path;
@@ -419,15 +443,15 @@ QString Location::preferred_path() const
 		return this->audio_file_source();
 	}
 
+	// return the calculated path
+	if(QFile::exists(this->cover_path())){
+		return this->cover_path();
+	}
+
 	// afterwards, search for cover in the path of the track
 	const QStringList paths = local_paths();
 	if(!paths.isEmpty()){
 		return paths.at(0);
-	}
-
-	// return the calculated path
-	if(QFile::exists(this->cover_path())){
-		return this->cover_path();
 	}
 
 	return invalid_location().cover_path();
