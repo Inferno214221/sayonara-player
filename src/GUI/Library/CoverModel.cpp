@@ -309,6 +309,8 @@ void CoverModel::next_hash()
 		return;
 	}
 
+	sp_log(Log::Debug, this) << "hlp: " << hlp.first << ", " << hlp.second.identifer();
+
 	Hash hash = hlp.first;
 	Location cl = hlp.second;
 

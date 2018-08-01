@@ -46,7 +46,7 @@ struct AlbumCoverFetchThread::Private
 	AlbumCoverFetchThread::HashLocationList	hash_location_online_list;
 	QStringList								queued_hashes;
 
-	std::mutex	mutex_album_list, mutex_location_list;
+	std::mutex	mutex_album_list, mutex_location_list, mutex_queued_hashes;
 
 	AtomicInt	done;
 	AtomicBool	paused;
@@ -120,10 +120,21 @@ void AlbumCoverFetchThread::run()
 				continue;
 			}
 
-			while(m->queued_hashes.size() > MaxThreads && m->hash_location_list.isEmpty())
+
+			int qhc;
+
+			{
+				LOCK_GUARD(m->mutex_queued_hashes)
+				qhc = m->queued_hashes.count();
+			}
+
+			while(qhc > MaxThreads && m->hash_location_list.isEmpty())
 			{
 				sp_log(Log::Debug, this) << "Sleep a little bit";
 				Util::sleep_ms(100);
+
+				LOCK_GUARD(m->mutex_queued_hashes)
+				qhc = m->queued_hashes.count();
 			}
 
 			emit sig_next();
@@ -211,6 +222,13 @@ void AlbumCoverFetchThread::add_album(const Album& album)
 	}
 
 	{
+		LOCK_GUARD(m->mutex_queued_hashes)
+		if(m->queued_hashes.contains(hash)){
+			return;
+		}
+	}
+
+	{
 		LOCK_GUARD(m->mutex_album_list);
 		m->hash_album_list.push_back(HashAlbumPair(hash, album));
 	}
@@ -220,12 +238,16 @@ AlbumCoverFetchThread::HashLocationPair AlbumCoverFetchThread::take_current_loca
 {
 	LOCK_GUARD(m->mutex_location_list);
 
-	if(m->hash_location_list.count() > 0){
+	if(m->hash_location_list.count() > 0)
+	{
 		return m->hash_location_list.takeLast();
 	}
 
-	else if(m->hash_location_online_list.count() > 0){
+	else if(m->hash_location_online_list.count() > 0)
+	{
 		HashLocationPair p = m->hash_location_online_list.takeLast();
+
+		LOCK_GUARD(m->mutex_queued_hashes)
 		m->queued_hashes << p.first;
 		return p;
 	}
@@ -277,7 +299,7 @@ void AlbumCoverFetchThread::clear()
 
 void AlbumCoverFetchThread::done(const AlbumCoverFetchThread::Hash& hash)
 {
-	LOCK_GUARD(m->mutex_location_list)
+	LOCK_GUARD(m->mutex_queued_hashes)
 
 	m->queued_hashes.removeAll(hash);
 }
