@@ -294,6 +294,7 @@ struct CoverLookupUserData
 	Hash hash;
 	Location cl;
 	QModelIndex idx;
+	AlbumCoverFetchThread* acft;
 };
 
 void CoverModel::next_hash()
@@ -316,6 +317,7 @@ void CoverModel::next_hash()
 		d->hash = hash;
 		d->cl = cl;
 		d->idx =  m->indexes[hash];
+		d->acft = acft;
 	}
 
 	Lookup* clu = new Lookup(this, 1);
@@ -344,6 +346,7 @@ void CoverModel::cover_lookup_finished(bool success)
 		}
 
 		m->valid_hashes[d->hash] = success;
+		d->acft->done(d->hash);
 
 		delete d; d=nullptr;
 	}

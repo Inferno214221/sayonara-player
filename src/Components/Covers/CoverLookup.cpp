@@ -112,6 +112,7 @@ bool Lookup::fetch_cover(const Cover::Location& cl, bool also_www)
 	// we have to fetch the cover from the internet
 	if(also_www)
 	{
+		sp_log(Log::Debug, this) << "Start new thread for " << cl.identifer();
 		if(!start_new_thread( cl ))
 		{
 			return false;

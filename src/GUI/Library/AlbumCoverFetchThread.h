@@ -90,6 +90,7 @@ class AlbumCoverFetchThread : public QThread
 		void stop();
 		void resume();
 		void clear();
+		void done(const Hash& hash);
 
 		static Hash get_hash(const Album& album);
 };

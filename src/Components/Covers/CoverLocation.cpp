@@ -220,7 +220,7 @@ static void check_cover_path(const QString& base_path, const QString& cover_path
 	QString source = local_paths.first();
 
 	QString ext = ::Util::File::get_file_extension(source);
-	if(ext.compare("jpg", Qt::CaseInsensitive) == 0)
+	if(ext.compare("jpg", Qt::CaseInsensitive) != 0)
 	{
 		QImage img = QPixmap(source).toImage();
 		QString jpg_source = source + ".jpg";
