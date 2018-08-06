@@ -130,7 +130,6 @@ void AlbumCoverFetchThread::run()
 
 			while(qhc > MaxThreads && m->hash_location_list.isEmpty())
 			{
-				sp_log(Log::Debug, this) << "Sleep a little bit";
 				Util::sleep_ms(100);
 
 				LOCK_GUARD(m->mutex_queued_hashes)
@@ -189,7 +188,6 @@ void AlbumCoverFetchThread::add_album(const Album& album)
 	}
 
 	QString hash = get_hash(album);
-
 	{
 		LOCK_GUARD(m->mutex_album_list);
 		bool has_hash = ::Util::contains(m->hash_album_list, [hash](const HashAlbumPair& p){

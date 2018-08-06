@@ -258,7 +258,8 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 					// Pixmap has bad quality, next time we'll search for it
 					// for this time it's sufficient
 
-					if(std::abs(p.size().width() - m->zoom) > 20)
+					int sz = std::max(p.size().width(), p.size().height());
+					if(std::abs(sz - m->zoom) > 20)
 					{
 						m->cover_thread->add_album(album);
 					}
@@ -309,8 +310,6 @@ void CoverModel::next_hash()
 		return;
 	}
 
-	sp_log(Log::Debug, this) << "hlp: " << hlp.first << ", " << hlp.second.identifer();
-
 	Hash hash = hlp.first;
 	Location cl = hlp.second;
 
@@ -326,7 +325,11 @@ void CoverModel::next_hash()
 	connect(clu, &Lookup::sig_finished, this, &CoverModel::cover_lookup_finished);
 
 	clu->set_user_data(d);
-	clu->fetch_cover(cl);
+	bool b = clu->fetch_cover(cl);
+	if(!b){
+		clu->deleteLater();
+		acft->done(hash);
+	}
 }
 
 #include <mutex>
