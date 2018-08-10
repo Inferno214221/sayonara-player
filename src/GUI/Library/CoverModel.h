@@ -54,7 +54,7 @@ namespace Library
 			Qt::ItemFlags	flags(const QModelIndex &index) const override;
 
 			int				zoom() const;
-			void			refresh_data();
+
 
 		protected:
 			// ItemModel
@@ -76,6 +76,7 @@ namespace Library
 			void remove_rows(int row, int count);
 			void add_columns(int column, int count);
 			void remove_columns(int column, int count);
+			void refresh_data();
 
 		public slots:
 			void set_zoom(int zoom, const QSize& view_size);

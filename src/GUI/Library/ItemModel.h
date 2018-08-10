@@ -52,8 +52,6 @@ namespace Library
 
 			virtual int     columnCount(const QModelIndex& parent=QModelIndex()) const override;
 
-			void 			refresh_data(int* n_rows_before=nullptr, int* n_rows_after=nullptr); //returns the size difference
-
 			/** AbstractSearchTableModel **/
 			virtual QModelIndex		getNextRowIndexOf(const QString& substr, int row, const QModelIndex& parent=QModelIndex()) override;
 			virtual QModelIndex		getPrevRowIndexOf(const QString& substr, int row, const QModelIndex& parent=QModelIndex()) override;
@@ -70,6 +68,8 @@ namespace Library
 			virtual const MetaDataList&	mimedata_tracks() const=0;
 			CustomMimeData*				custom_mimedata() const;
 
+			void refresh_data(int* n_rows_before=nullptr, int* n_rows_after=nullptr); //returns the size difference
+
 		protected:
 			AbstractLibrary*		library();
 			const AbstractLibrary*	library() const;
@@ -77,7 +77,6 @@ namespace Library
 		private:
 			bool removeRows(int position, int rows, const QModelIndex& index=QModelIndex()) override;
 			bool insertRows(int row, int count, const QModelIndex &parent=QModelIndex()) override;
-
 	};
 }
 

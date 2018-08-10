@@ -44,6 +44,7 @@ namespace Library
 		void wheelEvent(QWheelEvent* e) override;
 		void resizeEvent(QResizeEvent* e) override;
 		void hideEvent(QHideEvent* e) override;
+		void showEvent(QShowEvent* e) override;
 
 	private slots:
 		void timer_timed_out();

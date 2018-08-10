@@ -569,6 +569,8 @@ void CoverModel::set_zoom(int zoom, const QSize& view_size)
 
 void CoverModel::reload()
 {
+	m->cover_thread->resume();
+
 	sp_log(Log::Debug, this) << "Reload cover view";
 	m->reset_valid_hashes();
 	if(!m->refreshing) {

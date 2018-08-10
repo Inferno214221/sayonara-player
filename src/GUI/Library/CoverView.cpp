@@ -256,6 +256,15 @@ void CoverView::resizeEvent(QResizeEvent* e)
 	change_zoom();
 }
 
+void CoverView::showEvent(QShowEvent* e)
+{
+	Library::ItemView::showEvent(e);
+
+	if(m->model){
+		m->model->reload();
+	}
+}
+
 void CoverView::hideEvent(QHideEvent* e)
 {
 	if(m->model){
@@ -264,7 +273,6 @@ void CoverView::hideEvent(QHideEvent* e)
 
 	ItemView::hideEvent(e);
 }
-
 
 int CoverView::index_by_model_index(const QModelIndex& idx) const
 {

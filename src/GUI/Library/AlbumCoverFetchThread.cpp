@@ -24,7 +24,9 @@
 #include "Utils/MetaData/Album.h"
 #include "Components/Covers/CoverLookup.h"
 #include "Components/Covers/CoverLocation.h"
+
 #include "Utils/Utils.h"
+#include "Utils/Logger/Logger.h"
 
 #include <QFile>
 
@@ -84,7 +86,7 @@ AlbumCoverFetchThread::AlbumCoverFetchThread(QObject* parent) :
 
 AlbumCoverFetchThread::~AlbumCoverFetchThread() {}
 
-#include "Utils/Logger/Logger.h"
+
 void AlbumCoverFetchThread::run()
 {
 	const int MaxThreads=10;
@@ -95,7 +97,7 @@ void AlbumCoverFetchThread::run()
 		while(m->paused)
 		{
 			m->in_paused_state = true;
-			::Util::sleep_ms(100);
+			::Util::sleep_ms(50);
 
 			if(m->stopped){
 				return;
@@ -107,7 +109,7 @@ void AlbumCoverFetchThread::run()
 		int c = m->hash_album_list.count();
 		while(c == 0 && (m->may_run() == true))
 		{
-			Util::sleep_ms(100);
+			Util::sleep_ms(50);
 
 			c = m->hash_album_list.count();
 		}
@@ -122,7 +124,6 @@ void AlbumCoverFetchThread::run()
 
 
 			int qhc;
-
 			{
 				LOCK_GUARD(m->mutex_queued_hashes)
 				qhc = m->queued_hashes.count();
@@ -130,7 +131,7 @@ void AlbumCoverFetchThread::run()
 
 			while(qhc > MaxThreads && m->hash_location_list.isEmpty())
 			{
-				Util::sleep_ms(100);
+				Util::sleep_ms(50);
 
 				LOCK_GUARD(m->mutex_queued_hashes)
 				qhc = m->queued_hashes.count();
@@ -277,8 +278,8 @@ void AlbumCoverFetchThread::stop()
 
 void AlbumCoverFetchThread::resume()
 {
-	::Util::sleep_ms(100);
-	m->paused = true;
+	::Util::sleep_ms(20);
+	m->paused = false;
 }
 
 void AlbumCoverFetchThread::clear()
