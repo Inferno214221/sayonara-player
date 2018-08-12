@@ -41,7 +41,7 @@ namespace DB
 		PIMPL(Library)
 
 		public:
-			Library(const QSqlDatabase& db, DbId db_id);
+			Library(const QString& connection_name, DbId db_id);
 			~Library();
 
 			QList<::Library::Info> get_all_libraries();

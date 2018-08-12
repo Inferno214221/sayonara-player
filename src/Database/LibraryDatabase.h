@@ -31,7 +31,6 @@
 namespace DB
 {
 	class LibraryDatabase :
-			public DB::Base,
 			public DB::Albums,
 			public DB::Artists,
 			public DB::Tracks
@@ -46,16 +45,18 @@ namespace DB
 			ArtistID
 		};
 
-		LibraryDatabase(const QString& db_name, DbId db_id, LibraryId library_id);
+		LibraryDatabase(const QString& connection_name, DbId db_id, LibraryId library_id);
 		virtual ~LibraryDatabase();
 
 		void change_artistid_field(ArtistIDField field);
 		void clear();
-		bool apply_fixes() override;
 
 		LibraryId library_id() const;
 
 		virtual bool store_metadata(const MetaDataList& v_md);
+
+		QSqlDatabase db() const;
+		DbId db_id() const;
 	};
 }
 

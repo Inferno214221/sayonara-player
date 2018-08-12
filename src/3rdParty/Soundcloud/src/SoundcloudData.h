@@ -21,6 +21,7 @@
 #ifndef SOUNDCLOUDDATA_H
 #define SOUNDCLOUDDATA_H
 
+#include "Database/AbstractDatabase.h"
 #include "Database/LibraryDatabase.h"
 #include <QObject>
 
@@ -39,6 +40,7 @@ namespace SC
 	class SearchInformationList;
 
 	class Database :
+			public DB::Base,
 			public DB::LibraryDatabase
 	{
 	public:
@@ -62,7 +64,8 @@ namespace SC
 		bool insertTrackIntoDatabase(const MetaData& md, int artist_id, int album_id, int album_artist_id) override;
 		bool insertTrackIntoDatabase(const MetaData& md, int artist_id, int album_id) override;
 
-		bool apply_fixes() override;
+		// todo: assure to be called
+		bool apply_fixes();
 
 		QString load_setting(const QString& key);
 		bool save_setting(const QString& key, const QString& value);
@@ -73,6 +76,9 @@ namespace SC
 		QString fetch_query_albums(bool also_empty=false) const override;
 		QString fetch_query_artists(bool also_empty=false) const override;
 		QString fetch_query_tracks() const override;
+
+		private:
+			const DB::Module* module() const;
 	};
 }
 

@@ -38,8 +38,8 @@ using DB::Query;
 
 struct DB::Library::Private {};
 
-DB::Library::Library(const QSqlDatabase& db, DbId db_id) :
-	Module(db, db_id)
+DB::Library::Library(const QString& connection_name, DbId db_id) :
+	Module(connection_name, db_id)
 {}
 
 DB::Library::~Library() {}
@@ -61,7 +61,7 @@ QList<::Library::Info> DB::Library::get_all_libraries()
 	QList<::Library::Info> infos;
 	QList<InfoOrder> orders;
 
-	Query q(module_db());
+	Query q(this);
 	q.prepare(query);
 
 	bool success = q.exec();
@@ -120,7 +120,7 @@ bool DB::Library::insert_library(LibraryId id, const QString& library_name, cons
 					"VALUES "
 					"(:library_id, :library_name, :library_path, :library_index);";
 
-	Query q(module_db());
+	Query q(this);
 
 	q.prepare(query);
 	q.bindValue(":library_id",		id);
@@ -157,7 +157,7 @@ bool DB::Library::edit_library(LibraryId library_id, const QString& new_name, co
 					"WHERE "
 					"libraryID=:library_id;";
 
-	Query q(module_db());
+	Query q(this);
 
 	q.prepare(query);
 	q.bindValue(":library_name",	Util::cvt_not_null(new_name));
@@ -181,7 +181,7 @@ bool DB::Library::remove_library(LibraryId library_id)
 {
 	QString query = "DELETE FROM Libraries WHERE libraryID=:library_id;";
 
-	Query q(module_db());
+	Query q(this);
 
 	q.prepare(query);
 	q.bindValue(":library_id", library_id);
@@ -215,7 +215,7 @@ bool DB::Library::reorder_libraries(const QMap<LibraryId, int>& order)
 						"WHERE "
 						"libraryID=:library_id;";
 
-		Query q(module_db());
+		Query q(this);
 		q.prepare(query);
 		q.bindValue(":index",		it.value());
 		q.bindValue(":library_id",	it.key());

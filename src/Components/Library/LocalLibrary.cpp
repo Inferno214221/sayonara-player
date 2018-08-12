@@ -25,8 +25,8 @@
 #include "Threads/ReloadThread.h"
 
 #include "Database/DatabaseConnector.h"
-#include "Database/LocalLibraryDatabase.h"
 #include "Database/DatabaseLibrary.h"
+#include "Database/LibraryDatabase.h"
 
 #include "Components/Playlist/PlaylistHandler.h"
 #include "Components/Tagging/Editor.h"

@@ -30,7 +30,7 @@ namespace DB
 			private Module
 	{
 	public:
-		Bookmarks(const QSqlDatabase& db, DbId db_id);
+		Bookmarks(const QString& connection_name, DbId db_id);
 		~Bookmarks();
 
 		bool searchBookmarks(int track_id, QMap<Seconds, QString>& bookmarks);

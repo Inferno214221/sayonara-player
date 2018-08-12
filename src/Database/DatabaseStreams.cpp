@@ -25,8 +25,8 @@
 using DB::Streams;
 using DB::Query;
 
-Streams::Streams(const QSqlDatabase& db, DbId db_id) :
-	Module(db, db_id) {}
+Streams::Streams(const QString& connection_name, DbId db_id) :
+	Module(connection_name, db_id) {}
 
 Streams::~Streams() {}
 

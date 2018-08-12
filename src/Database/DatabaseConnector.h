@@ -36,7 +36,6 @@ namespace DB
 	class Bookmarks;
 	class Playlist;
 	class LibraryDatabase;
-	class LocalLibraryDatabase;
 	class Podcasts;
 	class Streams;
 	class VisualStyles;

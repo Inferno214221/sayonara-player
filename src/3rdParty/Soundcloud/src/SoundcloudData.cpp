@@ -37,9 +37,9 @@
 using DB::Query;
 
 SC::Database::Database() :
-	::DB::LibraryDatabase("soundcloud.db", 25, -1)
+	::DB::Base(25, "soundcloud.db"),
+	::DB::LibraryDatabase(module()->connection_name(), 25, -1)
 {
-	this->open_db();
 	this->apply_fixes();
 }
 
@@ -131,7 +131,7 @@ QString SC::Database::fetch_query_tracks() const
 
 QString SC::Database::load_setting(const QString& key)
 {
-	Query q(db());
+	Query q(module());
 	q.prepare("SELECT value FROM Settings WHERE key=:key;");
 	q.bindValue(":key", key);
 	if(!q.exec()){
@@ -148,7 +148,7 @@ QString SC::Database::load_setting(const QString& key)
 
 bool SC::Database::save_setting(const QString& key, const QString& value)
 {
-	Query q(db());
+	Query q(module());
 
 	QString v = load_setting(key);
 	if(v.isNull()){
@@ -170,7 +170,7 @@ bool SC::Database::save_setting(const QString& key, const QString& value)
 
 bool SC::Database::insert_setting(const QString& key, const QString& value)
 {
-	Query q(db());
+	Query q(module());
 
 	q.prepare("INSERT INTO settings (key, value) VALUES (:key, :value);");
 	q.bindValue(":key", key);
@@ -187,7 +187,7 @@ bool SC::Database::insert_setting(const QString& key, const QString& value)
 
 bool SC::Database::getSearchInformation(SC::SearchInformationList& search_information)
 {
-	Query q(db());
+	Query q(module());
 
 	q.prepare("SELECT artistId, albumId, trackId, allCissearch "
 			  "FROM track_search_view;");
@@ -250,7 +250,7 @@ bool SC::Database::db_fetch_tracks(Query& q, MetaDataList& result)
 		data.add_custom_field("purchase_url", tr("Purchase Url"), q.value(14).toString());
 		data.set_cover_download_url(q.value(15).toString());
 		data.rating = q.value(16).toInt();
-		data.set_db_id(db_id());
+		data.set_db_id(module()->db_id());
 
 		result << data;
 	}
@@ -300,7 +300,7 @@ bool SC::Database::db_fetch_albums(Query& q, AlbumList& result)
 
 		album.n_discs = album.discnumbers.size();
 		album.is_sampler = (lst_artists.size() > 1);
-		album.set_db_id(db_id());
+		album.set_db_id(module()->db_id());
 
 		result << album;
 	};
@@ -335,7 +335,7 @@ bool SC::Database::db_fetch_artists(Query& q, ArtistList& result)
 		artist.num_songs =				q.value(7).toInt();
 		QStringList list =				q.value(8).toString().split(',');
 		artist.num_albums =				list.size();
-		artist.set_db_id(db_id());
+		artist.set_db_id(module()->db_id());
 
 		result << artist;
 	}
@@ -345,7 +345,7 @@ bool SC::Database::db_fetch_artists(Query& q, ArtistList& result)
 
 int SC::Database::updateArtist(const Artist& artist)
 {
-	Query q(db());
+	Query q(module());
 
 	QString query_text = QString("UPDATE artists SET ") +
 			"name = :name, "
@@ -381,7 +381,7 @@ int SC::Database::insertArtistIntoDatabase (const QString& artist)
 
 int SC::Database::insertArtistIntoDatabase (const Artist& artist)
 {
-	Query q(db());
+	Query q(module());
 
 	Artist tmp_artist;
 	if(getArtistByID(artist.id, tmp_artist)){
@@ -416,7 +416,7 @@ int SC::Database::insertArtistIntoDatabase (const Artist& artist)
 
 int SC::Database::updateAlbum(const Album& album)
 {
-	Query q(db());
+	Query q(module());
 
 	QString query_text = QString("UPDATE albums SET ") +
 			"name = :name, "
@@ -452,7 +452,7 @@ int SC::Database::insertAlbumIntoDatabase (const QString& album)
 
 int SC::Database::insertAlbumIntoDatabase (const Album& album)
 {
-	Query q(db());
+	Query q(module());
 
 	Album tmp_album;
 	if(getAlbumByID(album.id, tmp_album) && tmp_album.id > 0){
@@ -484,7 +484,7 @@ int SC::Database::insertAlbumIntoDatabase (const Album& album)
 
 bool SC::Database::updateTrack(const MetaData& md)
 {
-	Query q(db());
+	Query q(module());
 
 	sp_log(Log::Info) << "insert new track: " << md.filepath();
 
@@ -540,7 +540,7 @@ bool SC::Database::insertTrackIntoDatabase(const MetaData& md, int artist_id, in
 
 bool SC::Database::insertTrackIntoDatabase(const MetaData &md, int artist_id, int album_id)
 {
-	Query q(db());
+	Query q(module());
 
 	int new_id = getTrackById(md.id).id;
 	if(new_id > 0){
@@ -587,7 +587,7 @@ bool SC::Database::store_metadata(const MetaDataList& v_md)
 		return true;
 	}
 
-	db().transaction();
+	module()->db().transaction();
 
 	for(const MetaData& md : v_md) {
 		sp_log(Log::Debug, this) << "Looking for " << md.artist() << " and " << md.album();
@@ -599,7 +599,7 @@ bool SC::Database::store_metadata(const MetaDataList& v_md)
 		insertTrackIntoDatabase (md, md.artist_id, md.album_id);
 	}
 
-	return db().commit();
+	return module()->db().commit();
 }
 
 
@@ -642,4 +642,10 @@ bool SC::Database::apply_fixes()
 	}
 
 	return true;
+}
+
+
+const DB::Module* SC::Database::module() const
+{
+	return static_cast<const DB::Base*>(this);
 }

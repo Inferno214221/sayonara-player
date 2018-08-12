@@ -25,8 +25,8 @@
 using DB::Bookmarks;
 using DB::Query;
 
-Bookmarks::Bookmarks(const QSqlDatabase& db, DbId db_id) :
-	DB::Module(db, db_id) {}
+Bookmarks::Bookmarks(const QString& connection_name, DbId db_id) :
+	DB::Module(connection_name, db_id) {}
 
 Bookmarks::~Bookmarks() {}
 

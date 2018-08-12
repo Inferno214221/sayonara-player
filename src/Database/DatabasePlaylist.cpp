@@ -28,8 +28,8 @@
 
 using DB::Query;
 
-DB::Playlist::Playlist(const QSqlDatabase& db, DbId db_id) :
-	Module(db, db_id) {}
+DB::Playlist::Playlist(const QString& connection_name, DbId db_id) :
+	Module(connection_name, db_id) {}
 
 DB::Playlist::~Playlist() {}
 
@@ -225,7 +225,7 @@ bool DB::Playlist::getPlaylistById(CustomPlaylist& pl)
 			data.library_id = q.value(17).toInt();
 
 			data.is_extern = false;
-			data.set_db_id(module_db_id());
+			data.set_db_id(db_id());
 
 			if(q.value(16).toInt() == 0 || q.value(16).isNull()){
 				pl.push_back(data);
@@ -263,7 +263,7 @@ bool DB::Playlist::getPlaylistById(CustomPlaylist& pl)
 		data.is_extern = true;
 		data.set_title(filepath);
 		data.set_artist(filepath);
-		data.set_db_id(module_db_id());
+		data.set_db_id(db_id());
 
 		for(int row=0; row<=pl.count(); row++)
 		{

@@ -28,8 +28,8 @@
 using DB::VisualStyles;
 using DB::Module;
 
-VisualStyles::VisualStyles(const QSqlDatabase& db, DbId db_id) :
-	Module(db, db_id) {}
+VisualStyles::VisualStyles(const QString& connection_name, DbId db_id) :
+	Module(connection_name, db_id) {}
 
 VisualStyles::~VisualStyles() {}
 

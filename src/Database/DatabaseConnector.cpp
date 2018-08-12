@@ -21,7 +21,6 @@
 #include "Database/SayonaraQuery.h"
 #include "Database/DatabaseConnector.h"
 #include "Database/LibraryDatabase.h"
-#include "Database/LocalLibraryDatabase.h"
 #include "Database/DatabaseBookmarks.h"
 #include "Database/DatabasePlaylist.h"
 #include "Database/DatabasePodcasts.h"
@@ -44,9 +43,12 @@
 #include <algorithm>
 
 using DB::Connector;
+using DB::LibraryDatabase;
 
 struct Connector::Private
 {
+	QString					connection_name;
+
 	DB::Bookmarks*			bookmark_connector=nullptr;
 	DB::Playlist*			playlist_connector=nullptr;
 	DB::Podcasts*			podcast_connector=nullptr;
@@ -56,7 +58,7 @@ struct Connector::Private
 	DB::Library*			library_connector=nullptr;
 
 	QList<LibraryDatabase*> library_dbs;
-	LocalLibraryDatabase*	generic_library_database=nullptr;
+	LibraryDatabase*		generic_library_database=nullptr;
 
 	Private() {}
 	~Private()
@@ -88,10 +90,10 @@ struct Connector::Private
 };
 
 Connector::Connector() :
-	DB::Base(0, "", QString("player.db"), nullptr)
+	DB::Base(0, "player.db", nullptr)
 {
 	m = Pimpl::make<Private>();
-	m->generic_library_database = new DB::LocalLibraryDatabase(-1);
+	m->generic_library_database = new LibraryDatabase(connection_name(), db_id(), -1);
 	m->library_dbs << m->generic_library_database;
 
 	apply_fixes();
@@ -113,7 +115,7 @@ bool Connector::updateAlbumCissearchFix()
 	for(const Album& album : albums)
 	{
 		QString str = "UPDATE albums SET cissearch=:cissearch WHERE albumID=:id;";
-		Query q(db());
+		Query q(this);
 		q.prepare(str);
 		q.bindValue(":cissearch",	Util::cvt_not_null(album.name().toLower()));
 		q.bindValue(":id",			album.id);
@@ -137,7 +139,7 @@ bool Connector::updateArtistCissearchFix()
 		QString str =
 				"UPDATE artists SET cissearch=:cissearch WHERE artistID=:id;";
 
-		Query q(db());
+		Query q(this);
 		q.prepare(str);
 		q.bindValue(":cissearch",	Util::cvt_not_null(artist.name().toLower()));
 		q.bindValue(":id",			artist.id);
@@ -183,7 +185,7 @@ bool Connector::updateLostArtists()
 	this->transaction();
 	for(const QString& query : queries)
 	{
-		DB::Query q(db());
+		DB::Query q(this);
 		q.prepare(query);
 		q.bindValue(":artistID", id);
 		bool success = q.exec();
@@ -216,7 +218,7 @@ bool Connector::updateLostAlbums()
 	this->transaction();
 	for(const QString& query : queries)
 	{
-		DB::Query q(db());
+		DB::Query q(this);
 		q.prepare(query);
 		q.bindValue(":albumID", id);
 		bool success = q.exec();
@@ -278,7 +280,8 @@ bool Connector::apply_fixes()
 		check_and_create_table("savedpodcasts", create_savedpodcasts);
 	}
 
-	if(version < 3) {
+	if(version < 3)
+	{
 		db().transaction();
 
 		bool success = true;
@@ -352,7 +355,7 @@ bool Connector::apply_fixes()
 		bool success = check_and_insert_column("playlists", "temporary", "integer");
 
 		if(success) {
-			Query q(db());
+			Query q(this);
 			QString querytext = "UPDATE playlists SET temporary=0;";
 			q.prepare(querytext);
 			if(q.exec()){
@@ -364,8 +367,8 @@ bool Connector::apply_fixes()
 	if(version < 10){
 		bool success = check_and_insert_column("playlisttotracks", "db_id", "integer");
 		if(success) {
-			Query q(db());
-			Query q_index(db());
+			Query q(this);
+			Query q_index(this);
 			QString querytext = "UPDATE playlisttotracks SET db_id = (CASE WHEN trackid > 0 THEN 0 ELSE -1 END)";
 			QString index_query = "CREATE INDEX album_search ON albums(cissearch, albumID);"
 					"CREATE INDEX artist_search ON artists(cissearch, artistID);"
@@ -407,7 +410,7 @@ bool Connector::apply_fixes()
 				"GROUP BY albums.albumID, albums.name";
 			;
 
-		Query q(db());
+		Query q(this);
 		q.prepare(querytext);
 
 		if(q.exec()){
@@ -418,7 +421,7 @@ bool Connector::apply_fixes()
 	if(version < 13){
 		bool success = check_and_insert_column("tracks", "albumArtistID", "integer", "-1");
 
-		Query q(db());
+		Query q(this);
 		q.prepare("UPDATE tracks SET albumArtistID=artistID;");
 		success = success && q.exec();
 
@@ -429,7 +432,7 @@ bool Connector::apply_fixes()
 
 	if(version < 14){
 		bool success=check_and_insert_column("tracks", "libraryID", "integer", "0");
-		Query q(db());
+		Query q(this);
 		q.prepare("UPDATE tracks SET libraryID=0;");
 		success = success && q.exec();
 
@@ -466,7 +469,7 @@ bool Connector::apply_fixes()
 			settings_connector()->store_setting("version", 16);
 
 			MetaDataList v_md;
-			LibraryDatabase* lib_db = new LocalLibraryDatabase(-1);
+			LibraryDatabase* lib_db = new DB::LibraryDatabase(connection_name(), db_id(), -1);
 			lib_db->getAllTracks(v_md);
 			this->transaction();
 			for(const MetaData& md : v_md) {
@@ -502,7 +505,7 @@ bool Connector::apply_fixes()
 
 void Connector::clean_up()
 {
-	Query q(db());
+	Query q(this);
 	QString querytext = "VACUUM;";
 	q.prepare(querytext);
 	q.exec();
@@ -516,16 +519,19 @@ DB::LibraryDatabases Connector::library_dbs() const
 
 DB::LibraryDatabase* Connector::library_db(LibraryId library_id, DbId db_id)
 {
-	for(LibraryDatabase* db : ::Util::AsConst(m->library_dbs))
+	for(DB::LibraryDatabase* db : ::Util::AsConst(m->library_dbs))
 	{
+		auto dd1 = db->db_id();
+
 		if( (db->library_id() == library_id) &&
-			(db->db_id() == db_id))
+			(dd1 == db_id))
 		{
 			return db;
 		}
 	}
 
-	if(db_id == 0){
+	if(db_id == 0)
+	{
 		sp_log(Log::Warning, this) << "Could not find Library:"
 								" DB ID = " << (int) db_id
 							 << " LibraryID = " << (int) library_id;
@@ -552,7 +558,7 @@ DB::LibraryDatabase* Connector::register_library_db(LibraryId library_id)
 	DB::LibraryDatabase* lib_db = find_library_db(library_id);
 
 	if(!lib_db) {
-		lib_db = new DB::LocalLibraryDatabase(library_id);
+		lib_db = new DB::LibraryDatabase(this->connection_name(), this->db_id(), library_id);
 		m->library_dbs << lib_db;
 	}
 
@@ -563,7 +569,7 @@ DB::LibraryDatabase* Connector::register_library_db(LibraryId library_id)
 DB::Playlist* Connector::playlist_connector()
 {
 	if(!m->playlist_connector){
-		m->playlist_connector = new DB::Playlist(this->db(), this->db_id());
+		m->playlist_connector = new DB::Playlist(this->connection_name(), this->db_id());
 	}
 
 	return m->playlist_connector;
@@ -573,7 +579,7 @@ DB::Playlist* Connector::playlist_connector()
 DB::Bookmarks* Connector::bookmark_connector()
 {
 	if(!m->bookmark_connector){
-		m->bookmark_connector = new DB::Bookmarks(this->db(), this->db_id());
+		m->bookmark_connector = new DB::Bookmarks(this->connection_name(), this->db_id());
 	}
 
 	return m->bookmark_connector;
@@ -582,7 +588,7 @@ DB::Bookmarks* Connector::bookmark_connector()
 DB::Streams* Connector::stream_connector()
 {
 	if(!m->stream_connector){
-		m->stream_connector = new DB::Streams(this->db(), this->db_id());
+		m->stream_connector = new DB::Streams(this->connection_name(), this->db_id());
 	}
 
 	return m->stream_connector;
@@ -591,7 +597,7 @@ DB::Streams* Connector::stream_connector()
 DB::Podcasts* Connector::podcast_connector()
 {
 	if(!m->podcast_connector){
-		m->podcast_connector = new DB::Podcasts(this->db(), this->db_id());
+		m->podcast_connector = new DB::Podcasts(this->connection_name(), this->db_id());
 	}
 
 	return m->podcast_connector;
@@ -600,7 +606,7 @@ DB::Podcasts* Connector::podcast_connector()
 DB::VisualStyles* Connector::visual_style_connector()
 {
 	if(!m->visual_style_connector){
-		m->visual_style_connector = new DB::VisualStyles(this->db(), this->db_id());
+		m->visual_style_connector = new DB::VisualStyles(this->connection_name(), this->db_id());
 	}
 
 	return m->visual_style_connector;
@@ -609,7 +615,7 @@ DB::VisualStyles* Connector::visual_style_connector()
 DB::Settings* Connector::settings_connector()
 {
 	if(!m->settings_connector){
-		m->settings_connector = new DB::Settings(this->db(), this->db_id());
+		m->settings_connector = new DB::Settings(this->connection_name(), this->db_id());
 	}
 
 	return m->settings_connector;
@@ -618,7 +624,7 @@ DB::Settings* Connector::settings_connector()
 DB::Library* Connector::library_connector()
 {
 	if(!m->library_connector){
-		m->library_connector = new DB::Library(this->db(), this->db_id());
+		m->library_connector = new DB::Library(this->connection_name(), this->db_id());
 	}
 
 	return m->library_connector;

@@ -26,8 +26,8 @@
 using DB::Podcasts;
 using DB::Query;
 
-Podcasts::Podcasts(const QSqlDatabase& db, DbId db_id) :
-	DB::Module(db, db_id) {}
+Podcasts::Podcasts(const QString& connection_name, DbId db_id) :
+	DB::Module(connection_name, db_id) {}
 
 Podcasts::~Podcasts() {}
 

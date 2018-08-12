@@ -35,11 +35,19 @@ struct Query::Private
 	QString query_string;
 };
 
-Query::Query(const Module* module) :
-	QSqlQuery(module->module_db())
+Query::Query(const QString& connection_name, DbId db_id) :
+	QSqlQuery(Module(connection_name, db_id).db())
 {
 	m = Pimpl::make<Private>();
 }
+
+
+Query::Query(const Module* module) :
+	QSqlQuery(module->db())
+{
+	m = Pimpl::make<Private>();
+}
+
 
 Query::Query(QSqlDatabase db) :
 	QSqlQuery(db)

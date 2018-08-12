@@ -65,8 +65,8 @@ struct Tracks::Private
 	}
 };
 
-Tracks::Tracks(const QSqlDatabase& db, DbId db_id, LibraryId library_id) :
-	DB::SearchMode(db, db_id)
+Tracks::Tracks(const QString& connection_name, DbId db_id, LibraryId library_id) :
+	DB::SearchMode(connection_name, db_id)
 {
 	m = Pimpl::make<Private>(library_id);
 
@@ -207,7 +207,7 @@ bool Tracks::db_fetch_tracks(Query& q, MetaDataList& result)
 		data.set_artist(	q.value(20).toString().trimmed());
 		data.set_album_artist(q.value(21).toString(), q.value(13).toInt());
 
-		data.set_db_id(module_db_id());
+		data.set_db_id(db_id());
 
 		result.push_back(std::move(data));
 	}
@@ -245,13 +245,13 @@ QString Tracks::append_track_sort_string(QString querytext, ::Library::SortOrder
 
 bool Tracks::getMultipleTracksByPath(const QStringList& paths, MetaDataList& v_md)
 {
-	module_db().transaction();
+	db().transaction();
 
 	for(const QString& path : paths) {
 		v_md << getTrackByPath(path);
 	}
 
-	module_db().commit();
+	db().commit();
 
 	return (v_md.count() == paths.size());
 }
@@ -266,7 +266,7 @@ MetaData Tracks::getTrackByPath(const QString& path)
 	q.bindValue(":filename", Util::cvt_not_null(path));
 
 	MetaData md(path);
-	md.set_db_id(module_db_id());
+	md.set_db_id(db_id());
 
 	MetaDataList v_md;
 	if(!db_fetch_tracks(q, v_md)) {
@@ -551,7 +551,7 @@ bool Tracks::deleteTracks(const IdList& ids)
 {
 	int n_files = 0;
 
-	module_db().transaction();
+	db().transaction();
 
 	for(const int& id : ids){
 		if( deleteTrack(id) ){
@@ -559,7 +559,7 @@ bool Tracks::deleteTracks(const IdList& ids)
 		};
 	}
 
-	bool success = module_db().commit();
+	bool success = db().commit();
 
 	return (success && (n_files == ids.size()));
 }
@@ -571,14 +571,14 @@ bool Tracks::deleteTracks(const MetaDataList& v_md)
 		return true;
 	}
 
-	module_db().transaction();
+	db().transaction();
 
 	size_t deleted_tracks = std::count_if(v_md.begin(), v_md.end(), [=](const MetaData& md)
 	{
 		return this->deleteTrack(md.id);
 	});
 
-	module_db().commit();
+	db().commit();
 
 	sp_log(Log::Info) << "Deleted " << deleted_tracks << " of " << v_md.size() << " tracks";
 
@@ -670,7 +670,7 @@ void Tracks::updateTrackCissearch()
 	MetaDataList v_md;
 	getAllTracks(v_md);
 
-	module_db().transaction();
+	db().transaction();
 
 	for(const MetaData& md : v_md)
 	{
@@ -690,7 +690,7 @@ void Tracks::updateTrackCissearch()
 		}
 	}
 
-	module_db().commit();
+	db().commit();
 }
 
 
@@ -779,13 +779,13 @@ bool Tracks::updateTrack(const MetaData& md)
 
 bool Tracks::updateTracks(const MetaDataList& v_md)
 {
-	module_db().transaction();
+	db().transaction();
 
 	size_t n_files = std::count_if(v_md.begin(), v_md.end(), [=](const MetaData& md){
 		return this->updateTrack(md);
 	});
 
-	bool success = module_db().commit();
+	bool success = db().commit();
 
 	return success && (n_files == v_md.size());
 }

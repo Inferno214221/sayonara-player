@@ -42,19 +42,8 @@ namespace DB
 	{
 		PIMPL(Tracks)
 
-		protected:
-			void change_artistid_field(const QString& id, const QString& name);
-			void change_track_lookup_field(const QString& track_lookup_field);
-
-			void check_track_views(LibraryId library_id);
-			void check_track_view(LibraryId library_id);
-			void check_track_search_view(const QString& track_view, const QString& track_search_view);
-
-		protected:
-			QString append_track_sort_string(QString querytext, ::Library::SortOrder sort);
-
 		public:
-			Tracks(const QSqlDatabase& db, DbId db_id, LibraryId _library_id);
+			Tracks(const QString& connection_name, DbId db_id, LibraryId _library_id);
 			~Tracks();
 
 			virtual bool db_fetch_tracks(Query& q, MetaDataList& result);
@@ -98,6 +87,18 @@ namespace DB
 			virtual void updateTrackCissearch();
 
 			void deleteAllTracks();
+
+
+		protected:
+			void change_artistid_field(const QString& id, const QString& name);
+			void change_track_lookup_field(const QString& track_lookup_field);
+
+			void check_track_views(LibraryId library_id);
+			void check_track_view(LibraryId library_id);
+			void check_track_search_view(const QString& track_view, const QString& track_search_view);
+
+		protected:
+			QString append_track_sort_string(QString querytext, ::Library::SortOrder sort);
 		};
 }
 

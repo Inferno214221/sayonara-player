@@ -21,6 +21,7 @@
 #ifndef DATABASEMODULE_H
 #define DATABASEMODULE_H
 
+#include <QString>
 #include <QSqlDatabase>
 #include "Utils/Pimpl.h"
 
@@ -32,11 +33,12 @@ namespace DB
 		PIMPL(Module)
 
 		public:
-			Module(QSqlDatabase db, DbId db_id);
+			Module(const QString& connection_name, DbId db_id);
 			virtual ~Module();
 
-			DbId module_db_id() const;
-			QSqlDatabase module_db() const;
+			QSqlDatabase	db() const;
+			DbId			db_id() const;
+			QString			connection_name() const;
 	};
 }
 

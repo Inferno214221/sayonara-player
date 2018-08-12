@@ -71,8 +71,8 @@ struct Albums::Private
 	}
 };
 
-Albums::Albums(QSqlDatabase db, DbId db_id, LibraryId library_id) :
-	DB::SearchMode(db, db_id)
+Albums::Albums(const QString& connection_name, DbId db_id, LibraryId library_id) :
+	DB::SearchMode(connection_name, db_id)
 {
 	m = Pimpl::make<Private>(library_id);
 }
@@ -145,7 +145,7 @@ bool Albums::db_fetch_albums(Query& q, AlbumList& result)
 
 		album.n_discs = album.discnumbers.size();
 		album.is_sampler = (album.artists().size() > 1);
-		album.set_db_id(module_db_id());
+		album.set_db_id(db_id());
 
 		result.push_back(std::move(album));
 	};
@@ -389,7 +389,7 @@ void Albums::updateAlbumCissearch()
 	AlbumList albums;
 	getAllAlbums(albums, true);
 
-	module_db().transaction();
+	db().transaction();
 
 	for(const Album& album : albums)
 	{
@@ -406,7 +406,7 @@ void Albums::updateAlbumCissearch()
 		}
 	}
 
-	module_db().commit();
+	db().commit();
 }
 
 int Albums::insertAlbumIntoDatabase (const QString& album)

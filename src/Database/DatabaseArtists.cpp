@@ -54,8 +54,8 @@ struct Artists::Private
 };
 
 
-Artists::Artists(const QSqlDatabase& db, DbId db_id, LibraryId library_id) :
-	DB::SearchMode(db, db_id)
+Artists::Artists(const QString& connection_name, DbId db_id, LibraryId library_id) :
+	DB::SearchMode(connection_name, db_id)
 {
 	m = Pimpl::make<Private>(library_id);
 }
@@ -100,7 +100,7 @@ bool Artists::db_fetch_artists(Query& q, ArtistList& result)
 		artist.id = q.value(0).toInt();
 		artist.set_name(q.value(1).toString().trimmed());
 		artist.num_songs = q.value(2).toInt();
-		artist.set_db_id(module_db_id());
+		artist.set_db_id(db_id());
 
 		result << std::move(artist);
 	}
@@ -306,7 +306,7 @@ void Artists::updateArtistCissearch()
 	ArtistList artists;
 	getAllArtists(artists, true);
 
-	module_db().transaction();
+	db().transaction();
 
 	for(const Artist& artist : artists)
 	{
@@ -322,7 +322,7 @@ void Artists::updateArtistCissearch()
 		}
 	}
 
-	module_db().commit();
+	db().commit();
 }
 
 

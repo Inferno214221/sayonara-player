@@ -26,36 +26,43 @@
 #include "Utils/MetaData/Artist.h"
 
 using DB::LibraryDatabase;
+using DB::Query;
 
 struct LibraryDatabase::Private
 {
+	QString connection_name;
+	DbId	db_id;
+
 	LibraryId library_id;
 
-	Private(LibraryId library_id) :
+	Private(const QString& connection_name, DbId db_id, LibraryId library_id) :
+		connection_name(connection_name),
+		db_id(db_id),
 		library_id(library_id)
 	{}
 };
 
 
-LibraryDatabase::LibraryDatabase(const QString& db_name, DbId database_id, LibraryId library_id) :
-	DB::Base(database_id, "", db_name),
-	DB::Albums(db(), db_id(), library_id),
-	DB::Artists(db(), db_id(), library_id),
-	DB::Tracks(db(), db_id(), library_id)
+LibraryDatabase::LibraryDatabase(const QString& connection_name, DbId db_id, LibraryId library_id) :
+	DB::Albums(connection_name, db_id, library_id),
+	DB::Artists(connection_name, db_id, library_id),
+	DB::Tracks(connection_name, db_id, library_id)
 {
-	m = Pimpl::make<Private>(library_id);
+	m = Pimpl::make<Private>(connection_name, db_id, library_id);
 
 	bool show_album_artists = false;
 
 	AbstrSetting* s = Settings::instance()->setting(SettingKey::Lib_ShowAlbumArtists);
 	QString db_key = s->db_key();
 
-	Query q(db());
+	Query q(connection_name, db_id);
 	QString querytext = "SELECT value FROM settings WHERE key = '" + db_key + "';";
 
 	q.prepare(querytext);
-	if(q.exec()){
-		if(q.next()){
+	if(q.exec())
+	{
+		if(q.next())
+		{
 			QVariant var = q.value("value");
 			show_album_artists = var.toBool();
 		}
@@ -68,8 +75,6 @@ LibraryDatabase::LibraryDatabase(const QString& db_name, DbId database_id, Libra
 	else{
 		change_artistid_field(LibraryDatabase::ArtistIDField::ArtistID);
 	}
-
-	apply_fixes();
 }
 
 LibraryDatabase::~LibraryDatabase() {}
@@ -100,11 +105,6 @@ void LibraryDatabase::clear()
 LibraryId LibraryDatabase::library_id() const
 {
 	return m->library_id;
-}
-
-bool LibraryDatabase::apply_fixes()
-{
-	return true;
 }
 
 
@@ -209,4 +209,15 @@ bool DB::LibraryDatabase::store_metadata(const MetaDataList& v_md)
 	success = db().commit();
 
 	return success;
+}
+
+QSqlDatabase LibraryDatabase::db() const
+{
+	DB::Module module(m->connection_name, m->db_id);
+	return module.db();
+}
+
+DbId LibraryDatabase::db_id() const
+{
+	return m->db_id;
 }

@@ -29,7 +29,7 @@ namespace DB
 	class Streams : private Module
 	{
 		public:
-			Streams(const QSqlDatabase& db, DbId db_id);
+			Streams(const QString& connection_name, DbId db_id);
 			~Streams();
 
 			bool getAllStreams(QMap<QString, QString>& result);

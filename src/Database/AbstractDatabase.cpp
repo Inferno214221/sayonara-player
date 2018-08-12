@@ -36,37 +36,36 @@ namespace FileUtils=::Util::File;
 
 struct Base::Private
 {
-	QString db_name;		// player.db
-	QString db_dir;			// /home/user/.Sayonara/
-	QString db_path;		// /home/user/.Sayonara/player.db
+	QString filename;		// player.db
+	QString connection_name;		// /home/user/.Sayonara/player.db
 	DbId	db_id;
 
 	bool initialized;
 
-	Private(DbId db_id, const QString& db_dir, const QString& db_name)
+	Private(DbId db_id, const QString& filename) :
+		filename(filename),
+		db_id(db_id)
 	{
-		this->db_id = db_id;
-		this->db_dir = db_dir;
-		this->db_name = db_name;
-		this->db_path = Util::sayonara_path(db_name);
+		connection_name = Util::sayonara_path(filename);
 	}
 };
 
-Base::Base(DbId db_id, const QString& db_dir, const QString& db_name, QObject *parent) :
-	QObject(parent)
+Base::Base(DbId db_id, const QString& filename, QObject* parent) :
+	QObject(parent),
+	DB::Module(Util::sayonara_path(filename), db_id)
 {
-	m = Pimpl::make<Private>(db_id, db_dir, db_name);
+	m = Pimpl::make<Private>(db_id, filename);
 
-	if(!exists()){
+	if(!FileUtils::exists(m->connection_name))
+	{
 		sp_log(Log::Info, this) << "Database not existent. Creating database...";
 		create_db();
 	}
 
-	QSqlDatabase db = open_db();
-	m->initialized = db.isOpen();
+	m->initialized = this->db().isOpen();
 
 	if(!m->initialized) {
-		sp_log(Log::Error, this) << "Could not open database";
+		sp_log(Log::Error, this) << "Database is not open";
 	}
 }
 
@@ -77,39 +76,6 @@ bool Base::is_initialized()
 	return m->initialized;
 }
 
-bool Base::exists()
-{
-	return FileUtils::exists(m->db_path);
-}
-
-
-QSqlDatabase Base::open_db()
-{
-	QString connection_name = m->db_path;
-	QStringList connection_names = QSqlDatabase::connectionNames();
-
-	if(connection_names.contains(connection_name))
-	{
-		return QSqlDatabase::database(connection_name);
-	}
-
-	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", connection_name);
-	db.setDatabaseName(connection_name);
-
-	bool success = db.open();
-	if (!success) {
-		sp_log(Log::Error, this) << "DatabaseConnector database cannot be opened!";
-		QSqlError er = db.lastError();
-		sp_log(Log::Error) << er.driverText();
-		sp_log(Log::Error) << er.databaseText();
-	}
-	else{
-		sp_log(Log::Info, this) << "Opened Database " << m->db_name;
-	}
-
-	return db;
-}
-
 bool Base::close_db()
 {
 	if(!QSqlDatabase::isDriverAvailable("QSQLITE")){
@@ -117,17 +83,17 @@ bool Base::close_db()
 	}
 
 	QStringList connection_names = QSqlDatabase::connectionNames();
-	if(!connection_names.contains(m->db_path)){
+	if(!connection_names.contains(m->connection_name)){
 		return false;
 	}
 
-	sp_log(Log::Info) << "close database " << m->db_name << "...";
+	sp_log(Log::Info) << "close database " << m->filename << "...";
 
 	if(db().isOpen()){
 		db().close();
 	}
 
-	QSqlDatabase::removeDatabase(m->db_path);
+	QSqlDatabase::removeDatabase(m->connection_name);
 	return true;
 }
 
@@ -159,25 +125,25 @@ bool Base::create_db()
 		return false;
 	}
 
-	QString source_db_file = Util::share_path(m->db_dir + "/" + m->db_name);
+	QString source_db_file = Util::share_path(m->filename);
 
-	success = FileUtils::exists(m->db_path);
+	success = FileUtils::exists(m->connection_name);
 
 	if(success) {
 		return true;
 	}
 
 	if (!success) {
-		sp_log(Log::Info) << "Database " << m->db_path << " not existent yet";
-		sp_log(Log::Info) << "Copy " <<  source_db_file << " to " << m->db_path;
+		sp_log(Log::Info) << "Database " << m->connection_name << " not existent yet";
+		sp_log(Log::Info) << "Copy " <<  source_db_file << " to " << m->connection_name;
 
-		if (QFile::copy(source_db_file, m->db_path)) {
-			sp_log(Log::Info) << "DB file has been copied to " <<   m->db_path;
+		if (QFile::copy(source_db_file, m->connection_name)) {
+			sp_log(Log::Info) << "DB file has been copied to " <<   m->connection_name;
 			success = true;
 		}
 
 		else {
-			sp_log(Log::Error) << "Fatal Error: could not copy DB file to " << m->db_path;
+			sp_log(Log::Error) << "Fatal Error: could not copy DB file to " << m->connection_name;
 			success = false;
 		}
 	}
@@ -202,9 +168,10 @@ void Base::rollback()
 }
 
 
+
 bool Base::check_and_drop_table(const QString& tablename)
 {
-	Query q(db());
+	Query q(this);
 	QString querytext = "DROP TABLE " +  tablename + ";";
 	q.prepare(querytext);
 
@@ -219,13 +186,13 @@ bool Base::check_and_drop_table(const QString& tablename)
 
 bool Base::check_and_insert_column(const QString& tablename, const QString& column, const QString& sqltype, const QString& default_value)
 {
-	Query q(db());
+	Query q(this);
 	QString querytext = "SELECT " + column + " FROM " + tablename + ";";
 	q.prepare(querytext);
 
 	if(!q.exec())
 	{
-		Query q2 (db());
+		Query q2 (this);
 		querytext = "ALTER TABLE " + tablename + " ADD COLUMN " + column + " " + sqltype;
 		if(!default_value.isEmpty()){
 			querytext += " DEFAULT " + default_value;
@@ -249,13 +216,13 @@ bool Base::check_and_insert_column(const QString& tablename, const QString& colu
 
 bool Base::check_and_create_table(const QString& tablename, const QString& sql_create_str)
 {
-	Query q(db());
+	Query q(this);
 	QString querytext = "SELECT * FROM " + tablename + ";";
 	q.prepare(querytext);
 
 	if(!q.exec())
 	{
-		Query q2 (db());
+		Query q2(this);
 		q2.prepare(sql_create_str);
 
 		if(!q2.exec()){
@@ -265,15 +232,5 @@ bool Base::check_and_create_table(const QString& tablename, const QString& sql_c
 	}
 
 	return true;
-}
-
-QSqlDatabase Base::db() const
-{
-	return QSqlDatabase::database(m->db_path);
-}
-
-DbId Base::db_id() const
-{
-	return m->db_id;
 }
 

@@ -31,7 +31,7 @@ namespace DB
 			private Module
 	{
 	public:
-		Settings(const QSqlDatabase& db, DbId db_id);
+		Settings(const QString& connection_name, DbId db_id);
 		~Settings();
 
 		bool load_setting(QString key, QString& val);

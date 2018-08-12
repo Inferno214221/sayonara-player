@@ -22,6 +22,8 @@
 #include "Utils/Logger/Logger.h"
 
 #include <QThread>
+#include <QSqlError>
+#include <QSqlDatabase>
 
 using DB::Module;
 
@@ -30,27 +32,32 @@ struct Module::Private
 	QString connection_name;
 	DbId	db_id;
 
-	Private(const QSqlDatabase& db, DbId db_id) :
-		connection_name(db.connectionName()),
+	Private(const QString& connection_name, DbId db_id) :
+		connection_name(connection_name),
 		db_id(db_id)
 	{}
 
 	~Private(){}
 };
 
-Module::Module(QSqlDatabase db, DbId db_id)
+Module::Module(const QString& connection_name, DbId db_id)
 {
-	m = Pimpl::make<Private>(db, db_id);
+	m = Pimpl::make<Private>(connection_name, db_id);
 }
 
 Module::~Module() {}
 
-DbId Module::module_db_id() const
+DbId Module::db_id() const
 {
 	return m->db_id;
 }
 
-QSqlDatabase Module::module_db() const
+QString Module::connection_name() const
+{
+	return m->connection_name;
+}
+
+QSqlDatabase Module::db() const
 {
 	if(!QSqlDatabase::isDriverAvailable("QSQLITE")){
 		return QSqlDatabase();
@@ -64,10 +71,17 @@ QSqlDatabase Module::module_db() const
 		return QSqlDatabase::database(new_connection_name);
 	}
 
+	sp_log(Log::Info, this) << "Create new connection to " << m->connection_name
+							<< "(" << new_connection_name << ")";
+
 	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", new_connection_name);
 	db.setDatabaseName(m->connection_name);
-	if(!db.open()){
-		sp_log(Log::Error, this) << "Houston: " << db.databaseName();
+	if(!db.open())
+	{
+		sp_log(Log::Error, this) << "Database cannot be opened! " << m->connection_name;
+		QSqlError er = db.lastError();
+		sp_log(Log::Error) << er.driverText();
+		sp_log(Log::Error) << er.databaseText();
 	}
 
 	return db;

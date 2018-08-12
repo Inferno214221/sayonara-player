@@ -36,16 +36,8 @@ namespace DB
 	{
 		PIMPL(Albums)
 
-		private:
-			virtual QString fetch_query_albums(bool also_empty=false) const;
-
-		protected:
-			void change_artistid_field(const QString& id, const QString& name);
-			void change_track_lookup_field(const QString& track_lookup_field);
-
 		public:
-
-			Albums(QSqlDatabase db, DbId db_id, LibraryId library_id);
+			Albums(const QString& connection_name, DbId db_id, LibraryId library_id);
 			virtual ~Albums();
 
 			virtual bool db_fetch_albums(Query& q, AlbumList& result);
@@ -71,6 +63,14 @@ namespace DB
 			virtual int updateAlbum(const Album& album);
 
 			virtual void updateAlbumCissearch();
+
+		private:
+			virtual QString fetch_query_albums(bool also_empty=false) const;
+
+		protected:
+			void change_artistid_field(const QString& id, const QString& name);
+			void change_track_lookup_field(const QString& track_lookup_field);
+
 
 	};
 }

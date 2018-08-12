@@ -25,8 +25,8 @@
 
 using DB::Query;
 
-DB::Settings::Settings(const QSqlDatabase& db, DbId db_id) :
-	DB::Module(db, db_id) {}
+DB::Settings::Settings(const QString& connection_name, DbId db_id) :
+	DB::Module(connection_name, db_id) {}
 
 DB::Settings::~Settings() {}
 
@@ -62,7 +62,7 @@ bool DB::Settings::store_settings()
 {
 	const SettingArray& settings = ::Settings::instance()->settings();
 
-	module_db().transaction();
+	db().transaction();
 
 	for(AbstrSetting* s : settings)
 	{
@@ -79,7 +79,7 @@ bool DB::Settings::store_settings()
 		}
 	}
 
-	module_db().commit();
+	db().commit();
 
 	return true;
 }

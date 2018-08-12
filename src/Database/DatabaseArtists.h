@@ -37,18 +37,9 @@ namespace DB
 	{
 		PIMPL(Artists)
 
-		private:
-			QString _create_order_string(::Library::SortOrder sort);
-
-		protected:
-			void change_artistid_field(const QString& id, const QString& name);
-			void change_track_lookup_field(const QString& track_lookup_field);
-
-			virtual QString fetch_query_artists(bool also_empty=false) const;
-
 		public:
 
-			Artists(const QSqlDatabase& db, DbId db_id, LibraryId library_id);
+			Artists(const QString& connection_name, DbId db_id, LibraryId library_id);
 			~Artists();
 
 			virtual bool db_fetch_artists(Query& q, ArtistList& result);
@@ -65,6 +56,17 @@ namespace DB
 			virtual ArtistId updateArtist(const Artist& artist);
 
 			virtual void updateArtistCissearch();
+
+
+		private:
+			QString _create_order_string(::Library::SortOrder sort);
+
+		protected:
+			void change_artistid_field(const QString& id, const QString& name);
+			void change_track_lookup_field(const QString& track_lookup_field);
+
+			virtual QString fetch_query_artists(bool also_empty=false) const;
+
 	};
 }
 
