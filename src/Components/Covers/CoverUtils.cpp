@@ -44,7 +44,8 @@ QString Cover::Util::cover_directory()
 QString Cover::Util::cover_directory(const QString& append_filename)
 {
 	QString cover_dir = ::Util::sayonara_path("covers");
-	if(!QFile::exists(cover_dir)){
+	if(!FileUtils::exists(cover_dir))
+	{
 		QDir().mkdir(cover_dir);
 	}
 

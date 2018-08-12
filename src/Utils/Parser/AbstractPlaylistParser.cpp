@@ -106,7 +106,7 @@ QString AbstractPlaylistParser::get_absolute_filename(const QString& filename) c
 		ret = filename;
 	}
 
-	if(!QFile::exists(ret)){
+	if(!Util::File::exists(ret)){
 		ret = "";
 	}
 

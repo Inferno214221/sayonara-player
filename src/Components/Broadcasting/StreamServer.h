@@ -25,8 +25,6 @@
 #include "Utils/Settings/SayonaraClass.h"
 #include "Utils/Pimpl.h"
 
-#include <QThread>
-
 class QTcpSocket;
 /**
  * @brief The StreamServer class. This class is listening for new connections and holds and administrates current connections.

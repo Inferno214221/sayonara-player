@@ -32,6 +32,8 @@
 #include <algorithm>
 #include "typedefs.h"
 
+#define LOCK_GUARD(locking_mutex) std::lock_guard<std::mutex> g(locking_mutex); Q_UNUSED(g)
+
 class QDateTime;
 /**
  * @brief Helper functions

@@ -52,6 +52,8 @@ CopyThread::CopyThread(const QString& target_dir, ImportCachePtr cache, QObject 
 	m = Pimpl::make<CopyThread::Private>(cache);
 	m->target_dir = target_dir;
 
+	this->setObjectName("CopyThread" + Util::random_string(4));
+
 	clear();
 }
 

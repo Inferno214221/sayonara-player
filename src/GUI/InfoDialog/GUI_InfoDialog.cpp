@@ -42,6 +42,8 @@
 #include "Utils/Language.h"
 #include "Utils/globals.h"
 
+#include <QTabBar>
+
 
 struct GUI_InfoDialog::Private
 {

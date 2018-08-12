@@ -36,6 +36,7 @@
 #include <QDateTime>
 
 namespace SR=StreamRecorder;
+namespace FileUtils=::Util::File;
 
 struct SR::StreamRecorder::Private
 {
@@ -162,7 +163,7 @@ QString SR::StreamRecorder::change_track(const MetaData& md)
 
 bool SR::StreamRecorder::save()
 {
-	if(!QFile::exists(m->sr_recording_dst)) {
+	if(!FileUtils::exists(m->sr_recording_dst)) {
 		return false;
 	}
 
@@ -186,7 +187,7 @@ bool SR::StreamRecorder::save()
 
 QString SR::StreamRecorder::check_target_path(const QString& target_path)
 {
-	if(!QFile::exists(target_path)) {
+	if(!FileUtils::exists(target_path)) {
 		Util::File::create_directories(Util::File::get_parent_directory(target_path));
 	}
 

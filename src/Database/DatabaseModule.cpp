@@ -21,6 +21,8 @@
 #include "Database/DatabaseModule.h"
 #include "Utils/Logger/Logger.h"
 
+#include <QThread>
+
 using DB::Module;
 
 struct Module::Private
@@ -39,8 +41,6 @@ struct Module::Private
 Module::Module(QSqlDatabase db, DbId db_id)
 {
 	m = Pimpl::make<Private>(db, db_id);
-
-	this->module_db().open();
 }
 
 Module::~Module() {}
@@ -56,8 +56,21 @@ QSqlDatabase Module::module_db() const
 		return QSqlDatabase();
 	}
 
-	return QSqlDatabase::database(m->connection_name);
+	QString new_connection_name = m->connection_name + QThread::currentThread()->objectName();
 
+	QStringList connection_names = QSqlDatabase::connectionNames();
+	if(connection_names.contains(new_connection_name))
+	{
+		return QSqlDatabase::database(new_connection_name);
+	}
+
+	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", new_connection_name);
+	db.setDatabaseName(m->connection_name);
+	if(!db.open()){
+		sp_log(Log::Error, this) << "Houston: " << db.databaseName();
+	}
+
+	return db;
 }
 
 

@@ -41,10 +41,10 @@ namespace DB
 		private:
 			explicit Query(const QString& query=QString(), const QSqlDatabase& db = QSqlDatabase()) = delete;
 			explicit Query(QSqlResult * result) = delete;
+			explicit Query(QSqlDatabase db);
 
 		public:
 			explicit Query(const Module* module);
-			explicit Query(QSqlDatabase db);
 			Query(const Query& other);
 
 			virtual ~Query();

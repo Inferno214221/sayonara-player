@@ -24,6 +24,7 @@
 
 #include "Utils/Utils.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/FileUtils.h"
 
 #include <QFile>
 #include <QDir>
@@ -31,11 +32,13 @@
 using DB::Base;
 using DB::Query;
 
+namespace FileUtils=::Util::File;
+
 struct Base::Private
 {
-	QString db_name;
-	QString db_dir;
-	QString db_path;
+	QString db_name;		// player.db
+	QString db_dir;			// /home/user/.Sayonara/
+	QString db_path;		// /home/user/.Sayonara/player.db
 	DbId	db_id;
 
 	bool initialized;
@@ -76,19 +79,22 @@ bool Base::is_initialized()
 
 bool Base::exists()
 {
-	return QFile::exists(m->db_path);
+	return FileUtils::exists(m->db_path);
 }
 
 
 QSqlDatabase Base::open_db()
 {
+	QString connection_name = m->db_path;
 	QStringList connection_names = QSqlDatabase::connectionNames();
-	if(connection_names.contains(m->db_path)){
-		return QSqlDatabase::database(m->db_path);
+
+	if(connection_names.contains(connection_name))
+	{
+		return QSqlDatabase::database(connection_name);
 	}
 
-	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", m->db_path);
-	db.setDatabaseName(m->db_path);
+	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", connection_name);
+	db.setDatabaseName(connection_name);
 
 	bool success = db.open();
 	if (!success) {
@@ -132,7 +138,8 @@ bool Base::create_db()
 	QDir dir = QDir::homePath();
 
 	QString sayonara_path = Util::sayonara_path();
-	if(!QFile::exists(sayonara_path)) {
+	if(!FileUtils::exists(sayonara_path))
+	{
 		success = dir.mkdir(".Sayonara");
 		if(!success) {
 			sp_log(Log::Error) << "Could not create .Sayonara dir";
@@ -154,7 +161,7 @@ bool Base::create_db()
 
 	QString source_db_file = Util::share_path(m->db_dir + "/" + m->db_name);
 
-	success = QFile::exists(m->db_path);
+	success = FileUtils::exists(m->db_path);
 
 	if(success) {
 		return true;

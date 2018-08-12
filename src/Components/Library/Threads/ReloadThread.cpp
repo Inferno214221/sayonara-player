@@ -49,6 +49,7 @@
 #include <utility>
 
 using Library::ReloadThread;
+namespace FileUtils=::Util::File;
 
 struct ReloadThread::Private
 {
@@ -78,6 +79,8 @@ ReloadThread::ReloadThread(QObject *parent) :
 {
 	m = Pimpl::make<Private>();
 	m->library_path = _settings->get<Set::Lib_Path>();
+
+	this->setObjectName("ReloadThread" + ::Util::random_string(4));
 }
 
 ReloadThread::~ReloadThread()
@@ -123,7 +126,7 @@ bool ReloadThread::get_and_save_all_files(const QHash<QString, MetaData>& md_map
 {
 	QString library_path = m->library_path;
 
-	if(library_path.isEmpty() || !QFile::exists(library_path)) {
+	if(library_path.isEmpty() || !FileUtils::exists(library_path)) {
 		return false;
 	}
 
@@ -215,7 +218,7 @@ QStringList ReloadThread::get_files_recursive(QDir base_dir)
 	{
 		sp_log(Log::Crazy, this) << "Reading all files from " << base_dir.absolutePath();
 		QString parent_dir, pure_dir_name;
-		::Util::File::split_filename(base_dir.absolutePath(), parent_dir, pure_dir_name);
+		FileUtils::split_filename(base_dir.absolutePath(), parent_dir, pure_dir_name);
 
 		QString message = tr("Reading files") + ": " + pure_dir_name;
 		emit sig_reloading_library(message, 0);
@@ -344,7 +347,7 @@ void ReloadThread::run()
 	// find orphaned tracks in library && delete them
 	for(const MetaData& md : v_md)
 	{
-		if(!::Util::File::check_file(md.filepath()))
+		if(!FileUtils::check_file(md.filepath()))
 		{
 			v_to_delete << std::move(md);
 		}

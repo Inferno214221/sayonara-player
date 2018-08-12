@@ -190,6 +190,8 @@ namespace Util
 		bool is_soundfile(const QString& filename);
 		bool is_playlistfile(const QString& filename);
 		bool is_imagefile(const QString& filename);
+
+		bool exists(const QString& filename);
 	}
 }
 

@@ -27,12 +27,14 @@
 
 #include "Database/DatabaseConnector.h"
 #include "Utils/Utils.h"
+#include "Utils/FileUtils.h"
 #include "Utils/Message/Message.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/StreamRecorder/StreamRecorderUtils.h"
 #include "Utils/Logger/Logger.h"
+
 
 #include <QFileDialog>
 #include <QDir>
@@ -211,7 +213,7 @@ bool GUI_StreamRecorder::commit()
 
 	if(active)
 	{
-		if(!QFile::exists(path))
+		if(!::Util::File::exists(path))
 		{
 			if(path.isEmpty())
 			{

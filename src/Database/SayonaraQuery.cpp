@@ -28,6 +28,7 @@
 //#define DB_DEBUG
 
 using DB::Query;
+using DB::Module;
 
 struct Query::Private
 {
@@ -39,7 +40,6 @@ Query::Query(const Module* module) :
 {
 	m = Pimpl::make<Private>();
 }
-
 
 Query::Query(QSqlDatabase db) :
 	QSqlQuery(db)

@@ -157,7 +157,7 @@ static std::mutex mtx;
 
 void EngineColorStyleChooser::reload(int widget_width, int widget_height)
 {
-	std::lock_guard<std::mutex> lock(mtx);
+	LOCK_GUARD(mtx)
 
 	DB::VisualStyles* db = DB::Connector::instance()->visual_style_connector();
 

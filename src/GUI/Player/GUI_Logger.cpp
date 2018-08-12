@@ -29,7 +29,6 @@
 
 #include <QStringList>
 #include <QTextEdit>
-#include <QThread>
 #include <QFileDialog>
 #include <QFile>
 #include <QDir>

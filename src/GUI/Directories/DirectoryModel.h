@@ -24,7 +24,6 @@
 #include "Utils/Pimpl.h"
 
 #include <QTreeView>
-#include <QThread>
 #include <QFileSystemModel>
 
 

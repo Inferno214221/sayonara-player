@@ -37,7 +37,8 @@
 #include <QPixmap>
 #include <QThread>
 
-	#include <atomic>
+#include <atomic>
+#include <mutex>
 
 using Cover::Location;
 using Cover::Lookup;
@@ -332,12 +333,11 @@ void CoverModel::next_hash()
 	}
 }
 
-#include <mutex>
+
 static std::mutex mtx;
 void CoverModel::cover_lookup_finished(bool success)
 {
-	std::lock_guard<std::mutex> grd(mtx);
-	Q_UNUSED(grd);
+	LOCK_GUARD(mtx)
 
 	Lookup* clu = static_cast<Lookup*>(sender());
 	CoverLookupUserData* d = static_cast<CoverLookupUserData*>(clu->take_user_data());

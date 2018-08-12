@@ -85,6 +85,8 @@ Editor::Editor(QObject *parent) :
 	m = Pimpl::make<Editor::Private>();
 	m->ldb = DB::Connector::instance()->library_db(-1, 0);
 
+	this->setObjectName("TagEditor" + ::Util::random_string(4));
+
 	connect(this, &QThread::finished, this, &Editor::thread_finished);
 }
 

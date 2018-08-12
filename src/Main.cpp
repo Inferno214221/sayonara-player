@@ -27,6 +27,7 @@
 
 #include "Application/Application.h"
 #include "Utils/Utils.h"
+#include "Utils/FileUtils.h"
 #include "Utils/Parser/CommandLineParser.h"
 #include "Utils/Logger/Logger.h"
 
@@ -37,6 +38,8 @@
 #include <QDir>
 #include <QIcon>
 #include <algorithm>
+
+namespace FileUtils=::Util::File;
 
 #ifdef Q_OS_UNIX
 	#include <execinfo.h>		// backtrace
@@ -55,8 +58,8 @@
 #ifdef Q_OS_WIN
 void init_gio()
 {
-	QString gio_path = Util::File::clean_filename(QApplication::applicationDirPath()) + "/gio-modules";
-	QString gst_plugin_path = Util::File::clean_filename(QApplication::applicationDirPath()) + "/gstreamer-1.0/";
+	QString gio_path = FileUtils::clean_filename(QApplication::applicationDirPath()) + "/gio-modules";
+	QString gst_plugin_path = FileUtils::clean_filename(QApplication::applicationDirPath()) + "/gstreamer-1.0/";
 
 	Util::set_environment("GST_PLUGIN_PATH", gst_plugin_path);
 	Util::set_environment("GST_PLUGIN_SYSTEM_PATH", gst_plugin_path);
@@ -179,7 +182,7 @@ int main(int argc, char *argv[])
 	signal(SIGSEGV, segfault_handler);
 #endif
 
-	if(!QFile::exists( Util::sayonara_path() )) {
+	if(!FileUtils::exists( Util::sayonara_path() )) {
 		QDir().mkdir( Util::sayonara_path() );
 	}
 

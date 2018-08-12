@@ -36,6 +36,7 @@
 #include <QObject>
 #include <QString>
 
+namespace FileUtils=::Util::File;
 using Library::Manager;
 using Library::Info;
 
@@ -163,8 +164,8 @@ public:
 		{
 			QString target = info.symlink_path();
 
-			if(!(QFile::exists(target))){
-				::Util::File::create_symlink(info.path(), target);
+			if(!(FileUtils::exists(target))){
+				FileUtils::create_symlink(info.path(), target);
 			}
 		}
 	}
@@ -232,13 +233,16 @@ void Manager::reset()
 
 	for(int i=m->all_libs.size() - 1; i>=0; i--)
 	{
-		if(!m->all_libs[i].valid()){
+		if(!m->all_libs[i].valid())
+		{
 			m->all_libs.removeAt(i);
 		}
 
-		else{
-			if(!QFile::exists(m->all_libs[i].symlink_path())){
-				::Util::File::create_symlink(m->all_libs[i].path(), m->all_libs[i].symlink_path());
+		else
+		{
+			if(!FileUtils::exists(m->all_libs[i].symlink_path()))
+			{
+				FileUtils::create_symlink(m->all_libs[i].path(), m->all_libs[i].symlink_path());
 			}
 		}
 	}
@@ -300,7 +304,7 @@ bool Manager::rename_library(LibraryId id, const QString& new_name)
 	if(success)
 	{
 		QFile::remove(old_info.symlink_path());
-		::Util::File::create_symlink(old_info.path(), new_info.symlink_path());
+		FileUtils::create_symlink(old_info.path(), new_info.symlink_path());
 		emit sig_renamed(id);
 	}
 
@@ -381,7 +385,7 @@ bool Manager::change_library_path(LibraryId id, const QString& new_path)
 	*it = new_info;
 
 	QFile::remove(old_info.symlink_path());
-	::Util::File::create_symlink(new_info.path(), new_info.symlink_path());
+	FileUtils::create_symlink(new_info.path(), new_info.symlink_path());
 
 	DB::Library* ldb = DB::Connector::instance()->library_connector();
 	bool success = ldb->edit_library(old_info.id(), old_info.name(), new_path);

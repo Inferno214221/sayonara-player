@@ -109,7 +109,7 @@ MetaDataList DirectoryReader::metadata_from_filelist(const QStringList& lst)
 
 	for( const QString& str : lst)
 	{
-		if(!QFile::exists(str)) {
+		if(!Util::File::exists(str)) {
 			continue;
 		}
 

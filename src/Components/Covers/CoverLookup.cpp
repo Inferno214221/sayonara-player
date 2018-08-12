@@ -36,8 +36,8 @@
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/Album.h"
 #include "Utils/Tagging/Tagging.h"
+#include "Utils/FileUtils.h"
 
-#include <QFile>
 #include <QImage>
 #include <QImageWriter>
 #include <QStringList>
@@ -102,7 +102,7 @@ bool Lookup::fetch_cover(const Cover::Location& cl, bool also_www)
 	}
 
 	// Look, if cover exists in .Sayonara/covers
-	if( QFile::exists(cover_path) && m->n_covers == 1 )
+	if( ::Util::File::exists(cover_path) && m->n_covers == 1 )
 	{
 		emit sig_cover_found(cover_path);
 		emit sig_finished(true);

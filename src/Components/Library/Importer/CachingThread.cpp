@@ -27,6 +27,7 @@
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Tagging/Tagging.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/Utils.h"
 
 #include <QDir>
 
@@ -104,6 +105,8 @@ CachingThread::CachingThread(const QStringList& file_list, const QString& librar
 	m->library_path = library_path;
 	m->file_list = file_list;
 	m->cancelled = false;
+
+	this->setObjectName("CachingThread" + Util::random_string(4));
 }
 
 CachingThread::~CachingThread() {}

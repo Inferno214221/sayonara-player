@@ -27,6 +27,7 @@
 
 #include "Utils/Utils.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/FileUtils.h"
 
 #include <QFile>
 
@@ -38,8 +39,6 @@ using Cover::Lookup;
 using Hash=AlbumCoverFetchThread::Hash;
 using AtomicBool=std::atomic<bool>;
 using AtomicInt=std::atomic<int>;
-
-#define LOCK_GUARD(locking_mutex) std::lock_guard<std::mutex> g(locking_mutex); Q_UNUSED(g)
 
 struct AlbumCoverFetchThread::Private
 {
@@ -82,6 +81,8 @@ AlbumCoverFetchThread::AlbumCoverFetchThread(QObject* parent) :
 	QThread(parent)
 {
 	m = Pimpl::make<Private>();
+
+	this->setObjectName("AlbumCoverFetchThread" + ::Util::random_string(4));
 }
 
 AlbumCoverFetchThread::~AlbumCoverFetchThread() {}
@@ -166,7 +167,7 @@ bool AlbumCoverFetchThread::thread_create_cover_location()
 		LOCK_GUARD(m->mutex_location_list)
 		if(cl.has_audio_file_source() ||
 			( !Location::is_invalid(cl.preferred_path()) &&
-			  QFile::exists(cl.preferred_path())
+			  ::Util::File::exists(cl.preferred_path())
 			)
 		  )
 		{

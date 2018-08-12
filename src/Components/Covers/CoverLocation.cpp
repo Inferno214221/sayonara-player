@@ -45,6 +45,7 @@
 using Cover::Location;
 using namespace Cover::Fetcher;
 using Cover::StringMap;
+namespace FileUtils=::Util::File;
 
 struct Location::Private
 {
@@ -147,7 +148,7 @@ Location Location::invalid_location()
 
 bool Location::is_invalid(const QString& cover_path)
 {
-	QString path1 = ::Util::File::clean_filename(cover_path);
+	QString path1 = FileUtils::clean_filename(cover_path);
 	QString path2 = invalid_location().cover_path();
 
 	return (path1 == path2);
@@ -193,7 +194,7 @@ static void check_cover_path(const QString& base_path, const QString& cover_path
 	QFileInfo fi(cover_path);
 
 	// broken symlink
-	if(fi.exists() && fi.isSymLink() && !QFile::exists(fi.symLinkTarget()))
+	if(fi.exists() && fi.isSymLink() && !FileUtils::exists(fi.symLinkTarget()))
 	{
 		Util::File::delete_files({cover_path});
 
@@ -219,7 +220,7 @@ static void check_cover_path(const QString& base_path, const QString& cover_path
 
 	QString source = local_paths.first();
 
-	QString ext = ::Util::File::get_file_extension(source);
+	QString ext = FileUtils::get_file_extension(source);
 	if(ext.compare("jpg", Qt::CaseInsensitive) != 0)
 	{
 		QImage img = QPixmap(source).toImage();
@@ -229,7 +230,7 @@ static void check_cover_path(const QString& base_path, const QString& cover_path
 		source = jpg_source;
 	}
 
-	::Util::File::create_symlink(source, cover_path);
+	FileUtils::create_symlink(source, cover_path);
 }
 
 // TODO: Clean me up
@@ -358,7 +359,7 @@ Location Location::cover_location(const MetaData& md)
 
 	if(!md.cover_download_url().isEmpty())
 	{
-		QString extension = ::Util::File::get_file_extension(md.cover_download_url());
+		QString extension = FileUtils::get_file_extension(md.cover_download_url());
 
 		QString cover_token = Cover::Util::calc_cover_token(md.artist(), md.album());
 		QString cover_path = Cover::Util::cover_directory(cover_token + "." + extension);
@@ -434,12 +435,12 @@ Location::CoverSourceType Location::get_cover_source_type() const
 QString Location::preferred_path() const
 {
 	// first search for cover in track
-	if(QFile::exists(this->audio_file_source())){
+	if(FileUtils::exists(this->audio_file_source())){
 		return this->audio_file_source();
 	}
 
 	// return the calculated path
-	if(QFile::exists(this->cover_path())){
+	if(FileUtils::exists(this->cover_path())){
 		return this->cover_path();
 	}
 
@@ -538,7 +539,7 @@ void Location::set_audio_file_source(const QString& audio_filepath, const QStrin
 		return;
 	}
 
-	if(!QFile::exists(cover_path))
+	if(!FileUtils::exists(cover_path))
 	{
 		QImage img = Tagging::Util::extract_cover(audio_filepath);
 		if(!img.isNull())

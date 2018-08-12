@@ -238,14 +238,14 @@ bool Util::File::is_www(const QString& str)
 
 bool Util::File::is_dir(const QString& filename)
 {
-	if(!QFile::exists(filename)) return false;
+	if(!exists(filename)) return false;
 	QFileInfo fileinfo(filename);
 	return fileinfo.isDir();
 }
 
 bool Util::File::is_file(const QString& filename)
 {
-	if(!QFile::exists(filename)) return false;
+	if(!exists(filename)) return false;
 	QFileInfo fileinfo(filename);
 	return fileinfo.isFile();
 }
@@ -285,7 +285,7 @@ bool Util::File::is_imagefile(const QString& filename)
 
 bool Util::File::create_directories(const QString& path)
 {
-	if(QFile::exists(path)){
+	if(exists(path)){
 		return true;
 	}
 
@@ -304,7 +304,7 @@ bool Util::File::create_directories(const QString& path)
 	{
 		QString abs_path = dir.absoluteFilePath(p);
 
-		if(QFile::exists(abs_path)){
+		if(exists(abs_path)){
 			dir.cd(p);
 			continue;
 		}
@@ -403,7 +403,7 @@ bool Util::File::check_file(const QString& filepath)
 		return true;
 	}
 
-	return QFile::exists(filepath);
+	return exists(filepath);
 }
 
 bool Util::File::create_symlink(const QString& source, const QString& target)
@@ -605,7 +605,7 @@ bool Util::File::can_copy_dir(const QString& src_dir, const QString& target_dir)
 		return false;
 	}
 
-	if(!QFile::exists(src_dir)){
+	if(!exists(src_dir)){
 		return false;
 	}
 
@@ -700,4 +700,13 @@ bool Util::File::copy_file(const QString& file, const QString& dir)
 
 	bool success = f.copy(target_filename);
 	return success;
+}
+
+bool Util::File::exists(const QString& filename)
+{
+	if(filename.isEmpty()){
+		return false;
+	}
+
+	return QFile::exists(filename);
 }

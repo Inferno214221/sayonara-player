@@ -145,8 +145,7 @@ Qt::ItemFlags AlternativeCoverItemModel::flags(const QModelIndex &index) const
 
 bool AlternativeCoverItemModel::add_cover(const QString& cover)
 {
-	std::lock_guard<std::mutex> guard(mtx);
-	Q_UNUSED(guard)
+	LOCK_GUARD(mtx)
 
 	int n_rows = rowCount();
 	m->pathlist << cover;

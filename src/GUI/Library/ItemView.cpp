@@ -36,6 +36,7 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Set.h"
+#include "Utils/FileUtils.h"
 #include "Utils/Logger/Logger.h"
 
 #include "GUI/Utils/ContextMenu/LibraryContextMenu.h"
@@ -534,7 +535,7 @@ void ItemView::dropEvent(QDropEvent *event)
 	{
 		QString path = url.path();
 
-		if(QFile::exists(path)) {
+		if(::Util::File::exists(path)) {
 			filelist << path;
 		}
 	}
