@@ -53,7 +53,9 @@ void register_setting(const typename T::Data& default_value)
 
 bool SettingRegistry::init()
 {
-	register_setting<Set::LFM_Login>("LastFM_login", StringPair("None", "None"));
+	register_setting<Set::LFM_Login>("LastFM_login", StringPair("", ""));
+	register_setting<Set::LFM_Username>("lfm_username", QString());
+	register_setting<Set::LFM_Password>("lfm_password", QString());
 	register_setting<Set::LFM_ScrobbleTimeSec>("lfm_scrobble_time", 10);
 	register_setting<Set::LFM_Active>( "LastFM_active", false );
 	register_setting<Set::LFM_Corrections>( "lfm_corrections", false );
@@ -203,7 +205,9 @@ bool SettingRegistry::init()
 	register_setting<Set::Proxy_Password>( "proxy_password", QString());
 	register_setting<Set::Proxy_SavePw>( "proxy_save_pw", false);
 
+	register_setting<Set::Settings_Revision>("settings_version", 0);
 	register_setting<Set::Logger_Level>( "logger_level", 0);
+
 
 	register_setting<SetNoDB::MP3enc_found>( true );
 	register_setting<SetNoDB::Pitch_found>( true );

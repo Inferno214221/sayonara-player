@@ -268,7 +268,7 @@ public:
 		if(lst.size() > 1){
 			b = lst[1];
 		}
-		else 
+		else
 		{
 			success = false;
 		}

@@ -67,7 +67,6 @@ namespace LastFM
 			virtual ~Base();
 
 			bool is_logged_in();
-			static void get_login(QString& user, QString& pw);
 
 		private:
 			bool init_track_changed_thread();

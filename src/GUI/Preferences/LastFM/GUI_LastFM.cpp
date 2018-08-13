@@ -28,6 +28,7 @@
 
 #include "GUI_LastFM.h"
 #include "GUI/Preferences/ui_GUI_LastFM.h"
+#include "Utils/Crypt.h"
 
 #include "Components/StreamPlugins/LastFM/LastFM.h"
 
@@ -69,6 +70,8 @@ void GUI_LastFM::init_ui()
 
 	revert();
 
+	logged_in(m->lfm->is_logged_in());
+
 	connect(ui->btn_login, &QPushButton::clicked, this, &GUI_LastFM::btn_login_clicked);
 	connect(ui->cb_activate, &QCheckBox::toggled, this, &GUI_LastFM::active_changed);
 	connect(m->lfm, &LastFM::Base::sig_logged_in, this, &GUI_LastFM::logged_in);
@@ -85,15 +88,18 @@ void GUI_LastFM::retranslate_ui()
 	ui->retranslateUi(this);
 	ui->lab_activate->setText(Lang::get(Lang::Activate));
 	ui->lab_sec->setText(Lang::get(Lang::Seconds));
+
+	logged_in(m->lfm->is_logged_in());
 }
 
 bool GUI_LastFM::commit()
 {
 	StringPair user_pw;
 	user_pw.first = ui->tf_username->text();
-	user_pw.second = ui->tf_password->text();
+	user_pw.second = Util::Crypt::encrypt(ui->tf_password->text());
 
-	_settings->set<Set::LFM_Login>(user_pw);
+	_settings->set<Set::LFM_Username>(ui->tf_username->text());
+	_settings->set<Set::LFM_Password>(Util::Crypt::encrypt(ui->tf_password->text()));
 
 	if( ui->tf_username->text().length() >= 3 &&
 		ui->tf_password->text().length() >= 3 )
@@ -118,9 +124,12 @@ void GUI_LastFM::revert()
 
 	logged_in(m->lfm->is_logged_in());
 
-	StringPair user_pw = _settings->get<Set::LFM_Login>();
-	ui->tf_username->setText(user_pw.first);
-	ui->tf_password->setText(user_pw.second);
+	QString username = _settings->get<Set::LFM_Username>();
+	QString password = Util::Crypt::decrypt(_settings->get<Set::LFM_Password>());
+
+	ui->tf_username->setText(username);
+	ui->tf_password->setText(password);
+
 	ui->sb_scrobble_time->setValue( _settings->get<Set::LFM_ScrobbleTimeSec>() );
 }
 
@@ -135,17 +144,17 @@ void GUI_LastFM::btn_login_clicked()
 		return;
 	}
 
-	StringPair user_pw;
-	user_pw.first = ui->tf_username->text();
-	user_pw.second = ui->tf_password->text();
+	ui->btn_login->setEnabled(false);
 
-	_settings->set<Set::LFM_Login>(user_pw);
+	_settings->set<Set::LFM_Username>(ui->tf_username->text());
+	_settings->set<Set::LFM_Password>(Util::Crypt::encrypt(ui->tf_password->text()));
 
 	m->lfm->login();
 }
 
 
-void GUI_LastFM::active_changed(bool active) {
+void GUI_LastFM::active_changed(bool active)
+{
 	if(!is_ui_initialized()){
 		return;
 	}
@@ -155,7 +164,8 @@ void GUI_LastFM::active_changed(bool active) {
 }
 
 
-void GUI_LastFM::logged_in(bool success){
+void GUI_LastFM::logged_in(bool success)
+{
 	if(!is_ui_initialized()){
 		return;
 	}
@@ -167,5 +177,7 @@ void GUI_LastFM::logged_in(bool success){
 	else{
 		ui->lab_status->setText(tr("Not logged in"));
 	}
+
+	ui->btn_login->setEnabled(true);
 }
 

@@ -55,6 +55,8 @@ enum class SettingKey : unsigned short
 	LFM_Active=0,
 	LFM_ScrobbleTimeSec,
 	LFM_Login,
+	LFM_Username,
+	LFM_Password,
 	LFM_Corrections,
 	LFM_ShowErrors,
 	LFM_SessionKey,
@@ -198,6 +200,7 @@ enum class SettingKey : unsigned short
 	Proxy_SavePw,
 
 	Logger_Level,
+	Settings_Revision,
 
 	Num_Setting_Keys
 };
@@ -226,7 +229,9 @@ namespace Set
 	//typedef SettingKey<bool, SK::LFM_Active> LFM_Active_t; const LFM_Active_t LFM_Active
 	INST(bool,				LFM_Active)				/* is lastFM active? */
 	INST(int,				LFM_ScrobbleTimeSec)	/* time in sec when to scrobble */
-	INST(StringPair,		LFM_Login)				/* 2-Tupel, username, password */
+	INST(StringPair,		LFM_Login)				/* deprecated: 2-Tupel, username, password */
+	INST(QString,			LFM_Username)			/* username*/
+	INST(QString,			LFM_Password)			/* encrypted password */
 
 	INST(bool,				LFM_Corrections)		/* propose lfm corrections */
 	INST(bool,				LFM_ShowErrors)			/* get error message, if there are lfm problems */
@@ -365,6 +370,8 @@ namespace Set
 	INST(QString,			Proxy_Hostname)			/* Proxy Hostname/IP Address */
 	INST(int,				Proxy_Port)				/* Proxy Port 3128 */
 	INST(bool,				Proxy_SavePw)				/* Should password be saved */
+
+	INST(int,				Settings_Revision)		/* Version number of settings */
 
 	INST(int,				Logger_Level)				/* Also log development: */
 }

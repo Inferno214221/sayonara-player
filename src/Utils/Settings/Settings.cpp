@@ -91,23 +91,26 @@ bool Settings::check_settings()
 
 void Settings::apply_fixes()
 {
-	/** Create priv keys **/
-	QByteArray priv_key = this->get<Set::Player_PrivId>();
-	if(priv_key.isEmpty())
+	int settings_revision = this->get<Set::Settings_Revision>();
+	if(settings_revision < 1)
 	{
-		StringPair lfm_pw = this->get<Set::LFM_Login>();
-		QString proxy_pw = this->get<Set::Proxy_Password>();
-
-		priv_key = ::Util::random_string(32).toLocal8Bit();
+		// Create Crypt keys
+		QByteArray priv_key = ::Util::random_string(32).toLocal8Bit();
 		this->set<Set::Player_PrivId>(priv_key);
 
 		QByteArray pub_key = ::Util::random_string(32).toLocal8Bit();
 		this->set<Set::Player_PublicId>(pub_key);
 
-		lfm_pw.second = Util::Crypt::encrypt(lfm_pw.second);
-		proxy_pw = Util::Crypt::encrypt(proxy_pw);
+		// Crypt Last FM password
+		StringPair lfm_pw = this->get<Set::LFM_Login>();
+		this->set<Set::LFM_Username>(lfm_pw.first);
+		this->set<Set::LFM_Password>(Util::Crypt::encrypt(lfm_pw.second));
+		this->set<Set::LFM_Login>(StringPair("", ""));
 
-		this->set<Set::LFM_Login>(lfm_pw);
-		this->set<Set::Proxy_Password>(proxy_pw);
+		// Crypt Proxy Password
+		QString proxy_pw = this->get<Set::Proxy_Password>();
+		this->set<Set::Proxy_Password>(Util::Crypt::encrypt(proxy_pw));
+
+		this->set<Set::Settings_Revision>(1);
 	}
 }

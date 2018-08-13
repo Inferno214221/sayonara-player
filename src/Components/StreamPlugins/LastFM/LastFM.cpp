@@ -84,26 +84,17 @@ Base::Base() :
 	QObject(),
 	SayonaraClass()
 {
-	m = Pimpl::make<Base::Private>(this);
+	m = Pimpl::make<Private>(this);
 
 	connect(m->play_manager, &PlayManager::sig_track_changed,	this, &Base::current_track_changed);
 	connect(m->play_manager, &PlayManager::sig_position_changed_ms, this, &Base::position_ms_changed);
 	connect(m->track_changed_thread, &TrackChangedThread::sig_similar_artists_available,
 			this, &Base::similar_artists_fetched);
 
-	Set::listen<Set::LFM_Login>(this, &Base::login, false);
 	Set::listen<Set::LFM_Active>(this, &Base::login);
 }
 
 Base::~Base() {}
-
-void Base::get_login(QString& user, QString& pw)
-{
-	StringPair user_pw = Settings::instance()->get<Set::LFM_Login>();
-	user = user_pw.first;
-	pw = Util::Crypt::decrypt(user_pw.second);
-}
-
 
 bool Base::is_logged_in()
 {
@@ -121,8 +112,8 @@ void Base::login()
 	LoginThread* login_thread = new LoginThread(this);
 	connect(login_thread, &LoginThread::sig_logged_in, this, &Base::login_thread_finished);
 
-	QString password;
-	get_login(m->username, password);
+	m->username = _settings->get<Set::LFM_Username>();
+	QString password = Util::Crypt::decrypt(_settings->get<Set::LFM_Password>());
 
 	login_thread->login(m->username, password);
 }

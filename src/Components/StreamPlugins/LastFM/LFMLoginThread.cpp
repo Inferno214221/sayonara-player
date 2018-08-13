@@ -35,20 +35,20 @@ LoginThread::~LoginThread() {}
 void LoginThread::login(const QString& username, const QString& password)
 {
 	WebAccess* lfm_wa = new WebAccess();
-    connect(lfm_wa, &WebAccess::sig_response, this, &LoginThread::wa_response);
-    connect(lfm_wa, &WebAccess::sig_error, this, &LoginThread::wa_error);
+	connect(lfm_wa, &WebAccess::sig_response, this, &LoginThread::wa_response);
+	connect(lfm_wa, &WebAccess::sig_error, this, &LoginThread::wa_error);
 
 	_login_info.logged_in = false;
 	_login_info.session_key = "";
 	_login_info.subscriber = false;
 
-    UrlParams signature_data;
-        signature_data["api_key"] = LFM_API_KEY;
+	UrlParams signature_data;
+		signature_data["api_key"] = LFM_API_KEY;
 		signature_data["method"] = "auth.getMobileSession";
 		signature_data["password"] = password.toLocal8Bit();
 		signature_data["username"] = username.toLocal8Bit();
 
-		signature_data.append_signature();
+	signature_data.append_signature();
 
 	QByteArray post_data;
 	QString url = lfm_wa->create_std_url_post("https://ws.audioscrobbler.com/2.0/", signature_data, post_data);
