@@ -76,7 +76,14 @@ CoverButton::CoverButton(QWidget* parent) :
 	connect(cn, &Cover::ChangeNotfier::sig_covers_changed, this, &CoverButton::refresh);
 }
 
-CoverButton::~CoverButton() {}
+CoverButton::~CoverButton()
+{
+	if(m->cover_lookup)
+	{
+		m->cover_lookup->stop();
+		m->cover_lookup->deleteLater();
+	}
+}
 
 void CoverButton::refresh()
 {
@@ -181,7 +188,8 @@ this->setToolTip("Cover source: " + cl.identifer() + "\n" + cl.preferred_path())
 
 void CoverButton::cover_lookup_finished(bool success)
 {
-	if(!success){
+	if(!success)
+	{
 		sp_log(Log::Warning, this) << "Cover lookup finished: false";
 		set_cover_image(Location::invalid_location().preferred_path());
 	}
