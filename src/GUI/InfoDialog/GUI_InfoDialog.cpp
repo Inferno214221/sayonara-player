@@ -178,7 +178,16 @@ void GUI_InfoDialog::show(GUI_InfoDialog::Tab tab)
 		tab = GUI_InfoDialog::Tab::Info;
 	}
 
-	tab_widget->setCurrentIndex((int) tab);
+	if(tab_widget->currentIndex() == ((int) tab))
+	{
+		tab_index_changed(tab);
+	}
+
+	else
+	{
+		tab_widget->setCurrentIndex((int) tab);
+	}
+
 
 	Dialog::show();
 }
