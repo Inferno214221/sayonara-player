@@ -17,7 +17,7 @@
    <item row="1" column="0">
     <widget class="QLabel" name="lab_activate">
      <property name="text">
-      <string notr="true">Activate</string>
+      <string notr="true">Active</string>
      </property>
     </widget>
    </item>

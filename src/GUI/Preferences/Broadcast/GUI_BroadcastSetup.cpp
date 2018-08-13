@@ -99,7 +99,7 @@ void GUI_BroadcastSetup::skin_changed()
 void GUI_BroadcastSetup::retranslate_ui()
 {
 	ui->retranslateUi(this);
-	ui->lab_activate->setText(Lang::get(Lang::Activate));
+	ui->lab_activate->setText(Lang::get(Lang::Active));
 	ui->lab_url_title->setText(Lang::get(Lang::StreamUrl));
 }
 

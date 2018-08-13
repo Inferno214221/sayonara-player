@@ -41,7 +41,7 @@ GUI_Speed::~GUI_Speed()
 void GUI_Speed::retranslate_ui()
 {
 	ui->retranslateUi(this);
-	ui->cb_active->setText(Lang::get(Lang::Activate));
+	ui->cb_active->setText(Lang::get(Lang::Active));
 }
 
 void GUI_Speed::init_ui()

@@ -20,9 +20,10 @@
 
 #include "GUI_Notifications.h"
 #include "GUI/Preferences/ui_GUI_Notifications.h"
+#include "Interfaces/Notification/NotificationHandler.h"
 
 #include "Utils/Settings/Settings.h"
-#include "Interfaces/Notification/NotificationHandler.h"
+#include "Utils/Language.h"
 
 GUI_Notifications::GUI_Notifications(const QString& identifier) :
 	Preferences::Base(identifier) {}
@@ -38,6 +39,7 @@ GUI_Notifications::~GUI_Notifications()
 void GUI_Notifications::retranslate_ui()
 {
 	ui->retranslateUi(this);
+	ui->cb_activate->setText(Lang::get(Lang::Active));
 
 	notifications_changed();
 }

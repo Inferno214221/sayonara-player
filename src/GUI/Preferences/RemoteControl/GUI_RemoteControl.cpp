@@ -26,6 +26,7 @@
 #include "GUI/Preferences/ui_GUI_RemoteControl.h"
 
 #include "Utils/Utils.h"
+#include "Utils/Language.h"
 #include "Utils/Settings/Settings.h"
 
 
@@ -53,6 +54,7 @@ void GUI_RemoteControl::init_ui()
 void GUI_RemoteControl::retranslate_ui()
 {
 	ui->retranslateUi(this);
+	ui->lab_active->setText(Lang::get(Lang::Active));
 }
 
 

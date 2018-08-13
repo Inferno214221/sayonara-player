@@ -164,6 +164,10 @@ bool SettingConverter<QPoint>::cvt_from_string(const QString& val, QPoint& sz)
 /** QByteArray **/
 QString SettingConverter<QByteArray>::cvt_to_string(const QByteArray& arr)
 {
+	if(arr.isEmpty()){
+		return QString();
+	}
+
 	QStringList numbers;
 	for(Byte item : arr)
 	{
@@ -175,6 +179,11 @@ QString SettingConverter<QByteArray>::cvt_to_string(const QByteArray& arr)
 
 bool SettingConverter<QByteArray>::cvt_from_string(const QString& str, QByteArray& arr)
 {
+	if(str.isEmpty()){
+		arr = QByteArray();
+		return true;
+	}
+
 	QStringList numbers = str.split(",");
 
 	for(const QString& num_str : numbers)

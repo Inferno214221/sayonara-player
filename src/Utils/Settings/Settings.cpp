@@ -22,6 +22,9 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/typedefs.h"
 
+#include "Utils/Crypt.h"
+#include "Utils/Utils.h"
+
 #include <array>
 #include <iterator>
 
@@ -85,9 +88,6 @@ bool Settings::check_settings()
 	return m->initialized;
 }
 
-
-#include "Utils/Crypt.h"
-#include "Utils/Utils.h"
 
 void Settings::apply_fixes()
 {

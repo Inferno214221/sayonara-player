@@ -117,7 +117,7 @@ QString GUI_AudioConverter::get_display_name() const
 void GUI_AudioConverter::retranslate_ui()
 {
 	ui->retranslateUi(this);
-	ui->cb_active->setText(Lang::get(Lang::Activate));
+	ui->cb_active->setText(Lang::get(Lang::Active));
 }
 
 

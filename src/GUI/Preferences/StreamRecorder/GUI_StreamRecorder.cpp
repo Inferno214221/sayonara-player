@@ -125,6 +125,7 @@ void GUI_StreamRecorder::retranslate_ui()
 {
 	ui->retranslateUi(this);
 
+	ui->cb_activate->setText(Lang::get(Lang::Active));
 	ui->btn_undo->setText(Lang::get(Lang::Undo));
 	ui->btn_default->setText(Lang::get(Lang::Default));
 }

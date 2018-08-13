@@ -86,7 +86,7 @@ QString GUI_LastFM::action_name() const
 void GUI_LastFM::retranslate_ui()
 {
 	ui->retranslateUi(this);
-	ui->lab_activate->setText(Lang::get(Lang::Activate));
+	ui->lab_activate->setText(Lang::get(Lang::Active));
 	ui->lab_sec->setText(Lang::get(Lang::Seconds));
 
 	logged_in(m->lfm->is_logged_in());
