@@ -21,7 +21,7 @@
 #ifndef DATABASESETTINGS_H
 #define DATABASESETTINGS_H
 
-#include "Database/DatabaseModule.h"
+#include "Database/Module.h"
 
 class QVariant;
 

@@ -26,8 +26,8 @@
 #include "Utils/Utils.h"
 #include "Utils/Message/Message.h"
 
-#include "Database/DatabaseConnector.h"
-#include "Database/DatabaseVisStyles.h"
+#include "Database/Connector.h"
+#include "Database/VisStyles.h"
 
 #include <QColorDialog>
 #include <QCloseEvent>

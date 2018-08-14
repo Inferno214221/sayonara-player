@@ -34,7 +34,7 @@
 #include "Utils/Library/Sortorder.h"
 
 #include "Database/LibraryDatabase.h"
-#include "Database/DatabaseConnector.h"
+#include "Database/Connector.h"
 
 #include <QHash>
 #include <algorithm>

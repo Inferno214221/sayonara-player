@@ -18,15 +18,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Database/SayonaraQuery.h"
-#include "Database/DatabaseConnector.h"
+#include "Database/Connector.h"
+#include "Database/Query.h"
 #include "Database/LibraryDatabase.h"
-#include "Database/DatabaseBookmarks.h"
-#include "Database/DatabasePlaylist.h"
-#include "Database/DatabasePodcasts.h"
-#include "Database/DatabaseStreams.h"
-#include "Database/DatabaseSettings.h"
-#include "Database/DatabaseVisStyles.h"
+#include "Database/Bookmarks.h"
+#include "Database/Playlist.h"
+#include "Database/Podcasts.h"
+#include "Database/Streams.h"
+#include "Database/Settings.h"
+#include "Database/VisStyles.h"
 
 #include "Utils/MetaData/Album.h"
 #include "Utils/MetaData/Artist.h"

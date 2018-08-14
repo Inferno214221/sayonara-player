@@ -24,7 +24,7 @@
 #include "Components/Tagging/ChangeNotifier.h"
 #include "Components/Tagging/Editor.h"
 
-#include "Database/DatabaseConnector.h"
+#include "Database/Connector.h"
 #include "Database/LibraryDatabase.h"
 
 #include "Utils/MetaData/MetaDataList.h"

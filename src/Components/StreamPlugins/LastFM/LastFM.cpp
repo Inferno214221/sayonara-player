@@ -44,7 +44,7 @@
 #include "Components/Playlist/PlaylistHandler.h"
 #include "Components/Playlist/AbstractPlaylist.h"
 
-#include "Database/DatabaseConnector.h"
+#include "Database/Connector.h"
 #include "Database/LibraryDatabase.h"
 
 #include <QDomDocument>

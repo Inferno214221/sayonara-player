@@ -20,14 +20,14 @@
 
 #include "Setting.h"
 #include "Utils/Logger/Logger.h"
-#include "Database/DatabaseSettings.h"
+#include "Database/Settings.h"
 
 #include <QVariant>
 
 struct AbstrSetting::Private
 {
 	QString			db_key;
-    SettingKey	key;
+	SettingKey	key;
 	bool			db_setting;
 };
 
@@ -73,29 +73,29 @@ AbstrSetting::~AbstrSetting() {}
 
 SettingKey AbstrSetting::get_key() const
 {
-    return m->key;
+	return m->key;
 }
 
 QString AbstrSetting::db_key() const
 {
-    return m->db_key;
+	return m->db_key;
 }
 
 bool AbstrSetting::is_db_setting() const
 {
-    return m->db_setting;
+	return m->db_setting;
 }
 
 void AbstrSetting::assign_value(const QString& value)
 {
-    if(!m->db_setting) {
-        return;
-    }
+	if(!m->db_setting) {
+		return;
+	}
 
-    bool success = load_value_from_string(value);
+	bool success = load_value_from_string(value);
 
-    if(!success)
-    {
+	if(!success)
+	{
 		sp_log(Log::Warning, this) << "Setting " << m->db_key << ": Cannot convert. Use default value...";
 		assign_default_value();
 	}

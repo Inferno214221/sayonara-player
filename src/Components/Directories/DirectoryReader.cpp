@@ -20,14 +20,15 @@
 
 #include "DirectoryReader.h"
 
+#include "Database/Connector.h"
+#include "Database/LibraryDatabase.h"
+
 #include "Utils/FileUtils.h"
 #include "Utils/Utils.h"
 #include "Utils/Tagging/Tagging.h"
 #include "Utils/Parser/PlaylistParser.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/MetaDataList.h"
-#include "Database/DatabaseConnector.h"
-#include "Database/LibraryDatabase.h"
 
 #include <QDirIterator>
 #include <QFileInfo>

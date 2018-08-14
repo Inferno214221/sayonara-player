@@ -1,4 +1,4 @@
-/* DatabaseBookmarks.h */
+/* DatabaseSearchMode.h */
 
 /* Copyright (C) 2011-2017  Lucio Carreras
  *
@@ -18,26 +18,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DATABASEBOOKMARKS_H
-#define DATABASEBOOKMARKS_H
+#ifndef DATABASESEARCHMODE_H
+#define DATABASESEARCHMODE_H
 
-#include "Database/DatabaseModule.h"
-#include <QMap>
+#include "Utils/Pimpl.h"
+#include "Utils/Library/SearchMode.h"
+#include "Database/Module.h"
+
+class QSqlDatabase;
 
 namespace DB
 {
-	class Bookmarks :
-			private Module
+	class SearchableModule :
+		public Module
 	{
-	public:
-		Bookmarks(const QString& connection_name, DbId db_id);
-		~Bookmarks();
+		PIMPL(SearchableModule)
 
-		bool searchBookmarks(int track_id, QMap<Seconds, QString>& bookmarks);
-		bool insertBookmark(int track_id, Seconds time, const QString& text);
-		bool removeBookmark(int track_id, Seconds time);
-		bool removeAllBookmarks(int track_id);
-	};
+		private:
+			void init();
+
+		protected:
+			SearchableModule(const QString& connection_name, DbId db_id);
+
+		public:
+			virtual ~SearchableModule();
+
+			::Library::SearchModeMask search_mode();
+			void update_search_mode();
+		};
 }
 
-#endif // DATABASEBOOKMARKS_H
+#endif // DATABASESEARCHMODE_H

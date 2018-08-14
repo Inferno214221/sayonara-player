@@ -1,4 +1,4 @@
-/* LocalLibraryDatabase.cpp */
+/* DatabaseBookmarks.h */
 
 /* Copyright (C) 2011-2017  Lucio Carreras
  *
@@ -18,11 +18,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "LocalLibraryDatabase.h"
+#ifndef DATABASEBOOKMARKS_H
+#define DATABASEBOOKMARKS_H
 
-DB::LocalLibraryDatabase::LocalLibraryDatabase(LibraryId library_id) :
-	DB::LibraryDatabase("player.db", 0, library_id)
-{}
+#include "Database/Module.h"
+#include <QMap>
 
-DB::LocalLibraryDatabase::~LocalLibraryDatabase() {}
+namespace DB
+{
+	class Bookmarks :
+			private Module
+	{
+	public:
+		Bookmarks(const QString& connection_name, DbId db_id);
+		~Bookmarks();
 
+		bool searchBookmarks(int track_id, QMap<Seconds, QString>& bookmarks);
+		bool insertBookmark(int track_id, Seconds time, const QString& text);
+		bool removeBookmark(int track_id, Seconds time);
+		bool removeAllBookmarks(int track_id);
+	};
+}
+
+#endif // DATABASEBOOKMARKS_H

@@ -41,7 +41,7 @@
 #include "Utils/MetaData/Genre.h"
 #include "Utils/Language.h"
 
-#include "Database/DatabaseConnector.h"
+#include "Database/Connector.h"
 #include "Database/LibraryDatabase.h"
 
 #include <QMap>

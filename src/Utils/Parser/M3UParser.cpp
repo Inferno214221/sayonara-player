@@ -20,10 +20,13 @@
 
 #include "PlaylistParser.h"
 #include "M3UParser.h"
-#include "Utils/FileUtils.h"
+
 #include "Tagging/Tagging.h"
+
+#include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaDataList.h"
-#include "Database/DatabaseConnector.h"
+
+#include "Database/Connector.h"
 #include "Database/LibraryDatabase.h"
 
 #include <QRegExp>

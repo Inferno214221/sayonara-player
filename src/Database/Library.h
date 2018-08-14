@@ -21,7 +21,7 @@
 #ifndef DATABASELIBRARY_H
 #define DATABASELIBRARY_H
 
-#include "Database/DatabaseModule.h"
+#include "Database/Module.h"
 
 #include <QList>
 #include <QMap>
@@ -44,7 +44,9 @@ namespace DB
 			Library(const QString& connection_name, DbId db_id);
 			~Library();
 
-			QList<::Library::Info> get_all_libraries();
+			using LibraryInfo=::Library::Info;
+			QList<LibraryInfo> get_all_libraries();
+
 			bool insert_library(LibraryId library_id, const QString& library_name, const QString& library_path, int index);
 			bool edit_library(LibraryId library_id, const QString& new_name, const QString& new_path);
 			bool remove_library(LibraryId library_id);

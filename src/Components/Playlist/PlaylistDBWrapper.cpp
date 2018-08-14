@@ -27,8 +27,8 @@
 #include "Utils/Playlist/CustomPlaylist.h"
 #include "Utils/Tagging/Tagging.h"
 
-#include "Database/DatabaseConnector.h"
-#include "Database/DatabasePlaylist.h"
+#include "Database/Connector.h"
+#include "Database/Playlist.h"
 
 #include <utility>
 

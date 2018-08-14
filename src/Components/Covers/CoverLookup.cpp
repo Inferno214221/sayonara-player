@@ -30,7 +30,7 @@
 #include "CoverFetchThread.h"
 #include "CoverLocation.h"
 
-#include "Database/DatabaseConnector.h"
+#include "Database/Connector.h"
 
 #include "Utils/Logger/Logger.h"
 #include "Utils/MetaData/MetaData.h"

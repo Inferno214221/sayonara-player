@@ -21,11 +21,11 @@
 #ifndef LIBRARYDATABASE_H
 #define LIBRARYDATABASE_H
 
-#include "Database/AbstractDatabase.h"
-#include "Database/DatabaseAlbums.h"
-#include "Database/DatabaseArtists.h"
-#include "Database/DatabaseTracks.h"
-#include "Database/DatabaseLibrary.h"
+#include "Database/Base.h"
+#include "Database/Albums.h"
+#include "Database/Artists.h"
+#include "Database/Tracks.h"
+#include "Database/Library.h"
 #include "Utils/Pimpl.h"
 
 namespace DB
@@ -48,12 +48,17 @@ namespace DB
 		LibraryDatabase(const QString& connection_name, DbId db_id, LibraryId library_id);
 		virtual ~LibraryDatabase();
 
-		void change_artistid_field(ArtistIDField field);
+
 		void clear();
 
 		LibraryId library_id() const;
 
 		virtual bool store_metadata(const MetaDataList& v_md);
+
+		void change_artistid_field(ArtistIDField field);
+
+		QString artistid_field() const override;
+		QString artistname_field() const override;
 
 		QSqlDatabase db() const;
 		DbId db_id() const;

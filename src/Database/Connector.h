@@ -1,4 +1,4 @@
-/* DatabaseConnector.h */
+/* Connector.h */
 
 /* Copyright (C) 2011-2017 Lucio Carreras
  *
@@ -21,7 +21,7 @@
 #ifndef DatabaseConnector_H
 #define DatabaseConnector_H
 
-#include "Database/AbstractDatabase.h"
+#include "Database/Base.h"
 
 #include "Utils/Singleton.h"
 #include "Utils/Pimpl.h"

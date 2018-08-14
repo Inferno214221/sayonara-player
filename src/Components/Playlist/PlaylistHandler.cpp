@@ -29,7 +29,7 @@
 
 #include "Components/Directories/DirectoryReader.h"
 #include "Components/PlayManager/PlayManager.h"
-#include "Database/DatabaseConnector.h"
+#include "Database/Connector.h"
 
 #include "Utils/globals.h"
 #include "Utils/Utils.h"

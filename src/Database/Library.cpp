@@ -18,11 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Database/SayonaraQuery.h"
-#include "Database/DatabaseLibrary.h"
-#include "Database/DatabaseAlbums.h"
-#include "Database/DatabaseArtists.h"
-#include "Database/DatabaseTracks.h"
+#include "Database/Query.h"
+#include "Database/Library.h"
+#include "Database/Albums.h"
+#include "Database/Artists.h"
+#include "Database/Tracks.h"
 
 #include "Utils/Utils.h"
 #include "Utils/MetaData/MetaData.h"

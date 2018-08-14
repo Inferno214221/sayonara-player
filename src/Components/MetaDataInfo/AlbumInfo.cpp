@@ -22,7 +22,7 @@
 #include "MetaDataInfo.h"
 
 #include "Database/LibraryDatabase.h"
-#include "Database/DatabaseConnector.h"
+#include "Database/Connector.h"
 
 #include "Utils/Set.h"
 #include "Utils/Language.h"

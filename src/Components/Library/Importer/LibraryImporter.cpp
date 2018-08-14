@@ -30,7 +30,7 @@
 #include "Utils/Message/Message.h"
 #include "Utils/Logger/Logger.h"
 
-#include "Database/DatabaseConnector.h"
+#include "Database/Connector.h"
 #include "Database/LibraryDatabase.h"
 
 #include <QMap>

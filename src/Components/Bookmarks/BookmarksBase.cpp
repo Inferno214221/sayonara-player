@@ -1,8 +1,8 @@
 #include "BookmarksBase.h"
 #include "Bookmark.h"
 
-#include "Database/DatabaseConnector.h"
-#include "Database/DatabaseBookmarks.h"
+#include "Database/Connector.h"
+#include "Database/Bookmarks.h"
 
 #include "Utils/Utils.h"
 #include "Utils/globals.h"

@@ -28,8 +28,8 @@
 #include "Utils/Logger/Logger.h"
 #include "Utils/globals.h"
 
-#include "Database/SayonaraQuery.h"
-#include "Database/DatabaseConnector.h"
+#include "Database/Query.h"
+#include "Database/Connector.h"
 #include "Database/LibraryDatabase.h"
 
 #include <QList>

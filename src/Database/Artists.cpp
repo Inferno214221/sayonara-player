@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Database/SayonaraQuery.h"
-#include "Database/DatabaseArtists.h"
+#include "Database/Query.h"
+#include "Database/Artists.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/Artist.h"
 #include "Utils/Library/Filter.h"
@@ -33,14 +33,9 @@ struct Artists::Private
 {
 	QString search_view;
 	QString track_view;
-	QString artistid_field;
-	QString artistname_field;
 
 	Private(LibraryId library_id)
 	{
-		artistid_field = "artistID";
-		artistname_field = "artistName";
-
 		if(library_id < 0) {
 			search_view = QString("track_search_view");
 			track_view = QString("tracks");
@@ -55,7 +50,7 @@ struct Artists::Private
 
 
 Artists::Artists(const QString& connection_name, DbId db_id, LibraryId library_id) :
-	DB::SearchMode(connection_name, db_id)
+	DB::SearchableModule(connection_name, db_id)
 {
 	m = Pimpl::make<Private>(library_id);
 }
@@ -76,7 +71,7 @@ QString Artists::fetch_query_artists(bool also_empty) const
 		join = " LEFT OUTER JOIN ";
 	}
 
-	sql += join + " " + m->track_view + " ON " + m->track_view + "." + m->artistid_field + " = artists.artistID ";
+	sql += join + " " + m->track_view + " ON " + m->track_view + "." + artistid_field() + " = artists.artistID ";
 	sql += join + " albums ON " + m->track_view + ".albumID = albums.albumID ";
 
 	return sql;
@@ -203,8 +198,8 @@ bool Artists::getAllArtistsBySearchString(const Library::Filter& filter, ArtistL
 	Query q(this);
 	QString query;
 	QString select = "SELECT " +
-					 m->artistid_field + ", " +
-					 m->artistname_field + ", " +
+					 artistid_field() + ", " +
+					 artistname_field() + ", " +
 					 "COUNT(DISTINCT trackID) AS trackCount "
 					 "FROM " + m->search_view + " ";
 
@@ -229,7 +224,7 @@ bool Artists::getAllArtistsBySearchString(const Library::Filter& filter, ArtistL
 	if(query.isEmpty()){
 			query = select +
 					where_clause +
-					"GROUP BY " + m->artistid_field + ", " + m->artistname_field + " ";
+					"GROUP BY " + artistid_field() + ", " + artistname_field() + " ";
 	}
 
 	query += _create_order_string(sortorder) + ";";
@@ -301,7 +296,7 @@ ArtistId Artists::updateArtist(const Artist &artist)
 
 void Artists::updateArtistCissearch()
 {
-	SearchMode::update_search_mode();
+	SearchableModule::update_search_mode();
 
 	ArtistList artists;
 	getAllArtists(artists, true);
@@ -323,16 +318,4 @@ void Artists::updateArtistCissearch()
 	}
 
 	db().commit();
-}
-
-
-void Artists::change_artistid_field(const QString& id, const QString& name)
-{
-	m->artistid_field = id;
-	m->artistname_field = name;
-}
-
-void Artists::change_track_lookup_field(const QString& search_view)
-{
-	m->search_view = search_view;
 }

@@ -27,7 +27,7 @@
 #include "GUI/Utils/Icons.h"
 
 #include "Components/Library/LibraryManager.h"
-#include "Database/DatabaseConnector.h"
+#include "Database/Connector.h"
 #include "Database/LibraryDatabase.h"
 
 #include "Utils/FileUtils.h"

@@ -23,10 +23,9 @@
 
 #include "Utils/Pimpl.h"
 #include "Utils/Playlist/CustomPlaylistFwd.h"
-#include "Database/DatabasePlaylist.h"
+#include "Database/Playlist.h"
 
 class MetaDataList;
-
 
 namespace Playlist
 {

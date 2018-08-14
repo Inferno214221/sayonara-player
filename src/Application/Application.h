@@ -39,8 +39,6 @@ public:
 
 	bool init(const QStringList& files_to_play);
 
-	bool settings_initialized() const;
-
 private:
 	void init_single_instance_thread();
 	void init_preferences();

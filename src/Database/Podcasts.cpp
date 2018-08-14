@@ -1,4 +1,4 @@
-/* DatabaseStreams.cpp */
+/* DatabasePodcasts.cpp */
 
 /* Copyright (C) 2011-2017  Lucio Carreras
  *
@@ -18,49 +18,52 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Database/SayonaraQuery.h"
-#include "Database/DatabaseStreams.h"
+#include "Database/Query.h"
+#include "Database/Podcasts.h"
+
+#include "Utils/Logger/Logger.h"
 #include "Utils/Utils.h"
 
-using DB::Streams;
+using DB::Podcasts;
 using DB::Query;
 
-Streams::Streams(const QString& connection_name, DbId db_id) :
-	Module(connection_name, db_id) {}
+Podcasts::Podcasts(const QString& connection_name, DbId db_id) :
+	DB::Module(connection_name, db_id) {}
 
-Streams::~Streams() {}
+Podcasts::~Podcasts() {}
 
-bool Streams::getAllStreams(QMap<QString, QString>& streams)
+bool Podcasts::getAllPodcasts(QMap<QString, QString> & podcasts)
 {
-	streams.clear();
+	podcasts.clear();
 
 	Query q(this);
-	q.prepare("SELECT name, url FROM savedstreams;");
+	q.prepare("SELECT name, url FROM savedpodcasts;");
 
 	if (!q.exec()){
-		q.show_error("Cannot get all streams");
+		q.show_error("Cannot fetch podcasts");
 		return false;
 	}
 
 	while(q.next()) {
 		QString name = q.value(0).toString();
-		QString url = q.value(1).toString().trimmed();
+		QString url = q.value(1).toString();
 
-		streams[name] = url;
+		podcasts[name] = url;
 	}
 
 	return true;
 }
 
 
-bool Streams::deleteStream(const QString& name)
+bool Podcasts::deletePodcast(const QString& name)
 {
 	Query q(this);
-	q.prepare("DELETE FROM savedstreams WHERE name = :name;" );
+
+	q.prepare("DELETE FROM savedpodcasts WHERE name = :name;" );
 	q.bindValue(":name", Util::cvt_not_null(name));
 
 	if(!q.exec()) {
-		q.show_error(QString("Could not delete stream ") + name);
+		q.show_error(QString("Could not delete podcast ") + name);
 		return false;
 	}
 
@@ -68,37 +71,38 @@ bool Streams::deleteStream(const QString& name)
 }
 
 
-bool Streams::addStream(const QString& name, const QString& url)
+bool Podcasts::addPodcast(const QString& name, const QString& url)
 {
 	Query q(this);
-
-	q.prepare("INSERT INTO savedstreams (name, url) VALUES (:name, :url); " );
+	q.prepare("INSERT INTO savedpodcasts (name, url) VALUES (:name, :url); " );
 	q.bindValue(":name",	Util::cvt_not_null(name));
 	q.bindValue(":url",		Util::cvt_not_null(url));
 
 	if(!q.exec()) {
-		q.show_error(QString("Could not add stream ") + name);
+		sp_log(Log::Warning) << "Could not add podcast " << name << ", " << url;
 		return false;
 	}
 
+	sp_log(Log::Info) << "podcast " << name << ", " << url << " successfully added";
 	return true;
 }
 
 
-bool Streams::updateStreamUrl(const QString& name, const QString& url)
+bool Podcasts::updatePodcastUrl(const QString& name, const QString& url)
 {
 	Query q(this);
 
-	q.prepare("UPDATE savedstreams SET url=:url WHERE name=:name;");
+	q.prepare("UPDATE savedpodcasts SET url=:url WHERE name=:name;");
 	q.bindValue(":name",	Util::cvt_not_null(name));
 	q.bindValue(":url",		Util::cvt_not_null(url));
 
 	if(!q.exec()) {
-		q.show_error(QString("Could not update stream url ") + name);
+		q.show_error(QString("Could not update podcast url ") + name);
 		return false;
 	}
 
 	return true;
 }
+
 
 

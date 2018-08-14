@@ -37,6 +37,7 @@
 
 using namespace Cover;
 using Cover::Fetcher::Manager;
+using Cover::Fetcher::Base;
 
 using SortMap=QMap<QString, int>;
 
@@ -149,9 +150,10 @@ Manager::Manager() :
 {
 	m = Pimpl::make<Private>();
 
-	register_coverfetcher(new Fetcher::Google());
-	register_coverfetcher(new Fetcher::Discogs());
 	register_coverfetcher(new Fetcher::LastFM());
+	register_coverfetcher(new Fetcher::Discogs());
+	register_coverfetcher(new Fetcher::Google());
+
 	register_coverfetcher(m->std_cover_fetcher);
 
 	Set::listen<Set::Cover_Server>(this, &Manager::servers_changed);

@@ -19,7 +19,6 @@
  */
 
 
-
 #ifndef LOGLISTENER_H
 #define LOGLISTENER_H
 

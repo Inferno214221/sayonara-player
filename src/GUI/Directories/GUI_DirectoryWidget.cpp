@@ -37,7 +37,7 @@
 #include "Components/Directories/DirectoryReader.h"
 
 #include "Database/LibraryDatabase.h"
-#include "Database/DatabaseConnector.h"
+#include "Database/Connector.h"
 
 #include "Utils/Message/Message.h"
 #include "Utils/Library/LibraryNamespaces.h"

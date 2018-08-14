@@ -28,7 +28,7 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language.h"
 
-#include "Database/DatabaseConnector.h"
+#include "Database/Connector.h"
 #include "Database/LibraryDatabase.h"
 
 using namespace Library;

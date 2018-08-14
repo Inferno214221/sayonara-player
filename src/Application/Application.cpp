@@ -87,10 +87,9 @@
 #include "Utils/Macros.h"
 #include "Utils/Language.h"
 #include "Utils/Settings/Settings.h"
-#include "Utils/Settings/SettingRegistry.h"
 
-#include "Database/DatabaseConnector.h"
-#include "Database/DatabaseSettings.h"
+#include "Database/Connector.h"
+#include "Database/Settings.h"
 
 #include <QTime>
 #include <QSessionManager>
@@ -129,7 +128,6 @@ struct Application::Private
 	InstanceThread*		instance_thread=nullptr;
 	MetaTypeRegistry*	metatype_registry=nullptr;
 
-	bool				settings_initialized;
 	bool				was_shut_down;
 
 	Private()
@@ -138,15 +136,13 @@ struct Application::Private
 		qRegisterMetaType<uint64_t>("uint64_t");
 
 		/* Tell the settings manager which settings are necessary */
-		settings_initialized = SettingRegistry::init();
-
 		db = DB::Connector::instance();
 		db->settings_connector()->load_settings();
 
 		Gui::Icons::set_standard_theme(QIcon::themeName());
 		Gui::Icons::force_standard_icons(Settings::instance()->get<Set::Icon_ForceInDarkTheme>());
 
-		if( !settings_initialized )
+		if( !Settings::instance()->check_settings() )
 		{
 			sp_log(Log::Error, this) << "Cannot initialize settings";
 			return;
@@ -239,7 +235,6 @@ bool Application::init(const QStringList& files_to_play)
 	{
 		measure("Settings")
 
-		settings->apply_fixes();
 		QString version = QString(SAYONARA_VERSION);
 		settings->set<Set::Player_Version>(version);
 	}
@@ -387,12 +382,6 @@ void Application::init_plugins()
 	pph->add_plugin(new GUI_Crossfader());
 
 	sp_log(Log::Debug, this) << "Plugins finsihed: " << m->timer->elapsed() << "ms";
-}
-
-
-bool Application::settings_initialized() const
-{
-	return m->settings_initialized;
 }
 
 void Application::init_single_instance_thread()

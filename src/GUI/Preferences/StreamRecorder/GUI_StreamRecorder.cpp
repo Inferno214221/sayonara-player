@@ -25,7 +25,7 @@
 #include "GUI_StreamRecorder.h"
 #include "GUI/Preferences/ui_GUI_StreamRecorder.h"
 
-#include "Database/DatabaseConnector.h"
+#include "Database/Connector.h"
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Message/Message.h"

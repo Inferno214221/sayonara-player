@@ -20,6 +20,7 @@
 
 #include <iostream>
 #include "Utils/Settings/Settings.h"
+#include "Utils/Settings/SettingRegistry.h"
 #include "Utils/typedefs.h"
 
 #include "Utils/Crypt.h"
@@ -55,7 +56,6 @@ Settings::~Settings ()
 	}
 }
 
-
 AbstrSetting* Settings::setting(SettingKey key) const
 {
 	return m->settings[(int) key];
@@ -79,11 +79,16 @@ bool Settings::check_settings()
 		return true;
 	}
 
+	SettingRegistry::init();
 	bool has_empty = std::any_of(m->settings.begin(), m->settings.end(), [](AbstrSetting* s){
 		return (s==nullptr);
 	});
 
 	m->initialized = (!has_empty);
+
+	if(m->initialized){
+		apply_fixes();
+	}
 
 	return m->initialized;
 }

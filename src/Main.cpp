@@ -144,13 +144,9 @@ bool check_for_other_instance(const CommandLineData& cmd_data, QSharedMemory* me
 }
 
 
-int main(int argc, char *argv[]) 
+int main(int argc, char *argv[])
 {
 	Application app(argc, argv);
-
-	if(!app.settings_initialized()){
-		return 1;
-	}
 
 	CommandLineData cmd_data = CommandLineParser::parse(argc, argv);
 	if(cmd_data.abort){

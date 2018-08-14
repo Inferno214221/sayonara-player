@@ -21,7 +21,7 @@
 #ifndef ABSTRACTDATABASE_H
 #define ABSTRACTDATABASE_H
 
-#include "Database/DatabaseModule.h"
+#include "Database/Module.h"
 #include "Utils/Pimpl.h"
 #include <QObject>
 

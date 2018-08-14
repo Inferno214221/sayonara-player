@@ -21,7 +21,7 @@
 #ifndef SOUNDCLOUDDATA_H
 #define SOUNDCLOUDDATA_H
 
-#include "Database/AbstractDatabase.h"
+#include "Database/Base.h"
 #include "Database/LibraryDatabase.h"
 #include <QObject>
 

@@ -18,9 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Database/SayonaraQuery.h"
-#include "Database/DatabaseTracks.h"
-#include "Database/DatabaseLibrary.h"
+#include "Database/Tracks.h"
+#include "Database/Library.h"
+#include "Database/Query.h"
+
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/MetaData/Genre.h"
 #include "Utils/Logger/Logger.h"
@@ -29,7 +30,6 @@
 #include "Utils/Library/Filter.h"
 #include "Utils/Set.h"
 
-#include <QFileInfo>
 #include <QDateTime>
 #include <QMap>
 
@@ -37,28 +37,27 @@
 #include <tuple>
 
 using DB::Tracks;
+using DB::Query;
+using DB::SearchableModule;
 
 struct Tracks::Private
 {
 	QString track_view;
 	QString search_view;
-	QString artistid_field;
-	QString artistname_field;
 
 	LibraryId library_id;
 
 	Private(LibraryId library_id) :
 		library_id(library_id)
 	{
-		artistid_field = "artistID";
-		artistname_field = "artistName";
-
-		if(library_id < 0) {
+		if(library_id < 0)
+		{
 			track_view = QString("tracks");
 			search_view = QString("track_search_view");
 		}
 
-		else {
+		else
+		{
 			track_view = QString("track_view_%1").arg(library_id);
 			search_view = QString("track_search_view_%1").arg(library_id);
 		}
@@ -66,18 +65,10 @@ struct Tracks::Private
 };
 
 Tracks::Tracks(const QString& connection_name, DbId db_id, LibraryId library_id) :
-	DB::SearchMode(connection_name, db_id)
+	DB::SearchableModule(connection_name, db_id)
 {
 	m = Pimpl::make<Private>(library_id);
 
-	check_track_view(library_id);
-}
-
-Tracks::~Tracks() {}
-
-
-void Tracks::check_track_view(LibraryId library_id)
-{
 	QString select = "SELECT "
 					"trackID, "									// 0
 					"title, "									// 1
@@ -99,72 +90,88 @@ void Tracks::check_track_view(LibraryId library_id)
 					"tracks.libraryID AS trackLibraryID "		// 17
 	;
 
-	QString view_query =
-					"CREATE "
-					"VIEW "
-					"IF NOT EXISTS "
+	drop_track_view();
+	create_track_view(select);
+
+	drop_search_view();
+	create_track_search_view(select);
+}
+
+Tracks::~Tracks() {}
+
+
+void Tracks::drop_track_view()
+{
+	if(m->library_id < 0){
+		return;
+	}
+
+	Query q(this);
+	q.prepare("DROP VIEW " + m->track_view + "; ");
+	q.exec();
+}
+
+void Tracks::create_track_view(const QString& select_statement)
+{
+	if(m->library_id < 0){
+		return;
+	}
+
+	Query q(this);
+	QString query =	"CREATE VIEW "
 					+ m->track_view + " "
-					"AS " + select + " "
+					"AS " + select_statement + " "
 					"FROM tracks "
-	;
+					"WHERE tracks.libraryID = " + QString::number(m->library_id);
 
-	QString search_view_query =
+	q.prepare(query);
+	if(!q.exec())
+	{
+		q.show_error("Cannot create track view");
+	}
+}
 
-			"CREATE "
-			"VIEW "
-			"IF NOT EXISTS "
+void Tracks::drop_search_view()
+{
+	Query drop_search_view(this);
+	drop_search_view.prepare("DROP VIEW " + m->search_view + "; ");
+	drop_search_view.exec();
+}
+
+void Tracks::create_track_search_view(const QString& select_statement)
+{
+	QString query =
+			"CREATE VIEW "
 			+ m->search_view + " "
 			"AS "
-			+ select + ", "
-			"albums.name AS albumName, "				// 18
-			"albums.rating AS albumRating, "			// 19
-			"artists.name AS artistName, "				// 20
-			"albumArtists.name AS albumArtistName, "	// 21
-			"(albums.cissearch || ',' || artists.cissearch || ',' || tracks.cissearch) AS allCissearch, " // 21
+			+ select_statement + ", "
+			"albums.name AS albumName, "						// 18
+			"albums.rating AS albumRating, "					// 19
+			"artists.name AS artistName, "						// 20
+			"albumArtists.name AS albumArtistName, "			// 21
+			"(albums.cissearch || ',' || artists.cissearch || ',' || tracks.cissearch) AS allCissearch, " // 22
 			"tracks.fileCissearch AS fileCissearch "
 			"FROM tracks "
 			"LEFT OUTER JOIN albums ON tracks.albumID = albums.albumID "
 			"LEFT OUTER JOIN artists ON tracks.artistID = artists.artistID "
-			"LEFT OUTER JOIN artists albumArtists ON tracks.albumArtistID = albumArtists.artistID ";
+			"LEFT OUTER JOIN artists albumArtists ON tracks.albumArtistID = albumArtists.artistID "
 	;
 
-
-
 	if(m->library_id >= 0){
-		view_query += "WHERE libraryID=" + QString::number(m->library_id);
-		search_view_query += "WHERE libraryID=" + QString::number(m->library_id);
+		query += "WHERE libraryID=" + QString::number(m->library_id);
 	}
 
-	view_query += ";";
-	search_view_query += ";";
+	query += ";";
 
-	Query drop_view(this);
-	drop_view.prepare("DROP VIEW " + m->track_view + "; ");
-	drop_view.exec();
+	Query q(this);
+	q.prepare(query);
 
-	Query drop_search_view(this);
-	drop_search_view.prepare("DROP VIEW " + m->search_view + "; ");
-	drop_search_view.exec();
-
-	Query view_q(this);
-	Query search_view_q(this);
-
-	view_q.prepare(view_query);
-	search_view_q.prepare(search_view_query);
-
-	if(library_id >= 0)
+	if(!q.exec())
 	{
-		if(!view_q.exec())
-		{
-			view_q.show_error("Cannot create track view");
-		}
-	}
-
-	if(!search_view_q.exec())
-	{
-		search_view_q.show_error("Cannot create track search view");
+		q.show_error("Cannot create track search view");
 	}
 }
+
 
 QString Tracks::fetch_query_tracks() const
 {
@@ -283,7 +290,7 @@ MetaData Tracks::getTrackByPath(const QString& path)
 }
 
 
-MetaData Tracks::getTrackById(int id)
+MetaData Tracks::getTrackById(TrackID id)
 {
 	Query q(this);
 	QString querytext = fetch_query_tracks() + "WHERE trackID = :track_id;";
@@ -319,13 +326,13 @@ bool Tracks::getAllTracks(MetaDataList& returndata, ::Library::SortOrder sort)
 }
 
 
-bool Tracks::getAllTracksByAlbum(int album, MetaDataList& result)
+bool Tracks::getAllTracksByAlbum(AlbumId album, MetaDataList& result)
 {
 	return getAllTracksByAlbum(album, result, ::Library::Filter());
 }
 
 
-bool Tracks::getAllTracksByAlbum(int album, MetaDataList& returndata, const ::Library::Filter& filter, ::Library::SortOrder sort, int discnumber)
+bool Tracks::getAllTracksByAlbum(AlbumId album, MetaDataList& returndata, const ::Library::Filter& filter, ::Library::SortOrder sort, int discnumber)
 {
 	MetaDataList v_md;
 
@@ -419,12 +426,12 @@ bool Tracks::getAllTracksByAlbum(IdList albums, MetaDataList& returndata, const 
 	return db_fetch_tracks(q, returndata);
 }
 
-bool Tracks::getAllTracksByArtist(int artist, MetaDataList& returndata)
+bool Tracks::getAllTracksByArtist(ArtistId artist, MetaDataList& returndata)
 {
 	return getAllTracksByArtist(artist, returndata, ::Library::Filter());
 }
 
-bool Tracks::getAllTracksByArtist(int artist, MetaDataList& returndata, const ::Library::Filter& filter, ::Library::SortOrder sort)
+bool Tracks::getAllTracksByArtist(ArtistId artist, MetaDataList& returndata, const ::Library::Filter& filter, ::Library::SortOrder sort)
 {
 	IdList list{artist};
 
@@ -471,7 +478,7 @@ bool Tracks::getAllTracksByArtist(IdList artists, MetaDataList& returndata, cons
 
 	if(artists.size() > 0)
 	{
-		QString artist_id_field = m->search_view + "." + m->artistid_field;
+		QString artist_id_field = m->search_view + "." + artistid_field();
 		querytext += " (" + artist_id_field + "=:artist_id_0 ";
 		for(int i=1; i<artists.size(); i++) {
 			querytext += "OR " + artist_id_field + "=:artist_id_" + QString::number(i) + " ";
@@ -530,7 +537,7 @@ bool Tracks::getAllTracksBySearchString(const ::Library::Filter& filter, MetaDat
 
 
 
-bool Tracks::deleteTrack(int id)
+bool Tracks::deleteTrack(TrackID id)
 {
 	Query q(this);
 	QString querytext = QString("DELETE FROM tracks WHERE trackID = :track_id;");
@@ -663,7 +670,7 @@ SP::Set<Genre> Tracks::getAllGenres()
 
 void Tracks::updateTrackCissearch()
 {
-	SearchMode::update_search_mode();
+	SearchableModule::update_search_mode();
 
 	sp_log(Log::Debug, this) << "UPdate track cissearch " << search_mode();
 
@@ -698,9 +705,8 @@ void Tracks::deleteAllTracks()
 {
 	if(m->library_id >= 0)
 	{
-		Query q(this);
-		q.prepare("DROP VIEW " + m->search_view + ";");
-		//q.exec();
+		drop_track_view();
+		drop_search_view();
 
 		Query q2(this);
 		q2.prepare("DELETE FROM tracks WHERE libraryId=:library_id;");
@@ -851,13 +857,3 @@ bool Tracks::insertTrackIntoDatabase(const MetaData& md, ArtistId artist_id, Alb
 	return true;
 }
 
-void Tracks::change_artistid_field(const QString& id, const QString& name)
-{
-	m->artistid_field = id;
-	m->artistname_field = name;
-}
-
-void Tracks::change_track_lookup_field(const QString& track_lookup_field)
-{
-	m->search_view = track_lookup_field;
-}

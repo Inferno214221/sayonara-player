@@ -18,8 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Database/SayonaraQuery.h"
-#include "Database/DatabasePlaylist.h"
+#include "Database/Query.h"
+#include "Database/Playlist.h"
+
 #include "Utils/Logger/Logger.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Playlist/CustomPlaylist.h"

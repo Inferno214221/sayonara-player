@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Database/DatabaseModule.h"
+#include "Database/Module.h"
 #include "Utils/Logger/Logger.h"
 
 #include <QThread>

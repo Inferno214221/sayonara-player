@@ -21,8 +21,7 @@
 #ifndef DATABASEARTISTS_H
 #define DATABASEARTISTS_H
 
-#include "Database/DatabaseSearchMode.h"
-#include "Database/DatabaseModule.h"
+#include "Database/SearchableModule.h"
 #include "Utils/Library/Sortorder.h"
 
 namespace Library {class Filter;}
@@ -33,7 +32,7 @@ class ArtistList;
 namespace DB
 {
 	class Artists :
-			private SearchMode
+			private SearchableModule
 	{
 		PIMPL(Artists)
 
@@ -57,16 +56,14 @@ namespace DB
 
 			virtual void updateArtistCissearch();
 
+		protected:
+			virtual QString artistid_field() const=0;
+			virtual QString artistname_field() const=0;
 
 		private:
 			QString _create_order_string(::Library::SortOrder sort);
 
-		protected:
-			void change_artistid_field(const QString& id, const QString& name);
-			void change_track_lookup_field(const QString& track_lookup_field);
-
 			virtual QString fetch_query_artists(bool also_empty=false) const;
-
 	};
 }
 

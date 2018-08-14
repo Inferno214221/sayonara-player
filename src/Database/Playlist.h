@@ -21,7 +21,7 @@
 #ifndef DATABASEPLAYLIST_H
 #define DATABASEPLAYLIST_H
 
-#include "Database/DatabaseModule.h"
+#include "Database/Module.h"
 #include "Utils/Playlist/CustomPlaylistFwd.h"
 #include "Utils/Playlist/Sorting.h"
 

@@ -20,7 +20,7 @@
 
 #include "AbstractStreamHandler.h"
 
-#include "Database/DatabaseConnector.h"
+#include "Database/Connector.h"
 #include "Components/Playlist/PlaylistHandler.h"
 #include "Components/PlayManager/PlayManager.h"
 

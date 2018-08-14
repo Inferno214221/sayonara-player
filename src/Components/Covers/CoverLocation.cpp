@@ -32,7 +32,7 @@
 #include "Utils/globals.h"
 #include "Utils/Logger/Logger.h"
 
-#include "Database/DatabaseConnector.h"
+#include "Database/Connector.h"
 #include "Database/LibraryDatabase.h"
 
 #include <QDir>
@@ -45,6 +45,7 @@
 using Cover::Location;
 using namespace Cover::Fetcher;
 using Cover::StringMap;
+
 namespace FileUtils=::Util::File;
 
 struct Location::Private
@@ -185,9 +186,9 @@ Location Location::cover_location(const QString& album_name, const QStringList& 
 }
 
 
-static void check_cover_path(const QString& base_path, const QString& cover_path)
+static void check_coverpath(const QString& audio_path, const QString& cover_path)
 {
-	if(Util::File::is_www(base_path)){
+	if(Util::File::is_www(audio_path)){
 		return;
 	}
 
@@ -197,7 +198,6 @@ static void check_cover_path(const QString& base_path, const QString& cover_path
 	if(fi.exists() && fi.isSymLink() && !FileUtils::exists(fi.symLinkTarget()))
 	{
 		Util::File::delete_files({cover_path});
-
 		fi = QFileInfo(cover_path);
 	}
 
@@ -206,7 +206,8 @@ static void check_cover_path(const QString& base_path, const QString& cover_path
 		return;
 	}
 
-	QStringList local_paths = Cover::LocalSearcher::cover_paths_from_filename(base_path);
+	// create symlink to local path
+	QStringList local_paths = Cover::LocalSearcher::cover_paths_from_filename(audio_path);
 	if(local_paths.isEmpty())
 	{
 		return;
@@ -276,18 +277,24 @@ Location Location::cover_location(const Album& album)
 		MetaDataList v_md;
 		lib_db->getAllTracksByAlbum(album.id, v_md);
 
-		bool has_audio_source = (cl.audio_file_source().size() > 0);
-
-		if(!v_md.isEmpty())
+		do
 		{
-			const MetaData& md = v_md.first();
-			if(!has_audio_source && Tagging::Util::has_cover(md.filepath()))
-			{
-				cl.set_audio_file_source(md.filepath(), cl.cover_path());
+			cl.set_audio_file_source(QString(), QString());
+
+			if(v_md.isEmpty()){
+				break;
 			}
 
-			check_cover_path(md.filepath(), cl.cover_path());
-		}
+			const MetaData& md = v_md.first();
+			check_coverpath(md.filepath(), cl.cover_path());
+
+			if(!Tagging::Util::has_cover(md.filepath())){
+				break;
+			}
+
+			cl.set_audio_file_source(md.filepath(), cl.cover_path());
+
+		} while(false);
 	}
 
 	cl.set_search_term(album.name() + " " + ArtistList::get_major_artist(album.artists()));
@@ -383,7 +390,7 @@ Location Location::cover_location(const MetaData& md)
 		cl.set_search_urls({md.cover_download_url()});
 	}
 
-	check_cover_path(md.filepath(), cl.cover_path());
+	check_coverpath(md.filepath(), cl.cover_path());
 
 	cl.set_identifier("CL:By metadata: " + md.album() + " by " + md.artist());
 	return cl;
@@ -529,6 +536,7 @@ QString Location::audio_file_source() const
 void Location::set_audio_file_source(const QString& audio_filepath, const QString& cover_path)
 {
 	if(audio_filepath.isEmpty() || cover_path.isEmpty()){
+		m->audio_file_source = QString();
 		return;
 	}
 
@@ -549,7 +557,8 @@ void Location::set_audio_file_source(const QString& audio_filepath, const QStrin
 		}
 	}
 
-	else {
+	else
+	{
 		m->audio_file_source = cover_path;
 	}
 }

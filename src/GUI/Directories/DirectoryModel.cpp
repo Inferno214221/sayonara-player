@@ -34,7 +34,7 @@
 #include "Components/Library/LocalLibrary.h"
 
 #include "Database/LibraryDatabase.h"
-#include "Database/DatabaseConnector.h"
+#include "Database/Connector.h"
 
 #include <QDirIterator>
 #include <QPair>

@@ -210,15 +210,9 @@ bool SettingRegistry::init()
 	register_setting<Set::Settings_Revision>("settings_version", 0);
 	register_setting<Set::Logger_Level>( "logger_level", 0);
 
-
 	register_setting<SetNoDB::MP3enc_found>( true );
 	register_setting<SetNoDB::Pitch_found>( true );
 	register_setting<SetNoDB::Player_Quit>( false );
-
-	bool success = Settings::instance()->check_settings();
-	if (!success){
-		return false;
-	}
 
 	return true;
 }

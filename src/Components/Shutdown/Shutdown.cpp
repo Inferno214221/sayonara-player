@@ -24,14 +24,17 @@
  * Homepage: https://launchpad.net/~hakaishi
  */
 
-#include "Utils/Utils.h"
 #include "Components/Shutdown/Shutdown.h"
-#include "Database/DatabaseConnector.h"
-#include "Database/DatabaseSettings.h"
 #include "Components/PlayManager/PlayManager.h"
+
+#include "Database/Connector.h"
+#include "Database/Settings.h"
+
 #include "Interfaces/Notification/NotificationHandler.h"
-#include "Utils/Logger/Logger.h"
+
+#include "Utils/Utils.h"
 #include "Utils/Language.h"
+#include "Utils/Logger/Logger.h"
 
 #include <QDBusInterface>
 #include <QDBusConnection>

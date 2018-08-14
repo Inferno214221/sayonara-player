@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Database/SayonaraQuery.h"
-#include "Database/DatabaseAlbums.h"
+#include "Database/Query.h"
+#include "Database/Albums.h"
 #include "Utils/MetaData/Album.h"
 #include "Utils/Library/Filter.h"
 #include "Utils/Utils.h"
@@ -29,15 +29,12 @@ using DB::Query;
 
 struct Albums::Private
 {
-	QString artistid_field;
 	QString search_view;
 	QString track_view;
 	QMap<Library::SortOrder, QString> sort_map;
 
 	Private(LibraryId library_id)
 	{
-		artistid_field = "artistID";
-
 		if(library_id < 0) {
 			track_view = "tracks";
 			search_view = QString("track_search_view");
@@ -72,7 +69,7 @@ struct Albums::Private
 };
 
 Albums::Albums(const QString& connection_name, DbId db_id, LibraryId library_id) :
-	DB::SearchMode(connection_name, db_id)
+	DB::SearchableModule(connection_name, db_id)
 {
 	m = Pimpl::make<Private>(library_id);
 }
@@ -270,7 +267,7 @@ bool Albums::getAllAlbumsByArtist(IdList artists, AlbumList& result, const Libra
 
 	if(!artists.isEmpty())
 	{
-		QString artist_id_field = m->search_view + "." + m->artistid_field;
+		QString artist_id_field = m->search_view + "." + artistid_field();
 		query += "(" + artist_id_field + " = :artist_id_0 ";
 
 		for(int i=1; i<artists.size(); i++) {
@@ -384,7 +381,7 @@ int Albums::updateAlbum (const Album & album)
 
 void Albums::updateAlbumCissearch()
 {
-	SearchMode::update_search_mode();
+	SearchableModule::update_search_mode();
 
 	AlbumList albums;
 	getAllAlbums(albums, true);
@@ -456,14 +453,3 @@ int Albums::insertAlbumIntoDatabase (const Album& album)
 	return album.id;
 }
 
-void Albums::change_artistid_field(const QString& id, const QString& name)
-{
-	Q_UNUSED(name)
-
-	m->artistid_field = id;
-}
-
-void Albums::change_track_lookup_field(const QString& search_view)
-{
-	m->search_view = search_view;
-}

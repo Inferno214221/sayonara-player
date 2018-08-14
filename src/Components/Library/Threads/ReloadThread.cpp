@@ -32,8 +32,8 @@
 
 #include "Components/Directories/DirectoryReader.h"
 
-#include "Database/DatabaseConnector.h"
-#include "Database/DatabaseLibrary.h"
+#include "Database/Connector.h"
+#include "Database/Library.h"
 #include "Database/LibraryDatabase.h"
 
 #include "Utils/Tagging/Tagging.h"

@@ -19,7 +19,7 @@
  */
 
 #include "LibraryDatabase.h"
-#include "SayonaraQuery.h"
+#include "Database/Query.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/MetaData/Album.h"
@@ -30,6 +30,8 @@ using DB::Query;
 
 struct LibraryDatabase::Private
 {
+	QString artistid_field;
+	QString artistname_field;
 	QString connection_name;
 	DbId	db_id;
 
@@ -39,7 +41,10 @@ struct LibraryDatabase::Private
 		connection_name(connection_name),
 		db_id(db_id),
 		library_id(library_id)
-	{}
+	{
+		artistid_field = "artistID";
+		artistname_field = "artistName";
+	}
 };
 
 
@@ -81,20 +86,27 @@ LibraryDatabase::~LibraryDatabase() {}
 
 void LibraryDatabase::change_artistid_field(LibraryDatabase::ArtistIDField field)
 {
-	QString id, name;
-	if(field == LibraryDatabase::ArtistIDField::AlbumArtistID){
-		id = "albumArtistID";
-		name = "albumArtistName";
+	if(field == LibraryDatabase::ArtistIDField::AlbumArtistID)
+	{
+		m->artistid_field = "albumArtistID";
+		m->artistname_field = "albumArtistName";
 	}
 
-	else{
-		id = "artistID";
-		name = "artistName";
+	else
+	{
+		m->artistid_field = "artistID";
+		m->artistname_field = "artistName";
 	}
+}
 
-	DB::Albums::change_artistid_field(id, name);
-	DB::Artists::change_artistid_field(id, name);
-	DB::Tracks::change_artistid_field(id, name);
+QString LibraryDatabase::artistid_field() const
+{
+	return m->artistid_field;
+}
+
+QString LibraryDatabase::artistname_field() const
+{
+	return m->artistname_field;
 }
 
 void LibraryDatabase::clear()

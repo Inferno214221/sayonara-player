@@ -1,4 +1,4 @@
-/* LocalLibraryDatabase.h */
+/* DatabaseStreams.h */
 
 /* Copyright (C) 2011-2017  Lucio Carreras
  *
@@ -18,22 +18,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef DATABASESTREAMS_H
+#define DATABASESTREAMS_H
 
-
-#ifndef LOCALLIBRARYDATABASE_H
-#define LOCALLIBRARYDATABASE_H
-
-#include "LibraryDatabase.h"
+#include "Database/Module.h"
+#include <QMap>
 
 namespace DB
 {
-	class LocalLibraryDatabase :
-			public LibraryDatabase
+	class Streams : private Module
 	{
 		public:
-			LocalLibraryDatabase(LibraryId library_id);
-			~LocalLibraryDatabase();
+			Streams(const QString& connection_name, DbId db_id);
+			~Streams();
+
+			bool getAllStreams(QMap<QString, QString>& result);
+			bool deleteStream(const QString& name);
+			bool addStream(const QString& name, const QString& url);
+			bool updateStreamUrl(const QString& name, const QString& url);
 	};
 }
 
-#endif // LOCALLIBRARYDATABASE_H
+#endif // DATABASESTREAMS_H

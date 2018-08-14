@@ -28,7 +28,7 @@
 #include "LFMSimArtistsParser.h"
 #include "ArtistMatch.h"
 
-#include "Database/DatabaseConnector.h"
+#include "Database/Connector.h"
 #include "Database/LibraryDatabase.h"
 
 #include "Utils/Utils.h"

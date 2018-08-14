@@ -24,8 +24,8 @@
 #include "Importer/LibraryImporter.h"
 #include "Threads/ReloadThread.h"
 
-#include "Database/DatabaseConnector.h"
-#include "Database/DatabaseLibrary.h"
+#include "Database/Connector.h"
+#include "Database/Library.h"
 #include "Database/LibraryDatabase.h"
 
 #include "Components/Playlist/PlaylistHandler.h"

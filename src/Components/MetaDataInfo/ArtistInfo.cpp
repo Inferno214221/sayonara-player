@@ -20,7 +20,7 @@
 
 #include "ArtistInfo.h"
 
-#include "Database/DatabaseConnector.h"
+#include "Database/Connector.h"
 #include "Database/LibraryDatabase.h"
 
 #include "Utils/Set.h"

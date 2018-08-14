@@ -21,8 +21,8 @@
 #include "LibraryManager.h"
 #include "LocalLibrary.h"
 
-#include "Database/DatabaseConnector.h"
-#include "Database/DatabaseLibrary.h"
+#include "Database/Connector.h"
+#include "Database/Library.h"
 
 #include "Utils/Library/LibraryInfo.h"
 #include "Utils/Utils.h"
@@ -318,13 +318,14 @@ bool Manager::rename_library(LibraryId id, const QString& new_name)
 
 bool Manager::remove_library(LibraryId id)
 {
-	m->lib_map.remove(id);
-
 	LocalLibrary* local_library = m->lib_map[id];
-	if(local_library) {
+	if(local_library)
+	{
 		local_library->clear_library();
 		delete local_library; local_library=nullptr;
 	}
+
+	m->lib_map.remove(id);
 
 	Library::Info info = m->get_library_info(id);
 	if(info.valid()){

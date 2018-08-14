@@ -19,8 +19,8 @@
  */
 
 #include "StreamHandlerStreams.h"
-#include "Database/DatabaseConnector.h"
-#include "Database/DatabaseStreams.h"
+#include "Database/Connector.h"
+#include "Database/Streams.h"
 
 StreamHandlerStreams::StreamHandlerStreams(QObject* parent) :
 	AbstractStreamHandler(parent) {}

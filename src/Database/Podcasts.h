@@ -1,4 +1,4 @@
-/* DatabaseSearchMode.h */
+/* DatabasePodcasts.h */
 
 /* Copyright (C) 2011-2017  Lucio Carreras
  *
@@ -18,34 +18,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DATABASESEARCHMODE_H
-#define DATABASESEARCHMODE_H
+#ifndef DATABASEPODCASTS_H
+#define DATABASEPODCASTS_H
 
-#include "Utils/Pimpl.h"
-#include "Utils/Library/SearchMode.h"
-#include "Database/DatabaseModule.h"
-
-class QSqlDatabase;
+#include "Database/Module.h"
+#include <QMap>
 
 namespace DB
 {
-	class SearchMode :
-		public Module
+	class Podcasts :
+		private Module
 	{
-		PIMPL(SearchMode)
-
-		private:
-			void init();
-
-		protected:
-			SearchMode(const QString& connection_name, DbId db_id);
-
 		public:
-			virtual ~SearchMode();
+			Podcasts(const QString& connection_name, DbId db_id);
+			~Podcasts();
 
-			::Library::SearchModeMask search_mode();
-			void update_search_mode();
-		};
+			bool getAllPodcasts(QMap<QString, QString>& result);
+			bool deletePodcast(const QString& name);
+			bool addPodcast(const QString& name, const QString& url);
+			bool updatePodcastUrl(const QString& name, const QString& url);
+	};
 }
 
-#endif // DATABASESEARCHMODE_H
+#endif // DATABASEPODCASTS_H

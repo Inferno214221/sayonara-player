@@ -18,14 +18,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Database/DatabaseSearchMode.h"
-#include "Database/SayonaraQuery.h"
+#include "Database/SearchableModule.h"
+#include "Database/Query.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Utils.h"
 
-using DB::SearchMode;
+using DB::SearchableModule;
 
-struct SearchMode::Private
+struct SearchableModule::Private
 {
 	bool initialized;
 	Library::SearchModeMask search_mode;
@@ -36,16 +36,16 @@ struct SearchMode::Private
 	{}
 };
 
-SearchMode::SearchMode(const QString& connection_name, DbId db_id) :
+SearchableModule::SearchableModule(const QString& connection_name, DbId db_id) :
 	DB::Module(connection_name, db_id)
 {
-	m = Pimpl::make<SearchMode::Private>();
+	m = Pimpl::make<Private>();
 }
 
-SearchMode::~SearchMode() {}
+SearchableModule::~SearchableModule() {}
 
 
-void SearchMode::init()
+void SearchableModule::init()
 {
 	if(m->initialized){
 		return;
@@ -75,14 +75,14 @@ void SearchMode::init()
 	}
 }
 
-Library::SearchModeMask SearchMode::search_mode()
+Library::SearchModeMask SearchableModule::search_mode()
 {
 	init();
 
 	return m->search_mode;
 }
 
-void SearchMode::update_search_mode()
+void SearchableModule::update_search_mode()
 {
 	Settings* settings = Settings::instance();
 	AbstrSetting* s = settings->setting(SettingKey::Lib_SearchMode);

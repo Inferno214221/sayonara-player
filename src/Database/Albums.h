@@ -21,8 +21,7 @@
 #ifndef DATABASEALBUMS_H
 #define DATABASEALBUMS_H
 
-#include "Database/DatabaseSearchMode.h"
-#include "Database/DatabaseModule.h"
+#include "Database/SearchableModule.h"
 #include "Utils/Library/Sortorder.h"
 
 namespace Library {class Filter;}
@@ -32,7 +31,7 @@ class AlbumList;
 namespace DB
 {
 	class Albums :
-			private SearchMode
+			private SearchableModule
 	{
 		PIMPL(Albums)
 
@@ -64,14 +63,11 @@ namespace DB
 
 			virtual void updateAlbumCissearch();
 
+		protected:
+			virtual QString artistid_field() const=0;
+
 		private:
 			virtual QString fetch_query_albums(bool also_empty=false) const;
-
-		protected:
-			void change_artistid_field(const QString& id, const QString& name);
-			void change_track_lookup_field(const QString& track_lookup_field);
-
-
 	};
 }
 

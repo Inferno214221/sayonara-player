@@ -1,4 +1,4 @@
-/* DatabasePodcasts.h */
+/* DatabaseVisStyles.h */
 
 /* Copyright (C) 2011-2017  Lucio Carreras
  *
@@ -18,26 +18,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DATABASEPODCASTS_H
-#define DATABASEPODCASTS_H
+#ifndef DATABASEVISSTYLES_H
+#define DATABASEVISSTYLES_H
 
-#include "Database/DatabaseModule.h"
-#include <QMap>
+#include "Database/Module.h"
+#include <QList>
+
+struct RawColorStyle;
 
 namespace DB
 {
-	class Podcasts :
-		private Module
+	class VisualStyles : private Module
 	{
 		public:
-			Podcasts(const QString& connection_name, DbId db_id);
-			~Podcasts();
+			VisualStyles(const QString& connection_name, DbId db_id);
+			~VisualStyles();
 
-			bool getAllPodcasts(QMap<QString, QString>& result);
-			bool deletePodcast(const QString& name);
-			bool addPodcast(const QString& name, const QString& url);
-			bool updatePodcastUrl(const QString& name, const QString& url);
+			QList<RawColorStyle> get_raw_color_styles();
+			bool insert_raw_color_style_to_db(const RawColorStyle& rcs);
+			bool update_raw_color_style(const RawColorStyle& rcs);
+			bool raw_color_style_exists(QString name);
+			bool delete_raw_color_style(QString name);
 	};
 }
 
-#endif // DATABASEPODCASTS_H
+#endif // DATABASEVISSTYLES_H

@@ -18,15 +18,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "FileOperations.h"
 
 #include "Components/Library/LibraryManager.h"
 #include "Components/Library/LocalLibrary.h"
 
 #include "Database/LibraryDatabase.h"
-#include "Database/DatabaseConnector.h"
+#include "Database/Connector.h"
 
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
