@@ -138,11 +138,11 @@ void GUI_AbstractLibrary::init_shortcuts()
 
 	KeyPressFilter* kp_filter_lib = new KeyPressFilter(this);
 	this->installEventFilter(kp_filter_lib);
-	connect(kp_filter_lib, &KeyPressFilter::sig_esc_pressed, this, &GUI_AbstractLibrary::esc_pressed);
+	connect(kp_filter_lib, &KeyPressFilter::sig_key_pressed, this, &GUI_AbstractLibrary::key_pressed);
 
 	KeyPressFilter* kp_filter_search = new KeyPressFilter(m->le_search);
 	m->le_search->installEventFilter(kp_filter_search);
-	connect(kp_filter_search, &KeyPressFilter::sig_esc_pressed, this, &GUI_AbstractLibrary::search_esc_pressed);
+	connect(kp_filter_search, &KeyPressFilter::sig_key_pressed, this, &GUI_AbstractLibrary::search_key_pressed);
 }
 
 void GUI_AbstractLibrary::query_library()
@@ -199,12 +199,23 @@ void GUI_AbstractLibrary::search_edited(const QString& search)
 	}
 }
 
-void GUI_AbstractLibrary::search_esc_pressed()
+void GUI_AbstractLibrary::search_key_pressed(int key)
 {
-	m->le_search->clear();
+	if(key == Qt::Key_Escape)
+	{
+		m->le_search->clear();
 
-	search_mode_changed(Filter::Fulltext);
-	query_library();
+		search_mode_changed(Filter::Fulltext);
+		query_library();
+	}
+
+	if(key == Qt::Key_Backspace)
+	{
+		if(m->le_search->text().isEmpty())
+		{
+			search_mode_changed(Filter::Fulltext);
+		}
+	}
 }
 
 void GUI_AbstractLibrary::search_mode_changed(Filter::Mode mode)
@@ -217,24 +228,27 @@ void GUI_AbstractLibrary::search_mode_changed(Filter::Mode mode)
 	query_library();
 }
 
-void GUI_AbstractLibrary::esc_pressed()
+void GUI_AbstractLibrary::key_pressed(int key)
 {
-	bool is_selected = (
-		(lv_album()->selected_items().count() > 0) ||
-		(lv_artist()->selected_items().count() > 0) ||
-		(lv_tracks()->selected_items().count() > 0)
-	);
-
-	if(is_selected)
+	if(key == Qt::Key_Escape)
 	{
-		lv_album()->clearSelection();
-		lv_artist()->clearSelection();
-		lv_tracks()->clearSelection();
-	}
+		bool is_selected = (
+			(lv_album()->selected_items().count() > 0) ||
+			(lv_artist()->selected_items().count() > 0) ||
+			(lv_tracks()->selected_items().count() > 0)
+		);
 
-	else
-	{
-		search_esc_pressed();
+		if(is_selected)
+		{
+			lv_album()->clearSelection();
+			lv_artist()->clearSelection();
+			lv_tracks()->clearSelection();
+		}
+
+		else
+		{
+			search_key_pressed(key);
+		}
 	}
 }
 

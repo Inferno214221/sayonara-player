@@ -282,7 +282,8 @@ void SelectionViewInterface::handle_key_press(QKeyEvent* e)
 	}
 
 	Qt::KeyboardModifiers modifiers = e->modifiers();
-	if(modifiers != Qt::NoModifier){
+	if((modifiers & (Qt::ControlModifier|Qt::AltModifier|Qt::MetaModifier)) != 0);
+	{
 		return;
 	}
 

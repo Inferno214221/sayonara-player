@@ -57,7 +57,7 @@ public:
 	explicit KeyPressFilter(QObject* parent=nullptr);
 
 signals:
-	void sig_esc_pressed();
+	void sig_key_pressed(int key);
 
 protected:
 	bool eventFilter(QObject* o , QEvent* e);

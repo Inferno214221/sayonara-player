@@ -50,7 +50,7 @@ private:
 	 * @param parent the widget the shortcut is mapped to
 	 * @return a list of shortcuts in the Qt format
 	 */
-	QList<QShortcut*> init_qt_shortcut(QWidget* parent);
+	QList<QShortcut*> init_qt_shortcut(QWidget* parent, Qt::ShortcutContext context);
 
 
 public:
@@ -136,12 +136,13 @@ public:
 	 * @param parent the widget the shortcut is attached to
 	 * @param func a lambda function which will be triggered when shortcut is pressed
 	 */
-	void create_qt_shortcut(QWidget* parent, T func){
-		QList<QShortcut*> shortcuts = init_qt_shortcut(parent);
+	void create_qt_shortcut(QWidget* parent, T func, Qt::ShortcutContext context=Qt::WindowShortcut){
+		QList<QShortcut*> shortcuts = init_qt_shortcut(parent, context);
 		for(QShortcut* sc : shortcuts){
 			parent->connect(sc, &QShortcut::activated, func);
 		}
 	}
+
 
 	/**
 	 * @brief create a qt shortcut for a widget
@@ -149,10 +150,10 @@ public:
 	 * @param the receiver object of the shortcut
 	 * @param the slot which is triggered when pressing that shortcut
 	 */
-	void create_qt_shortcut(QWidget* parent, QObject* receiver, const char* slot);
+	void create_qt_shortcut(QWidget* parent, QObject* receiver, const char* slot, Qt::ShortcutContext context=Qt::WindowShortcut);
 
 
-	void create_qt_shortcut(QWidget* parent);
+	void create_qt_shortcut(QWidget* parent, Qt::ShortcutContext context=Qt::WindowShortcut);
 };
 
 #endif // SHORTCUT_H

@@ -34,6 +34,7 @@
 
 #include "GUI/InfoDialog/InfoDialogContainer.h"
 #include "GUI/Utils/ContextMenu/LibraryContextMenu.h"
+#include "GUI/Utils/Shortcuts/ShortcutWidget.h"
 
 #include "Utils/Library/Sortorder.h"
 #include "Utils/MetaData/MetaDataFwd.h"
@@ -55,7 +56,8 @@ namespace Library
 	class ItemView :
 			public SearchableTableView,
 			public InfoDialogContainer,
-			protected Dragable
+			protected Dragable,
+			protected ShortcutWidget
 	{
 		Q_OBJECT
 		PIMPL(ItemView)
@@ -159,6 +161,8 @@ namespace Library
 	public:
 		void resize_rows_to_contents();
 		void resize_rows_to_contents(int first_row, int count);
+
+		QString get_shortcut_text(const QString& shortcut_identifier) const override;
 	};
 }
 

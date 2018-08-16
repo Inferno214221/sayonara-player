@@ -97,6 +97,8 @@ public:
 	QAction* add_preference_action(PreferenceAction* action);
 	QAction* before_preference_action() const;
 
+	void set_action_shortcut(LibraryContextMenu::Entry entry, const QString& shortcut);
+
 
 signals:
 	void sig_info_clicked();
@@ -116,6 +118,7 @@ signals:
 private slots:
 	void show_cover_view_changed();
 	void show_cover_triggered(bool b);
+	void shortcut_changed(const QString& identifier);
 
 
 protected:

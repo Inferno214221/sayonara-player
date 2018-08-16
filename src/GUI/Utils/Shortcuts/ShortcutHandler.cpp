@@ -61,7 +61,8 @@ void ShortcutHandler::set_shortcut(const QString& identifier, const QStringList&
 	RawShortcutMap rsm;
 	for(auto it = m->shortcuts.begin(); it != m->shortcuts.end(); it++)
 	{
-		if(it->get_identifier() == identifier){
+		if(it->get_identifier() == identifier)
+		{
 			it->change_shortcut(shortcuts);
 			emit sig_shortcut_changed(identifier);
 		}
@@ -76,6 +77,13 @@ void ShortcutHandler::set_shortcut(const QString& identifier, const QStringList&
 
 Shortcut ShortcutHandler::add(ShortcutWidget* parent, const QString& identifier, const QString& name, const QString& default_shortcut)
 {
+	for(const Shortcut& sc : m->shortcuts)
+	{
+		if(identifier == sc.get_identifier()){
+			return sc;
+		}
+	}
+
 	Shortcut shortcut(parent, identifier, name, default_shortcut);
 
 	if(!shortcut.is_valid()){

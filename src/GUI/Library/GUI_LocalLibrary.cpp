@@ -136,11 +136,14 @@ void GUI_LocalLibrary::language_changed()
 	GUI_AbstractLibrary::language_changed();
 }
 
-void GUI_LocalLibrary::search_esc_pressed()
+void GUI_LocalLibrary::search_key_pressed(int key)
 {
-	ui->lv_genres->clearSelection();
+	if(key == Qt::Key_Escape)
+	{
+		ui->lv_genres->clearSelection();
+	}
 
-	GUI_AbstractLibrary::search_esc_pressed();
+	GUI_AbstractLibrary::search_key_pressed(key);
 }
 
 void GUI_LocalLibrary::genre_selection_changed(const QModelIndex& index)

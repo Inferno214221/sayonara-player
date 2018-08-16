@@ -227,7 +227,6 @@ void Menubar::init_connections()
 	connect(m->action_about, &QAction::triggered, this, &Menubar::about_clicked);
 	connect(m->action_help, &QAction::triggered, this, &Menubar::help_clicked);
 
-
 	// shortcuts
 	ShortcutHandler* sch = ShortcutHandler::instance();
 
@@ -237,7 +236,8 @@ void Menubar::init_connections()
 
 	sc1.create_qt_shortcut(this, this, SLOT(close_clicked()));
 	sc2.create_qt_shortcut(this, this, SLOT(minimize_clicked()));
-	//sc3.create_qt_shortcut(this);
+	Q_UNUSED(sc3)
+
 
 	shortcut_changed(m->SC_ID_VIEW_LIBRARY);
 

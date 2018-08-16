@@ -54,7 +54,6 @@ class InfoDialogContainer
 		bool init_dialog();
 
 	protected:
-
 		enum EditTab
 		{
 			TabText,

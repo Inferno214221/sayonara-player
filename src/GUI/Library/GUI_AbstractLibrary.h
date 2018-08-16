@@ -65,11 +65,11 @@ namespace Library
 	protected slots:
 		virtual void _sl_live_search_changed();
 
-		virtual void search_esc_pressed();
+		virtual void search_key_pressed(int key);
 		virtual void search_return_pressed();
 		virtual void search_edited(const QString& searchstring);
 		virtual void search_mode_changed(Filter::Mode mode);
-		virtual void esc_pressed();
+		virtual void key_pressed(int key);
 		virtual void query_library();
 
 		virtual void item_delete_clicked();

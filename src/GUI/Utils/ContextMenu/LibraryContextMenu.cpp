@@ -23,6 +23,8 @@
 #include "GUI/Utils/Icons.h"
 #include "GUI/Utils/GuiUtils.h"
 #include "GUI/Utils/PreferenceAction.h"
+#include "GUI/Utils/Shortcuts/ShortcutHandler.h"
+#include "GUI/Utils/Shortcuts/Shortcut.h"
 
 #include "Utils/Utils.h"
 #include "Utils/Settings/Settings.h"
@@ -152,12 +154,27 @@ void LibraryContextMenu::language_changed()
 	m->clear_action->setText(Lang::get(Lang::Clear));
 	m->clear_selection_action->setText(tr("Clear selection"));
 	m->cover_view_action->setText(tr("Cover view"));
-	m->remove_action->setShortcut(QKeySequence(QKeySequence::Delete));
+
 	m->play_action->setShortcut(QKeySequence(Qt::Key_Enter));
-	m->play_new_tab_action->setShortcut(QKeySequence(Qt::ControlModifier + Qt::Key_Enter));
-	m->play_next_action->setShortcut(QKeySequence(Qt::AltModifier + Qt::Key_Enter));
-	m->append_action->setShortcut(QKeySequence(Qt::ShiftModifier + Qt::Key_Enter));
-	m->info_action->setShortcut(QKeySequence(QKeySequence::WhatsThis));
+	m->delete_action->setShortcut(QKeySequence(tr("Ctrl+X")));
+	m->remove_action->setShortcut(QKeySequence(QKeySequence::Delete));
+	m->clear_action->setShortcut(QKeySequence(Qt::Key_Backspace));
+
+	ShortcutHandler* sch = ShortcutHandler::instance();
+	connect(sch, &ShortcutHandler::sig_shortcut_changed, this, &LibraryContextMenu::shortcut_changed);
+
+	shortcut_changed("");
+}
+
+
+void LibraryContextMenu::shortcut_changed(const QString& identifier)
+{
+	Q_UNUSED(identifier)
+	ShortcutHandler* sch = ShortcutHandler::instance();
+
+	m->play_new_tab_action->setShortcut(sch->get_shortcut("play_new_tab").get_sequences().first());
+	m->play_next_action->setShortcut(sch->get_shortcut("play_next").get_sequences().first());
+	m->append_action->setShortcut(sch->get_shortcut("append").get_sequences().first());
 }
 
 
@@ -253,6 +270,15 @@ QAction* LibraryContextMenu::before_preference_action() const
 	return m->preference_separator;
 }
 
+void LibraryContextMenu::set_action_shortcut(LibraryContextMenu::Entry entry, const QString& shortcut)
+{
+	QAction* action = get_action(entry);
+	if(action)
+	{
+		action->setShortcut(QKeySequence(shortcut));
+	}
+}
+
 void LibraryContextMenu::show_cover_view_changed()
 {
 	m->cover_view_action->setChecked(_settings->get<Set::Lib_ShowAlbumCovers>());
@@ -264,4 +290,3 @@ void LibraryContextMenu::show_cover_triggered(bool b)
 	bool show_covers = _settings->get<Set::Lib_ShowAlbumCovers>();
 	_settings->set<Set::Lib_ShowAlbumCovers>(!show_covers);
 }
-

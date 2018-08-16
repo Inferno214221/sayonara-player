@@ -36,11 +36,8 @@ bool KeyPressFilter::eventFilter(QObject *o, QEvent *e)
 	if(e->type() == QEvent::KeyPress)
 	{
 		QKeyEvent* ke = static_cast<QKeyEvent*>(e);
-		if(ke->key() == Qt::Key_Escape)
-		{
-			e->accept();
-			emit sig_esc_pressed();
-		}
+		ke->accept();
+		emit sig_key_pressed(ke->key());
 	}
 
 	return QObject::eventFilter(o, e);

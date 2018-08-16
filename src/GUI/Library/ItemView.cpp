@@ -43,6 +43,8 @@
 #include "GUI/Utils/SearchableWidget/MiniSearcher.h"
 #include "GUI/Utils/CustomMimeData.h"
 #include "GUI/Utils/PreferenceAction.h"
+#include "GUI/Utils/Shortcuts/ShortcutHandler.h"
+#include "GUI/Utils/Shortcuts/Shortcut.h"
 
 #include <QShortcut>
 #include <QKeySequence>
@@ -81,7 +83,8 @@ struct Library::ItemView::Private
 ItemView::ItemView(QWidget* parent) :
 	SearchableTableView(parent),
 	InfoDialogContainer(),
-	Dragable(this)
+	Dragable(this),
+	ShortcutWidget()
 {
 	m = Pimpl::make<Private>();
 
@@ -97,12 +100,19 @@ ItemView::ItemView(QWidget* parent) :
 
 	clearSelection();
 
+	ShortcutHandler* sch = ShortcutHandler::instance();
+	Shortcut sc1 = sch->add(this, "play_new_tab", tr("Play track(s) in new tab"), "Ctrl+Enter");
+	Shortcut sc2 = sch->add(this, "play_next", tr("Play track(s) next"), "Alt+Enter");
+	Shortcut sc3 = sch->add(this, "append", tr("Append track(s)"), "Shift+Enter");
+
+	Qt::ShortcutContext ctx = Qt::WidgetWithChildrenShortcut;
+	sc1.create_qt_shortcut(this, this, SLOT(play_new_tab_clicked()), ctx);
+	sc2.create_qt_shortcut(this, this, SLOT(play_next_clicked()), ctx);
+	sc3.create_qt_shortcut(this, this, SLOT(append_clicked()), ctx);
+
+
 	new QShortcut(QKeySequence(Qt::Key_Return), this, SLOT(play_clicked()), nullptr, Qt::WidgetShortcut);
 	new QShortcut(QKeySequence(Qt::Key_Enter), this, SLOT(play_clicked()), nullptr, Qt::WidgetShortcut);
-	new QShortcut(QKeySequence(Qt::AltModifier + Qt::Key_Return), this, SLOT(play_next_clicked()), nullptr, Qt::WidgetShortcut);
-	new QShortcut(QKeySequence(Qt::AltModifier + Qt::Key_Enter), this, SLOT(play_next_clicked()), nullptr, Qt::WidgetShortcut);
-	new QShortcut(QKeySequence(Qt::ShiftModifier + Qt::Key_Return), this, SLOT(append_clicked()), nullptr, Qt::WidgetShortcut);
-	new QShortcut(QKeySequence(Qt::ShiftModifier + Qt::Key_Enter), this, SLOT(append_clicked()), nullptr, Qt::WidgetShortcut);
 	new QShortcut(QKeySequence(Qt::Key_Backspace), this, SLOT(clearSelection()), nullptr, Qt::WidgetShortcut);
 }
 
@@ -353,7 +363,7 @@ void ItemView::merge_action_triggered()
 void ItemView::run_merge_operation(const ItemView::MergeData& md) { Q_UNUSED(md) }
 
 void ItemView::play_clicked() { emit sig_play_clicked(); }
-void ItemView::play_new_tab_clicked() { emit sig_play_new_tab_clicked(); }
+void ItemView::play_new_tab_clicked() {	emit sig_play_new_tab_clicked(); }
 void ItemView::play_next_clicked() { emit sig_play_next_clicked(); }
 void ItemView::delete_clicked() { emit sig_delete_clicked(); }
 void ItemView::append_clicked() { emit sig_append_clicked(); }
@@ -416,7 +426,6 @@ void ItemView::resize_rows_to_contents(int first_row, int count)
 		}
 	}
 }
-
 
 void ItemView::mousePressEvent(QMouseEvent* event)
 {
@@ -571,3 +580,14 @@ void ItemView::resizeEvent(QResizeEvent *event)
 	}
 }
 
+QString ItemView::get_shortcut_text(const QString& shortcut_identifier) const
+{
+	QMap<QString, QString> name_map
+	{
+		{"play_new_tab", tr("Play track(s) in new tab")},
+		{"play_next", tr("Play track(s) next")},
+		{"append", tr("Append track(s)")}
+	};
+
+	return name_map[shortcut_identifier];
+}

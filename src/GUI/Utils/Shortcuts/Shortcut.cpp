@@ -64,12 +64,28 @@ Shortcut::Shortcut(ShortcutWidget* parent, const QString& identifier, const QStr
 	DB::Shortcuts* db = DB::Connector::instance()->shortcut_connector();
 	RawShortcutMap rsm = db->getAllShortcuts();
 
-	if(rsm.contains(identifier)){
+	if(rsm.contains(identifier))
+	{
 		m->shortcuts = rsm[identifier];
-	}
 
-	else{
-		m->shortcuts = m->default_shortcuts;
+		for(const QString& str : rsm[identifier])
+		{
+			if(str.contains("Enter"))
+			{
+				QString re(str);
+				re.replace("Enter", "Return");
+				m->shortcuts << re;
+			}
+
+			if(str.contains("Return"))
+			{
+				QString re(str);
+				re.replace("Return", "Enter");
+				m->shortcuts << re;
+			}
+		}
+
+		m->shortcuts.removeDuplicates();
 	}
 }
 
@@ -159,21 +175,22 @@ ShortcutWidget* Shortcut::parent() const
 }
 
 
-void Shortcut::create_qt_shortcut(QWidget* parent, QObject* receiver, const char* slot)
+void Shortcut::create_qt_shortcut(QWidget* parent, QObject* receiver, const char* slot, Qt::ShortcutContext context)
 {
-	QList<QShortcut*> shortcuts = init_qt_shortcut(parent);
-	for(QShortcut* sc : shortcuts){
+	QList<QShortcut*> shortcuts = init_qt_shortcut(parent, context);
+	for(QShortcut* sc : shortcuts)
+	{
 		parent->connect(sc, SIGNAL(activated()), receiver, slot);
 	}
 }
 
-void Shortcut::create_qt_shortcut(QWidget* parent)
+void Shortcut::create_qt_shortcut(QWidget* parent, Qt::ShortcutContext context)
 {
-	init_qt_shortcut(parent);
+	init_qt_shortcut(parent, context);
 }
 
 
-QList<QShortcut*> Shortcut::init_qt_shortcut(QWidget* parent)
+QList<QShortcut*> Shortcut::init_qt_shortcut(QWidget* parent, Qt::ShortcutContext context)
 {
 	QList<QShortcut*> lst;
 
@@ -182,7 +199,7 @@ QList<QShortcut*> Shortcut::init_qt_shortcut(QWidget* parent)
 	{
 		QShortcut* shortcut = new QShortcut(parent);
 
-		shortcut->setContext(Qt::WindowShortcut);
+		shortcut->setContext(context);
 		shortcut->setKey(sequence);
 
 		m->qt_shortcuts << shortcut;
@@ -205,6 +222,22 @@ void Shortcut::change_shortcut(const QStringList& shortcuts)
 		str.replace("+ ", "+");
 
 		m->shortcuts << str;
+
+		if(str.contains("Enter"))
+		{
+			QString re(str);
+			re.replace("Enter", "Return");
+			m->shortcuts << re;
+		}
+
+		if(str.contains("Return"))
+		{
+			QString re(str);
+			re.replace("Return", "Enter");
+			m->shortcuts << re;
+		}
+
+		m->shortcuts.removeDuplicates();
 	}
 
 	foreach(QShortcut* sc, m->qt_shortcuts)
@@ -214,6 +247,4 @@ void Shortcut::change_shortcut(const QStringList& shortcuts)
 			sc->setKey(ks);
 		}
 	}
-
-	//ShortcutHandler::instance()->set_shortcut(m->identifier, m->shortcuts);
 }
