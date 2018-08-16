@@ -150,6 +150,9 @@ public:
 	 * @param the slot which is triggered when pressing that shortcut
 	 */
 	void create_qt_shortcut(QWidget* parent, QObject* receiver, const char* slot);
+
+
+	void create_qt_shortcut(QWidget* parent);
 };
 
 #endif // SHORTCUT_H

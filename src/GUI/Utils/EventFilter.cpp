@@ -118,3 +118,69 @@ bool MouseLeaveFilter::eventFilter(QObject *o, QEvent *e)
 	return QObject::eventFilter(o, e);
 }
 
+
+HideFilter::HideFilter(QObject* parent) : QObject(parent) {}
+
+bool HideFilter::eventFilter(QObject* o, QEvent* e)
+{
+	bool success = QObject::eventFilter(o, e);
+
+	if(e->type() == QEvent::Hide)
+	{
+		emit sig_hidden();
+	}
+
+	return success;
+}
+
+ShowFilter::ShowFilter(QObject* parent) : QObject(parent) {}
+
+bool ShowFilter::eventFilter(QObject* o, QEvent* e)
+{
+	bool success = QObject::eventFilter(o, e);
+
+	if(e->type() == QEvent::Show)
+	{
+		emit sig_shown();
+	}
+
+	return success;
+}
+
+PaintFilter::PaintFilter(QObject* parent) : QObject(parent) {}
+
+bool PaintFilter::eventFilter(QObject* o, QEvent* e)
+{
+	bool success = QObject::eventFilter(o, e);
+
+	if(e->type() == QEvent::Paint)
+	{
+		emit sig_painted();
+	}
+
+	return success;
+}
+
+GenericFilter::GenericFilter(const QEvent::Type& type, QObject* parent) :
+	QObject(parent)
+{
+	m_types << type;
+}
+
+GenericFilter::GenericFilter(const QList<QEvent::Type>& types, QObject* parent) :
+	QObject(parent)
+{
+	m_types = types;
+}
+
+bool GenericFilter::eventFilter(QObject* o, QEvent* e)
+{
+	bool success = QObject::eventFilter(o, e);
+
+	if(m_types.contains(e->type()))
+	{
+		emit sig_event(e->type());
+	}
+
+	return success;
+}

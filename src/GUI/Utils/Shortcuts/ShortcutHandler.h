@@ -37,11 +37,15 @@ class Shortcut;
  * @ingroup Shortcuts
  */
 class ShortcutHandler :
+	public QObject,
 	public SayonaraClass
 {
+	Q_OBJECT
 	SINGLETON(ShortcutHandler)
 	PIMPL(ShortcutHandler)
 
+signals:
+	void sig_shortcut_changed(const QString& identifier);
 
 public:
 

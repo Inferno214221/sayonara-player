@@ -104,6 +104,7 @@ private slots:
 
 	void current_library_changed(const QString& name);
 	void check_library_menu_action();
+	void splitter_painted();
 
 	void awa_version_finished();
 

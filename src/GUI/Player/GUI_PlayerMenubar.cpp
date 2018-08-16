@@ -86,6 +86,8 @@ struct Menubar::Private
 	QMessageBox*	about_box=nullptr;
 	QStringList		translators;
 
+	const QString SC_ID_VIEW_LIBRARY=QString("view_library");
+
 	Private(Menubar* menubar)
 	{
 		menu_file = new QMenu(menubar);
@@ -137,12 +139,14 @@ struct Menubar::Private
 };
 
 Menubar::Menubar(QWidget* parent) :
-	Gui::WidgetTemplate<QMenuBar>(parent)
+	Gui::WidgetTemplate<QMenuBar>(parent),
+	ShortcutWidget()
 {
 	m = Pimpl::make<Private>(this);
 
 	m->action_view_library->setChecked(_settings->get<Set::Lib_Show>());
 	m->action_view_library->setText(Lang::get(Lang::Library));
+	m->action_view_library->setShortcut(QKeySequence("Ctrl+L"));
 
 	m->action_dark->setChecked(Style::is_dark());
 	m->action_dark->setShortcut(QKeySequence("F10"));
@@ -223,14 +227,21 @@ void Menubar::init_connections()
 	connect(m->action_about, &QAction::triggered, this, &Menubar::about_clicked);
 	connect(m->action_help, &QAction::triggered, this, &Menubar::help_clicked);
 
+
 	// shortcuts
 	ShortcutHandler* sch = ShortcutHandler::instance();
 
 	Shortcut sc1 = sch->add(this, "quit", Lang::get(Lang::Quit), "Ctrl+q");
 	Shortcut sc2 = sch->add(this, "minimize", tr("Minimize"), "Ctrl+m");
+	Shortcut sc3 = sch->add(this, m->SC_ID_VIEW_LIBRARY, tr("View Library"), "Ctrl+L");
 
 	sc1.create_qt_shortcut(this, this, SLOT(close_clicked()));
 	sc2.create_qt_shortcut(this, this, SLOT(minimize_clicked()));
+	//sc3.create_qt_shortcut(this);
+
+	shortcut_changed(m->SC_ID_VIEW_LIBRARY);
+
+	connect(sch, &ShortcutHandler::sig_shortcut_changed, this, &Menubar::shortcut_changed);
 }
 
 void Menubar::language_changed()
@@ -409,7 +420,7 @@ void Menubar::about_clicked()
 
 void Menubar::awa_translators_finished()
 {
-AsyncWebAccess* awa = static_cast<AsyncWebAccess*>(sender());
+	AsyncWebAccess* awa = static_cast<AsyncWebAccess*>(sender());
 	if(!awa){
 		return;
 	}
@@ -432,6 +443,19 @@ AsyncWebAccess* awa = static_cast<AsyncWebAccess*>(sender());
 
 	awa->deleteLater();
 	about_clicked();
+}
+
+void Menubar::shortcut_changed(const QString& identifier)
+{
+	if(identifier == m->SC_ID_VIEW_LIBRARY)
+	{
+		ShortcutHandler* sch = ShortcutHandler::instance();
+		Shortcut sc = sch->get_shortcut(identifier);
+		QList<QKeySequence> seqs = sc.get_sequences();
+		if(seqs.count() > 0){
+			m->action_view_library->setShortcut(seqs.first());
+		}
+	}
 }
 
 

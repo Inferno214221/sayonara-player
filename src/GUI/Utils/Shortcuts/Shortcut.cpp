@@ -21,9 +21,11 @@
 #include "Shortcut.h"
 #include "ShortcutHandler.h"
 #include "ShortcutWidget.h"
-#include "RawShortcutMap.h"
+#include "Database/Connector.h"
+#include "Database/Shortcuts.h"
 #include "GUI/Utils/Widgets/Widget.h"
-#include "Utils/Settings/Settings.h"
+
+#include "Utils/RawShortcutMap.h"
 #include "Utils/Logger/Logger.h"
 
 #include <QKeySequence>
@@ -59,7 +61,8 @@ Shortcut::Shortcut(ShortcutWidget* parent, const QString& identifier, const QStr
 
 	m->shortcuts = m->default_shortcuts;
 
-	RawShortcutMap rsm = Settings::instance()->get<Set::Player_Shortcuts>();
+	DB::Shortcuts* db = DB::Connector::instance()->shortcut_connector();
+	RawShortcutMap rsm = db->getAllShortcuts();
 
 	if(rsm.contains(identifier)){
 		m->shortcuts = rsm[identifier];
@@ -77,11 +80,11 @@ Shortcut::Shortcut(const Shortcut& other) :
 	Shortcut()
 {
 	m->parent =				other.m->parent;
-	m->name =					other.m->name;
+	m->name =				other.m->name;
 	m->identifier =			other.m->identifier;
-	m->default_shortcuts =		other.m->default_shortcuts;
-	m->shortcuts =				other.m->shortcuts;
-	m->qt_shortcuts =			other.m->qt_shortcuts;
+	m->default_shortcuts =	other.m->default_shortcuts;
+	m->shortcuts =			other.m->shortcuts;
+	m->qt_shortcuts =		other.m->qt_shortcuts;
 }
 
 Shortcut::~Shortcut() {}
@@ -164,13 +167,15 @@ void Shortcut::create_qt_shortcut(QWidget* parent, QObject* receiver, const char
 	}
 }
 
+void Shortcut::create_qt_shortcut(QWidget* parent)
+{
+	init_qt_shortcut(parent);
+}
+
 
 QList<QShortcut*> Shortcut::init_qt_shortcut(QWidget* parent)
 {
 	QList<QShortcut*> lst;
-	if(get_sequences().size() > 1){
-		sp_log(Log::Debug, this) << "Number of shortcuts: " << get_sequences().size();
-	}
 
 	const QList<QKeySequence> sequences = get_sequences();
 	for(const QKeySequence& sequence : sequences)

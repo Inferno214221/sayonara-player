@@ -2,14 +2,6 @@
 <ui version="4.0">
  <class>GUI_Player</class>
  <widget class="QMainWindow" name="GUI_Player">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>731</width>
-    <height>372</height>
-   </rect>
-  </property>
   <property name="focusPolicy">
    <enum>Qt::ClickFocus</enum>
   </property>

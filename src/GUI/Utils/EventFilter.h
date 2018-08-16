@@ -24,9 +24,30 @@
 #define EVENTFILTER_H
 
 #include <QObject>
+#include <QEvent>
+#include <QList>
 
-class QEvent;
 class QAction;
+
+class GenericFilter :
+		public QObject
+{
+	Q_OBJECT
+
+signals:
+	void sig_event(QEvent::Type);
+
+private:
+	QList<QEvent::Type> m_types;
+
+public:
+	explicit GenericFilter(const QEvent::Type& type, QObject* parent=nullptr);
+	explicit GenericFilter(const QList<QEvent::Type>& types, QObject* parent=nullptr);
+
+protected:
+	bool eventFilter(QObject* o , QEvent* e);
+};
+
 class KeyPressFilter :
 		public QObject
 {
@@ -41,6 +62,8 @@ signals:
 protected:
 	bool eventFilter(QObject* o , QEvent* e);
 };
+
+
 
 
 class ContextMenuFilter :
@@ -104,5 +127,55 @@ signals:
 protected:
 	bool eventFilter(QObject* o, QEvent* e);
 };
+
+
+class HideFilter :
+		public QObject
+{
+	Q_OBJECT
+
+public:
+	explicit HideFilter(QObject* parent=nullptr);
+
+signals:
+	void sig_hidden();
+
+protected:
+	bool eventFilter(QObject* o, QEvent* e);
+};
+
+
+
+class ShowFilter :
+		public QObject
+{
+	Q_OBJECT
+
+public:
+	explicit ShowFilter(QObject* parent=nullptr);
+
+signals:
+	void sig_shown();
+
+protected:
+	bool eventFilter(QObject* o, QEvent* e);
+};
+
+
+class PaintFilter :
+		public QObject
+{
+	Q_OBJECT
+
+public:
+	explicit PaintFilter(QObject* parent=nullptr);
+
+signals:
+	void sig_painted();
+
+protected:
+	bool eventFilter(QObject* o, QEvent* e);
+};
+
 
 #endif // EVENTFILTER_H

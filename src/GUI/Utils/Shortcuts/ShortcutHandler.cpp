@@ -20,9 +20,12 @@
 
 #include "ShortcutHandler.h"
 #include "Shortcut.h"
-#include "RawShortcutMap.h"
-#include "Utils/Settings/Settings.h"
+
+#include "Database/Connector.h"
+#include "Database/Shortcuts.h"
+
 #include "Utils/Utils.h"
+#include "Utils/RawShortcutMap.h"
 
 #include <functional>
 #include <QStringList>
@@ -60,12 +63,14 @@ void ShortcutHandler::set_shortcut(const QString& identifier, const QStringList&
 	{
 		if(it->get_identifier() == identifier){
 			it->change_shortcut(shortcuts);
+			emit sig_shortcut_changed(identifier);
 		}
 
 		rsm[it->get_identifier()] = it->get_shortcuts();
 	}
 
-	_settings->set<Set::Player_Shortcuts>(rsm);
+	DB::Shortcuts* db = DB::Connector::instance()->shortcut_connector();
+	db->setShortcuts(identifier, shortcuts);
 }
 
 

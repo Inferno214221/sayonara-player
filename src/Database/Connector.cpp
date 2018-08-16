@@ -26,6 +26,7 @@
 #include "Database/Podcasts.h"
 #include "Database/Streams.h"
 #include "Database/Settings.h"
+#include "Database/Shortcuts.h"
 #include "Database/VisStyles.h"
 
 #include "Utils/MetaData/Album.h"
@@ -34,6 +35,7 @@
 #include "Utils/Logger/Logger.h"
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
+#include "Utils/RawShortcutMap.h"
 
 #include <QFileInfo>
 #include <QDateTime>
@@ -55,6 +57,7 @@ struct Connector::Private
 	DB::Streams*			stream_connector=nullptr;
 	DB::VisualStyles*		visual_style_connector=nullptr;
 	DB::Settings*			settings_connector=nullptr;
+	DB::Shortcuts*			shortcut_connector=nullptr;
 	DB::Library*			library_connector=nullptr;
 
 	QList<LibraryDatabase*> library_dbs;
@@ -81,6 +84,10 @@ struct Connector::Private
 
 		if(settings_connector){
 			delete settings_connector; settings_connector = nullptr;
+		}
+
+		if(shortcut_connector){
+			delete shortcut_connector; shortcut_connector = nullptr;
 		}
 
 		if(library_connector){
@@ -237,7 +244,7 @@ bool Connector::apply_fixes()
 	QString str_version;
 	int version;
 	bool success;
-	const int LatestVersion = 18;
+	const int LatestVersion = 19;
 
 	success = settings_connector()->load_setting("version", str_version);
 	version = str_version.toInt(&success);
@@ -499,6 +506,33 @@ bool Connector::apply_fixes()
 		}
 	}
 
+	if(version < 19)
+	{
+		QString create_string =
+			"CREATE TABLE Shortcuts "
+			"( "
+			"  id INTEGER NOT NULL PRIMARY KEY, "
+			"  identifier VARCHAR(32) NOT NULL, "
+			"  shortcut VARCHAR(32) NOT NULL "
+			"); ";
+
+		bool success = check_and_create_table("Shortcuts", create_string);
+		if(success)
+		{
+			QString raw;
+			settings_connector()->load_setting("shortcuts", raw);
+
+			RawShortcutMap rsm = RawShortcutMap::fromString(raw);
+			for(const QString& key : rsm.keys())
+			{
+				this->shortcut_connector()->setShortcuts(key, rsm.value(key));
+			}
+
+			settings_connector()->store_setting("shortcuts", "<deprecated>");
+			settings_connector()->store_setting("version", 19);
+		}
+	}
+
 	return true;
 }
 
@@ -619,6 +653,15 @@ DB::Settings* Connector::settings_connector()
 	}
 
 	return m->settings_connector;
+}
+
+DB::Shortcuts*Connector::shortcut_connector()
+{
+	if(!m->shortcut_connector){
+		m->shortcut_connector = new DB::Shortcuts(this->connection_name(), this->db_id());
+	}
+
+	return m->shortcut_connector;
 }
 
 DB::Library* Connector::library_connector()

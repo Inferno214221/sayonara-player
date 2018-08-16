@@ -64,6 +64,7 @@ struct GUI_Player::Private
 	QString						current_language;
 	int							style;
 	bool						shutdown_requested;
+	QSize						new_size;
 
 	Private() :
 		shutdown_requested(false)
@@ -82,6 +83,7 @@ struct GUI_Player::Private
 	}
 };
 
+#include "GUI/Utils/EventFilter.h"
 
 GUI_Player::GUI_Player(QWidget* parent) :
 	Gui::MainWindow(parent),
@@ -166,9 +168,7 @@ void GUI_Player::init_sizes()
 
 void GUI_Player::init_main_splitter()
 {
-	ui->splitter->widget(1)->setVisible(
-		_settings->get<Set::Lib_Show>()
-	);
+	ui->library_widget->setVisible(_settings->get<Set::Lib_Show>());
 
 	QByteArray splitter_state_main = _settings->get<Set::Player_SplitterState>();
 	if(splitter_state_main.size() <= 1)
@@ -185,10 +185,14 @@ void GUI_Player::init_main_splitter()
 		ui->splitter->restoreState(splitter_state_main);
 	}
 
-	if(_settings->get<Set::Lib_Show>())
+	GenericFilter* paint_filter = new GenericFilter(QEvent::Paint, ui->splitter);
+	ui->splitter->installEventFilter(paint_filter);
+
+	connect(paint_filter, &GenericFilter::sig_event, this, [=](QEvent::Type t)
 	{
-		ui->library_widget->resize(ui->splitter->widget(1)->size());
-	}
+		Q_UNUSED(t)
+		this->splitter_painted();
+	});
 }
 
 
@@ -408,54 +412,52 @@ void GUI_Player::current_library_changed(const QString& name)
 
 void GUI_Player::show_library_changed()
 {
+	Library::PluginHandler* lph = Library::PluginHandler::instance();
+	Library::Container* cur_lib = lph->current_library();
+	if(cur_lib && cur_lib->is_initialized() && ui->library_widget->layout()->isEmpty())
+	{
+		ui->library_widget->layout()->addWidget(cur_lib->widget());
+	}
+
 	show_library(_settings->get<Set::Lib_Show>(), ui->library_widget->isVisible());
 }
 
+
 void GUI_Player::show_library(bool is_library_visible, bool was_library_visible)
 {
-	QSize player_size = this->size();
+	if(is_library_visible == was_library_visible){
+		return;
+	}
 
 	if(is_library_visible)
 	{
-		int library_width = _settings->get<Set::Lib_OldWidth>();
-		_settings->set<Set::Lib_OldWidth>(0);
-
-		if(!was_library_visible)
-		{
-			if(library_width < 100) {
-				library_width = 400;
-			}
-
-			player_size += QSize(library_width, 0);
-		}
-
-		/* Add the new library to the layout */
-		Library::PluginHandler* lph = Library::PluginHandler::instance();
-		Library::Container* cur_lib = lph->current_library();
-		if(cur_lib && cur_lib->is_initialized())
-		{
-			ui->library_widget->layout()->addWidget(cur_lib->widget());
-			cur_lib->widget()->show();
-		}
+		int old_lib_width = _settings->get<Set::Lib_OldWidth>();
+		m->new_size = QSize(this->width() + old_lib_width, this->height());
 	}
 
-	else if(was_library_visible)
+	else
 	{
-		int library_width = ui->library_widget->width();
-		_settings->set<Set::Lib_OldWidth>(library_width);
-
-		player_size -= QSize(library_width, 0);
+		int lib_width = ui->library_widget->width();
+		m->new_size = QSize(this->width() - lib_width, this->height());
 	}
 
 	ui->library_widget->setVisible(is_library_visible);
 
-	if(!this->isMaximized() && !this->isFullScreen())
-	{
-		this->resize(player_size);
-	}
-
 	check_library_menu_action();
 }
+
+void GUI_Player::splitter_painted()
+{
+	if(m->new_size.isValid() && (m->new_size != this->size()))
+	{
+		this->resize(m->new_size);
+	}
+
+	else {
+		m->new_size = QSize();
+	}
+}
+
 
 
 void GUI_Player::check_library_menu_action()
@@ -470,6 +472,7 @@ void GUI_Player::check_library_menu_action()
 		m->menubar->update_library_action(lph->current_library_menu(), lph->current_library()->display_name());
 	}
 }
+
 
 
 void GUI_Player::splitter_main_moved(int pos, int idx)
@@ -634,8 +637,6 @@ void GUI_Player::resizeEvent(QResizeEvent* e)
 	{
 		_settings->set<Set::Player_Size>(this->size());
 	}
-
-	update();
 }
 
 

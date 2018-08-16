@@ -41,6 +41,7 @@ namespace DB
 	class VisualStyles;
 	class Settings;
 	class Library;
+	class Shortcuts;
 
 	using LibraryDatabases=QList<LibraryDatabase*>;
 
@@ -73,6 +74,7 @@ namespace DB
 			DB::Streams*			stream_connector();
 			DB::VisualStyles*		visual_style_connector();
 			DB::Settings*			settings_connector();
+			DB::Shortcuts*			shortcut_connector();
 			DB::Library*			library_connector();
 	};
 }

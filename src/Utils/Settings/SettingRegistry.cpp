@@ -28,7 +28,7 @@
 #include "Utils/Library/Sorting.h"
 #include "Utils/Library/LibraryInfo.h"
 
-#include "GUI/Utils/Shortcuts/RawShortcutMap.h"
+#include "Utils/RawShortcutMap.h"
 
 #include <QDir>
 #include <QSize>
@@ -128,7 +128,7 @@ bool SettingRegistry::init()
 	register_setting<Set::Player_ShowTrayIcon>( "show_tray_icon", true );
 	register_setting<Set::Player_NotifyNewVersion>( "notify_new_version", true );
 	register_setting<Set::Player_SplitterState >("splitter_state_player", QByteArray());
-	register_setting<Set::Player_Shortcuts>( "shortcuts", RawShortcutMap());
+	register_setting<Set::Player_Shortcuts>( "shortcuts", RawShortcutMap()); // deprecated
 	register_setting<Set::Player_SplitterControls>("player_splitter_controls", QByteArray());
 	register_setting<Set::Player_PrivId>("player_priv_id", QByteArray());
 	register_setting<Set::Player_PublicId>("player_pub_id", QByteArray());
