@@ -414,9 +414,12 @@ void GUI_Player::show_library_changed()
 {
 	Library::PluginHandler* lph = Library::PluginHandler::instance();
 	Library::Container* cur_lib = lph->current_library();
-	if(cur_lib && cur_lib->is_initialized() && ui->library_widget->layout()->isEmpty())
+	if(cur_lib && cur_lib->is_initialized())
 	{
 		ui->library_widget->layout()->addWidget(cur_lib->widget());
+		if(ui->library_widget->isVisible()){
+			cur_lib->widget()->setVisible(true);
+		}
 	}
 
 	show_library(_settings->get<Set::Lib_Show>(), ui->library_widget->isVisible());
@@ -425,7 +428,8 @@ void GUI_Player::show_library_changed()
 
 void GUI_Player::show_library(bool is_library_visible, bool was_library_visible)
 {
-	if(is_library_visible == was_library_visible){
+	if(is_library_visible == was_library_visible)
+	{
 		return;
 	}
 
@@ -457,8 +461,6 @@ void GUI_Player::splitter_painted()
 		m->new_size = QSize();
 	}
 }
-
-
 
 void GUI_Player::check_library_menu_action()
 {

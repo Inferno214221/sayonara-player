@@ -105,6 +105,7 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 	connect(m->library_menu, &LocalLibraryMenu::sig_import_folder, this, &GUI_LocalLibrary::import_dirs_requested);
 	connect(m->library_menu, &LocalLibraryMenu::sig_info, this, &GUI_LocalLibrary::show_info_box);
 	connect(m->library_menu, &LocalLibraryMenu::sig_reload_library, this, [=](){ this->reload_library_requested(); });
+	connect(ui->btn_reload_library, &QPushButton::clicked, this, [=](){	this->reload_library_requested(); });
 
 	connect(ui->splitter_artist_album, &QSplitter::splitterMoved, this, &GUI_LocalLibrary::splitter_artist_moved);
 	connect(ui->splitter_tracks, &QSplitter::splitterMoved, this, &GUI_LocalLibrary::splitter_tracks_moved);
@@ -116,7 +117,6 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 
 	Set::listen<Set::Lib_ShowAlbumCovers>(this, &GUI_LocalLibrary::switch_album_view);
 
-	//QTimer::singleShot(100, m->library, SLOT(load()));
 	m->library->load();
 	ui->lv_genres->init(m->library);
 }
@@ -132,6 +132,7 @@ void GUI_LocalLibrary::language_changed()
 {
 	ui->retranslateUi(this);
 	ui->gb_genres->setTitle(Lang::get(Lang::Genres));
+	ui->btn_reload_library->setText(Lang::get(Lang::ReloadLibrary));
 
 	GUI_AbstractLibrary::language_changed();
 }
@@ -214,6 +215,9 @@ void GUI_LocalLibrary::reload_finished()
 	genres_reloaded();
 
 	m->library_menu->set_library_busy(false);
+	ui->btn_reload_library->setVisible(
+		m->library->tracks().isEmpty()
+	);
 }
 
 void GUI_LocalLibrary::show_info_box()
@@ -372,6 +376,7 @@ QList<Library::Filter::Mode> GUI_LocalLibrary::search_options() const
 	};
 }
 
+
 void GUI_LocalLibrary::showEvent(QShowEvent* e)
 {
 	GUI_AbstractLibrary::showEvent(e);
@@ -395,5 +400,7 @@ void GUI_LocalLibrary::showEvent(QShowEvent* e)
 	if(!genre_splitter_state.isEmpty()){
 		ui->splitter_genre->restoreState(genre_splitter_state);
 	}
+
+	ui->btn_reload_library->setVisible(m->library->tracks().isEmpty());
 }
 

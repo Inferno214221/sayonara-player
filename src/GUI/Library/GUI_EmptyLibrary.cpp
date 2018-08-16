@@ -99,6 +99,4 @@ void GUI_EmptyLibrary::new_library_created()
 
 	LocalLibrary* library = lib_manager->library_instance(id);
 	library->reload_library(false, Library::ReloadQuality::Accurate);
-
-	//LibraryPluginHandler::instance()->set_current_index(0);
 }

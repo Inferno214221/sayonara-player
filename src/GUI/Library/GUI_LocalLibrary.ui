@@ -308,6 +308,13 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_4">
           <item>
+           <widget class="QPushButton" name="btn_reload_library">
+            <property name="text">
+             <string>Reload Library</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QProgressBar" name="pb_progress">
             <property name="value">
              <number>24</number>
