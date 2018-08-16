@@ -34,6 +34,36 @@
 struct ShortcutHandler::Private
 {
 	QList<Shortcut> shortcuts;
+
+	QMap<ShortcutHandler::Identifier, QString> map;
+
+	Private()
+	{
+		map =
+		{
+			{ShortcutHandler::PlayPause, "play_pause"},
+			{ShortcutHandler::Stop, "stop"},
+			{ShortcutHandler::Next, "next"},
+			{ShortcutHandler::Prev, "prev"},
+			{ShortcutHandler::VolDown, "vol_down"},
+			{ShortcutHandler::VolUp, "vol_up"},
+			{ShortcutHandler::SeekFwd, "seek_fwd"},
+			{ShortcutHandler::SeekBwd, "seek_bwd"},
+			{ShortcutHandler::SeekFwdFast, "seek_fwd_fast"},
+			{ShortcutHandler::SeekBwdFast, "seek_bwd_fast"},
+			{ShortcutHandler::PlayNewTab, "play_new_tab"},
+			{ShortcutHandler::PlayNext, "play_next"},
+			{ShortcutHandler::Append, "append"},
+			{ShortcutHandler::CoverView, "cover_view"},
+			{ShortcutHandler::AlbumArtists, "album_artists"},
+			{ShortcutHandler::Quit, "quit"},
+			{ShortcutHandler::Minimize, "minimize"},
+			{ShortcutHandler::ViewLibrary, "view_library"},
+			{ShortcutHandler::AddTab, "add_tab"},
+			{ShortcutHandler::CloseTab, "close_tab"},
+			{ShortcutHandler::ClosePlugin, "close_plugin"}
+		};
+	}
 };
 
 ShortcutHandler::ShortcutHandler() :
@@ -48,7 +78,7 @@ Shortcut ShortcutHandler::get_shortcut(const QString& identifier) const
 {
 	for(auto it = m->shortcuts.begin(); it != m->shortcuts.end(); it++)
 	{
-		if(it->get_identifier() == identifier){
+		if(it->identifier() == identifier){
 			return *it;
 		}
 	}
@@ -56,18 +86,24 @@ Shortcut ShortcutHandler::get_shortcut(const QString& identifier) const
 	return Shortcut::getInvalid();
 }
 
+Shortcut ShortcutHandler::get_shortcut(const ShortcutHandler::Identifier& identifier) const
+{
+	QString id = this->identifier(identifier);
+	return get_shortcut(id);
+}
+
 void ShortcutHandler::set_shortcut(const QString& identifier, const QStringList& shortcuts)
 {
 	RawShortcutMap rsm;
 	for(auto it = m->shortcuts.begin(); it != m->shortcuts.end(); it++)
 	{
-		if(it->get_identifier() == identifier)
+		if(it->identifier() == identifier)
 		{
 			it->change_shortcut(shortcuts);
 			emit sig_shortcut_changed(identifier);
 		}
 
-		rsm[it->get_identifier()] = it->get_shortcuts();
+		rsm[it->identifier()] = it->shortcuts();
 	}
 
 	DB::Shortcuts* db = DB::Connector::instance()->shortcut_connector();
@@ -75,11 +111,12 @@ void ShortcutHandler::set_shortcut(const QString& identifier, const QStringList&
 }
 
 
-Shortcut ShortcutHandler::add(ShortcutWidget* parent, const QString& identifier, const QString& name, const QString& default_shortcut)
+Shortcut ShortcutHandler::add(ShortcutWidget* parent, ShortcutHandler::Identifier id, const QString& name, const QString& default_shortcut)
 {
+	QString identifier = this->identifier(id);
 	for(const Shortcut& sc : m->shortcuts)
 	{
-		if(identifier == sc.get_identifier()){
+		if(identifier == sc.identifier()){
 			return sc;
 		}
 	}
@@ -99,7 +136,7 @@ QStringList ShortcutHandler::get_shortcuts() const
 	QStringList ret;
 
 	for(auto sc : Util::AsConst(m->shortcuts)){
-		ret << sc.get_identifier();
+		ret << sc.identifier();
 	}
 
 	return ret;
@@ -116,3 +153,7 @@ void ShortcutHandler::set_parent_deleted(ShortcutWidget* parent)
 	}
 }
 
+QString ShortcutHandler::identifier(ShortcutHandler::Identifier id) const
+{
+	return m->map.value(id);
+}

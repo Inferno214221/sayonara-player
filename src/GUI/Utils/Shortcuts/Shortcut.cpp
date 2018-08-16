@@ -119,7 +119,7 @@ Shortcut& Shortcut::operator =(const Shortcut& other)
 
 
 
-QString Shortcut::get_name() const
+QString Shortcut::name() const
 {
 	if(m->parent){
 		QString name = m->parent->get_shortcut_text(m->identifier);
@@ -130,15 +130,15 @@ QString Shortcut::get_name() const
 	return m->name;
 }
 
-QStringList Shortcut::get_default() const
+QStringList Shortcut::default_shorcut() const
 {
 	return m->default_shortcuts;
 }
 
-QList<QKeySequence> Shortcut::get_sequences() const
+QList<QKeySequence> Shortcut::sequences() const
 {
 	QList<QKeySequence> sequences;
-	const QStringList& shortcuts = get_shortcuts();
+	const QStringList& shortcuts = this->shortcuts();
 
 	for(const QString& str : shortcuts)
 	{
@@ -146,15 +146,19 @@ QList<QKeySequence> Shortcut::get_sequences() const
 		sequences << seq;
 	}
 
+	if(sequences.isEmpty()){
+		sequences << QKeySequence();
+	}
+
 	return sequences;
 }
 
-const QStringList& Shortcut::get_shortcuts() const
+const QStringList& Shortcut::shortcuts() const
 {
 	return m->shortcuts;
 }
 
-QString Shortcut::get_identifier() const
+QString Shortcut::identifier() const
 {
 	return m->identifier;
 }
@@ -194,7 +198,7 @@ QList<QShortcut*> Shortcut::init_qt_shortcut(QWidget* parent, Qt::ShortcutContex
 {
 	QList<QShortcut*> lst;
 
-	const QList<QKeySequence> sequences = get_sequences();
+	const QList<QKeySequence> sequences = this->sequences();
 	for(const QKeySequence& sequence : sequences)
 	{
 		QShortcut* shortcut = new QShortcut(parent);
@@ -242,7 +246,7 @@ void Shortcut::change_shortcut(const QStringList& shortcuts)
 
 	foreach(QShortcut* sc, m->qt_shortcuts)
 	{
-		QList<QKeySequence> sequences = get_sequences();
+		QList<QKeySequence> sequences = this->sequences();
 		for(const QKeySequence& ks : sequences){
 			sc->setKey(ks);
 		}

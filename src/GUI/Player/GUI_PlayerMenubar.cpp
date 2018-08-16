@@ -230,16 +230,16 @@ void Menubar::init_connections()
 	// shortcuts
 	ShortcutHandler* sch = ShortcutHandler::instance();
 
-	Shortcut sc1 = sch->add(this, "quit", Lang::get(Lang::Quit), "Ctrl+q");
-	Shortcut sc2 = sch->add(this, "minimize", tr("Minimize"), "Ctrl+m");
-	Shortcut sc3 = sch->add(this, m->SC_ID_VIEW_LIBRARY, tr("View Library"), "Ctrl+L");
+	Shortcut sc1 = sch->add(this, ShortcutHandler::Quit, Lang::get(Lang::Quit), "Ctrl+q");
+	Shortcut sc2 = sch->add(this, ShortcutHandler::Minimize, tr("Minimize"), "Ctrl+m");
+	Shortcut sc3 = sch->add(this, ShortcutHandler::ViewLibrary, tr("View Library"), "Ctrl+L");
 
 	sc1.create_qt_shortcut(this, this, SLOT(close_clicked()));
 	sc2.create_qt_shortcut(this, this, SLOT(minimize_clicked()));
 	Q_UNUSED(sc3)
 
 
-	shortcut_changed(m->SC_ID_VIEW_LIBRARY);
+	shortcut_changed("");
 
 	connect(sch, &ShortcutHandler::sig_shortcut_changed, this, &Menubar::shortcut_changed);
 }
@@ -447,15 +447,11 @@ void Menubar::awa_translators_finished()
 
 void Menubar::shortcut_changed(const QString& identifier)
 {
-	if(identifier == m->SC_ID_VIEW_LIBRARY)
-	{
-		ShortcutHandler* sch = ShortcutHandler::instance();
-		Shortcut sc = sch->get_shortcut(identifier);
-		QList<QKeySequence> seqs = sc.get_sequences();
-		if(seqs.count() > 0){
-			m->action_view_library->setShortcut(seqs.first());
-		}
-	}
+	Q_UNUSED(identifier)
+
+	ShortcutHandler* sch = ShortcutHandler::instance();
+	Shortcut sc = sch->get_shortcut(ShortcutHandler::ViewLibrary);
+	m->action_view_library->setShortcut(sc.sequences().first());
 }
 
 

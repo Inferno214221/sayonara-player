@@ -156,6 +156,8 @@ namespace Library
 		virtual void delete_clicked();
 		virtual void append_clicked();
 		virtual void refresh_clicked();
+		virtual void cover_view_toggled();
+		virtual void album_artists_toggled();
 		virtual void fill();
 
 	public:

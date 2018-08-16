@@ -172,9 +172,10 @@ void LibraryContextMenu::shortcut_changed(const QString& identifier)
 	Q_UNUSED(identifier)
 	ShortcutHandler* sch = ShortcutHandler::instance();
 
-	m->play_new_tab_action->setShortcut(sch->get_shortcut("play_new_tab").get_sequences().first());
-	m->play_next_action->setShortcut(sch->get_shortcut("play_next").get_sequences().first());
-	m->append_action->setShortcut(sch->get_shortcut("append").get_sequences().first());
+	m->play_new_tab_action->setShortcut(sch->get_shortcut("play_new_tab").sequences().first());
+	m->play_next_action->setShortcut(sch->get_shortcut("play_next").sequences().first());
+	m->append_action->setShortcut(sch->get_shortcut("append").sequences().first());
+	m->cover_view_action->setShortcut(sch->get_shortcut("cover_view").sequences().first());
 }
 
 

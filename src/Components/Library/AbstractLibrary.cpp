@@ -135,8 +135,6 @@ void AbstractLibrary::refresh()
 	IdSet sel_albums = m->selected_albums;
 	IdSet sel_tracks = m->selected_tracks;
 
-	sp_log(Log::Debug, this) << "refresh(): Selected track ids" << sel_tracks;
-
 	fetch_by_filter(m->filter, true);
 
 	_artists.sort(m->sortorder.so_artists);

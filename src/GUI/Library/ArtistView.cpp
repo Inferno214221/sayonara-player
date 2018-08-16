@@ -30,6 +30,8 @@
 
 #include "GUI/Utils/Delegates/StyledItemDelegate.h"
 #include "GUI/Utils/ContextMenu/LibraryContextMenu.h"
+#include "GUI/Utils/Shortcuts/ShortcutHandler.h"
+#include "GUI/Utils/Shortcuts/Shortcut.h"
 
 #include "Utils/Settings/Settings.h"
 #include "Utils/Library/Sorting.h"
@@ -74,6 +76,8 @@ void ArtistView::init_view(AbstractLibrary* library)
 
 void ArtistView::init_context_menu()
 {
+	ShortcutHandler* sch = ShortcutHandler::instance();
+
 	ItemView::init_context_menu();
 
 	LibraryContextMenu* menu = context_menu();
@@ -81,6 +85,7 @@ void ArtistView::init_context_menu()
 	m->album_artist_action = new QAction(menu);
 	m->album_artist_action->setCheckable(true);
 	m->album_artist_action->setChecked(_settings->get<Set::Lib_ShowAlbumArtists>());
+	m->album_artist_action->setShortcut(sch->get_shortcut("album_artists").sequences().first());
 	Set::listen<Set::Lib_ShowAlbumCovers>(this, &ArtistView::album_artists_changed);
 
 	connect(m->album_artist_action, &QAction::triggered, this, &ArtistView::album_artists_triggered);
@@ -130,8 +135,11 @@ void ArtistView::language_changed()
 {
 	TableView::language_changed();
 
-	if(m->album_artist_action){
+	if(m->album_artist_action)
+	{
+		ShortcutHandler* sch = ShortcutHandler::instance();
 		m->album_artist_action->setText(Lang::get(Lang::ShowAlbumArtists));
+		m->album_artist_action->setShortcut(sch->get_shortcut("album_artists").sequences().first());
 	}
 }
 

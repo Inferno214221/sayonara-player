@@ -113,12 +113,14 @@ bool GUI_Shortcuts::commit()
 		QList<QKeySequence> lst = entry->get_sequences();
 		for(const QKeySequence& s : lst)
 		{
-			if(sequences.contains(s.toString()))
+			QString str = s.toString().trimmed();
+			if( sequences.contains(str) &&
+				str.size() > 0)
 			{
-				m->error_strings << s.toString();
+				m->error_strings << str;
 			}
 
-			sequences.insert(s.toString());
+			sequences.insert(str);
 		}
 
 		entry->commit();

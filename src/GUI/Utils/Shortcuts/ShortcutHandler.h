@@ -49,12 +49,38 @@ signals:
 
 public:
 
+	enum Identifier
+	{
+		PlayPause,
+		Stop,
+		Next,
+		Prev,
+		VolDown,
+		VolUp,
+		SeekFwd,
+		SeekBwd,
+		SeekFwdFast,
+		SeekBwdFast,
+		PlayNewTab,
+		PlayNext,
+		Append,
+		CoverView,
+		AlbumArtists,
+		Quit,
+		Minimize,
+		ViewLibrary,
+		AddTab,
+		CloseTab,
+		ClosePlugin
+	};
+
 	/**
 	 * @brief get a shortcut by its unique identifier
 	 * @param identifier the identifier which is used in database
 	 * @return a shortcut instance
 	 */
 	Shortcut get_shortcut(const QString& identifier) const;
+	Shortcut get_shortcut(const Identifier& identifier) const;
 
 	/**
 	 * @brief set the shortcut by its unique identifier
@@ -73,7 +99,7 @@ public:
 	 * if the shortcut already exists, the instance already known is returned\n
 	 * if the shortcut does not exist yet, the same shortcut as the input is returned
 	 */
-	Shortcut add(ShortcutWidget* parent, const QString& identifier, const QString& name, const QString& default_shortcut);
+	Shortcut add(ShortcutWidget* parent, Identifier id, const QString& name, const QString& default_shortcut);
 
 
 	/**
@@ -83,6 +109,8 @@ public:
 	QStringList	get_shortcuts() const;
 
 	void set_parent_deleted(ShortcutWidget* parent);
+
+	QString identifier(Identifier id) const;
 };
 
 #endif // SHORTCUTHANDLER_H

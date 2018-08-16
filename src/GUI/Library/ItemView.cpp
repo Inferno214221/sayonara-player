@@ -64,7 +64,6 @@ struct Library::ItemView::Private
 	ItemModel*			model=nullptr;
 	QPushButton*		btn_clear_selection=nullptr;
 	QAction*			merge_action=nullptr;
-	QAction*			album_artist_action=nullptr;
 	QMenu*				merge_menu=nullptr;
 	LibraryContextMenu*	context_menu=nullptr;
 
@@ -101,15 +100,18 @@ ItemView::ItemView(QWidget* parent) :
 	clearSelection();
 
 	ShortcutHandler* sch = ShortcutHandler::instance();
-	Shortcut sc1 = sch->add(this, "play_new_tab", tr("Play track(s) in new tab"), "Ctrl+Enter");
-	Shortcut sc2 = sch->add(this, "play_next", tr("Play track(s) next"), "Alt+Enter");
-	Shortcut sc3 = sch->add(this, "append", tr("Append track(s)"), "Shift+Enter");
+	Shortcut sc1 = sch->add(this, ShortcutHandler::PlayNewTab, tr("Play track(s) in new tab"), "Ctrl+Enter");
+	Shortcut sc2 = sch->add(this, ShortcutHandler::PlayNext, tr("Play track(s) next"), "Alt+Enter");
+	Shortcut sc3 = sch->add(this, ShortcutHandler::Append, tr("Append track(s)"), "Shift+Enter");
+	Shortcut sc4 = sch->add(this, ShortcutHandler::CoverView, tr("Toggle Cover View"), "Ctrl+Shift+C");
+	Shortcut sc5 = sch->add(this, ShortcutHandler::AlbumArtists, tr("Toggle Album Artists"), "Ctrl+Shift+A");
 
 	Qt::ShortcutContext ctx = Qt::WidgetWithChildrenShortcut;
 	sc1.create_qt_shortcut(this, this, SLOT(play_new_tab_clicked()), ctx);
 	sc2.create_qt_shortcut(this, this, SLOT(play_next_clicked()), ctx);
 	sc3.create_qt_shortcut(this, this, SLOT(append_clicked()), ctx);
-
+	sc4.create_qt_shortcut(this, this, SLOT(cover_view_toggled()), ctx);
+	sc5.create_qt_shortcut(this, this, SLOT(album_artists_toggled()), ctx);
 
 	new QShortcut(QKeySequence(Qt::Key_Return), this, SLOT(play_clicked()), nullptr, Qt::WidgetShortcut);
 	new QShortcut(QKeySequence(Qt::Key_Enter), this, SLOT(play_clicked()), nullptr, Qt::WidgetShortcut);
@@ -369,6 +371,18 @@ void ItemView::delete_clicked() { emit sig_delete_clicked(); }
 void ItemView::append_clicked() { emit sig_append_clicked(); }
 void ItemView::refresh_clicked() { emit sig_refresh_clicked(); }
 
+void ItemView::cover_view_toggled()
+{
+	bool b = _settings->get<Set::Lib_ShowAlbumCovers>();
+	_settings->set<Set::Lib_ShowAlbumCovers>(!b);
+}
+
+void ItemView::album_artists_toggled()
+{
+	bool b = _settings->get<Set::Lib_ShowAlbumArtists>();
+	_settings->set<Set::Lib_ShowAlbumArtists>(!b);
+}
+
 void ItemView::fill()
 {
 	IndexSet selections = m->model->selected_indexes();
@@ -586,7 +600,9 @@ QString ItemView::get_shortcut_text(const QString& shortcut_identifier) const
 	{
 		{"play_new_tab", tr("Play track(s) in new tab")},
 		{"play_next", tr("Play track(s) next")},
-		{"append", tr("Append track(s)")}
+		{"append", tr("Append track(s)")},
+		{"cover_view", tr("Toggle Cover View")},
+		{"album_artists", tr("Toggle Album Artists")}
 	};
 
 	return name_map[shortcut_identifier];

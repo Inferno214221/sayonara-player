@@ -96,31 +96,31 @@ public:
 	 * @brief get the human-readable name of the shortcut
 	 * @return
 	 */
-	QString					get_name() const;
+	QString					name() const;
 
 	/**
 	 * @brief get a human-readable list of mapped default shortcuts
 	 * @return
 	 */
-	QStringList				get_default() const;
+	QStringList				default_shorcut() const;
 
 	/**
 	 * @brief get a list key squences mapped to this shortcut
 	 * @return
 	 */
-	QList<QKeySequence>		get_sequences() const;
+	QList<QKeySequence>		sequences() const;
 
 	/**
 	 * @brief get a human-readable list of mapped shortcuts
 	 * @return
 	 */
-	const QStringList&		get_shortcuts() const;
+	const QStringList&		shortcuts() const;
 
 	/**
 	 * @brief get the unique identifier
 	 * @return
 	 */
-	QString					get_identifier() const;
+	QString					identifier() const;
 
 	/**
 	 * @brief Check if the shortcut is valid or if it was retrieved via getInvalid()

@@ -50,8 +50,8 @@ GUI_ShortcutEntry::GUI_ShortcutEntry(const QString& identifier, QWidget* parent)
 	ui->setupUi(this);
 
 	ui->le_entry->setPlaceholderText(tr("Enter shortcut"));
-	ui->lab_description->setText(sc.get_name());
-	ui->le_entry->setText(sc.get_shortcuts().join(", "));
+	ui->lab_description->setText(sc.name());
+	ui->le_entry->setText(sc.shortcuts().join(", "));
 
 	connect(ui->btn_edit, &QPushButton::clicked, this, &GUI_ShortcutEntry::edit_clicked);
 	connect(ui->btn_default, &QPushButton::clicked, this, &GUI_ShortcutEntry::default_clicked);
@@ -92,7 +92,7 @@ void GUI_ShortcutEntry::revert()
 	Shortcut sc = m->sch->get_shortcut(m->identifier);
 
 	ui->le_entry->setText(
-		sc.get_shortcuts().join(", ")
+		sc.shortcuts().join(", ")
 	);
 }
 
@@ -102,7 +102,7 @@ void GUI_ShortcutEntry::default_clicked()
 	Shortcut sc = m->sch->get_shortcut(m->identifier);
 
 	ui->le_entry->setText(
-		sc.get_default().join(", ")
+		sc.default_shorcut().join(", ")
 	);
 }
 
@@ -123,7 +123,7 @@ void GUI_ShortcutEntry::language_changed()
 	ui->retranslateUi(this);
 
 	Shortcut sc = m->sch->get_shortcut(m->identifier);
-	ui->lab_description->setText(sc.get_name());
+	ui->lab_description->setText(sc.name());
 
 	ui->btn_default->setToolTip(Lang::get(Lang::Default));
 	ui->btn_edit->setToolTip(Lang::get(Lang::Edit));

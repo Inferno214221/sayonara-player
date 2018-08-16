@@ -106,7 +106,7 @@ void Base::finalize_initialization()
 	ShortcutHandler* sch = ShortcutHandler::instance();
 	Shortcut sc = sch->get_shortcut("close_plugin");
 	if(!sc.is_valid()){
-		sc = sch->add(this, "close_plugin", tr("Close plugin"), "Ctrl+Esc");
+		sc = sch->add(this, ShortcutHandler::ClosePlugin, tr("Close plugin"), "Ctrl+Esc");
 	}
 
 	if(parentWidget()){
