@@ -52,6 +52,7 @@ struct CoverModel::Private
 	QHash<Hash, QPixmap>		pixmaps;
 	QHash<Hash, QModelIndex>	indexes;
 	QHash<Hash, bool>			valid_hashes;
+	std::mutex					refresh_mtx;
 
 	int	old_row_count;
 	int	old_column_count;
@@ -59,13 +60,10 @@ struct CoverModel::Private
 	int zoom;
 	int columns;
 
-	std::atomic<bool>   refreshing;
-
 	Private(QObject* parent) :
 		old_row_count(0),
 		old_column_count(0),
-		columns(10),
-		refreshing(false)
+		columns(10)
 	{
 		cover_thread = new AlbumCoverFetchThread(parent);
 		zoom = Settings::instance()->get<Set::Lib_CoverZoom>();
@@ -157,9 +155,10 @@ int CoverModel::columnCount(const QModelIndex& parent) const
 	return m->columns;
 }
 
+
 void CoverModel::refresh_data()
 {
-	m->refreshing = true;
+	LOCK_GUARD(m->refresh_mtx);
 
 	int old_columns = m->old_column_count;
 	int old_rows = m->old_row_count;
@@ -167,25 +166,28 @@ void CoverModel::refresh_data()
 	int new_rows = rowCount();
 	int new_columns = columnCount();
 
-	if(new_columns > old_columns) {
-		add_columns(old_columns, new_columns - old_columns);
-	}
-
-	else if(new_columns < old_columns) {
-		remove_columns(new_columns, old_columns - new_columns);
+	if((new_rows == old_rows) && (new_columns == old_columns))
+	{
+		return;
 	}
 
 	if(new_rows > old_rows)	{
 		add_rows(old_rows, new_rows - old_rows);
 	}
 
-	else if(new_rows < old_rows) {
+	if(new_columns > old_columns) {
+		add_columns(old_columns, new_columns - old_columns);
+	}
+
+	if(new_columns < old_columns) {
+		remove_columns(new_columns, old_columns - new_columns);
+	}
+
+	if(new_rows < old_rows) {
 		remove_rows(new_rows, old_rows - new_rows);
 	}
 
-	emit dataChanged(index(0, 0), index(rowCount() - 1, columnCount() - 1), {Qt::DisplayRole, Qt::SizeHintRole});
-
-	m->refreshing = false;
+	//emit dataChanged(index(0, 0), index(rowCount() - 1, columnCount() - 1), {Qt::DisplayRole, Qt::SizeHintRole});
 }
 
 void CoverModel::add_rows(int row, int count)
@@ -551,12 +553,13 @@ int CoverModel::zoom() const
 	return m->zoom;
 }
 
+QSize CoverModel::item_size() const
+{
+	return m->item_size();
+}
+
 void CoverModel::set_zoom(int zoom, const QSize& view_size)
 {
-	if(m->refreshing){
-		return;
-	}
-
 	m->zoom = zoom;
 
 	int columns = (view_size.width() / m->item_size().width());
@@ -570,12 +573,9 @@ void CoverModel::set_zoom(int zoom, const QSize& view_size)
 void CoverModel::reload()
 {
 	m->cover_thread->resume();
-
-	sp_log(Log::Debug, this) << "Reload cover view";
 	m->reset_valid_hashes();
-	if(!m->refreshing) {
-		refresh_data();
-	}
+
+	emit dataChanged(index(0,0), index(rowCount() - 1, columnCount() - 1), {Qt::SizeHintRole, Qt::DisplayRole, Qt::DecorationRole});
 }
 
 void CoverModel::clear()

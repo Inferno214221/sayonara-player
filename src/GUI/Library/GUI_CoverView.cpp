@@ -55,7 +55,6 @@ void GUI_CoverView::init(LocalLibrary* library)
 	ui->tb_view->init(library);
 	ui->lab_zoom->setText(Lang::get(Lang::Zoom).append(":"));
 	ui->lab_sorting->setText(Lang::get(Lang::SortBy).append(":"));
-	ui->combo_sorting->setEditable(true);
 
 	ui->topbar->setVisible(_settings->get<Set::Lib_CoverShowUtils>());
 

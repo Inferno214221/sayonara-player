@@ -54,6 +54,7 @@ namespace Library
 			Qt::ItemFlags	flags(const QModelIndex &index) const override;
 
 			int				zoom() const;
+			QSize			item_size() const;
 
 
 		protected:

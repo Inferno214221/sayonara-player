@@ -46,6 +46,8 @@ namespace Library
 		void hideEvent(QHideEvent* e) override;
 		void showEvent(QShowEvent* e) override;
 
+		int sizeHintForColumn(int) const override;
+
 	private slots:
 		void timer_timed_out();
 		void reload();

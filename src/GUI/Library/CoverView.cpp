@@ -265,6 +265,11 @@ void CoverView::showEvent(QShowEvent* e)
 	}
 }
 
+int CoverView::sizeHintForColumn(int c) const
+{
+	return m->model->item_size().width();
+}
+
 void CoverView::hideEvent(QHideEvent* e)
 {
 	if(m->model){

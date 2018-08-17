@@ -65,7 +65,7 @@ namespace SC
 		bool insertTrackIntoDatabase(const MetaData& md, int artist_id, int album_id) override;
 
 		// todo: assure to be called
-		bool apply_fixes();
+		bool apply_fixes() override;
 
 		QString load_setting(const QString& key);
 		bool save_setting(const QString& key, const QString& value);

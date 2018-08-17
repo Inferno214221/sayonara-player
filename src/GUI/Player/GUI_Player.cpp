@@ -442,6 +442,7 @@ void GUI_Player::show_library(bool is_library_visible, bool was_library_visible)
 	else
 	{
 		int lib_width = ui->library_widget->width();
+		_settings->set<Set::Lib_OldWidth>(lib_width);
 		m->new_size = QSize(this->width() - lib_width, this->height());
 	}
 

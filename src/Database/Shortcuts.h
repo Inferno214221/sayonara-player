@@ -3,7 +3,7 @@
 
 #include "Database/Module.h"
 
-class RawShortcutMap;
+struct RawShortcutMap;
 
 namespace DB
 {
