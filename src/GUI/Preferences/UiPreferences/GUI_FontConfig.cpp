@@ -43,6 +43,24 @@ GUI_FontConfig::GUI_FontConfig(QWidget* parent) :
 	Gui::Widget(parent)
 {
 	m = Pimpl::make<Private>();
+
+}
+
+GUI_FontConfig::~GUI_FontConfig()
+{
+	if(ui)
+	{
+		delete ui; ui=nullptr;
+	}
+}
+
+
+void GUI_FontConfig::init_ui()
+{
+	if(ui){
+		return;
+	}
+
 	ui = new Ui::GUI_FontConfig();
 	ui->setupUi(this);
 
@@ -57,13 +75,7 @@ GUI_FontConfig::GUI_FontConfig(QWidget* parent) :
 	revert();
 }
 
-GUI_FontConfig::~GUI_FontConfig()
-{
-	if(ui)
-	{
-		delete ui; ui=nullptr;
-	}
-}
+
 
 QString GUI_FontConfig::action_name() const
 {
@@ -132,9 +144,13 @@ void GUI_FontConfig::fill_sizes(const QStringList& sizes)
 	}
 }
 
-
 bool GUI_FontConfig::commit()
 {
+	if(!ui)
+	{
+		return true;
+	}
+
 	bool ok;
 	int font_size;
 
@@ -166,11 +182,17 @@ bool GUI_FontConfig::commit()
 
 void GUI_FontConfig::revert()
 {
+	if(!ui)
+	{
+		return;
+	}
+
 	QString cur_family = _settings->get<Set::Player_FontName>();
 	int cur_font_size = _settings->get<Set::Player_FontSize>();
 	int cur_pl_font_size = _settings->get<Set::PL_FontSize>();
 	int cur_lib_font_size = _settings->get<Set::Lib_FontSize>();
 	bool bold = _settings->get<Set::Lib_FontBold>();
+
 
 	int idx = ui->combo_fonts->findText(cur_family);
 	if(idx >= 0){
@@ -230,6 +252,15 @@ void GUI_FontConfig::language_changed()
 	ui->lab_library->setText(Lang::get(Lang::Library));
 	ui->lab_playlist->setText(Lang::get(Lang::Playlist));
 	ui->btn_default->setText(Lang::get(Lang::Default));
+}
+
+void GUI_FontConfig::showEvent(QShowEvent* e)
+{
+	if(!ui){
+		init_ui();
+	}
+
+	Gui::Widget::showEvent(e);
 }
 
 

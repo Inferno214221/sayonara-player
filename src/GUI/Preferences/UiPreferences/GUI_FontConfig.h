@@ -46,6 +46,7 @@ public:
 
 protected:
 	void language_changed() override;
+	void showEvent(QShowEvent* e) override;
 
 protected slots:
 	void default_clicked();
@@ -57,6 +58,7 @@ private:
 	QStringList available_font_sizes(const QFont& font);
 
 	void fill_sizes(const QStringList& sizes);
+	void init_ui();
 };
 
 #endif // FONTCONFIG_H

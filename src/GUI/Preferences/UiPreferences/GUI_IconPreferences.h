@@ -36,18 +36,23 @@ class GUI_IconPreferences :
 	PIMPL(GUI_IconPreferences)
 	UI_CLASS(GUI_IconPreferences)
 
+
 public:
 	explicit GUI_IconPreferences(QWidget* parent=nullptr);
 	virtual ~GUI_IconPreferences();
 
 protected:
 	void language_changed() override;
+	void showEvent(QShowEvent* e) override;
 
 public:
 	QString action_name() const;
 
 	bool commit();
 	void revert();
+
+private:
+	void init_ui();
 
 private slots:
 	void theme_changed(const QString& theme);
