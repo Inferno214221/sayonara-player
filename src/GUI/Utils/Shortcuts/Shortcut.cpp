@@ -30,6 +30,36 @@
 #include <QKeySequence>
 #include <QWidget>
 
+static QList<QKeySequence> merge_key_sequences(const QList<QKeySequence>& sequences)
+{
+	QList<QKeySequence> ret = sequences;
+
+	for(QKeySequence ks : sequences)
+	{
+		QString str = ks.toString();
+
+		if(ks.toString().contains("return", Qt::CaseInsensitive))
+		{
+			str.replace("return", "Enter", Qt::CaseInsensitive);
+			if(!ret.contains(QKeySequence(str))){
+				ret << QKeySequence(str);
+			}
+		}
+
+		else if(ks.toString().contains("enter", Qt::CaseInsensitive))
+		{
+			str.replace("num+enter", "enter", Qt::CaseInsensitive);
+			str.replace("enter", "Return", Qt::CaseInsensitive);
+			if(!ret.contains(QKeySequence(str))){
+				ret << QKeySequence(str);
+			}
+		}
+	}
+
+	return ret;
+}
+
+
 struct Shortcut::Private
 {
 	QStringList			default_shortcuts;
@@ -162,13 +192,13 @@ QList<QShortcut*> Shortcut::init_qt_shortcut(QWidget* parent, Qt::ShortcutContex
 {
 	QList<QShortcut*> lst;
 
-	const QList<QKeySequence> sequences = this->sequences();
-	for(const QKeySequence& sequence : sequences)
+	const QList<QKeySequence> sequences = this->sequences();//merge_key_sequences(this->sequences());
+
+	for(QKeySequence s : sequences)
 	{
 		QShortcut* shortcut = new QShortcut(parent);
-
 		shortcut->setContext(context);
-		shortcut->setKey(sequence);
+		shortcut->setKey(s);
 
 		lst << shortcut;
 	}
@@ -193,29 +223,17 @@ void Shortcut::change_shortcut(const QStringList& shortcuts)
 		str.replace("+ ", "+");
 
 		m->shortcuts << str;
-
-		if(str.contains("Enter"))
-		{
-			QString re(str);
-			re.replace("Enter", "Return");
-			m->shortcuts << re;
-		}
-
-		if(str.contains("Return"))
-		{
-			QString re(str);
-			re.replace("Return", "Enter");
-			m->shortcuts << re;
-		}
-
 		m->shortcuts.removeDuplicates();
 	}
 
+	QList<QKeySequence> new_ks = this->sequences();//merge_key_sequences(this->sequences());
 	foreach(QShortcut* sc, m->qt_shortcuts)
 	{
-		QList<QKeySequence> sequences = this->sequences();
-		for(const QKeySequence& ks : sequences){
-			sc->setKey(ks);
+		for(QKeySequence s : new_ks)
+		{
+			sp_log(Log::Debug, this) << "Change shortcut from " << sc->key().toString() << " to " << s.toString();
+			sc->setKey(s);
+			break;
 		}
 	}
 }
