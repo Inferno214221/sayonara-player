@@ -118,6 +118,7 @@ public:
 	 * @return
 	 */
 	QList<QKeySequence>		sequences() const;
+	QKeySequence			sequence() const;
 
 	/**
 	 * @brief get a human-readable list of mapped shortcuts

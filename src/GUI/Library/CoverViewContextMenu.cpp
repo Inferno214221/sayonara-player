@@ -170,6 +170,7 @@ void CoverViewContextMenu::set_sorting(Library::SortOrder so)
 	}
 }
 
+
 void CoverViewContextMenu::language_changed()
 {
 	LibraryContextMenu::language_changed();
@@ -180,4 +181,7 @@ void CoverViewContextMenu::language_changed()
 	m->action_show_utils->setText(tr("Show utils"));
 }
 
-void CoverViewContextMenu::skin_changed() {}
+void CoverViewContextMenu::skin_changed()
+{
+	LibraryContextMenu::skin_changed();
+}

@@ -31,6 +31,7 @@
 #include "Utils/Language.h"
 
 #include <QMap>
+#include <QTimer>
 
 struct LibraryContextMenu::Private
 {
@@ -93,6 +94,9 @@ LibraryContextMenu::LibraryContextMenu(QWidget* parent) :
 	connect(m->clear_action, &QAction::triggered, this, &LibraryContextMenu::sig_clear_clicked);
 	connect(m->clear_selection_action, &QAction::triggered, this, &LibraryContextMenu::sig_clear_selection_clicked);
 	connect(m->cover_view_action, &QAction::triggered, this, &LibraryContextMenu::show_cover_triggered);
+
+	ShortcutHandler* sch = ShortcutHandler::instance();
+	connect(sch, &ShortcutHandler::sig_shortcut_changed, this, &LibraryContextMenu::shortcut_changed);
 
 	QList<QAction*> actions;
 	actions << m->play_action
@@ -160,9 +164,6 @@ void LibraryContextMenu::language_changed()
 	m->remove_action->setShortcut(QKeySequence(QKeySequence::Delete));
 	m->clear_action->setShortcut(QKeySequence(Qt::Key_Backspace));
 
-	ShortcutHandler* sch = ShortcutHandler::instance();
-	connect(sch, &ShortcutHandler::sig_shortcut_changed, this, &LibraryContextMenu::shortcut_changed);
-
 	shortcut_changed(ShortcutIdentifier::Invalid);
 }
 
@@ -172,28 +173,32 @@ void LibraryContextMenu::shortcut_changed(ShortcutIdentifier identifier)
 	Q_UNUSED(identifier)
 	ShortcutHandler* sch = ShortcutHandler::instance();
 
-	m->play_new_tab_action->setShortcut(sch->shortcut(ShortcutIdentifier::PlayNewTab).sequences().first());
-	m->play_next_action->setShortcut(sch->shortcut(ShortcutIdentifier::PlayNext).sequences().first());
-	m->append_action->setShortcut(sch->shortcut(ShortcutIdentifier::Append).sequences().first());
-	m->cover_view_action->setShortcut(sch->shortcut(ShortcutIdentifier::CoverView).sequences().first());
+	m->play_new_tab_action->setShortcut(sch->shortcut(ShortcutIdentifier::PlayNewTab).sequence());
+	m->play_next_action->setShortcut(sch->shortcut(ShortcutIdentifier::PlayNext).sequence());
+	m->append_action->setShortcut(sch->shortcut(ShortcutIdentifier::Append).sequence());
+	m->cover_view_action->setShortcut(sch->shortcut(ShortcutIdentifier::CoverView).sequence());
 }
 
 
 void LibraryContextMenu::skin_changed()
 {
 	using namespace Gui;
-	m->info_action->setIcon(Icons::icon(Icons::Info));
-	m->lyrics_action->setIcon(Icons::icon(Icons::Lyrics));
-	m->edit_action->setIcon(Icons::icon(Icons::Edit));
-	m->remove_action->setIcon(Icons::icon(Icons::Remove));
-	m->delete_action->setIcon(Icons::icon(Icons::Delete));
-	m->play_action->setIcon(Icons::icon(Icons::PlaySmall));
-	m->play_new_tab_action->setIcon(Icons::icon(Icons::PlaySmall));
-	m->play_next_action->setIcon(Icons::icon(Icons::PlaySmall));
-	m->append_action->setIcon(Icons::icon(Icons::Append));
-	m->refresh_action->setIcon(Icons::icon(Icons::Undo));
-	m->clear_action->setIcon(Icons::icon(Icons::Clear));
-	m->clear_selection_action->setIcon(Icons::icon(Icons::Clear));
+
+	QTimer::singleShot(100, this, [=]()
+	{
+		m->info_action->setIcon(Icons::icon(Icons::Info));
+		m->lyrics_action->setIcon(Icons::icon(Icons::Lyrics));
+		m->edit_action->setIcon(Icons::icon(Icons::Edit));
+		m->remove_action->setIcon(Icons::icon(Icons::Remove));
+		m->delete_action->setIcon(Icons::icon(Icons::Delete));
+		m->play_action->setIcon(Icons::icon(Icons::PlaySmall));
+		m->play_new_tab_action->setIcon(Icons::icon(Icons::PlaySmall));
+		m->play_next_action->setIcon(Icons::icon(Icons::PlaySmall));
+		m->append_action->setIcon(Icons::icon(Icons::Append));
+		m->refresh_action->setIcon(Icons::icon(Icons::Undo));
+		m->clear_action->setIcon(Icons::icon(Icons::Clear));
+		m->clear_selection_action->setIcon(Icons::icon(Icons::Clear));
+	});
 }
 
 LibraryContextMenu::Entries LibraryContextMenu::get_entries() const

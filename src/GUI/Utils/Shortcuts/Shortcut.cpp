@@ -113,6 +113,16 @@ QList<QKeySequence> Shortcut::sequences() const
 	return sequences;
 }
 
+QKeySequence Shortcut::sequence() const
+{
+	QList<QKeySequence> sequences = this->sequences();
+	if(sequences.isEmpty()){
+		return QKeySequence();
+	}
+
+	return sequences.first();
+}
+
 const QStringList& Shortcut::shortcuts() const
 {
 	return m->shortcuts;

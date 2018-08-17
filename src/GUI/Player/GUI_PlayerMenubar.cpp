@@ -444,5 +444,5 @@ void Menubar::shortcut_changed(ShortcutIdentifier identifier)
 
 	ShortcutHandler* sch = ShortcutHandler::instance();
 	Shortcut sc = sch->shortcut(ShortcutIdentifier::ViewLibrary);
-	m->action_view_library->setShortcut(sc.sequences().first());
+	m->action_view_library->setShortcut(sc.sequence());
 }
