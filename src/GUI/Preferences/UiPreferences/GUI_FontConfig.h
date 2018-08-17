@@ -51,7 +51,6 @@ protected:
 protected slots:
 	void default_clicked();
 	void combo_fonts_changed(const QFont& font);
-	void skin_changed() override;
 
 private:
 	QStringList available_font_sizes(const QString& font_name, const QString& style=QString());

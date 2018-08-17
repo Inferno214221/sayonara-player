@@ -230,6 +230,7 @@ QStyleOptionViewItem CoverView::viewOptions() const
 	option.decorationAlignment = Qt::AlignHCenter;
 	option.displayAlignment = Qt::AlignHCenter;
 	option.decorationPosition = QStyleOptionViewItem::Top;
+	option.textElideMode = Qt::ElideRight;
 
 	return option;
 }

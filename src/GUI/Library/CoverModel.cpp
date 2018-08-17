@@ -186,8 +186,6 @@ void CoverModel::refresh_data()
 	if(new_rows < old_rows) {
 		remove_rows(new_rows, old_rows - new_rows);
 	}
-
-	//emit dataChanged(index(0, 0), index(rowCount() - 1, columnCount() - 1), {Qt::DisplayRole, Qt::SizeHintRole});
 }
 
 void CoverModel::add_rows(int row, int count)
@@ -262,7 +260,7 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 					// for this time it's sufficient
 
 					int sz = std::max(p.size().width(), p.size().height());
-					if(std::abs(sz - m->zoom) > 20)
+					if(std::abs(sz - m->zoom) > 10)
 					{
 						m->cover_thread->add_album(album);
 					}
@@ -567,6 +565,7 @@ void CoverModel::set_zoom(int zoom, const QSize& view_size)
 	{
 		m->columns = columns;
 		refresh_data();
+		emit dataChanged(index(0, 0), index(rowCount() - 1, columnCount() - 1), {Qt::SizeHintRole});
 	}
 }
 

@@ -248,6 +248,10 @@ void GUI_FontConfig::default_clicked()
 
 void GUI_FontConfig::language_changed()
 {
+	if(!ui){
+		return;
+	}
+
 	ui->retranslateUi(this);
 	ui->lab_library->setText(Lang::get(Lang::Library));
 	ui->lab_playlist->setText(Lang::get(Lang::Playlist));
@@ -262,6 +266,3 @@ void GUI_FontConfig::showEvent(QShowEvent* e)
 
 	Gui::Widget::showEvent(e);
 }
-
-
-void GUI_FontConfig::skin_changed() {}
