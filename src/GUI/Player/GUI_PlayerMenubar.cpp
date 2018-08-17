@@ -229,17 +229,10 @@ void Menubar::init_connections()
 
 	// shortcuts
 	ShortcutHandler* sch = ShortcutHandler::instance();
+	sch->shortcut(ShortcutIdentifier::Quit).connect(this, this, SLOT(close_clicked()));
+	sch->shortcut(ShortcutIdentifier::Minimize).connect(this, this, SLOT(minimize_clicked()));
 
-	Shortcut sc1 = sch->add(this, ShortcutHandler::Quit, Lang::get(Lang::Quit), "Ctrl+q");
-	Shortcut sc2 = sch->add(this, ShortcutHandler::Minimize, tr("Minimize"), "Ctrl+m");
-	Shortcut sc3 = sch->add(this, ShortcutHandler::ViewLibrary, tr("View Library"), "Ctrl+L");
-
-	sc1.create_qt_shortcut(this, this, SLOT(close_clicked()));
-	sc2.create_qt_shortcut(this, this, SLOT(minimize_clicked()));
-	Q_UNUSED(sc3)
-
-
-	shortcut_changed("");
+	shortcut_changed(ShortcutIdentifier::Invalid);
 
 	connect(sch, &ShortcutHandler::sig_shortcut_changed, this, &Menubar::shortcut_changed);
 }
@@ -256,7 +249,7 @@ void Menubar::language_changed()
 
 	m->action_close->setText(Lang::get(Lang::Quit));
 
-	m->action_view_library->setText(Lang::get(Lang::Library));
+	m->action_view_library->setText(Lang::get(Lang::ShowLibrary));
 	m->action_logger->setText(Lang::get(Lang::Logger));
 	m->action_dark->setText(tr("Dark"));
 	m->action_fullscreen->setText(tr("Fullscreen"));
@@ -445,25 +438,11 @@ void Menubar::awa_translators_finished()
 	about_clicked();
 }
 
-void Menubar::shortcut_changed(const QString& identifier)
+void Menubar::shortcut_changed(ShortcutIdentifier identifier)
 {
 	Q_UNUSED(identifier)
 
 	ShortcutHandler* sch = ShortcutHandler::instance();
-	Shortcut sc = sch->get_shortcut(ShortcutHandler::ViewLibrary);
+	Shortcut sc = sch->shortcut(ShortcutIdentifier::ViewLibrary);
 	m->action_view_library->setShortcut(sc.sequences().first());
-}
-
-
-QString Menubar::get_shortcut_text(const QString& shortcut_identifier) const
-{
-	if(shortcut_identifier == "quit"){
-		return Lang::get(Lang::Quit);
-	}
-
-	else if(shortcut_identifier == "minimize"){
-		return tr("Minimize");
-	}
-
-	return QString();
 }

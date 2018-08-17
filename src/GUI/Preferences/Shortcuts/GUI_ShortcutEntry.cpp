@@ -21,7 +21,6 @@
 
 #include "GUI/Preferences/ui_GUI_ShortcutEntry.h"
 #include "GUI/Utils/Icons.h"
-#include "GUI/Utils/Shortcuts/ShortcutHandler.h"
 
 #include "Utils/Language.h"
 
@@ -31,20 +30,23 @@
 
 struct GUI_ShortcutEntry::Private
 {
-	ShortcutHandler*		sch=nullptr;
-	QString					identifier;
+	ShortcutHandler*	sch=nullptr;
+	ShortcutIdentifier	identifier;
 
-	Private(const QString& identifier) :
+	Private(ShortcutIdentifier identifier) :
 		sch(ShortcutHandler::instance()),
 		identifier(identifier)
 	{}
 };
 
-GUI_ShortcutEntry::GUI_ShortcutEntry(const QString& identifier, QWidget* parent) :
+GUI_ShortcutEntry::GUI_ShortcutEntry(ShortcutIdentifier identifier, QWidget* parent) :
 	Widget(parent)
 {
 	m = Pimpl::make<Private>(identifier);
-	Shortcut sc = m->sch->get_shortcut(identifier);
+	Shortcut sc = m->sch->shortcut(identifier);
+	if(sc.name().trimmed().isEmpty()){
+		sp_log(Log::Warning, this) << "Shortcut name is empty";
+	}
 
 	ui = new Ui::GUI_ShortcutEntry();
 	ui->setupUi(this);
@@ -66,7 +68,7 @@ GUI_ShortcutEntry::~GUI_ShortcutEntry()
 	if(ui){ delete ui; ui = nullptr; }
 }
 
-QList<QKeySequence> GUI_ShortcutEntry::get_sequences() const
+QList<QKeySequence> GUI_ShortcutEntry::sequences() const
 {
 	return ui->le_entry->get_sequences();
 }
@@ -79,7 +81,13 @@ void GUI_ShortcutEntry::show_sequence_error()
 
 void GUI_ShortcutEntry::commit()
 {
-	m->sch->set_shortcut(m->identifier, ui->le_entry->text().split(", "));
+	QStringList lst = ui->le_entry->text().split(",");
+	for(auto it=lst.begin(); it != lst.end(); it++)
+	{
+		*it = it->trimmed();
+	}
+
+	m->sch->set_shortcut(m->identifier, lst);
 }
 
 void GUI_ShortcutEntry::clear()
@@ -89,7 +97,7 @@ void GUI_ShortcutEntry::clear()
 
 void GUI_ShortcutEntry::revert()
 {
-	Shortcut sc = m->sch->get_shortcut(m->identifier);
+	Shortcut sc = m->sch->shortcut(m->identifier);
 
 	ui->le_entry->setText(
 		sc.shortcuts().join(", ")
@@ -99,7 +107,7 @@ void GUI_ShortcutEntry::revert()
 
 void GUI_ShortcutEntry::default_clicked()
 {
-	Shortcut sc = m->sch->get_shortcut(m->identifier);
+	Shortcut sc = m->sch->shortcut(m->identifier);
 
 	ui->le_entry->setText(
 		sc.default_shorcut().join(", ")
@@ -122,7 +130,7 @@ void GUI_ShortcutEntry::language_changed()
 {
 	ui->retranslateUi(this);
 
-	Shortcut sc = m->sch->get_shortcut(m->identifier);
+	Shortcut sc = m->sch->shortcut(m->identifier);
 	ui->lab_description->setText(sc.name());
 
 	ui->btn_default->setToolTip(Lang::get(Lang::Default));

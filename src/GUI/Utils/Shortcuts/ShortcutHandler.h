@@ -21,17 +21,23 @@
 #ifndef SHORTCUTHANDLER_H
 #define SHORTCUTHANDLER_H
 
-#include <QList>
-#include <QObject>
 
+#include "ShortcutIdentifier.h"
 #include "Utils/Singleton.h"
 #include "Utils/Settings/SayonaraClass.h"
 #include "Utils/Pimpl.h"
+
+#include <QList>
+#include <QShortcut>
+#include <QObject>
 
 class ShortcutWidget;
 class QString;
 class QStringList;
 class Shortcut;
+
+#define ShortcutPrivate private
+
 /**
  * @brief A singleton class for retrieving shortcuts
  * @ingroup Shortcuts
@@ -44,73 +50,37 @@ class ShortcutHandler :
 	SINGLETON(ShortcutHandler)
 	PIMPL(ShortcutHandler)
 
+
+friend class Shortcut;
+ShortcutPrivate:
+	void qt_shortcuts_added(ShortcutIdentifier identifier, const QList<QShortcut*>& shortcuts);
+
 signals:
-	void sig_shortcut_changed(const QString& identifier);
+	void sig_shortcut_changed(ShortcutIdentifier identifier);
 
 public:
-
-	enum Identifier
-	{
-		PlayPause,
-		Stop,
-		Next,
-		Prev,
-		VolDown,
-		VolUp,
-		SeekFwd,
-		SeekBwd,
-		SeekFwdFast,
-		SeekBwdFast,
-		PlayNewTab,
-		PlayNext,
-		Append,
-		CoverView,
-		AlbumArtists,
-		Quit,
-		Minimize,
-		ViewLibrary,
-		AddTab,
-		CloseTab,
-		ClosePlugin
-	};
-
 	/**
 	 * @brief get a shortcut by its unique identifier
 	 * @param identifier the identifier which is used in database
 	 * @return a shortcut instance
 	 */
-	Shortcut get_shortcut(const QString& identifier) const;
-	Shortcut get_shortcut(const Identifier& identifier) const;
+	Shortcut shortcut(ShortcutIdentifier identifier) const;
 
 	/**
 	 * @brief set the shortcut by its unique identifier
 	 * @param identifier  the identifier which is used in database
 	 * @param shortcut a shortcut instance
 	 */
-	void set_shortcut(const QString& identifier, const QStringList& shortcut);
-
-
-	/**
-	 * @brief add a new shortcut instance to the handler. This is usually done
-	 * by the widget the shortcut is attached to. So you can use the same shortcut
-	 * on multiple widgets
-	 * @param shortcut a shortcut instance
-	 * @return an invalid shortcut, if source shortcut is invalid, too\n
-	 * if the shortcut already exists, the instance already known is returned\n
-	 * if the shortcut does not exist yet, the same shortcut as the input is returned
-	 */
-	Shortcut add(ShortcutWidget* parent, Identifier id, const QString& name, const QString& default_shortcut);
-
+	void set_shortcut(ShortcutIdentifier identifier, const QStringList& shortcut);
 
 	/**
 	 * @brief get all shortcuts
 	 * @return
 	 */
-	QStringList	get_shortcuts() const;
+	QList<ShortcutIdentifier> shortcuts_ids() const;
 
-	void set_parent_deleted(ShortcutWidget* parent);
-
-	QString identifier(Identifier id) const;
+	QString identifier(ShortcutIdentifier id) const;
+	QString shortcut_text(ShortcutIdentifier id) const;
 };
 
 #endif // SHORTCUTHANDLER_H

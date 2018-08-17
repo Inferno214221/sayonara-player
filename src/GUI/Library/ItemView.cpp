@@ -100,18 +100,13 @@ ItemView::ItemView(QWidget* parent) :
 	clearSelection();
 
 	ShortcutHandler* sch = ShortcutHandler::instance();
-	Shortcut sc1 = sch->add(this, ShortcutHandler::PlayNewTab, tr("Play track(s) in new tab"), "Ctrl+Enter");
-	Shortcut sc2 = sch->add(this, ShortcutHandler::PlayNext, tr("Play track(s) next"), "Alt+Enter");
-	Shortcut sc3 = sch->add(this, ShortcutHandler::Append, tr("Append track(s)"), "Shift+Enter");
-	Shortcut sc4 = sch->add(this, ShortcutHandler::CoverView, tr("Toggle Cover View"), "Ctrl+Shift+C");
-	Shortcut sc5 = sch->add(this, ShortcutHandler::AlbumArtists, tr("Toggle Album Artists"), "Ctrl+Shift+A");
-
 	Qt::ShortcutContext ctx = Qt::WidgetWithChildrenShortcut;
-	sc1.create_qt_shortcut(this, this, SLOT(play_new_tab_clicked()), ctx);
-	sc2.create_qt_shortcut(this, this, SLOT(play_next_clicked()), ctx);
-	sc3.create_qt_shortcut(this, this, SLOT(append_clicked()), ctx);
-	sc4.create_qt_shortcut(this, this, SLOT(cover_view_toggled()), ctx);
-	sc5.create_qt_shortcut(this, this, SLOT(album_artists_toggled()), ctx);
+
+	sch->shortcut(ShortcutIdentifier::PlayNewTab).connect(this, this, SLOT(play_new_tab_clicked()), ctx);
+	sch->shortcut(ShortcutIdentifier::PlayNext).connect(this, this, SLOT(play_next_clicked()), ctx);
+	sch->shortcut(ShortcutIdentifier::Append).connect(this, this, SLOT(append_clicked()), ctx);
+	sch->shortcut(ShortcutIdentifier::CoverView).connect(this, this, SLOT(cover_view_toggled()), ctx);
+	sch->shortcut(ShortcutIdentifier::AlbumArtists).connect(this, this, SLOT(album_artists_toggled()), ctx);
 
 	new QShortcut(QKeySequence(Qt::Key_Return), this, SLOT(play_clicked()), nullptr, Qt::WidgetShortcut);
 	new QShortcut(QKeySequence(Qt::Key_Enter), this, SLOT(play_clicked()), nullptr, Qt::WidgetShortcut);
@@ -594,16 +589,3 @@ void ItemView::resizeEvent(QResizeEvent *event)
 	}
 }
 
-QString ItemView::get_shortcut_text(const QString& shortcut_identifier) const
-{
-	QMap<QString, QString> name_map
-	{
-		{"play_new_tab", tr("Play track(s) in new tab")},
-		{"play_next", tr("Play track(s) next")},
-		{"append", tr("Append track(s)")},
-		{"cover_view", tr("Toggle Cover View")},
-		{"album_artists", tr("Toggle Album Artists")}
-	};
-
-	return name_map[shortcut_identifier];
-}

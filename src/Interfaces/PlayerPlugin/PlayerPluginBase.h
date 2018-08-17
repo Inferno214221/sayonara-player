@@ -167,14 +167,6 @@ namespace PlayerPlugin
 		 * @return
 		 */
 		virtual bool		has_loading_bar() const;
-
-
-		/**
-		 * @brief get translated text of shortcut (overridden)
-		 * @param shortcut_identifier shortcut id
-		 * @return translated shortcut text
-		 */
-		QString get_shortcut_text(const QString &shortcut_identifier) const override;
 	};
 }
 

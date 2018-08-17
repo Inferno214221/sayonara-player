@@ -21,11 +21,13 @@
 #ifndef SHORTCUT_H
 #define SHORTCUT_H
 
+#include "ShortcutIdentifier.h"
 #include <QShortcut>
 
 #include "Utils/Pimpl.h"
 
-class ShortcutWidget;
+#define ShortcutHandlerPrivate private
+
 class QKeySequence;
 class QWidget;
 class QStringList;
@@ -39,6 +41,8 @@ class QStringList;
  */
 class Shortcut
 {
+
+
 private:
 	PIMPL(Shortcut)
 
@@ -53,6 +57,11 @@ private:
 	QList<QShortcut*> init_qt_shortcut(QWidget* parent, Qt::ShortcutContext context);
 
 
+friend class ShortcutHandler;
+ShortcutHandlerPrivate:
+	void add_qt_shortcuts(const QList<QShortcut*>& shortcuts);
+
+
 public:
 	/**
 	 * @brief Shortcut
@@ -60,7 +69,7 @@ public:
 	 * @param name the name displayed in the Shortcut configuration dialog
 	 * @param default_shortcut one default shortcut
 	 */
-	Shortcut(ShortcutWidget* parent, const QString& identifier, const QString& name, const QString& default_shortcut);
+	Shortcut(ShortcutIdentifier identifier, const QString& default_shortcut);
 
 	/**
 	 * @brief Shortcut
@@ -68,7 +77,7 @@ public:
 	 * @param name the name displayed in the Shortcut configuration dialog
 	 * @param default_shortcuts a list of default shortcuts
 	 */
-	Shortcut(ShortcutWidget* parent, const QString& identifier, const QString& name, const QStringList& default_shortcuts);
+	Shortcut(ShortcutIdentifier identifier, const QStringList& default_shortcuts);
 
 	/**
 	 * @brief Copy constructor
@@ -76,9 +85,9 @@ public:
 	 */
 	Shortcut(const Shortcut& other);
 
-	~Shortcut();
-
 	Shortcut& operator=(const Shortcut& other);
+
+	~Shortcut();
 
 	/**
 	 * @brief get a raw and invalid shortcut. This function is used instead of the default constructor
@@ -120,7 +129,8 @@ public:
 	 * @brief get the unique identifier
 	 * @return
 	 */
-	QString					identifier() const;
+	ShortcutIdentifier		identifier() const;
+	QString					identifier_string() const;
 
 	/**
 	 * @brief Check if the shortcut is valid or if it was retrieved via getInvalid()
@@ -128,17 +138,17 @@ public:
 	 */
 	bool					is_valid() const;
 
-	ShortcutWidget*			parent() const;
-
 	template<typename T>
 	/**
 	 * @brief create a qt shortcut for a widget
 	 * @param parent the widget the shortcut is attached to
 	 * @param func a lambda function which will be triggered when shortcut is pressed
 	 */
-	void create_qt_shortcut(QWidget* parent, T func, Qt::ShortcutContext context=Qt::WindowShortcut){
+	void connect(QWidget* parent, T func, Qt::ShortcutContext context=Qt::WindowShortcut)
+	{
 		QList<QShortcut*> shortcuts = init_qt_shortcut(parent, context);
-		for(QShortcut* sc : shortcuts){
+		for(QShortcut* sc : shortcuts)
+		{
 			parent->connect(sc, &QShortcut::activated, func);
 		}
 	}
@@ -150,10 +160,7 @@ public:
 	 * @param the receiver object of the shortcut
 	 * @param the slot which is triggered when pressing that shortcut
 	 */
-	void create_qt_shortcut(QWidget* parent, QObject* receiver, const char* slot, Qt::ShortcutContext context=Qt::WindowShortcut);
-
-
-	void create_qt_shortcut(QWidget* parent, Qt::ShortcutContext context=Qt::WindowShortcut);
+	void connect(QWidget* parent, QObject* receiver, const char* slot, Qt::ShortcutContext context=Qt::WindowShortcut);
 };
 
 #endif // SHORTCUT_H

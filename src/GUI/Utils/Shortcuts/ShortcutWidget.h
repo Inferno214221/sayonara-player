@@ -21,17 +21,16 @@
 #ifndef SAYONARASHORTCUTWIDGET_H
 #define SAYONARASHORTCUTWIDGET_H
 
+#include "ShortcutIdentifier.h"
+
 class QString;
 /**
  * @brief Interface that should be implemented when using configurable shortcuts.
  * @ingroup GUIHelper
  * @ingroup Interfaces
  */
-class ShortcutWidget 
+class ShortcutWidget
 {
-public:
-	virtual QString get_shortcut_text(const QString& shortcut_identifier) const=0;
-
 protected:
 	ShortcutWidget();
 	virtual ~ShortcutWidget();

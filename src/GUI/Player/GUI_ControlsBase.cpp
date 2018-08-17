@@ -643,78 +643,31 @@ void GUI_ControlsBase::setup_shortcuts()
 	ShortcutHandler* sch = ShortcutHandler::instance();
 	PlayManager* play_manager = PlayManager::instance();
 
-	Shortcut sc1 = sch->add(this, ShortcutHandler::PlayPause, Lang::get(Lang::PlayPause), "Space");
-	Shortcut sc2 = sch->add(this, ShortcutHandler::Stop, Lang::get(Lang::Stop), "Ctrl + Space");
-	Shortcut sc3 = sch->add(this, ShortcutHandler::Next, Lang::get(Lang::NextTrack), "Ctrl + Right");
-	Shortcut sc4 = sch->add(this, ShortcutHandler::Prev, Lang::get(Lang::PreviousTrack), "Ctrl + Left");
-	Shortcut sc5 = sch->add(this, ShortcutHandler::VolDown, Lang::get(Lang::VolumeDown), "Ctrl + -");
-	Shortcut sc6 = sch->add(this, ShortcutHandler::VolUp, Lang::get(Lang::VolumeUp), "Ctrl++");
-	Shortcut sc7 = sch->add(this, ShortcutHandler::SeekFwd, Lang::get(Lang::SeekForward), "Alt+Right");
-	Shortcut sc8 = sch->add(this, ShortcutHandler::SeekBwd, Lang::get(Lang::SeekBackward), "Alt+Left");
-	Shortcut sc9 = sch->add(this, ShortcutHandler::SeekFwdFast, Lang::get(Lang::SeekForward).space() + "(" + Lang::get(Lang::Fast) + ")", "Shift+Right");
-	Shortcut sc10 = sch->add(this, ShortcutHandler::SeekBwdFast, Lang::get(Lang::SeekBackward).space() + "(" + Lang::get(Lang::Fast) + ")", "Shift+Left");
-
-	sc1.create_qt_shortcut(this, play_manager, SLOT(play_pause()));
-	sc2.create_qt_shortcut(this, play_manager, SLOT(stop()));
-	sc3.create_qt_shortcut(this, play_manager, SLOT(next()));
-	sc4.create_qt_shortcut(this, play_manager, SLOT(previous()));
-	sc5.create_qt_shortcut(this, play_manager, SLOT(volume_down()));
-	sc6.create_qt_shortcut(this, play_manager, SLOT(volume_up()));
-	sc7.create_qt_shortcut(this, [=]() {
+	sch->shortcut(ShortcutIdentifier::PlayPause).connect(this, play_manager, SLOT(play_pause()));
+	sch->shortcut(ShortcutIdentifier::Stop).connect(this, play_manager, SLOT(stop()));
+	sch->shortcut(ShortcutIdentifier::Next).connect(this, play_manager, SLOT(next()));
+	sch->shortcut(ShortcutIdentifier::Prev).connect(this, play_manager, SLOT(previous()));
+	sch->shortcut(ShortcutIdentifier::VolDown).connect(this, play_manager, SLOT(volume_down()));
+	sch->shortcut(ShortcutIdentifier::VolUp).connect(this, play_manager, SLOT(volume_up()));
+	sch->shortcut(ShortcutIdentifier::SeekFwd).connect(this, [=]() {
 		play_manager->seek_rel_ms(2000);
 	});
 
-	sc8.create_qt_shortcut(this, [=](){
+	sch->shortcut(ShortcutIdentifier::SeekBwd).connect(this, [=](){
 		play_manager->seek_rel_ms(-2000);
 	});
 
-	sc9.create_qt_shortcut(this, [=]() {
+	sch->shortcut(ShortcutIdentifier::SeekFwdFast).connect(this, [=]() {
 		MilliSeconds ms = play_manager->duration_ms() / 20;
 		play_manager->seek_rel_ms(ms);
 	});
 
-	sc10.create_qt_shortcut(this, [=]() {
+	sch->shortcut(ShortcutIdentifier::SeekBwdFast).connect(this, [=]() {
 		MilliSeconds ms = play_manager->duration_ms() / 20;
 		play_manager->seek_rel_ms(-ms);
 	});
 }
 
-
-QString GUI_ControlsBase::get_shortcut_text(const QString &shortcut_identifier) const
-{
-	if(shortcut_identifier == "play_pause"){
-		return Lang::get(Lang::PlayPause);
-	}
-	if(shortcut_identifier == "stop"){
-		return Lang::get(Lang::Stop);
-	}
-	if(shortcut_identifier == "next"){
-		return Lang::get(Lang::NextTrack);
-	}
-	if(shortcut_identifier == "prev"){
-		return Lang::get(Lang::PreviousTrack);
-	}
-	if(shortcut_identifier == "vol_down"){
-		return Lang::get(Lang::VolumeDown);
-	}
-	if(shortcut_identifier == "vol_up"){
-		return Lang::get(Lang::VolumeUp);
-	}
-	if(shortcut_identifier == "seek_fwd"){
-		return Lang::get(Lang::SeekForward);
-	}
-	if(shortcut_identifier == "seek_bwd"){
-		return Lang::get(Lang::SeekBackward);
-	}
-	if(shortcut_identifier == "seek_fwd_fast"){
-		return Lang::get(Lang::SeekForward).space() + "(" + Lang::get(Lang::Fast) + ")";
-	}
-	if(shortcut_identifier == "seek_bwd_fast"){
-		return Lang::get(Lang::SeekBackward).space() + "(" + Lang::get(Lang::Fast) + ")";
-	}
-
-	return "";
-}
 
 void GUI_ControlsBase::set_radio_mode(RadioMode radio)
 {

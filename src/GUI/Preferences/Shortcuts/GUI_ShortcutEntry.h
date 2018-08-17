@@ -21,9 +21,12 @@
 #define GUI_SHORTCUTENTRY_H
 
 #include "GUI/Utils/Shortcuts/Shortcut.h"
+#include "GUI/Utils/Shortcuts/ShortcutHandler.h"
 #include "GUI/Utils/Widgets/Widget.h"
 #include "Utils/Pimpl.h"
 
+#include <QList>
+#include <QKeySequence>
 
 UI_FWD(GUI_ShortcutEntry)
 
@@ -31,8 +34,7 @@ UI_FWD(GUI_ShortcutEntry)
  * @brief The delegate class for displaying a shortcut.
  * @ingroup Shortcuts
  */
-class ShortcutHandler;
-class Shortcut;
+
 class GUI_ShortcutEntry :
 		public Gui::Widget
 {
@@ -50,10 +52,10 @@ signals:
 	void sig_sequence_entered();
 
 public:
-	explicit GUI_ShortcutEntry(const QString& identifier, QWidget* parent=nullptr);
+	explicit GUI_ShortcutEntry(ShortcutIdentifier identifier, QWidget* parent=nullptr);
 	~GUI_ShortcutEntry();
 
-	QList<QKeySequence> get_sequences() const;
+	QList<QKeySequence> sequences() const;
 	void show_sequence_error();
 
 public slots:

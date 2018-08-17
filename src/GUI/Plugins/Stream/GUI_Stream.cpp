@@ -41,7 +41,7 @@ QString GUI_Stream::get_name() const
 
 QString GUI_Stream::get_display_name() const
 {
-	return tr("Webstreams");
+	return tr("Streams");
 }
 
 void GUI_Stream::retranslate_ui()

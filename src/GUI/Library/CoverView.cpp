@@ -267,6 +267,7 @@ void CoverView::showEvent(QShowEvent* e)
 
 int CoverView::sizeHintForColumn(int c) const
 {
+	Q_UNUSED(c)
 	return m->model->item_size().width();
 }
 

@@ -163,19 +163,19 @@ void LibraryContextMenu::language_changed()
 	ShortcutHandler* sch = ShortcutHandler::instance();
 	connect(sch, &ShortcutHandler::sig_shortcut_changed, this, &LibraryContextMenu::shortcut_changed);
 
-	shortcut_changed("");
+	shortcut_changed(ShortcutIdentifier::Invalid);
 }
 
 
-void LibraryContextMenu::shortcut_changed(const QString& identifier)
+void LibraryContextMenu::shortcut_changed(ShortcutIdentifier identifier)
 {
 	Q_UNUSED(identifier)
 	ShortcutHandler* sch = ShortcutHandler::instance();
 
-	m->play_new_tab_action->setShortcut(sch->get_shortcut("play_new_tab").sequences().first());
-	m->play_next_action->setShortcut(sch->get_shortcut("play_next").sequences().first());
-	m->append_action->setShortcut(sch->get_shortcut("append").sequences().first());
-	m->cover_view_action->setShortcut(sch->get_shortcut("cover_view").sequences().first());
+	m->play_new_tab_action->setShortcut(sch->shortcut(ShortcutIdentifier::PlayNewTab).sequences().first());
+	m->play_next_action->setShortcut(sch->shortcut(ShortcutIdentifier::PlayNext).sequences().first());
+	m->append_action->setShortcut(sch->shortcut(ShortcutIdentifier::Append).sequences().first());
+	m->cover_view_action->setShortcut(sch->shortcut(ShortcutIdentifier::CoverView).sequences().first());
 }
 
 

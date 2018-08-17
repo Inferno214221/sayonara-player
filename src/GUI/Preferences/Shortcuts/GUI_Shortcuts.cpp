@@ -70,9 +70,9 @@ void GUI_Shortcuts::init_ui()
 
 	ui->cb_test->setVisible(false);
 
-	const QStringList shortcuts = m->sch->get_shortcuts();
+	const QList<ShortcutIdentifier> shortcuts = m->sch->shortcuts_ids();
 
-	for(const QString& shortcut : shortcuts)
+	for(ShortcutIdentifier shortcut : shortcuts)
 	{
 		GUI_ShortcutEntry* entry = new GUI_ShortcutEntry(shortcut);
 
@@ -88,7 +88,8 @@ void GUI_Shortcuts::init_ui()
 
 	connect(ui->cb_test, &QCheckBox::toggled, ui->cb_test, [=]()
 	{
-		if(ui->cb_test->isChecked()){
+		if(ui->cb_test->isChecked())
+		{
 			ui->cb_test->setText(Lang::get(Lang::Success));
 			QTimer::singleShot(2500, ui->cb_test, SLOT(hide()));
 		}
@@ -110,7 +111,7 @@ bool GUI_Shortcuts::commit()
 
 	foreach(GUI_ShortcutEntry* entry, m->entries)
 	{
-		QList<QKeySequence> lst = entry->get_sequences();
+		QList<QKeySequence> lst = entry->sequences();
 		for(const QKeySequence& s : lst)
 		{
 			QString str = s.toString().trimmed();
@@ -141,8 +142,12 @@ void GUI_Shortcuts::revert()
 
 void GUI_Shortcuts::test_pressed(const QList<QKeySequence>& sequences)
 {
+	if(sequences.isEmpty()){
+		return;
+	}
+
 	ui->cb_test->setVisible(true);
-	ui->cb_test->setText(tr("Press shortcut") + ": " + sequences[0].toString(QKeySequence::NativeText));
+	ui->cb_test->setText(tr("Press shortcut") + ": " + sequences.first().toString(QKeySequence::NativeText));
 	ui->cb_test->setChecked(false);
 
 	for(const QKeySequence& sequence : sequences){
@@ -155,7 +160,7 @@ void GUI_Shortcuts::test_pressed(const QList<QKeySequence>& sequences)
 void GUI_Shortcuts::sequence_entered()
 {
 	GUI_ShortcutEntry* entry = static_cast<GUI_ShortcutEntry*>(sender());
-	QList<QKeySequence> sequences = entry->get_sequences();
+	QList<QKeySequence> sequences = entry->sequences();
 
 	foreach(const GUI_ShortcutEntry* lst_entry, m->entries)
 	{
@@ -163,7 +168,7 @@ void GUI_Shortcuts::sequence_entered()
 			continue;
 		}
 
-		const QList<QKeySequence> saved_sequences = lst_entry->get_sequences();
+		const QList<QKeySequence> saved_sequences = lst_entry->sequences();
 		for(const QKeySequence& seq1 : sequences)
 		{
 			QString seq1_str = seq1.toString(QKeySequence::NativeText);

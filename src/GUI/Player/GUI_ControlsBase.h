@@ -98,8 +98,6 @@ protected:
 	void skin_changed() override;
 
 public:
-	QString get_shortcut_text(const QString &shortcut_identifier) const override;
-
 	void file_info_changed();
 	void sr_active_changed();
 

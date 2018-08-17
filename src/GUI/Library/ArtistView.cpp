@@ -85,7 +85,7 @@ void ArtistView::init_context_menu()
 	m->album_artist_action = new QAction(menu);
 	m->album_artist_action->setCheckable(true);
 	m->album_artist_action->setChecked(_settings->get<Set::Lib_ShowAlbumArtists>());
-	m->album_artist_action->setShortcut(sch->get_shortcut("album_artists").sequences().first());
+	m->album_artist_action->setShortcut(sch->shortcut(ShortcutIdentifier::AlbumArtists).sequences().first());
 	Set::listen<Set::Lib_ShowAlbumCovers>(this, &ArtistView::album_artists_changed);
 
 	connect(m->album_artist_action, &QAction::triggered, this, &ArtistView::album_artists_triggered);
@@ -139,7 +139,7 @@ void ArtistView::language_changed()
 	{
 		ShortcutHandler* sch = ShortcutHandler::instance();
 		m->album_artist_action->setText(Lang::get(Lang::ShowAlbumArtists));
-		m->album_artist_action->setShortcut(sch->get_shortcut("album_artists").sequences().first());
+		m->album_artist_action->setShortcut(sch->shortcut(ShortcutIdentifier::AlbumArtists).sequences().first());
 	}
 }
 

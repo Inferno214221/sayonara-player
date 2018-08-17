@@ -71,11 +71,7 @@ private slots:
 	void help_clicked();
 	void about_clicked();
 	void awa_translators_finished();
-	void shortcut_changed(const QString& identifier);
-
-	// ShortcutWidget interface
-public:
-	QString get_shortcut_text(const QString& shortcut_identifier) const override;
+	void shortcut_changed(ShortcutIdentifier identifier);
 };
 
 

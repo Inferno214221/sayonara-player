@@ -64,9 +64,6 @@ public:
 	bool was_drag_from_playlist() const;
 	int get_drag_origin_tab() const;
 
-	QString get_shortcut_text(const QString &shortcut_identifier) const override;
-
-
 private:
 	void mousePressEvent(QMouseEvent* e) override;
 	void wheelEvent(QWheelEvent* e) override;

@@ -36,7 +36,7 @@ DiscAction::DiscAction(QWidget* parent, Disc disc) :
 	}
 
 	else {
-		this->setText(tr("Disc") + " " + QString::number(disc));
+		this->setText(Lang::get(Lang::Disc) + " " + QString::number(disc));
 		this->setIcon(Gui::Util::icon("cd.png"));
 	}
 

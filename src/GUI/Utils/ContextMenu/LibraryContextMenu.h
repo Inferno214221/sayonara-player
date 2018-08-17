@@ -24,6 +24,7 @@
 #include <QMenu>
 
 #include "GUI/Utils/Widgets/WidgetTemplate.h"
+#include "GUI/Utils/Shortcuts/ShortcutIdentifier.h"
 #include "Utils/Pimpl.h"
 
 class PreferenceAction;
@@ -118,7 +119,7 @@ signals:
 private slots:
 	void show_cover_view_changed();
 	void show_cover_triggered(bool b);
-	void shortcut_changed(const QString& identifier);
+	void shortcut_changed(ShortcutIdentifier identifier);
 
 
 protected:

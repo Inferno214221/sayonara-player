@@ -26,7 +26,4 @@
 
 ShortcutWidget::ShortcutWidget() {}
 
-ShortcutWidget::~ShortcutWidget()
-{
-	ShortcutHandler::instance()->set_parent_deleted(this);
-}
+ShortcutWidget::~ShortcutWidget() {}

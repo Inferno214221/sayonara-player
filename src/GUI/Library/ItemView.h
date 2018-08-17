@@ -163,8 +163,6 @@ namespace Library
 	public:
 		void resize_rows_to_contents();
 		void resize_rows_to_contents(int first_row, int count);
-
-		QString get_shortcut_text(const QString& shortcut_identifier) const override;
 	};
 }
 

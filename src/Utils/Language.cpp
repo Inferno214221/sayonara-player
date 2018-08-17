@@ -136,6 +136,8 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Directory");
 		case Directories:
 			return l.tr("Directories");
+		case Disc:
+			return l.tr("Disc");
 		case Duration:
 			return l.tr("Duration");
 		case DurationShort:
@@ -228,6 +230,8 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Lyrics");
 		case Menu:
 			return l.tr("Menu");
+		case Minimize:
+			return l.tr("Minimize");
 		case Minutes:
 			return l.tr("Minutes");
 		case MinutesShort:
@@ -276,16 +280,20 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Pause");
 		case Play:
 			return l.tr("Play");
-		case PlayPause:
-			return l.tr("Play/Pause");
 		case PlayingTime:
 			return l.tr("Playing time");
+		case PlayInNewTab:
+			return l.tr("Play in new tab");
 		case Playlist:
 			return l.tr("Playlist");
 		case Playlists:
 			return l.tr("Playlists");
 		case PlayNext:
 			return l.tr("Play next");
+		case PlayPause:
+			return l.tr("Play/Pause");
+		case Plugin:
+			return l.tr("Plugin");
 		case Preferences:
 			return l.tr("Preferences");
 		case PreviousTrack:
@@ -350,7 +358,11 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 		case Show:
 			return l.tr("Show");
 		case ShowAlbumArtists:
-			return l.tr("Show album artists");
+			return l.tr("Show Album Artists");
+		case ShowCovers:
+			return l.tr("Show Covers");
+		case ShowLibrary:
+			return l.tr("Show Library");
 		case SimilarArtists:
 			return l.tr("Similar artists");
 		case SortBy:

@@ -75,16 +75,6 @@ bool Base::has_loading_bar() const
 }
 
 
-QString Base::get_shortcut_text(const QString& shortcut_identifier) const
-{
-	if(shortcut_identifier == "close_plugin"){
-		return tr("Close plugin");
-	}
-
-	return "";
-}
-
-
 QAction* Base::get_action() const
 {
 	m->pp_action->setText( this->get_display_name() );
@@ -103,14 +93,10 @@ void Base::finalize_initialization()
 		widget_layout->setContentsMargins(3, 3, 3, bottom);
 	}
 
-	ShortcutHandler* sch = ShortcutHandler::instance();
-	Shortcut sc = sch->get_shortcut("close_plugin");
-	if(!sc.is_valid()){
-		sc = sch->add(this, ShortcutHandler::ClosePlugin, tr("Close plugin"), "Ctrl+Esc");
-	}
-
-	if(parentWidget()){
-		sc.create_qt_shortcut(this, parentWidget(), SLOT(close()));
+	if(parentWidget())
+	{
+		ShortcutHandler* sch = ShortcutHandler::instance();
+		sch->shortcut(ShortcutIdentifier::ClosePlugin).connect(this, parentWidget(), SLOT(close()), Qt::WidgetWithChildrenShortcut);
 	}
 
 	Set::listen<Set::Player_Style>(this, &Base::skin_changed);

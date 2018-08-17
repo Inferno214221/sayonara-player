@@ -20,7 +20,6 @@
 
 #include "Shortcut.h"
 #include "ShortcutHandler.h"
-#include "ShortcutWidget.h"
 #include "Database/Connector.h"
 #include "Database/Shortcuts.h"
 #include "GUI/Utils/Widgets/Widget.h"
@@ -35,23 +34,23 @@ struct Shortcut::Private
 {
 	QStringList			default_shortcuts;
 	QStringList			shortcuts;
-	QString				name;
-	QString				identifier;
+	ShortcutIdentifier	identifier;
+
 	QList<QShortcut*>	qt_shortcuts;
-	ShortcutWidget*		parent=nullptr;
+
+	Private(ShortcutIdentifier id) :
+		identifier(id)
+	{}
 };
 
 Shortcut::Shortcut()
 {
-	m = Pimpl::make<Private>();
+	m = Pimpl::make<Private>(ShortcutIdentifier::Invalid);
 }
 
-Shortcut::Shortcut(ShortcutWidget* parent, const QString& identifier, const QString& name, const QStringList& default_shortcuts) :
-	Shortcut()
+Shortcut::Shortcut(ShortcutIdentifier identifier, const QStringList& default_shortcuts)
 {
-	m->name = name;
-	m->identifier = identifier;
-	m->parent=parent;
+	m = Pimpl::make<Private>(identifier);
 
 	m->default_shortcuts = default_shortcuts;
 	for(QString& str : m->default_shortcuts){
@@ -60,43 +59,14 @@ Shortcut::Shortcut(ShortcutWidget* parent, const QString& identifier, const QStr
 	}
 
 	m->shortcuts = m->default_shortcuts;
-
-	DB::Shortcuts* db = DB::Connector::instance()->shortcut_connector();
-	RawShortcutMap rsm = db->getAllShortcuts();
-
-	if(rsm.contains(identifier))
-	{
-		m->shortcuts = rsm[identifier];
-
-		for(const QString& str : rsm[identifier])
-		{
-			if(str.contains("Enter"))
-			{
-				QString re(str);
-				re.replace("Enter", "Return");
-				m->shortcuts << re;
-			}
-
-			if(str.contains("Return"))
-			{
-				QString re(str);
-				re.replace("Return", "Enter");
-				m->shortcuts << re;
-			}
-		}
-
-		m->shortcuts.removeDuplicates();
-	}
 }
 
-Shortcut::Shortcut(ShortcutWidget* parent, const QString& identifier, const QString& name, const QString& default_shortcut) :
-	Shortcut(parent, identifier, name, QStringList(default_shortcut)) {}
+Shortcut::Shortcut(ShortcutIdentifier identifier, const QString& default_shortcut) :
+	Shortcut(identifier, QStringList(default_shortcut)) {}
 
 Shortcut::Shortcut(const Shortcut& other) :
 	Shortcut()
 {
-	m->parent =				other.m->parent;
-	m->name =				other.m->name;
 	m->identifier =			other.m->identifier;
 	m->default_shortcuts =	other.m->default_shortcuts;
 	m->shortcuts =			other.m->shortcuts;
@@ -107,27 +77,17 @@ Shortcut::~Shortcut() {}
 
 Shortcut& Shortcut::operator =(const Shortcut& other)
 {
-	m->parent =				other.m->parent;
-	m->name =					other.m->name;
 	m->identifier =			other.m->identifier;
-	m->default_shortcuts =		other.m->default_shortcuts;
-	m->shortcuts =				other.m->shortcuts;
-	m->qt_shortcuts =			other.m->qt_shortcuts;
+	m->default_shortcuts =	other.m->default_shortcuts;
+	m->shortcuts =			other.m->shortcuts;
+	m->qt_shortcuts =		other.m->qt_shortcuts;
 
 	return (*this);
 }
 
-
-
 QString Shortcut::name() const
 {
-	if(m->parent){
-		QString name = m->parent->get_shortcut_text(m->identifier);
-		if(!name.isEmpty()){
-			return name;
-		}
-	}
-	return m->name;
+	return ShortcutHandler::instance()->shortcut_text(m->identifier);
 }
 
 QStringList Shortcut::default_shorcut() const
@@ -158,9 +118,14 @@ const QStringList& Shortcut::shortcuts() const
 	return m->shortcuts;
 }
 
-QString Shortcut::identifier() const
+ShortcutIdentifier Shortcut::identifier() const
 {
 	return m->identifier;
+}
+
+QString Shortcut::identifier_string() const
+{
+	return ShortcutHandler::instance()->identifier(m->identifier);
 }
 
 Shortcut Shortcut::getInvalid()
@@ -170,27 +135,16 @@ Shortcut Shortcut::getInvalid()
 
 bool Shortcut::is_valid() const
 {
-	return !(m->identifier.isEmpty());
+	return (m->identifier != ShortcutIdentifier::Invalid);
 }
 
-ShortcutWidget* Shortcut::parent() const
-{
-	return m->parent;
-}
-
-
-void Shortcut::create_qt_shortcut(QWidget* parent, QObject* receiver, const char* slot, Qt::ShortcutContext context)
+void Shortcut::connect(QWidget* parent, QObject* receiver, const char* slot, Qt::ShortcutContext context)
 {
 	QList<QShortcut*> shortcuts = init_qt_shortcut(parent, context);
 	for(QShortcut* sc : shortcuts)
 	{
 		parent->connect(sc, SIGNAL(activated()), receiver, slot);
 	}
-}
-
-void Shortcut::create_qt_shortcut(QWidget* parent, Qt::ShortcutContext context)
-{
-	init_qt_shortcut(parent, context);
 }
 
 
@@ -206,14 +160,17 @@ QList<QShortcut*> Shortcut::init_qt_shortcut(QWidget* parent, Qt::ShortcutContex
 		shortcut->setContext(context);
 		shortcut->setKey(sequence);
 
-		m->qt_shortcuts << shortcut;
-
 		lst << shortcut;
 	}
 
-	ShortcutHandler::instance()->set_shortcut(m->identifier, m->shortcuts);
+	ShortcutHandler::instance()->qt_shortcuts_added(m->identifier, lst);
 
 	return lst;
+}
+
+void Shortcut::add_qt_shortcuts(const QList<QShortcut*>& qt_shortcuts)
+{
+	m->qt_shortcuts << qt_shortcuts;
 }
 
 

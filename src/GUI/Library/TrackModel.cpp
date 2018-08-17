@@ -108,7 +108,7 @@ QVariant TrackModel::data(const QModelIndex &index, int role) const
 				return QVariant(md.album());
 
 			case ColumnIndex::Track::Discnumber:
-				return QVariant(tr("Disc") + " " + QString::number(md.discnumber));
+				return QVariant(Lang::get(Lang::Disc) + " " + QString::number(md.discnumber));
 
 			case ColumnIndex::Track::Year:
 				if(md.year == 0){

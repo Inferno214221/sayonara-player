@@ -186,7 +186,7 @@ void LocalLibraryMenu::language_changed()
 	m->edit_action->setText(Lang::get(Lang::Edit));
 	m->livesearch_action->setText(tr("Live search"));
 	m->show_album_artists_action->setText(Lang::get(Lang::ShowAlbumArtists));
-	m->show_album_cover_view->setText(tr("Cover view"));
+	m->show_album_cover_view->setText(Lang::get(Lang::ShowCovers));
 }
 
 void LocalLibraryMenu::skin_changed()
