@@ -91,10 +91,11 @@ GUI_Player::GUI_Player(QWidget* parent) :
 {
 	m = Pimpl::make<Private>();
 
+	language_changed();
+
 	ui = new Ui::GUI_Player();
 	ui->setupUi(this);
-
-	language_changed();
+	ui->retranslateUi(this);
 
 	ui->plugin_widget->setVisible(false);
 
@@ -530,25 +531,11 @@ void GUI_Player::language_changed()
 	m->translators.clear();
 	m->current_language = language;
 
-	QRegExp re("sayonara_lang_(.*)\\.qm");
-	re.indexIn(language);
-	QString two_country_code = re.cap(1);
-
-	QLocale loc(two_country_code);
-	QLocale::setDefault(loc);
-
-	sp_log(Log::Info, this) << "Language changed: " << loc.nativeLanguageName() << " (" << two_country_code << ")";
-
 	init_translator(language, Util::share_path("translations/"));
 
-	/*QString qt_tr_file_sayonara = QString("qt_%1.qm").arg(two_country_code);
-	bool success = init_translator(qt_tr_file_sayonara, Util::share_path("translations/"));
-	if(!success){
-		QString qt_tr_file = QString("qt_%1.qm").arg(two_country_code);
-		init_translator(qt_tr_file, "/usr/share/qt5/translations/");
-	}*/
-
-	ui->retranslateUi(this);
+	if(ui) {
+		ui->retranslateUi(this);
+	}
 }
 
 

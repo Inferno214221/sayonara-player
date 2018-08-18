@@ -392,7 +392,6 @@ void GUI_Playlist::tab_close_playlist_clicked(int idx)
 	}
 
 	QWidget* playlist_widget = ui->tw_playlists->widget(idx);
-
 	ui->tw_playlists->removeTab(idx);
 
 	PlaylistView* plv = current_view();
@@ -400,9 +399,9 @@ void GUI_Playlist::tab_close_playlist_clicked(int idx)
 		plv->setFocus();
 	}
 
-	Handler::instance()->close_playlist(idx);
-
 	delete playlist_widget; playlist_widget = nullptr;
+
+	Handler::instance()->close_playlist(idx);
 }
 
 

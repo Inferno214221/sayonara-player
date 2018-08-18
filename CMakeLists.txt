@@ -3,7 +3,7 @@ project("Sayonara Player")
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}")
 
-if( with_cotire )
+if( WITH_COTIRE )
 	include(cotire)
 	message("Compiling with Cotire")
 	add_definitions(-D__STRICT_ANSI__)

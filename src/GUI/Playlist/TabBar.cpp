@@ -38,11 +38,12 @@
 
 struct PlaylistTabBar::Private
 {
+	QString             last_dir;
 	PlaylistTabMenu*	menu=nullptr;
 	int					tab_before_dd;
 	int					drag_origin_tab;
 	bool				drag_from_playlist;
-	QString             last_dir;
+
 
 	Private(QWidget* parent) :
 		menu(new PlaylistTabMenu(parent)),
@@ -107,7 +108,6 @@ void PlaylistTabBar::save_to_file_pressed()
 				Lang::get(Lang::SaveAs).triplePt(),
 				m->last_dir,
 				"*.m3u");
-
 
 	if(name.isEmpty()){
 		return;

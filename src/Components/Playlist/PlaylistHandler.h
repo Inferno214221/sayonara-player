@@ -200,7 +200,7 @@ namespace Playlist
 			 * @brief close playlist
 			 * @param pl_idx playlist index
 			 */
-			void close_playlist(int pl_idx);
+			int close_playlist(int pl_idx);
 
 
 			/**

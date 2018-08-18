@@ -164,6 +164,11 @@ int Handler::add_new_playlist(const QString& name, bool temporary, Playlist::Typ
 	PlaylistPtr pl = new_playlist(type, m->playlists.size(), name);
 	pl->set_temporary(temporary);
 
+	if(m->playlists.isEmpty()){
+		m->active_playlist_idx = 0;
+		m->current_playlist_idx = 0;
+	}
+
 	m->playlists.push_back(pl);
 
 	emit sig_new_playlist_added(pl);
@@ -370,7 +375,11 @@ int	Handler::active_index() const
 
 void Handler::set_active_idx(int idx)
 {
-	if(between(idx, m->playlists)){
+	if(m->playlists.isEmpty()){
+		m->active_playlist_idx = idx;
+	}
+
+	else if(between(idx, m->playlists)){
 		m->active_playlist_idx = idx;
 	}
 
@@ -390,7 +399,7 @@ PlaylistPtr Handler::active_playlist()
 
 	// assure we have at least one playlist
 	if(m->playlists.size() == 0){
-		m->active_playlist_idx = add_new_playlist(request_new_playlist_name(), true, Playlist::Type::Std);
+		m->active_playlist_idx = create_empty_playlist();
 	}
 
 	// assure valid idx
@@ -485,9 +494,9 @@ QString Handler::request_new_playlist_name() const
 	return DBInterface::request_new_db_name();
 }
 
-void Handler::close_playlist(int pl_idx)
+int Handler::close_playlist(int pl_idx)
 {
-	CHECK_IDX_VOID(pl_idx)
+	CHECK_IDX_RET(pl_idx, m->playlists.count());
 
 	bool was_active = (pl_idx == m->active_playlist_idx);
 
@@ -495,29 +504,35 @@ void Handler::close_playlist(int pl_idx)
 		m->playlists[pl_idx]->delete_playlist();
 	}
 
-	m->playlists.erase(m->playlists.begin() + pl_idx);
+	m->playlists.removeAt(pl_idx);
 
-	if(was_active){
-		set_active_idx(0);
+	if(was_active)
+	{
+		set_active_idx(m->playlists.isEmpty() ? -1 : 0);
 	}
 
 	else if(m->active_playlist_idx > pl_idx){
 		m->active_playlist_idx --;
 	}
 
-	for(PlaylistPtr pl : m->playlists) {
-		if(pl->index() >= pl_idx) {
+	for(PlaylistPtr pl : m->playlists)
+	{
+		if(pl->index() >= pl_idx && pl->index() > 0) {
 			pl->set_index(pl->index() - 1);
 		}
 	}
 
-	if(was_active){
+	if(was_active)
+	{
 		_settings->set<Set::PL_LastPlaylist>(-1);
 		_settings->set<Set::PL_LastTrack>(-1);
 	}
+
 	else{
 		_settings->set<Set::PL_LastPlaylist>(active_playlist()->get_id());
 	}
+
+	return m->playlists.count();
 }
 
 PlaylistConstPtr Handler::playlist(int idx) const

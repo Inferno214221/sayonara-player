@@ -50,10 +50,14 @@ struct Base::Private
 	{}
 };
 
+#include <exception>
 Base::Base(int idx, const QString& name) :
 	Playlist::DBInterface(name),
 	SayonaraClass()
 {
+	if(idx < 0){
+		throw "Playlist idx < 0";
+	}
 	Tagging::ChangeNotifier* md_change_notifier = Tagging::ChangeNotifier::instance();
 	PlayManagerPtr play_manager = PlayManager::instance();
 
