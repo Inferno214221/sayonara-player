@@ -701,12 +701,15 @@ void Tracks::updateTrackCissearch()
 }
 
 
-void Tracks::deleteAllTracks()
+void Tracks::deleteAllTracks(bool also_views)
 {
 	if(m->library_id >= 0)
 	{
-		drop_track_view();
-		drop_search_view();
+		if(also_views)
+		{
+			drop_track_view();
+			drop_search_view();
+		}
 
 		Query q2(this);
 		q2.prepare("DELETE FROM tracks WHERE libraryId=:library_id;");

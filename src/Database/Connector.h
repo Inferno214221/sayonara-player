@@ -65,8 +65,8 @@ namespace DB
 
 			LibraryDatabases		library_dbs() const;
 			DB::LibraryDatabase*	library_db(LibraryId library_id, DbId db_id);
-			DB::LibraryDatabase*	find_library_db(LibraryId library_id) const;
 			DB::LibraryDatabase*	register_library_db(LibraryId library_id);
+			void					delete_library_db(LibraryId library_id);
 
 			DB::Bookmarks*			bookmark_connector();
 			DB::Playlist*			playlist_connector();

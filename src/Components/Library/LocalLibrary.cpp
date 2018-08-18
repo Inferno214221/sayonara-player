@@ -61,8 +61,6 @@ struct LocalLibrary::Private
 LocalLibrary::LocalLibrary(LibraryId library_id, QObject *parent) :
 	AbstractLibrary(parent)
 {
-	DB::Connector::instance()->register_library_db(library_id);
-
 	m = Pimpl::make<Private>(library_id);
 
 	apply_db_fixes();
@@ -76,11 +74,6 @@ LocalLibrary::LocalLibrary(LibraryId library_id, QObject *parent) :
 }
 
 LocalLibrary::~LocalLibrary() {}
-
-void LocalLibrary::clear_library()
-{
-	m->library_db->clear();
-}
 
 void LocalLibrary::apply_db_fixes() {}
 

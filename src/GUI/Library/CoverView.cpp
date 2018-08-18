@@ -16,25 +16,21 @@
 #include <QHeaderView>
 #include <QTimer>
 #include <QWheelEvent>
-#include <atomic>
-
 #include <QShortcut>
 #include <QKeySequence>
+
+#include <mutex>
+
 using Library::CoverView;
 using Library::CoverModel;
 using AtomicBool=std::atomic<bool>;
+using AtomicInt=std::atomic<int>;
 
 struct CoverView::Private
 {
+	std::mutex		zoom_mutex;
 	LocalLibrary*	library=nullptr;
 	CoverModel*		model=nullptr;
-	QTimer*			buffer_timer=nullptr;
-
-	AtomicBool		blocked;
-
-	Private() :
-		blocked(false)
-	{}
 };
 
 CoverView::CoverView(QWidget* parent) :
@@ -45,19 +41,7 @@ CoverView::CoverView(QWidget* parent) :
 	connect(this, &ItemView::doubleClicked, this, &CoverView::play_clicked);
 }
 
-CoverView::~CoverView()
-{
-	if(m->buffer_timer){
-
-		while(m->buffer_timer->isActive())
-		{
-			m->buffer_timer->stop();
-			::Util::sleep_ms(10);
-		}
-
-		delete m->buffer_timer; m->buffer_timer = nullptr;
-	}
-}
+CoverView::~CoverView() {}
 
 void CoverView::init(LocalLibrary* library)
 {
@@ -129,8 +113,26 @@ void CoverView::change_zoom(int zoom)
 	m->model->set_zoom(zoom, this->size());
 	_settings->set<Set::Lib_CoverZoom>(zoom);
 
-	timer_start();
+	resize_sections();
 }
+
+
+void CoverView::resize_sections()
+{
+	if(this->is_empty()){
+		return;
+	}
+
+	if(!m->zoom_mutex.try_lock()){
+		return;
+	}
+
+	this->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+	this->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+
+	m->zoom_mutex.unlock();
+}
+
 
 
 QList<ActionPair> CoverView::sorting_actions()
@@ -176,38 +178,6 @@ void CoverView::init_context_menu()
 }
 
 
-void CoverView::timer_start()
-{
-	if(this->is_empty()){
-		return;
-	}
-
-	if(!m->buffer_timer)
-	{
-		m->buffer_timer = new QTimer();
-		m->buffer_timer->setInterval(50);
-		m->buffer_timer->setSingleShot(true);
-		connect(m->buffer_timer, &QTimer::timeout, this, &CoverView::timer_timed_out, Qt::QueuedConnection);
-	}
-
-	m->buffer_timer->start();
-}
-
-
-void CoverView::timer_timed_out()
-{
-	if(m->blocked){
-		return;
-	}
-
-	m->blocked = true;
-
-	this->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-	this->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-
-	m->buffer_timer->stop();
-	m->blocked = false;
-}
 
 void CoverView::reload()
 {
@@ -248,15 +218,6 @@ void CoverView::resizeEvent(QResizeEvent* e)
 {
 	ItemView::resizeEvent(e);
 	change_zoom();
-}
-
-void CoverView::showEvent(QShowEvent* e)
-{
-	Library::ItemView::showEvent(e);
-
-	if(m->model){
-		m->model->reload();
-	}
 }
 
 int CoverView::sizeHintForColumn(int c) const

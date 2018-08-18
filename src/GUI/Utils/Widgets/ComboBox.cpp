@@ -55,6 +55,5 @@ void ComboBox::changeEvent(QEvent* event)
 
 	this->setIconSize(QSize(h, h));
 	update();
-	repaint();
 }
 

@@ -86,7 +86,9 @@ namespace DB
 			virtual SP::Set<Genre> getAllGenres();
 			virtual void updateTrackCissearch();
 
-			void deleteAllTracks();
+			void deleteAllTracks(bool also_views);
+			void drop_track_view();
+			void drop_search_view();
 
 		protected:
 			virtual QString artistid_field() const=0;
@@ -95,8 +97,7 @@ namespace DB
 		private:
 			void create_track_view(const QString& select_statement);
 			void create_track_search_view(const QString& select_statement);
-			void drop_track_view();
-			void drop_search_view();
+
 
 			QString append_track_sort_string(QString querytext, ::Library::SortOrder sort);
 		};

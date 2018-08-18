@@ -49,8 +49,6 @@ protected:
 public:
 	virtual ~LocalLibrary();
 
-	void clear_library();
-
 public slots:
 	void delete_tracks(const MetaDataList& v_md, Library::TrackDeletionMode answer) override;
 	void reload_library(bool clear_first, Library::ReloadQuality quality) override;

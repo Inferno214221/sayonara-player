@@ -73,9 +73,13 @@ struct GUI_Player::Private
 
 	int							style;
 	bool						shutdown_requested;
+	bool						is_maximizable;
+	bool						is_fullscreenable;
 
 	Private() :
-		shutdown_requested(false)
+		shutdown_requested(false),
+		is_maximizable(true),
+		is_fullscreenable(true)
 	{
 		Settings* s = Settings::instance();
 		logger = new GUI_Logger();
@@ -215,7 +219,6 @@ void GUI_Player::init_font_change_fix()
 
 		this->removeEventFilter(m->style_changed_event_filter);
 		this->skin_changed();
-		this->repaint();
 		this->update();
 	});
 }
@@ -454,6 +457,11 @@ void GUI_Player::show_library_changed()
 
 void GUI_Player::show_library(bool is_library_visible, bool was_library_visible)
 {
+	if(this->isMaximized() || this->isFullScreen())
+	{
+		return;
+	}
+
 	if(is_library_visible == was_library_visible)
 	{
 		return;
@@ -465,6 +473,8 @@ void GUI_Player::show_library(bool is_library_visible, bool was_library_visible)
 	{
 		int old_lib_width = _settings->get<Set::Lib_OldWidth>();
 		m->new_size = QSize(this->width() + old_lib_width, this->height());
+
+		m->is_maximizable = true;
 	}
 
 	else
@@ -488,6 +498,7 @@ void GUI_Player::splitter_painted()
 
 	else {
 		ui->splitter->removeEventFilter(m->splitter_paint_event_filter);
+		_settings->set<Set::Player_Size>(this->size());
 	}
 }
 
@@ -628,14 +639,12 @@ void GUI_Player::request_shutdown()
 	m->shutdown_requested = true;
 }
 
-
 void GUI_Player::moveEvent(QMoveEvent* e)
 {
 	Gui::MainWindow::moveEvent(e);
 
 	_settings->set<Set::Player_Pos>(pos());
 }
-
 
 void GUI_Player::resizeEvent(QResizeEvent* e)
 {
@@ -653,6 +662,10 @@ void GUI_Player::resizeEvent(QResizeEvent* e)
 	{
 		_settings->set<Set::Player_Size>(this->size());
 	}
+
+	m->menubar->set_show_library_action_enabled(
+		!(this->isMaximized() || this->isFullScreen())
+	);
 }
 
 

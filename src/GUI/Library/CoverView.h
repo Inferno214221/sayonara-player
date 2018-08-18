@@ -47,16 +47,11 @@ namespace Library
 		void wheelEvent(QWheelEvent* e) override;
 		void resizeEvent(QResizeEvent* e) override;
 		void hideEvent(QHideEvent* e) override;
-		void showEvent(QShowEvent* e) override;
 
 		int sizeHintForColumn(int) const override;
 
-	private slots:
-		void timer_timed_out();
-
-
 	private:
-		void timer_start();
+		void resize_sections();
 
 		// Library::ItemView
 		void play_clicked() override;

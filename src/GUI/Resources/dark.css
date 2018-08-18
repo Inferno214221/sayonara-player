@@ -316,6 +316,11 @@ QMenu::item
 	background-color: transparent;
 }
 
+QMenu::item::disabled
+{
+	color: #7f7f7f;
+}
+
 QMenu::item:selected
 {
 	border-top: 1px solid #202020;

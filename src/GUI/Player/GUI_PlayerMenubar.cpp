@@ -209,6 +209,11 @@ void Menubar::show_library_action(bool visible)
 	}
 }
 
+void Menubar::set_show_library_action_enabled(bool b)
+{
+	m->action_view_library->setEnabled(b);
+}
+
 void Menubar::init_connections()
 {
 	// file

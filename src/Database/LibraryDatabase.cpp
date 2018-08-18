@@ -111,7 +111,7 @@ QString LibraryDatabase::artistname_field() const
 
 void LibraryDatabase::clear()
 {
-	DB::Tracks::deleteAllTracks();
+	DB::Tracks::deleteAllTracks(true);
 }
 
 LibraryId LibraryDatabase::library_id() const

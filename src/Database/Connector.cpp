@@ -47,6 +47,8 @@
 using DB::Connector;
 using DB::LibraryDatabase;
 
+using LibDbIterator=DB::LibraryDatabases::Iterator;
+
 struct Connector::Private
 {
 	QString					connection_name;
@@ -553,50 +555,58 @@ DB::LibraryDatabases Connector::library_dbs() const
 
 DB::LibraryDatabase* Connector::library_db(LibraryId library_id, DbId db_id)
 {
-	for(DB::LibraryDatabase* db : ::Util::AsConst(m->library_dbs))
-	{
-		auto dd1 = db->db_id();
+	LibDbIterator it = Util::find(m->library_dbs, [=](DB::LibraryDatabase* db){
+		return (db->library_id() == library_id && db->db_id() == db_id);
+	});
 
-		if( (db->library_id() == library_id) &&
-			(dd1 == db_id))
-		{
-			return db;
-		}
-	}
-
-	if(db_id == 0)
+	if(it == m->library_dbs.end())
 	{
 		sp_log(Log::Warning, this) << "Could not find Library:"
 								" DB ID = " << (int) db_id
 							 << " LibraryID = " << (int) library_id;
+
+		return m->generic_library_database;
 	}
 
-	return m->generic_library_database;
+	return *it;
 }
 
-
-DB::LibraryDatabase *Connector::find_library_db(LibraryId library_id) const
-{
-	for(DB::LibraryDatabase* db : ::Util::AsConst(m->library_dbs))
-	{
-		if( (db->library_id() == library_id)){
-			return db;
-		}
-	}
-
-	return nullptr;
-}
 
 DB::LibraryDatabase* Connector::register_library_db(LibraryId library_id)
 {
-	DB::LibraryDatabase* lib_db = find_library_db(library_id);
+	DB::LibraryDatabase* lib_db = nullptr;
+	LibDbIterator it = Util::find(m->library_dbs, [=](DB::LibraryDatabase* db){
+		return (db->library_id() == library_id);
+	});
 
-	if(!lib_db) {
+	if(it == m->library_dbs.end())
+	{
 		lib_db = new DB::LibraryDatabase(this->connection_name(), this->db_id(), library_id);
 		m->library_dbs << lib_db;
 	}
 
+	else
+	{
+		lib_db = *it;
+	}
+
 	return lib_db;
+}
+
+void Connector::delete_library_db(LibraryId library_id)
+{
+	LibDbIterator it = Util::find(m->library_dbs, [=](DB::LibraryDatabase* db){
+		return (db->library_id() == library_id);
+	});
+
+	if(it != m->library_dbs.end())
+	{
+		LibraryDatabase* db = *it;
+		db->deleteAllTracks(true);
+		m->library_dbs.removeAll(db);
+
+		delete db; db = nullptr;
+	}
 }
 
 

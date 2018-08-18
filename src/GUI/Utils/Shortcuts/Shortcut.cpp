@@ -30,34 +30,34 @@
 #include <QKeySequence>
 #include <QWidget>
 
-static QList<QKeySequence> merge_key_sequences(const QList<QKeySequence>& sequences)
-{
-	QList<QKeySequence> ret = sequences;
+//static QList<QKeySequence> merge_key_sequences(const QList<QKeySequence>& sequences)
+//{
+//	QList<QKeySequence> ret = sequences;
 
-	for(QKeySequence ks : sequences)
-	{
-		QString str = ks.toString();
+//	for(QKeySequence ks : sequences)
+//	{
+//		QString str = ks.toString();
 
-		if(ks.toString().contains("return", Qt::CaseInsensitive))
-		{
-			str.replace("return", "Enter", Qt::CaseInsensitive);
-			if(!ret.contains(QKeySequence(str))){
-				ret << QKeySequence(str);
-			}
-		}
+//		if(ks.toString().contains("return", Qt::CaseInsensitive))
+//		{
+//			str.replace("return", "Enter", Qt::CaseInsensitive);
+//			if(!ret.contains(QKeySequence(str))){
+//				ret << QKeySequence(str);
+//			}
+//		}
 
-		else if(ks.toString().contains("enter", Qt::CaseInsensitive))
-		{
-			str.replace("num+enter", "enter", Qt::CaseInsensitive);
-			str.replace("enter", "Return", Qt::CaseInsensitive);
-			if(!ret.contains(QKeySequence(str))){
-				ret << QKeySequence(str);
-			}
-		}
-	}
+//		else if(ks.toString().contains("enter", Qt::CaseInsensitive))
+//		{
+//			str.replace("num+enter", "enter", Qt::CaseInsensitive);
+//			str.replace("enter", "Return", Qt::CaseInsensitive);
+//			if(!ret.contains(QKeySequence(str))){
+//				ret << QKeySequence(str);
+//			}
+//		}
+//	}
 
-	return ret;
-}
+//	return ret;
+//}
 
 
 struct Shortcut::Private
