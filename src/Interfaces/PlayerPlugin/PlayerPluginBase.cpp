@@ -62,7 +62,10 @@ Base::Base(QWidget *parent) :
 
 Base::~Base() {}
 
-void Base::skin_changed() {}
+void Base::skin_changed()
+{
+	Widget::skin_changed();
+}
 
 bool Base::is_title_shown() const
 {

@@ -70,6 +70,7 @@ private:
 	void init_connections();
 	void init_sizes();
 	void init_main_splitter();
+	void init_font_change_fix();
 
 	void closeEvent(QCloseEvent* e) override;
 	void resizeEvent(QResizeEvent* e) override;

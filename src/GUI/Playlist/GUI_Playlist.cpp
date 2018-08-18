@@ -44,6 +44,7 @@
 
 #include <QFileDialog>
 #include <QTimer>
+#include <QTabBar>
 
 using Playlist::Handler;
 

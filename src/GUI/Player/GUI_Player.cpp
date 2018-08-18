@@ -40,6 +40,7 @@
 #include "GUI/Utils/GuiUtils.h"
 #include "GUI/Utils/Style.h"
 #include "GUI/Utils/Icons.h"
+#include "GUI/Utils/EventFilter.h"
 
 #include "Interfaces/LibraryInterface/LibraryPluginHandler.h"
 #include "Interfaces/LibraryInterface/LibraryContainer/LibraryContainer.h"
@@ -59,12 +60,19 @@ struct GUI_Player::Private
 	GUI_Logger*					logger=nullptr;
 	GUI_TrayIcon*				tray_icon=nullptr;
 	GUI_ControlsBase*			controls=nullptr;
+
+	// hack for resizing the player after library show/hide:
+	// star resizing after splitter has finished painting
+	GenericFilter*				splitter_paint_event_filter=nullptr;
+	GenericFilter*				style_changed_event_filter=nullptr;
+
 	QPoint						initial_pos;
 	QSize						initial_sz;
+	QSize						new_size;
 	QString						current_language;
+
 	int							style;
 	bool						shutdown_requested;
-	QSize						new_size;
 
 	Private() :
 		shutdown_requested(false)
@@ -83,13 +91,16 @@ struct GUI_Player::Private
 	}
 };
 
-#include "GUI/Utils/EventFilter.h"
 
 GUI_Player::GUI_Player(QWidget* parent) :
 	Gui::MainWindow(parent),
 	MessageReceiverInterface("Player Main Window")
 {
 	m = Pimpl::make<Private>();
+	m->style_changed_event_filter = new GenericFilter(
+		QList<QEvent::Type>{QEvent::Paint},
+		this
+	);
 
 	language_changed();
 
@@ -109,6 +120,7 @@ GUI_Player::GUI_Player(QWidget* parent) :
 	setWindowIcon(Gui::Util::icon("logo.png"));
 	setAttribute(Qt::WA_DeleteOnClose, false);
 
+	init_font_change_fix();
 	init_sizes();
 	init_main_splitter();
 	init_controlstyle();
@@ -186,13 +198,25 @@ void GUI_Player::init_main_splitter()
 		ui->splitter->restoreState(splitter_state_main);
 	}
 
-	GenericFilter* paint_filter = new GenericFilter(QEvent::Paint, ui->splitter);
-	ui->splitter->installEventFilter(paint_filter);
-
-	connect(paint_filter, &GenericFilter::sig_event, this, [=](QEvent::Type t)
+	m->splitter_paint_event_filter = new GenericFilter(QEvent::Paint, ui->splitter);
+	connect(m->splitter_paint_event_filter, &GenericFilter::sig_event, this, [=](QEvent::Type t)
 	{
 		Q_UNUSED(t)
 		this->splitter_painted();
+	});
+}
+
+void GUI_Player::init_font_change_fix()
+{
+	installEventFilter(m->style_changed_event_filter);
+
+	connect(m->style_changed_event_filter, &GenericFilter::sig_event, this, [=](QEvent::Type t){
+		Q_UNUSED(t)
+
+		this->removeEventFilter(m->style_changed_event_filter);
+		this->skin_changed();
+		this->repaint();
+		this->update();
 	});
 }
 
@@ -385,16 +409,17 @@ void GUI_Player::controlstyle_changed()
 	int h = 0;
 	if(_settings->get<Set::Player_ControlStyle>() == 0)
 	{
-		m->controls = new GUI_Controls(ui->controls);
+		m->controls = new GUI_Controls();
 	}
 
 	else
 	{
-		m->controls = new GUI_ControlsNew(ui->controls);
+		m->controls = new GUI_ControlsNew();
 		h = 350;
 	}
 
 	m->controls->init();
+
 	ui->controls->layout()->addWidget(m->controls);
 	ui->splitterControls->setSizes({h, this->height() - h});
 
@@ -434,6 +459,8 @@ void GUI_Player::show_library(bool is_library_visible, bool was_library_visible)
 		return;
 	}
 
+	ui->splitter->installEventFilter(m->splitter_paint_event_filter);
+
 	if(is_library_visible)
 	{
 		int old_lib_width = _settings->get<Set::Lib_OldWidth>();
@@ -454,13 +481,13 @@ void GUI_Player::show_library(bool is_library_visible, bool was_library_visible)
 
 void GUI_Player::splitter_painted()
 {
-	if(m->new_size.isValid() && (m->new_size != this->size()))
+	if(m->new_size != this->size())
 	{
 		this->resize(m->new_size);
 	}
 
 	else {
-		m->new_size = QSize();
+		ui->splitter->removeEventFilter(m->splitter_paint_event_filter);
 	}
 }
 
@@ -543,7 +570,6 @@ void GUI_Player::skin_changed()
 {
 	QString stylesheet = Style::current_style();
 	this->setStyleSheet(stylesheet);
-
 	int style = _settings->get<Set::Player_Style>();
 	if(style != m->style)
 	{

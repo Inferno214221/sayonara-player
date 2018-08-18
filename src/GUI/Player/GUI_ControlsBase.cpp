@@ -29,6 +29,7 @@
 #include <QIcon>
 #include <QDateTime>
 #include <QLabel>
+#include <QFont>
 
 #include <algorithm>
 
@@ -51,6 +52,7 @@ GUI_ControlsBase::~GUI_ControlsBase() {}
 void GUI_ControlsBase::init()
 {
 	QString version = _settings->get<Set::Player_Version>();
+
 	lab_sayonara()->setText(tr("Sayonara Player"));
 	lab_version()->setText( version );
 	lab_writtenby()->setText(tr("Written by") + " Lucio Carreras");
@@ -95,6 +97,7 @@ RatingLabel*GUI_ControlsBase::lab_rating() const
 void GUI_ControlsBase::track_changed(const MetaData & md)
 {
 	lab_sayonara()->hide();
+
 	lab_title()->show();
 
 	lab_version()->hide();
@@ -532,6 +535,8 @@ void GUI_ControlsBase::file_info_changed()
 
 void GUI_ControlsBase::skin_changed()
 {
+	Gui::Widget::skin_changed();
+
 	using namespace Gui;
 
 	btn_fwd()->setIcon(icon(Icons::Forward));

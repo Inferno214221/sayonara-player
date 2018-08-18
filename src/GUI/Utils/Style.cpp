@@ -43,7 +43,7 @@ QString Style::style(bool dark)
 {
 	Settings* settings = Settings::instance();
 
-	QFont std_font = QApplication::font();
+	QFont std_font =		QApplication::font();
 	QString font_family =	settings->get<Set::Player_FontName>();
 	int font_size =			settings->get<Set::Player_FontSize>();
 	int font_size_lib =		settings->get<Set::Lib_FontSize>();
