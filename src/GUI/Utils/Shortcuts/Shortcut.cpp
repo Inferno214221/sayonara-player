@@ -62,11 +62,10 @@ static QList<QKeySequence> merge_key_sequences(const QList<QKeySequence>& sequen
 
 struct Shortcut::Private
 {
+	QList<QShortcut*>	qt_shortcuts;
 	QStringList			default_shortcuts;
 	QStringList			shortcuts;
 	ShortcutIdentifier	identifier;
-
-	QList<QShortcut*>	qt_shortcuts;
 
 	Private(ShortcutIdentifier id) :
 		identifier(id)
@@ -226,14 +225,12 @@ void Shortcut::change_shortcut(const QStringList& shortcuts)
 		m->shortcuts.removeDuplicates();
 	}
 
-	QList<QKeySequence> new_ks = this->sequences();//merge_key_sequences(this->sequences());
+	const QList<QKeySequence> new_ks = this->sequences();//merge_key_sequences(this->sequences());
 	foreach(QShortcut* sc, m->qt_shortcuts)
 	{
-		for(QKeySequence s : new_ks)
+		if(new_ks.size() > 0)
 		{
-			sp_log(Log::Debug, this) << "Change shortcut from " << sc->key().toString() << " to " << s.toString();
-			sc->setKey(s);
-			break;
+			sc->setKey(new_ks.first());
 		}
 	}
 }
