@@ -382,6 +382,34 @@ bool MetaDataSorting::ArtistByTrackCountDesc(const Artist& artist1, const Artist
 	return false;
 }
 
+
+bool MetaDataSorting::AlbumByArtistNameAsc(const Album& album1, const Album& album2)
+{
+	switch(compare_string(album1.artists().join(","), album2.artists().join(","))){
+		case Equal:
+			return AlbumByYearAsc(album1, album2);
+		case Greater:
+			return false;
+		case Lesser:
+		default:
+			return true;
+	}
+}
+
+bool MetaDataSorting::AlbumByArtistNameDesc(const Album& album1, const Album& album2)
+{
+	switch(compare_string(album2.artists().join(","), album1.artists().join(","))){
+		case Equal:
+			return AlbumByYearDesc(album1, album2);
+		case Greater:
+			return false;
+		case Lesser:
+		default:
+			return true;
+	}
+}
+
+
 bool MetaDataSorting::AlbumByNameAsc(const Album& album1, const Album& album2)
 {
 	switch(compare_string(album1.name(), album2.name())){
@@ -590,6 +618,12 @@ void MetaDataSorting::sort_albums(AlbumList& albums, Library::SortOrder so)
 	using So=Library::SortOrder;
 	switch(so)
 	{
+		case So::ArtistNameAsc:
+			Util::sort(albums, AlbumByArtistNameAsc);
+			break;
+		case So::ArtistNameDesc:
+			Util::sort(albums, AlbumByArtistNameDesc);
+			break;
 		case So::AlbumNameAsc:
 			Util::sort(albums, AlbumByNameAsc);
 			break;

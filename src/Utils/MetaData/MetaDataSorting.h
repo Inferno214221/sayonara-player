@@ -74,6 +74,8 @@ namespace MetaDataSorting
 	bool ArtistByTrackCountAsc(const Artist& artist1, const Artist& artist2);
 	bool ArtistByTrackCountDesc(const Artist& artist1, const Artist& artist2);
 
+	bool AlbumByArtistNameAsc(const Album& album1, const Album& album2);
+	bool AlbumByArtistNameDesc(const Album& album1, const Album& album2);
 	bool AlbumByNameAsc(const Album& album1, const Album& album2);
 	bool AlbumByNameDesc(const Album& album1, const Album& album2);
 	bool AlbumByYearAsc(const Album& album1, const Album& album2);

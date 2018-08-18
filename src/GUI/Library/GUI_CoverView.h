@@ -66,10 +66,13 @@ namespace Library
 	private:
 		void zoom_changed();
 		void sortorder_changed();
+		void show_artist_changed();
 
 	private slots:
 		void combo_sorting_changed(int idx);
 		void combo_zoom_changed(int idx);
+		void close_clicked();
+		void show_artist_triggered(bool b);
 
 		void show_utils_changed();
 	};

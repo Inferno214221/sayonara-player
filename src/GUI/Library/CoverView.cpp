@@ -118,11 +118,6 @@ void CoverView::change_zoom(int zoom)
 	zoom = std::min(zoom, 200);
 	zoom = std::max(zoom, 50);
 
-	CoverViewContextMenu* menu = static_cast<CoverViewContextMenu*>(context_menu());
-	if(menu){
-		menu->set_zoom(zoom);
-	}
-
 	if(!force_reload)
 	{
 		if( zoom == m->model->zoom() )
@@ -148,6 +143,8 @@ QList<ActionPair> CoverView::sorting_actions()
 		ActionPair(Lang::Name, Lang::Descending, SortOrder::AlbumNameDesc),
 		ActionPair(Lang::Year, Lang::Ascending, SortOrder::AlbumYearAsc),
 		ActionPair(Lang::Year, Lang::Descending, SortOrder::AlbumYearDesc),
+		ActionPair(Lang::Artist, Lang::Ascending, SortOrder::ArtistNameAsc),
+		ActionPair(Lang::Artist, Lang::Descending, SortOrder::ArtistNameDesc),
 		ActionPair(Lang::NumTracks, Lang::Ascending, SortOrder::AlbumTracksAsc),
 		ActionPair(Lang::NumTracks, Lang::Descending, SortOrder::AlbumTracksDesc),
 		ActionPair(Lang::Duration, Lang::Ascending, SortOrder::AlbumDurationAsc),
@@ -160,12 +157,8 @@ QList<ActionPair> CoverView::sorting_actions()
 
 void CoverView::change_sortorder(Library::SortOrder so)
 {
-	CoverViewContextMenu* menu = static_cast<CoverViewContextMenu*>(context_menu());
-	if(menu){
-		menu->set_sorting(so);
-	}
-
 	m->library->change_album_sortorder(so);
+	this->reload();
 }
 
 

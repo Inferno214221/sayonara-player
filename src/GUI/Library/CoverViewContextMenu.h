@@ -23,7 +23,8 @@ public:
 	{
 		EntryShowUtils=(LibraryContextMenu::EntryLast << 1),
 		EntrySorting=(EntryShowUtils << 1),
-		EntryZoom=(EntrySorting << 1)
+		EntryZoom=(EntrySorting << 1),
+		EntryShowArtist=(EntryZoom << 1)
 	};
 
 	using Entries=LibraryContextMenu::Entries;
@@ -34,8 +35,8 @@ public:
 	CoverViewContextMenu::Entries get_entries() const override;
 	void show_actions(CoverViewContextMenu::Entries entries) override;
 
-	void set_zoom(int zoom);
-	void set_sorting(Library::SortOrder so);
+protected:
+	void showEvent(QShowEvent* e) override;
 
 private:
 	void language_changed() override;
@@ -45,8 +46,10 @@ private:
 	void init_sorting_actions();
 	void init_zoom_actions();
 
+	void set_zoom(int zoom);
+	void set_sorting(Library::SortOrder so);
+
 private slots:
-	void show_utils_triggered(bool b);
 	void action_zoom_triggered(bool b);
 	void action_sorting_triggered(bool b);
 

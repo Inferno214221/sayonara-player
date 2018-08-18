@@ -82,7 +82,7 @@ struct CoverModel::Private
 
 	QSize item_size() const
 	{
-		return QSize(zoom + 50, zoom + 50);
+		return QSize(zoom + 50, zoom + 60);
 	}
 
 	QPixmap get_pixmap(const QString& path)
@@ -239,6 +239,21 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 				QString name = album.name();
 				if(name.trimmed().isEmpty()){
 					name = Lang::get(Lang::None);
+				}
+
+				if(Settings::instance()->get<Set::Lib_CoverShowArtist>())
+				{
+					if(album.album_artists().isEmpty()){
+						if(!album.artists().isEmpty())
+						{
+							name.prepend(album.artists().first() + "\n");
+						}
+					}
+
+					else
+					{
+						name.prepend(album.album_artists().first() + "\n");
+					}
 				}
 
 				return name;

@@ -91,6 +91,7 @@ enum class SettingKey : unsigned short
 	Lib_ShowAlbumCovers,
 	Lib_CoverZoom,
 	Lib_CoverShowUtils,
+	Lib_CoverShowArtist,
 	Lib_GenreTree,
 	Lib_LastIndex,
 	Lib_AllLibraries,				// deprecated
@@ -267,6 +268,7 @@ namespace Set
 	INST(bool,				Lib_ShowAlbumCovers)		/* Show album cover view */
 	INST(int,				Lib_CoverZoom)				/* Zoom of album cover view */
 	INST(bool,				Lib_CoverShowUtils)		/* Show utils bar in cover view */
+	INST(bool,				Lib_CoverShowArtist)	/* Show artist name in cover view */
 	INST(bool,				Lib_GenreTree)				/* Show tree view of genres */
 	INST(QList<::Library::Info>, Lib_AllLibraries)		// deprecated
 	INST(int,				Lib_LastIndex)				/* Last selected library */

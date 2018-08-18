@@ -57,13 +57,17 @@ void GUI_CoverView::init(LocalLibrary* library)
 	ui->lab_sorting->setText(Lang::get(Lang::SortBy).append(":"));
 
 	ui->topbar->setVisible(_settings->get<Set::Lib_CoverShowUtils>());
+	ui->cb_show_artist->setChecked(_settings->get<Set::Lib_CoverShowArtist>());
 
 	connect(ui->combo_sorting, combo_activated_int, this, &GUI_CoverView::combo_sorting_changed);
 	connect(ui->combo_zoom, combo_activated_int, this, &GUI_CoverView::combo_zoom_changed);
+	connect(ui->btn_close, &QPushButton::clicked, this, &GUI_CoverView::close_clicked);
+	connect(ui->cb_show_artist, &QCheckBox::toggled, this, &GUI_CoverView::show_artist_triggered);
 
 	Set::listen<Set::Lib_CoverShowUtils>(this, &GUI_CoverView::show_utils_changed, false);
 	Set::listen<Set::Lib_Sorting>(this, &GUI_CoverView::sortorder_changed, false);
 	Set::listen<Set::Lib_CoverZoom>(this, &GUI_CoverView::zoom_changed, false);
+	Set::listen<Set::Lib_CoverShowArtist>(this, &GUI_CoverView::show_artist_changed, false);
 
 	init_sorting_actions();
 	init_zoom_actions();
@@ -118,6 +122,20 @@ void GUI_CoverView::sortorder_changed()
 	}
 }
 
+
+void GUI_CoverView::show_artist_triggered(bool b)
+{
+	_settings->set<Set::Lib_CoverShowArtist>(b);
+	ui->tb_view->reload();
+}
+
+
+void GUI_CoverView::show_artist_changed()
+{
+	bool b = _settings->get<Set::Lib_CoverShowArtist>();
+	ui->cb_show_artist->setChecked(b);
+}
+
 void GUI_CoverView::init_zoom_actions()
 {
 	ui->combo_zoom->addItems(CoverView::zoom_actions());
@@ -133,6 +151,11 @@ void GUI_CoverView::combo_zoom_changed(int idx)
 	int zoom = ui->combo_zoom->currentText().toInt();
 	_settings->set<Set::Lib_CoverZoom>(zoom);
 	ui->tb_view->change_zoom(zoom);
+}
+
+void GUI_CoverView::close_clicked()
+{
+	_settings->set<Set::Lib_CoverShowUtils>(false);
 }
 
 
@@ -169,4 +192,6 @@ void GUI_CoverView::language_changed()
 	ui->combo_zoom->setToolTip(tr("Use Ctrl + mouse wheel to zoom"));
 	ui->lab_sorting->setText(Lang::get(Lang::SortBy));
 	ui->lab_zoom->setText(Lang::get(Lang::Zoom));
+	ui->btn_close->setText(Lang::get(Lang::Close));
+	ui->cb_show_artist->setText(Lang::get(Lang::ShowAlbumArtists));
 }

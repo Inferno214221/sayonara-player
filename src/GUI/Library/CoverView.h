@@ -37,6 +37,9 @@ namespace Library
 		static QList<ActionPair> sorting_actions();
 		static QStringList zoom_actions();
 
+	public slots:
+		void reload();
+
 	protected:
 		void init_context_menu() override;
 
@@ -50,7 +53,7 @@ namespace Library
 
 	private slots:
 		void timer_timed_out();
-		void reload();
+
 
 	private:
 		void timer_start();
