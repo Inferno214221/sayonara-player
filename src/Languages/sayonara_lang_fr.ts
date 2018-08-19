@@ -96,7 +96,7 @@
 <context>
     <name>GUI_AbstractStream</name>
     <message>
-        <location filename="../GUI/Plugins/Stream/GUI_AbstractStream.cpp" line="+171"/>
+        <location filename="../GUI/Plugins/Stream/GUI_AbstractStream.cpp" line="+155"/>
         <source>Cannot open stream</source>
         <translation>Incapable d&apos;ouvrir le flux</translation>
     </message>
@@ -1631,16 +1631,14 @@
 <context>
     <name>GUI_StreamRecorder</name>
     <message>
-        <location filename="../GUI/Preferences/StreamRecorder/GUI_StreamRecorder.ui" line="+39"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+241"/>
         <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+244"/>
         <location filename="../../build-release/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+244"/>
         <source>Target path:</source>
         <translation>Chemin d&apos;écriture :</translation>
     </message>
     <message>
-        <location line="+43"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+2"/>
+        <location filename="../GUI/Preferences/StreamRecorder/GUI_StreamRecorder.ui" line="+82"/>
+        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+243"/>
         <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+2"/>
         <location filename="../../build-release/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+2"/>
         <source>Automatic recording</source>
@@ -1655,8 +1653,14 @@
         <translation>Général</translation>
     </message>
     <message>
-        <location line="+106"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="-1"/>
+        <location line="+12"/>
+        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="-7"/>
+        <source>Target path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+94"/>
+        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+6"/>
         <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="-1"/>
         <location filename="../../build-release/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="-1"/>
         <source>Create session folder</source>
@@ -1665,13 +1669,17 @@
     <message>
         <location line="+8"/>
         <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+5"/>
+        <source>Session Directory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+5"/>
         <location filename="../../build-release/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+5"/>
         <source>Session Folder</source>
         <translation>Dossier de la session</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location filename="../GUI/Preferences/StreamRecorder/GUI_StreamRecorder.ui" line="+22"/>
         <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="-3"/>
         <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="-3"/>
         <location filename="../../build-release/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="-3"/>
@@ -2096,7 +2104,7 @@
     <name>GUI_UiPreferences</name>
     <message>
         <location filename="../GUI/Preferences/UiPreferences/GUI_UiPreferences.ui" line="+14"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_UiPreferences.h" line="+76"/>
+        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_UiPreferences.h" line="+77"/>
         <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_UiPreferences.h" line="+79"/>
         <location filename="../../build-release/src/GUI/Preferences/ui_GUI_UiPreferences.h" line="+79"/>
         <source>Form</source>
@@ -2111,8 +2119,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_UiPreferences.h" line="+1"/>
         <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_UiPreferences.h" line="+1"/>
         <location filename="../../build-release/src/GUI/Preferences/ui_GUI_UiPreferences.h" line="+1"/>
         <source>Dark mode</source>
@@ -2121,6 +2127,16 @@
     <message>
         <location filename="../GUI/Preferences/UiPreferences/GUI_UiPreferences.cpp" line="+27"/>
         <source>User Interface</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+43"/>
+        <source>General</source>
+        <translation type="unfinished">Général</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Big Cover</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2233,7 +2249,7 @@
         <translation>Continuer</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+8"/>
         <source>Days</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2279,7 +2295,7 @@
         <translation>Duré</translation>
     </message>
     <message>
-        <location line="-72"/>
+        <location line="-74"/>
         <source>Activate</source>
         <translation>Activer</translation>
     </message>
@@ -2327,6 +2343,11 @@
         <location line="+14"/>
         <source>Covers</source>
         <translation>Pochettes</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Dark Mode</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3137,12 +3158,7 @@
         <translation>Aide</translation>
     </message>
     <message>
-        <location line="-3"/>
-        <source>Dark</source>
-        <translation>Foncé</translation>
-    </message>
-    <message>
-        <location line="+1"/>
+        <location line="-2"/>
         <source>Fullscreen</source>
         <translation>Plein écran</translation>
     </message>
@@ -3322,7 +3338,7 @@
 <context>
     <name>StreamPreferenceAction</name>
     <message>
-        <location filename="../GUI/Plugins/Stream/GUI_AbstractStream.cpp" line="-282"/>
+        <location filename="../GUI/Plugins/Stream/GUI_AbstractStream.cpp" line="+86"/>
         <location line="+6"/>
         <source>Streams</source>
         <translation>Flux Web</translation>

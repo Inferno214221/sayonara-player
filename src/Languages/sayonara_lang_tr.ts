@@ -96,7 +96,7 @@
 <context>
     <name>GUI_AbstractStream</name>
     <message>
-        <location filename="../GUI/Plugins/Stream/GUI_AbstractStream.cpp" line="+171"/>
+        <location filename="../GUI/Plugins/Stream/GUI_AbstractStream.cpp" line="+155"/>
         <source>Cannot open stream</source>
         <translation>Akış açılamıyor</translation>
     </message>
@@ -1640,27 +1640,35 @@
         <translation>Genel</translation>
     </message>
     <message>
-        <location line="+12"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="-7"/>
         <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="-7"/>
         <location filename="../../build-release/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="-7"/>
         <source>Target path:</source>
         <translation>Hedef dizini:</translation>
     </message>
     <message>
-        <location line="+43"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+2"/>
+        <location filename="../GUI/Preferences/StreamRecorder/GUI_StreamRecorder.ui" line="+55"/>
+        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="-5"/>
         <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+2"/>
         <location filename="../../build-release/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+2"/>
         <source>Automatic recording</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+59"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+9"/>
         <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+9"/>
         <location filename="../../build-release/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+9"/>
         <source>Session Folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../GUI/Preferences/StreamRecorder/GUI_StreamRecorder.ui" line="-43"/>
+        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="-2"/>
+        <source>Target path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+102"/>
+        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+11"/>
+        <source>Session Directory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2097,7 +2105,7 @@
     <name>GUI_UiPreferences</name>
     <message>
         <location filename="../GUI/Preferences/UiPreferences/GUI_UiPreferences.ui" line="+14"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_UiPreferences.h" line="+76"/>
+        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_UiPreferences.h" line="+77"/>
         <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_UiPreferences.h" line="+79"/>
         <location filename="../../build-release/src/GUI/Preferences/ui_GUI_UiPreferences.h" line="+79"/>
         <source>Form</source>
@@ -2112,8 +2120,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_UiPreferences.h" line="+1"/>
         <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_UiPreferences.h" line="+1"/>
         <location filename="../../build-release/src/GUI/Preferences/ui_GUI_UiPreferences.h" line="+1"/>
         <source>Dark mode</source>
@@ -2122,6 +2128,16 @@
     <message>
         <location filename="../GUI/Preferences/UiPreferences/GUI_UiPreferences.cpp" line="+27"/>
         <source>User Interface</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+43"/>
+        <source>General</source>
+        <translation type="unfinished">Genel</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Big Cover</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2234,7 +2250,7 @@
         <translation>Devam</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+11"/>
         <source>d</source>
         <translation>g</translation>
     </message>
@@ -2270,12 +2286,12 @@
         <translation>Süre</translation>
     </message>
     <message>
-        <location line="-64"/>
+        <location line="-66"/>
         <source>Album artists</source>
         <translation>Albüm sanatçısı</translation>
     </message>
     <message>
-        <location line="+47"/>
+        <location line="+49"/>
         <source>Days</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2626,7 +2642,7 @@
         <translation>Yenile</translation>
     </message>
     <message>
-        <location line="-242"/>
+        <location line="-244"/>
         <source>Activate</source>
         <translation>Etkinleştir</translation>
     </message>
@@ -2668,6 +2684,11 @@
     <message>
         <location line="+14"/>
         <source>Covers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Dark Mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3138,12 +3159,7 @@
         <translation>Yardım</translation>
     </message>
     <message>
-        <location line="-3"/>
-        <source>Dark</source>
-        <translation>Koyu</translation>
-    </message>
-    <message>
-        <location line="+1"/>
+        <location line="-2"/>
         <source>Fullscreen</source>
         <translation>Tam ekran </translation>
     </message>
@@ -3323,7 +3339,7 @@
 <context>
     <name>StreamPreferenceAction</name>
     <message>
-        <location filename="../GUI/Plugins/Stream/GUI_AbstractStream.cpp" line="-282"/>
+        <location filename="../GUI/Plugins/Stream/GUI_AbstractStream.cpp" line="+86"/>
         <location line="+6"/>
         <source>Streams</source>
         <translation>Akışlar</translation>

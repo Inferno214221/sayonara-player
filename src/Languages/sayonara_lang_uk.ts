@@ -19,12 +19,12 @@
     <message>
         <location filename="../GUI/Covers/CoverButton.cpp" line="+205"/>
         <source>Cover source: Audio file</source>
-        <translation type="unfinished"></translation>
+        <translation>Джерело обкладинки Аудіофайл</translation>
     </message>
     <message>
         <location line="+20"/>
         <source>Search an alternative cover</source>
-        <translation type="unfinished"></translation>
+        <translation>Пошук альтернативної обкладинки</translation>
     </message>
 </context>
 <context>
@@ -32,7 +32,7 @@
     <message>
         <location filename="../GUI/Library/CoverViewContextMenu.cpp" line="+196"/>
         <source>Toolbar</source>
-        <translation type="unfinished"></translation>
+        <translation>Панель інструментів</translation>
     </message>
 </context>
 <context>
@@ -42,7 +42,7 @@
         <location line="+4"/>
         <location line="+4"/>
         <source>None</source>
-        <translation type="unfinished">Інший</translation>
+        <translation>Інший</translation>
     </message>
 </context>
 <context>
@@ -96,7 +96,7 @@
 <context>
     <name>GUI_AbstractStream</name>
     <message>
-        <location filename="../GUI/Plugins/Stream/GUI_AbstractStream.cpp" line="+171"/>
+        <location filename="../GUI/Plugins/Stream/GUI_AbstractStream.cpp" line="+155"/>
         <source>Cannot open stream</source>
         <translation>Потік не можливо відкрити</translation>
     </message>
@@ -341,17 +341,17 @@
     <message>
         <location filename="../GUI/Player/GUI_ControlsBase.cpp" line="+56"/>
         <source>Sayonara Player</source>
-        <translation type="unfinished">Sayonara Player</translation>
+        <translation>Sayonara Player</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Written by</source>
-        <translation type="unfinished">Автор</translation>
+        <translation>Автор</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Copyright</source>
-        <translation type="unfinished">Авторські права</translation>
+        <translation>Авторські права</translation>
     </message>
 </context>
 <context>
@@ -362,7 +362,7 @@
         <location filename="../../build-debug/src/GUI/Player/ui_GUI_ControlsNew.h" line="+478"/>
         <location filename="../../build-release/src/GUI/Player/ui_GUI_ControlsNew.h" line="+478"/>
         <source>Copyright 2011-2017</source>
-        <translation type="unfinished">Copyright 2011-2017</translation>
+        <translation>Copyright 2011-2017</translation>
     </message>
     <message>
         <location line="+50"/>
@@ -370,7 +370,7 @@
         <location filename="../../build-debug/src/GUI/Player/ui_GUI_ControlsNew.h" line="+2"/>
         <location filename="../../build-release/src/GUI/Player/ui_GUI_ControlsNew.h" line="+2"/>
         <source>Written by Lucio Carreras</source>
-        <translation type="unfinished">Автор Lucio Carreras</translation>
+        <translation>Автор Lucio Carreras</translation>
     </message>
 </context>
 <context>
@@ -381,7 +381,7 @@
         <location filename="../../build-debug/src/GUI/Library/ui_GUI_CoverView.h" line="+124"/>
         <location filename="../../build-release/src/GUI/Library/ui_GUI_CoverView.h" line="+124"/>
         <source>Sort by</source>
-        <translation type="unfinished">Критерій впорядковування</translation>
+        <translation>Критерій впорядковування</translation>
     </message>
     <message>
         <location line="+23"/>
@@ -389,7 +389,7 @@
         <location filename="../../build-debug/src/GUI/Library/ui_GUI_CoverView.h" line="+1"/>
         <location filename="../../build-release/src/GUI/Library/ui_GUI_CoverView.h" line="+1"/>
         <source>Zoom</source>
-        <translation type="unfinished">Масштаб</translation>
+        <translation>Масштаб</translation>
     </message>
 </context>
 <context>
@@ -490,7 +490,7 @@
         <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_FontConfig.h" line="+1"/>
         <location filename="../../build-release/src/GUI/Preferences/ui_GUI_FontConfig.h" line="+1"/>
         <source>Font name</source>
-        <translation>Найменування шрифта</translation>
+        <translation>Найменування шрифту</translation>
     </message>
     <message>
         <location line="-83"/>
@@ -788,7 +788,7 @@
         <location filename="../../build-debug/src/GUI/Library/ui_GUI_LocalLibrary.h" line="+1"/>
         <location filename="../../build-release/src/GUI/Library/ui_GUI_LocalLibrary.h" line="+1"/>
         <source>Reload Library</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Перезавантажити бібліотеку</translation>
     </message>
     <message>
         <location line="+139"/>
@@ -836,7 +836,7 @@
     <message>
         <location filename="../GUI/InfoDialog/GUI_Lyrics.cpp" line="+299"/>
         <source>Save lyrics not supported</source>
-        <translation type="unfinished"></translation>
+        <translation>Зберети текст не вдається</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -883,7 +883,7 @@
         <location filename="../../build-debug/src/GUI/Player/ui_GUI_Player.h" line="+196"/>
         <location filename="../../build-release/src/GUI/Player/ui_GUI_Player.h" line="+196"/>
         <source>Sayonara Player</source>
-        <translation type="unfinished">Sayonara Player</translation>
+        <translation>Sayonara Player</translation>
     </message>
     <message>
         <location line="+155"/>
@@ -891,7 +891,7 @@
         <location filename="../../build-debug/src/GUI/Player/ui_GUI_Player.h" line="+1"/>
         <location filename="../../build-release/src/GUI/Player/ui_GUI_Player.h" line="+1"/>
         <source>Dark</source>
-        <translation type="unfinished">Темний інтерфейс</translation>
+        <translation>Темний інтерфейс</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -899,7 +899,7 @@
         <location filename="../../build-debug/src/GUI/Player/ui_GUI_Player.h" line="+1"/>
         <location filename="../../build-release/src/GUI/Player/ui_GUI_Player.h" line="+1"/>
         <source>Help</source>
-        <translation type="unfinished">Допомога</translation>
+        <translation>Допомога</translation>
     </message>
     <message>
         <location line="+33"/>
@@ -907,7 +907,7 @@
         <location filename="../../build-debug/src/GUI/Player/ui_GUI_Player.h" line="+1"/>
         <location filename="../../build-release/src/GUI/Player/ui_GUI_Player.h" line="+1"/>
         <source>Fullscreen </source>
-        <translation type="unfinished">Повний екран</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+5"/>
@@ -915,7 +915,7 @@
         <location filename="../../build-debug/src/GUI/Player/ui_GUI_Player.h" line="+1"/>
         <location filename="../../build-release/src/GUI/Player/ui_GUI_Player.h" line="+1"/>
         <source>Devices</source>
-        <translation type="unfinished">Зовнішні пристрої</translation>
+        <translation>Зовнішні пристрої</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -923,7 +923,7 @@
         <location filename="../../build-debug/src/GUI/Player/ui_GUI_Player.h" line="+1"/>
         <location filename="../../build-release/src/GUI/Player/ui_GUI_Player.h" line="+1"/>
         <source>Donate</source>
-        <translation type="unfinished">Пожертвувати</translation>
+        <translation>Пожертвувати</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -931,7 +931,7 @@
         <location filename="../../build-debug/src/GUI/Player/ui_GUI_Player.h" line="+1"/>
         <location filename="../../build-release/src/GUI/Player/ui_GUI_Player.h" line="+1"/>
         <source>Preferences</source>
-        <translation type="unfinished">Налаштування</translation>
+        <translation>Налаштування</translation>
     </message>
 </context>
 <context>
@@ -1162,7 +1162,7 @@
         <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+1"/>
         <location filename="../../build-release/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+1"/>
         <source>Show covers</source>
-        <translation type="unfinished"></translation>
+        <translation>Показати обкладинки</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -1170,7 +1170,7 @@
         <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+1"/>
         <location filename="../../build-release/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+1"/>
         <source>Show rating</source>
-        <translation type="unfinished"></translation>
+        <translation>Показати оцінку</translation>
     </message>
     <message>
         <location filename="../GUI/Preferences/Playlist/GUI_PlaylistPreferences.cpp" line="+203"/>
@@ -1596,7 +1596,7 @@
     <message>
         <location filename="../GUI/Plugins/Stream/GUI_Stream.cpp" line="+44"/>
         <source>Streams</source>
-        <translation type="unfinished">Веб-потоки</translation>
+        <translation>Веб-потоки</translation>
     </message>
 </context>
 <context>
@@ -1617,7 +1617,7 @@
         <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_StreamPreferences.h" line="+61"/>
         <location filename="../../build-release/src/GUI/Preferences/ui_GUI_StreamPreferences.h" line="+61"/>
         <source>Open Streams in new tab</source>
-        <translation>ВІдкрити потік у новій вкладці</translation>
+        <translation>Відкрити потік у новій вкладці</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -1631,16 +1631,14 @@
 <context>
     <name>GUI_StreamRecorder</name>
     <message>
-        <location filename="../GUI/Preferences/StreamRecorder/GUI_StreamRecorder.ui" line="+39"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+241"/>
         <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+244"/>
         <location filename="../../build-release/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+244"/>
         <source>Target path:</source>
         <translation>Адреса:</translation>
     </message>
     <message>
-        <location line="+43"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+2"/>
+        <location filename="../GUI/Preferences/StreamRecorder/GUI_StreamRecorder.ui" line="+82"/>
+        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+243"/>
         <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+2"/>
         <location filename="../../build-release/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+2"/>
         <source>Automatic recording</source>
@@ -1655,8 +1653,14 @@
         <translation>Загальне</translation>
     </message>
     <message>
-        <location line="+106"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="-1"/>
+        <location line="+12"/>
+        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="-7"/>
+        <source>Target path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+94"/>
+        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+6"/>
         <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="-1"/>
         <location filename="../../build-release/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="-1"/>
         <source>Create session folder</source>
@@ -1665,13 +1669,17 @@
     <message>
         <location line="+8"/>
         <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+5"/>
+        <source>Session Directory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+5"/>
         <location filename="../../build-release/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+5"/>
         <source>Session Folder</source>
         <translation>Каталог сесії</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location filename="../GUI/Preferences/StreamRecorder/GUI_StreamRecorder.ui" line="+22"/>
         <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="-3"/>
         <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="-3"/>
         <location filename="../../build-release/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="-3"/>
@@ -1702,18 +1710,18 @@
     <message>
         <location line="+65"/>
         <source>Target path is empty</source>
-        <translation type="unfinished"></translation>
+        <translation>Адресна строка пуста</translation>
     </message>
     <message>
         <location line="+0"/>
         <location line="+6"/>
         <source>Please choose another directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Будь ласка, виберіть інший каталог</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>%1 could not be created</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 неможливо створити</translation>
     </message>
     <message>
         <location line="+11"/>
@@ -1904,7 +1912,7 @@
         <location filename="../../build-debug/src/GUI/TagEdit/ui_GUI_TagEdit.h" line="+1"/>
         <location filename="../../build-release/src/GUI/TagEdit/ui_GUI_TagEdit.h" line="+1"/>
         <source>Comment</source>
-        <translation type="unfinished"></translation>
+        <translation>Коментар</translation>
     </message>
     <message>
         <location line="+185"/>
@@ -1912,7 +1920,7 @@
         <location filename="../../build-debug/src/GUI/TagEdit/ui_GUI_TagEdit.h" line="+2"/>
         <location filename="../../build-release/src/GUI/TagEdit/ui_GUI_TagEdit.h" line="+2"/>
         <source>all</source>
-        <translation type="unfinished"></translation>
+        <translation>всі</translation>
     </message>
     <message>
         <location line="+98"/>
@@ -1965,7 +1973,7 @@
     <message>
         <location filename="../GUI/TagEdit/GUI_TagEdit.cpp" line="+1"/>
         <source>Load complete album</source>
-        <translation type="unfinished"></translation>
+        <translation>Завантажити альбом повністю</translation>
     </message>
     <message>
         <location line="+107"/>
@@ -1975,7 +1983,7 @@
     <message>
         <location line="+2"/>
         <source>%1 tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 треків</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1985,7 +1993,7 @@
     <message>
         <location line="+397"/>
         <source>All changes will be lost</source>
-        <translation type="unfinished"></translation>
+        <translation>Всі зміни втрачені</translation>
     </message>
 </context>
 <context>
@@ -1996,7 +2004,7 @@
         <location filename="../../build-debug/src/GUI/TagEdit/ui_GUI_TagFromPath.h" line="+214"/>
         <location filename="../../build-release/src/GUI/TagEdit/ui_GUI_TagFromPath.h" line="+214"/>
         <source>Expression</source>
-        <translation type="unfinished">Вираз</translation>
+        <translation>Вираз</translation>
     </message>
     <message>
         <location line="+17"/>
@@ -2004,7 +2012,7 @@
         <location filename="../../build-debug/src/GUI/TagEdit/ui_GUI_TagFromPath.h" line="+1"/>
         <location filename="../../build-release/src/GUI/TagEdit/ui_GUI_TagFromPath.h" line="+1"/>
         <source>?</source>
-        <translation type="unfinished">?</translation>
+        <translation>?</translation>
     </message>
     <message>
         <location line="+67"/>
@@ -2012,7 +2020,7 @@
         <location filename="../../build-debug/src/GUI/TagEdit/ui_GUI_TagFromPath.h" line="+1"/>
         <location filename="../../build-release/src/GUI/TagEdit/ui_GUI_TagFromPath.h" line="+1"/>
         <source>Disc Nr</source>
-        <translation type="unfinished">CD Ном</translation>
+        <translation>CD Ном</translation>
     </message>
     <message>
         <location line="+57"/>
@@ -2020,7 +2028,7 @@
         <location filename="../../build-debug/src/GUI/TagEdit/ui_GUI_TagFromPath.h" line="+2"/>
         <location filename="../../build-release/src/GUI/TagEdit/ui_GUI_TagFromPath.h" line="+2"/>
         <source>Apply to all</source>
-        <translation type="unfinished">Застосувати до всього</translation>
+        <translation>Застосувати до всього</translation>
     </message>
     <message>
         <location line="+32"/>
@@ -2028,17 +2036,17 @@
         <location filename="../../build-debug/src/GUI/TagEdit/ui_GUI_TagFromPath.h" line="+1"/>
         <location filename="../../build-release/src/GUI/TagEdit/ui_GUI_TagFromPath.h" line="+1"/>
         <source>Warning</source>
-        <translation type="unfinished">Попередження</translation>
+        <translation>Попередження</translation>
     </message>
     <message>
         <location filename="../GUI/TagEdit/TagFromPath.cpp" line="+73"/>
         <source>Tag</source>
-        <translation type="unfinished">Мітка</translation>
+        <translation>Мітка</translation>
     </message>
     <message>
         <location line="+59"/>
         <source>Please select text first</source>
-        <translation type="unfinished"></translation>
+        <translation>Будь ласка, виберіть спочатку текст</translation>
     </message>
 </context>
 <context>
@@ -2095,10 +2103,31 @@
 <context>
     <name>GUI_UiPreferences</name>
     <message>
+        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_UiPreferences.h" line="+81"/>
+        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_UiPreferences.h" line="+81"/>
+        <source>Dark mode</source>
+        <translation>Темний інтерфейс</translation>
+    </message>
+    <message>
+        <location filename="../GUI/Preferences/UiPreferences/GUI_UiPreferences.cpp" line="+27"/>
+        <source>User Interface</source>
+        <translation>Інтерфейс користувача</translation>
+    </message>
+    <message>
+        <location line="+43"/>
+        <source>General</source>
+        <translation type="unfinished">Загальне</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Big Cover</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../GUI/Preferences/UiPreferences/GUI_UiPreferences.ui" line="+14"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_UiPreferences.h" line="+76"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_UiPreferences.h" line="+79"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_UiPreferences.h" line="+79"/>
+        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_UiPreferences.h" line="+77"/>
+        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_UiPreferences.h" line="-2"/>
+        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_UiPreferences.h" line="-2"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2108,19 +2137,6 @@
         <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_UiPreferences.h" line="+1"/>
         <location filename="../../build-release/src/GUI/Preferences/ui_GUI_UiPreferences.h" line="+1"/>
         <source>Big cover</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_UiPreferences.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_UiPreferences.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_UiPreferences.h" line="+1"/>
-        <source>Dark mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../GUI/Preferences/UiPreferences/GUI_UiPreferences.cpp" line="+27"/>
-        <source>User Interface</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2233,9 +2249,9 @@
         <translation>Continue</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+8"/>
         <source>Days</source>
-        <translation type="unfinished"></translation>
+        <translation>Дні</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -2266,7 +2282,7 @@
     <message>
         <location line="+2"/>
         <source>Disc</source>
-        <translation type="unfinished"></translation>
+        <translation>CD Ном</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -2279,7 +2295,7 @@
         <translation>Тривалість</translation>
     </message>
     <message>
-        <location line="-72"/>
+        <location line="-74"/>
         <source>Activate</source>
         <translation>Активувати</translation>
     </message>
@@ -2291,7 +2307,7 @@
     <message>
         <location line="+6"/>
         <source>Album artists</source>
-        <translation>Виконавець альбому</translation>
+        <translation>Виконавці альбому</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -2327,6 +2343,11 @@
         <location line="+14"/>
         <source>Covers</source>
         <translation>Обкладинки</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Dark Mode</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2511,7 +2532,7 @@
     <message>
         <location line="+7"/>
         <source>m</source>
-        <translation>м</translation>
+        <translation>мін</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2702,7 +2723,7 @@
     <message>
         <location line="+14"/>
         <source>Save to file</source>
-        <translation>Зберегти до файла...</translation>
+        <translation>Зберегти у файл</translation>
     </message>
     <message>
         <location line="+29"/>
@@ -2742,52 +2763,52 @@
     <message>
         <location line="-125"/>
         <source>Hours</source>
-        <translation type="unfinished"></translation>
+        <translation>Годин</translation>
     </message>
     <message>
         <location line="+19"/>
         <source>Ctrl+f</source>
-        <translation type="unfinished"></translation>
+        <translation>Ctrl+f</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Esc</source>
-        <translation type="unfinished">Esc</translation>
+        <translation>Esc</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Ctrl</source>
-        <translation type="unfinished"></translation>
+        <translation>Ctrl</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Alt</source>
-        <translation type="unfinished"></translation>
+        <translation>Alt</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Shift</source>
-        <translation type="unfinished"></translation>
+        <translation>Shift</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Backspace</source>
-        <translation type="unfinished"></translation>
+        <translation>Backspace</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Tab</source>
-        <translation type="unfinished"></translation>
+        <translation>Tab</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Minimize</source>
-        <translation type="unfinished">Мінімізувати</translation>
+        <translation>Мінімізувати</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Minutes</source>
-        <translation type="unfinished"></translation>
+        <translation>Хвилин</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -2797,22 +2818,22 @@
     <message>
         <location line="+41"/>
         <source>Play in new tab</source>
-        <translation type="unfinished">Відтворити у новій вкладці</translation>
+        <translation>Відтворити у новій вкладці</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Plugin</source>
-        <translation type="unfinished"></translation>
+        <translation>Додаток</translation>
     </message>
     <message>
         <location line="+18"/>
         <source>Reload Library</source>
-        <translation type="unfinished"></translation>
+        <translation>Перезавантажити бібліотеку</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Replace</source>
-        <translation type="unfinished">Замінити</translation>
+        <translation>Замінити</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -2863,7 +2884,7 @@
     <message>
         <location line="+2"/>
         <source>Seconds</source>
-        <translation type="unfinished"></translation>
+        <translation>Секунд</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -2888,27 +2909,27 @@
     <message>
         <location line="+2"/>
         <source>Show Album Artists</source>
-        <translation type="unfinished"></translation>
+        <translation>Показати виконавців альбому</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Show Covers</source>
-        <translation type="unfinished"></translation>
+        <translation>Показати обкладинки</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Show Library</source>
-        <translation type="unfinished"></translation>
+        <translation>Показати бібліотеку</translation>
     </message>
     <message>
         <location line="+18"/>
         <source>Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Доріжка</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Track number</source>
-        <translation type="unfinished"></translation>
+        <translation>Номер доріжки</translation>
     </message>
     <message>
         <location line="-18"/>
@@ -3011,7 +3032,7 @@
     <message>
         <location filename="../GUI/Library/GUI_CoverView.cpp" line="+192"/>
         <source>Use Ctrl + mouse wheel to zoom</source>
-        <translation type="unfinished">Використовувати Ctrl + mouse для збільшення</translation>
+        <translation>Використовувати Ctrl + mouse для збільшення</translation>
     </message>
 </context>
 <context>
@@ -3040,17 +3061,17 @@
     <message>
         <location filename="../Components/Library/Importer/LibraryImporter.cpp" line="+186"/>
         <source>All files could be imported</source>
-        <translation type="unfinished">Всі файли можуть імпортуватись</translation>
+        <translation>Всі файли можуть імпортуватись</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>%1 of %2 files could be imported</source>
-        <translation type="unfinished">%1 із %2 файлів можуть імпортуватись</translation>
+        <translation>%1 із %2 файлів можуть імпортуватись</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>Could not import tracks</source>
-        <translation type="unfinished">Неможливо імпортувати треки</translation>
+        <translation>Неможливо імпортувати треки</translation>
     </message>
 </context>
 <context>
@@ -3079,12 +3100,12 @@
     <message>
         <location filename="../Components/Library/Threads/ReloadThread.cpp" line="+223"/>
         <source>Reading files</source>
-        <translation type="unfinished"></translation>
+        <translation>Читання файлів</translation>
     </message>
     <message>
         <location line="+108"/>
         <source>Delete orphaned tracks...</source>
-        <translation type="unfinished">Видалити осиротілі треки...</translation>
+        <translation>Видалити осиротілі треки...</translation>
     </message>
 </context>
 <context>
@@ -3102,7 +3123,7 @@
     <message>
         <location line="+4"/>
         <source>Ctrl+X</source>
-        <translation type="unfinished"></translation>
+        <translation>Ctrl+X</translation>
     </message>
     <message>
         <location line="-3"/>
@@ -3115,12 +3136,12 @@
     <message>
         <location filename="../Components/Lyrics/LyricLookup.cpp" line="+179"/>
         <source>Could not fetch lyrics from %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Неможливо перенести текст з%1</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>No lyrics found</source>
-        <translation type="unfinished"></translation>
+        <translation>Текст не знайдено</translation>
     </message>
 </context>
 <context>
@@ -3137,12 +3158,7 @@
         <translation>Допомога</translation>
     </message>
     <message>
-        <location line="-3"/>
-        <source>Dark</source>
-        <translation>Темний інтерфейс</translation>
-    </message>
-    <message>
-        <location line="+1"/>
+        <location line="-2"/>
         <source>Fullscreen</source>
         <translation>На весь екран</translation>
     </message>
@@ -3202,7 +3218,7 @@
     <message>
         <location line="+0"/>
         <source>Arrow up</source>
-        <translation type="unfinished"></translation>
+        <translation>Стрілка вгору</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3212,7 +3228,7 @@
     <message>
         <location line="+0"/>
         <source>Arrow down</source>
-        <translation type="unfinished"></translation>
+        <translation>Стрілка вниз</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3322,7 +3338,7 @@
 <context>
     <name>StreamPreferenceAction</name>
     <message>
-        <location filename="../GUI/Plugins/Stream/GUI_AbstractStream.cpp" line="-282"/>
+        <location filename="../GUI/Plugins/Stream/GUI_AbstractStream.cpp" line="+86"/>
         <location line="+6"/>
         <source>Streams</source>
         <translation>Веб-потоки</translation>
@@ -3340,7 +3356,7 @@
         <location filename="../GUI/Utils/PreferenceAction.cpp" line="+150"/>
         <location line="+5"/>
         <source>Stream Recorder</source>
-        <translation type="unfinished"></translation>
+        <translation>Запис потоку</translation>
     </message>
 </context>
 <context>
@@ -3348,7 +3364,7 @@
     <message>
         <location filename="../Components/Broadcasting/StreamServer.cpp" line="+212"/>
         <source>%1 wants to listen to your music.</source>
-        <translation>% 1 бажають долучитись до прослуховування вашої музики</translation>
+        <translation>%1 бажає долучитись до прослуховування вашої музики.</translation>
     </message>
 </context>
 <context>
@@ -3369,7 +3385,7 @@
     <message>
         <location filename="../GUI/Player/GUI_TrayIcon.cpp" line="+184"/>
         <source>Current song</source>
-        <translation type="unfinished">Поточна пісня</translation>
+        <translation>Поточна пісня</translation>
     </message>
 </context>
 </TS>

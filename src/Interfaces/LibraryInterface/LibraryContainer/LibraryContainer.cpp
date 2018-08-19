@@ -25,21 +25,14 @@
 
 using Library::Container;
 
-struct Library::Container::Private
+struct Container::Private
 {
 	QAction*	action=nullptr;
 	bool		initialized;
 
-	Private()
-	{
-		initialized = false;
-	}
-
-	void set_initialized()
-	{
-		initialized = true;
-	}
-
+	Private() :
+		initialized(false)
+	{}
 };
 
 Container::Container(QObject* parent) :
@@ -75,7 +68,7 @@ QAction* Container::menu_action() const
 
 void Container::set_initialized()
 {
-	m->set_initialized();
+	m->initialized = true;
 }
 
 bool Container::is_initialized() const
