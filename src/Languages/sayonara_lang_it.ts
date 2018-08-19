@@ -723,7 +723,7 @@
     <message>
         <location line="+4"/>
         <source>Overwrite lyrics</source>
-        <translation type="unfinished"></translation>
+        <translation>Sovrascrivi testi</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -989,7 +989,7 @@
         <location line="+7"/>
         <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+1"/>
         <source>Show covers</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostra covers</translation>
     </message>
     <message>
         <location line="+7"/>
