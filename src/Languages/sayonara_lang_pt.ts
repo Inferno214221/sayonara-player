@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="uk_UA" sourcelanguage="en_US">
+<TS version="2.1" language="pt_PT">
 <context>
     <name>AbstractLibrary</name>
     <message>
         <location filename="../Components/Library/AbstractLibrary.cpp" line="+695"/>
         <source>All %1 could be removed</source>
-        <translation>Всі %1 видалені</translation>
+        <translation>Todos %1 poderiam ser removidos</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>%1 of %2 %3 could not be removed</source>
-        <translation>%1 із %2 %3 не можуть бути видалені</translation>
+        <translation>%1 de %2 %3 não puderam ser removidos</translation>
     </message>
 </context>
 <context>
@@ -19,12 +19,12 @@
     <message>
         <location filename="../GUI/Covers/CoverButton.cpp" line="+205"/>
         <source>Cover source: Audio file</source>
-        <translation>Джерело обкладинки Аудіофайл</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+20"/>
         <source>Search an alternative cover</source>
-        <translation>Пошук альтернативної обкладинки</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -32,7 +32,7 @@
     <message>
         <location filename="../GUI/Library/CoverViewContextMenu.cpp" line="+196"/>
         <source>Toolbar</source>
-        <translation>Панель інструментів</translation>
+        <translation>Barra de Ferramentas</translation>
     </message>
 </context>
 <context>
@@ -42,7 +42,7 @@
         <location line="+4"/>
         <location line="+4"/>
         <source>None</source>
-        <translation>Інший</translation>
+        <translation>Nenhum</translation>
     </message>
 </context>
 <context>
@@ -50,12 +50,12 @@
     <message>
         <location filename="../GUI/Directories/DirectoryContextMenu.cpp" line="+133"/>
         <source>Create directory</source>
-        <translation>Створити каталог</translation>
+        <translation>Criar a Directoria</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Collapse all</source>
-        <translation>Згорнути все</translation>
+        <translation>Fechar tudo</translation>
     </message>
 </context>
 <context>
@@ -64,17 +64,17 @@
         <location filename="../GUI/Directories/DirectoryTreeView.cpp" line="+322"/>
         <location line="+27"/>
         <source>Enter new name</source>
-        <translation>Ввести нове ім&apos;я</translation>
+        <translation>Novo Nome</translation>
     </message>
     <message>
         <location line="+233"/>
         <source>Copy here</source>
-        <translation>Копіювати сюди</translation>
+        <translation>Copiar para Aqui</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Move here</source>
-        <translation>Пересунути сюди</translation>
+        <translation>Mover para Aqui</translation>
     </message>
 </context>
 <context>
@@ -82,7 +82,7 @@
     <message>
         <location filename="../GUI/Library/EmptyLibraryContainer.cpp" line="+53"/>
         <source>Empty Library</source>
-        <translation>Порожня бібліотека</translation>
+        <translation>Vazio Biblioteca</translation>
     </message>
 </context>
 <context>
@@ -90,7 +90,7 @@
     <message>
         <location filename="../GUI/Directories/FileListView.cpp" line="+339"/>
         <source>Enter new name</source>
-        <translation>Ввести нове ім&apos;я</translation>
+        <translation>Novo Nome</translation>
     </message>
 </context>
 <context>
@@ -98,17 +98,17 @@
     <message>
         <location filename="../GUI/Plugins/Stream/GUI_AbstractStream.cpp" line="+168"/>
         <source>Cannot open stream</source>
-        <translation>Потік не можливо відкрити</translation>
+        <translation>Não foi possível abrir o stream</translation>
     </message>
     <message>
         <location line="+194"/>
         <source>Overwrite?</source>
-        <translation>Перезаписати?</translation>
+        <translation>Substituir?</translation>
     </message>
     <message>
         <location line="-30"/>
         <source>Do you really want to delete %1</source>
-        <translation>Ви дійсно бажаєте видалити %1</translation>
+        <translation>Tem certeza que deseja apagar %1</translation>
     </message>
 </context>
 <context>
@@ -116,59 +116,59 @@
     <message>
         <location filename="../GUI/Covers/GUI_AlternativeCovers.cpp" line="+233"/>
         <source>This cover does not exist</source>
-        <translation>Дана обкладинка не існує</translation>
+        <translation>Esta capa não existe</translation>
     </message>
     <message>
         <location line="+34"/>
         <source>%1 covers found</source>
-        <translation>Знайдено %1 обкладинок</translation>
+        <translation>%1 capas encontradas</translation>
     </message>
     <message>
         <location line="+55"/>
         <source>Open image files</source>
-        <translation>Відкрити файли зображень</translation>
+        <translation>Abrir arquivos de imagens</translation>
     </message>
     <message>
         <location filename="../GUI/Covers/GUI_AlternativeCovers.ui" line="+34"/>
         <location filename="../../ui/ui_GUI_AlternativeCovers.h" line="+286"/>
         <source>Online Search</source>
-        <translation>Пошук у мережі</translation>
+        <translation>Procurar ligado</translation>
     </message>
     <message>
         <location line="+37"/>
         <location filename="../../ui/ui_GUI_AlternativeCovers.h" line="-4"/>
         <source>Automatic search</source>
-        <translation>Автоматичний пошук</translation>
+        <translation>Procurar automática</translation>
     </message>
     <message>
         <location line="+19"/>
         <location filename="../../ui/ui_GUI_AlternativeCovers.h" line="+1"/>
         <source>Text search</source>
-        <translation>Шукати текст</translation>
+        <translation>Procurar</translation>
     </message>
     <message>
         <location line="+42"/>
         <location filename="../../ui/ui_GUI_AlternativeCovers.h" line="+2"/>
         <source>Server</source>
-        <translation>Сервер</translation>
+        <translation>Servidor</translation>
     </message>
     <message>
         <location line="+20"/>
         <location filename="../../ui/ui_GUI_AlternativeCovers.h" line="+3"/>
         <source>Local Search</source>
-        <translation>Локальний пошук</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+12"/>
         <location filename="../../ui/ui_GUI_AlternativeCovers.h" line="-1"/>
         <source>Select and preview multiple covers</source>
-        <translation>Вибір та попередній перегляд декількох обкладинок</translation>
+        <translation>Selecionar e pré-visualizar várias capas</translation>
     </message>
     <message>
         <location line="+194"/>
         <location filename="../../ui/ui_GUI_AlternativeCovers.h" line="+4"/>
         <source>Alternative Cover</source>
-        <translation>Альтернативна обкладинка</translation>
+        <translation>Capa Alternativa</translation>
     </message>
 </context>
 <context>
@@ -176,35 +176,35 @@
     <message>
         <location filename="../GUI/Plugins/Engine/AudioConverter/GUI_AudioConverter.cpp" line="+113"/>
         <source>Audio Converter</source>
-        <translation>Аудіо конвертер</translation>
+        <translation>Conversor de Áudio</translation>
     </message>
     <message>
         <location line="+41"/>
         <source>Best</source>
-        <translation>Найкраще</translation>
+        <translation>Melhor</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Worst</source>
-        <translation>Найгірший</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../GUI/Plugins/Engine/AudioConverter/GUI_AudioConverter.ui" line="+61"/>
         <location filename="../../ui/ui_GUI_AudioConverter.h" line="+91"/>
         <source>Variable Bitrate</source>
-        <translation>Змінний бітрейт</translation>
+        <translation>Taxa de Dados Variável</translation>
     </message>
     <message>
         <location line="+16"/>
         <location filename="../../ui/ui_GUI_AudioConverter.h" line="+1"/>
         <source>Quality</source>
-        <translation>Якість</translation>
+        <translation>Qualidade</translation>
     </message>
     <message>
         <location line="+10"/>
         <location filename="../../ui/ui_GUI_AudioConverter.h" line="+1"/>
         <source>Constant Bitrate</source>
-        <translation>Сталий бітрейт</translation>
+        <translation>Taxa de Dados Constante</translation>
     </message>
 </context>
 <context>
@@ -213,18 +213,18 @@
         <location filename="../GUI/Plugins/Bookmarks/GUI_Bookmarks.ui" line="+116"/>
         <location filename="../../ui/ui_GUI_Bookmarks.h" line="+129"/>
         <source>Loop</source>
-        <translation>Повторення</translation>
+        <translation>Repetir</translation>
     </message>
     <message>
         <location filename="../GUI/Plugins/Bookmarks/GUI_Bookmarks.cpp" line="+74"/>
         <location line="+52"/>
         <source>No bookmarks found</source>
-        <translation>Не знайдено жодної закладки</translation>
+        <translation>Não Favoritos</translation>
     </message>
     <message>
         <location line="+122"/>
         <source>Sorry, bookmarks can only be set for library tracks at the moment.</source>
-        <translation>Закладки можуть бути визначені тільки для треків із бібліотеки.</translation>
+        <translation>Desculpe, favoritos só podem ser configurados para faixas da biblioteca.</translation>
     </message>
 </context>
 <context>
@@ -239,37 +239,37 @@
         <location line="+34"/>
         <location filename="../../ui/ui_GUI_Broadcast.h" line="+1"/>
         <source>Cannot Broadcast</source>
-        <translation>Потік неможливий</translation>
+        <translation>Não foi possível executar o Broadcast</translation>
     </message>
     <message>
         <location filename="../GUI/Plugins/Broadcasting/GUI_Broadcast.cpp" line="+91"/>
         <source>Dismiss</source>
-        <translation>Заборонити</translation>
+        <translation>Recusar</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Dismiss all</source>
-        <translation>Заборонити всі</translation>
+        <translation>Recusar todos</translation>
     </message>
     <message>
         <location line="+44"/>
         <source>%1 listener</source>
-        <translation>%1 прослуховувач</translation>
+        <translation>%1 ouvinte</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>%1 listeners</source>
-        <translation>%1 прослуховувачів</translation>
+        <translation>%1 ouvintes</translation>
     </message>
     <message>
         <location line="+61"/>
         <source>Cannot broadcast on port %1</source>
-        <translation>Передача на порт %1 неможлива</translation>
+        <translation>Não foi possível executar o Broadcast na porta %1</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Maybe another application is using this port?</source>
-        <translation>Можливо, використовується інше застосування цього порту?</translation>
+        <translation>Será que outra aplicação está usando essa porta?</translation>
     </message>
 </context>
 <context>
@@ -278,13 +278,13 @@
         <location filename="../GUI/Preferences/Broadcast/GUI_BroadcastSetup.ui" line="+34"/>
         <location filename="../../ui/ui_GUI_BroadcastSetup.h" line="+116"/>
         <source>Ask for permission</source>
-        <translation>Запитати дозвіл</translation>
+        <translation>Pedir permissão</translation>
     </message>
     <message>
         <location line="-14"/>
         <location filename="../../ui/ui_GUI_BroadcastSetup.h" line="-1"/>
         <source>Port</source>
-        <translation>Порт</translation>
+        <translation>Porta</translation>
     </message>
 </context>
 <context>
@@ -293,7 +293,7 @@
         <location filename="../GUI/Player/GUI_Controls.ui" line="+546"/>
         <location filename="../../ui/ui_GUI_Controls.h" line="+446"/>
         <source>Written by Lucio Carreras</source>
-        <translation>Автор Lucio Carreras</translation>
+        <translation>Desenvolvido por Lucio Carreras</translation>
     </message>
     <message>
         <location line="-88"/>
@@ -312,12 +312,12 @@
     <message>
         <location line="+2"/>
         <source>Written by</source>
-        <translation>Автор</translation>
+        <translation>Desenvolvido por</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Copyright</source>
-        <translation>Авторські права</translation>
+        <translation>Copyright</translation>
     </message>
 </context>
 <context>
@@ -332,7 +332,7 @@
         <location line="+50"/>
         <location filename="../../ui/ui_GUI_ControlsNew.h" line="+2"/>
         <source>Written by Lucio Carreras</source>
-        <translation>Автор Lucio Carreras</translation>
+        <translation>Desenvolvido por Lucio Carreras</translation>
     </message>
 </context>
 <context>
@@ -341,13 +341,13 @@
         <location filename="../GUI/Library/GUI_CoverView.ui" line="+67"/>
         <location filename="../../ui/ui_GUI_CoverView.h" line="+124"/>
         <source>Sort by</source>
-        <translation>Критерій впорядковування</translation>
+        <translation>Ordenar por</translation>
     </message>
     <message>
         <location line="+23"/>
         <location filename="../../ui/ui_GUI_CoverView.h" line="+1"/>
         <source>Zoom</source>
-        <translation>Масштаб</translation>
+        <translation>Ampliar</translation>
     </message>
 </context>
 <context>
@@ -356,7 +356,7 @@
         <location filename="../GUI/Preferences/Covers/GUI_Covers.ui" line="+77"/>
         <location filename="../../ui/ui_GUI_Covers.h" line="+101"/>
         <source>If available, load covers from audio files</source>
-        <translation>Якщо можливо, завантаж обкладинки із аудіо файлів</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -365,7 +365,7 @@
         <location filename="../GUI/Plugins/Engine/Crossfader/GUI_Crossfader.cpp" line="+80"/>
         <location line="+11"/>
         <source>Crossfader</source>
-        <translation>Кросфейдер</translation>
+        <translation>Fade</translation>
     </message>
 </context>
 <context>
@@ -373,12 +373,12 @@
     <message>
         <location filename="../GUI/Utils/Library/GUI_DeleteDialog.cpp" line="+87"/>
         <source>Only from library</source>
-        <translation>Тільки з бібліотеки</translation>
+        <translation>Apenas as faixas da biblioteca</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>You are about to delete %1 files</source>
-        <translation>Ви дійсно бажаєте видалити %1 файлів</translation>
+        <translation>Você está prestes a apagar %1 arquivos</translation>
     </message>
 </context>
 <context>
@@ -387,13 +387,13 @@
         <location filename="../GUI/Library/GUI_EmptyLibrary.ui" line="+26"/>
         <location filename="../../ui/ui_GUI_EmptyLibrary.h" line="+134"/>
         <source>Set library path</source>
-        <translation>Вказати шлях до бібліотеки</translation>
+        <translation>Selecione caminho da Biblioteca</translation>
     </message>
     <message>
         <location line="+17"/>
         <location filename="../../ui/ui_GUI_EmptyLibrary.h" line="+1"/>
         <source>You haven&apos;t specified a library path yet</source>
-        <translation>Ви ще не вказали шлях до бібліотеки</translation>
+        <translation>Você não especificou o caminho da biblioteca</translation>
     </message>
 </context>
 <context>
@@ -401,7 +401,7 @@
     <message>
         <location filename="../GUI/Preferences/Engine/GUI_EnginePreferences.cpp" line="+44"/>
         <source>Audio</source>
-        <translation>Аудіо</translation>
+        <translation>Áudio</translation>
     </message>
 </context>
 <context>
@@ -409,7 +409,7 @@
     <message>
         <location filename="../GUI/Plugins/Engine/Equalizer/GUI_Equalizer.cpp" line="+160"/>
         <source>Equalizer</source>
-        <translation>Еквалайзер</translation>
+        <translation>Equalizador</translation>
     </message>
 </context>
 <context>
@@ -422,25 +422,25 @@
         <location line="+1"/>
         <location line="+2"/>
         <source>Font size</source>
-        <translation>Розмір шрифту</translation>
+        <translation>Tamanho da fonte</translation>
     </message>
     <message>
         <location line="+7"/>
         <location filename="../../ui/ui_GUI_FontConfig.h" line="+1"/>
         <source>Font name</source>
-        <translation>Найменування шрифту</translation>
+        <translation>Nome da fonte</translation>
     </message>
     <message>
         <location line="-83"/>
         <location filename="../../ui/ui_GUI_FontConfig.h" line="-5"/>
         <source>Bold</source>
-        <translation>Жирний</translation>
+        <translation>Negrito</translation>
     </message>
     <message>
         <location filename="../GUI/Preferences/UiPreferences/GUI_FontConfig.cpp" line="+131"/>
         <location line="+1"/>
         <source>Inherit</source>
-        <translation>Запам&apos;ятати</translation>
+        <translation>Herança</translation>
     </message>
 </context>
 <context>
@@ -448,13 +448,13 @@
     <message>
         <location filename="../GUI/Preferences/UiPreferences/GUI_IconPreferences.cpp" line="+137"/>
         <source>Icons</source>
-        <translation>Піктограми</translation>
+        <translation>Ícones</translation>
     </message>
     <message>
         <location filename="../GUI/Preferences/UiPreferences/GUI_IconPreferences.ui" line="+38"/>
         <location filename="../../ui/ui_GUI_IconPreferences.h" line="+120"/>
         <source>Also use selected icon theme in Sayonara&apos;s dark mode</source>
-        <translation>Використовувати обрану тему піктограми в темному режимі Sayonara</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -463,70 +463,70 @@
         <location filename="../GUI/ImportDialog/GUI_ImportDialog.ui" line="+14"/>
         <location filename="../../ui/ui_GUI_ImportDialog.h" line="+156"/>
         <source>Import</source>
-        <translation>Імпорт</translation>
+        <translation>Importar</translation>
     </message>
     <message>
         <location line="+13"/>
         <location filename="../../ui/ui_GUI_ImportDialog.h" line="+1"/>
         <source>Import tracks to library</source>
-        <translation>Імпортувати треки в бібліотеку</translation>
+        <translation>Importar faixas para biblioteca</translation>
     </message>
     <message>
         <location line="+7"/>
         <location filename="../../ui/ui_GUI_ImportDialog.h" line="+1"/>
         <source>Select target folder</source>
-        <translation>Вибрати каталог</translation>
+        <translation>Selecione o diretório de destino</translation>
     </message>
     <message>
         <location line="+43"/>
         <location filename="../../ui/ui_GUI_ImportDialog.h" line="+2"/>
         <source>OK</source>
-        <translation>ОК</translation>
+        <translation>OK</translation>
     </message>
     <message>
         <location filename="../GUI/ImportDialog/GUI_ImportDialog.cpp" line="+101"/>
         <source>%1 tracks available</source>
-        <translation>%1 треків доступно</translation>
+        <translation>%1 faixas disponíveis</translation>
     </message>
     <message>
         <location line="+19"/>
         <source>Loading tracks</source>
-        <translation>Завантаження треків</translation>
+        <translation>A carregar faixas</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Importing</source>
-        <translation>Імпортування</translation>
+        <translation>A importar</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Finished</source>
-        <translation>Завершено</translation>
+        <translation>Terminado</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Cancelled</source>
-        <translation>Відмінено</translation>
+        <translation>Cancelado</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>No tracks</source>
-        <translation>Немає треків</translation>
+        <translation>Não há faixas</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Rollback</source>
-        <translation>Повернути</translation>
+        <translation>Desfazer</translation>
     </message>
     <message>
         <location line="+67"/>
         <source>Choose target directory</source>
-        <translation>Вибрати каталог</translation>
+        <translation>Escolha o diretório de destino</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>%1&lt;br /&gt;is no library directory</source>
-        <translation>%1&lt;br /&gt;не каталог з бібліотекою</translation>
+        <translation>%1&lt;br /&gt;Não é um Diretório da Biblioteca</translation>
     </message>
 </context>
 <context>
@@ -534,19 +534,19 @@
     <message>
         <location filename="../GUI/Preferences/Language/GUI_LanguageChooser.cpp" line="+184"/>
         <source>Language</source>
-        <translation>Мова</translation>
+        <translation>Idioma</translation>
     </message>
     <message>
         <location filename="../GUI/Preferences/Language/GUI_LanguageChooser.ui" line="+31"/>
         <location filename="../../ui/ui_GUI_LanguageChooser.h" line="+61"/>
         <source>English</source>
-        <translation>English</translation>
+        <translation>Inglês</translation>
     </message>
     <message>
         <location line="-14"/>
         <location filename="../../ui/ui_GUI_LanguageChooser.h" line="-3"/>
         <source>For new languages I am always looking for translators</source>
-        <translation>Для нових мов я постійно шукаю перекладачів</translation>
+        <translation>Estamos à procura de tradutores para novos idiomas</translation>
     </message>
 </context>
 <context>
@@ -554,36 +554,36 @@
     <message>
         <location filename="../GUI/Preferences/LastFM/GUI_LastFM.cpp" line="+174"/>
         <source>Logged in</source>
-        <translation>Вхід виконан</translation>
+        <translation>Autenticado</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Not logged in</source>
-        <translation>Вхід до системи не виконано</translation>
+        <translation>Não autenticado</translation>
     </message>
     <message>
         <location filename="../GUI/Preferences/LastFM/GUI_LastFM.ui" line="+34"/>
         <location filename="../../ui/ui_GUI_LastFM.h" line="+135"/>
         <source>Password</source>
-        <translation>Пароль</translation>
+        <translation>Senha</translation>
     </message>
     <message>
         <location line="+20"/>
         <location filename="../../ui/ui_GUI_LastFM.h" line="+2"/>
         <source>Scrobble after</source>
-        <translation>Скроблінг через</translation>
+        <translation>Scrobble após</translation>
     </message>
     <message>
         <location line="+46"/>
         <location filename="../../ui/ui_GUI_LastFM.h" line="+2"/>
         <source>Login now</source>
-        <translation>Ввійти</translation>
+        <translation>Iniciar sessão</translation>
     </message>
     <message>
         <location line="-73"/>
         <location filename="../../ui/ui_GUI_LastFM.h" line="-5"/>
         <source>Username</source>
-        <translation>Ім&apos;я користувача</translation>
+        <translation>Nome do Usuário</translation>
     </message>
 </context>
 <context>
@@ -591,7 +591,7 @@
     <message>
         <location filename="../GUI/Plugins/Engine/GUI_LevelPainter.cpp" line="+145"/>
         <source>Level</source>
-        <translation>Рівень</translation>
+        <translation>Nível</translation>
     </message>
 </context>
 <context>
@@ -599,7 +599,7 @@
     <message>
         <location filename="../3rdParty/Soundcloud/ui/GUI_SoundcloudLibrary.cpp" line="+49"/>
         <source>Add artist</source>
-        <translation>Додати виконавця</translation>
+        <translation type="unfinished">Adicionar artista</translation>
     </message>
 </context>
 <context>
@@ -608,13 +608,13 @@
         <location filename="../GUI/Preferences/Library/GUI_LibraryPreferences.ui" line="+24"/>
         <location filename="../../ui/ui_GUI_LibraryPreferences.h" line="+213"/>
         <source>Libraries</source>
-        <translation>Бібліотеки</translation>
+        <translation>Bibliotecas</translation>
     </message>
     <message>
         <location line="+98"/>
         <location filename="../../ui/ui_GUI_LibraryPreferences.h" line="+1"/>
         <source>On double click, create playlist and</source>
-        <translation>Подвійний натиск: створити новий плейлист і </translation>
+        <translation>Com o clique duplo, criar lista de reprodução e</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -622,54 +622,54 @@
         <location filename="../../ui/ui_GUI_LibraryPreferences.h" line="+1"/>
         <location line="+4"/>
         <source>do nothing (default)</source>
-        <translation>залишити без змін</translation>
+        <translation>não fazer nada (Padrão)</translation>
     </message>
     <message>
         <location line="-23"/>
         <location filename="../../ui/ui_GUI_LibraryPreferences.h" line="-3"/>
         <source>start playback if stopped</source>
-        <translation>розпочати відтворення у разі зупинки</translation>
+        <translation>iniciar reprodução se parado</translation>
     </message>
     <message>
         <location line="+7"/>
         <location filename="../../ui/ui_GUI_LibraryPreferences.h" line="+1"/>
         <source>start playback immediately</source>
-        <translation>розпочати відтворення негайно</translation>
+        <translation>iniciar reprodução imediatamente</translation>
     </message>
     <message>
         <location line="+10"/>
         <location filename="../../ui/ui_GUI_LibraryPreferences.h" line="+1"/>
         <source>When drag and drop into playlist </source>
-        <translation>Drag and Drop: Вставити назву в плейлист і </translation>
+        <translation>Quando arrastar e soltar dentro da lista de reprodução </translation>
     </message>
     <message>
         <location line="+13"/>
         <location filename="../../ui/ui_GUI_LibraryPreferences.h" line="+2"/>
         <source>start if stopped and playlist is empty</source>
-        <translation>розпочати відтворення у разі зупинки і якщо плейлист порожній</translation>
+        <translation>iniciar se parado e a lista de reprodução estiver vazia</translation>
     </message>
     <message>
         <location line="+24"/>
         <location filename="../../ui/ui_GUI_LibraryPreferences.h" line="+3"/>
         <source>Other</source>
-        <translation>Інший</translation>
+        <translation>Outra</translation>
     </message>
     <message>
         <location line="+6"/>
         <location filename="../../ui/ui_GUI_LibraryPreferences.h" line="-1"/>
         <source>Show &quot;Clear selection&quot; buttons</source>
-        <translation>Показати кнопку &quot;Очистити виділене&quot;</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="-85"/>
         <location filename="../../ui/ui_GUI_LibraryPreferences.h" line="-1"/>
         <source>Library-Playlist Interaction</source>
-        <translation>Бібліотека і плейлист</translation>
+        <translation>Interação Biblioteca-Lista de reprodução</translation>
     </message>
     <message>
         <location filename="../GUI/Preferences/Library/GUI_LibraryPreferences.cpp" line="+137"/>
         <source>Cannot edit library</source>
-        <translation>Не можна змінити бібліотеку </translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -678,13 +678,13 @@
         <location filename="../GUI/Library/GUI_LocalLibrary.ui" line="+20"/>
         <location filename="../../ui/ui_GUI_LocalLibrary.h" line="+317"/>
         <source>Library</source>
-        <translation>Бібліотека</translation>
+        <translation>Biblioteca</translation>
     </message>
     <message>
         <location line="+396"/>
         <location filename="../../ui/ui_GUI_LocalLibrary.h" line="+2"/>
         <source>No genres found</source>
-        <translation>Жанри не знайдені</translation>
+        <translation>Nenhum gênero encontrado</translation>
     </message>
 </context>
 <context>
@@ -692,7 +692,7 @@
     <message>
         <location filename="../GUI/Player/GUI_Logger.cpp" line="+199"/>
         <source>Cannot open file</source>
-        <translation>Не вдалося відкрити файл</translation>
+        <translation>Não é possível aceder ao ficheiro</translation>
     </message>
 </context>
 <context>
@@ -701,39 +701,39 @@
         <location filename="../GUI/InfoDialog/GUI_Lyrics.ui" line="+28"/>
         <location filename="../../ui/ui_GUI_Lyrics.h" line="+212"/>
         <source>Save Lyrics</source>
-        <translation>Зберегти текст пісні</translation>
+        <translation>Gravar letras musicais</translation>
     </message>
     <message>
         <location line="+125"/>
         <location filename="../../ui/ui_GUI_Lyrics.h" line="+1"/>
         <source>switch</source>
-        <translation>Перемкнути</translation>
+        <translation>Mudar</translation>
     </message>
     <message>
         <location line="+42"/>
         <location filename="../../ui/ui_GUI_Lyrics.h" line="+1"/>
         <source>Zoom</source>
-        <translation>Масштаб</translation>
+        <translation>Ampliar</translation>
     </message>
     <message>
         <location filename="../GUI/InfoDialog/GUI_Lyrics.cpp" line="+299"/>
         <source>Save lyrics not supported</source>
-        <translation>Зберети текст не вдається</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Overwrite lyrics</source>
-        <translation>Перезаписати текст пісні</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Save lyrics</source>
-        <translation>Зберігти текст пісні</translation>
+        <translation>Gravar letras musicais</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Source</source>
-        <translation>Джерело</translation>
+        <translation>Origem</translation>
     </message>
 </context>
 <context>
@@ -741,13 +741,13 @@
     <message>
         <location filename="../GUI/Preferences/Notifications/GUI_Notifications.cpp" line="+98"/>
         <source>Notifications</source>
-        <translation>Повідомлення</translation>
+        <translation>Notificações</translation>
     </message>
     <message>
         <location filename="../GUI/Preferences/Notifications/GUI_Notifications.ui" line="+17"/>
         <location filename="../../ui/ui_GUI_Notifications.h" line="+78"/>
         <source>Timeout (ms)</source>
-        <translation>Затримка(мс)</translation>
+        <translation>Tempo de Espera</translation>
     </message>
 </context>
 <context>
@@ -755,7 +755,7 @@
     <message>
         <location filename="../GUI/Player/GUI_Player.cpp" line="+386"/>
         <source>A new version is available!</source>
-        <translation>Доступна нова версія!</translation>
+        <translation>Uma nova versão está disponível!</translation>
     </message>
     <message>
         <location filename="../GUI/Player/GUI_Player.ui" line="+9"/>
@@ -767,37 +767,37 @@
         <location line="+155"/>
         <location filename="../../ui/ui_GUI_Player.h" line="+1"/>
         <source>Dark</source>
-        <translation>Темний інтерфейс</translation>
+        <translation>Tema Escuro</translation>
     </message>
     <message>
         <location line="+5"/>
         <location filename="../../ui/ui_GUI_Player.h" line="+1"/>
         <source>Help</source>
-        <translation>Допомога</translation>
+        <translation>Ajuda</translation>
     </message>
     <message>
         <location line="+33"/>
         <location filename="../../ui/ui_GUI_Player.h" line="+1"/>
         <source>Fullscreen</source>
-        <translation>На весь екран</translation>
+        <translation>Ecrã Completo</translation>
     </message>
     <message>
         <location line="+5"/>
         <location filename="../../ui/ui_GUI_Player.h" line="+1"/>
         <source>Devices</source>
-        <translation>Зовнішні пристрої</translation>
+        <translation>Dispositivos</translation>
     </message>
     <message>
         <location line="+5"/>
         <location filename="../../ui/ui_GUI_Player.h" line="+1"/>
         <source>Donate</source>
-        <translation>Пожертвувати</translation>
+        <translation>Doar</translation>
     </message>
     <message>
         <location line="+10"/>
         <location filename="../../ui/ui_GUI_Player.h" line="+1"/>
         <source>Preferences</source>
-        <translation>Налаштування</translation>
+        <translation>Preferências</translation>
     </message>
 </context>
 <context>
@@ -806,25 +806,25 @@
         <location filename="../GUI/Preferences/Player/GUI_PlayerPreferences.ui" line="+59"/>
         <location filename="../../ui/ui_GUI_PlayerPreferences.h" line="+101"/>
         <source>Start in tray</source>
-        <translation>Відкрити в мінімальному режимі</translation>
+        <translation>Iniciar na bandeja do sistema</translation>
     </message>
     <message>
         <location line="-28"/>
         <location filename="../../ui/ui_GUI_PlayerPreferences.h" line="-1"/>
         <source>Close to tray</source>
-        <translation>Згорнути</translation>
+        <translation>Minimizar</translation>
     </message>
     <message>
         <location line="-7"/>
         <location filename="../../ui/ui_GUI_PlayerPreferences.h" line="-1"/>
         <source>Show system tray icon</source>
-        <translation>Показувати піктограму системного лотка</translation>
+        <translation>Mostrar o ícone da bandeja do sistema</translation>
     </message>
     <message>
         <location line="-7"/>
         <location filename="../../ui/ui_GUI_PlayerPreferences.h" line="-1"/>
         <source>Update notifications</source>
-        <translation>Повідомлення про оновлення</translation>
+        <translation>Atualizar notificações</translation>
     </message>
 </context>
 <context>
@@ -832,42 +832,42 @@
     <message>
         <location filename="../GUI/Playlist/GUI_Playlist.cpp" line="+227"/>
         <source>Playlist empty</source>
-        <translation>Плейлист порожній</translation>
+        <translation>Lista de reprodução vazia</translation>
     </message>
     <message>
         <location line="+28"/>
         <source>Media files</source>
-        <translation>Медіа файли</translation>
+        <translation>Arquivos de mídia</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Open Media files</source>
-        <translation>Відкрити медіа файли</translation>
+        <translation>Abrir Arquivos de mídia</translation>
     </message>
     <message>
         <location line="+201"/>
         <source>Playlist name already exists</source>
-        <translation>Ім&apos;я плейлиста вже існує</translation>
+        <translation>Lista de Reprodução já existe</translation>
     </message>
     <message>
         <location line="+120"/>
         <source>Cannot save playlist.</source>
-        <translation>Плейлист неможливо зберегти.</translation>
+        <translation>Não foi possível salvar a lista de reprodução.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Playlist exists</source>
-        <translation>Плейлист вже існує</translation>
+        <translation>Lista de Reprodução já existe</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Playlists are currently only supported for library tracks.</source>
-        <translation>Наразі плейлисти можуть бути створені тільки для треків із музичної коллекції.</translation>
+        <translation>Listas de reprodução são suportadas apenas para faixas da biblioteca.</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Save playlist</source>
-        <translation>Зберегти плейлист</translation>
+        <translation>Salvar lista de reprodução</translation>
     </message>
 </context>
 <context>
@@ -875,12 +875,12 @@
     <message>
         <location filename="../GUI/Playlist/BottomBar.cpp" line="+250"/>
         <source>Please set library path first</source>
-        <translation>Будь ласка,задайте спочатку шлях до бібліотеки</translation>
+        <translation>Por favor, definir o caminho da biblioteca primeiro</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>Cancel shutdown?</source>
-        <translation>Відмінити завершення?</translation>
+        <translation>Cancelar desligamento</translation>
     </message>
 </context>
 <context>
@@ -889,7 +889,7 @@
         <location filename="../GUI/Plugins/PlaylistChooser/GUI_PlaylistChooser.cpp" line="+95"/>
         <location line="+37"/>
         <source>No playlists found</source>
-        <translation>Не знайдено жодного плейлиста</translation>
+        <translation>0 listas de reprodução encontradas</translation>
     </message>
 </context>
 <context>
@@ -898,108 +898,108 @@
         <location filename="../GUI/Preferences/Playlist/GUI_PlaylistPreferences.ui" line="+159"/>
         <location filename="../../ui/ui_GUI_PlaylistPreferences.h" line="+319"/>
         <source>Show numbers</source>
-        <translation>Показати нумерацію</translation>
+        <translation>Mostrar o Número</translation>
     </message>
     <message>
         <location line="-29"/>
         <location filename="../../ui/ui_GUI_PlaylistPreferences.h" line="+7"/>
         <source>Look</source>
-        <translation>Подивитися</translation>
+        <translation>Aparência</translation>
     </message>
     <message>
         <location line="-71"/>
         <location filename="../../ui/ui_GUI_PlaylistPreferences.h" line="-16"/>
         <source>Start up</source>
-        <translation>Налаштування запуску</translation>
+        <translation>Inicialização</translation>
     </message>
     <message>
         <location line="+6"/>
         <location filename="../../ui/ui_GUI_PlaylistPreferences.h" line="+1"/>
         <source>Load temporary playlists</source>
-        <translation>Завантажити тимчасові плейлисти</translation>
+        <translation>Carregar listas de reprodução temporárias</translation>
     </message>
     <message>
         <location line="+38"/>
         <location filename="../../ui/ui_GUI_PlaylistPreferences.h" line="+4"/>
         <source>Remember time of last track</source>
-        <translation>Запам&apos;ятати час відтворення останнього треку</translation>
+        <translation>Lembrar posição da última faixa</translation>
     </message>
     <message>
         <location line="-31"/>
         <location filename="../../ui/ui_GUI_PlaylistPreferences.h" line="-3"/>
         <source>Load saved playlists</source>
-        <translation>Завантажити збережені плейлисти</translation>
+        <translation>Carregar listas de reprodução salvas</translation>
     </message>
     <message>
         <location line="+24"/>
         <location filename="../../ui/ui_GUI_PlaylistPreferences.h" line="+2"/>
         <source>Load last track on startup</source>
-        <translation>Вибрати останній відтворюваний трек</translation>
+        <translation>Carregar a ultima faixa ao inicializar</translation>
     </message>
     <message>
         <location line="-7"/>
         <location filename="../../ui/ui_GUI_PlaylistPreferences.h" line="-1"/>
         <source>Start playing</source>
-        <translation>Розпочати відтворення</translation>
+        <translation>Iniciar reprodução</translation>
     </message>
     <message>
         <location line="-56"/>
         <location filename="../../ui/ui_GUI_PlaylistPreferences.h" line="+5"/>
         <source>Behavior</source>
-        <translation>Режим</translation>
+        <translation>Comportamento</translation>
     </message>
     <message>
         <location line="+80"/>
         <location filename="../../ui/ui_GUI_PlaylistPreferences.h" line="-2"/>
         <source>Stop behaviour</source>
-        <translation>Зупинити режим</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+6"/>
         <location filename="../../ui/ui_GUI_PlaylistPreferences.h" line="+1"/>
         <source>Load last track after pressing stop</source>
-        <translation>Завантажити останню назву, після натиску Стоп</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+73"/>
         <location filename="../../ui/ui_GUI_PlaylistPreferences.h" line="+3"/>
         <source>&apos;italic text&apos;</source>
-        <translation>&apos;текст курсивом&apos;</translation>
+        <translation>&apos;texto em itálico&apos;</translation>
     </message>
     <message>
         <location line="+7"/>
         <location filename="../../ui/ui_GUI_PlaylistPreferences.h" line="+1"/>
         <source>Example</source>
-        <translation>Приклад</translation>
+        <translation>Exemplo</translation>
     </message>
     <message>
         <location line="+27"/>
         <location filename="../../ui/ui_GUI_PlaylistPreferences.h" line="+1"/>
         <source>*bold text*</source>
-        <translation>*жирний текст*</translation>
+        <translation>*texto em negrito*</translation>
     </message>
     <message>
         <location line="+72"/>
         <location filename="../../ui/ui_GUI_PlaylistPreferences.h" line="+1"/>
         <source>Show clear button</source>
-        <translation>Показати кнопку скидання налаштувань</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+7"/>
         <location filename="../../ui/ui_GUI_PlaylistPreferences.h" line="+1"/>
         <source>Show covers</source>
-        <translation>Показати обкладинки</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+7"/>
         <location filename="../../ui/ui_GUI_PlaylistPreferences.h" line="+1"/>
         <source>Show rating</source>
-        <translation>Показати оцінку</translation>
+        <translation>Mostrar classificação</translation>
     </message>
     <message>
         <location filename="../GUI/Preferences/Playlist/GUI_PlaylistPreferences.cpp" line="+203"/>
         <source>Playlist look: Invalid expression</source>
-        <translation>Подивіться список відтворення: Недійсний вираз</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1008,17 +1008,17 @@
         <location filename="../GUI/Plugins/Stream/GUI_Podcasts.ui" line="+80"/>
         <location filename="../../ui/ui_GUI_Podcasts.h" line="+106"/>
         <source>Start stream</source>
-        <translation>Розпочати стрімінг</translation>
+        <translation>Iniciar stream</translation>
     </message>
     <message>
         <location filename="../GUI/Plugins/Stream/GUI_Podcasts.cpp" line="+44"/>
         <source>Podcasts</source>
-        <translation>Подкасти</translation>
+        <translation>Podcasts</translation>
     </message>
     <message>
         <location line="+16"/>
         <source>Podcast</source>
-        <translation>Подкаст</translation>
+        <translation>Podcast</translation>
     </message>
 </context>
 <context>
@@ -1027,25 +1027,25 @@
         <location filename="../GUI/Preferences/PreferenceDialog/GUI_PreferenceDialog.ui" line="+133"/>
         <location filename="../../ui/ui_GUI_PreferenceDialog.h" line="+182"/>
         <source>Preferences</source>
-        <translation>Налаштування</translation>
+        <translation>Preferências</translation>
     </message>
     <message>
         <location line="+39"/>
         <location filename="../../ui/ui_GUI_PreferenceDialog.h" line="+1"/>
         <source>Cancel</source>
-        <translation>Відмінити</translation>
+        <translation>Cancelar</translation>
     </message>
     <message>
         <location line="+7"/>
         <location filename="../../ui/ui_GUI_PreferenceDialog.h" line="+1"/>
         <source>Apply</source>
-        <translation>Застосувати</translation>
+        <translation>Aplicar</translation>
     </message>
     <message>
         <location line="+7"/>
         <location filename="../../ui/ui_GUI_PreferenceDialog.h" line="+1"/>
         <source>OK</source>
-        <translation>ОК</translation>
+        <translation>OK</translation>
     </message>
 </context>
 <context>
@@ -1054,42 +1054,42 @@
         <location filename="../GUI/Preferences/Proxy/GUI_Proxy.ui" line="+30"/>
         <location filename="../../ui/ui_GUI_Proxy.h" line="+125"/>
         <source>Password</source>
-        <translation>Пароль</translation>
+        <translation>Senha</translation>
     </message>
     <message>
         <location line="+7"/>
         <location filename="../../ui/ui_GUI_Proxy.h" line="+1"/>
         <source>Save username/password</source>
-        <translation>Зберігти ім&apos;я користувача/ пароль</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+7"/>
         <location filename="../../ui/ui_GUI_Proxy.h" line="+1"/>
         <source>Active</source>
-        <translation>Активний</translation>
+        <translation>Activo</translation>
     </message>
     <message>
         <location line="+13"/>
         <location filename="../../ui/ui_GUI_Proxy.h" line="+1"/>
         <source>Port</source>
-        <translation>Порт</translation>
+        <translation>Porta</translation>
     </message>
     <message>
         <location line="+7"/>
         <location filename="../../ui/ui_GUI_Proxy.h" line="+1"/>
         <source>Username</source>
-        <translation>Ім&apos;я користувача</translation>
+        <translation>Nome do Usuário</translation>
     </message>
     <message>
         <location line="+27"/>
         <location filename="../../ui/ui_GUI_Proxy.h" line="+1"/>
         <source>Host</source>
-        <translation>Вузол</translation>
+        <translation>Máquina</translation>
     </message>
     <message>
         <location filename="../GUI/Preferences/Proxy/GUI_Proxy.cpp" line="+57"/>
         <source>Proxy</source>
-        <translation>Проксі-сервер</translation>
+        <translation>Proxy</translation>
     </message>
 </context>
 <context>
@@ -1097,22 +1097,22 @@
     <message>
         <location filename="../GUI/Library/GUI_ReloadLibraryDialog.cpp" line="+79"/>
         <source>Fast scan</source>
-        <translation>Швидке сканування</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Deep scan</source>
-        <translation>Детальне сканування</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+33"/>
         <source>Only scan for new and deleted files</source>
-        <translation>Сканувати тільки нові і видалені файли</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Scan all files in your library directory</source>
-        <translation>Сканувати всі файли у каталозі бібліотеки</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1120,19 +1120,19 @@
     <message>
         <location filename="../GUI/Preferences/RemoteControl/GUI_RemoteControl.cpp" line="+80"/>
         <source>Remote control</source>
-        <translation>Дистанційне управління</translation>
+        <translation>Controle Remoto</translation>
     </message>
     <message>
         <location filename="../GUI/Preferences/RemoteControl/GUI_RemoteControl.ui" line="+54"/>
         <location filename="../../ui/ui_GUI_RemoteControl.h" line="+98"/>
         <source>Remote control URL</source>
-        <translation>Дистанційне управління URL</translation>
+        <translation>URL do Controle Remoto</translation>
     </message>
     <message>
         <location line="-17"/>
         <location filename="../../ui/ui_GUI_RemoteControl.h" line="-1"/>
         <source>Port</source>
-        <translation>Порт</translation>
+        <translation>Porta</translation>
     </message>
 </context>
 <context>
@@ -1141,31 +1141,31 @@
         <location filename="../GUI/Preferences/Search/GUI_SearchPreferences.ui" line="+23"/>
         <location filename="../../ui/ui_GUI_SearchPreferences.h" line="+118"/>
         <source>Example</source>
-        <translation>Приклад</translation>
+        <translation>Exemplo</translation>
     </message>
     <message>
         <location line="+7"/>
         <location filename="../../ui/ui_GUI_SearchPreferences.h" line="+1"/>
         <source>Case insensitive</source>
-        <translation>Ігнорувати написання з вел і мал літер</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+13"/>
         <location filename="../../ui/ui_GUI_SearchPreferences.h" line="+1"/>
         <source>Option</source>
-        <translation>Параметр</translation>
+        <translation>Opção</translation>
     </message>
     <message>
         <location line="+10"/>
         <location filename="../../ui/ui_GUI_SearchPreferences.h" line="+1"/>
         <source>Ignore accents</source>
-        <translation>Ігнорувати гравіс</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+27"/>
         <location filename="../../ui/ui_GUI_SearchPreferences.h" line="+1"/>
         <source>Ignore special characters</source>
-        <translation>Ігнорувати спеціальні символи</translation>
+        <translation>Ignorar Caracteres Especiais</translation>
     </message>
 </context>
 <context>
@@ -1173,17 +1173,17 @@
     <message>
         <location filename="../GUI/Preferences/Shortcuts/GUI_ShortcutEntry.cpp" line="+54"/>
         <source>Enter shortcut</source>
-        <translation>Комбінація клавіш Enter</translation>
+        <translation>Pressione o atalho</translation>
     </message>
     <message>
         <location line="+25"/>
         <source>Shortcut already in use</source>
-        <translation>Комбінація клавіш вже використовується </translation>
+        <translation>O atalho já está em uso</translation>
     </message>
     <message>
         <location line="+59"/>
         <source>Test</source>
-        <translation>Тест</translation>
+        <translation>Teste</translation>
     </message>
 </context>
 <context>
@@ -1193,17 +1193,17 @@
         <location filename="../GUI/Preferences/Shortcuts/GUI_Shortcuts.cpp" line="+150"/>
         <location filename="../../ui/ui_GUI_Shortcuts.h" line="+85"/>
         <source>Press shortcut</source>
-        <translation>Натиснути shortcut</translation>
+        <translation>Pressione o atalho</translation>
     </message>
     <message>
         <location filename="../GUI/Preferences/Shortcuts/GUI_Shortcuts.cpp" line="-48"/>
         <source>Shortcuts</source>
-        <translation>Shortcuts</translation>
+        <translation>Atalhos</translation>
     </message>
     <message>
         <location line="+93"/>
         <source>Double shortcuts found</source>
-        <translation>Знайдено подвійну комбінацію клавіш</translation>
+        <translation>O atalho já está em uso</translation>
     </message>
 </context>
 <context>
@@ -1214,37 +1214,37 @@
         <location filename="../../ui/ui_GUI_Shutdown.h" line="+122"/>
         <location line="+7"/>
         <source>Shutdown</source>
-        <translation>Завершення роботи</translation>
+        <translation>Desligar</translation>
     </message>
     <message>
         <location line="-76"/>
         <location filename="../../ui/ui_GUI_Shutdown.h" line="-5"/>
         <source>Cancel</source>
-        <translation>Відмінити</translation>
+        <translation>Cancelar</translation>
     </message>
     <message>
         <location line="+7"/>
         <location filename="../../ui/ui_GUI_Shutdown.h" line="+1"/>
         <source>OK</source>
-        <translation>ОК</translation>
+        <translation>OK</translation>
     </message>
     <message>
         <location line="+24"/>
         <location filename="../../ui/ui_GUI_Shutdown.h" line="+2"/>
         <source>minutes</source>
-        <translation>хвилин</translation>
+        <translation>minutos</translation>
     </message>
     <message>
         <location line="-7"/>
         <location filename="../../ui/ui_GUI_Shutdown.h" line="-1"/>
         <source>Shutdown after</source>
-        <translation>Завершення після</translation>
+        <translation>Desligar depois de</translation>
     </message>
     <message>
         <location line="-34"/>
         <location filename="../../ui/ui_GUI_Shutdown.h" line="-3"/>
         <source>Shutdown after playlist finished</source>
-        <translation>Після останньої пісні завершити роботу</translation>
+        <translation>Desligar após o término da lista de reprodução</translation>
     </message>
 </context>
 <context>
@@ -1253,13 +1253,13 @@
         <location filename="../3rdParty/SomaFM/ui/GUI_SomaFM.ui" line="+42"/>
         <location filename="../../ui/ui_GUI_SomaFM.h" line="+200"/>
         <source>Donate to Soma.fm</source>
-        <translation>Пожертвувати Soma.fm</translation>
+        <translation>Contribuir para Soma.fm</translation>
     </message>
     <message>
         <location line="+102"/>
         <location filename="../../ui/ui_GUI_SomaFM.h" line="+2"/>
         <source>Streams</source>
-        <translation>Веб-потоки</translation>
+        <translation>Streams</translation>
     </message>
 </context>
 <context>
@@ -1268,25 +1268,25 @@
         <location filename="../3rdParty/Soundcloud/ui/GUI_SoundcloudArtistSearch.ui" line="+14"/>
         <location filename="../../ui/ui_GUI_SoundcloudArtistSearch.h" line="+169"/>
         <source>Search Soundcloud</source>
-        <translation>Шукати в Soundcloud</translation>
+        <translation>Procurar no Soundcloud</translation>
     </message>
     <message>
         <location line="+55"/>
         <location filename="../../ui/ui_GUI_SoundcloudArtistSearch.h" line="+4"/>
         <source>Search artist</source>
-        <translation>Шукати виконавця</translation>
+        <translation>Procurar artista</translation>
     </message>
     <message>
         <location line="-24"/>
         <location filename="../../ui/ui_GUI_SoundcloudArtistSearch.h" line="-2"/>
         <source>Cancel</source>
-        <translation>Відмінити</translation>
+        <translation>Cancelar</translation>
     </message>
     <message>
         <location line="+7"/>
         <location filename="../../ui/ui_GUI_SoundcloudArtistSearch.h" line="+1"/>
         <source>Add</source>
-        <translation>Додати</translation>
+        <translation>Adicionar</translation>
     </message>
 </context>
 <context>
@@ -1295,13 +1295,13 @@
         <location filename="../3rdParty/Soundcloud/ui/GUI_SoundcloudLibrary.ui" line="+26"/>
         <location filename="../../ui/ui_GUI_SoundcloudLibrary.h" line="+198"/>
         <source>Library</source>
-        <translation>Бібліотека</translation>
+        <translation>Biblioteca</translation>
     </message>
     <message>
         <location line="+311"/>
         <location filename="../../ui/ui_GUI_SoundcloudLibrary.h" line="+4"/>
         <source>Search for title, interprets and albums</source>
-        <translation>Пошук за назвами,виконавцями та альбомами</translation>
+        <translation>Buscar por título, intérprete e álbums</translation>
     </message>
 </context>
 <context>
@@ -1309,7 +1309,7 @@
     <message>
         <location filename="../GUI/Plugins/Engine/GUI_Spectrum.cpp" line="+119"/>
         <source>Spectrum</source>
-        <translation>Діапазон</translation>
+        <translation>Espectro</translation>
     </message>
 </context>
 <context>
@@ -1319,26 +1319,26 @@
         <location filename="../GUI/Plugins/Engine/Speed/GUI_Speed.cpp" line="+117"/>
         <location filename="../../ui/ui_GUI_Speed.h" line="+147"/>
         <source>Speed</source>
-        <translation>Швидкість</translation>
+        <translation>Velocidade</translation>
     </message>
     <message>
         <location line="+39"/>
         <location filename="../../ui/ui_GUI_Speed.h" line="-1"/>
         <source>Preserve pitch</source>
-        <translation>Не змінювати висоту</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+30"/>
         <location filename="../GUI/Plugins/Engine/Speed/GUI_Speed.cpp" line="+0"/>
         <location filename="../../ui/ui_GUI_Speed.h" line="+2"/>
         <source>Pitch</source>
-        <translation>Висота</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../GUI/Plugins/Engine/Speed/GUI_Speed.cpp" line="+64"/>
         <location line="+1"/>
         <source>%1 not found</source>
-        <translation>%1 не знайдено</translation>
+        <translation>%1 não encontrado</translation>
     </message>
 </context>
 <context>
@@ -1346,7 +1346,7 @@
     <message>
         <location filename="../GUI/Plugins/Stream/GUI_Stream.cpp" line="+44"/>
         <source>Streams</source>
-        <translation>Веб-потоки</translation>
+        <translation>Streams</translation>
     </message>
 </context>
 <context>
@@ -1354,24 +1354,24 @@
     <message>
         <location filename="../GUI/Preferences/Streams/GUI_StreamPreferences.cpp" line="+51"/>
         <source>Streams</source>
-        <translation>Веб-потоки</translation>
+        <translation>Streams</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Podcasts</source>
-        <translation>Подкасти</translation>
+        <translation>Podcasts</translation>
     </message>
     <message>
         <location filename="../GUI/Preferences/Streams/GUI_StreamPreferences.ui" line="+17"/>
         <location filename="../../ui/ui_GUI_StreamPreferences.h" line="+61"/>
         <source>Open Streams in new tab</source>
-        <translation>Відкрити потік у новій вкладці</translation>
+        <translation>Streams: Numa página nova</translation>
     </message>
     <message>
         <location line="+7"/>
         <location filename="../../ui/ui_GUI_StreamPreferences.h" line="+1"/>
         <source>Show history</source>
-        <translation>Показати історію</translation>
+        <translation>Mostrar histórico</translation>
     </message>
 </context>
 <context>
@@ -1380,80 +1380,80 @@
         <location filename="../GUI/Preferences/StreamRecorder/GUI_StreamRecorder.ui" line="+39"/>
         <location filename="../../ui/ui_GUI_StreamRecorder.h" line="+244"/>
         <source>Target path:</source>
-        <translation>Адреса:</translation>
+        <translation>Caminho do destino:</translation>
     </message>
     <message>
         <location line="+43"/>
         <location filename="../../ui/ui_GUI_StreamRecorder.h" line="+2"/>
         <source>Automatic recording</source>
-        <translation>Автоматичний запис</translation>
+        <translation>Gravação Automática</translation>
     </message>
     <message>
         <location line="-55"/>
         <location filename="../../ui/ui_GUI_StreamRecorder.h" line="+5"/>
         <source>General</source>
-        <translation>Загальне</translation>
+        <translation>Gêneros</translation>
     </message>
     <message>
         <location line="+106"/>
         <location filename="../../ui/ui_GUI_StreamRecorder.h" line="-1"/>
         <source>Create session folder</source>
-        <translation>Створити каталог для сесії</translation>
+        <translation>Criar diretório da sessão</translation>
     </message>
     <message>
         <location line="+8"/>
         <location filename="../../ui/ui_GUI_StreamRecorder.h" line="+5"/>
         <source>Session Folder</source>
-        <translation>Каталог сесії</translation>
+        <translation>Diretório da sessão</translation>
     </message>
     <message>
         <location line="+22"/>
         <location filename="../../ui/ui_GUI_StreamRecorder.h" line="-3"/>
         <source>Choose available placeholders</source>
-        <translation>Вибрати доступні заповнювачі</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+37"/>
         <location filename="../../ui/ui_GUI_StreamRecorder.h" line="+1"/>
         <source>Path template</source>
-        <translation>Шаблон шляху</translation>
+        <translation>Modelo do caminho</translation>
     </message>
     <message>
         <location line="+24"/>
         <location filename="../../ui/ui_GUI_StreamRecorder.h" line="+1"/>
         <source>Example</source>
-        <translation>Приклад</translation>
+        <translation>Exemplo</translation>
     </message>
     <message>
         <location filename="../GUI/Preferences/StreamRecorder/GUI_StreamRecorder.cpp" line="+156"/>
         <source>Choose target directory</source>
-        <translation>Вибрати каталог</translation>
+        <translation>Escolha o diretório de destino</translation>
     </message>
     <message>
         <location line="+65"/>
         <source>Target path is empty</source>
-        <translation>Адресна строка пуста</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+0"/>
         <location line="+6"/>
         <source>Please choose another directory</source>
-        <translation>Будь ласка, виберіть інший каталог</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+0"/>
         <source>%1 could not be created</source>
-        <translation>%1 неможливо створити</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+11"/>
         <source>Template path is not valid</source>
-        <translation>Шаблон шляху не є чинним</translation>
+        <translation>Modelo do caminho non válido</translation>
     </message>
     <message>
         <location line="+59"/>
         <source>Stream recorder</source>
-        <translation>Запис потоку</translation>
+        <translation>Gravar stream</translation>
     </message>
 </context>
 <context>
@@ -1462,25 +1462,25 @@
         <location filename="../GUI/Plugins/Engine/GUI_Style.ui" line="+14"/>
         <location filename="../../ui/ui_GUI_Style.h" line="+423"/>
         <source>Style</source>
-        <translation>Стиль</translation>
+        <translation>Estilo</translation>
     </message>
     <message>
         <location line="+38"/>
         <location filename="../../ui/ui_GUI_Style.h" line="+1"/>
         <source>Close</source>
-        <translation>Закрити</translation>
+        <translation>Fechar</translation>
     </message>
     <message>
         <location line="+11"/>
         <location filename="../../ui/ui_GUI_Style.h" line="+1"/>
         <source>Spectrum</source>
-        <translation>Діапазон</translation>
+        <translation>Espectro</translation>
     </message>
     <message>
         <location line="+16"/>
         <location filename="../../ui/ui_GUI_Style.h" line="+1"/>
         <source>Vert. spacing</source>
-        <translation>Верт. розташування</translation>
+        <translation>Espaçamento vertical</translation>
     </message>
     <message>
         <location line="+41"/>
@@ -1488,7 +1488,7 @@
         <location filename="../../ui/ui_GUI_Style.h" line="+3"/>
         <location line="+7"/>
         <source>Fading steps</source>
-        <translation>Налаштування переходу</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="-89"/>
@@ -1496,7 +1496,7 @@
         <location filename="../../ui/ui_GUI_Style.h" line="-8"/>
         <location line="+4"/>
         <source>Hor. spacing</source>
-        <translation>Гориз. розташування</translation>
+        <translation>Espaçamento Horizontal</translation>
     </message>
     <message>
         <location line="-64"/>
@@ -1504,55 +1504,55 @@
         <location filename="../../ui/ui_GUI_Style.h" line="-5"/>
         <location line="+7"/>
         <source>Rect height</source>
-        <translation>Висота прямокутника</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="-30"/>
         <location filename="../../ui/ui_GUI_Style.h" line="-3"/>
         <source>Level</source>
-        <translation>Рівень</translation>
+        <translation>Nível</translation>
     </message>
     <message>
         <location line="+23"/>
         <location filename="../../ui/ui_GUI_Style.h" line="+2"/>
         <source>Rect width</source>
-        <translation>Ширина прямокутника</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+14"/>
         <location filename="../../ui/ui_GUI_Style.h" line="+2"/>
         <source>Ver. spacing</source>
-        <translation>Верт. розташування</translation>
+        <translation>Espaçamento vertical</translation>
     </message>
     <message>
         <location line="+54"/>
         <location filename="../../ui/ui_GUI_Style.h" line="+2"/>
         <source>Style settings</source>
-        <translation>Налаштування стилю</translation>
+        <translation>Configurações de estilo</translation>
     </message>
     <message>
         <location line="+129"/>
         <location filename="../../ui/ui_GUI_Style.h" line="+4"/>
         <source>Color 2</source>
-        <translation>Колір 2</translation>
+        <translation>Cor 2</translation>
     </message>
     <message>
         <location line="+7"/>
         <location filename="../../ui/ui_GUI_Style.h" line="+1"/>
         <source>Color 1</source>
-        <translation>Колір 1</translation>
+        <translation>Cor 1</translation>
     </message>
     <message>
         <location line="+32"/>
         <location filename="../../ui/ui_GUI_Style.h" line="+2"/>
         <source>Color 3</source>
-        <translation>Колір 3</translation>
+        <translation>Cor 3</translation>
     </message>
     <message>
         <location line="+7"/>
         <location filename="../../ui/ui_GUI_Style.h" line="+1"/>
         <source>Color 4</source>
-        <translation>Коліра 4</translation>
+        <translation>Cor 4</translation>
     </message>
 </context>
 <context>
@@ -1560,73 +1560,24 @@
     <message>
         <location filename="../GUI/Plugins/Engine/GUI_StyleSettings.cpp" line="+189"/>
         <source>There are some unsaved settings&lt;br /&gt;Save now?</source>
-        <translation>Налаштування ще не збережені&lt;br /&gt;Зберегти?</translation>
+        <translation>Há algumas configurações não salvas&lt;br /&gt;Salvar agora?</translation>
     </message>
     <message>
         <location line="+87"/>
         <source>Please specify a name</source>
-        <translation>Будь ласка, вкажіть ім&apos;я</translation>
+        <translation>Por favor especifique um nome</translation>
     </message>
     <message>
         <location line="+168"/>
         <source>Save changes?</source>
-        <translation>Зберегти зміни?</translation>
+        <translation>Salvar alterações?</translation>
     </message>
 </context>
 <context>
     <name>GUI_TagEdit</name>
     <message>
-        <location filename="../GUI/TagEdit/GUI_TagEdit.ui" line="+128"/>
-        <location filename="../../ui/ui_GUI_TagEdit.h" line="+552"/>
-        <source>Discnumber</source>
-        <translation>Номер диска</translation>
-    </message>
-    <message>
-        <location line="+30"/>
-        <location filename="../../ui/ui_GUI_TagEdit.h" line="+1"/>
-        <source>Album artist</source>
-        <translation>Виконавець альбому</translation>
-    </message>
-    <message>
-        <location line="+110"/>
-        <location filename="../GUI/TagEdit/GUI_TagEdit.cpp" line="+130"/>
-        <location filename="../../ui/ui_GUI_TagEdit.h" line="+1"/>
-        <source>Comment</source>
-        <translation>Коментар</translation>
-    </message>
-    <message>
-        <location line="+185"/>
-        <location filename="../../ui/ui_GUI_TagEdit.h" line="+2"/>
-        <source>all</source>
-        <translation>всі</translation>
-    </message>
-    <message>
-        <location line="+98"/>
-        <location filename="../../ui/ui_GUI_TagEdit.h" line="+4"/>
-        <source>Original</source>
-        <translation>Оригінал</translation>
-    </message>
-    <message>
-        <location line="-65"/>
-        <location filename="../../ui/ui_GUI_TagEdit.h" line="-2"/>
-        <source>Replace</source>
-        <translation>Замінити</translation>
-    </message>
-    <message>
-        <location line="-25"/>
-        <location filename="../../ui/ui_GUI_TagEdit.h" line="-1"/>
-        <source>Tag from path</source>
-        <translation>ID3 тег добути зі шляху файла </translation>
-    </message>
-    <message>
-        <location line="+200"/>
-        <location filename="../../ui/ui_GUI_TagEdit.h" line="+5"/>
-        <source>Undo all</source>
-        <translation>Повернути все</translation>
-    </message>
-    <message>
-        <location line="-597"/>
-        <location filename="../../ui/ui_GUI_TagEdit.h" line="-13"/>
+        <location filename="../GUI/TagEdit/GUI_TagEdit.ui" line="+64"/>
+        <location filename="../../ui/ui_GUI_TagEdit.h" line="+549"/>
         <source>&lt;</source>
         <translation>&lt;</translation>
     </message>
@@ -1637,29 +1588,78 @@
         <translation>&gt;</translation>
     </message>
     <message>
+        <location line="+32"/>
+        <location filename="../../ui/ui_GUI_TagEdit.h" line="+1"/>
+        <source>Discnumber</source>
+        <translation>Núm. do Disco</translation>
+    </message>
+    <message>
+        <location line="+30"/>
+        <location filename="../../ui/ui_GUI_TagEdit.h" line="+1"/>
+        <source>Album artist</source>
+        <translation>Artista do Álbum</translation>
+    </message>
+    <message>
+        <location line="+110"/>
+        <location filename="../GUI/TagEdit/GUI_TagEdit.cpp" line="+130"/>
+        <location filename="../../ui/ui_GUI_TagEdit.h" line="+1"/>
+        <source>Comment</source>
+        <translation>Comentário</translation>
+    </message>
+    <message>
+        <location line="+185"/>
+        <location filename="../../ui/ui_GUI_TagEdit.h" line="+2"/>
+        <source>all</source>
+        <translation>Tudo</translation>
+    </message>
+    <message>
+        <location line="+98"/>
+        <location filename="../../ui/ui_GUI_TagEdit.h" line="+4"/>
+        <source>Original</source>
+        <translation>Original</translation>
+    </message>
+    <message>
+        <location line="-65"/>
+        <location filename="../../ui/ui_GUI_TagEdit.h" line="-2"/>
+        <source>Replace</source>
+        <translation>Substituir</translation>
+    </message>
+    <message>
+        <location line="-25"/>
+        <location filename="../../ui/ui_GUI_TagEdit.h" line="-1"/>
+        <source>Tag from path</source>
+        <translation>Tag do caminho</translation>
+    </message>
+    <message>
+        <location line="+200"/>
+        <location filename="../../ui/ui_GUI_TagEdit.h" line="+5"/>
+        <source>Undo all</source>
+        <translation>Desfazer tudo</translation>
+    </message>
+    <message>
         <location filename="../GUI/TagEdit/GUI_TagEdit.cpp" line="+1"/>
         <source>Load complete album</source>
-        <translation>Завантажити альбом повністю</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+107"/>
         <source>Cannot apply tag for</source>
-        <translation>Неможливо використати тег для </translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
         <source>%1 tracks</source>
-        <translation>%1 треків</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Ignore these tracks?</source>
-        <translation>Ігнорувати ці треки?</translation>
+        <translation>Ignorar essas faixas?</translation>
     </message>
     <message>
         <location line="+397"/>
         <source>All changes will be lost</source>
-        <translation>Всі зміни втрачені</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1668,7 +1668,7 @@
         <location filename="../GUI/TagEdit/GUI_TagFromPath.ui" line="+17"/>
         <location filename="../../ui/ui_GUI_TagFromPath.h" line="+214"/>
         <source>Expression</source>
-        <translation>Вираз</translation>
+        <translation>Expressão</translation>
     </message>
     <message>
         <location line="+17"/>
@@ -1680,29 +1680,29 @@
         <location line="+67"/>
         <location filename="../../ui/ui_GUI_TagFromPath.h" line="+1"/>
         <source>Disc Nr</source>
-        <translation>CD Ном</translation>
+        <translation>Núm. do Disco</translation>
     </message>
     <message>
         <location line="+57"/>
         <location filename="../../ui/ui_GUI_TagFromPath.h" line="+2"/>
         <source>Apply to all</source>
-        <translation>Застосувати до всього</translation>
+        <translation>Aplicar a todos</translation>
     </message>
     <message>
         <location line="+32"/>
         <location filename="../../ui/ui_GUI_TagFromPath.h" line="+1"/>
         <source>Warning</source>
-        <translation>Попередження</translation>
+        <translation>Aviso</translation>
     </message>
     <message>
         <location filename="../GUI/TagEdit/TagFromPath.cpp" line="+73"/>
         <source>Tag</source>
-        <translation>Мітка</translation>
+        <translation>Marca</translation>
     </message>
     <message>
         <location line="+59"/>
         <source>Please select text first</source>
-        <translation>Будь ласка, виберіть спочатку текст</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1711,13 +1711,14 @@
         <location filename="../GUI/Plugins/PlaylistChooser/GUI_TargetPlaylistDialog.ui" line="+14"/>
         <location filename="../../ui/ui_GUI_TargetPlaylistDialog.h" line="+109"/>
         <source>Choose target playlist</source>
-        <translation>Вибрати плейлист</translation>
+        <translation>Escolha a lista de reprodução de destino</translation>
     </message>
     <message>
         <location line="+25"/>
         <location filename="../../ui/ui_GUI_TargetPlaylistDialog.h" line="+1"/>
         <source>relative filepaths</source>
-        <translation>відносні шляхи</translation>
+        <translation>caminhos de 
+arquivos relativos</translation>
     </message>
     <message>
         <location line="+19"/>
@@ -1729,19 +1730,19 @@
         <location line="+15"/>
         <location filename="../../ui/ui_GUI_TargetPlaylistDialog.h" line="+1"/>
         <source>Close</source>
-        <translation>Закрити</translation>
+        <translation>Fechar</translation>
     </message>
     <message>
         <location line="+13"/>
         <location filename="../../ui/ui_GUI_TargetPlaylistDialog.h" line="+1"/>
         <source>Save</source>
-        <translation>Зберегти</translation>
+        <translation>Gravar</translation>
     </message>
     <message>
         <location line="+13"/>
         <location filename="../../ui/ui_GUI_TargetPlaylistDialog.h" line="+1"/>
         <source>Save playlist as...</source>
-        <translation>Зберегти плейлист як...</translation>
+        <translation>Salvar Lista de Reprodução como...</translation>
     </message>
 </context>
 <context>
@@ -1750,18 +1751,18 @@
         <location filename="../GUI/Preferences/UiPreferences/GUI_UiPreferences.ui" line="+27"/>
         <location filename="../../ui/ui_GUI_UiPreferences.h" line="+79"/>
         <source>Show Big cover</source>
-        <translation>Показати велику обкладинку</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+7"/>
         <location filename="../../ui/ui_GUI_UiPreferences.h" line="+1"/>
         <source>Dark mode</source>
-        <translation>Темний інтерфейс</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../GUI/Preferences/UiPreferences/GUI_UiPreferences.cpp" line="+27"/>
         <source>User Interface</source>
-        <translation>Інтерфейс користувача</translation>
+        <translation>Interface do Utilizador</translation>
     </message>
 </context>
 <context>
@@ -1770,7 +1771,7 @@
         <location filename="../GUI/InfoDialog/GUI_InfoDialog.ui" line="+20"/>
         <location filename="../../ui/ui_GUI_InfoDialog.h" line="+266"/>
         <source>Info / Edit</source>
-        <translation>Інформація/Зміна</translation>
+        <translation>Informação / Editar</translation>
     </message>
 </context>
 <context>
@@ -1778,614 +1779,614 @@
     <message>
         <location filename="../Utils/Language.cpp" line="+64"/>
         <source>About</source>
-        <translation>Про додаток</translation>
+        <translation>Acerca</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Action</source>
-        <translation>Дія</translation>
+        <translation>Acção</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Actions</source>
-        <translation>Дії</translation>
+        <translation>Acções</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Add tab</source>
-        <translation>Додати нову вкладку</translation>
+        <translation>Adicionar a página</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Album</source>
-        <translation>Альбом</translation>
+        <translation>Álbum</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Albums</source>
-        <translation>Альбоми</translation>
+        <translation>Álbuns</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Append</source>
-        <translation>Додавання</translation>
+        <translation>Adicionar</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Artist</source>
-        <translation>Виконавець</translation>
+        <translation>Artista</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Artists</source>
-        <translation>Виконавці</translation>
+        <translation>Artistas</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Bitrate</source>
-        <translation>Бітрейт</translation>
+        <translation>Taxa de Dados</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Bookmarks</source>
-        <translation>Закладки</translation>
+        <translation>Favoritos</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Broadcast</source>
-        <translation>Трансляція</translation>
+        <translation>Broadcast</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>by</source>
-        <translation>за</translation>
+        <translation>por</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Cannot find Lame MP3 encoder</source>
-        <translation>Не вдалося знайти MP3 інструмент кодування</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Clear</source>
-        <translation>Вилучити</translation>
+        <translation>Limpar</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Close</source>
-        <translation>Закрити</translation>
+        <translation>Fechar</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Close others</source>
-        <translation>Закрити інші</translation>
+        <translation>Fechar outros</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Close tab</source>
-        <translation>Закрити вкладку</translation>
+        <translation>Fechar a Página</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Continue</source>
-        <translation>Continue</translation>
+        <translation>Continuar</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Days</source>
-        <translation>Дні</translation>
+        <translation>Dias</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>d</source>
-        <translation>д</translation>
+        <translation>d</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Default</source>
-        <translation>Стандарт</translation>
+        <translation>Predefinida</translation>
     </message>
     <message>
         <location line="+2"/>
         <location line="+76"/>
         <source>Delete</source>
-        <translation>Видалити</translation>
+        <translation>Apagar</translation>
     </message>
     <message>
         <location line="-72"/>
         <source>Directory</source>
-        <translation>Каталог</translation>
+        <translation>Pasta</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Directories</source>
-        <translation>Каталоги</translation>
+        <translation>Pastas</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Disc</source>
-        <translation>CD Ном</translation>
+        <translation>Núm. do Disco</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Dur.</source>
-        <translation>Тривал.</translation>
+        <translation>Dur.</translation>
     </message>
     <message>
         <location line="-3"/>
         <source>Duration</source>
-        <translation>Тривалість</translation>
+        <translation>Duração</translation>
     </message>
     <message>
         <location line="-72"/>
         <source>Activate</source>
-        <translation>Активувати</translation>
+        <translation>Activar</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Active</source>
-        <translation>Активний</translation>
+        <translation>Activo</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Album artists</source>
-        <translation>Виконавці альбому</translation>
+        <translation>Artistas do Álbum</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>All</source>
-        <translation>Всі</translation>
+        <translation>Tudo</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Application</source>
-        <translation>Програма</translation>
+        <translation>Aplicação</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Apply</source>
-        <translation>Застосувати</translation>
+        <translation>Aplicar</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Ascending</source>
-        <translation>За зростанням</translation>
+        <translation>Ascendente</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Automatic</source>
-        <translation>Автоматично</translation>
+        <translation>Automático</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>Cancel</source>
-        <translation>Відмінити</translation>
+        <translation>Cancelar</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Covers</source>
-        <translation>Обкладинки</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Date</source>
-        <translation>Дата</translation>
+        <translation>Data</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>Descending</source>
-        <translation>За спаданням</translation>
+        <translation>Descendente</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>Dynamic playback</source>
-        <translation>Динамічне відтворення</translation>
+        <translation>Reprodução Dinâmica</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Edit</source>
-        <translation>Зміни</translation>
+        <translation>Editar</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Empty input</source>
-        <translation>Порожній введення</translation>
+        <translation>Vazio entrada</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Enter name</source>
-        <translation>Ввести ім&apos;я</translation>
+        <translation>Indique o nome</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Enter URL</source>
-        <translation>Ввести URL</translation>
+        <translation>Indique o URL</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Entry</source>
-        <translation>Елемент</translation>
+        <translation>Item</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Entries</source>
-        <translation>Записи</translation>
+        <translation>Elementos</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Error</source>
-        <translation>Помилка</translation>
+        <translation>Erro</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Fast</source>
-        <translation>Швидке</translation>
+        <translation>Rápido</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>File</source>
-        <translation>Файл</translation>
+        <translation>Ficheiro</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Filename</source>
-        <translation>Назва файла</translation>
+        <translation>Nome do Ficheiro</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Files</source>
-        <translation>Файли</translation>
+        <translation>Ficheiros</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Filesize</source>
-        <translation>Розмір файла</translation>
+        <translation>Tamanho do ficheiro</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>1st</source>
-        <translation>1-й</translation>
+        <translation>1º</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Font</source>
-        <translation>Шрифт</translation>
+        <translation>Tipo de letra</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Fonts</source>
-        <translation>Шрифти</translation>
+        <translation>Tipos de Letra</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Fulltext</source>
-        <translation>Текст повністю</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Gapless playback</source>
-        <translation>Безперервне відтворення</translation>
+        <translation>Reprodução contínua</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Genre</source>
-        <translation>Жанр</translation>
+        <translation>Género</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Genres</source>
-        <translation>Жанри</translation>
+        <translation>Gêneros</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>h</source>
-        <translation>год</translation>
+        <translation>h</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Import directory</source>
-        <translation>Імпорт каталогу</translation>
+        <translation>Importar diretório</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Import files</source>
-        <translation>Імпорт файлів</translation>
+        <translation>importar arquivos</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Inactive</source>
-        <translation>Неактивний</translation>
+        <translation>Inactivo</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Info</source>
-        <translation>Info</translation>
+        <translation>Informação</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Loading</source>
-        <translation>Завантаження</translation>
+        <translation>A carregar</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Loading %1</source>
-        <translation>Завантаження %1</translation>
+        <translation>A carregar %1</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Invalid characters</source>
-        <translation>Некоректні символи</translation>
+        <translation>Carácters inválidos</translation>
     </message>
     <message>
         <location line="+18"/>
         <source>Library</source>
-        <translation>Бібліотека</translation>
+        <translation>Biblioteca</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Library path</source>
-        <translation>Шлях до бібліотеки</translation>
+        <translation>Caminho da Biblioteca</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Listen</source>
-        <translation>Слухати</translation>
+        <translation>Ouvir</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Logger</source>
-        <translation>Логгер</translation>
+        <translation>Registos</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Lyrics</source>
-        <translation>Текст пісні</translation>
+        <translation>Letras Musicais</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Menu</source>
-        <translation>Меню</translation>
+        <translation>Menu</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>m</source>
-        <translation>мін</translation>
+        <translation>m</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Missing</source>
-        <translation>Відсутній</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Months</source>
-        <translation>Місяці</translation>
+        <translation>Meses</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Mute off</source>
-        <translation>Звук увімкнено</translation>
+        <translation>Silêncio Desligado</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Name</source>
-        <translation>Ім&apos;я</translation>
+        <translation>Nome</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>New</source>
-        <translation>Нова</translation>
+        <translation>Novo</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Next track</source>
-        <translation>Наступний трек</translation>
+        <translation>Próxima faixa</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>No</source>
-        <translation>Не покращувати</translation>
+        <translation>Não</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>None</source>
-        <translation>Інший</translation>
+        <translation>Nenhum</translation>
     </message>
     <message>
         <location line="+2"/>
         <location line="+130"/>
         <source>Tracks</source>
-        <translation>Композиції</translation>
+        <translation>Faixas</translation>
     </message>
     <message>
         <location line="-128"/>
         <source>Move down</source>
-        <translation>Пересунути вниз</translation>
+        <translation>Descer</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Move up</source>
-        <translation>Пересунути вгору</translation>
+        <translation>Subir</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>OK</source>
-        <translation>ОК</translation>
+        <translation>OK</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>on</source>
-        <translation>ввімкнено</translation>
+        <translation>ligada</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Open</source>
-        <translation>Відкрити</translation>
+        <translation>Abrir</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Open directory</source>
-        <translation>Відкритий каталог</translation>
+        <translation>Abrir uma pasta</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Open file</source>
-        <translation>Відкрити файл</translation>
+        <translation>Abrir um Ficheiro</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>or</source>
-        <translation>або</translation>
+        <translation>ou</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Overwrite</source>
-        <translation>Перезаписати</translation>
+        <translation>Sobrepor</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Pause</source>
-        <translation>Пауза</translation>
+        <translation>Pausar</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Play</source>
-        <translation>Відтворити</translation>
+        <translation>Reproduzir</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>Play/Pause</source>
-        <translation>Старт/Пауза</translation>
+        <translation>Tocar/Pausa</translation>
     </message>
     <message>
         <location line="-10"/>
         <source>Playing time</source>
-        <translation>Час відтворення</translation>
+        <translation>Tempo de reprodução</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Playlist</source>
-        <translation>Список відтворення</translation>
+        <translation>Lista de Reprodução</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Playlists</source>
-        <translation>Списки відтворення</translation>
+        <translation>Listas de Reprodução</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Play next</source>
-        <translation>Відтворити наступним</translation>
+        <translation>Reproduzir seguinte</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Preferences</source>
-        <translation>Налаштування</translation>
+        <translation>Preferências</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Previous track</source>
-        <translation>Попередній трек</translation>
+        <translation>Faixa anterior</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Quit</source>
-        <translation>Вихід</translation>
+        <translation>Sair</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Radio</source>
-        <translation>Радіо</translation>
+        <translation>Rádio</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Radio Station</source>
-        <translation>Радіостанція</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Rating</source>
-        <translation>Оцінка</translation>
+        <translation>Classificação</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Really</source>
-        <translation>Дійсно</translation>
+        <translation>Tem certeza</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Remove</source>
-        <translation>Вилучити із списку</translation>
+        <translation>Remover</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Rename</source>
-        <translation>Перейменувати</translation>
+        <translation>Mudar o Nome</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Repeat 1</source>
-        <translation>Повторити 1</translation>
+        <translation>Repetir 1</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Repeat all</source>
-        <translation>Повторити все</translation>
+        <translation>Repetir todos</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Reset</source>
-        <translation>Відновити</translation>
+        <translation>Reiniciar</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Save to file</source>
-        <translation>Зберегти у файл</translation>
+        <translation>Gravar num Ficheiro</translation>
     </message>
     <message>
         <location line="+29"/>
         <source>Sort by</source>
-        <translation>Критерій впорядковування</translation>
+        <translation>Ordenar por</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Stream URL</source>
-        <translation>Веб-потік URL</translation>
+        <translation>URL do stream</translation>
     </message>
     <message>
         <location line="+22"/>
         <source>Unknown placeholder</source>
-        <translation>Невідомий заповнювач</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+18"/>
         <source>Weeks</source>
-        <translation>Тижні</translation>
+        <translation>Semanas</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Years</source>
-        <translation>Роки</translation>
+        <translation>Anos</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Zoom</source>
-        <translation>Масштаб</translation>
+        <translation>Ampliar</translation>
     </message>
     <message>
         <location line="-109"/>
         <source>Refresh</source>
-        <translation>Оновити</translation>
+        <translation>Actualizar</translation>
     </message>
     <message>
         <location line="-125"/>
         <source>Hours</source>
-        <translation>Годин</translation>
+        <translation>Horas</translation>
     </message>
     <message>
         <location line="+19"/>
         <source>Ctrl+f</source>
-        <translation>Ctrl+f</translation>
+        <translation>Ctrl+F</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -2405,7 +2406,7 @@
     <message>
         <location line="+2"/>
         <source>Shift</source>
-        <translation>Shift</translation>
+        <translation>Desvio</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2420,228 +2421,228 @@
     <message>
         <location line="+14"/>
         <source>Minimize</source>
-        <translation>Мінімізувати</translation>
+        <translation>Minimizar</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Minutes</source>
-        <translation>Хвилин</translation>
+        <translation>Minutos</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Mute</source>
-        <translation>Вимкнути звук</translation>
+        <translation>Mudo</translation>
     </message>
     <message>
         <location line="+41"/>
         <source>Play in new tab</source>
-        <translation>Відтворити у новій вкладці</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Plugin</source>
-        <translation>Додаток</translation>
+        <translation>&apos;Plugin&apos;</translation>
     </message>
     <message>
         <location line="+18"/>
         <source>Reload Library</source>
-        <translation>Перезавантажити бібліотеку</translation>
+        <translation>Actualizar la biblioteca</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Replace</source>
-        <translation>Замінити</translation>
+        <translation>Substituir</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Retry</source>
-        <translation>Повторити</translation>
+        <translation>Repetir</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Sampler</source>
-        <translation>Шаблон</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Shuffle</source>
-        <translation>Випадкове відтворення</translation>
+        <translation>Embaralhar</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Shutdown</source>
-        <translation>Вимкнути</translation>
+        <translation>Desligar</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Save</source>
-        <translation>Зберегти</translation>
+        <translation>Gravar</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Save as</source>
-        <translation>Зберегти як</translation>
+        <translation>Gravar como</translation>
     </message>
     <message>
         <location line="+4"/>
         <location line="+2"/>
         <source>Search</source>
-        <translation>Пошук</translation>
+        <translation>Procurar</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Search next</source>
-        <translation>Шукати далі</translation>
+        <translation>Procurar próximo</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>2nd</source>
-        <translation>2-й</translation>
+        <translation>2º</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Seconds</source>
-        <translation>Секунд</translation>
+        <translation>Segundos</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>s</source>
-        <translation>с</translation>
+        <translation>s</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Seek backward</source>
-        <translation>Перемотати назад</translation>
+        <translation>Recuar</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Seek forward</source>
-        <translation>Перемотати вперед</translation>
+        <translation>Avançar</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Show</source>
-        <translation>Показ</translation>
+        <translation>Mostrar</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Show Album Artists</source>
-        <translation>Показати виконавців альбому</translation>
+        <translation>Mostrar: Artista do Álbum</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Show Covers</source>
-        <translation>Показати обкладинки</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Show Library</source>
-        <translation>Показати бібліотеку</translation>
+        <translation>Mostrar la biblioteca</translation>
     </message>
     <message>
         <location line="+18"/>
         <source>Track</source>
-        <translation>Доріжка</translation>
+        <translation>Faixa</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Track number</source>
-        <translation>Номер доріжки</translation>
+        <translation>Número de Faixa</translation>
     </message>
     <message>
         <location line="-18"/>
         <source>Similar artists</source>
-        <translation>Подібні виконавці</translation>
+        <translation>Artistas Semelhantes</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Stop</source>
-        <translation>Зупинити</translation>
+        <translation>Parar</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Success</source>
-        <translation>Виконано</translation>
+        <translation>Sucesso</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>th</source>
-        <translation>й</translation>
+        <translation>º</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>3rd</source>
-        <translation>3-й</translation>
+        <translation>3º</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Title</source>
-        <translation>Заголовок</translation>
+        <translation>Título</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>track on</source>
-        <translation>Трек на</translation>
+        <translation>faixa em</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Tree</source>
-        <translation>У вигляді дерева</translation>
+        <translation>Árvore</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Undo</source>
-        <translation>Скасувати</translation>
+        <translation>Desfazer</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Various</source>
-        <translation>Інше</translation>
+        <translation>Vários</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Various albums</source>
-        <translation>Різні альбоми</translation>
+        <translation>Vários Álbuns</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Various artists</source>
-        <translation>Різні виконавці</translation>
+        <translation>Vários Artistas</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Various tracks</source>
-        <translation>Різні треки</translation>
+        <translation>Varias Faixas</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Version</source>
-        <translation>Версія</translation>
+        <translation>Versão</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Volume down</source>
-        <translation>Зменшити гучність</translation>
+        <translation>Diminuir o Volume</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Volume up</source>
-        <translation>Збільшити гучність</translation>
+        <translation>Aumentar o Volume</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Warning</source>
-        <translation>Попередження</translation>
+        <translation>Aviso</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Year</source>
-        <translation>Рік</translation>
+        <translation>Ano</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Yes</source>
-        <translation>Так</translation>
+        <translation>Sim</translation>
     </message>
 </context>
 <context>
@@ -2649,7 +2650,7 @@
     <message>
         <location filename="../GUI/Library/GUI_CoverView.cpp" line="+192"/>
         <source>Use Ctrl + mouse wheel to zoom</source>
-        <translation>Використовувати Ctrl + mouse для збільшення</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2657,7 +2658,7 @@
     <message>
         <location filename="../GUI/Library/GUI_EmptyLibrary.cpp" line="+94"/>
         <source>Do you want to reload the Library?</source>
-        <translation>Ви дійсно бажаєте перезавантажити бібліотеку?</translation>
+        <translation>Quer atualizar a biblioteca?</translation>
     </message>
 </context>
 <context>
@@ -2665,12 +2666,12 @@
     <message>
         <location filename="../GUI/Library/GenreView.cpp" line="+122"/>
         <source>Updating genres</source>
-        <translation>Оновити жанри</translation>
+        <translation>Atualizando gêneros</translation>
     </message>
     <message>
         <location line="+86"/>
         <source>Do you really want to remove %1 from all tracks?</source>
-        <translation>Ви дійсно бажаєте вилучити %1? з усіх треків?</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2678,17 +2679,17 @@
     <message>
         <location filename="../Components/Library/Importer/LibraryImporter.cpp" line="+186"/>
         <source>All files could be imported</source>
-        <translation>Всі файли можуть імпортуватись</translation>
+        <translation>Todos os arquivos podem ser importados</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>%1 of %2 files could be imported</source>
-        <translation>%1 із %2 файлів можуть імпортуватись</translation>
+        <translation>%1 de %2 arquivos podem ser importados</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>Could not import tracks</source>
-        <translation>Неможливо імпортувати треки</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2696,12 +2697,12 @@
     <message>
         <location filename="../GUI/Library/ItemView.cpp" line="+186"/>
         <source>Merge</source>
-        <translation>Об’єднати</translation>
+        <translation>Reunir</translation>
     </message>
     <message>
         <location line="+76"/>
         <source>Clear selection</source>
-        <translation>Очистити вибір</translation>
+        <translation>Limpar a selecção</translation>
     </message>
 </context>
 <context>
@@ -2709,7 +2710,7 @@
     <message>
         <location filename="../GUI/Library/Utils/LocalLibraryMenu.cpp" line="+187"/>
         <source>Live search</source>
-        <translation>Live пошук</translation>
+        <translation>Pesquisa em tempo real</translation>
     </message>
 </context>
 <context>
@@ -2717,12 +2718,12 @@
     <message>
         <location filename="../Components/Library/Threads/ReloadThread.cpp" line="+223"/>
         <source>Reading files</source>
-        <translation>Читання файлів</translation>
+        <translation>A ler</translation>
     </message>
     <message>
         <location line="+108"/>
         <source>Delete orphaned tracks...</source>
-        <translation>Видалити осиротілі треки...</translation>
+        <translation>Deletar Faixas Ausentes...</translation>
     </message>
 </context>
 <context>
@@ -2730,22 +2731,22 @@
     <message>
         <location filename="../GUI/Utils/ContextMenu/LibraryContextMenu.cpp" line="+154"/>
         <source>Play in new tab</source>
-        <translation>Відтворити у новій вкладці</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Clear selection</source>
-        <translation>Вилучити вибір</translation>
+        <translation>Limpar a selecção</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Ctrl+X</source>
-        <translation>Ctrl+X</translation>
+        <translation>Ctrl + X</translation>
     </message>
     <message>
         <location line="-3"/>
         <source>Cover view</source>
-        <translation>Переглянути обкладинку</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2753,12 +2754,12 @@
     <message>
         <location filename="../Components/Lyrics/LyricLookup.cpp" line="+179"/>
         <source>Could not fetch lyrics from %1</source>
-        <translation>Неможливо перенести текст з%1</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+10"/>
         <source>No lyrics found</source>
-        <translation>Текст не знайдено</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2766,68 +2767,68 @@
     <message>
         <location filename="../GUI/Player/GUI_PlayerMenubar.cpp" line="+248"/>
         <source>View</source>
-        <translation>Вигляд</translation>
+        <translation>Ver</translation>
     </message>
     <message>
         <location line="+1"/>
         <location line="+13"/>
         <source>Help</source>
-        <translation>Допомога</translation>
+        <translation>Ajuda</translation>
     </message>
     <message>
         <location line="-3"/>
         <source>Dark</source>
-        <translation>Темний інтерфейс</translation>
+        <translation>Tema Escuro</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Fullscreen</source>
-        <translation>На весь екран</translation>
+        <translation>Ecrã Completo</translation>
     </message>
     <message>
         <location line="+40"/>
         <source>Media files</source>
-        <translation>Медіа файли</translation>
+        <translation>Arquivos de mídia</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Open Media files</source>
-        <translation>Відкрити медіа файли</translation>
+        <translation>Abrir Arquivos de mídia</translation>
     </message>
     <message>
         <location line="+51"/>
         <source>Please visit the forum at</source>
-        <translation>Будь ласка, завітайте до форуму</translation>
+        <translation>Por favor, visite o fórum em</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Donate</source>
-        <translation>Пожертвувати</translation>
+        <translation>Doar</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Thank you</source>
-        <translation>Дякуємо</translation>
+        <translation>Muito Obrigado</translation>
     </message>
     <message>
         <location line="+22"/>
         <source>About Sayonara</source>
-        <translation>Про Sayonara</translation>
+        <translation>Sobre o Sayonara</translation>
     </message>
     <message>
         <location line="+20"/>
         <source>Special thanks to %1 and %2 for translating</source>
-        <translation>Особлива подяка %1 и %2за переклад</translation>
+        <translation>Agradecimentos especiais a %1 e %2 pela tradução</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Written by Lucio Carreras</source>
-        <translation>Автор Lucio Carreras</translation>
+        <translation>Desenvolvido por Lucio Carreras</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>License</source>
-        <translation>Ліцензія</translation>
+        <translation>Licença</translation>
     </message>
 </context>
 <context>
@@ -2835,22 +2836,22 @@
     <message>
         <location filename="../GUI/Utils/SearchableWidget/MiniSearcher.cpp" line="+239"/>
         <source>Previous search result</source>
-        <translation>Попередній результат пошуку</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Arrow up</source>
-        <translation>Стрілка вгору</translation>
+        <translation>Seta cima</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Next search result</source>
-        <translation>Наступний результат пошуку</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Arrow down</source>
-        <translation>Стрілка вниз</translation>
+        <translation>Seta baixo</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -2863,7 +2864,7 @@
     <message>
         <location filename="../GUI/Playlist/Model.cpp" line="+424"/>
         <source>Goto row</source>
-        <translation>Стрибни до рядка</translation>
+        <translation>Ir para linha</translation>
     </message>
 </context>
 <context>
@@ -2871,7 +2872,7 @@
     <message>
         <location filename="../3rdParty/Soundcloud/src/SoundcloudData.cpp" line="+250"/>
         <source>Purchase Url</source>
-        <translation>Придбати на</translation>
+        <translation>Url de compra</translation>
     </message>
 </context>
 <context>
@@ -2879,27 +2880,27 @@
     <message>
         <location filename="../3rdParty/Soundcloud/ui/GUI_SoundcloudArtistSearch.cpp" line="+76"/>
         <source>Query too short</source>
-        <translation>Занадто короткий запит</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+78"/>
         <source>No artists found</source>
-        <translation>Не знайдено жодного виконавця</translation>
+        <translation>Nenhum artista encontrado</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Found %1 artists</source>
-        <translation>Знайдено %1 виконавців</translation>
+        <translation>Encontrados %1 artistas</translation>
     </message>
     <message>
         <location line="+48"/>
         <source>%1 tracks found</source>
-        <translation>Знайдено %1 треків</translation>
+        <translation>%1 faixas encontradas</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>%1 playlists found</source>
-        <translation>Знайдено %1 плейлистів</translation>
+        <translation>%1 listas de reprodução encontradas</translation>
     </message>
 </context>
 <context>
@@ -2907,24 +2908,24 @@
     <message>
         <location filename="../3rdParty/Soundcloud/src/SoundcloudJsonParser.cpp" line="+119"/>
         <source>Website</source>
-        <translation>Веб сторінка</translation>
+        <translation>Website</translation>
     </message>
     <message>
         <location line="+4"/>
         <location line="+218"/>
         <source>Permalink Url</source>
-        <translation>Постійне посилання</translation>
+        <translation>Url link</translation>
     </message>
     <message>
         <location line="-205"/>
         <source>Followers/Following</source>
-        <translation>Followers</translation>
+        <translation>Seguidores/Seguindo</translation>
     </message>
     <message>
         <location line="+84"/>
         <location line="+125"/>
         <source>Purchase Url</source>
-        <translation>Придбати на</translation>
+        <translation>Url de compra</translation>
     </message>
 </context>
 <context>
@@ -2932,13 +2933,13 @@
     <message>
         <location filename="../Components/Shutdown/Shutdown.cpp" line="+96"/>
         <source>Computer will shutdown after playlist has finished</source>
-        <translation>Комп&apos;ютер завершить роботу після поточного плейлиста</translation>
+        <translation>Computador desligará quando a lista de reprodução terminar</translation>
     </message>
     <message>
         <location line="+25"/>
         <location line="+30"/>
         <source>Computer will shutdown in %1 minutes</source>
-        <translation>Комп&apos;ютер завершить роботу через %1 хвилин</translation>
+        <translation>O computador irá desligar em %1 minutos</translation>
     </message>
 </context>
 <context>
@@ -2946,7 +2947,7 @@
     <message>
         <location filename="../3rdParty/SomaFM/ui/SomaFMStationModel.cpp" line="+122"/>
         <source>Cannot fetch stations</source>
-        <translation>Неможливо завантажити радіостанції</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2955,13 +2956,13 @@
         <location filename="../GUI/Plugins/Stream/GUI_AbstractStream.cpp" line="-281"/>
         <location line="+5"/>
         <source>Streams</source>
-        <translation>Веб-потоки</translation>
+        <translation>Streams</translation>
     </message>
     <message>
         <location line="-5"/>
         <location line="+5"/>
         <source>Podcasts</source>
-        <translation>Подкасти</translation>
+        <translation>Podcasts</translation>
     </message>
 </context>
 <context>
@@ -2970,7 +2971,7 @@
         <location filename="../GUI/Utils/PreferenceAction.cpp" line="+150"/>
         <location line="+5"/>
         <source>Stream Recorder</source>
-        <translation>Запис потоку</translation>
+        <translation>Gravar stream</translation>
     </message>
 </context>
 <context>
@@ -2978,7 +2979,7 @@
     <message>
         <location filename="../Components/Broadcasting/StreamServer.cpp" line="+212"/>
         <source>%1 wants to listen to your music.</source>
-        <translation>%1 бажає долучитись до прослуховування вашої музики.</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2986,12 +2987,12 @@
     <message>
         <location filename="../GUI/TagEdit/TagTextInput.cpp" line="+79"/>
         <source>Very first letter to upper case</source>
-        <translation>Найперші букви писати з великої</translation>
+        <translation>Todas as primeiras letras em maiúsculas</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>First letters to upper case</source>
-        <translation>Перші букви писати з великої</translation>
+        <translation>Primeiras letras em maiúsculas</translation>
     </message>
 </context>
 <context>
@@ -2999,7 +3000,7 @@
     <message>
         <location filename="../GUI/Player/GUI_TrayIcon.cpp" line="+184"/>
         <source>Current song</source>
-        <translation>Поточна пісня</translation>
+        <translation>Música atual</translation>
     </message>
 </context>
 </TS>

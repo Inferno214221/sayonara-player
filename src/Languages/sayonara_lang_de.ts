@@ -96,7 +96,7 @@
 <context>
     <name>GUI_AbstractStream</name>
     <message>
-        <location filename="../GUI/Plugins/Stream/GUI_AbstractStream.cpp" line="+155"/>
+        <location filename="../GUI/Plugins/Stream/GUI_AbstractStream.cpp" line="+168"/>
         <source>Cannot open stream</source>
         <translation>Stream kann nicht geöffnet werden</translation>
     </message>
@@ -130,57 +130,43 @@
     </message>
     <message>
         <location filename="../GUI/Covers/GUI_AlternativeCovers.ui" line="+34"/>
-        <location filename="../../5.11/build-debug/src/GUI/Covers/ui_GUI_AlternativeCovers.h" line="+285"/>
-        <location filename="../../build-debug/src/GUI/Covers/ui_GUI_AlternativeCovers.h" line="+286"/>
-        <location filename="../../build-release/src/GUI/Covers/ui_GUI_AlternativeCovers.h" line="+286"/>
+        <location filename="../../ui/ui_GUI_AlternativeCovers.h" line="+286"/>
         <source>Online Search</source>
         <translation>Online Suche</translation>
     </message>
     <message>
         <location line="+37"/>
-        <location filename="../../5.11/build-debug/src/GUI/Covers/ui_GUI_AlternativeCovers.h" line="-4"/>
-        <location filename="../../build-debug/src/GUI/Covers/ui_GUI_AlternativeCovers.h" line="-4"/>
-        <location filename="../../build-release/src/GUI/Covers/ui_GUI_AlternativeCovers.h" line="-4"/>
+        <location filename="../../ui/ui_GUI_AlternativeCovers.h" line="-4"/>
         <source>Automatic search</source>
         <translation>Automatische Suche</translation>
     </message>
     <message>
         <location line="+19"/>
-        <location filename="../../5.11/build-debug/src/GUI/Covers/ui_GUI_AlternativeCovers.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Covers/ui_GUI_AlternativeCovers.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Covers/ui_GUI_AlternativeCovers.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_AlternativeCovers.h" line="+1"/>
         <source>Text search</source>
         <translation>Freie Suche</translation>
     </message>
     <message>
         <location line="+42"/>
-        <location filename="../../5.11/build-debug/src/GUI/Covers/ui_GUI_AlternativeCovers.h" line="+2"/>
-        <location filename="../../build-debug/src/GUI/Covers/ui_GUI_AlternativeCovers.h" line="+2"/>
-        <location filename="../../build-release/src/GUI/Covers/ui_GUI_AlternativeCovers.h" line="+2"/>
+        <location filename="../../ui/ui_GUI_AlternativeCovers.h" line="+2"/>
         <source>Server</source>
         <translation>Server</translation>
     </message>
     <message>
         <location line="+20"/>
-        <location filename="../../5.11/build-debug/src/GUI/Covers/ui_GUI_AlternativeCovers.h" line="+3"/>
-        <location filename="../../build-debug/src/GUI/Covers/ui_GUI_AlternativeCovers.h" line="+3"/>
-        <location filename="../../build-release/src/GUI/Covers/ui_GUI_AlternativeCovers.h" line="+3"/>
+        <location filename="../../ui/ui_GUI_AlternativeCovers.h" line="+3"/>
         <source>Local Search</source>
         <translation>Lokale Suche</translation>
     </message>
     <message>
         <location line="+12"/>
-        <location filename="../../5.11/build-debug/src/GUI/Covers/ui_GUI_AlternativeCovers.h" line="-1"/>
-        <location filename="../../build-debug/src/GUI/Covers/ui_GUI_AlternativeCovers.h" line="-1"/>
-        <location filename="../../build-release/src/GUI/Covers/ui_GUI_AlternativeCovers.h" line="-1"/>
+        <location filename="../../ui/ui_GUI_AlternativeCovers.h" line="-1"/>
         <source>Select and preview multiple covers</source>
         <translation>Auswahl und Vorschau mehrerer Covers</translation>
     </message>
     <message>
         <location line="+194"/>
-        <location filename="../../5.11/build-debug/src/GUI/Covers/ui_GUI_AlternativeCovers.h" line="+4"/>
-        <location filename="../../build-debug/src/GUI/Covers/ui_GUI_AlternativeCovers.h" line="+4"/>
-        <location filename="../../build-release/src/GUI/Covers/ui_GUI_AlternativeCovers.h" line="+4"/>
+        <location filename="../../ui/ui_GUI_AlternativeCovers.h" line="+4"/>
         <source>Alternative Cover</source>
         <translation>Alternative Cover</translation>
     </message>
@@ -204,25 +190,19 @@
     </message>
     <message>
         <location filename="../GUI/Plugins/Engine/AudioConverter/GUI_AudioConverter.ui" line="+61"/>
-        <location filename="../../5.11/build-debug/src/GUI/Plugins/ui_GUI_AudioConverter.h" line="+88"/>
-        <location filename="../../build-debug/src/GUI/Plugins/ui_GUI_AudioConverter.h" line="+91"/>
-        <location filename="../../build-release/src/GUI/Plugins/ui_GUI_AudioConverter.h" line="+91"/>
+        <location filename="../../ui/ui_GUI_AudioConverter.h" line="+91"/>
         <source>Variable Bitrate</source>
         <translation>Variable Bitrate</translation>
     </message>
     <message>
         <location line="+16"/>
-        <location filename="../../5.11/build-debug/src/GUI/Plugins/ui_GUI_AudioConverter.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Plugins/ui_GUI_AudioConverter.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Plugins/ui_GUI_AudioConverter.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_AudioConverter.h" line="+1"/>
         <source>Quality</source>
         <translation>Qualität</translation>
     </message>
     <message>
         <location line="+10"/>
-        <location filename="../../5.11/build-debug/src/GUI/Plugins/ui_GUI_AudioConverter.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Plugins/ui_GUI_AudioConverter.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Plugins/ui_GUI_AudioConverter.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_AudioConverter.h" line="+1"/>
         <source>Constant Bitrate</source>
         <translation>Konstante Bitrate</translation>
     </message>
@@ -231,9 +211,7 @@
     <name>GUI_Bookmarks</name>
     <message>
         <location filename="../GUI/Plugins/Bookmarks/GUI_Bookmarks.ui" line="+116"/>
-        <location filename="../../5.11/build-debug/src/GUI/Plugins/ui_GUI_Bookmarks.h" line="+126"/>
-        <location filename="../../build-debug/src/GUI/Plugins/ui_GUI_Bookmarks.h" line="+129"/>
-        <location filename="../../build-release/src/GUI/Plugins/ui_GUI_Bookmarks.h" line="+129"/>
+        <location filename="../../ui/ui_GUI_Bookmarks.h" line="+129"/>
         <source>Loop</source>
         <translation>Wiederholen</translation>
     </message>
@@ -253,17 +231,13 @@
     <name>GUI_Broadcast</name>
     <message>
         <location filename="../GUI/Plugins/Broadcasting/GUI_Broadcast.ui" line="+54"/>
-        <location filename="../../5.11/build-debug/src/GUI/Plugins/ui_GUI_Broadcast.h" line="+112"/>
-        <location filename="../../build-debug/src/GUI/Plugins/ui_GUI_Broadcast.h" line="+114"/>
-        <location filename="../../build-release/src/GUI/Plugins/ui_GUI_Broadcast.h" line="+114"/>
+        <location filename="../../ui/ui_GUI_Broadcast.h" line="+114"/>
         <source>...</source>
         <translation>...</translation>
     </message>
     <message>
         <location line="+34"/>
-        <location filename="../../5.11/build-debug/src/GUI/Plugins/ui_GUI_Broadcast.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Plugins/ui_GUI_Broadcast.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Plugins/ui_GUI_Broadcast.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_Broadcast.h" line="+1"/>
         <source>Cannot Broadcast</source>
         <translation>Kein Streaming möglich</translation>
     </message>
@@ -302,17 +276,13 @@
     <name>GUI_BroadcastSetup</name>
     <message>
         <location filename="../GUI/Preferences/Broadcast/GUI_BroadcastSetup.ui" line="+34"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_BroadcastSetup.h" line="+113"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_BroadcastSetup.h" line="+116"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_BroadcastSetup.h" line="+116"/>
+        <location filename="../../ui/ui_GUI_BroadcastSetup.h" line="+116"/>
         <source>Ask for permission</source>
         <translation>Nach Erlaubnis fragen</translation>
     </message>
     <message>
         <location line="-14"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_BroadcastSetup.h" line="-1"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_BroadcastSetup.h" line="-1"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_BroadcastSetup.h" line="-1"/>
+        <location filename="../../ui/ui_GUI_BroadcastSetup.h" line="-1"/>
         <source>Port</source>
         <translation>Port</translation>
     </message>
@@ -321,17 +291,13 @@
     <name>GUI_Controls</name>
     <message>
         <location filename="../GUI/Player/GUI_Controls.ui" line="+546"/>
-        <location filename="../../5.11/build-debug/src/GUI/Player/ui_GUI_Controls.h" line="+444"/>
-        <location filename="../../build-debug/src/GUI/Player/ui_GUI_Controls.h" line="+446"/>
-        <location filename="../../build-release/src/GUI/Player/ui_GUI_Controls.h" line="+446"/>
+        <location filename="../../ui/ui_GUI_Controls.h" line="+446"/>
         <source>Written by Lucio Carreras</source>
         <translation>Von Lucio Carreras</translation>
     </message>
     <message>
         <location line="-88"/>
-        <location filename="../../5.11/build-debug/src/GUI/Player/ui_GUI_Controls.h" line="-2"/>
-        <location filename="../../build-debug/src/GUI/Player/ui_GUI_Controls.h" line="-2"/>
-        <location filename="../../build-release/src/GUI/Player/ui_GUI_Controls.h" line="-2"/>
+        <location filename="../../ui/ui_GUI_Controls.h" line="-2"/>
         <source>Copyright 2011-2017</source>
         <translation>Copyright 2011-2017</translation>
     </message>
@@ -358,17 +324,13 @@
     <name>GUI_ControlsNew</name>
     <message>
         <location filename="../GUI/Player/GUI_ControlsNew.ui" line="+638"/>
-        <location filename="../../5.11/build-debug/src/GUI/Player/ui_GUI_ControlsNew.h" line="+476"/>
-        <location filename="../../build-debug/src/GUI/Player/ui_GUI_ControlsNew.h" line="+478"/>
-        <location filename="../../build-release/src/GUI/Player/ui_GUI_ControlsNew.h" line="+478"/>
+        <location filename="../../ui/ui_GUI_ControlsNew.h" line="+478"/>
         <source>Copyright 2011-2017</source>
         <translation>Copyright 2011-2017</translation>
     </message>
     <message>
         <location line="+50"/>
-        <location filename="../../5.11/build-debug/src/GUI/Player/ui_GUI_ControlsNew.h" line="+2"/>
-        <location filename="../../build-debug/src/GUI/Player/ui_GUI_ControlsNew.h" line="+2"/>
-        <location filename="../../build-release/src/GUI/Player/ui_GUI_ControlsNew.h" line="+2"/>
+        <location filename="../../ui/ui_GUI_ControlsNew.h" line="+2"/>
         <source>Written by Lucio Carreras</source>
         <translation>Von Lucio Carreras</translation>
     </message>
@@ -377,17 +339,13 @@
     <name>GUI_CoverView</name>
     <message>
         <location filename="../GUI/Library/GUI_CoverView.ui" line="+67"/>
-        <location filename="../../5.11/build-debug/src/GUI/Library/ui_GUI_CoverView.h" line="+122"/>
-        <location filename="../../build-debug/src/GUI/Library/ui_GUI_CoverView.h" line="+124"/>
-        <location filename="../../build-release/src/GUI/Library/ui_GUI_CoverView.h" line="+124"/>
+        <location filename="../../ui/ui_GUI_CoverView.h" line="+124"/>
         <source>Sort by</source>
         <translation>Sortieren</translation>
     </message>
     <message>
         <location line="+23"/>
-        <location filename="../../5.11/build-debug/src/GUI/Library/ui_GUI_CoverView.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Library/ui_GUI_CoverView.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Library/ui_GUI_CoverView.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_CoverView.h" line="+1"/>
         <source>Zoom</source>
         <translation>Vergrößern</translation>
     </message>
@@ -396,9 +354,7 @@
     <name>GUI_Covers</name>
     <message>
         <location filename="../GUI/Preferences/Covers/GUI_Covers.ui" line="+77"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_Covers.h" line="+98"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_Covers.h" line="+101"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_Covers.h" line="+101"/>
+        <location filename="../../ui/ui_GUI_Covers.h" line="+101"/>
         <source>If available, load covers from audio files</source>
         <translation>Falls verfügbar, extrahiere Covers aus Audiodateien</translation>
     </message>
@@ -410,12 +366,6 @@
         <location line="+11"/>
         <source>Crossfader</source>
         <translation>Crossfader</translation>
-    </message>
-    <message>
-        <location filename="../../build-release/src/GUI/Plugins/ui_GUI_Crossfader.h" line="+80"/>
-        <location line="+1"/>
-        <source>CheckBox</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -435,17 +385,13 @@
     <name>GUI_EmptyLibrary</name>
     <message>
         <location filename="../GUI/Library/GUI_EmptyLibrary.ui" line="+26"/>
-        <location filename="../../5.11/build-debug/src/GUI/Library/ui_GUI_EmptyLibrary.h" line="+132"/>
-        <location filename="../../build-debug/src/GUI/Library/ui_GUI_EmptyLibrary.h" line="+134"/>
-        <location filename="../../build-release/src/GUI/Library/ui_GUI_EmptyLibrary.h" line="+134"/>
+        <location filename="../../ui/ui_GUI_EmptyLibrary.h" line="+134"/>
         <source>Set library path</source>
         <translation>Verzeichnis wählen</translation>
     </message>
     <message>
         <location line="+17"/>
-        <location filename="../../5.11/build-debug/src/GUI/Library/ui_GUI_EmptyLibrary.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Library/ui_GUI_EmptyLibrary.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Library/ui_GUI_EmptyLibrary.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_EmptyLibrary.h" line="+1"/>
         <source>You haven&apos;t specified a library path yet</source>
         <translation>Kein Verzeichnis für die Musiksammlung angegeben</translation>
     </message>
@@ -472,13 +418,7 @@
         <location filename="../GUI/Preferences/UiPreferences/GUI_FontConfig.ui" line="+58"/>
         <location line="+7"/>
         <location line="+28"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_FontConfig.h" line="+170"/>
-        <location line="+1"/>
-        <location line="+2"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_FontConfig.h" line="+173"/>
-        <location line="+1"/>
-        <location line="+2"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_FontConfig.h" line="+173"/>
+        <location filename="../../ui/ui_GUI_FontConfig.h" line="+173"/>
         <location line="+1"/>
         <location line="+2"/>
         <source>Font size</source>
@@ -486,17 +426,13 @@
     </message>
     <message>
         <location line="+7"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_FontConfig.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_FontConfig.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_FontConfig.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_FontConfig.h" line="+1"/>
         <source>Font name</source>
         <translation>Schriftart</translation>
     </message>
     <message>
         <location line="-83"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_FontConfig.h" line="-5"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_FontConfig.h" line="-5"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_FontConfig.h" line="-5"/>
+        <location filename="../../ui/ui_GUI_FontConfig.h" line="-5"/>
         <source>Bold</source>
         <translation>Fett</translation>
     </message>
@@ -516,9 +452,7 @@
     </message>
     <message>
         <location filename="../GUI/Preferences/UiPreferences/GUI_IconPreferences.ui" line="+38"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_IconPreferences.h" line="+117"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_IconPreferences.h" line="+120"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_IconPreferences.h" line="+120"/>
+        <location filename="../../ui/ui_GUI_IconPreferences.h" line="+120"/>
         <source>Also use selected icon theme in Sayonara&apos;s dark mode</source>
         <translation>Icons auch im dunklen Modus verwenden</translation>
     </message>
@@ -527,33 +461,25 @@
     <name>GUI_ImportDialog</name>
     <message>
         <location filename="../GUI/ImportDialog/GUI_ImportDialog.ui" line="+14"/>
-        <location filename="../../5.11/build-debug/src/GUI/ImportDialog/ui_GUI_ImportDialog.h" line="+153"/>
-        <location filename="../../build-debug/src/GUI/ImportDialog/ui_GUI_ImportDialog.h" line="+156"/>
-        <location filename="../../build-release/src/GUI/ImportDialog/ui_GUI_ImportDialog.h" line="+156"/>
+        <location filename="../../ui/ui_GUI_ImportDialog.h" line="+156"/>
         <source>Import</source>
         <translation>Importieren</translation>
     </message>
     <message>
         <location line="+13"/>
-        <location filename="../../5.11/build-debug/src/GUI/ImportDialog/ui_GUI_ImportDialog.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/ImportDialog/ui_GUI_ImportDialog.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/ImportDialog/ui_GUI_ImportDialog.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_ImportDialog.h" line="+1"/>
         <source>Import tracks to library</source>
         <translation>Importiere Titel in die Sammlung</translation>
     </message>
     <message>
         <location line="+7"/>
-        <location filename="../../5.11/build-debug/src/GUI/ImportDialog/ui_GUI_ImportDialog.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/ImportDialog/ui_GUI_ImportDialog.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/ImportDialog/ui_GUI_ImportDialog.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_ImportDialog.h" line="+1"/>
         <source>Select target folder</source>
         <translation>Zielverzeichnis auswählen</translation>
     </message>
     <message>
         <location line="+43"/>
-        <location filename="../../5.11/build-debug/src/GUI/ImportDialog/ui_GUI_ImportDialog.h" line="+2"/>
-        <location filename="../../build-debug/src/GUI/ImportDialog/ui_GUI_ImportDialog.h" line="+2"/>
-        <location filename="../../build-release/src/GUI/ImportDialog/ui_GUI_ImportDialog.h" line="+2"/>
+        <location filename="../../ui/ui_GUI_ImportDialog.h" line="+2"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
@@ -612,17 +538,13 @@
     </message>
     <message>
         <location filename="../GUI/Preferences/Language/GUI_LanguageChooser.ui" line="+31"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_LanguageChooser.h" line="+57"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_LanguageChooser.h" line="+61"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_LanguageChooser.h" line="+61"/>
+        <location filename="../../ui/ui_GUI_LanguageChooser.h" line="+61"/>
         <source>English</source>
         <translation>Englisch</translation>
     </message>
     <message>
         <location line="-14"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_LanguageChooser.h" line="-1"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_LanguageChooser.h" line="-3"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_LanguageChooser.h" line="-3"/>
+        <location filename="../../ui/ui_GUI_LanguageChooser.h" line="-3"/>
         <source>For new languages I am always looking for translators</source>
         <translation>Für neue Sprachen bin ich immer auf der Suche nach Übersetzern</translation>
     </message>
@@ -641,33 +563,25 @@
     </message>
     <message>
         <location filename="../GUI/Preferences/LastFM/GUI_LastFM.ui" line="+34"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_LastFM.h" line="+132"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_LastFM.h" line="+135"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_LastFM.h" line="+135"/>
+        <location filename="../../ui/ui_GUI_LastFM.h" line="+135"/>
         <source>Password</source>
         <translation>Passwort</translation>
     </message>
     <message>
         <location line="+20"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_LastFM.h" line="+2"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_LastFM.h" line="+2"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_LastFM.h" line="+2"/>
+        <location filename="../../ui/ui_GUI_LastFM.h" line="+2"/>
         <source>Scrobble after</source>
         <translation>Scrobblen nach</translation>
     </message>
     <message>
         <location line="+46"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_LastFM.h" line="+2"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_LastFM.h" line="+2"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_LastFM.h" line="+2"/>
+        <location filename="../../ui/ui_GUI_LastFM.h" line="+2"/>
         <source>Login now</source>
         <translation>Anmelden</translation>
     </message>
     <message>
         <location line="-73"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_LastFM.h" line="-5"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_LastFM.h" line="-5"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_LastFM.h" line="-5"/>
+        <location filename="../../ui/ui_GUI_LastFM.h" line="-5"/>
         <source>Username</source>
         <translation>Benutzername</translation>
     </message>
@@ -681,88 +595,74 @@
     </message>
 </context>
 <context>
+    <name>GUI_Library</name>
+    <message>
+        <location filename="../3rdParty/Soundcloud/ui/GUI_SoundcloudLibrary.cpp" line="+49"/>
+        <source>Add artist</source>
+        <translation type="unfinished">Künstler hinzufügen</translation>
+    </message>
+</context>
+<context>
     <name>GUI_LibraryPreferences</name>
     <message>
         <location filename="../GUI/Preferences/Library/GUI_LibraryPreferences.ui" line="+24"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_LibraryPreferences.h" line="+210"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_LibraryPreferences.h" line="+213"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_LibraryPreferences.h" line="+213"/>
+        <location filename="../../ui/ui_GUI_LibraryPreferences.h" line="+213"/>
         <source>Libraries</source>
         <translation>Musiksammlungen</translation>
     </message>
     <message>
         <location line="+98"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_LibraryPreferences.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_LibraryPreferences.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_LibraryPreferences.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_LibraryPreferences.h" line="+1"/>
         <source>On double click, create playlist and</source>
         <translation>Doppelklick: Erstelle neue Wiedergabeliste und</translation>
     </message>
     <message>
         <location line="+6"/>
         <location line="+30"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_LibraryPreferences.h" line="+1"/>
-        <location line="+4"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_LibraryPreferences.h" line="+1"/>
-        <location line="+4"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_LibraryPreferences.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_LibraryPreferences.h" line="+1"/>
         <location line="+4"/>
         <source>do nothing (default)</source>
         <translation>mache nichts</translation>
     </message>
     <message>
         <location line="-23"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_LibraryPreferences.h" line="-3"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_LibraryPreferences.h" line="-3"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_LibraryPreferences.h" line="-3"/>
+        <location filename="../../ui/ui_GUI_LibraryPreferences.h" line="-3"/>
         <source>start playback if stopped</source>
         <translation>starte Wiedergabe wenn gestoppt</translation>
     </message>
     <message>
         <location line="+7"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_LibraryPreferences.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_LibraryPreferences.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_LibraryPreferences.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_LibraryPreferences.h" line="+1"/>
         <source>start playback immediately</source>
         <translation>starte Wiedergabe sofort</translation>
     </message>
     <message>
         <location line="+10"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_LibraryPreferences.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_LibraryPreferences.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_LibraryPreferences.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_LibraryPreferences.h" line="+1"/>
         <source>When drag and drop into playlist </source>
         <translation>Drag und Drop: Füge Titel in Wiedergabeliste ein und</translation>
     </message>
     <message>
         <location line="+13"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_LibraryPreferences.h" line="+2"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_LibraryPreferences.h" line="+2"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_LibraryPreferences.h" line="+2"/>
+        <location filename="../../ui/ui_GUI_LibraryPreferences.h" line="+2"/>
         <source>start if stopped and playlist is empty</source>
         <translation>starte Wiedergabe wenn gestoppt und Wiedergabeliste leer</translation>
     </message>
     <message>
         <location line="+24"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_LibraryPreferences.h" line="+3"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_LibraryPreferences.h" line="+3"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_LibraryPreferences.h" line="+3"/>
+        <location filename="../../ui/ui_GUI_LibraryPreferences.h" line="+3"/>
         <source>Other</source>
         <translation>Sonstiges</translation>
     </message>
     <message>
         <location line="+6"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_LibraryPreferences.h" line="-1"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_LibraryPreferences.h" line="-1"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_LibraryPreferences.h" line="-1"/>
+        <location filename="../../ui/ui_GUI_LibraryPreferences.h" line="-1"/>
         <source>Show &quot;Clear selection&quot; buttons</source>
         <translation>Zeige &quot;Auswahl zurücksetzen&quot; Knöpfe</translation>
     </message>
     <message>
         <location line="-85"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_LibraryPreferences.h" line="-1"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_LibraryPreferences.h" line="-1"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_LibraryPreferences.h" line="-1"/>
+        <location filename="../../ui/ui_GUI_LibraryPreferences.h" line="-1"/>
         <source>Library-Playlist Interaction</source>
         <translation>Bibliothek und Wiedergabeliste</translation>
     </message>
@@ -776,25 +676,13 @@
     <name>GUI_LocalLibrary</name>
     <message>
         <location filename="../GUI/Library/GUI_LocalLibrary.ui" line="+20"/>
-        <location filename="../../5.11/build-debug/src/GUI/Library/ui_GUI_LocalLibrary.h" line="+312"/>
-        <location filename="../../build-debug/src/GUI/Library/ui_GUI_LocalLibrary.h" line="+314"/>
-        <location filename="../../build-release/src/GUI/Library/ui_GUI_LocalLibrary.h" line="+314"/>
+        <location filename="../../ui/ui_GUI_LocalLibrary.h" line="+317"/>
         <source>Library</source>
         <translation>Musiksammlung</translation>
     </message>
     <message>
-        <location line="+293"/>
-        <location filename="../../5.11/build-debug/src/GUI/Library/ui_GUI_LocalLibrary.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Library/ui_GUI_LocalLibrary.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Library/ui_GUI_LocalLibrary.h" line="+1"/>
-        <source>Reload Library</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+139"/>
-        <location filename="../../5.11/build-debug/src/GUI/Library/ui_GUI_LocalLibrary.h" line="+2"/>
-        <location filename="../../build-debug/src/GUI/Library/ui_GUI_LocalLibrary.h" line="+2"/>
-        <location filename="../../build-release/src/GUI/Library/ui_GUI_LocalLibrary.h" line="+2"/>
+        <location line="+396"/>
+        <location filename="../../ui/ui_GUI_LocalLibrary.h" line="+2"/>
         <source>No genres found</source>
         <translation>Keine Genres gefunden</translation>
     </message>
@@ -811,32 +699,26 @@
     <name>GUI_Lyrics</name>
     <message>
         <location filename="../GUI/InfoDialog/GUI_Lyrics.ui" line="+28"/>
-        <location filename="../../5.11/build-debug/src/GUI/InfoDialog/ui_GUI_Lyrics.h" line="+209"/>
-        <location filename="../../build-debug/src/GUI/InfoDialog/ui_GUI_Lyrics.h" line="+212"/>
-        <location filename="../../build-release/src/GUI/InfoDialog/ui_GUI_Lyrics.h" line="+212"/>
+        <location filename="../../ui/ui_GUI_Lyrics.h" line="+212"/>
         <source>Save Lyrics</source>
         <translation>Songtexte speichern</translation>
     </message>
     <message>
         <location line="+125"/>
-        <location filename="../../5.11/build-debug/src/GUI/InfoDialog/ui_GUI_Lyrics.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/InfoDialog/ui_GUI_Lyrics.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/InfoDialog/ui_GUI_Lyrics.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_Lyrics.h" line="+1"/>
         <source>switch</source>
         <translation>vertauschen</translation>
     </message>
     <message>
         <location line="+42"/>
-        <location filename="../../5.11/build-debug/src/GUI/InfoDialog/ui_GUI_Lyrics.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/InfoDialog/ui_GUI_Lyrics.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/InfoDialog/ui_GUI_Lyrics.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_Lyrics.h" line="+1"/>
         <source>Zoom</source>
         <translation>Vergrößern</translation>
     </message>
     <message>
         <location filename="../GUI/InfoDialog/GUI_Lyrics.cpp" line="+299"/>
         <source>Save lyrics not supported</source>
-        <translation type="unfinished"></translation>
+        <translation>Songtexte werden in dieser Datei nicht unterstützt</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -863,9 +745,7 @@
     </message>
     <message>
         <location filename="../GUI/Preferences/Notifications/GUI_Notifications.ui" line="+17"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_Notifications.h" line="+75"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_Notifications.h" line="+78"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_Notifications.h" line="+78"/>
+        <location filename="../../ui/ui_GUI_Notifications.h" line="+78"/>
         <source>Timeout (ms)</source>
         <translation>Schließen nach (ms)</translation>
     </message>
@@ -879,92 +759,70 @@
     </message>
     <message>
         <location filename="../GUI/Player/GUI_Player.ui" line="+9"/>
-        <location filename="../../5.11/build-debug/src/GUI/Player/ui_GUI_Player.h" line="+195"/>
-        <location filename="../../build-debug/src/GUI/Player/ui_GUI_Player.h" line="+196"/>
-        <location filename="../../build-release/src/GUI/Player/ui_GUI_Player.h" line="+196"/>
+        <location filename="../../ui/ui_GUI_Player.h" line="+196"/>
         <source>Sayonara Player</source>
-        <translation type="unfinished">Sayonara Player</translation>
+        <translation>Sayonara Player</translation>
     </message>
     <message>
         <location line="+155"/>
-        <location filename="../../5.11/build-debug/src/GUI/Player/ui_GUI_Player.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Player/ui_GUI_Player.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Player/ui_GUI_Player.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_Player.h" line="+1"/>
         <source>Dark</source>
-        <translation type="unfinished">Dunkel</translation>
+        <translation>Dunkel</translation>
     </message>
     <message>
         <location line="+5"/>
-        <location filename="../../5.11/build-debug/src/GUI/Player/ui_GUI_Player.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Player/ui_GUI_Player.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Player/ui_GUI_Player.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_Player.h" line="+1"/>
         <source>Help</source>
-        <translation type="unfinished">Hilfe</translation>
+        <translation>Hilfe</translation>
     </message>
     <message>
         <location line="+33"/>
-        <location filename="../../5.11/build-debug/src/GUI/Player/ui_GUI_Player.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Player/ui_GUI_Player.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Player/ui_GUI_Player.h" line="+1"/>
-        <source>Fullscreen </source>
-        <translation type="unfinished">Vollbild</translation>
+        <location filename="../../ui/ui_GUI_Player.h" line="+1"/>
+        <source>Fullscreen</source>
+        <translation>Vollbild</translation>
     </message>
     <message>
         <location line="+5"/>
-        <location filename="../../5.11/build-debug/src/GUI/Player/ui_GUI_Player.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Player/ui_GUI_Player.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Player/ui_GUI_Player.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_Player.h" line="+1"/>
         <source>Devices</source>
-        <translation type="unfinished">Externe Geräte</translation>
+        <translation>Externe Geräte</translation>
     </message>
     <message>
         <location line="+5"/>
-        <location filename="../../5.11/build-debug/src/GUI/Player/ui_GUI_Player.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Player/ui_GUI_Player.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Player/ui_GUI_Player.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_Player.h" line="+1"/>
         <source>Donate</source>
-        <translation type="unfinished">Spenden</translation>
+        <translation>Spenden</translation>
     </message>
     <message>
         <location line="+10"/>
-        <location filename="../../5.11/build-debug/src/GUI/Player/ui_GUI_Player.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Player/ui_GUI_Player.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Player/ui_GUI_Player.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_Player.h" line="+1"/>
         <source>Preferences</source>
-        <translation type="unfinished">Einstellungen</translation>
+        <translation>Einstellungen</translation>
     </message>
 </context>
 <context>
     <name>GUI_PlayerPreferences</name>
     <message>
         <location filename="../GUI/Preferences/Player/GUI_PlayerPreferences.ui" line="+59"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_PlayerPreferences.h" line="+98"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_PlayerPreferences.h" line="+101"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_PlayerPreferences.h" line="+101"/>
+        <location filename="../../ui/ui_GUI_PlayerPreferences.h" line="+101"/>
         <source>Start in tray</source>
         <translation>Minimiert starten</translation>
     </message>
     <message>
         <location line="-28"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_PlayerPreferences.h" line="-1"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_PlayerPreferences.h" line="-1"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_PlayerPreferences.h" line="-1"/>
+        <location filename="../../ui/ui_GUI_PlayerPreferences.h" line="-1"/>
         <source>Close to tray</source>
         <translation>Schließe ins Tray</translation>
     </message>
     <message>
         <location line="-7"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_PlayerPreferences.h" line="-1"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_PlayerPreferences.h" line="-1"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_PlayerPreferences.h" line="-1"/>
+        <location filename="../../ui/ui_GUI_PlayerPreferences.h" line="-1"/>
         <source>Show system tray icon</source>
         <translation>Im System Tray anzeigen</translation>
     </message>
     <message>
         <location line="-7"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_PlayerPreferences.h" line="-1"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_PlayerPreferences.h" line="-1"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_PlayerPreferences.h" line="-1"/>
+        <location filename="../../ui/ui_GUI_PlayerPreferences.h" line="-1"/>
         <source>Update notifications</source>
         <translation>Updatebenachrichtigung</translation>
     </message>
@@ -1038,139 +896,105 @@
     <name>GUI_PlaylistPreferences</name>
     <message>
         <location filename="../GUI/Preferences/Playlist/GUI_PlaylistPreferences.ui" line="+159"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+316"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+319"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+319"/>
+        <location filename="../../ui/ui_GUI_PlaylistPreferences.h" line="+319"/>
         <source>Show numbers</source>
         <translation>Nummerierung anzeigen</translation>
     </message>
     <message>
         <location line="-29"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+7"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+7"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+7"/>
+        <location filename="../../ui/ui_GUI_PlaylistPreferences.h" line="+7"/>
         <source>Look</source>
         <translation>Aussehen</translation>
     </message>
     <message>
         <location line="-71"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="-16"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="-16"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="-16"/>
+        <location filename="../../ui/ui_GUI_PlaylistPreferences.h" line="-16"/>
         <source>Start up</source>
         <translation>Startoptionen</translation>
     </message>
     <message>
         <location line="+6"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_PlaylistPreferences.h" line="+1"/>
         <source>Load temporary playlists</source>
         <translation>Lade temporäre Wiedergabelisten</translation>
     </message>
     <message>
         <location line="+38"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+4"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+4"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+4"/>
+        <location filename="../../ui/ui_GUI_PlaylistPreferences.h" line="+4"/>
         <source>Remember time of last track</source>
         <translation>Lade letzte Zeitposition</translation>
     </message>
     <message>
         <location line="-31"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="-3"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="-3"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="-3"/>
+        <location filename="../../ui/ui_GUI_PlaylistPreferences.h" line="-3"/>
         <source>Load saved playlists</source>
         <translation>Lade gespeicherte Wiedergabelisten</translation>
     </message>
     <message>
         <location line="+24"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+2"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+2"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+2"/>
+        <location filename="../../ui/ui_GUI_PlaylistPreferences.h" line="+2"/>
         <source>Load last track on startup</source>
         <translation>Lade letzten Titel</translation>
     </message>
     <message>
         <location line="-7"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="-1"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="-1"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="-1"/>
+        <location filename="../../ui/ui_GUI_PlaylistPreferences.h" line="-1"/>
         <source>Start playing</source>
         <translation>Starte Abspielen</translation>
     </message>
     <message>
         <location line="-56"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+5"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+5"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+5"/>
+        <location filename="../../ui/ui_GUI_PlaylistPreferences.h" line="+5"/>
         <source>Behavior</source>
         <translation>Verhalten</translation>
     </message>
     <message>
         <location line="+80"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="-2"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="-2"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="-2"/>
+        <location filename="../../ui/ui_GUI_PlaylistPreferences.h" line="-2"/>
         <source>Stop behaviour</source>
         <translation>Stop-Verhalten</translation>
     </message>
     <message>
         <location line="+6"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_PlaylistPreferences.h" line="+1"/>
         <source>Load last track after pressing stop</source>
         <translation>Letzten Titel laden, nachdem Stop gedrückt wurde</translation>
     </message>
     <message>
         <location line="+73"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+3"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+3"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+3"/>
+        <location filename="../../ui/ui_GUI_PlaylistPreferences.h" line="+3"/>
         <source>&apos;italic text&apos;</source>
         <translation>&apos;kursiver Text&apos;</translation>
     </message>
     <message>
         <location line="+7"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_PlaylistPreferences.h" line="+1"/>
         <source>Example</source>
         <translation>Beispiel</translation>
     </message>
     <message>
         <location line="+27"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_PlaylistPreferences.h" line="+1"/>
         <source>*bold text*</source>
         <translation>*fetter Text*</translation>
     </message>
     <message>
         <location line="+72"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_PlaylistPreferences.h" line="+1"/>
         <source>Show clear button</source>
         <translation>&quot;Leeren&quot; Knopf anzeigen</translation>
     </message>
     <message>
         <location line="+7"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_PlaylistPreferences.h" line="+1"/>
         <source>Show covers</source>
-        <translation type="unfinished"></translation>
+        <translation>Covers anzeigen</translation>
     </message>
     <message>
         <location line="+7"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_PlaylistPreferences.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_PlaylistPreferences.h" line="+1"/>
         <source>Show rating</source>
-        <translation type="unfinished"></translation>
+        <translation>Bewertung anzeigen</translation>
     </message>
     <message>
         <location filename="../GUI/Preferences/Playlist/GUI_PlaylistPreferences.cpp" line="+203"/>
@@ -1182,9 +1006,7 @@
     <name>GUI_Podcasts</name>
     <message>
         <location filename="../GUI/Plugins/Stream/GUI_Podcasts.ui" line="+80"/>
-        <location filename="../../5.11/build-debug/src/GUI/Plugins/ui_GUI_Podcasts.h" line="+104"/>
-        <location filename="../../build-debug/src/GUI/Plugins/ui_GUI_Podcasts.h" line="+106"/>
-        <location filename="../../build-release/src/GUI/Plugins/ui_GUI_Podcasts.h" line="+106"/>
+        <location filename="../../ui/ui_GUI_Podcasts.h" line="+106"/>
         <source>Start stream</source>
         <translation>Stream starten</translation>
     </message>
@@ -1203,33 +1025,25 @@
     <name>GUI_PreferenceDialog</name>
     <message>
         <location filename="../GUI/Preferences/PreferenceDialog/GUI_PreferenceDialog.ui" line="+133"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_PreferenceDialog.h" line="+179"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_PreferenceDialog.h" line="+182"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_PreferenceDialog.h" line="+182"/>
+        <location filename="../../ui/ui_GUI_PreferenceDialog.h" line="+182"/>
         <source>Preferences</source>
         <translation>Einstellungen</translation>
     </message>
     <message>
         <location line="+39"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_PreferenceDialog.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_PreferenceDialog.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_PreferenceDialog.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_PreferenceDialog.h" line="+1"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>
     <message>
         <location line="+7"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_PreferenceDialog.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_PreferenceDialog.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_PreferenceDialog.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_PreferenceDialog.h" line="+1"/>
         <source>Apply</source>
         <translation>Anwenden</translation>
     </message>
     <message>
         <location line="+7"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_PreferenceDialog.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_PreferenceDialog.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_PreferenceDialog.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_PreferenceDialog.h" line="+1"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
@@ -1238,49 +1052,37 @@
     <name>GUI_Proxy</name>
     <message>
         <location filename="../GUI/Preferences/Proxy/GUI_Proxy.ui" line="+30"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_Proxy.h" line="+122"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_Proxy.h" line="+125"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_Proxy.h" line="+125"/>
+        <location filename="../../ui/ui_GUI_Proxy.h" line="+125"/>
         <source>Password</source>
         <translation>Passwort</translation>
     </message>
     <message>
         <location line="+7"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_Proxy.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_Proxy.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_Proxy.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_Proxy.h" line="+1"/>
         <source>Save username/password</source>
         <translation>Nutername/Passwort speichern</translation>
     </message>
     <message>
         <location line="+7"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_Proxy.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_Proxy.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_Proxy.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_Proxy.h" line="+1"/>
         <source>Active</source>
         <translation>Aktivieren</translation>
     </message>
     <message>
         <location line="+13"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_Proxy.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_Proxy.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_Proxy.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_Proxy.h" line="+1"/>
         <source>Port</source>
         <translation>Port</translation>
     </message>
     <message>
         <location line="+7"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_Proxy.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_Proxy.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_Proxy.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_Proxy.h" line="+1"/>
         <source>Username</source>
         <translation>Benutzername</translation>
     </message>
     <message>
         <location line="+27"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_Proxy.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_Proxy.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_Proxy.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_Proxy.h" line="+1"/>
         <source>Host</source>
         <translation>Server</translation>
     </message>
@@ -1322,17 +1124,13 @@
     </message>
     <message>
         <location filename="../GUI/Preferences/RemoteControl/GUI_RemoteControl.ui" line="+54"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_RemoteControl.h" line="+95"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_RemoteControl.h" line="+98"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_RemoteControl.h" line="+98"/>
+        <location filename="../../ui/ui_GUI_RemoteControl.h" line="+98"/>
         <source>Remote control URL</source>
         <translation>Ferbedienung URL</translation>
     </message>
     <message>
         <location line="-17"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_RemoteControl.h" line="-1"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_RemoteControl.h" line="-1"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_RemoteControl.h" line="-1"/>
+        <location filename="../../ui/ui_GUI_RemoteControl.h" line="-1"/>
         <source>Port</source>
         <translation>Port</translation>
     </message>
@@ -1341,41 +1139,31 @@
     <name>GUI_SearchPreferences</name>
     <message>
         <location filename="../GUI/Preferences/Search/GUI_SearchPreferences.ui" line="+23"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_SearchPreferences.h" line="+115"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_SearchPreferences.h" line="+118"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_SearchPreferences.h" line="+118"/>
+        <location filename="../../ui/ui_GUI_SearchPreferences.h" line="+118"/>
         <source>Example</source>
         <translation>Beispiel</translation>
     </message>
     <message>
         <location line="+7"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_SearchPreferences.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_SearchPreferences.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_SearchPreferences.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_SearchPreferences.h" line="+1"/>
         <source>Case insensitive</source>
         <translation>Ignoriere Groß/Kleinschreibung</translation>
     </message>
     <message>
         <location line="+13"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_SearchPreferences.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_SearchPreferences.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_SearchPreferences.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_SearchPreferences.h" line="+1"/>
         <source>Option</source>
         <translation>Option</translation>
     </message>
     <message>
         <location line="+10"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_SearchPreferences.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_SearchPreferences.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_SearchPreferences.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_SearchPreferences.h" line="+1"/>
         <source>Ignore accents</source>
         <translation>Ignoriere Akzentzeichen</translation>
     </message>
     <message>
         <location line="+27"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_SearchPreferences.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_SearchPreferences.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_SearchPreferences.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_SearchPreferences.h" line="+1"/>
         <source>Ignore special characters</source>
         <translation>Ignoriere Sonderzeichen</translation>
     </message>
@@ -1402,10 +1190,8 @@
     <name>GUI_Shortcuts</name>
     <message>
         <location filename="../GUI/Preferences/Shortcuts/GUI_Shortcuts.ui" line="+41"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_Shortcuts.h" line="+82"/>
         <location filename="../GUI/Preferences/Shortcuts/GUI_Shortcuts.cpp" line="+150"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_Shortcuts.h" line="+85"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_Shortcuts.h" line="+85"/>
+        <location filename="../../ui/ui_GUI_Shortcuts.h" line="+85"/>
         <source>Press shortcut</source>
         <translation>Shortcut eingeben</translation>
     </message>
@@ -1425,52 +1211,38 @@
     <message>
         <location filename="../GUI/ShutdownDialog/GUI_Shutdown.ui" line="+14"/>
         <location line="+92"/>
-        <location filename="../../5.11/build-debug/src/GUI/ShutdownDialog/ui_GUI_Shutdown.h" line="+119"/>
-        <location line="+7"/>
-        <location filename="../../build-debug/src/GUI/ShutdownDialog/ui_GUI_Shutdown.h" line="+122"/>
-        <location line="+7"/>
-        <location filename="../../build-release/src/GUI/ShutdownDialog/ui_GUI_Shutdown.h" line="+122"/>
+        <location filename="../../ui/ui_GUI_Shutdown.h" line="+122"/>
         <location line="+7"/>
         <source>Shutdown</source>
         <translation>Herunterfahren</translation>
     </message>
     <message>
         <location line="-76"/>
-        <location filename="../../5.11/build-debug/src/GUI/ShutdownDialog/ui_GUI_Shutdown.h" line="-5"/>
-        <location filename="../../build-debug/src/GUI/ShutdownDialog/ui_GUI_Shutdown.h" line="-5"/>
-        <location filename="../../build-release/src/GUI/ShutdownDialog/ui_GUI_Shutdown.h" line="-5"/>
+        <location filename="../../ui/ui_GUI_Shutdown.h" line="-5"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>
     <message>
         <location line="+7"/>
-        <location filename="../../5.11/build-debug/src/GUI/ShutdownDialog/ui_GUI_Shutdown.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/ShutdownDialog/ui_GUI_Shutdown.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/ShutdownDialog/ui_GUI_Shutdown.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_Shutdown.h" line="+1"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
         <location line="+24"/>
-        <location filename="../../5.11/build-debug/src/GUI/ShutdownDialog/ui_GUI_Shutdown.h" line="+2"/>
-        <location filename="../../build-debug/src/GUI/ShutdownDialog/ui_GUI_Shutdown.h" line="+2"/>
-        <location filename="../../build-release/src/GUI/ShutdownDialog/ui_GUI_Shutdown.h" line="+2"/>
+        <location filename="../../ui/ui_GUI_Shutdown.h" line="+2"/>
         <source>minutes</source>
         <translation>Minuten</translation>
     </message>
     <message>
         <location line="-7"/>
-        <location filename="../../5.11/build-debug/src/GUI/ShutdownDialog/ui_GUI_Shutdown.h" line="-1"/>
-        <location filename="../../build-debug/src/GUI/ShutdownDialog/ui_GUI_Shutdown.h" line="-1"/>
-        <location filename="../../build-release/src/GUI/ShutdownDialog/ui_GUI_Shutdown.h" line="-1"/>
+        <location filename="../../ui/ui_GUI_Shutdown.h" line="-1"/>
         <source>Shutdown after</source>
         <translation>nach</translation>
     </message>
     <message>
         <location line="-34"/>
-        <location filename="../../5.11/build-debug/src/GUI/ShutdownDialog/ui_GUI_Shutdown.h" line="-3"/>
-        <location filename="../../build-debug/src/GUI/ShutdownDialog/ui_GUI_Shutdown.h" line="-3"/>
-        <location filename="../../build-release/src/GUI/ShutdownDialog/ui_GUI_Shutdown.h" line="-3"/>
+        <location filename="../../ui/ui_GUI_Shutdown.h" line="-3"/>
         <source>Shutdown after playlist finished</source>
         <translation>Nach letztem Lied herunterfahren </translation>
     </message>
@@ -1479,17 +1251,13 @@
     <name>GUI_SomaFM</name>
     <message>
         <location filename="../3rdParty/SomaFM/ui/GUI_SomaFM.ui" line="+42"/>
-        <location filename="../../5.11/build-debug/src/3rdParty/SomaFM/ui_GUI_SomaFM.h" line="+198"/>
-        <location filename="../../build-debug/src/3rdParty/SomaFM/ui_GUI_SomaFM.h" line="+200"/>
-        <location filename="../../build-release/src/3rdParty/SomaFM/ui_GUI_SomaFM.h" line="+200"/>
+        <location filename="../../ui/ui_GUI_SomaFM.h" line="+200"/>
         <source>Donate to Soma.fm</source>
         <translation>An Soma.fm spenden</translation>
     </message>
     <message>
         <location line="+102"/>
-        <location filename="../../5.11/build-debug/src/3rdParty/SomaFM/ui_GUI_SomaFM.h" line="+2"/>
-        <location filename="../../build-debug/src/3rdParty/SomaFM/ui_GUI_SomaFM.h" line="+2"/>
-        <location filename="../../build-release/src/3rdParty/SomaFM/ui_GUI_SomaFM.h" line="+2"/>
+        <location filename="../../ui/ui_GUI_SomaFM.h" line="+2"/>
         <source>Streams</source>
         <translation>Streams</translation>
     </message>
@@ -1498,33 +1266,25 @@
     <name>GUI_SoundcloudArtistSearch</name>
     <message>
         <location filename="../3rdParty/Soundcloud/ui/GUI_SoundcloudArtistSearch.ui" line="+14"/>
-        <location filename="../../5.11/build-debug/src/3rdParty/Soundcloud/ui_GUI_SoundcloudArtistSearch.h" line="+167"/>
-        <location filename="../../build-debug/src/3rdParty/Soundcloud/ui_GUI_SoundcloudArtistSearch.h" line="+169"/>
-        <location filename="../../build-release/src/3rdParty/Soundcloud/ui_GUI_SoundcloudArtistSearch.h" line="+169"/>
+        <location filename="../../ui/ui_GUI_SoundcloudArtistSearch.h" line="+169"/>
         <source>Search Soundcloud</source>
         <translation>Soundcloud durchsuchen</translation>
     </message>
     <message>
         <location line="+55"/>
-        <location filename="../../5.11/build-debug/src/3rdParty/Soundcloud/ui_GUI_SoundcloudArtistSearch.h" line="+4"/>
-        <location filename="../../build-debug/src/3rdParty/Soundcloud/ui_GUI_SoundcloudArtistSearch.h" line="+4"/>
-        <location filename="../../build-release/src/3rdParty/Soundcloud/ui_GUI_SoundcloudArtistSearch.h" line="+4"/>
+        <location filename="../../ui/ui_GUI_SoundcloudArtistSearch.h" line="+4"/>
         <source>Search artist</source>
         <translation>Künstler suchen</translation>
     </message>
     <message>
         <location line="-24"/>
-        <location filename="../../5.11/build-debug/src/3rdParty/Soundcloud/ui_GUI_SoundcloudArtistSearch.h" line="-2"/>
-        <location filename="../../build-debug/src/3rdParty/Soundcloud/ui_GUI_SoundcloudArtistSearch.h" line="-2"/>
-        <location filename="../../build-release/src/3rdParty/Soundcloud/ui_GUI_SoundcloudArtistSearch.h" line="-2"/>
+        <location filename="../../ui/ui_GUI_SoundcloudArtistSearch.h" line="-2"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>
     <message>
         <location line="+7"/>
-        <location filename="../../5.11/build-debug/src/3rdParty/Soundcloud/ui_GUI_SoundcloudArtistSearch.h" line="+1"/>
-        <location filename="../../build-debug/src/3rdParty/Soundcloud/ui_GUI_SoundcloudArtistSearch.h" line="+1"/>
-        <location filename="../../build-release/src/3rdParty/Soundcloud/ui_GUI_SoundcloudArtistSearch.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_SoundcloudArtistSearch.h" line="+1"/>
         <source>Add</source>
         <translation>Hinzufügen</translation>
     </message>
@@ -1533,17 +1293,13 @@
     <name>GUI_SoundcloudLibrary</name>
     <message>
         <location filename="../3rdParty/Soundcloud/ui/GUI_SoundcloudLibrary.ui" line="+26"/>
-        <location filename="../../5.11/build-debug/src/3rdParty/Soundcloud/ui_GUI_SoundcloudLibrary.h" line="+196"/>
-        <location filename="../../build-debug/src/3rdParty/Soundcloud/ui_GUI_SoundcloudLibrary.h" line="+198"/>
-        <location filename="../../build-release/src/3rdParty/Soundcloud/ui_GUI_SoundcloudLibrary.h" line="+198"/>
+        <location filename="../../ui/ui_GUI_SoundcloudLibrary.h" line="+198"/>
         <source>Library</source>
         <translation>Musiksammlung</translation>
     </message>
     <message>
         <location line="+311"/>
-        <location filename="../../5.11/build-debug/src/3rdParty/Soundcloud/ui_GUI_SoundcloudLibrary.h" line="+4"/>
-        <location filename="../../build-debug/src/3rdParty/Soundcloud/ui_GUI_SoundcloudLibrary.h" line="+4"/>
-        <location filename="../../build-release/src/3rdParty/Soundcloud/ui_GUI_SoundcloudLibrary.h" line="+4"/>
+        <location filename="../../ui/ui_GUI_SoundcloudLibrary.h" line="+4"/>
         <source>Search for title, interprets and albums</source>
         <translation>Suche nach Titel, Künstler und Alben</translation>
     </message>
@@ -1560,27 +1316,21 @@
     <name>GUI_Speed</name>
     <message>
         <location filename="../GUI/Plugins/Engine/Speed/GUI_Speed.ui" line="+45"/>
-        <location filename="../../5.11/build-debug/src/GUI/Plugins/ui_GUI_Speed.h" line="+144"/>
         <location filename="../GUI/Plugins/Engine/Speed/GUI_Speed.cpp" line="+117"/>
-        <location filename="../../build-debug/src/GUI/Plugins/ui_GUI_Speed.h" line="+147"/>
-        <location filename="../../build-release/src/GUI/Plugins/ui_GUI_Speed.h" line="+147"/>
+        <location filename="../../ui/ui_GUI_Speed.h" line="+147"/>
         <source>Speed</source>
         <translation>Geschwindigkeit</translation>
     </message>
     <message>
         <location line="+39"/>
-        <location filename="../../5.11/build-debug/src/GUI/Plugins/ui_GUI_Speed.h" line="-1"/>
-        <location filename="../../build-debug/src/GUI/Plugins/ui_GUI_Speed.h" line="-1"/>
-        <location filename="../../build-release/src/GUI/Plugins/ui_GUI_Speed.h" line="-1"/>
+        <location filename="../../ui/ui_GUI_Speed.h" line="-1"/>
         <source>Preserve pitch</source>
         <translation>Tonhöhe beibehalten</translation>
     </message>
     <message>
         <location line="+30"/>
-        <location filename="../../5.11/build-debug/src/GUI/Plugins/ui_GUI_Speed.h" line="+2"/>
         <location filename="../GUI/Plugins/Engine/Speed/GUI_Speed.cpp" line="+0"/>
-        <location filename="../../build-debug/src/GUI/Plugins/ui_GUI_Speed.h" line="+2"/>
-        <location filename="../../build-release/src/GUI/Plugins/ui_GUI_Speed.h" line="+2"/>
+        <location filename="../../ui/ui_GUI_Speed.h" line="+2"/>
         <source>Pitch</source>
         <translation>Tonhöhe</translation>
     </message>
@@ -1596,7 +1346,7 @@
     <message>
         <location filename="../GUI/Plugins/Stream/GUI_Stream.cpp" line="+44"/>
         <source>Streams</source>
-        <translation type="unfinished">Streams</translation>
+        <translation>Streams</translation>
     </message>
 </context>
 <context>
@@ -1613,17 +1363,13 @@
     </message>
     <message>
         <location filename="../GUI/Preferences/Streams/GUI_StreamPreferences.ui" line="+17"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_StreamPreferences.h" line="+58"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_StreamPreferences.h" line="+61"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_StreamPreferences.h" line="+61"/>
+        <location filename="../../ui/ui_GUI_StreamPreferences.h" line="+61"/>
         <source>Open Streams in new tab</source>
         <translation>Streams in neuem Tab öffnen</translation>
     </message>
     <message>
         <location line="+7"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_StreamPreferences.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_StreamPreferences.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_StreamPreferences.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_StreamPreferences.h" line="+1"/>
         <source>Show history</source>
         <translation>Verlauf anzeigen</translation>
     </message>
@@ -1631,74 +1377,50 @@
 <context>
     <name>GUI_StreamRecorder</name>
     <message>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+244"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+244"/>
+        <location filename="../GUI/Preferences/StreamRecorder/GUI_StreamRecorder.ui" line="+39"/>
+        <location filename="../../ui/ui_GUI_StreamRecorder.h" line="+244"/>
         <source>Target path:</source>
         <translation>Zielpfad:</translation>
     </message>
     <message>
-        <location filename="../GUI/Preferences/StreamRecorder/GUI_StreamRecorder.ui" line="+82"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+243"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+2"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+2"/>
+        <location line="+43"/>
+        <location filename="../../ui/ui_GUI_StreamRecorder.h" line="+2"/>
         <source>Automatic recording</source>
         <translation>Automatsch aufnehmen</translation>
     </message>
     <message>
         <location line="-55"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+5"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+5"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+5"/>
+        <location filename="../../ui/ui_GUI_StreamRecorder.h" line="+5"/>
         <source>General</source>
         <translation>Allgemein</translation>
     </message>
     <message>
-        <location line="+12"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="-7"/>
-        <source>Target path</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+94"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+6"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="-1"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="-1"/>
+        <location line="+106"/>
+        <location filename="../../ui/ui_GUI_StreamRecorder.h" line="-1"/>
         <source>Create session folder</source>
         <translation>Sitzungsverzeichnis erstellen</translation>
     </message>
     <message>
         <location line="+8"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+5"/>
-        <source>Session Directory</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+5"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+5"/>
+        <location filename="../../ui/ui_GUI_StreamRecorder.h" line="+5"/>
         <source>Session Folder</source>
         <translation>Sitzungsverzeichnis</translation>
     </message>
     <message>
-        <location filename="../GUI/Preferences/StreamRecorder/GUI_StreamRecorder.ui" line="+22"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="-3"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="-3"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="-3"/>
+        <location line="+22"/>
+        <location filename="../../ui/ui_GUI_StreamRecorder.h" line="-3"/>
         <source>Choose available placeholders</source>
         <translation>Verfügbare Platzhalter auswählen</translation>
     </message>
     <message>
         <location line="+37"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_StreamRecorder.h" line="+1"/>
         <source>Path template</source>
         <translation>Pfadvorlage</translation>
     </message>
     <message>
         <location line="+24"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_StreamRecorder.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_StreamRecorder.h" line="+1"/>
         <source>Example</source>
         <translation>Beispiel</translation>
     </message>
@@ -1710,18 +1432,18 @@
     <message>
         <location line="+65"/>
         <source>Target path is empty</source>
-        <translation type="unfinished"></translation>
+        <translation>Zielpfad ist leer</translation>
     </message>
     <message>
         <location line="+0"/>
         <location line="+6"/>
         <source>Please choose another directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Bitte ein anderes Verzeichnis auswählen</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>%1 could not be created</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 konnte nicht erstellt werden</translation>
     </message>
     <message>
         <location line="+11"/>
@@ -1738,44 +1460,32 @@
     <name>GUI_Style</name>
     <message>
         <location filename="../GUI/Plugins/Engine/GUI_Style.ui" line="+14"/>
-        <location filename="../../5.11/build-debug/src/GUI/Plugins/ui_GUI_Style.h" line="+421"/>
-        <location filename="../../build-debug/src/GUI/Plugins/ui_GUI_Style.h" line="+423"/>
-        <location filename="../../build-release/src/GUI/Plugins/ui_GUI_Style.h" line="+423"/>
+        <location filename="../../ui/ui_GUI_Style.h" line="+423"/>
         <source>Style</source>
         <translation>Style</translation>
     </message>
     <message>
         <location line="+38"/>
-        <location filename="../../5.11/build-debug/src/GUI/Plugins/ui_GUI_Style.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Plugins/ui_GUI_Style.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Plugins/ui_GUI_Style.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_Style.h" line="+1"/>
         <source>Close</source>
         <translation>Schließen</translation>
     </message>
     <message>
         <location line="+11"/>
-        <location filename="../../5.11/build-debug/src/GUI/Plugins/ui_GUI_Style.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Plugins/ui_GUI_Style.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Plugins/ui_GUI_Style.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_Style.h" line="+1"/>
         <source>Spectrum</source>
         <translation>Spektrum</translation>
     </message>
     <message>
         <location line="+16"/>
-        <location filename="../../5.11/build-debug/src/GUI/Plugins/ui_GUI_Style.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Plugins/ui_GUI_Style.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Plugins/ui_GUI_Style.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_Style.h" line="+1"/>
         <source>Vert. spacing</source>
         <translation>Vert. Abstand</translation>
     </message>
     <message>
         <location line="+41"/>
         <location line="+75"/>
-        <location filename="../../5.11/build-debug/src/GUI/Plugins/ui_GUI_Style.h" line="+3"/>
-        <location line="+7"/>
-        <location filename="../../build-debug/src/GUI/Plugins/ui_GUI_Style.h" line="+3"/>
-        <location line="+7"/>
-        <location filename="../../build-release/src/GUI/Plugins/ui_GUI_Style.h" line="+3"/>
+        <location filename="../../ui/ui_GUI_Style.h" line="+3"/>
         <location line="+7"/>
         <source>Fading steps</source>
         <translation>Übbergangsgeschw.</translation>
@@ -1783,11 +1493,7 @@
     <message>
         <location line="-89"/>
         <location line="+44"/>
-        <location filename="../../5.11/build-debug/src/GUI/Plugins/ui_GUI_Style.h" line="-8"/>
-        <location line="+4"/>
-        <location filename="../../build-debug/src/GUI/Plugins/ui_GUI_Style.h" line="-8"/>
-        <location line="+4"/>
-        <location filename="../../build-release/src/GUI/Plugins/ui_GUI_Style.h" line="-8"/>
+        <location filename="../../ui/ui_GUI_Style.h" line="-8"/>
         <location line="+4"/>
         <source>Hor. spacing</source>
         <translation>Hor. Abstand</translation>
@@ -1795,76 +1501,56 @@
     <message>
         <location line="-64"/>
         <location line="+88"/>
-        <location filename="../../5.11/build-debug/src/GUI/Plugins/ui_GUI_Style.h" line="-5"/>
-        <location line="+7"/>
-        <location filename="../../build-debug/src/GUI/Plugins/ui_GUI_Style.h" line="-5"/>
-        <location line="+7"/>
-        <location filename="../../build-release/src/GUI/Plugins/ui_GUI_Style.h" line="-5"/>
+        <location filename="../../ui/ui_GUI_Style.h" line="-5"/>
         <location line="+7"/>
         <source>Rect height</source>
         <translation>Rechteck-Höhe</translation>
     </message>
     <message>
         <location line="-30"/>
-        <location filename="../../5.11/build-debug/src/GUI/Plugins/ui_GUI_Style.h" line="-3"/>
-        <location filename="../../build-debug/src/GUI/Plugins/ui_GUI_Style.h" line="-3"/>
-        <location filename="../../build-release/src/GUI/Plugins/ui_GUI_Style.h" line="-3"/>
+        <location filename="../../ui/ui_GUI_Style.h" line="-3"/>
         <source>Level</source>
         <translation>Pegel</translation>
     </message>
     <message>
         <location line="+23"/>
-        <location filename="../../5.11/build-debug/src/GUI/Plugins/ui_GUI_Style.h" line="+2"/>
-        <location filename="../../build-debug/src/GUI/Plugins/ui_GUI_Style.h" line="+2"/>
-        <location filename="../../build-release/src/GUI/Plugins/ui_GUI_Style.h" line="+2"/>
+        <location filename="../../ui/ui_GUI_Style.h" line="+2"/>
         <source>Rect width</source>
         <translation>Rechteck-Breite</translation>
     </message>
     <message>
         <location line="+14"/>
-        <location filename="../../5.11/build-debug/src/GUI/Plugins/ui_GUI_Style.h" line="+2"/>
-        <location filename="../../build-debug/src/GUI/Plugins/ui_GUI_Style.h" line="+2"/>
-        <location filename="../../build-release/src/GUI/Plugins/ui_GUI_Style.h" line="+2"/>
+        <location filename="../../ui/ui_GUI_Style.h" line="+2"/>
         <source>Ver. spacing</source>
         <translation>Vert. Abstand</translation>
     </message>
     <message>
         <location line="+54"/>
-        <location filename="../../5.11/build-debug/src/GUI/Plugins/ui_GUI_Style.h" line="+2"/>
-        <location filename="../../build-debug/src/GUI/Plugins/ui_GUI_Style.h" line="+2"/>
-        <location filename="../../build-release/src/GUI/Plugins/ui_GUI_Style.h" line="+2"/>
+        <location filename="../../ui/ui_GUI_Style.h" line="+2"/>
         <source>Style settings</source>
         <translation>Style Eingstellungen</translation>
     </message>
     <message>
         <location line="+129"/>
-        <location filename="../../5.11/build-debug/src/GUI/Plugins/ui_GUI_Style.h" line="+4"/>
-        <location filename="../../build-debug/src/GUI/Plugins/ui_GUI_Style.h" line="+4"/>
-        <location filename="../../build-release/src/GUI/Plugins/ui_GUI_Style.h" line="+4"/>
+        <location filename="../../ui/ui_GUI_Style.h" line="+4"/>
         <source>Color 2</source>
         <translation>Farbe 2</translation>
     </message>
     <message>
         <location line="+7"/>
-        <location filename="../../5.11/build-debug/src/GUI/Plugins/ui_GUI_Style.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Plugins/ui_GUI_Style.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Plugins/ui_GUI_Style.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_Style.h" line="+1"/>
         <source>Color 1</source>
         <translation>Farbe 1</translation>
     </message>
     <message>
         <location line="+32"/>
-        <location filename="../../5.11/build-debug/src/GUI/Plugins/ui_GUI_Style.h" line="+2"/>
-        <location filename="../../build-debug/src/GUI/Plugins/ui_GUI_Style.h" line="+2"/>
-        <location filename="../../build-release/src/GUI/Plugins/ui_GUI_Style.h" line="+2"/>
+        <location filename="../../ui/ui_GUI_Style.h" line="+2"/>
         <source>Color 3</source>
         <translation>Farbe 3</translation>
     </message>
     <message>
         <location line="+7"/>
-        <location filename="../../5.11/build-debug/src/GUI/Plugins/ui_GUI_Style.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Plugins/ui_GUI_Style.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Plugins/ui_GUI_Style.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_Style.h" line="+1"/>
         <source>Color 4</source>
         <translation>Farbe 4</translation>
     </message>
@@ -1891,89 +1577,69 @@
     <name>GUI_TagEdit</name>
     <message>
         <location filename="../GUI/TagEdit/GUI_TagEdit.ui" line="+64"/>
-        <location filename="../../5.11/build-debug/src/GUI/TagEdit/ui_GUI_TagEdit.h" line="+546"/>
-        <location filename="../../build-debug/src/GUI/TagEdit/ui_GUI_TagEdit.h" line="+549"/>
-        <location filename="../../build-release/src/GUI/TagEdit/ui_GUI_TagEdit.h" line="+549"/>
+        <location filename="../../ui/ui_GUI_TagEdit.h" line="+549"/>
         <source>&lt;</source>
         <translation>&lt;</translation>
     </message>
     <message>
         <location line="+32"/>
-        <location filename="../../5.11/build-debug/src/GUI/TagEdit/ui_GUI_TagEdit.h" line="+2"/>
-        <location filename="../../build-debug/src/GUI/TagEdit/ui_GUI_TagEdit.h" line="+2"/>
-        <location filename="../../build-release/src/GUI/TagEdit/ui_GUI_TagEdit.h" line="+2"/>
+        <location filename="../../ui/ui_GUI_TagEdit.h" line="+2"/>
         <source>&gt;</source>
         <translation>&gt;</translation>
     </message>
     <message>
         <location line="+62"/>
-        <location filename="../../5.11/build-debug/src/GUI/TagEdit/ui_GUI_TagEdit.h" line="+2"/>
-        <location filename="../../build-debug/src/GUI/TagEdit/ui_GUI_TagEdit.h" line="+2"/>
-        <location filename="../../build-release/src/GUI/TagEdit/ui_GUI_TagEdit.h" line="+2"/>
+        <location filename="../../ui/ui_GUI_TagEdit.h" line="+2"/>
         <source>Album artist</source>
         <translation>Albumkünstler</translation>
     </message>
     <message>
         <location line="+110"/>
-        <location filename="../../5.11/build-debug/src/GUI/TagEdit/ui_GUI_TagEdit.h" line="+1"/>
         <location filename="../GUI/TagEdit/GUI_TagEdit.cpp" line="+130"/>
-        <location filename="../../build-debug/src/GUI/TagEdit/ui_GUI_TagEdit.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/TagEdit/ui_GUI_TagEdit.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_TagEdit.h" line="+1"/>
         <source>Comment</source>
-        <translation type="unfinished"></translation>
+        <translation>Kommentar</translation>
     </message>
     <message>
         <location line="+185"/>
-        <location filename="../../5.11/build-debug/src/GUI/TagEdit/ui_GUI_TagEdit.h" line="+2"/>
-        <location filename="../../build-debug/src/GUI/TagEdit/ui_GUI_TagEdit.h" line="+2"/>
-        <location filename="../../build-release/src/GUI/TagEdit/ui_GUI_TagEdit.h" line="+2"/>
+        <location filename="../../ui/ui_GUI_TagEdit.h" line="+2"/>
         <source>all</source>
-        <translation type="unfinished"></translation>
+        <translation>Alle</translation>
     </message>
     <message>
         <location line="+98"/>
-        <location filename="../../5.11/build-debug/src/GUI/TagEdit/ui_GUI_TagEdit.h" line="+4"/>
-        <location filename="../../build-debug/src/GUI/TagEdit/ui_GUI_TagEdit.h" line="+4"/>
-        <location filename="../../build-release/src/GUI/TagEdit/ui_GUI_TagEdit.h" line="+4"/>
+        <location filename="../../ui/ui_GUI_TagEdit.h" line="+4"/>
         <source>Original</source>
         <translation>Original</translation>
     </message>
     <message>
         <location line="-65"/>
-        <location filename="../../5.11/build-debug/src/GUI/TagEdit/ui_GUI_TagEdit.h" line="-2"/>
-        <location filename="../../build-debug/src/GUI/TagEdit/ui_GUI_TagEdit.h" line="-2"/>
-        <location filename="../../build-release/src/GUI/TagEdit/ui_GUI_TagEdit.h" line="-2"/>
+        <location filename="../../ui/ui_GUI_TagEdit.h" line="-2"/>
         <source>Replace</source>
         <translation>Ersetzen</translation>
     </message>
     <message>
         <location line="-25"/>
-        <location filename="../../5.11/build-debug/src/GUI/TagEdit/ui_GUI_TagEdit.h" line="-1"/>
-        <location filename="../../build-debug/src/GUI/TagEdit/ui_GUI_TagEdit.h" line="-1"/>
-        <location filename="../../build-release/src/GUI/TagEdit/ui_GUI_TagEdit.h" line="-1"/>
+        <location filename="../../ui/ui_GUI_TagEdit.h" line="-1"/>
         <source>Tag from path</source>
         <translation>Extrahiere ID3 Tag aus Dateipfad</translation>
     </message>
     <message>
         <location line="+200"/>
-        <location filename="../../5.11/build-debug/src/GUI/TagEdit/ui_GUI_TagEdit.h" line="+5"/>
-        <location filename="../../build-debug/src/GUI/TagEdit/ui_GUI_TagEdit.h" line="+5"/>
-        <location filename="../../build-release/src/GUI/TagEdit/ui_GUI_TagEdit.h" line="+5"/>
+        <location filename="../../ui/ui_GUI_TagEdit.h" line="+5"/>
         <source>Undo all</source>
         <translation>Alles rückgängig</translation>
     </message>
     <message>
         <location line="-533"/>
-        <location filename="../../5.11/build-debug/src/GUI/TagEdit/ui_GUI_TagEdit.h" line="-10"/>
-        <location filename="../../build-debug/src/GUI/TagEdit/ui_GUI_TagEdit.h" line="-10"/>
-        <location filename="../../build-release/src/GUI/TagEdit/ui_GUI_TagEdit.h" line="-10"/>
+        <location filename="../../ui/ui_GUI_TagEdit.h" line="-10"/>
         <source>Discnumber</source>
         <translation>CD Nummer</translation>
     </message>
     <message>
         <location filename="../GUI/TagEdit/GUI_TagEdit.cpp" line="+1"/>
         <source>Load complete album</source>
-        <translation type="unfinished"></translation>
+        <translation>Komplettes Album laden</translation>
     </message>
     <message>
         <location line="+107"/>
@@ -1983,7 +1649,7 @@
     <message>
         <location line="+2"/>
         <source>%1 tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 Audiodateien</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1993,109 +1659,87 @@
     <message>
         <location line="+397"/>
         <source>All changes will be lost</source>
-        <translation type="unfinished"></translation>
+        <translation>Alle Änderungen werden verworfen</translation>
     </message>
 </context>
 <context>
     <name>GUI_TagFromPath</name>
     <message>
         <location filename="../GUI/TagEdit/GUI_TagFromPath.ui" line="+17"/>
-        <location filename="../../5.11/build-debug/src/GUI/TagEdit/ui_GUI_TagFromPath.h" line="+211"/>
-        <location filename="../../build-debug/src/GUI/TagEdit/ui_GUI_TagFromPath.h" line="+214"/>
-        <location filename="../../build-release/src/GUI/TagEdit/ui_GUI_TagFromPath.h" line="+214"/>
+        <location filename="../../ui/ui_GUI_TagFromPath.h" line="+214"/>
         <source>Expression</source>
-        <translation type="unfinished">Ausdruck</translation>
+        <translation>Ausdruck</translation>
     </message>
     <message>
         <location line="+17"/>
-        <location filename="../../5.11/build-debug/src/GUI/TagEdit/ui_GUI_TagFromPath.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/TagEdit/ui_GUI_TagFromPath.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/TagEdit/ui_GUI_TagFromPath.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_TagFromPath.h" line="+1"/>
         <source>?</source>
-        <translation type="unfinished">?</translation>
+        <translation>?</translation>
     </message>
     <message>
         <location line="+67"/>
-        <location filename="../../5.11/build-debug/src/GUI/TagEdit/ui_GUI_TagFromPath.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/TagEdit/ui_GUI_TagFromPath.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/TagEdit/ui_GUI_TagFromPath.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_TagFromPath.h" line="+1"/>
         <source>Disc Nr</source>
-        <translation type="unfinished">CD Nr</translation>
+        <translation>CD Nr</translation>
     </message>
     <message>
         <location line="+57"/>
-        <location filename="../../5.11/build-debug/src/GUI/TagEdit/ui_GUI_TagFromPath.h" line="+2"/>
-        <location filename="../../build-debug/src/GUI/TagEdit/ui_GUI_TagFromPath.h" line="+2"/>
-        <location filename="../../build-release/src/GUI/TagEdit/ui_GUI_TagFromPath.h" line="+2"/>
+        <location filename="../../ui/ui_GUI_TagFromPath.h" line="+2"/>
         <source>Apply to all</source>
-        <translation type="unfinished">Auf alle anwenden</translation>
+        <translation>Auf alle anwenden</translation>
     </message>
     <message>
         <location line="+32"/>
-        <location filename="../../5.11/build-debug/src/GUI/TagEdit/ui_GUI_TagFromPath.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/TagEdit/ui_GUI_TagFromPath.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/TagEdit/ui_GUI_TagFromPath.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_TagFromPath.h" line="+1"/>
         <source>Warning</source>
-        <translation type="unfinished">Warnung</translation>
+        <translation>Warnung</translation>
     </message>
     <message>
         <location filename="../GUI/TagEdit/TagFromPath.cpp" line="+73"/>
         <source>Tag</source>
-        <translation type="unfinished">Tag</translation>
+        <translation>Tag</translation>
     </message>
     <message>
         <location line="+59"/>
         <source>Please select text first</source>
-        <translation type="unfinished"></translation>
+        <translation>Bitte zuerst den Text markieren</translation>
     </message>
 </context>
 <context>
     <name>GUI_TargetPlaylistDialog</name>
     <message>
         <location filename="../GUI/Plugins/PlaylistChooser/GUI_TargetPlaylistDialog.ui" line="+14"/>
-        <location filename="../../5.11/build-debug/src/GUI/Plugins/ui_GUI_TargetPlaylistDialog.h" line="+107"/>
-        <location filename="../../build-debug/src/GUI/Plugins/ui_GUI_TargetPlaylistDialog.h" line="+109"/>
-        <location filename="../../build-release/src/GUI/Plugins/ui_GUI_TargetPlaylistDialog.h" line="+109"/>
+        <location filename="../../ui/ui_GUI_TargetPlaylistDialog.h" line="+109"/>
         <source>Choose target playlist</source>
         <translation>Wähle Ziel-Wiedergabeliste aus</translation>
     </message>
     <message>
         <location line="+25"/>
-        <location filename="../../5.11/build-debug/src/GUI/Plugins/ui_GUI_TargetPlaylistDialog.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Plugins/ui_GUI_TargetPlaylistDialog.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Plugins/ui_GUI_TargetPlaylistDialog.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_TargetPlaylistDialog.h" line="+1"/>
         <source>relative filepaths</source>
         <translation>Relative Dateipfade</translation>
     </message>
     <message>
         <location line="+19"/>
-        <location filename="../../5.11/build-debug/src/GUI/Plugins/ui_GUI_TargetPlaylistDialog.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Plugins/ui_GUI_TargetPlaylistDialog.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Plugins/ui_GUI_TargetPlaylistDialog.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_TargetPlaylistDialog.h" line="+1"/>
         <source>...</source>
         <translation>...</translation>
     </message>
     <message>
         <location line="+15"/>
-        <location filename="../../5.11/build-debug/src/GUI/Plugins/ui_GUI_TargetPlaylistDialog.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Plugins/ui_GUI_TargetPlaylistDialog.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Plugins/ui_GUI_TargetPlaylistDialog.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_TargetPlaylistDialog.h" line="+1"/>
         <source>Close</source>
         <translation>Schließen</translation>
     </message>
     <message>
         <location line="+13"/>
-        <location filename="../../5.11/build-debug/src/GUI/Plugins/ui_GUI_TargetPlaylistDialog.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Plugins/ui_GUI_TargetPlaylistDialog.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Plugins/ui_GUI_TargetPlaylistDialog.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_TargetPlaylistDialog.h" line="+1"/>
         <source>Save</source>
         <translation>Speichern</translation>
     </message>
     <message>
         <location line="+13"/>
-        <location filename="../../5.11/build-debug/src/GUI/Plugins/ui_GUI_TargetPlaylistDialog.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Plugins/ui_GUI_TargetPlaylistDialog.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Plugins/ui_GUI_TargetPlaylistDialog.h" line="+1"/>
+        <location filename="../../ui/ui_GUI_TargetPlaylistDialog.h" line="+1"/>
         <source>Save playlist as...</source>
         <translation>Speichern unter...</translation>
     </message>
@@ -2103,50 +1747,28 @@
 <context>
     <name>GUI_UiPreferences</name>
     <message>
-        <location filename="../GUI/Preferences/UiPreferences/GUI_UiPreferences.ui" line="+14"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_UiPreferences.h" line="+77"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_UiPreferences.h" line="+79"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_UiPreferences.h" line="+79"/>
-        <source>Form</source>
-        <translation type="unfinished"></translation>
+        <location filename="../GUI/Preferences/UiPreferences/GUI_UiPreferences.ui" line="+27"/>
+        <location filename="../../ui/ui_GUI_UiPreferences.h" line="+79"/>
+        <source>Show Big cover</source>
+        <translation>Großes Cover anzeigen</translation>
     </message>
     <message>
-        <location line="+16"/>
-        <location filename="../../5.11/build-debug/src/GUI/Preferences/ui_GUI_UiPreferences.h" line="+1"/>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_UiPreferences.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_UiPreferences.h" line="+1"/>
-        <source>Big cover</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../build-debug/src/GUI/Preferences/ui_GUI_UiPreferences.h" line="+1"/>
-        <location filename="../../build-release/src/GUI/Preferences/ui_GUI_UiPreferences.h" line="+1"/>
+        <location line="+7"/>
+        <location filename="../../ui/ui_GUI_UiPreferences.h" line="+1"/>
         <source>Dark mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Dunkler Modus</translation>
     </message>
     <message>
         <location filename="../GUI/Preferences/UiPreferences/GUI_UiPreferences.cpp" line="+27"/>
         <source>User Interface</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+43"/>
-        <source>General</source>
-        <translation type="unfinished">Allgemein</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Big Cover</source>
-        <translation type="unfinished"></translation>
+        <translation>Benutzeroberfläche</translation>
     </message>
 </context>
 <context>
     <name>InfoDialog</name>
     <message>
         <location filename="../GUI/InfoDialog/GUI_InfoDialog.ui" line="+20"/>
-        <location filename="../../5.11/build-debug/src/GUI/InfoDialog/ui_GUI_InfoDialog.h" line="+263"/>
-        <location filename="../../build-debug/src/GUI/InfoDialog/ui_GUI_InfoDialog.h" line="+266"/>
-        <location filename="../../build-release/src/GUI/InfoDialog/ui_GUI_InfoDialog.h" line="+266"/>
+        <location filename="../../ui/ui_GUI_InfoDialog.h" line="+266"/>
         <source>Info / Edit</source>
         <translation>Info / Bearbeiten</translation>
     </message>
@@ -2249,9 +1871,9 @@
         <translation>Weiter</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+6"/>
         <source>Days</source>
-        <translation type="unfinished"></translation>
+        <translation>Tage</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -2282,7 +1904,7 @@
     <message>
         <location line="+2"/>
         <source>Disc</source>
-        <translation type="unfinished"></translation>
+        <translation>CD Nr</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -2295,7 +1917,7 @@
         <translation>Dauer</translation>
     </message>
     <message>
-        <location line="-74"/>
+        <location line="-72"/>
         <source>Activate</source>
         <translation>Aktivieren</translation>
     </message>
@@ -2343,11 +1965,6 @@
         <location line="+14"/>
         <source>Covers</source>
         <translation>Covers</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Dark Mode</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2754,7 +2371,7 @@
     <message>
         <location line="-125"/>
         <source>Hours</source>
-        <translation type="unfinished"></translation>
+        <translation>Stunden</translation>
     </message>
     <message>
         <location line="+13"/>
@@ -2769,47 +2386,47 @@
     <message>
         <location line="+4"/>
         <source>Ctrl+f</source>
-        <translation type="unfinished"></translation>
+        <translation>Strg+F</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Esc</source>
-        <translation type="unfinished">Esc</translation>
+        <translation>Esc</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Ctrl</source>
-        <translation type="unfinished"></translation>
+        <translation>Strg</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Alt</source>
-        <translation type="unfinished"></translation>
+        <translation>Alt</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Shift</source>
-        <translation type="unfinished"></translation>
+        <translation>Shift</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Backspace</source>
-        <translation type="unfinished"></translation>
+        <translation>Backspace</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Tab</source>
-        <translation type="unfinished"></translation>
+        <translation>Tab</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Minimize</source>
-        <translation type="unfinished">Minimieren</translation>
+        <translation>Minimieren</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Minutes</source>
-        <translation type="unfinished"></translation>
+        <translation>Minuten</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -2819,22 +2436,22 @@
     <message>
         <location line="+41"/>
         <source>Play in new tab</source>
-        <translation type="unfinished">In neuem Tab abspielen</translation>
+        <translation>In neuem Tab abspielen</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Plugin</source>
-        <translation type="unfinished"></translation>
+        <translation>Plugin</translation>
     </message>
     <message>
         <location line="+18"/>
         <source>Reload Library</source>
-        <translation type="unfinished"></translation>
+        <translation>Bibliothek neu laden</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Replace</source>
-        <translation type="unfinished">Ersetzen</translation>
+        <translation>Ersetzen</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -2885,7 +2502,7 @@
     <message>
         <location line="+2"/>
         <source>Seconds</source>
-        <translation type="unfinished"></translation>
+        <translation>Sekunden</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -2910,27 +2527,27 @@
     <message>
         <location line="+2"/>
         <source>Show Album Artists</source>
-        <translation type="unfinished"></translation>
+        <translation>Albumkünstler anzeigen</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Show Covers</source>
-        <translation type="unfinished"></translation>
+        <translation>Covers anzeigen</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Show Library</source>
-        <translation type="unfinished"></translation>
+        <translation>Bibliothek anzeigen</translation>
     </message>
     <message>
         <location line="+18"/>
         <source>Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Titel</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Track number</source>
-        <translation type="unfinished"></translation>
+        <translation>Titelnummer</translation>
     </message>
     <message>
         <location line="-18"/>
@@ -3033,7 +2650,7 @@
     <message>
         <location filename="../GUI/Library/GUI_CoverView.cpp" line="+192"/>
         <source>Use Ctrl + mouse wheel to zoom</source>
-        <translation type="unfinished">Strg + Mausrad zum zoomen</translation>
+        <translation>Strg + Mausrad zum zoomen</translation>
     </message>
 </context>
 <context>
@@ -3062,17 +2679,17 @@
     <message>
         <location filename="../Components/Library/Importer/LibraryImporter.cpp" line="+186"/>
         <source>All files could be imported</source>
-        <translation type="unfinished">Alle Dateien konnten importiert werden</translation>
+        <translation>Alle Dateien konnten importiert werden</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>%1 of %2 files could be imported</source>
-        <translation type="unfinished">%1 von %2 Dateien wurden importiert</translation>
+        <translation>%1 von %2 Dateien wurden importiert</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>Could not import tracks</source>
-        <translation type="unfinished">Titel können nicht importiert werden</translation>
+        <translation>Titel können nicht importiert werden</translation>
     </message>
 </context>
 <context>
@@ -3101,12 +2718,12 @@
     <message>
         <location filename="../Components/Library/Threads/ReloadThread.cpp" line="+223"/>
         <source>Reading files</source>
-        <translation type="unfinished"></translation>
+        <translation>Lese Dateien</translation>
     </message>
     <message>
         <location line="+108"/>
         <source>Delete orphaned tracks...</source>
-        <translation type="unfinished">Lösche verwaiste Titel...</translation>
+        <translation>Lösche verwaiste Titel...</translation>
     </message>
 </context>
 <context>
@@ -3124,7 +2741,7 @@
     <message>
         <location line="+4"/>
         <source>Ctrl+X</source>
-        <translation type="unfinished"></translation>
+        <translation>Strg+X</translation>
     </message>
     <message>
         <location line="-3"/>
@@ -3137,12 +2754,12 @@
     <message>
         <location filename="../Components/Lyrics/LyricLookup.cpp" line="+179"/>
         <source>Could not fetch lyrics from %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Konnte keine Songtexte von %1 holen</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>No lyrics found</source>
-        <translation type="unfinished"></translation>
+        <translation>Keine Songtexte gefunden</translation>
     </message>
 </context>
 <context>
@@ -3159,7 +2776,12 @@
         <translation>Hilfe</translation>
     </message>
     <message>
-        <location line="-2"/>
+        <location line="-3"/>
+        <source>Dark</source>
+        <translation>Dunkel</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Fullscreen</source>
         <translation>Vollbild</translation>
     </message>
@@ -3282,14 +2904,6 @@
     </message>
 </context>
 <context>
-    <name>SC::GUI_Library</name>
-    <message>
-        <location filename="../3rdParty/Soundcloud/ui/GUI_SoundcloudLibrary.cpp" line="+52"/>
-        <source>Add artist</source>
-        <translation type="unfinished">Künstler hinzufügen</translation>
-    </message>
-</context>
-<context>
     <name>SC::JsonParser</name>
     <message>
         <location filename="../3rdParty/Soundcloud/src/SoundcloudJsonParser.cpp" line="+119"/>
@@ -3339,14 +2953,14 @@
 <context>
     <name>StreamPreferenceAction</name>
     <message>
-        <location filename="../GUI/Plugins/Stream/GUI_AbstractStream.cpp" line="+86"/>
-        <location line="+6"/>
+        <location filename="../GUI/Plugins/Stream/GUI_AbstractStream.cpp" line="-281"/>
+        <location line="+5"/>
         <source>Streams</source>
         <translation>Streams</translation>
     </message>
     <message>
-        <location line="-6"/>
-        <location line="+6"/>
+        <location line="-5"/>
+        <location line="+5"/>
         <source>Podcasts</source>
         <translation>Podcasts</translation>
     </message>
@@ -3357,7 +2971,7 @@
         <location filename="../GUI/Utils/PreferenceAction.cpp" line="+150"/>
         <location line="+5"/>
         <source>Stream Recorder</source>
-        <translation type="unfinished"></translation>
+        <translation>Stream Recorder</translation>
     </message>
 </context>
 <context>
@@ -3386,7 +3000,7 @@
     <message>
         <location filename="../GUI/Player/GUI_TrayIcon.cpp" line="+184"/>
         <source>Current song</source>
-        <translation type="unfinished">Was läuft?</translation>
+        <translation>Was läuft?</translation>
     </message>
 </context>
 </TS>
