@@ -24,6 +24,7 @@
 #include "ui_GUI_StreamPreferences.h"
 
 #include "Utils/Settings/Settings.h"
+#include "Utils/Language.h"
 
 
 GUI_StreamPreferences::GUI_StreamPreferences(const QString& identifier) :
@@ -48,7 +49,7 @@ void GUI_StreamPreferences::revert()
 
 QString GUI_StreamPreferences::action_name() const
 {
-	return tr("Streams") + " & " + tr("Podcasts");
+	return Lang::get(Lang::Streams) + " & " + Lang::get(Lang::Podcasts);
 }
 
 void GUI_StreamPreferences::init_ui()

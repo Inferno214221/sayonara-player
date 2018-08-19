@@ -224,7 +224,7 @@ bool GUI_StreamRecorder::commit()
 
 			else if(!QDir::root().mkpath(path))
 			{
-				m->error_string = tr("%1 could not be created").arg(path) + "\n" + tr("Please choose another directory");
+				m->error_string = tr("Cannot create %1").arg(path) + "\n" + tr("Please choose another directory");
 				everything_ok = false;
 			}
 		}

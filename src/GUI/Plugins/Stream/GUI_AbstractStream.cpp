@@ -402,10 +402,11 @@ void GUI_AbstractStream::assign_ui_vars()
 	m->btn_tool = btn_menu();
 }
 
-StreamPreferenceAction::StreamPreferenceAction(QWidget* parent) : PreferenceAction(QString(tr("Streams") + " && " + tr("Podcasts")), identifier(), parent) {}
+StreamPreferenceAction::StreamPreferenceAction(QWidget* parent) :
+	PreferenceAction(QString(Lang::get(Lang::Streams) + " && " +Lang::get(Lang::Podcasts)), identifier(), parent) {}
 
 StreamPreferenceAction::~StreamPreferenceAction() {}
 
 QString StreamPreferenceAction::identifier() const { return "streams"; }
 
-QString StreamPreferenceAction::display_name() const { return tr("Streams") + " && " + tr("Podcasts"); }
+QString StreamPreferenceAction::display_name() const { return Lang::get(Lang::Streams) + " && " + Lang::get(Lang::Podcasts); }

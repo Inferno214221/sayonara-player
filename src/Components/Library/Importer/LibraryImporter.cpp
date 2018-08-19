@@ -200,7 +200,7 @@ void Importer::copy_thread_finished()
 	}
 
 	else {
-		QString warning = tr("Could not import tracks");
+		QString warning = tr("Cannot import tracks");
 		Message::warning(warning);
 	}
 

@@ -310,7 +310,7 @@
           <item>
            <widget class="QPushButton" name="btn_reload_library">
             <property name="text">
-             <string>Reload Library</string>
+			 <string notr="true">Reload Library</string>
             </property>
            </widget>
           </item>

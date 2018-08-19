@@ -176,7 +176,7 @@ void LyricLookupThread::content_fetched()
 
 	if(!awa->has_data() || awa->has_error())
 	{
-		m->final_wp = tr("Could not fetch lyrics from %1").arg(awa->url());
+		m->final_wp = tr("Cannot fetch lyrics from %1").arg(awa->url());
 		m->has_error = true;
 		emit sig_finished();
 		return;

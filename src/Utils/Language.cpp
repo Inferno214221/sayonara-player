@@ -296,6 +296,8 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Play/Pause");
 		case Plugin:
 			return l.tr("Plugin");
+		case Podcasts:
+			return l.tr("Podcasts");
 		case Preferences:
 			return l.tr("Preferences");
 		case PreviousTrack:
@@ -371,6 +373,8 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Sort by");			// for example "sort by year"
 		case Stop:
 			return l.tr("Stop");
+		case Streams:
+			return l.tr("Streams");
 		case StreamUrl:
 			return l.tr("Stream URL");
 		case Success:

@@ -692,11 +692,16 @@ void AbstractLibrary::delete_tracks(const MetaDataList& v_md, Library::TrackDele
 	}
 
 	if(n_fails == 0) {
+		// all entries could be removed
 		answer_str = tr("All %1 could be removed").arg(file_entry);
 	}
 
 	else {
-		answer_str = tr("%1 of %2 %3 could not be removed").arg(n_fails).arg(v_md.size()).arg(file_entry);
+		// 5 of 20 entries could not be removed
+		answer_str = tr("%1 of %2 %3 could not be removed")
+				.arg(n_fails)
+				.arg(v_md.size())
+				.arg(file_entry);
 	}
 
 	emit sig_delete_answer(answer_str);
