@@ -25,7 +25,7 @@
 
 using Library::Container;
 
-struct Container::Private
+struct Library::Container::Private
 {
 	QAction*	action=nullptr;
 	bool		initialized;

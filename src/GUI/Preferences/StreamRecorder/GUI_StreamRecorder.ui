@@ -36,7 +36,7 @@
        <item row="3" column="0">
         <widget class="QLabel" name="label_2">
          <property name="text">
-          <string>Target path:</string>
+          <string>Target path</string>
          </property>
         </widget>
        </item>
@@ -84,7 +84,7 @@
         </widget>
        </item>
        <item row="0" column="0">
-        <widget class="QLabel" name="label">
+        <widget class="QLabel" name="lab_active">
          <property name="text">
           <string notr="true">Active</string>
          </property>
@@ -138,7 +138,7 @@
      </widget>
      <widget class="QWidget" name="tab_2">
       <attribute name="title">
-       <string>Session Folder</string>
+       <string>Session Directory</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_4">
        <item row="4" column="0" colspan="2">

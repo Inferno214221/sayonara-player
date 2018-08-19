@@ -70,6 +70,7 @@ public:
 		Close,
 		CloseOthers,
 		CloseTab,
+		DarkMode,
 		Date,
 		Days,
 		DaysShort,

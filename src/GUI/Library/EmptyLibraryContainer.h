@@ -29,6 +29,7 @@
 class EmptyLibraryContainer :
 		public Library::Container
 {
+	Q_OBJECT
 	PIMPL(EmptyLibraryContainer)
 
 	// LibraryContainerInterface interface

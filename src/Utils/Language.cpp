@@ -119,6 +119,8 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Continue");
 		case Covers:
 			return l.tr("Covers");
+		case DarkMode:
+			return l.tr("Dark Mode");
 		case Date:
 			return l.tr("Date");
 		case Days:
@@ -311,7 +313,7 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 		case Refresh:
 			return l.tr("Refresh");
 		case ReloadLibrary:
-			return l.tr("Reload library");
+			return l.tr("Reload Library");
 		case Remove:
 			return l.tr("Remove");
 		case Rename:

@@ -22,6 +22,7 @@
 #define GUI_ABSTRACT_STREAM_H_
 
 #include "Interfaces/PlayerPlugin/PlayerPluginBase.h"
+#include "GUI/Utils/PreferenceAction.h"
 #include "Utils/Pimpl.h"
 
 class QComboBox;
@@ -30,6 +31,21 @@ class QLineEdit;
 class QLabel;
 class MenuToolButton;
 class AbstractStreamHandler;
+
+class StreamPreferenceAction :
+		public PreferenceAction
+{
+	Q_OBJECT
+
+public:
+	StreamPreferenceAction(QWidget* parent);
+	~StreamPreferenceAction();
+
+	QString identifier() const override;
+
+protected:
+	QString display_name() const override;
+};
 
 class GUI_AbstractStream :
 		public PlayerPlugin::Base

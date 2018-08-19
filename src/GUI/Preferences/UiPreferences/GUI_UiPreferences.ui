@@ -21,7 +21,7 @@
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
-       <string notr="true">Page</string>
+       <string notr="true">General</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_4">
        <item row="1" column="0">
@@ -34,7 +34,7 @@
        <item row="0" column="0">
         <widget class="QCheckBox" name="cb_dark_mode">
          <property name="text">
-          <string>Dark mode</string>
+          <string notr="true">Dark mode</string>
          </property>
         </widget>
        </item>

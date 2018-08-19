@@ -176,7 +176,7 @@ void LyricLookupThread::content_fetched()
 
 	if(!awa->has_data() || awa->has_error())
 	{
-		m->final_wp = tr("Sorry, could not fetch lyrics from %1").arg(awa->url());
+		m->final_wp = tr("Could not fetch lyrics from %1").arg(awa->url());
 		m->has_error = true;
 		emit sig_finished();
 		return;
@@ -186,7 +186,7 @@ void LyricLookupThread::content_fetched()
 
 	if ( m->final_wp.isEmpty() )
 	{
-		m->final_wp = tr("Sorry, no lyrics found") + "<br />" + url;
+		m->final_wp = tr("No lyrics found") + "<br />" + url;
 		m->has_error = true;
 
 		emit sig_finished();

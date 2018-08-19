@@ -43,6 +43,8 @@ namespace SC
 			public DB::Base,
 			public DB::LibraryDatabase
 	{
+		Q_OBJECT
+
 	public:
 		Database();
 		~Database();

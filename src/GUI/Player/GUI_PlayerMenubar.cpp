@@ -256,7 +256,7 @@ void Menubar::language_changed()
 
 	m->action_view_library->setText(Lang::get(Lang::ShowLibrary));
 	m->action_logger->setText(Lang::get(Lang::Logger));
-	m->action_dark->setText(tr("Dark"));
+	m->action_dark->setText(Lang::get(Lang::DarkMode));
 	m->action_fullscreen->setText(tr("Fullscreen"));
 
 	m->action_help->setText(tr("Help"));

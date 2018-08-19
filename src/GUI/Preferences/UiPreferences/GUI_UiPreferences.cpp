@@ -67,7 +67,10 @@ void GUI_UiPreferences::init_ui()
 
 void GUI_UiPreferences::retranslate_ui()
 {
-	ui->tabWidget->setTabText(0, "General");
+	ui->tabWidget->setTabText(0, tr("General"));
+	ui->cb_big_cover->setText(tr("Big Cover"));
+	ui->cb_dark_mode->setText(Lang::get(Lang::DarkMode));
+
 	if(m->font_config){
 		ui->tabWidget->setTabText(1, m->font_config->action_name());
 	}
@@ -75,4 +78,6 @@ void GUI_UiPreferences::retranslate_ui()
 	if(m->icon_config){
 		ui->tabWidget->setTabText(2, m->icon_config->action_name());
 	}
+
+	ui->retranslateUi(this);
 }

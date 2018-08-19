@@ -54,6 +54,7 @@ struct GUI_SomaFM::Private
 	}
 };
 
+
 GUI_SomaFM::GUI_SomaFM(QWidget *parent) :
 	Widget(parent)
 {

@@ -56,6 +56,7 @@ class PreferenceAction :
 class LibraryPreferenceAction :
 	public PreferenceAction
 {
+	Q_OBJECT
 	public:
 		LibraryPreferenceAction(QWidget* parent);
 		QString display_name() const override;
@@ -65,6 +66,7 @@ class LibraryPreferenceAction :
 class PlaylistPreferenceAction :
 	public PreferenceAction
 {
+	Q_OBJECT
 	public:
 		PlaylistPreferenceAction(QWidget* parent);
 
@@ -75,6 +77,7 @@ class PlaylistPreferenceAction :
 class SearchPreferenceAction :
 	public PreferenceAction
 {
+	Q_OBJECT
 	public:
 		SearchPreferenceAction(QWidget* parent);
 		QString display_name() const override;
@@ -84,6 +87,7 @@ class SearchPreferenceAction :
 class CoverPreferenceAction :
 	public PreferenceAction
 {
+	Q_OBJECT
 	public:
 		CoverPreferenceAction(QWidget* parent);
 		QString display_name() const override;
@@ -94,6 +98,7 @@ class CoverPreferenceAction :
 class PlayerPreferencesAction :
 	public PreferenceAction
 {
+	Q_OBJECT
 	public:
 		PlayerPreferencesAction(QWidget* parent);
 		QString display_name() const override;
@@ -104,10 +109,11 @@ class PlayerPreferencesAction :
 class StreamRecorderPreferenceAction :
 		public PreferenceAction
 {
-public:
-	StreamRecorderPreferenceAction(QWidget* parent);
-	QString display_name() const override;
-	QString identifier() const override;
+	Q_OBJECT
+	public:
+		StreamRecorderPreferenceAction(QWidget* parent);
+		QString display_name() const override;
+		QString identifier() const override;
 };
 
 #endif // PREFERENCEACTION_H

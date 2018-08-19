@@ -25,15 +25,18 @@
 #include "GUI/Utils/ContextMenu/LibraryContextMenu.h"
 
 #include <QShortcut>
+#include <QMenu>
+#include <QAction>
 
-using SC::GUI_Library;
 using SC::GUI_ArtistSearch;
 
-struct GUI_Library::Private
+struct SC::GUI_Library::Private
 {
 	GUI_ArtistSearch*	artist_search=nullptr;
 	QMenu*              library_menu=nullptr;
 };
+
+using SC::GUI_Library;
 
 GUI_Library::GUI_Library(Library* library, QWidget *parent) :
 	GUI_AbstractLibrary(library, parent)

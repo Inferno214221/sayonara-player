@@ -24,7 +24,7 @@
 #include "GUI/Utils/Icons.h"
 #include "GUI/Utils/MenuTool/MenuTool.h"
 #include "GUI/Utils/Style.h"
-#include "GUI/Utils/PreferenceAction.h"
+
 
 #include "Utils/Parser/PlaylistParser.h"
 #include "Utils/Parser/PodcastParser.h"
@@ -41,23 +41,11 @@
 #include <QLabel>
 #include <QAbstractItemView>
 
-
 using namespace Gui;
-
-class StreamPreferenceAction :
-		public PreferenceAction
-{
-public:
-	StreamPreferenceAction(QWidget* parent) : PreferenceAction(QString(tr("Streams") + " && " + tr("Podcasts")), identifier(), parent) {}
-
-	QString identifier() const override { return "streams"; }
-
-protected:
-	QString display_name() const override { return tr("Streams") + " && " + tr("Podcasts"); }
-};
 
 struct GUI_AbstractStream::Private
 {
+	QMap<QString, QString>	stations;
 	ProgressBar*			loading_bar=nullptr;
 	QComboBox*				combo_stream=nullptr;
 	QPushButton*			btn_play=nullptr;
@@ -65,7 +53,6 @@ struct GUI_AbstractStream::Private
 	QLabel*					lab_listen=nullptr;
 	MenuToolButton*			btn_tool=nullptr;
 	AbstractStreamHandler*	stream_handler=nullptr;
-	QMap<QString, QString>	stations;
 	bool					searching;
 
 	Private() :
@@ -414,3 +401,11 @@ void GUI_AbstractStream::assign_ui_vars()
 	m->lab_listen = lab_listen();
 	m->btn_tool = btn_menu();
 }
+
+StreamPreferenceAction::StreamPreferenceAction(QWidget* parent) : PreferenceAction(QString(tr("Streams") + " && " + tr("Podcasts")), identifier(), parent) {}
+
+StreamPreferenceAction::~StreamPreferenceAction() {}
+
+QString StreamPreferenceAction::identifier() const { return "streams"; }
+
+QString StreamPreferenceAction::display_name() const { return tr("Streams") + " && " + tr("Podcasts"); }

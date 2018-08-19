@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>292</width>
-    <height>60</height>
+    <height>63</height>
    </rect>
   </property>
   <layout class="QGridLayout" name="grid_layout">
@@ -33,7 +33,7 @@
    <item row="0" column="0">
     <widget class="QCheckBox" name="cb_crossfader">
      <property name="text">
-      <string>CheckBox</string>
+      <string notr="true">Crossfader</string>
      </property>
     </widget>
    </item>
@@ -65,7 +65,7 @@
    <item row="1" column="0" colspan="3">
     <widget class="QCheckBox" name="cb_gapless">
      <property name="text">
-      <string>CheckBox</string>
+      <string notr="true">Gapless</string>
      </property>
     </widget>
    </item>
