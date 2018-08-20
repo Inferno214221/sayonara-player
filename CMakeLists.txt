@@ -42,3 +42,17 @@ set(CMAKE_INSTALL_MANIFEST "install_manifest.txt")
 if(${UNIX})
 	execute_process(COMMAND update-menus)
 endif(${UNIX})
+
+
+set(LANGUAGE_PACK_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/language-pack)
+file(GLOB_RECURSE HEADER_FILES . *.h)
+file(GLOB_RECURSE SOURCE_FILES . *.cpp)
+file(MAKE_DIRECTORY ${LANGUAGE_PACK_DIRECTORY})
+
+add_custom_target(language-pack
+	COMMAND ${CMAKE_COMMAND} -E make_directory ${LANGUAGE_PACK_DIRECTORY}
+	COMMAND ${CMAKE_COMMAND} -E copy ${HEADER_FILES} ${LANGUAGE_PACK_DIRECTORY}
+	COMMAND ${CMAKE_COMMAND} -E copy ${SOURCE_FILES} ${LANGUAGE_PACK_DIRECTORY}
+	DEPENDS sayonara
+)
+
