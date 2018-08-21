@@ -21,6 +21,10 @@
 #include "Language.h"
 #include "Utils.h"
 
+#include <QDir>
+#include <QRegExp>
+#include <QStringList>
+
 LanguageString::LanguageString(const QString& str) :
 	QString(str) {}
 
@@ -431,4 +435,61 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			}
 			return QString();
 	}
+}
+
+QStringList Lang::convert_old_lang(const QString& old_lang)
+{
+	QRegExp re(".*lang_(.*)\\.qm");
+	int idx = re.indexIn(old_lang);
+	if(idx < 0)
+	{
+		return QStringList();
+	}
+
+	return convert_two_letter(re.cap(1));
+}
+
+
+QStringList Lang::convert_two_letter(const QString& two_letter)
+{
+	QStringList rets;
+
+	const QList<QDir> directories
+	{
+		QDir(Util::share_path("translations")),
+		QDir(Util::sayonara_path("translations"))
+	};
+
+	for(const QDir& d : directories)
+	{
+		if(!d.exists()) {
+			continue;
+		}
+
+		const QStringList entries = d.entryList(QStringList{"*.qm"}, QDir::Files);
+
+
+		for(const QString& entry : entries)
+		{
+			QRegExp re(".*lang_(.*)\\.qm");
+			int idx = re.indexIn(entry);
+			if(idx < 0)
+			{
+				continue;
+			}
+
+			QString cap = re.cap(1);
+			if(cap.startsWith(two_letter))
+			{
+				rets << entry;
+			}
+		}
+	}
+
+	Util::sort(rets, [](const QString& str1, const QString& str2)
+	{
+		return (str2.size() < str1.size());
+	});
+
+	return rets;
 }

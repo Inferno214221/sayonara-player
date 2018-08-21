@@ -567,9 +567,11 @@ void GUI_Player::language_changed()
 	}
 
 	m->translators.clear();
-	m->current_language = language;
 
-	init_translator(language, Util::share_path("translations/"));
+	QStringList languages = Lang::convert_old_lang(language);
+	m->current_language = languages.first();
+
+	init_translator(m->current_language, Util::share_path("translations/"));
 
 	if(ui) {
 		ui->retranslateUi(this);

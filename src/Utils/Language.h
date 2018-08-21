@@ -228,6 +228,18 @@ public:
 	~Lang();
 
 	static LanguageString get(Lang::Term term, bool* ok=nullptr);
+
+
+	/*
+	 * Eg: sayonara_lang_de.qm -> sayonara_lang_de_DE.qm
+	 */
+	static QStringList convert_old_lang(const QString& old_lang);
+
+	/*
+	 * Eg: de -> sayonara_lang_de_DE.qm
+	 * Eg: en -> sayonara_lang_en_US.qm
+	 */
+	static QStringList convert_two_letter(const QString& two_letter);
 };
 
 #endif // LANGUAGE_H
