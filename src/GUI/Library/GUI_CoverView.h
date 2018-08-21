@@ -30,6 +30,7 @@
 #include "GUI/Utils/Widgets/Widget.h"
 #include "GUI/Utils/GuiClass.h"
 
+class QTableView;
 class AbstractLibrary;
 class LocalLibrary;
 
@@ -55,6 +56,8 @@ namespace Library
 
 		void init(LocalLibrary* library);
 		bool is_initialized() const;
+
+		Library::CoverView* table_view() const;
 
 
 	protected:

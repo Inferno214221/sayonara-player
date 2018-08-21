@@ -147,6 +147,26 @@ void GUI_LocalLibrary::search_key_pressed(int key)
 	GUI_AbstractLibrary::search_key_pressed(key);
 }
 
+void GUI_LocalLibrary::key_pressed(int key)
+{
+	if(!ui->cover_view || !ui->cover_view->table_view()){
+		return;
+	}
+
+	Library::CoverView* cv = ui->cover_view->table_view();
+
+	if(cv->selected_items().isEmpty())
+	{
+		GUI_AbstractLibrary::key_pressed(key);
+	}
+
+	else
+	{
+		cv->clearSelection();
+		ui->tb_title->clearSelection();
+	}
+}
+
 void GUI_LocalLibrary::genre_selection_changed(const QModelIndex& index)
 {
 	QVariant data = index.data();

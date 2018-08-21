@@ -80,6 +80,15 @@ bool GUI_CoverView::is_initialized() const
 	return (ui != nullptr);
 }
 
+Library::CoverView* GUI_CoverView::table_view() const
+{
+	if(ui) {
+		return ui->tb_view;
+	}
+
+	return nullptr;
+}
+
 
 void GUI_CoverView::init_sorting_actions()
 {

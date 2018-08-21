@@ -72,6 +72,7 @@ namespace Library
 
 		void language_changed() override;
 		void search_key_pressed(int key) override;
+		void key_pressed(int key) override;
 
 
 	private slots:

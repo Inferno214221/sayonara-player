@@ -35,31 +35,31 @@
 
 bool MiniSearchEventFilter::eventFilter(QObject* o, QEvent* e)
 {
-    switch(e->type())
-    {
-        case QEvent::KeyPress:
-            {
-                QKeyEvent* ke = static_cast<QKeyEvent*>(e);
-                if(ke->key() == Qt::Key_Tab)
-                {
-                    emit sig_tab_pressed();
+	switch(e->type())
+	{
+		case QEvent::KeyPress:
+			{
+				QKeyEvent* ke = static_cast<QKeyEvent*>(e);
+				if(ke->key() == Qt::Key_Tab)
+				{
+					emit sig_tab_pressed();
 
-                    // Accept + true = EAT the event. No one else should see the event
-                    e->accept();
+					// Accept + true = EAT the event. No one else should see the event
+					e->accept();
 					return true;
-                }
-            }
-            break;
+				}
+			}
+			break;
 
-        case QEvent::FocusOut:
+		case QEvent::FocusOut:
 			emit sig_focus_lost();
 			break;
 
-        default:
-            break;
-    }
+		default:
+			break;
+	}
 
-    return QObject::eventFilter(o, e);
+	return QObject::eventFilter(o, e);
 }
 
 
@@ -67,7 +67,7 @@ struct MiniSearcher::Private
 {
 	QMap<QChar, QString>    triggers;
 
-    QLineEdit*              line_edit=nullptr;
+	QLineEdit*              line_edit=nullptr;
 	QAbstractItemView*		parent=nullptr;
 	QLabel*					label=nullptr;
 
@@ -80,32 +80,32 @@ struct MiniSearcher::Private
 
 
 MiniSearcher::MiniSearcher(QAbstractItemView* parent) :
-    WidgetTemplate<QFrame>(parent)
+	WidgetTemplate<QFrame>(parent)
 {
 	m = Pimpl::make<MiniSearcher::Private>();
 	m->parent = parent;
 
-    QLayout* layout = new QBoxLayout(QBoxLayout::LeftToRight, this);
-    this->setLayout(layout);
-    this->setMaximumWidth(150);
+	QLayout* layout = new QBoxLayout(QBoxLayout::LeftToRight, this);
+	this->setLayout(layout);
+	this->setMaximumWidth(150);
 
-    MiniSearchEventFilter* msef = new MiniSearchEventFilter(this);
+	MiniSearchEventFilter* msef = new MiniSearchEventFilter(this);
 
-    m->label = new QLabel(this);
-    m->line_edit = new QLineEdit(this);
-    m->line_edit->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-    m->line_edit->installEventFilter(msef);
-    reset_tooltip();
+	m->label = new QLabel(this);
+	m->line_edit = new QLineEdit(this);
+	m->line_edit->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+	m->line_edit->installEventFilter(msef);
+	reset_tooltip();
 
-    layout->setContentsMargins(5, 5, 5, 5);
-    layout->addWidget(m->line_edit);
-    layout->addWidget(m->label);
+	layout->setContentsMargins(5, 5, 5, 5);
+	layout->addWidget(m->line_edit);
+	layout->addWidget(m->label);
 
-    connect(m->line_edit, &QLineEdit::textChanged, this, &MiniSearcher::sig_text_changed);
-    connect(msef, &MiniSearchEventFilter::sig_tab_pressed, this, &MiniSearcher::right_clicked);
-    connect(msef, &MiniSearchEventFilter::sig_focus_lost, this, &MiniSearcher::line_edit_focus_lost);
+	connect(m->line_edit, &QLineEdit::textChanged, this, &MiniSearcher::sig_text_changed);
+	connect(msef, &MiniSearchEventFilter::sig_tab_pressed, this, &MiniSearcher::right_clicked);
+	connect(msef, &MiniSearchEventFilter::sig_focus_lost, this, &MiniSearcher::line_edit_focus_lost);
 
-    this->hide();
+	this->hide();
 }
 
 MiniSearcher::~MiniSearcher() {}
@@ -116,13 +116,13 @@ void MiniSearcher::init(const QString& text)
 	m->line_edit->setFocus();
 	m->line_edit->setText(text);
 
-    this->show();	
+	this->show();
 }
 
 
 bool MiniSearcher::is_initiator(QKeyEvent* event) const
 {
-    QString text = event->text();
+	QString text = event->text();
 
 	if(event->modifiers() & Qt::ControlModifier){
 		return false;
@@ -158,13 +158,13 @@ void MiniSearcher::left_clicked()
 void MiniSearcher::right_clicked()
 {
 	emit sig_find_next_row();
-    m->line_edit->setFocus();
+	m->line_edit->setFocus();
 }
 
 void MiniSearcher::language_changed()
 {
-    reset_tooltip();
-    set_extra_triggers(m->triggers);
+	reset_tooltip();
+	set_extra_triggers(m->triggers);
 }
 
 void MiniSearcher::reset()
@@ -184,10 +184,10 @@ bool MiniSearcher::check_and_init(QKeyEvent* event)
 		return false;
 	}
 
-    if(!this->isVisible()) {
-        init(event->text());
-        return true;
-    }
+	if(!this->isVisible()) {
+		init(event->text());
+		return true;
+	}
 
 	return false;
 }
@@ -195,7 +195,7 @@ bool MiniSearcher::check_and_init(QKeyEvent* event)
 
 void MiniSearcher::set_extra_triggers(const QMap<QChar, QString>& triggers)
 {
-    reset_tooltip();
+	reset_tooltip();
 
 	m->triggers = triggers;
 	QString tooltip;
@@ -205,7 +205,7 @@ void MiniSearcher::set_extra_triggers(const QMap<QChar, QString>& triggers)
 		tooltip += "<b>" + QString(it.key()) + "</b> = " + it.value() + "<br />";
 	}
 
-    add_tooltip_text(tooltip);
+	add_tooltip_text(tooltip);
 }
 
 
@@ -223,23 +223,23 @@ void MiniSearcher::set_number_results(int results)
 
 	QString text = QString("(%1)").arg(results);
 	m->label->setText(text);
-    m->label->show();
+	m->label->show();
 }
 
 void MiniSearcher::add_tooltip_text(const QString& str)
 {
-    QString tooltip = m->line_edit->toolTip();
-    tooltip += "<br /><br />" + str;
-    m->line_edit->setToolTip(tooltip);
+	QString tooltip = m->line_edit->toolTip();
+	tooltip += "<br /><br />" + str;
+	m->line_edit->setToolTip(tooltip);
 }
 
 void MiniSearcher::reset_tooltip()
 {
-    m->line_edit->setToolTip(
+	m->line_edit->setToolTip(
 		"<b>" + tr("Arrow up") + "</b> = " + tr("Previous search result") + "<br/>" +
 		"<b>" + tr("Arrow down") + "</b> = " + tr("Next search result") + "<br/>" +
-        "<b>" + tr("Esc") + "</b> = " + Lang::get(Lang::Close)
-				);
+		"<b>" + Lang::get(Lang::Key_Escape) + "</b> = " + Lang::get(Lang::Close)
+	);
 }
 
 
@@ -254,50 +254,50 @@ void MiniSearcher::set_padding(int padding)
 
 void MiniSearcher::handle_key_press(QKeyEvent *e)
 {
-    bool was_initialized = isVisible();
-    bool initialized = check_and_init(e);
+	bool was_initialized = isVisible();
+	bool initialized = check_and_init(e);
 
-    if(initialized || was_initialized)
-    {
-        keyPressEvent(e);
-    }
+	if(initialized || was_initialized)
+	{
+		keyPressEvent(e);
+	}
 }
 
 void MiniSearcher::keyPressEvent(QKeyEvent* event)
 {
-    int key = event->key();
+	int key = event->key();
 
-    switch(key)
-    {
-        case Qt::Key_Escape:
-        case Qt::Key_Enter:
-        case Qt::Key_Return:
-            if(this->isVisible())
-            {
-                reset();
-                event->accept();
-            }
-            break;
+	switch(key)
+	{
+		case Qt::Key_Escape:
+		case Qt::Key_Enter:
+		case Qt::Key_Return:
+			if(this->isVisible())
+			{
+				reset();
+				event->accept();
+			}
+			break;
 
-        case Qt::Key_Down:
-            if(this->isVisible())
-            {
-                right_clicked();
-                event->accept();
-            }
-            break;
+		case Qt::Key_Down:
+			if(this->isVisible())
+			{
+				right_clicked();
+				event->accept();
+			}
+			break;
 
-        case Qt::Key_Up:
-            if(this->isVisible())
-            {
-                left_clicked();
-                event->accept();
-            }
-            break;
+		case Qt::Key_Up:
+			if(this->isVisible())
+			{
+				left_clicked();
+				event->accept();
+			}
+			break;
 
-        default:
-            QFrame::keyPressEvent(event);
-            break;
+		default:
+			QFrame::keyPressEvent(event);
+			break;
 	}
 }
 
