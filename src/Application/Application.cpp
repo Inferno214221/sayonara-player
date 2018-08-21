@@ -148,6 +148,8 @@ struct Application::Private
 			return;
 		}
 
+		Settings::instance()->apply_fixes();
+
 		Q_INIT_RESOURCE(Icons);
 
 #ifdef Q_OS_WIN

@@ -113,7 +113,7 @@ bool SettingRegistry::init()
 	register_setting<Set::Lib_UseViewClearButton>( "lib_view_clear_button", false);
 
 	register_setting<Set::Player_Version>( "player_version", QString(SAYONARA_VERSION));
-	register_setting<Set::Player_Language>( "player_language", QString("sayonara_lang_en"));
+	register_setting<Set::Player_Language>( "player_language", QString("sayonara_lang_en.qm"));
 	register_setting<Set::Player_Style>( "player_style", 0 );
 	register_setting<Set::Player_ControlStyle>( "player_control_style", 0 );
 	register_setting<Set::Player_FontName>( "player_font", QApplication::font().family() );

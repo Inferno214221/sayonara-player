@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="en_US">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="en_US" version="2.1">
 <context>
     <name>AbstractLibrary</name>
     <message>
@@ -2218,7 +2216,7 @@
     <name>StreamRecorderPreferenceAction</name>
     <message>
         <source>Stream Recorder</source>
-        <translation type="unfinished"></translation>
+        <translation>Stream Recorder</translation>
     </message>
 </context>
 <context>

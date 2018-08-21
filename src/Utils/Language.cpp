@@ -24,6 +24,7 @@
 #include <QDir>
 #include <QRegExp>
 #include <QStringList>
+#include <QLocale>
 
 LanguageString::LanguageString(const QString& str) :
 	QString(str) {}
@@ -437,22 +438,28 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 	}
 }
 
-QStringList Lang::convert_old_lang(const QString& old_lang)
+QString Lang::convert_old_lang(const QString& old_lang)
 {
-	QRegExp re(".*lang_(.*)\\.qm");
-	int idx = re.indexIn(old_lang);
-	if(idx < 0)
+	QString tl = two_letter(old_lang);
+	if(tl.count() >= 2)
 	{
-		return QStringList();
+		QMap<QString, QLocale> languages = available_languages();
+		for(const QString& four_letter : languages.keys())
+		{
+			if(four_letter.startsWith(tl)){
+				return four_letter;
+			}
+		}
 	}
 
-	return convert_two_letter(re.cap(1));
+	return "en_US";
 }
 
 
-QStringList Lang::convert_two_letter(const QString& two_letter)
+
+QMap<QString, QLocale> Lang::available_languages()
 {
-	QStringList rets;
+	QMap<QString, QLocale> ret;
 
 	const QList<QDir> directories
 	{
@@ -468,28 +475,45 @@ QStringList Lang::convert_two_letter(const QString& two_letter)
 
 		const QStringList entries = d.entryList(QStringList{"*.qm"}, QDir::Files);
 
-
 		for(const QString& entry : entries)
 		{
-			QRegExp re(".*lang_(.*)\\.qm");
-			int idx = re.indexIn(entry);
-			if(idx < 0)
-			{
-				continue;
-			}
-
-			QString cap = re.cap(1);
-			if(cap.startsWith(two_letter))
-			{
-				rets << entry;
+			QString fl = four_letter(entry);
+			if(!fl.isEmpty()){
+				ret[fl] = QLocale(fl);
 			}
 		}
 	}
 
-	Util::sort(rets, [](const QString& str1, const QString& str2)
-	{
-		return (str2.size() < str1.size());
-	});
+	return ret;
+}
 
-	return rets;
+
+QString Lang::two_letter(const QString& language_name)
+{
+	QRegExp re(".*lang_(.+)(_.*)*.qm");
+	int idx = re.indexIn(language_name);
+	if(idx < 0)
+	{
+		return QString();
+	}
+
+	return re.cap(1);
+}
+
+QString Lang::four_letter(const QString& language_name)
+{
+	QRegExp re(".*lang_(.+).qm");
+	int idx = re.indexIn(language_name);
+	if(idx < 0)
+	{
+		return QString();
+	}
+
+	QString ret = re.cap(1);
+	if(ret.count() == 5)
+	{
+		return ret;
+	}
+
+	return QString();
 }

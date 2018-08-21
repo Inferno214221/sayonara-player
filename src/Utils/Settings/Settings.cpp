@@ -25,6 +25,7 @@
 
 #include "Utils/Crypt.h"
 #include "Utils/Utils.h"
+#include "Utils/Language.h"
 
 #include <array>
 #include <iterator>
@@ -85,11 +86,6 @@ bool Settings::check_settings()
 	});
 
 	m->initialized = (!has_empty);
-
-	if(m->initialized){
-		apply_fixes();
-	}
-
 	return m->initialized;
 }
 
@@ -117,5 +113,14 @@ void Settings::apply_fixes()
 		this->set<Set::Proxy_Password>(Util::Crypt::encrypt(proxy_pw));
 
 		this->set<Set::Settings_Revision>(1);
+	}
+
+	if(settings_revision < 2)
+	{
+		QString language = this->get<Set::Player_Language>();
+		QString four_letter = Lang::convert_old_lang(language);
+		this->set<Set::Player_Language>(four_letter);
+
+		this->set<Set::Settings_Revision>(2);
 	}
 }

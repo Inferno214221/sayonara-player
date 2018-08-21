@@ -22,6 +22,9 @@
 #define LANGUAGE_H
 
 #include <QObject>
+#include <QList>
+#include <QMap>
+#include <QLocale>
 
 class LanguageString : public QString
 {
@@ -233,13 +236,11 @@ public:
 	/*
 	 * Eg: sayonara_lang_de.qm -> sayonara_lang_de_DE.qm
 	 */
-	static QStringList convert_old_lang(const QString& old_lang);
+	static QString convert_old_lang(const QString& old_lang);
+	static QMap<QString, QLocale> available_languages();
 
-	/*
-	 * Eg: de -> sayonara_lang_de_DE.qm
-	 * Eg: en -> sayonara_lang_en_US.qm
-	 */
-	static QStringList convert_two_letter(const QString& two_letter);
+	static QString two_letter(const QString& language_name);
+	static QString four_letter(const QString& language_name);
 };
 
 #endif // LANGUAGE_H

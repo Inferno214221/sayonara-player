@@ -1,4 +1,4 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="pt_PT" version="2.1">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="pt_BR" version="2.1">
 <context>
     <name>AbstractLibrary</name>
     <message>
@@ -1167,7 +1167,7 @@
     </message>
     <message>
         <source>%1 tracks</source>
-        <translation type="unfinished"/>
+        <translation>%1 faixas</translation>
     </message>
     <message>
         <source>Ignore these tracks?</source>
@@ -2217,7 +2217,7 @@ arquivos relativos</translation>
     <name>StreamRecorderPreferenceAction</name>
     <message>
         <source>Stream Recorder</source>
-        <translation>Gravar stream</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>

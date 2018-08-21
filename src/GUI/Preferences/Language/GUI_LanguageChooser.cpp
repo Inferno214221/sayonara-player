@@ -25,44 +25,14 @@
 #include "Utils/FileUtils.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/Language.h"
 
 #include <QFile>
 #include <QDir>
 #include <QRegExp>
 #include <QLocale>
 
-static QString language_name(QLocale::Language l, QLocale::Country c)
-{
-	QLocale loc(l, c);
-	return Util::cvt_str_to_very_first_upper(loc.nativeLanguageName());
-}
-
-struct GUI_LanguageChooser::Private
-{
-	QMap<QString, QString>  map;
-
-	Private()
-	{
-		map["br"] = language_name(QLocale::Portuguese, QLocale::Brazil);
-		map["cs"] = language_name(QLocale::Czech, QLocale::CzechRepublic); // QString::fromUtf8("Český");
-		map["de"] = language_name(QLocale::German, QLocale::Germany); // "Deutsch";
-		map["en"] = language_name(QLocale::English, QLocale::UnitedStates); // "English";
-		map["es"] = language_name(QLocale::Spanish, QLocale::Spain); // QString::fromUtf8("Español");
-		map["fr"] = language_name(QLocale::French, QLocale::France); // "Francais";
-		map["hu"] = language_name(QLocale::Hungarian, QLocale::Hungary); // "Magyar";
-		map["it"] = language_name(QLocale::Italian, QLocale::Italy); // "Italiano";
-		//map["ja"] = language_name(QLocale::Japanese, QLocale::Japan); // QString::fromUtf8("日本語");
-		map["nl"] = language_name(QLocale::Dutch, QLocale::Netherlands); // "Nederlands";
-		map["pl"] = language_name(QLocale::Polish, QLocale::Poland); // QString::fromUtf8("Polski");
-		map["pt"] = language_name(QLocale::Portuguese, QLocale::Portugal); // QString::fromUtf8("Português");
-		map["ro"] = language_name(QLocale::Romanian, QLocale::Romania); // QString::fromUtf8("Limba română");
-		map["ru"] = language_name(QLocale::Russian, QLocale::Russia); // QString::fromUtf8("Русский");
-		map["tr"] = language_name(QLocale::Turkish, QLocale::Turkey); // QString::fromUtf8("Türkçe");
-		map["uk"] = language_name(QLocale::Ukrainian, QLocale::Ukraine); // QString::fromUtf8("Українська");
-		map["zh_cn"] = language_name(QLocale::Chinese, QLocale::China); // QLocale::QString::fromUtf8("中文");
-		//map["da"] = language_name(QLocale::Danish, QLocale::Denmark);
-	}
-};
+struct GUI_LanguageChooser::Private {};
 
 GUI_LanguageChooser::GUI_LanguageChooser(const QString& identifier) :
 	Preferences::Base(identifier)
@@ -82,6 +52,7 @@ GUI_LanguageChooser::~GUI_LanguageChooser()
 void GUI_LanguageChooser::retranslate_ui()
 {
 	ui->retranslateUi(this);
+
 	renew_combo();
 }
 
@@ -89,9 +60,9 @@ void GUI_LanguageChooser::retranslate_ui()
 bool GUI_LanguageChooser::commit()
 {
 	int cur_idx = ui->combo_lang->currentIndex();
-	QString cur_language = ui->combo_lang->itemData(cur_idx).toString();
+	QString four_letter = ui->combo_lang->itemData(cur_idx).toString();
 
-	_settings->set<Set::Player_Language>(cur_language);
+	_settings->set<Set::Player_Language>(four_letter);
 
 	return true;
 }
@@ -105,62 +76,33 @@ void GUI_LanguageChooser::renew_combo()
 		return;
 	}
 
-	QString lang_setting = _settings->get<Set::Player_Language>();
-
-	sp_log(Log::Info, this) << "Language setting = " << lang_setting;
-	QDir dir(Util::share_path("translations"));
-
-	QStringList filters;
-	filters << "*.qm";
-	//QStringList files = dir.entryList(filters);
-
-	QStringList files;
-	for(QString key : m->map.keys())
-	{
-		files << QString("sayonara_lang_%1.qm").arg(key);
-	}
-
 	ui->combo_lang->clear();
 
-	int i=0;
-	for(const QString& file : files)
+	QString language = _settings->get<Set::Player_Language>();
+
+	const QMap<QString, QLocale> locales = Lang::available_languages();
+
+	int cur_idx = 0;
+	for(auto it=locales.begin(); it != locales.end(); it++)
 	{
-		QRegExp re(".*lang_(.*)\\.qm");
-		re.setMinimal(true);
+		QString four_letter = it.key();
+		QLocale loc = it.value();
 
-		QString country_code;
-		if(re.indexIn(file) >= 0){
-			country_code = re.cap(1).toLower();
-		}
+		QString rel_icon_path = QString("translations/icons/%1.png").arg(four_letter);
+		QString abs_icon_path = Util::share_path(rel_icon_path);
 
-		else{
-			continue;
-		}
-
-		if(country_code.compare("mx") == 0){
-			continue;
-		}
-
-		QString icon_path = Util::share_path(
-					"translations/icons/" + country_code + ".png"
+		ui->combo_lang->addItem(
+			QIcon(abs_icon_path),
+			Util::cvt_str_to_first_upper(loc.nativeLanguageName()),
+			four_letter
 		);
 
-		QString language_name = m->map.value(country_code);
-
-		if(language_name.size() > 0){
-			ui->combo_lang->addItem(QIcon(icon_path), language_name, file);
+		if(four_letter == language){
+			cur_idx = std::distance(locales.begin(), it);
 		}
-
-		else{
-			ui->combo_lang->addItem(file, file);
-		}
-
-		if(file.contains(lang_setting, Qt::CaseInsensitive)){
-			ui->combo_lang->setCurrentIndex(i);
-		}
-
-		i++;
 	}
+
+	ui->combo_lang->setCurrentIndex(cur_idx);
 }
 
 

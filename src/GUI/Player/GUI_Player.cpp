@@ -534,18 +534,20 @@ void GUI_Player::splitter_controls_moved(int pos, int idx)
 	_settings->set<Set::Player_SplitterControls>(splitter_state);
 }
 
-bool GUI_Player::init_translator(const QString& file, const QString& dir)
+bool GUI_Player::init_translator(const QString& four_letter, const QString& dir)
 {
+	QString filename = QString("sayonara_lang_%1.qm").arg(four_letter);
+
 	QTranslator* t = new QTranslator(this);
-	bool loaded = t->load(file, dir);
+	bool loaded = t->load(filename, dir);
 	if(!loaded){
-		sp_log(Log::Warning, this) << "Translator " << dir << "/" << file << " could not be loaded";
+		sp_log(Log::Warning, this) << "Translator " << dir << "/" << filename << " could not be loaded";
 		return false;
 	}
 
 	bool installed = QApplication::installTranslator(t);
 	if(!installed){
-		sp_log(Log::Warning, this) << "Translator " << dir << "/" << file << " could not be installed";
+		sp_log(Log::Warning, this) << "Translator " << dir << "/" << filename << " could not be installed";
 		return false;
 	}
 
@@ -567,9 +569,7 @@ void GUI_Player::language_changed()
 	}
 
 	m->translators.clear();
-
-	QStringList languages = Lang::convert_old_lang(language);
-	m->current_language = languages.first();
+	m->current_language = language;
 
 	init_translator(m->current_language, Util::share_path("translations/"));
 

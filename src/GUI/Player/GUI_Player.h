@@ -65,7 +65,7 @@ public:
 	void request_shutdown();
 
 private:
-	bool init_translator(const QString& file, const QString& dir);
+	bool init_translator(const QString& four_letter, const QString& dir);
 	void init_tray_actions();
 	void init_connections();
 	void init_sizes();
