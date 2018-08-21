@@ -46,6 +46,8 @@ public:
 protected:
 	void init_ui() override;
 	void retranslate_ui() override;
+	void skin_changed() override;
+
 	void showEvent(QShowEvent*) override;
 
 private:

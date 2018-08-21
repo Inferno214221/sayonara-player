@@ -17,10 +17,16 @@ public:
 	virtual ~GUI_UiPreferences();
 
 	QString action_name() const override;
+
+protected:
+	void retranslate_ui() override;
 	bool commit() override;
 	void revert() override;
 	void init_ui() override;
-	void retranslate_ui() override;
+
+private:
+	void style_changed();
+
 };
 
 #endif

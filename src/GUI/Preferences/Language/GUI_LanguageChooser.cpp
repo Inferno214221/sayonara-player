@@ -26,6 +26,7 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Language.h"
+#include "GUI/Utils/Style.h"
 
 #include <QFile>
 #include <QDir>
@@ -54,6 +55,17 @@ void GUI_LanguageChooser::retranslate_ui()
 	ui->retranslateUi(this);
 
 	renew_combo();
+}
+
+
+void GUI_LanguageChooser::skin_changed()
+{
+	if(is_ui_initialized())
+	{
+		ui->lab_link->setText(
+			Util::create_link("https://www.transifex.com/sayonara/sayonara-player", Style::is_dark())
+		);
+	}
 }
 
 

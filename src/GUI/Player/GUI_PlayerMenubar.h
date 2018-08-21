@@ -55,6 +55,7 @@ public:
 
 private:
 	void init_connections();
+	void style_changed();
 
 protected:
 	void language_changed() override;
@@ -67,12 +68,14 @@ private slots:
 	void close_clicked();
 	void minimize_clicked();
 	void skin_toggled(bool b);
+	void big_cover_toggled(bool b);
 	void show_library_toggled(bool b);
 	void show_fullscreen_toggled(bool b);
 	void help_clicked();
 	void about_clicked();
 	void awa_translators_finished();
 	void shortcut_changed(ShortcutIdentifier identifier);
+
 };
 
 

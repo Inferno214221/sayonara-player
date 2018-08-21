@@ -74,6 +74,7 @@ struct Menubar::Private
 	QAction*		sep_after_plugins=nullptr;
 	QAction*		action_logger=nullptr;
 	QAction*		action_dark=nullptr;
+	QAction*		action_big_cover=nullptr;
 	QAction*		action_fullscreen=nullptr;
 
 	// help
@@ -119,12 +120,20 @@ struct Menubar::Private
 		action_logger = new QAction(menu_view);
 		action_dark = new QAction(menu_view);
 		action_dark->setCheckable(true);
+		action_big_cover = new QAction(menu_view);
+		action_big_cover->setCheckable(true);
 		action_fullscreen = new QAction(menu_view);
 		action_fullscreen->setCheckable(true);
 
 		menu_view->insertActions(nullptr,
 		{
-			action_view_library, sep_after_view_library, sep_after_plugins, action_logger, action_dark, action_fullscreen
+			action_view_library,
+			sep_after_view_library,
+			sep_after_plugins,
+			action_logger,
+			action_big_cover,
+			action_dark,
+			action_fullscreen
 		});
 
 		//help
@@ -148,8 +157,11 @@ Menubar::Menubar(QWidget* parent) :
 	m->action_view_library->setText(Lang::get(Lang::Library));
 	m->action_view_library->setShortcut(QKeySequence("Ctrl+L"));
 
-	m->action_dark->setChecked(Style::is_dark());
+	m->action_big_cover->setShortcut(QKeySequence("F9"));
+	Set::listen<Set::Player_ControlStyle>(this, &Menubar::style_changed);
+
 	m->action_dark->setShortcut(QKeySequence("F10"));
+	Set::listen<Set::Player_ControlStyle>(this, &Menubar::style_changed);
 
 	m->action_fullscreen->setShortcut(QKeySequence("F11"));
 	m->action_fullscreen->setChecked(_settings->get<Set::Player_Fullscreen>());
@@ -163,9 +175,11 @@ Menubar::Menubar(QWidget* parent) :
 	init_connections();
 	language_changed();
 	skin_changed();
+	style_changed();
 }
 
 Menubar::~Menubar() {}
+
 
 void Menubar::insert_player_plugin_action(QAction* action)
 {
@@ -225,6 +239,7 @@ void Menubar::init_connections()
 	// view
 	connect(m->action_view_library, &QAction::toggled, this, &Menubar::show_library_toggled);
 	connect(m->action_dark, &QAction::toggled, this, &Menubar::skin_toggled);
+	connect(m->action_big_cover, &QAction::toggled, this, &Menubar::big_cover_toggled);
 	connect(m->action_fullscreen, &QAction::toggled, this, &Menubar::show_fullscreen_toggled);
 	connect(m->action_logger, &QAction::triggered, this, &Menubar::sig_logger_clicked);
 
@@ -257,6 +272,7 @@ void Menubar::language_changed()
 	m->action_view_library->setText(Lang::get(Lang::ShowLibrary));
 	m->action_logger->setText(Lang::get(Lang::Logger));
 	m->action_dark->setText(Lang::get(Lang::DarkMode));
+	m->action_big_cover->setText(tr("Show large cover"));
 	m->action_fullscreen->setText(tr("Fullscreen"));
 
 	m->action_help->setText(tr("Help"));
@@ -330,9 +346,20 @@ void Menubar::minimize_clicked()
 	emit sig_minimize_clicked();
 }
 
+void Menubar::style_changed()
+{
+	m->action_big_cover->setChecked(_settings->get<Set::Player_ControlStyle>() == 1);
+	m->action_dark->setChecked(Style::is_dark());
+}
+
 void Menubar::skin_toggled(bool b)
 {
 	Style::set_dark(b);
+}
+
+void Menubar::big_cover_toggled(bool b)
+{
+	_settings->set<Set::Player_ControlStyle>((b==true) ? 1 : 0);
 }
 
 
