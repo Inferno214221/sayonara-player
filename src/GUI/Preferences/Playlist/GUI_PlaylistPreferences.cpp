@@ -166,6 +166,7 @@ void GUI_PlaylistPreferences::init_ui()
 
 	setup_parent(this, &ui);
 	ui->tabWidget->setCurrentIndex(0);
+	ui->le_expression->setStyleSheet("font-family: mono;");
 
 	revert();
 

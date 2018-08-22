@@ -144,7 +144,7 @@ void Shutdown::countdown_timeout()
 	m->timer_countdown->start(1000);
 
 	emit sig_time_to_go(m->msecs2go);
-	sp_log(Log::Info) << "Time to go: " << m->msecs2go;
+	sp_log(Log::Debug, this) << "Time to go: " << m->msecs2go;
 
 	if(m->msecs2go % 60000 == 0){
 		NotificationHandler::instance()->notify(Lang::get(Lang::Shutdown),

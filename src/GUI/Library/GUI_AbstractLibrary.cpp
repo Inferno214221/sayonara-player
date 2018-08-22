@@ -44,6 +44,7 @@ struct GUI_AbstractLibrary::Private
 {
 	AbstractLibrary*	library = nullptr;
 	QLineEdit*			le_search=nullptr;
+	QMenu*				search_context_menu=nullptr;
 
 	Private(AbstractLibrary* library) :
 		library(library)
@@ -84,6 +85,29 @@ void GUI_AbstractLibrary::init_search_bar()
 	m->le_search->setContextMenuPolicy(Qt::CustomContextMenu);
 	m->le_search->setClearButtonEnabled(true);
 
+	init_search_context_menu();
+
+	connect(m->le_search, &QLineEdit::returnPressed, this, &GUI_AbstractLibrary::search_return_pressed);
+
+	search_mode_changed(Filter::Fulltext);
+}
+
+void GUI_AbstractLibrary::init_search_context_menu()
+{
+	if(!m->search_context_menu)
+	{
+		m->search_context_menu = new QMenu(m->le_search);
+
+		ContextMenuFilter* cm_filter = new ContextMenuFilter(m->le_search);
+		connect(cm_filter, &ContextMenuFilter::sig_context_menu, m->search_context_menu, &QMenu::popup);
+
+		m->le_search->installEventFilter(cm_filter);
+	}
+
+	else {
+		m->search_context_menu->clear();
+	}
+
 	QList<QAction*> actions;
 	QList<Filter::Mode> filters = search_options();
 	for(const Filter::Mode filter_mode : filters)
@@ -101,19 +125,10 @@ void GUI_AbstractLibrary::init_search_bar()
 		});
 	}
 
-	QMenu* menu = new QMenu(m->le_search);
-	actions << menu->addSeparator();
-	actions << new SearchPreferenceAction(menu);
+	actions << m->search_context_menu->addSeparator();
+	actions << new SearchPreferenceAction(m->search_context_menu);
 
-	menu->addActions(actions);
-
-	ContextMenuFilter* cm_filter = new ContextMenuFilter(m->le_search);
-	connect(cm_filter, &ContextMenuFilter::sig_context_menu, menu, &QMenu::popup);
-
-	m->le_search->installEventFilter(cm_filter);
-	connect(m->le_search, &QLineEdit::returnPressed, this, &GUI_AbstractLibrary::search_return_pressed);
-
-	search_mode_changed(Filter::Fulltext);
+	m->search_context_menu->addActions(actions);
 }
 
 void GUI_AbstractLibrary::language_changed()
@@ -122,6 +137,7 @@ void GUI_AbstractLibrary::language_changed()
 	QString text = Lang::get(Lang::SearchNoun) + ": " + Filter::get_text(mode);
 
 	m->le_search->setPlaceholderText(text);
+	init_search_context_menu();
 }
 
 

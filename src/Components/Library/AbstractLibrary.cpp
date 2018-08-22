@@ -466,13 +466,10 @@ void AbstractLibrary::change_track_selection(const IndexSet& indexes)
 		}
 
 		const MetaData& md = _tracks[idx];
-		sp_log(Log::Debug, this) << "change_track_selection(): track at " << idx << " has id " << md.id;
 
 		m->current_tracks << md;
 		m->selected_tracks.insert(md.id);
 	}
-
-	sp_log(Log::Debug, this) << "change_track_selection(): " << m->selected_tracks;
 }
 
 

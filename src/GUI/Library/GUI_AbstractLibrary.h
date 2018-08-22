@@ -56,6 +56,7 @@ namespace Library
 	private:
 		virtual void init();
 		virtual void init_search_bar();
+		virtual void init_search_context_menu();
 
 	protected:
 		virtual void language_changed() override;

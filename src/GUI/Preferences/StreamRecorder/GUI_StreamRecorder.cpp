@@ -73,6 +73,7 @@ void GUI_StreamRecorder::init_ui()
 	ui->le_result_path->setReadOnly(true);
 	ui->le_template->setClearButtonEnabled(true);
 	ui->le_template->setMouseTracking(true);
+	ui->le_template->setStyleSheet("font-family: mono;");
 	ui->tabWidget->setCurrentIndex(0);
 	ui->tabWidget->setTabEnabled(1, _settings->get<Set::Engine_SR_SessionPath>());
 

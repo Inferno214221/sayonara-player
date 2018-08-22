@@ -38,7 +38,6 @@
 #include <vector>
 #include <mutex>
 
-static std::mutex mtx;
 static const int Channels = 2;
 
 using Step=uint_fast8_t;
@@ -51,6 +50,7 @@ struct GUI_LevelPainter::Private
 {
 	ChannelArray	level;
 	StepArray		steps;
+	std::mutex		mtx;
 
 	float*			exp_lot=nullptr;
 
@@ -154,8 +154,7 @@ void GUI_LevelPainter::retranslate_ui()
 
 void GUI_LevelPainter::set_level(float left, float right)
 {
-	if(!mtx.try_lock()){
-		sp_log(Log::Debug, this) << "Throw away the mutex";
+	if(!m->mtx.try_lock()){
 		return;
 	}
 
@@ -168,7 +167,7 @@ void GUI_LevelPainter::set_level(float left, float right)
 	stop_fadeout_timer();
 	update();
 
-	mtx.unlock();
+	m->mtx.unlock();
 }
 
 
