@@ -54,6 +54,7 @@ namespace Engine
 		bool change_track(const MetaData&) override;
 		bool change_track_by_filename(const QString&) override;
 
+
 	private slots:
 		void cur_pos_ms_changed(MilliSeconds ms);
 
@@ -61,6 +62,10 @@ namespace Engine
 		// methods
 		bool change_uri(char* uri) override;
 		void configure_target(const MetaData& md);
+
+		// Base interface
+	public:
+		void update_metadata(const MetaData& md, GstElement* src) override;
 	};
 }
 

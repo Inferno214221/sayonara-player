@@ -103,6 +103,10 @@ void Convert::set_track_finished(GstElement* src)
 
 void Convert::cur_pos_ms_changed(MilliSeconds pos_ms)
 {
+	if(sender() != m->pipeline){
+		return;
+	}
+
 	Base::set_current_position_ms(pos_ms);
 }
 
@@ -141,3 +145,5 @@ void Convert::jump_abs_ms(MilliSeconds pos_ms) { Q_UNUSED(pos_ms); }
 void Convert::jump_rel_ms(MilliSeconds ms) { Q_UNUSED(ms); }
 
 void Convert::jump_rel(double percent) { Q_UNUSED(percent); }
+
+void Convert::update_metadata(const MetaData& md, GstElement* src) { Q_UNUSED(src); Q_UNUSED(md) }

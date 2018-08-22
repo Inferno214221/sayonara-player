@@ -158,7 +158,9 @@ void GUI_LevelPainter::set_level(float left, float right)
 		return;
 	}
 
-	if(!is_ui_initialized() || !isVisible()){
+	if(!is_ui_initialized() || !isVisible())
+	{
+		m->mtx.unlock();
 		return;
 	}
 
@@ -282,6 +284,7 @@ void GUI_LevelPainter::reload()
 
 void GUI_LevelPainter::showEvent(QShowEvent* e)
 {
+	m->mtx.unlock();
 	_settings->set<Set::Engine_ShowLevel>(true);
 	EnginePlugin::showEvent(e);
 }
@@ -289,8 +292,15 @@ void GUI_LevelPainter::showEvent(QShowEvent* e)
 
 void GUI_LevelPainter::closeEvent(QCloseEvent* e)
 {
+	m->mtx.unlock();
 	_settings->set<Set::Engine_ShowLevel>(false);
 	EnginePlugin::closeEvent(e);
+}
+
+void GUI_LevelPainter::hideEvent(QHideEvent* e)
+{
+	m->mtx.unlock();
+	EnginePlugin::hideEvent(e);
 }
 
 
