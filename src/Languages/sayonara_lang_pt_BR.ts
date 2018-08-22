@@ -1248,8 +1248,8 @@ arquivos relativos</translation>
         <translation>Gêneros</translation>
     </message>
     <message>
-        <source>Big Cover</source>
-        <translation>Mostrar capa de álbun grande</translation>
+        <source>Show large cover</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -2114,6 +2114,10 @@ arquivos relativos</translation>
     <message>
         <source>License</source>
         <translation>Licença</translation>
+    </message>
+    <message>
+        <source>Show large cover</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>

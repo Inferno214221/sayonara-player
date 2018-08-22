@@ -1247,7 +1247,7 @@
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Big Cover</source>
+        <source>Show large cover</source>
         <translation type="unfinished"/>
     </message>
 </context>
@@ -2113,6 +2113,10 @@
     <message>
         <source>License</source>
         <translation>Lisans</translation>
+    </message>
+    <message>
+        <source>Show large cover</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>

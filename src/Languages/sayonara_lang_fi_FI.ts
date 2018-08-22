@@ -1,13 +1,13 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="pt_PT" version="2.1">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="fi_FI" version="2.1">
 <context>
     <name>AbstractLibrary</name>
     <message>
         <source>All %1 could be removed</source>
-        <translation>Todos %1 poderiam ser removidos</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>%1 of %2 %3 could not be removed</source>
-        <translation>%1 de %2 %3 não puderam ser removidos</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -25,100 +25,100 @@
     <name>CoverViewContextMenu</name>
     <message>
         <source>Toolbar</source>
-        <translation>Barra de Ferramentas</translation>
+        <translation>Työkalurivi</translation>
     </message>
 </context>
 <context>
     <name>DBusMPRIS::MediaPlayer2</name>
     <message>
         <source>None</source>
-        <translation>Nenhum</translation>
+        <translation>Ei konetta</translation>
     </message>
 </context>
 <context>
     <name>DirectoryContextMenu</name>
     <message>
         <source>Create directory</source>
-        <translation>Criar a Directoria</translation>
+        <translation>Luo kansio…</translation>
     </message>
     <message>
         <source>Collapse all</source>
-        <translation>Fechar tudo</translation>
+        <translation>Supista kaikki</translation>
     </message>
 </context>
 <context>
     <name>DirectoryTreeView</name>
     <message>
         <source>Enter new name</source>
-        <translation>Novo Nome</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Copy here</source>
-        <translation>Copiar para Aqui</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Move here</source>
-        <translation>Mover para Aqui</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>EmptyLibraryContainer</name>
     <message>
         <source>Empty Library</source>
-        <translation>Vazio Biblioteca</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>FileListView</name>
     <message>
         <source>Enter new name</source>
-        <translation>Novo Nome</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_AbstractStream</name>
     <message>
         <source>Cannot open stream</source>
-        <translation>Não foi possível abrir o stream</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Overwrite?</source>
-        <translation>Substituir?</translation>
+        <translation>Korvataanko?</translation>
     </message>
     <message>
         <source>Do you really want to delete %1</source>
-        <translation>Tem certeza que deseja apagar %1</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_AlternativeCovers</name>
     <message>
         <source>This cover does not exist</source>
-        <translation>Esta capa não existe</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>%1 covers found</source>
-        <translation>%1 capas encontradas</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Open image files</source>
-        <translation>Abrir arquivos de imagens</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Online Search</source>
-        <translation>Procurar ligado</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Automatic search</source>
-        <translation>Procurar automática</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Text search</source>
-        <translation>Procurar</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Server</source>
-        <translation>Servidor</translation>
+        <translation>P alvelin</translation>
     </message>
     <message>
         <source>Local Search</source>
@@ -126,22 +126,22 @@
     </message>
     <message>
         <source>Select and preview multiple covers</source>
-        <translation>Selecionar e pré-visualizar várias capas</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Alternative Cover</source>
-        <translation>Capa Alternativa</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_AudioConverter</name>
     <message>
         <source>Audio Converter</source>
-        <translation>Conversor de Áudio</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Best</source>
-        <translation>Melhor</translation>
+        <translation>Paras</translation>
     </message>
     <message>
         <source>Worst</source>
@@ -149,30 +149,30 @@
     </message>
     <message>
         <source>Variable Bitrate</source>
-        <translation>Taxa de Dados Variável</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Quality</source>
-        <translation>Qualidade</translation>
+        <translation>Laatu</translation>
     </message>
     <message>
         <source>Constant Bitrate</source>
-        <translation>Taxa de Dados Constante</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_Bookmarks</name>
     <message>
         <source>Loop</source>
-        <translation>Repetir</translation>
+        <translation>Si lmukka</translation>
     </message>
     <message>
         <source>No bookmarks found</source>
-        <translation>Não Favoritos</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Sorry, bookmarks can only be set for library tracks at the moment.</source>
-        <translation>Desculpe, favoritos só podem ser configurados para faixas da biblioteca.</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -183,53 +183,53 @@
     </message>
     <message>
         <source>Cannot Broadcast</source>
-        <translation>Não foi possível executar o Broadcast</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Dismiss</source>
-        <translation>Recusar</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Dismiss all</source>
-        <translation>Recusar todos</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>%1 listener</source>
-        <translation>%1 ouvinte</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>%1 listeners</source>
-        <translation>%1 ouvintes</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Cannot broadcast on port %1</source>
-        <translation>Não foi possível executar o Broadcast na porta %1</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Maybe another application is using this port?</source>
-        <translation>Será que outra aplicação está usando essa porta?</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_BroadcastSetup</name>
     <message>
         <source>Ask for permission</source>
-        <translation>Pedir permissão</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Port</source>
-        <translation>Porta</translation>
+        <translation>Portti</translation>
     </message>
 </context>
 <context>
     <name>GUI_Controls</name>
     <message>
         <source>Written by Lucio Carreras</source>
-        <translation>Desenvolvido por Lucio Carreras</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Copyright 2011-2017</source>
-        <translation>Copyright 2011-2017</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -240,33 +240,33 @@
     </message>
     <message>
         <source>Written by</source>
-        <translation>Desenvolvido por</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Copyright</source>
-        <translation>Copyright</translation>
+        <translation>Tekijän oikeudet</translation>
     </message>
 </context>
 <context>
     <name>GUI_ControlsNew</name>
     <message>
         <source>Copyright 2011-2017</source>
-        <translation>Copyright 2011-2017</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Written by Lucio Carreras</source>
-        <translation>Desenvolvido por Lucio Carreras</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_CoverView</name>
     <message>
         <source>Sort by</source>
-        <translation>Ordenar por</translation>
+        <translation>Lajitteluperuste</translation>
     </message>
     <message>
         <source>Zoom</source>
-        <translation>Ampliar</translation>
+        <translation>Loitonna</translation>
     </message>
 </context>
 <context>
@@ -280,69 +280,69 @@
     <name>GUI_Crossfader</name>
     <message>
         <source>Crossfader</source>
-        <translation>Fade</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_DeleteDialog</name>
     <message>
         <source>Only from library</source>
-        <translation>Apenas as faixas da biblioteca</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>You are about to delete %1 files</source>
-        <translation>Você está prestes a apagar %1 arquivos</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_EmptyLibrary</name>
     <message>
         <source>Set library path</source>
-        <translation>Selecione caminho da Biblioteca</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>You haven&apos;t specified a library path yet</source>
-        <translation>Você não especificou o caminho da biblioteca</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_EnginePreferences</name>
     <message>
         <source>Audio</source>
-        <translation>Áudio</translation>
+        <translation>Audio</translation>
     </message>
 </context>
 <context>
     <name>GUI_Equalizer</name>
     <message>
         <source>Equalizer</source>
-        <translation>Equalizador</translation>
+        <translation>Taajuuskorjain</translation>
     </message>
 </context>
 <context>
     <name>GUI_FontConfig</name>
     <message>
         <source>Font size</source>
-        <translation>Tamanho da fonte</translation>
+        <translation>Fonttikoko</translation>
     </message>
     <message>
         <source>Font name</source>
-        <translation>Nome da fonte</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Bold</source>
-        <translation>Negrito</translation>
+        <translation>Lihavointi</translation>
     </message>
     <message>
         <source>Inherit</source>
-        <translation>Herança</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_IconPreferences</name>
     <message>
         <source>Icons</source>
-        <translation>Ícones</translation>
+        <translation>Kuvakkeet</translation>
     </message>
     <message>
         <source>Also use selected icon theme in Sayonara&apos;s dark mode</source>
@@ -353,191 +353,191 @@
     <name>GUI_ImportDialog</name>
     <message>
         <source>Import</source>
-        <translation>Importar</translation>
+        <translation>Tuo</translation>
     </message>
     <message>
         <source>Import tracks to library</source>
-        <translation>Importar faixas para biblioteca</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Select target folder</source>
-        <translation>Selecione o diretório de destino</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>OK</source>
-        <translation>OK</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>%1 tracks available</source>
-        <translation>%1 faixas disponíveis</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Loading tracks</source>
-        <translation>A carregar faixas</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Importing</source>
-        <translation>A importar</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Finished</source>
-        <translation>Terminado</translation>
+        <translation>Valmis</translation>
     </message>
     <message>
         <source>Cancelled</source>
-        <translation>Cancelado</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>No tracks</source>
-        <translation>Não há faixas</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Rollback</source>
-        <translation>Desfazer</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Choose target directory</source>
-        <translation>Escolha o diretório de destino</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>%1&lt;br /&gt;is no library directory</source>
-        <translation>%1&lt;br /&gt;Não é um Diretório da Biblioteca</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_LanguageChooser</name>
     <message>
         <source>Language</source>
-        <translation>Idioma</translation>
+        <translation>Kieli</translation>
     </message>
     <message>
         <source>English</source>
-        <translation>Inglês</translation>
+        <translation>Englanti</translation>
     </message>
     <message>
         <source>For new languages I am always looking for translators</source>
-        <translation>Estamos à procura de tradutores para novos idiomas</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_LastFM</name>
     <message>
         <source>Logged in</source>
-        <translation>Autenticado</translation>
+        <translation>Kirjauduttu</translation>
     </message>
     <message>
         <source>Not logged in</source>
-        <translation>Não autenticado</translation>
+        <translation>Ei sisäänkirjautuneena</translation>
     </message>
     <message>
         <source>Password</source>
-        <translation>Senha</translation>
+        <translation>Salasana</translation>
     </message>
     <message>
         <source>Scrobble after</source>
-        <translation>Scrobble após</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Login now</source>
-        <translation>Iniciar sessão</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Username</source>
-        <translation>Nome do Usuário</translation>
+        <translation>Käyttäjätunnus</translation>
     </message>
 </context>
 <context>
     <name>GUI_LevelPainter</name>
     <message>
         <source>Level</source>
-        <translation>Nível</translation>
+        <translation>T aso</translation>
     </message>
 </context>
 <context>
     <name>GUI_Library</name>
     <message>
         <source>Add artist</source>
-        <translation>Adicionar artista</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_LibraryPreferences</name>
     <message>
         <source>Libraries</source>
-        <translation>Bibliotecas</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>On double click, create playlist and</source>
-        <translation>Com o clique duplo, criar lista de reprodução e</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>do nothing (default)</source>
-        <translation>não fazer nada (Padrão)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>start playback if stopped</source>
-        <translation>iniciar reprodução se parado</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>start playback immediately</source>
-        <translation>iniciar reprodução imediatamente</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>When drag and drop into playlist </source>
-        <translation>Quando arrastar e soltar dentro da lista de reprodução </translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>start if stopped and playlist is empty</source>
-        <translation>iniciar se parado e a lista de reprodução estiver vazia</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Other</source>
-        <translation>Outra</translation>
+        <translation>M uu</translation>
     </message>
     <message>
         <source>Show &quot;Clear selection&quot; buttons</source>
-        <translation>Mostrar Botões &quot;Limpar a selecção&quot;</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Library-Playlist Interaction</source>
-        <translation>Interação entre biblioteca e lista de reprodução</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Cannot edit library</source>
-        <translation>Não é possível editar biblioteca</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_LocalLibrary</name>
     <message>
         <source>Library</source>
-        <translation>Biblioteca</translation>
+        <translation>Kir jasto</translation>
     </message>
     <message>
         <source>No genres found</source>
-        <translation>Nenhum gênero encontrado</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_Logger</name>
     <message>
         <source>Cannot open file</source>
-        <translation>Não é possível aceder ao ficheiro</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_Lyrics</name>
     <message>
         <source>Save Lyrics</source>
-        <translation>Gravar letras musicais</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>switch</source>
-        <translation>Mudar</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Zoom</source>
-        <translation>Ampliar</translation>
+        <translation>Loitonna</translation>
     </message>
     <message>
         <source>Save lyrics not supported</source>
@@ -545,152 +545,152 @@
     </message>
     <message>
         <source>Overwrite lyrics</source>
-        <translation>Letras de overwrite</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Save lyrics</source>
-        <translation>Gravar letras musicais</translation>
+        <translation>Tallenna sanoitus…</translation>
     </message>
     <message>
         <source>Source</source>
-        <translation>Origem</translation>
+        <translation>Lähde</translation>
     </message>
 </context>
 <context>
     <name>GUI_Notifications</name>
     <message>
         <source>Notifications</source>
-        <translation>Notificações</translation>
+        <translation>Ilmoitukset</translation>
     </message>
     <message>
         <source>Timeout (ms)</source>
-        <translation>Tempo de Espera</translation>
+        <translation>Aika katkaisu (ms)</translation>
     </message>
 </context>
 <context>
     <name>GUI_Player</name>
     <message>
         <source>A new version is available!</source>
-        <translation>Uma nova versão está disponível!</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Sayonara Player</source>
-        <translation>Sayonara Player</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_PlayerPreferences</name>
     <message>
         <source>Start in tray</source>
-        <translation>Iniciar na bandeja do sistema</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Close to tray</source>
-        <translation>Minimizar da bandeja do sistema</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Show system tray icon</source>
-        <translation>Mostrar o ícone da bandeja do sistema</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Update notifications</source>
-        <translation>Atualizar notificações</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_Playlist</name>
     <message>
         <source>Playlist empty</source>
-        <translation>Lista de reprodução vazia</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Media files</source>
-        <translation>Arquivos de mídia</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Open Media files</source>
-        <translation>Abrir Arquivos de mídia</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Playlist name already exists</source>
-        <translation>Lista de Reprodução já existe</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Cannot save playlist.</source>
-        <translation>Não foi possível salvar a lista de reprodução.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Playlist exists</source>
-        <translation>Lista de Reprodução já existe</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Playlists are currently only supported for library tracks.</source>
-        <translation>Listas de reprodução são suportadas apenas para faixas da biblioteca.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Save playlist</source>
-        <translation>Salvar lista de reprodução</translation>
+        <translation>Tallenna soittolista…</translation>
     </message>
 </context>
 <context>
     <name>GUI_PlaylistBottomBar</name>
     <message>
         <source>Please set library path first</source>
-        <translation>Por favor, definir o caminho da biblioteca primeiro</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Cancel shutdown?</source>
-        <translation>Cancelar desligamento</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_PlaylistChooser</name>
     <message>
         <source>No playlists found</source>
-        <translation>0 listas de reprodução encontradas</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_PlaylistPreferences</name>
     <message>
         <source>Show numbers</source>
-        <translation>Mostrar o Número</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Look</source>
-        <translation>Aparência</translation>
+        <translation>Katso</translation>
     </message>
     <message>
         <source>Start up</source>
-        <translation>Inicialização</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Load temporary playlists</source>
-        <translation>Carregar listas de reprodução temporárias</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Remember time of last track</source>
-        <translation>Lembrar posição da última faixa</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Load saved playlists</source>
-        <translation>Carregar listas de reprodução salvas</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Load last track on startup</source>
-        <translation>Carregar a ultima faixa ao inicializar</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Start playing</source>
-        <translation>Iniciar reprodução</translation>
+        <translation>Aloita soitto</translation>
     </message>
     <message>
         <source>Behavior</source>
-        <translation>Comportamento</translation>
+        <translation>Toiminta</translation>
     </message>
     <message>
         <source>Stop behaviour</source>
-        <translation>Parar: comportamento</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Load last track after pressing stop</source>
@@ -698,15 +698,15 @@
     </message>
     <message>
         <source>&apos;italic text&apos;</source>
-        <translation>&apos;texto em itálico&apos;</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Example</source>
-        <translation>Exemplo</translation>
+        <translation>Esimerkki</translation>
     </message>
     <message>
         <source>*bold text*</source>
-        <translation>*texto em negrito*</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Show clear button</source>
@@ -714,11 +714,11 @@
     </message>
     <message>
         <source>Show covers</source>
-        <translation>Mostrar capas de álbuns</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Show rating</source>
-        <translation>Mostrar classificação</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Playlist look: Invalid expression</source>
@@ -729,264 +729,264 @@
     <name>GUI_Podcasts</name>
     <message>
         <source>Start stream</source>
-        <translation>Iniciar stream</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Podcast</source>
-        <translation>Podcast</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_PreferenceDialog</name>
     <message>
         <source>Preferences</source>
-        <translation>Preferências</translation>
+        <translation>Asetukset</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation>Cancelar</translation>
+        <translation>Cancel</translation>
     </message>
     <message>
         <source>Apply</source>
-        <translation>Aplicar</translation>
+        <translation>Käytä</translation>
     </message>
     <message>
         <source>OK</source>
-        <translation>OK</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_Proxy</name>
     <message>
         <source>Password</source>
-        <translation>Senha</translation>
+        <translation>Salasana</translation>
     </message>
     <message>
         <source>Save username/password</source>
-        <translation>Salvar nome de usuário e senha</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Active</source>
-        <translation>Activo</translation>
+        <translation>Aktiivinen</translation>
     </message>
     <message>
         <source>Port</source>
-        <translation>Porta</translation>
+        <translation>Portti</translation>
     </message>
     <message>
         <source>Username</source>
-        <translation>Nome do Usuário</translation>
+        <translation>Käyttäjätunnus</translation>
     </message>
     <message>
         <source>Host</source>
-        <translation>Máquina</translation>
+        <translation>Isäntä</translation>
     </message>
     <message>
         <source>Proxy</source>
-        <translation>Proxy</translation>
+        <translation>Välityspalvelin</translation>
     </message>
 </context>
 <context>
     <name>GUI_ReloadLibraryDialog</name>
     <message>
         <source>Fast scan</source>
-        <translation>Pesquisar rápida</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Deep scan</source>
-        <translation>Pesquisar minuciosamente</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Only scan for new and deleted files</source>
-        <translation>Procurar por arquivos novos e excluídos</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Scan all files in your library directory</source>
-        <translation>Pesquisando todos os arquivos no diretório biblioteca</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_RemoteControl</name>
     <message>
         <source>Remote control</source>
-        <translation>Controle Remoto</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Remote control URL</source>
-        <translation>URL do Controle Remoto</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Port</source>
-        <translation>Porta</translation>
+        <translation>Portti</translation>
     </message>
 </context>
 <context>
     <name>GUI_SearchPreferences</name>
     <message>
         <source>Example</source>
-        <translation>Exemplo</translation>
+        <translation>Esimerkki</translation>
     </message>
     <message>
         <source>Case insensitive</source>
-        <translation>Caso insensível</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Option</source>
-        <translation>Opção</translation>
+        <translation>Asetus</translation>
     </message>
     <message>
         <source>Ignore accents</source>
-        <translation>Ignorar acentos</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Ignore special characters</source>
-        <translation>Ignorar Caracteres Especiais</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_ShortcutEntry</name>
     <message>
         <source>Enter shortcut</source>
-        <translation>Pressione o atalho</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Shortcut already in use</source>
-        <translation>O atalho já está em uso</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Test</source>
-        <translation>Teste</translation>
+        <translation>Koe</translation>
     </message>
 </context>
 <context>
     <name>GUI_Shortcuts</name>
     <message>
         <source>Press shortcut</source>
-        <translation>Pressione o atalho</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Shortcuts</source>
-        <translation>Atalhos</translation>
+        <translation>Pikanäppäimet</translation>
     </message>
     <message>
         <source>Double shortcuts found</source>
-        <translation>O atalho já está em uso</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_Shutdown</name>
     <message>
         <source>Shutdown</source>
-        <translation>Desligar</translation>
+        <translation>Sammuta</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation>Cancelar</translation>
+        <translation>Cancel</translation>
     </message>
     <message>
         <source>OK</source>
-        <translation>OK</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>minutes</source>
-        <translation>minutos</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Shutdown after</source>
-        <translation>Desligar depois de</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Shutdown after playlist finished</source>
-        <translation>Desligar após o término da lista de reprodução</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_SomaFM</name>
     <message>
         <source>Donate to Soma.fm</source>
-        <translation>Contribuir para Soma.fm</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Streams</source>
-        <translation>Streams</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_SoundcloudArtistSearch</name>
     <message>
         <source>Search Soundcloud</source>
-        <translation>Procurar no Soundcloud</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Search artist</source>
-        <translation>Procurar artista</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Cancel</source>
-        <translation>Cancelar</translation>
+        <translation>Cancel</translation>
     </message>
     <message>
         <source>Add</source>
-        <translation>Adicionar</translation>
+        <translation>L isää</translation>
     </message>
 </context>
 <context>
     <name>GUI_SoundcloudLibrary</name>
     <message>
         <source>Library</source>
-        <translation>Biblioteca</translation>
+        <translation>Kir jasto</translation>
     </message>
     <message>
         <source>Search for title, interprets and albums</source>
-        <translation>Buscar por título, intérprete e álbums</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_Spectrum</name>
     <message>
         <source>Spectrum</source>
-        <translation>Espectro</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_Speed</name>
     <message>
         <source>Speed</source>
-        <translation>Velocidade</translation>
+        <translation>Nopeus</translation>
     </message>
     <message>
         <source>Preserve pitch</source>
-        <translation>Preservar pitch Audio</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Pitch</source>
-        <translation>Audio pitch</translation>
+        <translation>Kork.</translation>
     </message>
     <message>
         <source>%1 not found</source>
-        <translation>%1 não encontrado</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_StreamPreferences</name>
     <message>
         <source>Open Streams in new tab</source>
-        <translation>Streams: Numa página nova</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Show history</source>
-        <translation>Mostrar histórico</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_StreamRecorder</name>
     <message>
         <source>Automatic recording</source>
-        <translation>Gravação Automática</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>General</source>
-        <translation>Gêneros</translation>
+        <translation>Perusasetukset</translation>
     </message>
     <message>
         <source>Target path</source>
@@ -994,11 +994,11 @@
     </message>
     <message>
         <source>Create session folder</source>
-        <translation>Criar diretório da sessão</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Session Directory</source>
-        <translation>Diretório de sessão</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Choose available placeholders</source>
@@ -1006,15 +1006,15 @@
     </message>
     <message>
         <source>Path template</source>
-        <translation>Modelo do caminho</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Example</source>
-        <translation>Exemplo</translation>
+        <translation>Esimerkki</translation>
     </message>
     <message>
         <source>Choose target directory</source>
-        <translation>Escolha o diretório de destino</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Target path is empty</source>
@@ -1030,30 +1030,30 @@
     </message>
     <message>
         <source>Template path is not valid</source>
-        <translation>Modelo do caminho non válido</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Stream recorder</source>
-        <translation>Gravar stream</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_Style</name>
     <message>
         <source>Style</source>
-        <translation>Estilo</translation>
+        <translation>Tyyli</translation>
     </message>
     <message>
         <source>Close</source>
-        <translation>Fechar</translation>
+        <translation>S ulje</translation>
     </message>
     <message>
         <source>Spectrum</source>
-        <translation>Espectro</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Vert. spacing</source>
-        <translation>Espaçamento vertical</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Fading steps</source>
@@ -1061,7 +1061,7 @@
     </message>
     <message>
         <source>Hor. spacing</source>
-        <translation>Espaçamento Horizontal</translation>
+        <translation>Vaakavälistys</translation>
     </message>
     <message>
         <source>Rect height</source>
@@ -1069,7 +1069,7 @@
     </message>
     <message>
         <source>Level</source>
-        <translation>Nível</translation>
+        <translation>T aso</translation>
     </message>
     <message>
         <source>Rect width</source>
@@ -1077,89 +1077,89 @@
     </message>
     <message>
         <source>Ver. spacing</source>
-        <translation>Espaçamento vertical</translation>
+        <translation>Pystyvälistys</translation>
     </message>
     <message>
         <source>Style settings</source>
-        <translation>Configurações de estilo</translation>
+        <translation>Tyyliasetukset</translation>
     </message>
     <message>
         <source>Color 2</source>
-        <translation>Cor 2</translation>
+        <translation>Väri 2</translation>
     </message>
     <message>
         <source>Color 1</source>
-        <translation>Cor 1</translation>
+        <translation>Väri 1</translation>
     </message>
     <message>
         <source>Color 3</source>
-        <translation>Cor 3</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Color 4</source>
-        <translation>Cor 4</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_StyleSettings</name>
     <message>
         <source>There are some unsaved settings&lt;br /&gt;Save now?</source>
-        <translation>Há algumas configurações não salvas&lt;br /&gt;Salvar agora?</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Please specify a name</source>
-        <translation>Por favor especifique um nome</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Save changes?</source>
-        <translation>Salvar alterações?</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_TagEdit</name>
     <message>
         <source>&lt;</source>
-        <translation>&lt;</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>&gt;</source>
-        <translation>&gt;</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Album artist</source>
-        <translation>Artista do Álbum</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Comment</source>
-        <translation>Comentário</translation>
+        <translation>Kommentti</translation>
     </message>
     <message>
         <source>all</source>
-        <translation>Tudo</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Original</source>
-        <translation>Original</translation>
+        <translation>Alkuperäinen</translation>
     </message>
     <message>
         <source>Replace</source>
-        <translation>Substituir</translation>
+        <translation>Korvaa</translation>
     </message>
     <message>
         <source>Tag from path</source>
-        <translation>Tag do caminho</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Undo all</source>
-        <translation>Desfazer tudo</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Discnumber</source>
-        <translation>Núm. do Disco</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Load complete album</source>
-        <translation>Carregar álbum completo</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Cannot apply tag for</source>
@@ -1171,18 +1171,18 @@
     </message>
     <message>
         <source>Ignore these tracks?</source>
-        <translation>Ignorar essas faixas?</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>All changes will be lost</source>
-        <translation>Todas as mudanças serão perdidas</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_TagFromPath</name>
     <message>
         <source>Expression</source>
-        <translation>Expressão</translation>
+        <translation>Lauseke</translation>
     </message>
     <message>
         <source>?</source>
@@ -1190,62 +1190,61 @@
     </message>
     <message>
         <source>Disc Nr</source>
-        <translation>Núm. do Disco</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Apply to all</source>
-        <translation>Aplicar a todos</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Warning</source>
-        <translation>Aviso</translation>
+        <translation>Varoitus</translation>
     </message>
     <message>
         <source>Tag</source>
-        <translation>Marca</translation>
+        <translation>Tunniste</translation>
     </message>
     <message>
         <source>Please select text first</source>
-        <translation>Por favor, selecione primeiro o texto</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_TargetPlaylistDialog</name>
     <message>
         <source>Choose target playlist</source>
-        <translation>Escolha a lista de reprodução de destino</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>relative filepaths</source>
-        <translation>caminhos de 
-arquivos relativos</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>...</source>
-        <translation>...</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Close</source>
-        <translation>Fechar</translation>
+        <translation>S ulje</translation>
     </message>
     <message>
         <source>Save</source>
-        <translation>Gravar</translation>
+        <translation>Tallenna nimellä</translation>
     </message>
     <message>
         <source>Save playlist as...</source>
-        <translation>Salvar Lista de Reprodução como...</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_UiPreferences</name>
     <message>
         <source>User Interface</source>
-        <translation>Interface do Utilizador</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>General</source>
-        <translation>Gêneros</translation>
+        <translation>Perusasetukset</translation>
     </message>
     <message>
         <source>Show large cover</source>
@@ -1256,62 +1255,62 @@ arquivos relativos</translation>
     <name>InfoDialog</name>
     <message>
         <source>Info / Edit</source>
-        <translation>Informação / Editar</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>Lang</name>
     <message>
         <source>About</source>
-        <translation>Acerca</translation>
+        <translation>Ohj elmasta</translation>
     </message>
     <message>
         <source>Action</source>
-        <translation>Acção</translation>
+        <translation>Toiminta</translation>
     </message>
     <message>
         <source>Actions</source>
-        <translation>Acções</translation>
+        <translation>Toimenpiteet</translation>
     </message>
     <message>
         <source>Add tab</source>
-        <translation>Adicionar a página</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Album</source>
-        <translation>Álbum</translation>
+        <translation>Albumi</translation>
     </message>
     <message>
         <source>Albums</source>
-        <translation>Álbuns</translation>
+        <translation>Albumit</translation>
     </message>
     <message>
         <source>Append</source>
-        <translation>Adicionar</translation>
+        <translation>Lisää komento</translation>
     </message>
     <message>
         <source>Artist</source>
-        <translation>Artista</translation>
+        <translation>Artisri</translation>
     </message>
     <message>
         <source>Artists</source>
-        <translation>Artistas</translation>
+        <translation>Artistit</translation>
     </message>
     <message>
         <source>Bitrate</source>
-        <translation>Taxa de Dados</translation>
+        <translation>Bittinopeus</translation>
     </message>
     <message>
         <source>Bookmarks</source>
-        <translation>Favoritos</translation>
+        <translation>Kirjanmerkit</translation>
     </message>
     <message>
         <source>Broadcast</source>
-        <translation>Transmissão</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>by</source>
-        <translation>por</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Cannot find Lame MP3 encoder</source>
@@ -1319,175 +1318,175 @@ arquivos relativos</translation>
     </message>
     <message>
         <source>Clear</source>
-        <translation>Limpar</translation>
+        <translation>Poista</translation>
     </message>
     <message>
         <source>Close</source>
-        <translation>Fechar</translation>
+        <translation>S ulje</translation>
     </message>
     <message>
         <source>Close others</source>
-        <translation>Fechar outros</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Close tab</source>
-        <translation>Fechar a Página</translation>
+        <translation>S ulje välilehti</translation>
     </message>
     <message>
         <source>Continue</source>
-        <translation>Continuar</translation>
+        <translation>Jatka</translation>
     </message>
     <message>
         <source>Days</source>
-        <translation>Dias</translation>
+        <translation>Päivä</translation>
     </message>
     <message>
         <source>d</source>
-        <translation>d</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Default</source>
-        <translation>Predefinida</translation>
+        <translation>Oletus</translation>
     </message>
     <message>
         <source>Delete</source>
-        <translation>Apagar</translation>
+        <translation>Delete</translation>
     </message>
     <message>
         <source>Directory</source>
-        <translation>Pasta</translation>
+        <translation>Kansio</translation>
     </message>
     <message>
         <source>Directories</source>
-        <translation>Pastas</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Disc</source>
-        <translation>Núm. do Disco</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Dur.</source>
-        <translation>Dur.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Duration</source>
-        <translation>Duração</translation>
+        <translation>Kesto</translation>
     </message>
     <message>
         <source>Activate</source>
-        <translation>Activar</translation>
+        <translation>Aktivoi</translation>
     </message>
     <message>
         <source>Active</source>
-        <translation>Activo</translation>
+        <translation>Aktiivinen</translation>
     </message>
     <message>
         <source>Album artists</source>
-        <translation>Artistas do Álbum</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>All</source>
-        <translation>Tudo</translation>
+        <translation>K aikki</translation>
     </message>
     <message>
         <source>Application</source>
-        <translation>Aplicação</translation>
+        <translation>Sovellus</translation>
     </message>
     <message>
         <source>Apply</source>
-        <translation>Aplicar</translation>
+        <translation>Käytä</translation>
     </message>
     <message>
         <source>Ascending</source>
-        <translation>Ascendente</translation>
+        <translation>Nouseva</translation>
     </message>
     <message>
         <source>Automatic</source>
-        <translation>Automático</translation>
+        <translation>Automaattinen</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation>Cancelar</translation>
+        <translation>Cancel</translation>
     </message>
     <message>
         <source>Covers</source>
-        <translation>Capas</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Dark Mode</source>
-        <translation>Modo escuro</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Date</source>
-        <translation>Data</translation>
+        <translation>Päivä</translation>
     </message>
     <message>
         <source>Descending</source>
-        <translation>Descendente</translation>
+        <translation>Laskeva</translation>
     </message>
     <message>
         <source>Dynamic playback</source>
-        <translation>Reprodução Dinâmica</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Edit</source>
-        <translation>Editar</translation>
+        <translation>Muo kkaa</translation>
     </message>
     <message>
         <source>Empty input</source>
-        <translation>Vazio entrada</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Enter name</source>
-        <translation>Indique o nome</translation>
+        <translation>Anna nimi</translation>
     </message>
     <message>
         <source>Enter URL</source>
-        <translation>Indique o URL</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Entry</source>
-        <translation>Item</translation>
+        <translation>Kohta</translation>
     </message>
     <message>
         <source>Entries</source>
-        <translation>Elementos</translation>
+        <translation>Tietueet</translation>
     </message>
     <message>
         <source>Error</source>
-        <translation>Erro</translation>
+        <translation>Virhe</translation>
     </message>
     <message>
         <source>Fast</source>
-        <translation>Rápido</translation>
+        <translation>Fast</translation>
     </message>
     <message>
         <source>File</source>
-        <translation>Ficheiro</translation>
+        <translation>Tiedosto</translation>
     </message>
     <message>
         <source>Filename</source>
-        <translation>Nome do Ficheiro</translation>
+        <translation>Tiedostonimi</translation>
     </message>
     <message>
         <source>Files</source>
-        <translation>Ficheiros</translation>
+        <translation>Tiedostoja</translation>
     </message>
     <message>
         <source>Filesize</source>
-        <translation>Tamanho do ficheiro</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>1st</source>
-        <translation>1º</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Font</source>
-        <translation>Tipo de letra</translation>
+        <translation>Fontti</translation>
     </message>
     <message>
         <source>Fonts</source>
-        <translation>Tipos de Letra</translation>
+        <translation>Fontit</translation>
     </message>
     <message>
         <source>Fulltext</source>
@@ -1495,67 +1494,67 @@ arquivos relativos</translation>
     </message>
     <message>
         <source>Gapless playback</source>
-        <translation>Reprodução contínua</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Genre</source>
-        <translation>Género</translation>
+        <translation>Genre</translation>
     </message>
     <message>
         <source>Genres</source>
-        <translation>Gêneros</translation>
+        <translation>Genret</translation>
     </message>
     <message>
         <source>h</source>
-        <translation>h</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Import directory</source>
-        <translation>Importar diretório</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Import files</source>
-        <translation>importar arquivos</translation>
+        <translation>Tuo tiedostoja</translation>
     </message>
     <message>
         <source>Inactive</source>
-        <translation>Inactivo</translation>
+        <translation>Passiivinen</translation>
     </message>
     <message>
         <source>Info</source>
-        <translation>Informação</translation>
+        <translation>Tiedot</translation>
     </message>
     <message>
         <source>Loading</source>
-        <translation>A carregar</translation>
+        <translation>Ladataan</translation>
     </message>
     <message>
         <source>Loading %1</source>
-        <translation>A carregar %1</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Invalid characters</source>
-        <translation>Carácters inválidos</translation>
+        <translation>Virheellisiä merkkejä</translation>
     </message>
     <message>
         <source>Library</source>
-        <translation>Biblioteca</translation>
+        <translation>Kir jasto</translation>
     </message>
     <message>
         <source>Library path</source>
-        <translation>Caminho da Biblioteca</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Listen</source>
-        <translation>Ouvir</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Logger</source>
-        <translation>Registos</translation>
+        <translation>Loki</translation>
     </message>
     <message>
         <source>Lyrics</source>
-        <translation>Letras Musicais</translation>
+        <translation>Sanat</translation>
     </message>
     <message>
         <source>Menu</source>
@@ -1563,7 +1562,7 @@ arquivos relativos</translation>
     </message>
     <message>
         <source>m</source>
-        <translation>m</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Missing</source>
@@ -1571,115 +1570,115 @@ arquivos relativos</translation>
     </message>
     <message>
         <source>Months</source>
-        <translation>Meses</translation>
+        <translation>Kuukaudet</translation>
     </message>
     <message>
         <source>Mute off</source>
-        <translation>Silêncio Desligado</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Name</source>
-        <translation>Nome</translation>
+        <translation>Nimen mukaan</translation>
     </message>
     <message>
         <source>New</source>
-        <translation>Novo</translation>
+        <translation>Uu si</translation>
     </message>
     <message>
         <source>Next track</source>
-        <translation>Próxima faixa</translation>
+        <translation>Seuraava kappale</translation>
     </message>
     <message>
         <source>No</source>
-        <translation>Não</translation>
+        <translation>Ei</translation>
     </message>
     <message>
         <source>None</source>
-        <translation>Nenhum</translation>
+        <translation>Ei konetta</translation>
     </message>
     <message>
         <source>Tracks</source>
-        <translation>Faixas</translation>
+        <translation>Raidat</translation>
     </message>
     <message>
         <source>Move down</source>
-        <translation>Descer</translation>
+        <translation>Laske alemmas</translation>
     </message>
     <message>
         <source>Move up</source>
-        <translation>Subir</translation>
+        <translation>Nosta ylemmäs</translation>
     </message>
     <message>
         <source>OK</source>
-        <translation>OK</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>on</source>
-        <translation>ligada</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Open</source>
-        <translation>Abrir</translation>
+        <translation>A vaa</translation>
     </message>
     <message>
         <source>Open directory</source>
-        <translation>Abrir uma pasta</translation>
+        <translation>A vaa kansio…</translation>
     </message>
     <message>
         <source>Open file</source>
-        <translation>Abrir um Ficheiro</translation>
+        <translation>Avaa tiedosto</translation>
     </message>
     <message>
         <source>or</source>
-        <translation>ou</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Overwrite</source>
-        <translation>Sobrepor</translation>
+        <translation>K orvaa</translation>
     </message>
     <message>
         <source>Pause</source>
-        <translation>Pausar</translation>
+        <translation>Ta uko</translation>
     </message>
     <message>
         <source>Play</source>
-        <translation>Reproduzir</translation>
+        <translation>Soita</translation>
     </message>
     <message>
         <source>Play/Pause</source>
-        <translation>Tocar/Pausa</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Playing time</source>
-        <translation>Tempo de reprodução</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Playlist</source>
-        <translation>Lista de Reprodução</translation>
+        <translation>Soitto lista</translation>
     </message>
     <message>
         <source>Playlists</source>
-        <translation>Listas de Reprodução</translation>
+        <translation>Soittolistat</translation>
     </message>
     <message>
         <source>Play next</source>
-        <translation>Reproduzir seguinte</translation>
+        <translation>Toista seuraava</translation>
     </message>
     <message>
         <source>Preferences</source>
-        <translation>Preferências</translation>
+        <translation>Asetukset</translation>
     </message>
     <message>
         <source>Previous track</source>
-        <translation>Faixa anterior</translation>
+        <translation>Edellinen kappale</translation>
     </message>
     <message>
         <source>Quit</source>
-        <translation>Sair</translation>
+        <translation>Lo peta</translation>
     </message>
     <message>
         <source>Radio</source>
-        <translation>Rádio</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Radio Station</source>
@@ -1687,43 +1686,43 @@ arquivos relativos</translation>
     </message>
     <message>
         <source>Rating</source>
-        <translation>Classificação</translation>
+        <translation>Arvostelu</translation>
     </message>
     <message>
         <source>Really</source>
-        <translation>Tem certeza</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Remove</source>
-        <translation>Remover</translation>
+        <translation>Poi sta</translation>
     </message>
     <message>
         <source>Rename</source>
-        <translation>Mudar o Nome</translation>
+        <translation>Muuta nimeä</translation>
     </message>
     <message>
         <source>Repeat 1</source>
-        <translation>Repetir 1</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Repeat all</source>
-        <translation>Repetir todos</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Reset</source>
-        <translation>Reiniciar</translation>
+        <translation>Alusta</translation>
     </message>
     <message>
         <source>Save to file</source>
-        <translation>Gravar num Ficheiro</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Sort by</source>
-        <translation>Ordenar por</translation>
+        <translation>Lajitteluperuste</translation>
     </message>
     <message>
         <source>Stream URL</source>
-        <translation>URL do stream</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Unknown placeholder</source>
@@ -1731,27 +1730,27 @@ arquivos relativos</translation>
     </message>
     <message>
         <source>Weeks</source>
-        <translation>Semanas</translation>
+        <translation>Viikot</translation>
     </message>
     <message>
         <source>Years</source>
-        <translation>Anos</translation>
+        <translation>Vuodet</translation>
     </message>
     <message>
         <source>Zoom</source>
-        <translation>Ampliar</translation>
+        <translation>Loitonna</translation>
     </message>
     <message>
         <source>Refresh</source>
-        <translation>Actualizar</translation>
+        <translation>Päivitä</translation>
     </message>
     <message>
         <source>Hours</source>
-        <translation>Horas</translation>
+        <translation>Tunnit</translation>
     </message>
     <message>
         <source>Ctrl+f</source>
-        <translation>Ctrl+F</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Esc</source>
@@ -1767,51 +1766,51 @@ arquivos relativos</translation>
     </message>
     <message>
         <source>Shift</source>
-        <translation>Desvio</translation>
+        <translation>Vaihto</translation>
     </message>
     <message>
         <source>Backspace</source>
-        <translation>Backspace</translation>
+        <translation>Askelpalautin</translation>
     </message>
     <message>
         <source>Tab</source>
-        <translation>Tab</translation>
+        <translation>Sarkain</translation>
     </message>
     <message>
         <source>Minimize</source>
-        <translation>Minimizar</translation>
+        <translation>Pienennä</translation>
     </message>
     <message>
         <source>Minutes</source>
-        <translation>Minutos</translation>
+        <translation>Minuutit</translation>
     </message>
     <message>
         <source>Mute</source>
-        <translation>Mudo</translation>
+        <translation>Hiljennä</translation>
     </message>
     <message>
         <source>Play in new tab</source>
-        <translation>Jogar na aba nova</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Plugin</source>
-        <translation>&apos;Plugin&apos;</translation>
+        <translation>Liitännäinen</translation>
     </message>
     <message>
         <source>Podcasts</source>
-        <translation>Podcasts</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Reload Library</source>
-        <translation>Actualizar la biblioteca</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Replace</source>
-        <translation>Substituir</translation>
+        <translation>Korvaa</translation>
     </message>
     <message>
         <source>Retry</source>
-        <translation>Repetir</translation>
+        <translation>Yritä uudelleen</translation>
     </message>
     <message>
         <source>Sampler</source>
@@ -1819,151 +1818,151 @@ arquivos relativos</translation>
     </message>
     <message>
         <source>Shuffle</source>
-        <translation>Embaralhar</translation>
+        <translation>Sekoita</translation>
     </message>
     <message>
         <source>Shutdown</source>
-        <translation>Desligar</translation>
+        <translation>Sammuta</translation>
     </message>
     <message>
         <source>Save</source>
-        <translation>Gravar</translation>
+        <translation>Tallenna nimellä</translation>
     </message>
     <message>
         <source>Save as</source>
-        <translation>Gravar como</translation>
+        <translation>Tallenna nimellä</translation>
     </message>
     <message>
         <source>Search</source>
-        <translation>Procurar</translation>
+        <translation>Etsi ohjeista</translation>
     </message>
     <message>
         <source>Search next</source>
-        <translation>Procurar próximo</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>2nd</source>
-        <translation>2º</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Seconds</source>
-        <translation>Segundos</translation>
+        <translation>Sekunnin välein</translation>
     </message>
     <message>
         <source>s</source>
-        <translation>s</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Seek backward</source>
-        <translation>Recuar</translation>
+        <translation>Kelaa taaksepäin</translation>
     </message>
     <message>
         <source>Seek forward</source>
-        <translation>Avançar</translation>
+        <translation>Kelaa eteenpäin</translation>
     </message>
     <message>
         <source>Show</source>
-        <translation>Mostrar</translation>
+        <translation>Näytä</translation>
     </message>
     <message>
         <source>Show Album Artists</source>
-        <translation>Mostrar: Artista do Álbum</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Show Covers</source>
-        <translation>Mostrar capas de álbuns</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Show Library</source>
-        <translation>Mostrar la biblioteca</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Streams</source>
-        <translation>Streams</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Track</source>
-        <translation>Faixa</translation>
+        <translation>Kappale</translation>
     </message>
     <message>
         <source>Track number</source>
-        <translation>Número de Faixa</translation>
+        <translation>Kappaleen numero</translation>
     </message>
     <message>
         <source>Similar artists</source>
-        <translation>Artistas Semelhantes</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Stop</source>
-        <translation>Parar</translation>
+        <translation>Pysäytä</translation>
     </message>
     <message>
         <source>Success</source>
-        <translation>Sucesso</translation>
+        <translation>Onnistui</translation>
     </message>
     <message>
         <source>th</source>
-        <translation>º</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>3rd</source>
-        <translation>3º</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Title</source>
-        <translation>Título</translation>
+        <translation>Ikkunan otsikko</translation>
     </message>
     <message>
         <source>track on</source>
-        <translation>faixa em</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Tree</source>
-        <translation>Árvore</translation>
+        <translation>Puu</translation>
     </message>
     <message>
         <source>Undo</source>
-        <translation>Desfazer</translation>
+        <translation>Kumoa</translation>
     </message>
     <message>
         <source>Various</source>
-        <translation>Vários</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Various albums</source>
-        <translation>Vários Álbuns</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Various artists</source>
-        <translation>Vários Artistas</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Various tracks</source>
-        <translation>Varias Faixas</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Version</source>
-        <translation>Versão</translation>
+        <translation>Versio</translation>
     </message>
     <message>
         <source>Volume down</source>
-        <translation>Diminuir o Volume</translation>
+        <translation>Laske äänenvoimakkuutta</translation>
     </message>
     <message>
         <source>Volume up</source>
-        <translation>Aumentar o Volume</translation>
+        <translation>Lisää äänenvoimakkuutta</translation>
     </message>
     <message>
         <source>Warning</source>
-        <translation>Aviso</translation>
+        <translation>Varoitus</translation>
     </message>
     <message>
         <source>Year</source>
-        <translation>Ano</translation>
+        <translation>Vuosi</translation>
     </message>
     <message>
         <source>Yes</source>
-        <translation>Sim</translation>
+        <translation>Aloitetaan</translation>
     </message>
 </context>
 <context>
@@ -1977,14 +1976,14 @@ arquivos relativos</translation>
     <name>Library::GUI_EmptyLibrary</name>
     <message>
         <source>Do you want to reload the Library?</source>
-        <translation>Quer atualizar a biblioteca?</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>Library::GenreView</name>
     <message>
         <source>Updating genres</source>
-        <translation>Atualizando gêneros</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Do you really want to remove %1 from all tracks?</source>
@@ -1995,63 +1994,63 @@ arquivos relativos</translation>
     <name>Library::Importer</name>
     <message>
         <source>All files could be imported</source>
-        <translation>Todos os arquivos podem ser importados</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>%1 of %2 files could be imported</source>
-        <translation>%1 de %2 arquivos podem ser importados</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Cannot import tracks</source>
-        <translation>Não é possível importar faixas</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>Library::ItemView</name>
     <message>
         <source>Merge</source>
-        <translation>Reunir</translation>
+        <translation>Yhdistä</translation>
     </message>
     <message>
         <source>Clear selection</source>
-        <translation>Limpar a selecção</translation>
+        <translation>Tyhjennä valinta</translation>
     </message>
 </context>
 <context>
     <name>Library::LocalLibraryMenu</name>
     <message>
         <source>Live search</source>
-        <translation>Pesquisa em tempo real</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>Library::ReloadThread</name>
     <message>
         <source>Reading files</source>
-        <translation>A ler</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Delete orphaned tracks...</source>
-        <translation>Deletar Faixas Ausentes...</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>LibraryContextMenu</name>
     <message>
         <source>Play in new tab</source>
-        <translation>Jogar na aba nova</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Clear selection</source>
-        <translation>Limpar a selecção</translation>
+        <translation>Tyhjennä valinta</translation>
     </message>
     <message>
         <source>Ctrl+X</source>
-        <translation>Ctrl + X</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Cover view</source>
-        <translation>Ver capas de álbuns</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -2069,51 +2068,51 @@ arquivos relativos</translation>
     <name>Menubar</name>
     <message>
         <source>View</source>
-        <translation>Ver</translation>
+        <translation>Näkymä</translation>
     </message>
     <message>
         <source>Help</source>
-        <translation>Ajuda</translation>
+        <translation>Help</translation>
     </message>
     <message>
         <source>Fullscreen</source>
-        <translation>Ecrã Completo</translation>
+        <translation>Koko näyttö</translation>
     </message>
     <message>
         <source>Media files</source>
-        <translation>Arquivos de mídia</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Open Media files</source>
-        <translation>Abrir Arquivos de mídia</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Please visit the forum at</source>
-        <translation>Por favor, visite o fórum em</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Donate</source>
-        <translation>Doar</translation>
+        <translation>Lahjoita</translation>
     </message>
     <message>
         <source>Thank you</source>
-        <translation>Muito Obrigado</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>About Sayonara</source>
-        <translation>Sobre o Sayonara</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Special thanks to %1 and %2 for translating</source>
-        <translation>Agradecimentos especiais a %1 e %2 pela tradução</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Written by Lucio Carreras</source>
-        <translation>Desenvolvido por Lucio Carreras</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>License</source>
-        <translation>Licença</translation>
+        <translation>Lisenssi</translation>
     </message>
     <message>
         <source>Show large cover</source>
@@ -2128,7 +2127,7 @@ arquivos relativos</translation>
     </message>
     <message>
         <source>Arrow up</source>
-        <translation>Seta cima</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Next search result</source>
@@ -2136,25 +2135,25 @@ arquivos relativos</translation>
     </message>
     <message>
         <source>Arrow down</source>
-        <translation>Seta baixo</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Esc</source>
-        <translation>Esc</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>PlaylistItemModel</name>
     <message>
         <source>Goto row</source>
-        <translation>Ir para linha</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>SC::Database</name>
     <message>
         <source>Purchase Url</source>
-        <translation>Url de compra</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -2165,49 +2164,49 @@ arquivos relativos</translation>
     </message>
     <message>
         <source>No artists found</source>
-        <translation>Nenhum artista encontrado</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Found %1 artists</source>
-        <translation>Encontrados %1 artistas</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>%1 tracks found</source>
-        <translation>%1 faixas encontradas</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>%1 playlists found</source>
-        <translation>%1 listas de reprodução encontradas</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>SC::JsonParser</name>
     <message>
         <source>Website</source>
-        <translation>Website</translation>
+        <translation>Verkkosivusto</translation>
     </message>
     <message>
         <source>Permalink Url</source>
-        <translation>Url link</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Followers/Following</source>
-        <translation>Seguidores/Seguindo</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Purchase Url</source>
-        <translation>Url de compra</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>Shutdown</name>
     <message>
         <source>Computer will shutdown after playlist has finished</source>
-        <translation>Computador desligará quando a lista de reprodução terminar</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Computer will shutdown in %1 minutes</source>
-        <translation>O computador irá desligar em %1 minutos</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -2221,7 +2220,7 @@ arquivos relativos</translation>
     <name>StreamRecorderPreferenceAction</name>
     <message>
         <source>Stream Recorder</source>
-        <translation>Gravar stream</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -2235,18 +2234,18 @@ arquivos relativos</translation>
     <name>TagTextInput</name>
     <message>
         <source>Very first letter to upper case</source>
-        <translation>Todas as primeiras letras em maiúsculas</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>First letters to upper case</source>
-        <translation>Primeiras letras em maiúsculas</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>TrayIconContextMenu</name>
     <message>
         <source>Current song</source>
-        <translation>Música atual</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 </TS>

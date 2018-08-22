@@ -1247,8 +1247,8 @@
         <translation>Ogólne</translation>
     </message>
     <message>
-        <source>Big Cover</source>
-        <translation>Pokaż duży okładka albumu</translation>
+        <source>Show large cover</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -2113,6 +2113,10 @@
     <message>
         <source>License</source>
         <translation>Licencja</translation>
+    </message>
+    <message>
+        <source>Show large cover</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>

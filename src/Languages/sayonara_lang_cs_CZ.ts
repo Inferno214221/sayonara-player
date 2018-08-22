@@ -1247,8 +1247,8 @@
         <translation>Obecné</translation>
     </message>
     <message>
-        <source>Big Cover</source>
-        <translation>Velký obal</translation>
+        <source>Show large cover</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -2113,6 +2113,10 @@
     <message>
         <source>License</source>
         <translation>Povolení</translation>
+    </message>
+    <message>
+        <source>Show large cover</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>

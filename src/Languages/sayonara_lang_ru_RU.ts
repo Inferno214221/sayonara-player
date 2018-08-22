@@ -1247,8 +1247,8 @@
         <translation>Общее</translation>
     </message>
     <message>
-        <source>Big Cover</source>
-        <translation>Большая обложка</translation>
+        <source>Show large cover</source>
+        <translation>Показать большую обложку</translation>
     </message>
 </context>
 <context>
@@ -2113,6 +2113,10 @@
     <message>
         <source>License</source>
         <translation>Лицензия</translation>
+    </message>
+    <message>
+        <source>Show large cover</source>
+        <translation>Показать большую обложку</translation>
     </message>
 </context>
 <context>

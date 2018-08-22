@@ -18,7 +18,7 @@
     </message>
     <message>
         <source>Search an alternative cover</source>
-        <translation type="unfinished"/>
+        <translation>Ricerca per copertine di album alternativi</translation>
     </message>
 </context>
 <context>
@@ -98,7 +98,7 @@
     </message>
     <message>
         <source>%1 covers found</source>
-        <translation type="unfinished"/>
+        <translation>Trovate %1 copertine di album</translation>
     </message>
     <message>
         <source>Open image files</source>
@@ -130,7 +130,7 @@
     </message>
     <message>
         <source>Alternative Cover</source>
-        <translation>Immagine alternativa</translation>
+        <translation>Copertine di album alternativi</translation>
     </message>
 </context>
 <context>
@@ -145,7 +145,7 @@
     </message>
     <message>
         <source>Worst</source>
-        <translation type="unfinished"/>
+        <translation>Peggiore</translation>
     </message>
     <message>
         <source>Variable Bitrate</source>
@@ -187,19 +187,19 @@
     </message>
     <message>
         <source>Dismiss</source>
-        <translation type="unfinished"/>
+        <translation>Respingere</translation>
     </message>
     <message>
         <source>Dismiss all</source>
-        <translation type="unfinished"/>
+        <translation>Respingere tutti</translation>
     </message>
     <message>
         <source>%1 listener</source>
-        <translation type="unfinished"/>
+        <translation>%1 Ascoltatore radiofonico</translation>
     </message>
     <message>
         <source>%1 listeners</source>
-        <translation type="unfinished"/>
+        <translation>%1 Ascoltatori radiofonici</translation>
     </message>
     <message>
         <source>Cannot broadcast on port %1</source>
@@ -214,7 +214,7 @@
     <name>GUI_BroadcastSetup</name>
     <message>
         <source>Ask for permission</source>
-        <translation type="unfinished"/>
+        <translation>Richiedi il permesso</translation>
     </message>
     <message>
         <source>Port</source>
@@ -273,7 +273,7 @@
     <name>GUI_Covers</name>
     <message>
         <source>If available, load covers from audio files</source>
-        <translation type="unfinished"/>
+        <translation>Se possibile, caricare copertine di album da file audio</translation>
     </message>
 </context>
 <context>
@@ -457,7 +457,7 @@
     <name>GUI_Library</name>
     <message>
         <source>Add artist</source>
-        <translation type="unfinished"/>
+        <translation>Aggiungi nuovo artista</translation>
     </message>
 </context>
 <context>
@@ -698,7 +698,7 @@
     </message>
     <message>
         <source>&apos;italic text&apos;</source>
-        <translation type="unfinished"/>
+        <translation>&apos;Testo in corsivo&apos;</translation>
     </message>
     <message>
         <source>Example</source>
@@ -706,7 +706,7 @@
     </message>
     <message>
         <source>*bold text*</source>
-        <translation type="unfinished"/>
+        <translation>*Grassetto*</translation>
     </message>
     <message>
         <source>Show clear button</source>
@@ -1247,7 +1247,7 @@
         <translation>Generale</translation>
     </message>
     <message>
-        <source>Big Cover</source>
+        <source>Show large cover</source>
         <translation type="unfinished"/>
     </message>
 </context>
@@ -1410,7 +1410,7 @@
     </message>
     <message>
         <source>Covers</source>
-        <translation>Covers</translation>
+        <translation>Copertine degli album</translation>
     </message>
     <message>
         <source>Dark Mode</source>
@@ -1690,7 +1690,7 @@
     </message>
     <message>
         <source>Really</source>
-        <translation type="unfinished"/>
+        <translation>Davvero</translation>
     </message>
     <message>
         <source>Remove</source>
@@ -1870,7 +1870,7 @@
     </message>
     <message>
         <source>Show Covers</source>
-        <translation>Mostra covers</translation>
+        <translation>Mostra copertine degli album</translation>
     </message>
     <message>
         <source>Show Library</source>
@@ -2050,7 +2050,7 @@
     </message>
     <message>
         <source>Cover view</source>
-        <translation>Mostra covers</translation>
+        <translation>Mostra copertine degli album</translation>
     </message>
 </context>
 <context>
@@ -2113,6 +2113,10 @@
     <message>
         <source>License</source>
         <translation>Licenza</translation>
+    </message>
+    <message>
+        <source>Show large cover</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>

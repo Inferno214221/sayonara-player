@@ -1247,8 +1247,8 @@
         <translation>Général</translation>
     </message>
     <message>
-        <source>Big Cover</source>
-        <translation>Grande pochette</translation>
+        <source>Show large cover</source>
+        <translation>Afficher grande pochette</translation>
     </message>
 </context>
 <context>
@@ -2113,6 +2113,10 @@
     <message>
         <source>License</source>
         <translation>Licence</translation>
+    </message>
+    <message>
+        <source>Show large cover</source>
+        <translation>Afficher grande pochette</translation>
     </message>
 </context>
 <context>

@@ -1250,7 +1250,7 @@ Biblioteca</translation>
         <translation>General</translation>
     </message>
     <message>
-        <source>Big Cover</source>
+        <source>Show large cover</source>
         <translation type="unfinished"/>
     </message>
 </context>
@@ -2116,6 +2116,10 @@ Biblioteca</translation>
     <message>
         <source>License</source>
         <translation>Licencia</translation>
+    </message>
+    <message>
+        <source>Show large cover</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
