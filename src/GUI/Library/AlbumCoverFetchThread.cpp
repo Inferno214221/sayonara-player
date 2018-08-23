@@ -54,7 +54,6 @@ struct AlbumCoverFetchThread::Private
 	AtomicBool	in_paused_state;
 	AtomicBool	stopped;
 
-
 	Private()
 	{
 		init();
@@ -98,7 +97,7 @@ void AlbumCoverFetchThread::run()
 		while(m->paused)
 		{
 			m->in_paused_state = true;
-			::Util::sleep_ms(50);
+			::Util::sleep_ms(10);
 
 			if(m->stopped){
 				return;
@@ -110,7 +109,7 @@ void AlbumCoverFetchThread::run()
 		int c = m->hash_album_list.count();
 		while(c == 0 && (m->may_run() == true))
 		{
-			Util::sleep_ms(50);
+			Util::sleep_ms(10);
 
 			c = m->hash_album_list.count();
 		}
@@ -132,7 +131,7 @@ void AlbumCoverFetchThread::run()
 
 			while(qhc > MaxThreads && m->hash_location_list.isEmpty())
 			{
-				Util::sleep_ms(50);
+				Util::sleep_ms(10);
 
 				LOCK_GUARD(m->mutex_queued_hashes)
 				qhc = m->queued_hashes.count();

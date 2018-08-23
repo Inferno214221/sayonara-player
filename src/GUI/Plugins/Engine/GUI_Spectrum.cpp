@@ -39,15 +39,13 @@
 #include <algorithm>
 #include <mutex>
 
-static std::mutex mtx;
-
-
 using Step=uint_fast8_t;
 using BinSteps=std::vector<Step>;
 using StepArray=std::vector<BinSteps>;
 
 struct GUI_Spectrum::Private
 {
+	std::atomic_flag locked = ATOMIC_FLAG_INIT;
 	SpectrumList	spec;
 	StepArray		steps;
 	float*			log_lu=nullptr;
@@ -171,7 +169,7 @@ void GUI_Spectrum::sl_update_style()
 		return;
 	}
 
-	if(!mtx.try_lock()) {
+	if(m->locked.test_and_set()) {
 		sp_log(Log::Debug, this) << "Cannot update stylde";
 		return;
 	}
@@ -184,7 +182,8 @@ void GUI_Spectrum::sl_update_style()
 	resize_steps(bins, _cur_style.n_rects);
 
 	update();
-	mtx.unlock();
+
+	m->locked.clear();
 }
 
 

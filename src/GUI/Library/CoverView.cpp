@@ -28,9 +28,12 @@ using AtomicInt=std::atomic<int>;
 
 struct CoverView::Private
 {
-	std::mutex		zoom_mutex;
 	LocalLibrary*	library=nullptr;
 	CoverModel*		model=nullptr;
+
+	std::atomic_flag zoom_locked = ATOMIC_FLAG_INIT;
+
+	Private() : zoom_locked(false) {}
 };
 
 CoverView::CoverView(QWidget* parent) :
@@ -123,14 +126,14 @@ void CoverView::resize_sections()
 		return;
 	}
 
-	if(!m->zoom_mutex.try_lock()){
+	if(m->zoom_locked.test_and_set()){
 		return;
 	}
 
 	this->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 	this->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
-	m->zoom_mutex.unlock();
+	m->zoom_locked.clear();
 }
 
 

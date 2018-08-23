@@ -36,7 +36,7 @@
 #include <algorithm>
 #include <array>
 #include <vector>
-#include <mutex>
+#include <atomic>
 
 static const int Channels = 2;
 
@@ -50,9 +50,9 @@ struct GUI_LevelPainter::Private
 {
 	ChannelArray	level;
 	StepArray		steps;
-	std::mutex		mtx;
-
 	float*			exp_lot=nullptr;
+
+	std::atomic_flag lock = ATOMIC_FLAG_INIT;
 
 	void resize_steps(int n_rects)
 	{
@@ -154,13 +154,12 @@ void GUI_LevelPainter::retranslate_ui()
 
 void GUI_LevelPainter::set_level(float left, float right)
 {
-	if(!m->mtx.try_lock()){
+	if(!is_ui_initialized() || !isVisible())
+	{
 		return;
 	}
 
-	if(!is_ui_initialized() || !isVisible())
-	{
-		m->mtx.unlock();
+	if(m->lock.test_and_set()){
 		return;
 	}
 
@@ -169,7 +168,7 @@ void GUI_LevelPainter::set_level(float left, float right)
 	stop_fadeout_timer();
 	update();
 
-	m->mtx.unlock();
+	m->lock.clear();
 }
 
 
@@ -284,7 +283,6 @@ void GUI_LevelPainter::reload()
 
 void GUI_LevelPainter::showEvent(QShowEvent* e)
 {
-	m->mtx.unlock();
 	_settings->set<Set::Engine_ShowLevel>(true);
 	EnginePlugin::showEvent(e);
 }
@@ -292,14 +290,12 @@ void GUI_LevelPainter::showEvent(QShowEvent* e)
 
 void GUI_LevelPainter::closeEvent(QCloseEvent* e)
 {
-	m->mtx.unlock();
 	_settings->set<Set::Engine_ShowLevel>(false);
 	EnginePlugin::closeEvent(e);
 }
 
 void GUI_LevelPainter::hideEvent(QHideEvent* e)
 {
-	m->mtx.unlock();
 	EnginePlugin::hideEvent(e);
 }
 
