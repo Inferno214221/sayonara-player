@@ -131,6 +131,8 @@ GUI_Player::GUI_Player(QWidget* parent) :
 	init_connections();
 	init_tray_actions();
 
+	current_track_changed(PlayManager::instance()->current_track());
+
 	if(_settings->get<Set::Player_NotifyNewVersion>())
 	{
 		AsyncWebAccess* awa = new AsyncWebAccess(this);
@@ -236,6 +238,7 @@ void GUI_Player::init_connections()
 	connect(lph, &Library::PluginHandler::sig_libraries_changed,
 			this, &GUI_Player::check_library_menu_action);
 
+	connect(play_manager, &PlayManager::sig_track_changed, this, &GUI_Player::current_track_changed);
 	connect(play_manager, &PlayManager::sig_playstate_changed, this, &GUI_Player::playstate_changed);
 	connect(play_manager, &PlayManager::sig_error, this, &GUI_Player::play_error);
 
@@ -288,6 +291,26 @@ void GUI_Player::tray_icon_activated(QSystemTrayIcon::ActivationReason reason)
 
 	else {
 		showMinimized();
+	}
+}
+
+void GUI_Player::current_track_changed(const MetaData& md)
+{
+	bool title_empty = md.title().trimmed().isEmpty();
+	bool artist_empty = md.artist().trimmed().isEmpty();
+
+	if(title_empty)
+	{
+		this->setWindowTitle("Sayonara " + _settings->get<Set::Player_Version>());
+	}
+
+	else if(artist_empty)
+	{
+		this->setWindowTitle(md.title());
+	}
+
+	else {
+		this->setWindowTitle(md.artist() + " - " + md.title());
 	}
 }
 

@@ -114,6 +114,7 @@ private slots:
 	void really_close();
 
 	void tray_icon_activated(QSystemTrayIcon::ActivationReason reason);
+	void current_track_changed(const MetaData& md);
 
 	/* Plugins */
 	void plugin_added(PlayerPlugin::Base* plugin);
