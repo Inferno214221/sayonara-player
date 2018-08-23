@@ -109,6 +109,7 @@ IndexSet Base::move_tracks(const IndexSet& indexes, int tgt_row)
 IndexSet Base::copy_tracks(const IndexSet& indexes, int tgt)
 {
 	m->v_md.copy_tracks(indexes, tgt);
+
 	set_changed(true);
 
 	IndexSet new_track_positions;
@@ -126,6 +127,7 @@ IndexSet Base::copy_tracks(const IndexSet& indexes, int tgt)
 void Base::remove_tracks(const IndexSet& indexes)
 {
 	m->v_md.remove_tracks(indexes);
+
 	set_changed(true);
 }
 
@@ -159,11 +161,15 @@ void Base::append_tracks(const MetaDataList& lst)
 
 bool Base::change_track(int idx)
 {
+	set_track_idx_before_stop(-1);
 	m->v_md.set_current_track(idx);
 
-	// ERROR: invalid idx
-	if( !between(idx, m->v_md) ) {
+	_settings->set<Set::PL_LastTrackBeforeStop>(-1);
+
+	if( !between(idx, m->v_md) )
+	{
 		stop();
+		set_track_idx_before_stop(-1);
 		return false;
 	}
 
@@ -234,7 +240,7 @@ int Base::current_track_index() const
 }
 
 
-bool Base::current_track(MetaData &md) const
+bool Base::current_track(MetaData& md) const
 {
 	int cur_play_idx = m->v_md.current_track();
 
@@ -253,9 +259,9 @@ QStringList Base::toStringList() const
 }
 
 
-IdxList Base::find_tracks(int idx) const
+IdxList Base::find_tracks(Id id) const
 {
-	return m->v_md.findTracks(idx);
+	return m->v_md.findTracks(id);
 }
 
 
@@ -285,6 +291,8 @@ const MetaDataList& Base::playlist() const
 
 void Base::set_changed(bool b)
 {
+	restore_track_before_stop();
+
 	m->playlist_changed = b;
 
 	emit sig_items_changed(m->playlist_idx);

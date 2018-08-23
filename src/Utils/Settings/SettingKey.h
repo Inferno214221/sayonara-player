@@ -130,6 +130,7 @@ enum class SettingKey : unsigned short
 	PL_RememberTime,
 	PL_StartPlaying,
 	PL_LastTrack,
+	PL_LastTrackBeforeStop,
 	PL_LastPlaylist,
 	PL_Mode,
 	PL_ShowNumbers,
@@ -308,6 +309,7 @@ namespace Set
 	INST(bool,				PL_RememberTime)			/* remember time of last track */
 	INST(bool,				PL_StartPlaying)			/* start playing immediately when opening Sayonara */
 	INST(int,				PL_LastTrack)				/* last track idx in playlist */
+	INST(int,				PL_LastTrackBeforeStop)		/* last track before stop */
 	INST(int,				PL_LastPlaylist)			/* last Playlist id, where LastTrack has been played */
 	INST(QString,			PL_EntryLook)				/* formatting of playlist entry */
 	INST(int,				PL_FontSize)				/* current playlist font size */

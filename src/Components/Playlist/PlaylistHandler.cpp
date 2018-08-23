@@ -351,9 +351,10 @@ void Handler::change_track(int track_idx, int playlist_idx)
 		playlist_idx = active_playlist()->index();
 	}
 
-	if( playlist_idx != m->active_playlist_idx && playlist_idx >= 0 )
+	if( playlist_idx != m->active_playlist_idx )
 	{
 		active_playlist()->stop();
+
 		set_active_idx(playlist_idx);
 	}
 

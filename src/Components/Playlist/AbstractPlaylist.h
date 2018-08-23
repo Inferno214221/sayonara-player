@@ -22,8 +22,10 @@
 #define PLAYLIST_H
 
 #include "PlaylistDBInterface.h"
+#include "PlaylistStopBehavior.h"
 #include "Utils/Playlist/PlaylistFwd.h"
 #include "Utils/Playlist/PlaylistMode.h"
+
 #include "Utils/Settings/SayonaraClass.h"
 #include "Utils/Pimpl.h"
 
@@ -46,7 +48,8 @@ namespace Playlist
 	 * @ingroup Playlists
 	 */
 	class Base :
-			public DBInterface,
+			public Playlist::DBInterface,
+			protected Playlist::StopBehavior,
 			public SayonaraClass
 	{
 		Q_OBJECT
@@ -64,7 +67,7 @@ namespace Playlist
 
 			QStringList		toStringList() const;
 
-			IdxList			find_tracks(int id) const;
+			IdxList			find_tracks(Id id) const;
 			IdxList			find_tracks(const QString& filepath) const;
 			int				current_track_index() const;
 			bool			current_track(MetaData& metadata) const;
@@ -100,7 +103,6 @@ namespace Playlist
 			void				set_storable(bool b);
 			void				set_changed(bool b) override;
 
-
 		public:
 			const MetaData& operator[](int idx) const;
 
@@ -108,7 +110,7 @@ namespace Playlist
 			const MetaData& metadata(int idx) const;
 
 			MetaDataList& metadata();
-			const MetaDataList& metadata() const;
+			const MetaDataList& metadata() const override;
 
 			virtual void clear();
 

@@ -328,7 +328,7 @@ bool MetaDataList::contains(const MetaData& md) const
 	return (it != this->end());
 }
 
-QList<int> MetaDataList::findTracks(int id) const
+QList<int> MetaDataList::findTracks(Id id) const
 {
 	IdxList ret;
 

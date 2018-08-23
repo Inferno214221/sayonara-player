@@ -34,11 +34,7 @@ using Playlist::Standard;
 
 struct Standard::Private
 {
-	int	track_idx_before_stop;
-
-	Private() :
-		track_idx_before_stop(-1)
-	{}
+	Private() {}
 };
 
 Standard::Standard(int idx, const QString& name) :
@@ -58,8 +54,6 @@ Playlist::Type Standard::type() const
 void Standard::set_changed(bool b)
 {
 	Base::set_changed(b);
-
-	m->track_idx_before_stop = metadata().current_track();
 }
 
 int Standard::create_playlist(const MetaDataList& v_md)
@@ -81,6 +75,8 @@ int Standard::create_playlist(const MetaDataList& v_md)
 
 bool Standard::change_track(int idx)
 {
+	set_track_idx_before_stop(-1);
+
 	bool success = Base::change_track(idx);
 	if(!success){
 		return false;
@@ -102,10 +98,11 @@ bool Standard::change_track(int idx)
 
 bool Standard::wake_up()
 {
-	bool success = between(metadata().current_track(), count());
+	int idx = track_idx_before_stop();
+	bool success = between(idx, count());
 
 	if(success) {
-		success = change_track(m->track_idx_before_stop);
+		success = change_track(idx);
 	}
 
 	return success;
@@ -114,8 +111,10 @@ bool Standard::wake_up()
 
 void Standard::play()
 {
-	if( metadata().isEmpty() ) {
+	if( metadata().isEmpty() )
+	{
 		stop();
+		set_track_idx_before_stop(-1);
 		return;
 	}
 
@@ -131,11 +130,13 @@ void Standard::pause() {}
 
 void Standard::stop()
 {
-	m->track_idx_before_stop = metadata().current_track();
-
-	if(!_settings->get<Set::PL_RememberTrackAfterStop>()){
-		metadata().set_current_track(-1);
+	int cur_track_idx = metadata().current_track();
+	if(cur_track_idx >= 0)
+	{
+		set_track_idx_before_stop(metadata().current_track());
 	}
+
+	metadata().set_current_track(-1);
 
 	for(MetaData& md : metadata()){
 		md.played = false;
@@ -170,8 +171,10 @@ void Standard::next()
 	int track_num = -1;
 
 	// no track
-	if(metadata().isEmpty() ) {
+	if(metadata().isEmpty() )
+	{
 		stop();
+		set_track_idx_before_stop(-1);
 		return;
 	}
 
@@ -188,14 +191,17 @@ void Standard::next()
 	else if(Playlist::Mode::isActiveAndEnabled(mode().shuffle()))
 	{
 		track_num = calc_shuffle_track();
-		if(track_num == -1){
+		if(track_num == -1)
+		{
 			stop();
+			set_track_idx_before_stop(-1);
 			return;
 		}
 	}
 
 	// normal track
-	else {
+	else
+	{
 		// last track
 		if(cur_track == metadata().count() - 1)
 		{
@@ -203,8 +209,10 @@ void Standard::next()
 				track_num = 0;
 			}
 
-			else {
+			else
+			{
 				stop();
+				set_track_idx_before_stop(-1);
 				return;
 			}
 		}
@@ -255,6 +263,7 @@ int Standard::calc_shuffle_track()
 	return left_tracks[left_tracks_idx];
 }
 
+
 void Standard::metadata_deleted(const MetaDataList& v_md_deleted)
 {
 	IndexSet indexes;
@@ -304,13 +313,11 @@ void Standard::duration_changed(MilliSeconds ms)
 	MetaDataList& v_md = metadata();
 
 	int cur_track = v_md.current_track();
-	if(cur_track < 0 || cur_track >= v_md.count()){
+	if(!between(cur_track, v_md.count())){
 		return;
 	}
 
-	IdxList idx_list = find_tracks(
-		v_md[cur_track].filepath()
-	);
+	IdxList idx_list = find_tracks(v_md[cur_track].filepath());
 
 	for(int i : idx_list)
 	{

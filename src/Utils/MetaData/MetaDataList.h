@@ -66,8 +66,8 @@ public:
 	MetaDataList& insert_track(const MetaData& md, int tgt_idx);
 	MetaDataList& insert_tracks(const MetaDataList& v_md, int tgt_idx);
 
-	IdxList findTracks(int id) const;
-	IdxList findTracks(const QString&) const;
+	IdxList findTracks(Id id) const;
+	IdxList findTracks(const QString& filepath) const;
 
 	QStringList toStringList() const;
 

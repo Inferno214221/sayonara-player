@@ -141,6 +141,7 @@ bool SettingRegistry::init()
 	register_setting<Set::PL_RememberTime>( "remember_time", false );
 	register_setting<Set::PL_StartPlaying>( "start_playing", false );
 	register_setting<Set::PL_LastTrack>( "last_track", -1 );
+	register_setting<Set::PL_LastTrackBeforeStop>( "last_track_before_stop", -1);
 	register_setting<Set::PL_LastPlaylist>( "last_playlist", -1 );
 	register_setting<Set::PL_Mode>( "playlist_mode", Playlist::Mode() );
 	register_setting<Set::PL_ShowNumbers>( "show_playlist_numbers", true );

@@ -59,6 +59,11 @@ Loader::Loader(QObject* parent) :
 	int saved_playlist_id = _settings->get<Set::PL_LastPlaylist>();
 	int saved_track_idx = _settings->get<Set::PL_LastTrack>();
 
+	bool load_last_track_before_stop = _settings->get<Set::PL_RememberTrackAfterStop>();
+	if(saved_track_idx == -1 && load_last_track_before_stop){
+		saved_track_idx = _settings->get<Set::PL_LastTrackBeforeStop>();
+	}
+
 	// we don't load any playlists
 	if(!load_playlists)
 	{
