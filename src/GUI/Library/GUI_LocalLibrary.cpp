@@ -157,13 +157,15 @@ void GUI_LocalLibrary::clear_selections()
 	}
 }
 
-void GUI_LocalLibrary::genre_selection_changed(const QModelIndex& index)
+void GUI_LocalLibrary::genre_selection_changed(const QModelIndex& idx)
 {
+	Q_UNUSED(idx)
+
 	QStringList index_datas;
 	QModelIndexList indexes = ui->lv_genres->selectionModel()->selectedIndexes();
-	for(const QModelIndex& idx : indexes)
+	for(const QModelIndex& index : indexes)
 	{
-		index_datas << idx.data().toString();
+		index_datas << index.data().toString();
 	}
 
 	search_mode_changed(::Library::Filter::Genre);

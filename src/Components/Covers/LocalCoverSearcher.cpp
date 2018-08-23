@@ -26,6 +26,8 @@
 #include <QFile>
 #include <QDir>
 #include <QFileInfo>
+#include <QImage>
+#include <QMap>
 
 using namespace Cover;
 
@@ -39,41 +41,54 @@ QStringList LocalSearcher::cover_paths_from_filename(const QString& filepath)
 QStringList LocalSearcher::cover_paths_from_dirname(const QString& filepath)
 {
 	QStringList ret;
-	QStringList hash[3];
-	QStringList entries;
+
 	QStringList filters;
 	filters << "*.jpg"
 			<< "*.png";
 
 	QDir dir(filepath);
-	entries = dir.entryList(filters);
+	QStringList entries = dir.entryList(filters);
 	if(entries.isEmpty()){
 		return ret;
 	}
 
-	for(const QString& entry : ::Util::AsConst(entries))
+	QMap<QString, double> size_map;
+	for(const QString& entry : entries)
 	{
-		int prio = 2;
+		QImage i(entry);
+		double d = std::abs(i.width() - i.height()) / (i.width() * 1.0) + 1.0;
 
-		if(entry.contains(QStringLiteral("cover"), Qt::CaseInsensitive) ||
+		if( entry.contains(QStringLiteral("cover"), Qt::CaseInsensitive) ||
 			entry.contains(QStringLiteral("albumart"), Qt::CaseInsensitive) ||
-			entry.contains(QStringLiteral("front"), Qt::CaseInsensitive))
+			entry.contains(QStringLiteral("front"), Qt::CaseInsensitive) ||
+			entry.contains(QStringLiteral("folder"), Qt::CaseInsensitive))
 		{
 			if(entry.contains(QStringLiteral("large"), Qt::CaseInsensitive)){
-				prio = 0;
+				d = d * 2;
 			}
 
 			else if(!entry.contains(QStringLiteral("small"), Qt::CaseInsensitive)){
-				prio = 1;
+				d = d * 3;
+			}
+
+			else {
+				d = d * 4;
 			}
 		}
 
-		hash[prio] << filepath + "/" + entry;
+		else
+		{
+			d = d * 5;
+		}
+
+		QString f = filepath + "/" + entry;
+		size_map[f] = d;
+		ret << f;
 	}
 
-	for(int i=0; i<3; i++){
-		ret << hash[i];
-	}
+	std::sort(ret.begin(), ret.end(), [=](const QString& f1, const QString& f2){
+		return ((size_map[f1] < size_map[f2]) || (f1 < f2));
+	});
 
 	return ret;
 }
