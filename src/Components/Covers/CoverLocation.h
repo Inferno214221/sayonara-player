@@ -148,12 +148,15 @@ namespace Cover
 		 */
 		QString			to_string() const;
 
+		QString			hash() const;
+		void			set_hash(const QString& str);
+
 
 		bool			has_audio_file_source() const;
 
 		QString			audio_file_source() const;
 
-		void			set_audio_file_source(const QString& audio_file_source, const QString& cover_path);
+		bool			set_audio_file_source(const QString& audio_file_source, const QString& cover_path);
 
 
 		/**

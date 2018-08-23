@@ -26,6 +26,9 @@
 #include "Components/Covers/CoverLookup.h"
 #include "Components/Covers/CoverChangeNotifier.h"
 
+#include "Database/Connector.h"
+#include "Database/CoverConnector.h"
+
 #include "Utils/MetaData/Album.h"
 #include "Utils/Utils.h"
 #include "Utils/Set.h"
@@ -87,11 +90,17 @@ struct CoverModel::Private
 
 	QPixmap get_pixmap(const QString& path)
 	{
-		QPixmap p = QPixmap(path).scaled(zoom, zoom, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+		Qt::TransformationMode mode = Qt::FastTransformation;
+		QPixmap p(path);;
 		if(p.isNull()){
 			sp_log(Log::Warning, this) << "Pixmap is null";
 			QString invalid_path = Cover::Location::invalid_location().cover_path();
-			return QPixmap(invalid_path).scaled(zoom, zoom, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+			return QPixmap(invalid_path).scaled(zoom, zoom, Qt::KeepAspectRatio, mode);
+		}
+
+		else
+		{
+			return p.scaled(zoom, zoom, Qt::KeepAspectRatio, mode);
 		}
 
 		return p;
@@ -264,16 +273,15 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 
 		case Qt::DecorationRole:
 			{
-
 				Hash hash = AlbumCoverFetchThread::get_hash(album);
 				m->indexes[hash] = index;
 
 				if(m->pixmaps.contains(hash))
 				{
 					QPixmap p = m->pixmaps[hash];
+
 					// Pixmap has bad quality, next time we'll search for it
 					// for this time it's sufficient
-
 					int sz = std::max(p.size().width(), p.size().height());
 					if(std::abs(sz - m->zoom) > 10)
 					{
@@ -312,8 +320,10 @@ struct CoverLookupUserData
 	Location cl;
 	QModelIndex idx;
 	AlbumCoverFetchThread* acft;
+	QPixmap* p=nullptr;
 };
 
+static std::mutex mtx1, mtx2;
 void CoverModel::next_hash()
 {
 	AlbumCoverFetchThread* acft = dynamic_cast<AlbumCoverFetchThread*>(sender());
@@ -349,11 +359,9 @@ void CoverModel::next_hash()
 }
 
 
-static std::mutex mtx;
+
 void CoverModel::cover_lookup_finished(bool success)
 {
-	LOCK_GUARD(mtx)
-
 	Lookup* clu = static_cast<Lookup*>(sender());
 	CoverLookupUserData* d = static_cast<CoverLookupUserData*>(clu->take_user_data());
 
@@ -361,11 +369,30 @@ void CoverModel::cover_lookup_finished(bool success)
 	{
 		if(success)
 		{
-			m->insert_pixmap(d->hash, d->cl.preferred_path());
+			{
+				QPixmap pm = clu->pixmap();
+				if(!pm.isNull())
+				{
+					LOCK_GUARD(mtx1)
+					m->pixmaps[d->hash] = pm.scaled(m->zoom, m->zoom, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+				}
+
+				else
+				{
+					LOCK_GUARD(mtx1)
+					m->insert_pixmap(d->hash, d->cl.preferred_path());
+				}
+			}
+
 			emit dataChanged(d->idx, d->idx);
 		}
 
-		m->valid_hashes[d->hash] = success;
+
+		{
+			LOCK_GUARD(mtx2)
+			m->valid_hashes[d->hash] = success;
+		}
+
 		d->acft->done(d->hash);
 
 		delete d; d=nullptr;

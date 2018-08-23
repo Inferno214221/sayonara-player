@@ -122,7 +122,6 @@ void AlbumCoverFetchThread::run()
 				continue;
 			}
 
-
 			int qhc;
 			{
 				LOCK_GUARD(m->mutex_queued_hashes)
@@ -199,7 +198,6 @@ void AlbumCoverFetchThread::add_album(const Album& album)
 			return;
 		}
 	}
-
 
 	{
 		LOCK_GUARD(m->mutex_location_list)

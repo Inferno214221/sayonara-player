@@ -31,6 +31,7 @@
 
 #include "AbstractCoverLookup.h"
 #include "Utils/Pimpl.h"
+#include <QPixmap>
 
 class Album;
 
@@ -73,6 +74,8 @@ namespace Cover
 
 		void set_user_data(void* data);
 		void* take_user_data();
+
+		QPixmap pixmap() const;
 
 
 	private:

@@ -42,6 +42,7 @@ namespace DB
 	class Settings;
 	class Library;
 	class Shortcuts;
+	class Covers;
 
 	using LibraryDatabases=QList<LibraryDatabase*>;
 
@@ -75,6 +76,7 @@ namespace DB
 			DB::VisualStyles*		visual_style_connector();
 			DB::Settings*			settings_connector();
 			DB::Shortcuts*			shortcut_connector();
+			DB::Covers*				cover_connector();
 			DB::Library*			library_connector();
 	};
 }

@@ -28,6 +28,7 @@
 #include "Database/Settings.h"
 #include "Database/Shortcuts.h"
 #include "Database/VisStyles.h"
+#include "Database/CoverConnector.h"
 
 #include "Utils/MetaData/Album.h"
 #include "Utils/MetaData/Artist.h"
@@ -60,6 +61,7 @@ struct Connector::Private
 	DB::VisualStyles*		visual_style_connector=nullptr;
 	DB::Settings*			settings_connector=nullptr;
 	DB::Shortcuts*			shortcut_connector=nullptr;
+	DB::Covers*				cover_connector=nullptr;
 	DB::Library*			library_connector=nullptr;
 
 	QList<LibraryDatabase*> library_dbs;
@@ -90,6 +92,10 @@ struct Connector::Private
 
 		if(shortcut_connector){
 			delete shortcut_connector; shortcut_connector = nullptr;
+		}
+
+		if(cover_connector){
+			delete cover_connector; cover_connector = nullptr;
 		}
 
 		if(library_connector){
@@ -246,7 +252,7 @@ bool Connector::apply_fixes()
 	QString str_version;
 	int version;
 	bool success;
-	const int LatestVersion = 19;
+	const int LatestVersion = 20;
 
 	success = settings_connector()->load_setting("version", str_version);
 	version = str_version.toInt(&success);
@@ -535,6 +541,25 @@ bool Connector::apply_fixes()
 		}
 	}
 
+	if(version < 20)
+	{
+		QString create_string =
+			"CREATE TABLE Covers "
+			"("
+			"  id INTEGER,"
+			"  hash VARCHAR(64),"
+			"  filepath VARCHAR(512),"
+			"  data BLOB, "
+			"  PRIMARY KEY (id, hash) "
+			");";
+
+		bool success = check_and_create_table("Covers", create_string);
+		if(success)
+		{
+			settings_connector()->store_setting("version", 20);
+		}
+	}
+
 	return true;
 }
 
@@ -681,6 +706,15 @@ DB::Library* Connector::library_connector()
 	}
 
 	return m->library_connector;
+}
+
+DB::Covers* Connector::cover_connector()
+{
+	if(!m->cover_connector){
+		m->cover_connector = new DB::Covers(this->connection_name(), this->db_id());
+	}
+
+	return m->cover_connector;
 }
 
 
