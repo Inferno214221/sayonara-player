@@ -81,6 +81,7 @@ public:
 	void remove_duplicates();
 	MetaData take_at(int idx);
 	bool isEmpty() const;
+	MetaDataList& append_unique(const MetaDataList& other);
 
 	const MetaData& first() const;
 	const MetaData& last() const;

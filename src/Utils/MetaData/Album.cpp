@@ -277,6 +277,25 @@ Album AlbumList::first() const
 	return this->at(0);
 }
 
+AlbumList& AlbumList::append_unique(const AlbumList& other)
+{
+	int diff_cap = other.size() - (this->capacity() - this->size());
+	if(diff_cap > 0)
+	{
+		this->reserve(this->capacity() + diff_cap);
+	}
+
+	for(auto it = other.begin(); it != other.end(); it++)
+	{
+		if(!this->contains(it->id)){
+			this->push_back(*it);
+		}
+	}
+
+	return *this;
+}
+
+
 void AlbumList::sort(Library::SortOrder so)
 {
 	MetaDataSorting::sort_albums(*this, so);

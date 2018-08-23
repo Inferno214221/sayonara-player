@@ -227,70 +227,79 @@ bool Albums::getAllAlbumsByArtist(IdList artists, AlbumList& result, const Libra
 		return false;
 	}
 
-	Query q(this);
-	QString select = "SELECT "
-					 "  albumID"
-					 ", albumName"
-					 ", SUM(length) / 1000 AS albumLength"
-					 ", albumRating"
-					 ", COUNT(DISTINCT trackID) AS trackCount"
-					 ", MAX(year) AS albumYear"
-					 ", GROUP_CONCAT(DISTINCT artistName)"
-					 ", GROUP_CONCAT(DISTINCT albumArtistName)"
-					 ", GROUP_CONCAT(DISTINCT discnumber)"
-					 " FROM " + m->search_view + " ";
-
-	QString query = select;
-
-	if( !filter.cleared() )
+	QStringList filters = filter.filtertext(true);
+	QStringList search_filters = filter.search_mode_filtertext(true);
+	for(int i=0; i<filters.size(); i++)
 	{
-		switch(filter.mode())
+		Query q(this);
+		QString select = "SELECT "
+						 "  albumID"
+						 ", albumName"
+						 ", SUM(length) / 1000 AS albumLength"
+						 ", albumRating"
+						 ", COUNT(DISTINCT trackID) AS trackCount"
+						 ", MAX(year) AS albumYear"
+						 ", GROUP_CONCAT(DISTINCT artistName)"
+						 ", GROUP_CONCAT(DISTINCT albumArtistName)"
+						 ", GROUP_CONCAT(DISTINCT discnumber)"
+						 " FROM " + m->search_view + " ";
+
+		QString query = select;
+
+		if( !filter.cleared() )
 		{
-			case Library::Filter::Genre:
-				query += "WHERE genre LIKE :searchterm AND ";			// track title is like filter
-				break;
+			switch(filter.mode())
+			{
+				case Library::Filter::Genre:
+					query += "WHERE genre LIKE :searchterm AND ";			// track title is like filter
+					break;
 
-			case Library::Filter::Filename:
-				query += "WHERE filecissearch LIKE :cissearch AND ";			// track title is like filter
+				case Library::Filter::Filename:
+					query += "WHERE filecissearch LIKE :cissearch AND ";			// track title is like filter
 
-				break;
+					break;
 
-			case Library::Filter::Fulltext:
-				query += "WHERE allCissearch LIKE :cissearch AND ";
-				break;
-		}
-	}
-
-	else{
-		query += "WHERE ";
-	}
-
-	if(!artists.isEmpty())
-	{
-		QString artist_id_field = m->search_view + "." + artistid_field();
-		query += "(" + artist_id_field + " = :artist_id_0 ";
-
-		for(int i=1; i<artists.size(); i++) {
-			query += "OR " + artist_id_field + " = :artist_id_"
-					+ QString::number(i) + " ";
+				case Library::Filter::Fulltext:
+					query += "WHERE allCissearch LIKE :cissearch AND ";
+					break;
+			}
 		}
 
-		query += ") ";
+		else{
+			query += "WHERE ";
+		}
+
+		if(!artists.isEmpty())
+		{
+			QString artist_id_field = m->search_view + "." + artistid_field();
+			query += "(" + artist_id_field + " = :artist_id_0 ";
+
+			for(int i=1; i<artists.size(); i++) {
+				query += "OR " + artist_id_field + " = :artist_id_"
+						+ QString::number(i) + " ";
+			}
+
+			query += ") ";
+		}
+
+		query += "GROUP BY albumID, albumName ";
+		query += m->order_string(sortorder) + ";";
+
+		q.prepare(query);
+
+		q.bindValue(":searchterm",	filters[i]);
+		q.bindValue(":cissearch",	search_filters[i]);
+
+		for(int i=0; i<artists.size(); i++) {
+			q.bindValue(QString(":artist_id_") + QString::number(i), artists[i]);
+		}
+
+		AlbumList tmp_list;
+		db_fetch_albums(q, tmp_list);
+		result.append_unique(tmp_list);
 	}
 
-	query += "GROUP BY albumID, albumName ";
-	query += m->order_string(sortorder) + ";";
-
-	q.prepare(query);
-
-	q.bindValue(":searchterm",	Util::cvt_not_null(filter.filtertext(true)));
-	q.bindValue(":cissearch",	Util::cvt_not_null(filter.search_mode_filtertext(true)));
-
-	for(int i=0; i<artists.size(); i++) {
-		q.bindValue(QString(":artist_id_") + QString::number(i), artists[i]);
-	}
-
-	return db_fetch_albums(q, result);
+	return true;
 }
 
 bool Albums::getAllAlbumsByArtist(ArtistId artist, AlbumList& result)
@@ -308,50 +317,59 @@ bool Albums::getAllAlbumsByArtist(ArtistId artist, AlbumList& result, const Libr
 
 bool Albums::getAllAlbumsBySearchString(const Library::Filter& filter, AlbumList& result, Library::SortOrder sortorder)
 {
-	Query q(this);
-	QString select = "SELECT "
-					 "  albumID"
-					 ", albumName"
-					 ", SUM(length) / 1000 AS albumLength"
-					 ", albumRating"
-					 ", COUNT(DISTINCT trackID) AS trackCount"
-					 ", MAX(year) AS albumYear"
-					 ", GROUP_CONCAT(DISTINCT artistName)"
-					 ", GROUP_CONCAT(DISTINCT albumArtistName)"
-					 ", GROUP_CONCAT(DISTINCT discnumber)"
-					 " FROM " + m->search_view + " ";
-	QString query;
-	QString where_clause;
-	switch(filter.mode())
+	QStringList filters = filter.filtertext(true);
+	QStringList search_filters = filter.search_mode_filtertext(true);
+	for(int i=0; i<filters.size(); i++)
 	{
-		case Library::Filter::Genre:
-			where_clause = "WHERE genre LIKE :searchterm ";
-			break;
+		Query q(this);
+		QString select = "SELECT "
+						 "  albumID"
+						 ", albumName"
+						 ", SUM(length) / 1000 AS albumLength"
+						 ", albumRating"
+						 ", COUNT(DISTINCT trackID) AS trackCount"
+						 ", MAX(year) AS albumYear"
+						 ", GROUP_CONCAT(DISTINCT artistName)"
+						 ", GROUP_CONCAT(DISTINCT albumArtistName)"
+						 ", GROUP_CONCAT(DISTINCT discnumber)"
+						 " FROM " + m->search_view + " ";
+		QString query;
+		QString where_clause;
+		switch(filter.mode())
+		{
+			case Library::Filter::Genre:
+				where_clause = "WHERE genre LIKE :searchterm ";
+				break;
 
-		case Library::Filter::Filename:
-			where_clause = "WHERE filecissearch LIKE :cissearch ";
-			break;
+			case Library::Filter::Filename:
+				where_clause = "WHERE filecissearch LIKE :cissearch ";
+				break;
 
-		case Library::Filter::Fulltext:
-		default:
-			where_clause = "WHERE allCissearch LIKE :cissearch ";
-			break;
+			case Library::Filter::Fulltext:
+			default:
+				where_clause = "WHERE allCissearch LIKE :cissearch ";
+				break;
+		}
+
+
+		if(query.isEmpty()){
+			query = select +
+					where_clause +
+					"GROUP BY albumID, albumName ";
+		}
+
+		query += m->order_string(sortorder) + ";";
+
+		q.prepare(query);
+		q.bindValue(":searchterm",	filters[i]);
+		q.bindValue(":cissearch",	search_filters[i]);
+
+		AlbumList tmp_list;
+		db_fetch_albums(q, tmp_list);
+		result.append_unique(tmp_list);
 	}
 
-
-	if(query.isEmpty()){
-		query = select +
-				where_clause +
-				"GROUP BY albumID, albumName ";
-	}
-
-	query += m->order_string(sortorder) + ";";
-
-	q.prepare(query);
-	q.bindValue(":searchterm",	Util::cvt_not_null(filter.filtertext(true)));
-	q.bindValue(":cissearch",	Util::cvt_not_null(filter.search_mode_filtertext(true)));
-
-	return db_fetch_albums(q, result);
+	return true;
 }
 
 int Albums::updateAlbum (const Album & album)

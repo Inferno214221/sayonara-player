@@ -91,6 +91,9 @@ public:
 	AlbumList& operator <<(const Album& album);
 	Album first() const;
 
+	AlbumList& append_unique(const AlbumList& other);
+	AlbumList& append_unique(AlbumList&& other);
+
 	void sort(Library::SortOrder so);
 };
 

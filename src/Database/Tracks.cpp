@@ -364,66 +364,75 @@ bool Tracks::getAllTracksByAlbum(IdList albums, MetaDataList& result)
 }
 
 
-bool Tracks::getAllTracksByAlbum(IdList albums, MetaDataList& returndata, const ::Library::Filter& filter, ::Library::SortOrder sort)
+bool Tracks::getAllTracksByAlbum(IdList albums, MetaDataList& result, const ::Library::Filter& filter, ::Library::SortOrder sort)
 {
 	if(albums.isEmpty()) {
 		return false;
 	}
 
-	Query q(this);
-
-	QString querytext = fetch_query_tracks();
-
-	if( !filter.cleared() )
+	QStringList filters = filter.filtertext(true);
+	QStringList search_filters = filter.search_mode_filtertext(true);
+	for(int i=0; i<filters.size(); i++)
 	{
-		switch( filter.mode() )
+		Query q(this);
+
+		QString querytext = fetch_query_tracks();
+
+		if( !filter.cleared() )
 		{
-			case ::Library::Filter::Genre:
-				querytext += "WHERE genre LIKE :searchterm AND ";
-				break;
+			switch( filter.mode() )
+			{
+				case ::Library::Filter::Genre:
+					querytext += "WHERE genre LIKE :searchterm AND ";
+					break;
 
-			case ::Library::Filter::Filename:
-				querytext += "WHERE filecissearch LIKE :cissearch AND ";
-				break;
+				case ::Library::Filter::Filename:
+					querytext += "WHERE filecissearch LIKE :cissearch AND ";
+					break;
 
-			case ::Library::Filter::Fulltext:
-			default:
-				querytext += "WHERE allCissearch LIKE :cissearch AND ";
-				break;
-		}
-	}
-
-	else{
-		querytext += " WHERE ";
-	}
-
-	if(albums.size() > 0) {
-		QString album_id_field = m->search_view + ".albumID ";
-		querytext += " (" + album_id_field + "=:albumid_0 ";
-		for(int i=1; i<albums.size(); i++) {
-			querytext += "OR " + album_id_field + "=:albumid_" + QString::number(i) + " ";
+				case ::Library::Filter::Fulltext:
+				default:
+					querytext += "WHERE allCissearch LIKE :cissearch AND ";
+					break;
+			}
 		}
 
-		querytext += ") ";
+		else{
+			querytext += " WHERE ";
+		}
+
+		if(albums.size() > 0) {
+			QString album_id_field = m->search_view + ".albumID ";
+			querytext += " (" + album_id_field + "=:albumid_0 ";
+			for(int i=1; i<albums.size(); i++) {
+				querytext += "OR " + album_id_field + "=:albumid_" + QString::number(i) + " ";
+			}
+
+			querytext += ") ";
+		}
+
+
+		querytext = append_track_sort_string(querytext, sort);
+
+		q.prepare(querytext);
+
+		for(int i=0; i<albums.size(); i++)
+		{
+			q.bindValue(QString(":albumid_%1").arg(i), albums[i]);
+		}
+
+		if( !filter.cleared() )
+		{
+			q.bindValue(":searchterm", filters[i]);
+			q.bindValue(":cissearch", search_filters[i]);
+		}
+
+		MetaDataList tmp_list;
+		db_fetch_tracks(q, tmp_list);
+		result.append_unique(tmp_list);
 	}
 
-
-	querytext = append_track_sort_string(querytext, sort);
-
-	q.prepare(querytext);
-
-	for(int i=0; i<albums.size(); i++)
-	{
-		q.bindValue(QString(":albumid_%1").arg(i), albums[i]);
-	}
-
-	if( !filter.cleared() )
-	{
-		q.bindValue(":searchterm",	Util::cvt_not_null(filter.filtertext(true)));
-		q.bindValue(":cissearch",	Util::cvt_not_null(filter.search_mode_filtertext(true)));
-	}
-
-	return db_fetch_tracks(q, returndata);
+	return true;
 }
 
 bool Tracks::getAllTracksByArtist(ArtistId artist, MetaDataList& returndata)
@@ -444,95 +453,113 @@ bool Tracks::getAllTracksByArtist(IdList artists, MetaDataList& returndata)
 }
 
 
-bool Tracks::getAllTracksByArtist(IdList artists, MetaDataList& returndata, const ::Library::Filter& filter, ::Library::SortOrder sort)
+bool Tracks::getAllTracksByArtist(IdList artists, MetaDataList& result, const ::Library::Filter& filter, ::Library::SortOrder sort)
 {
 	if(artists.empty()){
 		return false;
 	}
 
-	Query q(this);
-
-	QString querytext = fetch_query_tracks();
-	if( !filter.cleared() )
+	QStringList filters = filter.filtertext(true);
+	QStringList search_filters = filter.search_mode_filtertext(true);
+	for(int i=0; i<filters.size(); i++)
 	{
-		switch( filter.mode() )
+		Query q(this);
+
+		QString querytext = fetch_query_tracks();
+		if( !filter.cleared() )
 		{
-			case ::Library::Filter::Genre:
-				querytext += "WHERE genre LIKE :searchterm AND ";
-				break;
+			switch( filter.mode() )
+			{
+				case ::Library::Filter::Genre:
+					querytext += "WHERE genre LIKE :searchterm AND ";
+					break;
 
-			case ::Library::Filter::Filename:
-				querytext += "WHERE filecissearch LIKE :cissearch AND ";
-				break;
+				case ::Library::Filter::Filename:
+					querytext += "WHERE filecissearch LIKE :cissearch AND ";
+					break;
 
-			case ::Library::Filter::Fulltext:
-			default:
-				querytext += "WHERE allCissearch LIKE :cissearch AND ";
-				break;
-		}
-	}
-
-	else{
-		querytext += " WHERE ";
-	}
-
-	if(artists.size() > 0)
-	{
-		QString artist_id_field = m->search_view + "." + artistid_field();
-		querytext += " (" + artist_id_field + "=:artist_id_0 ";
-		for(int i=1; i<artists.size(); i++) {
-			querytext += "OR " + artist_id_field + "=:artist_id_" + QString::number(i) + " ";
+				case ::Library::Filter::Fulltext:
+				default:
+					querytext += "WHERE allCissearch LIKE :cissearch AND ";
+					break;
+			}
 		}
 
-		querytext += ") ";
+		else{
+			querytext += " WHERE ";
+		}
+
+		if(artists.size() > 0)
+		{
+			QString artist_id_field = m->search_view + "." + artistid_field();
+			querytext += " (" + artist_id_field + "=:artist_id_0 ";
+			for(int i=1; i<artists.size(); i++) {
+				querytext += "OR " + artist_id_field + "=:artist_id_" + QString::number(i) + " ";
+			}
+
+			querytext += ") ";
+		}
+
+		querytext = append_track_sort_string(querytext, sort);
+
+		q.prepare(querytext);
+		q.bindValue(":artist_id", artists.first());
+
+		for(int i=0; i<artists.size(); i++) {
+			q.bindValue(QString(":artist_id_%1").arg(i), artists[i]);
+		}
+
+		q.bindValue(":searchterm", filters[i]);
+		q.bindValue(":cissearch", search_filters[i]);
+
+		MetaDataList tmp_list;
+		db_fetch_tracks(q, tmp_list);
+		result.append_unique(tmp_list);
 	}
 
-	querytext = append_track_sort_string(querytext, sort);
-
-	q.prepare(querytext);
-	q.bindValue(":artist_id", artists.first());
-
-	for(int i=0; i<artists.size(); i++) {
-		q.bindValue(QString(":artist_id_%1").arg(i), artists[i]);
-	}
-
-	q.bindValue(":searchterm", Util::cvt_not_null(filter.filtertext(true)));
-	q.bindValue(":cissearch",  Util::cvt_not_null(filter.search_mode_filtertext(true)));
-
-	return db_fetch_tracks(q, returndata);
+	return true;
 }
 
 bool Tracks::getAllTracksBySearchString(const ::Library::Filter& filter, MetaDataList& result, ::Library::SortOrder sort)
 {
-	Query q(this);
-
-	QString querytext = fetch_query_tracks();
-
-	switch(filter.mode())
+	QStringList filters = filter.filtertext(true);
+	QStringList search_filters = filter.search_mode_filtertext(true);
+	for(int i=0; i<filters.size(); i++)
 	{
-		case ::Library::Filter::Genre:
-			querytext += "WHERE genre LIKE :searchterm ";
-			break;
+		Query q(this);
 
-		case ::Library::Filter::Filename:
-			querytext += "WHERE filecissearch LIKE :cissearch ";
-			break;
+		QString querytext = fetch_query_tracks();
 
-		case ::Library::Filter::Fulltext:
-			querytext += "WHERE allCissearch LIKE :cissearch ";
-			break;
+		switch(filter.mode())
+		{
+			case ::Library::Filter::Genre:
+				querytext += "WHERE genre LIKE :searchterm ";
+				break;
 
-		default:
-			return false;
+			case ::Library::Filter::Filename:
+				querytext += "WHERE filecissearch LIKE :cissearch ";
+				break;
+
+			case ::Library::Filter::Fulltext:
+				querytext += "WHERE allCissearch LIKE :cissearch ";
+				break;
+
+			default:
+				return false;
+		}
+
+		querytext = append_track_sort_string(querytext, sort);
+		q.prepare(querytext);
+
+		q.bindValue(":searchterm", filters[i]);
+		q.bindValue(":cissearch", search_filters[i]);
+
+		MetaDataList tmp_list;
+		db_fetch_tracks(q, tmp_list);
+		result.append_unique(tmp_list);
 	}
 
-	querytext = append_track_sort_string(querytext, sort);
-	q.prepare(querytext);
-
-	q.bindValue(":searchterm",	Util::cvt_not_null(filter.filtertext(true)));
-	q.bindValue(":cissearch",	Util::cvt_not_null(filter.search_mode_filtertext(true)));
-
-	return db_fetch_tracks(q, result);
+	return true;
 }
 
 

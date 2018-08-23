@@ -248,17 +248,14 @@ void GUI_AbstractLibrary::key_pressed(int key)
 {
 	if(key == Qt::Key_Escape)
 	{
-		bool is_selected = (
-			(lv_album()->selected_items().count() > 0) ||
-			(lv_artist()->selected_items().count() > 0) ||
-			(lv_tracks()->selected_items().count() > 0)
-		);
+		bool is_selected =
+			(m->library->selected_albums().count() > 0) ||
+			(m->library->selected_artists().count() > 0) ||
+			(m->library->selected_tracks().count() > 0);
 
 		if(is_selected)
 		{
-			lv_album()->clearSelection();
-			lv_artist()->clearSelection();
-			lv_tracks()->clearSelection();
+			clear_selections();
 		}
 
 		else
@@ -268,6 +265,12 @@ void GUI_AbstractLibrary::key_pressed(int key)
 	}
 }
 
+void GUI_AbstractLibrary::clear_selections()
+{
+	lv_album()->clearSelection();
+	lv_artist()->clearSelection();
+	lv_tracks()->clearSelection();
+}
 
 void GUI_AbstractLibrary::item_delete_clicked()
 {
@@ -311,3 +314,4 @@ void GUI_AbstractLibrary::_sl_live_search_changed()
 		disconnect(m->le_search, &QLineEdit::textEdited, this, &GUI_AbstractLibrary::search_edited);
 	}
 }
+

@@ -41,6 +41,7 @@ namespace Library
 		void reload();
 
 	protected:
+		void fill() override;
 		void init_context_menu() override;
 
 		void language_changed() override;

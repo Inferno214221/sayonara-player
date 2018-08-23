@@ -346,16 +346,16 @@ Library::Filter AbstractLibrary::filter() const
 
 void AbstractLibrary::change_filter(Library::Filter filter, bool force)
 {
-	QString filtertext = filter.filtertext(false);
+	QStringList filtertext = filter.filtertext(false);
 
-	if(filtertext.size() < 3){
+	if(filtertext.join("").size() < 3){
 		filter.clear();
 	}
 
 	else
 	{
 		Library::SearchModeMask mask = _settings->get<Set::Lib_SearchMode>();
-		filter.set_filtertext(filtertext, mask);
+		filter.set_filtertext(filtertext.join(","), mask);
 	}
 
 	if(filter == m->filter){

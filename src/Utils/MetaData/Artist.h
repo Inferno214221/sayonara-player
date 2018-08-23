@@ -71,7 +71,6 @@ class ArtistList :
 {
 
 public:
-
 	ArtistList();
 	~ArtistList();
 
@@ -95,6 +94,8 @@ public:
 	int count() const;
 	ArtistList& operator <<(const Artist& artist);
 	Artist first() const;
+
+	ArtistList& append_unique(const ArtistList& other);
 
 	void sort(Library::SortOrder so);
 };

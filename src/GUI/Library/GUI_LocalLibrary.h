@@ -72,8 +72,6 @@ namespace Library
 
 		void language_changed() override;
 		void search_key_pressed(int key) override;
-		void key_pressed(int key) override;
-
 
 	private slots:
 		void switch_album_view();
@@ -102,6 +100,7 @@ namespace Library
 
 		// reimplemented from Abstract Library
 		TrackDeletionMode show_delete_dialog(int n_tracks) override;
+		void clear_selections() override;
 
 		void show_info_box();
 	};

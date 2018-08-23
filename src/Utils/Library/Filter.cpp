@@ -56,12 +56,12 @@ bool Filter::operator ==(const Filter& other)
 {
 	bool same_filtertext = false;
 
-	if(m->filtertext.size() < 3 && other.filtertext(false).size() < 3)
+	if(m->filtertext.size() < 3 && other.m->filtertext.size() < 3)
 	{
 		same_filtertext = true;
 	}
 
-	else if(m->filtertext.compare(other.filtertext(false), Qt::CaseInsensitive) == 0)
+	else if(m->filtertext.compare(other.m->filtertext, Qt::CaseInsensitive) == 0)
 	{
 		same_filtertext = true;
 	}
@@ -70,43 +70,56 @@ bool Filter::operator ==(const Filter& other)
 }
 
 
-QString Filter::filtertext(bool with_percent) const
+QStringList Filter::filtertext(bool with_percent) const
 {
-	QString ret(m->filtertext);
-	if(with_percent)
+	QStringList ret;
+	const QStringList tmp = m->filtertext.split(",");
+
+	for(QString str : tmp)
 	{
-		if(!ret.startsWith('%')){
-			ret.prepend('%');
+		if(with_percent)
+		{
+			if(!str.startsWith('%')){
+				str.prepend('%');
+			}
+
+			if(!str.endsWith('%')){
+				str.append('%');
+			}
 		}
 
-		if(!ret.endsWith('%')){
-			ret.append('%');
+		if(!str.isEmpty())
+		{
+			ret << str;
 		}
-	}
-
-	if(ret.isNull()){
-		return QString("");
 	}
 
 	return ret;
 }
 
-QString Filter::search_mode_filtertext(bool with_percent) const
+QStringList Filter::search_mode_filtertext(bool with_percent) const
 {
-	QString ret = ::Library::Util::convert_search_string(m->filtertext, m->search_mode);
-	if(with_percent)
+	QStringList ret;
+	const QStringList tmp = m->filtertext.split(",");
+
+	for(const QString& tmp_str : tmp)
 	{
-		if(!ret.startsWith('%')){
-			ret.prepend('%');
+		QString str = ::Library::Util::convert_search_string(tmp_str, m->search_mode);
+		if(with_percent)
+		{
+			if(!str.startsWith('%')){
+				str.prepend('%');
+			}
+
+			if(!str.endsWith('%')){
+				str.append('%');
+			}
 		}
 
-		if(!ret.endsWith('%')){
-			ret.append('%');
+		if(!str.isEmpty())
+		{
+			ret << str;
 		}
-	}
-
-	if(ret.isNull()){
-		return QString("");
 	}
 
 	return ret;
@@ -114,7 +127,6 @@ QString Filter::search_mode_filtertext(bool with_percent) const
 
 void Filter::set_filtertext(const QString& str, ::Library::SearchModeMask search_mode)
 {
-
 	m->filtertext = str;
 	m->search_mode = search_mode;
 }

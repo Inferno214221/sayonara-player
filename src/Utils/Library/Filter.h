@@ -28,6 +28,7 @@
 
 #include "Utils/Pimpl.h"
 #include "Utils/Library/SearchMode.h"
+#include <QStringList>
 
 class QString;
 
@@ -60,8 +61,8 @@ namespace Library
 
 			bool operator==(const Filter& other);
 
-			QString filtertext(bool with_percent) const;
-			QString search_mode_filtertext(bool with_percent) const;
+			QStringList filtertext(bool with_percent) const;
+			QStringList search_mode_filtertext(bool with_percent) const;
 			void set_filtertext(const QString& str, SearchModeMask search_mode);
 
 			Filter::Mode mode() const;

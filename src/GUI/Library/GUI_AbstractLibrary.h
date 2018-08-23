@@ -61,11 +61,13 @@ namespace Library
 	protected:
 		virtual void language_changed() override;
 		virtual void init_shortcuts();
+
 		virtual TrackDeletionMode show_delete_dialog(int n_tracks)=0;
 
 	protected slots:
 		virtual void _sl_live_search_changed();
 
+		virtual void clear_selections();
 		virtual void search_key_pressed(int key);
 		virtual void search_return_pressed();
 		virtual void search_edited(const QString& searchstring);

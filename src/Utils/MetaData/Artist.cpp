@@ -233,6 +233,25 @@ Artist ArtistList::first() const
 	return this->at(0);
 }
 
+ArtistList& ArtistList::append_unique(const ArtistList& other)
+{
+	int new_size = this->size();
+	this->resize(this->size() + other.size());
+
+	for(auto it = other.begin(); it != other.end(); it++)
+	{
+		if(!this->contains(it->id)){
+			this->push_back(*it);
+			new_size++;
+		}
+	}
+
+	this->resize(new_size);
+
+	return *this;
+}
+
+
 void ArtistList::sort(Library::SortOrder so)
 {
 	MetaDataSorting::sort_artists(*this, so);

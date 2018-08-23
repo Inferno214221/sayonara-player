@@ -473,6 +473,18 @@ bool MetaDataList::isEmpty() const
 	return this->empty();
 }
 
+MetaDataList& MetaDataList::append_unique(const MetaDataList& other)
+{
+	for(auto it = other.begin(); it != other.end(); it++)
+	{
+		if(!this->contains(it->id)){
+			this->push_back(*it);
+		}
+	}
+
+	return *this;
+}
+
 const MetaData& MetaDataList::first() const
 {
 	return at(0);

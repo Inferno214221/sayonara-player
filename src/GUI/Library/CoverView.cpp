@@ -61,6 +61,8 @@ void CoverView::init(LocalLibrary* library)
 	this->setItemDelegate(new Library::CoverDelegate(this));
 	this->setShowGrid(false);
 
+	connect(m->library, &LocalLibrary::sig_all_albums_loaded, this, &CoverView::reload);
+
 	if(this->horizontalHeader()){
 		this->horizontalHeader()->hide();
 	}
@@ -163,7 +165,6 @@ QList<ActionPair> CoverView::sorting_actions()
 void CoverView::change_sortorder(Library::SortOrder so)
 {
 	m->library->change_album_sortorder(so);
-	this->reload();
 }
 
 
@@ -180,13 +181,15 @@ void CoverView::init_context_menu()
 	connect(cm, &CoverViewContextMenu::sig_sorting_changed, this, &CoverView::change_sortorder);
 }
 
-
-
 void CoverView::reload()
 {
 	m->model->reload();
 }
 
+void CoverView::fill()
+{
+	this->clearSelection();
+}
 
 void CoverView::language_changed() {}
 

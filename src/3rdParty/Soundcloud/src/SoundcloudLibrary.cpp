@@ -134,15 +134,21 @@ void SC::Library::get_all_artists_by_searchstring(::Library::Filter filter, Arti
 		m->scd->getSearchInformation(m->search_information);
 	}
 
-	IntSet artist_ids = m->search_information.artist_ids(filter.filtertext(false));
-
-	for(int artist_id : artist_ids)
+	QStringList filtertexts = filter.filtertext(false);
+	for(const QString& filtertext : filtertexts)
 	{
-		int idx = m->artist_id_idx_map[artist_id];
+		IntSet artist_ids = m->search_information.artist_ids(filtertext);
 
-		Artist artist = m->artists[idx];
-		artist.num_songs = m->md_artist_id_idx_map[artist_id].count();
-		artists << artist;
+		for(int artist_id : artist_ids)
+		{
+			int idx = m->artist_id_idx_map[artist_id];
+
+			Artist artist = m->artists[idx];
+			artist.num_songs = m->md_artist_id_idx_map[artist_id].count();
+			if(!artists.contains(artist.id)){
+				artists << artist;
+			}
+		}
 	}
 
 	artists.sort(sortorder().so_artists);
@@ -211,16 +217,22 @@ void SC::Library::get_all_albums_by_searchstring(::Library::Filter filter, Album
 		m->scd->getSearchInformation(m->search_information);
 	}
 
-	IntSet album_ids = m->search_information.album_ids(filter.filtertext(false));
-	for(int album_id : album_ids)
+	QStringList filtertexts = filter.filtertext(false);
+	for(const QString& filtertext : filtertexts)
 	{
-		int idx = m->album_id_idx_map[album_id];
-		if(!between(idx, m->albums)) {
-			sp_log(Log::Warning, this) << __FUNCTION__ << " Invalid index: " << idx << " (" << m->albums.size() << ")";
-		}
+		IntSet album_ids = m->search_information.album_ids(filtertext);
+		for(int album_id : album_ids)
+		{
+			int idx = m->album_id_idx_map[album_id];
+			if(!between(idx, m->albums)) {
+				sp_log(Log::Warning, this) << __FUNCTION__ << " Invalid index: " << idx << " (" << m->albums.size() << ")";
+				continue;
+			}
 
-		else {
-			albums << m->albums[idx];
+			if(albums.contains(m->albums[idx].id))
+			{
+				albums << m->albums[idx];
+			}
 		}
 	}
 
@@ -305,12 +317,19 @@ void SC::Library::get_all_tracks_by_searchstring(::Library::Filter filter, MetaD
 		m->scd->getSearchInformation(m->search_information);
 	}
 
-	IntSet track_ids = m->search_information.track_ids(filter.filtertext(false));
-
-	for(int track_id : track_ids)
+	QStringList filtertexts = filter.filtertext(false);
+	for(const QString& filtertext : filtertexts)
 	{
-		int idx = m->md_id_idx_map[track_id];
-		v_md << m->v_md[idx];
+		IntSet track_ids = m->search_information.track_ids(filtertext);
+
+		for(int track_id : track_ids)
+		{
+			int idx = m->md_id_idx_map[track_id];
+			if(!v_md.contains(m->v_md[idx].id))
+			{
+				v_md << m->v_md[idx];
+			}
+		}
 	}
 
 	v_md.sort(sortorder().so_tracks);

@@ -147,29 +147,28 @@ void GUI_LocalLibrary::search_key_pressed(int key)
 	GUI_AbstractLibrary::search_key_pressed(key);
 }
 
-void GUI_LocalLibrary::key_pressed(int key)
+
+void GUI_LocalLibrary::clear_selections()
 {
-	if(!ui->cover_view || !ui->cover_view->table_view()){
-		GUI_AbstractLibrary::key_pressed(key);
-		return;
-	}
-
-	Library::CoverView* cv = ui->cover_view->table_view();
-	if(key == Qt::Key_Escape)
+	GUI_AbstractLibrary::clear_selections();
+	if(ui->cover_view && ui->cover_view->table_view())
 	{
-		cv->clearSelection();
+		ui->cover_view->table_view()->clearSelection();
 	}
-
-	GUI_AbstractLibrary::key_pressed(key);
 }
 
 void GUI_LocalLibrary::genre_selection_changed(const QModelIndex& index)
 {
-	QVariant data = index.data();
-	search_mode_changed(::Library::Filter::Genre);
+	QStringList index_datas;
+	QModelIndexList indexes = ui->lv_genres->selectionModel()->selectedIndexes();
+	for(const QModelIndex& idx : indexes)
+	{
+		index_datas << idx.data().toString();
+	}
 
-	ui->le_search->setText(data.toString());
-	search_edited(data.toString());
+	search_mode_changed(::Library::Filter::Genre);
+	ui->le_search->setText(index_datas.join(","));
+	search_edited(index_datas.join(","));
 }
 
 Library::TrackDeletionMode GUI_LocalLibrary::show_delete_dialog(int n_tracks)
@@ -179,6 +178,7 @@ Library::TrackDeletionMode GUI_LocalLibrary::show_delete_dialog(int n_tracks)
 
 	return dialog.answer();
 }
+
 
 void GUI_LocalLibrary::progress_changed(const QString& type, int progress)
 {
