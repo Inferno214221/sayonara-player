@@ -19,19 +19,27 @@
 
 #include "DBusNotifications.h"
 #include "Components/Covers/CoverLocation.h"
+#include "Components/Covers/CoverLookup.h"
 
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
+
+struct DBusNotifications::Private
+{
+	OrgFreedesktopNotificationsInterface* interface=nullptr;
+	MetaData md;
+};
 
 DBusNotifications::DBusNotifications(QObject* parent) :
 	QObject(parent),
 	NotificationInterface(),
 	SayonaraClass()
 {
-	QString service_name = "org.freedesktop.Notifications";
+	m = Pimpl::make<Private>();
 
-	_interface = new OrgFreedesktopNotificationsInterface(
+	QString service_name = "org.freedesktop.Notifications";
+	m->interface = new OrgFreedesktopNotificationsInterface(
 				QString(service_name),
 				QString("/org/freedesktop/Notifications"),
 				QDBusConnection::sessionBus(),
@@ -69,7 +77,7 @@ void DBusNotifications::notify(const QString& title, const QString& text, const 
 	map.insert("transient", false);
 	map.insert("urgency", 1);
 
-	_interface->Notify("Sayonara Player",
+	m->interface->Notify("Sayonara Player",
 					   500,
 					   image_path,
 					   title,
@@ -93,13 +101,33 @@ void DBusNotifications::notify(const MetaData& md)
 
 void DBusNotifications::track_changed(const MetaData& md)
 {
+	m->md = md;
+
 	bool active = _settings->get<Set::Notification_Show>();
 	if(!active){
 		return;
 	}
 
 	Cover::Location cl = Cover::Location::cover_location(md);
-	QString cover_path = cl.preferred_path();
+	Cover::Lookup* clu = new Cover::Lookup(nullptr, 1);
 
-	notify(md.title(), "by " + md.artist(), cover_path);
+	connect(clu, &Cover::Lookup::sig_cover_found, this, &DBusNotifications::cover_found);
+	connect(clu, &Cover::Lookup::sig_finished, this, &DBusNotifications::cover_lookup_finished);
+
+	clu->fetch_cover(cl);
+}
+
+void DBusNotifications::cover_found(const QString& path)
+{
+	notify(m->md.title(), " by " + m->md.artist(), path);
+}
+
+void DBusNotifications::cover_lookup_finished(bool success)
+{
+	if(!success)
+	{
+		QString path = Cover::Location::invalid_location().cover_path();
+		notify(m->md.title(), " by " + m->md.artist(), path);
+	}
+	sender()->deleteLater();
 }

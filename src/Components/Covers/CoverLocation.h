@@ -80,17 +80,7 @@ namespace Cover
 		 */
 		static bool is_invalid(const QString& cover_path);
 
-
-		/**
-		 * @brief Returns the most suitable path for covers.
-		 * Usually this is the first of local_paths(). If not,
-		 * the cover_path() is taken. If this file does not exist
-		 * either, the fallback path is returned (logo)
-		 * @return
-		 */
-		QString			preferred_path() const;
-
-		CoverSourceType get_cover_source_type() const;
+	//	CoverSourceType get_cover_source_type() const;
 
 		/**
 		 * @brief Returns the standard cover path in the .Sayonara
@@ -157,6 +147,11 @@ namespace Cover
 		QString			audio_file_source() const;
 
 		bool			set_audio_file_source(const QString& audio_file_source, const QString& cover_path);
+
+		QString			local_path_hint() const;
+		void			set_local_path_hint(const QString& base_path);
+
+		QString			preferred_path() const;
 
 
 		/**

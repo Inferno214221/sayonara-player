@@ -23,6 +23,7 @@
 #include "Interfaces/Notification/NotificationHandler.h"
 #include "Components/DBus/Notifications.h"
 #include "Utils/Settings/SayonaraClass.h"
+#include "Utils/Pimpl.h"
 
 class DBusNotifications :
 		public QObject,
@@ -30,9 +31,7 @@ class DBusNotifications :
 		private SayonaraClass
 {
 	Q_OBJECT
-
-private:
-	OrgFreedesktopNotificationsInterface* _interface=nullptr;
+	PIMPL(DBusNotifications)
 
 public:
 	explicit DBusNotifications(QObject* parent=nullptr);
@@ -45,6 +44,8 @@ public:
 
 private slots:
 	void track_changed(const MetaData& md);
+	void cover_found(const QString& path);
+	void cover_lookup_finished(bool success);
 };
 
 #endif // DBUSNOTIFICATIONS_H

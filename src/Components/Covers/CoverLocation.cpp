@@ -48,6 +48,8 @@ using Cover::StringMap;
 
 namespace FileUtils=::Util::File;
 
+static void check_coverpath(const QString& audio_path, const QString& cover_path);
+
 struct Location::Private
 {
 	QString			search_term;		// Term provided to search engine
@@ -57,6 +59,7 @@ struct Location::Private
 	QString			cover_path;		// cover_path path, in .Sayonara, where cover is stored. Ignored if local_paths are not empty
 	QString			identifier;		// Some human readable identifier with methods where invokded
 	QString			audio_file_source;	// A saved cover from an audio file
+	QString			local_path_hint;
 	QString			hash;			// A unique identifier, mostly referred to as the cover token
 
 	bool			freetext_search;
@@ -75,6 +78,7 @@ struct Location::Private
 		CASSIGN(cover_path),
 		CASSIGN(identifier),
 		CASSIGN(audio_file_source),
+		CASSIGN(local_path_hint),
 		CASSIGN(hash),
 		CASSIGN(freetext_search),
 		CASSIGN(valid)
@@ -88,9 +92,10 @@ struct Location::Private
 		ASSIGN(all_search_urls);
 		ASSIGN(cover_path);
 		ASSIGN(identifier);
-		ASSIGN(audio_file_source),
-		ASSIGN(hash),
-		ASSIGN(freetext_search),
+		ASSIGN(audio_file_source);
+		ASSIGN(local_path_hint);
+		ASSIGN(hash);
+		ASSIGN(freetext_search);
 		ASSIGN(valid);
 
 		return (*this);
@@ -146,6 +151,7 @@ Location Location::invalid_location()
 	cl.set_search_term(QString());
 	cl.set_identifier("Invalid location");
 	cl.set_audio_file_source(QString(), QString());
+	cl.set_local_path_hint(QString());
 
 	return cl;
 }
@@ -191,8 +197,13 @@ Location Location::cover_location(const QString& album_name, const QStringList& 
 }
 
 
-static void check_coverpath(const QString& audio_path, const QString& cover_path)
+void check_coverpath(const QString& audio_path, const QString& cover_path)
 {
+	if(audio_path.isEmpty() || cover_path.isEmpty())
+	{
+		return;
+	}
+
 	if(Util::File::is_www(audio_path)){
 		return;
 	}
@@ -283,9 +294,10 @@ Location Location::cover_location(const Album& album)
 		MetaDataList v_md;
 		lib_db->getAllTracksByAlbum(album.id, v_md);
 		cl.set_audio_file_source(QString(), QString());
+
 		if(!v_md.isEmpty())
 		{
-			check_coverpath(v_md.first().filepath(), cl.cover_path());
+			cl.set_local_path_hint(v_md.first().filepath());
 		}
 	}
 
@@ -383,9 +395,9 @@ Location Location::cover_location(const MetaData& md)
 		cl.set_search_urls({md.cover_download_url()});
 	}
 
-	check_coverpath(md.filepath(), cl.cover_path());
-
+	cl.set_local_path_hint(md.filepath());
 	cl.set_identifier("CL:By metadata: " + md.album() + " by " + md.artist());
+
 	return cl;
 }
 
@@ -413,30 +425,16 @@ QString Location::cover_path() const
 	return m->cover_path;
 }
 
-
-Location::CoverSourceType Location::get_cover_source_type() const
-{
-	QString prefered = preferred_path();
-
-	if(prefered.contains(Util::cover_directory())){
-		return CoverSourceType::SayonaraCoverDir;
-	}
-
-	else if(prefered == invalid_location().cover_path()){
-		return CoverSourceType::Invalid;
-	}
-
-	else {
-		return CoverSourceType::LocalPath;
-	}
-}
-
-
 QString Location::preferred_path() const
 {
 	// first search for cover in track
 	if(FileUtils::exists(this->audio_file_source())){
 		return this->audio_file_source();
+	}
+
+	if(!m->local_path_hint.isEmpty())
+	{
+		check_coverpath(m->local_path_hint, this->cover_path());
 	}
 
 	// return the calculated path
@@ -560,14 +558,14 @@ bool Location::set_audio_file_source(const QString& audio_filepath, const QStrin
 	return false;
 }
 
-QString Location::to_string() const
+QString Location::local_path_hint() const
 {
-	return	"Cover Location: Valid? " + QString::number(m->valid) + ", "
-			"Cover Path: " + cover_path() + ", "
-			"Preferred Path: " + preferred_path() + ", "
-			"Search Urls: " + search_urls().join(',') + ", "
-			"Search Term: " + search_term() + ", "
-											  "Identifier: " + identifer();
+	return m->local_path_hint;
+}
+
+void Location::set_local_path_hint(const QString& base_path)
+{
+	m->local_path_hint = base_path;
 }
 
 QString Location::hash() const
@@ -579,3 +577,15 @@ void Location::set_hash(const QString& hash)
 {
 	m->hash	= hash;
 }
+
+
+QString Location::to_string() const
+{
+	return	"Cover Location: Valid? " + QString::number(m->valid) + ", "
+			"Cover Path: " + cover_path() + ", "
+//			"Preferred Path: " + preferred_path() + ", "
+			"Search Urls: " + search_urls().join(',') + ", "
+			"Search Term: " + search_term() + ", "
+											  "Identifier: " + identifer();
+}
+
