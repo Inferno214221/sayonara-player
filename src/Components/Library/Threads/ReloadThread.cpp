@@ -31,10 +31,12 @@
 #include "ReloadThread.h"
 
 #include "Components/Directories/DirectoryReader.h"
+#include "Components/Covers/CoverLocation.h"
 
 #include "Database/Connector.h"
 #include "Database/Library.h"
 #include "Database/LibraryDatabase.h"
+#include "Database/CoverConnector.h"
 
 #include "Utils/Tagging/Tagging.h"
 #include "Utils/Utils.h"
@@ -130,9 +132,7 @@ bool ReloadThread::get_and_save_all_files(const QHash<QString, MetaData>& md_map
 		return false;
 	}
 
-	DB::Connector*			db = m->db;
-	DB::Library*			db_library = m->db->library_connector();
-	DB::LibraryDatabase*	lib_db = db->library_db(m->library_id, db->db_id());
+	DB::Library* db_library = m->db->library_connector();
 
 	QDir dir(library_path);
 
@@ -185,17 +185,13 @@ bool ReloadThread::get_and_save_all_files(const QHash<QString, MetaData>& md_map
 
 			if(v_md_to_store.size() >= N_FILES_TO_STORE)
 			{
-				sp_log(Log::Develop, this) << N_FILES_TO_STORE << " tracks reached. Commit chunk to DB";
-				bool success = lib_db->store_metadata(v_md_to_store);
-				sp_log(Log::Develop, this) << "  Success? " << success;
+				store_metadata_block(v_md_to_store);
 				v_md_to_store.clear();
 			}
 		}
 	}
 
-	sp_log(Log::Develop, this) << "Adding the remaining " << v_md_to_store.size() << " tracks.";
-	bool success = lib_db->store_metadata(v_md_to_store);
-	sp_log(Log::Develop, this) << "  Success? " << success;
+	store_metadata_block(v_md_to_store);
 	v_md_to_store.clear();
 
 	sp_log(Log::Develop, this) << "Updating album artists... ";
@@ -208,6 +204,37 @@ bool ReloadThread::get_and_save_all_files(const QHash<QString, MetaData>& md_map
 	DB::Connector::instance()->clean_up();
 
 	return true;
+}
+
+void ReloadThread::store_metadata_block(const MetaDataList& v_md)
+{
+	DB::Connector* db = m->db;
+	DB::LibraryDatabase*	lib_db = db->library_db(m->library_id, db->db_id());
+
+	sp_log(Log::Develop, this) << N_FILES_TO_STORE << " tracks reached. Commit chunk to DB";
+	bool success = lib_db->store_metadata(v_md);
+	sp_log(Log::Develop, this) << "  Success? " << success;
+
+	sp_log(Log::Develop, this) << "Adding Covers...";
+	DB::Covers* db_covers = DB::Connector::instance()->cover_connector();
+	for(const MetaData& md : v_md)
+	{
+		Cover::Location cl = Cover::Location::cover_location(md);
+		QString hash = cl.hash();
+		QString preferred_path = cl.preferred_path();
+
+		if(!db_covers->exists(hash))
+		{
+			if(!Cover::Location::is_invalid(preferred_path))
+			{
+				QPixmap pm(preferred_path);
+				bool success = db_covers->set_cover(hash, pm);
+				if(!success){
+					sp_log(Log::Warning, this) << "Cannot add cover for " << md.album() << ", " << md.artist() << " HASH: " << hash;
+				}
+			}
+		}
+	}
 }
 
 

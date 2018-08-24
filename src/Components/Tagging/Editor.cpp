@@ -22,6 +22,8 @@
 #include "Expression.h"
 #include "ChangeNotifier.h"
 #include "Components/MetaDataInfo/MetaDataInfo.h"
+#include "Components/Covers/CoverLocation.h"
+#include "Database/CoverConnector.h"
 
 #include "Utils/globals.h"
 #include "Utils/Utils.h"
@@ -49,7 +51,7 @@ struct Editor::Private
 	MetaDataList			v_md_before_change;
 	MetaDataList			v_md_after_change;
 	BoolList				changed_md;	// indicates if metadata at idx was changed
-	QMap<int, QImage>		cover_map;
+	QMap<int, QPixmap>		cover_map;
 
 	QHash<QString, ArtistId>	artist_map;
 	QHash<QString, AlbumId>		album_map;
@@ -243,7 +245,8 @@ void Editor::set_metadata(const MetaDataList& v_md)
 	m->changed_md.clear();
 	m->changed_md.assign(v_md.size(), false);
 
-	if( v_md.size() > 0) {
+	if( v_md.size() > 0)
+	{
 		m->ldb = DB::Connector::instance()->library_db(v_md.first().library_id, 0);
 	}
 
@@ -299,7 +302,7 @@ void Editor::apply_artists_and_albums_to_md()
 }
 
 
-void Editor::update_cover(int idx, const QImage& cover)
+void Editor::update_cover(int idx, const QPixmap& cover)
 {
 	if(cover.isNull()){
 		return;
@@ -322,6 +325,7 @@ bool Editor::has_cover_replacement(int idx) const
 {
 	return m->cover_map.contains(idx);
 }
+
 
 void Editor::run()
 {
@@ -364,16 +368,26 @@ void Editor::run()
 		}
 	}
 
+	DB::Connector* db = DB::Connector::instance();
+	DB::Covers* db_covers = db->cover_connector();
+
 	for(auto it=m->cover_map.cbegin(); it != m->cover_map.cend(); it++)
 	{
 		int idx = it.key();
-		Tagging::Util::write_cover(m->v_md[idx].filepath(), it.value());
+		QPixmap pm = it.value();
+
+		const MetaData& md = m->v_md[idx];
+
+		Tagging::Util::write_cover(md.filepath(), pm);
 		if(n_operations > 5){
 			emit sig_progress( (i++ * 100) / n_operations);
 		}
+
+		Cover::Location cl = Cover::Location::cover_location(md);
+		db_covers->set_cover(cl.hash(), pm);
 	}
 
-	DB::Connector* db = DB::Connector::instance();
+
 	DB::Library* db_library = db->library_connector();
 
 	db_library->create_indexes();

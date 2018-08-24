@@ -381,6 +381,10 @@ QString Util::easy_tag_finder(const QString& tag, const QString& xml_doc)
 
 QByteArray Util::calc_hash(const QByteArray& data)
 {
+	if(data.isEmpty()){
+		return QByteArray();
+	}
+
 	return QCryptographicHash::hash(data, QCryptographicHash::Md5).toHex();
 }
 

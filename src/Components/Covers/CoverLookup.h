@@ -31,7 +31,9 @@
 
 #include "AbstractCoverLookup.h"
 #include "Utils/Pimpl.h"
+
 #include <QPixmap>
+#include <QList>
 
 class Album;
 
@@ -75,7 +77,7 @@ namespace Cover
 		void set_user_data(void* data);
 		void* take_user_data();
 
-		QPixmap pixmap() const;
+		QList<QPixmap> pixmaps() const;
 
 
 	private:
@@ -85,13 +87,16 @@ namespace Cover
 		 */
 		bool start_new_thread(const Location& cl);
 
+		bool add_new_cover(const QPixmap& pm, const QString& hash);
+		bool add_new_cover(const QPixmap& pm);
+
 
 	private slots:
 		/**
 		 * @brief called when CoverFetchThread has found cover
 		 * @param cl
 		 */
-		void cover_found(const QString& cover_path);
+		void cover_found(int idx);
 
 		/**
 		 * @brief called when CoverFetchThread has finished

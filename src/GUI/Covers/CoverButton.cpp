@@ -41,13 +41,15 @@ using CoverButtonBase=Gui::WidgetTemplate<QPushButton>;
 
 struct CoverButton::Private
 {
-	Lookup*			cover_lookup=nullptr;
 	Location		cover_location;
-	QString			current_cover_path;
+	QPixmap			current_cover;
 	QString			class_tmp_file;
+	Lookup*			cover_lookup=nullptr;
 	bool			cover_forced;
 
 	Private() :
+		cover_location(Location::invalid_location()),
+		current_cover(Location::invalid_location().cover_path()),
 		cover_forced(false)
 	{
 		class_tmp_file = Cover::Util::cover_directory("cb_" + Util::random_string(16) + ".jpg");
@@ -66,9 +68,6 @@ CoverButton::CoverButton(QWidget* parent) :
 	m = Pimpl::make<CoverButton::Private>();
 
 	this->setObjectName("CoverButton");
-
-	m->current_cover_path = Location::invalid_location().preferred_path();
-	m->cover_location = Location::invalid_location();
 
 	connect(this, &QPushButton::clicked, this, &CoverButton::cover_button_clicked);
 
@@ -91,9 +90,9 @@ void CoverButton::refresh()
 }
 
 
-void CoverButton::set_cover_image(const QString& cover_path)
+void CoverButton::set_cover_image(const QPixmap& pm)
 {
-	m->current_cover_path = cover_path;
+	m->current_cover = pm;
 	m->cover_forced = false;
 
 	this->refresh();
@@ -102,8 +101,6 @@ void CoverButton::set_cover_image(const QString& cover_path)
 
 void CoverButton::set_cover_location(const Location& cl)
 {
-	this->setToolTip("Cover source: " + cl.identifer() + "\n" + cl.preferred_path());
-
 	m->cover_location = cl;
 	m->cover_forced = false;
 
@@ -124,7 +121,7 @@ void CoverButton::set_cover_location(const Location& cl)
 QIcon CoverButton::current_icon() const
 {
 	QIcon icon;
-	QPixmap pm = QPixmap(m->current_cover_path)
+	QPixmap pm = QPixmap(m->current_cover)
 			.scaled(this->iconSize(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
 	if(pm.isNull()){
@@ -166,25 +163,14 @@ void CoverButton::cover_button_clicked()
 
 void CoverButton::alternative_cover_fetched(const Location& cl)
 {
-	if(cl.valid()){
+	if(cl.valid())
+	{
 		ChangeNotfier::instance()->shout();
 	}
 
 	set_cover_image(cl.cover_path());
 }
 
-
-void CoverButton::cover_found(const Location& cl)
-{
-this->setToolTip("Cover source: " + cl.identifer() + "\n" + cl.preferred_path());
-
-	/* If cover was forced while CoverLookup was still running */
-	if(m->cover_forced && (sender() == m->cover_lookup)) {
-		return;
-	}
-
-	set_cover_image(cl.cover_path());
-}
 
 void CoverButton::cover_lookup_finished(bool success)
 {
@@ -204,11 +190,7 @@ void CoverButton::force_cover(const QPixmap& pm)
 
 	this->setToolTip(tr("Cover source: Audio file"));
 
-	m->current_cover_path = m->class_tmp_file;
-	m->cover_forced = true;
-
-	pm.save(m->current_cover_path);
-
+	m->current_cover = pm;
 	refresh();
 }
 
@@ -238,8 +220,7 @@ void CoverButton::paintEvent(QPaintEvent* event)
 	int sz = std::min(this->height(), this->width()) - 2;
 	QSize size(sz, sz);
 
-	QPixmap pm = QPixmap(m->current_cover_path)
-			.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+	QPixmap pm = m->current_cover.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
 	int x = (this->width() - sz) / 2;
 

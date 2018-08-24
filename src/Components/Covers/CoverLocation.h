@@ -143,10 +143,10 @@ namespace Cover
 
 
 		bool			has_audio_file_source() const;
-
 		QString			audio_file_source() const;
-
+		QString			audio_file_target() const;
 		bool			set_audio_file_source(const QString& audio_file_source, const QString& cover_path);
+
 
 		QString			local_path_hint() const;
 		void			set_local_path_hint(const QString& base_path);

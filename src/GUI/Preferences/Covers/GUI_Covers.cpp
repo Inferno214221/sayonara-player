@@ -22,8 +22,12 @@
 
 #include "GUI_Covers.h"
 
+#include "Database/Connector.h"
+#include "Database/CoverConnector.h"
+
 #include "Components/Covers/CoverFetchManager.h"
 #include "Components/Covers/CoverFetcherInterface.h"
+#include "Components/Covers/CoverChangeNotifier.h"
 
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language.h"
@@ -115,6 +119,7 @@ void GUI_Covers::init_ui()
 	connect(ui->btn_up, &QPushButton::clicked, this, &GUI_Covers::up_clicked);
 	connect(ui->btn_down, &QPushButton::clicked, this, &GUI_Covers::down_clicked);
 	connect(ui->lv_cover_searchers, &QListWidget::currentRowChanged, this, &GUI_Covers::current_row_changed);
+	connect(ui->btn_delete_album_covers, &QPushButton::clicked, this, &GUI_Covers::delete_covers_from_db);
 
 	revert();
 }
@@ -149,4 +154,10 @@ void GUI_Covers::current_row_changed(int row)
 {
 	ui->btn_up->setDisabled(row <= 0 || row >= ui->lv_cover_searchers->count());
 	ui->btn_down->setDisabled(row < 0 || row >= ui->lv_cover_searchers->count() - 1);
+}
+
+void GUI_Covers::delete_covers_from_db()
+{
+	DB::Connector::instance()->cover_connector()->clear();
+	Cover::ChangeNotfier::instance()->shout();
 }

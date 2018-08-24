@@ -22,7 +22,7 @@
 #define TAGEDIT_H
 
 #include <QThread>
-#include <QImage>
+#include <QPixmap>
 #include <QStringList>
 
 #include "Utils/Pimpl.h"
@@ -126,7 +126,7 @@ namespace Tagging
 		 * @param idx track index
 		 * @param cover new cover image
 		 */
-		void update_cover(int idx, const QImage& cover);
+		void update_cover(int idx, const QPixmap& cover);
 
 		/**
 		 * @brief remove_cover for a specific track

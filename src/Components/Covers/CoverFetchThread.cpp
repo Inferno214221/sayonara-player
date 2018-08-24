@@ -31,11 +31,15 @@
 #include "CoverFetchManager.h"
 #include "CoverFetcherInterface.h"
 
+#include "Database/Connector.h"
+#include "Database/CoverConnector.h"
+
 #include "Utils/Logger/Logger.h"
 #include "Utils/WebAccess/AsyncWebAccess.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Utils.h"
 
+#include <QPixmap>
 #include <QImage>
 #include <QStringList>
 
@@ -45,7 +49,8 @@ using namespace Cover;
 
 struct FetchThread::Private
 {
-	QList<AsyncWebAccess*> active_connections;
+	QList<AsyncWebAccess*>	active_connections;
+	QList<QPixmap>			pixmaps;
 
 	Cover::Location		cl;
 	Fetcher::Base*		acf=nullptr;
@@ -55,7 +60,6 @@ struct FetchThread::Private
 	QStringList			addresses;
 	QStringList			search_urls;
 	int					n_covers;
-	int					n_covers_found;
 	bool				may_run;
 
 	Private(const Location& cl, int n_covers) :
@@ -63,7 +67,6 @@ struct FetchThread::Private
 		id(Util::random_string(8)),
 		search_urls(cl.search_urls()),
 		n_covers(n_covers),
-		n_covers_found(0),
 		may_run(true)
 	{
 		sp_log(Log::Develop, this) << "Search urls for " << cl.identifer() << ": " << cl.search_urls();
@@ -140,7 +143,7 @@ bool FetchThread::more()
 	}
 
 	// we have all our covers
-	if(m->n_covers == m->n_covers_found)
+	if(m->n_covers == m->pixmaps.size())
 	{
 		emit sig_finished(true);
 		return true;
@@ -187,6 +190,15 @@ void FetchThread::stop()
 	emit sig_finished(false);
 }
 
+QPixmap FetchThread::pixmap(int idx) const
+{
+	if(idx >= 0 && idx < m->pixmaps.size())
+	{
+		return m->pixmaps[idx];
+	}
+
+	return QPixmap();
+}
 
 void FetchThread::content_fetched()
 {
@@ -206,7 +218,7 @@ void FetchThread::content_fetched()
 	more();
 }
 
-#include <QPixmap>
+
 void FetchThread::single_image_fetched()
 {
 	AsyncWebAccess* awa = static_cast<AsyncWebAccess*>(sender());
@@ -218,21 +230,24 @@ void FetchThread::single_image_fetched()
 	if(status == AsyncWebAccess::Status::GotData)
 	{
 		QImage img  = awa->image();
-		//QPixmap pm = QPixmap::fromImage(img);
+		QPixmap pm = QPixmap::fromImage(img);
 
-		if(!img.isNull())
+		if(!pm.isNull())
 		{
-			QString target_file = m->cl.cover_path();
-			m->n_covers_found++;
-			//emit sig_cover_found(m->n_covers_found, pm);
-			save_and_emit_image(target_file, img);
+			m->pixmaps << pm;
+
+			DB::Covers* dbc = DB::Connector::instance()->cover_connector();
+			dbc->set_cover(m->cl.hash(), pm);
+
+			emit sig_cover_found(m->pixmaps.size() - 1);
 			emit sig_finished(true);
 		}
 
 		sp_log(Log::Info, this) << "Found cover in " << m->acf->keyword() << " for " << m->cl.identifer();
 	}
 
-	else {
+	else
+	{
 		sp_log(Log::Warning, this) << "Could not fetch cover from " << m->acf->keyword();
 		if(!more()){
 			emit sig_finished(false);
@@ -250,18 +265,13 @@ FetchThread::multi_image_fetched()
 	if(awa->status() == AsyncWebAccess::Status::GotData)
 	{
 		QImage img  = awa->image();
+		QPixmap pm = QPixmap::fromImage(img);
 
-		if(!img.isNull())
+		if(!pm.isNull())
 		{
-			QString target_file = m->cl.cover_path();
+			m->pixmaps << pm;
 
-			QString filename, dir;
-			Util::File::split_filename(target_file, dir, filename);
-
-			QString cover_path = dir + "/" + QString::number(m->n_covers_found) + "_" + filename;
-			save_and_emit_image(cover_path, img);
-
-			m->n_covers_found++;
+			emit sig_cover_found(m->pixmaps.size() - 1);
 		}
 	}
 
@@ -271,28 +281,4 @@ FetchThread::multi_image_fetched()
 	}
 
 	awa->deleteLater();
-}
-
-
-void
-FetchThread::save_and_emit_image(const QString& filepath, const QImage& img)
-{
-	QString filename = filepath;
-	QString ext = Util::File::calc_file_extension(filepath);
-	if(ext.compare("gif", Qt::CaseInsensitive) == 0)
-	{
-		filename = filename.left(filename.size() - 3);
-		filename += "png";
-	}
-
-	filename = Util::File::get_absolute_filename(filename);
-
-	bool success = img.save(filename);
-	if(!success){
-		sp_log(Log::Warning, this) << "Cannot save image to " << filename;
-	}
-
-	else {
-		emit sig_cover_found(filename);
-	}
 }

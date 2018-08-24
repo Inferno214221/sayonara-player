@@ -217,14 +217,11 @@ void GUI_SomaFM::playlist_double_clicked(const QModelIndex& idx)
 }
 
 
-void GUI_SomaFM::cover_found(const QString &cover_path)
+void GUI_SomaFM::cover_found(const QPixmap& cover)
 {
 	Cover::Lookup* cl = static_cast<Cover::Lookup*>(sender());
-	if(Cover::Location::is_invalid(cover_path)){
-		return;
-	}
 
-	QPixmap pixmap = QPixmap(cover_path).scaled(QSize(200, 200), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+	QPixmap pixmap = cover.scaled(QSize(200, 200), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 	if(pixmap.isNull()){
 		pixmap = QPixmap(":/soma_icons/soma_logo.png").scaled(QSize(200, 200), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 	}

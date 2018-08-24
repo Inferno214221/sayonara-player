@@ -31,6 +31,7 @@
 
 #include "GUI/Utils/Widgets/Dialog.h"
 #include "Utils/Pimpl.h"
+#include <QPixmap>
 
 namespace Cover
 {
@@ -68,7 +69,7 @@ private slots:
 	void search_clicked();
 	void cover_pressed(const QModelIndex& idx);
 	void open_file_dialog();
-	void cl_new_cover(const QString& cover_path);
+	void cl_new_cover(const QPixmap& cover);
 	void cl_finished(bool);
 	void servers_changed();
 

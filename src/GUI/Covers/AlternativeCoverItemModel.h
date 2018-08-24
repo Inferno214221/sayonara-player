@@ -29,10 +29,13 @@
 #ifndef ALTERNATIVECOVERITEMMODEL_H_
 #define ALTERNATIVECOVERITEMMODEL_H_
 
+class QPixmap;
+
 #include "Utils/Pimpl.h"
 
 #include <QModelIndex>
 #include <QAbstractTableModel>
+
 
 struct RowColumn
 {
@@ -69,7 +72,7 @@ public:
 
 	Qt::ItemFlags flags(const QModelIndex &index) const override;
 
-	bool add_cover(const QString& cover);
+	bool add_cover(const QPixmap& cover);
 
 	void reset();
 

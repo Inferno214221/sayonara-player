@@ -21,6 +21,7 @@ namespace DB
 			bool set_cover(const QString& hash, const QPixmap& data);
 
 			bool get_all_covers(QMap<QString, QPixmap>& covers);
+			void clear();
 	};
 }
 

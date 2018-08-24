@@ -20,6 +20,7 @@
 
 #include "LibraryDatabase.h"
 #include "Database/Query.h"
+#include "Database/CoverConnector.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/MetaData/Album.h"
@@ -141,10 +142,12 @@ bool DB::LibraryDatabase::store_metadata(const MetaDataList& v_md)
 
 	sp_log(Log::Develop, this) << "  Found " << albums.size() << " albums and " << artists.size() << " artists";
 
+	// gather all albums in a map
 	for(const Album& album : albums){
 		album_map[album.name()] = album;
 	}
 
+	// gather all artists in a map
 	for(const Artist& artist : artists){
 		artist_map[artist.name()] = artist;
 	}
@@ -158,18 +161,20 @@ bool DB::LibraryDatabase::store_metadata(const MetaDataList& v_md)
 		AlbumId album_id;
 		//first check if we know the artist and its id
 		Album album = album_map[md.album()];
-		if(album.id < 0) {
+		if(album.id < 0)
+		{
 			album_id = DB::Albums::insertAlbumIntoDatabase(md.album());
 			album.id = album_id;
 			album_map[md.album()] = album;
 		}
 
-		else{
+		else {
 			album_id = album.id;
 		}
 
 		Artist artist = artist_map[md.artist()];
-		if (artist.id < 0) {
+		if (artist.id < 0)
+		{
 			artist_id = DB::Artists::insertArtistIntoDatabase(md.artist());
 			artist.id = artist_id;
 			artist_map[md.artist()] = artist;

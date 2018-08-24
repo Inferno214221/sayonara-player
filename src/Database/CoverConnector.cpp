@@ -13,7 +13,7 @@ DB::Covers::~Covers() {}
 bool DB::Covers::exists(const QString& hash)
 {
 	Query q_check(this);
-	QString query_check("SELECT id FROM covers WHERE hash = :hash;");
+	QString query_check("SELECT hash FROM covers WHERE hash = :hash;");
 	q_check.prepare(query_check);
 	q_check.bindValue(":hash", hash);
 	if(!q_check.exec())
@@ -49,7 +49,7 @@ bool DB::Covers::get_cover(const QString& hash, QPixmap& pm)
 
 bool DB::Covers::set_cover(const QString& hash, const QPixmap& pm)
 {
-	if(hash.isEmpty()){
+	if(hash.isEmpty() || pm.isNull()){
 		return false;
 	}
 
@@ -109,4 +109,14 @@ bool DB::Covers::get_all_covers(QMap<QString, QPixmap>& covers)
 	}
 
 	return true;
+}
+
+void DB::Covers::clear()
+{
+	Query q(this);
+	QString query = "DELETE FROM covers;";
+	q.prepare(query);
+	if(!q.exec()){
+		q.show_error("Cannot drop all covers");
+	}
 }

@@ -54,7 +54,7 @@
 
 #include <QFile>
 #include <QFileInfo>
-#include <QImage>
+#include <QPixmap>
 #include <QRegExp>
 #include <QStringList>
 
@@ -326,7 +326,7 @@ bool Tagging::Util::setMetaDataOfFile(const MetaData& md)
 }
 
 
-bool Tagging::Util::write_cover(const QString& filepath, const QImage& cover)
+bool Tagging::Util::write_cover(const QString& filepath, const QPixmap& cover)
 {
 	QString tmp_filepath = ::Util::sayonara_path("tmp.png");
 
@@ -398,17 +398,17 @@ bool Tagging::Util::write_cover(const QString& filepath, const QString& cover_im
 	return f.save();
 }
 
-QImage Tagging::Util::extract_cover(const QString& filepath)
+QPixmap Tagging::Util::extract_cover(const QString& filepath)
 {
 	QByteArray data;
 	QString mime;
 
 	bool success = extract_cover(filepath, data, mime);
 	if(!success){
-		return QImage();
+		return QPixmap();
 	}
 
-	return QImage::fromData(data);
+	return QPixmap::fromImage(QImage::fromData(data));
 }
 
 

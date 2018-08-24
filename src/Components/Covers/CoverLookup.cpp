@@ -31,6 +31,7 @@
 #include "CoverLocation.h"
 
 #include "Database/Connector.h"
+#include "Database/CoverConnector.h"
 
 #include "Utils/Logger/Logger.h"
 #include "Utils/MetaData/MetaData.h"
@@ -50,9 +51,12 @@ namespace FileUtils=::Util::File;
 
 struct Lookup::Private
 {
-	int             n_covers;
-	FetchThread*    cft=nullptr;
+	QList<QPixmap>	pixmaps;
+	int				n_covers;
+
+	FetchThread*	cft=nullptr;
 	void*			user_data=nullptr;
+
 	bool			thread_running;
 
 	Private(int n_covers) :
@@ -97,30 +101,76 @@ bool Lookup::start_new_thread(const Cover::Location& cl )
 }
 
 
+
 bool Lookup::fetch_cover(const Cover::Location& cl, bool also_www)
 {
-	QString cover_path = cl.preferred_path();
-	if(Location::is_invalid(cover_path))
+	DB::Covers* dbc = DB::Connector::instance()->cover_connector();
+
+	if(m->n_covers == 1)
 	{
-		// cover path always return the path in .Sayonara/cover
-		// No matter if it exists or not
-		cover_path = cl.cover_path();
+		{ // first, let's look in database
+			QPixmap pm;
+			bool success = dbc->get_cover(cl.hash(), pm);
+			if(success)
+			{
+				add_new_cover(pm);
+				emit sig_finished(true);
+				return true;
+			}
+		}
+
+		{ // Let's look if the cover can be extracted from a file
+			if(cl.has_audio_file_source())
+			{
+				QPixmap pm;
+				if(FileUtils::exists(cl.audio_file_target()))
+				{
+					pm = QPixmap(cl.audio_file_target());
+				}
+
+				else
+				{
+					pm = Tagging::Util::extract_cover(cl.audio_file_source());
+				}
+
+				bool success = add_new_cover(pm, cl.hash());
+				if(success)
+				{
+					emit sig_finished(true);
+					return true;
+				}
+			}
+		}
 	}
 
-	// Look, if cover exists in .Sayonara/covers
-	if( FileUtils::exists(cover_path) && m->n_covers == 1 )
-	{
-		emit sig_cover_found(cover_path);
-		emit sig_finished(true);
+	{ // Let's look at the preferred path where we look at the local dirs, too
+		QString cover_path = cl.preferred_path();
+		if(Location::is_invalid(cover_path))
+		{
+			// cover path always return the path in .Sayonara/cover
+			// No matter if it exists or not
+			cover_path = cl.cover_path();
+		}
 
-		return true;
+		// Look, if cover exists in .Sayonara/covers
+		if(FileUtils::exists(cover_path) && m->n_covers == 1)
+		{
+			QPixmap pm(cover_path);
+			bool success = add_new_cover(pm, cl.hash());
+			if(success)
+			{
+				emit sig_finished(true);
+				return true;
+			}
+		}
 	}
 
-	// we have to fetch the cover from the internet
-	if(also_www)
-	{
-		sp_log(Log::Debug, this) << "Start new thread for " << cl.identifer();
-		return start_new_thread( cl );
+	{// we have to fetch the cover from the internet
+		if(also_www)
+		{
+			sp_log(Log::Debug, this) << "Start new thread for " << cl.identifer();
+			return start_new_thread( cl );
+		}
 	}
 
 	return false;
@@ -134,12 +184,46 @@ void Lookup::finished(bool success)
 }
 
 
-void Lookup::cover_found(const QString& file_path)
+bool Lookup::add_new_cover(const QPixmap& pm)
+{
+	if(!pm.isNull())
+	{
+		m->pixmaps << pm;
+		emit sig_cover_found(pm);
+	}
+
+	return (!pm.isNull());
+}
+
+
+bool Lookup::add_new_cover(const QPixmap& pm, const QString& hash)
+{
+	bool success = add_new_cover(pm);
+	if(success)
+	{
+		DB::Covers* dbc = DB::Connector::instance()->cover_connector();
+		if(!dbc->exists(hash))
+		{
+			dbc->set_cover(hash, pm);
+		}
+	}
+
+	return success;
+}
+
+
+void Lookup::cover_found(int idx)
 {
 	FetchThread* cft = static_cast<FetchThread*>(sender());
-	emit sig_cover_found(file_path);
+	if(!cft){
+		return;
+	}
 
-	if(!cft->more()){
+	QPixmap pm = cft->pixmap(idx);
+	add_new_cover(pm);
+
+	if(!cft->more())
+	{
 		emit sig_finished(true);
 	}
 }
@@ -168,4 +252,9 @@ void* Lookup::take_user_data()
 	void* data = m->user_data;
 	m->user_data = nullptr;
 	return data;
+}
+
+QList<QPixmap> Lookup::pixmaps() const
+{
+	return m->pixmaps;
 }

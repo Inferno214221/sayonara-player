@@ -59,6 +59,7 @@ struct Location::Private
 	QString			cover_path;		// cover_path path, in .Sayonara, where cover is stored. Ignored if local_paths are not empty
 	QString			identifier;		// Some human readable identifier with methods where invokded
 	QString			audio_file_source;	// A saved cover from an audio file
+	QString			audio_file_target;
 	QString			local_path_hint;
 	QString			hash;			// A unique identifier, mostly referred to as the cover token
 
@@ -78,6 +79,7 @@ struct Location::Private
 		CASSIGN(cover_path),
 		CASSIGN(identifier),
 		CASSIGN(audio_file_source),
+		CASSIGN(audio_file_target),
 		CASSIGN(local_path_hint),
 		CASSIGN(hash),
 		CASSIGN(freetext_search),
@@ -93,6 +95,7 @@ struct Location::Private
 		ASSIGN(cover_path);
 		ASSIGN(identifier);
 		ASSIGN(audio_file_source);
+		ASSIGN(audio_file_target);
 		ASSIGN(local_path_hint);
 		ASSIGN(hash);
 		ASSIGN(freetext_search);
@@ -101,7 +104,13 @@ struct Location::Private
 		return (*this);
 	}
 
-	~Private() {}
+	~Private()
+	{
+		if(FileUtils::exists(audio_file_target))
+		{
+			FileUtils::delete_files({audio_file_target});
+		}
+	}
 };
 
 
@@ -293,11 +302,12 @@ Location Location::cover_location(const Album& album)
 
 		MetaDataList v_md;
 		lib_db->getAllTracksByAlbum(album.id, v_md);
-		cl.set_audio_file_source(QString(), QString());
+
 
 		if(!v_md.isEmpty())
 		{
 			cl.set_local_path_hint(v_md.first().filepath());
+			cl.set_audio_file_source(v_md.first().filepath(), cl.cover_path());
 		}
 	}
 
@@ -428,8 +438,18 @@ QString Location::cover_path() const
 QString Location::preferred_path() const
 {
 	// first search for cover in track
-	if(FileUtils::exists(this->audio_file_source())){
-		return this->audio_file_source();
+	if(has_audio_file_source())
+	{
+		if(!FileUtils::exists(this->audio_file_target()))
+		{
+			QPixmap pm = Tagging::Util::extract_cover(this->audio_file_source());
+			if(!pm.isNull())
+			{
+				pm.save(this->audio_file_target());
+			}
+		}
+
+		return this->audio_file_target();
 	}
 
 	if(!m->local_path_hint.isEmpty())
@@ -516,7 +536,8 @@ bool Location::is_freetext_search_enabled() const
 
 bool Location::has_audio_file_source() const
 {
-	return (m->audio_file_source.size() > 0);
+	return (FileUtils::exists(m->audio_file_source) &&
+			(m->audio_file_target.size() > 0));
 }
 
 QString Location::audio_file_source() const
@@ -524,9 +545,15 @@ QString Location::audio_file_source() const
 	return m->audio_file_source;
 }
 
+QString Location::audio_file_target() const
+{
+	return m->audio_file_target;
+}
+
 bool Location::set_audio_file_source(const QString& audio_filepath, const QString& cover_path)
 {
 	m->audio_file_source = QString();
+	m->audio_file_target = QString();
 
 	if(audio_filepath.isEmpty() || cover_path.isEmpty())
 	{
@@ -538,24 +565,14 @@ bool Location::set_audio_file_source(const QString& audio_filepath, const QStrin
 		return false;
 	}
 
-	if(!FileUtils::exists(cover_path))
-	{
-		QImage img = Tagging::Util::extract_cover(audio_filepath);
-		if(!img.isNull())
-		{
-			QString dir, filename;
-			FileUtils::split_filename(cover_path, dir, filename);
-			filename.prepend("fromtag_");
+	QString dir, filename;
+	FileUtils::split_filename(cover_path, dir, filename);
+	filename.prepend("fromtag_");
 
-			QString new_path = dir + "/" + filename;
-			img.save(new_path);
+	m->audio_file_source = audio_filepath;
+	m->audio_file_target = dir + "/" + filename;
 
-			m->audio_file_source = new_path;
-			return true;
-		}
-	}
-
-	return false;
+	return true;
 }
 
 QString Location::local_path_hint() const

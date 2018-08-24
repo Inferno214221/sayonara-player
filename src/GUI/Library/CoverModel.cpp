@@ -366,7 +366,13 @@ void CoverModel::cover_lookup_finished(bool success)
 		if(success)
 		{
 			LOCK_GUARD(mtx1)
-			m->insert_pixmap(d->hash, d->cl.preferred_path());
+			QList<QPixmap> pixmaps = clu->pixmaps();
+			if(!pixmaps.isEmpty())
+			{
+				m->pixmaps[d->hash] = pixmaps.first();
+				m->scaled_pixmaps[d->hash] = m->get_pixmap(d->hash);
+			}
+
 			emit dataChanged(d->idx, d->idx);
 		}
 
@@ -595,10 +601,9 @@ void CoverModel::set_zoom(int zoom, const QSize& view_size)
 
 void CoverModel::reload()
 {
-	m->cover_thread->resume();
-	m->reset_valid_hashes();
+	clear();
 
-	emit dataChanged(index(0,0), index(rowCount() - 1, columnCount() - 1), {Qt::SizeHintRole, Qt::DisplayRole, Qt::DecorationRole});
+	emit dataChanged(index(0,0), index(rowCount() - 1, columnCount() - 1));
 }
 
 void CoverModel::clear()
@@ -606,6 +611,7 @@ void CoverModel::clear()
 	m->cover_thread->pause();
 	m->cover_thread->clear();
 
+	m->scaled_pixmaps.clear();
 	m->pixmaps.clear();
 	m->indexes.clear();
 	m->reset_valid_hashes();

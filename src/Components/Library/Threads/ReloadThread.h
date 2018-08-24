@@ -38,6 +38,7 @@
 #include "Utils/Pimpl.h"
 
 class MetaData;
+class MetaDataList;
 
 namespace Library
 {
@@ -70,6 +71,7 @@ namespace Library
 		bool			get_and_save_all_files(const QHash<QString, MetaData>& v_md_map);
 		QStringList		get_files_recursive(QDir base_dir);
 		QStringList		process_sub_files(const QDir& dir, const QStringList& sub_files);
+		void			store_metadata_block(const MetaDataList& v_md);
 	};
 }
 

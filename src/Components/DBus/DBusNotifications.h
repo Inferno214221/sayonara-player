@@ -44,8 +44,6 @@ public:
 
 private slots:
 	void track_changed(const MetaData& md);
-	void cover_found(const QString& path);
-	void cover_lookup_finished(bool success);
 };
 
 #endif // DBUSNOTIFICATIONS_H

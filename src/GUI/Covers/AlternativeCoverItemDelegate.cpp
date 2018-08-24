@@ -51,31 +51,28 @@ void AlternativeCoverItemDelegate::paint(QPainter *painter, const QStyleOptionVi
 {
 	QItemDelegate::paint(painter, option, index);
 
-    if(!index.isValid()) return;
+	if(!index.isValid()) return;
 
 	QRect rect(option.rect);
 
 	painter->save();
 	painter->translate(2, 0);
 
-	QString cover_path = index.data(Qt::UserRole).toString();
-
-	label->setDisabled( Location::is_invalid(cover_path) );
-	label->setMinimumHeight(100);
-	label->setMinimumWidth(100);
-    label->resize(100, 100);
+	QPixmap pm = index.data(Qt::UserRole).value<QPixmap>();
 
 	label->setContentsMargins(10, 10, 10, 10);
+	label->setEnabled((option.state & QStyle::State_Enabled) > 0);
+	label->setMinimumHeight(100);
+	label->setMinimumWidth(100);
+	label->resize(100, 100);
 
-	QPixmap pixmap( cover_path );
-
-	if(!pixmap.isNull()) {
-		label->setPixmap(pixmap);
+	if(!pm.isNull()) {
+		label->setPixmap(pm);
 	}
 
 	label->render(painter, rect.topLeft() );
 
-    painter->restore();
+	painter->restore();
 }
 
 

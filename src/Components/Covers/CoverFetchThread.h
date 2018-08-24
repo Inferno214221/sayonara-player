@@ -62,7 +62,7 @@ namespace Cover
 		 * @brief emitted, when covers has been found
 		 * @param cl CoverLocation including the local cover path
 		 */
-		void sig_cover_found(const QString& cover_path);
+		void sig_cover_found(int idx);
 
 
 	public:
@@ -88,15 +88,7 @@ namespace Cover
 		 */
 		void stop();
 
-
-	private:
-		/**
-		 * @brief save_and_emit_image saves the image to disc, creates CoverLocation object and emits the sig_cover_found signal
-		 * @param filepath where to save the image on disc
-		 * @param img the cover image
-		 */
-		void save_and_emit_image(const QString& filepath,
-								 const QImage& img);
+		QPixmap pixmap(int idx) const;
 
 
 	private slots:

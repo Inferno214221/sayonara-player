@@ -40,6 +40,9 @@
 #include "Components/Covers/CoverFetcherInterface.h"
 #include "Components/Covers/CoverUtils.h"
 
+#include "Database/Connector.h"
+#include "Database/CoverConnector.h"
+
 #include "Utils/Utils.h"
 #include "Utils/Message/Message.h"
 #include "Utils/Language.h"
@@ -47,6 +50,7 @@
 
 #include <QDir>
 #include <QFile>
+#include <QFileInfo>
 #include <QFileDialog>
 #include <QStringList>
 
@@ -226,23 +230,27 @@ void GUI_AlternativeCovers::apply_clicked()
 {
 	QModelIndex current_idx = ui->tv_images->currentIndex();
 
-	QString cover_path = m->model->data(current_idx, Qt::UserRole).toString();
-	QFile file(cover_path);
-
-	if( !file.exists()) {
-		Message::warning(tr("This cover does not exist"));
-		return;
+	QPixmap cover = m->model->data(current_idx, Qt::UserRole).value<QPixmap>();
+	if(cover.isNull())
+	{
+		sp_log(Log::Warning, this) << "Cannot save invalid cover";
 	}
 
-	QImage img(cover_path);
-	if(img.isNull()){
-		return;
+	else
+	{
+		Cover::Location cl = m->cl_alternative->cover_location();
+		QFileInfo fi(cl.cover_path());
+		if(fi.isSymLink()){
+			QFile::remove(cl.cover_path());
+		}
+
+		cover.save(cl.cover_path());
+
+		DB::Covers* dbc = DB::Connector::instance()->cover_connector();
+		dbc->set_cover(cl.hash(), cover);
+
+		emit sig_cover_changed(cl);
 	}
-
-	Cover::Location cl = m->cl_alternative->cover_location();
-	img.save(cl.cover_path());
-
-	emit sig_cover_changed(cl);
 }
 
 void GUI_AlternativeCovers::search_clicked()
@@ -258,9 +266,9 @@ void GUI_AlternativeCovers::search_clicked()
 }
 
 
-void GUI_AlternativeCovers::cl_new_cover(const QString& cover_path)
+void GUI_AlternativeCovers::cl_new_cover(const QPixmap& pm)
 {
-	m->model->add_cover(cover_path);
+	m->model->add_cover(pm);
 
 	ui->btn_ok->setEnabled(true);
 	ui->btn_apply->setEnabled(true);
@@ -268,9 +276,9 @@ void GUI_AlternativeCovers::cl_new_cover(const QString& cover_path)
 }
 
 
-void GUI_AlternativeCovers::cl_finished(bool b)
+void GUI_AlternativeCovers::cl_finished(bool success)
 {
-	Q_UNUSED(b)
+	Q_UNUSED(success)
 
 	m->is_searching = false;
 	m->loading_bar->hide();

@@ -26,7 +26,7 @@
 namespace TagLib { class FileRef; }
 
 class QString;
-class QImage;
+class QPixmap;
 class MetaData;
 class QString;
 class QByteArray;
@@ -77,10 +77,10 @@ namespace Tagging
 		 */
 		bool setMetaDataOfFile(const MetaData& md);
 
-		bool write_cover(const QString& filepath, const QImage& image);
+		bool write_cover(const QString& filepath, const QPixmap& image);
 		bool write_cover(const QString& filepath, const QString& image_path);
 		bool extract_cover(const QString& filepath, QByteArray& cover_data, QString& mime_type);
-		QImage extract_cover(const QString& filepath);
+		QPixmap extract_cover(const QString& filepath);
 		bool has_cover(const QString& filepath);
 		bool is_cover_supported(const QString& filepath);
 

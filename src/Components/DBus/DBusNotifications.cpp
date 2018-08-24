@@ -19,7 +19,6 @@
 
 #include "DBusNotifications.h"
 #include "Components/Covers/CoverLocation.h"
-#include "Components/Covers/CoverLookup.h"
 
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/Settings/Settings.h"
@@ -109,25 +108,7 @@ void DBusNotifications::track_changed(const MetaData& md)
 	}
 
 	Cover::Location cl = Cover::Location::cover_location(md);
-	Cover::Lookup* clu = new Cover::Lookup(nullptr, 1);
+	QString path = cl.preferred_path();
 
-	connect(clu, &Cover::Lookup::sig_cover_found, this, &DBusNotifications::cover_found);
-	connect(clu, &Cover::Lookup::sig_finished, this, &DBusNotifications::cover_lookup_finished);
-
-	clu->fetch_cover(cl);
-}
-
-void DBusNotifications::cover_found(const QString& path)
-{
 	notify(m->md.title(), " by " + m->md.artist(), path);
-}
-
-void DBusNotifications::cover_lookup_finished(bool success)
-{
-	if(!success)
-	{
-		QString path = Cover::Location::invalid_location().cover_path();
-		notify(m->md.title(), " by " + m->md.artist(), path);
-	}
-	sender()->deleteLater();
 }

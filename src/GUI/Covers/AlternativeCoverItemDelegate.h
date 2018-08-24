@@ -47,7 +47,6 @@ public:
 	explicit AlternativeCoverItemDelegate(QObject* parent=nullptr);
 	virtual ~AlternativeCoverItemDelegate();
 
-
 public:
 	virtual void paint(QPainter *painter,
 			   const QStyleOptionViewItem &option,

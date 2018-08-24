@@ -56,11 +56,6 @@ namespace Cover
 
 		Cover::Location cover_location() const;
 		void set_cover_location(const Cover::Location& location);
-
-
-	private slots:
-		void cover_found(const QString& cover_path);
-		void finished(bool);
 	};
 }
 

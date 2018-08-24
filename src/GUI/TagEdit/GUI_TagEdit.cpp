@@ -46,6 +46,7 @@
 
 #include <QMap>
 #include <QStringList>
+#include <QPixmap>
 
 
 using namespace Tagging;
@@ -596,8 +597,8 @@ void GUI_TagEdit::set_cover(const MetaData& md)
 	{
 		QSize sz = ui->btn_cover_original->size();
 
-		QImage img = Tagging::Util::extract_cover(md.filepath());
-		QPixmap pm = QPixmap::fromImage(img).scaled(sz, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+		QPixmap pm = Tagging::Util::extract_cover(md.filepath())
+			.scaled(sz, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
 		QIcon icon;
 		icon.addPixmap(pm);
@@ -620,7 +621,7 @@ void GUI_TagEdit::set_cover(const MetaData& md)
 
 void GUI_TagEdit::update_cover(int idx, const QString& cover_path)
 {
-	QImage img(cover_path);
+	QPixmap img(cover_path);
 	m->tag_edit->update_cover(idx, img);
 }
 

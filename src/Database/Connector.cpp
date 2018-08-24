@@ -555,6 +555,32 @@ bool Connector::apply_fixes()
 		{
 			settings_connector()->store_setting("version", 20);
 		}
+
+
+		/*
+		 * QString create_covers =
+			"CREATE TABLE Covers "
+			"("
+			"  coverId INTEGER PRIMARY KEY, "
+			"  coverKey VARCHAR(128), "
+			"  data BLOB "
+			");";
+
+		QString create_cover_lo =
+			"CREATE TABLE HashCoverMap "
+			"("
+			"  hash VARCHAR(128),"
+			"  coverId INTEGER,"
+			"  FOREIGN KEY(coverId) REFERENCES Covers(coverId) ON DELETE CASCADE"
+			");";
+
+		bool success = check_and_create_table("Covers", create_covers);
+		success &= check_and_create_table("HashCoverMap", create_cover_lo);
+		if(success)
+		{
+			settings_connector()->store_setting("version", 20);
+		}
+		*/
 	}
 
 	return true;
@@ -705,5 +731,13 @@ DB::Library* Connector::library_connector()
 	return m->library_connector;
 }
 
+DB::Covers* Connector::cover_connector()
+{
+	if(!m->cover_connector){
+		m->cover_connector = new DB::Covers(this->connection_name(), this->db_id());
+	}
+
+	return m->cover_connector;
+}
 
 

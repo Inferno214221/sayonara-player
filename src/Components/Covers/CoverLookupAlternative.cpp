@@ -28,6 +28,7 @@
 using Cover::AlternativeLookup;
 using Cover::Location;
 using Cover::Lookup;
+using Cover::LookupBase;
 using Cover::Fetcher::Manager;
 
 struct AlternativeLookup::Private
@@ -54,8 +55,8 @@ AlternativeLookup::AlternativeLookup(QObject* parent, int n_covers) :
 {
 	m = Pimpl::make<Private>(this, n_covers);
 
-	connect(m->lookup, &Lookup::sig_cover_found, this, &AlternativeLookup::cover_found);
-	connect(m->lookup, &Lookup::sig_finished, this, &AlternativeLookup::finished);
+	connect(m->lookup, &Lookup::sig_cover_found, this, &AlternativeLookup::sig_cover_found);
+	connect(m->lookup, &Lookup::sig_finished, this, &AlternativeLookup::sig_finished);
 }
 
 AlternativeLookup::~AlternativeLookup() {}
@@ -128,14 +129,3 @@ void AlternativeLookup::set_cover_location(const Location& location)
 {
 	m->cover_location = location;
 }
-
-void AlternativeLookup::cover_found(const QString& cover_path)
-{
-	emit sig_cover_found(cover_path);
-}
-
-void AlternativeLookup::finished(bool success)
-{
-	emit sig_finished(success);
-}
-
