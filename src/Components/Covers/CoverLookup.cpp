@@ -169,8 +169,3 @@ void* Lookup::take_user_data()
 	m->user_data = nullptr;
 	return data;
 }
-
-QPixmap Lookup::pixmap() const
-{
-	return m->pm;
-}
