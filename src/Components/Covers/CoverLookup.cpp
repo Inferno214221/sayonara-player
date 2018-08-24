@@ -31,7 +31,6 @@
 #include "CoverLocation.h"
 
 #include "Database/Connector.h"
-#include "Database/CoverConnector.h"
 
 #include "Utils/Logger/Logger.h"
 #include "Utils/MetaData/MetaData.h"
@@ -39,26 +38,22 @@
 #include "Utils/Tagging/Tagging.h"
 #include "Utils/FileUtils.h"
 
-#include <QBuffer>
-#include <QDataStream>
-#include <QPixmap>
 #include <QImage>
 #include <QImageWriter>
 #include <QStringList>
-
 
 using Cover::Location;
 using Cover::Lookup;
 using Cover::FetchThread;
 
+namespace FileUtils=::Util::File;
+
 struct Lookup::Private
 {
-	QPixmap			pm;
 	int             n_covers;
 	FetchThread*    cft=nullptr;
 	void*			user_data=nullptr;
 	bool			thread_running;
-
 
 	Private(int n_covers) :
 		n_covers(n_covers),
@@ -104,43 +99,17 @@ bool Lookup::start_new_thread(const Cover::Location& cl )
 
 bool Lookup::fetch_cover(const Cover::Location& cl, bool also_www)
 {
-	DB::Covers* cc = DB::Connector::instance()->cover_connector();
-	if(cc->exists(cl.hash()))
-	{
-		QByteArray arr;
-		cc->get_cover(cl.hash(), arr);
-		bool success = m->pm.loadFromData(arr, "JPG");
-		if(success){
-			emit sig_cover_found(cl.preferred_path());
-			emit sig_finished(true);
-		}
-	}
-
-
 	QString cover_path = cl.preferred_path();
-	if(Location::is_invalid(cover_path)){
+	if(Location::is_invalid(cover_path))
+	{
+		// cover path always return the path in .Sayonara/cover
+		// No matter if it exists or not
 		cover_path = cl.cover_path();
 	}
 
 	// Look, if cover exists in .Sayonara/covers
-	if( ::Util::File::exists(cover_path) && m->n_covers == 1 )
+	if( FileUtils::exists(cover_path) && m->n_covers == 1 )
 	{
-
-		if(!cc->exists(cl.hash()))
-		{
-			QPixmap img(cover_path);
-
-			QByteArray arr;
-			QBuffer buffer(&arr);
-			buffer.open(QIODevice::WriteOnly);
-			img.save(&buffer, "JPG");
-
-			if(!arr.isEmpty())
-			{
-				cc->set_cover(cl.hash(), arr);
-			}
-		}
-
 		emit sig_cover_found(cover_path);
 		emit sig_finished(true);
 

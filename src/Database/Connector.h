@@ -76,7 +76,7 @@ namespace DB
 			DB::VisualStyles*		visual_style_connector();
 			DB::Settings*			settings_connector();
 			DB::Shortcuts*			shortcut_connector();
-			DB::Covers*				cover_connector();
+			DB::Covers*			cover_connector();
 			DB::Library*			library_connector();
 	};
 }

@@ -26,9 +26,6 @@
 #include "Components/Covers/CoverLookup.h"
 #include "Components/Covers/CoverChangeNotifier.h"
 
-#include "Database/Connector.h"
-#include "Database/CoverConnector.h"
-
 #include "Utils/MetaData/Album.h"
 #include "Utils/Utils.h"
 #include "Utils/Set.h"
@@ -52,7 +49,9 @@ using Hash=AlbumCoverFetchThread::Hash;
 struct CoverModel::Private
 {
 	AlbumCoverFetchThread*		cover_thread=nullptr;
+	QHash<Hash, QPixmap>		original_pixmaps;
 	QHash<Hash, QPixmap>		pixmaps;
+	QHash<Hash, QPixmap>		scaled_pixmaps;
 	QHash<Hash, QModelIndex>	indexes;
 	QHash<Hash, bool>			valid_hashes;
 	std::mutex					refresh_mtx;
@@ -88,19 +87,21 @@ struct CoverModel::Private
 		return QSize(zoom + 50, zoom + 60);
 	}
 
-	QPixmap get_pixmap(const QString& path)
+	QPixmap get_pixmap(const Hash& hash)
 	{
 		Qt::TransformationMode mode = Qt::FastTransformation;
-		QPixmap p(path);;
-		if(p.isNull()){
-			sp_log(Log::Warning, this) << "Pixmap is null";
+		QPixmap p = pixmaps[hash];
+		if(p.isNull())
+		{
 			QString invalid_path = Cover::Location::invalid_location().cover_path();
 			return QPixmap(invalid_path).scaled(zoom, zoom, Qt::KeepAspectRatio, mode);
 		}
 
 		else
 		{
-			return p.scaled(zoom, zoom, Qt::KeepAspectRatio, mode);
+			QPixmap ret = p.scaled(zoom, zoom, Qt::KeepAspectRatio, mode);
+			scaled_pixmaps[hash] = ret;
+			return ret;
 		}
 
 		return p;
@@ -108,7 +109,7 @@ struct CoverModel::Private
 
 	void insert_pixmap(Hash hash, const QString& path)
 	{
-		pixmaps[hash] = get_pixmap(path);
+		pixmaps[hash] = QPixmap(path);
 	}
 
 	void reset_valid_hashes()
@@ -276,30 +277,26 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 				Hash hash = AlbumCoverFetchThread::get_hash(album);
 				m->indexes[hash] = index;
 
-				if(m->pixmaps.contains(hash))
+				if(m->scaled_pixmaps.contains(hash))
 				{
-					QPixmap p = m->pixmaps[hash];
+					return m->scaled_pixmaps[hash];
+				}
 
-					// Pixmap has bad quality, next time we'll search for it
-					// for this time it's sufficient
-					int sz = std::max(p.size().width(), p.size().height());
-					if(std::abs(sz - m->zoom) > 10)
-					{
-						m->cover_thread->add_album(album);
-					}
-
+				else if(m->pixmaps.contains(hash))
+				{
 					if(m->valid_hashes[hash] == false)
 					{
 						m->cover_thread->add_album(album);
 					}
 
-					return p;
+					return m->get_pixmap(hash);
 				}
 
-				m->cover_thread->add_album(album);
-
-				QString path = Cover::Location::invalid_location().cover_path();
-				return m->get_pixmap(path);
+				else
+				{
+					m->cover_thread->add_album(album);
+					return m->get_pixmap(hash);
+				}
 			}
 
 		case Qt::SizeHintRole:
@@ -319,8 +316,7 @@ struct CoverLookupUserData
 	Hash hash;
 	Location cl;
 	QModelIndex idx;
-	AlbumCoverFetchThread* acft;
-	QPixmap* p=nullptr;
+	AlbumCoverFetchThread* acft=nullptr;
 };
 
 static std::mutex mtx1, mtx2;
@@ -352,12 +348,12 @@ void CoverModel::next_hash()
 
 	clu->set_user_data(d);
 	bool b = clu->fetch_cover(cl);
-	if(!b){
+	if(!b)
+	{
 		clu->deleteLater();
 		acft->done(hash);
 	}
 }
-
 
 
 void CoverModel::cover_lookup_finished(bool success)
@@ -369,24 +365,10 @@ void CoverModel::cover_lookup_finished(bool success)
 	{
 		if(success)
 		{
-			{
-				QPixmap pm = clu->pixmap();
-				if(!pm.isNull())
-				{
-					LOCK_GUARD(mtx1)
-					m->pixmaps[d->hash] = pm.scaled(m->zoom, m->zoom, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-				}
-
-				else
-				{
-					LOCK_GUARD(mtx1)
-					m->insert_pixmap(d->hash, d->cl.preferred_path());
-				}
-			}
-
+			LOCK_GUARD(mtx1)
+			m->insert_pixmap(d->hash, d->cl.preferred_path());
 			emit dataChanged(d->idx, d->idx);
 		}
-
 
 		{
 			LOCK_GUARD(mtx2)
@@ -535,10 +517,9 @@ Location CoverModel::cover(const IndexSet& indexes) const
 		return Location::invalid_location();
 	}
 
-	AlbumList albums = this->albums();
-	// todo
-	int idx = indexes.first();
+	const AlbumList& albums = this->albums();
 
+	int idx = indexes.first();
 	if(idx < 0 || idx >= albums.count()){
 		return Location::invalid_location();
 	}
@@ -600,6 +581,7 @@ QSize CoverModel::item_size() const
 
 void CoverModel::set_zoom(int zoom, const QSize& view_size)
 {
+	m->scaled_pixmaps.clear();
 	m->zoom = zoom;
 
 	int columns = (view_size.width() / m->item_size().width());

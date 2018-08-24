@@ -50,14 +50,14 @@ namespace FileUtils=::Util::File;
 
 struct Location::Private
 {
-	QString			search_term;	// Term provided to search engine
-	QStringList		search_urls;	// Search url where to fetch covers
-	QStringList		search_term_urls; // Search urls where to fetch cover when using freetext search
-	StringMap		all_search_urls; // key = identifier of coverfetcher, value = search url
+	QString			search_term;		// Term provided to search engine
+	QStringList		search_urls;		// Search url where to fetch covers
+	QStringList		search_term_urls;	// Search urls where to fetch cover when using freetext search
+	StringMap		all_search_urls;	// key = identifier of coverfetcher, value = search url
 	QString			cover_path;		// cover_path path, in .Sayonara, where cover is stored. Ignored if local_paths are not empty
-	QString			identifier;
-	QString			audio_file_source;
-	QString			hash;
+	QString			identifier;		// Some human readable identifier with methods where invokded
+	QString			audio_file_source;	// A saved cover from an audio file
+	QString			hash;			// A unique identifier, mostly referred to as the cover token
 
 	bool			freetext_search;
 	bool			valid;			// valid if CoverLocation object contains a valid download url

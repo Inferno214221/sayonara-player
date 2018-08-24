@@ -244,24 +244,26 @@ FetchThread::multi_image_fetched()
 	AsyncWebAccess* awa = static_cast<AsyncWebAccess*>(sender());
 	m->active_connections.removeAll(awa);
 
-	if(awa->status() == AsyncWebAccess::Status::GotData){
-
+	if(awa->status() == AsyncWebAccess::Status::GotData)
+	{
 		QImage img  = awa->image();
 
 		if(!img.isNull())
 		{
-			QString filename, dir, cover_path;
 			QString target_file = m->cl.cover_path();
+
+			QString filename, dir;
 			Util::File::split_filename(target_file, dir, filename);
 
-			cover_path = dir + "/" + QString::number(m->n_covers_found) + "_" + filename;
+			QString cover_path = dir + "/" + QString::number(m->n_covers_found) + "_" + filename;
 			save_and_emit_image(cover_path, img);
 
 			m->n_covers_found++;
 		}
 	}
 
-	else {
+	else
+	{
 		sp_log(Log::Warning, this) << "Could not fetch multi cover " << m->acf->keyword();
 	}
 
@@ -274,7 +276,8 @@ FetchThread::save_and_emit_image(const QString& filepath, const QImage& img)
 {
 	QString filename = filepath;
 	QString ext = Util::File::calc_file_extension(filepath);
-	if(ext.compare("gif", Qt::CaseInsensitive) == 0){
+	if(ext.compare("gif", Qt::CaseInsensitive) == 0)
+	{
 		filename = filename.left(filename.size() - 3);
 		filename += "png";
 	}
@@ -286,7 +289,7 @@ FetchThread::save_and_emit_image(const QString& filepath, const QImage& img)
 		sp_log(Log::Warning, this) << "Cannot save image to " << filename;
 	}
 
-	else{
+	else {
 		emit sig_cover_found(filename);
 	}
 }

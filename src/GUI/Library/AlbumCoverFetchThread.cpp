@@ -25,11 +25,13 @@
 #include "Components/Covers/CoverLookup.h"
 #include "Components/Covers/CoverLocation.h"
 
+
 #include "Utils/Utils.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/FileUtils.h"
 
 #include <QFile>
+#include <QFileInfo>
 
 #include <atomic>
 #include <mutex>
@@ -40,14 +42,22 @@ using Hash=AlbumCoverFetchThread::Hash;
 using AtomicBool=std::atomic<bool>;
 using AtomicInt=std::atomic<int>;
 
+namespace FileUtils=::Util::File;
+
 struct AlbumCoverFetchThread::Private
 {
-	AlbumCoverFetchThread::HashAlbumList	hash_album_list;
-	AlbumCoverFetchThread::HashLocationList	hash_location_list;
-	AlbumCoverFetchThread::HashLocationList	hash_location_online_list;
-	QStringList								queued_hashes;
+	AlbumCoverFetchThread::HashAlbumList hash_album_list;
+	AlbumCoverFetchThread::HashLocationList	location_list;
+	AlbumCoverFetchThread::HashLocationList	location_symlink_list;
+	AlbumCoverFetchThread::HashLocationList	location_online_list;
 
-	std::mutex	mutex_album_list, mutex_location_list, mutex_queued_hashes;
+	QStringList			queued_hashes;
+
+	std::mutex mutex_album_list;
+	std::mutex mutex_location_list;
+	std::mutex mutex_symlink_list;
+	std::mutex mutex_online_list;
+	std::mutex mutex_queued_hashes;
 
 	AtomicInt	done;
 	AtomicBool	paused;
@@ -66,7 +76,7 @@ struct AlbumCoverFetchThread::Private
 		in_paused_state = false;
 		stopped = false;
 		hash_album_list.clear();
-		hash_location_list.clear();
+		location_list.clear();
 	}
 
 	bool may_run()
@@ -128,7 +138,7 @@ void AlbumCoverFetchThread::run()
 				qhc = m->queued_hashes.count();
 			}
 
-			while(qhc > MaxThreads && m->hash_location_list.isEmpty())
+			while(qhc > MaxThreads && m->location_list.isEmpty())
 			{
 				Util::sleep_ms(10);
 
@@ -162,19 +172,27 @@ bool AlbumCoverFetchThread::thread_create_cover_location()
 
 	Cover::Location cl = Cover::Location::cover_location(album);
 	{
-		LOCK_GUARD(m->mutex_location_list)
-		if(cl.has_audio_file_source() ||
-			( !Location::is_invalid(cl.preferred_path()) &&
-			  ::Util::File::exists(cl.preferred_path())
-			)
-		  )
+		QString cp = cl.cover_path();
+
+		if( FileUtils::exists(cp) )
 		{
-			m->hash_location_list.push_back(HashLocationPair(hash, cl));
+			if(!QFileInfo(cp).isSymLink())
+			{
+				LOCK_GUARD(m->mutex_location_list)
+				m->location_list.push_back(HashLocationPair(hash, cl));
+			}
+
+			else
+			{
+				LOCK_GUARD(m->mutex_symlink_list)
+				m->location_symlink_list.push_back(HashLocationPair(hash, cl));
+			}
 		}
 
 		else
 		{
-			m->hash_location_online_list.push_back(HashLocationPair(hash, cl));
+			LOCK_GUARD(m->mutex_online_list)
+			m->location_online_list.push_back(HashLocationPair(hash, cl));
 		}
 	}
 
@@ -201,15 +219,29 @@ void AlbumCoverFetchThread::add_album(const Album& album)
 
 	{
 		LOCK_GUARD(m->mutex_location_list)
-		bool has_hash = ::Util::contains(m->hash_location_list, [hash](const HashLocationPair& p){
+		bool has_hash = ::Util::contains(m->location_list, [hash](const HashLocationPair& p){
 			return (p.first == hash);
 		});
 
 		if(has_hash){
 			return;
 		}
+	}
 
-		has_hash = ::Util::contains(m->hash_location_online_list, [hash](const HashLocationPair& p){
+	{
+		LOCK_GUARD(m->mutex_online_list)
+		bool has_hash = ::Util::contains(m->location_online_list, [hash](const HashLocationPair& p){
+			return (p.first == hash);
+		});
+
+		if(has_hash){
+			return;
+		}
+	}
+
+	{
+		LOCK_GUARD(m->mutex_symlink_list)
+		bool has_hash = ::Util::contains(m->location_symlink_list, [hash](const HashLocationPair& p){
 			return (p.first == hash);
 		});
 
@@ -233,16 +265,25 @@ void AlbumCoverFetchThread::add_album(const Album& album)
 
 AlbumCoverFetchThread::HashLocationPair AlbumCoverFetchThread::take_current_location()
 {
-	LOCK_GUARD(m->mutex_location_list);
-
-	if(m->hash_location_list.count() > 0)
+	if(m->location_list.count() > 0)
 	{
-		return m->hash_location_list.takeLast();
+		LOCK_GUARD(m->mutex_location_list);
+		return m->location_list.takeLast();
 	}
 
-	else if(m->hash_location_online_list.count() > 0)
+	else if(m->location_symlink_list.count() > 0)
 	{
-		HashLocationPair p = m->hash_location_online_list.takeLast();
+		LOCK_GUARD(m->mutex_symlink_list);
+		return m->location_symlink_list.takeLast();
+	}
+
+	else if(m->location_online_list.count() > 0)
+	{
+		HashLocationPair p;
+		{
+			LOCK_GUARD(m->mutex_online_list)
+			p = m->location_online_list.takeLast();
+		}
 
 		LOCK_GUARD(m->mutex_queued_hashes)
 		m->queued_hashes << p.first;
@@ -289,15 +330,23 @@ void AlbumCoverFetchThread::clear()
 
 	{
 		LOCK_GUARD(m->mutex_location_list)
-		m->hash_location_list.clear();
-		m->hash_location_online_list.clear();
+		m->location_list.clear();
+	}
+
+	{
+		LOCK_GUARD(m->mutex_online_list)
+		m->location_online_list.clear();
+	}
+
+	{
+		LOCK_GUARD(m->mutex_symlink_list)
+		m->location_symlink_list.clear();
 	}
 }
 
 void AlbumCoverFetchThread::done(const AlbumCoverFetchThread::Hash& hash)
 {
 	LOCK_GUARD(m->mutex_queued_hashes)
-
 	m->queued_hashes.removeAll(hash);
 }
 

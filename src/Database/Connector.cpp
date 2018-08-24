@@ -61,7 +61,7 @@ struct Connector::Private
 	DB::VisualStyles*		visual_style_connector=nullptr;
 	DB::Settings*			settings_connector=nullptr;
 	DB::Shortcuts*			shortcut_connector=nullptr;
-	DB::Covers*				cover_connector=nullptr;
+	DB::Covers*			cover_connector=nullptr;
 	DB::Library*			library_connector=nullptr;
 
 	QList<LibraryDatabase*> library_dbs;
@@ -546,11 +546,8 @@ bool Connector::apply_fixes()
 		QString create_string =
 			"CREATE TABLE Covers "
 			"("
-			"  id INTEGER,"
-			"  hash VARCHAR(64),"
-			"  filepath VARCHAR(512),"
-			"  data BLOB, "
-			"  PRIMARY KEY (id, hash) "
+			"  hash VARCHAR(64) PRIMARY KEY,"
+			"  data BLOB "
 			");";
 
 		bool success = check_and_create_table("Covers", create_string);
@@ -706,15 +703,6 @@ DB::Library* Connector::library_connector()
 	}
 
 	return m->library_connector;
-}
-
-DB::Covers* Connector::cover_connector()
-{
-	if(!m->cover_connector){
-		m->cover_connector = new DB::Covers(this->connection_name(), this->db_id());
-	}
-
-	return m->cover_connector;
 }
 
 
