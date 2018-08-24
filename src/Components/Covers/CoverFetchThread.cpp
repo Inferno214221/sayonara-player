@@ -206,6 +206,7 @@ void FetchThread::content_fetched()
 	more();
 }
 
+#include <QPixmap>
 void FetchThread::single_image_fetched()
 {
 	AsyncWebAccess* awa = static_cast<AsyncWebAccess*>(sender());
@@ -217,11 +218,13 @@ void FetchThread::single_image_fetched()
 	if(status == AsyncWebAccess::Status::GotData)
 	{
 		QImage img  = awa->image();
+		//QPixmap pm = QPixmap::fromImage(img);
 
 		if(!img.isNull())
 		{
 			QString target_file = m->cl.cover_path();
 			m->n_covers_found++;
+			//emit sig_cover_found(m->n_covers_found, pm);
 			save_and_emit_image(target_file, img);
 			emit sig_finished(true);
 		}

@@ -5,7 +5,7 @@
 
 #include <QMap>
 #include <QString>
-#include <QByteArray>
+#include <QPixmap>
 
 namespace DB
 {
@@ -17,10 +17,10 @@ namespace DB
 			~Covers();
 
 			bool exists(const QString& hash);
-			bool get_cover(const QString& hash, QByteArray& data);
-			bool set_cover(const QString& hash, QByteArray& data);
+			bool get_cover(const QString& hash, QPixmap& data);
+			bool set_cover(const QString& hash, const QPixmap& data);
 
-			bool get_all_covers(QMap<QString, QByteArray>& covers);
+			bool get_all_covers(QMap<QString, QPixmap>& covers);
 	};
 }
 

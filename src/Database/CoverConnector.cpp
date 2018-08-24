@@ -1,5 +1,6 @@
 #include "CoverConnector.h"
 #include "Query.h"
+#include "Utils/Utils.h"
 
 using DB::Query;
 
@@ -24,7 +25,7 @@ bool DB::Covers::exists(const QString& hash)
 	return q_check.next();
 }
 
-bool DB::Covers::get_cover(const QString& hash, QByteArray& data)
+bool DB::Covers::get_cover(const QString& hash, QPixmap& pm)
 {
 	Query q(this);
 	QString query = "SELECT data FROM covers WHERE hash = :hash;";
@@ -35,19 +36,24 @@ bool DB::Covers::get_cover(const QString& hash, QByteArray& data)
 		return false;
 	}
 
-	if(q.next()){
-		data = q.value(0).toByteArray();
+	if(q.next())
+	{
+		QByteArray data = q.value(0).toByteArray();
+		pm = ::Util::cvt_bytearray_to_pixmap(data);
+
 		return true;
 	}
 
 	return false;
 }
 
-bool DB::Covers::set_cover(const QString& hash, QByteArray& data)
+bool DB::Covers::set_cover(const QString& hash, const QPixmap& pm)
 {
 	if(hash.isEmpty()){
 		return false;
 	}
+
+	QByteArray data = ::Util::cvt_pixmap_to_bytearray(pm);
 
 	if(this->exists(hash))
 	{
@@ -82,7 +88,7 @@ bool DB::Covers::set_cover(const QString& hash, QByteArray& data)
 	}
 }
 
-bool DB::Covers::get_all_covers(QMap<QString, QByteArray>& covers)
+bool DB::Covers::get_all_covers(QMap<QString, QPixmap>& covers)
 {
 	covers.clear();
 
@@ -97,7 +103,9 @@ bool DB::Covers::get_all_covers(QMap<QString, QByteArray>& covers)
 	while(q.next())
 	{
 		QString hash = q.value(0).toString();
-		covers[hash] = q.value(1).toByteArray();
+		QByteArray data = q.value(1).toByteArray();
+
+		covers[hash] = ::Util::cvt_bytearray_to_pixmap(data);
 	}
 
 	return true;

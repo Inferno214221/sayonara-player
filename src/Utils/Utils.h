@@ -28,13 +28,15 @@
 #ifndef _HELPER_H
 #define _HELPER_H
 
+class QDateTime;
+class QPixmap;
+
 #include <QObject>
 #include <algorithm>
 #include "typedefs.h"
 
 #define LOCK_GUARD(locking_mutex) std::lock_guard<std::mutex> g(locking_mutex); Q_UNUSED(g)
 
-class QDateTime;
 /**
  * @brief Helper functions
  * @ingroup Helper
@@ -162,6 +164,10 @@ namespace Util
 	 * @return list of ip addresses
 	 */
 	QStringList ip_addresses();
+
+
+	QByteArray cvt_pixmap_to_bytearray(const QPixmap& pm);
+	QPixmap cvt_bytearray_to_pixmap(const QByteArray& arr);
 
 	/**
 	 * @brief set an environment variable. This function is platform independent

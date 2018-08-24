@@ -34,6 +34,9 @@
 #include <QDir>
 #include <QRegExp>
 #include <QDateTime>
+#include <QByteArray>
+#include <QPixmap>
+#include <QBuffer>
 
 #include <thread>
 #include <chrono>
@@ -460,4 +463,21 @@ QString Util::cvt_not_null(const QString& str)
 	}
 
 	return str;
+}
+
+QByteArray Util::cvt_pixmap_to_bytearray(const QPixmap& pm)
+{
+	QByteArray arr;
+	QBuffer buffer(&arr);
+	buffer.open(QIODevice::WriteOnly);
+	pm.save(&buffer, "JPG");
+
+	return arr;
+}
+
+QPixmap Util::cvt_bytearray_to_pixmap(const QByteArray& arr)
+{
+	QPixmap pm;
+	pm.loadFromData(arr, "JPG");
+	return pm;
 }
