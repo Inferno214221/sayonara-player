@@ -22,9 +22,10 @@
 #define SOUNDCLOUDGLOBAL_H
 
 #include <QByteArray>
+#include <QString>
 
-#define CLIENT_ID QByteArray("ab7d663fc58d0257c64443358292f6ce")
-#define CLIENT_ID_STR QByteArray("client_id=").append(CLIENT_ID)
+#define CLIENT_ID QString("ab7d663fc58d0257c64443358292f6ce")
+#define CLIENT_ID_STR QString("client_id=").append(CLIENT_ID)
 
 #endif // SOUNDCLOUDGLOBAL_H
 
