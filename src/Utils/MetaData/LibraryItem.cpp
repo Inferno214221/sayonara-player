@@ -118,9 +118,9 @@ QString CustomField::get_value() const
 
 struct LibraryItem::Private
 {
-	CustomFieldList additional_data;
-	QString	cover_download_url;
-	DbId db_id;
+	CustomFieldList		additional_data;
+	QString				cover_download_url;
+	DbId				db_id;
 
 	Private() :
 		db_id(0)

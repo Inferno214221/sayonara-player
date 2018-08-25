@@ -338,8 +338,6 @@ QModelIndex PlaylistItemModel::getNextRowIndexOf(const QString& substr, int row,
 
 QModelIndex PlaylistItemModel::getRowIndexOf(const QString& substr, int row, bool is_forward)
 {
-	row = std::min(rowCount()-1, row);
-
 	QString pure_search_string = substr;
 	PlaylistSearchMode plsm = PlaylistSearchMode::Title;
 
@@ -372,21 +370,22 @@ QModelIndex PlaylistItemModel::getRowIndexOf(const QString& substr, int row, boo
 		return index(-1, -1);
 	}
 
-	for(int i=0; i<rowCount(); i++)
+	int rows = rowCount();
+	for(int i=0; i<rows; i++)
 	{
 		int row_idx;
 		if(is_forward)
 		{
-			row_idx = (i + row) % rowCount();
+			row_idx = (i + row) % rows;
 		}
 
 		else
 		{
 			if(row - i < 0) {
-				row = rowCount() - 1;
+				row = rows - 1;
 			}
 
-			row_idx = (row - i) % rowCount();
+			row_idx = (row - i) % rows;
 		}
 
 		MetaData md = m->pl->metadata(row_idx);

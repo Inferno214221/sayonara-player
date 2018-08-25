@@ -408,7 +408,7 @@ QModelIndex CoverModel::getNextRowIndexOf(const QString& substr, int cur_row, co
 			return this->index(idx / columnCount(), idx % columnCount());
 		}
 
-		const QStringList artists = a[idx].artists();
+		/*const QStringList artists = a[idx].artists();
 		for(const QString& artist : artists)
 		{
 			QString cvt_artist = Library::Util::convert_search_string(artist, search_mode());
@@ -416,7 +416,7 @@ QModelIndex CoverModel::getNextRowIndexOf(const QString& substr, int cur_row, co
 			if(cvt_artist.contains(substr)){
 				return this->index(idx / columnCount(), idx % columnCount());
 			}
-		}
+		}*/
 	}
 
 	return QModelIndex();
@@ -475,7 +475,7 @@ int CoverModel::getNumberResults(const QString& substr)
 			continue;
 		}
 
-		const QStringList artists = a[i].artists();
+		/*const QStringList artists = a[i].artists();
 		for(const QString& artist : artists)
 		{
 			QString cvt_artist = Library::Util::convert_search_string(artist, search_mode());
@@ -484,7 +484,7 @@ int CoverModel::getNumberResults(const QString& substr)
 				ret++;
 				break;
 			}
-		}
+		}*/
 	}
 
 	return ret;

@@ -240,7 +240,7 @@ void check_coverpath(const QString& audio_path, const QString& cover_path)
 	}
 
 	// no symlink, but real file, replace it with first local path
-	if(fi.exists())
+	/*if(fi.exists())
 	{
 		Util::File::delete_files({cover_path});
 	}
@@ -257,7 +257,7 @@ void check_coverpath(const QString& audio_path, const QString& cover_path)
 		source = jpg_source;
 	}
 
-	FileUtils::create_symlink(source, cover_path);
+	FileUtils::create_symlink(source, cover_path);*/
 }
 
 // TODO: Clean me up
