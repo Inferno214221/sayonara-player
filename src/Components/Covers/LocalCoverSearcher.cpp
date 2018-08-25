@@ -49,7 +49,7 @@ QStringList LocalSearcher::cover_paths_from_dirname(const QString& filepath)
 			<< "*.png";
 
 	QDir dir(filepath);
-	QStringList entries = dir.entryList(filters);
+	QStringList entries = dir.entryList(filters, (QDir::Files | QDir::NoDotAndDotDot));
 	if(entries.isEmpty()){
 		return ret;
 	}
@@ -68,10 +68,10 @@ QStringList LocalSearcher::cover_paths_from_dirname(const QString& filepath)
 			continue;
 		}
 
-		double d = std::abs(width - height) / (width * 1.0) + 1.0;
+		double d = std::abs(height - width) / (width * 1.0) + 1.0;
 		double pixels = static_cast<double>(width * height);
 
-		d = (d * d) / std::sqrt(pixels);
+		d = (d * d * std::max(width, height)) / pixels;
 
 		if( entry.contains(QStringLiteral("cover"), Qt::CaseInsensitive) ||
 			entry.contains(QStringLiteral("albumart"), Qt::CaseInsensitive) ||
@@ -102,7 +102,7 @@ QStringList LocalSearcher::cover_paths_from_dirname(const QString& filepath)
 	}
 
 	std::sort(ret.begin(), ret.end(), [=](const QString& f1, const QString& f2){
-		return ((size_map[f1] < size_map[f2]) || (f1 < f2));
+		return (size_map[f1] < size_map[f2]);
 	});
 
 	return ret;

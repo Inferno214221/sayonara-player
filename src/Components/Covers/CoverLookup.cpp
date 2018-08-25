@@ -29,6 +29,7 @@
 #include "CoverLookup.h"
 #include "CoverFetchThread.h"
 #include "CoverLocation.h"
+#include "CoverUtils.h"
 
 #include "Database/Connector.h"
 #include "Database/CoverConnector.h"
@@ -51,6 +52,7 @@ namespace FileUtils=::Util::File;
 
 struct Lookup::Private
 {
+	Location		cl;
 	QList<QPixmap>	pixmaps;
 	int				n_covers;
 
@@ -84,6 +86,8 @@ bool Lookup::start_new_thread(const Cover::Location& cl )
 	if(!has_search_urls || !cl.valid()){
 		return false;
 	}
+
+	m->cl = cl;
 
 	sp_log(Log::Develop, this) << cl.search_urls();
 	m->thread_running = true;
@@ -221,6 +225,10 @@ void Lookup::cover_found(int idx)
 
 	QPixmap pm = cft->pixmap(idx);
 	add_new_cover(pm);
+	if(m->n_covers == 1)
+	{
+		pm.save(Cover::Util::cover_directory(m->cl.hash() + ".jpg"));
+	}
 
 	if(!cft->more())
 	{

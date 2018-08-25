@@ -217,6 +217,8 @@ void ReloadThread::store_metadata_block(const MetaDataList& v_md)
 
 	sp_log(Log::Develop, this) << "Adding Covers...";
 	DB::Covers* db_covers = DB::Connector::instance()->cover_connector();
+
+	db->transaction();
 	for(const MetaData& md : v_md)
 	{
 		Cover::Location cl = Cover::Location::cover_location(md);
@@ -235,6 +237,8 @@ void ReloadThread::store_metadata_block(const MetaDataList& v_md)
 			}
 		}
 	}
+
+	db->commit();
 }
 
 

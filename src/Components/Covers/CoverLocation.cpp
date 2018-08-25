@@ -220,7 +220,7 @@ void check_coverpath(const QString& audio_path, const QString& cover_path)
 	QFileInfo fi(cover_path);
 
 	// broken symlink
-	if(fi.exists() && fi.isSymLink() && !FileUtils::exists(fi.symLinkTarget()))
+	if(fi.isSymLink() && !FileUtils::exists(fi.symLinkTarget()))
 	{
 		Util::File::delete_files({cover_path});
 		fi = QFileInfo(cover_path);

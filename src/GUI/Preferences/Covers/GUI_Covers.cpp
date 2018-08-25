@@ -34,12 +34,14 @@
 #include "Utils/Language.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Utils.h"
+#include "Utils/Logger/Logger.h"
 
 #include "GUI/Utils/Delegates/StyledItemDelegate.h"
 
 #include <QListWidgetItem>
 #include <QList>
 #include <QDir>
+#include <QFileInfo>
 
 using namespace Cover;
 
@@ -124,6 +126,7 @@ void GUI_Covers::init_ui()
 	connect(ui->btn_down, &QPushButton::clicked, this, &GUI_Covers::down_clicked);
 	connect(ui->lv_cover_searchers, &QListWidget::currentRowChanged, this, &GUI_Covers::current_row_changed);
 	connect(ui->btn_delete_album_covers, &QPushButton::clicked, this, &GUI_Covers::delete_covers_from_db);
+	connect(ui->btn_delete_files, &QPushButton::clicked, this, &GUI_Covers::delete_cover_files);
 
 	revert();
 }
@@ -168,7 +171,5 @@ void GUI_Covers::delete_covers_from_db()
 
 void GUI_Covers::delete_cover_files()
 {
-	QDir d(Cover::Util::cover_directory());
-	QStringList entries = d.entryList();
-	::Util::File::delete_files(entries);
+	::Util::File::remove_files_in_directory(Cover::Util::cover_directory());
 }

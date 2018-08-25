@@ -138,7 +138,12 @@ void AlbumCoverFetchThread::run()
 				qhc = m->queued_hashes.count();
 			}
 
-			while(qhc > MaxThreads && m->location_list.isEmpty())
+			while
+			(
+				(qhc > MaxThreads) &&
+				(m->location_list.isEmpty()) &&
+				(m->may_run())
+			)
 			{
 				Util::sleep_ms(10);
 
@@ -146,7 +151,10 @@ void AlbumCoverFetchThread::run()
 				qhc = m->queued_hashes.count();
 			}
 
-			emit sig_next();
+			if(m->may_run())
+			{
+				emit sig_next();
+			}
 		}
 	}
 }

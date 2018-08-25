@@ -601,9 +601,17 @@ void CoverModel::set_zoom(int zoom, const QSize& view_size)
 
 void CoverModel::reload()
 {
+	m->cover_thread->pause();
+	m->cover_thread->clear();
+
+	m->scaled_pixmaps.clear();
+	m->pixmaps.clear();
+	m->indexes.clear();
+	m->reset_valid_hashes();
 	clear();
 
 	emit dataChanged(index(0,0), index(rowCount() - 1, columnCount() - 1));
+	m->cover_thread->resume();
 }
 
 void CoverModel::clear()

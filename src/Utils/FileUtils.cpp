@@ -68,32 +68,47 @@ void Util::File::remove_files_in_directory(const QString& dir_name)
 
 void Util::File::remove_files_in_directory(const QString& dir_name, const QStringList& filters)
 {
+	if(dir_name.contains("..")){
+		return;
+	}
+
 	bool success;
 	QDir dir(dir_name);
 	dir.setNameFilters(filters);
 
-	QFileInfoList info_lst = dir.entryInfoList(
-								 (QDir::Filters)(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot)
-								 );
+	QFileInfoList info_lst = dir.entryInfoList
+	(
+		static_cast<QDir::Filters>(QDir::System | QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot)
+	);
 
-	for(const QFileInfo& info : info_lst){
+	for(const QFileInfo& info : info_lst)
+	{
 		QString path = info.absoluteFilePath();
-		if(info.isDir())
+
+		if(info.isSymLink())
+		{
+			QFile::remove(path);
+		}
+
+		else if(info.isDir())
 		{
 			remove_files_in_directory(path);
 			QDir().rmdir(path);
 		}
 
-		else{
-			QFile file(path);
-			file.remove();
+		else if(info.isFile())
+		{
+			QFile::remove(path);
 		}
 	}
 
 	QDir d = QDir::root();
-	success = d.rmdir(dir_name);
-	if(!success){
-		sp_log(Log::Warning) << "Could not remove dir " << dir_name;
+	if(dir_name.contains(::Util::sayonara_path()))
+	{
+		success = d.rmdir(dir_name);
+		if(!success){
+			sp_log(Log::Warning) << "Could not remove dir " << dir_name;
+		}
 	}
 }
 
@@ -107,12 +122,23 @@ void Util::File::delete_files(const QStringList& paths)
 
 	for(const QString& path : Util::AsConst(sorted_paths))
 	{
-		QFileInfo info(path);
-		if(!info.exists()){
+		if(path.contains("..")){
 			continue;
 		}
 
-		if(info.isDir()){
+		QFileInfo info(path);
+		if(!info.exists())
+		{
+			continue;
+		}
+
+		if(info.isSymLink())
+		{
+			QFile::remove(info.absoluteFilePath());
+		}
+
+		else if(info.isDir())
+		{
 			remove_files_in_directory(path);
 			QDir().rmdir(path);
 		}
@@ -390,7 +416,7 @@ QString Util::File::get_file_extension(const QString& filename)
 {
 	int last_dot = filename.lastIndexOf(".");
 	if(last_dot < 0){
-		return "";
+		return QString("");
 	}
 
 	return filename.mid(last_dot + 1);
@@ -709,4 +735,24 @@ bool Util::File::exists(const QString& filename)
 	}
 
 	return QFile::exists(filename);
+}
+
+bool Util::File::is_in_sayonara_dir(const QString& path)
+{
+	QDir sayonara_dir(sayonara_path());
+	QDir p(path);
+
+	while(!p.isRoot())
+	{
+		bool b = p.cdUp();
+		if(!b){
+			return false;
+		}
+
+		if(p == sayonara_dir){
+			return true;
+		}
+	}
+
+	return false;
 }

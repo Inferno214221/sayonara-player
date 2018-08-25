@@ -166,6 +166,8 @@ namespace Util
 		 */
 		bool check_file(const QString& filepath);
 
+		bool is_in_sayonara_dir(const QString& path);
+
 		QString get_common_directory(const QStringList& paths);
 		QString get_common_directory(QString dir1, QString dir2);
 

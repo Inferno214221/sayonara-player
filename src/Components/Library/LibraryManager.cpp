@@ -151,7 +151,7 @@ public:
 		QString dir = ::Util::sayonara_path("Libraries");
 		QDir d(dir);
 
-		QFileInfoList symlinks = d.entryInfoList(QDir::NoFilter);
+		QFileInfoList symlinks = d.entryInfoList(QDir::NoFilter | QDir::NoDotAndDotDot);
 		for(const QFileInfo& symlink : symlinks)
 		{
 			if(symlink.isSymLink()) {

@@ -543,44 +543,52 @@ bool Connector::apply_fixes()
 
 	if(version < 20)
 	{
-		QString create_string =
-			"CREATE TABLE Covers "
-			"("
-			"  hash VARCHAR(64) PRIMARY KEY,"
-			"  data BLOB "
-			");";
+		bool success;
+		{
+			QString create_string =
+				"CREATE TABLE Covers "
+				"("
+				"  coverId INTEGER PRIMARY KEY,"
+				"  hash VARCHAR(64),"
+				"  coverKey VARCHAR(128),"
+				"  data BLOB "
+				");";
 
-		bool success = check_and_create_table("Covers", create_string);
+			success = check_and_create_table("Covers", create_string);
+		}
+
+		{
+			QString create_string =
+				"CREATE TABLE TrackCoverMap "
+				"("
+				"  metadataId INTEGER,"
+				"  coverId INTEGER,"
+				"  PRIMARY KEY(metadataId, coverId),"
+				"  FOREIGN KEY(metadataId) REFERENCES Tracks(trackId) ON DELETE CASCADE,"
+				"  FOREIGN KEY(coverId) REFERENCES Covers(coverId) ON DELETE CASCADE"
+				");";
+
+			success &= check_and_create_table("TrackCoverMap", create_string);
+		}
+
+		{
+			QString create_string =
+				"CREATE TABLE AlbumCoverMap "
+				"("
+				"  albumId INTEGER,"
+				"  coverId INTEGER,"
+				"  PRIMARY KEY(albumId, coverId),"
+				"  FOREIGN KEY(albumId) REFERENCES Albums(albumId) ON DELETE CASCADE,"
+				"  FOREIGN KEY(coverId) REFERENCES Covers(coverId) ON DELETE CASCADE"
+				");";
+
+			success &= check_and_create_table("AlbumCoverMap", create_string);
+		}
+
 		if(success)
 		{
 			settings_connector()->store_setting("version", 20);
 		}
-
-
-		/*
-		 * QString create_covers =
-			"CREATE TABLE Covers "
-			"("
-			"  coverId INTEGER PRIMARY KEY, "
-			"  coverKey VARCHAR(128), "
-			"  data BLOB "
-			");";
-
-		QString create_cover_lo =
-			"CREATE TABLE HashCoverMap "
-			"("
-			"  hash VARCHAR(128),"
-			"  coverId INTEGER,"
-			"  FOREIGN KEY(coverId) REFERENCES Covers(coverId) ON DELETE CASCADE"
-			");";
-
-		bool success = check_and_create_table("Covers", create_covers);
-		success &= check_and_create_table("HashCoverMap", create_cover_lo);
-		if(success)
-		{
-			settings_connector()->store_setting("version", 20);
-		}
-		*/
 	}
 
 	return true;
