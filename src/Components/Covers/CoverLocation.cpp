@@ -239,10 +239,10 @@ void check_coverpath(const QString& audio_path, const QString& cover_path)
 		return;
 	}
 
-	// no symlink, but real file, replace it with first local path
-	/*if(fi.exists())
+	// no symlink, but real file, go back
+	if(fi.exists())
 	{
-		Util::File::delete_files({cover_path});
+		return;
 	}
 
 	QString source = local_paths.first();
@@ -257,7 +257,7 @@ void check_coverpath(const QString& audio_path, const QString& cover_path)
 		source = jpg_source;
 	}
 
-	FileUtils::create_symlink(source, cover_path);*/
+	FileUtils::create_symlink(source, cover_path);
 }
 
 // TODO: Clean me up
@@ -440,16 +440,23 @@ QString Location::preferred_path() const
 	// first search for cover in track
 	if(has_audio_file_source())
 	{
-		if(!FileUtils::exists(this->audio_file_target()))
+		bool target_exists = FileUtils::exists(this->audio_file_target());
+		if(!target_exists)
 		{
-			QPixmap pm = Tagging::Util::extract_cover(this->audio_file_source());
-			if(!pm.isNull())
+			if(Tagging::Util::has_cover(this->audio_file_source()))
 			{
-				pm.save(this->audio_file_target());
+				QPixmap pm = Tagging::Util::extract_cover(this->audio_file_source());
+				if(!pm.isNull())
+				{
+					target_exists = pm.save(this->audio_file_target());
+				}
 			}
 		}
 
-		return this->audio_file_target();
+		if(target_exists)
+		{
+			return this->audio_file_target();
+		}
 	}
 
 	if(!m->local_path_hint.isEmpty())
@@ -536,8 +543,12 @@ bool Location::is_freetext_search_enabled() const
 
 bool Location::has_audio_file_source() const
 {
-	return (FileUtils::exists(m->audio_file_source) &&
-			(m->audio_file_target.size() > 0));
+	return
+	(
+		(m->audio_file_target.size() > 0) &&
+		(m->audio_file_source.size() > 0) &&
+		(FileUtils::exists(m->audio_file_source))
+	);
 }
 
 QString Location::audio_file_source() const
@@ -556,11 +567,6 @@ bool Location::set_audio_file_source(const QString& audio_filepath, const QStrin
 	m->audio_file_target = QString();
 
 	if(audio_filepath.isEmpty() || cover_path.isEmpty())
-	{
-		return false;
-	}
-
-	if(!Tagging::Util::has_cover(audio_filepath))
 	{
 		return false;
 	}

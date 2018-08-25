@@ -49,6 +49,7 @@ private slots:
 	void down_clicked();
 	void current_row_changed(int row);
 	void delete_covers_from_db();
+	void delete_cover_files();
 };
 
 

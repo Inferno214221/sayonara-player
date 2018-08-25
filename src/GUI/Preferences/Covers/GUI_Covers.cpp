@@ -28,14 +28,18 @@
 #include "Components/Covers/CoverFetchManager.h"
 #include "Components/Covers/CoverFetcherInterface.h"
 #include "Components/Covers/CoverChangeNotifier.h"
+#include "Components/Covers/CoverUtils.h"
 
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language.h"
+#include "Utils/FileUtils.h"
+#include "Utils/Utils.h"
 
 #include "GUI/Utils/Delegates/StyledItemDelegate.h"
 
 #include <QListWidgetItem>
 #include <QList>
+#include <QDir>
 
 using namespace Cover;
 
@@ -160,4 +164,11 @@ void GUI_Covers::delete_covers_from_db()
 {
 	DB::Connector::instance()->cover_connector()->clear();
 	Cover::ChangeNotfier::instance()->shout();
+}
+
+void GUI_Covers::delete_cover_files()
+{
+	QDir d(Cover::Util::cover_directory());
+	QStringList entries = d.entryList();
+	::Util::File::delete_files(entries);
 }

@@ -29,6 +29,8 @@
 #include <QImage>
 #include <QMap>
 
+#include <cmath>
+
 using namespace Cover;
 
 QStringList LocalSearcher::cover_paths_from_filename(const QString& filepath)
@@ -55,8 +57,21 @@ QStringList LocalSearcher::cover_paths_from_dirname(const QString& filepath)
 	QMap<QString, double> size_map;
 	for(const QString& entry : entries)
 	{
-		QImage i(entry);
-		double d = std::abs(i.width() - i.height()) / (i.width() * 1.0) + 1.0;
+		QImage i(filepath + "/" + entry);
+		if(i.isNull()){
+			continue;
+		}
+
+		int width = i.width();
+		int height = i.height();
+		if(width == 0){
+			continue;
+		}
+
+		double d = std::abs(width - height) / (width * 1.0) + 1.0;
+		double pixels = static_cast<double>(width * height);
+
+		d = (d * d) / std::sqrt(pixels);
 
 		if( entry.contains(QStringLiteral("cover"), Qt::CaseInsensitive) ||
 			entry.contains(QStringLiteral("albumart"), Qt::CaseInsensitive) ||
