@@ -89,7 +89,7 @@ struct CoverModel::Private
 
 	QPixmap get_pixmap(const Hash& hash)
 	{
-		Qt::TransformationMode mode = Qt::FastTransformation;
+		Qt::TransformationMode mode = Qt::SmoothTransformation;
 		QPixmap p = pixmaps[hash];
 		if(p.isNull())
 		{

@@ -172,7 +172,7 @@ void Base::rollback()
 bool Base::check_and_drop_table(const QString& tablename)
 {
 	Query q(this);
-	QString querytext = "DROP TABLE " +  tablename + ";";
+	QString querytext = "DROP TABLE IF EXISTS " +  tablename + ";";
 	q.prepare(querytext);
 
 	if(!q.exec()){

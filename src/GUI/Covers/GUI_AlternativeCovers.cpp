@@ -30,6 +30,7 @@
 #include "GUI/Covers/ui_GUI_AlternativeCovers.h"
 #include "GUI/Utils/Widgets/ProgressBar.h"
 #include "GUI/Utils/PreferenceAction.h"
+#include "GUI/Utils/ImageSelectionDialog.h"
 
 #include "AlternativeCoverItemDelegate.h"
 #include "AlternativeCoverItemModel.h"
@@ -44,6 +45,7 @@
 #include "Database/CoverConnector.h"
 
 #include "Utils/Utils.h"
+#include "Utils/FileUtils.h"
 #include "Utils/Message/Message.h"
 #include "Utils/Language.h"
 #include "Utils/Settings/Settings.h"
@@ -345,15 +347,23 @@ void GUI_AlternativeCovers::reset()
 
 void GUI_AlternativeCovers::open_file_dialog()
 {
-	QStringList filters;
-		filters << "*.jpg";
-		filters << "*.png";
-		filters << "*.gif";
 
-	QStringList lst = QFileDialog::getOpenFileNames(this,
-								  tr("Open image files"),
-								  QDir::homePath(),
-								  filters.join(" "));
+	QString dir = QDir::homePath();
+	Cover::Location cl = m->cl_alternative->cover_location();
+	if(!cl.local_path_hint().isEmpty())
+	{
+		QString filename;
+		::Util::File::split_filename(cl.local_path_hint(), dir, filename);
+	}
+
+	ImageSelectionDialog* dialog = new ImageSelectionDialog(dir, this);
+
+	if(!dialog->exec()){
+		return;
+	};
+
+	QStringList lst = dialog->selectedFiles();
+	dialog->deleteLater();
 	if(lst.isEmpty())
 	{
 		return;

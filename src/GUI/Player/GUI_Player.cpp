@@ -538,8 +538,6 @@ void GUI_Player::check_library_menu_action()
 	}
 }
 
-
-
 void GUI_Player::splitter_main_moved(int pos, int idx)
 {
 	Q_UNUSED(pos) Q_UNUSED(idx)
@@ -547,7 +545,6 @@ void GUI_Player::splitter_main_moved(int pos, int idx)
 	QByteArray splitter_state = ui->splitter->saveState();
 	_settings->set<Set::Player_SplitterState>(splitter_state);
 }
-
 
 void GUI_Player::splitter_controls_moved(int pos, int idx)
 {

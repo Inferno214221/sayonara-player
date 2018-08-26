@@ -385,7 +385,13 @@ bool MetaDataSorting::ArtistByTrackCountDesc(const Artist& artist1, const Artist
 
 bool MetaDataSorting::AlbumByArtistNameAsc(const Album& album1, const Album& album2)
 {
-	switch(compare_string(album1.artists().join(","), album2.artists().join(","))){
+	Relation rel = compare_string(album1.album_artists().join(","), album2.album_artists().join(","));
+	if(rel == Equal)
+	{
+		rel = compare_string(album1.artists().join(","), album2.artists().join(","));
+	}
+
+	switch(rel){
 		case Equal:
 			return AlbumByYearAsc(album1, album2);
 		case Greater:

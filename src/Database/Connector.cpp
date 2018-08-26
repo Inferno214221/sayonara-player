@@ -252,7 +252,7 @@ bool Connector::apply_fixes()
 	QString str_version;
 	int version;
 	bool success;
-	const int LatestVersion = 20;
+	const int LatestVersion = 21;
 
 	success = settings_connector()->load_setting("version", str_version);
 	version = str_version.toInt(&success);
@@ -543,6 +543,8 @@ bool Connector::apply_fixes()
 
 	if(version < 20)
 	{
+		check_and_drop_table("Covers");
+
 		bool success;
 		{
 			QString create_string =
@@ -589,6 +591,15 @@ bool Connector::apply_fixes()
 		{
 			settings_connector()->store_setting("version", 20);
 		}
+	}
+
+	if(version < 21)
+	{
+		check_and_drop_table("Statistics");
+		check_and_drop_table("Lyrics");
+		check_and_drop_table("Genres");
+
+		settings_connector()->store_setting("version", 21);
 	}
 
 	return true;
