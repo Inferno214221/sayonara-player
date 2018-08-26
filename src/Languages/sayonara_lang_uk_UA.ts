@@ -126,7 +126,7 @@
     </message>
     <message>
         <source>Start search automatically</source>
-        <translation type="unfinished"/>
+        <translation>Розпочати пошук автоматично</translation>
     </message>
 </context>
 <context>
@@ -273,11 +273,11 @@
     </message>
     <message>
         <source>Clear cache</source>
-        <translation type="unfinished"/>
+        <translation>Очистити кеш</translation>
     </message>
     <message>
         <source>Delete files</source>
-        <translation type="unfinished"/>
+        <translation>Видалити файли</translation>
     </message>
 </context>
 <context>
