@@ -253,7 +253,7 @@ void DB::Library::drop_indexes()
 	for(const QString& idx : ::Util::AsConst(indexes))
 	{
 		Query q(this);
-		QString text = "DROP INDEX " + idx + ";";
+		QString text = "DROP INDEX IF EXISTS " + idx + ";";
 		q.prepare(text);
 		if(!q.exec()){
 			q.show_error("Cannot drop index " + idx);

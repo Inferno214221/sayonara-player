@@ -75,39 +75,71 @@ bool DB::Covers::set_cover(const QString& hash, const QPixmap& pm)
 		return false;
 	}
 
-	QByteArray data = ::Util::cvt_pixmap_to_bytearray(pm);
-
 	if(this->exists(hash))
 	{
-		Query q(this);
-		QString query("UPDATE covers SET data=:data WHERE hash=:hash;");
-		q.prepare(query);
-		q.bindValue(":data", data);
-		q.bindValue(":hash", hash);
-
-		if(!q.exec()){
-			q.show_error("Cannot update cover");
-			return false;
-		}
-
-		return true;
+		return update_cover(hash, pm);
 	}
 
 	else
 	{
-		Query q(this);
-		QString query("INSERT INTO covers (hash, data) VALUES (:hash, :data)");
-		q.prepare(query);
-		q.bindValue(":data", data);
-		q.bindValue(":hash", hash);
-
-		if(!q.exec()){
-			q.show_error("Cannot insert cover");
-			return false;
-		}
-
-		return true;
+		return insert_cover(hash, pm);
 	}
+}
+
+bool DB::Covers::update_cover(const QString& hash, const QPixmap& pm)
+{
+	QByteArray data = ::Util::cvt_pixmap_to_bytearray(pm);
+
+	Query q(this);
+	QString query("UPDATE covers SET data=:data WHERE hash=:hash;");
+	q.prepare(query);
+	q.bindValue(":data", data);
+	q.bindValue(":hash", hash);
+
+	if(!q.exec()){
+		q.show_error("Cannot update cover");
+		return false;
+	}
+
+	return true;
+}
+
+bool DB::Covers::insert_cover(const QString& hash, const QPixmap& pm)
+{
+	QByteArray data = ::Util::cvt_pixmap_to_bytearray(pm);
+
+	Query q(this);
+	QString query("INSERT INTO covers (hash, data) VALUES (:hash, :data)");
+	q.prepare(query);
+	q.bindValue(":data", data);
+	q.bindValue(":hash", hash);
+
+	if(!q.exec()){
+		q.show_error("Cannot insert cover");
+		return false;
+	}
+
+	return true;
+}
+
+QStringList DB::Covers::get_all_hashes()
+{
+	QStringList ret;
+
+	Query q(this);
+	QString query = "SELECT hash FROM covers;";
+	q.prepare(query);
+	if(!q.exec()){
+		q.show_error("Cannot fetch all hashes");
+		return ret;
+	}
+
+	while(q.next())
+	{
+		ret << q.value(0).toString();
+	}
+
+	return ret;
 }
 
 bool DB::Covers::get_all_covers(QMap<QString, QPixmap>& covers)

@@ -42,6 +42,11 @@ namespace DB
 			bool get_cover(const QString& hash, QPixmap& data);
 			bool set_cover(const QString& hash, const QPixmap& data);
 
+			bool update_cover(const QString& hash, const QPixmap& data);
+			bool insert_cover(const QString& hash, const QPixmap& data);
+
+			QStringList get_all_hashes();
+
 			bool get_all_covers(QMap<QString, QPixmap>& covers);
 			void clear();
 	};
