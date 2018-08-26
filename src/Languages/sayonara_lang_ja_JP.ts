@@ -49,11 +49,11 @@
 <context>
     <name>DirectoryTreeView</name>
     <message>
-        <source>Enter new name</source>
+        <source>Copy here</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Copy here</source>
+        <source>Enter new name</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -78,6 +78,10 @@
 <context>
     <name>GUI_AbstractStream</name>
     <message>
+        <source>Do you really want to delete %1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
         <source>Cannot open stream</source>
         <translation type="unfinished"/>
     </message>
@@ -85,27 +89,11 @@
         <source>Overwrite?</source>
         <translation type="unfinished"/>
     </message>
-    <message>
-        <source>Do you really want to delete %1</source>
-        <translation type="unfinished"/>
-    </message>
 </context>
 <context>
     <name>GUI_AlternativeCovers</name>
     <message>
-        <source>This cover does not exist</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>%1 covers found</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Open image files</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Online Search</source>
+        <source>Local Search</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -113,7 +101,11 @@
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Text search</source>
+        <source>Online Search</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>%1 covers found</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -121,30 +113,34 @@
         <translation>サーバ</translation>
     </message>
     <message>
-        <source>Local Search</source>
+        <source>Select and preview multiple covers</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Select and preview multiple covers</source>
+        <source>Text search</source>
         <translation type="unfinished"/>
     </message>
     <message>
         <source>Alternative Cover</source>
         <translation type="unfinished"/>
     </message>
+    <message>
+        <source>Start search automatically</source>
+        <translation type="unfinished"/>
+    </message>
 </context>
 <context>
     <name>GUI_AudioConverter</name>
-    <message>
-        <source>Audio Converter</source>
-        <translation type="unfinished"/>
-    </message>
     <message>
         <source>Best</source>
         <translation>最良</translation>
     </message>
     <message>
         <source>Worst</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Constant Bitrate</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -156,7 +152,7 @@
         <translation>品質</translation>
     </message>
     <message>
-        <source>Constant Bitrate</source>
+        <source>Audio Converter</source>
         <translation type="unfinished"/>
     </message>
 </context>
@@ -186,7 +182,7 @@
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Dismiss</source>
+        <source>%1 listener</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -194,7 +190,7 @@
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>%1 listener</source>
+        <source>Cannot broadcast on port %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -202,33 +198,33 @@
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Cannot broadcast on port %1</source>
+        <source>Maybe another application is using this port?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Maybe another application is using this port?</source>
+        <source>Dismiss</source>
         <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_BroadcastSetup</name>
     <message>
-        <source>Ask for permission</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
         <source>Port</source>
         <translation>ポート</translation>
+    </message>
+    <message>
+        <source>Ask for permission</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_Controls</name>
     <message>
-        <source>Written by Lucio Carreras</source>
+        <source>Copyright 2011-2017</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Copyright 2011-2017</source>
+        <source>Written by Lucio Carreras</source>
         <translation type="unfinished"/>
     </message>
 </context>
@@ -239,12 +235,12 @@
         <translation>Sayonara Player</translation>
     </message>
     <message>
-        <source>Written by</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
         <source>Copyright</source>
         <translation>Copyright</translation>
+    </message>
+    <message>
+        <source>Written by</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -261,18 +257,26 @@
 <context>
     <name>GUI_CoverView</name>
     <message>
-        <source>Sort by</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
         <source>Zoom</source>
         <translation>ズーム( z)</translation>
+    </message>
+    <message>
+        <source>Sort by</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_Covers</name>
     <message>
         <source>If available, load covers from audio files</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Clear cache</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Delete files</source>
         <translation type="unfinished"/>
     </message>
 </context>
@@ -297,11 +301,11 @@
 <context>
     <name>GUI_EmptyLibrary</name>
     <message>
-        <source>Set library path</source>
+        <source>You haven&apos;t specified a library path yet</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>You haven&apos;t specified a library path yet</source>
+        <source>Set library path</source>
         <translation type="unfinished"/>
     </message>
 </context>
@@ -322,20 +326,20 @@
 <context>
     <name>GUI_FontConfig</name>
     <message>
-        <source>Font size</source>
-        <translation>フォントサイズ</translation>
-    </message>
-    <message>
-        <source>Font name</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
         <source>Bold</source>
         <translation>ボールド</translation>
     </message>
     <message>
         <source>Inherit</source>
         <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Font name</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Font size</source>
+        <translation>フォントサイズ</translation>
     </message>
 </context>
 <context>
@@ -352,31 +356,7 @@
 <context>
     <name>GUI_ImportDialog</name>
     <message>
-        <source>Import</source>
-        <translation>インポート</translation>
-    </message>
-    <message>
-        <source>Import tracks to library</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Select target folder</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
         <source>OK</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>%1 tracks available</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Loading tracks</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Importing</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -384,11 +364,27 @@
         <translation>完了</translation>
     </message>
     <message>
+        <source>Select target folder</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Loading tracks</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Import tracks to library</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
         <source>Cancelled</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>No tracks</source>
+        <source>Import</source>
+        <translation>インポート</translation>
+    </message>
+    <message>
+        <source>%1 tracks available</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -396,16 +392,28 @@
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Choose target directory</source>
+        <source>Importing</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>No tracks</source>
         <translation type="unfinished"/>
     </message>
     <message>
         <source>%1&lt;br /&gt;is no library directory</source>
         <translation type="unfinished"/>
     </message>
+    <message>
+        <source>Choose target directory</source>
+        <translation type="unfinished"/>
+    </message>
 </context>
 <context>
     <name>GUI_LanguageChooser</name>
+    <message>
+        <source>For new languages I am always looking for translators</source>
+        <translation type="unfinished"/>
+    </message>
     <message>
         <source>Language</source>
         <translation>言語</translation>
@@ -414,24 +422,24 @@
         <source>English</source>
         <translation>英語</translation>
     </message>
-    <message>
-        <source>For new languages I am always looking for translators</source>
-        <translation type="unfinished"/>
-    </message>
 </context>
 <context>
     <name>GUI_LastFM</name>
     <message>
-        <source>Logged in</source>
-        <translation type="unfinished"/>
+        <source>Password</source>
+        <translation>パスワード</translation>
     </message>
     <message>
         <source>Not logged in</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Password</source>
-        <translation>パスワード</translation>
+        <source>Username</source>
+        <translation>ユーザ名</translation>
+    </message>
+    <message>
+        <source>Logged in</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Scrobble after</source>
@@ -440,10 +448,6 @@
     <message>
         <source>Login now</source>
         <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Username</source>
-        <translation>ユーザ名</translation>
     </message>
 </context>
 <context>
@@ -454,24 +458,41 @@
     </message>
 </context>
 <context>
-    <name>GUI_Library</name>
-    <message>
-        <source>Add artist</source>
-        <translation type="unfinished"/>
-    </message>
-</context>
-<context>
     <name>GUI_LibraryPreferences</name>
     <message>
-        <source>Libraries</source>
-        <translation type="unfinished"/>
+        <source>Other</source>
+        <translation>その他</translation>
     </message>
     <message>
         <source>On double click, create playlist and</source>
         <translation type="unfinished"/>
     </message>
     <message>
+        <source>When drag and drop into playlist </source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Library-Playlist Interaction</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>start if stopped and playlist is empty</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
         <source>do nothing (default)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Show &quot;Clear selection&quot; buttons</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Libraries</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Cannot edit library</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -480,30 +501,6 @@
     </message>
     <message>
         <source>start playback immediately</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>When drag and drop into playlist </source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>start if stopped and playlist is empty</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Other</source>
-        <translation>その他</translation>
-    </message>
-    <message>
-        <source>Show &quot;Clear selection&quot; buttons</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Library-Playlist Interaction</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Cannot edit library</source>
         <translation type="unfinished"/>
     </message>
 </context>
@@ -528,43 +525,43 @@
 <context>
     <name>GUI_Lyrics</name>
     <message>
-        <source>Save Lyrics</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>switch</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
         <source>Zoom</source>
         <translation>ズーム( z)</translation>
-    </message>
-    <message>
-        <source>Save lyrics not supported</source>
-        <translation type="unfinished"/>
     </message>
     <message>
         <source>Overwrite lyrics</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Save lyrics</source>
-        <translation>歌詞を保存(s)</translation>
+        <source>Save Lyrics</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Source</source>
         <translation>出典</translation>
     </message>
+    <message>
+        <source>Save lyrics</source>
+        <translation>歌詞を保存(s)</translation>
+    </message>
+    <message>
+        <source>switch</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Save lyrics not supported</source>
+        <translation type="unfinished"/>
+    </message>
 </context>
 <context>
     <name>GUI_Notifications</name>
     <message>
-        <source>Notifications</source>
-        <translation>通知</translation>
-    </message>
-    <message>
         <source>Timeout (ms)</source>
         <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Notifications</source>
+        <translation>通知</translation>
     </message>
 </context>
 <context>
@@ -575,21 +572,21 @@
     </message>
     <message>
         <source>Sayonara Player</source>
-        <translation type="unfinished"/>
+        <translation>Sayonara Player</translation>
     </message>
 </context>
 <context>
     <name>GUI_PlayerPreferences</name>
-    <message>
-        <source>Start in tray</source>
-        <translation type="unfinished"/>
-    </message>
     <message>
         <source>Close to tray</source>
         <translation type="unfinished"/>
     </message>
     <message>
         <source>Show system tray icon</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Start in tray</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -600,11 +597,7 @@
 <context>
     <name>GUI_Playlist</name>
     <message>
-        <source>Playlist empty</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Media files</source>
+        <source>Playlist name already exists</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -612,7 +605,11 @@
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Playlist name already exists</source>
+        <source>Media files</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Playlist empty</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -620,16 +617,16 @@
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Playlist exists</source>
-        <translation type="unfinished"/>
+        <source>Save playlist</source>
+        <translation>プレイリストを保存</translation>
     </message>
     <message>
         <source>Playlists are currently only supported for library tracks.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Save playlist</source>
-        <translation>プレイリストを保存</translation>
+        <source>Playlist exists</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -653,59 +650,15 @@
 <context>
     <name>GUI_PlaylistPreferences</name>
     <message>
-        <source>Show numbers</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
         <source>Look</source>
         <translation>外観</translation>
-    </message>
-    <message>
-        <source>Start up</source>
-        <translation type="unfinished"/>
     </message>
     <message>
         <source>Load temporary playlists</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Remember time of last track</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Load saved playlists</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Load last track on startup</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Start playing</source>
-        <translation>再生を開始</translation>
-    </message>
-    <message>
-        <source>Behavior</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Stop behaviour</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Load last track after pressing stop</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>&apos;italic text&apos;</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Example</source>
-        <translation>例</translation>
-    </message>
-    <message>
-        <source>*bold text*</source>
+        <source>Show numbers</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -713,7 +666,27 @@
         <translation type="unfinished"/>
     </message>
     <message>
+        <source>Load saved playlists</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Playlist look: Invalid expression</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Stop behaviour</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>*bold text*</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
         <source>Show covers</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Remember time of last track</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -721,8 +694,32 @@
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Playlist look: Invalid expression</source>
+        <source>Load last track after pressing stop</source>
         <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Start up</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>&apos;italic text&apos;</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Behavior</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Load last track on startup</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Example</source>
+        <translation>例</translation>
+    </message>
+    <message>
+        <source>Start playing</source>
+        <translation>再生を開始</translation>
     </message>
 </context>
 <context>
@@ -739,55 +736,63 @@
 <context>
     <name>GUI_PreferenceDialog</name>
     <message>
-        <source>Preferences</source>
+        <source>OK</source>
         <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation>キャンセル</translation>
     </message>
     <message>
         <source>Apply</source>
         <translation>適用</translation>
     </message>
     <message>
-        <source>OK</source>
+        <source>Cancel</source>
+        <translation>キャンセル</translation>
+    </message>
+    <message>
+        <source>Preferences</source>
         <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_Proxy</name>
     <message>
-        <source>Password</source>
-        <translation>パスワード</translation>
-    </message>
-    <message>
-        <source>Save username/password</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Active</source>
-        <translation>アクティブ</translation>
+        <source>Host</source>
+        <translation>ホスト</translation>
     </message>
     <message>
         <source>Port</source>
         <translation>ポート</translation>
     </message>
     <message>
+        <source>Proxy</source>
+        <translation>プロキシ</translation>
+    </message>
+    <message>
+        <source>Active</source>
+        <translation>アクティブ</translation>
+    </message>
+    <message>
+        <source>Password</source>
+        <translation>パスワード</translation>
+    </message>
+    <message>
         <source>Username</source>
         <translation>ユーザ名</translation>
     </message>
     <message>
-        <source>Host</source>
-        <translation>ホスト</translation>
-    </message>
-    <message>
-        <source>Proxy</source>
-        <translation>プロキシ</translation>
+        <source>Save username/password</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_ReloadLibraryDialog</name>
+    <message>
+        <source>Scan all files in your library directory</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Only scan for new and deleted files</source>
+        <translation type="unfinished"/>
+    </message>
     <message>
         <source>Fast scan</source>
         <translation type="unfinished"/>
@@ -796,17 +801,13 @@
         <source>Deep scan</source>
         <translation type="unfinished"/>
     </message>
-    <message>
-        <source>Only scan for new and deleted files</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Scan all files in your library directory</source>
-        <translation type="unfinished"/>
-    </message>
 </context>
 <context>
     <name>GUI_RemoteControl</name>
+    <message>
+        <source>Port</source>
+        <translation>ポート</translation>
+    </message>
     <message>
         <source>Remote control</source>
         <translation type="unfinished"/>
@@ -815,17 +816,9 @@
         <source>Remote control URL</source>
         <translation type="unfinished"/>
     </message>
-    <message>
-        <source>Port</source>
-        <translation>ポート</translation>
-    </message>
 </context>
 <context>
     <name>GUI_SearchPreferences</name>
-    <message>
-        <source>Example</source>
-        <translation>例</translation>
-    </message>
     <message>
         <source>Case insensitive</source>
         <translation type="unfinished"/>
@@ -835,16 +828,24 @@
         <translation>オプション</translation>
     </message>
     <message>
+        <source>Ignore special characters</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
         <source>Ignore accents</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Ignore special characters</source>
-        <translation type="unfinished"/>
+        <source>Example</source>
+        <translation>例</translation>
     </message>
 </context>
 <context>
     <name>GUI_ShortcutEntry</name>
+    <message>
+        <source>Test</source>
+        <translation>テスト</translation>
+    </message>
     <message>
         <source>Enter shortcut</source>
         <translation type="unfinished"/>
@@ -853,19 +854,15 @@
         <source>Shortcut already in use</source>
         <translation type="unfinished"/>
     </message>
-    <message>
-        <source>Test</source>
-        <translation>テスト</translation>
-    </message>
 </context>
 <context>
     <name>GUI_Shortcuts</name>
     <message>
-        <source>Press shortcut</source>
+        <source>Shortcuts</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Shortcuts</source>
+        <source>Press shortcut</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -876,14 +873,6 @@
 <context>
     <name>GUI_Shutdown</name>
     <message>
-        <source>Shutdown</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation>キャンセル</translation>
-    </message>
-    <message>
         <source>OK</source>
         <translation type="unfinished"/>
     </message>
@@ -892,11 +881,19 @@
         <translation type="unfinished"/>
     </message>
     <message>
+        <source>Cancel</source>
+        <translation>キャンセル</translation>
+    </message>
+    <message>
+        <source>Shutdown after playlist finished</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
         <source>Shutdown after</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Shutdown after playlist finished</source>
+        <source>Shutdown</source>
         <translation type="unfinished"/>
     </message>
 </context>
@@ -914,20 +911,20 @@
 <context>
     <name>GUI_SoundcloudArtistSearch</name>
     <message>
-        <source>Search Soundcloud</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Search artist</source>
-        <translation type="unfinished"/>
+        <source>Add</source>
+        <translation>加算</translation>
     </message>
     <message>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <source>Add</source>
-        <translation>加算</translation>
+        <source>Search Soundcloud</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Search artist</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -951,19 +948,19 @@
 <context>
     <name>GUI_Speed</name>
     <message>
-        <source>Speed</source>
-        <translation>速度</translation>
-    </message>
-    <message>
-        <source>Preserve pitch</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
         <source>Pitch</source>
         <translation>ピッチ</translation>
     </message>
     <message>
+        <source>Speed</source>
+        <translation>速度</translation>
+    </message>
+    <message>
         <source>%1 not found</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Preserve pitch</source>
         <translation type="unfinished"/>
     </message>
 </context>
@@ -981,15 +978,7 @@
 <context>
     <name>GUI_StreamRecorder</name>
     <message>
-        <source>Automatic recording</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>General</source>
-        <translation>一般</translation>
-    </message>
-    <message>
-        <source>Target path</source>
+        <source>Please choose another directory</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -997,35 +986,7 @@
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Session Directory</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Choose available placeholders</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Path template</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Example</source>
-        <translation>例</translation>
-    </message>
-    <message>
-        <source>Choose target directory</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Target path is empty</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Please choose another directory</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Cannot create %1</source>
+        <source>Stream recorder</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -1033,26 +994,94 @@
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Stream recorder</source>
+        <source>Session Directory</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Target path is empty</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Target path</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Choose target directory</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Automatic recording</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Example</source>
+        <translation>例</translation>
+    </message>
+    <message>
+        <source>General</source>
+        <translation>一般</translation>
+    </message>
+    <message>
+        <source>Path template</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Cannot create %1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Choose available placeholders</source>
         <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_Style</name>
     <message>
+        <source>Close</source>
+        <translation>閉じる</translation>
+    </message>
+    <message>
+        <source>Level</source>
+        <translation>レベル</translation>
+    </message>
+    <message>
         <source>Style</source>
         <translation>スタイル</translation>
     </message>
     <message>
-        <source>Close</source>
-        <translation>閉じる</translation>
+        <source>Style settings</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Rect width</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Vert. spacing</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Rect height</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Spectrum</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Vert. spacing</source>
+        <source>Color 1</source>
+        <translation>色 1</translation>
+    </message>
+    <message>
+        <source>Color 2</source>
+        <translation>色 2</translation>
+    </message>
+    <message>
+        <source>Color 3</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Color 4</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -1064,39 +1093,7 @@
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Rect height</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Level</source>
-        <translation>レベル</translation>
-    </message>
-    <message>
-        <source>Rect width</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
         <source>Ver. spacing</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Style settings</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Color 2</source>
-        <translation>色 2</translation>
-    </message>
-    <message>
-        <source>Color 1</source>
-        <translation>色 1</translation>
-    </message>
-    <message>
-        <source>Color 3</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Color 4</source>
         <translation type="unfinished"/>
     </message>
 </context>
@@ -1107,11 +1104,11 @@
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Please specify a name</source>
+        <source>Save changes?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Save changes?</source>
+        <source>Please specify a name</source>
         <translation type="unfinished"/>
     </message>
 </context>
@@ -1126,27 +1123,19 @@
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Album artist</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Comment</source>
-        <translation>コメント</translation>
-    </message>
-    <message>
         <source>all</source>
         <translation>すべてのページ( a)</translation>
     </message>
     <message>
-        <source>Original</source>
-        <translation>オリジナル</translation>
+        <source>Load complete album</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <source>Replace</source>
-        <translation>置換</translation>
+        <source>Album artist</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <source>Tag from path</source>
+        <source>All changes will be lost</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -1154,42 +1143,46 @@
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Discnumber</source>
+        <source>%1 tracks</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Load complete album</source>
-        <translation type="unfinished"/>
+        <source>Replace</source>
+        <translation>置換</translation>
+    </message>
+    <message>
+        <source>Original</source>
+        <translation>オリジナル</translation>
     </message>
     <message>
         <source>Cannot apply tag for</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>%1 tracks</source>
+        <source>Discnumber</source>
         <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Comment</source>
+        <translation>コメント</translation>
     </message>
     <message>
         <source>Ignore these tracks?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>All changes will be lost</source>
+        <source>Tag from path</source>
         <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_TagFromPath</name>
     <message>
-        <source>Expression</source>
-        <translation>式</translation>
-    </message>
-    <message>
         <source>?</source>
         <translation>?</translation>
     </message>
     <message>
-        <source>Disc Nr</source>
+        <source>Tag</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -1197,12 +1190,16 @@
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Warning</source>
-        <translation>警告</translation>
+        <source>Expression</source>
+        <translation>式</translation>
     </message>
     <message>
-        <source>Tag</source>
+        <source>Disc Nr</source>
         <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Warning</source>
+        <translation>警告</translation>
     </message>
     <message>
         <source>Please select text first</source>
@@ -1212,24 +1209,24 @@
 <context>
     <name>GUI_TargetPlaylistDialog</name>
     <message>
-        <source>Choose target playlist</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>relative filepaths</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
         <source>...</source>
         <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Save</source>
+        <translation>保存( s)</translation>
     </message>
     <message>
         <source>Close</source>
         <translation>閉じる</translation>
     </message>
     <message>
-        <source>Save</source>
-        <translation>保存( s)</translation>
+        <source>relative filepaths</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Choose target playlist</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Save playlist as...</source>
@@ -1252,6 +1249,13 @@
     </message>
 </context>
 <context>
+    <name>ImageSelectionDialog</name>
+    <message>
+        <source>Open image files</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
     <name>InfoDialog</name>
     <message>
         <source>Info / Edit</source>
@@ -1261,23 +1265,347 @@
 <context>
     <name>Lang</name>
     <message>
+        <source>d</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>h</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>m</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>s</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>OK</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>No</source>
+        <translation>いいえ</translation>
+    </message>
+    <message>
+        <source>by</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>on</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>or</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>th</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>1st</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>2nd</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>3rd</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>All</source>
+        <translation>すべて</translation>
+    </message>
+    <message>
+        <source>Alt</source>
+        <translation>Alt</translation>
+    </message>
+    <message>
+        <source>Esc</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>New</source>
+        <translation>新規</translation>
+    </message>
+    <message>
+        <source>Tab</source>
+        <translation>タブ</translation>
+    </message>
+    <message>
+        <source>Yes</source>
+        <translation>はい</translation>
+    </message>
+    <message>
+        <source>Date</source>
+        <translation>アクティブ</translation>
+    </message>
+    <message>
+        <source>Days</source>
+        <translation>日</translation>
+    </message>
+    <message>
+        <source>Ctrl</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Disc</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Edit</source>
+        <translation>編集( e)</translation>
+    </message>
+    <message>
+        <source>Dur.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Fast</source>
+        <translation>速く</translation>
+    </message>
+    <message>
+        <source>File</source>
+        <translation>ファイル( f)</translation>
+    </message>
+    <message>
+        <source>Font</source>
+        <translation>フォント</translation>
+    </message>
+    <message>
+        <source>Info</source>
+        <translation>情報</translation>
+    </message>
+    <message>
+        <source>Menu</source>
+        <translation>メニュー</translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation>名前</translation>
+    </message>
+    <message>
+        <source>Mute</source>
+        <translation>ミュート</translation>
+    </message>
+    <message>
+        <source>None</source>
+        <translation>なし</translation>
+    </message>
+    <message>
+        <source>Open</source>
+        <translation>オープン</translation>
+    </message>
+    <message>
+        <source>Play</source>
+        <translation>再生(p)</translation>
+    </message>
+    <message>
+        <source>Quit</source>
+        <translation>終了</translation>
+    </message>
+    <message>
+        <source>Save</source>
+        <translation>保存( s)</translation>
+    </message>
+    <message>
+        <source>Show</source>
+        <translation>表示</translation>
+    </message>
+    <message>
+        <source>Stop</source>
+        <translation>停止(s)</translation>
+    </message>
+    <message>
+        <source>Tree</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Undo</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Year</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Zoom</source>
+        <translation>ズーム( z)</translation>
+    </message>
+    <message>
+        <source>Filename</source>
+        <translation>ファイル名</translation>
+    </message>
+    <message>
+        <source>Filesize</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Gapless playback</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
         <source>About</source>
         <translation>情報</translation>
+    </message>
+    <message>
+        <source>Album</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Apply</source>
+        <translation>適用</translation>
+    </message>
+    <message>
+        <source>Clear</source>
+        <translation>クリア</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation>閉じる</translation>
+    </message>
+    <message>
+        <source>Entry</source>
+        <translation>メニューの項目( m)</translation>
+    </message>
+    <message>
+        <source>Error</source>
+        <translation>エラー</translation>
+    </message>
+    <message>
+        <source>Files</source>
+        <translation>ファイル</translation>
+    </message>
+    <message>
+        <source>Fonts</source>
+        <translation>フォント</translation>
+    </message>
+    <message>
+        <source>Genre</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Hours</source>
+        <translation>時間</translation>
+    </message>
+    <message>
+        <source>Minimize</source>
+        <translation>最小化</translation>
+    </message>
+    <message>
+        <source>Pause</source>
+        <translation>一時停止(p)</translation>
+    </message>
+    <message>
+        <source>Radio</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Reset</source>
+        <translation>リセット</translation>
+    </message>
+    <message>
+        <source>Retry</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Shift</source>
+        <translation>Shift</translation>
+    </message>
+    <message>
+        <source>Title</source>
+        <translation>タイトル</translation>
+    </message>
+    <message>
+        <source>Track</source>
+        <translation>トラック</translation>
+    </message>
+    <message>
+        <source>Weeks</source>
+        <translation>週間</translation>
+    </message>
+    <message>
+        <source>Years</source>
+        <translation>年</translation>
+    </message>
+    <message>
+        <source>Save to file</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Album artists</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Various artists</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Playing time</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Invalid characters</source>
+        <translation>不正な文字</translation>
+    </message>
+    <message>
+        <source>Playlist</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Radio Station</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Library</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Volume down</source>
+        <translation>音量を下げる</translation>
+    </message>
+    <message>
+        <source>Loading</source>
+        <translation>読み込み中</translation>
+    </message>
+    <message>
+        <source>Import files</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Volume up</source>
+        <translation>音量を上げる</translation>
+    </message>
+    <message>
+        <source>Close others</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Minutes</source>
+        <translation>分</translation>
+    </message>
+    <message>
+        <source>Missing</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Move up</source>
+        <translation>上に移動</translation>
     </message>
     <message>
         <source>Action</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Actions</source>
-        <translation>オプション</translation>
+        <source>Active</source>
+        <translation>アクティブ</translation>
     </message>
     <message>
-        <source>Add tab</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Album</source>
+        <source>Inactive</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -1293,118 +1621,6 @@
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Artists</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Bitrate</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Bookmarks</source>
-        <translation>ブックマーク( b)</translation>
-    </message>
-    <message>
-        <source>Broadcast</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>by</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Cannot find Lame MP3 encoder</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Clear</source>
-        <translation>クリア</translation>
-    </message>
-    <message>
-        <source>Close</source>
-        <translation>閉じる</translation>
-    </message>
-    <message>
-        <source>Close others</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Close tab</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Continue</source>
-        <translation>接続( n)</translation>
-    </message>
-    <message>
-        <source>Days</source>
-        <translation>日</translation>
-    </message>
-    <message>
-        <source>d</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Default</source>
-        <translation>デフォルト</translation>
-    </message>
-    <message>
-        <source>Delete</source>
-        <translation>削除( d)</translation>
-    </message>
-    <message>
-        <source>Directory</source>
-        <translation>ディレクトリ</translation>
-    </message>
-    <message>
-        <source>Directories</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Disc</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Dur.</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Duration</source>
-        <translation>持続時間 %1</translation>
-    </message>
-    <message>
-        <source>Activate</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Active</source>
-        <translation>アクティブ</translation>
-    </message>
-    <message>
-        <source>Album artists</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>All</source>
-        <translation>すべて</translation>
-    </message>
-    <message>
-        <source>Application</source>
-        <translation>アプリケーション</translation>
-    </message>
-    <message>
-        <source>Apply</source>
-        <translation>適用</translation>
-    </message>
-    <message>
-        <source>Ascending</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Automatic</source>
-        <translation>自動</translation>
-    </message>
-    <message>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
@@ -1413,135 +1629,23 @@
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Dark Mode</source>
+        <source>Ctrl+f</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Date</source>
-        <translation>アクティブ</translation>
-    </message>
-    <message>
-        <source>Descending</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Dynamic playback</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Edit</source>
-        <translation>編集( e)</translation>
-    </message>
-    <message>
-        <source>Empty input</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Enter name</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Enter URL</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Entry</source>
-        <translation>メニューの項目( m)</translation>
-    </message>
-    <message>
-        <source>Entries</source>
-        <translation>エントリ</translation>
-    </message>
-    <message>
-        <source>Error</source>
-        <translation>エラー</translation>
-    </message>
-    <message>
-        <source>Fast</source>
-        <translation>速く</translation>
-    </message>
-    <message>
-        <source>File</source>
-        <translation>ファイル( f)</translation>
-    </message>
-    <message>
-        <source>Filename</source>
-        <translation>ファイル名</translation>
-    </message>
-    <message>
-        <source>Files</source>
-        <translation>ファイル</translation>
-    </message>
-    <message>
-        <source>Filesize</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>1st</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Font</source>
-        <translation>フォント</translation>
-    </message>
-    <message>
-        <source>Fonts</source>
-        <translation>フォント</translation>
-    </message>
-    <message>
-        <source>Fulltext</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Gapless playback</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Genre</source>
-        <translation type="unfinished"/>
+        <source>Delete</source>
+        <translation>削除( d)</translation>
     </message>
     <message>
         <source>Genres</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>h</source>
+        <source>Show Covers</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Import directory</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Import files</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Inactive</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Info</source>
-        <translation>情報</translation>
-    </message>
-    <message>
-        <source>Loading</source>
-        <translation>読み込み中</translation>
-    </message>
-    <message>
-        <source>Loading %1</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Invalid characters</source>
-        <translation>不正な文字</translation>
-    </message>
-    <message>
-        <source>Library</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Library path</source>
+        <source>Track number</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -1557,131 +1661,15 @@
         <translation>歌詞</translation>
     </message>
     <message>
-        <source>Menu</source>
-        <translation>メニュー</translation>
-    </message>
-    <message>
-        <source>m</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Missing</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
         <source>Months</source>
         <translation>カ月</translation>
     </message>
     <message>
-        <source>Mute off</source>
+        <source>Plugin</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Name</source>
-        <translation>名前</translation>
-    </message>
-    <message>
-        <source>New</source>
-        <translation>新規</translation>
-    </message>
-    <message>
-        <source>Next track</source>
-        <translation>次のトラック</translation>
-    </message>
-    <message>
-        <source>No</source>
-        <translation>いいえ</translation>
-    </message>
-    <message>
-        <source>None</source>
-        <translation>なし</translation>
-    </message>
-    <message>
-        <source>Tracks</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Move down</source>
-        <translation>下に移動</translation>
-    </message>
-    <message>
-        <source>Move up</source>
-        <translation>上に移動</translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>on</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Open</source>
-        <translation>オープン</translation>
-    </message>
-    <message>
-        <source>Open directory</source>
-        <translation>ディレクトリを開く</translation>
-    </message>
-    <message>
-        <source>Open file</source>
-        <translation>ファイルを開く</translation>
-    </message>
-    <message>
-        <source>or</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Overwrite</source>
-        <translation>上書き</translation>
-    </message>
-    <message>
-        <source>Pause</source>
-        <translation>一時停止(p)</translation>
-    </message>
-    <message>
-        <source>Play</source>
-        <translation>再生(p)</translation>
-    </message>
-    <message>
-        <source>Play/Pause</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Playing time</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Playlist</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Playlists</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Play next</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Preferences</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Previous track</source>
-        <translation>前のトラック</translation>
-    </message>
-    <message>
-        <source>Quit</source>
-        <translation>終了</translation>
-    </message>
-    <message>
-        <source>Radio</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Radio Station</source>
+        <source>Broadcast</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -1701,175 +1689,31 @@
         <translation>ユーザ名</translation>
     </message>
     <message>
-        <source>Repeat 1</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Repeat all</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Reset</source>
-        <translation>リセット</translation>
-    </message>
-    <message>
-        <source>Save to file</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Sort by</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Stream URL</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Unknown placeholder</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Weeks</source>
-        <translation>週間</translation>
-    </message>
-    <message>
-        <source>Years</source>
-        <translation>年</translation>
-    </message>
-    <message>
-        <source>Zoom</source>
-        <translation>ズーム( z)</translation>
-    </message>
-    <message>
-        <source>Refresh</source>
-        <translation>更新</translation>
-    </message>
-    <message>
-        <source>Hours</source>
-        <translation>時間</translation>
-    </message>
-    <message>
-        <source>Ctrl+f</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Esc</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Ctrl</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Alt</source>
-        <translation>Alt</translation>
-    </message>
-    <message>
-        <source>Shift</source>
-        <translation>Shift</translation>
-    </message>
-    <message>
-        <source>Backspace</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Tab</source>
-        <translation>タブ</translation>
-    </message>
-    <message>
-        <source>Minimize</source>
-        <translation>最小化</translation>
-    </message>
-    <message>
-        <source>Minutes</source>
-        <translation>分</translation>
-    </message>
-    <message>
-        <source>Mute</source>
-        <translation>ミュート</translation>
-    </message>
-    <message>
-        <source>Play in new tab</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Plugin</source>
-        <translation type="unfinished"/>
+        <source>Search</source>
+        <translation>検索</translation>
     </message>
     <message>
         <source>Podcasts</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Reload Library</source>
+        <source>Tracks</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Replace</source>
-        <translation>置換</translation>
+        <source>Bookmarks</source>
+        <translation>ブックマーク( b)</translation>
     </message>
     <message>
-        <source>Retry</source>
-        <translation type="unfinished"/>
+        <source>Continue</source>
+        <translation>接続( n)</translation>
     </message>
     <message>
-        <source>Sampler</source>
-        <translation type="unfinished"/>
+        <source>Next track</source>
+        <translation>次のトラック</translation>
     </message>
     <message>
-        <source>Shuffle</source>
-        <translation>シャッフル</translation>
-    </message>
-    <message>
-        <source>Shutdown</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Save</source>
-        <translation>保存( s)</translation>
-    </message>
-    <message>
-        <source>Save as</source>
-        <translation>すべて保存</translation>
-    </message>
-    <message>
-        <source>Search</source>
-        <translation>検索</translation>
-    </message>
-    <message>
-        <source>Search next</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>2nd</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Seconds</source>
-        <translation>秒</translation>
-    </message>
-    <message>
-        <source>s</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Seek backward</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Seek forward</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Show</source>
-        <translation>表示</translation>
-    </message>
-    <message>
-        <source>Show Album Artists</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Show Covers</source>
+        <source>Close tab</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -1877,15 +1721,187 @@
         <translation type="unfinished"/>
     </message>
     <message>
+        <source>Add tab</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Actions</source>
+        <translation>オプション</translation>
+    </message>
+    <message>
+        <source>Unknown placeholder</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>track on</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Artists</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Play next</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Directory</source>
+        <translation>ディレクトリ</translation>
+    </message>
+    <message>
+        <source>Refresh</source>
+        <translation>更新</translation>
+    </message>
+    <message>
+        <source>Replace</source>
+        <translation>置換</translation>
+    </message>
+    <message>
+        <source>Dark Mode</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Playlists</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Bitrate</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Sampler</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Save as</source>
+        <translation>すべて保存</translation>
+    </message>
+    <message>
+        <source>Seconds</source>
+        <translation>秒</translation>
+    </message>
+    <message>
+        <source>Descending</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Ascending</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Shuffle</source>
+        <translation>シャッフル</translation>
+    </message>
+    <message>
+        <source>Search next</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Backspace</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Sort by</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Activate</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Dynamic playback</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
         <source>Streams</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Track</source>
-        <translation>トラック</translation>
+        <source>Success</source>
+        <translation>成功</translation>
     </message>
     <message>
-        <source>Track number</source>
+        <source>Default</source>
+        <translation>デフォルト</translation>
+    </message>
+    <message>
+        <source>Enter URL</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Seek forward</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Directories</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Loading %1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Empty input</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Show Album Artists</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Automatic</source>
+        <translation>自動</translation>
+    </message>
+    <message>
+        <source>Stream URL</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Repeat all</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Open file</source>
+        <translation>ファイルを開く</translation>
+    </message>
+    <message>
+        <source>Fulltext</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Enter name</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Play/Pause</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Entries</source>
+        <translation>エントリ</translation>
+    </message>
+    <message>
+        <source>Repeat 1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Move down</source>
+        <translation>下に移動</translation>
+    </message>
+    <message>
+        <source>Play in new tab</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Duration</source>
+        <translation>持続時間 %1</translation>
+    </message>
+    <message>
+        <source>Various</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Library path</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -1893,51 +1909,11 @@
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Stop</source>
-        <translation>停止(s)</translation>
+        <source>Overwrite</source>
+        <translation>上書き</translation>
     </message>
     <message>
-        <source>Success</source>
-        <translation>成功</translation>
-    </message>
-    <message>
-        <source>th</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>3rd</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Title</source>
-        <translation>タイトル</translation>
-    </message>
-    <message>
-        <source>track on</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Tree</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Undo</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Various</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Various albums</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Various artists</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Various tracks</source>
+        <source>Mute off</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -1945,24 +1921,52 @@
         <translation>バージョン</translation>
     </message>
     <message>
-        <source>Volume down</source>
-        <translation>音量を下げる</translation>
-    </message>
-    <message>
-        <source>Volume up</source>
-        <translation>音量を上げる</translation>
+        <source>Preferences</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <source>Year</source>
+        <source>Previous track</source>
+        <translation>前のトラック</translation>
+    </message>
+    <message>
+        <source>Cannot find Lame MP3 encoder</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Yes</source>
-        <translation>はい</translation>
+        <source>Import directory</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Seek backward</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Open directory</source>
+        <translation>ディレクトリを開く</translation>
+    </message>
+    <message>
+        <source>Reload Library</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Various albums</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Various tracks</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Shutdown</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Application</source>
+        <translation>アプリケーション</translation>
     </message>
 </context>
 <context>
@@ -1982,22 +1986,22 @@
 <context>
     <name>Library::GenreView</name>
     <message>
-        <source>Updating genres</source>
+        <source>Do you really want to remove %1 from all tracks?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Do you really want to remove %1 from all tracks?</source>
+        <source>Updating genres</source>
         <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>Library::Importer</name>
     <message>
-        <source>All files could be imported</source>
+        <source>%1 of %2 files could be imported</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>%1 of %2 files could be imported</source>
+        <source>All files could be imported</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -2037,7 +2041,7 @@
 <context>
     <name>LibraryContextMenu</name>
     <message>
-        <source>Play in new tab</source>
+        <source>Ctrl+X</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -2045,41 +2049,49 @@
         <translation>選択をクリア</translation>
     </message>
     <message>
-        <source>Ctrl+X</source>
+        <source>Cover view</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Cover view</source>
+        <source>Play in new tab</source>
         <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>LyricLookupThread</name>
     <message>
-        <source>Cannot fetch lyrics from %1</source>
+        <source>No lyrics found</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>No lyrics found</source>
+        <source>Cannot fetch lyrics from %1</source>
         <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>Menubar</name>
     <message>
-        <source>View</source>
-        <translation>表示</translation>
-    </message>
-    <message>
         <source>Help</source>
         <translation>ヘルプ</translation>
     </message>
     <message>
-        <source>Fullscreen</source>
+        <source>View</source>
+        <translation>表示</translation>
+    </message>
+    <message>
+        <source>About Sayonara</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Media files</source>
+        <source>Please visit the forum at</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Special thanks to %1 and %2 for translating</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>License</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -2087,7 +2099,11 @@
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Please visit the forum at</source>
+        <source>Media files</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Fullscreen</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -2099,19 +2115,7 @@
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>About Sayonara</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Special thanks to %1 and %2 for translating</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
         <source>Written by Lucio Carreras</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>License</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -2126,19 +2130,15 @@
         <translation type="unfinished"/>
     </message>
     <message>
+        <source>Arrow down</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
         <source>Arrow up</source>
         <translation type="unfinished"/>
     </message>
     <message>
         <source>Next search result</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Arrow down</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Esc</source>
         <translation type="unfinished"/>
     </message>
 </context>
@@ -2159,11 +2159,7 @@
 <context>
     <name>SC::GUI_ArtistSearch</name>
     <message>
-        <source>Query too short</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>No artists found</source>
+        <source>%1 tracks found</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -2171,7 +2167,11 @@
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>%1 tracks found</source>
+        <source>No artists found</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Query too short</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -2180,9 +2180,16 @@
     </message>
 </context>
 <context>
+    <name>SC::GUI_Library</name>
+    <message>
+        <source>Add artist</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
     <name>SC::JsonParser</name>
     <message>
-        <source>Website</source>
+        <source>Followers/Following</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -2190,7 +2197,7 @@
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Followers/Following</source>
+        <source>Website</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -2233,11 +2240,11 @@
 <context>
     <name>TagTextInput</name>
     <message>
-        <source>Very first letter to upper case</source>
+        <source>First letters to upper case</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>First letters to upper case</source>
+        <source>Very first letter to upper case</source>
         <translation type="unfinished"/>
     </message>
 </context>
