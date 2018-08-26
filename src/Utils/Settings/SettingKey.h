@@ -191,6 +191,7 @@ enum class SettingKey : unsigned short
 
 	Cover_Server,
 	Cover_LoadFromFile,
+	Cover_StartSearch,
 	Icon_Theme,
 	Icon_ForceInDarkTheme,
 
@@ -365,6 +366,7 @@ namespace Set
 
 	INST(QStringList,		Cover_Server)				/* Cover server */
 	INST(bool,				Cover_LoadFromFile)		/* load covers from audio file, if available */
+	INST(bool,				Cover_StartSearch)		/* start alternative cover search automatically */
 	INST(QString,			Icon_Theme)				/* Current icon theme */
 	INST(bool,				Icon_ForceInDarkTheme)		/* Current icon theme */
 

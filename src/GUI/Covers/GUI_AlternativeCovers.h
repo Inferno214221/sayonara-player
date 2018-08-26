@@ -69,9 +69,13 @@ private slots:
 	void search_clicked();
 	void cover_pressed(const QModelIndex& idx);
 	void open_file_dialog();
-	void cl_new_cover(const QPixmap& cover);
+
+	void cl_started();
 	void cl_finished(bool);
+	void cl_new_cover(const QPixmap& cover);
+
 	void servers_changed();
+	void autostart_toggled(bool b);
 
 private:
 	void reset();

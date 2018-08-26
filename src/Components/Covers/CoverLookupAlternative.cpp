@@ -73,6 +73,10 @@ void AlternativeLookup::go(const Cover::Location& location)
 	{
 		emit sig_finished(false);
 	}
+
+	else {
+		emit sig_started();
+	}
 }
 
 void AlternativeLookup::start()

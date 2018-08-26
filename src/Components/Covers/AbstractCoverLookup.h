@@ -40,6 +40,7 @@ namespace Cover
 	signals:
 		void sig_cover_found(const QPixmap& pm);
 		void sig_finished(bool success);
+		void sig_started();
 
 	public slots:
 		virtual void stop()=0;

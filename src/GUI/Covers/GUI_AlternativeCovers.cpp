@@ -103,6 +103,7 @@ GUI_AlternativeCovers::GUI_AlternativeCovers(QWidget* parent) :
 	QPushButton* pref_button = cpa->create_button(this);
 	pref_button->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
 	ui->layout_server->addWidget(pref_button);
+	ui->cb_autostart->setChecked(_settings->get<Set::Cover_StartSearch>());
 
 	connect(ui->btn_ok, &QPushButton::clicked, this, &GUI_AlternativeCovers::ok_clicked);
 	connect(ui->btn_apply, &QPushButton::clicked, this, &GUI_AlternativeCovers::apply_clicked);
@@ -110,8 +111,11 @@ GUI_AlternativeCovers::GUI_AlternativeCovers(QWidget* parent) :
 	connect(ui->tv_images, &QTableView::pressed, this, &GUI_AlternativeCovers::cover_pressed);
 	connect(ui->btn_file, &QPushButton::clicked, this, &GUI_AlternativeCovers::open_file_dialog);
 	connect(ui->btn_close, &QPushButton::clicked, this, &Dialog::close);
+	connect(ui->cb_autostart, &QCheckBox::toggled, this, &GUI_AlternativeCovers::autostart_toggled);
+
 	connect(m->cl_alternative, &AlternativeLookup::sig_cover_found, this, &GUI_AlternativeCovers::cl_new_cover);
 	connect(m->cl_alternative, &AlternativeLookup::sig_finished, this, &GUI_AlternativeCovers::cl_finished);
+	connect(m->cl_alternative, &AlternativeLookup::sig_started, this, &GUI_AlternativeCovers::cl_started);
 
 	connect(ui->rb_auto_search, &QRadioButton::toggled, this, [=](bool b)
 	{
@@ -148,8 +152,10 @@ void GUI_AlternativeCovers::start(const Location& cl)
 	}
 
 	m->cl_alternative->set_cover_location(cl);
+	m->loading_bar->hide();
 
 	ui->tabWidget->setCurrentIndex(0);
+	ui->lab_status->setText("");
 	ui->le_search->setText( cl.search_term() );
 	ui->rb_auto_search->setChecked(true);
 
@@ -157,19 +163,20 @@ void GUI_AlternativeCovers::start(const Location& cl)
 
 	init_combobox();
 
-	connect_and_start();
+	if(!_settings->get<Set::Cover_StartSearch>())
+	{
+		this->show();
+	}
+
+	else {
+		connect_and_start();
+	}
 }
 
 
 void GUI_AlternativeCovers::connect_and_start()
 {
-	reset();
-
-	m->is_searching = true;
-
-	ui->btn_ok->setEnabled(false);
-	ui->btn_apply->setEnabled(false);
-	ui->btn_search->setText(Lang::get(Lang::Stop));
+	this->reset();
 
 	if(ui->rb_text_search->isChecked())
 	{
@@ -198,9 +205,7 @@ void GUI_AlternativeCovers::connect_and_start()
 		}
 	}
 
-	m->loading_bar->show();
-
-	show();
+	this->show();
 }
 
 void GUI_AlternativeCovers::language_changed()
@@ -265,16 +270,13 @@ void GUI_AlternativeCovers::search_clicked()
 	connect_and_start();
 }
 
-
-void GUI_AlternativeCovers::cl_new_cover(const QPixmap& pm)
+void GUI_AlternativeCovers::cl_started()
 {
-	m->model->add_cover(pm);
+	m->is_searching = true;
+	m->loading_bar->show();
 
-	ui->btn_ok->setEnabled(true);
-	ui->btn_apply->setEnabled(true);
-	ui->lab_status->setText( tr("%1 covers found").arg(m->model->cover_count()) ) ;
+	ui->btn_search->setText(Lang::get(Lang::Stop));
 }
-
 
 void GUI_AlternativeCovers::cl_finished(bool success)
 {
@@ -286,9 +288,25 @@ void GUI_AlternativeCovers::cl_finished(bool success)
 	ui->btn_search->setText(Lang::get(Lang::SearchVerb));
 }
 
+void GUI_AlternativeCovers::cl_new_cover(const QPixmap& pm)
+{
+	m->model->add_cover(pm);
+
+	ui->btn_ok->setEnabled(true);
+	ui->btn_apply->setEnabled(true);
+	ui->lab_status->setText( tr("%1 covers found").arg(m->model->cover_count()) ) ;
+}
+
+
+
 void GUI_AlternativeCovers::servers_changed()
 {
 	init_combobox();
+}
+
+void GUI_AlternativeCovers::autostart_toggled(bool b)
+{
+	_settings->set<Set::Cover_StartSearch>(b);
 }
 
 
@@ -307,8 +325,14 @@ void GUI_AlternativeCovers::cover_pressed(const QModelIndex& idx)
 
 void GUI_AlternativeCovers::reset()
 {
-	m->model->reset();
+	ui->btn_ok->setEnabled(false);
+	ui->btn_apply->setEnabled(false);
+	ui->btn_search->setText(Lang::get(Lang::Stop));
 	ui->lab_status->clear();
+
+	m->is_searching = false;
+	m->model->reset();
+	m->loading_bar->hide();
 
 	if(m->cl_alternative)
 	{
