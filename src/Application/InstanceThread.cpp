@@ -23,6 +23,9 @@
 #include "Utils/Logger/Logger.h"
 #include "Components/Playlist/PlaylistHandler.h"
 
+#include <QByteArray>
+#include <QDir>
+
 
 struct InstanceThread::Private
 {
@@ -31,7 +34,7 @@ struct InstanceThread::Private
 	bool				may_run;
 
 	Private() :
-		memory("SayonaraMemory"),
+		memory(QByteArray("SayonaraMemory") + QDir::homePath()),
 		may_run(true)
 	{}
 };

@@ -93,7 +93,7 @@ bool check_for_other_instance(const CommandLineData& cmd_data, QSharedMemory* me
 	sp_log(Log::Debug, "Main") << "Check for another instance";
 	if(memory->create(256, QSharedMemory::ReadWrite))
 	{
-		sp_log(Log::Debug, "Main") << "Cannot create memory";
+		sp_log(Log::Debug, "Main") << "Could create memory";
 		return false;
 	}
 
@@ -157,7 +157,10 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
-	QSharedMemory memory("SayonaraMemory");
+	QByteArray key("SayonaraMemory");
+	key += QDir::homePath();
+
+	QSharedMemory memory(key);
 
 	if(!cmd_data.multiple_instances)
 	{
@@ -168,7 +171,11 @@ int main(int argc, char *argv[])
 
 		if(memory.data())
 		{
-			memory.attach(QSharedMemory::ReadWrite);
+			bool success = memory.attach(QSharedMemory::ReadWrite);
+			sp_log(Log::Debug) << "Attach memory " << success;
+			if(!success){
+				sp_log(Log::Debug) << "Cannot attach memory " << memory.error() << ": " << memory.errorString();
+			}
 			memory.lock();
 			memcpy(memory.data(), "Sayonara", 8);
 			memory.unlock();
