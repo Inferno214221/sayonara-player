@@ -172,9 +172,9 @@ int main(int argc, char *argv[])
 		if(memory.data())
 		{
 			bool success = memory.attach(QSharedMemory::ReadWrite);
-			sp_log(Log::Debug) << "Attach memory " << success;
+			sp_log(Log::Debug, "Main") << "Attach memory " << success;
 			if(!success){
-				sp_log(Log::Debug) << "Cannot attach memory " << memory.error() << ": " << memory.errorString();
+				sp_log(Log::Debug, "Main") << "Cannot attach memory " << memory.error() << ": " << memory.errorString();
 			}
 			memory.lock();
 			memcpy(memory.data(), "Sayonara", 8);
