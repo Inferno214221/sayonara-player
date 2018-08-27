@@ -52,7 +52,6 @@ namespace Cover
 
 
 	public:
-
 		enum CoverSourceType
 		{
 			Invalid=0,

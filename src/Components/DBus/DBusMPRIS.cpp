@@ -38,12 +38,12 @@
 
 struct DBusAdaptor::Private
 {
-	PlayManagerPtr play_manager=nullptr;
-
 	QString		object_path;
 	QString		service_name;
 	QString		dbus_service;
 	QString		dbus_interface;
+
+	PlayManagerPtr play_manager=nullptr;
 
 	Private(QStrRef object_path, QStrRef service_name, QStrRef dbus_service, QStrRef dbus_interface) :
 		object_path(object_path),
@@ -68,7 +68,6 @@ void DBusAdaptor::create_message(QString name, QVariant val)
 	QDBusMessage sig;
 	QVariantMap map;
 	QVariantList args;
-	bool success;
 
 	map.insert(name, val);
 	args << m->dbus_service << map << QStringList();
@@ -77,10 +76,7 @@ void DBusAdaptor::create_message(QString name, QVariant val)
 	sig = QDBusMessage::createSignal(m->object_path, m->dbus_interface, "PropertiesChanged");
 	sig.setArguments(args);
 
-	success = QDBusConnection::sessionBus().send(sig);
-	Q_UNUSED(success)
-	/*QDBusError err = QDBusConnection::sessionBus().lastError();
-	sp_log(Log::Debug, this) << "Send signal: " << name << ": " << success << ": " << err.message();*/
+	QDBusConnection::sessionBus().send(sig);
 }
 
 QString DBusAdaptor::object_path() const
@@ -105,8 +101,7 @@ QString DBusAdaptor::dbus_interface() const
 
 struct DBusMPRIS::MediaPlayer2::Private
 {
-	QMainWindow*	player=nullptr;
-	PlayManagerPtr  play_manager=nullptr;
+	Cover::Location cl;
 
 	QStringList     supported_uri_schemes;
 	QStringList     supported_mime_types;
@@ -114,6 +109,10 @@ struct DBusMPRIS::MediaPlayer2::Private
 	QString			playback_status;
 	MetaData		md;
 	MicroSeconds	pos;
+
+	QMainWindow*	player=nullptr;
+	PlayManagerPtr  play_manager=nullptr;
+
 	double			volume;
 
 	int				playlist_track_count;
@@ -124,11 +123,10 @@ struct DBusMPRIS::MediaPlayer2::Private
 
 	bool			initialized;
 
-
 	Private(QMainWindow* player) :
-		player(player),
 		playback_status("Stopped"),
 		pos(0),
+		player(player),
 		volume(1.0),
 		playlist_track_count(0),
 		cur_idx(-1),
@@ -317,7 +315,6 @@ bool DBusMPRIS::MediaPlayer2::Shuffle()
 
 QVariantMap DBusMPRIS::MediaPlayer2::Metadata()
 {
-	QString cover_path;
 	QVariantMap map;
 	QVariant v_object_path, v_length;
 
@@ -330,8 +327,8 @@ QVariantMap DBusMPRIS::MediaPlayer2::Metadata()
 	v_object_path.setValue<QDBusObjectPath>(object_path);
 	v_length.setValue<qlonglong>(m->md.length_ms * 1000);
 
-	Cover::Location cl = Cover::Location::cover_location(m->md);
-	cover_path = cl.preferred_path();
+	m->cl = Cover::Location::cover_location(m->md);
+	QString cover_path = m->cl.preferred_path();
 
 	QString title = m->md.title();
 	if(title.isEmpty()){

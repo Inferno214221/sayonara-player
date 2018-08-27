@@ -109,7 +109,7 @@ void Tracks::drop_track_view()
 		return;
 	}
 
-	run_query("DROP VIEW " + m->track_view + ";", "Cannot drop " + m->track_view);
+	run_query("DROP VIEW IF EXISTS " + m->track_view + ";", "Cannot drop " + m->track_view);
 }
 
 void Tracks::create_track_view(const QString& select_statement)
@@ -129,7 +129,7 @@ void Tracks::create_track_view(const QString& select_statement)
 
 void Tracks::drop_search_view()
 {
-	run_query("DROP VIEW " + m->search_view + "; ", "Cannot drop " + m->search_view);
+	run_query("DROP VIEW IF EXISTS " + m->search_view + "; ", "Cannot drop " + m->search_view);
 }
 
 void Tracks::create_track_search_view(const QString& select_statement)
@@ -566,10 +566,12 @@ bool Tracks::deleteTracks(const IdList& ids)
 
 	db().transaction();
 
-	for(const int& id : ids){
-		if( deleteTrack(id) ){
+	for(const int& id : ids)
+	{
+		if( deleteTrack(id) )
+		{
 			n_files++;
-		};
+		}
 	}
 
 	bool success = db().commit();

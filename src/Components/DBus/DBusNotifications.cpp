@@ -28,6 +28,7 @@ struct DBusNotifications::Private
 {
 	OrgFreedesktopNotificationsInterface* interface=nullptr;
 	MetaData md;
+	Cover::Location cl;
 };
 
 DBusNotifications::DBusNotifications(QObject* parent) :
@@ -77,14 +78,14 @@ void DBusNotifications::notify(const QString& title, const QString& text, const 
 	map.insert("urgency", 1);
 
 	m->interface->Notify("Sayonara Player",
-					   500,
-					   image_path,
-					   title,
-					   text,
-					   QStringList(),
-					   map,
-					   _settings->get<Set::Notification_Timeout>()
-					   );
+	   500,
+	   image_path,
+	   title,
+	   text,
+	   QStringList(),
+	   map,
+	   _settings->get<Set::Notification_Timeout>()
+	);
 }
 
 QString DBusNotifications::name() const
@@ -107,8 +108,8 @@ void DBusNotifications::track_changed(const MetaData& md)
 		return;
 	}
 
-	Cover::Location cl = Cover::Location::cover_location(md);
-	QString path = cl.preferred_path();
+	m->cl = Cover::Location::cover_location(md);
+	QString path = m->cl.preferred_path();
 
 	notify(m->md.title(), " by " + m->md.artist(), path);
 }

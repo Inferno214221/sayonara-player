@@ -125,133 +125,115 @@ LibraryId LibraryDatabase::library_id() const
 
 bool DB::LibraryDatabase::store_metadata(const MetaDataList& v_md)
 {
-	bool success = true;
-
 	if(v_md.isEmpty()) {
-		return success;
+		return true;
+	}
+
+	sp_log(Log::Develop, this) << " Search for already known albums and artists.";
+
+	// gather all albums in a map
+	QHash<QString, Album> album_map;
+	{
+		AlbumList albums;
+		DB::Albums::getAllAlbums(albums, true);
+
+		for(const Album& album : albums){
+			album_map[album.name()] = album;
+		}
+	}
+
+	// gather all artists in a map
+	QHash<QString, Artist> artist_map;
+	{
+		ArtistList artists;
+		DB::Artists::getAllArtists(artists, true);
+
+		for(const Artist& artist : artists){
+			artist_map[artist.name()] = artist;
+		}
+	}
+
+	// gather all metadata in a map
+	QHash<QString, MetaData> md_map;
+	{
+		MetaDataList v_md_old;
+		DB::Tracks::getAllTracks(v_md_old);
+		for(const MetaData& md : v_md_old) {
+			md_map[md.filepath()] = md;
+		}
 	}
 
 	db().transaction();
 
-	AlbumList albums;
-	ArtistList artists;
-	MetaDataList v_md_old;
-	QHash<QString, Album> album_map;
-	QHash<QString, Artist> artist_map;
-	QHash<QString, MetaData> md_map;
-
-	sp_log(Log::Develop, this) << " Search for already known albums and artists.";
-	DB::Albums::getAllAlbums(albums, true);
-	DB::Artists::getAllArtists(artists, true);
-	DB::Tracks::getAllTracks(v_md_old);
-
-	sp_log(Log::Develop, this) << "  Found " << albums.size() << " albums and " << artists.size() << " artists";
-
-	// gather all albums in a map
-	for(const Album& album : albums){
-		album_map[album.name()] = album;
-	}
-
-	// gather all artists in a map
-	for(const Artist& artist : artists){
-		artist_map[artist.name()] = artist;
-	}
-
-	for(const MetaData& md : v_md_old) {
-		md_map[md.filepath()] = md;
-	}
-
-	albums.clear();
-	artists.clear();
-	v_md_old.clear();
-
 	for(MetaData md : v_md)
 	{
-		if(md.filepath().contains("never", Qt::CaseInsensitive)){
-			int x = 4;
-			sp_log(Log::Debug, this) << "Processing " << md.filepath();
-		}
-		sp_log(Log::Debug, this) << "Processing " << md.filepath();
-
-		ArtistId artist_id, album_artist_id;
-		AlbumId album_id;
-		//first check if we know the artist and its id
-		Album album = album_map[md.album()];
-		if(album.id < 0)
-		{
-			album_id = DB::Albums::insertAlbumIntoDatabase(md.album());
-			album.id = album_id;
-			album_map[md.album()] = album;
-		}
-
-		else {
-			album_id = album.id;
-		}
-
-		Artist artist = artist_map[md.artist()];
-		if (artist.id < 0)
-		{
-			artist_id = DB::Artists::insertArtistIntoDatabase(md.artist());
-			artist.id = artist_id;
-			artist_map[md.artist()] = artist;
-		}
-
-		else {
-			artist_id = artist.id;
-		}
-
-		if(md.album_artist().isEmpty()){
-			md.set_album_artist(md.artist());
-		}
-
-		Artist album_artist = artist_map[md.album_artist()];
-		if (album_artist.id < 0)
-		{
-			if(md.album_artist().isEmpty()){
-				album_artist_id = -1;
-			}
-
-			else{
-				album_artist_id = DB::Artists::insertArtistIntoDatabase(md.album_artist());
-				album_artist.id = album_artist_id;
-				artist_map[md.album_artist()] = album_artist;
-			}
-		}
-
-		else{
-			album_artist_id = album_artist.id;
-		}
-
-		md.album_id = album_id;
-		md.artist_id = artist_id;
-		md.set_album_artist_id(album_artist_id);
-
 		md.library_id = m->library_id;
 
-		if(album_id == -1 || artist_id == -1 || md.library_id == -1)
+		{ // check album id
+			Album album = album_map[md.album()];
+			if(album.id < 0)
+			{
+				album.id = DB::Albums::insertAlbumIntoDatabase(md.album());
+				album_map[md.album()] = album;
+			}
+
+			md.album_id = album.id;
+		}
+
+		{ // check artist id
+			Artist artist = artist_map[md.artist()];
+			if (artist.id < 0)
+			{
+				artist.id = DB::Artists::insertArtistIntoDatabase(md.artist());
+				artist_map[md.artist()] = artist;
+			}
+
+			md.artist_id = artist.id;
+		}
+
+		{ // check album artist ...
+			if(md.album_artist().isEmpty()){
+				md.set_album_artist(md.artist());
+			}
+
+			// ... and insert it into db if it doesn't exist
+			Artist album_artist = artist_map[md.album_artist()];
+			if(album_artist.id < 0)
+			{
+				album_artist.id  = DB::Artists::insertArtistIntoDatabase(md.album_artist());
+				artist_map[md.album_artist()] = album_artist;
+			}
+
+			md.set_album_artist_id(album_artist.id);
+		}
+
+		// because all artists and albums should be in the db right now,
+		// we should never reach the inner block
+		if(md.album_id < 0 || md.artist_id < 0 || md.library_id < 0)
 		{
 			sp_log(Log::Warning) << "Cannot insert artist or album of " << md.filepath();
 			continue;
 		}
 
-		const MetaData& found_md = md_map[md.filepath()];
-		if(found_md.id < 0)
+		// check, if the track was known before
 		{
-			DB::Tracks::insertTrackIntoDatabase(md, artist_id, album_id, album_artist_id);
-		}
+			const MetaData& found_md = md_map[md.filepath()];
+			if(found_md.id < 0)
+			{
+				DB::Tracks::insertTrackIntoDatabase(md, md.artist_id, md.album_id, md.album_artist_id());
+			}
 
-		else
-		{
-			md.id = found_md.id;
-			DB::Tracks::updateTrack(md);
+			else
+			{
+				md.id = found_md.id;
+				DB::Tracks::updateTrack(md);
+			}
 		}
-
 	}
 
 	sp_log(Log::Develop, this) << "Commit " << v_md.size() << " tracks to database";
-	success = db().commit();
 
-	return success;
+	return db().commit();
 }
 
 QSqlDatabase LibraryDatabase::db() const

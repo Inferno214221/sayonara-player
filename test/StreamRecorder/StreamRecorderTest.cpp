@@ -34,8 +34,8 @@ private slots:
 
 StreamRecorderTest::StreamRecorderTest()
 {
-	SettingRegistry::init();
 	Settings* s = Settings::instance();
+	s->check_settings();
 
 	Util::File::remove_files_in_directory(sr_path());
 	Util::File::delete_files({sr_path()});
@@ -111,7 +111,7 @@ void StreamRecorderTest::www_test()
 			track_num--;
 		}
 
-		QVERIFY(filename.compare(should_filename) == 0);
+		QVERIFY(filename == should_filename);
 		QVERIFY(sr->is_recording());
 	}
 
@@ -126,15 +126,15 @@ void StreamRecorderTest::file_test()
 
 	for(int i=1; i<100; i++)
 	{
-		QString filepath = QString("path%1.mp3")
+		QString filepath = QString("/tmp/path%1.mp3")
 				.arg(i);
 
 		QVERIFY(Util::File::is_www(filepath) == false);
 
 		MetaData md;
 		md.set_title(QString("title%1").arg(i));
-		md.set_artist( QString("artist%1").arg(i));
-		md.set_filepath( filepath);
+		md.set_artist(QString("artist%1").arg(i));
+		md.set_filepath(filepath);
 
 		QString filename = sr->change_track(md);
 
