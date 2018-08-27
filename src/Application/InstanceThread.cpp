@@ -60,7 +60,7 @@ void InstanceThread::run()
 
 		if(memcmp(ptr, "Req", 3) == 0)
 		{
-			sp_log(Log::Debug, this) << "Second instance saying hello";
+			sp_log(Log::Info, this) << "Second instance saying hello";
 
 			if(*(ptr + 3) == 'D'){
 				parse_memory();

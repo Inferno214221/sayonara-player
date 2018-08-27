@@ -90,14 +90,17 @@ void segfault_handler(int sig)
 
 bool check_for_other_instance(const CommandLineData& cmd_data, QSharedMemory* memory)
 {
+	sp_log(Log::Debug, "Main") << "Check for another instance";
 	if(memory->create(256, QSharedMemory::ReadWrite))
 	{
+		sp_log(Log::Debug, "Main") << "Cannot create memory";
 		return false;
 	}
 
 	memory->attach(QSharedMemory::ReadWrite);
 	if(!memory->data())
 	{
+		sp_log(Log::Debug, "Main") << "No shared memory data";
 		return false;
 	}
 
@@ -123,7 +126,8 @@ bool check_for_other_instance(const CommandLineData& cmd_data, QSharedMemory* me
 	}
 
 	memory->lock();
-	memcpy(ptr, data.data(), data.size());
+	sp_log(Log::Debug, "Main") << "Sending to shared memory: " << data;
+	memcpy(ptr, data.data(), static_cast<size_t>(data.size()));
 	memory->unlock();
 
 	Util::sleep_ms(500);
