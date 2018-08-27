@@ -3,7 +3,7 @@
     <name>AbstractLibrary</name>
     <message>
         <source>All %1 could be removed</source>
-        <translation>Tous les %1 ont été effacé</translation>
+        <translation>Tous les %1 ont été effacés</translation>
     </message>
     <message>
         <source>%1 of %2 %3 could not be removed</source>
@@ -94,11 +94,11 @@
     <name>GUI_AlternativeCovers</name>
     <message>
         <source>Local Search</source>
-        <translation>Chercher local</translation>
+        <translation>Recherche locale</translation>
     </message>
     <message>
         <source>Automatic search</source>
-        <translation>Chercher automatique</translation>
+        <translation>Recherche automatique</translation>
     </message>
     <message>
         <source>Online Search</source>
@@ -118,15 +118,15 @@
     </message>
     <message>
         <source>Text search</source>
-        <translation>Recherche avec texte</translation>
+        <translation>Recherche par texte</translation>
     </message>
     <message>
         <source>Alternative Cover</source>
-        <translation>Pochette altérnative</translation>
+        <translation>Pochette alternative</translation>
     </message>
     <message>
         <source>Start search automatically</source>
-        <translation type="unfinished"/>
+        <translation>Démarrer la recherche automatiquement</translation>
     </message>
 </context>
 <context>
@@ -164,11 +164,11 @@
     </message>
     <message>
         <source>No bookmarks found</source>
-        <translation>Non signets</translation>
+        <translation>Aucun signet trouvé</translation>
     </message>
     <message>
         <source>Sorry, bookmarks can only be set for library tracks at the moment.</source>
-        <translation>Création de signets est uniquement possible pour des pistes dans la bibliothèque.</translation>
+        <translation>La création de signets n&apos;est possible que dans la bibliothèque pour l&apos;instant</translation>
     </message>
 </context>
 <context>
@@ -179,7 +179,7 @@
     </message>
     <message>
         <source>Cannot Broadcast</source>
-        <translation>Incapable de radiodiffuser</translation>
+        <translation>La radiodiffusion n&apos;a pas pu démarrer</translation>
     </message>
     <message>
         <source>%1 listener</source>
@@ -191,15 +191,15 @@
     </message>
     <message>
         <source>Cannot broadcast on port %1</source>
-        <translation>Incapable de radiodiffuser au port %1</translation>
+        <translation>La radiodiffusion au port %1 n&apos;a pas pu démarrer</translation>
     </message>
     <message>
         <source>%1 listeners</source>
-        <translation>%1 auditeurs</translation>
+        <translation>%1 auditeur(s)</translation>
     </message>
     <message>
         <source>Maybe another application is using this port?</source>
-        <translation>Peut-être une autre application utilise ce port?</translation>
+        <translation>Peut-être qu&apos;une autre application utilise ce port ?</translation>
     </message>
     <message>
         <source>Dismiss</source>
@@ -258,7 +258,7 @@
     <name>GUI_CoverView</name>
     <message>
         <source>Zoom</source>
-        <translation>Agrandissement</translation>
+        <translation>Zoom</translation>
     </message>
     <message>
         <source>Sort by</source>
@@ -273,11 +273,11 @@
     </message>
     <message>
         <source>Clear cache</source>
-        <translation type="unfinished"/>
+        <translation>Effacer le cache</translation>
     </message>
     <message>
         <source>Delete files</source>
-        <translation type="unfinished"/>
+        <translation>Supprimer les fichiers</translation>
     </message>
 </context>
 <context>
@@ -302,7 +302,7 @@
     <name>GUI_EmptyLibrary</name>
     <message>
         <source>You haven&apos;t specified a library path yet</source>
-        <translation>Vous n&apos;avez encore spécifié&lt;br /&gt;aucun chemin pour la bibliothèque</translation>
+        <translation>Vous n&apos;avez pas défini de chemin pour la bibliothèque</translation>
     </message>
     <message>
         <source>Set library path</source>
@@ -385,7 +385,7 @@
     </message>
     <message>
         <source>%1 tracks available</source>
-        <translation>%1 piste(s) trouvée</translation>
+        <translation>%1 piste(s) trouvée(s)</translation>
     </message>
     <message>
         <source>Rollback</source>
@@ -405,7 +405,7 @@
     </message>
     <message>
         <source>Choose target directory</source>
-        <translation>Choisissez le dossier d&apos;écriture</translation>
+        <translation>Choisissez le dossier cible</translation>
     </message>
 </context>
 <context>
@@ -465,11 +465,11 @@
     </message>
     <message>
         <source>On double click, create playlist and</source>
-        <translation>Au double clic créez liste et</translation>
+        <translation>Au double clic, créer liste de lecture et</translation>
     </message>
     <message>
         <source>When drag and drop into playlist </source>
-        <translation>Glisser-déplacer dans la liste de lecture et </translation>
+        <translation>Quand glissé-déposé dans la liste de lecture</translation>
     </message>
     <message>
         <source>Library-Playlist Interaction</source>
@@ -477,15 +477,15 @@
     </message>
     <message>
         <source>start if stopped and playlist is empty</source>
-        <translation>démmarer le lecture, si joueur est arrêté et liste de lecture est vide</translation>
+        <translation>démarrer la lecture si le lecteur est arrêté et si la liste de lecture est vide</translation>
     </message>
     <message>
         <source>do nothing (default)</source>
-        <translation>faire rien (défaut)</translation>
+        <translation>ne rien faire (défaut)</translation>
     </message>
     <message>
         <source>Show &quot;Clear selection&quot; buttons</source>
-        <translation>Afficher des boutons d&apos;effacer</translation>
+        <translation>Afficher les boutons pour effacer la sélection</translation>
     </message>
     <message>
         <source>Libraries</source>
@@ -493,11 +493,11 @@
     </message>
     <message>
         <source>Cannot edit library</source>
-        <translation>Incapable d&apos;éditer la bibliothèque</translation>
+        <translation>La bibliothèque n&apos;a pas pu être éditée</translation>
     </message>
     <message>
         <source>start playback if stopped</source>
-        <translation>démarrer la lecture, si joueur est arrêté</translation>
+        <translation>démarrer la lecture si le lecteur est arrêté</translation>
     </message>
     <message>
         <source>start playback immediately</source>
@@ -512,7 +512,7 @@
     </message>
     <message>
         <source>No genres found</source>
-        <translation>Incapable de trouver des genres</translation>
+        <translation>Aucun genre trouvé</translation>
     </message>
 </context>
 <context>
@@ -526,7 +526,7 @@
     <name>GUI_Lyrics</name>
     <message>
         <source>Zoom</source>
-        <translation>Agrandissement </translation>
+        <translation>Zoom</translation>
     </message>
     <message>
         <source>Overwrite lyrics</source>
@@ -550,7 +550,7 @@
     </message>
     <message>
         <source>Save lyrics not supported</source>
-        <translation>Impossible d&apos;enregistrer des paroles dans le ficher</translation>
+        <translation>Enregistrement des paroles non supporté</translation>
     </message>
 </context>
 <context>
@@ -579,15 +579,15 @@
     <name>GUI_PlayerPreferences</name>
     <message>
         <source>Close to tray</source>
-        <translation>Réduire à la zone de notification</translation>
+        <translation>Réduire dans la zone de notifications</translation>
     </message>
     <message>
         <source>Show system tray icon</source>
-        <translation>Afficher l&apos;icône dans la boîte à miniatures</translation>
+        <translation>Afficher l&apos;icône dans la zone de notifications</translation>
     </message>
     <message>
         <source>Start in tray</source>
-        <translation>Démarrer minimisée</translation>
+        <translation>Démarrer minimisé</translation>
     </message>
     <message>
         <source>Update notifications</source>
@@ -598,7 +598,7 @@
     <name>GUI_Playlist</name>
     <message>
         <source>Playlist name already exists</source>
-        <translation>Liste de lecture existe déjà</translation>
+        <translation>Ce nom de liste de lecture existe déjà</translation>
     </message>
     <message>
         <source>Open Media files</source>
@@ -614,7 +614,7 @@
     </message>
     <message>
         <source>Cannot save playlist.</source>
-        <translation>Incapable d&apos;enregistrer la liste de lecture.</translation>
+        <translation>La liste de lecture n&apos;a pas pu être enregistrée.</translation>
     </message>
     <message>
         <source>Save playlist</source>
@@ -622,29 +622,29 @@
     </message>
     <message>
         <source>Playlists are currently only supported for library tracks.</source>
-        <translation>Listes de lectures sont seulement disponible pour les fichiers de la bibliothèque.</translation>
+        <translation>Les listes de lectures sont uniquement disponibles pour les fichiers de la bibliothèque.</translation>
     </message>
     <message>
         <source>Playlist exists</source>
-        <translation>Liste de lecture existe</translation>
+        <translation>Cette liste de lecture existe déjà</translation>
     </message>
 </context>
 <context>
     <name>GUI_PlaylistBottomBar</name>
     <message>
         <source>Please set library path first</source>
-        <translation>Veuillez d&apos;abord définir le chemin d&apos;accès de la bibliothèque</translation>
+        <translation>Veuillez d&apos;abord définir le chemin de la bibliothèque</translation>
     </message>
     <message>
         <source>Cancel shutdown?</source>
-        <translation>Annuler éteindre l&apos;ordinateur?</translation>
+        <translation>Annuler l&apos;extinction de l&apos;ordinateur ?</translation>
     </message>
 </context>
 <context>
     <name>GUI_PlaylistChooser</name>
     <message>
         <source>No playlists found</source>
-        <translation>Non liste de lecture</translation>
+        <translation>Aucune liste de lecture trouvée</translation>
     </message>
 </context>
 <context>
@@ -655,7 +655,7 @@
     </message>
     <message>
         <source>Load temporary playlists</source>
-        <translation>Charger des listes de lecture temporaires</translation>
+        <translation>Charger les listes de lecture temporaires</translation>
     </message>
     <message>
         <source>Show numbers</source>
@@ -663,7 +663,7 @@
     </message>
     <message>
         <source>Show clear button</source>
-        <translation>Afficher bouton d&apos;effacer</translation>
+        <translation>Afficher bouton pour effacer</translation>
     </message>
     <message>
         <source>Load saved playlists</source>
@@ -671,7 +671,7 @@
     </message>
     <message>
         <source>Playlist look: Invalid expression</source>
-        <translation>Apparence de la liste de lecture: Expression non valable</translation>
+        <translation>Apparence de la liste de lecture : Expression non valable</translation>
     </message>
     <message>
         <source>Stop behaviour</source>
@@ -683,11 +683,11 @@
     </message>
     <message>
         <source>Show covers</source>
-        <translation>Afficher des pochettes</translation>
+        <translation>Afficher les pochettes</translation>
     </message>
     <message>
         <source>Remember time of last track</source>
-        <translation>Mémoriser le point de lecture</translation>
+        <translation>Mémoriser la position de lecture</translation>
     </message>
     <message>
         <source>Show rating</source>
@@ -695,7 +695,7 @@
     </message>
     <message>
         <source>Load last track after pressing stop</source>
-        <translation>Charger la dernière piste encore</translation>
+        <translation>Charger la dernière piste après l&apos;appui sur stop</translation>
     </message>
     <message>
         <source>Start up</source>
@@ -768,7 +768,7 @@
     </message>
     <message>
         <source>Active</source>
-        <translation>Active</translation>
+        <translation>Actif</translation>
     </message>
     <message>
         <source>Password</source>
@@ -780,26 +780,26 @@
     </message>
     <message>
         <source>Save username/password</source>
-        <translation>Enregistrer nom/parole</translation>
+        <translation>Enregistrer nom/mot de passe</translation>
     </message>
 </context>
 <context>
     <name>GUI_ReloadLibraryDialog</name>
     <message>
         <source>Scan all files in your library directory</source>
-        <translation>Analyser tout des fichiers dans votre dossier de la bibliotheque</translation>
+        <translation>Analyser tous les fichiers dans votre dossier de bibliothèque</translation>
     </message>
     <message>
         <source>Only scan for new and deleted files</source>
-        <translation>Seulement analyser des fichiers nouveaux et supprimés</translation>
+        <translation>Seulement détecter les fichiers nouveaux ou supprimés</translation>
     </message>
     <message>
         <source>Fast scan</source>
-        <translation>Analyser vite</translation>
+        <translation>Analyse rapide</translation>
     </message>
     <message>
         <source>Deep scan</source>
-        <translation>Analyser exactement</translation>
+        <translation>Analyse exhaustive</translation>
     </message>
 </context>
 <context>
@@ -814,7 +814,7 @@
     </message>
     <message>
         <source>Remote control URL</source>
-        <translation>Url de la commande à distance</translation>
+        <translation>URL de la commande à distance</translation>
     </message>
 </context>
 <context>
@@ -829,7 +829,7 @@
     </message>
     <message>
         <source>Ignore special characters</source>
-        <translation>Ignorer charactères spéciales</translation>
+        <translation>Ignorer caractères spéciaux</translation>
     </message>
     <message>
         <source>Ignore accents</source>
@@ -867,14 +867,14 @@
     </message>
     <message>
         <source>Double shortcuts found</source>
-        <translation>Raccourcis déjà utilisé</translation>
+        <translation>Raccourcis en conflit détectés</translation>
     </message>
 </context>
 <context>
     <name>GUI_Shutdown</name>
     <message>
         <source>OK</source>
-        <translation>Ok</translation>
+        <translation>OK</translation>
     </message>
     <message>
         <source>minutes</source>
@@ -886,11 +886,11 @@
     </message>
     <message>
         <source>Shutdown after playlist finished</source>
-        <translation>Fermeture après la fin de la liste de pistes</translation>
+        <translation>Éteindre après la fin de la liste de lecture</translation>
     </message>
     <message>
         <source>Shutdown after</source>
-        <translation>Fermeture après </translation>
+        <translation>Éteindre après </translation>
     </message>
     <message>
         <source>Shutdown</source>
@@ -920,11 +920,11 @@
     </message>
     <message>
         <source>Search Soundcloud</source>
-        <translation>Chercher Soundcloud</translation>
+        <translation>Chercher sur Soundcloud</translation>
     </message>
     <message>
         <source>Search artist</source>
-        <translation>Chercher des artistes</translation>
+        <translation>Chercher artiste</translation>
     </message>
 </context>
 <context>
@@ -957,7 +957,7 @@
     </message>
     <message>
         <source>%1 not found</source>
-        <translation>%1 ne pas trouvée</translation>
+        <translation>%1 non trouvé(es)</translation>
     </message>
     <message>
         <source>Preserve pitch</source>
@@ -968,18 +968,18 @@
     <name>GUI_StreamPreferences</name>
     <message>
         <source>Open Streams in new tab</source>
-        <translation>Ouvrir le flux dans une nouveaux tab</translation>
+        <translation>Ouvrir le flux dans un nouvel onglet</translation>
     </message>
     <message>
         <source>Show history</source>
-        <translation>Afficher l&apos;histoire</translation>
+        <translation>Afficher l&apos;historique</translation>
     </message>
 </context>
 <context>
     <name>GUI_StreamRecorder</name>
     <message>
         <source>Please choose another directory</source>
-        <translation>Choisissez une autre dossier d&apos;écriture</translation>
+        <translation>Choisissez un autre dossier d&apos;écriture</translation>
     </message>
     <message>
         <source>Create session folder</source>
@@ -991,7 +991,7 @@
     </message>
     <message>
         <source>Template path is not valid</source>
-        <translation>Emplacement des modèles n&apos;est pas valable</translation>
+        <translation>Emplacement de modèles invalide</translation>
     </message>
     <message>
         <source>Session Directory</source>
@@ -999,7 +999,7 @@
     </message>
     <message>
         <source>Target path is empty</source>
-        <translation>Chemin d&apos;écriture est vide</translation>
+        <translation>Le chemin d&apos;écriture est vide</translation>
     </message>
     <message>
         <source>Target path</source>
@@ -1086,7 +1086,7 @@
     </message>
     <message>
         <source>Fading steps</source>
-        <translation>Etapes de fanaison</translation>
+        <translation>Étapes de transition (fading)</translation>
     </message>
     <message>
         <source>Hor. spacing</source>
@@ -1101,7 +1101,7 @@
     <name>GUI_StyleSettings</name>
     <message>
         <source>There are some unsaved settings&lt;br /&gt;Save now?</source>
-        <translation>Il y a des reglages non enregistrés&lt;br /&gt;Enregistrer?</translation>
+        <translation>Il y a des réglages non enregistrés&lt;br /&gt;Enregistrer ?</translation>
     </message>
     <message>
         <source>Save changes?</source>
@@ -1109,7 +1109,7 @@
     </message>
     <message>
         <source>Please specify a name</source>
-        <translation>Spécifiez un nom, s&apos;il vous plaît</translation>
+        <translation>Merci de définir un nom</translation>
     </message>
 </context>
 <context>
@@ -1128,7 +1128,7 @@
     </message>
     <message>
         <source>Load complete album</source>
-        <translation>Charger l&apos;album totale</translation>
+        <translation>Charger l&apos;album complet</translation>
     </message>
     <message>
         <source>Album artist</source>
@@ -1144,7 +1144,7 @@
     </message>
     <message>
         <source>%1 tracks</source>
-        <translation>%1 Pistes</translation>
+        <translation>%1 piste(s)</translation>
     </message>
     <message>
         <source>Replace</source>
@@ -1156,7 +1156,7 @@
     </message>
     <message>
         <source>Cannot apply tag for</source>
-        <translation>Incapable d&apos;appliquer l&apos;expression</translation>
+        <translation>Le tag n&apos;a pas pu être appliqué pour</translation>
     </message>
     <message>
         <source>Discnumber</source>
@@ -1168,11 +1168,11 @@
     </message>
     <message>
         <source>Ignore these tracks?</source>
-        <translation>Ignorer ces pistes?</translation>
+        <translation>Ignorer ces pistes ?</translation>
     </message>
     <message>
         <source>Tag from path</source>
-        <translation>Info à partir du chemin</translation>
+        <translation>Tag à partir du chemin</translation>
     </message>
 </context>
 <context>
@@ -1187,7 +1187,7 @@
     </message>
     <message>
         <source>Apply to all</source>
-        <translation>Appliquer sur tous</translation>
+        <translation>Appliquer à tout</translation>
     </message>
     <message>
         <source>Expression</source>
@@ -1203,7 +1203,7 @@
     </message>
     <message>
         <source>Please select text first</source>
-        <translation>Svp, sélectionez d&apos;abord le texte</translation>
+        <translation>Sélectionez le texte d&apos;abord s&apos;il vous plaît</translation>
     </message>
 </context>
 <context>
@@ -1222,7 +1222,7 @@
     </message>
     <message>
         <source>relative filepaths</source>
-        <translation>chemins d&apos;accès relatifs</translation>
+        <translation>chemins relatifs</translation>
     </message>
     <message>
         <source>Choose target playlist</source>
@@ -1278,11 +1278,11 @@
     </message>
     <message>
         <source>s</source>
-        <translation>ms</translation>
+        <translation>s</translation>
     </message>
     <message>
         <source>OK</source>
-        <translation>Ok</translation>
+        <translation>OK</translation>
     </message>
     <message>
         <source>No</source>
@@ -1294,7 +1294,7 @@
     </message>
     <message>
         <source>on</source>
-        <translation>Activée</translation>
+        <translation>activé</translation>
     </message>
     <message>
         <source>or</source>
@@ -1334,7 +1334,7 @@
     </message>
     <message>
         <source>Tab</source>
-        <translation>Tab</translation>
+        <translation>Onglet</translation>
     </message>
     <message>
         <source>Yes</source>
@@ -1410,7 +1410,7 @@
     </message>
     <message>
         <source>Save</source>
-        <translation>Enregistrement</translation>
+        <translation>Enregistrer</translation>
     </message>
     <message>
         <source>Show</source>
@@ -1426,7 +1426,7 @@
     </message>
     <message>
         <source>Undo</source>
-        <translation>Annulation</translation>
+        <translation>Annuler</translation>
     </message>
     <message>
         <source>Year</source>
@@ -1434,7 +1434,7 @@
     </message>
     <message>
         <source>Zoom</source>
-        <translation>Agrandissement</translation>
+        <translation>Zoom</translation>
     </message>
     <message>
         <source>Filename</source>
@@ -1446,7 +1446,7 @@
     </message>
     <message>
         <source>Gapless playback</source>
-        <translation>Jouer sans lacunes</translation>
+        <translation>Jouer sans interruption entre les pistes (gapless)</translation>
     </message>
     <message>
         <source>About</source>
@@ -1462,7 +1462,7 @@
     </message>
     <message>
         <source>Clear</source>
-        <translation>Vider</translation>
+        <translation>Effacer</translation>
     </message>
     <message>
         <source>Close</source>
@@ -1534,7 +1534,7 @@
     </message>
     <message>
         <source>Save to file</source>
-        <translation>Enregistrer dans le fichier</translation>
+        <translation>Enregistrer vers le fichier</translation>
     </message>
     <message>
         <source>Album artists</source>
@@ -1550,7 +1550,7 @@
     </message>
     <message>
         <source>Invalid characters</source>
-        <translation>Caractères non valable</translation>
+        <translation>Caractères non valides</translation>
     </message>
     <message>
         <source>Playlist</source>
@@ -1558,7 +1558,7 @@
     </message>
     <message>
         <source>Radio Station</source>
-        <translation>Station de la radio</translation>
+        <translation>Station radio</translation>
     </message>
     <message>
         <source>Library</source>
@@ -1590,7 +1590,7 @@
     </message>
     <message>
         <source>Missing</source>
-        <translation>Indisponible</translation>
+        <translation>Manquant</translation>
     </message>
     <message>
         <source>Move up</source>
@@ -1642,7 +1642,7 @@
     </message>
     <message>
         <source>Show Covers</source>
-        <translation>Afficher des pochettes</translation>
+        <translation>Afficher les pochettes</translation>
     </message>
     <message>
         <source>Track number</source>
@@ -1674,7 +1674,7 @@
     </message>
     <message>
         <source>Rating</source>
-        <translation>Evaluation</translation>
+        <translation>Note</translation>
     </message>
     <message>
         <source>Really</source>
@@ -1702,7 +1702,7 @@
     </message>
     <message>
         <source>Bookmarks</source>
-        <translation>Favoris</translation>
+        <translation>Signets</translation>
     </message>
     <message>
         <source>Continue</source>
@@ -1730,7 +1730,7 @@
     </message>
     <message>
         <source>Unknown placeholder</source>
-        <translation>Unconnu expression remplaçable</translation>
+        <translation>Expression inconnue</translation>
     </message>
     <message>
         <source>track on</source>
@@ -1758,7 +1758,7 @@
     </message>
     <message>
         <source>Dark Mode</source>
-        <translation>Mode foncé</translation>
+        <translation>Mode sombre</translation>
     </message>
     <message>
         <source>Playlists</source>
@@ -1770,7 +1770,7 @@
     </message>
     <message>
         <source>Sampler</source>
-        <translation>Echantillonneur</translation>
+        <translation>Échantillonneur</translation>
     </message>
     <message>
         <source>Save as</source>
@@ -1786,7 +1786,7 @@
     </message>
     <message>
         <source>Ascending</source>
-        <translation>Ascendant</translation>
+        <translation>Croissant</translation>
     </message>
     <message>
         <source>Shuffle</source>
@@ -1794,7 +1794,7 @@
     </message>
     <message>
         <source>Search next</source>
-        <translation>Continuer de checher</translation>
+        <translation>Continuer la recherche</translation>
     </message>
     <message>
         <source>Backspace</source>
@@ -1814,7 +1814,7 @@
     </message>
     <message>
         <source>Streams</source>
-        <translation>Flux Web</translation>
+        <translation>Flux web</translation>
     </message>
     <message>
         <source>Success</source>
@@ -1826,7 +1826,7 @@
     </message>
     <message>
         <source>Enter URL</source>
-        <translation>Ecrivez l&apos;URL</translation>
+        <translation>Saisir URL</translation>
     </message>
     <message>
         <source>Seek forward</source>
@@ -1838,7 +1838,7 @@
     </message>
     <message>
         <source>Loading %1</source>
-        <translation>Chargement en cours: %1</translation>
+        <translation>Chargement en cours : %1</translation>
     </message>
     <message>
         <source>Empty input</source>
@@ -1858,7 +1858,7 @@
     </message>
     <message>
         <source>Repeat all</source>
-        <translation>Répéter toutes</translation>
+        <translation>Répéter tout</translation>
     </message>
     <message>
         <source>Open file</source>
@@ -1926,7 +1926,7 @@
     </message>
     <message>
         <source>Warning</source>
-        <translation>Attention</translation>
+        <translation>Avertissement</translation>
     </message>
     <message>
         <source>Previous track</source>
@@ -1934,7 +1934,7 @@
     </message>
     <message>
         <source>Cannot find Lame MP3 encoder</source>
-        <translation>Lame MP3 ne pas trouvée</translation>
+        <translation>Encodeur Lame MP3 introuvable</translation>
     </message>
     <message>
         <source>Import directory</source>
@@ -1950,15 +1950,15 @@
     </message>
     <message>
         <source>Reload Library</source>
-        <translation>Recharge la bibliothèque</translation>
+        <translation>Recharger la bibliothèque</translation>
     </message>
     <message>
         <source>Various albums</source>
-        <translation>Albums variés</translation>
+        <translation>Albums divers</translation>
     </message>
     <message>
         <source>Various tracks</source>
-        <translation>Pistes variées</translation>
+        <translation>Pistes diverses</translation>
     </message>
     <message>
         <source>Shutdown</source>
@@ -1973,14 +1973,14 @@
     <name>Library::GUI_CoverView</name>
     <message>
         <source>Use Ctrl + mouse wheel to zoom</source>
-        <translation>Utiliser molette pour agrandissement</translation>
+        <translation>Utiliser Ctrl + molette pour zoomer</translation>
     </message>
 </context>
 <context>
     <name>Library::GUI_EmptyLibrary</name>
     <message>
         <source>Do you want to reload the Library?</source>
-        <translation>Voulez-vous recharger la bibliothèque?</translation>
+        <translation>Voulez-vous recharger la bibliothèque ?</translation>
     </message>
 </context>
 <context>
@@ -1991,7 +1991,7 @@
     </message>
     <message>
         <source>Updating genres</source>
-        <translation>Acutalizer les genres</translation>
+        <translation>Acutaliser les genres</translation>
     </message>
 </context>
 <context>
@@ -2017,14 +2017,14 @@
     </message>
     <message>
         <source>Clear selection</source>
-        <translation>Nettoyer une sélection</translation>
+        <translation>Effacer la sélection</translation>
     </message>
 </context>
 <context>
     <name>Library::LocalLibraryMenu</name>
     <message>
         <source>Live search</source>
-        <translation>Recherche en direct dans la bibliothèque</translation>
+        <translation>Rechercher pendant la frappe</translation>
     </message>
 </context>
 <context>
@@ -2046,11 +2046,11 @@
     </message>
     <message>
         <source>Clear selection</source>
-        <translation>Nettoyer une sélection</translation>
+        <translation>Effacer la sélection</translation>
     </message>
     <message>
         <source>Cover view</source>
-        <translation>Afficher des pochettes</translation>
+        <translation>Afficher pochettes</translation>
     </message>
     <message>
         <source>Play in new tab</source>
@@ -2084,7 +2084,7 @@
     </message>
     <message>
         <source>Please visit the forum at</source>
-        <translation>Veuillez visiter le forum au</translation>
+        <translation>Veuillez visiter le forum sur</translation>
     </message>
     <message>
         <source>Special thanks to %1 and %2 for translating</source>
@@ -2127,7 +2127,7 @@
     <name>MiniSearcher</name>
     <message>
         <source>Previous search result</source>
-        <translation>Précédent résultat</translation>
+        <translation>Résultat précédent</translation>
     </message>
     <message>
         <source>Arrow down</source>
@@ -2139,7 +2139,7 @@
     </message>
     <message>
         <source>Next search result</source>
-        <translation>Suivant résultat</translation>
+        <translation>Résultat suivant</translation>
     </message>
 </context>
 <context>
@@ -2153,22 +2153,22 @@
     <name>SC::Database</name>
     <message>
         <source>Purchase Url</source>
-        <translation>Lien d&apos;achat</translation>
+        <translation>URL d&apos;achat</translation>
     </message>
 </context>
 <context>
     <name>SC::GUI_ArtistSearch</name>
     <message>
         <source>%1 tracks found</source>
-        <translation>%1 piste(s) trouvé</translation>
+        <translation>%1 piste(s) trouvée(s)</translation>
     </message>
     <message>
         <source>Found %1 artists</source>
-        <translation>%1 artistes trouvés</translation>
+        <translation>%1 artiste(s) trouvé(s)</translation>
     </message>
     <message>
         <source>No artists found</source>
-        <translation>Incapable de trouver des artistes</translation>
+        <translation>Aucun artiste trouvé</translation>
     </message>
     <message>
         <source>Query too short</source>
@@ -2176,7 +2176,7 @@
     </message>
     <message>
         <source>%1 playlists found</source>
-        <translation>%1 listes de pistes trouvées</translation>
+        <translation>%1 liste(s) de lecture trouvée(s)</translation>
     </message>
 </context>
 <context>
@@ -2190,7 +2190,7 @@
     <name>SC::JsonParser</name>
     <message>
         <source>Followers/Following</source>
-        <translation>Suiveurs/Suivant</translation>
+        <translation>Followers/Following</translation>
     </message>
     <message>
         <source>Permalink Url</source>
@@ -2209,18 +2209,18 @@
     <name>Shutdown</name>
     <message>
         <source>Computer will shutdown after playlist has finished</source>
-        <translation>L&apos;ordinateur s&apos;éteindra après que la liste de lecture finisse</translation>
+        <translation>L&apos;ordinateur s&apos;éteindra à la fin de la liste de lecture</translation>
     </message>
     <message>
         <source>Computer will shutdown in %1 minutes</source>
-        <translation>L&apos;ordinateur s&apos;éteindra après %1 minutes</translation>
+        <translation>L&apos;ordinateur s&apos;éteindra après %1 minute(s)</translation>
     </message>
 </context>
 <context>
     <name>SomaFM::StationModel</name>
     <message>
         <source>Cannot fetch stations</source>
-        <translation>Impossible de trouver des stations</translation>
+        <translation>Impossible de trouver les stations</translation>
     </message>
 </context>
 <context>
@@ -2234,14 +2234,14 @@
     <name>StreamServer</name>
     <message>
         <source>%1 wants to listen to your music.</source>
-        <translation>%1 veut écouter ta musique.</translation>
+        <translation>%1 veut écouter votre musique.</translation>
     </message>
 </context>
 <context>
     <name>TagTextInput</name>
     <message>
         <source>First letters to upper case</source>
-        <translation>Toutes les premières lettres en majuscule</translation>
+        <translation>Toutes les premières lettres en majuscules</translation>
     </message>
     <message>
         <source>Very first letter to upper case</source>

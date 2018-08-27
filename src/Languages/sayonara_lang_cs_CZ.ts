@@ -126,7 +126,7 @@
     </message>
     <message>
         <source>Start search automatically</source>
-        <translation type="unfinished"/>
+        <translation>Začít hledání automaticky</translation>
     </message>
 </context>
 <context>
@@ -273,11 +273,11 @@
     </message>
     <message>
         <source>Clear cache</source>
-        <translation type="unfinished"/>
+        <translation>Vyprázdnit vyrovnávací paměť</translation>
     </message>
     <message>
         <source>Delete files</source>
-        <translation type="unfinished"/>
+        <translation>Smazat soubory</translation>
     </message>
 </context>
 <context>
@@ -1245,14 +1245,14 @@
     </message>
     <message>
         <source>Show large cover</source>
-        <translation type="unfinished"/>
+        <translation>Ukázat velký obal</translation>
     </message>
 </context>
 <context>
     <name>ImageSelectionDialog</name>
     <message>
         <source>Open image files</source>
-        <translation>Otevřít soubor s obrázkem</translation>
+        <translation>Otevřít soubory s obrázky</translation>
     </message>
 </context>
 <context>
@@ -2120,7 +2120,7 @@
     </message>
     <message>
         <source>Show large cover</source>
-        <translation type="unfinished"/>
+        <translation>Ukázat velký obal</translation>
     </message>
 </context>
 <context>
