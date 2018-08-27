@@ -168,6 +168,7 @@ int main(int argc, char *argv[])
 
 		if(memory.data())
 		{
+			memory.attach(QSharedMemory::ReadWrite);
 			memory.lock();
 			memcpy(memory.data(), "Sayonara", 8);
 			memory.unlock();
