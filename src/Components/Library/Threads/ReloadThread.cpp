@@ -216,24 +216,29 @@ void ReloadThread::store_metadata_block(const MetaDataList& v_md)
 	sp_log(Log::Develop, this) << "  Success? " << success;
 
 	sp_log(Log::Develop, this) << "Adding Covers...";
-	DB::Covers* db_covers = DB::Connector::instance()->cover_connector();	
+	DB::Covers* db_covers = DB::Connector::instance()->cover_connector();
+
+	SP::Set<QString> all_hashes = db_covers->get_all_hashes();
 
 	db->transaction();
 	for(const MetaData& md : v_md)
 	{
 		Cover::Location cl = Cover::Location::cover_location(md);
 		QString hash = cl.hash();
+		if(all_hashes.contains(hash))
+		{
+			continue;
+		}
+
 		QString preferred_path = cl.preferred_path();
 
 		if(!db_covers->exists(hash))
 		{
 			if(!Cover::Location::is_invalid(preferred_path))
 			{
-				QPixmap pm(preferred_path);
-				bool success = db_covers->set_cover(hash, pm);
-				if(!success){
-					sp_log(Log::Warning, this) << "Cannot add cover for " << md.album() << ", " << md.artist() << " HASH: " << hash;
-				}
+				QPixmap cover(preferred_path);
+				db_covers->insert_cover(hash, cover);
+				all_hashes.insert(hash);
 			}
 		}
 	}

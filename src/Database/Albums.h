@@ -56,10 +56,10 @@ namespace DB
 
 			virtual bool getAllAlbumsBySearchString(const ::Library::Filter& filter, AlbumList& result, ::Library::SortOrder sortorder = ::Library::SortOrder::AlbumNameAsc);
 
-			virtual int insertAlbumIntoDatabase (const QString & album);
-			virtual int insertAlbumIntoDatabase (const Album& album);
+			virtual AlbumId insertAlbumIntoDatabase (const QString & album);
+			virtual AlbumId insertAlbumIntoDatabase (const Album& album);
 
-			virtual int updateAlbum(const Album& album);
+			virtual AlbumId updateAlbum(const Album& album);
 
 			virtual void updateAlbumCissearch();
 

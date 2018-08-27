@@ -88,16 +88,19 @@ bool DB::Settings::store_settings()
 
 bool DB::Settings::load_setting(QString key, QString& tgt_value)
 {
-	Query q(this);
-	q.prepare("SELECT value FROM settings WHERE key = ?;");
-	q.addBindValue(QVariant(key));
+	Query q = run_query
+	(
+		"SELECT value FROM settings WHERE key = :key;",
+		{":key", key},
+		QString("Cannot load setting %1").arg(key)
+	);
 
-	if (!q.exec()) {
-		q.show_error(QString("Cannot load setting ") + key);
+	if (q.has_error()) {
 		return false;
 	}
 
-	if(q.next()) {
+	if(q.next())
+	{
 		tgt_value = q.value(0).toString();
 		return true;
 	}
@@ -108,35 +111,42 @@ bool DB::Settings::load_setting(QString key, QString& tgt_value)
 
 bool DB::Settings::store_setting(QString key, const QVariant& value)
 {
-	Query q(this);
-	q.prepare("SELECT value FROM settings WHERE key = :key;");
-	q.bindValue(":key", key);
+	Query q = run_query
+	(
+		"SELECT value FROM settings WHERE key = :key;",
+		{":key", key},
+		QString("Store setting: Cannot fetch setting %1").arg(key)
+	);
 
-	if (!q.exec()) {
-		q.show_error(QString("Store setting: Cannot fetch setting ") + key);
+	if (q.has_error()) {
 		return false;
 	}
 
-	if (!q.next()) {
-		q.prepare("INSERT INTO settings VALUES(:key, :val);");
-		q.bindValue(":key", key);
-		q.bindValue(":value", value);
+	if (!q.next())
+	{
+		Query q2 = insert("settings",
+		{
+			{"key", key},
+			{"value", value}
+		}, QString("Store setting: Cannot insert setting %1").arg(key));
 
-		if (!q.exec()) {
-			q.show_error(QString("Store setting: Cannot insert setting ") + key);
+		if (q2.has_error()) {
 			return false;
 		}
 
 		sp_log(Log::Info) << "Inserted " << key << " first time";
 	}
 
-	q.prepare("UPDATE settings SET value=:value WHERE key=:key;");
-	q.bindValue(":key", key);
-	q.bindValue(":value", value);
+	else
+	{
+		Query q2 = update("settings",
+			{{"value", value}},
+			{"key", key}
+		, QString("Store setting: Cannot update setting %1").arg(key));
 
-	if (!q.exec()) {
-		q.show_error(QString("Store setting: Cannot update setting ") + key);
-		return false;
+		if (q2.has_error()) {
+			return false;
+		}
 	}
 
 	return true;

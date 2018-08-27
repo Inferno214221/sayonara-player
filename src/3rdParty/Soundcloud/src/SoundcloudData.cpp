@@ -343,7 +343,7 @@ bool SC::Database::db_fetch_artists(Query& q, ArtistList& result)
 	return true;
 }
 
-int SC::Database::updateArtist(const Artist& artist)
+ArtistId SC::Database::updateArtist(const Artist& artist)
 {
 	Query q(module());
 
@@ -373,13 +373,13 @@ int SC::Database::updateArtist(const Artist& artist)
 	return getArtistID(artist.name());
 }
 
-int SC::Database::insertArtistIntoDatabase (const QString& artist)
+ArtistId SC::Database::insertArtistIntoDatabase (const QString& artist)
 {
 	Q_UNUSED(artist)
 	return -1;
 }
 
-int SC::Database::insertArtistIntoDatabase (const Artist& artist)
+ArtistId SC::Database::insertArtistIntoDatabase (const Artist& artist)
 {
 	Query q(module());
 
@@ -414,7 +414,7 @@ int SC::Database::insertArtistIntoDatabase (const Artist& artist)
 }
 
 
-int SC::Database::updateAlbum(const Album& album)
+AlbumId SC::Database::updateAlbum(const Album& album)
 {
 	Query q(module());
 
@@ -444,13 +444,13 @@ int SC::Database::updateAlbum(const Album& album)
 }
 
 
-int SC::Database::insertAlbumIntoDatabase (const QString& album)
+AlbumId SC::Database::insertAlbumIntoDatabase (const QString& album)
 {
 	Q_UNUSED(album)
 	return -1;
 }
 
-int SC::Database::insertAlbumIntoDatabase (const Album& album)
+AlbumId SC::Database::insertAlbumIntoDatabase (const Album& album)
 {
 	Query q(module());
 

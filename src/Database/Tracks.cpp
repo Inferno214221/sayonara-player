@@ -28,6 +28,7 @@
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Library/Filter.h"
+#include "Utils/Library/SearchMode.h"
 #include "Utils/Set.h"
 
 #include <QDateTime>
@@ -39,6 +40,8 @@
 using DB::Tracks;
 using DB::Query;
 using DB::SearchableModule;
+using SMM=::Library::SearchModeMask;
+namespace LibraryUtils=::Library::Util;
 
 struct Tracks::Private
 {
@@ -106,9 +109,7 @@ void Tracks::drop_track_view()
 		return;
 	}
 
-	Query q(this);
-	q.prepare("DROP VIEW " + m->track_view + "; ");
-	q.exec();
+	run_query("DROP VIEW " + m->track_view + ";", "Cannot drop " + m->track_view);
 }
 
 void Tracks::create_track_view(const QString& select_statement)
@@ -117,25 +118,18 @@ void Tracks::create_track_view(const QString& select_statement)
 		return;
 	}
 
-	Query q(this);
 	QString query =	"CREATE VIEW "
 					+ m->track_view + " "
 					"AS " + select_statement + " "
 					"FROM tracks "
 					"WHERE tracks.libraryID = " + QString::number(m->library_id);
 
-	q.prepare(query);
-	if(!q.exec())
-	{
-		q.show_error("Cannot create track view");
-	}
+	run_query(query, "Cannot create track view");
 }
 
 void Tracks::drop_search_view()
 {
-	Query drop_search_view(this);
-	drop_search_view.prepare("DROP VIEW " + m->search_view + "; ");
-	drop_search_view.exec();
+	run_query("DROP VIEW " + m->search_view + "; ", "Cannot drop " + m->search_view);
 }
 
 void Tracks::create_track_search_view(const QString& select_statement)
@@ -163,13 +157,7 @@ void Tracks::create_track_search_view(const QString& select_statement)
 
 	query += ";";
 
-	Query q(this);
-	q.prepare(query);
-
-	if(!q.exec())
-	{
-		q.show_error("Cannot create track search view");
-	}
+	run_query(query, "Cannot create track search view");
 }
 
 
@@ -566,18 +554,9 @@ bool Tracks::getAllTracksBySearchString(const ::Library::Filter& filter, MetaDat
 
 bool Tracks::deleteTrack(TrackID id)
 {
-	Query q(this);
-	QString querytext = QString("DELETE FROM tracks WHERE trackID = :track_id;");
+	Query q = run_query("DELETE FROM tracks WHERE trackID = :trackID", {":trackID", id}, QString("Cannot delete track %1").arg(id));
 
-	q.prepare(querytext);
-	q.bindValue(":track_id", id);
-
-	if (!q.exec()) {
-		q.show_error(QString("Cannot delete track") + QString::number(id));
-		return false;
-	}
-
-	return true;
+	return (!q.has_error());
 }
 
 
@@ -669,17 +648,13 @@ bool Tracks::deleteInvalidTracks(const QString& library_path, MetaDataList& doub
 
 SP::Set<Genre> Tracks::getAllGenres()
 {
-	SP::Set<Genre> genres;
-	sp_log(Log::Debug, this) << "Load all genres";
+	Query q = run_query("SELECT genre FROM " + m->track_view + " GROUP BY genre;", "Cannot fetch genres");
 
-	Query q(this);
-	q.prepare("SELECT genre FROM " + m->track_view + " GROUP BY genre;");
-
-	bool success = q.exec();
-	if(!success){
-		return genres;
+	if(q.has_error()){
+		return SP::Set<Genre>();
 	}
 
+	SP::Set<Genre> genres;
 	while(q.next())
 	{
 		QString genre = q.value(0).toString();
@@ -698,8 +673,9 @@ SP::Set<Genre> Tracks::getAllGenres()
 void Tracks::updateTrackCissearch()
 {
 	SearchableModule::update_search_mode();
+	SMM sm = search_mode();
 
-	sp_log(Log::Debug, this) << "UPdate track cissearch " << search_mode();
+	sp_log(Log::Debug, this) << "UPdate track cissearch " << sm;
 
 	MetaDataList v_md;
 	getAllTracks(v_md);
@@ -708,20 +684,17 @@ void Tracks::updateTrackCissearch()
 
 	for(const MetaData& md : v_md)
 	{
-		QString querystring = "UPDATE tracks SET cissearch=:cissearch, filecissearch=:filecissearch WHERE trackID=:id;";
-		Query q(this);
-		q.prepare(querystring);
+		QString cis = LibraryUtils::convert_search_string(md.title(), sm);
+		QString cis_file = LibraryUtils::convert_search_string(md.filepath(), sm);
 
-		QString cis = ::Library::Util::convert_search_string(md.title(), search_mode());
-		QString cis_file = ::Library::Util::convert_search_string(md.filepath(), search_mode());
-
-		q.bindValue(":cissearch",		Util::cvt_not_null(cis));
-		q.bindValue(":filecissearch",	Util::cvt_not_null(cis_file));
-		q.bindValue(":id", md.id);
-
-		if(!q.exec()){
-			q.show_error("Cannot update album cissearch");
-		}
+		this->update("tracks",
+		{
+			{"cissearch", Util::cvt_not_null(cis)},
+			{"filecissearch", Util::cvt_not_null(cis_file)}
+		},
+		{"trackId", md.id},
+		"Cannot update album cissearch"
+		);
 	}
 
 	db().commit();
@@ -738,10 +711,13 @@ void Tracks::deleteAllTracks(bool also_views)
 			drop_search_view();
 		}
 
-		Query q2(this);
-		q2.prepare("DELETE FROM tracks WHERE libraryId=:library_id;");
-		q2.bindValue(":library_id", m->library_id);
-		q2.exec();
+		this->run_query
+		(
+			"DELETE FROM tracks WHERE libraryId=:library_id;",
+			{":library_id", m->library_id},
+			"Cannot delete library tracks"
+		);
+
 	}
 }
 
@@ -758,59 +734,35 @@ bool Tracks::updateTrack(const MetaData& md)
 		return false;
 	}
 
-	Query q(this);
+	SMM sm = search_mode();
+	QString cissearch = LibraryUtils::convert_search_string(md.title(), sm);
+	QString file_cissearch = LibraryUtils::convert_search_string(md.filepath(), sm);
 
-	QString cissearch = ::Library::Util::convert_search_string(md.title(), search_mode());
-	QString file_cissearch = ::Library::Util::convert_search_string(md.filepath(), search_mode());
+	QMap<QString, QVariant> bindings
+	{
+		{"albumArtistID",	md.album_artist_id()},
+		{"albumID",			md.album_id},
+		{"artistID",		md.artist_id},
+		{"bitrate",			md.bitrate},
+		{"cissearch",		Util::cvt_not_null(cissearch)},
+		{"discnumber",		md.discnumber},
+		{"filecissearch",	Util::cvt_not_null(file_cissearch)},
+		{"filename",		Util::cvt_not_null(md.filepath())},
+		{"filesize",		QVariant::fromValue(md.filesize)},
+		{"genre",			Util::cvt_not_null(md.genres_to_string())},
+		{"length",			QVariant::fromValue(md.length_ms)},
+		{"libraryID",		md.library_id},
+		{"modifydate",		QVariant::fromValue(Util::current_date_to_int())},
+		{"rating",			md.rating},
+		{"title",			Util::cvt_not_null(md.title())},
+		{"track",			md.track_num},
+		{"year",			md.year},
+		{"comment",			Util::cvt_not_null(md.comment())}
+	};
 
-	q.prepare("UPDATE tracks "
-			  "SET "
-			  "albumArtistID=:albumArtistID, "
-			  "albumID=:albumID, "
-			  "artistID=:artistID, "
-			  "bitrate=:bitrate, "
-			  "cissearch=:cissearch, "
-			  "discnumber=:discnumber, "
-			  "filecissearch=:filecissearch, "
-			  "filename=:filename, "
-			  "filesize=:filesize, "
-			  "genre=:genre, "
-			  "length=:length, "
-			  "libraryID=:libraryID, "
-			  "modifydate=:modifydate, "
-			  "rating=:rating, "
-			  "title=:title, "
-			  "track=:track, "
-			  "year=:year, "
-			  "comment=:comment "
-			  "WHERE TrackID = :trackID;");
+	Query q = update("tracks", bindings, {"trackId", md.id}, QString("Cannot update track %1").arg(md.filepath()));
 
-	q.bindValue(":albumArtistID",	md.album_artist_id());
-	q.bindValue(":albumID",			md.album_id);
-	q.bindValue(":artistID",		md.artist_id);
-	q.bindValue(":bitrate",			md.bitrate);
-	q.bindValue(":cissearch",		Util::cvt_not_null(cissearch));
-	q.bindValue(":discnumber",		md.discnumber);
-	q.bindValue(":filecissearch",	Util::cvt_not_null(file_cissearch));
-	q.bindValue(":filename",		Util::cvt_not_null(md.filepath()));
-	q.bindValue(":filesize",		QVariant::fromValue(md.filesize));
-	q.bindValue(":genre",			Util::cvt_not_null(md.genres_to_string()));
-	q.bindValue(":length",			QVariant::fromValue(md.length_ms));
-	q.bindValue(":libraryID",		md.library_id);
-	q.bindValue(":modifydate",		QVariant::fromValue(Util::current_date_to_int()));
-	q.bindValue(":rating",			md.rating);
-	q.bindValue(":title",			Util::cvt_not_null(md.title()));
-	q.bindValue(":track",			md.track_num);
-	q.bindValue(":trackID",			md.id);
-	q.bindValue(":year",			md.year);
-	q.bindValue(":comment",			Util::cvt_not_null(md.comment()));
-
-	if (!q.exec()) {
-		q.show_error(QString("Cannot update track ") + md.filepath());
-		return false;
-	}
-
-	return true;
+	return (!q.has_error());
 }
 
 bool Tracks::updateTracks(const MetaDataList& v_md)
@@ -833,57 +785,41 @@ bool Tracks::insertTrackIntoDatabase(const MetaData& md, ArtistId artist_id, Alb
 
 bool Tracks::insertTrackIntoDatabase(const MetaData& md, ArtistId artist_id, AlbumId album_id, ArtistId album_artist_id)
 {
-	DB::Query q(this);
-
-	MetaData md_tmp = getTrackByPath( md.filepath() );
-
-	if( md_tmp.id >= 0 )
+	if(album_artist_id == -1)
 	{
-		MetaData track_copy = md;
-		track_copy.id = md_tmp.id;
-		track_copy.artist_id = artist_id;
-		track_copy.album_id = album_id;
-		track_copy.set_album_artist_id(album_artist_id);
-
-		return updateTrack(track_copy);
+		album_artist_id = artist_id;
 	}
+
+	auto current_time = Util::current_date_to_int();
 
 	QString cissearch = ::Library::Util::convert_search_string(md.title(), search_mode());
 	QString file_cissearch = ::Library::Util::convert_search_string(md.filepath(), search_mode());
-	QString querytext =
-			"INSERT INTO tracks "
-			"(filename,  albumID, artistID, albumArtistID,  title,  year,  length,  track,  bitrate,  genre,  filesize,  discnumber,  rating,  comment,  cissearch,  filecissearch,  createdate,  modifydate,  libraryID) "
-			"VALUES "
-			"(:filename,:albumID,:artistID, :albumArtistID, :title, :year, :length, :track, :bitrate, :genre, :filesize, :discnumber, :rating, :comment, :cissearch, :filecissearch, :createdate, :modifydate, :libraryID); ";
 
-	auto current_time = Util::current_date_to_int();
-	q.prepare(querytext);
+	QMap<QString, QVariant> bindings =
+	{
+		{"filename",		Util::cvt_not_null(md.filepath())},
+		{"albumID",			album_id},
+		{"artistID",		artist_id},
+		{"albumArtistID",	album_artist_id},
+		{"title",			Util::cvt_not_null(md.title())},
+		{"year",			md.year},
+		{"length",			QVariant::fromValue(md.length_ms)},
+		{"track",			md.track_num},
+		{"bitrate",			md.bitrate},
+		{"genre",			Util::cvt_not_null(md.genres_to_string())},
+		{"filesize",		QVariant::fromValue(md.filesize)},
+		{"discnumber",		md.discnumber},
+		{"rating",			md.rating},
+		{"comment",			Util::cvt_not_null(md.comment())},
+		{"cissearch",		Util::cvt_not_null(cissearch)},
+		{"filecissearch",	Util::cvt_not_null(file_cissearch)},
+		{"createdate",		QVariant::fromValue(current_time)},
+		{"modifydate",		QVariant::fromValue(current_time)},
+		{"libraryID",		md.library_id}
+	};
 
-	q.bindValue(":filename",		Util::cvt_not_null(md.filepath()));
-	q.bindValue(":albumID",			album_id);
-	q.bindValue(":artistID",		artist_id);
-	q.bindValue(":albumArtistID",	album_artist_id);
-	q.bindValue(":title",			Util::cvt_not_null(md.title()));
-	q.bindValue(":year",			md.year);
-	q.bindValue(":length",			QVariant::fromValue(md.length_ms));
-	q.bindValue(":track",			md.track_num);
-	q.bindValue(":bitrate",			md.bitrate);
-	q.bindValue(":genre",			Util::cvt_not_null(md.genres_to_string()));
-	q.bindValue(":filesize",		QVariant::fromValue(md.filesize));
-	q.bindValue(":discnumber",		md.discnumber);
-	q.bindValue(":rating",			md.rating);
-	q.bindValue(":comment",			Util::cvt_not_null(md.comment()));
-	q.bindValue(":cissearch",		Util::cvt_not_null(cissearch));
-	q.bindValue(":filecissearch",	Util::cvt_not_null(file_cissearch));
-	q.bindValue(":createdate",		QVariant::fromValue(current_time));
-	q.bindValue(":modifydate",		QVariant::fromValue(current_time));
-	q.bindValue(":libraryID",		md.library_id);
+	Query q = insert("tracks", bindings, QString("Cannot insert track %1").arg(md.filepath()));
 
-	if (!q.exec()) {
-		q.show_error(QString("Cannot insert track into database ") + md.filepath());
-		return false;
-	}
-
-	return true;
+	return (!q.has_error());
 }
 

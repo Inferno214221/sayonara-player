@@ -18,11 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "CoverConnector.h"
 #include "Query.h"
 #include "Utils/Utils.h"
+#include "Utils/Set.h"
 
 using DB::Query;
 
@@ -34,27 +33,34 @@ DB::Covers::~Covers() {}
 
 bool DB::Covers::exists(const QString& hash)
 {
-	Query q_check(this);
-	QString query_check("SELECT hash FROM covers WHERE hash = :hash;");
-	q_check.prepare(query_check);
-	q_check.bindValue(":hash", hash);
-	if(!q_check.exec())
-	{
-		q_check.show_error("Cannot check cover");
+	Query q = run_query
+	(
+		"SELECT hash FROM covers WHERE hash = :hash;",
+		{
+			{":hash", hash}
+		},
+		"Cannot check cover"
+	);
+
+	if(q.has_error()){
 		return false;
 	}
 
-	return q_check.next();
+	return q.next();
 }
 
 bool DB::Covers::get_cover(const QString& hash, QPixmap& pm)
 {
-	Query q(this);
-	QString query = "SELECT data FROM covers WHERE hash = :hash;";
-	q.prepare(query);
-	q.bindValue(":hash", hash);
-	if(!q.exec()){
-		q.show_error("Cannot fetch cover");
+	Query q = run_query
+	(
+		"SELECT data FROM covers WHERE hash = :hash;",
+		{
+			{":hash", hash}
+		},
+		"Cannot fetch cover"
+	);
+
+	if(q.has_error()){
 		return false;
 	}
 
@@ -90,53 +96,39 @@ bool DB::Covers::update_cover(const QString& hash, const QPixmap& pm)
 {
 	QByteArray data = ::Util::cvt_pixmap_to_bytearray(pm);
 
-	Query q(this);
-	QString query("UPDATE covers SET data=:data WHERE hash=:hash;");
-	q.prepare(query);
-	q.bindValue(":data", data);
-	q.bindValue(":hash", hash);
+	Query q = update("covers",
+		{{"data", data}},
+		{"hash", hash},
+		"Cannot update cover"
+	);
 
-	if(!q.exec()){
-		q.show_error("Cannot update cover");
-		return false;
-	}
-
-	return true;
+	return (!q.has_error());
 }
 
 bool DB::Covers::insert_cover(const QString& hash, const QPixmap& pm)
 {
 	QByteArray data = ::Util::cvt_pixmap_to_bytearray(pm);
 
-	Query q(this);
-	QString query("INSERT INTO covers (hash, data) VALUES (:hash, :data)");
-	q.prepare(query);
-	q.bindValue(":data", data);
-	q.bindValue(":hash", hash);
+	Query q = insert("covers",
+	{
+		{"data", data},
+		{"hash", hash}
+	}, "Cannot insert cover");
 
-	if(!q.exec()){
-		q.show_error("Cannot insert cover");
-		return false;
-	}
-
-	return true;
+	return (!q.has_error());
 }
 
-QStringList DB::Covers::get_all_hashes()
+SP::Set<QString> DB::Covers::get_all_hashes()
 {
-	QStringList ret;
-
-	Query q(this);
-	QString query = "SELECT hash FROM covers;";
-	q.prepare(query);
-	if(!q.exec()){
-		q.show_error("Cannot fetch all hashes");
-		return ret;
+	Query q = run_query("SELECT hash FROM covers;", "Cannot fetch all hashes");
+	if(q.has_error()){
+		return SP::Set<QString>();
 	}
 
+	SP::Set<QString> ret;
 	while(q.next())
 	{
-		ret << q.value(0).toString();
+		ret.insert(q.value(0).toString());
 	}
 
 	return ret;
@@ -146,11 +138,8 @@ bool DB::Covers::get_all_covers(QMap<QString, QPixmap>& covers)
 {
 	covers.clear();
 
-	Query q(this);
-	QString query = "SELECT hash, data FROM covers;";
-	q.prepare(query);
-	if(!q.exec()){
-		q.show_error("Cannot fetch all covers");
+	Query q = run_query("SELECT hash, data FROM covers;", "Cannot fetch all covers");
+	if(q.has_error()){
 		return false;
 	}
 
@@ -167,10 +156,5 @@ bool DB::Covers::get_all_covers(QMap<QString, QPixmap>& covers)
 
 void DB::Covers::clear()
 {
-	Query q(this);
-	QString query = "DELETE FROM covers;";
-	q.prepare(query);
-	if(!q.exec()){
-		q.show_error("Cannot drop all covers");
-	}
+	run_query("DELETE FROM covers;", "Cannot drop all covers");
 }

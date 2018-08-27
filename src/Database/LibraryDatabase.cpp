@@ -25,6 +25,8 @@
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/MetaData/Album.h"
 #include "Utils/MetaData/Artist.h"
+#include "Utils/Utils.h"
+#include "Utils/Set.h"
 
 using DB::LibraryDatabase;
 using DB::Query;
@@ -133,12 +135,15 @@ bool DB::LibraryDatabase::store_metadata(const MetaDataList& v_md)
 
 	AlbumList albums;
 	ArtistList artists;
+	MetaDataList v_md_old;
 	QHash<QString, Album> album_map;
 	QHash<QString, Artist> artist_map;
+	QHash<QString, MetaData> md_map;
 
 	sp_log(Log::Develop, this) << " Search for already known albums and artists.";
 	DB::Albums::getAllAlbums(albums, true);
 	DB::Artists::getAllArtists(artists, true);
+	DB::Tracks::getAllTracks(v_md_old);
 
 	sp_log(Log::Develop, this) << "  Found " << albums.size() << " albums and " << artists.size() << " artists";
 
@@ -152,11 +157,22 @@ bool DB::LibraryDatabase::store_metadata(const MetaDataList& v_md)
 		artist_map[artist.name()] = artist;
 	}
 
+	for(const MetaData& md : v_md_old) {
+		md_map[md.filepath()] = md;
+	}
+
 	albums.clear();
 	artists.clear();
+	v_md_old.clear();
 
 	for(MetaData md : v_md)
 	{
+		if(md.filepath().contains("never", Qt::CaseInsensitive)){
+			int x = 4;
+			sp_log(Log::Debug, this) << "Processing " << md.filepath();
+		}
+		sp_log(Log::Debug, this) << "Processing " << md.filepath();
+
 		ArtistId artist_id, album_artist_id;
 		AlbumId album_id;
 		//first check if we know the artist and its id
@@ -180,12 +196,8 @@ bool DB::LibraryDatabase::store_metadata(const MetaDataList& v_md)
 			artist_map[md.artist()] = artist;
 		}
 
-		else{
+		else {
 			artist_id = artist.id;
-		}
-
-		if(md.album_artist_id() == -1){
-			md.set_album_artist_id(artist_id);
 		}
 
 		if(md.album_artist().isEmpty()){
@@ -212,14 +224,28 @@ bool DB::LibraryDatabase::store_metadata(const MetaDataList& v_md)
 
 		md.album_id = album_id;
 		md.artist_id = artist_id;
+		md.set_album_artist_id(album_artist_id);
+
 		md.library_id = m->library_id;
 
-		if(album_id == -1 || artist_id == -1 || md.library_id == -1){
+		if(album_id == -1 || artist_id == -1 || md.library_id == -1)
+		{
 			sp_log(Log::Warning) << "Cannot insert artist or album of " << md.filepath();
 			continue;
 		}
 
-		DB::Tracks::insertTrackIntoDatabase(md, artist_id, album_id, album_artist_id);
+		const MetaData& found_md = md_map[md.filepath()];
+		if(found_md.id < 0)
+		{
+			DB::Tracks::insertTrackIntoDatabase(md, artist_id, album_id, album_artist_id);
+		}
+
+		else
+		{
+			md.id = found_md.id;
+			DB::Tracks::updateTrack(md);
+		}
+
 	}
 
 	sp_log(Log::Develop, this) << "Commit " << v_md.size() << " tracks to database";

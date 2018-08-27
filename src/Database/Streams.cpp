@@ -35,17 +35,16 @@ bool Streams::getAllStreams(QMap<QString, QString>& streams)
 {
 	streams.clear();
 
-	Query q(this);
-	q.prepare("SELECT name, url FROM savedstreams;");
+	Query q = run_query("SELECT name, url FROM savedstreams;", "Cannot fetch streams");
 
-	if (!q.exec()){
-		q.show_error("Cannot get all streams");
+	if(q.has_error()){
 		return false;
 	}
 
-	while(q.next()) {
+	while(q.next())
+	{
 		QString name = q.value(0).toString();
-		QString url = q.value(1).toString().trimmed();
+		QString url = q.value(1).toString();
 
 		streams[name] = url;
 	}
@@ -56,50 +55,40 @@ bool Streams::getAllStreams(QMap<QString, QString>& streams)
 
 bool Streams::deleteStream(const QString& name)
 {
-	Query q(this);
-	q.prepare("DELETE FROM savedstreams WHERE name = :name;" );
-	q.bindValue(":name", Util::cvt_not_null(name));
+	Query q = run_query
+	(
+		"DELETE FROM savedstreams WHERE name = :name;",
+		{
+			{":name", Util::cvt_not_null(name)},
+		},
+		QString("Could not delete stream %1").arg(name)
+	);
 
-	if(!q.exec()) {
-		q.show_error(QString("Could not delete stream ") + name);
-		return false;
-	}
-
-	return true;
+	return (!q.has_error());
 }
 
 
 bool Streams::addStream(const QString& name, const QString& url)
 {
-	Query q(this);
+	Query q = insert("savedstreams",
+	{
+		{"name", Util::cvt_not_null(name)},
+		{"url", Util::cvt_not_null(url)}
+	}, QString("Could not add stream: %1, %2").arg(name, url));
 
-	q.prepare("INSERT INTO savedstreams (name, url) VALUES (:name, :url); " );
-	q.bindValue(":name",	Util::cvt_not_null(name));
-	q.bindValue(":url",		Util::cvt_not_null(url));
-
-	if(!q.exec()) {
-		q.show_error(QString("Could not add stream ") + name);
-		return false;
-	}
-
-	return true;
+	return (!q.has_error());
 }
 
 
 bool Streams::updateStreamUrl(const QString& name, const QString& url)
 {
-	Query q(this);
+	Query q = update("savedstreams",
+		{{"url", Util::cvt_not_null(url)}},
+		{"name", Util::cvt_not_null(name)},
+		QString("Could not update stream url %1").arg(name)
+	);
 
-	q.prepare("UPDATE savedstreams SET url=:url WHERE name=:name;");
-	q.bindValue(":name",	Util::cvt_not_null(name));
-	q.bindValue(":url",		Util::cvt_not_null(url));
-
-	if(!q.exec()) {
-		q.show_error(QString("Could not update stream url ") + name);
-		return false;
-	}
-
-	return true;
+	return (!q.has_error());
 }
 
 

@@ -77,6 +77,10 @@ bool Tagging::Util::is_valid_file(const TagLib::FileRef& f)
 
 bool Tagging::Util::getMetaDataOfFile(MetaData& md, Quality quality)
 {
+	if(md.filepath().contains("never", Qt::CaseInsensitive)){
+		int x = 4;
+		sp_log(Log::Debug, "this") << x;
+	}
 	bool success;
 
 	QFileInfo fi(md.filepath());

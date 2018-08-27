@@ -24,6 +24,7 @@
 #define COVERCONNECTOR_H
 
 #include "Database/Module.h"
+#include "Utils/SetFwd.h"
 
 #include <QMap>
 #include <QString>
@@ -45,7 +46,7 @@ namespace DB
 			bool update_cover(const QString& hash, const QPixmap& data);
 			bool insert_cover(const QString& hash, const QPixmap& data);
 
-			QStringList get_all_hashes();
+			SP::Set<QString> get_all_hashes();
 
 			bool get_all_covers(QMap<QString, QPixmap>& covers);
 			void clear();

@@ -66,6 +66,16 @@ Query::Query(const Query& other) :
 {
 	m = Pimpl::make<Private>();
 	m->query_string = other.m->query_string;
+	m->success = other.m->success;
+}
+
+DB::Query& Query::operator=(const DB::Query& other)
+{
+	QSqlQuery::operator =(other);
+	m->query_string = other.m->query_string;
+	m->success = other.m->success;
+
+	return *this;
 }
 
 Query::~Query()
@@ -132,6 +142,11 @@ bool Query::exec()
 #endif
 
 	return m->success;
+}
+
+bool Query::has_error() const
+{
+	return (m->success == false);
 }
 
 QString Query::get_query_string() const

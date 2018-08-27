@@ -154,24 +154,22 @@ bool Artists::getArtistByID(int id, Artist& artist, bool also_empty)
 
 ArtistId Artists::getArtistID(const QString& artist)
 {
-	Query q(this);
-	ArtistId artistID = -1;
+	Query q = run_query
+	(
+		"SELECT artistID FROM artists WHERE name = :name;",
+		{":name", Util::cvt_not_null(artist)},
+		QString("Cannot fetch artistID for artist %1").arg(artist)
+	);
 
-	QString query("SELECT artistID FROM artists WHERE name = :name;");
-
-	q.prepare(query);
-	q.bindValue(":name", Util::cvt_not_null(artist));
-
-	if (!q.exec()) {
-		q.show_error("Cannot fetch artistID");
+	if (q.has_error()) {
 		return -1;
 	}
 
 	if (q.next()) {
-		artistID = q.value(0).toInt();
+		return q.value(0).toInt();
 	}
 
-	return artistID;
+	return -1;
 }
 
 bool Artists::getAllArtists(ArtistList& result, bool also_empty)
@@ -246,67 +244,56 @@ bool Artists::getAllArtistsBySearchString(const Library::Filter& filter, ArtistL
 	return true;
 }
 
-
-ArtistId Artists::insertArtistIntoDatabase(const QString& artist)
+ArtistId Artists::updateArtist(const Artist& artist)
 {
-	ArtistId id = getArtistID(artist);
-	if(id >= 0){
-		return id;
-	}
-
-	Query q(this);
-
-	QString cissearch = Library::Util::convert_search_string(artist, search_mode());
-	q.prepare("INSERT INTO artists (name, cissearch) values (:artist, :cissearch);");
-
-	q.bindValue(":artist",		Util::cvt_not_null(artist));
-	q.bindValue(":cissearch",	Util::cvt_not_null(cissearch));
-
-	if (!q.exec()) {
-		q.show_error(QString("Cannot insert artist ") + artist);
+	if(artist.id < 0){
 		return -1;
 	}
 
-	return getArtistID(artist);
-}
+	QString cis = Library::Util::convert_search_string(artist.name(), search_mode());
 
-ArtistId Artists::insertArtistIntoDatabase (const Artist& artist)
-{
-	if(artist.id >= 0)
+	QMap<QString, QVariant> bindings
 	{
-		updateArtist(artist);
-		return artist.id;
-	}
+		{"name", Util::cvt_not_null(artist.name())},
+		{"cissearch", Util::cvt_not_null(cis)}
+	};
 
-	return insertArtistIntoDatabase(artist.name());
-}
-
-
-ArtistId Artists::updateArtist(const Artist &artist)
-{
-	Query q(this);
-
-	if(artist.id < 0) return -1;
-
-	QString cissearch = Library::Util::convert_search_string(artist.name(), search_mode());
-
-	q.prepare("UPDATE artists SET name = :name, cissearch = :cissearch WHERE artistID = :artist_id;");
-
-	q.bindValue(":name",		Util::cvt_not_null(artist.name()));
-	q.bindValue(":cissearch",	Util::cvt_not_null(cissearch));
-	q.bindValue(":artist_id",	artist.id);
-
-	if (!q.exec()) {
-		q.show_error(QString("Cannot insert (2) artist ") + artist.name());
+	Query q = update("artists", bindings, {"artistID", artist.id}, QString("Cannot insert artist %1").arg(artist.name()));
+	if(q.has_error()){
 		return -1;
 	}
 
 	return artist.id;
 }
 
+
+ArtistId Artists::insertArtistIntoDatabase(const QString& artist)
+{
+	QString cis = Library::Util::convert_search_string(artist, search_mode());
+
+	QMap<QString, QVariant> bindings
+	{
+		{"name", Util::cvt_not_null(artist)},
+		{"cissearch", Util::cvt_not_null(cis)}
+	};
+
+	Query q = insert("artists", bindings, QString("Cannot insert artist %1").arg(artist));
+	if(q.has_error()){
+		return -1;
+	}
+
+	return q.lastInsertId().toInt();
+}
+
+ArtistId Artists::insertArtistIntoDatabase (const Artist& artist)
+{
+	return insertArtistIntoDatabase(artist.name());
+}
+
 void Artists::updateArtistCissearch()
 {
 	SearchableModule::update_search_mode();
+	Library::SearchModeMask sm = search_mode();
 
 	ArtistList artists;
 	getAllArtists(artists, true);
@@ -315,16 +302,15 @@ void Artists::updateArtistCissearch()
 
 	for(const Artist& artist : artists)
 	{
-		QString str = "UPDATE artists SET cissearch=:cissearch WHERE artistID=:id;";
-		Query q(this);
-		q.prepare(str);
-		QString conv_search = Library::Util::convert_search_string(artist.name(), search_mode());
-		q.bindValue(":cissearch",	Util::cvt_not_null(conv_search));
-		q.bindValue(":id",			artist.id);
+		QString cis = Library::Util::convert_search_string(artist.name(), sm);
 
-		if(!q.exec()){
-			q.show_error("Cannot update artist cissearch");
-		}
+		this->update
+		(
+			"artists",
+			{{"cissearch", Util::cvt_not_null(cis)}},
+			{"artistID", artist.id},
+			"Cannot update artist cissearch"
+		);
 	}
 
 	db().commit();

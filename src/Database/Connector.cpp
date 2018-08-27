@@ -222,7 +222,7 @@ bool Connector::updateLostAlbums()
 		return false;
 	}
 
-	AlbumId id = lib_db->insertAlbumIntoDatabase(QString());
+	AlbumId id = lib_db->insertAlbumIntoDatabase(QString(""));
 
 	const QStringList queries {
 		QString("UPDATE tracks SET albumID=:albumID WHERE albumID IN (SELECT albumID FROM albums WHERE name IS NULL);"),

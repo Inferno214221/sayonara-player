@@ -53,13 +53,13 @@ namespace SC
 		bool db_fetch_albums(::DB::Query& q, AlbumList& result) override;
 		bool db_fetch_artists(::DB::Query& q, ArtistList& result) override;
 
-		int updateArtist(const Artist& artist) override;
-		int insertArtistIntoDatabase (const Artist& artist) override;
-		int insertArtistIntoDatabase (const QString& artist) override;
+		ArtistId updateArtist(const Artist& artist) override;
+		ArtistId insertArtistIntoDatabase (const Artist& artist) override;
+		ArtistId insertArtistIntoDatabase (const QString& artist) override;
 
-		int updateAlbum(const Album& album) override;
-		int insertAlbumIntoDatabase (const Album& album) override;
-		int insertAlbumIntoDatabase (const QString& album) override;
+		AlbumId updateAlbum(const Album& album) override;
+		AlbumId insertAlbumIntoDatabase (const Album& album) override;
+		AlbumId insertAlbumIntoDatabase (const QString& album) override;
 
 		bool updateTrack(const MetaData& md) override;
 		bool store_metadata(const MetaDataList& v_md) override;

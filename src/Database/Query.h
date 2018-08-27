@@ -47,6 +47,7 @@ namespace DB
 			explicit Query(const Module* module);
 			Query(const QString& connection_name, DbId db_id);
 			Query(const Query& other);
+			Query& operator=(const Query& other);
 
 			virtual ~Query();
 

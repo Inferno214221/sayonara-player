@@ -36,15 +36,14 @@ bool Podcasts::getAllPodcasts(QMap<QString, QString> & podcasts)
 {
 	podcasts.clear();
 
-	Query q(this);
-	q.prepare("SELECT name, url FROM savedpodcasts;");
+	Query q = run_query("SELECT name, url FROM savedpodcasts;", "Cannot fetch podcasts");
 
-	if (!q.exec()){
-		q.show_error("Cannot fetch podcasts");
+	if(q.has_error()){
 		return false;
 	}
 
-	while(q.next()) {
+	while(q.next())
+	{
 		QString name = q.value(0).toString();
 		QString url = q.value(1).toString();
 
@@ -57,51 +56,40 @@ bool Podcasts::getAllPodcasts(QMap<QString, QString> & podcasts)
 
 bool Podcasts::deletePodcast(const QString& name)
 {
-	Query q(this);
+	Query q = run_query
+	(
+		"DELETE FROM savedpodcasts WHERE name = :name;",
+		{
+			{":name", Util::cvt_not_null(name)},
+		},
+		QString("Could not delete podcast %1").arg(name)
+	);
 
-	q.prepare("DELETE FROM savedpodcasts WHERE name = :name;" );
-	q.bindValue(":name", Util::cvt_not_null(name));
-
-	if(!q.exec()) {
-		q.show_error(QString("Could not delete podcast ") + name);
-		return false;
-	}
-
-	return true;
+	return (!q.has_error());
 }
 
 
 bool Podcasts::addPodcast(const QString& name, const QString& url)
 {
-	Query q(this);
-	q.prepare("INSERT INTO savedpodcasts (name, url) VALUES (:name, :url); " );
-	q.bindValue(":name",	Util::cvt_not_null(name));
-	q.bindValue(":url",		Util::cvt_not_null(url));
+	Query q = insert("savedpodcasts",
+	{
+		{"name", Util::cvt_not_null(name)},
+		{"url", Util::cvt_not_null(url)}
+	}, QString("Could not add podcast: %1, %2").arg(name, url));
 
-	if(!q.exec()) {
-		sp_log(Log::Warning) << "Could not add podcast " << name << ", " << url;
-		return false;
-	}
-
-	sp_log(Log::Info) << "podcast " << name << ", " << url << " successfully added";
-	return true;
+	return (!q.has_error());
 }
 
 
 bool Podcasts::updatePodcastUrl(const QString& name, const QString& url)
 {
-	Query q(this);
+	Query q = update("savedpodcasts",
+		{{"url", Util::cvt_not_null(url)}},
+		{"name", Util::cvt_not_null(name)},
+		QString("Could not update podcast url %1").arg(name)
+	);
 
-	q.prepare("UPDATE savedpodcasts SET url=:url WHERE name=:name;");
-	q.bindValue(":name",	Util::cvt_not_null(name));
-	q.bindValue(":url",		Util::cvt_not_null(url));
-
-	if(!q.exec()) {
-		q.show_error(QString("Could not update podcast url ") + name);
-		return false;
-	}
-
-	return true;
+	return (!q.has_error());
 }
 
 

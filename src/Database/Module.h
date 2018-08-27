@@ -23,6 +23,7 @@
 
 #include "Utils/Pimpl.h"
 
+#include <QPair>
 #include <QMap>
 #include <QString>
 #include <QVariant>
@@ -43,7 +44,12 @@ namespace DB
 			DbId			db_id() const;
 			QString			connection_name() const;
 
+			DB::Query		run_query(const QString& query, const QString& error_text);
+			DB::Query		run_query(const QString& query, const QPair<QString, QVariant>& bindings, const QString& error_text);
 			DB::Query		run_query(const QString& query, const QMap<QString, QVariant>& bindings, const QString& error_text);
+
+			DB::Query		update(const QString& tablename, const QMap<QString, QVariant>& field_bindings, const QPair<QString, QVariant>& where_binding, const QString& error_message);
+			DB::Query		insert(const QString& tablename, const QMap<QString, QVariant>& field_bindings, const QString& error_message);
 	};
 }
 

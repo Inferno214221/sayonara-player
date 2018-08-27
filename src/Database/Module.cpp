@@ -58,6 +58,8 @@ QString Module::connection_name() const
 	return m->connection_name;
 }
 
+
+
 QSqlDatabase Module::db() const
 {
 	if(!QSqlDatabase::isDriverAvailable("QSQLITE")){
@@ -89,6 +91,16 @@ QSqlDatabase Module::db() const
 	return db;
 }
 
+DB::Query Module::run_query(const QString& query, const QString& error_text)
+{
+	return run_query(query, QMap<QString, QVariant>(), error_text);
+}
+
+DB::Query Module::run_query(const QString& query, const QPair<QString, QVariant>& bindings, const QString& error_text)
+{
+	return run_query(query, {{bindings.first, bindings.second}}, error_text);
+}
+
 DB::Query Module::run_query(const QString& query, const QMap<QString, QVariant>& bindings, const QString& error_text)
 {
 	DB::Query q(this);
@@ -107,5 +119,68 @@ DB::Query Module::run_query(const QString& query, const QMap<QString, QVariant>&
 
 	return q;
 }
+
+DB::Query Module::insert(const QString& tablename, const QMap<QString, QVariant>& field_bindings, const QString& error_message)
+{
+	QList<QString> field_names = field_bindings.keys();
+	QString fields = field_names.join(", ");
+	QString bindings = ":" + field_names.join(", :");
+
+	QString query = "INSERT INTO " + tablename + " ";
+	query += "(" + fields + ") ";
+	query += "VALUES (" + bindings + ");";
+
+	DB::Query q(this);
+	q.prepare(query);
+
+	for(const QString& field : field_names)
+	{
+		q.bindValue(":" + field, field_bindings[field]);
+	}
+
+	if(!q.exec())
+	{
+		q.show_error(error_message);
+	}
+
+	return q;
+}
+
+
+DB::Query Module::update(const QString& tablename, const QMap<QString, QVariant>& field_bindings, const QPair<QString, QVariant>& where_binding, const QString& error_message)
+{
+	const QList<QString> field_names = field_bindings.keys();
+
+	QStringList update_commands;
+	for(const QString& field : field_names)
+	{
+		update_commands << field + " = :" + field;
+	}
+
+	QString query = "UPDATE " + tablename + " SET ";
+	query += update_commands.join(", ");
+	query += " WHERE ";
+	query += where_binding.first + " = :" + where_binding.first;
+	query += ";";
+
+	DB::Query q(this);
+	q.prepare(query);
+
+	for(const QString& field : field_names)
+	{
+		q.bindValue(":" + field, field_bindings[field]);
+	}
+
+	q.bindValue(":" + where_binding.first, where_binding.second);
+
+	if(!q.exec())
+	{
+		q.show_error(error_message);
+	}
+
+	return q;
+}
+
+
 
 

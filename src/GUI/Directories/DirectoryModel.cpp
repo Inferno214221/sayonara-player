@@ -141,10 +141,6 @@ void DirectoryModel::create_file_list(const QString& substr)
 
 QModelIndexList DirectoryModel::search_results(const QString& substr)
 {
-	if(substr == "sla")
-	{
-		int x = 4;
-	}
 	QModelIndexList ret;
 
 	m->found_strings.clear();

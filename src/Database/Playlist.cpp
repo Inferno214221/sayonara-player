@@ -57,7 +57,8 @@ bool DB::Playlist::getAllPlaylistSkeletons(CustomPlaylistSkeletons& skeletons, :
 	}
 
 	QString type_clause;
-	switch(type){
+	switch(type)
+	{
 		case ::Playlist::StoreType::OnlyTemporary:
 			type_clause = " WHERE playlists.temporary = 1 ";
 			break;
@@ -66,33 +67,30 @@ bool DB::Playlist::getAllPlaylistSkeletons(CustomPlaylistSkeletons& skeletons, :
 			break;
 		default:
 			break;
-
 	}
 
-	Query q(this);
+	Query q = run_query
+	(
+		"SELECT "
+		"playlists.playlistID, "
+		"playlists.playlist, "
+		"playlists.temporary, "
+		"COUNT(playlisttotracks.trackID) "
+		"FROM playlists LEFT OUTER JOIN playlisttotracks "
+		"ON playlists.playlistID = playlisttotracks.playlistID "
+		+ type_clause +
+		"GROUP BY playlists.playlistID " +
+		sortorder_str + ";",
 
-	QString querytext = QString() +
+		"Cannot fetch all playlists"
+	);
 
-			"SELECT "
-			"playlists.playlistID, "
-			"playlists.playlist, "
-			"playlists.temporary, "
-			"COUNT(playlisttotracks.trackID) "
-			"FROM playlists LEFT OUTER JOIN playlisttotracks "
-			"ON playlists.playlistID = playlisttotracks.playlistID "
-			+ type_clause +
-			"GROUP BY playlists.playlistID " +
-			sortorder_str +
-			";";
-
-	q.prepare(querytext);
-
-	if(!q.exec()) {
-		q.show_error("Cannot fetch all playlists");
+	if(q.has_error()){
 		return false;
 	}
 
-	while(q.next()) {
+	while(q.next())
+	{
 		CustomPlaylistSkeleton skeleton;
 		if(q.value(0).isNull()){
 			continue;
@@ -118,29 +116,29 @@ bool DB::Playlist::getPlaylistSkeletonById(CustomPlaylistSkeleton& skeleton)
 		return false;
 	}
 
-	Query q(this);
+	Query q = run_query
+	(
+		"SELECT "
+		"playlists.playlistID, "
+		"playlists.playlist, "
+		"playlists.temporary, "
+		"COUNT(playlisttotracks.trackID) "
+		"FROM playlists LEFT OUTER JOIN playlisttotracks "
+		"ON playlists.playlistID = playlisttotracks.playlistID "
+		"WHERE playlists.playlistid = :playlist_id "
+		"GROUP BY playlists.playlistID;",
 
-	QString querytext = QString() +
+		{{":playlist_id", skeleton.id()}},
+		"Cannot fetch all playlists"
+	);
 
-			"SELECT "
-			"playlists.playlistID, "
-			"playlists.playlist, "
-			"playlists.temporary, "
-			"COUNT(playlisttotracks.trackID) "
-			"FROM playlists LEFT OUTER JOIN playlisttotracks "
-			"ON playlists.playlistID = playlisttotracks.playlistID "
-			"WHERE playlists.playlistid = :playlist_id "
-			"GROUP BY playlists.playlistID;";
-
-	q.prepare(querytext);
-	q.bindValue(":playlist_id", skeleton.id());
-
-	if(!q.exec()) {
-		q.show_error("Cannot fetch all playlists");
+	if(q.has_error())
+	{
 		return false;
 	}
 
-	if(q.next()) {
+	if(q.next())
+	{
 		skeleton.set_id(q.value(0).toInt());
 		skeleton.set_name(q.value(1).toString());
 
@@ -163,45 +161,42 @@ bool DB::Playlist::getPlaylistById(CustomPlaylist& pl)
 
 	pl.clear();
 
-	Query q(this);
+	Query q = run_query
+	(
+		"SELECT "
+		"tracks.trackID AS trackID, "				// 0
+		"tracks.title AS title, "					// 1
+		"tracks.length AS length, "					// 2
+		"tracks.year AS year, "						// 3
+		"tracks.bitrate AS bitrate, "				// 4
+		"tracks.filename AS filename, "				// 5
+		"tracks.track AS trackNum, "				// 6
+		"albums.albumID AS albumID, "				// 7
+		"artists.artistID AS artistID, "			// 8
+		"albums.name AS albumName, "				// 9
+		"artists.name AS artistName, "				// 10
+		"tracks.genre AS genrename, "				// 11
+		"tracks.filesize AS filesize, "				// 12
+		"tracks.discnumber AS discnumber, "			// 13
+		"tracks.rating AS rating, "					// 14
+		"playlistToTracks.filepath AS filepath, "	// 15
+		"playlistToTracks.db_id AS db_id, "			// 16
+		"tracks.libraryID AS library_id "			// 17
 
-	QString querytext = QString("SELECT ") +
+		"FROM tracks, albums, artists, playlists, playlisttotracks "
+		"WHERE playlists.playlistID = :playlist_id "
+		"AND playlists.playlistID = playlistToTracks.playlistID "
+		"AND playlistToTracks.trackID = tracks.trackID "
+		"AND tracks.albumID = albums.albumID "
+		"AND tracks.artistID = artists.artistID "
+		"ORDER BY playlistToTracks.position ASC; ",
 
-			"tracks.trackID AS trackID, "				// 0
-			"tracks.title AS title, "					// 1
-			"tracks.length AS length, "					// 2
-			"tracks.year AS year, "						// 3
-			"tracks.bitrate AS bitrate, "				// 4
-			"tracks.filename AS filename, "				// 5
-			"tracks.track AS trackNum, "				// 6
-			"albums.albumID AS albumID, "				// 7
-			"artists.artistID AS artistID, "			// 8
-			"albums.name AS albumName, "				// 9
-			"artists.name AS artistName, "				// 10
-			"tracks.genre AS genrename, "				// 11
-			"tracks.filesize AS filesize, "				// 12
-			"tracks.discnumber AS discnumber, "			// 13
-			"tracks.rating AS rating, "					// 14
-			"playlistToTracks.filepath AS filepath, "	// 15
-			"playlistToTracks.db_id AS db_id, "			// 16
-			"tracks.libraryID AS library_id "			// 17
+		{{":playlist_id", pl.id()}},
+		QString("Cannot get tracks for playlist %1").arg(pl.id())
+	);
 
-			"FROM tracks, albums, artists, playlists, playlisttotracks "
-			"WHERE playlists.playlistID = :playlist_id "
-			"AND playlists.playlistID = playlistToTracks.playlistID "
-			"AND playlistToTracks.trackID = tracks.trackID "
-			"AND tracks.albumID = albums.albumID "
-			"AND tracks.artistID = artists.artistID "
-			"ORDER BY playlistToTracks.position ASC; ";
 
-	q.prepare(querytext);
-	q.bindValue(":playlist_id", pl.id());
-
-	if (!q.exec()) {
-		q.show_error( QString("Cannot get tracks for playlist %1").arg(pl.id()) );
-	}
-
-	else
+	if(!q.has_error())
 	{
 		while (q.next())
 		{
@@ -234,23 +229,23 @@ bool DB::Playlist::getPlaylistById(CustomPlaylist& pl)
 		}
 	}
 
-	// non database tracks
-	QString querytext2 = QString()+
-			"SELECT "
-			"playlisttotracks.filepath AS filepath, "
-			"playlisttotracks.position AS position "
-			"FROM playlists, playlisttotracks "
-			"WHERE playlists.playlistID = :playlist_id "
-			"AND playlists.playlistID =  playlistToTracks.playlistID "
-			"AND playlistToTracks.trackID <= 0 "
-			"ORDER BY playlistToTracks.position ASC; ";
+	// non database playlists
+	Query q2 = run_query
+	(
+		"SELECT "
+		"playlisttotracks.filepath AS filepath, "
+		"playlisttotracks.position AS position "
+		"FROM playlists, playlisttotracks "
+		"WHERE playlists.playlistID = :playlist_id "
+		"AND playlists.playlistID =  playlistToTracks.playlistID "
+		"AND playlistToTracks.trackID <= 0 "
+		"ORDER BY playlistToTracks.position ASC;",
 
-	Query q2(this);
-	q2.prepare(querytext2);
-	q2.bindValue(":playlist_id", pl.id());
+		{{":playlist_id", pl.id()}},
+		QString("Playlist by id: Cannot fetch playlist %1").arg(pl.id())
+	);
 
-	if(!q2.exec()) {
-		q2.show_error(QString("Playlist by id: Cannot fetch playlist %1").arg(pl.id()));
+	if(q2.has_error()) {
 		return false;
 	}
 
@@ -283,55 +278,46 @@ bool DB::Playlist::getPlaylistById(CustomPlaylist& pl)
 // nonnegative else
 int DB::Playlist::getPlaylistIdByName(const QString& name)
 {
-	Query q(this);
+	Query q = run_query
+	(
+		"SELECT playlistid FROM playlists WHERE playlist = :playlist_name;",
+		{
+			{":playlist_name", Util::cvt_not_null(name)}
+		},
+		QString("Playlist by name: Cannot fetch playlist %1").arg(name)
+	);
 
-	q.prepare("SELECT playlistid FROM playlists WHERE playlist = :playlist_name;");
-	q.bindValue(":playlist_name", Util::cvt_not_null(name));
-
-	if(!q.exec()) {
-		q.show_error(QString("Playlist by name: Cannot fetch playlist ") + name);
+	if(q.has_error()) {
 		return -1;
 	}
 
-	else {
-		  if(q.next()) {
-			  return q.value(0).toInt();
-		  }
+	else
+	{
+		if(q.next()) {
+		  return q.value(0).toInt();
+		}
 
-		  return -1;
+		return -1;
 	}
 }
 
 
 bool DB::Playlist::insertTrackIntoPlaylist(const MetaData& md, int playlist_id, int pos)
 {
-	if(md.is_disabled)
+	if(md.is_disabled) {
+		return false;
+	}
+
+	Query q = insert("playlisttotracks",
 	{
-		return false;
-	}
+		{"trackid", md.id},
+		{"playlistid", playlist_id},
+		{"position", pos},
+		{"filepath", Util::cvt_not_null(md.filepath())},
+		{"db_id", md.db_id()}
+	}, "Cannot insert track into playlist");
 
-	Query q(this);
-
-	QString query_string = QString("INSERT INTO playlisttotracks ") +
-							"(trackid, playlistid, position, filepath, db_id) " +
-							"VALUES " +
-							"(:track_id, :playlist_id, :position, :filepath, :db_id);";
-
-
-	q.prepare(query_string);
-
-	q.bindValue(":track_id", md.id);
-	q.bindValue(":playlist_id", playlist_id);
-	q.bindValue(":position", pos);
-	q.bindValue(":filepath", Util::cvt_not_null(md.filepath()));
-	q.bindValue(":db_id", md.db_id());
-
-	if (!q.exec()) {
-		q.show_error("Cannot insert track into playlist");
-		return false;
-	}
-
-	return true;
+	return (!q.has_error());
 }
 
 
@@ -339,19 +325,14 @@ bool DB::Playlist::insertTrackIntoPlaylist(const MetaData& md, int playlist_id, 
 // negative otherwise
 int DB::Playlist::createPlaylist(QString playlist_name, bool temporary)
 {
-	int temporary_int = (temporary) ? 1 : 0;
+	Query q	= insert("playlists",
+	{
+		{"playlist", Util::cvt_not_null(playlist_name)},
+		{"temporary", (temporary == true) ? 1 : 0}
+	}, "Cannot create playlist");
 
-	QString query_string = "INSERT INTO playlists (playlist, temporary) VALUES (:playlist_name, :temporary);";
-
-	Query q(this);
-
-	q.prepare(query_string);
-	q.bindValue(":playlist_name",	Util::cvt_not_null(playlist_name));
-	q.bindValue(":temporary",		temporary_int);
-
-	if(!q.exec()) {
-		q.show_error("Cannot create playlist");
-		return -1;
+	if(q.has_error()){
+		return false;
 	}
 
 	return q.lastInsertId().toInt();
@@ -360,20 +341,12 @@ int DB::Playlist::createPlaylist(QString playlist_name, bool temporary)
 
 bool DB::Playlist::renamePlaylist(int id, const QString& new_name)
 {
-	QString query_string = "UPDATE playlists SET playlist=:playlist_name WHERE playlistId=:id;";
+	Query q = update("playlists",
+		{{"playlist", Util::cvt_not_null(new_name)}},
+		{"playlistId", id}
+	, "Cannot rename playlist");
 
-	Query q(this);
-
-	q.prepare(query_string);
-	q.bindValue(":playlist_name", Util::cvt_not_null(new_name));
-	q.bindValue(":id", id);
-
-	if(!q.exec()) {
-		q.show_error("Cannot rename playlist");
-		return false;
-	}
-
-	return true;
+	return (!q.has_error());
 }
 
 
