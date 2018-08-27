@@ -75,6 +75,7 @@ void DirectoryModel::search_only_dirs(bool b)
 	m->search_only_dirs = b;
 }
 
+
 void DirectoryModel::create_file_list(const QString& substr)
 {
 	m->all_files.clear();
@@ -138,14 +139,16 @@ void DirectoryModel::create_file_list(const QString& substr)
 	});
 }
 
-QModelIndex DirectoryModel::getFirstRowIndexOf(const QString& substr)
+QModelIndexList DirectoryModel::search_results(const QString& substr)
 {
+	QModelIndexList ret;
+
 	m->found_strings.clear();
 	m->cur_idx = -1;
 
 	create_file_list(substr);
 	if(m->all_files.isEmpty()){
-		return QModelIndex();
+		return QModelIndexList();
 	}
 
 	QString cvt_search_string = Library::Util::convert_search_string(substr, search_mode());
@@ -195,79 +198,21 @@ QModelIndex DirectoryModel::getFirstRowIndexOf(const QString& substr)
 		m->cur_idx = 0;
 	}
 
-	QModelIndex found_idx = index(str);
-	sp_log(Log::Debug, this) << "Data@found idx: " << found_idx.data().toString() << " Data to search: " << str;
-	if(canFetchMore(found_idx)){
-		fetchMore(found_idx);
+	for(const QString& found_str : m->found_strings)
+	{
+		QModelIndex found_idx = index(found_str);
+		ret << found_idx;
+
+		sp_log(Log::Debug, this) << "Data@found idx: " << found_idx.data().toString() << " Data to search: " << found_str;
+		if(canFetchMore(found_idx)){
+			fetchMore(found_idx);
+		}
+
 	}
 
-	return found_idx;
+	return ret;
 }
 
-
-QModelIndex DirectoryModel::getNextRowIndexOf(const QString& substr, int cur_row, const QModelIndex& parent)
-{
-	Q_UNUSED(substr)
-	Q_UNUSED(cur_row)
-	Q_UNUSED(parent)
-
-	QString str;
-
-	if(m->cur_idx < 0 || m->found_strings.isEmpty() ){
-		return QModelIndex();
-	}
-
-	m->cur_idx = (m->cur_idx + 1) % m->found_strings.size();
-
-	str = m->found_strings[m->cur_idx];
-
-	QModelIndex found_idx = index(str);
-	sp_log(Log::Debug, this) << "Data@found idx: " << found_idx.data().toString() << " Data to search: " << str;
-	if(canFetchMore(found_idx)){
-		fetchMore(found_idx);
-	}
-
-	return found_idx;
-}
-
-
-QModelIndex DirectoryModel::getPrevRowIndexOf(const QString& substr, int cur_row, const QModelIndex& parent)
-{
-	Q_UNUSED(substr)
-	Q_UNUSED(cur_row)
-	Q_UNUSED(parent)
-
-	QString str;
-
-	if(m->cur_idx < 0 ){
-		return QModelIndex();
-	}
-
-	if(m->cur_idx == 0){
-		m->cur_idx = (m->found_strings.size() - 1);
-	}
-
-	else {
-		m->cur_idx--;
-	}
-
-	str = m->found_strings[m->cur_idx];
-
-	QModelIndex found_idx = index(str);
-	sp_log(Log::Debug, this) << "Data@found idx: " << found_idx.data().toString() << " Data to search: " << str;
-	if(canFetchMore(found_idx)){
-		fetchMore(found_idx);
-	}
-
-	return found_idx;
-}
-
-
-int DirectoryModel::getNumberResults(const QString& str)
-{
-	Q_UNUSED(str)
-	return m->found_strings.size();
-}
 
 Qt::ItemFlags DirectoryModel::flags(const QModelIndex& index) const
 {

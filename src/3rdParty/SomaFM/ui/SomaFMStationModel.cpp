@@ -146,42 +146,26 @@ bool SomaFM::StationModel::has_items() const
 	return (!m->stations.isEmpty());
 }
 
-
-QModelIndex SomaFM::StationModel::getNextRowIndexOf(const QString& substr, int cur_row, const QModelIndex& parent)
+QModelIndexList SomaFM::StationModel::search_results(const QString& substr)
 {
-	Q_UNUSED(parent)
-	for(int i=cur_row; i<m->stations.size(); i++)
+	QModelIndexList ret;
+
+	int i = 0;
+	for(const SomaFM::Station& station : m->stations)
 	{
-		QString name = m->stations[i].name();
-		QString desc = m->stations[i].description();
+		QString name = station.name();
+		QString desc = station.description();
 
 		QString str = name + desc;
 
 		if(str.contains(substr, Qt::CaseInsensitive)){
-			return this->index(i, 0);
+			ret << this->index(i, 0);
 		}
 	}
 
-	return QModelIndex();
+	return ret;
 }
 
-QModelIndex SomaFM::StationModel::getPrevRowIndexOf(const QString& substr, int cur_row, const QModelIndex& parent)
-{
-	Q_UNUSED(parent)
-	for(int i=cur_row; i>=0; i--)
-	{
-		QString name = m->stations[i].name();
-		QString desc = m->stations[i].description();
-
-		QString str = name + desc;
-
-		if(str.contains(substr, Qt::CaseInsensitive)){
-			return this->index(i, 0);
-		}
-	}
-
-	return QModelIndex();
-}
 
 void SomaFM::StationModel::set_stations(const QList<SomaFM::Station>& stations)
 {

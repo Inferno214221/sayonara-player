@@ -160,6 +160,21 @@ QStringList FileListModel::files() const
 	return m->files;
 }
 
+QModelIndexList FileListModel::search_results(const QString& substr)
+{
+	QModelIndexList ret;
+
+	for(int i=0; i<m->files.size(); i++)
+	{
+
+		if(check_row_for_searchstring(i, substr)){
+			ret << index(i, 0);
+		}
+	}
+
+	return ret;
+}
+
 
 LibraryId FileListModel::library_id() const
 {
@@ -219,41 +234,6 @@ bool FileListModel::check_row_for_searchstring(int row, const QString& substr) c
 
 	QString converted_filepath = Library::Util::convert_search_string(filename, search_mode());
 	return converted_filepath.contains(converted_string);
-}
-
-QModelIndex FileListModel::getNextRowIndexOf(const QString& substr, int cur_row, const QModelIndex& parent)
-{
-	Q_UNUSED(parent)
-
-	for(int i=0; i<m->files.size(); i++)
-	{
-		int row = (cur_row + i) % m->files.size();
-
-		if(check_row_for_searchstring(row, substr)){
-			return index(row, 0);
-		}
-	}
-
-	return QModelIndex();
-}
-
-QModelIndex FileListModel::getPrevRowIndexOf(const QString& substr, int cur_row, const QModelIndex& parent)
-{
-	Q_UNUSED(parent)
-
-	for(int i=0; i<m->files.size(); i++)
-	{
-		int row = (cur_row - i);
-		if(row == -1){
-			row = m->files.size()	- 1;
-		}
-
-		if(check_row_for_searchstring(row, substr)){
-			return index(row, 0);
-		}
-	}
-
-	return QModelIndex();
 }
 
 QMimeData* FileListModel::mimeData(const QModelIndexList& indexes) const

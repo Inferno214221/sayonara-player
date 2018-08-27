@@ -74,9 +74,8 @@ public:
 
 
 	SearchableModelInterface::ExtraTriggerMap	getExtraTriggers() override;
-	QModelIndex		getPrevRowIndexOf(const QString& substr, int row, const QModelIndex& parent=QModelIndex()) override;
-	QModelIndex		getNextRowIndexOf(const QString& substr, int row, const QModelIndex& parent=QModelIndex()) override;
 	QModelIndex		getRowIndexOf(const QString& substr, int row, bool is_forward);
+	QModelIndexList	search_results(const QString& substr) override;
 
 	void		clear();
 	void		remove_rows(const IndexSet& rows);

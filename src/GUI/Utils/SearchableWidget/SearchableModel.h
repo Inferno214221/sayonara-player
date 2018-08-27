@@ -36,11 +36,8 @@ class SearchableModelInterface
 public:
 	using ExtraTriggerMap=QMap<QChar, QString>;
 
-	virtual QModelIndex getFirstRowIndexOf(const QString& substr);
-	virtual QModelIndex getNextRowIndexOf(const QString& substr, int cur_row, const QModelIndex& parent=QModelIndex())=0;
-	virtual QModelIndex getPrevRowIndexOf(const QString& substr, int cur_row, const QModelIndex& parent=QModelIndex())=0;
 	virtual ExtraTriggerMap getExtraTriggers();
-	virtual int getNumberResults(const QString& str);
+	virtual QModelIndexList search_results(const QString& substr)=0;
 	virtual bool has_items() const=0;
 
 	virtual ::Library::SearchModeMask search_mode() const final;

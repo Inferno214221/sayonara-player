@@ -38,11 +38,13 @@ struct SearchableViewInterface::Private :
 	Q_OBJECT
 
 public:
+	QModelIndexList				found_search_indexes;
 	SearchableModelInterface*	search_model=nullptr;
 	SearchableViewInterface*	search_view=nullptr;
 	QAbstractItemView*			view=nullptr;
 	MiniSearcher*				mini_searcher=nullptr;
 	int							cur_idx;
+	int							current_search_index;
 
 private slots:
 	void edit_changed(const QString& str);
@@ -51,12 +53,12 @@ private slots:
 
 public:
 	Private(SearchableViewInterface* parent, QAbstractItemView* v) :
-		QObject(v)
+		QObject(v),
+		search_view(parent),
+		view(v),
+		cur_idx(-1),
+		current_search_index(-1)
 	{
-		view = v;
-		search_view = parent;
-		search_model = nullptr;
-		cur_idx = -1;
 		mini_searcher = new MiniSearcher(v);
 
 		connect(mini_searcher, &MiniSearcher::sig_text_changed, this, &Private::edit_changed);
@@ -132,28 +134,46 @@ QModelIndex SearchableViewInterface::match_index(const QString& str, SearchDirec
 {
 	QModelIndex idx;
 	if(str.isEmpty()) {
-		return idx;
+		return QModelIndex();
 	}
 
 	if(!m->search_model) {
-		return idx;
+		return QModelIndex();
 	}
 
-	Library::SearchModeMask search_mode = Settings::instance()->get<Set::Lib_SearchMode>();
-	QMap<QChar, QString> extra_triggers = m->search_model->getExtraTriggers();
 
-	QString converted_string = Library::Util::convert_search_string(str, search_mode, extra_triggers.keys());
+	if(m->found_search_indexes.isEmpty())
+	{
+		return QModelIndex();
+	}
+
+	if(m->current_search_index < 0 || m->current_search_index >= m->found_search_indexes.size()){
+		m->current_search_index = 0;
+	}
 
 	switch(direction)
 	{
 		case SearchDirection::First:
-			idx = m->search_model->getFirstRowIndexOf(converted_string);
+			idx = m->found_search_indexes.first();
+			m->current_search_index = 0;
 			break;
+
 		case SearchDirection::Next:
-			idx = m->search_model->getNextRowIndexOf(converted_string, m->cur_idx + 1);
+			m->current_search_index++;
+			if(m->current_search_index >= m->found_search_indexes.count()){
+				m->current_search_index = 0;
+			}
+
+			idx = m->found_search_indexes.at(m->current_search_index);
 			break;
+
 		case SearchDirection::Prev:
-			idx = m->search_model->getPrevRowIndexOf(converted_string, m->cur_idx - 1);
+			m->current_search_index--;
+			if(m->current_search_index < 0){
+				m->current_search_index = m->found_search_indexes.count() - 1;
+			}
+
+			idx = m->found_search_indexes.at(m->current_search_index);
 			break;
 	}
 
@@ -201,12 +221,10 @@ void SearchableViewInterface::select_match(const QString& str, SearchDirection d
 	}
 }
 
-
 QItemSelectionModel* SearchableViewInterface::selection_model() const
 {
 	return m->view->selectionModel();
 }
-
 
 void SearchableViewInterface::set_current_index(int idx)
 {
@@ -232,14 +250,15 @@ void SearchableViewInterface::handle_key_press(QKeyEvent* e)
 
 void SearchableViewInterface::Private::edit_changed(const QString& str)
 {
-	search_view->select_match(str, SearchDirection::First);
-
 	Library::SearchModeMask search_mode = Settings::instance()->get<Set::Lib_SearchMode>();
-	QString search_str = Library::Util::convert_search_string(str, search_mode);
+	QMap<QChar, QString> extra_triggers = this->search_model->getExtraTriggers();
+	QString converted_string = Library::Util::convert_search_string(str, search_mode, extra_triggers.keys());
 
-	mini_searcher->set_number_results(
-		search_model->getNumberResults(search_str)
-	);
+	this->found_search_indexes = this->search_model->search_results(converted_string);
+	this->current_search_index = -1;
+
+	this->search_view->select_match(str, SearchDirection::First);
+	this->mini_searcher->set_number_results(this->found_search_indexes.size());
 }
 
 void SearchableViewInterface::Private::select_next()

@@ -87,6 +87,7 @@ int ItemModel::columnCount(const QModelIndex& parent) const
 	return m->header_names.size();
 }
 
+
 bool ItemModel::removeRows(int row, int count, const QModelIndex& index)
 {
 	Q_UNUSED(index)
@@ -168,55 +169,26 @@ IndexSet ItemModel::selected_indexes() const
 	return ret;
 }
 
-QModelIndex ItemModel::getNextRowIndexOf(const QString& substr, int row, const QModelIndex& parent)
+QModelIndexList ItemModel::search_results(const QString& substr)
 {
-	Q_UNUSED(parent)
+	QModelIndexList ret;
 
 	int len = rowCount();
 	if(len == 0) {
-		return QModelIndex();
+		return QModelIndexList();
 	}
 
 	for(int i=0; i<len; i++)
 	{
-		int row_idx = (i + row) % len;
-
-		QString title = searchable_string(row_idx);
+		QString title = searchable_string(i);
 		title = Library::Util::convert_search_string(title, search_mode());
 
 		if(title.contains(substr)) {
-			return this->index(row_idx, searchable_column());
+			ret << this->index(i, searchable_column());
 		}
 	}
 
-	return QModelIndex();
-}
-
-
-QModelIndex ItemModel::getPrevRowIndexOf(const QString& substr, int row, const QModelIndex& parent)
-{
-	Q_UNUSED(parent)
-
-	int len = rowCount();
-	if(len < row) row = len - 1;
-
-	for(int i=0; i<len; i++)
-	{
-		if(row - i < 0) {
-			row = len - 1;
-		}
-
-		int row_idx = (row - i) % len;
-
-		QString title = searchable_string(row_idx);
-		title = Library::Util::convert_search_string(title, search_mode());
-
-		if(title.contains(substr)) {
-			return this->index(row_idx, searchable_column());
-		}
-	}
-
-	return QModelIndex();
+	return ret;
 }
 
 

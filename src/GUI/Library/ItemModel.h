@@ -53,8 +53,7 @@ namespace Library
 			virtual int     columnCount(const QModelIndex& parent=QModelIndex()) const override;
 
 			/** AbstractSearchTableModel **/
-			virtual QModelIndex		getNextRowIndexOf(const QString& substr, int row, const QModelIndex& parent=QModelIndex()) override;
-			virtual QModelIndex		getPrevRowIndexOf(const QString& substr, int row, const QModelIndex& parent=QModelIndex()) override;
+			QModelIndexList search_results(const QString& substr) override;
 
 			virtual bool			is_selected(int id) const final;
 			virtual const SP::Set<Id>& selections() const=0;

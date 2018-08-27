@@ -44,12 +44,8 @@ public:
 	void search_only_dirs(bool b);
 
 public:
-	virtual QModelIndex getFirstRowIndexOf(const QString& substr) override;
-	virtual QModelIndex getNextRowIndexOf(const QString& substr, int cur_row, const QModelIndex& parent=QModelIndex()) override;
-	virtual QModelIndex getPrevRowIndexOf(const QString& substr, int cur_row, const QModelIndex& parent=QModelIndex()) override;
-
-	virtual int getNumberResults(const QString &str) override;
-	Qt::ItemFlags flags(const QModelIndex &index) const override;
+	QModelIndexList search_results(const QString& substr) override;
+	Qt::ItemFlags	flags(const QModelIndex &index) const override;
 
 	LibraryId library_id(const QModelIndex& index) const;
 	QString filepath_origin(const QModelIndex& index) const;

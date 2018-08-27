@@ -62,9 +62,7 @@ namespace Library
 			const MetaDataList& mimedata_tracks() const override;
 			const SP::Set<Id>&	selections() const override;
 
-			QModelIndex		getNextRowIndexOf(const QString& substr, int cur_row, const QModelIndex& parent=QModelIndex()) override;
-			QModelIndex		getPrevRowIndexOf(const QString& substr, int cur_row, const QModelIndex& parent=QModelIndex()) override;
-			int				getNumberResults(const QString& str) override;
+			QModelIndexList search_results(const QString& substr) override;
 
 			int				searchable_column() const override;
 			QString			searchable_string(int idx) const override;

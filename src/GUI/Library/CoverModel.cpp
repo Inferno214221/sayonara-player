@@ -390,77 +390,10 @@ void CoverModel::cover_lookup_finished(bool success)
 }
 
 
-QModelIndex CoverModel::getNextRowIndexOf(const QString& substr, int cur_row, const QModelIndex& parent)
+QModelIndexList CoverModel::search_results(const QString& substr)
 {
-	Q_UNUSED(parent)
+	QModelIndexList ret;
 
-	const AlbumList& a = albums();
-	const int n_albums = a.count();
-
-	for(int i=0; i<n_albums; i++)
-	{
-		int idx = (i + cur_row) % n_albums;
-		QString title = searchable_string(idx);
-		title = Library::Util::convert_search_string(title, search_mode());
-
-		if(title.contains(substr))
-		{
-			return this->index(idx / columnCount(), idx % columnCount());
-		}
-
-		/*const QStringList artists = a[idx].artists();
-		for(const QString& artist : artists)
-		{
-			QString cvt_artist = Library::Util::convert_search_string(artist, search_mode());
-
-			if(cvt_artist.contains(substr)){
-				return this->index(idx / columnCount(), idx % columnCount());
-			}
-		}*/
-	}
-
-	return QModelIndex();
-}
-
-QModelIndex CoverModel::getPrevRowIndexOf(const QString& substr, int row, const QModelIndex& parent)
-{
-	Q_UNUSED(parent)
-
-	const AlbumList& a = albums();
-	const int n_albums = a.count();
-
-	for(int i=0; i<n_albums; i++)
-	{
-		if(row - i < 0){
-			row = n_albums - 1;
-		}
-
-		int idx = (row - i) % n_albums;
-
-		QString title = searchable_string(idx);
-		title = Library::Util::convert_search_string(title, search_mode());
-		if(title.contains(substr))
-		{
-			return this->index(idx / columnCount(), idx % columnCount());
-		}
-
-		const QStringList artists = a[idx].artists();
-		for(const QString& artist : artists)
-		{
-			QString cvt_artist = Library::Util::convert_search_string(artist, search_mode());
-
-			if(cvt_artist.contains(substr)){
-				return this->index(idx / columnCount(), idx % columnCount());
-			}
-		}
-	}
-
-	return QModelIndex();
-}
-
-int CoverModel::getNumberResults(const QString& substr)
-{
-	int ret=0;
 	const AlbumList& a = albums();
 	const int n_albums = a.count();
 
@@ -471,24 +404,23 @@ int CoverModel::getNumberResults(const QString& substr)
 
 		if(title.contains(substr))
 		{
-			ret++;
-			continue;
+			ret << this->index(i / columnCount(), i % columnCount());
 		}
 
-		/*const QStringList artists = a[i].artists();
+		/*const QStringList artists = a[idx].artists();
 		for(const QString& artist : artists)
 		{
 			QString cvt_artist = Library::Util::convert_search_string(artist, search_mode());
 
 			if(cvt_artist.contains(substr)){
-				ret++;
-				break;
+				ret << this->index(idx / columnCount(), idx % columnCount());
 			}
 		}*/
 	}
 
 	return ret;
 }
+
 
 int CoverModel::searchable_column() const
 {

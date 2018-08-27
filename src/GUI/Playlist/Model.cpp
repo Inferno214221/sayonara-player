@@ -324,20 +324,10 @@ MetaDataList PlaylistItemModel::metadata(const IndexSet &rows) const
 	return v_md;
 }
 
-QModelIndex PlaylistItemModel::getPrevRowIndexOf(const QString& substr, int row, const QModelIndex& parent)
-{
-	Q_UNUSED(parent)
-	return getRowIndexOf(substr, row, false);
-}
 
-QModelIndex PlaylistItemModel::getNextRowIndexOf(const QString& substr, int row, const QModelIndex &parent)
+QModelIndexList PlaylistItemModel::search_results(const QString& substr)
 {
-	Q_UNUSED(parent)
-	return getRowIndexOf(substr, row, true);
-}
-
-QModelIndex PlaylistItemModel::getRowIndexOf(const QString& substr, int row, bool is_forward)
-{
+	QModelIndexList ret;
 	QString pure_search_string = substr;
 	PlaylistSearchMode plsm = PlaylistSearchMode::Title;
 
@@ -364,31 +354,20 @@ QModelIndex PlaylistItemModel::getRowIndexOf(const QString& substr, int row, boo
 		bool ok;
 		int line = pure_search_string.toInt(&ok);
 		if(ok && line < rowCount()) {
-			return this->index(line, 0);
+			ret << this->index(line, 0);
 		}
 
-		return index(-1, -1);
+		else {
+			ret << QModelIndex();
+		}
+
+		return ret;
 	}
 
 	int rows = rowCount();
 	for(int i=0; i<rows; i++)
 	{
-		int row_idx;
-		if(is_forward)
-		{
-			row_idx = (i + row) % rows;
-		}
-
-		else
-		{
-			if(row - i < 0) {
-				row = rows - 1;
-			}
-
-			row_idx = (row - i) % rows;
-		}
-
-		MetaData md = m->pl->metadata(row_idx);
+		MetaData md = m->pl->metadata(i);
 		QString str;
 		switch(plsm)
 		{
@@ -406,11 +385,11 @@ QModelIndex PlaylistItemModel::getRowIndexOf(const QString& substr, int row, boo
 		str = Library::Util::convert_search_string(str, search_mode());
 		if(str.contains(pure_search_string))
 		{
-			return this->index(row_idx, 0);
+			ret << this->index(i, 0);
 		}
 	}
 
-	return index(-1, -1);
+	return ret;
 }
 
 using ExtraTriggerMap=SearchableModelInterface::ExtraTriggerMap;

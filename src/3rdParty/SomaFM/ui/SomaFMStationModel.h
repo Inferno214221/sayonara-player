@@ -63,8 +63,7 @@ namespace SomaFM
 	public:
 		// AbstractSearchModelInterface interface
 		bool		has_items() const override;
-		QModelIndex getNextRowIndexOf(const QString& substr, int cur_row, const QModelIndex& parent) override;
-		QModelIndex getPrevRowIndexOf(const QString& substr, int cur_row, const QModelIndex& parent) override;
+		QModelIndexList search_results(const QString& substr) override;
 
 		void set_stations(const QList<SomaFM::Station>& stations);
 		void replace_station(const SomaFM::Station& station);

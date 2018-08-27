@@ -58,8 +58,10 @@ struct DirectoryTreeView::Private
 	IconProvider*		icon_provider = nullptr;
 	QModelIndex			drag_move_index;
 	QTimer*				drag_move_timer=nullptr;
+	int					last_found_index;
 
-	Private(QObject* parent)
+	Private(QObject* parent) :
+		last_found_index(-1)
 	{
 		file_operations = new FileOperations(parent);
 		icon_provider = new IconProvider();
@@ -209,18 +211,29 @@ QStringList DirectoryTreeView::selected_paths() const
 
 QModelIndex DirectoryTreeView::search(const QString& search_term)
 {
-	QModelIndex found_idx;
-
 	m->model->search_only_dirs(false);
 
-	if(m->last_search_term == search_term) {
-		found_idx = m->model->getNextRowIndexOf(m->last_search_term, 0, QModelIndex());
+	QModelIndexList found_indexes = m->model->search_results(search_term);
+	if(found_indexes.isEmpty())
+	{
+		m->last_found_index = 0;
+		return QModelIndex();
+	}
+
+	if(m->last_search_term == search_term)
+	{
+		m->last_found_index++;
+		if(m->last_found_index >= found_indexes.count()){
+			m->last_found_index = 0;
+		}
 	}
 
 	else {
-		found_idx = m->model->getFirstRowIndexOf(search_term);
+		m->last_found_index = 0;
 		m->last_search_term = search_term;
 	}
+
+	QModelIndex found_idx = found_indexes[m->last_found_index];
 
 	scrollTo(found_idx, QAbstractItemView::PositionAtCenter);
 	selectionModel()->select(found_idx, QItemSelectionModel::ClearAndSelect);
@@ -233,20 +246,7 @@ QModelIndex DirectoryTreeView::search(const QString& search_term)
 
 void DirectoryTreeView::select_match(const QString& str, SearchDirection direction)
 {
-	QModelIndex idx;
-
-	if(direction == SearchDirection::First){
-		idx = m->model->getFirstRowIndexOf(str);
-	}
-
-	else if(direction == SearchDirection::Next){
-		idx = m->model->getNextRowIndexOf(str, 0);
-	}
-
-	else {
-		idx = m->model->getPrevRowIndexOf(str, 0);
-	}
-
+	QModelIndex idx = match_index(str, direction);
 	if(!idx.isValid()){
 		return;
 	}

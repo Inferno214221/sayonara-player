@@ -49,8 +49,7 @@ class FileListModel :
 
 		QStringList files() const;
 
-		QModelIndex getNextRowIndexOf(const QString& substr, int cur_row, const QModelIndex& parent=QModelIndex()) override;
-		QModelIndex getPrevRowIndexOf(const QString& substr, int cur_row, const QModelIndex& parent=QModelIndex()) override;
+		QModelIndexList search_results(const QString& substr) override;
 
 		QVariant data(const QModelIndex &index, int role=Qt::DisplayRole) const override;
 
