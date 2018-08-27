@@ -21,9 +21,12 @@
 #ifndef DATABASEMODULE_H
 #define DATABASEMODULE_H
 
-#include <QString>
-#include <QSqlDatabase>
 #include "Utils/Pimpl.h"
+
+#include <QMap>
+#include <QString>
+#include <QVariant>
+#include <QSqlDatabase>
 
 namespace DB
 {
@@ -39,6 +42,8 @@ namespace DB
 			QSqlDatabase	db() const;
 			DbId			db_id() const;
 			QString			connection_name() const;
+
+			DB::Query		run_query(const QString& query, const QMap<QString, QVariant>& bindings, const QString& error_text);
 	};
 }
 

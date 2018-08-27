@@ -53,6 +53,7 @@ namespace DB
 			bool prepare(const QString& query);
 			void bindValue(const QString & placeholder, const QVariant & val, QSql::ParamType paramType = QSql::In);
 			bool exec();
+			bool has_error() const;
 
 			QString get_query_string() const;
 			void show_query() const;

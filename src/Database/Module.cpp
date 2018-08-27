@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "Database/Query.h"
 #include "Database/Module.h"
 #include "Utils/Logger/Logger.h"
 
@@ -86,6 +87,25 @@ QSqlDatabase Module::db() const
 	}
 
 	return db;
+}
+
+DB::Query Module::run_query(const QString& query, const QMap<QString, QVariant>& bindings, const QString& error_text)
+{
+	DB::Query q(this);
+	q.prepare(query);
+
+	const QList<QString> keys = bindings.keys();
+	for(const QString& k : keys)
+	{
+		q.bindValue(k, bindings[k]);
+	}
+
+	if(!q.exec())
+	{
+		q.show_error(error_text);
+	}
+
+	return q;
 }
 
 

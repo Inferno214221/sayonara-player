@@ -33,6 +33,11 @@ using DB::Module;
 struct Query::Private
 {
 	QString query_string;
+	bool success;
+
+	Private() :
+		success(false)
+	{}
 };
 
 Query::Query(const QString& connection_name, DbId db_id) :
@@ -112,7 +117,7 @@ bool Query::exec()
 
 #endif
 
-	bool success = QSqlQuery::exec();
+	m->success = QSqlQuery::exec();
 
 #ifdef DB_DEBUG
 	sp_log(Log::Debug, this) << QString("(%1) ").arg(n_queries)
@@ -126,7 +131,7 @@ bool Query::exec()
 
 #endif
 
-	return success;
+	return m->success;
 }
 
 QString Query::get_query_string() const
