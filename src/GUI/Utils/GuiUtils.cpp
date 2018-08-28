@@ -40,7 +40,7 @@ static QString icon_path(const QString& icon_name)
 	}
 
 	else if(path.endsWith(".svg")){
-
+		// svg
 	}
 
 	else if(!path.endsWith(".svg.png")){

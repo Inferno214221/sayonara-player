@@ -9,12 +9,8 @@
         <file>Icons/arrow_right.svg.png</file>
         <file>Icons/arrow_up_orange.svg.png</file>
         <file>Icons/arrow_up.svg.png</file>
-        <file>Icons/broadcast.svg.png</file>
         <file>Icons/broom.png</file>
-        <file>Icons/bwd_orange.svg.png</file>
         <file>Icons/bwd.svg.png</file>
-        <file>Icons/cb_checked_disabled.svg.png</file>
-        <file>Icons/cb_checked.svg.png</file>
         <file>Icons/delete.svg.png</file>
         <file>Icons/dynamic.svg.png</file>
         <file>Icons/edit.svg.png</file>
@@ -29,8 +25,6 @@
         <file>Icons/play.svg.png</file>
         <file>Icons/power_off.svg.png</file>
         <file>Icons/power_on.svg.png</file>
-        <file>Icons/rb_checked_disabled.svg.png</file>
-        <file>Icons/rb_checked.svg.png</file>
         <file>Icons/rec.svg.png</file>
         <file>Icons/rep_1.svg.png</file>
         <file>Icons/rep_all.svg.png</file>
@@ -49,18 +43,11 @@
         <file>Icons/arrow_left_disabled.svg.png</file>
         <file>Icons/arrow_right_disabled.svg.png</file>
         <file>Icons/border_c.png</file>
-        <file>Icons/tool_blue.svg.png</file>
         <file>Icons/tool_dark_grey.svg.png</file>
         <file>Icons/tool_grey.svg.png</file>
         <file>Icons/tool_orange.svg.png</file>
         <file>Icons/tool_disabled.svg.png</file>
-        <file>Icons/append_active.svg.png</file>
-        <file>Icons/dynamic_active.svg.png</file>
-        <file>Icons/gapless_active.svg.png</file>
-        <file>Icons/rep_all_active.svg.png</file>
-        <file>Icons/rep_1_active.svg.png</file>
-        <file>Icons/shuffle_active.svg.png</file>
-        <file>Icons/dark_bg.svg.png</file>
+	<file>Icons/dark_bg.svg.png</file>
         <file>Icons/tool_grey_std.svg.png</file>
         <file>Icons/new.svg.png</file>
         <file>Icons/play_bordered.svg.png</file>
@@ -89,6 +76,5 @@
         <file>Icons/cd.png</file>
         <file>Icons/cds.png</file>
         <file>Icons/append.svg</file>
-        <file>Icons/dir_view.svg</file>
     </qresource>
 </RCC>

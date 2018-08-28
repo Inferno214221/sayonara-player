@@ -41,57 +41,55 @@ using P=QPair<QString, QString>;
 
 static const QMap<Icons::IconName, QPair<QString, QString>> s_icon_map =
 {
-	{Icons::AudioFile,	P("audio-x-generic", "cd.png")},
-	{Icons::Append,		P("list-add", "append")},
-	{Icons::Backward,	P("media-skip-backward", "bwd")},
-	{Icons::Clear,		P("edit-clear", "broom.png")},
-	{Icons::Close,		P("window-close", "close")},
-	{Icons::Delete,		P("edit-delete", "delete")},
-	{Icons::Dynamic,	P("dynamic", "dynamic")},
-	{Icons::Edit,		P("edit-copy", "edit")},
-	{Icons::Exit,		P("application-exit", "power_on")},
-	{Icons::File,		P("text-x-generic", "file")},
-	{Icons::FileManager, P("system-file-manager", "folder")},
-	{Icons::Folder,		P("folder", "folder")},
-	{Icons::FolderOpen,	P("folder-open", "folder_open")},
-	{Icons::FolderVisiting,P("folder-visiting", "folder_open")},
-	{Icons::Forward,	P("media-skip-forward", "fwd")},
-	{Icons::Gapless,	P("gapless", "gapless")},
-	{Icons::Image,		P("image-x-generic", "file")},
-	{Icons::ImageFile,	P("image-x-generic", "file")},
-	{Icons::Info,		P("info", "info")},
-	{Icons::LocalLibrary, P("audio-x-generic", "append")},
-	{Icons::Lyrics,		P("format-justify-left", "lyrics")},
-	{Icons::New,		P("document-new", "new")},
-	{Icons::Next,		P("media-skip-forward", "fwd")},
-	{Icons::Open,		P("document-open", "open")},
-	{Icons::Pause,		P("media-playback-pause", "pause")},
-	{Icons::Play,		P("media-playback-start", "play")},
-	{Icons::PlaySmall,	P("media-playback-start", "play_small")},
-	{Icons::PlayBorder,	P("media-playback-start", "play_bordered")},
-	{Icons::PlaylistFile, P("text-x-generic", "playlistfile")},
-	{Icons::Preferences, P("applications-system", "")},
-	{Icons::Previous,	P("media-skip-backward", "bwd")},
-	{Icons::Record,		P("media-record", "rec")},
-	{Icons::Refresh,	P("view-refresh", "undo")},
-	{Icons::Remove,		P("list-remove", "remove")},
-	{Icons::Rename,		P("edit-copy", "edit")},
-	{Icons::Repeat1,	P("rep_1", "rep_1")},
-	{Icons::RepeatAll,	P("rep_all", "rep_all")},
-	{Icons::Save,		P("document-save", "save")},
-	{Icons::SaveAs,		P("document-save-as", "save_as")},
-	{Icons::Search,		P("edit-find", "lupe")},
-	{Icons::Shuffle,	P("shuffle", "shuffle")},
-	{Icons::Shutdown,	P("system-shutdown", "power_on")},
-	{Icons::Star,		P("rating", "star.png")},
-	{Icons::StarDisabled, P("star_disabled.png", "star_disabled.png")},
-	{Icons::Stop,		P("media-playback-stop", "stop")},
-	{Icons::Table,		P("format-justify-fill", "")},
-	{Icons::Undo,		P("edit-undo", "undo")},
-	{Icons::Vol1,		P("audio-volume-low", "vol_1_dark")},
-	{Icons::Vol2,		P("audio-volume-medium", "vol_2_dark")},
-	{Icons::Vol3,		P("audio-volume-high", "vol_3_dark")},
-	{Icons::VolMute,	P("audio-volume-muted", "vol_mute_dark")},
+	{Icons::AudioFile,		P("audio-x-generic", "cd.png")},
+	{Icons::Append,			P("list-add", "append")},
+	{Icons::Backward,		P("media-skip-backward", "bwd")},
+	{Icons::Clear,			P("edit-clear", "broom.png")},
+	{Icons::Close,			P("window-close", "close")},
+	{Icons::Delete,			P("edit-delete", "delete")},
+	{Icons::Dynamic,		P("dynamic", "dynamic")},
+	{Icons::Edit,			P("edit-copy", "edit")},
+	{Icons::Exit,			P("application-exit", "power_on")},
+	{Icons::File,			P("text-x-generic", "file")},
+	{Icons::FileManager,	P("system-file-manager", "folder")},
+	{Icons::Folder,			P("folder", "folder")},
+	{Icons::FolderOpen,		P("folder-open", "folder_open")},
+	{Icons::Forward,		P("media-skip-forward", "fwd")},
+	{Icons::Gapless,		P("gapless", "gapless")},
+	{Icons::ImageFile,		P("image-x-generic", "image-file")},
+	{Icons::Info,			P("dialog-information", "info")},
+	{Icons::LocalLibrary,	P("audio-x-generic", "append")},
+	{Icons::Lyrics,			P("format-justify-left", "lyrics")},
+	{Icons::New,			P("document-new", "new")},
+	{Icons::Next,			P("media-skip-forward", "fwd")},
+	{Icons::Open,			P("document-open", "open")},
+	{Icons::Pause,			P("media-playback-pause", "pause")},
+	{Icons::Play,			P("media-playback-start", "play")},
+	{Icons::PlaySmall,		P("media-playback-start", "play_small")},
+	{Icons::PlayBorder,		P("media-playback-start", "play_bordered")},
+	{Icons::PlaylistFile,	P("text-x-generic", "playlistfile")},
+	{Icons::Preferences,	P("applications-system", "")},
+	{Icons::Previous,		P("media-skip-backward", "bwd")},
+	{Icons::Record,			P("media-record", "rec")},
+	{Icons::Refresh,		P("view-refresh", "undo")},
+	{Icons::Remove,			P("list-remove", "remove")},
+	{Icons::Rename,			P("edit-copy", "edit")},
+	{Icons::Repeat1,		P("rep_1", "rep_1")},
+	{Icons::RepeatAll,		P("rep_all", "rep_all")},
+	{Icons::Save,			P("document-save", "save")},
+	{Icons::SaveAs,			P("document-save-as", "save_as")},
+	{Icons::Search,			P("edit-find", "lupe")},
+	{Icons::Shuffle,		P("shuffle", "shuffle")},
+	{Icons::Shutdown,		P("system-shutdown", "power_on")},
+	{Icons::Star,			P("rating", "star.png")},
+	{Icons::StarDisabled,	P("star_disabled.png", "star_disabled.png")},
+	{Icons::Stop,			P("media-playback-stop", "stop")},
+	{Icons::Table,			P("format-justify-fill", "")},
+	{Icons::Undo,			P("edit-undo", "undo")},
+	{Icons::Vol1,			P("audio-volume-low", "vol_1_dark")},
+	{Icons::Vol2,			P("audio-volume-medium", "vol_2_dark")},
+	{Icons::Vol3,			P("audio-volume-high", "vol_3_dark")},
+	{Icons::VolMute,		P("audio-volume-muted", "vol_mute_dark")},
 };
 
 
@@ -134,7 +132,11 @@ QIcon Icons::icon(Icons::IconName spec, Icons::IconMode mode)
 	#ifdef Q_OS_WIN
 			icon = QIcon(get_win_icon_name(std_name));
 	#else
-			icon = Gui::Util::icon(dark_name);
+			icon = Gui::Util::icon(std_name);
+			if(icon.isNull())
+			{
+				icon = Gui::Util::icon(dark_name);
+			}
 	#endif
 		}
 	}
@@ -151,6 +153,7 @@ QIcon Icons::icon(Icons::IconName spec, Icons::IconMode mode)
 QIcon Icons::icon(IconName spec)
 {
 	change_theme();
+
 	if(s_force_standard_icons){
 		return icon(spec, IconMode::ForceStdIcon);
 	}

@@ -37,7 +37,7 @@ QIcon IconProvider::icon(IconType type) const
 	if(type==IconType::Folder)
 	{
 		QPixmap pm = Gui::Icons::pixmap(Gui::Icons::Folder);
-		QPixmap pm_open = Gui::Icons::pixmap(Gui::Icons::FolderVisiting);
+		QPixmap pm_open = Gui::Icons::pixmap(Gui::Icons::FolderOpen);
 
 		QIcon icon;
 
@@ -60,7 +60,7 @@ QIcon IconProvider::icon(const QFileInfo &info) const
 	if(info.isDir())
 	{
 		QPixmap pm = Gui::Icons::pixmap(Gui::Icons::Folder);
-		QPixmap pm_open = Gui::Icons::pixmap(Gui::Icons::FolderVisiting);
+		QPixmap pm_open = Gui::Icons::pixmap(Gui::Icons::FolderOpen);
 
 		QIcon icon;
 

@@ -38,10 +38,11 @@ struct PlaylistContextMenu::Private
 
 	Private(PlaylistContextMenu* parent)
 	{
+		rating_menu = new QMenu(parent);
+		rating_action = parent->addMenu(rating_menu);
+
 		bookmarks_menu = new BookmarksMenu(parent);
 		bookmarks_action = parent->addMenu(bookmarks_menu);
-
-		rating_menu = new QMenu(parent);
 	}
 };
 
@@ -57,7 +58,6 @@ PlaylistContextMenu::PlaylistContextMenu(QWidget *parent) :
 	}
 
 	m->rating_menu->addActions(rating_actions);
-	m->rating_action = this->addMenu(m->rating_menu);
 
 	connect(m->bookmarks_menu, &BookmarksMenu::sig_bookmark_pressed, this, &PlaylistContextMenu::bookmark_pressed);
 

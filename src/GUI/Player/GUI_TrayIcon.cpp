@@ -98,6 +98,9 @@ TrayIconContextMenu::TrayIconContextMenu(QWidget* parent) :
 
 	mute_changed(pm->is_muted());
 	playstate_changed(pm->playstate());
+
+	language_changed();
+	skin_changed();
 }
 
 TrayIconContextMenu::~TrayIconContextMenu() {}
@@ -125,10 +128,6 @@ void TrayIconContextMenu::current_song_clicked()
 
 void TrayIconContextMenu::mute_changed(bool muted)
 {
-	if(!m->mute_action) {
-		return;
-	}
-
 	using namespace Gui;
 	if(!muted) {
 		m->mute_action->setIcon(Icons::icon(Icons::VolMute));
@@ -143,10 +142,6 @@ void TrayIconContextMenu::mute_changed(bool muted)
 
 void TrayIconContextMenu::playstate_changed(PlayState state)
 {
-	if(!m->play_action){
-		return;
-	}
-
 	using namespace Gui;
 	if(state == PlayState::Playing)
 	{
