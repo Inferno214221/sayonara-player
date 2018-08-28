@@ -27,6 +27,12 @@ message("Will install to ${CMAKE_INSTALL_PREFIX}")
 add_subdirectory(src)
 add_subdirectory(resources)
 
+string(TOLOWER ${CMAKE_BUILD_TYPE} LOWER_CMAKE_BUILD_TYPE)
+message("Lower cmake build type ${LOWER_CMAKE_BUILD_TYPE}")
+if("${LOWER_CMAKE_BUILD_TYPE}" MATCHES "debug")
+	SET(WITH_TESTS 1)
+endif()
+
 if( WITH_TESTS )
 	message("Compiling with tests...")
 	enable_testing()

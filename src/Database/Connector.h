@@ -62,7 +62,10 @@ namespace DB
 			virtual bool apply_fixes();
 
 		public:
+			Connector(const QString& dir, const QString& db_filename);
 			virtual void			clean_up();
+
+			static Connector*		instance(const QString& dir, const QString& db_filename);
 
 			LibraryDatabases		library_dbs() const;
 			DB::LibraryDatabase*	library_db(LibraryId library_id, DbId db_id);

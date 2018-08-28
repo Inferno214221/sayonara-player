@@ -32,18 +32,22 @@ include_directories(${CMAKE_BINARY_DIR}/test)
 
 include("new_test.cmake")
 QT5_ADD_RESOURCES(RESOURCES_RCC
-        ${RESOURCES}
+		${RESOURCES}
 )
+
+NEW_TEST(Database/PodcastTest.cpp)
 
 NEW_TEST(Helper/CryptTest.cpp)
 NEW_TEST(Helper/FileHelperTest.cpp)
 NEW_TEST(Helper/MetaDataListTest.cpp)
 NEW_TEST(Helper/LanguageKeyTest.cpp)
 NEW_TEST(Helper/MetaDataTest.cpp)
+NEW_TEST(Helper/SettingsTest.cpp)
+
+NEW_TEST(StreamRecorder/StreamRecorderUtilsTest.cpp)
+NEW_TEST(StreamRecorder/StreamRecorderTest.cpp)
 NEW_TEST(Tagging/LyricsTest.cpp ${RESOURCES_RCC} Tagging/AbstractTaggingTest.cpp)
 NEW_TEST(Tagging/AlbumArtistTest.cpp ${RESOURCES_RCC} Tagging/AbstractTaggingTest.cpp)
 NEW_TEST(Tagging/DiscnumberTest.cpp ${RESOURCES_RCC} Tagging/AbstractTaggingTest.cpp)
 NEW_TEST(Tagging/RatingTest.cpp ${RESOURCES_RCC} Tagging/AbstractTaggingTest.cpp)
-NEW_TEST(StreamRecorder/StreamRecorderUtilsTest.cpp)
-NEW_TEST(StreamRecorder/StreamRecorderTest.cpp)
 

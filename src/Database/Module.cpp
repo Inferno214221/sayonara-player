@@ -173,8 +173,9 @@ DB::Query Module::update(const QString& tablename, const QMap<QString, QVariant>
 
 	q.bindValue(":" + where_binding.first, where_binding.second);
 
-	if(!q.exec())
+	if(!q.exec() || q.numRowsAffected() == 0)
 	{
+		q.set_error(true);
 		q.show_error(error_message);
 	}
 

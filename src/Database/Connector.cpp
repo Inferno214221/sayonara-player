@@ -104,17 +104,29 @@ struct Connector::Private
 	}
 };
 
-Connector::Connector() :
-	DB::Base(0, "player.db", nullptr)
+Connector::Connector(const QString& dir, const QString& db_filename) :
+	DB::Base(0, dir, db_filename, nullptr)
 {
 	m = Pimpl::make<Private>();
+
 	m->generic_library_database = new LibraryDatabase(connection_name(), db_id(), -1);
 	m->library_dbs << m->generic_library_database;
 
 	apply_fixes();
 }
 
+Connector::Connector() :
+	Connector(Util::sayonara_path(), "player.db")
+{}
+
 Connector::~Connector() {}
+
+DB::Connector* Connector::instance(const QString& dir, const QString& db_filename)
+{
+	static Connector db(dir, db_filename);
+	return &db;
+}
+
 
 bool Connector::updateAlbumCissearchFix()
 {
@@ -605,7 +617,6 @@ bool Connector::apply_fixes()
 	return true;
 }
 
-
 void Connector::clean_up()
 {
 	Query q(this);
@@ -613,6 +624,7 @@ void Connector::clean_up()
 	q.prepare(querytext);
 	q.exec();
 }
+
 
 DB::LibraryDatabases Connector::library_dbs() const
 {

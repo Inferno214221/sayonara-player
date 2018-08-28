@@ -123,4 +123,17 @@ void Settings::apply_fixes()
 
 		this->set<Set::Settings_Revision>(2);
 	}
+
+
+	if(get<Set::Player_PrivId>().isEmpty())
+	{
+		QByteArray id = ::Util::random_string(32).toLocal8Bit();
+		this->set<Set::Player_PrivId>(id);
+	}
+
+	if(get<Set::Player_PublicId>().isEmpty())
+	{
+		QByteArray id = ::Util::random_string(32).toLocal8Bit();
+		this->set<Set::Player_PublicId>(id);
+	}
 }

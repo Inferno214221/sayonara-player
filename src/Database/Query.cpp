@@ -144,6 +144,11 @@ bool Query::exec()
 	return m->success;
 }
 
+void Query::set_error(bool b)
+{
+	m->success = (!b);
+}
+
 bool Query::has_error() const
 {
 	return (m->success == false);
@@ -209,12 +214,24 @@ void Query::show_query() const
 void Query::show_error(const QString& err_msg) const
 {
 	sp_log(Log::Error) << "SQL ERROR: " << err_msg << ": " << (int) this->lastError().type();
-	sp_log(Log::Error) << this->lastError().text();
-	sp_log(Log::Error) << this->lastError().driverText();
-	sp_log(Log::Error) << this->lastError().databaseText();
+
+	QSqlError e = this->lastError();
+	if(!e.text().isEmpty()){
+		sp_log(Log::Error) << e.text();
+	}
+
+	if(!e.driverText().isEmpty()) {
+		sp_log(Log::Error) << e.driverText();
+	}
+
+	if(!e.databaseText().isEmpty()){
+		sp_log(Log::Error) << e.databaseText();
+	}
+
 #ifdef DEBUG
 	sp_log(Log::Error) << m->query_string;
 #endif
+
 	sp_log(Log::Error) << this->get_query_string();
 }
 

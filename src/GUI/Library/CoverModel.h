@@ -85,6 +85,7 @@ namespace Library
 		private slots:
 			void next_hash();
 			void cover_lookup_finished(bool success);
+			void show_artists_changed();
 	};
 }
 

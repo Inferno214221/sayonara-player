@@ -81,7 +81,8 @@ void CoverView::init(LocalLibrary* library)
 	this->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
 	this->setSelectionBehavior(QAbstractItemView::SelectItems);
 	this->setItemDelegate(new Library::CoverDelegate(this));
-	this->setShowGrid(false);
+	this->setShowGrid(true);
+	this->setAlternatingRowColors(false);
 
 	connect(m->library, &LocalLibrary::sig_all_albums_loaded, this, &CoverView::reload);
 

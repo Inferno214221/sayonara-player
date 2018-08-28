@@ -33,6 +33,8 @@
 #include "Utils/Language.h"
 #include "Utils/Logger/Logger.h"
 
+#include <QFontMetrics>
+#include <QApplication>
 #include <QStringList>
 #include <QPixmap>
 #include <QThread>
@@ -54,11 +56,11 @@ struct CoverModel::Private
 	QHash<Hash, QPixmap>		scaled_pixmaps;
 	QHash<Hash, QModelIndex>	indexes;
 	QHash<Hash, bool>			valid_hashes;
+	QSize						item_size;
 	std::mutex					refresh_mtx;
 
 	int	old_row_count;
 	int	old_column_count;
-
 	int zoom;
 	int columns;
 
@@ -80,11 +82,6 @@ struct CoverModel::Private
 			cover_thread->stop();
 			cover_thread->wait();
 		}
-	}
-
-	QSize item_size() const
-	{
-		return QSize(zoom + 50, zoom + 60);
 	}
 
 	QPixmap get_pixmap(const Hash& hash)
@@ -142,6 +139,8 @@ CoverModel::CoverModel(QObject* parent, AbstractLibrary* library) :
 		sp_log(Log::Warning, this) << "Cover Thread finished";
 		m->cover_thread = nullptr;
 	});
+
+	Set::listen<Set::Lib_CoverShowArtist>(this, &CoverModel::show_artists_changed);
 
 	m->cover_thread->start();
 }
@@ -300,7 +299,7 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 			}
 
 		case Qt::SizeHintRole:
-			return m->item_size();
+			return m->item_size;
 
 		default:
 			return QVariant();
@@ -514,15 +513,24 @@ int CoverModel::zoom() const
 
 QSize CoverModel::item_size() const
 {
-	return m->item_size();
+	return m->item_size;
 }
+
 
 void CoverModel::set_zoom(int zoom, const QSize& view_size)
 {
+	int text_height = QFontMetrics(QApplication::font()).height() + 10;
+	bool show_artist = Settings::instance()->get<Set::Lib_CoverShowArtist>();
+	if(show_artist)
+	{
+		text_height = 2 * text_height;
+	}
+
 	m->scaled_pixmaps.clear();
 	m->zoom = zoom;
+	m->item_size = QSize(m->zoom + 25, m->zoom + text_height);
 
-	int columns = (view_size.width() / m->item_size().width());
+	int columns = (view_size.width() / m->item_size.width());
 	if(columns > 0)
 	{
 		m->columns = columns;
@@ -530,6 +538,19 @@ void CoverModel::set_zoom(int zoom, const QSize& view_size)
 		emit dataChanged(index(0, 0), index(rowCount() - 1, columnCount() - 1), {Qt::SizeHintRole});
 	}
 }
+
+void CoverModel::show_artists_changed()
+{
+	int text_height = QFontMetrics(QApplication::font()).height();
+	bool show_artist = Settings::instance()->get<Set::Lib_CoverShowArtist>();
+	if(show_artist)
+	{
+		text_height = 2 * text_height;
+	}
+
+	m->item_size = QSize(m->zoom + 25, m->zoom + 25 + text_height);
+}
+
 
 void CoverModel::reload()
 {

@@ -42,19 +42,20 @@ struct Base::Private
 
 	bool initialized;
 
-	Private(DbId db_id, const QString& filename) :
+	Private(DbId db_id, const QString& dir, const QString& filename) :
 		filename(filename),
 		db_id(db_id)
 	{
-		connection_name = Util::sayonara_path(filename);
+		connection_name = dir + "/" +filename;
 	}
 };
 
-Base::Base(DbId db_id, const QString& filename, QObject* parent) :
+
+Base::Base(DbId db_id, const QString& dir, const QString& filename, QObject* parent) :
 	QObject(parent),
-	DB::Module(Util::sayonara_path(filename), db_id)
+	DB::Module(dir + "/" + filename, db_id)
 {
-	m = Pimpl::make<Private>(db_id, filename);
+	m = Pimpl::make<Private>(db_id, dir, filename);
 
 	if(!FileUtils::exists(m->connection_name))
 	{
@@ -68,6 +69,11 @@ Base::Base(DbId db_id, const QString& filename, QObject* parent) :
 		sp_log(Log::Error, this) << "Database is not open";
 	}
 }
+
+
+Base::Base(DbId db_id, const QString& filename, QObject* parent) :
+	Base(db_id, Util::sayonara_path(), filename, parent)
+{}
 
 Base::~Base() {}
 
