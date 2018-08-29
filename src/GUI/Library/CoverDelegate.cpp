@@ -20,6 +20,7 @@
 
 #include "CoverDelegate.h"
 
+#include <QPen>
 #include <QBrush>
 #include <QColor>
 #include <QPainter>
