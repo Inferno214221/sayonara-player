@@ -33,8 +33,6 @@ Library::CoverDelegate::~CoverDelegate() {}
 
 void Library::CoverDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
-
-	//const int offset = 0;
 	const int text_offset = 3;
 
 	QFontMetrics fm = option.fontMetrics;
@@ -48,8 +46,6 @@ void Library::CoverDelegate::paint(QPainter* painter, const QStyleOptionViewItem
 		painter->translate(0, pm.height() / 20);
 
 		int x = (option.rect.width() - pm.width()) / 2;
-
-		//painter->fillRect(x, pm.height(), pm.width(), option.rect.height() - pm.height() - offset, QColor(0,0,0,64));
 
 		painter->drawPixmap(x, 0, pm.width(), pm.height(), pm);
 		painter->translate(0, pm.height() + 2);
