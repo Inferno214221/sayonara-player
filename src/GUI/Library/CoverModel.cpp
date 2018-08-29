@@ -249,22 +249,6 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 				if(name.trimmed().isEmpty()){
 					name = Lang::get(Lang::None);
 				}
-
-				if(Settings::instance()->get<Set::Lib_CoverShowArtist>())
-				{
-					if(album.album_artists().isEmpty()){
-						if(!album.artists().isEmpty())
-						{
-							name.prepend(album.artists().first() + "\n");
-						}
-					}
-
-					else
-					{
-						name.prepend(album.album_artists().first() + "\n");
-					}
-				}
-
 				return name;
 			}
 
@@ -301,6 +285,28 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 		case Qt::SizeHintRole:
 			return m->item_size;
 
+		case Qt::UserRole:
+		{
+			QString artist;
+
+			if(Settings::instance()->get<Set::Lib_CoverShowArtist>())
+			{
+				if(album.album_artists().isEmpty())
+				{
+					if(!album.artists().isEmpty())
+					{
+						artist = album.artists().first();
+					}
+				}
+
+				else
+				{
+					artist = album.album_artists().first();
+				}
+			}
+
+			return artist;
+		}
 		default:
 			return QVariant();
 	}
@@ -516,19 +522,24 @@ QSize CoverModel::item_size() const
 	return m->item_size;
 }
 
-
+#include "GUI/Utils/GuiUtils.h"
+#include <QMainWindow>
 void CoverModel::set_zoom(int zoom, const QSize& view_size)
 {
-	int text_height = QFontMetrics(QApplication::font()).height() + 10;
+	int text_height = QFontMetrics(Gui::Util::main_window()->font()).height();
 	bool show_artist = Settings::instance()->get<Set::Lib_CoverShowArtist>();
 	if(show_artist)
 	{
 		text_height = 2 * text_height;
 	}
 
+	text_height = (text_height * 12) / 10;
+
 	m->scaled_pixmaps.clear();
 	m->zoom = zoom;
-	m->item_size = QSize(m->zoom + 25, m->zoom + text_height);
+	m->item_size = QSize((m->zoom * 11) / 10, (m->zoom * 12) / 10 + text_height);
+
+
 
 	int columns = (view_size.width() / m->item_size.width());
 	if(columns > 0)
@@ -541,14 +552,14 @@ void CoverModel::set_zoom(int zoom, const QSize& view_size)
 
 void CoverModel::show_artists_changed()
 {
-	int text_height = QFontMetrics(QApplication::font()).height();
+	int text_height = (QFontMetrics(Gui::Util::main_window()->font()).height() * 13) / 10;
 	bool show_artist = Settings::instance()->get<Set::Lib_CoverShowArtist>();
 	if(show_artist)
 	{
 		text_height = 2 * text_height;
 	}
 
-	m->item_size = QSize(m->zoom + 25, m->zoom + 25 + text_height);
+	m->item_size = QSize((m->zoom * 11) / 10, (m->zoom * 12) / 10 + text_height);
 }
 
 
