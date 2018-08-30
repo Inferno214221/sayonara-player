@@ -112,7 +112,7 @@ AlbumInfo::AlbumInfo(const MetaDataList& v_md) :
 					continue;
 				}
 
-				_additional_info[name] += field.get_value();
+				_additional_info << StringPair(name, field.get_value());
 			}
 		}
 	}

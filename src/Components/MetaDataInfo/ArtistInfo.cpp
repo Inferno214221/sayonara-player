@@ -79,6 +79,10 @@ ArtistInfo::ArtistInfo(const MetaDataList& v_md) :
 			calc_similar_artists(artist);
 			// custom fields
 			const CustomFieldList custom_fields = artist.get_custom_fields();
+			if(!custom_fields.empty()){
+				_additional_info << StringPair(Lang::get(Lang::SimilarArtists), QString());
+			}
+
 			for(const CustomField& field : custom_fields)
 			{
 				QString name = field.get_display_name();
@@ -87,7 +91,7 @@ ArtistInfo::ArtistInfo(const MetaDataList& v_md) :
 					continue;
 				}
 
-				_additional_info[name] += field.get_value();
+				_additional_info << StringPair(name, field.get_value());
 			}
 		}
 	}
@@ -111,14 +115,23 @@ void ArtistInfo::calc_header()
 
 void ArtistInfo::calc_similar_artists(Artist& artist)
 {
+	using SimPair=QPair<double, QString>;
+
+	QList<SimPair> sim_list;
 	QMap<QString, double> sim_artists = SimilarArtists::get_similar_artists(artist.name());
 
 	for(auto it=sim_artists.cbegin(); it != sim_artists.cend(); it++)
 	{
-		const QString& artist_name = it.key();
-		artist.add_custom_field("sim_artist_" + artist_name,
-								"sim_artist_" + QString::number(it.value()) + it.key(),
-								artist_name);
+		sim_list << SimPair(it.value(), it.key());
+	}
+
+	Util::sort(sim_list, [](const SimPair& p1, const SimPair& p2){
+		return (p2.first < p1.first);
+	});
+
+	for(const SimPair& p : sim_list)
+	{
+		artist.add_custom_field(p.second, p.second, QString("%1%").arg((int) (p.first * 100)));
 	}
 }
 
@@ -149,58 +162,10 @@ void ArtistInfo::calc_cover_location()
 	}
 }
 
-
+// todo: delete me
 QString ArtistInfo::additional_infostring() const
 {
-	QString str;
-	QStringList sim_artists;
-
-	for(auto it=_additional_info.cbegin(); it != _additional_info.cend(); it++)
-	{
-		if(it.key().startsWith("sim_artist_")){
-			sim_artists << it.key();
-		}
-
-		else {
-			str += BOLD(it.key()) + ": " + it.value() + CAR_RET;
-		}
-	}
-
-	Util::sort(sim_artists, [](const QString& artist1, const QString artist2){
-		return (artist1 > artist2);
-	});
-
-	if(!sim_artists.isEmpty()){
-		str = BOLD(Lang::get(Lang::SimilarArtists) + ":") + CAR_RET + CAR_RET;
-	}
-
-	int i=0;
-	QStringList artist_list;
-	for(const QString& sim_artist : ::Util::AsConst(sim_artists))
-	{
-		if(i++ > 50){
-			break;
-		}
-
-		QString artist_name = _additional_info[sim_artist];
-		DB::Connector* db = DB::Connector::instance();
-		DB::LibraryDatabase* lib_db = db->library_db(-1, m->db_id);
-
-		ArtistId id = lib_db->getArtistID(artist_name);
-
-		if( id >= 0 ){
-			artist_list << BOLD(artist_name);
-		}
-
-		else {
-			artist_list << artist_name;
-		}
-
-	}
-
-	str += artist_list.join(", ");
-
-	return str;
+	return QString();
 }
 
 Cover::Location ArtistInfo::cover_location() const

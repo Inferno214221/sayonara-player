@@ -72,7 +72,6 @@ MetaDataInfo::MetaDataInfo(const MetaDataList& v_md) :
 	bool calc_track_num = (v_md.size() == 1);
 
 	QStringList genres;
-	QMap<QString, QStringList> values;
 
 	for(const MetaData& md : v_md )
 	{
@@ -112,12 +111,8 @@ MetaDataInfo::MetaDataInfo(const MetaDataList& v_md) :
 		{
 			QString name = field.get_display_name();
 			QString value = field.get_value();
-			if(value.isEmpty()){
-				continue;
-			}
-
-			if(!values[name].contains(value)){
-				values[name] << value;
+			if(!value.isEmpty()){
+				_additional_info << StringPair(name, value);
 			}
 		}
 
@@ -139,11 +134,6 @@ MetaDataInfo::MetaDataInfo(const MetaDataList& v_md) :
 		{
 			m->paths << md.filepath();
 		}
-	}
-
-	for(auto it=values.cbegin(); it != values.cend(); it++)
-	{
-		_additional_info[it.key()] = it.value().join("<br />");
 	}
 
 	if(bitrate_max > 0){
@@ -341,23 +331,23 @@ QString MetaDataInfo::get_info_string(InfoStrings idx) const
 	switch(idx)
 	{
 		case InfoStrings::nTracks:
-			return QString("#") + Lang::get(Lang::Tracks) + ": ";
+			return QString("#") + Lang::get(Lang::Tracks);
 		case InfoStrings::nAlbums:
-			return QString("#") + Lang::get(Lang::Albums) + ": ";
+			return QString("#") + Lang::get(Lang::Albums);
 		case InfoStrings::nArtists:
-			return QString("#") + Lang::get(Lang::Artists) + ": ";
+			return QString("#") + Lang::get(Lang::Artists);
 		case InfoStrings::Filesize:
-			return Lang::get(Lang::Filesize) + ": ";
+			return Lang::get(Lang::Filesize);
 		case InfoStrings::PlayingTime:
-			return Lang::get(Lang::PlayingTime) + ": ";
+			return Lang::get(Lang::PlayingTime);
 		case InfoStrings::Year:
-			return Lang::get(Lang::Year) + ": ";
+			return Lang::get(Lang::Year);
 		case InfoStrings::Sampler:
 			return Lang::get(Lang::Sampler);
 		case InfoStrings::Bitrate:
-			return Lang::get(Lang::Bitrate) + ": ";
+			return Lang::get(Lang::Bitrate);
 		case InfoStrings::Genre:
-			return Lang::get(Lang::Genre) + ": ";
+			return Lang::get(Lang::Genre);
 		default: break;
 	}
 
@@ -376,21 +366,48 @@ QString MetaDataInfo::infostring() const
 	return str;
 }
 
-QString MetaDataInfo::additional_infostring() const
+QList<StringPair> MetaDataInfo::infostring_map() const
 {
-	QString str;
+	QList<StringPair> ret;
 
-	for(auto it=_additional_info.cbegin(); it != _additional_info.cend(); it++)
+	for(auto it=_info.cbegin(); it != _info.cend(); it++)
 	{
-		str += BOLD(it.key()) + ": " + it.value() + CAR_RET;
+		QString value = it.value();
+		if(value.isEmpty()){
+			value = Lang::get(Lang::None);
+
+		}
+
+		ret << StringPair(get_info_string(it.key()), value);
 	}
 
-	return str;
+	if(!_additional_info.isEmpty())
+	{
+		ret << StringPair(QString(), QString());
+		ret.append(_additional_info);
+	}
+
+	return ret;
 }
 
+// todo: delete me
+QString MetaDataInfo::additional_infostring() const
+{
+
+	return QString();
+}
+
+// todo: delete me
 QString MetaDataInfo::pathsstring() const
 {
-	QString ret;
+	return this->paths().join(CAR_RET);
+}
+
+
+QStringList MetaDataInfo::paths() const
+{
+	bool dark = (Settings::instance()->get<Set::Player_Style>() == 1);
+	QStringList ret;
 	QList<Library::Info> lib_infos = Library::Manager::instance()->all_libraries();
 	QStringList lib_paths;
 
@@ -402,8 +419,6 @@ QString MetaDataInfo::pathsstring() const
 	Util::sort(lib_paths, [](const QString& lp1, const QString& lp2){
 		return (lp1.length() > lp2.length());
 	});
-
-	bool dark = (_settings->get<Set::Player_Style>() == 1);
 
 	for(const QString& path : ::Util::AsConst(m->paths))
 	{
@@ -419,11 +434,13 @@ QString MetaDataInfo::pathsstring() const
 		}
 
 		QString link = Util::create_link(name, dark, path, false);
-		ret += link + CAR_RET;
+		ret << link;
 	}
 
 	return ret;
 }
+
+
 
 Cover::Location MetaDataInfo::cover_location() const
 {
@@ -459,7 +476,6 @@ const SP::Set<ArtistId> &MetaDataInfo::album_artist_ids() const
 {
 	return m->album_artist_ids;
 }
-
 
 void MetaDataInfo::insert_interval_info_field(InfoStrings key, int min, int max)
 {

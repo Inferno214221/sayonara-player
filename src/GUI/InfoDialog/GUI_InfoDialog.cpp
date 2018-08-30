@@ -43,7 +43,8 @@
 #include "Utils/globals.h"
 
 #include <QTabBar>
-
+#include <QTableWidget>
+#include <QTableWidgetItem>
 
 struct GUI_InfoDialog::Private
 {
@@ -99,6 +100,53 @@ void GUI_InfoDialog::skin_changed()
 	}
 }
 
+
+static void prepare_info_table(QTableWidget* table, const QList<StringPair>& data)
+{
+	table->clear();
+	table->setRowCount(data.count());
+	table->setColumnCount(2);
+	table->setAlternatingRowColors(true);
+	table->setShowGrid(false);
+	table->setEditTriggers(QTableView::NoEditTriggers);
+	table->setSelectionBehavior(QTableView::SelectRows);
+
+	int row	= 0;
+	for(const StringPair& p : data)
+	{
+		QTableWidgetItem* i1 = new QTableWidgetItem(p.first);
+		QFont f(i1->font());
+		f.setBold(true);
+		i1->setFont(f);
+		QTableWidgetItem* i2 = new QTableWidgetItem(p.second);
+
+		table->setItem(row, 0, i1);
+		table->setItem(row, 1, i2);
+
+		row++;
+	}
+
+	table->resizeColumnToContents(0);
+}
+
+static void prepare_paths(QListWidget* path_list_widget, const QStringList& paths)
+{
+	path_list_widget->clear();
+
+	for(const QString& path : paths)
+	{
+		QLabel* label = new QLabel(path_list_widget);
+		label->setText(path);
+		label->setOpenExternalLinks(true);
+		label->setTextFormat(Qt::RichText);
+
+		QListWidgetItem* item = new QListWidgetItem(path_list_widget);
+		path_list_widget->setItemWidget(item, label);
+		path_list_widget->addItem(item);
+	}
+}
+
+
 void GUI_InfoDialog::prepare_info(MD::Interpretation md_interpretation)
 {
 	if(!ui){
@@ -124,17 +172,16 @@ void GUI_InfoDialog::prepare_info(MD::Interpretation md_interpretation)
 			return;
 	}
 
-	QString info_text = info->infostring() + CAR_RET + CAR_RET +
-			info->additional_infostring();
-
 	ui->lab_title->setText(info->header());
 	ui->lab_subheader->setText(info->subheader());
-	ui->lab_info->setText(info_text);
-	ui->lab_paths->setOpenExternalLinks(true);
-	ui->lab_paths->setText(info->pathsstring());
+
+	const QList<StringPair> info_map = info->infostring_map();
+	prepare_info_table(ui->table_info, info_map);
+
+	QStringList paths = info->paths();
+	prepare_paths(ui->list_paths, paths);
 
 	m->cl = info->cover_location();
-
 	prepare_cover(m->cl);
 
 	delete info; info = nullptr;

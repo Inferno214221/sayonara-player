@@ -64,7 +64,7 @@ class MetaDataInfo :
 		QString						_header;
 		QString						_subheader;
 		QMap<InfoStrings, QString>	_info;
-		QMap<QString, QString>		_additional_info;
+		QList<StringPair>			_additional_info;
 
 
 		QString calc_tracknum_str( uint16_t tracknum );
@@ -90,6 +90,7 @@ class MetaDataInfo :
 		virtual QString header() const;
 		virtual QString subheader() const;
 		virtual QString infostring() const;
+		virtual QList<StringPair> infostring_map() const;
 		virtual QString additional_infostring() const;
 
 		virtual Cover::Location cover_location() const;
@@ -102,6 +103,7 @@ class MetaDataInfo :
 		const SP::Set<ArtistId>& artist_ids() const;
 		const SP::Set<ArtistId>& album_artist_ids() const;
 
+		QStringList paths() const;
 		QString pathsstring() const;
 
 
