@@ -19,6 +19,7 @@
  */
 
 #include "CoverDelegate.h"
+#include "Utils/Settings/Settings.h"
 
 #include <QBrush>
 #include <QColor>
@@ -31,28 +32,46 @@ Library::CoverDelegate::CoverDelegate(QObject* parent) :
 
 Library::CoverDelegate::~CoverDelegate() {}
 
+
 void Library::CoverDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
-
-	//const int offset = 0;
 	const int text_offset = 3;
 
 	QFontMetrics fm = option.fontMetrics;
+	int zoom = Settings::instance()->get<Set::Lib_CoverZoom>();
 
 	painter->save();
-
 	painter->translate(option.rect.x(), option.rect.y());
 
 	{
 		QPixmap pm = index.data(Qt::DecorationRole).value<QPixmap>();
-		painter->translate(0, pm.height() / 20);
+		if(pm.isNull()){
+			painter->restore();
+			return;
+		}
 
-		int x = (option.rect.width() - pm.width()) / 2;
+		painter->translate(0, zoom / 20);
 
-		//painter->fillRect(x, pm.height(), pm.width(), option.rect.height() - pm.height() - offset, QColor(0,0,0,64));
+		int x_zoom = (option.rect.width() - zoom) / 2;
 
-		painter->drawPixmap(x, 0, pm.width(), pm.height(), pm);
-		painter->translate(0, pm.height() + 2);
+		painter->fillRect(x_zoom - 2, -2, zoom + 3, zoom + 3, option.palette.color(QPalette::Active, QPalette::Background).darker());
+
+		QPen pen = painter->pen();
+		QColor old_color = pen.color();
+
+		QColor color = option.palette.color(QPalette::Active, QPalette::Highlight);
+		pen.setColor(color);
+		painter->setPen(pen);
+
+		painter->drawRect(x_zoom - 2, -2, zoom + 3, zoom + 3);
+
+		pen.setColor(old_color);
+		painter->setPen(pen);
+
+		int x = x_zoom + (zoom - pm.width()) / 2;
+		int y = (zoom - pm.height()) / 2;
+		painter->drawPixmap(x, y , pm.width(), pm.height(), pm);
+		painter->translate(0, zoom + 2);
 	}
 
 	{

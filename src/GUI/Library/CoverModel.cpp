@@ -524,7 +524,7 @@ QSize CoverModel::item_size() const
 
 #include "GUI/Utils/GuiUtils.h"
 #include <QMainWindow>
-void CoverModel::set_zoom(int zoom, const QSize& view_size)
+static QSize calc_item_size(int zoom)
 {
 	int text_height = QFontMetrics(Gui::Util::main_window()->font()).height();
 	bool show_artist = Settings::instance()->get<Set::Lib_CoverShowArtist>();
@@ -533,13 +533,15 @@ void CoverModel::set_zoom(int zoom, const QSize& view_size)
 		text_height = 2 * text_height;
 	}
 
-	text_height = (text_height * 12) / 10;
+	return QSize((zoom * 11) / 10, (zoom * 11) / 10 + (text_height * 13) / 10);
+}
 
+
+void CoverModel::set_zoom(int zoom, const QSize& view_size)
+{
 	m->scaled_pixmaps.clear();
 	m->zoom = zoom;
-	m->item_size = QSize((m->zoom * 11) / 10, (m->zoom * 12) / 10 + text_height);
-
-
+	m->item_size = calc_item_size(m->zoom);
 
 	int columns = (view_size.width() / m->item_size.width());
 	if(columns > 0)
@@ -552,14 +554,7 @@ void CoverModel::set_zoom(int zoom, const QSize& view_size)
 
 void CoverModel::show_artists_changed()
 {
-	int text_height = (QFontMetrics(Gui::Util::main_window()->font()).height() * 13) / 10;
-	bool show_artist = Settings::instance()->get<Set::Lib_CoverShowArtist>();
-	if(show_artist)
-	{
-		text_height = 2 * text_height;
-	}
-
-	m->item_size = QSize((m->zoom * 11) / 10, (m->zoom * 12) / 10 + text_height);
+	m->item_size = calc_item_size(m->zoom);
 }
 
 
