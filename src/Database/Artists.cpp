@@ -223,7 +223,8 @@ bool Artists::getAllArtistsBySearchString(const Library::Filter& filter, ArtistL
 				break;
 		}
 
-		if(query.isEmpty()){
+		if(query.isEmpty())
+		{
 				query = select +
 						where_clause +
 						"GROUP BY " + artistid_field() + ", " + artistname_field() + " ";

@@ -235,18 +235,19 @@ Artist ArtistList::first() const
 
 ArtistList& ArtistList::append_unique(const ArtistList& other)
 {
-	int new_size = this->size();
-	this->resize(this->size() + other.size());
+	long long diff_cap = other.size() - (this->capacity() - this->size());
+	if(diff_cap > 0)
+	{
+		this->reserve(this->capacity() + diff_cap);
+	}
 
 	for(auto it = other.begin(); it != other.end(); it++)
 	{
-		if(!this->contains(it->id)){
+		if(!this->contains(it->id))
+		{
 			this->push_back(*it);
-			new_size++;
 		}
 	}
-
-	this->resize(new_size);
 
 	return *this;
 }

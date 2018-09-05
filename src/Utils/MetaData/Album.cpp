@@ -279,7 +279,7 @@ Album AlbumList::first() const
 
 AlbumList& AlbumList::append_unique(const AlbumList& other)
 {
-	int diff_cap = other.size() - (this->capacity() - this->size());
+	long long diff_cap = other.size() - (this->capacity() - this->size());
 	if(diff_cap > 0)
 	{
 		this->reserve(this->capacity() + diff_cap);
