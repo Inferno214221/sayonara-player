@@ -96,6 +96,9 @@ TrayIconContextMenu::TrayIconContextMenu(QWidget* parent) :
 	connect(pm, &PlayManager::sig_mute_changed, this, &TrayIconContextMenu::mute_changed);
 	connect(pm, &PlayManager::sig_playstate_changed, this, &TrayIconContextMenu::playstate_changed);
 
+	language_changed();
+	skin_changed();
+
 	mute_changed(pm->is_muted());
 	playstate_changed(pm->playstate());
 
