@@ -33,11 +33,14 @@
 #include "Utils/Language.h"
 #include "Utils/Logger/Logger.h"
 
+#include "GUI/Utils/GuiUtils.h"
+
 #include <QFontMetrics>
 #include <QApplication>
 #include <QStringList>
 #include <QPixmap>
 #include <QThread>
+#include <QMainWindow>
 
 #include <atomic>
 #include <mutex>
@@ -371,6 +374,7 @@ void CoverModel::cover_lookup_finished(bool success)
 		if(success)
 		{
 			LOCK_GUARD(mtx1)
+
 			QList<QPixmap> pixmaps = clu->pixmaps();
 			if(!pixmaps.isEmpty())
 			{
@@ -502,9 +506,7 @@ const MetaDataList& Library::CoverModel::mimedata_tracks() const
 
 const AlbumList& CoverModel::albums() const
 {
-	const AbstractLibrary* al = library();
-	const AlbumList& a = al->albums();
-	return a;
+	return library()->albums();
 }
 
 const SP::Set<Id>& CoverModel::selections() const
@@ -522,26 +524,29 @@ QSize CoverModel::item_size() const
 	return m->item_size;
 }
 
-#include "GUI/Utils/GuiUtils.h"
-#include <QMainWindow>
-static QSize calc_item_size(int zoom)
+
+static QSize calc_item_size(int zoom, QFont font)
 {
-	int text_height = QFontMetrics(Gui::Util::main_window()->font()).height();
+	int text_height = QFontMetrics(font).height();
 	bool show_artist = Settings::instance()->get<Set::Lib_CoverShowArtist>();
 	if(show_artist)
 	{
 		text_height = 2 * text_height;
 	}
 
-	return QSize((zoom * 11) / 10, (zoom * 11) / 10 + (text_height * 13) / 10);
-}
+	text_height = (text_height * 12) / 10;
 
+	int width = std::max(((zoom * 11) / 10), zoom + 15);
+	int height = width + text_height;
+
+	return QSize(width, height);
+}
 
 void CoverModel::set_zoom(int zoom, const QSize& view_size)
 {
 	m->scaled_pixmaps.clear();
 	m->zoom = zoom;
-	m->item_size = calc_item_size(m->zoom);
+	m->item_size = calc_item_size(zoom, Gui::Util::main_window()->font());
 
 	int columns = (view_size.width() / m->item_size.width());
 	if(columns > 0)
@@ -554,9 +559,8 @@ void CoverModel::set_zoom(int zoom, const QSize& view_size)
 
 void CoverModel::show_artists_changed()
 {
-	m->item_size = calc_item_size(m->zoom);
+	m->item_size = calc_item_size(m->zoom, Gui::Util::main_window()->font());
 }
-
 
 void CoverModel::reload()
 {

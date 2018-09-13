@@ -32,7 +32,6 @@ Library::CoverDelegate::CoverDelegate(QObject* parent) :
 
 Library::CoverDelegate::~CoverDelegate() {}
 
-
 void Library::CoverDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
 	const int text_offset = 3;

@@ -192,9 +192,6 @@ void LocalLibrary::change_current_disc(Disc disc)
 	emit sig_all_tracks_loaded();
 }
 
-
-
-
 void LocalLibrary::get_all_artists(ArtistList& artists)
 {
 	m->library_db->getAllArtists(artists, Library::SortOrder::NoSorting);
@@ -205,66 +202,55 @@ void LocalLibrary::get_all_artists_by_searchstring(Library::Filter filter, Artis
 	m->library_db->getAllArtistsBySearchString(filter, artists, Library::SortOrder::NoSorting);
 }
 
-
 void LocalLibrary::get_all_albums(AlbumList& albums)
 {
 	m->library_db->getAllAlbums(albums, Library::SortOrder::NoSorting);
 }
-
 
 void LocalLibrary::get_all_albums_by_artist(IdList artist_ids, AlbumList& albums, Library::Filter filter)
 {
 	m->library_db->getAllAlbumsByArtist(artist_ids, albums, filter, Library::SortOrder::NoSorting);
 }
 
-
 void LocalLibrary::get_all_albums_by_searchstring(Library::Filter filter, AlbumList& albums)
 {
 	m->library_db->getAllAlbumsBySearchString(filter, albums, Library::SortOrder::NoSorting);
 }
-
 
 void LocalLibrary::get_all_tracks(MetaDataList& v_md)
 {
 	m->library_db->getAllTracks(v_md, Library::SortOrder::NoSorting);
 }
 
-
 void LocalLibrary::get_all_tracks(const QStringList& paths, MetaDataList& v_md)
 {
 	m->library_db->getMultipleTracksByPath(paths, v_md);
 }
-
 
 void LocalLibrary::get_all_tracks_by_artist(IdList artist_ids, MetaDataList& v_md, Library::Filter filter)
 {
 	m->library_db->getAllTracksByArtist(artist_ids, v_md, filter, Library::SortOrder::NoSorting);
 }
 
-
 void LocalLibrary::get_all_tracks_by_album(IdList album_ids, MetaDataList& v_md, Library::Filter filter)
 {
 	m->library_db->getAllTracksByAlbum(album_ids, v_md, filter, Library::SortOrder::NoSorting);
 }
-
 
 void LocalLibrary::get_all_tracks_by_searchstring(Library::Filter filter, MetaDataList& v_md)
 {
 	m->library_db->getAllTracksBySearchString(filter, v_md, Library::SortOrder::NoSorting);
 }
 
-
 void LocalLibrary::get_album_by_id(AlbumId album_id, Album& album)
 {
 	m->library_db->getAlbumByID(album_id, album);
 }
 
-
 void LocalLibrary::get_artist_by_id(ArtistId artist_id, Artist& artist)
 {
 	m->library_db->getArtistByID(artist_id, artist);
 }
-
 
 void LocalLibrary::update_track(const MetaData& md)
 {
@@ -281,13 +267,11 @@ void LocalLibrary::update_album(const Album& album)
 	m->library_db->updateAlbum(album);
 }
 
-
 void LocalLibrary::insert_tracks(const MetaDataList &v_md)
 {
 	m->library_db->store_metadata(v_md);
 	AbstractLibrary::insert_tracks(v_md);
 }
-
 
 void LocalLibrary::init_reload_thread()
 {
@@ -306,7 +290,6 @@ void LocalLibrary::init_reload_thread()
 	connect(m->reload_thread, &Library::ReloadThread::finished,
 			this, &LocalLibrary::reload_thread_finished);
 }
-
 
 void LocalLibrary::delete_tracks(const MetaDataList &v_md, Library::TrackDeletionMode mode)
 {
