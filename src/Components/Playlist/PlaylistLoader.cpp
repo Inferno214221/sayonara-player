@@ -81,8 +81,6 @@ Loader::Loader(QObject* parent) :
 		return;
 	}
 
-
-	bool has_playlist_id=false;
 	if(load_temporary_playlists && !load_saved_playlists){
 		success = playlist_db_connector->get_temporary_playlists(m->playlists);
 	}
@@ -99,14 +97,14 @@ Loader::Loader(QObject* parent) :
 		return;
 	}
 
-	has_playlist_id = Util::contains(m->playlists, [&saved_playlist_id](const CustomPlaylist& pl){
+	bool has_playlist_id = Util::contains(m->playlists, [&saved_playlist_id](const CustomPlaylist& pl)
+	{
 		return (saved_playlist_id == pl.id());
 	});
 
 	if(!has_playlist_id){
 		m->playlists.prepend(playlist_db_connector->get_playlist_by_id(saved_playlist_id));
 	}
-
 
 	for(int i=0; i<m->playlists.size(); i++)
 	{
