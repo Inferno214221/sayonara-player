@@ -132,6 +132,8 @@ static void prepare_info_table(QTableWidget* table, const QList<StringPair>& dat
 static void prepare_paths(QListWidget* path_list_widget, const QStringList& paths)
 {
 	path_list_widget->clear();
+	path_list_widget->setAlternatingRowColors(true);
+	path_list_widget->setEditTriggers(QListView::NoEditTriggers);
 
 	for(const QString& path : paths)
 	{

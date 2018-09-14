@@ -48,6 +48,8 @@ namespace Library
 		TrackAlbumDesc,
 		TrackArtistAsc,
 		TrackArtistDesc,
+		TrackAlbumArtistAsc,
+		TrackAlbumArtistDesc,
 		TrackYearAsc,
 		TrackYearDesc,
 		TrackLenghtAsc,

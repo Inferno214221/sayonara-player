@@ -123,11 +123,11 @@ int Handler::load_old_playlists()
 		last_track_idx = loader.get_last_track_idx();
 	}
 
-	if(last_track_idx >= 0){
+	if(last_track_idx >= 0) {
 		change_track(last_track_idx, last_playlist_idx);
 	}
 
-	else{
+	else {
 		m->play_manager->stop();
 		return m->playlists.size();
 	}
@@ -202,7 +202,10 @@ int Handler::create_playlist(const MetaDataList& v_md, const QString& name, bool
 int Handler::create_playlist(const QStringList& pathlist, const QString& name, bool temporary, Playlist::Type type)
 {
 	DirectoryReader reader;
+
 	MetaDataList v_md = reader.metadata_from_filelist(pathlist);
+	v_md.sort(Library::SortOrder::TrackAlbumArtistAsc);
+
 	return create_playlist(v_md, name, temporary, type);
 }
 

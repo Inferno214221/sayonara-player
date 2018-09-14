@@ -124,6 +124,7 @@ void GenreView::progress_changed(int progress)
 
 void GenreView::update_finished()
 {
+	this->setAcceptDrops(true);
 	emit sig_progress("", -1);
 }
 

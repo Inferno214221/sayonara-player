@@ -75,7 +75,6 @@ namespace Playlist
 				Active
 			};
 
-
 		signals:
 			/**
 			 * @brief emitted when new playlist has been created

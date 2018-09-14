@@ -51,7 +51,7 @@ namespace Library
 		PIMPL(GenreView)
 
 	signals:
-		void sig_progress(const QString& message, int progress);
+		void sig_progress(const QString& name, int progress);
 		void sig_genres_reloaded();
 
 	public:

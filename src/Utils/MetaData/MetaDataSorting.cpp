@@ -177,7 +177,7 @@ bool MetaDataSorting::TracksByAlbumArtistAsc(const MetaData& md1, const MetaData
 {
 	switch(compare_string(md1.album_artist(), md2.album_artist())){
 		case Equal:
-			return TracksByArtistAsc(md1, md2);
+			return TracksByAlbumAsc(md1, md2);
 		case Greater:
 			return false;
 		case Lesser:
@@ -190,7 +190,7 @@ bool MetaDataSorting::TracksByAlbumArtistDesc(const MetaData& md1, const MetaDat
 {
 	switch(compare_string(md2.album_artist(), md1.album_artist())){
 		case Equal:
-			return TracksByArtistAsc(md1, md2);
+			return TracksByAlbumDesc(md1, md2);
 		case Greater:
 			return false;
 		case Lesser:
@@ -576,6 +576,12 @@ void MetaDataSorting::sort_metadata(MetaDataList& v_md, Library::SortOrder so)
 			break;
 		case So::TrackArtistDesc:
 			Util::sort(v_md, TracksByArtistDesc);
+			break;
+		case So::TrackAlbumArtistAsc:
+			Util::sort(v_md, TracksByAlbumArtistAsc);
+			break;
+		case So::TrackAlbumArtistDesc:
+			Util::sort(v_md, TracksByAlbumArtistDesc);
 			break;
 		case So::TrackYearAsc:
 			Util::sort(v_md, TracksByYearAsc);

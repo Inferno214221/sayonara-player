@@ -117,7 +117,7 @@ MetaDataInfo::MetaDataInfo(const MetaDataList& v_md) :
 		}
 
 		// genre
-		genres = md.genres_to_list();
+		genres << md.genres_to_list();
 
 		// paths
 		if(!Util::File::is_www(md.filepath()))
@@ -147,6 +147,8 @@ MetaDataInfo::MetaDataInfo(const MetaDataList& v_md) :
 	insert_numeric_info_field(InfoStrings::nTracks, v_md.count());
 	insert_filesize(filesize);
 	insert_playing_time(length);
+
+	genres.removeDuplicates();
 	insert_genre(genres);
 
 	calc_header(v_md);
@@ -304,8 +306,17 @@ void MetaDataInfo::insert_playing_time(MilliSeconds ms)
 
 void MetaDataInfo::insert_genre(const QStringList& lst)
 {
+	if(lst.isEmpty()){
+		return;
+	}
+
 	QString str = lst.join(", ");
-	_info.insert(InfoStrings::Genre, str);
+	QString old_genre = _info[InfoStrings::Genre];
+	if(!old_genre.isEmpty()){
+		old_genre += ", ";
+	}
+
+	_info[InfoStrings::Genre] = old_genre + str;
 }
 
 void MetaDataInfo::insert_filesize(uint64_t filesize)
@@ -313,7 +324,6 @@ void MetaDataInfo::insert_filesize(uint64_t filesize)
 	QString str = Util::File::calc_filesize_str(filesize);
 	_info.insert(InfoStrings::Filesize, str);
 }
-
 
 QString MetaDataInfo::header() const
 {

@@ -28,6 +28,7 @@
 #include "Utils/Utils.h"
 
 using Playlist::Loader;
+using Playlist::Handler;
 
 struct Loader::Private
 {
@@ -84,7 +85,6 @@ Loader::Loader(QObject* parent) :
 	bool has_playlist_id=false;
 	if(load_temporary_playlists && !load_saved_playlists){
 		success = playlist_db_connector->get_temporary_playlists(m->playlists);
-
 	}
 
 	else if(load_saved_playlists && !load_temporary_playlists){
@@ -142,7 +142,8 @@ Loader::Loader(QObject* parent) :
 		}
 
 
-		if(pl.temporary()){
+		if(pl.temporary())
+		{
 			if(load_temporary_playlists){
 				add_playlist = true;
 			}
@@ -152,13 +153,15 @@ Loader::Loader(QObject* parent) :
 			}
 		}
 
-		else{
+		else
+		{
 			if(load_saved_playlists){
 				add_playlist = true;
 			}
 		}
 
-		if(!add_playlist){
+		if(!add_playlist)
+		{
 			m->playlists.removeAt(i);
 			i--;
 		}

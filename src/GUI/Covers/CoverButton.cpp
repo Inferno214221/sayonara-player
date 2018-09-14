@@ -219,6 +219,7 @@ void CoverButton::paintEvent(QPaintEvent* event)
 
 	int h = this->height() - 2;
 	int w = this->width() - 2;
+
 	QSize size(w, h);
 
 	QPixmap pm = m->current_cover.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
@@ -226,7 +227,8 @@ void CoverButton::paintEvent(QPaintEvent* event)
 	int x = (w - pm.width()) / 2;
 	int y = (h - pm.height()) / 2;
 
-	painter.drawPixmap(
+	painter.drawPixmap
+	(
 		QRect(x, y, pm.width(), pm.height()),
 		pm
 	);
