@@ -358,7 +358,7 @@ double DBusMPRIS::MediaPlayer2::Volume()
 	return m->volume;
 }
 
-MicroSeconds DBusMPRIS::MediaPlayer2::Position()
+qlonglong DBusMPRIS::MediaPlayer2::Position()
 {
 	return m->pos;
 }
@@ -438,12 +438,12 @@ void DBusMPRIS::MediaPlayer2::Play()
 	m->play_manager->play();
 }
 
-void DBusMPRIS::MediaPlayer2::Seek(MicroSeconds offset)
+void DBusMPRIS::MediaPlayer2::Seek(qlonglong offset)
 {
 	m->play_manager->seek_rel_ms(offset / 1000);
 }
 
-void DBusMPRIS::MediaPlayer2::SetPosition(const QDBusObjectPath& track_id, MicroSeconds position)
+void DBusMPRIS::MediaPlayer2::SetPosition(const QDBusObjectPath& track_id, qlonglong position)
 {
 	Q_UNUSED(track_id)
 	m->play_manager->seek_abs_ms(position / 1000);

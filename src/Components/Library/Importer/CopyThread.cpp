@@ -90,17 +90,14 @@ void CopyThread::copy()
 			return;
 		}
 
-		bool success;
-		QString target_filename, target_dir;
-
-		target_filename = m->cache->target_filename(filename, m->target_dir);
+		QString target_filename = m->cache->target_filename(filename, m->target_dir);
 		if(target_filename.isEmpty()){
 			continue;
 		}
 
-		target_dir = Util::File::get_parent_directory(target_filename);
+		QString target_dir = Util::File::get_parent_directory(target_filename);
 
-		success = Util::File::create_directories(target_dir);
+		bool success = Util::File::create_directories(target_dir);
 		if(!success){
 			continue;
 		}

@@ -264,7 +264,7 @@ bool Connector::apply_fixes()
 	QString str_version;
 	int version;
 	bool success;
-	const int LatestVersion = 21;
+	const int LatestVersion = 22;
 
 	success = settings_connector()->load_setting("version", str_version);
 	version = str_version.toInt(&success);
@@ -612,6 +612,61 @@ bool Connector::apply_fixes()
 		check_and_drop_table("Genres");
 
 		settings_connector()->store_setting("version", 21);
+	}
+
+	if(version < 22)
+	{
+		LibraryDatabase* lib_db = library_db(-1, 0);
+
+		QMap<QString, AlbumId> albums;
+		QMap<QString, ArtistId> artists;
+
+		MetaDataList tracks;
+		lib_db->getAllTracks(tracks);
+
+		for(auto it=tracks.begin(); it != tracks.end(); it++)
+		{
+			albums[it->album()] = it->album_id;
+			artists[it->artist()] = it->artist_id;
+			artists[it->album_artist()] = it->album_artist_id();
+		}
+
+		for(auto it=tracks.begin(); it != tracks.end(); it++)
+		{
+			AlbumId correct_album_id = albums[it->album()];
+			ArtistId correct_artist_id = artists[it->artist()];
+			ArtistId correct_album_artist_id = artists[it->album_artist()];
+			this->transaction();
+			if(	(it->album_id != correct_album_id) ||
+				(it->artist_id != correct_artist_id) ||
+				(it->album_artist_id() != correct_album_artist_id))
+			{
+				sp_log(Log::Info, this) << "Move track " << it->filepath() << "from album " << it->album_id << " to " << correct_album_id;
+
+				it->album_id = correct_album_id;
+				it->artist_id = correct_artist_id;
+				it->set_album_artist_id(correct_album_artist_id);
+
+				lib_db->updateTrack(*it);
+			}
+			this->commit();
+		}
+
+		{
+			QString query("DELETE FROM albums WHERE albums.albumID NOT IN (SELECT albumId from tracks);");
+			Query q(this);
+			q.prepare(query);
+			q.exec();
+		}
+
+		{
+			QString query("DELETE FROM artists WHERE artists.artistID NOT IN (SELECT artistId from tracks UNION SELECT albumArtistId FROM tracks);");
+			Query q(this);
+			q.prepare(query);
+			q.exec();
+		}
+
+		settings_connector()->store_setting("version", 22);
 	}
 
 	return true;

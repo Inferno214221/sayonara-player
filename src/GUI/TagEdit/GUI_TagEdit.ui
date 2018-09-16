@@ -116,6 +116,13 @@
        <string notr="true">Tags</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_3">
+       <item row="4" column="0">
+        <widget class="QLabel" name="lab_genres">
+         <property name="text">
+          <string notr="true">Genres</string>
+         </property>
+        </widget>
+       </item>
        <item row="2" column="4">
         <widget class="QLabel" name="label_9">
          <property name="sizePolicy">
@@ -166,6 +173,16 @@
          </property>
         </widget>
        </item>
+       <item row="4" column="1">
+        <widget class="TagTextInput" name="le_genre">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
        <item row="4" column="2">
         <widget class="QCheckBox" name="cb_genre_all">
          <property name="focusPolicy">
@@ -183,16 +200,6 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="1">
-        <widget class="TagTextInput" name="le_genre">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-        </widget>
-       </item>
        <item row="2" column="2">
         <widget class="QCheckBox" name="cb_artist_all">
          <property name="focusPolicy">
@@ -200,13 +207,6 @@
          </property>
          <property name="text">
           <string notr="true">all</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="lab_genres">
-         <property name="text">
-          <string notr="true">Genres</string>
          </property>
         </widget>
        </item>
@@ -262,20 +262,6 @@
          </property>
         </widget>
        </item>
-       <item row="5" column="0">
-        <widget class="QLabel" name="lab_comment">
-         <property name="text">
-          <string>Comment</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="lab_artist">
-         <property name="text">
-          <string notr="true">Artist</string>
-         </property>
-        </widget>
-       </item>
        <item row="0" column="1">
         <widget class="TagTextInput" name="le_title">
          <property name="sizePolicy">
@@ -286,6 +272,13 @@
          </property>
         </widget>
        </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="lab_comment">
+         <property name="text">
+          <string>Comment</string>
+         </property>
+        </widget>
+       </item>
        <item row="3" column="1">
         <widget class="TagTextInput" name="le_album_artist">
          <property name="sizePolicy">
@@ -293,6 +286,13 @@
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="lab_artist">
+         <property name="text">
+          <string notr="true">Artist</string>
          </property>
         </widget>
        </item>
@@ -379,6 +379,16 @@
          </property>
         </spacer>
        </item>
+       <item row="1" column="1">
+        <widget class="TagTextInput" name="le_album">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
        <item row="2" column="6">
         <widget class="QCheckBox" name="cb_discnumber_all">
          <property name="sizePolicy">
@@ -414,13 +424,13 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
-        <widget class="TagTextInput" name="le_album">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
+       <item row="5" column="1">
+        <widget class="QPlainTextEdit" name="te_comment">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>100</height>
+          </size>
          </property>
         </widget>
        </item>
@@ -437,22 +447,25 @@
          </property>
         </widget>
        </item>
-       <item row="5" column="1">
-        <widget class="QPlainTextEdit" name="te_comment">
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>100</height>
-          </size>
-         </property>
-        </widget>
-       </item>
        <item row="5" column="2">
         <widget class="QCheckBox" name="cb_comment_all">
          <property name="text">
           <string>all</string>
          </property>
         </widget>
+       </item>
+       <item row="6" column="1">
+        <spacer name="verticalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </widget>

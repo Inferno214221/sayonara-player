@@ -31,6 +31,8 @@
 #include "Utils/Tagging/Tagging.h"
 #include "Utils/MetaData/Genre.h"
 #include "Utils/MetaData/MetaDataList.h"
+#include "Utils/MetaData/Album.h"
+#include "Utils/MetaData/Artist.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Library/Filter.h"
 #include "Utils/Library/Sortorder.h"
@@ -57,6 +59,25 @@ struct Editor::Private
 	QHash<QString, AlbumId>		album_map;
 
 	DB::LibraryDatabase*	ldb=nullptr;	// database of LocalLibrary
+
+	Private()
+	{
+		ldb = DB::Connector::instance()->library_db(-1, 0);
+
+		AlbumList albums;
+		ldb->getAllAlbums(albums, true);
+		for(auto it=albums.begin(); it != albums.end(); it++)
+		{
+			album_map[it->name()] = it->id;
+		}
+
+		ArtistList artists;
+		ldb->getAllArtists(artists, true);
+		for(auto it=artists.begin(); it != artists.end(); it++)
+		{
+			artist_map[it->name()] = it->id;
+		}
+	}
 
 	ArtistId get_artist_id(const QString& artist_name)
 	{
@@ -85,7 +106,7 @@ Editor::Editor(QObject *parent) :
 	QThread(parent)
 {
 	m = Pimpl::make<Editor::Private>();
-	m->ldb = DB::Connector::instance()->library_db(-1, 0);
+
 
 	this->setObjectName("TagEditor" + ::Util::random_string(4));
 
@@ -293,11 +314,18 @@ void Editor::apply_artists_and_albums_to_md()
 
 		ArtistId artist_id =		m->get_artist_id(md.artist());
 		AlbumId album_id =			m->get_album_id(md.album());
-		ArtistId album_artist_id =	m->get_artist_id(md.album_artist());
+
+		if(md.album_artist().isEmpty()){
+			md.set_album_artist(md.artist(), md.artist_id);
+		}
+
+		else {
+			ArtistId album_artist_id =	m->get_artist_id(md.album_artist());
+			md.set_album_artist_id(album_artist_id);
+		}
 
 		md.album_id = album_id;
 		md.artist_id = artist_id;
-		md.set_album_artist_id(album_artist_id);
 	}
 }
 
