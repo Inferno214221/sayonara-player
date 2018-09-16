@@ -43,13 +43,18 @@ public:
 	{
 		connect(this, &AbstrSettingNotifier::sig_value_changed, c, fn);
 	}
+
+protected:
+	void emit_value_changed()
+	{
+		emit sig_value_changed();
+	}
 };
 
 template<typename KeyClass>
 class SettingNotifier :
 	public AbstrSettingNotifier
 {
-
 private:
 	SettingNotifier() :
 		AbstrSettingNotifier()
@@ -69,7 +74,7 @@ public:
 
 	void val_changed()
 	{
-		emit sig_value_changed();
+		emit_value_changed();
 	}
 };
 
