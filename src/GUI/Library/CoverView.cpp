@@ -138,12 +138,16 @@ void CoverView::change_zoom(int zoom)
 		}
 	}
 
-	m->model->set_zoom(zoom, this->size());
 	_settings->set<Set::Lib_CoverZoom>(zoom);
 
-	resize_sections();
-}
+	if(m->zoom_locked.test_and_set()){
+		return;
+	}
 
+	m->model->set_zoom(zoom, this->size());
+	resize_sections();
+	m->zoom_locked.clear();
+}
 
 void CoverView::resize_sections()
 {
@@ -151,16 +155,9 @@ void CoverView::resize_sections()
 		return;
 	}
 
-	if(m->zoom_locked.test_and_set()){
-		return;
-	}
-
 	this->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 	this->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-
-	m->zoom_locked.clear();
 }
-
 
 
 QList<ActionPair> CoverView::sorting_actions()
