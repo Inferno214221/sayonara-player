@@ -115,6 +115,13 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>cb_activate</tabstop>
+  <tabstop>tf_username</tabstop>
+  <tabstop>tf_password</tabstop>
+  <tabstop>sb_scrobble_time</tabstop>
+  <tabstop>btn_login</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
