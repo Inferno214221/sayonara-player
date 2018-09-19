@@ -414,17 +414,18 @@ QModelIndexList CoverModel::search_results(const QString& substr)
 		if(title.contains(substr))
 		{
 			ret << this->index(i / columnCount(), i % columnCount());
+			continue;
 		}
 
-		/*const QStringList artists = a[idx].artists();
+		const QStringList artists = a[i].artists();
 		for(const QString& artist : artists)
 		{
 			QString cvt_artist = Library::Util::convert_search_string(artist, search_mode());
 
 			if(cvt_artist.contains(substr)){
-				ret << this->index(idx / columnCount(), idx % columnCount());
+				ret << this->index(i / columnCount(), i % columnCount());
 			}
-		}*/
+		}
 	}
 
 	return ret;
