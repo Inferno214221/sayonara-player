@@ -39,7 +39,7 @@ namespace Xiph
 		public Xiph::XiphFrame<QString>
     {
 	public:
-	    AlbumArtistFrame(TagLib::Tag* tag);
+		AlbumArtistFrame(TagLib::Ogg::XiphComment* tag);
 		~AlbumArtistFrame();
 
 	protected:

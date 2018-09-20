@@ -22,7 +22,7 @@
 
 #include "AlbumArtist.h"
 
-MP4::AlbumArtistFrame::AlbumArtistFrame(TagLib::Tag* tag) :
+MP4::AlbumArtistFrame::AlbumArtistFrame(TagLib::MP4::Tag* tag) :
 	MP4::MP4Frame<QString>(tag, "aART") {}
 
 MP4::AlbumArtistFrame::~AlbumArtistFrame() {}

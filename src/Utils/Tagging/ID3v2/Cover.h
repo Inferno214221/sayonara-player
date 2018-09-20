@@ -38,7 +38,7 @@ namespace ID3v2
 			public ID3v2Frame<Models::Cover, TagLib::ID3v2::AttachedPictureFrame>
 	{
 		public:
-			CoverFrame(const TagLib::FileRef& f);
+			CoverFrame(TagLib::ID3v2::Tag* tag);
 			~CoverFrame();
 
 			void map_model_to_frame(const Models::Cover& model, TagLib::ID3v2::AttachedPictureFrame* frame) override;

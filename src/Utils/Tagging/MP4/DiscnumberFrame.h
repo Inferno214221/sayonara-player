@@ -39,7 +39,7 @@ namespace MP4
 		public MP4::MP4Frame<Models::Discnumber>
 	{
 	public:
-		DiscnumberFrame(TagLib::Tag* tag);
+		DiscnumberFrame(TagLib::MP4::Tag* tag);
 		~DiscnumberFrame();
 
 	protected:

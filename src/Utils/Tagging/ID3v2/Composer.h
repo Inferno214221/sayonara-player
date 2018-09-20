@@ -33,7 +33,7 @@ namespace ID3v2
 			public ID3v2Frame<QString, TagLib::ID3v2::TextIdentificationFrame>
 	{
 		public:
-			explicit ComposerFrame(const TagLib::FileRef& f);
+			explicit ComposerFrame(TagLib::ID3v2::Tag* tag);
 			~ComposerFrame();
 
 		protected:

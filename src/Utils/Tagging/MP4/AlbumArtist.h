@@ -32,7 +32,7 @@ namespace MP4
 			public MP4::MP4Frame<QString>
 	{
 	public:
-		AlbumArtistFrame(TagLib::Tag* tag);
+		AlbumArtistFrame(TagLib::MP4::Tag* tag);
 		~AlbumArtistFrame();
 
 		// AbstractFrame interface

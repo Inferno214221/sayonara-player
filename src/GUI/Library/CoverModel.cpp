@@ -424,6 +424,7 @@ QModelIndexList CoverModel::search_results(const QString& substr)
 
 			if(cvt_artist.contains(substr)){
 				ret << this->index(i / columnCount(), i % columnCount());
+				break;
 			}
 		}
 	}
@@ -537,7 +538,7 @@ static QSize calc_item_size(int zoom, QFont font)
 
 	text_height = (text_height * 12) / 10;
 
-	int width = std::max(((zoom * 11) / 10), zoom + 15);
+	int width = std::max(((zoom * 115) / 100), zoom + 20);
 	int height = width + text_height;
 
 	return QSize(width, height);

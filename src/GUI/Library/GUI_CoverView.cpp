@@ -53,8 +53,6 @@ void GUI_CoverView::init(LocalLibrary* library)
 	ui->setupUi(this);
 
 	ui->tb_view->init(library);
-	ui->lab_zoom->setText(Lang::get(Lang::Zoom).append(":"));
-	ui->lab_sorting->setText(Lang::get(Lang::SortBy).append(":"));
 
 	ui->topbar->setVisible(_settings->get<Set::Lib_CoverShowUtils>());
 	ui->cb_show_artist->setChecked(_settings->get<Set::Lib_CoverShowArtist>());
@@ -92,7 +90,6 @@ Library::CoverView* GUI_CoverView::table_view() const
 
 void GUI_CoverView::init_sorting_actions()
 {
-	ui->lab_sorting->setText(Lang::get(Lang::SortBy));
 	ui->combo_sorting->clear();
 
 	const QList<ActionPair> action_pairs = CoverView::sorting_actions();
@@ -147,7 +144,12 @@ void GUI_CoverView::show_artist_changed()
 
 void GUI_CoverView::init_zoom_actions()
 {
-	ui->combo_zoom->addItems(CoverView::zoom_actions());
+	const QStringList zoom_data = CoverView::zoom_actions();
+
+	for(const QString& zoom : zoom_data)
+	{
+		ui->combo_zoom->addItem(zoom + "%", zoom);
+	}
 
 	zoom_changed();
 }
@@ -157,7 +159,7 @@ void GUI_CoverView::combo_zoom_changed(int idx)
 {
 	Q_UNUSED(idx)
 
-	int zoom = ui->combo_zoom->currentText().toInt();
+	int zoom = ui->combo_zoom->currentData().toInt();
 	_settings->set<Set::Lib_CoverZoom>(zoom);
 	ui->tb_view->change_zoom(zoom);
 }
@@ -199,8 +201,6 @@ void GUI_CoverView::language_changed()
 	init_sorting_actions();
 
 	ui->combo_zoom->setToolTip(tr("Use Ctrl + mouse wheel to zoom"));
-	ui->lab_sorting->setText(Lang::get(Lang::SortBy));
-	ui->lab_zoom->setText(Lang::get(Lang::Zoom));
 	ui->btn_close->setText(Lang::get(Lang::Close));
 	ui->cb_show_artist->setText(Lang::get(Lang::ShowAlbumArtists));
 }

@@ -147,8 +147,10 @@ MetaDataList DirectoryReader::metadata_from_filelist(const QStringList& lst)
 	{
 		if( it->id < 0 )
 		{
-			if(!Tagging::Util::getMetaDataOfFile(*it)) {
-				it = v_md.erase(it);
+			if(!Tagging::Util::getMetaDataOfFile(*it))
+			{
+				it->set_title(it->filepath());
+				//it = v_md.erase(it);
 				continue;
 			}
 

@@ -70,20 +70,9 @@ namespace ID3v2
 
 		public:
 			// constructor
-			ID3v2Frame(const TagLib::FileRef& f, const char* four) :
-				Tagging::AbstractFrame<TagLib::ID3v2::Tag>(nullptr, four)
+			ID3v2Frame(TagLib::ID3v2::Tag* tag, const char* four) :
+				Tagging::AbstractFrame<TagLib::ID3v2::Tag>(tag, four)
 			{
-				TagLib::MPEG::File* mpeg = dynamic_cast<TagLib::MPEG::File*>(f.file());
-				if(!mpeg){
-					return;
-				}
-
-				TagLib::ID3v2::Tag* tag = mpeg->ID3v2Tag(true);
-				this->set_tag(tag);
-				if(!tag){
-					return;
-				}
-
 				// map, containing [four][frame list]
 				TagLib::ByteVector vec(four, 4);
 				TagLib::ID3v2::FrameListMap map = tag->frameListMap();

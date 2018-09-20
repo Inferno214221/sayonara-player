@@ -67,7 +67,7 @@ namespace Xiph
 			}
 
 		public:
-			XiphFrame(TagLib::Tag* tag, const QString& identifier) :
+			XiphFrame(TagLib::Ogg::XiphComment* tag, const QString& identifier) :
 				Tagging::AbstractFrame<TagLib::Ogg::XiphComment>(tag, identifier) {}
 
 			virtual ~XiphFrame() {}

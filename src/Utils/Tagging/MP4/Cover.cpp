@@ -22,7 +22,7 @@
 
 #include "Cover.h"
 
-MP4::CoverFrame::CoverFrame(TagLib::Tag* tag) :
+MP4::CoverFrame::CoverFrame(TagLib::MP4::Tag* tag) :
 	MP4Frame<Models::Cover>(tag, "covr") {}
 
 MP4::CoverFrame::~CoverFrame() {}

@@ -32,7 +32,7 @@ namespace MP4
 			public MP4::MP4Frame<Models::Popularimeter>
 	{
 	public:
-		PopularimeterFrame(TagLib::Tag* tag);
+		PopularimeterFrame(TagLib::MP4::Tag* tag);
 		~PopularimeterFrame();
 
 		// AbstractFrame interface

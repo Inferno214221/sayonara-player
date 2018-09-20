@@ -22,8 +22,8 @@
 #include <taglib/textidentificationframe.h>
 #include <taglib/tstring.h>
 
-ID3v2::AlbumArtistFrame::AlbumArtistFrame(const TagLib::FileRef& f) :
-	ID3v2Frame<QString, TagLib::ID3v2::TextIdentificationFrame>(f, "TPE2") {}
+ID3v2::AlbumArtistFrame::AlbumArtistFrame(TagLib::ID3v2::Tag* tag) :
+	ID3v2Frame<QString, TagLib::ID3v2::TextIdentificationFrame>(tag, "TPE2") {}
 
 ID3v2::AlbumArtistFrame::~AlbumArtistFrame() {}
 

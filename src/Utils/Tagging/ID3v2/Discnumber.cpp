@@ -21,8 +21,8 @@
 #include "Discnumber.h"
 #include <QStringList>
 
-ID3v2::DiscnumberFrame::DiscnumberFrame(const TagLib::FileRef& f) :
-	ID3v2Frame<Models::Discnumber, TagLib::ID3v2::TextIdentificationFrame>(f, "TPOS") {}
+ID3v2::DiscnumberFrame::DiscnumberFrame(TagLib::ID3v2::Tag* tag) :
+	ID3v2Frame<Models::Discnumber, TagLib::ID3v2::TextIdentificationFrame>(tag, "TPOS") {}
 
 ID3v2::DiscnumberFrame::~DiscnumberFrame() {}
 

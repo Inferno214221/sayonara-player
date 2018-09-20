@@ -245,7 +245,8 @@ QStringList Util::soundfile_extensions(bool with_asterisk)
 			<< "wma"
 			<< "mpc"
 			<< "aiff"
-			<< "ape";
+			<< "ape"
+			<< "webm";
 
 	QStringList upper_filters;
 	for(QString& filter : filters) {
