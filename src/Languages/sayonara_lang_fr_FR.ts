@@ -18,7 +18,7 @@
     </message>
     <message>
         <source>Search an alternative cover</source>
-        <translation>Cherchez une pochette alternative</translation>
+        <translation>Chercher une autre pochette</translation>
     </message>
 </context>
 <context>
@@ -118,7 +118,7 @@
     </message>
     <message>
         <source>Text search</source>
-        <translation>Recherche par texte</translation>
+        <translation>Recherche textuelle</translation>
     </message>
     <message>
         <source>Alternative Cover</source>
@@ -141,7 +141,7 @@
     </message>
     <message>
         <source>Constant Bitrate</source>
-        <translation>Débit binaire constant</translation>
+        <translation>Débit constant</translation>
     </message>
     <message>
         <source>Variable Bitrate</source>
@@ -183,15 +183,15 @@
     </message>
     <message>
         <source>%1 listener</source>
-        <translation>%1 auditeurs</translation>
+        <translation>%1 auditeur(s)</translation>
     </message>
     <message>
         <source>Dismiss all</source>
-        <translation>Rejeter tout</translation>
+        <translation>Tout rejeter</translation>
     </message>
     <message>
         <source>Cannot broadcast on port %1</source>
-        <translation>La radiodiffusion au port %1 n&apos;a pas pu démarrer</translation>
+        <translation>La radiodiffusion n&apos;a pas pu démarrer sur le port %1</translation>
     </message>
     <message>
         <source>%1 listeners</source>
@@ -199,7 +199,7 @@
     </message>
     <message>
         <source>Maybe another application is using this port?</source>
-        <translation>Peut-être qu&apos;une autre application utilise ce port ?</translation>
+        <translation>Une autre application utilise-t-elle ce port ?</translation>
     </message>
     <message>
         <source>Dismiss</source>
@@ -269,7 +269,7 @@
     <name>GUI_Covers</name>
     <message>
         <source>If available, load covers from audio files</source>
-        <translation>Si disponsible, charge des images du fichier audio</translation>
+        <translation>Si disponibles, charge les pochettes depuis le fichier audio</translation>
     </message>
     <message>
         <source>Clear cache</source>
@@ -313,7 +313,7 @@
     <name>GUI_EnginePreferences</name>
     <message>
         <source>Audio</source>
-        <translation>Audio </translation>
+        <translation>Audio</translation>
     </message>
 </context>
 <context>
@@ -350,7 +350,7 @@
     </message>
     <message>
         <source>Also use selected icon theme in Sayonara&apos;s dark mode</source>
-        <translation>Utilisier des icônes avec le thème foncé</translation>
+        <translation>Utiliser les icônes sélectionnées également dans le thème foncé</translation>
     </message>
 </context>
 <context>
@@ -443,11 +443,11 @@
     </message>
     <message>
         <source>Scrobble after</source>
-        <translation>Scrobble après</translation>
+        <translation>partager avec LastFM</translation>
     </message>
     <message>
         <source>Login now</source>
-        <translation>Connecter maintenant</translation>
+        <translation>Se connecter maintenant</translation>
     </message>
 </context>
 <context>
@@ -465,7 +465,7 @@
     </message>
     <message>
         <source>On double click, create playlist and</source>
-        <translation>Au double clic, créer liste de lecture et</translation>
+        <translation>Au double clic, créer une liste de lecture et</translation>
     </message>
     <message>
         <source>When drag and drop into playlist </source>
@@ -481,11 +481,11 @@
     </message>
     <message>
         <source>do nothing (default)</source>
-        <translation>ne rien faire (défaut)</translation>
+        <translation>ne rien faire ( défaut )</translation>
     </message>
     <message>
         <source>Show &quot;Clear selection&quot; buttons</source>
-        <translation>Afficher les boutons pour effacer la sélection</translation>
+        <translation>Afficher les boutons pour « effacer la sélection »</translation>
     </message>
     <message>
         <source>Libraries</source>
@@ -493,7 +493,7 @@
     </message>
     <message>
         <source>Cannot edit library</source>
-        <translation>La bibliothèque n&apos;a pas pu être éditée</translation>
+        <translation>La bibliothèque n&apos;a pas pu être modifiée</translation>
     </message>
     <message>
         <source>start playback if stopped</source>
@@ -501,7 +501,7 @@
     </message>
     <message>
         <source>start playback immediately</source>
-        <translation>démarrer immédiatement</translation>
+        <translation>démarrer la lecture immédiatement</translation>
     </message>
 </context>
 <context>
@@ -530,11 +530,11 @@
     </message>
     <message>
         <source>Overwrite lyrics</source>
-        <translation>Écraser des paroles</translation>
+        <translation>Écraser les paroles</translation>
     </message>
     <message>
         <source>Save Lyrics</source>
-        <translation>Enregistrer des paroles dans le ficher</translation>
+        <translation>Enregistrer les paroles dans le ficher</translation>
     </message>
     <message>
         <source>Source</source>
@@ -542,7 +542,7 @@
     </message>
     <message>
         <source>Save lyrics</source>
-        <translation>Enregistrer des paroles</translation>
+        <translation>Enregistrer les paroles</translation>
     </message>
     <message>
         <source>switch</source>
@@ -557,7 +557,7 @@
     <name>GUI_Notifications</name>
     <message>
         <source>Timeout (ms)</source>
-        <translation>Délai (ms) </translation>
+        <translation>Délai ( ms ) </translation>
     </message>
     <message>
         <source>Notifications</source>
@@ -587,7 +587,7 @@
     </message>
     <message>
         <source>Start in tray</source>
-        <translation>Démarrer minimisé</translation>
+        <translation>Démarrer minimisé dans la zone de notification</translation>
     </message>
     <message>
         <source>Update notifications</source>
@@ -667,7 +667,7 @@
     </message>
     <message>
         <source>Load saved playlists</source>
-        <translation>Charger des listes de lecture enregistrées</translation>
+        <translation>Charger les listes de lecture enregistrées</translation>
     </message>
     <message>
         <source>Playlist look: Invalid expression</source>
@@ -691,7 +691,7 @@
     </message>
     <message>
         <source>Show rating</source>
-        <translation>Afficher des notes</translation>
+        <translation>Afficher l&apos;appréciation</translation>
     </message>
     <message>
         <source>Load last track after pressing stop</source>
@@ -764,7 +764,7 @@
     </message>
     <message>
         <source>Proxy</source>
-        <translation>Serveur mandataire (proxy)</translation>
+        <translation>Serveur mandataire ( proxy )</translation>
     </message>
     <message>
         <source>Active</source>
@@ -787,11 +787,11 @@
     <name>GUI_ReloadLibraryDialog</name>
     <message>
         <source>Scan all files in your library directory</source>
-        <translation>Analyser tous les fichiers dans votre dossier de bibliothèque</translation>
+        <translation>Analyser tous les fichiers de votre bibliothèque</translation>
     </message>
     <message>
         <source>Only scan for new and deleted files</source>
-        <translation>Seulement détecter les fichiers nouveaux ou supprimés</translation>
+        <translation>Restreindre l&apos;analyse aux ajouts et suppressions</translation>
     </message>
     <message>
         <source>Fast scan</source>
@@ -810,7 +810,7 @@
     </message>
     <message>
         <source>Remote control</source>
-        <translation>Télécommande</translation>
+        <translation>Commande à distance</translation>
     </message>
     <message>
         <source>Remote control URL</source>
@@ -829,11 +829,11 @@
     </message>
     <message>
         <source>Ignore special characters</source>
-        <translation>Ignorer caractères spéciaux</translation>
+        <translation>Ignorer les caractères spéciaux</translation>
     </message>
     <message>
         <source>Ignore accents</source>
-        <translation>Ignorer accents</translation>
+        <translation>Ignorer les accents</translation>
     </message>
     <message>
         <source>Example</source>
@@ -848,7 +848,7 @@
     </message>
     <message>
         <source>Enter shortcut</source>
-        <translation>Appuyez sur le raccourci</translation>
+        <translation>Tapez votre raccourci</translation>
     </message>
     <message>
         <source>Shortcut already in use</source>
@@ -863,11 +863,11 @@
     </message>
     <message>
         <source>Press shortcut</source>
-        <translation>Appuyez sur le raccourci</translation>
+        <translation>Tapez votre raccourci</translation>
     </message>
     <message>
         <source>Double shortcuts found</source>
-        <translation>Raccourcis en conflit détectés</translation>
+        <translation>Conflit détecté dans les raccourcis</translation>
     </message>
 </context>
 <context>
@@ -961,7 +961,7 @@
     </message>
     <message>
         <source>Preserve pitch</source>
-        <translation>Préserver tonalité</translation>
+        <translation>Préserver la tonalité</translation>
     </message>
 </context>
 <context>
@@ -1023,7 +1023,7 @@
     </message>
     <message>
         <source>Path template</source>
-        <translation>Modèle d&apos;emplacement</translation>
+        <translation>Emplacement des modèles</translation>
     </message>
     <message>
         <source>Cannot create %1</source>
@@ -1105,11 +1105,11 @@
     </message>
     <message>
         <source>Save changes?</source>
-        <translation>Enregistrer les changements ?</translation>
+        <translation>Enregistrer les changements ?</translation>
     </message>
     <message>
         <source>Please specify a name</source>
-        <translation>Merci de définir un nom</translation>
+        <translation>Veuillez définir un nom</translation>
     </message>
 </context>
 <context>
@@ -1183,7 +1183,7 @@
     </message>
     <message>
         <source>Tag</source>
-        <translation>Étiquette</translation>
+        <translation>Étiquette ( tag )</translation>
     </message>
     <message>
         <source>Apply to all</source>
@@ -1203,7 +1203,7 @@
     </message>
     <message>
         <source>Please select text first</source>
-        <translation>Sélectionez le texte d&apos;abord s&apos;il vous plaît</translation>
+        <translation>Veuillez d&apos;abord sélectionner le texte</translation>
     </message>
 </context>
 <context>
@@ -1245,7 +1245,7 @@
     </message>
     <message>
         <source>Show large cover</source>
-        <translation>Afficher grande pochette</translation>
+        <translation>Pochette plus grande</translation>
     </message>
 </context>
 <context>
@@ -1302,11 +1302,11 @@
     </message>
     <message>
         <source>th</source>
-        <translation>e</translation>
+        <translation>ème</translation>
     </message>
     <message>
         <source>1st</source>
-        <translation>1ère</translation>
+        <translation>1er</translation>
     </message>
     <message>
         <source>2nd</source>
@@ -1362,7 +1362,7 @@
     </message>
     <message>
         <source>Dur.</source>
-        <translation>Dur.</translation>
+        <translation>Durée</translation>
     </message>
     <message>
         <source>Fast</source>
@@ -1446,7 +1446,7 @@
     </message>
     <message>
         <source>Gapless playback</source>
-        <translation>Jouer sans interruption entre les pistes (gapless)</translation>
+        <translation>Jouer sans interruption entre les pistes ( gapless )</translation>
     </message>
     <message>
         <source>About</source>
@@ -1602,7 +1602,7 @@
     </message>
     <message>
         <source>Active</source>
-        <translation>Active</translation>
+        <translation>Actif</translation>
     </message>
     <message>
         <source>Inactive</source>
@@ -1666,7 +1666,7 @@
     </message>
     <message>
         <source>Plugin</source>
-        <translation>Module externe</translation>
+        <translation>Extension</translation>
     </message>
     <message>
         <source>Broadcast</source>
@@ -1674,7 +1674,7 @@
     </message>
     <message>
         <source>Rating</source>
-        <translation>Note</translation>
+        <translation>Appréciation</translation>
     </message>
     <message>
         <source>Really</source>
@@ -1894,7 +1894,7 @@
     </message>
     <message>
         <source>Duration</source>
-        <translation>Duré</translation>
+        <translation>Durée</translation>
     </message>
     <message>
         <source>Various</source>
@@ -1914,7 +1914,7 @@
     </message>
     <message>
         <source>Mute off</source>
-        <translation>Volume rétabli</translation>
+        <translation>Rétablir le volume</translation>
     </message>
     <message>
         <source>Version</source>
@@ -1987,7 +1987,7 @@
     <name>Library::GenreView</name>
     <message>
         <source>Do you really want to remove %1 from all tracks?</source>
-        <translation>Voulez-vous vraiment supprimer « %1 » de toutes des pistes?</translation>
+        <translation>Voulez-vous vraiment supprimer « %1 » de toutes les pistes ?</translation>
     </message>
     <message>
         <source>Updating genres</source>
@@ -2006,7 +2006,7 @@
     </message>
     <message>
         <source>Cannot import tracks</source>
-        <translation>Impossible d&apos;importer des pistes</translation>
+        <translation>Impossible d&apos;importer les pistes</translation>
     </message>
 </context>
 <context>
@@ -2031,7 +2031,7 @@
     <name>Library::ReloadThread</name>
     <message>
         <source>Reading files</source>
-        <translation>Lecture</translation>
+        <translation>Lecture des fichiers en cours</translation>
     </message>
     <message>
         <source>Delete orphaned tracks...</source>
@@ -2050,7 +2050,7 @@
     </message>
     <message>
         <source>Cover view</source>
-        <translation>Afficher pochettes</translation>
+        <translation>Afficher les pochettes</translation>
     </message>
     <message>
         <source>Play in new tab</source>
@@ -2065,7 +2065,7 @@
     </message>
     <message>
         <source>Cannot fetch lyrics from %1</source>
-        <translation>Impossible de chercher les paroles de %1</translation>
+        <translation>Les paroles de %1 sont introuvables</translation>
     </message>
 </context>
 <context>
@@ -2084,7 +2084,7 @@
     </message>
     <message>
         <source>Please visit the forum at</source>
-        <translation>Veuillez visiter le forum sur</translation>
+        <translation>Rendez-vous sur le forum via</translation>
     </message>
     <message>
         <source>Special thanks to %1 and %2 for translating</source>
@@ -2120,7 +2120,7 @@
     </message>
     <message>
         <source>Show large cover</source>
-        <translation>Afficher grande pochette</translation>
+        <translation>Pochette plus grande</translation>
     </message>
 </context>
 <context>
@@ -2146,14 +2146,14 @@
     <name>PlaylistItemModel</name>
     <message>
         <source>Goto row</source>
-        <translation>Sauter à la rangée</translation>
+        <translation>Aller à la rangée</translation>
     </message>
 </context>
 <context>
     <name>SC::Database</name>
     <message>
         <source>Purchase Url</source>
-        <translation>URL d&apos;achat</translation>
+        <translation>Lien pour l&apos;achat</translation>
     </message>
 </context>
 <context>
@@ -2172,7 +2172,7 @@
     </message>
     <message>
         <source>Query too short</source>
-        <translation>Recherche trop courte</translation>
+        <translation>La requête est trop courte</translation>
     </message>
     <message>
         <source>%1 playlists found</source>
@@ -2202,7 +2202,7 @@
     </message>
     <message>
         <source>Purchase Url</source>
-        <translation>Lien d&apos;achat</translation>
+        <translation>Lien pour l&apos;achat</translation>
     </message>
 </context>
 <context>

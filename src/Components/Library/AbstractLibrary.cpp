@@ -444,6 +444,8 @@ void AbstractLibrary::change_album_selection(const IndexSet& indexes, bool ignor
 	else{
 		get_all_tracks(_tracks);
 	}
+
+	_tracks.sort(m->sortorder.so_tracks);
 }
 
 

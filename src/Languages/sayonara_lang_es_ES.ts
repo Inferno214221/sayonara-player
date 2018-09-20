@@ -94,11 +94,11 @@
     <name>GUI_AlternativeCovers</name>
     <message>
         <source>Local Search</source>
-        <translation>Buscar local</translation>
+        <translation>Búsqueda local</translation>
     </message>
     <message>
         <source>Automatic search</source>
-        <translation>Buscar automática</translation>
+        <translation>Búsqueda automática</translation>
     </message>
     <message>
         <source>Online Search</source>
@@ -118,7 +118,7 @@
     </message>
     <message>
         <source>Text search</source>
-        <translation>Buscar</translation>
+        <translation>Buscar texto</translation>
     </message>
     <message>
         <source>Alternative Cover</source>
@@ -137,7 +137,7 @@
     </message>
     <message>
         <source>Worst</source>
-        <translation type="unfinished"/>
+        <translation>Peor</translation>
     </message>
     <message>
         <source>Constant Bitrate</source>
@@ -164,7 +164,7 @@
     </message>
     <message>
         <source>No bookmarks found</source>
-        <translation>No marcadores</translation>
+        <translation>No se encontraron marcadores.</translation>
     </message>
     <message>
         <source>Sorry, bookmarks can only be set for library tracks at the moment.</source>
@@ -269,7 +269,7 @@
     <name>GUI_Covers</name>
     <message>
         <source>If available, load covers from audio files</source>
-        <translation type="unfinished"/>
+        <translation>Cargar carátulas desde los archivos de audio si están disponibles.</translation>
     </message>
     <message>
         <source>Clear cache</source>
@@ -352,7 +352,7 @@ Biblioteca</translation>
     </message>
     <message>
         <source>Also use selected icon theme in Sayonara&apos;s dark mode</source>
-        <translation type="unfinished"/>
+        <translation>También usar el tema de íconos seleccionada en el modo Oscuro de Sayonara.</translation>
     </message>
 </context>
 <context>
@@ -475,7 +475,7 @@ Biblioteca</translation>
     </message>
     <message>
         <source>Library-Playlist Interaction</source>
-        <translation>Interacción entre Biblioteca y Lista de reproducción</translation>
+        <translation>Interacción Biblioteca-Lista de reproducción</translation>
     </message>
     <message>
         <source>start if stopped and playlist is empty</source>
@@ -487,7 +487,7 @@ Biblioteca</translation>
     </message>
     <message>
         <source>Show &quot;Clear selection&quot; buttons</source>
-        <translation>Mostrar botón &quot;Limpiar selección&quot;</translation>
+        <translation>Mostrar los botones de Limpiar Selección.</translation>
     </message>
     <message>
         <source>Libraries</source>
@@ -495,7 +495,7 @@ Biblioteca</translation>
     </message>
     <message>
         <source>Cannot edit library</source>
-        <translation>No se puede editar la biblioteca</translation>
+        <translation>No se puede editar la biblioteca.</translation>
     </message>
     <message>
         <source>start playback if stopped</source>
@@ -532,7 +532,7 @@ Biblioteca</translation>
     </message>
     <message>
         <source>Overwrite lyrics</source>
-        <translation type="unfinished"/>
+        <translation>Sobreescribir letras</translation>
     </message>
     <message>
         <source>Save Lyrics</source>
@@ -665,7 +665,7 @@ Biblioteca</translation>
     </message>
     <message>
         <source>Show clear button</source>
-        <translation type="unfinished"/>
+        <translation>Mostrar botón transparente</translation>
     </message>
     <message>
         <source>Load saved playlists</source>
@@ -673,11 +673,11 @@ Biblioteca</translation>
     </message>
     <message>
         <source>Playlist look: Invalid expression</source>
-        <translation type="unfinished"/>
+        <translation>Apariencia de la Lista de Reproducción. Expresión inválida</translation>
     </message>
     <message>
         <source>Stop behaviour</source>
-        <translation>Parada: Comportamiento</translation>
+        <translation>Detener comportamiento</translation>
     </message>
     <message>
         <source>*bold text*</source>
@@ -697,7 +697,7 @@ Biblioteca</translation>
     </message>
     <message>
         <source>Load last track after pressing stop</source>
-        <translation type="unfinished"/>
+        <translation>Cargar la última pista luego de presionar Detener</translation>
     </message>
     <message>
         <source>Start up</source>
@@ -782,26 +782,26 @@ Biblioteca</translation>
     </message>
     <message>
         <source>Save username/password</source>
-        <translation>Guardar nombre de usuario y contraseña</translation>
+        <translation>Guardar nombre de usuario/contraseñá</translation>
     </message>
 </context>
 <context>
     <name>GUI_ReloadLibraryDialog</name>
     <message>
         <source>Scan all files in your library directory</source>
-        <translation>Escanear todos los archivos en el directorio Library</translation>
+        <translation>Escanear todos los archivos en su carpeta de Biblioteca</translation>
     </message>
     <message>
         <source>Only scan for new and deleted files</source>
-        <translation>Búsqueda de archivos nuevos y eliminados</translation>
+        <translation>Sólo buscar archivos nuevos o borrados</translation>
     </message>
     <message>
         <source>Fast scan</source>
-        <translation>Escaneo rápido</translation>
+        <translation>Búsqueda rápida</translation>
     </message>
     <message>
         <source>Deep scan</source>
-        <translation>Escanear a fondo</translation>
+        <translation>Búsqueda profunda</translation>
     </message>
 </context>
 <context>
@@ -823,7 +823,7 @@ Biblioteca</translation>
     <name>GUI_SearchPreferences</name>
     <message>
         <source>Case insensitive</source>
-        <translation>Caso insensible</translation>
+        <translation>Insensible a mayúsculas</translation>
     </message>
     <message>
         <source>Option</source>
@@ -831,11 +831,11 @@ Biblioteca</translation>
     </message>
     <message>
         <source>Ignore special characters</source>
-        <translation>Omitir caracteres especiales</translation>
+        <translation>Ignorar caracteres especiales</translation>
     </message>
     <message>
         <source>Ignore accents</source>
-        <translation>Ignorar Acentos</translation>
+        <translation>Ignorar acentos</translation>
     </message>
     <message>
         <source>Example</source>
@@ -951,7 +951,7 @@ Biblioteca</translation>
     <name>GUI_Speed</name>
     <message>
         <source>Pitch</source>
-        <translation>Tono de audio</translation>
+        <translation>Tono</translation>
     </message>
     <message>
         <source>Speed</source>
@@ -963,14 +963,14 @@ Biblioteca</translation>
     </message>
     <message>
         <source>Preserve pitch</source>
-        <translation>Preservar tono de audio</translation>
+        <translation>Preservar tono</translation>
     </message>
 </context>
 <context>
     <name>GUI_StreamPreferences</name>
     <message>
         <source>Open Streams in new tab</source>
-        <translation type="unfinished"/>
+        <translation>Abrir emisiones en una pestaña nueva</translation>
     </message>
     <message>
         <source>Show history</source>
@@ -1034,7 +1034,7 @@ Biblioteca</translation>
     </message>
     <message>
         <source>Choose available placeholders</source>
-        <translation type="unfinished"/>
+        <translation>Elija un marcador de posición disponibles</translation>
     </message>
 </context>
 <context>
@@ -1561,7 +1561,7 @@ Biblioteca</translation>
     </message>
     <message>
         <source>Radio Station</source>
-        <translation type="unfinished"/>
+        <translation>Emisora de Radio</translation>
     </message>
     <message>
         <source>Library</source>
@@ -1593,7 +1593,7 @@ Biblioteca</translation>
     </message>
     <message>
         <source>Missing</source>
-        <translation type="unfinished"/>
+        <translation>Faltante</translation>
     </message>
     <message>
         <source>Move up</source>
@@ -1773,7 +1773,7 @@ Biblioteca</translation>
     </message>
     <message>
         <source>Sampler</source>
-        <translation type="unfinished"/>
+        <translation>Muestreo</translation>
     </message>
     <message>
         <source>Save as</source>
@@ -1869,7 +1869,7 @@ Biblioteca</translation>
     </message>
     <message>
         <source>Fulltext</source>
-        <translation type="unfinished"/>
+        <translation>Texto completo</translation>
     </message>
     <message>
         <source>Enter name</source>
@@ -1937,7 +1937,7 @@ Biblioteca</translation>
     </message>
     <message>
         <source>Cannot find Lame MP3 encoder</source>
-        <translation type="unfinished"/>
+        <translation>No se puede encontrar cofificador LAME MP3</translation>
     </message>
     <message>
         <source>Import directory</source>
@@ -1990,7 +1990,7 @@ Biblioteca</translation>
     <name>Library::GenreView</name>
     <message>
         <source>Do you really want to remove %1 from all tracks?</source>
-        <translation type="unfinished"/>
+        <translation>¿Realmente desear remover %1 de todas las pistas?</translation>
     </message>
     <message>
         <source>Updating genres</source>
@@ -2057,7 +2057,7 @@ Biblioteca</translation>
     </message>
     <message>
         <source>Play in new tab</source>
-        <translation>Reproducir en nueva pestaña</translation>
+        <translation>Reproducir en una nueva pestaña</translation>
     </message>
 </context>
 <context>
@@ -2130,7 +2130,7 @@ Biblioteca</translation>
     <name>MiniSearcher</name>
     <message>
         <source>Previous search result</source>
-        <translation type="unfinished"/>
+        <translation>Resultado de búsqueda previa</translation>
     </message>
     <message>
         <source>Arrow down</source>
@@ -2142,7 +2142,7 @@ Biblioteca</translation>
     </message>
     <message>
         <source>Next search result</source>
-        <translation type="unfinished"/>
+        <translation>Próximo resultado de búsqueda</translation>
     </message>
 </context>
 <context>
@@ -2175,7 +2175,7 @@ Biblioteca</translation>
     </message>
     <message>
         <source>Query too short</source>
-        <translation type="unfinished"/>
+        <translation>Solicitud muy corta</translation>
     </message>
     <message>
         <source>%1 playlists found</source>
@@ -2237,7 +2237,7 @@ Biblioteca</translation>
     <name>StreamServer</name>
     <message>
         <source>%1 wants to listen to your music.</source>
-        <translation type="unfinished"/>
+        <translation>%1 desea escuchar su música.</translation>
     </message>
 </context>
 <context>
