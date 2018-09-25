@@ -92,3 +92,13 @@ bool Streams::updateStreamUrl(const QString& name, const QString& url)
 }
 
 
+bool DB::Streams::renameStream(const QString& old_name, const QString& new_name)
+{
+	Query q = update("savedstreams",
+		{{"name", Util::cvt_not_null(new_name)}},
+		{"name", Util::cvt_not_null(old_name)},
+		QString("Could not update stream name %1").arg(old_name)
+	);
+
+	return (!q.has_error());
+}

@@ -160,7 +160,7 @@ DB::Query Module::update(const QString& tablename, const QMap<QString, QVariant>
 	QString query = "UPDATE " + tablename + " SET ";
 	query += update_commands.join(", ");
 	query += " WHERE ";
-	query += where_binding.first + " = :" + where_binding.first;
+	query += where_binding.first + " = :W" + where_binding.first;
 	query += ";";
 
 	DB::Query q(this);
@@ -171,7 +171,7 @@ DB::Query Module::update(const QString& tablename, const QMap<QString, QVariant>
 		q.bindValue(":" + field, field_bindings[field]);
 	}
 
-	q.bindValue(":" + where_binding.first, where_binding.second);
+	q.bindValue(":W" + where_binding.first, where_binding.second);
 
 	if(!q.exec() || q.numRowsAffected() == 0)
 	{

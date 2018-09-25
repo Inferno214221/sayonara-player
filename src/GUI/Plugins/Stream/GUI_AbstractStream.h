@@ -61,7 +61,7 @@ protected:
 	virtual void		play(QString url, QString station_name);
 
 	virtual QString		get_title_fallback_name() const=0;
-	void				setup_stations(const QMap<QString, QString>&);
+
 	bool				has_loading_bar() const override;
 
 	template<typename T, typename UiType>
@@ -74,9 +74,10 @@ protected:
 protected slots:
 	void listen_clicked();
 	void combo_idx_changed(int idx);
+	void new_clicked();
 	void delete_clicked();
 	void save_clicked();
-	void new_clicked();
+	void rename_clicked();
 	void text_changed(const QString& str);
 	void too_many_urls_found(int n_urls, int n_max_urls);
 
@@ -101,7 +102,7 @@ private:
 	void assign_ui_vars() override;
 
 	void init_connections();
-	void init_streams();
+	void setup_stations();
 
 	void set_le_url(QLineEdit* le_url);
 	void set_combo_stream(QComboBox* le_combo_stream);

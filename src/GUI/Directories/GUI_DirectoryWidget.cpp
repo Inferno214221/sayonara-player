@@ -22,10 +22,11 @@
 #include "FileListModel.h"
 #include "DirectoryModel.h"
 
-
 #include "GUI/Directories/ui_GUI_DirectoryWidget.h"
 #include "GUI/Library/TrackModel.h"
 #include "GUI/ImportDialog/GUI_ImportDialog.h"
+
+#include "GUI/Utils/Library/GUI_EditLibrary.h"
 #include "GUI/Utils/ContextMenu/LibraryContextMenu.h"
 #include "GUI/Utils/Icons.h"
 #include "GUI/Utils/EventFilter.h"
@@ -62,7 +63,6 @@ struct GUI_DirectoryWidget::Private
 		Files
 	} selected_widget;
 
-	QList<LocalLibrary*>	local_libraries;
 	LocalLibrary*			generic_library=nullptr;
 	bool					is_search_active;
 
@@ -89,13 +89,6 @@ GUI_DirectoryWidget::GUI_DirectoryWidget(QWidget *parent) :
 	QList<Library::Info> all_libraries = library_manager->all_libraries();
 
 	m->generic_library = library_manager->library_instance(-1);
-	for(const Library::Info& info : all_libraries)
-	{
-		LocalLibrary* l = library_manager->library_instance(info.id());
-		if(l){
-			m->local_libraries << l;
-		}
-	}
 
 	ui->tb_title->init(m->generic_library);
 
@@ -172,6 +165,17 @@ GUI_DirectoryWidget::GUI_DirectoryWidget(QWidget *parent) :
 
 	connect(ui->splitter_dir_files, &QSplitter::splitterMoved, this, &GUI_DirectoryWidget::splitter_moved);
 	connect(ui->splitter_tracks, &QSplitter::splitterMoved, this, &GUI_DirectoryWidget::splitter_moved);
+	connect(ui->btn_set_library_path, &QPushButton::clicked, this, &GUI_DirectoryWidget::set_lib_path_clicked);
+
+	connect(library_manager, &Library::Manager::sig_added, this, [=](LibraryId id){
+		Q_UNUSED(id)
+		check_libraries();
+	});
+
+	connect(library_manager, &Library::Manager::sig_removed, this, [=](LibraryId id){
+		Q_UNUSED(id)
+		check_libraries();
+	});
 
 	QMenu* search_context_menu = new QMenu(ui->le_search);
 	QAction* action = new SearchPreferenceAction(ui->le_search);
@@ -182,6 +186,7 @@ GUI_DirectoryWidget::GUI_DirectoryWidget(QWidget *parent) :
 	ui->le_search->installEventFilter(cmf);
 
 	init_shortcuts();
+	check_libraries();
 }
 
 GUI_DirectoryWidget::~GUI_DirectoryWidget()
@@ -196,12 +201,10 @@ QFrame* GUI_DirectoryWidget::header_frame() const
 	return ui->header_frame;
 }
 
-
 MD::Interpretation GUI_DirectoryWidget::metadata_interpretation() const
 {
 	return MD::Interpretation::Tracks;
 }
-
 
 MetaDataList GUI_DirectoryWidget::info_dialog_data() const
 {
@@ -239,8 +242,7 @@ void GUI_DirectoryWidget::dir_pressed(QModelIndex idx)
 	{
 		if(!paths.isEmpty())
 		{
-			LocalLibrary* l = m->local_libraries.first();
-			l->prepare_tracks_for_playlist(paths, true);
+			m->generic_library->prepare_tracks_for_playlist(paths, true);
 		}
 	}
 }
@@ -284,9 +286,7 @@ void GUI_DirectoryWidget::dir_append_clicked()
 void GUI_DirectoryWidget::dir_play_clicked()
 {
 	QStringList paths = ui->tv_dirs->selected_paths();
-	LocalLibrary* l = m->local_libraries.first();
-	l->prepare_tracks_for_playlist(paths, false);
-
+	m->generic_library->prepare_tracks_for_playlist(paths, false);
 }
 
 void GUI_DirectoryWidget::dir_play_next_clicked()
@@ -315,8 +315,7 @@ void GUI_DirectoryWidget::dir_delete_clicked()
 	QStringList files = ui->tv_dirs->selected_paths();
 	MetaDataList v_md = ui->tv_dirs->selected_metadata();
 
-	LocalLibrary* l = m->local_libraries.first();
-	l->delete_tracks(v_md, Library::TrackDeletionMode::OnlyLibrary);
+	m->generic_library->delete_tracks(v_md, Library::TrackDeletionMode::OnlyLibrary);
 
 	Util::File::delete_files(files);
 }
@@ -332,8 +331,7 @@ void GUI_DirectoryWidget::file_append_clicked()
 void GUI_DirectoryWidget::file_play_clicked()
 {
 	QStringList paths = ui->lv_files->selected_paths();
-	LocalLibrary* l = m->local_libraries.first();
-	l->prepare_tracks_for_playlist(paths, false);
+	m->generic_library->prepare_tracks_for_playlist(paths, false);
 }
 
 
@@ -362,8 +360,7 @@ void GUI_DirectoryWidget::file_delete_clicked()
 
 	MetaDataList v_md = ui->lv_files->selected_metadata();
 
-	LocalLibrary* l = m->local_libraries.first();
-	l->delete_tracks(v_md, Library::TrackDeletionMode::OnlyLibrary);
+	m->generic_library->delete_tracks(v_md, Library::TrackDeletionMode::OnlyLibrary);
 
 	QStringList files = ui->lv_files->selected_paths();
 	Util::File::delete_files(files);
@@ -411,8 +408,7 @@ void GUI_DirectoryWidget::file_pressed(QModelIndex idx)
 
 	if(buttons & Qt::MiddleButton)
 	{
-		LocalLibrary* l = m->local_libraries.first();
-		l->prepare_tracks_for_playlist(paths, true);
+		m->generic_library->prepare_tracks_for_playlist(paths, true);
 	}
 
 	m->generic_library->fetch_tracks_by_paths(paths);
@@ -424,17 +420,13 @@ void GUI_DirectoryWidget::file_dbl_clicked(QModelIndex idx)
 	Q_UNUSED(idx)
 
 	QStringList paths = ui->lv_files->selected_paths();
-
-	LocalLibrary* l = m->local_libraries.first();
-	l->prepare_tracks_for_playlist(paths, false);
+	m->generic_library->prepare_tracks_for_playlist(paths, false);
 }
 
 void GUI_DirectoryWidget::file_enter_pressed()
 {
 	QStringList paths = ui->lv_files->selected_paths();
-
-	LocalLibrary* l = m->local_libraries.first();
-	l->prepare_tracks_for_playlist(paths, false);
+	m->generic_library->prepare_tracks_for_playlist(paths, false);
 }
 
 void GUI_DirectoryWidget::search_button_clicked()
@@ -473,6 +465,8 @@ void GUI_DirectoryWidget::init_shortcuts()
 
 void GUI_DirectoryWidget::language_changed()
 {
+	ui->retranslateUi(this);
+
 	if(m->is_search_active) {
 		ui->btn_search->setText(Lang::get(Lang::SearchNext));
 	}
@@ -496,5 +490,42 @@ void GUI_DirectoryWidget::splitter_moved(int pos, int index)
 
 	_settings->set<Set::Dir_SplitterDirFile>(ui->splitter_dir_files->saveState());
 	_settings->set<Set::Dir_SplitterTracks>(ui->splitter_tracks->saveState());
+}
+
+void GUI_DirectoryWidget::set_lib_path_clicked()
+{
+	GUI_EditLibrary* new_library = new GUI_EditLibrary(this);
+	connect(new_library, &GUI_EditLibrary::sig_accepted, this, &GUI_DirectoryWidget::new_library_created);
+
+	new_library->reset();
+	new_library->show();
+}
+
+void GUI_DirectoryWidget::new_library_created()
+{
+	GUI_EditLibrary* new_library = dynamic_cast<GUI_EditLibrary*>(sender());
+	if(!new_library) {
+		return;
+	}
+
+	QString name = new_library->name();
+	QString path = new_library->path();
+
+	Library::Manager* lib_manager = Library::Manager::instance();
+	lib_manager->add_library(name, path);
+}
+
+
+void GUI_DirectoryWidget::check_libraries()
+{
+	Library::Manager* lib_manager = Library::Manager::instance();
+	if(lib_manager->count() == 0)
+	{
+		ui->stackedWidget->setCurrentIndex(1);
+	}
+
+	else {
+		ui->stackedWidget->setCurrentIndex(0);
+	}
 }
 

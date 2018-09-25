@@ -92,5 +92,18 @@ bool Podcasts::updatePodcastUrl(const QString& name, const QString& url)
 	return (!q.has_error());
 }
 
+bool Podcasts::renamePodcast(const QString& old_name, const QString& new_name)
+{
+	Query q = update("savedpodcasts",
+		{{"name", Util::cvt_not_null(new_name)}},
+		{"name", Util::cvt_not_null(old_name)},
+		QString("Could not update podcast name %1").arg(old_name)
+	);
+
+	q.show_query();
+	sp_log(Log::Debug, this) << "Affected rows = " << q.numRowsAffected();
+	return (!q.has_error());
+}
+
 
 

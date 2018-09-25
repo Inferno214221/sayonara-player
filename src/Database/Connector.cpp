@@ -25,6 +25,7 @@
 #include "Database/Playlist.h"
 #include "Database/Podcasts.h"
 #include "Database/Streams.h"
+#include "Database/Session.h"
 #include "Database/Settings.h"
 #include "Database/Shortcuts.h"
 #include "Database/VisStyles.h"
@@ -59,9 +60,10 @@ struct Connector::Private
 	DB::Podcasts*			podcast_connector=nullptr;
 	DB::Streams*			stream_connector=nullptr;
 	DB::VisualStyles*		visual_style_connector=nullptr;
+	DB::Session*			session_connector=nullptr;
 	DB::Settings*			settings_connector=nullptr;
 	DB::Shortcuts*			shortcut_connector=nullptr;
-	DB::Covers*			cover_connector=nullptr;
+	DB::Covers*				cover_connector=nullptr;
 	DB::Library*			library_connector=nullptr;
 
 	QList<LibraryDatabase*> library_dbs;
@@ -100,6 +102,10 @@ struct Connector::Private
 
 		if(library_connector){
 			delete library_connector; library_connector = nullptr;
+		}
+
+		if(session_connector){
+			delete session_connector; session_connector = nullptr;
 		}
 	}
 };
@@ -827,3 +833,11 @@ DB::Covers* Connector::cover_connector()
 }
 
 
+DB::Session* DB::Connector::session_connector()
+{
+	if(!m->session_connector){
+		m->session_connector = new DB::Session(this->connection_name(), this->db_id());
+	}
+
+	return m->session_connector;
+}

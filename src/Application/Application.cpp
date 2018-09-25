@@ -39,6 +39,7 @@
 #include "Components/Engine/EngineHandler.h"
 #include "Components/PlayManager/PlayManager.h"
 #include "Components/StreamPlugins/LastFM/LastFM.h"
+#include "Components/Session/Session.h"
 
 #include "Interfaces/LibraryInterface/LibraryPluginHandler.h"
 #include "Interfaces/PlayerPlugin/PlayerPluginHandler.h"
@@ -91,6 +92,7 @@
 #include "Database/Connector.h"
 #include "Database/Settings.h"
 
+
 #include <QTime>
 #include <QSessionManager>
 
@@ -127,10 +129,11 @@ struct Application::Private
 	DB::Connector*		db=nullptr;
 	InstanceThread*		instance_thread=nullptr;
 	MetaTypeRegistry*	metatype_registry=nullptr;
+	Session*			session=nullptr;
 
 	bool				was_shut_down;
 
-	Private()
+	Private(Application* app)
 	{
 		metatype_registry = new MetaTypeRegistry();
 		qRegisterMetaType<uint64_t>("uint64_t");
@@ -138,6 +141,8 @@ struct Application::Private
 		/* Tell the settings manager which settings are necessary */
 		db = DB::Connector::instance();
 		db->settings_connector()->load_settings();
+
+		session = new Session(app);
 
 		Gui::Icons::set_standard_theme(QIcon::themeName());
 		Gui::Icons::force_standard_icons(Settings::instance()->get<Set::Icon_ForceInDarkTheme>());
@@ -218,7 +223,7 @@ void global_key_handler()
 Application::Application(int & argc, char ** argv) :
 	QApplication(argc, argv)
 {
-	m = Pimpl::make<Private>();
+	m = Pimpl::make<Private>(this);
 	m->timer->start();
 
 	this->setQuitOnLastWindowClosed(false);

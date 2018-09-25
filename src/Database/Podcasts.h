@@ -37,6 +37,7 @@ namespace DB
 			bool deletePodcast(const QString& name);
 			bool addPodcast(const QString& name, const QString& url);
 			bool updatePodcastUrl(const QString& name, const QString& url);
+			bool renamePodcast(const QString& old_name, const QString& new_name);
 	};
 }
 
