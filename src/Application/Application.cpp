@@ -88,12 +88,14 @@
 #include "Utils/Macros.h"
 #include "Utils/Language.h"
 #include "Utils/Settings/Settings.h"
+#include "Utils/MetaData/MetaDataList.h"
 
 #include "Database/Connector.h"
 #include "Database/Settings.h"
 
 
 #include <QTime>
+#include <QDateTime>
 #include <QSessionManager>
 
 class Measure
@@ -143,6 +145,9 @@ struct Application::Private
 		db->settings_connector()->load_settings();
 
 		session = new Session(app);
+
+
+		QMap<QDateTime, MetaDataList> history = Session::get_history();
 
 		Gui::Icons::set_standard_theme(QIcon::themeName());
 		Gui::Icons::force_standard_icons(Settings::instance()->get<Set::Icon_ForceInDarkTheme>());

@@ -74,6 +74,13 @@ uint64_t Util::date_to_int(const QDateTime& date_time)
 	return str.toULongLong();
 }
 
+QDateTime Util::int_to_date(uint64_t date)
+{
+	QString str = QString::number((qulonglong) date);
+	return QDateTime::fromString(str, "yyMMddHHmmss");
+}
+
+
 uint64_t Util::current_date_to_int()
 {
 	QString str = QDateTime::currentDateTimeUtc().toString("yyMMddHHmmss");
@@ -473,3 +480,4 @@ QPixmap Util::cvt_bytearray_to_pixmap(const QByteArray& arr)
 	pm.loadFromData(arr, "JPG");
 	return pm;
 }
+

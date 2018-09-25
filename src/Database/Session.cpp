@@ -2,7 +2,6 @@
 #include "Query.h"
 #include "Utils/MetaData/MetaData.h"
 
-
 using DB::Module;
 
 DB::Session::Session(const QString& connection_name, DbId db_id) :
@@ -23,18 +22,31 @@ DB::Session::Session(const QString& connection_name, DbId db_id) :
 
 DB::Session::~Session() {}
 
-QStringList DB::Session::get_sessions()
+QMap<uint64_t, QList<TrackID>> DB::Session::get_sessions(uint64_t beginning)
 {
-	QStringList ret;
-	DB::Query q = this->run_query("SELECT sessionId FROM Session;", "Cannot fetch sessions");
+	QMap<uint64_t, QList<TrackID>> ret;
+	QString query
+	(
+		"SELECT Session.date, Session.trackId FROM Session, Tracks "
+		"WHERE Session.trackId = tracks.trackId AND Session.date > :beggining;"
+	);
+
+	QPair<QString, QVariant> binding(":beggining", QVariant::fromValue<uint64_t>(beginning));
+
+	DB::Query q = this->run_query(query, binding, "Cannot fetch sessions");
 	if(q.has_error())
 	{
 		return ret;
 	}
 
+	q.show_query();
+
 	while(q.next())
 	{
-		ret << q.value(0).toString();
+		uint64_t date =			q.value(0).value<uint64_t>();
+		TrackID track_id =		q.value(1).toInt();
+
+		ret[date].push_back(track_id);
 	}
 
 	return ret;
