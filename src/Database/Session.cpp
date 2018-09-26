@@ -22,9 +22,9 @@ DB::Session::Session(const QString& connection_name, DbId db_id) :
 
 DB::Session::~Session() {}
 
-QMap<uint64_t, QList<TrackID>> DB::Session::get_sessions(uint64_t beginning)
+PairList<uint64_t, TrackID> DB::Session::get_sessions(uint64_t beginning)
 {
-	QMap<uint64_t, QList<TrackID>> ret;
+	PairList<uint64_t, TrackID> ret;
 	QString query
 	(
 		"SELECT Session.date, Session.trackId FROM Session, Tracks "
@@ -46,7 +46,7 @@ QMap<uint64_t, QList<TrackID>> DB::Session::get_sessions(uint64_t beginning)
 		uint64_t date =			q.value(0).value<uint64_t>();
 		TrackID track_id =		q.value(1).toInt();
 
-		ret[date].push_back(track_id);
+		ret.push_back(QPair<uint64_t, TrackID>(date, track_id));
 	}
 
 	return ret;

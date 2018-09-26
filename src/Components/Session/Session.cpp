@@ -59,40 +59,22 @@ QMap<QDateTime, MetaDataList> Session::get_history(QDateTime beginning)
 		start = 0;
 	}
 
-	QMap<uint64_t, QList<TrackID>> history = session_connector->get_sessions(start);
+	PairList<uint64_t, TrackID> history = session_connector->get_sessions(start);
 
-	MetaDataList v_md;
-	MetaDataList v_md_ret;
-	track_connector->getAllTracks(v_md);
-
-	QMap<TrackID, int> track_map;
-
-	for(int i=0; i<v_md.count(); i++)
-	{
-		TrackID id = v_md[i].id;
-		track_map[id] = i;
-	}
-
+	QList<TrackID> track_ids;
 	for(auto it=history.begin(); it != history.end(); it++)
 	{
-		uint64_t date_int = it.key();
-		QDateTime date_time = Util::int_to_date(date_int);
-
-		sp_log(Log::Debug, "SESSION") << "";
-		sp_log(Log::Debug, "SESSION") << date_int;
-		const QList<TrackID>& history_list = it.value();
-		for(const TrackID& id : history_list)
-		{
-			if(!track_map.contains(id)){
-				continue;
-			}
-
-			int idx = track_map[id];
-			const MetaData& md = v_md[idx];
-			ret[date_time].push_back(md);
-			sp_log(Log::Debug, "SESSION") << "   " << md.filepath();
-		}
+		track_ids << it->second;
 	}
+
+	MetaDataList v_md;
+	track_connector->getTracksbyIds(track_ids, v_md);
+
+	for(auto it=v_md.begin(); it != v_md.end(); it++)
+	{
+		sp_log(Log::Debug, "Session") << "   " << it->filepath();
+	}
+
 
 	return ret;
 }

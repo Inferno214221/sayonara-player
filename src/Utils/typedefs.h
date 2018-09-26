@@ -23,6 +23,7 @@
 
 #include <cstdint>
 #include <vector>
+#include <QList>
 
 class QString;
 template <typename A, typename B> struct QPair;
@@ -59,5 +60,8 @@ using MicroSeconds=int64_t;
 using NanoSeconds=int64_t;
 using Bitrate=uint32_t;
 using Filesize=uint32_t;
+
+template<typename K, typename V>
+using PairList = QList<QPair<K,V>>;
 
 #endif
