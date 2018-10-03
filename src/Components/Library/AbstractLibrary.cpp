@@ -744,14 +744,24 @@ void AbstractLibrary::add_genre(SP::Set<Id> ids, const Genre& genre)
 
 void AbstractLibrary::delete_genre(const Genre& genre)
 {
-	MetaDataList v_md;
-
 	sp_log(Log::Debug, this) << "Delete genre: Fetch all tracks";
+	MetaDataList v_md, v_md_with_genre;
 	get_all_tracks(v_md);
-	sp_log(Log::Debug, this) << "Delete genre: Set Metadata";
-	tag_edit()->set_metadata(v_md);
 
-	for(int i=0; i<v_md.count(); i++)
+	for(auto it=v_md.begin(); it != v_md.end(); it++)
+	{
+		if(it->genre_ids().contains(genre.id()))
+		{
+			v_md_with_genre << std::move(*it);
+		}
+	}
+
+	v_md.clear();
+
+	sp_log(Log::Debug, this) << "Delete genre: Set Metadata";
+	tag_edit()->set_metadata(v_md_with_genre);
+
+	for(int i=0; i<v_md_with_genre.count(); i++)
 	{
 		tag_edit()->delete_genre(i, genre);
 	}
