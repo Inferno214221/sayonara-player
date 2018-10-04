@@ -440,5 +440,5 @@ void Application::create_playlist()
 	QStringList paths = t->paths();
 	QString new_name = Playlist::Handler::instance()->request_new_playlist_name();
 
-	Playlist::Handler::instance()->create_playlist(paths, new_name, true);
+	//Playlist::Handler::instance()->create_playlist(paths, new_name, true);
 }

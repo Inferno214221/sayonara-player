@@ -144,7 +144,7 @@ void Tracks::create_track_search_view(const QString& select_statement)
 			"artists.name			AS artistName, "				// 20
 			"albumArtists.name		AS albumArtistName, "			// 21
 			"(albums.cissearch || ',' || artists.cissearch || ',' || tracks.cissearch) AS allCissearch, " // 22
-			"tracks.fileCissearch	AS fileCissearch				// 23"
+			"tracks.fileCissearch	AS fileCissearch "				// 23
 			"FROM tracks "
 			"LEFT OUTER JOIN albums ON tracks.albumID = albums.albumID "
 			"LEFT OUTER JOIN artists ON tracks.artistID = artists.artistID "
