@@ -87,7 +87,7 @@ namespace PlayerPlugin
 		 * @brief mark ui as initialized
 		 */
 		void set_ui_initialized();
-		void finalize_initialization();
+
 
 		/**
 		 * @brief language_changed. Calls retranslate_ui in subclasses
@@ -101,6 +101,8 @@ namespace PlayerPlugin
 
 
 	protected:
+
+		virtual void finalize_initialization();
 
 		/**
 		 * @brief Check if ui already was initialized
@@ -130,7 +132,6 @@ namespace PlayerPlugin
 		 * @param e the event
 		 */
 		void closeEvent(QCloseEvent* e) override;
-
 		void showEvent(QShowEvent* e) override;
 
 
