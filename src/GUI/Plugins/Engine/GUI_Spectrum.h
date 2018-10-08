@@ -32,9 +32,9 @@ class GUI_Spectrum :
 		public EnginePlugin,
 		public SpectrumReceiver
 {
-    Q_OBJECT
+	Q_OBJECT
 	UI_CLASS(GUI_Spectrum)
-    PIMPL(GUI_Spectrum)
+	PIMPL(GUI_Spectrum)
 
 public:
 	explicit GUI_Spectrum(QWidget *parent=nullptr);
@@ -45,23 +45,23 @@ public:
 
 protected:
 	void paintEvent(QPaintEvent* e) override;
-	void showEvent(QShowEvent*) override;
-	void closeEvent(QCloseEvent*) override;
+	void showEvent(QShowEvent* e) override;
+	void closeEvent(QCloseEvent* e) override;
 	void init_ui() override;
 	void retranslate_ui() override;
-    QWidget *widget() override;
-    bool has_small_buttons() const override;
+
+	QWidget*	widget() override;
+	bool		has_small_buttons() const override;
+	ColorStyle	current_style() const override;
+	int			current_style_index() const override;
+	void		finalize_initialization() override;
 
 protected slots:
-    void do_fadeout_step() override;
+	void do_fadeout_step() override;
 
 public slots:
 	void set_spectrum(const SpectrumList& spec) override;
-	void sl_update_style() override;
-
-private:
-    void resize_steps(int bins, int rects);
-
+	void update_style(int new_index) override;
 };
 
 #endif // GUI_SPECTRUM_H

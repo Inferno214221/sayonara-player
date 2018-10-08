@@ -44,13 +44,10 @@ class EnginePlugin : public PlayerPlugin::Base
 	PIMPL(EnginePlugin)
 
 protected:
-	GUI_StyleSettings*			_ui_style_settings=nullptr;
 	EngineColorStyleChooser*	_ecsc=nullptr;
-	ColorStyle					_cur_style;
-	int							_cur_style_idx;
 
-	void init_buttons(bool small);
-	Engine::Handler* engine() const;
+	void				init_buttons(bool small);
+	Engine::Handler*	engine() const;
 
 	virtual void closeEvent(QCloseEvent* e) override;
 	virtual void resizeEvent(QResizeEvent* e) override;
@@ -58,10 +55,15 @@ protected:
 	virtual void enterEvent(QEvent* e) override;
 	virtual void leaveEvent(QEvent* e) override;
 
-	virtual QWidget* widget()=0;
-	virtual bool has_small_buttons() const=0;
+	virtual QWidget*	widget()=0;
+	virtual ColorStyle	current_style() const=0;
+	virtual int			current_style_index() const=0;
+	virtual bool		has_small_buttons() const=0;
 
 	void stop_fadeout_timer();
+
+private slots:
+	void style_changed();
 
 
 protected slots:
@@ -78,7 +80,7 @@ protected slots:
 
 
 public slots:
-	virtual void sl_update_style()=0;
+	virtual void update_style(int new_index)=0;
 	virtual void update();
 	virtual void init_ui() override;
 
