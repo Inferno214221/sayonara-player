@@ -87,7 +87,6 @@ void LoginThread::wa_error(const QString& error)
 	sp_log(Log::Warning, this) << error;
 
 	emit sig_error(error);
-	emit sig_logged_in(false);
 
 	lfm_wa->deleteLater();
 }
