@@ -63,10 +63,31 @@ struct GUI_LevelPainter::Private
 		}
 	}
 
+	void init_lookup_table()
+	{
+		int n = 40;
+		exp_lot = new float[n];
+		for(int i=0; i<n; i++)
+		{
+			exp_lot[i] = -(i / 40.0f) + 1.0f;
+		}
+	}
+
+	float scale(float value)
+	{
+		int v = (int) (-value);
+
+		// [-39, 0]
+		int idx = std::min(v, 39);
+		idx = std::max(0, idx);
+
+		return exp_lot[idx];
+	}
+
 	void set_level(float left, float right)
 	{
-		level[0] = left;
-		level[1] = right;
+		level[0] = scale(left);
+		level[1] = scale(right);
 	}
 
 	void decrease_step(int channel, int step)
@@ -104,23 +125,17 @@ void GUI_LevelPainter::init_ui()
 		return;
 	}
 
-	_cur_style_idx = _settings->get<Set::Level_Style>();
-
-	m->exp_lot = new float[600];
-
-	// exp(-6.0) = 0.002478752
-	// exp(0) = 1;
-	float f=0;
-	for(int i=0; i<600; i++, f+=0.01f)
-	{
-		m->exp_lot[i] = std::exp(-i / 100.0f);
-	}
+	m->init_lookup_table();
 
 	setup_parent(this, &ui);
-	EnginePlugin::init_ui();
-	_cur_style = _ecsc->get_color_scheme_level(_cur_style_idx);
+}
 
-	m->resize_steps(_cur_style.n_rects);
+
+void GUI_LevelPainter::finalize_initialization()
+{
+	EnginePlugin::init_ui();
+
+	m->resize_steps(current_style().n_rects);
 	m->set_level(0, 0);
 
 	Engine::Playback* playback_engine = engine()->get_playback_engine();
@@ -129,6 +144,7 @@ void GUI_LevelPainter::init_ui()
 		playback_engine->add_level_receiver(this);
 	}
 
+	PlayerPlugin::Base::finalize_initialization();
 
 	reload();
 }
@@ -178,12 +194,13 @@ void GUI_LevelPainter::paintEvent(QPaintEvent* e)
 
 	QPainter painter(this);
 
-	int n_rects = _cur_style.n_rects;
-	int border_x = _cur_style.hor_spacing;
-	int border_y = _cur_style.ver_spacing;
-	int n_fading_steps = _cur_style.n_fading_steps;
-	int h_rect = _cur_style.rect_height;
-	int w_rect = _cur_style.rect_width;
+	ColorStyle style = current_style();
+	int n_rects =		style.n_rects;
+	int border_x =		style.hor_spacing;
+	int border_y =		style.ver_spacing;
+	int n_fading_steps = style.n_fading_steps;
+	int h_rect =		style.rect_height;
+	int w_rect =		style.rect_width;
 
 	int y = 10;
 	int num_zero = 0;
@@ -191,12 +208,7 @@ void GUI_LevelPainter::paintEvent(QPaintEvent* e)
 
 	for(int c=0; c<Channels; c++)
 	{
-		float level = -std::max(m->level[c], -39.9f) * 15.0f;
-		int idx = std::max(0, std::min(599, (int) level));
-
-		level = m->exp_lot[idx];
-
-		int n_colored_rects = n_rects * level;
+		int n_colored_rects = n_rects * m->level[c];
 
 		QRect rect(0, y, w_rect, h_rect);
 
@@ -204,22 +216,22 @@ void GUI_LevelPainter::paintEvent(QPaintEvent* e)
 		{
 			if(r < n_colored_rects)
 			{
-				if(!_cur_style.style[r].contains(-1)){
+				if(!style.style[r].contains(-1)){
 					sp_log(Log::Debug, this) << "Style does not contain -1";
 				}
 
-				painter.fillRect(rect, _cur_style.style[r].value(-1) );
+				painter.fillRect(rect, style.style[r].value(-1) );
 
 				m->set_step(c, r, n_fading_steps - 1);
 			}
 
 			else
 			{
-				if(!_cur_style.style[r].contains(m->steps[c][r])){
+				if(!style.style[r].contains(m->steps[c][r])){
 					sp_log(Log::Debug, this) << "2 Style does not contain " << m->steps[c][r] << ", " << c << ", " << r;
 				}
 
-				painter.fillRect(rect, _cur_style.style[r].value(m->steps[c][r]) );
+				painter.fillRect(rect, style.style[r].value(m->steps[c][r]) );
 
 				if(m->steps[c][r] > 0) {
 					m->decrease_step(c, r);
@@ -254,13 +266,12 @@ void GUI_LevelPainter::do_fadeout_step()
 	update();
 }
 
-void GUI_LevelPainter::sl_update_style()
+void GUI_LevelPainter::update_style(int new_index)
 {
-	_settings->set<Set::Level_Style>(_cur_style_idx);
+	_settings->set<Set::Level_Style>(new_index);
 	_ecsc->reload(width(), height());
-	_cur_style = _ecsc->get_color_scheme_level(_cur_style_idx);
 
-	m->resize_steps(_cur_style.n_rects);
+	m->resize_steps(current_style().n_rects);
 
 	update();
 }
@@ -268,7 +279,8 @@ void GUI_LevelPainter::sl_update_style()
 
 void GUI_LevelPainter::reload()
 {
-	int new_height = _cur_style.rect_height * 2 + _cur_style.ver_spacing + 12;
+	ColorStyle style = current_style();
+	int new_height = style.rect_height * 2 + style.ver_spacing + 12;
 
 	setMinimumHeight(0);
 	setMaximumHeight(100);
@@ -309,3 +321,15 @@ bool GUI_LevelPainter::has_small_buttons() const
 {
 	return true;
 }
+
+ColorStyle GUI_LevelPainter::current_style() const
+{
+	return _ecsc->get_color_scheme_level(current_style_index());
+}
+
+int GUI_LevelPainter::current_style_index() const
+{
+	return _settings->get<Set::Level_Style>();
+}
+
+

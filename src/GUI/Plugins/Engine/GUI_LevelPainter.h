@@ -31,9 +31,9 @@ class GUI_LevelPainter :
 		public EnginePlugin,
 		public LevelReceiver
 {
-    Q_OBJECT
+	Q_OBJECT
 	UI_CLASS(GUI_LevelPainter)
-    PIMPL(GUI_LevelPainter)
+	PIMPL(GUI_LevelPainter)
 
 public:
 	explicit GUI_LevelPainter(QWidget *parent=nullptr);
@@ -43,7 +43,7 @@ public:
 	QString get_display_name() const override;
 
 public slots:
-	void sl_update_style() override;
+	void update_style(int new_index) override;
 
 protected:
    void paintEvent(QPaintEvent* e) override;
@@ -53,16 +53,23 @@ protected:
    void init_ui() override;
    void retranslate_ui() override;
 
-   QWidget* widget() override;
-   bool has_small_buttons() const override;
+   QWidget*		widget() override;
+   bool			has_small_buttons() const override;
+   ColorStyle	current_style() const override;
+   int			current_style_index() const override;
+   void			finalize_initialization() override;
 
 
 protected slots:
-    void do_fadeout_step() override;
+	void do_fadeout_step() override;
 	void set_level(float, float) override;
 
 private:
-    void reload();
+	void reload();
+
+	// EnginePlugin interface
+	protected:
+
 };
 
 #endif // GUI_LEVELPAINTER_H

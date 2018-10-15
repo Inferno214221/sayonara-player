@@ -27,13 +27,14 @@
 
 struct EnginePlugin::Private
 {
+	GUI_StyleSettings*	style_settings=nullptr;
+
 	PlayManagerPtr		play_manager=nullptr;
 	Engine::Handler*	engine=nullptr;
 	QPushButton*		btn_config=nullptr;
 	QPushButton*		btn_prev=nullptr;
 	QPushButton*		btn_next=nullptr;
 	QPushButton*		btn_close=nullptr;
-
 
 	QTimer*				timer=nullptr;
 	int					timer_stopped;
@@ -50,8 +51,6 @@ EnginePlugin::EnginePlugin(QWidget* parent) :
 	PlayerPlugin::Base(parent)
 {
 	m = Pimpl::make<Private>();
-
-	_cur_style_idx = 0;
 }
 
 
@@ -68,7 +67,7 @@ void EnginePlugin::init_ui()
 	connect(m->play_manager, &PlayManager::sig_playstate_changed, this, &EnginePlugin::playstate_changed);
 
 	_ecsc = new EngineColorStyleChooser(minimumWidth(), minimumHeight());
-	_ui_style_settings = new GUI_StyleSettings(this);
+	m->style_settings = new GUI_StyleSettings(this);
 
 	m->timer = new QTimer();
 	m->timer->setInterval(30);
@@ -86,7 +85,7 @@ void EnginePlugin::init_ui()
 	init_buttons( has_small_buttons() );
 
 	connect(m->timer, &QTimer::timeout, this, &EnginePlugin::do_fadeout_step);
-	connect(_ui_style_settings, &GUI_StyleSettings::sig_style_update, this, &EnginePlugin::sl_update_style);
+	connect(m->style_settings, &GUI_StyleSettings::sig_style_update, this, &EnginePlugin::style_changed);
 }
 
 
@@ -131,8 +130,6 @@ void EnginePlugin::init_buttons(bool small)
 	m->btn_prev->hide();
 	m->btn_next->hide();
 	m->btn_close->hide();
-
-
 }
 
 Engine::Handler *EnginePlugin::engine() const
@@ -140,31 +137,32 @@ Engine::Handler *EnginePlugin::engine() const
 	return m->engine;
 }
 
-
 void EnginePlugin::config_clicked()
 {
-	_ui_style_settings->show(_cur_style_idx);
+	m->style_settings->show(current_style_index());
 }
 
 
 void EnginePlugin::next_clicked()
 {
 	int n_styles = _ecsc->get_num_color_schemes();
-	_cur_style_idx = (_cur_style_idx + 1) % n_styles;
 
-	sl_update_style();
+	int new_index = (current_style_index() + 1) % n_styles;
+
+	update_style(new_index);
 }
 
 
 void EnginePlugin::prev_clicked()
 {
 	int n_styles = _ecsc->get_num_color_schemes();
-	_cur_style_idx = (_cur_style_idx - 1);
-	if(_cur_style_idx < 0){
-		_cur_style_idx = n_styles - 1;
+
+	int new_index = (current_style_index() - 1);
+	if(new_index < 0){
+		new_index = n_styles - 1;
 	}
 
-	sl_update_style();
+	update_style(new_index);
 }
 
 
@@ -225,7 +223,7 @@ void EnginePlugin::resizeEvent(QResizeEvent* e)
 		return;
 	}
 
-	sl_update_style();
+	update_style(current_style_index());
 
 	QSize new_size = e->size();
 
@@ -276,7 +274,7 @@ void EnginePlugin::mousePressEvent(QMouseEvent *e)
 			break;
 
 		case Qt::RightButton:
-			_ui_style_settings->show(_cur_style_idx);
+			m->style_settings->show(current_style_index());
 			break;
 		default:
 			break;
@@ -304,6 +302,7 @@ void EnginePlugin::leaveEvent(QEvent* e)
 	m->btn_close->hide();
 }
 
+
 void EnginePlugin::stop_fadeout_timer()
 {
 	if(!m->timer_stopped )
@@ -314,5 +313,10 @@ void EnginePlugin::stop_fadeout_timer()
 			m->timer->stop();
 		}
 	}
+}
+
+void EnginePlugin::style_changed()
+{
+	update_style(current_style_index());
 }
 

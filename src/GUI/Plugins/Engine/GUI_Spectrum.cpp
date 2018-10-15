@@ -45,10 +45,54 @@ using StepArray=std::vector<BinSteps>;
 
 struct GUI_Spectrum::Private
 {
-	std::atomic_flag locked = ATOMIC_FLAG_INIT;
-	SpectrumList	spec;
-	StepArray		steps;
-	float*			log_lu=nullptr;
+	std::atomic_flag	locked = ATOMIC_FLAG_INIT;
+	SpectrumList		spec;
+	StepArray			steps;
+	float*				log_lu=nullptr;
+
+	void init_lookup_table(int bins)
+	{
+		log_lu = new float[bins];
+
+		// make bass value smaller than high frequencies
+		// log_lu[0] = 0.0.01666667
+		// log_lu[50] = 0.37930765
+		for(int i=0; i<bins; i++)
+		{
+			log_lu[i] = (std::pow(10.0f, (i / 140.0f) + 1.0f) / 8.0f) / 75.0f;
+		}
+	}
+
+	void set_spectrum(const SpectrumList& s)
+	{
+		// s: [-75, 0]
+		// s[i] + 75: [0, 75]
+		// scaling factor of ( / 75.0) is in log_lu
+
+		spec.clear();
+		spec.reserve(s.size());
+
+		for(size_t i=0; i<s.size(); i++)
+		{
+			float f = (s[i] + 75.0) * log_lu[i];
+			spec.push_back(f);
+		}
+	}
+
+	void resize_steps(int n_bins, int rects)
+	{
+		n_bins = std::max(50, n_bins);
+
+		if(n_bins != (int) steps.size()){
+			steps.resize(n_bins);
+		}
+
+		for(BinSteps& bin_steps : steps)
+		{
+			bin_steps.resize(rects);
+			std::fill(bin_steps.begin(), bin_steps.end(), 0);
+		}
+	}
 };
 
 
@@ -76,31 +120,25 @@ void GUI_Spectrum::init_ui()
 		return;
 	}
 
-	int bins = _settings->get<Set::Engine_SpectrumBins>();
-	bins = std::max(50, bins);
-
-	_cur_style_idx = _settings->get<Set::Spectrum_Style>();
-
-	resize_steps(bins, _cur_style.n_rects);
-
-	m->spec.resize((size_t) bins, -100.0f);
-
-	m->log_lu = new float[bins];
-	for(int i=0; i<bins; i++)
-	{
-		m->log_lu[i] = (std::pow(10.0f, (i / 140.0f) + 1.0f) / 8.0f) / 75.0f;
-	}
-
 	setup_parent(this, &ui);
+}
+
+void GUI_Spectrum::finalize_initialization()
+{
 	EnginePlugin::init_ui();
 
+	int bins = _settings->get<Set::Engine_SpectrumBins>();
 
-	_cur_style = _ecsc->get_color_scheme_spectrum(_cur_style_idx);
+	m->init_lookup_table(bins);
+	m->resize_steps(bins, current_style().n_rects);
+	m->spec.resize((size_t) bins, -100.0f);
 
 	Engine::Playback* playback_engine = engine()->get_playback_engine();
 	if(playback_engine){
 		playback_engine->add_spectrum_receiver(this);
 	}
+
+	PlayerPlugin::Base::finalize_initialization();
 
 	update();
 }
@@ -126,7 +164,7 @@ void GUI_Spectrum::set_spectrum(const SpectrumList& spec)
 		return;
 	}
 
-	m->spec = spec;
+	m->set_spectrum(spec);
 
 	stop_fadeout_timer();
 	update();
@@ -144,26 +182,7 @@ void GUI_Spectrum::do_fadeout_step()
 }
 
 
-void GUI_Spectrum::resize_steps(int n_bins, int rects)
-{
-	if(!is_ui_initialized()){
-		return;
-	}
-
-	if(n_bins != (int) m->steps.size()){
-		m->steps.resize(n_bins);
-	}
-
-	for(BinSteps& bin_steps : m->steps)
-	{
-		bin_steps.resize(rects);
-		std::fill(bin_steps.begin(), bin_steps.end(), 0);
-	}
-}
-
-
-
-void GUI_Spectrum::sl_update_style()
+void GUI_Spectrum::update_style(int new_index)
 {
 	if(!is_ui_initialized()){
 		return;
@@ -175,11 +194,10 @@ void GUI_Spectrum::sl_update_style()
 	}
 
 	_ecsc->reload(width(), height());
-	_cur_style = _ecsc->get_color_scheme_spectrum(_cur_style_idx);
-	_settings->set<Set::Spectrum_Style>(_cur_style_idx);
+	_settings->set<Set::Spectrum_Style>(new_index);
 
 	int bins = _settings->get<Set::Engine_SpectrumBins>();
-	resize_steps(bins, _cur_style.n_rects);
+	m->resize_steps(bins, current_style().n_rects);
 
 	update();
 
@@ -208,11 +226,12 @@ void GUI_Spectrum::paintEvent(QPaintEvent* e)
 
 	float widget_height = (float) height();
 
-	int n_rects = _cur_style.n_rects;
-	int n_fading_steps = _cur_style.n_fading_steps;
-	int h_rect = (widget_height / n_rects) - _cur_style.ver_spacing;
-	int border_y = _cur_style.ver_spacing;
-	int border_x = _cur_style.hor_spacing;
+	ColorStyle style = current_style();
+	int n_rects = style.n_rects;
+	int n_fading_steps = style.n_fading_steps;
+	int h_rect = (widget_height / n_rects) - style.ver_spacing;
+	int border_y = style.ver_spacing;
+	int border_x = style.hor_spacing;
 
 	int x=3;
 	int ninety = 35;
@@ -228,14 +247,8 @@ void GUI_Spectrum::paintEvent(QPaintEvent* e)
 	// run through all bins
 	for(int i=offset; i<ninety + 1; i++)
 	{
-		// spec: [-75, 0]
-		// f_scaled: [0, 75]
-		// scaling factor of ( / 75.0) is in log_lu
-		float f_scaled = (m->spec[i] + 75.0);
-		float f = f_scaled * m->log_lu[i];
-
 		// if this is one bar, how tall would it be?
-		int h =  f * widget_height;
+		int h =  m->spec[i] * widget_height;
 
 		// how many colored rectangles would fit into this bar?
 		int colored_rects = h / (h_rect + border_y) - 1 ;
@@ -254,14 +267,14 @@ void GUI_Spectrum::paintEvent(QPaintEvent* e)
 			// 100%
 			if( r < colored_rects)
 			{
-				col = _cur_style.style[r].value(-1);
+				col = current_style().style[r].value(-1);
 				m->steps[i][r] = n_fading_steps;
 			}
 
 			// fading out
 			else
 			{
-				col = _cur_style.style[r].value(m->steps[i][r]);
+				col = current_style().style[r].value(m->steps[i][r]);
 
 				if(m->steps[i][r] > 0) {
 					m->steps[i][r]--;
@@ -295,4 +308,14 @@ QWidget* GUI_Spectrum::widget()
 bool GUI_Spectrum::has_small_buttons() const
 {
 	return false;
+}
+
+ColorStyle GUI_Spectrum::current_style() const
+{
+	return _ecsc->get_color_scheme_spectrum(current_style_index());
+}
+
+int GUI_Spectrum::current_style_index() const
+{
+	return _settings->get<Set::Spectrum_Style>();
 }
