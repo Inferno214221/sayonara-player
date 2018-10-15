@@ -59,7 +59,6 @@ struct Base::Private
 {
 	MetaData					md;
 
-	QString						username;
 	QString						session_key;
 
 	Seconds						old_pos;
@@ -91,39 +90,50 @@ Base::Base() :
 	connect(m->track_changed_thread, &TrackChangedThread::sig_similar_artists_available,
 			this, &Base::similar_artists_fetched);
 
-	Set::listen<Set::LFM_Active>(this, &Base::login);
+	Set::listen<Set::LFM_Active>(this, &Base::lfm_active_changed);
 }
 
 Base::~Base() {}
+
 
 bool Base::is_logged_in()
 {
 	return m->logged_in;
 }
 
-
-void Base::login()
+void Base::login(const QString& username, const QString& password)
 {
-	bool active = _settings->get<Set::LFM_Active>();
-	if(!active){
-		return;
-	}
-
 	LoginThread* login_thread = new LoginThread(this);
 	connect(login_thread, &LoginThread::sig_logged_in, this, &Base::login_thread_finished);
+	connect(login_thread, &LoginThread::sig_error, this, [=](const QString& error_message){
+		sp_log(Log::Warning, this) << error_message;
+		emit sig_logged_in(false);
+	});
 
-	m->username = _settings->get<Set::LFM_Username>();
-	QString password = Util::Crypt::decrypt(_settings->get<Set::LFM_Password>());
-
-	login_thread->login(m->username, password);
+	login_thread->login(username, password);
 }
 
+
+void Base::lfm_active_changed()
+{
+	m->logged_in = false;
+
+	bool active = _settings->get<Set::LFM_Active>();
+	if(active)
+	{
+		QString username = _settings->get<Set::LFM_Username>();
+		QString password = Util::Crypt::decrypt(_settings->get<Set::LFM_Password>());
+
+		login(username, password);
+	}
+}
 
 void Base::login_thread_finished(bool success)
 {
 	m->logged_in = success;
 
 	if(!success){
+		emit sig_logged_in(false);
 		return;
 	}
 

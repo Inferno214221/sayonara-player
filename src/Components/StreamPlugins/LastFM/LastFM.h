@@ -51,10 +51,8 @@ namespace LastFM
 		signals:
 			void sig_logged_in(bool);
 
-		public slots:
-			void login();
-
 		private slots:
+			void lfm_active_changed();
 			void login_thread_finished(bool success);
 			void similar_artists_fetched(IdList artist_ids);
 			void current_track_changed(const MetaData& md);
@@ -66,6 +64,7 @@ namespace LastFM
 			Base();
 			virtual ~Base();
 
+			void login(const QString& username, const QString& password);
 			bool is_logged_in();
 
 		private:
