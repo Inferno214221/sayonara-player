@@ -23,7 +23,7 @@
 #include "DiscnumberFrame.h"
 #include <QStringList>
 
-Xiph::DiscnumberFrame::DiscnumberFrame(TagLib::Tag* tag) :
+Xiph::DiscnumberFrame::DiscnumberFrame(TagLib::Ogg::XiphComment* tag) :
     Xiph::XiphFrame<Models::Discnumber>(tag, "DISCNUMBER")
 {
 

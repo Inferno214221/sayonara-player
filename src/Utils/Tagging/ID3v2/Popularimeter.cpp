@@ -20,8 +20,8 @@
 
 #include "Popularimeter.h"
 
-ID3v2::PopularimeterFrame::PopularimeterFrame(const TagLib::FileRef& f) :
-	ID3v2Frame<Models::Popularimeter, TagLib::ID3v2::PopularimeterFrame>(f, "POPM") {}
+ID3v2::PopularimeterFrame::PopularimeterFrame(TagLib::ID3v2::Tag* tag) :
+	ID3v2Frame<Models::Popularimeter, TagLib::ID3v2::PopularimeterFrame>(tag, "POPM") {}
 
 ID3v2::PopularimeterFrame::~PopularimeterFrame() {}
 

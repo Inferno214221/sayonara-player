@@ -35,7 +35,7 @@ namespace MP4
 			public MP4Frame<Models::Cover>
 	{
 	public:
-		explicit CoverFrame(TagLib::Tag* tag);
+		explicit CoverFrame(TagLib::MP4::Tag* tag);
 		~CoverFrame();
 
 

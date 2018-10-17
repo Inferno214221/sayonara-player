@@ -19,9 +19,8 @@
  */
 
 
-
-#ifndef SHORTCUTS_H
-#define SHORTCUTS_H
+#ifndef DB_SHORTCUTS_H
+#define DB_SHORTCUTS_H
 
 #include "Database/Module.h"
 
@@ -42,4 +41,4 @@ namespace DB
 	};
 }
 
-#endif // SHORTCUTS_H
+#endif // DB_SHORTCUTS_H

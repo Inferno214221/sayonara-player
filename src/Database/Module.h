@@ -48,6 +48,14 @@ namespace DB
 			DB::Query		run_query(const QString& query, const QPair<QString, QVariant>& bindings, const QString& error_text);
 			DB::Query		run_query(const QString& query, const QMap<QString, QVariant>& bindings, const QString& error_text);
 
+			/**
+			 * @brief update
+			 * @param tablename Name of table to update
+			 * @param field_bindings Fields to update
+			 * @param where_binding Where clause
+			 * @param error_message
+			 * @return
+			 */
 			DB::Query		update(const QString& tablename, const QMap<QString, QVariant>& field_bindings, const QPair<QString, QVariant>& where_binding, const QString& error_message);
 			DB::Query		insert(const QString& tablename, const QMap<QString, QVariant>& field_bindings, const QString& error_message);
 	};

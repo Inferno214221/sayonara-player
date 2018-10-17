@@ -22,7 +22,7 @@
 
 #include "PopularimeterFrame.h"
 
-Xiph::PopularimeterFrame::PopularimeterFrame(TagLib::Tag* tag) :
+Xiph::PopularimeterFrame::PopularimeterFrame(TagLib::Ogg::XiphComment* tag) :
 	XiphFrame<Models::Popularimeter>(tag, "RATING")
 {}
 

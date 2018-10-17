@@ -142,20 +142,19 @@ MetaDataList DirectoryReader::metadata_from_filelist(const QStringList& lst)
 
 	lib_db->getMultipleTracksByPath(sound_files, v_md);
 
-	auto it=v_md.begin();
-	while(it != v_md.end())
+	for(auto it=v_md.begin(); it != v_md.end(); it++)
 	{
-		if( it->id < 0 )
+		if( it->id >= 0 )
 		{
-			if(!Tagging::Util::getMetaDataOfFile(*it)) {
-				it = v_md.erase(it);
-				continue;
-			}
-
-			it->is_extern = true;
+			continue;
 		}
 
-		it++;
+		it->is_extern = true;
+		if(!Tagging::Util::getMetaDataOfFile(*it))
+		{
+			it->set_title(it->filepath());
+			continue;
+		}
 	}
 
 	for(const QString& playlist_file : ::Util::AsConst(playlist_files))

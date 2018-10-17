@@ -33,6 +33,7 @@ public:
 	bool add_stream(const QString& station_name, const QString& url) override;
 	bool delete_stream(const QString& station_name) override;
 	bool update_url(const QString& station_name, const QString& url) override;
+	bool rename(const QString& old_name, const QString& new_name) override;
 };
 
 #endif // STREAMHANDLERSTREAMS_H

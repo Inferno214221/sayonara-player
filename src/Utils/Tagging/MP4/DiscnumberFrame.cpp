@@ -23,11 +23,9 @@
 #include "DiscnumberFrame.h"
 #include <taglib/mp4item.h>
 
-MP4::DiscnumberFrame::DiscnumberFrame(TagLib::Tag* tag) :
+MP4::DiscnumberFrame::DiscnumberFrame(TagLib::MP4::Tag* tag) :
     MP4::MP4Frame<Models::Discnumber>(tag, "disk")
-{
-
-}
+{}
 
 MP4::DiscnumberFrame::~DiscnumberFrame() {}
 

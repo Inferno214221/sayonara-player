@@ -22,7 +22,7 @@
 
 #include "LyricsFrame.h"
 
-Xiph::LyricsFrame::LyricsFrame(TagLib::Tag* tag) :
+Xiph::LyricsFrame::LyricsFrame(TagLib::Ogg::XiphComment* tag) :
     Xiph::XiphFrame<QString>(tag, "LYRICS")
 {}
 

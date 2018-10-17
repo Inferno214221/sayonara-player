@@ -67,6 +67,7 @@ namespace DB
 
 			virtual bool getAllTracks(MetaDataList& returndata, ::Library::SortOrder sortorder = ::Library::SortOrder::TrackArtistAsc);
 			virtual MetaData getTrackById(int id);
+			virtual bool getTracksbyIds(const QList<TrackID>& ids, MetaDataList& v_md);
 			virtual MetaData getTrackByPath(const QString& path);
 			virtual bool getMultipleTracksByPath(const QStringList& paths, MetaDataList& v_md);
 

@@ -98,6 +98,14 @@ class AbstractStreamHandler : public QObject
 		virtual bool update_url(const QString& station_name, const QString& url)=0;
 
 		/**
+		 * @brief Rename station
+		 * @param old_name old station name
+		 * @param new_name new station name
+		 * @return
+		 */
+		virtual bool rename(const QString& old_name, const QString& new_name)=0;
+
+		/**
 		 * @brief Clears all station content
 		 */
 		void clear();

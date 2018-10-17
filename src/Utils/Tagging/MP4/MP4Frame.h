@@ -54,7 +54,7 @@ protected:
 
 
 public:
-	MP4Frame(TagLib::Tag* tag, const QString& identifier) :
+	MP4Frame(TagLib::MP4::Tag* tag, const QString& identifier) :
 		Tagging::AbstractFrame<TagLib::MP4::Tag>(tag, identifier) {}
 
 	virtual ~MP4Frame() {}

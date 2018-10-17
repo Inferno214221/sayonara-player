@@ -61,10 +61,10 @@ namespace Tagging
 				TagImpl*	_tag=nullptr;
 
 		protected:
-			AbstractFrame(TagLib::Tag* tag, const QString& key=QString()) :
+			AbstractFrame(TagImpl* tag, const QString& key=QString()) :
 				AbstractFrameHelper(key)
 			{
-				_tag = dynamic_cast<TagImpl*>(tag);
+				_tag = tag;
 			}
 
 			TagImpl* tag() const

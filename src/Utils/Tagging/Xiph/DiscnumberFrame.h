@@ -39,7 +39,7 @@ namespace Xiph
 		public Xiph::XiphFrame<Models::Discnumber>
 	{
 	public:
-		DiscnumberFrame(TagLib::Tag* tag);
+		DiscnumberFrame(TagLib::Ogg::XiphComment* tag);
 		~DiscnumberFrame();
 
 	protected:

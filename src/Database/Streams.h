@@ -36,6 +36,7 @@ namespace DB
 			bool deleteStream(const QString& name);
 			bool addStream(const QString& name, const QString& url);
 			bool updateStreamUrl(const QString& name, const QString& url);
+			bool renameStream(const QString& old_name, const QString& new_name);
 	};
 }
 

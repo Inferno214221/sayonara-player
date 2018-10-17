@@ -87,11 +87,13 @@
 #include "Utils/Macros.h"
 #include "Utils/Language.h"
 #include "Utils/Settings/Settings.h"
+#include "Utils/MetaData/MetaDataList.h"
 
 #include "Database/Connector.h"
 #include "Database/Settings.h"
 
 #include <QTime>
+#include <QDateTime>
 #include <QSessionManager>
 
 class Measure
@@ -130,8 +132,10 @@ struct Application::Private
 
 	bool				was_shut_down;
 
-	Private()
+	Private(Application* app)
 	{
+		Q_UNUSED(app)
+
 		metatype_registry = new MetaTypeRegistry();
 		qRegisterMetaType<uint64_t>("uint64_t");
 
@@ -218,7 +222,7 @@ void global_key_handler()
 Application::Application(int & argc, char ** argv) :
 	QApplication(argc, argv)
 {
-	m = Pimpl::make<Private>();
+	m = Pimpl::make<Private>(this);
 	m->timer->start();
 
 	this->setQuitOnLastWindowClosed(false);

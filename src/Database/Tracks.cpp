@@ -73,24 +73,24 @@ Tracks::Tracks(const QString& connection_name, DbId db_id, LibraryId library_id)
 	m = Pimpl::make<Private>(library_id);
 
 	QString select = "SELECT "
-					"trackID, "									// 0
-					"title, "									// 1
-					"length, "									// 2
-					"year, "									// 3
-					"bitrate, "									// 4
-					"filename, "								// 5
-					"filesize, "								// 6
-					"track AS trackNum, "						// 7
-					"genre, "									// 8
-					"discnumber, "								// 9
+					"tracks.trackID, "							// 0
+					"tracks.title, "							// 1
+					"tracks.length, "							// 2
+					"tracks.year, "								// 3
+					"tracks.bitrate, "							// 4
+					"tracks.filename, "							// 5
+					"tracks.filesize, "							// 6
+					"tracks.track			AS trackNum, "		// 7
+					"tracks.genre, "							// 8
+					"tracks.discnumber, "						// 9
 					"tracks.rating, "							// 10
-					"tracks.albumID AS albumID, "				// 11
-					"tracks.artistID AS artistID, "				// 12
-					"tracks.albumArtistID AS albumArtistID, "	// 13
-					"tracks.comment AS comment, "				// 14
-					"createDate, "								// 15
-					"modifyDate, "								// 16
-					"tracks.libraryID AS trackLibraryID "		// 17
+					"tracks.albumID			AS albumID, "		// 11
+					"tracks.artistID		AS artistID, "		// 12
+					"tracks.albumArtistID	AS albumArtistID, "	// 13
+					"tracks.comment			AS comment, "		// 14
+					"tracks.createDate, "						// 15
+					"tracks.modifyDate, "						// 16
+					"tracks.libraryID		AS trackLibraryID "	// 17
 	;
 
 	drop_track_view();
@@ -139,12 +139,12 @@ void Tracks::create_track_search_view(const QString& select_statement)
 			+ m->search_view + " "
 			"AS "
 			+ select_statement + ", "
-			"albums.name AS albumName, "						// 18
-			"albums.rating AS albumRating, "					// 19
-			"artists.name AS artistName, "						// 20
-			"albumArtists.name AS albumArtistName, "			// 21
+			"albums.name			AS albumName, "					// 18
+			"albums.rating			AS albumRating, "				// 19
+			"artists.name			AS artistName, "				// 20
+			"albumArtists.name		AS albumArtistName, "			// 21
 			"(albums.cissearch || ',' || artists.cissearch || ',' || tracks.cissearch) AS allCissearch, " // 22
-			"tracks.fileCissearch AS fileCissearch "
+			"tracks.fileCissearch	AS fileCissearch "				// 23
 			"FROM tracks "
 			"LEFT OUTER JOIN albums ON tracks.albumID = albums.albumID "
 			"LEFT OUTER JOIN artists ON tracks.artistID = artists.artistID "
@@ -299,6 +299,30 @@ MetaData Tracks::getTrackById(TrackID id)
 
 	return v_md.first();
 }
+
+bool Tracks::getTracksbyIds(const QList<TrackID>& ids, MetaDataList& v_md)
+{
+	QStringList queries;
+	for(const TrackID& id : ids)
+	{
+		queries << fetch_query_tracks() + QString(" WHERE trackID = :track_id_%1").arg(id);
+	}
+
+	QString querytext = queries.join(" UNION ");
+	querytext += ";";
+
+	Query q(this);
+	q.prepare(querytext);
+
+	for(const TrackID& id : ids)
+	{
+		q.bindValue(QString(":track_id_%1").arg(id), id);
+	}
+
+	return db_fetch_tracks(q, v_md);
+}
+
+
 
 
 bool Tracks::getAllTracks(MetaDataList& returndata, ::Library::SortOrder sort)

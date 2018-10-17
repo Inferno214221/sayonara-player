@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>510</width>
-    <height>395</height>
+    <width>775</width>
+    <height>647</height>
    </rect>
   </property>
   <layout class="QGridLayout" name="gridLayout">
@@ -62,13 +62,6 @@
        </spacer>
       </item>
       <item>
-       <widget class="QLabel" name="lab_sorting">
-        <property name="text">
-         <string>Sort by</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="Gui::ComboBox" name="combo_sorting"/>
       </item>
       <item>
@@ -83,13 +76,6 @@
          </size>
         </property>
        </spacer>
-      </item>
-      <item>
-       <widget class="QLabel" name="lab_zoom">
-        <property name="text">
-         <string>Zoom</string>
-        </property>
-       </widget>
       </item>
       <item>
        <widget class="Gui::ComboBox" name="combo_zoom"/>

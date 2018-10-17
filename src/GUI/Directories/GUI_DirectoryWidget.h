@@ -77,6 +77,10 @@ class GUI_DirectoryWidget :
 
 		void splitter_moved(int pos, int index);
 
+		void set_lib_path_clicked();
+		void new_library_created();
+		void check_libraries();
+
 		protected:
 			MD::Interpretation metadata_interpretation() const override;
 			MetaDataList info_dialog_data() const override;

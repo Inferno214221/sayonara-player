@@ -41,7 +41,7 @@ namespace ID3v2
 			TagLib::ID3v2::Frame* create_id3v2_frame() override;
 
 		public:
-			PopularimeterFrame(const TagLib::FileRef& f);
+			PopularimeterFrame(TagLib::ID3v2::Tag* tag);
 			~PopularimeterFrame();
 
 			void map_model_to_frame(const Models::Popularimeter& model, TagLib::ID3v2::PopularimeterFrame* frame) override;

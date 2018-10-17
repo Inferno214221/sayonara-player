@@ -45,6 +45,7 @@ namespace Util
 {
 	uint64_t current_date_to_int();
 	uint64_t date_to_int(const QDateTime& date);
+	QDateTime int_to_date(uint64_t date);
 
 	/**
 	 * @brief Transform all letters after a space to upper case

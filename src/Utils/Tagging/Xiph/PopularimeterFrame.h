@@ -39,7 +39,7 @@ namespace Xiph
 			public XiphFrame<Models::Popularimeter>
 	{
 	public:
-		PopularimeterFrame(TagLib::Tag* tag);
+		PopularimeterFrame(TagLib::Ogg::XiphComment* tag);
 		~PopularimeterFrame();
 
 	protected:

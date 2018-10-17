@@ -33,7 +33,7 @@ namespace ID3v2
 			public ID3v2Frame<QString, TagLib::ID3v2::UnsynchronizedLyricsFrame>
 	{
 		public:
-			explicit LyricsFrame(const TagLib::FileRef& f);
+			explicit LyricsFrame(TagLib::ID3v2::Tag* tag);
 			~LyricsFrame();
 
 			void map_model_to_frame(const QString& model, TagLib::ID3v2::UnsynchronizedLyricsFrame* frame) override;

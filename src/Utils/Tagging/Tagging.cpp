@@ -60,7 +60,14 @@
 
 using namespace Tagging::Util;
 
-static TagType tag_type_from_fileref(const TagLib::FileRef& f);
+struct ParsedTag
+{
+	TagLib::Tag* tag;
+	TagType type;
+};
+
+
+static ParsedTag tag_type_from_fileref(const TagLib::FileRef& f);
 
 bool Tagging::Util::is_valid_file(const TagLib::FileRef& f)
 {
@@ -119,8 +126,9 @@ bool Tagging::Util::getMetaDataOfFile(MetaData& md, Quality quality)
 		return false;
 	}
 
-	TagLib::Tag* tag = f.tag();
-	TagType tag_type = tag_type_from_fileref(f);
+
+	ParsedTag parsed_tag = tag_type_from_fileref(f);
+	TagLib::Tag* tag = parsed_tag.tag;
 
 	QString artist = QString::fromUtf8(tag->artist().toCString(true));
 	QString album = QString::fromUtf8(tag->album().toCString(true));
@@ -132,21 +140,22 @@ bool Tagging::Util::getMetaDataOfFile(MetaData& md, Quality quality)
 
 	Models::Discnumber discnumber;
 	Models::Popularimeter popularimeter;
-	if(tag_type == TagType::ID3v2)
+	if(parsed_tag.type == TagType::ID3v2)
 	{
-		ID3v2::AlbumArtistFrame album_artist_frame(f);
+		auto id3v2 = dynamic_cast<TagLib::ID3v2::Tag*>(tag);
+		ID3v2::AlbumArtistFrame album_artist_frame(id3v2);
 		success = album_artist_frame.read(album_artist);
 		if(success){
 			md.set_album_artist(album_artist);
 		}
 
-		ID3v2::PopularimeterFrame popularimeter_frame(f);
+		ID3v2::PopularimeterFrame popularimeter_frame(id3v2);
 		success = popularimeter_frame.read(popularimeter);
 		if(success){
 			md.rating = popularimeter.get_rating();
 		}
 
-		ID3v2::DiscnumberFrame discnumber_frame(f);
+		ID3v2::DiscnumberFrame discnumber_frame(id3v2);
 		success = discnumber_frame.read(discnumber);
 		if(success){
 			md.discnumber = discnumber.disc;
@@ -154,21 +163,23 @@ bool Tagging::Util::getMetaDataOfFile(MetaData& md, Quality quality)
 		}
 	}
 
-	else if(tag_type == TagType::Xiph)
+	else if(parsed_tag.type == TagType::Xiph)
 	{
-		Xiph::AlbumArtistFrame album_artist_frame(tag);
+		auto xiph = dynamic_cast<TagLib::Ogg::XiphComment*>(tag);
+
+		Xiph::AlbumArtistFrame album_artist_frame(xiph);
 		success = album_artist_frame.read(album_artist);
 		if(success){
 			md.set_album_artist(album_artist);
 		}
 
-		Xiph::PopularimeterFrame popularimeter_frame(tag);
+		Xiph::PopularimeterFrame popularimeter_frame(xiph);
 		success = popularimeter_frame.read(popularimeter);
 		if(success){
 			md.rating = popularimeter.get_rating();
 		}
 
-		Xiph::DiscnumberFrame discnumber_frame(tag);
+		Xiph::DiscnumberFrame discnumber_frame(xiph);
 		success = discnumber_frame.read(discnumber);
 		if(success){
 			md.discnumber = discnumber.disc;
@@ -176,23 +187,25 @@ bool Tagging::Util::getMetaDataOfFile(MetaData& md, Quality quality)
 		}
 	}
 
-	else if(tag_type == TagType::MP4)
+	else if(parsed_tag.type == TagType::MP4)
 	{
-		MP4::AlbumArtistFrame album_artist_frame(tag);
+		auto mp4 = dynamic_cast<TagLib::MP4::Tag*>(tag);
+
+		MP4::AlbumArtistFrame album_artist_frame(mp4);
 		success = album_artist_frame.read(album_artist);
 		if(success){
 			md.set_album_artist(album_artist);
 		}
 
 
-		MP4::DiscnumberFrame discnumber_frame(tag);
+		MP4::DiscnumberFrame discnumber_frame(mp4);
 		success = discnumber_frame.read(discnumber);
 		if(success){
 			md.discnumber = discnumber.disc;
 			md.n_discs = discnumber.n_discs;
 		}
 
-		MP4::PopularimeterFrame popularimeter_frame(tag);
+		MP4::PopularimeterFrame popularimeter_frame(mp4);
 
 		success = popularimeter_frame.read(popularimeter);
 		if(success){
@@ -270,8 +283,8 @@ bool Tagging::Util::setMetaDataOfFile(const MetaData& md)
 	TagLib::String genre(md.genres_to_string().toUtf8().data(), TagLib::String::UTF8);
 	TagLib::String comment(md.comment().toUtf8().data(), TagLib::String::UTF8);
 
-	TagLib::Tag* tag = f.tag();
-	TagType tag_type = tag_type_from_fileref(f);
+	ParsedTag parsed_tag = tag_type_from_fileref(f);
+	TagLib::Tag* tag = parsed_tag.tag;
 
 	tag->setAlbum(album);
 	tag->setArtist(artist);
@@ -285,39 +298,44 @@ bool Tagging::Util::setMetaDataOfFile(const MetaData& md)
 	popularimeter.set_rating(md.rating);
 	Models::Discnumber discnumber(md.discnumber, md.n_discs);
 
-	if(tag_type == TagType::ID3v2)
+	if(parsed_tag.type == TagType::ID3v2)
 	{
-		ID3v2::PopularimeterFrame popularimeter_frame(f);
+		auto id3v2 = dynamic_cast<TagLib::ID3v2::Tag*>(tag);
+		ID3v2::PopularimeterFrame popularimeter_frame(id3v2);
 		popularimeter_frame.write(popularimeter);
 
-		ID3v2::DiscnumberFrame discnumber_frame(f);
+		ID3v2::DiscnumberFrame discnumber_frame(id3v2);
 		discnumber_frame.write(discnumber);
 
-		ID3v2::AlbumArtistFrame album_artist_frame(f);
+		ID3v2::AlbumArtistFrame album_artist_frame(id3v2);
 		album_artist_frame.write(md.album_artist());
 	}
 
-	else if(tag_type == TagType::Xiph)
+	else if(parsed_tag.type == TagType::Xiph)
 	{
-		Xiph::PopularimeterFrame popularimeter_frame(tag);
+		auto xiph = dynamic_cast<TagLib::Ogg::XiphComment*>(tag);
+
+		Xiph::PopularimeterFrame popularimeter_frame(xiph);
 		popularimeter_frame.write(popularimeter);
 
-		Xiph::DiscnumberFrame discnumber_frame(tag);
+		Xiph::DiscnumberFrame discnumber_frame(xiph);
 		discnumber_frame.write(discnumber);
 
-		Xiph::AlbumArtistFrame album_artist_frame(tag);
+		Xiph::AlbumArtistFrame album_artist_frame(xiph);
 		album_artist_frame.write(md.album_artist());
 	}
 
-	else if(tag_type == TagType::MP4)
+	else if(parsed_tag.type == TagType::MP4)
 	{
-		MP4::AlbumArtistFrame album_artist_frame(tag);
+		auto mp4 = dynamic_cast<TagLib::MP4::Tag*>(tag);
+
+		MP4::AlbumArtistFrame album_artist_frame(mp4);
 		album_artist_frame.write(md.album_artist());
 
-		MP4::DiscnumberFrame discnumber_frame(tag);
+		MP4::DiscnumberFrame discnumber_frame(mp4);
 		discnumber_frame.write(discnumber);
 
-		MP4::PopularimeterFrame popularimeter_frame(tag);
+		MP4::PopularimeterFrame popularimeter_frame(mp4);
 		popularimeter_frame.write(popularimeter);
 	}
 
@@ -381,18 +399,24 @@ bool Tagging::Util::write_cover(const QString& filepath, const QString& cover_im
 	}
 
 	Models::Cover cover(mime_type, data);
-	TagType tag_type = get_tag_type(filepath);
+	ParsedTag parsed_tag = tag_type_from_fileref(f);
+	TagType tag_type = parsed_tag.type;
+
 	if(tag_type == TagType::ID3v2)
 	{
-		ID3v2::CoverFrame cover_frame(f);
+		auto id3v2 = dynamic_cast<TagLib::ID3v2::Tag*>(parsed_tag.tag);
+		ID3v2::CoverFrame cover_frame(id3v2);
 		if(!cover_frame.write(cover)) {
 			sp_log(Log::Warning, "Tagging") << "ID3v2 Cannot write cover";
 			return false;
 		}
 	}
 
-	else if(tag_type == TagType::MP4){
-		MP4::CoverFrame cover_frame(f.tag());
+	else if(tag_type == TagType::MP4)
+	{
+		auto mp4 = dynamic_cast<TagLib::MP4::Tag*>(parsed_tag.tag);
+
+		MP4::CoverFrame cover_frame(mp4);
 		if(!cover_frame.write(cover)){
 			sp_log(Log::Warning, "Tagging") << "MP4 Cannot write cover";
 			return false;
@@ -426,12 +450,15 @@ bool Tagging::Util::extract_cover(const QString& filepath, QByteArray& cover_dat
 	}
 
 	Models::Cover cover;
-	TagType tag_type = get_tag_type(filepath);
+	ParsedTag parsed_tag = tag_type_from_fileref(f);
+	TagType tag_type = parsed_tag.type;
+
 	switch(tag_type){
 
 		case TagType::ID3v2:
 			{
-				ID3v2::CoverFrame cover_frame(f);
+				auto id3v2 = dynamic_cast<TagLib::ID3v2::Tag*>(parsed_tag.tag);
+				ID3v2::CoverFrame cover_frame(id3v2);
 
 				if(!cover_frame.is_frame_found()){
 					return false;
@@ -444,7 +471,8 @@ bool Tagging::Util::extract_cover(const QString& filepath, QByteArray& cover_dat
 
 		case TagType::MP4:
 			{
-				MP4::CoverFrame cover_frame(f.tag());
+				auto mp4 = dynamic_cast<TagLib::MP4::Tag*>(parsed_tag.tag);
+				MP4::CoverFrame cover_frame(mp4);
 				if(!cover_frame.read(cover)){
 					return false;
 				}
@@ -472,12 +500,15 @@ bool Tagging::Util::has_cover(const QString& filepath)
 		return false;
 	}
 
-	TagType tag_type = get_tag_type(filepath);
+	ParsedTag parsed_tag = tag_type_from_fileref(f);
+	TagType tag_type = parsed_tag.type;
+
 	switch(tag_type){
 
 		case TagType::ID3v2:
 			{
-				ID3v2::CoverFrame cover_frame(f);
+				auto id3v2 = dynamic_cast<TagLib::ID3v2::Tag*>(parsed_tag.tag);
+				ID3v2::CoverFrame cover_frame(id3v2);
 				return cover_frame.is_frame_found();
 			}
 
@@ -485,7 +516,8 @@ bool Tagging::Util::has_cover(const QString& filepath)
 
 		case TagType::MP4:
 			{
-				MP4::CoverFrame cover_frame(f.tag());
+				auto mp4 = dynamic_cast<TagLib::MP4::Tag*>(parsed_tag.tag);
+				MP4::CoverFrame cover_frame(mp4);
 				return cover_frame.is_frame_found();
 			}
 
@@ -499,12 +531,16 @@ bool Tagging::Util::has_cover(const QString& filepath)
 
 bool Tagging::Util::is_cover_supported(const QString& filepath)
 {
-	TagType type = get_tag_type(filepath);
-	return (type == TagType::ID3v2 || type == TagType::MP4);
+	TagLib::FileRef f(TagLib::FileName(filepath.toUtf8()));
+	if(!is_valid_file(f)){
+		return false;
+	}
+
+	ParsedTag parsed_tag = tag_type_from_fileref(f);
+	TagType tag_type = parsed_tag.type;
+
+	return (tag_type == TagType::ID3v2 || tag_type == TagType::MP4);
 }
-
-
-
 
 
 bool Tagging::Util::write_lyrics(const MetaData& md, const QString& lyrics_data)
@@ -518,12 +554,15 @@ bool Tagging::Util::write_lyrics(const MetaData& md, const QString& lyrics_data)
 
 	bool success = false;
 
-	TagType tag_type = get_tag_type(md.filepath());
+	ParsedTag parsed_tag = tag_type_from_fileref(f);
+	TagType tag_type = parsed_tag.type;
+
 	switch(tag_type){
 
 		case TagType::ID3v2:
 			{
-				ID3v2::LyricsFrame lyrics_frame(f);
+				auto id3v2 = dynamic_cast<TagLib::ID3v2::Tag*>(parsed_tag.tag);
+				ID3v2::LyricsFrame lyrics_frame(id3v2);
 				success = lyrics_frame.write(lyrics_data);
 			}
 
@@ -531,7 +570,8 @@ bool Tagging::Util::write_lyrics(const MetaData& md, const QString& lyrics_data)
 
 		case TagType::Xiph:
 			{
-				Xiph::LyricsFrame lyrics_frame(f.tag());
+				auto xiph = dynamic_cast<TagLib::Ogg::XiphComment*>(parsed_tag.tag);
+				Xiph::LyricsFrame lyrics_frame(xiph);
 				success = lyrics_frame.write(lyrics_data);
 			}
 
@@ -558,13 +598,15 @@ bool Tagging::Util::extract_lyrics(const MetaData& md, QString& lyrics_data)
 		return false;
 	}
 
-	TagType tag_type = get_tag_type(md.filepath());
+	ParsedTag parsed_tag = tag_type_from_fileref(f);
+	TagType tag_type = parsed_tag.type;
 
 	switch(tag_type)
 	{
 		case TagType::ID3v2:
 			{
-				ID3v2::LyricsFrame lyrics_frame(f);
+				auto id3v2 = dynamic_cast<TagLib::ID3v2::Tag*>(parsed_tag.tag);
+				ID3v2::LyricsFrame lyrics_frame(id3v2);
 
 				if(!lyrics_frame.is_frame_found()){
 					return false;
@@ -577,7 +619,8 @@ bool Tagging::Util::extract_lyrics(const MetaData& md, QString& lyrics_data)
 
 		case TagType::Xiph:
 			{
-				Xiph::LyricsFrame lyrics_frame(f.tag());
+				auto xiph = dynamic_cast<TagLib::Ogg::XiphComment*>(parsed_tag.tag);
+				Xiph::LyricsFrame lyrics_frame(xiph);
 				lyrics_frame.read(lyrics_data);
 			}
 
@@ -593,56 +636,91 @@ bool Tagging::Util::extract_lyrics(const MetaData& md, QString& lyrics_data)
 
 bool Tagging::Util::is_lyrics_supported(const QString& filepath)
 {
-	TagType type = get_tag_type(filepath);
-	return ((type == TagType::ID3v2) ||
-			(type == TagType::Xiph));
+	TagLib::FileRef f(TagLib::FileName(filepath.toUtf8()));
+
+	if(!is_valid_file(f)){
+		return false;
+	}
+
+	ParsedTag parsed_tag = tag_type_from_fileref(f);
+	TagType tag_type = parsed_tag.type;
+
+	return ((tag_type == TagType::ID3v2) ||
+			(tag_type == TagType::Xiph));
 }
 
 
-static TagType tag_type_from_fileref(const TagLib::FileRef& f)
+static ParsedTag tag_type_from_fileref(const TagLib::FileRef& f)
 {
+	ParsedTag ret;
+
+	ret.tag = f.tag();
+	ret.type = TagType::Unsupported;
+
 	TagLib::MPEG::File* mpg = dynamic_cast<TagLib::MPEG::File*>(f.file());
 	if(mpg)
 	{
-		if(mpg->hasID3v2Tag()){
-			return TagType::ID3v2;
+		if(mpg->hasID3v2Tag())
+		{
+			ret.tag = mpg->ID3v2Tag();
+			ret.type = TagType::ID3v2;
+			return ret;
 		}
 
-		if(mpg->hasID3v1Tag()){
-			return TagType::ID3v1;
+		else if(mpg->hasID3v1Tag())
+		{
+			ret.tag = mpg->ID3v1Tag();
+			ret.type = TagType::ID3v1;
+			return ret;
 		}
 	}
 
 	TagLib::FLAC::File* flac = dynamic_cast<TagLib::FLAC::File*>(f.file());
 	if(flac)
 	{
-		if(flac->hasID3v2Tag()){
-			return TagType::ID3v2;
+		if(flac->hasXiphComment())
+		{
+			ret.tag = flac->xiphComment();
+			ret.type = TagType::Xiph;
+			return ret;
 		}
 
-		if(flac->hasID3v1Tag()){
-			return TagType::ID3v1;
+		else if(flac->hasID3v2Tag())
+		{
+			ret.tag = flac->ID3v2Tag();
+			ret.type = TagType::ID3v2;
+			return ret;
+		}
+
+		else if(flac->hasID3v1Tag())
+		{
+			ret.tag = flac->ID3v1Tag();
+			ret.type = TagType::ID3v1;
 		}
 	}
 
 	TagLib::Tag* tag = f.tag();
-	if(dynamic_cast<TagLib::ID3v2::Tag*>(tag) != nullptr){
-		return TagType::ID3v2;
+	if(dynamic_cast<TagLib::ID3v2::Tag*>(tag) != nullptr)
+	{
+		ret.type = TagType::ID3v2;
 	}
 
-	if(dynamic_cast<TagLib::ID3v1::Tag*>(tag) != nullptr){
-		return TagType::ID3v1;
+	else if(dynamic_cast<TagLib::ID3v1::Tag*>(tag) != nullptr)
+	{
+		ret.type = TagType::ID3v1;
 	}
 
-	if(dynamic_cast<TagLib::Ogg::XiphComment*>(tag) != nullptr){
-		return TagType::Xiph;
+	else if(dynamic_cast<TagLib::Ogg::XiphComment*>(tag) != nullptr)
+	{
+		ret.type = TagType::Xiph;
 	}
 
-	if(dynamic_cast<TagLib::MP4::Tag*>(tag) != nullptr){
-		return TagType::MP4;
+	else if(dynamic_cast<TagLib::MP4::Tag*>(tag) != nullptr)
+	{
+		ret.type = TagType::MP4;
 	}
 
-	return TagType::Unsupported;
+	return ret;
 }
 
 
@@ -653,7 +731,8 @@ TagType Tagging::Util::get_tag_type(const QString &filepath)
 		return TagType::Unknown;
 	}
 
-	return tag_type_from_fileref(f);
+	ParsedTag parsed = tag_type_from_fileref(f);
+	return parsed.type;
 }
 
 QString Tagging::Util::tag_type_to_string(TagType type)

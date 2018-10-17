@@ -36,7 +36,7 @@ namespace ID3v2
 			public ID3v2Frame<Models::Discnumber, TagLib::ID3v2::TextIdentificationFrame>
 	{
 		public:
-			DiscnumberFrame(const TagLib::FileRef& f);
+			DiscnumberFrame(TagLib::ID3v2::Tag* tag);
 			~DiscnumberFrame();
 
 			void map_model_to_frame(const Models::Discnumber& model, TagLib::ID3v2::TextIdentificationFrame* frame) override;

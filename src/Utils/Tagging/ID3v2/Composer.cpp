@@ -22,8 +22,8 @@
 #include <taglib/textidentificationframe.h>
 #include <taglib/tstring.h>
 
-ID3v2::ComposerFrame::ComposerFrame(const TagLib::FileRef& f) :
-	ID3v2Frame<QString, TagLib::ID3v2::TextIdentificationFrame>(f, "\xA9wrt") {}
+ID3v2::ComposerFrame::ComposerFrame(TagLib::ID3v2::Tag* tag) :
+	ID3v2Frame<QString, TagLib::ID3v2::TextIdentificationFrame>(tag, "\xA9wrt") {}
 
 ID3v2::ComposerFrame::~ComposerFrame() {}
 
