@@ -83,13 +83,13 @@ public:
 
 	~MetaData();
 
-	const QString& title() const;
+	QString title() const;
 	void set_title(const QString& title);
 
-	const QString& artist() const;
+	QString artist() const;
 	void set_artist(const QString& artist);
 
-	const QString& album() const;
+	QString album() const;
 	void set_album(const QString& album);
 
 	const QString& comment() const;
@@ -99,14 +99,14 @@ public:
 	QString set_filepath(QString filepath);
 
 	ArtistId album_artist_id() const;
-	const QString& album_artist() const;
+	QString album_artist() const;
 	bool has_album_artist() const;
 
 	void set_album_artist(const QString& album_artist, ArtistId id=-1);
 	void set_album_artist_id(ArtistId id);
 
 	void set_radio_station(const QString& name);
-	const QString& radio_station() const;
+	QString radio_station() const;
 
 	RadioMode radio_mode() const;
 	bool is_valid() const;

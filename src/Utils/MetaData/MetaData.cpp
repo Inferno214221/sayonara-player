@@ -247,7 +247,7 @@ MetaData::~MetaData()
 #endif
 }
 
-const QString& MetaData::title() const
+QString MetaData::title() const
 {
 	return m->title;
 }
@@ -257,9 +257,9 @@ void MetaData::set_title(const QString &title)
 	m->title = title;
 }
 
-const QString& MetaData::artist() const
+QString MetaData::artist() const
 {
-	return artist_pool()[m->artist_idx];
+	return artist_pool().value(m->artist_idx);
 }
 
 void MetaData::set_artist(const QString& artist)
@@ -267,15 +267,15 @@ void MetaData::set_artist(const QString& artist)
 	HashValue hashed = qHash(artist);
 	if(!artist_pool().contains(hashed))
 	{
-		artist_pool()[hashed] = artist;
+		artist_pool().insert(hashed, artist);
 	}
 
 	m->artist_idx = hashed;
 }
 
-const QString& MetaData::album() const
+QString MetaData::album() const
 {
-	return album_pool()[m->album_idx];
+	return album_pool().value(m->album_idx);
 }
 
 void MetaData::set_album(const QString& album)
@@ -284,7 +284,7 @@ void MetaData::set_album(const QString& album)
 
 	if(!album_pool().contains(hashed))
 	{
-		album_pool()[hashed] = album;
+		album_pool().insert(hashed, album);
 	}
 
 	m->album_idx = hashed;
@@ -309,9 +309,9 @@ ArtistId MetaData::album_artist_id() const
 	return m->album_artist_id;
 }
 
-const QString& MetaData::album_artist() const
+QString MetaData::album_artist() const
 {
-	return artist_pool()[m->album_artist_idx];
+	return artist_pool().value(m->album_artist_idx);
 }
 
 void MetaData::set_album_artist(const QString& album_artist, ArtistId id)
@@ -319,7 +319,7 @@ void MetaData::set_album_artist(const QString& album_artist, ArtistId id)
 	HashValue hashed = qHash(album_artist);
 	if(!artist_pool().contains(hashed))
 	{
-		artist_pool()[hashed] = album_artist;
+		artist_pool().insert(hashed, album_artist);
 	}
 
 	m->album_artist_idx = hashed;
@@ -337,7 +337,7 @@ void MetaData::set_radio_station(const QString& album)
 	album_id = -1;
 }
 
-const QString&MetaData::radio_station() const
+QString MetaData::radio_station() const
 {
 	return album();
 }

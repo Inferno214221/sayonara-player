@@ -86,8 +86,6 @@ bool Artists::db_fetch_artists(Query& q, ArtistList& result)
 		return false;
 	}
 
-	result.reserve(q.fetched_rows());
-
 	while(q.next())
 	{
 		Artist artist;

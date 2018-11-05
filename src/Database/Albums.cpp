@@ -113,8 +113,6 @@ bool Albums::db_fetch_albums(Query& q, AlbumList& result)
 		return false;
 	}
 
-	result.reserve(q.fetched_rows());
-
 	while(q.next())
 	{
 		Album album;

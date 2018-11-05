@@ -39,9 +39,9 @@
 
 
 class MetaDataList :
-		public std::vector<MetaData>
+		public std::deque<MetaData>
 {
-	using Parent=std::vector<MetaData>;
+	using Parent=std::deque<MetaData>;
 
 	PIMPL(MetaDataList)
 
@@ -95,6 +95,9 @@ public:
 	int count() const;
 
 	void sort(Library::SortOrder so);
+
+	void reserve(size_t items);
+	size_t capacity() const;
 };
 
 
