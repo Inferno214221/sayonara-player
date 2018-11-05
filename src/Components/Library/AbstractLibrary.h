@@ -44,6 +44,8 @@ namespace Tagging
 	class Editor;
 }
 
+class ExtensionSet;
+
 class AbstractLibrary :
 		public QObject,
 		public SayonaraClass
@@ -61,20 +63,32 @@ public:
 	// calls fetch_by_filter and emits
 	void change_filter(Library::Filter, bool force=false);
 
-	const MetaDataList& tracks() const;
-	const AlbumList& albums() const;
-	const ArtistList& artists() const;
-	const MetaDataList& current_tracks() const;
 
-	const SP::Set<TrackID>& selected_tracks() const;
-	const SP::Set<AlbumId>& selected_albums() const;
-	const SP::Set<ArtistId>& selected_artists() const;
+	const MetaDataList&			tracks() const;
+	const AlbumList&			albums() const;
+	const ArtistList&			artists() const;
+	/**
+	 * @brief current selected tracks
+	 * @return if no track is selected, return all tracks
+	 */
+	const MetaDataList&			current_tracks() const;
+
+	const SP::Set<TrackID>&		selected_tracks() const;
+	const SP::Set<AlbumId>&		selected_albums() const;
+	const SP::Set<ArtistId>&	selected_artists() const;
+
+	// emits new tracks, very similar to psl_selected_albums_changed
+	void change_current_disc(Disc disc);
+
 
 	bool is_loaded() const;
 
+	void set_extensions(const ExtensionSet& extensions);
+	ExtensionSet extensions() const;
+
 signals:
 	void sig_track_mime_data_available();
-	void sig_all_tracks_loaded ();
+	void sig_all_tracks_loaded();
 	void sig_all_albums_loaded();
 	void sig_all_artists_loaded();
 
@@ -138,7 +152,6 @@ public slots:
 	virtual void import_files(const QStringList& files);
 
 	/* write new rating to database */
-	virtual void change_track_rating(int idx, Rating rating);
 	virtual void change_album_rating(int idx, Rating rating);
 
 	virtual void change_track_sortorder(Library::SortOrder s);
@@ -182,12 +195,11 @@ protected:
 	virtual void		update_tracks(const MetaDataList& v_md);
 	virtual void		update_album(const Album& album)=0;
 
+	void				prepare_tracks();
+	void				prepare_albums();
+	void				prepare_artists();
+
 	Tagging::Editor*      tag_edit();
-
-
-	MetaDataList        _tracks;
-	AlbumList			_albums;
-	ArtistList			_artists;
 
 
 private:

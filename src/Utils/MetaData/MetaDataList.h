@@ -29,15 +29,20 @@
 #include "Utils/Library/Sortorder.h"
 
 #include <vector>
+#include <deque>
+#include <functional>
 
 /**
  * @brief The MetaDataList class
  * @ingroup MetaDataHelper
  */
 
+
 class MetaDataList :
 		public std::vector<MetaData>
 {
+	using Parent=std::vector<MetaData>;
+
 	PIMPL(MetaDataList)
 
 public:
@@ -60,6 +65,7 @@ public:
 	MetaDataList& remove_track(int idx);
 	MetaDataList& remove_tracks(const IndexSet& rows);
 	MetaDataList& remove_tracks(int first, int last);
+	MetaDataList& remove_tracks(std::function<bool (const MetaData&)> attr);
 
 	MetaDataList& move_tracks(const IndexSet& indexes, int tgt_idx);
 	MetaDataList& copy_tracks(const IndexSet& indexes, int tgt_idx);

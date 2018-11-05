@@ -33,11 +33,13 @@
 #include "Utils/Library/Sorting.h"
 #include "Utils/Language.h"
 
+#include <QStringList>
+
 using namespace Library;
 
 struct TrackView::Private
 {
-	AbstractLibrary* library = nullptr;
+	AbstractLibrary*	library = nullptr;
 };
 
 TrackView::TrackView(QWidget* parent) :

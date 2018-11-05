@@ -37,8 +37,7 @@ struct ItemModel::Private
 {
 	AbstractLibrary*	library=nullptr;
 	QStringList			header_names;
-	int                 old_row_count;
-
+	int					old_row_count;
 
 	Private(AbstractLibrary* library) :
 		library(library),

@@ -49,6 +49,7 @@
 #include "Utils/Language.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Library/LibraryInfo.h"
+#include "Utils/ExtensionSet.h"
 
 #include <QDir>
 #include <QTimer>
@@ -59,6 +60,7 @@ using namespace Library;
 
 struct GUI_LocalLibrary::Private
 {
+	QList<QPushButton*>		extension_buttons;
 	Manager*				manager = nullptr;
 	LocalLibrary*			library = nullptr;
 	GUI_ImportDialog*		ui_importer = nullptr;
@@ -90,6 +92,8 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 	connect(m->library, &LocalLibrary::sig_reloading_library, this, &GUI_LocalLibrary::progress_changed);
 	connect(m->library, &LocalLibrary::sig_reloading_library_finished, this, &GUI_LocalLibrary::reload_finished);
 	connect(m->library, &LocalLibrary::sig_reloading_library_finished, ui->lv_genres, &GenreView::reload_genres);
+	connect(m->library, &LocalLibrary::sig_all_tracks_loaded, this, &GUI_LocalLibrary::tracks_loaded);
+
 	connect(m->manager, &Manager::sig_path_changed, this, &GUI_LocalLibrary::path_changed);
 	connect(m->manager, &Manager::sig_renamed, this, &GUI_LocalLibrary::name_changed);
 
@@ -145,6 +149,58 @@ void GUI_LocalLibrary::search_key_pressed(int key)
 	}
 
 	GUI_AbstractLibrary::search_key_pressed(key);
+}
+
+#include <QLayoutItem>
+#include <QLayout>
+void GUI_LocalLibrary::tracks_loaded()
+{
+	ui->stacked_status->setCurrentIndex(1);
+
+	QLayout* l = ui->widget_extensions->layout();
+	if(!l){
+		return;
+	}
+
+	for(QPushButton* btn : m->extension_buttons){
+		l->removeWidget(btn);
+		btn->deleteLater();
+	}
+
+	m->extension_buttons.clear();
+
+	ExtensionSet extensions = m->library->extensions();
+
+	const QStringList ext_str = extensions.extensions();
+	bool has_multiple_extensions = (ext_str.size() > 1);
+	ui->widget_extensions->setVisible(has_multiple_extensions);
+	if(!has_multiple_extensions){
+		return;
+	}
+
+	for(const QString& ext : ext_str)
+	{
+		QPushButton* btn = new QPushButton(ui->widget_extensions);
+		btn->setText(ext);
+		btn->setCheckable(true);
+		btn->setChecked(extensions.is_enabled(ext));
+		//btn->setChecked(false);
+
+		connect(btn, &QPushButton::toggled, this, &GUI_LocalLibrary::extension_button_toggled);
+
+		l->addWidget(btn);
+
+		m->extension_buttons << btn;
+	}
+}
+
+void GUI_LocalLibrary::extension_button_toggled(bool b)
+{
+	QPushButton* btn = static_cast<QPushButton*>(sender());
+	ExtensionSet extensions = m->library->extensions();
+	extensions.set_enabled(btn->text(), b);
+
+	m->library->set_extensions(extensions);
 }
 
 

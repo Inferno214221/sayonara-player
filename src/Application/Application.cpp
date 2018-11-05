@@ -146,9 +146,6 @@ struct Application::Private
 
 		session = new Session(app);
 
-
-		QMap<QDateTime, MetaDataList> history = Session::get_history();
-
 		Gui::Icons::set_standard_theme(QIcon::themeName());
 		Gui::Icons::force_standard_icons(Settings::instance()->get<Set::Icon_ForceInDarkTheme>());
 

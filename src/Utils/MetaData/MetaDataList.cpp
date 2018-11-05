@@ -55,20 +55,20 @@ struct MetaDataList::Private
 };
 
 MetaDataList::MetaDataList() :
-	std::vector<MetaData>()
+	MetaDataList::Parent()
 {
 	m = Pimpl::make<Private>();
 }
 
 MetaDataList::MetaDataList(const MetaData& md) :
-	std::vector<MetaData>()
+	MetaDataList::Parent()
 {
 	m = Pimpl::make<Private>();
 	append(md);
 }
 
 MetaDataList::MetaDataList(const MetaDataList& other) :
-	std::vector<MetaData>()
+	MetaDataList::Parent()
 {
 	m = Pimpl::make<Private>();
 	m->current_track = other.current_track();
@@ -78,7 +78,7 @@ MetaDataList::MetaDataList(const MetaDataList& other) :
 }
 
 MetaDataList::MetaDataList(MetaDataList&& other) :
-	std::vector<MetaData>()
+	MetaDataList::Parent()
 {
 	m = Pimpl::make<Private>(std::move(*(other.m)));
 	m->current_track = other.current_track();
@@ -170,7 +170,7 @@ MetaDataList& MetaDataList::copy_tracks(const IndexSet& indexes, int tgt_idx)
 	MetaDataList v_md; v_md.reserve(indexes.size());
 
 	for(int idx : indexes){
-		v_md << this->operator[](idx);
+		v_md << this->at(idx);
 	}
 
 	return insert_tracks(v_md, tgt_idx);
@@ -282,6 +282,12 @@ MetaDataList& MetaDataList::remove_tracks(int first, int last)
 		set_current_track( m->current_track - n_elems );
 	}
 
+	return *this;
+}
+
+MetaDataList& MetaDataList::remove_tracks(std::function<bool (const MetaData&)> attr)
+{
+	this->erase( std::remove_if(this->begin(), this->end(), attr), this->end() );
 	return *this;
 }
 
@@ -503,7 +509,7 @@ const MetaData& MetaDataList::last() const
 
 int MetaDataList::count() const
 {
-	return (int) std::vector<MetaData>::size();
+	return (int) MetaDataList::Parent::size();
 }
 
 

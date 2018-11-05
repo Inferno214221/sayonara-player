@@ -41,6 +41,7 @@
 #include <limits>
 #include <QTime>
 
+
 struct LocalLibrary::Private
 {
 	Library::ReloadThread*	reload_thread=nullptr;
@@ -145,52 +146,14 @@ void LocalLibrary::show_album_artists_changed()
 
 void LocalLibrary::library_reloading_state_new_block()
 {
-	::Library::Sortings so = sortorder();
 	m->reload_thread->pause();
 
-	m->library_db->getAllAlbums(_albums, so.so_albums);
-	m->library_db->getAllArtists(_artists, so.so_artists);
-	m->library_db->getAllTracks(_tracks, so.so_tracks);
-
-	emit_stuff();
+	this->refresh();
 
 	m->reload_thread->goon();
 }
 
-void LocalLibrary::change_current_disc(Disc disc)
-{
-	if( selected_albums().size() != 1 )
-	{
-		return;
-	}
 
-	MetaDataList v_md;
-
-	if(disc == std::numeric_limits<Disc>::max())
-	{
-		m->library_db->getAllTracksByAlbum(selected_albums().first(), _tracks, filter(), sortorder().so_tracks);
-	}
-
-	else
-	{
-		m->library_db->getAllTracksByAlbum(selected_albums().first(), v_md, filter(), sortorder().so_tracks);
-
-		_tracks.clear();
-
-		for(const MetaData& md : v_md)
-		{
-			if(md.discnumber != disc) {
-				continue;
-			}
-
-			_tracks << std::move(md);
-		}
-	}
-
-	_tracks.sort(sortorder().so_tracks);
-
-	emit sig_all_tracks_loaded();
-}
 
 void LocalLibrary::get_all_artists(ArtistList& artists)
 {
@@ -410,18 +373,6 @@ void LocalLibrary::merge_albums(const SP::Set<Id>& album_ids, AlbumId target_alb
 	tag_edit()->commit();
 }
 
-
-void LocalLibrary::change_track_rating(int idx, Rating rating)
-{
-	MetaDataList v_md{ _tracks[idx] };
-
-	AbstractLibrary::change_track_rating(idx, rating);
-	MetaData md_new = _tracks[idx];
-
-	tag_edit()->set_metadata(v_md);
-	tag_edit()->update_track(0, md_new);
-	tag_edit()->commit();
-}
 
 bool LocalLibrary::set_library_path(const QString& library_path)
 {

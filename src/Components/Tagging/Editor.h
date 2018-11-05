@@ -48,6 +48,7 @@ namespace Tagging
 		PIMPL(Editor)
 
 	signals:
+		void sig_finished();
 		void sig_progress(int);
 		void sig_metadata_received(const MetaDataList& v_md);
 

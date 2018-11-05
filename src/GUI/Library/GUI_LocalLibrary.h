@@ -74,6 +74,8 @@ namespace Library
 		void search_key_pressed(int key) override;
 
 	private slots:
+		void tracks_loaded();
+		void extension_button_toggled(bool b);
 		void switch_album_view();
 
 		void progress_changed(const QString& type, int progress);
@@ -103,6 +105,7 @@ namespace Library
 		void clear_selections() override;
 
 		void show_info_box();
+
 	};
 }
 

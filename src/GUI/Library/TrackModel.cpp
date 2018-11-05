@@ -30,6 +30,7 @@
 
 #include "Components/Library/AbstractLibrary.h"
 #include "Components/Covers/CoverLocation.h"
+#include "Components/Tagging/Editor.h"
 
 #include "GUI/Library/Utils/ColumnIndex.h"
 
@@ -152,7 +153,7 @@ Qt::ItemFlags TrackModel::flags(const QModelIndex &index = QModelIndex()) const
 	return QAbstractTableModel::flags(index);
 }
 
-bool TrackModel::setData(const QModelIndex &index, const QVariant &value, int role)
+bool TrackModel::setData(const QModelIndex& index, const QVariant& value, int role)
 {
 	if(!index.isValid()){
 		return false;
@@ -165,8 +166,16 @@ bool TrackModel::setData(const QModelIndex &index, const QVariant &value, int ro
 
 		if(col == (int) ColumnIndex::Track::Rating)
 		{
-			library()->change_track_rating(row, (Rating) (value.toInt()));
-			emit dataChanged(index, this->index(row, columnCount() - 1));
+			MetaData md = library()->tracks()[row];
+
+			Tagging::Editor* tag_editor = new Tagging::Editor(this);
+			tag_editor->set_metadata(MetaDataList(md));
+			md.rating = (Rating) (value.toInt());
+			tag_editor->update_track(0, md);
+			tag_editor->commit();
+
+			connect(tag_editor, &Tagging::Editor::sig_finished, tag_editor, &Tagging::Editor::deleteLater);
+
 			return true;
 		}
 	}

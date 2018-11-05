@@ -354,6 +354,10 @@ bool Editor::has_cover_replacement(int idx) const
 	return m->cover_map.contains(idx);
 }
 
+void Editor::commit()
+{
+	this->start();
+}
 
 void Editor::run()
 {
@@ -431,11 +435,9 @@ void Editor::run()
 void Editor::thread_finished()
 {
 	ChangeNotifier::instance()->change_metadata(m->v_md_before_change, m->v_md_after_change);
+
+	emit sig_finished();
 }
 
-void Editor::commit()
-{
-	this->start();
-}
 
 
