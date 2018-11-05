@@ -137,6 +137,7 @@ void GUI_LocalLibrary::language_changed()
 	ui->retranslateUi(this);
 	ui->gb_genres->setTitle(Lang::get(Lang::Genres));
 	ui->btn_reload_library->setText(Lang::get(Lang::ReloadLibrary));
+	ui->lab_extension->setText(Lang::get(Lang::Filename));
 
 	GUI_AbstractLibrary::language_changed();
 }

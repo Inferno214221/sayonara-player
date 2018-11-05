@@ -423,10 +423,6 @@ void AbstractLibrary::change_album_selection(const IndexSet& indexes, bool ignor
 		selected_albums.insert(album.id);
 	}
 
-	/*if(selected_albums == m->selected_albums) {
-		return;
-	}*/
-
 	m->tracks.clear();
 	m->selected_albums = selected_albums;
 
@@ -824,6 +820,7 @@ void AbstractLibrary::merge_albums(const IdSet& source_ids, AlbumId target_id)
 void AbstractLibrary::prepare_tracks()
 {
 	m->extensions.clear();
+	m->filtered_tracks.clear();
 
 	for(const MetaData& md : tracks())
 	{
