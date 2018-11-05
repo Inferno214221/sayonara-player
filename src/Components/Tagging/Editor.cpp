@@ -184,7 +184,7 @@ bool Editor::apply_regex(const QString& regex, int idx)
 		}
 
 		else if(key == Tagging::TagTrackNum) {
-			md.discnumber = value.toInt();
+			md.track_num = value.toInt();
 		}
 
 		else if(key == Tagging::TagYear) {
