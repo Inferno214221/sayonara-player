@@ -25,7 +25,7 @@
 #include <type_traits>
 #include <string>
 #include <QString>
-#include <QObject>
+#include <QMetaType>
 
 /**
  * @brief The Log enum
@@ -36,10 +36,11 @@ class QStringList;
 class QByteArray;
 class QPoint;
 class QChar;
-class QObject;
 class LogListener;
 class QRegion;
 class QMargins;
+class QSize;
+class QRect;
 
 enum class Log : unsigned char
 {
