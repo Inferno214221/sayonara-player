@@ -213,23 +213,26 @@ enum class SettingKey : unsigned short
 template<typename DataType, SettingKey keyIndex>
 class SettingIdentifier
 {
-public:
-	using Data=DataType;
-	const static SettingKey key=keyIndex;
+	public:
+		using Data=DataType;
+		const static SettingKey key=keyIndex;
 
-private:
-	SettingIdentifier()=delete;
-	~SettingIdentifier();
+	private:
+		SettingIdentifier();
+		~SettingIdentifier();
 };
 
-#define INST(type, settingkey) using settingkey = SettingIdentifier<type, SettingKey:: settingkey>;
+#define INST(type, settingkey)	template class SettingIdentifier<type, SettingKey:: settingkey>; \
+								namespace Set {	using settingkey = SettingIdentifier<type, SettingKey:: settingkey>; }
+
+#define INST_NO_DB(type, settingkey)	template class SettingIdentifier<type, SettingKey:: settingkey>; \
+								namespace SetNoDB {	using settingkey = SettingIdentifier<type, SettingKey:: settingkey>; }
+
 
 /**
  * @brief Set namespace defines the setting: Which key and which type
  * @ingroup Settings
  */
-namespace Set
-{
 	//typedef SettingKey<bool, SK::LFM_Active> LFM_Active_t; const LFM_Active_t LFM_Active
 	INST(bool,				LFM_Active)				/* is lastFM active? */
 	INST(int,				LFM_ScrobbleTimeSec)	/* time in sec when to scrobble */
@@ -382,13 +385,9 @@ namespace Set
 	INST(int,				Settings_Revision)		/* Version number of settings */
 
 	INST(int,				Logger_Level)				/* Also log development: */
-}
 
-namespace SetNoDB
-{
-	INST(bool,				MP3enc_found)
-	INST(bool,				Pitch_found)
-	INST(bool,				Player_Quit)
-}
+	INST_NO_DB(bool,				MP3enc_found)
+	INST_NO_DB(bool,				Pitch_found)
+	INST_NO_DB(bool,				Player_Quit)
 
 #endif // SETTINGKEY_H
