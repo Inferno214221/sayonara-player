@@ -18,11 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "Crypt.h"
 #include "Utils/Settings/Settings.h"
-
 
 static QByteArray _encrypt(const QByteArray& src, QByteArray key)
 {

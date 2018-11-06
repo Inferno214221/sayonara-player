@@ -37,18 +37,18 @@
 #include <QFont>
 #include <type_traits>
 
-template<typename T>
-void register_setting(const char* db_key, const typename T::Data& default_value)
+template<typename KeyClass>
+void register_setting(const char* db_key, const typename KeyClass::Data& default_value)
 {
-	auto setting = new Setting<typename T::Data, T::key>(db_key, default_value);
+	auto setting = new Setting<KeyClass>(db_key, default_value);
 
 	Settings::instance()->register_setting( setting );
 }
 
-template<typename T>
-void register_setting(const typename T::Data& default_value)
+template<typename KeyClass>
+void register_setting(const typename KeyClass::Data& default_value)
 {
-	auto setting = new Setting<typename T::Data, T::key>(default_value);
+	auto setting = new Setting<KeyClass>(default_value);
 
 	Settings::instance()->register_setting( setting );
 }

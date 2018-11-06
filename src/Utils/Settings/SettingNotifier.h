@@ -23,7 +23,6 @@
 
 #include "Utils/Logger/Logger.h"
 #include "Utils/Settings/SayonaraClass.h"
-#include "Utils/Settings/SettingKey.h"
 
 #include <functional>
 #include <QObject>

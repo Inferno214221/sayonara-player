@@ -21,7 +21,7 @@
 #ifndef SAYONARA_SETTINGS_H_
 #define SAYONARA_SETTINGS_H_
 
-
+#include "Utils/Settings/SettingKey.h"
 #include "Utils/Settings/Setting.h"
 #include "Utils/Settings/SettingNotifier.h"
 #include "Utils/Singleton.h"
@@ -40,62 +40,45 @@ class Settings
 	PIMPL(Settings)
 
 	public:
-
 		AbstrSetting* setting(SettingKey keyIndex) const;
 
 		/* get all settings (used by database) */
 		const SettingArray& settings();
 
-
 		/* before you want to access a setting you have to register it */
 		void register_setting(AbstrSetting* s);
-
 
 		/* checks if all settings are registered */
 		bool check_settings();
 
-
 		/* get a setting, defined by a unique, REGISTERED key */
-		template< typename T>
-		const typename T::Data& get() const
+		template<typename KeyClass>
+		const typename KeyClass::Data& get() const
 		{
-			using DataType = typename T::Data;
-			constexpr SettingKey keyIndex = T::key;
-
-			using SettingPtr=Setting<DataType, keyIndex>*;
-
-			SettingPtr s = static_cast<SettingPtr>( setting(keyIndex) );
+			using SettingPtr=Setting<KeyClass>*;
+			SettingPtr s = static_cast<SettingPtr>( setting(KeyClass::key) );
 			return s->value();
 		}
 
 		/* set a setting, define by a unique, REGISTERED key */
-		template< typename T>
-		void set(const typename T::Data& val)
+		template<typename KeyClass>
+		void set(const typename KeyClass::Data& val)
 		{
-			using DataType = typename T::Data;
-			constexpr SettingKey keyIndex = T::key;
-
-			using SettingPtr=Setting<DataType, keyIndex>*;
-			SettingPtr s = static_cast<SettingPtr>( setting(keyIndex) );
+			using SettingPtr=Setting<KeyClass>*;
+			SettingPtr s = static_cast<SettingPtr>( setting(KeyClass::key) );
 
 			if( s->assign_value(val))
 			{
-				using KeyClass=SettingIdentifier<DataType, keyIndex>;
-
 				SettingNotifier< KeyClass >* sn = SettingNotifier< KeyClass >::instance();
 				sn->val_changed();
 			}
 		}
 
 		/* get a setting, defined by a unique, REGISTERED key */
-		template< typename T>
+		template<typename KeyClass>
 		void shout() const
 		{
-			using DataType = typename T::Data;
-			constexpr SettingKey keyIndex = T::key;
-			using KeyClass=SettingIdentifier<DataType, keyIndex>;
-
-			SettingNotifier< KeyClass >* sn = SettingNotifier< KeyClass >::instance();
+			SettingNotifier<KeyClass >* sn = SettingNotifier< KeyClass >::instance();
 			sn->val_changed();
 		}
 

@@ -22,8 +22,8 @@
 #ifndef SAYONARA_SETTING_H_
 #define SAYONARA_SETTING_H_
 
-#include "Utils/Settings/SettingKey.h"
 #include "Utils/Settings/SettingConverter.h"
+#include "Utils/Settings/SettingKeyEnum.h"
 #include "Utils/Pimpl.h"
 
 class Settings;
@@ -64,7 +64,7 @@ class AbstrSetting
 };
 
 
-template< typename DataType, SettingKey keyIndex,
+template< typename KeyClass,
 		 template <typename Arg> class SC = SettingConverter >
 /**
  * @brief The Setting class\n
@@ -77,21 +77,21 @@ class Setting : public AbstrSetting
 		Setting();
 		Setting(const Setting&);
 
-		DataType _val;
-		DataType _default_val;
+		typename KeyClass::Data _val;
+		typename KeyClass::Data _default_val;
 
 	public:
 
 		/* Constructor */
-		Setting(const char* db_key, const DataType& def) :
-			AbstrSetting(keyIndex, db_key)
+		Setting(const char* db_key, const typename KeyClass::Data& def) :
+			AbstrSetting(KeyClass::key, db_key)
 		{
 			_default_val = def;
 			_val = def;
 		}
 
-		Setting(const DataType& def) :
-			AbstrSetting(keyIndex)
+		Setting(const typename KeyClass::Data& def) :
+			AbstrSetting(KeyClass::key)
 		{
 			_default_val = def;
 			_val = def;
@@ -107,28 +107,28 @@ class Setting : public AbstrSetting
 
 		QString value_to_string() const override
 		{
-			 return SC<DataType>::cvt_to_string(_val);
+			 return SC<typename KeyClass::Data>::cvt_to_string(_val);
 		}
 
 		bool load_value_from_string(const QString& str) override
 		{
-			return SC<DataType>::cvt_from_string(str, _val);
+			return SC<typename KeyClass::Data>::cvt_from_string(str, _val);
 		}
 
 		/* ... */
-		const DataType& value() const
+		const typename KeyClass::Data& value() const
 		{
 			return _val;
 		}
 
 		/* ... */
-		const DataType& default_value() const
+		const typename KeyClass::Data& default_value() const
 		{
 			return _default_val;
 		}
 
 		/* ... */
-		bool assign_value(const DataType& val)
+		bool assign_value(const typename KeyClass::Data& val)
 		{
 			if( _val == val ){
 				return false;
