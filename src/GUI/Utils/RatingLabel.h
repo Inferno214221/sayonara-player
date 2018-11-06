@@ -21,11 +21,11 @@
 #ifndef RATINGLABEL_H
 #define RATINGLABEL_H
 
+#include "Utils/Pimpl.h"
+
 #include <QLabel>
 #include <QPoint>
 #include <QSize>
-
-#include "Utils/Pimpl.h"
 
 /**
  * @brief The RatingLabel class

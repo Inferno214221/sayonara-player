@@ -29,19 +29,19 @@
 
 namespace FileUtils=::Util::File;
 
-QString Cover::Util::calc_cover_token(const QString& artist, const QString& album)
+QString Cover::Utils::calc_cover_token(const QString& artist, const QString& album)
 {
 	QByteArray str = QString(artist.trimmed() + album.trimmed()).toLower().toUtf8();
 
 	return ::Util::calc_hash(str);
 }
 
-QString Cover::Util::cover_directory()
+QString Cover::Utils::cover_directory()
 {
 	return cover_directory(QString());
 }
 
-QString Cover::Util::cover_directory(const QString& append_filename)
+QString Cover::Utils::cover_directory(const QString& append_filename)
 {
 	QString cover_dir = ::Util::sayonara_path("covers");
 	if(!FileUtils::exists(cover_dir))
@@ -57,7 +57,7 @@ QString Cover::Util::cover_directory(const QString& append_filename)
 }
 
 
-void Cover::Util::delete_temp_covers()
+void Cover::Utils::delete_temp_covers()
 {
 	QDir cover_dir = QDir(cover_directory());
 

@@ -21,7 +21,6 @@
 #ifndef AbstractStreamHandler_H
 #define AbstractStreamHandler_H
 
-#include <QMap>
 #include <QObject>
 
 #include "Utils/Pimpl.h"

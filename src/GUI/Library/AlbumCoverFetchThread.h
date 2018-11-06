@@ -23,19 +23,16 @@
 #ifndef ALBUMCOVERFETCHTHREAD_H
 #define ALBUMCOVERFETCHTHREAD_H
 
+#include "Utils/Pimpl.h"
+
 #include <QThread>
 #include <QModelIndex>
-#include <QPair>
-#include <QList>
-
-#include "Utils/Pimpl.h"
 
 namespace Cover
 {
 	class Location;
 }
 
-class Album;
 /**
  * @brief This class organizes requests for new Covers for the AlbumCoverView.
  * When looking for covers, not all requests should be fired simultaneously,

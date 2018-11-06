@@ -23,26 +23,23 @@
 
 #include "Utils/Pimpl.h"
 
-class QString;
-class QByteArray;
-
 namespace LastFM
 {
-    class ArtistMatch;
-    class SimArtistsParser
-    {
-        PIMPL(SimArtistsParser)
+	class ArtistMatch;
+	class SimArtistsParser
+	{
+		PIMPL(SimArtistsParser)
 
-    private:
-        void parse_document();
+	private:
+		void parse_document();
 
-    public:
-        SimArtistsParser(const QString& artist_name, const QByteArray& arr);
-        SimArtistsParser(const QString& artist_name, const QString& filename);
-        ~SimArtistsParser();
+	public:
+		SimArtistsParser(const QString& artist_name, const QByteArray& arr);
+		SimArtistsParser(const QString& artist_name, const QString& filename);
+		~SimArtistsParser();
 
-        LastFM::ArtistMatch artist_match() const;
-    };
+		LastFM::ArtistMatch artist_match() const;
+	};
 }
 
 #endif // LFMSIMARTISTSPARSER_H

@@ -21,11 +21,11 @@
 #ifndef LIBRARYDELETEDIALOG_H
 #define LIBRARYDELETEDIALOG_H
 
-#include <QMessageBox>
+#include "Utils/Pimpl.h"
 #include "Utils/Library/LibraryNamespaces.h"
 #include "GUI/Utils/Widgets/Dialog.h"
 
-#include "Utils/Pimpl.h"
+#include <QMessageBox>
 
 UI_FWD(GUI_DeleteDialog)
 

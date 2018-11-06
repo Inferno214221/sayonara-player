@@ -252,7 +252,7 @@ void SearchableViewInterface::Private::edit_changed(const QString& str)
 {
 	Library::SearchModeMask search_mode = Settings::instance()->get<Set::Lib_SearchMode>();
 	QMap<QChar, QString> extra_triggers = this->search_model->getExtraTriggers();
-	QString converted_string = Library::Util::convert_search_string(str, search_mode, extra_triggers.keys());
+	QString converted_string = Library::Utils::convert_search_string(str, search_mode, extra_triggers.keys());
 
 	this->found_search_indexes = this->search_model->search_results(converted_string);
 	this->current_search_index = -1;

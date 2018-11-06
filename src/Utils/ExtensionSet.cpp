@@ -1,9 +1,11 @@
 #include "ExtensionSet.h"
+#include "Utils/Set.h"
+#include <QString>
 
 struct ExtensionSet::Private
 {
-	SP::Set<QString> enabled_extensions;
-	SP::Set<QString> disabled_extensions;
+	Util::Set<QString> enabled_extensions;
+	Util::Set<QString> disabled_extensions;
 };
 
 ExtensionSet::ExtensionSet()

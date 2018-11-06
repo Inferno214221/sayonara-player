@@ -176,6 +176,8 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Files");
 		case Filesize:
 			return l.tr("Filesize");
+		case Filter:
+			return l.tr("Filter");
 		case First:
 			return l.tr("1st");
 		case Font:

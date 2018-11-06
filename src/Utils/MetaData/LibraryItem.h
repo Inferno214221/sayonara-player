@@ -22,13 +22,10 @@
 #define _LIBRARY_ITEM_H_
 
 #include "Utils/Pimpl.h"
-#include "Utils/typedefs.h"
 #include <vector>
 #include <QHash>
 
 using HashValue=uint32_t;
-class QString;
-
 
 /**
  * @brief The CustomField class

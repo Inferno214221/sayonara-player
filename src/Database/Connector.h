@@ -26,8 +26,6 @@
 #include "Utils/Singleton.h"
 #include "Utils/Pimpl.h"
 
-#include <QList>
-
 #define INDEX_SIZE 3
 
 namespace DB

@@ -98,6 +98,7 @@ public:
 		Filename,
 		Files,
 		Filesize,
+		Filter,
 		First,
 		Font,
 		Fonts,

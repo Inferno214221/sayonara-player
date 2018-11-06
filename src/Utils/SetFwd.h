@@ -21,7 +21,7 @@
 #ifndef SETFWD_H
 #define SETFWD_H
 
-namespace SP
+namespace Util
 {
 	template<typename T>
 	class Set;

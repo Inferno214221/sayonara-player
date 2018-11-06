@@ -163,6 +163,7 @@ QTreeView::branch:selected
 {
 	color: #D8D8D8;
 	background: #424e72;
+	border-bottom: 1px solid #202030;
 }
 
 QTreeView::branch:has-children:!has-siblings:closed,

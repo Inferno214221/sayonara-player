@@ -60,7 +60,7 @@ void DBWrapper::apply_tags(MetaDataList& v_md)
 		if(md.is_extern)
 		{
 			if(Util::File::is_file(md.filepath())){
-				Tagging::Util::getMetaDataOfFile(md);
+				Tagging::Utils::getMetaDataOfFile(md);
 			}
 		}
 	}

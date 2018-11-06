@@ -25,7 +25,6 @@
 #include "Utils/Singleton.h"
 #include "Utils/Pimpl.h"
 
-#include <QList>
 #include <QObject>
 
 class QMenu;

@@ -21,11 +21,7 @@
 #ifndef TAGEXPRESSION_H
 #define TAGEXPRESSION_H
 
-#include <QMap>
 #include "Utils/Pimpl.h"
-
-class QString;
-class QStringList;
 
 namespace Tagging
 {

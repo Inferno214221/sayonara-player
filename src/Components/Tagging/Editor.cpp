@@ -276,7 +276,7 @@ void Editor::set_metadata(const MetaDataList& v_md)
 
 bool Editor::is_cover_supported(int idx) const
 {
-	return Util::is_cover_supported( m->v_md[idx].filepath() );
+	return Utils::is_cover_supported( m->v_md[idx].filepath() );
 }
 
 bool Editor::can_load_entire_album() const
@@ -385,7 +385,7 @@ void Editor::run()
 			continue;
 		}
 
-		bool success = Tagging::Util::setMetaDataOfFile(md);
+		bool success = Tagging::Utils::setMetaDataOfFile(md);
 		if( !success ) {
 			continue;
 		}
@@ -410,7 +410,7 @@ void Editor::run()
 
 		const MetaData& md = m->v_md[idx];
 
-		Tagging::Util::write_cover(md.filepath(), pm);
+		Tagging::Utils::write_cover(md.filepath(), pm);
 		if(n_operations > 5){
 			emit sig_progress( (i++ * 100) / n_operations);
 		}

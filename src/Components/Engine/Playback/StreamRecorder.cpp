@@ -176,7 +176,7 @@ bool SR::StreamRecorder::save()
 
 	m->md.set_filepath(m->sr_recording_dst);
 
-	Tagging::Util::setMetaDataOfFile(m->md);
+	Tagging::Utils::setMetaDataOfFile(m->md);
 	m->session_collector.push_back(m->md);
 
 	PlaylistParser::save_m3u_playlist(m->session_playlist_name, m->session_collector, true);

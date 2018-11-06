@@ -23,13 +23,13 @@
 
 #include <QObject>
 
+#include "Components/Engine/gstfwd.h"
+
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/Settings/SayonaraClass.h"
 #include "Utils/Pimpl.h"
-#include "Components/Engine/gstfwd.h"
 
 class QImage;
-
 namespace Engine
 {
 	/**

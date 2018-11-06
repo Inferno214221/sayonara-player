@@ -23,11 +23,6 @@
 
 #include "Utils/Pimpl.h"
 
-class QString;
-class QStringList;
-class MetaData;
-class MetaDataList;
-
 namespace Library
 {
 	/**

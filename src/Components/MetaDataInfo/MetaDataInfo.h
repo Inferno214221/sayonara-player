@@ -21,15 +21,14 @@
 #ifndef METADATAINFO_H
 #define METADATAINFO_H
 
+#include "Utils/Pimpl.h"
 #include "Utils/Settings/SayonaraClass.h"
 #include "Components/Covers/CoverLocation.h"
 
-#include <QMap>
 #include <QObject>
-#include "Utils/Pimpl.h"
+#include <QMap>
+#include <QList>
 
-class QStringList;
-class MetaDataList;
 class LibraryDatabase;
 
 /**
@@ -95,13 +94,13 @@ class MetaDataInfo :
 
 		virtual Cover::Location cover_location() const;
 
-		const SP::Set<QString>& albums() const;
-		const SP::Set<QString>& artists() const;
-		const SP::Set<QString>& album_artists() const;
+		const Util::Set<QString>& albums() const;
+		const Util::Set<QString>& artists() const;
+		const Util::Set<QString>& album_artists() const;
 
-		const SP::Set<AlbumId>& album_ids() const;
-		const SP::Set<ArtistId>& artist_ids() const;
-		const SP::Set<ArtistId>& album_artist_ids() const;
+		const Util::Set<AlbumId>& album_ids() const;
+		const Util::Set<ArtistId>& artist_ids() const;
+		const Util::Set<ArtistId>& album_artist_ids() const;
 
 		QStringList paths() const;
 		QString pathsstring() const;

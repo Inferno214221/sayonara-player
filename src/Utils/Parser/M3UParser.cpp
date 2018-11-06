@@ -117,7 +117,7 @@ void M3UParser::parse_local_file(const QString& line, MetaData& md)
 
 	else {
 		md.set_filepath(abs_filename);
-		Tagging::Util::getMetaDataOfFile(md);
+		Tagging::Utils::getMetaDataOfFile(md);
 	}
 }
 

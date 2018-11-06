@@ -40,6 +40,7 @@
 #include "Database/LibraryDatabase.h"
 #include "Database/Connector.h"
 
+#include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Message/Message.h"
 #include "Utils/Library/LibraryNamespaces.h"
 #include "Utils/Library/LibraryInfo.h"

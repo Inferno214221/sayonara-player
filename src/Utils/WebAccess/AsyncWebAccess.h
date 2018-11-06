@@ -21,15 +21,12 @@
 #ifndef ASYNCWEBACCESS_H_
 #define ASYNCWEBACCESS_H_
 
-#include <QMap>
-#include <QObject>
-
 #include "AbstractWebAccess.h"
 #include "Utils/Pimpl.h"
 
+#include <QObject>
 
 class QImage;
-class QString;
 class QNetworkReply;
 /**
  * @brief Asynchgronous web access class
@@ -46,7 +43,7 @@ public:
 	/**
 	 * @brief The Behavior enum. Responsible for the user-agent variable in the HTTP header
 	 */
-	enum class Behavior : uint8_t 
+	enum class Behavior : uint8_t
 	{
 		AsBrowser=0,
 		AsSayonara,

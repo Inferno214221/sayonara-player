@@ -25,6 +25,9 @@
 #include "Components/Tagging/ChangeNotifier.h"
 #include "Components/Tagging/Editor.h"
 
+#include "Utils/MetaData/MetaDataList.h"
+#include "Utils/MetaData/Album.h"
+#include "Utils/MetaData/Artist.h"
 #include "Utils/MetaData/Genre.h"
 #include "Utils/MetaData/MetaDataSorting.h"
 #include "Utils/Settings/Settings.h"
@@ -34,14 +37,15 @@
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 #include "Utils/ExtensionSet.h"
+#include "Utils/Set.h"
 
 #include <QHash>
 
 struct AbstractLibrary::Private
 {
-	SP::Set<ArtistId>	selected_artists;
-	SP::Set<AlbumId>	selected_albums;
-	SP::Set<TrackID>	selected_tracks;
+	Util::Set<ArtistId>	selected_artists;
+	Util::Set<AlbumId>	selected_albums;
+	Util::Set<TrackID>	selected_tracks;
 
 	ArtistList			artists;
 	AlbumList			albums;
@@ -264,7 +268,7 @@ void AbstractLibrary::append_current_tracks()
 
 void AbstractLibrary::change_artist_selection(const IndexSet& indexes)
 {
-	SP::Set<ArtistId> selected_artists;
+	Util::Set<ArtistId> selected_artists;
 	for(auto it=indexes.begin(); it!=indexes.end(); it++)
 	{
 		int idx = *it;
@@ -409,7 +413,7 @@ void AbstractLibrary::selected_artists_changed(const IndexSet& indexes)
 
 void AbstractLibrary::change_album_selection(const IndexSet& indexes, bool ignore_artists)
 {
-	SP::Set<AlbumId> selected_albums;
+	Util::Set<AlbumId> selected_albums;
 	bool show_album_artists = _settings->get<Set::Lib_ShowAlbumArtists>();
 
 	for(auto it=indexes.begin(); it != indexes.end(); it++)
@@ -741,7 +745,7 @@ void AbstractLibrary::delete_tracks_by_idx(const IndexSet& indexes, Library::Tra
 }
 
 
-void AbstractLibrary::add_genre(SP::Set<Id> ids, const Genre& genre)
+void AbstractLibrary::add_genre(Util::Set<Id> ids, const Genre& genre)
 {
 	MetaDataList v_md;
 	get_all_tracks(v_md);

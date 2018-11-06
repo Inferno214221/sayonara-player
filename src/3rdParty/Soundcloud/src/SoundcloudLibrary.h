@@ -23,8 +23,8 @@
 
 #include "SoundcloudData.h"
 #include "Components/Library/AbstractLibrary.h"
-#include "Utils/Pimpl.h"
 #include "Utils/Library/Sorting.h"
+#include "Utils/Pimpl.h"
 
 namespace Cover
 {

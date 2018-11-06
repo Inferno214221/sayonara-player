@@ -341,7 +341,7 @@ void GUI_AlternativeCovers::reset()
 		m->cl_alternative->stop();
 	}
 
-	Cover::Util::delete_temp_covers();
+	Cover::Utils::delete_temp_covers();
 }
 
 
@@ -439,7 +439,7 @@ void GUI_AlternativeCovers::closeEvent(QCloseEvent *e)
 
 	m->loading_bar->hide();
 
-	Cover::Util::delete_temp_covers();
+	Cover::Utils::delete_temp_covers();
 
 	Dialog::closeEvent(e);
 }

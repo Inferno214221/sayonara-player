@@ -21,14 +21,13 @@
 #ifndef Query_H
 #define Query_H
 
-#include <QSqlQuery>
+#include "Utils/Pimpl.h"
+
 #include <QString>
+#include <QSqlQuery>
 #include <QVariant>
 #include <QSqlDatabase>
 #include <QSqlError>
-
-#include "Utils/Pimpl.h"
-
 
 namespace DB
 {
@@ -40,7 +39,7 @@ namespace DB
 
 		private:
 			explicit Query(const QString& query=QString(), const QSqlDatabase& db = QSqlDatabase()) = delete;
-			explicit Query(QSqlResult * result) = delete;
+			explicit Query(QSqlResult* result) = delete;
 			explicit Query(QSqlDatabase db);
 
 		public:

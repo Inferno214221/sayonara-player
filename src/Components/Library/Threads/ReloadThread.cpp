@@ -167,7 +167,7 @@ bool ReloadThread::get_and_save_all_files(const QHash<QString, MetaData>& md_map
 			}
 
 			// fetch some metadata and check if we have the same data already in library in the next step
-			file_was_read = Tagging::Util::getMetaDataOfFile(md, Tagging::Util::Quality::Dirty);
+			file_was_read = Tagging::Utils::getMetaDataOfFile(md, Tagging::Utils::Quality::Dirty);
 			if(!file_was_read) {
 				continue;
 			}
@@ -178,7 +178,7 @@ bool ReloadThread::get_and_save_all_files(const QHash<QString, MetaData>& md_map
 			}
 		}
 
-		file_was_read = Tagging::Util::getMetaDataOfFile(md, Tagging::Util::Quality::Quality);
+		file_was_read = Tagging::Utils::getMetaDataOfFile(md, Tagging::Utils::Quality::Quality);
 		if(file_was_read)
 		{
 			v_md_to_store << md;
@@ -208,6 +208,8 @@ bool ReloadThread::get_and_save_all_files(const QHash<QString, MetaData>& md_map
 
 void ReloadThread::store_metadata_block(const MetaDataList& v_md)
 {
+	using StringSet=::Util::Set<QString>;
+
 	DB::Connector* db = m->db;
 	DB::LibraryDatabase*	lib_db = db->library_db(m->library_id, db->db_id());
 
@@ -218,7 +220,7 @@ void ReloadThread::store_metadata_block(const MetaDataList& v_md)
 	sp_log(Log::Develop, this) << "Adding Covers...";
 	DB::Covers* db_covers = DB::Connector::instance()->cover_connector();
 
-	SP::Set<QString> all_hashes = db_covers->get_all_hashes();
+	StringSet all_hashes = db_covers->get_all_hashes();
 
 	db->transaction();
 	for(const MetaData& md : v_md)

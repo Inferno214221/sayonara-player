@@ -409,7 +409,7 @@ QModelIndexList CoverModel::search_results(const QString& substr)
 	for(int i=0; i<n_albums; i++)
 	{
 		QString title = searchable_string(i);
-		title = Library::Util::convert_search_string(title, search_mode());
+		title = Library::Utils::convert_search_string(title, search_mode());
 
 		if(title.contains(substr))
 		{
@@ -420,7 +420,7 @@ QModelIndexList CoverModel::search_results(const QString& substr)
 		const QStringList artists = a[i].artists();
 		for(const QString& artist : artists)
 		{
-			QString cvt_artist = Library::Util::convert_search_string(artist, search_mode());
+			QString cvt_artist = Library::Utils::convert_search_string(artist, search_mode());
 
 			if(cvt_artist.contains(substr)){
 				ret << this->index(i / columnCount(), i % columnCount());
@@ -511,7 +511,7 @@ const AlbumList& CoverModel::albums() const
 	return library()->albums();
 }
 
-const SP::Set<Id>& CoverModel::selections() const
+const Util::Set<Id>& CoverModel::selections() const
 {
 	return library()->selected_albums();
 }

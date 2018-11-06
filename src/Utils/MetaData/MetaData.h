@@ -32,14 +32,10 @@
 #include "Utils/MetaData/RadioMode.h"
 #include "Utils/MetaData/Genre.h"
 #include "Utils/Library/Sortorder.h"
-#include "Utils/SetFwd.h"
 #include "Utils/Pimpl.h"
 
 #include <QMetaType>
 #include <QString>
-
-class QStringList;
-class Genre;
 
 /**
  * @brief The MetaData class
@@ -74,10 +70,10 @@ public:
 	bool is_disabled;
 
 public:
-	MetaData ();
+	MetaData();
 	explicit MetaData (const QString& path);
-	MetaData (const MetaData& );
-	MetaData ( MetaData&& );
+	MetaData(const MetaData& );
+	MetaData( MetaData&& );
 	MetaData& operator=(const MetaData& md);
 	MetaData& operator=(MetaData&& md);
 
@@ -116,12 +112,12 @@ public:
 	bool is_equal(const MetaData& md) const;
 	bool is_equal_deep(const MetaData& md) const;
 
-	const SP::Set<GenreID>& genre_ids() const;
-	SP::Set<Genre> genres() const;
+	const Util::Set<GenreID>& genre_ids() const;
+	Util::Set<Genre> genres() const;
 	bool has_genre(const Genre& genre) const;
 	bool remove_genre(const Genre& genre);
 	bool add_genre(const Genre& genre);
-	void set_genres(const SP::Set<Genre>& genres);
+	void set_genres(const Util::Set<Genre>& genres);
 	void set_genres(const QStringList& genres);
 
 	QString genres_to_string() const;
@@ -136,6 +132,9 @@ private:
 	QHash<GenreID, Genre>& genre_pool() const;
 };
 
-Q_DECLARE_METATYPE(MetaData)
+#ifndef MetaDataDeclared
+	Q_DECLARE_METATYPE(MetaData)
+	#define MetaDataDeclared
+#endif
 
 #endif /* METADATA_H_ */

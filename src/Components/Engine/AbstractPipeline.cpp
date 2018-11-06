@@ -25,6 +25,7 @@
 #include "Callbacks/PipelineCallbacks.h"
 #include "Utils/Logger/Logger.h"
 
+#include <QTimer>
 #include <gst/app/gstappsink.h>
 
 using Pipeline::Base;

@@ -21,24 +21,14 @@
 #ifndef SAYONARASELECTIONVIEW_H
 #define SAYONARASELECTIONVIEW_H
 
-#include "Utils/typedefs.h"
 #include "Utils/Pimpl.h"
-
 #include <QModelIndex>
-#include <QPair>
-#include <QList>
 
 using ModelIndexRange=QPair<QModelIndex, QModelIndex>; // top left, bottom right
 using ModelIndexRanges=QList<ModelIndexRange>;
 
 class QItemSelectionModel;
 class QKeyEvent;
-
-namespace SP
-{
-	template<typename T>
-	class Set;
-}
 
 /**
  * @brief The SayonaraSelectionView class

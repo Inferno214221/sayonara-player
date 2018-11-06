@@ -23,7 +23,6 @@
 
 #include "Utils/Pimpl.h"
 
-class QString;
 class QTcpSocket;
 
 /**

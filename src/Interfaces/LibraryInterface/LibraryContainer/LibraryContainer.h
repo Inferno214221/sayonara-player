@@ -21,9 +21,10 @@
 #ifndef LIBRARYCONTAINER_H
 #define LIBRARYCONTAINER_H
 
-#include <QObject>
 #include "Utils/Pimpl.h"
 #include "Utils/Settings/SayonaraClass.h"
+
+#include <QObject>
 
 class QFrame;
 class QAction;
@@ -32,7 +33,6 @@ class QMenu;
 class QWidget;
 class QComboBox;
 class Settings;
-
 
 /**
  * @brief An interface class needed when implementing a library plugin

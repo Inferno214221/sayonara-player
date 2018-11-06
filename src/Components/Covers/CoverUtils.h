@@ -27,7 +27,7 @@ class QString;
  */
 namespace Cover
 {
-	namespace Util
+	namespace Utils
 	{
 		/**
 		 * @brief calc_cover_token calculate the hash for a cover

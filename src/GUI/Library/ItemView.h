@@ -37,15 +37,10 @@
 #include "GUI/Utils/Shortcuts/ShortcutWidget.h"
 
 #include "Utils/Library/Sortorder.h"
-#include "Utils/MetaData/MetaDataFwd.h"
-#include "Utils/typedefs.h"
 #include "Utils/Set.h"
 #include "Utils/Pimpl.h"
 
 class AbstractLibrary;
-class LibraryContextMenu;
-class QStringList;
-class QMenu;
 
 namespace Library
 {
@@ -65,8 +60,8 @@ namespace Library
 	protected:
 		struct MergeData
 		{
-			SP::Set<Id>	source_ids;
-			Id			target_id;
+			Util::Set<Id>	source_ids;
+			Id				target_id;
 
 			bool is_valid() const;
 		};
@@ -81,7 +76,7 @@ namespace Library
 		void sig_refresh_clicked();
 		void sig_import_files(const QStringList& files);
 		void sig_sel_changed(const IndexSet& indexes);
-		void sig_merge(const SP::Set<Id>& ids, int target_id);
+		void sig_merge(const Util::Set<Id>& ids, int target_id);
 
 	private:
 		ItemView(const ItemView& other)=delete;
@@ -158,6 +153,7 @@ namespace Library
 		virtual void refresh_clicked();
 		virtual void cover_view_toggled();
 		virtual void album_artists_toggled();
+		virtual void filter_extensions_triggered(const QString& extension, bool b);
 		virtual void fill();
 
 	public:

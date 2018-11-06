@@ -226,7 +226,7 @@ Cover::Location TrackModel::cover(const IndexSet& indexes) const
 	}
 
 	const MetaDataList& tracks = library()->tracks();
-	SP::Set<AlbumId> album_ids;
+	Util::Set<AlbumId> album_ids;
 
 	for(int idx : indexes)
 	{
@@ -250,7 +250,7 @@ int TrackModel::searchable_column() const
 }
 
 
-const SP::Set<Id>& TrackModel::selections() const
+const Util::Set<Id>& TrackModel::selections() const
 {
 	return library()->selected_tracks();
 }

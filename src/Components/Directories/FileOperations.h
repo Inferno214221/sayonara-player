@@ -27,9 +27,6 @@
 
 #include <QThread>
 
-class QString;
-class QStringList;
-
 class DirectoryCopyThread : public QThread
 {
 	Q_OBJECT

@@ -23,6 +23,7 @@
 
 #include "Components/Library/AbstractLibrary.h"
 
+#include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Message/Message.h"
 #include "Utils/Library/SearchMode.h"
 #include "Utils/Library/Filter.h"

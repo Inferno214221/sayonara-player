@@ -25,7 +25,6 @@
 #define SOMAFMLIBRARY_H
 
 #include <QObject>
-#include <QList>
 
 #include "Utils/Pimpl.h"
 

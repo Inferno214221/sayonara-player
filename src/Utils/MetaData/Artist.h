@@ -22,8 +22,8 @@
 #define _ARTIST_H_
 
 #include "Utils/MetaData/LibraryItem.h"
-#include "Utils/Pimpl.h"
 #include "Utils/Library/Sortorder.h"
+#include "Utils/Pimpl.h"
 
 #include <QStringList>
 #include <QMetaType>

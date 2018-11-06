@@ -21,17 +21,11 @@
 #ifndef STREAMPARSER_H
 #define STREAMPARSER_H
 
-#include <QObject>
-#include <QPair>
-
 #include "Utils/Pimpl.h"
-
-class QStringList;
+#include <QObject>
 
 using PlaylistFiles=QStringList;
 
-class MetaDataList;
-class MetaData;
 class StreamParser : public QObject
 {
 	Q_OBJECT

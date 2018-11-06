@@ -20,6 +20,7 @@
 
 #include "ArtistMatch.h"
 
+#include <QMap>
 #include <QStringList>
 
 #include <algorithm>

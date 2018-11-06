@@ -23,21 +23,21 @@ void RatingTest::run_test(const QString& filename)
 	MetaData md(filename);
 	MetaData md2(filename);
 
-	Tagging::Util::getMetaDataOfFile(md);
+	Tagging::Utils::getMetaDataOfFile(md);
 
 	md.rating = 3;
-	Tagging::Util::setMetaDataOfFile(md);
+	Tagging::Utils::setMetaDataOfFile(md);
 	QVERIFY(md.rating == 3);
 
-	Tagging::Util::getMetaDataOfFile(md2);
+	Tagging::Utils::getMetaDataOfFile(md2);
 	qDebug() << "Expect 3, get " << md2.rating;
 	QVERIFY(md2.rating == 3);
 
 	md.rating = 0;
-	Tagging::Util::setMetaDataOfFile(md);
+	Tagging::Utils::setMetaDataOfFile(md);
 	QVERIFY(md.rating == 0);
 
-	Tagging::Util::getMetaDataOfFile(md2);
+	Tagging::Utils::getMetaDataOfFile(md2);
 	qDebug() << "Expect 0, get " << md2.rating;
 	QVERIFY(md2.rating == 0);
 }

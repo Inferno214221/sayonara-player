@@ -18,12 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef LIBRARYPLUGINCOMBOBOX_H
 #define LIBRARYPLUGINCOMBOBOX_H
 
-#include <QComboBox>
 #include "Utils/Pimpl.h"
 #include "Utils/Settings/SayonaraClass.h"
 #include "GUI/Utils/Widgets/ComboBox.h"

@@ -3,13 +3,10 @@
 
 #include "Utils/Settings/SayonaraClass.h"
 #include "Utils/Pimpl.h"
-#include "Utils/MetaData/MetaDataList.h"
 
 #include <QObject>
-#include <QMap>
 #include <QDateTime>
 
-class MetaData;
 class QDateTime;
 
 class Session :

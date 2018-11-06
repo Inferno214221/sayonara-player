@@ -27,7 +27,6 @@
 #include "Utils/Pimpl.h"
 
 class FileListModel;
-class MetaDataList;
 class LibraryContextMenu;
 
 class FileListView :

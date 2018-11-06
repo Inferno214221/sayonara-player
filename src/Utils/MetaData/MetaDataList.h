@@ -22,13 +22,9 @@
 #define METADATALIST_H
 
 #include "MetaData.h"
-#include "MetaDataFwd.h"
-#include "Utils/typedefs.h"
-#include "Utils/SetFwd.h"
 #include "Utils/Pimpl.h"
 #include "Utils/Library/Sortorder.h"
 
-#include <vector>
 #include <deque>
 #include <functional>
 

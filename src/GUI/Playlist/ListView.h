@@ -40,11 +40,7 @@
 #include "Utils/Pimpl.h"
 #include "Utils/Settings/SayonaraClass.h"
 
-#include <QPoint>
-#include <QDrag>
-#include <QList>
-#include <QProxyStyle>
-
+class QPoint;
 class PlaylistView :
 		public SearchableTableView,
 		public InfoDialogContainer,

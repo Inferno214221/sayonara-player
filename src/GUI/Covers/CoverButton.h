@@ -21,10 +21,10 @@
 #ifndef COVER_BUTTON_H
 #define COVER_BUTTON_H
 
-#include <QPushButton>
-
 #include "Utils/Pimpl.h"
 #include "GUI/Utils/Widgets/WidgetTemplate.h"
+
+#include <QPushButton>
 
 class QPixmap;
 class QResizeEvent;

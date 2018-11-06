@@ -27,7 +27,6 @@
 #include "Utils/Pimpl.h"
 #include "Utils/Settings/SayonaraClass.h"
 
-#include <QList>
 #include <QObject>
 
 class LocalLibrary;

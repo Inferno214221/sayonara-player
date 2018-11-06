@@ -22,7 +22,6 @@
 #define _CUSTOMMIMEDATA_H
 
 #include "Utils/Pimpl.h"
-#include "Utils/MetaData/MetaDataFwd.h"
 
 #include <QMimeData>
 

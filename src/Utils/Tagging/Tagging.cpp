@@ -58,7 +58,7 @@
 #include <QRegExp>
 #include <QStringList>
 
-using namespace Tagging::Util;
+using namespace Tagging::Utils;
 
 struct ParsedTag
 {
@@ -69,7 +69,7 @@ struct ParsedTag
 
 static ParsedTag tag_type_from_fileref(const TagLib::FileRef& f);
 
-bool Tagging::Util::is_valid_file(const TagLib::FileRef& f)
+bool Tagging::Utils::is_valid_file(const TagLib::FileRef& f)
 {
 	if( f.isNull() ||
 		!f.tag() ||
@@ -82,7 +82,7 @@ bool Tagging::Util::is_valid_file(const TagLib::FileRef& f)
 	return true;
 }
 
-bool Tagging::Util::getMetaDataOfFile(MetaData& md, Quality quality)
+bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 {
 	if(md.filepath().contains("never", Qt::CaseInsensitive)){
 		int x = 4;
@@ -265,7 +265,7 @@ bool Tagging::Util::getMetaDataOfFile(MetaData& md, Quality quality)
 }
 
 
-bool Tagging::Util::setMetaDataOfFile(const MetaData& md)
+bool Tagging::Utils::setMetaDataOfFile(const MetaData& md)
 {
 	QString filepath = md.filepath();
 	TagLib::FileRef f(TagLib::FileName(filepath.toUtf8()));
@@ -348,7 +348,7 @@ bool Tagging::Util::setMetaDataOfFile(const MetaData& md)
 }
 
 
-bool Tagging::Util::write_cover(const QString& filepath, const QPixmap& cover)
+bool Tagging::Utils::write_cover(const QString& filepath, const QPixmap& cover)
 {
 	QString tmp_filepath = ::Util::sayonara_path("tmp.png");
 
@@ -366,7 +366,7 @@ bool Tagging::Util::write_cover(const QString& filepath, const QPixmap& cover)
 }
 
 
-bool Tagging::Util::write_cover(const QString& filepath, const QString& cover_image_path)
+bool Tagging::Utils::write_cover(const QString& filepath, const QString& cover_image_path)
 {
 	QString error_msg = "Cannot save cover. ";
 
@@ -426,7 +426,7 @@ bool Tagging::Util::write_cover(const QString& filepath, const QString& cover_im
 	return f.save();
 }
 
-QPixmap Tagging::Util::extract_cover(const QString& filepath)
+QPixmap Tagging::Utils::extract_cover(const QString& filepath)
 {
 	QByteArray data;
 	QString mime;
@@ -440,7 +440,7 @@ QPixmap Tagging::Util::extract_cover(const QString& filepath)
 }
 
 
-bool Tagging::Util::extract_cover(const QString& filepath, QByteArray& cover_data, QString& mime_type)
+bool Tagging::Utils::extract_cover(const QString& filepath, QByteArray& cover_data, QString& mime_type)
 {
 	TagLib::FileRef f(TagLib::FileName(filepath.toUtf8()));
 
@@ -491,7 +491,7 @@ bool Tagging::Util::extract_cover(const QString& filepath, QByteArray& cover_dat
 }
 
 
-bool Tagging::Util::has_cover(const QString& filepath)
+bool Tagging::Utils::has_cover(const QString& filepath)
 {
 	TagLib::FileRef f(TagLib::FileName(filepath.toUtf8()));
 
@@ -529,7 +529,7 @@ bool Tagging::Util::has_cover(const QString& filepath)
 }
 
 
-bool Tagging::Util::is_cover_supported(const QString& filepath)
+bool Tagging::Utils::is_cover_supported(const QString& filepath)
 {
 	TagLib::FileRef f(TagLib::FileName(filepath.toUtf8()));
 	if(!is_valid_file(f)){
@@ -543,7 +543,7 @@ bool Tagging::Util::is_cover_supported(const QString& filepath)
 }
 
 
-bool Tagging::Util::write_lyrics(const MetaData& md, const QString& lyrics_data)
+bool Tagging::Utils::write_lyrics(const MetaData& md, const QString& lyrics_data)
 {
 	QString filepath = md.filepath();
 	TagLib::FileRef f(TagLib::FileName(filepath.toUtf8()));
@@ -586,7 +586,7 @@ bool Tagging::Util::write_lyrics(const MetaData& md, const QString& lyrics_data)
 }
 
 
-bool Tagging::Util::extract_lyrics(const MetaData& md, QString& lyrics_data)
+bool Tagging::Utils::extract_lyrics(const MetaData& md, QString& lyrics_data)
 {
 	lyrics_data.clear();
 
@@ -634,7 +634,7 @@ bool Tagging::Util::extract_lyrics(const MetaData& md, QString& lyrics_data)
 }
 
 
-bool Tagging::Util::is_lyrics_supported(const QString& filepath)
+bool Tagging::Utils::is_lyrics_supported(const QString& filepath)
 {
 	TagLib::FileRef f(TagLib::FileName(filepath.toUtf8()));
 
@@ -724,7 +724,7 @@ static ParsedTag tag_type_from_fileref(const TagLib::FileRef& f)
 }
 
 
-TagType Tagging::Util::get_tag_type(const QString &filepath)
+TagType Tagging::Utils::get_tag_type(const QString &filepath)
 {
 	TagLib::FileRef f(TagLib::FileName(filepath.toUtf8()));
 	if(!is_valid_file(f)){
@@ -735,7 +735,7 @@ TagType Tagging::Util::get_tag_type(const QString &filepath)
 	return parsed.type;
 }
 
-QString Tagging::Util::tag_type_to_string(TagType type)
+QString Tagging::Utils::tag_type_to_string(TagType type)
 {
 	switch(type){
 		case TagType::ID3v1:

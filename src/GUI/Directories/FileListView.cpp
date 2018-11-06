@@ -268,7 +268,7 @@ void FileListView::set_search_filter(const QString& search_string)
 	}
 
 	Library::SearchModeMask smm = _settings->get<Set::Lib_SearchMode>();
-	QString search_text = Library::Util::convert_search_string(search_string, smm);
+	QString search_text = Library::Utils::convert_search_string(search_string, smm);
 
 	int n_rows = m->model->rowCount();
 	for(int i=0; i<n_rows; i++)
@@ -283,7 +283,7 @@ void FileListView::set_search_filter(const QString& search_string)
 			continue;
 		}
 
-		data = Library::Util::convert_search_string(data, smm);
+		data = Library::Utils::convert_search_string(data, smm);
 		if(data.contains(search_text, Qt::CaseInsensitive)){
 			this->selectionModel()->select(idx, (QItemSelectionModel::Select | QItemSelectionModel::Rows));
 		}

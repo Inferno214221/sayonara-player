@@ -585,7 +585,7 @@ bool GUI_TagEdit::is_cover_replacement_active() const
 
 void GUI_TagEdit::set_cover(const MetaData& md)
 {
-	bool has_cover = Tagging::Util::has_cover(md.filepath());
+	bool has_cover = Tagging::Utils::has_cover(md.filepath());
 
 	if(!has_cover)
 	{
@@ -597,7 +597,7 @@ void GUI_TagEdit::set_cover(const MetaData& md)
 	{
 		QSize sz = ui->btn_cover_original->size();
 
-		QPixmap pm = Tagging::Util::extract_cover(md.filepath())
+		QPixmap pm = Tagging::Utils::extract_cover(md.filepath())
 			.scaled(sz, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
 		QIcon icon;

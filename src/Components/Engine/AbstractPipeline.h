@@ -27,10 +27,6 @@
 #include <gst/gst.h>
 #include <gst/gstbuffer.h>
 
-#include <memory>
-
-#include <QTimer>
-
 namespace Engine
 {
 	class Base;

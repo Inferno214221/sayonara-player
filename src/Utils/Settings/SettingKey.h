@@ -96,6 +96,7 @@ enum class SettingKey : unsigned short
 	Lib_LastIndex,
 	Lib_AllLibraries,				// deprecated
 	Lib_UseViewClearButton,
+	Lib_ShowFilterExtBar,
 
 	Dir_ShowTracks,
 	Dir_SplitterDirFile,
@@ -275,6 +276,7 @@ namespace Set
 	INST(QList<::Library::Info>, Lib_AllLibraries)		// deprecated
 	INST(int,				Lib_LastIndex)				/* Last selected library */
 	INST(bool,				Lib_UseViewClearButton)	/* Show clear button in single view */
+	INST(bool,				Lib_ShowFilterExtBar) /* Show the file extension filter bar in track view */
 
 	INST(bool,				Dir_ShowTracks)			/* show tracks panel in directory view */
 	INST(QByteArray,		Dir_SplitterDirFile)		/* Splitter state between dirs and files */

@@ -24,7 +24,6 @@
 #include "GUI/Utils/SearchableWidget/SearchableModel.h"
 #include "Utils/Pimpl.h"
 
-#include <QStringList>
 #include <QModelIndex>
 
 class QVariant;

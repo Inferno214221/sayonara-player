@@ -52,7 +52,7 @@ struct CoverButton::Private
 		current_cover(Location::invalid_location().cover_path()),
 		cover_forced(false)
 	{
-		class_tmp_file = Cover::Util::cover_directory("cb_" + Util::random_string(16) + ".jpg");
+		class_tmp_file = Cover::Utils::cover_directory("cb_" + Util::random_string(16) + ".jpg");
 	}
 
 	~Private()

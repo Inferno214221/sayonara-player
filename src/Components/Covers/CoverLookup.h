@@ -35,8 +35,6 @@
 #include <QPixmap>
 #include <QList>
 
-class Album;
-
 namespace Cover
 {
 	class Location;

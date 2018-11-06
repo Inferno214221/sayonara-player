@@ -27,10 +27,6 @@
 
 #include <QObject>
 
-class QString;
-class QStringList;
-class MetaData;
-
 class Lyrics :
 		public QObject
 {

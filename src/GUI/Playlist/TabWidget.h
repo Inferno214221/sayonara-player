@@ -26,7 +26,6 @@
 
 #include <QTabWidget>
 
-class MetaDataList;
 class PlaylistTabWidget :
 		public QTabWidget
 {

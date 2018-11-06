@@ -27,8 +27,6 @@
 #include "Utils/Pimpl.h"
 #include "Utils/Settings/SayonaraClass.h"
 
-class MetaData;
-
 /**
  * @brief Global handler for current playback state (Singleton)
  * @ingroup Components

@@ -21,12 +21,11 @@
 #ifndef CONTEXTMENU_H
 #define CONTEXTMENU_H
 
-#include <QMenu>
-
 #include "GUI/Utils/Widgets/WidgetTemplate.h"
 #include "Utils/Pimpl.h"
 
-class QAction;
+#include <QMenu>
+
 class PreferenceAction;
 
 /**

@@ -23,15 +23,15 @@
 
 #include <cstdint>
 #include <vector>
-#include <QList>
+#include "Utils/SetFwd.h"
+#include "Utils/MetaData/MetaDataFwd.h"
 
+class QByteArray;
 class QString;
+class QStringList;
 template <typename A, typename B> struct QPair;
+template <typename A, typename B> struct QMap;
 template <typename T> class QList;
-namespace SP
-{
-	template <typename T> class Set;
-}
 
 /**
  * @brief Sayonara Typedefs
@@ -46,9 +46,9 @@ using Id=int32_t;
 using ArtistId=Id;
 using AlbumId=Id;
 using TrackID=Id;
-using IntSet=SP::Set<int>;
-using IndexSet=SP::Set<int>;
-using IdSet=SP::Set<Id>;
+using IntSet=Util::Set<int>;
+using IndexSet=Util::Set<int>;
+using IdSet=Util::Set<Id>;
 using LibraryId=int8_t;
 using DbId=uint8_t;
 using Byte=uint8_t;

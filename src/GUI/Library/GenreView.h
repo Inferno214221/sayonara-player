@@ -21,26 +21,23 @@
 #ifndef LIBRARYGENREVIEW_H
 #define LIBRARYGENREVIEW_H
 
-#include <QTreeWidget>
-
 #include "GUI/Utils/Widgets/WidgetTemplate.h"
 #include "GUI/Utils/SearchableWidget/SearchableView.h"
 #include "Utils/Pimpl.h"
-#include "Utils/SetFwd.h"
 
-class MetaDataList;
+#include <QTreeWidget>
+
 class Genre;
 class TreeDelegate;
-class QStringList;
 class LocalLibrary;
 
-namespace SP
+namespace Util
 {
 	template<typename T>
 	class Tree;
 }
 
-using GenreNode=SP::Tree<QString>;
+using GenreNode=Util::Tree<QString>;
 
 namespace Library
 {
@@ -63,8 +60,8 @@ namespace Library
 		bool has_items() const;
 
 	private:
-		void set_genres(const SP::Set<Genre>& genres);
-		void build_genre_data_tree(const SP::Set<Genre>& genres);
+		void set_genres(const Util::Set<Genre>& genres);
+		void build_genre_data_tree(const Util::Set<Genre>& genres);
 		void populate_widget(QTreeWidgetItem* parent_item, GenreNode* node);
 
 		QTreeWidgetItem* find_genre(const QString& genre);

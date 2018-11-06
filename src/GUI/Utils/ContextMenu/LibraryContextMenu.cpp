@@ -29,6 +29,7 @@
 #include "Utils/Utils.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language.h"
+#include "Utils/ExtensionSet.h"
 
 #include <QMap>
 #include <QTimer>
@@ -36,6 +37,8 @@
 struct LibraryContextMenu::Private
 {
 	QMap<LibraryContextMenu::Entry, QAction*> entry_action_map;
+
+	QMenu*		filter_extension_menu=nullptr;
 
 	QAction*	info_action=nullptr;
 	QAction*	lyrics_action=nullptr;
@@ -49,7 +52,8 @@ struct LibraryContextMenu::Private
 	QAction*	refresh_action=nullptr;
 	QAction*	clear_action=nullptr;
 	QAction*	cover_view_action=nullptr;
-	QAction*	clear_selection_action=nullptr;
+	QAction*	filter_extension_action=nullptr;
+	QAction*	show_filter_extension_bar_action=nullptr;
 	QAction*	preference_separator=nullptr;
 
 	bool has_preference_actions;
@@ -75,25 +79,15 @@ LibraryContextMenu::LibraryContextMenu(QWidget* parent) :
 	m->append_action = new QAction(this);
 	m->refresh_action = new QAction(this);
 	m->clear_action = new QAction(this);
-	m->clear_selection_action = new QAction(this);
 	m->cover_view_action = new QAction(this);
 	m->cover_view_action->setCheckable(true);
+	m->filter_extension_menu = new QMenu(this);
+	m->filter_extension_action = this->addMenu(m->filter_extension_menu);
+	m->show_filter_extension_bar_action = new QAction(this);
+	m->show_filter_extension_bar_action->setCheckable(true);
 
 	Set::listen<Set::Lib_ShowAlbumCovers>(this, &LibraryContextMenu::show_cover_view_changed);
-
-	connect(m->info_action, &QAction::triggered, this, &LibraryContextMenu::sig_info_clicked);
-	connect(m->lyrics_action, &QAction::triggered, this, &LibraryContextMenu::sig_lyrics_clicked);
-	connect(m->edit_action, &QAction::triggered, this, &LibraryContextMenu::sig_edit_clicked);
-	connect(m->remove_action, &QAction::triggered, this, &LibraryContextMenu::sig_remove_clicked);
-	connect(m->delete_action, &QAction::triggered, this, &LibraryContextMenu::sig_delete_clicked);
-	connect(m->play_action, &QAction::triggered, this, &LibraryContextMenu::sig_play_clicked);
-	connect(m->play_new_tab_action, &QAction::triggered, this, &LibraryContextMenu::sig_play_new_tab_clicked);
-	connect(m->play_next_action, &QAction::triggered, this, &LibraryContextMenu::sig_play_next_clicked);
-	connect(m->append_action, &QAction::triggered, this, &LibraryContextMenu::sig_append_clicked);
-	connect(m->refresh_action, &QAction::triggered, this, &LibraryContextMenu::sig_refresh_clicked);
-	connect(m->clear_action, &QAction::triggered, this, &LibraryContextMenu::sig_clear_clicked);
-	connect(m->clear_selection_action, &QAction::triggered, this, &LibraryContextMenu::sig_clear_selection_clicked);
-	connect(m->cover_view_action, &QAction::triggered, this, &LibraryContextMenu::show_cover_triggered);
+	Set::listen<Set::Lib_ShowFilterExtBar>(this, &LibraryContextMenu::show_filter_ext_bar_changed);
 
 	ShortcutHandler* sch = ShortcutHandler::instance();
 	connect(sch, &ShortcutHandler::sig_shortcut_changed, this, &LibraryContextMenu::shortcut_changed);
@@ -108,6 +102,7 @@ LibraryContextMenu::LibraryContextMenu(QWidget* parent) :
 			<< m->info_action
 			<< m->lyrics_action
 			<< m->edit_action
+			<< m->filter_extension_action
 			<< addSeparator()
 
 			<< m->refresh_action
@@ -116,7 +111,6 @@ LibraryContextMenu::LibraryContextMenu(QWidget* parent) :
 			<< m->delete_action
 			<< addSeparator()
 			<< m->cover_view_action
-			<< m->clear_selection_action
 	;
 
 	this->addActions(actions);
@@ -132,13 +126,27 @@ LibraryContextMenu::LibraryContextMenu(QWidget* parent) :
 	m->entry_action_map[EntryAppend] = m->append_action;
 	m->entry_action_map[EntryRefresh] = m->refresh_action;
 	m->entry_action_map[EntryClear] = m->clear_action;
-	m->entry_action_map[EntryClearSelection] = m->clear_selection_action;
 	m->entry_action_map[EntryCoverView] = m->cover_view_action;
+	m->entry_action_map[EntryFilterExtension] = m->filter_extension_action;
 
 	for(QAction* action : ::Util::AsConst(actions))
 	{
 		action->setVisible(action->isSeparator());
 	}
+
+	connect(m->info_action, &QAction::triggered, this, &LibraryContextMenu::sig_info_clicked);
+	connect(m->lyrics_action, &QAction::triggered, this, &LibraryContextMenu::sig_lyrics_clicked);
+	connect(m->edit_action, &QAction::triggered, this, &LibraryContextMenu::sig_edit_clicked);
+	connect(m->remove_action, &QAction::triggered, this, &LibraryContextMenu::sig_remove_clicked);
+	connect(m->delete_action, &QAction::triggered, this, &LibraryContextMenu::sig_delete_clicked);
+	connect(m->play_action, &QAction::triggered, this, &LibraryContextMenu::sig_play_clicked);
+	connect(m->play_new_tab_action, &QAction::triggered, this, &LibraryContextMenu::sig_play_new_tab_clicked);
+	connect(m->play_next_action, &QAction::triggered, this, &LibraryContextMenu::sig_play_next_clicked);
+	connect(m->append_action, &QAction::triggered, this, &LibraryContextMenu::sig_append_clicked);
+	connect(m->refresh_action, &QAction::triggered, this, &LibraryContextMenu::sig_refresh_clicked);
+	connect(m->clear_action, &QAction::triggered, this, &LibraryContextMenu::sig_clear_clicked);
+	connect(m->cover_view_action, &QAction::triggered, this, &LibraryContextMenu::show_cover_triggered);
+	connect(m->show_filter_extension_bar_action, &QAction::triggered, this, &LibraryContextMenu::show_filter_extension_bar_triggered);
 }
 
 LibraryContextMenu::~LibraryContextMenu() {}
@@ -156,9 +164,9 @@ void LibraryContextMenu::language_changed()
 	m->append_action->setText(Lang::get(Lang::Append));
 	m->refresh_action->setText(Lang::get(Lang::Refresh));
 	m->clear_action->setText(Lang::get(Lang::Clear));
-	m->clear_selection_action->setText(tr("Clear selection"));
 	m->cover_view_action->setText(tr("Cover view"));
-
+	m->filter_extension_action->setText(Lang::get(Lang::Filter));
+	m->show_filter_extension_bar_action->setText(Lang::get(Lang::Show) + ": " + tr("Toolbar"));
 	m->play_action->setShortcut(QKeySequence(Qt::Key_Enter));
 	m->delete_action->setShortcut(QKeySequence(tr("Ctrl+X")));
 	m->remove_action->setShortcut(QKeySequence(QKeySequence::Delete));
@@ -179,7 +187,6 @@ void LibraryContextMenu::shortcut_changed(ShortcutIdentifier identifier)
 	m->cover_view_action->setShortcut(sch->shortcut(ShortcutIdentifier::CoverView).sequence());
 }
 
-
 void LibraryContextMenu::skin_changed()
 {
 	using namespace Gui;
@@ -197,7 +204,6 @@ void LibraryContextMenu::skin_changed()
 		m->append_action->setIcon(Icons::icon(Icons::Append));
 		m->refresh_action->setIcon(Icons::icon(Icons::Undo));
 		m->clear_action->setIcon(Icons::icon(Icons::Clear));
-		m->clear_selection_action->setIcon(Icons::icon(Icons::Clear));
 	});
 }
 
@@ -254,6 +260,28 @@ QAction* LibraryContextMenu::get_action(LibraryContextMenu::Entry entry) const
 	return m->entry_action_map[entry];
 }
 
+QAction* LibraryContextMenu::get_action_after(LibraryContextMenu::Entry entry) const
+{
+	QAction* a = get_action(entry);
+	if(!a){
+		return nullptr;
+	}
+
+	QList<QAction*> actions = this->actions();
+	auto it = std::find(actions.begin(), actions.end(), a);
+
+	if(it == actions.end()){
+		return nullptr;
+	}
+
+	it++;
+	if(it == actions.end()) {
+		return nullptr;
+	}
+
+	return *it;
+}
+
 QAction* LibraryContextMenu::add_preference_action(PreferenceAction* action)
 {
 	QList<QAction*> actions;
@@ -285,6 +313,38 @@ void LibraryContextMenu::set_action_shortcut(LibraryContextMenu::Entry entry, co
 	}
 }
 
+void LibraryContextMenu::set_extensions(const ExtensionSet& extensions)
+{
+	QMenu* fem = m->filter_extension_menu;
+	if(fem->isEmpty())
+	{
+		fem->addActions({fem->addSeparator(), m->show_filter_extension_bar_action});
+	}
+
+	while(fem->actions().count() > 2)
+	{
+		fem->removeAction(fem->actions().at(0));
+	}
+
+	QAction* sep = fem->actions().at(fem->actions().count() - 2);
+
+	const QStringList ext_list = extensions.extensions();
+
+	for(const QString& ext : ext_list)
+	{
+		QAction* a = new QAction(ext, fem);
+		a->setCheckable(true);
+		a->setChecked(extensions.is_enabled(ext));
+		a->setEnabled(ext_list.count() > 1);
+
+		connect(a, &QAction::triggered, this, [=](bool b){
+			emit sig_filter_triggered(a->text(), b);
+		});
+
+		fem->insertAction(sep, a);
+	}
+}
+
 void LibraryContextMenu::show_cover_view_changed()
 {
 	m->cover_view_action->setChecked(_settings->get<Set::Lib_ShowAlbumCovers>());
@@ -296,3 +356,22 @@ void LibraryContextMenu::show_cover_triggered(bool b)
 	bool show_covers = _settings->get<Set::Lib_ShowAlbumCovers>();
 	_settings->set<Set::Lib_ShowAlbumCovers>(!show_covers);
 }
+
+void LibraryContextMenu::show_filter_ext_bar_changed()
+{
+	m->filter_extension_action->setChecked(_settings->get<Set::Lib_ShowFilterExtBar>());
+}
+
+void LibraryContextMenu::show_filter_extension_bar_triggered(bool b)
+{
+	_settings->set<Set::Lib_ShowFilterExtBar>(b);
+
+	// little hack to trigger menu
+	if(m->filter_extension_menu->actions().count() > 2)
+	{
+		QString text = m->filter_extension_menu->actions().at(0)->text();
+		bool checked = m->filter_extension_menu->actions().at(0)->isChecked();
+		emit sig_filter_triggered(text, checked);
+	}
+}
+

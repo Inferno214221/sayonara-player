@@ -23,13 +23,11 @@
 #ifndef GUI_PLAYERMENUBAR_H
 #define GUI_PLAYERMENUBAR_H
 
-#include <QMenuBar>
 #include "GUI/Utils/Widgets/WidgetTemplate.h"
 #include "GUI/Utils/Shortcuts/ShortcutWidget.h"
 #include "Utils/Pimpl.h"
 
-class QMenu;
-class QAction;
+#include <QMenuBar>
 
 class Menubar :
 	public Gui::WidgetTemplate<QMenuBar>,

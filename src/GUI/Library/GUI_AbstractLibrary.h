@@ -27,14 +27,10 @@
 #include "Utils/Library/Filter.h"
 #include "Utils/Library/Sorting.h"
 #include "Utils/Library/LibraryNamespaces.h"
-#include "Utils/MetaData/MetaDataFwd.h"
 #include "Utils/Pimpl.h"
-
-#include <QList>
 
 class QPushButton;
 class QComboBox;
-
 class AbstractLibrary;
 
 namespace Library

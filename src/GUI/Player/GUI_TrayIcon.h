@@ -30,12 +30,8 @@
 #include <QSystemTrayIcon>
 #include <QMenu>
 
-
-class QTimer;
-class QAction;
-class MetaData;
-
 class GUI_TrayIcon;
+class QTimer;
 
 class TrayIconContextMenu :
 		public Gui::WidgetTemplate<QMenu>

@@ -29,9 +29,6 @@
 
 #include "Utils/Pimpl.h"
 
-class MetaData;
-class QByteArray;
-
 /**
  * @brief Remote control allows to control Sayonara from an external application via network.
  * Various commands are implemented. Sayonara also delivers information about state changes,

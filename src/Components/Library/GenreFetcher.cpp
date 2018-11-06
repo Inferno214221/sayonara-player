@@ -35,8 +35,8 @@
 struct GenreFetcher::Private
 {
 	LocalLibrary*		local_library=nullptr;
-	SP::Set<Genre>		genres;
-	SP::Set<Genre>		additional_genres; // empty genres that are inserted
+	Util::Set<Genre>		genres;
+	Util::Set<Genre>		additional_genres; // empty genres that are inserted
 	Tagging::Editor*	tag_edit=nullptr;
 
 	Private() {}
@@ -93,9 +93,9 @@ void GenreFetcher::reload_genres()
 	emit sig_genres_fetched();
 }
 
-SP::Set<Genre> GenreFetcher::genres() const
+Util::Set<Genre> GenreFetcher::genres() const
 {
-	SP::Set<Genre> genres(m->genres);
+	Util::Set<Genre> genres(m->genres);
 	for(const Genre& genre : m->additional_genres)
 	{
 		genres.insert(genre);

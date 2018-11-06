@@ -23,9 +23,6 @@
 
 #include "Utils/Pimpl.h"
 
-#include <QPair>
-#include <QMap>
-#include <QString>
 #include <QVariant>
 #include <QSqlDatabase>
 

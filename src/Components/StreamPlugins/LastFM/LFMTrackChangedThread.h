@@ -26,7 +26,6 @@
 #define LFMTRACKCHANGEDTHREAD_H_
 
 #include "ArtistMatch.h"
-#include "Utils/MetaData/MetaDataFwd.h"
 #include "Utils/Pimpl.h"
 
 #include <QObject>

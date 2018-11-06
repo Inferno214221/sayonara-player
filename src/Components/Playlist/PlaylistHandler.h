@@ -30,6 +30,7 @@
 #define PLAYLISTHANDLER_H_
 
 #include "PlaylistDBInterface.h"
+
 #include "Components/PlayManager/PlayState.h"
 
 #include "Utils/Pimpl.h"
@@ -38,17 +39,7 @@
 #include "Utils/Playlist/PlaylistFwd.h"
 #include "Utils/Library/LibraryNamespaces.h"
 
-#include <QStringList>
-
 class CustomPlaylist;
-class MetaData;
-class MetaDataList;
-
-namespace SP
-{
-	template<typename T>
-	class Set;
-}
 
 namespace Playlist
 {

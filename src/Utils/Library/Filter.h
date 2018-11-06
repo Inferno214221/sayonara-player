@@ -28,9 +28,6 @@
 
 #include "Utils/Pimpl.h"
 #include "Utils/Library/SearchMode.h"
-#include <QStringList>
-
-class QString;
 
 namespace Library
 {

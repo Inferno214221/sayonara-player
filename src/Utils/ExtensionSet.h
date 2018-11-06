@@ -2,7 +2,6 @@
 #define EXTENSIONSET_H
 
 #include "Utils/Pimpl.h"
-#include "Utils/Set.h"
 
 class ExtensionSet
 {
@@ -32,7 +31,6 @@ class ExtensionSet
 		QStringList enabled_extensions() const;
 		QStringList disabled_extensions() const;
 		QStringList extensions() const;
-
 };
 
 #endif // EXTENSIONSET_H

@@ -85,7 +85,7 @@ bool Base::change_track_by_filename(const QString& filepath)
 
 	bool success = true;
 
-	bool got_md = Tagging::Util::getMetaDataOfFile(md);
+	bool got_md = Tagging::Utils::getMetaDataOfFile(md);
 	if( !got_md ) {
 		stop();
 		success = false;

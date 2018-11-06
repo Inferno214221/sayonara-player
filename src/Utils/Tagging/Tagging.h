@@ -38,7 +38,7 @@ class QByteArray;
 namespace Tagging
 {
 
-	namespace Util
+	namespace Utils
 	{
 		/**
 		 * @brief The Quality enum
@@ -68,7 +68,7 @@ namespace Tagging
 		 * @param quality fast, normal, accurate
 		 * @return true, if metadata could be filled. false else
 		 */
-		bool getMetaDataOfFile(MetaData& md, Tagging::Util::Quality quality=Tagging::Util::Quality::Standard);
+		bool getMetaDataOfFile(MetaData& md, Tagging::Utils::Quality quality=Tagging::Utils::Quality::Standard);
 
 		/**
 		 * @brief writes metadata into file specivied in MetaData::_filepath
@@ -91,8 +91,8 @@ namespace Tagging
 		bool is_valid_file(const TagLib::FileRef& f);
 
 
-		Tagging::Util::TagType get_tag_type(const QString& filepath);
-		QString tag_type_to_string(Tagging::Util::TagType);
+		Tagging::Utils::TagType get_tag_type(const QString& filepath);
+		QString tag_type_to_string(Tagging::Utils::TagType);
 	}
 }
 

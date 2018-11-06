@@ -24,6 +24,7 @@
 
 #include <QRegExp>
 #include <QMap>
+#include <QList>
 #include <QString>
 
 using DiacMap=QMap<QString, QString>;
@@ -103,7 +104,7 @@ static void init_diacritic_chars()
 }
 
 
-QString Library::Util::convert_search_string(const QString& str, Library::SearchModeMask mode, const QList<QChar>& ignored_chars)
+QString Library::Utils::convert_search_string(const QString& str, Library::SearchModeMask mode, const QList<QChar>& ignored_chars)
 {
 	if(diacritic_chars->isEmpty()){
 		init_diacritic_chars();
@@ -161,3 +162,8 @@ QString Library::Util::convert_search_string(const QString& str, Library::Search
 	return ::Util::cvt_not_null(ret);
 }
 
+
+QString Library::Utils::convert_search_string(const QString& str, Library::SearchModeMask mode)
+{
+	return convert_search_string(str, mode, QList<QChar>());
+}

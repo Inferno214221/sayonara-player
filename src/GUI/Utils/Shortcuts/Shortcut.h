@@ -22,15 +22,14 @@
 #define SHORTCUT_H
 
 #include "ShortcutIdentifier.h"
-#include <QShortcut>
-
 #include "Utils/Pimpl.h"
+
+#include <QShortcut>
 
 #define ShortcutHandlerPrivate private
 
 class QKeySequence;
 class QWidget;
-class QStringList;
 /**
  * @brief A single shortcut managed by ShortcutHandler.
  * This class holds information about the default shortcuts,
@@ -42,126 +41,125 @@ class QStringList;
 class Shortcut
 {
 
+	private:
+		PIMPL(Shortcut)
 
-private:
-	PIMPL(Shortcut)
+		Shortcut();
 
-	Shortcut();
-
-	/**
-	 * @brief Converts the sequences from get_sequences() to a list of qt specific
-	 * shortcuts and writes them into the _qt_shortcuts field
-	 * @param parent the widget the shortcut is mapped to
-	 * @return a list of shortcuts in the Qt format
-	 */
-	QList<QShortcut*> init_qt_shortcut(QWidget* parent, Qt::ShortcutContext context);
-
-
-friend class ShortcutHandler;
-ShortcutHandlerPrivate:
-	void add_qt_shortcuts(const QList<QShortcut*>& shortcuts);
+		/**
+		 * @brief Converts the sequences from get_sequences() to a list of qt specific
+		 * shortcuts and writes them into the _qt_shortcuts field
+		 * @param parent the widget the shortcut is mapped to
+		 * @return a list of shortcuts in the Qt format
+		 */
+		QList<QShortcut*> init_qt_shortcut(QWidget* parent, Qt::ShortcutContext context);
 
 
-public:
-	/**
-	 * @brief Shortcut
-	 * @param identifier an unique identifier used to write the shortcut into the database
-	 * @param name the name displayed in the Shortcut configuration dialog
-	 * @param default_shortcut one default shortcut
-	 */
-	Shortcut(ShortcutIdentifier identifier, const QString& default_shortcut);
+	friend class ShortcutHandler;
+	ShortcutHandlerPrivate:
+		void add_qt_shortcuts(const QList<QShortcut*>& shortcuts);
 
-	/**
-	 * @brief Shortcut
-	 * @param identifier an unique identifier used to write the shortcut into the database
-	 * @param name the name displayed in the Shortcut configuration dialog
-	 * @param default_shortcuts a list of default shortcuts
-	 */
-	Shortcut(ShortcutIdentifier identifier, const QStringList& default_shortcuts);
 
-	/**
-	 * @brief Copy constructor
-	 * @param other
-	 */
-	Shortcut(const Shortcut& other);
+	public:
+		/**
+		 * @brief Shortcut
+		 * @param identifier an unique identifier used to write the shortcut into the database
+		 * @param name the name displayed in the Shortcut configuration dialog
+		 * @param default_shortcut one default shortcut
+		 */
+		Shortcut(ShortcutIdentifier identifier, const QString& default_shortcut);
 
-	Shortcut& operator=(const Shortcut& other);
+		/**
+		 * @brief Shortcut
+		 * @param identifier an unique identifier used to write the shortcut into the database
+		 * @param name the name displayed in the Shortcut configuration dialog
+		 * @param default_shortcuts a list of default shortcuts
+		 */
+		Shortcut(ShortcutIdentifier identifier, const QStringList& default_shortcuts);
 
-	~Shortcut();
+		/**
+		 * @brief Copy constructor
+		 * @param other
+		 */
+		Shortcut(const Shortcut& other);
 
-	/**
-	 * @brief get a raw and invalid shortcut. This function is used instead of the default constructor
-	 * @return an uninitialized shortcut
-	 */
-	static Shortcut getInvalid();
+		Shortcut& operator=(const Shortcut& other);
 
-	/**
-	 * @brief
-	 * @param shortcuts map new user-readable key sequences to this shortcut
-	 */
-	void					change_shortcut(const QStringList& shortcuts);
+		~Shortcut();
 
-	/**
-	 * @brief get the human-readable name of the shortcut
-	 * @return
-	 */
-	QString					name() const;
+		/**
+		 * @brief get a raw and invalid shortcut. This function is used instead of the default constructor
+		 * @return an uninitialized shortcut
+		 */
+		static Shortcut getInvalid();
 
-	/**
-	 * @brief get a human-readable list of mapped default shortcuts
-	 * @return
-	 */
-	QStringList				default_shorcut() const;
+		/**
+		 * @brief
+		 * @param shortcuts map new user-readable key sequences to this shortcut
+		 */
+		void					change_shortcut(const QStringList& shortcuts);
 
-	/**
-	 * @brief get a list key squences mapped to this shortcut
-	 * @return
-	 */
-	QList<QKeySequence>		sequences() const;
-	QKeySequence			sequence() const;
+		/**
+		 * @brief get the human-readable name of the shortcut
+		 * @return
+		 */
+		QString					name() const;
 
-	/**
-	 * @brief get a human-readable list of mapped shortcuts
-	 * @return
-	 */
-	const QStringList&		shortcuts() const;
+		/**
+		 * @brief get a human-readable list of mapped default shortcuts
+		 * @return
+		 */
+		QStringList				default_shorcut() const;
 
-	/**
-	 * @brief get the unique identifier
-	 * @return
-	 */
-	ShortcutIdentifier		identifier() const;
-	QString					identifier_string() const;
+		/**
+		 * @brief get a list key squences mapped to this shortcut
+		 * @return
+		 */
+		QList<QKeySequence>		sequences() const;
+		QKeySequence			sequence() const;
 
-	/**
-	 * @brief Check if the shortcut is valid or if it was retrieved via getInvalid()
-	 * @return
-	 */
-	bool					is_valid() const;
+		/**
+		 * @brief get a human-readable list of mapped shortcuts
+		 * @return
+		 */
+		const QStringList&		shortcuts() const;
 
-	template<typename T>
-	/**
-	 * @brief create a qt shortcut for a widget
-	 * @param parent the widget the shortcut is attached to
-	 * @param func a lambda function which will be triggered when shortcut is pressed
-	 */
-	void connect(QWidget* parent, T func, Qt::ShortcutContext context=Qt::WindowShortcut)
-	{
-		QList<QShortcut*> shortcuts = init_qt_shortcut(parent, context);
-		for(QShortcut* sc : shortcuts)
+		/**
+		 * @brief get the unique identifier
+		 * @return
+		 */
+		ShortcutIdentifier		identifier() const;
+		QString					identifier_string() const;
+
+		/**
+		 * @brief Check if the shortcut is valid or if it was retrieved via getInvalid()
+		 * @return
+		 */
+		bool					is_valid() const;
+
+		template<typename T>
+		/**
+		 * @brief create a qt shortcut for a widget
+		 * @param parent the widget the shortcut is attached to
+		 * @param func a lambda function which will be triggered when shortcut is pressed
+		 */
+		void connect(QWidget* parent, T func, Qt::ShortcutContext context=Qt::WindowShortcut)
 		{
-			parent->connect(sc, &QShortcut::activated, func);
+			QList<QShortcut*> shortcuts = init_qt_shortcut(parent, context);
+			for(QShortcut* sc : shortcuts)
+			{
+				parent->connect(sc, &QShortcut::activated, func);
+			}
 		}
-	}
 
 
-	/**
-	 * @brief create a qt shortcut for a widget
-	 * @param parent the widget the shortcut is attached to
-	 * @param the receiver object of the shortcut
-	 * @param the slot which is triggered when pressing that shortcut
-	 */
-	void connect(QWidget* parent, QObject* receiver, const char* slot, Qt::ShortcutContext context=Qt::WindowShortcut);
+		/**
+		 * @brief create a qt shortcut for a widget
+		 * @param parent the widget the shortcut is attached to
+		 * @param the receiver object of the shortcut
+		 * @param the slot which is triggered when pressing that shortcut
+		 */
+		void connect(QWidget* parent, QObject* receiver, const char* slot, Qt::ShortcutContext context=Qt::WindowShortcut);
 };
 
 #endif // SHORTCUT_H

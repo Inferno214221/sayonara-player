@@ -57,7 +57,7 @@
 struct MetaData::Private
 {
 	QString			title;
-	SP::Set<GenreID> genres;
+	Util::Set<GenreID> genres;
 	ArtistId		album_artist_id;
 	HashValue		album_artist_idx;
 	HashValue		album_idx;
@@ -491,15 +491,15 @@ bool MetaData::is_equal_deep(const MetaData& other) const
 	);
 }
 
-const SP::Set<GenreID>& MetaData::genre_ids() const
+const Util::Set<GenreID>& MetaData::genre_ids() const
 {
 	return m->genres;
 }
 
 
-SP::Set<Genre> MetaData::genres() const
+Util::Set<Genre> MetaData::genres() const
 {
-	SP::Set<Genre> genres;
+	Util::Set<Genre> genres;
 
 	for(GenreID genre_id : m->genres){
 		genres.insert( genre_pool().value(genre_id) );
@@ -508,7 +508,7 @@ SP::Set<Genre> MetaData::genres() const
 	return genres;
 }
 
-void MetaData::set_genres(const SP::Set<Genre>& genres)
+void MetaData::set_genres(const Util::Set<Genre>& genres)
 {
 	m->genres.clear();
 	for(const Genre& genre : genres)

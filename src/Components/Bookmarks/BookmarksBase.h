@@ -18,15 +18,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef BOOKMARKSBASE_H
 #define BOOKMARKSBASE_H
 
-#include <QObject>
-#include <QList>
 #include "Utils/Pimpl.h"
 #include "Bookmark.h"
+
+#include <QObject>
 
 class MetaData;
 class BookmarksBase :

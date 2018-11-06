@@ -33,9 +33,7 @@
 
 class LibraryContextMenu;
 class DirectoryModel;
-class MetaDataList;
 class IconProvider;
-class QStringList;
 class CustomMimeData;
 
 namespace Library

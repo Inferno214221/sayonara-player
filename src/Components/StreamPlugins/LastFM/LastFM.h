@@ -32,13 +32,10 @@
 #include "Utils/Settings/SayonaraClass.h"
 #include "Utils/Pimpl.h"
 
-#include <QMap>
 #include <QObject>
 
 // singleton base LastFM API class
 // signals and slots are handled by the adapter class
-class MetaData;
-
 namespace LastFM
 {
 	class Base :

@@ -25,6 +25,7 @@
 #include "Components/Preferences/PreferenceRegistry.h"
 
 #include <QFont>
+#include <QPushButton>
 
 struct PreferenceAction::Private
 {

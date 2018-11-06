@@ -23,7 +23,6 @@
 
 #include "GUI/Utils/Widgets/Widget.h"
 #include "GUI/InfoDialog/InfoDialogContainer.h"
-#include "Utils/MetaData/MetaDataFwd.h"
 #include "Utils/Pimpl.h"
 
 class QPoint;

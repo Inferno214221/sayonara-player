@@ -45,6 +45,9 @@
 #include "Components/Library/LocalLibrary.h"
 #include "Components/Library/LibraryManager.h"
 
+#include "Utils/MetaData/MetaDataList.h"
+#include "Utils/MetaData/Album.h"
+#include "Utils/MetaData/Artist.h"
 #include "Utils/Utils.h"
 #include "Utils/Language.h"
 #include "Utils/Settings/Settings.h"
@@ -55,6 +58,26 @@
 #include <QTimer>
 #include <QFileDialog>
 #include <QStringList>
+#include <QLayoutItem>
+#include <QLayout>
+
+enum StatusWidgetIndex
+{
+	ReloadLibrary=0,
+	FileExtensions
+};
+
+enum GenreWidgetIndex
+{
+	GenreTree=0,
+	NoGenres
+};
+
+enum AlbumViewIndex
+{
+	TableView=0,
+	AlbumCoverView
+};
 
 using namespace Library;
 
@@ -85,9 +108,6 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 	m = Pimpl::make<Private>(id, this);
 
 	setup_parent(this, &ui);
-
-	ui->pb_progress->setVisible(false);
-	ui->lab_progress->setVisible(false);
 
 	connect(m->library, &LocalLibrary::sig_reloading_library, this, &GUI_LocalLibrary::progress_changed);
 	connect(m->library, &LocalLibrary::sig_reloading_library_finished, this, &GUI_LocalLibrary::reload_finished);
@@ -121,6 +141,8 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 
 	Set::listen<Set::Lib_ShowAlbumCovers>(this, &GUI_LocalLibrary::switch_album_view);
 
+	ui->sw_status->setVisible(false);
+
 	m->library->load();
 	ui->lv_genres->init(m->library);
 }
@@ -137,7 +159,7 @@ void GUI_LocalLibrary::language_changed()
 	ui->retranslateUi(this);
 	ui->gb_genres->setTitle(Lang::get(Lang::Genres));
 	ui->btn_reload_library->setText(Lang::get(Lang::ReloadLibrary));
-	ui->lab_extension->setText(Lang::get(Lang::Filename));
+	ui->lab_extension->setText(Lang::get(Lang::Filter) + ":");
 
 	GUI_AbstractLibrary::language_changed();
 }
@@ -152,14 +174,12 @@ void GUI_LocalLibrary::search_key_pressed(int key)
 	GUI_AbstractLibrary::search_key_pressed(key);
 }
 
-#include <QLayoutItem>
-#include <QLayout>
+
 void GUI_LocalLibrary::tracks_loaded()
 {
-	ui->stacked_status->setCurrentIndex(1);
-
 	QLayout* l = ui->widget_extensions->layout();
 	if(!l){
+		ui->sw_status->setVisible(false);
 		return;
 	}
 
@@ -170,11 +190,20 @@ void GUI_LocalLibrary::tracks_loaded()
 
 	m->extension_buttons.clear();
 
+	if(!_settings->get<Set::Lib_ShowFilterExtBar>())
+	{
+		ui->sw_status->setVisible(false);
+		ui->sw_status->setCurrentIndex(StatusWidgetIndex::ReloadLibrary);
+		return;
+	}
+
 	ExtensionSet extensions = m->library->extensions();
 
 	const QStringList ext_str = extensions.extensions();
+
 	bool has_multiple_extensions = (ext_str.size() > 1);
-	ui->widget_extensions->setVisible(has_multiple_extensions);
+	ui->sw_status->setVisible(has_multiple_extensions);
+
 	if(!has_multiple_extensions){
 		return;
 	}
@@ -185,7 +214,6 @@ void GUI_LocalLibrary::tracks_loaded()
 		btn->setText(ext);
 		btn->setCheckable(true);
 		btn->setChecked(extensions.is_enabled(ext));
-		//btn->setChecked(false);
 
 		connect(btn, &QPushButton::toggled, this, &GUI_LocalLibrary::extension_button_toggled);
 
@@ -193,6 +221,8 @@ void GUI_LocalLibrary::tracks_loaded()
 
 		m->extension_buttons << btn;
 	}
+
+	ui->sw_status->setCurrentIndex(StatusWidgetIndex::FileExtensions);
 }
 
 void GUI_LocalLibrary::extension_button_toggled(bool b)
@@ -241,11 +271,11 @@ Library::TrackDeletionMode GUI_LocalLibrary::show_delete_dialog(int n_tracks)
 
 void GUI_LocalLibrary::progress_changed(const QString& type, int progress)
 {
-	ui->pb_progress->setVisible(progress >= 0);
+	ui->sw_status->setVisible(progress >= 0);
+	ui->sw_status->setCurrentIndex(StatusWidgetIndex::ReloadLibrary);
+
 	ui->pb_progress->setMaximum((progress > 0) ? 100 : 0);
 	ui->pb_progress->setValue(progress);
-
-	ui->lab_progress->setVisible(progress >= 0);
 	ui->lab_progress->setText(type);
 }
 
@@ -276,11 +306,11 @@ void GUI_LocalLibrary::reload_library_accepted(Library::ReloadQuality quality)
 void GUI_LocalLibrary::genres_reloaded()
 {
 	if(ui->lv_genres->has_items()){
-		ui->stacked_genre_widget->setCurrentIndex(0);
+		ui->stacked_genre_widget->setCurrentIndex(GenreWidgetIndex::GenreTree);
 	}
 
 	else {
-		ui->stacked_genre_widget->setCurrentIndex(1);
+		ui->stacked_genre_widget->setCurrentIndex(GenreWidgetIndex::NoGenres);
 	}
 }
 
@@ -411,7 +441,7 @@ void GUI_LocalLibrary::switch_album_view()
 
 	if(!show_cover_view)
 	{
-		ui->sw_album_covers->setCurrentIndex(0);
+		ui->sw_album_covers->setCurrentIndex(AlbumViewIndex::TableView);
 	}
 
 	else
@@ -427,7 +457,7 @@ void GUI_LocalLibrary::switch_album_view()
 			m->library->selected_artists_changed(IndexSet());
 		}
 
-		ui->sw_album_covers->setCurrentIndex(1);
+		ui->sw_album_covers->setCurrentIndex(AlbumViewIndex::AlbumCoverView);
 	}
 }
 

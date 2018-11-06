@@ -24,7 +24,6 @@
 #include <QMenu>
 #include "Utils/Pimpl.h"
 
-class MetaData;
 class BookmarksMenu :
 	public QMenu
 {

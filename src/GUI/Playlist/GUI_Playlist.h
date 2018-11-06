@@ -39,7 +39,6 @@
 #include "Components/PlayManager/PlayState.h"
 #include "Components/Playlist/PlaylistDBInterface.h"
 
-class MetaData;
 class PlaylistView;
 
 UI_FWD(Playlist_Window)

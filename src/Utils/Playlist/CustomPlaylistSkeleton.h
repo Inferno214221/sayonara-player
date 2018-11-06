@@ -23,33 +23,31 @@
 
 #include "Utils/Pimpl.h"
 
-class QString;
-
 /**
  * @brief The CustomPlaylistSkeleton class
  * @ingroup PlaylistHelper
  */
 class CustomPlaylistSkeleton
 {
-    PIMPL(CustomPlaylistSkeleton)
+	PIMPL(CustomPlaylistSkeleton)
 
-    public:
-        int id() const;
-        void set_id(int id);
+	public:
+		int id() const;
+		void set_id(int id);
 
-        QString name() const;
-        void set_name(const QString& name);
+		QString name() const;
+		void set_name(const QString& name);
 
-        bool temporary() const;
-        void set_temporary(bool temporary);
+		bool temporary() const;
+		void set_temporary(bool temporary);
 
-        virtual int num_tracks() const;
-        virtual void set_num_tracks(int num_tracks);
+		virtual int num_tracks() const;
+		virtual void set_num_tracks(int num_tracks);
 
-        CustomPlaylistSkeleton();
-        CustomPlaylistSkeleton(const CustomPlaylistSkeleton& other);
-        CustomPlaylistSkeleton& operator=(const CustomPlaylistSkeleton& other);
-        virtual ~CustomPlaylistSkeleton();
+		CustomPlaylistSkeleton();
+		CustomPlaylistSkeleton(const CustomPlaylistSkeleton& other);
+		CustomPlaylistSkeleton& operator=(const CustomPlaylistSkeleton& other);
+		virtual ~CustomPlaylistSkeleton();
 };
 
 #endif

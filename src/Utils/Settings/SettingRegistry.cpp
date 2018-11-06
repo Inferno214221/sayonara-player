@@ -97,6 +97,8 @@ bool SettingRegistry::init()
 	register_setting<Set::Lib_GenreTree>( "lib_show_genre_tree", true);
 	register_setting<Set::Lib_LastIndex>( "lib_last_idx", -1);
 	register_setting<Set::Lib_AllLibraries>( "lib_all_libraries", QList<Library::Info>()); // deprecated
+	register_setting<Set::Lib_UseViewClearButton>( "lib_view_clear_button", false);
+	register_setting<Set::Lib_ShowFilterExtBar>("lib_show_filter_ext_bar", true);
 
 #ifdef Q_OS_WIN
 	register_setting<Set::Lib_FontBold >("lib_font_bold", false);
@@ -109,8 +111,6 @@ bool SettingRegistry::init()
 	register_setting<Set::Dir_ShowTracks>( "dir_show_tracks", true);
 	register_setting<Set::Dir_SplitterDirFile>( "dir_splitter_dir_file", QByteArray());
 	register_setting<Set::Dir_SplitterTracks>( "dir_splitter_tracks", QByteArray());
-
-	register_setting<Set::Lib_UseViewClearButton>( "lib_view_clear_button", false);
 
 	register_setting<Set::Player_Version>( "player_version", QString(SAYONARA_VERSION));
 	register_setting<Set::Player_Language>( "player_language", QString("en_US"));

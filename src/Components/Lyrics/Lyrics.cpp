@@ -87,7 +87,7 @@ bool Lyrics::save_lyrics(const QString& plain_text)
 		return false;
 	}
 
-	bool success = Tagging::Util::write_lyrics(m->md, plain_text);
+	bool success = Tagging::Utils::write_lyrics(m->md, plain_text);
 	if(success){
 		m->is_valid = true;
 		m->lyric_tag_content = plain_text;
@@ -106,7 +106,7 @@ void Lyrics::set_metadata(const MetaData& md)
 	m->md = md;
 	m->guess_artist_and_title();
 
-	bool has_lyrics = Tagging::Util::extract_lyrics(md, m->lyric_tag_content);
+	bool has_lyrics = Tagging::Utils::extract_lyrics(md, m->lyric_tag_content);
 	if(!has_lyrics){
 		sp_log(Log::Debug, this) << "Could not find lyrics in " << md.filepath();
 	}
@@ -162,7 +162,7 @@ bool Lyrics::is_lyric_tag_available() const
 
 bool Lyrics::is_lyric_tag_supported() const
 {
-	return Tagging::Util::is_lyrics_supported(m->md.filepath());
+	return Tagging::Utils::is_lyrics_supported(m->md.filepath());
 }
 
 void Lyrics::lyrics_fetched()

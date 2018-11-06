@@ -48,6 +48,7 @@
 #include <QDropEvent>
 #include <QHeaderView>
 #include <QScrollBar>
+#include <QDrag>
 
 #include <algorithm>
 

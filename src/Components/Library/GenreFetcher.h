@@ -25,10 +25,7 @@
 
 #include <QObject>
 #include "Utils/Pimpl.h"
-#include "Utils/SetFwd.h"
 
-class QStringList;
-class MetaDataList;
 class LocalLibrary;
 class Genre;
 
@@ -55,7 +52,7 @@ public:
 	explicit GenreFetcher(QObject* parent=nullptr);
 	~GenreFetcher();
 
-	SP::Set<Genre> genres() const;
+	Util::Set<Genre> genres() const;
 
 	void add_genre_to_md(const MetaDataList& v_md, const Genre& genre);
 

@@ -27,8 +27,6 @@
 #include "GUI/Utils/SearchableWidget/SearchableModel.h"
 #include "Utils/Pimpl.h"
 
-#include <QMap>
-#include <QList>
 #include <QMimeData>
 
 namespace SomaFM

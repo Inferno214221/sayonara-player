@@ -18,18 +18,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef GUI_LYRICS_H
 #define GUI_LYRICS_H
 
-#include <QWidget>
 #include "Utils/Pimpl.h"
 #include "GUI/Utils/Widgets/Widget.h"
 
 
 UI_FWD(GUI_Lyrics)
-class MetaData;
 
 class GUI_Lyrics :
 		public Gui::Widget

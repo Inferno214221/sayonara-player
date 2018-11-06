@@ -171,5 +171,5 @@ void GUI_Covers::delete_covers_from_db()
 
 void GUI_Covers::delete_cover_files()
 {
-	::Util::File::remove_files_in_directory(Cover::Util::cover_directory());
+	::Util::File::remove_files_in_directory(Cover::Utils::cover_directory());
 }

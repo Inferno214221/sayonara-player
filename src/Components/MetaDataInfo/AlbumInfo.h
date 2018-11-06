@@ -24,7 +24,6 @@
 #include "MetaDataInfo.h"
 #include "Utils/Pimpl.h"
 
-class MetaDataList;
 /**
  * @brief The AlbumInfo class
  * @ingroup MetaDataHelper

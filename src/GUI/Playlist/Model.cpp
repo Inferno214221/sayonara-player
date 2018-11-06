@@ -382,7 +382,7 @@ QModelIndexList PlaylistItemModel::search_results(const QString& substr)
 				break;
 		}
 
-		str = Library::Util::convert_search_string(str, search_mode());
+		str = Library::Utils::convert_search_string(str, search_mode());
 		if(str.contains(pure_search_string))
 		{
 			ret << this->index(i, 0);

@@ -44,7 +44,7 @@
 #include <QShortcut>
 
 
-using StringSet=SP::Set<QString>;
+using StringSet=Util::Set<QString>;
 using namespace Library;
 
 struct GenreView::Private
@@ -196,7 +196,7 @@ void GenreView::delete_pressed()
 		return;
 	}
 
-	SP::Set<Genre> genres;
+	Util::Set<Genre> genres;
 	QStringList genre_names;
 
 	for(QTreeWidgetItem* twi : selected_items){
@@ -247,7 +247,7 @@ void GenreView::language_changed()
 
 void GenreView::reload_genres()
 {
-	SP::Set<Genre> genres = m->genre_fetcher->genres();
+	Util::Set<Genre> genres = m->genre_fetcher->genres();
 
 	for(GenreNode* n : ::Util::AsConst(m->genres->children))
 	{
@@ -265,7 +265,7 @@ void GenreView::reload_genres()
 	emit sig_genres_reloaded();
 }
 
-void GenreView::set_genres(const SP::Set<Genre>& genres)
+void GenreView::set_genres(const Util::Set<Genre>& genres)
 {
 	if(m->filled){
 		return;
@@ -298,7 +298,7 @@ static void build_genre_node(GenreNode* node, const QMap<QString, StringSet>& pa
 }
 
 
-void GenreView::build_genre_data_tree(const SP::Set<Genre>& genres)
+void GenreView::build_genre_data_tree(const Util::Set<Genre>& genres)
 {
 	bool show_tree = _settings->get<Set::Lib_GenreTree>();
 

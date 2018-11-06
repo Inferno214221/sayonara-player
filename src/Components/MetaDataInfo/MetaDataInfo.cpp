@@ -39,13 +39,13 @@
 
 struct MetaDataInfo::Private
 {
-	SP::Set<QString> albums;
-	SP::Set<QString> artists;
-	SP::Set<QString> album_artists;
+	Util::Set<QString> albums;
+	Util::Set<QString> artists;
+	Util::Set<QString> album_artists;
 
-	SP::Set<AlbumId> album_ids;
-	SP::Set<ArtistId> artist_ids;
-	SP::Set<ArtistId> album_artist_ids;
+	Util::Set<AlbumId> album_ids;
+	Util::Set<ArtistId> artist_ids;
+	Util::Set<ArtistId> album_artist_ids;
 
 	QStringList paths;
 
@@ -457,32 +457,32 @@ Cover::Location MetaDataInfo::cover_location() const
 	return m->cover_location;
 }
 
-const SP::Set<QString>& MetaDataInfo::albums() const
+const Util::Set<QString>& MetaDataInfo::albums() const
 {
 	return m->albums;
 }
 
-const SP::Set<QString> &MetaDataInfo::artists() const
+const Util::Set<QString> &MetaDataInfo::artists() const
 {
 	return m->artists;
 }
 
-const SP::Set<QString> &MetaDataInfo::album_artists() const
+const Util::Set<QString> &MetaDataInfo::album_artists() const
 {
 	return m->album_artists;
 }
 
-const SP::Set<AlbumId> &MetaDataInfo::album_ids() const
+const Util::Set<AlbumId> &MetaDataInfo::album_ids() const
 {
 	return m->album_ids;
 }
 
-const SP::Set<ArtistId> &MetaDataInfo::artist_ids() const
+const Util::Set<ArtistId> &MetaDataInfo::artist_ids() const
 {
 	return m->artist_ids;
 }
 
-const SP::Set<ArtistId> &MetaDataInfo::album_artist_ids() const
+const Util::Set<ArtistId> &MetaDataInfo::album_artist_ids() const
 {
 	return m->album_artist_ids;
 }

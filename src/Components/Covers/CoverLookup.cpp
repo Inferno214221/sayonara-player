@@ -134,7 +134,7 @@ bool Lookup::fetch_cover(const Cover::Location& cl, bool also_www)
 
 				else
 				{
-					pm = Tagging::Util::extract_cover(cl.audio_file_source());
+					pm = Tagging::Utils::extract_cover(cl.audio_file_source());
 				}
 
 				bool success = add_new_cover(pm, cl.hash());
@@ -227,7 +227,7 @@ void Lookup::cover_found(int idx)
 	add_new_cover(pm);
 	if(m->n_covers == 1)
 	{
-		pm.save(Cover::Util::cover_directory(m->cl.hash() + ".jpg"));
+		pm.save(Cover::Utils::cover_directory(m->cl.hash() + ".jpg"));
 	}
 
 	if(!cft->more())

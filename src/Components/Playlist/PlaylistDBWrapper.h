@@ -25,8 +25,6 @@
 #include "Utils/Playlist/CustomPlaylistFwd.h"
 #include "Database/Playlist.h"
 
-class MetaDataList;
-
 namespace Playlist
 {
 	/**

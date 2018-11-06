@@ -24,8 +24,8 @@
 #ifndef SAYONARALOADINGBAR_H
 #define SAYONARALOADINGBAR_H
 
-#include <QProgressBar>
 #include "Utils/Pimpl.h"
+#include <QProgressBar>
 
 namespace Gui
 {

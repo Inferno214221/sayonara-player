@@ -188,7 +188,7 @@ int ArtistModel::searchable_column() const
 }
 
 
-const SP::Set<Id>& ArtistModel::selections() const
+const Util::Set<Id>& ArtistModel::selections() const
 {
 	return library()->selected_artists();
 }

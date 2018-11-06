@@ -30,7 +30,6 @@
 #define LIBRARYITEMMODELARTISTS_H_
 
 #include "ItemModel.h"
-#include "Utils/MetaData/MetaDataFwd.h"
 #include "Utils/Pimpl.h"
 
 namespace Library
@@ -55,7 +54,7 @@ namespace Library
 			int				searchable_column() const override;
 			Id				id_by_index(int row) const override;
 			QString			searchable_string(int row) const override;
-			const SP::Set<Id>&		selections() const override;
+			const Util::Set<Id>&		selections() const override;
 
 		protected:
 			const MetaDataList& mimedata_tracks() const override;

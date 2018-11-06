@@ -21,7 +21,6 @@
 #ifndef INFO_DIALOG_CONTAINER_H_
 #define INFO_DIALOG_CONTAINER_H_
 
-#include "Utils/MetaData/MetaDataFwd.h"
 #include "Utils/Pimpl.h"
 
 class GUI_InfoDialog;

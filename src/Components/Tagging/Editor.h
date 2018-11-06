@@ -23,13 +23,10 @@
 
 #include <QThread>
 #include <QPixmap>
-#include <QStringList>
 
 #include "Utils/Pimpl.h"
 
 class Genre;
-class MetaDataList;
-class MetaData;
 namespace Tagging
 {
 /**

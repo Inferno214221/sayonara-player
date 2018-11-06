@@ -21,15 +21,12 @@
 #ifndef LOCALLIBRARYMENU_H
 #define LOCALLIBRARYMENU_H
 
+#include "GUI/Utils/Widgets/WidgetTemplate.h"
+#include "Utils/Pimpl.h"
+
 #include <QMenu>
 #include <QAction>
 
-#include "GUI/Utils/Widgets/WidgetTemplate.h"
-
-#include "Utils/Pimpl.h"
-
-
-class QString;
 class PreferenceAction;
 
 namespace Library

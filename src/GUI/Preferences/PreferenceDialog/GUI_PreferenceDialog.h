@@ -25,7 +25,6 @@
 #include "Interfaces/PreferenceDialog/PreferenceDialog.h"
 #include "GUI/Utils/Widgets/Dialog.h"
 
-class QString;
 namespace Preferences
 {
 	class Base;

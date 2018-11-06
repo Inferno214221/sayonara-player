@@ -38,6 +38,7 @@
 #include "Utils/Set.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/ExtensionSet.h"
 
 #include "GUI/Utils/ContextMenu/LibraryContextMenu.h"
 #include "GUI/Utils/SearchableWidget/MiniSearcher.h"
@@ -142,7 +143,8 @@ LibraryContextMenu::Entries ItemView::context_menu_entries() const
 			LibraryContextMenu::EntryDelete |
 			LibraryContextMenu::EntryPlayNext |
 			LibraryContextMenu::EntryAppend |
-			LibraryContextMenu::EntryCoverView);
+			LibraryContextMenu::EntryCoverView |
+			LibraryContextMenu::EntryFilterExtension);
 
 	return entries;
 }
@@ -154,10 +156,6 @@ void ItemView::selected_items_changed(const QItemSelection& selected, const QIte
 
 	if(m->cur_filling) {
 		return;
-	}
-
-	if(m->context_menu){
-		m->context_menu->show_action(LibraryContextMenu::EntryClearSelection, !selected.isEmpty());
 	}
 
 	selection_changed(selected_items());
@@ -187,22 +185,27 @@ void ItemView::init_context_menu_custom_type(LibraryContextMenu* menu)
 	m->merge_action = m->context_menu->addMenu(m->merge_menu);
 	m->merge_action->setVisible(false);
 
-	QAction* action_clear = m->context_menu->get_action(LibraryContextMenu::EntryClearSelection);
-	m->context_menu->insertAction(action_clear, m->merge_action);
+	QAction* after_edit_action = m->context_menu->get_action_after(LibraryContextMenu::EntryEdit);
+	if(after_edit_action)
+	{
+		m->context_menu->insertAction(after_edit_action, m->merge_action);
+	}
 
 	connect(m->context_menu, &LibraryContextMenu::sig_edit_clicked, this, [=](){ show_edit(); });
 	connect(m->context_menu, &LibraryContextMenu::sig_info_clicked, this, [=](){ show_info(); });
 	connect(m->context_menu, &LibraryContextMenu::sig_lyrics_clicked, this, [=](){ show_lyrics(); });
-	connect(m->context_menu, &LibraryContextMenu::sig_clear_selection_clicked, this, [=](){ clear_selection(); });
 	connect(m->context_menu, &LibraryContextMenu::sig_delete_clicked, this, &ItemView::delete_clicked);
 	connect(m->context_menu, &LibraryContextMenu::sig_play_clicked, this, &ItemView::play_clicked);
 	connect(m->context_menu, &LibraryContextMenu::sig_play_next_clicked, this, &ItemView::play_next_clicked);
 	connect(m->context_menu, &LibraryContextMenu::sig_play_new_tab_clicked, this, &ItemView::play_new_tab_clicked);
 	connect(m->context_menu, &LibraryContextMenu::sig_append_clicked, this, &ItemView::append_clicked);
 	connect(m->context_menu, &LibraryContextMenu::sig_refresh_clicked, this, &ItemView::refresh_clicked);
+	connect(m->context_menu, &LibraryContextMenu::sig_filter_triggered, this, &ItemView::filter_extensions_triggered);
 
 	this->show_context_menu_actions(context_menu_entries());
+
 	m->context_menu->add_preference_action(new LibraryPreferenceAction(m->context_menu));
+	m->context_menu->set_extensions(library()->extensions());
 }
 
 LibraryContextMenu* ItemView::context_menu() const
@@ -218,7 +221,6 @@ void ItemView::show_context_menu(const QPoint& p)
 void ItemView::show_context_menu_actions(LibraryContextMenu::Entries entries)
 {
 	m->context_menu->show_actions(entries);
-	m->context_menu->show_action(LibraryContextMenu::EntryClearSelection, !selected_items().isEmpty());
 }
 
 QMimeData* ItemView::dragable_mimedata() const
@@ -378,6 +380,18 @@ void ItemView::album_artists_toggled()
 	_settings->set<Set::Lib_ShowAlbumArtists>(!b);
 }
 
+void ItemView::filter_extensions_triggered(const QString& extension, bool b)
+{
+	AbstractLibrary* lib = library();
+	if(!lib){
+		return;
+	}
+
+	ExtensionSet extensions = lib->extensions();
+	extensions.set_enabled(extension, b);
+	lib->set_extensions(extensions);
+}
+
 void ItemView::fill()
 {
 	IndexSet selections = m->model->selected_indexes();
@@ -391,7 +405,6 @@ void ItemView::fill()
 		resize_rows_to_contents(old_size, new_size - old_size);
 	}
 }
-
 
 void ItemView::selection_changed(const IndexSet& indexes)
 {
@@ -520,6 +533,7 @@ void ItemView::contextMenuEvent(QContextMenuEvent* event)
 		}
 	}
 
+	m->context_menu->set_extensions(library()->extensions());
 	show_context_menu(pos);
 
 	QTableView::contextMenuEvent(event);

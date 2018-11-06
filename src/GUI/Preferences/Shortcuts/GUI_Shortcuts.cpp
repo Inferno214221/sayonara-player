@@ -107,7 +107,7 @@ bool GUI_Shortcuts::commit()
 {
 	m->error_strings.clear();
 
-	SP::Set<QKeySequence> sequences;
+	Util::Set<QKeySequence> sequences;
 
 	foreach(GUI_ShortcutEntry* entry, m->entries)
 	{

@@ -27,8 +27,6 @@
  * @brief Parses requests out of the Client.
  * @ingroup Broadcasting
  */
-class QByteArray;
-class QString;
 class StreamHttpParser
 {
 	PIMPL(StreamHttpParser)

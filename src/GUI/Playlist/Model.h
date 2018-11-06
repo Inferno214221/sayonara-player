@@ -30,15 +30,9 @@
 #define PLAYLISTITEMMODEL_H_
 
 #include "GUI/Utils/SearchableWidget/SearchableModel.h"
-#include "Utils/typedefs.h"
 #include "Utils/Playlist/PlaylistFwd.h"
-#include "Utils/SetFwd.h"
 #include "Utils/Pimpl.h"
 
-#include <QString>
-
-class MetaData;
-class MetaDataList;
 class CustomMimeData;
 
 class PlaylistItemModel :

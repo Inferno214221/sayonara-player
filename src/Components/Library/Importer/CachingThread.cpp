@@ -87,7 +87,7 @@ struct CachingThread::Private
 			{
 				MetaData md(filename);
 
-				bool success = Tagging::Util::getMetaDataOfFile(md);
+				bool success = Tagging::Utils::getMetaDataOfFile(md);
 				if(success){
 					cache->add_soundfile(md);
 				}

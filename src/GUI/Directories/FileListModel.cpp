@@ -227,12 +227,12 @@ QVariant FileListModel::data(const QModelIndex &index, int role) const
 
 bool FileListModel::check_row_for_searchstring(int row, const QString& substr) const
 {
-	QString converted_string = Library::Util::convert_search_string(substr, search_mode());
+	QString converted_string = Library::Utils::convert_search_string(substr, search_mode());
 
 	QString dirname, filename;
 	Util::File::split_filename(m->files[row], dirname, filename);
 
-	QString converted_filepath = Library::Util::convert_search_string(filename, search_mode());
+	QString converted_filepath = Library::Utils::convert_search_string(filename, search_mode());
 	return converted_filepath.contains(converted_string);
 }
 

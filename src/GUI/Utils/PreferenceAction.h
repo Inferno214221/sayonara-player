@@ -18,20 +18,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef PREFERENCEACTION_H
 #define PREFERENCEACTION_H
-
-#include <QAction>
-#include <QPushButton>
 
 #include "Utils/Settings/SayonaraClass.h"
 #include "Utils/Pimpl.h"
 
-class QString;
-class QWidget;
+#include <QAction>
 
+class QPushButton;
 class PreferenceAction :
 		public QAction,
 		public SayonaraClass

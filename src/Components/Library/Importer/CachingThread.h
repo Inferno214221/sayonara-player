@@ -26,8 +26,6 @@
 #include "ImportCache.h"
 #include "Utils/Pimpl.h"
 
-class MetaDataList;
-
 namespace Library
 {
 	class ImportCache;

@@ -24,8 +24,8 @@
 #include <set>
 #include <QList>
 
-namespace SP {
-
+namespace Util
+{
 	template<typename T>
 
 	/**
@@ -105,7 +105,7 @@ namespace SP {
 			}
 		}
 
-		SP::Set<T>& operator<<(const T& t){
+		Util::Set<T>& operator<<(const T& t){
 			this->insert(t);
 			return *this;
 		}

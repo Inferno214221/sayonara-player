@@ -24,7 +24,9 @@
 #include "3rdParty/Soundcloud/ui_GUI_SoundcloudArtistSearch.h"
 
 #include "Utils/globals.h"
+#include "Utils/MetaData/Album.h"
 #include "Utils/MetaData/Artist.h"
+#include "Utils/MetaData/MetaDataList.h"
 
 struct SC::GUI_ArtistSearch::Private
 {
@@ -35,7 +37,7 @@ struct SC::GUI_ArtistSearch::Private
 	AlbumList			albums;
 	ArtistList			searched_artists;
 	ArtistList			chosen_artists;
-	uint64_t				cur_artist_sc_id;
+	uint64_t			cur_artist_sc_id;
 };
 
 SC::GUI_ArtistSearch::GUI_ArtistSearch(SC::Library* library, QWidget *parent) :

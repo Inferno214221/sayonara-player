@@ -23,10 +23,7 @@
 
 #include "Utils/Pimpl.h"
 
-class QStringList;
-class QString;
 class QDir;
-class MetaDataList;
 
 /**
  * @brief Directory reader functions
@@ -36,7 +33,7 @@ class DirectoryReader final
 {
 	PIMPL(DirectoryReader)
 
-    public:
+	public:
 		DirectoryReader();
 		~DirectoryReader();
 

@@ -26,9 +26,6 @@
 #include "ImportCache.h"
 #include "Utils/Pimpl.h"
 
-class QString;
-class MetaDataList;
-
 namespace Library
 {
 	class ImportCache;

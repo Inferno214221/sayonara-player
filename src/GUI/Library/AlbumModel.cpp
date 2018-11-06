@@ -249,7 +249,7 @@ int AlbumModel::searchable_column() const
 }
 
 
-const SP::Set<Id>& AlbumModel::selections() const
+const Util::Set<Id>& AlbumModel::selections() const
 {
 	return library()->selected_albums();
 }

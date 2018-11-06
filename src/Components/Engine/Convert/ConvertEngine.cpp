@@ -89,7 +89,7 @@ void Convert::stop()
 {
 	m->pipeline->stop();
 
-	Tagging::Util::setMetaDataOfFile(m->md_target);
+	Tagging::Utils::setMetaDataOfFile(m->md_target);
 
 	Base::stop();
 }

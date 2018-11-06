@@ -151,13 +151,13 @@ QModelIndexList DirectoryModel::search_results(const QString& substr)
 		return QModelIndexList();
 	}
 
-	QString cvt_search_string = Library::Util::convert_search_string(substr, search_mode());
+	QString cvt_search_string = Library::Utils::convert_search_string(substr, search_mode());
 
 	auto it_all_dirs = m->all_dirs.begin();
 
 	while(it_all_dirs != m->all_dirs.end())
 	{
-		QString dir_cvt = Library::Util::convert_search_string(it_all_dirs->second, search_mode());
+		QString dir_cvt = Library::Utils::convert_search_string(it_all_dirs->second, search_mode());
 
 		if(dir_cvt.contains(cvt_search_string))
 		{
@@ -173,7 +173,7 @@ QModelIndexList DirectoryModel::search_results(const QString& substr)
 
 		while(it_all_files != m->all_files.end())
 		{
-			QString file_cvt = Library::Util::convert_search_string(it_all_files->second, search_mode());
+			QString file_cvt = Library::Utils::convert_search_string(it_all_files->second, search_mode());
 			if(file_cvt.contains(cvt_search_string))
 			{
 				QString f, d;

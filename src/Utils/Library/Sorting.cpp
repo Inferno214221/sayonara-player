@@ -19,8 +19,7 @@
  */
 
 #include "Sorting.h"
-#include "Utils/Pimpl.h"
-
+#include "Utils/Pimpl.h" // CASSIGN
 #include <QStringList>
 
 Library::Sortings::Sortings()

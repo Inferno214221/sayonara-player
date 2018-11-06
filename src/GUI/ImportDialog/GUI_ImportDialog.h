@@ -25,7 +25,6 @@
 #include "Components/Library/Importer/LibraryImporter.h"
 #include "Utils/Pimpl.h"
 
-class MetaDataList;
 class GUI_TagEdit;
 class LocalLibrary;
 
