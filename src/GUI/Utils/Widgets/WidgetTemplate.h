@@ -22,12 +22,9 @@
 #define SAYONARAWIDGETTEMPLATE_H
 
 #include "GUI/Utils/GuiClass.h"
-
 #include "Utils/Settings/SayonaraClass.h"
-#include "Utils/Settings/SettingNotifier.h"
-#include "Utils/Settings/SettingKey.h"
-
 #include <QShowEvent>
+#include <QObject>
 
 class QWidget;
 
@@ -37,6 +34,40 @@ class QWidget;
 
 namespace Gui
 {
+	class WidgetTemplateParent;
+	class AbstrWidgetTemplate :
+		public QObject,
+		public SayonaraClass
+	{
+		Q_OBJECT
+
+		private:
+			WidgetTemplateParent* _wtp;
+
+		public:
+			AbstrWidgetTemplate(QObject* parent, WidgetTemplateParent* wtp);
+			virtual ~AbstrWidgetTemplate();
+
+		protected:
+			virtual void language_changed();
+			virtual void skin_changed();
+	};
+
+
+	class WidgetTemplateParent :
+		public SayonaraClass
+	{
+		friend class AbstrWidgetTemplate;
+
+		public:
+			WidgetTemplateParent();
+			virtual ~WidgetTemplateParent();
+
+		protected:
+			virtual void language_changed();
+			virtual void skin_changed();
+	};
+
 	template<typename T>
 	/**
 	 * @brief Template for Sayonara Widgets. This template is responsible for holding a reference to the settings
@@ -46,39 +77,32 @@ namespace Gui
 
 	class WidgetTemplate :
 			public T,
-			public SayonaraClass
+			protected WidgetTemplateParent
 	{
-	public:
+		friend class AbstrWidgetTemplate;
 
-		template<typename... Args>
-		WidgetTemplate(Args&&... args) :
-			T(std::forward<Args>(args)...),
-			SayonaraClass()
-		{
-			Set::listen<Set::Player_Language>(this, &WidgetTemplate<T>::language_changed);
-			Set::listen<Set::Player_Style>(this, &WidgetTemplate<T>::skin_changed);
-			Set::listen<Set::Player_FontName>(this, &WidgetTemplate<T>::skin_changed, false);
-			Set::listen<Set::Player_FontSize>(this, &WidgetTemplate<T>::skin_changed, false);
-			Set::listen<Set::PL_FontSize>(this, &WidgetTemplate<T>::skin_changed, false);
-			Set::listen<Set::Lib_FontSize>(this, &WidgetTemplate<T>::skin_changed, false);
-			Set::listen<Set::Lib_FontBold>(this, &WidgetTemplate<T>::skin_changed, false);
-			Set::listen<Set::Icon_Theme>(this, &WidgetTemplate<T>::skin_changed, false);
-			Set::listen<Set::Icon_ForceInDarkTheme>(this, &WidgetTemplate<T>::skin_changed, false);
-		}
+		private:
+			AbstrWidgetTemplate* _awt;
 
-		virtual ~WidgetTemplate() {}
+		public:
+			template<typename... Args>
+			WidgetTemplate(Args&&... args) :
+				T(std::forward<Args>(args)...),
+				WidgetTemplateParent()
+			{
+				_awt = new AbstrWidgetTemplate(this, this);
+			}
 
-		virtual void language_changed() {}
-		virtual void skin_changed() {}
+			virtual ~WidgetTemplate() {}
 
-		virtual void showEvent(QShowEvent* e) override
-		{
-			language_changed();
-			skin_changed();
+			virtual void showEvent(QShowEvent* e) override
+			{
+				language_changed();
+				skin_changed();
 
-			T::showEvent(e);
-		}
-	};
+				T::showEvent(e);
+			}
+		};
 }
 
 #endif // SAYONARAWIDGETTEMPLATE_H

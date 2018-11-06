@@ -27,6 +27,7 @@
 #include "Utils/Tagging/Tagging.h"
 #include "Utils/Message/Message.h"
 #include "Utils/Language.h"
+#include "Utils/Logger/Logger.h"
 
 #include <QDesktopServices>
 #include <QMap>

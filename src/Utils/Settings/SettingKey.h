@@ -59,6 +59,8 @@ class SettingIdentifier
 		~SettingIdentifier();
 };
 
+#pragma message("Generate")
+
 #define INST_ABSTR(ns, type, settingkey) \
 	template class SettingIdentifier<type, SettingKey:: settingkey>; \
 	namespace ns {	using settingkey = SettingIdentifier<type, SettingKey:: settingkey>; }

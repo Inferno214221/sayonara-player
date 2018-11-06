@@ -28,6 +28,7 @@
 #include "Utils/Utils.h"
 #include "Utils/Message/Message.h"
 #include "Utils/Language.h"
+#include "Utils/Logger/Logger.h"
 
 #include "GUI/Utils/Icons.h"
 #include "GUI/Utils/Delegates/StyledItemDelegate.h"

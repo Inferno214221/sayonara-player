@@ -25,6 +25,7 @@
 #include "Components/DBus/DBusNotifications.h"
 
 #include "GUI/Utils/Widgets/Widget.h"
+#include "Utils/Logger/Logger.h"
 
 #include <QMainWindow>
 #include <QDBusConnectionInterface>
