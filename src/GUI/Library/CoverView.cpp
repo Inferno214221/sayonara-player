@@ -26,6 +26,7 @@
 #include "CoverViewContextMenu.h"
 
 #include "Components/Library/LocalLibrary.h"
+#include "Components/Tagging/UserTaggingOperations.h"
 
 #include "GUI/Utils/ContextMenu/LibraryContextMenu.h"
 
@@ -306,6 +307,12 @@ void CoverView::refresh_clicked()
 
 void CoverView::run_merge_operation(const Library::ItemView::MergeData& mergedata)
 {
-	m->library->merge_albums(mergedata.source_ids, mergedata.target_id);
+#pragma message(__FILE__ " set library id here!")
+
+	Tagging::UserOperations* uto = new Tagging::UserOperations(-1, this);
+
+	connect(uto, &Tagging::UserOperations::sig_finished, uto, &Tagging::UserOperations::deleteLater);
+
+	uto->merge_albums(mergedata.source_ids, mergedata.target_id);
 }
 

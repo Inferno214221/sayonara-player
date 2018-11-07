@@ -23,7 +23,6 @@
 #include "Components/Playlist/PlaylistHandler.h"
 #include "Components/PlayManager/PlayManager.h"
 #include "Components/Tagging/ChangeNotifier.h"
-#include "Components/Tagging/Editor.h"
 
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/MetaData/Album.h"
@@ -55,7 +54,6 @@ struct AbstractLibrary::Private
 
 	ExtensionSet		extensions;
 
-	Tagging::Editor*	tag_edit=nullptr;
 	Playlist::Handler*	playlist=nullptr;
 
 	Library::Sortings	sortorder;
@@ -642,19 +640,6 @@ Library::Sortings AbstractLibrary::sortorder() const
 	return m->sortorder;
 }
 
-Tagging::Editor* AbstractLibrary::tag_edit()
-{
-	if(!m->tag_edit){
-		m->tag_edit = new Tagging::Editor(this);
-		connect(m->tag_edit, &Tagging::Editor::finished, this, &AbstractLibrary::refresh);
-		connect(m->tag_edit, &Tagging::Editor::sig_progress, this, [=](int progress){
-			emit sig_reloading_library(Lang::get(Lang::ReloadLibrary), progress);
-		});
-	}
-
-	return m->tag_edit;
-}
-
 void AbstractLibrary::insert_tracks(const MetaDataList &v_md)
 {
 	Q_UNUSED(v_md)
@@ -742,83 +727,6 @@ void AbstractLibrary::delete_tracks_by_idx(const IndexSet& indexes, Library::Tra
 	}
 
 	delete_tracks(v_md, mode);
-}
-
-
-void AbstractLibrary::add_genre(Util::Set<Id> ids, const Genre& genre)
-{
-	MetaDataList v_md;
-	get_all_tracks(v_md);
-
-	tag_edit()->set_metadata(v_md);
-
-	for(int i=0; i<v_md.count(); i++)
-	{
-		if( ids.contains(v_md[i].id) ){
-			tag_edit()->add_genre(i, genre);
-		}
-	}
-
-	tag_edit()->commit();
-}
-
-
-void AbstractLibrary::delete_genre(const Genre& genre)
-{
-	sp_log(Log::Debug, this) << "Delete genre: Fetch all tracks";
-	MetaDataList v_md, v_md_with_genre;
-	get_all_tracks(v_md);
-
-	for(auto it=v_md.begin(); it != v_md.end(); it++)
-	{
-		if(it->genre_ids().contains(genre.id()))
-		{
-			v_md_with_genre << std::move(*it);
-		}
-	}
-
-	v_md.clear();
-
-	sp_log(Log::Debug, this) << "Delete genre: Set Metadata";
-	tag_edit()->set_metadata(v_md_with_genre);
-
-	for(int i=0; i<v_md_with_genre.count(); i++)
-	{
-		tag_edit()->delete_genre(i, genre);
-	}
-
-	tag_edit()->commit();
-}
-
-void AbstractLibrary::rename_genre(const Genre& genre, const Genre& new_genre)
-{
-	MetaDataList v_md;
-
-	sp_log(Log::Debug, this) << "Rename genre: Fetch all tracks";
-	get_all_tracks(v_md);
-	tag_edit()->set_metadata(v_md);
-
-	for(int i=0; i<v_md.count(); i++)
-	{
-		if(v_md[i].has_genre(genre)){
-			tag_edit()->delete_genre(i, genre);
-			tag_edit()->add_genre(i, new_genre);
-		}
-	}
-
-	tag_edit()->commit();
-}
-
-void AbstractLibrary::merge_artists(const IdSet& source_ids, ArtistId target_id)
-{
-	Q_UNUSED(source_ids)
-	Q_UNUSED(target_id)
-}
-
-void AbstractLibrary::merge_albums(const IdSet& source_ids, AlbumId target_id)
-{
-	Q_UNUSED(source_ids)
-	Q_UNUSED(target_id)
 }
 
 void AbstractLibrary::prepare_tracks()

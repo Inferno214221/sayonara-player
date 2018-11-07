@@ -45,9 +45,6 @@ signals:
 	void sig_progress(int progress);
 	void sig_finished();
 
-private:
-	Tagging::Editor* tag_edit();
-
 public:
 	explicit GenreFetcher(QObject* parent=nullptr);
 	~GenreFetcher();
@@ -55,7 +52,6 @@ public:
 	Util::Set<Genre> genres() const;
 
 	void add_genre_to_md(const MetaDataList& v_md, const Genre& genre);
-
 	void create_genre(const Genre& genre);
 	void delete_genre(const Genre& genre);
 	void rename_genre(const Genre& old_genre, const Genre& new_genre);
@@ -68,8 +64,6 @@ public slots:
 private slots:
 	void metadata_changed(const MetaDataList& v_md_old, const MetaDataList& v_md_new);
 	void metadata_deleted(const MetaDataList& v_md_deleted);
-
-	void tag_edit_finished();
 };
 
 

@@ -27,9 +27,11 @@
 #include "GUI/Library/Utils/ColumnIndex.h"
 #include "GUI/Library/Utils/ColumnHeader.h"
 #include "GUI/Utils/ContextMenu/LibraryContextMenu.h"
-#include "Utils/Settings/Settings.h"
 
+#include "Components/Tagging/UserTaggingOperations.h"
 #include "Components/Library/AbstractLibrary.h"
+
+#include "Utils/Settings/Settings.h"
 
 #include <QHeaderView>
 #include <QVBoxLayout>
@@ -239,7 +241,13 @@ void AlbumView::refresh_clicked()
 
 void AlbumView::run_merge_operation(const MergeData& mergedata)
 {
-	m->library->merge_albums(mergedata.source_ids, mergedata.target_id);
+#pragma message(__FILE__ " set library id here!")
+
+	Tagging::UserOperations* uto = new Tagging::UserOperations(-1, this);
+
+	connect(uto, &Tagging::UserOperations::sig_finished, uto, &Tagging::UserOperations::deleteLater);
+
+	uto->merge_albums(mergedata.source_ids, mergedata.target_id);
 }
 
 void AlbumView::use_clear_button_changed()

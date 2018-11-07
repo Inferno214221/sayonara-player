@@ -22,7 +22,7 @@
 
 #include "Components/Library/LocalLibrary.h"
 #include "Components/Tagging/ChangeNotifier.h"
-#include "Components/Tagging/Editor.h"
+#include "Components/Tagging/UserTaggingOperations.h"
 
 #include "Database/Connector.h"
 #include "Database/LibraryDatabase.h"
@@ -34,12 +34,15 @@
 
 struct GenreFetcher::Private
 {
-	LocalLibrary*		local_library=nullptr;
-	Util::Set<Genre>		genres;
-	Util::Set<Genre>		additional_genres; // empty genres that are inserted
-	Tagging::Editor*	tag_edit=nullptr;
+	LocalLibrary*					local_library=nullptr;
+	Util::Set<Genre>				genres;
+	Util::Set<Genre>				additional_genres; // empty genres that are inserted
+	Tagging::UserOperations* uto=nullptr;
 
-	Private() {}
+	Private(GenreFetcher* parent)
+	{
+		uto = new Tagging::UserOperations(-1, parent);
+	}
 
 	DB::LibraryDatabase* get_local_library_db()
 	{
@@ -59,27 +62,18 @@ struct GenreFetcher::Private
 GenreFetcher::GenreFetcher(QObject* parent) :
 	QObject(parent)
 {
-	m = Pimpl::make<Private>();
+	m = Pimpl::make<Private>(this);
 
 	Tagging::ChangeNotifier* mcn = Tagging::ChangeNotifier::instance();
 
 	connect(mcn, &Tagging::ChangeNotifier::sig_metadata_changed, this, &GenreFetcher::metadata_changed);
 	connect(mcn, &Tagging::ChangeNotifier::sig_metadata_deleted, this, &GenreFetcher::metadata_deleted);
+
+	connect(m->uto, &Tagging::UserOperations::sig_progress, this, &GenreFetcher::sig_progress);
+	connect(m->uto, &Tagging::UserOperations::sig_finished, this, &GenreFetcher::sig_finished);
 }
 
 GenreFetcher::~GenreFetcher() {}
-
-Tagging::Editor* GenreFetcher::tag_edit()
-{
-	if(!m->tag_edit)
-	{
-		m->tag_edit = new Tagging::Editor(this);
-		connect(m->tag_edit, &Tagging::Editor::sig_progress, this, &GenreFetcher::sig_progress);
-		connect(m->tag_edit, &Tagging::Editor::finished, this, &GenreFetcher::tag_edit_finished);
-	}
-
-	return m->tag_edit;
-}
 
 void GenreFetcher::reload_genres()
 {
@@ -119,45 +113,25 @@ void GenreFetcher::metadata_deleted(const MetaDataList& v_md_deleted)
 	reload_genres();
 }
 
-void GenreFetcher::tag_edit_finished()
-{
-	emit sig_finished();
-
-	reload_genres();
-}
-
-void GenreFetcher::add_genre_to_md(const MetaDataList& v_md, const Genre& genre)
-{
-	Tagging::Editor* te = tag_edit();
-	te->set_metadata(v_md);
-
-	for(int i=0; i<v_md.count(); i++)
-	{
-		te->add_genre(i, genre);
-	}
-
-	te->commit();
-	emit sig_progress(0);
-}
-
 void GenreFetcher::create_genre(const Genre& genre)
 {
 	m->additional_genres << genre;
 	emit sig_genres_fetched();
 }
 
+void GenreFetcher::add_genre_to_md(const MetaDataList& v_md, const Genre& genre)
+{
+	m->uto->add_genre_to_md(v_md, genre);
+}
+
 void GenreFetcher::delete_genre(const Genre& genre)
 {
-	if(m->local_library){
-		m->local_library->delete_genre(genre);
-	}
+	m->uto->delete_genre(genre);
 }
 
 void GenreFetcher::rename_genre(const Genre& old_genre, const Genre& new_genre)
 {
-	if(m->local_library){
-		m->local_library->rename_genre(old_genre, new_genre);
-	}
+	m->uto->rename_genre(old_genre, new_genre);
 }
 
 void GenreFetcher::set_local_library(LocalLibrary* local_library)

@@ -30,7 +30,7 @@
 
 #include "Components/Library/AbstractLibrary.h"
 #include "Components/Covers/CoverLocation.h"
-#include "Components/Tagging/Editor.h"
+#include "Components/Tagging/UserTaggingOperations.h"
 
 #include "GUI/Library/Utils/ColumnIndex.h"
 
@@ -168,13 +168,9 @@ bool TrackModel::setData(const QModelIndex& index, const QVariant& value, int ro
 		{
 			MetaData md = library()->tracks()[row];
 
-			Tagging::Editor* tag_editor = new Tagging::Editor(this);
-			tag_editor->set_metadata(MetaDataList(md));
-			md.rating = (Rating) (value.toInt());
-			tag_editor->update_track(0, md);
-			tag_editor->commit();
-
-			connect(tag_editor, &Tagging::Editor::sig_finished, tag_editor, &Tagging::Editor::deleteLater);
+			Tagging::UserOperations* uto = new Tagging::UserOperations(-1, this);
+			connect(uto, &Tagging::UserOperations::sig_finished, uto, &Tagging::UserOperations::deleteLater);
+			uto->set_track_rating(md, (Rating) (value.toInt()));
 
 			return true;
 		}

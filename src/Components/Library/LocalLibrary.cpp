@@ -29,7 +29,6 @@
 #include "Database/LibraryDatabase.h"
 
 #include "Components/Playlist/PlaylistHandler.h"
-#include "Components/Tagging/Editor.h"
 
 #include "Utils/MetaData/Album.h"
 #include "Utils/MetaData/Artist.h"
@@ -286,97 +285,6 @@ void LocalLibrary::import_files_to(const QStringList& files, const QString& targ
 
 	emit sig_import_dialog_requested(target_dir);
 }
-
-
-/** BIG TODO
- * What is the library for? Imo, the Library is there
- * for managing the database entries for the tracks
- * So, the library is NOT responsible for changing
- * The ID3 tags on filesystem base. So, these 3
- * methods should be moved somewhere else.
- * You can use the updateTracks method for doing
- * the database part when editing tracks.
- * But I suggest, to introduce a Library/TagEdit
- * interface which you can use to edit tracks. But
- * this is not part of this ticket.
- */
-
-void LocalLibrary::merge_artists(const Util::Set<Id>& artist_ids, ArtistId target_artist)
-{
-	if(artist_ids.isEmpty()) {
-		return;
-	}
-
-	if(target_artist < 0){
-		sp_log(Log::Warning, this) << "Cannot merge artist: Target artist id < 0";
-		return;
-	}
-
-	bool show_album_artists = _settings->get<Set::Lib_ShowAlbumArtists>();
-
-	Artist artist;
-	bool success = m->library_db->getArtistByID(target_artist, artist);
-	if(!success){
-		return;
-	}
-
-	MetaDataList v_md;
-
-	get_all_tracks_by_artist(artist_ids.toList(), v_md, filter());
-	tag_edit()->set_metadata(v_md);
-
-	for(int idx=0; idx<v_md.count(); idx++)
-	{
-		MetaData md(v_md[idx]);
-		if(show_album_artists){
-			md.set_album_artist(artist.name(), artist.id);
-		}
-
-		else {
-			md.artist_id = artist.id;
-			md.set_artist(artist.name());
-		}
-
-		tag_edit()->update_track(idx, md);
-	}
-
-	tag_edit()->commit();
-}
-
-void LocalLibrary::merge_albums(const Util::Set<Id>& album_ids, AlbumId target_album)
-{
-	if(album_ids.isEmpty())	{
-		return;
-	}
-
-	if(target_album < 0){
-		sp_log(Log::Warning, this) << "Cannot merge albums: Target album id < 0";
-		return;
-	}
-
-	Album album;
-	bool success = m->library_db->getAlbumByID(target_album, album, true);
-	if(!success) {
-		return;
-	}
-
-	MetaDataList v_md;
-	get_all_tracks_by_album(album_ids.toList(), v_md, filter());
-
-	tag_edit()->set_metadata(v_md);
-
-	for(int idx=0; idx<v_md.count(); idx++)
-	{
-		MetaData md(v_md[idx]);
-		md.album_id = album.id;
-		md.set_album(album.name());
-
-		tag_edit()->update_track(idx, md);
-	}
-
-	tag_edit()->commit();
-}
-
 
 bool LocalLibrary::set_library_path(const QString& library_path)
 {

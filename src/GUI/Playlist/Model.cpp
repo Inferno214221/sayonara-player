@@ -29,7 +29,7 @@
 #include "Model.h"
 #include "Components/Playlist/AbstractPlaylist.h"
 #include "Components/Playlist/PlaylistHandler.h"
-#include "Components/Tagging/Editor.h"
+#include "Components/Tagging/UserTaggingOperations.h"
 #include "Components/Covers/CoverLocation.h"
 
 #include "GUI/Utils/CustomMimeData.h"
@@ -271,23 +271,15 @@ void PlaylistItemModel::change_rating(const IndexSet& indexes, Rating rating)
 {
 	MetaDataList v_md;
 	v_md.reserve(indexes.size());
+
 	for(auto idx : indexes)
 	{
 		v_md << m->pl->metadata(idx);
 	}
 
-	Tagging::Editor* te = new Tagging::Editor(v_md);
-
-	for(int i=0; i<v_md.count(); i++)
-	{
-		MetaData md	= v_md[i];
-		md.rating = rating;
-		te->update_track(i, md);
-	}
-
-	te->commit();
-
-	connect(te, &QThread::finished, te, &Tagging::Editor::deleteLater);
+	Tagging::UserOperations* uto = new Tagging::UserOperations(-1, this);
+	connect(uto, &Tagging::UserOperations::sig_finished, uto, &Tagging::UserOperations::deleteLater);
+	uto->set_track_rating(v_md, rating);
 }
 
 void PlaylistItemModel::insert_tracks(const MetaDataList& v_md, int row)

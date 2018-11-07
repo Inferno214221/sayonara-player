@@ -33,11 +33,6 @@
 #define prepare_tracks_for_playlist_files static_cast<void (AbstractLibrary::*) (const QStringList&)>(&AbstractLibrary::psl_prepare_tracks_for_playlist)
 #define prepare_tracks_for_playlist_idxs static_cast<void (AbstractLibrary::*) (const IdxList&)>(&AbstractLibrary::psl_prepare_tracks_for_playlist)
 
-namespace Tagging
-{
-	class Editor;
-}
-
 class Genre;
 class ExtensionSet;
 
@@ -71,13 +66,6 @@ public:
 	const Util::Set<TrackID>&		selected_tracks() const;
 	const Util::Set<AlbumId>&		selected_albums() const;
 	const Util::Set<ArtistId>&		selected_artists() const;
-
-	virtual void add_genre(const IdSet ids, const Genre& genre);
-	virtual void delete_genre(const Genre& genre);
-	virtual void rename_genre(const Genre& genre, const Genre& new_genre);
-
-	virtual void merge_artists(const IdSet& source_ids, ArtistId target_id);
-	virtual void merge_albums(const IdSet& source_ids, AlbumId target_id);
 
 	// emits new tracks, very similar to psl_selected_albums_changed
 	void change_current_disc(Disc disc);
@@ -192,8 +180,6 @@ protected:
 	void				prepare_tracks();
 	void				prepare_albums();
 	void				prepare_artists();
-
-	Tagging::Editor*      tag_edit();
 
 
 private:
