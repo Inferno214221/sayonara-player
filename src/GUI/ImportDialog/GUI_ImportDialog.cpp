@@ -25,7 +25,6 @@
 #include "Components/Library/LocalLibrary.h"
 
 #include "Utils/MetaData/MetaDataList.h"
-#include "Utils/Settings/Settings.h"
 #include "Utils/Message/Message.h"
 #include "Utils/Language.h"
 

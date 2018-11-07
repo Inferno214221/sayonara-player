@@ -22,6 +22,7 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Language.h"
+#include "Utils/Logger/Logger.h"
 
 #include <QToolTip>
 #include <QImage>

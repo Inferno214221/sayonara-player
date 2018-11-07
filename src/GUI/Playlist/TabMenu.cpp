@@ -23,7 +23,6 @@
 #include "GUI/Utils/GuiUtils.h"
 #include "GUI/Utils/PreferenceAction.h"
 
-#include "Utils/Settings/Settings.h"
 #include "Utils/Language.h"
 
 using namespace Gui;

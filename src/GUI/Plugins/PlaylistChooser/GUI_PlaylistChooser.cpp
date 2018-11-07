@@ -26,10 +26,9 @@
 
 #include "Utils/Message/Message.h"
 
-#include "Utils/Utils.h"
 #include "Utils/Playlist/CustomPlaylist.h"
 #include "Utils/Language.h"
-#include "Utils/Settings/Settings.h"
+#include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 
 #include <QDir>

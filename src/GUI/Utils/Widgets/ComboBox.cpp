@@ -18,12 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "ComboBox.h"
 #include "GUI/Utils/Delegates/ComboBoxDelegate.h"
 #include "GUI/Utils/Delegates/StyledItemDelegate.h"
-#include "Utils/Settings/Settings.h"
 
 #include <QAbstractItemView>
 #include <QEvent>

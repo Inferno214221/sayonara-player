@@ -18,10 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "GUI_ControlsNew.h"
-#include "Utils/Settings/Settings.h"
 #include "GUI/Player/ui_GUI_ControlsNew.h"
 #include "Components/Tagging/Editor.h"
 #include "Components/PlayManager/PlayManager.h"

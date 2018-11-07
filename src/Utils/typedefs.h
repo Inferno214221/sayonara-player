@@ -22,7 +22,6 @@
 #define TYPEDEFS_H
 
 #include <cstdint>
-#include <vector>
 #include "Utils/SetFwd.h"
 #include "Utils/MetaData/MetaDataFwd.h"
 
@@ -41,7 +40,7 @@ using StringPair=QPair<QString, QString>;
 using IntList=QList<int>;
 using IdList=QList<int>;
 using IdxList=QList<int> ;
-using BoolList=std::vector<bool> ;
+using BoolList=QList<bool> ;
 using Id=int32_t;
 using ArtistId=Id;
 using AlbumId=Id;

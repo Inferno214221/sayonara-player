@@ -22,10 +22,12 @@
 #define _LIBRARY_ITEM_H_
 
 #include "Utils/Pimpl.h"
-#include <vector>
 #include <QHash>
 
 using HashValue=uint32_t;
+
+class CustomField;
+using CustomFieldList=QList<CustomField>;
 
 /**
  * @brief The CustomField class
@@ -53,7 +55,6 @@ public:
 	QString get_value() const;
 };
 
-using CustomFieldList=std::vector<CustomField>;
 
 /**
  * @brief The LibraryItem class

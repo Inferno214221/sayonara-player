@@ -264,7 +264,9 @@ void Editor::set_metadata(const MetaDataList& v_md)
 
 	m->cover_map.clear();
 	m->changed_md.clear();
-	m->changed_md.assign(v_md.size(), false);
+
+	m->changed_md.reserve(v_md.count());
+	for(const MetaData& md : v_md) { Q_UNUSED(md); m->changed_md << false; }
 
 	if( v_md.size() > 0)
 	{

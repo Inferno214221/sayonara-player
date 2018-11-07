@@ -24,6 +24,8 @@
 #include "Utils/Settings/SayonaraClass.h"
 #include "Utils/Pimpl.h"
 
+#include <QObject>
+
 #include <gst/gst.h>
 #include <gst/gstbuffer.h>
 

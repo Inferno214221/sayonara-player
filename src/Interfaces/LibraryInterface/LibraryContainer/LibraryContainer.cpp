@@ -20,6 +20,7 @@
 
 #include "Interfaces/LibraryInterface/LibraryContainer/LibraryContainer.h"
 #include "Utils/Settings/Settings.h"
+#include "Utils/Settings/SettingNotifier.h"
 
 #include <QAction>
 

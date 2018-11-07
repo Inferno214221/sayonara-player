@@ -23,7 +23,6 @@
 #include "LibraryContainer/LibraryContainer.h"
 
 #include "Utils/Utils.h"
-#include "Utils/Settings/Settings.h"
 
 #include <QList>
 #include <QAction>

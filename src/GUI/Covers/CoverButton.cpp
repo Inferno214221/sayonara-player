@@ -30,6 +30,7 @@
 #include "Utils/Utils.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language.h"
+#include "Utils/Logger/Logger.h"
 
 #include <QPainter>
 #include <QMenu>

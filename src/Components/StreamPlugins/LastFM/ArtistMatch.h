@@ -22,6 +22,7 @@
 #define ARTISTMATCH_H
 
 #include "Utils/Pimpl.h"
+#include <QString>
 
 namespace LastFM
 {

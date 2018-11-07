@@ -20,9 +20,7 @@
 
 #include "MiniSearcher.h"
 #include "Utils/Language.h"
-
 #include "GUI/Utils/GuiUtils.h"
-#include "Utils/Settings/Settings.h"
 
 #include <QBoxLayout>
 #include <QScrollBar>

@@ -298,22 +298,22 @@ Logger& Logger::operator << (const std::string& str)
  * ***********************/
 Logger sp_log(const Log& type)
 {
-	return sp_log(type, nullptr);
+	return sp_log(type, std::string());
 }
 
 
-Logger sp_log(const Log& type, const char* data)
+Logger sp_log(const Log& type, const std::string& data)
 {
 	QString class_name;
-	if(data)
+	if(!data.empty())
 	{
 #ifdef HAVE_CXX_ABI
 		int status;
-		char* content = abi::__cxa_demangle(data, 0, 0, &status);
+		char* content = abi::__cxa_demangle(data.c_str(), 0, 0, &status);
 		class_name = QString(content);
 		free(content);
 #else
-		class_name = QString(data);
+		class_name = QString::fromStdString(data);
 #endif
 	}
 

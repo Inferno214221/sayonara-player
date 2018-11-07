@@ -20,7 +20,6 @@
 
 #include "Utils/Utils.h"
 #include "TagTextInput.h"
-#include "Utils/Settings/Settings.h"
 
 #include <QMenu>
 #include <QAction>

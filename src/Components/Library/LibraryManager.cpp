@@ -25,11 +25,13 @@
 #include "Database/Library.h"
 #include "Database/LibraryDatabase.h"
 
+#include "Utils/Logger/Logger.h"
 #include "Utils/Library/LibraryInfo.h"
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/globals.h"
+
 
 #include <QDir>
 #include <QFile>

@@ -18,10 +18,8 @@
  */
 
 #include "HeaderView.h"
-
 #include "Utils/globals.h"
 #include "Utils/Utils.h"
-#include "Utils/Settings/Settings.h"
 
 #include <QFontMetrics>
 #include <QTableView>

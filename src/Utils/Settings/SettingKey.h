@@ -46,7 +46,6 @@ namespace Library
 	class Info;
 }
 
-
 template<typename DataType, SettingKey keyIndex>
 class SettingIdentifier
 {
@@ -59,10 +58,8 @@ class SettingIdentifier
 		~SettingIdentifier();
 };
 
-#pragma message("Generate")
 
 #define INST_ABSTR(ns, type, settingkey) \
-	template class SettingIdentifier<type, SettingKey:: settingkey>; \
 	namespace ns {	using settingkey = SettingIdentifier<type, SettingKey:: settingkey>; }
 
 #define INST(type, settingkey)	INST_ABSTR(Set, type, settingkey)

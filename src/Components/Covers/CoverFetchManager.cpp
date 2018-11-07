@@ -28,6 +28,7 @@
 
 #include "Utils/Utils.h"
 #include "Utils/Settings/Settings.h"
+#include "Utils/Settings/SettingNotifier.h"
 #include "Utils/Logger/Logger.h"
 
 #include <QStringList>

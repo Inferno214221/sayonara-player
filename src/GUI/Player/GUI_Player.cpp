@@ -607,7 +607,7 @@ void GUI_Player::skin_changed()
 	if(style != m->style)
 	{
 		m->style = style;
-		Set::shout<Set::Player_Style>();
+		Set::shout(SettingKey::Player_Style);
 	}
 }
 

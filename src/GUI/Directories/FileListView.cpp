@@ -33,6 +33,7 @@
 #include "Utils/Library/SearchMode.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Language.h"
+#include "Utils/Logger/Logger.h"
 
 #include "GUI/Utils/InputDialog/LineInputDialog.h"
 #include "GUI/Utils/PreferenceAction.h"

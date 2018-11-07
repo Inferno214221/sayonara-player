@@ -28,7 +28,6 @@
 #include "3rdParty/SomaFM/SomaFMStation.h"
 
 #include "Utils/Utils.h"
-#include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
 
 #include "GUI/Utils/Style.h"

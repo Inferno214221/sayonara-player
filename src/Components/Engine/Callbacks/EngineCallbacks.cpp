@@ -28,6 +28,7 @@
 #include <QList>
 #include <QImage>
 #include <QRegExp>
+#include <QVector>
 
 #include <memory>
 #include <algorithm>

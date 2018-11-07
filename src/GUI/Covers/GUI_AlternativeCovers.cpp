@@ -49,6 +49,7 @@
 #include "Utils/Message/Message.h"
 #include "Utils/Language.h"
 #include "Utils/Settings/Settings.h"
+#include "Utils/Logger/Logger.h"
 
 #include <QDir>
 #include <QFile>

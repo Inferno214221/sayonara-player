@@ -8,7 +8,6 @@
 
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/MetaDataList.h"
-#include "Utils/Settings/Settings.h"
 #include "Utils/Utils.h"
 #include "Utils/Logger/Logger.h"
 

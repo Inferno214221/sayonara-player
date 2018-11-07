@@ -21,11 +21,11 @@
 #include "StdPlaylist.h"
 
 #include "Utils/globals.h"
-#include "Utils/Settings/Settings.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Parser/PlaylistParser.h"
 #include "Utils/RandomGenerator.h"
 #include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Logger/Logger.h"
 #include "Utils/Set.h"
 
 #include <algorithm>

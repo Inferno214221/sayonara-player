@@ -21,7 +21,6 @@
 #include "ImportCache.h"
 #include "Components/Library/LibraryManager.h"
 #include "Utils/Library/LibraryInfo.h"
-#include "Utils/Settings/Settings.h"
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaDataList.h"
 

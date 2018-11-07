@@ -18,3 +18,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "SettingNotifier.h"
+
+/** Setting Notifier **/
+SettingNotifier::SettingNotifier() :
+	QObject()
+{}
+
+SettingNotifier::~SettingNotifier() {}
+
+SettingNotifier* SettingNotifier::instance()
+{
+	static SettingNotifier inst;
+	return &inst;
+}
+
+void SettingNotifier::change_value(SettingKey key)
+{
+	emit sig_value_changed(key);
+}
+

@@ -27,6 +27,7 @@
 #include "Utils/MetaData/Artist.h"
 #include "Utils/Utils.h"
 #include "Utils/Set.h"
+#include "Utils/Logger/Logger.h"
 
 using DB::LibraryDatabase;
 using DB::Query;

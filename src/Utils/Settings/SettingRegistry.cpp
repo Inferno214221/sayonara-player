@@ -68,7 +68,8 @@ bool SettingRegistry::init()
 	register_setting<Set::Eq_List>( "EQ_list", EQ_Setting::get_defaults() );
 	register_setting<Set::Eq_Gauss>( "EQ_Gauss", true );
 
-	BoolList shown_cols(10); shown_cols.assign(10, true);
+	BoolList shown_cols; shown_cols.reserve(10); while(shown_cols.count() < 10) { shown_cols << false; }
+
 	register_setting<Set::Lib_ColsTitle>( "lib_shown_cols_title", shown_cols );
 	register_setting<Set::Lib_ColsArtist>( "lib_shown_cols_artist", shown_cols );
 	register_setting<Set::Lib_ColsAlbum>( "lib_shown_cols_album", shown_cols );

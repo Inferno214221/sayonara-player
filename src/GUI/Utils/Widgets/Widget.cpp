@@ -22,8 +22,6 @@
 #include "Dialog.h"
 #include <QFormLayout>
 
-#include "Utils/Settings/Settings.h"
-
 using Gui::MainWindow;
 using Gui::Dialog;
 using Gui::Widget;
