@@ -43,7 +43,6 @@
 #include <QTreeWidget>
 #include <QShortcut>
 
-
 using StringSet=Util::Set<QString>;
 using namespace Library;
 

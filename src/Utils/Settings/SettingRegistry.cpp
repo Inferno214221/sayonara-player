@@ -37,8 +37,6 @@
 #include <QFont>
 #include <type_traits>
 
-			/* Show tree view of genres */
-
 template<typename KeyClass>
 void register_setting(const char* db_key, const typename KeyClass::Data& default_value)
 {
