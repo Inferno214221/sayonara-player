@@ -36,6 +36,7 @@
 #include <QHeaderView>
 #include <QVBoxLayout>
 
+
 using namespace Library;
 
 struct AlbumView::Private

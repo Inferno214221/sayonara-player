@@ -118,6 +118,9 @@ struct CoverModel::Private
 		for(const Hash& key : valid_hashes.keys()){
 			valid_hashes[key] = false;
 		}
+
+		valid_hashes.clear();
+		valid_hashes.squeeze();
 	}
 };
 
@@ -585,8 +588,11 @@ void CoverModel::clear()
 	m->cover_thread->clear();
 
 	m->scaled_pixmaps.clear();
+	m->scaled_pixmaps.squeeze();
 	m->pixmaps.clear();
+	m->pixmaps.squeeze();
 	m->indexes.clear();
+	m->indexes.squeeze();
 	m->reset_valid_hashes();
 
 	m->cover_thread->resume();

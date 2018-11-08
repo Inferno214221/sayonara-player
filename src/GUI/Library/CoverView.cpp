@@ -35,6 +35,7 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language.h"
 #include "Utils/Utils.h"
+#include "Utils/Logger/Logger.h"
 
 #include <QHeaderView>
 #include <QTimer>
@@ -96,6 +97,7 @@ void CoverView::init(LocalLibrary* library)
 	}
 
 	new QShortcut(QKeySequence(QKeySequence::Refresh), this, SLOT(reload()), nullptr, Qt::WidgetShortcut);
+	new QShortcut(QKeySequence("F7"), this, SLOT(clear_cache()));
 }
 
 AbstractLibrary* CoverView::library() const
@@ -205,6 +207,12 @@ void CoverView::init_context_menu()
 void CoverView::reload()
 {
 	m->model->reload();
+}
+
+void CoverView::clear_cache()
+{
+	sp_log(Log::Debug, this) << "Clear cache";
+	m->model->clear();
 }
 
 void CoverView::fill()
