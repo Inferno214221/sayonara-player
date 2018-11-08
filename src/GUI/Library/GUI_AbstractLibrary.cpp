@@ -22,17 +22,17 @@
 #include "TableView.h"
 
 #include "Components/Library/AbstractLibrary.h"
+#include "GUI/Library/Utils/LibrarySearchBar.h"
 
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Message/Message.h"
 #include "Utils/Library/SearchMode.h"
 #include "Utils/Library/Filter.h"
 #include "Utils/Settings/Settings.h"
-#include "Utils/Language.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/Language.h"
 
 #include "GUI/Utils/EventFilter.h"
-#include "GUI/Utils/PreferenceAction.h"
 #include "GUI/Utils/GuiUtils.h"
 
 #include <QLineEdit>
@@ -44,8 +44,7 @@ using namespace Library;
 struct GUI_AbstractLibrary::Private
 {
 	AbstractLibrary*	library = nullptr;
-	QLineEdit*			le_search=nullptr;
-	QMenu*				search_context_menu=nullptr;
+	SearchBar*			le_search=nullptr;
 
 	Private(AbstractLibrary* library) :
 		library(library)
@@ -77,98 +76,50 @@ void GUI_AbstractLibrary::init()
 	connect(lv_album(), &ItemView::sig_delete_clicked, this, &GUI_AbstractLibrary::item_delete_clicked);
 	connect(lv_tracks(), &ItemView::sig_delete_clicked, this, &GUI_AbstractLibrary::tracks_delete_clicked);
 
-	Set::listen<Set::Lib_LiveSearch>(this, &GUI_AbstractLibrary::_sl_live_search_changed);
+	if(m->le_search)
+	{
+		connect(m->le_search, &SearchBar::sig_current_mode_changed, this, &GUI_AbstractLibrary::query_library);
+	}
+
+	Set::listen<Set::Lib_LiveSearch>(this, &GUI_AbstractLibrary::live_search_changed);
 }
 
 void GUI_AbstractLibrary::init_search_bar()
-{
-	m->le_search->setFocusPolicy(Qt::ClickFocus);
-	m->le_search->setContextMenuPolicy(Qt::CustomContextMenu);
-	m->le_search->setClearButtonEnabled(true);
-
-	init_search_context_menu();
-
-	connect(m->le_search, &QLineEdit::returnPressed, this, &GUI_AbstractLibrary::search_return_pressed);
-
-	search_mode_changed(Filter::Fulltext);
-}
-
-void GUI_AbstractLibrary::init_search_context_menu()
-{
-	if(!m->search_context_menu)
-	{
-		m->search_context_menu = new QMenu(m->le_search);
-
-		ContextMenuFilter* cm_filter = new ContextMenuFilter(m->le_search);
-		connect(cm_filter, &ContextMenuFilter::sig_context_menu, m->search_context_menu, &QMenu::popup);
-
-		m->le_search->installEventFilter(cm_filter);
-	}
-
-	else {
-		m->search_context_menu->clear();
-	}
-
-	QList<QAction*> actions;
-	QList<Filter::Mode> filters = search_options();
-	for(const Filter::Mode filter_mode : filters)
-	{
-		QVariant data = QVariant((int) (filter_mode));
-		QAction* action = new QAction(Filter::get_text(filter_mode), m->le_search);
-
-		action->setCheckable(false);
-		action->setData(data);
-
-		actions << action;
-
-		connect(action, &QAction::triggered, this, [=](){
-			search_mode_changed(filter_mode);
-		});
-	}
-
-	actions << m->search_context_menu->addSeparator();
-	actions << new SearchPreferenceAction(m->search_context_menu);
-
-	m->search_context_menu->addActions(actions);
-}
-
-void GUI_AbstractLibrary::language_changed()
-{
-	Filter::Mode mode = static_cast<Filter::Mode>(m->le_search->property("search_mode").toInt());
-	QString text = Lang::get(Lang::SearchNoun) + ": " + Filter::get_text(mode);
-
-	m->le_search->setPlaceholderText(text);
-	init_search_context_menu();
-}
-
-
-void GUI_AbstractLibrary::init_shortcuts()
 {
 	if(!m->le_search){
 		return;
 	}
 
-	m->le_search->setShortcutEnabled(QKeySequence::Find, true);
+	m->le_search->set_modes(this->search_options());
+	m->le_search->set_current_mode(Filter::Fulltext);
 
-	new QShortcut(QKeySequence::Find, m->le_search, SLOT(setFocus()), nullptr, Qt::WindowShortcut);
-	new QShortcut(QKeySequence("F3"), m->le_search, SLOT(setFocus()), nullptr, Qt::WindowShortcut);
+	connect(m->le_search, &QLineEdit::returnPressed, this, &GUI_AbstractLibrary::search_return_pressed);
+}
 
+
+void GUI_AbstractLibrary::language_changed() {}
+
+void GUI_AbstractLibrary::init_shortcuts()
+{
 	KeyPressFilter* kp_filter_lib = new KeyPressFilter(this);
 	this->installEventFilter(kp_filter_lib);
 	connect(kp_filter_lib, &KeyPressFilter::sig_key_pressed, this, &GUI_AbstractLibrary::key_pressed);
-
-	KeyPressFilter* kp_filter_search = new KeyPressFilter(m->le_search);
-	m->le_search->installEventFilter(kp_filter_search);
-	connect(kp_filter_search, &KeyPressFilter::sig_key_pressed, this, &GUI_AbstractLibrary::search_key_pressed);
 }
 
 void GUI_AbstractLibrary::query_library()
 {
-	Filter filter = m->library->filter();
-	Filter::Mode current_mode = static_cast<Filter::Mode>(m->le_search->property("search_mode").toInt());
+	QString text;
+	Filter::Mode current_mode = Filter::Mode::Fulltext;
 
+	if(m->le_search)
+	{
+		text = m->le_search->text();
+		current_mode = m->le_search->current_mode();
+	}
+
+	Filter filter = m->library->filter();
 	filter.set_mode(current_mode);
-	filter.set_filtertext(m->le_search->text(), _settings->get<Set::Lib_SearchMode>());
+	filter.set_filtertext(text, _settings->get<Set::Lib_SearchMode>());
 
 	m->library->change_filter(filter);
 }
@@ -180,69 +131,12 @@ void GUI_AbstractLibrary::search_return_pressed()
 
 void GUI_AbstractLibrary::search_edited(const QString& search)
 {
-	static bool search_icon_initialized=false;
-	if(!search_icon_initialized)
-	{
-		QAction* a = m->le_search->findChild<QAction*>("_q_qlineeditclearaction");
+	Q_UNUSED(search)
 
-		if(a){
-			a->setIcon(Gui::Util::icon("broom.png"));
-		}
-
-		search_icon_initialized = true;
-	}
-
-	if(search.startsWith("f:", Qt::CaseInsensitive))
-	{
-		m->le_search->clear();
-		search_mode_changed(::Library::Filter::Fulltext);
-	}
-
-	else if(search.startsWith("g:", Qt::CaseInsensitive))
-	{
-		m->le_search->clear();
-		search_mode_changed(::Library::Filter::Genre);
-	}
-
-	else if(search.startsWith("p:", Qt::CaseInsensitive))
-	{
-		m->le_search->clear();
-		search_mode_changed(::Library::Filter::Filename);
-	}
-
-	else if(_settings->get<Set::Lib_LiveSearch>())
+	if(_settings->get<Set::Lib_LiveSearch>())
 	{
 		query_library();
 	}
-}
-
-void GUI_AbstractLibrary::search_key_pressed(int key)
-{
-	if(key == Qt::Key_Escape)
-	{
-		m->le_search->clear();
-
-		search_mode_changed(Filter::Fulltext);
-		query_library();
-	}
-
-	if(key == Qt::Key_Backspace)
-	{
-		if(m->le_search->text().isEmpty())
-		{
-			search_mode_changed(Filter::Fulltext);
-		}
-	}
-}
-
-void GUI_AbstractLibrary::search_mode_changed(Filter::Mode mode)
-{
-	QString text = Lang::get(Lang::SearchNoun) + ": " + Filter::get_text(mode);
-
-	m->le_search->setPlaceholderText(text);
-	m->le_search->setProperty("search_mode", (int) mode);
-
-	query_library();
 }
 
 void GUI_AbstractLibrary::key_pressed(int key)
@@ -259,9 +153,8 @@ void GUI_AbstractLibrary::key_pressed(int key)
 			clear_selections();
 		}
 
-		else
-		{
-			search_key_pressed(key);
+		else if(m->le_search){
+			m->le_search->clear();
 		}
 	}
 }
@@ -305,7 +198,7 @@ void GUI_AbstractLibrary::show_delete_answer(QString answer)
 }
 
 
-void GUI_AbstractLibrary::_sl_live_search_changed()
+void GUI_AbstractLibrary::live_search_changed()
 {
 	if(_settings->get<Set::Lib_LiveSearch>()) {
 		connect(m->le_search, &QLineEdit::textChanged, this, &GUI_AbstractLibrary::search_edited);

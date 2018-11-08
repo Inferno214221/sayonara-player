@@ -67,11 +67,10 @@ namespace Library
 		TableView* lv_album() const override;
 		TableView* lv_tracks() const override;
 
-		QLineEdit* le_search() const override;
+		Library::SearchBar* le_search() const override;
 		QList<Filter::Mode> search_options() const override;
 
 		void language_changed() override;
-		void search_key_pressed(int key) override;
 
 	private slots:
 		void tracks_loaded();

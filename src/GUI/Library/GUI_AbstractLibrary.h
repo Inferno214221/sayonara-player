@@ -36,6 +36,7 @@ class AbstractLibrary;
 namespace Library
 {
 	class TableView;
+	class SearchBar;
 
 	class GUI_AbstractLibrary :
 			public Gui::Widget
@@ -52,7 +53,6 @@ namespace Library
 	private:
 		virtual void init();
 		virtual void init_search_bar();
-		virtual void init_search_context_menu();
 
 	protected:
 		virtual void language_changed() override;
@@ -61,30 +61,25 @@ namespace Library
 		virtual TrackDeletionMode show_delete_dialog(int n_tracks)=0;
 
 	protected slots:
-		virtual void _sl_live_search_changed();
+		virtual void live_search_changed();
 
 		virtual void clear_selections();
-		virtual void search_key_pressed(int key);
 		virtual void search_return_pressed();
 		virtual void search_edited(const QString& searchstring);
-		virtual void search_mode_changed(Filter::Mode mode);
 		virtual void key_pressed(int key);
 		virtual void query_library();
 
 		virtual void item_delete_clicked();
-		void tracks_delete_clicked();
 		virtual void show_delete_answer(QString);
-
-
-	public slots:
 		virtual void id3_tags_changed();
 
+		void tracks_delete_clicked();
 
 	protected:
 		virtual TableView* lv_artist() const=0;
 		virtual TableView* lv_album() const=0;
 		virtual TableView* lv_tracks() const=0;
-		virtual QLineEdit* le_search() const=0;
+		virtual Library::SearchBar* le_search() const=0;
 
 		virtual QList<Filter::Mode> search_options() const=0;
 

@@ -21,7 +21,6 @@
 #include <iostream>
 #include "Utils/Settings/Settings.h"
 #include "Utils/Settings/SettingRegistry.h"
-#include "Utils/Settings/SettingNotifier.h"
 #include "Utils/typedefs.h"
 
 #include "Utils/Crypt.h"
@@ -58,12 +57,6 @@ Settings::~Settings ()
 	}
 }
 
-void Settings::trigger_setting_notifier(SettingKey key) const
-{
-	SettingNotifier* sn = SettingNotifier::instance();
-	sn->change_value(key);
-}
-
 AbstrSetting* Settings::setting(SettingKey key) const
 {
 	return m->settings[(int) key];
@@ -94,11 +87,6 @@ bool Settings::check_settings()
 
 	m->initialized = (!has_empty);
 	return m->initialized;
-}
-
-void Settings::shout(SettingKey key) const
-{
-	trigger_setting_notifier(key);
 }
 
 
@@ -148,11 +136,4 @@ void Settings::apply_fixes()
 		QByteArray id = ::Util::random_string(32).toLocal8Bit();
 		this->set<Set::Player_PublicId>(id);
 	}
-}
-
-
-/** Global namespace **/
-void Set::shout(SettingKey key)
-{
-	SettingNotifier::instance()->change_value(key);
 }

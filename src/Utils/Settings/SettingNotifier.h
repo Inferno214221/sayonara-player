@@ -21,48 +21,84 @@
 #ifndef SETTINGNOTIFIER_H
 #define SETTINGNOTIFIER_H
 
-#include "Utils/Settings/SayonaraClass.h"
-#include "Utils/Settings/SettingKeyEnum.h"
-
 #include <functional>
-#include <iostream>
 #include <QObject>
 
 #pragma once
 
-
-class SettingNotifier :
-	public QObject
+class AbstrSettingNotifier : public QObject
 {
 	Q_OBJECT
 
-	signals:
-		void sig_value_changed(SettingKey);
+signals:
+	void sig_value_changed();
 
-	private:
-		SettingNotifier();
-		SettingNotifier(const SettingNotifier& other) = delete;
+public:
+	template<typename T>
+	void add_listener(T* c, void (T::*fn)())
+	{
+		connect(this, &AbstrSettingNotifier::sig_value_changed, c, fn);
+	}
 
-	public:
-		~SettingNotifier();
-
-		static SettingNotifier* instance();
-		void change_value(SettingKey key);
-
-		template<typename T>
-		void add_listener(SettingKey key, T* t, void (T::*fn)())
-		{
-			connect(this, &SettingNotifier::sig_value_changed, this, [=](SettingKey k)
-			{
-				if(key == k)
-				{
-					auto callable = std::bind(fn, t);
-					callable();
-				}
-			});
-		}
+	void emit_value_changed();
 };
 
+template<typename KeyClass>
+class SettingNotifier
+{
+private:
+	AbstrSettingNotifier* m;
+
+	SettingNotifier() :
+		m(new AbstrSettingNotifier())
+	{}
+
+	SettingNotifier(const SettingNotifier& other) = delete;
+
+public:
+	~SettingNotifier() {}
+
+	static SettingNotifier<KeyClass>* instance()
+	{
+		static SettingNotifier<KeyClass> inst;
+		return &inst;
+	}
+
+	void val_changed()
+	{
+		m->emit_value_changed();
+	}
+
+	template<typename T>
+	void add_listener(T* c, void (T::*fn)())
+	{
+		m->add_listener(c, fn);
+	}
+};
+
+
+namespace Set
+{
+	template<typename KeyClassInstance, typename T>
+	//typename std::enable_if<std::is_base_of<SayonaraClass, T>::value, void>::type
+	void
+	listen(T* t, void (T::*fn)(), bool run=true)
+	{
+		SettingNotifier<KeyClassInstance>::instance()->add_listener(t, fn);
+
+		if(run)
+		{
+			auto callable = std::bind(fn, t);
+			callable();
+		}
+	}
+
+	template<typename KeyClassInstance>
+	void shout()
+	{
+		SettingNotifier<KeyClassInstance>::instance()->val_changed();
+	}
+}
 
 
 #endif // SETTINGNOTIFIER_H

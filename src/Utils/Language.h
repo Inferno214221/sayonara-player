@@ -124,6 +124,7 @@ public:
 		Library,
 		LibraryPath,
 		Listen,
+		LiveSearch,
 		Loading,
 		LoadingArg,
 		Logger,

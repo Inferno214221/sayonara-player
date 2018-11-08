@@ -58,7 +58,7 @@
       </spacer>
      </item>
      <item>
-      <widget class="QLineEdit" name="le_search"/>
+      <widget class="Library::SearchBar" name="le_search"/>
      </item>
     </layout>
    </item>
@@ -574,6 +574,11 @@
    <extends>QWidget</extends>
    <header>GUI/Library/GUI_CoverView.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Library::SearchBar</class>
+   <extends>QLineEdit</extends>
+   <header>GUI/Library/Utils/LibrarySearchBar.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

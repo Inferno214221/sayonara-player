@@ -39,9 +39,6 @@ class Settings
 	SINGLETON(Settings)
 	PIMPL(Settings)
 
-	private:
-		void trigger_setting_notifier(SettingKey key) const;
-
 	public:
 		AbstrSetting* setting(SettingKey keyIndex) const;
 
@@ -72,35 +69,22 @@ class Settings
 
 			if( s->assign_value(val))
 			{
-				trigger_setting_notifier(KeyClass::key);
+				SettingNotifier< KeyClass >* sn = SettingNotifier< KeyClass >::instance();
+				sn->val_changed();
 			}
 		}
 
 		/* get a setting, defined by a unique, REGISTERED key */
-		void shout(SettingKey key) const;
+		template<typename KeyClass>
+		void shout() const
+		{
+			SettingNotifier<KeyClass >* sn = SettingNotifier< KeyClass >::instance();
+			sn->val_changed();
+		}
 
 		void apply_fixes();
+
 };
-
-namespace Set
-{
-	template<typename KeyClassInstance, typename T>
-	//typename std::enable_if<std::is_base_of<SayonaraClass, T>::value, void>::type
-	void
-	listen(T* t, void (T::*fn)(), bool run=true)
-	{
-		SettingNotifier::instance()->add_listener(KeyClassInstance::key, t, fn);
-
-		if(run)
-		{
-			auto callable = std::bind(fn, t);
-			callable();
-		}
-	}
-
-	void shout(SettingKey key);
-}
-
 
 
 #endif // SAYONARA_SETTINGS_H_

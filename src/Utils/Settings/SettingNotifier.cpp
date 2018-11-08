@@ -20,21 +20,7 @@
 
 #include "SettingNotifier.h"
 
-/** Setting Notifier **/
-SettingNotifier::SettingNotifier() :
-	QObject()
-{}
-
-SettingNotifier::~SettingNotifier() {}
-
-SettingNotifier* SettingNotifier::instance()
+void AbstrSettingNotifier::emit_value_changed()
 {
-	static SettingNotifier inst;
-	return &inst;
+	emit sig_value_changed();
 }
-
-void SettingNotifier::change_value(SettingKey key)
-{
-	emit sig_value_changed(key);
-}
-

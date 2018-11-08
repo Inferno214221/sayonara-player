@@ -46,7 +46,8 @@ namespace Library
 			{
 				Fulltext=0,
 				Filename,
-				Genre
+				Genre,
+				Invalid
 			};
 
 

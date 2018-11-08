@@ -233,6 +233,8 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Library path");
 		case Listen:
 			return l.tr("Listen");
+		case LiveSearch:
+			return l.tr("Live Search");
 		case Logger:
 			return l.tr("Logger");
 		case Lyrics:

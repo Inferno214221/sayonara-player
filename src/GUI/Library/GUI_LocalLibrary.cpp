@@ -35,6 +35,7 @@
 #include "GUI/Library/Utils/LocalLibraryMenu.h"
 #include "GUI/Library/GUI_CoverView.h"
 #include "GUI/Library/CoverView.h"
+#include "GUI/Library/Utils/LibrarySearchBar.h"
 
 #include "GUI/ImportDialog/GUI_ImportDialog.h"
 #include "GUI/Utils/Library/GUI_DeleteDialog.h"
@@ -165,16 +166,6 @@ void GUI_LocalLibrary::language_changed()
 	GUI_AbstractLibrary::language_changed();
 }
 
-void GUI_LocalLibrary::search_key_pressed(int key)
-{
-	if(key == Qt::Key_Escape)
-	{
-		ui->lv_genres->clearSelection();
-	}
-
-	GUI_AbstractLibrary::search_key_pressed(key);
-}
-
 
 void GUI_LocalLibrary::tracks_loaded()
 {
@@ -256,7 +247,7 @@ void GUI_LocalLibrary::genre_selection_changed(const QModelIndex& idx)
 		index_datas << index.data().toString();
 	}
 
-	search_mode_changed(::Library::Filter::Genre);
+	ui->le_search->set_current_mode(::Library::Filter::Genre);
 	ui->le_search->setText(index_datas.join(","));
 	search_edited(index_datas.join(","));
 }
@@ -467,7 +458,7 @@ void GUI_LocalLibrary::switch_album_view()
 Library::TableView* GUI_LocalLibrary::lv_artist() const { return ui->lv_artist; }
 Library::TableView* GUI_LocalLibrary::lv_album() const { return ui->lv_album; }
 Library::TableView* GUI_LocalLibrary::lv_tracks() const { return ui->tb_title; }
-QLineEdit* GUI_LocalLibrary::le_search() const { return ui->le_search; }
+Library::SearchBar* GUI_LocalLibrary::le_search() const { return ui->le_search; }
 
 // LocalLibraryContainer
 QMenu* GUI_LocalLibrary::menu() const {	return m->library_menu; }

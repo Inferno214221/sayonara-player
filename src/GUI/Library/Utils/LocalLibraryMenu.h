@@ -67,13 +67,14 @@ namespace Library
 		void shortcut_changed(ShortcutIdentifier identifier);
 
 	private slots:
+		void show_album_covers_changed();
 		void show_album_covers_triggered(bool b);
+
+		void show_album_artists_changed();
 		void show_album_artists_triggered(bool b);
 
-		void show_album_covers_changed();
-		void show_album_artists_changed();
-
 		void realtime_search_changed();
+		void realtime_search_triggered(bool b);
 
 		void edit_clicked();
 		void edit_accepted();
