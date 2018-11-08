@@ -71,9 +71,7 @@ private slots:
 	void show_fullscreen_toggled(bool b);
 	void help_clicked();
 	void about_clicked();
-	void awa_translators_finished();
 	void shortcut_changed(ShortcutIdentifier identifier);
-
 };
 
 

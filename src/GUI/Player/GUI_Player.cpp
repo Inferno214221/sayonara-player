@@ -343,7 +343,7 @@ void GUI_Player::plugin_added(PlayerPlugin::Base* plugin)
 	QList<PlayerPlugin::Base*> lst = pph->all_plugins();
 
 	QAction* action = plugin->get_action();
-	QKeySequence ks("Ctrl+F" + QString::number(lst.size()));
+	QKeySequence ks("Shift+F" + QString::number(lst.size()));
 	action->setShortcut(ks);
 	action->setData(plugin->get_name());
 

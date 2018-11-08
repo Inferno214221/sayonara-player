@@ -84,7 +84,7 @@ namespace Library
 		void genre_selection_changed(const QModelIndex& index);
 
 		void reload_library_requested();
-		void reload_library_requested(ReloadQuality quality);
+		void reload_library_requested_with_quality(ReloadQuality quality);
 		void reload_library_accepted(ReloadQuality quality);
 		void reload_finished();
 

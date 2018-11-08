@@ -59,7 +59,8 @@ public:
 		EntryPlay=(1<<10),
 		EntryPlayNewTab=(1<<11),
 		EntryFilterExtension=(1<<12),
-		EntryLast=(1<<13)
+		EntryReload=(1<<13),
+		EntryLast=(1<<14)
 	};
 
 	using Entries=uint64_t;
@@ -117,6 +118,7 @@ signals:
 	void sig_refresh_clicked();
 	void sig_clear_clicked();
 	void sig_filter_triggered(const QString& extension, bool b);
+	void sig_reload_clicked();
 
 private slots:
 	void show_cover_view_changed();

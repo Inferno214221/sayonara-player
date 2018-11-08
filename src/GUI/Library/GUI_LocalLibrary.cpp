@@ -37,8 +37,6 @@
 #include "GUI/Library/CoverView.h"
 
 #include "GUI/ImportDialog/GUI_ImportDialog.h"
-
-#include "GUI/Utils/ContextMenu/LibraryContextMenu.h"
 #include "GUI/Utils/Library/GUI_DeleteDialog.h"
 
 #include "Components/Covers/CoverLocation.h"
@@ -63,8 +61,8 @@
 
 enum StatusWidgetIndex
 {
-	ReloadLibrary=0,
-	FileExtensions
+	ReloadLibraryIndex=0,
+	FileExtensionsIndex
 };
 
 enum GenreWidgetIndex
@@ -113,6 +111,7 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 	connect(m->library, &LocalLibrary::sig_reloading_library_finished, this, &GUI_LocalLibrary::reload_finished);
 	connect(m->library, &LocalLibrary::sig_reloading_library_finished, ui->lv_genres, &GenreView::reload_genres);
 	connect(m->library, &LocalLibrary::sig_all_tracks_loaded, this, &GUI_LocalLibrary::tracks_loaded);
+	connect(m->library, &LocalLibrary::sig_import_dialog_requested, this, &GUI_LocalLibrary::import_dialog_requested);
 
 	connect(m->manager, &Manager::sig_path_changed, this, &GUI_LocalLibrary::path_changed);
 	connect(m->manager, &Manager::sig_renamed, this, &GUI_LocalLibrary::name_changed);
@@ -135,7 +134,9 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 	connect(ui->splitter_tracks, &QSplitter::splitterMoved, this, &GUI_LocalLibrary::splitter_tracks_moved);
 	connect(ui->splitter_genre, &QSplitter::splitterMoved, this, &GUI_LocalLibrary::splitter_genre_moved);
 
-	connect(m->library, &LocalLibrary::sig_import_dialog_requested, this, &GUI_LocalLibrary::import_dialog_requested);
+	connect(ui->lv_album, &Library::ItemView::sig_reload_clicked, this, &GUI_LocalLibrary::reload_library_requested);
+	connect(ui->lv_artist, &Library::ItemView::sig_reload_clicked, this, &GUI_LocalLibrary::reload_library_requested);
+	connect(ui->tb_title, &Library::ItemView::sig_reload_clicked, this, &GUI_LocalLibrary::reload_library_requested);
 
 	setAcceptDrops(true);
 
@@ -193,7 +194,7 @@ void GUI_LocalLibrary::tracks_loaded()
 	if(!_settings->get<Set::Lib_ShowFilterExtBar>())
 	{
 		ui->sw_status->setVisible(false);
-		ui->sw_status->setCurrentIndex(StatusWidgetIndex::ReloadLibrary);
+		ui->sw_status->setCurrentIndex(StatusWidgetIndex::ReloadLibraryIndex);
 		return;
 	}
 
@@ -222,7 +223,7 @@ void GUI_LocalLibrary::tracks_loaded()
 		m->extension_buttons << btn;
 	}
 
-	ui->sw_status->setCurrentIndex(StatusWidgetIndex::FileExtensions);
+	ui->sw_status->setCurrentIndex(StatusWidgetIndex::FileExtensionsIndex);
 }
 
 void GUI_LocalLibrary::extension_button_toggled(bool b)
@@ -272,7 +273,7 @@ Library::TrackDeletionMode GUI_LocalLibrary::show_delete_dialog(int n_tracks)
 void GUI_LocalLibrary::progress_changed(const QString& type, int progress)
 {
 	ui->sw_status->setVisible(progress >= 0);
-	ui->sw_status->setCurrentIndex(StatusWidgetIndex::ReloadLibrary);
+	ui->sw_status->setCurrentIndex(StatusWidgetIndex::ReloadLibraryIndex);
 
 	ui->pb_progress->setMaximum((progress > 0) ? 100 : 0);
 	ui->pb_progress->setValue(progress);
@@ -281,10 +282,10 @@ void GUI_LocalLibrary::progress_changed(const QString& type, int progress)
 
 void GUI_LocalLibrary::reload_library_requested()
 {
-	reload_library_requested(Library::ReloadQuality::Unknown);
+	reload_library_requested_with_quality(Library::ReloadQuality::Unknown);
 }
 
-void GUI_LocalLibrary::reload_library_requested(Library::ReloadQuality quality)
+void GUI_LocalLibrary::reload_library_requested_with_quality(Library::ReloadQuality quality)
 {
 	GUI_ReloadLibraryDialog* dialog =
 			new GUI_ReloadLibraryDialog(m->library->library_name(), this);
@@ -390,7 +391,7 @@ void GUI_LocalLibrary::path_changed(LibraryId id)
 		m->library_menu->refresh_path(info.path());
 
 		if(this->isVisible()){
-			reload_library_requested(Library::ReloadQuality::Accurate);
+			reload_library_requested_with_quality(Library::ReloadQuality::Accurate);
 		}
 	}
 }
@@ -450,6 +451,7 @@ void GUI_LocalLibrary::switch_album_view()
 		{
 			ui->cover_view->init(m->library);
 			connect(ui->cover_view, &GUI_CoverView::sig_delete_clicked, this, &GUI_LocalLibrary::item_delete_clicked);
+			connect(ui->cover_view->table_view(), &Library::ItemView::sig_reload_clicked, this, &GUI_LocalLibrary::reload_library_requested);
 		}
 
 		if(m->library->is_loaded() && (m->library->selected_artists().size() > 0))

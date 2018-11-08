@@ -77,6 +77,7 @@ struct ShortcutHandler::Private
 		shortcut_map << ShortcutMapEntry(ShortcutIdentifier::ClosePlugin, "close_plugin", QString("Ctrl+Esc"));
 		shortcut_map << ShortcutMapEntry(ShortcutIdentifier::Minimize, "minimize", QString("Ctrl+M"));
 		shortcut_map << ShortcutMapEntry(ShortcutIdentifier::Quit, "quit", QString("Ctrl+Q"));
+		shortcut_map << ShortcutMapEntry(ShortcutIdentifier::ReloadLibrary, "reload_library", QString("Ctrl+F5"));
 	}
 };
 

@@ -74,6 +74,7 @@ namespace Library
 		void sig_play_new_tab_clicked();
 		void sig_append_clicked();
 		void sig_refresh_clicked();
+		void sig_reload_clicked();
 		void sig_import_files(const QStringList& files);
 		void sig_sel_changed(const IndexSet& indexes);
 		void sig_merge(const Util::Set<Id>& ids, int target_id);
@@ -151,6 +152,7 @@ namespace Library
 		virtual void delete_clicked();
 		virtual void append_clicked();
 		virtual void refresh_clicked();
+		virtual void reload_clicked();
 		virtual void cover_view_toggled();
 		virtual void album_artists_toggled();
 		virtual void filter_extensions_triggered(const QString& extension, bool b);

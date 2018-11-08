@@ -38,7 +38,6 @@
 #include "Utils/Utils.h"
 #include "Utils/Language.h"
 #include "Utils/Message/Message.h"
-#include "Utils/WebAccess/AsyncWebAccess.h"
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -85,7 +84,6 @@ struct Menubar::Private
 	QAction*		current_library_menu_action=nullptr;
 
 	QMessageBox*	about_box=nullptr;
-	QStringList		translators;
 
 	const QString SC_ID_VIEW_LIBRARY=QString("view_library");
 
@@ -380,24 +378,22 @@ void Menubar::show_fullscreen_toggled(bool b)
 
 void Menubar::help_clicked()
 {
-	Message::info(tr("Please visit the forum at") + "<br />" +
-				  Util::create_link("http://sayonara-player.com/forum", Style::is_dark()) +
-				  "<br /><br />" +
-				  tr("Donate") + ": <br />" + Util::create_link("http://sayonara-player.com", Style::is_dark()) +
-				  "<br /><br />" +
-				  tr("Thank you") + "! :-)"
-	);
+	QStringList text
+	{
+		tr("Please visit the forum at"),
+		Util::create_link("https://sayonara-player.com/forum", Style::is_dark()),
+		"",
+		tr("FAQ") + ": ",
+		Util::create_link("http://sayonara-player.com/faq.php", Style::is_dark()),
+	};
+
+	Message::info(text.join("<br/>"));
 }
 
 // private slot
 void Menubar::about_clicked()
 {
-	QString first_translators;
-	QString last_translator;
-	QString translator_str = "";
 	QString version = _settings->get<Set::Player_Version>();
-
-	QString link = Util::create_link("http://sayonara-player.com");
 
 	if(!m->about_box)
 	{
@@ -408,66 +404,30 @@ void Menubar::about_clicked()
 		m->about_box->setModal(true);
 		m->about_box->setStandardButtons(QMessageBox::Ok);
 		m->about_box->setWindowTitle(tr("About Sayonara"));
-		m->about_box->setText("<b><font size=\"+2\">Sayonara Player " + version + "</font></b>");
 
-		AsyncWebAccess* awa = new AsyncWebAccess(this);
-		awa->run("http://sayonara-player.com/translators");
-		connect(awa,  &AsyncWebAccess::sig_finished, this, &Menubar::awa_translators_finished);
+		m->about_box->setText(QStringList
+		({
+			"<b><font size=\"+2\">",
+			"Sayonara Player " + version,
+			"</font></b>"
+		}).join(""));
+
+		m->about_box->setInformativeText( QStringList
+		({
+			tr("Written by Lucio Carreras"),
+			"",
+			tr("License") + ": GPLv3",
+			"Copyright 2011-" + QString::number(QDateTime::currentDateTime().date().year()),
+			Util::create_link("http://sayonara-player.com", Style::is_dark()),
+			"",
+			"<b>" + tr("Donate") + "</b>",
+			Util::create_link("http://sayonara-player.com/donations.php", Style::is_dark()),
+			"",
+			tr("Special tanks to all the brave translators") + "!"
+		}).join("<br/>"));
 	}
 
-	if(m->translators.size() > 2)
-	{
-		for (int i=0; i<m->translators.size() - 1; i++)
-		{
-			first_translators += "<b>" + m->translators[i] + "</b>";
-			if(i < m->translators.size() - 2) {
-				first_translators += ", ";
-			}
-		}
-
-		last_translator = QString("<b>") + m->translators.last() + "</b>";
-		translator_str = QString("<br /><br /><br />") +
-				tr("Special thanks to %1 and %2 for translating")
-				.arg(first_translators, last_translator);
-	}
-
-	m->about_box->setInformativeText( QString("") +
-				tr("Written by Lucio Carreras") + "<br /><br />" +
-				tr("License") + ": GPLv3<br /><br />" +
-				"Copyright 2011-" + QString::number(QDateTime::currentDateTime().date().year()) +
-				"<br /><br />" + link + translator_str
-	);
-
-	if(!m->about_box->isVisible()){
-		m->about_box->exec();
-	}
-}
-
-void Menubar::awa_translators_finished()
-{
-	AsyncWebAccess* awa = static_cast<AsyncWebAccess*>(sender());
-	if(!awa){
-		return;
-	}
-
-	if(awa->status() != AsyncWebAccess::Status::GotData) {
-		awa->deleteLater();
-		return;
-	}
-
-	QString data(awa->data());
-	QStringList translators = data.split('\n');
-
-	m->translators.clear();
-
-	for(const QString& str : translators) {
-		if(str.trimmed().size() > 0) {
-			m->translators.push_back(str);
-		}
-	}
-
-	awa->deleteLater();
-	about_clicked();
+	m->about_box->exec();
 }
 
 void Menubar::shortcut_changed(ShortcutIdentifier identifier)

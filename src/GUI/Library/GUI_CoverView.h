@@ -59,7 +59,6 @@ namespace Library
 
 		Library::CoverView* table_view() const;
 
-
 	protected:
 		void init_sorting_actions();
 		void init_zoom_actions();

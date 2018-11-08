@@ -50,6 +50,7 @@ struct LibraryContextMenu::Private
 	QAction*	play_next_action=nullptr;
 	QAction*	append_action=nullptr;
 	QAction*	refresh_action=nullptr;
+	QAction*	reload_library_action=nullptr;
 	QAction*	clear_action=nullptr;
 	QAction*	cover_view_action=nullptr;
 	QAction*	filter_extension_action=nullptr;
@@ -78,6 +79,7 @@ LibraryContextMenu::LibraryContextMenu(QWidget* parent) :
 	m->play_next_action = new QAction(this);
 	m->append_action = new QAction(this);
 	m->refresh_action = new QAction(this);
+	m->reload_library_action = new QAction(this);
 	m->clear_action = new QAction(this);
 	m->cover_view_action = new QAction(this);
 	m->cover_view_action->setCheckable(true);
@@ -105,6 +107,7 @@ LibraryContextMenu::LibraryContextMenu(QWidget* parent) :
 			<< m->filter_extension_action
 			<< addSeparator()
 
+			<< m->reload_library_action
 			<< m->refresh_action
 			<< m->remove_action
 			<< m->clear_action
@@ -125,6 +128,7 @@ LibraryContextMenu::LibraryContextMenu(QWidget* parent) :
 	m->entry_action_map[EntryPlayNext] = m->play_next_action;
 	m->entry_action_map[EntryAppend] = m->append_action;
 	m->entry_action_map[EntryRefresh] = m->refresh_action;
+	m->entry_action_map[EntryReload] = m->reload_library_action;
 	m->entry_action_map[EntryClear] = m->clear_action;
 	m->entry_action_map[EntryCoverView] = m->cover_view_action;
 	m->entry_action_map[EntryFilterExtension] = m->filter_extension_action;
@@ -144,6 +148,7 @@ LibraryContextMenu::LibraryContextMenu(QWidget* parent) :
 	connect(m->play_next_action, &QAction::triggered, this, &LibraryContextMenu::sig_play_next_clicked);
 	connect(m->append_action, &QAction::triggered, this, &LibraryContextMenu::sig_append_clicked);
 	connect(m->refresh_action, &QAction::triggered, this, &LibraryContextMenu::sig_refresh_clicked);
+	connect(m->reload_library_action, &QAction::triggered, this, &LibraryContextMenu::sig_reload_clicked);
 	connect(m->clear_action, &QAction::triggered, this, &LibraryContextMenu::sig_clear_clicked);
 	connect(m->cover_view_action, &QAction::triggered, this, &LibraryContextMenu::show_cover_triggered);
 	connect(m->show_filter_extension_bar_action, &QAction::triggered, this, &LibraryContextMenu::show_filter_extension_bar_triggered);
@@ -163,10 +168,12 @@ void LibraryContextMenu::language_changed()
 	m->play_next_action->setText(Lang::get(Lang::PlayNext));
 	m->append_action->setText(Lang::get(Lang::Append));
 	m->refresh_action->setText(Lang::get(Lang::Refresh));
+	m->reload_library_action->setText(Lang::get(Lang::ReloadLibrary));
 	m->clear_action->setText(Lang::get(Lang::Clear));
 	m->cover_view_action->setText(tr("Cover view"));
 	m->filter_extension_action->setText(Lang::get(Lang::Filter));
 	m->show_filter_extension_bar_action->setText(Lang::get(Lang::Show) + ": " + tr("Toolbar"));
+
 	m->play_action->setShortcut(QKeySequence(Qt::Key_Enter));
 	m->delete_action->setShortcut(QKeySequence(tr("Ctrl+X")));
 	m->remove_action->setShortcut(QKeySequence(QKeySequence::Delete));
@@ -185,6 +192,7 @@ void LibraryContextMenu::shortcut_changed(ShortcutIdentifier identifier)
 	m->play_next_action->setShortcut(sch->shortcut(ShortcutIdentifier::PlayNext).sequence());
 	m->append_action->setShortcut(sch->shortcut(ShortcutIdentifier::Append).sequence());
 	m->cover_view_action->setShortcut(sch->shortcut(ShortcutIdentifier::CoverView).sequence());
+	m->reload_library_action->setShortcut(sch->shortcut(ShortcutIdentifier::ReloadLibrary).sequence());
 }
 
 void LibraryContextMenu::skin_changed()
@@ -203,6 +211,7 @@ void LibraryContextMenu::skin_changed()
 		m->play_next_action->setIcon(Icons::icon(Icons::PlaySmall));
 		m->append_action->setIcon(Icons::icon(Icons::Append));
 		m->refresh_action->setIcon(Icons::icon(Icons::Undo));
+		m->reload_library_action->setIcon(Icons::icon(Icons::Refresh));
 		m->clear_action->setIcon(Icons::icon(Icons::Clear));
 	});
 }

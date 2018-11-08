@@ -39,6 +39,7 @@ enum ShortcutIdentifier
 	PlayPause,
 	Prev,
 	Quit,
+	ReloadLibrary,
 	SeekBwd,
 	SeekBwdFast,
 	SeekFwd,
@@ -47,7 +48,6 @@ enum ShortcutIdentifier
 	ViewLibrary,
 	VolDown,
 	VolUp,
-
 	Invalid
 };
 

@@ -22,6 +22,7 @@
 #define LOCALLIBRARYMENU_H
 
 #include "GUI/Utils/Widgets/WidgetTemplate.h"
+#include "GUI/Utils/Shortcuts/ShortcutIdentifier.h"
 #include "Utils/Pimpl.h"
 
 #include <QMenu>
@@ -63,6 +64,7 @@ namespace Library
 	protected:
 		void language_changed() override;
 		void skin_changed() override;
+		void shortcut_changed(ShortcutIdentifier identifier);
 
 	private slots:
 		void show_album_covers_triggered(bool b);

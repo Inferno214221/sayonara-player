@@ -108,6 +108,7 @@ ItemView::ItemView(QWidget* parent) :
 	sch->shortcut(ShortcutIdentifier::Append).connect(this, this, SLOT(append_clicked()), ctx);
 	sch->shortcut(ShortcutIdentifier::CoverView).connect(this, this, SLOT(cover_view_toggled()), ctx);
 	sch->shortcut(ShortcutIdentifier::AlbumArtists).connect(this, this, SLOT(album_artists_toggled()), ctx);
+	sch->shortcut(ShortcutIdentifier::ReloadLibrary).connect(this, this, SLOT(reload_clicked()), ctx);
 
 	new QShortcut(QKeySequence(Qt::Key_Return), this, SLOT(play_clicked()), nullptr, Qt::WidgetShortcut);
 	new QShortcut(QKeySequence(Qt::Key_Enter), this, SLOT(play_clicked()), nullptr, Qt::WidgetShortcut);
@@ -144,7 +145,8 @@ LibraryContextMenu::Entries ItemView::context_menu_entries() const
 			LibraryContextMenu::EntryPlayNext |
 			LibraryContextMenu::EntryAppend |
 			LibraryContextMenu::EntryCoverView |
-			LibraryContextMenu::EntryFilterExtension);
+			LibraryContextMenu::EntryFilterExtension |
+			LibraryContextMenu::EntryReload);
 
 	return entries;
 }
@@ -201,6 +203,7 @@ void ItemView::init_context_menu_custom_type(LibraryContextMenu* menu)
 	connect(m->context_menu, &LibraryContextMenu::sig_append_clicked, this, &ItemView::append_clicked);
 	connect(m->context_menu, &LibraryContextMenu::sig_refresh_clicked, this, &ItemView::refresh_clicked);
 	connect(m->context_menu, &LibraryContextMenu::sig_filter_triggered, this, &ItemView::filter_extensions_triggered);
+	connect(m->context_menu, &LibraryContextMenu::sig_reload_clicked, this, &ItemView::reload_clicked);
 
 	this->show_context_menu_actions(context_menu_entries());
 
@@ -367,6 +370,7 @@ void ItemView::play_next_clicked() { emit sig_play_next_clicked(); }
 void ItemView::delete_clicked() { emit sig_delete_clicked(); }
 void ItemView::append_clicked() { emit sig_append_clicked(); }
 void ItemView::refresh_clicked() { emit sig_refresh_clicked(); }
+void ItemView::reload_clicked() { emit sig_reload_clicked(); }
 
 void ItemView::cover_view_toggled()
 {
