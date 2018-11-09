@@ -25,6 +25,7 @@
 #include "Utils/globals.h"
 #include <QStringList>
 #include <algorithm>
+#include <assert.h>
 
 struct MetaDataList::Private
 {
@@ -58,12 +59,15 @@ MetaDataList::MetaDataList() :
 	MetaDataList::Parent()
 {
 	m = Pimpl::make<Private>();
+	assert(m != nullptr);
 }
 
 MetaDataList::MetaDataList(const MetaData& md) :
 	MetaDataList::Parent()
 {
 	m = Pimpl::make<Private>();
+	assert(m != nullptr);
+
 	append(md);
 }
 
@@ -71,6 +75,7 @@ MetaDataList::MetaDataList(const MetaDataList& other) :
 	MetaDataList::Parent()
 {
 	m = Pimpl::make<Private>(*(other.m));
+	assert(m != nullptr);
 
 	this->resize(other.size());
 	std::copy(other.begin(), other.end(), this->begin());
@@ -80,6 +85,7 @@ MetaDataList::MetaDataList(MetaDataList&& other) :
 	MetaDataList::Parent()
 {
 	m = Pimpl::make<Private>(std::move(*(other.m)));
+	assert(m != nullptr);
 
 	this->resize(other.size());
 	std::move(other.begin(), other.end(), this->begin());
