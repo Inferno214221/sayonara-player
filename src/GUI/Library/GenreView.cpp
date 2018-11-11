@@ -246,8 +246,6 @@ void GenreView::language_changed()
 
 void GenreView::reload_genres()
 {
-	Util::Set<Genre> genres = m->genre_fetcher->genres();
-
 	for(GenreNode* n : ::Util::AsConst(m->genres->children))
 	{
 		m->genres->remove_child(n);
@@ -259,6 +257,7 @@ void GenreView::reload_genres()
 	// fill it on next show event
 	m->filled = false;
 
+	Util::Set<Genre> genres = m->genre_fetcher->genres();
 	set_genres(genres);
 
 	emit sig_genres_reloaded();

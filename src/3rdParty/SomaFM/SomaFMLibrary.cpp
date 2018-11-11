@@ -102,7 +102,7 @@ void SomaFM::Library::soma_website_fetched()
 			continue;
 		}
 
-		QString station_name = station.name();
+		QString station_name = station.name().trimmed();
 
 		bool loved = m->qsettings->value(station_name, false).toBool();
 
