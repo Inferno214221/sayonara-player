@@ -49,6 +49,7 @@ namespace Pipeline
 		bool init(GstState state=GST_STATE_NULL) override;
 		bool set_uri(gchar* uri) override;
 
+		void init_broadcasting();
 		void set_n_sound_receiver(int num_sound_receiver);
 
 		void set_current_volume(double volume) override;
@@ -59,8 +60,7 @@ namespace Pipeline
 
 		void force_about_to_finish();
 
-		void set_spectrum_enabled(bool b);
-		void set_level_enabled(bool b);
+		void set_visualizer_enabled(bool b);
 
 
 	public slots:
@@ -68,6 +68,7 @@ namespace Pipeline
 		void stop() override;
 
 		void set_eq_band(int band_name, int val);
+		void init_streamrecorder();
 		void set_streamrecorder_path(const QString& session_path);
 
 		NanoSeconds seek_rel(double percent, NanoSeconds ref_ns);
@@ -86,8 +87,7 @@ namespace Pipeline
 
 	protected slots:
 		void s_vol_changed();
-		void s_show_level_changed();
-		void s_show_spectrum_changed();
+		void s_show_visualizer_changed();
 		void s_mute_changed();
 		void s_speed_active_changed();
 		void s_speed_changed();

@@ -39,11 +39,14 @@
 #include "Utils/MetaData/Album.h"
 #include "Utils/Tagging/Tagging.h"
 #include "Utils/FileUtils.h"
+#include "Utils/Utils.h"
 
 #include <QImage>
 #include <QImageWriter>
 #include <QStringList>
+#include <mutex>
 
+static std::mutex mtx;
 using Cover::Location;
 using Cover::Lookup;
 using Cover::FetchThread;
@@ -54,11 +57,10 @@ struct Lookup::Private
 {
 	Location		cl;
 	QList<QPixmap>	pixmaps;
-	int				n_covers;
-
 	FetchThread*	cft=nullptr;
 	void*			user_data=nullptr;
 
+	int				n_covers;
 	bool			thread_running;
 
 	Private(int n_covers) :
@@ -75,6 +77,7 @@ Lookup::Lookup(QObject* parent, int n_covers) :
 
 Lookup::~Lookup()
 {
+	m->pixmaps.clear();
 	if(m->cft){
 		m->cft->stop();
 	}
@@ -192,7 +195,9 @@ bool Lookup::add_new_cover(const QPixmap& pm)
 {
 	if(!pm.isNull())
 	{
-		m->pixmaps << pm;
+		LOCK_GUARD(mtx){
+			m->pixmaps.push_back(pm);
+		}
 		emit sig_cover_found(pm);
 	}
 
@@ -265,4 +270,16 @@ void* Lookup::take_user_data()
 QList<QPixmap> Lookup::pixmaps() const
 {
 	return m->pixmaps;
+}
+
+QList<QPixmap> Lookup::take_pixmaps()
+{
+	QList<QPixmap> ret;
+	LOCK_GUARD(mtx)
+	{
+		ret = m->pixmaps;
+		m->pixmaps.clear();
+	}
+
+	return ret;
 }

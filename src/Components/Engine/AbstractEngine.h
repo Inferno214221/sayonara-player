@@ -106,7 +106,7 @@ namespace Engine
 
 
 	protected:
-		virtual bool        change_uri(char* uri)=0;
+		virtual bool        change_uri(const QString& uri)=0;
 
 		// if the current track is changed, this routine should be called within the
 		// change_track method. This method has to be called explicitly, because its

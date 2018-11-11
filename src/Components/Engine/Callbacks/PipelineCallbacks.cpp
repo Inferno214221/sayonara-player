@@ -24,6 +24,7 @@
 #include "Components/Engine/AbstractPipeline.h"
 
 #include <gst/app/gstappsink.h>
+#include <gst/base/gstbasesrc.h>
 
 using namespace Pipeline;
 
@@ -55,29 +56,27 @@ gboolean Callbacks::position_changed(gpointer data)
 // dynamic linking, important for decodebin
 void Callbacks::decodebin_ready(GstElement* source, GstPad* new_src_pad, gpointer data)
 {
-	GstElement*			element;
-	GstPad*				sink_pad;
-	GstPadLinkReturn	pad_link_return;
-
 	gchar* element_name = gst_element_get_name(source);
 	sp_log(Log::Develop, "Callback") << "Source: " << element_name;
 	g_free(element_name);
 
-	element = static_cast<GstElement*>(data);
+	GstElement* element = static_cast<GstElement*>(data);
 	if(!element){
 		return;
 	}
 
-	sink_pad = gst_element_get_static_pad(element, "sink");
+	GstPad*	sink_pad = gst_element_get_static_pad(element, "sink");
 	if(!sink_pad){
 		return;
 	}
 
-	if(gst_pad_is_linked(sink_pad)) {
+	if(gst_pad_is_linked(sink_pad))
+	{
+		gst_object_unref(sink_pad);
 		return;
 	}
 
-	pad_link_return = gst_pad_link(new_src_pad, sink_pad);
+	GstPadLinkReturn pad_link_return = gst_pad_link(new_src_pad, sink_pad);
 
 	if(pad_link_return != GST_PAD_LINK_OK)
 	{
@@ -105,6 +104,8 @@ void Callbacks::decodebin_ready(GstElement* source, GstPad* new_src_pad, gpointe
 				break;
 		}
 	}
+
+	gst_object_unref(sink_pad);
 }
 
 
@@ -138,7 +139,6 @@ GstFlowReturn Callbacks::new_buffer(GstElement *sink, gpointer p)
 	size_new = gst_buffer_extract(buffer, 0, data, size);
 	pipeline->set_data(data, size_new);
 
-	//gst_buffer_unref(buffer);
 	gst_sample_unref(sample);
 
 	return GST_FLOW_OK;
@@ -150,7 +150,8 @@ static bool is_source_soup(GstElement* source)
 	GstElementFactory* fac = gst_element_get_factory(source);
 	GType type = gst_element_factory_get_element_type(fac);
 
-	QString src_type(g_type_name(type));
+	const gchar* name = g_type_name(type);
+	QString src_type(name);
 
 	return (src_type.compare("gstsouphttpsrc", Qt::CaseInsensitive) == 0);
 }
@@ -162,6 +163,8 @@ void Callbacks::source_ready(GstURIDecodeBin* bin, GstElement* source, gpointer 
 	Q_UNUSED(data);
 
 	sp_log(Log::Develop, "Engine Callback") << "Source ready: is soup? " << is_source_soup(source);
+	gst_base_src_set_dynamic_size(GST_BASE_SRC(source), false);
+
 	if(is_source_soup(source))
 	{
 		//g_object_set(G_OBJECT(source), "ssl-strict", false, nullptr);
@@ -169,11 +172,6 @@ void Callbacks::source_ready(GstURIDecodeBin* bin, GstElement* source, gpointer 
 		Proxy* proxy = Proxy::instance();
 		if(proxy->active())
 		{
-		  /*  g_object_set(G_OBJECT(source),
-						 "proxy", proxy->full_url().toLocal8Bit().data(),
-						 nullptr
-			);*/
-
 			sp_log(Log::Develop, "Engine Callback") << "Will use proxy: " << proxy->full_url();
 
 			if(proxy->has_username())

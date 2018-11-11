@@ -97,7 +97,7 @@ namespace Engine
 
 		// Engine interface
 	protected:
-		bool change_uri(char* uri) override;
+		bool change_uri(const QString& uri) override;
 	};
 }
 #endif

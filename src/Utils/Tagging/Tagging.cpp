@@ -503,16 +503,14 @@ bool Tagging::Utils::has_cover(const QString& filepath)
 	ParsedTag parsed_tag = tag_type_from_fileref(f);
 	TagType tag_type = parsed_tag.type;
 
-	switch(tag_type){
-
+	switch(tag_type)
+	{
 		case TagType::ID3v2:
 			{
 				auto id3v2 = dynamic_cast<TagLib::ID3v2::Tag*>(parsed_tag.tag);
 				ID3v2::CoverFrame cover_frame(id3v2);
 				return cover_frame.is_frame_found();
 			}
-
-			break;
 
 		case TagType::MP4:
 			{
@@ -524,8 +522,6 @@ bool Tagging::Utils::has_cover(const QString& filepath)
 		default:
 			return false;
 	}
-
-	return false;
 }
 
 

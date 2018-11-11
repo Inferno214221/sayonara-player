@@ -60,7 +60,7 @@ namespace Engine
 
 	protected:
 		// methods
-		bool change_uri(char* uri) override;
+		bool change_uri(const QString& uri) override;
 		void configure_target(const MetaData& md);
 
 		// Base interface

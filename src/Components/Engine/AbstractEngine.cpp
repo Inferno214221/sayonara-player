@@ -31,30 +31,19 @@
 #include <cstdlib>
 
 using Engine::Base;
+using Engine::Name;
 
 struct Base::Private
 {
 	MetaData		md;
+	QString			uri;
+	MilliSeconds	cur_pos_ms;
 	Name			name;
 
-	MilliSeconds	cur_pos_ms;
-	Seconds			cur_pos_s;
-
-	gchar*			uri=nullptr;
-
 	Private(Name name) :
-		name(name),
 		cur_pos_ms(0),
-		cur_pos_s(0)
+		name(name)
 	{}
-
-	Private()
-	{
-		if(uri)
-		{
-			g_free(uri); uri = nullptr;
-		}
-	}
 };
 
 Base::Base(Name name, QObject *parent) :
@@ -101,12 +90,6 @@ bool Base::change_track_by_filename(const QString& filepath)
 
 bool Base::change_metadata(const MetaData& md)
 {
-	if(m->uri)
-	{
-		g_free(m->uri);
-		m->uri = nullptr;
-	}
-
 	QString filepath = md.filepath();
 	bool playing_stream = Util::File::is_www(filepath);
 
@@ -114,23 +97,22 @@ bool Base::change_metadata(const MetaData& md)
 	// stream is already uri
 	if (playing_stream)
 	{
-		QUrl url = QUrl(filepath);
-		m->uri = g_strdup(url.toString().toUtf8().data());
+		m->uri = QUrl(filepath).toString();
 	}
 
 	// no stream (not quite right because of mms, rtsp or other streams
 	// normal filepath -> no uri
 	else if (!filepath.contains("://"))
 	{
-		QUrl url = QUrl::fromLocalFile(filepath);
-		m->uri = g_strdup(url.url().toUtf8().data());
+		QUrl url = QUrl::fromLocalFile(md.filepath());
+		m->uri = url.toString();
 	}
 
 	else {
-		m->uri = g_strdup(filepath.toUtf8().data());
+		m->uri = md.filepath();
 	}
 
-	if(g_utf8_strlen(m->uri, 16) == 0)
+	if(m->uri.isEmpty())
 	{
 		m->md = MetaData();
 
@@ -215,7 +197,6 @@ void Base::update_bitrate(Bitrate br, GstElement* src)
 void Base::stop()
 {
 	m->cur_pos_ms = 0;
-	m->cur_pos_s = 0;
 
 	emit sig_buffering(-1);
 }
@@ -227,14 +208,11 @@ const MetaData& Base::metadata() const
 
 void Base::set_current_position_ms(MilliSeconds pos_ms)
 {
-	Seconds pos_sec = pos_ms / 1000;
-
-	if ( m->cur_pos_s == pos_sec ){
+	if ( m->cur_pos_ms / 100 == (pos_ms / 100)){
 		return;
 	}
 
 	m->cur_pos_ms = pos_ms;
-	m->cur_pos_s = pos_ms / 1000;
 
 	emit sig_pos_changed_ms(pos_ms);
 }

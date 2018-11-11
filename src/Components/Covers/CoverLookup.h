@@ -76,6 +76,7 @@ namespace Cover
 		void* take_user_data();
 
 		QList<QPixmap> pixmaps() const;
+		QList<QPixmap> take_pixmaps();
 
 
 	private:

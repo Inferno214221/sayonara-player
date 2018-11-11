@@ -110,9 +110,9 @@ void Convert::cur_pos_ms_changed(MilliSeconds pos_ms)
 	Base::set_current_position_ms(pos_ms);
 }
 
-bool Convert::change_uri(char* uri)
+bool Convert::change_uri(const QString& uri)
 {
-	return m->pipeline->set_uri(uri);
+	return m->pipeline->set_uri(uri.toUtf8().data());
 }
 
 void Convert::configure_target(const MetaData& md)

@@ -245,6 +245,8 @@ MetaData::~MetaData()
 #ifdef COUNT_MD
 	mdc.decrease();
 #endif
+
+	m->genres.clear();
 }
 
 QString MetaData::title() const

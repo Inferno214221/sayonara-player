@@ -100,8 +100,6 @@ static bool parse_image(GstTagList* tags, QImage& img)
 		delete[] data;
 
 		gst_sample_unref(sample);
-
-
 		return false;
 	}
 
@@ -164,9 +162,6 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 
 		case GST_MESSAGE_TAG:
 		{
-			GstTagList*		tags;
-			gchar*			title;
-
 			bool			success;
 			Bitrate			bitrate;
 
@@ -177,9 +172,8 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 				break;
 			}
 
-			tags = nullptr;
+			GstTagList*	tags = nullptr;
 			gst_message_parse_tag(msg, &tags);
-
 			if(!tags){
 				break;
 			}
@@ -195,6 +189,7 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 				engine->update_bitrate((bitrate / 1000) * 1000, src);
 			}
 
+			gchar* title=nullptr;
 			success = gst_tag_list_get_string(tags, GST_TAG_TITLE, (gchar**) &title);
 			if(success)
 			{
@@ -309,7 +304,7 @@ Callbacks::level_handler(GstBus * bus, GstMessage * message, gpointer data)
 
 	double					channel_values[2];
 
-	Playback*			engine;
+	Playback*				engine;
 	GValueArray*			rms_arr;
 	const GstStructure*		structure;
 	const gchar*			name;

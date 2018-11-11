@@ -124,7 +124,7 @@ Playback::~Playback()
 
 bool Playback::init()
 {
-	gst_init(0, 0);
+	gst_init(nullptr, nullptr);
 
 	bool success = init_pipeline(&m->pipeline);
 	if(!success){
@@ -232,9 +232,9 @@ bool Playback::change_metadata(const MetaData& md)
 	return success;
 }
 
-bool Playback::change_uri(char* uri)
+bool Playback::change_uri(const QString& uri)
 {
-	return m->pipeline->set_uri(uri);
+	return m->pipeline->set_uri(uri.toUtf8().data());
 }
 
 void Playback::play()
@@ -424,17 +424,26 @@ void Playback::s_streamrecorder_active_changed()
 
 void Playback::set_streamrecorder_recording(bool b)
 {
-	QString dst_file;
-
-	if(!m->stream_recorder)
+	if(b)
 	{
-		m->stream_recorder = new StreamRecorder::StreamRecorder(this);
+		if(m->pipeline) {
+			m->pipeline->init_streamrecorder();
+		}
+
+		if(!m->stream_recorder) {
+			m->stream_recorder = new StreamRecorder::StreamRecorder(this);
+		}
+	}
+
+	if(!m->stream_recorder)	{
+		return;
 	}
 
 	if(m->stream_recorder->is_recording() != b){
 		m->stream_recorder->record(b);
 	}
 
+	QString dst_file;
 	if(b)
 	{
 		dst_file = m->stream_recorder->change_track(metadata());
@@ -450,10 +459,17 @@ void Playback::set_streamrecorder_recording(bool b)
 
 void Playback::set_n_sound_receiver(int num_sound_receiver)
 {
-	m->pipeline->set_n_sound_receiver(num_sound_receiver);
+	if(num_sound_receiver > 0) {
+		m->pipeline->init_broadcasting();
+	}
 
+	m->pipeline->set_n_sound_receiver(num_sound_receiver);
 	if(m->other_pipeline)
 	{
+		if(num_sound_receiver > 0) {
+			m->other_pipeline->init_broadcasting();
+		}
+
 		m->other_pipeline->set_n_sound_receiver(num_sound_receiver);
 	}
 }

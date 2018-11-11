@@ -41,6 +41,8 @@ namespace Pipeline
 		StreamRecorderHandler();
 		virtual ~StreamRecorderHandler();
 
+		void init(GstElement* tee);
+
 		void set_streamrecorder_target_path(const QString& path);
 		StreamRecorder::Data* streamrecorder_data() const;
 

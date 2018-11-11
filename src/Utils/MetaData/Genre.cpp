@@ -26,8 +26,8 @@
 
 struct Genre::Private
 {
-	GenreID id;
 	QString name;
+	GenreID id;
 
 	static GenreID calc_id(const QString& name)
 	{

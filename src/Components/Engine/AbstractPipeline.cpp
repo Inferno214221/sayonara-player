@@ -45,6 +45,8 @@ struct Base::Private
 	gchar*			uri=nullptr;
 	GstElement*		pipeline=nullptr;
 
+	QList<GstElement*> elements;
+
 	bool			about_to_finish;
 	bool            initialized;
 
@@ -226,9 +228,8 @@ void Base::check_about_to_finish()
 MilliSeconds Base::get_time_to_go() const
 {
 	NanoSeconds position, duration;
-	GstElement* element;
 
-	element = get_source();
+	GstElement* element = get_source();
 	if(!element){
 		element = GST_ELEMENT(m->pipeline);
 	}
@@ -304,12 +305,13 @@ bool Base::create_element(GstElement** elem, const gchar* elem_name, const gchar
 	}
 
 	bool success = test_and_error(*elem, error_msg);
+	m->elements << *elem;
 
 	return success;
 }
 
 
-bool Base::tee_connect(GstElement* tee, GstPadTemplate* tee_src_pad_template, GstElement* queue, const QString& queue_name)
+bool Base::tee_connect(GstElement* tee, GstElement* queue, const QString& queue_name)
 {
 	GstPadLinkReturn s;
 	GstPad* tee_queue_pad;
@@ -318,6 +320,11 @@ bool Base::tee_connect(GstElement* tee, GstPadTemplate* tee_src_pad_template, Gs
 	QString error_1 = QString("Engine: Tee-") + queue_name + " pad is nullptr";
 	QString error_2 = QString("Engine: ") + queue_name + " pad is nullptr";
 	QString error_3 = QString("Engine: Cannot link tee with ") + queue_name;
+
+	GstPadTemplate* tee_src_pad_template = gst_element_class_get_pad_template(GST_ELEMENT_GET_CLASS(tee), "src_%u");
+	if(!test_and_error(tee_src_pad_template, "Engine: _tee_src_pad_template is nullptr")) {
+		return false;
+	}
 
 	tee_queue_pad = gst_element_request_pad(tee, tee_src_pad_template, nullptr, nullptr);
 	if(!test_and_error(tee_queue_pad, error_1)){
@@ -334,7 +341,14 @@ bool Base::tee_connect(GstElement* tee, GstPadTemplate* tee_src_pad_template, Gs
 		return false;
 	}
 
-	g_object_set (queue, "silent", TRUE, nullptr);
+	g_object_set (queue,
+		"silent", true,
+		"flush-on-eos", true,
+		"max-size-bytes", 1000000,
+		"max-size-time", 500000000,
+		nullptr);
+
+	//g_object_set(queue, "ring-buffer-max-size", 1048576 , nullptr);
 
 	gst_object_unref(tee_queue_pad);
 	gst_object_unref(queue_pad);
@@ -349,13 +363,15 @@ Base::has_element(GstElement* e) const
 		return true;
 	}
 
-	GstObject* o = (GstObject*) e;
+	GstObject* o = GST_OBJECT(e);
 	GstObject* parent = nullptr;
 
 	while(o)
 	{
-		if( o == (GstObject*) m->pipeline ){
-			if( (GstObject*) e != o ){
+		if( o == GST_OBJECT(m->pipeline))
+		{
+			if( o != GST_OBJECT(e) )
+			{
 				gst_object_unref(o);
 			}
 
@@ -363,7 +379,8 @@ Base::has_element(GstElement* e) const
 		}
 
 		parent = gst_object_get_parent(o);
-		if( (GstObject*) e != o ){
+		if( o != GST_OBJECT(e) )
+		{
 			gst_object_unref(o);
 		}
 

@@ -387,7 +387,7 @@ void Handler::set_equalizer(int band, int value)
 }
 
 
-bool Handler::change_uri(char* uri)
+bool Handler::change_uri(const QString& uri)
 {
 	Q_UNUSED(uri);
 	return true;

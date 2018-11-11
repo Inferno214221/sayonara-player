@@ -68,7 +68,6 @@ namespace Pipeline
 
 		protected:
 			bool tee_connect(GstElement* tee,
-							GstPadTemplate* tee_src_pad_template,
 							 GstElement* queue,
 							 const QString& queue_name
 			);

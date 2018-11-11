@@ -247,5 +247,5 @@ size_t Query::fetched_rows()
 		return 0;
 	}
 
-	return (size_t) rows;
+	return static_cast<size_t>(rows);
 }

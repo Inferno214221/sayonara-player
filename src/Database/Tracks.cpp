@@ -176,8 +176,6 @@ bool Tracks::db_fetch_tracks(Query& q, MetaDataList& result)
 		return false;
 	}
 
-	result.reserve(q.fetched_rows());
-
 	while(q.next())
 	{
 		MetaData data;
