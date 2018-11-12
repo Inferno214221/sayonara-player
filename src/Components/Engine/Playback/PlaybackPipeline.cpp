@@ -72,6 +72,7 @@ struct Playback::Private :
 	GstElement*			level=nullptr;
 	GstElement*			visualizer_sink=nullptr;
 
+	GstElement*			bc_bin=nullptr;
 	GstElement*			bc_queue=nullptr;
 	GstElement*			bc_converter=nullptr;
 	GstElement*			bc_resampler=nullptr;
@@ -85,9 +86,9 @@ struct Playback::Private :
 	GstElement*			sr_resampler=nullptr;
 	GstElement*			sr_lame=nullptr;
 
-	gulong				level_probe, spectrum_probe, lame_probe, file_probe;
+	gulong				lame_probe;
 	int					vol;
-	bool				show_level, show_spectrum, run_broadcast, run_sr;
+	bool				run_broadcast;
 
 	Private() :
 		SpeedHandler(),
@@ -95,15 +96,9 @@ struct Playback::Private :
 		StreamRecorderHandler(),
 		SeekHandler(),
 
-		level_probe(0),
-		spectrum_probe(0),
 		lame_probe(0),
-		file_probe(0),
 		vol(0),
-		show_level(false),
-		show_spectrum(false),
-		run_broadcast(false),
-		run_sr(false)
+		run_broadcast(false)
 	{}
 
 
@@ -355,11 +350,9 @@ void Playback::s_mute_changed()
 
 void Playback::set_visualizer_enabled(bool b)
 {
+	Q_UNUSED(b)
 	gst_base_transform_set_passthrough(GST_BASE_TRANSFORM(m->level), !_settings->get<Set::Engine_ShowLevel>());
 	gst_base_transform_set_passthrough(GST_BASE_TRANSFORM(m->spectrum), !_settings->get<Set::Engine_ShowSpectrum>());
-
-	m->show_spectrum = b;
-	Probing::handle_probe(&m->show_spectrum, m->visualizer_queue, &m->spectrum_probe, Probing::spectrum_probed);
 }
 
 void Playback::s_show_visualizer_changed()
@@ -382,11 +375,6 @@ void Playback::fade_out_handler()
 
 bool Playback::init_broadcasting()
 {
-	bool success;
-	if(m->bc_lame){
-		return true;
-	}
-
 	// create
 	if( !EngineUtils::create_element(&m->bc_queue, QUEUE, "lame_queue") ||
 		!EngineUtils::create_element(&m->bc_converter, "audioconvert", "lame_converter") ||
@@ -394,31 +382,39 @@ bool Playback::init_broadcasting()
 		!EngineUtils::create_element(&m->bc_lame, "lamemp3enc") ||
 		!EngineUtils::create_element(&m->bc_app_sink, "appsink", "lame_appsink"))
 	{
-		m->bc_lame = nullptr;
 		return false;
 	}
 
-	// linking
-	gst_bin_add_many(GST_BIN(pipeline()), m->bc_queue,  m->bc_converter, m->bc_resampler, m->bc_lame, m->bc_app_sink, nullptr);
-	success = gst_element_link_many( m->bc_queue, m->bc_converter, m->bc_resampler, m->bc_lame, m->bc_app_sink, nullptr);
-	EngineUtils::test_and_error_bool(success, "Engine: Cannot link lame stuff");
+	GstState state = get_state();
+	bool success;
+	{ // init bin
+		success = EngineUtils::create_bin(&m->bc_bin, {m->bc_queue,  m->bc_converter, m->bc_resampler, m->bc_lame, m->bc_app_sink}, "broadcast");
+		if(!success){
+			return false;
+		}
 
-	success = EngineUtils::tee_connect(m->tee, m->bc_queue, "Lame");
-	if(!EngineUtils::test_and_error_bool(success, "Engine: Cannot link lame queue with tee")){
-		_settings->set<SetNoDB::MP3enc_found>(false);
+		gst_bin_add(GST_BIN(pipeline()), m->bc_bin);
+		success = EngineUtils::tee_connect(m->tee, m->sr_bin, "StreamRecorderQueue");
+		if(!success){
+			return false;
+		}
 	}
 
-	gst_object_ref(m->bc_app_sink);
+	{ // configure
+		gst_object_ref(m->bc_app_sink);
 
-	EngineUtils::config_lame(m->bc_lame);
-	EngineUtils::config_queue(m->bc_queue);
-	EngineUtils::config_sink(m->bc_app_sink);
+		EngineUtils::config_lame(m->bc_lame);
+		EngineUtils::config_queue(m->bc_queue);
+		EngineUtils::config_sink(m->bc_app_sink);
 
-	g_object_set(G_OBJECT(m->bc_app_sink),
-				 "emit-signals", true,
-				 nullptr );
+		g_object_set(G_OBJECT(m->bc_app_sink),
+					 "emit-signals", true,
+					 nullptr );
 
-	g_signal_connect (m->bc_app_sink, "new-sample", G_CALLBACK(Callbacks::new_buffer), this);
+		g_signal_connect (m->bc_app_sink, "new-sample", G_CALLBACK(Callbacks::new_buffer), this);
+	}
+
+	EngineUtils::set_state(m->sr_bin, state);
 
 	return true;
 }
@@ -426,7 +422,7 @@ bool Playback::init_broadcasting()
 
 void Playback::set_n_sound_receiver(int num_sound_receiver)
 {
-	if(!m->bc_lame){
+	if(!m->bc_bin){
 		return;
 	}
 
@@ -475,7 +471,6 @@ bool Playback::init_streamrecorder()
 		return true;
 	}
 
-	bool success;
 	// stream recorder branch
 	if(	!EngineUtils::create_element(&m->sr_queue, QUEUE, "sr_queue") ||
 		!EngineUtils::create_element(&m->sr_converter, "audioconvert", "sr_converter") ||
@@ -489,26 +484,30 @@ bool Playback::init_streamrecorder()
 	m->streamrecorder_data()->queue = m->sr_queue;
 	m->streamrecorder_data()->sink = m->sr_sink;
 
-	EngineUtils::config_lame(m->sr_lame);
-	EngineUtils::config_queue(m->sr_queue);
-	EngineUtils::config_sink(m->sr_sink);
+	GstState state = get_state();
+	bool success;
+	{ // init bin
+		success = EngineUtils::create_bin(&m->sr_bin, {m->sr_queue, m->sr_converter, m->sr_resampler, m->sr_lame, m->sr_sink}, "sr");
+		if(!success){
+			return false;
+		}
 
-	g_object_set(G_OBJECT(m->sr_sink),
-				 "buffer-size", 8192,
-				 "location", (Util::sayonara_path() + "bla.mp3").toLocal8Bit().data(),
-				 nullptr);
-
-
-	success = EngineUtils::create_bin(&m->sr_bin, {m->sr_queue, m->sr_converter, m->sr_resampler, m->sr_lame, m->sr_sink}, "sr");
-	if(!success){
-		return false;
+		gst_bin_add(GST_BIN(pipeline()), m->sr_bin);
+		success = EngineUtils::tee_connect(m->tee, m->sr_bin, "StreamRecorderQueue");
+		if(!success){
+			return false;
+		}
 	}
 
-	gst_bin_add(GST_BIN(pipeline()), m->sr_bin);
-	GstState state = get_state();
-	success = EngineUtils::tee_connect(m->tee, m->sr_bin, "StreamRecorderQueue");
-	if(!success){
-		return false;
+	{ // configure
+		EngineUtils::config_lame(m->sr_lame);
+		EngineUtils::config_queue(m->sr_queue);
+		EngineUtils::config_sink(m->sr_sink);
+
+		g_object_set(G_OBJECT(m->sr_sink),
+					 "buffer-size", 8192,
+					 "location", (Util::sayonara_path() + "bla.mp3").toLocal8Bit().data(),
+					 nullptr);
 	}
 
 	EngineUtils::set_state(m->sr_bin, state);
