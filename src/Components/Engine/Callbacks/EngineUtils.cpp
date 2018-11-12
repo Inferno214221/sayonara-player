@@ -8,17 +8,26 @@
 
 using namespace Engine;
 
+struct TeeProbeData
+{
+	GstState	state;
+	GstElement* element;
+};
 
 static GstPadProbeReturn
-tee_probe_blocked(GstPad* pad, GstPadProbeInfo* info, gpointer data)
+tee_probe_blocked(GstPad* pad, GstPadProbeInfo* info, gpointer p)
 {
-	GstElement* queue = GST_ELEMENT(data);
+	TeeProbeData* data = static_cast<TeeProbeData*>(p);
+	GstElement* queue = data->element;
+
 	if(!Engine::Utils::test_and_error(queue, "Connect to tee: Element is not GstElement")){
+		delete data; data = nullptr;
 		return GST_PAD_PROBE_DROP;
 	}
 
 	GstPad* queue_pad = gst_element_get_static_pad(queue, "sink");
 	if(!Engine::Utils::test_and_error(queue_pad, "Connect to tee: No valid pad from GstElement")){
+		delete data; data = nullptr;
 		return GST_PAD_PROBE_DROP;
 	}
 
@@ -27,7 +36,11 @@ tee_probe_blocked(GstPad* pad, GstPadProbeInfo* info, gpointer data)
 		sp_log(Log::Warning, "AbstractPipeline") << "Could not dynamically connect tee";
 	}
 
+
 	gst_pad_remove_probe (pad, GST_PAD_PROBE_INFO_ID (info));
+	gst_element_set_state(queue, data->state);
+
+	delete data; data = nullptr;
 	return GST_PAD_PROBE_DROP;
 }
 
@@ -56,13 +69,17 @@ bool Utils::tee_connect(GstElement* tee, GstElement* queue, const QString& queue
 	}
 
 	GstState state	= Utils::get_state(tee);
+
 	if(state == GST_STATE_PLAYING || state == GST_STATE_PAUSED)
 	{
+		TeeProbeData* data = new TeeProbeData();
+		data->state = state;
+		data->element = queue;
+
 		gulong id = gst_pad_add_probe(tee_queue_pad,
-		//		GST_PAD_PROBE_TYPE_BLOCK_DOWNSTREAM,
 				GST_PAD_PROBE_TYPE_IDLE,
 				tee_probe_blocked,
-				queue,
+				data,
 				nullptr);
 
 		Q_UNUSED(id)
@@ -71,7 +88,6 @@ bool Utils::tee_connect(GstElement* tee, GstElement* queue, const QString& queue
 	}
 
 	GstPad* queue_pad = gst_element_get_static_pad(queue, "sink");
-
 	if(!test_and_error(queue_pad, error_2)) {
 		return false;
 	}
@@ -81,10 +97,10 @@ bool Utils::tee_connect(GstElement* tee, GstElement* queue, const QString& queue
 		return false;
 	}
 
-	//g_object_set(queue, "ring-buffer-max-size", 1048576 , nullptr);
+	set_state(queue, get_state(tee));
 
-//	gst_object_unref(tee_queue_pad);
-//	gst_object_unref(queue_pad);
+	gst_object_unref(tee_queue_pad);
+	gst_object_unref(queue_pad);
 	return true;
 }
 

@@ -58,11 +58,11 @@ struct Playback::Private :
 	GstElement*			audio_convert=nullptr;
 	GstElement*			tee=nullptr;
 
-	GstElement*			eq_queue=nullptr;
-	GstElement*			equalizer=nullptr;
-	GstElement*			speed=nullptr;
-	GstElement*			volume=nullptr;
-	GstElement*			pitch=nullptr;
+	GstElement*			pb_bin=nullptr;
+	GstElement*			pb_queue=nullptr;
+	GstElement*			pb_equalizer=nullptr;
+	GstElement*			pb_volume=nullptr;
+	GstElement*			pb_pitch=nullptr;
 
 	GstElement*			audio_sink=nullptr;
 
@@ -87,7 +87,6 @@ struct Playback::Private :
 	GstElement*			sr_lame=nullptr;
 
 	gulong				lame_probe;
-	int					vol;
 	bool				run_broadcast;
 
 	Private() :
@@ -97,7 +96,6 @@ struct Playback::Private :
 		SeekHandler(),
 
 		lame_probe(0),
-		vol(0),
 		run_broadcast(false)
 	{}
 
@@ -105,12 +103,12 @@ struct Playback::Private :
 	protected:
 		GstElement* get_pitch_element() const override
 		{
-			return pitch;
+			return pb_pitch;
 		}
 
 		GstElement* get_equalizer_element() const override
 		{
-			return equalizer;
+			return pb_equalizer;
 		}
 
 		GstElement* get_streamrecorder_sink_element() const override
@@ -173,17 +171,19 @@ bool Playback::create_elements()
 	// input
 	if(!EngineUtils::create_element(&m->audio_src, "uridecodebin", "src")) return false;
 	if(!EngineUtils::create_element(&m->audio_convert, "audioconvert")) return false;
-	if(!EngineUtils::create_element(&m->equalizer, "equalizer-10bands")) return false;
-
-	if(!EngineUtils::create_element(&m->pitch, "pitch")){
-		m->pitch = nullptr;
-	}
-
 	if(!EngineUtils::create_element(&m->tee, "tee")) return false;
 
 	// standard output branch
-	if(!EngineUtils::create_element(&m->eq_queue, QUEUE, "eq_queue")) return false;
-	if(!EngineUtils::create_element(&m->volume, "volume")) return false;
+
+	if(!EngineUtils::create_element(&m->pb_queue, QUEUE, "eq_queue")) return false;
+	if(!EngineUtils::create_element(&m->pb_equalizer, "equalizer-10bands")) return false;
+	if(!EngineUtils::create_element(&m->pb_volume, "volume")) return false;
+	if(!EngineUtils::create_element(&m->pb_pitch, "pitch")){
+		m->pb_pitch = nullptr;
+	}
+
+	//EngineUtils::create_bin(&m->pb_bin)
+
 
 	m->audio_sink = create_audio_sink(_settings->get<Set::Engine_Sink>());
 	if(!m->audio_sink){
@@ -228,22 +228,22 @@ GstElement* Playback::create_audio_sink(const QString& name)
 bool Playback::add_and_link_elements()
 {
 	gst_bin_add_many(GST_BIN(pipeline()),
-					 m->audio_src, m->audio_convert, m->equalizer, m->tee, m->eq_queue, m->volume, m->audio_sink,
+					 m->audio_src, m->audio_convert, m->pb_equalizer, m->tee, m->pb_queue, m->pb_volume, m->audio_sink,
 					 nullptr);
 
 	/* before tee */
-	bool success = gst_element_link_many(m->audio_convert, m->equalizer, m->tee,  nullptr);
+	bool success = gst_element_link_many(m->audio_convert, m->pb_equalizer, m->tee,  nullptr);
 	if(!EngineUtils::test_and_error_bool(success, "Engine: Cannot link audio convert with tee")){
 		return false;
 	}
 
 	/* standard output branch */
-	success = gst_element_link_many(m->eq_queue, m->volume, /*_speed,*/ m->audio_sink, nullptr);
+	success = gst_element_link_many(m->pb_queue, m->pb_volume, /*_speed,*/ m->audio_sink, nullptr);
 	if(!EngineUtils::test_and_error_bool(success, "Engine: Cannot link eq with audio sink")) {
 		return false;
 	}
 
-	EngineUtils::tee_connect(m->tee, m->eq_queue, "Equalizer");
+	EngineUtils::tee_connect(m->tee, m->pb_queue, "Equalizer");
 	if(!EngineUtils::test_and_error_bool(success, "Engine: Cannot link eq queue with tee")){
 		return false;
 	}
@@ -303,10 +303,9 @@ bool Playback::configure_elements()
 				 "async", false,
 				 nullptr);
 
-	EngineUtils::config_queue(m->eq_queue);
+	EngineUtils::config_queue(m->pb_queue);
 	EngineUtils::config_queue(m->visualizer_queue);
 	EngineUtils::config_sink(m->visualizer_sink);
-	EngineUtils::config_sink(m->audio_sink);
 
 	g_signal_connect (m->audio_src, "pad-added", G_CALLBACK (Callbacks::decodebin_ready), m->audio_convert);
 	g_signal_connect (m->audio_src, "source-setup", G_CALLBACK (Callbacks::source_ready), nullptr);
@@ -333,18 +332,18 @@ void Playback::stop()
 
 void Playback::s_vol_changed()
 {
-	m->vol = _settings->get<Set::Engine_Vol>();
+	int vol = _settings->get<Set::Engine_Vol>();
 
-	float vol_val = (float) ((m->vol * 1.0f) / 100.0f);
+	float vol_val = (float) ((vol * 1.0f) / 100.0f);
 
-	g_object_set(G_OBJECT(m->volume), "volume", vol_val, nullptr);
+	g_object_set(G_OBJECT(m->pb_volume), "volume", vol_val, nullptr);
 }
 
 
 void Playback::s_mute_changed()
 {
 	bool muted = _settings->get<Set::Engine_Mute>();
-	g_object_set(G_OBJECT(m->volume), "mute", muted, nullptr);
+	g_object_set(G_OBJECT(m->pb_volume), "mute", muted, nullptr);
 }
 
 
@@ -484,21 +483,6 @@ bool Playback::init_streamrecorder()
 	m->streamrecorder_data()->queue = m->sr_queue;
 	m->streamrecorder_data()->sink = m->sr_sink;
 
-	GstState state = get_state();
-	bool success;
-	{ // init bin
-		success = EngineUtils::create_bin(&m->sr_bin, {m->sr_queue, m->sr_converter, m->sr_resampler, m->sr_lame, m->sr_sink}, "sr");
-		if(!success){
-			return false;
-		}
-
-		gst_bin_add(GST_BIN(pipeline()), m->sr_bin);
-		success = EngineUtils::tee_connect(m->tee, m->sr_bin, "StreamRecorderQueue");
-		if(!success){
-			return false;
-		}
-	}
-
 	{ // configure
 		EngineUtils::config_lame(m->sr_lame);
 		EngineUtils::config_queue(m->sr_queue);
@@ -510,7 +494,18 @@ bool Playback::init_streamrecorder()
 					 nullptr);
 	}
 
-	EngineUtils::set_state(m->sr_bin, state);
+	{ // init bin
+		bool success = EngineUtils::create_bin(&m->sr_bin, {m->sr_queue, m->sr_converter, m->sr_resampler, m->sr_lame, m->sr_sink}, "sr");
+		if(!success){
+			return false;
+		}
+
+		gst_bin_add(GST_BIN(pipeline()), m->sr_bin);
+		success = EngineUtils::tee_connect(m->tee, m->sr_bin, "StreamRecorderQueue");
+		if(!success){
+			return false;
+		}
+	}
 
 	return true;
 }
@@ -532,20 +527,20 @@ NanoSeconds Playback::seek_abs(NanoSeconds ns)
 
 void Playback::set_current_volume(double volume)
 {
-	g_object_set(m->volume, "volume", volume, nullptr);
+	g_object_set(m->pb_volume, "volume", volume, nullptr);
 }
 
 double Playback::get_current_volume() const
 {
 	double volume;
-	g_object_get(m->volume, "volume", &volume, nullptr);
+	g_object_get(m->pb_volume, "volume", &volume, nullptr);
 	return volume;
 }
 
 
 void Playback::s_speed_active_changed()
 {
-	if(!m->pitch){
+	if(!m->pb_pitch){
 		return;
 	}
 
@@ -556,12 +551,12 @@ void Playback::s_speed_active_changed()
 	bool success = gst_element_query_position(source, GST_FORMAT_TIME, &pos);
 
 	if(active){
-		add_element(m->pitch, m->audio_convert, m->equalizer);
+		add_element(m->pb_pitch, m->audio_convert, m->pb_equalizer);
 		s_speed_changed();
 	}
 
 	else{
-		remove_element(m->pitch, m->audio_convert, m->equalizer);
+		remove_element(m->pb_pitch, m->audio_convert, m->pb_equalizer);
 	}
 
 	if(this->get_state() == GST_STATE_PLAYING && success)
@@ -603,11 +598,11 @@ void Playback::s_sink_changed()
 	NanoSeconds pos;
 	gst_element_query_position(pipeline(), GST_FORMAT_TIME, &pos);
 
-	gst_element_unlink(m->volume, m->audio_sink);
+	gst_element_unlink(m->pb_volume, m->audio_sink);
 	gst_bin_remove(GST_BIN(pipeline()), m->audio_sink);
 	m->audio_sink = e;
 	gst_bin_add(GST_BIN(pipeline()), m->audio_sink);
-	gst_element_link(m->volume, m->audio_sink);
+	gst_element_link(m->pb_volume, m->audio_sink);
 
 	gst_element_set_state(pipeline(), old_state);
 
