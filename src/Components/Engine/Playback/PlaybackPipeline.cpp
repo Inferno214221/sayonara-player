@@ -71,17 +71,17 @@ struct Playback::Private :
 	GstElement*			level=nullptr;
 	GstElement*			visualizer_sink=nullptr;
 
-	GstElement*			lame_queue=nullptr;
-	GstElement*			lame_converter=nullptr;
-	GstElement*			lame_resampler=nullptr;
-	GstElement*			lame=nullptr;
-	GstElement*			lame_app_sink=nullptr;
+	GstElement*			bc_queue=nullptr;
+	GstElement*			bc_converter=nullptr;
+	GstElement*			bc_resampler=nullptr;
+	GstElement*			bc_lame=nullptr;
+	GstElement*			bc_app_sink=nullptr;
 
-	GstElement*			file_queue=nullptr;
-	GstElement*			file_converter=nullptr;
-	GstElement*			file_sink=nullptr;
-	GstElement*			file_resampler=nullptr;
-	GstElement*			file_lame=nullptr;
+	GstElement*			sr_queue=nullptr;
+	GstElement*			sr_converter=nullptr;
+	GstElement*			sr_sink=nullptr;
+	GstElement*			sr_resampler=nullptr;
+	GstElement*			sr_lame=nullptr;
 
 	gulong				level_probe, spectrum_probe, lame_probe, file_probe;
 	int					vol;
@@ -118,7 +118,7 @@ struct Playback::Private :
 
 		GstElement* get_streamrecorder_sink_element() const override
 		{
-			return file_sink;
+			return sr_sink;
 		}
 
 		GstElement* get_source() const override
@@ -146,8 +146,8 @@ bool Playback::init(GstState state)
 		return false;
 	}
 
-	_settings->set<SetNoDB::MP3enc_found>(m->lame != nullptr);
-	_settings->set<SetNoDB::Pitch_found>(m->lame != nullptr);
+	_settings->set<SetNoDB::MP3enc_found>(m->bc_lame != nullptr);
+	_settings->set<SetNoDB::Pitch_found>(m->bc_lame != nullptr);
 	_settings->set<SetNoDB::MP3enc_found>(true);
 
 	Set::listen<Set::Engine_Vol>(this, &Playback::s_vol_changed);
@@ -385,42 +385,42 @@ void Playback::fade_out_handler()
 bool Playback::init_broadcasting()
 {
 	bool success;
-	if(m->lame){
+	if(m->bc_lame){
 		return true;
 	}
 
 	// create
-	if( !EngineUtils::create_element(&m->lame_queue, QUEUE, "lame_queue") ||
-		!EngineUtils::create_element(&m->lame_converter, "audioconvert", "lame_converter") ||
-		!EngineUtils::create_element(&m->lame_resampler, "audioresample", "lame_resampler") ||
-		!EngineUtils::create_element(&m->lame, "lamemp3enc") ||
-		!EngineUtils::create_element(&m->lame_app_sink, "appsink", "lame_appsink"))
+	if( !EngineUtils::create_element(&m->bc_queue, QUEUE, "lame_queue") ||
+		!EngineUtils::create_element(&m->bc_converter, "audioconvert", "lame_converter") ||
+		!EngineUtils::create_element(&m->bc_resampler, "audioresample", "lame_resampler") ||
+		!EngineUtils::create_element(&m->bc_lame, "lamemp3enc") ||
+		!EngineUtils::create_element(&m->bc_app_sink, "appsink", "lame_appsink"))
 	{
-		m->lame = nullptr;
+		m->bc_lame = nullptr;
 		return false;
 	}
 
 	// linking
-	gst_bin_add_many(GST_BIN(pipeline()), m->lame_queue,  m->lame_converter, m->lame_resampler, m->lame, m->lame_app_sink, nullptr);
-	success = gst_element_link_many( m->lame_queue, m->lame_converter, m->lame_resampler, m->lame, m->lame_app_sink, nullptr);
+	gst_bin_add_many(GST_BIN(pipeline()), m->bc_queue,  m->bc_converter, m->bc_resampler, m->bc_lame, m->bc_app_sink, nullptr);
+	success = gst_element_link_many( m->bc_queue, m->bc_converter, m->bc_resampler, m->bc_lame, m->bc_app_sink, nullptr);
 	EngineUtils::test_and_error_bool(success, "Engine: Cannot link lame stuff");
 
-	success = EngineUtils::tee_connect(m->tee, m->lame_queue, "Lame");
+	success = EngineUtils::tee_connect(m->tee, m->bc_queue, "Lame");
 	if(!EngineUtils::test_and_error_bool(success, "Engine: Cannot link lame queue with tee")){
 		_settings->set<SetNoDB::MP3enc_found>(false);
 	}
 
-	gst_object_ref(m->lame_app_sink);
+	gst_object_ref(m->bc_app_sink);
 
-	EngineUtils::config_lame(m->lame);
-	EngineUtils::config_queue(m->lame_queue);
-	EngineUtils::config_sink(m->lame_app_sink);
+	EngineUtils::config_lame(m->bc_lame);
+	EngineUtils::config_queue(m->bc_queue);
+	EngineUtils::config_sink(m->bc_app_sink);
 
-	g_object_set(G_OBJECT(m->lame_app_sink),
+	g_object_set(G_OBJECT(m->bc_app_sink),
 				 "emit-signals", true,
 				 nullptr );
 
-	g_signal_connect (m->lame_app_sink, "new-sample", G_CALLBACK(Callbacks::new_buffer), this);
+	g_signal_connect (m->bc_app_sink, "new-sample", G_CALLBACK(Callbacks::new_buffer), this);
 
 	return true;
 }
@@ -428,13 +428,13 @@ bool Playback::init_broadcasting()
 
 void Playback::set_n_sound_receiver(int num_sound_receiver)
 {
-	if(!m->lame){
+	if(!m->bc_lame){
 		return;
 	}
 
 	m->run_broadcast = (num_sound_receiver > 0);
 
-	Probing::handle_probe(&m->run_broadcast, m->lame_queue, &m->lame_probe, Probing::lame_probed);
+	Probing::handle_probe(&m->run_broadcast, m->bc_queue, &m->lame_probe, Probing::lame_probed);
 }
 
 GstElement* Playback::get_source() const
@@ -473,39 +473,39 @@ void Playback::set_eq_band(int band, int val)
 
 bool Playback::init_streamrecorder()
 {
-	if(m->file_sink) {
+	if(m->sr_sink) {
 		return true;
 	}
 
 	bool success;
 	// stream recorder branch
-	if(	!EngineUtils::create_element(&m->file_queue, QUEUE, "sr_queue") ||
-		!EngineUtils::create_element(&m->file_converter, "audioconvert", "sr_converter") ||
-		!EngineUtils::create_element(&m->file_resampler, "audioresample", "sr_resample") ||
-		!EngineUtils::create_element(&m->file_lame, "lamemp3enc", "sr_lame")  ||
-		!EngineUtils::create_element(&m->file_sink, "filesink", "sr_filesink"))
+	if(	!EngineUtils::create_element(&m->sr_queue, QUEUE, "sr_queue") ||
+		!EngineUtils::create_element(&m->sr_converter, "audioconvert", "sr_converter") ||
+		!EngineUtils::create_element(&m->sr_resampler, "audioresample", "sr_resample") ||
+		!EngineUtils::create_element(&m->sr_lame, "lamemp3enc", "sr_lame")  ||
+		!EngineUtils::create_element(&m->sr_sink, "filesink", "sr_filesink"))
 	{
-		m->file_sink = nullptr;
+		m->sr_sink = nullptr;
 		return false;
 	}
 
-	m->streamrecorder_data()->queue = m->file_queue;
-	m->streamrecorder_data()->sink = m->file_sink;
+	m->streamrecorder_data()->queue = m->sr_queue;
+	m->streamrecorder_data()->sink = m->sr_sink;
 
-	gst_bin_add_many(GST_BIN(pipeline()), m->file_queue, m->file_converter, m->file_resampler, m->file_lame, m->file_sink, nullptr);
-	success = gst_element_link_many( m->file_queue, m->file_converter, m->file_resampler, m->file_lame, m->file_sink, nullptr);
+	gst_bin_add_many(GST_BIN(pipeline()), m->sr_queue, m->sr_converter, m->sr_resampler, m->sr_lame, m->sr_sink, nullptr);
+	success = gst_element_link_many( m->sr_queue, m->sr_converter, m->sr_resampler, m->sr_lame, m->sr_sink, nullptr);
 	EngineUtils::test_and_error_bool(success, "Engine: Cannot link streamripper stuff");
 
-	success = EngineUtils::tee_connect(m->tee, m->file_queue, "Streamripper");
+	success = EngineUtils::tee_connect(m->tee, m->sr_queue, "Streamripper");
 	if(!EngineUtils::test_and_error_bool(success, "Engine: Cannot link streamripper stuff")){
 		_settings->set<Set::Engine_SR_Active>(false);
 	}
 
-	EngineUtils::config_lame(m->file_lame);
-	EngineUtils::config_queue(m->file_queue);
-	EngineUtils::config_sink(m->file_sink);
+	EngineUtils::config_lame(m->sr_lame);
+	EngineUtils::config_queue(m->sr_queue);
+	EngineUtils::config_sink(m->sr_sink);
 
-	g_object_set(G_OBJECT(m->file_sink),
+	g_object_set(G_OBJECT(m->sr_sink),
 				 "buffer-size", 8192,
 				 "location", (Util::sayonara_path() + "bla.mp3").toLocal8Bit().data(),
 				 nullptr);
