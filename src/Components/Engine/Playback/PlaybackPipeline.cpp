@@ -66,6 +66,7 @@ struct Playback::Private :
 
 	GstElement*			audio_sink=nullptr;
 
+	GstElement*			visualizer_bin=nullptr;
 	GstElement*			visualizer_queue=nullptr;
 	GstElement*			spectrum=nullptr;
 	GstElement*			level=nullptr;
@@ -77,6 +78,7 @@ struct Playback::Private :
 	GstElement*			bc_lame=nullptr;
 	GstElement*			bc_app_sink=nullptr;
 
+	GstElement*			sr_bin=nullptr;
 	GstElement*			sr_queue=nullptr;
 	GstElement*			sr_converter=nullptr;
 	GstElement*			sr_sink=nullptr;
@@ -195,10 +197,14 @@ bool Playback::create_elements()
 	}
 
 	// spectrum branch
-	if(!EngineUtils::create_element(&m->visualizer_queue, QUEUE, "spectrum_queue")) return false;
-	if(!EngineUtils::create_element(&m->level, "level")) return false;
-	if(!EngineUtils::create_element(&m->spectrum, "spectrum")) return false;
-	if(!EngineUtils::create_element(&m->visualizer_sink,"fakesink", "spectrum_sink")) return false;
+	if(	EngineUtils::create_element(&m->visualizer_queue, QUEUE, "spectrum_queue") &&
+		EngineUtils::create_element(&m->level, "level") &&
+		EngineUtils::create_element(&m->spectrum, "spectrum") &&
+		EngineUtils::create_element(&m->visualizer_sink,"fakesink", "spectrum_sink"))
+	{
+		EngineUtils::create_bin(&m->visualizer_bin, {m->visualizer_queue, m->level, m->spectrum, m->visualizer_sink}, "visualizer");
+
+	}
 
 	return true;
 }
@@ -229,13 +235,7 @@ GstElement* Playback::create_audio_sink(const QString& name)
 bool Playback::add_and_link_elements()
 {
 	gst_bin_add_many(GST_BIN(pipeline()),
-					 m->audio_src,
-					 //m->audio_dec,
-					 m->audio_convert, m->equalizer, m->tee,
-
-					 m->eq_queue, m->volume, m->audio_sink,
-					 m->visualizer_queue, m->spectrum, m->level, m->visualizer_sink,
-
+					 m->audio_src, m->audio_convert, m->equalizer, m->tee, m->eq_queue, m->volume, m->audio_sink,
 					 nullptr);
 
 	/* before tee */
@@ -250,21 +250,13 @@ bool Playback::add_and_link_elements()
 		return false;
 	}
 
-	/* spectrum branch */
-	success = gst_element_link_many(m->visualizer_queue, m->level, m->spectrum, m->visualizer_sink, nullptr);
-	if(!EngineUtils::test_and_error_bool(success, "Engine: Cannot link Spectrum pipeline")){
-		return false;
-	}
-
-	EngineUtils::tee_connect(m->tee, m->visualizer_queue, "Spectrum");
-	if(!EngineUtils::test_and_error_bool(success, "Engine: Cannot link spectrum queue with tee")){
-		return false;
-	}
-
 	EngineUtils::tee_connect(m->tee, m->eq_queue, "Equalizer");
 	if(!EngineUtils::test_and_error_bool(success, "Engine: Cannot link eq queue with tee")){
 		return false;
 	}
+
+	gst_bin_add(GST_BIN(pipeline()), m->visualizer_bin);
+	EngineUtils::tee_connect(m->tee, m->visualizer_bin, "Visualizer");
 
 	return true;
 }
