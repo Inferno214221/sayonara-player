@@ -104,7 +104,6 @@ struct Playback::Private :
 		run_pitch(false)
 	{}
 
-
 	protected:
 		GstElement* get_pitch_element() const override
 		{
@@ -196,6 +195,7 @@ bool Playback::create_elements()
 
 	return true;
 }
+
 
 GstElement* Playback::create_audio_sink(const QString& name)
 {
@@ -310,7 +310,7 @@ bool Playback::configure_elements()
 	return true;
 }
 
-#include "Utils/FileUtils.h"
+
 bool Playback::init_streamrecorder()
 {
 	if(m->sr_bin) {
@@ -404,15 +404,18 @@ bool Playback::init_broadcasting()
 	return true;
 }
 
+
 MilliSeconds Playback::get_about_to_finish_time() const
 {
 	return std::max( get_fading_time_ms(), Base::get_about_to_finish_time() );
 }
 
+
 void Playback::play()
 {
 	Base::play();
 }
+
 
 void Playback::stop()
 {
@@ -420,6 +423,7 @@ void Playback::stop()
 	abort_delayed_playing();
 	abort_fader();
 }
+
 
 void Playback::s_vol_changed()
 {
