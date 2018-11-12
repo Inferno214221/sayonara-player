@@ -73,6 +73,21 @@ Probing::lame_probed(GstPad *pad, GstPadProbeInfo *info, gpointer user_data){
 	}
 }
 
+GstPadProbeReturn
+Probing::pitch_probed(GstPad *pad, GstPadProbeInfo *info, gpointer user_data){
+	Q_UNUSED(pad)
+	Q_UNUSED(info)
+
+	bool* b = static_cast<bool*>( user_data );
+	if(*b){
+		return GST_PAD_PROBE_REMOVE;
+	}
+
+	else{
+		return GST_PAD_PROBE_DROP;
+	}
+}
+
 
 void Probing::handle_probe(bool* active, GstElement* queue, gulong* probe_id, GstPadProbeCallback callback){
 	GstPad* pad =  gst_element_get_static_pad(queue, "src");
@@ -104,8 +119,8 @@ void Probing::handle_stream_recorder_probe(StreamRecorder::Data* data, GstPadPro
 {
 	GstPad* pad =  gst_element_get_static_pad(data->queue, "src");
 
-    if(data->probe_id == 0)
-    {
+	if(data->probe_id == 0)
+	{
 		data->busy = true;
 		data->probe_id = gst_pad_add_probe(
 					pad,
@@ -130,14 +145,14 @@ Probing::stream_recorder_probed(GstPad *pad, GstPadProbeInfo *info, gpointer use
 	Q_UNUSED(pad)
 	Q_UNUSED(info)
 
-    StreamRecorder::Data* data = static_cast<StreamRecorder::Data*>(user_data);
+	StreamRecorder::Data* data = static_cast<StreamRecorder::Data*>(user_data);
 
 	if(!data){
 		return GST_PAD_PROBE_DROP;
 	}
 
-    if(data->active)
-    {
+	if(data->active)
+	{
 		sp_log(Log::Develop) << "set new filename streamrecorder: " << data->filename;
 
 		gst_element_set_state(data->sink, GST_STATE_NULL);

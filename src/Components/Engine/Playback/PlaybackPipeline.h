@@ -62,7 +62,6 @@ namespace Pipeline
 
 		void set_visualizer_enabled(bool b);
 
-
 	public slots:
 		void play() override;
 		void stop() override;
