@@ -148,9 +148,8 @@ bool Playback::init(GstState state)
 		return false;
 	}
 
-	_settings->set<SetNoDB::MP3enc_found>(m->bc_lame != nullptr);
+	_settings->set<SetNoDB::MP3enc_found>(EngineUtils::check_lame_available());
 	_settings->set<SetNoDB::Pitch_found>(m->bc_lame != nullptr);
-	_settings->set<SetNoDB::MP3enc_found>(true);
 
 	Set::listen<Set::Engine_Vol>(this, &Playback::s_vol_changed);
 	Set::listen<Set::Engine_Mute>(this, &Playback::s_mute_changed);
@@ -203,7 +202,6 @@ bool Playback::create_elements()
 		EngineUtils::create_element(&m->visualizer_sink,"fakesink", "spectrum_sink"))
 	{
 		EngineUtils::create_bin(&m->visualizer_bin, {m->visualizer_queue, m->level, m->spectrum, m->visualizer_sink}, "visualizer");
-
 	}
 
 	return true;
@@ -255,8 +253,16 @@ bool Playback::add_and_link_elements()
 		return false;
 	}
 
-	gst_bin_add(GST_BIN(pipeline()), m->visualizer_bin);
-	EngineUtils::tee_connect(m->tee, m->visualizer_bin, "Visualizer");
+	if(m->visualizer_bin)
+	{
+		gst_bin_add(GST_BIN(pipeline()), m->visualizer_bin);
+		success = EngineUtils::tee_connect(m->tee, m->visualizer_bin, "Visualizer");
+		if(!success){
+			gst_bin_remove(GST_BIN(pipeline()), m->visualizer_bin);
+			gst_object_unref(m->visualizer_bin);
+			m->visualizer_bin = nullptr;
+		}
+	}
 
 	return true;
 }
@@ -465,7 +471,7 @@ void Playback::set_eq_band(int band, int val)
 
 bool Playback::init_streamrecorder()
 {
-	if(m->sr_sink) {
+	if(m->sr_bin) {
 		return true;
 	}
 
@@ -477,21 +483,11 @@ bool Playback::init_streamrecorder()
 		!EngineUtils::create_element(&m->sr_lame, "lamemp3enc", "sr_lame")  ||
 		!EngineUtils::create_element(&m->sr_sink, "filesink", "sr_filesink"))
 	{
-		m->sr_sink = nullptr;
 		return false;
 	}
 
 	m->streamrecorder_data()->queue = m->sr_queue;
 	m->streamrecorder_data()->sink = m->sr_sink;
-
-	gst_bin_add_many(GST_BIN(pipeline()), m->sr_queue, m->sr_converter, m->sr_resampler, m->sr_lame, m->sr_sink, nullptr);
-	success = gst_element_link_many( m->sr_queue, m->sr_converter, m->sr_resampler, m->sr_lame, m->sr_sink, nullptr);
-	EngineUtils::test_and_error_bool(success, "Engine: Cannot link streamripper stuff");
-
-	success = EngineUtils::tee_connect(m->tee, m->sr_queue, "Streamripper");
-	if(!EngineUtils::test_and_error_bool(success, "Engine: Cannot link streamripper stuff")){
-		_settings->set<Set::Engine_SR_Active>(false);
-	}
 
 	EngineUtils::config_lame(m->sr_lame);
 	EngineUtils::config_queue(m->sr_queue);
@@ -502,7 +498,20 @@ bool Playback::init_streamrecorder()
 				 "location", (Util::sayonara_path() + "bla.mp3").toLocal8Bit().data(),
 				 nullptr);
 
-	_settings->set<SetNoDB::MP3enc_found>(true);
+
+	success = EngineUtils::create_bin(&m->sr_bin, {m->sr_queue, m->sr_converter, m->sr_resampler, m->sr_lame, m->sr_sink}, "sr");
+	if(!success){
+		return false;
+	}
+
+	gst_bin_add(GST_BIN(pipeline()), m->sr_bin);
+	GstState state = get_state();
+	success = EngineUtils::tee_connect(m->tee, m->sr_bin, "StreamRecorderQueue");
+	if(!success){
+		return false;
+	}
+
+	EngineUtils::set_state(m->sr_bin, state);
 
 	return true;
 }
