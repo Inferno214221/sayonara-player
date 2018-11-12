@@ -111,16 +111,6 @@ Playback::~Playback()
 	{
 		set_streamrecorder_recording(false);
 	}
-
-	if(m->pipeline)
-	{
-		delete m->pipeline; m->pipeline = nullptr;
-	}
-
-	if(m->other_pipeline)
-	{
-		delete m->other_pipeline; m->other_pipeline = nullptr;
-	}
 }
 
 

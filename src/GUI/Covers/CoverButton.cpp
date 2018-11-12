@@ -42,6 +42,7 @@ using CoverButtonBase=Gui::WidgetTemplate<QPushButton>;
 
 struct CoverButton::Private
 {
+	QString			hash;
 	Location		cover_location;
 	QPixmap			current_cover;
 	QString			class_tmp_file;
@@ -102,6 +103,12 @@ void CoverButton::set_cover_image(const QPixmap& pm)
 
 void CoverButton::set_cover_location(const Location& cl)
 {
+	if(m->hash.size() > 0 && cl.hash() == m->hash){
+		return;
+	}
+
+	m->hash = cl.hash();
+
 	m->cover_location = cl;
 	m->cover_forced = false;
 
@@ -169,6 +176,7 @@ void CoverButton::alternative_cover_fetched(const Location& cl)
 		ChangeNotfier::instance()->shout();
 	}
 
+	m->hash = QString();
 	set_cover_image(cl.cover_path());
 }
 

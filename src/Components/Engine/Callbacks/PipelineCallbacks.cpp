@@ -118,29 +118,24 @@ GstFlowReturn Callbacks::new_buffer(GstElement *sink, gpointer p)
 {
 	static uchar data[TCP_BUFFER_SIZE];
 
-	Base* pipeline;
-	GstSample* sample;
-	GstBuffer* buffer;
-	gsize size = 0;
-	gsize size_new = 0;
-
-	pipeline = static_cast<Base*>(p);
+	Base* pipeline = static_cast<Base*>(p);
 	if(!pipeline){
 		return GST_FLOW_OK;
 	}
 
-	sample = gst_app_sink_pull_sample(GST_APP_SINK(sink));
+	GstSample* sample = gst_app_sink_pull_sample(GST_APP_SINK(sink));
 	if(!sample) {
 		return GST_FLOW_OK;
 	}
 
-	buffer = gst_sample_get_buffer(sample);
+	GstBuffer* buffer = gst_sample_get_buffer(sample);
 	if(!buffer) {
+		gst_sample_unref(sample);
 		return GST_FLOW_OK;
 	}
 
-	size = gst_buffer_get_size(buffer);
-	size_new = gst_buffer_extract(buffer, 0, data, size);
+	gsize size = gst_buffer_get_size(buffer);
+	gsize size_new = gst_buffer_extract(buffer, 0, data, size);
 	pipeline->set_data(data, size_new);
 
 	gst_sample_unref(sample);

@@ -272,7 +272,7 @@ bool Playback::configure_elements()
 	gint threshold = -75;
 
 	g_object_set(G_OBJECT(m->tee),
-				 "silent", false,
+				 "silent", true,
 				 "allow-not-linked", true,
 				 nullptr);
 
@@ -419,6 +419,8 @@ void Playback::play()
 
 void Playback::stop()
 {
+	EngineUtils::print_all_elements(GST_BIN(m->audio_src));
+
 	Base::stop();
 	abort_delayed_playing();
 	abort_fader();

@@ -346,15 +346,13 @@ void Handler::new_data(const uchar* data, uint64_t n_bytes)
 
 void Handler::register_raw_sound_receiver(RawSoundReceiverInterface* receiver)
 {
-	Playback* engine;
-
 	if(m->raw_sound_receiver.contains(receiver)){
 		return;
 	}
 
 	m->raw_sound_receiver << receiver;
 
-	engine = get_playback_engine();
+	Playback* engine = get_playback_engine();
 	if(engine){
 		get_playback_engine()->set_n_sound_receiver(m->raw_sound_receiver.size());
 	}
@@ -362,15 +360,13 @@ void Handler::register_raw_sound_receiver(RawSoundReceiverInterface* receiver)
 
 void Handler::unregister_raw_sound_receiver(RawSoundReceiverInterface* receiver)
 {
-	Playback* engine;
-
 	if(!m->raw_sound_receiver.contains(receiver)){
 		return;
 	}
 
 	m->raw_sound_receiver.removeOne(receiver);
 
-	engine = get_playback_engine();
+	Playback* engine = get_playback_engine();
 	if(engine){
 		get_playback_engine()->set_n_sound_receiver(m->raw_sound_receiver.size());
 	}

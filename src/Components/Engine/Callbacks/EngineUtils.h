@@ -34,6 +34,8 @@ namespace Engine
 		void add_elements(GstBin* bin, const QList<GstElement*>& elements);
 		void unref_elements(const QList<GstElement*>& elements);
 
+		void print_all_elements(GstBin* bin);
+
 	}
 }
 

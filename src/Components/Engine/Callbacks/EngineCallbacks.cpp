@@ -53,9 +53,10 @@ using namespace Engine;
 static bool parse_image(GstTagList* tags, QImage& img)
 {
 	GstSample* sample;
-
 	bool success = gst_tag_list_get_sample(tags, GST_TAG_IMAGE, &sample);
-	if(!success){
+
+	if(!success)
+	{
 		success = gst_tag_list_get_sample(tags, GST_TAG_PREVIEW_IMAGE, &sample);
 		if(!success){
 			return false;
@@ -64,23 +65,25 @@ static bool parse_image(GstTagList* tags, QImage& img)
 
 	GstCaps* caps = gst_sample_get_caps(sample);
 	if(!caps){
+		gst_sample_unref(sample);
 		return false;
 	}
 
 	gchar* mimetype = gst_caps_to_string(caps);
 	if(mimetype == nullptr){
+		gst_sample_unref(sample);
 		return false;
 	}
 
 	QString mime(mimetype);
 	g_free(mimetype); mimetype = nullptr;
-	//sp_log(Log::Debug, this) << "Mime type: " << mimetype;
+
 	QRegExp re(".*(image/[a-z|A-Z]+).*");
 	if(re.indexIn(mime) >= 0){
 		mime = re.cap(1);
 	}
 
-	GstBuffer* buffer = gst_sample_get_buffer( sample );
+	GstBuffer* buffer = gst_sample_get_buffer(sample);
 	if(!buffer){
 		gst_sample_unref(sample);
 		return false;
@@ -89,16 +92,14 @@ static bool parse_image(GstTagList* tags, QImage& img)
 	gsize size = gst_buffer_get_size(buffer);
 	if(size == 0){
 		gst_sample_unref(sample);
-
 		return false;
 	}
 
 	gchar* data = new gchar[size];
 	size = gst_buffer_extract(buffer, 0, data, size);
 
-	if(size == 0){
+	if(size == 0) {
 		delete[] data;
-
 		gst_sample_unref(sample);
 		return false;
 	}
@@ -106,9 +107,7 @@ static bool parse_image(GstTagList* tags, QImage& img)
 	img = QImage::fromData((const uchar*) data, size, mime.toLocal8Bit().data());
 
 	delete[] data;
-
 	gst_sample_unref(sample);
-
 
 	return (!img.isNull());
 }
@@ -195,8 +194,9 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 			{
 				MetaData md;
 				md.set_title(title);
-				g_free(title);
 				engine->update_metadata(md, src);
+
+				g_free(title);
 			}
 
 			gst_tag_list_unref(tags);
@@ -258,16 +258,17 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 
 		case GST_MESSAGE_WARNING:
 			{
-				GError*			err;
+				GError*	err;
 				gst_message_parse_warning(msg, &err, nullptr);
 				sp_log(Log::Warning) << "Engine " << (int) engine->name() << ": GST_MESSAGE_WARNING: " << err->message << ": "
 					 << GST_MESSAGE_SRC_NAME(msg);
+				g_error_free(err);
 			}
 			break;
 
 		case GST_MESSAGE_ERROR:
 			{
-				GError*			err;
+				GError*	err;
 				gst_message_parse_error(msg, &err, nullptr);
 
 				sp_log(Log::Error) << "Engine " << (int) engine->name() << ": GST_MESSAGE_ERROR: " << err->message << ": "
@@ -304,37 +305,29 @@ Callbacks::level_handler(GstBus* bus, GstMessage* message, gpointer data)
 
 	double					channel_values[2];
 
-	Playback*				engine;
-	GValueArray*			rms_arr;
-	const GstStructure*		structure;
-	const gchar*			name;
-	const GValue*			peak_value;
-	guint					n_peak_elements;
-
-	engine = static_cast<Playback*>(data);
+	Playback* engine = static_cast<Playback*>(data);
 	if(!engine) {
 		return true;
 	}
 
-	structure = gst_message_get_structure(message);
+	const GstStructure* structure = gst_message_get_structure(message);
 	if(!structure) {
 		sp_log(Log::Warning) << "structure is null";
 		return true;
 	}
 
-	name = gst_structure_get_name(structure);
+	const gchar* name = gst_structure_get_name(structure);
 	if ( strcmp(name, "level") != 0 ) {
 		return true;
 	}
 
-	peak_value = gst_structure_get_value(structure, "peak");
+	const GValue* peak_value = gst_structure_get_value(structure, "peak");
 	if(!peak_value) {
 		return true;
 	}
 
-	rms_arr = static_cast<GValueArray*>(g_value_get_boxed(peak_value));
-
-	n_peak_elements = rms_arr->n_values;
+	GValueArray* rms_arr = static_cast<GValueArray*>(g_value_get_boxed(peak_value));
+	guint n_peak_elements = rms_arr->n_values;
 	if(n_peak_elements == 0) {
 		return true;
 	}
@@ -373,46 +366,38 @@ Callbacks::spectrum_handler(GstBus* bus, GstMessage* message, gpointer data)
 {
 	Q_UNUSED(bus);
 
-	Playback*				engine;
-	const GstStructure*		structure;
-	const gchar*			structure_name;
-	const GValue*			magnitudes;
 	static SpectrumList		spectrum_vals;
 
-	engine = static_cast<Playback*>(data);
+	Playback* engine = static_cast<Playback*>(data);
 	if(!engine) {
 		return true;
 	}
 
-	structure = gst_message_get_structure(message);
+	const GstStructure* structure = gst_message_get_structure(message);
 	if(!structure) {
 		return true;
 	}
 
-	structure_name = gst_structure_get_name(structure);
+	const gchar* structure_name = gst_structure_get_name(structure);
 	if( strcmp(structure_name, "spectrum") != 0 ) {
 		return true;
 	}
 
-	magnitudes = gst_structure_get_value (structure, "magnitude");
+	const GValue* magnitudes = gst_structure_get_value (structure, "magnitude");
 
 	int bins = engine->get_spectrum_bins();
-
 	if(spectrum_vals.empty()){
 		spectrum_vals.resize(bins, 0);
 	}
 
 	for (int i=0; i<bins; ++i)
 	{
-		float f;
-		const GValue* mag;
-
-		mag = gst_value_list_get_value(magnitudes, i);
+		const GValue* mag = gst_value_list_get_value(magnitudes, i);
 		if(!mag) {
 			continue;
 		}
 
-		f = g_value_get_float(mag);
+		float f = g_value_get_float(mag);
 
 		spectrum_vals[i] = f;
 	}

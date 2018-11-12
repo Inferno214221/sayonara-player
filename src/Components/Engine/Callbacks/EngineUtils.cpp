@@ -398,3 +398,45 @@ void Utils::config_lame(GstElement* lame)
 				 "encoding-engine-quality", 2,
 				 nullptr);
 }
+
+void Utils::print_all_elements(GstBin* bin)
+{
+	if(!bin){
+		return;
+	}
+
+	if(bin->children == 0){
+		return;
+	}
+
+	GstIterator *it = gst_bin_iterate_elements(bin);
+	if(!it){
+		return;
+	}
+	gpointer item = NULL;
+	gboolean done = FALSE;
+
+	while (!done)
+	{
+		switch (gst_iterator_next (it, (GValue*) (&item)))
+		{
+			case GST_ITERATOR_OK:
+				printf("\nitem = %s\n", gst_element_get_name(item));
+				gst_object_unref (item);
+				break;
+			case GST_ITERATOR_RESYNC:
+				gst_iterator_resync (it);
+				break;
+			case GST_ITERATOR_ERROR:
+				done = TRUE;
+				break;
+			case GST_ITERATOR_DONE:
+				done = TRUE;
+				break;
+		}
+	}
+
+//	if(it){
+//		gst_iterator_free (it);
+//	}
+}

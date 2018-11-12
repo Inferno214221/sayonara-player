@@ -32,7 +32,7 @@
 
 struct StreamWriter::Private
 {
-	Engine::Handler*    engine=nullptr;
+	Engine::Handler*	engine=nullptr;
 	StreamHttpParser*	parser=nullptr;
 	StreamDataSender*	sender=nullptr;
 	QTcpSocket*			socket=nullptr;
@@ -56,7 +56,6 @@ StreamWriter::StreamWriter(QTcpSocket* socket, const QString& ip, const MetaData
 	m->parser = new StreamHttpParser();
 	m->ip = ip;
 
-	m->engine = Engine::Handler::instance();
 	m->send_data = false;
 	m->dismissed = false;
 
@@ -71,11 +70,16 @@ StreamWriter::StreamWriter(QTcpSocket* socket, const QString& ip, const MetaData
 
 	connect(socket, &QTcpSocket::disconnected, this, &StreamWriter::socket_disconnected);
 	connect(socket, &QTcpSocket::readyRead, this, &StreamWriter::data_available);
+	connect(Engine::Handler::instance(), &Engine::Handler::destroyed, this, [=](){
+		m->engine = nullptr;
+	});
 }
 
 StreamWriter::~StreamWriter()
 {
-	m->engine->unregister_raw_sound_receiver(this);
+	if(m->engine){
+		m->engine->unregister_raw_sound_receiver(this);
+	}
 
 	if(m->parser){
 		delete m->parser; m->parser = nullptr;
@@ -159,7 +163,10 @@ void StreamWriter::change_track(const MetaData& md){
 
 void StreamWriter::dismiss()
 {
-	m->engine->unregister_raw_sound_receiver(this);
+	if(m->engine){
+		m->engine->unregister_raw_sound_receiver(this);
+	}
+
 	m->dismissed = true;
 }
 
@@ -174,7 +181,10 @@ void StreamWriter::disconnect()
 
 void StreamWriter::socket_disconnected()
 {
-	m->engine->unregister_raw_sound_receiver(this);
+	if(m->engine){
+		m->engine->unregister_raw_sound_receiver(this);
+	}
+
 	emit sig_disconnected(this);
 }
 
@@ -234,7 +244,7 @@ void StreamWriter::data_available()
 
 			if(success){
 				m->send_data = true;
-				m->engine->register_raw_sound_receiver(this);
+				Engine::Handler::instance()->register_raw_sound_receiver(this);
 			}
 
 			emit sig_new_connection(ip);
