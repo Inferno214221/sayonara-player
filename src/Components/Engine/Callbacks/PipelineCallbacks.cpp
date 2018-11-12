@@ -105,6 +105,10 @@ void Callbacks::decodebin_ready(GstElement* source, GstPad* new_src_pad, gpointe
 		}
 	}
 
+	else {
+		sp_log(Log::Debug, "PipelineCallbacks") << "Successfully linked " << gst_element_get_name(source) << " with " << gst_element_get_name(element);
+	}
+
 	gst_object_unref(sink_pad);
 }
 

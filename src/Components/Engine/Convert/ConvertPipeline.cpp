@@ -20,13 +20,14 @@
 
 #include "ConvertPipeline.h"
 #include "Components/Engine/Callbacks/PipelineCallbacks.h"
+#include "Components/Engine/Callbacks/EngineUtils.h"
 
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
 
 using Pipeline::Convert;
-using Pipeline::test_and_error;
-using Pipeline::test_and_error_bool;
+
+namespace EngineUtils=Engine::Utils;
 
 Convert::Convert(Engine::Base* engine, QObject *parent) :
 	Pipeline::Base("ConvertPipeline", engine, parent)
@@ -59,20 +60,18 @@ GstElement*Convert::get_source() const
 
 bool Convert::create_elements()
 {
-	if(!create_element(&_audio_src, "uridecodebin", "src")) return false;
-	if(!create_element(&_audio_convert, "audioconvert", "audio_convert")) return false;
-	if(!create_element(&_lame, "lamemp3enc", "lame")) return false;
-	if(!create_element(&_resampler, "audioresample", "resampler")) return false;
-	if(!create_element(&_xingheader, "xingmux", "xingmux")) return false;
-	if(!create_element(&_audio_sink, "filesink", "filesink")) return false;
+	if(!EngineUtils::create_element(&_audio_src, "uridecodebin", "src")) return false;
+	if(!EngineUtils::create_element(&_audio_convert, "audioconvert", "audio_convert")) return false;
+	if(!EngineUtils::create_element(&_lame, "lamemp3enc", "lame")) return false;
+	if(!EngineUtils::create_element(&_resampler, "audioresample", "resampler")) return false;
+	if(!EngineUtils::create_element(&_xingheader, "xingmux", "xingmux")) return false;
+	if(!EngineUtils::create_element(&_audio_sink, "filesink", "filesink")) return false;
 
 	return true;
 }
 
 bool Convert::add_and_link_elements()
 {
-	bool success;
-
 	gst_bin_add_many(GST_BIN(pipeline()),
 		_audio_src,
 		_audio_convert,
@@ -83,8 +82,8 @@ bool Convert::add_and_link_elements()
 		nullptr
 	);
 
-	success = gst_element_link_many(_audio_convert, _resampler, _lame, _xingheader, _audio_sink, nullptr);
-	return test_and_error_bool(success, "ConvertEngine: Cannot link lame elements");
+	bool success = gst_element_link_many(_audio_convert, _resampler, _lame, _xingheader, _audio_sink, nullptr);
+	return EngineUtils::test_and_error_bool(success, "ConvertEngine: Cannot link lame elements");
 }
 
 bool Convert::configure_elements()

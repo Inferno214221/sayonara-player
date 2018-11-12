@@ -109,3 +109,18 @@ NanoSeconds SeekHandler::seek_nearest(NanoSeconds ns)
 
 	return 0;
 }
+
+NanoSeconds SeekHandler::seek_rel_ms(double percent, MilliSeconds ref_ms)
+{
+	return seek_rel(percent, ref_ms	* 1000000);
+}
+
+NanoSeconds SeekHandler::seek_abs_ms(MilliSeconds ms)
+{
+	return seek_abs(ms * 1000000);
+}
+
+NanoSeconds SeekHandler::seek_nearest_ms(MilliSeconds ms)
+{
+	return seek_nearest(ms * 1000000);
+}

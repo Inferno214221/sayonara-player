@@ -49,7 +49,7 @@ namespace Pipeline
 		bool init(GstState state=GST_STATE_NULL) override;
 		bool set_uri(gchar* uri) override;
 
-		void init_broadcasting();
+		bool init_broadcasting();
 		void set_n_sound_receiver(int num_sound_receiver);
 
 		void set_current_volume(double volume) override;
@@ -68,22 +68,22 @@ namespace Pipeline
 		void stop() override;
 
 		void set_eq_band(int band_name, int val);
-		void init_streamrecorder();
+		bool init_streamrecorder();
 		void set_streamrecorder_path(const QString& session_path);
 
 		NanoSeconds seek_rel(double percent, NanoSeconds ref_ns);
 		NanoSeconds seek_abs(NanoSeconds ns );
 
 	private:
-		void init_equalizer();
-		bool create_elements() override;
-		GstElement* create_audio_sink(const QString& name);
-		bool add_and_link_elements() override;
-		bool configure_elements() override;
-		MilliSeconds get_about_to_finish_time() const override;
+		void			init_equalizer();
+		bool			create_elements() override;
+		GstElement*		create_audio_sink(const QString& name);
+		bool			add_and_link_elements() override;
+		bool			configure_elements() override;
+		MilliSeconds	get_about_to_finish_time() const override;
 
-		void fade_in_handler() override;
-		void fade_out_handler() override;
+		void			fade_in_handler() override;
+		void			fade_out_handler() override;
 
 	protected slots:
 		void s_vol_changed();

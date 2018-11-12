@@ -298,7 +298,7 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 
 // level changed
 gboolean
-Callbacks::level_handler(GstBus * bus, GstMessage * message, gpointer data)
+Callbacks::level_handler(GstBus* bus, GstMessage* message, gpointer data)
 {
 	Q_UNUSED(bus);
 

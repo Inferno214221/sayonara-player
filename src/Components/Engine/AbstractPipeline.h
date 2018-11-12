@@ -46,12 +46,6 @@ namespace Pipeline
 		Http
 	};
 
-	bool
-	test_and_error(void* element, const QString& errorstr);
-
-	bool
-	test_and_error_bool(bool b, const QString& errorstr);
-
 	/**
 	 * @brief The AbstractPipeline class
 	 * @ingroup Engine
@@ -67,12 +61,6 @@ namespace Pipeline
 			void sig_duration_changed();
 
 		protected:
-			bool tee_connect(GstElement* tee,
-							 GstElement* queue,
-							 const QString& queue_name
-			);
-			bool create_element(GstElement** elem, const gchar* elem_name, const gchar* name="");
-
 			virtual bool create_elements()=0;
 			virtual bool add_and_link_elements()=0;
 			virtual bool configure_elements()=0;
@@ -103,19 +91,19 @@ namespace Pipeline
 			virtual GstState	get_state();
 			virtual void		refresh_position();
 
-			virtual void		finished();
-			virtual void		check_about_to_finish();
+			virtual void			finished();
+			virtual void			check_about_to_finish();
 			virtual MilliSeconds	get_time_to_go() const;
-			virtual void		set_data(uchar* data, uint64_t size);
+			virtual void			set_data(uchar* data, uint64_t size);
 
-			virtual bool		set_uri(gchar* uri);
+			virtual bool			set_uri(gchar* uri);
 
-			void                update_duration_ms(MilliSeconds duration_ms, GstElement* src);
+			void					update_duration_ms(MilliSeconds duration_ms, GstElement* src);
 			virtual MilliSeconds	get_duration_ms() const final ;
 			virtual MilliSeconds	get_source_position_ms() const final;
 			virtual MilliSeconds	get_pipeline_position_ms() const final;
 
-			bool 				has_element(GstElement* e) const;
+			bool					has_element(GstElement* e) const;
 	};
 }
 

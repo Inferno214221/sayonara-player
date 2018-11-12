@@ -21,6 +21,7 @@
 #include "PlaybackEngine.h"
 #include "PlaybackPipeline.h"
 #include "StreamRecorder.h"
+#include "Callbacks/EngineUtils.h"
 #include "Components/Engine/Callbacks/EngineCallbacks.h"
 
 #include "Utils/MetaData/MetaData.h"
@@ -33,6 +34,7 @@
 #include <list>
 
 using Engine::Playback;
+namespace EngineUtils=Engine::Utils;
 
 /**
  * @brief The GaplessState enum
