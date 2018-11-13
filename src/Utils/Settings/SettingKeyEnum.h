@@ -146,7 +146,7 @@ enum class SettingKey : unsigned short
 	Lyrics_Server,
 
 	Cover_Server,
-	Cover_LoadFromFile,
+	Cover_FetchFromWWW,
 	Cover_StartSearch,
 	Icon_Theme,
 	Icon_ForceInDarkTheme,
