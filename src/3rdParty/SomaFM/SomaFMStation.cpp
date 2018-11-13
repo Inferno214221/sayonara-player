@@ -53,13 +53,13 @@ struct SomaFM::Station::Private
 
 	void parse_station_name()
 	{
-		QString pattern("<h3>(.*)</h3>");
+		QString pattern("<h3>(.*).*</h3>");
 		QRegExp re(pattern);
 		re.setMinimal(true);
 
 		int idx = re.indexIn(content);
 		if(idx > 0){
-			station_name = Util::cvt_str_to_first_upper(re.cap(1));
+			station_name = Util::cvt_str_to_first_upper(re.cap(1)).toLocal8Bit();
 		}
 	}
 
@@ -103,7 +103,7 @@ struct SomaFM::Station::Private
 
 		int idx = re.indexIn(content);
 		if(idx > 0){
-			description = re.cap(1);
+			description = re.cap(1).toLocal8Bit();
 		}
 	}
 
