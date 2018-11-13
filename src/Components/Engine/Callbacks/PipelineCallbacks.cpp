@@ -76,6 +76,10 @@ void Callbacks::decodebin_ready(GstElement* source, GstPad* new_src_pad, gpointe
 		return;
 	}
 
+	gst_pad_set_active(new_src_pad, true);
+	gst_pad_set_active(sink_pad, true);
+
+
 	GstPadLinkReturn pad_link_return = gst_pad_link(new_src_pad, sink_pad);
 
 	if(pad_link_return != GST_PAD_LINK_OK)

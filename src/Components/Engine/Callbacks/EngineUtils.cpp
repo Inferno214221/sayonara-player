@@ -359,8 +359,12 @@ bool Utils::link_elements(const QList<GstElement*>& elements)
 
 void Utils::add_elements(GstBin* bin, const QList<GstElement*>& elements)
 {
-	for(GstElement* e : elements){
-		gst_bin_add(bin, e);
+	for(GstElement* e : elements)
+	{
+		bool success = gst_bin_add(bin, e);
+
+		QString name(gst_element_get_name(e));
+		test_and_error_bool(success, "Cannot add element to pipeline" + name);
 	}
 }
 
@@ -375,7 +379,7 @@ void Utils::config_queue(GstElement* queue)
 {
 	g_object_set(G_OBJECT(queue),
 				 "flush-on-eos", true,
-				 "max-size-time", 100 * GST_MSECOND,
+				 "max-size-time", 1000 * GST_MSECOND,
 				 "silent", true,
 				 nullptr);
 }
@@ -401,42 +405,37 @@ void Utils::config_lame(GstElement* lame)
 
 void Utils::print_all_elements(GstBin* bin)
 {
-	if(!bin){
-		return;
-	}
 
-	if(bin->children == 0){
-		return;
-	}
+}
 
-	GstIterator *it = gst_bin_iterate_elements(bin);
-	if(!it){
-		return;
-	}
-	gpointer item = NULL;
-	gboolean done = FALSE;
+bool Utils::remove_element(GstBin* bin, GstElement* element)
+{
+	return gst_bin_remove(bin, element);
+}
 
-	while (!done)
+bool Utils::unlink_element(GstElement* element1, GstElement* element2)
+{
+	gst_element_unlink(element1, element2);
+	return true;
+}
+
+
+void Utils::send_signal(GstElement* element, Utils::SignalType type)
+{
+	GstEvent* e;
+	switch(type)
 	{
-		switch (gst_iterator_next (it, (GValue*) (&item)))
-		{
-			case GST_ITERATOR_OK:
-				printf("\nitem = %s\n", gst_element_get_name(item));
-				gst_object_unref (item);
-				break;
-			case GST_ITERATOR_RESYNC:
-				gst_iterator_resync (it);
-				break;
-			case GST_ITERATOR_ERROR:
-				done = TRUE;
-				break;
-			case GST_ITERATOR_DONE:
-				done = TRUE;
-				break;
-		}
+		case Eos:
+			e = gst_event_new_eos();
+			break;
+		case FlushStart:
+			e = gst_event_new_flush_start();
+			break;
+		case FlushStop:
+			e = gst_event_new_flush_stop(true);
+			break;
+		default: break;
 	}
 
-//	if(it){
-//		gst_iterator_free (it);
-//	}
+	gst_element_send_event(element, e);
 }

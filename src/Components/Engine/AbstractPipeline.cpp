@@ -286,6 +286,10 @@ void Base::pause()
 
 void Base::stop()
 {
+	EngineUtils::send_signal(m->pipeline, EngineUtils::Eos);
+	EngineUtils::send_signal(m->pipeline, EngineUtils::FlushStart);
+	EngineUtils::send_signal(m->pipeline, EngineUtils::FlushStop);
+
 	EngineUtils::set_state(m->pipeline, GST_STATE_NULL);
 
 	m->position_source_ms = 0;

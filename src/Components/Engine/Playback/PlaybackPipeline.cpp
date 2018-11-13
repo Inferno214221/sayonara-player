@@ -184,15 +184,6 @@ bool Playback::create_elements()
 		return false;
 	}
 
-	// spectrum branch
-	if(	EngineUtils::create_element(&m->visualizer_queue, QUEUE, "spectrum_queue") &&
-		EngineUtils::create_element(&m->level, "level") &&
-		EngineUtils::create_element(&m->spectrum, "spectrum") &&
-		EngineUtils::create_element(&m->visualizer_sink,"fakesink", "spectrum_sink"))
-	{
-		EngineUtils::create_bin(&m->visualizer_bin, {m->visualizer_queue, m->level, m->spectrum, m->visualizer_sink}, "visualizer");
-	}
-
 	return true;
 }
 
@@ -201,12 +192,12 @@ GstElement* Playback::create_audio_sink(const QString& name)
 {
 	GstElement* ret=nullptr;
 
-	if(name == "pulse"){
+	if(name == "pulse" && 0){
 		sp_log(Log::Debug, this) << "Create pulseaudio sink";
 		EngineUtils::create_element(&ret, "pulsesink", name.toLocal8Bit().data());
 	}
 
-	else if(name == "alsa"){
+	else if(name == "alsa" && 0){
 		sp_log(Log::Debug, this) << "Create alsa sink";
 		EngineUtils::create_element(&ret, "alsasink", name.toLocal8Bit().data());
 	}
@@ -224,7 +215,7 @@ bool Playback::add_and_link_elements()
 {
 	{ // before tee
 		gst_bin_add_many(GST_BIN(pipeline()),
-						 m->audio_src, m->audio_convert, m->pb_equalizer, m->tee,
+						 m->audio_convert, m->pb_equalizer, m->tee,
 						 nullptr);
 
 		bool success = gst_element_link_many(m->audio_convert, m->pb_equalizer, m->tee,  nullptr);
@@ -251,61 +242,22 @@ bool Playback::add_and_link_elements()
 		}
 	}
 
-	if(m->visualizer_bin)
-	{
-		gst_bin_add(GST_BIN(pipeline()), m->visualizer_bin);
-		bool success = EngineUtils::tee_connect(m->tee, m->visualizer_bin, "Visualizer");
-		if(!success){
-			gst_bin_remove(GST_BIN(pipeline()), m->visualizer_bin);
-			gst_object_unref(m->visualizer_bin);
-			m->visualizer_bin = nullptr;
-		}
-	}
-
 	return true;
 }
 
 
 bool Playback::configure_elements()
 {
-	guint64 interval = 25 * GST_MSECOND;
-	gint threshold = -75;
-
 	g_object_set(G_OBJECT(m->tee),
 				 "silent", true,
 				 "allow-not-linked", true,
 				 nullptr);
-
-	g_object_set (G_OBJECT (m->audio_src),
-				  "use-buffering", true,
-				  "ring-buffer-max-size", 10000,
-				  "buffer-duration", 10000 * GST_MSECOND,
-				  nullptr);
-
-	g_object_set (G_OBJECT (m->level),
-				  "post-messages", true,
-				  "interval", interval,
-				  nullptr);
-
-	int bins = _settings->get<Set::Engine_SpectrumBins>();
-	g_object_set (G_OBJECT (m->spectrum),
-				  "post-messages", true,
-				  "interval", interval,
-				  "bands", bins,
-				  "threshold", threshold,
-				  "message-phase", false,
-				  "message-magnitude", true,
-				  "multi-channel", false,
-				  nullptr);
 
 	m->init_equalizer();
 
 	EngineUtils::config_queue(m->pb_queue);
 	EngineUtils::config_queue(m->visualizer_queue);
 	EngineUtils::config_sink(m->visualizer_sink);
-
-	g_signal_connect (m->audio_src, "pad-added", G_CALLBACK (Callbacks::decodebin_ready), m->audio_convert);
-	g_signal_connect (m->audio_src, "source-setup", G_CALLBACK (Callbacks::source_ready), nullptr);
 
 	return true;
 }
@@ -419,8 +371,6 @@ void Playback::play()
 
 void Playback::stop()
 {
-	EngineUtils::print_all_elements(GST_BIN(m->audio_src));
-
 	Base::stop();
 	abort_delayed_playing();
 	abort_fader();
@@ -446,7 +396,11 @@ void Playback::s_mute_changed()
 
 void Playback::set_visualizer_enabled(bool b)
 {
-	Q_UNUSED(b)
+	if(b && !m->visualizer_bin)
+	{
+		init_visualizer();
+	}
+
 	gst_base_transform_set_passthrough(GST_BASE_TRANSFORM(m->level), !_settings->get<Set::Engine_ShowLevel>());
 	gst_base_transform_set_passthrough(GST_BASE_TRANSFORM(m->spectrum), !_settings->get<Set::Engine_ShowSpectrum>());
 }
@@ -501,9 +455,76 @@ bool Playback::set_uri(gchar* uri)
 {
 	stop();
 
-	g_object_set(G_OBJECT(m->audio_src), "uri", uri, nullptr);
+	EngineUtils::unlink_element(m->audio_src, m->audio_convert);
+	EngineUtils::remove_element(GST_BIN(pipeline()), m->audio_src);
+
+	if(!EngineUtils::create_element(&m->audio_src, "uridecodebin", "src")) {
+		return false;
+	}
+
+	gst_bin_add_many(GST_BIN(pipeline()), m->audio_src, nullptr);
+	EngineUtils::set_state(pipeline(), GST_STATE_NULL);
+
+	g_signal_connect (m->audio_src, "pad-added", G_CALLBACK (Callbacks::decodebin_ready), m->audio_convert);
+	g_signal_connect (m->audio_src, "source-setup", G_CALLBACK (Callbacks::source_ready), nullptr);
+
+	g_object_set (G_OBJECT (m->audio_src),
+				  "use-buffering", false,
+				  "ring-buffer-max-size", 0,
+				  //"buffer-duration", 10000 * GST_MSECOND,
+				  "uri", uri,
+				  nullptr);
 
 	gst_element_set_state(pipeline(), GST_STATE_PAUSED);
+
+	return true;
+}
+
+bool Playback::init_visualizer()
+{
+	bool success = false;
+	// spectrum branch
+	if(	EngineUtils::create_element(&m->visualizer_queue, QUEUE, "spectrum_queue") &&
+		EngineUtils::create_element(&m->level, "level") &&
+		EngineUtils::create_element(&m->spectrum, "spectrum") &&
+		EngineUtils::create_element(&m->visualizer_sink,"fakesink", "spectrum_sink"))
+	{
+		success = EngineUtils::create_bin(&m->visualizer_bin, {m->visualizer_queue, m->level, m->spectrum, m->visualizer_sink}, "visualizer");
+	}
+
+	if(!success){
+		return false;
+	}
+
+	gst_bin_add(GST_BIN(pipeline()), m->visualizer_bin);
+	success = EngineUtils::tee_connect(m->tee, m->visualizer_bin, "Visualizer");
+	if(!success){
+		gst_bin_remove(GST_BIN(pipeline()), m->visualizer_bin);
+		gst_object_unref(m->visualizer_bin);
+		m->visualizer_bin = nullptr;
+		return false;
+	}
+
+	guint64 interval = 25 * GST_MSECOND;
+	gint threshold = -75;
+
+	g_object_set (G_OBJECT (m->level),
+			  "post-messages", true,
+			  "interval", interval,
+			  nullptr);
+
+	int bins = _settings->get<Set::Engine_SpectrumBins>();
+	g_object_set (G_OBJECT (m->spectrum),
+				  "post-messages", true,
+				  "interval", interval,
+				  "bands", bins,
+				  "threshold", threshold,
+				  "message-phase", false,
+				  "message-magnitude", true,
+				  "multi-channel", false,
+				  nullptr);
+
+	EngineUtils::config_queue(m->visualizer_queue);
 
 	return true;
 }

@@ -49,6 +49,7 @@ namespace Pipeline
 		bool init(GstState state=GST_STATE_NULL) override;
 		bool set_uri(gchar* uri) override;
 
+		bool init_visualizer();
 		bool init_broadcasting();
 		void set_n_sound_receiver(int num_sound_receiver);
 
