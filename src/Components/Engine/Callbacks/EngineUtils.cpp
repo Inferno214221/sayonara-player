@@ -5,6 +5,7 @@
 #include <QStringList>
 
 #include <gst/gst.h>
+#include <gst/base/gstbasetransform.h>
 
 using namespace Engine;
 
@@ -106,16 +107,20 @@ bool Utils::tee_connect(GstElement* tee, GstElement* queue, const QString& queue
 
 bool Utils::has_element(GstBin* bin, GstElement* element)
 {
-	if(!element){
+	if(!bin || !element){
 		return true;
+	}
+
+	if(!GST_IS_OBJECT(bin) || !GST_IS_OBJECT(element)){
+		return false;
 	}
 
 	GstObject* o = GST_OBJECT(element);
 	GstObject* parent = nullptr;
 
-	while(o)
+	while(o && GST_IS_OBJECT(o))
 	{
-		if( o == GST_OBJECT(bin))
+		if(o == GST_OBJECT(bin))
 		{
 			if( o != GST_OBJECT(element) )
 			{
@@ -260,19 +265,26 @@ bool Utils::set_state(GstElement* element, GstState state)
 	return (ret != GST_STATE_CHANGE_FAILURE);
 }
 
+
+bool Utils::check_plugin_available(const gchar* str)
+{
+	GstRegistry* reg = gst_registry_get();
+	GstPlugin* plugin = gst_registry_find_plugin(reg, str);
+
+	bool success = (plugin != nullptr);
+	gst_object_unref(plugin);
+
+	return success;
+}
+
+bool Utils::check_pitch_available()
+{
+	return check_plugin_available("soundtouch");
+}
+
 bool Utils::check_lame_available()
 {
-	static bool available=false;
-	if(available){
-		return true;
-	}
-
-	GstElement* e;
-	bool success = create_element(&e, "lamemp3enc");
-	available = (success && e);
-
-	gst_object_unref(e);
-	return available;
+	return check_plugin_available("lame");
 }
 
 bool Utils::create_ghost_pad(GstBin* bin, GstElement* e)
@@ -293,7 +305,7 @@ bool Utils::create_ghost_pad(GstBin* bin, GstElement* e)
 		return false;
 	}
 
-	//gst_object_unref(pad);
+	gst_object_unref(pad);
 	return true;
 }
 
@@ -371,11 +383,11 @@ void Utils::unref_elements(const QList<GstElement*>& elements)
 	}
 }
 
-void Utils::config_queue(GstElement* queue)
+void Utils::config_queue(GstElement* queue, gulong max_time_ms)
 {
 	g_object_set(G_OBJECT(queue),
 				 "flush-on-eos", true,
-				 "max-size-time", 100 * GST_MSECOND,
+				 "max-size-time", max_time_ms * GST_MSECOND,
 				 "silent", true,
 				 nullptr);
 }
@@ -399,44 +411,13 @@ void Utils::config_lame(GstElement* lame)
 				 nullptr);
 }
 
-void Utils::print_all_elements(GstBin* bin)
+
+void Utils::set_passthrough(GstElement* e, bool b)
 {
-	if(!bin){
-		return;
-	}
-
-	if(bin->children == 0){
-		return;
-	}
-
-	GstIterator *it = gst_bin_iterate_elements(bin);
-	if(!it){
-		return;
-	}
-	gpointer item = NULL;
-	gboolean done = FALSE;
-
-	while (!done)
+	if(e && GST_IS_BASE_TRANSFORM(e))
 	{
-		switch (gst_iterator_next (it, (GValue*) (&item)))
-		{
-			case GST_ITERATOR_OK:
-				printf("\nitem = %s\n", gst_element_get_name(item));
-				gst_object_unref (item);
-				break;
-			case GST_ITERATOR_RESYNC:
-				gst_iterator_resync (it);
-				break;
-			case GST_ITERATOR_ERROR:
-				done = TRUE;
-				break;
-			case GST_ITERATOR_DONE:
-				done = TRUE;
-				break;
-		}
+		gst_base_transform_set_passthrough(GST_BASE_TRANSFORM(e), b);
+		gst_base_transform_set_prefer_passthrough(GST_BASE_TRANSFORM(e), b);
 	}
-
-//	if(it){
-//		gst_iterator_free (it);
-//	}
 }
+

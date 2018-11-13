@@ -366,7 +366,7 @@ Callbacks::spectrum_handler(GstBus* bus, GstMessage* message, gpointer data)
 {
 	Q_UNUSED(bus);
 
-	static SpectrumList		spectrum_vals;
+	static SpectrumList	spectrum_vals;
 
 	Playback* engine = static_cast<Playback*>(data);
 	if(!engine) {

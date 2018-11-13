@@ -34,13 +34,11 @@ SpeedHandler::~SpeedHandler() {}
 void SpeedHandler::set_speed(float speed, double pitch, bool preserve_pitch)
 {
 	Settings* s = Settings::instance();
-	if(!s->get<Set::Engine_SpeedActive>())
-	{
+	if(!s->get<Set::Engine_SpeedActive>()) {
 		return;
 	}
 
 	GstElement* pitch_element = get_pitch_element();
-
 	if(!pitch_element){
 		return;
 	}
