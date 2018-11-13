@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "PlaylistContextMenu.h"
 #include "BookmarksMenu.h"
 #include "GUI/Utils/RatingLabel.h"
@@ -28,9 +26,9 @@
 #include "Utils/Language.h"
 #include "Utils/MetaData/MetaData.h"
 
-
 struct PlaylistContextMenu::Private
 {
+	QAction*		current_track_action=nullptr;
 	BookmarksMenu*	bookmarks_menu=nullptr;
 	QAction*		bookmarks_action=nullptr;
 	QAction*		rating_action=nullptr;
@@ -38,6 +36,9 @@ struct PlaylistContextMenu::Private
 
 	Private(PlaylistContextMenu* parent)
 	{
+		current_track_action = new QAction(parent);
+		parent->addActions({current_track_action});
+
 		rating_menu = new QMenu(parent);
 		rating_action = parent->addMenu(rating_menu);
 
@@ -60,6 +61,7 @@ PlaylistContextMenu::PlaylistContextMenu(QWidget *parent) :
 	m->rating_menu->addActions(rating_actions);
 
 	connect(m->bookmarks_menu, &BookmarksMenu::sig_bookmark_pressed, this, &PlaylistContextMenu::bookmark_pressed);
+	connect(m->current_track_action, &QAction::triggered, this, &PlaylistContextMenu::sig_jump_to_current_track);
 
 	skin_changed();
 }
@@ -77,6 +79,10 @@ PlaylistContextMenu::Entries PlaylistContextMenu::get_entries() const
 		entries |= PlaylistContextMenu::EntryRating;
 	}
 
+	if(m->current_track_action->isVisible()){
+		entries |= PlaylistContextMenu::EntryCurrentTrack;
+	}
+
 	return entries;
 }
 
@@ -86,6 +92,7 @@ void PlaylistContextMenu::show_actions(PlaylistContextMenu::Entries entries)
 
 	m->rating_action->setVisible(entries & PlaylistContextMenu::EntryRating);
 	m->bookmarks_action->setVisible((entries & PlaylistContextMenu::EntryBookmarks) && m->bookmarks_menu->has_bookmarks());
+	m->current_track_action->setVisible(entries & PlaylistContextMenu::EntryCurrentTrack);
 }
 
 void PlaylistContextMenu::set_rating(Rating rating)
@@ -130,6 +137,7 @@ void PlaylistContextMenu::language_changed()
 {
 	LibraryContextMenu::language_changed();
 	m->rating_action->setText(Lang::get(Lang::Rating));
+	m->current_track_action->setText(tr("Jump to current track"));
 }
 
 void PlaylistContextMenu::skin_changed()

@@ -59,8 +59,6 @@ public:
 	virtual ~PlaylistView();
 
 	void goto_row(int row);
-
-
 	void delete_selected_tracks();
 
 	/**
@@ -115,15 +113,16 @@ private slots:
 	void move_selected_rows_up();
 	void move_selected_rows_down();
 	void play_selected_track();
+	void goto_to_current_track();
 
 
 protected:
 	// SayonaraSelectionView interface
 	int index_by_model_index(const QModelIndex& idx) const override;
 	ModelIndexRange model_indexrange_by_index(int idx) const override;
-	bool viewportEvent(QEvent *event) override;
 
 	void skin_changed() override;
+	bool viewportEvent(QEvent *event) override;
 };
 
 #endif /* PlaylistView_H_ */
