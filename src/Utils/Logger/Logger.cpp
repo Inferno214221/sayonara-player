@@ -229,8 +229,13 @@ Logger& Logger::operator <<(const QSize& size)
 
 Logger& Logger::operator <<(const QRect& r)
 {
-	(*this) << "Rect(l:" << r.left() << ", r:" << r.right()
-			<< ", w:" << r.width() << ", h:" << r.height();
+	(*this) << "Rect("
+			<< "left:" << r.left()
+			<< ", right:" << r.right()
+			<< ", top:" << r.top()
+			<< ", bottom:" << r.bottom()
+			<< ", width:" << r.width()
+			<< ", heigh:" << r.height();
 	return *this;
 }
 

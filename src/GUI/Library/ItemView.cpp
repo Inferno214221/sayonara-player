@@ -272,27 +272,16 @@ void ItemView::show_clear_button(bool visible)
 		});
 	}
 
-	const int h = 22;
-
-	int y = this->height() - h - 1;
-	int w = this->width() - 2;
-
-	if(this->verticalScrollBar() && this->verticalScrollBar()->isVisible())
-	{
-		w -= this->verticalScrollBar()->width();
+	{ // little hack to use vieport_height() and ..width() method
+		m->btn_clear_selection->setVisible(false);
 	}
 
-	if(this->horizontalScrollBar() && this->horizontalScrollBar()->isVisible())
-	{
-		y -= this->horizontalScrollBar()->height();
-	}
+	m->btn_clear_selection->setGeometry(
+			1, viewport_height() - m->btn_clear_selection->height() - 2,
+			viewport_width() - 2, m->btn_clear_selection->height()
+	);
 
 	m->btn_clear_selection->setVisible(visible);
-	m->btn_clear_selection->setGeometry(1, y, w, h);
-
-	int mini_searcher_padding = (visible) ? h : 0;
-	SearchableTableView::set_mini_searcher_padding(mini_searcher_padding);
-
 }
 
 void ItemView::use_clear_button(bool yesno)
@@ -607,3 +596,14 @@ void ItemView::resizeEvent(QResizeEvent *event)
 	}
 }
 
+
+int ItemView::viewport_height() const
+{
+	int h = SearchableTableView::viewport_height();
+
+	if(m->btn_clear_selection && m->btn_clear_selection->isVisible()) {
+		return h - (m->btn_clear_selection->height() + 5);
+	}
+
+	return h;
+}

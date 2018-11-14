@@ -139,6 +139,7 @@ void PlaylistView::init_context_menu()
 
 	m->context_menu = new PlaylistContextMenu(this);
 
+	connect(m->context_menu, &LibraryContextMenu::sig_refresh_clicked, m->model, &PlaylistItemModel::refresh_data);
 	connect(m->context_menu, &LibraryContextMenu::sig_edit_clicked, this, [=](){ show_edit(); });
 	connect(m->context_menu, &LibraryContextMenu::sig_info_clicked, this, [=](){ show_info(); });
 	connect(m->context_menu, &LibraryContextMenu::sig_lyrics_clicked, this, [=](){ show_lyrics(); });
@@ -324,6 +325,7 @@ void PlaylistView::delete_selected_tracks()
 	emit sig_delete_tracks(selections);
 }
 
+
 void PlaylistView::clear()
 {
 	clear_selection();
@@ -351,7 +353,7 @@ void PlaylistView::contextMenuEvent(QContextMenuEvent* e)
 
 	LibraryContextMenu::Entries entry_mask = 0;
 	if(row_count() > 0)	{
-		entry_mask = (LibraryContextMenu::EntryClear);
+		entry_mask = (LibraryContextMenu::EntryClear | LibraryContextMenu::EntryRefresh);
 	}
 
 	IndexSet selections = selected_items();
@@ -371,7 +373,6 @@ void PlaylistView::contextMenuEvent(QContextMenuEvent* e)
 		entry_mask |= LibraryContextMenu::EntryEdit;
 		entry_mask |= PlaylistContextMenu::EntryRating;
 		entry_mask |= LibraryContextMenu::EntryDelete;
-
 
 		if(selections.size() == 1)
 		{

@@ -142,6 +142,7 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 	setAcceptDrops(true);
 
 	Set::listen<Set::Lib_ShowAlbumCovers>(this, &GUI_LocalLibrary::switch_album_view);
+	Set::listen<Set::Lib_ShowFilterExtBar>(this, &GUI_LocalLibrary::tracks_loaded);
 
 	ui->sw_status->setVisible(false);
 

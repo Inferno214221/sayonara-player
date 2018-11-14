@@ -54,10 +54,6 @@ void GUI_Crossfader::init_ui()
 		gapless_active = false;
 	}
 
-	if(!gapless_active && !crossfader_active){
-		crossfader_active = true;
-	}
-
 	ui->cb_gapless->setChecked(gapless_active);
 	ui->cb_crossfader->setChecked(crossfader_active);
 	ui->sli_crossfader->setValue(val);

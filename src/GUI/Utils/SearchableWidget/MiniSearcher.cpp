@@ -19,8 +19,10 @@
  */
 
 #include "MiniSearcher.h"
-#include "Utils/Language.h"
+#include "SearchableView.h"
 #include "GUI/Utils/GuiUtils.h"
+#include "Utils/Language.h"
+#include "Utils/Logger/Logger.h"
 
 #include <QBoxLayout>
 #include <QScrollBar>
@@ -29,7 +31,6 @@
 #include <QKeyEvent>
 #include <QFocusEvent>
 #include <QLabel>
-
 
 bool MiniSearchEventFilter::eventFilter(QObject* o, QEvent* e)
 {
@@ -65,45 +66,66 @@ struct MiniSearcher::Private
 {
 	QMap<QChar, QString>    triggers;
 
+	SearchableViewInterface*	svi=nullptr;
 	QLineEdit*              line_edit=nullptr;
-	QAbstractItemView*		parent=nullptr;
 	QLabel*					label=nullptr;
 
-	int						padding;
+	int						max_width;
 
-	Private() :
-		padding(0)
-	{}
+	Private(MiniSearcher* parent, SearchableViewInterface* svi) :
+		svi(svi),
+		max_width(150)
+	{
+		label = new QLabel(parent);
+		line_edit = new QLineEdit(parent);
+		line_edit->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+
+		reset_tooltip();
+	}
+
+	void reset_tooltip()
+	{
+		line_edit->setToolTip(
+			"<b>" + tr("Arrow up") + "</b> = " + tr("Previous search result") + "<br/>" +
+			"<b>" + tr("Arrow down") + "</b> = " + tr("Next search result") + "<br/>" +
+			"<b>" + Lang::get(Lang::Key_Escape) + "</b> = " + Lang::get(Lang::Close)
+		);
+	}
+
+	void add_tooltip_text(const QString& str)
+	{
+		if(str.isEmpty()){
+			return;
+		}
+
+		QString tooltip = line_edit->toolTip();
+		tooltip += "<br /><br />" + str;
+		line_edit->setToolTip(tooltip);
+	}
 };
 
 
-MiniSearcher::MiniSearcher(QAbstractItemView* parent) :
-	WidgetTemplate<QFrame>(parent)
+MiniSearcher::MiniSearcher(SearchableViewInterface* parent) :
+	WidgetTemplate<QFrame>(parent->view())
 {
-	m = Pimpl::make<MiniSearcher::Private>();
-	m->parent = parent;
+	m = Pimpl::make<MiniSearcher::Private>(this, parent);
 
 	QLayout* layout = new QBoxLayout(QBoxLayout::LeftToRight, this);
-	this->setLayout(layout);
-	this->setMaximumWidth(150);
-
-	MiniSearchEventFilter* msef = new MiniSearchEventFilter(this);
-
-	m->label = new QLabel(this);
-	m->line_edit = new QLineEdit(this);
-	m->line_edit->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-	m->line_edit->installEventFilter(msef);
-	reset_tooltip();
-
 	layout->setContentsMargins(5, 5, 5, 5);
 	layout->addWidget(m->line_edit);
 	layout->addWidget(m->label);
+	setLayout(layout);
+
+	MiniSearchEventFilter* msef = new MiniSearchEventFilter(this);
+	m->line_edit->installEventFilter(msef);
+
+	connect(msef, &MiniSearchEventFilter::sig_tab_pressed, this, &MiniSearcher::next_result);
+	connect(msef, &MiniSearchEventFilter::sig_focus_lost, this, &MiniSearcher::hide);
 
 	connect(m->line_edit, &QLineEdit::textChanged, this, &MiniSearcher::sig_text_changed);
-	connect(msef, &MiniSearchEventFilter::sig_tab_pressed, this, &MiniSearcher::right_clicked);
-	connect(msef, &MiniSearchEventFilter::sig_focus_lost, this, &MiniSearcher::line_edit_focus_lost);
 
-	this->hide();
+	this->setMaximumWidth(m->max_width);
+	hide();
 }
 
 MiniSearcher::~MiniSearcher() {}
@@ -141,19 +163,13 @@ bool MiniSearcher::is_initiator(QKeyEvent* event) const
 	return false;
 }
 
-
-void MiniSearcher::line_edit_focus_lost()
-{
-	this->setVisible(false);
-}
-
-void MiniSearcher::left_clicked()
+void MiniSearcher::prev_result()
 {
 	emit sig_find_prev_row();
 	m->line_edit->setFocus();
 }
 
-void MiniSearcher::right_clicked()
+void MiniSearcher::next_result()
 {
 	emit sig_find_next_row();
 	m->line_edit->setFocus();
@@ -161,19 +177,8 @@ void MiniSearcher::right_clicked()
 
 void MiniSearcher::language_changed()
 {
-	reset_tooltip();
+	m->reset_tooltip();
 	set_extra_triggers(m->triggers);
-}
-
-void MiniSearcher::reset()
-{
-	m->line_edit->clear();
-
-	if(this->isVisible()){
-		m->parent->setFocus();
-	}
-
-	this->hide();
 }
 
 bool MiniSearcher::check_and_init(QKeyEvent* event)
@@ -190,24 +195,33 @@ bool MiniSearcher::check_and_init(QKeyEvent* event)
 	return false;
 }
 
+void MiniSearcher::reset()
+{
+	m->line_edit->clear();
+
+	if(this->isVisible() && this->parentWidget()){
+		parentWidget()->setFocus();
+	}
+
+	this->hide();
+}
 
 void MiniSearcher::set_extra_triggers(const QMap<QChar, QString>& triggers)
 {
-	reset_tooltip();
+	m->reset_tooltip();
 
 	m->triggers = triggers;
-	QString tooltip;
 
+	QStringList tooltips;
 	for(auto it=triggers.cbegin(); it != triggers.cend(); it++)
 	{
-		tooltip += "<b>" + QString(it.key()) + "</b> = " + it.value() + "<br />";
+		tooltips << "<b>" + QString(it.key()) + "</b> = " + it.value();
 	}
 
-	add_tooltip_text(tooltip);
+	m->add_tooltip_text(tooltips.join("<br/>"));
 }
 
-
-QString MiniSearcher::get_current_text()
+QString MiniSearcher::current_text()
 {
 	return m->line_edit->text();
 }
@@ -223,32 +237,6 @@ void MiniSearcher::set_number_results(int results)
 	m->label->setText(text);
 	m->label->show();
 }
-
-void MiniSearcher::add_tooltip_text(const QString& str)
-{
-	QString tooltip = m->line_edit->toolTip();
-	tooltip += "<br /><br />" + str;
-	m->line_edit->setToolTip(tooltip);
-}
-
-void MiniSearcher::reset_tooltip()
-{
-	m->line_edit->setToolTip(
-		"<b>" + tr("Arrow up") + "</b> = " + tr("Previous search result") + "<br/>" +
-		"<b>" + tr("Arrow down") + "</b> = " + tr("Next search result") + "<br/>" +
-		"<b>" + Lang::get(Lang::Key_Escape) + "</b> = " + Lang::get(Lang::Close)
-	);
-}
-
-
-void MiniSearcher::set_padding(int padding)
-{
-	m->padding = padding;
-
-	QRect geo = calc_geo();
-	this->setGeometry(geo);
-}
-
 
 void MiniSearcher::handle_key_press(QKeyEvent *e)
 {
@@ -280,7 +268,7 @@ void MiniSearcher::keyPressEvent(QKeyEvent* event)
 		case Qt::Key_Down:
 			if(this->isVisible())
 			{
-				right_clicked();
+				next_result();
 				event->accept();
 			}
 			break;
@@ -288,7 +276,7 @@ void MiniSearcher::keyPressEvent(QKeyEvent* event)
 		case Qt::Key_Up:
 			if(this->isVisible())
 			{
-				left_clicked();
+				prev_result();
 				event->accept();
 			}
 			break;
@@ -301,35 +289,31 @@ void MiniSearcher::keyPressEvent(QKeyEvent* event)
 
 QRect MiniSearcher::calc_geo() const
 {
-	QScrollBar* v_scrollbar = m->parent->verticalScrollBar();
-	QScrollBar* h_scrollbar = m->parent->horizontalScrollBar();
+	int par_width = m->svi->viewport_width();
+	int par_height = m->svi->viewport_height();
 
-	int sb_width = v_scrollbar->width();
-	int sb_height = h_scrollbar->height();
+	int target_width = m->max_width;
+	int target_height = std::max(35, 10 + m->line_edit->height());
 
-	int par_width = m->parent->width();
-	int par_height = m->parent->height();
-
-	if(!v_scrollbar->isVisible()) sb_width = 0;
-	if(!h_scrollbar->isVisible()) sb_height = 0;
-
-	par_width -= sb_width;
-	par_height -= sb_height;
-
-	int target_width = 150;
-	int target_height = 35;
 	int new_x = par_width - (target_width + 5);
-	int new_y = par_height - (target_height + 5 + m->padding);
+	int new_y = par_height - (target_height + 5);
 
-	return QRect(new_x, new_y, target_width, target_height);
+	QRect r(new_x, new_y, target_width, target_height);
+	sp_log(Log::Develop, this) << "Show Minisearcher at " << r;
+
+	return r;
 }
 
 void MiniSearcher::showEvent(QShowEvent* e)
 {
-	QRect geo = calc_geo();
-	this->setGeometry(geo);
-
 	WidgetTemplate<QFrame>::showEvent(e);
+	this->setGeometry(calc_geo());
+}
+
+void MiniSearcher::hideEvent(QHideEvent* e)
+{
+	WidgetTemplate<QFrame>::hideEvent(e);
+	sp_log(Log::Develop, this) << "Hide Minisearcher";
 }
 
 

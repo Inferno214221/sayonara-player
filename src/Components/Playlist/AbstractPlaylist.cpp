@@ -194,6 +194,18 @@ void Base::replace_track(int idx, const MetaData& md)
 	emit sig_items_changed( index() );
 }
 
+
+void Base::enable_all()
+{
+	for(auto it=m->v_md.begin(); it != m->v_md.end(); it++)
+	{
+		it->is_disabled = false;
+	}
+
+	set_changed(true);
+}
+
+
 int Base::index() const
 {
 	return m->playlist_idx;
@@ -338,15 +350,12 @@ const MetaData& Base::metadata(int idx) const
 	return m->v_md[idx];
 }
 
-
 MetaDataList& Base::metadata()
 {
 	return m->v_md;
 }
 
-
 MetaData& Base::metadata(int idx)
 {
 	return m->v_md[idx];
 }
-

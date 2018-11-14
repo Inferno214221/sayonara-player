@@ -108,7 +108,6 @@ namespace Library
 
 		bool is_valid_drag_position(const QPoint &p) const override;
 
-
 	protected:
 		// Events implemented in LibraryViewEvents.cpp
 		virtual void mousePressEvent(QMouseEvent* event) override;
@@ -141,6 +140,8 @@ namespace Library
 
 		MergeData calc_mergedata() const;
 		virtual void run_merge_operation(const MergeData& md);
+
+		int viewport_height() const override;
 
 
 	protected slots:

@@ -77,6 +77,8 @@ namespace Playlist
 			bool				was_changed() const override;
 			bool				is_storable() const override;
 
+			void				enable_all();
+
 			virtual int			create_playlist(const MetaDataList& v_md)=0;
 			virtual void		replace_track(int idx, const MetaData& metadata);
 
