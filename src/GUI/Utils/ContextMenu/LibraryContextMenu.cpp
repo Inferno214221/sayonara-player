@@ -369,7 +369,7 @@ void LibraryContextMenu::show_cover_triggered(bool b)
 
 void LibraryContextMenu::show_filter_ext_bar_changed()
 {
-	m->filter_extension_action->setChecked(_settings->get<Set::Lib_ShowFilterExtBar>());
+	m->show_filter_extension_bar_action->setChecked(_settings->get<Set::Lib_ShowFilterExtBar>());
 }
 
 void LibraryContextMenu::show_filter_extension_bar_triggered(bool b)
