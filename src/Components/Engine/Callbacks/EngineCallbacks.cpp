@@ -75,13 +75,16 @@ static bool parse_image(GstTagList* tags, QImage& img)
 		return false;
 	}
 
-	QString mime(mimetype);
+	QString mime;
+	QString full_mime(mimetype);
 	g_free(mimetype); mimetype = nullptr;
 
 	QRegExp re(".*(image/[a-z|A-Z]+).*");
-	if(re.indexIn(mime) >= 0){
+	if(re.indexIn(full_mime) >= 0){
 		mime = re.cap(1);
 	}
+
+	sp_log(Log::Develop, "Engine Callbacks") << "Cover in Track: " << full_mime;
 
 	GstBuffer* buffer = gst_sample_get_buffer(sample);
 	if(!buffer){
@@ -118,6 +121,7 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 {
 	Q_UNUSED(bus);
 
+	static MetaData md;
 	Base* engine = static_cast<Base*>(data);
 	if(!engine){
 		return true;
@@ -192,7 +196,6 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 			success = gst_tag_list_get_string(tags, GST_TAG_TITLE, (gchar**) &title);
 			if(success)
 			{
-				MetaData md;
 				md.set_title(title);
 				engine->update_metadata(md, src);
 

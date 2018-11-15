@@ -60,6 +60,57 @@
 
 using namespace Library;
 
+struct ItemView::MergeData::Private
+{
+	Util::Set<Id>	source_ids;
+	Id				target_id;
+	LibraryId		library_id;
+
+	Private(const Util::Set<Id>& source_ids, Id target_id, LibraryId library_id) :
+		source_ids(source_ids),
+		target_id(target_id),
+		library_id(library_id)
+	{}
+};
+
+ItemView::MergeData::MergeData(const Util::Set<Id>& source_ids, Id target_id, LibraryId library_id)
+{
+	m = Pimpl::make<Private>(source_ids, target_id, library_id);
+}
+
+ItemView::MergeData::MergeData(const ItemView::MergeData& other)
+{
+	m = Pimpl::make<Private>(other.source_ids(), other.target_id(), other.library_id());
+}
+
+ItemView::MergeData::~MergeData() {}
+
+ItemView::MergeData&ItemView::MergeData::operator=(const ItemView::MergeData& other)
+{
+	*m = *(other.m);
+	return *this;
+}
+
+bool ItemView::MergeData::is_valid() const
+{
+	return ((target_id() >= 0) && (source_ids().count() >= 2) && !(source_ids().contains(-1)));
+}
+
+Util::Set<Id> ItemView::MergeData::source_ids() const
+{
+	return m->source_ids;
+}
+
+Id ItemView::MergeData::target_id() const
+{
+	return m->target_id;
+}
+
+LibraryId ItemView::MergeData::library_id() const
+{
+	return m->library_id;
+}
+
 struct Library::ItemView::Private
 {
 	ItemModel*			model=nullptr;
@@ -320,25 +371,21 @@ MetaDataList ItemView::info_dialog_data() const
 	return item_model()->mimedata_tracks();
 }
 
-bool ItemView::MergeData::is_valid() const
-{
-	return ((target_id >= 0) && (source_ids.count() >= 2) && !(source_ids.contains(-1)));
-}
-
 ItemView::MergeData ItemView::calc_mergedata() const
 {
-	ItemView::MergeData ret;
 	QAction* action = static_cast<QAction*>(sender());
-	ret.target_id = action->data().toInt();
+	Id target_id = action->data().toInt();
 
 	IndexSet selected_items = this->selected_items();
-
 	ItemModel* model = item_model();
+
+	Util::Set<Id> source_ids;
 	for(auto idx : selected_items)
 	{
-		ret.source_ids.insert( model->id_by_index(idx) );
+		source_ids.insert( model->id_by_index(idx) );
 	}
 
+	ItemView::MergeData ret(source_ids, target_id, -1);
 	return ret;
 }
 

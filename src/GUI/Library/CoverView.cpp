@@ -315,12 +315,10 @@ void CoverView::refresh_clicked()
 
 void CoverView::run_merge_operation(const Library::ItemView::MergeData& mergedata)
 {
-#pragma message(__FILE__ " set library id here!")
-
-	Tagging::UserOperations* uto = new Tagging::UserOperations(-1, this);
+	Tagging::UserOperations* uto = new Tagging::UserOperations(mergedata.library_id(), this);
 
 	connect(uto, &Tagging::UserOperations::sig_finished, uto, &Tagging::UserOperations::deleteLater);
 
-	uto->merge_albums(mergedata.source_ids, mergedata.target_id);
+	uto->merge_albums(mergedata.source_ids(), mergedata.target_id());
 }
 
