@@ -58,8 +58,6 @@ QString Module::connection_name() const
 	return m->connection_name;
 }
 
-
-
 QSqlDatabase Module::db() const
 {
 	if(!QSqlDatabase::isDriverAvailable("QSQLITE")){
