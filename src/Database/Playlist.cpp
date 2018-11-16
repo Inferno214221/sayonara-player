@@ -112,7 +112,7 @@ bool DB::Playlist::getAllPlaylistSkeletons(CustomPlaylistSkeletons& skeletons, :
 bool DB::Playlist::getPlaylistSkeletonById(CustomPlaylistSkeleton& skeleton)
 {
 	if(skeleton.id() < 0){
-		sp_log(Log::Warning) << "Cannot fetch playlist -1";
+		sp_log(Log::Warning, this) << "Cannot fetch playlist -1";
 		return false;
 	}
 
@@ -155,7 +155,7 @@ bool DB::Playlist::getPlaylistSkeletonById(CustomPlaylistSkeleton& skeleton)
 bool DB::Playlist::getPlaylistById(CustomPlaylist& pl)
 {
 	if(!getPlaylistSkeletonById(pl)){
-		sp_log(Log::Warning) << "Get playlist by id: cannot fetch skeleton id " << pl.id();
+		sp_log(Log::Warning, this) << "Get playlist by id: cannot fetch skeleton id " << pl.id();
 		return false;
 	}
 
@@ -359,7 +359,7 @@ bool DB::Playlist::storePlaylist(const MetaDataList& vec_md, QString playlist_na
 	}
 
 	if(playlist_name.isEmpty()){
-		sp_log(Log::Warning) << "Try to save empty playlist";
+		sp_log(Log::Warning, this) << "Try to save empty playlist";
 		return false;
 	}
 
@@ -396,7 +396,7 @@ bool DB::Playlist::storePlaylist(const MetaDataList& vec_md, int playlist_id, bo
 
 	bool success = getPlaylistById(pl);
 	if(!success){
-		sp_log(Log::Warning) << "Store: Cannot fetch playlist: " << pl.id();
+		sp_log(Log::Warning, this) << "Store: Cannot fetch playlist: " << pl.id();
 		return false;
 	}
 

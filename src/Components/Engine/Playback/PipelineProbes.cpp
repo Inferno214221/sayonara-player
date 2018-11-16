@@ -153,7 +153,7 @@ Probing::stream_recorder_probed(GstPad *pad, GstPadProbeInfo *info, gpointer use
 
 	if(data->active)
 	{
-		sp_log(Log::Develop) << "set new filename streamrecorder: " << data->filename;
+		sp_log(Log::Develop, "PipelineProbes") << "set new filename streamrecorder: " << data->filename;
 
 		gst_element_set_state(data->sink, GST_STATE_NULL);
 		g_object_set( data->sink,

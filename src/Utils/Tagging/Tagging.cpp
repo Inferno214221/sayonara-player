@@ -86,7 +86,7 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 {
 	if(md.filepath().contains("never", Qt::CaseInsensitive)){
 		int x = 4;
-		sp_log(Log::Debug, __FILE__) << x;
+		sp_log(Log::Debug, "Tagging") << x;
 	}
 	bool success;
 
@@ -122,7 +122,7 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 	);
 
 	if(!is_valid_file(f)){
-		sp_log(Log::Warning) << "Cannot open tags for " << md.filepath();
+		sp_log(Log::Warning, "Tagging") << "Cannot open tags for " << md.filepath();
 		return false;
 	}
 
@@ -271,7 +271,7 @@ bool Tagging::Utils::setMetaDataOfFile(const MetaData& md)
 	TagLib::FileRef f(TagLib::FileName(filepath.toUtf8()));
 
 	if(!is_valid_file(f)){
-		sp_log(Log::Warning) << "Cannot open tags for " << md.filepath();
+		sp_log(Log::Warning, "Tagging") << "Cannot open tags for " << md.filepath();
 		return false;
 	}
 
@@ -341,7 +341,7 @@ bool Tagging::Utils::setMetaDataOfFile(const MetaData& md)
 
 	success = f.save();
 	if(!success){
-		sp_log(Log::Warning) << "Could not save " << md.filepath();
+		sp_log(Log::Warning, "Tagging") << "Could not save " << md.filepath();
 	}
 
 	return true;

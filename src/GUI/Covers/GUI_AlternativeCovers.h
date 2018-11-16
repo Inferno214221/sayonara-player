@@ -76,6 +76,7 @@ private slots:
 
 	void servers_changed();
 	void autostart_toggled(bool b);
+	void www_active_changed();
 
 private:
 	void reset();

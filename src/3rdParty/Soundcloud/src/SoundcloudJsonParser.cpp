@@ -60,7 +60,7 @@ SC::JsonParser::JsonParser(const QByteArray& content) :
 
 	QJsonParseError::ParseError pe = m->error.error;
 	if(pe != QJsonParseError::NoError){
-		sp_log(Log::Warning) << "Cannot parse json document: " << m->error.errorString();
+		sp_log(Log::Warning, this) << "Cannot parse json document: " << m->error.errorString();
 	}
 }
 

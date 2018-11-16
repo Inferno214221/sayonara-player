@@ -125,7 +125,7 @@ void Shutdown::shutdown(MilliSeconds ms)
 
 void Shutdown::stop()
 {
-	sp_log(Log::Info) << "Shutdown cancelled";
+	sp_log(Log::Info, this) << "Shutdown cancelled";
 	m->is_running = false;
 	m->timer->stop();
 	m->timer_countdown->stop();
@@ -263,7 +263,7 @@ void Shutdown::timeout()
 		return;
 	}
 
-	sp_log(Log::Warning) << "Sorry, power off is not possible";
+	sp_log(Log::Warning, this) << "Sorry, power off is not possible";
 
 #endif
 }

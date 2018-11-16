@@ -134,7 +134,7 @@ bool DB::Settings::store_setting(QString key, const QVariant& value)
 			return false;
 		}
 
-		sp_log(Log::Info) << "Inserted " << key << " first time";
+		sp_log(Log::Info, this) << "Inserted " << key << " first time";
 	}
 
 	else

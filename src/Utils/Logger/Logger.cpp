@@ -301,12 +301,6 @@ Logger& Logger::operator << (const std::string& str)
 /*************************
  * Static Log functions
  * ***********************/
-Logger sp_log(const Log& type)
-{
-	return sp_log(type, std::string());
-}
-
-
 Logger sp_log(const Log& type, const std::string& data)
 {
 	QString class_name;

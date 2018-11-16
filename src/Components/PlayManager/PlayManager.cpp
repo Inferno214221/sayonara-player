@@ -284,7 +284,7 @@ void PlayManager::change_track(const MetaData& md, int track_idx)
 	}
 
 	else {
-		sp_log(Log::Info) << "Playlist finished";
+		sp_log(Log::Info, this) << "Playlist finished";
 		emit sig_playlist_finished();
 		stop();
 	}

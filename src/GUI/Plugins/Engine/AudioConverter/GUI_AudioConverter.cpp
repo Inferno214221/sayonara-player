@@ -281,7 +281,7 @@ void GUI_AudioConverter::quality_changed(int index)
 	}
 
 	LameBitrate q = (LameBitrate) ui->cb_quality->itemData(index).toInt();
-	sp_log(Log::Info) << "Quality: " << q;
+	sp_log(Log::Info, this) << "Quality: " << q;
 	_settings->set<Set::Engine_ConvertQuality>((int) q);
 }
 

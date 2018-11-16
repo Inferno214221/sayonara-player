@@ -167,7 +167,7 @@ void GUI_Broadcast::connection_closed(const QString& ip)
 		return;
 	}
 
-	sp_log(Log::Info) << "Connection closed: " << ip;
+	sp_log(Log::Info, this) << "Connection closed: " << ip;
 
 	int idx;
 	for(idx=0; idx<ui->combo_clients->count(); idx++){

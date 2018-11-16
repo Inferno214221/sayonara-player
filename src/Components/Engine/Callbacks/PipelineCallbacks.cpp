@@ -26,6 +26,8 @@
 #include <gst/app/gstappsink.h>
 #include <gst/base/gstbasesrc.h>
 
+const char* ClassPipelineCallbacks="PipelineCallbacks";
+
 using namespace Pipeline;
 
 gboolean Callbacks::position_changed(gpointer data)
@@ -80,27 +82,27 @@ void Callbacks::decodebin_ready(GstElement* source, GstPad* new_src_pad, gpointe
 
 	if(pad_link_return != GST_PAD_LINK_OK)
 	{
-		sp_log(Log::Error) << "Dynamic pad linking: Cannot link pads";
+		sp_log(Log::Error, ClassPipelineCallbacks) << "Dynamic pad linking: Cannot link pads";
 
 		switch(pad_link_return){
 			case GST_PAD_LINK_WRONG_HIERARCHY:
-				sp_log(Log::Error) << "Cause: Wrong hierarchy";
+				sp_log(Log::Error, ClassPipelineCallbacks) << "Cause: Wrong hierarchy";
 				break;
 			case GST_PAD_LINK_WAS_LINKED:
-				sp_log(Log::Error) << "Cause: Pad was already linked";
+				sp_log(Log::Error, ClassPipelineCallbacks) << "Cause: Pad was already linked";
 				break;
 			case GST_PAD_LINK_WRONG_DIRECTION:
-				sp_log(Log::Error) << "Cause: Pads have wrong direction";
+				sp_log(Log::Error, ClassPipelineCallbacks) << "Cause: Pads have wrong direction";
 				break;
 			case GST_PAD_LINK_NOFORMAT:
-				sp_log(Log::Error) << "Cause: Pads have incompatible format";
+				sp_log(Log::Error, ClassPipelineCallbacks) << "Cause: Pads have incompatible format";
 				break;
 			case GST_PAD_LINK_NOSCHED:
-				sp_log(Log::Error) << "Cause: Pads cannot cooperate scheduling";
+				sp_log(Log::Error, ClassPipelineCallbacks) << "Cause: Pads cannot cooperate scheduling";
 				break;
 			case GST_PAD_LINK_REFUSED:
 			default:
-				sp_log(Log::Error) << "Cause: Refused because of different reason";
+				sp_log(Log::Error, ClassPipelineCallbacks) << "Cause: Refused because of different reason";
 				break;
 		}
 	}
