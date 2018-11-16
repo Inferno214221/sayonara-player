@@ -86,7 +86,7 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 {
 	if(md.filepath().contains("never", Qt::CaseInsensitive)){
 		int x = 4;
-		sp_log(Log::Debug, "this") << x;
+		sp_log(Log::Debug, __FILE__) << x;
 	}
 	bool success;
 

@@ -140,7 +140,7 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 				 !msg_src_name.contains("spectrum_sink") &&
 				 !msg_src_name.contains("pipeline"))
 			{
-				sp_log(Log::Debug, "Engine Callbacks") << "EOF reached: " << msg_src_name;
+				sp_log(Log::Debug, __FILE__) << "EOF reached: " << msg_src_name;
 				break;
 			}
 
@@ -160,7 +160,7 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 			break;
 
 		case GST_MESSAGE_SEGMENT_DONE:
-			sp_log(Log::Debug) << "Segment done: " << msg_src_name;
+			sp_log(Log::Debug, __FILE__) << "Segment done: " << msg_src_name;
 			break;
 
 		case GST_MESSAGE_TAG:
@@ -288,7 +288,7 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 			/*{
 				GstStreamStatusType type;
 				gst_message_parse_stream_status(msg, &type, NULL);
-				sp_log(Log::Debug) << "Get stream status " << type;
+				sp_log(Log::Debug, __FILE__) << "Get stream status " << type;
 			}*/
 			break;
 
@@ -341,7 +341,7 @@ Callbacks::level_handler(GstBus* bus, GstMessage* message, gpointer data)
 		const GValue* val = rms_arr->values + i;
 
 		if(!G_VALUE_HOLDS_DOUBLE(val)) {
-			sp_log(Log::Debug) << "Could not find a double";
+			sp_log(Log::Debug, __FILE__) << "Could not find a double";
 			break;
 		}
 

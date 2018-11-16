@@ -352,7 +352,7 @@ bool Utils::link_elements(const QList<GstElement*>& elements)
 		gchar* n1 = gst_element_get_name(e1);
 		gchar* n2 = gst_element_get_name(e2);
 
-		sp_log(Log::Debug, "EngineUtils") << "Try to link " << n1 << " with " << n2;
+		sp_log(Log::Debug, __FILE__) << "Try to link " << n1 << " with " << n2;
 
 		bool b = gst_element_link(e1, e2);
 		if(!b)

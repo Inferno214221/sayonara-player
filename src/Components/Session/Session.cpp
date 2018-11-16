@@ -71,7 +71,7 @@ QMap<QDateTime, MetaDataList> Session::get_history(QDateTime beginning)
 
 	for(auto it=v_md.begin(); it != v_md.end(); it++)
 	{
-		sp_log(Log::Debug, "Session") << "   " << it->filepath();
+		sp_log(Log::Debug, __FILE__) << "History Filepath: " << it->filepath();
 	}
 
 
