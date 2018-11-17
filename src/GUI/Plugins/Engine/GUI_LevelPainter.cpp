@@ -138,11 +138,7 @@ void GUI_LevelPainter::finalize_initialization()
 	m->resize_steps(current_style().n_rects);
 	m->set_level(0, 0);
 
-	Engine::Playback* playback_engine = engine()->get_playback_engine();
-	if(playback_engine)
-	{
-		playback_engine->add_level_receiver(this);
-	}
+#pragma message "add level receiver"
 
 	PlayerPlugin::Base::finalize_initialization();
 

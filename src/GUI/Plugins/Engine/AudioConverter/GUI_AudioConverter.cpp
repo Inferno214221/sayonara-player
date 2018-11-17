@@ -121,10 +121,11 @@ void GUI_AudioConverter::btn_start_clicked()
 	Converter* converter;
 	if(ui->stackedWidget->currentIndex() == 0)
 	{
-		converter = new OggConverter(dir, 4, 10, this);
+		converter = new OggConverter(dir, 4, ui->sb_ogg_quality->value(), this);
 	}
 
-	else{
+	else
+	{
 		if(ui->rb_cbr->isChecked()){
 			converter = new LameConverter(dir, 4, ui->rb_cbr->isChecked(), ui->combo_cbr->currentText().toInt(), this );
 		}
@@ -133,6 +134,7 @@ void GUI_AudioConverter::btn_start_clicked()
 			converter = new LameConverter(dir, 4, ui->rb_cbr->isChecked(), ui->combo_vbr->currentText().toInt(), this );
 		}
 	}
+
 	converter->add_metadata(v_md);
 
 	connect(converter, &OggConverter::sig_finished, this, &GUI_AudioConverter::convert_finished);

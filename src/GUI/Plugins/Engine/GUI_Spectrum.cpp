@@ -133,10 +133,7 @@ void GUI_Spectrum::finalize_initialization()
 	m->resize_steps(bins, current_style().n_rects);
 	m->spec.resize((size_t) bins, -100.0f);
 
-	Engine::Playback* playback_engine = engine()->get_playback_engine();
-	if(playback_engine){
-		playback_engine->add_spectrum_receiver(this);
-	}
+#pragma message "add spectrum receiver"
 
 	PlayerPlugin::Base::finalize_initialization();
 
