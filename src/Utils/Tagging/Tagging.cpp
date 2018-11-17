@@ -286,13 +286,13 @@ bool Tagging::Utils::setMetaDataOfFile(const MetaData& md)
 	ParsedTag parsed_tag = tag_type_from_fileref(f);
 	TagLib::Tag* tag = parsed_tag.tag;
 
-	tag->setAlbum(album);
-	tag->setArtist(artist);
-	tag->setTitle(title);
-	tag->setGenre(genre);
+//	tag->setAlbum(album);
+//	tag->setArtist(artist);
+//	tag->setTitle(title);
+/*	tag->setGenre(genre);
 	tag->setYear(md.year);
 	tag->setTrack(md.track_num);
-	tag->setComment(comment);
+	tag->setComment(comment);*/
 
 	Models::Popularimeter popularimeter("sayonara player", 0, 0);
 	popularimeter.set_rating(md.rating);
@@ -313,16 +313,16 @@ bool Tagging::Utils::setMetaDataOfFile(const MetaData& md)
 
 	else if(parsed_tag.type == TagType::Xiph)
 	{
-		auto xiph = dynamic_cast<TagLib::Ogg::XiphComment*>(tag);
+//		auto xiph = dynamic_cast<TagLib::Ogg::XiphComment*>(tag);
 
-		Xiph::PopularimeterFrame popularimeter_frame(xiph);
-		popularimeter_frame.write(popularimeter);
+//		Xiph::PopularimeterFrame popularimeter_frame(xiph);
+//		popularimeter_frame.write(popularimeter);
 
-		Xiph::DiscnumberFrame discnumber_frame(xiph);
-		discnumber_frame.write(discnumber);
+//		Xiph::DiscnumberFrame discnumber_frame(xiph);
+//		discnumber_frame.write(discnumber);
 
-		Xiph::AlbumArtistFrame album_artist_frame(xiph);
-		album_artist_frame.write(md.album_artist());
+//		Xiph::AlbumArtistFrame album_artist_frame(xiph);
+//		album_artist_frame.write(md.album_artist());
 	}
 
 	else if(parsed_tag.type == TagType::MP4)
@@ -368,6 +368,7 @@ bool Tagging::Utils::write_cover(const QString& filepath, const QPixmap& cover)
 
 bool Tagging::Utils::write_cover(const QString& filepath, const QString& cover_image_path)
 {
+	return false;
 	QString error_msg = "Cannot save cover. ";
 
 	TagLib::FileRef f(TagLib::FileName(filepath.toUtf8()));
@@ -541,6 +542,7 @@ bool Tagging::Utils::is_cover_supported(const QString& filepath)
 
 bool Tagging::Utils::write_lyrics(const MetaData& md, const QString& lyrics_data)
 {
+	return true;
 	QString filepath = md.filepath();
 	TagLib::FileRef f(TagLib::FileName(filepath.toUtf8()));
 	if(!is_valid_file(f)){

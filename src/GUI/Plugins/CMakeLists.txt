@@ -12,6 +12,7 @@ target_link_libraries(${PROJECT_NAME}
 	say_comp_engine
 	say_comp_playlist_chooser
 	say_comp_streamplugins
+	say_comp_converter
 	say_gui_utils
 
 	say_interfaces_player_plugin

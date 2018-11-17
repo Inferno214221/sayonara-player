@@ -36,27 +36,18 @@ class GUI_AudioConverter :
 
 public:
 	explicit GUI_AudioConverter(QWidget *parent=nullptr);
-	virtual ~GUI_AudioConverter();
+	virtual ~GUI_AudioConverter() override;
 
 	QString	get_name() const override;
 	QString	get_display_name() const override;
 
-
 private slots:
-	void rb_cbr_toggled(bool b);
-	void rb_vbr_toggled(bool b);
-	void quality_changed(int index);
-	void cb_active_toggled(bool b);
 	void mp3_enc_found();
-	void playstate_changed(PlayState state);
-	void stopped();
+	void btn_start_clicked();
+	void convert_finished();
+	void combo_codecs_changed(const QString& text);
 
 private:
-	void fill_cbr();
-	void fill_vbr();
-	void pl_mode_backup();
-	void pl_mode_restore();
-
 	void retranslate_ui() override;
 	void init_ui() override;
 };

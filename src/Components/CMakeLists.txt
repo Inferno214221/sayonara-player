@@ -2,6 +2,7 @@ project(say_comp)
 
 add_subdirectory(Bookmarks)
 add_subdirectory(Broadcasting)
+add_subdirectory(Converter)
 add_subdirectory(Covers)
 
 if( NOT WIN32 OR NOT DEFINED WIN32 )

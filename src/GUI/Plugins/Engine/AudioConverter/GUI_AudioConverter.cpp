@@ -25,17 +25,21 @@
 #include "Utils/Logger/Logger.h"
 #include "Utils/Language.h"
 #include "Utils/Settings/Settings.h"
-#include "Utils/Playlist/PlaylistMode.h"
 
-#include "Components/Engine/EngineHandler.h"
-#include "Components/Engine/Convert/LameBitrate.h"
-#include "Components/PlayManager/PlayManager.h"
+#include "Components/Playlist/PlaylistHandler.h"
+#include "Components/Playlist/AbstractPlaylist.h"
+#include "Components/Converter/OggConverter.h"
+#include "Components/Converter/LameConverter.h"
+
+#include "Utils/FileUtils.h"
+#include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Set.h"
 
 #include <QFileDialog>
+#include <QStringList>
 
 struct GUI_AudioConverter::Private
 {
-	Playlist::Mode		pl_mode;
 	bool				mp3_enc_available;
 
 	Private() :
@@ -63,42 +67,15 @@ void GUI_AudioConverter::init_ui()
 {
 	setup_parent(this, &ui);
 
-	LameBitrate br = (LameBitrate) _settings->get<Set::Engine_ConvertQuality>();
+	ui->pb_progress->setVisible(false);
+	ui->stackedWidget->setCurrentIndex(0);
+	ui->rb_cbr->setChecked(true);
+	ui->btn_stop_encoding->setVisible(false);
 
-	ui->rb_cbr->setChecked(false);
-	ui->rb_vbr->setChecked(false);
+	connect(ui->btn_start, &QPushButton::clicked, this, &GUI_AudioConverter::btn_start_clicked);
+	connect(ui->combo_codecs, &QComboBox::currentTextChanged, this, &GUI_AudioConverter::combo_codecs_changed);
 
-	connect(ui->rb_cbr, &QRadioButton::toggled, this, &GUI_AudioConverter::rb_cbr_toggled);
-	connect(ui->rb_vbr, &QRadioButton::toggled, this, &GUI_AudioConverter::rb_vbr_toggled);
-	connect(ui->cb_quality,	combo_current_index_changed_int, this, &GUI_AudioConverter::quality_changed);
-	connect(ui->cb_active, &QCheckBox::toggled, this, &GUI_AudioConverter::cb_active_toggled);
-
-	int idx = -1;
-
-	switch(br) {
-		case LameBitrate_64:
-		case LameBitrate_128:
-		case LameBitrate_192:
-		case LameBitrate_256:
-		case LameBitrate_320:
-			ui->rb_cbr->setChecked(true);
-			idx = ui->cb_quality->findData((int) br);
-			break;
-
-		default:
-			ui->rb_vbr->setChecked(true);
-			idx = ui->cb_quality->findData((int) br);
-			break;
-	}
-
-	if(idx >= 0 && idx < ui->cb_quality->count()) {
-		ui->cb_quality->setCurrentIndex(idx);
-	}
-
-	PlayManagerPtr play_manager = PlayManager::instance();
-	connect(play_manager, &PlayManager::sig_playstate_changed, this, &GUI_AudioConverter::playstate_changed);
-
-	Set::listen<SetNoDB::MP3enc_found>(this, &GUI_AudioConverter::mp3_enc_found);
+	//Set::listen<SetNoDB::MP3enc_found>(this, &GUI_AudioConverter::mp3_enc_found);
 }
 
 
@@ -117,172 +94,80 @@ QString GUI_AudioConverter::get_display_name() const
 void GUI_AudioConverter::retranslate_ui()
 {
 	ui->retranslateUi(this);
-	ui->cb_active->setText(Lang::get(Lang::Active));
 }
 
-
-void GUI_AudioConverter::fill_cbr()
+void GUI_AudioConverter::btn_start_clicked()
 {
 	if(!is_ui_initialized()){
 		return;
 	}
 
-	disconnect(ui->cb_quality,	combo_current_index_changed_int, this, &GUI_AudioConverter::quality_changed);
-
-	ui->cb_quality->clear();
-	ui->cb_quality->addItem("64", LameBitrate_64);
-	ui->cb_quality->addItem("128", LameBitrate_128);
-	ui->cb_quality->addItem("192", LameBitrate_192);
-	ui->cb_quality->addItem("256", LameBitrate_256);
-	ui->cb_quality->addItem("320", LameBitrate_320);
-
-	connect(ui->cb_quality,	combo_current_index_changed_int, this, &GUI_AudioConverter::quality_changed);
-
-	ui->cb_quality->setCurrentIndex(2);
-}
-
-
-void GUI_AudioConverter::fill_vbr()
-{
-	if(!is_ui_initialized()){
+	QString cvt_target_path = _settings->get<Set::Engine_CovertTargetPath>();
+	QString dir = QFileDialog::getExistingDirectory(this, "Choose target directory", cvt_target_path);
+	if(dir.isEmpty()){
 		return;
 	}
 
-	disconnect(ui->cb_quality,	combo_current_index_changed_int, this, &GUI_AudioConverter::quality_changed);
+	ui->pb_progress->setVisible(true);
+	ui->pb_progress->setValue(0);
+	ui->btn_start->setVisible(false);
+	ui->btn_stop_encoding->setVisible(true);
 
-	ui->cb_quality->clear();
-	ui->cb_quality->addItem("0 (" + tr("Best") + ")", LameBitrate_var_0);
-	ui->cb_quality->addItem("1", LameBitrate_var_1);
-	ui->cb_quality->addItem("2", LameBitrate_var_2);
-	ui->cb_quality->addItem("3", LameBitrate_var_3);
-	ui->cb_quality->addItem("4", LameBitrate_var_4);
-	ui->cb_quality->addItem("5", LameBitrate_var_5);
-	ui->cb_quality->addItem("6", LameBitrate_var_6);
-	ui->cb_quality->addItem("7", LameBitrate_var_7);
-	ui->cb_quality->addItem("8", LameBitrate_var_8);
-	ui->cb_quality->addItem("9 (" + tr("Worst") + ")", LameBitrate_var_9);
+	_settings->set<Set::Engine_CovertTargetPath>(dir);
 
-	connect(ui->cb_quality,	combo_current_index_changed_int, this, &GUI_AudioConverter::quality_changed);
+	PlaylistConstPtr pl = Playlist::Handler::instance()->playlist(Playlist::Handler::instance()->current_index());
+	MetaDataList v_md = pl->metadata();
 
-	ui->cb_quality->setCurrentIndex(2);
-}
-
-
-void GUI_AudioConverter::playstate_changed(PlayState state)
-{
-	if(state == PlayState::Stopped){
-		stopped();
-	}
-}
-
-
-void GUI_AudioConverter::stopped()
-{
-	if(!isVisible()) {
-		return;
-	}
-
-	if(!ui->cb_active->isChecked()) {
-		return;
-	}
-
-	ui->cb_active->setChecked( false );
-}
-
-
-void GUI_AudioConverter::rb_cbr_toggled(bool b)
-{
-	if(!is_ui_initialized()){
-		return;
-	}
-
-	if(b) {
-		fill_cbr();
-	}
-}
-
-void GUI_AudioConverter::rb_vbr_toggled(bool b)
-{
-	if(!is_ui_initialized()){
-		return;
-	}
-
-	if(b) {
-		fill_vbr();
-	}
-}
-
-void GUI_AudioConverter::pl_mode_backup()
-{
-	m->pl_mode = _settings->get<Set::PL_Mode>();
-
-	Playlist::Mode new_mode;
-		new_mode.setAppend(false, false);
-		new_mode.setRep1(false, false);
-		new_mode.setRepAll(false, false);
-		new_mode.setShuffle(false, false);
-		new_mode.setGapless(false, false);
-		new_mode.setDynamic(false, false);
-
-	_settings->set<Set::PL_Mode>(new_mode);
-}
-
-void GUI_AudioConverter::pl_mode_restore()
-{
-	_settings->set<Set::PL_Mode>(m->pl_mode);
-}
-
-void GUI_AudioConverter::cb_active_toggled(bool b)
-{
-	if(!is_ui_initialized()){
-		return;
-	}
-
-	if(!m->mp3_enc_available)
+	Converter* converter;
+	if(ui->stackedWidget->currentIndex() == 0)
 	{
-		Message::warning(Lang::get(Lang::CannotFindLame));
-
-		disconnect(ui->cb_active, &QCheckBox::toggled, this, &GUI_AudioConverter::cb_active_toggled);
-		ui->cb_active->setChecked(false);
-		connect(ui->cb_active, &QCheckBox::toggled, this, &GUI_AudioConverter::cb_active_toggled);
-
-		return;
+		converter = new OggConverter(dir, 4, 10, this);
 	}
 
-	Engine::Handler* engine = Engine::Handler::instance();
-	if(b) {
-		QString cvt_target_path = _settings->get<Set::Engine_CovertTargetPath>();
-		QString dir = QFileDialog::getExistingDirectory(this, "Choose target directory", cvt_target_path);
-
-		if(dir.size() > 0) {
-			_settings->set<Set::Engine_CovertTargetPath>(dir);
-			pl_mode_backup();
-
-			engine->start_convert();
+	else{
+		if(ui->rb_cbr->isChecked()){
+			converter = new LameConverter(dir, 4, ui->rb_cbr->isChecked(), ui->combo_cbr->currentText().toInt(), this );
 		}
 
-		else {
-			disconnect(ui->cb_active, &QCheckBox::toggled, this, &GUI_AudioConverter::cb_active_toggled);
-			ui->cb_active->setChecked(false);
-			connect(ui->cb_active, &QCheckBox::toggled, this, &GUI_AudioConverter::cb_active_toggled);
+		else{
+			converter = new LameConverter(dir, 4, ui->rb_cbr->isChecked(), ui->combo_vbr->currentText().toInt(), this );
 		}
+	}
+	converter->add_metadata(v_md);
+
+	connect(converter, &OggConverter::sig_finished, this, &GUI_AudioConverter::convert_finished);
+	connect(converter, &OggConverter::sig_progress, ui->pb_progress, &QProgressBar::setValue);
+	connect(ui->btn_stop_encoding, &QPushButton::clicked, converter, &OggConverter::stop);
+
+	converter->start();
+}
+
+void GUI_AudioConverter::convert_finished()
+{
+	OggConverter* converter = static_cast<OggConverter*>(sender());
+
+	if(converter && converter->num_errors() > 0){
+		Message::error(tr("Failed to convert %1 tracks").arg(converter->num_errors()));
 	}
 
 	else {
-		pl_mode_restore();
-		engine->end_convert();
+		Message::info(tr("Successfully finished"));
 	}
+
+	ui->pb_progress->setVisible(false);
+	ui->btn_start->setVisible(true);
+	ui->btn_stop_encoding->setVisible(false);
 }
 
-void GUI_AudioConverter::quality_changed(int index)
+void GUI_AudioConverter::combo_codecs_changed(const QString& text)
 {
-	if(!is_ui_initialized()){
-		return;
+	if(text.toLower().contains("mp3") || text.toLower().contains("lame")){
+		ui->stackedWidget->setCurrentIndex(1);
 	}
 
-	LameBitrate q = (LameBitrate) ui->cb_quality->itemData(index).toInt();
-	sp_log(Log::Info, this) << "Quality: " << q;
-	_settings->set<Set::Engine_ConvertQuality>((int) q);
+	else {
+		ui->stackedWidget->setCurrentIndex(0);
+	}
 }
 
 void GUI_AudioConverter::mp3_enc_found()
