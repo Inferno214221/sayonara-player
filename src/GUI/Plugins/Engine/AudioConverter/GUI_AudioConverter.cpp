@@ -21,6 +21,7 @@
 #include "GUI_AudioConverter.h"
 #include "GUI/Plugins/ui_GUI_AudioConverter.h"
 
+#include "Utils/Utils.h"
 #include "Utils/Message/Message.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Language.h"
@@ -136,6 +137,17 @@ void GUI_AudioConverter::btn_start_clicked()
 	}
 
 	converter->add_metadata(v_md);
+	if(converter->num_files() == 0)
+	{
+		Message::error(tr("Playlist does not contain FLAC or WAV (PCM) files. No file will be converted."));
+		converter->deleteLater();
+		return;
+	}
+
+	else if(converter->num_files() < v_md.count())
+	{
+		Message::error(tr("Not all files in the playlist are of type FLAC or WAV (PCM). Those files will be ignored."));
+	}
 
 	connect(converter, &OggConverter::sig_finished, this, &GUI_AudioConverter::convert_finished);
 	connect(converter, &OggConverter::sig_progress, ui->pb_progress, &QProgressBar::setValue);
@@ -159,6 +171,8 @@ void GUI_AudioConverter::convert_finished()
 	ui->pb_progress->setVisible(false);
 	ui->btn_start->setVisible(true);
 	ui->btn_stop_encoding->setVisible(false);
+
+	converter->deleteLater();
 }
 
 void GUI_AudioConverter::combo_codecs_changed(const QString& text)
