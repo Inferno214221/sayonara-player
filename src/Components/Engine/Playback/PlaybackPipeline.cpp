@@ -26,27 +26,25 @@
 #include "StreamRecorderHandler.h"
 #include "StreamRecorderData.h"
 #include "Callbacks/EngineUtils.h"
+#include "Callbacks/PipelineCallbacks.h"
 
-#include "Components/Engine/Callbacks/PipelineCallbacks.h"
 #include "Utils/globals.h"
 #include "Utils/Utils.h"
+#include "Utils/FileUtils.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Settings/SettingNotifier.h"
 #include "Utils/Logger/Logger.h"
 
-#include <gst/base/gstdataqueue.h>
 #include <gst/app/gstappsink.h>
-#include <gst/base/gstbasetransform.h>
-#include <gst/base/gstbasesrc.h>
 
 #include <algorithm>
-#include <list>
 
 #define QUEUE "queue"
 
 //http://gstreamer.freedesktop.org/data/doc/gstreamer/head/manual/html/chapter-dataaccess.html
 
 using Pipeline::Playback;
+namespace Probing=Pipeline::Probing;
 namespace EngineUtils=Engine::Utils;
 
 struct Playback::Private :
@@ -56,7 +54,6 @@ struct Playback::Private :
 		public SeekHandler
 {
 	GstElement*			audio_src=nullptr;
-	GstElement*			audio_dec=nullptr;
 	GstElement*			audio_convert=nullptr;
 	GstElement*			tee=nullptr;
 
@@ -87,10 +84,8 @@ struct Playback::Private :
 	GstElement*			sr_resampler=nullptr;
 	GstElement*			sr_lame=nullptr;
 
-	gulong				bc_probe;
-	gulong				pitch_probe;
-	bool				run_broadcast;
-	bool				run_pitch;
+	gulong				bc_probe, visualizer_probe;
+	bool				run_broadcast, run_visualizer;
 
 	Private() :
 		SpeedHandler(),
@@ -99,9 +94,9 @@ struct Playback::Private :
 		SeekHandler(),
 
 		bc_probe(0),
-		pitch_probe(0),
+		visualizer_probe(0),
 		run_broadcast(false),
-		run_pitch(false)
+		run_visualizer(false)
 	{}
 
 	protected:
@@ -145,7 +140,7 @@ bool Playback::init(GstState state)
 	}
 
 	_settings->set<SetNoDB::MP3enc_found>(EngineUtils::check_lame_available());
-	_settings->set<SetNoDB::Pitch_found>(true);
+	_settings->set<SetNoDB::Pitch_found>(EngineUtils::check_pitch_available());
 
 	Set::listen<Set::Engine_Vol>(this, &Playback::s_vol_changed);
 	Set::listen<Set::Engine_Mute>(this, &Playback::s_mute_changed);
@@ -154,9 +149,9 @@ bool Playback::init(GstState state)
 	// set by gui, initialized directly in pipeline
 	Set::listen<Set::Engine_ShowLevel>(this, &Playback::s_show_visualizer_changed);
 	Set::listen<Set::Engine_ShowSpectrum>(this, &Playback::s_show_visualizer_changed, false);
-	Set::listen<Set::Engine_Pitch>(this, &Playback::s_speed_changed);
-	Set::listen<Set::Engine_Speed>(this, &Playback::s_speed_changed);
-	Set::listen<Set::Engine_PreservePitch>(this, &Playback::s_speed_changed);
+	Set::listen<Set::Engine_Pitch>(this, &Playback::s_speed_changed, false);
+	Set::listen<Set::Engine_Speed>(this, &Playback::s_speed_changed, false);
+	Set::listen<Set::Engine_PreservePitch>(this, &Playback::s_speed_changed, false);
 	Set::listen<Set::Engine_SpeedActive>(this, &Playback::s_speed_active_changed);
 
 	return true;
@@ -166,11 +161,8 @@ bool Playback::init(GstState state)
 bool Playback::create_elements()
 {
 	// input
-	if(!EngineUtils::create_element(&m->audio_src, "uridecodebin", "src")) return false;
 	if(!EngineUtils::create_element(&m->audio_convert, "audioconvert")) return false;
 	if(!EngineUtils::create_element(&m->tee, "tee")) return false;
-
-	// standard output branch
 
 	if(!EngineUtils::create_element(&m->pb_queue, QUEUE, "eq_queue")) return false;
 	if(!EngineUtils::create_element(&m->pb_equalizer, "equalizer-10bands")) return false;
@@ -180,11 +172,41 @@ bool Playback::create_elements()
 	}
 
 	m->pb_sink = create_audio_sink(_settings->get<Set::Engine_Sink>());
-	if(!m->pb_sink){
-		return false;
+
+	return (m->pb_sink != nullptr);
+}
+
+
+bool Playback::create_source(gchar* uri)
+{
+	if(EngineUtils::create_element(&m->audio_src, "uridecodebin", "src"))
+	{
+		g_object_set (G_OBJECT (m->audio_src),
+					  "use-buffering", Util::File::is_www(uri),
+					  "ring-buffer-max-size", 10000,
+					  "buffer-duration", 1000 * GST_MSECOND,
+					  "uri", uri,
+					  nullptr);
+
+		EngineUtils::add_elements(GST_BIN(pipeline()), {m->audio_src});
+		EngineUtils::set_state(m->audio_src, GST_STATE_NULL);
+
+		g_signal_connect (m->audio_src, "pad-added", G_CALLBACK (Callbacks::decodebin_ready), m->audio_convert);
+		g_signal_connect (m->audio_src, "source-setup", G_CALLBACK (Callbacks::source_ready), nullptr);
 	}
 
-	return true;
+	return (m->audio_src != nullptr);
+}
+
+void Playback::remove_source()
+{
+	if(m->audio_src && EngineUtils::has_element(GST_BIN(pipeline()), m->audio_src))
+	{
+		gst_element_send_event(pipeline(), gst_event_new_eos());
+		gst_element_unlink(m->audio_src, m->audio_convert);
+		gst_bin_remove(GST_BIN(pipeline()), m->audio_src);
+		m->audio_src = nullptr;
+	}
 }
 
 
@@ -192,12 +214,12 @@ GstElement* Playback::create_audio_sink(const QString& name)
 {
 	GstElement* ret=nullptr;
 
-	if(name == "pulse" && 0){
+	if(name == "pulse"){
 		sp_log(Log::Debug, this) << "Create pulseaudio sink";
 		EngineUtils::create_element(&ret, "pulsesink", name.toLocal8Bit().data());
 	}
 
-	else if(name == "alsa" && 0){
+	else if(name == "alsa"){
 		sp_log(Log::Debug, this) << "Create alsa sink";
 		EngineUtils::create_element(&ret, "alsasink", name.toLocal8Bit().data());
 	}
@@ -237,14 +259,10 @@ bool Playback::add_and_link_elements()
 
 		EngineUtils::create_ghost_pad(GST_BIN(m->pb_bin), m->pb_queue);
 		EngineUtils::tee_connect(m->tee, m->pb_bin, "Equalizer");
-		if(!EngineUtils::test_and_error_bool(success, "Engine: Cannot link eq queue with tee")){
-			return false;
-		}
+
+		return EngineUtils::test_and_error_bool(success, "Engine: Cannot link eq queue with tee");
 	}
-
-	return true;
 }
-
 
 bool Playback::configure_elements()
 {
@@ -254,14 +272,12 @@ bool Playback::configure_elements()
 				 nullptr);
 
 	m->init_equalizer();
+	init_visualizer();
 
 	EngineUtils::config_queue(m->pb_queue);
-	EngineUtils::config_queue(m->visualizer_queue);
-	EngineUtils::config_sink(m->visualizer_sink);
 
 	return true;
 }
-
 
 bool Playback::init_streamrecorder()
 {
@@ -301,19 +317,22 @@ bool Playback::init_streamrecorder()
 
 		gst_bin_add(GST_BIN(pipeline()), m->sr_bin);
 		success = EngineUtils::tee_connect(m->tee, m->sr_bin, "StreamRecorderQueue");
-		if(!success){
+		if(!success) {
 			EngineUtils::set_state(m->sr_bin, GST_STATE_NULL);
 			gst_object_unref(m->bc_bin);
-			return false;
 		}
-	}
 
-	return true;
+		return success;
+	}
 }
 
 
 bool Playback::init_broadcasting()
 {
+	if(m->bc_bin){
+		return true;
+	}
+
 	// create
 	if( !EngineUtils::create_element(&m->bc_queue, QUEUE, "lame_queue") ||
 		!EngineUtils::create_element(&m->bc_converter, "audioconvert", "lame_converter") ||
@@ -356,26 +375,80 @@ bool Playback::init_broadcasting()
 	return true;
 }
 
+bool Pipeline::Playback::init_visualizer()
+{
+	if(m->visualizer_bin){
+		return true;
+	}
+
+	{ // create
+		if(	EngineUtils::create_element(&m->visualizer_queue, QUEUE, "visualizer") &&
+			EngineUtils::create_element(&m->level, "level") &&	// in case of renaming, also look in EngineCallbase GST_MESSAGE_EVENT
+			EngineUtils::create_element(&m->spectrum, "spectrum") &&
+			EngineUtils::create_element(&m->visualizer_sink,"fakesink", "visualizer"))
+		{
+			EngineUtils::create_bin(&m->visualizer_bin, {m->visualizer_queue, m->level, m->spectrum, m->visualizer_sink}, "visualizer");
+		}
+
+		if(!m->visualizer_bin){
+			return false;
+		}
+	}
+
+	{ // link
+		gst_bin_add(GST_BIN(pipeline()), m->visualizer_bin);
+		bool success = EngineUtils::tee_connect(m->tee, m->visualizer_bin, "Visualizer");
+		if(!success)
+		{
+			gst_bin_remove(GST_BIN(pipeline()), m->visualizer_bin);
+			gst_object_unref(m->visualizer_bin);
+			m->visualizer_bin = nullptr;
+			return false;
+		}
+	}
+
+	{ // configure
+		g_object_set (G_OBJECT(m->level),
+					  "post-messages", true,
+					  "interval", 20 * GST_MSECOND,
+					  nullptr);
+
+		g_object_set (G_OBJECT (m->spectrum),
+					  "post-messages", true,
+					  "interval", 20 * GST_MSECOND,
+					  "bands", _settings->get<Set::Engine_SpectrumBins>(),
+					  "threshold", -75,
+					  "message-phase", false,
+					  "message-magnitude", true,
+					  "multi-channel", false,
+					  nullptr);
+
+		EngineUtils::config_queue(m->visualizer_queue, 1000);
+		EngineUtils::config_sink(m->visualizer_sink);
+	}
+
+	return true;
+}
+
 
 MilliSeconds Playback::get_about_to_finish_time() const
 {
 	return std::max( get_fading_time_ms(), Base::get_about_to_finish_time() );
 }
 
-
 void Playback::play()
 {
 	Base::play();
 }
-
 
 void Playback::stop()
 {
 	Base::stop();
 	abort_delayed_playing();
 	abort_fader();
-}
 
+	remove_source();
+}
 
 void Playback::s_vol_changed()
 {
@@ -386,51 +459,45 @@ void Playback::s_vol_changed()
 	g_object_set(G_OBJECT(m->pb_volume), "volume", vol_val, nullptr);
 }
 
-
 void Playback::s_mute_changed()
 {
 	bool muted = _settings->get<Set::Engine_Mute>();
 	g_object_set(G_OBJECT(m->pb_volume), "mute", muted, nullptr);
 }
 
-
-void Playback::set_visualizer_enabled(bool b)
+void Playback::enable_visualizer(bool b)
 {
-	if(b && !m->visualizer_bin)
-	{
-		init_visualizer();
+	if(!init_visualizer()){
+		return;
 	}
 
-	gst_base_transform_set_passthrough(GST_BASE_TRANSFORM(m->level), !_settings->get<Set::Engine_ShowLevel>());
-	gst_base_transform_set_passthrough(GST_BASE_TRANSFORM(m->spectrum), !_settings->get<Set::Engine_ShowSpectrum>());
+	m->run_visualizer = b;
+	Probing::handle_probe(&m->run_visualizer, m->visualizer_queue, &m->visualizer_probe, Probing::spectrum_probed);
+
+	bool show_level = _settings->get<Set::Engine_ShowLevel>();
+	bool show_spectrum = _settings->get<Set::Engine_ShowSpectrum>();
+	g_object_set(G_OBJECT(m->level), "post-messages", show_level, nullptr);
+	g_object_set(G_OBJECT(m->spectrum), "post-messages", show_spectrum, nullptr);
+
+
 }
 
 void Playback::s_show_visualizer_changed()
 {
-	set_visualizer_enabled(
+	enable_visualizer
+	(
 		_settings->get<Set::Engine_ShowSpectrum>() ||
 		_settings->get<Set::Engine_ShowLevel>()
 	);
 }
 
-void Playback::fade_in_handler()
+void Playback::enable_broadcasting(bool b)
 {
-	s_show_visualizer_changed();
-}
-
-void Playback::fade_out_handler()
-{
-	set_visualizer_enabled(false);
-}
-
-void Playback::set_n_sound_receiver(int num_sound_receiver)
-{
-	if(!m->bc_bin){
+	if(b && !init_broadcasting()){
 		return;
 	}
 
-	m->run_broadcast = (num_sound_receiver > 0);
-
+	m->run_broadcast = b;
 	Probing::handle_probe(&m->run_broadcast, m->bc_queue, &m->bc_probe, Probing::lame_probed);
 }
 
@@ -445,86 +512,11 @@ GstElement* Playback::pipeline() const
 	return Pipeline::Base::pipeline();
 }
 
-void Playback::force_about_to_finish()
-{
-	set_about_to_finish(true);
-	emit sig_about_to_finish(get_about_to_finish_time());
-}
-
 bool Playback::set_uri(gchar* uri)
 {
 	stop();
-
-	EngineUtils::unlink_element(m->audio_src, m->audio_convert);
-	EngineUtils::remove_element(GST_BIN(pipeline()), m->audio_src);
-
-	if(!EngineUtils::create_element(&m->audio_src, "uridecodebin", "src")) {
-		return false;
-	}
-
-	gst_bin_add_many(GST_BIN(pipeline()), m->audio_src, nullptr);
-	EngineUtils::set_state(pipeline(), GST_STATE_NULL);
-
-	g_signal_connect (m->audio_src, "pad-added", G_CALLBACK (Callbacks::decodebin_ready), m->audio_convert);
-	g_signal_connect (m->audio_src, "source-setup", G_CALLBACK (Callbacks::source_ready), nullptr);
-
-	g_object_set (G_OBJECT (m->audio_src),
-				  "use-buffering", false,
-				  "ring-buffer-max-size", 0,
-				  //"buffer-duration", 10000 * GST_MSECOND,
-				  "uri", uri,
-				  nullptr);
-
+	create_source(uri);
 	gst_element_set_state(pipeline(), GST_STATE_PAUSED);
-
-	return true;
-}
-
-bool Playback::init_visualizer()
-{
-	bool success = false;
-	// spectrum branch
-	if(	EngineUtils::create_element(&m->visualizer_queue, QUEUE, "spectrum_queue") &&
-		EngineUtils::create_element(&m->level, "level") &&
-		EngineUtils::create_element(&m->spectrum, "spectrum") &&
-		EngineUtils::create_element(&m->visualizer_sink,"fakesink", "spectrum_sink"))
-	{
-		success = EngineUtils::create_bin(&m->visualizer_bin, {m->visualizer_queue, m->level, m->spectrum, m->visualizer_sink}, "visualizer");
-	}
-
-	if(!success){
-		return false;
-	}
-
-	gst_bin_add(GST_BIN(pipeline()), m->visualizer_bin);
-	success = EngineUtils::tee_connect(m->tee, m->visualizer_bin, "Visualizer");
-	if(!success){
-		gst_bin_remove(GST_BIN(pipeline()), m->visualizer_bin);
-		gst_object_unref(m->visualizer_bin);
-		m->visualizer_bin = nullptr;
-		return false;
-	}
-
-	guint64 interval = 25 * GST_MSECOND;
-	gint threshold = -75;
-
-	g_object_set (G_OBJECT (m->level),
-			  "post-messages", true,
-			  "interval", interval,
-			  nullptr);
-
-	int bins = _settings->get<Set::Engine_SpectrumBins>();
-	g_object_set (G_OBJECT (m->spectrum),
-				  "post-messages", true,
-				  "interval", interval,
-				  "bands", bins,
-				  "threshold", threshold,
-				  "message-phase", false,
-				  "message-magnitude", true,
-				  "multi-channel", false,
-				  nullptr);
-
-	EngineUtils::config_queue(m->visualizer_queue);
 
 	return true;
 }
@@ -532,6 +524,13 @@ bool Playback::init_visualizer()
 void Playback::set_eq_band(int band, int val)
 {
 	m->set_band(band, val);
+}
+
+void Playback::enable_streamrecorder(bool b)
+{
+	if(b){
+		init_streamrecorder();
+	}
 }
 
 void Playback::set_streamrecorder_path(const QString& path)
@@ -586,9 +585,12 @@ void Playback::s_speed_active_changed()
 	}
 }
 
-
 void Playback::s_speed_changed()
 {
+	if(gst_element_get_parent(m->pb_pitch) == nullptr){
+		return;
+	}
+
 	m->set_speed(
 		_settings->get<Set::Engine_Speed>(),
 		_settings->get<Set::Engine_Pitch>() / 440.0,
@@ -598,42 +600,44 @@ void Playback::s_speed_changed()
 
 void Playback::s_sink_changed()
 {
-	GstElement* e = create_audio_sink(_settings->get<Set::Engine_Sink>());
-	if(!e){
+	GstElement* new_sink = create_audio_sink(_settings->get<Set::Engine_Sink>());
+	if(!new_sink){
 		return;
 	}
 
-	GstState old_state, state;
-	gst_element_get_state(pipeline(), &old_state, nullptr, 0);
+	MilliSeconds pos_ms = EngineUtils::get_position_ms(pipeline());
+	GstState old_state = EngineUtils::get_state(pipeline());
 
-	state = old_state;
+	{ //replace elements
+		gst_element_set_state(pipeline(), GST_STATE_NULL);
 
-	stop();
-	while(state != GST_STATE_NULL)
-	{
-		gst_element_get_state(pipeline(), &state, nullptr, 0);
-		Util::sleep_ms(50);
+		remove_element(m->pb_sink, m->pb_volume, nullptr);
+		add_element(new_sink, m->pb_volume, nullptr);
+
+		gst_element_set_state(pipeline(), old_state);
 	}
 
-	NanoSeconds pos;
-	gst_element_query_position(pipeline(), GST_FORMAT_TIME, &pos);
+	{ //restore position
+		if(old_state != GST_STATE_NULL)
+		{
+			while(old_state != EngineUtils::get_state(pipeline())) {
+				Util::sleep_ms(50);
+			}
 
-	gst_element_unlink(m->pb_volume, m->pb_sink);
-	gst_bin_remove(GST_BIN(pipeline()), m->pb_sink);
-	m->pb_sink = e;
-	gst_bin_add(GST_BIN(pipeline()), m->pb_sink);
-	gst_element_link(m->pb_volume, m->pb_sink);
-
-	gst_element_set_state(pipeline(), old_state);
-
-	state = GST_STATE_NULL;
-	while(state != old_state)
-	{
-		gst_element_get_state(pipeline(), &state, nullptr, 0);
-		Util::sleep_ms(50);
+			seek_abs(GST_MSECOND * pos_ms);
+		}
 	}
 
-	if(old_state != GST_STATE_NULL) {
-		seek_abs((NanoSeconds)(pos));
-	}
+	m->pb_sink = new_sink;
 }
+
+void Playback::fade_in_handler()
+{
+	s_show_visualizer_changed();
+}
+
+void Playback::fade_out_handler()
+{
+	enable_visualizer(false);
+}
+

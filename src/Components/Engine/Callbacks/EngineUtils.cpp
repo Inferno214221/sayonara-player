@@ -5,6 +5,7 @@
 #include <QStringList>
 
 #include <gst/gst.h>
+#include <gst/base/gstbasetransform.h>
 
 using namespace Engine;
 
@@ -106,16 +107,20 @@ bool Utils::tee_connect(GstElement* tee, GstElement* queue, const QString& queue
 
 bool Utils::has_element(GstBin* bin, GstElement* element)
 {
-	if(!element){
+	if(!bin || !element){
 		return true;
+	}
+
+	if(!GST_IS_OBJECT(bin) || !GST_IS_OBJECT(element)){
+		return false;
 	}
 
 	GstObject* o = GST_OBJECT(element);
 	GstObject* parent = nullptr;
 
-	while(o)
+	while(o && GST_IS_OBJECT(o))
 	{
-		if( o == GST_OBJECT(bin))
+		if(o == GST_OBJECT(bin))
 		{
 			if( o != GST_OBJECT(element) )
 			{
@@ -260,19 +265,26 @@ bool Utils::set_state(GstElement* element, GstState state)
 	return (ret != GST_STATE_CHANGE_FAILURE);
 }
 
+
+bool Utils::check_plugin_available(const gchar* str)
+{
+	GstRegistry* reg = gst_registry_get();
+	GstPlugin* plugin = gst_registry_find_plugin(reg, str);
+
+	bool success = (plugin != nullptr);
+	gst_object_unref(plugin);
+
+	return success;
+}
+
+bool Utils::check_pitch_available()
+{
+	return check_plugin_available("soundtouch");
+}
+
 bool Utils::check_lame_available()
 {
-	static bool available=false;
-	if(available){
-		return true;
-	}
-
-	GstElement* e;
-	bool success = create_element(&e, "lamemp3enc");
-	available = (success && e);
-
-	gst_object_unref(e);
-	return available;
+	return check_plugin_available("lame");
 }
 
 bool Utils::create_ghost_pad(GstBin* bin, GstElement* e)
@@ -293,7 +305,7 @@ bool Utils::create_ghost_pad(GstBin* bin, GstElement* e)
 		return false;
 	}
 
-	//gst_object_unref(pad);
+	gst_object_unref(pad);
 	return true;
 }
 
@@ -359,12 +371,8 @@ bool Utils::link_elements(const QList<GstElement*>& elements)
 
 void Utils::add_elements(GstBin* bin, const QList<GstElement*>& elements)
 {
-	for(GstElement* e : elements)
-	{
-		bool success = gst_bin_add(bin, e);
-
-		QString name(gst_element_get_name(e));
-		test_and_error_bool(success, "Cannot add element to pipeline" + name);
+	for(GstElement* e : elements){
+		gst_bin_add(bin, e);
 	}
 }
 
@@ -375,11 +383,11 @@ void Utils::unref_elements(const QList<GstElement*>& elements)
 	}
 }
 
-void Utils::config_queue(GstElement* queue)
+void Utils::config_queue(GstElement* queue, gulong max_time_ms)
 {
 	g_object_set(G_OBJECT(queue),
 				 "flush-on-eos", true,
-				 "max-size-time", 1000 * GST_MSECOND,
+				 "max-size-time", max_time_ms * GST_MSECOND,
 				 "silent", true,
 				 nullptr);
 }
@@ -403,39 +411,13 @@ void Utils::config_lame(GstElement* lame)
 				 nullptr);
 }
 
-void Utils::print_all_elements(GstBin* bin)
+
+void Utils::set_passthrough(GstElement* e, bool b)
 {
-
-}
-
-bool Utils::remove_element(GstBin* bin, GstElement* element)
-{
-	return gst_bin_remove(bin, element);
-}
-
-bool Utils::unlink_element(GstElement* element1, GstElement* element2)
-{
-	gst_element_unlink(element1, element2);
-	return true;
-}
-
-
-void Utils::send_signal(GstElement* element, Utils::SignalType type)
-{
-	GstEvent* e;
-	switch(type)
+	if(e && GST_IS_BASE_TRANSFORM(e))
 	{
-		case Eos:
-			e = gst_event_new_eos();
-			break;
-		case FlushStart:
-			e = gst_event_new_flush_start();
-			break;
-		case FlushStop:
-			e = gst_event_new_flush_stop(true);
-			break;
-		default: break;
+		gst_base_transform_set_passthrough(GST_BASE_TRANSFORM(e), b);
+		gst_base_transform_set_prefer_passthrough(GST_BASE_TRANSFORM(e), b);
 	}
-
-	gst_element_send_event(element, e);
 }
+

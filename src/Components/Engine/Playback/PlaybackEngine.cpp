@@ -419,7 +419,7 @@ void Playback::set_streamrecorder_recording(bool b)
 	if(b)
 	{
 		if(m->pipeline) {
-			m->pipeline->init_streamrecorder();
+			m->pipeline->enable_streamrecorder(b);
 		}
 
 		if(!m->stream_recorder) {
@@ -451,18 +451,11 @@ void Playback::set_streamrecorder_recording(bool b)
 
 void Playback::set_n_sound_receiver(int num_sound_receiver)
 {
-	if(num_sound_receiver > 0) {
-		m->pipeline->init_broadcasting();
-	}
+	m->pipeline->enable_broadcasting(num_sound_receiver > 0);
 
-	m->pipeline->set_n_sound_receiver(num_sound_receiver);
 	if(m->other_pipeline)
 	{
-		if(num_sound_receiver > 0) {
-			m->other_pipeline->init_broadcasting();
-		}
-
-		m->other_pipeline->set_n_sound_receiver(num_sound_receiver);
+		m->other_pipeline->enable_broadcasting(num_sound_receiver > 0);
 	}
 }
 
