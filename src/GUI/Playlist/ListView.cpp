@@ -49,6 +49,7 @@
 #include <QHeaderView>
 #include <QScrollBar>
 #include <QDrag>
+#include <QTimer>
 
 #include <algorithm>
 
@@ -81,9 +82,6 @@ PlaylistView::PlaylistView(PlaylistPtr pl, QWidget* parent) :
 
 	init_view();
 
-	connect(m->model, &PlaylistItemModel::sig_data_ready, this, &PlaylistView::refresh);
-	connect(pl.get(), &Playlist::Base::sig_current_track_changed, this, &PlaylistView::goto_row);
-
 	Set::listen<Set::PL_ShowNumbers>(this, &PlaylistView::sl_columns_changed);
 	Set::listen<Set::PL_ShowCovers>(this, &PlaylistView::sl_columns_changed);
 	Set::listen<Set::PL_ShowNumbers>(this, &PlaylistView::sl_columns_changed);
@@ -96,7 +94,13 @@ PlaylistView::PlaylistView(PlaylistPtr pl, QWidget* parent) :
 	new QShortcut(QKeySequence(Qt::Key_Return), this, SLOT(play_selected_track()), nullptr, Qt::WidgetShortcut);
 	new QShortcut(QKeySequence(Qt::Key_Enter), this, SLOT(play_selected_track()), nullptr, Qt::WidgetShortcut);
 
-	this->goto_row(pl->current_track_index());
+	connect(m->model, &PlaylistItemModel::sig_data_ready, this, &PlaylistView::refresh);
+	connect(pl.get(), &Playlist::Base::sig_current_track_changed, this, &PlaylistView::goto_row);
+
+	QTimer::singleShot(100, this, [=](){
+		this->goto_to_current_track();
+	});
+
 }
 
 PlaylistView::~PlaylistView() {}
@@ -135,6 +139,7 @@ void PlaylistView::init_context_menu()
 
 	m->context_menu = new PlaylistContextMenu(this);
 
+	connect(m->context_menu, &LibraryContextMenu::sig_refresh_clicked, m->model, &PlaylistItemModel::refresh_data);
 	connect(m->context_menu, &LibraryContextMenu::sig_edit_clicked, this, [=](){ show_edit(); });
 	connect(m->context_menu, &LibraryContextMenu::sig_info_clicked, this, [=](){ show_info(); });
 	connect(m->context_menu, &LibraryContextMenu::sig_lyrics_clicked, this, [=](){ show_lyrics(); });
@@ -142,6 +147,7 @@ void PlaylistView::init_context_menu()
 	connect(m->context_menu, &PlaylistContextMenu::sig_remove_clicked, this, &PlaylistView::remove_selected_rows);
 	connect(m->context_menu, &PlaylistContextMenu::sig_clear_clicked, this, &PlaylistView::clear);
 	connect(m->context_menu, &PlaylistContextMenu::sig_rating_changed, this, &PlaylistView::rating_changed);
+	connect(m->context_menu, &PlaylistContextMenu::sig_jump_to_current_track, this, &PlaylistView::goto_to_current_track);
 	connect(m->context_menu, &PlaylistContextMenu::sig_bookmark_pressed, this, [=](Seconds timestamp){
 		IndexSet idxs = this->selected_items();
 		if(idxs.size() > 0){
@@ -294,6 +300,11 @@ void PlaylistView::play_selected_track()
 	emit sig_double_clicked(min_row);
 }
 
+void PlaylistView::goto_to_current_track()
+{
+	goto_row(m->model->current_track());
+}
+
 void PlaylistView::remove_selected_rows()
 {
 	int min_row = min_selected_item();
@@ -313,6 +324,7 @@ void PlaylistView::delete_selected_tracks()
 	IndexSet selections = selected_items();
 	emit sig_delete_tracks(selections);
 }
+
 
 void PlaylistView::clear()
 {
@@ -341,7 +353,7 @@ void PlaylistView::contextMenuEvent(QContextMenuEvent* e)
 
 	LibraryContextMenu::Entries entry_mask = 0;
 	if(row_count() > 0)	{
-		entry_mask = (LibraryContextMenu::EntryClear);
+		entry_mask = (LibraryContextMenu::EntryClear | LibraryContextMenu::EntryRefresh);
 	}
 
 	IndexSet selections = selected_items();
@@ -362,7 +374,6 @@ void PlaylistView::contextMenuEvent(QContextMenuEvent* e)
 		entry_mask |= PlaylistContextMenu::EntryRating;
 		entry_mask |= LibraryContextMenu::EntryDelete;
 
-
 		if(selections.size() == 1)
 		{
 			MetaData md = m->model->metadata(selections.first());
@@ -379,6 +390,10 @@ void PlaylistView::contextMenuEvent(QContextMenuEvent* e)
 		{
 			entry_mask |= PlaylistContextMenu::EntryBookmarks;
 		}
+	}
+
+	if(m->model->current_track() >= 0){
+		entry_mask |= PlaylistContextMenu::EntryCurrentTrack;
 	}
 
 	m->context_menu->show_actions(entry_mask);
@@ -478,13 +493,13 @@ bool PlaylistView::viewportEvent(QEvent* event)
 {
 	bool success = SearchableTableView::viewportEvent(event);
 
-	if(event->type() == QEvent::Resize)
-	{
+	if(event->type() == QEvent::Resize) {
 		refresh();
 	}
 
 	return success;
 }
+
 
 void PlaylistView::skin_changed()
 {

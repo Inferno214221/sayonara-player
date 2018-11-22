@@ -617,7 +617,7 @@ bool Tracks::deleteTracks(const MetaDataList& v_md)
 
 	db().commit();
 
-	sp_log(Log::Info) << "Deleted " << deleted_tracks << " of " << v_md.size() << " tracks";
+	sp_log(Log::Info, this) << "Deleted " << deleted_tracks << " of " << v_md.size() << " tracks";
 
 	return (deleted_tracks == v_md.size());
 }
@@ -628,7 +628,7 @@ bool Tracks::deleteInvalidTracks(const QString& library_path, MetaDataList& doub
 
 	MetaDataList v_md;
 	if(!getAllTracks(v_md)){
-		sp_log(Log::Error) << "Cannot get tracks from db";
+		sp_log(Log::Error, this) << "Cannot get tracks from db";
 		return false;
 	}
 

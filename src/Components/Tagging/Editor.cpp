@@ -314,20 +314,13 @@ void Editor::apply_artists_and_albums_to_md()
 
 		MetaData& md = m->v_md[i];
 
-		ArtistId artist_id =		m->get_artist_id(md.artist());
-		AlbumId album_id =			m->get_album_id(md.album());
-
-		if(md.album_artist().isEmpty()){
-			md.set_album_artist(md.artist(), md.artist_id);
-		}
-
-		else {
-			ArtistId album_artist_id =	m->get_artist_id(md.album_artist());
-			md.set_album_artist_id(album_artist_id);
-		}
+		ArtistId artist_id =	m->get_artist_id(md.artist());
+		AlbumId album_id =		m->get_album_id(md.album());
+		ArtistId album_artist_id =	m->get_artist_id(md.album_artist());
 
 		md.album_id = album_id;
 		md.artist_id = artist_id;
+		md.set_album_artist_id(album_artist_id);
 	}
 }
 

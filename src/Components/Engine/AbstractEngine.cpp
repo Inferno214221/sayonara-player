@@ -116,7 +116,7 @@ bool Base::change_metadata(const MetaData& md)
 	{
 		m->md = MetaData();
 
-		sp_log(Log::Warning) << "uri = 0";
+		sp_log(Log::Warning, this) << "uri = 0";
 		return false;
 	}
 

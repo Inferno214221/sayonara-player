@@ -110,8 +110,8 @@ public:
 	}
 };
 
-Logger sp_log(const Log& type);
 Logger sp_log(const Log& type, const std::string& data);
+Logger sp_log(const Log& type, const char* data);
 
 template<typename T>
 typename std::enable_if< std::is_class<T>::value, Logger>::type

@@ -28,71 +28,67 @@
 #include <QFrame>
 #include <QMap>
 
-class QAbstractItemView;
+class SearchableViewInterface;
 class QEvent;
 class QKeyEvent;
 class QFocusEvent;
 class QHideEvent;
 
 class MiniSearchEventFilter :
-        public QObject
+		public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 
 signals:
-    void sig_tab_pressed();
-    void sig_focus_lost();
+	void sig_tab_pressed();
+	void sig_focus_lost();
 
 public:
-    using QObject::QObject;
+	using QObject::QObject;
 
 protected:
-    bool eventFilter(QObject* o, QEvent* e) override;
+	bool eventFilter(QObject* o, QEvent* e) override;
 };
 
 
 class MiniSearcher :
-        public Gui::WidgetTemplate<QFrame>
+		public Gui::WidgetTemplate<QFrame>
 {
-    Q_OBJECT
+	Q_OBJECT
 	PIMPL(MiniSearcher)
 
 signals:
-    void sig_reset();
+	void sig_reset();
 	void sig_text_changed(const QString&);
 	void sig_find_next_row();
 	void sig_find_prev_row();
 
 private slots:
-	void line_edit_focus_lost();
-	void left_clicked();
-	void right_clicked();
+	void prev_result();
+	void next_result();
 
 private:
 	bool is_initiator(QKeyEvent* event) const;
-    void init(const QString& text);
-    bool check_and_init(QKeyEvent* event);
+	void init(const QString& text);
+	bool check_and_init(QKeyEvent* event);
 	QRect calc_geo() const;
 
 protected:
-    void language_changed() override;
+	void language_changed() override;
 
-    void keyPressEvent(QKeyEvent* e) override;
-
+	void keyPressEvent(QKeyEvent* e) override;
 	void showEvent(QShowEvent* e) override;
-    void focusOutEvent(QFocusEvent* e) override;
+	void hideEvent(QHideEvent* e) override;
+	void focusOutEvent(QFocusEvent* e) override;
 
 public:
-    MiniSearcher(QAbstractItemView* parent);
+	MiniSearcher(SearchableViewInterface* parent);
 	virtual ~MiniSearcher();
 
-    void    handle_key_press(QKeyEvent* e);
-    void    set_extra_triggers(const QMap<QChar, QString>& triggers);
-    QString get_current_text();
-    void    set_number_results(int results);
-    void    add_tooltip_text(const QString& str);
-    void    reset_tooltip();
-	void	set_padding(int padding);
+	void    handle_key_press(QKeyEvent* e);
+	void    set_extra_triggers(const QMap<QChar, QString>& triggers);
+	QString current_text();
+	void    set_number_results(int results);
 
 public slots:
 	void reset();

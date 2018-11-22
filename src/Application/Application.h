@@ -51,6 +51,7 @@ private:
 	void shutdown();
 
 private slots:
+	void remote_control_activated();
 	void session_end_requested(QSessionManager& manager);
 	void create_playlist();
 };

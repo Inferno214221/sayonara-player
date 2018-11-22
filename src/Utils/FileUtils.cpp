@@ -107,7 +107,7 @@ void Util::File::remove_files_in_directory(const QString& dir_name, const QStrin
 	{
 		success = d.rmdir(dir_name);
 		if(!success){
-			sp_log(Log::Warning) << "Could not remove dir " << dir_name;
+			sp_log(Log::Warning, "FileUtils") << "Could not remove dir " << dir_name;
 		}
 	}
 }

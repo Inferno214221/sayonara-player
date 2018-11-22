@@ -57,13 +57,14 @@
 struct MetaData::Private
 {
 	QString			title;
+	QString			comment;
+	QString         filepath;
 	Util::Set<GenreID> genres;
 	ArtistId		album_artist_id;
 	HashValue		album_artist_idx;
 	HashValue		album_idx;
 	HashValue		artist_idx;
-	QString			comment;
-	QString         filepath;
+
 	RadioMode       radio_mode;
 
 	Private() :
@@ -76,38 +77,38 @@ struct MetaData::Private
 
 	Private(const Private& other) :
 		CASSIGN(title),
+		CASSIGN(comment),
+		CASSIGN(filepath),
 		CASSIGN(genres),
 		CASSIGN(album_artist_id),
 		CASSIGN(album_artist_idx),
 		CASSIGN(album_idx),
 		CASSIGN(artist_idx),
-		CASSIGN(comment),
-		CASSIGN(filepath),
 		CASSIGN(radio_mode)
 	{}
 
 	Private(Private&& other) :
 		CMOVE(title),
+		CMOVE(comment),
+		CMOVE(filepath),
 		CMOVE(genres),
 		CMOVE(album_artist_id),
 		CMOVE(album_artist_idx),
 		CMOVE(album_idx),
 		CMOVE(artist_idx),
-		CMOVE(comment),
-		CMOVE(filepath),
 		CMOVE(radio_mode)
 	{}
 
 	Private& operator=(const Private& other)
 	{
 		ASSIGN(title);
+		ASSIGN(comment);
+		ASSIGN(filepath);
 		ASSIGN(genres);
 		ASSIGN(album_artist_id);
 		ASSIGN(album_artist_idx);
 		ASSIGN(album_idx);
 		ASSIGN(artist_idx);
-		ASSIGN(comment);
-		ASSIGN(filepath);
 		ASSIGN(radio_mode);
 
 		return *this;
@@ -116,13 +117,13 @@ struct MetaData::Private
 	Private& operator=(Private&& other)
 	{
 		MOVE(title);
+		MOVE(comment);
+		MOVE(filepath);
 		MOVE(genres);
 		MOVE(album_artist_id);
 		MOVE(album_artist_idx);
 		MOVE(album_idx);
 		MOVE(artist_idx);
-		MOVE(comment);
-		MOVE(filepath);
 		MOVE(radio_mode);
 
 		return *this;
@@ -308,12 +309,22 @@ ArtistId MetaData::album_artist_id() const
 		return artist_id;
 	}
 
+	QString str = artist_pool().value(m->album_artist_idx);
+	if(str.isEmpty()){
+		return artist_id;
+	}
+
 	return m->album_artist_id;
 }
 
 QString MetaData::album_artist() const
 {
-	return artist_pool().value(m->album_artist_idx);
+	QString str = artist_pool().value(m->album_artist_idx);
+	if(str.isEmpty()){
+		return artist();
+	}
+
+	return str;
 }
 
 void MetaData::set_album_artist(const QString& album_artist, ArtistId id)

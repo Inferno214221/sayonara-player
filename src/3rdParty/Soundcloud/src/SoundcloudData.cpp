@@ -486,7 +486,7 @@ bool SC::Database::updateTrack(const MetaData& md)
 {
 	Query q(module());
 
-	sp_log(Log::Info) << "insert new track: " << md.filepath();
+	sp_log(Log::Info, this) << "insert new track: " << md.filepath();
 
 	QString querytext =
 				"UPDATE tracks SET "
@@ -547,7 +547,7 @@ bool SC::Database::insertTrackIntoDatabase(const MetaData &md, int artist_id, in
 		return updateTrack(md);
 	}
 
-	sp_log(Log::Info) << "insert new track: " << md.filepath();
+	sp_log(Log::Info, this) << "insert new track: " << md.filepath();
 
 	QString querytext =
 			"INSERT INTO tracks "
@@ -592,7 +592,7 @@ bool SC::Database::store_metadata(const MetaDataList& v_md)
 	for(const MetaData& md : v_md) {
 		sp_log(Log::Debug, this) << "Looking for " << md.artist() << " and " << md.album();
 		if(md.album_id == -1 || md.artist_id == -1){
-			sp_log(Log::Warning) << "AlbumID = " << md.album_id << " - ArtistID = " << md.artist_id;
+			sp_log(Log::Warning, this) << "AlbumID = " << md.album_id << " - ArtistID = " << md.artist_id;
 			continue;
 		}
 
@@ -612,7 +612,7 @@ bool SC::Database::apply_fixes()
 
 	bool success = check_and_create_table("Settings", creation_string);
 	if(!success){
-		sp_log(Log::Error) << "Cannot create settings table for soundcloud";
+		sp_log(Log::Error, this) << "Cannot create settings table for soundcloud";
 		return false;
 	}
 

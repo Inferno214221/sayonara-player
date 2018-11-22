@@ -127,8 +127,8 @@ void TrackChangedThread::response_update(const QByteArray& data)
 void TrackChangedThread::error_update(const QString& error){
 	WebAccess* lfm_wa = static_cast<WebAccess*>(sender());
 
-	sp_log(Log::Warning) << "Last.fm: Cannot update track";
-	sp_log(Log::Warning) << "Last.fm: " << error;
+	sp_log(Log::Warning, this) << "Last.fm: Cannot update track";
+	sp_log(Log::Warning, this) << "Last.fm: " << error;
 
 	lfm_wa->deleteLater();
 }
@@ -151,7 +151,8 @@ void TrackChangedThread::search_similar_artists(const MetaData& md)
 	}
 
 	// check if already in cache
-	if(m->sim_artists_cache.contains(m->md.artist())) {
+	if(m->sim_artists_cache.contains(m->md.artist()))
+	{
 		const ArtistMatch& artist_match = m->sim_artists_cache.value(m->md.artist());
 		evaluate_artist_match(artist_match);
 		return;
@@ -205,7 +206,8 @@ void TrackChangedThread::evaluate_artist_match(const ArtistMatch& artist_match)
 	quality_org = quality;
 	QMap<QString, int> possible_artists;
 
-	while(possible_artists.isEmpty()) {
+	while(possible_artists.isEmpty())
+	{
 		possible_artists = filter_available_artists(artist_match, quality);
 
 		switch(quality){
@@ -247,7 +249,7 @@ QMap<QString, int> TrackChangedThread::filter_available_artists(const ArtistMatc
 	QMap<QString, int> possible_artists;
 
 	DB::Connector* db = DB::Connector::instance();
-	DB::LibraryDatabase* lib_db = db->library_db(-1, 0);
+	DB::LibraryDatabase* lib_db = db->library_db(m->md.library_id, 0);
 
 	for(auto it=bin.cbegin(); it!=bin.cend(); it++)
 	{
@@ -278,5 +280,5 @@ void TrackChangedThread::response_sim_artists(const QByteArray& data)
 
 void TrackChangedThread::error_sim_artists(const QString& error)
 {
-	sp_log(Log::Warning) << "Last.fm: Search similar artists" << error;
+	sp_log(Log::Warning, this) << "Last.fm: Search similar artists" << error;
 }

@@ -32,14 +32,13 @@ namespace Pipeline
         Q_OBJECT
     public:
         explicit Convert(Engine::Base* engine, QObject *parent=nullptr);
-        ~Convert();
+		~Convert() override;
 
         bool set_uri(gchar* uri) override;
         bool init(GstState state=GST_STATE_NULL) override;
         GstElement* get_source() const override;
 
         bool set_target_uri(gchar* uri);
-
 
     public slots:
         void play() override;
@@ -55,7 +54,6 @@ namespace Pipeline
         GstElement* _audio_sink=nullptr;
         GstElement* _resampler=nullptr;
         GstElement* _xingheader=nullptr;
-
 
     protected:
         bool create_elements() override;

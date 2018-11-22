@@ -28,14 +28,13 @@ using namespace Library;
 
 struct RatingDelegate::Private
 {
-	bool enabled;
 	int	rating_column;
+	bool enabled;
 
-	Private(bool enabled, int rating_column)
-	{
-		this->enabled = enabled;
-		this->rating_column = rating_column;
-	}
+	Private(bool enabled, int rating_column) :
+		rating_column(rating_column),
+		enabled(enabled)
+	{}
 };
 
 RatingDelegate::RatingDelegate(QObject* parent, int rating_column, bool enabled) :

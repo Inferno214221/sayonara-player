@@ -58,12 +58,20 @@ namespace Library
 		PIMPL(ItemView)
 
 	protected:
-		struct MergeData
+		class MergeData
 		{
-			Util::Set<Id>	source_ids;
-			Id				target_id;
+			PIMPL(MergeData)
 
-			bool is_valid() const;
+			public:
+				MergeData(const Util::Set<Id>& source_ids, Id target_id, LibraryId library_id);
+				MergeData(const MergeData& other);
+				~MergeData();
+
+				MergeData& operator=(const MergeData& other);
+				bool			is_valid() const;
+				Util::Set<Id>	source_ids() const;
+				Id				target_id() const;
+				LibraryId		library_id() const;
 		};
 
 	signals:
@@ -108,7 +116,6 @@ namespace Library
 
 		bool is_valid_drag_position(const QPoint &p) const override;
 
-
 	protected:
 		// Events implemented in LibraryViewEvents.cpp
 		virtual void mousePressEvent(QMouseEvent* event) override;
@@ -141,6 +148,8 @@ namespace Library
 
 		MergeData calc_mergedata() const;
 		virtual void run_merge_operation(const MergeData& md);
+
+		int viewport_height() const override;
 
 
 	protected slots:

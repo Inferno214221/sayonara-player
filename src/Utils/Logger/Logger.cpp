@@ -229,8 +229,13 @@ Logger& Logger::operator <<(const QSize& size)
 
 Logger& Logger::operator <<(const QRect& r)
 {
-	(*this) << "Rect(l:" << r.left() << ", r:" << r.right()
-			<< ", w:" << r.width() << ", h:" << r.height();
+	(*this) << "Rect("
+			<< "left:" << r.left()
+			<< ", right:" << r.right()
+			<< ", top:" << r.top()
+			<< ", bottom:" << r.bottom()
+			<< ", width:" << r.width()
+			<< ", heigh:" << r.height();
 	return *this;
 }
 
@@ -296,12 +301,6 @@ Logger& Logger::operator << (const std::string& str)
 /*************************
  * Static Log functions
  * ***********************/
-Logger sp_log(const Log& type)
-{
-	return sp_log(type, std::string());
-}
-
-
 Logger sp_log(const Log& type, const std::string& data)
 {
 	QString class_name;
@@ -309,13 +308,24 @@ Logger sp_log(const Log& type, const std::string& data)
 	{
 #ifdef HAVE_CXX_ABI
 		int status;
-		char* content = abi::__cxa_demangle(data.c_str(), 0, 0, &status);
-		class_name = QString(content);
-		free(content);
+		char* content = abi::__cxa_demangle(data.c_str(), nullptr, nullptr, &status);
+		if(content && strnlen(content, 3) > 1){
+			class_name = QString(content);
+			free(content);
+		}
+		else {
+			class_name = QString::fromStdString(data);
+		}
+
 #else
 		class_name = QString::fromStdString(data);
 #endif
 	}
 
 	return Logger(type, class_name);
+}
+
+Logger sp_log(const Log& type, const char* data)
+{
+	return sp_log(type, std::string(data));
 }

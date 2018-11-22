@@ -193,10 +193,6 @@ void CoverButton::cover_lookup_finished(bool success)
 
 void CoverButton::force_cover(const QPixmap& pm)
 {
-	if(!_settings->get<Set::Cover_LoadFromFile>()){
-		return;
-	}
-
 	this->setToolTip(tr("Cover source: Audio file"));
 
 	m->current_cover = pm;

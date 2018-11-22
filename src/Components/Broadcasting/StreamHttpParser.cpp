@@ -93,7 +93,7 @@ StreamHttpParser::HttpAnswer StreamHttpParser::parse(const QByteArray& data)
 	m->host = "";
 
 	if(data.isEmpty()) {
-		sp_log(Log::Error) << "Fail.. Cannot read from socket";
+		sp_log(Log::Error, this) << "Fail.. Cannot read from socket";
 		return HttpAnswer::Fail;
 	}
 

@@ -71,11 +71,7 @@ public:
 				continue;
 			}
 
-			if(info.path().contains(path)){
-				return false;
-			}
-
-			if(path.contains(info.path())){
+			if(Util::File::clean_filename(info.path()) == Util::File::clean_filename(path)){
 				return false;
 			}
 		}

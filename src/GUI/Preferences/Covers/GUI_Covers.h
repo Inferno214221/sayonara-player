@@ -50,6 +50,7 @@ private slots:
 	void current_row_changed(int row);
 	void delete_covers_from_db();
 	void delete_cover_files();
+	void fetch_covers_www_triggered(bool b);
 };
 
 

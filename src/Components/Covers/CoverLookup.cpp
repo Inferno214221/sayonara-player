@@ -34,6 +34,7 @@
 #include "Database/Connector.h"
 #include "Database/CoverConnector.h"
 
+#include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/Album.h"
@@ -173,7 +174,8 @@ bool Lookup::fetch_cover(const Cover::Location& cl, bool also_www)
 	}
 
 	{// we have to fetch the cover from the internet
-		if(also_www)
+		bool fetch_from_www_allowed = Settings::instance()->get<Set::Cover_FetchFromWWW>();
+		if(also_www && fetch_from_www_allowed)
 		{
 			sp_log(Log::Debug, this) << "Start new thread for " << cl.identifer();
 			return start_new_thread( cl );

@@ -172,7 +172,7 @@ void Convert::set_quality(LameBitrate quality)
 
 
 	if(cbr > 0) {
-		sp_log(Log::Info) << "Set Constant bitrate: " << cbr;
+		sp_log(Log::Info, this) << "Set Constant bitrate: " << cbr;
 		g_object_set(_lame,
 					 "cbr", true,
 					 "bitrate", cbr,
@@ -182,7 +182,7 @@ void Convert::set_quality(LameBitrate quality)
 	}
 
 	else {
-		sp_log(Log::Info) << "Set variable bitrate: " << vbr;
+		sp_log(Log::Info, this) << "Set variable bitrate: " << vbr;
 		g_object_set(_lame,
 					 "cbr", false,
 					 "quality", vbr,

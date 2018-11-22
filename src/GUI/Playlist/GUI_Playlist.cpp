@@ -132,6 +132,7 @@ void GUI_Playlist::bookmark_selected(int idx, Seconds timestamp)
 	PlayManager::instance()->seek_abs_ms(timestamp * 1000);
 }
 
+
 void GUI_Playlist::add_playlist_button_pressed()
 {
 	Handler::instance()->create_empty_playlist();

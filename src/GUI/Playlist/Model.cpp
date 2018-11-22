@@ -202,11 +202,11 @@ bool PlaylistItemModel::setData(const QModelIndex& index, const QVariant& value,
 Qt::ItemFlags PlaylistItemModel::flags(const QModelIndex &index) const
 {
 	int row = index.row();
-	if (!index.isValid()){
+	if(!index.isValid()){
 		return (Qt::ItemIsEnabled | Qt::ItemIsDropEnabled);
 	}
 
-	if( between(row, m->pl->count()))
+	if(between(row, m->pl->count()))
 	{
 		const MetaData& md = metadata(row);
 		if(md.is_disabled){
@@ -457,6 +457,11 @@ void PlaylistItemModel::set_drag_index(int drag_index)
 	{
 		emit dataChanged(index(drag_index, 0), index(drag_index, columnCount() - 1));
 	}
+}
+
+void PlaylistItemModel::refresh_data()
+{
+	m->pl->enable_all();
 }
 
 void PlaylistItemModel::look_changed()

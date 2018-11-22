@@ -196,13 +196,11 @@ void ArtistView::album_artists_triggered(bool b)
 
 void ArtistView::run_merge_operation(const ItemView::MergeData& mergedata)
 {
-#pragma message(__FILE__ " set library id here!")
-
-	Tagging::UserOperations* uto = new Tagging::UserOperations(-1, this);
+	Tagging::UserOperations* uto = new Tagging::UserOperations(mergedata.library_id(), this);
 
 	connect(uto, &Tagging::UserOperations::sig_finished, uto, &Tagging::UserOperations::deleteLater);
 
-	uto->merge_artists(mergedata.source_ids, mergedata.target_id);
+	uto->merge_artists(mergedata.source_ids(), mergedata.target_id());
 }
 
 void ArtistView::album_artists_changed()

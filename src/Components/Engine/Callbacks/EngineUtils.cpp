@@ -146,7 +146,7 @@ bool Utils::has_element(GstBin* bin, GstElement* element)
 bool Utils::test_and_error(void* element, const QString& errorstr)
 {
 	if(!element) {
-		sp_log(Log::Error) << errorstr;
+		sp_log(Log::Error, "EngineUtils") << errorstr;
 		return false;
 	}
 
@@ -156,7 +156,7 @@ bool Utils::test_and_error(void* element, const QString& errorstr)
 bool Utils::test_and_error_bool(bool b, const QString& errorstr)
 {
 	if(!b) {
-		sp_log(Log::Error) << errorstr;
+		sp_log(Log::Error, "EngineUtils") << errorstr;
 		return false;
 	}
 

@@ -37,6 +37,8 @@ public:
 	int index_by_model_index(const QModelIndex& idx) const override;
 	ModelIndexRange model_indexrange_by_index(int idx) const override;
 
+	int viewport_height() const override;
+
 protected:
 	void keyPressEvent(QKeyEvent *e) override;
 };

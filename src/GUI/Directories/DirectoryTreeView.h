@@ -108,7 +108,6 @@ protected:
 	void dragMoveEvent(QDragMoveEvent *event) override;
 	void dropEvent(QDropEvent *event) override;
 
-
 	// SayonaraSelectionView
 	int index_by_model_index(const QModelIndex& idx) const override;
 	ModelIndexRange model_indexrange_by_index(int idx) const override;

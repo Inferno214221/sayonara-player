@@ -93,7 +93,7 @@ bool Base::close_db()
 		return false;
 	}
 
-	sp_log(Log::Info) << "close database " << m->filename << "...";
+	sp_log(Log::Info, this) << "close database " << m->filename << "...";
 
 	if(db().isOpen()){
 		db().close();
@@ -114,12 +114,12 @@ bool Base::create_db()
 	{
 		success = dir.mkdir(".Sayonara");
 		if(!success) {
-			sp_log(Log::Error) << "Could not create .Sayonara dir";
+			sp_log(Log::Error, this) << "Could not create .Sayonara dir";
 			return false;
 		}
 
 		else{
-			sp_log(Log::Info) << "Successfully created .Sayonara dir";
+			sp_log(Log::Info, this) << "Successfully created .Sayonara dir";
 		}
 	}
 
@@ -127,7 +127,7 @@ bool Base::create_db()
 
 	//if ret is still not true we are not able to create the directory
 	if(!success) {
-		sp_log(Log::Error) << "Could not change to .Sayonara dir";
+		sp_log(Log::Error, this) << "Could not change to .Sayonara dir";
 		return false;
 	}
 
@@ -140,16 +140,16 @@ bool Base::create_db()
 	}
 
 	if (!success) {
-		sp_log(Log::Info) << "Database " << m->connection_name << " not existent yet";
-		sp_log(Log::Info) << "Copy " <<  source_db_file << " to " << m->connection_name;
+		sp_log(Log::Info, this) << "Database " << m->connection_name << " not existent yet";
+		sp_log(Log::Info, this) << "Copy " <<  source_db_file << " to " << m->connection_name;
 
 		if (QFile::copy(source_db_file, m->connection_name)) {
-			sp_log(Log::Info) << "DB file has been copied to " <<   m->connection_name;
+			sp_log(Log::Info, this) << "DB file has been copied to " <<   m->connection_name;
 			success = true;
 		}
 
 		else {
-			sp_log(Log::Error) << "Fatal Error: could not copy DB file to " << m->connection_name;
+			sp_log(Log::Error, this) << "Fatal Error: could not copy DB file to " << m->connection_name;
 			success = false;
 		}
 	}

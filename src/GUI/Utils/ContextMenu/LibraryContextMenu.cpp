@@ -30,6 +30,7 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language.h"
 #include "Utils/ExtensionSet.h"
+#include "Utils/Message/Message.h"
 
 #include <QMap>
 #include <QTimer>
@@ -368,19 +369,16 @@ void LibraryContextMenu::show_cover_triggered(bool b)
 
 void LibraryContextMenu::show_filter_ext_bar_changed()
 {
-	m->filter_extension_action->setChecked(_settings->get<Set::Lib_ShowFilterExtBar>());
+	m->show_filter_extension_bar_action->setChecked(_settings->get<Set::Lib_ShowFilterExtBar>());
 }
 
 void LibraryContextMenu::show_filter_extension_bar_triggered(bool b)
 {
 	_settings->set<Set::Lib_ShowFilterExtBar>(b);
 
-	// little hack to trigger menu
-	if(m->filter_extension_menu->actions().count() > 2)
+	if(b)
 	{
-		QString text = m->filter_extension_menu->actions().at(0)->text();
-		bool checked = m->filter_extension_menu->actions().at(0)->isChecked();
-		emit sig_filter_triggered(text, checked);
+		Message::info(tr("The file extension toolbar is visible when there are more than one different track types available in the track view"), tr("File extension filter"));
 	}
 }
 

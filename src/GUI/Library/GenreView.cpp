@@ -172,15 +172,15 @@ void GenreView::rename_pressed()
 		return;
 	}
 
-	bool ok;
-	QString new_name;
-	for(const QTreeWidgetItem* item : selected_items) {
+	for(const QTreeWidgetItem* item : selected_items)
+	{
+		bool ok;
 		QString text = item->text(0);
 
-		new_name = QInputDialog::getText(this,
+		QString new_name = QInputDialog::getText(this,
 						Lang::get(Lang::Genre),
 						Lang::get(Lang::Rename) + " " + text + ": ",
-						QLineEdit::Normal, QString(), &ok);
+						QLineEdit::Normal, text, &ok);
 		if(ok && !new_name.isEmpty()){
 			m->genre_fetcher->rename_genre(Genre(text), Genre(new_name));
 		}
