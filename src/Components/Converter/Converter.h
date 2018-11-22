@@ -18,24 +18,29 @@ signals:
 	void sig_progress(int percent);
 
 public:
-	Converter(const QString& target_dir, int num_threads, int quality, QObject* parent=nullptr);
+	Converter(int num_threads, int quality, QObject* parent=nullptr);
 	virtual ~Converter();
 
+	virtual QStringList supported_input_formats() const=0;
+	virtual QString binary() const=0;
+
+	QString		log_directory() const;
 	QString		target_file(const MetaData& md) const;
 	void 		add_metadata(const MetaDataList& v_md);
 	int 		num_errors() const;
 	int 		quality() const;
 	int			num_files() const;
+	bool		is_available() const;
 
 private:
 	bool start_process(const QString& process_name, const QStringList& arguments);
 
 protected:
-	virtual QStringList get_process_entry(const MetaData& md) const=0;
+	virtual QStringList process_entry(const MetaData& md) const=0;
 	virtual QString extension() const=0;
 
 public slots:
-	void start();
+	void start(const QString& target_dir);
 	void stop();
 
 private slots:

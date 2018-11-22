@@ -27,8 +27,7 @@ struct Converter::Private
 	int quality;
 	bool stopped;
 
-	Private(const QString& target_dir, int num_processes, int quality) :
-		target_dir(target_dir),
+	Private(int num_processes, int quality) :
 		current_index(0),
 		num_errors(0),
 		num_processes(num_processes),
@@ -37,10 +36,10 @@ struct Converter::Private
 	{}
 };
 
-Converter::Converter(const QString& target_dir, int num_processes, int quality, QObject* parent) :
+Converter::Converter(int num_processes, int quality, QObject* parent) :
 	QObject(parent)
 {
-	m = Pimpl::make<Private>(target_dir, num_processes, quality);
+	m = Pimpl::make<Private>(num_processes, quality);
 }
 
 Converter::~Converter()
@@ -48,23 +47,32 @@ Converter::~Converter()
 	Util::File::delete_files(m->log_files);
 }
 
+QString Converter::log_directory() const
+{
+	return Util::File::clean_filename(Util::sayonara_path("encoder-logs"));
+}
+
 void Converter::add_metadata(const MetaDataList& v_md)
 {
 	m->v_md.clear();
 
+	QStringList formats = supported_input_formats();
 	for(const MetaData& md : v_md)
 	{
-		QString f = md.filepath();
-		if(f.endsWith("flac", Qt::CaseInsensitive) ||
-			f.endsWith("wav", Qt::CaseInsensitive))
+		QString filepath = md.filepath();
+		for(const QString& format : formats)
 		{
-			m->v_md << md;
+			if(filepath.endsWith(format, Qt::CaseInsensitive)){
+				m->v_md << md;
+				break;
+			}
 		}
 	}
 }
 
-void Converter::start()
+void Converter::start(const QString& target_directory)
 {
+	m->target_dir = target_directory;
 	m->running_processes.clear();
 	m->num_errors = 0;
 	m->processes.clear();
@@ -73,16 +81,16 @@ void Converter::start()
 
 	for(const MetaData& md : m->v_md)
 	{
-		m->processes << get_process_entry(md);
+		m->processes << process_entry(md);
 	}
 
 	m->num_commands = m->v_md.count();
 
 	for(int i=0; i<std::min(m->processes.size(), m->num_processes); i++)
-	{
-		QStringList process = m->processes.takeFirst();
-		QString process_name = process.takeFirst();
-		QStringList arguments = process;
+	{		
+		QString process_name = binary();
+		QStringList arguments = m->processes.takeFirst();
+
 		sp_log(Log::Debug, this) << process_name << " " << arguments.join(" ");
 		start_process(process_name, arguments);
 	}
@@ -118,6 +126,12 @@ int Converter::num_files() const
 	return m->v_md.count();
 }
 
+bool Converter::is_available() const
+{
+	return QProcess::startDetached(binary(), {"--version"});
+}
+
+
 QString Converter::target_file(const MetaData& md) const
 {
 	QString filename, dirname;
@@ -132,14 +146,16 @@ bool Converter::start_process(const QString& command, const QStringList& argumen
 {
 	m->current_index++;
 
-	QString log_file = QString("encoder_%1.out").arg(m->current_index);
+	Util::File::create_dir(log_directory());
+	QString log_file = log_directory() + "/" + QString("encoder_%1_%2.out").arg(binary(), m->current_index);
+
 	m->log_files << log_file;
 
 	int id = Util::random_number(100, 1000000);
 
 	QProcess* process = new QProcess(this);
-	process->setStandardOutputFile(Util::sayonara_path(QString("encoder_%1.out").arg(m->current_index)));
-	process->setStandardErrorFile(Util::sayonara_path(QString("encoder_%1.out").arg(m->current_index)));
+	process->setStandardOutputFile(log_file);
+	process->setStandardErrorFile(log_file);
 	process->setProperty("id", id);
 	m->running_processes.insert(id, process);
 

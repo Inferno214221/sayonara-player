@@ -3,17 +3,26 @@
 
 #include <QStringList>
 
-OggConverter::OggConverter(const QString& target_dir, int num_processes, int quality, QObject* parent) :
-	Converter(target_dir, num_processes, quality, parent)
+OggConverter::OggConverter(int num_processes, int quality, QObject* parent) :
+	Converter(num_processes, quality, parent)
 {}
 
 OggConverter::~OggConverter() {}
 
-QStringList OggConverter::get_process_entry(const MetaData& md) const
+QStringList OggConverter::supported_input_formats() const
+{
+	return {"flac", "wav"};
+}
+
+QString OggConverter::binary() const
+{
+	return "oggenc";
+}
+
+QStringList OggConverter::process_entry(const MetaData& md) const
 {
 	QStringList ret
 	{
-		QString("oggenc"),
 		QString("-q"), QString("%1").arg(quality()),
 		QString("-o"), QString("%1").arg(target_file(md)),
 		QString("%1").arg(md.filepath())

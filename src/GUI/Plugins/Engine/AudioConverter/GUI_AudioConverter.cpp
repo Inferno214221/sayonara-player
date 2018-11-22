@@ -26,15 +26,16 @@
 #include "Utils/Logger/Logger.h"
 #include "Utils/Language.h"
 #include "Utils/Settings/Settings.h"
+#include "Utils/FileUtils.h"
+#include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Set.h"
+
+#include "GUI/Utils/Style.h"
 
 #include "Components/Playlist/PlaylistHandler.h"
 #include "Components/Playlist/AbstractPlaylist.h"
 #include "Components/Converter/OggConverter.h"
 #include "Components/Converter/LameConverter.h"
-
-#include "Utils/FileUtils.h"
-#include "Utils/MetaData/MetaDataList.h"
-#include "Utils/Set.h"
 
 #include <QFileDialog>
 #include <QStringList>
@@ -75,8 +76,6 @@ void GUI_AudioConverter::init_ui()
 
 	connect(ui->btn_start, &QPushButton::clicked, this, &GUI_AudioConverter::btn_start_clicked);
 	connect(ui->combo_codecs, &QComboBox::currentTextChanged, this, &GUI_AudioConverter::combo_codecs_changed);
-
-	//Set::listen<SetNoDB::MP3enc_found>(this, &GUI_AudioConverter::mp3_enc_found);
 }
 
 
@@ -103,65 +102,98 @@ void GUI_AudioConverter::btn_start_clicked()
 		return;
 	}
 
-	QString cvt_target_path = _settings->get<Set::Engine_CovertTargetPath>();
-	QString dir = QFileDialog::getExistingDirectory(this, "Choose target directory", cvt_target_path);
-	if(dir.isEmpty()){
-		return;
-	}
-
-	ui->pb_progress->setVisible(true);
-	ui->pb_progress->setValue(0);
-	ui->btn_start->setVisible(false);
-	ui->btn_stop_encoding->setVisible(true);
-
-	_settings->set<Set::Engine_CovertTargetPath>(dir);
+	int n_threads = 8;
 
 	PlaylistConstPtr pl = Playlist::Handler::instance()->playlist(Playlist::Handler::instance()->current_index());
 	MetaDataList v_md = pl->metadata();
 
 	Converter* converter;
-	if(ui->stackedWidget->currentIndex() == 0)
-	{
-		converter = new OggConverter(dir, 4, ui->sb_ogg_quality->value(), this);
-	}
-
-	else
-	{
-		if(ui->rb_cbr->isChecked()){
-			converter = new LameConverter(dir, 4, ui->rb_cbr->isChecked(), ui->combo_cbr->currentText().toInt(), this );
+	{ // create and check converter
+		if(ui->stackedWidget->currentIndex() == 0)
+		{
+			converter = new OggConverter(n_threads, ui->sb_ogg_quality->value(), this);
 		}
 
-		else{
-			converter = new LameConverter(dir, 4, ui->rb_cbr->isChecked(), ui->combo_vbr->currentText().toInt(), this );
+		else
+		{
+			if(ui->rb_cbr->isChecked()){
+				converter = new LameConverter(n_threads, ui->rb_cbr->isChecked(), ui->combo_cbr->currentText().toInt(), this );
+			}
+
+			else{
+				converter = new LameConverter(n_threads, ui->rb_cbr->isChecked(), ui->combo_vbr->currentText().toInt(), this );
+			}
+		}
+
+		if(!converter->is_available())
+		{
+			Message::error(tr("Cannot find encoder") + (" '" + converter->binary() + "'") );
+			converter->deleteLater();
+			return;
 		}
 	}
 
-	converter->add_metadata(v_md);
-	if(converter->num_files() == 0)
-	{
-		Message::error(tr("Playlist does not contain FLAC or WAV (PCM) files. No file will be converted."));
-		converter->deleteLater();
-		return;
+	{ // check input files
+		converter->add_metadata(v_md);
+		if(converter->num_files() == 0)
+		{
+			QString error_text = tr("Playlist does not contain files supported by the converter");
+			Message::error
+			(
+				error_text +
+				QString(" (%1). ").arg(converter->supported_input_formats().join(", ")) +
+				tr("No file will be converted.")
+			);
+
+			converter->deleteLater();
+			return;
+		}
+
+		if(converter->num_files() < v_md.count())
+		{
+			QString error_text = tr("Playlist does not contain files supported by the converter");
+			Message::warning
+			(
+				error_text +
+				QString(" (%1). ").arg(converter->supported_input_formats().join(", ")) +
+				tr("These files will be ignored")
+			);
+		}
 	}
 
-	else if(converter->num_files() < v_md.count())
-	{
-		Message::error(tr("Not all files in the playlist are of type FLAC or WAV (PCM). Those files will be ignored."));
+	QString dir;
+	{ // set target dir
+		QString cvt_target_path = _settings->get<Set::Engine_CovertTargetPath>();
+		dir = QFileDialog::getExistingDirectory(this, "Choose target directory", cvt_target_path);
+		if(dir.isEmpty()){
+			converter->deleteLater();
+			return;
+		}
+		_settings->set<Set::Engine_CovertTargetPath>(dir);
 	}
 
 	connect(converter, &OggConverter::sig_finished, this, &GUI_AudioConverter::convert_finished);
 	connect(converter, &OggConverter::sig_progress, ui->pb_progress, &QProgressBar::setValue);
 	connect(ui->btn_stop_encoding, &QPushButton::clicked, converter, &OggConverter::stop);
 
-	converter->start();
+	ui->pb_progress->setVisible(true);
+	ui->pb_progress->setValue(0);
+	ui->btn_start->setVisible(false);
+	ui->btn_stop_encoding->setVisible(true);
+
+	converter->start(dir);
 }
 
 void GUI_AudioConverter::convert_finished()
 {
 	OggConverter* converter = static_cast<OggConverter*>(sender());
 
-	if(converter && converter->num_errors() > 0){
-		Message::error(tr("Failed to convert %1 tracks").arg(converter->num_errors()));
+	if(converter && converter->num_errors() != 100){
+		Message::error( QStringList
+		{
+			tr("Failed to convert %1 tracks").arg(converter->num_errors()),
+			tr("Please check the log files") + ". " + Util::create_link(converter->log_directory(), Style::is_dark(), "file://" + converter->log_directory())
+		}.join("<br>"));
 	}
 
 	else {

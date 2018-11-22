@@ -9,14 +9,17 @@ class LameConverter :
 	Q_OBJECT
 	PIMPL(LameConverter)
 
-public:
-	LameConverter(const QString& target_dir, int num_threads, bool cbr, int quality, QObject* parent);
-	~LameConverter() override;
+	public:
+		LameConverter(int num_threads, bool cbr, int quality, QObject* parent);
+		~LameConverter() override;
 
-	// Converter interface
-protected:
-	QStringList get_process_entry(const MetaData& md) const override;
-	QString extension() const override;
+		QStringList supported_input_formats() const override;
+
+		// Converter interface
+	protected:
+		QString binary() const override;
+		QStringList process_entry(const MetaData& md) const override;
+		QString extension() const override;
 };
 
 #endif // LAMECONVERTER_H

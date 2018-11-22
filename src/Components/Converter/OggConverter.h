@@ -12,11 +12,14 @@ class OggConverter :
 	Q_OBJECT
 
 public:
-	OggConverter(const QString& target_dir, int num_threads, int quality, QObject* parent=nullptr);
+	OggConverter(int num_threads, int quality, QObject* parent=nullptr);
 	~OggConverter() override;
 
+	QStringList supported_input_formats() const override;
+
 protected:
-	QStringList get_process_entry(const MetaData& md) const override;
+	QString binary() const override;
+	QStringList process_entry(const MetaData& md) const override;
 	QString extension() const override;
 };
 

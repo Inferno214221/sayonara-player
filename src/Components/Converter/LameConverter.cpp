@@ -11,19 +11,28 @@ struct LameConverter::Private
 	{}
 };
 
-LameConverter::LameConverter(const QString& target_dir, int num_threads, bool cbr, int quality, QObject* parent) :
-	Converter(target_dir, num_threads, quality, parent)
+LameConverter::LameConverter(int num_threads, bool cbr, int quality, QObject* parent) :
+	Converter(num_threads, quality, parent)
 {
 	m = Pimpl::make<Private>(cbr);
 }
 
 LameConverter::~LameConverter() {}
 
-QStringList LameConverter::get_process_entry(const MetaData& md) const
+QStringList LameConverter::supported_input_formats() const
+{
+	return {"flac", "wav"};
+}
+
+QString LameConverter::binary() const
+{
+	return "lame";
+}
+
+QStringList LameConverter::process_entry(const MetaData& md) const
 {
 	QStringList ret
 	{
-		"lame",
 		"--id3v2-only",
 		"--verbose",
 		QString("--tt"), QString("%1").arg(md.title()).toUtf8().data(),
