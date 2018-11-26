@@ -29,6 +29,7 @@
 #include "Utils/Utils.h"
 #include "Utils/Set.h"
 #include "Utils/Tagging/Tagging.h"
+#include "Utils/Tagging/TaggingCover.h"
 #include "Utils/MetaData/Genre.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/MetaData/Album.h"
@@ -278,7 +279,7 @@ void Editor::set_metadata(const MetaDataList& v_md)
 
 bool Editor::is_cover_supported(int idx) const
 {
-	return Utils::is_cover_supported( m->v_md[idx].filepath() );
+	return Tagging::Covers::is_cover_supported( m->v_md[idx].filepath() );
 }
 
 bool Editor::can_load_entire_album() const
@@ -405,7 +406,7 @@ void Editor::run()
 
 		const MetaData& md = m->v_md[idx];
 
-		Tagging::Utils::write_cover(md.filepath(), pm);
+		Tagging::Covers::write_cover(md.filepath(), pm);
 		if(n_operations > 5){
 			emit sig_progress( (i++ * 100) / n_operations);
 		}

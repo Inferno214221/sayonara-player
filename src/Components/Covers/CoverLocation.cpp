@@ -23,7 +23,7 @@
 #include "CoverFetchManager.h"
 #include "LocalCoverSearcher.h"
 
-#include "Utils/Tagging/Tagging.h"
+#include "Utils/Tagging/TaggingCover.h"
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaDataList.h"
@@ -397,7 +397,7 @@ Location Location::cover_location(const MetaData& md)
 		cl = cover_location(md.album(), md.artist());
 	}
 
-	if(cl.audio_file_source().isEmpty() && !md.filepath().isEmpty() && Tagging::Utils::has_cover(md.filepath())) {
+	if(cl.audio_file_source().isEmpty() && !md.filepath().isEmpty() && Tagging::Covers::has_cover(md.filepath())) {
 		cl.set_audio_file_source(md.filepath(), cl.cover_path());
 	}
 
@@ -443,9 +443,9 @@ QString Location::preferred_path() const
 		bool target_exists = FileUtils::exists(this->audio_file_target());
 		if(!target_exists)
 		{
-			if(Tagging::Utils::has_cover(this->audio_file_source()))
+			if(Tagging::Covers::has_cover(this->audio_file_source()))
 			{
-				QPixmap pm = Tagging::Utils::extract_cover(this->audio_file_source());
+				QPixmap pm = Tagging::Covers::extract_cover(this->audio_file_source());
 				if(!pm.isNull())
 				{
 					target_exists = pm.save(this->audio_file_target());

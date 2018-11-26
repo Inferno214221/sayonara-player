@@ -1,5 +1,7 @@
 #include "Cover.h"
 #include <taglib/flacpicture.h>
+#include <taglib/flacfile.h>
+#include <taglib/oggfile.h>
 
 namespace TL=TagLib;
 
@@ -16,7 +18,14 @@ bool Xiph::CoverFrame::is_frame_found() const
 
 bool Xiph::CoverFrame::map_tag_to_model(Models::Cover& model)
 {
-	TL::List<TL::FLAC::Picture*> pictures = this->tag()->pictureList();
+
+#if TAGLIB_MINOR_VERSION < 10
+	Q_UNUSED(model)
+	return false;
+#else
+
+	TL::Ogg::XiphComment* xiph = this->tag();
+	TL::List<TL::FLAC::Picture*> pictures = xiph->pictureList();
 	if(pictures.isEmpty())
 	{
 		model.mime_type = QString();
@@ -58,10 +67,17 @@ bool Xiph::CoverFrame::map_tag_to_model(Models::Cover& model)
 	}
 
 	return true;
+#endif
 }
 
 bool Xiph::CoverFrame::map_model_to_tag(const Models::Cover& model)
 {
+
+#if TAGLIB_MINOR_VERSION < 10
+	Q_UNUSED(model)
+	return false;
+#else
+
 	this->tag()->removeAllPictures();
 
 	unsigned int length = static_cast<unsigned int>(model.image_data.size());
@@ -77,4 +93,5 @@ bool Xiph::CoverFrame::map_model_to_tag(const Models::Cover& model)
 	tag->addPicture(pic); // do not delete the picture, because tag will take ownership
 
 	return true;
+#endif
 }
