@@ -133,25 +133,26 @@ void GUI_Spectrum::finalize_initialization()
 	m->resize_steps(bins, current_style().n_rects);
 	m->spec.resize((size_t) bins, -100.0f);
 
-#pragma message "add spectrum receiver"
-
+	Engine::Handler::instance()->register_spectrum_receiver(this);
 	PlayerPlugin::Base::finalize_initialization();
 
 	update();
 }
-
 
 QString GUI_Spectrum::get_name() const
 {
 	return "Spectrum";
 }
 
-
 QString GUI_Spectrum::get_display_name() const
 {
 	return tr("Spectrum");
 }
 
+bool GUI_Spectrum::is_active() const
+{
+	return this->isVisible();
+}
 
 void GUI_Spectrum::retranslate_ui() {}
 
@@ -167,7 +168,6 @@ void GUI_Spectrum::set_spectrum(const SpectrumList& spec)
 	update();
 }
 
-
 void GUI_Spectrum::do_fadeout_step()
 {
 	for(auto it=m->spec.begin(); it!= m->spec.end(); it++)
@@ -177,7 +177,6 @@ void GUI_Spectrum::do_fadeout_step()
 
 	update();
 }
-
 
 void GUI_Spectrum::update_style(int new_index)
 {
@@ -221,12 +220,12 @@ void GUI_Spectrum::paintEvent(QPaintEvent* e)
 
 	QPainter painter(this);
 
-	float widget_height = (float) height();
+	float widget_height = height() * 1.0f;
 
 	ColorStyle style = current_style();
 	int n_rects = style.n_rects;
 	int n_fading_steps = style.n_fading_steps;
-	int h_rect = (widget_height / n_rects) - style.ver_spacing;
+	int h_rect = static_cast<int>((widget_height / n_rects) - style.ver_spacing);
 	int border_y = style.ver_spacing;
 	int border_x = style.hor_spacing;
 
@@ -245,7 +244,7 @@ void GUI_Spectrum::paintEvent(QPaintEvent* e)
 	for(int i=offset; i<ninety + 1; i++)
 	{
 		// if this is one bar, how tall would it be?
-		int h =  m->spec[i] * widget_height;
+		int h =  static_cast<int>(m->spec.at(i) * widget_height);
 
 		// how many colored rectangles would fit into this bar?
 		int colored_rects = h / (h_rect + border_y) - 1 ;
@@ -253,7 +252,7 @@ void GUI_Spectrum::paintEvent(QPaintEvent* e)
 		colored_rects = std::max(colored_rects, 0);
 
 		// we start from bottom with painting
-		int y = widget_height - h_rect;
+		int y = static_cast<int>(widget_height - h_rect);
 
 		// run vertical
 

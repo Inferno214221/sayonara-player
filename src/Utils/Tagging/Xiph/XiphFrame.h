@@ -40,6 +40,8 @@ namespace Xiph
 			virtual bool map_tag_to_model(Model_t& model)=0;
 			virtual bool map_model_to_tag(const Model_t& model)=0;
 
+			// those methods are usually called by the implementations
+			// in order to retrieve and write back the data easily
 			bool value(TagLib::String& str) const
 			{
 				TagLib::Ogg::XiphComment* tag = this->tag();
@@ -90,9 +92,23 @@ namespace Xiph
 					return false;
 				}
 
-				tag->removeField( this->tag_key() );
+				TagLib::String key = this->tag_key();
+				if(!key.isEmpty())
+				{
+					tag->removeField( this->tag_key() );
+				}
 
 				return map_model_to_tag(model);
+			}
+
+			virtual bool is_frame_found() const
+			{
+				if(this->tag_key().isEmpty())
+				{
+					return false;
+				}
+
+				return this->tag()->contains("METADTA_BLOCK_PICTURE");
 			}
 	};
 }

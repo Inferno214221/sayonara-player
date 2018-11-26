@@ -476,10 +476,9 @@ void Playback::enable_visualizer(bool b)
 
 	bool show_level = _settings->get<Set::Engine_ShowLevel>();
 	bool show_spectrum = _settings->get<Set::Engine_ShowSpectrum>();
+
 	g_object_set(G_OBJECT(m->level), "post-messages", show_level, nullptr);
 	g_object_set(G_OBJECT(m->spectrum), "post-messages", show_spectrum, nullptr);
-
-
 }
 
 void Playback::s_show_visualizer_changed()

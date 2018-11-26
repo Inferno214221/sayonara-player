@@ -25,9 +25,7 @@
 
 Xiph::DiscnumberFrame::DiscnumberFrame(TagLib::Ogg::XiphComment* tag) :
     Xiph::XiphFrame<Models::Discnumber>(tag, "DISCNUMBER")
-{
-
-}
+{}
 
 Xiph::DiscnumberFrame::~DiscnumberFrame() {}
 

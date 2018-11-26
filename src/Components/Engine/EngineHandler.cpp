@@ -21,6 +21,7 @@
 #include "EngineHandler.h"
 
 #include "Components/PlayManager/PlayManager.h"
+#include "Components/Engine/Playback/SoundOutReceiver.h"
 #include "Interfaces/RawSoundReceiver/RawSoundReceiverInterface.h"
 
 #include "Playback/PlaybackEngine.h"
@@ -249,6 +250,16 @@ void Handler::unregister_raw_sound_receiver(RawSoundReceiverInterface* receiver)
 
 	m->raw_sound_receiver.removeOne(receiver);
 	m->engine->set_n_sound_receiver(m->raw_sound_receiver.size());
+}
+
+void Handler::register_level_receiver(LevelReceiver* receiver)
+{
+	m->engine->add_level_receiver(receiver);
+}
+
+void Handler::register_spectrum_receiver(SpectrumReceiver* receiver)
+{
+	m->engine->add_spectrum_receiver(receiver);
 }
 
 

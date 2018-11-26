@@ -138,9 +138,8 @@ void GUI_LevelPainter::finalize_initialization()
 	m->resize_steps(current_style().n_rects);
 	m->set_level(0, 0);
 
-#pragma message "add level receiver"
-
 	PlayerPlugin::Base::finalize_initialization();
+	Engine::Handler::instance()->register_level_receiver(this);
 
 	reload();
 }
@@ -155,6 +154,11 @@ QString GUI_LevelPainter::get_name() const
 QString GUI_LevelPainter::get_display_name() const
 {
 	return tr("Level");
+}
+
+bool GUI_LevelPainter::is_active() const
+{
+	return this->isVisible();
 }
 
 

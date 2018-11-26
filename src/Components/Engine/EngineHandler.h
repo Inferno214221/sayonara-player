@@ -29,6 +29,8 @@
 #define EngineHandler_change_track_md static_cast<void (EngineHandler::*) (const MetaData& md)>(&EngineHandler::change_track)
 
 class RawSoundReceiverInterface;
+class LevelReceiver;
+class SpectrumReceiver;
 
 namespace Engine
 {
@@ -51,6 +53,9 @@ namespace Engine
 
 		void register_raw_sound_receiver(RawSoundReceiverInterface* receiver);
 		void unregister_raw_sound_receiver(RawSoundReceiverInterface* receiver);
+
+		void register_level_receiver(LevelReceiver* receiver);
+		void register_spectrum_receiver(SpectrumReceiver* receiver);
 
 		void set_equalizer(int band, int value);
 

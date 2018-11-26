@@ -548,12 +548,11 @@ void Playback::set_spectrum(const SpectrumList& vals)
 {
 	for(SpectrumReceiver* rcv : m->spectrum_receiver)
 	{
-		if(rcv){
+		if(rcv && rcv->is_active()){
 			rcv->set_spectrum(vals);
 		}
 	}
 }
-
 
 void Playback::add_level_receiver(LevelReceiver* receiver)
 {
@@ -564,7 +563,7 @@ void Playback::set_level(float left, float right)
 {
 	for(LevelReceiver* rcv : m->level_receiver)
 	{
-		if(rcv){
+		if(rcv && rcv->is_active()){
 			rcv->set_level(left, right);
 		}
 	}
