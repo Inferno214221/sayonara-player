@@ -2,6 +2,7 @@
 #define AUDIOCONVERTER_H
 
 #include <QObject>
+#include <QProcess>
 #include "Utils/Pimpl.h"
 
 class MetaDataList;
@@ -45,6 +46,7 @@ public slots:
 
 private slots:
 	void process_finished(int ret);
+	void error_occured(QProcess::ProcessError err);
 };
 
 #endif // OGGCONVERTER_H

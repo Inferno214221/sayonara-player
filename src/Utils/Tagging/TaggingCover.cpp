@@ -239,7 +239,7 @@ bool Tagging::Covers::is_cover_supported(const QString& filepath)
 #if TAGLIB_MAJOR_VERSION == 1 && TAGLIB_MINOR_VERSION < 10
 	return supported;
 #else
-	return supported && (tag_type == Tagging::TagType::Xiph);
+	return supported | (tag_type == Tagging::TagType::Xiph);
 #endif
 }
 

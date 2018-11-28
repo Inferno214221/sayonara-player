@@ -69,6 +69,7 @@ MetaDataInfo::MetaDataInfo(const MetaDataList& v_md) :
 	Bitrate bitrate_min = std::numeric_limits<Bitrate>::max();
 	Bitrate bitrate_max = 0;
 	uint16_t tracknum = 0;
+	QStringList filetypes;
 	bool calc_track_num = (v_md.size() == 1);
 
 	QStringList genres;
@@ -134,6 +135,8 @@ MetaDataInfo::MetaDataInfo(const MetaDataList& v_md) :
 		{
 			m->paths << md.filepath();
 		}
+
+		filetypes << Util::File::get_file_extension(md.filepath());
 	}
 
 	if(bitrate_max > 0){
@@ -144,8 +147,11 @@ MetaDataInfo::MetaDataInfo(const MetaDataList& v_md) :
 		insert_interval_info_field(InfoStrings::Year, year_min, year_max);
 	}
 
+	filetypes.removeDuplicates();
+
 	insert_numeric_info_field(InfoStrings::nTracks, v_md.count());
 	insert_filesize(filesize);
+	insert_filetype(filetypes);
 	insert_playing_time(length);
 
 	genres.removeDuplicates();
@@ -325,6 +331,11 @@ void MetaDataInfo::insert_filesize(uint64_t filesize)
 	_info.insert(InfoStrings::Filesize, str);
 }
 
+void MetaDataInfo::insert_filetype(const QStringList& filetypes)
+{
+	_info.insert(InfoStrings::Filetype, filetypes.join(", "));
+}
+
 QString MetaDataInfo::header() const
 {
 	return _header;
@@ -358,6 +369,9 @@ QString MetaDataInfo::get_info_string(InfoStrings idx) const
 			return Lang::get(Lang::Bitrate);
 		case InfoStrings::Genre:
 			return Lang::get(Lang::Genre);
+		case InfoStrings::Filetype:
+			return Lang::get(Lang::Filetype);
+
 		default: break;
 	}
 

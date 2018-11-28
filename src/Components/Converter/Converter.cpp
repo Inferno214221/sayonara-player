@@ -91,7 +91,6 @@ void Converter::start(const QString& target_directory)
 		QString process_name = binary();
 		QStringList arguments = m->processes.takeFirst();
 
-		sp_log(Log::Debug, this) << process_name << " " << arguments.join(" ");
 		start_process(process_name, arguments);
 	}
 }
@@ -147,7 +146,9 @@ bool Converter::start_process(const QString& command, const QStringList& argumen
 	m->current_index++;
 
 	Util::File::create_dir(log_directory());
-	QString log_file = log_directory() + "/" + QString("encoder_%1_%2.out").arg(binary(), m->current_index);
+	QString log_file = log_directory() + "/" + QString("encoder_%1_%2.out")
+															.arg(binary())
+															.arg(m->current_index);
 
 	m->log_files << log_file;
 
@@ -160,7 +161,9 @@ bool Converter::start_process(const QString& command, const QStringList& argumen
 	m->running_processes.insert(id, process);
 
 	connect(process, static_cast<void (QProcess::*)(int)>(&QProcess::finished), this, &Converter::process_finished);
+	connect(process, &QProcess::errorOccurred, this, &Converter::error_occured);
 
+	sp_log(Log::Debug, this) << "Starting: " << command << " " << arguments.join(" ");
 	process->start(command, arguments);
 
 	return true;
@@ -168,6 +171,7 @@ bool Converter::start_process(const QString& command, const QStringList& argumen
 
 void Converter::process_finished(int ret)
 {
+	sp_log(Log::Debug, this) << "process finished";
 	QProcess* process = static_cast<QProcess*>(sender());
 	Q_UNUSED(process);
 
@@ -183,13 +187,23 @@ void Converter::process_finished(int ret)
 
 	if(!m->processes.isEmpty() && !m->stopped)
 	{
-		QStringList process = m->processes.takeFirst();
-		QString process_name = process.takeFirst();
-		QStringList arguments = process;
-		start_process(process_name, arguments);
+		QStringList arguments = m->processes.takeFirst();
+		start_process(binary(), arguments);
 	}
 
-	else if(m->running_processes.size() == 0){
+	else if(m->running_processes.isEmpty()){
 		emit sig_finished();
 	}
+
+	else {
+		sp_log(Log::Warning, this) << "Something strange happened";
+	}
+}
+
+void Converter::error_occured(QProcess::ProcessError err)
+{
+	QProcess* p = static_cast<QProcess*>(this->sender());
+
+	sp_log(Log::Warning, this) << p->program() << ": " << p->arguments().join(", ");
+	sp_log(Log::Warning, this) << "Error: QProcess:ProcessError " << err;
 }
