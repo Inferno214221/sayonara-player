@@ -171,7 +171,11 @@ class SettingIdentifier
 	INST(int,				Engine_Vol)				/* Volume */
 	INST(bool,				Engine_Mute)				/* Muted/unmuted */
 	INST(int,				Engine_CurTrackPos_s)			/* position of track (used to load old position) */
-	INST(int,				Engine_ConvertQuality)			/* Convert quality, 1-10 for variable, > 64 for fixed bitrate */
+	INST(int,				Engine_ConvertNumberThreads)	/* Number of threads */
+	INST(QString,			Engine_ConvertPreferredConverter)		/* Preferred Converter: ogg, lame cbr, lame vbr */
+	INST(int,				Engine_ConvertQualityLameVBR)	/* Lame Quality for variable bitrate 1-10 */
+	INST(int,				Engine_ConvertQualityLameCBR)	/* 64 - 320 */
+	INST(int,				Engine_ConvertQualityOgg)		/* 1 - 10 */
 	INST(QString,			Engine_CovertTargetPath)		/* last convert path */
 	INST(int,				Engine_SpectrumBins)			/* number of spectrum bins */
 	INST(bool,				Engine_ShowSpectrum)			/* show spectrum */

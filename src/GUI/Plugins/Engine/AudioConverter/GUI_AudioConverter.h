@@ -34,22 +34,31 @@ class GUI_AudioConverter :
 	UI_CLASS(GUI_AudioConverter)
 	PIMPL(GUI_AudioConverter)
 
-public:
-	explicit GUI_AudioConverter(QWidget *parent=nullptr);
-	virtual ~GUI_AudioConverter() override;
+	public:
+		explicit GUI_AudioConverter(QWidget *parent=nullptr);
+		virtual ~GUI_AudioConverter() override;
 
-	QString	get_name() const override;
-	QString	get_display_name() const override;
+		QString	get_name() const override;
+		QString	get_display_name() const override;
 
-private slots:
-	void mp3_enc_found();
-	void btn_start_clicked();
-	void convert_finished();
-	void combo_codecs_changed(const QString& text);
+	private slots:
+		void btn_start_clicked();
+		void convert_finished();
+		void combo_codecs_changed(int idx);
+		void reset_buttons();
 
-private:
-	void retranslate_ui() override;
-	void init_ui() override;
+		void ogg_quality_changed(int value);
+		void combo_cbr_lame_changed(int idx);
+		void lame_vbr_changed(int idx);
+
+		void num_threads_changed(int value);
+
+	private:
+		void check_start_button();
+
+		void retranslate_ui() override;
+		void init_ui() override;
 };
+
 
 #endif // GUI_AUDIOCONVERTER_H

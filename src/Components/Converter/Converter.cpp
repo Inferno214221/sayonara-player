@@ -87,7 +87,7 @@ void Converter::start(const QString& target_directory)
 	m->num_commands = m->v_md.count();
 
 	for(int i=0; i<std::min(m->processes.size(), m->num_processes); i++)
-	{		
+	{
 		QString process_name = binary();
 		QStringList arguments = m->processes.takeFirst();
 
@@ -161,7 +161,12 @@ bool Converter::start_process(const QString& command, const QStringList& argumen
 	m->running_processes.insert(id, process);
 
 	connect(process, static_cast<void (QProcess::*)(int)>(&QProcess::finished), this, &Converter::process_finished);
+
+#if QT_VERSION < 0x050600
+	connect(process, static_cast<void (QProcess::*)(QProcess::ProcessError)>(&QProcess::error), this, &Converter::error_occured);
+#else
 	connect(process, &QProcess::errorOccurred, this, &Converter::error_occured);
+#endif
 
 	sp_log(Log::Debug, this) << "Starting: " << command << " " << arguments.join(" ");
 	process->start(command, arguments);
@@ -205,5 +210,7 @@ void Converter::error_occured(QProcess::ProcessError err)
 	QProcess* p = static_cast<QProcess*>(this->sender());
 
 	sp_log(Log::Warning, this) << p->program() << ": " << p->arguments().join(", ");
-	sp_log(Log::Warning, this) << "Error: QProcess:ProcessError " << err;
+	sp_log(Log::Warning, this) << "Error: QProcess:ProcessError " << p->errorString();
+
+	process_finished(10000 + err);
 }

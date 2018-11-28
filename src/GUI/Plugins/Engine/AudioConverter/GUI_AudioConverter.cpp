@@ -40,6 +40,13 @@
 #include <QFileDialog>
 #include <QStringList>
 
+enum StackedWidgetPage
+{
+	Ogg=0,
+	LameCBR,
+	LameVBR
+};
+
 struct GUI_AudioConverter::Private
 {
 	bool				mp3_enc_available;
@@ -69,31 +76,54 @@ void GUI_AudioConverter::init_ui()
 {
 	setup_parent(this, &ui);
 
-	ui->pb_progress->setVisible(false);
-	ui->stackedWidget->setCurrentIndex(0);
-	ui->rb_cbr->setChecked(true);
-	ui->btn_stop_encoding->setVisible(false);
+	QString preferred_converter = _settings->get<Set::Engine_ConvertPreferredConverter>();
+	int idx = std::max(ui->combo_codecs->findText(preferred_converter), 0);
+
+	ui->combo_codecs->setCurrentIndex(idx);
+	ui->sw_preferences->setCurrentIndex(idx);
+
+	ui->sw_progress->setCurrentIndex(0);
+	ui->sb_threads->setValue(_settings->get<Set::Engine_ConvertNumberThreads>());
+
+	int lame_cbr = _settings->get<Set::Engine_ConvertQualityLameCBR>();
+	ui->combo_cbr->setCurrentIndex(ui->combo_cbr->findText(QString::number(lame_cbr)));
+
+	ui->sb_lame_vbr->setValue(_settings->get<Set::Engine_ConvertQualityLameVBR>());
+	ui->sb_ogg_quality->setValue(_settings->get<Set::Engine_ConvertQualityOgg>());
 
 	connect(ui->btn_start, &QPushButton::clicked, this, &GUI_AudioConverter::btn_start_clicked);
-	connect(ui->combo_codecs, &QComboBox::currentTextChanged, this, &GUI_AudioConverter::combo_codecs_changed);
-}
+	connect(ui->combo_codecs, combo_activated_int, this, &GUI_AudioConverter::combo_codecs_changed);
+	connect(ui->combo_cbr, combo_activated_int, this, &GUI_AudioConverter::combo_cbr_lame_changed);
 
+	connect(ui->sb_ogg_quality, spinbox_value_changed_int, this, &GUI_AudioConverter::ogg_quality_changed);
+	connect(ui->sb_lame_vbr, spinbox_value_changed_int, this, &GUI_AudioConverter::lame_vbr_changed);
+	connect(ui->sb_threads, spinbox_value_changed_int, this, &GUI_AudioConverter::num_threads_changed);
+
+	check_start_button();
+}
 
 QString GUI_AudioConverter::get_name() const
 {
 	return "Audio Converter";
 }
 
-
 QString GUI_AudioConverter::get_display_name() const
 {
 	return tr("Audio Converter");
 }
 
-
 void GUI_AudioConverter::retranslate_ui()
 {
+	int idx_codecs = ui->combo_codecs->currentIndex();
+	int idx_cbr = ui->combo_cbr->currentIndex();
+
 	ui->retranslateUi(this);
+	ui->lab_threads->setText("#" + tr("Threads"));
+
+	ui->combo_codecs->setCurrentIndex(idx_codecs);
+	ui->combo_cbr->setCurrentIndex(idx_cbr);
+
+	check_start_button();
 }
 
 void GUI_AudioConverter::btn_start_clicked()
@@ -102,27 +132,26 @@ void GUI_AudioConverter::btn_start_clicked()
 		return;
 	}
 
-	int n_threads = 8;
+	int n_threads = _settings->get<Set::Engine_ConvertNumberThreads>();
 
 	PlaylistConstPtr pl = Playlist::Handler::instance()->playlist(Playlist::Handler::instance()->current_index());
 	MetaDataList v_md = pl->metadata();
 
-	Converter* converter;
+	Converter* converter=nullptr;
 	{ // create and check converter
-		if(ui->stackedWidget->currentIndex() == 0)
+		switch(ui->sw_preferences->currentIndex())
 		{
-			converter = new OggConverter(n_threads, ui->sb_ogg_quality->value(), this);
-		}
-
-		else
-		{
-			if(ui->rb_cbr->isChecked()){
-				converter = new LameConverter(n_threads, ui->rb_cbr->isChecked(), ui->combo_cbr->currentText().toInt(), this );
-			}
-
-			else{
-				converter = new LameConverter(n_threads, ui->rb_cbr->isChecked(), ui->combo_vbr->currentText().toInt(), this );
-			}
+			case StackedWidgetPage::Ogg:
+				converter = new OggConverter(n_threads, ui->sb_ogg_quality->value(), this);
+				break;
+			case StackedWidgetPage::LameCBR:
+				converter = new LameConverter(n_threads, true, ui->combo_cbr->currentText().toInt(), this );
+				break;
+			case StackedWidgetPage::LameVBR:
+				converter = new LameConverter(n_threads, false, ui->sb_lame_vbr->value(), this );
+				break;
+			default:
+				return;
 		}
 
 		if(!converter->is_available())
@@ -175,11 +204,10 @@ void GUI_AudioConverter::btn_start_clicked()
 	connect(converter, &OggConverter::sig_finished, this, &GUI_AudioConverter::convert_finished);
 	connect(converter, &OggConverter::sig_progress, ui->pb_progress, &QProgressBar::setValue);
 	connect(ui->btn_stop_encoding, &QPushButton::clicked, converter, &OggConverter::stop);
+	connect(ui->btn_stop_encoding, &QPushButton::clicked, this, &GUI_AudioConverter::reset_buttons);
 
-	ui->pb_progress->setVisible(true);
 	ui->pb_progress->setValue(0);
-	ui->btn_start->setVisible(false);
-	ui->btn_stop_encoding->setVisible(true);
+	ui->sw_progress->setCurrentIndex(1);
 
 	converter->start(dir);
 }
@@ -188,37 +216,90 @@ void GUI_AudioConverter::convert_finished()
 {
 	OggConverter* converter = static_cast<OggConverter*>(sender());
 
-	if(converter && converter->num_errors() != 100){
+	if(converter)
+	{
 		Message::error( QStringList
 		{
 			tr("Failed to convert %1 tracks").arg(converter->num_errors()),
 			tr("Please check the log files") + ". " + Util::create_link(converter->log_directory(), Style::is_dark(), "file://" + converter->log_directory())
 		}.join("<br>"));
+
+		converter->deleteLater();
 	}
 
 	else {
 		Message::info(tr("Successfully finished"));
 	}
 
-	ui->pb_progress->setVisible(false);
-	ui->btn_start->setVisible(true);
-	ui->btn_stop_encoding->setVisible(false);
-
-	converter->deleteLater();
+	reset_buttons();
 }
 
-void GUI_AudioConverter::combo_codecs_changed(const QString& text)
+void GUI_AudioConverter::combo_codecs_changed(int idx)
 {
-	if(text.toLower().contains("mp3") || text.toLower().contains("lame")){
-		ui->stackedWidget->setCurrentIndex(1);
+	if(idx < 0){
+		return;
+	}
+
+	ui->sw_preferences->setCurrentIndex(idx);
+
+	QString text = ui->combo_codecs->currentText();
+	_settings->set<Set::Engine_ConvertPreferredConverter>(text);
+
+	check_start_button();
+}
+
+void GUI_AudioConverter::reset_buttons()
+{
+	ui->sw_progress->setCurrentIndex(0);
+}
+
+void GUI_AudioConverter::num_threads_changed(int value)
+{
+	_settings->set<Set::Engine_ConvertNumberThreads>(value);
+}
+
+void GUI_AudioConverter::check_start_button()
+{
+	Converter* converter;
+	switch(ui->sw_preferences->currentIndex())
+	{
+		case StackedWidgetPage::Ogg:
+			converter = new OggConverter(1, ui->sb_ogg_quality->value(), this);
+			break;
+		case StackedWidgetPage::LameCBR:
+			converter = new LameConverter(1, true, ui->combo_cbr->currentText().toInt(), this );
+			break;
+		case StackedWidgetPage::LameVBR:
+			converter = new LameConverter(1, false, ui->sb_lame_vbr->value(), this );
+			break;
+		default:
+			return;
+	}
+
+	if(!converter->is_available()){
+		ui->btn_start->setEnabled(false);
+		ui->btn_start->setText(tr("Cannot find encoder") + (" '" + converter->binary() + "'"));
 	}
 
 	else {
-		ui->stackedWidget->setCurrentIndex(0);
+		ui->btn_start->setEnabled(true);
+		ui->btn_start->setText(tr("Start"));
 	}
 }
 
-void GUI_AudioConverter::mp3_enc_found()
+void GUI_AudioConverter::ogg_quality_changed(int value)
 {
-	m->mp3_enc_available = _settings->get<SetNoDB::MP3enc_found>();
+	_settings->set<Set::Engine_ConvertQualityOgg>(value);
 }
+
+void GUI_AudioConverter::lame_vbr_changed(int value)
+{
+	_settings->set<Set::Engine_ConvertQualityLameVBR>(value);
+}
+
+void GUI_AudioConverter::combo_cbr_lame_changed(int idx)
+{
+	Q_UNUSED(idx)
+	_settings->set<Set::Engine_ConvertQualityLameCBR>(ui->combo_cbr->currentText().toInt());
+}
+
