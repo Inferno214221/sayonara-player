@@ -12,7 +12,7 @@ class OggConverter :
 	Q_OBJECT
 
 public:
-	OggConverter(int num_threads, int quality, QObject* parent=nullptr);
+	OggConverter(int quality, QObject* parent=nullptr);
 	~OggConverter() override;
 
 	QStringList supported_input_formats() const override;

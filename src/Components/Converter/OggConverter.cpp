@@ -3,8 +3,8 @@
 
 #include <QStringList>
 
-OggConverter::OggConverter(int num_processes, int quality, QObject* parent) :
-	Converter(num_processes, quality, parent)
+OggConverter::OggConverter(int quality, QObject* parent) :
+	Converter(quality, parent)
 {}
 
 OggConverter::~OggConverter() {}

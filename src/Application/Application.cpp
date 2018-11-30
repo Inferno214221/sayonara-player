@@ -52,7 +52,9 @@
 #include "GUI/Directories/DirectoryWidgetContainer.h"
 
 #include "GUI/Plugins/PlaylistChooser/GUI_PlaylistChooser.h"
-#include "GUI/Plugins/Engine/AudioConverter/GUI_AudioConverter.h"
+#include "GUI/Plugins/AudioConverter/GUI_AudioConverter.h"
+#include "GUI/Plugins/Bookmarks/GUI_Bookmarks.h"
+#include "GUI/Plugins/Broadcasting/GUI_Broadcast.h"
 #include "GUI/Plugins/Engine/GUI_LevelPainter.h"
 #include "GUI/Plugins/Engine/GUI_Spectrum.h"
 #include "GUI/Plugins/Engine/Equalizer/GUI_Equalizer.h"
@@ -60,8 +62,6 @@
 #include "GUI/Plugins/Engine/Crossfader/GUI_Crossfader.h"
 #include "GUI/Plugins/Stream/GUI_Stream.h"
 #include "GUI/Plugins/Stream/GUI_Podcasts.h"
-#include "GUI/Plugins/Bookmarks/GUI_Bookmarks.h"
-#include "GUI/Plugins/Broadcasting/GUI_Broadcast.h"
 
 #include "GUI/Preferences/Broadcast/GUI_BroadcastSetup.h"
 #include "GUI/Preferences/Covers/GUI_Covers.h"

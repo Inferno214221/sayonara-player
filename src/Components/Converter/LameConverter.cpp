@@ -11,8 +11,8 @@ struct LameConverter::Private
 	{}
 };
 
-LameConverter::LameConverter(int num_threads, bool cbr, int quality, QObject* parent) :
-	Converter(num_threads, quality, parent)
+LameConverter::LameConverter(bool cbr, int quality, QObject* parent) :
+	Converter(quality, parent)
 {
 	m = Pimpl::make<Private>(cbr);
 }

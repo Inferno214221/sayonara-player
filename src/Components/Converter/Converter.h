@@ -19,7 +19,7 @@ signals:
 	void sig_progress(int percent);
 
 public:
-	Converter(int num_threads, int quality, QObject* parent=nullptr);
+	Converter(int quality, QObject* parent=nullptr);
 	virtual ~Converter();
 
 	virtual QStringList supported_input_formats() const=0;
@@ -41,7 +41,7 @@ protected:
 	virtual QString extension() const=0;
 
 public slots:
-	void start(const QString& target_dir);
+	void start(int num_threads, const QString& target_dir);
 	void stop();
 
 private slots:

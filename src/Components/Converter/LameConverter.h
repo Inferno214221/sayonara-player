@@ -10,7 +10,7 @@ class LameConverter :
 	PIMPL(LameConverter)
 
 	public:
-		LameConverter(int num_threads, bool cbr, int quality, QObject* parent);
+		LameConverter(bool cbr, int quality, QObject* parent);
 		~LameConverter() override;
 
 		QStringList supported_input_formats() const override;

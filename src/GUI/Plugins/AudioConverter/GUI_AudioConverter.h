@@ -27,6 +27,7 @@
 
 UI_FWD(GUI_AudioConverter)
 
+class Converter;
 class GUI_AudioConverter :
 		public PlayerPlugin::Base
 {
@@ -55,6 +56,7 @@ class GUI_AudioConverter :
 
 	private:
 		void check_start_button();
+		Converter* create_converter();
 
 		void retranslate_ui() override;
 		void init_ui() override;

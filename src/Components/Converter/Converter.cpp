@@ -27,19 +27,20 @@ struct Converter::Private
 	int quality;
 	bool stopped;
 
-	Private(int num_processes, int quality) :
+	Private(int quality) :
 		current_index(0),
+		num_commands(0),
 		num_errors(0),
-		num_processes(num_processes),
+		num_processes(0),
 		quality(quality),
 		stopped(false)
 	{}
 };
 
-Converter::Converter(int num_processes, int quality, QObject* parent) :
+Converter::Converter(int quality, QObject* parent) :
 	QObject(parent)
 {
-	m = Pimpl::make<Private>(num_processes, quality);
+	m = Pimpl::make<Private>(quality);
 }
 
 Converter::~Converter()
@@ -70,8 +71,9 @@ void Converter::add_metadata(const MetaDataList& v_md)
 	}
 }
 
-void Converter::start(const QString& target_directory)
+void Converter::start(int num_threads, const QString& target_directory)
 {
+	m->num_processes = num_threads;
 	m->target_dir = target_directory;
 	m->running_processes.clear();
 	m->num_errors = 0;
