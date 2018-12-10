@@ -35,6 +35,7 @@
 #include <QPoint>
 #include <QApplication>
 #include <QFont>
+#include <QThread>
 #include <type_traits>
 
 template<typename KeyClass>
@@ -161,7 +162,11 @@ bool SettingRegistry::init()
 	register_setting<Set::Engine_CurTrackPos_s>( "last_track_pos", 0 );
 	register_setting<Set::Engine_Vol>( "volume", 50 );
 	register_setting<Set::Engine_Mute>( "mute", false );
-	register_setting<Set::Engine_ConvertQuality>( "convert_quality", 0 );
+	register_setting<Set::AudioConvert_NumberThreads>("convert_number_threads", QThread::idealThreadCount());
+	register_setting<Set::AudioConvert_PreferredConverter>("convert_preferred_converter", "ogg");
+	register_setting<Set::AudioConvert_QualityLameVBR>( "convert_quality_lame_vbr", 7);
+	register_setting<Set::AudioConvert_QualityLameCBR>( "convert_quality_lame_cbr", 192);
+	register_setting<Set::AudioConvert_QualityOgg>("convert_quality_ogg", 7);
 	register_setting<Set::Engine_CovertTargetPath>( "convert_target_path", QDir::homePath() );
 	register_setting<Set::Engine_ShowLevel>( "show_level", false);
 	register_setting<Set::Engine_ShowSpectrum>( "show_spectrum", false);

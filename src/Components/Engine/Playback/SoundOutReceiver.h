@@ -33,6 +33,7 @@ class LevelReceiver
 {
 	public:
 	virtual void set_level(float left, float right)=0;
+	virtual bool is_active() const=0;
 
 	LevelReceiver();
 	virtual ~LevelReceiver();
@@ -46,6 +47,7 @@ class SpectrumReceiver
 {
 public:
 	virtual void set_spectrum(const SpectrumList& spectrum)=0;
+	virtual bool is_active() const=0;
 
 	SpectrumReceiver();
 	virtual ~SpectrumReceiver();

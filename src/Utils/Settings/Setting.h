@@ -23,7 +23,7 @@
 #define SAYONARA_SETTING_H_
 
 #include "Utils/Settings/SettingConverter.h"
-#include "Utils/Settings/SettingKeyEnum.h"
+#include "Utils/Settings/SettingKey.h"
 #include "Utils/Pimpl.h"
 
 class Settings;

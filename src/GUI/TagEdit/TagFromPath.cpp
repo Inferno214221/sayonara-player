@@ -90,7 +90,7 @@ void GUI_TagFromPath::set_filepath(const QString& filepath)
 	bool valid = e.is_valid();
 	set_tag_colors(valid);
 
-	Tagging::Utils::TagType tag_type = Tagging::Utils::get_tag_type(filepath);
+	Tagging::TagType tag_type = Tagging::Utils::get_tag_type(filepath);
 	QString tag_type_string = Tagging::Utils::tag_type_to_string(tag_type);
 
 	ui->lab_tag_type->setText(tr("Tag") + ": " + tag_type_string);

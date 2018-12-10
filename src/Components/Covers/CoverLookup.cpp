@@ -38,7 +38,7 @@
 #include "Utils/Logger/Logger.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/Album.h"
-#include "Utils/Tagging/Tagging.h"
+#include "Utils/Tagging/TaggingCover.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Utils.h"
 
@@ -138,7 +138,7 @@ bool Lookup::fetch_cover(const Cover::Location& cl, bool also_www)
 
 				else
 				{
-					pm = Tagging::Utils::extract_cover(cl.audio_file_source());
+					pm = Tagging::Covers::extract_cover(cl.audio_file_source());
 				}
 
 				bool success = add_new_cover(pm, cl.hash());

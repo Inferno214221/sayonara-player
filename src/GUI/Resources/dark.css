@@ -420,7 +420,7 @@ QTextEdit,
 QPlainTextEdit
 {
 	padding: 3px;
-	min-height: 28px; /*4ex;*/
+	min-height: 22px; /*4ex;*/
 	border: 1px solid #2B2B2B;
 	border-radius: 2px;
 	background: #505050;

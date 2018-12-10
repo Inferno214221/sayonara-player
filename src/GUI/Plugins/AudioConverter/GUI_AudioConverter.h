@@ -27,6 +27,7 @@
 
 UI_FWD(GUI_AudioConverter)
 
+class Converter;
 class GUI_AudioConverter :
 		public PlayerPlugin::Base
 {
@@ -34,31 +35,32 @@ class GUI_AudioConverter :
 	UI_CLASS(GUI_AudioConverter)
 	PIMPL(GUI_AudioConverter)
 
-public:
-	explicit GUI_AudioConverter(QWidget *parent=nullptr);
-	virtual ~GUI_AudioConverter();
+	public:
+		explicit GUI_AudioConverter(QWidget *parent=nullptr);
+		virtual ~GUI_AudioConverter() override;
 
-	QString	get_name() const override;
-	QString	get_display_name() const override;
+		QString	get_name() const override;
+		QString	get_display_name() const override;
 
+	private slots:
+		void btn_start_clicked();
+		void convert_finished();
+		void combo_codecs_changed(int idx);
+		void reset_buttons();
 
-private slots:
-	void rb_cbr_toggled(bool b);
-	void rb_vbr_toggled(bool b);
-	void quality_changed(int index);
-	void cb_active_toggled(bool b);
-	void mp3_enc_found();
-	void playstate_changed(PlayState state);
-	void stopped();
+		void ogg_quality_changed(int value);
+		void combo_cbr_lame_changed(int idx);
+		void lame_vbr_changed(int idx);
 
-private:
-	void fill_cbr();
-	void fill_vbr();
-	void pl_mode_backup();
-	void pl_mode_restore();
+		void num_threads_changed(int value);
 
-	void retranslate_ui() override;
-	void init_ui() override;
+	private:
+		void check_start_button();
+		Converter* create_converter();
+
+		void retranslate_ui() override;
+		void init_ui() override;
 };
+
 
 #endif // GUI_AUDIOCONVERTER_H

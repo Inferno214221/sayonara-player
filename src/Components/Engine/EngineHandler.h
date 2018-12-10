@@ -29,6 +29,8 @@
 #define EngineHandler_change_track_md static_cast<void (EngineHandler::*) (const MetaData& md)>(&EngineHandler::change_track)
 
 class RawSoundReceiverInterface;
+class LevelReceiver;
+class SpectrumReceiver;
 
 namespace Engine
 {
@@ -49,13 +51,11 @@ namespace Engine
 		bool init() override;
 		void shutdown();
 
-		Engine::Playback* get_playback_engine();
-
 		void register_raw_sound_receiver(RawSoundReceiverInterface* receiver);
 		void unregister_raw_sound_receiver(RawSoundReceiverInterface* receiver);
 
-		void start_convert();
-		void end_convert();
+		void register_level_receiver(LevelReceiver* receiver);
+		void register_spectrum_receiver(SpectrumReceiver* receiver);
 
 		void set_equalizer(int band, int value);
 
@@ -90,10 +90,7 @@ namespace Engine
 		void pause() override;
 
 	private:
-		Base* get_engine(Name name);
-		void switch_engine(Name name);
-
-		bool configure_connections(Base* old_engine, Base* new_engine);
+		bool configure_connections();
 
 		// Engine interface
 	protected:

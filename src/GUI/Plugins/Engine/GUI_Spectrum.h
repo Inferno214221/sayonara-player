@@ -42,6 +42,7 @@ public:
 
 	QString get_name() const override;
 	QString get_display_name() const override;
+	bool is_active() const override;
 
 protected:
 	void paintEvent(QPaintEvent* e) override;

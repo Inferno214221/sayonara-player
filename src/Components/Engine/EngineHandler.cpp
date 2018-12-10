@@ -21,10 +21,10 @@
 #include "EngineHandler.h"
 
 #include "Components/PlayManager/PlayManager.h"
+#include "Components/Engine/Playback/SoundOutReceiver.h"
 #include "Interfaces/RawSoundReceiver/RawSoundReceiverInterface.h"
 
 #include "Playback/PlaybackEngine.h"
-#include "Convert/ConvertEngine.h"
 
 #include "Utils/Utils.h"
 #include "Utils/Logger/Logger.h"
@@ -35,14 +35,13 @@
 using Engine::Handler;
 using Engine::Base;
 using Engine::Playback;
-using Engine::Convert;
 
 struct Handler::Private
 {
 	PlayManagerPtr						play_manager=nullptr;
-	Engine::Base*                       cur_engine=nullptr;
-	QList<Base*>						engines;
 	QList<RawSoundReceiverInterface*>	raw_sound_receiver;
+
+	Engine::Playback*					engine=nullptr;
 
 	Private()
 	{
@@ -54,6 +53,10 @@ Handler::Handler(QObject* parent) :
 	Base(Name::EngineHandler, parent)
 {
 	m = Pimpl::make<Private>();
+	m->engine = new Engine::Playback(this);
+	m->engine->init();
+
+	configure_connections();
 
 	connect(m->play_manager, &PlayManager::sig_playstate_changed,
 			this, &Handler::playstate_changed);
@@ -75,8 +78,6 @@ Handler::Handler(QObject* parent) :
 	connect(m->play_manager, &PlayManager::sig_record,
 			this, &Handler::sr_record_button_pressed);
 
-	switch_engine(Name::PlaybackEngine);
-
 	const MetaData& md = m->play_manager->current_track();
 	if(!md.filepath().isEmpty()) {
 		change_track(md);
@@ -92,46 +93,12 @@ bool Handler::init()
 
 void Handler::shutdown()
 {
-	for(Base* e : ::Util::AsConst(m->engines))
-	{
-		e->stop();
-		delete e;
-	}
-
-	m->engines.clear();
-}
-
-
-void Handler::start_convert()
-{
-	stop();
-
-	if( m->cur_engine->name() != Name::ConvertEngine ) {
-		switch_engine(Name::ConvertEngine);
-	}
-
-	m->cur_engine->stop();
-}
-
-void Handler::end_convert()
-{
-	stop();
-
-	sp_log(Log::Debug, this) << "Engine end convert";
-
-	if( m->cur_engine->name() != Name::PlaybackEngine ) {
-		sp_log(Log::Debug, this) << "Change to playback engine";
-		switch_engine(Name::PlaybackEngine);
-	}
-
-	m->cur_engine->stop();
+	delete m->engine;
 }
 
 
 void Handler::playstate_changed(PlayState state)
 {
-	if(!m->cur_engine) return;
-
 	switch(state){
 		case PlayState::Playing:
 			play();
@@ -153,53 +120,45 @@ void Handler::playstate_changed(PlayState state)
 
 void Handler::play()
 {
-	if(!m->cur_engine) return;
-
-	m->cur_engine->play();
+	m->engine->play();
 }
 
 void Handler::stop()
 {
-	if(!m->cur_engine) return;
-	m->cur_engine->stop();
+	m->engine->stop();
 }
+
 
 void Handler::pause()
 {
-	if(!m->cur_engine) return;
-	m->cur_engine->pause();
+	m->engine->pause();
 }
 
 
 void Handler::jump_abs_ms(MilliSeconds ms)
 {
-	if(!m->cur_engine) return;
-	m->cur_engine->jump_abs_ms(ms);
+	m->engine->jump_abs_ms(ms);
 }
 
 void Handler::jump_rel_ms(MilliSeconds ms)
 {
-	if(!m->cur_engine) return;
-	m->cur_engine->jump_rel_ms(ms);
+	m->engine->jump_rel_ms(ms);
 }
 
 void Handler::jump_rel(double where)
 {
-	if(!m->cur_engine) return;
-	m->cur_engine->jump_rel(where);
+	m->engine->jump_rel(where);
 }
 
 
 bool Handler::change_track(const MetaData& md)
 {
-	if(!m->cur_engine) return false;
-	return m->cur_engine->change_track(md);
+	return m->engine->change_track(md);
 }
 
 bool Handler::change_track_by_filename(const QString& filepath)
 {
-	if(!m->cur_engine) return false;
-	return m->cur_engine->change_track_by_filename(filepath);
+	return m->engine->change_track_by_filename(filepath);
 }
 
 
@@ -247,93 +206,22 @@ void Handler::sl_error(const QString& error_msg)
 
 void Handler::sr_record_button_pressed(bool b)
 {
-	Playback* p = get_playback_engine();
-	if(p){
-		p->set_streamrecorder_recording(b);
-	}
+	m->engine->set_streamrecorder_recording(b);
 }
 
-bool Handler::configure_connections(Base* old_engine, Base* new_engine)
+bool Handler::configure_connections()
 {
-	if(!old_engine && !new_engine) return false;
-	if(old_engine == new_engine) return false;
-
-	if(old_engine) {
-		disconnect(old_engine, &Base::sig_track_ready, this, &Handler::sl_track_ready_changed);
-		disconnect(old_engine, &Base::sig_md_changed, this, &Handler::sl_md_changed);
-		disconnect(old_engine, &Base::sig_pos_changed_ms, this, &Handler::sl_pos_changed_ms);
-		disconnect(old_engine, &Base::sig_dur_changed, this, &Handler::sl_dur_changed);
-		disconnect(old_engine, &Base::sig_br_changed, this, &Base::sig_br_changed);
-		disconnect(old_engine, &Base::sig_track_finished, this, &Handler::sl_track_finished);
-		disconnect(old_engine, &Base::sig_buffering, this, &Handler::sl_buffer_state_changed);
-		disconnect(old_engine, &Base::sig_cover_changed, this, &Handler::sig_cover_changed);
-		disconnect(old_engine, &Base::sig_error, this, &Handler::sl_error);
-	}
-
-	if(new_engine) {
-		connect(new_engine, &Base::sig_track_ready, this, &Handler::sl_track_ready_changed);
-		connect(new_engine, &Base::sig_md_changed, this, &Handler::sl_md_changed);
-		connect(new_engine, &Base::sig_pos_changed_ms, this, &Handler::sl_pos_changed_ms);
-		connect(new_engine, &Base::sig_dur_changed, this, &Handler::sl_dur_changed);
-		connect(new_engine, &Base::sig_br_changed, this, &Base::sig_br_changed);
-		connect(new_engine, &Base::sig_track_finished, this, &Handler::sl_track_finished);
-		connect(new_engine, &Base::sig_buffering, this, &Handler::sl_buffer_state_changed);
-		connect(new_engine, &Base::sig_cover_changed, this, &Handler::sig_cover_changed);
-		connect(new_engine, &Base::sig_error, this, &Handler::sl_error);
-	}
+	connect(m->engine, &Base::sig_track_ready, this, &Handler::sl_track_ready_changed);
+	connect(m->engine, &Base::sig_md_changed, this, &Handler::sl_md_changed);
+	connect(m->engine, &Base::sig_pos_changed_ms, this, &Handler::sl_pos_changed_ms);
+	connect(m->engine, &Base::sig_dur_changed, this, &Handler::sl_dur_changed);
+	connect(m->engine, &Base::sig_br_changed, this, &Base::sig_br_changed);
+	connect(m->engine, &Base::sig_track_finished, this, &Handler::sl_track_finished);
+	connect(m->engine, &Base::sig_buffering, this, &Handler::sl_buffer_state_changed);
+	connect(m->engine, &Base::sig_cover_changed, this, &Handler::sig_cover_changed);
+	connect(m->engine, &Base::sig_error, this, &Handler::sl_error);
 
 	return true;
-}
-
-Base* Handler::get_engine(Name name)
-{
-	for(Base* e : ::Util::AsConst(m->engines))
-	{
-		if(e && e->name() == name){
-			return e;
-		}
-	}
-
-	if(name == Name::PlaybackEngine)
-	{
-		Playback* pb_engine = new Playback();
-		if(pb_engine->init())
-		{
-			m->engines << static_cast<Base*>(pb_engine);
-			connect(pb_engine, &Playback::sig_data, this, &Handler::new_data);
-			return pb_engine;
-		}
-	}
-
-	else if(name == Name::ConvertEngine)
-	{
-		Convert* cvt_engine = new Convert();
-		if(cvt_engine->init())
-		{
-			m->engines << static_cast<Base*>(cvt_engine);
-			return cvt_engine;
-		}
-	}
-
-	return nullptr;
-}
-
-
-void Handler::switch_engine(Name name)
-{
-	Base* new_engine=get_engine(name);
-
-	if(!new_engine){
-		return;
-	}
-
-	configure_connections(m->cur_engine, new_engine);
-	m->cur_engine = new_engine;
-}
-
-Engine::Playback* Handler::get_playback_engine()
-{
-	return dynamic_cast<Playback*>(get_engine(Name::PlaybackEngine));
 }
 
 void Handler::new_data(const uchar* data, uint64_t n_bytes)
@@ -351,11 +239,7 @@ void Handler::register_raw_sound_receiver(RawSoundReceiverInterface* receiver)
 	}
 
 	m->raw_sound_receiver << receiver;
-
-	Playback* engine = get_playback_engine();
-	if(engine){
-		get_playback_engine()->set_n_sound_receiver(m->raw_sound_receiver.size());
-	}
+	m->engine->set_n_sound_receiver(m->raw_sound_receiver.size());
 }
 
 void Handler::unregister_raw_sound_receiver(RawSoundReceiverInterface* receiver)
@@ -365,21 +249,23 @@ void Handler::unregister_raw_sound_receiver(RawSoundReceiverInterface* receiver)
 	}
 
 	m->raw_sound_receiver.removeOne(receiver);
+	m->engine->set_n_sound_receiver(m->raw_sound_receiver.size());
+}
 
-	Playback* engine = get_playback_engine();
-	if(engine){
-		get_playback_engine()->set_n_sound_receiver(m->raw_sound_receiver.size());
-	}
+void Handler::register_level_receiver(LevelReceiver* receiver)
+{
+	m->engine->add_level_receiver(receiver);
+}
+
+void Handler::register_spectrum_receiver(SpectrumReceiver* receiver)
+{
+	m->engine->add_spectrum_receiver(receiver);
 }
 
 
 void Handler::set_equalizer(int band, int value)
 {
-	Playback* engine = get_playback_engine();
-
-	if(engine){
-		engine->set_equalizer(band, value);
-	}
+	m->engine->set_equalizer(band, value);
 }
 
 

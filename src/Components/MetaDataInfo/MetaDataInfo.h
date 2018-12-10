@@ -45,7 +45,8 @@ enum class InfoStrings : uint8_t
 	Year,			// set by MetaDataInfo
 	Sampler,		// set by AlbumInfo
 	Bitrate,		// set by MetaDataInfo
-	Genre			// set by MetaDataInfo
+	Genre,			// set by MetaDataInfo
+	Filetype
 };
 
 
@@ -77,6 +78,7 @@ class MetaDataInfo :
 		void insert_playing_time(MilliSeconds ms);
 		void insert_genre(const QStringList& lst);
 		void insert_filesize(uint64_t filesize);
+		void insert_filetype(const QStringList& filetypes);
 
 		void insert_interval_info_field(InfoStrings key, int min, int max);
 		void insert_numeric_info_field(InfoStrings key, int number);

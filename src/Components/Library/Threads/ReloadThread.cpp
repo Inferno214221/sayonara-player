@@ -167,7 +167,7 @@ bool ReloadThread::get_and_save_all_files(const QHash<QString, MetaData>& md_map
 			}
 
 			// fetch some metadata and check if we have the same data already in library in the next step
-			file_was_read = Tagging::Utils::getMetaDataOfFile(md, Tagging::Utils::Quality::Dirty);
+			file_was_read = Tagging::Utils::getMetaDataOfFile(md, Tagging::Quality::Dirty);
 			if(!file_was_read) {
 				continue;
 			}
@@ -178,7 +178,7 @@ bool ReloadThread::get_and_save_all_files(const QHash<QString, MetaData>& md_map
 			}
 		}
 
-		file_was_read = Tagging::Utils::getMetaDataOfFile(md, Tagging::Utils::Quality::Quality);
+		file_was_read = Tagging::Utils::getMetaDataOfFile(md, Tagging::Quality::Quality);
 		if(file_was_read)
 		{
 			v_md_to_store << md;
