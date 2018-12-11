@@ -453,10 +453,12 @@ void GUI_ControlsBase::dur_changed(const MetaData& md)
 	set_total_time_label(md.length_ms);
 }
 
+#include <cmath>
 void GUI_ControlsBase::br_changed(const MetaData& md)
 {
 	if(md.bitrate / 1000 > 0){
-		QString bitrate = QString::number(md.bitrate / 1000) + " kBit/s";
+	sp_log(Log::Debug, this) << "Bitrate " << md.bitrate;
+		QString bitrate = QString::number(std::nearbyint(md.bitrate / 1000.)) + " kBit/s";
 		lab_bitrate()->setText(bitrate);
 	}
 
@@ -635,8 +637,8 @@ void GUI_ControlsBase::setup_connections()
 	// engine
 	Engine::Handler* engine = Engine::Handler::instance();
 	connect(engine, &Engine::Handler::sig_md_changed,	this, &GUI_ControlsBase::md_changed);
-	connect(engine, &Engine::Handler::sig_dur_changed, this, &GUI_ControlsBase::dur_changed);
-	connect(engine, &Engine::Handler::sig_br_changed,	this, &GUI_ControlsBase::br_changed);
+	connect(engine, &Engine::Handler::sig_duration_changed, this, &GUI_ControlsBase::dur_changed);
+	connect(engine, &Engine::Handler::sig_bitrate_changed,	this, &GUI_ControlsBase::br_changed);
 	connect(engine, &Engine::Handler::sig_cover_changed, this, &GUI_ControlsBase::force_cover);
 
 	Tagging::ChangeNotifier* mdcn = Tagging::ChangeNotifier::instance();

@@ -57,8 +57,8 @@ namespace Engine
 
 	signals:
 		void sig_md_changed(const MetaData& md);
-		void sig_dur_changed(const MetaData& md);
-		void sig_br_changed(const MetaData& md);
+		void sig_duration_changed(const MetaData& md);
+		void sig_bitrate_changed(const MetaData& md);
 		void sig_cover_changed(const QImage& img);
 
 		void sig_pos_changed_ms(MilliSeconds pos_ms);

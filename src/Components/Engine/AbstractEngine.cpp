@@ -173,24 +173,27 @@ void Base::update_duration(MilliSeconds duration_ms, GstElement* src)
 	m->md.length_ms = duration_ms;
 	update_metadata(m->md, src);
 
-	emit sig_dur_changed(m->md);
+	emit sig_duration_changed(m->md);
 }
 
+template<typename T>
+T br_diff(T a, T b){ return std::max(a, b) - std::min(a, b); }
 
 void Base::update_bitrate(Bitrate br, GstElement* src)
 {
+	Q_UNUSED(src)
 	if( br <= 0) {
 		return;
 	}
 
-	if( std::abs((int) br - (int) m->md.bitrate) <= 1000) { // (br / 1000) == (m->md.bitrate / 1000)
+	if( br_diff(br, m->md.bitrate) < 1000)
+	{
 		return;
 	}
 
 	m->md.bitrate = br;
-	update_metadata(m->md, src);
 
-	emit sig_br_changed(m->md);
+	emit sig_bitrate_changed(m->md);
 }
 
 

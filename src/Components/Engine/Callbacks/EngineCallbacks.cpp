@@ -167,9 +167,6 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 
 		case GST_MESSAGE_TAG:
 		{
-			bool			success;
-			Bitrate			bitrate;
-
 			if( msg_src_name.compare("sr_filesink") == 0 ||
 				msg_src_name.compare("level_sink") == 0 ||
 				msg_src_name.compare("spectrum_sink") == 0)
@@ -184,11 +181,12 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 			}
 
 			QImage img;
-			success = parse_image(tags, img);
+			bool success = parse_image(tags, img);
 			if(success){
 				engine->update_cover(img, src);
 			}
 
+			Bitrate bitrate;
 			success = gst_tag_list_get_uint(tags, GST_TAG_BITRATE, &bitrate);
 			if(success){
 				engine->update_bitrate((bitrate / 1000) * 1000, src);

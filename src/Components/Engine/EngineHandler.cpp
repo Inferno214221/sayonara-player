@@ -171,7 +171,7 @@ void Handler::sl_md_changed(const MetaData& md)
 void Handler::sl_dur_changed(const MetaData& md)
 {
 	m->play_manager->change_duration(md.length_ms);
-	emit sig_dur_changed(md);
+	emit sig_duration_changed(md);
 }
 
 void Handler::sl_pos_changed_ms(MilliSeconds ms)
@@ -214,8 +214,8 @@ bool Handler::configure_connections()
 	connect(m->engine, &Base::sig_track_ready, this, &Handler::sl_track_ready_changed);
 	connect(m->engine, &Base::sig_md_changed, this, &Handler::sl_md_changed);
 	connect(m->engine, &Base::sig_pos_changed_ms, this, &Handler::sl_pos_changed_ms);
-	connect(m->engine, &Base::sig_dur_changed, this, &Handler::sl_dur_changed);
-	connect(m->engine, &Base::sig_br_changed, this, &Base::sig_br_changed);
+	connect(m->engine, &Base::sig_duration_changed, this, &Handler::sl_dur_changed);
+	connect(m->engine, &Base::sig_bitrate_changed, this, &Handler::sig_bitrate_changed);
 	connect(m->engine, &Base::sig_track_finished, this, &Handler::sl_track_finished);
 	connect(m->engine, &Base::sig_buffering, this, &Handler::sl_buffer_state_changed);
 	connect(m->engine, &Base::sig_cover_changed, this, &Handler::sig_cover_changed);
