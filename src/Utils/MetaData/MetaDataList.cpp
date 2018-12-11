@@ -264,7 +264,7 @@ MetaDataList& MetaDataList::remove_tracks(int first, int last)
 	}
 
 	int n_elems = last - first + 1;
-	this->erase(this->begin() + first, this->begin() + last);
+	this->erase(this->begin() + first, this->begin() + last + 1);
 
 	if(m->current_track >= first && m->current_track <= last){
 		set_current_track(-1);
