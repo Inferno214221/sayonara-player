@@ -39,6 +39,7 @@
 
 #include "GUI/ImportDialog/GUI_ImportDialog.h"
 #include "GUI/Utils/Library/GUI_DeleteDialog.h"
+#include "GUI/Utils/GuiUtils.h"
 
 #include "Components/Covers/CoverLocation.h"
 #include "Components/Library/LocalLibrary.h"
@@ -59,6 +60,7 @@
 #include <QStringList>
 #include <QLayoutItem>
 #include <QLayout>
+#include <QFontMetrics>
 
 enum StatusWidgetIndex
 {
@@ -284,11 +286,13 @@ Library::TrackDeletionMode GUI_LocalLibrary::show_delete_dialog(int n_tracks)
 
 void GUI_LocalLibrary::progress_changed(const QString& type, int progress)
 {
+	QFontMetrics fm(this->font());
+
 	check_status_bar(progress >= 0);
 
 	ui->pb_progress->setMaximum((progress > 0) ? 100 : 0);
 	ui->pb_progress->setValue(progress);
-	ui->lab_progress->setText(type);
+	ui->lab_progress->setText(fm.elidedText(type, Qt::ElideRight, ui->sw_status->width() / 2));
 }
 
 void GUI_LocalLibrary::reload_library_requested()

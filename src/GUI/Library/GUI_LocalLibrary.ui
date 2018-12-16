@@ -340,7 +340,7 @@
             <item>
              <widget class="QLabel" name="lab_progress">
               <property name="text">
-               <string>filepath</string>
+               <string notr="true">filepath</string>
               </property>
               <property name="textInteractionFlags">
                <set>Qt::NoTextInteraction</set>
@@ -362,6 +362,12 @@
             </item>
             <item>
              <widget class="QProgressBar" name="pb_progress">
+              <property name="minimumSize">
+               <size>
+                <width>120</width>
+                <height>0</height>
+               </size>
+              </property>
               <property name="value">
                <number>24</number>
               </property>

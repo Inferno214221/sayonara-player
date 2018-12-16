@@ -155,12 +155,12 @@ void GUI_AudioConverter::btn_start_clicked()
 		converter->add_metadata(v_md);
 		if(converter->num_files() == 0)
 		{
-			QString error_text = tr("Playlist does not contain files supported by the converter");
+			QString error_text = tr("Playlist does not contain tracks which are supported by the converter");
 			Message::error
 			(
 				error_text +
 				QString(" (%1). ").arg(converter->supported_input_formats().join(", ")) +
-				tr("No file will be converted.")
+				tr("No track will be converted.")
 			);
 
 			converter->deleteLater();
@@ -169,12 +169,12 @@ void GUI_AudioConverter::btn_start_clicked()
 
 		if(converter->num_files() < v_md.count())
 		{
-			QString error_text = tr("Playlist does not contain files supported by the converter");
+			QString error_text = tr("Playlist does not contain tracks which are supported by the converter");
 			Message::warning
 			(
 				error_text +
 				QString(" (%1). ").arg(converter->supported_input_formats().join(", ")) +
-				tr("These files will be ignored")
+				tr("These tracks will be ignored")
 			);
 		}
 	}
