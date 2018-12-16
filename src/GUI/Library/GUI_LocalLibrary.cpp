@@ -139,6 +139,8 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 	connect(ui->lv_artist, &Library::ItemView::sig_reload_clicked, this, &GUI_LocalLibrary::reload_library_requested);
 	connect(ui->tb_title, &Library::ItemView::sig_reload_clicked, this, &GUI_LocalLibrary::reload_library_requested);
 
+	connect(ui->btn_close_extensions, &QPushButton::clicked, this, &GUI_LocalLibrary::close_extensions_clicked);
+
 	setAcceptDrops(true);
 
 	Set::listen<Set::Lib_ShowAlbumCovers>(this, &GUI_LocalLibrary::switch_album_view);
@@ -168,54 +170,67 @@ void GUI_LocalLibrary::language_changed()
 }
 
 
+void GUI_LocalLibrary::check_status_bar(bool is_reloading)
+{
+	ui->sw_status->setVisible(false);
+
+	if(is_reloading || m->library->tracks().isEmpty())
+	{
+		ui->btn_reload_library->setVisible(!is_reloading);
+		ui->pb_progress->setVisible(is_reloading);
+		ui->lab_progress->setVisible(is_reloading);
+
+		ui->sw_status->setVisible(true);
+		ui->sw_status->setCurrentIndex(StatusWidgetIndex::ReloadLibraryIndex);
+	}
+
+	else
+	{
+		QLayout* l = ui->widget_extensions->layout();
+
+		for(QPushButton* btn : m->extension_buttons)
+		{
+			l->removeWidget(btn);
+			btn->deleteLater();
+		}
+
+		m->extension_buttons.clear();
+
+		if(!_settings->get<Set::Lib_ShowFilterExtBar>()) {
+			return;
+		}
+
+		ExtensionSet extensions = m->library->extensions();
+		const QStringList ext_str = extensions.extensions();
+
+		bool has_multiple_extensions = (ext_str.size() > 1);
+		if(!has_multiple_extensions){
+			return;
+		}
+
+		for(const QString& ext : ext_str)
+		{
+			QPushButton* btn = new QPushButton(ui->widget_extensions);
+			btn->setText(ext);
+			btn->setCheckable(true);
+			btn->setChecked(extensions.is_enabled(ext));
+
+			connect(btn, &QPushButton::toggled, this, &GUI_LocalLibrary::extension_button_toggled);
+
+			l->addWidget(btn);
+
+			m->extension_buttons << btn;
+		}
+
+		ui->sw_status->setVisible(true);
+		ui->sw_status->setCurrentIndex(StatusWidgetIndex::FileExtensionsIndex);
+	}
+}
+
+
 void GUI_LocalLibrary::tracks_loaded()
 {
-	QLayout* l = ui->widget_extensions->layout();
-	if(!l){
-		ui->sw_status->setVisible(false);
-		return;
-	}
-
-	for(QPushButton* btn : m->extension_buttons){
-		l->removeWidget(btn);
-		btn->deleteLater();
-	}
-
-	m->extension_buttons.clear();
-
-	if(!_settings->get<Set::Lib_ShowFilterExtBar>())
-	{
-		ui->sw_status->setVisible(false);
-		ui->sw_status->setCurrentIndex(StatusWidgetIndex::ReloadLibraryIndex);
-		return;
-	}
-
-	ExtensionSet extensions = m->library->extensions();
-
-	const QStringList ext_str = extensions.extensions();
-
-	bool has_multiple_extensions = (ext_str.size() > 1);
-	ui->sw_status->setVisible(has_multiple_extensions);
-
-	if(!has_multiple_extensions){
-		return;
-	}
-
-	for(const QString& ext : ext_str)
-	{
-		QPushButton* btn = new QPushButton(ui->widget_extensions);
-		btn->setText(ext);
-		btn->setCheckable(true);
-		btn->setChecked(extensions.is_enabled(ext));
-
-		connect(btn, &QPushButton::toggled, this, &GUI_LocalLibrary::extension_button_toggled);
-
-		l->addWidget(btn);
-
-		m->extension_buttons << btn;
-	}
-
-	ui->sw_status->setCurrentIndex(StatusWidgetIndex::FileExtensionsIndex);
+	check_status_bar(false);
 }
 
 void GUI_LocalLibrary::extension_button_toggled(bool b)
@@ -225,6 +240,11 @@ void GUI_LocalLibrary::extension_button_toggled(bool b)
 	extensions.set_enabled(btn->text(), b);
 
 	m->library->set_extensions(extensions);
+}
+
+void GUI_LocalLibrary::close_extensions_clicked()
+{
+	_settings->set<Set::Lib_ShowFilterExtBar>(false);
 }
 
 
@@ -264,8 +284,7 @@ Library::TrackDeletionMode GUI_LocalLibrary::show_delete_dialog(int n_tracks)
 
 void GUI_LocalLibrary::progress_changed(const QString& type, int progress)
 {
-	ui->sw_status->setVisible(progress >= 0);
-	ui->sw_status->setCurrentIndex(StatusWidgetIndex::ReloadLibraryIndex);
+	check_status_bar(progress >= 0);
 
 	ui->pb_progress->setMaximum((progress > 0) ? 100 : 0);
 	ui->pb_progress->setValue(progress);
@@ -500,6 +519,6 @@ void GUI_LocalLibrary::showEvent(QShowEvent* e)
 		ui->splitter_genre->restoreState(genre_splitter_state);
 	}
 
-	ui->btn_reload_library->setVisible(m->library->tracks().isEmpty());
+	check_status_bar(false);
 }
 

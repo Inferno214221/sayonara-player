@@ -289,7 +289,7 @@ AlbumList& AlbumList::append_unique(const AlbumList& other)
 	return *this;
 }
 
-void AlbumList::sort(Library::SortOrder so)
+void AlbumList::sort(::Library::SortOrder so)
 {
 	MetaDataSorting::sort_albums(*this, so);
 }

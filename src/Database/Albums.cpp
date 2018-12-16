@@ -254,12 +254,13 @@ bool Albums::getAllAlbumsByArtist(IdList artists, AlbumList& result, const Libra
 
 				case Library::Filter::Filename:
 					query += "WHERE filecissearch LIKE :cissearch AND ";			// track title is like filter
-
 					break;
 
 				case Library::Filter::Fulltext:
 					query += "WHERE allCissearch LIKE :cissearch AND ";
 					break;
+
+				default: break;
 			}
 		}
 

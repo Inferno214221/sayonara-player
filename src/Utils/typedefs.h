@@ -29,7 +29,7 @@ class QByteArray;
 class QString;
 class QStringList;
 template <typename A, typename B> struct QPair;
-template <typename A, typename B> struct QMap;
+template <typename A, typename B> class QMap;
 template <typename T> class QList;
 
 /**

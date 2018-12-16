@@ -79,7 +79,7 @@ namespace Library
 		virtual TableView* lv_artist() const=0;
 		virtual TableView* lv_album() const=0;
 		virtual TableView* lv_tracks() const=0;
-		virtual Library::SearchBar* le_search() const=0;
+		virtual SearchBar* le_search() const=0;
 
 		virtual QList<Filter::Mode> search_options() const=0;
 

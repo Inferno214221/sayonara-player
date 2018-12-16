@@ -378,7 +378,7 @@ void LibraryContextMenu::show_filter_extension_bar_triggered(bool b)
 
 	if(b)
 	{
-		Message::info(tr("The file extension toolbar is visible when there are more than one different track types available in the track view"), Lang::get(Lang::Filetype));
+		Message::info(tr("The file extension toolbar is visible when there is more than one different track types available in the track view"), Lang::get(Lang::Filetype));
 	}
 }
 

@@ -59,7 +59,6 @@ namespace Library
 		QMenu*		menu() const;
 		QFrame*		header_frame() const;
 
-
 	protected:
 		void showEvent(QShowEvent* e) override;
 
@@ -72,9 +71,13 @@ namespace Library
 
 		void language_changed() override;
 
+	private:
+		void check_status_bar(bool is_reloading);
+
 	private slots:
 		void tracks_loaded();
 		void extension_button_toggled(bool b);
+		void close_extensions_clicked();
 		void switch_album_view();
 
 		void progress_changed(const QString& type, int progress);
