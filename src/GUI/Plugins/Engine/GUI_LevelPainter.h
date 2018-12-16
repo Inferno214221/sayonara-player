@@ -41,6 +41,7 @@ public:
 
 	QString get_name() const override;
 	QString get_display_name() const override;
+	bool is_active() const override;
 
 public slots:
 	void update_style(int new_index) override;

@@ -25,7 +25,6 @@
 #include "Components/Tagging/Expression.h"
 #include "Utils/Pimpl.h"
 
-class QString;
 /**
  * @brief The GUI_TagEdit class
  * @ingroup Tagging

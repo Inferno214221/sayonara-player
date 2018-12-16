@@ -28,11 +28,14 @@
 #include <QList>
 #include <QImage>
 #include <QRegExp>
+#include <QVector>
 
 #include <memory>
 #include <algorithm>
 
 using namespace Engine;
+
+const char* ClassEngineCallbacks = "Engine Callbacks";
 
 #ifdef Q_OS_WIN
 	void Callbacks::destroy_notify(gpointer data) {}
@@ -52,9 +55,10 @@ using namespace Engine;
 static bool parse_image(GstTagList* tags, QImage& img)
 {
 	GstSample* sample;
-
 	bool success = gst_tag_list_get_sample(tags, GST_TAG_IMAGE, &sample);
-	if(!success){
+
+	if(!success)
+	{
 		success = gst_tag_list_get_sample(tags, GST_TAG_PREVIEW_IMAGE, &sample);
 		if(!success){
 			return false;
@@ -63,23 +67,28 @@ static bool parse_image(GstTagList* tags, QImage& img)
 
 	GstCaps* caps = gst_sample_get_caps(sample);
 	if(!caps){
+		gst_sample_unref(sample);
 		return false;
 	}
 
 	gchar* mimetype = gst_caps_to_string(caps);
 	if(mimetype == nullptr){
+		gst_sample_unref(sample);
 		return false;
 	}
 
-	QString mime(mimetype);
+	QString mime;
+	QString full_mime(mimetype);
 	g_free(mimetype); mimetype = nullptr;
-	//sp_log(Log::Debug, this) << "Mime type: " << mimetype;
+
 	QRegExp re(".*(image/[a-z|A-Z]+).*");
-	if(re.indexIn(mime) >= 0){
+	if(re.indexIn(full_mime) >= 0){
 		mime = re.cap(1);
 	}
 
-	GstBuffer* buffer = gst_sample_get_buffer( sample );
+	sp_log(Log::Develop, "Engine Callbacks") << "Cover in Track: " << full_mime;
+
+	GstBuffer* buffer = gst_sample_get_buffer(sample);
 	if(!buffer){
 		gst_sample_unref(sample);
 		return false;
@@ -88,28 +97,22 @@ static bool parse_image(GstTagList* tags, QImage& img)
 	gsize size = gst_buffer_get_size(buffer);
 	if(size == 0){
 		gst_sample_unref(sample);
-
 		return false;
 	}
 
 	gchar* data = new gchar[size];
 	size = gst_buffer_extract(buffer, 0, data, size);
 
-	if(size == 0){
+	if(size == 0) {
 		delete[] data;
-
 		gst_sample_unref(sample);
-
-
 		return false;
 	}
 
 	img = QImage::fromData((const uchar*) data, size, mime.toLocal8Bit().data());
 
 	delete[] data;
-
 	gst_sample_unref(sample);
-
 
 	return (!img.isNull());
 }
@@ -120,6 +123,7 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 {
 	Q_UNUSED(bus);
 
+	static MetaData md;
 	Base* engine = static_cast<Base*>(data);
 	if(!engine){
 		return true;
@@ -138,7 +142,7 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 				 !msg_src_name.contains("spectrum_sink") &&
 				 !msg_src_name.contains("pipeline"))
 			{
-				sp_log(Log::Debug, "Engine Callbacks") << "EOF reached: " << msg_src_name;
+				sp_log(Log::Debug, ClassEngineCallbacks) << "EOF reached: " << msg_src_name;
 				break;
 			}
 
@@ -158,17 +162,11 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 			break;
 
 		case GST_MESSAGE_SEGMENT_DONE:
-			sp_log(Log::Debug) << "Segment done: " << msg_src_name;
+			sp_log(Log::Debug, ClassEngineCallbacks) << "Segment done: " << msg_src_name;
 			break;
 
 		case GST_MESSAGE_TAG:
 		{
-			GstTagList*		tags;
-			gchar*			title;
-
-			bool			success;
-			Bitrate			bitrate;
-
 			if( msg_src_name.compare("sr_filesink") == 0 ||
 				msg_src_name.compare("level_sink") == 0 ||
 				msg_src_name.compare("spectrum_sink") == 0)
@@ -176,31 +174,32 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 				break;
 			}
 
-			tags = nullptr;
+			GstTagList*	tags = nullptr;
 			gst_message_parse_tag(msg, &tags);
-
 			if(!tags){
 				break;
 			}
 
 			QImage img;
-			success = parse_image(tags, img);
+			bool success = parse_image(tags, img);
 			if(success){
 				engine->update_cover(img, src);
 			}
 
+			Bitrate bitrate;
 			success = gst_tag_list_get_uint(tags, GST_TAG_BITRATE, &bitrate);
 			if(success){
 				engine->update_bitrate((bitrate / 1000) * 1000, src);
 			}
 
+			gchar* title=nullptr;
 			success = gst_tag_list_get_string(tags, GST_TAG_TITLE, (gchar**) &title);
 			if(success)
 			{
-				MetaData md;
 				md.set_title(title);
-				g_free(title);
 				engine->update_metadata(md, src);
+
+				g_free(title);
 			}
 
 			gst_tag_list_unref(tags);
@@ -262,19 +261,20 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 
 		case GST_MESSAGE_WARNING:
 			{
-				GError*			err;
+				GError*	err;
 				gst_message_parse_warning(msg, &err, nullptr);
-				sp_log(Log::Warning) << "Engine " << (int) engine->name() << ": GST_MESSAGE_WARNING: " << err->message << ": "
+				sp_log(Log::Warning, ClassEngineCallbacks) << "Engine " << (int) engine->name() << ": GST_MESSAGE_WARNING: " << err->message << ": "
 					 << GST_MESSAGE_SRC_NAME(msg);
+				g_error_free(err);
 			}
 			break;
 
 		case GST_MESSAGE_ERROR:
 			{
-				GError*			err;
+				GError*	err;
 				gst_message_parse_error(msg, &err, nullptr);
 
-				sp_log(Log::Error) << "Engine " << (int) engine->name() << ": GST_MESSAGE_ERROR: " << err->message << ": "
+				sp_log(Log::Error, ClassEngineCallbacks) << "Engine " << (int) engine->name() << ": GST_MESSAGE_ERROR: " << err->message << ": "
 						 << GST_MESSAGE_SRC_NAME(msg);
 
 				QString	error_msg(err->message);
@@ -288,7 +288,7 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 			/*{
 				GstStreamStatusType type;
 				gst_message_parse_stream_status(msg, &type, NULL);
-				sp_log(Log::Debug) << "Get stream status " << type;
+				sp_log(Log::Debug, ClassEngineCallbacks) << "Get stream status " << type;
 			}*/
 			break;
 
@@ -302,43 +302,35 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 
 // level changed
 gboolean
-Callbacks::level_handler(GstBus * bus, GstMessage * message, gpointer data)
+Callbacks::level_handler(GstBus* bus, GstMessage* message, gpointer data)
 {
 	Q_UNUSED(bus);
 
 	double					channel_values[2];
 
-	Playback*			engine;
-	GValueArray*			rms_arr;
-	const GstStructure*		structure;
-	const gchar*			name;
-	const GValue*			peak_value;
-	guint					n_peak_elements;
-
-	engine = static_cast<Playback*>(data);
+	Playback* engine = static_cast<Playback*>(data);
 	if(!engine) {
 		return true;
 	}
 
-	structure = gst_message_get_structure(message);
+	const GstStructure* structure = gst_message_get_structure(message);
 	if(!structure) {
-		sp_log(Log::Warning) << "structure is null";
+		sp_log(Log::Warning, ClassEngineCallbacks) << "structure is null";
 		return true;
 	}
 
-	name = gst_structure_get_name(structure);
+	const gchar* name = gst_structure_get_name(structure);
 	if ( strcmp(name, "level") != 0 ) {
 		return true;
 	}
 
-	peak_value = gst_structure_get_value(structure, "peak");
+	const GValue* peak_value = gst_structure_get_value(structure, "peak");
 	if(!peak_value) {
 		return true;
 	}
 
-	rms_arr = static_cast<GValueArray*>(g_value_get_boxed(peak_value));
-
-	n_peak_elements = rms_arr->n_values;
+	GValueArray* rms_arr = static_cast<GValueArray*>(g_value_get_boxed(peak_value));
+	guint n_peak_elements = rms_arr->n_values;
 	if(n_peak_elements == 0) {
 		return true;
 	}
@@ -349,7 +341,7 @@ Callbacks::level_handler(GstBus * bus, GstMessage * message, gpointer data)
 		const GValue* val = rms_arr->values + i;
 
 		if(!G_VALUE_HOLDS_DOUBLE(val)) {
-			sp_log(Log::Debug) << "Could not find a double";
+			sp_log(Log::Debug, ClassEngineCallbacks) << "Could not find a double";
 			break;
 		}
 
@@ -377,46 +369,38 @@ Callbacks::spectrum_handler(GstBus* bus, GstMessage* message, gpointer data)
 {
 	Q_UNUSED(bus);
 
-	Playback*				engine;
-	const GstStructure*		structure;
-	const gchar*			structure_name;
-	const GValue*			magnitudes;
-	static SpectrumList		spectrum_vals;
+	static SpectrumList	spectrum_vals;
 
-	engine = static_cast<Playback*>(data);
+	Playback* engine = static_cast<Playback*>(data);
 	if(!engine) {
 		return true;
 	}
 
-	structure = gst_message_get_structure(message);
+	const GstStructure* structure = gst_message_get_structure(message);
 	if(!structure) {
 		return true;
 	}
 
-	structure_name = gst_structure_get_name(structure);
+	const gchar* structure_name = gst_structure_get_name(structure);
 	if( strcmp(structure_name, "spectrum") != 0 ) {
 		return true;
 	}
 
-	magnitudes = gst_structure_get_value (structure, "magnitude");
+	const GValue* magnitudes = gst_structure_get_value (structure, "magnitude");
 
 	int bins = engine->get_spectrum_bins();
-
 	if(spectrum_vals.empty()){
 		spectrum_vals.resize(bins, 0);
 	}
 
 	for (int i=0; i<bins; ++i)
 	{
-		float f;
-		const GValue* mag;
-
-		mag = gst_value_list_get_value(magnitudes, i);
+		const GValue* mag = gst_value_list_get_value(magnitudes, i);
 		if(!mag) {
 			continue;
 		}
 
-		f = g_value_get_float(mag);
+		float f = g_value_get_float(mag);
 
 		spectrum_vals[i] = f;
 	}

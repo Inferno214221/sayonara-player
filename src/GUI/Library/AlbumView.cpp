@@ -27,12 +27,15 @@
 #include "GUI/Library/Utils/ColumnIndex.h"
 #include "GUI/Library/Utils/ColumnHeader.h"
 #include "GUI/Utils/ContextMenu/LibraryContextMenu.h"
-#include "Utils/Settings/Settings.h"
 
+#include "Components/Tagging/UserTaggingOperations.h"
 #include "Components/Library/AbstractLibrary.h"
+
+#include "Utils/Settings/Settings.h"
 
 #include <QHeaderView>
 #include <QVBoxLayout>
+
 
 using namespace Library;
 
@@ -132,6 +135,8 @@ void AlbumView::index_clicked(const QModelIndex& idx)
 /* where to show the popup */
 void AlbumView::calc_discmenu_point(QModelIndex idx)
 {
+	QHeaderView* v_header = this->verticalHeader();
+
 	m->discmenu_point = QCursor::pos();
 
 	QRect box = this->geometry();
@@ -143,9 +148,10 @@ void AlbumView::calc_discmenu_point(QModelIndex idx)
 		m->discmenu_point.setY(box.y());
 
 		QPoint dmp_tmp = parentWidget()->pos();
-		dmp_tmp.setY(dmp_tmp.y() - this->verticalHeader()->sizeHint().height());
+		dmp_tmp.setY(dmp_tmp.y() - v_header->sizeHint().height());
 
-		while(idx.row() != indexAt(dmp_tmp).row()){
+		while(idx.row() != indexAt(dmp_tmp).row())
+		{
 			  dmp_tmp.setY(dmp_tmp.y() + 10);
 			  m->discmenu_point.setY(m->discmenu_point.y() + 10);
 		}
@@ -239,7 +245,11 @@ void AlbumView::refresh_clicked()
 
 void AlbumView::run_merge_operation(const MergeData& mergedata)
 {
-	m->library->merge_albums(mergedata.source_ids, mergedata.target_id);
+	Tagging::UserOperations* uto = new Tagging::UserOperations(mergedata.library_id(), this);
+
+	connect(uto, &Tagging::UserOperations::sig_finished, uto, &Tagging::UserOperations::deleteLater);
+
+	uto->merge_albums(mergedata.source_ids(), mergedata.target_id());
 }
 
 void AlbumView::use_clear_button_changed()

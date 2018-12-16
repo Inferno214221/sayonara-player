@@ -163,6 +163,7 @@ QTreeView::branch:selected
 {
 	color: #D8D8D8;
 	background: #424e72;
+	border-bottom: 1px solid #202030;
 }
 
 QTreeView::branch:has-children:!has-siblings:closed,
@@ -419,7 +420,7 @@ QTextEdit,
 QPlainTextEdit
 {
 	padding: 3px;
-	min-height: 28px; /*4ex;*/
+	min-height: 22px; /*4ex;*/
 	border: 1px solid #2B2B2B;
 	border-radius: 2px;
 	background: #505050;

@@ -2,6 +2,7 @@ project(say_comp)
 
 add_subdirectory(Bookmarks)
 add_subdirectory(Broadcasting)
+add_subdirectory(Converter)
 add_subdirectory(Covers)
 
 if( NOT WIN32 OR NOT DEFINED WIN32 )
@@ -19,6 +20,7 @@ add_subdirectory(PlaylistChooser)
 add_subdirectory(PlayManager)
 add_subdirectory(Preferences)
 add_subdirectory(RemoteControl)
+add_subdirectory(Session)
 add_subdirectory(StreamPlugins)
 add_subdirectory(Tagging)
 

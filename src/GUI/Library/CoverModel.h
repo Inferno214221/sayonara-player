@@ -60,7 +60,7 @@ namespace Library
 		protected:
 			// ItemModel
 			const MetaDataList& mimedata_tracks() const override;
-			const SP::Set<Id>&	selections() const override;
+			const Util::Set<Id>&	selections() const override;
 
 			QModelIndexList search_results(const QString& substr) override;
 

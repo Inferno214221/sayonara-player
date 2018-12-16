@@ -34,16 +34,20 @@
 #include "Database/Connector.h"
 #include "Database/CoverConnector.h"
 
+#include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/Album.h"
-#include "Utils/Tagging/Tagging.h"
+#include "Utils/Tagging/TaggingCover.h"
 #include "Utils/FileUtils.h"
+#include "Utils/Utils.h"
 
 #include <QImage>
 #include <QImageWriter>
 #include <QStringList>
+#include <mutex>
 
+static std::mutex mtx;
 using Cover::Location;
 using Cover::Lookup;
 using Cover::FetchThread;
@@ -54,11 +58,10 @@ struct Lookup::Private
 {
 	Location		cl;
 	QList<QPixmap>	pixmaps;
-	int				n_covers;
-
 	FetchThread*	cft=nullptr;
 	void*			user_data=nullptr;
 
+	int				n_covers;
 	bool			thread_running;
 
 	Private(int n_covers) :
@@ -75,6 +78,7 @@ Lookup::Lookup(QObject* parent, int n_covers) :
 
 Lookup::~Lookup()
 {
+	m->pixmaps.clear();
 	if(m->cft){
 		m->cft->stop();
 	}
@@ -134,7 +138,7 @@ bool Lookup::fetch_cover(const Cover::Location& cl, bool also_www)
 
 				else
 				{
-					pm = Tagging::Util::extract_cover(cl.audio_file_source());
+					pm = Tagging::Covers::extract_cover(cl.audio_file_source());
 				}
 
 				bool success = add_new_cover(pm, cl.hash());
@@ -170,7 +174,8 @@ bool Lookup::fetch_cover(const Cover::Location& cl, bool also_www)
 	}
 
 	{// we have to fetch the cover from the internet
-		if(also_www)
+		bool fetch_from_www_allowed = Settings::instance()->get<Set::Cover_FetchFromWWW>();
+		if(also_www && fetch_from_www_allowed)
 		{
 			sp_log(Log::Debug, this) << "Start new thread for " << cl.identifer();
 			return start_new_thread( cl );
@@ -192,7 +197,9 @@ bool Lookup::add_new_cover(const QPixmap& pm)
 {
 	if(!pm.isNull())
 	{
-		m->pixmaps << pm;
+		LOCK_GUARD(mtx){
+			m->pixmaps.push_back(pm);
+		}
 		emit sig_cover_found(pm);
 	}
 
@@ -227,7 +234,7 @@ void Lookup::cover_found(int idx)
 	add_new_cover(pm);
 	if(m->n_covers == 1)
 	{
-		pm.save(Cover::Util::cover_directory(m->cl.hash() + ".jpg"));
+		pm.save(Cover::Utils::cover_directory(m->cl.hash() + ".jpg"));
 	}
 
 	if(!cft->more())
@@ -265,4 +272,16 @@ void* Lookup::take_user_data()
 QList<QPixmap> Lookup::pixmaps() const
 {
 	return m->pixmaps;
+}
+
+QList<QPixmap> Lookup::take_pixmaps()
+{
+	QList<QPixmap> ret;
+	LOCK_GUARD(mtx)
+	{
+		ret = m->pixmaps;
+		m->pixmaps.clear();
+	}
+
+	return ret;
 }

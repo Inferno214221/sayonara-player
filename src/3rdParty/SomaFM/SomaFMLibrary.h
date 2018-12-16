@@ -18,14 +18,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 /* SomaFMLibrary.h */
 
 #ifndef SOMAFMLIBRARY_H
 #define SOMAFMLIBRARY_H
 
 #include <QObject>
-#include <QList>
 
 #include "Utils/Pimpl.h"
 

@@ -21,7 +21,6 @@
 #include "MenuButton.h"
 #include "GUI/Utils/GuiUtils.h"
 #include "GUI/Utils/Icons.h"
-#include "Utils/Settings/Settings.h"
 #include "Utils/Language.h"
 
 #include <QMouseEvent>

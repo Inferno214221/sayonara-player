@@ -18,10 +18,8 @@
  */
 
 #include "HeaderView.h"
-
 #include "Utils/globals.h"
 #include "Utils/Utils.h"
-#include "Utils/Settings/Settings.h"
 
 #include <QFontMetrics>
 #include <QTableView>
@@ -32,19 +30,13 @@ using namespace Library;
 
 struct HeaderView::Private
 {
-	QMenu*				context_menu=nullptr;
 	ColumnHeaderList	column_headers;
-
-	Private(HeaderView* parent)
-	{
-		context_menu = new QMenu(parent);
-	}
 };
 
 HeaderView::HeaderView(Qt::Orientation orientation, QWidget* parent) :
 	WidgetTemplate<QHeaderView>(orientation, parent)
 {
-	m = Pimpl::make<Private>(this);
+	m = Pimpl::make<Private>();
 
 	this->setSectionsClickable(true);
 	this->setStretchLastSection(true);
@@ -52,18 +44,6 @@ HeaderView::HeaderView(Qt::Orientation orientation, QWidget* parent) :
 }
 
 HeaderView::~HeaderView() {}
-
-QSize HeaderView::sizeHint() const
-{
-	QSize size = QHeaderView::sizeHint();
-	QFontMetrics fm(this->font());
-
-	int height = std::max(fm.height() + 10, 20);
-
-	size.setHeight(height);
-
-	return size;
-}
 
 void HeaderView::init_header_action(ColumnHeaderPtr header, bool is_shown)
 {
@@ -98,11 +78,11 @@ void HeaderView::set_column_headers(const ColumnHeaderList& column_headers, cons
 
 	for(ColumnHeaderPtr header : Util::AsConst(m->column_headers))
 	{
-		if( header->sortorder_asc() == sorting) {
+		if(header->sortorder_asc() == sorting) {
 			this->setSortIndicator(i, Qt::AscendingOrder);
 		}
 
-		else if( header->sortorder_desc() == sorting) {
+		else if(header->sortorder_desc() == sorting) {
 			this->setSortIndicator(i, Qt::DescendingOrder);
 		}
 
@@ -241,4 +221,16 @@ void HeaderView::language_changed()
 	{
 		header->retranslate();
 	}
+}
+
+QSize HeaderView::sizeHint() const
+{
+	QSize size = QHeaderView::sizeHint();
+	QFontMetrics fm(this->font());
+
+	int height = std::max(fm.height() + 10, 20);
+
+	size.setHeight(height);
+
+	return size;
 }

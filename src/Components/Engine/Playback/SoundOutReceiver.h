@@ -31,24 +31,26 @@ using SpectrumList=std::vector<float>;
  */
 class LevelReceiver
 {
-    public:
+	public:
 	virtual void set_level(float left, float right)=0;
+	virtual bool is_active() const=0;
 
-    LevelReceiver();
-    virtual ~LevelReceiver();
+	LevelReceiver();
+	virtual ~LevelReceiver();
 };
 
 /**
  * @brief The SpectrumReceiver class
  * @ingroup EngineInterfaces
  */
-class SpectrumReceiver 
+class SpectrumReceiver
 {
 public:
 	virtual void set_spectrum(const SpectrumList& spectrum)=0;
+	virtual bool is_active() const=0;
 
-    SpectrumReceiver();
-    virtual ~SpectrumReceiver();
+	SpectrumReceiver();
+	virtual ~SpectrumReceiver();
 };
 
 #endif // LEVELRECEIVER_H

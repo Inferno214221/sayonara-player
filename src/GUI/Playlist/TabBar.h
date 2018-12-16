@@ -27,8 +27,6 @@
 
 #include <QTabBar>
 
-class MetaDataList;
-
 class PlaylistTabBar :
 		public QTabBar,
 		public ShortcutWidget

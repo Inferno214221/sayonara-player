@@ -23,7 +23,6 @@
 
 #include "GUI/Library/Utils/ColumnHeader.h"
 #include "GUI/Library/HeaderView.h"
-#include "Utils/Settings/Settings.h"
 #include <algorithm>
 
 using namespace Library;

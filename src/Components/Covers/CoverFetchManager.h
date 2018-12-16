@@ -29,9 +29,6 @@
 #include <QList>
 #include <QObject>
 
-class QStringList;
-class QString;
-
 namespace Cover
 {
 namespace Fetcher

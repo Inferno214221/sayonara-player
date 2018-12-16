@@ -29,17 +29,21 @@
 #include "Database/LibraryDatabase.h"
 
 #include "Components/Playlist/PlaylistHandler.h"
-#include "Components/Tagging/Editor.h"
 
+#include "Utils/MetaData/Album.h"
+#include "Utils/MetaData/Artist.h"
+#include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Library/SearchMode.h"
 #include "Utils/Library/LibraryInfo.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/globals.h"
+#include "Utils/Set.h"
 
 #include <utility>
 #include <limits>
 #include <QTime>
+
 
 struct LocalLibrary::Private
 {
@@ -145,52 +149,14 @@ void LocalLibrary::show_album_artists_changed()
 
 void LocalLibrary::library_reloading_state_new_block()
 {
-	::Library::Sortings so = sortorder();
 	m->reload_thread->pause();
 
-	m->library_db->getAllAlbums(_albums, so.so_albums);
-	m->library_db->getAllArtists(_artists, so.so_artists);
-	m->library_db->getAllTracks(_tracks, so.so_tracks);
-
-	emit_stuff();
+	this->refresh();
 
 	m->reload_thread->goon();
 }
 
-void LocalLibrary::change_current_disc(Disc disc)
-{
-	if( selected_albums().size() != 1 )
-	{
-		return;
-	}
 
-	MetaDataList v_md;
-
-	if(disc == std::numeric_limits<Disc>::max())
-	{
-		m->library_db->getAllTracksByAlbum(selected_albums().first(), _tracks, filter(), sortorder().so_tracks);
-	}
-
-	else
-	{
-		m->library_db->getAllTracksByAlbum(selected_albums().first(), v_md, filter(), sortorder().so_tracks);
-
-		_tracks.clear();
-
-		for(const MetaData& md : v_md)
-		{
-			if(md.discnumber != disc) {
-				continue;
-			}
-
-			_tracks << std::move(md);
-		}
-	}
-
-	_tracks.sort(sortorder().so_tracks);
-
-	emit sig_all_tracks_loaded();
-}
 
 void LocalLibrary::get_all_artists(ArtistList& artists)
 {
@@ -318,109 +284,6 @@ void LocalLibrary::import_files_to(const QStringList& files, const QString& targ
 	m->library_importer->import_files(files, target_dir);
 
 	emit sig_import_dialog_requested(target_dir);
-}
-
-
-/** BIG TODO
- * What is the library for? Imo, the Library is there
- * for managing the database entries for the tracks
- * So, the library is NOT responsible for changing
- * The ID3 tags on filesystem base. So, these 3
- * methods should be moved somewhere else.
- * You can use the updateTracks method for doing
- * the database part when editing tracks.
- * But I suggest, to introduce a Library/TagEdit
- * interface which you can use to edit tracks. But
- * this is not part of this ticket.
- */
-
-void LocalLibrary::merge_artists(const SP::Set<Id>& artist_ids, ArtistId target_artist)
-{
-	if(artist_ids.isEmpty()) {
-		return;
-	}
-
-	if(target_artist < 0){
-		sp_log(Log::Warning, this) << "Cannot merge artist: Target artist id < 0";
-		return;
-	}
-
-	bool show_album_artists = _settings->get<Set::Lib_ShowAlbumArtists>();
-
-	Artist artist;
-	bool success = m->library_db->getArtistByID(target_artist, artist);
-	if(!success){
-		return;
-	}
-
-	MetaDataList v_md;
-
-	get_all_tracks_by_artist(artist_ids.toList(), v_md, filter());
-	tag_edit()->set_metadata(v_md);
-
-	for(int idx=0; idx<v_md.count(); idx++)
-	{
-		MetaData md(v_md[idx]);
-		if(show_album_artists){
-			md.set_album_artist(artist.name(), artist.id);
-		}
-
-		else {
-			md.artist_id = artist.id;
-			md.set_artist(artist.name());
-		}
-
-		tag_edit()->update_track(idx, md);
-	}
-
-	tag_edit()->commit();
-}
-
-void LocalLibrary::merge_albums(const SP::Set<Id>& album_ids, AlbumId target_album)
-{
-	if(album_ids.isEmpty())	{
-		return;
-	}
-
-	if(target_album < 0){
-		sp_log(Log::Warning, this) << "Cannot merge albums: Target album id < 0";
-		return;
-	}
-
-	Album album;
-	bool success = m->library_db->getAlbumByID(target_album, album, true);
-	if(!success) {
-		return;
-	}
-
-	MetaDataList v_md;
-	get_all_tracks_by_album(album_ids.toList(), v_md, filter());
-
-	tag_edit()->set_metadata(v_md);
-
-	for(int idx=0; idx<v_md.count(); idx++)
-	{
-		MetaData md(v_md[idx]);
-		md.album_id = album.id;
-		md.set_album(album.name());
-
-		tag_edit()->update_track(idx, md);
-	}
-
-	tag_edit()->commit();
-}
-
-
-void LocalLibrary::change_track_rating(int idx, Rating rating)
-{
-	MetaDataList v_md{ _tracks[idx] };
-
-	AbstractLibrary::change_track_rating(idx, rating);
-	MetaData md_new = _tracks[idx];
-
-	tag_edit()->set_metadata(v_md);
-	tag_edit()->update_track(0, md_new);
-	tag_edit()->commit();
 }
 
 bool LocalLibrary::set_library_path(const QString& library_path)

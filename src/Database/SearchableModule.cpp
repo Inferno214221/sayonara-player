@@ -22,6 +22,7 @@
 #include "Database/Query.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Utils.h"
+#include "Utils/Logger/Logger.h"
 
 using DB::SearchableModule;
 

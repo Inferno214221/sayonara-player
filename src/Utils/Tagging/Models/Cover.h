@@ -51,6 +51,7 @@ namespace Models
 			QString mime_type;
 			QByteArray image_data;
 
+
 			Cover();
 			Cover(const QString& mime_type, const QByteArray& image_data);
 			MimeType get_mime_type() const;

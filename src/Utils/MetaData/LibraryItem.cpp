@@ -23,7 +23,6 @@
 #include <QString>
 
 #include <utility>
-#include <list>
 
 struct CustomField::Private
 {

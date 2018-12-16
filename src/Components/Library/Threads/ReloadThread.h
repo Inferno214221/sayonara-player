@@ -29,16 +29,13 @@
 #ifndef RELOADTHREAD_H_
 #define RELOADTHREAD_H_
 
-#include <QThread>
-#include <QHash>
-#include <QDir>
 
 #include "Utils/Settings/SayonaraClass.h"
 #include "Utils/Library/LibraryNamespaces.h"
 #include "Utils/Pimpl.h"
 
-class MetaData;
-class MetaDataList;
+#include <QThread>
+#include <QDir>
 
 namespace Library
 {

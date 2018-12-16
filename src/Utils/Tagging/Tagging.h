@@ -21,7 +21,7 @@
 #ifndef TAGGING_H_
 #define TAGGING_H_
 
-#include <taglib/audioproperties.h>
+#include "TaggingEnums.h"
 
 namespace TagLib { class FileRef; }
 
@@ -31,6 +31,11 @@ class MetaData;
 class QString;
 class QByteArray;
 
+namespace TagLib
+{
+	class FileRef;
+}
+
 /**
  * @brief Tagging namespace
  * @ingroup Tagging
@@ -38,37 +43,15 @@ class QByteArray;
 namespace Tagging
 {
 
-	namespace Util
+	namespace Utils
 	{
-		/**
-		 * @brief The Quality enum
-		 */
-		enum class Quality : unsigned char
-		{
-			Fast=TagLib::AudioProperties::Fast,
-			Standard=TagLib::AudioProperties::Average,
-			Quality=TagLib::AudioProperties::Accurate,
-			Dirty
-		};
-
-		enum class TagType : unsigned char
-		{
-			ID3v1=0,
-			ID3v2,
-			Xiph,
-			MP4,
-			Unsupported,
-			Unknown
-		};
-
-
 		/**
 		 * @brief get metadata of file. Filepath should be given within the MetaData struct
 		 * @param md MetaData that will be filled
 		 * @param quality fast, normal, accurate
 		 * @return true, if metadata could be filled. false else
 		 */
-		bool getMetaDataOfFile(MetaData& md, Tagging::Util::Quality quality=Tagging::Util::Quality::Standard);
+		bool getMetaDataOfFile(MetaData& md, Tagging::Quality quality=Tagging::Quality::Standard);
 
 		/**
 		 * @brief writes metadata into file specivied in MetaData::_filepath
@@ -77,22 +60,11 @@ namespace Tagging
 		 */
 		bool setMetaDataOfFile(const MetaData& md);
 
-		bool write_cover(const QString& filepath, const QPixmap& image);
-		bool write_cover(const QString& filepath, const QString& image_path);
-		bool extract_cover(const QString& filepath, QByteArray& cover_data, QString& mime_type);
-		QPixmap extract_cover(const QString& filepath);
-		bool has_cover(const QString& filepath);
-		bool is_cover_supported(const QString& filepath);
-
-		bool write_lyrics(const MetaData& md, const QString& lyrics);
-		bool extract_lyrics(const MetaData& md, QString& lyrics);
-		bool is_lyrics_supported(const QString& filepath);
-
 		bool is_valid_file(const TagLib::FileRef& f);
 
-
-		Tagging::Util::TagType get_tag_type(const QString& filepath);
-		QString tag_type_to_string(Tagging::Util::TagType);
+		Tagging::TagType get_tag_type(const QString& filepath);
+		QString tag_type_to_string(Tagging::TagType);
+		Tagging::ParsedTag tag_type_from_fileref(const TagLib::FileRef& f);
 	}
 }
 

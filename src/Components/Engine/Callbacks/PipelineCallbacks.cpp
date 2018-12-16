@@ -24,6 +24,9 @@
 #include "Components/Engine/AbstractPipeline.h"
 
 #include <gst/app/gstappsink.h>
+#include <gst/base/gstbasesrc.h>
+
+const char* ClassPipelineCallbacks="PipelineCallbacks";
 
 using namespace Pipeline;
 
@@ -55,56 +58,60 @@ gboolean Callbacks::position_changed(gpointer data)
 // dynamic linking, important for decodebin
 void Callbacks::decodebin_ready(GstElement* source, GstPad* new_src_pad, gpointer data)
 {
-	GstElement*			element;
-	GstPad*				sink_pad;
-	GstPadLinkReturn	pad_link_return;
-
 	gchar* element_name = gst_element_get_name(source);
 	sp_log(Log::Develop, "Callback") << "Source: " << element_name;
 	g_free(element_name);
 
-	element = static_cast<GstElement*>(data);
+	GstElement* element = static_cast<GstElement*>(data);
 	if(!element){
 		return;
 	}
 
-	sink_pad = gst_element_get_static_pad(element, "sink");
+	GstPad*	sink_pad = gst_element_get_static_pad(element, "sink");
 	if(!sink_pad){
 		return;
 	}
 
-	if(gst_pad_is_linked(sink_pad)) {
+	if(gst_pad_is_linked(sink_pad))
+	{
+		gst_object_unref(sink_pad);
 		return;
 	}
 
-	pad_link_return = gst_pad_link(new_src_pad, sink_pad);
+	GstPadLinkReturn pad_link_return = gst_pad_link(new_src_pad, sink_pad);
 
 	if(pad_link_return != GST_PAD_LINK_OK)
 	{
-		sp_log(Log::Error) << "Dynamic pad linking: Cannot link pads";
+		sp_log(Log::Error, ClassPipelineCallbacks) << "Dynamic pad linking: Cannot link pads";
 
 		switch(pad_link_return){
 			case GST_PAD_LINK_WRONG_HIERARCHY:
-				sp_log(Log::Error) << "Cause: Wrong hierarchy";
+				sp_log(Log::Error, ClassPipelineCallbacks) << "Cause: Wrong hierarchy";
 				break;
 			case GST_PAD_LINK_WAS_LINKED:
-				sp_log(Log::Error) << "Cause: Pad was already linked";
+				sp_log(Log::Error, ClassPipelineCallbacks) << "Cause: Pad was already linked";
 				break;
 			case GST_PAD_LINK_WRONG_DIRECTION:
-				sp_log(Log::Error) << "Cause: Pads have wrong direction";
+				sp_log(Log::Error, ClassPipelineCallbacks) << "Cause: Pads have wrong direction";
 				break;
 			case GST_PAD_LINK_NOFORMAT:
-				sp_log(Log::Error) << "Cause: Pads have incompatible format";
+				sp_log(Log::Error, ClassPipelineCallbacks) << "Cause: Pads have incompatible format";
 				break;
 			case GST_PAD_LINK_NOSCHED:
-				sp_log(Log::Error) << "Cause: Pads cannot cooperate scheduling";
+				sp_log(Log::Error, ClassPipelineCallbacks) << "Cause: Pads cannot cooperate scheduling";
 				break;
 			case GST_PAD_LINK_REFUSED:
 			default:
-				sp_log(Log::Error) << "Cause: Refused because of different reason";
+				sp_log(Log::Error, ClassPipelineCallbacks) << "Cause: Refused because of different reason";
 				break;
 		}
 	}
+
+	else {
+		sp_log(Log::Debug, "PipelineCallbacks") << "Successfully linked " << gst_element_get_name(source) << " with " << gst_element_get_name(element);
+	}
+
+	gst_object_unref(sink_pad);
 }
 
 
@@ -113,32 +120,26 @@ GstFlowReturn Callbacks::new_buffer(GstElement *sink, gpointer p)
 {
 	static uchar data[TCP_BUFFER_SIZE];
 
-	Base* pipeline;
-	GstSample* sample;
-	GstBuffer* buffer;
-	gsize size = 0;
-	gsize size_new = 0;
-
-	pipeline = static_cast<Base*>(p);
+	Base* pipeline = static_cast<Base*>(p);
 	if(!pipeline){
 		return GST_FLOW_OK;
 	}
 
-	sample = gst_app_sink_pull_sample(GST_APP_SINK(sink));
+	GstSample* sample = gst_app_sink_pull_sample(GST_APP_SINK(sink));
 	if(!sample) {
 		return GST_FLOW_OK;
 	}
 
-	buffer = gst_sample_get_buffer(sample);
+	GstBuffer* buffer = gst_sample_get_buffer(sample);
 	if(!buffer) {
+		gst_sample_unref(sample);
 		return GST_FLOW_OK;
 	}
 
-	size = gst_buffer_get_size(buffer);
-	size_new = gst_buffer_extract(buffer, 0, data, size);
+	gsize size = gst_buffer_get_size(buffer);
+	gsize size_new = gst_buffer_extract(buffer, 0, data, size);
 	pipeline->set_data(data, size_new);
 
-	//gst_buffer_unref(buffer);
 	gst_sample_unref(sample);
 
 	return GST_FLOW_OK;
@@ -150,7 +151,8 @@ static bool is_source_soup(GstElement* source)
 	GstElementFactory* fac = gst_element_get_factory(source);
 	GType type = gst_element_factory_get_element_type(fac);
 
-	QString src_type(g_type_name(type));
+	const gchar* name = g_type_name(type);
+	QString src_type(name);
 
 	return (src_type.compare("gstsouphttpsrc", Qt::CaseInsensitive) == 0);
 }
@@ -162,6 +164,8 @@ void Callbacks::source_ready(GstURIDecodeBin* bin, GstElement* source, gpointer 
 	Q_UNUSED(data);
 
 	sp_log(Log::Develop, "Engine Callback") << "Source ready: is soup? " << is_source_soup(source);
+	gst_base_src_set_dynamic_size(GST_BASE_SRC(source), false);
+
 	if(is_source_soup(source))
 	{
 		//g_object_set(G_OBJECT(source), "ssl-strict", false, nullptr);
@@ -169,11 +173,6 @@ void Callbacks::source_ready(GstURIDecodeBin* bin, GstElement* source, gpointer 
 		Proxy* proxy = Proxy::instance();
 		if(proxy->active())
 		{
-		  /*  g_object_set(G_OBJECT(source),
-						 "proxy", proxy->full_url().toLocal8Bit().data(),
-						 nullptr
-			);*/
-
 			sp_log(Log::Develop, "Engine Callback") << "Will use proxy: " << proxy->full_url();
 
 			if(proxy->has_username())

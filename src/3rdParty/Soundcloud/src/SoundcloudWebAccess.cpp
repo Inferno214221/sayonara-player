@@ -39,9 +39,7 @@ QString	SC::WebAccess::create_dl_get_artist(const QString& name)
 	QString ret = sc_users + "?" + client_id_string + "&q=" + name;
 
 	sp_log(Log::Debug, "SCWA") << "Concat: " << sc_users << ", " << client_id_string << ", " << name;
-
-
-	sp_log(Log::Debug) << "Get Artist info from " << ret;
+	sp_log(Log::Debug, "SCMA") << "Get Artist info from " << ret;
 
 	return ret;
 }
@@ -56,7 +54,7 @@ QString	SC::WebAccess::create_dl_get_artist(int artist_id)
 
 	ret += sc_users + "/" + QString::number(artist_id) + "?" + CLIENT_ID_STR;
 
-	sp_log(Log::Debug) << "Get Artist info from " << ret;
+	sp_log(Log::Debug, "SCMA") << "Get Artist info from " << ret;
 
 	return ret;
 }

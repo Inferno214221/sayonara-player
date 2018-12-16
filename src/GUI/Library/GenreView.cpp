@@ -43,8 +43,7 @@
 #include <QTreeWidget>
 #include <QShortcut>
 
-
-using StringSet=SP::Set<QString>;
+using StringSet=Util::Set<QString>;
 using namespace Library;
 
 struct GenreView::Private
@@ -173,15 +172,15 @@ void GenreView::rename_pressed()
 		return;
 	}
 
-	bool ok;
-	QString new_name;
-	for(const QTreeWidgetItem* item : selected_items) {
+	for(const QTreeWidgetItem* item : selected_items)
+	{
+		bool ok;
 		QString text = item->text(0);
 
-		new_name = QInputDialog::getText(this,
+		QString new_name = QInputDialog::getText(this,
 						Lang::get(Lang::Genre),
 						Lang::get(Lang::Rename) + " " + text + ": ",
-						QLineEdit::Normal, QString(), &ok);
+						QLineEdit::Normal, text, &ok);
 		if(ok && !new_name.isEmpty()){
 			m->genre_fetcher->rename_genre(Genre(text), Genre(new_name));
 		}
@@ -196,7 +195,7 @@ void GenreView::delete_pressed()
 		return;
 	}
 
-	SP::Set<Genre> genres;
+	Util::Set<Genre> genres;
 	QStringList genre_names;
 
 	for(QTreeWidgetItem* twi : selected_items){
@@ -247,8 +246,6 @@ void GenreView::language_changed()
 
 void GenreView::reload_genres()
 {
-	SP::Set<Genre> genres = m->genre_fetcher->genres();
-
 	for(GenreNode* n : ::Util::AsConst(m->genres->children))
 	{
 		m->genres->remove_child(n);
@@ -260,12 +257,13 @@ void GenreView::reload_genres()
 	// fill it on next show event
 	m->filled = false;
 
+	Util::Set<Genre> genres = m->genre_fetcher->genres();
 	set_genres(genres);
 
 	emit sig_genres_reloaded();
 }
 
-void GenreView::set_genres(const SP::Set<Genre>& genres)
+void GenreView::set_genres(const Util::Set<Genre>& genres)
 {
 	if(m->filled){
 		return;
@@ -298,7 +296,7 @@ static void build_genre_node(GenreNode* node, const QMap<QString, StringSet>& pa
 }
 
 
-void GenreView::build_genre_data_tree(const SP::Set<Genre>& genres)
+void GenreView::build_genre_data_tree(const Util::Set<Genre>& genres)
 {
 	bool show_tree = _settings->get<Set::Lib_GenreTree>();
 

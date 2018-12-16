@@ -38,6 +38,10 @@ namespace Pipeline
 			NanoSeconds seek_abs(NanoSeconds ns);
 			NanoSeconds seek_nearest(NanoSeconds ns);
 
+			NanoSeconds seek_rel_ms(double percent, MilliSeconds ref_ns);
+			NanoSeconds seek_abs_ms(MilliSeconds ns);
+			NanoSeconds seek_nearest_ms(MilliSeconds ns);
+
 			virtual GstElement* get_source() const=0;
 	};
 }

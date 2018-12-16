@@ -49,45 +49,49 @@ namespace Pipeline
 		bool init(GstState state=GST_STATE_NULL) override;
 		bool set_uri(gchar* uri) override;
 
-		void set_n_sound_receiver(int num_sound_receiver);
+		void enable_broadcasting(bool b);
+		void enable_streamrecorder(bool b);
+		void set_streamrecorder_path(const QString& session_path);
+
+		void enable_visualizer(bool b);
 
 		void set_current_volume(double volume) override;
 		double get_current_volume() const override;
 
+
 		GstElement* get_source() const override;
 		GstElement* pipeline() const override;
-
-		void force_about_to_finish();
-
-		void set_spectrum_enabled(bool b);
-		void set_level_enabled(bool b);
-
 
 	public slots:
 		void play() override;
 		void stop() override;
 
 		void set_eq_band(int band_name, int val);
-		void set_streamrecorder_path(const QString& session_path);
 
 		NanoSeconds seek_rel(double percent, NanoSeconds ref_ns);
 		NanoSeconds seek_abs(NanoSeconds ns );
 
 	private:
-		void init_equalizer();
-		bool create_elements() override;
-		GstElement* create_audio_sink(const QString& name);
-		bool add_and_link_elements() override;
-		bool configure_elements() override;
-		MilliSeconds get_about_to_finish_time() const override;
+		bool			create_source(gchar* uri);
+		void			remove_source();
 
-		void fade_in_handler() override;
-		void fade_out_handler() override;
+		void			init_equalizer();
+		bool			init_visualizer();
+		bool			init_broadcasting();
+		bool			init_streamrecorder();
+
+		bool			create_elements() override;
+		GstElement*		create_audio_sink(const QString& name);
+		bool			add_and_link_elements() override;
+		bool			configure_elements() override;
+		MilliSeconds	get_about_to_finish_time() const override;
+
+		void			fade_in_handler() override;
+		void			fade_out_handler() override;
 
 	protected slots:
 		void s_vol_changed();
-		void s_show_level_changed();
-		void s_show_spectrum_changed();
+		void s_show_visualizer_changed();
 		void s_mute_changed();
 		void s_speed_active_changed();
 		void s_speed_changed();

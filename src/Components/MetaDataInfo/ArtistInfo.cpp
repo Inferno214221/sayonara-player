@@ -33,7 +33,6 @@
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/MetaDataList.h"
 
-
 #include <QFile>
 
 struct ArtistInfo::Private

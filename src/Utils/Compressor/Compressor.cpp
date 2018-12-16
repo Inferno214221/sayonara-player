@@ -24,7 +24,12 @@
 #include "zlib.h"
 
 
-QByteArray Compressor::compress(const QByteArray &arr){
+QByteArray Compressor::compress(const QByteArray &arr)
+{
+	if(arr.isEmpty()){
+		return arr;
+	}
+
 	QByteArray target(arr.size(), 0);
 
 	z_stream comp_stream;
@@ -45,8 +50,13 @@ QByteArray Compressor::compress(const QByteArray &arr){
 	return target;
 }
 
-QByteArray Compressor::decompress(const QByteArray& arr){
-	QByteArray target(arr.size() * 10, 0);
+QByteArray Compressor::decompress(const QByteArray& arr)
+{
+	if(arr.isEmpty()){
+		return arr;
+	}
+
+	QByteArray target(arr.size() * 100, 0);
 
 	z_stream decomp_stream;
 	decomp_stream.zalloc = Z_NULL;

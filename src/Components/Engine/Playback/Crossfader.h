@@ -25,7 +25,6 @@
 
 #include "Utils/Pimpl.h"
 
-
 namespace Pipeline
 {
 	/**

@@ -25,11 +25,13 @@
 #include "Database/Library.h"
 #include "Database/LibraryDatabase.h"
 
+#include "Utils/Logger/Logger.h"
 #include "Utils/Library/LibraryInfo.h"
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/globals.h"
+
 
 #include <QDir>
 #include <QFile>
@@ -69,11 +71,7 @@ public:
 				continue;
 			}
 
-			if(info.path().contains(path)){
-				return false;
-			}
-
-			if(path.contains(info.path())){
+			if(Util::File::clean_filename(info.path()) == Util::File::clean_filename(path)){
 				return false;
 			}
 		}

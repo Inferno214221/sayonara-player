@@ -23,87 +23,86 @@
 
 #include "Utils/Pimpl.h"
 #include <QString>
-#include <QMap>
 
 namespace LastFM
 {
-    class ArtistMatch
-    {
-        PIMPL(ArtistMatch)
+	class ArtistMatch
+	{
+		PIMPL(ArtistMatch)
 
-    public:
+	public:
 
-        struct ArtistDesc
-        {
-            QString artist_name;
-            QString mbid;
+		struct ArtistDesc
+		{
+			QString artist_name;
+			QString mbid;
 
-            ArtistDesc(const QString& artist_name, const QString& mbid);
+			ArtistDesc(const QString& artist_name, const QString& mbid);
 
-            bool operator ==(const ArtistDesc& other) const;
-            bool operator <(const ArtistDesc& other) const;
-            bool operator <=(const ArtistDesc& other) const;
+			bool operator ==(const ArtistDesc& other) const;
+			bool operator <(const ArtistDesc& other) const;
+			bool operator <=(const ArtistDesc& other) const;
 
-            QString to_string() const;
-        };
+			QString to_string() const;
+		};
 
-        /**
-         * @brief The Quality enum used to access the bin of interest. See ArtistMatch::get(Quality q)
-         */
-        enum class Quality : uint8_t
-        {
-            Poor = 0,
-            Well = 1,
-            Very_Good = 2
-        };
+		/**
+		 * @brief The Quality enum used to access the bin of interest. See ArtistMatch::get(Quality q)
+		 */
+		enum class Quality : uint8_t
+		{
+			Poor = 0,
+			Well = 1,
+			Very_Good = 2
+		};
 
 
-        ArtistMatch();
-        explicit ArtistMatch(const QString& artist_name);
-        ArtistMatch(const ArtistMatch& other);
+		ArtistMatch();
+		explicit ArtistMatch(const QString& artist_name);
+		ArtistMatch(const ArtistMatch& other);
 
-        virtual ~ArtistMatch();
+		virtual ~ArtistMatch();
 
-        /**
-         * @brief checks, if structure is valid.
-         * @return false, if all bins are empty. True else
-         */
-        bool is_valid() const;
+		/**
+		 * @brief checks, if structure is valid.
+		 * @return false, if all bins are empty. True else
+		 */
+		bool is_valid() const;
 
-        /**
-         * @brief Compares two ArtistMatch structures
-         * @param am the other ArtistMatch
-         * @return true, if the artist string is the same. False else
-         */
-        bool operator ==(const ArtistMatch& am) const;
-        ArtistMatch& operator =(const ArtistMatch& other);
+		/**
+		 * @brief Compares two ArtistMatch structures
+		 * @param am the other ArtistMatch
+		 * @return true, if the artist string is the same. False else
+		 */
+		bool operator ==(const ArtistMatch& am) const;
+		ArtistMatch& operator =(const ArtistMatch& other);
 
-        /**
-         * @brief adds an artist string to the corresponding bin
-         * @param artist artist string
-         * @param match the match value
-         */
-        void add(const ArtistDesc& artist, double match);
+		/**
+		 * @brief adds an artist string to the corresponding bin
+		 * @param artist artist string
+		 * @param match the match value
+		 */
+		void add(const ArtistDesc& artist, double match);
 
-        /**
-         * @brief get bin by quality
-         * @param q quality. See ArtistMatch::Quality
-         * @return the desired bin
-         */
-        QMap<ArtistDesc, double> get(Quality q) const;
+		/**
+		 * @brief get bin by quality
+		 * @param q quality. See ArtistMatch::Quality
+		 * @return the desired bin
+		 */
+		QMap<ArtistDesc, double> get(Quality q) const;
 
-        /**
-         * @brief get the corresponding artist name of the ArtistMatch structure
-         * @return artist name
-         */
-        QString get_artist_name() const;
+		/**
+		 * @brief get the corresponding artist name of the ArtistMatch structure
+		 * @return artist name
+		 */
+		QString get_artist_name() const;
 
-        /**
-         * @brief converts the artist match to string
-         * @return string representation
-         */
-        QString to_string() const;
-    };
+		/**
+		 * @brief converts the artist match to string
+		 * @return string representation
+		 */
+		QString to_string() const;
+	};
 }
 
 #endif // ARTISTMATCH_H

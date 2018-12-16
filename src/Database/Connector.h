@@ -26,8 +26,6 @@
 #include "Utils/Singleton.h"
 #include "Utils/Pimpl.h"
 
-#include <QList>
-
 #define INDEX_SIZE 3
 
 namespace DB
@@ -43,6 +41,7 @@ namespace DB
 	class Library;
 	class Shortcuts;
 	class Covers;
+	class Session;
 
 	using LibraryDatabases=QList<LibraryDatabase*>;
 
@@ -79,8 +78,9 @@ namespace DB
 			DB::VisualStyles*		visual_style_connector();
 			DB::Settings*			settings_connector();
 			DB::Shortcuts*			shortcut_connector();
-			DB::Covers*			cover_connector();
+			DB::Covers*				cover_connector();
 			DB::Library*			library_connector();
+			DB::Session*			session_connector();
 	};
 }
 #endif // DatabaseConnector_H

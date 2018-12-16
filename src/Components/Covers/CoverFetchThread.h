@@ -33,7 +33,6 @@
 #include "Utils/Pimpl.h"
 
 class QImage;
-class QStringList;
 class AsyncWebAccess;
 
 namespace Cover

@@ -21,13 +21,13 @@ void AlbumArtistTest::run_test(const QString& filename)
 {
 	QString album_artist = QString::fromUtf8("Motörhead фыва");
 	MetaData md(filename);
-    Tagging::Util::getMetaDataOfFile(md);
+    Tagging::Utils::getMetaDataOfFile(md);
 
 	md.set_album_artist(album_artist);
-    Tagging::Util::setMetaDataOfFile(md);
+    Tagging::Utils::setMetaDataOfFile(md);
 
 	MetaData md2(filename);
-    Tagging::Util::getMetaDataOfFile(md2);
+    Tagging::Utils::getMetaDataOfFile(md2);
 
 	QString md_album_artist = md.album_artist();
 	QString md2_album_artist = md2.album_artist();

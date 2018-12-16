@@ -26,7 +26,6 @@
 
 UI_FWD(GUI_LanguageChooser)
 
-class QString;
 class GUI_LanguageChooser :
 		public Preferences::Base
 {

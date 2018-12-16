@@ -26,7 +26,6 @@
 #define GUI_INFODIALOG_H_
 
 #include "GUI/Utils/Widgets/Dialog.h"
-#include "Utils/MetaData/MetaDataFwd.h"
 #include "Utils/Pimpl.h"
 
 class GUI_TagEdit;

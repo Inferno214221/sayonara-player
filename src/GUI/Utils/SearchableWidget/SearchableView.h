@@ -33,6 +33,29 @@
 
 class QAbstractItemView;
 class QItemSelectionModel;
+class ExtraTriggerMap;
+class SearchableViewInterface;
+
+class MiniSearcherViewConnector : public QObject
+{
+	Q_OBJECT
+	PIMPL(MiniSearcherViewConnector)
+
+public:
+	MiniSearcherViewConnector(SearchableViewInterface* parent);
+	~MiniSearcherViewConnector();
+
+	void init();
+	bool is_active() const;
+	void set_extra_triggers(const QMap<QChar, QString>& map);
+	void handle_key_press(QKeyEvent* e);
+
+private slots:
+	void edit_changed(const QString& str);
+	void select_next();
+	void select_previous();
+};
+
 
 /**
  * @brief The SearchViewInterface class
@@ -58,21 +81,28 @@ protected:
 		virtual void set_search_model(SearchableModelInterface* model);
 
 		virtual QModelIndex model_index(int row, int col, const QModelIndex& parent=QModelIndex()) const override final;
-		virtual int row_count(const QModelIndex& parent=QModelIndex()) const override final;
-		virtual int column_count(const QModelIndex& parent=QModelIndex()) const override final;
-		bool is_empty(const QModelIndex& parent=QModelIndex()) const;
-		bool has_rows(const QModelIndex& parent=QModelIndex()) const;
+		virtual int			row_count(const QModelIndex& parent=QModelIndex()) const override final;
+		virtual int			column_count(const QModelIndex& parent=QModelIndex()) const override final;
+		bool				is_empty(const QModelIndex& parent=QModelIndex()) const;
+		bool				has_rows(const QModelIndex& parent=QModelIndex()) const;
 
-		virtual QItemSelectionModel* selection_model() const override final;
-		virtual void set_current_index(int idx) override final;
+		virtual QItemSelectionModel*	selection_model() const override final;
+		virtual void					set_current_index(int idx) override final;
 
-		bool is_minisearcher_active() const;
-		void set_mini_searcher_padding(int padding);
+		bool			is_minisearcher_active() const;
+		virtual int		viewport_height() const;
+		virtual int		viewport_width() const;
+
+		QAbstractItemView* view() const;
+
+		int set_searchstring(const QString& str);
+		void select_next_match(const QString& str);
+		void select_previous_match(const QString& str);
 
 	protected:
-		virtual void select_match(const QString& str, SearchDirection direction);
 		virtual QModelIndex match_index(const QString& str, SearchDirection direction) const;
-		void handle_key_press(QKeyEvent* e) override;
+		virtual void	select_match(const QString& str, SearchDirection direction);
+		void			handle_key_press(QKeyEvent* e) override;
 };
 
 

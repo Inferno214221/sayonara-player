@@ -39,6 +39,7 @@
 #include "Components/Engine/EngineHandler.h"
 #include "Components/PlayManager/PlayManager.h"
 #include "Components/StreamPlugins/LastFM/LastFM.h"
+#include "Components/Session/Session.h"
 
 #include "Interfaces/LibraryInterface/LibraryPluginHandler.h"
 #include "Interfaces/PlayerPlugin/PlayerPluginHandler.h"
@@ -51,7 +52,9 @@
 #include "GUI/Directories/DirectoryWidgetContainer.h"
 
 #include "GUI/Plugins/PlaylistChooser/GUI_PlaylistChooser.h"
-#include "GUI/Plugins/Engine/AudioConverter/GUI_AudioConverter.h"
+#include "GUI/Plugins/AudioConverter/GUI_AudioConverter.h"
+#include "GUI/Plugins/Bookmarks/GUI_Bookmarks.h"
+#include "GUI/Plugins/Broadcasting/GUI_Broadcast.h"
 #include "GUI/Plugins/Engine/GUI_LevelPainter.h"
 #include "GUI/Plugins/Engine/GUI_Spectrum.h"
 #include "GUI/Plugins/Engine/Equalizer/GUI_Equalizer.h"
@@ -59,8 +62,6 @@
 #include "GUI/Plugins/Engine/Crossfader/GUI_Crossfader.h"
 #include "GUI/Plugins/Stream/GUI_Stream.h"
 #include "GUI/Plugins/Stream/GUI_Podcasts.h"
-#include "GUI/Plugins/Bookmarks/GUI_Bookmarks.h"
-#include "GUI/Plugins/Broadcasting/GUI_Broadcast.h"
 
 #include "GUI/Preferences/Broadcast/GUI_BroadcastSetup.h"
 #include "GUI/Preferences/Covers/GUI_Covers.h"
@@ -91,6 +92,7 @@
 
 #include "Database/Connector.h"
 #include "Database/Settings.h"
+
 
 #include <QTime>
 #include <QDateTime>
@@ -125,23 +127,25 @@ struct Application::Private
 	QTime*				timer=nullptr;
 	GUI_Player*			player=nullptr;
 
+	RemoteControl*		remote_control=nullptr;
 	Playlist::Handler*	plh=nullptr;
 	DB::Connector*		db=nullptr;
 	InstanceThread*		instance_thread=nullptr;
 	MetaTypeRegistry*	metatype_registry=nullptr;
+	Session*			session=nullptr;
 
 	bool				was_shut_down;
 
 	Private(Application* app)
 	{
-		Q_UNUSED(app)
-
 		metatype_registry = new MetaTypeRegistry();
 		qRegisterMetaType<uint64_t>("uint64_t");
 
 		/* Tell the settings manager which settings are necessary */
 		db = DB::Connector::instance();
 		db->settings_connector()->load_settings();
+
+		session = new Session(app);
 
 		Gui::Icons::set_standard_theme(QIcon::themeName());
 		Gui::Icons::force_standard_icons(Settings::instance()->get<Set::Icon_ForceInDarkTheme>());
@@ -266,8 +270,7 @@ bool Application::init(const QStringList& files_to_play)
 #endif
 
 	{
-		measure("Remote Control")
-		new RemoteControl(this);
+		Set::listen<Set::Remote_Active>(this, &Application::remote_control_activated);
 	}
 
 	if(settings->get<Set::Notification_Show>())
@@ -276,7 +279,6 @@ bool Application::init(const QStringList& files_to_play)
 												Lang::get(Lang::Version) + " " + SAYONARA_VERSION,
 												Util::share_path("logo.png"));
 	}
-
 
 	init_libraries();
 	init_plugins();
@@ -422,6 +424,14 @@ void Application::shutdown()
 	PlayManager::instance()->shutdown();
 
 	m->was_shut_down = true;
+}
+
+void Application::remote_control_activated()
+{
+	if(Settings::instance()->get<Set::Remote_Active>() && !m->remote_control)
+	{
+		m->remote_control = new RemoteControl(this);
+	}
 }
 
 void Application::create_playlist()

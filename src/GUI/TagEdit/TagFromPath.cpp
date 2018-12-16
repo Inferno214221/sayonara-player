@@ -27,6 +27,7 @@
 #include "Utils/Tagging/Tagging.h"
 #include "Utils/Message/Message.h"
 #include "Utils/Language.h"
+#include "Utils/Logger/Logger.h"
 
 #include <QDesktopServices>
 #include <QMap>
@@ -89,8 +90,8 @@ void GUI_TagFromPath::set_filepath(const QString& filepath)
 	bool valid = e.is_valid();
 	set_tag_colors(valid);
 
-	Tagging::Util::TagType tag_type = Tagging::Util::get_tag_type(filepath);
-	QString tag_type_string = Tagging::Util::tag_type_to_string(tag_type);
+	Tagging::TagType tag_type = Tagging::Utils::get_tag_type(filepath);
+	QString tag_type_string = Tagging::Utils::tag_type_to_string(tag_type);
 
 	ui->lab_tag_type->setText(tr("Tag") + ": " + tag_type_string);
 }

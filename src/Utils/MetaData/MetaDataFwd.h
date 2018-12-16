@@ -21,8 +21,6 @@
 #ifndef METADATA_FWD_H
 #define METADATA_FWD_H
 
-#include <QObject>
-
 class MetaData;
 class MetaDataList;
 class Artist;
@@ -34,10 +32,10 @@ namespace MD
 {
     enum class Interpretation : char
     {
-	None=0,
-	Artists,
-	Albums,
-	Tracks
+		None=0,
+		Artists,
+		Albums,
+		Tracks
     };
 }
 

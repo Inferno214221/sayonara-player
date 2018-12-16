@@ -109,9 +109,9 @@ Artist& Artist::operator =(Artist&& other)
 
 Artist::~Artist() {}
 
-const QString& Artist::name() const
+QString Artist::name() const
 {
-	return artist_pool()[m->artist_idx];
+	return artist_pool().value(m->artist_idx);
 }
 
 void Artist::set_name(const QString& artist)
@@ -119,7 +119,7 @@ void Artist::set_name(const QString& artist)
 	HashValue hashed = qHash(artist);
 	if(!artist_pool().contains(hashed))
 	{
-		artist_pool()[hashed] = artist;
+		artist_pool().insert(hashed, artist);
 	}
 
 	m->artist_idx = hashed;
@@ -141,12 +141,12 @@ bool Artist::fromVariant(const QVariant& v, Artist& artist) {
 
 void Artist::print() const
 {
-	sp_log(Log::Info) << id << ": " << name() << ": " << num_songs << " Songs, " << num_albums << " Albums";
+	sp_log(Log::Info, this) << id << ": " << name() << ": " << num_songs << " Songs, " << num_albums << " Albums";
 }
 
 
 ArtistList::ArtistList() :
-	std::vector<Artist>()
+	ArtistList::Parent()
 {}
 
 ArtistList::~ArtistList()
@@ -165,7 +165,8 @@ QString ArtistList::get_major_artist(const QStringList& artists)
 		return artists.first().toLower().trimmed();
 	}
 
-	for(const QString& artist : artists) {
+	for(const QString& artist : artists)
+	{
 		QString alower = artist.toLower().trimmed();
 
 		// count appearance of artist
@@ -185,7 +186,6 @@ QString ArtistList::get_major_artist(const QStringList& artists)
 		if(n_appearances * 3 > n_artists * 2) {
 			return artist;
 		}
-
 	}
 
 	return Lang::get(Lang::Various);
@@ -235,12 +235,6 @@ Artist ArtistList::first() const
 
 ArtistList& ArtistList::append_unique(const ArtistList& other)
 {
-	long long diff_cap = other.size() - (this->capacity() - this->size());
-	if(diff_cap > 0)
-	{
-		this->reserve(this->capacity() + diff_cap);
-	}
-
 	for(auto it = other.begin(); it != other.end(); it++)
 	{
 		if(!this->contains(it->id))

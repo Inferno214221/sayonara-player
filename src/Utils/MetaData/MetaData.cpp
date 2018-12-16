@@ -57,13 +57,14 @@
 struct MetaData::Private
 {
 	QString			title;
-	SP::Set<GenreID> genres;
+	QString			comment;
+	QString         filepath;
+	Util::Set<GenreID> genres;
 	ArtistId		album_artist_id;
 	HashValue		album_artist_idx;
 	HashValue		album_idx;
 	HashValue		artist_idx;
-	QString			comment;
-	QString         filepath;
+
 	RadioMode       radio_mode;
 
 	Private() :
@@ -76,38 +77,38 @@ struct MetaData::Private
 
 	Private(const Private& other) :
 		CASSIGN(title),
+		CASSIGN(comment),
+		CASSIGN(filepath),
 		CASSIGN(genres),
 		CASSIGN(album_artist_id),
 		CASSIGN(album_artist_idx),
 		CASSIGN(album_idx),
 		CASSIGN(artist_idx),
-		CASSIGN(comment),
-		CASSIGN(filepath),
 		CASSIGN(radio_mode)
 	{}
 
 	Private(Private&& other) :
 		CMOVE(title),
+		CMOVE(comment),
+		CMOVE(filepath),
 		CMOVE(genres),
 		CMOVE(album_artist_id),
 		CMOVE(album_artist_idx),
 		CMOVE(album_idx),
 		CMOVE(artist_idx),
-		CMOVE(comment),
-		CMOVE(filepath),
 		CMOVE(radio_mode)
 	{}
 
 	Private& operator=(const Private& other)
 	{
 		ASSIGN(title);
+		ASSIGN(comment);
+		ASSIGN(filepath);
 		ASSIGN(genres);
 		ASSIGN(album_artist_id);
 		ASSIGN(album_artist_idx);
 		ASSIGN(album_idx);
 		ASSIGN(artist_idx);
-		ASSIGN(comment);
-		ASSIGN(filepath);
 		ASSIGN(radio_mode);
 
 		return *this;
@@ -116,13 +117,13 @@ struct MetaData::Private
 	Private& operator=(Private&& other)
 	{
 		MOVE(title);
+		MOVE(comment);
+		MOVE(filepath);
 		MOVE(genres);
 		MOVE(album_artist_id);
 		MOVE(album_artist_idx);
 		MOVE(album_idx);
 		MOVE(artist_idx);
-		MOVE(comment);
-		MOVE(filepath);
 		MOVE(radio_mode);
 
 		return *this;
@@ -245,9 +246,11 @@ MetaData::~MetaData()
 #ifdef COUNT_MD
 	mdc.decrease();
 #endif
+
+	m->genres.clear();
 }
 
-const QString& MetaData::title() const
+QString MetaData::title() const
 {
 	return m->title;
 }
@@ -257,9 +260,9 @@ void MetaData::set_title(const QString &title)
 	m->title = title;
 }
 
-const QString& MetaData::artist() const
+QString MetaData::artist() const
 {
-	return artist_pool()[m->artist_idx];
+	return artist_pool().value(m->artist_idx);
 }
 
 void MetaData::set_artist(const QString& artist)
@@ -267,15 +270,15 @@ void MetaData::set_artist(const QString& artist)
 	HashValue hashed = qHash(artist);
 	if(!artist_pool().contains(hashed))
 	{
-		artist_pool()[hashed] = artist;
+		artist_pool().insert(hashed, artist);
 	}
 
 	m->artist_idx = hashed;
 }
 
-const QString& MetaData::album() const
+QString MetaData::album() const
 {
-	return album_pool()[m->album_idx];
+	return album_pool().value(m->album_idx);
 }
 
 void MetaData::set_album(const QString& album)
@@ -284,7 +287,7 @@ void MetaData::set_album(const QString& album)
 
 	if(!album_pool().contains(hashed))
 	{
-		album_pool()[hashed] = album;
+		album_pool().insert(hashed, album);
 	}
 
 	m->album_idx = hashed;
@@ -306,12 +309,22 @@ ArtistId MetaData::album_artist_id() const
 		return artist_id;
 	}
 
+	QString str = artist_pool().value(m->album_artist_idx);
+	if(str.isEmpty()){
+		return artist_id;
+	}
+
 	return m->album_artist_id;
 }
 
-const QString& MetaData::album_artist() const
+QString MetaData::album_artist() const
 {
-	return artist_pool()[m->album_artist_idx];
+	QString str = artist_pool().value(m->album_artist_idx);
+	if(str.isEmpty()){
+		return artist();
+	}
+
+	return str;
 }
 
 void MetaData::set_album_artist(const QString& album_artist, ArtistId id)
@@ -319,7 +332,7 @@ void MetaData::set_album_artist(const QString& album_artist, ArtistId id)
 	HashValue hashed = qHash(album_artist);
 	if(!artist_pool().contains(hashed))
 	{
-		artist_pool()[hashed] = album_artist;
+		artist_pool().insert(hashed, album_artist);
 	}
 
 	m->album_artist_idx = hashed;
@@ -337,7 +350,7 @@ void MetaData::set_radio_station(const QString& album)
 	album_id = -1;
 }
 
-const QString&MetaData::radio_station() const
+QString MetaData::radio_station() const
 {
 	return album();
 }
@@ -491,15 +504,15 @@ bool MetaData::is_equal_deep(const MetaData& other) const
 	);
 }
 
-const SP::Set<GenreID>& MetaData::genre_ids() const
+const Util::Set<GenreID>& MetaData::genre_ids() const
 {
 	return m->genres;
 }
 
 
-SP::Set<Genre> MetaData::genres() const
+Util::Set<Genre> MetaData::genres() const
 {
-	SP::Set<Genre> genres;
+	Util::Set<Genre> genres;
 
 	for(GenreID genre_id : m->genres){
 		genres.insert( genre_pool().value(genre_id) );
@@ -508,7 +521,7 @@ SP::Set<Genre> MetaData::genres() const
 	return genres;
 }
 
-void MetaData::set_genres(const SP::Set<Genre>& genres)
+void MetaData::set_genres(const Util::Set<Genre>& genres)
 {
 	m->genres.clear();
 	for(const Genre& genre : genres)

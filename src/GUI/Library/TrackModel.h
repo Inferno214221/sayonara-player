@@ -32,7 +32,6 @@
 #include "GUI/Library/ItemModel.h"
 #include "Utils/Pimpl.h"
 
-class MetaDataList;
 namespace Library
 {
 	class TrackModel :
@@ -55,7 +54,7 @@ namespace Library
 			int				searchable_column() const override;
 			Id				id_by_index(int row) const override;
 			QString			searchable_string(int row) const override;
-			const SP::Set<Id>& selections() const override;
+			const Util::Set<Id>& selections() const override;
 
 		protected:
 			const MetaDataList& mimedata_tracks() const override;

@@ -105,7 +105,7 @@ Library::TableView* GUI_Library::lv_tracks() const
 	return ui->tb_title;
 }
 
-QLineEdit* GUI_Library::le_search() const
+Library::SearchBar* GUI_Library::le_search() const
 {
 	return ui->le_search;
 }

@@ -32,12 +32,15 @@
 #include "Utils/Library/Sortorder.h"
 #include "Utils/Library/Sorting.h"
 #include "Utils/Language.h"
+#include "Utils/ExtensionSet.h"
+
+#include <QStringList>
 
 using namespace Library;
 
 struct TrackView::Private
 {
-	AbstractLibrary* library = nullptr;
+	AbstractLibrary*	library = nullptr;
 };
 
 TrackView::TrackView(QWidget* parent) :
@@ -99,7 +102,7 @@ void TrackView::save_visible_columns(const BoolList& lst)
 
 LibraryContextMenu::Entries TrackView::context_menu_entries() const
 {
-	return (ItemView::context_menu_entries() | LibraryContextMenu::EntryLyrics);
+	return (ItemView::context_menu_entries() | LibraryContextMenu::EntryLyrics | LibraryContextMenu::EntryFilterExtension);
 }
 
 SortOrder TrackView::sortorder() const

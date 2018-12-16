@@ -26,7 +26,6 @@
 
 #include <QObject>
 
-class MetaDataList;
 class LocalLibrary;
 
 namespace Library

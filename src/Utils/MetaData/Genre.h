@@ -21,8 +21,9 @@
 #ifndef GENRE_H
 #define GENRE_H
 
-#include <QString>
 #include "Utils/Pimpl.h"
+
+#include <QString>
 
 using GenreID = uint32_t;
 

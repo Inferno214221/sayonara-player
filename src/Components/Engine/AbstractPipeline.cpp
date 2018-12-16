@@ -20,16 +20,16 @@
 
 #include "AbstractPipeline.h"
 #include "Components/Engine/AbstractEngine.h"
-
+#include "Callbacks/EngineUtils.h"
 #include "Callbacks/EngineCallbacks.h"
 #include "Callbacks/PipelineCallbacks.h"
 #include "Utils/Logger/Logger.h"
 
+#include <QTimer>
 #include <gst/app/gstappsink.h>
 
 using Pipeline::Base;
-using Pipeline::test_and_error;
-using Pipeline::test_and_error_bool;
+namespace EngineUtils=Engine::Utils;
 
 struct Base::Private
 {
@@ -44,6 +44,8 @@ struct Base::Private
 	gchar*			uri=nullptr;
 	GstElement*		pipeline=nullptr;
 
+	QList<GstElement*> elements;
+
 	bool			about_to_finish;
 	bool            initialized;
 
@@ -56,18 +58,6 @@ struct Base::Private
 		about_to_finish(false),
 		initialized(false)
 	{}
-
-	MilliSeconds query_duration(GstElement* source) const
-	{
-		NanoSeconds duration_ns;
-		bool success = gst_element_query_duration(source, GST_FORMAT_TIME, &duration_ns);
-
-		if(success && (duration_ns >= 0)){
-			return (MilliSeconds) (GST_TIME_AS_MSECONDS(duration_ns));
-		}
-
-		return 0;
-	}
 };
 
 Base::Base(QString name, Engine::Base* engine, QObject* parent) :
@@ -79,7 +69,8 @@ Base::Base(QString name, Engine::Base* engine, QObject* parent) :
 
 Base::~Base()
 {
-	if (m->pipeline) {
+	if (m->pipeline)
+	{
 		gst_element_set_state(GST_ELEMENT(m->pipeline), GST_STATE_NULL);
 		gst_object_unref (GST_OBJECT(m->pipeline));
 		m->pipeline = nullptr;
@@ -96,7 +87,7 @@ bool Base::init(GstState state)
 
 	// create equalizer element
 	m->pipeline = gst_pipeline_new(m->name.toStdString().c_str());
-	if(!test_and_error(m->pipeline, "Engine: Pipeline sucks")){
+	if(!EngineUtils::test_and_error(m->pipeline, "Engine: Pipeline sucks")){
 		return false;
 	}
 
@@ -114,7 +105,7 @@ bool Base::init(GstState state)
 
 	configure_elements();
 
-	gst_element_set_state(m->pipeline, state);
+	EngineUtils::set_state(m->pipeline, state);
 
 #ifdef Q_OS_WIN
 	gst_bus_set_sync_handler(m->bus, Engine::Callbacks::bus_message_received, m->engine, EngineCallbacks::destroy_notify);
@@ -139,27 +130,23 @@ bool Base::init(GstState state)
 
 void Base::refresh_position()
 {
-	NanoSeconds pos_pipeline, pos_source;
-	bool success_source, success_pipeline;
-	GstElement* element;
-
-	element = get_source();
-
+	GstElement* element = get_source();
 	if(!element){
 		element = GST_ELEMENT(m->pipeline);
 	}
 
-	success_source = gst_element_query_position(element, GST_FORMAT_TIME, &pos_source);
-	success_pipeline = gst_element_query_position(m->pipeline, GST_FORMAT_TIME, &pos_pipeline);
+	MilliSeconds pos_source_ms = EngineUtils::get_position_ms(element);
+	MilliSeconds pos_pipeline_ms = EngineUtils::get_position_ms(m->pipeline);
 
 	m->position_source_ms = 0;
 	m->position_pipeline_ms = 0;
-	if(success_source) {
-		m->position_source_ms = (MilliSeconds) (GST_TIME_AS_MSECONDS(pos_source));
+
+	if(pos_source_ms >= 0) {
+		m->position_source_ms = pos_source_ms;
 	}
 
-	if(success_pipeline) {
-		m->position_pipeline_ms = (MilliSeconds) (GST_TIME_AS_MSECONDS(pos_pipeline));
+	if(pos_pipeline_ms >= 0) {
+		m->position_pipeline_ms = pos_pipeline_ms;
 	}
 
 	emit sig_pos_changed_ms( m->position_pipeline_ms );
@@ -194,9 +181,9 @@ void Base::check_about_to_finish()
 	{
 		if(m->duration_ms < m->position_pipeline_ms || (m->duration_ms == 0))
 		{
-			m->duration_ms = m->query_duration(get_source());
+			m->duration_ms = EngineUtils::get_duration_ms(get_source());
 
-			if(m->duration_ms == 0){
+			if(m->duration_ms < 0){
 				return;
 			}
 		}
@@ -224,26 +211,13 @@ void Base::check_about_to_finish()
 
 MilliSeconds Base::get_time_to_go() const
 {
-	NanoSeconds position, duration;
-	GstElement* element;
-
-	element = get_source();
-	if(!element){
-		element = GST_ELEMENT(m->pipeline);
-	}
-
-	element = GST_ELEMENT(m->pipeline);
-
-	gst_element_query_duration(element, GST_FORMAT_TIME, &duration);
-	gst_element_query_position(element, GST_FORMAT_TIME, &position);
-
-	if(duration < position) {
+	GstElement* element = GST_ELEMENT(m->pipeline);
+	MilliSeconds ms = EngineUtils::get_time_to_go(element);
+	if(ms < 100){
 		return 0;
 	}
 
-	else {
-		return (MilliSeconds) (GST_TIME_AS_MSECONDS(duration - position) - 100);
-	}
+	return ms - 100;
 }
 
 
@@ -262,6 +236,11 @@ MilliSeconds Base::get_pipeline_position_ms() const
 	return m->position_pipeline_ms;
 }
 
+bool Base::has_element(GstElement* e) const
+{
+	return EngineUtils::has_element(GST_BIN(m->pipeline), e);
+}
+
 void Base::finished()
 {
 	emit sig_finished();
@@ -270,9 +249,7 @@ void Base::finished()
 
 GstState Base::get_state()
 {
-	GstState state;
-	gst_element_get_state(m->pipeline, &state, nullptr, GST_MSECOND * 10);
-	return state;
+	return EngineUtils::get_state(m->pipeline);
 }
 
 
@@ -287,92 +264,6 @@ bool Base::set_uri(gchar* uri)
 	return (m->uri != nullptr);
 }
 
-
-
-bool Base::create_element(GstElement** elem, const gchar* elem_name, const gchar* name)
-{
-	QString error_msg;
-	if(strlen(name) > 0){
-		*elem = gst_element_factory_make(elem_name, name);
-		error_msg = QString("Engine: ") + name + " creation failed";
-	}
-
-	else{
-		*elem = gst_element_factory_make(elem_name, elem_name);
-		error_msg = QString("Engine: ") + elem_name + " creation failed";
-	}
-
-	bool success = test_and_error(*elem, error_msg);
-
-	return success;
-}
-
-
-bool Base::tee_connect(GstElement* tee, GstPadTemplate* tee_src_pad_template, GstElement* queue, const QString& queue_name)
-{
-	GstPadLinkReturn s;
-	GstPad* tee_queue_pad;
-	GstPad* queue_pad;
-
-	QString error_1 = QString("Engine: Tee-") + queue_name + " pad is nullptr";
-	QString error_2 = QString("Engine: ") + queue_name + " pad is nullptr";
-	QString error_3 = QString("Engine: Cannot link tee with ") + queue_name;
-
-	tee_queue_pad = gst_element_request_pad(tee, tee_src_pad_template, nullptr, nullptr);
-	if(!test_and_error(tee_queue_pad, error_1)){
-		return false;
-	}
-
-	queue_pad = gst_element_get_static_pad(queue, "sink");
-	if(!test_and_error(queue_pad, error_2)) {
-		return false;
-	}
-
-	s = gst_pad_link (tee_queue_pad, queue_pad);
-	if(!test_and_error_bool((s == GST_PAD_LINK_OK), error_3)) {
-		return false;
-	}
-
-	g_object_set (queue, "silent", TRUE, nullptr);
-
-	gst_object_unref(tee_queue_pad);
-	gst_object_unref(queue_pad);
-	return true;
-}
-
-
-bool
-Base::has_element(GstElement* e) const
-{
-	if(!e){
-		return true;
-	}
-
-	GstObject* o = (GstObject*) e;
-	GstObject* parent = nullptr;
-
-	while(o)
-	{
-		if( o == (GstObject*) m->pipeline ){
-			if( (GstObject*) e != o ){
-				gst_object_unref(o);
-			}
-
-			return true;
-		}
-
-		parent = gst_object_get_parent(o);
-		if( (GstObject*) e != o ){
-			gst_object_unref(o);
-		}
-
-		o = parent;
-	}
-
-	return false;
-}
-
-
 MilliSeconds Base::get_about_to_finish_time() const
 {
 	return 300;
@@ -385,51 +276,20 @@ void Base::set_about_to_finish(bool b)
 
 void Base::play()
 {
-	if(m->pipeline)
-	{
-		gst_element_set_state(m->pipeline, GST_STATE_PLAYING);
-	}
+	EngineUtils::set_state(m->pipeline, GST_STATE_PLAYING);
 }
 
 void Base::pause()
 {
-	if(m->pipeline)
-	{
-		gst_element_set_state(m->pipeline, GST_STATE_PAUSED);
-	}
+	EngineUtils::set_state(m->pipeline, GST_STATE_PAUSED);
 }
 
 void Base::stop()
 {
-	if(m->pipeline)
-	{
-		gst_element_set_state(m->pipeline, GST_STATE_NULL);
-	}
+	EngineUtils::set_state(m->pipeline, GST_STATE_NULL);
 
 	m->position_source_ms = 0;
 	m->position_pipeline_ms = 0;
 	m->duration_ms = 0;
 	m->uri = nullptr;
-}
-
-bool
-Pipeline::test_and_error(void* element, const QString& errorstr)
-{
-	if(!element) {
-		sp_log(Log::Error) << errorstr;
-		return false;
-	}
-
-	return true;
-}
-
-bool
-Pipeline::test_and_error_bool(bool b, const QString& errorstr)
-{
-	if(!b) {
-		sp_log(Log::Error) << errorstr;
-		return false;
-	}
-
-	return true;
 }

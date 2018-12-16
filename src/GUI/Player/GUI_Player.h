@@ -22,18 +22,16 @@
 #define GUI_SIMPLEPLAYER_H
 
 #include "Components/PlayManager/PlayState.h"
-#include "Utils/Message/MessageReceiverInterface.h"
-#include "Utils/Pimpl.h"
 #include "GUI/Utils/GuiClass.h"
 #include "GUI/Utils/Widgets/Widget.h"
+#include "Utils/Message/MessageReceiverInterface.h"
+#include "Utils/Pimpl.h"
 
 #include <QSystemTrayIcon>
 
 class GUI_TrayIcon;
 class GUI_Logger;
-class MetaData;
 class PreferenceDialog;
-
 class QAction;
 class QMessageBox;
 class QTranslator;

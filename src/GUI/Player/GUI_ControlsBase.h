@@ -23,15 +23,15 @@
 #ifndef GUI_CONTROLSBASE_H
 #define GUI_CONTROLSBASE_H
 
-#include "GUI/Utils/Shortcuts/ShortcutWidget.h"
-#include "GUI/Utils/Widgets/Widget.h"
-#include "GUI/InfoDialog/InfoDialogContainer.h"
-#include "GUI/Utils/Icons.h"
-
 #include "Components/PlayManager/PlayState.h"
 
-#include "Utils/Pimpl.h"
+#include "GUI/InfoDialog/InfoDialogContainer.h"
+#include "GUI/Utils/Shortcuts/ShortcutWidget.h"
+#include "GUI/Utils/Widgets/Widget.h"
+#include "GUI/Utils/Icons.h"
+
 #include "Utils/MetaData/RadioMode.h"
+#include "Utils/Pimpl.h"
 
 class QLabel;
 class QSlider;

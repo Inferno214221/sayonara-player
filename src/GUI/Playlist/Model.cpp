@@ -29,7 +29,7 @@
 #include "Model.h"
 #include "Components/Playlist/AbstractPlaylist.h"
 #include "Components/Playlist/PlaylistHandler.h"
-#include "Components/Tagging/Editor.h"
+#include "Components/Tagging/UserTaggingOperations.h"
 #include "Components/Covers/CoverLocation.h"
 
 #include "GUI/Utils/CustomMimeData.h"
@@ -202,11 +202,11 @@ bool PlaylistItemModel::setData(const QModelIndex& index, const QVariant& value,
 Qt::ItemFlags PlaylistItemModel::flags(const QModelIndex &index) const
 {
 	int row = index.row();
-	if (!index.isValid()){
+	if(!index.isValid()){
 		return (Qt::ItemIsEnabled | Qt::ItemIsDropEnabled);
 	}
 
-	if( between(row, m->pl->count()))
+	if(between(row, m->pl->count()))
 	{
 		const MetaData& md = metadata(row);
 		if(md.is_disabled){
@@ -271,23 +271,15 @@ void PlaylistItemModel::change_rating(const IndexSet& indexes, Rating rating)
 {
 	MetaDataList v_md;
 	v_md.reserve(indexes.size());
+
 	for(auto idx : indexes)
 	{
 		v_md << m->pl->metadata(idx);
 	}
 
-	Tagging::Editor* te = new Tagging::Editor(v_md);
-
-	for(int i=0; i<v_md.count(); i++)
-	{
-		MetaData md	= v_md[i];
-		md.rating = rating;
-		te->update_track(i, md);
-	}
-
-	te->commit();
-
-	connect(te, &QThread::finished, te, &Tagging::Editor::deleteLater);
+	Tagging::UserOperations* uto = new Tagging::UserOperations(-1, this);
+	connect(uto, &Tagging::UserOperations::sig_finished, uto, &Tagging::UserOperations::deleteLater);
+	uto->set_track_rating(v_md, rating);
 }
 
 void PlaylistItemModel::insert_tracks(const MetaDataList& v_md, int row)
@@ -382,7 +374,7 @@ QModelIndexList PlaylistItemModel::search_results(const QString& substr)
 				break;
 		}
 
-		str = Library::Util::convert_search_string(str, search_mode());
+		str = Library::Utils::convert_search_string(str, search_mode());
 		if(str.contains(pure_search_string))
 		{
 			ret << this->index(i, 0);
@@ -465,6 +457,11 @@ void PlaylistItemModel::set_drag_index(int drag_index)
 	{
 		emit dataChanged(index(drag_index, 0), index(drag_index, columnCount() - 1));
 	}
+}
+
+void PlaylistItemModel::refresh_data()
+{
+	m->pl->enable_all();
 }
 
 void PlaylistItemModel::look_changed()

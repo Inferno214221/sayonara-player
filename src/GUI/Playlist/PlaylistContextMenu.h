@@ -35,12 +35,14 @@ class PlaylistContextMenu :
 signals:
 	void sig_rating_changed(Rating rating);
 	void sig_bookmark_pressed(Seconds timestamp);
+	void sig_jump_to_current_track();
 
 public:
 	enum Entry
 	{
 		EntryRating=(LibraryContextMenu::EntryLast << 1),
-		EntryBookmarks=(EntryRating << 1)
+		EntryBookmarks=(EntryRating << 1),
+		EntryCurrentTrack=(EntryBookmarks << 1)
 	};
 
 	using Entries=LibraryContextMenu::Entries;

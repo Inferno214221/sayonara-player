@@ -19,7 +19,6 @@
  */
 
 #include "Dialog.h"
-#include "Utils/Settings/Settings.h"
 
 #include <QDialog>
 #include <QCloseEvent>

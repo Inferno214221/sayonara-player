@@ -23,13 +23,11 @@
 #ifndef GUI_PLAYERMENUBAR_H
 #define GUI_PLAYERMENUBAR_H
 
-#include <QMenuBar>
 #include "GUI/Utils/Widgets/WidgetTemplate.h"
 #include "GUI/Utils/Shortcuts/ShortcutWidget.h"
 #include "Utils/Pimpl.h"
 
-class QMenu;
-class QAction;
+#include <QMenuBar>
 
 class Menubar :
 	public Gui::WidgetTemplate<QMenuBar>,
@@ -73,9 +71,7 @@ private slots:
 	void show_fullscreen_toggled(bool b);
 	void help_clicked();
 	void about_clicked();
-	void awa_translators_finished();
 	void shortcut_changed(ShortcutIdentifier identifier);
-
 };
 
 

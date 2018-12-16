@@ -25,6 +25,7 @@
 #include "Utils/globals.h"
 #include <QStringList>
 #include <algorithm>
+#include <assert.h>
 
 struct MetaDataList::Private
 {
@@ -55,33 +56,36 @@ struct MetaDataList::Private
 };
 
 MetaDataList::MetaDataList() :
-	std::vector<MetaData>()
+	MetaDataList::Parent()
 {
 	m = Pimpl::make<Private>();
+	assert(m != nullptr);
 }
 
 MetaDataList::MetaDataList(const MetaData& md) :
-	std::vector<MetaData>()
+	MetaDataList::Parent()
 {
 	m = Pimpl::make<Private>();
+	assert(m != nullptr);
+
 	append(md);
 }
 
 MetaDataList::MetaDataList(const MetaDataList& other) :
-	std::vector<MetaData>()
+	MetaDataList::Parent()
 {
-	m = Pimpl::make<Private>();
-	m->current_track = other.current_track();
+	m = Pimpl::make<Private>(*(other.m));
+	assert(m != nullptr);
 
 	this->resize(other.size());
-	std::move(other.begin(), other.end(), this->begin());
+	std::copy(other.begin(), other.end(), this->begin());
 }
 
 MetaDataList::MetaDataList(MetaDataList&& other) :
-	std::vector<MetaData>()
+	MetaDataList::Parent()
 {
 	m = Pimpl::make<Private>(std::move(*(other.m)));
-	m->current_track = other.current_track();
+	assert(m != nullptr);
 
 	this->resize(other.size());
 	std::move(other.begin(), other.end(), this->begin());
@@ -143,20 +147,12 @@ MetaDataList& MetaDataList::insert_tracks(const MetaDataList& v_md, int tgt_idx)
 		return *this;
 	}
 
-	tgt_idx = std::max(0, tgt_idx);
-	tgt_idx = std::min((int) this->count(), tgt_idx);
-
-	int old_count = this->count();
-
-	this->resize(old_count + v_md.count());
-
-	std::move_backward(this->begin() + tgt_idx,
-					   this->begin() + old_count,
-					   this->end());
-
-	std::copy(v_md.begin(),
-			  v_md.end(),
-			  this->begin() + tgt_idx);
+	auto it = this->begin() + tgt_idx;
+	for(const MetaData& md : v_md)
+	{
+		it = this->insert(it, md);
+		it++;
+	}
 
 	if(current_track() >= tgt_idx){
 		set_current_track(current_track() + v_md.count());
@@ -170,7 +166,7 @@ MetaDataList& MetaDataList::copy_tracks(const IndexSet& indexes, int tgt_idx)
 	MetaDataList v_md; v_md.reserve(indexes.size());
 
 	for(int idx : indexes){
-		v_md << this->operator[](idx);
+		v_md << this->at(idx);
 	}
 
 	return insert_tracks(v_md, tgt_idx);
@@ -260,6 +256,7 @@ MetaDataList& MetaDataList::remove_track(int idx)
 
 MetaDataList& MetaDataList::remove_tracks(int first, int last)
 {
+
 	if( !between(first, this) ||
 		!between(last, this))
 	{
@@ -267,12 +264,7 @@ MetaDataList& MetaDataList::remove_tracks(int first, int last)
 	}
 
 	int n_elems = last - first + 1;
-
-	if(last != this->count() - 1) {
-		std::move(this->begin() + last + 1, this->end(), this->begin()  + first);
-	}
-
-	this->resize(this->count() - n_elems);
+	this->erase(this->begin() + first, this->begin() + last + 1);
 
 	if(m->current_track >= first && m->current_track <= last){
 		set_current_track(-1);
@@ -282,6 +274,12 @@ MetaDataList& MetaDataList::remove_tracks(int first, int last)
 		set_current_track( m->current_track - n_elems );
 	}
 
+	return *this;
+}
+
+MetaDataList& MetaDataList::remove_tracks(std::function<bool (const MetaData&)> attr)
+{
+	this->erase( std::remove_if(this->begin(), this->end(), attr), this->end() );
 	return *this;
 }
 
@@ -437,7 +435,8 @@ bool MetaDataList::contains(TrackID id) const
 
 void MetaDataList::remove_duplicates()
 {
-	for(auto it=this->begin(); it!=this->end(); it++){
+	for(auto it=this->begin(); it!=this->end(); it++)
+	{
 		auto it_next = it + 1;
 
 		if(it_next == this->end()){
@@ -503,7 +502,7 @@ const MetaData& MetaDataList::last() const
 
 int MetaDataList::count() const
 {
-	return (int) std::vector<MetaData>::size();
+	return (int) MetaDataList::Parent::size();
 }
 
 
@@ -518,4 +517,14 @@ MetaData MetaDataList::take_at(int idx)
 void MetaDataList::sort(Library::SortOrder so)
 {
 	MetaDataSorting::sort_metadata(*this, so);
+}
+
+void MetaDataList::reserve(size_t items)
+{
+	Q_UNUSED(items)
+}
+
+size_t MetaDataList::capacity() const
+{
+	return 0;
 }

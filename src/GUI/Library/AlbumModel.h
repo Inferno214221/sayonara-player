@@ -32,8 +32,6 @@
 #include "GUI/Library/ItemModel.h"
 #include "Utils/Pimpl.h"
 
-class AlbumList;
-
 namespace Library
 {
 	class AlbumModel :
@@ -57,7 +55,7 @@ namespace Library
 			QString			searchable_string(int row) const override;
 
 
-			const SP::Set<Id>& selections() const override;
+			const Util::Set<Id>& selections() const override;
 
 		public:
 			const MetaDataList& mimedata_tracks() const override;

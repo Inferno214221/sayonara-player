@@ -45,8 +45,6 @@ struct RatingLabel::Private
 	uint8_t     icon_size;
 	bool		enabled;
 
-
-
 	Private(QWidget* parent, bool enabled) :
 		parent(parent),
 		offset_x(3),

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>538</width>
-    <height>497</height>
+    <height>516</height>
    </rect>
   </property>
   <layout class="QGridLayout" name="gridLayout">
@@ -103,7 +103,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -184,6 +184,19 @@
             </size>
            </property>
           </spacer>
+         </item>
+         <item>
+          <widget class="QLabel" name="lab_websearch_disabled">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string notr="true">TextLabel</string>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QPushButton" name="btn_search">

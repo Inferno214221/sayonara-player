@@ -24,13 +24,13 @@
 #define SAYONARA_PIMPL_H_
 
 #include <memory>
+#include <utility>
+
 #include "Utils/typedefs.h"
 
 #define CASSIGN(x) x(other.x)
 #define CMOVE(x) x(std::move(other.x))
-//#define CMOVE(x) CASSIGN(x)
 #define ASSIGN(x) x = other.x
-//#define MOVE(x) ASSIGN(x)
 #define MOVE(x) x = std::move(other.x)
 #define CMP(x) (x == other.x)
 

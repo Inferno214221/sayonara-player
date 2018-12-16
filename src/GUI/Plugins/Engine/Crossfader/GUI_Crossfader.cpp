@@ -41,8 +41,6 @@ void GUI_Crossfader::init_ui()
 {
 	setup_parent(this, &ui);
 
-
-
 	Playlist::Mode mode = _settings->get<Set::PL_Mode>();
 
 	bool gapless_active = Playlist::Mode::isActive(mode.gapless());
@@ -52,10 +50,6 @@ void GUI_Crossfader::init_ui()
 
 	if(gapless_active && crossfader_active){
 		gapless_active = false;
-	}
-
-	if(!gapless_active && !crossfader_active){
-		crossfader_active = true;
 	}
 
 	ui->cb_gapless->setChecked(gapless_active);

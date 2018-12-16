@@ -24,6 +24,7 @@
 #include "Utils/MetaData/LibraryItem.h"
 #include "Utils/Library/Sortorder.h"
 #include <QMetaType>
+#include <deque>
 
 class QVariant;
 class QStringList;
@@ -63,7 +64,7 @@ public:
 
 	~Album();
 
-	const QString& name() const;
+	QString name() const;
 	void set_name(const QString& name);
 
 	QStringList artists() const;
@@ -82,8 +83,10 @@ public:
  * @brief The AlbumList class
  * @ingroup MetaDataHelper
  */
-class AlbumList : public std::vector<Album>
+class AlbumList : public std::deque<Album>
 {
+	using Parent=std::deque<Album>;
+
 public:
 	bool contains(AlbumId album_id) const;
 

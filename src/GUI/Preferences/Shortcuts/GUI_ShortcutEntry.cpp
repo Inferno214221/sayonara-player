@@ -23,6 +23,7 @@
 #include "GUI/Utils/Icons.h"
 
 #include "Utils/Language.h"
+#include "Utils/Logger/Logger.h"
 
 #include <QKeySequence>
 #include <QShortcut>

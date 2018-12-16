@@ -20,15 +20,14 @@
 #ifndef HEADERVIEW_H
 #define HEADERVIEW_H
 
-#include <QHeaderView>
-#include <QWidget>
-#include <QMenu>
-#include <QTableView>
-
 #include "GUI/Library/Utils/ColumnHeader.h"
 #include "GUI/Utils/Widgets/WidgetTemplate.h"
 #include "Utils/Library/Sortorder.h"
 #include "Utils/Pimpl.h"
+
+#include <QTableView>
+#include <QHeaderView>
+#include <QMenu>
 
 namespace Library
 {

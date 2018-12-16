@@ -18,20 +18,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef PREFERENCEACTION_H
 #define PREFERENCEACTION_H
-
-#include <QAction>
-#include <QPushButton>
 
 #include "Utils/Settings/SayonaraClass.h"
 #include "Utils/Pimpl.h"
 
-class QString;
-class QWidget;
+#include <QAction>
 
+class QPushButton;
 class PreferenceAction :
 		public QAction,
 		public SayonaraClass
@@ -59,6 +54,8 @@ class LibraryPreferenceAction :
 	Q_OBJECT
 	public:
 		LibraryPreferenceAction(QWidget* parent);
+		~LibraryPreferenceAction();
+
 		QString display_name() const override;
 		QString identifier() const override;
 };
@@ -69,6 +66,7 @@ class PlaylistPreferenceAction :
 	Q_OBJECT
 	public:
 		PlaylistPreferenceAction(QWidget* parent);
+		~PlaylistPreferenceAction();
 
 		QString display_name() const override;
 		QString identifier() const override;
@@ -80,6 +78,8 @@ class SearchPreferenceAction :
 	Q_OBJECT
 	public:
 		SearchPreferenceAction(QWidget* parent);
+		~SearchPreferenceAction();
+
 		QString display_name() const override;
 		QString identifier() const override;
 };
@@ -90,6 +90,8 @@ class CoverPreferenceAction :
 	Q_OBJECT
 	public:
 		CoverPreferenceAction(QWidget* parent);
+		~CoverPreferenceAction();
+
 		QString display_name() const override;
 		QString identifier() const override;
 };
@@ -101,6 +103,8 @@ class PlayerPreferencesAction :
 	Q_OBJECT
 	public:
 		PlayerPreferencesAction(QWidget* parent);
+		~PlayerPreferencesAction();
+
 		QString display_name() const override;
 		QString identifier() const override;
 };
@@ -112,6 +116,8 @@ class StreamRecorderPreferenceAction :
 	Q_OBJECT
 	public:
 		StreamRecorderPreferenceAction(QWidget* parent);
+		~StreamRecorderPreferenceAction();
+
 		QString display_name() const override;
 		QString identifier() const override;
 };

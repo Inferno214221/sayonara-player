@@ -23,7 +23,7 @@
 #include "CoverFetchManager.h"
 #include "LocalCoverSearcher.h"
 
-#include "Utils/Tagging/Tagging.h"
+#include "Utils/Tagging/TaggingCover.h"
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaDataList.h"
@@ -183,8 +183,8 @@ Location Location::cover_location(const QString& album_name, const QString& arti
 		return invalid_location();
 	}
 
-	QString cover_token = Cover::Util::calc_cover_token(artist_name, album_name);
-	QString cover_path = Cover::Util::cover_directory( cover_token + ".jpg" );
+	QString cover_token = Cover::Utils::calc_cover_token(artist_name, album_name);
+	QString cover_path = Cover::Utils::cover_directory( cover_token + ".jpg" );
 	Fetcher::Manager* cfm = Fetcher::Manager::instance();
 
 	Location ret;
@@ -338,8 +338,8 @@ Location Location::cover_location(const QString& artist)
 		return invalid_location();
 	}
 
-	QString cover_token = QString("artist_") + Cover::Util::calc_cover_token(artist, "");
-	QString cover_path = Cover::Util::cover_directory(cover_token + ".jpg");
+	QString cover_token = QString("artist_") + Cover::Utils::calc_cover_token(artist, "");
+	QString cover_path = Cover::Utils::cover_directory(cover_token + ".jpg");
 	Fetcher::Manager* cfm = Fetcher::Manager::instance();
 
 	Location ret;
@@ -383,8 +383,8 @@ Location Location::cover_location(const MetaData& md)
 	{
 		QString extension = FileUtils::get_file_extension(md.cover_download_url());
 
-		QString cover_token = Cover::Util::calc_cover_token(md.artist(), md.album());
-		QString cover_path = Cover::Util::cover_directory(cover_token + "." + extension);
+		QString cover_token = Cover::Utils::calc_cover_token(md.artist(), md.album());
+		QString cover_path = Cover::Utils::cover_directory(cover_token + "." + extension);
 
 		cl = cover_location(QUrl(md.cover_download_url()), cover_path);
 	}
@@ -397,7 +397,7 @@ Location Location::cover_location(const MetaData& md)
 		cl = cover_location(md.album(), md.artist());
 	}
 
-	if(cl.audio_file_source().isEmpty() && !md.filepath().isEmpty() && Tagging::Util::has_cover(md.filepath())) {
+	if(cl.audio_file_source().isEmpty() && !md.filepath().isEmpty() && Tagging::Covers::has_cover(md.filepath())) {
 		cl.set_audio_file_source(md.filepath(), cl.cover_path());
 	}
 
@@ -443,9 +443,9 @@ QString Location::preferred_path() const
 		bool target_exists = FileUtils::exists(this->audio_file_target());
 		if(!target_exists)
 		{
-			if(Tagging::Util::has_cover(this->audio_file_source()))
+			if(Tagging::Covers::has_cover(this->audio_file_source()))
 			{
-				QPixmap pm = Tagging::Util::extract_cover(this->audio_file_source());
+				QPixmap pm = Tagging::Covers::extract_cover(this->audio_file_source());
 				if(!pm.isNull())
 				{
 					target_exists = pm.save(this->audio_file_target());

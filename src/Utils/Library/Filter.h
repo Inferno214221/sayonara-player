@@ -28,9 +28,6 @@
 
 #include "Utils/Pimpl.h"
 #include "Utils/Library/SearchMode.h"
-#include <QStringList>
-
-class QString;
 
 namespace Library
 {
@@ -49,7 +46,8 @@ namespace Library
 			{
 				Fulltext=0,
 				Filename,
-				Genre
+				Genre,
+				Invalid
 			};
 
 

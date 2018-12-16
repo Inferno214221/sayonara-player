@@ -25,9 +25,6 @@
 #include "Utils/Pimpl.h"
 #include <QObject>
 
-class QString;
-class QStringList;
-
 /**
  * @brief The PlaylistChooser class
  * @ingroup Components

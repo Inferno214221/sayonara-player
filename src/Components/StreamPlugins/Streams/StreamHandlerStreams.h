@@ -36,4 +36,5 @@ public:
 	bool rename(const QString& old_name, const QString& new_name) override;
 };
 
+
 #endif // STREAMHANDLERSTREAMS_H

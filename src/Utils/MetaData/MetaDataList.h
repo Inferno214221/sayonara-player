@@ -22,22 +22,23 @@
 #define METADATALIST_H
 
 #include "MetaData.h"
-#include "MetaDataFwd.h"
-#include "Utils/typedefs.h"
-#include "Utils/SetFwd.h"
 #include "Utils/Pimpl.h"
 #include "Utils/Library/Sortorder.h"
 
-#include <vector>
+#include <deque>
+#include <functional>
 
 /**
  * @brief The MetaDataList class
  * @ingroup MetaDataHelper
  */
 
+
 class MetaDataList :
-		public std::vector<MetaData>
+		public std::deque<MetaData>
 {
+	using Parent=std::deque<MetaData>;
+
 	PIMPL(MetaDataList)
 
 public:
@@ -60,6 +61,7 @@ public:
 	MetaDataList& remove_track(int idx);
 	MetaDataList& remove_tracks(const IndexSet& rows);
 	MetaDataList& remove_tracks(int first, int last);
+	MetaDataList& remove_tracks(std::function<bool (const MetaData&)> attr);
 
 	MetaDataList& move_tracks(const IndexSet& indexes, int tgt_idx);
 	MetaDataList& copy_tracks(const IndexSet& indexes, int tgt_idx);
@@ -89,6 +91,9 @@ public:
 	int count() const;
 
 	void sort(Library::SortOrder so);
+
+	void reserve(size_t items);
+	size_t capacity() const;
 };
 
 

@@ -18,3 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "SettingNotifier.h"
+
+void AbstrSettingNotifier::emit_value_changed()
+{
+	emit sig_value_changed();
+}

@@ -27,6 +27,7 @@
 #include "Utils/MetaData/Artist.h"
 #include "Utils/Utils.h"
 #include "Utils/Set.h"
+#include "Utils/Logger/Logger.h"
 
 using DB::LibraryDatabase;
 using DB::Query;
@@ -192,11 +193,6 @@ bool DB::LibraryDatabase::store_metadata(const MetaDataList& v_md)
 		}
 
 		{ // check album artist ...
-			if(md.album_artist().isEmpty()){
-				md.set_album_artist(md.artist());
-			}
-
-			// ... and insert it into db if it doesn't exist
 			Artist album_artist = artist_map[md.album_artist()];
 			if(album_artist.id < 0)
 			{
@@ -211,7 +207,7 @@ bool DB::LibraryDatabase::store_metadata(const MetaDataList& v_md)
 		// we should never reach the inner block
 		if(md.album_id < 0 || md.artist_id < 0 || md.library_id < 0)
 		{
-			sp_log(Log::Warning) << "Cannot insert artist or album of " << md.filepath();
+			sp_log(Log::Warning, this) << "Cannot insert artist or album of " << md.filepath();
 			continue;
 		}
 

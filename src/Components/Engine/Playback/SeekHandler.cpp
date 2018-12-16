@@ -18,10 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "SeekHandler.h"
+#include "Utils/Logger/Logger.h"
 #include <gst/gst.h>
+#include <gst/base/gstbasesrc.h>
 
 using Pipeline::SeekHandler;
 
@@ -36,11 +36,20 @@ namespace Seek
 			return false;
 		}
 
-		return gst_element_seek_simple (
+
+
+		bool success = gst_element_seek_simple (
 					audio_src,
 					GST_FORMAT_TIME,
 					flags,
 					ns);
+
+		if(!success)
+		{
+			sp_log(Log::Warning, "SeekHandler") << "seeking not possible";
+		}
+
+		return success;
 	}
 
 	bool seek_accurate(GstElement* audio_src, NanoSeconds ns)
@@ -99,4 +108,19 @@ NanoSeconds SeekHandler::seek_nearest(NanoSeconds ns)
 	}
 
 	return 0;
+}
+
+NanoSeconds SeekHandler::seek_rel_ms(double percent, MilliSeconds ref_ms)
+{
+	return seek_rel(percent, ref_ms	* 1000000);
+}
+
+NanoSeconds SeekHandler::seek_abs_ms(MilliSeconds ms)
+{
+	return seek_abs(ms * 1000000);
+}
+
+NanoSeconds SeekHandler::seek_nearest_ms(MilliSeconds ms)
+{
+	return seek_nearest(ms * 1000000);
 }

@@ -21,14 +21,14 @@
 #ifndef LIBRARYCONTEXTMENU_H
 #define LIBRARYCONTEXTMENU_H
 
-#include <QMenu>
-
 #include "GUI/Utils/Widgets/WidgetTemplate.h"
 #include "GUI/Utils/Shortcuts/ShortcutIdentifier.h"
 #include "Utils/Pimpl.h"
 
+#include <QMenu>
+
+class ExtensionSet;
 class PreferenceAction;
-class QAction;
 /**
  * @brief Context menu used for Library and playlist windows
  * @ingroup GUIHelper
@@ -55,11 +55,12 @@ public:
 		EntryAppend=(1<<6),
 		EntryRefresh=(1<<7),
 		EntryClear=(1<<8),
-		EntryClearSelection=(1<<9),
-		EntryCoverView=(1<<10),
-		EntryPlay=(1<<11),
-		EntryPlayNewTab=(1<<12),
-		EntryLast=(1<<13)
+		EntryCoverView=(1<<9),
+		EntryPlay=(1<<10),
+		EntryPlayNewTab=(1<<11),
+		EntryFilterExtension=(1<<12),
+		EntryReload=(1<<13),
+		EntryLast=(1<<14)
 	};
 
 	using Entries=uint64_t;
@@ -94,11 +95,14 @@ public:
 	virtual void show_all();
 
 	QAction* get_action(LibraryContextMenu::Entry entry) const;
+	QAction* get_action_after(LibraryContextMenu::Entry entry) const;
 
 	QAction* add_preference_action(PreferenceAction* action);
 	QAction* before_preference_action() const;
 
 	void set_action_shortcut(LibraryContextMenu::Entry entry, const QString& shortcut);
+
+	void set_extensions(const ExtensionSet& extensions);
 
 
 signals:
@@ -113,13 +117,15 @@ signals:
 	void sig_append_clicked();
 	void sig_refresh_clicked();
 	void sig_clear_clicked();
-	void sig_clear_selection_clicked();
-
+	void sig_filter_triggered(const QString& extension, bool b);
+	void sig_reload_clicked();
 
 private slots:
 	void show_cover_view_changed();
+	void show_filter_ext_bar_changed();
 	void show_cover_triggered(bool b);
 	void shortcut_changed(ShortcutIdentifier identifier);
+	void show_filter_extension_bar_triggered(bool b);
 
 
 protected:

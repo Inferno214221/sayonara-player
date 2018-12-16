@@ -18,11 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "StreamServerHandler.h"
 #include "StreamServer.h"
-#include "Utils/Settings/Settings.h"
 
 struct StreamServerHandler::Private
 {
@@ -46,10 +43,7 @@ StreamServerHandler::StreamServerHandler()
 
 StreamServerHandler::~StreamServerHandler() {}
 
-void StreamServerHandler::active_changed()
-{
-
-}
+void StreamServerHandler::active_changed() {}
 
 void StreamServerHandler::port_changed()
 {

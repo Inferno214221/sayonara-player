@@ -21,15 +21,13 @@
 #ifndef LOCALLIBRARYMENU_H
 #define LOCALLIBRARYMENU_H
 
+#include "GUI/Utils/Widgets/WidgetTemplate.h"
+#include "GUI/Utils/Shortcuts/ShortcutIdentifier.h"
+#include "Utils/Pimpl.h"
+
 #include <QMenu>
 #include <QAction>
 
-#include "GUI/Utils/Widgets/WidgetTemplate.h"
-
-#include "Utils/Pimpl.h"
-
-
-class QString;
 class PreferenceAction;
 
 namespace Library
@@ -66,15 +64,17 @@ namespace Library
 	protected:
 		void language_changed() override;
 		void skin_changed() override;
+		void shortcut_changed(ShortcutIdentifier identifier);
 
 	private slots:
+		void show_album_covers_changed();
 		void show_album_covers_triggered(bool b);
+
+		void show_album_artists_changed();
 		void show_album_artists_triggered(bool b);
 
-		void show_album_covers_changed();
-		void show_album_artists_changed();
-
 		void realtime_search_changed();
+		void realtime_search_triggered(bool b);
 
 		void edit_clicked();
 		void edit_accepted();

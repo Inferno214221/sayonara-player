@@ -23,7 +23,7 @@
 #include <QList>
 #include <algorithm>
 
-namespace SP
+namespace Util
 {
 	template<typename T>
 	/**
@@ -65,7 +65,7 @@ namespace SP
 		/**
 		 * copy the entire tree. Has to be deleted afterwards
 		 */
-		Tree* copy() 
+		Tree* copy()
 		{
 			Tree* node = new Tree(this->data);
 
@@ -76,7 +76,7 @@ namespace SP
 			return node;
 		}
 
-		
+
 		/**
 		 * @brief adds a child to the given node
 		 * @param node the parent node

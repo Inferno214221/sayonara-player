@@ -35,30 +35,54 @@
 #include "GUI/Library/Utils/LocalLibraryMenu.h"
 #include "GUI/Library/GUI_CoverView.h"
 #include "GUI/Library/CoverView.h"
+#include "GUI/Library/Utils/LibrarySearchBar.h"
 
 #include "GUI/ImportDialog/GUI_ImportDialog.h"
-
-#include "GUI/Utils/ContextMenu/LibraryContextMenu.h"
 #include "GUI/Utils/Library/GUI_DeleteDialog.h"
 
 #include "Components/Covers/CoverLocation.h"
 #include "Components/Library/LocalLibrary.h"
 #include "Components/Library/LibraryManager.h"
 
+#include "Utils/MetaData/MetaDataList.h"
+#include "Utils/MetaData/Album.h"
+#include "Utils/MetaData/Artist.h"
 #include "Utils/Utils.h"
 #include "Utils/Language.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Library/LibraryInfo.h"
+#include "Utils/ExtensionSet.h"
 
 #include <QDir>
 #include <QTimer>
 #include <QFileDialog>
 #include <QStringList>
+#include <QLayoutItem>
+#include <QLayout>
+
+enum StatusWidgetIndex
+{
+	ReloadLibraryIndex=0,
+	FileExtensionsIndex
+};
+
+enum GenreWidgetIndex
+{
+	GenreTree=0,
+	NoGenres
+};
+
+enum AlbumViewIndex
+{
+	TableView=0,
+	AlbumCoverView
+};
 
 using namespace Library;
 
 struct GUI_LocalLibrary::Private
 {
+	QList<QPushButton*>		extension_buttons;
 	Manager*				manager = nullptr;
 	LocalLibrary*			library = nullptr;
 	GUI_ImportDialog*		ui_importer = nullptr;
@@ -84,12 +108,12 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 
 	setup_parent(this, &ui);
 
-	ui->pb_progress->setVisible(false);
-	ui->lab_progress->setVisible(false);
-
 	connect(m->library, &LocalLibrary::sig_reloading_library, this, &GUI_LocalLibrary::progress_changed);
 	connect(m->library, &LocalLibrary::sig_reloading_library_finished, this, &GUI_LocalLibrary::reload_finished);
 	connect(m->library, &LocalLibrary::sig_reloading_library_finished, ui->lv_genres, &GenreView::reload_genres);
+	connect(m->library, &LocalLibrary::sig_all_tracks_loaded, this, &GUI_LocalLibrary::tracks_loaded);
+	connect(m->library, &LocalLibrary::sig_import_dialog_requested, this, &GUI_LocalLibrary::import_dialog_requested);
+
 	connect(m->manager, &Manager::sig_path_changed, this, &GUI_LocalLibrary::path_changed);
 	connect(m->manager, &Manager::sig_renamed, this, &GUI_LocalLibrary::name_changed);
 
@@ -111,11 +135,16 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 	connect(ui->splitter_tracks, &QSplitter::splitterMoved, this, &GUI_LocalLibrary::splitter_tracks_moved);
 	connect(ui->splitter_genre, &QSplitter::splitterMoved, this, &GUI_LocalLibrary::splitter_genre_moved);
 
-	connect(m->library, &LocalLibrary::sig_import_dialog_requested, this, &GUI_LocalLibrary::import_dialog_requested);
+	connect(ui->lv_album, &Library::ItemView::sig_reload_clicked, this, &GUI_LocalLibrary::reload_library_requested);
+	connect(ui->lv_artist, &Library::ItemView::sig_reload_clicked, this, &GUI_LocalLibrary::reload_library_requested);
+	connect(ui->tb_title, &Library::ItemView::sig_reload_clicked, this, &GUI_LocalLibrary::reload_library_requested);
 
 	setAcceptDrops(true);
 
 	Set::listen<Set::Lib_ShowAlbumCovers>(this, &GUI_LocalLibrary::switch_album_view);
+	Set::listen<Set::Lib_ShowFilterExtBar>(this, &GUI_LocalLibrary::tracks_loaded);
+
+	ui->sw_status->setVisible(false);
 
 	m->library->load();
 	ui->lv_genres->init(m->library);
@@ -133,18 +162,69 @@ void GUI_LocalLibrary::language_changed()
 	ui->retranslateUi(this);
 	ui->gb_genres->setTitle(Lang::get(Lang::Genres));
 	ui->btn_reload_library->setText(Lang::get(Lang::ReloadLibrary));
+	ui->lab_extension->setText(Lang::get(Lang::Filter) + ":");
 
 	GUI_AbstractLibrary::language_changed();
 }
 
-void GUI_LocalLibrary::search_key_pressed(int key)
+
+void GUI_LocalLibrary::tracks_loaded()
 {
-	if(key == Qt::Key_Escape)
-	{
-		ui->lv_genres->clearSelection();
+	QLayout* l = ui->widget_extensions->layout();
+	if(!l){
+		ui->sw_status->setVisible(false);
+		return;
 	}
 
-	GUI_AbstractLibrary::search_key_pressed(key);
+	for(QPushButton* btn : m->extension_buttons){
+		l->removeWidget(btn);
+		btn->deleteLater();
+	}
+
+	m->extension_buttons.clear();
+
+	if(!_settings->get<Set::Lib_ShowFilterExtBar>())
+	{
+		ui->sw_status->setVisible(false);
+		ui->sw_status->setCurrentIndex(StatusWidgetIndex::ReloadLibraryIndex);
+		return;
+	}
+
+	ExtensionSet extensions = m->library->extensions();
+
+	const QStringList ext_str = extensions.extensions();
+
+	bool has_multiple_extensions = (ext_str.size() > 1);
+	ui->sw_status->setVisible(has_multiple_extensions);
+
+	if(!has_multiple_extensions){
+		return;
+	}
+
+	for(const QString& ext : ext_str)
+	{
+		QPushButton* btn = new QPushButton(ui->widget_extensions);
+		btn->setText(ext);
+		btn->setCheckable(true);
+		btn->setChecked(extensions.is_enabled(ext));
+
+		connect(btn, &QPushButton::toggled, this, &GUI_LocalLibrary::extension_button_toggled);
+
+		l->addWidget(btn);
+
+		m->extension_buttons << btn;
+	}
+
+	ui->sw_status->setCurrentIndex(StatusWidgetIndex::FileExtensionsIndex);
+}
+
+void GUI_LocalLibrary::extension_button_toggled(bool b)
+{
+	QPushButton* btn = static_cast<QPushButton*>(sender());
+	ExtensionSet extensions = m->library->extensions();
+	extensions.set_enabled(btn->text(), b);
+
+	m->library->set_extensions(extensions);
 }
 
 
@@ -168,7 +248,7 @@ void GUI_LocalLibrary::genre_selection_changed(const QModelIndex& idx)
 		index_datas << index.data().toString();
 	}
 
-	search_mode_changed(::Library::Filter::Genre);
+	ui->le_search->set_current_mode(::Library::Filter::Genre);
 	ui->le_search->setText(index_datas.join(","));
 	search_edited(index_datas.join(","));
 }
@@ -184,20 +264,20 @@ Library::TrackDeletionMode GUI_LocalLibrary::show_delete_dialog(int n_tracks)
 
 void GUI_LocalLibrary::progress_changed(const QString& type, int progress)
 {
-	ui->pb_progress->setVisible(progress >= 0);
+	ui->sw_status->setVisible(progress >= 0);
+	ui->sw_status->setCurrentIndex(StatusWidgetIndex::ReloadLibraryIndex);
+
 	ui->pb_progress->setMaximum((progress > 0) ? 100 : 0);
 	ui->pb_progress->setValue(progress);
-
-	ui->lab_progress->setVisible(progress >= 0);
 	ui->lab_progress->setText(type);
 }
 
 void GUI_LocalLibrary::reload_library_requested()
 {
-	reload_library_requested(Library::ReloadQuality::Unknown);
+	reload_library_requested_with_quality(Library::ReloadQuality::Unknown);
 }
 
-void GUI_LocalLibrary::reload_library_requested(Library::ReloadQuality quality)
+void GUI_LocalLibrary::reload_library_requested_with_quality(Library::ReloadQuality quality)
 {
 	GUI_ReloadLibraryDialog* dialog =
 			new GUI_ReloadLibraryDialog(m->library->library_name(), this);
@@ -219,11 +299,11 @@ void GUI_LocalLibrary::reload_library_accepted(Library::ReloadQuality quality)
 void GUI_LocalLibrary::genres_reloaded()
 {
 	if(ui->lv_genres->has_items()){
-		ui->stacked_genre_widget->setCurrentIndex(0);
+		ui->stacked_genre_widget->setCurrentIndex(GenreWidgetIndex::GenreTree);
 	}
 
 	else {
-		ui->stacked_genre_widget->setCurrentIndex(1);
+		ui->stacked_genre_widget->setCurrentIndex(GenreWidgetIndex::NoGenres);
 	}
 }
 
@@ -303,7 +383,7 @@ void GUI_LocalLibrary::path_changed(LibraryId id)
 		m->library_menu->refresh_path(info.path());
 
 		if(this->isVisible()){
-			reload_library_requested(Library::ReloadQuality::Accurate);
+			reload_library_requested_with_quality(Library::ReloadQuality::Accurate);
 		}
 	}
 }
@@ -354,7 +434,7 @@ void GUI_LocalLibrary::switch_album_view()
 
 	if(!show_cover_view)
 	{
-		ui->sw_album_covers->setCurrentIndex(0);
+		ui->sw_album_covers->setCurrentIndex(AlbumViewIndex::TableView);
 	}
 
 	else
@@ -363,6 +443,7 @@ void GUI_LocalLibrary::switch_album_view()
 		{
 			ui->cover_view->init(m->library);
 			connect(ui->cover_view, &GUI_CoverView::sig_delete_clicked, this, &GUI_LocalLibrary::item_delete_clicked);
+			connect(ui->cover_view->table_view(), &Library::ItemView::sig_reload_clicked, this, &GUI_LocalLibrary::reload_library_requested);
 		}
 
 		if(m->library->is_loaded() && (m->library->selected_artists().size() > 0))
@@ -370,7 +451,7 @@ void GUI_LocalLibrary::switch_album_view()
 			m->library->selected_artists_changed(IndexSet());
 		}
 
-		ui->sw_album_covers->setCurrentIndex(1);
+		ui->sw_album_covers->setCurrentIndex(AlbumViewIndex::AlbumCoverView);
 	}
 }
 
@@ -378,7 +459,7 @@ void GUI_LocalLibrary::switch_album_view()
 Library::TableView* GUI_LocalLibrary::lv_artist() const { return ui->lv_artist; }
 Library::TableView* GUI_LocalLibrary::lv_album() const { return ui->lv_album; }
 Library::TableView* GUI_LocalLibrary::lv_tracks() const { return ui->tb_title; }
-QLineEdit* GUI_LocalLibrary::le_search() const { return ui->le_search; }
+Library::SearchBar* GUI_LocalLibrary::le_search() const { return ui->le_search; }
 
 // LocalLibraryContainer
 QMenu* GUI_LocalLibrary::menu() const {	return m->library_menu; }

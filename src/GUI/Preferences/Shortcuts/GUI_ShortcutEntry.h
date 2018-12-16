@@ -25,7 +25,6 @@
 #include "GUI/Utils/Widgets/Widget.h"
 #include "Utils/Pimpl.h"
 
-#include <QList>
 #include <QKeySequence>
 
 UI_FWD(GUI_ShortcutEntry)

@@ -25,31 +25,6 @@
 
 #include "Utils/typedefs.h"
 
-class QString;
-class QStringList;
-class QPoint;
-class QSize;
-class QByteArray;
-
-class EQ_Setting;
-struct RawShortcutMap;
-
-namespace Playlist
-{
-	class Mode;
-}
-
-namespace Library
-{
-	class Sortings;
-	class Info;
-}
-
-
-/**
- * @brief The SK namespace is used to access setting keys
- * @ingroup Settings
- */
 enum class SettingKey : unsigned short
 {
 	LFM_Active=0,
@@ -96,6 +71,7 @@ enum class SettingKey : unsigned short
 	Lib_LastIndex,
 	Lib_AllLibraries,				// deprecated
 	Lib_UseViewClearButton,
+	Lib_ShowFilterExtBar,
 
 	Dir_ShowTracks,
 	Dir_SplitterDirFile,
@@ -148,7 +124,11 @@ enum class SettingKey : unsigned short
 	Engine_Name,
 	Engine_Vol,
 	Engine_Mute,
-	Engine_ConvertQuality,
+	AudioConvert_NumberThreads,
+	AudioConvert_PreferredConverter,
+	AudioConvert_QualityLameVBR,
+	AudioConvert_QualityLameCBR,
+	AudioConvert_QualityOgg,
 	Engine_CovertTargetPath,
 	Engine_SpectrumBins,
 	Engine_ShowSpectrum,
@@ -190,7 +170,7 @@ enum class SettingKey : unsigned short
 	Lyrics_Server,
 
 	Cover_Server,
-	Cover_LoadFromFile,
+	Cover_FetchFromWWW,
 	Cover_StartSearch,
 	Icon_Theme,
 	Icon_ForceInDarkTheme,
@@ -209,26 +189,51 @@ enum class SettingKey : unsigned short
 };
 
 
+
+class QString;
+class QStringList;
+class QPoint;
+class QSize;
+class QByteArray;
+
+class EQ_Setting;
+struct RawShortcutMap;
+
+namespace Playlist
+{
+	class Mode;
+}
+
+namespace Library
+{
+	class Sortings;
+	class Info;
+}
+
 template<typename DataType, SettingKey keyIndex>
 class SettingIdentifier
 {
-public:
-	using Data=DataType;
-	const static SettingKey key=keyIndex;
+	public:
+		using Data=DataType;
+		const static SettingKey key=keyIndex;
 
-private:
-	SettingIdentifier()=delete;
-	~SettingIdentifier();
+	private:
+		SettingIdentifier()=delete;
+		~SettingIdentifier();
 };
 
-#define INST(type, settingkey) using settingkey = SettingIdentifier<type, SettingKey:: settingkey>;
+
+#define INST_ABSTR(ns, type, settingkey) \
+	namespace ns {	using settingkey = SettingIdentifier<type, SettingKey:: settingkey>; }
+
+#define INST(type, settingkey)	INST_ABSTR(Set, type, settingkey)
+#define INST_NO_DB(type, settingkey) INST_ABSTR(SetNoDB, type, settingkey)
+
 
 /**
  * @brief Set namespace defines the setting: Which key and which type
  * @ingroup Settings
  */
-namespace Set
-{
 	//typedef SettingKey<bool, SK::LFM_Active> LFM_Active_t; const LFM_Active_t LFM_Active
 	INST(bool,				LFM_Active)				/* is lastFM active? */
 	INST(int,				LFM_ScrobbleTimeSec)	/* time in sec when to scrobble */
@@ -275,6 +280,7 @@ namespace Set
 	INST(QList<::Library::Info>, Lib_AllLibraries)		// deprecated
 	INST(int,				Lib_LastIndex)				/* Last selected library */
 	INST(bool,				Lib_UseViewClearButton)	/* Show clear button in single view */
+	INST(bool,				Lib_ShowFilterExtBar) /* Show the file extension filter bar in track view */
 
 	INST(bool,				Dir_ShowTracks)			/* show tracks panel in directory view */
 	INST(QByteArray,		Dir_SplitterDirFile)		/* Splitter state between dirs and files */
@@ -325,11 +331,16 @@ namespace Set
 	INST(int,				Notification_Timeout)		/* notification timeout */
 	INST(QString,			Notification_Name)			/* type of notifications: libnotify or empty for native baloons :( */
 
+	INST(int,				AudioConvert_NumberThreads)	/* Number of threads */
+	INST(QString,			AudioConvert_PreferredConverter)		/* Preferred Converter: ogg, lame cbr, lame vbr */
+	INST(int,				AudioConvert_QualityLameVBR)	/* Lame Quality for variable bitrate 1-10 */
+	INST(int,				AudioConvert_QualityLameCBR)	/* 64 - 320 */
+	INST(int,				AudioConvert_QualityOgg)		/* 1 - 10 */
+
 	INST(QString,			Engine_Name)				/* Deprecated: Engine name */
 	INST(int,				Engine_Vol)				/* Volume */
 	INST(bool,				Engine_Mute)				/* Muted/unmuted */
 	INST(int,				Engine_CurTrackPos_s)			/* position of track (used to load old position) */
-	INST(int,				Engine_ConvertQuality)			/* Convert quality, 1-10 for variable, > 64 for fixed bitrate */
 	INST(QString,			Engine_CovertTargetPath)		/* last convert path */
 	INST(int,				Engine_SpectrumBins)			/* number of spectrum bins */
 	INST(bool,				Engine_ShowSpectrum)			/* show spectrum */
@@ -365,7 +376,7 @@ namespace Set
 	INST(QString,			Lyrics_Server)				/* Lyrics server */
 
 	INST(QStringList,		Cover_Server)				/* Cover server */
-	INST(bool,				Cover_LoadFromFile)		/* load covers from audio file, if available */
+	INST(bool,				Cover_FetchFromWWW)			/* Fetch covers from www */
 	INST(bool,				Cover_StartSearch)		/* start alternative cover search automatically */
 	INST(QString,			Icon_Theme)				/* Current icon theme */
 	INST(bool,				Icon_ForceInDarkTheme)		/* Current icon theme */
@@ -380,13 +391,9 @@ namespace Set
 	INST(int,				Settings_Revision)		/* Version number of settings */
 
 	INST(int,				Logger_Level)				/* Also log development: */
-}
 
-namespace SetNoDB
-{
-	INST(bool,				MP3enc_found)
-	INST(bool,				Pitch_found)
-	INST(bool,				Player_Quit)
-}
+	INST_NO_DB(bool,				MP3enc_found)
+	INST_NO_DB(bool,				Pitch_found)
+	INST_NO_DB(bool,				Player_Quit)
 
 #endif // SETTINGKEY_H

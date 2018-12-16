@@ -30,15 +30,9 @@
 #define PLAYLISTITEMMODEL_H_
 
 #include "GUI/Utils/SearchableWidget/SearchableModel.h"
-#include "Utils/typedefs.h"
 #include "Utils/Playlist/PlaylistFwd.h"
-#include "Utils/SetFwd.h"
 #include "Utils/Pimpl.h"
 
-#include <QString>
-
-class MetaData;
-class MetaDataList;
 class CustomMimeData;
 
 class PlaylistItemModel :
@@ -96,6 +90,9 @@ public:
 
 	bool			has_local_media(const IndexSet& rows) const;
 	void			set_drag_index(int drag_index);
+
+public slots:
+	void			refresh_data();
 
 private:
 	void			look_changed();

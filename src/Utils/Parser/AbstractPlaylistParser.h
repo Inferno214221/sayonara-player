@@ -27,12 +27,9 @@
  * @brief The AbstractPlaylistParser class
  * @ingroup PlaylistParser
  */
-class QString;
-class MetaData;
-class MetaDataList;
 class AbstractPlaylistParser
 {
-    PIMPL(AbstractPlaylistParser)
+	PIMPL(AbstractPlaylistParser)
 
 public:
 	explicit AbstractPlaylistParser(const QString& filepath);

@@ -102,7 +102,7 @@ namespace Engine
 	private:
 		bool init_pipeline(Pipeline::Playback** pipeline);
 
-		bool change_uri(char* uri) override;
+		bool change_uri(const QString& uri) override;
 		bool change_metadata(const MetaData& md) override;
 
 		bool change_track_crossfading(const MetaData& md);

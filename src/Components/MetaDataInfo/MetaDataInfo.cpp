@@ -39,13 +39,13 @@
 
 struct MetaDataInfo::Private
 {
-	SP::Set<QString> albums;
-	SP::Set<QString> artists;
-	SP::Set<QString> album_artists;
+	Util::Set<QString> albums;
+	Util::Set<QString> artists;
+	Util::Set<QString> album_artists;
 
-	SP::Set<AlbumId> album_ids;
-	SP::Set<ArtistId> artist_ids;
-	SP::Set<ArtistId> album_artist_ids;
+	Util::Set<AlbumId> album_ids;
+	Util::Set<ArtistId> artist_ids;
+	Util::Set<ArtistId> album_artist_ids;
 
 	QStringList paths;
 
@@ -69,6 +69,7 @@ MetaDataInfo::MetaDataInfo(const MetaDataList& v_md) :
 	Bitrate bitrate_min = std::numeric_limits<Bitrate>::max();
 	Bitrate bitrate_max = 0;
 	uint16_t tracknum = 0;
+	QStringList filetypes;
 	bool calc_track_num = (v_md.size() == 1);
 
 	QStringList genres;
@@ -134,6 +135,8 @@ MetaDataInfo::MetaDataInfo(const MetaDataList& v_md) :
 		{
 			m->paths << md.filepath();
 		}
+
+		filetypes << Util::File::get_file_extension(md.filepath());
 	}
 
 	if(bitrate_max > 0){
@@ -144,8 +147,11 @@ MetaDataInfo::MetaDataInfo(const MetaDataList& v_md) :
 		insert_interval_info_field(InfoStrings::Year, year_min, year_max);
 	}
 
+	filetypes.removeDuplicates();
+
 	insert_numeric_info_field(InfoStrings::nTracks, v_md.count());
 	insert_filesize(filesize);
+	insert_filetype(filetypes);
 	insert_playing_time(length);
 
 	genres.removeDuplicates();
@@ -325,6 +331,11 @@ void MetaDataInfo::insert_filesize(uint64_t filesize)
 	_info.insert(InfoStrings::Filesize, str);
 }
 
+void MetaDataInfo::insert_filetype(const QStringList& filetypes)
+{
+	_info.insert(InfoStrings::Filetype, filetypes.join(", "));
+}
+
 QString MetaDataInfo::header() const
 {
 	return _header;
@@ -358,6 +369,9 @@ QString MetaDataInfo::get_info_string(InfoStrings idx) const
 			return Lang::get(Lang::Bitrate);
 		case InfoStrings::Genre:
 			return Lang::get(Lang::Genre);
+		case InfoStrings::Filetype:
+			return Lang::get(Lang::Filetype);
+
 		default: break;
 	}
 
@@ -457,32 +471,32 @@ Cover::Location MetaDataInfo::cover_location() const
 	return m->cover_location;
 }
 
-const SP::Set<QString>& MetaDataInfo::albums() const
+const Util::Set<QString>& MetaDataInfo::albums() const
 {
 	return m->albums;
 }
 
-const SP::Set<QString> &MetaDataInfo::artists() const
+const Util::Set<QString> &MetaDataInfo::artists() const
 {
 	return m->artists;
 }
 
-const SP::Set<QString> &MetaDataInfo::album_artists() const
+const Util::Set<QString> &MetaDataInfo::album_artists() const
 {
 	return m->album_artists;
 }
 
-const SP::Set<AlbumId> &MetaDataInfo::album_ids() const
+const Util::Set<AlbumId> &MetaDataInfo::album_ids() const
 {
 	return m->album_ids;
 }
 
-const SP::Set<ArtistId> &MetaDataInfo::artist_ids() const
+const Util::Set<ArtistId> &MetaDataInfo::artist_ids() const
 {
 	return m->artist_ids;
 }
 
-const SP::Set<ArtistId> &MetaDataInfo::album_artist_ids() const
+const Util::Set<ArtistId> &MetaDataInfo::album_artist_ids() const
 {
 	return m->album_artist_ids;
 }

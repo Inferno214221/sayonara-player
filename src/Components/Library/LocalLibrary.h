@@ -53,18 +53,12 @@ public slots:
 	void delete_tracks(const MetaDataList& v_md, Library::TrackDeletionMode answer) override;
 	void reload_library(bool clear_first, Library::ReloadQuality quality) override;
 
-	// emits new tracks, very similar to psl_selected_albums_changed
-	void change_current_disc(Disc disc);
-	void change_track_rating(int idx, Rating rating) override;
-
 	void refresh_artist() override;
 	void refresh_albums() override;
 	void refresh_tracks() override;
 
 	void import_files(const QStringList& files) override;
 	void import_files_to(const QStringList& files, const QString& target_dir);
-	void merge_artists(const SP::Set<Id>& artist_ids, ArtistId target_artist_id) override;
-	void merge_albums(const SP::Set<Id>& albums_ids, AlbumId target_album_id) override;
 
 protected slots:
 	void library_reloading_state_new_block();

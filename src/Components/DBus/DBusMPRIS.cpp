@@ -193,7 +193,7 @@ void DBusMPRIS::MediaPlayer2::init()
 	new OrgMprisMediaPlayer2PlayerAdaptor(this);
 
 	if (!QDBusConnection::sessionBus().registerService(service_name())) {
-		sp_log(Log::Error)	<< "Failed to register "
+		sp_log(Log::Error, this)	<< "Failed to register "
 							<< service_name()
 							<< " on the session bus";
 

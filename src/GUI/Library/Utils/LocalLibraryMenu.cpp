@@ -24,6 +24,8 @@
 #include "GUI/Utils/Icons.h"
 #include "GUI/Utils/Library/GUI_EditLibrary.h"
 #include "GUI/Utils/PreferenceAction.h"
+#include "GUI/Utils/Shortcuts/ShortcutHandler.h"
+#include "GUI/Utils/Shortcuts/Shortcut.h"
 
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language.h"
@@ -144,7 +146,7 @@ void LocalLibraryMenu::init_menu()
 	connect(m->import_folder_action, &QAction::triggered, this, &LocalLibraryMenu::sig_import_folder);
 	connect(m->info_action, &QAction::triggered, this, &LocalLibraryMenu::sig_info);
 	connect(m->edit_action, &QAction::triggered, this, &LocalLibraryMenu::edit_clicked);
-	connect(m->livesearch_action, &QAction::triggered, this, &LocalLibraryMenu::realtime_search_changed);
+	connect(m->livesearch_action, &QAction::triggered, this, &LocalLibraryMenu::realtime_search_triggered);
 	connect(m->show_album_artists_action, &QAction::triggered, this, &LocalLibraryMenu::show_album_artists_triggered);
 	connect(m->show_album_cover_view, &QAction::triggered, this, &LocalLibraryMenu::show_album_covers_triggered);
 
@@ -157,8 +159,8 @@ void LocalLibraryMenu::init_menu()
 		m->import_folder_action <<
 		m->reload_library_action <<
 		this->addSeparator() <<
-		m->show_album_cover_view <<
 		m->livesearch_action <<
+		m->show_album_cover_view <<
 		m->show_album_artists_action;
 
 	this->addActions(actions);
@@ -168,7 +170,9 @@ void LocalLibraryMenu::init_menu()
 
 	Set::listen<Set::Lib_ShowAlbumCovers>(this, &LocalLibraryMenu::show_album_covers_changed);
 	Set::listen<Set::Lib_ShowAlbumArtists>(this, &LocalLibraryMenu::show_album_artists_changed);
+	Set::listen<Set::Lib_LiveSearch>(this, &LocalLibraryMenu::realtime_search_changed);
 
+	shortcut_changed(ShortcutIdentifier::Invalid);
 	language_changed();
 	skin_changed();
 }
@@ -179,12 +183,14 @@ void LocalLibraryMenu::language_changed()
 		return;
 	}
 
-	m->reload_library_action->setText(Lang::get(Lang::ReloadLibrary));
+	m->info_action->setText(Lang::get(Lang::Library) + ": " + Lang::get(Lang::Info));
+	m->edit_action->setText(Lang::get(Lang::Library) + ": " + Lang::get(Lang::Edit));
+
 	m->import_file_action->setText(Lang::get(Lang::ImportFiles));
 	m->import_folder_action->setText(Lang::get(Lang::ImportDir));
-	m->info_action->setText(Lang::get(Lang::Info));
-	m->edit_action->setText(Lang::get(Lang::Edit));
-	m->livesearch_action->setText(tr("Live search"));
+	m->reload_library_action->setText(Lang::get(Lang::ReloadLibrary));
+
+	m->livesearch_action->setText(Lang::get(Lang::LiveSearch));
 	m->show_album_artists_action->setText(Lang::get(Lang::ShowAlbumArtists));
 	m->show_album_cover_view->setText(Lang::get(Lang::ShowCovers));
 }
@@ -203,13 +209,37 @@ void LocalLibraryMenu::skin_changed()
 	m->edit_action->setIcon(Icons::icon(Icons::Edit));
 }
 
+void LocalLibraryMenu::shortcut_changed(ShortcutIdentifier identifier)
+{
+	Q_UNUSED(identifier)
+
+	if(!m->initialized){
+		return;
+	}
+
+	ShortcutHandler* sch = ShortcutHandler::instance();
+
+	m->show_album_artists_action->setShortcutContext(Qt::WidgetShortcut);
+	m->show_album_artists_action->setShortcut(sch->shortcut(ShortcutIdentifier::AlbumArtists).sequence());
+	m->show_album_cover_view->setShortcutContext(Qt::WidgetShortcut);
+	m->show_album_cover_view->setShortcut(sch->shortcut(ShortcutIdentifier::CoverView).sequence());
+	m->reload_library_action->setShortcutContext(Qt::WidgetShortcut);
+	m->reload_library_action->setShortcut(sch->shortcut(ShortcutIdentifier::ReloadLibrary).sequence());
+}
+
+void LocalLibraryMenu::realtime_search_triggered(bool b)
+{
+	_settings->set<Set::Lib_LiveSearch>(b);
+}
+
+
 void LocalLibraryMenu::realtime_search_changed()
 {
 	if(!m->initialized){
 		return;
 	}
 
-	_settings->set<Set::Lib_LiveSearch>(m->livesearch_action->isChecked());
+	m->livesearch_action->setChecked(_settings->get<Set::Lib_LiveSearch>() );
 }
 
 void LocalLibraryMenu::edit_clicked()

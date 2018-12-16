@@ -24,7 +24,6 @@
 #include "Utils/Pimpl.h"
 #include <QtGlobal>
 
-class QString;
 namespace Library
 {
 	class Info

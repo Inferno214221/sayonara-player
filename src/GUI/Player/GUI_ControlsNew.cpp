@@ -18,12 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "GUI_ControlsNew.h"
-#include "Utils/Settings/Settings.h"
 #include "GUI/Player/ui_GUI_ControlsNew.h"
-#include "Components/Tagging/Editor.h"
+#include "Components/Tagging/UserTaggingOperations.h"
 #include "Components/PlayManager/PlayManager.h"
 #include "Utils/MetaData/MetaDataList.h"
 
@@ -88,15 +85,10 @@ void GUI_ControlsNew::rating_changed_here(bool success)
 		return;
 	}
 
-	MetaData md = PlayManager::instance()->current_track();
-	MetaDataList v_md{md};
-
-	Tagging::Editor* te = new Tagging::Editor(v_md);
-	connect(te, &QThread::finished, te, &Tagging::Editor::deleteLater);
-
 	Rating rating = ui->lab_rating->get_rating();
-	md.rating = rating;
+	MetaData md = PlayManager::instance()->current_track();
 
-	te->update_track(0, md);
-	te->commit();
+	Tagging::UserOperations* uto = new Tagging::UserOperations(md.library_id, this);
+	connect(uto, &Tagging::UserOperations::sig_finished, uto, &Tagging::UserOperations::deleteLater);
+	uto->set_track_rating(md, rating);
 }

@@ -28,7 +28,6 @@
  * @brief The ArtistInfo class
  * @ingroup MetaDataHelper
  */
-class MetaDataList;
 class ArtistInfo :
 	public MetaDataInfo
 {

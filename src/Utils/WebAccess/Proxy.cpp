@@ -22,9 +22,11 @@
 
 #include "Proxy.h"
 #include "Utils/Settings/Settings.h"
+#include "Utils/Settings/SettingNotifier.h"
 #include "Utils/Utils.h"
 #include "Utils/Crypt.h"
 #include "Utils/Logger/Logger.h"
+
 
 #include <QNetworkProxy>
 

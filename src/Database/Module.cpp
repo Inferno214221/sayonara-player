@@ -58,8 +58,6 @@ QString Module::connection_name() const
 	return m->connection_name;
 }
 
-
-
 QSqlDatabase Module::db() const
 {
 	if(!QSqlDatabase::isDriverAvailable("QSQLITE")){
@@ -84,8 +82,8 @@ QSqlDatabase Module::db() const
 	{
 		sp_log(Log::Error, this) << "Database cannot be opened! " << m->connection_name;
 		QSqlError er = db.lastError();
-		sp_log(Log::Error) << er.driverText();
-		sp_log(Log::Error) << er.databaseText();
+		sp_log(Log::Error, this) << er.driverText();
+		sp_log(Log::Error, this) << er.databaseText();
 	}
 
 	return db;

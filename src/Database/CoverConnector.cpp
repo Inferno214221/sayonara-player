@@ -118,14 +118,14 @@ bool DB::Covers::insert_cover(const QString& hash, const QPixmap& pm)
 	return (!q.has_error());
 }
 
-SP::Set<QString> DB::Covers::get_all_hashes()
+Util::Set<QString> DB::Covers::get_all_hashes()
 {
 	Query q = run_query("SELECT hash FROM covers;", "Cannot fetch all hashes");
 	if(q.has_error()){
-		return SP::Set<QString>();
+		return Util::Set<QString>();
 	}
 
-	SP::Set<QString> ret;
+	Util::Set<QString> ret;
 	while(q.next())
 	{
 		ret.insert(q.value(0).toString());

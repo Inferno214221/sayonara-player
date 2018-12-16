@@ -21,8 +21,8 @@
 #ifndef TAGLINEEDIT_H
 #define TAGLINEEDIT_H
 
-#include <QLineEdit>
 #include "Utils/Pimpl.h"
+#include <QLineEdit>
 
 struct TextSelection;
 

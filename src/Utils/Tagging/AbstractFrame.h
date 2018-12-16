@@ -27,13 +27,11 @@
 
 #include <QString>
 
-class QString;
 namespace TagLib
 {
 	class Tag;
 	class String;
 }
-
 
 namespace Tagging
 {

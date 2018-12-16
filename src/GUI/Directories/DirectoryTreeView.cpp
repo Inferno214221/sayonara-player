@@ -35,11 +35,11 @@
 #include "GUI/Utils/Widgets/ProgressBar.h"
 
 #include "Utils/MetaData/MetaDataList.h"
-#include "Utils/Settings/Settings.h"
 #include "Utils/Library/LibraryInfo.h"
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Language.h"
+#include "Utils/Logger/Logger.h"
 
 #include <QDir>
 #include <QMouseEvent>

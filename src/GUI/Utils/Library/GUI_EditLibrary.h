@@ -18,12 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef GUI_EDITLIBRARY_H
 #define GUI_EDITLIBRARY_H
 
-#include <QDialog>
 #include "Utils/Pimpl.h"
 #include "GUI/Utils/Widgets/Dialog.h"
 

@@ -30,6 +30,7 @@
 
 #include "Components/Library/AbstractLibrary.h"
 #include "Components/Covers/CoverLocation.h"
+#include "Components/Tagging/UserTaggingOperations.h"
 
 #include "GUI/Library/Utils/ColumnIndex.h"
 
@@ -152,7 +153,7 @@ Qt::ItemFlags TrackModel::flags(const QModelIndex &index = QModelIndex()) const
 	return QAbstractTableModel::flags(index);
 }
 
-bool TrackModel::setData(const QModelIndex &index, const QVariant &value, int role)
+bool TrackModel::setData(const QModelIndex& index, const QVariant& value, int role)
 {
 	if(!index.isValid()){
 		return false;
@@ -165,8 +166,12 @@ bool TrackModel::setData(const QModelIndex &index, const QVariant &value, int ro
 
 		if(col == (int) ColumnIndex::Track::Rating)
 		{
-			library()->change_track_rating(row, (Rating) (value.toInt()));
-			emit dataChanged(index, this->index(row, columnCount() - 1));
+			MetaData md = library()->tracks()[row];
+
+			Tagging::UserOperations* uto = new Tagging::UserOperations(-1, this);
+			connect(uto, &Tagging::UserOperations::sig_finished, uto, &Tagging::UserOperations::deleteLater);
+			uto->set_track_rating(md, (Rating) (value.toInt()));
+
 			return true;
 		}
 	}
@@ -217,7 +222,7 @@ Cover::Location TrackModel::cover(const IndexSet& indexes) const
 	}
 
 	const MetaDataList& tracks = library()->tracks();
-	SP::Set<AlbumId> album_ids;
+	Util::Set<AlbumId> album_ids;
 
 	for(int idx : indexes)
 	{
@@ -241,7 +246,7 @@ int TrackModel::searchable_column() const
 }
 
 
-const SP::Set<Id>& TrackModel::selections() const
+const Util::Set<Id>& TrackModel::selections() const
 {
 	return library()->selected_tracks();
 }

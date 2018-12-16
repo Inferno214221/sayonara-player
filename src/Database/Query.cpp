@@ -213,26 +213,26 @@ void Query::show_query() const
 
 void Query::show_error(const QString& err_msg) const
 {
-	sp_log(Log::Error) << "SQL ERROR: " << err_msg << ": " << (int) this->lastError().type();
+	sp_log(Log::Error, this) << "SQL ERROR: " << err_msg << ": " << (int) this->lastError().type();
 
 	QSqlError e = this->lastError();
 	if(!e.text().isEmpty()){
-		sp_log(Log::Error) << e.text();
+		sp_log(Log::Error, this) << e.text();
 	}
 
 	if(!e.driverText().isEmpty()) {
-		sp_log(Log::Error) << e.driverText();
+		sp_log(Log::Error, this) << e.driverText();
 	}
 
 	if(!e.databaseText().isEmpty()){
-		sp_log(Log::Error) << e.databaseText();
+		sp_log(Log::Error, this) << e.databaseText();
 	}
 
 #ifdef DEBUG
-	sp_log(Log::Error) << m->query_string;
+	sp_log(Log::Error, this) << m->query_string;
 #endif
 
-	sp_log(Log::Error) << this->get_query_string();
+	sp_log(Log::Error, this) << this->get_query_string();
 }
 
 size_t Query::fetched_rows()
@@ -247,5 +247,5 @@ size_t Query::fetched_rows()
 		return 0;
 	}
 
-	return (size_t) rows;
+	return static_cast<size_t>(rows);
 }

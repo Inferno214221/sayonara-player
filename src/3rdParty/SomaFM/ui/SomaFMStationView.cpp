@@ -45,3 +45,8 @@ void SomaFMStationView::keyPressEvent(QKeyEvent *e)
 
 	SearchableTableView::keyPressEvent(e);
 }
+
+int SomaFMStationView::viewport_height() const
+{
+	return this->height();
+}

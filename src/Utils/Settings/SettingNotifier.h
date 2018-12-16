@@ -21,10 +21,6 @@
 #ifndef SETTINGNOTIFIER_H
 #define SETTINGNOTIFIER_H
 
-#include "Utils/Logger/Logger.h"
-#include "Utils/Settings/SayonaraClass.h"
-#include "Utils/Settings/SettingKey.h"
-
 #include <functional>
 #include <QObject>
 
@@ -44,24 +40,20 @@ public:
 		connect(this, &AbstrSettingNotifier::sig_value_changed, c, fn);
 	}
 
-protected:
-	void emit_value_changed()
-	{
-		emit sig_value_changed();
-	}
+	void emit_value_changed();
 };
 
 template<typename KeyClass>
-class SettingNotifier :
-	public AbstrSettingNotifier
+class SettingNotifier
 {
 private:
+	AbstrSettingNotifier* m;
+
 	SettingNotifier() :
-		AbstrSettingNotifier()
+		m(new AbstrSettingNotifier())
 	{}
 
 	SettingNotifier(const SettingNotifier& other) = delete;
-
 
 public:
 	~SettingNotifier() {}
@@ -74,10 +66,15 @@ public:
 
 	void val_changed()
 	{
-		emit_value_changed();
+		m->emit_value_changed();
+	}
+
+	template<typename T>
+	void add_listener(T* c, void (T::*fn)())
+	{
+		m->add_listener(c, fn);
 	}
 };
-
 
 
 namespace Set

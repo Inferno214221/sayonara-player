@@ -26,6 +26,7 @@
 #include "CoverViewContextMenu.h"
 
 #include "Components/Library/LocalLibrary.h"
+#include "Components/Tagging/UserTaggingOperations.h"
 
 #include "GUI/Utils/ContextMenu/LibraryContextMenu.h"
 
@@ -34,6 +35,7 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language.h"
 #include "Utils/Utils.h"
+#include "Utils/Logger/Logger.h"
 
 #include <QHeaderView>
 #include <QTimer>
@@ -95,6 +97,7 @@ void CoverView::init(LocalLibrary* library)
 	}
 
 	new QShortcut(QKeySequence(QKeySequence::Refresh), this, SLOT(reload()), nullptr, Qt::WidgetShortcut);
+	new QShortcut(QKeySequence("F7"), this, SLOT(clear_cache()));
 }
 
 AbstractLibrary* CoverView::library() const
@@ -206,6 +209,12 @@ void CoverView::reload()
 	m->model->reload();
 }
 
+void CoverView::clear_cache()
+{
+	sp_log(Log::Debug, this) << "Clear cache";
+	m->model->clear();
+}
+
 void CoverView::fill()
 {
 	this->clearSelection();
@@ -306,6 +315,10 @@ void CoverView::refresh_clicked()
 
 void CoverView::run_merge_operation(const Library::ItemView::MergeData& mergedata)
 {
-	m->library->merge_albums(mergedata.source_ids, mergedata.target_id);
+	Tagging::UserOperations* uto = new Tagging::UserOperations(mergedata.library_id(), this);
+
+	connect(uto, &Tagging::UserOperations::sig_finished, uto, &Tagging::UserOperations::deleteLater);
+
+	uto->merge_albums(mergedata.source_ids(), mergedata.target_id());
 }
 

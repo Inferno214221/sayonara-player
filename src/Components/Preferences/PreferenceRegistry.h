@@ -26,7 +26,6 @@
 #include "Utils/Pimpl.h"
 #include "Utils/Singleton.h"
 
-class QString;
 class PreferenceUi
 {
 	public:

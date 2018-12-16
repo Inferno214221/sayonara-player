@@ -22,11 +22,12 @@
 #define _ARTIST_H_
 
 #include "Utils/MetaData/LibraryItem.h"
-#include "Utils/Pimpl.h"
 #include "Utils/Library/Sortorder.h"
+#include "Utils/Pimpl.h"
 
 #include <QStringList>
 #include <QMetaType>
+#include <deque>
 
 /**
  * @brief The Artist class
@@ -51,7 +52,7 @@ public:
 
 	~Artist();
 
-	const QString& name() const;
+	QString name() const;
 	void set_name(const QString& name);
 
 	static bool fromVariant(const QVariant& v, Artist& a);
@@ -67,8 +68,9 @@ Q_DECLARE_METATYPE(Artist)
  * @ingroup MetaDataHelper
  */
 class ArtistList :
-		public std::vector<Artist>
+		public std::deque<Artist>
 {
+	using Parent=std::deque<Artist>;
 
 public:
 	ArtistList();

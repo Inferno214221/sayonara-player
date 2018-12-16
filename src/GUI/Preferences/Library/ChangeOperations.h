@@ -28,8 +28,6 @@ namespace Library
 	class Manager;
 }
 
-class QString;
-
 class ChangeOperation
 {
 public:

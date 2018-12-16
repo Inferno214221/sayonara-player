@@ -19,7 +19,6 @@
  */
 
 #include "GUI_TargetPlaylistDialog.h"
-#include "Utils/Settings/Settings.h"
 #include "Utils/Language.h"
 #include "Components/Library/LibraryManager.h"
 

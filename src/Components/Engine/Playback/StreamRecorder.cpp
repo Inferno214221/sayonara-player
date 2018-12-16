@@ -72,7 +72,7 @@ SR::StreamRecorder::StreamRecorder(QObject *parent) :
 		QFile f(path);
 		f.remove();
 
-		sp_log(Log::Info) << "Remove " << path;
+		sp_log(Log::Info, this) << "Remove " << path;
 	}
 
 	PlayManagerPtr play_manager = PlayManager::instance();
@@ -94,7 +94,7 @@ void SR::StreamRecorder::clear()
 void SR::StreamRecorder::new_session()
 {
 	clear();
-	sp_log(Log::Info) << "New session: " << m->session_path;
+	sp_log(Log::Info, this) << "New session: " << m->session_path;
 
 	m->date = QDate::currentDate();
 	m->time = QTime::currentTime();
@@ -172,11 +172,11 @@ bool SR::StreamRecorder::save()
 		return false;
 	}
 
-	sp_log(Log::Info) << "Finalize file " << m->sr_recording_dst;
+	sp_log(Log::Info, this) << "Finalize file " << m->sr_recording_dst;
 
 	m->md.set_filepath(m->sr_recording_dst);
 
-	Tagging::Util::setMetaDataOfFile(m->md);
+	Tagging::Utils::setMetaDataOfFile(m->md);
 	m->session_collector.push_back(m->md);
 
 	PlaylistParser::save_m3u_playlist(m->session_playlist_name, m->session_collector, true);

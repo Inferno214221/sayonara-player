@@ -49,6 +49,7 @@
 #include "Utils/Message/Message.h"
 #include "Utils/Language.h"
 #include "Utils/Settings/Settings.h"
+#include "Utils/Logger/Logger.h"
 
 #include <QDir>
 #include <QFile>
@@ -136,6 +137,7 @@ GUI_AlternativeCovers::GUI_AlternativeCovers(QWidget* parent) :
 	});
 
 	Set::listen<Set::Cover_Server>(this, &GUI_AlternativeCovers::servers_changed, false);
+	Set::listen<Set::Cover_FetchFromWWW>(this, &GUI_AlternativeCovers::www_active_changed);
 }
 
 
@@ -170,7 +172,12 @@ void GUI_AlternativeCovers::start(const Location& cl)
 		this->show();
 	}
 
-	else {
+	else
+	{
+//		if(!_settings->get<Set::Cover_FetchFromWWW>()){
+//			return;
+//		}
+
 		connect_and_start();
 	}
 }
@@ -217,6 +224,7 @@ void GUI_AlternativeCovers::language_changed()
 	ui->btn_ok->setText(Lang::get(Lang::OK));
 	ui->btn_close->setText(Lang::get(Lang::Close));
 	ui->btn_apply->setText(Lang::get(Lang::Apply));
+	ui->lab_websearch_disabled->setText(tr("Cover web search is not enabled"));
 
 	if(m->is_searching){
 		ui->btn_search->setText(Lang::get(Lang::Stop));
@@ -299,8 +307,6 @@ void GUI_AlternativeCovers::cl_new_cover(const QPixmap& pm)
 	ui->lab_status->setText( tr("%1 covers found").arg(m->model->cover_count()) ) ;
 }
 
-
-
 void GUI_AlternativeCovers::servers_changed()
 {
 	init_combobox();
@@ -309,6 +315,18 @@ void GUI_AlternativeCovers::servers_changed()
 void GUI_AlternativeCovers::autostart_toggled(bool b)
 {
 	_settings->set<Set::Cover_StartSearch>(b);
+}
+
+void GUI_AlternativeCovers::www_active_changed()
+{
+	bool is_active = _settings->get<Set::Cover_FetchFromWWW>();
+
+	ui->lab_websearch_disabled->setVisible(!is_active);
+	ui->btn_search->setVisible(is_active);
+
+	ui->combo_search_fetchers->setEnabled(is_active);
+	ui->rb_auto_search->setEnabled(is_active);
+	ui->rb_text_search->setEnabled(is_active);
 }
 
 
@@ -341,7 +359,7 @@ void GUI_AlternativeCovers::reset()
 		m->cl_alternative->stop();
 	}
 
-	Cover::Util::delete_temp_covers();
+	Cover::Utils::delete_temp_covers();
 }
 
 
@@ -439,7 +457,7 @@ void GUI_AlternativeCovers::closeEvent(QCloseEvent *e)
 
 	m->loading_bar->hide();
 
-	Cover::Util::delete_temp_covers();
+	Cover::Utils::delete_temp_covers();
 
 	Dialog::closeEvent(e);
 }

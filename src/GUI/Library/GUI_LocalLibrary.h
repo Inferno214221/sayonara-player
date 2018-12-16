@@ -67,13 +67,14 @@ namespace Library
 		TableView* lv_album() const override;
 		TableView* lv_tracks() const override;
 
-		QLineEdit* le_search() const override;
+		Library::SearchBar* le_search() const override;
 		QList<Filter::Mode> search_options() const override;
 
 		void language_changed() override;
-		void search_key_pressed(int key) override;
 
 	private slots:
+		void tracks_loaded();
+		void extension_button_toggled(bool b);
 		void switch_album_view();
 
 		void progress_changed(const QString& type, int progress);
@@ -82,7 +83,7 @@ namespace Library
 		void genre_selection_changed(const QModelIndex& index);
 
 		void reload_library_requested();
-		void reload_library_requested(ReloadQuality quality);
+		void reload_library_requested_with_quality(ReloadQuality quality);
 		void reload_library_accepted(ReloadQuality quality);
 		void reload_finished();
 
@@ -103,6 +104,7 @@ namespace Library
 		void clear_selections() override;
 
 		void show_info_box();
+
 	};
 }
 

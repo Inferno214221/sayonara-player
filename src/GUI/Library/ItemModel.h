@@ -22,7 +22,6 @@
 #define LIBRARYITEMMODEL_H_
 
 #include "GUI/Utils/SearchableWidget/SearchableModel.h"
-
 #include "Utils/Pimpl.h"
 
 namespace Cover
@@ -31,7 +30,6 @@ namespace Cover
 }
 
 class CustomMimeData;
-class MetaDataList;
 class AbstractLibrary;
 
 namespace Library
@@ -56,7 +54,7 @@ namespace Library
 			QModelIndexList search_results(const QString& substr) override;
 
 			virtual bool			is_selected(int id) const final;
-			virtual const SP::Set<Id>& selections() const=0;
+			virtual const Util::Set<Id>& selections() const=0;
 			virtual IndexSet		selected_indexes() const;
 
 			virtual int				searchable_column() const=0;

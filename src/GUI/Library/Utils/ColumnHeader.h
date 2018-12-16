@@ -27,14 +27,12 @@
 #ifndef MYCOLUMNHEADER_H_
 #define MYCOLUMNHEADER_H_
 
-#include <QObject>
-
 #include "Utils/Library/Sortorder.h"
 #include "Utils/Pimpl.h"
-#include <memory>
+
+#include <QObject>
 
 class QAction;
-
 namespace Library
 {
 	class ColumnHeader : public QObject

@@ -22,7 +22,6 @@
 #define _EQUALIZER_PRESETS_
 
 #include "Utils/Pimpl.h"
-#include <QList>
 #include <QString>
 
 /**

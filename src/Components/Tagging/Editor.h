@@ -23,13 +23,10 @@
 
 #include <QThread>
 #include <QPixmap>
-#include <QStringList>
 
 #include "Utils/Pimpl.h"
 
 class Genre;
-class MetaDataList;
-class MetaData;
 namespace Tagging
 {
 /**
@@ -48,6 +45,7 @@ namespace Tagging
 		PIMPL(Editor)
 
 	signals:
+		void sig_finished();
 		void sig_progress(int);
 		void sig_metadata_received(const MetaDataList& v_md);
 

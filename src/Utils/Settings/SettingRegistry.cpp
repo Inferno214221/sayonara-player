@@ -35,20 +35,21 @@
 #include <QPoint>
 #include <QApplication>
 #include <QFont>
+#include <QThread>
 #include <type_traits>
 
-template<typename T>
-void register_setting(const char* db_key, const typename T::Data& default_value)
+template<typename KeyClass>
+void register_setting(const char* db_key, const typename KeyClass::Data& default_value)
 {
-	auto setting = new Setting<typename T::Data, T::key>(db_key, default_value);
+	auto setting = new Setting<KeyClass>(db_key, default_value);
 
 	Settings::instance()->register_setting( setting );
 }
 
-template<typename T>
-void register_setting(const typename T::Data& default_value)
+template<typename KeyClass>
+void register_setting(const typename KeyClass::Data& default_value)
 {
-	auto setting = new Setting<typename T::Data, T::key>(default_value);
+	auto setting = new Setting<KeyClass>(default_value);
 
 	Settings::instance()->register_setting( setting );
 }
@@ -68,7 +69,8 @@ bool SettingRegistry::init()
 	register_setting<Set::Eq_List>( "EQ_list", EQ_Setting::get_defaults() );
 	register_setting<Set::Eq_Gauss>( "EQ_Gauss", true );
 
-	BoolList shown_cols(10); shown_cols.assign(10, true);
+	BoolList shown_cols; shown_cols.reserve(10); while(shown_cols.count() < 10) { shown_cols << false; }
+
 	register_setting<Set::Lib_ColsTitle>( "lib_shown_cols_title", shown_cols );
 	register_setting<Set::Lib_ColsArtist>( "lib_shown_cols_artist", shown_cols );
 	register_setting<Set::Lib_ColsAlbum>( "lib_shown_cols_album", shown_cols );
@@ -97,6 +99,8 @@ bool SettingRegistry::init()
 	register_setting<Set::Lib_GenreTree>( "lib_show_genre_tree", true);
 	register_setting<Set::Lib_LastIndex>( "lib_last_idx", -1);
 	register_setting<Set::Lib_AllLibraries>( "lib_all_libraries", QList<Library::Info>()); // deprecated
+	register_setting<Set::Lib_UseViewClearButton>( "lib_view_clear_button", false);
+	register_setting<Set::Lib_ShowFilterExtBar>("lib_show_filter_ext_bar", true);
 
 #ifdef Q_OS_WIN
 	register_setting<Set::Lib_FontBold >("lib_font_bold", false);
@@ -109,8 +113,6 @@ bool SettingRegistry::init()
 	register_setting<Set::Dir_ShowTracks>( "dir_show_tracks", true);
 	register_setting<Set::Dir_SplitterDirFile>( "dir_splitter_dir_file", QByteArray());
 	register_setting<Set::Dir_SplitterTracks>( "dir_splitter_tracks", QByteArray());
-
-	register_setting<Set::Lib_UseViewClearButton>( "lib_view_clear_button", false);
 
 	register_setting<Set::Player_Version>( "player_version", QString(SAYONARA_VERSION));
 	register_setting<Set::Player_Language>( "player_language", QString("en_US"));
@@ -160,7 +162,11 @@ bool SettingRegistry::init()
 	register_setting<Set::Engine_CurTrackPos_s>( "last_track_pos", 0 );
 	register_setting<Set::Engine_Vol>( "volume", 50 );
 	register_setting<Set::Engine_Mute>( "mute", false );
-	register_setting<Set::Engine_ConvertQuality>( "convert_quality", 0 );
+	register_setting<Set::AudioConvert_NumberThreads>("convert_number_threads", QThread::idealThreadCount());
+	register_setting<Set::AudioConvert_PreferredConverter>("convert_preferred_converter", "ogg");
+	register_setting<Set::AudioConvert_QualityLameVBR>( "convert_quality_lame_vbr", 7);
+	register_setting<Set::AudioConvert_QualityLameCBR>( "convert_quality_lame_cbr", 192);
+	register_setting<Set::AudioConvert_QualityOgg>("convert_quality_ogg", 7);
 	register_setting<Set::Engine_CovertTargetPath>( "convert_target_path", QDir::homePath() );
 	register_setting<Set::Engine_ShowLevel>( "show_level", false);
 	register_setting<Set::Engine_ShowSpectrum>( "show_spectrum", false);
@@ -197,7 +203,7 @@ bool SettingRegistry::init()
 	register_setting<Set::Lyrics_Zoom>( "lyrics_zoom", 100);
 
 	register_setting<Set::Cover_Server>( "cover_server", QStringList());
-	register_setting<Set::Cover_LoadFromFile>( "cover_load_from_file", true);
+	register_setting<Set::Cover_FetchFromWWW>( "cover_fetch_from_www", true);
 	register_setting<Set::Cover_StartSearch>("cover_start_search_automatically", true);
 
 	register_setting<Set::Icon_Theme>( "icon_theme", QString());

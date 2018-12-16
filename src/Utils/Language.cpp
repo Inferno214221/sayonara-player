@@ -176,6 +176,10 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Files");
 		case Filesize:
 			return l.tr("Filesize");
+		case Filetype:
+			return l.tr("File type");
+		case Filter:
+			return l.tr("Filter");
 		case First:
 			return l.tr("1st");
 		case Font:
@@ -231,6 +235,8 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Library path");
 		case Listen:
 			return l.tr("Listen");
+		case LiveSearch:
+			return l.tr("Live Search");
 		case Logger:
 			return l.tr("Logger");
 		case Lyrics:

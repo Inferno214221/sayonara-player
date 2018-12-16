@@ -41,7 +41,7 @@ using DB::Tracks;
 using DB::Query;
 using DB::SearchableModule;
 using SMM=::Library::SearchModeMask;
-namespace LibraryUtils=::Library::Util;
+namespace LibraryUtils=::Library::Utils;
 
 struct Tracks::Private
 {
@@ -175,8 +175,6 @@ bool Tracks::db_fetch_tracks(Query& q, MetaDataList& result)
 		q.show_error("Cannot fetch tracks from database");
 		return false;
 	}
-
-	result.reserve(q.fetched_rows());
 
 	while(q.next())
 	{
@@ -619,7 +617,7 @@ bool Tracks::deleteTracks(const MetaDataList& v_md)
 
 	db().commit();
 
-	sp_log(Log::Info) << "Deleted " << deleted_tracks << " of " << v_md.size() << " tracks";
+	sp_log(Log::Info, this) << "Deleted " << deleted_tracks << " of " << v_md.size() << " tracks";
 
 	return (deleted_tracks == v_md.size());
 }
@@ -630,7 +628,7 @@ bool Tracks::deleteInvalidTracks(const QString& library_path, MetaDataList& doub
 
 	MetaDataList v_md;
 	if(!getAllTracks(v_md)){
-		sp_log(Log::Error) << "Cannot get tracks from db";
+		sp_log(Log::Error, this) << "Cannot get tracks from db";
 		return false;
 	}
 
@@ -672,15 +670,15 @@ bool Tracks::deleteInvalidTracks(const QString& library_path, MetaDataList& doub
 	return false;
 }
 
-SP::Set<Genre> Tracks::getAllGenres()
+Util::Set<Genre> Tracks::getAllGenres()
 {
 	Query q = run_query("SELECT genre FROM " + m->track_view + " GROUP BY genre;", "Cannot fetch genres");
 
 	if(q.has_error()){
-		return SP::Set<Genre>();
+		return Util::Set<Genre>();
 	}
 
-	SP::Set<Genre> genres;
+	Util::Set<Genre> genres;
 	while(q.next())
 	{
 		QString genre = q.value(0).toString();
@@ -818,8 +816,8 @@ bool Tracks::insertTrackIntoDatabase(const MetaData& md, ArtistId artist_id, Alb
 
 	auto current_time = Util::current_date_to_int();
 
-	QString cissearch = ::Library::Util::convert_search_string(md.title(), search_mode());
-	QString file_cissearch = ::Library::Util::convert_search_string(md.filepath(), search_mode());
+	QString cissearch = ::Library::Utils::convert_search_string(md.title(), search_mode());
+	QString file_cissearch = ::Library::Utils::convert_search_string(md.filepath(), search_mode());
 
 	QMap<QString, QVariant> bindings =
 	{

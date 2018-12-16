@@ -24,16 +24,16 @@
 
 CommandLineData::CommandLineData()
 {
-    multiple_instances = false;
-    abort = false;
+	multiple_instances = false;
+	abort = false;
 }
 
 
 CommandLineData CommandLineParser::parse(int argc, char** argv)
 {
-    CommandLineData data;
+	CommandLineData data;
 
-    for(int i=1; i<argc; i++) 
+	for(int i=1; i<argc; i++)
 	{
 		QString str(argv[i]);
 		QRegExp re("--lang=([a-z]+).*");
@@ -54,26 +54,26 @@ CommandLineData CommandLineParser::parse(int argc, char** argv)
 		if(re.indexIn(str) >= 0)
 		{
 			data.language = re.cap(1);
-			sp_log(Log::Info) << "Force language to " << data.language;
+			sp_log(Log::Info, "CommandLineParser") << "Force language to " << data.language;
 		}
 
-		else 
+		else
 		{
 			data.files_to_play << Util::File::get_absolute_filename(QString(argv[i]));
 		}
-    }
+	}
 
-    return data;
+	return data;
 }
 
 
 void CommandLineParser::help()
 {
-    sp_log(Log::Info) << "sayonara [options] <list>";
-    sp_log(Log::Info) << "<list> can consist of either files or directories or both";
-    sp_log(Log::Info) << "Options:";
-    sp_log(Log::Info) << "\t--multi-instances      Run more than one instance";
-    sp_log(Log::Info) << "\t--lang=<country code>  Force language";
-    sp_log(Log::Info) << "\t--help                 Print this help dialog";
-    sp_log(Log::Info) << "Bye.";
+	sp_log(Log::Info, "") << "sayonara [options] <list>";
+	sp_log(Log::Info, "") << "<list> can consist of either files or directories or both";
+	sp_log(Log::Info, "") << "Options:";
+	sp_log(Log::Info, "") << "\t--multi-instances      Run more than one instance";
+	sp_log(Log::Info, "") << "\t--lang=<country code>  Force language";
+	sp_log(Log::Info, "") << "\t--help                 Print this help dialog";
+	sp_log(Log::Info, "") << "Bye.";
 }

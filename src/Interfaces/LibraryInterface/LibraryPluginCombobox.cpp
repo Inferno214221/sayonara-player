@@ -23,11 +23,12 @@
 #include "LibraryContainer/LibraryContainer.h"
 
 #include "Utils/Utils.h"
-#include "Utils/Settings/Settings.h"
+#include "Utils/Logger/Logger.h"
 
 #include <QList>
 #include <QAction>
 #include <QSize>
+#include <QFontMetrics>
 
 using Library::Container;
 using Library::PluginHandler;
@@ -67,6 +68,8 @@ PluginCombobox::~PluginCombobox() {}
 
 void PluginCombobox::setup_actions()
 {
+	QFontMetrics fm(this->font());
+
 	this->clear();
 
 	QList<Container*> libraries = m->lph->get_libraries();
@@ -79,7 +82,9 @@ void PluginCombobox::setup_actions()
 					Qt::SmoothTransformation
 		);
 
-		this->addItem(QIcon(pm), container->display_name(), container->name());
+
+		QString display_name = fm.elidedText(container->display_name(), Qt::TextElideMode::ElideRight, 200);
+		this->addItem(QIcon(pm), display_name, container->name());
 	}
 
 	current_library_changed(m->lph->current_library()->name());
@@ -121,14 +126,7 @@ void PluginCombobox::language_changed()
 		return;
 	}
 
-	QList<Container*> libraries = m->lph->get_libraries();
-	int i=0;
-
-	for(const Container* container : libraries)
-	{
-		this->setItemText(i, container->display_name());
-		i++;
-	}
+	setup_actions();
 }
 
 void PluginCombobox::skin_changed()

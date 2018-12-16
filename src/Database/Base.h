@@ -25,7 +25,6 @@
 #include "Utils/Pimpl.h"
 #include <QObject>
 
-
 class QSqlDatabase;
 
 namespace DB

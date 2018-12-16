@@ -17,6 +17,7 @@ set(APPLICATION_LIBRARIES
 
 	say_interfaces_libraryinterface
 	say_comp_remote_control
+	say_comp_session
 )
 
 if(NOT WIN32 OR NOT DEFINED WIN32)

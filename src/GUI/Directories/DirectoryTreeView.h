@@ -33,9 +33,7 @@
 
 class LibraryContextMenu;
 class DirectoryModel;
-class MetaDataList;
 class IconProvider;
-class QStringList;
 class CustomMimeData;
 
 namespace Library
@@ -109,7 +107,6 @@ protected:
 	void dragLeaveEvent(QDragLeaveEvent* event) override;
 	void dragMoveEvent(QDragMoveEvent *event) override;
 	void dropEvent(QDropEvent *event) override;
-
 
 	// SayonaraSelectionView
 	int index_by_model_index(const QModelIndex& idx) const override;

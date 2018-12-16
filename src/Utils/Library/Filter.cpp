@@ -104,7 +104,7 @@ QStringList Filter::search_mode_filtertext(bool with_percent) const
 
 	for(const QString& tmp_str : tmp)
 	{
-		QString str = ::Library::Util::convert_search_string(tmp_str, m->search_mode);
+		QString str = ::Library::Utils::convert_search_string(tmp_str, m->search_mode);
 		if(with_percent)
 		{
 			if(!str.startsWith('%')){

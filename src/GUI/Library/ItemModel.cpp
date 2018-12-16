@@ -37,8 +37,7 @@ struct ItemModel::Private
 {
 	AbstractLibrary*	library=nullptr;
 	QStringList			header_names;
-	int                 old_row_count;
-
+	int					old_row_count;
 
 	Private(AbstractLibrary* library) :
 		library(library),
@@ -181,7 +180,7 @@ QModelIndexList ItemModel::search_results(const QString& substr)
 	for(int i=0; i<len; i++)
 	{
 		QString title = searchable_string(i);
-		title = Library::Util::convert_search_string(title, search_mode());
+		title = Library::Utils::convert_search_string(title, search_mode());
 
 		if(title.contains(substr)) {
 			ret << this->index(i, searchable_column());

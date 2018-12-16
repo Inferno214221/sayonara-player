@@ -25,7 +25,6 @@
 
 #include "Utils/Pimpl.h"
 
-class MetaDataList;
 namespace Playlist
 {
 	class StopBehavior

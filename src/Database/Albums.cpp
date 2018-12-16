@@ -113,8 +113,6 @@ bool Albums::db_fetch_albums(Query& q, AlbumList& result)
 		return false;
 	}
 
-	result.reserve(q.fetched_rows());
-
 	while(q.next())
 	{
 		Album album;
@@ -374,7 +372,7 @@ bool Albums::getAllAlbumsBySearchString(const Library::Filter& filter, AlbumList
 
 int Albums::updateAlbum(const Album& album)
 {
-	QString cissearch = Library::Util::convert_search_string(album.name(), search_mode());
+	QString cissearch = Library::Utils::convert_search_string(album.name(), search_mode());
 
 	QMap<QString, QVariant> bindings
 	{
@@ -404,7 +402,7 @@ void Albums::updateAlbumCissearch()
 
 	for(const Album& album : albums)
 	{
-		QString cis = Library::Util::convert_search_string(album.name(), sm);
+		QString cis = Library::Utils::convert_search_string(album.name(), sm);
 
 		this->update
 		(
@@ -428,7 +426,7 @@ AlbumId Albums::insertAlbumIntoDatabase(const QString& album_name)
 
 AlbumId Albums::insertAlbumIntoDatabase(const Album& album)
 {
-	QString cissearch = Library::Util::convert_search_string(album.name(), search_mode());
+	QString cissearch = Library::Utils::convert_search_string(album.name(), search_mode());
 
 	QMap<QString, QVariant> bindings
 	{

@@ -21,15 +21,15 @@
 #ifndef SETTINGCONVERTER_H
 #define SETTINGCONVERTER_H
 
+#include "Utils/typedefs.h"
+
 #include <QPair>
 #include <QStringList>
-#include "Utils/typedefs.h"
 
 #include <exception>
 #include <iostream>
 
 class QSize;
-class QString;
 class QPoint;
 
 // generic

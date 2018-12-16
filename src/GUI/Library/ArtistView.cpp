@@ -24,6 +24,8 @@
 #include "ItemModel.h"
 
 #include "Components/Library/AbstractLibrary.h"
+#include "Components/Tagging/UserTaggingOperations.h"
+
 #include "GUI/Library/ArtistModel.h"
 #include "GUI/Library/Utils/ColumnIndex.h"
 #include "GUI/Library/Utils/ColumnHeader.h"
@@ -194,7 +196,11 @@ void ArtistView::album_artists_triggered(bool b)
 
 void ArtistView::run_merge_operation(const ItemView::MergeData& mergedata)
 {
-	m->library->merge_artists(mergedata.source_ids, mergedata.target_id);
+	Tagging::UserOperations* uto = new Tagging::UserOperations(mergedata.library_id(), this);
+
+	connect(uto, &Tagging::UserOperations::sig_finished, uto, &Tagging::UserOperations::deleteLater);
+
+	uto->merge_artists(mergedata.source_ids(), mergedata.target_id());
 }
 
 void ArtistView::album_artists_changed()

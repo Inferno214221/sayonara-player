@@ -20,10 +20,11 @@
 #ifndef NOTIFICATIONHANDLER_H
 #define NOTIFICATIONHANDLER_H
 
-#include <QObject>
 #include "NotificationInterface.h"
 #include "Utils/Singleton.h"
 #include "Utils/Pimpl.h"
+
+#include <QObject>
 
 class DummyNotificator : public NotificationInterface
 {

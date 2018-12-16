@@ -86,8 +86,6 @@ bool Artists::db_fetch_artists(Query& q, ArtistList& result)
 		return false;
 	}
 
-	result.reserve(q.fetched_rows());
-
 	while(q.next())
 	{
 		Artist artist;
@@ -251,7 +249,7 @@ ArtistId Artists::updateArtist(const Artist& artist)
 		return -1;
 	}
 
-	QString cis = Library::Util::convert_search_string(artist.name(), search_mode());
+	QString cis = Library::Utils::convert_search_string(artist.name(), search_mode());
 
 	QMap<QString, QVariant> bindings
 	{
@@ -270,7 +268,7 @@ ArtistId Artists::updateArtist(const Artist& artist)
 
 ArtistId Artists::insertArtistIntoDatabase(const QString& artist)
 {
-	QString cis = Library::Util::convert_search_string(artist, search_mode());
+	QString cis = Library::Utils::convert_search_string(artist, search_mode());
 
 	QMap<QString, QVariant> bindings
 	{
@@ -303,7 +301,7 @@ void Artists::updateArtistCissearch()
 
 	for(const Artist& artist : artists)
 	{
-		QString cis = Library::Util::convert_search_string(artist.name(), sm);
+		QString cis = Library::Utils::convert_search_string(artist.name(), sm);
 
 		this->update
 		(

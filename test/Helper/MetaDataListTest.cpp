@@ -87,9 +87,9 @@ void MetaDataListTest::insert_test()
 }
 
 
-static SP::Set<int> create_idx_set(int n, int max_val, int ignore_val=-1)
+static Util::Set<int> create_idx_set(int n, int max_val, int ignore_val=-1)
 {
-	SP::Set<int> indexes;
+	Util::Set<int> indexes;
 	for(int i=0; i<n; i++){
 		int idx = (i*7) % max_val;
 		if(idx == ignore_val){
@@ -108,7 +108,7 @@ void MetaDataListTest::remove_test()
 	int old_size = v_md.size();
 	int cur_track = 10;
 
-	SP::Set<int> remove_indexes = create_idx_set(15, v_md.size(), cur_track);
+	Util::Set<int> remove_indexes = create_idx_set(15, v_md.size(), cur_track);
 
 	v_md.set_current_track(cur_track);
 
@@ -156,7 +156,7 @@ void MetaDataListTest::write_move_stuff()
 		int cur_play_idx = RandomGenerator::get_random_number(0, sz - 1);
 		int n_idxs = RandomGenerator::get_random_number(5, sz - 10);
 
-		SP::Set<int> idxs;
+		Util::Set<int> idxs;
 		for(int i=0; i<n_idxs; i++){
 			idxs.insert(RandomGenerator::get_random_number(0, sz));
 		}
@@ -214,7 +214,7 @@ void MetaDataListTest::move_test()
 	/*for(int rounds = 0; rounds < 10; rounds++)
 	{
 		MetaDataList v_md = create_v_md(0, 53);
-		SP::Set<int> move_indexes = create_idx_set(15, v_md.size());
+		Util::Set<int> move_indexes = create_idx_set(15, v_md.size());
 		QList<int> idxs = move_indexes.toList();
 		int target_idx = 8;
 

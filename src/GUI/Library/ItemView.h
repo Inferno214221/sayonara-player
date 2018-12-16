@@ -37,15 +37,10 @@
 #include "GUI/Utils/Shortcuts/ShortcutWidget.h"
 
 #include "Utils/Library/Sortorder.h"
-#include "Utils/MetaData/MetaDataFwd.h"
-#include "Utils/typedefs.h"
 #include "Utils/Set.h"
 #include "Utils/Pimpl.h"
 
 class AbstractLibrary;
-class LibraryContextMenu;
-class QStringList;
-class QMenu;
 
 namespace Library
 {
@@ -63,12 +58,20 @@ namespace Library
 		PIMPL(ItemView)
 
 	protected:
-		struct MergeData
+		class MergeData
 		{
-			SP::Set<Id>	source_ids;
-			Id			target_id;
+			PIMPL(MergeData)
 
-			bool is_valid() const;
+			public:
+				MergeData(const Util::Set<Id>& source_ids, Id target_id, LibraryId library_id);
+				MergeData(const MergeData& other);
+				~MergeData();
+
+				MergeData& operator=(const MergeData& other);
+				bool			is_valid() const;
+				Util::Set<Id>	source_ids() const;
+				Id				target_id() const;
+				LibraryId		library_id() const;
 		};
 
 	signals:
@@ -79,9 +82,10 @@ namespace Library
 		void sig_play_new_tab_clicked();
 		void sig_append_clicked();
 		void sig_refresh_clicked();
+		void sig_reload_clicked();
 		void sig_import_files(const QStringList& files);
 		void sig_sel_changed(const IndexSet& indexes);
-		void sig_merge(const SP::Set<Id>& ids, int target_id);
+		void sig_merge(const Util::Set<Id>& ids, int target_id);
 
 	private:
 		ItemView(const ItemView& other)=delete;
@@ -111,7 +115,6 @@ namespace Library
 		void use_clear_button(bool yesno);
 
 		bool is_valid_drag_position(const QPoint &p) const override;
-
 
 	protected:
 		// Events implemented in LibraryViewEvents.cpp
@@ -146,6 +149,8 @@ namespace Library
 		MergeData calc_mergedata() const;
 		virtual void run_merge_operation(const MergeData& md);
 
+		int viewport_height() const override;
+
 
 	protected slots:
 		virtual void show_context_menu(const QPoint&);
@@ -156,8 +161,10 @@ namespace Library
 		virtual void delete_clicked();
 		virtual void append_clicked();
 		virtual void refresh_clicked();
+		virtual void reload_clicked();
 		virtual void cover_view_toggled();
 		virtual void album_artists_toggled();
+		virtual void filter_extensions_triggered(const QString& extension, bool b);
 		virtual void fill();
 
 	public:

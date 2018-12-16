@@ -29,6 +29,7 @@
 #include "Utils/Utils.h"
 #include "Utils/Set.h"
 #include "Utils/Tagging/Tagging.h"
+#include "Utils/Tagging/TaggingCover.h"
 #include "Utils/MetaData/Genre.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/MetaData/Album.h"
@@ -184,7 +185,7 @@ bool Editor::apply_regex(const QString& regex, int idx)
 		}
 
 		else if(key == Tagging::TagTrackNum) {
-			md.discnumber = value.toInt();
+			md.track_num = value.toInt();
 		}
 
 		else if(key == Tagging::TagYear) {
@@ -264,7 +265,9 @@ void Editor::set_metadata(const MetaDataList& v_md)
 
 	m->cover_map.clear();
 	m->changed_md.clear();
-	m->changed_md.assign(v_md.size(), false);
+
+	m->changed_md.reserve(v_md.count());
+	for(const MetaData& md : v_md) { Q_UNUSED(md); m->changed_md << false; }
 
 	if( v_md.size() > 0)
 	{
@@ -276,7 +279,7 @@ void Editor::set_metadata(const MetaDataList& v_md)
 
 bool Editor::is_cover_supported(int idx) const
 {
-	return Util::is_cover_supported( m->v_md[idx].filepath() );
+	return Tagging::Covers::is_cover_supported( m->v_md[idx].filepath() );
 }
 
 bool Editor::can_load_entire_album() const
@@ -312,20 +315,13 @@ void Editor::apply_artists_and_albums_to_md()
 
 		MetaData& md = m->v_md[i];
 
-		ArtistId artist_id =		m->get_artist_id(md.artist());
-		AlbumId album_id =			m->get_album_id(md.album());
-
-		if(md.album_artist().isEmpty()){
-			md.set_album_artist(md.artist(), md.artist_id);
-		}
-
-		else {
-			ArtistId album_artist_id =	m->get_artist_id(md.album_artist());
-			md.set_album_artist_id(album_artist_id);
-		}
+		ArtistId artist_id =	m->get_artist_id(md.artist());
+		AlbumId album_id =		m->get_album_id(md.album());
+		ArtistId album_artist_id =	m->get_artist_id(md.album_artist());
 
 		md.album_id = album_id;
 		md.artist_id = artist_id;
+		md.set_album_artist_id(album_artist_id);
 	}
 }
 
@@ -354,6 +350,10 @@ bool Editor::has_cover_replacement(int idx) const
 	return m->cover_map.contains(idx);
 }
 
+void Editor::commit()
+{
+	this->start();
+}
 
 void Editor::run()
 {
@@ -381,7 +381,7 @@ void Editor::run()
 			continue;
 		}
 
-		bool success = Tagging::Util::setMetaDataOfFile(md);
+		bool success = Tagging::Utils::setMetaDataOfFile(md);
 		if( !success ) {
 			continue;
 		}
@@ -406,7 +406,7 @@ void Editor::run()
 
 		const MetaData& md = m->v_md[idx];
 
-		Tagging::Util::write_cover(md.filepath(), pm);
+		Tagging::Covers::write_cover(md.filepath(), pm);
 		if(n_operations > 5){
 			emit sig_progress( (i++ * 100) / n_operations);
 		}
@@ -431,11 +431,9 @@ void Editor::run()
 void Editor::thread_finished()
 {
 	ChangeNotifier::instance()->change_metadata(m->v_md_before_change, m->v_md_after_change);
+
+	emit sig_finished();
 }
 
-void Editor::commit()
-{
-	this->start();
-}
 
 

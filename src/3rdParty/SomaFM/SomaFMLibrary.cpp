@@ -29,6 +29,7 @@
 #include "Utils/Parser/StreamParser.h"
 #include "Utils/globals.h"
 #include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Logger/Logger.h"
 
 #include "Components/Playlist/PlaylistHandler.h"
 #include "Components/Covers/CoverLocation.h"
@@ -102,13 +103,11 @@ void SomaFM::Library::soma_website_fetched()
 			continue;
 		}
 
-		QString station_name = station.name();
-
-		bool loved = m->qsettings->value(station_name, false).toBool();
+		bool loved = m->qsettings->value(station.name(), false).toBool();
 
 		station.set_loved( loved );
 
-		m->station_map[station_name] = station;
+		m->station_map[station.name()] = station;
 		stations << station;
 	}
 

@@ -146,9 +146,9 @@ Album& Album::operator=(Album&& other)
 Album::~Album() {}
 
 
-const QString& Album::name() const
+QString Album::name() const
 {
-	return album_pool()[m->album_idx];
+	return album_pool().value(m->album_idx);
 }
 
 void Album::set_name(const QString& name)
@@ -157,7 +157,7 @@ void Album::set_name(const QString& name)
 
 	if(!album_pool().contains(hashed))
 	{
-		album_pool()[hashed] = name;
+		album_pool().insert(hashed, name);
 	}
 
 	m->album_idx = hashed;
@@ -169,7 +169,7 @@ QStringList Album::artists() const
 
 	for(const HashValue& v : m->artist_idxs)
 	{
-		lst << artist_pool()[v];
+		lst << artist_pool().value(v);
 	}
 
 	return lst;
@@ -185,7 +185,7 @@ void Album::set_artists(const QStringList& artists)
 
 		if(!artist_pool().contains(hashed))
 		{
-			artist_pool()[hashed] = artist;
+			artist_pool().insert(hashed, artist);
 		}
 
 		m->artist_idxs.push_back(hashed);
@@ -198,7 +198,7 @@ QStringList Album::album_artists() const
 
 	for(const HashValue& v : m->album_artist_idxs)
 	{
-		lst << artist_pool()[v];
+		lst << artist_pool().value(v);
 	}
 
 	return lst;
@@ -214,7 +214,7 @@ void Album::set_album_artists(const QStringList &album_artists)
 
 		if(!artist_pool().contains(hashed))
 		{
-			artist_pool()[hashed] = artist;
+			artist_pool().insert(hashed, artist);
 		}
 
 		m->album_artist_idxs.push_back(hashed);
@@ -279,12 +279,6 @@ Album AlbumList::first() const
 
 AlbumList& AlbumList::append_unique(const AlbumList& other)
 {
-	long long diff_cap = other.size() - (this->capacity() - this->size());
-	if(diff_cap > 0)
-	{
-		this->reserve(this->capacity() + diff_cap);
-	}
-
 	for(auto it = other.begin(); it != other.end(); it++)
 	{
 		if(!this->contains(it->id)){
@@ -294,7 +288,6 @@ AlbumList& AlbumList::append_unique(const AlbumList& other)
 
 	return *this;
 }
-
 
 void AlbumList::sort(Library::SortOrder so)
 {

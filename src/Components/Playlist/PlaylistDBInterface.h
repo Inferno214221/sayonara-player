@@ -21,8 +21,8 @@
 #ifndef PLAYLISTDBINTERFACE_H
 #define PLAYLISTDBINTERFACE_H
 
-#include <QObject>
 #include "Utils/Pimpl.h"
+#include <QObject>
 
 class MetaDataList;
 

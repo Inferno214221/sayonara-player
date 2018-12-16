@@ -61,6 +61,7 @@ namespace Library
 
 	public slots:
 		void reload();
+		void clear_cache();
 
 	protected:
 		void fill() override;

@@ -25,6 +25,7 @@
 #include "Components/Preferences/PreferenceRegistry.h"
 
 #include <QFont>
+#include <QPushButton>
 
 struct PreferenceAction::Private
 {
@@ -79,6 +80,8 @@ LibraryPreferenceAction::LibraryPreferenceAction(QWidget* parent) :
 	PreferenceAction(Lang::get(Lang::Library), identifier(), parent)
 {}
 
+LibraryPreferenceAction::~LibraryPreferenceAction() {}
+
 QString LibraryPreferenceAction::display_name() const
 {
 	return Lang::get(Lang::Library);
@@ -92,6 +95,8 @@ QString LibraryPreferenceAction::identifier() const
 PlaylistPreferenceAction::PlaylistPreferenceAction(QWidget* parent) :
 	PreferenceAction(Lang::get(Lang::Playlist), identifier(), parent)
 {}
+
+PlaylistPreferenceAction::~PlaylistPreferenceAction() {}
 
 
 QString PlaylistPreferenceAction::display_name() const
@@ -108,6 +113,8 @@ SearchPreferenceAction::SearchPreferenceAction(QWidget* parent) :
 	PreferenceAction(Lang::get(Lang::SearchNoun), identifier(), parent)
 {}
 
+SearchPreferenceAction::~SearchPreferenceAction() {}
+
 QString SearchPreferenceAction::display_name() const
 {
 	return Lang::get(Lang::SearchNoun);
@@ -119,8 +126,10 @@ QString SearchPreferenceAction::identifier() const
 }
 
 CoverPreferenceAction::CoverPreferenceAction(QWidget* parent) :
-	   PreferenceAction(Lang::get(Lang::Covers), identifier(), parent)
+	PreferenceAction(Lang::get(Lang::Covers), identifier(), parent)
 {}
+
+CoverPreferenceAction::~CoverPreferenceAction() {}
 
 QString CoverPreferenceAction::display_name() const
 {
@@ -136,6 +145,8 @@ PlayerPreferencesAction::PlayerPreferencesAction(QWidget* parent) :
 	PreferenceAction(Lang::get(Lang::Application), identifier(), parent)
 {}
 
+PlayerPreferencesAction::~PlayerPreferencesAction() {}
+
 QString PlayerPreferencesAction::display_name() const
 {
 	return Lang::get(Lang::Application);
@@ -149,6 +160,8 @@ QString PlayerPreferencesAction::identifier() const
 StreamRecorderPreferenceAction::StreamRecorderPreferenceAction(QWidget* parent) :
 	PreferenceAction(tr("Stream Recorder"), identifier(), parent)
 {}
+
+StreamRecorderPreferenceAction::~StreamRecorderPreferenceAction() {}
 
 QString StreamRecorderPreferenceAction::display_name() const
 {

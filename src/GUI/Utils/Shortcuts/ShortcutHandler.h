@@ -27,14 +27,11 @@
 #include "Utils/Settings/SayonaraClass.h"
 #include "Utils/Pimpl.h"
 
-#include <QList>
 #include <QShortcut>
 #include <QObject>
 
-class ShortcutWidget;
-class QString;
-class QStringList;
 class Shortcut;
+class ShortcutWidget;
 
 #define ShortcutPrivate private
 

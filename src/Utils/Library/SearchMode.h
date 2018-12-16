@@ -21,9 +21,9 @@
 #ifndef LIBRARYSEARCHMODE_H
 #define LIBRARYSEARCHMODE_H
 
-#include <QList>
-#include <QChar>
-
+template<typename T>
+class QList;
+class QChar;
 class QString;
 namespace Library
 {
@@ -40,9 +40,10 @@ namespace Library
 
 	using SearchModeMask = int;
 
-	namespace Util
+	namespace Utils
 	{
-		QString convert_search_string(const QString& str, SearchModeMask mode, const QList<QChar>& ignored_chars=QList<QChar>());
+		QString convert_search_string(const QString& str, SearchModeMask mode);
+		QString convert_search_string(const QString& str, SearchModeMask mode, const QList<QChar>& ignored_chars);
 	}
 }
 

@@ -42,6 +42,7 @@
 #include <QList>
 #include <QDir>
 #include <QFileInfo>
+#include <QCheckBox>
 
 using namespace Cover;
 
@@ -68,7 +69,7 @@ bool GUI_Covers::commit()
 	}
 
 	settings->set<Set::Cover_Server>(active_items);
-	settings->set<Set::Cover_LoadFromFile>(ui->cb_load_covers_from_file->isChecked());
+	settings->set<Set::Cover_FetchFromWWW>(ui->cb_fetch_covers_from_www->isChecked());
 
 	return true;
 }
@@ -101,7 +102,10 @@ void GUI_Covers::revert()
 		}
 	}
 
-	ui->cb_load_covers_from_file->setChecked(settings->get<Set::Cover_LoadFromFile>());
+	bool fetch_from_www = settings->instance()->get<Set::Cover_FetchFromWWW>();
+	ui->cb_fetch_covers_from_www->setChecked(fetch_from_www);
+
+	fetch_covers_www_triggered(fetch_from_www);
 
 	current_row_changed(ui->lv_cover_searchers->currentRow());
 }
@@ -127,6 +131,7 @@ void GUI_Covers::init_ui()
 	connect(ui->lv_cover_searchers, &QListWidget::currentRowChanged, this, &GUI_Covers::current_row_changed);
 	connect(ui->btn_delete_album_covers, &QPushButton::clicked, this, &GUI_Covers::delete_covers_from_db);
 	connect(ui->btn_delete_files, &QPushButton::clicked, this, &GUI_Covers::delete_cover_files);
+	connect(ui->cb_fetch_covers_from_www, &QCheckBox::toggled, this, &GUI_Covers::fetch_covers_www_triggered);
 
 	revert();
 }
@@ -171,5 +176,12 @@ void GUI_Covers::delete_covers_from_db()
 
 void GUI_Covers::delete_cover_files()
 {
-	::Util::File::remove_files_in_directory(Cover::Util::cover_directory());
+	::Util::File::remove_files_in_directory(Cover::Utils::cover_directory());
+}
+
+void GUI_Covers::fetch_covers_www_triggered(bool b)
+{
+	ui->lv_cover_searchers->setEnabled(b);
+	ui->btn_down->setEnabled(b);
+	ui->btn_up->setEnabled(b);
 }

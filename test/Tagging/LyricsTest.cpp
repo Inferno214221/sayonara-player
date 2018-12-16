@@ -1,5 +1,6 @@
 #include <QTest>
 #include "Utils/Tagging/Tagging.h"
+#include "Utils/Tagging/TaggingLyrics.h"
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaData.h"
 #include "AbstractTaggingTest.h"
@@ -22,10 +23,10 @@ void LyricsTest::run_test(const QString& filename)
 	QString read_lyrics;
 	QString lyrics = QString::fromUtf8("Those are söme lyrics фыва");
 	MetaData md(filename);
-    Tagging::Util::getMetaDataOfFile(md);
+	Tagging::Utils::getMetaDataOfFile(md);
 
-    bool wrote_lyrics = Tagging::Util::write_lyrics(md, lyrics);
-    bool extracted_lyrics = Tagging::Util::extract_lyrics(md, read_lyrics);
+	bool wrote_lyrics = Tagging::Lyrics::write_lyrics(md, lyrics);
+	bool extracted_lyrics = Tagging::Lyrics::extract_lyrics(md, read_lyrics);
 
 	QVERIFY(wrote_lyrics == true);
 	QVERIFY(extracted_lyrics == true);

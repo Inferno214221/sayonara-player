@@ -26,28 +26,28 @@
 #include "Utils/Pimpl.h"
 #include "Components/Engine/gstfwd.h"
 
-class QString;
-
 namespace StreamRecorder
 {
-    struct Data;
+	struct Data;
 }
 
 namespace Pipeline
 {
-    class StreamRecorderHandler
-    {
-        PIMPL(StreamRecorderHandler)
+	class StreamRecorderHandler
+	{
+		PIMPL(StreamRecorderHandler)
 
-    public:
-        StreamRecorderHandler();
-        virtual ~StreamRecorderHandler();
+	public:
+		StreamRecorderHandler();
+		virtual ~StreamRecorderHandler();
 
-        void set_streamrecorder_target_path(const QString& path);
-        StreamRecorder::Data* streamrecorder_data() const;
+		void init(GstElement* tee);
 
-        virtual GstElement* get_streamrecorder_sink_element() const=0;
-    };
+		void set_streamrecorder_target_path(const QString& path);
+		StreamRecorder::Data* streamrecorder_data() const;
+
+		virtual GstElement* get_streamrecorder_sink_element() const=0;
+	};
 }
 
 #endif // STREAMRECORDERHANDLER_H

@@ -30,6 +30,7 @@
 #include "Utils/Utils.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language.h"
+#include "Utils/Logger/Logger.h"
 
 #include <QPainter>
 #include <QMenu>
@@ -41,6 +42,7 @@ using CoverButtonBase=Gui::WidgetTemplate<QPushButton>;
 
 struct CoverButton::Private
 {
+	QString			hash;
 	Location		cover_location;
 	QPixmap			current_cover;
 	QString			class_tmp_file;
@@ -52,7 +54,7 @@ struct CoverButton::Private
 		current_cover(Location::invalid_location().cover_path()),
 		cover_forced(false)
 	{
-		class_tmp_file = Cover::Util::cover_directory("cb_" + Util::random_string(16) + ".jpg");
+		class_tmp_file = Cover::Utils::cover_directory("cb_" + Util::random_string(16) + ".jpg");
 	}
 
 	~Private()
@@ -101,6 +103,12 @@ void CoverButton::set_cover_image(const QPixmap& pm)
 
 void CoverButton::set_cover_location(const Location& cl)
 {
+	if(m->hash.size() > 0 && cl.hash() == m->hash){
+		return;
+	}
+
+	m->hash = cl.hash();
+
 	m->cover_location = cl;
 	m->cover_forced = false;
 
@@ -168,6 +176,7 @@ void CoverButton::alternative_cover_fetched(const Location& cl)
 		ChangeNotfier::instance()->shout();
 	}
 
+	m->hash = QString();
 	set_cover_image(cl.cover_path());
 }
 
@@ -184,10 +193,6 @@ void CoverButton::cover_lookup_finished(bool success)
 
 void CoverButton::force_cover(const QPixmap& pm)
 {
-	if(!_settings->get<Set::Cover_LoadFromFile>()){
-		return;
-	}
-
 	this->setToolTip(tr("Cover source: Audio file"));
 
 	m->current_cover = pm;

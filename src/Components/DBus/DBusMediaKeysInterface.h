@@ -22,8 +22,9 @@
 #define DBUSMEDIAKEYSINTERFACE_H
 
 #include <QDBusPendingCallWatcher>
-#include "Utils/Pimpl.h"
 #include <QDBusPendingReply>
+
+#include "Utils/Pimpl.h"
 
 class DBusMediaKeysInterface :
 		public QObject

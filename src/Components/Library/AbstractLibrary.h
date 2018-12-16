@@ -24,25 +24,17 @@
 
 #include "Utils/Library/LibraryNamespaces.h"
 #include "Utils/Library/Filter.h"
+#include "Utils/Library/Sorting.h"
 #include "Utils/Settings/SayonaraClass.h"
 #include "Utils/Pimpl.h"
-#include "Utils/Set.h"
-
-#include "Utils/MetaData/Artist.h"
-#include "Utils/MetaData/Album.h"
-#include "Utils/MetaData/MetaDataList.h"
-
-#include "Utils/Library/Sorting.h"
 
 #include <QFile>
 
 #define prepare_tracks_for_playlist_files static_cast<void (AbstractLibrary::*) (const QStringList&)>(&AbstractLibrary::psl_prepare_tracks_for_playlist)
 #define prepare_tracks_for_playlist_idxs static_cast<void (AbstractLibrary::*) (const IdxList&)>(&AbstractLibrary::psl_prepare_tracks_for_playlist)
 
-namespace Tagging
-{
-	class Editor;
-}
+class Genre;
+class ExtensionSet;
 
 class AbstractLibrary :
 		public QObject,
@@ -61,20 +53,31 @@ public:
 	// calls fetch_by_filter and emits
 	void change_filter(Library::Filter, bool force=false);
 
-	const MetaDataList& tracks() const;
-	const AlbumList& albums() const;
-	const ArtistList& artists() const;
-	const MetaDataList& current_tracks() const;
 
-	const SP::Set<TrackID>& selected_tracks() const;
-	const SP::Set<AlbumId>& selected_albums() const;
-	const SP::Set<ArtistId>& selected_artists() const;
+	const MetaDataList&			tracks() const;
+	const AlbumList&			albums() const;
+	const ArtistList&			artists() const;
+	/**
+	 * @brief current selected tracks
+	 * @return if no track is selected, return all tracks
+	 */
+	const MetaDataList&			current_tracks() const;
+
+	const Util::Set<TrackID>&		selected_tracks() const;
+	const Util::Set<AlbumId>&		selected_albums() const;
+	const Util::Set<ArtistId>&		selected_artists() const;
+
+	// emits new tracks, very similar to psl_selected_albums_changed
+	void change_current_disc(Disc disc);
 
 	bool is_loaded() const;
 
+	void set_extensions(const ExtensionSet& extensions);
+	ExtensionSet extensions() const;
+
 signals:
 	void sig_track_mime_data_available();
-	void sig_all_tracks_loaded ();
+	void sig_all_tracks_loaded();
 	void sig_all_albums_loaded();
 	void sig_all_artists_loaded();
 
@@ -138,19 +141,11 @@ public slots:
 	virtual void import_files(const QStringList& files);
 
 	/* write new rating to database */
-	virtual void change_track_rating(int idx, Rating rating);
 	virtual void change_album_rating(int idx, Rating rating);
 
 	virtual void change_track_sortorder(Library::SortOrder s);
 	virtual void change_album_sortorder(Library::SortOrder s);
 	virtual void change_artist_sortorder(Library::SortOrder s);
-
-	virtual void add_genre(const IdSet ids, const Genre& genre);
-	virtual void delete_genre(const Genre& genre);
-	virtual void rename_genre(const Genre& genre, const Genre& new_genre);
-
-	virtual void merge_artists(const IdSet& source_ids, ArtistId target_id);
-	virtual void merge_albums(const IdSet& source_ids, AlbumId target_id);
 
 	/* Check for current selected artist if out of date and
 	 * fetch new data */
@@ -182,12 +177,9 @@ protected:
 	virtual void		update_tracks(const MetaDataList& v_md);
 	virtual void		update_album(const Album& album)=0;
 
-	Tagging::Editor*      tag_edit();
-
-
-	MetaDataList        _tracks;
-	AlbumList			_albums;
-	ArtistList			_artists;
+	void				prepare_tracks();
+	void				prepare_albums();
+	void				prepare_artists();
 
 
 private:

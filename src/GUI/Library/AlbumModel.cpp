@@ -226,20 +226,19 @@ int AlbumModel::rowCount(const QModelIndex&) const
 }
 
 
-Qt::ItemFlags AlbumModel::flags(const QModelIndex & index) const
+Qt::ItemFlags AlbumModel::flags(const QModelIndex& index) const
 {
 	if (!index.isValid()) {
 		return Qt::ItemIsEnabled;
 	}
 
 	int col = index.column();
-
 	if(col == (int) ColumnIndex::Album::Rating)
 	{
-		return (QAbstractTableModel::flags(index) | Qt::ItemIsEditable);
+		return (ItemModel::flags(index) | Qt::ItemIsEditable);
 	}
 
-	return QAbstractTableModel::flags(index);
+	return ItemModel::flags(index);
 }
 
 
@@ -249,7 +248,7 @@ int AlbumModel::searchable_column() const
 }
 
 
-const SP::Set<Id>& AlbumModel::selections() const
+const Util::Set<Id>& AlbumModel::selections() const
 {
 	return library()->selected_albums();
 }

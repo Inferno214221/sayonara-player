@@ -22,15 +22,9 @@
 #define COVERLOCATION_H
 
 #include <QMetaType>
-#include <QMap>
 #include "Utils/Pimpl.h"
 
 class QUrl;
-class QString;
-class QStringList;
-class MetaData;
-class Album;
-class Artist;
 
 namespace Cover
 {

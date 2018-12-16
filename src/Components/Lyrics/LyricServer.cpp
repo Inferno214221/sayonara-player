@@ -31,54 +31,54 @@ void ServerTemplate::addReplacement(const QString& rep, const QString& rep_with)
 
 void ServerTemplate::print_xml() const
 {
-	sp_log(Log::Info) << "<ServerTemplate>";
-	sp_log(Log::Info) << "  <name>\"" << display_str << "\"</name>";
-	sp_log(Log::Info) << "  <server_address>\"" << server_address << "\"</server_address>";
-	sp_log(Log::Info) << "  <call_policy>\"" << call_policy << "\"</call_policy>";
+	sp_log(Log::Info, this) << "<ServerTemplate>";
+	sp_log(Log::Info, this) << "  <name>\"" << display_str << "\"</name>";
+	sp_log(Log::Info, this) << "  <server_address>\"" << server_address << "\"</server_address>";
+	sp_log(Log::Info, this) << "  <call_policy>\"" << call_policy << "\"</call_policy>";
 	/*sp_log(Log::Info) << "  <start_tag>\"" << start_tag << "\"</start_tag>";
 	sp_log(Log::Info) << "  <end_tag>\"" << end_tag << "\"</end_tag>";*/
-	sp_log(Log::Info) << "  <include_start_tag>" << (include_start_tag ? STR_TRUE : STR_FALSE) << "</include_start_tag>";
-	sp_log(Log::Info) << "  <include_end_tag>" << (include_end_tag ? STR_TRUE : STR_FALSE) << "</include_end_tag>";
-	sp_log(Log::Info) << "  <is_numeric>" << (is_numeric ? STR_TRUE : STR_FALSE) << "</is_numeric>";
-	sp_log(Log::Info) << "  <to_lower>" << (to_lower ? STR_TRUE : STR_FALSE) << "</to_lower>";
-	sp_log(Log::Info) << "  <error>\"" << error << "\"</error>";
+	sp_log(Log::Info, this) << "  <include_start_tag>" << (include_start_tag ? STR_TRUE : STR_FALSE) << "</include_start_tag>";
+	sp_log(Log::Info, this) << "  <include_end_tag>" << (include_end_tag ? STR_TRUE : STR_FALSE) << "</include_end_tag>";
+	sp_log(Log::Info, this) << "  <is_numeric>" << (is_numeric ? STR_TRUE : STR_FALSE) << "</is_numeric>";
+	sp_log(Log::Info, this) << "  <to_lower>" << (to_lower ? STR_TRUE : STR_FALSE) << "</to_lower>";
+	sp_log(Log::Info, this) << "  <error>\"" << error << "\"</error>";
 
 	for(auto it=replacements.cbegin(); it!=replacements.cend(); it++)
 	{
-		sp_log(Log::Info) << "  <replacement>";
-		sp_log(Log::Info) << "    <from>\"" << it.key() << "\"</from>";
-		sp_log(Log::Info) << "    <to>\"" << it.value() << "\"</to>";
-		sp_log(Log::Info) << "  </replacement>";
+		sp_log(Log::Info, this) << "  <replacement>";
+		sp_log(Log::Info, this) << "    <from>\"" << it.key() << "\"</from>";
+		sp_log(Log::Info, this) << "    <to>\"" << it.value() << "\"</to>";
+		sp_log(Log::Info, this) << "  </replacement>";
 	}
 
-	sp_log(Log::Info) << "</ServerTemplate>";
+	sp_log(Log::Info, this) << "</ServerTemplate>";
 }
 
 void ServerTemplate::print_json() const
 {
-	sp_log(Log::Info) << "  {";
-	sp_log(Log::Info) << "    \"ServerName\": \"" + display_str + "\",";
-	sp_log(Log::Info) << "    \"ServerAddress\": \"" + server_address + "\",";
-	sp_log(Log::Info) << "    \"CallPolicy\": \"" + call_policy + "\",";
-	sp_log(Log::Info) << "    \"IncludeStartTag\": " + QString::number(include_start_tag) + ",";
-	sp_log(Log::Info) << "    \"IncludeEndTag\": " + QString::number(include_end_tag) + ",";
-	sp_log(Log::Info) << "    \"IsNumeric\": " + QString::number(is_numeric) + ",";
-	sp_log(Log::Info) << "    \"ToLower\": " + QString::number(to_lower) + ",";
-	sp_log(Log::Info) << "    \"Error\": \"" + error + "\",";
+	sp_log(Log::Info, this) << "  {";
+	sp_log(Log::Info, this) << "    \"ServerName\": \"" + display_str + "\",";
+	sp_log(Log::Info, this) << "    \"ServerAddress\": \"" + server_address + "\",";
+	sp_log(Log::Info, this) << "    \"CallPolicy\": \"" + call_policy + "\",";
+	sp_log(Log::Info, this) << "    \"IncludeStartTag\": " + QString::number(include_start_tag) + ",";
+	sp_log(Log::Info, this) << "    \"IncludeEndTag\": " + QString::number(include_end_tag) + ",";
+	sp_log(Log::Info, this) << "    \"IsNumeric\": " + QString::number(is_numeric) + ",";
+	sp_log(Log::Info, this) << "    \"ToLower\": " + QString::number(to_lower) + ",";
+	sp_log(Log::Info, this) << "    \"Error\": \"" + error + "\",";
 
-	sp_log(Log::Info) << "    \"Replacements\": [";
+	sp_log(Log::Info, this) << "    \"Replacements\": [";
 
 	for(auto it=replacements.cbegin(); it!=replacements.cend(); it++)
 	{
-		sp_log(Log::Info) << "      {";
-		sp_log(Log::Info) << "        \"OrgString\": \"" + it.key() + "\",";
-		sp_log(Log::Info) << "        \"RepString\": \"" + it.value() + "\"";
-		sp_log(Log::Info) << "      },";
+		sp_log(Log::Info, this) << "      {";
+		sp_log(Log::Info, this) << "        \"OrgString\": \"" + it.key() + "\",";
+		sp_log(Log::Info, this) << "        \"RepString\": \"" + it.value() + "\"";
+		sp_log(Log::Info, this) << "      },";
 	}
 
-	sp_log(Log::Info) << "    ]";
+	sp_log(Log::Info, this) << "    ]";
 
-	sp_log(Log::Info) << "    \"BorderTags\": [";
+	sp_log(Log::Info, this) << "    \"BorderTags\": [";
 	for(auto it=start_end_tag.cbegin(); it != start_end_tag.cend(); it++)
 	{
 		QString key = it.key();
@@ -86,12 +86,12 @@ void ServerTemplate::print_json() const
 		QString value = it.value();
 		value.replace("\"", "\\\"");
 
-		sp_log(Log::Info) << "      {";
-		sp_log(Log::Info) << "        \"StartTag\": \"" + key + "\",";
-		sp_log(Log::Info) << "        \"EndTag\": \"" + value + "\"";
-		sp_log(Log::Info) << "      },";
+		sp_log(Log::Info, this) << "      {";
+		sp_log(Log::Info, this) << "        \"StartTag\": \"" + key + "\",";
+		sp_log(Log::Info, this) << "        \"EndTag\": \"" + value + "\"";
+		sp_log(Log::Info, this) << "      },";
 	}
 
-	sp_log(Log::Info) << "    ]";
-	sp_log(Log::Info) << "  }";
+	sp_log(Log::Info, this) << "    ]";
+	sp_log(Log::Info, this) << "  }";
 }

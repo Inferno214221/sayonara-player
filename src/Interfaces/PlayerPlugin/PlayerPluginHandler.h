@@ -22,11 +22,10 @@
 #define PLAYERPLUGINHANDLER_H
 
 #include "Utils/Settings/SayonaraClass.h"
-#include "Utils/Pimpl.h"
 #include "Utils/Singleton.h"
+#include "Utils/Pimpl.h"
 
 #include <QObject>
-#include <QList>
 
 namespace PlayerPlugin
 {
