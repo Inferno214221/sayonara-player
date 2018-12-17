@@ -154,7 +154,7 @@
     <message>
         <location filename="../GUI/Covers/GUI_AlternativeCovers.cpp" line="227"/>
         <source>Cover web search is not enabled</source>
-        <translation type="unfinished"/>
+        <translation>La recherche de pochette sur le Web est désactivée</translation>
     </message>
     <message>
         <location filename="../GUI/Covers/GUI_AlternativeCovers.cpp" line="307"/>
@@ -168,7 +168,7 @@
         <location filename="../GUI/Plugins/AudioConverter/GUI_AudioConverter.ui" line="45"/>
         <location filename="../GUI/Plugins/AudioConverter/GUI_AudioConverter.cpp" line="261"/>
         <source>Start</source>
-        <translation type="unfinished"/>
+        <translation>Démarrer</translation>
     </message>
     <message>
         <location filename="../GUI/Plugins/AudioConverter/GUI_AudioConverter.ui" line="75"/>
@@ -178,7 +178,7 @@
     <message>
         <location filename="../GUI/Plugins/AudioConverter/GUI_AudioConverter.ui" line="99"/>
         <source>#Threads</source>
-        <translation type="unfinished"/>
+        <translation>#Threads</translation>
     </message>
     <message>
         <location filename="../GUI/Plugins/AudioConverter/GUI_AudioConverter.ui" line="138"/>
@@ -195,44 +195,44 @@
     <message>
         <location filename="../GUI/Plugins/AudioConverter/GUI_AudioConverter.cpp" line="121"/>
         <source>Threads</source>
-        <translation type="unfinished"/>
+        <translation>Threads</translation>
     </message>
     <message>
         <location filename="../GUI/Plugins/AudioConverter/GUI_AudioConverter.cpp" line="148"/>
         <location filename="../GUI/Plugins/AudioConverter/GUI_AudioConverter.cpp" line="256"/>
         <source>Cannot find encoder</source>
-        <translation type="unfinished"/>
+        <translation>Encodeur introuvable</translation>
     </message>
     <message>
         <location filename="../GUI/Plugins/AudioConverter/GUI_AudioConverter.cpp" line="158"/>
         <location filename="../GUI/Plugins/AudioConverter/GUI_AudioConverter.cpp" line="172"/>
         <source>Playlist does not contain tracks which are supported by the converter</source>
-        <translation type="unfinished"/>
+        <translation>La liste de lecture ne contient aucune piste prise en charge par le convertisseur.</translation>
     </message>
     <message>
         <location filename="../GUI/Plugins/AudioConverter/GUI_AudioConverter.cpp" line="163"/>
         <source>No track will be converted.</source>
-        <translation type="unfinished"/>
+        <translation>Aucune piste ne sera convertie.</translation>
     </message>
     <message>
         <location filename="../GUI/Plugins/AudioConverter/GUI_AudioConverter.cpp" line="177"/>
         <source>These tracks will be ignored</source>
-        <translation type="unfinished"/>
+        <translation>Ces pistes seront ignorées.</translation>
     </message>
     <message>
         <location filename="../GUI/Plugins/AudioConverter/GUI_AudioConverter.cpp" line="212"/>
         <source>Failed to convert %1 tracks</source>
-        <translation type="unfinished"/>
+        <translation>Échec de la conversion de %1 piste(s)</translation>
     </message>
     <message>
         <location filename="../GUI/Plugins/AudioConverter/GUI_AudioConverter.cpp" line="213"/>
         <source>Please check the log files</source>
-        <translation type="unfinished"/>
+        <translation>Veuillez consulter les fichiers journaux</translation>
     </message>
     <message>
         <location filename="../GUI/Plugins/AudioConverter/GUI_AudioConverter.cpp" line="220"/>
         <source>Successfully finished</source>
-        <translation type="unfinished"/>
+        <translation>Terminé avec succès</translation>
     </message>
 </context>
 <context>
@@ -369,7 +369,7 @@
     <message>
         <location filename="../GUI/Preferences/Covers/GUI_Covers.ui" line="91"/>
         <source>Fetch covers from the internet</source>
-        <translation type="unfinished"/>
+        <translation>Récupérer les pochettes sur Internet</translation>
     </message>
 </context>
 <context>
@@ -1883,12 +1883,12 @@
     <message>
         <location filename="../Utils/Language.cpp" line="180"/>
         <source>File type</source>
-        <translation type="unfinished"/>
+        <translation>Type de fichier</translation>
     </message>
     <message>
         <location filename="../Utils/Language.cpp" line="182"/>
         <source>Filter</source>
-        <translation type="unfinished"/>
+        <translation>Filtre</translation>
     </message>
     <message>
         <location filename="../Utils/Language.cpp" line="184"/>
@@ -2023,7 +2023,7 @@
     <message>
         <location filename="../Utils/Language.cpp" line="239"/>
         <source>Live Search</source>
-        <translation type="unfinished"/>
+        <translation>Recherche instantanée</translation>
     </message>
     <message>
         <location filename="../Utils/Language.cpp" line="241"/>
@@ -2606,7 +2606,7 @@
     <message>
         <location filename="../GUI/Utils/ContextMenu/LibraryContextMenu.cpp" line="381"/>
         <source>The toolbar is visible when there are tracks with differing file types listed in the track view</source>
-        <translation type="unfinished"/>
+        <translation>La barre d&apos;outils s&apos;affiche lorsque des pistes aux types de fichier différents se trouvent dans l&apos;affichage des pistes.</translation>
     </message>
 </context>
 <context>
@@ -2663,7 +2663,7 @@
     <message>
         <location filename="../GUI/Player/GUI_PlayerMenubar.cpp" line="386"/>
         <source>FAQ</source>
-        <translation type="unfinished"/>
+        <translation>FAQ</translation>
     </message>
     <message>
         <location filename="../GUI/Player/GUI_PlayerMenubar.cpp" line="406"/>
@@ -2688,7 +2688,7 @@
     <message>
         <location filename="../GUI/Player/GUI_PlayerMenubar.cpp" line="426"/>
         <source>Special tanks to all the brave translators</source>
-        <translation type="unfinished"/>
+        <translation>Un remerciement particulier à tous les braves traducteurs</translation>
     </message>
 </context>
 <context>
@@ -2719,7 +2719,7 @@
     <message>
         <location filename="../GUI/Playlist/PlaylistContextMenu.cpp" line="140"/>
         <source>Jump to current track</source>
-        <translation type="unfinished"/>
+        <translation>Aller à la piste actuelle</translation>
     </message>
 </context>
 <context>
