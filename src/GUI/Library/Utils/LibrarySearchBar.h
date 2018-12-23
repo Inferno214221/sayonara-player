@@ -32,7 +32,7 @@ namespace Library
 
 		protected:
 			void init_context_menu();
-			void keyPressEvent(QKeyEvent* e);
+			void keyPressEvent(QKeyEvent* e) override;
 			void language_changed() override;
 			void skin_changed() override;
 

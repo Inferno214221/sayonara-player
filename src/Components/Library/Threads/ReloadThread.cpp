@@ -57,18 +57,19 @@ struct ReloadThread::Private
 {
 	QString					library_path;
 	MetaDataList			v_md;
-	LibraryId				library_id;
-	Library::ReloadQuality	quality;
 
 	DB::Connector*			db=nullptr;
+	Library::ReloadQuality	quality;
+	LibraryId				library_id;
 
 	bool					paused;
 	bool					running;
 	bool					may_run;
 
 	Private() :
-		quality(Library::ReloadQuality::Fast),
 		db(DB::Connector::instance()),
+		quality(Library::ReloadQuality::Fast),
+		library_id(-1),
 		paused(false),
 		running(false),
 		may_run(true)

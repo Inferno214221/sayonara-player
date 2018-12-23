@@ -219,6 +219,8 @@ QString ShortcutHandler::shortcut_text(ShortcutIdentifier identifier) const
 			return Lang::get(Lang::VolumeDown);
 		case ShortcutIdentifier::VolUp:
 			return Lang::get(Lang::VolumeUp);
+		case ShortcutIdentifier::ReloadLibrary:
+			return Lang::get(Lang::ReloadLibrary);
 		default:
 			return QString();
 	}

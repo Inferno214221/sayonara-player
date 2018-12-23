@@ -23,7 +23,7 @@
    <item row="10" column="0" colspan="2">
     <widget class="QStackedWidget" name="sw_progress">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="page_4">
       <layout class="QGridLayout" name="gridLayout_5">
@@ -103,7 +103,7 @@
    <item row="6" column="0" colspan="2">
     <widget class="QStackedWidget" name="sw_preferences">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="page">
       <layout class="QGridLayout" name="gridLayout_2">
@@ -158,36 +158,36 @@
        <item row="0" column="1">
         <widget class="Gui::ComboBox" name="combo_cbr">
          <property name="currentText">
-          <string>320</string>
+          <string notr="true">320</string>
          </property>
          <item>
           <property name="text">
-           <string>320</string>
+           <string notr="true">320</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>256</string>
+           <string notr="true">256</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>192</string>
+           <string notr="true">192</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>160</string>
+           <string notr="true">160</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>128</string>
+           <string notr="true">128</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>96</string>
+           <string notr="true">96</string>
           </property>
          </item>
         </widget>
@@ -241,19 +241,22 @@
    </item>
    <item row="5" column="0" colspan="2">
     <widget class="Gui::ComboBox" name="combo_codecs">
+     <property name="currentText">
+      <string notr="true">Ogg Vorbis</string>
+     </property>
      <item>
       <property name="text">
-       <string>Ogg Vorbis</string>
+       <string notr="true">Ogg Vorbis</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>MP3 (CBR)</string>
+       <string notr="true">MP3 (CBR)</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>MP3 (VBR)</string>
+       <string notr="true">MP3 (VBR)</string>
       </property>
      </item>
     </widget>

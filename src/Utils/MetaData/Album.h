@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _ALBUM_H_
-#define _ALBUM_H_
+#ifndef HEADER_ALBUM_H_
+#define HEADER_ALBUM_H_
 
 #include "Utils/MetaData/LibraryItem.h"
 #include "Utils/Library/Sortorder.h"
@@ -97,9 +97,9 @@ public:
 	AlbumList& append_unique(const AlbumList& other);
 	AlbumList& append_unique(AlbumList&& other);
 
-	void sort(Library::SortOrder so);
+	void sort(::Library::SortOrder so);
 };
 
-#endif
+#endif //HEADER_ALBUM_H_
 
 

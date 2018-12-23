@@ -43,11 +43,12 @@ NEW_TEST(Helper/MetaDataListTest.cpp)
 NEW_TEST(Helper/LanguageKeyTest.cpp)
 NEW_TEST(Helper/MetaDataTest.cpp)
 NEW_TEST(Helper/SettingsTest.cpp)
-
+NEW_TEST(Shortcuts/ShortcutIdentifierTest.cpp)
 NEW_TEST(StreamRecorder/StreamRecorderUtilsTest.cpp)
 NEW_TEST(StreamRecorder/StreamRecorderTest.cpp)
 NEW_TEST(Tagging/LyricsTest.cpp ${RESOURCES_RCC} Tagging/AbstractTaggingTest.cpp)
 NEW_TEST(Tagging/AlbumArtistTest.cpp ${RESOURCES_RCC} Tagging/AbstractTaggingTest.cpp)
 NEW_TEST(Tagging/DiscnumberTest.cpp ${RESOURCES_RCC} Tagging/AbstractTaggingTest.cpp)
 NEW_TEST(Tagging/RatingTest.cpp ${RESOURCES_RCC} Tagging/AbstractTaggingTest.cpp)
+
 

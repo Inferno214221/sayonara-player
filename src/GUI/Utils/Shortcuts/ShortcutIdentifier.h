@@ -26,7 +26,7 @@
 
 enum ShortcutIdentifier
 {
-	AddTab,
+	AddTab=0,
 	AlbumArtists,
 	Append,
 	ClosePlugin,
