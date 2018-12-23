@@ -146,7 +146,7 @@ MetaDataList DirectoryReader::metadata_from_filelist(const QStringList& lst)
 	{
 		if( it->id >= 0 )
 		{
-			continue;
+				continue;
 		}
 
 		it->is_extern = true;

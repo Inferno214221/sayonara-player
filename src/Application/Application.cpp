@@ -138,6 +138,8 @@ struct Application::Private
 
 	Private(Application* app)
 	{
+		Q_UNUSED(app)
+
 		metatype_registry = new MetaTypeRegistry();
 		qRegisterMetaType<uint64_t>("uint64_t");
 
