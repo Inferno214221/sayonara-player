@@ -43,17 +43,29 @@ namespace Cover
 		void set_valid(bool b);
 		void set_identifier(const QString& identifier);
 		void set_cover_path(const QString& cover_path);
+		void set_local_path_hint(const QString& base_path);
+
+		/**
+		 * @brief Set hash manually. You should never call this function
+		 * @param str
+		 */
+		void			set_hash(const QString& str);
+
+		/**
+		 * @brief Set the audio file source manually. You should not
+		 * use this function from the outside
+		 * @param audio_file_source
+		 * @param cover_path
+		 * @return true if everything is alright with audio_filesource oder cover_path (not empty)
+		 */
+		bool			set_audio_file_source(const QString& audio_filesource, const QString& cover_path);
 
 
 	public:
-		enum CoverSourceType
-		{
-			Invalid=0,
-			SayonaraCoverDir,
-			LocalPath,
-			AudioFile
-		};
-
+		/**
+		 * @brief Default constructor. Creates an invalid Location with
+		 * the Sayonara logo as cover
+		 */
 		Location();
 		~Location();
 		Location(const Location& cl);
@@ -73,7 +85,6 @@ namespace Cover
 		 */
 		static bool is_invalid(const QString& cover_path);
 
-	//	CoverSourceType get_cover_source_type() const;
 
 		/**
 		 * @brief Returns the standard cover path in the .Sayonara
@@ -95,6 +106,14 @@ namespace Cover
 		 */
 		const QStringList& search_urls() const;
 
+		/**
+		 * @brief Search urls contains urls from
+		 * Google, Discogs or Audioscrobbler. They are
+		 * ordered as configured in the Cover preferences
+		 * Dialog
+		 * @param idx
+		 * @return
+		 */
 		QString search_url(int idx) const;
 
 		/**
@@ -117,11 +136,31 @@ namespace Cover
 		 */
 		void			set_search_term(const QString& search_term);
 
+		/**
+		 * @brief Set a new search term for a specific cover fetcher
+		 * Cover fetcher strings can be found in the Cover::Fetcher::Base implementations
+		 * by calling Cover::Fetcher::Base::keyword()
+		 * @param search_term A searchterm suitable for the specific Cover::Fetcher::Base.
+		 * For example "Master of puppets Metallica"
+		 * @param cover_fetcher_identifier
+		 */
 		void			set_search_term(const QString& search_term,
 										const QString& cover_fetcher_identifier);
 
+		/**
+		 * @brief Set urls where to look for Covers in the internet
+		 * @param urls
+		 */
 		void			set_search_urls(const QStringList& urls);
 
+		/**
+		 * @brief When enabling freetext search you specify the
+		 * search string yourself and it is not generated automatically
+		 * as usually. Usually, search APIs of a provider have special
+		 * reserved fields for albums and artist which are populated
+		 * automatically by Sayonara.
+		 * @param b
+		 */
 		void			enable_freetext_search(bool b);
 		bool			is_freetext_search_enabled() const;
 
@@ -131,19 +170,52 @@ namespace Cover
 		 */
 		QString			to_string() const;
 
+		/**
+		 * @brief Every combination of album and artist will result
+		 * in a specific hash. You can find those hashes in the database,
+		 * for example.
+		 * @return
+		 */
 		QString			hash() const;
-		void			set_hash(const QString& str);
 
-
+		/**
+		 * @brief Indicates if it is possible to fetch the cover
+		 * directly from the audio file. If you call this method
+		 * very often for albums this may end up in poor performance
+		 * @return
+		 */
 		bool			has_audio_file_source() const;
+
+		/**
+		 * @brief Returns the path to the music file where a cover
+		 * is stored. You can extract the cover by using
+		 * Tagging::Covers::extract_cover
+		 * @return
+		 */
 		QString			audio_file_source() const;
+
+		/**
+		 * @brief When retrieving the audio_file_source, and you want
+		 * to save it afterwards, store it at the place returned by
+		 * this method. So Cover::Lookup will find it. Also see hash()
+		 * @return
+		 */
 		QString			audio_file_target() const;
-		bool			set_audio_file_source(const QString& audio_file_source, const QString& cover_path);
 
 
+		/**
+		 * @brief Get the path of an audio file where a cover is stored
+		 * in the same directory
+		 * @return
+		 */
 		QString			local_path_hint() const;
-		void			set_local_path_hint(const QString& base_path);
 
+
+		/**
+		 * @brief Use this to retrieve a filepath where a copy of the
+		 * cover is stored.
+		 * @return
+		 */
 		QString			preferred_path() const;
 
 

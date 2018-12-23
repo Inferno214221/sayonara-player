@@ -116,7 +116,7 @@ void AlternativeLookup::start_text_search(const QString& search_term)
 	go(cl);
 }
 
-void AlternativeLookup::start_text_search(const QString& search_term, const QString &cover_fetcher_identifier)
+void AlternativeLookup::start_text_search(const QString& search_term, const QString& cover_fetcher_identifier)
 {
 	Location cl = m->cover_location;
 	cl.set_search_term(search_term, cover_fetcher_identifier);

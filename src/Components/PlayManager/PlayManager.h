@@ -58,6 +58,10 @@ signals:
 	 */
 	void sig_next();
 
+	/**
+	 * @brief This signal is sent when the playstate changed
+	 * from stopped to play
+	 */
 	void sig_wake_up();
 
 	/**
@@ -265,14 +269,30 @@ public slots:
 	 */
 	void set_muted(bool b);
 
+	/**
+	 * @brief If already muted, then unmute. If unmuted, then mute it
+	 */
 	void toggle_mute();
 
-
+	/**
+	 * @brief Change the current MetaData object. This may happen
+	 * if the current track is edited while playing
+	 * @param md
+	 */
 	void change_metadata(const MetaData& md);
 
-
+	/**
+	 * @brief Change the duration. This is usually called when
+	 * the Engine sends a duration changed signal. You should
+	 * not use this
+	 * @param ms
+	 */
 	void change_duration(MilliSeconds ms);
 
+	/**
+	 * @brief Some playback error occured
+	 * @param message
+	 */
 	void error(const QString& message);
 
 public:
@@ -320,6 +340,9 @@ public:
 	bool		is_muted() const;
 
 
+	/**
+	 * @brief Shutdown the computer
+	 */
 	void		shutdown();
 };
 

@@ -53,7 +53,7 @@ namespace Cover
 	public:
 
 		Lookup(QObject* parent=nullptr, int n_covers=1);
-		~Lookup();
+		~Lookup() override;
 
 		/**
 		 * @brief fetches cover for a CoverLocation.
@@ -66,16 +66,41 @@ namespace Cover
 		bool fetch_cover(const Location& cl, bool also_www=true);
 
 		/**
-		 * @brief not implemented
+		 * @brief Stop the Cover::FetchThread if running and
+		 * retrieve the sig_finished signal
+		 * If no Cover::FetchThread is running, nothing will happen
 		 */
 		void stop() override;
 
+		/**
+		 * @brief indicates if the Cover::FetchThread is running
+		 * @return
+		 */
 		bool is_thread_running() const;
 
+		/**
+		 * @brief Set some custom data you can retrieve later
+		 * @param data
+		 */
 		void set_user_data(void* data);
+
+		/**
+		 * @brief Fetch your custom data again
+		 * @return
+		 */
 		void* take_user_data();
 
+		/**
+		 * @brief Get a copy of all pixmaps that where fetched
+		 * @return
+		 */
 		QList<QPixmap> pixmaps() const;
+
+		/**
+		 * @brief Get all pixmaps that where fetched and remove them
+		 * from Cover::Lookup
+		 * @return
+		 */
 		QList<QPixmap> take_pixmaps();
 
 
