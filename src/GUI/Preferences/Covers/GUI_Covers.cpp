@@ -77,32 +77,30 @@ bool GUI_Covers::commit()
 void GUI_Covers::revert()
 {
 	Settings* settings = Settings::instance();
+	Cover::Fetcher::Manager* cfm = Cover::Fetcher::Manager::instance();
 
 	QStringList cover_servers = settings->get<Set::Cover_Server>();
 
-	Cover::Fetcher::Manager* cfm = Cover::Fetcher::Manager::instance();
-	QList<Cover::Fetcher::Base*> cover_fetchers = cfm->coverfetchers();
-
-	if(cover_servers.size() != cover_fetchers.size())
-	{
-		cover_servers.clear();
-		for(const Cover::Fetcher::Base* b : cover_fetchers)
-		{
-			cover_servers << b->keyword();
-		}
-	}
-
 	ui->lv_cover_searchers->clear();
 
-	for(const QString& cover_server : cover_servers)
+	QList<Cover::Fetcher::Base*> cover_fetchers = cfm->coverfetchers();
+	for(const Cover::Fetcher::Base* b : cover_fetchers)
 	{
-		if(!cover_server.isEmpty())
-		{
-			ui->lv_cover_searchers->addItem(cover_server);
+		QString name = b->keyword();
+		if(name.trimmed().isEmpty()) {
+			continue;
+		}
+
+		if(cover_servers.contains(name)) {
+			ui->lv_cover_searchers->addItem(name);
+		}
+
+		else {
+			ui->lv_cover_searchers_inactive->addItem(name);
 		}
 	}
 
-	bool fetch_from_www = settings->instance()->get<Set::Cover_FetchFromWWW>();
+	bool fetch_from_www = settings->get<Set::Cover_FetchFromWWW>();
 	ui->cb_fetch_covers_from_www->setChecked(fetch_from_www);
 
 	fetch_covers_www_triggered(fetch_from_www);
@@ -132,6 +130,8 @@ void GUI_Covers::init_ui()
 	connect(ui->btn_delete_album_covers, &QPushButton::clicked, this, &GUI_Covers::delete_covers_from_db);
 	connect(ui->btn_delete_files, &QPushButton::clicked, this, &GUI_Covers::delete_cover_files);
 	connect(ui->cb_fetch_covers_from_www, &QCheckBox::toggled, this, &GUI_Covers::fetch_covers_www_triggered);
+	connect(ui->btn_add, &QPushButton::clicked, this, &GUI_Covers::add_clicked);
+	connect(ui->btn_remove, &QPushButton::clicked, this, &GUI_Covers::remove_clicked);
 
 	revert();
 }
@@ -162,6 +162,28 @@ void GUI_Covers::down_clicked()
 	ui->lv_cover_searchers->setCurrentRow(cur_row + 1);
 }
 
+void GUI_Covers::add_clicked()
+{
+	QListWidgetItem* item = ui->lv_cover_searchers_inactive->takeItem(ui->lv_cover_searchers_inactive->currentRow());
+	if(!item){
+		return;
+	}
+
+	ui->lv_cover_searchers->addItem(item->text());
+	delete item; item=nullptr;
+}
+
+void GUI_Covers::remove_clicked()
+{
+	QListWidgetItem* item = ui->lv_cover_searchers->takeItem(ui->lv_cover_searchers->currentRow());
+	if(!item){
+		return;
+	}
+
+	ui->lv_cover_searchers_inactive->addItem(item->text());
+	delete item; item=nullptr;
+}
+
 void GUI_Covers::current_row_changed(int row)
 {
 	ui->btn_up->setDisabled(row <= 0 || row >= ui->lv_cover_searchers->count());
@@ -182,6 +204,7 @@ void GUI_Covers::delete_cover_files()
 void GUI_Covers::fetch_covers_www_triggered(bool b)
 {
 	ui->lv_cover_searchers->setEnabled(b);
+	ui->lv_cover_searchers_inactive->setEnabled(b);
 	ui->btn_down->setEnabled(b);
 	ui->btn_up->setEnabled(b);
 }

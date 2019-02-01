@@ -17,7 +17,7 @@
    <item row="0" column="0">
     <widget class="QTabWidget" name="tab_widget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab_libraries">
       <attribute name="title">
@@ -140,6 +140,13 @@
            <widget class="QRadioButton" name="rb_dc_play_immediately">
             <property name="text">
              <string>start playback immediately</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>(does not apply when playlist is in append mode)</string>
             </property>
            </widget>
           </item>
