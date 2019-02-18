@@ -6,28 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>425</width>
+    <width>624</width>
     <height>254</height>
    </rect>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="1" column="0">
     <layout class="QGridLayout" name="gridLayout_2">
-     <item row="0" column="1">
-      <widget class="QPushButton" name="btn_up">
+     <item row="3" column="1">
+      <widget class="QPushButton" name="btn_remove">
        <property name="text">
-        <string notr="true">Up</string>
+        <string>&lt;</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
-      <widget class="QPushButton" name="btn_down">
-       <property name="text">
-        <string notr="true">Down</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0" rowspan="2">
+     <item row="1" column="1" rowspan="2">
       <widget class="QListWidget" name="lv_cover_searchers">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
@@ -46,6 +39,69 @@
        </property>
        <property name="alternatingRowColors">
         <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QPushButton" name="btn_up">
+       <property name="text">
+        <string notr="true">Up</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="2">
+      <widget class="QPushButton" name="btn_down">
+       <property name="text">
+        <string notr="true">Down</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0" rowspan="2">
+      <widget class="QListWidget" name="lv_cover_searchers_inactive">
+       <property name="dragEnabled">
+        <bool>true</bool>
+       </property>
+       <property name="dragDropMode">
+        <enum>QAbstractItemView::DragDrop</enum>
+       </property>
+       <property name="defaultDropAction">
+        <enum>Qt::MoveAction</enum>
+       </property>
+       <property name="alternatingRowColors">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QPushButton" name="btn_add">
+       <property name="text">
+        <string>&gt;</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label">
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Inactive</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLabel" name="label_2">
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Active</string>
        </property>
       </widget>
      </item>

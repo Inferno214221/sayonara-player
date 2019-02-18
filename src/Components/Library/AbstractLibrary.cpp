@@ -33,6 +33,7 @@
 #include "Utils/Logger/Logger.h"
 #include "Utils/Language.h"
 #include "Utils/Library/SearchMode.h"
+#include "Utils/Playlist/PlaylistMode.h"
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 #include "Utils/ExtensionSet.h"
@@ -142,7 +143,8 @@ void AbstractLibrary::refresh()
 	fetch_by_filter(m->filter, true);
 
 	prepare_artists();
-	for(int i=0; i<m->artists.count(); i++){
+	for(int i=0; i<m->artists.count(); i++)
+	{
 		if(sel_artists.contains(m->artists[i].id)) {
 			sel_artists_idx.insert(i);
 		}
@@ -151,7 +153,8 @@ void AbstractLibrary::refresh()
 	change_artist_selection(sel_artists_idx);
 	prepare_albums();
 
-	for(int i=0; i<m->albums.count(); i++){
+	for(int i=0; i<m->albums.count(); i++)
+	{
 		if(sel_albums.contains(m->albums[i].id)) {
 			sel_albums_idx.insert(i);
 		}
@@ -221,23 +224,28 @@ void AbstractLibrary::prepare_tracks_for_playlist(const QStringList& paths, bool
 	set_playlist_action_after_double_click();
 }
 
-
 void AbstractLibrary::set_playlist_action_after_double_click()
 {
 	PlayManagerPtr play_manager = PlayManager::instance();
+	Playlist::Mode plm = _settings->get<Set::PL_Mode>();
 
-	if(_settings->get<Set::Lib_DC_DoNothing>()){
+	bool append = (plm.append() == Playlist::Mode::State::On);
+
+	if(_settings->get<Set::Lib_DC_DoNothing>())
+	{
 		return;
 	}
 
 	else if(_settings->get<Set::Lib_DC_PlayIfStopped>())
 	{
-		if(play_manager->playstate() != PlayState::Playing){
+		if(play_manager->playstate() != PlayState::Playing)
+		{
 			m->playlist->change_track(0, m->playlist->current_index());
 		}
 	}
 
-	else {
+	else if(_settings->get<Set::Lib_DC_PlayImmediately>() && !append)
+	{
 		m->playlist->change_track(0, m->playlist->current_index());
 	}
 }
@@ -718,12 +726,14 @@ void AbstractLibrary::delete_tracks(const MetaDataList& v_md, Library::TrackDele
 
 void AbstractLibrary::delete_tracks_by_idx(const IndexSet& indexes, Library::TrackDeletionMode mode)
 {
-	if(mode == Library::TrackDeletionMode::None) return;
+	if(mode == Library::TrackDeletionMode::None || indexes.isEmpty()) {
+		return;
+	}
 
 	MetaDataList v_md;
-	for(auto it = indexes.begin(); it != indexes.end(); it++){
-		int idx = *it;
-		v_md.push_back(tracks()[idx]);
+	const MetaDataList& tracks = this->tracks();
+	for(auto it = indexes.begin(); it != indexes.end(); it++) {
+		v_md.push_back(tracks[*it]);
 	}
 
 	delete_tracks(v_md, mode);
