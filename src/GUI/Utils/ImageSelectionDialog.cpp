@@ -29,6 +29,7 @@
 
 struct ImageSelectionDialog::Private
 {
+	QString start_dir;
 	QLabel* img_label=nullptr;
 	QLabel* res_label=nullptr;
 
@@ -43,22 +44,25 @@ struct ImageSelectionDialog::Private
 };
 
 ImageSelectionDialog::ImageSelectionDialog(const QString& dir, QWidget* parent) :
-    Gui::WidgetTemplate<QFileDialog>(parent)
+	Gui::WidgetTemplate<QFileDialog>(parent)
 {
 	m = Pimpl::make<Private>(this);
+	m->start_dir = dir;
 
-	QStringList filters;
-	    filters << "*.jpg";
-		filters << "*.png";
-		filters << "*.gif";
+	QStringList filters
+	{
+		tr("Image files") + " (*.jpg *.png *.gif)",
+		tr("Any files") + " (*)"
+	};
 
 	this->setDirectory(dir);
-	this->setFilter(QDir::Files | QDir::Dirs);
+	this->setFilter(QDir::AllEntries | QDir::AllDirs);
 	this->setLabelText(QFileDialog::DialogLabel::FileName, tr("Open image files"));
 	this->setNameFilters(filters);
 	this->setViewMode(QFileDialog::Detail);
 	this->setModal(true);
 	this->setAcceptMode(QFileDialog::AcceptOpen);
+
 	QLayout* layout = this->layout();
 	if(layout)
 	{
@@ -69,10 +73,7 @@ ImageSelectionDialog::ImageSelectionDialog(const QString& dir, QWidget* parent) 
 	connect(this, &QFileDialog::currentChanged, this, &ImageSelectionDialog::file_selected);
 }
 
-ImageSelectionDialog::~ImageSelectionDialog()
-{
-
-}
+ImageSelectionDialog::~ImageSelectionDialog() {}
 
 void ImageSelectionDialog::file_selected(const QString& file)
 {
@@ -82,10 +83,18 @@ void ImageSelectionDialog::file_selected(const QString& file)
 	}
 
 	m->img_label->setPixmap(
-	    pm.scaled(m->img_label->size())
+		pm.scaled(m->img_label->size())
 	);
 
 	m->res_label->setText(
-	    QString("%1x%2").arg(pm.width()).arg(pm.height())
+		QString("%1x%2").arg(pm.width()).arg(pm.height())
 	);
+}
+
+void ImageSelectionDialog::showEvent(QShowEvent* e)
+{
+	this->setDirectory(m->start_dir);
+	//this->setHistory({m->start_dir});
+
+	Gui::WidgetTemplate<QFileDialog>::showEvent(e);
 }

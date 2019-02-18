@@ -27,7 +27,6 @@
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Tagging/Tagging.h"
 #include "Utils/Logger/Logger.h"
-#include "Utils/Utils.h"
 
 #include <QDir>
 #include <QProcess>
@@ -45,10 +44,14 @@ struct CachingThread::Private
 	int				progress;
 	bool			cancelled;
 
-	Private() :
+	Private(const QStringList& file_list, const QString& library_path) :
+		library_path(library_path),
+		file_list(file_list),
 		progress(0),
 		cancelled(false)
-	{}
+	{
+		cache = std::shared_ptr<ImportCache>(new ImportCache(library_path));
+	}
 
 	void extract_soundfiles()
 	{
@@ -73,59 +76,53 @@ struct CachingThread::Private
 CachingThread::CachingThread(const QStringList& file_list, const QString& library_path, QObject *parent) :
 	QThread(parent)
 {
-	m = Pimpl::make<CachingThread::Private>();
-
-	m->cache = std::shared_ptr<ImportCache>(new ImportCache(library_path));
-	m->library_path = library_path;
-	m->file_list = file_list;
-	m->cancelled = false;
+	m = Pimpl::make<CachingThread::Private>(file_list, library_path);
 
 	this->setObjectName("CachingThread" + Util::random_string(4));
 }
 
 CachingThread::~CachingThread() {}
 
-
 bool CachingThread::scan_rar(const QString& rar_file)
 {
-	QString token = Util::random_string(16);
-	QString rar_dir = QDir::tempPath() + QString("/sayonara/%1").arg(token);
+#ifndef Q_OS_UNIX
+	return false;
+#endif
 
-	bool b = Util::File::create_directories(rar_dir);
+	static const QString rar_binary = "rar";
+
+	QDir rar_dir(QDir::tempPath() + "/sayonara/import/" +  Util::random_string(16));
+	QString rar_path = rar_dir.absolutePath();
+
+	bool b = Util::File::create_directories(rar_path);
 	if(!b){
 		return false;
 	}
 
-	m->rar_dirs << rar_dir;
+	m->rar_dirs << rar_path;
 
-	QString command = QString("rar x %1 %2")
-							.arg(rar_file)
-							.arg(rar_dir);
+	int ret = QProcess::execute(rar_binary, {"x", rar_file, rar_dir.absolutePath()});
+	if(ret < 0){
+		sp_log(Log::Warning, this) << "rar not found or crashed";
+	}
 
-	QProcess p;
-	p.start(
-		"rar",
-		{"x", rar_file, rar_dir}
-	);
-
-	b = p.waitForFinished();
-	if(!b){
-		sp_log(Log::Warning, this) << "rar exited with error " << p.errorString() << " (" << p.exitCode() << ")";
+	else if(ret > 0){
+		sp_log(Log::Warning, this) << "rar exited with error " << ret;
 		return false;
 	}
 
-	QStringList entries = QDir(rar_dir).entryList(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
+	QStringList entries = rar_dir.entryList(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
 	for(const QString& e : entries)
 	{
-		QString found_file = Util::File::clean_filename(rar_dir + "/" + e);
-		if(Util::File::is_dir(found_file))
+		QString filename = rar_dir.absoluteFilePath(e);
+		if(Util::File::is_dir(filename))
 		{
-			scan_dir(found_file);
+			scan_dir(filename);
 		}
 
-		else
+		else if(Util::File::is_file(filename))
 		{
-			add_file(found_file, rar_dir);
+			add_file(filename, rar_path);
 		}
 	}
 
@@ -134,14 +131,13 @@ bool CachingThread::scan_rar(const QString& rar_file)
 
 void CachingThread::scan_dir(const QString& dir)
 {
-	QStringList dir_files;
+	DirectoryReader dr({"*"});
+	QStringList files;
 
-	DirectoryReader dr;
-	dr.set_filter("*");
-	dr.files_in_directory_recursive(dir, dir_files);
-	sp_log(Log::Crazy, this) << "Found " << dir_files.size() << " files";
+	dr.scan_files_recursive(dir, files);
+	sp_log(Log::Crazy, this) << "Found " << files.size() << " files";
 
-	for(const QString& dir_file : ::Util::AsConst(dir_files))
+	for(const QString& dir_file : ::Util::AsConst(files))
 	{
 		add_file(dir_file, dir);
 	}

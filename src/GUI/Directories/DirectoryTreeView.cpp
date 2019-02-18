@@ -188,7 +188,7 @@ MetaDataList DirectoryTreeView::selected_metadata() const
 {
 	DirectoryReader reader;
 	QStringList paths = selected_paths();
-	return reader.metadata_from_filelist(paths);
+	return reader.scan_metadata(paths);
 }
 
 

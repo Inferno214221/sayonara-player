@@ -39,18 +39,21 @@ struct DirectoryReader::Private
 {
 	QStringList		name_filters;
 
-	Private()
-	{
-		name_filters = Util::soundfile_extensions();
-	}
+	Private(const QStringList& filter) :
+		name_filters(filter)
+	{}
 };
 
-DirectoryReader::DirectoryReader ()
+DirectoryReader::DirectoryReader(const QStringList& filter)
 {
-	m = Pimpl::make<Private>();
+	m = Pimpl::make<Private>(filter);
 }
 
-DirectoryReader::~DirectoryReader () {}
+DirectoryReader::DirectoryReader() :
+	DirectoryReader(QStringList())
+{}
+
+DirectoryReader::~DirectoryReader() {}
 
 void DirectoryReader::set_filter(const QStringList & filter)
 {
@@ -64,19 +67,17 @@ void DirectoryReader::set_filter(const QString& filter)
 }
 
 
-void DirectoryReader::files_in_directory_recursive(const QDir& base_dir_orig, QStringList& files) const
+void DirectoryReader::scan_files_recursive(const QDir& base_dir_orig, QStringList& files) const
 {
 	QDir base_dir(base_dir_orig);
 
-	const QStringList tmp_files = base_dir.entryList(m->name_filters,
-											   (QDir::Filters)(QDir::Files | QDir::NoDotAndDotDot));
-
+	const QStringList tmp_files = base_dir.entryList(m->name_filters, (QDir::Filters)(QDir::Files | QDir::NoDotAndDotDot));
 	const QStringList dirs = base_dir.entryList((QDir::Filters)(QDir::Dirs | QDir::NoDotAndDotDot));
 
 	for(const QString& dir : dirs)
 	{
 		base_dir.cd(dir);
-		files_in_directory_recursive(base_dir, files);
+		scan_files_recursive(base_dir, files);
 		base_dir.cdUp();
 	}
 
@@ -85,7 +86,7 @@ void DirectoryReader::files_in_directory_recursive(const QDir& base_dir_orig, QS
 	}
 }
 
-void DirectoryReader::files_in_directory(const QDir& base_dir, QStringList& files) const
+void DirectoryReader::scan_files(const QDir& base_dir, QStringList& files) const
 {
 	const QStringList tmp_files = base_dir.entryList(m->name_filters,
 											   (QDir::Filters)(QDir::Files | QDir::NoDotAndDotDot));
@@ -96,7 +97,7 @@ void DirectoryReader::files_in_directory(const QDir& base_dir, QStringList& file
 }
 
 
-MetaDataList DirectoryReader::metadata_from_filelist(const QStringList& lst)
+MetaDataList DirectoryReader::scan_metadata(const QStringList& lst)
 {
 	MetaDataList v_md;
 	QStringList sound_files, playlist_files;
@@ -120,7 +121,7 @@ MetaDataList DirectoryReader::metadata_from_filelist(const QStringList& lst)
 			dir.cd(str);
 
 			QStringList files;
-			files_in_directory_recursive(dir, files);
+			scan_files_recursive(dir, files);
 			for(const QString& file : ::Util::AsConst(files)){
 				if(Util::File::is_soundfile(file)){
 					sound_files << file;

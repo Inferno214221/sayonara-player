@@ -65,7 +65,7 @@ void Cover::Utils::delete_temp_covers()
 
 	DirectoryReader reader;
 	reader.set_filter({"*.jpg", "*.png"});
-	reader.files_in_directory(cover_dir, files);
+	reader.scan_files(cover_dir, files);
 
 	for(const QString& f : ::Util::AsConst(files))
 	{

@@ -269,6 +269,7 @@ void AlbumCoverFetchThread::add_album(const Album& album)
 		LOCK_GUARD(m->mutex_album_list);
 		m->hash_album_list.push_back(HashAlbumPair(hash, album));
 	}
+
 }
 
 AlbumCoverFetchThread::HashLocationPair AlbumCoverFetchThread::take_current_location()
