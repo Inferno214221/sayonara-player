@@ -81,7 +81,6 @@ LocalLibrary::~LocalLibrary() {}
 
 void LocalLibrary::apply_db_fixes() {}
 
-
 void LocalLibrary::reload_library(bool clear_first, Library::ReloadQuality quality)
 {
 	if(m->reload_thread && m->reload_thread->is_running()){

@@ -434,19 +434,25 @@ void CoverModel::set_zoom(int zoom, const QSize& view_size)
 	if(columns > 0)
 	{
 		int visible_rows = (view_size.height() / m->item_size.height()) + 1;
+		int visible_items = visible_rows * columns;
+
+		int cache_orig_pms = Settings::instance()->get<Set::Lib_CoverOrigPMCache>();
+		int cache_scaled_pms = Settings::instance()->get<Set::Lib_CoverScaledPMCache>();
 
 		m->columns = columns;
-		m->cvpc->set_cache_size(visible_rows * m->columns * 3);
+		m->cvpc->set_cache_size(cache_orig_pms, visible_items * cache_scaled_pms);
 
 		refresh_data();
 		emit dataChanged(index(0, 0), index(rowCount() - 1, columnCount() - 1), {Qt::SizeHintRole});
 	}
 }
 
+
 void CoverModel::show_artists_changed()
 {
 	m->item_size = calc_item_size(m->cvpc->scaling(), Gui::Util::main_window()->font());
 }
+
 
 void CoverModel::reload()
 {

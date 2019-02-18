@@ -124,9 +124,9 @@ bool CoverViewPixmapCache::is_outdated(const Hash& hash) const
 	return (!m->valid_hashes.contains(hash));
 }
 
-void CoverViewPixmapCache::set_cache_size(int size)
+void CoverViewPixmapCache::set_cache_size(int size_orig, int size_scaled)
 {
-	m->scaled_pixmaps.setMaxCost(size);
-	m->pixmaps.setMaxCost(size / 2);
+	m->scaled_pixmaps.setMaxCost(size_scaled);
+	m->pixmaps.setMaxCost(size_orig);
 }
 

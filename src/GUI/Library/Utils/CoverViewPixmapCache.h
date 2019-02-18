@@ -27,7 +27,7 @@ public:
 	void add_pixmap(const Hash& hash, const QPixmap& pm);
 
 	bool is_outdated(const Hash& hash) const;
-	void set_cache_size(int size);
+	void set_cache_size(int size_orig, int size_scaled);
 };
 
 #endif // COVERVIEWPIXMAPCACHE_H

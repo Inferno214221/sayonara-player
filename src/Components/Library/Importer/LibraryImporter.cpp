@@ -26,6 +26,7 @@
 
 #include "Components/Tagging/ChangeNotifier.h"
 
+#include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Message/Message.h"
 #include "Utils/Logger/Logger.h"
@@ -41,6 +42,7 @@ using Library::Importer;
 struct Importer::Private
 {
 	QString						src_dir;
+	QStringList					temporary_files;
 
 	LocalLibrary*				library=nullptr;
 	Library::CachingThread*		cache_thread=nullptr;
@@ -56,6 +58,11 @@ struct Importer::Private
 		db(DB::Connector::instance()),
 		status(Importer::ImportStatus::NoTracks)
 	{}
+
+	void delete_temporary_files()
+	{
+		Util::File::delete_files(temporary_files);
+	}
 };
 
 Importer::Importer(LocalLibrary* library) :
@@ -82,7 +89,7 @@ void Importer::import_files(const QStringList& files, const QString& target_dir)
 	using Library::CachingThread;
 	CachingThread* thread = new CachingThread(files, m->library->library_path());
 	connect(thread, &CachingThread::finished, this, &Importer::caching_thread_finished);
-	connect(thread, &CachingThread::sig_progress, this, &Importer::sig_progress);
+	connect(thread, &CachingThread::sig_progress, this, &Importer::sig_progress_no_percent);
 	connect(thread, &CachingThread::destroyed, this, [=]()
 	{
 		m->cache_thread = nullptr;
@@ -96,26 +103,33 @@ void Importer::import_files(const QStringList& files, const QString& target_dir)
 // preload thread has cached everything, but ok button has not been clicked yet
 void Importer::caching_thread_finished()
 {
-	Library::CachingThread* thread = static_cast<Library::CachingThread*>(sender());
 	MetaDataList v_md;
+	Library::CachingThread* thread = static_cast<Library::CachingThread*>(sender());
 
+	m->temporary_files << thread->temporary_files();
 	m->import_cache = thread->cache();
-	if(!m->import_cache){
+
+	if(!m->import_cache)
+	{
 		emit_status(ImportStatus::NoTracks);
 	}
 
-	else {
+	else
+	{
 		v_md = m->import_cache->soundfiles();
 	}
 
-	if(v_md.isEmpty() || thread->is_cancelled()){
+	if(v_md.isEmpty() || thread->is_cancelled())
+	{
 		emit_status(ImportStatus::NoTracks);
 	}
 
-	else {
+	else
+	{
 		emit_status(ImportStatus::WaitForUser);
 	}
 
+	emit sig_progress_no_percent(-1);
 	emit sig_got_metadata(v_md);
 
 	thread->deleteLater();
@@ -149,6 +163,7 @@ void Importer::copy_thread_finished()
 	MetaDataList v_md = copy_thread->get_copied_metadata();
 
 	emit_status(ImportStatus::WaitForUser);
+	m->delete_temporary_files();
 
 	// no tracks were copied or rollback was finished
 	if(v_md.isEmpty()) {
@@ -228,6 +243,12 @@ void Importer::cancel_import()
 	else if(m->copy_thread && m->copy_thread->isRunning()){
 		m->copy_thread->cancel();
 	}
+}
+
+void Importer::reset()
+{
+	cancel_import();
+	m->delete_temporary_files();
 }
 
 void Importer::emit_status(Importer::ImportStatus status)

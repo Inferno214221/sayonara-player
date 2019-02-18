@@ -67,6 +67,8 @@ enum class SettingKey : unsigned short
 	Lib_CoverZoom,
 	Lib_CoverShowUtils,
 	Lib_CoverShowArtist,
+	Lib_CoverOrigPMCache,
+	Lib_CoverScaledPMCache,
 	Lib_GenreTree,
 	Lib_LastIndex,
 	Lib_AllLibraries,				// deprecated
@@ -274,6 +276,8 @@ class SettingIdentifier
 	INST(bool,				Lib_ShowAlbumArtists)		/* Show album artists instead of artists */
 	INST(bool,				Lib_ShowAlbumCovers)		/* Show album cover view */
 	INST(int,				Lib_CoverZoom)				/* Zoom of album cover view */
+	INST(int,				Lib_CoverOrigPMCache)		/* Original sized pixmap cache */
+	INST(int,				Lib_CoverScaledPMCache)		/* Scaled sized pixmap cache */
 	INST(bool,				Lib_CoverShowUtils)		/* Show utils bar in cover view */
 	INST(bool,				Lib_CoverShowArtist)	/* Show artist name in cover view */
 	INST(bool,				Lib_GenreTree)				/* Show tree view of genres */

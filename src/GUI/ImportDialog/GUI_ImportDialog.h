@@ -53,7 +53,8 @@ private slots:
 	void edit_pressed();
 	void set_metadata(const MetaDataList& v_md);
 	void set_status(Library::Importer::ImportStatus status);
-	void set_progress(int);
+	void set_progress(int percent);
+	void set_progress_no_percent(int progress);
 
 protected:
 	void closeEvent(QCloseEvent* e) override;

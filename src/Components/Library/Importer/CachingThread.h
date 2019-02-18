@@ -51,8 +51,15 @@ namespace Library
 			bool			is_cancelled() const;
 			void			change_metadata(const MetaDataList& v_md_old, const MetaDataList& v_md_new);
 
+			QStringList		temporary_files() const;
+
 		private:
 			void run() override;
+
+			void update_progress();
+			void scan_dir(const QString& dir);
+			bool scan_rar(const QString& rar);
+			void add_file(const QString& filename, const QString& relative_dir=QString());
 	};
 }
 

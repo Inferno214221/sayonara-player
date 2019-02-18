@@ -60,6 +60,7 @@ namespace Library
 		void sig_status_changed(Importer::ImportStatus);
 		void sig_got_library_dirs(const QStringList& library_dirs);
 		void sig_progress(int percent);
+		void sig_progress_no_percent(int progress);
 		void sig_triggered();
 		void sig_target_dir_changed(const QString& target_dir);
 
@@ -68,6 +69,7 @@ namespace Library
 		void import_files(const QStringList& files, const QString& target_dir);
 		void accept_import(const QString& target_dir);
 		void cancel_import();
+		void reset();
 
 		Importer::ImportStatus status() const;
 
