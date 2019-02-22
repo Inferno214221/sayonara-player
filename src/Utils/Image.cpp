@@ -60,6 +60,7 @@ Util::Image::Image(const QPixmap& pm, const QSize& max_size)
 Util::Image::Image(const Util::Image& other)
 {
 	if(!other.m){
+		m = nullptr;
 		return;
 	}
 

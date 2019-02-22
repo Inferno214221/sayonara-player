@@ -30,6 +30,7 @@ struct CoverViewPixmapCache::Private
 
 	QList<Pair>					pixmap_queue;
 	std::mutex					mutex_pixmap_queue;
+	std::mutex					mutex_pixmaps;
 
 
 	QPixmap						invalid_cover;
@@ -117,21 +118,30 @@ QPixmap CoverViewPixmapCache::invalid_pixmap() const
 
 QPixmap CoverViewPixmapCache::scaled_pixmap(const Hash& hash)
 {
+	LOCK_GUARD(m->mutex_pixmaps);
+
 	if(!has_scaled_pixmap(hash))
 	{
 		if(!has_pixmap(hash)) {
 			return m->invalid_cover;
 		}
 
-		else {
+		else
+		{
 			QPixmap pm = this->pixmap(hash, true);
-
 			m->scaled_pixmaps.insert(hash, new Util::Image(pm, QSize(m->scaling, m->scaling)));
 			return pm;
 		}
 	}
 
-	return m->scaled_pixmaps.object(hash)->pixmap();
+
+	QPixmap pm;
+	{
+		Util::Image* img = m->scaled_pixmaps.object(hash);
+		pm = img->pixmap();
+	}
+
+	return pm;
 }
 
 void CoverViewPixmapCache::add_pixmap(const Hash& hash, const QPixmap& pm)
@@ -151,8 +161,11 @@ bool CoverViewPixmapCache::is_outdated(const Hash& hash) const
 
 void CoverViewPixmapCache::set_cache_size(int size_orig, int size_scaled)
 {
-	m->scaled_pixmaps.setMaxCost(size_scaled);
-	m->pixmaps.setMaxCost(size_orig);
+	LOCK_GUARD(m->mutex_pixmaps);
+	{
+		m->scaled_pixmaps.setMaxCost(size_scaled);
+		m->pixmaps.setMaxCost(size_orig);
+	}
 }
 
 void CoverViewPixmapCache::run()
@@ -169,9 +182,12 @@ void CoverViewPixmapCache::run()
 			p = m->pixmap_queue.takeFirst();
 		}
 
-		m->pixmaps.insert(p.hash, new Util::Image(p.pm, QSize(200, 200)));
-		m->scaled_pixmaps.insert(p.hash, new Util::Image(p.pm, QSize(m->scaling, m->scaling)));
-		m->valid_hashes.insert(p.hash);
+		{
+			LOCK_GUARD(m->mutex_pixmaps);
+			m->pixmaps.insert(p.hash, new Util::Image(p.pm, QSize(200, 200)));
+			m->scaled_pixmaps.insert(p.hash, new Util::Image(p.pm, QSize(m->scaling, m->scaling)));
+			m->valid_hashes.insert(p.hash);
+		}
 
 		emit sig_hash_ready(p.hash);
 	}

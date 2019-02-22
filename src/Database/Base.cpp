@@ -95,8 +95,9 @@ bool Base::close_db()
 
 	sp_log(Log::Info, this) << "close database " << m->filename << "...";
 
-	if(db().isOpen()){
-		db().close();
+	QSqlDatabase database = db();
+	if(database.isOpen() && database.isValid()){
+		database.close();
 	}
 
 	QSqlDatabase::removeDatabase(m->connection_name);

@@ -73,7 +73,6 @@ public:
 		old_column_count(0),
 		columns(10)
 	{
-
 		cover_thread = new AlbumCoverFetchThread(parent);
 	}
 
@@ -245,43 +244,36 @@ void CoverModel::next_hash()
 		d->acft = acft;
 	}
 
-	Lookup* clu = new Lookup(this, 1);
+	Lookup* clu = new Lookup(nullptr, 1, cl);
+	clu->set_user_data(d);
+
 	connect(clu, &Lookup::sig_finished, this, &CoverModel::cover_lookup_finished);
 
-	clu->set_user_data(d);
-	bool b = clu->fetch_cover(cl);
-	if(!b)
-	{
-		clu->deleteLater();
-		acft->done(hash);
-	}
+	clu->start();
 }
 
 
 void CoverModel::cover_lookup_finished(bool success)
 {
 	Lookup* clu = static_cast<Lookup*>(sender());
-	CoverLookupUserData* d = static_cast<CoverLookupUserData*>(clu->take_user_data());
+	CoverLookupUserData* d = static_cast<CoverLookupUserData*>(clu->user_data());
 
-	if(d)
+	if(success)
 	{
-		if(success)
+		LOCK_GUARD(mtx);
+
+		QList<QPixmap> pixmaps = clu->take_pixmaps();
+		if(!pixmaps.isEmpty())
 		{
-			LOCK_GUARD(mtx)
-
-			QList<QPixmap> pixmaps = clu->pixmaps();
-			if(!pixmaps.isEmpty())
-			{
-				QPixmap pm(pixmaps.first());
-				m->cvpc->add_pixmap(d->hash, pm);
-			}
+			QPixmap pm(pixmaps.first());
+			m->cvpc->add_pixmap(d->hash, pm);
 		}
-
-		d->acft->done(d->hash);
-
-		delete d; d=nullptr;
 	}
 
+	d->acft->done(d->hash);
+	delete d; d=nullptr;
+
+	clu->set_user_data(nullptr);
 	clu->deleteLater();
 }
 

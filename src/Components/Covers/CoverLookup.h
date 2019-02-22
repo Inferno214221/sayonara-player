@@ -53,6 +53,7 @@ namespace Cover
 	public:
 
 		Lookup(QObject* parent=nullptr, int n_covers=1);
+		Lookup(QObject* parent, int n_covers, const Location& cl);
 		~Lookup() override;
 
 		/**
@@ -64,6 +65,7 @@ namespace Cover
 		 * @return always true
 		 */
 		bool fetch_cover(const Location& cl, bool also_www=true);
+
 
 		/**
 		 * @brief Stop the Cover::FetchThread if running and
@@ -88,7 +90,7 @@ namespace Cover
 		 * @brief Fetch your custom data again
 		 * @return
 		 */
-		void* take_user_data();
+		void* user_data();
 
 		/**
 		 * @brief Get a copy of all pixmaps that where fetched
@@ -105,6 +107,13 @@ namespace Cover
 
 
 	private:
+
+		bool fetch_from_database();
+		bool fetch_from_audio_source();
+		bool fetch_from_file_system();
+		bool fetch_from_www();
+
+
 		/**
 		 * @brief Starts a new CoverFetchThread
 		 * @param cl CoverLocation object
@@ -114,6 +123,10 @@ namespace Cover
 		bool add_new_cover(const QPixmap& pm, const QString& hash);
 		bool add_new_cover(const QPixmap& pm);
 
+		void emit_finished(bool success);
+
+	public slots:
+		void start();
 
 	private slots:
 		/**
@@ -125,7 +138,27 @@ namespace Cover
 		/**
 		 * @brief called when CoverFetchThread has finished
 		 */
-		void finished(bool);
+		void thread_finished(bool);
+
+		void extractor_finished();
+	};
+
+	class Extractor : public QObject
+	{
+		Q_OBJECT
+		PIMPL(Extractor)
+
+		signals:
+			void sig_finished();
+
+		public:
+			Extractor(const QString& filepath, QObject* parent);
+			~Extractor();
+
+			QPixmap pixmap();
+
+		public slots:
+			void start();
 	};
 
 	/**

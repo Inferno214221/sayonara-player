@@ -60,6 +60,7 @@ struct FetchThread::Private
 	QStringList			addresses;
 	QStringList			search_urls;
 	int					n_covers;
+	bool				finished;
 	bool				may_run;
 
 	Private(const Location& cl, int n_covers) :
@@ -67,6 +68,7 @@ struct FetchThread::Private
 		id(Util::random_string(8)),
 		search_urls(cl.search_urls()),
 		n_covers(n_covers),
+		finished(false),
 		may_run(true)
 	{
 		sp_log(Log::Develop, this) << "Search urls for " << cl.identifer() << ": " << cl.search_urls();
@@ -84,10 +86,10 @@ FetchThread::~FetchThread()
 {
 	while(!m->active_connections.isEmpty())
 	{
-		for(AsyncWebAccess* awa : ::Util::AsConst(m->active_connections))
-		{
-			awa->stop();
-		}
+		AsyncWebAccess* awa = m->active_connections.takeLast();
+
+		awa->stop();
+		awa->deleteLater();
 
 		Util::sleep_ms(50);
 	}
@@ -145,7 +147,7 @@ bool FetchThread::more()
 	// we have all our covers
 	if(m->n_covers == m->pixmaps.size())
 	{
-		emit sig_finished(true);
+		emit_finished(true);
 		return true;
 	}
 
@@ -154,7 +156,7 @@ bool FetchThread::more()
 	{
 		bool success = start();
 		if(!success) {
-			emit sig_finished(false);
+			emit_finished(false);
 		}
 
 		return success;
@@ -181,13 +183,14 @@ bool FetchThread::more()
 
 void FetchThread::stop()
 {
+	m->may_run = false;
+
 	for(AsyncWebAccess* awa : ::Util::AsConst(m->active_connections))
 	{
 		awa->stop();
 	}
 
-	m->may_run = false;
-	emit sig_finished(false);
+	emit_finished(false);
 }
 
 QPixmap FetchThread::pixmap(int idx) const
@@ -205,6 +208,11 @@ void FetchThread::content_fetched()
 	AsyncWebAccess* awa = static_cast<AsyncWebAccess*>(sender());
 	m->active_connections.removeAll(awa);
 
+	if(!m->may_run){
+		awa->deleteLater();
+		return;
+	}
+
 	if(awa->objectName() == m->acf->keyword())
 	{
 		if(awa->status() == AsyncWebAccess::Status::GotData)
@@ -215,9 +223,21 @@ void FetchThread::content_fetched()
 	}
 
 	awa->deleteLater();
-	more();
+
+	if(!more())
+	{
+		sp_log(Log::Warning, this) << "Could not extract data out of webpage";
+	}
 }
 
+void FetchThread::emit_finished(bool success)
+{
+	if(!m->finished)
+	{
+		emit sig_finished(success);
+		m->finished = true;
+	}
+}
 
 void FetchThread::single_image_fetched()
 {
@@ -225,7 +245,11 @@ void FetchThread::single_image_fetched()
 	AsyncWebAccess::Status status = awa->status();
 
 	m->active_connections.removeAll(awa);
-	awa->deleteLater();
+
+	if(!m->may_run){
+		awa->deleteLater();
+		return;
+	}
 
 	if(status == AsyncWebAccess::Status::GotData)
 	{
@@ -240,7 +264,7 @@ void FetchThread::single_image_fetched()
 			dbc->set_cover(m->cl.hash(), pm);
 
 			emit sig_cover_found(m->pixmaps.size() - 1);
-			emit sig_finished(true);
+			emit_finished(true);
 		}
 
 		sp_log(Log::Info, this) << "Found cover in " << m->acf->keyword() << " for " << m->cl.identifer();
@@ -248,19 +272,25 @@ void FetchThread::single_image_fetched()
 
 	else
 	{
-		sp_log(Log::Warning, this) << "Could not fetch cover from " << m->acf->keyword();
-		if(!more()){
-			emit sig_finished(false);
+		if(!more())
+		{
+			sp_log(Log::Warning, this) << "Could not fetch cover from " << m->acf->keyword();
 		}
 	}
+
+	awa->deleteLater();
 }
 
 
-void
-FetchThread::multi_image_fetched()
+void FetchThread::multi_image_fetched()
 {
 	AsyncWebAccess* awa = static_cast<AsyncWebAccess*>(sender());
 	m->active_connections.removeAll(awa);
+
+	if(!m->may_run){
+		awa->deleteLater();
+		return;
+	}
 
 	if(awa->status() == AsyncWebAccess::Status::GotData)
 	{
@@ -281,4 +311,6 @@ FetchThread::multi_image_fetched()
 	}
 
 	awa->deleteLater();
+
+	more();
 }
