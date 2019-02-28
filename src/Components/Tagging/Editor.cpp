@@ -69,6 +69,12 @@ struct Editor::Private
 		ldb->getAllAlbums(albums, true);
 		for(auto it=albums.begin(); it != albums.end(); it++)
 		{
+			if(album_map.contains(it->name()))
+			{
+				sp_log(Log::Warning, this) << "Album " << it->name() << " already exists";
+				continue;
+			}
+
 			album_map[it->name()] = it->id;
 		}
 
@@ -76,6 +82,12 @@ struct Editor::Private
 		ldb->getAllArtists(artists, true);
 		for(auto it=artists.begin(); it != artists.end(); it++)
 		{
+			if(artist_map.contains(it->name()))
+			{
+				sp_log(Log::Warning, this) << "Artist " << it->name() << " already exists";
+				continue;
+			}
+
 			artist_map[it->name()] = it->id;
 		}
 	}
@@ -127,7 +139,18 @@ void Editor::update_track(int idx, const MetaData& md)
 {
 	bool has_changed = !( md.is_equal_deep( m->v_md_orig[idx]) );
 	m->changed_md[idx] = has_changed;
-	m->v_md[idx] = md;
+	if(!has_changed)
+	{
+		return;
+	}
+
+	auto it = m->v_md.begin() + idx;
+	*it = md;
+
+	MetaData new_md = m->v_md[idx];
+
+	sp_log(Log::Info, this) << new_md.artist_id;
+
 }
 
 void Editor::undo(int idx)
@@ -370,9 +393,10 @@ void Editor::run()
 	int i=0;
 	int n_operations = m->v_md.size() + m->cover_map.size();
 
-	for(i=0; i<m->v_md.count(); i++)
+	for(auto i=0; i < m->v_md.size(); i++)
 	{
-		MetaData md = m->v_md[i];
+		const MetaData& md = m->v_md[i];
+
 		if(n_operations > 5){
 			emit sig_progress( (i * 100) / n_operations);
 		}
@@ -404,7 +428,7 @@ void Editor::run()
 		int idx = it.key();
 		QPixmap pm = it.value();
 
-		const MetaData& md = m->v_md[idx];
+		const MetaData& md = *(m->v_md.cbegin() + idx);
 
 		Tagging::Covers::write_cover(md.filepath(), pm);
 		if(n_operations > 5){

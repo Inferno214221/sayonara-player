@@ -99,6 +99,15 @@ void UserOperations::merge_artists(const Util::Set<Id>& artist_ids, ArtistId tar
 	}
 
 	m->editor->commit();
+
+	for(auto it = artist_ids.begin(); it != artist_ids.end(); it++)
+	{
+		if(*it == target_artist){
+			continue;
+		}
+
+		m->library_db->deleteArtist(*it);
+	}
 }
 
 void UserOperations::merge_albums(const Util::Set<Id>& album_ids, AlbumId target_album)

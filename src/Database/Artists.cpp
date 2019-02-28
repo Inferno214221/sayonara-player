@@ -243,6 +243,23 @@ bool Artists::getAllArtistsBySearchString(const Library::Filter& filter, ArtistL
 	return true;
 }
 
+bool Artists::deleteArtist(ArtistId id)
+{
+	QMap<QString, QVariant> bindings
+	{
+		{"id", id}
+	};
+
+	Query q = run_query
+	(
+		"delete from artists where artist_id=:artist_id;",
+		{":artist_id", id},
+		QString("Cannot delete artist %1").arg(id)
+	);
+
+	return (!q.has_error());
+}
+
 ArtistId Artists::updateArtist(const Artist& artist)
 {
 	if(artist.id < 0){

@@ -50,6 +50,8 @@ namespace DB
 			virtual bool getAllArtists(ArtistList& result, ::Library::SortOrder sortorder = ::Library::SortOrder::ArtistNameAsc, bool also_empty=false);
 			virtual bool getAllArtistsBySearchString(const ::Library::Filter& filter, ArtistList& result, ::Library::SortOrder sortorder = ::Library::SortOrder::ArtistNameAsc);
 
+			virtual bool deleteArtist(ArtistId id);
+
 			virtual ArtistId insertArtistIntoDatabase(const QString& artist);
 			virtual ArtistId insertArtistIntoDatabase(const Artist& artist);
 
