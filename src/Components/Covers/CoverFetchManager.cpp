@@ -162,7 +162,7 @@ Manager::Manager() :
 
 Manager::~Manager() {}
 
-void Manager::register_coverfetcher(Base *t)
+void Manager::register_coverfetcher(Base* t)
 {
 	Fetcher::Base* cfi = coverfetcher_by_keyword(t->keyword(), m->coverfetchers);
 	if(cfi){ // already there
