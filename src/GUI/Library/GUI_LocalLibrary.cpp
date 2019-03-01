@@ -176,7 +176,7 @@ void GUI_LocalLibrary::check_status_bar(bool is_reloading)
 {
 	ui->sw_status->setVisible(false);
 
-	if(is_reloading || m->library->tracks().isEmpty())
+	if(is_reloading || (m->library->tracks().isEmpty() && m->library->filter().cleared()))
 	{
 		ui->btn_reload_library->setVisible(!is_reloading);
 		ui->pb_progress->setVisible(is_reloading);

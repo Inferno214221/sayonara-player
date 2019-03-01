@@ -35,6 +35,7 @@ class DirectoryReader final
 
 	public:
 		DirectoryReader();
+		DirectoryReader(const QStringList& filter);
 		~DirectoryReader();
 
 		/**
@@ -54,10 +55,9 @@ class DirectoryReader final
 		 * @param base_dir the directory of interest
 		 * @param files this array will be filled with the found absolute file paths
 		 */
-		void files_in_directory_recursive(const QDir& base_dir, QStringList& files) const;
+		void scan_files_recursive(const QDir& base_dir, QStringList& files) const;
 
-
-		void files_in_directory(const QDir& base_dir, QStringList& files) const;
+		void scan_files(const QDir& base_dir, QStringList& files) const;
 
 
 		/**
@@ -65,7 +65,7 @@ class DirectoryReader final
 		 * @param paths List of filepaths
 		 * @return A list of MetaData extracted from paths
 		 */
-		MetaDataList metadata_from_filelist(const QStringList& paths);
+		MetaDataList scan_metadata(const QStringList& paths);
 
 		/**
 		 * @brief Finds files recursively in the given directory with the given filter

@@ -29,7 +29,7 @@
 #include <QFileDialog>
 
 class ImageSelectionDialog :
-        public Gui::WidgetTemplate<QFileDialog>
+		public Gui::WidgetTemplate<QFileDialog>
 {
 	Q_OBJECT
 	PIMPL(ImageSelectionDialog)
@@ -40,6 +40,9 @@ public:
 
 private slots:
 	void file_selected(const QString& file);
+
+protected:
+	void showEvent(QShowEvent* e) override;
 };
 
 #endif // IMAGESELECTIONDIALOG_H

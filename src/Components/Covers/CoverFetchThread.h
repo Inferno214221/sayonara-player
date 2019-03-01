@@ -110,6 +110,9 @@ namespace Cover
 		 * @param success indicates if content could be fetched
 		 */
 		void content_fetched();
+
+	private:
+		void emit_finished(bool success);
 	};
 }
 

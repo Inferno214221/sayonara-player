@@ -38,6 +38,9 @@
 #include <QDir>
 
 using Library::Importer;
+using Library::CachingThread;
+using Library::CopyThread;
+using Library::ImportCachePtr;
 
 struct Importer::Private
 {
@@ -45,9 +48,9 @@ struct Importer::Private
 	QStringList					temporary_files;
 
 	LocalLibrary*				library=nullptr;
-	Library::CachingThread*		cache_thread=nullptr;
-	Library::CopyThread*		copy_thread=nullptr;
-	Library::ImportCachePtr		import_cache=nullptr;
+	CachingThread*				cache_thread=nullptr;
+	CopyThread*					copy_thread=nullptr;
+	ImportCachePtr				import_cache=nullptr;
 
 	DB::Connector*				db=nullptr;
 
@@ -86,7 +89,6 @@ void Importer::import_files(const QStringList& files, const QString& target_dir)
 		emit sig_target_dir_changed(target_dir);
 	}
 
-	using Library::CachingThread;
 	CachingThread* thread = new CachingThread(files, m->library->library_path());
 	connect(thread, &CachingThread::finished, this, &Importer::caching_thread_finished);
 	connect(thread, &CachingThread::sig_progress, this, &Importer::sig_progress_no_percent);
@@ -104,7 +106,7 @@ void Importer::import_files(const QStringList& files, const QString& target_dir)
 void Importer::caching_thread_finished()
 {
 	MetaDataList v_md;
-	Library::CachingThread* thread = static_cast<Library::CachingThread*>(sender());
+	CachingThread* thread = static_cast<CachingThread*>(sender());
 
 	m->temporary_files << thread->temporary_files();
 	m->import_cache = thread->cache();
@@ -141,8 +143,6 @@ void  Importer::accept_import(const QString& target_dir)
 {
 	emit_status(ImportStatus::Importing);
 
-	using Library::CopyThread;
-
 	CopyThread* copy_thread = new CopyThread(target_dir, m->import_cache, this);
 	connect(copy_thread, &CopyThread::sig_progress, this, &Importer::sig_progress);
 	connect(copy_thread, &CopyThread::finished, this, &Importer::copy_thread_finished);
@@ -158,7 +158,7 @@ void  Importer::accept_import(const QString& target_dir)
 
 void Importer::copy_thread_finished()
 {
-	Library::CopyThread* copy_thread = static_cast<Library::CopyThread*>(sender());
+	CopyThread* copy_thread = static_cast<CopyThread*>(sender());
 
 	MetaDataList v_md = copy_thread->get_copied_metadata();
 
@@ -176,7 +176,7 @@ void Importer::copy_thread_finished()
 	sp_log(Log::Debug, this) << "Copy folder thread finished " << m->copy_thread->was_cancelled();
 	if(copy_thread->was_cancelled())
 	{
-		copy_thread->set_mode(Library::CopyThread::Mode::Rollback);
+		copy_thread->set_mode(CopyThread::Mode::Rollback);
 		copy_thread->start();
 
 		emit_status(ImportStatus::Rollback);

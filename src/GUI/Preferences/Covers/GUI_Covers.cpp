@@ -82,6 +82,7 @@ void GUI_Covers::revert()
 	QStringList cover_servers = settings->get<Set::Cover_Server>();
 
 	ui->lv_cover_searchers->clear();
+	ui->lv_cover_searchers_inactive->clear();
 
 	QList<Cover::Fetcher::Base*> cover_fetchers = cfm->coverfetchers();
 	for(const Cover::Fetcher::Base* b : cover_fetchers)
@@ -121,8 +122,8 @@ void GUI_Covers::init_ui()
 
 	setup_parent(this, &ui);
 
-	ui->lv_cover_searchers->clear();
 	ui->lv_cover_searchers->setItemDelegate(new Gui::StyledItemDelegate(ui->lv_cover_searchers));
+	ui->lv_cover_searchers_inactive->setItemDelegate(new Gui::StyledItemDelegate(ui->lv_cover_searchers_inactive));
 
 	connect(ui->btn_up, &QPushButton::clicked, this, &GUI_Covers::up_clicked);
 	connect(ui->btn_down, &QPushButton::clicked, this, &GUI_Covers::down_clicked);

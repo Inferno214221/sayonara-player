@@ -73,12 +73,13 @@ public:
 		old_column_count(0),
 		columns(10)
 	{
-		cvpc = new CoverViewPixmapCache();
 		cover_thread = new AlbumCoverFetchThread(parent);
 	}
 
 	~Private()
 	{
+		cvpc->terminate();
+
 		if(cover_thread)
 		{
 			cover_thread->stop();
@@ -93,6 +94,10 @@ CoverModel::CoverModel(QObject* parent, AbstractLibrary* library) :
 	ItemModel(parent, library)
 {
 	m = Pimpl::make<Private>(this);
+	m->cvpc = new CoverViewPixmapCache(this);
+	m->cvpc->start();
+
+	connect(m->cvpc, &CoverViewPixmapCache::sig_hash_ready, this, &CoverModel::cover_ready);
 
 	Cover::ChangeNotfier* ccn = Cover::ChangeNotfier::instance();
 	connect(ccn, &Cover::ChangeNotfier::sig_covers_changed, this, &CoverModel::reload);
@@ -166,6 +171,11 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 					return pm;
 				}
 
+				if(m->cvpc->is_in_queue(hash))
+				{
+					return m->cvpc->invalid_pixmap();
+				}
+
 				m->cover_thread->add_album(album);
 				return m->cvpc->invalid_pixmap();
 			}
@@ -208,7 +218,6 @@ struct CoverLookupUserData
 {
 	Hash hash;
 	Location cl;
-	QModelIndex idx;
 	AlbumCoverFetchThread* acft=nullptr;
 };
 
@@ -232,52 +241,47 @@ void CoverModel::next_hash()
 	{
 		d->hash = hash;
 		d->cl = cl;
-		d->idx =  m->indexes[hash];
 		d->acft = acft;
 	}
 
-	Lookup* clu = new Lookup(this, 1);
+	Lookup* clu = new Lookup(nullptr, 1, cl);
+	clu->set_user_data(d);
+
 	connect(clu, &Lookup::sig_finished, this, &CoverModel::cover_lookup_finished);
 
-	clu->set_user_data(d);
-	bool b = clu->fetch_cover(cl);
-	if(!b)
-	{
-		clu->deleteLater();
-		acft->done(hash);
-	}
+	clu->start();
 }
 
 
 void CoverModel::cover_lookup_finished(bool success)
 {
 	Lookup* clu = static_cast<Lookup*>(sender());
-	CoverLookupUserData* d = static_cast<CoverLookupUserData*>(clu->take_user_data());
+	CoverLookupUserData* d = static_cast<CoverLookupUserData*>(clu->user_data());
 
-	if(d)
+	if(success)
 	{
-		if(success)
+		LOCK_GUARD(mtx);
+
+		QList<QPixmap> pixmaps = clu->take_pixmaps();
+		if(!pixmaps.isEmpty())
 		{
-			LOCK_GUARD(mtx)
-
-			QList<QPixmap> pixmaps = clu->pixmaps();
-			if(!pixmaps.isEmpty())
-			{
-				QPixmap pm(pixmaps.first());
-				m->cvpc->add_pixmap(d->hash, pm);
-			}
-
-			emit dataChanged(d->idx, d->idx);
+			QPixmap pm(pixmaps.first());
+			m->cvpc->add_pixmap(d->hash, pm);
 		}
-
-		d->acft->done(d->hash);
-
-		delete d; d=nullptr;
 	}
 
+	d->acft->done(d->hash);
+	delete d; d=nullptr;
+
+	clu->set_user_data(nullptr);
 	clu->deleteLater();
 }
 
+void CoverModel::cover_ready(const QString& hash)
+{
+	QModelIndex index = m->indexes.value(hash);
+	emit dataChanged(index, index);
+}
 
 QModelIndexList CoverModel::search_results(const QString& substr)
 {
@@ -460,7 +464,6 @@ void CoverModel::reload()
 	m->cover_thread->clear();
 
 	m->cvpc->clear();
-	m->indexes.clear();
 	m->indexes.clear();
 	clear();
 

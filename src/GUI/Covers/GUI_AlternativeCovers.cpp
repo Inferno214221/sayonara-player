@@ -365,7 +365,6 @@ void GUI_AlternativeCovers::reset()
 
 void GUI_AlternativeCovers::open_file_dialog()
 {
-
 	QString dir = QDir::homePath();
 	Cover::Location cl = m->cl_alternative->cover_location();
 	if(!cl.local_path_hint().isEmpty())

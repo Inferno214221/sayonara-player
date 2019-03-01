@@ -203,7 +203,7 @@ int Handler::create_playlist(const QStringList& pathlist, const QString& name, b
 {
 	DirectoryReader reader;
 
-	MetaDataList v_md = reader.metadata_from_filelist(pathlist);
+	MetaDataList v_md = reader.scan_metadata(pathlist);
 	v_md.sort(Library::SortOrder::TrackAlbumArtistAsc);
 
 	return create_playlist(v_md, name, temporary, type);

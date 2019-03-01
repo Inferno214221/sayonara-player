@@ -32,6 +32,7 @@
 
 #include <QFile>
 #include <QFileInfo>
+#include <QSqlDatabase>
 
 #include <atomic>
 #include <mutex>
@@ -95,7 +96,6 @@ AlbumCoverFetchThread::AlbumCoverFetchThread(QObject* parent) :
 }
 
 AlbumCoverFetchThread::~AlbumCoverFetchThread() {}
-
 
 void AlbumCoverFetchThread::run()
 {
@@ -269,6 +269,7 @@ void AlbumCoverFetchThread::add_album(const Album& album)
 		LOCK_GUARD(m->mutex_album_list);
 		m->hash_album_list.push_back(HashAlbumPair(hash, album));
 	}
+
 }
 
 AlbumCoverFetchThread::HashLocationPair AlbumCoverFetchThread::take_current_location()

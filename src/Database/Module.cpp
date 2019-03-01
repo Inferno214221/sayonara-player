@@ -76,8 +76,8 @@ QSqlDatabase Module::db() const
 							<< "(" << new_connection_name << ")";
 
 	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", new_connection_name);
-
 	db.setDatabaseName(m->connection_name);
+
 	if(!db.open())
 	{
 		sp_log(Log::Error, this) << "Database cannot be opened! " << m->connection_name;

@@ -83,6 +83,7 @@ namespace Library
 			void clear();
 
 		private slots:
+			void cover_ready(const QString& hash);
 			void next_hash();
 			void cover_lookup_finished(bool success);
 			void show_artists_changed();

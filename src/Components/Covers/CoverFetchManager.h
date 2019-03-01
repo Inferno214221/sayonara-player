@@ -105,6 +105,12 @@ namespace Fetcher
 			 */
 			QList<Cover::Fetcher::Base*> coverfetchers() const;
 
+			QList<Cover::Fetcher::Base*> active_coverfetchers() const;
+			QList<Cover::Fetcher::Base*> inactive_coverfetchers() const;
+
+			bool is_active(const Cover::Fetcher::Base* cfi) const;
+			bool is_active(const QString& identifier) const;
+
 			QString identifier_by_url(const QString& url) const;
 
 

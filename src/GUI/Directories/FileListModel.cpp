@@ -80,7 +80,7 @@ void FileListModel::set_parent_directory(LibraryId id, const QString& dir)
 
 	DirectoryReader reader;
 	reader.set_filter(extensions);
-	reader.files_in_directory(base_dir, m->files);
+	reader.scan_files(base_dir, m->files);
 
 	if(m->files.size() > old_rowcount){
 		beginInsertRows(QModelIndex(), old_rowcount, m->files.size());
