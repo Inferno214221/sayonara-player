@@ -194,7 +194,17 @@ struct Application::Private
 		if(db){
 			db->settings_connector()->store_settings();
 			db->close_db();
+
 			db = nullptr;
+
+			QStringList connection_names = QSqlDatabase::connectionNames();
+			for(const QString& connection_name : connection_names)
+			{
+				QSqlDatabase database = QSqlDatabase::database(connection_name);
+				if(database.isOpen()){
+					database.close();
+				}
+			}
 		}
 
 		if(metatype_registry)

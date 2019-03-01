@@ -32,6 +32,7 @@
 
 #include <QFile>
 #include <QFileInfo>
+#include <QSqlDatabase>
 
 #include <atomic>
 #include <mutex>
@@ -95,7 +96,6 @@ AlbumCoverFetchThread::AlbumCoverFetchThread(QObject* parent) :
 }
 
 AlbumCoverFetchThread::~AlbumCoverFetchThread() {}
-
 
 void AlbumCoverFetchThread::run()
 {

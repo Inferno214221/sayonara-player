@@ -32,8 +32,8 @@ using DB::Module;
 
 struct Query::Private
 {
-	QString query_string;
-	bool success;
+	QString		query_string;
+	bool		success;
 
 	Private() :
 		success(false)

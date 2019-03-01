@@ -303,7 +303,6 @@ Location Location::cover_location(const Album& album)
 		MetaDataList v_md;
 		lib_db->getAllTracksByAlbum(album.id, v_md);
 
-
 		if(!v_md.isEmpty())
 		{
 			cl.set_local_path_hint(v_md.first().filepath());

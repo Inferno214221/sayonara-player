@@ -70,7 +70,6 @@ Base::Base(DbId db_id, const QString& dir, const QString& filename, QObject* par
 	}
 }
 
-
 Base::Base(DbId db_id, const QString& filename, QObject* parent) :
 	Base(db_id, Util::sayonara_path(), filename, parent)
 {}
@@ -96,11 +95,10 @@ bool Base::close_db()
 	sp_log(Log::Info, this) << "close database " << m->filename << "...";
 
 	QSqlDatabase database = db();
-	if(database.isOpen() && database.isValid()){
+	if(database.isOpen()){
 		database.close();
 	}
 
-	QSqlDatabase::removeDatabase(m->connection_name);
 	return true;
 }
 

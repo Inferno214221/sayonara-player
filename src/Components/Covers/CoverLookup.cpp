@@ -180,13 +180,15 @@ bool Lookup::fetch_from_database()
 	DB::Covers* dbc = DB::Connector::instance()->cover_connector();
 
 	QPixmap pm;
-	bool success = dbc->get_cover(m->cl.hash(), pm);
+	QString hash = m->cl.hash();
+	bool success = dbc->get_cover(hash, pm);
 	if(success)
 	{
 		add_new_cover(pm);
 		emit_finished(true);
-		return true;
 	}
+
+	return success;
 }
 
 bool Lookup::fetch_from_audio_source()
