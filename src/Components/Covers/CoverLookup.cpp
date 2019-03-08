@@ -137,6 +137,7 @@ void Lookup::start()
 
 bool Lookup::fetch_cover(const Cover::Location& cl, bool also_www)
 {
+	m->cl = cl;
 	m->finished = false;
 
 	bool success = false;
