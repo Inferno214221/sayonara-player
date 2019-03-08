@@ -429,6 +429,10 @@ void GUI_Playlist::tab_save_playlist_clicked(int idx)
 
 void GUI_Playlist::tab_save_playlist_as_clicked(int idx, const QString& str)
 {
+	if(str.isEmpty()){
+		return;
+	}
+
 	Handler* handler = Handler::instance();
 
 	Playlist::DBInterface::SaveAsAnswer success =

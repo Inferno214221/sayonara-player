@@ -96,7 +96,9 @@ void PlaylistTabBar::save_as_pressed()
 				Lang::get(Lang::SaveAs).triplePt(),
 				cur_text + ": " + Lang::get(Lang::SaveAs));
 
-	emit sig_tab_save_as(cur_idx, name);
+	if(!name.isEmpty()){
+		emit sig_tab_save_as(cur_idx, name);
+	}
 }
 
 void PlaylistTabBar::save_to_file_pressed()

@@ -243,7 +243,7 @@ namespace Cover
 		 * @param album
 		 * @return CoverLocation object
 		 */
-		static Location cover_location(const Album& album);
+		static Location xcover_location(const Album& album);
 
 
 		/**

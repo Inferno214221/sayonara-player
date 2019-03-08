@@ -32,11 +32,9 @@
 #include "Utils/globals.h"
 #include "Utils/Logger/Logger.h"
 
-#include "Database/Connector.h"
-#include "Database/LibraryDatabase.h"
-
 #include <QDir>
 #include <QUrl>
+#include <QMap>
 #include <QStringList>
 #include <QImage>
 #include <QPixmap>
@@ -56,15 +54,15 @@ struct Location::Private
 	QStringList		search_urls;		// Search url where to fetch covers
 	QStringList		search_term_urls;	// Search urls where to fetch cover when using freetext search
 	StringMap		all_search_urls;	// key = identifier of coverfetcher, value = search url
-	QString			cover_path;		// cover_path path, in .Sayonara, where cover is stored. Ignored if local_paths are not empty
-	QString			identifier;		// Some human readable identifier with methods where invokded
+	QString			cover_path;			// cover_path path, in .Sayonara, where cover is stored. Ignored if local_paths are not empty
+	QString			identifier;			// Some human readable identifier with methods where invokded
 	QString			audio_file_source;	// A saved cover from an audio file
 	QString			audio_file_target;
 	QString			local_path_hint;
-	QString			hash;			// A unique identifier, mostly referred to as the cover token
+	QString			hash;				// A unique identifier, mostly referred to as the cover token
 
 	bool			freetext_search;
-	bool			valid;			// valid if CoverLocation object contains a valid download url
+	bool			valid;				// valid if CoverLocation object contains a valid download url
 
 	Private() :
 		freetext_search(false),
@@ -260,11 +258,7 @@ void check_coverpath(const QString& audio_path, const QString& cover_path)
 	FileUtils::create_symlink(source, cover_path);
 }
 
-// TODO: Clean me up
-// TODO: Check for albumID
-// TODO: Check for dbid
-// TODO: Make this class nicer: e.g. valid(), isInvalidLocation()
-Location Location::cover_location(const Album& album)
+Location Location::xcover_location(const Album& album)
 {
 	Location cl;
 
@@ -297,16 +291,11 @@ Location Location::cover_location(const Album& album)
 
 	// setup local paths. No audio file source. That may last too long
 	{
-		DB::Connector* db = DB::Connector::instance();
-		DB::LibraryDatabase* lib_db = db->library_db(-1, 0);
-
-		MetaDataList v_md;
-		lib_db->getAllTracksByAlbum(album.id, v_md);
-
-		if(!v_md.isEmpty())
+		QStringList path_hint = album.path_hint();
+		if(!path_hint.isEmpty())
 		{
-			cl.set_local_path_hint(v_md.first().filepath());
-			cl.set_audio_file_source(v_md.first().filepath(), cl.cover_path());
+			cl.set_local_path_hint(path_hint.first());
+			cl.set_audio_file_source(path_hint.first(), cl.cover_path());
 		}
 	}
 
@@ -353,27 +342,6 @@ Location Location::cover_location(const QString& artist)
 	return ret;
 }
 
-Location Get_cover_location(AlbumId album_id, DbId db_id)
-{
-	if(album_id < 0) {
-		return Location::invalid_location();
-	}
-
-	DB::Connector* db = DB::Connector::instance();
-	DB::LibraryDatabase* lib_db = db->library_db(-1, db_id);
-	if(!lib_db){
-		return Location();
-	}
-
-	Album album;
-	bool success = lib_db->getAlbumByID(album_id, album, true);
-	if(!success) {
-		return Location::invalid_location();
-	}
-
-	return Location::cover_location(album);
-}
-
 Location Location::cover_location(const MetaData& md)
 {
 	Location cl;
@@ -388,8 +356,17 @@ Location Location::cover_location(const MetaData& md)
 		cl = cover_location(QUrl(md.cover_download_url()), cover_path);
 	}
 
-	else if(md.album_id >= 0){
-		cl = Get_cover_location(md.album_id, md.db_id());
+	else if(md.album_id >= 0)
+	{
+		Album album;
+		album.id = md.album_id;
+		album.set_name(md.album());
+		album.set_artists({md.artist()});
+		album.set_album_artists({md.album_artist()});
+		album.set_db_id(md.db_id());
+		album.set_path_hint({md.filepath()});
+
+		cl = xcover_location(album);
 	}
 
 	if(!cl.valid() && !md.album().isEmpty() && !md.artist().isEmpty()){

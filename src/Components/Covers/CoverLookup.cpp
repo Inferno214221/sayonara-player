@@ -170,7 +170,6 @@ bool Lookup::fetch_cover(const Cover::Location& cl, bool also_www)
 		}
 	}
 
-	emit_finished(false);
 	return false;
 }
 
@@ -182,7 +181,7 @@ bool Lookup::fetch_from_database()
 	QPixmap pm;
 	QString hash = m->cl.hash();
 	bool success = dbc->get_cover(hash, pm);
-	if(success)
+	if(success && !pm.isNull())
 	{
 		add_new_cover(pm);
 		emit_finished(true);
@@ -195,19 +194,10 @@ bool Lookup::fetch_from_audio_source()
 {
 	Cover::Location cl = m->cl;
 	QPixmap pm;
-	if(FileUtils::exists(cl.audio_file_target()))
-	{
-		pm = QPixmap(cl.audio_file_target());
-		bool success = add_new_cover(pm, cl.hash());
-		if(success)
-		{
-			emit_finished(true);
-			return true;
-		}
-	}
 
-	Cover::Extractor* extractor = new Cover::Extractor(cl.audio_file_source(), this);
+	Cover::Extractor* extractor = new Cover::Extractor(cl.audio_file_source(), nullptr);
 	QThread* thread = new QThread();
+	extractor->moveToThread(thread);
 
 	connect(extractor, &Cover::Extractor::sig_finished, this, &Cover::Lookup::extractor_finished);
 	connect(extractor, &Cover::Extractor::destroyed, thread, &QThread::quit);
@@ -224,13 +214,7 @@ bool Lookup::fetch_from_file_system()
 {
 	Cover::Location cl = m->cl;
 
-	QString cover_path = cl.preferred_path();
-	if(Location::is_invalid(cover_path))
-	{
-		// cover path always return the path in .Sayonara/cover
-		// No matter if it exists or not
-		cover_path = cl.cover_path();
-	}
+	QString cover_path = cl.local_path_hint();
 
 	// Look, if cover exists in .Sayonara/covers
 	if(FileUtils::exists(cover_path) && m->n_covers == 1)
@@ -261,8 +245,6 @@ bool Lookup::fetch_from_www()
 	return false;
 }
 
-
-
 void Lookup::thread_finished(bool success)
 {
 	emit_finished(success);
@@ -278,23 +260,20 @@ void Lookup::extractor_finished()
 
 	extractor->deleteLater();
 
-	if(!pm.isNull())
-	{
-		this->add_new_cover(pm, m->cl.hash());
+	bool success = this->add_new_cover(pm, m->cl.hash());
+	if(success){
 		emit_finished(true);
+		return;
 	}
 
-	else
-	{
-		bool success = fetch_from_file_system();
-		if(!success){
-			return;
-		}
+	success = fetch_from_file_system();
+	if(success){
+		return;
+	}
 
-		success = fetch_from_www();
-		if(!success){
-			emit_finished(false);
-		}
+	success = fetch_from_www();
+	if(!success){
+		emit_finished(false);
 	}
 }
 
@@ -339,7 +318,7 @@ void Lookup::cover_found(int idx)
 	}
 
 	QPixmap pm = cft->pixmap(idx);
-	add_new_cover(pm);
+	add_new_cover(pm, m->cl.hash());
 	if(m->n_covers == 1)
 	{
 		pm.save(Cover::Utils::cover_directory(m->cl.hash() + ".jpg"));
@@ -420,6 +399,11 @@ QPixmap Cover::Extractor::pixmap()
 
 void Cover::Extractor::start()
 {
-	m->pixmap = Tagging::Covers::extract_cover(m->filepath);
+	m->pixmap = QPixmap();
+
+	if(FileUtils::exists(m->filepath)){
+		m->pixmap = Tagging::Covers::extract_cover(m->filepath);
+	}
+
 	emit sig_finished();
 }

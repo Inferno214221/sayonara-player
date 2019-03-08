@@ -89,6 +89,7 @@ QString Albums::fetch_query_albums(bool also_empty) const
 			", GROUP_CONCAT(DISTINCT artists.name)"
 			", GROUP_CONCAT(DISTINCT albumArtists.name)"
 			", GROUP_CONCAT(DISTINCT " + m->track_view + ".discnumber)"
+			", GROUP_CONCAT(DISTINCT " + m->track_view + ".filename)"
 			" FROM albums ";
 
 	QString join = " INNER JOIN ";
@@ -96,9 +97,9 @@ QString Albums::fetch_query_albums(bool also_empty) const
 		join = " LEFT OUTER JOIN ";
 	}
 
-	sql +=	join + " " +  m->track_view + " ON " +  m->track_view + ".albumID = albums.albumID " +
-			join + " artists ON " + m->track_view + ".artistID = artists.artistID " +
-			join + " artists albumArtists ON " + m->track_view + ".albumArtistID = albumArtists.artistID ";
+	sql += join + " " +  m->track_view + " ON " +  m->track_view + ".albumID = albums.albumID ";
+	sql += join + " artists ON " + m->track_view + ".artistID = artists.artistID ";
+	sql += join + " artists albumArtists ON " + m->track_view + ".albumArtistID = albumArtists.artistID ";
 
 	return sql;
 }
@@ -141,6 +142,8 @@ bool Albums::db_fetch_albums(Query& q, AlbumList& result)
 		album.n_discs = album.discnumbers.size();
 		album.is_sampler = (album.artists().size() > 1);
 		album.set_db_id(db_id());
+
+		album.set_path_hint(q.value(9).toString().split(','));
 
 		result.push_back(std::move(album));
 	};

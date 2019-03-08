@@ -48,7 +48,6 @@ namespace DB
 			virtual bool getAllAlbums(AlbumList& result, bool also_empty);
 			virtual bool getAllAlbums(AlbumList& result, ::Library::SortOrder sortorder=::Library::SortOrder::AlbumNameAsc, bool also_empty=false);
 
-
 			virtual bool getAllAlbumsByArtist(ArtistId artist, AlbumList& result);
 			virtual bool getAllAlbumsByArtist(ArtistId artist, AlbumList& result, const ::Library::Filter& filter, ::Library::SortOrder sortorder = ::Library::SortOrder::AlbumNameAsc);
 			virtual bool getAllAlbumsByArtist(IdList artists, AlbumList& result);

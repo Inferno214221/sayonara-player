@@ -208,4 +208,6 @@ void GUI_Covers::fetch_covers_www_triggered(bool b)
 	ui->lv_cover_searchers_inactive->setEnabled(b);
 	ui->btn_down->setEnabled(b);
 	ui->btn_up->setEnabled(b);
+	ui->btn_add->setEnabled(b);
+	ui->btn_remove->setEnabled(b);
 }

@@ -198,6 +198,11 @@ void MetaDataInfo::calc_subheader(uint16_t tracknum)
 void MetaDataInfo::calc_cover_location() {}
 void MetaDataInfo::calc_cover_location(const MetaDataList& lst)
 {
+	if(lst.isEmpty()){
+		m->cover_location = Cover::Location::invalid_location();
+		return;
+	}
+
 	if(lst.size() == 1)
 	{
 		const MetaData& md = lst[0];
@@ -214,7 +219,13 @@ void MetaDataInfo::calc_cover_location(const MetaDataList& lst)
 		album.set_album_artists(m->album_artists.toList());
 		album.set_db_id(lst[0].db_id());
 
-		m->cover_location = Cover::Location::cover_location(album);
+		QStringList path_hint;
+		for(const MetaData& md : lst){
+			path_hint << md.filepath();
+		}
+		album.set_path_hint(path_hint);
+
+		m->cover_location = Cover::Location::xcover_location(album);
 	}
 
 	else if(m->albums.size() == 1 && m->artists.size() == 1)

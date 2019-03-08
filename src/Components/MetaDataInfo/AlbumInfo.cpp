@@ -60,12 +60,12 @@ AlbumInfo::AlbumInfo(const MetaDataList& v_md) :
 
 	if(albums().size() > 1)
 	{
-		insert_numeric_info_field(InfoStrings::nAlbums, albums().size());
+		insert_numeric_info_field(InfoStrings::nAlbums, albums().count());
 	}
 
 	if(artists().size() > 1)
 	{
-		insert_numeric_info_field(InfoStrings::nArtists, artists().size());
+		insert_numeric_info_field(InfoStrings::nArtists, artists().count());
 	}
 
 	if(albums().size() == 1)
@@ -152,7 +152,7 @@ void AlbumInfo::calc_cover_location()
 			album.set_db_id(lib_db->db_id());
 		}
 
-		m->cover_location = Cover::Location::cover_location(album);
+		m->cover_location = Cover::Location::xcover_location(album);
 	}
 
 	else if( albums().size() == 1)

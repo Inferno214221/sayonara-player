@@ -80,7 +80,7 @@ namespace Cover
 		 * @brief fetch next cover
 		 * @return false, if there are no more covers to fetch
 		 */
-		bool more();
+		bool fetch_next_cover();
 
 		/**
 		 * @brief stops the current search

@@ -29,6 +29,7 @@ struct Album::Private
 {
 	std::list<HashValue> artist_idxs;
 	std::list<HashValue> album_artist_idxs;
+	QStringList			 path_hint;
 	HashValue album_idx;
 
 	Private() {}
@@ -37,12 +38,14 @@ struct Album::Private
 	Private(const Private& other) :
 		CASSIGN(artist_idxs),
 		CASSIGN(album_artist_idxs),
+		CASSIGN(path_hint),
 		CASSIGN(album_idx)
 	{}
 
 	Private(Private&& other) :
 		CMOVE(artist_idxs),
 		CMOVE(album_artist_idxs),
+		CMOVE(path_hint),
 		CMOVE(album_idx)
 	{}
 
@@ -50,6 +53,7 @@ struct Album::Private
 	{
 		ASSIGN(artist_idxs);
 		ASSIGN(album_artist_idxs);
+		ASSIGN(path_hint);
 		ASSIGN(album_idx);
 
 		return *this;
@@ -59,6 +63,7 @@ struct Album::Private
 	{
 		MOVE(artist_idxs);
 		MOVE(album_artist_idxs);
+		MOVE(path_hint);
 		MOVE(album_idx);
 
 		return *this;
@@ -221,6 +226,16 @@ void Album::set_album_artists(const QStringList &album_artists)
 	}
 }
 
+QStringList Album::path_hint() const
+{
+	return m->path_hint;
+}
+
+void Album::set_path_hint(const QStringList& paths)
+{
+	m->path_hint = paths;
+	m->path_hint.removeDuplicates();
+}
 
 QVariant Album::toVariant(const Album& album)
 {
@@ -275,6 +290,16 @@ Album AlbumList::first() const
 	}
 
 	return this->at(0);
+}
+
+Album& AlbumList::operator[](int idx)
+{
+	return *(this->begin() + idx);
+}
+
+const Album& AlbumList::operator[](int idx) const
+{
+	return *(this->begin() + idx);
 }
 
 AlbumList& AlbumList::append_unique(const AlbumList& other)

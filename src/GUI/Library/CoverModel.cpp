@@ -62,16 +62,19 @@ public:
 
 	QHash<Hash, QModelIndex>	indexes;
 	QSize						item_size;
+
 	std::mutex					refresh_mtx;
 
 	int	old_row_count;
 	int	old_column_count;
 	int columns;
+	int							clus_running;
 
 	Private(QObject* parent) :
 		old_row_count(0),
 		old_column_count(0),
-		columns(10)
+		columns(10),
+		clus_running(0)
 	{
 		cover_thread = new AlbumCoverFetchThread(parent);
 	}
@@ -127,14 +130,14 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 		return QVariant();
 	}
 
-	const AlbumList& a = this->albums();
+	const AlbumList& albums = this->albums();
 
 	int lin_idx = (index.row() *  columnCount()) + index.column();
-	if(lin_idx >= a.count()){
+	if(lin_idx >= albums.count()){
 		return QVariant();
 	}
 
-	const Album& album = a[lin_idx];
+	const Album& album = albums[lin_idx];
 
 	switch(role)
 	{
@@ -249,6 +252,8 @@ void CoverModel::next_hash()
 
 	connect(clu, &Lookup::sig_finished, this, &CoverModel::cover_lookup_finished);
 
+	m->clus_running++;
+	sp_log(Log::Develop, this) << "CLU started: " << m->clus_running << ", " << d->hash;
 	clu->start();
 }
 
@@ -270,6 +275,8 @@ void CoverModel::cover_lookup_finished(bool success)
 		}
 	}
 
+	m->clus_running--;
+	sp_log(Log::Develop, this) << "CLU finished: " << m->clus_running << ", " << d->hash;
 	d->acft->done(d->hash);
 	delete d; d=nullptr;
 
@@ -287,10 +294,10 @@ QModelIndexList CoverModel::search_results(const QString& substr)
 {
 	QModelIndexList ret;
 
-	const AlbumList& a = albums();
-	const int n_albums = a.count();
+	const AlbumList& albums = this->albums();
 
-	for(int i=0; i<n_albums; i++)
+	int i=0;
+	for(auto it=albums.begin(); it != albums.end(); it++, i++)
 	{
 		QString title = searchable_string(i);
 		title = Library::Utils::convert_search_string(title, search_mode());
@@ -301,7 +308,7 @@ QModelIndexList CoverModel::search_results(const QString& substr)
 			continue;
 		}
 
-		const QStringList artists = a[i].artists();
+		const QStringList artists = it->artists();
 		for(const QString& artist : artists)
 		{
 			QString cvt_artist = Library::Utils::convert_search_string(artist, search_mode());
@@ -324,24 +331,24 @@ int CoverModel::searchable_column() const
 
 QString CoverModel::searchable_string(int idx) const
 {
-	const AlbumList& a = albums();
-	if(idx < 0 || idx >= a.count())
+	const AlbumList& albums = this->albums();
+	if(idx < 0 || idx >= albums.count())
 	{
 		return QString();
 	}
 
-	return a[idx].name();
+	return albums[idx].name();
 }
 
 int CoverModel::id_by_index(int idx) const
 {
-	const AlbumList& a = albums();
-	if(idx < 0 || idx >= a.count())
+	const AlbumList& albums = this->albums();
+	if(idx < 0 || idx >= albums.count())
 	{
 		return -1;
 	}
 
-	return a[idx].id;
+	return albums[idx].id;
 }
 
 Location CoverModel::cover(const IndexSet& indexes) const
@@ -358,7 +365,7 @@ Location CoverModel::cover(const IndexSet& indexes) const
 	}
 
 	Album album = albums[idx];
-	return Cover::Location::cover_location(album);
+	return Cover::Location::xcover_location(album);
 }
 
 
@@ -372,7 +379,7 @@ Qt::ItemFlags CoverModel::flags(const QModelIndex& index) const
 	int max_column = columnCount();
 	if(row == rowCount() - 1)
 	{
-		max_column = albums().size() % columnCount();
+		max_column = albums().count() % columnCount();
 	}
 
 	if(column >= max_column || column < 0 || row < 0)

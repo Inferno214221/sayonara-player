@@ -73,6 +73,9 @@ public:
 	QStringList album_artists() const;
 	void set_album_artists(const QStringList& album_artists);
 
+	QStringList path_hint() const;
+	void set_path_hint(const QStringList& paths);
+
 	static QVariant toVariant(const Album& album);
 	static bool fromVariant(const QVariant& v, Album& album);
 	QString to_string() const;
@@ -93,6 +96,8 @@ public:
 	int count() const;
 	AlbumList& operator <<(const Album& album);
 	Album first() const;
+	Album& operator[](int idx);
+	const Album& operator[](int idx) const;
 
 	AlbumList& append_unique(const AlbumList& other);
 	AlbumList& append_unique(AlbumList&& other);

@@ -46,7 +46,6 @@ struct CoverButton::Private
 	Location		cover_location;
 	QPixmap			current_cover;
 	QString			class_tmp_file;
-	Lookup*			cover_lookup=nullptr;
 	bool			cover_forced;
 
 	Private() :
@@ -77,14 +76,7 @@ CoverButton::CoverButton(QWidget* parent) :
 	connect(cn, &Cover::ChangeNotfier::sig_covers_changed, this, &CoverButton::refresh);
 }
 
-CoverButton::~CoverButton()
-{
-	if(m->cover_lookup)
-	{
-		m->cover_lookup->stop();
-		m->cover_lookup->deleteLater();
-	}
-}
+CoverButton::~CoverButton() {}
 
 void CoverButton::refresh()
 {
@@ -112,16 +104,13 @@ void CoverButton::set_cover_location(const Location& cl)
 	m->cover_location = cl;
 	m->cover_forced = false;
 
-	if(!m->cover_lookup)
-	{
-		m->cover_lookup = new Lookup(this);
-		connect(m->cover_lookup, &Lookup::sig_cover_found, this, &CoverButton::set_cover_image);
-		connect(m->cover_lookup, &Lookup::sig_finished, this, &CoverButton::cover_lookup_finished);
-	}
-
 	set_cover_image(Cover::Location::invalid_location().cover_path());
 
-	m->cover_lookup->fetch_cover(cl);
+	Cover::Lookup* clu = new Lookup(this, 1, cl);
+	connect(clu, &Lookup::sig_cover_found, this, &CoverButton::set_cover_image);
+	connect(clu, &Lookup::sig_finished, this, &CoverButton::cover_lookup_finished);
+
+	clu->start();
 }
 
 
@@ -188,6 +177,8 @@ void CoverButton::cover_lookup_finished(bool success)
 		sp_log(Log::Warning, this) << "Cover lookup finished: false";
 		set_cover_image(Location::invalid_location().preferred_path());
 	}
+
+	sender()->deleteLater();
 }
 
 

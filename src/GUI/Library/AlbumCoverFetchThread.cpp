@@ -178,7 +178,7 @@ bool AlbumCoverFetchThread::thread_create_cover_location()
 	QString hash = hap.first;
 	Album album = hap.second;
 
-	Cover::Location cl = Cover::Location::cover_location(album);
+	Cover::Location cl = Cover::Location::xcover_location(album);
 	{
 		QString cp = cl.cover_path();
 
