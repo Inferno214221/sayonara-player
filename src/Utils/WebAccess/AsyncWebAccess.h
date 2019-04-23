@@ -75,7 +75,7 @@ public:
 	AsyncWebAccess(QObject* parent=nullptr, const QByteArray& header=QByteArray(),
 				   AsyncWebAccess::Behavior behavior=AsyncWebAccess::Behavior::AsBrowser);
 
-	~AsyncWebAccess();
+	virtual ~AsyncWebAccess();
 
 	/**
 	 * @brief get fetched data

@@ -20,11 +20,22 @@
 
 #include "GUI_Stream.h"
 #include "GUI/Plugins/ui_GUI_Stream.h"
-#include "Components/StreamPlugins/Streams/StreamHandlerStreams.h"
+#include "GUI/Plugins/Stream/GUI_StationSearcher.h"
+
+#include "Components/Streaming/Streams/StreamHandlerStreams.h"
+
 #include "Utils/Language.h"
 
+struct GUI_Stream::Private
+{
+	GUI_StationSearcher* searcher = nullptr;
+};
+
 GUI_Stream::GUI_Stream(QWidget *parent) :
-	GUI_AbstractStream(parent) {}
+	GUI_AbstractStream(parent)
+{
+	m = Pimpl::make<Private>();
+}
 
 GUI_Stream::~GUI_Stream()
 {
@@ -53,6 +64,8 @@ void GUI_Stream::retranslate_ui()
 void GUI_Stream::init_ui()
 {
 	setup_parent(this, &ui);
+
+	connect(ui->le_url, &QLineEdit::textEdited, this, &GUI_Stream::text_changed);
 }
 
 
@@ -90,4 +103,24 @@ QLabel* GUI_Stream::lab_listen()
 AbstractStreamHandler* GUI_Stream::stream_handler() const
 {
 	return new StreamHandlerStreams();
+}
+
+void GUI_Stream::text_changed(const QString& text)
+{
+	if(text == "ss")
+	{
+		if(!m->searcher)
+		{
+			m->searcher = new GUI_StationSearcher(this);
+			connect(m->searcher, &GUI_StationSearcher::sig_stream_selected, this, &GUI_Stream::stream_selected);
+		}
+
+		m->searcher->show();
+	}
+}
+
+void GUI_Stream::stream_selected(const QString& name, const QString& url)
+{
+	ui->le_url->setText(url);
+	ui->combo_stream->setCurrentText(name);
 }

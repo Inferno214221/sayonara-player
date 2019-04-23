@@ -38,7 +38,7 @@
 #include "Components/RemoteControl/RemoteControl.h"
 #include "Components/Engine/EngineHandler.h"
 #include "Components/PlayManager/PlayManager.h"
-#include "Components/StreamPlugins/LastFM/LastFM.h"
+#include "Components/Streaming/LastFM/LastFM.h"
 #include "Components/Session/Session.h"
 
 #include "Interfaces/LibraryInterface/LibraryPluginHandler.h"

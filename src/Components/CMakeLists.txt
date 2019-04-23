@@ -21,7 +21,7 @@ add_subdirectory(PlayManager)
 add_subdirectory(Preferences)
 add_subdirectory(RemoteControl)
 add_subdirectory(Session)
-add_subdirectory(StreamPlugins)
+add_subdirectory(Streaming)
 add_subdirectory(Tagging)
 
 

@@ -33,7 +33,7 @@
 #include "Utils/Message/Message.h"
 #include "Utils/Settings/Settings.h"
 
-#include "Components/StreamPlugins/Streams/AbstractStreamHandler.h"
+#include "Components/Streaming/Streams/AbstractStreamHandler.h"
 
 #include <QComboBox>
 #include <QPushButton>

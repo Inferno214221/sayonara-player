@@ -23,7 +23,7 @@
 #include "LFMCoverFetcher.h"
 #include "Utils/Utils.h"
 #include "Utils/Logger/Logger.h"
-#include "Components/StreamPlugins/LastFM/LFMGlobals.h"
+#include "Components/Streaming/LastFM/LFMGlobals.h"
 
 #include <QStringList>
 #include <QDomDocument>

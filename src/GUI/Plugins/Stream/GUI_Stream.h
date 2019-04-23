@@ -30,6 +30,7 @@ class GUI_Stream :
 {
 	Q_OBJECT
 	UI_CLASS(GUI_Stream)
+	PIMPL(GUI_Stream)
 
 public:
 	explicit GUI_Stream(QWidget *parent=nullptr);
@@ -51,6 +52,11 @@ private:
 	MenuToolButton* btn_menu() override;
 	QLabel* lab_listen() override;
 	AbstractStreamHandler* stream_handler() const override;
+
+private slots:
+	void text_changed(const QString& text);
+	void stream_selected(const QString& name, const QString& url);
+
 };
 
 #endif /* GUI_STREAM_H_ */

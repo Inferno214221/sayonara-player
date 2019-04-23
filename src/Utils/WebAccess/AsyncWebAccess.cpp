@@ -191,12 +191,15 @@ void AsyncWebAccess::data_available()
 	QNetworkReply* reply = static_cast<QNetworkReply*>(sender());
 
 	int content_length = reply->header(QNetworkRequest::ContentLengthHeader).toInt();
+	qint32 length = static_cast<qint32>(content_length + 1024 * 1024); // some streaming sites use maxint for streams
+	bool valid_length = (content_length > 0) && (length > 0);
+
 	QString content_type = reply->header(QNetworkRequest::ContentTypeHeader).toString();
 	QString url_file = QUrl(m->url).fileName();
 
 	if(content_type.contains("audio/", Qt::CaseInsensitive) &&
-			content_length <= 0 &&
-			!Util::File::is_playlistfile(url_file))
+			(valid_length == false) &&
+			(Util::File::is_playlistfile(url_file) == false))
 	{
 		m->abort_request(true);
 		m->status = AsyncWebAccess::Status::AudioStream;

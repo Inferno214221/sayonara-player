@@ -20,13 +20,13 @@
 
 #include "GUI_Podcasts.h"
 #include "GUI/Plugins/ui_GUI_Podcasts.h"
-#include "Components/StreamPlugins/Streams/StreamHandlerPodcasts.h"
+#include "Components/Streaming/Streams/StreamHandlerPodcasts.h"
 
 #include "Utils/Language.h"
 
 GUI_Podcasts::GUI_Podcasts(QWidget *parent) :
 	GUI_AbstractStream(parent)
- {}
+{}
 
 GUI_Podcasts::~GUI_Podcasts()
 {

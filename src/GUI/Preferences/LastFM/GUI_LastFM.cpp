@@ -30,7 +30,7 @@
 #include "GUI/Preferences/ui_GUI_LastFM.h"
 #include "Utils/Crypt.h"
 
-#include "Components/StreamPlugins/LastFM/LastFM.h"
+#include "Components/Streaming/LastFM/LastFM.h"
 
 #include "Utils/Language.h"
 #include "Utils/Settings/Settings.h"
