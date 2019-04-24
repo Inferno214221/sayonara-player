@@ -11,21 +11,23 @@
    </rect>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
-    <widget class="QCheckBox" name="cb_new_tab">
-     <property name="text">
-      <string>Open Streams in new tab</string>
+   <item row="2" column="1">
+    <widget class="QSpinBox" name="sb_buffer_size">
+     <property name="suffix">
+      <string> ms</string>
+     </property>
+     <property name="minimum">
+      <number>20</number>
+     </property>
+     <property name="maximum">
+      <number>1000</number>
+     </property>
+     <property name="value">
+      <number>500</number>
      </property>
     </widget>
    </item>
-   <item row="1" column="0">
-    <widget class="QCheckBox" name="cb_show_history">
-     <property name="text">
-      <string>Show history</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0">
+   <item row="3" column="1">
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -37,6 +39,27 @@
       </size>
      </property>
     </spacer>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="lab_buffer_size">
+     <property name="text">
+      <string>Buffer size</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QCheckBox" name="cb_show_history">
+     <property name="text">
+      <string>Show history</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QCheckBox" name="cb_new_tab">
+     <property name="text">
+      <string>Open Streams in new tab</string>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

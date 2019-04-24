@@ -1,5 +1,8 @@
 #include "FMStreamParser.h"
+#include "Utils/Utils.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/FileUtils.h"
+
 #include <QRegExp>
 
 struct FMStreamParser::Private
@@ -12,22 +15,50 @@ static QString extract_regexp(const QString& data, const QString& re_str)
 	QRegExp re(re_str);
 	re.setMinimal(true);
 	int idx = re.indexIn(data);
-	if(idx >= 0) {
-		return re.cap(1).trimmed();
+	if(idx >= 0)
+	{
+		QString ret = re.cap(1).trimmed();
+		ret.remove("<br>", Qt::CaseInsensitive);
+		while(ret.contains("  ")){
+			ret.replace("  ", " ");
+		}
+
+		while(ret.contains("??")){
+			ret.replace("??", "");
+		}
+
+		while(ret.contains("? ?")){
+			ret.replace("? ?", "");
+		}
+
+		return ret;
 	}
 
 	return QString();
 }
 
+
 static void parse_stn1_block(const QString& data, RadioStation& station)
 {
-	station.name =				extract_regexp(data, "<h3>(.*)</h3>");
+	station.name =				Util::cvt_str_to_first_upper(extract_regexp(data, "<h3>(.*)</h3>"));
 	station.image =				extract_regexp(data, "<img.+src=\"(.*)\"");
-	station.location =			extract_regexp(data, "class=\"loc\".*>(.*)</span>");
-	station.style =				extract_regexp(data, "class=\"sty\".*>(.*)</span>");
-	station.frequency =			extract_regexp(data, "class=\"frq\".*>(.*)</span>");
-	station.description =		extract_regexp(data, "class=\"desc\".*>(.*)</span>");
-	station.short_description = extract_regexp(data, "class=\"bra\".*>(.*)</span>");
+	station.location =			Util::cvt_str_to_first_upper(extract_regexp(data, "class=\"loc\".*>(.*)<.{0,1}span"));
+	station.style =				extract_regexp(data, "class=\"sty\".*>(.*)<.{0,1}span");
+	station.frequency =			extract_regexp(data, "class=\"frq\".*>(.*)<.{0,1}span");
+	station.description =		Util::cvt_str_to_first_upper(extract_regexp(data, "class=\"desc\".*>(.*)<.{0,1}span"));
+	station.short_description = Util::cvt_str_to_first_upper(extract_regexp(data, "class=\"bra\".*>(.*)<.{0,1}span"));
+
+	if(station.description.isEmpty()){
+		station.description = station.short_description;
+	}
+
+	if(station.description.isEmpty()){
+		station.description = station.style;
+	}
+
+	if(station.short_description.isEmpty()){
+		station.short_description = station.description;
+	}
 }
 
 static RadioStation parse_stnblock(const QString& data)
@@ -90,14 +121,86 @@ static QList<Stream> extract_streams(const QString& data)
 	return streams;
 }
 
-#include "Utils/Utils.h"
-FMStreamParser::FMStreamParser(const QByteArray& data)
+
+QStringList convert(QByteArray data, FMStreamParser::Encoding from, FMStreamParser::Encoding to, FMStreamParser::Encoding from2, FMStreamParser::Encoding to2)
+{
+	QString s1;
+	switch(from)
+	{
+		case FMStreamParser::Utf8:
+			s1 = QString::fromUtf8(data);
+			break;
+		case FMStreamParser::Latin1:
+			s1 = QString::fromLatin1(data);
+			break;
+		case FMStreamParser::Local8Bit:
+			s1 = QString::fromLocal8Bit(data);
+			break;
+	}
+
+	QByteArray d1;
+	switch(to)
+	{
+		case FMStreamParser::Utf8:
+			d1 = s1.toUtf8();
+			break;
+		case FMStreamParser::Latin1:
+			d1 = s1.toLatin1();
+			break;
+		case FMStreamParser::Local8Bit:
+			d1 = s1.toLocal8Bit();
+			break;
+	}
+
+	QString s2;
+	switch(from2)
+	{
+		case FMStreamParser::Utf8:
+			s2 = QString::fromUtf8(d1);
+			break;
+		case FMStreamParser::Latin1:
+			s2 = QString::fromLatin1(d1);
+			break;
+		case FMStreamParser::Local8Bit:
+			s2 = QString::fromLocal8Bit(d1);
+			break;
+	}
+
+	QByteArray d2;
+	switch(to2)
+	{
+		case FMStreamParser::Utf8:
+			d2 = s2.toUtf8();
+			break;
+		case FMStreamParser::Latin1:
+			d2 = s2.toLatin1();
+			break;
+		case FMStreamParser::Local8Bit:
+			d2 = s2.toLocal8Bit();
+			break;
+	}
+
+	QStringList ret{
+		QString(d2),
+		QString::fromUtf8(d2),
+		QString::fromLatin1(d2),
+		QString::fromLocal8Bit(d2),
+		QString::fromStdString(std::string(d2.data())),
+	};
+
+	return ret;
+}
+
+
+FMStreamParser::FMStreamParser(const QByteArray& data, FMStreamParser::EncodingTuple encodings, int encoding_version)
 {
 	m = Pimpl::make<Private>();
 
+	QString text = convert(data, encodings[0], encodings[1], encodings[2], encodings[3])[encoding_version];
+
 	QList<RadioStation> stations;
-	QString text(data);
-	const QList<Stream> streams = extract_streams(data);
+
+	const QList<Stream> streams = extract_streams(text);
 
 	int offset = 0;
 
@@ -135,6 +238,11 @@ FMStreamParser::FMStreamParser(const QByteArray& data)
 		}
 	}
 }
+
+
+FMStreamParser::FMStreamParser(const QByteArray& data) :
+	FMStreamParser(data, EncodingTuple{Utf8, Utf8, Utf8, Latin1}, 0)
+{}
 
 FMStreamParser::~FMStreamParser() {}
 

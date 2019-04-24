@@ -5,7 +5,6 @@
 #include "Utils/Pimpl.h"
 
 class QWidget;
-class QTableWidgetItem;
 
 UI_FWD(GUI_StationSearcher)
 
@@ -25,6 +24,8 @@ public:
 
 private slots:
 	void search_clicked();
+	void search_prev_clicked();
+	void search_next_clicked();
 	void listen_clicked();
 	void close_clicked();
 
@@ -32,8 +33,16 @@ private slots:
 	void data_available();
 	void clear();
 
-	void station_changed(QTableWidgetItem* item);
-	void stream_changed(QTableWidgetItem* item);
+	void station_changed();
+	void stream_changed();
+
+protected:
+	void showEvent(QShowEvent* e) override;
+	void closeEvent(QCloseEvent* e) override;
+
+	void language_changed() override;
+	void skin_changed() override;
 };
+
 
 #endif // STATIONSEARCHER_H

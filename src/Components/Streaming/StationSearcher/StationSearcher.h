@@ -13,11 +13,30 @@ class StationSearcher : public QObject
 signals:
 	void sig_stations_found();
 
+private:
+	void start_call();
+
 public:
+
+	enum Mode
+	{
+		NewSearch,
+		Incremental,
+		Style
+	};
+
 	StationSearcher(QObject* parent=nullptr);
 	~StationSearcher();
 
+	void search_style(const QString& style);
 	void search_station(const QString& name);
+	void search_previous();
+	void search_next();
+
+	bool can_search_next() const;
+	bool can_search_previous() const;
+	Mode mode() const;
+
 	QList<RadioStation> found_stations() const;
 
 private slots:

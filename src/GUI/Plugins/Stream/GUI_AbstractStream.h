@@ -71,14 +71,16 @@ protected:
 		GUI_AbstractStream::init_ui();
 	}
 
+private slots:
+	void edit_finished();
+	void new_finished();
+
 protected slots:
 	void listen_clicked();
 	void combo_idx_changed(int idx);
 	void new_clicked();
 	void delete_clicked();
-	void save_clicked();
-	void rename_clicked();
-	void text_changed(const QString& str);
+	void edit_clicked();
 	void too_many_urls_found(int n_urls, int n_max_urls);
 
 	void stopped();
@@ -88,13 +90,13 @@ protected slots:
 
 
 protected:
-	virtual QLineEdit* le_url()=0;
 	virtual QComboBox* combo_stream()=0;
 	virtual QPushButton* btn_play()=0;
 	virtual MenuToolButton* btn_menu()=0;
-	virtual QLabel* lab_listen()=0;
 	virtual AbstractStreamHandler* stream_handler() const=0;
-
+	virtual QString url() const;
+	QString current_station() const;
+	void add_stream(const QString& name, const QString& url);
 
 private:
 	PIMPL(GUI_AbstractStream)
@@ -103,12 +105,6 @@ private:
 
 	void init_connections();
 	void setup_stations();
-
-	void set_le_url(QLineEdit* le_url);
-	void set_combo_stream(QComboBox* le_combo_stream);
-	void set_btn_play(QPushButton* btn_play);
-	void set_btn_tool(MenuToolButton* btn_tool);
-	void set_lab_listen(QLabel* lab_listen);
 
 	void set_searching(bool searching);
 

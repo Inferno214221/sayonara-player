@@ -184,7 +184,7 @@ bool Playback::create_source(gchar* uri)
 		g_object_set (G_OBJECT (m->audio_src),
 					  "use-buffering", Util::File::is_www(uri),
 					  "ring-buffer-max-size", 10000,
-					  "buffer-duration", 500 * GST_MSECOND,
+					  "buffer-duration", _settings->get<Set::Engine_BufferSizeMS>() * GST_MSECOND,
 					  "uri", uri,
 					  nullptr);
 

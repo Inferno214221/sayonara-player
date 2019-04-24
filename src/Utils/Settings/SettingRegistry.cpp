@@ -187,6 +187,7 @@ bool SettingRegistry::init()
 	register_setting<Set::Engine_SpeedActive>( "engine_speed_active", false);
 	register_setting<Set::Engine_Speed>( "engine_speed", 1.0f);
 	register_setting<Set::Engine_Sink>( "engine_sink", QString("auto"));
+	register_setting<Set::Engine_BufferSizeMS>( "engine_buffer_size_ms", 500);
 
 	register_setting<Set::Spectrum_Style>( "spectrum_style", 0 );
 	register_setting<Set::Level_Style>( "level_style", 0 );
@@ -200,6 +201,7 @@ bool SettingRegistry::init()
 
 	register_setting<Set::Stream_NewTab>( "stream_new_tab", true);
 	register_setting<Set::Stream_ShowHistory>( "stream_show_history", true);
+	register_setting<Set::Stream_SearchWindowSize>("stream_search_window_size", QSize());
 
 	register_setting<Set::Lyrics_Server>( "lyrics_server", QString());
 	register_setting<Set::Lyrics_Zoom>( "lyrics_zoom", 100);

@@ -26,7 +26,7 @@
 UI_FWD(GUI_Stream)
 
 class GUI_Stream :
-		public GUI_AbstractStream
+	public GUI_AbstractStream
 {
 	Q_OBJECT
 	UI_CLASS(GUI_Stream)
@@ -44,13 +44,11 @@ private:
 	void retranslate_ui() override;
 	QString get_title_fallback_name() const override;
 
-	// GUI_AbstractStream interface
-	protected:
-	QLineEdit* le_url() override;
+// GUI_AbstractStream interface
+protected:
 	QComboBox* combo_stream() override;
 	QPushButton* btn_play() override;
 	MenuToolButton* btn_menu() override;
-	QLabel* lab_listen() override;
 	AbstractStreamHandler* stream_handler() const override;
 
 private slots:

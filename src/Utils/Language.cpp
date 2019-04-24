@@ -262,6 +262,8 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Name");
 		case New:
 			return l.tr("New");
+		case NextPage:
+			return l.tr("Next page");
 		case NextTrack:
 			return l.tr("Next track");
 		case No:
@@ -311,6 +313,8 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Podcasts");
 		case Preferences:
 			return l.tr("Preferences");
+		case PreviousPage:
+			return l.tr("Previous page");
 		case PreviousTrack:
 			return l.tr("Previous track");
 		case Quit:
@@ -359,6 +363,8 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Search");			// the verb of the searching process
 		case SearchNext:
 			return l.tr("Search next");
+		case SearchPrev:
+			return l.tr("Search previous");
 		case Second:
 			return l.tr("2nd");
 		case Seconds:

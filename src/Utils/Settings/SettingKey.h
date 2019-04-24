@@ -143,6 +143,7 @@ enum class SettingKey : unsigned short
 	Engine_Speed,
 	Engine_SpeedActive,
 	Engine_Sink,
+	Engine_BufferSizeMS,
 
 	Engine_SR_Active,
 	Engine_SR_Warning,
@@ -167,6 +168,7 @@ enum class SettingKey : unsigned short
 
 	Stream_NewTab,
 	Stream_ShowHistory,
+	Stream_SearchWindowSize,
 
 	Lyrics_Zoom,
 	Lyrics_Server,
@@ -356,6 +358,7 @@ class SettingIdentifier
 	INST(float,				Engine_Speed)				/* if yes, set speed */
 	INST(bool, 				Engine_PreservePitch)			/* if yes, should pitch be preserved? */
 	INST(QString,			Engine_Sink)				/* Alsa, pulseaudio */
+	INST(int,				Engine_BufferSizeMS)
 
 	INST(bool,				Engine_SR_Active)			/* Streamripper active */
 	INST(bool,				Engine_SR_Warning)			/* streamripper warnings */
@@ -375,6 +378,7 @@ class SettingIdentifier
 
 	INST(bool,				Stream_NewTab)				/* Open Streams in new tab */
 	INST(bool,				Stream_ShowHistory)		/* Show history when playing streams */
+	INST(QSize,				Stream_SearchWindowSize)
 
 	INST(int,				Lyrics_Zoom)				/* Zoom factor in lyrics window */
 	INST(QString,			Lyrics_Server)				/* Lyrics server */

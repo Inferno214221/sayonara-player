@@ -64,8 +64,6 @@ void GUI_Stream::retranslate_ui()
 void GUI_Stream::init_ui()
 {
 	setup_parent(this, &ui);
-
-	connect(ui->le_url, &QLineEdit::textEdited, this, &GUI_Stream::text_changed);
 }
 
 
@@ -75,11 +73,6 @@ QString GUI_Stream::get_title_fallback_name() const
 }
 
 
-QLineEdit* GUI_Stream::le_url()
-{
-	return ui->le_url;
-}
-
 QComboBox* GUI_Stream::combo_stream()
 {
 	return ui->combo_stream;
@@ -87,17 +80,12 @@ QComboBox* GUI_Stream::combo_stream()
 
 QPushButton* GUI_Stream::btn_play()
 {
-	return ui->btn_play;
+	return ui->btn_listen;
 }
 
 MenuToolButton* GUI_Stream::btn_menu()
 {
 	return ui->btn_tool;
-}
-
-QLabel* GUI_Stream::lab_listen()
-{
-	return ui->lab_listen;
 }
 
 AbstractStreamHandler* GUI_Stream::stream_handler() const
@@ -121,6 +109,5 @@ void GUI_Stream::text_changed(const QString& text)
 
 void GUI_Stream::stream_selected(const QString& name, const QString& url)
 {
-	ui->le_url->setText(url);
-	ui->combo_stream->setCurrentText(name);
+	add_stream(name, url);
 }

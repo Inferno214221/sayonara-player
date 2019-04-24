@@ -34,10 +34,10 @@ class PreferenceAction;
  * @ingroup GUIHelper
  */
 class MenuToolButton :
-        public MenuButton
+		public MenuButton
 {
 	Q_OBJECT
-    PIMPL(MenuToolButton)
+	PIMPL(MenuToolButton)
 
 signals:
 	void sig_open();
@@ -47,11 +47,12 @@ signals:
 	void sig_save_as();
 	void sig_rename();
 	void sig_delete();
+	void sig_edit();
 	void sig_default();
 
 public:
 	explicit MenuToolButton(QWidget *parent=nullptr);
-	virtual ~MenuToolButton();
+	virtual ~MenuToolButton() override;
 
 	/**
 	 * @brief Use this to add custom actions

@@ -46,11 +46,9 @@ private:
 
 	// GUI_AbstractStream interface
 	protected:
-	QLineEdit* le_url() override;
 	QComboBox* combo_stream() override;
 	QPushButton* btn_play() override;
 	MenuToolButton* btn_menu() override;
-	QLabel* lab_listen() override;
 
 	AbstractStreamHandler* stream_handler() const override;
 };

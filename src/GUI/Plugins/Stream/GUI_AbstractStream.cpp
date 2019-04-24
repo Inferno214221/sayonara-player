@@ -19,6 +19,7 @@
  */
 
 #include "GUI_AbstractStream.h"
+#include "GUI_ConfigureStreams.h"
 
 #include "GUI/Utils/Widgets/ProgressBar.h"
 #include "GUI/Utils/Icons.h"
@@ -46,13 +47,13 @@ using namespace Gui;
 struct GUI_AbstractStream::Private
 {
 	QMap<QString, QString>	stations;
+	QPair<QString, QString>	temporary_station;
 	ProgressBar*			loading_bar=nullptr;
 	QComboBox*				combo_stream=nullptr;
 	QPushButton*			btn_play=nullptr;
-	QLineEdit*				le_url=nullptr;
-	QLabel*					lab_listen=nullptr;
 	MenuToolButton*			btn_tool=nullptr;
 	AbstractStreamHandler*	stream_handler=nullptr;
+
 	bool					searching;
 
 	Private() :
@@ -71,30 +72,20 @@ GUI_AbstractStream::~GUI_AbstractStream() {}
 
 void GUI_AbstractStream::init_connections()
 {
-	m->combo_stream->setAutoCompletion(false);
-	m->combo_stream->setFocusPolicy(Qt::StrongFocus);
-
-	m->le_url->setFocusPolicy(Qt::StrongFocus);
 	m->btn_play->setFocusPolicy(Qt::StrongFocus);
 
-	setTabOrder(m->combo_stream, m->le_url);
-	setTabOrder(m->le_url, m->btn_play);
-
-	m->btn_tool->show_actions((ContextMenuEntries) (ContextMenu::EntryNew));
+	m->btn_tool->show_actions(static_cast<ContextMenuEntries>(ContextMenu::EntryNew));
 	m->btn_tool->register_preference_action(new StreamPreferenceAction(m->btn_tool));
 	m->btn_tool->register_preference_action(new StreamRecorderPreferenceAction(m->btn_tool));
 
+	setTabOrder(m->combo_stream, m->btn_play);
+
 	connect(m->btn_play, &QPushButton::clicked, this, &GUI_AbstractStream::listen_clicked);
-	connect(m->btn_tool, &MenuToolButton::sig_rename, this, &GUI_AbstractStream::rename_clicked);
-	connect(m->btn_tool, &MenuToolButton::sig_save, this, &GUI_AbstractStream::save_clicked);
+	connect(m->btn_tool, &MenuToolButton::sig_edit, this, &GUI_AbstractStream::edit_clicked);
 	connect(m->btn_tool, &MenuToolButton::sig_delete, this, &GUI_AbstractStream::delete_clicked);
 	connect(m->btn_tool, &MenuToolButton::sig_new, this, &GUI_AbstractStream::new_clicked);
 
 	connect(m->combo_stream, combo_activated_int, this, &GUI_AbstractStream::combo_idx_changed);
-	connect(m->combo_stream, &QComboBox::editTextChanged, this, &GUI_AbstractStream::text_changed);
-
-	connect(m->le_url, &QLineEdit::textChanged, this, &GUI_AbstractStream::text_changed);
-
 	connect(m->stream_handler, &AbstractStreamHandler::sig_error, this, &GUI_AbstractStream::error);
 	connect(m->stream_handler, &AbstractStreamHandler::sig_data_available, this, &GUI_AbstractStream::data_available);
 	connect(m->stream_handler, &AbstractStreamHandler::sig_stopped, this, &GUI_AbstractStream::stopped);
@@ -105,11 +96,6 @@ void GUI_AbstractStream::init_ui()
 	m->stream_handler = stream_handler();
 	connect(m->stream_handler, &AbstractStreamHandler::sig_too_many_urls_found,
 			this, &GUI_AbstractStream::too_many_urls_found);
-
-	m->btn_play->setMinimumSize(QSize(24,24));
-	m->btn_play->setMaximumSize(QSize(24,24));
-	m->btn_play->setFlat(true);
-	m->btn_play->setIconSize(QSize(18, 18));
 
 	m->loading_bar = new ProgressBar(this);
 
@@ -124,16 +110,9 @@ void GUI_AbstractStream::init_ui()
 
 void GUI_AbstractStream::retranslate_ui()
 {
-	m->le_url->setPlaceholderText(Lang::get(Lang::EnterUrl).triplePt());
+	QString text = (m->searching) ? Lang::get(Lang::Stop) : Lang::get(Lang::Listen);
 
-	QLineEdit* le = m->combo_stream->lineEdit();
-	le->setPlaceholderText(Lang::get(Lang::EnterName).triplePt());
-
-	if(m->searching){
-		m->lab_listen->setText(Lang::get(Lang::Stop));
-	} else {
-		m->lab_listen->setText(Lang::get(Lang::Listen));
-	}
+	m->btn_play->setText(text);
 }
 
 void GUI_AbstractStream::error()
@@ -144,7 +123,7 @@ void GUI_AbstractStream::error()
 	Message::Answer answer = Message::question_yn
 	(
 		tr("Cannot open stream") + "\n" +
-		m->le_url->text() + "\n\n" +
+		url() + "\n\n" +
 		Lang::get(Lang::Retry).question()
 	);
 
@@ -165,24 +144,11 @@ void GUI_AbstractStream::stopped()
 
 void GUI_AbstractStream::set_searching(bool searching)
 {
-	bool is_dark = (_settings->get<Set::Player_Style>() == 1);
+	QString text = (searching == true) ? Lang::get(Lang::Stop) : Lang::get(Lang::Listen);
 
-	m->loading_bar->setVisible(searching);
+	m->btn_play->setText(text);
 	m->btn_play->setDisabled(false);
-
-	Icons::IconMode mode = Icons::IconMode::ForceStdIcon;
-	if(is_dark){
-		mode = Icons::IconMode::ForceSayonaraIcon;
-	}
-
-	if(!searching) {
-		m->btn_play->setIcon( Icons::icon(Icons::Play, mode));
-		m->lab_listen->setText(Lang::get(Lang::Listen));
-	} else {
-		m->btn_play->setIcon( Icons::icon(Icons::Stop, mode));
-		m->lab_listen->setText(Lang::get(Lang::Stop));
-	}
-
+	m->loading_bar->setVisible(searching);
 	m->searching = searching;
 }
 
@@ -205,7 +171,8 @@ void GUI_AbstractStream::_sl_skin_changed()
 void GUI_AbstractStream::play(QString url, QString station_name)
 {
 	bool success = m->stream_handler->parse_station(url, station_name);
-	if(!success){
+	if(!success)
+	{
 		sp_log(Log::Warning, this) << "Stream Handler busy";
 		set_searching(false);
 	}
@@ -217,68 +184,43 @@ bool GUI_AbstractStream::has_loading_bar() const
 	return true;
 }
 
+
+
 void GUI_AbstractStream::listen_clicked()
 {
-	QString name, url;
-
-	if(m->searching){
+	if(m->searching)
+	{
 		m->btn_play->setDisabled(true);
 		m->stream_handler->stop();
 		return;
 	}
 
-	if( m->combo_stream->currentIndex() <= 0) {
-		url = m->le_url->text();
-		name = get_title_fallback_name();
+	QString station_name = get_title_fallback_name();
+	if(m->combo_stream->currentIndex() > 0)
+	{
+		station_name = current_station();
 	}
 
-	else{
-		url = m->le_url->text();
-		name = m->combo_stream->currentText();
-	}
-
-	url = url.trimmed();
-	if(url.size() > 5) {
+	if(url().size() > 5)
+	{
 		set_searching(true);
-		play(url, name);
+		play(url(), station_name);
+	}
+
+	else {
+		sp_log(Log::Warning, this) << "Url is empty";
 	}
 }
 
 void GUI_AbstractStream::combo_idx_changed(int idx)
 {
-	QString cur_station_name = m->combo_stream->currentText();
-	QString address = m->stations[cur_station_name];
+	m->btn_tool->show_action(ContextMenu::EntryDelete, (idx > 0));
+	m->btn_tool->show_action(ContextMenu::EntryEdit, (idx > 0));
 
-	if(address.size() > 0) {
-		m->le_url->setText(address);
-	}
+	m->combo_stream->setToolTip(url());
 
-	if(idx == 0) {
-		m->le_url->clear();
-	}
-
-	m->btn_tool->show_action(ContextMenu::EntryDelete, idx > 0);
-
-	m->combo_stream->setToolTip(address);
-
-	QString text = m->le_url->text();
-	bool listen_disabled = (text.size() < 8 && !m->searching);
+	bool listen_disabled = (url().size() < 8 && !m->searching);
 	m->btn_play->setDisabled(listen_disabled);
-}
-
-
-void GUI_AbstractStream::text_changed(const QString& str)
-{
-	Q_UNUSED(str)
-
-	bool has_url = (!m->le_url->text().isEmpty());
-	bool has_text = (!m->combo_stream->currentText().isEmpty());
-
-	m->btn_play->setEnabled(has_url);
-	m->lab_listen->setEnabled(has_url);
-
-	m->btn_tool->show_action(ContextMenu::EntrySave, has_url && has_text);
-	m->btn_tool->show_action(ContextMenu::EntryRename, has_url && has_text);
 }
 
 void GUI_AbstractStream::too_many_urls_found(int n_urls, int n_max_urls)
@@ -292,116 +234,125 @@ void GUI_AbstractStream::too_many_urls_found(int n_urls, int n_max_urls)
 
 void GUI_AbstractStream::new_clicked()
 {
-	if(m->combo_stream->count() > 0){
-		m->combo_stream->setCurrentIndex(0);
-		m->combo_stream->setItemText(0, "");
+	GUI_ConfigureStreams* cs = new GUI_ConfigureStreams(GUI_ConfigureStreams::Streams, GUI_ConfigureStreams::New, this);
+	connect(cs, &Gui::Dialog::finished, this, &GUI_AbstractStream::new_finished);
+
+	cs->open();
+}
+
+void GUI_AbstractStream::new_finished()
+{
+	GUI_ConfigureStreams* cs = static_cast<GUI_ConfigureStreams*>(sender());
+
+
+	bool b = cs->was_accepted();
+	if(!b){
+		cs->deleteLater();
+		return;
 	}
 
-	else{
-		m->combo_stream->addItem("");
-		m->combo_stream->setCurrentIndex(0);
+	QString new_name = cs->name();
+	QString new_url	= cs->url();
+
+	if(m->combo_stream->findText(new_name) >= 0)
+	{
+		sp_log(Log::Warning, this) << "Stream already there";
+		cs->open();
+		return;
 	}
 
-	m->le_url->clear();
+	m->stream_handler->add_stream(new_name, new_url);
+	cs->deleteLater();
+
+	setup_stations();
 }
 
 void GUI_AbstractStream::delete_clicked()
 {
-	if(m->combo_stream->currentIndex() <= 0) return;
+	QString cur_station = current_station();
+	if(cur_station.isEmpty()) {
+		return;
+	}
 
-	QString cur_station_name = m->combo_stream->currentText();
-
-	Message::Answer ret = Message::question_yn(tr("Do you really want to delete %1").arg(cur_station_name));
+	Message::Answer ret = Message::question_yn(tr("Do you really want to delete %1").arg(cur_station));
 
 	if(ret == Message::Answer::Yes)
 	{
-		bool success = m->stream_handler->delete_stream(cur_station_name);
+		bool success = m->stream_handler->delete_stream(cur_station);
 		if(success){
-			sp_log(Log::Info, this) << cur_station_name << "successfully deleted";
+			sp_log(Log::Info, this) << cur_station << "successfully deleted";
 		}
 
 		else {
-			sp_log(Log::Warning, this) << "Cannot delete " << cur_station_name;
+			sp_log(Log::Warning, this) << "Cannot delete " << cur_station;
 		}
 	}
 
 	setup_stations();
 }
 
-void GUI_AbstractStream::save_clicked()
+void GUI_AbstractStream::edit_clicked()
 {
-	QString name = m->combo_stream->currentText();
-	QString url = m->le_url->text();
-	Message::Answer answer;
+	GUI_ConfigureStreams* cs = new GUI_ConfigureStreams(GUI_ConfigureStreams::Streams, GUI_ConfigureStreams::New, this);
+	connect(cs, &Gui::Dialog::finished, this, &GUI_AbstractStream::new_finished);
 
-	if(name.isEmpty() || url.isEmpty()){
+	cs->set_name(current_station());
+	cs->set_url(url());
+
+	cs->open();
+}
+
+
+void GUI_AbstractStream::edit_finished()
+{
+	GUI_ConfigureStreams* cs = static_cast<GUI_ConfigureStreams*>(sender());
+
+	QString new_name = cs->name();
+	QString new_url	= cs->url();
+
+	int b = cs->was_accepted();
+	if(!b){
+		cs->deleteLater();
 		return;
 	}
 
-	bool overwritten = false;
-	for(int i=0; i<m->combo_stream->count(); i++)
+	QString old_name = current_station();
+	if(m->combo_stream->findText(new_name) >= 0)
 	{
-		QString text = m->combo_stream->itemText(i);
-		if(text == name)
-		{
-			answer = Message::question_yn(tr("Overwrite?") + "\n" + name + "\n" + url);
-			if(answer == Message::Answer::Yes)
-			{
-				m->stream_handler->update_url(name, url);
-				overwritten = true;
-			}
-
-			break;
-		}
+		sp_log(Log::Warning, this) << "Stream already there";
+		cs->open();
+		return;
 	}
 
-	if(!overwritten)
-	{
-		m->stream_handler->save(name, url);
+	QString old_url = url();
+
+	if(old_url != new_url){
+		m->stream_handler->update_url(old_name, new_url);
 	}
 
+	if(old_name != new_name){
+		m->stream_handler->rename(old_name, new_name);
+	}
+
+	cs->deleteLater();
 	setup_stations();
 }
 
-void GUI_AbstractStream::rename_clicked()
-{
-	QString old_name = m->combo_stream->currentText();
-	if(old_name.isEmpty() || old_name.isEmpty()){
-		return;
-	}
-
-	LineInputDialog* dialog = new LineInputDialog(Lang::get(Lang::Rename), Lang::get(Lang::Rename), old_name, this);
-	if(dialog->exec() == QDialog::Rejected){
-		return;
-	}
-
-	QString new_name = dialog->textValue();
-	if(new_name.isEmpty()){
-		return;
-	}
-
-	m->stream_handler->rename(old_name, new_name);
-
-	setup_stations();
-}
 
 void GUI_AbstractStream::setup_stations()
 {
-	QString old_name = m->combo_stream->currentText();
-	QString old_url = m->le_url->text();
+	QString old_name = current_station();
+	QString old_url = url();
 
 	StreamMap stations;
 	m->stream_handler->get_all_streams(stations);
 
 	m->combo_stream->clear();
-	m->le_url->clear();
 	m->btn_play->setEnabled(false);
-	m->lab_listen->setEnabled(false);
 
 	m->stations = stations;
-	m->stations[""] = "";
 
-	if(m->stations.size() == 1){
+	if(m->stations.size() > 0){
 		m->combo_stream->setCurrentIndex(0);
 	}
 
@@ -424,11 +375,12 @@ void GUI_AbstractStream::setup_stations()
 		}
 	}
 
-	m->btn_tool->show_actions((ContextMenuEntries) (ContextMenu::EntryNew));
+	m->btn_tool->show_action(ContextMenu::EntryNew, true);
+	m->btn_tool->show_action(ContextMenu::EntryNew, (m->combo_stream->currentIndex() >= 0));
+	m->btn_tool->show_action(ContextMenu::EntryDelete, (m->combo_stream->currentIndex() >= 0));
 
 	if(idx > 0)
 	{
-		m->le_url->setText(m->combo_stream->itemData(idx).toString());
 		m->combo_stream->setCurrentIndex(idx);
 	}
 }
@@ -437,8 +389,6 @@ void GUI_AbstractStream::assign_ui_vars()
 {
 	m->combo_stream=combo_stream();
 	m->btn_play=btn_play();
-	m->le_url = le_url();
-	m->lab_listen = lab_listen();
 	m->btn_tool = btn_menu();
 }
 
@@ -450,3 +400,25 @@ StreamPreferenceAction::~StreamPreferenceAction() {}
 QString StreamPreferenceAction::identifier() const { return "streams"; }
 
 QString StreamPreferenceAction::display_name() const { return Lang::get(Lang::Streams) + " && " + Lang::get(Lang::Podcasts); }
+
+QString GUI_AbstractStream::url() const
+{
+	return m->combo_stream->currentData().toString();
+}
+
+QString GUI_AbstractStream::current_station() const
+{
+	return m->combo_stream->currentText();
+}
+
+void GUI_AbstractStream::add_stream(const QString& name, const QString& url)
+{
+	int idx = m->combo_stream->findText(m->temporary_station.first);
+	if(idx >= 0){
+		m->combo_stream->removeItem(idx);
+	}
+
+	m->combo_stream->addItem(name, url);
+	m->combo_stream->setCurrentText(name);
+}
+
