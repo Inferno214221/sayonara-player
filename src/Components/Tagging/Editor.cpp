@@ -391,9 +391,9 @@ void Editor::run()
 					   << " tracks";
 
 	int i=0;
-	int n_operations = m->v_md.size() + m->cover_map.size();
+	int n_operations = m->v_md.count() + m->cover_map.size();
 
-	for(auto i=0; i < m->v_md.size(); i++)
+	for(auto i=0; i < m->v_md.count(); i++)
 	{
 		const MetaData& md = m->v_md[i];
 
