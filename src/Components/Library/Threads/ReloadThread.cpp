@@ -210,43 +210,45 @@ void ReloadThread::store_metadata_block(const MetaDataList& v_md)
 	using StringSet=::Util::Set<QString>;
 
 	DB::Connector* db = DB::Connector::instance();
+	DB::Covers* db_covers = db->cover_connector();
 	DB::LibraryDatabase* lib_db = db->library_db(m->library_id, db->db_id());
 
-	sp_log(Log::Develop, this) << N_FILES_TO_STORE << " tracks reached. Commit chunk to DB";
-	bool success = lib_db->store_metadata(v_md);
-	sp_log(Log::Develop, this) << "  Success? " << success;
-
-	sp_log(Log::Develop, this) << "Adding Covers...";
-
-	DB::Covers* db_covers = db->cover_connector();
-
-	StringSet all_hashes = db_covers->get_all_hashes();
-
-	db->transaction();
-	int idx = 0;
-
-	for(const MetaData& md : v_md)
 	{
-		int progress = ((idx++) * 100) / v_md.size();
-		emit sig_reloading_library(tr("Looking for covers"), progress);
-
-		Cover::MeasureOn = true;
-		Cover::Location cl = Cover::Location::cover_location(md, false);
-
-		if(!cl.valid()){
-			continue;
-		}
-
-		QString hash = cl.hash();
-		if(!all_hashes.contains(hash))
-		{
-			QPixmap cover(cl.preferred_path());
-			db_covers->insert_cover(hash, cover);
-			all_hashes.insert(hash);
-		}
+		sp_log(Log::Develop, this) << N_FILES_TO_STORE << " tracks reached. Commit chunk to DB";
+		bool success = lib_db->store_metadata(v_md);
+		sp_log(Log::Develop, this) << "  Success? " << success;
 	}
 
-	db->commit();
+	{
+		QString status = tr("Looking for covers");
+		sp_log(Log::Develop, this) << "Adding Covers...";
+
+		StringSet all_hashes = db_covers->get_all_hashes();
+
+		db->transaction();
+
+		int idx=0;
+		for(const MetaData& md : v_md)
+		{
+			int progress = ((idx++) * 100) / v_md.count();
+			emit sig_reloading_library(status, progress);
+
+			Cover::Location cl = Cover::Location::cover_location(md, false);
+			if(!cl.valid()){
+				continue;
+			}
+
+			QString hash = cl.hash();
+			if(!all_hashes.contains(hash))
+			{
+				QPixmap cover(cl.preferred_path());
+				db_covers->insert_cover(hash, cover);
+				all_hashes.insert(hash);
+			}
+		}
+
+		db->commit();
+	}
 }
 
 
