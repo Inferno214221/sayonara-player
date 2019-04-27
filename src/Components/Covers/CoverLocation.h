@@ -28,6 +28,11 @@ class QUrl;
 
 namespace Cover
 {
+
+#ifdef DEBUG
+	static bool MeasureOn=false;
+#endif
+
 	using StringMap=QMap<QString, QString>;
 
 	/**
@@ -37,7 +42,6 @@ namespace Cover
 	class Location
 	{
 		PIMPL(Location)
-
 
 	private:
 		void set_valid(bool b);
@@ -84,7 +88,6 @@ namespace Cover
 		 * @return
 		 */
 		static bool is_invalid(const QString& cover_path);
-
 
 		/**
 		 * @brief Returns the standard cover path in the .Sayonara
@@ -273,6 +276,7 @@ namespace Cover
 		 * @return  CoverLocation object
 		 */
 		static Location cover_location(const MetaData& md);
+		static Location cover_location(const MetaData& md, bool check_for_coverart);
 
 
 		/**

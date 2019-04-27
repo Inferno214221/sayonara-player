@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "GUI_ConfigureStreams.h"
 #include "GUI/Plugins/ui_GUI_ConfigureStreams.h"
 #include "Utils/Language.h"

@@ -25,6 +25,7 @@
 #include "Components/Streaming/Streams/StreamHandlerStreams.h"
 
 #include "Utils/Language.h"
+#include <QAction>
 
 struct GUI_Stream::Private
 {
@@ -65,7 +66,7 @@ void GUI_Stream::init_ui()
 {
 	setup_parent(this, &ui);
 
-	QAction* action = new QAction("Search Radio");
+	QAction* action = new QAction("Search Radio", ui->btn_tool);
 	ui->btn_tool->register_action(action);
 	connect(action, &QAction::triggered, this, &GUI_Stream::search_radio_triggered);
 }

@@ -110,6 +110,17 @@ namespace Util
 			return *this;
 		}
 
+		template<template <typename> class A>
+		Util::Set<T>& operator<<(const A<T>& container)
+		{
+			for(const T& t : container)
+			{
+				this->insert(t);
+			}
+
+			return *this;
+		}
+
 		int count() const
 		{
 			return static_cast<int>(this->size());

@@ -57,8 +57,6 @@ struct ReloadThread::Private
 {
 	QString					library_path;
 	MetaDataList			v_md;
-
-	DB::Connector*			db=nullptr;
 	Library::ReloadQuality	quality;
 	LibraryId				library_id;
 
@@ -67,7 +65,6 @@ struct ReloadThread::Private
 	bool					may_run;
 
 	Private() :
-		db(DB::Connector::instance()),
 		quality(Library::ReloadQuality::Fast),
 		library_id(-1),
 		paused(false),
@@ -132,7 +129,8 @@ bool ReloadThread::get_and_save_all_files(const QHash<QString, MetaData>& md_map
 		return false;
 	}
 
-	DB::Library* db_library = m->db->library_connector();
+	DB::Connector* db = DB::Connector::instance();
+	DB::Library* db_library = db->library_connector();
 
 	QDir dir(library_path);
 
@@ -157,8 +155,8 @@ bool ReloadThread::get_and_save_all_files(const QHash<QString, MetaData>& md_map
 
 		const MetaData& md_lib = md_map_lib[filepath];
 
-		int percent = (cur_idx_files++ * 100) / n_files;
-		emit sig_reloading_library(Lang::get(Lang::ReloadLibrary).triplePt(), percent);
+		int progress = (cur_idx_files++ * 100) / n_files;
+		emit sig_reloading_library(Lang::get(Lang::ReloadLibrary).triplePt(), progress);
 
 		if(md_lib.id >= 0) // found in library
 		{
@@ -201,47 +199,50 @@ bool ReloadThread::get_and_save_all_files(const QHash<QString, MetaData>& md_map
 	db_library->create_indexes();
 
 	sp_log(Log::Develop, this) << "Clean up... ";
-	DB::Connector::instance()->clean_up();
+	db->clean_up();
 
 	return true;
 }
+
 
 void ReloadThread::store_metadata_block(const MetaDataList& v_md)
 {
 	using StringSet=::Util::Set<QString>;
 
-	DB::Connector* db = m->db;
-	DB::LibraryDatabase*	lib_db = db->library_db(m->library_id, db->db_id());
+	DB::Connector* db = DB::Connector::instance();
+	DB::LibraryDatabase* lib_db = db->library_db(m->library_id, db->db_id());
 
 	sp_log(Log::Develop, this) << N_FILES_TO_STORE << " tracks reached. Commit chunk to DB";
 	bool success = lib_db->store_metadata(v_md);
 	sp_log(Log::Develop, this) << "  Success? " << success;
 
 	sp_log(Log::Develop, this) << "Adding Covers...";
-	DB::Covers* db_covers = DB::Connector::instance()->cover_connector();
+
+	DB::Covers* db_covers = db->cover_connector();
 
 	StringSet all_hashes = db_covers->get_all_hashes();
 
 	db->transaction();
+	int idx = 0;
+
 	for(const MetaData& md : v_md)
 	{
-		Cover::Location cl = Cover::Location::cover_location(md);
-		QString hash = cl.hash();
-		if(all_hashes.contains(hash))
-		{
+		int progress = ((idx++) * 100) / v_md.size();
+		emit sig_reloading_library(tr("Looking for covers"), progress);
+
+		Cover::MeasureOn = true;
+		Cover::Location cl = Cover::Location::cover_location(md, false);
+
+		if(!cl.valid()){
 			continue;
 		}
 
-		QString preferred_path = cl.preferred_path();
-
-		if(!db_covers->exists(hash))
+		QString hash = cl.hash();
+		if(!all_hashes.contains(hash))
 		{
-			if(!Cover::Location::is_invalid(preferred_path))
-			{
-				QPixmap cover(preferred_path);
-				db_covers->insert_cover(hash, cover);
-				all_hashes.insert(hash);
-			}
+			QPixmap cover(cl.preferred_path());
+			db_covers->insert_cover(hash, cover);
+			all_hashes.insert(hash);
 		}
 	}
 
@@ -357,7 +358,8 @@ void ReloadThread::run()
 		return;
 	}
 
-	DB::LibraryDatabase* lib_db = m->db->library_db(m->library_id, 0);
+	DB::Connector* db = DB::Connector::instance();
+	DB::LibraryDatabase* lib_db = db->library_db(m->library_id, 0);
 
 	m->may_run = true;
 	m->running = true;

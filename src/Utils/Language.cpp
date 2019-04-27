@@ -122,6 +122,8 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Close others");
 		case CloseTab:
 			return l.tr("Close tab");
+		case Comment:
+			return l.tr("Comment");
 		case Continue:
 			return l.tr("Continue");
 		case Covers:

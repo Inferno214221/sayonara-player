@@ -40,6 +40,44 @@
 #include <QPixmap>
 #include <QFileInfo>
 
+#ifdef DEBUG
+	#include <QTime>
+
+	class Measure
+	{
+		QString m_fn;
+		int m_id;
+		QTime* m_t=nullptr;
+
+		public:
+			Measure(const QString& fn_name=QString())
+			{
+				static int measure_id=0;
+				measure_id++;
+
+				if(Cover::MeasureOn || 1)
+				{
+					m_id = measure_id;
+					m_fn = fn_name;
+					m_t = new QTime();
+					m_t->start();
+				}
+			}
+
+			~Measure()
+			{
+				if(Cover::MeasureOn || 1)
+				{
+					sp_log(Log::Develop, this) << "Measure " << m_id << ": " << m_fn << " " << m_t->elapsed();
+				}
+			}
+	};
+
+	#define measure(x) Measure(x); Q_UNUSED(x);
+#else
+	#define measure(x)
+#endif
+
 using Cover::Location;
 using namespace Cover::Fetcher;
 using Cover::StringMap;
@@ -104,6 +142,8 @@ struct Location::Private
 
 	~Private()
 	{
+		//measure(__FUNCTION__)
+
 		if(FileUtils::exists(audio_file_target))
 		{
 			FileUtils::delete_files({audio_file_target});
@@ -129,6 +169,7 @@ void Location::set_cover_path(const QString& cover_path)
 
 Location::Location()
 {
+	measure(__FUNCTION__)
 	qRegisterMetaType<Location>("CoverLocation");
 
 	m = Pimpl::make<Location::Private>();
@@ -150,6 +191,8 @@ Location& Location::operator=(const Location& other)
 
 Location Location::invalid_location()
 {
+	//measure(__FUNCTION__)
+
 	Location cl;
 
 	cl.set_valid(false);
@@ -344,6 +387,11 @@ Location Location::cover_location(const QString& artist)
 
 Location Location::cover_location(const MetaData& md)
 {
+	return Location::cover_location(md, true);
+}
+
+Location Location::cover_location(const MetaData& md, bool check_for_coverart)
+{
 	Location cl;
 
 	if(!md.cover_download_url().isEmpty())
@@ -373,7 +421,16 @@ Location Location::cover_location(const MetaData& md)
 		cl = cover_location(md.album(), md.artist());
 	}
 
-	if(cl.audio_file_source().isEmpty() && !md.filepath().isEmpty() && Tagging::Covers::has_cover(md.filepath())) {
+	bool has_cover_art;
+	if(check_for_coverart) {
+		has_cover_art = Tagging::Covers::has_cover(md.filepath());
+	}
+
+	else {
+		has_cover_art = static_cast<bool>((md.get_custom_field("has_album_art").toInt()));
+	}
+
+	if(cl.audio_file_source().isEmpty() && !md.filepath().isEmpty() && has_cover_art) {
 		cl.set_audio_file_source(md.filepath(), cl.cover_path());
 	}
 
@@ -413,20 +470,22 @@ QString Location::cover_path() const
 
 QString Location::preferred_path() const
 {
+	measure(__FUNCTION__)
+
 	// first search for cover in track
 	if(has_audio_file_source())
 	{
 		bool target_exists = FileUtils::exists(this->audio_file_target());
 		if(!target_exists)
 		{
-			if(Tagging::Covers::has_cover(this->audio_file_source()))
-			{
+			/*if(Tagging::Covers::has_cover(this->audio_file_source()))
+			{*/
 				QPixmap pm = Tagging::Covers::extract_cover(this->audio_file_source());
 				if(!pm.isNull())
 				{
 					target_exists = pm.save(this->audio_file_target());
 				}
-			}
+			//}
 		}
 
 		if(target_exists)

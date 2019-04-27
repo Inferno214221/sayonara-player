@@ -27,10 +27,10 @@
 #include "Utils/FileUtils.h"
 #include "Utils/Language.h"
 #include "Utils/MetaData/MetaDataList.h"
-#include "Utils/Settings/Settings.h"
 #include "Utils/MetaData/Album.h"
 #include "Utils/MetaData/Genre.h"
 #include "Utils/Library/LibraryInfo.h"
+#include "Utils/Settings/Settings.h"
 
 #include "Components/Covers/CoverLocation.h"
 
@@ -68,10 +68,12 @@ MetaDataInfo::MetaDataInfo(const MetaDataList& v_md) :
 	Bitrate bitrate_min = std::numeric_limits<Bitrate>::max();
 	Bitrate bitrate_max = 0;
 	uint16_t tracknum = 0;
-	QStringList filetypes;
+
 	bool calc_track_num = (v_md.size() == 1);
 
-	QStringList genres;
+	Util::Set<QString> filetypes;
+	Util::Set<Genre> genres;
+	Util::Set<QString> comments;
 
 	for(const MetaData& md : v_md )
 	{
@@ -93,16 +95,18 @@ MetaDataInfo::MetaDataInfo(const MetaDataList& v_md) :
 		// bitrate
 		if(md.bitrate != 0){
 			bitrate_min = std::min(md.bitrate, bitrate_min);
+			bitrate_max = std::max(md.bitrate, bitrate_max);
 		}
-
-		bitrate_max = std::max(md.bitrate, bitrate_max);
 
 		// year
 		if(md.year != 0) {
 			year_min = std::min(year_min, md.year);
+			year_max = std::max(year_max, md.year);
 		}
 
-		year_max = std::max(year_max, md.year);
+		if(!md.comment().isEmpty()){
+			comments << md.comment();
+		}
 
 		// custom fields
 		const CustomFieldList& custom_fields = md.get_custom_fields();
@@ -117,17 +121,14 @@ MetaDataInfo::MetaDataInfo(const MetaDataList& v_md) :
 		}
 
 		// genre
-		genres << md.genres_to_list();
+		genres << md.genres();
 
 		// paths
 		if(!Util::File::is_www(md.filepath()))
 		{
 			QString filename, dir;
 			Util::File::split_filename(md.filepath(), dir, filename);
-			if(!m->paths.contains(dir))
-			{
-				m->paths << dir;
-			}
+			m->paths << dir;
 		}
 
 		else
@@ -146,15 +147,12 @@ MetaDataInfo::MetaDataInfo(const MetaDataList& v_md) :
 		insert_interval_info_field(InfoStrings::Year, year_min, year_max);
 	}
 
-	filetypes.removeDuplicates();
-
 	insert_numeric_info_field(InfoStrings::nTracks, v_md.count());
 	insert_filesize(filesize);
 	insert_filetype(filetypes);
 	insert_playing_time(length);
-
-	genres.removeDuplicates();
 	insert_genre(genres);
+	insert_comment(comments);
 
 	calc_header(v_md);
 	calc_subheader(tracknum);
@@ -320,13 +318,18 @@ void MetaDataInfo::insert_playing_time(MilliSeconds ms)
 	_info.insert(InfoStrings::PlayingTime, str);
 }
 
-void MetaDataInfo::insert_genre(const QStringList& lst)
+void MetaDataInfo::insert_genre(const Util::Set<Genre>& genres)
 {
-	if(lst.isEmpty()){
+	if(genres.isEmpty()){
 		return;
 	}
 
-	QString str = lst.join(", ");
+	QStringList genres_list;
+	for(auto g : genres){
+		genres_list << g.name();
+	}
+
+	QString str = genres_list.join(", ");
 	QString old_genre = _info[InfoStrings::Genre];
 	if(!old_genre.isEmpty()){
 		old_genre += ", ";
@@ -341,9 +344,20 @@ void MetaDataInfo::insert_filesize(uint64_t filesize)
 	_info.insert(InfoStrings::Filesize, str);
 }
 
-void MetaDataInfo::insert_filetype(const QStringList& filetypes)
+void MetaDataInfo::insert_comment(const Util::Set<QString>& comments)
 {
-	_info.insert(InfoStrings::Filetype, filetypes.join(", "));
+	QString comments_str(QStringList(comments.toList()).join(", "));
+	if(comments_str.size() > 50){
+		comments_str = comments_str.left(50) + "...";
+	}
+
+	_info.insert(InfoStrings::Comment, comments_str);
+}
+
+void MetaDataInfo::insert_filetype(const Util::Set<QString>& filetypes)
+{
+	QStringList filetypes_str(filetypes.toList());
+	_info.insert(InfoStrings::Filetype, filetypes_str.join(", "));
 }
 
 QString MetaDataInfo::header() const
@@ -381,6 +395,8 @@ QString MetaDataInfo::get_info_string(InfoStrings idx) const
 			return Lang::get(Lang::Genre);
 		case InfoStrings::Filetype:
 			return Lang::get(Lang::Filetype);
+		case InfoStrings::Comment:
+			return Lang::get(Lang::Comment);
 
 		default: break;
 	}

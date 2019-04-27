@@ -19,6 +19,7 @@
  */
 
 #include "Tagging.h"
+#include "Tagging/TaggingCover.h"
 #include "ID3v2/Popularimeter.h"
 #include "ID3v2/Discnumber.h"
 #include "ID3v2/AlbumArtist.h"
@@ -110,7 +111,6 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 		return false;
 	}
 
-
 	ParsedTag parsed_tag = tag_type_from_fileref(f);
 	TagLib::Tag* tag = parsed_tag.tag;
 
@@ -181,7 +181,6 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 			md.set_album_artist(album_artist);
 		}
 
-
 		MP4::DiscnumberFrame discnumber_frame(mp4);
 		success = discnumber_frame.read(discnumber);
 		if(success){
@@ -232,6 +231,7 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 	md.n_discs = discnumber.n_discs;
 	md.rating = popularimeter.get_rating();
 	md.set_comment(comment);
+	md.add_custom_field("has_album_art", "", QString::number(Tagging::Covers::has_cover(parsed_tag)));
 
 	if(md.title().length() == 0)
 	{

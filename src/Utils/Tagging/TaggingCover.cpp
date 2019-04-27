@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "TaggingCover.h"
 #include "TaggingEnums.h"
 #include "Tagging.h"
@@ -41,6 +39,8 @@
 #include <taglib/fileref.h>
 #include <taglib/flacpicture.h>
 #include <taglib/tlist.h>
+
+using Tagging::ParsedTag;
 
 bool Tagging::Covers::write_cover(const QString& filepath, const QPixmap& cover)
 {
@@ -143,17 +143,9 @@ QPixmap Tagging::Covers::extract_cover(const QString& filepath)
 }
 
 
-bool Tagging::Covers::extract_cover(const QString& filepath, QByteArray& cover_data, QString& mime_type)
+bool Tagging::Covers::extract_cover(const ParsedTag& parsed_tag, QByteArray& cover_data, QString& mime_type)
 {
-	TagLib::FileRef f(TagLib::FileName(filepath.toUtf8()));
-
-	if(!Tagging::Utils::is_valid_file(f)){
-		sp_log(Log::Warning, "Tagging") << "Cannot open tags for " << filepath;
-		return false;
-	}
-
 	Models::Cover cover;
-	Tagging::ParsedTag parsed_tag = Tagging::Utils::tag_type_from_fileref(f);
 	Tagging::TagType tag_type = parsed_tag.type;
 
 	switch(tag_type)
@@ -205,16 +197,22 @@ bool Tagging::Covers::extract_cover(const QString& filepath, QByteArray& cover_d
 }
 
 
-bool Tagging::Covers::has_cover(const QString& filepath)
+bool Tagging::Covers::extract_cover(const QString& filepath, QByteArray& cover_data, QString& mime_type)
 {
-	TagLib::FileRef f(TagLib::FileName(filepath.toUtf8()));
-
-	if(!Tagging::Utils::is_valid_file(f)){
+	TagLib::FileRef fileref(TagLib::FileName(filepath.toUtf8()));
+	if(!Tagging::Utils::is_valid_file(fileref)){
 		sp_log(Log::Warning, "Tagging") << "Cannot open tags for " << filepath;
 		return false;
 	}
 
-	Tagging::ParsedTag parsed_tag = Tagging::Utils::tag_type_from_fileref(f);
+	Tagging::ParsedTag parsed_tag = Tagging::Utils::tag_type_from_fileref(fileref);
+
+	return extract_cover(parsed_tag, cover_data, mime_type);
+
+}
+
+bool Tagging::Covers::has_cover(const ParsedTag& parsed_tag)
+{
 	Tagging::TagType tag_type = parsed_tag.type;
 
 	switch(tag_type)
@@ -243,6 +241,19 @@ bool Tagging::Covers::has_cover(const QString& filepath)
 		default:
 			return false;
 	}
+}
+
+bool Tagging::Covers::has_cover(const QString& filepath)
+{
+	TagLib::FileRef fileref(TagLib::FileName(filepath.toUtf8()));
+	if(!Tagging::Utils::is_valid_file(fileref)){
+		sp_log(Log::Warning, "Tagging") << "Cannot open tags for " << filepath;
+		return false;
+	}
+
+	Tagging::ParsedTag parsed_tag = Tagging::Utils::tag_type_from_fileref(fileref);
+
+	return has_cover(parsed_tag);
 }
 
 

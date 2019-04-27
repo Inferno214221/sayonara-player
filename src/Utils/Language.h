@@ -68,6 +68,7 @@ public:
 		By,
 		Cancel,
 		CannotFindLame,
+		Comment,
 		Continue,
 		Covers,
 		Clear,

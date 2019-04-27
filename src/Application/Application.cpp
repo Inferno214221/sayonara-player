@@ -98,14 +98,14 @@
 #include <QDateTime>
 #include <QSessionManager>
 
-class Measure
+class MeasureApp
 {
 	QTime*		m_t;
 	QString		m_component;
 	int			m_start;
 
 public:
-	Measure(const QString& component, QTime* t) :
+	MeasureApp(const QString& component, QTime* t) :
 		m_t(t),
 		m_component(component)
 	{
@@ -113,14 +113,14 @@ public:
 		sp_log(Log::Debug, this) << "Init " << m_component << ": " << m_start << "ms";
 	}
 
-	~Measure()
+	~MeasureApp()
 	{
 		int end = m_t->elapsed();
 		sp_log(Log::Debug, this) << "Init " << m_component << " finished: " << end << "ms (" << end - m_start << "ms)";
 	}
 };
 
-#define measure(c) Measure mt(c, m->timer); Q_UNUSED(mt);
+#define measure(c) MeasureApp mt(c, m->timer); Q_UNUSED(mt);
 
 struct Application::Private
 {
