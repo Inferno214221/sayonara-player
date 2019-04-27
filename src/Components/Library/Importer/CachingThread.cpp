@@ -131,7 +131,7 @@ bool CachingThread::scan_rar(const QString& rar_file)
 
 void CachingThread::scan_dir(const QString& dir)
 {
-	DirectoryReader dr({"*"});
+	DirectoryReader dr(QStringList({"*"}));
 	QStringList files;
 
 	dr.scan_files_recursive(dir, files);
