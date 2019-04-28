@@ -1,252 +1,252 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="ru_RU" version="2.0">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="sk_SK" version="2.0">
 <context>
     <name>AbstractLibrary</name>
     <message>
         <source>All %1 could be removed</source>
-        <translation>Все %1 удалены</translation>
+        <translation>Všetkých %1 bolo odstránených</translation>
     </message>
     <message>
         <source>%1 of %2 %3 could not be removed</source>
-        <translation>%1 из %2 %3 не могут быть удалены</translation>
+        <translation>%1 z %2 %3 sa nepodarilo odstrániť</translation>
     </message>
 </context>
 <context>
     <name>CoverButton</name>
     <message>
         <source>Cover source: Audio file</source>
-        <translation>Источник обложки Аудиофайл</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Search an alternative cover</source>
-        <translation>Поиск альтернативной обложки</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>CoverViewContextMenu</name>
     <message>
         <source>Toolbar</source>
-        <translation>Панель инструментов</translation>
+        <translation>Panel nástrojov</translation>
     </message>
 </context>
 <context>
     <name>DBusMPRIS::MediaPlayer2</name>
     <message>
         <source>None</source>
-        <translation>Выключено</translation>
+        <translation>Žiadne</translation>
     </message>
 </context>
 <context>
     <name>DirectoryContextMenu</name>
     <message>
         <source>Create directory</source>
-        <translation>Создать каталог</translation>
+        <translation>Vytvoriť priečinok</translation>
     </message>
     <message>
         <source>Collapse all</source>
-        <translation>Свернуть все</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>DirectoryTreeView</name>
     <message>
         <source>Enter new name</source>
-        <translation>Введите новое имя</translation>
+        <translation>Zadajte nový názov</translation>
     </message>
     <message>
         <source>Copy here</source>
-        <translation>Копировать сюда</translation>
+        <translation>Kopírovať sem</translation>
     </message>
     <message>
         <source>Move here</source>
-        <translation>Переместить сюда</translation>
+        <translation>Presunúť sem</translation>
     </message>
 </context>
 <context>
     <name>EmptyLibraryContainer</name>
     <message>
         <source>Empty Library</source>
-        <translation>Пустая библиотека</translation>
+        <translation>Knižnica je prázdna</translation>
     </message>
 </context>
 <context>
     <name>FileListView</name>
     <message>
         <source>Enter new name</source>
-        <translation>Введите новое имя</translation>
+        <translation>Zadajte nový názov</translation>
     </message>
 </context>
 <context>
     <name>GUI_AbstractStream</name>
     <message>
         <source>Cannot open stream</source>
-        <translation>Открыть поток невозможно</translation>
+        <translation>Nemôžem otvoriť stream</translation>
     </message>
     <message>
         <source>Do you really want to delete %1</source>
-        <translation>Вы действительно хотите удалить %1</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Overwrite?</source>
-        <translation>Перезаписать?</translation>
+        <translation>Prepísať?</translation>
     </message>
 </context>
 <context>
     <name>GUI_AlternativeCovers</name>
     <message>
         <source>Online Search</source>
-        <translation>Поиск в Интернет</translation>
+        <translation>Online vyhľadávanie</translation>
     </message>
     <message>
         <source>Automatic search</source>
-        <translation>Автоматический поиск</translation>
+        <translation>Automatické vyhľadávanie</translation>
     </message>
     <message>
         <source>Text search</source>
-        <translation>Искать текст</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Server</source>
-        <translation>Сервер</translation>
+        <translation>Server</translation>
     </message>
     <message>
         <source>Local Search</source>
-        <translation>Локальный поиск</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Select and preview multiple covers</source>
-        <translation>Выбор и предварительный просмотр нескольких обложек</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Alternative Cover</source>
-        <translation>Альтернативная обложка</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Start search automatically</source>
-        <translation>Начать поиск автоматически</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Cover web search is not enabled</source>
-        <translation>Поиск обложек в интернете недоступен</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>%1 covers found</source>
-        <translation>Найдено %1 обложек</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_AudioConverter</name>
     <message>
         <source>Start</source>
-        <translation>Начать</translation>
+        <translation>Spustiť</translation>
     </message>
     <message>
         <source>Stop</source>
-        <translation>Остановить</translation>
+        <translation>Zastaviť</translation>
     </message>
     <message>
         <source>#Threads</source>
-        <translation>#Потоки</translation>
+        <translation>#Vlákna</translation>
     </message>
     <message>
         <source>Quality</source>
-        <translation>Качество</translation>
+        <translation>Kvalita</translation>
     </message>
     <message>
         <source>Audio Converter</source>
-        <translation>Аудио конвертер</translation>
+        <translation>Konvertor zvuku</translation>
     </message>
     <message>
         <source>Threads</source>
-        <translation>Потоки</translation>
+        <translation>Vlákna</translation>
     </message>
     <message>
         <source>Cannot find encoder</source>
-        <translation>Не найден кодек</translation>
+        <translation>Nepodarilo sa nájsť kodér</translation>
     </message>
     <message>
         <source>Playlist does not contain tracks which are supported by the converter</source>
-        <translation>Плейлист не содержит треки, которые поддерживаются конвертером</translation>
+        <translation>Playlist neobsahuje skladby, ktoré by tento konvertor podporoval</translation>
     </message>
     <message>
         <source>No track will be converted.</source>
-        <translation>Ни один файл не был конвертирован</translation>
+        <translation>Neskonvertujú sa žiadne skladby.</translation>
     </message>
     <message>
         <source>These tracks will be ignored</source>
-        <translation>Эти треки будут пропущены</translation>
+        <translation>Tieto skladby budú ignorované</translation>
     </message>
     <message>
         <source>Failed to convert %1 tracks</source>
-        <translation>Не удалось конвертировать файлов: %1 </translation>
+        <translation>Zlyhala konverzia %1 skladieb</translation>
     </message>
     <message>
         <source>Please check the log files</source>
-        <translation>Пожалуйста, проверьте лог-файлы</translation>
+        <translation>Prosím, skontrolujte záznamy aplikácie</translation>
     </message>
     <message>
         <source>Successfully finished</source>
-        <translation>Успешно завершено</translation>
+        <translation>Úspešne dokončené</translation>
     </message>
 </context>
 <context>
     <name>GUI_Bookmarks</name>
     <message>
         <source>Loop</source>
-        <translation>Повторение</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>No bookmarks found</source>
-        <translation>Не найдено ни одной закладки</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Sorry, bookmarks can only be set for library tracks at the moment.</source>
-        <translation>Закладки могут быть определенны только для треков из библиотеки.</translation>
+        <translation>Prepáčte, záložky je v tejto chvíli možné nastaviť len pre skladby</translation>
     </message>
 </context>
 <context>
     <name>GUI_Broadcast</name>
     <message>
         <source>...</source>
-        <translation>...</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Cannot Broadcast</source>
-        <translation>Поток невозможен</translation>
+        <translation>Nemôžem vysielať</translation>
     </message>
     <message>
         <source>Dismiss</source>
-        <translation>Запретить</translation>
+        <translation>Odmietnuť</translation>
     </message>
     <message>
         <source>Dismiss all</source>
-        <translation>Запретить все</translation>
+        <translation>Odmietnuť všetky</translation>
     </message>
     <message>
         <source>%1 listener</source>
-        <translation>%1 прослушиватель</translation>
+        <translation>%1 poslucháč</translation>
     </message>
     <message>
         <source>%1 listeners</source>
-        <translation>%1 прослушивателей</translation>
+        <translation>%1 poslucháči</translation>
     </message>
     <message>
         <source>Cannot broadcast on port %1</source>
-        <translation>Передача на порт %1 невозможна</translation>
+        <translation>Nemožno vysielať na porte %1</translation>
     </message>
     <message>
         <source>Maybe another application is using this port?</source>
-        <translation>Возможно, используется другое применение этого порта?</translation>
+        <translation>Možno tento port používa iná aplikácia?</translation>
     </message>
 </context>
 <context>
     <name>GUI_BroadcastSetup</name>
     <message>
         <source>Port</source>
-        <translation>Порт</translation>
+        <translation>Port</translation>
     </message>
     <message>
         <source>Ask for permission</source>
-        <translation>Спросить разрешение</translation>
+        <translation>Vypýtať povolenie</translation>
     </message>
 </context>
 <context>
@@ -257,7 +257,7 @@
     </message>
     <message>
         <source>Written by Lucio Carreras</source>
-        <translation>Автор Lucio Carreras</translation>
+        <translation>Vytvoril Lucio Carreras</translation>
     </message>
 </context>
 <context>
@@ -268,11 +268,11 @@
     </message>
     <message>
         <source>Written by</source>
-        <translation>Автор</translation>
+        <translation>Vytvorené</translation>
     </message>
     <message>
         <source>Copyright</source>
-        <translation>Авторские права</translation>
+        <translation>Copyright</translation>
     </message>
 </context>
 <context>
@@ -283,7 +283,7 @@
     </message>
     <message>
         <source>Written by Lucio Carreras</source>
-        <translation>Автор Lucio Carreras</translation>
+        <translation>Vytvoril Lucio Carreras</translation>
     </message>
 </context>
 <context>
@@ -298,265 +298,265 @@
     </message>
     <message>
         <source>Inactive</source>
-        <translation>Неактивный</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Active</source>
-        <translation>Активный</translation>
+        <translation>Aktívne</translation>
     </message>
     <message>
         <source>Clear cache</source>
-        <translation>Очистить кэш</translation>
+        <translation>Vymazať vyrovnávaciu pamäť</translation>
     </message>
     <message>
         <source>Delete files</source>
-        <translation>Удалить файлы</translation>
+        <translation>Odstrániť súbory</translation>
     </message>
     <message>
         <source>Fetch covers from the internet</source>
-        <translation>Отыскать обложки в интернете</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_Crossfader</name>
     <message>
         <source>Crossfader</source>
-        <translation>Кросфейдер</translation>
+        <translation>Prelínač</translation>
     </message>
 </context>
 <context>
     <name>GUI_DeleteDialog</name>
     <message>
         <source>Only from library</source>
-        <translation>Только из библиотеки</translation>
+        <translation>Len z knižnice</translation>
     </message>
     <message>
         <source>You are about to delete %1 files</source>
-        <translation>Вы действительно хотите удалить %1 файлов</translation>
+        <translation>Chystáte sa odstrániť %1 súborov</translation>
     </message>
 </context>
 <context>
     <name>GUI_DirectoryWidget</name>
     <message>
         <source>Set library path</source>
-        <translation>Указать путь к библиотеке</translation>
+        <translation>Nastaviť cestu knižnice</translation>
     </message>
     <message>
         <source>You haven&apos;t specified a library path yet</source>
-        <translation>Вы еще не указали путь к библиотеке</translation>
+        <translation>Zatiaľ ste nenastavili cestu ku knižnici</translation>
     </message>
 </context>
 <context>
     <name>GUI_EmptyLibrary</name>
     <message>
         <source>Set library path</source>
-        <translation>Указать путь к библиотеке</translation>
+        <translation>Nastaviť cestu knižnice</translation>
     </message>
     <message>
         <source>You haven&apos;t specified a library path yet</source>
-        <translation>Вы еще не указали путь к библиотеке</translation>
+        <translation>Zatiaľ ste nenastavili cestu ku knižnici</translation>
     </message>
 </context>
 <context>
     <name>GUI_EnginePreferences</name>
     <message>
         <source>Audio</source>
-        <translation>Аудио</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_Equalizer</name>
     <message>
         <source>Equalizer</source>
-        <translation>Эквалайзер</translation>
+        <translation>Ekvalizér</translation>
     </message>
 </context>
 <context>
     <name>GUI_FontConfig</name>
     <message>
         <source>Bold</source>
-        <translation>Жырный</translation>
+        <translation>Tučné</translation>
     </message>
     <message>
         <source>Font size</source>
-        <translation>Размер шрифта</translation>
+        <translation>Veľkosť písma</translation>
     </message>
     <message>
         <source>Font name</source>
-        <translation>Название шрифта</translation>
+        <translation>Názov písma</translation>
     </message>
     <message>
         <source>Inherit</source>
-        <translation>Запомнить</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_IconPreferences</name>
     <message>
         <source>Also use selected icon theme in Sayonara&apos;s dark mode</source>
-        <translation>Использывать выбранную тему значка в темном режиме Sayonara</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Icons</source>
-        <translation>Значки</translation>
+        <translation>Ikony</translation>
     </message>
 </context>
 <context>
     <name>GUI_ImportDialog</name>
     <message>
         <source>Import</source>
-        <translation>Импорт</translation>
+        <translation>Importovať</translation>
     </message>
     <message>
         <source>Import tracks to library</source>
-        <translation>Импортировать треки в библиотеку</translation>
+        <translation>Importovať skladby do knižnice</translation>
     </message>
     <message>
         <source>Select target folder</source>
-        <translation>Выбрать каталог</translation>
+        <translation>Zvoliť cieľový adresár</translation>
     </message>
     <message>
         <source>OK</source>
-        <translation>ОК</translation>
+        <translation>OK</translation>
     </message>
     <message>
         <source>%1 tracks available</source>
-        <translation>%1 треков доступно</translation>
+        <translation>%1 dostupných skladieb</translation>
     </message>
     <message>
         <source>Loading tracks</source>
-        <translation>Загрузка треков</translation>
+        <translation>Načítavam skladby</translation>
     </message>
     <message>
         <source>Importing</source>
-        <translation>Импортирование</translation>
+        <translation>Importujem</translation>
     </message>
     <message>
         <source>Finished</source>
-        <translation>Готово</translation>
+        <translation>Dokončené</translation>
     </message>
     <message>
         <source>Cancelled</source>
-        <translation>Отменено</translation>
+        <translation>Zrušené</translation>
     </message>
     <message>
         <source>No tracks</source>
-        <translation>Нет треков</translation>
+        <translation>Žiadne skladby</translation>
     </message>
     <message>
         <source>Rollback</source>
-        <translation>Вернуть</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Choose target directory</source>
-        <translation>Выбрать каталог</translation>
+        <translation>Zvoliť cieľový priečinok</translation>
     </message>
     <message>
         <source>%1&lt;br /&gt;is no library directory</source>
-        <translation>%1&lt;br /&gt;не каталог с библиотекой</translation>
+        <translation>%1&lt;br /&gt;nie je priečinok knižnice</translation>
     </message>
 </context>
 <context>
     <name>GUI_LanguageChooser</name>
     <message>
         <source>For new languages I am always looking for translators</source>
-        <translation>Для новых языков я постоянно ищу переводчиков</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>English</source>
-        <translation>English</translation>
+        <translation>Angličtina</translation>
     </message>
     <message>
         <source>Language</source>
-        <translation>Язык</translation>
+        <translation>Jazyk</translation>
     </message>
 </context>
 <context>
     <name>GUI_LastFM</name>
     <message>
         <source>Username</source>
-        <translation>Имя пользователя</translation>
+        <translation>Používateľské meno</translation>
     </message>
     <message>
         <source>Password</source>
-        <translation>Пароль</translation>
+        <translation>Heslo</translation>
     </message>
     <message>
         <source>Scrobble after</source>
-        <translation>Скробблинг через</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Login now</source>
-        <translation>Войти</translation>
+        <translation>Prihlásiť sa</translation>
     </message>
     <message>
         <source>Logged in</source>
-        <translation>Вход выполнен</translation>
+        <translation>Prihlásený</translation>
     </message>
     <message>
         <source>Not logged in</source>
-        <translation>Вход в систему не выполнен</translation>
+        <translation>Neprihlásený</translation>
     </message>
 </context>
 <context>
     <name>GUI_LevelPainter</name>
     <message>
         <source>Level</source>
-        <translation>Уровень</translation>
+        <translation>Úroveň</translation>
     </message>
 </context>
 <context>
     <name>GUI_Library</name>
     <message>
         <source>Add artist</source>
-        <translation>Добавить исполнителя</translation>
+        <translation>Pridať autora</translation>
     </message>
 </context>
 <context>
     <name>GUI_LibraryPreferences</name>
     <message>
         <source>Libraries</source>
-        <translation>Библиотеки</translation>
+        <translation>Knižnice</translation>
     </message>
     <message>
         <source>Library-Playlist Interaction</source>
-        <translation>Библиотека и плейлист</translation>
+        <translation>Interakcia knižnice a playlistu</translation>
     </message>
     <message>
         <source>On double click, create playlist and</source>
-        <translation>Двойное нажатие: создать новый плейлист и</translation>
+        <translation>Pri dvojkliku vytvoriť playlist a</translation>
     </message>
     <message>
         <source>do nothing (default)</source>
-        <translation>оставить без изменений</translation>
+        <translation>nespraviť nič (predvolené)</translation>
     </message>
     <message>
         <source>start playback if stopped</source>
-        <translation>начать воспроизведение в случае остановки</translation>
+        <translation>spustiť prehrávanie ak je zastavené</translation>
     </message>
     <message>
         <source>start playback immediately</source>
-        <translation>начать воспроизведение сразу</translation>
+        <translation>spustiť prehrávanie okamžite</translation>
     </message>
     <message>
         <source>When drag and drop into playlist </source>
-        <translation>Drag and Drop: Вставить название в плейлист и</translation>
+        <translation>Pri pretiahnutí do playlistu</translation>
     </message>
     <message>
         <source>start if stopped and playlist is empty</source>
-        <translation>начать воспроизведение в случае остановки и если плейлист пустой</translation>
+        <translation>spustiť ak je zastavené a playlist je prázdny</translation>
     </message>
     <message>
         <source>Other</source>
-        <translation>Другие</translation>
+        <translation>Ostatné</translation>
     </message>
     <message>
         <source>Show &quot;Clear selection&quot; buttons</source>
-        <translation>Показать кнопку: &quot;Очистить выбор&quot;</translation>
+        <translation>Zobraziť tlačidlo &quot;Vyčistiť výber&quot;</translation>
     </message>
     <message>
         <source>Cannot edit library</source>
-        <translation>Библиотеку невозможно изменить</translation>
+        <translation>Nemôžem upraviť knižnicu</translation>
     </message>
     <message>
         <source>(this is ignored when playlist is in &apos;append mode&apos;)</source>
@@ -567,64 +567,64 @@
     <name>GUI_LocalLibrary</name>
     <message>
         <source>Library</source>
-        <translation>Библиотека</translation>
+        <translation>Knižnica</translation>
     </message>
     <message>
         <source>Close</source>
-        <translation>Закрыть</translation>
+        <translation>Zatvoriť</translation>
     </message>
     <message>
         <source>No genres found</source>
-        <translation>Жанри не найдены</translation>
+        <translation>Nenašli sa žiadne žánre</translation>
     </message>
 </context>
 <context>
     <name>GUI_Logger</name>
     <message>
         <source>Cannot open file</source>
-        <translation>Создать профиль</translation>
+        <translation>Nepodarilo sa otvoriť súbor</translation>
     </message>
 </context>
 <context>
     <name>GUI_Lyrics</name>
     <message>
         <source>Save Lyrics</source>
-        <translation>Сохранить текст песни</translation>
+        <translation>Uložiť text</translation>
     </message>
     <message>
         <source>switch</source>
-        <translation>Сменить</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Zoom</source>
-        <translation>Масштаб</translation>
+        <translation>Priblíženie</translation>
     </message>
     <message>
         <source>Save lyrics not supported</source>
-        <translation>Сохранить текст не получается</translation>
+        <translation>Ukladanie textu nie je podporované</translation>
     </message>
     <message>
         <source>Overwrite lyrics</source>
-        <translation>Перезаписать текст песни</translation>
+        <translation>Prepísať text</translation>
     </message>
     <message>
         <source>Save lyrics</source>
-        <translation>Сохранить текст песни</translation>
+        <translation>Uložiť text</translation>
     </message>
     <message>
         <source>Source</source>
-        <translation>Источник</translation>
+        <translation>Zdroj</translation>
     </message>
 </context>
 <context>
     <name>GUI_Notifications</name>
     <message>
         <source>Timeout (ms)</source>
-        <translation>Задержка (мс)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Notifications</source>
-        <translation>Уведомления</translation>
+        <translation>Notifikácie</translation>
     </message>
 </context>
 <context>
@@ -635,544 +635,544 @@
     </message>
     <message>
         <source>A new version is available!</source>
-        <translation>Доступна новая версия!</translation>
+        <translation>Nová verzia dostupná!</translation>
     </message>
 </context>
 <context>
     <name>GUI_PlayerPreferences</name>
     <message>
         <source>Update notifications</source>
-        <translation>Оповещение об обновлении</translation>
+        <translation>Aktualizovať notifikácie</translation>
     </message>
     <message>
         <source>Show system tray icon</source>
-        <translation>Встраивать в системный лоток</translation>
+        <translation>Zobraziť ikonu v oznamovacej oblasti</translation>
     </message>
     <message>
         <source>Close to tray</source>
-        <translation>Свернуть</translation>
+        <translation>Zatvoriť do lišty</translation>
     </message>
     <message>
         <source>Start in tray</source>
-        <translation>Открыть в минимальном режиме</translation>
+        <translation>Spustiť v lište</translation>
     </message>
 </context>
 <context>
     <name>GUI_Playlist</name>
     <message>
         <source>Playlist empty</source>
-        <translation>Плейлист пустой</translation>
+        <translation>Playlist prázdny</translation>
     </message>
     <message>
         <source>Media files</source>
-        <translation>Медиа файлы</translation>
+        <translation>Mediálne súbory</translation>
     </message>
     <message>
         <source>Open Media files</source>
-        <translation>Открыть медиа файлы</translation>
+        <translation>Otvoriť mediálne súbory</translation>
     </message>
     <message>
         <source>Playlist name already exists</source>
-        <translation>Имя плейлиста уже существует</translation>
+        <translation>Playlist s rovnakým názvom už existuje</translation>
     </message>
     <message>
         <source>Cannot save playlist.</source>
-        <translation>Плейлист невозможно сохранить.</translation>
+        <translation>Nemôžem uložiť playlist</translation>
     </message>
     <message>
         <source>Playlist exists</source>
-        <translation>Плейлист уже существует</translation>
+        <translation>Playlist existuje</translation>
     </message>
     <message>
         <source>Playlists are currently only supported for library tracks.</source>
-        <translation>На данный момент плейлисты могут быть созданы только для треков из музыкальной коллекции.</translation>
+        <translation>Playlisty sú v tejto chvíli podporované len pre skladby z knižnice.</translation>
     </message>
     <message>
         <source>Save playlist</source>
-        <translation>Сохранить плейлист</translation>
+        <translation>Uložiť playlist</translation>
     </message>
 </context>
 <context>
     <name>GUI_PlaylistBottomBar</name>
     <message>
         <source>Please set library path first</source>
-        <translation>Пожалуйста, сначала задайте путь к библиотеке</translation>
+        <translation>Prosím, najprv nastavte cestu ku knižnici</translation>
     </message>
     <message>
         <source>Cancel shutdown?</source>
-        <translation>Отменить завершение?</translation>
+        <translation>Zrušiť vypnutie?</translation>
     </message>
 </context>
 <context>
     <name>GUI_PlaylistChooser</name>
     <message>
         <source>No playlists found</source>
-        <translation>Не найдено ни одного плейлиста</translation>
+        <translation>Nenašli sa žiadne playlisty</translation>
     </message>
 </context>
 <context>
     <name>GUI_PlaylistPreferences</name>
     <message>
         <source>Behavior</source>
-        <translation>Режим</translation>
+        <translation>Správanie</translation>
     </message>
     <message>
         <source>Start up</source>
-        <translation>Настройки запуска</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Load temporary playlists</source>
-        <translation>Загрузить временные плейлисты</translation>
+        <translation>Načítať dočasné playlisty</translation>
     </message>
     <message>
         <source>Load saved playlists</source>
-        <translation>Загрузить сохраненные плейлисты</translation>
+        <translation>Načítať uložené playlisty</translation>
     </message>
     <message>
         <source>Start playing</source>
-        <translation>Начать воспроизведение</translation>
+        <translation>Spustiť prehrávanie</translation>
     </message>
     <message>
         <source>Load last track on startup</source>
-        <translation>Выбрать последний воспроизводившийся трек</translation>
+        <translation>Načítať poslednú skladbu pri štarte</translation>
     </message>
     <message>
         <source>Remember time of last track</source>
-        <translation>Запомнить время воспроизведения последнего трека</translation>
+        <translation>Zapamätať čas poslednej skladby</translation>
     </message>
     <message>
         <source>Stop behaviour</source>
-        <translation>Остановить режим</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Load last track after pressing stop</source>
-        <translation>Загрузить последнее название, после нажатия Стоп</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Look</source>
-        <translation>Посмотреть</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Show numbers</source>
-        <translation>Показать нумерацию</translation>
+        <translation>Zobraziť čísla</translation>
     </message>
     <message>
         <source>&apos;italic text&apos;</source>
-        <translation>&apos;текст курсивом&apos;</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Example</source>
-        <translation>Пример</translation>
+        <translation>Príklad</translation>
     </message>
     <message>
         <source>*bold text*</source>
-        <translation>*жирный текст*</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Show clear button</source>
-        <translation>Показать кнопку сброса настроек</translation>
+        <translation>Zobraziť tlačidlo vyčistenia</translation>
     </message>
     <message>
         <source>Show covers</source>
-        <translation>Показать обложки</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Show rating</source>
-        <translation>Показывать оценку</translation>
+        <translation>Zobraziť hodnotenie</translation>
     </message>
     <message>
         <source>Playlist look: Invalid expression</source>
-        <translation>Просмотр списка воспроизведения: Недопустимое выражение</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_Podcasts</name>
     <message>
         <source>Start stream</source>
-        <translation>Начать стриминг</translation>
+        <translation>Spustiť vysielanie</translation>
     </message>
     <message>
         <source>Podcast</source>
-        <translation>Подкаст</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_PreferenceDialog</name>
     <message>
         <source>Preferences</source>
-        <translation>Настройки</translation>
+        <translation>Nastavenia</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation>Отменить</translation>
+        <translation>Zrušiť</translation>
     </message>
     <message>
         <source>Apply</source>
-        <translation>Применить</translation>
+        <translation>Použiť</translation>
     </message>
     <message>
         <source>OK</source>
-        <translation>ОК</translation>
+        <translation>OK</translation>
     </message>
 </context>
 <context>
     <name>GUI_Proxy</name>
     <message>
         <source>Password</source>
-        <translation>Пароль</translation>
+        <translation>Heslo</translation>
     </message>
     <message>
         <source>Save username/password</source>
-        <translation>Сохранить имя пользователя/пароль</translation>
+        <translation>Uložiť meno a heslo</translation>
     </message>
     <message>
         <source>Active</source>
-        <translation>Активный</translation>
+        <translation>Aktívne</translation>
     </message>
     <message>
         <source>Port</source>
-        <translation>Порт</translation>
+        <translation>Port</translation>
     </message>
     <message>
         <source>Username</source>
-        <translation>Имя пользователя</translation>
+        <translation>Používateľské meno</translation>
     </message>
     <message>
         <source>Host</source>
-        <translation>Сервер</translation>
+        <translation>Hostiteľ</translation>
     </message>
     <message>
         <source>Proxy</source>
-        <translation>Прокси-сервер</translation>
+        <translation>Proxy</translation>
     </message>
 </context>
 <context>
     <name>GUI_ReloadLibraryDialog</name>
     <message>
         <source>Fast scan</source>
-        <translation>Быстрое сканирование</translation>
+        <translation>Rýchle prehľadávanie</translation>
     </message>
     <message>
         <source>Deep scan</source>
-        <translation>Детальное сканирование</translation>
+        <translation>Hĺbkové prehľadávanie</translation>
     </message>
     <message>
         <source>Only scan for new and deleted files</source>
-        <translation>Сканировать только новые и удаленные файлы</translation>
+        <translation>Nájsť len nové a vymazané súbory</translation>
     </message>
     <message>
         <source>Scan all files in your library directory</source>
-        <translation>Сканировать все файлы в каталоге библиотеки</translation>
+        <translation>Hľadať všteky súbory v priečinku knižnice</translation>
     </message>
 </context>
 <context>
     <name>GUI_RemoteControl</name>
     <message>
         <source>Port</source>
-        <translation>Порт</translation>
+        <translation>Port</translation>
     </message>
     <message>
         <source>Remote control URL</source>
-        <translation>Дистанционное управление URL</translation>
+        <translation>URL vzdialeného ovládania</translation>
     </message>
     <message>
         <source>Remote control</source>
-        <translation>Дистанционное управление</translation>
+        <translation>Vzdialené ovládanie</translation>
     </message>
 </context>
 <context>
     <name>GUI_SearchPreferences</name>
     <message>
         <source>Example</source>
-        <translation>Пример</translation>
+        <translation>Príklad</translation>
     </message>
     <message>
         <source>Case insensitive</source>
-        <translation>Игнорировать написание с больш и мал.букв</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Option</source>
-        <translation>Параметр</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Ignore accents</source>
-        <translation>Игнорировать гравис</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Ignore special characters</source>
-        <translation>Игнорировать специальные символы</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_ShortcutEntry</name>
     <message>
         <source>Enter shortcut</source>
-        <translation>Комбинация клавиш Enter</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Shortcut already in use</source>
-        <translation>Комбинация клавиш уже используется</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Test</source>
-        <translation>Тест</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_Shortcuts</name>
     <message>
         <source>Press shortcut</source>
-        <translation>Нажать shortcut</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Shortcuts</source>
-        <translation>Shortcuts</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Double shortcuts found</source>
-        <translation>Найдено двойная комбинация клавиш</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_Shutdown</name>
     <message>
         <source>Shutdown</source>
-        <translation>Завершение работы</translation>
+        <translation>Vypnúť</translation>
     </message>
     <message>
         <source>Shutdown after playlist finished</source>
-        <translation>После последней песни завершить работу</translation>
+        <translation>Vypnúť po skončení playlistu</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation>Отменить</translation>
+        <translation>Zrušiť</translation>
     </message>
     <message>
         <source>OK</source>
-        <translation>ОК</translation>
+        <translation>OK</translation>
     </message>
     <message>
         <source>Shutdown after</source>
-        <translation>Завершение после</translation>
+        <translation>Vypnúť po</translation>
     </message>
     <message>
         <source>minutes</source>
-        <translation>минут</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_SomaFM</name>
     <message>
         <source>Donate to Soma.fm</source>
-        <translation>Пожертвовать Soma.fm</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Streams</source>
-        <translation>Веб-потоки</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_SoundcloudArtistSearch</name>
     <message>
         <source>Search Soundcloud</source>
-        <translation>Искать в Soundcloud</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Cancel</source>
-        <translation>Отменить</translation>
+        <translation>Zrušiť</translation>
     </message>
     <message>
         <source>Add</source>
-        <translation>Добавить</translation>
+        <translation>Pridať</translation>
     </message>
     <message>
         <source>Search artist</source>
-        <translation>Искать исполнителя</translation>
+        <translation>Vyhľadať autora</translation>
     </message>
 </context>
 <context>
     <name>GUI_SoundcloudLibrary</name>
     <message>
         <source>Library</source>
-        <translation>Библиотека</translation>
+        <translation>Knižnica</translation>
     </message>
     <message>
         <source>Search for title, interprets and albums</source>
-        <translation>Искать по названиям, исполнителям и альбомам</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_Spectrum</name>
     <message>
         <source>Spectrum</source>
-        <translation>Диапазон</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_Speed</name>
     <message>
         <source>Speed</source>
-        <translation>Скорость</translation>
+        <translation>Rýchlosť</translation>
     </message>
     <message>
         <source>Preserve pitch</source>
-        <translation>Не менять высоту</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Pitch</source>
-        <translation>Высота</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>%1 not found</source>
-        <translation>%1 не найден</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_StreamPreferences</name>
     <message>
         <source>Open Streams in new tab</source>
-        <translation>Открыть поток в новой вкладке</translation>
+        <translation>Otvoriť Vysielania v novej karte</translation>
     </message>
     <message>
         <source>Show history</source>
-        <translation>Показать историю</translation>
+        <translation>Zobraziť históriu</translation>
     </message>
 </context>
 <context>
     <name>GUI_StreamRecorder</name>
     <message>
         <source>General</source>
-        <translation>Общее</translation>
+        <translation>Všeobecné</translation>
     </message>
     <message>
         <source>Target path</source>
-        <translation>Путь к библиотеке</translation>
+        <translation>Cieľová cesta</translation>
     </message>
     <message>
         <source>Automatic recording</source>
-        <translation>Автоматическая запись</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Create session folder</source>
-        <translation>Создать каталог для сессии</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Session Directory</source>
-        <translation>Каталог сеанса</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Choose available placeholders</source>
-        <translation>Выбрать доступные заполнители</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Path template</source>
-        <translation>Шаблон пути</translation>
+        <translation>Šablóna cesty</translation>
     </message>
     <message>
         <source>Example</source>
-        <translation>Пример</translation>
+        <translation>Príklad</translation>
     </message>
     <message>
         <source>Choose target directory</source>
-        <translation>Выбрать каталог</translation>
+        <translation>Zvoľte cieľový priečinok</translation>
     </message>
     <message>
         <source>Target path is empty</source>
-        <translation>Адресная строка пустая</translation>
+        <translation>Cieľová cesta je prázdna</translation>
     </message>
     <message>
         <source>Please choose another directory</source>
-        <translation>Пожалуйста, выберите другой каталог</translation>
+        <translation>Prosím, vyberte iný priečinok</translation>
     </message>
     <message>
         <source>Cannot create %1</source>
-        <translation>Невозможно создать %1</translation>
+        <translation>Nemôžem vytvoriť %1</translation>
     </message>
     <message>
         <source>Template path is not valid</source>
-        <translation>Шаблон пути не есть действительным</translation>
+        <translation>Šablóna cesty nie je platná</translation>
     </message>
     <message>
         <source>Stream recorder</source>
-        <translation>Запись потока</translation>
+        <translation>Nahrávač vysielania</translation>
     </message>
 </context>
 <context>
     <name>GUI_Style</name>
     <message>
         <source>Style</source>
-        <translation>Стиль</translation>
+        <translation>Vzhľad</translation>
     </message>
     <message>
         <source>Close</source>
-        <translation>Закрыть</translation>
+        <translation>Zatvoriť</translation>
     </message>
     <message>
         <source>Spectrum</source>
-        <translation>Диапазон</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Vert. spacing</source>
-        <translation>Верт. расположение</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Rect height</source>
-        <translation>Высота прямоугольника</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Hor. spacing</source>
-        <translation>Гориз. расположение</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Fading steps</source>
-        <translation>Настройки перехода</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Level</source>
-        <translation>Уровень</translation>
+        <translation>Úroveň</translation>
     </message>
     <message>
         <source>Rect width</source>
-        <translation>Ширина прямоугольника</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Ver. spacing</source>
-        <translation>Верт. расположение</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Style settings</source>
-        <translation>Настройки стиля</translation>
+        <translation>Nastavenia vzhľadu</translation>
     </message>
     <message>
         <source>Color 2</source>
-        <translation>Цвет 2</translation>
+        <translation>Farba 2</translation>
     </message>
     <message>
         <source>Color 1</source>
-        <translation>Цвет 1</translation>
+        <translation>Farba 1</translation>
     </message>
     <message>
         <source>Color 3</source>
-        <translation>Цвет 3</translation>
+        <translation>Farba 3</translation>
     </message>
     <message>
         <source>Color 4</source>
-        <translation>Цвет 4</translation>
+        <translation>Farba 4</translation>
     </message>
 </context>
 <context>
     <name>GUI_StyleSettings</name>
     <message>
         <source>There are some unsaved settings&lt;br /&gt;Save now?</source>
-        <translation>Настройки еще не сохранены&lt;br /&gt;Сохранить?</translation>
+        <translation>Nejaké zmeny nie sú uložené.&lt;br /&gt;Uložiť teraz?</translation>
     </message>
     <message>
         <source>Please specify a name</source>
-        <translation>Пожалуйста, укажите имя</translation>
+        <translation>Prosím, zadajte názov</translation>
     </message>
     <message>
         <source>Save changes?</source>
-        <translation>Сохранить изменения?</translation>
+        <translation>Uložiť zmeny?</translation>
     </message>
 </context>
 <context>
@@ -1187,62 +1187,62 @@
     </message>
     <message>
         <source>Discnumber</source>
-        <translation>Номер диска</translation>
+        <translation>Číslo disku</translation>
     </message>
     <message>
         <source>Album artist</source>
-        <translation>Исполнитель альбома</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Comment</source>
-        <translation>Закомментировать</translation>
+        <translation>Komentár</translation>
     </message>
     <message>
         <source>all</source>
-        <translation>все</translation>
+        <translation>všetky</translation>
     </message>
     <message>
         <source>Tag from path</source>
-        <translation>ID3 тег извлечь из пути файла</translation>
+        <translation>Štítok z cesty</translation>
     </message>
     <message>
         <source>Replace</source>
-        <translation>Заменить</translation>
+        <translation>Nahradiť</translation>
     </message>
     <message>
         <source>Original</source>
-        <translation>Оригинальный</translation>
+        <translation>Originál</translation>
     </message>
     <message>
         <source>Undo all</source>
-        <translation>Вернуть все</translation>
+        <translation>Vrátiť všetko</translation>
     </message>
     <message>
         <source>Load complete album</source>
-        <translation>Загрузить альбом полностью</translation>
+        <translation>Načítať úplný album</translation>
     </message>
     <message>
         <source>Cannot apply tag for</source>
-        <translation>Невозможно использовать тег для</translation>
+        <translation>Nemôžem použiť štítky pre</translation>
     </message>
     <message>
         <source>%1 tracks</source>
-        <translation>%1 треков</translation>
+        <translation>%1 skladieb</translation>
     </message>
     <message>
         <source>Ignore these tracks?</source>
-        <translation>Игнорировать эти треки?</translation>
+        <translation>Ignorovať tieto skladby?</translation>
     </message>
     <message>
         <source>All changes will be lost</source>
-        <translation>Все изменения утеряны</translation>
+        <translation>Všetky zmeny budú stratené</translation>
     </message>
 </context>
 <context>
     <name>GUI_TagFromPath</name>
     <message>
         <source>Expression</source>
-        <translation>Выражение</translation>
+        <translation>Výraz</translation>
     </message>
     <message>
         <source>?</source>
@@ -1250,65 +1250,65 @@
     </message>
     <message>
         <source>Disc Nr</source>
-        <translation>CD Ном</translation>
+        <translation>Číslo disku</translation>
     </message>
     <message>
         <source>Apply to all</source>
-        <translation>Применить ко всему</translation>
+        <translation>Použiť pre všetky</translation>
     </message>
     <message>
         <source>Warning</source>
-        <translation>Внимание</translation>
+        <translation>Upozornenie</translation>
     </message>
     <message>
         <source>Tag</source>
-        <translation>Метка</translation>
+        <translation>Štítok</translation>
     </message>
     <message>
         <source>Please select text first</source>
-        <translation>Пожалуйста,выберите сначала текст</translation>
+        <translation>Prosím, najprv vyberte text</translation>
     </message>
 </context>
 <context>
     <name>GUI_TargetPlaylistDialog</name>
     <message>
         <source>Choose target playlist</source>
-        <translation>Выбрать плейлист</translation>
+        <translation>Zvoľte cieľový playlist</translation>
     </message>
     <message>
         <source>relative filepaths</source>
-        <translation>относительные пути</translation>
+        <translation>relatívne cesty súborov</translation>
     </message>
     <message>
         <source>...</source>
-        <translation>...</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Close</source>
-        <translation>Закрыть</translation>
+        <translation>Zatvoriť</translation>
     </message>
     <message>
         <source>Save</source>
-        <translation>Сохранить</translation>
+        <translation>Uložiť</translation>
     </message>
     <message>
         <source>Save playlist as...</source>
-        <translation>Сохранить плейлист как...</translation>
+        <translation>Uložiť playlist ako...</translation>
     </message>
 </context>
 <context>
     <name>GUI_UiPreferences</name>
     <message>
         <source>User Interface</source>
-        <translation>Интерфейс пользователя</translation>
+        <translation>Používateľské rozhranie</translation>
     </message>
     <message>
         <source>General</source>
-        <translation>Общее</translation>
+        <translation>Všeobecné</translation>
     </message>
     <message>
         <source>Show large cover</source>
-        <translation>Показать большую обложку</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -1323,309 +1323,309 @@
     </message>
     <message>
         <source>Open image files</source>
-        <translation>Открыть файлы изображений</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>InfoDialog</name>
     <message>
         <source>Info / Edit</source>
-        <translation>Информация / Изменение</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>Lang</name>
     <message>
         <source>About</source>
-        <translation>О программе</translation>
+        <translation>O programe</translation>
     </message>
     <message>
         <source>Action</source>
-        <translation>Действие</translation>
+        <translation>Akcia</translation>
     </message>
     <message>
         <source>Actions</source>
-        <translation>Действия</translation>
+        <translation>Akcie</translation>
     </message>
     <message>
         <source>Activate</source>
-        <translation>Активировать</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Active</source>
-        <translation>Активный</translation>
+        <translation>Aktívne</translation>
     </message>
     <message>
         <source>Add tab</source>
-        <translation>Добавить новую вкладку</translation>
+        <translation>Pridať kartu</translation>
     </message>
     <message>
         <source>Album</source>
-        <translation>Альбом</translation>
+        <translation>Album</translation>
     </message>
     <message>
         <source>Album artists</source>
-        <translation>Исполнители альбома</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Albums</source>
-        <translation>Альбомы</translation>
+        <translation>Albumy</translation>
     </message>
     <message>
         <source>All</source>
-        <translation>Все</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Append</source>
-        <translation>Добавить</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Application</source>
-        <translation>Приложение</translation>
+        <translation>Aplikácia</translation>
     </message>
     <message>
         <source>Apply</source>
-        <translation>Применить</translation>
+        <translation>Použiť</translation>
     </message>
     <message>
         <source>Artist</source>
-        <translation>Исполнитель</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Artists</source>
-        <translation>Исполнители</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Ascending</source>
-        <translation>По возрастанию</translation>
+        <translation>Vzostupne</translation>
     </message>
     <message>
         <source>Automatic</source>
-        <translation>Автоматическое</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Bitrate</source>
-        <translation>Битрейт</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Bookmarks</source>
-        <translation>Закладки</translation>
+        <translation>Záložky</translation>
     </message>
     <message>
         <source>Broadcast</source>
-        <translation>Трансляция</translation>
+        <translation>Vysielanie</translation>
     </message>
     <message>
         <source>by</source>
-        <translation>от</translation>
+        <translation>od</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation>Отмена</translation>
+        <translation>Zrušiť</translation>
     </message>
     <message>
         <source>Cannot find Lame MP3 encoder</source>
-        <translation>Не удалось найти MP3 кодер</translation>
+        <translation>Nepodarilo sa nájsť Lame MP3 kodér</translation>
     </message>
     <message>
         <source>Clear</source>
-        <translation>Очистить</translation>
+        <translation>Vyčistiť</translation>
     </message>
     <message>
         <source>Close</source>
-        <translation>Закрыть</translation>
+        <translation>Zatvoriť</translation>
     </message>
     <message>
         <source>Close others</source>
-        <translation>Закрыть другие</translation>
+        <translation>Zatvoriť ostatné</translation>
     </message>
     <message>
         <source>Close tab</source>
-        <translation>Закрыть вкладку</translation>
+        <translation>Zatvoriť kartu</translation>
     </message>
     <message>
         <source>Continue</source>
-        <translation>Continue</translation>
+        <translation>Pokračovať</translation>
     </message>
     <message>
         <source>Covers</source>
-        <translation>Обложки</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Dark Mode</source>
-        <translation>Темный интерфейс</translation>
+        <translation>Tmavý režim</translation>
     </message>
     <message>
         <source>Date</source>
-        <translation>Дата</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Days</source>
-        <translation>В днях</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>d</source>
-        <translation>д</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Default</source>
-        <translation>По умолчанию</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Delete</source>
-        <translation>Удалить </translation>
+        <translation>Odstrániť</translation>
     </message>
     <message>
         <source>Descending</source>
-        <translation>По убыванию</translation>
+        <translation>Zostupne</translation>
     </message>
     <message>
         <source>Directory</source>
-        <translation>Папка</translation>
+        <translation>Priečinok</translation>
     </message>
     <message>
         <source>Directories</source>
-        <translation>Каталоги</translation>
+        <translation>Priečinky</translation>
     </message>
     <message>
         <source>Disc</source>
-        <translation>CD Ном</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Duration</source>
-        <translation>Длительность</translation>
+        <translation>Trvanie</translation>
     </message>
     <message>
         <source>Dur.</source>
-        <translation>Длител.</translation>
+        <translation>Trv.</translation>
     </message>
     <message>
         <source>Dynamic playback</source>
-        <translation>Динамическое воспроизведение</translation>
+        <translation>Dynamické prehrávanie</translation>
     </message>
     <message>
         <source>Edit</source>
-        <translation>Изменить</translation>
+        <translation>Upraviť</translation>
     </message>
     <message>
         <source>Empty input</source>
-        <translation>Пустой ввод</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Enter name</source>
-        <translation>Ввести имя</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Enter URL</source>
-        <translation>Введите URL</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Entry</source>
-        <translation>Элемент</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Entries</source>
-        <translation>Записи</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Error</source>
-        <translation>Ошибка сохранения</translation>
+        <translation>Chyba</translation>
     </message>
     <message>
         <source>Fast</source>
-        <translation>Быстрый</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>File</source>
-        <translation>Файл</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Filename</source>
-        <translation>Имя файла</translation>
+        <translation>Názov súboru</translation>
     </message>
     <message>
         <source>Files</source>
-        <translation>Файлы</translation>
+        <translation>Súbory</translation>
     </message>
     <message>
         <source>Filesize</source>
-        <translation>Размеру файла</translation>
+        <translation>Veľkosť súboru</translation>
     </message>
     <message>
         <source>File type</source>
-        <translation>Тип файла</translation>
+        <translation>Typ súboru</translation>
     </message>
     <message>
         <source>Filter</source>
-        <translation>Фильтр</translation>
+        <translation>Filter</translation>
     </message>
     <message>
         <source>1st</source>
-        <translation>1-й</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Font</source>
-        <translation>Шрифт</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Fonts</source>
-        <translation>Шрифты</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Fulltext</source>
-        <translation>Текст полностью</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Gapless playback</source>
-        <translation>Безпрерывное воспроизведение</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Genre</source>
-        <translation>Жанр</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Genres</source>
-        <translation>Жанры</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Hours</source>
-        <translation>Часов</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>h</source>
-        <translation>ч</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Import directory</source>
-        <translation>Испорт каталога</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Import files</source>
-        <translation>Импорт файлов</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Inactive</source>
-        <translation>Неактивный</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Info</source>
-        <translation>Info</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Loading</source>
-        <translation>Загрузка</translation>
+        <translation>Načítavam</translation>
     </message>
     <message>
         <source>Loading %1</source>
-        <translation>Загрузка %1</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Invalid characters</source>
-        <translation>Недопустимые символы</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Ctrl+f</source>
-        <translation>Ctrl+f</translation>
+        <translation>Ctrl+F</translation>
     </message>
     <message>
         <source>Esc</source>
@@ -1645,7 +1645,7 @@
     </message>
     <message>
         <source>Backspace</source>
-        <translation>Backspace</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Tab</source>
@@ -1653,686 +1653,686 @@
     </message>
     <message>
         <source>Library</source>
-        <translation>Библиотека</translation>
+        <translation>Knižnica</translation>
     </message>
     <message>
         <source>Library path</source>
-        <translation>Путь к библиотеке</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Listen</source>
-        <translation>Слушать</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Live Search</source>
-        <translation>Живой поиск</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Logger</source>
-        <translation>Логгер</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Lyrics</source>
-        <translation>Слова песни</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Menu</source>
-        <translation>Menu</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Minimize</source>
-        <translation>Свернуть</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Minutes</source>
-        <translation>Мин</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>m</source>
-        <translation>мин</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Missing</source>
-        <translation>Отстутствует</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Months</source>
-        <translation>Месяцы</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Mute</source>
-        <translation>Выключить звук</translation>
+        <translation>Stlmiť</translation>
     </message>
     <message>
         <source>Mute off</source>
-        <translation>Звук включён</translation>
+        <translation>Vypnúť stlmenie</translation>
     </message>
     <message>
         <source>Name</source>
-        <translation>Имя</translation>
+        <translation>Názov</translation>
     </message>
     <message>
         <source>New</source>
-        <translation>Добавить</translation>
+        <translation>Nový</translation>
     </message>
     <message>
         <source>Next track</source>
-        <translation>Следующий трек</translation>
+        <translation>Ďalšia skladba</translation>
     </message>
     <message>
         <source>No</source>
-        <translation>Нет</translation>
+        <translation>Nie</translation>
     </message>
     <message>
         <source>None</source>
-        <translation>Выключено</translation>
+        <translation>Žiadne</translation>
     </message>
     <message>
         <source>Tracks</source>
-        <translation>Дорожки</translation>
+        <translation>Skladby</translation>
     </message>
     <message>
         <source>Move down</source>
-        <translation>Переместить вниз</translation>
+        <translation>Presunúť nadol</translation>
     </message>
     <message>
         <source>Move up</source>
-        <translation>Переместить вверх</translation>
+        <translation>Presunúť nahor</translation>
     </message>
     <message>
         <source>OK</source>
-        <translation>ОК</translation>
+        <translation>OK</translation>
     </message>
     <message>
         <source>on</source>
-        <translation>включена</translation>
+        <translation>na</translation>
     </message>
     <message>
         <source>Open</source>
-        <translation>Открытие файла</translation>
+        <translation>Otvoriť</translation>
     </message>
     <message>
         <source>Open directory</source>
-        <translation>Открыть папку</translation>
+        <translation>Otvoriť adresár</translation>
     </message>
     <message>
         <source>Open file</source>
-        <translation>Открыть файл</translation>
+        <translation>Otvoriť súbor</translation>
     </message>
     <message>
         <source>or</source>
-        <translation>или</translation>
+        <translation>alebo</translation>
     </message>
     <message>
         <source>Overwrite</source>
-        <translation>Заменить</translation>
+        <translation>Prepísať</translation>
     </message>
     <message>
         <source>Pause</source>
-        <translation>Pause</translation>
+        <translation>Pauza</translation>
     </message>
     <message>
         <source>Play</source>
-        <translation>Воспроизведение</translation>
+        <translation>Prehrať</translation>
     </message>
     <message>
         <source>Playing time</source>
-        <translation>Время воспроизведения</translation>
+        <translation>Čas prehrávania</translation>
     </message>
     <message>
         <source>Play in new tab</source>
-        <translation>Воспроизвести в новой вкладке</translation>
+        <translation>Prehrať na novej karte</translation>
     </message>
     <message>
         <source>Playlist</source>
-        <translation>Плейлист</translation>
+        <translation>Playlist</translation>
     </message>
     <message>
         <source>Playlists</source>
-        <translation>Воспроизведение файлов</translation>
+        <translation>Playlisty</translation>
     </message>
     <message>
         <source>Play next</source>
-        <translation>Воспроизвести следующим</translation>
+        <translation>Prehrať ďalšie</translation>
     </message>
     <message>
         <source>Play/Pause</source>
-        <translation>Воспроизвести/приостановить</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Plugin</source>
-        <translation>Модуль</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Podcasts</source>
-        <translation>Подкасты</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Preferences</source>
-        <translation>Настройки</translation>
+        <translation>Nastavenia</translation>
     </message>
     <message>
         <source>Previous track</source>
-        <translation>Предыдущий трек</translation>
+        <translation>Predchádzajúca skladba</translation>
     </message>
     <message>
         <source>Quit</source>
-        <translation>Выход</translation>
+        <translation>Ukončiť</translation>
     </message>
     <message>
         <source>Radio</source>
-        <translation>Радио</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Radio Station</source>
-        <translation>Радиостанция</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Rating</source>
-        <translation>Оценка</translation>
+        <translation>Hodnotenie</translation>
     </message>
     <message>
         <source>Really</source>
-        <translation>Действительно</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Refresh</source>
-        <translation>Обновить</translation>
+        <translation>Obnoviť</translation>
     </message>
     <message>
         <source>Reload Library</source>
-        <translation>Перезагрузить библиотеку</translation>
+        <translation>Obnoviť knižnicu</translation>
     </message>
     <message>
         <source>Remove</source>
-        <translation>Удалить из списка</translation>
+        <translation>Odstrániť</translation>
     </message>
     <message>
         <source>Rename</source>
-        <translation>Переименовать</translation>
+        <translation>Premenovať</translation>
     </message>
     <message>
         <source>Repeat 1</source>
-        <translation>Повторить 1</translation>
+        <translation>Opakovať 1</translation>
     </message>
     <message>
         <source>Repeat all</source>
-        <translation>Повторить все</translation>
+        <translation>Opakovať všetky</translation>
     </message>
     <message>
         <source>Replace</source>
-        <translation>Заменить</translation>
+        <translation>Nahradiť</translation>
     </message>
     <message>
         <source>Reset</source>
-        <translation>Очистить</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Retry</source>
-        <translation>Повторить</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Sampler</source>
-        <translation>Шаблон</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Shuffle</source>
-        <translation>В случайном порядке</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Shutdown</source>
-        <translation>Выключить компьютер</translation>
+        <translation>Vypnúť</translation>
     </message>
     <message>
         <source>Save</source>
-        <translation>Сохранить</translation>
+        <translation>Uložiť</translation>
     </message>
     <message>
         <source>Save as</source>
-        <translation>Сохранить все</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Save to file</source>
-        <translation>Сохранить в файл</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Search</source>
-        <translation>Поиск</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Search next</source>
-        <translation>Искать дальше</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>2nd</source>
-        <translation>2-й</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Seconds</source>
-        <translation>С</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>s</source>
-        <translation>c</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Seek backward</source>
-        <translation>Перейти назад по дорожке</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Seek forward</source>
-        <translation>Перейти вперёд по дорожке</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Show</source>
-        <translation>Показ</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Show Album Artists</source>
-        <translation>Показать исполнителей альбома</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Show Covers</source>
-        <translation>Показать обложки</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Show Library</source>
-        <translation>Показать библиотеку</translation>
+        <translation>Zobraziť knižnicu</translation>
     </message>
     <message>
         <source>Similar artists</source>
-        <translation>Похожие исполнители</translation>
+        <translation>Podobní autori</translation>
     </message>
     <message>
         <source>Sort by</source>
-        <translation>Сортировка</translation>
+        <translation>Zoradiť podľa</translation>
     </message>
     <message>
         <source>Stop</source>
-        <translation>Остановить</translation>
+        <translation>Zastaviť</translation>
     </message>
     <message>
         <source>Streams</source>
-        <translation>Веб-потоки</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Stream URL</source>
-        <translation>Веб-поток  URL</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Success</source>
-        <translation>Вход успешно выполнен</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>th</source>
-        <translation>-й</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>3rd</source>
-        <translation>3-й</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Title</source>
-        <translation>Заголовок</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Track</source>
-        <translation>Дорожка</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Track number</source>
-        <translation>Номер дорожки</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>track on</source>
-        <translation>Трек на</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Tree</source>
-        <translation>В виде дерева</translation>
+        <translation>Strom</translation>
     </message>
     <message>
         <source>Undo</source>
-        <translation>Отмена</translation>
+        <translation>Späť</translation>
     </message>
     <message>
         <source>Unknown placeholder</source>
-        <translation>Неизвестный наполнитель</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Various</source>
-        <translation>Разное</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Various albums</source>
-        <translation>Разные альбомы</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Various artists</source>
-        <translation>Разные артисты</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Various tracks</source>
-        <translation>Разные треки</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Version</source>
-        <translation>Версия</translation>
+        <translation>Verzia</translation>
     </message>
     <message>
         <source>Volume down</source>
-        <translation>Уменьшить громкость</translation>
+        <translation>Znížiť hlasitosť</translation>
     </message>
     <message>
         <source>Volume up</source>
-        <translation>Увеличить громкость</translation>
+        <translation>Zvýšiť hlasitosť</translation>
     </message>
     <message>
         <source>Warning</source>
-        <translation>Внимание</translation>
+        <translation>Upozornenie</translation>
     </message>
     <message>
         <source>Weeks</source>
-        <translation>Недели</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Year</source>
-        <translation>Год</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Years</source>
-        <translation>Годы</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Yes</source>
-        <translation>Да</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Zoom</source>
-        <translation>Масштаб</translation>
+        <translation>Priblíženie</translation>
     </message>
 </context>
 <context>
     <name>Library::GUI_CoverView</name>
     <message>
         <source>Use Ctrl + mouse wheel to zoom</source>
-        <translation>Использовать Ctrl + mouse для увеличения</translation>
+        <translation>Použite Ctrl + koliesko myši pre priblíženie</translation>
     </message>
 </context>
 <context>
     <name>Library::GUI_EmptyLibrary</name>
     <message>
         <source>Do you want to reload the Library?</source>
-        <translation>Вы действительно хотите перезагрузить библиотеку?</translation>
+        <translation>Naozaj chcete obnoviť obsah knižnice?</translation>
     </message>
 </context>
 <context>
     <name>Library::GenreView</name>
     <message>
         <source>Updating genres</source>
-        <translation>Обновить жанры</translation>
+        <translation>Aktualizujem žánre</translation>
     </message>
     <message>
         <source>Do you really want to remove %1 from all tracks?</source>
-        <translation>Вы действительно хотите удалить %1 из всех треков?</translation>
+        <translation>Naozaj chcete odstrániť %1 zo všetkých skladieb?</translation>
     </message>
 </context>
 <context>
     <name>Library::Importer</name>
     <message>
         <source>All files could be imported</source>
-        <translation>Все файлы могут быть импортированы</translation>
+        <translation>Všetky súbory boli importované</translation>
     </message>
     <message>
         <source>%1 of %2 files could be imported</source>
-        <translation>%1 из %2 файлов импортированы</translation>
+        <translation>Importovalo sa %1 z %2 súborov</translation>
     </message>
     <message>
         <source>Cannot import tracks</source>
-        <translation>Невозможно импортировать треки</translation>
+        <translation>Nemôžem importovať skladby</translation>
     </message>
 </context>
 <context>
     <name>Library::ItemView</name>
     <message>
         <source>Merge</source>
-        <translation>Объединить</translation>
+        <translation>Spojiť</translation>
     </message>
     <message>
         <source>Clear selection</source>
-        <translation>Очистить выделенное</translation>
+        <translation>Vyčistiť výber</translation>
     </message>
 </context>
 <context>
     <name>Library::ReloadThread</name>
     <message>
         <source>Reading files</source>
-        <translation>Чтение файлов</translation>
+        <translation>Čítam súbory</translation>
     </message>
     <message>
         <source>Delete orphaned tracks...</source>
-        <translation>Удалить осиротевшие треки...</translation>
+        <translation>Vymazať osirelé skladby</translation>
     </message>
 </context>
 <context>
     <name>LibraryContextMenu</name>
     <message>
         <source>Play in new tab</source>
-        <translation>Воспроизвести в новой вкладке</translation>
+        <translation>Prehrať na novej karte</translation>
     </message>
     <message>
         <source>Cover view</source>
-        <translation>Просмотр обложки</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Toolbar</source>
-        <translation>Панель инструментов</translation>
+        <translation>Panel nástrojov</translation>
     </message>
     <message>
         <source>Ctrl+X</source>
-        <translation>Ctrl+X</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>The toolbar is visible when there are tracks with differing file types listed in the track view</source>
-        <translation>Панель инструментов отображается при наличии дорожек с различными типами файлов, перечисленных в представлении дорожек</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>LyricLookupThread</name>
     <message>
         <source>Cannot fetch lyrics from %1</source>
-        <translation>Невозможно перенести тексты из %1</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>No lyrics found</source>
-        <translation>Текст не найден</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>Menubar</name>
     <message>
         <source>View</source>
-        <translation>Вид</translation>
+        <translation>Zobraziť</translation>
     </message>
     <message>
         <source>Help</source>
-        <translation>Помощь</translation>
+        <translation>Pomoc</translation>
     </message>
     <message>
         <source>Show large cover</source>
-        <translation>Показать большую обложку</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Fullscreen</source>
-        <translation>Во весь экран</translation>
+        <translation>Na celú obrazovku</translation>
     </message>
     <message>
         <source>Media files</source>
-        <translation>Медиа файлы</translation>
+        <translation>Mediálne súbory</translation>
     </message>
     <message>
         <source>Open Media files</source>
-        <translation>Открыть медиа файлы</translation>
+        <translation>Otvoriť mediálne súbory</translation>
     </message>
     <message>
         <source>Please visit the forum at</source>
-        <translation>Пожалуйста, посетите форум</translation>
+        <translation>Prosím, navštívte fórum na</translation>
     </message>
     <message>
         <source>FAQ</source>
-        <translation>ЧАВО</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>About Sayonara</source>
-        <translation>О Sayonara</translation>
+        <translation>O Sayonara</translation>
     </message>
     <message>
         <source>Written by Lucio Carreras</source>
-        <translation>Автор Lucio Carreras</translation>
+        <translation>Vytvoril Lucio Carreras</translation>
     </message>
     <message>
         <source>License</source>
-        <translation>Лицензия</translation>
+        <translation>Licencia</translation>
     </message>
     <message>
         <source>Donate</source>
-        <translation>Пожертвовать</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Special tanks to all the brave translators</source>
-        <translation>Особая благодарность всем отважным переводчикам</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>MiniSearcher</name>
     <message>
         <source>Arrow up</source>
-        <translation>Стрелка вверх</translation>
+        <translation>Šípka hore</translation>
     </message>
     <message>
         <source>Previous search result</source>
-        <translation>Предыдущий результат поиска</translation>
+        <translation>Predchádzajúci výsledok vyhľadávania</translation>
     </message>
     <message>
         <source>Arrow down</source>
-        <translation>СТрелка вниз</translation>
+        <translation>Šípka dole</translation>
     </message>
     <message>
         <source>Next search result</source>
-        <translation>Наступний результат пошуку</translation>
+        <translation>Ďalší výsledok vyhľadávania</translation>
     </message>
 </context>
 <context>
     <name>PlaylistContextMenu</name>
     <message>
         <source>Jump to current track</source>
-        <translation>Перейти к текущей дорожке</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>PlaylistItemModel</name>
     <message>
         <source>Goto row</source>
-        <translation>Прыгай к строке</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>SC::Database</name>
     <message>
         <source>Purchase Url</source>
-        <translation>Приобрести на</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>SC::GUI_ArtistSearch</name>
     <message>
         <source>Query too short</source>
-        <translation>Слишком короткий запрос</translation>
+        <translation>Dopyt príliš krátky</translation>
     </message>
     <message>
         <source>No artists found</source>
-        <translation>Не найден ни один исполнитель</translation>
+        <translation>Nenašli sa žiadni autori</translation>
     </message>
     <message>
         <source>Found %1 artists</source>
-        <translation>Найдено %1 исполнителей</translation>
+        <translation>Nájdených %1 autorov</translation>
     </message>
     <message>
         <source>%1 tracks found</source>
-        <translation>Найдено %1 треков</translation>
+        <translation>Nájdených %1 skladieb</translation>
     </message>
     <message>
         <source>%1 playlists found</source>
-        <translation>Найдено %1 плейлистов</translation>
+        <translation>Nájdených %1 playlistov</translation>
     </message>
 </context>
 <context>
     <name>SC::JsonParser</name>
     <message>
         <source>Website</source>
-        <translation>Веб страница</translation>
+        <translation>Webstránka</translation>
     </message>
     <message>
         <source>Permalink Url</source>
-        <translation>Постоянная ссылка</translation>
+        <translation>Permanentná URL</translation>
     </message>
     <message>
         <source>Followers/Following</source>
-        <translation>Followers</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Purchase Url</source>
-        <translation>Приобрести на</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>Shutdown</name>
     <message>
         <source>Computer will shutdown after playlist has finished</source>
-        <translation>Компьютер завершит работу после текущего плейлиста</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Computer will shutdown in %1 minutes</source>
-        <translation>Компьютер завершит работу через %1 минут</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>SomaFM::StationModel</name>
     <message>
         <source>Cannot fetch stations</source>
-        <translation>Невозможно загрузить радиостанции</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>StreamRecorderPreferenceAction</name>
     <message>
         <source>Stream Recorder</source>
-        <translation>Запись потока</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>StreamServer</name>
     <message>
         <source>%1 wants to listen to your music.</source>
-        <translation>%1 желает присоединиться к прослушиванию вашей музыки.</translation>
+        <translation>%1 chce počúvať vašu hudbu.</translation>
     </message>
 </context>
 <context>
     <name>TagTextInput</name>
     <message>
         <source>Very first letter to upper case</source>
-        <translation>Самые первые буквы писать с большой</translation>
+        <translation>Veľké len prvé písmeno</translation>
     </message>
     <message>
         <source>First letters to upper case</source>
-        <translation>Первые буквы писать с большой</translation>
+        <translation>Kapitalizovať prvé písmená slov</translation>
     </message>
 </context>
 <context>
     <name>TrayIconContextMenu</name>
     <message>
         <source>Current song</source>
-        <translation>Текущая песня</translation>
+        <translation>Súčasná skladba</translation>
     </message>
 </context>
 </TS>

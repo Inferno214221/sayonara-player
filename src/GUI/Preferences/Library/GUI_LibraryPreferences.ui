@@ -146,7 +146,7 @@
           <item>
            <widget class="QLabel" name="label">
             <property name="text">
-             <string>(does not apply when playlist is in append mode)</string>
+             <string>(this is ignored when playlist is in 'append mode')</string>
             </property>
            </widget>
           </item>
