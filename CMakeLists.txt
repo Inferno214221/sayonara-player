@@ -11,7 +11,7 @@ else()
 	message("Compiling without Cotire")
 endif()
 
-set(VAR_SAYONARA_VERSION "1.3.0-stable2")
+set(VAR_SAYONARA_VERSION "1.3.0-stable3")
 
 set(SAYONARA_VERSION "${VAR_SAYONARA_VERSION}")
 set(SAYONARA_INSTALL_PATH "${CMAKE_INSTALL_PREFIX}")

@@ -51,6 +51,6 @@ NEW_TEST(Tagging/AlbumArtistTest.cpp ${RESOURCES_RCC} Tagging/AbstractTaggingTes
 NEW_TEST(Tagging/DiscnumberTest.cpp ${RESOURCES_RCC} Tagging/AbstractTaggingTest.cpp)
 NEW_TEST(Tagging/RatingTest.cpp ${RESOURCES_RCC} Tagging/AbstractTaggingTest.cpp)
 
-NEW_TEST(StreamSearchTest.cpp)
+#NEW_TEST(StreamSearchTest.cpp)
 
 
