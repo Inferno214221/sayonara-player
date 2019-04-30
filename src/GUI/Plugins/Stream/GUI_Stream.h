@@ -52,7 +52,7 @@ protected:
 	AbstractStreamHandler* stream_handler() const override;
 
 private slots:
-	void text_changed(const QString& text);
+	void search_radio_triggered();
 	void stream_selected(const QString& name, const QString& url);
 
 };

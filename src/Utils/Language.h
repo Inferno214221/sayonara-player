@@ -49,6 +49,7 @@ public:
 		Actions,
 		Activate,
 		Active,
+		Add,
 		AddTab,
 		Album,
 		AlbumArtists,

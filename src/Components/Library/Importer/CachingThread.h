@@ -59,6 +59,7 @@ namespace Library
 			void update_progress();
 			void scan_dir(const QString& dir);
 			bool scan_rar(const QString& rar);
+			bool scan_zip(const QString& zip);
 			void add_file(const QString& filename, const QString& relative_dir=QString());
 	};
 }

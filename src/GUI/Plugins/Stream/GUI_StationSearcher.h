@@ -4,8 +4,6 @@
 #include "GUI/Utils/Widgets/Dialog.h"
 #include "Utils/Pimpl.h"
 
-class QWidget;
-
 UI_FWD(GUI_StationSearcher)
 
 class GUI_StationSearcher :
@@ -22,16 +20,20 @@ public:
 	GUI_StationSearcher(QWidget* parent=nullptr);
 	~GUI_StationSearcher();
 
+private:
+	void check_listen_button();
+	void clear_stations();
+	void clear_streams();
+
+
 private slots:
 	void search_clicked();
 	void search_prev_clicked();
 	void search_next_clicked();
 	void listen_clicked();
-	void close_clicked();
 
 	void search_text_changed(const QString& text);
-	void data_available();
-	void clear();
+	void stations_fetched();
 
 	void station_changed();
 	void stream_changed();

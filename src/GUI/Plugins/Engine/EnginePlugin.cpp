@@ -75,7 +75,7 @@ void EnginePlugin::init_ui()
 
 	QWidget* w = widget();
 
-	m->btn_config = new QPushButton("...", w);
+	m->btn_config = new QPushButton(QString::fromUtf8("≡"), w);
 	m->btn_prev = new QPushButton("<", w);
 	m->btn_next = new QPushButton(">", w);
 	m->btn_close = new QPushButton("x", w);

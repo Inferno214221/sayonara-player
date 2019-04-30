@@ -49,7 +49,14 @@ Message::Answer GUI_Player::error_received(const QString &error, const QString &
 			? Lang::get(Lang::Error) + ":"
 			: sender_name + ": " + Lang::get(Lang::Error);
 
-	return convert_answer (QMessageBox::critical(this, title, error));
+	QMessageBox msgBox(this);
+	msgBox.setWindowTitle(title);
+	msgBox.setIcon(QMessageBox::Critical);
+	msgBox.setText(error);
+	msgBox.setStandardButtons(QMessageBox::Ok);
+	msgBox.setButtonText(QMessageBox::Ok, Lang::get(Lang::OK));
+
+	return convert_answer((QMessageBox::StandardButton) msgBox.exec());
 }
 
 Message::Answer GUI_Player::warning_received(const QString &warning, const QString &sender_name)
@@ -58,7 +65,14 @@ Message::Answer GUI_Player::warning_received(const QString &warning, const QStri
 			? Lang::get(Lang::Warning)
 			: sender_name + ": " + Lang::get(Lang::Warning);
 
-	return convert_answer (QMessageBox::warning(this, title, warning));
+	QMessageBox msgBox(this);
+	msgBox.setWindowTitle(title);
+	msgBox.setIcon(QMessageBox::Warning);
+	msgBox.setText(warning);
+	msgBox.setStandardButtons(QMessageBox::Ok);
+	msgBox.setButtonText(QMessageBox::Ok, Lang::get(Lang::OK));
+
+	return convert_answer((QMessageBox::StandardButton) msgBox.exec());
 }
 
 Message::Answer GUI_Player::info_received(const QString &info, const QString &sender_name)
@@ -67,8 +81,16 @@ Message::Answer GUI_Player::info_received(const QString &info, const QString &se
 			? Lang::get(Lang::Info)
 			: sender_name + ": " + Lang::get(Lang::Info);
 
-	return convert_answer (QMessageBox::information(this, title, info));
+	QMessageBox msgBox(this);
+	msgBox.setWindowTitle(title);
+	msgBox.setText(info);
+	msgBox.setIcon(QMessageBox::Information);
+	msgBox.setStandardButtons(QMessageBox::Ok);
+	msgBox.setButtonText(QMessageBox::Ok, Lang::get(Lang::OK));
+
+	return convert_answer((QMessageBox::StandardButton) msgBox.exec());
 }
+
 
 Message::Answer GUI_Player::question_received(const QString &question, const QString &sender_name, Message::QuestionType type)
 {
@@ -76,11 +98,25 @@ Message::Answer GUI_Player::question_received(const QString &question, const QSt
 			? Lang::get(Lang::Info)
 			: sender_name + ": " + Lang::get(Lang::Info);
 
-	if(type == Message::QuestionType::YesNo){
-		return convert_answer(QMessageBox::information(this, title, question, QMessageBox::Yes, QMessageBox::No));
+	QMessageBox msgBox(this);
+	msgBox.setWindowTitle(title);
+	msgBox.setText(question);
+	msgBox.setIcon(QMessageBox::Question);
+
+	if(type == Message::QuestionType::YesNo)
+	{
+		msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+		msgBox.setButtonText(QMessageBox::Yes, Lang::get(Lang::Yes));
+		msgBox.setButtonText(QMessageBox::No, Lang::get(Lang::No));
 	}
 
-	else {
-		return convert_answer(QMessageBox::information(this, title, question, QMessageBox::Ok, QMessageBox::Cancel));
+	else
+	{
+		msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+		msgBox.setButtonText(QMessageBox::Ok, Lang::get(Lang::OK));
+		msgBox.setButtonText(QMessageBox::Cancel, Lang::get(Lang::Cancel));
 	}
+
+	return convert_answer((QMessageBox::StandardButton) msgBox.exec());
+
 }

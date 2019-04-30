@@ -78,9 +78,12 @@ private slots:
 protected slots:
 	void listen_clicked();
 	void combo_idx_changed(int idx);
+
 	void new_clicked();
-	void delete_clicked();
+	void save_clicked();
 	void edit_clicked();
+	void delete_clicked();
+
 	void too_many_urls_found(int n_urls, int n_max_urls);
 
 	void stopped();
@@ -96,7 +99,7 @@ protected:
 	virtual AbstractStreamHandler* stream_handler() const=0;
 	virtual QString url() const;
 	QString current_station() const;
-	void add_stream(const QString& name, const QString& url);
+	void add_stream(const QString& name, const QString& url, bool keep_old=true);
 
 private:
 	PIMPL(GUI_AbstractStream)

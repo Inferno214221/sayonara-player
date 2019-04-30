@@ -14,13 +14,11 @@ class GUI_ConfigureStreams :
 	UI_CLASS(GUI_ConfigureStreams)
 
 public:
-	enum Type
-	{Streams, Podcasts};
 
 	enum Mode
 	{New, Edit};
 
-	GUI_ConfigureStreams(Type type, Mode mode, QWidget* parent=nullptr);
+	GUI_ConfigureStreams(const QString& type, Mode mode, QWidget* parent=nullptr);
 	~GUI_ConfigureStreams();
 
 	QString url() const;
@@ -28,8 +26,9 @@ public:
 
 	void set_url(const QString& url);
 	void set_name(const QString& name);
+	void set_error_message(const QString& message);
 
-	void set_mode(Type type, Mode mode);
+	void set_mode(const QString& trype, Mode mode);
 	bool was_accepted() const;
 };
 

@@ -297,7 +297,7 @@
      <item>
       <widget class="Gui::ComboBox" name="combo_presets">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -319,7 +319,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string notr="true">...</string>
+        <string notr="true">≡</string>
        </property>
       </widget>
      </item>

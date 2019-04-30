@@ -2,11 +2,12 @@
 #include "GUI/Plugins/ui_GUI_ConfigureStreams.h"
 #include "Utils/Language.h"
 
-GUI_ConfigureStreams::GUI_ConfigureStreams(GUI_ConfigureStreams::Type type, GUI_ConfigureStreams::Mode mode, QWidget* parent) :
+GUI_ConfigureStreams::GUI_ConfigureStreams(const QString& type, GUI_ConfigureStreams::Mode mode, QWidget* parent) :
 	Gui::Dialog(parent)
 {
 	ui = new Ui::GUI_ConfigureStreams();
 	ui->setupUi(this);
+	ui->lab_error->setVisible(false);
 
 	connect(ui->btn_ok, &QPushButton::clicked, this, &Gui::Dialog::accept);
 	connect(ui->btn_cancel, &QPushButton::clicked, this, &Gui::Dialog::reject);
@@ -36,17 +37,15 @@ void GUI_ConfigureStreams::set_name(const QString& name)
 	ui->le_name->setText(name);
 }
 
-void GUI_ConfigureStreams::set_mode(GUI_ConfigureStreams::Type type, GUI_ConfigureStreams::Mode mode)
+void GUI_ConfigureStreams::set_error_message(const QString& message)
 {
-	QString type_str, mode_str;
-	if(type == GUI_ConfigureStreams::Streams) {
-		type_str = Lang::get(Lang::Streams);
-	}
+	ui->lab_error->setText(message);
+	ui->lab_error->setVisible(true);
+}
 
-	else {
-		type_str = Lang::get(Lang::Podcasts);
-	}
-
+void GUI_ConfigureStreams::set_mode(const QString& type, GUI_ConfigureStreams::Mode mode)
+{
+	QString mode_str;
 	if(mode == GUI_ConfigureStreams::Edit){
 		mode_str = Lang::get(Lang::Edit);
 	}
@@ -55,7 +54,10 @@ void GUI_ConfigureStreams::set_mode(GUI_ConfigureStreams::Type type, GUI_Configu
 		mode_str = Lang::get(Lang::New);
 	}
 
-	this->setWindowTitle(QString("%1: %2").arg(type_str).arg(mode_str));
+	QString text = QString("%1: %2").arg(type).arg(mode_str);
+
+	ui->lab_header->setText(text);
+	this->setWindowTitle(text);
 }
 
 bool GUI_ConfigureStreams::was_accepted() const

@@ -7,30 +7,10 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>139</height>
+    <height>162</height>
    </rect>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
-    <widget class="QLabel" name="lab_header">
-     <property name="font">
-      <font>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="text">
-      <string notr="true">New/Edit</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0" colspan="2">
-    <widget class="Line" name="line">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
-   </item>
    <item row="2" column="0">
     <widget class="QLabel" name="lab_name">
      <property name="text">
@@ -38,20 +18,7 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="1">
-    <widget class="QLineEdit" name="le_name"/>
-   </item>
-   <item row="3" column="0">
-    <widget class="QLabel" name="lab_url">
-     <property name="text">
-      <string>Url</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="1">
-    <widget class="QLineEdit" name="le_url"/>
-   </item>
-   <item row="4" column="0" colspan="2">
+   <item row="6" column="0" colspan="2">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <spacer name="horizontalSpacer">
@@ -81,6 +48,53 @@
       </widget>
      </item>
     </layout>
+   </item>
+   <item row="3" column="1">
+    <widget class="QLineEdit" name="le_url"/>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="lab_url">
+     <property name="text">
+      <string>Url</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="lab_header">
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string notr="true">New/Edit</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="2">
+    <widget class="Line" name="line">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QLineEdit" name="le_name"/>
+   </item>
+   <item row="5" column="0" colspan="2">
+    <widget class="QLabel" name="lab_error">
+     <property name="text">
+      <string notr="true">Error</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0" colspan="2">
+    <widget class="Line" name="line_2">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

@@ -129,6 +129,11 @@ bool CachingThread::scan_rar(const QString& rar_file)
 	return true;
 }
 
+bool CachingThread::scan_zip(const QString& zip)
+{
+	return true;
+}
+
 void CachingThread::scan_dir(const QString& dir)
 {
 	DirectoryReader dr(QStringList({"*"}));

@@ -69,7 +69,8 @@ void MenuButton::language_changed()
 {
 	this->setToolTip(Lang::get(Lang::Menu));
 
-	if(!this->text().isEmpty()){
-		this->setText("...");
+	if(!this->text().isEmpty())
+	{
+		this->setText(QString::fromUtf8("≡"));
 	}
 }

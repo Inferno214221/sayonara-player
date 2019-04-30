@@ -64,6 +64,10 @@ void GUI_Stream::retranslate_ui()
 void GUI_Stream::init_ui()
 {
 	setup_parent(this, &ui);
+
+	QAction* action = new QAction("Search Radio");
+	ui->btn_tool->register_action(action);
+	connect(action, &QAction::triggered, this, &GUI_Stream::search_radio_triggered);
 }
 
 
@@ -93,18 +97,15 @@ AbstractStreamHandler* GUI_Stream::stream_handler() const
 	return new StreamHandlerStreams();
 }
 
-void GUI_Stream::text_changed(const QString& text)
+void GUI_Stream::search_radio_triggered()
 {
-	if(text == "ss")
+	if(!m->searcher)
 	{
-		if(!m->searcher)
-		{
-			m->searcher = new GUI_StationSearcher(this);
-			connect(m->searcher, &GUI_StationSearcher::sig_stream_selected, this, &GUI_Stream::stream_selected);
-		}
-
-		m->searcher->show();
+		m->searcher = new GUI_StationSearcher(this);
+		connect(m->searcher, &GUI_StationSearcher::sig_stream_selected, this, &GUI_Stream::stream_selected);
 	}
+
+	m->searcher->show();
 }
 
 void GUI_Stream::stream_selected(const QString& name, const QString& url)

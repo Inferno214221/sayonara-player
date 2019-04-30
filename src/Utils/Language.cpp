@@ -75,6 +75,8 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Activate");
 		case Active:
 			return l.tr("Active");
+		case Add:
+			return l.tr("Add");
 		case AddTab:
 			return l.tr("Add tab");
 		case Album:
