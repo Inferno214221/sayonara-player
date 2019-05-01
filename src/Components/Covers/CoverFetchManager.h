@@ -25,7 +25,7 @@
 
 #include "Utils/Singleton.h"
 #include "Utils/Pimpl.h"
-#include "Utils/Settings/SayonaraClass.h"
+
 #include <QList>
 #include <QObject>
 
@@ -44,8 +44,7 @@ namespace Fetcher
 	 * @ingroup Covers
 	 */
 	class Manager :
-			public QObject,
-			public SayonaraClass
+			public QObject
 	{
 		Q_OBJECT
 

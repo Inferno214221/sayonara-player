@@ -25,11 +25,9 @@
 
 #include <QMenu>
 #include "Helper/Pimpl.h"
-#include "Helper/Settings/SayonaraClass.h"
 
 class LibraryPluginMenu :
-        public QMenu,
-        public SayonaraClass
+		public QMenu
 {
 	Q_OBJECT
 	PIMPL(LibraryPluginMenu)

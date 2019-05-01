@@ -21,14 +21,12 @@
 #ifndef PLAYLISTITEMDELEGATE_H_
 #define PLAYLISTITEMDELEGATE_H_
 
-#include "Utils/Settings/SayonaraClass.h"
 #include "GUI/Utils/Delegates/StyledItemDelegate.h"
 #include "Utils/Pimpl.h"
 
 class QTableView;
 class PlaylistItemDelegate :
-		public Gui::StyledItemDelegate,
-		public SayonaraClass
+		public Gui::StyledItemDelegate
 {
 	Q_OBJECT
 	PIMPL(PlaylistItemDelegate)

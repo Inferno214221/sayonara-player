@@ -162,8 +162,7 @@ struct Manager::Private
 
 
 Manager::Manager() :
-	QObject(),
-	SayonaraClass()
+	QObject()
 {
 	m = Pimpl::make<Private>();
 

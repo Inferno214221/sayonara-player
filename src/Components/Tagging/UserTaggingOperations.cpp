@@ -29,8 +29,7 @@ struct UserOperations::Private
 };
 
 UserOperations::UserOperations(LibraryId library_id, QObject* parent) :
-	QObject(parent),
-	SayonaraClass()
+	QObject(parent)
 {
 	m = Pimpl::make<Private>(library_id, this);
 

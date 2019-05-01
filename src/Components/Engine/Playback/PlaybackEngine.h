@@ -23,7 +23,6 @@
 
 #include "Components/Engine/AbstractEngine.h"
 #include "SoundOutReceiver.h"
-#include "Utils/Settings/SayonaraClass.h"
 
 class QTimer;
 class QString;

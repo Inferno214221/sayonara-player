@@ -3,15 +3,13 @@
 
 #include <QObject>
 #include "Utils/Pimpl.h"
-#include "Utils/Settings/SayonaraClass.h"
 
 class Genre;
 
 namespace Tagging
 {
 	class UserOperations :
-			public QObject,
-			protected SayonaraClass
+			public QObject
 	{
 		Q_OBJECT
 		PIMPL(UserOperations)

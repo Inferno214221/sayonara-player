@@ -22,7 +22,6 @@
 #define LIBRARYCONTAINER_H
 
 #include "Utils/Pimpl.h"
-#include "Utils/Settings/SayonaraClass.h"
 
 #include <QObject>
 
@@ -45,8 +44,7 @@ namespace Library
 	class PluginHandler;
 
 	class Container :
-		public QObject,
-		public SayonaraClass
+		public QObject
 	{
 		Q_OBJECT
 		PIMPL(Container)

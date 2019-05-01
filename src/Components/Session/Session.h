@@ -1,7 +1,6 @@
 #ifndef SESSION_H
 #define SESSION_H
 
-#include "Utils/Settings/SayonaraClass.h"
 #include "Utils/Pimpl.h"
 
 #include <QObject>
@@ -10,8 +9,7 @@
 class QDateTime;
 
 class Session :
-		public QObject,
-		public SayonaraClass
+		public QObject
 {
 	Q_OBJECT
 	PIMPL(Session)

@@ -36,8 +36,7 @@ struct Handler::Private
 };
 
 Handler::Handler() :
-	QObject(),
-	SayonaraClass()
+	QObject()
 {
 	m = Pimpl::make<Private>();
 

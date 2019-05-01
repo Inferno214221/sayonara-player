@@ -22,7 +22,6 @@
 #define METADATAINFO_H
 
 #include "Utils/Pimpl.h"
-#include "Utils/Settings/SayonaraClass.h"
 #include "Components/Covers/CoverLocation.h"
 
 #include <QObject>
@@ -55,8 +54,7 @@ enum class InfoStrings : uint8_t
  * @ingroup MetaDataHelper
  */
 class MetaDataInfo :
-	public QObject,
-	public SayonaraClass
+	public QObject
 {
 	PIMPL(MetaDataInfo)
 

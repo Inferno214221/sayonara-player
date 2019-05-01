@@ -22,7 +22,6 @@
 #define LIBRARYPLUGINCOMBOBOX_H
 
 #include "Utils/Pimpl.h"
-#include "Utils/Settings/SayonaraClass.h"
 #include "GUI/Utils/Widgets/ComboBox.h"
 
 class QEvent;

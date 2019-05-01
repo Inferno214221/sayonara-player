@@ -104,8 +104,7 @@ struct PlayManager::Private
 
 
 PlayManager::PlayManager(QObject* parent) :
-	QObject(parent),
-	SayonaraClass()
+	QObject(parent)
 {
 	m = Pimpl::make<Private>();
 

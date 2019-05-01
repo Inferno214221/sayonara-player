@@ -37,8 +37,7 @@ struct Container::Private
 };
 
 Container::Container(QObject* parent) :
-	QObject(parent),
-	SayonaraClass()
+	QObject(parent)
 {
 	m = Pimpl::make<Private>();
 

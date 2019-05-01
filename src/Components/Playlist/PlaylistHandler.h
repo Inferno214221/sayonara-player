@@ -35,7 +35,6 @@
 
 #include "Utils/Pimpl.h"
 #include "Utils/Singleton.h"
-#include "Utils/Settings/SayonaraClass.h"
 #include "Utils/Playlist/PlaylistFwd.h"
 #include "Utils/Library/LibraryNamespaces.h"
 
@@ -48,8 +47,7 @@ namespace Playlist
 	 * @ingroup Playlists
 	 */
 	class Handler :
-			public QObject,
-			public SayonaraClass
+			public QObject
 	{
 		Q_OBJECT
 		PIMPL(Handler)

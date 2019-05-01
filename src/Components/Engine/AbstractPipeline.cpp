@@ -61,8 +61,7 @@ struct Base::Private
 };
 
 Base::Base(QString name, Engine::Base* engine, QObject* parent) :
-	QObject(parent),
-	SayonaraClass()
+	QObject(parent)
 {
 	m = Pimpl::make<Private>(name, engine);
 }

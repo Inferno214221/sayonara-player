@@ -18,20 +18,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef PROXY_H
 #define PROXY_H
 
 #include "Utils/Singleton.h"
-#include "Utils/Settings/SayonaraClass.h"
 
 #include <QObject>
 
 class QString;
 class Proxy :
-		public QObject,
-		public SayonaraClass
+		public QObject
 {
 	Q_OBJECT
 	SINGLETON(Proxy)

@@ -47,8 +47,7 @@ struct Base::Private
 };
 
 Base::Base(Name name, QObject *parent) :
-	QObject(parent),
-	SayonaraClass()
+	QObject(parent)
 {
 	m = Pimpl::make<Private>(name);
 }

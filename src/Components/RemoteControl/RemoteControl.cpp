@@ -60,8 +60,7 @@ struct RemoteControl::Private
 };
 
 RemoteControl::RemoteControl(QObject *parent) :
-	QObject(parent),
-	SayonaraClass()
+	QObject(parent)
 {
 	m = Pimpl::make<Private>();
 

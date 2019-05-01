@@ -29,7 +29,6 @@
 #ifndef LASTFM_H_
 #define LASTFM_H_
 
-#include "Utils/Settings/SayonaraClass.h"
 #include "Utils/Pimpl.h"
 
 #include <QObject>
@@ -39,8 +38,7 @@
 namespace LastFM
 {
 	class Base :
-			public QObject,
-			public SayonaraClass
+			public QObject
 	{
 		Q_OBJECT
 		PIMPL(Base)

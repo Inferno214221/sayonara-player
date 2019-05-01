@@ -185,7 +185,7 @@ public:
 
 
 Manager::Manager() :
-	SayonaraClass()
+	QObject()
 {
 	m = Pimpl::make<Private>();
 

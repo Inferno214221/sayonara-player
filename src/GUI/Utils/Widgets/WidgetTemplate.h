@@ -22,7 +22,7 @@
 #define SAYONARAWIDGETTEMPLATE_H
 
 #include "GUI/Utils/GuiClass.h"
-#include "Utils/Settings/SayonaraClass.h"
+
 #include <QShowEvent>
 #include <QObject>
 
@@ -36,8 +36,7 @@ namespace Gui
 {
 	class WidgetTemplateParent;
 	class AbstrWidgetTemplate :
-		public QObject,
-		public SayonaraClass
+		public QObject
 	{
 		Q_OBJECT
 
@@ -54,8 +53,7 @@ namespace Gui
 	};
 
 
-	class WidgetTemplateParent :
-		public SayonaraClass
+	class WidgetTemplateParent
 	{
 		friend class AbstrWidgetTemplate;
 

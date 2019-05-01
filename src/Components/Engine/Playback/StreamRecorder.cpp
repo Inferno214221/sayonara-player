@@ -54,8 +54,7 @@ struct SR::StreamRecorder::Private
 
 
 SR::StreamRecorder::StreamRecorder(QObject *parent) :
-	QObject(parent),
-	SayonaraClass()
+	QObject(parent)
 {
 	m = Pimpl::make<StreamRecorder::Private>();
 

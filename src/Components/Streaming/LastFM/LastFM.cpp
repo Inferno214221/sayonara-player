@@ -80,8 +80,7 @@ struct Base::Private
 };
 
 Base::Base() :
-	QObject(),
-	SayonaraClass()
+	QObject()
 {
 	m = Pimpl::make<Private>(this);
 

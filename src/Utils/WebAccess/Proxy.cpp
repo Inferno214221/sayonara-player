@@ -31,8 +31,7 @@
 #include <QNetworkProxy>
 
 Proxy::Proxy() :
-	QObject(),
-	SayonaraClass()
+	QObject()
 {
 	ListenSetting(Set::Proxy_Active, Proxy::proxy_changed);
 	ListenSetting(Set::Proxy_Hostname, Proxy::proxy_changed);

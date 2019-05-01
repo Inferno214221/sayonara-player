@@ -19,14 +19,12 @@
  */
 
 
-
 #ifndef STREAMSERVERHANDLER_H
 #define STREAMSERVERHANDLER_H
 
-#include "Utils/Settings/SayonaraClass.h"
 #include "Utils/Pimpl.h"
 
-class StreamServerHandler : public SayonaraClass
+class StreamServerHandler
 {
     PIMPL(StreamServerHandler)
 

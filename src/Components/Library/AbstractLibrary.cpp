@@ -68,8 +68,7 @@ struct AbstractLibrary::Private
 };
 
 AbstractLibrary::AbstractLibrary(QObject *parent) :
-	QObject(parent),
-	SayonaraClass()
+	QObject(parent)
 {
 	m = Pimpl::make<Private>();
 

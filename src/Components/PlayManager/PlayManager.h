@@ -25,15 +25,13 @@
 #include "PlayState.h"
 #include "Utils/Singleton.h"
 #include "Utils/Pimpl.h"
-#include "Utils/Settings/SayonaraClass.h"
 
 /**
  * @brief Global handler for current playback state (Singleton)
  * @ingroup Components
  */
 class PlayManager :
-		public QObject,
-		public SayonaraClass
+		public QObject
 {
 	Q_OBJECT
 

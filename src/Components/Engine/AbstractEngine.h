@@ -26,7 +26,6 @@
 #include "Components/Engine/gstfwd.h"
 
 #include "Utils/MetaData/MetaData.h"
-#include "Utils/Settings/SayonaraClass.h"
 #include "Utils/Pimpl.h"
 
 class QImage;
@@ -49,8 +48,7 @@ namespace Engine
 	 * @ingroup Engine
 	 */
 	class Base :
-			public QObject,
-			public SayonaraClass
+			public QObject
 	{
 		Q_OBJECT
 		PIMPL(Base)

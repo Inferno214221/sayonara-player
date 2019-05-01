@@ -67,8 +67,7 @@ struct Handler::Private
 };
 
 Handler::Handler(QObject * parent) :
-	QObject(parent),
-	SayonaraClass()
+	QObject(parent)
 {
 	qRegisterMetaType<PlaylistPtr>("PlaylistPtr");
 	qRegisterMetaType<PlaylistConstPtr>("PlaylistConstPtr");

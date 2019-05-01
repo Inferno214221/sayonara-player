@@ -22,7 +22,6 @@
 #define TAGTEXTINPUT_H
 
 #include <QLineEdit>
-#include "Utils/Settings/SayonaraClass.h"
 #include "GUI/Utils/Widgets/WidgetTemplate.h"
 
 class QAction;

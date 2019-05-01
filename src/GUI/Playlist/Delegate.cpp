@@ -50,8 +50,7 @@ struct PlaylistItemDelegate::Private
 };
 
 PlaylistItemDelegate::PlaylistItemDelegate(QTableView* parent) :
-	StyledItemDelegate(parent),
-	SayonaraClass()
+	StyledItemDelegate(parent)
 {
 	m = Pimpl::make<Private>();
 

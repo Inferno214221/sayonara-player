@@ -53,8 +53,7 @@ struct MetaDataInfo::Private
 };
 
 MetaDataInfo::MetaDataInfo(const MetaDataList& v_md) :
-	QObject(nullptr),
-	SayonaraClass()
+	QObject(nullptr)
 {
 	m = Pimpl::make<Private>();
 

@@ -29,8 +29,6 @@
 #ifndef RELOADTHREAD_H_
 #define RELOADTHREAD_H_
 
-
-#include "Utils/Settings/SayonaraClass.h"
 #include "Utils/Library/LibraryNamespaces.h"
 #include "Utils/Pimpl.h"
 
@@ -40,8 +38,7 @@
 namespace Library
 {
 	class ReloadThread :
-			public QThread,
-			public SayonaraClass
+			public QThread
 	{
 		Q_OBJECT
 		PIMPL(ReloadThread)

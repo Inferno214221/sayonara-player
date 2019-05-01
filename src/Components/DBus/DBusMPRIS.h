@@ -28,7 +28,6 @@
 #include "Components/PlayManager/PlayState.h"
 
 #include "Utils/MetaData/MetaData.h"
-#include "Utils/Settings/SayonaraClass.h"
 #include "Utils/Pimpl.h"
 
 using QStrRef=const QString&;
@@ -57,8 +56,7 @@ namespace DBusMPRIS
 {
 
 class MediaPlayer2 :
-		public DBusAdaptor,
-		public SayonaraClass
+		public DBusAdaptor
 {
 	Q_OBJECT
 	PIMPL(MediaPlayer2)

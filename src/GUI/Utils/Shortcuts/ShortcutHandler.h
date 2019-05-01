@@ -24,7 +24,6 @@
 
 #include "ShortcutIdentifier.h"
 #include "Utils/Singleton.h"
-#include "Utils/Settings/SayonaraClass.h"
 #include "Utils/Pimpl.h"
 
 #include <QShortcut>
@@ -40,8 +39,7 @@ class ShortcutWidget;
  * @ingroup Shortcuts
  */
 class ShortcutHandler :
-	public QObject,
-	public SayonaraClass
+	public QObject
 {
 	Q_OBJECT
 	SINGLETON(ShortcutHandler)

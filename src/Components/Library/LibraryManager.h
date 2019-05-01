@@ -25,7 +25,6 @@
 
 #include "Utils/Singleton.h"
 #include "Utils/Pimpl.h"
-#include "Utils/Settings/SayonaraClass.h"
 
 #include <QObject>
 
@@ -35,8 +34,7 @@ namespace Library
 {
 	class Info;
 	class Manager :
-			public QObject,
-			public SayonaraClass
+			public QObject
 	{
 		Q_OBJECT
 		PIMPL(Manager)

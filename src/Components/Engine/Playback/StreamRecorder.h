@@ -22,7 +22,6 @@
 #define STREAMRECORDER_H
 
 #include "Components/PlayManager/PlayState.h"
-#include "Utils/Settings/SayonaraClass.h"
 #include "Utils/Pimpl.h"
 
 #include <QObject>
@@ -36,8 +35,7 @@ namespace StreamRecorder
      * @ingroup Engine
      */
     class StreamRecorder :
-            public QObject,
-            public SayonaraClass
+			public QObject
     {
         PIMPL(StreamRecorder)
 

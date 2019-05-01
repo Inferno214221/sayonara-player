@@ -22,7 +22,6 @@
 #define REMOTECONTROL_H
 
 #include "Components/PlayManager/PlayState.h"
-#include "Utils/Settings/SayonaraClass.h"
 #include "Utils/Playlist/PlaylistFwd.h"
 
 #include <QObject>
@@ -71,8 +70,7 @@
  * @ingroup Components
  */
 class RemoteControl :
-		public QObject,
-		public SayonaraClass
+		public QObject
 {
 	Q_OBJECT
 	PIMPL(RemoteControl)

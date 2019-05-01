@@ -21,7 +21,6 @@
 #ifndef PLAYERPLUGINHANDLER_H
 #define PLAYERPLUGINHANDLER_H
 
-#include "Utils/Settings/SayonaraClass.h"
 #include "Utils/Singleton.h"
 #include "Utils/Pimpl.h"
 
@@ -32,8 +31,7 @@ namespace PlayerPlugin
 	class Base;
 
 	class Handler :
-		public QObject,
-		public SayonaraClass
+		public QObject
 	{
 		Q_OBJECT
 		PIMPL(Handler)

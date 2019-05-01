@@ -77,8 +77,7 @@ struct ReloadThread::Private
 };
 
 ReloadThread::ReloadThread(QObject *parent) :
-	QThread(parent),
-	SayonaraClass()
+	QThread(parent)
 {
 	m = Pimpl::make<Private>();
 	m->library_path = GetSetting(Set::Lib_Path);

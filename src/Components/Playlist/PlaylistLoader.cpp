@@ -44,8 +44,7 @@ struct Loader::Private
 };
 
 Loader::Loader(QObject* parent) :
-	QObject(parent),
-	SayonaraClass()
+	QObject(parent)
 {
 	m = Pimpl::make<Private>();
 

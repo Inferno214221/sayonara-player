@@ -25,7 +25,6 @@
 #include "Utils/Library/LibraryNamespaces.h"
 #include "Utils/Library/Filter.h"
 #include "Utils/Library/Sorting.h"
-#include "Utils/Settings/SayonaraClass.h"
 #include "Utils/Pimpl.h"
 
 #include <QFile>
@@ -37,8 +36,7 @@ class Genre;
 class ExtensionSet;
 
 class AbstractLibrary :
-		public QObject,
-		public SayonaraClass
+		public QObject
 {
 	Q_OBJECT
 	PIMPL(AbstractLibrary)

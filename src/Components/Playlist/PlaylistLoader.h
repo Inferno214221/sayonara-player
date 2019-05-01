@@ -21,7 +21,6 @@
 #ifndef PLAYLISTLOADER_H
 #define PLAYLISTLOADER_H
 
-#include "Utils/Settings/SayonaraClass.h"
 #include "Utils/Playlist/CustomPlaylistFwd.h"
 #include "Utils/Pimpl.h"
 
@@ -36,8 +35,7 @@ namespace Playlist
 	 * @ingroup Playlists
 	 */
 	class Loader :
-			public QObject,
-			public SayonaraClass
+			public QObject
 	{
 		Q_OBJECT
 		PIMPL(Loader)

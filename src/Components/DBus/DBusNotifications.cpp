@@ -33,8 +33,7 @@ struct DBusNotifications::Private
 
 DBusNotifications::DBusNotifications(QObject* parent) :
 	QObject(parent),
-	NotificationInterface(),
-	SayonaraClass()
+	NotificationInterface()
 {
 	m = Pimpl::make<Private>();
 

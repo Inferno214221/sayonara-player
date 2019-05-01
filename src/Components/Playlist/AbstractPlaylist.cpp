@@ -52,8 +52,7 @@ struct Base::Private
 
 #include <exception>
 Base::Base(int idx, const QString& name) :
-	Playlist::DBInterface(name),
-	SayonaraClass()
+	Playlist::DBInterface(name)
 {
 	if(idx < 0){
 		throw "Playlist idx < 0";

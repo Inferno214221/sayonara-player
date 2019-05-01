@@ -22,7 +22,6 @@
 #define STREAM_SERVER_H
 
 #include "StreamWriter.h"
-#include "Utils/Settings/SayonaraClass.h"
 #include "Utils/Pimpl.h"
 
 class QTcpSocket;
@@ -31,8 +30,7 @@ class QTcpSocket;
  * @ingroup Broadcasting
  */
 class StreamServer :
-		public QObject,
-		public SayonaraClass
+		public QObject
 {
 	Q_OBJECT
 	PIMPL(StreamServer)

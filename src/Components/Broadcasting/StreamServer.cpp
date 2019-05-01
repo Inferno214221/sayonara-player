@@ -60,8 +60,7 @@ struct StreamServer::Private
 
 
 StreamServer::StreamServer(QObject* parent) :
-	QObject(parent),
-	SayonaraClass()
+	QObject(parent)
 {
 	m = Pimpl::make<StreamServer::Private>();
 

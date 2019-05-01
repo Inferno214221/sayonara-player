@@ -25,7 +25,6 @@
 #include "PlaylistStopBehavior.h"
 #include "Utils/Playlist/PlaylistFwd.h"
 #include "Utils/Playlist/PlaylistMode.h"
-#include "Utils/Settings/SayonaraClass.h"
 #include "Utils/Pimpl.h"
 
 #include <QString>
@@ -38,8 +37,7 @@ namespace Playlist
 	 */
 	class Base :
 			public Playlist::DBInterface,
-			protected Playlist::StopBehavior,
-			public SayonaraClass
+			protected Playlist::StopBehavior
 	{
 		Q_OBJECT
 		PIMPL(Base)

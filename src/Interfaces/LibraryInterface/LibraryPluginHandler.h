@@ -21,7 +21,6 @@
 #ifndef LIBRARYPLUGINLOADER_H
 #define LIBRARYPLUGINLOADER_H
 
-#include "Utils/Settings/SayonaraClass.h"
 #include "Utils/Singleton.h"
 #include "Utils/Pimpl.h"
 
@@ -38,8 +37,7 @@ namespace Library
 	 * @ingroup LibraryPlugins
 	 */
 	class PluginHandler :
-			public QObject,
-			protected SayonaraClass
+			public QObject
 	{
 		Q_OBJECT
 		PIMPL(PluginHandler)

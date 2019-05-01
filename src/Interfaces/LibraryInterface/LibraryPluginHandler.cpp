@@ -171,8 +171,7 @@ struct PluginHandler::Private
 
 
 PluginHandler::PluginHandler() :
-	QObject(nullptr),
-	SayonaraClass()
+	QObject(nullptr)
 {
 	m = Pimpl::make<Private>(this);
 }

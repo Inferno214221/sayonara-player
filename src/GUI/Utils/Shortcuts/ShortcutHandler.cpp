@@ -82,7 +82,7 @@ struct ShortcutHandler::Private
 };
 
 ShortcutHandler::ShortcutHandler() :
-	SayonaraClass()
+	QObject()
 {
 	m = Pimpl::make<Private>();
 

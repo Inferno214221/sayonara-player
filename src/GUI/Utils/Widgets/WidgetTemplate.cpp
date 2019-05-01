@@ -24,8 +24,7 @@
 #include "Utils/Settings/Settings.h"
 
 Gui::AbstrWidgetTemplate::AbstrWidgetTemplate(QObject* parent, WidgetTemplateParent* wtp) :
-	QObject(parent),
-	SayonaraClass()
+	QObject(parent)
 {
 	_wtp = wtp;
 
@@ -47,10 +46,7 @@ void Gui::AbstrWidgetTemplate::language_changed() { _wtp->language_changed(); }
 void Gui::AbstrWidgetTemplate::skin_changed() { _wtp->skin_changed(); }
 
 
-Gui::WidgetTemplateParent::WidgetTemplateParent() :
-	SayonaraClass()
-{}
-
+Gui::WidgetTemplateParent::WidgetTemplateParent() {}
 Gui::WidgetTemplateParent::~WidgetTemplateParent() {}
 void Gui::WidgetTemplateParent::language_changed() {}
 void Gui::WidgetTemplateParent::skin_changed() {}

@@ -22,13 +22,11 @@
 
 #include "Interfaces/Notification/NotificationHandler.h"
 #include "Components/DBus/Notifications.h"
-#include "Utils/Settings/SayonaraClass.h"
 #include "Utils/Pimpl.h"
 
 class DBusNotifications :
 		public QObject,
-		public NotificationInterface,
-		private SayonaraClass
+		public NotificationInterface
 {
 	Q_OBJECT
 	PIMPL(DBusNotifications)

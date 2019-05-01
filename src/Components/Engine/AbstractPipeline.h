@@ -21,7 +21,6 @@
 #ifndef GSTPIPELINE_H
 #define GSTPIPELINE_H
 
-#include "Utils/Settings/SayonaraClass.h"
 #include "Utils/Pimpl.h"
 
 #include <QObject>
@@ -51,8 +50,7 @@ namespace Pipeline
 	 * @ingroup Engine
 	 */
 	class Base :
-		public QObject,
-		public SayonaraClass
+		public QObject
 	{
 		Q_OBJECT
 		PIMPL(Base)

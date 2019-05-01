@@ -155,8 +155,7 @@ struct DBusMPRIS::MediaPlayer2::Private
 };
 
 DBusMPRIS::MediaPlayer2::MediaPlayer2(QMainWindow* player, QObject *parent) :
-	DBusAdaptor("/org/mpris/MediaPlayer2", "org.mpris.MediaPlayer2.sayonara","org.mpris.MediaPlayer2.Player", "org.freedesktop.DBus.Properties", parent),
-	SayonaraClass()
+	DBusAdaptor("/org/mpris/MediaPlayer2", "org.mpris.MediaPlayer2.sayonara","org.mpris.MediaPlayer2.Player", "org.freedesktop.DBus.Properties", parent)
 {
 	m = Pimpl::make<Private>(player);
 

@@ -21,15 +21,13 @@
 #ifndef PREFERENCEACTION_H
 #define PREFERENCEACTION_H
 
-#include "Utils/Settings/SayonaraClass.h"
 #include "Utils/Pimpl.h"
 
 #include <QAction>
 
 class QPushButton;
 class PreferenceAction :
-		public QAction,
-		public SayonaraClass
+		public QAction
 {
 	Q_OBJECT
 	PIMPL(PreferenceAction)

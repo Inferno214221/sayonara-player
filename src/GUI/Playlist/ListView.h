@@ -38,7 +38,6 @@
 #include "Utils/Playlist/PlaylistFwd.h"
 #include "Utils/MetaData/MetaDataFwd.h"
 #include "Utils/Pimpl.h"
-#include "Utils/Settings/SayonaraClass.h"
 
 class QPoint;
 class PlaylistView :
