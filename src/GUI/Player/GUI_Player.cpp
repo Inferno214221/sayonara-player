@@ -465,7 +465,7 @@ void GUI_Player::show_library_changed()
 {
 	Library::PluginHandler* lph = Library::PluginHandler::instance();
 	Library::Container* cur_lib = lph->current_library();
-	if(cur_lib && cur_lib->is_initialized())
+	if(cur_lib && cur_lib->is_initialized() && cur_lib->widget())
 	{
 		ui->library_widget->layout()->addWidget(cur_lib->widget());
 		if(ui->library_widget->isVisible()){
