@@ -69,7 +69,7 @@ void AlbumView::init_view(AbstractLibrary* library)
 
 	connect(m->library, &AbstractLibrary::sig_all_albums_loaded, this, &AlbumView::fill);
 
-	Set::listen<Set::Lib_UseViewClearButton>(this, &AlbumView::use_clear_button_changed);
+	ListenSetting(Set::Lib_UseViewClearButton, AlbumView::use_clear_button_changed);
 }
 
 AbstractLibrary* AlbumView::library() const
@@ -93,17 +93,17 @@ ColumnHeaderList AlbumView::column_headers() const
 
 BoolList AlbumView::visible_columns() const
 {
-	return _settings->get<Set::Lib_ColsAlbum>();
+	return GetSetting(Set::Lib_ColsAlbum);
 }
 
 void AlbumView::save_visible_columns(const BoolList& lst)
 {
-	_settings->set<Set::Lib_ColsAlbum>(lst);
+	SetSetting(Set::Lib_ColsAlbum, lst);
 }
 
 SortOrder AlbumView::sortorder() const
 {
-	Sortings so = _settings->get<Set::Lib_Sorting>();
+	Sortings so = GetSetting(Set::Lib_Sorting);
 	return so.so_albums;
 }
 
@@ -254,6 +254,6 @@ void AlbumView::run_merge_operation(const MergeData& mergedata)
 
 void AlbumView::use_clear_button_changed()
 {
-	bool b = _settings->get<Set::Lib_UseViewClearButton>();
+	bool b = GetSetting(Set::Lib_UseViewClearButton);
 	use_clear_button(b);
 }

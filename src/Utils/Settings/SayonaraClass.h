@@ -28,9 +28,6 @@ class Settings;
  */
 class SayonaraClass 
 {
-	protected:
-		Settings* _settings=nullptr;
-
 	public:
 		SayonaraClass();
 

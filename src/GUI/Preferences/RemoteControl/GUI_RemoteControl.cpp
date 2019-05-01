@@ -60,16 +60,16 @@ void GUI_RemoteControl::retranslate_ui()
 
 bool GUI_RemoteControl::commit()
 {
-	_settings->set<Set::Remote_Active>(ui->cb_activate->isChecked());
-	_settings->set<Set::Remote_Port>(ui->sb_port->value());
+	SetSetting(Set::Remote_Active, ui->cb_activate->isChecked());
+	SetSetting(Set::Remote_Port, ui->sb_port->value());
 
 	return true;
 }
 
 void GUI_RemoteControl::revert()
 {
-	ui->cb_activate->setChecked(_settings->get<Set::Remote_Active>());
-	ui->sb_port->setValue(_settings->get<Set::Remote_Port>());
+	ui->cb_activate->setChecked(GetSetting(Set::Remote_Active));
+	ui->sb_port->setValue(GetSetting(Set::Remote_Port));
 
 	refresh_url();
 }
@@ -116,6 +116,3 @@ void GUI_RemoteControl::refresh_url()
 	ui->lab_url->setVisible(active);
 	ui->le_url->setText(get_url_string());
 }
-
-
-

@@ -84,7 +84,7 @@ void DBusNotifications::notify(const QString& title, const QString& text, const 
 	   text,
 	   QStringList(),
 	   map,
-	   _settings->get<Set::Notification_Timeout>()
+	   GetSetting(Set::Notification_Timeout)
 	);
 }
 
@@ -103,7 +103,7 @@ void DBusNotifications::track_changed(const MetaData& md)
 {
 	m->md = md;
 
-	bool active = _settings->get<Set::Notification_Show>();
+	bool active = GetSetting(Set::Notification_Show);
 	if(!active){
 		return;
 	}

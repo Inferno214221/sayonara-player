@@ -52,7 +52,7 @@ static QPixmap scale_pixmap(const QPixmap& pm, int w, int h)
 CoverViewPixmapCache::CoverViewPixmapCache(QObject* parent) :
 	QThread(parent)
 {
-	int scaling = Settings::instance()->get<Set::Lib_CoverZoom>();
+	int scaling = GetSetting(Set::Lib_CoverZoom);
 	m = Pimpl::make<Private>(scaling);
 }
 

@@ -131,15 +131,15 @@ void LocalLibraryMenu::init_menu()
 
 	m->livesearch_action = new QAction(this);
 	m->livesearch_action->setCheckable(true);
-	m->livesearch_action->setChecked(_settings->get<Set::Lib_LiveSearch>());
+	m->livesearch_action->setChecked(GetSetting(Set::Lib_LiveSearch));
 
 	m->show_album_artists_action = new QAction(this);
 	m->show_album_artists_action->setCheckable(true);
-	m->show_album_artists_action->setChecked(_settings->get<Set::Lib_ShowAlbumArtists>());
+	m->show_album_artists_action->setChecked(GetSetting(Set::Lib_ShowAlbumArtists));
 
 	m->show_album_cover_view = new QAction(this);
 	m->show_album_cover_view->setCheckable(true);
-	m->show_album_cover_view->setChecked(_settings->get<Set::Lib_ShowAlbumCovers>());
+	m->show_album_cover_view->setChecked(GetSetting(Set::Lib_ShowAlbumCovers));
 
 	connect(m->reload_library_action, &QAction::triggered, this, &LocalLibraryMenu::sig_reload_library);
 	connect(m->import_file_action, &QAction::triggered, this, &LocalLibraryMenu::sig_import_file);
@@ -168,9 +168,9 @@ void LocalLibraryMenu::init_menu()
 
 	m->initialized = true;
 
-	Set::listen<Set::Lib_ShowAlbumCovers>(this, &LocalLibraryMenu::show_album_covers_changed);
-	Set::listen<Set::Lib_ShowAlbumArtists>(this, &LocalLibraryMenu::show_album_artists_changed);
-	Set::listen<Set::Lib_LiveSearch>(this, &LocalLibraryMenu::realtime_search_changed);
+	ListenSetting(Set::Lib_ShowAlbumCovers, LocalLibraryMenu::show_album_covers_changed);
+	ListenSetting(Set::Lib_ShowAlbumArtists, LocalLibraryMenu::show_album_artists_changed);
+	ListenSetting(Set::Lib_LiveSearch, LocalLibraryMenu::realtime_search_changed);
 
 	shortcut_changed(ShortcutIdentifier::Invalid);
 	language_changed();
@@ -229,7 +229,7 @@ void LocalLibraryMenu::shortcut_changed(ShortcutIdentifier identifier)
 
 void LocalLibraryMenu::realtime_search_triggered(bool b)
 {
-	_settings->set<Set::Lib_LiveSearch>(b);
+	SetSetting(Set::Lib_LiveSearch, b);
 }
 
 
@@ -239,7 +239,7 @@ void LocalLibraryMenu::realtime_search_changed()
 		return;
 	}
 
-	m->livesearch_action->setChecked(_settings->get<Set::Lib_LiveSearch>() );
+	m->livesearch_action->setChecked(GetSetting(Set::Lib_LiveSearch) );
 }
 
 void LocalLibraryMenu::edit_clicked()
@@ -277,21 +277,21 @@ void LocalLibraryMenu::edit_accepted()
 
 void LocalLibraryMenu::show_album_covers_triggered(bool b)
 {
-	_settings->set<Set::Lib_ShowAlbumCovers>(b);
+	SetSetting(Set::Lib_ShowAlbumCovers, b);
 }
 
 void LocalLibraryMenu::show_album_covers_changed()
 {
-	m->show_album_cover_view->setChecked(_settings->get<Set::Lib_ShowAlbumCovers>());
+	m->show_album_cover_view->setChecked(GetSetting(Set::Lib_ShowAlbumCovers));
 }
 
 void LocalLibraryMenu::show_album_artists_triggered(bool b)
 {
-	_settings->set<Set::Lib_ShowAlbumArtists>(b);
+	SetSetting(Set::Lib_ShowAlbumArtists, b);
 }
 
 void LocalLibraryMenu::show_album_artists_changed()
 {
-	m->show_album_artists_action->setChecked(_settings->get<Set::Lib_ShowAlbumArtists>());
+	m->show_album_artists_action->setChecked(GetSetting(Set::Lib_ShowAlbumArtists));
 }
 

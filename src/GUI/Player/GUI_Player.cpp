@@ -81,12 +81,11 @@ struct GUI_Player::Private
 		is_maximizable(true),
 		is_fullscreenable(true)
 	{
-		Settings* s = Settings::instance();
 		logger = new GUI_Logger();
 
-		initial_pos = s->get<Set::Player_Pos>();
-		initial_sz = s->get<Set::Player_Size>();
-		style = s->get<Set::Player_Style>();
+		initial_pos = GetSetting(Set::Player_Pos);
+		initial_sz = GetSetting(Set::Player_Size);
+		style = GetSetting(Set::Player_Style);
 	}
 
 	~Private()
@@ -119,7 +118,7 @@ GUI_Player::GUI_Player(QWidget* parent) :
 	m->menubar = new Menubar(this);
 	setMenuBar(m->menubar);
 
-	QString version = _settings->get<Set::Player_Version>();
+	QString version = GetSetting(Set::Player_Version);
 	setWindowTitle(QString("Sayonara %1").arg(version));
 	setWindowIcon(Gui::Util::icon("logo.png"));
 	setAttribute(Qt::WA_DeleteOnClose, false);
@@ -133,17 +132,17 @@ GUI_Player::GUI_Player(QWidget* parent) :
 
 	current_track_changed(PlayManager::instance()->current_track());
 
-	if(_settings->get<Set::Player_NotifyNewVersion>())
+	if(GetSetting(Set::Player_NotifyNewVersion))
 	{
 		AsyncWebAccess* awa = new AsyncWebAccess(this);
 		awa->run("http://sayonara-player.com/current_version");
 		connect(awa, &AsyncWebAccess::sig_finished, this, &GUI_Player::awa_version_finished);
 	}
 
-	Set::listen<Set::Player_Fullscreen>(this, &GUI_Player::fullscreen_changed, false);
-	Set::listen<Set::Lib_Show>(this, &GUI_Player::show_library_changed, false);
-	Set::listen<SetNoDB::Player_Quit>(this, &GUI_Player::really_close, false);
-	Set::listen<Set::Player_ControlStyle>(this, &GUI_Player::controlstyle_changed, false);
+	ListenSettingNoCall(Set::Player_Fullscreen, GUI_Player::fullscreen_changed);
+	ListenSettingNoCall(Set::Lib_Show, GUI_Player::show_library_changed);
+	ListenSettingNoCall(SetNoDB::Player_Quit, GUI_Player::really_close);
+	ListenSettingNoCall(Set::Player_ControlStyle, GUI_Player::controlstyle_changed);
 }
 
 GUI_Player::~GUI_Player()
@@ -156,17 +155,17 @@ GUI_Player::~GUI_Player()
 
 void GUI_Player::init_sizes()
 {
-	if(_settings->get<Set::Player_StartInTray>())
+	if(GetSetting(Set::Player_StartInTray))
 	{
 		this->setHidden(true);
 	}
 
-	else if(_settings->get<Set::Player_Fullscreen>())
+	else if(GetSetting(Set::Player_Fullscreen))
 	{
 		this->showFullScreen();
 	}
 
-	else if(_settings->get<Set::Player_Maximized>())
+	else if(GetSetting(Set::Player_Maximized))
 	{
 		this->showMaximized();
 	}
@@ -187,16 +186,16 @@ void GUI_Player::init_sizes()
 
 void GUI_Player::init_main_splitter()
 {
-	ui->library_widget->setVisible(_settings->get<Set::Lib_Show>());
+	ui->library_widget->setVisible(GetSetting(Set::Lib_Show));
 
-	QByteArray splitter_state_main = _settings->get<Set::Player_SplitterState>();
+	QByteArray splitter_state_main = GetSetting(Set::Player_SplitterState);
 	if(splitter_state_main.size() <= 1)
 	{
 		int w1 = width() / 3;
 		int w2 = width() - w1;
 		ui->splitter->setSizes({w1, w2});
 
-		_settings->set<Set::Player_SplitterState>(ui->splitter->saveState());
+		SetSetting(Set::Player_SplitterState, ui->splitter->saveState());
 	}
 
 	else
@@ -264,7 +263,7 @@ void GUI_Player::init_tray_actions()
 	connect(tray_icon, &GUI_TrayIcon::sig_wheel_changed, m->controls, &GUI_ControlsBase::change_volume_by_tick);
 	connect(tray_icon, &GUI_TrayIcon::activated, this, &GUI_Player::tray_icon_activated);
 
-	if(_settings->get<Set::Player_ShowTrayIcon>()){
+	if(GetSetting(Set::Player_ShowTrayIcon)){
 		tray_icon->show();
 	}
 
@@ -274,7 +273,7 @@ void GUI_Player::init_tray_actions()
 
 void GUI_Player::tray_icon_activated(QSystemTrayIcon::ActivationReason reason)
 {
-	bool min_to_tray = _settings->get<Set::Player_Min2Tray>();
+	bool min_to_tray = GetSetting(Set::Player_Min2Tray);
 	if(reason != QSystemTrayIcon::Trigger){
 		return;
 	}
@@ -301,7 +300,7 @@ void GUI_Player::current_track_changed(const MetaData& md)
 
 	if(title_empty)
 	{
-		this->setWindowTitle("Sayonara " + _settings->get<Set::Player_Version>());
+		this->setWindowTitle("Sayonara " + GetSetting(Set::Player_Version));
 	}
 
 	else if(artist_empty)
@@ -395,9 +394,9 @@ void GUI_Player::awa_version_finished()
 	}
 
 	QString new_version = QString(awa->data()).trimmed();
-	QString cur_version = _settings->get<Set::Player_Version>();
+	QString cur_version = GetSetting(Set::Player_Version);
 
-	bool notify_new_version = _settings->get<Set::Player_NotifyNewVersion>();
+	bool notify_new_version = GetSetting(Set::Player_NotifyNewVersion);
 	bool dark = Style::is_dark();
 
 	sp_log(Log::Info, this) << "Newest Version: " << new_version;
@@ -415,7 +414,7 @@ void GUI_Player::awa_version_finished()
 
 void GUI_Player::init_controlstyle()
 {
-	QByteArray splitter_state = _settings->get<Set::Player_SplitterControls>();
+	QByteArray splitter_state = GetSetting(Set::Player_SplitterControls);
 
 	controlstyle_changed();
 
@@ -433,7 +432,7 @@ void GUI_Player::controlstyle_changed()
 	}
 
 	int h = 0;
-	if(_settings->get<Set::Player_ControlStyle>() == 0)
+	if(GetSetting(Set::Player_ControlStyle) == 0)
 	{
 		m->controls = new GUI_Controls();
 	}
@@ -474,7 +473,7 @@ void GUI_Player::show_library_changed()
 		}
 	}
 
-	show_library(_settings->get<Set::Lib_Show>(), ui->library_widget->isVisible());
+	show_library(GetSetting(Set::Lib_Show), ui->library_widget->isVisible());
 }
 
 
@@ -494,7 +493,7 @@ void GUI_Player::show_library(bool is_library_visible, bool was_library_visible)
 
 	if(is_library_visible)
 	{
-		int old_lib_width = _settings->get<Set::Lib_OldWidth>();
+		int old_lib_width = GetSetting(Set::Lib_OldWidth);
 		m->new_size = QSize(this->width() + old_lib_width, this->height());
 
 		m->is_maximizable = true;
@@ -503,7 +502,7 @@ void GUI_Player::show_library(bool is_library_visible, bool was_library_visible)
 	else
 	{
 		int lib_width = ui->library_widget->width();
-		_settings->set<Set::Lib_OldWidth>(lib_width);
+		SetSetting(Set::Lib_OldWidth, lib_width);
 		m->new_size = QSize(this->width() - lib_width, this->height());
 	}
 
@@ -521,7 +520,7 @@ void GUI_Player::splitter_painted()
 
 	else {
 		ui->splitter->removeEventFilter(m->splitter_paint_event_filter);
-		_settings->set<Set::Player_Size>(this->size());
+		SetSetting(Set::Player_Size, this->size());
 	}
 }
 
@@ -543,7 +542,7 @@ void GUI_Player::splitter_main_moved(int pos, int idx)
 	Q_UNUSED(pos) Q_UNUSED(idx)
 
 	QByteArray splitter_state = ui->splitter->saveState();
-	_settings->set<Set::Player_SplitterState>(splitter_state);
+	SetSetting(Set::Player_SplitterState, splitter_state);
 }
 
 void GUI_Player::splitter_controls_moved(int pos, int idx)
@@ -551,7 +550,7 @@ void GUI_Player::splitter_controls_moved(int pos, int idx)
 	Q_UNUSED(pos) Q_UNUSED(idx)
 
 	QByteArray splitter_state = ui->splitterControls->saveState();
-	_settings->set<Set::Player_SplitterControls>(splitter_state);
+	SetSetting(Set::Player_SplitterControls, splitter_state);
 }
 
 bool GUI_Player::init_translator(const QString& four_letter, const QString& dir)
@@ -577,7 +576,7 @@ bool GUI_Player::init_translator(const QString& four_letter, const QString& dir)
 
 void GUI_Player::language_changed()
 {
-	QString language = _settings->get<Set::Player_Language>();
+	QString language = GetSetting(Set::Player_Language);
 	if(language == m->current_language)
 	{
 		return;
@@ -603,7 +602,7 @@ void GUI_Player::skin_changed()
 {
 	QString stylesheet = Style::current_style();
 	this->setStyleSheet(stylesheet);
-	int style = _settings->get<Set::Player_Style>();
+	int style = GetSetting(Set::Player_Style);
 	if(style != m->style)
 	{
 		m->style = style;
@@ -629,14 +628,14 @@ void GUI_Player::minimize_to_tray()
 
 	this->hide();
 
-	_settings->set<Set::Player_Pos>(p);
-	_settings->set<Set::Player_Size>(sz);
+	SetSetting(Set::Player_Pos, p);
+	SetSetting(Set::Player_Size, sz);
 }
 
 
 void GUI_Player::fullscreen_changed()
 {
-	if(_settings->get<Set::Player_Fullscreen>()) {
+	if(GetSetting(Set::Player_Fullscreen)) {
 		showFullScreen();
 	}
 
@@ -665,24 +664,24 @@ void GUI_Player::moveEvent(QMoveEvent* e)
 {
 	Gui::MainWindow::moveEvent(e);
 
-	_settings->set<Set::Player_Pos>(pos());
+	SetSetting(Set::Player_Pos, pos());
 }
 
 void GUI_Player::resizeEvent(QResizeEvent* e)
 {
 	Gui::MainWindow::resizeEvent(e);
 
-	bool is_maximized = _settings->get<Set::Player_Maximized>();
-	bool is_fullscreen = _settings->get<Set::Player_Fullscreen>();
+	bool is_maximized = GetSetting(Set::Player_Maximized);
+	bool is_fullscreen = GetSetting(Set::Player_Fullscreen);
 
 	if(is_maximized) {
-		_settings->set<Set::Player_Fullscreen>(false);
+		SetSetting(Set::Player_Fullscreen, false);
 	}
 
 	if( !is_maximized && !this->isMaximized() &&
 		!is_fullscreen && !this->isFullScreen())
 	{
-		_settings->set<Set::Player_Size>(this->size());
+		SetSetting(Set::Player_Size, this->size());
 	}
 
 	m->menubar->set_show_library_action_enabled(
@@ -693,11 +692,11 @@ void GUI_Player::resizeEvent(QResizeEvent* e)
 
 void GUI_Player::closeEvent(QCloseEvent* e)
 {
-	bool min_to_tray = _settings->get<Set::Player_Min2Tray>();
+	bool min_to_tray = GetSetting(Set::Player_Min2Tray);
 
-	_settings->set<Set::Player_Maximized>(this->isMaximized());
-	_settings->set<Set::Player_Fullscreen>(this->isFullScreen());
-	_settings->set<Set::Player_Pos>(this->pos());
+	SetSetting(Set::Player_Maximized, this->isMaximized());
+	SetSetting(Set::Player_Fullscreen, this->isFullScreen());
+	SetSetting(Set::Player_Pos, this->pos());
 
 	if(!m->shutdown_requested && min_to_tray)
 	{

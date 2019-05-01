@@ -148,7 +148,7 @@ struct Application::Private
 		session = new Session(app);
 
 		Gui::Icons::set_standard_theme(QIcon::themeName());
-		Gui::Icons::force_standard_icons(Settings::instance()->get<Set::Icon_ForceInDarkTheme>());
+		Gui::Icons::force_standard_icons(GetSetting(Set::Icon_ForceInDarkTheme));
 
 		if( !Settings::instance()->check_settings() )
 		{
@@ -251,12 +251,11 @@ Application::~Application()
 
 bool Application::init(const QStringList& files_to_play)
 {
-	Settings* settings = Settings::instance();
 	{
 		measure("Settings")
 
 		QString version = QString(SAYONARA_VERSION);
-		settings->set<Set::Player_Version>(version);
+		SetSetting(Set::Player_Version, version);
 	}
 
 	{
@@ -280,10 +279,10 @@ bool Application::init(const QStringList& files_to_play)
 #endif
 
 	{
-		Set::listen<Set::Remote_Active>(this, &Application::remote_control_activated);
+		ListenSetting(Set::Remote_Active, Application::remote_control_activated);
 	}
 
-	if(settings->get<Set::Notification_Show>())
+	if(GetSetting(Set::Notification_Show))
 	{
 		NotificationHandler::instance()->notify("Sayonara Player",
 												Lang::get(Lang::Version) + " " + SAYONARA_VERSION,
@@ -438,7 +437,7 @@ void Application::shutdown()
 
 void Application::remote_control_activated()
 {
-	if(Settings::instance()->get<Set::Remote_Active>() && !m->remote_control)
+	if(GetSetting(Set::Remote_Active) && !m->remote_control)
 	{
 		m->remote_control = new RemoteControl(this);
 	}

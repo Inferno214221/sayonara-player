@@ -165,8 +165,7 @@ QIcon Icons::icon(IconName spec)
 
 void Icons::change_theme()
 {
-	Settings* s = Settings::instance();
-	QString theme = s->get<Set::Icon_Theme>();
+	QString theme = GetSetting(Set::Icon_Theme);
 
 	QIcon::setThemeName(theme);
 }

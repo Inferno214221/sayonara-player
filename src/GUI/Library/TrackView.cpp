@@ -92,12 +92,12 @@ ColumnHeaderList TrackView::column_headers() const
 
 BoolList TrackView::visible_columns() const
 {
-	return _settings->get<Set::Lib_ColsTitle>();
+	return GetSetting(Set::Lib_ColsTitle);
 }
 
 void TrackView::save_visible_columns(const BoolList& lst)
 {
-	_settings->set<Set::Lib_ColsTitle>(lst);
+	SetSetting(Set::Lib_ColsTitle, lst);
 }
 
 LibraryContextMenu::Entries TrackView::context_menu_entries() const
@@ -107,7 +107,7 @@ LibraryContextMenu::Entries TrackView::context_menu_entries() const
 
 SortOrder TrackView::sortorder() const
 {
-	Sortings so = _settings->get<Set::Lib_Sorting>();
+	Sortings so = GetSetting(Set::Lib_Sorting);
 	return so.so_tracks;
 }
 

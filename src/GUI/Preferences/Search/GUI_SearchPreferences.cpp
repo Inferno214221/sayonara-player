@@ -61,14 +61,14 @@ bool GUI_SearchPreferences::commit()
 		mask |= Library::NoDiacriticChars;
 	}
 
-	_settings->set<Set::Lib_SearchMode>(mask);
+	SetSetting(Set::Lib_SearchMode, mask);
 
 	return true;
 }
 
 void GUI_SearchPreferences::revert()
 {
-	Library::SearchModeMask mask = _settings->get<Set::Lib_SearchMode>();
+	Library::SearchModeMask mask = GetSetting(Set::Lib_SearchMode);
 
 	ui->cb_case_insensitive->setChecked(mask & Library::CaseInsensitve);
 	ui->cb_no_special_chars->setChecked(mask & Library::NoSpecialChars);

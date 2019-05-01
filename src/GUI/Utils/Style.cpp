@@ -41,14 +41,12 @@
 
 QString Style::style(bool dark)
 {
-	Settings* settings = Settings::instance();
-
 	QFont std_font =		QApplication::font();
-	QString font_family =	settings->get<Set::Player_FontName>();
-	int font_size =			settings->get<Set::Player_FontSize>();
-	int font_size_lib =		settings->get<Set::Lib_FontSize>();
-	int font_size_pl =		settings->get<Set::PL_FontSize>();
-	bool lib_bold =			settings->get<Set::Lib_FontBold>();
+	QString font_family =	GetSetting(Set::Player_FontName);
+	int font_size =			GetSetting(Set::Player_FontSize);
+	int font_size_lib =		GetSetting(Set::Lib_FontSize);
+	int font_size_pl =		GetSetting(Set::PL_FontSize);
+	bool lib_bold =			GetSetting(Set::Lib_FontBold);
 
 	if(font_family.isEmpty()){
 		font_family = std_font.family();
@@ -88,13 +86,12 @@ QString Style::style(bool dark)
 
 QFont Style::current_font()
 {
-	Settings* settings = Settings::instance();
 	QFont std_font = QApplication::font();
-	QString font_family =	settings->get<Set::Player_FontName>();
-	int font_size =			settings->get<Set::Player_FontSize>();
-	int font_size_lib =		settings->get<Set::Lib_FontSize>();
-	int font_size_pl =		settings->get<Set::PL_FontSize>();
-	bool lib_bold =			settings->get<Set::Lib_FontBold>();
+	QString font_family =	GetSetting(Set::Player_FontName);
+	int font_size =			GetSetting(Set::Player_FontSize);
+	int font_size_lib =		GetSetting(Set::Lib_FontSize);
+	int font_size_pl =		GetSetting(Set::PL_FontSize);
+	bool lib_bold =			GetSetting(Set::Lib_FontBold);
 
 	Q_UNUSED(lib_bold);
 
@@ -131,12 +128,10 @@ int Style::recommended_height()
 
 bool Style::is_dark()
 {
-	Settings* s = Settings::instance();
-	return (s->get<Set::Player_Style>() == 1);
+	return (GetSetting(Set::Player_Style) == 1);
 }
 
 void Style::set_dark(bool dark)
 {
-	Settings* s = Settings::instance();
-	s->set<Set::Player_Style>(dark ? 1 : 0);
+	SetSetting(Set::Player_Style, dark ? 1 : 0);
 }

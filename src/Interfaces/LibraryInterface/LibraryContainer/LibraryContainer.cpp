@@ -42,7 +42,7 @@ Container::Container(QObject* parent) :
 {
 	m = Pimpl::make<Private>();
 
-	Set::listen<Set::Player_Language>(this, &Container::language_changed);
+	ListenSetting(Set::Player_Language, Container::language_changed);
 }
 
 Container::~Container() {}

@@ -227,7 +227,7 @@ bool SettingRegistry::init()
 	register_setting<SetNoDB::Pitch_found>( true );
 	register_setting<SetNoDB::Player_Quit>( false );
 
-	Settings::instance()->set<Set::Player_Version>(SAYONARA_VERSION);
+	SetSetting(Set::Player_Version, SAYONARA_VERSION);
 
 	return true;
 }

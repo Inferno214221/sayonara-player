@@ -41,12 +41,12 @@ void GUI_Crossfader::init_ui()
 {
 	setup_parent(this, &ui);
 
-	Playlist::Mode mode = _settings->get<Set::PL_Mode>();
+	Playlist::Mode mode = GetSetting(Set::PL_Mode);
 
 	bool gapless_active = Playlist::Mode::isActive(mode.gapless());
-	bool crossfader_active = _settings->get<Set::Engine_CrossFaderActive>();
+	bool crossfader_active = GetSetting(Set::Engine_CrossFaderActive);
 
-	int val = _settings->get<Set::Engine_CrossFaderTime>();
+	int val = GetSetting(Set::Engine_CrossFaderTime);
 
 	if(gapless_active && crossfader_active){
 		gapless_active = false;
@@ -88,7 +88,7 @@ QString GUI_Crossfader::get_display_name() const
 
 void GUI_Crossfader::slider_changed(int val)
 {
-	_settings->set<Set::Engine_CrossFaderTime>(val);
+	SetSetting(Set::Engine_CrossFaderTime, val);
 
 	if(val == 0){
 		ui->lab_crossfader->setText(Lang::get(Lang::GaplessPlayback));
@@ -113,7 +113,7 @@ void GUI_Crossfader::crossfader_active_changed(bool b)
 	ui->lab_crossfader->setEnabled(b);
 	ui->sli_crossfader->setEnabled(b);
 
-	_settings->set<Set::Engine_CrossFaderActive>(b);
+	SetSetting(Set::Engine_CrossFaderActive, b);
 }
 
 
@@ -130,8 +130,8 @@ void GUI_Crossfader::gapless_active_changed(bool b)
 
 	ui->cb_gapless->setChecked(b);
 
-	Playlist::Mode plm = _settings->get<Set::PL_Mode>();
+	Playlist::Mode plm = GetSetting(Set::PL_Mode);
 	plm.setGapless(b);
 
-	_settings->set<Set::PL_Mode>(plm);
+	SetSetting(Set::PL_Mode, plm);
 }

@@ -98,10 +98,10 @@ bool GUI_LastFM::commit()
 	QString username = ui->tf_username->text();
 	QString password = ui->tf_password->text();
 
-	_settings->set<Set::LFM_Username>(username);
-	_settings->set<Set::LFM_Password>(Util::Crypt::encrypt(password));
-	_settings->set<Set::LFM_ScrobbleTimeSec>(ui->sb_scrobble_time->value());
-	_settings->set<Set::LFM_Active>(active);
+	SetSetting(Set::LFM_Username, username);
+	SetSetting(Set::LFM_Password, Util::Crypt::encrypt(password));
+	SetSetting(Set::LFM_ScrobbleTimeSec, ui->sb_scrobble_time->value());
+	SetSetting(Set::LFM_Active, active);
 
 	return true;
 }
@@ -109,16 +109,16 @@ bool GUI_LastFM::commit()
 
 void GUI_LastFM::revert()
 {
-	bool active = _settings->get<Set::LFM_Active>();
-	QString username = _settings->get<Set::LFM_Username>();
-	QString password = Util::Crypt::decrypt(_settings->get<Set::LFM_Password>());
+	bool active = GetSetting(Set::LFM_Active);
+	QString username = GetSetting(Set::LFM_Username);
+	QString password = Util::Crypt::decrypt(GetSetting(Set::LFM_Password));
 
 	active_changed(active);
 	logged_in(m->lfm->is_logged_in());
 
 	ui->tf_username->setText(username);
 	ui->tf_password->setText(password);
-	ui->sb_scrobble_time->setValue( _settings->get<Set::LFM_ScrobbleTimeSec>() );
+	ui->sb_scrobble_time->setValue( GetSetting(Set::LFM_ScrobbleTimeSec) );
 	ui->cb_activate->setChecked(active);
 }
 

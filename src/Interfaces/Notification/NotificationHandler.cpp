@@ -60,7 +60,7 @@ void NotificationHandler::register_notificator(NotificationInterface* notificato
 	sp_log(Log::Info, this) << "Notification handler " << notificator->name() << " registered";
 	m->notificators << notificator;
 
-	QString preferred = Settings::instance()->get<Set::Notification_Name>();
+	QString preferred = GetSetting(Set::Notification_Name);
 
 	auto lambda = [preferred](NotificationInterface* n){
 		return (n->name().compare(preferred, Qt::CaseInsensitive) == 0);

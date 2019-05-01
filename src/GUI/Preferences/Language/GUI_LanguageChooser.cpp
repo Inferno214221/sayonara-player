@@ -74,7 +74,7 @@ bool GUI_LanguageChooser::commit()
 	int cur_idx = ui->combo_lang->currentIndex();
 	QString four_letter = ui->combo_lang->itemData(cur_idx).toString();
 
-	_settings->set<Set::Player_Language>(four_letter);
+	SetSetting(Set::Player_Language, four_letter);
 
 	return true;
 }
@@ -90,7 +90,7 @@ void GUI_LanguageChooser::renew_combo()
 
 	ui->combo_lang->clear();
 
-	QString language = _settings->get<Set::Player_Language>();
+	QString language = GetSetting(Set::Player_Language);
 
 	const QMap<QString, QLocale> locales = Lang::available_languages();
 

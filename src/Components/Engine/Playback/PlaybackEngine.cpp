@@ -84,11 +84,10 @@ struct Playback::Private
 
 	void change_gapless_state(GaplessState state)
 	{
-		Settings* settings = Settings::instance();
-		Playlist::Mode plm = settings->get<Set::PL_Mode>();
+		Playlist::Mode plm = GetSetting(Set::PL_Mode);
 
 		bool gapless = Playlist::Mode::isActiveAndEnabled(plm.gapless());
-		bool crossfader = settings->get<Set::Engine_CrossFaderActive>();
+		bool crossfader = GetSetting(Set::Engine_CrossFaderActive);
 
 		gapless_state = state;
 
@@ -123,9 +122,9 @@ bool Playback::init()
 		return false;
 	}
 
-	Set::listen<Set::Engine_SR_Active>(this, &Playback::s_streamrecorder_active_changed);
-	Set::listen<Set::PL_Mode>(this, &Playback::s_gapless_changed);
-	Set::listen<Set::Engine_CrossFaderActive>(this, &Playback::s_gapless_changed);
+	ListenSetting(Set::Engine_SR_Active, Playback::s_streamrecorder_active_changed);
+	ListenSetting(Set::PL_Mode, Playback::s_gapless_changed);
+	ListenSetting(Set::Engine_CrossFaderActive, Playback::s_gapless_changed);
 
 	return true;
 }
@@ -199,7 +198,7 @@ bool Playback::change_track_immediatly(const MetaData& md)
 
 bool Playback::change_track(const MetaData& md)
 {
-	bool crossfader_active = _settings->get<Set::Engine_CrossFaderActive>();
+	bool crossfader_active = GetSetting(Set::Engine_CrossFaderActive);
 	if(m->gapless_state != GaplessState::Stopped && crossfader_active)
 	{
 		return change_track_crossfading(md);
@@ -329,7 +328,7 @@ void Playback::set_track_almost_finished(MilliSeconds time2go)
 
 	m->change_gapless_state(GaplessState::AboutToFinish);
 
-	bool crossfade = _settings->get<Set::Engine_CrossFaderActive>();
+	bool crossfade = GetSetting(Set::Engine_CrossFaderActive);
 	if(crossfade) {
 		m->pipeline->fade_out();
 	}
@@ -386,9 +385,9 @@ void Playback::set_buffer_state(int progress, GstElement* src)
 
 void Playback::s_gapless_changed()
 {
-	Playlist::Mode plm = _settings->get<Set::PL_Mode>();
+	Playlist::Mode plm = GetSetting(Set::PL_Mode);
 	bool gapless =	(Playlist::Mode::isActiveAndEnabled(plm.gapless()) ||
-					 _settings->get<Set::Engine_CrossFaderActive>());
+					 GetSetting(Set::Engine_CrossFaderActive));
 
 	if(gapless)
 	{
@@ -406,7 +405,7 @@ void Playback::s_gapless_changed()
 
 void Playback::s_streamrecorder_active_changed()
 {
-	m->sr_active = _settings->get<Set::Engine_SR_Active>();
+	m->sr_active = GetSetting(Set::Engine_SR_Active);
 
 	if(!m->sr_active){
 		set_streamrecorder_recording(false);
@@ -541,7 +540,7 @@ void Playback::add_spectrum_receiver(SpectrumReceiver* receiver)
 
 int Playback::get_spectrum_bins() const
 {
-	return _settings->get<Set::Engine_SpectrumBins>();
+	return GetSetting(Set::Engine_SpectrumBins);
 }
 
 void Playback::set_spectrum(const SpectrumList& vals)

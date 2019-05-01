@@ -76,20 +76,20 @@ void CoverViewContextMenu::init()
 
 	m->action_show_artist = new QAction(this);
 	m->action_show_artist->setCheckable(true);
-	m->action_show_artist->setChecked(_settings->get<Set::Lib_CoverShowArtist>());
+	m->action_show_artist->setChecked(GetSetting(Set::Lib_CoverShowArtist));
 	this->insertAction(sep_before_prefs, m->action_show_artist);
 
 	connect(m->action_show_artist, &QAction::triggered, this, [=](){
-		_settings->set<Set::Lib_CoverShowArtist>(m->action_show_artist->isChecked());
+		SetSetting(Set::Lib_CoverShowArtist, m->action_show_artist->isChecked());
 	});
 
 	m->action_show_utils = new QAction(this);
 	m->action_show_utils->setCheckable(true);
-	m->action_show_utils->setChecked(_settings->get<Set::Lib_CoverShowUtils>());
+	m->action_show_utils->setChecked(GetSetting(Set::Lib_CoverShowUtils));
 	this->insertAction(sep_before_prefs, m->action_show_utils);
 
 	connect(m->action_show_utils, &QAction::triggered, this, [=](){
-		_settings->set<Set::Lib_CoverShowUtils>(m->action_show_utils->isChecked());
+		SetSetting(Set::Lib_CoverShowUtils, m->action_show_utils->isChecked());
 	});
 
 	m->menu_sorting = new QMenu(this);
@@ -200,12 +200,10 @@ void CoverViewContextMenu::showEvent(QShowEvent* e)
 {
 	LibraryContextMenu::showEvent(e);
 
-	Settings* s = Settings::instance();
-
-	set_sorting(s->get<Set::Lib_Sorting>().so_albums);
-	set_zoom(s->get<Set::Lib_CoverZoom>());
-	m->action_show_utils->setChecked(s->get<Set::Lib_CoverShowUtils>());
-	m->action_show_artist->setChecked(s->get<Set::Lib_CoverShowArtist>());
+	set_sorting(GetSetting(Set::Lib_Sorting).so_albums);
+	set_zoom(GetSetting(Set::Lib_CoverZoom));
+	m->action_show_utils->setChecked(GetSetting(Set::Lib_CoverShowUtils));
+	m->action_show_artist->setChecked(GetSetting(Set::Lib_CoverShowArtist));
 }
 
 

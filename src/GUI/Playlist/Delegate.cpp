@@ -44,8 +44,8 @@ struct PlaylistItemDelegate::Private
 		rating_height(18),
 		show_rating(false)
 	{
-		entry_look = Settings::instance()->get<Set::PL_EntryLook>();
-		show_rating = Settings::instance()->get<Set::PL_ShowRating>();
+		entry_look = GetSetting(Set::PL_EntryLook);
+		show_rating = GetSetting(Set::PL_ShowRating);
 	}
 };
 
@@ -55,8 +55,8 @@ PlaylistItemDelegate::PlaylistItemDelegate(QTableView* parent) :
 {
 	m = Pimpl::make<Private>();
 
-	Set::listen<Set::PL_EntryLook>(this, &PlaylistItemDelegate::sl_look_changed, false);
-	Set::listen<Set::PL_ShowRating>(this, &PlaylistItemDelegate::sl_show_rating_changed, false);
+	ListenSettingNoCall(Set::PL_EntryLook, PlaylistItemDelegate::sl_look_changed);
+	ListenSettingNoCall(Set::PL_ShowRating, PlaylistItemDelegate::sl_show_rating_changed);
 }
 
 PlaylistItemDelegate::~PlaylistItemDelegate() {}
@@ -211,12 +211,12 @@ void PlaylistItemDelegate::paint(QPainter *painter,	const QStyleOptionViewItem &
 
 void PlaylistItemDelegate::sl_look_changed()
 {
-	m->entry_look = _settings->get<Set::PL_EntryLook>();
+	m->entry_look = GetSetting(Set::PL_EntryLook);
 }
 
 void PlaylistItemDelegate::sl_show_rating_changed()
 {
-	m->show_rating = _settings->get<Set::PL_ShowRating>();
+	m->show_rating = GetSetting(Set::PL_ShowRating);
 }
 
 

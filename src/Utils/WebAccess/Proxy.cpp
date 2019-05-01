@@ -34,11 +34,11 @@ Proxy::Proxy() :
 	QObject(),
 	SayonaraClass()
 {
-	Set::listen<Set::Proxy_Active>(this, &Proxy::proxy_changed);
-	Set::listen<Set::Proxy_Hostname>(this, &Proxy::proxy_changed);
-	Set::listen<Set::Proxy_Port>(this, &Proxy::proxy_changed);
-	Set::listen<Set::Proxy_Username>(this, &Proxy::proxy_changed);
-	Set::listen<Set::Proxy_Password>(this, &Proxy::proxy_changed);
+	ListenSetting(Set::Proxy_Active, Proxy::proxy_changed);
+	ListenSetting(Set::Proxy_Hostname, Proxy::proxy_changed);
+	ListenSetting(Set::Proxy_Port, Proxy::proxy_changed);
+	ListenSetting(Set::Proxy_Username, Proxy::proxy_changed);
+	ListenSetting(Set::Proxy_Password, Proxy::proxy_changed);
 }
 
 Proxy::~Proxy() {}
@@ -86,27 +86,27 @@ void Proxy::init()
 
 QString Proxy::hostname() const
 {
-	return _settings->get<Set::Proxy_Hostname>();
+	return GetSetting(Set::Proxy_Hostname);
 }
 
 int Proxy::port() const
 {
-	return _settings->get<Set::Proxy_Port>();
+	return GetSetting(Set::Proxy_Port);
 }
 
 QString Proxy::username() const
 {
-	return _settings->get<Set::Proxy_Username>();
+	return GetSetting(Set::Proxy_Username);
 }
 
 QString Proxy::password() const
 {
-	return Util::Crypt::decrypt(_settings->get<Set::Proxy_Password>());
+	return Util::Crypt::decrypt(GetSetting(Set::Proxy_Password));
 }
 
 bool Proxy::active() const
 {
-	return _settings->get<Set::Proxy_Active>();
+	return GetSetting(Set::Proxy_Active);
 }
 
 bool Proxy::has_username() const

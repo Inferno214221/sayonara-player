@@ -121,7 +121,7 @@ GUI_PlaylistBottomBar::GUI_PlaylistBottomBar(QWidget *parent) :
 	m->ui_shutdown = new GUI_Shutdown(this);
 #endif
 
-	m->plm = _settings->get<Set::PL_Mode>();
+	m->plm = GetSetting(Set::PL_Mode);
 
 	m->btn_rep1->setChecked(Playlist::Mode::isActive(m->plm.rep1()));
 	m->btn_repAll->setChecked(Playlist::Mode::isActive(m->plm.repAll()));
@@ -141,7 +141,7 @@ GUI_PlaylistBottomBar::GUI_PlaylistBottomBar(QWidget *parent) :
 	connect(m->shutdown, &Shutdown::sig_started, this, &GUI_PlaylistBottomBar::shutdown_started);
 	connect(m->shutdown, &Shutdown::sig_stopped, this, &GUI_PlaylistBottomBar::shutdown_closed);
 
-	Set::listen<Set::PL_Mode>(this, &GUI_PlaylistBottomBar::s_playlist_mode_changed);
+	ListenSetting(Set::PL_Mode, GUI_PlaylistBottomBar::s_playlist_mode_changed);
 }
 
 GUI_PlaylistBottomBar::~GUI_PlaylistBottomBar() {}
@@ -193,7 +193,7 @@ void GUI_PlaylistBottomBar::playlist_mode_changed()
 
 	m->plm = plm;
 
-	_settings->set<Set::PL_Mode>(m->plm);
+	SetSetting(Set::PL_Mode, m->plm);
 }
 
 void GUI_PlaylistBottomBar::gapless_clicked()
@@ -217,7 +217,7 @@ void GUI_PlaylistBottomBar::language_changed()
 // setting slot
 void GUI_PlaylistBottomBar::s_playlist_mode_changed()
 {
-	Playlist::Mode plm = _settings->get<Set::PL_Mode>();
+	Playlist::Mode plm = GetSetting(Set::PL_Mode);
 
 	if(plm == m->plm) {
 		return;

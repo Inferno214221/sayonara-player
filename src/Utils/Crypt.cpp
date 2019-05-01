@@ -28,7 +28,7 @@ static QByteArray _encrypt(const QByteArray& src, QByteArray key)
 	}
 
 	if(key.isEmpty()){
-		key = Settings::instance()->get<Set::Player_PrivId>();
+		key = GetSetting(Set::Player_PrivId);
 	}
 
 	QByteArray result;

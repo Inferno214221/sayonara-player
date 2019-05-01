@@ -301,7 +301,7 @@ void GUI_StationSearcher::showEvent(QShowEvent* e)
 	ui->le_search->setFocus();
 	Gui::Dialog::showEvent(e);
 
-	QSize sz = _settings->get<Set::Stream_SearchWindowSize>();
+	QSize sz = GetSetting(Set::Stream_SearchWindowSize);
 	if(!sz.isEmpty())
 	{
 		this->resize(sz);
@@ -313,7 +313,7 @@ void GUI_StationSearcher::showEvent(QShowEvent* e)
 
 void GUI_StationSearcher::closeEvent(QCloseEvent* e)
 {
-	_settings->set<Set::Stream_SearchWindowSize>(this->size());
+	SetSetting(Set::Stream_SearchWindowSize, this->size());
 
 	Gui::Dialog::closeEvent(e);
 }

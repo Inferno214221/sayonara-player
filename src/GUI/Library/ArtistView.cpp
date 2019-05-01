@@ -73,7 +73,7 @@ void ArtistView::init_view(AbstractLibrary* library)
 
 	connect(m->library, &AbstractLibrary::sig_all_artists_loaded, this, &ArtistView::fill);
 
-	Set::listen<Set::Lib_UseViewClearButton>(this, &ArtistView::use_clear_button_changed);
+	ListenSetting(Set::Lib_UseViewClearButton, ArtistView::use_clear_button_changed);
 }
 
 void ArtistView::init_context_menu()
@@ -86,9 +86,9 @@ void ArtistView::init_context_menu()
 
 	m->album_artist_action = new QAction(menu);
 	m->album_artist_action->setCheckable(true);
-	m->album_artist_action->setChecked(_settings->get<Set::Lib_ShowAlbumArtists>());
+	m->album_artist_action->setChecked(GetSetting(Set::Lib_ShowAlbumArtists));
 	m->album_artist_action->setShortcut(sch->shortcut(ShortcutIdentifier::AlbumArtists).sequence());
-	Set::listen<Set::Lib_ShowAlbumCovers>(this, &ArtistView::album_artists_changed);
+	ListenSetting(Set::Lib_ShowAlbumCovers, ArtistView::album_artists_changed);
 
 	connect(m->album_artist_action, &QAction::triggered, this, &ArtistView::album_artists_triggered);
 
@@ -112,19 +112,19 @@ ColumnHeaderList ArtistView::column_headers() const
 
 BoolList ArtistView::visible_columns() const
 {
-	BoolList columns = _settings->get<Set::Lib_ColsArtist>();
+	BoolList columns = GetSetting(Set::Lib_ColsArtist);
 	columns[0] = false;
 	return columns;
 }
 
 void ArtistView::save_visible_columns(const BoolList& columns)
 {
-	_settings->set<Set::Lib_ColsArtist>(columns);
+	SetSetting(Set::Lib_ColsArtist, columns);
 }
 
 SortOrder ArtistView::sortorder() const
 {
-	Library::Sortings so = _settings->get<Set::Lib_Sorting>();
+	Library::Sortings so = GetSetting(Set::Lib_Sorting);
 	return so.so_artists;
 }
 
@@ -184,14 +184,14 @@ void ArtistView::refresh_clicked()
 
 void ArtistView::use_clear_button_changed()
 {
-	bool b = _settings->get<Set::Lib_UseViewClearButton>();
+	bool b = GetSetting(Set::Lib_UseViewClearButton);
 	use_clear_button(b);
 }
 
 void ArtistView::album_artists_triggered(bool b)
 {
 	Q_UNUSED(b)
-	_settings->set<Set::Lib_ShowAlbumArtists>(m->album_artist_action->isChecked());
+	SetSetting(Set::Lib_ShowAlbumArtists, m->album_artist_action->isChecked());
 }
 
 void ArtistView::run_merge_operation(const ItemView::MergeData& mergedata)
@@ -205,5 +205,5 @@ void ArtistView::run_merge_operation(const ItemView::MergeData& mergedata)
 
 void ArtistView::album_artists_changed()
 {
-	m->album_artist_action->setChecked(_settings->get<Set::Lib_ShowAlbumArtists>());
+	m->album_artist_action->setChecked(GetSetting(Set::Lib_ShowAlbumArtists));
 }

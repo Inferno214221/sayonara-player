@@ -33,6 +33,7 @@
 #include <QFont>
 
 #include <algorithm>
+#include <cmath>
 
 using Cover::Location;
 
@@ -52,7 +53,7 @@ GUI_ControlsBase::~GUI_ControlsBase() {}
 
 void GUI_ControlsBase::init()
 {
-	QString version = _settings->get<Set::Player_Version>();
+	QString version = GetSetting(Set::Player_Version);
 
 	lab_sayonara()->setText(tr("Sayonara Player"));
 	lab_version()->setText( version );
@@ -82,9 +83,9 @@ void GUI_ControlsBase::init()
 		show_edit();
 	});
 
-	Set::listen<Set::Engine_SR_Active>(this, &GUI_ControlsBase::sr_active_changed);
-	Set::listen<Set::Engine_Pitch>(this, &GUI_ControlsBase::file_info_changed);
-	Set::listen<Set::Engine_SpeedActive>(this, &GUI_ControlsBase::file_info_changed, false);
+	ListenSetting(Set::Engine_SR_Active, GUI_ControlsBase::sr_active_changed);
+	ListenSetting(Set::Engine_Pitch, GUI_ControlsBase::file_info_changed);
+	ListenSettingNoCall(Set::Engine_SpeedActive, GUI_ControlsBase::file_info_changed);
 
 	skin_changed();
 }
@@ -453,7 +454,7 @@ void GUI_ControlsBase::dur_changed(const MetaData& md)
 	set_total_time_label(md.length_ms);
 }
 
-#include <cmath>
+
 void GUI_ControlsBase::br_changed(const MetaData& md)
 {
 	if(md.bitrate / 1000 > 0){
@@ -504,14 +505,14 @@ void GUI_ControlsBase::file_info_changed()
 	const MetaData& md = PlayManager::instance()->current_track();
 
 	QString rating_text;
-	if( (_settings->get<Set::Engine_Pitch>() != 440) &&
-		_settings->get<Set::Engine_SpeedActive>())
+	if( (GetSetting(Set::Engine_Pitch) != 440) &&
+		GetSetting(Set::Engine_SpeedActive))
 	{
 		if(!rating_text.isEmpty()){
 			rating_text += ", ";
 		}
 
-		rating_text += QString::number(_settings->get<Set::Engine_Pitch>()) + "Hz";
+		rating_text += QString::number(GetSetting(Set::Engine_Pitch)) + "Hz";
 	}
 
 
@@ -574,8 +575,8 @@ void GUI_ControlsBase::check_record_button_visible()
 	const MetaData& md = play_manager->current_track();
 	PlayState playstate = play_manager->playstate();
 
-	bool is_lame_available = _settings->get<SetNoDB::MP3enc_found>();
-	bool is_sr_active = _settings->get<Set::Engine_SR_Active>();
+	bool is_lame_available = GetSetting(SetNoDB::MP3enc_found);
+	bool is_sr_active = GetSetting(Set::Engine_SR_Active);
 	bool is_radio = ((md.radio_mode() != RadioMode::Off));
 	bool is_playing = (playstate == PlayState::Playing);
 

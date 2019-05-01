@@ -90,7 +90,7 @@ Base::Base() :
 	connect(m->track_changed_thread, &TrackChangedThread::sig_similar_artists_available,
 			this, &Base::similar_artists_fetched);
 
-	Set::listen<Set::LFM_Active>(this, &Base::lfm_active_changed);
+	ListenSetting(Set::LFM_Active, Base::lfm_active_changed);
 }
 
 Base::~Base() {}
@@ -118,11 +118,11 @@ void Base::lfm_active_changed()
 {
 	m->logged_in = false;
 
-	bool active = _settings->get<Set::LFM_Active>();
+	bool active = GetSetting(Set::LFM_Active);
 	if(active)
 	{
-		QString username = _settings->get<Set::LFM_Username>();
-		QString password = Util::Crypt::decrypt(_settings->get<Set::LFM_Password>());
+		QString username = GetSetting(Set::LFM_Username);
+		QString password = Util::Crypt::decrypt(GetSetting(Set::LFM_Password));
 
 		login(username, password);
 	}
@@ -143,7 +143,7 @@ void Base::login_thread_finished(bool success)
 	m->logged_in = login_info.logged_in;
 	m->session_key = login_info.session_key;
 
-	_settings->set<Set::LFM_SessionKey>(m->session_key);
+	SetSetting(Set::LFM_SessionKey, m->session_key);
 
 	sp_log(Log::Debug, this) << "Got session key";
 
@@ -158,13 +158,13 @@ void Base::login_thread_finished(bool success)
 
 void Base::current_track_changed(const MetaData& md)
 {
-	Playlist::Mode pl_mode = _settings->get<Set::PL_Mode>();
+	Playlist::Mode pl_mode = GetSetting(Set::PL_Mode);
 	if( Playlist::Mode::isActiveAndEnabled(pl_mode.dynamic()))
 	{
 		m->track_changed_thread->search_similar_artists(md);
 	}
 
-	bool active = _settings->get<Set::LFM_Active>();
+	bool active = GetSetting(Set::LFM_Active);
 	if(!active || !m->logged_in) {
 		return;
 	}
@@ -179,7 +179,7 @@ void Base::current_track_changed(const MetaData& md)
 
 void Base::position_ms_changed(MilliSeconds pos_ms)
 {
-	bool active = _settings->get<Set::LFM_Active>();
+	bool active = GetSetting(Set::LFM_Active);
 	if(!active){
 		return;
 	}
@@ -231,7 +231,7 @@ bool Base::check_scrobble(MilliSeconds pos_ms)
 		}
 
 		else{
-			MilliSeconds scrobble_time_ms = (MilliSeconds) (_settings->get<Set::LFM_ScrobbleTimeSec>() * 1000);
+			MilliSeconds scrobble_time_ms = (MilliSeconds) (GetSetting(Set::LFM_ScrobbleTimeSec) * 1000);
 
 			m->old_pos_difference += (pos_ms - m->old_pos);
 			m->old_pos = pos_ms;
@@ -251,7 +251,7 @@ void Base::scrobble(const MetaData& md)
 {
 	m->scrobbled = true;
 
-	bool active = _settings->get<Set::LFM_Active>();
+	bool active = GetSetting(Set::LFM_Active);
 	if(!active) {
 		return;
 	}

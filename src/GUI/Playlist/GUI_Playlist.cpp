@@ -86,7 +86,7 @@ GUI_Playlist::GUI_Playlist(QWidget *parent) :
 
 	connect(ui->btn_clear, &QPushButton::clicked, this, &GUI_Playlist::clear_button_pressed);
 
-	Set::listen<Set::PL_ShowClearButton>(this, &GUI_Playlist::sl_show_clear_button_changed);
+	ListenSetting(Set::PL_ShowClearButton, GUI_Playlist::sl_show_clear_button_changed);
 
 	QTimer::singleShot(500, Handler::instance(), SLOT(load_old_playlists()));
 	//Handler::instance()->load_old_playlists();
@@ -625,6 +625,6 @@ PlaylistView* GUI_Playlist::current_view()
 
 void GUI_Playlist::sl_show_clear_button_changed()
 {
-	ui->btn_clear->setVisible(_settings->get<Set::PL_ShowClearButton>());
+	ui->btn_clear->setVisible(GetSetting(Set::PL_ShowClearButton));
 }
 

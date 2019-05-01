@@ -71,7 +71,7 @@ void UserOperations::merge_artists(const Util::Set<Id>& artist_ids, ArtistId tar
 		return;
 	}
 
-	bool show_album_artists = _settings->get<Set::Lib_ShowAlbumArtists>();
+	bool show_album_artists = GetSetting(Set::Lib_ShowAlbumArtists);
 
 	Artist artist;
 	bool success = m->library_db->getArtistByID(target_artist, artist);

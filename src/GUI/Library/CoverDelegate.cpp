@@ -37,7 +37,7 @@ void Library::CoverDelegate::paint(QPainter* painter, const QStyleOptionViewItem
 	const int text_offset = 3;
 
 	QFontMetrics fm = option.fontMetrics;
-	int zoom = Settings::instance()->get<Set::Lib_CoverZoom>();
+	int zoom = GetSetting(Set::Lib_CoverZoom);
 
 	painter->save();
 	painter->translate(option.rect.x(), option.rect.y());

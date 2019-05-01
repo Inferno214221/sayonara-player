@@ -108,7 +108,7 @@ struct MiniSearcher::Private
 MiniSearcher::MiniSearcher(SearchableViewInterface* parent) :
 	WidgetTemplate<QFrame>(parent->view())
 {
-	m = Pimpl::make<MiniSearcher::Private>(this, parent);
+	m = Pimpl::make<Private>(this, parent);
 
 	QLayout* layout = new QBoxLayout(QBoxLayout::LeftToRight, this);
 	layout->setContentsMargins(5, 5, 5, 5);

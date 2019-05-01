@@ -75,7 +75,7 @@ void GUI_StreamRecorder::init_ui()
 	ui->le_template->setMouseTracking(true);
 	ui->le_template->setStyleSheet("font-family: mono;");
 	ui->tabWidget->setCurrentIndex(0);
-	ui->tabWidget->setTabEnabled(1, _settings->get<Set::Engine_SR_SessionPath>());
+	ui->tabWidget->setTabEnabled(1, GetSetting(Set::Engine_SR_SessionPath));
 
 	QList<QPair<QString, QString>> desc = StreamRecorder::Utils::descriptions();
 
@@ -145,7 +145,7 @@ void GUI_StreamRecorder::sl_cb_activate_toggled(bool b)
 	ui->cb_create_session_path->setEnabled(b);
 	ui->le_template->setEnabled(b);
 
-	bool create_session_path = _settings->get<Set::Engine_SR_SessionPath>();
+	bool create_session_path = GetSetting(Set::Engine_SR_SessionPath);
 	ui->cb_create_session_path->setChecked(create_session_path);
 	ui->tabWidget->setTabEnabled(1, (b && create_session_path));
 }
@@ -244,11 +244,11 @@ bool GUI_StreamRecorder::commit()
 
 	if(everything_ok)
 	{
-		_settings->set<Set::Engine_SR_Active>(ui->cb_activate->isChecked());
-		_settings->set<Set::Engine_SR_Path>(path);
-		_settings->set<Set::Engine_SR_AutoRecord>(ui->cb_auto_rec->isChecked());
-		_settings->set<Set::Engine_SR_SessionPath>(ui->cb_create_session_path->isChecked());
-		_settings->set<Set::Engine_SR_SessionPathTemplate>(ui->le_template->text().trimmed());
+		SetSetting(Set::Engine_SR_Active, ui->cb_activate->isChecked());
+		SetSetting(Set::Engine_SR_Path, path);
+		SetSetting(Set::Engine_SR_AutoRecord, ui->cb_auto_rec->isChecked());
+		SetSetting(Set::Engine_SR_SessionPath, ui->cb_create_session_path->isChecked());
+		SetSetting(Set::Engine_SR_SessionPathTemplate, ui->le_template->text().trimmed());
 	}
 
 	return everything_ok;
@@ -256,13 +256,13 @@ bool GUI_StreamRecorder::commit()
 
 void GUI_StreamRecorder::revert()
 {
-	bool lame_available = _settings->get<SetNoDB::MP3enc_found>();
+	bool lame_available = GetSetting(SetNoDB::MP3enc_found);
 
-	QString path = _settings->get<Set::Engine_SR_Path>();
-	QString template_path = _settings->get<Set::Engine_SR_SessionPathTemplate>();
-	bool active = _settings->get<Set::Engine_SR_Active>() && lame_available;
-	bool create_session_path = _settings->get<Set::Engine_SR_SessionPath>();
-	bool auto_rec = _settings->get<Set::Engine_SR_AutoRecord>();
+	QString path = GetSetting(Set::Engine_SR_Path);
+	QString template_path = GetSetting(Set::Engine_SR_SessionPathTemplate);
+	bool active = GetSetting(Set::Engine_SR_Active) && lame_available;
+	bool create_session_path = GetSetting(Set::Engine_SR_SessionPath);
+	bool auto_rec = GetSetting(Set::Engine_SR_AutoRecord);
 
 	if(template_path.isEmpty()){
 		template_path = SR::Utils::target_path_template_default(true);

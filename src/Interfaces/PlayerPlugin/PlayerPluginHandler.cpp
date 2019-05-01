@@ -41,7 +41,7 @@ Handler::Handler() :
 {
 	m = Pimpl::make<Private>();
 
-	Set::listen<Set::Player_Language>(this, &Handler::language_changed);
+	ListenSetting(Set::Player_Language, Handler::language_changed);
 }
 
 Handler::~Handler() {}
@@ -75,7 +75,7 @@ void Handler::add_plugin(Base* p)
 	connect(p, SIGNAL(sig_opened()), this, SLOT(plugin_opened()));
 	connect(p, SIGNAL(sig_action_triggered(bool)), this, SLOT(plugin_action_triggered(bool)));
 
-	QString last_plugin = _settings->get<Set::Player_ShownPlugin>();
+	QString last_plugin = GetSetting(Set::Player_ShownPlugin);
 	if(p->get_name() == last_plugin)
 	{
 		m->current_plugin = p;
@@ -115,7 +115,7 @@ void Handler::plugin_action_triggered(bool b)
 void Handler::plugin_opened(Base* p)
 {
 	if(p){
-		_settings->set<Set::Player_ShownPlugin>(p->get_name());
+		SetSetting(Set::Player_ShownPlugin, p->get_name());
 	}
 }
 
@@ -128,7 +128,7 @@ void Handler::plugin_opened()
 void Handler::plugin_closed()
 {
 	m->current_plugin = nullptr;
-	_settings->set<Set::Player_ShownPlugin>(QString());
+	SetSetting(Set::Player_ShownPlugin, QString());
 
 	emit sig_plugin_closed();
 }
@@ -148,7 +148,7 @@ QList<Base*> Handler::all_plugins() const
 	return m->plugins;
 }
 
-Base *Handler::current_plugin() const
+Base* Handler::current_plugin() const
 {
 	return m->current_plugin;
 }

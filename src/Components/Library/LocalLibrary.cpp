@@ -73,8 +73,8 @@ LocalLibrary::LocalLibrary(LibraryId library_id, QObject *parent) :
 	connect(plh, &Playlist::Handler::sig_track_deletion_requested,
 			this, &LocalLibrary::delete_tracks);
 
-	Set::listen<Set::Lib_SearchMode>(this, &LocalLibrary::search_mode_changed, false);
-	Set::listen<Set::Lib_ShowAlbumArtists>(this, &LocalLibrary::show_album_artists_changed, false);
+	ListenSettingNoCall(Set::Lib_SearchMode, LocalLibrary::search_mode_changed);
+	ListenSettingNoCall(Set::Lib_ShowAlbumArtists, LocalLibrary::show_album_artists_changed);
 }
 
 LocalLibrary::~LocalLibrary() {}
@@ -111,19 +111,19 @@ void LocalLibrary::reload_thread_finished()
 
 void LocalLibrary::search_mode_changed()
 {
-	sp_log(Log::Debug, this) << "Updating cissearch... " << _settings->get<Set::Lib_SearchMode>();
+	sp_log(Log::Debug, this) << "Updating cissearch... " << GetSetting(Set::Lib_SearchMode);
 
 	m->library_db->updateArtistCissearch();
 	m->library_db->updateAlbumCissearch();
 	m->library_db->updateTrackCissearch();
 
-	sp_log(Log::Debug, this) << "Updating cissearch finished" << _settings->get<Set::Lib_SearchMode>();
+	sp_log(Log::Debug, this) << "Updating cissearch finished" << GetSetting(Set::Lib_SearchMode);
 }
 
 
 void LocalLibrary::show_album_artists_changed()
 {
-	bool show_album_artists = _settings->get<Set::Lib_ShowAlbumArtists>();
+	bool show_album_artists = GetSetting(Set::Lib_ShowAlbumArtists);
 
 	DB::LibraryDatabases dbs = m->db->library_dbs();
 	for(DB::LibraryDatabase* lib_db : dbs)

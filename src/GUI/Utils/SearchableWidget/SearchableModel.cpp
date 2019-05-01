@@ -32,5 +32,5 @@ SearchableModelInterface::ExtraTriggerMap SearchableModelInterface::getExtraTrig
 
 Library::SearchModeMask SearchableModelInterface::search_mode() const
 {
-	return Settings::instance()->get<Set::Lib_SearchMode>();
+	return GetSetting(Set::Lib_SearchMode);
 }

@@ -103,7 +103,7 @@ void GUI_AbstractStream::init_ui()
 
 	set_searching(false);
 
-	Set::listen<Set::Player_Style>(this, &GUI_AbstractStream::_sl_skin_changed);
+	ListenSetting(Set::Player_Style, GUI_AbstractStream::_sl_skin_changed);
 }
 
 

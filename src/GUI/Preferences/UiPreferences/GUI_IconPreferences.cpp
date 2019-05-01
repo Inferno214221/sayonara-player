@@ -151,7 +151,7 @@ bool GUI_IconPreferences::commit()
 		rb->setStyleSheet("font-weight: normal;");
 		if(rb->isChecked())
 		{
-			_settings->set<Set::Icon_Theme>(key);
+			SetSetting(Set::Icon_Theme, key);
 			rb->setStyleSheet("font-weight: bold;");
 			m->original_theme = rb->data();
 
@@ -161,7 +161,7 @@ bool GUI_IconPreferences::commit()
 
 	bool force_std_icons = ui->cb_force_in_dark_theme->isChecked();
 	Gui::Icons::force_standard_icons(force_std_icons);
-	_settings->set<Set::Icon_ForceInDarkTheme>(force_std_icons);
+	SetSetting(Set::Icon_ForceInDarkTheme, force_std_icons);
 
 	return true;
 }
@@ -180,7 +180,7 @@ void GUI_IconPreferences::revert()
 		rb->setChecked(key.compare(m->original_theme) == 0);
 	}
 
-	ui->cb_force_in_dark_theme->setChecked(_settings->get<Set::Icon_ForceInDarkTheme>());
+	ui->cb_force_in_dark_theme->setChecked(GetSetting(Set::Icon_ForceInDarkTheme));
 
 	QIcon::setThemeName(m->original_theme);
 }

@@ -55,20 +55,20 @@ bool GUI_BroadcastSetup::commit()
 	bool new_prompt = ui->cb_prompt->isChecked();
 	int new_port = ui->sb_port->value();
 
-	bool old_active = _settings->get<Set::Broadcast_Active>();
-	bool old_prompt = _settings->get<Set::Broadcast_Prompt>();
-	int old_port = _settings->get<Set::Broadcast_Port>();
+	bool old_active = GetSetting(Set::Broadcast_Active);
+	bool old_prompt = GetSetting(Set::Broadcast_Prompt);
+	int old_port = GetSetting(Set::Broadcast_Port);
 
 	if(old_active != new_active){
-		_settings->set<Set::Broadcast_Active>(new_active);
+		SetSetting(Set::Broadcast_Active, new_active);
 	}
 
 	if(old_prompt != new_prompt){
-		_settings->set<Set::Broadcast_Prompt>(new_prompt);
+		SetSetting(Set::Broadcast_Prompt, new_prompt);
 	}
 
 	if(old_port != new_port){
-		_settings->set<Set::Broadcast_Port>(new_port);
+		SetSetting(Set::Broadcast_Port, new_port);
 	}
 
 	return true;
@@ -77,11 +77,11 @@ bool GUI_BroadcastSetup::commit()
 
 void GUI_BroadcastSetup::revert()
 {
-	bool active = _settings->get<Set::Broadcast_Active>();
+	bool active = GetSetting(Set::Broadcast_Active);
 
 	ui->cb_active->setChecked( active );
-	ui->cb_prompt->setChecked( _settings->get<Set::Broadcast_Prompt>() );
-	ui->sb_port->setValue( _settings->get<Set::Broadcast_Port>() );
+	ui->cb_prompt->setChecked( GetSetting(Set::Broadcast_Prompt) );
+	ui->sb_port->setValue( GetSetting(Set::Broadcast_Port) );
 	ui->le_url->setVisible(active);
 	ui->lab_url_title->setVisible(active);
 

@@ -54,7 +54,7 @@ GUI_Broadcast::GUI_Broadcast(QWidget *parent) :
 {
 	m = Pimpl::make<GUI_Broadcast::Private>();
 
-	Set::listen<Set::Broadcast_Active>(this, &GUI_Broadcast::start_server);
+	ListenSetting(Set::Broadcast_Active, GUI_Broadcast::start_server);
 }
 
 
@@ -87,7 +87,8 @@ void GUI_Broadcast::retranslate_ui()
 	set_status_label();
 	ui->btn_retry->setText(Lang::get(Lang::Retry));
 
-	if(m->action_dismiss){
+	if(m->action_dismiss)
+	{
 		m->action_dismiss->setText(tr("Dismiss"));
 		m->action_dismiss_all->setText(tr("Dismiss all"));
 	}
@@ -119,7 +120,7 @@ void GUI_Broadcast::init_ui()
 	set_status_label();
 	retranslate_ui();
 
-	Set::listen<SetNoDB::MP3enc_found>(this, &GUI_Broadcast::mp3_enc_found);
+	ListenSetting(SetNoDB::MP3enc_found, GUI_Broadcast::mp3_enc_found);
 }
 
 
@@ -198,7 +199,7 @@ void GUI_Broadcast::can_listen_changed(bool success)
 	ui->btn_retry->setVisible(!success);
 
 	if(!success){
-		QString msg = tr("Cannot broadcast on port %1").arg(_settings->get<Set::Broadcast_Port>());
+		QString msg = tr("Cannot broadcast on port %1").arg(GetSetting(Set::Broadcast_Port));
 		msg += "\n" + tr("Maybe another application is using this port?");
 
 		Message::warning(msg);
@@ -295,7 +296,7 @@ void GUI_Broadcast::update_dismiss_buttons()
 
 void GUI_Broadcast::start_server()
 {
-	bool enabled = _settings->get<Set::Broadcast_Active>();
+	bool enabled = GetSetting(Set::Broadcast_Active);
 	if(enabled && !m->server)
 	{
 		m->server = new StreamServer(this);
@@ -312,7 +313,7 @@ void GUI_Broadcast::mp3_enc_found()
 		return;
 	}
 
-	bool active = _settings->get<SetNoDB::MP3enc_found>();
+	bool active = GetSetting(SetNoDB::MP3enc_found);
 	if(!active)
 	{
 		ui->combo_clients->hide();

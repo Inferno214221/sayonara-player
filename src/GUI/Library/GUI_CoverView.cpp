@@ -54,18 +54,18 @@ void GUI_CoverView::init(LocalLibrary* library)
 
 	ui->tb_view->init(library);
 
-	ui->topbar->setVisible(_settings->get<Set::Lib_CoverShowUtils>());
-	ui->cb_show_artist->setChecked(_settings->get<Set::Lib_CoverShowArtist>());
+	ui->topbar->setVisible(GetSetting(Set::Lib_CoverShowUtils));
+	ui->cb_show_artist->setChecked(GetSetting(Set::Lib_CoverShowArtist));
 
 	connect(ui->combo_sorting, combo_activated_int, this, &GUI_CoverView::combo_sorting_changed);
 	connect(ui->combo_zoom, combo_activated_int, this, &GUI_CoverView::combo_zoom_changed);
 	connect(ui->btn_close, &QPushButton::clicked, this, &GUI_CoverView::close_clicked);
 	connect(ui->cb_show_artist, &QCheckBox::toggled, this, &GUI_CoverView::show_artist_triggered);
 
-	Set::listen<Set::Lib_CoverShowUtils>(this, &GUI_CoverView::show_utils_changed, false);
-	Set::listen<Set::Lib_Sorting>(this, &GUI_CoverView::sortorder_changed, false);
-	Set::listen<Set::Lib_CoverZoom>(this, &GUI_CoverView::zoom_changed, false);
-	Set::listen<Set::Lib_CoverShowArtist>(this, &GUI_CoverView::show_artist_changed, false);
+	ListenSettingNoCall(Set::Lib_CoverShowUtils, GUI_CoverView::show_utils_changed);
+	ListenSettingNoCall(Set::Lib_Sorting, GUI_CoverView::sortorder_changed);
+	ListenSettingNoCall(Set::Lib_CoverZoom, GUI_CoverView::zoom_changed);
+	ListenSettingNoCall(Set::Lib_CoverShowArtist, GUI_CoverView::show_artist_changed);
 
 	init_sorting_actions();
 	init_zoom_actions();
@@ -115,7 +115,7 @@ void GUI_CoverView::combo_sorting_changed(int idx)
 
 void GUI_CoverView::sortorder_changed()
 {
-	Library::Sortings s = _settings->get<Set::Lib_Sorting>();
+	Library::Sortings s = GetSetting(Set::Lib_Sorting);
 	Library::SortOrder so = s.so_albums;
 
 	for(int i=0; i<ui->combo_sorting->count(); i++)
@@ -131,14 +131,14 @@ void GUI_CoverView::sortorder_changed()
 
 void GUI_CoverView::show_artist_triggered(bool b)
 {
-	_settings->set<Set::Lib_CoverShowArtist>(b);
+	SetSetting(Set::Lib_CoverShowArtist, b);
 	ui->tb_view->reload();
 }
 
 
 void GUI_CoverView::show_artist_changed()
 {
-	bool b = _settings->get<Set::Lib_CoverShowArtist>();
+	bool b = GetSetting(Set::Lib_CoverShowArtist);
 	ui->cb_show_artist->setChecked(b);
 }
 
@@ -160,13 +160,13 @@ void GUI_CoverView::combo_zoom_changed(int idx)
 	Q_UNUSED(idx)
 
 	int zoom = ui->combo_zoom->currentData().toInt();
-	_settings->set<Set::Lib_CoverZoom>(zoom);
+	SetSetting(Set::Lib_CoverZoom, zoom);
 	ui->tb_view->change_zoom(zoom);
 }
 
 void GUI_CoverView::close_clicked()
 {
-	_settings->set<Set::Lib_CoverShowUtils>(false);
+	SetSetting(Set::Lib_CoverShowUtils, false);
 }
 
 
@@ -174,7 +174,7 @@ void GUI_CoverView::zoom_changed()
 {
 	QStringList zoom_actions = CoverView::zoom_actions();
 
-	int zoom = _settings->get<Set::Lib_CoverZoom>();
+	int zoom = GetSetting(Set::Lib_CoverZoom);
 	int idx = ::Util::indexOf(zoom_actions, [zoom](const QString& str){
 		return (str == QString::number(zoom));
 	});
@@ -186,7 +186,7 @@ void GUI_CoverView::zoom_changed()
 
 void GUI_CoverView::show_utils_changed()
 {
-	bool b = _settings->get<Set::Lib_CoverShowUtils>();
+	bool b = GetSetting(Set::Lib_CoverShowUtils);
 	ui->topbar->setVisible(b);
 }
 

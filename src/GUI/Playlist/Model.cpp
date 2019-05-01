@@ -84,7 +84,7 @@ PlaylistItemModel::PlaylistItemModel(PlaylistPtr pl, QObject* parent) :
 
 	connect(m->pl.get(), &Playlist::Base::sig_items_changed, this, &PlaylistItemModel::playlist_changed);
 
-	Set::listen<Set::PL_EntryLook>(this, &PlaylistItemModel::look_changed, false);
+	ListenSettingNoCall(Set::PL_EntryLook, PlaylistItemModel::look_changed);
 
 	playlist_changed(0);
 }
@@ -147,9 +147,8 @@ QVariant PlaylistItemModel::data(const QModelIndex& index, int role) const
 
 	else if(role == Qt::FontRole)
 	{
-		Settings* s = Settings::instance();
 		QFont f = Gui::Util::main_window()->font();
-		int point_size = s->get<Set::PL_FontSize>();
+		int point_size = GetSetting(Set::PL_FontSize);
 		if(point_size > 0){
 			f.setPointSize(point_size);
 		}

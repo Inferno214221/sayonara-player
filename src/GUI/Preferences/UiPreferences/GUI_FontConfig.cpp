@@ -155,25 +155,25 @@ bool GUI_FontConfig::commit()
 	int font_size;
 
 	font_size = ui->combo_sizes->currentText().toInt(&ok);
-	_settings->set<Set::Player_FontName>(ui->combo_fonts->currentText());
+	SetSetting(Set::Player_FontName, ui->combo_fonts->currentText());
 
 	if(ok){
-		_settings->set<Set::Player_FontSize>(font_size);
+		SetSetting(Set::Player_FontSize, font_size);
 	}
 
 	font_size = ui->combo_lib_size->currentText().toInt(&ok);
 	if(!ok){
 		font_size = -1;
 	}
-	_settings->set<Set::Lib_FontSize>(font_size);
 
+	SetSetting(Set::Lib_FontSize, font_size);
 	font_size = ui->combo_pl_size->currentText().toInt(&ok);
 	if(!ok){
 		font_size = -1;
 	}
 
-	_settings->set<Set::PL_FontSize>(font_size);
-	_settings->set<Set::Lib_FontBold>(ui->cb_lib_bold->isChecked());
+	SetSetting(Set::PL_FontSize, font_size);
+	SetSetting(Set::Lib_FontBold, ui->cb_lib_bold->isChecked());
 
 	m->cur_font_size = font_size;
 
@@ -187,11 +187,11 @@ void GUI_FontConfig::revert()
 		return;
 	}
 
-	QString cur_family = _settings->get<Set::Player_FontName>();
-	int cur_font_size = _settings->get<Set::Player_FontSize>();
-	int cur_pl_font_size = _settings->get<Set::PL_FontSize>();
-	int cur_lib_font_size = _settings->get<Set::Lib_FontSize>();
-	bool bold = _settings->get<Set::Lib_FontBold>();
+	QString cur_family = GetSetting(Set::Player_FontName);
+	int cur_font_size = GetSetting(Set::Player_FontSize);
+	int cur_pl_font_size = GetSetting(Set::PL_FontSize);
+	int cur_lib_font_size = GetSetting(Set::Lib_FontSize);
+	bool bold = GetSetting(Set::Lib_FontBold);
 
 
 	int idx = ui->combo_fonts->findText(cur_family);

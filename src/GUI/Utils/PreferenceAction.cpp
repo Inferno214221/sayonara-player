@@ -46,7 +46,7 @@ PreferenceAction::PreferenceAction(const QString& text, const QString& identifie
 		PreferenceRegistry::instance()->show_preference(this->identifier());
 	});
 
-	Set::listen<Set::Player_Language>(this, &PreferenceAction::language_changed, false);
+	ListenSettingNoCall(Set::Player_Language, PreferenceAction::language_changed);
 }
 
 PreferenceAction::~PreferenceAction() {}

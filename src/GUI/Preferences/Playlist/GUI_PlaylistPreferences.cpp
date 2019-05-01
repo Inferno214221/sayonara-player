@@ -112,21 +112,21 @@ GUI_PlaylistPreferences::~GUI_PlaylistPreferences()
 
 bool GUI_PlaylistPreferences::commit()
 {
-	_settings->set<Set::PL_LoadSavedPlaylists>(ui->cb_load_saved_playlists->isChecked() );
-	_settings->set<Set::PL_LoadTemporaryPlaylists>(ui->cb_load_temporary_playlists->isChecked() );
-	_settings->set<Set::PL_LoadLastTrack>((ui->cb_load_last_track->isChecked() && ui->cb_load_last_track->isEnabled()) );
-	_settings->set<Set::PL_RememberTime>((ui->cb_remember_time->isChecked() && ui->cb_remember_time->isEnabled()) );
-	_settings->set<Set::PL_StartPlaying>((ui->cb_start_playing->isChecked() && ui->cb_start_playing->isEnabled()) );
+	SetSetting(Set::PL_LoadSavedPlaylists, ui->cb_load_saved_playlists->isChecked() );
+	SetSetting(Set::PL_LoadTemporaryPlaylists, ui->cb_load_temporary_playlists->isChecked() );
+	SetSetting(Set::PL_LoadLastTrack, (ui->cb_load_last_track->isChecked() && ui->cb_load_last_track->isEnabled()) );
+	SetSetting(Set::PL_RememberTime, (ui->cb_remember_time->isChecked() && ui->cb_remember_time->isEnabled()) );
+	SetSetting(Set::PL_StartPlaying, (ui->cb_start_playing->isChecked() && ui->cb_start_playing->isEnabled()) );
 
-	_settings->set<Set::PL_ShowNumbers>(ui->cb_show_numbers->isChecked());
-	_settings->set<Set::PL_ShowCovers>(ui->cb_show_covers->isChecked());
-	_settings->set<Set::PL_ShowRating>(ui->cb_show_rating->isChecked());
+	SetSetting(Set::PL_ShowNumbers, ui->cb_show_numbers->isChecked());
+	SetSetting(Set::PL_ShowCovers, ui->cb_show_covers->isChecked());
+	SetSetting(Set::PL_ShowRating, ui->cb_show_rating->isChecked());
 
-	_settings->set<Set::PL_ShowClearButton>(ui->cb_show_clear_button->isChecked());
-	_settings->set<Set::PL_RememberTrackAfterStop>(ui->cb_remember_after_stop->isChecked());
+	SetSetting(Set::PL_ShowClearButton, ui->cb_show_clear_button->isChecked());
+	SetSetting(Set::PL_RememberTrackAfterStop, ui->cb_remember_after_stop->isChecked());
 
 	if(evaluate_expression(ui->le_expression->text())){
-		_settings->set<Set::PL_EntryLook>(ui->le_expression->text());
+		SetSetting(Set::PL_EntryLook, ui->le_expression->text());
 		return true;
 	}
 
@@ -137,11 +137,11 @@ void GUI_PlaylistPreferences::revert()
 {
 	bool load_saved_playlists, load_temporary_playlists, load_last_track, remember_time, start_playing;
 
-	load_saved_playlists = _settings->get<Set::PL_LoadSavedPlaylists>();
-	load_temporary_playlists = _settings->get<Set::PL_LoadTemporaryPlaylists>();
-	load_last_track = _settings->get<Set::PL_LoadLastTrack>();
-	remember_time = _settings->get<Set::PL_RememberTime>();
-	start_playing = _settings->get<Set::PL_StartPlaying>();
+	load_saved_playlists = GetSetting(Set::PL_LoadSavedPlaylists);
+	load_temporary_playlists = GetSetting(Set::PL_LoadTemporaryPlaylists);
+	load_last_track = GetSetting(Set::PL_LoadLastTrack);
+	remember_time = GetSetting(Set::PL_RememberTime);
+	start_playing = GetSetting(Set::PL_StartPlaying);
 
 	ui->cb_load_saved_playlists->setChecked(load_saved_playlists);
 	ui->cb_load_temporary_playlists->setChecked(load_temporary_playlists);
@@ -149,12 +149,12 @@ void GUI_PlaylistPreferences::revert()
 	ui->cb_remember_time->setChecked(remember_time);
 	ui->cb_start_playing->setChecked(start_playing);
 
-	ui->le_expression->setText(_settings->get<Set::PL_EntryLook>());
-	ui->cb_show_numbers->setChecked(_settings->get<Set::PL_ShowNumbers>());
-	ui->cb_show_covers->setChecked(_settings->get<Set::PL_ShowCovers>());
-	ui->cb_show_rating->setChecked(_settings->get<Set::PL_ShowRating>());
-	ui->cb_show_clear_button->setChecked(_settings->get<Set::PL_ShowClearButton>());
-	ui->cb_remember_after_stop->setChecked(_settings->get<Set::PL_RememberTrackAfterStop>());
+	ui->le_expression->setText(GetSetting(Set::PL_EntryLook));
+	ui->cb_show_numbers->setChecked(GetSetting(Set::PL_ShowNumbers));
+	ui->cb_show_covers->setChecked(GetSetting(Set::PL_ShowCovers));
+	ui->cb_show_rating->setChecked(GetSetting(Set::PL_ShowRating));
+	ui->cb_show_clear_button->setChecked(GetSetting(Set::PL_ShowClearButton));
+	ui->cb_remember_after_stop->setChecked(GetSetting(Set::PL_RememberTrackAfterStop));
 }
 
 

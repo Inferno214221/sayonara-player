@@ -76,20 +76,20 @@ void GUI_AudioConverter::init_ui()
 {
 	setup_parent(this, &ui);
 
-	QString preferred_converter = _settings->get<Set::AudioConvert_PreferredConverter>();
+	QString preferred_converter = GetSetting(Set::AudioConvert_PreferredConverter);
 	int idx = std::max(ui->combo_codecs->findText(preferred_converter), 0);
 
 	ui->combo_codecs->setCurrentIndex(idx);
 	ui->sw_preferences->setCurrentIndex(idx);
 
 	ui->sw_progress->setCurrentIndex(0);
-	ui->sb_threads->setValue(_settings->get<Set::AudioConvert_NumberThreads>());
+	ui->sb_threads->setValue(GetSetting(Set::AudioConvert_NumberThreads));
 
-	int lame_cbr = _settings->get<Set::AudioConvert_QualityLameCBR>();
+	int lame_cbr = GetSetting(Set::AudioConvert_QualityLameCBR);
 	ui->combo_cbr->setCurrentIndex(ui->combo_cbr->findText(QString::number(lame_cbr)));
 
-	ui->sb_lame_vbr->setValue(_settings->get<Set::AudioConvert_QualityLameVBR>());
-	ui->sb_ogg_quality->setValue(_settings->get<Set::AudioConvert_QualityOgg>());
+	ui->sb_lame_vbr->setValue(GetSetting(Set::AudioConvert_QualityLameVBR));
+	ui->sb_ogg_quality->setValue(GetSetting(Set::AudioConvert_QualityOgg));
 
 	connect(ui->btn_start, &QPushButton::clicked, this, &GUI_AudioConverter::btn_start_clicked);
 	connect(ui->combo_codecs, combo_activated_int, this, &GUI_AudioConverter::combo_codecs_changed);
@@ -132,7 +132,7 @@ void GUI_AudioConverter::btn_start_clicked()
 		return;
 	}
 
-	int n_threads = _settings->get<Set::AudioConvert_NumberThreads>();
+	int n_threads = GetSetting(Set::AudioConvert_NumberThreads);
 
 	PlaylistConstPtr pl = Playlist::Handler::instance()->playlist(Playlist::Handler::instance()->current_index());
 	MetaDataList v_md = pl->metadata();
@@ -181,13 +181,13 @@ void GUI_AudioConverter::btn_start_clicked()
 
 	QString dir;
 	{ // set target dir
-		QString cvt_target_path = _settings->get<Set::Engine_CovertTargetPath>();
+		QString cvt_target_path = GetSetting(Set::Engine_CovertTargetPath);
 		dir = QFileDialog::getExistingDirectory(this, "Choose target directory", cvt_target_path);
 		if(dir.isEmpty()){
 			converter->deleteLater();
 			return;
 		}
-		_settings->set<Set::Engine_CovertTargetPath>(dir);
+		SetSetting(Set::Engine_CovertTargetPath, dir);
 	}
 
 	connect(converter, &OggConverter::sig_finished, this, &GUI_AudioConverter::convert_finished);
@@ -232,7 +232,7 @@ void GUI_AudioConverter::combo_codecs_changed(int idx)
 	ui->sw_preferences->setCurrentIndex(idx);
 
 	QString text = ui->combo_codecs->currentText();
-	_settings->set<Set::AudioConvert_PreferredConverter>(text);
+	SetSetting(Set::AudioConvert_PreferredConverter, text);
 
 	check_start_button();
 }
@@ -244,7 +244,7 @@ void GUI_AudioConverter::reset_buttons()
 
 void GUI_AudioConverter::num_threads_changed(int value)
 {
-	_settings->set<Set::AudioConvert_NumberThreads>(value);
+	SetSetting(Set::AudioConvert_NumberThreads, value);
 }
 
 void GUI_AudioConverter::check_start_button()
@@ -285,17 +285,17 @@ Converter* GUI_AudioConverter::create_converter()
 
 void GUI_AudioConverter::ogg_quality_changed(int value)
 {
-	_settings->set<Set::AudioConvert_QualityOgg>(value);
+	SetSetting(Set::AudioConvert_QualityOgg, value);
 }
 
 void GUI_AudioConverter::lame_vbr_changed(int value)
 {
-	_settings->set<Set::AudioConvert_QualityLameVBR>(value);
+	SetSetting(Set::AudioConvert_QualityLameVBR, value);
 }
 
 void GUI_AudioConverter::combo_cbr_lame_changed(int idx)
 {
 	Q_UNUSED(idx)
-	_settings->set<Set::AudioConvert_QualityLameCBR>(ui->combo_cbr->currentText().toInt());
+	SetSetting(Set::AudioConvert_QualityLameCBR, ui->combo_cbr->currentText().toInt());
 }
 

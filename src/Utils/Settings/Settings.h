@@ -28,6 +28,11 @@
 
 #include <array>
 
+#define GetSetting(x) Settings::instance()->get<x>()
+#define SetSetting(x, y) Settings::instance()->set<x>(y)
+#define ListenSetting(x, y) Set::listen<x>(this, &y)
+#define ListenSettingNoCall(x, y) Set::listen<x>(this, &y, false)
+
 using SettingArray=std::array<AbstrSetting*, static_cast<unsigned int>(SettingKey::Num_Setting_Keys)>;
 
 /**

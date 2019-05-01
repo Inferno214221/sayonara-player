@@ -410,14 +410,14 @@ void ItemView::reload_clicked() { emit sig_reload_clicked(); }
 
 void ItemView::cover_view_toggled()
 {
-	bool b = _settings->get<Set::Lib_ShowAlbumCovers>();
-	_settings->set<Set::Lib_ShowAlbumCovers>(!b);
+	bool b = GetSetting(Set::Lib_ShowAlbumCovers);
+	SetSetting(Set::Lib_ShowAlbumCovers, !b);
 }
 
 void ItemView::album_artists_toggled()
 {
-	bool b = _settings->get<Set::Lib_ShowAlbumArtists>();
-	_settings->set<Set::Lib_ShowAlbumArtists>(!b);
+	bool b = GetSetting(Set::Lib_ShowAlbumArtists);
+	SetSetting(Set::Lib_ShowAlbumArtists, !b);
 }
 
 void ItemView::filter_extensions_triggered(const QString& extension, bool b)

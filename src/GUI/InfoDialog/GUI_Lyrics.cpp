@@ -87,7 +87,7 @@ void GUI_Lyrics::init()
 	m->loading_bar->set_position(ProgressBar::Position::Bottom);
 	m->loading_bar->setVisible(false);
 
-	QString server = _settings->get<Set::Lyrics_Server>();
+	QString server = GetSetting(Set::Lyrics_Server);
 	QStringList servers = m->lyrics->servers();
 
 	ui->combo_servers->addItems(servers);
@@ -100,7 +100,7 @@ void GUI_Lyrics::init()
 	ui->le_artist->setText(m->lyrics->artist());
 	ui->le_title->setText(m->lyrics->title());
 
-	int zoom_factor = _settings->get<Set::Lyrics_Zoom>();
+	int zoom_factor = GetSetting(Set::Lyrics_Zoom);
 	m->font_size = QApplication::font().pointSizeF();
 	m->initial_font_size = QApplication::font().pointSizeF();
 	ui->sb_zoom->setValue(zoom_factor);
@@ -131,7 +131,7 @@ void GUI_Lyrics::lyric_server_changed(int idx)
 	Q_UNUSED(idx)
 
 	if(ui->combo_servers->currentData().toInt() >= 0) {
-		_settings->set<Set::Lyrics_Server>(ui->combo_servers->currentText());
+		SetSetting(Set::Lyrics_Server, ui->combo_servers->currentText());
 	}
 
 	prepare_lyrics();
@@ -248,7 +248,7 @@ void GUI_Lyrics::zoom(qreal font_size)
 	m->font_size = std::max(5.0, font_size);
 
 	ui->te_lyrics->setStyleSheet("font-size: " + QString::number(m->font_size) + "pt;");
-	_settings->set<Set::Lyrics_Zoom>(ui->sb_zoom->value());
+	SetSetting(Set::Lyrics_Zoom, ui->sb_zoom->value());
 }
 
 void GUI_Lyrics::setup_sources()
@@ -274,7 +274,7 @@ void GUI_Lyrics::choose_source()
 
 	if(!m->lyrics->is_lyric_tag_available())
 	{
-		QString last_server = _settings->get<Set::Lyrics_Server>();
+		QString last_server = GetSetting(Set::Lyrics_Server);
 		new_index = std::max(0, ui->combo_servers->findText(last_server));
 	}
 

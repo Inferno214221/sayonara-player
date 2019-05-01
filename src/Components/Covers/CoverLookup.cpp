@@ -236,7 +236,7 @@ bool Lookup::fetch_from_www()
 {
 	Cover::Location cl = m->cl;
 
-	bool fetch_from_www_allowed = Settings::instance()->get<Set::Cover_FetchFromWWW>();
+	bool fetch_from_www_allowed = GetSetting(Set::Cover_FetchFromWWW);
 	if(fetch_from_www_allowed)
 	{
 		sp_log(Log::Debug, this) << "Start new thread for " << cl.identifer();

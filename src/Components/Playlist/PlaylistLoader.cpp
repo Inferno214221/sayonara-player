@@ -53,16 +53,16 @@ Loader::Loader(QObject* parent) :
 
 	bool success=false;
 
-	bool load_playlists = (_settings->get<Set::PL_LoadSavedPlaylists>() || _settings->get<Set::PL_LoadTemporaryPlaylists>());
-	bool load_temporary_playlists = _settings->get<Set::PL_LoadTemporaryPlaylists>();
-	bool load_saved_playlists = _settings->get<Set::PL_LoadSavedPlaylists>();
-	bool load_last_track = _settings->get<Set::PL_LoadLastTrack>();
-	int saved_playlist_id = _settings->get<Set::PL_LastPlaylist>();
-	int saved_track_idx = _settings->get<Set::PL_LastTrack>();
+	bool load_playlists = (GetSetting(Set::PL_LoadSavedPlaylists) || GetSetting(Set::PL_LoadTemporaryPlaylists));
+	bool load_temporary_playlists = GetSetting(Set::PL_LoadTemporaryPlaylists);
+	bool load_saved_playlists = GetSetting(Set::PL_LoadSavedPlaylists);
+	bool load_last_track = GetSetting(Set::PL_LoadLastTrack);
+	int saved_playlist_id = GetSetting(Set::PL_LastPlaylist);
+	int saved_track_idx = GetSetting(Set::PL_LastTrack);
 
-	bool load_last_track_before_stop = _settings->get<Set::PL_RememberTrackAfterStop>();
+	bool load_last_track_before_stop = GetSetting(Set::PL_RememberTrackAfterStop);
 	if(saved_track_idx == -1 && load_last_track_before_stop){
-		saved_track_idx = _settings->get<Set::PL_LastTrackBeforeStop>();
+		saved_track_idx = GetSetting(Set::PL_LastTrackBeforeStop);
 	}
 
 	// we don't load any playlists

@@ -34,10 +34,8 @@ EqualizerHandler::~EqualizerHandler() {}
 
 void EqualizerHandler::init_equalizer()
 {
-	Settings* settings = Settings::instance();
-
-	int last_idx = settings->get<Set::Eq_Last>();
-	QList<EQ_Setting> presets = settings->get<Set::Eq_List>();
+	int last_idx = GetSetting(Set::Eq_Last);
+	QList<EQ_Setting> presets = GetSetting(Set::Eq_List);
 	presets.push_front(EQ_Setting());
 
 	if( !between(last_idx, presets)){

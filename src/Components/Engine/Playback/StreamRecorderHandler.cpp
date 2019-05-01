@@ -29,16 +29,13 @@ using Pipeline::StreamRecorderHandler;
 
 struct StreamRecorderHandler::Private
 {
-	Settings*			settings=nullptr;
 	QString				sr_path;
 	bool				run_sr;
 	StreamRecorder::Data* sr_data=nullptr;
 
 	Private() :
 		sr_data(new StreamRecorder::Data())
-	{
-		settings = Settings::instance();
-	}
+	{}
 
 	~Private()
 	{

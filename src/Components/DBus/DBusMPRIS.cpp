@@ -139,7 +139,7 @@ struct DBusMPRIS::MediaPlayer2::Private
 		auto playlist = plh->active_playlist();
 
 		play_manager = PlayManager::instance();
-		volume = Settings::instance()->get<Set::Engine_Vol>() / 100.0;
+		volume = GetSetting(Set::Engine_Vol) / 100.0;
 
 		if(playlist)
 		{
@@ -264,13 +264,13 @@ bool DBusMPRIS::MediaPlayer2::CanSetFullscreen()
 
 bool DBusMPRIS::MediaPlayer2::Fullscreen()
 {
-	return _settings->get<Set::Player_Fullscreen>();
+	return GetSetting(Set::Player_Fullscreen);
 }
 
 
 void DBusMPRIS::MediaPlayer2::SetFullscreen(bool b)
 {
-	_settings->set<Set::Player_Fullscreen>(b);
+	SetSetting(Set::Player_Fullscreen, b);
 }
 
 

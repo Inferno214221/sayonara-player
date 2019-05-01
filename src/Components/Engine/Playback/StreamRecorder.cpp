@@ -103,7 +103,7 @@ void SR::StreamRecorder::new_session()
 
 QString SR::StreamRecorder::change_track(const MetaData& md)
 {
-	QString sr_path = _settings->get<Set::Engine_SR_Path>();
+	QString sr_path = GetSetting(Set::Engine_SR_Path);
 
 	if(!m->recording){
 		return "";
@@ -133,8 +133,8 @@ QString SR::StreamRecorder::change_track(const MetaData& md)
 	m->md.track_num = m->cur_idx;
 
 	int i;
-	QString target_path_template = _settings->get<Set::Engine_SR_SessionPathTemplate>();
-	bool use_session_path = _settings->get<Set::Engine_SR_SessionPath>();
+	QString target_path_template = GetSetting(Set::Engine_SR_SessionPathTemplate);
+	bool use_session_path = GetSetting(Set::Engine_SR_SessionPath);
 	bool valid = (Utils::validate_template(target_path_template, &i) == Utils::ErrorCode::OK);
 
 	if(!use_session_path || !valid)

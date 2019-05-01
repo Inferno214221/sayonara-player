@@ -48,9 +48,9 @@ void GUI_Speed::init_ui()
 {
 	setup_parent(this, &ui);
 
-	bool active = _settings->get<Set::Engine_SpeedActive>();
-	float speed = _settings->get<Set::Engine_Speed>() * 1.0f;
-	int pitch = _settings->get<Set::Engine_Pitch>() * 10;
+	bool active = GetSetting(Set::Engine_SpeedActive);
+	float speed = GetSetting(Set::Engine_Speed) * 1.0f;
+	int pitch = GetSetting(Set::Engine_Pitch) * 10;
 
 	active_changed(active);
 
@@ -59,7 +59,7 @@ void GUI_Speed::init_ui()
 
 	speed_changed(speed * 100);
 
-	ui->cb_preserve_pitch->setChecked( _settings->get<Set::Engine_PreservePitch>());
+	ui->cb_preserve_pitch->setChecked( GetSetting(Set::Engine_PreservePitch));
 
 	ui->sli_pitch->setValue(pitch);
 	ui->sli_pitch->setMouseTracking(true);
@@ -103,7 +103,7 @@ void GUI_Speed::init_ui()
 	connect(ui->sli_speed, &Gui::Slider::sig_slider_hovered, this, &GUI_Speed::speed_hovered);
 	connect(ui->sli_pitch, &Gui::Slider::sig_slider_hovered, this, &GUI_Speed::pitch_hovered);
 
-	Set::listen<SetNoDB::Pitch_found>(this, &GUI_Speed::_sl_pitch_found_changed);
+	ListenSetting(SetNoDB::Pitch_found, GUI_Speed::_sl_pitch_found_changed);
 }
 
 
@@ -123,7 +123,7 @@ void GUI_Speed::speed_changed(int val)
 	float val_f = val / 100.0f;
 
 	ui->btn_speed->setText(QString::number(val_f, 'f', 2));
-	_settings->set<Set::Engine_Speed>(ui->sli_speed->value() / 100.0f);
+	SetSetting(Set::Engine_Speed, ui->sli_speed->value() / 100.0f);
 }
 
 
@@ -137,18 +137,18 @@ void GUI_Speed::active_changed(bool active)
 	ui->cb_preserve_pitch->setEnabled(active);
 	ui->btn_pitch->setEnabled(active);
 
-	_settings->set<Set::Engine_SpeedActive>(active);
+	SetSetting(Set::Engine_SpeedActive, active);
 }
 
 void GUI_Speed::preserve_pitch_changed(bool enabled)
 {
-	_settings->set<Set::Engine_PreservePitch>(enabled);
+	SetSetting(Set::Engine_PreservePitch, enabled);
 }
 
 void GUI_Speed::pitch_changed(int pitch)
 {
 	pitch = pitch / 10;
-	_settings->set<Set::Engine_Pitch>(pitch);
+	SetSetting(Set::Engine_Pitch, pitch);
 	ui->btn_pitch->setText(QString::number(pitch) + " Hz");
 }
 
@@ -174,7 +174,7 @@ void GUI_Speed::speed_hovered(int val)
 
 void GUI_Speed::_sl_pitch_found_changed()
 {
-	bool pitch_found = _settings->get<SetNoDB::Pitch_found>();
+	bool pitch_found = GetSetting(SetNoDB::Pitch_found);
 	if(!pitch_found){
 		ui->cb_active->setChecked(false);
 		active_changed(false);

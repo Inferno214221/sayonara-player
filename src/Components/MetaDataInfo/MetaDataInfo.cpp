@@ -441,7 +441,7 @@ QString MetaDataInfo::pathsstring() const
 
 QStringList MetaDataInfo::paths() const
 {
-	bool dark = (Settings::instance()->get<Set::Player_Style>() == 1);
+	bool dark = (GetSetting(Set::Player_Style) == 1);
 	QStringList ret;
 	QList<Library::Info> lib_infos = Library::Manager::instance()->all_libraries();
 	QStringList lib_paths;

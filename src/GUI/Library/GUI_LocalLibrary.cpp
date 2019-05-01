@@ -145,8 +145,8 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 
 	setAcceptDrops(true);
 
-	Set::listen<Set::Lib_ShowAlbumCovers>(this, &GUI_LocalLibrary::switch_album_view);
-	Set::listen<Set::Lib_ShowFilterExtBar>(this, &GUI_LocalLibrary::tracks_loaded);
+	ListenSetting(Set::Lib_ShowAlbumCovers, GUI_LocalLibrary::switch_album_view);
+	ListenSetting(Set::Lib_ShowFilterExtBar, GUI_LocalLibrary::tracks_loaded);
 
 	ui->sw_status->setVisible(false);
 
@@ -198,7 +198,7 @@ void GUI_LocalLibrary::check_status_bar(bool is_reloading)
 
 		m->extension_buttons.clear();
 
-		if(!_settings->get<Set::Lib_ShowFilterExtBar>()) {
+		if(!GetSetting(Set::Lib_ShowFilterExtBar)) {
 			return;
 		}
 
@@ -246,7 +246,7 @@ void GUI_LocalLibrary::extension_button_toggled(bool b)
 
 void GUI_LocalLibrary::close_extensions_clicked()
 {
-	_settings->set<Set::Lib_ShowFilterExtBar>(false);
+	SetSetting(Set::Lib_ShowFilterExtBar, false);
 }
 
 
@@ -431,7 +431,7 @@ void GUI_LocalLibrary::splitter_artist_moved(int pos, int idx)
 	Q_UNUSED(pos) Q_UNUSED(idx)
 
 	QByteArray arr = ui->splitter_artist_album->saveState();
-	_settings->set<Set::Lib_SplitterStateArtist>(arr);
+	SetSetting(Set::Lib_SplitterStateArtist, arr);
 }
 
 void GUI_LocalLibrary::splitter_tracks_moved(int pos, int idx)
@@ -439,7 +439,7 @@ void GUI_LocalLibrary::splitter_tracks_moved(int pos, int idx)
 	Q_UNUSED(pos) Q_UNUSED(idx)
 
 	QByteArray arr = ui->splitter_tracks->saveState();
-	_settings->set<Set::Lib_SplitterStateTrack>(arr);
+	SetSetting(Set::Lib_SplitterStateTrack, arr);
 }
 
 void GUI_LocalLibrary::splitter_genre_moved(int pos, int idx)
@@ -447,13 +447,13 @@ void GUI_LocalLibrary::splitter_genre_moved(int pos, int idx)
 	Q_UNUSED(pos) Q_UNUSED(idx)
 
 	QByteArray arr = ui->splitter_genre->saveState();
-	_settings->set<Set::Lib_SplitterStateGenre>(arr);
+	SetSetting(Set::Lib_SplitterStateGenre, arr);
 }
 
 
 void GUI_LocalLibrary::switch_album_view()
 {
-	bool show_cover_view = _settings->get<Set::Lib_ShowAlbumCovers>();
+	bool show_cover_view = GetSetting(Set::Lib_ShowAlbumCovers);
 
 	if(!show_cover_view)
 	{
@@ -507,9 +507,9 @@ void GUI_LocalLibrary::showEvent(QShowEvent* e)
 	this->lv_artist()->resizeRowsToContents();
 	this->lv_tracks()->resizeRowsToContents();
 
-	QByteArray artist_splitter_state = _settings->get<Set::Lib_SplitterStateArtist>();
-	QByteArray track_splitter_state = _settings->get<Set::Lib_SplitterStateTrack>();
-	QByteArray genre_splitter_state = _settings->get<Set::Lib_SplitterStateGenre>();
+	QByteArray artist_splitter_state = GetSetting(Set::Lib_SplitterStateArtist);
+	QByteArray track_splitter_state = GetSetting(Set::Lib_SplitterStateTrack);
+	QByteArray genre_splitter_state = GetSetting(Set::Lib_SplitterStateGenre);
 
 	if(!artist_splitter_state.isEmpty()){
 		ui->splitter_artist_album->restoreState(artist_splitter_state);

@@ -106,7 +106,7 @@ GUI_AlternativeCovers::GUI_AlternativeCovers(QWidget* parent) :
 	QPushButton* pref_button = cpa->create_button(this);
 	pref_button->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
 	ui->layout_server->addWidget(pref_button);
-	ui->cb_autostart->setChecked(_settings->get<Set::Cover_StartSearch>());
+	ui->cb_autostart->setChecked(GetSetting(Set::Cover_StartSearch));
 
 	connect(ui->btn_ok, &QPushButton::clicked, this, &GUI_AlternativeCovers::ok_clicked);
 	connect(ui->btn_apply, &QPushButton::clicked, this, &GUI_AlternativeCovers::apply_clicked);
@@ -136,8 +136,8 @@ GUI_AlternativeCovers::GUI_AlternativeCovers(QWidget* parent) :
 		}
 	});
 
-	Set::listen<Set::Cover_Server>(this, &GUI_AlternativeCovers::servers_changed, false);
-	Set::listen<Set::Cover_FetchFromWWW>(this, &GUI_AlternativeCovers::www_active_changed);
+	ListenSettingNoCall(Set::Cover_Server, GUI_AlternativeCovers::servers_changed);
+	ListenSetting(Set::Cover_FetchFromWWW, GUI_AlternativeCovers::www_active_changed);
 }
 
 
@@ -167,14 +167,14 @@ void GUI_AlternativeCovers::start(const Location& cl)
 
 	init_combobox();
 
-	if(!_settings->get<Set::Cover_StartSearch>())
+	if(!GetSetting(Set::Cover_StartSearch))
 	{
 		this->show();
 	}
 
 	else
 	{
-//		if(!_settings->get<Set::Cover_FetchFromWWW>()){
+//		if(!GetSetting(Set::Cover_FetchFromWWW)){
 //			return;
 //		}
 
@@ -314,12 +314,12 @@ void GUI_AlternativeCovers::servers_changed()
 
 void GUI_AlternativeCovers::autostart_toggled(bool b)
 {
-	_settings->set<Set::Cover_StartSearch>(b);
+	SetSetting(Set::Cover_StartSearch, b);
 }
 
 void GUI_AlternativeCovers::www_active_changed()
 {
-	bool is_active = _settings->get<Set::Cover_FetchFromWWW>();
+	bool is_active = GetSetting(Set::Cover_FetchFromWWW);
 
 	ui->lab_websearch_disabled->setVisible(!is_active);
 	ui->btn_search->setVisible(is_active);

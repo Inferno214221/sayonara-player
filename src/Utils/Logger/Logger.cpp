@@ -84,7 +84,7 @@ struct Logger::Private
 		int logger_level = 0;
 
 		if(s->check_settings()){
-			logger_level = s->get<Set::Logger_Level>();
+			logger_level = GetSetting(Set::Logger_Level);
 		}
 
 		switch(type)

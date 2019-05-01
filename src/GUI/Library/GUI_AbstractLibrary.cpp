@@ -81,7 +81,7 @@ void GUI_AbstractLibrary::init()
 		connect(m->le_search, &SearchBar::sig_current_mode_changed, this, &GUI_AbstractLibrary::query_library);
 	}
 
-	Set::listen<Set::Lib_LiveSearch>(this, &GUI_AbstractLibrary::live_search_changed);
+	ListenSetting(Set::Lib_LiveSearch, GUI_AbstractLibrary::live_search_changed);
 }
 
 void GUI_AbstractLibrary::init_search_bar()
@@ -119,7 +119,7 @@ void GUI_AbstractLibrary::query_library()
 
 	Filter filter = m->library->filter();
 	filter.set_mode(current_mode);
-	filter.set_filtertext(text, _settings->get<Set::Lib_SearchMode>());
+	filter.set_filtertext(text, GetSetting(Set::Lib_SearchMode));
 
 	m->library->change_filter(filter);
 }
@@ -133,7 +133,7 @@ void GUI_AbstractLibrary::search_edited(const QString& search)
 {
 	Q_UNUSED(search)
 
-	if(_settings->get<Set::Lib_LiveSearch>())
+	if(GetSetting(Set::Lib_LiveSearch))
 	{
 		query_library();
 	}
@@ -198,7 +198,7 @@ void GUI_AbstractLibrary::show_delete_answer(QString answer)
 
 void GUI_AbstractLibrary::live_search_changed()
 {
-	if(_settings->get<Set::Lib_LiveSearch>()) {
+	if(GetSetting(Set::Lib_LiveSearch)) {
 		connect(m->le_search, &QLineEdit::textChanged, this, &GUI_AbstractLibrary::search_edited);
 	}
 

@@ -54,7 +54,7 @@ struct StreamServer::Private
 	Private()
 	{
 		asking = false;
-		current_port = Settings::instance()->get<Set::Broadcast_Port>();
+		current_port = GetSetting(Set::Broadcast_Port);
 	}
 };
 
@@ -71,9 +71,9 @@ StreamServer::StreamServer(QObject* parent) :
 	connect(play_manager, &PlayManager::sig_track_changed, this, &StreamServer::track_changed);
 	connect(engine, &Engine::Handler::destroyed, this, &StreamServer::close);
 
-	Set::listen<Set::Broadcast_Active>(this, &StreamServer::active_changed);
-	Set::listen<SetNoDB::MP3enc_found>(this, &StreamServer::active_changed);
-	Set::listen<Set::Broadcast_Port>(this, &StreamServer::port_changed);
+	ListenSetting(Set::Broadcast_Active, StreamServer::active_changed);
+	ListenSetting(SetNoDB::MP3enc_found, StreamServer::active_changed);
+	ListenSetting(Set::Broadcast_Port, StreamServer::port_changed);
 }
 
 StreamServer::~StreamServer()
@@ -96,11 +96,11 @@ StreamServer::~StreamServer()
 
 bool StreamServer::listen()
 {
-	int port = _settings->get<Set::Broadcast_Port>();
+	int port = GetSetting(Set::Broadcast_Port);
 	bool already_there = (m->server != nullptr);
 
-	bool mp3_available = _settings->get<SetNoDB::MP3enc_found>();
-	bool active = _settings->get<Set::Broadcast_Active>();
+	bool mp3_available = GetSetting(SetNoDB::MP3enc_found);
+	bool active = GetSetting(Set::Broadcast_Active);
 
 	if(!mp3_available || !active)
 	{
@@ -206,7 +206,7 @@ void StreamServer::new_client_request()
 		pending_socket = m->pending[0].first;
 		pending_ip = m->pending[0].second;
 
-		if( _settings->get<Set::Broadcast_Prompt>() )
+		if( GetSetting(Set::Broadcast_Prompt) )
 		{
 			if(!m->allowed_ips.contains(pending_ip))
 			{
@@ -341,8 +341,8 @@ void StreamServer::disconnected(StreamWriter* sw)
 
 void StreamServer::active_changed()
 {
-	if( _settings->get<Set::Broadcast_Active>() &&
-		_settings->get<SetNoDB::MP3enc_found>())
+	if( GetSetting(Set::Broadcast_Active) &&
+		GetSetting(SetNoDB::MP3enc_found))
 	{
 		listen();
 	}
@@ -354,7 +354,7 @@ void StreamServer::active_changed()
 
 void StreamServer::port_changed()
 {
-	int port = _settings->get<Set::Broadcast_Port>();
+	int port = GetSetting(Set::Broadcast_Port);
 
 	if(port != m->current_port){
 		restart();

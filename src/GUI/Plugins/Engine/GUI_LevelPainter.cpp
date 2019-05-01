@@ -106,7 +106,7 @@ GUI_LevelPainter::GUI_LevelPainter(QWidget *parent) :
 	EnginePlugin(parent)
 {
 	m = Pimpl::make<Private>();
-	_settings->set<Set::Engine_ShowLevel>(false);
+	SetSetting(Set::Engine_ShowLevel, false);
 }
 
 
@@ -268,7 +268,7 @@ void GUI_LevelPainter::do_fadeout_step()
 
 void GUI_LevelPainter::update_style(int new_index)
 {
-	_settings->set<Set::Level_Style>(new_index);
+	SetSetting(Set::Level_Style, new_index);
 	_ecsc->reload(width(), height());
 
 	m->resize_steps(current_style().n_rects);
@@ -295,14 +295,14 @@ void GUI_LevelPainter::reload()
 
 void GUI_LevelPainter::showEvent(QShowEvent* e)
 {
-	_settings->set<Set::Engine_ShowLevel>(true);
+	SetSetting(Set::Engine_ShowLevel, true);
 	EnginePlugin::showEvent(e);
 }
 
 
 void GUI_LevelPainter::closeEvent(QCloseEvent* e)
 {
-	_settings->set<Set::Engine_ShowLevel>(false);
+	SetSetting(Set::Engine_ShowLevel, false);
 	EnginePlugin::closeEvent(e);
 }
 
@@ -329,7 +329,7 @@ ColorStyle GUI_LevelPainter::current_style() const
 
 int GUI_LevelPainter::current_style_index() const
 {
-	return _settings->get<Set::Level_Style>();
+	return GetSetting(Set::Level_Style);
 }
 
 

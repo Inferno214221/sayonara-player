@@ -109,15 +109,15 @@ PlayManager::PlayManager(QObject* parent) :
 {
 	m = Pimpl::make<Private>();
 
-	bool load_playlist = (_settings->get<Set::PL_LoadSavedPlaylists>() || _settings->get<Set::PL_LoadTemporaryPlaylists>());
-	bool load_last_track = _settings->get<Set::PL_LoadLastTrack>();
-	bool remember_last_time = _settings->get<Set::PL_RememberTime>();
+	bool load_playlist = (GetSetting(Set::PL_LoadSavedPlaylists) || GetSetting(Set::PL_LoadTemporaryPlaylists));
+	bool load_last_track = GetSetting(Set::PL_LoadLastTrack);
+	bool remember_last_time = GetSetting(Set::PL_RememberTime);
 
 	if(	load_playlist &&
 			load_last_track &&
 			remember_last_time)
 	{
-		m->initial_position_ms = _settings->get<Set::Engine_CurTrackPos_s>() * 1000;
+		m->initial_position_ms = GetSetting(Set::Engine_CurTrackPos_s) * 1000;
 	}
 
 	else {
@@ -154,12 +154,12 @@ const MetaData& PlayManager::current_track() const
 
 int PlayManager::volume() const
 {
-	return _settings->get<Set::Engine_Vol>();
+	return GetSetting(Set::Engine_Vol);
 }
 
 bool PlayManager::is_muted() const
 {
-	return _settings->get<Set::Engine_Mute>();
+	return GetSetting(Set::Engine_Mute);
 }
 
 
@@ -219,7 +219,7 @@ void PlayManager::stop()
 
 void PlayManager::record(bool b)
 {
-	if(_settings->get<SetNoDB::MP3enc_found>()) {
+	if(GetSetting(SetNoDB::MP3enc_found)) {
 		emit sig_record(b);
 	} else {
 		emit sig_record(false);
@@ -245,7 +245,7 @@ void PlayManager::set_position_ms(MilliSeconds ms)
 {
 	m->position_ms = ms;
 
-	_settings->set<Set::Engine_CurTrackPos_s>((int) (m->position_ms / 1000));
+	SetSetting(Set::Engine_CurTrackPos_s, (int) (m->position_ms / 1000));
 
 	emit sig_position_changed_ms(ms);
 }
@@ -261,7 +261,7 @@ void PlayManager::change_track(const MetaData& md, int track_idx)
 	// initial position is outdated now and never needed again
 	if(m->initial_position_ms > 0)
 	{
-		int old_idx = _settings->get<Set::PL_LastTrack>();
+		int old_idx = GetSetting(Set::PL_LastTrack);
 		if(old_idx != m->track_idx) {
 			m->initial_position_ms = 0;
 		}
@@ -276,8 +276,8 @@ void PlayManager::change_track(const MetaData& md, int track_idx)
 		play();
 
 		if( (md.radio_mode() != RadioMode::Off) &&
-				_settings->get<Set::Engine_SR_Active>() &&
-				_settings->get<Set::Engine_SR_AutoRecord>() )
+				GetSetting(Set::Engine_SR_Active) &&
+				GetSetting(Set::Engine_SR_AutoRecord) )
 		{
 			record(true);
 		}
@@ -291,15 +291,15 @@ void PlayManager::change_track(const MetaData& md, int track_idx)
 
 	// save last track
 	if(md.db_id() == 0) {
-		_settings->set<Set::PL_LastTrack>(m->track_idx);
+		SetSetting(Set::PL_LastTrack, m->track_idx);
 	}
 
 	else{
-		_settings->set<Set::PL_LastTrack>(-1);
+		SetSetting(Set::PL_LastTrack, -1);
 	}
 
 	// show notification
-	if(_settings->get<Set::Notification_Show>()) {
+	if(GetSetting(Set::Notification_Show)) {
 		if(m->track_idx > -1 && !m->md.filepath().isEmpty()) {
 			NotificationHandler::instance()->notify(m->md);
 		}
@@ -317,7 +317,7 @@ void PlayManager::set_track_ready()
 
 	m->initial_position_ms = 0;
 
-	if(_settings->get<Set::PL_StartPlaying>()){
+	if(GetSetting(Set::PL_StartPlaying)){
 		play();
 	}
 
@@ -334,31 +334,31 @@ void PlayManager::buffering(int progress)
 
 void PlayManager::volume_up()
 {
-	set_volume(_settings->get<Set::Engine_Vol>() + 5);
+	set_volume(GetSetting(Set::Engine_Vol) + 5);
 }
 
 void PlayManager::volume_down()
 {
-	set_volume(_settings->get<Set::Engine_Vol>() - 5);
+	set_volume(GetSetting(Set::Engine_Vol) - 5);
 }
 
 void PlayManager::set_volume(int vol)
 {
 	vol = std::min(vol, 100);
 	vol = std::max(vol, 0);
-	_settings->set<Set::Engine_Vol>(vol);
+	SetSetting(Set::Engine_Vol, vol);
 	emit sig_volume_changed(vol);
 }
 
 void PlayManager::set_muted(bool b)
 {
-	_settings->set<Set::Engine_Mute>(b);
+	SetSetting(Set::Engine_Mute, b);
 	emit sig_mute_changed(b);
 }
 
 void PlayManager::toggle_mute()
 {
-	bool muted = _settings->get<Set::Engine_Mute>();
+	bool muted = GetSetting(Set::Engine_Mute);
 	set_muted(!muted);
 }
 
@@ -384,7 +384,7 @@ void PlayManager::change_metadata(const MetaData& md)
 
 	if(!has_data)
 	{
-		if(_settings->get<Set::Notification_Show>()) {
+		if(GetSetting(Set::Notification_Show)) {
 			NotificationHandler::instance()->notify(m->md);
 		}
 
@@ -409,12 +409,13 @@ void PlayManager::change_metadata(const MetaData& md)
 
 void PlayManager::shutdown()
 {
-	if(m->playstate == PlayState::Stopped){
-		_settings->set<Set::PL_LastTrack>(-1);
-		_settings->set<Set::Engine_CurTrackPos_s>(0);
+	if(m->playstate == PlayState::Stopped)
+	{
+		SetSetting(Set::PL_LastTrack, -1);
+		SetSetting(Set::Engine_CurTrackPos_s, 0);
 	}
 
 	else {
-		_settings->set<Set::Engine_CurTrackPos_s>((int) (m->position_ms / 1000));
+		SetSetting(Set::Engine_CurTrackPos_s, (int) (m->position_ms / 1000));
 	}
 }

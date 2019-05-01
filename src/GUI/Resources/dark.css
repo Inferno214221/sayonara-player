@@ -433,6 +433,7 @@ QComboBox
 }
 
 QComboBox:editable:focus,
+QComboBox:hover,
 QLineEdit:focus,
 QSpinBox:focus,
 QTextEdit:focus,

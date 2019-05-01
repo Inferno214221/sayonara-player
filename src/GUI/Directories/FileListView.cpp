@@ -268,7 +268,7 @@ void FileListView::set_search_filter(const QString& search_string)
 		return;
 	}
 
-	Library::SearchModeMask smm = _settings->get<Set::Lib_SearchMode>();
+	Library::SearchModeMask smm = GetSetting(Set::Lib_SearchMode);
 	QString search_text = Library::Utils::convert_search_string(search_string, smm);
 
 	int n_rows = m->model->rowCount();

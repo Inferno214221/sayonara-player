@@ -157,9 +157,9 @@ void SearchBar::init_context_menu()
 		m->action_live_search = new QAction(m->context_menu);
 		m->action_live_search->setText(Lang::get(Lang::LiveSearch));
 		m->action_live_search->setCheckable(true);
-		m->action_live_search->setChecked(_settings->get<Set::Lib_LiveSearch>());
+		m->action_live_search->setChecked(GetSetting(Set::Lib_LiveSearch));
 		connect(m->action_live_search, &QAction::triggered, this, &SearchBar::livesearch_triggered);
-		Set::listen<Set::Lib_LiveSearch>(this, &SearchBar::livesearch_changed, false);
+		ListenSettingNoCall(Set::Lib_LiveSearch, SearchBar::livesearch_changed);
 	}
 
 	{
@@ -257,11 +257,11 @@ void SearchBar::skin_changed()
 void SearchBar::livesearch_changed()
 {
 	if(m->action_live_search){
-		m->action_live_search->setChecked(_settings->get<Set::Lib_LiveSearch>());
+		m->action_live_search->setChecked(GetSetting(Set::Lib_LiveSearch));
 	}
 }
 
 void SearchBar::livesearch_triggered(bool b)
 {
-	_settings->set<Set::Lib_LiveSearch>(b);
+	SetSetting(Set::Lib_LiveSearch, b);
 }

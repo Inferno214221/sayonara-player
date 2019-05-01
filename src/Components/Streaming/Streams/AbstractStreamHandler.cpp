@@ -101,7 +101,8 @@ void AbstractStreamHandler::stream_parser_finished(bool success)
 {
 	StreamParser* stream_parser = static_cast<StreamParser*>(sender());
 
-	if(!success) {
+	if(!success)
+	{
 		sp_log(Log::Warning, this) << "Stream parser finished with error";
 		stream_parser->deleteLater(); m->stream_parser = nullptr;
 
@@ -109,15 +110,15 @@ void AbstractStreamHandler::stream_parser_finished(bool success)
 		emit sig_error();
 	}
 
-	else {
-
+	else
+	{
 		MetaDataList v_md = stream_parser->metadata();
 		m->station_contents[m->station_name] = v_md;
 
 		if(!v_md.isEmpty())
 		{
 			QString station_name;
-			if(Settings::instance()->get<Set::Stream_NewTab>()){
+			if(GetSetting(Set::Stream_NewTab)){
 				station_name = m->station_name;
 			}
 

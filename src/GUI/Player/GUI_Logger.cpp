@@ -87,7 +87,7 @@ void GUI_Logger::init_ui()
 
 QString GUI_Logger::calc_log_line(const QDateTime &t, Log log_type, const QString& class_name, const QString& str)
 {
-	int log_level = _settings->get<Set::Logger_Level>();
+	int log_level = GetSetting(Set::Logger_Level);
 	QString log_line = "<table style=\"font-family: Monospace;\">";
 	QString html_color, type_str;
 	switch(log_type)

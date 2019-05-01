@@ -92,24 +92,24 @@ QString GUI_LibraryPreferences::action_name() const
 
 bool GUI_LibraryPreferences::commit()
 {
-	_settings->set<Set::Lib_DC_DoNothing>(ui->rb_dc_do_nothing->isChecked());
-	_settings->set<Set::Lib_DC_PlayIfStopped>(ui->rb_dc_play_if_stopped->isChecked());
-	_settings->set<Set::Lib_DC_PlayImmediately>(ui->rb_dc_play_immediately->isChecked());
-	_settings->set<Set::Lib_DD_DoNothing>(ui->rb_dd_do_nothing->isChecked());
-	_settings->set<Set::Lib_DD_PlayIfStoppedAndEmpty>(ui->rb_dd_start_if_stopped_and_empty->isChecked());
-	_settings->set<Set::Lib_UseViewClearButton>(ui->cb_show_clear_buttons->isChecked());
+	SetSetting(Set::Lib_DC_DoNothing, ui->rb_dc_do_nothing->isChecked());
+	SetSetting(Set::Lib_DC_PlayIfStopped, ui->rb_dc_play_if_stopped->isChecked());
+	SetSetting(Set::Lib_DC_PlayImmediately, ui->rb_dc_play_immediately->isChecked());
+	SetSetting(Set::Lib_DD_DoNothing, ui->rb_dd_do_nothing->isChecked());
+	SetSetting(Set::Lib_DD_PlayIfStoppedAndEmpty, ui->rb_dd_start_if_stopped_and_empty->isChecked());
+	SetSetting(Set::Lib_UseViewClearButton, ui->cb_show_clear_buttons->isChecked());
 
 	return m->model->commit();
 }
 
 void GUI_LibraryPreferences::revert()
 {
-	ui->rb_dc_do_nothing->setChecked(_settings->get<Set::Lib_DC_DoNothing>());
-	ui->rb_dc_play_if_stopped->setChecked(_settings->get<Set::Lib_DC_PlayIfStopped>());
-	ui->rb_dc_play_immediately->setChecked(_settings->get<Set::Lib_DC_PlayImmediately>());
-	ui->rb_dd_do_nothing->setChecked(_settings->get<Set::Lib_DD_DoNothing>());
-	ui->rb_dd_start_if_stopped_and_empty->setChecked(_settings->get<Set::Lib_DD_PlayIfStoppedAndEmpty>());
-	ui->cb_show_clear_buttons->setChecked(_settings->get<Set::Lib_UseViewClearButton>());
+	ui->rb_dc_do_nothing->setChecked(GetSetting(Set::Lib_DC_DoNothing));
+	ui->rb_dc_play_if_stopped->setChecked(GetSetting(Set::Lib_DC_PlayIfStopped));
+	ui->rb_dc_play_immediately->setChecked(GetSetting(Set::Lib_DC_PlayImmediately));
+	ui->rb_dd_do_nothing->setChecked(GetSetting(Set::Lib_DD_DoNothing));
+	ui->rb_dd_start_if_stopped_and_empty->setChecked(GetSetting(Set::Lib_DD_PlayIfStoppedAndEmpty));
+	ui->cb_show_clear_buttons->setChecked(GetSetting(Set::Lib_UseViewClearButton));
 
 	m->model->reset();
 }

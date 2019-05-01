@@ -102,7 +102,7 @@ void Base::finalize_initialization()
 		sch->shortcut(ShortcutIdentifier::ClosePlugin).connect(this, parentWidget(), SLOT(close()), Qt::WidgetWithChildrenShortcut);
 	}
 
-	Set::listen<Set::Player_Style>(this, &Base::skin_changed);
+	ListenSetting(Set::Player_Style, Base::skin_changed);
 
 	set_ui_initialized();
 	retranslate_ui();

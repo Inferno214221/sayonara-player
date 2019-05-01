@@ -59,27 +59,27 @@ QString GUI_PlayerPreferences::action_name() const
 
 bool GUI_PlayerPreferences::commit()
 {
-	bool show_tray_icon = _settings->get<Set::Player_ShowTrayIcon>();
+	bool show_tray_icon = GetSetting(Set::Player_ShowTrayIcon);
 
-	_settings->set<Set::Player_Min2Tray>(ui->cb_close_to_tray->isChecked() && show_tray_icon);
-	_settings->set<Set::Player_StartInTray>(ui->cb_start_in_tray->isChecked() && show_tray_icon);
+	SetSetting(Set::Player_Min2Tray, ui->cb_close_to_tray->isChecked() && show_tray_icon);
+	SetSetting(Set::Player_StartInTray, ui->cb_start_in_tray->isChecked() && show_tray_icon);
 
-	_settings->set<Set::Player_ShowTrayIcon>(ui->cb_show_tray_icon->isChecked());
-	_settings->set<Set::Player_NotifyNewVersion>(ui->cb_update_notifications->isChecked());
-	_settings->set<Set::Logger_Level>(ui->cb_logger->currentIndex());
+	SetSetting(Set::Player_ShowTrayIcon, ui->cb_show_tray_icon->isChecked());
+	SetSetting(Set::Player_NotifyNewVersion, ui->cb_update_notifications->isChecked());
+	SetSetting(Set::Logger_Level, ui->cb_logger->currentIndex());
 
 	return true;
 }
 
 void GUI_PlayerPreferences::revert()
 {
-	bool show_tray_icon = _settings->get<Set::Player_ShowTrayIcon>();
+	bool show_tray_icon = GetSetting(Set::Player_ShowTrayIcon);
 
-	ui->cb_start_in_tray->setChecked(_settings->get<Set::Player_StartInTray>());
-	ui->cb_close_to_tray->setChecked(_settings->get<Set::Player_Min2Tray>());
-	ui->cb_update_notifications->setChecked(_settings->get<Set::Player_NotifyNewVersion>());
-	ui->cb_show_tray_icon->setChecked(_settings->get<Set::Player_ShowTrayIcon>());
-	ui->cb_logger->setCurrentIndex(_settings->get<Set::Logger_Level>());
+	ui->cb_start_in_tray->setChecked(GetSetting(Set::Player_StartInTray));
+	ui->cb_close_to_tray->setChecked(GetSetting(Set::Player_Min2Tray));
+	ui->cb_update_notifications->setChecked(GetSetting(Set::Player_NotifyNewVersion));
+	ui->cb_show_tray_icon->setChecked(GetSetting(Set::Player_ShowTrayIcon));
+	ui->cb_logger->setCurrentIndex(GetSetting(Set::Logger_Level));
 
 	show_tray_icon_toggled(show_tray_icon);
 }
@@ -90,7 +90,7 @@ void GUI_PlayerPreferences::show_tray_icon_toggled(bool b)
 	ui->cb_close_to_tray->setEnabled(b);
 
 	if(!b){
-		_settings->set<Set::Player_Min2Tray>(false);
+		SetSetting(Set::Player_Min2Tray, false);
 	}
 }
 

@@ -65,7 +65,7 @@ RemoteControl::RemoteControl(QObject *parent) :
 {
 	m = Pimpl::make<Private>();
 
-	Set::listen<Set::Remote_Active>(this, &RemoteControl::active_changed);
+	ListenSetting(Set::Remote_Active, RemoteControl::active_changed);
 }
 
 RemoteControl::~RemoteControl() {}
@@ -74,8 +74,8 @@ void RemoteControl::active_changed()
 {
 	m->server = new QTcpServer(this);
 
-	if(_settings->get<Set::Remote_Active>()){
-		m->server->listen(QHostAddress::Any, _settings->get<Set::Remote_Port>());
+	if(GetSetting(Set::Remote_Active)){
+		m->server->listen(QHostAddress::Any, GetSetting(Set::Remote_Port));
 	}
 
 	connect(m->server, &QTcpServer::newConnection, this, &RemoteControl::new_connection);
@@ -110,17 +110,17 @@ void RemoteControl::init()
 	m->fn_int_call_map["seekrels"] =std::bind(&RemoteControl::seek_rel_ms, this, std::placeholders::_1);
 	m->fn_int_call_map["chtrk"] =   std::bind(&RemoteControl::change_track, this, std::placeholders::_1);
 
-	Set::listen<Set::Remote_Active>(this, &RemoteControl::_sl_active_changed, false);
-	Set::listen<Set::Remote_Port>(this, &RemoteControl::_sl_port_changed, false);
-	Set::listen<Set::Broadcast_Port>(this, &RemoteControl::_sl_broadcast_changed, false);
-	Set::listen<Set::Broadcast_Active>(this, &RemoteControl::_sl_broadcast_changed, false);
+	ListenSettingNoCall(Set::Remote_Active, RemoteControl::_sl_active_changed);
+	ListenSettingNoCall(Set::Remote_Port, RemoteControl::_sl_port_changed);
+	ListenSettingNoCall(Set::Broadcast_Port, RemoteControl::_sl_broadcast_changed);
+	ListenSettingNoCall(Set::Broadcast_Active, RemoteControl::_sl_broadcast_changed);
 
 	m->initialized = true;
 }
 
 bool RemoteControl::is_connected() const
 {
-	if(!_settings->get<Set::Remote_Active>()){
+	if(!GetSetting(Set::Remote_Active)){
 		return false;
 	}
 
@@ -243,7 +243,7 @@ void RemoteControl::playlist_changed(PlaylistConstPtr pl)
 
 void RemoteControl::_sl_active_changed()
 {
-	bool active = _settings->get<Set::Remote_Active>();
+	bool active = GetSetting(Set::Remote_Active);
 
 	if(!active){
 		m->socket->disconnectFromHost();
@@ -255,14 +255,14 @@ void RemoteControl::_sl_active_changed()
 	}
 
 	else {
-		m->server->listen(QHostAddress::Any, _settings->get<Set::Remote_Port>());
+		m->server->listen(QHostAddress::Any, GetSetting(Set::Remote_Port));
 	}
 }
 
 void RemoteControl::_sl_port_changed()
 {
-	int port = _settings->get<Set::Remote_Port>();
-	bool active = _settings->get<Set::Remote_Active>();
+	int port = GetSetting(Set::Remote_Port);
+	bool active = GetSetting(Set::Remote_Active);
 
 	if(!active){
 		return;
@@ -428,8 +428,8 @@ void RemoteControl::write_broadcast_info()
 {
 	QByteArray data;
 	data = "broadcast:" +
-			QByteArray::number(_settings->get<Set::Broadcast_Active>()) + '\t' +
-			QByteArray::number(_settings->get<Set::Broadcast_Port>());
+			QByteArray::number(GetSetting(Set::Broadcast_Active)) + '\t' +
+			QByteArray::number(GetSetting(Set::Broadcast_Port));
 
 	sp_log(Log::Debug, this) << "Write broadcast " << data;
 

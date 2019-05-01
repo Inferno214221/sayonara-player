@@ -139,20 +139,20 @@ bool Playback::init(GstState state)
 		return false;
 	}
 
-	_settings->set<SetNoDB::MP3enc_found>(EngineUtils::check_lame_available());
-	_settings->set<SetNoDB::Pitch_found>(EngineUtils::check_pitch_available());
+	SetSetting(SetNoDB::MP3enc_found, EngineUtils::check_lame_available());
+	SetSetting(SetNoDB::Pitch_found, EngineUtils::check_pitch_available());
 
-	Set::listen<Set::Engine_Vol>(this, &Playback::s_vol_changed);
-	Set::listen<Set::Engine_Mute>(this, &Playback::s_mute_changed);
-	Set::listen<Set::Engine_Sink>(this, &Playback::s_sink_changed, false);
+	ListenSetting(Set::Engine_Vol, Playback::s_vol_changed);
+	ListenSetting(Set::Engine_Mute, Playback::s_mute_changed);
+	ListenSettingNoCall(Set::Engine_Sink, Playback::s_sink_changed);
 
 	// set by gui, initialized directly in pipeline
-	Set::listen<Set::Engine_ShowLevel>(this, &Playback::s_show_visualizer_changed);
-	Set::listen<Set::Engine_ShowSpectrum>(this, &Playback::s_show_visualizer_changed, false);
-	Set::listen<Set::Engine_Pitch>(this, &Playback::s_speed_changed, false);
-	Set::listen<Set::Engine_Speed>(this, &Playback::s_speed_changed, false);
-	Set::listen<Set::Engine_PreservePitch>(this, &Playback::s_speed_changed, false);
-	Set::listen<Set::Engine_SpeedActive>(this, &Playback::s_speed_active_changed);
+	ListenSetting(Set::Engine_ShowLevel, Playback::s_show_visualizer_changed);
+	ListenSettingNoCall(Set::Engine_ShowSpectrum, Playback::s_show_visualizer_changed);
+	ListenSettingNoCall(Set::Engine_Pitch, Playback::s_speed_changed);
+	ListenSettingNoCall(Set::Engine_Speed, Playback::s_speed_changed);
+	ListenSettingNoCall(Set::Engine_PreservePitch, Playback::s_speed_changed);
+	ListenSetting(Set::Engine_SpeedActive, Playback::s_speed_active_changed);
 
 	return true;
 }
@@ -171,7 +171,7 @@ bool Playback::create_elements()
 		m->pb_pitch = nullptr;
 	}
 
-	m->pb_sink = create_audio_sink(_settings->get<Set::Engine_Sink>());
+	m->pb_sink = create_audio_sink(GetSetting(Set::Engine_Sink));
 
 	return (m->pb_sink != nullptr);
 }
@@ -184,7 +184,7 @@ bool Playback::create_source(gchar* uri)
 		g_object_set (G_OBJECT (m->audio_src),
 					  "use-buffering", Util::File::is_www(uri),
 					  "ring-buffer-max-size", 10000,
-					  "buffer-duration", _settings->get<Set::Engine_BufferSizeMS>() * GST_MSECOND,
+					  "buffer-duration", GetSetting(Set::Engine_BufferSizeMS) * GST_MSECOND,
 					  "uri", uri,
 					  nullptr);
 
@@ -416,7 +416,7 @@ bool Pipeline::Playback::init_visualizer()
 		g_object_set (G_OBJECT (m->spectrum),
 					  "post-messages", true,
 					  "interval", 20 * GST_MSECOND,
-					  "bands", _settings->get<Set::Engine_SpectrumBins>(),
+					  "bands", GetSetting(Set::Engine_SpectrumBins),
 					  "threshold", -75,
 					  "message-phase", false,
 					  "message-magnitude", true,
@@ -452,7 +452,7 @@ void Playback::stop()
 
 void Playback::s_vol_changed()
 {
-	int vol = _settings->get<Set::Engine_Vol>();
+	int vol = GetSetting(Set::Engine_Vol);
 
 	float vol_val = (float) ((vol * 1.0f) / 100.0f);
 
@@ -461,7 +461,7 @@ void Playback::s_vol_changed()
 
 void Playback::s_mute_changed()
 {
-	bool muted = _settings->get<Set::Engine_Mute>();
+	bool muted = GetSetting(Set::Engine_Mute);
 	g_object_set(G_OBJECT(m->pb_volume), "mute", muted, nullptr);
 }
 
@@ -474,8 +474,8 @@ void Playback::enable_visualizer(bool b)
 	m->run_visualizer = b;
 	Probing::handle_probe(&m->run_visualizer, m->visualizer_queue, &m->visualizer_probe, Probing::spectrum_probed);
 
-	bool show_level = _settings->get<Set::Engine_ShowLevel>();
-	bool show_spectrum = _settings->get<Set::Engine_ShowSpectrum>();
+	bool show_level = GetSetting(Set::Engine_ShowLevel);
+	bool show_spectrum = GetSetting(Set::Engine_ShowSpectrum);
 
 	g_object_set(G_OBJECT(m->level), "post-messages", show_level, nullptr);
 	g_object_set(G_OBJECT(m->spectrum), "post-messages", show_spectrum, nullptr);
@@ -485,8 +485,8 @@ void Playback::s_show_visualizer_changed()
 {
 	enable_visualizer
 	(
-		_settings->get<Set::Engine_ShowSpectrum>() ||
-		_settings->get<Set::Engine_ShowLevel>()
+		GetSetting(Set::Engine_ShowSpectrum) ||
+		GetSetting(Set::Engine_ShowLevel)
 	);
 }
 
@@ -567,7 +567,7 @@ void Playback::s_speed_active_changed()
 
 	MilliSeconds pos_ms = EngineUtils::get_position_ms(get_source());
 
-	bool active = _settings->get<Set::Engine_SpeedActive>();
+	bool active = GetSetting(Set::Engine_SpeedActive);
 	if(active) {
 		add_element(m->pb_pitch, m->audio_convert, m->pb_equalizer);
 		s_speed_changed();
@@ -591,15 +591,15 @@ void Playback::s_speed_changed()
 	}
 
 	m->set_speed(
-		_settings->get<Set::Engine_Speed>(),
-		_settings->get<Set::Engine_Pitch>() / 440.0,
-		_settings->get<Set::Engine_PreservePitch>()
+		GetSetting(Set::Engine_Speed),
+		GetSetting(Set::Engine_Pitch) / 440.0,
+		GetSetting(Set::Engine_PreservePitch)
 	);
 }
 
 void Playback::s_sink_changed()
 {
-	GstElement* new_sink = create_audio_sink(_settings->get<Set::Engine_Sink>());
+	GstElement* new_sink = create_audio_sink(GetSetting(Set::Engine_Sink));
 	if(!new_sink){
 		return;
 	}

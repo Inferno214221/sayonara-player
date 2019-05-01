@@ -83,7 +83,7 @@ void MiniSearcherViewConnector::handle_key_press(QKeyEvent* e)
 
 void MiniSearcherViewConnector::edit_changed(const QString& str)
 {
-	Library::SearchModeMask search_mode = Settings::instance()->get<Set::Lib_SearchMode>();
+	Library::SearchModeMask search_mode = GetSetting(Set::Lib_SearchMode);
 	m->current_searchstring = Library::Utils::convert_search_string(str, search_mode, m->trigger_map.keys());
 
 	int num_results = m->svi->set_searchstring(m->current_searchstring);

@@ -173,7 +173,7 @@ Manager::Manager() :
 
 	register_coverfetcher(m->std_cover_fetcher);
 
-	Set::listen<Set::Cover_Server>(this, &Manager::servers_changed);
+	ListenSetting(Set::Cover_Server, Manager::servers_changed);
 }
 
 Manager::~Manager() {}
@@ -255,7 +255,7 @@ QString Manager::identifier_by_url(const QString& url) const
 
 void Manager::servers_changed()
 {
-	QStringList servers = _settings->get<Set::Cover_Server>();
+	QStringList servers = GetSetting(Set::Cover_Server);
 
 	for(const QString& key : m->active_map.keys()){
 		m->active_map[key] = servers.contains(key);

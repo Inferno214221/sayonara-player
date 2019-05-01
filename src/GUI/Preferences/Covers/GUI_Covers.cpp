@@ -59,7 +59,6 @@ GUI_Covers::~GUI_Covers()
 
 bool GUI_Covers::commit()
 {
-	Settings* settings = Settings::instance();
 	QStringList active_items;
 
 	for(int i=0; i<ui->lv_cover_searchers->count(); i++)
@@ -68,18 +67,17 @@ bool GUI_Covers::commit()
 		active_items << item->text();
 	}
 
-	settings->set<Set::Cover_Server>(active_items);
-	settings->set<Set::Cover_FetchFromWWW>(ui->cb_fetch_covers_from_www->isChecked());
+	SetSetting(Set::Cover_Server, active_items);
+	SetSetting(Set::Cover_FetchFromWWW, ui->cb_fetch_covers_from_www->isChecked());
 
 	return true;
 }
 
 void GUI_Covers::revert()
 {
-	Settings* settings = Settings::instance();
 	Cover::Fetcher::Manager* cfm = Cover::Fetcher::Manager::instance();
 
-	QStringList cover_servers = settings->get<Set::Cover_Server>();
+	QStringList cover_servers = GetSetting(Set::Cover_Server);
 
 	ui->lv_cover_searchers->clear();
 	ui->lv_cover_searchers_inactive->clear();
@@ -101,7 +99,7 @@ void GUI_Covers::revert()
 		}
 	}
 
-	bool fetch_from_www = settings->get<Set::Cover_FetchFromWWW>();
+	bool fetch_from_www = GetSetting(Set::Cover_FetchFromWWW);
 	ui->cb_fetch_covers_from_www->setChecked(fetch_from_www);
 
 	fetch_covers_www_triggered(fetch_from_www);

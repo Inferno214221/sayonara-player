@@ -117,7 +117,7 @@ CoverModel::CoverModel(QObject* parent, AbstractLibrary* library) :
 		m->cover_thread = nullptr;
 	});
 
-	Set::listen<Set::Lib_CoverShowArtist>(this, &CoverModel::show_artists_changed);
+	ListenSetting(Set::Lib_CoverShowArtist, CoverModel::show_artists_changed);
 
 	m->cover_thread->start();
 }
@@ -190,7 +190,7 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 		{
 			QString artist;
 
-			if(Settings::instance()->get<Set::Lib_CoverShowArtist>())
+			if(GetSetting(Set::Lib_CoverShowArtist))
 			{
 				if(album.album_artists().isEmpty())
 				{
@@ -421,7 +421,7 @@ QSize CoverModel::item_size() const
 static QSize calc_item_size(int zoom, QFont font)
 {
 	int text_height = QFontMetrics(font).height();
-	bool show_artist = Settings::instance()->get<Set::Lib_CoverShowArtist>();
+	bool show_artist = GetSetting(Set::Lib_CoverShowArtist);
 	if(show_artist)
 	{
 		text_height = 2 * text_height;
@@ -447,8 +447,8 @@ void CoverModel::set_zoom(int zoom, const QSize& view_size)
 		int visible_rows = (view_size.height() / m->item_size.height()) + 1;
 		int visible_items = visible_rows * columns;
 
-		int cache_orig_pms = Settings::instance()->get<Set::Lib_CoverOrigPMCache>();
-		int cache_scaled_pms = Settings::instance()->get<Set::Lib_CoverScaledPMCache>();
+		int cache_orig_pms = GetSetting(Set::Lib_CoverOrigPMCache);
+		int cache_scaled_pms = GetSetting(Set::Lib_CoverScaledPMCache);
 
 		m->columns = columns;
 		m->cvpc->set_cache_size(cache_orig_pms, visible_items * cache_scaled_pms);

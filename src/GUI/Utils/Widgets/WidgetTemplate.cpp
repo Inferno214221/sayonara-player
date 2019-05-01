@@ -29,15 +29,15 @@ Gui::AbstrWidgetTemplate::AbstrWidgetTemplate(QObject* parent, WidgetTemplatePar
 {
 	_wtp = wtp;
 
-	Set::listen<Set::Player_Language>(this, &AbstrWidgetTemplate::language_changed);
-	Set::listen<Set::Player_Style>(this, &AbstrWidgetTemplate::skin_changed);
-	Set::listen<Set::Player_FontName>(this, &AbstrWidgetTemplate::skin_changed, false);
-	Set::listen<Set::Player_FontSize>(this, &AbstrWidgetTemplate::skin_changed, false);
-	Set::listen<Set::PL_FontSize>(this, &AbstrWidgetTemplate::skin_changed, false);
-	Set::listen<Set::Lib_FontSize>(this, &AbstrWidgetTemplate::skin_changed, false);
-	Set::listen<Set::Lib_FontBold>(this, &AbstrWidgetTemplate::skin_changed, false);
-	Set::listen<Set::Icon_Theme>(this, &AbstrWidgetTemplate::skin_changed, false);
-	Set::listen<Set::Icon_ForceInDarkTheme>(this, &AbstrWidgetTemplate::skin_changed, false);
+	ListenSetting(Set::Player_Language, AbstrWidgetTemplate::language_changed);
+	ListenSetting(Set::Player_Style, AbstrWidgetTemplate::skin_changed);
+	ListenSettingNoCall(Set::Player_FontName, AbstrWidgetTemplate::skin_changed);
+	ListenSettingNoCall(Set::Player_FontSize, AbstrWidgetTemplate::skin_changed);
+	ListenSettingNoCall(Set::PL_FontSize, AbstrWidgetTemplate::skin_changed);
+	ListenSettingNoCall(Set::Lib_FontSize, AbstrWidgetTemplate::skin_changed);
+	ListenSettingNoCall(Set::Lib_FontBold, AbstrWidgetTemplate::skin_changed);
+	ListenSettingNoCall(Set::Icon_Theme, AbstrWidgetTemplate::skin_changed);
+	ListenSettingNoCall(Set::Icon_ForceInDarkTheme, AbstrWidgetTemplate::skin_changed);
 }
 
 Gui::AbstrWidgetTemplate::~AbstrWidgetTemplate() {}

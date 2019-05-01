@@ -55,8 +55,8 @@ bool GUI_UiPreferences::commit()
 	m->font_config->commit();
 	m->icon_config->commit();
 
-	_settings->set<Set::Player_ControlStyle>(ui->cb_big_cover->isChecked() ? 1 : 0);
-	_settings->set<Set::Player_Style>(ui->cb_dark_mode->isChecked() ? 1 : 0);
+	SetSetting(Set::Player_ControlStyle, ui->cb_big_cover->isChecked() ? 1 : 0);
+	SetSetting(Set::Player_Style, ui->cb_dark_mode->isChecked() ? 1 : 0);
 
 	return true;
 }
@@ -83,8 +83,8 @@ void GUI_UiPreferences::init_ui()
 	ui->tabWidget->addTab(m->font_config, m->font_config->action_name());
 	ui->tabWidget->addTab(m->icon_config, m->icon_config->action_name());
 
-	Set::listen<Set::Player_ControlStyle>(this, &GUI_UiPreferences::style_changed);
-	Set::listen<Set::Player_Style>(this, &GUI_UiPreferences::style_changed);
+	ListenSetting(Set::Player_ControlStyle, GUI_UiPreferences::style_changed);
+	ListenSetting(Set::Player_Style, GUI_UiPreferences::style_changed);
 
 	retranslate_ui();
 	revert();
@@ -92,7 +92,7 @@ void GUI_UiPreferences::init_ui()
 
 void GUI_UiPreferences::style_changed()
 {
-	ui->cb_big_cover->setChecked(_settings->get<Set::Player_ControlStyle>() == 1);
+	ui->cb_big_cover->setChecked(GetSetting(Set::Player_ControlStyle) == 1);
 	ui->cb_dark_mode->setChecked(Style::is_dark());
 }
 

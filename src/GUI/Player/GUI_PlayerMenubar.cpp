@@ -151,18 +151,18 @@ Menubar::Menubar(QWidget* parent) :
 {
 	m = Pimpl::make<Private>(this);
 
-	m->action_view_library->setChecked(_settings->get<Set::Lib_Show>());
+	m->action_view_library->setChecked(GetSetting(Set::Lib_Show));
 	m->action_view_library->setText(Lang::get(Lang::Library));
 	m->action_view_library->setShortcut(QKeySequence("Ctrl+L"));
 
 	m->action_big_cover->setShortcut(QKeySequence("F9"));
-	Set::listen<Set::Player_ControlStyle>(this, &Menubar::style_changed);
+	ListenSetting(Set::Player_ControlStyle, Menubar::style_changed);
 
 	m->action_dark->setShortcut(QKeySequence("F10"));
-	Set::listen<Set::Player_ControlStyle>(this, &Menubar::style_changed);
+	ListenSetting(Set::Player_ControlStyle, Menubar::style_changed);
 
 	m->action_fullscreen->setShortcut(QKeySequence("F11"));
-	m->action_fullscreen->setChecked(_settings->get<Set::Player_Fullscreen>());
+	m->action_fullscreen->setChecked(GetSetting(Set::Player_Fullscreen));
 
 #ifdef WITH_SHUTDOWN
 	m->action_shutdown->setVisible(true);
@@ -208,7 +208,7 @@ QAction* Menubar::update_library_action(QMenu* new_library_menu, const QString& 
 	m->current_library_menu_action = this->insertMenu(m->menu_help_action, new_library_menu);
 	m->current_library_menu_action->setText(name);
 
-	bool library_visible = _settings->get<Set::Lib_Show>();
+	bool library_visible = GetSetting(Set::Lib_Show);
 	m->current_library_menu_action->setVisible(library_visible);
 
 	return m->current_library_menu_action;
@@ -346,7 +346,7 @@ void Menubar::minimize_clicked()
 
 void Menubar::style_changed()
 {
-	m->action_big_cover->setChecked(_settings->get<Set::Player_ControlStyle>() == 1);
+	m->action_big_cover->setChecked(GetSetting(Set::Player_ControlStyle) == 1);
 	m->action_dark->setChecked(Style::is_dark());
 }
 
@@ -357,14 +357,14 @@ void Menubar::skin_toggled(bool b)
 
 void Menubar::big_cover_toggled(bool b)
 {
-	_settings->set<Set::Player_ControlStyle>((b==true) ? 1 : 0);
+	SetSetting(Set::Player_ControlStyle, (b==true) ? 1 : 0);
 }
 
 
 void Menubar::show_library_toggled(bool b)
 {
 	m->action_view_library->setChecked(b);
-	_settings->set<Set::Lib_Show>(b);
+	SetSetting(Set::Lib_Show, b);
 }
 
 
@@ -372,7 +372,7 @@ void Menubar::show_fullscreen_toggled(bool b)
 {
 	// may happened because of F11 too
 	m->action_fullscreen->setChecked(b);
-	_settings->set<Set::Player_Fullscreen>(b);
+	SetSetting(Set::Player_Fullscreen, b);
 }
 
 
@@ -393,7 +393,7 @@ void Menubar::help_clicked()
 // private slot
 void Menubar::about_clicked()
 {
-	QString version = _settings->get<Set::Player_Version>();
+	QString version = GetSetting(Set::Player_Version);
 
 	if(!m->about_box)
 	{

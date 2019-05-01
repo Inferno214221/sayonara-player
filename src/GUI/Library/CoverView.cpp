@@ -141,7 +141,7 @@ void CoverView::change_zoom(int zoom)
 		}
 	}
 
-	_settings->set<Set::Lib_CoverZoom>(zoom);
+	SetSetting(Set::Lib_CoverZoom, zoom);
 
 	if(m->zoom_locked.test_and_set()){
 		return;

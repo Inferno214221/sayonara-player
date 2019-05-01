@@ -80,8 +80,8 @@ GUI_DirectoryWidget::GUI_DirectoryWidget(QWidget *parent) :
 	ui = new Ui::GUI_DirectoryWidget();
 	ui->setupUi(this);
 
-	ui->splitter_dir_files->restoreState(_settings->get<Set::Dir_SplitterDirFile>());
-	ui->splitter_tracks->restoreState(_settings->get<Set::Dir_SplitterTracks>());
+	ui->splitter_dir_files->restoreState(GetSetting(Set::Dir_SplitterDirFile));
+	ui->splitter_tracks->restoreState(GetSetting(Set::Dir_SplitterTracks));
 
 	m = Pimpl::make<GUI_DirectoryWidget::Private>();
 
@@ -438,7 +438,7 @@ void GUI_DirectoryWidget::search_button_clicked()
 	}
 
 	Library::Filter filter;
-	filter.set_filtertext(ui->le_search->text(), _settings->get<Set::Lib_SearchMode>());
+	filter.set_filtertext(ui->le_search->text(), GetSetting(Set::Lib_SearchMode));
 	filter.set_mode(Library::Filter::Mode::Filename);
 	m->generic_library->change_filter(filter);
 
@@ -489,8 +489,8 @@ void GUI_DirectoryWidget::splitter_moved(int pos, int index)
 	Q_UNUSED(pos)
 	Q_UNUSED(index)
 
-	_settings->set<Set::Dir_SplitterDirFile>(ui->splitter_dir_files->saveState());
-	_settings->set<Set::Dir_SplitterTracks>(ui->splitter_tracks->saveState());
+	SetSetting(Set::Dir_SplitterDirFile, ui->splitter_dir_files->saveState());
+	SetSetting(Set::Dir_SplitterTracks, ui->splitter_tracks->saveState());
 }
 
 void GUI_DirectoryWidget::set_lib_path_clicked()

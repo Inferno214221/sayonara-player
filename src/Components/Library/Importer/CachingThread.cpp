@@ -36,7 +36,7 @@ using Library::CachingThread;
 struct CachingThread::Private
 {
 	QString			library_path;
-	QStringList		rar_dirs;
+	QStringList		archive_dirs;
 	QStringList		file_list;
 
 	ImportCachePtr	cache=nullptr;
@@ -83,38 +83,27 @@ CachingThread::CachingThread(const QStringList& file_list, const QString& librar
 
 CachingThread::~CachingThread() {}
 
-bool CachingThread::scan_rar(const QString& rar_file)
+bool CachingThread::scan_archive(const QString& temp_dir, const QString& binary, const QStringList& args)
 {
 #ifndef Q_OS_UNIX
 	return false;
 #endif
 
-	static const QString rar_binary = "rar";
-
-	QDir rar_dir(QDir::tempPath() + "/sayonara/import/" +  Util::random_string(16));
-	QString rar_path = rar_dir.absolutePath();
-
-	bool b = Util::File::create_directories(rar_path);
-	if(!b){
-		return false;
-	}
-
-	m->rar_dirs << rar_path;
-
-	int ret = QProcess::execute(rar_binary, {"x", rar_file, rar_dir.absolutePath()});
+	QDir dir(temp_dir);
+	int ret = QProcess::execute(binary, args);
 	if(ret < 0){
-		sp_log(Log::Warning, this) << "rar not found or crashed";
+		sp_log(Log::Warning, "Scan archive") << binary << " not found or crashed";
 	}
 
 	else if(ret > 0){
-		sp_log(Log::Warning, this) << "rar exited with error " << ret;
+		sp_log(Log::Warning, "Scan archive") << binary << " exited with error " << ret;
 		return false;
 	}
 
-	QStringList entries = rar_dir.entryList(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
+	QStringList entries = dir.entryList(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
 	for(const QString& e : entries)
 	{
-		QString filename = rar_dir.absoluteFilePath(e);
+		QString filename = dir.absoluteFilePath(e);
 		if(Util::File::is_dir(filename))
 		{
 			scan_dir(filename);
@@ -122,16 +111,59 @@ bool CachingThread::scan_rar(const QString& rar_file)
 
 		else if(Util::File::is_file(filename))
 		{
-			add_file(filename, rar_path);
+			add_file(filename, temp_dir);
 		}
 	}
 
 	return true;
 }
 
-bool CachingThread::scan_zip(const QString& zip)
+
+QString CachingThread::create_temp_dir()
 {
-	return true;
+	QDir dir(QDir::tempPath() + "/sayonara/import/" +  Util::random_string(16));
+	QString abs_dir = dir.absolutePath();
+
+	bool b = Util::File::create_directories(abs_dir);
+	if(!b){
+		sp_log(Log::Warning, this) << "Cannot create temp directory " << abs_dir;
+		return QString();
+	}
+
+	m->archive_dirs << abs_dir;
+
+	return abs_dir;
+}
+
+
+bool CachingThread::scan_rar(const QString& rar_file)
+{
+#ifndef Q_OS_UNIX
+	return false;
+#endif
+
+	QString temp_dir = create_temp_dir();
+	return scan_archive(temp_dir, "rar", {"x", rar_file, temp_dir});
+}
+
+bool CachingThread::scan_zip(const QString& zip_file)
+{
+#ifndef Q_OS_UNIX
+	return false;
+#endif
+
+	QString temp_dir = create_temp_dir();
+	return scan_archive(temp_dir, "unzip", {zip_file, "-d", temp_dir});
+}
+
+bool CachingThread::scan_tgz(const QString& tgz)
+{
+#ifndef Q_OS_UNIX
+	return false;
+#endif
+
+	QString temp_dir = create_temp_dir();
+	return scan_archive(temp_dir, "tar", {"xzf", tgz, "-C", temp_dir});
 }
 
 void CachingThread::scan_dir(const QString& dir)
@@ -185,6 +217,22 @@ void CachingThread::run()
 				}
 			}
 
+			else if(ext.compare("zip", Qt::CaseInsensitive) == 0)
+			{
+				bool success = scan_zip(filename);
+				if(!success){
+					sp_log(Log::Warning, this) << "Cannot scan zip";
+				}
+			}
+
+			else if((ext.compare("tar.gz", Qt::CaseInsensitive) == 0) || (ext.compare("tgz", Qt::CaseInsensitive) == 0))
+			{
+				bool success = scan_tgz(filename);
+				if(!success){
+					sp_log(Log::Warning, this) << "Cannot scan zip";
+				}
+			}
+
 			else {
 				add_file(filename);
 			}
@@ -216,7 +264,7 @@ void CachingThread::change_metadata(const MetaDataList& v_md_old, const MetaData
 
 QStringList CachingThread::temporary_files() const
 {
-	return m->rar_dirs;
+	return m->archive_dirs;
 }
 
 Library::ImportCachePtr CachingThread::cache() const

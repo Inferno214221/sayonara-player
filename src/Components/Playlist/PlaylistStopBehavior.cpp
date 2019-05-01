@@ -80,5 +80,5 @@ void Playlist::StopBehavior::set_track_idx_before_stop(int idx)
 		m->id_before_stop = -1;
 	}
 
-	Settings::instance()->set<Set::PL_LastTrackBeforeStop>(m->idx_before_stop);
+	SetSetting(Set::PL_LastTrackBeforeStop, m->idx_before_stop);
 }

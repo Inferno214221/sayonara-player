@@ -89,8 +89,8 @@ LibraryContextMenu::LibraryContextMenu(QWidget* parent) :
 	m->show_filter_extension_bar_action = new QAction(this);
 	m->show_filter_extension_bar_action->setCheckable(true);
 
-	Set::listen<Set::Lib_ShowAlbumCovers>(this, &LibraryContextMenu::show_cover_view_changed);
-	Set::listen<Set::Lib_ShowFilterExtBar>(this, &LibraryContextMenu::show_filter_ext_bar_changed);
+	ListenSetting(Set::Lib_ShowAlbumCovers, LibraryContextMenu::show_cover_view_changed);
+	ListenSetting(Set::Lib_ShowFilterExtBar, LibraryContextMenu::show_filter_ext_bar_changed);
 
 	ShortcutHandler* sch = ShortcutHandler::instance();
 	connect(sch, &ShortcutHandler::sig_shortcut_changed, this, &LibraryContextMenu::shortcut_changed);
@@ -357,24 +357,24 @@ void LibraryContextMenu::set_extensions(const ExtensionSet& extensions)
 
 void LibraryContextMenu::show_cover_view_changed()
 {
-	m->cover_view_action->setChecked(_settings->get<Set::Lib_ShowAlbumCovers>());
+	m->cover_view_action->setChecked(GetSetting(Set::Lib_ShowAlbumCovers));
 }
 
 void LibraryContextMenu::show_cover_triggered(bool b)
 {
 	Q_UNUSED(b)
-	bool show_covers = _settings->get<Set::Lib_ShowAlbumCovers>();
-	_settings->set<Set::Lib_ShowAlbumCovers>(!show_covers);
+	bool show_covers = GetSetting(Set::Lib_ShowAlbumCovers);
+	SetSetting(Set::Lib_ShowAlbumCovers, !show_covers);
 }
 
 void LibraryContextMenu::show_filter_ext_bar_changed()
 {
-	m->show_filter_extension_bar_action->setChecked(_settings->get<Set::Lib_ShowFilterExtBar>());
+	m->show_filter_extension_bar_action->setChecked(GetSetting(Set::Lib_ShowFilterExtBar));
 }
 
 void LibraryContextMenu::show_filter_extension_bar_triggered(bool b)
 {
-	_settings->set<Set::Lib_ShowFilterExtBar>(b);
+	SetSetting(Set::Lib_ShowFilterExtBar, b);
 
 	if(b)
 	{

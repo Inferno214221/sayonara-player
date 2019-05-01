@@ -262,8 +262,7 @@ void GUI_TrayIcon::notify(const MetaData& md)
 		return;
 	}
 
-	Settings* s = Settings::instance();
-	int timeout = s->get<Set::Notification_Timeout>();
+	int timeout = GetSetting(Set::Notification_Timeout);
 
 	QString msg = md.title() + " " + Lang::get(Lang::By).space() + md.artist();
 
@@ -279,8 +278,7 @@ void GUI_TrayIcon::notify(const QString &title, const QString &message, const QS
 		return;
 	}
 
-	Settings* s = Settings::instance();
-	int timeout = s->get<Set::Notification_Timeout>();
+	int timeout = GetSetting(Set::Notification_Timeout);
 
 	showMessage(title, message, QSystemTrayIcon::Information, timeout);
 }
@@ -319,7 +317,6 @@ void GUI_TrayIcon::set_enable_fwd(bool b)
 
 void GUI_TrayIcon::s_show_tray_icon_changed()
 {
-	Settings* settings = Settings::instance();
-	bool show_tray_icon = settings->get<Set::Player_ShowTrayIcon>();
+	bool show_tray_icon = GetSetting(Set::Player_ShowTrayIcon);
 	this->setVisible(show_tray_icon);
 }
