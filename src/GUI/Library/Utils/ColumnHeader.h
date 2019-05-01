@@ -1,6 +1,6 @@
 /* MyColumnHeader.h */
 
-/* Copyright 2011-2017  Lucio Carreras
+/* Copyright 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *

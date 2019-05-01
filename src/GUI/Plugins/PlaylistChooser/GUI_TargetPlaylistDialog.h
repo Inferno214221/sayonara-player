@@ -1,6 +1,6 @@
 /* GUI_Target_Playlist_Dialog.h */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *

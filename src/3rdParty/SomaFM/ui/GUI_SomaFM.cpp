@@ -1,6 +1,6 @@
 /* GUI_SomaFM.cpp */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -133,6 +133,7 @@ void GUI_SomaFM::stations_loaded(const QList<SomaFM::Station>& stations)
 	ui->tv_stations->setEnabled(true);
 	ui->tv_stations->setDragEnabled(true);
 	ui->tv_stations->setDragDropMode(QAbstractItemView::DragDrop);
+	ui->tv_stations->resizeColumnToContents(0);
 }
 
 void GUI_SomaFM::station_changed(const SomaFM::Station& station)
