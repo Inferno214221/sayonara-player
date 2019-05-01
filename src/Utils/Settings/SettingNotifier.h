@@ -47,7 +47,7 @@ template<typename KeyClass>
 class SettingNotifier
 {
 private:
-	AbstrSettingNotifier* m;
+	AbstrSettingNotifier* m=nullptr;
 
 	SettingNotifier() :
 		m(new AbstrSettingNotifier())
