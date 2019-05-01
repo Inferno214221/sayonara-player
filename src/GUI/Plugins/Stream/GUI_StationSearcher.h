@@ -2,6 +2,7 @@
 #define GUISTATIONSEARCHER_H
 
 #include "GUI/Utils/Widgets/Dialog.h"
+#include "Components/Streaming/StationSearcher/StationSearcher.h"
 #include "Utils/Pimpl.h"
 
 UI_FWD(GUI_StationSearcher)
@@ -21,9 +22,11 @@ public:
 	~GUI_StationSearcher();
 
 private:
+	void init_line_edit();
 	void check_listen_button();
 	void clear_stations();
 	void clear_streams();
+	void change_mode(StationSearcher::Mode mode);
 
 
 private slots:

@@ -5,12 +5,16 @@
 #include "Utils/Language.h"
 #include "Utils/Settings/Settings.h"
 #include "GUI/Utils/Style.h"
+#include "GUI/Utils/EventFilter.h"
+
+#include <QMenu>
 
 struct GUI_StationSearcher::Private
 {
 	QList<RadioStation> stations;
 	StationSearcher*	searcher;
 	StationSearcher::Mode mode;
+	QMenu*			context_menu=nullptr;
 
 	Private(GUI_StationSearcher* parent) :
 		mode(StationSearcher::NewSearch)
@@ -33,6 +37,18 @@ struct GUI_StationSearcher::Private
 				.arg("<b>" + stations.first().name + "</b>")
 				.arg("<b>" + stations.last().name + "</b>" )
 		);
+	}
+
+	void set_placeholder_text(QLineEdit* le)
+	{
+		if(mode == StationSearcher::Style)
+		{
+			le->setPlaceholderText(Lang::get(Lang::SearchVerb) + ": " + Lang::get(Lang::Genre));
+		}
+
+		else {
+			le->setPlaceholderText(Lang::get(Lang::SearchVerb) + ": " + Lang::get(Lang::RadioStation));
+		}
 	}
 
 };
@@ -72,6 +88,31 @@ GUI_StationSearcher::GUI_StationSearcher(QWidget* parent) :
 
 GUI_StationSearcher::~GUI_StationSearcher() {}
 
+void GUI_StationSearcher::init_line_edit()
+{
+	ContextMenuFilter* cmf = new ContextMenuFilter(ui->le_search);
+	QMenu* menu = new QMenu(ui->le_search);
+	m->context_menu = menu;
+	connect(cmf, &ContextMenuFilter::sig_context_menu, this, [menu](const QPoint& p, QAction* action)
+	{
+		Q_UNUSED(action)
+		menu->exec(p);
+	});
+
+	QAction* action_1 = m->context_menu->addAction(Lang::get(Lang::RadioStation));
+	QAction* action_2 = m->context_menu->addAction(Lang::get(Lang::Genre));
+
+	connect(action_1, &QAction::triggered, this, [this](){
+		this->change_mode(StationSearcher::Mode::NewSearch);
+	});
+
+	connect(action_2, &QAction::triggered, this, [this](){
+		this->change_mode(StationSearcher::Mode::Style);
+	});
+
+	ui->le_search->installEventFilter(cmf);
+}
+
 void GUI_StationSearcher::check_listen_button()
 {
 	ui->btn_listen->setEnabled(false);
@@ -108,6 +149,12 @@ void GUI_StationSearcher::clear_streams()
 	}
 
 	ui->tw_streams->setEnabled(false);
+}
+
+void GUI_StationSearcher::change_mode(StationSearcher::Mode mode)
+{
+	m->mode = mode;
+	m->set_placeholder_text(ui->le_search);
 }
 
 void GUI_StationSearcher::search_clicked()
@@ -237,16 +284,14 @@ void GUI_StationSearcher::search_text_changed(const QString& text)
 
 	if(text.startsWith("s:") || text.startsWith("n:"))
 	{
-		m->mode = StationSearcher::Style;
+		change_mode(StationSearcher::NewSearch);
 		ui->le_search->clear();
-		ui->le_search->setPlaceholderText(Lang::get(Lang::SearchVerb));
 	}
 
 	else if(text.startsWith("g:"))
 	{
-		m->mode = StationSearcher::NewSearch;
+		change_mode(StationSearcher::Style);
 		ui->le_search->clear();
-		ui->le_search->setPlaceholderText(Lang::get(Lang::SearchVerb) + ": " + Lang::get(Lang::Genre));
 	}
 }
 
@@ -326,13 +371,22 @@ void GUI_StationSearcher::language_changed()
 	ui->btn_listen->setText(Lang::get(Lang::Add));
 	ui->btn_close->setText(Lang::get(Lang::Close));
 
+	QString tooltip = QString("<b>%1</b><br />s:, n: %2<br />g: %3")
+		.arg(Lang::get(Lang::SearchNoun))
+		.arg(Lang::get(Lang::RadioStation))
+		.arg(Lang::get(Lang::Genre));
+
+	ui->le_search->setToolTip(tooltip);
+
+	m->set_placeholder_text(ui->le_search);
 	m->set_from_to_label(ui->lab_from_to);
+	ui->label->setText(Lang::get(Lang::SearchNoun) + ": " + Lang::get(Lang::RadioStation));
 }
 
 
 void GUI_StationSearcher::skin_changed()
 {
-	QFontMetrics fm(this->font());
+	QFontMetrics fm = this->fontMetrics();
 
 	ui->tw_stations->horizontalHeader()->setMinimumHeight(std::max(fm.height() + 10, 20));
 	ui->lab_link->setText(Util::create_link("fmstream.org", Style::is_dark(), "http://fmstream.org"));
