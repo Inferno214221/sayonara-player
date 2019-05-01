@@ -457,8 +457,10 @@ void GUI_ControlsBase::dur_changed(const MetaData& md)
 
 void GUI_ControlsBase::br_changed(const MetaData& md)
 {
-	if(md.bitrate / 1000 > 0){
-	sp_log(Log::Debug, this) << "Bitrate " << md.bitrate;
+	if(md.bitrate / 1000 > 0)
+	{
+		sp_log(Log::Develop, this) << "Bitrate " << md.bitrate;
+
 		QString bitrate = QString::number(std::nearbyint(md.bitrate / 1000.)) + " kBit/s";
 		lab_bitrate()->setText(bitrate);
 	}
