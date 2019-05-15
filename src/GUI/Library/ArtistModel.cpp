@@ -104,7 +104,6 @@ QVariant ArtistModel::data(const QModelIndex & index, int role) const
 	ColumnIndex::Artist idx_col = (ColumnIndex::Artist) col;
 	const Artist& artist = artists[row];
 
-
 	if(role == Qt::TextAlignmentRole)
 	{
 		switch(idx_col) {

@@ -90,6 +90,16 @@ ColumnHeaderList TrackView::column_headers() const
 	return columns;
 }
 
+IntList TrackView::column_header_sizes() const
+{
+	return GetSetting(Set::Lib_ColSizeTitle);
+}
+
+void TrackView::save_column_header_sizes(const IntList& sizes)
+{
+	SetSetting(Set::Lib_ColSizeTitle, sizes);
+}
+
 BoolList TrackView::visible_columns() const
 {
 	return GetSetting(Set::Lib_ColsTitle);

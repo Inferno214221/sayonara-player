@@ -52,15 +52,14 @@ namespace Library
 
 	public:
 		HeaderView(Qt::Orientation orientation, QWidget* parent=nullptr);
-		virtual ~HeaderView();
+		virtual ~HeaderView() override;
 
 		QSize sizeHint() const override;
 
-		void set_column_headers(const ColumnHeaderList& column_headers, const BoolList& shown_columns, Library::SortOrder sorting );
-		void refresh_sizes(QTableView* view);
+		void				set_column_headers(const ColumnHeaderList& column_headers, const BoolList& shown_columns, Library::SortOrder sorting );
 
-		BoolList shown_columns() const;
-		ColumnHeaderPtr column_header(int idx);
+		BoolList			shown_columns() const;
+		ColumnHeaderPtr		column_header(int idx);
 	};
 }
 

@@ -74,6 +74,11 @@ bool SettingRegistry::init()
 	register_setting<Set::Lib_ColsTitle>( "lib_shown_cols_title", shown_cols );
 	register_setting<Set::Lib_ColsArtist>( "lib_shown_cols_artist", shown_cols );
 	register_setting<Set::Lib_ColsAlbum>( "lib_shown_cols_album", shown_cols );
+
+	register_setting<Set::Lib_ColSizeTitle>( "lib_colsize_title", IntList() );
+	register_setting<Set::Lib_ColSizeArtist>( "lib_colsize_artist", IntList() );
+	register_setting<Set::Lib_ColSizeAlbum>( "lib_colsize_album", IntList() );
+
 	register_setting<Set::Lib_LiveSearch>( "lib_live_search", true );
 	register_setting<Set::Lib_Sorting>( "lib_sortings", Library::Sortings() );
 	register_setting<Set::Lib_Path>( "library_path", QString() );

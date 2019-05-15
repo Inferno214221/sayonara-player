@@ -91,6 +91,17 @@ ColumnHeaderList AlbumView::column_headers() const
 	return columns;
 }
 
+IntList AlbumView::column_header_sizes() const
+{
+	return GetSetting(Set::Lib_ColSizeAlbum);
+}
+
+
+void Library::AlbumView::save_column_header_sizes(const IntList& sizes)
+{
+	SetSetting(Set::Lib_ColSizeAlbum, sizes);
+}
+
 BoolList AlbumView::visible_columns() const
 {
 	return GetSetting(Set::Lib_ColsAlbum);
@@ -257,3 +268,4 @@ void AlbumView::use_clear_button_changed()
 	bool b = GetSetting(Set::Lib_UseViewClearButton);
 	use_clear_button(b);
 }
+

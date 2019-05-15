@@ -93,6 +93,14 @@ double ColumnHeader::preferred_size_rel() const
 	return m->preferred_size_rel;
 }
 
+void ColumnHeader::set_preferred_size_abs(int size)
+{
+	m->preferred_size_rel = 0;
+	m->preferred_size_abs = size;
+
+	m->size_type = SizeType::Abs;
+}
+
 SortOrder ColumnHeader::sortorder_asc() const
 {
 	return	m->sort_asc;
@@ -136,11 +144,11 @@ ColumnHeader::SizeType ColumnHeader::size_type() const
 
 int ColumnHeaderList::visible_columns() const
 {
-	int count = std::count_if(this->begin(), this->end(), [](ColumnHeaderPtr header){
+	auto count = std::count_if(this->begin(), this->end(), [](ColumnHeaderPtr header){
 		return header->is_visible();
 	});
 
-	return count;
+	return static_cast<int>(count);
 }
 
 int ColumnHeaderList::visible_column(int n) const

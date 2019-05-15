@@ -110,6 +110,16 @@ ColumnHeaderList ArtistView::column_headers() const
 	return columns;
 }
 
+IntList ArtistView::column_header_sizes() const
+{
+	return GetSetting(Set::Lib_ColSizeArtist);
+}
+
+void ArtistView::save_column_header_sizes(const IntList& sizes)
+{
+	SetSetting(Set::Lib_ColSizeArtist, sizes);
+}
+
 BoolList ArtistView::visible_columns() const
 {
 	BoolList columns = GetSetting(Set::Lib_ColsArtist);
@@ -202,6 +212,7 @@ void ArtistView::run_merge_operation(const ItemView::MergeData& mergedata)
 
 	uto->merge_artists(mergedata.source_ids(), mergedata.target_id());
 }
+
 
 void ArtistView::album_artists_changed()
 {

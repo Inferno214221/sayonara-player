@@ -75,6 +75,8 @@ namespace Library
 			int preferred_size_abs() const;
 			double preferred_size_rel() const;
 
+			void set_preferred_size_abs(int size);
+
 			SortOrder sortorder_asc() const;
 			SortOrder sortorder_desc() const;
 

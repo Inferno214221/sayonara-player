@@ -42,7 +42,7 @@ namespace Library
 
 		public:
 			ItemModel(QObject* parent, AbstractLibrary* library);
-			virtual ~ItemModel();
+			virtual ~ItemModel() override;
 
 			/** Overloaded from QAbstractTableModel **/
 			QVariant		headerData ( int section, Qt::Orientation orientation, int role=Qt::DisplayRole ) const override;

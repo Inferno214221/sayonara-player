@@ -45,13 +45,15 @@ namespace Library
 
 	public:
 		explicit TableView(QWidget* parent=nullptr);
-		~TableView();
+		virtual ~TableView() override;
 
 		virtual void init(AbstractLibrary* library);
 
 	protected:
 		virtual void init_view(AbstractLibrary* library)=0;
 		virtual ColumnHeaderList column_headers() const=0;
+		virtual IntList column_header_sizes() const=0;
+		virtual void save_column_header_sizes(const IntList& sizes)=0;
 
 		virtual BoolList visible_columns() const=0;
 		virtual void save_visible_columns(const BoolList& columns)=0;
@@ -69,6 +71,7 @@ namespace Library
 	protected slots:
 		void header_actions_triggered();
 		void sort_by_column(int column_idx);
+		void sizes_changed();
 	};
 }
 

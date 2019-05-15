@@ -47,6 +47,8 @@ namespace Library
 			void play_clicked() override;
 			void play_new_tab_clicked() override;
 			void run_merge_operation(const MergeData& mergedata) override;
+			IntList column_header_sizes() const override;
+			void save_column_header_sizes(const IntList& sizes) override;
 
 		protected:
 			void init_view(AbstractLibrary* library) override;
