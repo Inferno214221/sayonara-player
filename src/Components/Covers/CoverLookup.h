@@ -51,20 +51,8 @@ namespace Cover
 
 
 	public:
-
-		Lookup(QObject* parent=nullptr, int n_covers=1);
-		Lookup(QObject* parent, int n_covers, const Location& cl);
+		Lookup(const Location& cl, int n_covers, QObject* parent);
 		~Lookup() override;
-
-		/**
-		 * @brief fetches cover for a CoverLocation.
-		 *   1. Looks up CoverLocation::cover_path
-		 *   2. Looks up CoverLocation::local_paths
-		 *   3. Starts a CoverFetchThread
-		 * @param cl CoverLocation of interest
-		 * @return always true
-		 */
-		bool fetch_cover(const Location& cl, bool also_www=true);
 
 
 		/**

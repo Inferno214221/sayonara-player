@@ -204,10 +204,11 @@ void GUI_SomaFM::station_index_changed(const QModelIndex& idx)
 
 	ui->lab_description->setText(station.description());
 
-	Cover::Lookup* cl = new Cover::Lookup(this);
+	Cover::Lookup* cl = new Cover::Lookup(station.cover_location(), 1, this);
 
 	connect(cl, &Cover::Lookup::sig_cover_found, this, &GUI_SomaFM::cover_found);
-	cl->fetch_cover(station.cover_location());
+
+	cl->start();
 }
 
 

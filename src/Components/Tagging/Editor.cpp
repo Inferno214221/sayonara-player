@@ -71,6 +71,7 @@ struct Editor::Private
 		{
 			if(album_map.contains(it->name()))
 			{
+				Album album = *it;
 				sp_log(Log::Warning, this) << "Album " << it->name() << " already exists";
 				continue;
 			}

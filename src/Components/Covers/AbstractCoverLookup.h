@@ -25,9 +25,11 @@
 
 #include <QObject>
 #include <QPixmap>
+#include "Utils/Pimpl.h"
 
 namespace Cover
 {
+	class Location;
 	/**
 	 * @brief The CoverLookupInterface class
 	 * @ingroup Covers
@@ -36,6 +38,7 @@ namespace Cover
 			public QObject
 	{
 		Q_OBJECT
+		PIMPL(LookupBase)
 
 	signals:
 		void sig_cover_found(const QPixmap& pm);
@@ -46,8 +49,11 @@ namespace Cover
 		virtual void stop()=0;
 
 	public:
-		explicit LookupBase(QObject* parent=nullptr);
+		explicit LookupBase(const Location& cl, QObject* parent=nullptr);
 		virtual ~LookupBase();
+
+		Location cover_location() const;
+		void set_cover_location(const Location& cl);
 	};
 }
 

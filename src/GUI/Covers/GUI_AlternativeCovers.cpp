@@ -92,7 +92,7 @@ GUI_AlternativeCovers::GUI_AlternativeCovers(QWidget* parent) :
 
 	m = Pimpl::make<GUI_AlternativeCovers::Private>();
 
-	m->cl_alternative = new AlternativeLookup(this, 20);
+	m->cl_alternative = new AlternativeLookup(Cover::Location(), 20, this);
 	m->loading_bar = new ProgressBar(ui->tv_images);
 
 	m->model = new AlternativeCoverItemModel(this);

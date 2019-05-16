@@ -33,15 +33,14 @@ using Cover::Fetcher::Manager;
 
 struct AlternativeLookup::Private
 {
-	Location	cover_location;
 	Lookup*		lookup=nullptr;
 
 	int			n_covers;
 
-	Private(AlternativeLookup* alt_lookup, int n_covers) :
+	Private(const Cover::Location& cl, int n_covers, AlternativeLookup* parent) :
 		n_covers(n_covers)
 	{
-		lookup = new Lookup(alt_lookup, n_covers);
+		lookup = new Lookup(cl, n_covers, parent);
 	}
 
 	~Private()
@@ -50,10 +49,10 @@ struct AlternativeLookup::Private
 	}
 };
 
-AlternativeLookup::AlternativeLookup(QObject* parent, int n_covers) :
-	LookupBase(parent)
+AlternativeLookup::AlternativeLookup(const Cover::Location& cl, int n_covers, QObject* parent) :
+	LookupBase(cl, parent)
 {
-	m = Pimpl::make<Private>(this, n_covers);
+	m = Pimpl::make<Private>(cl, n_covers, this);
 
 	connect(m->lookup, &Lookup::sig_cover_found, this, &AlternativeLookup::sig_cover_found);
 	connect(m->lookup, &Lookup::sig_finished, this, &AlternativeLookup::sig_finished);
@@ -66,29 +65,26 @@ void AlternativeLookup::stop()
 	m->lookup->stop();
 }
 
-void AlternativeLookup::go(const Cover::Location& location)
+void AlternativeLookup::go(const Cover::Location& cl)
 {
-	bool can_fetch = m->lookup->fetch_cover(location, true);
-	if(!can_fetch)
-	{
-		emit sig_finished(false);
-	}
+	set_cover_location(cl);
 
-	else {
-		emit sig_started();
-	}
+	m->lookup->set_cover_location(cl);
+	m->lookup->start();
+
+	emit sig_started();
 }
 
 void AlternativeLookup::start()
 {
-	go(m->cover_location);
+	go(cover_location());
 }
 
 
 void AlternativeLookup::start(const QString& cover_fetcher_identifier)
 {
-	Location cl = m->cover_location;
-	QStringList search_urls = m->cover_location.search_urls();
+	Location cl = cover_location();
+	QStringList search_urls = cover_location().search_urls();
 	QString search_url;
 
 	Manager* cfm = Manager::instance();
@@ -110,7 +106,7 @@ void AlternativeLookup::start(const QString& cover_fetcher_identifier)
 
 void AlternativeLookup::start_text_search(const QString& search_term)
 {
-	Location cl = m->cover_location;
+	Location cl = cover_location();
 	cl.set_search_term(search_term);
 	cl.enable_freetext_search(true);
 	go(cl);
@@ -118,18 +114,9 @@ void AlternativeLookup::start_text_search(const QString& search_term)
 
 void AlternativeLookup::start_text_search(const QString& search_term, const QString& cover_fetcher_identifier)
 {
-	Location cl = m->cover_location;
+	Location cl = cover_location();
 	cl.set_search_term(search_term, cover_fetcher_identifier);
 	cl.enable_freetext_search(true);
 	go(cl);
 }
 
-Location AlternativeLookup::cover_location() const
-{
-	return m->cover_location;
-}
-
-void AlternativeLookup::set_cover_location(const Location& location)
-{
-	m->cover_location = location;
-}

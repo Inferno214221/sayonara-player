@@ -80,7 +80,7 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 	QFileInfo fi(md.filepath());
 	md.filesize = fi.size();
 
-	TagLib::AudioProperties::ReadStyle read_style;
+	TagLib::AudioProperties::ReadStyle read_style = TagLib::AudioProperties::Fast;
 	bool read_audio_props=true;
 
 	switch(quality)

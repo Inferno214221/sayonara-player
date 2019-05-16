@@ -38,6 +38,7 @@ QT5_ADD_RESOURCES(RESOURCES_RCC
 )
 
 NEW_TEST(Database/PodcastTest.cpp)
+NEW_TEST(Database/AlbumTest.cpp)
 
 NEW_TEST(Helper/CryptTest.cpp)
 NEW_TEST(Helper/FileHelperTest.cpp)

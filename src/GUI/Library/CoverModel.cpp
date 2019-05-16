@@ -247,7 +247,7 @@ void CoverModel::next_hash()
 		d->acft = acft;
 	}
 
-	Lookup* clu = new Lookup(nullptr, 1, cl);
+	Lookup* clu = new Lookup(cl, 1, nullptr);
 	clu->set_user_data(d);
 
 	connect(clu, &Lookup::sig_finished, this, &CoverModel::cover_lookup_finished);

@@ -150,8 +150,6 @@ Location& Location::operator=(const Location& other)
 
 Location Location::invalid_location()
 {
-	//measure(__FUNCTION__)
-
 	Location cl;
 
 	cl.set_valid(false);
