@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 2.8)
 project(say_tests)
 include(${CMAKE_CURRENT_SOURCE_DIR}/../src/compiler.cmake)
 
+cmake_policy(SET CMP0071 NEW)
+
 find_package(Qt5 COMPONENTS Core Widgets Sql Network DBus Network Xml Test REQUIRED)
 
 set(CMAKE_AUTOMOC ON)

@@ -41,13 +41,6 @@ namespace Library
 		PIMPL(ColumnHeader)
 
 		public:
-			enum class SizeType : uint8_t
-			{
-				Abs=0,
-				Rel,
-				Undefined
-			};
-
 			enum HeaderType
 			{
 				Sharp,
@@ -68,19 +61,14 @@ namespace Library
 			ColumnHeader(HeaderType type, bool switchable, SortOrder sort_asc, SortOrder sort_desc);
 
 		public:
-			ColumnHeader(HeaderType type, bool switchable, SortOrder sort_asc, SortOrder sort_desc, int preferred_size_abs);
-			ColumnHeader(HeaderType type, bool switchable, SortOrder sort_asc, SortOrder sort_desc, double preferred_size_rel, int min_size);
+			ColumnHeader(HeaderType type, bool switchable, SortOrder sort_asc, SortOrder sort_desc, int preferred_size);
 			virtual ~ColumnHeader();
 
-			int preferred_size_abs() const;
-			double preferred_size_rel() const;
-
-			void set_preferred_size_abs(int size);
+			int preferred_size() const;
+			void set_preferred_size(int size);
 
 			SortOrder sortorder_asc() const;
 			SortOrder sortorder_desc() const;
-
-			ColumnHeader::SizeType size_type() const;
 
 			bool is_visible() const;
 			bool is_hidden() const;
@@ -88,7 +76,7 @@ namespace Library
 			void retranslate();
 
 			QAction* action();
-			QString title() const;
+			QString	 title() const;
 	};
 
 	using ColumnHeaderPtr = std::shared_ptr<ColumnHeader>;

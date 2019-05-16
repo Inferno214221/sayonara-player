@@ -2,9 +2,7 @@ project(say_gui_resources)
 
 add_subdirectory(Icons)
 
-set(RESOURCES
-	Icons.qrc
-)
+set(RESOURCES Icons.qrc)
 
 if(WIN32)
 	set(RESOURCES

@@ -28,11 +28,6 @@ class QUrl;
 
 namespace Cover
 {
-
-#ifdef DEBUG
-	static bool MeasureOn=false;
-#endif
-
 	using StringMap=QMap<QString, QString>;
 
 	/**

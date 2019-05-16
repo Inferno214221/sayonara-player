@@ -25,8 +25,8 @@
  *      Author: Lucio Carreras
  */
 
-#ifndef _HELPER_H
-#define _HELPER_H
+#ifndef UTIL_HELPER_H
+#define UTIL_HELPER_H
 
 class QDateTime;
 class QPixmap;
@@ -34,6 +34,13 @@ class QPixmap;
 #include <QObject>
 #include <algorithm>
 #include "typedefs.h"
+
+#ifndef CAST_MACROS
+	#define scast(x, y) static_cast<x>(y)
+	#define dcast(x, y) dynamic_cast<x>(y)
+	#define rcast(x, y) reinterpret_cast<x>(y)
+	#define CAST_MACROS
+#endif
 
 #define LOCK_GUARD(locking_mutex) std::lock_guard<std::mutex> g(locking_mutex); Q_UNUSED(g)
 

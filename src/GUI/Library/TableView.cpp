@@ -67,19 +67,20 @@ TableView::TableView(QWidget* parent) :
 
 TableView::~TableView() {}
 
+
+
 void TableView::init(AbstractLibrary* library)
 {
 	init_view(library);
 
 	ColumnHeaderList headers = column_headers();
 	IntList sizes = column_header_sizes();
-	sp_log(Log::Debug, this) << "restore sizes: " << sizes;
 
 	if(headers.size() == sizes.size())
 	{
 		for(int i=0; i<sizes.size(); i++)
 		{
-			headers.at(i)->set_preferred_size_abs(sizes.at(i));
+			headers.at(i)->set_preferred_size(sizes.at(i));
 		}
 	}
 

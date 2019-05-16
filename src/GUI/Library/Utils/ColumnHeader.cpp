@@ -26,28 +26,23 @@
 
 using namespace Library;
 
-using SizeType=ColumnHeader::SizeType;
 using HeaderType=ColumnHeader::HeaderType;
 
 struct ColumnHeader::Private
 {
 	QAction*		action=nullptr;
-	double			preferred_size_rel;
-	int 			preferred_size_abs;
+	int 			preferred_size;
 
 	SortOrder		sort_asc;
 	SortOrder		sort_desc;
-	SizeType		size_type;
 	HeaderType		type;
 
 	bool 			switchable;
 
 	Private(ColumnHeader* parent, HeaderType type, bool switchable, SortOrder sort_asc, SortOrder sort_desc) :
-		preferred_size_rel(0),
-		preferred_size_abs(0),
+		preferred_size(0),
 		sort_asc(sort_asc),
 		sort_desc(sort_desc),
-		size_type(SizeType::Undefined),
 		type(type),
 		switchable(switchable)
 
@@ -65,40 +60,20 @@ ColumnHeader::ColumnHeader(HeaderType type, bool switchable, SortOrder sort_asc,
 
 ColumnHeader::~ColumnHeader() {}
 
-ColumnHeader::ColumnHeader(HeaderType type, bool switchable, SortOrder sort_asc, SortOrder sort_desc, int preferred_size_abs) :
+ColumnHeader::ColumnHeader(HeaderType type, bool switchable, SortOrder sort_asc, SortOrder sort_desc, int preferred_size) :
 	ColumnHeader(type, switchable, sort_asc, sort_desc)
 {
-	m->preferred_size_abs = preferred_size_abs;
-	m->preferred_size_rel = 0;
-
-	m->size_type = SizeType::Abs;
+	m->preferred_size = preferred_size;
 }
 
-ColumnHeader::ColumnHeader(HeaderType type, bool switchable, SortOrder sort_asc, SortOrder sort_desc, double preferred_size_rel, int min_size) :
-	ColumnHeader(type, switchable, sort_asc, sort_desc)
+int ColumnHeader::preferred_size() const
 {
-	m->preferred_size_abs = min_size;
-	m->preferred_size_rel = preferred_size_rel;
-
-	m->size_type = SizeType::Rel;
+	return m->preferred_size;
 }
 
-int ColumnHeader::preferred_size_abs() const
+void ColumnHeader::set_preferred_size(int size)
 {
-	return m->preferred_size_abs;
-}
-
-double ColumnHeader::preferred_size_rel() const
-{
-	return m->preferred_size_rel;
-}
-
-void ColumnHeader::set_preferred_size_abs(int size)
-{
-	m->preferred_size_rel = 0;
-	m->preferred_size_abs = size;
-
-	m->size_type = SizeType::Abs;
+	m->preferred_size = size;
 }
 
 SortOrder ColumnHeader::sortorder_asc() const
@@ -135,12 +110,6 @@ void ColumnHeader::retranslate()
 {
 	m->action->setText(this->title());
 }
-
-ColumnHeader::SizeType ColumnHeader::size_type() const
-{
-	return m->size_type;
-}
-
 
 int ColumnHeaderList::visible_columns() const
 {

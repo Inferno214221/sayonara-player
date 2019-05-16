@@ -18,15 +18,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "Sorting.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/Artist.h"
 #include "Utils/MetaData/Album.h"
 #include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Utils.h"
 
 #include <functional>
+#include <QMap>
 
 namespace Compare
 {
@@ -151,137 +151,67 @@ namespace Compare
 	}
 }
 
-
-
 void SC::Sorting::sort_artists(ArtistList& artists, Library::SortOrder so)
 {
-	std::function<bool (const Artist& a1, const Artist& a2)> fn;
-	switch(so) {
-		case Library::SortOrder::ArtistNameAsc:
-			fn = Compare::artistNameAsc;
-			break;
+	using namespace Library;
+	using SortFn=std::function<bool (const Artist&, const Artist&)>;
+	QMap<Library::SortOrder, SortFn> functions
+	{
+		{SortOrder::ArtistNameAsc,			Compare::artistNameAsc},
+		{SortOrder::ArtistNameDesc,			Compare::artistNameDesc},
+		{SortOrder::ArtistTrackcountAsc,	Compare::artistTrackcountAsc},
+		{SortOrder::ArtistTrackcountDesc,	Compare::artistTrackcountDesc}
+	};
 
-		case Library::SortOrder::ArtistNameDesc:
-			fn = Compare::artistNameDesc;
-			break;
-
-		case Library::SortOrder::ArtistTrackcountAsc:
-			fn = Compare::artistTrackcountAsc;
-			break;
-
-		case Library::SortOrder::ArtistTrackcountDesc:
-			fn = Compare::artistTrackcountDesc;
-			break;
-
-		default:
-			return;
+	if(functions.contains(so)){
+		Util::sort(artists, functions[so]);
 	}
-
-	std::sort(artists.begin(), artists.end(), fn);
 }
 
 void SC::Sorting::sort_albums(AlbumList& albums, Library::SortOrder so)
 {
-	std::function<bool (const Album& a1, const Album& a2)> fn;
-	switch(so)
+	using namespace Library;
+	using SortFn=std::function<bool (const Album&, const Album&)>;
+	QMap<Library::SortOrder, SortFn> functions
 	{
-		case Library::SortOrder::AlbumNameAsc:
-			fn = Compare::albumNameAsc;
-			break;
+		{SortOrder::AlbumNameAsc,		&Compare::albumNameAsc},
+		{SortOrder::AlbumNameDesc,		&Compare::albumNameDesc},
+		{SortOrder::AlbumYearAsc,		&Compare::albumYearAsc},
+		{SortOrder::AlbumYearDesc,		&Compare::albumYearDesc},
+		{SortOrder::AlbumDurationAsc,	&Compare::albumDurationAsc},
+		{SortOrder::AlbumDurationDesc,	&Compare::albumDurationDesc}
+	};
 
-		case Library::SortOrder::AlbumNameDesc:
-			fn = Compare::albumNameDesc;
-			break;
-
-		case Library::SortOrder::AlbumYearAsc:
-			fn = Compare::albumYearAsc;
-			break;
-
-		case Library::SortOrder::AlbumYearDesc:
-			fn = Compare::albumYearDesc;
-			break;
-
-		case Library::SortOrder::AlbumDurationAsc:
-			fn = Compare::albumDurationAsc;
-			break;
-
-		case Library::SortOrder::AlbumDurationDesc:
-			fn = Compare::albumDurationDesc;
-			break;
-
-		default:
-			return;
+	if(functions.contains(so)){
+		Util::sort(albums, functions[so]);
 	}
-
-	std::sort(albums.begin(), albums.end(), fn);
 }
 
-void SC::Sorting::sort_tracks(MetaDataList& v_md, Library::SortOrder so)
+
+void SC::Sorting::sort_tracks(MetaDataList& tracks, Library::SortOrder so)
 {
-	std::function<bool (const MetaData& md1, const MetaData& md2)> fn;
+	using namespace Library;
+	using SortFn=std::function<bool (const MetaData&, const MetaData&)>;
 
-	switch(so)
+	QMap<Library::SortOrder, SortFn> functions
 	{
-		case Library::SortOrder::TrackNumAsc:
-			fn = Compare::trackNumAsc;
-			break;
+		{SortOrder::TrackNumAsc,		&Compare::trackNumAsc},
+		{SortOrder::TrackNumDesc,		&Compare::trackNumDesc},
+		{SortOrder::TrackTitleAsc,		&Compare::trackTitleAsc},
+		{SortOrder::TrackTitleDesc,		&Compare::trackTitleDesc},
+		{SortOrder::TrackAlbumAsc,		&Compare::trackAlbumAsc},
+		{SortOrder::TrackAlbumDesc,		&Compare::trackAlbumDesc},
+		{SortOrder::TrackArtistAsc,		&Compare::trackArtistAsc},
+		{SortOrder::TrackArtistDesc,	&Compare::trackArtistDesc},
+		{SortOrder::TrackYearAsc,		&Compare::trackYearAsc},
+		{SortOrder::TrackYearDesc,		&Compare::trackYearDesc},
+		{SortOrder::TrackLenghtAsc,		&Compare::trackLengthAsc},
+		{SortOrder::TrackLengthDesc,	&Compare::trackLengthDesc},
+		{SortOrder::TrackBitrateAsc,	&Compare::trackBitrateAsc},
+		{SortOrder::TrackBitrateDesc,	&Compare::trackBitrateDesc}
+	};
 
-		case Library::SortOrder::TrackNumDesc:
-			fn = Compare::trackNumDesc;
-			break;
-
-		case Library::SortOrder::TrackTitleAsc:
-			fn = Compare::trackTitleAsc;
-			break;
-
-		case Library::SortOrder::TrackTitleDesc:
-			fn = Compare::trackTitleDesc;
-			break;
-
-		case Library::SortOrder::TrackAlbumAsc:
-			fn = Compare::trackAlbumAsc;
-			break;
-
-		case Library::SortOrder::TrackAlbumDesc:
-			fn = Compare::trackAlbumDesc;
-			break;
-
-		case Library::SortOrder::TrackArtistAsc:
-			fn = Compare::trackArtistAsc;
-			break;
-
-		case Library::SortOrder::TrackArtistDesc:
-			fn = Compare::trackArtistDesc;
-			break;
-
-		case Library::SortOrder::TrackYearAsc:
-			fn = Compare::trackYearAsc;
-			break;
-
-		case Library::SortOrder::TrackYearDesc:
-			fn = Compare::trackYearDesc;
-			break;
-
-		case Library::SortOrder::TrackLenghtAsc:
-			fn = Compare::trackLengthAsc;
-			break;
-
-		case Library::SortOrder::TrackLengthDesc:
-			fn = Compare::trackLengthDesc;
-			break;
-
-
-		case Library::SortOrder::TrackBitrateAsc:
-			fn = Compare::trackBitrateAsc;
-			break;
-
-		case Library::SortOrder::TrackBitrateDesc:
-			fn = Compare::trackBitrateDesc;
-			break;
-
-		default:
-			return;
+	if(functions.contains(so)){
+		Util::sort(tracks, functions[so]);
 	}
-
-	std::sort(v_md.begin(), v_md.end(), fn);
 }

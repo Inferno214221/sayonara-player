@@ -234,9 +234,10 @@ void GUI_LocalLibrary::tracks_loaded()
 	check_status_bar(false);
 }
 
+
 void GUI_LocalLibrary::extension_button_toggled(bool b)
 {
-	QPushButton* btn = static_cast<QPushButton*>(sender());
+	QPushButton* btn = scast(QPushButton*, sender());
 	ExtensionSet extensions = m->library->extensions();
 	extensions.set_enabled(btn->text(), b);
 

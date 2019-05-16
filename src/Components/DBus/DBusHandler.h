@@ -38,7 +38,7 @@ class DBusHandler :
 
 public:
 	explicit DBusHandler(QMainWindow* main_window, QObject* parent=nullptr);
-	~DBusHandler();
+	virtual ~DBusHandler();
 
 private slots:
 	void service_registered(const QString& service_name);

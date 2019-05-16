@@ -76,7 +76,7 @@ void HeaderView::set_column_headers(const ColumnHeaderList& column_headers, cons
 		}
 
 		if(is_shown){
-			this->resizeSection(i, section->preferred_size_abs());
+			this->resizeSection(i, section->preferred_size());
 		}
 
 		init_header_action(section, is_shown);
