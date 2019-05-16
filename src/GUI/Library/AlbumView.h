@@ -44,7 +44,11 @@ namespace Library
 
 	public:
 		explicit AlbumView(QWidget *parent=nullptr);
-		virtual ~AlbumView();
+		virtual ~AlbumView() override;
+
+	protected:
+		IntList column_header_sizes() const override;
+		void save_column_header_sizes(const IntList& sizes) override;
 
 	private:
 		// Library::TableView

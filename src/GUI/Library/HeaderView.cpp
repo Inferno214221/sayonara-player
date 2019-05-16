@@ -22,7 +22,6 @@
 #include "Utils/Utils.h"
 
 #include <QFontMetrics>
-#include <QTableView>
 
 #include <algorithm>
 
@@ -41,6 +40,7 @@ HeaderView::HeaderView(Qt::Orientation orientation, QWidget* parent) :
 	this->setSectionsClickable(true);
 	this->setStretchLastSection(true);
 	this->setHighlightSections(false);
+	this->setContextMenuPolicy(Qt::ActionsContextMenu);
 }
 
 HeaderView::~HeaderView() {}
@@ -54,35 +54,19 @@ void HeaderView::init_header_action(ColumnHeaderPtr header, bool is_shown)
 	this->addAction(action);
 }
 
-void HeaderView::action_triggered(bool b)
-{
-	Q_UNUSED(b)
-
-	QTableView* table_view = static_cast<QTableView*>(this->parentWidget());
-
-	BoolList shown_cols = refresh_active_columns();
-
-	if(table_view){
-		this->refresh_sizes(table_view);
-	}
-
-	emit sig_columns_changed();
-}
-
-
 void HeaderView::set_column_headers(const ColumnHeaderList& column_headers, const BoolList& shown_actions, Library::SortOrder sorting)
 {
 	m->column_headers = column_headers;
 
-	int i=0;
-
-	for(ColumnHeaderPtr header : Util::AsConst(m->column_headers))
+	for(int i=0; i<m->column_headers.count(); i++)
 	{
-		if(header->sortorder_asc() == sorting) {
+		ColumnHeaderPtr section = m->column_headers[i];
+
+		if(section->sortorder_asc() == sorting) {
 			this->setSortIndicator(i, Qt::AscendingOrder);
 		}
 
-		else if(header->sortorder_desc() == sorting) {
+		else if(section->sortorder_desc() == sorting) {
 			this->setSortIndicator(i, Qt::DescendingOrder);
 		}
 
@@ -91,101 +75,31 @@ void HeaderView::set_column_headers(const ColumnHeaderList& column_headers, cons
 			is_shown = shown_actions[i];
 		}
 
-		init_header_action(header, is_shown);
+		if(is_shown){
+			this->resizeSection(i, section->preferred_size());
+		}
 
-		i++;
+		init_header_action(section, is_shown);
 	}
 
 	refresh_active_columns();
 
-	this->setContextMenuPolicy(Qt::ActionsContextMenu);
-}
-
-
-void HeaderView::refresh_sizes(QTableView* view)
-{
-	int altogether_width = 0;
-	int desired_width = 0;
-	int tolerance = 30;
-	double altogether_percentage = 0;
-
-	int n_cols = m->column_headers.visible_columns();
-
-	for(int i=0; i<n_cols; i++)
-	{
-		int preferred_size = 0;
-		int col = m->column_headers.visible_column(i);
-
-		if(!between(col, m->column_headers)){
-			continue;
-		}
-
-		ColumnHeaderPtr h = m->column_headers[col];
-
-		if(h->size_type() == ColumnHeader::SizeType::Abs) {
-			preferred_size = h->preferred_size_abs();
-		}
-
-		else{
-			altogether_percentage += h->preferred_size_rel();
-			desired_width += h->preferred_size_abs();
-		}
-
-		altogether_width += preferred_size;
+	for(int i=0; i<m->column_headers.count()-1; i++){
+		this->setSectionResizeMode(1, QHeaderView::Interactive);
 	}
 
-	altogether_width += tolerance;
-
-	int target_width = view->width() - altogether_width;
-
-	if(target_width < desired_width) {
-		target_width = desired_width;
-		view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-	}
-
-	else{
-		view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-	}
-
-	// width for percentage stuff
-	for(int i=0; i<n_cols; i++)
-	{
-		int col = m->column_headers.visible_column(i);
-		int preferred_size = 0;
-
-		ColumnHeaderPtr h = m->column_headers[col];
-		if(h->size_type() == ColumnHeader::SizeType::Rel) {
-			preferred_size = (h->preferred_size_rel() * target_width) / altogether_percentage;
-		}
-
-		else{
-			preferred_size = h->preferred_size_abs();
-		}
-
-		view->setColumnWidth(col, preferred_size);
-	}
+	this->setSectionResizeMode(m->column_headers.count()-1, QHeaderView::Stretch);
 }
 
 BoolList HeaderView::refresh_active_columns()
 {
 	BoolList lst;
-	int n_cols = m->column_headers.size();
 
-	for(int i=0; i<n_cols; i++)
+	for(int i=0; i<m->column_headers.count(); i++)
 	{
 		ColumnHeaderPtr section = m->column_headers[i];
-		bool is_hidden = section->is_hidden();
 
-		if(is_hidden)
-		{
-			this->hideSection(i);
-		}
-
-		else
-		{
-			this->showSection(i);
-		}
-
+		this->setSectionHidden(i, section->is_hidden());
 		lst.push_back(section->is_visible());
 	}
 
@@ -195,10 +109,9 @@ BoolList HeaderView::refresh_active_columns()
 BoolList HeaderView::shown_columns() const
 {
 	BoolList lst;
-	int n_cols = m->column_headers.size();
 
-	for(int i=0; i<n_cols; i++){
-		ColumnHeaderPtr section = m->column_headers[i];
+	for(ColumnHeaderPtr section : m->column_headers)
+	{
 		lst.push_back(section->is_visible());
 	}
 
@@ -226,11 +139,20 @@ void HeaderView::language_changed()
 QSize HeaderView::sizeHint() const
 {
 	QSize size = QHeaderView::sizeHint();
-	QFontMetrics fm(this->font());
 
-	int height = std::max(fm.height() + 10, 20);
+	int height = std::max(this->fontMetrics().height() + 10, 20);
 
 	size.setHeight(height);
 
 	return size;
+}
+
+void HeaderView::action_triggered(bool b)
+{
+	BoolList shown_cols = refresh_active_columns();
+
+	emit sig_columns_changed();
+
+	Q_UNUSED(b)
+	Q_UNUSED(shown_cols)
 }

@@ -1,17 +1,16 @@
 project( sayonara_somafm )
 
 file(GLOB_RECURSE SOURCES . *.cpp)
-file(GLOB_RECURSE RAW_UI_FILES . *.ui)
+set(CMAKE_AUTOUIC ON)
 
-qt5_wrap_ui(UI_FILES ${RAW_UI_FILES})
 qt5_add_resources(RESOURCES
     ui/SomaFMIcons.qrc
 )
 
 if( WIN32 )
-    add_library(${PROJECT_NAME} STATIC ${SOURCES} ${UI_FILES} ${RESOURCES})
+    add_library(${PROJECT_NAME} STATIC ${SOURCES} ${RESOURCES})
 else()
-    add_library(${PROJECT_NAME} SHARED ${SOURCES} ${UI_FILES} ${RESOURCES})
+    add_library(${PROJECT_NAME} SHARED ${SOURCES} ${RESOURCES})
 endif()
 
 target_link_libraries(${PROJECT_NAME}

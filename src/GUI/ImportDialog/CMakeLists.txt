@@ -4,11 +4,7 @@ set(SOURCES
 	GUI_ImportDialog.cpp
 )
 
-qt5_wrap_ui(FORMS_UIC
-	GUI_ImportDialog.ui
-)
-
-add_library(${PROJECT_NAME} STATIC ${SOURCES} ${FORMS_UIC})
+add_library(${PROJECT_NAME} STATIC ${SOURCES})
 target_link_libraries(${PROJECT_NAME}
 	say_gui_utils
     say_comp_library

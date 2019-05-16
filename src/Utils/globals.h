@@ -23,6 +23,13 @@
 
 #include <type_traits>
 
+#ifndef CAST_MACROS
+	#define scast(x, y) static_cast<x>(y)
+	#define dcast(x, y) dynamic_cast<x>(y)
+	#define rcast(x, y) reinterpret_cast<x>(y)
+	#define CAST_MACROS
+#endif
+
 #define DARK_BLUE(x) QString("<font color=#0000FF>") + x + QString("</font>")
 #define LIGHT_BLUE(x) QString("<font color=#8888FF>") + x + QString("</font>")
 

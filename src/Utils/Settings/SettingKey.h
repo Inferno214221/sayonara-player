@@ -45,6 +45,9 @@ enum class SettingKey : unsigned short
 	Lib_ColsTitle,
 	Lib_ColsArtist,
 	Lib_ColsAlbum,
+	Lib_ColSizeTitle,
+	Lib_ColSizeArtist,
+	Lib_ColSizeAlbum,
 	Lib_LiveSearch,
 	Lib_Sorting,
 	Lib_CurPlugin,
@@ -258,6 +261,9 @@ class SettingIdentifier
 	INST(BoolList,			Lib_ColsTitle)			/* shown columns tracks */
 	INST(BoolList,			Lib_ColsArtist)			/* shown columns artist */
 	INST(BoolList,			Lib_ColsAlbum)				/* shown columns albums */
+	INST(IntList,			Lib_ColSizeArtist)
+	INST(IntList,			Lib_ColSizeAlbum)
+	INST(IntList,			Lib_ColSizeTitle)
 	INST(bool,				Lib_LiveSearch)			/* library live search */
 	INST(::Library::Sortings,		Lib_Sorting)		/* how to sort in lib */
 	INST(QString,			Lib_CurPlugin)				/* Current shown library plugin */

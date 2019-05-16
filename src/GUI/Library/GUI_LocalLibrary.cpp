@@ -119,7 +119,7 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 	connect(m->manager, &Manager::sig_path_changed, this, &GUI_LocalLibrary::path_changed);
 	connect(m->manager, &Manager::sig_renamed, this, &GUI_LocalLibrary::name_changed);
 
-	connect(ui->lv_album, &AlbumView::sig_disc_pressed, m->library, &LocalLibrary::change_current_disc);
+	connect(ui->tv_albums, &AlbumView::sig_disc_pressed, m->library, &LocalLibrary::change_current_disc);
 	connect(ui->lv_genres, &QAbstractItemView::clicked, this, &GUI_LocalLibrary::genre_selection_changed);
 	connect(ui->lv_genres, &QAbstractItemView::activated, this, &GUI_LocalLibrary::genre_selection_changed);
 	connect(ui->lv_genres, &GenreView::sig_progress, this, &GUI_LocalLibrary::progress_changed);
@@ -137,9 +137,9 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 	connect(ui->splitter_tracks, &QSplitter::splitterMoved, this, &GUI_LocalLibrary::splitter_tracks_moved);
 	connect(ui->splitter_genre, &QSplitter::splitterMoved, this, &GUI_LocalLibrary::splitter_genre_moved);
 
-	connect(ui->lv_album, &Library::ItemView::sig_reload_clicked, this, &GUI_LocalLibrary::reload_library_requested);
-	connect(ui->lv_artist, &Library::ItemView::sig_reload_clicked, this, &GUI_LocalLibrary::reload_library_requested);
-	connect(ui->tb_title, &Library::ItemView::sig_reload_clicked, this, &GUI_LocalLibrary::reload_library_requested);
+	connect(ui->tv_albums, &Library::ItemView::sig_reload_clicked, this, &GUI_LocalLibrary::reload_library_requested);
+	connect(ui->tv_artists, &Library::ItemView::sig_reload_clicked, this, &GUI_LocalLibrary::reload_library_requested);
+	connect(ui->tv_tracks, &Library::ItemView::sig_reload_clicked, this, &GUI_LocalLibrary::reload_library_requested);
 
 	connect(ui->btn_close_extensions, &QPushButton::clicked, this, &GUI_LocalLibrary::close_extensions_clicked);
 
@@ -229,15 +229,15 @@ void GUI_LocalLibrary::check_status_bar(bool is_reloading)
 	}
 }
 
-
 void GUI_LocalLibrary::tracks_loaded()
 {
 	check_status_bar(false);
 }
 
+
 void GUI_LocalLibrary::extension_button_toggled(bool b)
 {
-	QPushButton* btn = static_cast<QPushButton*>(sender());
+	QPushButton* btn = scast(QPushButton*, sender());
 	ExtensionSet extensions = m->library->extensions();
 	extensions.set_enabled(btn->text(), b);
 
@@ -479,9 +479,9 @@ void GUI_LocalLibrary::switch_album_view()
 }
 
 // GUI_AbstractLibrary
-Library::TableView* GUI_LocalLibrary::lv_artist() const { return ui->lv_artist; }
-Library::TableView* GUI_LocalLibrary::lv_album() const { return ui->lv_album; }
-Library::TableView* GUI_LocalLibrary::lv_tracks() const { return ui->tb_title; }
+Library::TableView* GUI_LocalLibrary::lv_artist() const { return ui->tv_artists; }
+Library::TableView* GUI_LocalLibrary::lv_album() const { return ui->tv_albums; }
+Library::TableView* GUI_LocalLibrary::lv_tracks() const { return ui->tv_tracks; }
 Library::SearchBar* GUI_LocalLibrary::le_search() const { return ui->le_search; }
 
 // LocalLibraryContainer

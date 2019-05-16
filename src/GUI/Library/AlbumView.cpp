@@ -32,6 +32,7 @@
 #include "Components/Library/AbstractLibrary.h"
 
 #include "Utils/Settings/Settings.h"
+#include "Utils/Utils.h"
 
 #include <QHeaderView>
 #include <QVBoxLayout>
@@ -61,7 +62,7 @@ void AlbumView::init_view(AbstractLibrary* library)
 	m->library = library;
 
 	AlbumModel* album_model = new AlbumModel(this, m->library);
-	RatingDelegate* album_delegate = new RatingDelegate(this, (int) ColumnIndex::Album::Rating, true);
+	RatingDelegate* album_delegate = new RatingDelegate(this, scast(int, ColumnIndex::Album::Rating), true);
 
 	this->set_item_model(album_model);
 	this->setItemDelegate(album_delegate);
@@ -82,13 +83,24 @@ ColumnHeaderList AlbumView::column_headers() const
 	ColumnHeaderList columns;
 
 	columns << std::make_shared<ColumnHeader>(ColumnHeader::Sharp, true, SortOrder::NoSorting, SortOrder::NoSorting, 20);
-	columns << std::make_shared<ColumnHeader>(ColumnHeader::Album, false, SortOrder::AlbumNameAsc, SortOrder::AlbumNameDesc, 1.0, 160);
+	columns << std::make_shared<ColumnHeader>(ColumnHeader::Album, false, SortOrder::AlbumNameAsc, SortOrder::AlbumNameDesc, 160);
 	columns << std::make_shared<ColumnHeader>(ColumnHeader::Duration, true, SortOrder::AlbumDurationAsc, SortOrder::AlbumDurationDesc, 90);
 	columns << std::make_shared<ColumnHeader>(ColumnHeader::NumTracks, true, SortOrder::AlbumTracksAsc, SortOrder::AlbumTracksDesc, 80);
 	columns << std::make_shared<ColumnHeader>(ColumnHeader::Year, true, SortOrder::AlbumYearAsc, SortOrder::AlbumYearDesc, 50);
 	columns << std::make_shared<ColumnHeader>(ColumnHeader::Rating, true, SortOrder::AlbumRatingAsc, SortOrder::AlbumRatingDesc, 80);
 
 	return columns;
+}
+
+IntList AlbumView::column_header_sizes() const
+{
+	return GetSetting(Set::Lib_ColSizeAlbum);
+}
+
+
+void Library::AlbumView::save_column_header_sizes(const IntList& sizes)
+{
+	SetSetting(Set::Lib_ColSizeAlbum, sizes);
 }
 
 BoolList AlbumView::visible_columns() const
@@ -121,7 +133,7 @@ void AlbumView::show_context_menu(const QPoint& p)
 
 void AlbumView::index_clicked(const QModelIndex& idx)
 {
-	if(idx.column() == static_cast<int>(ColumnIndex::Album::MultiDisc))
+	if(idx.column() == scast(int, ColumnIndex::Album::MultiDisc))
 	{
 		QModelIndexList selections = this->selectionModel()->selectedRows();
 		if(selections.size() == 1){
@@ -170,7 +182,7 @@ void AlbumView::init_discmenu(QModelIndex idx)
 		return;
 	}
 
-	const Album& album = m->library->albums().at(row);
+	const Album& album = m->library->albums().at(scast(size_t, row));
 	if(album.discnumbers.size() < 2) {
 		return;
 	}
@@ -257,3 +269,4 @@ void AlbumView::use_clear_button_changed()
 	bool b = GetSetting(Set::Lib_UseViewClearButton);
 	use_clear_button(b);
 }
+

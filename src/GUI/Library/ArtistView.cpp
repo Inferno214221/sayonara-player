@@ -104,10 +104,20 @@ ColumnHeaderList ArtistView::column_headers() const
 	ColumnHeaderList columns;
 
 	columns << std::make_shared<ColumnHeader>(ColumnHeader::Sharp, true, SortOrder::NoSorting, SortOrder::NoSorting, 20);
-	columns << std::make_shared<ColumnHeader>(ColumnHeader::Artist, false, SortOrder::ArtistNameAsc, SortOrder::ArtistNameDesc, 1.0, 160);
+	columns << std::make_shared<ColumnHeader>(ColumnHeader::Artist, false, SortOrder::ArtistNameAsc, SortOrder::ArtistNameDesc, 160);
 	columns << std::make_shared<ColumnHeader>(ColumnHeader::NumTracks, true, SortOrder::ArtistTrackcountAsc, SortOrder::ArtistTrackcountDesc, 80);
 
 	return columns;
+}
+
+IntList ArtistView::column_header_sizes() const
+{
+	return GetSetting(Set::Lib_ColSizeArtist);
+}
+
+void ArtistView::save_column_header_sizes(const IntList& sizes)
+{
+	SetSetting(Set::Lib_ColSizeArtist, sizes);
 }
 
 BoolList ArtistView::visible_columns() const
@@ -202,6 +212,7 @@ void ArtistView::run_merge_operation(const ItemView::MergeData& mergedata)
 
 	uto->merge_artists(mergedata.source_ids(), mergedata.target_id());
 }
+
 
 void ArtistView::album_artists_changed()
 {

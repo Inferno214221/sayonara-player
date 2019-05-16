@@ -7,11 +7,7 @@ set(SOURCES
 	GUI_AlternativeCovers.cpp
 )
 
-qt5_wrap_ui(FORMS_UIC
-	GUI_AlternativeCovers.ui
-)
-
-add_library(${PROJECT_NAME} STATIC ${SOURCES} ${FORMS_UIC})
+add_library(${PROJECT_NAME} STATIC ${SOURCES})
 target_link_libraries(${PROJECT_NAME}
     say_comp_covers
     say_gui_utils

@@ -23,6 +23,7 @@
 
 #include "GUI/Library/Utils/ColumnHeader.h"
 #include "GUI/Library/HeaderView.h"
+#include "Utils/Logger/Logger.h"
 #include <algorithm>
 
 using namespace Library;
@@ -44,6 +45,11 @@ struct TableView::Private
 	BoolList			shown_columns;
 	HeaderView*			header=nullptr;
 	Library::SortOrder  sortorder;
+	bool				header_connected;
+
+	Private() :
+		header_connected(false)
+	{}
 };
 
 TableView::TableView(QWidget* parent) :
@@ -61,11 +67,23 @@ TableView::TableView(QWidget* parent) :
 
 TableView::~TableView() {}
 
+
+
 void TableView::init(AbstractLibrary* library)
 {
 	init_view(library);
 
-	const ColumnHeaderList headers = column_headers();
+	ColumnHeaderList headers = column_headers();
+	IntList sizes = column_header_sizes();
+
+	if(headers.size() == sizes.size())
+	{
+		for(int i=0; i<sizes.size(); i++)
+		{
+			headers.at(i)->set_preferred_size(sizes.at(i));
+		}
+	}
+
 	m->shown_columns = visible_columns();
 	m->sortorder = sortorder();
 
@@ -116,6 +134,21 @@ void TableView::sort_by_column(int column_idx)
 	save_sortorder(m->sortorder);
 }
 
+void TableView::sizes_changed()
+{
+	if(!this->isVisible()){
+		return;
+	}
+
+	IntList sizes;
+	for(int i=0; i<this->column_count(); i++)
+	{
+		sizes << this->horizontalHeader()->sectionSize(i);
+	}
+
+	save_column_header_sizes(sizes);
+}
+
 
 void TableView::language_changed()
 {
@@ -136,7 +169,14 @@ void TableView::language_changed()
 void TableView::resizeEvent(QResizeEvent* event)
 {
 	ItemView::resizeEvent(event);
-	m->header->refresh_sizes(this);
+
+	if(!m->header_connected)
+	{
+		m->header_connected = true;
+		connect(this->horizontalHeader(), &QHeaderView::sectionResized, this, [=](){
+			this->sizes_changed();
+		});
+	}
 }
 
 int TableView::index_by_model_index(const QModelIndex& idx) const

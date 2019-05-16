@@ -1,21 +1,21 @@
 project(sayonara_soundcloud)
 
 file(GLOB_RECURSE SOURCES . *.cpp)
-file(GLOB_RECURSE RAW_UI_FILES . *.ui)
+
+set(CMAKE_AUTOUIC ON)
 set(RESOURCES
 	SoundcloudIcons.qrc
 )
 
-qt5_wrap_ui(UI_FILES ${RAW_UI_FILES})
 qt5_add_resources(RESOURCES_RCC ${RESOURCES})
 
 if(WIN32)
-	add_library(${PROJECT_NAME} STATIC ${SOURCES} ${UI_FILES} ${RESOURCES_RCC})
+	add_library(${PROJECT_NAME} STATIC ${SOURCES} ${RESOURCES_RCC})
 	set(SOUNDCLOUD_INSTALL_PATH
 		"share"
 	)
 else()
-	add_library(${PROJECT_NAME} SHARED ${SOURCES} ${UI_FILES} ${RESOURCES_RCC})
+	add_library(${PROJECT_NAME} SHARED ${SOURCES} ${RESOURCES_RCC})
 	set(SOUNDCLOUD_INSTALL_PATH
 		"share/sayonara"
 	)

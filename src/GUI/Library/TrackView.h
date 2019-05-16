@@ -45,6 +45,8 @@ namespace Library
 		//from Library::TableView
 		void init_view(AbstractLibrary* library) override;
 		ColumnHeaderList column_headers() const override;
+		IntList column_header_sizes() const override;
+		void save_column_header_sizes(const IntList& sizes) override;
 
 		SortOrder sortorder() const override;
 		void save_sortorder(SortOrder s) override;
