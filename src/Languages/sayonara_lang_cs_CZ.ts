@@ -126,7 +126,7 @@
     </message>
     <message>
         <source>Cover web search is not enabled</source>
-        <translation type="unfinished"/>
+        <translation>Hledání obalů na internetu není povoleno</translation>
     </message>
     <message>
         <source>%1 covers found</source>
@@ -137,7 +137,7 @@
     <name>GUI_AudioConverter</name>
     <message>
         <source>Start</source>
-        <translation type="unfinished"/>
+        <translation>Spustit</translation>
     </message>
     <message>
         <source>Stop</source>
@@ -145,7 +145,7 @@
     </message>
     <message>
         <source>#Threads</source>
-        <translation type="unfinished"/>
+        <translation>#Vlákna</translation>
     </message>
     <message>
         <source>Quality</source>
@@ -157,35 +157,35 @@
     </message>
     <message>
         <source>Threads</source>
-        <translation type="unfinished"/>
+        <translation>Vlákna</translation>
     </message>
     <message>
         <source>Cannot find encoder</source>
-        <translation type="unfinished"/>
+        <translation>Nelze najít kodér</translation>
     </message>
     <message>
         <source>Playlist does not contain tracks which are supported by the converter</source>
-        <translation type="unfinished"/>
+        <translation>Seznam skladeb neobsahuje skladby, jež jsou podporovány převaděčem</translation>
     </message>
     <message>
         <source>No track will be converted.</source>
-        <translation type="unfinished"/>
+        <translation>Nebude převedena žádná skladba.</translation>
     </message>
     <message>
         <source>These tracks will be ignored</source>
-        <translation type="unfinished"/>
+        <translation>Tyto skladby se budou přehlížet</translation>
     </message>
     <message>
         <source>Failed to convert %1 tracks</source>
-        <translation type="unfinished"/>
+        <translation>Nepodařilo se převést %1 skladeb</translation>
     </message>
     <message>
         <source>Please check the log files</source>
-        <translation type="unfinished"/>
+        <translation>Prověřte, prosím, soubory se zápisy</translation>
     </message>
     <message>
         <source>Successfully finished</source>
-        <translation type="unfinished"/>
+        <translation>Úspěšně dokončeno</translation>
     </message>
 </context>
 <context>
@@ -314,7 +314,7 @@
     </message>
     <message>
         <source>Fetch covers from the internet</source>
-        <translation type="unfinished"/>
+        <translation>Natáhnout obaly z internetu</translation>
     </message>
 </context>
 <context>
@@ -560,7 +560,7 @@
     </message>
     <message>
         <source>(this is ignored when playlist is in &apos;append mode&apos;)</source>
-        <translation type="unfinished"/>
+        <translation>(toto se přehlíží, když je seznam skladeb v &quot;přidávacím režimu&quot;)</translation>
     </message>
 </context>
 <context>
@@ -1315,11 +1315,11 @@
     <name>ImageSelectionDialog</name>
     <message>
         <source>Image files</source>
-        <translation type="unfinished"/>
+        <translation>Obrázkové soubory</translation>
     </message>
     <message>
         <source>Any files</source>
-        <translation type="unfinished"/>
+        <translation>Všechny soubory</translation>
     </message>
     <message>
         <source>Open image files</source>
@@ -1553,11 +1553,11 @@
     </message>
     <message>
         <source>File type</source>
-        <translation type="unfinished"/>
+        <translation>Typ souboru</translation>
     </message>
     <message>
         <source>Filter</source>
-        <translation type="unfinished"/>
+        <translation>Filtr</translation>
     </message>
     <message>
         <source>1st</source>
@@ -1665,7 +1665,7 @@
     </message>
     <message>
         <source>Live Search</source>
-        <translation type="unfinished"/>
+        <translation>Živé hledání</translation>
     </message>
     <message>
         <source>Logger</source>
@@ -2134,7 +2134,7 @@
     </message>
     <message>
         <source>The toolbar is visible when there are tracks with differing file types listed in the track view</source>
-        <translation type="unfinished"/>
+        <translation>Nástrojový pruh je viditelný, když jsou v pohledu na skladby vypsány skladby s lišícími se souborovými typy</translation>
     </message>
 </context>
 <context>
@@ -2180,7 +2180,7 @@
     </message>
     <message>
         <source>FAQ</source>
-        <translation type="unfinished"/>
+        <translation>Často kladené otázky</translation>
     </message>
     <message>
         <source>About Sayonara</source>
@@ -2200,7 +2200,7 @@
     </message>
     <message>
         <source>Special tanks to all the brave translators</source>
-        <translation type="unfinished"/>
+        <translation>Zvláštní poděkování všem odvážným a udatným překladatelům</translation>
     </message>
 </context>
 <context>
@@ -2226,7 +2226,7 @@
     <name>PlaylistContextMenu</name>
     <message>
         <source>Jump to current track</source>
-        <translation type="unfinished"/>
+        <translation>Skočit na nynější skladbu</translation>
     </message>
 </context>
 <context>

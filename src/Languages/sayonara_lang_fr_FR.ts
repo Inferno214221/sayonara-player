@@ -560,7 +560,7 @@
     </message>
     <message>
         <source>(this is ignored when playlist is in &apos;append mode&apos;)</source>
-        <translation type="unfinished"/>
+        <translation>(ignoré lorsque la liste de lecture est en mode « ajouter à la suite »)</translation>
     </message>
 </context>
 <context>
@@ -1315,11 +1315,11 @@
     <name>ImageSelectionDialog</name>
     <message>
         <source>Image files</source>
-        <translation type="unfinished"/>
+        <translation>Fichiers image</translation>
     </message>
     <message>
         <source>Any files</source>
-        <translation type="unfinished"/>
+        <translation>Tous les fichiers</translation>
     </message>
     <message>
         <source>Open image files</source>

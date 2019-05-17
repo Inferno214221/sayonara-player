@@ -560,7 +560,7 @@
     </message>
     <message>
         <source>(this is ignored when playlist is in &apos;append mode&apos;)</source>
-        <translation type="unfinished"/>
+        <translation>(çalma listesi &apos;ekleme kipinde&apos; olduğunda bu dikkate alınmaz)</translation>
     </message>
 </context>
 <context>
@@ -1315,11 +1315,11 @@
     <name>ImageSelectionDialog</name>
     <message>
         <source>Image files</source>
-        <translation type="unfinished"/>
+        <translation>Görüntü dosyaları</translation>
     </message>
     <message>
         <source>Any files</source>
-        <translation type="unfinished"/>
+        <translation>Tüm dosyalar</translation>
     </message>
     <message>
         <source>Open image files</source>
