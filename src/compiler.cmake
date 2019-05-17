@@ -13,6 +13,7 @@ SET(COMMON_FLAGS_TEST
 		"-Wextra"
 		"-Wpedantic"
 		"-pthread"
+		"-Wno-old-style-cast"
 )
 
 IF(NOT WIN32 OR NOT DEFINED WIN32)

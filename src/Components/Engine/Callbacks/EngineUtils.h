@@ -18,13 +18,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef ENGINEUTILS_H
 #define ENGINEUTILS_H
 
 #include <gst/gst.h>
 #include "Utils/typedefs.h"
+#include <type_traits>
+#include <utility>
+#include <memory>
+#include <iostream>
 
 namespace Engine
 {
@@ -42,6 +44,82 @@ namespace Engine
 		bool create_element(GstElement** elem, const QString& elem_name, const QString& name);
 
 		void set_passthrough(GstElement* e, bool b);
+
+		GValue get_int64(gint64 value);
+		GValue get_uint64(guint64 value);
+		GValue get_uint(guint value);
+		GValue get_int(gint value);
+
+		template<typename T>
+		struct Dont_Use_Integers_In_GObject_Set
+		{
+			Dont_Use_Integers_In_GObject_Set(T value)
+			{
+				std::string("There's a wrong value somewhere") + value;
+			}
+		};
+
+		template<typename GlibObject, typename T>
+		void set_value(GlibObject* object, const gchar* key, T value, std::true_type)
+		{
+			(void) object;
+			(void) key;
+			(void) value;
+			Dont_Use_Integers_In_GObject_Set<T>();
+		}
+
+		template<typename GlibObject, typename T>
+		void set_value(GlibObject* object, const gchar* key, T value, std::false_type)
+		{
+			g_object_set(G_OBJECT(object), key, value, nullptr);
+		}
+
+		template<typename GlibObject, typename T>
+		void set_value(GlibObject* object, const gchar* key, T value)
+		{
+			constexpr bool b = (std::is_integral<T>::value) && (sizeof(T) > sizeof(bool));
+			set_value(object, key, value, std::integral_constant<bool, b>());
+		}
+
+		template<typename GlibObject, typename First>
+		void set_values(GlibObject* object, const gchar* key, First value)
+		{
+			set_value(object, key, value);
+		}
+
+		template<typename GlibObject, typename First, typename... Args>
+		void set_values(GlibObject* object, const gchar* key, First value, Args... args)
+		{
+			set_value(object, key, value);
+			set_values(object, std::forward<Args>(args)...);
+		}
+
+		template<typename GlibObject>
+		void set_int64_value(GlibObject* object, const gchar* key, gint64 value)
+		{
+			GValue val = get_int64(value);
+			g_object_set_property(G_OBJECT(object), key, &val);
+		}
+
+		template<typename GlibObject>
+		void set_int_value(GlibObject* object,const  gchar* key, gint value)
+		{
+			GValue val = get_int(value);
+			g_object_set_property(G_OBJECT(object), key, &val);
+		}
+
+		template<typename GlibObject>
+		void set_uint64_value(GlibObject* object, const gchar* key, guint64 value)
+		{
+			GValue val = get_uint64(value);
+			g_object_set_property(G_OBJECT(object), key, &val);
+		}
+		template<typename GlibObject>
+		void set_uint_value(GlibObject* object, const gchar* key, guint value)
+		{
+			GValue val = get_uint(value);
+			g_object_set_property(G_OBJECT(object), key, &val);
+		}
 
 		MilliSeconds get_duration_ms(GstElement* element);
 		MilliSeconds get_position_ms(GstElement* element);

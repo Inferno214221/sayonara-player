@@ -181,12 +181,12 @@ bool Playback::create_source(gchar* uri)
 {
 	if(EngineUtils::create_element(&m->audio_src, "uridecodebin", "src"))
 	{
-		g_object_set (G_OBJECT (m->audio_src),
-					  "use-buffering", Util::File::is_www(uri),
-					  "ring-buffer-max-size", 10000,
-					  "buffer-duration", GetSetting(Set::Engine_BufferSizeMS) * GST_MSECOND,
-					  "uri", uri,
-					  nullptr);
+		EngineUtils::set_values(G_OBJECT(m->audio_src),
+								"use-buffering", Util::File::is_www(uri),
+								"uri", uri);
+
+		EngineUtils::set_uint64_value(G_OBJECT(m->audio_src), "ring-buffer-max-size", 10000);
+		EngineUtils::set_uint64_value(G_OBJECT(m->audio_src), "buffer-duration", GetSetting(Set::Engine_BufferSizeMS));
 
 		EngineUtils::add_elements(GST_BIN(pipeline()), {m->audio_src});
 		EngineUtils::set_state(m->audio_src, GST_STATE_NULL);
@@ -266,10 +266,9 @@ bool Playback::add_and_link_elements()
 
 bool Playback::configure_elements()
 {
-	g_object_set(G_OBJECT(m->tee),
-				 "silent", true,
-				 "allow-not-linked", true,
-				 nullptr);
+	EngineUtils::set_values(G_OBJECT(m->tee),
+				"silent", true,
+				"allow-not-linked", true);
 
 	m->init_equalizer();
 	init_visualizer();
@@ -303,10 +302,9 @@ bool Playback::init_streamrecorder()
 		EngineUtils::config_queue(m->sr_queue);
 		EngineUtils::config_sink(m->sr_sink);
 
-		g_object_set(G_OBJECT(m->sr_sink),
-					 "buffer-size", 8192,
-					 "location", Util::sayonara_path("bla.mp3").toLocal8Bit().data(),
-					 nullptr);
+		EngineUtils::set_values(G_OBJECT(m->sr_sink),
+								"location", Util::sayonara_path("bla.mp3").toLocal8Bit().data());
+		EngineUtils::set_uint_value(G_OBJECT(m->sr_sink), "buffer-size", 8192);
 	}
 
 	{ // init bin
@@ -364,10 +362,7 @@ bool Playback::init_broadcasting()
 		EngineUtils::config_lame(m->bc_lame);
 		EngineUtils::config_queue(m->bc_queue);
 		EngineUtils::config_sink(m->bc_app_sink);
-
-		g_object_set(G_OBJECT(m->bc_app_sink),
-					 "emit-signals", true,
-					 nullptr );
+		EngineUtils::set_values(G_OBJECT(m->bc_app_sink), "emit-signals", true);
 
 		g_signal_connect (m->bc_app_sink, "new-sample", G_CALLBACK(Callbacks::new_buffer), this);
 	}
@@ -408,20 +403,17 @@ bool Pipeline::Playback::init_visualizer()
 	}
 
 	{ // configure
-		g_object_set (G_OBJECT(m->level),
+		EngineUtils::set_values(G_OBJECT(m->level), "post-messages", true);
+		EngineUtils::set_uint64_value(G_OBJECT(m->level), "interval", 20 * GST_MSECOND);
+		EngineUtils::set_values(G_OBJECT (m->spectrum),
 					  "post-messages", true,
-					  "interval", 20 * GST_MSECOND,
-					  nullptr);
-
-		g_object_set (G_OBJECT (m->spectrum),
-					  "post-messages", true,
-					  "interval", 20 * GST_MSECOND,
-					  "bands", GetSetting(Set::Engine_SpectrumBins),
-					  "threshold", -75,
 					  "message-phase", false,
 					  "message-magnitude", true,
-					  "multi-channel", false,
-					  nullptr);
+					  "multi-channel", false);
+
+		EngineUtils::set_int_value(G_OBJECT(m->spectrum), "threshold", -75);
+		EngineUtils::set_uint_value(G_OBJECT(m->spectrum), "bands", GetSetting(Set::Engine_SpectrumBins));
+		EngineUtils::set_uint64_value(G_OBJECT(m->spectrum), "interval", 20 * GST_MSECOND);
 
 		EngineUtils::config_queue(m->visualizer_queue, 1000);
 		EngineUtils::config_sink(m->visualizer_sink);
@@ -455,14 +447,13 @@ void Playback::s_vol_changed()
 	int vol = GetSetting(Set::Engine_Vol);
 
 	float vol_val = (float) ((vol * 1.0f) / 100.0f);
-
-	g_object_set(G_OBJECT(m->pb_volume), "volume", vol_val, nullptr);
+	EngineUtils::set_value(G_OBJECT(m->pb_volume), "volume", vol_val);
 }
 
 void Playback::s_mute_changed()
 {
 	bool muted = GetSetting(Set::Engine_Mute);
-	g_object_set(G_OBJECT(m->pb_volume), "mute", muted, nullptr);
+	EngineUtils::set_value(G_OBJECT(m->pb_volume), "mute", muted);
 }
 
 void Playback::enable_visualizer(bool b)
@@ -477,8 +468,8 @@ void Playback::enable_visualizer(bool b)
 	bool show_level = GetSetting(Set::Engine_ShowLevel);
 	bool show_spectrum = GetSetting(Set::Engine_ShowSpectrum);
 
-	g_object_set(G_OBJECT(m->level), "post-messages", show_level, nullptr);
-	g_object_set(G_OBJECT(m->spectrum), "post-messages", show_spectrum, nullptr);
+	EngineUtils::set_value(G_OBJECT(m->level), "post-messages", show_level);
+	EngineUtils::set_value(G_OBJECT(m->spectrum), "post-messages", show_spectrum);
 }
 
 void Playback::s_show_visualizer_changed()
@@ -549,7 +540,7 @@ NanoSeconds Playback::seek_abs(NanoSeconds ns)
 
 void Playback::set_current_volume(double volume)
 {
-	g_object_set(m->pb_volume, "volume", volume, nullptr);
+	EngineUtils::set_value(G_OBJECT(m->pb_volume), "volume", volume);
 }
 
 double Playback::get_current_volume() const

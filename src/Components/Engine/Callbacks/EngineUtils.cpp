@@ -407,30 +407,30 @@ void Utils::unref_elements(const QList<GstElement*>& elements)
 
 void Utils::config_queue(GstElement* queue, gulong max_time_ms)
 {
-	g_object_set(G_OBJECT(queue),
-				 "flush-on-eos", true,
-				 "max-size-time", max_time_ms * GST_MSECOND,
-				 "silent", true,
-				 nullptr);
+	set_values(queue,
+		"flush-on-eos", true,
+		"silent", true);
+
+	set_uint64_value(queue,  "max-size-time", max_time_ms);
 }
 
 void Utils::config_sink(GstElement* sink)
 {
-	g_object_set(G_OBJECT(sink),
-				 "sync", true,
-				 "async", false,
-				 nullptr);
+	set_values(sink,
+		"sync", true,
+		"async", false);
 }
 
 void Utils::config_lame(GstElement* lame)
 {
-	g_object_set(G_OBJECT(lame),
-				 "perfect-timestamp", true,
-				 "target", 1,
-				 "cbr", true,
-				 "bitrate", 128,
-				 "encoding-engine-quality", 2,
-				 nullptr);
+	set_values(lame,
+		"perfect-timestamp", true,
+		"cbr", true
+	);
+
+	set_int_value(lame, "bitrate", 128);
+	set_int_value(lame, "target", 1);
+	set_int_value(lame, "encoding-engine-quality", 2);
 }
 
 
@@ -443,3 +443,31 @@ void Utils::set_passthrough(GstElement* e, bool b)
 	}
 }
 
+
+GValue Utils::get_int64(gint64 value)
+{
+	GValue ret = G_VALUE_INIT;
+	g_value_set_int64(&ret, value * GST_MSECOND);
+	return ret;
+}
+
+GValue Utils::get_uint64(guint64 value)
+{
+	GValue ret = G_VALUE_INIT;
+	g_value_set_int64(&ret, value * GST_MSECOND);
+	return ret;
+}
+
+GValue Utils::get_uint(guint value)
+{
+	GValue ret = G_VALUE_INIT;
+	g_value_set_uint(&ret, value * GST_MSECOND);
+	return ret;
+}
+
+GValue Utils::get_int(gint value)
+{
+	GValue ret = G_VALUE_INIT;
+	g_value_set_int(&ret, value * GST_MSECOND);
+	return ret;
+}
