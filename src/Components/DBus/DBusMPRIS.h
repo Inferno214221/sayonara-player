@@ -186,7 +186,6 @@ class MediaPlayer2 :
 		void					position_changed(MilliSeconds pos_ms);
 		void					volume_changed(int volume);
 		void					track_idx_changed(int idx);
-		void					playlist_len_changed(int len);
 		void					track_changed(const MetaData& md);
 		void					playstate_changed(PlayState state);
 

@@ -359,13 +359,6 @@ void GUI_AbstractStream::edit_finished()
 	}
 
 	QString old_name = current_station();
-	if(m->combo_stream->findText(new_name) >= 0)
-	{
-		sp_log(Log::Warning, this) << "Stream already there";
-		cs->open();
-		return;
-	}
-
 	QString old_url = url();
 
 	if(old_url != new_url){

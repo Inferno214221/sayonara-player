@@ -109,12 +109,6 @@ signals:
 	void sig_track_idx_changed(int idx);
 
 	/**
-	 * @brief playlist has changed
-	 * @param len new size of playlist
-	 */
-	void sig_playlist_changed(int len);
-
-	/**
 	 * @brief duration of track has changed
 	 * @param ms duration of track in milliseconds
 	 */

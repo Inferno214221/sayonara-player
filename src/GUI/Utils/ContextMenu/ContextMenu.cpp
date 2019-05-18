@@ -41,13 +41,17 @@ struct ContextMenu::Private
 	QAction*	action_rename=nullptr;
 	QAction*	action_delete=nullptr;
 	QAction*	action_default=nullptr;
+	QAction*	preference_separator=nullptr;
 
 	QList<QAction*>		actions;
 	QTimer*				timer=nullptr;
-	bool				has_preference_action;
+
+	bool				has_special_actions;
+	bool				has_preference_actions;
 
 	Private(QObject* parent) :
-		has_preference_action(false)
+		has_special_actions(false),
+		has_preference_actions(false)
 	{
 		timer = new QTimer(parent);
 	}
@@ -128,11 +132,25 @@ void ContextMenu::skin_changed()
 	m->action_delete->setIcon(Icons::icon(Icons::Delete));
 }
 
-void ContextMenu::register_action(QAction *action)
+void ContextMenu::register_action(QAction* action)
 {
 	m->actions << action;
-	addSeparator();
-	addAction(action);
+
+	if(!m->has_special_actions)
+	{
+		QAction* sep = this->addSeparator();
+		this->insertAction(m->preference_separator, sep);
+		m->has_special_actions = true;
+	}
+
+	if(m->preference_separator)
+	{
+		this->insertAction(m->preference_separator, action);
+	}
+
+	else {
+		addAction(action);
+	}
 }
 
 void ContextMenu::show_actions(ContextMenuEntries entries)
@@ -218,14 +236,16 @@ void ContextMenu::add_preference_action(PreferenceAction* action)
 {
 	QList<QAction*> actions;
 
-	if(!m->has_preference_action){
-		actions << this->addSeparator();
+	if(!m->has_preference_actions)
+	{
+		m->preference_separator = this->addSeparator();
+		actions << m->preference_separator;
+		m->has_preference_actions = true;
 	}
 
 	actions << action;
 
 	this->addActions(actions);
-	m->has_preference_action = true;
 }
 
 void ContextMenu::showEvent(QShowEvent* e)

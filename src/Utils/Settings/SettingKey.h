@@ -97,6 +97,7 @@ enum class SettingKey : unsigned short
 	Player_Min2Tray,
 	Player_StartInTray,
 	Player_ShowTrayIcon,
+	Player_514Fix,
 	Player_NotifyNewVersion,
 	Player_SplitterState,
 	Player_Shortcuts,
@@ -314,6 +315,7 @@ class SettingIdentifier
 	INST(bool,				Player_Min2Tray)			/* minimize Sayonara to tray */
 	INST(bool,				Player_ShowTrayIcon)			/* Show/hide the tray icon */
 	INST(bool,				Player_StartInTray)			/* start in tray */
+	INST(bool,				Player_514Fix)				/* https://bugs.archlinux.org/task/59451 */
 	INST(bool,				Player_NotifyNewVersion)		/* check for new version on startup */
 	INST(QByteArray,		Player_SplitterState)			/* spliter state between playlist and library */
 	INST(RawShortcutMap,	Player_Shortcuts)			/* player shortcuts */

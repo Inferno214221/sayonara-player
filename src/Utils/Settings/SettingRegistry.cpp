@@ -136,6 +136,7 @@ bool SettingRegistry::init()
 	register_setting<Set::Player_Min2Tray>( "min_to_tray", false );
 	register_setting<Set::Player_StartInTray>( "start_in_tray", false );
 	register_setting<Set::Player_ShowTrayIcon>( "show_tray_icon", true );
+	register_setting<Set::Player_514Fix>("514_fix", true);
 	register_setting<Set::Player_NotifyNewVersion>( "notify_new_version", true );
 	register_setting<Set::Player_SplitterState >("splitter_state_player", QByteArray());
 	register_setting<Set::Player_Shortcuts>( "shortcuts", RawShortcutMap()); // deprecated

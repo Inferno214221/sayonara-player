@@ -52,6 +52,7 @@
 #include <QKeySequence>
 #include <QCloseEvent>
 #include <QResizeEvent>
+#include <QTimer>
 
 struct GUI_Player::Private
 {
@@ -700,7 +701,16 @@ void GUI_Player::closeEvent(QCloseEvent* e)
 
 	if(!m->shutdown_requested && min_to_tray)
 	{
-		minimize_to_tray();
+		if(GetSetting(Set::Player_514Fix))
+		{
+			e->ignore();
+			QTimer::singleShot(10, this, &GUI_Player::minimize_to_tray);
+		}
+
+		else
+		{
+			minimize_to_tray();
+		}
 	}
 
 	else

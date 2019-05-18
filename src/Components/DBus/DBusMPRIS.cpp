@@ -115,12 +115,6 @@ struct DBusMPRIS::MediaPlayer2::Private
 
 	double			volume;
 
-	int				playlist_track_count;
-	int				cur_idx;
-
-	bool			can_previous;
-	bool			can_next;
-
 	bool			initialized;
 
 	Private(QMainWindow* player) :
@@ -128,27 +122,10 @@ struct DBusMPRIS::MediaPlayer2::Private
 		pos(0),
 		player(player),
 		volume(1.0),
-		playlist_track_count(0),
-		cur_idx(-1),
-		can_previous(false),
-		can_next(false),
 		initialized(false)
 	{
-
-		const Playlist::Handler* plh = Playlist::Handler::instance();
-		auto playlist = plh->active_playlist();
-
 		play_manager = PlayManager::instance();
 		volume = GetSetting(Set::Engine_Vol) / 100.0;
-
-		if(playlist)
-		{
-			cur_idx = playlist->current_track_index();
-			can_previous = (playlist->current_track_index() > 0);
-			can_next = ((playlist->current_track_index() < playlist->count() - 1) && (cur_idx >= 0));
-			playlist_track_count = playlist->count();
-		}
-
 
 		pos = (play_manager->current_position_ms() * 1000);
 	}
@@ -159,8 +136,6 @@ DBusMPRIS::MediaPlayer2::MediaPlayer2(QMainWindow* player, QObject *parent) :
 {
 	m = Pimpl::make<Private>(player);
 
-	connect(m->play_manager, &PlayManager::sig_playlist_changed,
-			this, &DBusMPRIS::MediaPlayer2::playlist_len_changed);
 	connect(m->play_manager, &PlayManager::sig_playstate_changed,
 			this, &DBusMPRIS::MediaPlayer2::playstate_changed);
 	connect(m->play_manager, &PlayManager::sig_track_changed,
@@ -375,12 +350,28 @@ double DBusMPRIS::MediaPlayer2::MaximumRate()
 
 bool DBusMPRIS::MediaPlayer2::CanGoNext()
 {
-	return m->can_next;
+	Playlist::Handler* handler = Playlist::Handler::instance();
+	PlaylistConstPtr pl = handler->playlist(handler->current_index());
+	if(!pl){
+		return false;
+	}
+
+	Playlist::Mode mode = pl->mode();
+	bool b =	Playlist::Mode::isActiveAndEnabled(mode.shuffle()) ||
+				Playlist::Mode::isActiveAndEnabled(mode.repAll());
+
+	return ((b && pl->count() > 0) || (pl->current_track_index() < pl->count() - 1));
 }
 
 bool DBusMPRIS::MediaPlayer2::CanGoPrevious()
 {
-	return m->can_previous;
+	Playlist::Handler* handler = Playlist::Handler::instance();
+	PlaylistConstPtr pl = handler->playlist(handler->current_index());
+	if(!pl){
+		return false;
+	}
+
+	return (pl->current_track_index() > 0 && pl->count() > 1);
 }
 
 bool DBusMPRIS::MediaPlayer2::CanPlay()
@@ -506,31 +497,16 @@ void DBusMPRIS::MediaPlayer2::position_changed(MilliSeconds pos)
 
 void DBusMPRIS::MediaPlayer2::track_idx_changed(int idx)
 {
+	Q_UNUSED(idx)
+
 	if(!m->initialized){
 		init();
 	}
 
-	m->can_previous = (idx > 0);
-	m->can_next = (idx < m->playlist_track_count - 1);
-
-	create_message("CanGoNext", m->can_next);
-	create_message("CanGoPrevious", m->can_previous);
-
-	m->cur_idx = idx;
+	create_message("CanGoNext", CanGoNext());
+	create_message("CanGoPrevious", CanGoPrevious());
 }
 
-void DBusMPRIS::MediaPlayer2::playlist_len_changed(int track_count)
-{
-	if(!m->initialized){
-		init();
-	}
-
-	m->can_next = (m->cur_idx < track_count - 1 && m->cur_idx >= 0);
-
-	create_message("CanGoNext", m->can_next);
-
-	m->playlist_track_count = track_count;
-}
 
 void DBusMPRIS::MediaPlayer2::track_changed(const MetaData& md)
 {

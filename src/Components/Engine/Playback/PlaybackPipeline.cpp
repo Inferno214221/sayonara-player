@@ -185,7 +185,7 @@ bool Playback::create_source(gchar* uri)
 								"use-buffering", Util::File::is_www(uri),
 								"uri", uri);
 
-		EngineUtils::set_uint64_value(G_OBJECT(m->audio_src), "ring-buffer-max-size", 10000);
+		//EngineUtils::set_uint64_value(G_OBJECT(m->audio_src), "ring-buffer-max-size", 10000);
 		EngineUtils::set_uint64_value(G_OBJECT(m->audio_src), "buffer-duration", GetSetting(Set::Engine_BufferSizeMS));
 
 		EngineUtils::add_elements(GST_BIN(pipeline()), {m->audio_src});

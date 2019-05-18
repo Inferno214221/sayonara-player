@@ -447,27 +447,31 @@ void Utils::set_passthrough(GstElement* e, bool b)
 GValue Utils::get_int64(gint64 value)
 {
 	GValue ret = G_VALUE_INIT;
-	g_value_set_int64(&ret, value * GST_MSECOND);
+	g_value_init(&ret, G_TYPE_INT64);
+	g_value_set_int64(&ret, value);
 	return ret;
 }
 
 GValue Utils::get_uint64(guint64 value)
 {
 	GValue ret = G_VALUE_INIT;
-	g_value_set_int64(&ret, value * GST_MSECOND);
+	g_value_init(&ret, G_TYPE_INT64);
+	g_value_set_int64(&ret, value);
 	return ret;
 }
 
 GValue Utils::get_uint(guint value)
 {
 	GValue ret = G_VALUE_INIT;
-	g_value_set_uint(&ret, value * GST_MSECOND);
+	g_value_init(&ret, G_TYPE_UINT);
+	g_value_set_uint(&ret, value);
 	return ret;
 }
 
 GValue Utils::get_int(gint value)
 {
 	GValue ret = G_VALUE_INIT;
-	g_value_set_int(&ret, value * GST_MSECOND);
+	g_value_init(&ret, G_TYPE_INT);
+	g_value_set_int(&ret, value);
 	return ret;
 }

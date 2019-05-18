@@ -31,6 +31,8 @@
 #include <algorithm>
 #include <array>
 
+const int InvalidTimeStamp=-1;
+
 template<typename T, int N_ITEMS>
 class RingBuffer
 {
@@ -97,7 +99,7 @@ struct PlayManager::Private
 		ring_buffer.clear();
 		track_idx = -1;
 		position_ms = 0;
-		initial_position_ms = 0;
+		initial_position_ms = InvalidTimeStamp;
 		playstate = PlayState::Stopped;
 	}
 };
@@ -111,16 +113,22 @@ PlayManager::PlayManager(QObject* parent) :
 	bool load_playlist = (GetSetting(Set::PL_LoadSavedPlaylists) || GetSetting(Set::PL_LoadTemporaryPlaylists));
 	bool load_last_track = GetSetting(Set::PL_LoadLastTrack);
 	bool remember_last_time = GetSetting(Set::PL_RememberTime);
+	bool start_playing = GetSetting(Set::PL_StartPlaying);
 
 	if(	load_playlist &&
-			load_last_track &&
-			remember_last_time)
+		load_last_track)
 	{
-		m->initial_position_ms = GetSetting(Set::Engine_CurTrackPos_s) * 1000;
+		if(start_playing){
+			m->initial_position_ms = 0;
+		}
+
+		if(remember_last_time){
+			m->initial_position_ms = GetSetting(Set::Engine_CurTrackPos_s) * 1000;
+		}
 	}
 
 	else {
-		m->initial_position_ms = 0;
+		m->initial_position_ms = InvalidTimeStamp;
 	}
 }
 
@@ -252,17 +260,19 @@ void PlayManager::set_position_ms(MilliSeconds ms)
 
 void PlayManager::change_track(const MetaData& md, int track_idx)
 {
+	bool is_first_start = (m->playstate == PlayState::FirstStartup);
+
 	m->md = md;
 	m->position_ms = 0;
 	m->track_idx = track_idx;
 	m->ring_buffer.clear();
 
 	// initial position is outdated now and never needed again
-	if(m->initial_position_ms > 0)
+	if(m->initial_position_ms >= 0)
 	{
 		int old_idx = GetSetting(Set::PL_LastTrack);
 		if(old_idx != m->track_idx) {
-			m->initial_position_ms = 0;
+			m->initial_position_ms = InvalidTimeStamp;
 		}
 	}
 
@@ -272,13 +282,16 @@ void PlayManager::change_track(const MetaData& md, int track_idx)
 		emit sig_track_changed(m->md);
 		emit sig_track_idx_changed(m->track_idx);
 
-		play();
-
-		if( (md.radio_mode() != RadioMode::Off) &&
-				GetSetting(Set::Engine_SR_Active) &&
-				GetSetting(Set::Engine_SR_AutoRecord) )
+		if(!is_first_start)
 		{
-			record(true);
+			play();
+
+			if( (md.radio_mode() != RadioMode::Off) &&
+					GetSetting(Set::Engine_SR_Active) &&
+					GetSetting(Set::Engine_SR_AutoRecord) )
+			{
+				record(true);
+			}
 		}
 	}
 
@@ -288,13 +301,17 @@ void PlayManager::change_track(const MetaData& md, int track_idx)
 		stop();
 	}
 
-	// save last track
-	if(md.db_id() == 0) {
-		SetSetting(Set::PL_LastTrack, m->track_idx);
-	}
+	if(!is_first_start)
+	{
 
-	else{
-		SetSetting(Set::PL_LastTrack, -1);
+		// save last track
+		if(md.db_id() == 0) {
+			SetSetting(Set::PL_LastTrack, m->track_idx);
+		}
+
+		else{
+			SetSetting(Set::PL_LastTrack, -1);
+		}
 	}
 
 	// show notification
@@ -307,14 +324,17 @@ void PlayManager::change_track(const MetaData& md, int track_idx)
 
 void PlayManager::set_track_ready()
 {
-	if(m->initial_position_ms == 0) {
+	if(m->initial_position_ms == InvalidTimeStamp) {
 		return;
 	}
 
-	sp_log(Log::Debug, this) << "Track ready, " << m->initial_position_ms / 1000;
-	this->seek_abs_ms(m->initial_position_ms);
+	sp_log(Log::Debug, this) << "Track ready, Start at " << m->initial_position_ms / 1000 << "ms";
+	if(m->initial_position_ms != 0)
+	{
+		this->seek_abs_ms(m->initial_position_ms);
+	}
 
-	m->initial_position_ms = 0;
+	m->initial_position_ms = InvalidTimeStamp;
 
 	if(GetSetting(Set::PL_StartPlaying)){
 		play();

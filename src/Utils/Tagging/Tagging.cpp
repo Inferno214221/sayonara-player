@@ -71,14 +71,13 @@ bool Tagging::Utils::is_valid_file(const TagLib::FileRef& f)
 
 bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 {
-	if(md.filepath().contains("never", Qt::CaseInsensitive)){
-		int x = 4;
-		sp_log(Log::Debug, "Tagging") << x;
-	}
 	bool success;
 
 	QFileInfo fi(md.filepath());
 	md.filesize = fi.size();
+	if(fi.size() <= 0){
+		return false;
+	}
 
 	TagLib::AudioProperties::ReadStyle read_style = TagLib::AudioProperties::Fast;
 	bool read_audio_props=true;
@@ -107,7 +106,7 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 	);
 
 	if(!is_valid_file(f)){
-		sp_log(Log::Warning, "Tagging") << "Cannot open tags for " << md.filepath();
+		sp_log(Log::Warning, "Tagging") << "Cannot open tags for " << md.filepath() << ": Err 1";
 		return false;
 	}
 
@@ -252,10 +251,15 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 bool Tagging::Utils::setMetaDataOfFile(const MetaData& md)
 {
 	QString filepath = md.filepath();
+	QFileInfo info(filepath);
+	if(info.size() <= 0){
+		return false;
+	}
+
 	TagLib::FileRef f(TagLib::FileName(filepath.toUtf8()));
 
 	if(!is_valid_file(f)){
-		sp_log(Log::Warning, "Tagging") << "Cannot open tags for " << md.filepath();
+		sp_log(Log::Warning, "Tagging") << "Cannot open tags for " << md.filepath() << ": Err 2";
 		return false;
 	}
 

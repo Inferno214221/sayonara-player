@@ -71,12 +71,15 @@ void GUI_ControlsBase::init()
 	setup_connections();
 	setup_shortcuts();
 
-	playstate_changed(play_manager->playstate());
-
-	if(play_manager->playstate() != PlayState::Stopped)
+	if(play_manager->playstate() != PlayState::FirstStartup)
 	{
-		track_changed(play_manager->current_track());
-		cur_pos_changed(play_manager->initial_position_ms());
+		playstate_changed(play_manager->playstate());
+
+		if(play_manager->playstate() != PlayState::Stopped)
+		{
+			track_changed(play_manager->current_track());
+			cur_pos_changed(play_manager->initial_position_ms());
+		}
 	}
 
 	connect(btn_cover(), &CoverButton::sig_rejected, this, [=](){

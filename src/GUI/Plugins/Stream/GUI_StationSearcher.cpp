@@ -259,7 +259,7 @@ void GUI_StationSearcher::stations_fetched()
 	ui->tw_stations->setRowCount(m->stations.size());
 	ui->tw_stations->setColumnCount(3);
 	ui->tw_stations->setHorizontalHeaderItem(0, new QTableWidgetItem(Lang::get(Lang::Name)));
-	ui->tw_stations->setHorizontalHeaderItem(1, new QTableWidgetItem(tr("Location")));
+	ui->tw_stations->setHorizontalHeaderItem(1, new QTableWidgetItem(tr("Country")));
 	ui->tw_stations->setHorizontalHeaderItem(2, new QTableWidgetItem(Lang::get(Lang::Info)));
 
 	int row=0;

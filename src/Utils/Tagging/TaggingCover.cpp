@@ -35,6 +35,7 @@
 #include <QString>
 #include <QPixmap>
 #include <QFile>
+#include <QFileInfo>
 
 #include <taglib/fileref.h>
 #include <taglib/flacpicture.h>
@@ -66,7 +67,7 @@ bool Tagging::Covers::write_cover(const QString& filepath, const QString& cover_
 
 	TagLib::FileRef f(TagLib::FileName(filepath.toUtf8()));
 	if(!Tagging::Utils::is_valid_file(f)){
-		sp_log(Log::Warning, "Tagging") << "Cannot open tags for " << filepath;
+		sp_log(Log::Warning, "Tagging") << "Cannot write cover for " << filepath;
 		return false;
 	}
 
@@ -201,7 +202,7 @@ bool Tagging::Covers::extract_cover(const QString& filepath, QByteArray& cover_d
 {
 	TagLib::FileRef fileref(TagLib::FileName(filepath.toUtf8()));
 	if(!Tagging::Utils::is_valid_file(fileref)){
-		sp_log(Log::Warning, "Tagging") << "Cannot open tags for " << filepath;
+		sp_log(Log::Warning, "Tagging") << "Cannot extract cover for " << filepath;
 		return false;
 	}
 
@@ -245,9 +246,14 @@ bool Tagging::Covers::has_cover(const ParsedTag& parsed_tag)
 
 bool Tagging::Covers::has_cover(const QString& filepath)
 {
+	QFileInfo fi(filepath);
+	if(fi.size() <= 0){
+		return false;
+	}
+
 	TagLib::FileRef fileref(TagLib::FileName(filepath.toUtf8()));
 	if(!Tagging::Utils::is_valid_file(fileref)){
-		sp_log(Log::Warning, "Tagging") << "Cannot open tags for " << filepath;
+		sp_log(Log::Warning, "Tagging") << "Cannot determine cover for " << filepath;
 		return false;
 	}
 
