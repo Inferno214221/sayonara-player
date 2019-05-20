@@ -36,6 +36,84 @@
 
 Q_GLOBAL_STATIC(LogObject, log_object)
 
+struct LogLine
+{
+	QDateTime	date_time;
+	Log			log_type;
+	QString		class_name;
+	QString	str;
+
+	LogLine(const QDateTime& date_time, Log log_type, const QString& class_name, const QString& str) :
+		date_time(date_time),
+		log_type(log_type),
+		class_name(class_name),
+		str(str)
+	{}
+
+	QString to_string() const
+	{
+		int log_level = GetSetting(Set::Logger_Level);
+		QString log_line = "<table style=\"font-family: Monospace;\">";
+		QString html_color, type_str;
+		switch(log_type)
+		{
+			case Log::Info:
+				html_color = "#00AA00";
+				type_str = "Info";
+				break;
+			case Log::Warning:
+				html_color = "#EE0000";
+				type_str = "Warning";
+				break;
+			case Log::Error:
+				html_color = "#EE0000";
+				type_str = "Error";
+				break;
+			case Log::Debug:
+				html_color = "#7A7A00";
+				type_str = "Debug";
+				if(log_level < 1) {
+					return QString();
+				}
+				break;
+
+			case Log::Develop:
+				html_color = "#6A6A00";
+				type_str = "Dev";
+				if(log_level < 2){
+					return QString();
+				}
+				break;
+
+			case Log::Crazy:
+				html_color = "#5A5A00";
+				type_str = "CrazyLog";
+				if(log_level < 3){
+					return QString();
+				}
+				break;
+			default:
+				type_str = "Debug";
+				break;
+		}
+
+		log_line += "<tr>";
+		log_line += "<td>[" + date_time.toString("hh:mm:ss") + "." + QString::number(date_time.time().msec()) + "]</td>";
+		log_line += "<td><div style=\"color: " + html_color + ";\">" + type_str + ": </div></td>";
+
+		if(!class_name.isEmpty())
+		{
+			log_line += "<td><div style=\"color: #0000FF;\">" + class_name + "</div>:</td>";
+		}
+
+		log_line += "<td>" + str + "</td>";
+		log_line += "</tr>";
+		log_line += "</table>";
+
+		return log_line;
+	}
+};
+
 LogObject::LogObject(QObject* parent) :
 	QObject(parent),
 	LogListener()
@@ -48,10 +126,24 @@ void LogObject::add_log_line(const LogEntry& le)
 	emit sig_new_log(QDateTime::currentDateTime(), le.type, le.class_name, le.message);
 }
 
+#include <QList>
+
+struct GUI_Logger::Private
+{
+	QList<LogLine> buffer;
+	QStringList modules;
+
+	Private()
+	{
+		modules << "";
+	}
+};
+
 
 GUI_Logger::GUI_Logger(QWidget *parent) :
 	Widget(parent)
 {
+	m = Pimpl::make<Private>();
 	connect(log_object (), &LogObject::sig_new_log, this, &GUI_Logger::log_ready, Qt::QueuedConnection);
 
 	Logger::register_log_listener(this->get_log_listener());
@@ -64,6 +156,7 @@ GUI_Logger::~GUI_Logger()
 	}
 }
 
+
 void GUI_Logger::init_ui()
 {
 	if(ui) {
@@ -73,79 +166,59 @@ void GUI_Logger::init_ui()
 	ui = new Ui::GUI_Logger;
 	ui->setupUi(this);
 
-	for(const QString& line : Util::AsConst(_buffer))
+	for(const LogLine& line : Util::AsConst(m->buffer))
 	{
-		ui->te_log->append(line);
+		ui->te_log->append(line.to_string());
 	}
 
-	_buffer.clear();
+	for(const QString& module : m->modules){
+		ui->combo_modules->addItem(module);
+	}
+
 	language_changed();
 
 	connect(ui->btn_close, &QPushButton::clicked, this, &QWidget::close);
 	connect(ui->btn_save, &QPushButton::clicked, this, &GUI_Logger::save_clicked);
+	connect(ui->combo_modules, &QComboBox::currentTextChanged, this, &GUI_Logger::current_module_changed);
 }
 
-QString GUI_Logger::calc_log_line(const QDateTime &t, Log log_type, const QString& class_name, const QString& str)
+QString GUI_Logger::calc_log_line(const LogLine& log_line)
 {
-	int log_level = GetSetting(Set::Logger_Level);
-	QString log_line = "<table style=\"font-family: Monospace;\">";
-	QString html_color, type_str;
-	switch(log_type)
+	m->buffer << log_line;
+
+	if(!m->modules.contains(log_line.class_name))
 	{
-		case Log::Info:
-			html_color = "#00AA00";
-			type_str = "Info";
-			break;
-		case Log::Warning:
-			html_color = "#EE0000";
-			type_str = "Warning";
-			break;
-		case Log::Error:
-			html_color = "#EE0000";
-			type_str = "Error";
-			break;
-		case Log::Debug:
-			html_color = "#7A7A00";
-			type_str = "Debug";
-			if(log_level < 1) {
-				return QString();
-			}
-			break;
+		int i=0;
+		for(; i<m->modules.size(); i++)
+		{
+			if(log_line.class_name < m->modules[i]){
 
-		case Log::Develop:
-			html_color = "#6A6A00";
-			type_str = "Dev";
-			if(log_level < 2){
-				return QString();
+				break;
 			}
-			break;
+		}
 
-		case Log::Crazy:
-			html_color = "#5A5A00";
-			type_str = "CrazyLog";
-			if(log_level < 3){
-				return QString();
-			}
-			break;
-		default:
-			type_str = "Debug";
-			break;
+		m->modules.insert(i, log_line.class_name);
+
+		if(ui)
+		{
+			ui->combo_modules->insertItem(i, log_line.class_name);
+		}
 	}
 
-	log_line += "<tr>";
-	log_line += "<td>[" + t.toString("hh:mm:ss") + "." + QString::number(t.time().msec()) + "]</td>";
-	log_line += "<td><div style=\"color: " + html_color + ";\">" + type_str + ": </div></td>";
+	return log_line.to_string();
+}
 
-	if(!class_name.isEmpty())
+void GUI_Logger::current_module_changed(const QString& module)
+{
+	ui->te_log->clear();
+
+	for(const LogLine& log_line : m->buffer)
 	{
-		log_line += "<td><div style=\"color: #0000FF;\">" + class_name + "</div>:</td>";
+		if((log_line.class_name == module) || module.isEmpty())
+		{
+			ui->te_log->append(log_line.to_string());
+		}
 	}
-
-	log_line += "<td>" + str + "</td>";
-	log_line += "</tr>";
-	log_line += "</table>";
-
-	return log_line;
 }
 
 void GUI_Logger::language_changed()
@@ -166,14 +239,14 @@ LogListener* GUI_Logger::get_log_listener()
 }
 
 
-void GUI_Logger::log_ready(const QDateTime& t, Log log_type, const QString& class_name, const QString& str)
+void GUI_Logger::log_ready(const QDateTime& t, Log log_type, const QString& class_name, const QString& message)
 {
-	if(!ui){
-		_buffer << calc_log_line(t, log_type, class_name, str);
-	}
+	LogLine log_line(t, log_type, class_name, message);
+	QString str = calc_log_line(log_line);
 
-	else {
-		ui->te_log->append(calc_log_line(t, log_type, class_name, str));
+	if(ui)
+	{
+		ui->te_log->append(str);
 	}
 }
 

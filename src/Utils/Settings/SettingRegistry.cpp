@@ -214,6 +214,7 @@ bool SettingRegistry::init()
 
 	register_setting<Set::Cover_Server>( "cover_server", QStringList());
 	register_setting<Set::Cover_FetchFromWWW>( "cover_fetch_from_www", true);
+	register_setting<Set::Cover_SaveToDB>("cover_save_to_db", true);
 	register_setting<Set::Cover_StartSearch>("cover_start_search_automatically", true);
 
 	register_setting<Set::Icon_Theme>( "icon_theme", QString());

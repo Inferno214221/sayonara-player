@@ -69,6 +69,7 @@ bool GUI_Covers::commit()
 
 	SetSetting(Set::Cover_Server, active_items);
 	SetSetting(Set::Cover_FetchFromWWW, ui->cb_fetch_covers_from_www->isChecked());
+	SetSetting(Set::Cover_SaveToDB, ui->cb_save_covers_to_db->isChecked());
 
 	return true;
 }
@@ -81,6 +82,7 @@ void GUI_Covers::revert()
 
 	ui->lv_cover_searchers->clear();
 	ui->lv_cover_searchers_inactive->clear();
+
 
 	QList<Cover::Fetcher::Base*> cover_fetchers = cfm->coverfetchers();
 	for(const Cover::Fetcher::Base* b : cover_fetchers)
@@ -101,6 +103,9 @@ void GUI_Covers::revert()
 
 	bool fetch_from_www = GetSetting(Set::Cover_FetchFromWWW);
 	ui->cb_fetch_covers_from_www->setChecked(fetch_from_www);
+
+	bool save_to_db = GetSetting(Set::Cover_SaveToDB);
+	ui->cb_save_covers_to_db->setChecked(save_to_db);
 
 	fetch_covers_www_triggered(fetch_from_www);
 

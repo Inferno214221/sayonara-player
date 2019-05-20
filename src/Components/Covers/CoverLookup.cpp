@@ -123,15 +123,15 @@ void Lookup::start()
 
 	if(m->n_covers == 1)
 	{
-		success = fetch_from_database();
+		/*success = fetch_from_database();
 		if(success){
 			return;
-		}
+		}*/
 
-		success = fetch_from_audio_source();
+		/*success = fetch_from_audio_source();
 		if(success){
 			return;
-		}
+		}*/
 	}
 
 	success = fetch_from_file_system();
@@ -203,13 +203,12 @@ bool Lookup::fetch_from_audio_source()
 bool Lookup::fetch_from_file_system()
 {
 	Cover::Location cl = cover_location();
-
-	QString cover_path = cl.local_path_hint();
+	QString local_path = cl.local_path();
 
 	// Look, if cover exists in .Sayonara/covers
-	if(FileUtils::exists(cover_path) && m->n_covers == 1)
+	if(FileUtils::exists(local_path) && m->n_covers == 1)
 	{
-		QPixmap pm(cover_path);
+		QPixmap pm(local_path);
 		bool success = add_new_cover(pm, cl.hash());
 		if(success)
 		{
@@ -291,7 +290,7 @@ bool Lookup::add_new_cover(const QPixmap& pm)
 bool Lookup::add_new_cover(const QPixmap& pm, const QString& hash)
 {
 	bool success = add_new_cover(pm);
-	if(success)
+	if(success && GetSetting(Set::Cover_SaveToDB))
 	{
 		DB::Covers* dbc = DB::Connector::instance()->cover_connector();
 		if(!dbc->exists(hash))

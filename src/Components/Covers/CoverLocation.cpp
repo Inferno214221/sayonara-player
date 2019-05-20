@@ -46,8 +46,6 @@ using Cover::StringMap;
 
 namespace FileUtils=::Util::File;
 
-static void check_coverpath(const QString& audio_path, const QString& cover_path);
-
 struct Location::Private
 {
 	QString			search_term;		// Term provided to search engine
@@ -127,6 +125,11 @@ void Location::set_cover_path(const QString& cover_path)
 	m->cover_path = cover_path;
 }
 
+QString Location::cover_path() const
+{
+	return m->cover_path;
+}
+
 Location::Location()
 {
 	qRegisterMetaType<Location>("CoverLocation");
@@ -167,7 +170,7 @@ Location Location::invalid_location()
 bool Location::is_invalid(const QString& cover_path)
 {
 	QString path1 = FileUtils::clean_filename(cover_path);
-	QString path2 = invalid_location().cover_path();
+	QString path2 = invalid_location().preferred_path();
 
 	return (path1 == path2);
 }
@@ -203,60 +206,6 @@ Location Location::cover_location(const QString& album_name, const QStringList& 
 	return cover_location(album_name, major_artist);
 }
 
-
-void check_coverpath(const QString& audio_path, const QString& cover_path)
-{
-	if(audio_path.isEmpty() || cover_path.isEmpty())
-	{
-		return;
-	}
-
-	if(Util::File::is_www(audio_path)){
-		return;
-	}
-
-	QFileInfo fi(cover_path);
-
-	// broken symlink
-	if(fi.isSymLink() && !FileUtils::exists(fi.symLinkTarget()))
-	{
-		Util::File::delete_files({cover_path});
-		fi = QFileInfo(cover_path);
-	}
-
-	// good symlink
-	if(fi.exists() && fi.isSymLink())
-	{
-		return;
-	}
-
-	// create symlink to local path
-	QStringList local_paths = Cover::LocalSearcher::cover_paths_from_filename(audio_path);
-	if(local_paths.isEmpty())
-	{
-		return;
-	}
-
-	// no symlink, but real file, go back
-	if(fi.exists())
-	{
-		return;
-	}
-
-	QString source = local_paths.first();
-
-	QString ext = FileUtils::get_file_extension(source);
-	if(ext.contains("jpg", Qt::CaseInsensitive) == false)
-	{
-		QImage img(source);
-		QString jpg_source = source + ".jpg";
-		img.save(jpg_source);
-
-		source = jpg_source;
-	}
-
-	FileUtils::create_symlink(source, cover_path);
-}
 
 Location Location::xcover_location(const Album& album)
 {
@@ -420,46 +369,37 @@ bool Location::valid() const
 }
 
 
-QString Location::cover_path() const
-{
-	return m->cover_path;
-}
-
 QString Location::preferred_path() const
 {
+	if(!m->valid){
+		return invalid_location().cover_path();
+	}
+
 	// first search for cover in track
 	if(has_audio_file_source())
 	{
 		bool target_exists = FileUtils::exists(this->audio_file_target());
 		if(!target_exists)
 		{
-			/*if(Tagging::Covers::has_cover(this->audio_file_source()))
-			{*/
-				QPixmap pm = Tagging::Covers::extract_cover(this->audio_file_source());
-				if(!pm.isNull())
-				{
-					target_exists = pm.save(this->audio_file_target());
-				}
-			//}
+			QPixmap pm = Tagging::Covers::extract_cover(this->audio_file_source());
+			if(!pm.isNull())
+			{
+				target_exists = pm.save(this->audio_file_target());
+			}
 		}
 
 		if(target_exists)
 		{
-			return this->audio_file_target();
+			return audio_file_target();
 		}
 	}
 
 	if(!m->local_path_hint.isEmpty())
 	{
-		check_coverpath(m->local_path_hint, this->cover_path());
+		return local_path();
 	}
 
-	// return the calculated path
-	if(FileUtils::exists(this->cover_path())){
-		return this->cover_path();
-	}
-
-	return invalid_location().cover_path();
+	return invalid_location().preferred_path();
 }
 
 
@@ -576,6 +516,24 @@ QString Location::local_path_hint() const
 	return m->local_path_hint;
 }
 
+QString Location::local_path() const
+{
+	if(m->local_path_hint.isEmpty()) {
+		return QString();
+	}
+
+	if(Util::File::is_www(m->local_path_hint)){
+		return QString();
+	}
+
+	QStringList local_paths = Cover::LocalSearcher::cover_paths_from_filename(m->local_path_hint);
+	if(local_paths.isEmpty()) {
+		return QString();
+	}
+
+	return local_paths.first();
+}
+
 void Location::set_local_path_hint(const QString& base_path)
 {
 	m->local_path_hint = base_path;
@@ -595,7 +553,6 @@ void Location::set_hash(const QString& hash)
 QString Location::to_string() const
 {
 	return	"Cover Location: Valid? " + QString::number(m->valid) + ", "
-			"Cover Path: " + cover_path() + ", "
 //			"Preferred Path: " + preferred_path() + ", "
 			"Search Urls: " + search_urls().join(',') + ", "
 			"Search Term: " + search_term() + ", "

@@ -22,6 +22,7 @@
 #define COVERHELPER_H
 
 class QString;
+class QPixmap;
 /**
  * @ingroup Covers
  */
@@ -37,6 +38,7 @@ namespace Cover
 		 */
 		QString calc_cover_token(const QString& artist, const QString& album);
 
+		bool add_temp_cover(const QPixmap& pm, const QString& hash);
 		void delete_temp_covers();
 
 		QString cover_directory();

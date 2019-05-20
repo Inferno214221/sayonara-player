@@ -25,6 +25,7 @@
 
 #include "Utils/Logger/LogListener.h"
 #include "GUI/Utils/Widgets/Widget.h"
+#include "Utils/Pimpl.h"
 
 #include <QStringList>
 #include <QWidget>
@@ -49,12 +50,13 @@ class LogObject :
 		void add_log_line(const LogEntry& le) override;
 };
 
-
+struct LogLine;
 class GUI_Logger :
 		public Gui::Widget
 {
 	Q_OBJECT
 	UI_CLASS(GUI_Logger)
+	PIMPL(GUI_Logger)
 
 	public:
 		explicit GUI_Logger(QWidget *parent = 0);
@@ -66,13 +68,11 @@ class GUI_Logger :
 		void showEvent(QShowEvent* e) override;
 		void language_changed() override;
 
-	private:
-		QStringList			_buffer;
-
 		void init_ui();
-		QString calc_log_line(const QDateTime& t, Log log_type, const QString& class_name, const QString& str);
+		QString calc_log_line(const LogLine& log_line);
 
 	private slots:
+		void current_module_changed(const QString& module);
 		void log_ready(const QDateTime& t, Log log_type, const QString& class_name, const QString& str);
 		void save_clicked();
 };

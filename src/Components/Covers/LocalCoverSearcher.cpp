@@ -33,7 +33,7 @@
 #include <cmath>
 
 using namespace Cover;
-const char* ClassName="LocalSearcher";
+static const char* ClassName="LocalSearcher";
 
 QStringList LocalSearcher::cover_paths_from_filename(const QString& filepath)
 {

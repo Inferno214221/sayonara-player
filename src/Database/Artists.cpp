@@ -285,6 +285,12 @@ ArtistId Artists::updateArtist(const Artist& artist)
 
 ArtistId Artists::insertArtistIntoDatabase(const QString& artist)
 {
+	ArtistId id = getArtistID(artist);
+	if(id >= 0){
+		Artist a; a.set_name(artist);
+		return updateArtist(a);
+	}
+
 	QString cis = Library::Utils::convert_search_string(artist, search_mode());
 
 	QMap<QString, QVariant> bindings

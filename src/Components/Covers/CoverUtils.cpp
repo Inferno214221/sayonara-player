@@ -24,6 +24,7 @@
 #include "Utils/Logger/Logger.h"
 #include "Components/Directories/DirectoryReader.h"
 
+#include <QPixmap>
 #include <QDir>
 #include <QStringList>
 
@@ -77,4 +78,12 @@ void Cover::Utils::delete_temp_covers()
 	}
 
 	FileUtils::delete_files(files_to_delete);
+}
+
+
+bool Cover::Utils::add_temp_cover(const QPixmap& pm, const QString& hash)
+{
+	QDir cover_dir = QDir(cover_directory());
+	QString path = cover_dir.filePath("tmp_" + hash + ".jpg");
+	return pm.save(path);
 }

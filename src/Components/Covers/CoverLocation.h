@@ -208,6 +208,8 @@ namespace Cover
 		 */
 		QString			local_path_hint() const;
 
+		QString			local_path() const;
+
 
 		/**
 		 * @brief Use this to retrieve a filepath where a copy of the

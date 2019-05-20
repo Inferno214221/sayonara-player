@@ -179,6 +179,7 @@ enum class SettingKey : unsigned short
 
 	Cover_Server,
 	Cover_FetchFromWWW,
+	Cover_SaveToDB,
 	Cover_StartSearch,
 	Icon_Theme,
 	Icon_ForceInDarkTheme,
@@ -232,17 +233,17 @@ class SettingIdentifier
 
 
 #define INST_ABSTR(ns, type, settingkey) \
-	namespace ns {	using settingkey = SettingIdentifier<type, SettingKey:: settingkey>; }
+	namespace ns {	\
+		using settingkey = SettingIdentifier<type, SettingKey:: settingkey>; \
+	}
 
 #define INST(type, settingkey)	INST_ABSTR(Set, type, settingkey)
 #define INST_NO_DB(type, settingkey) INST_ABSTR(SetNoDB, type, settingkey)
-
 
 /**
  * @brief Set namespace defines the setting: Which key and which type
  * @ingroup Settings
  */
-	//typedef SettingKey<bool, SK::LFM_Active> LFM_Active_t; const LFM_Active_t LFM_Active
 	INST(bool,				LFM_Active)				/* is lastFM active? */
 	INST(int,				LFM_ScrobbleTimeSec)	/* time in sec when to scrobble */
 	INST(StringPair,		LFM_Login)				/* deprecated: 2-Tupel, username, password */
@@ -262,9 +263,9 @@ class SettingIdentifier
 	INST(BoolList,			Lib_ColsTitle)			/* shown columns tracks */
 	INST(BoolList,			Lib_ColsArtist)			/* shown columns artist */
 	INST(BoolList,			Lib_ColsAlbum)				/* shown columns albums */
-	INST(IntList,			Lib_ColSizeArtist)
-	INST(IntList,			Lib_ColSizeAlbum)
-	INST(IntList,			Lib_ColSizeTitle)
+	INST(IntList,			Lib_ColSizeArtist)		/* Column Sizes for Artist */
+	INST(IntList,			Lib_ColSizeAlbum)		/* Column Sizes for Albums */
+	INST(IntList,			Lib_ColSizeTitle)		/* Column Sizes for Tracks */
 	INST(bool,				Lib_LiveSearch)			/* library live search */
 	INST(::Library::Sortings,		Lib_Sorting)		/* how to sort in lib */
 	INST(QString,			Lib_CurPlugin)				/* Current shown library plugin */
@@ -352,61 +353,62 @@ class SettingIdentifier
 	INST(int,				AudioConvert_QualityOgg)		/* 1 - 10 */
 
 	INST(QString,			Engine_Name)				/* Deprecated: Engine name */
-	INST(int,				Engine_Vol)				/* Volume */
+	INST(int,				Engine_Vol)					/* Volume */
 	INST(bool,				Engine_Mute)				/* Muted/unmuted */
-	INST(int,				Engine_CurTrackPos_s)			/* position of track (used to load old position) */
-	INST(QString,			Engine_CovertTargetPath)		/* last convert path */
-	INST(int,				Engine_SpectrumBins)			/* number of spectrum bins */
-	INST(bool,				Engine_ShowSpectrum)			/* show spectrum */
+	INST(int,				Engine_CurTrackPos_s)		/* position of track (used to load old position) */
+	INST(QString,			Engine_CovertTargetPath)	/* last convert path */
+	INST(int,				Engine_SpectrumBins)		/* number of spectrum bins */
+	INST(bool,				Engine_ShowSpectrum)		/* show spectrum */
 	INST(bool,				Engine_ShowLevel)			/* show level */
-	INST(bool,				Engine_CrossFaderActive)		/* crossfader, but not gapless active */
-	INST(int,				Engine_CrossFaderTime)			/* crossfader overlap time */
+	INST(bool,				Engine_CrossFaderActive)	/* crossfader, but not gapless active */
+	INST(int,				Engine_CrossFaderTime)		/* crossfader overlap time */
 	INST(int, 				Engine_Pitch)				/* hertz of a */
 	INST(bool, 				Engine_SpeedActive)			/* is speed control active? */
 	INST(float,				Engine_Speed)				/* if yes, set speed */
-	INST(bool, 				Engine_PreservePitch)			/* if yes, should pitch be preserved? */
+	INST(bool, 				Engine_PreservePitch)		/* if yes, should pitch be preserved? */
 	INST(QString,			Engine_Sink)				/* Alsa, pulseaudio */
-	INST(int,				Engine_BufferSizeMS)
+	INST(int,				Engine_BufferSizeMS)		/* Buffer size for streaming */
 
 	INST(bool,				Engine_SR_Active)			/* Streamripper active */
 	INST(bool,				Engine_SR_Warning)			/* streamripper warnings */
-	INST(QString,			Engine_SR_Path)			/* streamripper paths */
+	INST(QString,			Engine_SR_Path)				/* streamripper paths */
 	INST(bool,				Engine_SR_SessionPath)			/* create streamripper session path? */
 	INST(QString,			Engine_SR_SessionPathTemplate)	/* streamripper session path template*/
 	INST(bool,				Engine_SR_AutoRecord)			/* streamripper automatic recording */
 
 	INST(int,				Spectrum_Style)			/* index of spectrum style */
-	INST(int,				Level_Style)				/* index of level style */
-	INST(bool,				Broadcast_Active)			/* is broadcast active? */
-	INST(bool,				Broadcast_Prompt)			/* prompt when new connection arrives? */
+	INST(int,				Level_Style)			/* index of level style */
+	INST(bool,				Broadcast_Active)		/* is broadcast active? */
+	INST(bool,				Broadcast_Prompt)		/* prompt when new connection arrives? */
 	INST(int,				Broadcast_Port)			/* broadcast port */
 
-	INST(bool,				Remote_Active)				/* Remote control activated */
-	INST(int,				Remote_Port)				/* Remote control port */
+	INST(bool,				Remote_Active)			/* Remote control activated */
+	INST(int,				Remote_Port)			/* Remote control port */
 
-	INST(bool,				Stream_NewTab)				/* Open Streams in new tab */
+	INST(bool,				Stream_NewTab)			/* Open Streams in new tab */
 	INST(bool,				Stream_ShowHistory)		/* Show history when playing streams */
 	INST(QSize,				Stream_SearchWindowSize)
 
-	INST(int,				Lyrics_Zoom)				/* Zoom factor in lyrics window */
-	INST(QString,			Lyrics_Server)				/* Lyrics server */
+	INST(int,				Lyrics_Zoom)			/* Zoom factor in lyrics window */
+	INST(QString,			Lyrics_Server)			/* Lyrics server */
 
-	INST(QStringList,		Cover_Server)				/* Cover server */
-	INST(bool,				Cover_FetchFromWWW)			/* Fetch covers from www */
+	INST(QStringList,		Cover_Server)			/* Cover server */
+	INST(bool,				Cover_FetchFromWWW)		/* Fetch covers from www */
+	INST(bool,				Cover_SaveToDB)			/* Save covers to DB */
 	INST(bool,				Cover_StartSearch)		/* start alternative cover search automatically */
 	INST(QString,			Icon_Theme)				/* Current icon theme */
-	INST(bool,				Icon_ForceInDarkTheme)		/* Current icon theme */
+	INST(bool,				Icon_ForceInDarkTheme)	/* Current icon theme */
 
-	INST(bool,				Proxy_Active)				/* Is proxy server active */
+	INST(bool,				Proxy_Active)			/* Is proxy server active */
 	INST(QString,			Proxy_Username)			/* Proxy Username */
 	INST(QString,			Proxy_Password)			/* Proxy Password */
 	INST(QString,			Proxy_Hostname)			/* Proxy Hostname/IP Address */
 	INST(int,				Proxy_Port)				/* Proxy Port 3128 */
-	INST(bool,				Proxy_SavePw)				/* Should password be saved */
+	INST(bool,				Proxy_SavePw)			/* Should password be saved */
 
 	INST(int,				Settings_Revision)		/* Version number of settings */
 
-	INST(int,				Logger_Level)				/* Also log development: */
+	INST(int,				Logger_Level)			/* Also log development: */
 
 	INST_NO_DB(bool,				MP3enc_found)
 	INST_NO_DB(bool,				Pitch_found)
