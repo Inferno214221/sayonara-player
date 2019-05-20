@@ -112,7 +112,7 @@ QVariant AlternativeCoverItemModel::data(const QModelIndex& index, int role) con
 
 		 else
 		 {
-			 return QPixmap(Location::invalid_location().cover_path());
+			 return QPixmap(Location::invalid_location().preferred_path());
 		 }
 	 }
 

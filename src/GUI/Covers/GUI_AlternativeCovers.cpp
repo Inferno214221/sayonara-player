@@ -261,8 +261,11 @@ void GUI_AlternativeCovers::apply_clicked()
 
 		cover.save(cl.cover_path());
 
-		DB::Covers* dbc = DB::Connector::instance()->cover_connector();
-		dbc->set_cover(cl.hash(), cover);
+		if(GetSetting(Set::Cover_SaveToDB))
+		{
+			DB::Covers* dbc = DB::Connector::instance()->cover_connector();
+			dbc->set_cover(cl.hash(), cover);
+		}
 
 		emit sig_cover_changed(cl);
 	}

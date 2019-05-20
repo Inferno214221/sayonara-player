@@ -123,15 +123,15 @@ void Lookup::start()
 
 	if(m->n_covers == 1)
 	{
-		/*success = fetch_from_database();
+		success = fetch_from_database();
 		if(success){
 			return;
-		}*/
+		}
 
-		/*success = fetch_from_audio_source();
+		success = fetch_from_audio_source();
 		if(success){
 			return;
-		}*/
+		}
 	}
 
 	success = fetch_from_file_system();

@@ -396,7 +396,7 @@ void GUI_TagEdit::reset()
 	ui->btn_cover_replacement->setEnabled(true);
 	show_replacement_field(false);
 
-	QIcon icon(Cover::Location::invalid_location().cover_path());
+	QIcon icon(Cover::Location::invalid_location().preferred_path());
 	ui->btn_cover_replacement->setIcon( icon );
 
 	ui->lab_filepath->clear();

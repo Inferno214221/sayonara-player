@@ -92,7 +92,7 @@ void CoverViewPixmapCache::set_scaling(int scaling)
 	m->scaling = scaling;
 	m->scaled_pixmaps.clear();
 
-	QString invalid_path = Cover::Location::invalid_location().cover_path();
+	QString invalid_path = Cover::Location::invalid_location().preferred_path();
 	m->invalid_cover = scale_pixmap(QPixmap(invalid_path), m->scaling, m->scaling);
 }
 

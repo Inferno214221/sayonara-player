@@ -526,12 +526,35 @@ QString Location::local_path() const
 		return QString();
 	}
 
+	QString link_path = this->cover_path();
+	QFileInfo info(link_path);
+	if(info.exists())
+	{
+		if(info.isSymLink())
+		{
+			if(!Util::File::exists(info.symLinkTarget())){
+				Util::File::delete_files({link_path});
+			}
+
+			else { // symlink ok
+				return link_path;
+			}
+		}
+
+		else if(info.isFile()) {
+			return link_path;
+		}
+	}
+
 	QStringList local_paths = Cover::LocalSearcher::cover_paths_from_filename(m->local_path_hint);
 	if(local_paths.isEmpty()) {
 		return QString();
 	}
 
-	return local_paths.first();
+	QString original_path = local_paths.first();
+	Util::File::create_symlink(original_path, link_path);
+
+	return link_path;
 }
 
 void Location::set_local_path_hint(const QString& base_path)
