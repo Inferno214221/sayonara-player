@@ -30,6 +30,7 @@
 struct GUI_Stream::Private
 {
 	GUI_StationSearcher* searcher = nullptr;
+	QAction* radio_action=nullptr;
 };
 
 GUI_Stream::GUI_Stream(QWidget *parent) :
@@ -60,15 +61,22 @@ void GUI_Stream::retranslate_ui()
 {
 	GUI_AbstractStream::retranslate_ui();
 	ui->retranslateUi(this);
+
+	if(m->radio_action)
+	{
+		m->radio_action->setText(tr("Search radio station"));
+	}
 }
 
 void GUI_Stream::init_ui()
 {
 	setup_parent(this, &ui);
 
-	QAction* action = new QAction("Search Radio", ui->btn_tool);
-	ui->btn_tool->register_action(action);
-	connect(action, &QAction::triggered, this, &GUI_Stream::search_radio_triggered);
+	m->radio_action = new QAction(ui->btn_tool);
+	ui->btn_tool->register_action(m->radio_action);
+	connect(m->radio_action, &QAction::triggered, this, &GUI_Stream::search_radio_triggered);
+
+	retranslate_ui();
 }
 
 
