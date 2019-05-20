@@ -290,7 +290,11 @@ bool Lookup::add_new_cover(const QPixmap& pm)
 bool Lookup::add_new_cover(const QPixmap& pm, const QString& hash)
 {
 	bool success = add_new_cover(pm);
-	if(success && GetSetting(Set::Cover_SaveToDB))
+	if(!success){
+		return false;
+	}
+
+	if(GetSetting(Set::Cover_SaveToDB))
 	{
 		DB::Covers* dbc = DB::Connector::instance()->cover_connector();
 		if(!dbc->exists(hash))
@@ -299,7 +303,17 @@ bool Lookup::add_new_cover(const QPixmap& pm, const QString& hash)
 		}
 	}
 
-	return success;
+	else
+	{
+		QString filepath = Cover::Utils::cover_directory(hash + ".jpg");
+		if(!Util::File::exists(filepath))
+		{
+			pm.save(filepath);
+		}
+
+	}
+
+	return true;
 }
 
 
@@ -311,11 +325,7 @@ void Lookup::cover_found(int idx)
 	}
 
 	QPixmap pm = cft->pixmap(idx);
-	add_new_cover(pm);
-	if(m->n_covers == 1)
-	{
-		pm.save(Cover::Utils::cover_directory(cover_location().hash() + ".jpg"));
-	}
+	add_new_cover(pm, cover_location().hash());
 }
 
 void Lookup::stop()

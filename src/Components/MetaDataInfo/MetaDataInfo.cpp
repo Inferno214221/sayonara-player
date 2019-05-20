@@ -47,7 +47,7 @@ struct MetaDataInfo::Private
 	Util::Set<ArtistId> artist_ids;
 	Util::Set<ArtistId> album_artist_ids;
 
-	QStringList paths;
+	Util::Set<QString> paths;
 
 	Cover::Location	cover_location;
 };
