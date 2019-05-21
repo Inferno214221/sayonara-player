@@ -55,6 +55,16 @@ struct MetaDataList::Private
 	}
 };
 
+const MetaData& MetaDataList::operator[](int i) const
+{
+	return *(this->cbegin() + i);
+}
+
+MetaData& MetaDataList::operator[](int i)
+{
+	return *(this->begin() + i);
+}
+
 MetaDataList::MetaDataList() :
 	MetaDataList::Parent()
 {

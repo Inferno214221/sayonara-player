@@ -48,7 +48,7 @@ static const int MaxThreads=10;
 struct AlbumCoverFetchThread::Private
 {
 	AlbumCoverFetchThread::HashAlbumList hash_album_list;
-	QList<HashLookupPair> lookups;
+	QList<HashLocationPair> lookups;
 
 	QStringList			queued_hashes;
 
@@ -57,7 +57,6 @@ struct AlbumCoverFetchThread::Private
 	std::mutex mutex_lookup;
 
 	AtomicInt	done;
-	AtomicBool	paused;
 	AtomicBool	stopped;
 	AtomicBool	in_paused_state;
 	uint64_t	paused_to_go;
@@ -70,23 +69,22 @@ struct AlbumCoverFetchThread::Private
 	void init()
 	{
 		done = 0;
-		paused = false;
 		stopped = false;
 		hash_album_list.clear();
 		in_paused_state = false;
 		paused_to_go = 0;
 	}
 
-	void pause(uint64_t ms = 100)
+	void pause(uint64_t ms = 10)
 	{
-		paused_to_go = std::min<uint64_t>(paused_to_go + ms, 500);
+		paused_to_go = std::min<uint64_t>(paused_to_go + ms, 70);
 	}
 
 	void wait()
 	{
-			auto ms = std::min<uint64_t>(50, paused_to_go);
-			Util::sleep_ms(ms);
-			paused_to_go -= ms;
+		auto ms = std::min<uint64_t>(20, paused_to_go);
+		Util::sleep_ms(ms);
+		paused_to_go -= ms;
 	}
 
 	bool may_run()
@@ -137,7 +135,7 @@ void AlbumCoverFetchThread::run()
 		{
 			bool b = thread_create_cover_location();
 			if(b){
-				m->pause(10);
+				//m->pause(10);
 				emit sig_next();
 			}
 		}
@@ -163,10 +161,9 @@ bool AlbumCoverFetchThread::thread_create_cover_location()
 	Cover::Location cl = Cover::Location::xcover_location(album);
 	{
 		QString hash = hap.first;
-		Cover::Lookup* clu = new Cover::Lookup(cl, 1, nullptr);
 
 		LOCK_GUARD(m->mutex_lookup)
-		m->lookups << HashLookupPair(hash, clu);
+		m->lookups << HashLocationPair(hash, cl);
 	}
 
 	return true;
@@ -194,7 +191,7 @@ bool AlbumCoverFetchThread::check_album(const QString& hash)
 	bool has_hash = false;
 	{
 		LOCK_GUARD(m->mutex_lookup)
-		has_hash = ::Util::contains(m->lookups, [hash](const HashLookupPair& p){
+		has_hash = ::Util::contains(m->lookups, [hash](const HashLocationPair& p){
 			return (p.first == hash);
 		});
 	}
@@ -227,9 +224,24 @@ bool AlbumCoverFetchThread::check_album(const QString& hash)
 	return has_hash;
 }
 
-AlbumCoverFetchThread::HashLookupPair AlbumCoverFetchThread::take_current_lookup()
+int AlbumCoverFetchThread::lookups_ready() const
 {
-	HashLookupPair ret;
+	return m->lookups.size();
+}
+
+int AlbumCoverFetchThread::queued_hashes() const
+{
+	return m->queued_hashes.size();
+}
+
+int AlbumCoverFetchThread::unprocessed_hashes() const
+{
+	return m->hash_album_list.size();
+}
+
+AlbumCoverFetchThread::HashLocationPair AlbumCoverFetchThread::take_current_lookup()
+{
+	HashLocationPair ret;
 
 	{
 		LOCK_GUARD(m->mutex_lookup)
@@ -282,8 +294,7 @@ void AlbumCoverFetchThread::stop()
 
 void AlbumCoverFetchThread::resume()
 {
-	//m->paused_to_go = 0;
-	//m->paused = false;
+	m->paused_to_go = 0;
 }
 
 void AlbumCoverFetchThread::clear()

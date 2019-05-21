@@ -174,9 +174,9 @@ void GUI_AlternativeCovers::start(const Location& cl)
 
 	else
 	{
-//		if(!GetSetting(Set::Cover_FetchFromWWW)){
-//			return;
-//		}
+		if(!GetSetting(Set::Cover_FetchFromWWW)){
+			return;
+		}
 
 		connect_and_start();
 	}
@@ -254,17 +254,13 @@ void GUI_AlternativeCovers::apply_clicked()
 	else
 	{
 		Cover::Location cl = m->cl_alternative->cover_location();
-		QFileInfo fi(cl.cover_path());
-		if(fi.isSymLink()){
-			QFile::remove(cl.cover_path());
-		}
 
-		cover.save(cl.cover_path());
+		Cover::Utils::write_cover_to_db(cl, cover);
+		Cover::Utils::write_cover_to_sayonara_dir(cl, cover);
 
-		if(GetSetting(Set::Cover_SaveToDB))
+		if(GetSetting(Set::Cover_SaveToLibrary))
 		{
-			DB::Covers* dbc = DB::Connector::instance()->cover_connector();
-			dbc->set_cover(cl.hash(), cover);
+			Cover::Utils::write_cover_to_library(cl, cover);
 		}
 
 		emit sig_cover_changed(cl);

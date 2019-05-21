@@ -45,6 +45,7 @@ public:
 
 	bool is_outdated(const Hash& hash) const;
 	void set_cache_size(int cache_size);
+	void clear();
 };
 
 #endif // COVERVIEWPIXMAPCACHE_H

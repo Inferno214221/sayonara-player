@@ -47,9 +47,7 @@ QStringList LocalSearcher::cover_paths_from_path_hint(const QString& filepath_hi
 		sp_log(Log::Develop, ClassName) << filepath_hint << " is not a directory. Using " << filepath << " instead";
 	}
 
-	QStringList filters;
-	filters << "*.jpg"
-			<< "*.png";
+	QStringList filters = Util::image_extensions();
 
 	int c = filters.size();
 	for(int i=0; i<c; i++){

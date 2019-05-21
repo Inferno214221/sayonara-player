@@ -100,8 +100,7 @@ namespace Cover
 		 */
 		bool start_new_thread(const Location& cl);
 
-		bool add_new_cover(const QPixmap& pm, const QString& hash);
-		bool add_new_cover(const QPixmap& pm);
+		bool add_new_cover(const QPixmap& pm, bool save);
 
 		void emit_finished(bool success);
 
@@ -123,23 +122,6 @@ namespace Cover
 		void extractor_finished();
 	};
 
-	class Extractor : public QObject
-	{
-		Q_OBJECT
-		PIMPL(Extractor)
-
-		signals:
-			void sig_finished();
-
-		public:
-			Extractor(const QString& filepath, QObject* parent);
-			~Extractor();
-
-			QPixmap pixmap();
-
-		public slots:
-			void start();
-	};
 
 	/**
 	 * @brief CoverLookupPtr

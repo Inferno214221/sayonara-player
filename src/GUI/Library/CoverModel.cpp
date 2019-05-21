@@ -69,7 +69,7 @@ public:
 	int	old_row_count;
 	int	old_column_count;
 	int columns;
-	int							clus_running;
+	int	clus_running;
 	int	zoom;
 
 	Private(QObject* parent) :
@@ -211,6 +211,7 @@ struct CoverLookupUserData
 };
 
 static std::mutex mtx;
+
 void CoverModel::next_hash()
 {
 	AlbumCoverFetchThread* acft = dynamic_cast<AlbumCoverFetchThread*>(sender());
@@ -218,13 +219,21 @@ void CoverModel::next_hash()
 		return;
 	}
 
-	AlbumCoverFetchThread::HashLookupPair hlp = acft->take_current_lookup();
-	if(hlp.first.isEmpty() || hlp.second == nullptr){
+	AlbumCoverFetchThread::HashLocationPair hlp = acft->take_current_lookup();
+	if(hlp.first.isEmpty() || !hlp.second.valid()){
 		return;
 	}
 
+	sp_log(Log::Debug, this) << "Status cover fetch thread:";
+	sp_log(Log::Debug, this) << "  Lookups ready: " << acft->lookups_ready();
+	sp_log(Log::Debug, this) << "  Unprocessed hashes: " << acft->unprocessed_hashes();
+	sp_log(Log::Debug, this) << "  Queued hashes: " << acft->queued_hashes();
+
+
 	Hash hash = hlp.first;
-	Lookup* clu = hlp.second;
+	Location cl = hlp.second;
+
+	Lookup* clu = new Lookup(cl, 1, nullptr);
 
 	CoverLookupUserData* d = new CoverLookupUserData();
 	{
@@ -236,6 +245,7 @@ void CoverModel::next_hash()
 	clu->set_user_data(d);
 
 	connect(clu, &Lookup::sig_finished, this, &CoverModel::cover_lookup_finished);
+
 
 	m->clus_running++;
 	sp_log(Log::Develop, this) << "CLU started: " << m->clus_running << ", " << d->hash;
@@ -427,7 +437,6 @@ static QSize calc_item_size(int zoom, QFont font)
 void CoverModel::set_zoom(int zoom, const QSize& view_size)
 {
 	m->zoom = zoom;
-	m->cover_thread->pause();
 	m->item_size = calc_item_size(zoom, Gui::Util::main_window()->font());
 
 	int columns = (view_size.width() / m->item_size.width());
@@ -441,8 +450,6 @@ void CoverModel::set_zoom(int zoom, const QSize& view_size)
 		refresh_data();
 		emit dataChanged(index(0, 0), index(rowCount() - 1, columnCount() - 1), {Qt::SizeHintRole});
 	}
-
-	m->cover_thread->resume();
 }
 
 
@@ -454,10 +461,8 @@ void CoverModel::show_artists_changed()
 
 void CoverModel::reload()
 {
-	m->cover_thread->pause();
 	m->cover_thread->clear();
-
-	m->indexes.clear();
+	m->cvpc->clear();
 	clear();
 
 	emit dataChanged(index(0,0), index(rowCount() - 1, columnCount() - 1));
@@ -465,12 +470,10 @@ void CoverModel::reload()
 
 void CoverModel::clear()
 {
-	m->cover_thread->pause();
 	m->cover_thread->clear();
 
 	m->indexes.clear();
 	m->indexes.squeeze();
-	m->cover_thread->resume();
 }
 
 

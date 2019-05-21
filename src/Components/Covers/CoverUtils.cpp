@@ -19,11 +19,15 @@
  */
 
 #include "CoverUtils.h"
+#include "CoverLocation.h"
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Logger/Logger.h"
 #include "Components/Directories/DirectoryReader.h"
+#include "Database/Connector.h"
+#include "Database/CoverConnector.h"
 
+#include <QFileInfo>
 #include <QPixmap>
 #include <QDir>
 #include <QStringList>
@@ -86,4 +90,32 @@ bool Cover::Utils::add_temp_cover(const QPixmap& pm, const QString& hash)
 	QDir cover_dir = QDir(cover_directory());
 	QString path = cover_dir.filePath("tmp_" + hash + ".jpg");
 	return pm.save(path);
+}
+
+
+void Cover::Utils::write_cover_to_sayonara_dir(const Cover::Location& cl, const QPixmap& pm)
+{
+	QFileInfo fi(cl.cover_path());
+	if(fi.isSymLink()){
+		QFile::remove(cl.cover_path());
+	}
+
+	pm.save(cl.cover_path());
+}
+
+void Cover::Utils::write_cover_to_db(const Cover::Location& cl, const QPixmap& pm)
+{
+	DB::Covers* dbc = DB::Connector::instance()->cover_connector();
+	dbc->set_cover(cl.hash(), pm);
+}
+
+void Cover::Utils::write_cover_to_library(const Cover::Location& cl, const QPixmap& pm)
+{
+	QString filepath = cover_directory(cl.hash() + ".jpg");
+	QFileInfo fi(filepath);
+	if(fi.isSymLink()){
+		Util::File::delete_files({filepath});
+	}
+
+	pm.save(filepath);
 }

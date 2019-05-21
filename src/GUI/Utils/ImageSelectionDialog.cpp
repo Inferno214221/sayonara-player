@@ -18,9 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "ImageSelectionDialog.h"
+#include "Utils/Utils.h"
 
 #include <QLayout>
 #include <QLabel>
@@ -43,15 +42,17 @@ struct ImageSelectionDialog::Private
 	}
 };
 
+
 ImageSelectionDialog::ImageSelectionDialog(const QString& dir, QWidget* parent) :
 	Gui::WidgetTemplate<QFileDialog>(parent)
 {
 	m = Pimpl::make<Private>(this);
 	m->start_dir = dir;
 
+	;
 	QStringList filters
 	{
-		tr("Image files") + " (*.jpg *.png *.gif)",
+		tr("Image files") + " (" + Util::image_extensions().join(" ") + ")",
 		tr("Any files") + " (*)"
 	};
 

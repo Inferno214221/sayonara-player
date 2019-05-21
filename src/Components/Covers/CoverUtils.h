@@ -28,6 +28,7 @@ class QPixmap;
  */
 namespace Cover
 {
+	class Location;
 	namespace Utils
 	{
 		/**
@@ -43,6 +44,10 @@ namespace Cover
 
 		QString cover_directory();
 		QString cover_directory(const QString& append_filename);
+
+		void write_cover_to_sayonara_dir(const Cover::Location& cl, const QPixmap& pm);
+		void write_cover_to_db(const Cover::Location& cl, const QPixmap& pm);
+		void write_cover_to_library(const Cover::Location& cl, const QPixmap& pm);
 
 	}
 }

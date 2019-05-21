@@ -107,10 +107,14 @@ void CoverButton::set_cover_location(const Location& cl)
 		return;
 	}
 
-	m->hash = cl.hash();
+	set_cover_image(Cover::Location::invalid_location().preferred_path());
+	if(cl.hash().isEmpty()){
+		return;
+	}
 
 	m->cover_location = cl;
 	m->cover_forced = false;
+	m->hash = cl.hash();
 
 	if(!m->cover_lookup)
 	{
@@ -119,7 +123,9 @@ void CoverButton::set_cover_location(const Location& cl)
 		connect(m->cover_lookup, &Lookup::sig_finished, this, &CoverButton::cover_lookup_finished);
 	}
 
-	set_cover_image(Cover::Location::invalid_location().preferred_path());
+	else {
+		m->cover_lookup->set_cover_location(cl);
+	}
 
 	m->cover_lookup->start();
 }

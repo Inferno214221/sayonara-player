@@ -57,7 +57,6 @@ class AlbumCoverFetchThread : public QThread
 		using HashAlbumPair = QPair<Hash, Album>;
 		using HashAlbumList = QList<HashAlbumPair>;
 		using HashLocationPair = QPair<Hash, Cover::Location>;
-		using HashLookupPair = QPair<Hash, Cover::Lookup*>;
 		using HashLocationList = QList<HashLocationPair>;
 
 	signals:
@@ -82,8 +81,12 @@ class AlbumCoverFetchThread : public QThread
 
 		bool check_album(const QString& hash);
 
+		int lookups_ready() const;
+		int queued_hashes() const;
+		int unprocessed_hashes() const;
 
-		HashLookupPair take_current_lookup();
+
+		HashLocationPair take_current_lookup();
 
 
 		/**

@@ -102,5 +102,14 @@ bool CoverViewPixmapCache::is_outdated(const Hash& hash) const
 
 void CoverViewPixmapCache::set_cache_size(int cache_size)
 {
+	if(m->pixmaps.maxCost() > cache_size){
+		return;
+	}
+
 	m->pixmaps.setMaxCost(std::min(30, cache_size));
+}
+
+void CoverViewPixmapCache::clear()
+{
+	m->pixmaps.clear();
 }

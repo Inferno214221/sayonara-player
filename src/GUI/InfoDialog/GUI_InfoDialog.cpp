@@ -321,6 +321,7 @@ void GUI_InfoDialog::tab_index_changed(GUI_InfoDialog::Tab idx)
 	}
 }
 
+#include "Utils/Logger/Logger.h"
 void GUI_InfoDialog::show_info_tab()
 {
 	prepare_info(m->md_interpretation);
