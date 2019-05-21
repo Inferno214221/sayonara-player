@@ -1,4 +1,4 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="cs_CZ" version="2.0">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="cs_CZ" version="2.1">
 <context>
     <name>GUI_SomaFM</name>
     <message>
@@ -96,7 +96,7 @@
         <translation>Hledání obalů na internetu není povoleno</translation>
     </message>
     <message>
-        <location line="+80"/>
+        <location line="+79"/>
         <source>%1 covers found</source>
         <translation>Nalezeno %1 obalů</translation>
     </message>
@@ -615,7 +615,17 @@
 <context>
     <name>GUI_Covers</name>
     <message>
-        <location filename="src/GUI/Preferences/Covers/GUI_Covers.ui" line="+19"/>
+        <location filename="src/GUI/Preferences/Covers/GUI_Covers.ui" line="+32"/>
+        <source>Cover name template</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Delete files</source>
+        <translation>Smazat soubory</translation>
+    </message>
+    <message>
+        <location line="+9"/>
         <source>&lt;</source>
         <translation>&lt;</translation>
     </message>
@@ -635,19 +645,34 @@
         <translation>Činný</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+9"/>
+        <source>Fetch missing covers from the internet</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+21"/>
         <source>Clear cache</source>
         <translation>Vyprázdnit vyrovnávací paměť</translation>
     </message>
     <message>
-        <location line="+14"/>
-        <source>Delete files</source>
-        <translation>Smazat soubory</translation>
+        <location line="+7"/>
+        <source>Saving covers to the database leads to significantly faster access but results in a bigger database</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Save found covers to database</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+7"/>
-        <source>Fetch covers from the internet</source>
-        <translation>Natáhnout obaly z internetu</translation>
+        <source>Save found covers into library</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Save found covers into Sayonara directory</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -1480,7 +1505,7 @@
 <context>
     <name>CoverButton</name>
     <message>
-        <location filename="src/GUI/Covers/CoverButton.cpp" line="+196"/>
+        <location filename="src/GUI/Covers/CoverButton.cpp" line="+202"/>
         <source>Cover source: Audio file</source>
         <translation>Zdroj obalu: zvukový soubor</translation>
     </message>
@@ -1632,7 +1657,7 @@
 <context>
     <name>GUI_Logger</name>
     <message>
-        <location filename="src/GUI/Player/GUI_Logger.cpp" line="+199"/>
+        <location filename="src/GUI/Player/GUI_Logger.cpp" line="+272"/>
         <source>Cannot open file</source>
         <translation>Nelze otevřít soubor</translation>
     </message>
@@ -1873,6 +1898,14 @@
     </message>
 </context>
 <context>
+    <name>GUI_Stream</name>
+    <message>
+        <location filename="src/GUI/Plugins/Stream/GUI_Stream.cpp" line="+67"/>
+        <source>Search radio station</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
     <name>GUI_EnginePreferences</name>
     <message>
         <location filename="src/GUI/Preferences/Engine/GUI_EnginePreferences.cpp" line="+44"/>
@@ -1960,7 +1993,7 @@
 <context>
     <name>ImageSelectionDialog</name>
     <message>
-        <location filename="src/GUI/Utils/ImageSelectionDialog.cpp" line="+54"/>
+        <location filename="src/GUI/Utils/ImageSelectionDialog.cpp" line="+55"/>
         <source>Image files</source>
         <translation>Obrázkové soubory</translation>
     </message>

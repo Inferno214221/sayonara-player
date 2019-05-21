@@ -1,4 +1,4 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="fr_FR" version="2.0">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="fr_FR" version="2.1">
 <context>
     <name>GUI_SomaFM</name>
     <message>
@@ -96,7 +96,7 @@
         <translation>La recherche de pochette sur le Web est désactivée</translation>
     </message>
     <message>
-        <location line="+80"/>
+        <location line="+79"/>
         <source>%1 covers found</source>
         <translation>%1 pochette(s) trouvée(s)</translation>
     </message>
@@ -272,7 +272,7 @@
     <message>
         <location filename="src/GUI/Player/GUI_ControlsNew.ui" line="+638"/>
         <source>Copyright 2011-2019</source>
-        <translation type="unfinished"/>
+        <translation>Copyright 2011-2019</translation>
     </message>
     <message>
         <location line="+50"/>
@@ -568,7 +568,7 @@
     <message>
         <location line="+41"/>
         <source>Url</source>
-        <translation type="unfinished"/>
+        <translation>URL</translation>
     </message>
 </context>
 <context>
@@ -576,27 +576,27 @@
     <message>
         <location filename="src/GUI/Plugins/Stream/GUI_StationSearcher.ui" line="+14"/>
         <source>Search Radio Station</source>
-        <translation type="unfinished"/>
+        <translation>Rechercher une station de radio</translation>
     </message>
     <message>
         <location filename="src/GUI/Plugins/Stream/GUI_StationSearcher.cpp" line="+58"/>
         <source>Show stations from %1 to %2</source>
-        <translation type="unfinished"/>
+        <translation>Affichage des stations %1 à %2</translation>
     </message>
     <message>
         <location line="+204"/>
         <source>Country</source>
-        <translation type="unfinished"/>
+        <translation>Pays</translation>
     </message>
     <message>
         <location line="+76"/>
         <source>Type</source>
-        <translation type="unfinished"/>
+        <translation>Type</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Url</source>
-        <translation type="unfinished"/>
+        <translation>URL</translation>
     </message>
 </context>
 <context>
@@ -615,7 +615,17 @@
 <context>
     <name>GUI_Covers</name>
     <message>
-        <location filename="src/GUI/Preferences/Covers/GUI_Covers.ui" line="+19"/>
+        <location filename="src/GUI/Preferences/Covers/GUI_Covers.ui" line="+32"/>
+        <source>Cover name template</source>
+        <translation>Modèle de nom de pochette</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Delete files</source>
+        <translation>Supprimer les fichiers</translation>
+    </message>
+    <message>
+        <location line="+9"/>
         <source>&lt;</source>
         <translation>&lt;</translation>
     </message>
@@ -635,19 +645,34 @@
         <translation>Actif</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+9"/>
+        <source>Fetch missing covers from the internet</source>
+        <translation>Récupérer les pochettes manquantes sur Internet</translation>
+    </message>
+    <message>
+        <location line="+21"/>
         <source>Clear cache</source>
         <translation>Effacer le cache</translation>
     </message>
     <message>
-        <location line="+14"/>
-        <source>Delete files</source>
-        <translation>Supprimer les fichiers</translation>
+        <location line="+7"/>
+        <source>Saving covers to the database leads to significantly faster access but results in a bigger database</source>
+        <translation>Enregistrer les pochettes dans la base de données permet un accès beaucoup plus rapide, mais alourdit la base de données.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Save found covers to database</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+7"/>
-        <source>Fetch covers from the internet</source>
-        <translation>Récupérer les pochettes sur Internet</translation>
+        <source>Save found covers into library</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Save found covers into Sayonara directory</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -1099,12 +1124,12 @@
     <message>
         <location filename="src/GUI/Preferences/Streams/GUI_StreamPreferences.ui" line="+17"/>
         <source> ms</source>
-        <translation type="unfinished"/>
+        <translation> ms</translation>
     </message>
     <message>
         <location line="+29"/>
         <source>Buffer size</source>
-        <translation type="unfinished"/>
+        <translation>Mémoire tampon</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -1437,7 +1462,7 @@
     <message>
         <location filename="src/Components/Library/Threads/ReloadThread.cpp" line="+223"/>
         <source>Looking for covers</source>
-        <translation type="unfinished"/>
+        <translation>Recherche de pochettes</translation>
     </message>
     <message>
         <location line="+41"/>
@@ -1480,7 +1505,7 @@
 <context>
     <name>CoverButton</name>
     <message>
-        <location filename="src/GUI/Covers/CoverButton.cpp" line="+196"/>
+        <location filename="src/GUI/Covers/CoverButton.cpp" line="+202"/>
         <source>Cover source: Audio file</source>
         <translation>Source pochette: Fichier audio</translation>
     </message>
@@ -1632,7 +1657,7 @@
 <context>
     <name>GUI_Logger</name>
     <message>
-        <location filename="src/GUI/Player/GUI_Logger.cpp" line="+199"/>
+        <location filename="src/GUI/Player/GUI_Logger.cpp" line="+272"/>
         <source>Cannot open file</source>
         <translation>Impossible d&apos;ouvrir le fichier</translation>
     </message>
@@ -1856,7 +1881,7 @@
     <message>
         <location line="+96"/>
         <source>Please choose another name</source>
-        <translation type="unfinished"/>
+        <translation>Veuillez choisir un autre nom</translation>
     </message>
     <message>
         <location line="+61"/>
@@ -1870,6 +1895,14 @@
         <location filename="src/GUI/Plugins/Stream/GUI_Podcasts.cpp" line="+62"/>
         <source>Podcast</source>
         <translation>Podcast</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_Stream</name>
+    <message>
+        <location filename="src/GUI/Plugins/Stream/GUI_Stream.cpp" line="+67"/>
+        <source>Search radio station</source>
+        <translation>Rechercher une station de radio</translation>
     </message>
 </context>
 <context>
@@ -1960,7 +1993,7 @@
 <context>
     <name>ImageSelectionDialog</name>
     <message>
-        <location filename="src/GUI/Utils/ImageSelectionDialog.cpp" line="+54"/>
+        <location filename="src/GUI/Utils/ImageSelectionDialog.cpp" line="+55"/>
         <source>Image files</source>
         <translation>Fichiers image</translation>
     </message>
@@ -2511,7 +2544,7 @@
     <message>
         <location line="+2"/>
         <source>Next page</source>
-        <translation type="unfinished"/>
+        <translation>Page suivante</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2637,7 +2670,7 @@
     <message>
         <location line="+2"/>
         <source>Previous page</source>
-        <translation type="unfinished"/>
+        <translation>Page précédente</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2758,7 +2791,7 @@
     <message>
         <location line="+2"/>
         <source>Search previous</source>
-        <translation type="unfinished"/>
+        <translation>Rechercher le précédent</translation>
     </message>
     <message>
         <location line="+2"/>

@@ -1,4 +1,4 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="pl_PL" version="2.0">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="pl_PL" version="2.1">
 <context>
     <name>GUI_SomaFM</name>
     <message>
@@ -96,7 +96,7 @@
         <translation>Wyszukiwarka okładek w sieci nie jest włączona</translation>
     </message>
     <message>
-        <location line="+80"/>
+        <location line="+79"/>
         <source>%1 covers found</source>
         <translation>Znaleziono %1 okładek albumów</translation>
     </message>
@@ -272,7 +272,7 @@
     <message>
         <location filename="src/GUI/Player/GUI_ControlsNew.ui" line="+638"/>
         <source>Copyright 2011-2019</source>
-        <translation type="unfinished"/>
+        <translation>Prawa autorskie 2011-2019</translation>
     </message>
     <message>
         <location line="+50"/>
@@ -568,7 +568,7 @@
     <message>
         <location line="+41"/>
         <source>Url</source>
-        <translation type="unfinished"/>
+        <translation>Url</translation>
     </message>
 </context>
 <context>
@@ -576,27 +576,27 @@
     <message>
         <location filename="src/GUI/Plugins/Stream/GUI_StationSearcher.ui" line="+14"/>
         <source>Search Radio Station</source>
-        <translation type="unfinished"/>
+        <translation>Wyszukaj stację radiową</translation>
     </message>
     <message>
         <location filename="src/GUI/Plugins/Stream/GUI_StationSearcher.cpp" line="+58"/>
         <source>Show stations from %1 to %2</source>
-        <translation type="unfinished"/>
+        <translation>Pokaż stacje od% 1 do% 2</translation>
     </message>
     <message>
         <location line="+204"/>
         <source>Country</source>
-        <translation type="unfinished"/>
+        <translation>Kraj</translation>
     </message>
     <message>
         <location line="+76"/>
         <source>Type</source>
-        <translation type="unfinished"/>
+        <translation>Rodzaj</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Url</source>
-        <translation type="unfinished"/>
+        <translation>Url</translation>
     </message>
 </context>
 <context>
@@ -615,7 +615,17 @@
 <context>
     <name>GUI_Covers</name>
     <message>
-        <location filename="src/GUI/Preferences/Covers/GUI_Covers.ui" line="+19"/>
+        <location filename="src/GUI/Preferences/Covers/GUI_Covers.ui" line="+32"/>
+        <source>Cover name template</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Delete files</source>
+        <translation>Usuń pliki</translation>
+    </message>
+    <message>
+        <location line="+9"/>
         <source>&lt;</source>
         <translation>&lt;</translation>
     </message>
@@ -635,19 +645,34 @@
         <translation>Aktywna</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+9"/>
+        <source>Fetch missing covers from the internet</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+21"/>
         <source>Clear cache</source>
         <translation>Wyczyść pamięć podręczną</translation>
     </message>
     <message>
-        <location line="+14"/>
-        <source>Delete files</source>
-        <translation>Usuń pliki</translation>
+        <location line="+7"/>
+        <source>Saving covers to the database leads to significantly faster access but results in a bigger database</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Save found covers to database</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+7"/>
-        <source>Fetch covers from the internet</source>
-        <translation>Pobierz okładki z Internetu</translation>
+        <source>Save found covers into library</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Save found covers into Sayonara directory</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -1099,12 +1124,12 @@
     <message>
         <location filename="src/GUI/Preferences/Streams/GUI_StreamPreferences.ui" line="+17"/>
         <source> ms</source>
-        <translation type="unfinished"/>
+        <translation>ms</translation>
     </message>
     <message>
         <location line="+29"/>
         <source>Buffer size</source>
-        <translation type="unfinished"/>
+        <translation>Rozmiar bufora</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -1480,7 +1505,7 @@
 <context>
     <name>CoverButton</name>
     <message>
-        <location filename="src/GUI/Covers/CoverButton.cpp" line="+196"/>
+        <location filename="src/GUI/Covers/CoverButton.cpp" line="+202"/>
         <source>Cover source: Audio file</source>
         <translation>Źródło okładki albumu: Plik audio</translation>
     </message>
@@ -1632,7 +1657,7 @@
 <context>
     <name>GUI_Logger</name>
     <message>
-        <location filename="src/GUI/Player/GUI_Logger.cpp" line="+199"/>
+        <location filename="src/GUI/Player/GUI_Logger.cpp" line="+272"/>
         <source>Cannot open file</source>
         <translation>Nie można otworzyć pliku</translation>
     </message>
@@ -1856,7 +1881,7 @@
     <message>
         <location line="+96"/>
         <source>Please choose another name</source>
-        <translation type="unfinished"/>
+        <translation>Wybierz inną nazwę</translation>
     </message>
     <message>
         <location line="+61"/>
@@ -1870,6 +1895,14 @@
         <location filename="src/GUI/Plugins/Stream/GUI_Podcasts.cpp" line="+62"/>
         <source>Podcast</source>
         <translation>Podcast</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_Stream</name>
+    <message>
+        <location filename="src/GUI/Plugins/Stream/GUI_Stream.cpp" line="+67"/>
+        <source>Search radio station</source>
+        <translation>Wyszukaj stację radiową</translation>
     </message>
 </context>
 <context>
@@ -1960,14 +1993,14 @@
 <context>
     <name>ImageSelectionDialog</name>
     <message>
-        <location filename="src/GUI/Utils/ImageSelectionDialog.cpp" line="+54"/>
+        <location filename="src/GUI/Utils/ImageSelectionDialog.cpp" line="+55"/>
         <source>Image files</source>
-        <translation type="unfinished"/>
+        <translation>Pliki obrazów</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Any files</source>
-        <translation type="unfinished"/>
+        <translation>Wszystkie pliki</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -2511,7 +2544,7 @@
     <message>
         <location line="+2"/>
         <source>Next page</source>
-        <translation type="unfinished"/>
+        <translation>Następna strona</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2637,7 +2670,7 @@
     <message>
         <location line="+2"/>
         <source>Previous page</source>
-        <translation type="unfinished"/>
+        <translation>Poprzednia strona</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2758,7 +2791,7 @@
     <message>
         <location line="+2"/>
         <source>Search previous</source>
-        <translation type="unfinished"/>
+        <translation>Wyszukaj poprzedni</translation>
     </message>
     <message>
         <location line="+2"/>

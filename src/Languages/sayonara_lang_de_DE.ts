@@ -1,4 +1,4 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="de_DE" version="2.0">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="de_DE" version="2.1">
 <context>
     <name>GUI_SomaFM</name>
     <message>
@@ -96,7 +96,7 @@
         <translation>Websuche für Covers ist nicht aktiviert</translation>
     </message>
     <message>
-        <location line="+80"/>
+        <location line="+79"/>
         <source>%1 covers found</source>
         <translation>%1 Cover(s) gefunden</translation>
     </message>
@@ -615,7 +615,17 @@
 <context>
     <name>GUI_Covers</name>
     <message>
-        <location filename="src/GUI/Preferences/Covers/GUI_Covers.ui" line="+19"/>
+        <location filename="src/GUI/Preferences/Covers/GUI_Covers.ui" line="+32"/>
+        <source>Cover name template</source>
+        <translation>Muster für Covername</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Delete files</source>
+        <translation>Dateien löschen</translation>
+    </message>
+    <message>
+        <location line="+9"/>
         <source>&lt;</source>
         <translation>&lt;</translation>
     </message>
@@ -635,19 +645,34 @@
         <translation>Aktiv</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+9"/>
+        <source>Fetch missing covers from the internet</source>
+        <translation>Hole fehlende Covers aus dem Internet</translation>
+    </message>
+    <message>
+        <location line="+21"/>
         <source>Clear cache</source>
         <translation>Cache leeren</translation>
     </message>
     <message>
-        <location line="+14"/>
-        <source>Delete files</source>
-        <translation>Dateien löschen</translation>
+        <location line="+7"/>
+        <source>Saving covers to the database leads to significantly faster access but results in a bigger database</source>
+        <translation>Covers in der Datenbank zu speichern führt zu einer wesentlich höheren Performance aber auch zu einer größeren Datenbank</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Save found covers to database</source>
+        <translation>Gefundene Covers in Datenbank speichern</translation>
     </message>
     <message>
         <location line="+7"/>
-        <source>Fetch covers from the internet</source>
-        <translation>Covers aus dem Internet laden</translation>
+        <source>Save found covers into library</source>
+        <translation>Gefundene Covers in Bibliothek speichern</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Save found covers into Sayonara directory</source>
+        <translation>Gefundene Covers im Sayonara Verzeichnis speichern</translation>
     </message>
 </context>
 <context>
@@ -1480,7 +1505,7 @@
 <context>
     <name>CoverButton</name>
     <message>
-        <location filename="src/GUI/Covers/CoverButton.cpp" line="+196"/>
+        <location filename="src/GUI/Covers/CoverButton.cpp" line="+202"/>
         <source>Cover source: Audio file</source>
         <translation>Coverquelle: Audio Date</translation>
     </message>
@@ -1632,7 +1657,7 @@
 <context>
     <name>GUI_Logger</name>
     <message>
-        <location filename="src/GUI/Player/GUI_Logger.cpp" line="+199"/>
+        <location filename="src/GUI/Player/GUI_Logger.cpp" line="+272"/>
         <source>Cannot open file</source>
         <translation>Datei konnte nicht geöffnet werden</translation>
     </message>
@@ -1873,6 +1898,14 @@
     </message>
 </context>
 <context>
+    <name>GUI_Stream</name>
+    <message>
+        <location filename="src/GUI/Plugins/Stream/GUI_Stream.cpp" line="+67"/>
+        <source>Search radio station</source>
+        <translation>Radiostation suchen</translation>
+    </message>
+</context>
+<context>
     <name>GUI_EnginePreferences</name>
     <message>
         <location filename="src/GUI/Preferences/Engine/GUI_EnginePreferences.cpp" line="+44"/>
@@ -1960,7 +1993,7 @@
 <context>
     <name>ImageSelectionDialog</name>
     <message>
-        <location filename="src/GUI/Utils/ImageSelectionDialog.cpp" line="+54"/>
+        <location filename="src/GUI/Utils/ImageSelectionDialog.cpp" line="+55"/>
         <source>Image files</source>
         <translation>Bilder</translation>
     </message>

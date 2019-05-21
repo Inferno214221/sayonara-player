@@ -29,7 +29,7 @@
      <item>
       <widget class="QLabel" name="lab_cover_template">
        <property name="text">
-        <string>Name template</string>
+        <string>Cover name template</string>
        </property>
       </widget>
      </item>
@@ -144,7 +144,7 @@
    <item row="5" column="0">
     <widget class="QCheckBox" name="cb_fetch_from_www">
      <property name="text">
-      <string>Fetch covers from the internet</string>
+      <string>Fetch missing covers from the internet</string>
      </property>
     </widget>
    </item>
