@@ -54,6 +54,8 @@ private slots:
 	void delete_covers_from_db();
 	void delete_cover_files();
 	void fetch_covers_www_triggered(bool b);
+
+	void cb_save_to_library_toggled(bool b);
 };
 
 

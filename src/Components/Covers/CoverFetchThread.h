@@ -88,6 +88,7 @@ namespace Cover
 		void stop();
 
 		QPixmap pixmap(int idx) const;
+		int found_images() const;
 
 
 	private slots:

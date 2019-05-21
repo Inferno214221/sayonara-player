@@ -438,6 +438,8 @@ static QSize calc_item_size(int zoom, QFont font)
 
 void CoverModel::set_zoom(int zoom, const QSize& view_size)
 {
+	m->cover_thread->pause();
+
 	m->cvpc->set_scaling(zoom);
 	m->item_size = calc_item_size(zoom, Gui::Util::main_window()->font());
 
@@ -456,6 +458,8 @@ void CoverModel::set_zoom(int zoom, const QSize& view_size)
 		refresh_data();
 		emit dataChanged(index(0, 0), index(rowCount() - 1, columnCount() - 1), {Qt::SizeHintRole});
 	}
+
+	m->cover_thread->resume();
 }
 
 

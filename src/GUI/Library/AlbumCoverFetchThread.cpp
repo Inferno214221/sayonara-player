@@ -104,27 +104,32 @@ void AlbumCoverFetchThread::run()
 
 	while(!m->stopped)
 	{
-		while(m->paused)
-		{
-			m->in_paused_state = true;
-			::Util::sleep_ms(10);
+		{ // pause looking for covers
+			while(m->paused)
+			{
+				m->in_paused_state = true;
+				::Util::sleep_ms(10);
 
-			if(m->stopped){
-				return;
+				if(m->stopped){
+					return;
+				}
 			}
 		}
 
 		m->in_paused_state = false;
 
-		int c = m->hash_album_list.count();
-		while(c == 0 && (m->may_run() == true))
-		{
-			Util::sleep_ms(10);
+		int queue_count;
+		{ // no more covers to fetch
+			queue_count = m->hash_album_list.count();
+			while(queue_count == 0 && (m->may_run() == true))
+			{
+				Util::sleep_ms(1000);
 
-			c = m->hash_album_list.count();
+				queue_count = m->hash_album_list.count();
+			}
 		}
 
-		for(int i=0; (m->may_run() == true) && (i<c); i++)
+		for(int i=0; (m->may_run() == true) && (i < queue_count); i++)
 		{
 			bool success = thread_create_cover_location();
 			if(!success)
@@ -140,12 +145,12 @@ void AlbumCoverFetchThread::run()
 
 			while
 			(
-				(qhc > MaxThreads) &&
+				(qhc > MaxThreads / 2) &&
 				(m->location_list.isEmpty()) &&
 				(m->may_run())
 			)
 			{
-				Util::sleep_ms(10);
+				Util::sleep_ms(1000);
 
 				LOCK_GUARD(m->mutex_queued_hashes)
 				qhc = m->queued_hashes.count();
@@ -326,7 +331,7 @@ void AlbumCoverFetchThread::stop()
 
 void AlbumCoverFetchThread::resume()
 {
-	::Util::sleep_ms(20);
+	::Util::sleep_ms(100);
 	m->paused = false;
 }
 

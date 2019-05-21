@@ -31,6 +31,7 @@
 #include "Utils/MetaData/Artist.h"
 #include "Utils/globals.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/Set.h"
 
 #include <QDir>
 #include <QUrl>
@@ -51,12 +52,13 @@ struct Location::Private
 	QString			search_term;		// Term provided to search engine
 	QStringList		search_urls;		// Search url where to fetch covers
 	QStringList		search_term_urls;	// Search urls where to fetch cover when using freetext search
+	QStringList		local_path_hints;
 	StringMap		all_search_urls;	// key = identifier of coverfetcher, value = search url
 	QString			cover_path;			// cover_path path, in .Sayonara, where cover is stored. Ignored if local_paths are not empty
 	QString			identifier;			// Some human readable identifier with methods where invokded
 	QString			audio_file_source;	// A saved cover from an audio file
 	QString			audio_file_target;
-	QString			local_path_hint;
+
 	QString			hash;				// A unique identifier, mostly referred to as the cover token
 
 	bool			freetext_search;
@@ -71,12 +73,12 @@ struct Location::Private
 		CASSIGN(search_term),
 		CASSIGN(search_urls),
 		CASSIGN(search_term_urls),
+		CASSIGN(local_path_hints),
 		CASSIGN(all_search_urls),
 		CASSIGN(cover_path),
 		CASSIGN(identifier),
 		CASSIGN(audio_file_source),
 		CASSIGN(audio_file_target),
-		CASSIGN(local_path_hint),
 		CASSIGN(hash),
 		CASSIGN(freetext_search),
 		CASSIGN(valid)
@@ -87,12 +89,12 @@ struct Location::Private
 		ASSIGN(search_term);
 		ASSIGN(search_urls);
 		ASSIGN(search_term_urls);
+		ASSIGN(local_path_hints);
 		ASSIGN(all_search_urls);
 		ASSIGN(cover_path);
 		ASSIGN(identifier);
 		ASSIGN(audio_file_source);
 		ASSIGN(audio_file_target);
-		ASSIGN(local_path_hint);
 		ASSIGN(hash);
 		ASSIGN(freetext_search);
 		ASSIGN(valid);
@@ -161,7 +163,7 @@ Location Location::invalid_location()
 	cl.set_search_term(QString());
 	cl.set_identifier("Invalid location");
 	cl.set_audio_file_source(QString(), QString());
-	cl.set_local_path_hint(QString());
+	cl.set_local_path_hints(QStringList());
 
 	return cl;
 }
@@ -240,11 +242,11 @@ Location Location::xcover_location(const Album& album)
 
 	// setup local paths. No audio file source. That may last too long
 	{
-		QStringList path_hint = album.path_hint();
-		if(!path_hint.isEmpty())
+		QStringList path_hints = album.path_hint();
+		if(!path_hints.isEmpty())
 		{
-			cl.set_local_path_hint(path_hint.first());
-			cl.set_audio_file_source(path_hint.first(), cl.cover_path());
+			cl.set_local_path_hints(path_hints);
+			cl.set_audio_file_source(path_hints.first(), cl.cover_path());
 		}
 	}
 
@@ -344,7 +346,7 @@ Location Location::cover_location(const MetaData& md, bool check_for_coverart)
 		cl.set_search_urls({md.cover_download_url()});
 	}
 
-	cl.set_local_path_hint(md.filepath());
+	cl.set_local_path_hints(QStringList{md.filepath()});
 	cl.set_identifier("CL:By metadata: " + md.album() + " by " + md.artist());
 
 	return cl;
@@ -394,7 +396,7 @@ QString Location::preferred_path() const
 		}
 	}
 
-	if(!m->local_path_hint.isEmpty())
+	if(!m->local_path_hints.isEmpty())
 	{
 		return local_path();
 	}
@@ -511,27 +513,25 @@ bool Location::set_audio_file_source(const QString& audio_filepath, const QStrin
 	return true;
 }
 
-QString Location::local_path_hint() const
-{
-	return m->local_path_hint;
-}
 
 QString Location::local_path() const
 {
-	if(m->local_path_hint.isEmpty()) {
+	QString dir = local_path_dir();
+	if(dir.isEmpty()) {
 		return QString();
 	}
 
-	if(Util::File::is_www(m->local_path_hint)){
+	QString link_path = cover_path();
+	if(link_path.isEmpty()){
 		return QString();
 	}
 
-	QString link_path = this->cover_path();
 	QFileInfo info(link_path);
 	if(info.exists())
 	{
 		if(info.isSymLink())
 		{
+			// delete broken link
 			if(!Util::File::exists(info.symLinkTarget())){
 				Util::File::delete_files({link_path});
 			}
@@ -544,22 +544,62 @@ QString Location::local_path() const
 		else if(info.isFile()) {
 			return link_path;
 		}
+
+		else {
+			sp_log(Log::Warning, "CoverLocation") << "Cover path is no symlink and no regular file";
+			return QString();
+		}
 	}
 
-	QStringList local_paths = Cover::LocalSearcher::cover_paths_from_filename(m->local_path_hint);
+	QStringList local_paths = Cover::LocalSearcher::cover_paths_from_path_hint(dir);
 	if(local_paths.isEmpty()) {
 		return QString();
 	}
 
-	QString original_path = local_paths.first();
-	Util::File::create_symlink(original_path, link_path);
-
+	Util::File::create_symlink(local_paths.first(), link_path);
 	return link_path;
 }
 
-void Location::set_local_path_hint(const QString& base_path)
+QString Location::local_path_dir() const
 {
-	m->local_path_hint = base_path;
+	Util::Set<QString> parent_dirs;
+	const QStringList lph = local_path_hints();
+	for(const QString& local_path : lph)
+	{
+		QFileInfo fi(local_path);
+		if(fi.isFile()){
+			parent_dirs << Util::File::get_parent_directory(local_path);
+		}
+
+		else if(fi.isDir()){
+			parent_dirs << local_path;
+		}
+	}
+
+	if(parent_dirs.isEmpty() || parent_dirs.size() > 1){
+		return QString();
+	}
+
+	return parent_dirs.first();
+}
+
+
+QStringList Location::local_path_hints() const
+{
+	return m->local_path_hints;
+}
+
+void Location::set_local_path_hints(const QStringList& path_hints)
+{
+	m->local_path_hints.clear();
+	for(const QString& path_hint : path_hints)
+	{
+		if(Util::File::is_file(path_hint) && !Util::File::is_www(path_hint))
+		{
+			m->local_path_hints << path_hint;
+		}
+
+	}
 }
 
 QString Location::hash() const

@@ -370,10 +370,9 @@ void GUI_AlternativeCovers::open_file_dialog()
 {
 	QString dir = QDir::homePath();
 	Cover::Location cl = m->cl_alternative->cover_location();
-	if(!cl.local_path_hint().isEmpty())
+	if(!cl.local_path_dir().isEmpty())
 	{
-		QString filename;
-		::Util::File::split_filename(cl.local_path_hint(), dir, filename);
+		dir = cl.local_path_dir();
 	}
 
 	ImageSelectionDialog* dialog = new ImageSelectionDialog(dir, this);

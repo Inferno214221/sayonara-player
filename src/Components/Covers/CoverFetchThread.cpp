@@ -219,6 +219,11 @@ QPixmap FetchThread::pixmap(int idx) const
 	return QPixmap();
 }
 
+int FetchThread::found_images() const
+{
+	return m->pixmaps.size();
+}
+
 
 void FetchThread::emit_finished(bool success)
 {

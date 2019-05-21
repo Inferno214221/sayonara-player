@@ -51,7 +51,7 @@ struct CoverButton::Private
 
 	Private() :
 		cover_location(Location::invalid_location()),
-		current_cover(Location::invalid_location().cover_path()),
+		current_cover(Location::invalid_location().preferred_path()),
 		cover_forced(false)
 	{
 		class_tmp_file = Cover::Utils::cover_directory("cb_" + Util::random_string(16) + ".jpg");
@@ -119,7 +119,7 @@ void CoverButton::set_cover_location(const Location& cl)
 		connect(m->cover_lookup, &Lookup::sig_finished, this, &CoverButton::cover_lookup_finished);
 	}
 
-	set_cover_image(Cover::Location::invalid_location().cover_path());
+	set_cover_image(Cover::Location::invalid_location().preferred_path());
 
 	m->cover_lookup->start();
 }
@@ -177,7 +177,7 @@ void CoverButton::alternative_cover_fetched(const Location& cl)
 	}
 
 	m->hash = QString();
-	set_cover_image(cl.cover_path());
+	set_cover_image(cl.preferred_path());
 }
 
 

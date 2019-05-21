@@ -57,6 +57,30 @@ GUI_Covers::~GUI_Covers()
 	}
 }
 
+static bool check_cover_template(const QString& cover_template)
+{
+	if(cover_template.trimmed().isEmpty()){
+		return false;
+	}
+
+	QString str(cover_template);
+	str.remove("<h>");
+
+	QList<QChar> invalid_chars
+	{
+		'/', '\\', '|', ':', '\"', '?', '$', '<', '>'
+	};
+
+	for(const QChar& c : invalid_chars)
+	{
+		if(str.contains(c)){
+			return false;
+		}
+	}
+
+	return Util::File::is_imagefile(str);
+}
+
 bool GUI_Covers::commit()
 {
 	QStringList active_items;
@@ -68,8 +92,19 @@ bool GUI_Covers::commit()
 	}
 
 	SetSetting(Set::Cover_Server, active_items);
-	SetSetting(Set::Cover_FetchFromWWW, ui->cb_fetch_covers_from_www->isChecked());
-	SetSetting(Set::Cover_SaveToDB, ui->cb_save_covers_to_db->isChecked());
+	SetSetting(Set::Cover_FetchFromWWW, ui->cb_fetch_from_www->isChecked());
+	SetSetting(Set::Cover_SaveToDB, ui->cb_save_to_db->isChecked());
+	SetSetting(Set::Cover_SaveToLibrary, ui->cb_save_to_library->isChecked() && ui->cb_save_to_library->isEnabled());
+	SetSetting(Set::Cover_SaveToSayonaraDir, ui->cb_save_to_sayonara_dir->isChecked() && ui->cb_save_to_sayonara_dir->isEnabled());
+
+	QString cover_template = ui->le_cover_template->text().trimmed();
+	if(check_cover_template(cover_template)) {
+		SetSetting(Set::Cover_TemplatePath, cover_template);
+	}
+
+	else {
+		ui->le_cover_template->setText(GetSetting(Set::Cover_TemplatePath));
+	}
 
 	return true;
 }
@@ -101,13 +136,14 @@ void GUI_Covers::revert()
 		}
 	}
 
-	bool fetch_from_www = GetSetting(Set::Cover_FetchFromWWW);
-	ui->cb_fetch_covers_from_www->setChecked(fetch_from_www);
+	ui->cb_fetch_from_www->setChecked(GetSetting(Set::Cover_FetchFromWWW));
+	ui->cb_save_to_db->setChecked(GetSetting(Set::Cover_SaveToDB));
+	ui->cb_save_to_sayonara_dir->setChecked(GetSetting(Set::Cover_SaveToSayonaraDir));
+	ui->cb_save_to_library->setChecked(GetSetting(Set::Cover_SaveToLibrary));
+	ui->le_cover_template->setText(GetSetting(Set::Cover_TemplatePath));
 
-	bool save_to_db = GetSetting(Set::Cover_SaveToDB);
-	ui->cb_save_covers_to_db->setChecked(save_to_db);
-
-	fetch_covers_www_triggered(fetch_from_www);
+	fetch_covers_www_triggered(GetSetting(Set::Cover_FetchFromWWW));
+	cb_save_to_library_toggled(GetSetting(Set::Cover_SaveToLibrary));
 
 	current_row_changed(ui->lv_cover_searchers->currentRow());
 }
@@ -133,9 +169,10 @@ void GUI_Covers::init_ui()
 	connect(ui->lv_cover_searchers, &QListWidget::currentRowChanged, this, &GUI_Covers::current_row_changed);
 	connect(ui->btn_delete_album_covers, &QPushButton::clicked, this, &GUI_Covers::delete_covers_from_db);
 	connect(ui->btn_delete_files, &QPushButton::clicked, this, &GUI_Covers::delete_cover_files);
-	connect(ui->cb_fetch_covers_from_www, &QCheckBox::toggled, this, &GUI_Covers::fetch_covers_www_triggered);
+	connect(ui->cb_fetch_from_www, &QCheckBox::toggled, this, &GUI_Covers::fetch_covers_www_triggered);
 	connect(ui->btn_add, &QPushButton::clicked, this, &GUI_Covers::add_clicked);
 	connect(ui->btn_remove, &QPushButton::clicked, this, &GUI_Covers::remove_clicked);
+	connect(ui->cb_save_to_library, &QCheckBox::toggled, this, &GUI_Covers::cb_save_to_library_toggled);
 
 	revert();
 }
@@ -213,4 +250,16 @@ void GUI_Covers::fetch_covers_www_triggered(bool b)
 	ui->btn_up->setEnabled(b);
 	ui->btn_add->setEnabled(b);
 	ui->btn_remove->setEnabled(b);
+
+	ui->cb_save_to_sayonara_dir->setEnabled(b);
+
+	ui->cb_save_to_library->setEnabled(b);
+	ui->le_cover_template->setEnabled(b);
+	ui->lab_cover_template->setEnabled(b);
+}
+
+void GUI_Covers::cb_save_to_library_toggled(bool b)
+{
+	ui->le_cover_template->setVisible(b);
+	ui->lab_cover_template->setVisible(b);
 }

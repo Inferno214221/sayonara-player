@@ -35,19 +35,12 @@
 using namespace Cover;
 static const char* ClassName="LocalSearcher";
 
-QStringList LocalSearcher::cover_paths_from_filename(const QString& filepath)
-{
-	QString file, dir;
-	Util::File::split_filename(filepath, dir, file);
-	return cover_paths_from_dirname(dir);
-}
-
-QStringList LocalSearcher::cover_paths_from_dirname(const QString& filepath_hint)
+QStringList LocalSearcher::cover_paths_from_path_hint(const QString& filepath_hint)
 {
 	sp_log(Log::Develop, ClassName) << "Search for covers. Hint: " << filepath_hint;
 
 	QString filepath = filepath_hint;
-	QFileInfo info(filepath_hint);
+	QFileInfo info(filepath);
 	if(info.isFile())
 	{
 		filepath = Util::File::get_parent_directory(filepath_hint);

@@ -181,6 +181,9 @@ enum class SettingKey : unsigned short
 	Cover_FetchFromWWW,
 	Cover_SaveToDB,
 	Cover_StartSearch,
+	Cover_SaveToLibrary,
+	Cover_SaveToSayonaraDir,
+	Cover_TemplatePath,
 	Icon_Theme,
 	Icon_ForceInDarkTheme,
 
@@ -396,6 +399,9 @@ class SettingIdentifier
 	INST(bool,				Cover_FetchFromWWW)		/* Fetch covers from www */
 	INST(bool,				Cover_SaveToDB)			/* Save covers to DB */
 	INST(bool,				Cover_StartSearch)		/* start alternative cover search automatically */
+	INST(bool,				Cover_SaveToLibrary)	/* Save covers in library */
+	INST(bool,				Cover_SaveToSayonaraDir) /* Save covers in library */
+	INST(QString,			Cover_TemplatePath)		/* Name of cover file in library */
 	INST(QString,			Icon_Theme)				/* Current icon theme */
 	INST(bool,				Icon_ForceInDarkTheme)	/* Current icon theme */
 
