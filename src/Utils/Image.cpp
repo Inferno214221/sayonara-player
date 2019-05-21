@@ -18,11 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "Image.h"
 #include "Utils.h"
-#include "Compressor/Compressor.h"
 #include "Utils/Logger/Logger.h"
 
 #include <QPixmap>
@@ -66,15 +63,10 @@ Util::Image::Image(const QPixmap& pm, const QSize& max_size)
 			p = pm.scaled(mw, mh, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 		}
 
-		QByteArray arr = Util::cvt_pixmap_to_bytearray(p);
-		m->img = Compressor::compress(arr);
-
-		/*sp_log(Log::Debug, this) << "Compressed image (" << pw << "x" << ph << ") from "
-								 << tmp_arr.size() << " to " << m->img.size()
-								 << ": " << m->img.size() * 100.0 / tmp_arr.size() << "%";*/
+		m->img = Util::cvt_pixmap_to_bytearray(p);
 
 		if(m->img.size() == 0){
-			sp_log(Log::Warning, this) << "Could not compress " << arr.size() << " bytes of image data";
+			sp_log(Log::Warning, this) << "Could not compress " << m->img.size() << " bytes of image data";
 		}
 	}
 }
@@ -125,10 +117,9 @@ QPixmap Util::Image::pixmap() const
 		return QPixmap();
 	}
 
-	QByteArray decompressed = Compressor::decompress(m->img);
-	QPixmap pm = Util::cvt_bytearray_to_pixmap(decompressed);
+	QPixmap pm = Util::cvt_bytearray_to_pixmap(m->img);
 	if(pm.isNull()){
-		sp_log(Log::Warning, this) << "Pixmap is empty after decompressing (" << decompressed.size() << "," << m->img.size() << " bytes)";
+		sp_log(Log::Warning, this) << "Pixmap is empty after decompressing (" << m->img.size() << "," << m->img.size() << " bytes)";
 	}
 
 	return pm;

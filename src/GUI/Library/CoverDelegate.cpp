@@ -52,7 +52,6 @@ void Library::CoverDelegate::paint(QPainter* painter, const QStyleOptionViewItem
 		painter->translate(0, zoom / 20);
 
 		int x_zoom = (option.rect.width() - zoom) / 2;
-
 		painter->fillRect(x_zoom - 2, -2, zoom + 3, zoom + 3, option.palette.color(QPalette::Active, QPalette::Background).darker());
 
 		QPen pen = painter->pen();
@@ -62,14 +61,16 @@ void Library::CoverDelegate::paint(QPainter* painter, const QStyleOptionViewItem
 		pen.setColor(color);
 		painter->setPen(pen);
 
-		painter->drawRect(x_zoom - 2, -2, zoom + 3, zoom + 3);
+		painter->drawRect(x_zoom - 2, -2, zoom + 4, zoom + 4);
 
 		pen.setColor(old_color);
 		painter->setPen(pen);
 
-		int x = x_zoom + (zoom - pm.width()) / 2;
-		int y = (zoom - pm.height()) / 2;
-		painter->drawPixmap(x, y , pm.width(), pm.height(), pm);
+		painter->setRenderHint(QPainter::SmoothPixmapTransform, true);
+		QRectF target(x_zoom, 0, zoom, zoom);
+		QRectF source(0, 0, pm.width(), pm.height());
+		painter->drawPixmap(target, pm, source);
+
 		painter->translate(0, zoom + 2);
 	}
 

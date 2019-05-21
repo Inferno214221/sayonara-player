@@ -31,6 +31,7 @@
 namespace Cover
 {
 	class Location;
+	class Lookup;
 }
 
 /**
@@ -44,6 +45,8 @@ namespace Cover
  * and the hash which should be processed next can be fetched by current_hash()
  * and current_cover_location().
  */
+
+
 class AlbumCoverFetchThread : public QThread
 {
 	Q_OBJECT
@@ -54,6 +57,7 @@ class AlbumCoverFetchThread : public QThread
 		using HashAlbumPair = QPair<Hash, Album>;
 		using HashAlbumList = QList<HashAlbumPair>;
 		using HashLocationPair = QPair<Hash, Cover::Location>;
+		using HashLookupPair = QPair<Hash, Cover::Lookup*>;
 		using HashLocationList = QList<HashLocationPair>;
 
 	signals:
@@ -76,8 +80,10 @@ class AlbumCoverFetchThread : public QThread
 		 */
 		void add_album(const Album& album);
 
+		bool check_album(const QString& hash);
 
-		HashLocationPair take_current_location();
+
+		HashLookupPair take_current_lookup();
 
 
 		/**

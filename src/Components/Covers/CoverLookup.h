@@ -86,14 +86,6 @@ namespace Cover
 		 */
 		QList<QPixmap> pixmaps() const;
 
-		/**
-		 * @brief Get all pixmaps that where fetched and remove them
-		 * from Cover::Lookup
-		 * @return
-		 */
-		QList<QPixmap> take_pixmaps();
-
-
 	private:
 
 		bool fetch_from_database();

@@ -110,7 +110,6 @@ QStringList CoverView::zoom_actions()
 	return QStringList{"50", "75", "100", "125", "150", "175", "200"};
 }
 
-
 void CoverView::change_zoom(int zoom)
 {
 	bool force_reload = (zoom < 0);

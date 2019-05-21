@@ -49,7 +49,6 @@
 #include <QDir>
 #include <mutex>
 
-static std::mutex mtx;
 using Cover::Location;
 using Cover::Lookup;
 using Cover::FetchThread;
@@ -74,11 +73,13 @@ struct Lookup::Private
 	CoverSource		source;
 	bool			thread_running;
 	bool			finished;
+	bool			stopped;
 
 	Private(int n_covers) :
 		n_covers(n_covers),
 		thread_running(false),
-		finished(false)
+		finished(false),
+		stopped(false)
 	{}
 };
 
@@ -129,6 +130,7 @@ bool Lookup::start_new_thread(const Cover::Location& cl )
 
 void Lookup::start()
 {
+	m->stopped = false;
 	m->finished = false;
 	bool success = false;
 
@@ -275,12 +277,14 @@ void Lookup::extractor_finished()
 
 	if(!pm.isNull())
 	{
+		sp_log(Log::Debug, this) << " finished: success";
 		this->add_new_cover(pm, cover_location().hash());
 		emit_finished(true);
 	}
 
 	else
 	{
+		sp_log(Log::Debug, this) << " finished: PM is null";
 		bool success = fetch_from_file_system();
 		if(success){
 			return;
@@ -296,13 +300,13 @@ void Lookup::extractor_finished()
 
 bool Lookup::add_new_cover(const QPixmap& pm)
 {
+	if(m->stopped){
+		return false;
+	}
+
 	if(!pm.isNull())
 	{
-		LOCK_GUARD(mtx)
-		{
-			m->pixmaps.push_back(pm);
-		}
-
+		m->pixmaps.push_back(pm);
 		emit sig_cover_found(pm);
 	}
 
@@ -367,6 +371,7 @@ void Lookup::cover_found(int idx)
 
 void Lookup::stop()
 {
+	m->stopped = true;
 	if(m->cft)
 	{
 		m->cft->stop();
@@ -403,19 +408,6 @@ QList<QPixmap> Lookup::pixmaps() const
 {
 	return m->pixmaps;
 }
-
-QList<QPixmap> Lookup::take_pixmaps()
-{
-	QList<QPixmap> ret;
-	LOCK_GUARD(mtx)
-	{
-		ret = m->pixmaps;
-		m->pixmaps.clear();
-	}
-
-	return ret;
-}
-
 
 struct Cover::Extractor::Private
 {
