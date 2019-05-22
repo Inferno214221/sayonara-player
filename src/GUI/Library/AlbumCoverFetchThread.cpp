@@ -43,7 +43,7 @@ using AtomicBool=std::atomic<bool>;
 using AtomicInt=std::atomic<int>;
 
 namespace FileUtils=::Util::File;
-static const int MaxThreads=10;
+static const int MaxThreads=20;
 
 struct AlbumCoverFetchThread::Private
 {
@@ -56,10 +56,10 @@ struct AlbumCoverFetchThread::Private
 	std::mutex mutex_queued_hashes;
 	std::mutex mutex_lookup;
 
+	AtomicInt	paused_to_go;
 	AtomicInt	done;
 	AtomicBool	stopped;
 	AtomicBool	in_paused_state;
-	uint64_t	paused_to_go;
 
 	Private()
 	{
@@ -75,14 +75,14 @@ struct AlbumCoverFetchThread::Private
 		paused_to_go = 0;
 	}
 
-	void pause(uint64_t ms = 10)
+	void pause(int ms = 10)
 	{
-		paused_to_go = std::min<uint64_t>(paused_to_go + ms, 70);
+		paused_to_go = std::min<int>(paused_to_go + ms, 70);
 	}
 
 	void wait()
 	{
-		auto ms = std::min<uint64_t>(20, paused_to_go);
+		auto ms = std::min<int>(20, paused_to_go);
 		Util::sleep_ms(ms);
 		paused_to_go -= ms;
 	}
@@ -94,10 +94,10 @@ struct AlbumCoverFetchThread::Private
 			return false;
 		}
 
-		/*if(queued_hashes.count() >= MaxThreads) {
+		if(queued_hashes.count() >= MaxThreads) {
 			in_paused_state = true;
 			wait();
-		};*/
+		};
 
 		if(paused_to_go > 0) {
 			in_paused_state = true;
@@ -113,7 +113,6 @@ struct AlbumCoverFetchThread::Private
 	}
 };
 
-
 AlbumCoverFetchThread::AlbumCoverFetchThread(QObject* parent) :
 	QThread(parent)
 {
@@ -124,7 +123,6 @@ AlbumCoverFetchThread::AlbumCoverFetchThread(QObject* parent) :
 
 AlbumCoverFetchThread::~AlbumCoverFetchThread() {}
 
-#include <iostream>
 void AlbumCoverFetchThread::run()
 {
 	m->init();

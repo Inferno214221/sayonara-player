@@ -71,6 +71,8 @@ void GUI_CoverView::init(LocalLibrary* library)
 	init_zoom_actions();
 
 	connect(ui->tb_view, &ItemView::sig_delete_clicked, this, &GUI_CoverView::sig_delete_clicked);
+
+	ui->tb_view->change_zoom(GetSetting(Set::Lib_CoverZoom));
 }
 
 bool GUI_CoverView::is_initialized() const

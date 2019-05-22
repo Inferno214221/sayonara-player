@@ -270,15 +270,15 @@ void Lookup::extractor_finished()
 
 	extractor->deleteLater();
 
+	sp_log(Log::Debug, this) << " finished: " << !pm.isNull();
+
 	if(!pm.isNull())
 	{
-		sp_log(Log::Debug, this) << " finished: success";
 		add_new_cover(pm, true);
 	}
 
 	else
 	{
-		sp_log(Log::Debug, this) << " finished: PM is null";
 		bool success = fetch_from_file_system();
 		if(success){
 			return;
