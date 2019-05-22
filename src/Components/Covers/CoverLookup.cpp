@@ -199,25 +199,13 @@ bool Lookup::fetch_from_audio_source()
 	{
 		QPixmap pm = QPixmap(cl.audio_file_target());
 		bool success = add_new_cover(pm, true);
-		if(success)
+		if(success && pm.isNull())
 		{
 			return true;
 		}
 	}
 
-	Cover::Extractor* extractor = new Cover::Extractor(cl.audio_file_source(), this);
-	QThread* thread = new QThread(nullptr);
-	extractor->moveToThread(thread);
-
-	connect(extractor, &Cover::Extractor::sig_finished, this, &Cover::Lookup::extractor_finished);
-	connect(extractor, &Cover::Extractor::destroyed, thread, &QThread::quit);
-
-	connect(thread, &QThread::started, extractor, &Cover::Extractor::start);
-	connect(thread, &QThread::finished, thread, &QThread::deleteLater);
-
-	thread->start();
-
-	return true;
+	return start_extractor(cl);
 }
 
 bool Lookup::fetch_from_file_system()
@@ -261,6 +249,25 @@ void Lookup::thread_finished(bool success)
 	sender()->deleteLater();
 }
 
+
+bool Lookup::start_extractor(const Location& cl)
+{
+	Cover::Extractor* extractor = new Cover::Extractor(cl.audio_file_source(), this);
+	QThread* thread = new QThread(nullptr);
+	extractor->moveToThread(thread);
+
+	connect(extractor, &Cover::Extractor::sig_finished, this, &Cover::Lookup::extractor_finished);
+	connect(extractor, &Cover::Extractor::destroyed, thread, &QThread::quit);
+
+	connect(thread, &QThread::started, extractor, &Cover::Extractor::start);
+	connect(thread, &QThread::finished, thread, &QThread::deleteLater);
+
+	thread->start();
+
+	return true;
+}
+
+
 void Lookup::extractor_finished()
 {
 	sp_log(Log::Develop, this) << "Extractor finished";
@@ -290,6 +297,7 @@ void Lookup::extractor_finished()
 		}
 	}
 }
+
 
 
 bool Lookup::add_new_cover(const QPixmap& pm, bool save)

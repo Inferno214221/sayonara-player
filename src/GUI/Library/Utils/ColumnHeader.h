@@ -57,15 +57,15 @@ namespace Library
 				Filesize
 			};
 
-		private:
-			ColumnHeader(HeaderType type, bool switchable, SortOrder sort_asc, SortOrder sort_desc);
-
 		public:
-			ColumnHeader(HeaderType type, bool switchable, SortOrder sort_asc, SortOrder sort_desc, int preferred_size);
+			ColumnHeader(HeaderType type, bool switchable, SortOrder sort_asc, SortOrder sort_desc, int preferred_size, bool stretchable=false);
 			virtual ~ColumnHeader();
 
+			bool stretchable() const;
+			int default_size() const;
 			int preferred_size() const;
 			void set_preferred_size(int size);
+
 
 			SortOrder sortorder_asc() const;
 			SortOrder sortorder_desc() const;

@@ -23,6 +23,8 @@
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/Settings/Settings.h"
+
 #include "Components/Directories/DirectoryReader.h"
 #include "Database/Connector.h"
 #include "Database/CoverConnector.h"
@@ -109,13 +111,19 @@ void Cover::Utils::write_cover_to_db(const Cover::Location& cl, const QPixmap& p
 	dbc->set_cover(cl.hash(), pm);
 }
 
+
 void Cover::Utils::write_cover_to_library(const Cover::Location& cl, const QPixmap& pm)
 {
-	QString filepath = cover_directory(cl.hash() + ".jpg");
-	QFileInfo fi(filepath);
-	if(fi.isSymLink()){
-		Util::File::delete_files({filepath});
+	QString local_dir = cl.local_path_dir();
+	if(local_dir.isEmpty()){
+		return;
 	}
+
+	QString cover_template = GetSetting(Set::Cover_TemplatePath);
+	cover_template.replace("<h>", cl.hash());
+
+	QString filepath = QDir(local_dir).absoluteFilePath(cover_template);
+	QFileInfo fi(filepath);
 
 	pm.save(filepath);
 }

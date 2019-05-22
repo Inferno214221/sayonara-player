@@ -83,7 +83,7 @@ ColumnHeaderList AlbumView::column_headers() const
 	ColumnHeaderList columns;
 
 	columns << std::make_shared<ColumnHeader>(ColumnHeader::Sharp, true, SortOrder::NoSorting, SortOrder::NoSorting, 20);
-	columns << std::make_shared<ColumnHeader>(ColumnHeader::Album, false, SortOrder::AlbumNameAsc, SortOrder::AlbumNameDesc, 160);
+	columns << std::make_shared<ColumnHeader>(ColumnHeader::Album, false, SortOrder::AlbumNameAsc, SortOrder::AlbumNameDesc, 160, true);
 	columns << std::make_shared<ColumnHeader>(ColumnHeader::Duration, true, SortOrder::AlbumDurationAsc, SortOrder::AlbumDurationDesc, 90);
 	columns << std::make_shared<ColumnHeader>(ColumnHeader::NumTracks, true, SortOrder::AlbumTracksAsc, SortOrder::AlbumTracksDesc, 80);
 	columns << std::make_shared<ColumnHeader>(ColumnHeader::Year, true, SortOrder::AlbumYearAsc, SortOrder::AlbumYearDesc, 50);

@@ -217,23 +217,6 @@ void GUI_AlternativeCovers::connect_and_start()
 	this->show();
 }
 
-void GUI_AlternativeCovers::language_changed()
-{
-	ui->retranslateUi(this);
-
-	ui->btn_ok->setText(Lang::get(Lang::OK));
-	ui->btn_close->setText(Lang::get(Lang::Close));
-	ui->btn_apply->setText(Lang::get(Lang::Apply));
-	ui->lab_websearch_disabled->setText(tr("Cover web search is not enabled"));
-
-	if(m->is_searching){
-		ui->btn_search->setText(Lang::get(Lang::Stop));
-	}
-
-	else {
-		ui->btn_search->setText(Lang::get(Lang::SearchVerb));
-	}
-}
 
 void GUI_AlternativeCovers::ok_clicked()
 {
@@ -431,6 +414,25 @@ void GUI_AlternativeCovers::init_combobox()
 		if(suitable){
 			ui->combo_search_fetchers->addItem(cover_fetcher->keyword());
 		}
+	}
+}
+
+
+void GUI_AlternativeCovers::language_changed()
+{
+	ui->retranslateUi(this);
+
+	ui->btn_ok->setText(Lang::get(Lang::OK));
+	ui->btn_close->setText(Lang::get(Lang::Close));
+	ui->btn_apply->setText(Lang::get(Lang::Apply));
+	ui->lab_websearch_disabled->setText(tr("Cover web search is not enabled"));
+
+	if(m->is_searching){
+		ui->btn_search->setText(Lang::get(Lang::Stop));
+	}
+
+	else {
+		ui->btn_search->setText(Lang::get(Lang::SearchVerb));
 	}
 }
 

@@ -46,6 +46,7 @@ struct TableView::Private
 	HeaderView*			header=nullptr;
 	Library::SortOrder  sortorder;
 	bool				header_connected;
+	IntList				sizes;
 
 	Private() :
 		header_connected(false)
@@ -66,7 +67,6 @@ TableView::TableView(QWidget* parent) :
 }
 
 TableView::~TableView() {}
-
 
 
 void TableView::init(AbstractLibrary* library)
@@ -90,6 +90,7 @@ void TableView::init(AbstractLibrary* library)
 	QStringList header_names;
 	for(ColumnHeaderPtr header : headers)
 	{
+		header->preferred_size();
 		header_names << header->title();
 	}
 
@@ -100,6 +101,7 @@ void TableView::init(AbstractLibrary* library)
 
 	language_changed();
 }
+
 
 
 void TableView::header_actions_triggered()

@@ -32,20 +32,23 @@ struct ColumnHeader::Private
 {
 	QAction*		action=nullptr;
 	int 			preferred_size;
+	int				default_size;
 
 	SortOrder		sort_asc;
 	SortOrder		sort_desc;
 	HeaderType		type;
 
 	bool 			switchable;
+	bool			stretchable;
 
-	Private(ColumnHeader* parent, HeaderType type, bool switchable, SortOrder sort_asc, SortOrder sort_desc) :
-		preferred_size(0),
+	Private(ColumnHeader* parent, HeaderType type, bool switchable, SortOrder sort_asc, SortOrder sort_desc, int sz) :
+		preferred_size(sz),
+		default_size(sz),
 		sort_asc(sort_asc),
 		sort_desc(sort_desc),
 		type(type),
-		switchable(switchable)
-
+		switchable(switchable),
+		stretchable(false)
 	{
 		action = new QAction(parent);
 		action->setChecked(true);
@@ -53,17 +56,25 @@ struct ColumnHeader::Private
 	}
 };
 
-ColumnHeader::ColumnHeader(HeaderType type, bool switchable, SortOrder sort_asc, SortOrder sort_desc)
-{
-	m = Pimpl::make<Private>(this, type, switchable, sort_asc, sort_desc);
-}
-
 ColumnHeader::~ColumnHeader() {}
 
-ColumnHeader::ColumnHeader(HeaderType type, bool switchable, SortOrder sort_asc, SortOrder sort_desc, int preferred_size) :
-	ColumnHeader(type, switchable, sort_asc, sort_desc)
+
+
+ColumnHeader::ColumnHeader(HeaderType type, bool switchable, SortOrder sort_asc, SortOrder sort_desc, int preferred_size, bool stretchable)
 {
-	m->preferred_size = preferred_size;
+	m = Pimpl::make<Private>(this, type, switchable, sort_asc, sort_desc, preferred_size);
+	m->stretchable = stretchable;
+}
+
+bool ColumnHeader::stretchable() const
+{
+	return m->stretchable;
+}
+
+
+int ColumnHeader::default_size() const
+{
+	return m->default_size;
 }
 
 int ColumnHeader::preferred_size() const

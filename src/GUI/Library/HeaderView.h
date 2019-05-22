@@ -45,6 +45,7 @@ namespace Library
 
 	private slots:
 		void action_triggered(bool b);
+		void action_resize_triggered();
 
 	protected:
 		BoolList refresh_active_columns();

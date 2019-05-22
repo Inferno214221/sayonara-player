@@ -54,6 +54,13 @@
      <item>
       <widget class="QLineEdit" name="le_cover_template"/>
      </item>
+     <item>
+      <widget class="QLabel" name="lab_template_error">
+       <property name="text">
+        <string notr="true">Invalid chars</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item row="4" column="0">

@@ -94,6 +94,7 @@ namespace Cover
 		bool fetch_from_www();
 
 
+		bool start_extractor(const Location& cl);
 		/**
 		 * @brief Starts a new CoverFetchThread
 		 * @param cl CoverLocation object
