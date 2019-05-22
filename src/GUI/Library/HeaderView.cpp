@@ -20,6 +20,7 @@
 #include "HeaderView.h"
 #include "Utils/globals.h"
 #include "Utils/Utils.h"
+#include "Utils/Language.h"
 
 #include <QFontMetrics>
 
@@ -55,7 +56,12 @@ void HeaderView::init_header_action(ColumnHeaderPtr header, bool is_shown)
 	this->addAction(action);
 }
 
-#include "Utils/Language.h"
+QString HeaderView::resize_text() const
+{
+	return tr("Resize columns");
+}
+
+
 void HeaderView::set_column_headers(const ColumnHeaderList& column_headers, const BoolList& shown_actions, Library::SortOrder sorting)
 {
 	m->column_headers = column_headers;
@@ -93,7 +99,7 @@ void HeaderView::set_column_headers(const ColumnHeaderList& column_headers, cons
 	this->setSectionResizeMode(m->column_headers.count()-1, QHeaderView::Stretch);
 
 
-	m->action_resize = new QAction(Lang::get(Lang::Default), this);
+	m->action_resize = new QAction(resize_text(), this);
 	connect(m->action_resize, &QAction::triggered, this, &HeaderView::action_resize_triggered);
 
 	this->addAction(m->action_resize);
@@ -145,9 +151,8 @@ void HeaderView::language_changed()
 	}
 
 	if(m->action_resize){
-		m->action_resize->setText(Lang::get(Lang::Default));
+		m->action_resize->setText(resize_text());
 	}
-
 }
 
 QSize HeaderView::sizeHint() const

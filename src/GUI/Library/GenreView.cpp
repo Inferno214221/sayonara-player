@@ -66,7 +66,6 @@ struct GenreView::Private
 	{
 		delete genres; genres=nullptr;
 	}
-
 };
 
 GenreView::GenreView(QWidget* parent) :
@@ -242,6 +241,19 @@ void GenreView::language_changed()
 	if(m->toggle_tree_action) {
 		m->toggle_tree_action->setText(Lang::get(Lang::Tree));
 	}
+
+	QAbstractItemModel* model = this->model();
+	int rc = model->rowCount();
+	for(int i=0; i<rc; i++)
+	{
+		QModelIndex idx = model->index(i, 0);
+		int data = idx.data(Qt::UserRole).toInt();
+		if(data == 5000){
+			model->setData(idx, no_genre_name(), Qt::DisplayRole);
+			break;
+		}
+
+	}
 }
 
 void GenreView::reload_genres()
@@ -270,10 +282,6 @@ void GenreView::set_genres(const Util::Set<Genre>& genres)
 	}
 
 	m->filled = true;
-
-	/*QTreeWidgetItem* item = new QTreeWidgetItem(this, QStringList{""});
-	item->setData(0, Qt::UserRole, 5000);
-	this->addTopLevelItem(item);*/
 
 	this->build_genre_data_tree(genres);
 	this->populate_widget(nullptr, m->genres);
@@ -314,10 +322,6 @@ void GenreView::build_genre_data_tree(const Util::Set<Genre>& genres)
 	for(const Genre& genre : genres)
 	{
 		bool found_parent = false;
-
-		/*if(genre.name().isEmpty()){
-			continue;
-		}*/
 
 		if(show_tree)
 		{
@@ -361,7 +365,7 @@ void GenreView::populate_widget(QTreeWidgetItem* parent_item, GenreNode* node)
 
 	if(invalid_genre)
 	{
-		text = QStringList{Lang::get(Lang::None)};
+		text = QStringList{"<" + no_genre_name() + ">"};
 	}
 
 	if(node->parent == m->genres){
@@ -375,6 +379,7 @@ void GenreView::populate_widget(QTreeWidgetItem* parent_item, GenreNode* node)
 	if(invalid_genre)
 	{
 		item->setData(0, Qt::UserRole, 5000);
+		item->setFlags(item->flags() & ~Qt::ItemIsDragEnabled & ~Qt::ItemIsDropEnabled);
 	}
 
 	for(GenreNode* child : ::Util::AsConst(node->children))
@@ -432,48 +437,63 @@ void GenreView::init_context_menu()
 
 void GenreView::contextMenuEvent(QContextMenuEvent* e)
 {
+	QModelIndexList indexes = this->selectionModel()->selectedIndexes();
+	for(const QModelIndex& idx : indexes)
+	{
+		if(idx.data(Qt::UserRole).toInt() == 5000)
+		{
+			e->ignore();
+			return;
+		}
+	}
+
 	init_context_menu();
-
 	m->context_menu->exec(e->globalPos());
-
 	QTreeView::contextMenuEvent(e);
 }
 
-void GenreView::dragEnterEvent(QDragEnterEvent *e)
+void GenreView::dragEnterEvent(QDragEnterEvent* e)
 {
 	e->accept();
 }
 
-void GenreView::dragMoveEvent(QDragMoveEvent *e)
+void GenreView::dragMoveEvent(QDragMoveEvent* e)
 {
-	QItemSelectionModel* ism;
-	QModelIndex idx;
+	QModelIndex idx = this->indexAt(e->pos());
+	if(idx.data(Qt::UserRole) == 5000){
+		e->ignore();
+		return;
+	}
 
-	idx = this->indexAt(e->pos());
 	if(!idx.isValid()){
 		sp_log(Log::Debug, this) << "drag: Invalid index";
 		return;
 	}
 
-	ism = this->selectionModel();
+	QItemSelectionModel* ism = this->selectionModel();
 
 	ism->select(idx, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
 
 	e->accept();
 }
 
-void GenreView::dragLeaveEvent(QDragLeaveEvent *e)
+void GenreView::dragLeaveEvent(QDragLeaveEvent* e)
 {
 	this->clearSelection();
 	e->accept();
 }
 
-void GenreView::dropEvent(QDropEvent *e)
+void GenreView::dropEvent(QDropEvent* e)
 {
-	e->accept();
+	QModelIndex idx = this->indexAt(e->pos());
+	if(idx.data(Qt::UserRole) == 5000){
+		e->ignore();
+		return;
+	}
 
 	this->clearSelection();
 
+	e->accept();
 	const CustomMimeData* cmd = static_cast<const CustomMimeData*>(e->mimeData());
 
 	if(!cmd){
@@ -481,7 +501,6 @@ void GenreView::dropEvent(QDropEvent *e)
 		return;
 	}
 
-	QModelIndex idx = this->indexAt(e->pos());
 	if(!idx.isValid()){
 		sp_log(Log::Debug, this) << "drop: Invalid index";
 		return;
@@ -493,4 +512,9 @@ void GenreView::dropEvent(QDropEvent *e)
 	MetaDataList v_md(std::move(cmd->metadata()));
 
 	m->genre_fetcher->add_genre_to_md(v_md, genre);
+}
+
+QString GenreView::no_genre_name() const
+{
+	return "<" + tr("No genre") + ">";
 }

@@ -55,7 +55,7 @@ struct GUI_StationSearcher::Private
 
 		label->setText
 		(
-			tr("Show stations from %1 to %2")
+			tr("Show radio stations from %1 to %2")
 				.arg("<b>" + stations.first().name + "</b>")
 				.arg("<b>" + stations.last().name + "</b>" )
 		);

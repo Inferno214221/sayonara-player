@@ -423,7 +423,7 @@ void Menubar::about_clicked()
 			"<b>" + tr("Donate") + "</b>",
 			Util::create_link("http://sayonara-player.com/donations.php", Style::is_dark()),
 			"",
-			tr("Special tanks to all the brave translators") + "!"
+			tr("Special thanks to all the brave translators") + "!"
 		}).join("<br/>"));
 	}
 

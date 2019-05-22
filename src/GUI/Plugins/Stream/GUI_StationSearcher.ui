@@ -7,14 +7,68 @@
     <x>0</x>
     <y>0</y>
     <width>620</width>
-    <height>586</height>
+    <height>571</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Search Radio Station</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="7" column="0" colspan="2">
+   <property name="verticalSpacing">
+    <number>6</number>
+   </property>
+   <item row="4" column="0" colspan="2">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <property name="spacing">
+      <number>5</number>
+     </property>
+     <property name="topMargin">
+      <number>1</number>
+     </property>
+     <property name="bottomMargin">
+      <number>1</number>
+     </property>
+     <item>
+      <widget class="QLineEdit" name="le_search"/>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_search_prev">
+       <property name="text">
+        <string notr="true">Search previous</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_search_next">
+       <property name="text">
+        <string notr="true">Search next</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_search">
+       <property name="text">
+        <string notr="true">Search</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="3" column="0" colspan="2">
+    <widget class="Line" name="line">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="0" colspan="2">
+    <widget class="QLabel" name="lab_from_to">
+     <property name="text">
+      <string notr="true"/>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="0" colspan="2">
     <widget class="QSplitter" name="splitter">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -70,43 +124,17 @@
      </widget>
     </widget>
    </item>
-   <item row="3" column="0" colspan="2">
-    <widget class="Line" name="line">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="0" colspan="2">
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="QLineEdit" name="le_search"/>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btn_search_prev">
-       <property name="text">
-        <string notr="true">Search previous</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btn_search_next">
-       <property name="text">
-        <string notr="true">Search next</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btn_search">
-       <property name="text">
-        <string notr="true">Search</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item row="9" column="0" colspan="2">
+   <item row="10" column="0" colspan="2">
     <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <property name="spacing">
+      <number>5</number>
+     </property>
+     <property name="topMargin">
+      <number>1</number>
+     </property>
+     <property name="bottomMargin">
+      <number>1</number>
+     </property>
      <item>
       <widget class="QProgressBar" name="pb_progress">
        <property name="maximum">
@@ -148,6 +176,12 @@
    </item>
    <item row="2" column="0" colspan="2">
     <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <property name="topMargin">
+      <number>1</number>
+     </property>
+     <property name="bottomMargin">
+      <number>3</number>
+     </property>
      <item>
       <widget class="QLabel" name="label">
        <property name="font">
@@ -184,9 +218,9 @@
     </layout>
    </item>
    <item row="5" column="0" colspan="2">
-    <widget class="QLabel" name="lab_from_to">
-     <property name="text">
-      <string notr="true"/>
+    <widget class="Line" name="line_2">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
      </property>
     </widget>
    </item>

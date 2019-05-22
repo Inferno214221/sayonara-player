@@ -67,6 +67,7 @@ namespace Library
 		QTreeWidgetItem* find_genre(const QString& genre);
 
 		void init_context_menu();
+		QString no_genre_name() const;
 
 	private slots:
 		void item_expanded(QTreeWidgetItem* item);

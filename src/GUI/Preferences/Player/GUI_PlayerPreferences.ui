@@ -28,7 +28,7 @@
    <item row="3" column="0">
     <widget class="QCheckBox" name="cb_close_to_tray">
      <property name="text">
-      <string>Close to tray</string>
+      <string>Close to system tray</string>
      </property>
     </widget>
    </item>
@@ -56,7 +56,7 @@
    <item row="1" column="0">
     <widget class="QCheckBox" name="cb_start_in_tray">
      <property name="text">
-      <string>Start in tray</string>
+      <string>Start in system tray</string>
      </property>
     </widget>
    </item>

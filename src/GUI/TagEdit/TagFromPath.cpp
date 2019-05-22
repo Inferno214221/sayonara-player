@@ -244,6 +244,7 @@ void GUI_TagFromPath::language_changed()
 	ui->btn_artist->setText(Lang::get(Lang::Artist));
 	ui->btn_year->setText(Lang::get(Lang::Year));
 	ui->btn_track_nr->setText(Lang::get(Lang::TrackNo).toFirstUpper());
+	ui->lab_tag_from_path_warning->setText(Lang::get(Lang::Warning));
 
 	ui->btn_apply_tag_all->setText(Lang::get(Lang::Apply) + ": " + Lang::get(Lang::All).toFirstUpper());
 	ui->btn_apply_tag->setText(Lang::get(Lang::Apply) + ": " + Lang::get(Lang::Title).toFirstUpper());
