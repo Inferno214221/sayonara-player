@@ -94,10 +94,10 @@ struct AlbumCoverFetchThread::Private
 			return false;
 		}
 
-		/*if(queued_hashes.count() >= MaxThreads) {
+		if(queued_hashes.count() >= MaxThreads) {
 			in_paused_state = true;
 			wait();
-		};*/
+		};
 
 		if(paused_to_go > 0) {
 			in_paused_state = true;

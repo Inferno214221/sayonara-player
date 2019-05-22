@@ -49,6 +49,7 @@ TrackModel::TrackModel(QObject* parent, AbstractLibrary* library) :
 
 TrackModel::~TrackModel() {}
 
+#include <QSize>
 QVariant TrackModel::data(const QModelIndex &index, int role) const
 {
 	int row = index.row();

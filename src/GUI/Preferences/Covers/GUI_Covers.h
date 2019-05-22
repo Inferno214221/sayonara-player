@@ -56,6 +56,7 @@ private slots:
 	void fetch_covers_www_triggered(bool b);
 
 	void cb_save_to_library_toggled(bool b);
+	void le_cover_template_edited(const QString& text);
 };
 
 

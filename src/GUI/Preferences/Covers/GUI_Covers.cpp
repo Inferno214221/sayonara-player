@@ -68,7 +68,7 @@ static bool check_cover_template(const QString& cover_template)
 
 	QList<QChar> invalid_chars
 	{
-		'/', '\\', '|', ':', '\"', '?', '$', '<', '>'
+		'/', '\\', '|', ':', '\"', '?', '$', '<', '>', '*', '#', '%', '&'
 	};
 
 	for(const QChar& c : invalid_chars)
@@ -78,7 +78,7 @@ static bool check_cover_template(const QString& cover_template)
 		}
 	}
 
-	return Util::File::is_imagefile(str);
+	return true;
 }
 
 bool GUI_Covers::commit()
@@ -98,12 +98,30 @@ bool GUI_Covers::commit()
 	SetSetting(Set::Cover_SaveToSayonaraDir, ui->cb_save_to_sayonara_dir->isChecked() && ui->cb_save_to_sayonara_dir->isEnabled());
 
 	QString cover_template = ui->le_cover_template->text().trimmed();
-	if(check_cover_template(cover_template)) {
+	if(check_cover_template(cover_template))
+	{
+		if(!Util::File::is_imagefile(cover_template))
+		{
+			QString ext = Util::File::get_file_extension(cover_template);
+			if(ext.isEmpty()){
+				cover_template.append(".jpg");
+				cover_template.replace("..jpg", ".jpg");
+			}
+
+			else {
+				cover_template.replace("." + ext, ".jpg");
+			}
+
+			ui->le_cover_template->setText(cover_template);
+		}
+
 		SetSetting(Set::Cover_TemplatePath, cover_template);
 	}
 
-	else {
+	else
+	{
 		ui->le_cover_template->setText(GetSetting(Set::Cover_TemplatePath));
+		ui->lab_template_error->setVisible(false);
 	}
 
 	return true;
@@ -163,6 +181,7 @@ void GUI_Covers::init_ui()
 
 	ui->lv_cover_searchers->setItemDelegate(new Gui::StyledItemDelegate(ui->lv_cover_searchers));
 	ui->lv_cover_searchers_inactive->setItemDelegate(new Gui::StyledItemDelegate(ui->lv_cover_searchers_inactive));
+	ui->lab_template_error->setVisible(false);
 
 	connect(ui->btn_up, &QPushButton::clicked, this, &GUI_Covers::up_clicked);
 	connect(ui->btn_down, &QPushButton::clicked, this, &GUI_Covers::down_clicked);
@@ -173,6 +192,7 @@ void GUI_Covers::init_ui()
 	connect(ui->btn_add, &QPushButton::clicked, this, &GUI_Covers::add_clicked);
 	connect(ui->btn_remove, &QPushButton::clicked, this, &GUI_Covers::remove_clicked);
 	connect(ui->cb_save_to_library, &QCheckBox::toggled, this, &GUI_Covers::cb_save_to_library_toggled);
+	connect(ui->le_cover_template, &QLineEdit::textEdited, this, &GUI_Covers::le_cover_template_edited);
 
 	revert();
 }
@@ -262,4 +282,11 @@ void GUI_Covers::cb_save_to_library_toggled(bool b)
 {
 	ui->le_cover_template->setVisible(b);
 	ui->lab_cover_template->setVisible(b);
+}
+
+void GUI_Covers::le_cover_template_edited(const QString& text)
+{
+	bool valid = check_cover_template(text);
+	ui->lab_template_error->setVisible(!valid);
+	ui->lab_template_error->setText(Lang::get(Lang::Error) + ": " + Lang::get(Lang::InvalidChars));
 }

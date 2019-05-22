@@ -30,6 +30,7 @@ using namespace Library;
 struct HeaderView::Private
 {
 	ColumnHeaderList	column_headers;
+	QAction*			action_resize;
 };
 
 HeaderView::HeaderView(Qt::Orientation orientation, QWidget* parent) :
@@ -54,6 +55,7 @@ void HeaderView::init_header_action(ColumnHeaderPtr header, bool is_shown)
 	this->addAction(action);
 }
 
+#include "Utils/Language.h"
 void HeaderView::set_column_headers(const ColumnHeaderList& column_headers, const BoolList& shown_actions, Library::SortOrder sorting)
 {
 	m->column_headers = column_headers;
@@ -85,10 +87,17 @@ void HeaderView::set_column_headers(const ColumnHeaderList& column_headers, cons
 	refresh_active_columns();
 
 	for(int i=0; i<m->column_headers.count()-1; i++){
-		this->setSectionResizeMode(1, QHeaderView::Interactive);
+		this->setSectionResizeMode(i, QHeaderView::Interactive);
 	}
 
 	this->setSectionResizeMode(m->column_headers.count()-1, QHeaderView::Stretch);
+
+
+	m->action_resize = new QAction(Lang::get(Lang::Default), this);
+	connect(m->action_resize, &QAction::triggered, this, &HeaderView::action_resize_triggered);
+
+	this->addAction(m->action_resize);
+
 }
 
 BoolList HeaderView::refresh_active_columns()
@@ -134,6 +143,11 @@ void HeaderView::language_changed()
 	{
 		header->retranslate();
 	}
+
+	if(m->action_resize){
+		m->action_resize->setText(Lang::get(Lang::Default));
+	}
+
 }
 
 QSize HeaderView::sizeHint() const
@@ -155,4 +169,47 @@ void HeaderView::action_triggered(bool b)
 
 	Q_UNUSED(b)
 	Q_UNUSED(shown_cols)
+}
+
+void HeaderView::action_resize_triggered()
+{
+	int space_needed = 0;
+	int free_space = this->width();
+	int i=0;
+
+	for(ColumnHeaderPtr ch : m->column_headers)
+	{
+		int sz = ch->default_size();
+		this->setSectionResizeMode(i, QHeaderView::Interactive);
+
+		if(ch->stretchable())
+		{
+			space_needed += sz;
+			i++;
+			continue;
+		}
+
+		else
+		{
+			this->resizeSection(i, sz);
+			free_space -= sz;
+		}
+
+		i++;
+	}
+
+	double scale_factor = std::max(free_space * 1.0 / space_needed, 1.0);
+
+	i = 0;
+	for(ColumnHeaderPtr ch : m->column_headers)
+	{
+		if(ch->stretchable()){
+			int sz = static_cast<int>(ch->default_size() * scale_factor);
+			this->resizeSection(i, sz);
+		}
+
+		i++;
+	}
+
+	this->setSectionResizeMode(m->column_headers.count()-1, QHeaderView::Stretch);
 }
