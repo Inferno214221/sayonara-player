@@ -91,14 +91,14 @@
         <translation>Розпочати пошук автоматично</translation>
     </message>
     <message>
-        <location filename="src/GUI/Covers/GUI_AlternativeCovers.cpp" line="+227"/>
-        <source>Cover web search is not enabled</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+79"/>
+        <location filename="src/GUI/Covers/GUI_AlternativeCovers.cpp" line="+289"/>
         <source>%1 covers found</source>
         <translation>Знайдено %1 обкладинок</translation>
+    </message>
+    <message>
+        <location line="+139"/>
+        <source>Cover web search is not enabled</source>
+        <translation>Пошуковий веб-перегляд не ввімкнено</translation>
     </message>
 </context>
 <context>
@@ -272,7 +272,7 @@
     <message>
         <location filename="src/GUI/Player/GUI_ControlsNew.ui" line="+638"/>
         <source>Copyright 2011-2019</source>
-        <translation type="unfinished"/>
+        <translation>Copyright 2011-2019</translation>
     </message>
     <message>
         <location line="+50"/>
@@ -299,7 +299,7 @@
         <location filename="src/GUI/Plugins/AudioConverter/GUI_AudioConverter.ui" line="+45"/>
         <location filename="src/GUI/Plugins/AudioConverter/GUI_AudioConverter.cpp" line="+261"/>
         <source>Start</source>
-        <translation type="unfinished"/>
+        <translation>Старт</translation>
     </message>
     <message>
         <location line="+30"/>
@@ -309,7 +309,7 @@
     <message>
         <location line="+24"/>
         <source>#Threads</source>
-        <translation type="unfinished"/>
+        <translation>#Потоки</translation>
     </message>
     <message>
         <location line="+39"/>
@@ -326,44 +326,44 @@
     <message>
         <location line="+9"/>
         <source>Threads</source>
-        <translation type="unfinished"/>
+        <translation>Потоки</translation>
     </message>
     <message>
         <location line="+27"/>
         <location line="+108"/>
         <source>Cannot find encoder</source>
-        <translation type="unfinished"/>
+        <translation>Неможливо знайти шифрування</translation>
     </message>
     <message>
         <location line="-98"/>
         <location line="+14"/>
         <source>Playlist does not contain tracks which are supported by the converter</source>
-        <translation type="unfinished"/>
+        <translation>Плейлист не містить треків, які підтримуються конвертером</translation>
     </message>
     <message>
         <location line="-9"/>
         <source>No track will be converted.</source>
-        <translation type="unfinished"/>
+        <translation>Жодного треку не буде конвертовано</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>These tracks will be ignored</source>
-        <translation type="unfinished"/>
+        <translation>Ці треки будуть проігноровані</translation>
     </message>
     <message>
         <location line="+35"/>
         <source>Failed to convert %1 tracks</source>
-        <translation type="unfinished"/>
+        <translation>Не вдалося конвертувати %1 треків</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Please check the log files</source>
-        <translation type="unfinished"/>
+        <translation>Будь ласка, перевірте файли журналу</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Successfully finished</source>
-        <translation type="unfinished"/>
+        <translation>Успішно завершено</translation>
     </message>
 </context>
 <context>
@@ -568,7 +568,7 @@
     <message>
         <location line="+41"/>
         <source>Url</source>
-        <translation type="unfinished"/>
+        <translation>Url</translation>
     </message>
 </context>
 <context>
@@ -576,27 +576,27 @@
     <message>
         <location filename="src/GUI/Plugins/Stream/GUI_StationSearcher.ui" line="+14"/>
         <source>Search Radio Station</source>
-        <translation type="unfinished"/>
+        <translation>Пошук радіостанції</translation>
     </message>
     <message>
         <location filename="src/GUI/Plugins/Stream/GUI_StationSearcher.cpp" line="+58"/>
-        <source>Show stations from %1 to %2</source>
+        <source>Show radio stations from %1 to %2</source>
         <translation type="unfinished"/>
     </message>
     <message>
         <location line="+204"/>
         <source>Country</source>
-        <translation type="unfinished"/>
+        <translation>Країна</translation>
     </message>
     <message>
         <location line="+76"/>
         <source>Type</source>
-        <translation type="unfinished"/>
+        <translation>Тип</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Url</source>
-        <translation type="unfinished"/>
+        <translation>Url</translation>
     </message>
 </context>
 <context>
@@ -615,27 +615,67 @@
 <context>
     <name>GUI_Covers</name>
     <message>
-        <location filename="src/GUI/Preferences/Covers/GUI_Covers.ui" line="+32"/>
-        <source>Cover name template</source>
+        <location filename="src/GUI/Preferences/Covers/GUI_Covers.ui" line="+17"/>
+        <source>Save found covers into Sayonara directory</source>
+        <translation>Зберігти знайдені обкладинки в папці Sayonara</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>Save found covers into the library directory where the audio files are located</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+3"/>
+        <source>Save found covers into library</source>
+        <translation>Зберігти знайдені обкладинки в бібліотеці </translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Saving covers to the database leads to significantly faster access but results in a bigger database</source>
+        <translation>Зберігання обкладинок в базі даних призводить до кращої результативності роботи, але спричиняє розширення розміру бази даних</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Save found covers to database</source>
+        <translation>Зберігти знайдені обкладинки в базі даних</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Cover name</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Name of cover file</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+36"/>
+        <source>Fetch missing covers from the internet</source>
+        <translation>Отримати відсутні обкладинки з інтернету</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Delete all covers from the database</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Clear cache</source>
+        <translation>Очистити кеш</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Delete all covers from the Sayonara directory</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>Delete files</source>
         <translation>Видалити файли</translation>
     </message>
     <message>
-        <location line="+9"/>
-        <source>&lt;</source>
-        <translation>&lt;</translation>
-    </message>
-    <message>
-        <location line="+59"/>
-        <source>&gt;</source>
-        <translation>&gt;</translation>
-    </message>
-    <message>
-        <location line="+13"/>
+        <location line="+83"/>
         <source>Inactive</source>
         <translation>Неактивний</translation>
     </message>
@@ -643,36 +683,6 @@
         <location line="+13"/>
         <source>Active</source>
         <translation>Активний</translation>
-    </message>
-    <message>
-        <location line="+9"/>
-        <source>Fetch missing covers from the internet</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+21"/>
-        <source>Clear cache</source>
-        <translation>Очистити кеш</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Saving covers to the database leads to significantly faster access but results in a bigger database</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Save found covers to database</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Save found covers into library</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Save found covers into Sayonara directory</source>
-        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -762,7 +772,7 @@
     <message>
         <location line="+7"/>
         <source>(this is ignored when playlist is in &apos;append mode&apos;)</source>
-        <translation type="unfinished"/>
+        <translation>(це ігнорується, якщо плейлист знаходиться в режимі &quot;Шукати до кінця&quot;)</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -817,13 +827,13 @@
     </message>
     <message>
         <location line="+7"/>
-        <source>Close to tray</source>
-        <translation>Згорнути</translation>
+        <source>Close to system tray</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+28"/>
-        <source>Start in tray</source>
-        <translation>Відкрити в мінімальному режимі</translation>
+        <source>Start in system tray</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -1124,12 +1134,12 @@
     <message>
         <location filename="src/GUI/Preferences/Streams/GUI_StreamPreferences.ui" line="+17"/>
         <source> ms</source>
-        <translation type="unfinished"/>
+        <translation>мс</translation>
     </message>
     <message>
         <location line="+29"/>
         <source>Buffer size</source>
-        <translation type="unfinished"/>
+        <translation>Розмір буфера</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -1218,17 +1228,7 @@
 <context>
     <name>GUI_TagEdit</name>
     <message>
-        <location filename="src/GUI/TagEdit/GUI_TagEdit.ui" line="+64"/>
-        <source>&lt;</source>
-        <translation>&lt;</translation>
-    </message>
-    <message>
-        <location line="+32"/>
-        <source>&gt;</source>
-        <translation>&gt;</translation>
-    </message>
-    <message>
-        <location line="+39"/>
+        <location filename="src/GUI/TagEdit/GUI_TagEdit.ui" line="+135"/>
         <source>Discnumber</source>
         <translation>Номер диска</translation>
     </message>
@@ -1301,12 +1301,7 @@
         <translation>Вираз</translation>
     </message>
     <message>
-        <location line="+17"/>
-        <source>?</source>
-        <translation>?</translation>
-    </message>
-    <message>
-        <location line="+67"/>
+        <location line="+84"/>
         <source>Disc Nr</source>
         <translation>CD Ном</translation>
     </message>
@@ -1314,11 +1309,6 @@
         <location line="+57"/>
         <source>Apply to all</source>
         <translation>Застосувати до всього</translation>
-    </message>
-    <message>
-        <location line="+32"/>
-        <source>Warning</source>
-        <translation>Попередження</translation>
     </message>
     <message>
         <location filename="src/GUI/TagEdit/TagFromPath.cpp" line="+96"/>
@@ -1429,7 +1419,7 @@
 <context>
     <name>AbstractLibrary</name>
     <message>
-        <location filename="src/Components/Library/AbstractLibrary.cpp" line="+708"/>
+        <location filename="src/Components/Library/AbstractLibrary.cpp" line="+714"/>
         <source>All %1 could be removed</source>
         <translation>Всі %1 видалені</translation>
     </message>
@@ -1462,7 +1452,7 @@
     <message>
         <location filename="src/Components/Library/Threads/ReloadThread.cpp" line="+223"/>
         <source>Looking for covers</source>
-        <translation type="unfinished"/>
+        <translation>Шукаю обкладинки</translation>
     </message>
     <message>
         <location line="+41"/>
@@ -1574,7 +1564,7 @@
 <context>
     <name>Library::GenreView</name>
     <message>
-        <location filename="src/GUI/Library/GenreView.cpp" line="+121"/>
+        <location filename="src/GUI/Library/GenreView.cpp" line="+120"/>
         <source>Updating genres</source>
         <translation>Оновити жанри</translation>
     </message>
@@ -1583,11 +1573,16 @@
         <source>Do you really want to remove %1 from all tracks?</source>
         <translation>Ви дійсно бажаєте вилучити %1? з усіх треків?</translation>
     </message>
+    <message>
+        <location line="+312"/>
+        <source>No genre</source>
+        <translation type="unfinished"/>
+    </message>
 </context>
 <context>
     <name>Library::GUI_CoverView</name>
     <message>
-        <location filename="src/GUI/Library/GUI_CoverView.cpp" line="+203"/>
+        <location filename="src/GUI/Library/GUI_CoverView.cpp" line="+205"/>
         <source>Use Ctrl + mouse wheel to zoom</source>
         <translation>Використовувати Ctrl + mouse для збільшення</translation>
     </message>
@@ -1621,6 +1616,14 @@
         <location line="+4"/>
         <source>Scan all files in your library directory</source>
         <translation>Сканувати всі файли у каталозі бібліотеки</translation>
+    </message>
+</context>
+<context>
+    <name>Library::HeaderView</name>
+    <message>
+        <location filename="src/GUI/Library/HeaderView.cpp" line="+61"/>
+        <source>Resize columns</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -1703,7 +1706,7 @@
     <message>
         <location line="+3"/>
         <source>FAQ</source>
-        <translation type="unfinished"/>
+        <translation>FAQ</translation>
     </message>
     <message>
         <location line="+20"/>
@@ -1727,7 +1730,7 @@
     </message>
     <message>
         <location line="+3"/>
-        <source>Special tanks to all the brave translators</source>
+        <source>Special thanks to all the brave translators</source>
         <translation type="unfinished"/>
     </message>
 </context>
@@ -1808,7 +1811,7 @@
     <message>
         <location filename="src/GUI/Playlist/PlaylistContextMenu.cpp" line="+140"/>
         <source>Jump to current track</source>
-        <translation type="unfinished"/>
+        <translation>Перейти до поточного треку</translation>
     </message>
 </context>
 <context>
@@ -1881,7 +1884,7 @@
     <message>
         <location line="+96"/>
         <source>Please choose another name</source>
-        <translation type="unfinished"/>
+        <translation>Будь ласка, виберіть інше ім’я</translation>
     </message>
     <message>
         <location line="+61"/>
@@ -1902,7 +1905,7 @@
     <message>
         <location filename="src/GUI/Plugins/Stream/GUI_Stream.cpp" line="+67"/>
         <source>Search radio station</source>
-        <translation type="unfinished"/>
+        <translation>Пошук радіостанції</translation>
     </message>
 </context>
 <context>
@@ -1987,7 +1990,7 @@
     <message>
         <location line="+202"/>
         <source>The toolbar is visible when there are tracks with differing file types listed in the track view</source>
-        <translation type="unfinished"/>
+        <translation>Перегляд треків відображається, якщо перегляд треків містить треки з різними типами файлів</translation>
     </message>
 </context>
 <context>
@@ -1995,12 +1998,12 @@
     <message>
         <location filename="src/GUI/Utils/ImageSelectionDialog.cpp" line="+55"/>
         <source>Image files</source>
-        <translation type="unfinished"/>
+        <translation>Медіа файли</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Any files</source>
-        <translation type="unfinished"/>
+        <translation>Немає файлів</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -2339,12 +2342,12 @@
     <message>
         <location line="+2"/>
         <source>File type</source>
-        <translation type="unfinished"/>
+        <translation>Тип файлу</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Filter</source>
-        <translation type="unfinished"/>
+        <translation>Фільтер</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2479,7 +2482,7 @@
     <message>
         <location line="+2"/>
         <source>Live Search</source>
-        <translation type="unfinished"/>
+        <translation>Live пошук</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2544,7 +2547,7 @@
     <message>
         <location line="+2"/>
         <source>Next page</source>
-        <translation type="unfinished"/>
+        <translation>Наступна сторінка</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2670,7 +2673,7 @@
     <message>
         <location line="+2"/>
         <source>Previous page</source>
-        <translation type="unfinished"/>
+        <translation>Попередня сторінка</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2791,7 +2794,7 @@
     <message>
         <location line="+2"/>
         <source>Search previous</source>
-        <translation type="unfinished"/>
+        <translation>Шукати попередній результат пошуку</translation>
     </message>
     <message>
         <location line="+2"/>

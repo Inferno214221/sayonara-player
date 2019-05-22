@@ -91,14 +91,14 @@
         <translation>Suche automatisch starten</translation>
     </message>
     <message>
-        <location filename="src/GUI/Covers/GUI_AlternativeCovers.cpp" line="+227"/>
-        <source>Cover web search is not enabled</source>
-        <translation>Websuche für Covers ist nicht aktiviert</translation>
-    </message>
-    <message>
-        <location line="+79"/>
+        <location filename="src/GUI/Covers/GUI_AlternativeCovers.cpp" line="+289"/>
         <source>%1 covers found</source>
         <translation>%1 Cover(s) gefunden</translation>
+    </message>
+    <message>
+        <location line="+139"/>
+        <source>Cover web search is not enabled</source>
+        <translation>Websuche für Covers ist nicht aktiviert</translation>
     </message>
 </context>
 <context>
@@ -580,8 +580,8 @@
     </message>
     <message>
         <location filename="src/GUI/Plugins/Stream/GUI_StationSearcher.cpp" line="+58"/>
-        <source>Show stations from %1 to %2</source>
-        <translation>Zeige Stationen von %1 bis %2</translation>
+        <source>Show radio stations from %1 to %2</source>
+        <translation>Zeige Radiostationen von %1 bis %2</translation>
     </message>
     <message>
         <location line="+204"/>
@@ -615,44 +615,19 @@
 <context>
     <name>GUI_Covers</name>
     <message>
-        <location filename="src/GUI/Preferences/Covers/GUI_Covers.ui" line="+32"/>
-        <source>Cover name template</source>
-        <translation>Muster für Covername</translation>
+        <location filename="src/GUI/Preferences/Covers/GUI_Covers.ui" line="+17"/>
+        <source>Save found covers into Sayonara directory</source>
+        <translation>Gefundene Covers im Sayonara Verzeichnis speichern</translation>
     </message>
     <message>
-        <location line="+12"/>
-        <source>Delete files</source>
-        <translation>Dateien löschen</translation>
+        <location line="+14"/>
+        <source>Save found covers into the library directory where the audio files are located</source>
+        <translation>Speichere gefundene Covers in der Musiksammlung wo sich die Musikdateien befinden</translation>
     </message>
     <message>
-        <location line="+9"/>
-        <source>&lt;</source>
-        <translation>&lt;</translation>
-    </message>
-    <message>
-        <location line="+59"/>
-        <source>&gt;</source>
-        <translation>&gt;</translation>
-    </message>
-    <message>
-        <location line="+13"/>
-        <source>Inactive</source>
-        <translation>Inaktiv</translation>
-    </message>
-    <message>
-        <location line="+13"/>
-        <source>Active</source>
-        <translation>Aktiv</translation>
-    </message>
-    <message>
-        <location line="+9"/>
-        <source>Fetch missing covers from the internet</source>
-        <translation>Hole fehlende Covers aus dem Internet</translation>
-    </message>
-    <message>
-        <location line="+21"/>
-        <source>Clear cache</source>
-        <translation>Cache leeren</translation>
+        <location line="+3"/>
+        <source>Save found covers into library</source>
+        <translation>Gefundene Covers in Bibliothek speichern</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -665,14 +640,49 @@
         <translation>Gefundene Covers in Datenbank speichern</translation>
     </message>
     <message>
-        <location line="+7"/>
-        <source>Save found covers into library</source>
-        <translation>Gefundene Covers in Bibliothek speichern</translation>
+        <location line="+9"/>
+        <source>Cover name</source>
+        <translation>Covername</translation>
     </message>
     <message>
         <location line="+7"/>
-        <source>Save found covers into Sayonara directory</source>
-        <translation>Gefundene Covers im Sayonara Verzeichnis speichern</translation>
+        <source>Name of cover file</source>
+        <translation>Name der Cover-Datei</translation>
+    </message>
+    <message>
+        <location line="+36"/>
+        <source>Fetch missing covers from the internet</source>
+        <translation>Hole fehlende Covers aus dem Internet</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Delete all covers from the database</source>
+        <translation>Lösche alle Covers aus der Datenbank</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Clear cache</source>
+        <translation>Cache leeren</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Delete all covers from the Sayonara directory</source>
+        <translation>Lösche alle Covers aus dem Sayonara-Verzeichnis</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Delete files</source>
+        <translation>Dateien löschen</translation>
+    </message>
+    <message>
+        <location line="+83"/>
+        <source>Inactive</source>
+        <translation>Inaktiv</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Active</source>
+        <translation>Aktiv</translation>
     </message>
 </context>
 <context>
@@ -817,13 +827,13 @@
     </message>
     <message>
         <location line="+7"/>
-        <source>Close to tray</source>
-        <translation>Schließe ins Tray</translation>
+        <source>Close to system tray</source>
+        <translation>Beim Schließen ins System-Tray minimieren</translation>
     </message>
     <message>
         <location line="+28"/>
-        <source>Start in tray</source>
-        <translation>Minimiert starten</translation>
+        <source>Start in system tray</source>
+        <translation>Minimiert im System-Tray starten</translation>
     </message>
 </context>
 <context>
@@ -1218,17 +1228,7 @@
 <context>
     <name>GUI_TagEdit</name>
     <message>
-        <location filename="src/GUI/TagEdit/GUI_TagEdit.ui" line="+64"/>
-        <source>&lt;</source>
-        <translation>&lt;</translation>
-    </message>
-    <message>
-        <location line="+32"/>
-        <source>&gt;</source>
-        <translation>&gt;</translation>
-    </message>
-    <message>
-        <location line="+39"/>
+        <location filename="src/GUI/TagEdit/GUI_TagEdit.ui" line="+135"/>
         <source>Discnumber</source>
         <translation>CD Nummer</translation>
     </message>
@@ -1301,12 +1301,7 @@
         <translation>Ausdruck</translation>
     </message>
     <message>
-        <location line="+17"/>
-        <source>?</source>
-        <translation>?</translation>
-    </message>
-    <message>
-        <location line="+67"/>
+        <location line="+84"/>
         <source>Disc Nr</source>
         <translation>CD Nr</translation>
     </message>
@@ -1314,11 +1309,6 @@
         <location line="+57"/>
         <source>Apply to all</source>
         <translation>Auf alle anwenden</translation>
-    </message>
-    <message>
-        <location line="+32"/>
-        <source>Warning</source>
-        <translation>Warnung</translation>
     </message>
     <message>
         <location filename="src/GUI/TagEdit/TagFromPath.cpp" line="+96"/>
@@ -1429,7 +1419,7 @@
 <context>
     <name>AbstractLibrary</name>
     <message>
-        <location filename="src/Components/Library/AbstractLibrary.cpp" line="+708"/>
+        <location filename="src/Components/Library/AbstractLibrary.cpp" line="+714"/>
         <source>All %1 could be removed</source>
         <translation>Alle %1 konnten gelöscht werden</translation>
     </message>
@@ -1574,7 +1564,7 @@
 <context>
     <name>Library::GenreView</name>
     <message>
-        <location filename="src/GUI/Library/GenreView.cpp" line="+121"/>
+        <location filename="src/GUI/Library/GenreView.cpp" line="+120"/>
         <source>Updating genres</source>
         <translation>Aktualisiere Genres</translation>
     </message>
@@ -1583,11 +1573,16 @@
         <source>Do you really want to remove %1 from all tracks?</source>
         <translation>Soll %1 wirklich aus allen Titeln gelöscht werden?</translation>
     </message>
+    <message>
+        <location line="+312"/>
+        <source>No genre</source>
+        <translation>Kein Genre</translation>
+    </message>
 </context>
 <context>
     <name>Library::GUI_CoverView</name>
     <message>
-        <location filename="src/GUI/Library/GUI_CoverView.cpp" line="+203"/>
+        <location filename="src/GUI/Library/GUI_CoverView.cpp" line="+205"/>
         <source>Use Ctrl + mouse wheel to zoom</source>
         <translation>Strg + Mausrad zum zoomen</translation>
     </message>
@@ -1621,6 +1616,14 @@
         <location line="+4"/>
         <source>Scan all files in your library directory</source>
         <translation>Alle Dateien in Sammlung neu einlesen</translation>
+    </message>
+</context>
+<context>
+    <name>Library::HeaderView</name>
+    <message>
+        <location filename="src/GUI/Library/HeaderView.cpp" line="+61"/>
+        <source>Resize columns</source>
+        <translation>Spaltengröße anpassen</translation>
     </message>
 </context>
 <context>
@@ -1727,8 +1730,8 @@
     </message>
     <message>
         <location line="+3"/>
-        <source>Special tanks to all the brave translators</source>
-        <translation>Vielen Dank an die tapferen Übersetzer</translation>
+        <source>Special thanks to all the brave translators</source>
+        <translation>Herzlichen Dank an all die tapferen Übersetzer</translation>
     </message>
 </context>
 <context>
@@ -1902,7 +1905,7 @@
     <message>
         <location filename="src/GUI/Plugins/Stream/GUI_Stream.cpp" line="+67"/>
         <source>Search radio station</source>
-        <translation>Radiostation suchen</translation>
+        <translation>Nach Radiostation suchen</translation>
     </message>
 </context>
 <context>
@@ -2691,7 +2694,7 @@
     <message>
         <location line="+2"/>
         <source>Radio Station</source>
-        <translation>Radio Station</translation>
+        <translation>Radiostation</translation>
     </message>
     <message>
         <location line="+2"/>
