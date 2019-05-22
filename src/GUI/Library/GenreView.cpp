@@ -365,7 +365,7 @@ void GenreView::populate_widget(QTreeWidgetItem* parent_item, GenreNode* node)
 
 	if(invalid_genre)
 	{
-		text = QStringList{"<" + no_genre_name() + ">"};
+		text = QStringList{no_genre_name()};
 	}
 
 	if(node->parent == m->genres){
