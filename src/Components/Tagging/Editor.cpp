@@ -320,9 +320,11 @@ void Editor::load_entire_album()
 	}
 
 	AlbumId id = info.album_ids().first();
-	MetaDataList v_md;
 
-	m->ldb->getAllTracksByAlbum(id, v_md, ::Library::Filter(), ::Library::SortOrder::TrackNumAsc);
+	MetaDataList v_md;
+	m->ldb->getAllTracksByAlbum(IdList{id}, v_md, ::Library::Filter(), -1);
+	v_md.sort(::Library::SortOrder::TrackDiscnumberAsc);
+
 	set_metadata(v_md);
 }
 

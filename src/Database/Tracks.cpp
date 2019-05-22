@@ -42,6 +42,9 @@ using DB::Query;
 using DB::SearchableModule;
 using SMM=::Library::SearchModeMask;
 namespace LibraryUtils=::Library::Utils;
+using ::Library::Filter;
+
+static QString get_filter_clause(const Filter& filter, QString cis_placeholder, QString searchterm_placeholder);
 
 struct Tracks::Private
 {
@@ -72,26 +75,29 @@ Tracks::Tracks(const QString& connection_name, DbId db_id, LibraryId library_id)
 {
 	m = Pimpl::make<Private>(library_id);
 
-	QString select = "SELECT "
-					"tracks.trackID, "							// 0
-					"tracks.title, "							// 1
-					"tracks.length, "							// 2
-					"tracks.year, "								// 3
-					"tracks.bitrate, "							// 4
-					"tracks.filename, "							// 5
-					"tracks.filesize, "							// 6
-					"tracks.track			AS trackNum, "		// 7
-					"tracks.genre, "							// 8
-					"tracks.discnumber, "						// 9
-					"tracks.rating, "							// 10
-					"tracks.albumID			AS albumID, "		// 11
-					"tracks.artistID		AS artistID, "		// 12
-					"tracks.albumArtistID	AS albumArtistID, "	// 13
-					"tracks.comment			AS comment, "		// 14
-					"tracks.createDate, "						// 15
-					"tracks.modifyDate, "						// 16
-					"tracks.libraryID		AS trackLibraryID "	// 17
-	;
+	QStringList fields
+	{
+		"tracks.trackID",							// 0
+		"tracks.title",								// 1
+		"tracks.length",							// 2
+		"tracks.year",								// 3
+		"tracks.bitrate",							// 4
+		"tracks.filename",							// 5
+		"tracks.filesize",							// 6
+		"tracks.track         AS trackNum",			// 7
+		"tracks.genre",								// 8
+		"tracks.discnumber",						// 9
+		"tracks.rating",							// 10
+		"tracks.albumID	      AS albumID",			// 11
+		"tracks.artistID      AS artistID",			// 12
+		"tracks.albumArtistID AS albumArtistID",	// 13
+		"tracks.comment       AS comment",			// 14
+		"tracks.createDate",						// 15
+		"tracks.modifyDate",						// 16
+		"tracks.libraryID     AS trackLibraryID"	// 17
+	};
+
+	QString select = "SELECT " + fields.join(", ") + " ";
 
 	drop_track_view();
 	create_track_view(select);
@@ -101,7 +107,6 @@ Tracks::Tracks(const QString& connection_name, DbId db_id, LibraryId library_id)
 }
 
 Tracks::~Tracks() {}
-
 
 void Tracks::drop_track_view()
 {
@@ -166,7 +171,6 @@ QString Tracks::fetch_query_tracks() const
 	return "SELECT * FROM " + m->search_view + " ";
 }
 
-
 bool Tracks::db_fetch_tracks(Query& q, MetaDataList& result)
 {
 	result.clear();
@@ -208,32 +212,6 @@ bool Tracks::db_fetch_tracks(Query& q, MetaDataList& result)
 	return true;
 }
 
-
-QString Tracks::append_track_sort_string(QString querytext, ::Library::SortOrder sort)
-{
-	if(sort == ::Library::SortOrder::TrackArtistAsc) querytext += QString(" ORDER BY artistName ASC, discnumber ASC, albumName ASC, trackNum;");
-	else if(sort == ::Library::SortOrder::TrackArtistDesc) querytext += QString(" ORDER BY artistName DESC, discnumber ASC, albumName ASC, trackNum;");
-	else if(sort == ::Library::SortOrder::TrackAlbumAsc) querytext += QString(" ORDER BY discnumber ASC, albumName ASC, trackNum;");
-	else if(sort == ::Library::SortOrder::TrackAlbumDesc) querytext += QString(" ORDER BY discnumber ASC, albumName DESC, trackNum;");
-	else if(sort == ::Library::SortOrder::TrackTitleAsc) querytext += QString(" ORDER BY title ASC;");
-	else if(sort == ::Library::SortOrder::TrackTitleDesc) querytext += QString(" ORDER BY title DESC;");
-	else if(sort == ::Library::SortOrder::TrackNumAsc) querytext += QString(" ORDER BY trackNum ASC;");
-	else if(sort == ::Library::SortOrder::TrackNumDesc) querytext += QString(" ORDER BY trackNum DESC;");
-	else if(sort == ::Library::SortOrder::TrackYearAsc) querytext += QString(" ORDER BY year ASC;");
-	else if(sort == ::Library::SortOrder::TrackYearDesc) querytext += QString(" ORDER BY year DESC;");
-	else if(sort == ::Library::SortOrder::TrackLenghtAsc) querytext += QString(" ORDER BY length ASC;");
-	else if(sort == ::Library::SortOrder::TrackLengthDesc) querytext += QString(" ORDER BY length DESC;");
-	else if(sort == ::Library::SortOrder::TrackBitrateAsc) querytext += QString(" ORDER BY bitrate ASC;");
-	else if(sort == ::Library::SortOrder::TrackBitrateDesc) querytext += QString(" ORDER BY bitrate DESC;");
-	else if(sort == ::Library::SortOrder::TrackSizeAsc) querytext += QString(" ORDER BY filesize ASC;");
-	else if(sort == ::Library::SortOrder::TrackSizeDesc) querytext += QString(" ORDER BY filesize DESC;");
-	else if(sort == ::Library::SortOrder::TrackRatingAsc) querytext += QString(" ORDER BY rating ASC;");
-	else if(sort == ::Library::SortOrder::TrackRatingDesc) querytext += QString(" ORDER BY rating DESC;");
-
-	else querytext += ";";
-
-	return querytext;
-}
 
 
 bool Tracks::getMultipleTracksByPath(const QStringList& paths, MetaDataList& v_md)
@@ -320,61 +298,23 @@ bool Tracks::getTracksbyIds(const QList<TrackID>& ids, MetaDataList& v_md)
 	return db_fetch_tracks(q, v_md);
 }
 
-
-
-
-bool Tracks::getAllTracks(MetaDataList& returndata, ::Library::SortOrder sort)
+bool Tracks::getAllTracks(MetaDataList& result)
 {
 	Query q(this);
 
-	QString querytext = fetch_query_tracks();
-	querytext = append_track_sort_string(querytext, sort);
+	QString querytext = fetch_query_tracks() + ";";
 
 	q.prepare(querytext);
 
-	return db_fetch_tracks(q, returndata);
+	return db_fetch_tracks(q, result);
 }
-
-
-bool Tracks::getAllTracksByAlbum(AlbumId album, MetaDataList& result)
-{
-	return getAllTracksByAlbum(album, result, ::Library::Filter());
-}
-
-
-bool Tracks::getAllTracksByAlbum(AlbumId album, MetaDataList& returndata, const ::Library::Filter& filter, ::Library::SortOrder sort, int discnumber)
-{
-	MetaDataList v_md;
-
-	IdList list{album};
-	returndata.clear();
-
-	bool success = getAllTracksByAlbum(list, v_md, filter, sort);
-
-	if(discnumber < 0) {
-		returndata = v_md;
-	}
-
-	for(const MetaData& md : v_md)
-	{
-		if(discnumber != md.discnumber) {
-			continue;
-		}
-
-		returndata << std::move(md);
-	}
-
-	return success;
-}
-
 
 bool Tracks::getAllTracksByAlbum(IdList albums, MetaDataList& result)
 {
-	return getAllTracksByAlbum(albums, result, ::Library::Filter());
+	return getAllTracksByAlbum(albums, result, Filter());
 }
 
-
-bool Tracks::getAllTracksByAlbum(IdList albums, MetaDataList& result, const ::Library::Filter& filter, ::Library::SortOrder sort)
+bool Tracks::getAllTracksByAlbum(IdList albums, MetaDataList& result, const Filter& filter, int discnumber)
 {
 	if(albums.isEmpty()) {
 		return false;
@@ -387,83 +327,60 @@ bool Tracks::getAllTracksByAlbum(IdList albums, MetaDataList& result, const ::Li
 		Query q(this);
 
 		QString querytext = fetch_query_tracks();
-
+		querytext += " WHERE ";
 		if( !filter.cleared() )
 		{
-			switch( filter.mode() )
-			{
-				case ::Library::Filter::Genre:
-					querytext += "WHERE genre LIKE :searchterm AND ";
-					break;
-
-				case ::Library::Filter::Filename:
-					querytext += "WHERE filecissearch LIKE :cissearch AND ";
-					break;
-
-				case ::Library::Filter::Fulltext:
-				default:
-					querytext += "WHERE allCissearch LIKE :cissearch AND ";
-					break;
-			}
+			querytext += get_filter_clause(filter, "cissearch", "searchterm") + " AND ";
 		}
 
-		else{
-			querytext += " WHERE ";
-		}
-
-		if(albums.size() > 0) {
-			QString album_id_field = m->search_view + ".albumID ";
-			querytext += " (" + album_id_field + "=:albumid_0 ";
-			for(int i=1; i<albums.size(); i++) {
-				querytext += "OR " + album_id_field + "=:albumid_" + QString::number(i) + " ";
+		{ // album id clauses
+			QString aidf = m->search_view+ ".albumID ";
+			QStringList or_clauses;
+			for(int a=0; a<albums.size(); a++){
+				or_clauses << QString("%1 = :album_id_%2").arg(aidf).arg(a);
 			}
 
-			querytext += ") ";
+			querytext += " (" + or_clauses.join(" OR ") + ") ";
 		}
 
+		querytext += ";";
 
-		querytext = append_track_sort_string(querytext, sort);
+		{ // prepare & run
+			q.prepare(querytext);
 
-		q.prepare(querytext);
+			for(int i=0; i<albums.size(); i++) {
+				q.bindValue(QString(":album_id_%1").arg(i), albums[i]);
+			}
 
-		for(int i=0; i<albums.size(); i++)
-		{
-			q.bindValue(QString(":albumid_%1").arg(i), albums[i]);
-		}
-
-		if( !filter.cleared() )
-		{
 			q.bindValue(":searchterm", filters[i]);
 			q.bindValue(":cissearch", search_filters[i]);
-		}
 
-		MetaDataList tmp_list;
-		db_fetch_tracks(q, tmp_list);
-		result.append_unique(tmp_list);
+			MetaDataList tmp_list;
+			db_fetch_tracks(q, tmp_list);
+
+			if(discnumber >= 0)
+			{
+				for(int i=tmp_list.count() - 1; i>=0; i--)
+				{
+					if(tmp_list[i].discnumber != discnumber){
+						tmp_list.remove_track(i);
+					}
+				}
+			}
+
+			result.append_unique(tmp_list);
+		}
 	}
 
 	return true;
 }
 
-bool Tracks::getAllTracksByArtist(ArtistId artist, MetaDataList& returndata)
+bool Tracks::getAllTracksByArtist(IdList artists, MetaDataList& result)
 {
-	return getAllTracksByArtist(artist, returndata, ::Library::Filter());
+	return getAllTracksByArtist(artists, result, Filter());
 }
 
-bool Tracks::getAllTracksByArtist(ArtistId artist, MetaDataList& returndata, const ::Library::Filter& filter, ::Library::SortOrder sort)
-{
-	IdList list{artist};
-
-	return getAllTracksByArtist(list, returndata, filter, sort);
-}
-
-bool Tracks::getAllTracksByArtist(IdList artists, MetaDataList& returndata)
-{
-	return 	getAllTracksByArtist(artists, returndata, ::Library::Filter());
-}
-
-
-bool Tracks::getAllTracksByArtist(IdList artists, MetaDataList& result, const ::Library::Filter& filter, ::Library::SortOrder sort)
+bool Tracks::getAllTracksByArtist(IdList artists, MetaDataList& result, const Filter& filter)
 {
 	if(artists.empty()){
 		return false;
@@ -471,66 +388,52 @@ bool Tracks::getAllTracksByArtist(IdList artists, MetaDataList& result, const ::
 
 	QStringList filters = filter.filtertext(true);
 	QStringList search_filters = filter.search_mode_filtertext(true);
+
 	for(int i=0; i<filters.size(); i++)
 	{
 		Query q(this);
 
-		QString querytext = fetch_query_tracks();
+		QString query = fetch_query_tracks();
+		query += " WHERE ";
 		if( !filter.cleared() )
 		{
-			switch( filter.mode() )
-			{
-				case ::Library::Filter::Genre:
-					querytext += "WHERE genre LIKE :searchterm AND ";
-					break;
-
-				case ::Library::Filter::Filename:
-					querytext += "WHERE filecissearch LIKE :cissearch AND ";
-					break;
-
-				case ::Library::Filter::Fulltext:
-				default:
-					querytext += "WHERE allCissearch LIKE :cissearch AND ";
-					break;
-			}
+			query += get_filter_clause(filter, "cissearch", "searchterm") + " AND ";
 		}
 
-		else{
-			querytext += " WHERE ";
-		}
+		{ // artist conditions
+			QString aidf = m->search_view + "." + artistid_field();
 
-		if(artists.size() > 0)
-		{
-			QString artist_id_field = m->search_view + "." + artistid_field();
-			querytext += " (" + artist_id_field + "=:artist_id_0 ";
-			for(int i=1; i<artists.size(); i++) {
-				querytext += "OR " + artist_id_field + "=:artist_id_" + QString::number(i) + " ";
+			QStringList or_clauses;
+			for(int a=0; a<artists.size(); a++) {
+				or_clauses << QString("%1 = :artist_id_%2").arg(aidf).arg(a);
 			}
 
-			querytext += ") ";
+			query += " (" + or_clauses.join(" OR ") + ") ";
 		}
 
-		querytext = append_track_sort_string(querytext, sort);
+		query += ";";
 
-		q.prepare(querytext);
-		q.bindValue(":artist_id", artists.first());
+		{ // prepare & run
+			q.prepare(query);
 
-		for(int i=0; i<artists.size(); i++) {
-			q.bindValue(QString(":artist_id_%1").arg(i), artists[i]);
+			for(int a=0; a<artists.size(); a++) {
+				q.bindValue(QString(":artist_id_%1").arg(a), artists[i]);
+			}
+
+			q.bindValue(":searchterm", filters[i]);
+			q.bindValue(":cissearch", search_filters[i]);
+
+			MetaDataList tmp_list;
+			db_fetch_tracks(q, tmp_list);
+			result.append_unique(tmp_list);
 		}
-
-		q.bindValue(":searchterm", filters[i]);
-		q.bindValue(":cissearch", search_filters[i]);
-
-		MetaDataList tmp_list;
-		db_fetch_tracks(q, tmp_list);
-		result.append_unique(tmp_list);
 	}
 
 	return true;
 }
 
-bool Tracks::getAllTracksBySearchString(const ::Library::Filter& filter, MetaDataList& result, ::Library::SortOrder sort)
+
+bool Tracks::getAllTracksBySearchString(const Filter& filter, MetaDataList& result)
 {
 	QStringList filters = filter.filtertext(true);
 	QStringList search_filters = filter.search_mode_filtertext(true);
@@ -539,26 +442,9 @@ bool Tracks::getAllTracksBySearchString(const ::Library::Filter& filter, MetaDat
 		Query q(this);
 
 		QString querytext = fetch_query_tracks();
+		querytext += " WHERE " + get_filter_clause(filter, "cissearch", "searchterm");
+		querytext += ";";
 
-		switch(filter.mode())
-		{
-			case ::Library::Filter::Genre:
-				querytext += "WHERE genre LIKE :searchterm ";
-				break;
-
-			case ::Library::Filter::Filename:
-				querytext += "WHERE filecissearch LIKE :cissearch ";
-				break;
-
-			case ::Library::Filter::Fulltext:
-				querytext += "WHERE allCissearch LIKE :cissearch ";
-				break;
-
-			default:
-				return false;
-		}
-
-		querytext = append_track_sort_string(querytext, sort);
 		q.prepare(querytext);
 
 		q.bindValue(":searchterm", filters[i]);
@@ -566,12 +452,14 @@ bool Tracks::getAllTracksBySearchString(const ::Library::Filter& filter, MetaDat
 
 		MetaDataList tmp_list;
 		db_fetch_tracks(q, tmp_list);
+		if(tmp_list.size() == 0){
+			q.show_query();
+		}
 		result.append_unique(tmp_list);
 	}
 
 	return true;
 }
-
 
 
 bool Tracks::deleteTrack(TrackID id)
@@ -610,7 +498,7 @@ bool Tracks::deleteTracks(const MetaDataList& v_md)
 
 	db().transaction();
 
-	size_t deleted_tracks = std::count_if(v_md.begin(), v_md.end(), [=](const MetaData& md)
+	auto deleted_tracks = std::count_if(v_md.begin(), v_md.end(), [=](const MetaData& md)
 	{
 		return this->deleteTrack(md.id);
 	});
@@ -619,7 +507,7 @@ bool Tracks::deleteTracks(const MetaDataList& v_md)
 
 	sp_log(Log::Info, this) << "Deleted " << deleted_tracks << " of " << v_md.size() << " tracks";
 
-	return (deleted_tracks == v_md.size());
+	return (deleted_tracks == v_md.count());
 }
 
 bool Tracks::deleteInvalidTracks(const QString& library_path, MetaDataList& double_metadata)
@@ -847,3 +735,26 @@ bool Tracks::insertTrackIntoDatabase(const MetaData& md, ArtistId artist_id, Alb
 	return (!q.has_error());
 }
 
+static QString get_filter_clause(const Filter& filter, QString cis_placeholder, QString searchterm_placeholder)
+{
+	cis_placeholder.remove(":");
+	searchterm_placeholder.remove(":");
+
+	switch( filter.mode() )
+	{
+		case Filter::Genre:
+			if(filter.is_invalid_genre()){
+				return "genre = ''";
+			}
+
+			return "genre LIKE :" + searchterm_placeholder;
+
+		case Filter::Filename:
+			return "filecissearch LIKE :" + cis_placeholder;
+
+		case Filter::Fulltext:
+		case Filter::Invalid:
+		default:
+			return "allCissearch LIKE :" + cis_placeholder;
+	}
+}

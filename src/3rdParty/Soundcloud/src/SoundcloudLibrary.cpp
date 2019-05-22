@@ -109,7 +109,7 @@ void SC::Library::get_all_artists(ArtistList& artists)
 {
 	if(m->artists.empty())
 	{
-		m->scd->getAllArtists(artists, ::Library::SortOrder::NoSorting);
+		m->scd->getAllArtists(artists, false);
 		m->artists = artists;
 
 		for(int i=0; i<m->artists.count(); i++)

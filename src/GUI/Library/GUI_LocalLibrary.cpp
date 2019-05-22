@@ -263,16 +263,22 @@ void GUI_LocalLibrary::genre_selection_changed(const QModelIndex& idx)
 {
 	Q_UNUSED(idx)
 
-	QStringList index_datas;
 	QModelIndexList indexes = ui->lv_genres->selectionModel()->selectedIndexes();
+
+	QStringList genres;
 	for(const QModelIndex& index : indexes)
 	{
-		index_datas << index.data().toString();
+		genres << index.data().toString();
+		if(index.data(Qt::UserRole).toInt() == 5000)
+		{
+			genres.clear();
+			break;
+		}
 	}
 
 	ui->le_search->set_current_mode(::Library::Filter::Genre);
-	ui->le_search->setText(index_datas.join(","));
-	search_edited(index_datas.join(","));
+	ui->le_search->setText(genres.join(","));
+	search_return_pressed();
 }
 
 Library::TrackDeletionMode GUI_LocalLibrary::show_delete_dialog(int n_tracks)

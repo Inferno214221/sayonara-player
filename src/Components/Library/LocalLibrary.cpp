@@ -155,36 +155,34 @@ void LocalLibrary::library_reloading_state_new_block()
 	m->reload_thread->goon();
 }
 
-
-
 void LocalLibrary::get_all_artists(ArtistList& artists)
 {
-	m->library_db->getAllArtists(artists, Library::SortOrder::NoSorting);
+	m->library_db->getAllArtists(artists, false);
 }
 
 void LocalLibrary::get_all_artists_by_searchstring(Library::Filter filter, ArtistList& artists)
 {
-	m->library_db->getAllArtistsBySearchString(filter, artists, Library::SortOrder::NoSorting);
+	m->library_db->getAllArtistsBySearchString(filter, artists);
 }
 
 void LocalLibrary::get_all_albums(AlbumList& albums)
 {
-	m->library_db->getAllAlbums(albums, Library::SortOrder::NoSorting);
+	m->library_db->getAllAlbums(albums, false);
 }
 
 void LocalLibrary::get_all_albums_by_artist(IdList artist_ids, AlbumList& albums, Library::Filter filter)
 {
-	m->library_db->getAllAlbumsByArtist(artist_ids, albums, filter, Library::SortOrder::NoSorting);
+	m->library_db->getAllAlbumsByArtist(artist_ids, albums, filter);
 }
 
 void LocalLibrary::get_all_albums_by_searchstring(Library::Filter filter, AlbumList& albums)
 {
-	m->library_db->getAllAlbumsBySearchString(filter, albums, Library::SortOrder::NoSorting);
+	m->library_db->getAllAlbumsBySearchString(filter, albums);
 }
 
 void LocalLibrary::get_all_tracks(MetaDataList& v_md)
 {
-	m->library_db->getAllTracks(v_md, Library::SortOrder::NoSorting);
+	m->library_db->getAllTracks(v_md);
 }
 
 void LocalLibrary::get_all_tracks(const QStringList& paths, MetaDataList& v_md)
@@ -194,17 +192,17 @@ void LocalLibrary::get_all_tracks(const QStringList& paths, MetaDataList& v_md)
 
 void LocalLibrary::get_all_tracks_by_artist(IdList artist_ids, MetaDataList& v_md, Library::Filter filter)
 {
-	m->library_db->getAllTracksByArtist(artist_ids, v_md, filter, Library::SortOrder::NoSorting);
+	m->library_db->getAllTracksByArtist(artist_ids, v_md, filter);
 }
 
 void LocalLibrary::get_all_tracks_by_album(IdList album_ids, MetaDataList& v_md, Library::Filter filter)
 {
-	m->library_db->getAllTracksByAlbum(album_ids, v_md, filter, Library::SortOrder::NoSorting);
+	m->library_db->getAllTracksByAlbum(album_ids, v_md, filter, -1);
 }
 
 void LocalLibrary::get_all_tracks_by_searchstring(Library::Filter filter, MetaDataList& v_md)
 {
-	m->library_db->getAllTracksBySearchString(filter, v_md, Library::SortOrder::NoSorting);
+	m->library_db->getAllTracksBySearchString(filter, v_md);
 }
 
 void LocalLibrary::get_album_by_id(AlbumId album_id, Album& album)

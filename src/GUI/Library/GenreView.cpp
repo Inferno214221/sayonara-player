@@ -271,6 +271,10 @@ void GenreView::set_genres(const Util::Set<Genre>& genres)
 
 	m->filled = true;
 
+	/*QTreeWidgetItem* item = new QTreeWidgetItem(this, QStringList{""});
+	item->setData(0, Qt::UserRole, 5000);
+	this->addTopLevelItem(item);*/
+
 	this->build_genre_data_tree(genres);
 	this->populate_widget(nullptr, m->genres);
 }
@@ -311,22 +315,24 @@ void GenreView::build_genre_data_tree(const Util::Set<Genre>& genres)
 	{
 		bool found_parent = false;
 
-		if(genre.name().isEmpty()){
+		/*if(genre.name().isEmpty()){
 			continue;
-		}
+		}*/
 
 		if(show_tree)
 		{
 			for(const Genre& parent_genre : genres)
 			{
-				if( parent_genre.name().isEmpty() ||
+				QString parent_name = parent_genre.name();
+
+				if( parent_name.isEmpty() ||
 					parent_genre == genre)
 				{
 					continue;
 				}
 
-				if( genre.name().contains(parent_genre.name(), Qt::CaseInsensitive) ) {
-					StringSet& child_genres = children[parent_genre.name()];
+				if( genre.name().contains(parent_name, Qt::CaseInsensitive)) {
+					StringSet& child_genres = children[parent_name];
 					child_genres.insert(genre.name());
 					found_parent = true;
 				}
@@ -347,11 +353,16 @@ void GenreView::build_genre_data_tree(const Util::Set<Genre>& genres)
 }
 
 
-
 void GenreView::populate_widget(QTreeWidgetItem* parent_item, GenreNode* node)
 {
 	QTreeWidgetItem* item;
 	QStringList text = { ::Util::cvt_str_to_first_upper(node->data) };
+	bool invalid_genre = (text.size() > 0 && text.first().isEmpty());
+
+	if(invalid_genre)
+	{
+		text = QStringList{Lang::get(Lang::None)};
+	}
 
 	if(node->parent == m->genres){
 		item = new QTreeWidgetItem(this, text);
@@ -359,6 +370,11 @@ void GenreView::populate_widget(QTreeWidgetItem* parent_item, GenreNode* node)
 
 	else {
 		item = new QTreeWidgetItem(parent_item, text);
+	}
+
+	if(invalid_genre)
+	{
+		item->setData(0, Qt::UserRole, 5000);
 	}
 
 	for(GenreNode* child : ::Util::AsConst(node->children))

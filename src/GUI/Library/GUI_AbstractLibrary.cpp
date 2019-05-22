@@ -120,6 +120,7 @@ void GUI_AbstractLibrary::query_library()
 	Filter filter = m->library->filter();
 	filter.set_mode(current_mode);
 	filter.set_filtertext(text, GetSetting(Set::Lib_SearchMode));
+	filter.set_invalid_genre((current_mode == Filter::Mode::Genre) && text.isEmpty());
 
 	m->library->change_filter(filter);
 }

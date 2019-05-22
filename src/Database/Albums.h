@@ -22,7 +22,6 @@
 #define DATABASEALBUMS_H
 
 #include "Database/SearchableModule.h"
-#include "Utils/Library/Sortorder.h"
 
 namespace Library {class Filter;}
 class Album;
@@ -46,14 +45,10 @@ namespace DB
 			virtual bool getAlbumByID(AlbumId id, Album& album, bool also_empty=false);
 
 			virtual bool getAllAlbums(AlbumList& result, bool also_empty);
-			virtual bool getAllAlbums(AlbumList& result, ::Library::SortOrder sortorder=::Library::SortOrder::AlbumNameAsc, bool also_empty=false);
-
-			virtual bool getAllAlbumsByArtist(ArtistId artist, AlbumList& result);
-			virtual bool getAllAlbumsByArtist(ArtistId artist, AlbumList& result, const ::Library::Filter& filter, ::Library::SortOrder sortorder = ::Library::SortOrder::AlbumNameAsc);
 			virtual bool getAllAlbumsByArtist(IdList artists, AlbumList& result);
-			virtual bool getAllAlbumsByArtist(IdList artists, AlbumList& result, const ::Library::Filter& filter, ::Library::SortOrder sortorder = ::Library::SortOrder::AlbumNameAsc);
+			virtual bool getAllAlbumsByArtist(IdList artists, AlbumList& result, const ::Library::Filter& filter);
 
-			virtual bool getAllAlbumsBySearchString(const ::Library::Filter& filter, AlbumList& result, ::Library::SortOrder sortorder = ::Library::SortOrder::AlbumNameAsc);
+			virtual bool getAllAlbumsBySearchString(const ::Library::Filter& filter, AlbumList& result);
 
 			virtual AlbumId insertAlbumIntoDatabase (const QString & album);
 			virtual AlbumId insertAlbumIntoDatabase (const Album& album);

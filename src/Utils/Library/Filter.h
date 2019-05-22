@@ -50,7 +50,6 @@ namespace Library
 				Invalid
 			};
 
-
 			Filter();
 			~Filter();
 
@@ -68,6 +67,9 @@ namespace Library
 
 			void clear();
 			bool cleared() const;
+
+			void set_invalid_genre(bool b);
+			bool is_invalid_genre() const;
 
 			static QString get_text(Mode mode);
 	};

@@ -116,8 +116,8 @@ void GUI_LibraryInfoBox::refresh()
 	ArtistList v_artists;
 
 	lib_db->getAllTracks(v_md);
-	lib_db->getAllAlbums(v_albums);
-	lib_db->getAllArtists(v_artists);
+	lib_db->getAllAlbums(v_albums, false);
+	lib_db->getAllArtists(v_artists, false);
 
 	int n_tracks = v_md.size();
 	int n_albums = v_albums.size();

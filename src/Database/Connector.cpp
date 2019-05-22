@@ -143,7 +143,7 @@ bool Connector::updateAlbumCissearchFix()
 	AlbumList albums;
 
 	LibraryDatabase* lib_db = library_db(-1, 0);
-	lib_db->getAllAlbums(albums);
+	lib_db->getAllAlbums(albums, true);
 
 	for(const Album& album : albums)
 	{
@@ -161,12 +161,11 @@ bool Connector::updateAlbumCissearchFix()
 	return true;
 }
 
-
 bool Connector::updateArtistCissearchFix()
 {
 	ArtistList artists;
 	LibraryDatabase* lib_db = library_db(-1, 0);
-	lib_db->getAllArtists(artists);
+	lib_db->getAllArtists(artists, true);
 	for(const Artist& artist : artists)
 	{
 		QString str =

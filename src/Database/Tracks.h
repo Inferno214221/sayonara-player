@@ -22,10 +22,12 @@
 #define DATABASETRACKS_H
 
 #include "Database/SearchableModule.h"
-#include "Utils/Library/Sortorder.h"
 #include "Utils/Pimpl.h"
 
-namespace Library {class Filter;}
+namespace Library
+{
+	class Filter;
+}
 
 class Genre;
 
@@ -42,24 +44,21 @@ namespace DB
 
 			virtual bool db_fetch_tracks(Query& q, MetaDataList& result);
 
-			virtual bool getAllTracksByAlbum(AlbumId album, MetaDataList& result);
-			virtual bool getAllTracksByAlbum(AlbumId album, MetaDataList& result, const ::Library::Filter& filter, ::Library::SortOrder sortorder = ::Library::SortOrder::TrackArtistAsc, int discnumber=-1);
 			virtual bool getAllTracksByAlbum(IdList albums, MetaDataList& result);
-			virtual bool getAllTracksByAlbum(IdList albums, MetaDataList& result, const ::Library::Filter& filter, ::Library::SortOrder sortorder = ::Library::SortOrder::TrackArtistAsc);
+			virtual bool getAllTracksByAlbum(IdList albums, MetaDataList& result, const ::Library::Filter& filter, int discnumber=-1);
 
-			virtual bool getAllTracksByArtist(ArtistId artist, MetaDataList& result);
-			virtual bool getAllTracksByArtist(ArtistId artist, MetaDataList& result, const ::Library::Filter& filter, ::Library::SortOrder sortorder = ::Library::SortOrder::TrackArtistAsc);
 			virtual bool getAllTracksByArtist(IdList artists, MetaDataList& result);
-			virtual bool getAllTracksByArtist(IdList artists, MetaDataList& result, const ::Library::Filter& filter, ::Library::SortOrder sortorder = ::Library::SortOrder::TrackArtistAsc);
+			virtual bool getAllTracksByArtist(IdList artists, MetaDataList& result, const ::Library::Filter& filter);
 
-			virtual bool getAllTracksBySearchString(const ::Library::Filter& filter, MetaDataList& result, ::Library::SortOrder sortorder = ::Library::SortOrder::TrackArtistAsc);
+			virtual bool getAllTracksBySearchString(const ::Library::Filter& filter, MetaDataList& result);
 
 			virtual bool insertTrackIntoDatabase (const MetaData& data, ArtistId artist_id, AlbumId album_id);
 			virtual bool insertTrackIntoDatabase (const MetaData& data, ArtistId artist_id, AlbumId album_id, ArtistId album_artist_id);
 			virtual bool updateTrack(const MetaData& data);
 			virtual bool updateTracks(const MetaDataList& lst);
 
-			virtual bool getAllTracks(MetaDataList& returndata, ::Library::SortOrder sortorder = ::Library::SortOrder::TrackArtistAsc);
+			virtual bool getAllTracks(MetaDataList& returndata);
+
 			virtual MetaData getTrackById(int id);
 			virtual bool getTracksbyIds(const QList<TrackID>& ids, MetaDataList& v_md);
 			virtual MetaData getTrackByPath(const QString& path);
@@ -92,9 +91,6 @@ namespace DB
 		private:
 			void create_track_view(const QString& select_statement);
 			void create_track_search_view(const QString& select_statement);
-
-
-			QString append_track_sort_string(QString querytext, ::Library::SortOrder sort);
 		};
 }
 

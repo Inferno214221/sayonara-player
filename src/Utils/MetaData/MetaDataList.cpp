@@ -526,6 +526,10 @@ MetaData MetaDataList::take_at(int idx)
 
 void MetaDataList::sort(Library::SortOrder so)
 {
+	if(so == Library::SortOrder::NoSorting){
+		return;
+	}
+
 	MetaDataSorting::sort_metadata(*this, so);
 }
 

@@ -319,7 +319,7 @@ void Base::similar_artists_fetched(IdList artist_ids)
 	for( auto it=artist_ids.begin(); it != artist_ids.end(); it++ )
 	{
 		MetaDataList artist_tracks;
-		lib_db->getAllTracksByArtist(*it, artist_tracks);
+		lib_db->getAllTracksByArtist(IdList{*it}, artist_tracks);
 
 		std::random_shuffle(artist_tracks.begin(), artist_tracks.end());
 
