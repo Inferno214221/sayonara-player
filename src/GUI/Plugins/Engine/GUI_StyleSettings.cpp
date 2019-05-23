@@ -20,14 +20,13 @@
 
 #include "GUI_StyleSettings.h"
 #include "GUI/Plugins/ui_GUI_Style.h"
-
-#include "StyleTypes.h"
+#include "VisualStyleTypes.h"
 
 #include "Utils/Utils.h"
 #include "Utils/Message/Message.h"
 
 #include "Database/Connector.h"
-#include "Database/VisStyles.h"
+#include "Database/VisualStyles.h"
 
 #include <QColorDialog>
 #include <QCloseEvent>

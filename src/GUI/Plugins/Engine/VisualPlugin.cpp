@@ -1,4 +1,4 @@
-/* EnginePlugin.cpp */
+/* VisualPlugin.cpp */
 
 /* Copyright (C) 2011-2019  Lucio Carreras
  *
@@ -18,14 +18,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "EnginePlugin.h"
-#include "EngineColorStyleChooser.h"
+#include "VisualPlugin.h"
+#include "VisualColorStyleChooser.h"
 #include "Components/Engine/EngineHandler.h"
 #include "Components/PlayManager/PlayManager.h"
 
 #include <QResizeEvent>
 
-struct EnginePlugin::Private
+struct VisualPlugin::Private
 {
 	GUI_StyleSettings*	style_settings=nullptr;
 
@@ -47,26 +47,26 @@ struct EnginePlugin::Private
 	}
 };
 
-EnginePlugin::EnginePlugin(QWidget* parent) :
+VisualPlugin::VisualPlugin(QWidget* parent) :
 	PlayerPlugin::Base(parent)
 {
 	m = Pimpl::make<Private>();
 }
 
 
-EnginePlugin::~EnginePlugin()
+VisualPlugin::~VisualPlugin()
 {
-	if(_ecsc){
-		delete _ecsc; _ecsc = nullptr;
+	if(m_ecsc){
+		delete m_ecsc; m_ecsc = nullptr;
 	}
 }
 
 
-void EnginePlugin::init_ui()
+void VisualPlugin::init_ui()
 {
-	connect(m->play_manager, &PlayManager::sig_playstate_changed, this, &EnginePlugin::playstate_changed);
+	connect(m->play_manager, &PlayManager::sig_playstate_changed, this, &VisualPlugin::playstate_changed);
 
-	_ecsc = new EngineColorStyleChooser(minimumWidth(), minimumHeight());
+	m_ecsc = new VisualColorStyleChooser(minimumWidth(), minimumHeight());
 	m->style_settings = new GUI_StyleSettings(this);
 
 	m->timer = new QTimer();
@@ -84,18 +84,18 @@ void EnginePlugin::init_ui()
 
 	init_buttons( has_small_buttons() );
 
-	connect(m->timer, &QTimer::timeout, this, &EnginePlugin::do_fadeout_step);
-	connect(m->style_settings, &GUI_StyleSettings::sig_style_update, this, &EnginePlugin::style_changed);
+	connect(m->timer, &QTimer::timeout, this, &VisualPlugin::do_fadeout_step);
+	connect(m->style_settings, &GUI_StyleSettings::sig_style_update, this, &VisualPlugin::style_changed);
 }
 
 
-bool EnginePlugin::is_title_shown() const
+bool VisualPlugin::is_title_shown() const
 {
 	return false;
 }
 
 
-void EnginePlugin::init_buttons(bool small)
+void VisualPlugin::init_buttons(bool small)
 {
 	int height = this->height() - 4;
 	int x = 10;
@@ -120,10 +120,10 @@ void EnginePlugin::init_buttons(bool small)
 	x += width + 5;
 	m->btn_close->setGeometry(x, y, width, height);
 
-	connect(m->btn_config, &QPushButton::clicked, this, &EnginePlugin::config_clicked);
-	connect(m->btn_prev, &QPushButton::clicked, this, &EnginePlugin::prev_clicked);
-	connect(m->btn_next, &QPushButton::clicked, this, &EnginePlugin::next_clicked);
-	connect(m->btn_close, &QPushButton::clicked, this, &EnginePlugin::close);
+	connect(m->btn_config, &QPushButton::clicked, this, &VisualPlugin::config_clicked);
+	connect(m->btn_prev, &QPushButton::clicked, this, &VisualPlugin::prev_clicked);
+	connect(m->btn_next, &QPushButton::clicked, this, &VisualPlugin::next_clicked);
+	connect(m->btn_close, &QPushButton::clicked, this, &VisualPlugin::close);
 	connect(m->btn_close, &QPushButton::clicked, this->parentWidget(), &QWidget::close);
 
 	m->btn_config->hide();
@@ -132,20 +132,20 @@ void EnginePlugin::init_buttons(bool small)
 	m->btn_close->hide();
 }
 
-Engine::Handler *EnginePlugin::engine() const
+Engine::Handler *VisualPlugin::engine() const
 {
 	return m->engine;
 }
 
-void EnginePlugin::config_clicked()
+void VisualPlugin::config_clicked()
 {
 	m->style_settings->show(current_style_index());
 }
 
 
-void EnginePlugin::next_clicked()
+void VisualPlugin::next_clicked()
 {
-	int n_styles = _ecsc->get_num_color_schemes();
+	int n_styles = m_ecsc->get_num_color_schemes();
 
 	int new_index = (current_style_index() + 1) % n_styles;
 
@@ -153,9 +153,9 @@ void EnginePlugin::next_clicked()
 }
 
 
-void EnginePlugin::prev_clicked()
+void VisualPlugin::prev_clicked()
 {
-	int n_styles = _ecsc->get_num_color_schemes();
+	int n_styles = m_ecsc->get_num_color_schemes();
 
 	int new_index = (current_style_index() - 1);
 	if(new_index < 0){
@@ -166,7 +166,7 @@ void EnginePlugin::prev_clicked()
 }
 
 
-void EnginePlugin::update()
+void VisualPlugin::update()
 {
 	QWidget::update();
 
@@ -176,7 +176,7 @@ void EnginePlugin::update()
 }
 
 
-void EnginePlugin::playstate_changed(PlayState state)
+void VisualPlugin::playstate_changed(PlayState state)
 {
 	switch(state)
 	{
@@ -194,10 +194,10 @@ void EnginePlugin::playstate_changed(PlayState state)
 	}
 }
 
-void EnginePlugin::played() {}
-void EnginePlugin::paused() {}
+void VisualPlugin::played() {}
+void VisualPlugin::paused() {}
 
-void EnginePlugin::stopped()
+void VisualPlugin::stopped()
 {
 	if(!is_ui_initialized()){
 		return;
@@ -208,14 +208,14 @@ void EnginePlugin::stopped()
 }
 
 
-void EnginePlugin::closeEvent(QCloseEvent *e)
+void VisualPlugin::closeEvent(QCloseEvent *e)
 {
 	PlayerPlugin::Base::closeEvent(e);
 	update();
 }
 
 
-void EnginePlugin::resizeEvent(QResizeEvent* e)
+void VisualPlugin::resizeEvent(QResizeEvent* e)
 {
 	PlayerPlugin::Base::resizeEvent(e);
 
@@ -259,7 +259,7 @@ void EnginePlugin::resizeEvent(QResizeEvent* e)
 }
 
 
-void EnginePlugin::mousePressEvent(QMouseEvent *e)
+void VisualPlugin::mousePressEvent(QMouseEvent *e)
 {
 	switch(e->button())
 	{
@@ -282,7 +282,7 @@ void EnginePlugin::mousePressEvent(QMouseEvent *e)
 }
 
 
-void EnginePlugin::enterEvent(QEvent* e)
+void VisualPlugin::enterEvent(QEvent* e)
 {
 	PlayerPlugin::Base::enterEvent(e);
 
@@ -292,7 +292,7 @@ void EnginePlugin::enterEvent(QEvent* e)
 	m->btn_close->show();
 }
 
-void EnginePlugin::leaveEvent(QEvent* e)
+void VisualPlugin::leaveEvent(QEvent* e)
 {
 	PlayerPlugin::Base::leaveEvent(e);
 
@@ -303,7 +303,7 @@ void EnginePlugin::leaveEvent(QEvent* e)
 }
 
 
-void EnginePlugin::stop_fadeout_timer()
+void VisualPlugin::stop_fadeout_timer()
 {
 	if(!m->timer_stopped )
 	{
@@ -315,7 +315,7 @@ void EnginePlugin::stop_fadeout_timer()
 	}
 }
 
-void EnginePlugin::style_changed()
+void VisualPlugin::style_changed()
 {
 	update_style(current_style_index());
 }

@@ -1,4 +1,4 @@
-/* StyleTypes.h */
+/* VisualStyleTypes.h */
 
 /* Copyright 2011-2019  Lucio Carreras
  *

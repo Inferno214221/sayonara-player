@@ -82,7 +82,7 @@ QString GUI_Crossfader::get_name() const
 
 QString GUI_Crossfader::get_display_name() const
 {
-	return tr("Crossfader") + " / " + Lang::get(Lang::GaplessPlayback);
+	return Lang::get(Lang::GaplessPlayback)  + " / " + tr("Crossfader");
 }
 
 

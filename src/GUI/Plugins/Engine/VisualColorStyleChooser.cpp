@@ -1,4 +1,4 @@
-/* EngineColorStyleChooser.cpp */
+/* VisualColorStyleChooser.cpp */
 
 /* Copyright (C) 2011-2019  Lucio Carreras
  *
@@ -18,9 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "EngineColorStyleChooser.h"
+#include "VisualColorStyleChooser.h"
 #include "Database/Connector.h"
-#include "Database/VisStyles.h"
+#include "Database/VisualStyles.h"
 
 #include "Utils/Utils.h"
 
@@ -30,7 +30,7 @@
 
 QList<float> borders_4, borders_3, borders_2;
 
-EngineColorStyleChooser::EngineColorStyleChooser(int widget_width, int widget_height)
+VisualColorStyleChooser::VisualColorStyleChooser(int widget_width, int widget_height)
 {
 	borders_4 << 0 << 0.33f  << 0.66f << 1.0f;
 	borders_3 << 0 << 0.50f  << 1.0f;
@@ -40,7 +40,7 @@ EngineColorStyleChooser::EngineColorStyleChooser(int widget_width, int widget_he
 }
 
 
-void EngineColorStyleChooser::
+void VisualColorStyleChooser::
 create_colorstyle(ColorStyle &style, const ColorList &clist_active, int n_rects, int n_fading_steps) {
 	style.style.clear();
 
@@ -79,7 +79,7 @@ create_colorstyle(ColorStyle &style, const ColorList &clist_active, int n_rects,
 }
 
 
-void EngineColorStyleChooser::insertColorOfRect(int bin, int n_bins, const ColorList& colorlist, QHash<int, QColor>& map) {
+void VisualColorStyleChooser::insertColorOfRect(int bin, int n_bins, const ColorList& colorlist, QHash<int, QColor>& map) {
 	QColor col;
 	QList<float> borders;
 
@@ -133,14 +133,14 @@ void EngineColorStyleChooser::insertColorOfRect(int bin, int n_bins, const Color
 
 // scheme_fading_rect_color[r]: get access to the rect j in fading scheme i
 // scheme_fading_rect_color[r][c]: get access to the c-th color of rect j in fading scheme i
-ColorStyle EngineColorStyleChooser::get_color_scheme_spectrum(int i) {
+ColorStyle VisualColorStyleChooser::get_color_scheme_spectrum(int i) {
 	i = std::max(i, 0);
 	i = std::min(_styles_spectrum.size() -1, i);
 
 	return _styles_spectrum[i];
 }
 
-ColorStyle EngineColorStyleChooser::get_color_scheme_level(int i) {
+ColorStyle VisualColorStyleChooser::get_color_scheme_level(int i) {
 	i = std::max(i, 0);
 	i = std::min(_styles_level.size() -1, i);
 
@@ -148,14 +148,14 @@ ColorStyle EngineColorStyleChooser::get_color_scheme_level(int i) {
 }
 
 
-int EngineColorStyleChooser::get_num_color_schemes()
+int VisualColorStyleChooser::get_num_color_schemes()
 {
 	return _styles_spectrum.size();
 }
 
 static std::mutex mtx;
 
-void EngineColorStyleChooser::reload(int widget_width, int widget_height)
+void VisualColorStyleChooser::reload(int widget_width, int widget_height)
 {
 	LOCK_GUARD(mtx)
 

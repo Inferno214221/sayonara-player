@@ -20,7 +20,7 @@
 
 
 #include "GUI_LevelPainter.h"
-#include "EngineColorStyleChooser.h"
+#include "VisualColorStyleChooser.h"
 #include "GUI/Plugins/ui_GUI_LevelPainter.h"
 
 #include "Components/Engine/Playback/PlaybackEngine.h"
@@ -103,7 +103,7 @@ struct GUI_LevelPainter::Private
 
 
 GUI_LevelPainter::GUI_LevelPainter(QWidget *parent) :
-	EnginePlugin(parent)
+	VisualPlugin(parent)
 {
 	m = Pimpl::make<Private>();
 	SetSetting(Set::Engine_ShowLevel, false);
@@ -133,7 +133,7 @@ void GUI_LevelPainter::init_ui()
 
 void GUI_LevelPainter::finalize_initialization()
 {
-	EnginePlugin::init_ui();
+	VisualPlugin::init_ui();
 
 	m->resize_steps(current_style().n_rects);
 	m->set_level(0, 0);
@@ -269,7 +269,7 @@ void GUI_LevelPainter::do_fadeout_step()
 void GUI_LevelPainter::update_style(int new_index)
 {
 	SetSetting(Set::Level_Style, new_index);
-	_ecsc->reload(width(), height());
+	m_ecsc->reload(width(), height());
 
 	m->resize_steps(current_style().n_rects);
 
@@ -296,19 +296,19 @@ void GUI_LevelPainter::reload()
 void GUI_LevelPainter::showEvent(QShowEvent* e)
 {
 	SetSetting(Set::Engine_ShowLevel, true);
-	EnginePlugin::showEvent(e);
+	VisualPlugin::showEvent(e);
 }
 
 
 void GUI_LevelPainter::closeEvent(QCloseEvent* e)
 {
 	SetSetting(Set::Engine_ShowLevel, false);
-	EnginePlugin::closeEvent(e);
+	VisualPlugin::closeEvent(e);
 }
 
 void GUI_LevelPainter::hideEvent(QHideEvent* e)
 {
-	EnginePlugin::hideEvent(e);
+	VisualPlugin::hideEvent(e);
 }
 
 
@@ -324,7 +324,7 @@ bool GUI_LevelPainter::has_small_buttons() const
 
 ColorStyle GUI_LevelPainter::current_style() const
 {
-	return _ecsc->get_color_scheme_level(current_style_index());
+	return m_ecsc->get_color_scheme_level(current_style_index());
 }
 
 int GUI_LevelPainter::current_style_index() const

@@ -38,11 +38,13 @@ namespace Cover
 		Q_OBJECT
 		PIMPL(AlternativeLookup)
 
+	signals:
+		void sig_cover_changed(Cover::Location& cl);
+
 	private:
 		void go(const Cover::Location& cl);
 
 	public:
-
 		AlternativeLookup(const Cover::Location& cl, int n_covers, QObject* parent);
 		~AlternativeLookup();
 
@@ -53,6 +55,17 @@ namespace Cover
 		void start_text_search(const QString& search_term, const QString& cover_fetcher_identifier);
 
 		void stop() override;
+		void reset();
+
+		bool save(const QPixmap& pm);
+		bool is_running() const;
+
+		QStringList get_activated_coverfetchers(bool fulltext_search) const;
+
+		private slots:
+			void started();
+			void finished(bool success);
+			void cover_found(const QPixmap& pm);
 	};
 }
 

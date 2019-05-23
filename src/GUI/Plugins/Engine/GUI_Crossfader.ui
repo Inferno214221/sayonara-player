@@ -20,7 +20,14 @@
    <property name="horizontalSpacing">
     <number>20</number>
    </property>
-   <item row="0" column="2">
+   <item row="1" column="0">
+    <widget class="QCheckBox" name="cb_crossfader">
+     <property name="text">
+      <string notr="true">Crossfader</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="2">
     <widget class="QLabel" name="lab_crossfader">
      <property name="text">
       <string notr="true"/>
@@ -30,14 +37,7 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="0">
-    <widget class="QCheckBox" name="cb_crossfader">
-     <property name="text">
-      <string notr="true">Crossfader</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="1">
+   <item row="1" column="1">
     <widget class="Gui::Slider" name="sli_crossfader">
      <property name="minimum">
       <number>500</number>
@@ -62,7 +62,7 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="0" colspan="3">
+   <item row="0" column="0" colspan="3">
     <widget class="QCheckBox" name="cb_gapless">
      <property name="text">
       <string notr="true">Gapless</string>

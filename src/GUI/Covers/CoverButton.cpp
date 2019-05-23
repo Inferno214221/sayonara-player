@@ -165,12 +165,12 @@ void CoverButton::cover_button_clicked()
 
 	else
 	{
-		GUI_AlternativeCovers* alt_cover = new GUI_AlternativeCovers(this->parentWidget());
+		GUI_AlternativeCovers* alt_cover = new GUI_AlternativeCovers(m->cover_location, this->parentWidget());
 
-		connect(alt_cover, &GUI_AlternativeCovers::sig_cover_changed, this, &CoverButton::alternative_cover_fetched );
+		connect(alt_cover, &GUI_AlternativeCovers::sig_cover_changed, this, &CoverButton::alternative_cover_fetched);
 		connect(alt_cover, &GUI_AlternativeCovers::sig_closed, alt_cover, &GUI_AlternativeCovers::deleteLater);
 
-		alt_cover->start(m->cover_location);
+		alt_cover->show();
 	}
 }
 

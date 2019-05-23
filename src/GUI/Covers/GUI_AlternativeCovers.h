@@ -54,11 +54,14 @@ class GUI_AlternativeCovers :
 	UI_CLASS(GUI_AlternativeCovers)
 
 public:
-	explicit GUI_AlternativeCovers(QWidget* parent=nullptr);
+	explicit GUI_AlternativeCovers(const Cover::Location& cl, QWidget* parent=nullptr);
 	virtual ~GUI_AlternativeCovers();
 
+	void set_cover_location(const Cover::Location& cl);
+
+
 public slots:
-	void start(const Cover::Location& cl);
+	//void start(const Cover::Location& cl);
 
 signals:
 	void sig_cover_changed(const Cover::Location& cl);
@@ -70,20 +73,24 @@ private slots:
 	void cover_pressed(const QModelIndex& idx);
 	void open_file_dialog();
 
-	void cl_started();
-	void cl_finished(bool);
-	void cl_new_cover(const QPixmap& cover);
+	void lookup_started();
+	void lookup_finished(bool);
+	void cover_found(const QPixmap& cover);
 
 	void servers_changed();
 	void autostart_toggled(bool b);
+	void rb_autosearch_toggled(bool b);
+	void rb_textsearch_toggled(bool b);
 	void www_active_changed();
 
 private:
+	void init_ui();
 	void reset();
 	void connect_and_start();
 	void init_combobox();
 
 protected:
+	void showEvent(QShowEvent* e) override;
 	void resizeEvent(QResizeEvent* e) override;
 	void closeEvent(QCloseEvent* e) override;
 	void language_changed() override;

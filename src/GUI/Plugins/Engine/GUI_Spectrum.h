@@ -21,15 +21,15 @@
 #ifndef GUI_SPECTRUM_H
 #define GUI_SPECTRUM_H
 
+#include "VisualPlugin.h"
 #include "Utils/Pimpl.h"
 #include "Components/Engine/Playback/SoundOutReceiver.h"
 
-#include "EnginePlugin.h"
 
 UI_FWD(GUI_Spectrum)
 
 class GUI_Spectrum :
-		public EnginePlugin,
+		public VisualPlugin,
 		public SpectrumReceiver
 {
 	Q_OBJECT

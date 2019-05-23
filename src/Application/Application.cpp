@@ -57,9 +57,9 @@
 #include "GUI/Plugins/Broadcasting/GUI_Broadcast.h"
 #include "GUI/Plugins/Engine/GUI_LevelPainter.h"
 #include "GUI/Plugins/Engine/GUI_Spectrum.h"
-#include "GUI/Plugins/Engine/Equalizer/GUI_Equalizer.h"
-#include "GUI/Plugins/Engine/Speed/GUI_Speed.h"
-#include "GUI/Plugins/Engine/Crossfader/GUI_Crossfader.h"
+#include "GUI/Plugins/Engine/GUI_Equalizer.h"
+#include "GUI/Plugins/Engine/GUI_Speed.h"
+#include "GUI/Plugins/Engine/GUI_Crossfader.h"
 #include "GUI/Plugins/Stream/GUI_Stream.h"
 #include "GUI/Plugins/Stream/GUI_Podcasts.h"
 

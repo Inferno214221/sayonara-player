@@ -1,4 +1,4 @@
-/* DatabaseVisStyles.h */
+/* DatabaseVisualStyles.h */
 
 /* Copyright (C) 2011-2019  Lucio Carreras
  *

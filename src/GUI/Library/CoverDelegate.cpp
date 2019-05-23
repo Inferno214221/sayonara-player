@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "CoverModel.h"					// Role names
 #include "CoverDelegate.h"
 #include "Utils/Settings/Settings.h"
 
@@ -61,7 +62,7 @@ void Library::CoverDelegate::paint(QPainter* painter, const QStyleOptionViewItem
 		pen.setColor(color);
 		painter->setPen(pen);
 
-		painter->drawRect(x_zoom - 2, -2, zoom + 4, zoom + 4);
+		painter->drawRect(x_zoom - 2, -2, zoom + 3, zoom + 3);
 
 		pen.setColor(old_color);
 		painter->setPen(pen);
@@ -71,18 +72,18 @@ void Library::CoverDelegate::paint(QPainter* painter, const QStyleOptionViewItem
 		QRectF source(0, 0, pm.width(), pm.height());
 		painter->drawPixmap(target, pm, source);
 
-		painter->translate(0, zoom + 2);
+		painter->translate(0, zoom + 4);
 	}
 
 	{
-		QString album = index.data(Qt::DisplayRole).toString();
+		QString album = index.data(CoverModel::AlbumRole).toString();
 		album = fm.elidedText(album, Qt::ElideRight, option.rect.width() - 2*text_offset);
 		painter->drawText(text_offset, 0, option.rect.width() - 2*text_offset, fm.height(), option.displayAlignment, album);
 		painter->translate(0, fm.height());
 	}
 
 	{
-		QString artist = index.data(Qt::UserRole).toString();
+		QString artist = index.data(CoverModel::ArtistRole).toString();
 		artist = fm.elidedText(artist, Qt::ElideRight, option.rect.width() - 2*text_offset);
 		if(!artist.isEmpty())
 		{

@@ -21,7 +21,7 @@
 #include "GUI_Spectrum.h"
 #include "GUI/Plugins/ui_GUI_Spectrum.h"
 
-#include "EngineColorStyleChooser.h"
+#include "VisualColorStyleChooser.h"
 
 #include "Components/Engine/Playback/PlaybackEngine.h"
 #include "Components/Engine/EngineHandler.h"
@@ -97,7 +97,7 @@ struct GUI_Spectrum::Private
 
 
 GUI_Spectrum::GUI_Spectrum(QWidget *parent) :
-	EnginePlugin(parent)
+	VisualPlugin(parent)
 {
 	m = Pimpl::make<Private>();
 
@@ -125,7 +125,7 @@ void GUI_Spectrum::init_ui()
 
 void GUI_Spectrum::finalize_initialization()
 {
-	EnginePlugin::init_ui();
+	VisualPlugin::init_ui();
 
 	int bins = GetSetting(Set::Engine_SpectrumBins);
 
@@ -189,7 +189,7 @@ void GUI_Spectrum::update_style(int new_index)
 		return;
 	}
 
-	_ecsc->reload(width(), height());
+	m_ecsc->reload(width(), height());
 	SetSetting(Set::Spectrum_Style, new_index);
 
 	int bins = GetSetting(Set::Engine_SpectrumBins);
@@ -204,14 +204,14 @@ void GUI_Spectrum::update_style(int new_index)
 void GUI_Spectrum::showEvent(QShowEvent* e)
 {
 	SetSetting(Set::Engine_ShowSpectrum, true);
-	EnginePlugin::showEvent(e);
+	VisualPlugin::showEvent(e);
 }
 
 
 void GUI_Spectrum::closeEvent(QCloseEvent* e)
 {
 	SetSetting(Set::Engine_ShowSpectrum, false);
-	EnginePlugin::closeEvent(e);
+	VisualPlugin::closeEvent(e);
 }
 
 void GUI_Spectrum::paintEvent(QPaintEvent* e)
@@ -308,7 +308,7 @@ bool GUI_Spectrum::has_small_buttons() const
 
 ColorStyle GUI_Spectrum::current_style() const
 {
-	return _ecsc->get_color_scheme_spectrum(current_style_index());
+	return m_ecsc->get_color_scheme_spectrum(current_style_index());
 }
 
 int GUI_Spectrum::current_style_index() const

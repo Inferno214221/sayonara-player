@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>474</width>
-    <height>245</height>
+    <width>505</width>
+    <height>257</height>
    </rect>
   </property>
   <layout class="QGridLayout" name="gridLayout">
@@ -59,7 +59,7 @@
       </widget>
      </item>
      <item>
-      <widget class="EqSlider" name="sli_6">
+      <widget class="EqualizerSlider" name="sli_6">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
@@ -124,7 +124,7 @@
       </widget>
      </item>
      <item>
-      <widget class="EqSlider" name="sli_5">
+      <widget class="EqualizerSlider" name="sli_5">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
@@ -189,7 +189,7 @@
       </widget>
      </item>
      <item>
-      <widget class="EqSlider" name="sli_9">
+      <widget class="EqualizerSlider" name="sli_9">
        <property name="layoutDirection">
         <enum>Qt::LeftToRight</enum>
        </property>
@@ -257,7 +257,7 @@
       </widget>
      </item>
      <item>
-      <widget class="EqSlider" name="sli_3">
+      <widget class="EqualizerSlider" name="sli_3">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
@@ -358,7 +358,7 @@
       </widget>
      </item>
      <item>
-      <widget class="EqSlider" name="sli_7">
+      <widget class="EqualizerSlider" name="sli_7">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
@@ -423,7 +423,7 @@
       </widget>
      </item>
      <item>
-      <widget class="EqSlider" name="sli_1">
+      <widget class="EqualizerSlider" name="sli_1">
        <property name="pageStep">
         <number>1</number>
        </property>
@@ -498,7 +498,7 @@
       </widget>
      </item>
      <item>
-      <widget class="EqSlider" name="sli_4">
+      <widget class="EqualizerSlider" name="sli_4">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
@@ -563,7 +563,7 @@
       </widget>
      </item>
      <item>
-      <widget class="EqSlider" name="sli_0">
+      <widget class="EqualizerSlider" name="sli_0">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
@@ -628,7 +628,7 @@
       </widget>
      </item>
      <item>
-      <widget class="EqSlider" name="sli_8">
+      <widget class="EqualizerSlider" name="sli_8">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
@@ -693,7 +693,7 @@
       </widget>
      </item>
      <item>
-      <widget class="EqSlider" name="sli_2">
+      <widget class="EqualizerSlider" name="sli_2">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
@@ -745,9 +745,9 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>EqSlider</class>
+   <class>EqualizerSlider</class>
    <extends>QSlider</extends>
-   <header>GUI/Plugins/Engine/Equalizer/EqSlider.h</header>
+   <header>GUI/Plugins/Engine/EqualizerSlider.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

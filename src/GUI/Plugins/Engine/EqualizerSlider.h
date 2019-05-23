@@ -1,4 +1,4 @@
-/* EqSlider.h */
+/* EqualizerSlider.h */
 
 /* Copyright (C) 2011-2019  Lucio Carreras
  *
@@ -30,18 +30,18 @@ class QLabel;
  * @brief The EqSlider class
  * @ingroup Equalizer
  */
-class EqSlider :
+class EqualizerSlider :
 	public Gui::Slider
 {
 	Q_OBJECT
-	PIMPL(EqSlider)
+	PIMPL(EqualizerSlider)
 
 	signals:
 		void sig_value_changed(int idx, int val);
 
 	public:
-		explicit EqSlider(QWidget* parent);
-		virtual ~EqSlider();
+		explicit EqualizerSlider(QWidget* parent);
+		virtual ~EqualizerSlider();
 
 		/**
 		 * @brief sets everything the slider has to be aware about

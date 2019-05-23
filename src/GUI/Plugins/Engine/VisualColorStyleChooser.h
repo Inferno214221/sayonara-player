@@ -1,4 +1,4 @@
-/* EngineColorStyleChooser.h */
+/* VisualColorStyleChooser.h */
 
 /* Copyright (C) 2011-2019  Lucio Carreras
  *
@@ -26,10 +26,10 @@
 #include <QHash>
 #include <QColor>
 
-#include "StyleTypes.h"
+#include "VisualStyleTypes.h"
 
 
-class EngineColorStyleChooser : public QObject
+class VisualColorStyleChooser : public QObject
 {
     Q_OBJECT
 
@@ -37,7 +37,7 @@ signals:
     void sig_use_style(int, const ColorStyle& );
 
 public:
-    EngineColorStyleChooser(int widget_width, int widget_height);
+    VisualColorStyleChooser(int widget_width, int widget_height);
     ColorStyle get_color_scheme_spectrum(int i);
     ColorStyle get_color_scheme_level(int i);
     int get_num_color_schemes();

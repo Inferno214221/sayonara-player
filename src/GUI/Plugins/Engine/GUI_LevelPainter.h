@@ -21,14 +21,14 @@
 #ifndef GUI_LEVELPAINTER_H
 #define GUI_LEVELPAINTER_H
 
-#include "EnginePlugin.h"
+#include "VisualPlugin.h"
 #include "Components/Engine/Playback/SoundOutReceiver.h"
 #include "Utils/Pimpl.h"
 
 UI_FWD(GUI_LevelPainter)
 
 class GUI_LevelPainter :
-		public EnginePlugin,
+		public VisualPlugin,
 		public LevelReceiver
 {
 	Q_OBJECT
@@ -68,7 +68,7 @@ protected slots:
 private:
 	void reload();
 
-	// EnginePlugin interface
+	// VisualPlugin interface
 	protected:
 
 };

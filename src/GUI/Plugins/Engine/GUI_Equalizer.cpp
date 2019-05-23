@@ -27,7 +27,7 @@
  */
 
 #include "GUI_Equalizer.h"
-#include "EqSlider.h"
+#include "EqualizerSlider.h"
 
 #include "Components/Engine/EngineHandler.h"
 
@@ -60,7 +60,7 @@ static QString calc_lab(int val)
 struct GUI_Equalizer::Private
 {
 	QList<EQ_Setting>	presets;
-	QList<EqSlider*>	sliders;
+	QList<EqualizerSlider*>	sliders;
 
 	ValueArray			old_val;
 	int					active_idx;
@@ -131,11 +131,11 @@ void GUI_Equalizer::init_ui()
 
 	ui->btn_tool->register_action(action_gauss);
 
-	for(EqSlider* s : Util::AsConst(m->sliders))
+	for(EqualizerSlider* s : Util::AsConst(m->sliders))
 	{
-		connect(s, &EqSlider::sig_value_changed, this, &GUI_Equalizer::sli_changed);
-		connect(s, &EqSlider::sig_slider_got_focus, this, &GUI_Equalizer::sli_pressed);
-		connect(s, &EqSlider::sig_slider_lost_focus, this, &GUI_Equalizer::sli_released);
+		connect(s, &EqualizerSlider::sig_value_changed, this, &GUI_Equalizer::sli_changed);
+		connect(s, &EqualizerSlider::sig_slider_got_focus, this, &GUI_Equalizer::sli_pressed);
+		connect(s, &EqualizerSlider::sig_slider_lost_focus, this, &GUI_Equalizer::sli_released);
 	}
 
 	connect(ui->btn_tool, &MenuToolButton::sig_save, this, &GUI_Equalizer::btn_save_clicked);
@@ -171,13 +171,13 @@ void GUI_Equalizer::retranslate_ui()
 
 void GUI_Equalizer::sli_pressed()
 {
-	EqSlider* sli = static_cast<EqSlider*>(sender());
+	EqualizerSlider* sli = static_cast<EqualizerSlider*>(sender());
 	int idx = sli->index();
 
 	m->active_idx= idx;
 
 	int i=0;
-	for(const EqSlider* slider : Util::AsConst(m->sliders))
+	for(const EqualizerSlider* slider : Util::AsConst(m->sliders))
 	{
 		m->old_val[i] = slider->value();
 		i++;
@@ -196,7 +196,7 @@ void GUI_Equalizer::sli_changed(int idx, int new_val)
 	bool gauss_on = GetSetting(Set::Eq_Gauss);
 	ui->btn_tool->show_action(ContextMenu::EntryUndo, true);
 
-	EqSlider* s = m->sliders[idx];
+	EqualizerSlider* s = m->sliders[idx];
 	s->label()->setText(calc_lab(new_val));
 
 	Engine::Handler* engine = Engine::Handler::instance();
@@ -372,7 +372,7 @@ void GUI_Equalizer::btn_undo_clicked()
 
 	if(found_idx <= 0)
 	{
-		for(EqSlider* sli : Util::AsConst(m->sliders)){
+		for(EqualizerSlider* sli : Util::AsConst(m->sliders)){
 			sli->setValue(0);
 		}
 	}

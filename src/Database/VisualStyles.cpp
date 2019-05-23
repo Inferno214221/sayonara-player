@@ -19,9 +19,9 @@
  */
 
 #include "Database/Query.h"
-#include "Database/VisStyles.h"
+#include "Database/VisualStyles.h"
 
-#include "GUI/Plugins/Engine/StyleTypes.h"
+#include "GUI/Plugins/Engine/VisualStyleTypes.h"
 #include "Utils/Utils.h"
 
 #include <QColor>

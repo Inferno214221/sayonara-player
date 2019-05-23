@@ -1,4 +1,4 @@
-/* EnginePlugin.h */
+/* VisualPlugin.h */
 
 /* Copyright (C) 2011-2019  Lucio Carreras
  *
@@ -22,7 +22,7 @@
 #define ENGINEPLUGIN_H
 
 #include "GUI_StyleSettings.h"
-#include "GUI/Plugins/Engine/StyleTypes.h"
+#include "VisualStyleTypes.h"
 #include "Interfaces/PlayerPlugin/PlayerPluginBase.h"
 #include "Components/PlayManager/PlayState.h"
 
@@ -31,20 +31,20 @@
 #include <QTimer>
 #include <QPushButton>
 
-class EngineColorStyleChooser;
+class VisualColorStyleChooser;
 
 namespace Engine
 {
 	class Handler;
 }
 
-class EnginePlugin : public PlayerPlugin::Base
+class VisualPlugin : public PlayerPlugin::Base
 {
 	Q_OBJECT
-	PIMPL(EnginePlugin)
+	PIMPL(VisualPlugin)
 
 protected:
-	EngineColorStyleChooser*	_ecsc=nullptr;
+	VisualColorStyleChooser*	m_ecsc=nullptr;
 
 	void				init_buttons(bool small);
 	Engine::Handler*	engine() const;
@@ -86,8 +86,8 @@ public slots:
 
 
 public:
-	explicit EnginePlugin(QWidget* parent=nullptr);
-	virtual ~EnginePlugin();
+	explicit VisualPlugin(QWidget* parent=nullptr);
+	virtual ~VisualPlugin();
 
 	virtual bool is_title_shown() const override;
 };

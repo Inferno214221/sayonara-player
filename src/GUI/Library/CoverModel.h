@@ -23,6 +23,7 @@
 
 #include "GUI/Library/ItemModel.h"
 #include "Utils/Pimpl.h"
+#include <QtGlobal>
 
 class Album;
 class AlbumList;
@@ -44,6 +45,12 @@ namespace Library
 		PIMPL(CoverModel)
 
 		public:
+			enum Role
+			{
+				AlbumRole=Qt::UserRole,
+				ArtistRole=Qt::UserRole + 1
+			};
+
 			explicit CoverModel(QObject* parent, AbstractLibrary* library);
 			virtual ~CoverModel();
 

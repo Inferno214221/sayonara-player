@@ -194,6 +194,8 @@ void GUI_Covers::init_ui()
 	connect(ui->cb_save_to_library, &QCheckBox::toggled, this, &GUI_Covers::cb_save_to_library_toggled);
 	connect(ui->le_cover_template, &QLineEdit::textEdited, this, &GUI_Covers::le_cover_template_edited);
 
+	ui->cb_save_to_sayonara_dir->setToolTip(Cover::Utils::cover_directory());
+
 	revert();
 }
 

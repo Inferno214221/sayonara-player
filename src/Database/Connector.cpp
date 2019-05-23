@@ -28,7 +28,7 @@
 #include "Database/Session.h"
 #include "Database/Settings.h"
 #include "Database/Shortcuts.h"
-#include "Database/VisStyles.h"
+#include "Database/VisualStyles.h"
 #include "Database/CoverConnector.h"
 
 #include "Utils/MetaData/Album.h"

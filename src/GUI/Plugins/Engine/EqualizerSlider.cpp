@@ -1,4 +1,4 @@
-/* EqSlider.cpp */
+/* EqualizerSlider.cpp */
 
 /* Copyright (C) 2011-2019  Lucio Carreras
  *
@@ -18,12 +18,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "EqSlider.h"
+#include "EqualizerSlider.h"
 
 #include <QLabel>
 #include <QShortcut>
 
-struct EqSlider::Private
+struct EqualizerSlider::Private
 {
 	QLabel* label=nullptr;
 	int		idx;
@@ -33,7 +33,7 @@ struct EqSlider::Private
 	{}
 };
 
-EqSlider::EqSlider(QWidget *parent) :
+EqualizerSlider::EqualizerSlider(QWidget *parent) :
 	Gui::Slider(parent)
 {
 	m = Pimpl::make<Private>();
@@ -45,25 +45,25 @@ EqSlider::EqSlider(QWidget *parent) :
 	new QShortcut(QKeySequence(Qt::Key_0), this, SLOT(set_zero()), nullptr, Qt::WidgetShortcut);
 }
 
-EqSlider::~EqSlider() {}
+EqualizerSlider::~EqualizerSlider() {}
 
-void EqSlider::set_label(int idx, QLabel* label)
+void EqualizerSlider::set_label(int idx, QLabel* label)
 {
 	m->label = label;
 	m->idx = idx;
 }
 
-QLabel* EqSlider::label() const
+QLabel* EqualizerSlider::label() const
 {
 	return m->label;
 }
 
-int EqSlider::index() const
+int EqualizerSlider::index() const
 {
 	return m->idx;
 }
 
-void EqSlider::sliderChange(SliderChange change)
+void EqualizerSlider::sliderChange(SliderChange change)
 {
 	Gui::Slider::sliderChange(change);
 
@@ -74,7 +74,7 @@ void EqSlider::sliderChange(SliderChange change)
 }
 
 
-double EqSlider::eq_value() const
+double EqualizerSlider::eq_value() const
 {
 	int val = this->value();
 	if( val > 0 ){
@@ -86,13 +86,13 @@ double EqSlider::eq_value() const
 	}
 }
 
-void EqSlider::set_zero()
+void EqualizerSlider::set_zero()
 {
 	this->setValue(0);
 	emit sig_value_changed(m->idx, eq_value());
 }
 
-QSize EqSlider::minimumSizeHint() const
+QSize EqualizerSlider::minimumSizeHint() const
 {
 	return QSize(10, 50);
 }

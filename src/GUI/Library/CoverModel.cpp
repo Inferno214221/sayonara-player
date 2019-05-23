@@ -136,11 +136,9 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 	}
 
 	const Album& album = albums[lin_idx];
-
-
-
 	switch(role)
 	{
+		case CoverModel::AlbumRole:
 		case Qt::DisplayRole:
 			{
 				QString name = album.name();
@@ -172,7 +170,7 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 		case Qt::SizeHintRole:
 			return m->item_size;
 
-		case Qt::UserRole:
+		case CoverModel::ArtistRole:
 		{
 			QString artist;
 
@@ -194,11 +192,10 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 
 			return artist;
 		}
+
 		default:
 			return QVariant();
 	}
-
-	return QVariant();
 }
 
 
