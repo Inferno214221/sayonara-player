@@ -19,7 +19,7 @@
  */
 
 #include "AbstractPipeline.h"
-#include "Components/Engine/AbstractEngine.h"
+#include "Components/Engine/Playback/PlaybackEngine.h"
 #include "Callbacks/EngineUtils.h"
 #include "Callbacks/EngineCallbacks.h"
 #include "Callbacks/PipelineCallbacks.h"
@@ -39,7 +39,7 @@ struct Base::Private
 
 	QString			name;
 	GstBus*			bus=nullptr;
-	Engine::Base*   engine=nullptr;
+	Engine::Playback*   engine=nullptr;
 	QTimer*         progress_timer=nullptr;
 	gchar*			uri=nullptr;
 	GstElement*		pipeline=nullptr;
@@ -49,7 +49,7 @@ struct Base::Private
 	bool			about_to_finish;
 	bool            initialized;
 
-	Private(const QString& name, Engine::Base* engine) :
+	Private(const QString& name, Engine::Playback* engine) :
 		duration_ms(0),
 		position_source_ms(0),
 		position_pipeline_ms(0),
@@ -60,7 +60,7 @@ struct Base::Private
 	{}
 };
 
-Base::Base(QString name, Engine::Base* engine, QObject* parent) :
+Base::Base(QString name, Engine::Playback* engine, QObject* parent) :
 	QObject(parent)
 {
 	m = Pimpl::make<Private>(name, engine);

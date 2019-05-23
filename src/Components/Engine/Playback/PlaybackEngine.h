@@ -21,11 +21,10 @@
 #ifndef GSTPLAYBACKENGINE_H_
 #define GSTPLAYBACKENGINE_H_
 
-#include "Components/Engine/AbstractEngine.h"
+#include "Utils/Pimpl.h"
 #include "SoundOutReceiver.h"
-
-class QTimer;
-class QString;
+#include <QObject>
+#include <gst/gst.h>
 
 class SpectrumReceiver;
 class LevelReceiver;
@@ -47,7 +46,7 @@ namespace Engine
 	 * @ingroup Engine
 	 */
 	class Playback :
-			public Base
+			public QObject
 	{
 		Q_OBJECT
 		PIMPL(Playback)
@@ -55,18 +54,33 @@ namespace Engine
 	signals:
 		void sig_data(const unsigned char* data, uint64_t n_bytes);
 
+		void sig_md_changed(const MetaData& md);
+		void sig_duration_changed(const MetaData& md);
+		void sig_bitrate_changed(const MetaData& md);
+		void sig_cover_changed(const QImage& img);
+
+		void sig_buffering(int progress);
+
+		void sig_track_ready();
+		void sig_track_almost_finished(MilliSeconds time2go);
+		void sig_track_finished();
+
+		void sig_error(const QString& message);
+
 	public:
 		explicit Playback(QObject* parent=nullptr);
 		~Playback();
 
-		bool init() override;
+		bool init();
 
-		void update_bitrate(Bitrate br, GstElement* src) override;
-		void update_duration(MilliSeconds duration_ms, GstElement* src) override;
+		bool change_track_by_filename(const QString& filepath);
 
-		void set_track_ready(GstElement* src) override;
-		void set_track_almost_finished(MilliSeconds time2go) override;
-		void set_track_finished(GstElement* src) override;
+		void update_bitrate(Bitrate br, GstElement* src);
+		void update_duration(MilliSeconds duration_ms, GstElement* src);
+
+		void set_track_ready(GstElement* src);
+		void set_track_almost_finished(MilliSeconds time2go);
+		void set_track_finished(GstElement* src);
 
 		bool is_streamrecroder_recording() const;
 		void set_streamrecorder_recording(bool b);
@@ -84,29 +98,33 @@ namespace Engine
 
 
 	public slots:
-		void play() override;
-		void stop() override;
-		void pause() override;
+		void play();
+		void stop();
+		void pause();
 
-		void jump_abs_ms(MilliSeconds pos_ms) override;
-		void jump_rel_ms(MilliSeconds pos_ms) override;
-		void jump_rel(double percent) override;
-		void update_metadata(const MetaData& md, GstElement* src) override;
-		void update_cover(const QImage& img, GstElement* src) override;
+		void jump_abs_ms(MilliSeconds pos_ms);
+		void jump_rel_ms(MilliSeconds pos_ms);
+		void jump_rel(double percent);
+		void update_metadata(const MetaData& md, GstElement* src);
+		void update_cover(const QImage& img, GstElement* src);
 
-		bool change_track(const MetaData& md) override;
+		bool change_track(const MetaData& md);
 
-		void set_buffer_state(int progress, GstElement* src) override;
+		void set_buffer_state(int progress, GstElement* src);
+		void error(const QString& error);
 
 	private:
 		bool init_pipeline(Pipeline::Playback** pipeline);
 
-		bool change_uri(const QString& uri) override;
-		bool change_metadata(const MetaData& md) override;
+		bool change_uri(const QString& uri);
+		bool change_metadata(const MetaData& md);
 
 		bool change_track_crossfading(const MetaData& md);
 		bool change_track_gapless(const MetaData& md);
 		bool change_track_immediatly(const MetaData& md);
+
+		void set_current_position_ms(MilliSeconds pos_ms);
+		MilliSeconds		current_position_ms() const;
 
 
 	private slots:

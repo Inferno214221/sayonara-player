@@ -345,6 +345,11 @@ void PlayManager::set_track_ready()
 	}
 }
 
+void PlayManager::set_track_finished()
+{
+	next();
+}
+
 void PlayManager::buffering(int progress)
 {
 	emit sig_buffer(progress);

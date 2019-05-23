@@ -172,7 +172,7 @@ void GUI_AbstractStream::listen_clicked()
 	}
 
 	QString station_name = get_title_fallback_name();
-	if(m->combo_stream->currentIndex() > 0)
+	if(m->combo_stream->currentIndex() >= 0)
 	{
 		station_name = current_station();
 	}

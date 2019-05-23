@@ -22,6 +22,7 @@
 #define GSTPIPELINE_H
 
 #include "Utils/Pimpl.h"
+#include "Components/Engine/Playback/PlaybackEngine.h"
 
 #include <QObject>
 
@@ -80,7 +81,7 @@ namespace Pipeline
 
 
 		public:
-			Base(QString name, Engine::Base* engine, QObject* parent=nullptr);
+			Base(QString name, Engine::Playback* engine, QObject* parent=nullptr);
 			virtual ~Base();
 
 			virtual GstElement* get_source() const=0;

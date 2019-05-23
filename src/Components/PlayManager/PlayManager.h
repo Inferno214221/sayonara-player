@@ -232,6 +232,7 @@ public slots:
 	 * @brief notify, that track is ready for playback
 	 */
 	void set_track_ready();
+	void set_track_finished();
 
 	/**
 	 * @brief notifiy, that track is in buffering state currently

@@ -22,8 +22,8 @@
 #include "Components/Engine/Playback/PlaybackEngine.h"
 
 #include "Utils/MetaData/MetaData.h"
-#include "Utils/globals.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/globals.h"
 
 #include <QList>
 #include <QImage>
@@ -124,7 +124,7 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 	Q_UNUSED(bus);
 
 	static MetaData md;
-	Base* engine = static_cast<Base*>(data);
+	Playback* engine = static_cast<Playback*>(data);
 	if(!engine){
 		return true;
 	}
@@ -264,7 +264,7 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 			{
 				GError*	err;
 				gst_message_parse_warning(msg, &err, nullptr);
-				sp_log(Log::Warning, ClassEngineCallbacks) << "Engine " << (int) engine->name() << ": GST_MESSAGE_WARNING: " << err->message << ": "
+				sp_log(Log::Warning, ClassEngineCallbacks) << "Engine: GST_MESSAGE_WARNING: " << err->message << ": "
 					 << GST_MESSAGE_SRC_NAME(msg);
 				g_error_free(err);
 			}
@@ -275,7 +275,7 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 				GError*	err;
 				gst_message_parse_error(msg, &err, nullptr);
 
-				sp_log(Log::Error, ClassEngineCallbacks) << "Engine " << (int) engine->name() << ": GST_MESSAGE_ERROR: " << err->message << ": "
+				sp_log(Log::Error, ClassEngineCallbacks) << "Engine: GST_MESSAGE_ERROR: " << err->message << ": "
 						 << GST_MESSAGE_SRC_NAME(msg);
 
 				QString	error_msg(err->message);

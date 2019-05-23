@@ -21,6 +21,7 @@
 #ifndef GSTPLAYBACKPIPELINE_H_
 #define GSTPLAYBACKPIPELINE_H_
 
+#include "Components/Engine/Playback/PlaybackEngine.h"
 #include "ChangeablePipeline.h"
 #include "Crossfader.h"
 #include "DelayedPlayHandler.h"
@@ -43,7 +44,7 @@ namespace Pipeline
 		PIMPL(Playback)
 
 	public:
-		explicit Playback(Engine::Base* engine, QObject *parent=nullptr);
+		explicit Playback(Engine::Playback* engine, QObject *parent=nullptr);
 		virtual ~Playback();
 
 		bool init(GstState state=GST_STATE_NULL) override;

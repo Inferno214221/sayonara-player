@@ -133,7 +133,7 @@ void GUI_Spectrum::finalize_initialization()
 	m->resize_steps(bins, current_style().n_rects);
 	m->spec.resize((size_t) bins, -100.0f);
 
-	Engine::Handler::instance()->register_spectrum_receiver(this);
+	Engine::Handler::instance()->add_spectrum_receiver(this);
 	PlayerPlugin::Base::finalize_initialization();
 
 	update();

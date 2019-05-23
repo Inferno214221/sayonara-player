@@ -19,7 +19,6 @@
  */
 
 #include "LineInputDialog.h"
-#include <QInputDialog>
 #include "Utils/Language.h"
 
 LineInputDialog::LineInputDialog(const QString& title, const QString& label, QWidget* parent) :

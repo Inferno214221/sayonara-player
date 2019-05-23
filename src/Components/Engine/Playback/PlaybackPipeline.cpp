@@ -122,7 +122,7 @@ struct Playback::Private :
 };
 
 
-Playback::Playback(Engine::Base* engine, QObject *parent) :
+Playback::Playback(Engine::Playback* engine, QObject *parent) :
 	Pipeline::Base("Playback Pipeline", engine, parent),
 	CrossFader(),
 	Pipeline::Changeable(),
