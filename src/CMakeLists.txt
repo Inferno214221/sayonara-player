@@ -77,7 +77,7 @@ endif()
 
 
 add_subdirectory(Application)
-add_subdirectory(GUI)
+add_subdirectory(Gui)
 add_subdirectory(Utils)
 add_subdirectory(Database)
 add_subdirectory(Interfaces)

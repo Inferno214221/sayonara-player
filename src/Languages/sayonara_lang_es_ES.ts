@@ -51,7 +51,7 @@
 <context>
     <name>GUI_AlternativeCovers</name>
     <message>
-        <location filename="src/GUI/Covers/GUI_AlternativeCovers.ui" line="+110"/>
+        <location filename="src/Gui/Covers/GUI_AlternativeCovers.ui" line="+110"/>
         <source>Online Search</source>
         <translation>Buscar en línea</translation>
     </message>
@@ -91,7 +91,7 @@
         <translation>Iniciar la búsqueda automáticamente</translation>
     </message>
     <message>
-        <location filename="src/GUI/Covers/GUI_AlternativeCovers.cpp" line="+289"/>
+        <location filename="src/Gui/Covers/GUI_AlternativeCovers.cpp" line="+289"/>
         <source>%1 covers found</source>
         <translation>%1 carátulas encontradas</translation>
     </message>
@@ -104,7 +104,7 @@
 <context>
     <name>GUI_DirectoryWidget</name>
     <message>
-        <location filename="src/GUI/Directories/GUI_DirectoryWidget.ui" line="+271"/>
+        <location filename="src/Gui/Directories/GUI_DirectoryWidget.ui" line="+271"/>
         <source>Set library path</source>
         <translation>Establecer
 ruta de la
@@ -119,7 +119,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_ImportDialog</name>
     <message>
-        <location filename="src/GUI/ImportDialog/GUI_ImportDialog.ui" line="+14"/>
+        <location filename="src/Gui/ImportDialog/GUI_ImportDialog.ui" line="+14"/>
         <source>Import</source>
         <translation>Importar</translation>
     </message>
@@ -139,7 +139,7 @@ Biblioteca</translation>
         <translation>Aceptar</translation>
     </message>
     <message>
-        <location filename="src/GUI/ImportDialog/GUI_ImportDialog.cpp" line="+103"/>
+        <location filename="src/Gui/ImportDialog/GUI_ImportDialog.cpp" line="+103"/>
         <source>%1 tracks available</source>
         <translation>%1 pistas disponibles</translation>
     </message>
@@ -187,7 +187,7 @@ Biblioteca</translation>
 <context>
     <name>InfoDialog</name>
     <message>
-        <location filename="src/GUI/InfoDialog/GUI_InfoDialog.ui" line="+20"/>
+        <location filename="src/Gui/InfoDialog/GUI_InfoDialog.ui" line="+20"/>
         <source>Info / Edit</source>
         <translation>Info / Editar</translation>
     </message>
@@ -195,7 +195,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_Lyrics</name>
     <message>
-        <location filename="src/GUI/InfoDialog/GUI_Lyrics.ui" line="+28"/>
+        <location filename="src/Gui/InfoDialog/GUI_Lyrics.ui" line="+28"/>
         <source>Save Lyrics</source>
         <translation>Guardar letras</translation>
     </message>
@@ -210,7 +210,7 @@ Biblioteca</translation>
         <translation>Ampliación</translation>
     </message>
     <message>
-        <location filename="src/GUI/InfoDialog/GUI_Lyrics.cpp" line="+299"/>
+        <location filename="src/Gui/InfoDialog/GUI_Lyrics.cpp" line="+299"/>
         <source>Save lyrics not supported</source>
         <translation>Guardar letras no está soportado</translation>
     </message>
@@ -233,7 +233,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_EmptyLibrary</name>
     <message>
-        <location filename="src/GUI/Library/GUI_EmptyLibrary.ui" line="+20"/>
+        <location filename="src/Gui/Library/GUI_EmptyLibrary.ui" line="+20"/>
         <source>Set library path</source>
         <translation>Establecer
 ruta de la
@@ -248,7 +248,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_LocalLibrary</name>
     <message>
-        <location filename="src/GUI/Library/GUI_LocalLibrary.ui" line="+20"/>
+        <location filename="src/Gui/Library/GUI_LocalLibrary.ui" line="+20"/>
         <source>Library</source>
         <translation>Biblioteca</translation>
     </message>
@@ -266,7 +266,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_Controls</name>
     <message>
-        <location filename="src/GUI/Player/GUI_Controls.ui" line="+546"/>
+        <location filename="src/Gui/Player/GUI_Controls.ui" line="+546"/>
         <source>Written by Lucio Carreras</source>
         <translation>Escrito por Lucio Carreras</translation>
     </message>
@@ -274,7 +274,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_ControlsNew</name>
     <message>
-        <location filename="src/GUI/Player/GUI_ControlsNew.ui" line="+638"/>
+        <location filename="src/Gui/Player/GUI_ControlsNew.ui" line="+638"/>
         <source>Copyright 2011-2019</source>
         <translation type="unfinished"/>
     </message>
@@ -287,12 +287,12 @@ Biblioteca</translation>
 <context>
     <name>GUI_Player</name>
     <message>
-        <location filename="src/GUI/Player/GUI_Player.ui" line="+17"/>
+        <location filename="src/Gui/Player/GUI_Player.ui" line="+17"/>
         <source>Sayonara Player</source>
         <translation>Reproductor Sayonara</translation>
     </message>
     <message>
-        <location filename="src/GUI/Player/GUI_Player.cpp" line="+409"/>
+        <location filename="src/Gui/Player/GUI_Player.cpp" line="+409"/>
         <source>A new version is available!</source>
         <translation>¡Hay una nueva versión disponible!</translation>
     </message>
@@ -300,8 +300,8 @@ Biblioteca</translation>
 <context>
     <name>GUI_AudioConverter</name>
     <message>
-        <location filename="src/GUI/Plugins/AudioConverter/GUI_AudioConverter.ui" line="+45"/>
-        <location filename="src/GUI/Plugins/AudioConverter/GUI_AudioConverter.cpp" line="+261"/>
+        <location filename="src/Gui/Plugins/AudioConverter/GUI_AudioConverter.ui" line="+45"/>
+        <location filename="src/Gui/Plugins/AudioConverter/GUI_AudioConverter.cpp" line="+261"/>
         <source>Start</source>
         <translation>Iniciar</translation>
     </message>
@@ -323,7 +323,7 @@ Biblioteca</translation>
         <translation>Calidad</translation>
     </message>
     <message>
-        <location filename="src/GUI/Plugins/AudioConverter/GUI_AudioConverter.cpp" line="-149"/>
+        <location filename="src/Gui/Plugins/AudioConverter/GUI_AudioConverter.cpp" line="-149"/>
         <source>Audio Converter</source>
         <translation>Conversor de audio</translation>
     </message>
@@ -373,12 +373,12 @@ Biblioteca</translation>
 <context>
     <name>GUI_Bookmarks</name>
     <message>
-        <location filename="src/GUI/Plugins/Bookmarks/GUI_Bookmarks.ui" line="+116"/>
+        <location filename="src/Gui/Plugins/Bookmarks/GUI_Bookmarks.ui" line="+116"/>
         <source>Loop</source>
         <translation>Bucle</translation>
     </message>
     <message>
-        <location filename="src/GUI/Plugins/Bookmarks/GUI_Bookmarks.cpp" line="+74"/>
+        <location filename="src/Gui/Plugins/Bookmarks/GUI_Bookmarks.cpp" line="+74"/>
         <location line="+52"/>
         <source>No bookmarks found</source>
         <translation>No se encontraron marcadores.</translation>
@@ -392,12 +392,12 @@ Biblioteca</translation>
 <context>
     <name>GUI_Broadcast</name>
     <message>
-        <location filename="src/GUI/Plugins/Broadcasting/GUI_Broadcast.ui" line="+88"/>
+        <location filename="src/Gui/Plugins/Broadcasting/GUI_Broadcast.ui" line="+88"/>
         <source>Cannot Broadcast</source>
         <translation>No se puede emitir</translation>
     </message>
     <message>
-        <location filename="src/GUI/Plugins/Broadcasting/GUI_Broadcast.cpp" line="+92"/>
+        <location filename="src/Gui/Plugins/Broadcasting/GUI_Broadcast.cpp" line="+92"/>
         <source>Dismiss</source>
         <translation>Descartar</translation>
     </message>
@@ -430,7 +430,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_Style</name>
     <message>
-        <location filename="src/GUI/Plugins/Engine/GUI_Style.ui" line="+14"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_Style.ui" line="+14"/>
         <source>Style</source>
         <translation>Estilo</translation>
     </message>
@@ -511,8 +511,8 @@ Biblioteca</translation>
 <context>
     <name>GUI_Speed</name>
     <message>
-        <location filename="src/GUI/Plugins/Engine/Speed/GUI_Speed.ui" line="+45"/>
-        <location filename="src/GUI/Plugins/Engine/Speed/GUI_Speed.cpp" line="+117"/>
+        <location filename="src/Gui/Plugins/Engine/Speed/GUI_Speed.ui" line="+45"/>
+        <location filename="src/Gui/Plugins/Engine/Speed/GUI_Speed.cpp" line="+117"/>
         <source>Speed</source>
         <translation>Velocidad</translation>
     </message>
@@ -523,12 +523,12 @@ Biblioteca</translation>
     </message>
     <message>
         <location line="+30"/>
-        <location filename="src/GUI/Plugins/Engine/Speed/GUI_Speed.cpp" line="+0"/>
+        <location filename="src/Gui/Plugins/Engine/Speed/GUI_Speed.cpp" line="+0"/>
         <source>Pitch</source>
         <translation>Tono</translation>
     </message>
     <message>
-        <location filename="src/GUI/Plugins/Engine/Speed/GUI_Speed.cpp" line="+64"/>
+        <location filename="src/Gui/Plugins/Engine/Speed/GUI_Speed.cpp" line="+64"/>
         <location line="+1"/>
         <source>%1 not found</source>
         <translation>%1: No encontrado</translation>
@@ -537,7 +537,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_TargetPlaylistDialog</name>
     <message>
-        <location filename="src/GUI/Plugins/PlaylistChooser/GUI_TargetPlaylistDialog.ui" line="+14"/>
+        <location filename="src/Gui/Plugins/PlaylistChooser/GUI_TargetPlaylistDialog.ui" line="+14"/>
         <source>Choose target playlist</source>
         <translation>Escoger destino para la lista</translation>
     </message>
@@ -565,7 +565,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_ConfigureStreams</name>
     <message>
-        <location filename="src/GUI/Plugins/Stream/GUI_ConfigureStreams.ui" line="+17"/>
+        <location filename="src/Gui/Plugins/Stream/GUI_ConfigureStreams.ui" line="+17"/>
         <source>Name</source>
         <translation>Nombre</translation>
     </message>
@@ -578,12 +578,12 @@ Biblioteca</translation>
 <context>
     <name>GUI_StationSearcher</name>
     <message>
-        <location filename="src/GUI/Plugins/Stream/GUI_StationSearcher.ui" line="+14"/>
+        <location filename="src/Gui/Plugins/Stream/GUI_StationSearcher.ui" line="+14"/>
         <source>Search Radio Station</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="src/GUI/Plugins/Stream/GUI_StationSearcher.cpp" line="+58"/>
+        <location filename="src/Gui/Plugins/Stream/GUI_StationSearcher.cpp" line="+58"/>
         <source>Show radio stations from %1 to %2</source>
         <translation type="unfinished"/>
     </message>
@@ -606,7 +606,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_BroadcastSetup</name>
     <message>
-        <location filename="src/GUI/Preferences/Broadcast/GUI_BroadcastSetup.ui" line="+20"/>
+        <location filename="src/Gui/Preferences/Broadcast/GUI_BroadcastSetup.ui" line="+20"/>
         <source>Port</source>
         <translation>Puerto</translation>
     </message>
@@ -619,7 +619,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_Covers</name>
     <message>
-        <location filename="src/GUI/Preferences/Covers/GUI_Covers.ui" line="+17"/>
+        <location filename="src/Gui/Preferences/Covers/GUI_Covers.ui" line="+17"/>
         <source>Save found covers into Sayonara directory</source>
         <translation type="unfinished"/>
     </message>
@@ -692,7 +692,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_LanguageChooser</name>
     <message>
-        <location filename="src/GUI/Preferences/Language/GUI_LanguageChooser.ui" line="+17"/>
+        <location filename="src/Gui/Preferences/Language/GUI_LanguageChooser.ui" line="+17"/>
         <source>For new languages I am always looking for translators</source>
         <translation>Siempre busco traductores a más idiomas</translation>
     </message>
@@ -702,7 +702,7 @@ Biblioteca</translation>
         <translation>Inglés</translation>
     </message>
     <message>
-        <location filename="src/GUI/Preferences/Language/GUI_LanguageChooser.cpp" line="+138"/>
+        <location filename="src/Gui/Preferences/Language/GUI_LanguageChooser.cpp" line="+138"/>
         <source>Language</source>
         <translation>Idioma</translation>
     </message>
@@ -710,7 +710,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_LastFM</name>
     <message>
-        <location filename="src/GUI/Preferences/LastFM/GUI_LastFM.ui" line="+27"/>
+        <location filename="src/Gui/Preferences/LastFM/GUI_LastFM.ui" line="+27"/>
         <source>Username</source>
         <translation>Nombre de usuario</translation>
     </message>
@@ -730,7 +730,7 @@ Biblioteca</translation>
         <translation>Acceder</translation>
     </message>
     <message>
-        <location filename="src/GUI/Preferences/LastFM/GUI_LastFM.cpp" line="+163"/>
+        <location filename="src/Gui/Preferences/LastFM/GUI_LastFM.cpp" line="+163"/>
         <source>Logged in</source>
         <translation>Registrado</translation>
     </message>
@@ -743,7 +743,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_LibraryPreferences</name>
     <message>
-        <location filename="src/GUI/Preferences/Library/GUI_LibraryPreferences.ui" line="+24"/>
+        <location filename="src/Gui/Preferences/Library/GUI_LibraryPreferences.ui" line="+24"/>
         <source>Libraries</source>
         <translation>Bibliotecas</translation>
     </message>
@@ -799,7 +799,7 @@ Biblioteca</translation>
         <translation>Mostrar los botones de Limpiar Selección.</translation>
     </message>
     <message>
-        <location filename="src/GUI/Preferences/Library/GUI_LibraryPreferences.cpp" line="+137"/>
+        <location filename="src/Gui/Preferences/Library/GUI_LibraryPreferences.cpp" line="+137"/>
         <source>Cannot edit library</source>
         <translation>No se puede editar la biblioteca.</translation>
     </message>
@@ -807,12 +807,12 @@ Biblioteca</translation>
 <context>
     <name>GUI_Notifications</name>
     <message>
-        <location filename="src/GUI/Preferences/Notifications/GUI_Notifications.ui" line="+17"/>
+        <location filename="src/Gui/Preferences/Notifications/GUI_Notifications.ui" line="+17"/>
         <source>Timeout (ms)</source>
         <translation>Mostrar durante (ms)</translation>
     </message>
     <message>
-        <location filename="src/GUI/Preferences/Notifications/GUI_Notifications.cpp" line="+98"/>
+        <location filename="src/Gui/Preferences/Notifications/GUI_Notifications.cpp" line="+98"/>
         <source>Notifications</source>
         <translation>Notificaciones</translation>
     </message>
@@ -820,7 +820,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_PlayerPreferences</name>
     <message>
-        <location filename="src/GUI/Preferences/Player/GUI_PlayerPreferences.ui" line="+17"/>
+        <location filename="src/Gui/Preferences/Player/GUI_PlayerPreferences.ui" line="+17"/>
         <source>Update notifications</source>
         <translation>Notificar si hay actualizaciones</translation>
     </message>
@@ -843,7 +843,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_PlaylistPreferences</name>
     <message>
-        <location filename="src/GUI/Preferences/Playlist/GUI_PlaylistPreferences.ui" line="+33"/>
+        <location filename="src/Gui/Preferences/Playlist/GUI_PlaylistPreferences.ui" line="+33"/>
         <source>Behavior</source>
         <translation>Comportamiento</translation>
     </message>
@@ -928,7 +928,7 @@ Biblioteca</translation>
         <translation>Mostrar calificación</translation>
     </message>
     <message>
-        <location filename="src/GUI/Preferences/Playlist/GUI_PlaylistPreferences.cpp" line="+204"/>
+        <location filename="src/Gui/Preferences/Playlist/GUI_PlaylistPreferences.cpp" line="+204"/>
         <source>Playlist look: Invalid expression</source>
         <translation>Apariencia de la Lista de Reproducción. Expresión inválida</translation>
     </message>
@@ -936,7 +936,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_PreferenceDialog</name>
     <message>
-        <location filename="src/GUI/Preferences/PreferenceDialog/GUI_PreferenceDialog.ui" line="+133"/>
+        <location filename="src/Gui/Preferences/PreferenceDialog/GUI_PreferenceDialog.ui" line="+133"/>
         <source>Preferences</source>
         <translation>Preferencias</translation>
     </message>
@@ -959,7 +959,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_Proxy</name>
     <message>
-        <location filename="src/GUI/Preferences/Proxy/GUI_Proxy.ui" line="+30"/>
+        <location filename="src/Gui/Preferences/Proxy/GUI_Proxy.ui" line="+30"/>
         <source>Password</source>
         <translation>Contraseña</translation>
     </message>
@@ -989,7 +989,7 @@ Biblioteca</translation>
         <translation>Servidor</translation>
     </message>
     <message>
-        <location filename="src/GUI/Preferences/Proxy/GUI_Proxy.cpp" line="+57"/>
+        <location filename="src/Gui/Preferences/Proxy/GUI_Proxy.cpp" line="+57"/>
         <source>Proxy</source>
         <translation>Proxy</translation>
     </message>
@@ -997,7 +997,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_RemoteControl</name>
     <message>
-        <location filename="src/GUI/Preferences/RemoteControl/GUI_RemoteControl.ui" line="+37"/>
+        <location filename="src/Gui/Preferences/RemoteControl/GUI_RemoteControl.ui" line="+37"/>
         <source>Port</source>
         <translation>Puerto</translation>
     </message>
@@ -1007,7 +1007,7 @@ Biblioteca</translation>
         <translation>Url para control remoto</translation>
     </message>
     <message>
-        <location filename="src/GUI/Preferences/RemoteControl/GUI_RemoteControl.cpp" line="+80"/>
+        <location filename="src/Gui/Preferences/RemoteControl/GUI_RemoteControl.cpp" line="+80"/>
         <source>Remote control</source>
         <translation>Control remoto</translation>
     </message>
@@ -1015,7 +1015,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_SearchPreferences</name>
     <message>
-        <location filename="src/GUI/Preferences/Search/GUI_SearchPreferences.ui" line="+23"/>
+        <location filename="src/Gui/Preferences/Search/GUI_SearchPreferences.ui" line="+23"/>
         <source>Example</source>
         <translation>Ejemplo</translation>
     </message>
@@ -1043,13 +1043,13 @@ Biblioteca</translation>
 <context>
     <name>GUI_Shortcuts</name>
     <message>
-        <location filename="src/GUI/Preferences/Shortcuts/GUI_Shortcuts.ui" line="+41"/>
-        <location filename="src/GUI/Preferences/Shortcuts/GUI_Shortcuts.cpp" line="+150"/>
+        <location filename="src/Gui/Preferences/Shortcuts/GUI_Shortcuts.ui" line="+41"/>
+        <location filename="src/Gui/Preferences/Shortcuts/GUI_Shortcuts.cpp" line="+150"/>
         <source>Press shortcut</source>
         <translation>Teclée atajo</translation>
     </message>
     <message>
-        <location filename="src/GUI/Preferences/Shortcuts/GUI_Shortcuts.cpp" line="-48"/>
+        <location filename="src/Gui/Preferences/Shortcuts/GUI_Shortcuts.cpp" line="-48"/>
         <source>Shortcuts</source>
         <translation>Atajos</translation>
     </message>
@@ -1062,7 +1062,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_StreamRecorder</name>
     <message>
-        <location filename="src/GUI/Preferences/StreamRecorder/GUI_StreamRecorder.ui" line="+27"/>
+        <location filename="src/Gui/Preferences/StreamRecorder/GUI_StreamRecorder.ui" line="+27"/>
         <source>General</source>
         <translation>General</translation>
     </message>
@@ -1103,7 +1103,7 @@ Biblioteca</translation>
         <translation>Ejemplo</translation>
     </message>
     <message>
-        <location filename="src/GUI/Preferences/StreamRecorder/GUI_StreamRecorder.cpp" line="+157"/>
+        <location filename="src/Gui/Preferences/StreamRecorder/GUI_StreamRecorder.cpp" line="+157"/>
         <source>Choose target directory</source>
         <translation>Elegir directorio (la carpeta de sesión irá a él)</translation>
     </message>
@@ -1137,7 +1137,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_StreamPreferences</name>
     <message>
-        <location filename="src/GUI/Preferences/Streams/GUI_StreamPreferences.ui" line="+17"/>
+        <location filename="src/Gui/Preferences/Streams/GUI_StreamPreferences.ui" line="+17"/>
         <source> ms</source>
         <translation type="unfinished"/>
     </message>
@@ -1160,7 +1160,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_FontConfig</name>
     <message>
-        <location filename="src/GUI/Preferences/UiPreferences/GUI_FontConfig.ui" line="+17"/>
+        <location filename="src/Gui/Preferences/UiPreferences/GUI_FontConfig.ui" line="+17"/>
         <source>Bold</source>
         <translation>Negrita</translation>
     </message>
@@ -1177,7 +1177,7 @@ Biblioteca</translation>
         <translation>Nombre de la fuente</translation>
     </message>
     <message>
-        <location filename="src/GUI/Preferences/UiPreferences/GUI_FontConfig.cpp" line="+131"/>
+        <location filename="src/Gui/Preferences/UiPreferences/GUI_FontConfig.cpp" line="+131"/>
         <location line="+1"/>
         <source>Inherit</source>
         <translation>La del programa</translation>
@@ -1186,12 +1186,12 @@ Biblioteca</translation>
 <context>
     <name>GUI_IconPreferences</name>
     <message>
-        <location filename="src/GUI/Preferences/UiPreferences/GUI_IconPreferences.ui" line="+38"/>
+        <location filename="src/Gui/Preferences/UiPreferences/GUI_IconPreferences.ui" line="+38"/>
         <source>Also use selected icon theme in Sayonara&apos;s dark mode</source>
         <translation>También usar el tema de íconos seleccionada en el modo Oscuro de Sayonara.</translation>
     </message>
     <message>
-        <location filename="src/GUI/Preferences/UiPreferences/GUI_IconPreferences.cpp" line="+137"/>
+        <location filename="src/Gui/Preferences/UiPreferences/GUI_IconPreferences.cpp" line="+137"/>
         <source>Icons</source>
         <translation>Iconos</translation>
     </message>
@@ -1199,7 +1199,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_Shutdown</name>
     <message>
-        <location filename="src/GUI/ShutdownDialog/GUI_Shutdown.ui" line="+14"/>
+        <location filename="src/Gui/ShutdownDialog/GUI_Shutdown.ui" line="+14"/>
         <location line="+92"/>
         <source>Shutdown</source>
         <translation>Apagar</translation>
@@ -1233,7 +1233,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_TagEdit</name>
     <message>
-        <location filename="src/GUI/TagEdit/GUI_TagEdit.ui" line="+135"/>
+        <location filename="src/Gui/TagEdit/GUI_TagEdit.ui" line="+135"/>
         <source>Discnumber</source>
         <translation>Disco número</translation>
     </message>
@@ -1273,7 +1273,7 @@ Biblioteca</translation>
         <translation>Deshacer todo</translation>
     </message>
     <message>
-        <location filename="src/GUI/TagEdit/GUI_TagEdit.cpp" line="+133"/>
+        <location filename="src/Gui/TagEdit/GUI_TagEdit.cpp" line="+133"/>
         <source>Load complete album</source>
         <translation>Cargar álbum completo</translation>
     </message>
@@ -1301,7 +1301,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_TagFromPath</name>
     <message>
-        <location filename="src/GUI/TagEdit/GUI_TagFromPath.ui" line="+17"/>
+        <location filename="src/Gui/TagEdit/GUI_TagFromPath.ui" line="+17"/>
         <source>Expression</source>
         <translation>Expresión</translation>
     </message>
@@ -1316,7 +1316,7 @@ Biblioteca</translation>
         <translation>Aplicar a todas</translation>
     </message>
     <message>
-        <location filename="src/GUI/TagEdit/TagFromPath.cpp" line="+96"/>
+        <location filename="src/Gui/TagEdit/TagFromPath.cpp" line="+96"/>
         <source>Tag</source>
         <translation>Etiqueta</translation>
     </message>
@@ -1500,7 +1500,7 @@ Biblioteca</translation>
 <context>
     <name>CoverButton</name>
     <message>
-        <location filename="src/GUI/Covers/CoverButton.cpp" line="+202"/>
+        <location filename="src/Gui/Covers/CoverButton.cpp" line="+202"/>
         <source>Cover source: Audio file</source>
         <translation>Fuente de la portada: archivo de audio</translation>
     </message>
@@ -1513,7 +1513,7 @@ Biblioteca</translation>
 <context>
     <name>DirectoryContextMenu</name>
     <message>
-        <location filename="src/GUI/Directories/DirectoryContextMenu.cpp" line="+133"/>
+        <location filename="src/Gui/Directories/DirectoryContextMenu.cpp" line="+133"/>
         <source>Create directory</source>
         <translation>Crear un directorio</translation>
     </message>
@@ -1526,7 +1526,7 @@ Biblioteca</translation>
 <context>
     <name>DirectoryTreeView</name>
     <message>
-        <location filename="src/GUI/Directories/DirectoryTreeView.cpp" line="+322"/>
+        <location filename="src/Gui/Directories/DirectoryTreeView.cpp" line="+322"/>
         <location line="+27"/>
         <source>Enter new name</source>
         <translation>Nuevo nombre</translation>
@@ -1545,7 +1545,7 @@ Biblioteca</translation>
 <context>
     <name>FileListView</name>
     <message>
-        <location filename="src/GUI/Directories/FileListView.cpp" line="+340"/>
+        <location filename="src/Gui/Directories/FileListView.cpp" line="+340"/>
         <source>Enter new name</source>
         <translation>Ingresar un nuevo nombre</translation>
     </message>
@@ -1553,7 +1553,7 @@ Biblioteca</translation>
 <context>
     <name>CoverViewContextMenu</name>
     <message>
-        <location filename="src/GUI/Library/CoverViewContextMenu.cpp" line="+216"/>
+        <location filename="src/Gui/Library/CoverViewContextMenu.cpp" line="+216"/>
         <source>Toolbar</source>
         <translation>Barra de herramientas</translation>
     </message>
@@ -1561,7 +1561,7 @@ Biblioteca</translation>
 <context>
     <name>EmptyLibraryContainer</name>
     <message>
-        <location filename="src/GUI/Library/EmptyLibraryContainer.cpp" line="+53"/>
+        <location filename="src/Gui/Library/EmptyLibraryContainer.cpp" line="+53"/>
         <source>Empty Library</source>
         <translation>Biblioteca vacía</translation>
     </message>
@@ -1569,7 +1569,7 @@ Biblioteca</translation>
 <context>
     <name>Library::GenreView</name>
     <message>
-        <location filename="src/GUI/Library/GenreView.cpp" line="+120"/>
+        <location filename="src/Gui/Library/GenreView.cpp" line="+120"/>
         <source>Updating genres</source>
         <translation>Actualizando géneros</translation>
     </message>
@@ -1587,7 +1587,7 @@ Biblioteca</translation>
 <context>
     <name>Library::GUI_CoverView</name>
     <message>
-        <location filename="src/GUI/Library/GUI_CoverView.cpp" line="+205"/>
+        <location filename="src/Gui/Library/GUI_CoverView.cpp" line="+205"/>
         <source>Use Ctrl + mouse wheel to zoom</source>
         <translation>Ampliación: Ctrl+Rueda</translation>
     </message>
@@ -1595,7 +1595,7 @@ Biblioteca</translation>
 <context>
     <name>Library::GUI_EmptyLibrary</name>
     <message>
-        <location filename="src/GUI/Library/GUI_EmptyLibrary.cpp" line="+94"/>
+        <location filename="src/Gui/Library/GUI_EmptyLibrary.cpp" line="+94"/>
         <source>Do you want to reload the Library?</source>
         <translation>¿Quiere recargar la Biblioteca?</translation>
     </message>
@@ -1603,7 +1603,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_ReloadLibraryDialog</name>
     <message>
-        <location filename="src/GUI/Library/GUI_ReloadLibraryDialog.cpp" line="+79"/>
+        <location filename="src/Gui/Library/GUI_ReloadLibraryDialog.cpp" line="+79"/>
         <source>Fast scan</source>
         <translation>Búsqueda rápida</translation>
     </message>
@@ -1626,7 +1626,7 @@ Biblioteca</translation>
 <context>
     <name>Library::HeaderView</name>
     <message>
-        <location filename="src/GUI/Library/HeaderView.cpp" line="+61"/>
+        <location filename="src/Gui/Library/HeaderView.cpp" line="+61"/>
         <source>Resize columns</source>
         <translation type="unfinished"/>
     </message>
@@ -1634,7 +1634,7 @@ Biblioteca</translation>
 <context>
     <name>Library::ItemView</name>
     <message>
-        <location filename="src/GUI/Library/ItemView.cpp" line="+237"/>
+        <location filename="src/Gui/Library/ItemView.cpp" line="+237"/>
         <source>Merge</source>
         <translation>Fusionar</translation>
     </message>
@@ -1647,7 +1647,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_ControlsBase</name>
     <message>
-        <location filename="src/GUI/Player/GUI_ControlsBase.cpp" line="+58"/>
+        <location filename="src/Gui/Player/GUI_ControlsBase.cpp" line="+58"/>
         <source>Sayonara Player</source>
         <translation>Reproductor Sayonara</translation>
     </message>
@@ -1665,7 +1665,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_Logger</name>
     <message>
-        <location filename="src/GUI/Player/GUI_Logger.cpp" line="+272"/>
+        <location filename="src/Gui/Player/GUI_Logger.cpp" line="+272"/>
         <source>Cannot open file</source>
         <translation>No se puede abrir el archivo</translation>
     </message>
@@ -1673,7 +1673,7 @@ Biblioteca</translation>
 <context>
     <name>Menubar</name>
     <message>
-        <location filename="src/GUI/Player/GUI_PlayerMenubar.cpp" line="+261"/>
+        <location filename="src/Gui/Player/GUI_PlayerMenubar.cpp" line="+261"/>
         <source>View</source>
         <translation>Ver</translation>
     </message>
@@ -1742,7 +1742,7 @@ Biblioteca</translation>
 <context>
     <name>TrayIconContextMenu</name>
     <message>
-        <location filename="src/GUI/Player/GUI_TrayIcon.cpp" line="+182"/>
+        <location filename="src/Gui/Player/GUI_TrayIcon.cpp" line="+182"/>
         <source>Current song</source>
         <translation>Canción actual</translation>
     </message>
@@ -1750,7 +1750,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_PlaylistBottomBar</name>
     <message>
-        <location filename="src/GUI/Playlist/BottomBar.cpp" line="+250"/>
+        <location filename="src/Gui/Playlist/BottomBar.cpp" line="+250"/>
         <source>Please set library path first</source>
         <translation>Seleccione primero la ruta de la biblioteca</translation>
     </message>
@@ -1763,7 +1763,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_Playlist</name>
     <message>
-        <location filename="src/GUI/Playlist/GUI_Playlist.cpp" line="+228"/>
+        <location filename="src/Gui/Playlist/GUI_Playlist.cpp" line="+228"/>
         <source>Playlist empty</source>
         <translation>Lista vacía</translation>
     </message>
@@ -1806,7 +1806,7 @@ Biblioteca</translation>
 <context>
     <name>PlaylistItemModel</name>
     <message>
-        <location filename="src/GUI/Playlist/Model.cpp" line="+393"/>
+        <location filename="src/Gui/Playlist/Model.cpp" line="+393"/>
         <source>Goto row</source>
         <translation>Ir a la fila</translation>
     </message>
@@ -1814,7 +1814,7 @@ Biblioteca</translation>
 <context>
     <name>PlaylistContextMenu</name>
     <message>
-        <location filename="src/GUI/Playlist/PlaylistContextMenu.cpp" line="+140"/>
+        <location filename="src/Gui/Playlist/PlaylistContextMenu.cpp" line="+140"/>
         <source>Jump to current track</source>
         <translation>Saltar a la pista actual.</translation>
     </message>
@@ -1822,7 +1822,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_Crossfader</name>
     <message>
-        <location filename="src/GUI/Plugins/Engine/Crossfader/GUI_Crossfader.cpp" line="+74"/>
+        <location filename="src/Gui/Plugins/Engine/Crossfader/GUI_Crossfader.cpp" line="+74"/>
         <location line="+11"/>
         <source>Crossfader</source>
         <translation>Solapamiento</translation>
@@ -1831,7 +1831,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_Equalizer</name>
     <message>
-        <location filename="src/GUI/Plugins/Engine/Equalizer/GUI_Equalizer.cpp" line="+160"/>
+        <location filename="src/Gui/Plugins/Engine/Equalizer/GUI_Equalizer.cpp" line="+160"/>
         <source>Equalizer</source>
         <translation>Ecualizador</translation>
     </message>
@@ -1839,7 +1839,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_LevelPainter</name>
     <message>
-        <location filename="src/GUI/Plugins/Engine/GUI_LevelPainter.cpp" line="+156"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_LevelPainter.cpp" line="+156"/>
         <source>Level</source>
         <translation>Nivel</translation>
     </message>
@@ -1847,7 +1847,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_Spectrum</name>
     <message>
-        <location filename="src/GUI/Plugins/Engine/GUI_Spectrum.cpp" line="+149"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_Spectrum.cpp" line="+149"/>
         <source>Spectrum</source>
         <translation>Espectro</translation>
     </message>
@@ -1855,7 +1855,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_StyleSettings</name>
     <message>
-        <location filename="src/GUI/Plugins/Engine/GUI_StyleSettings.cpp" line="+189"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_StyleSettings.cpp" line="+189"/>
         <source>There are some unsaved settings&lt;br /&gt;Save now?</source>
         <translation>Hay opciones sin guardar.&lt;br /&gt;¿Guardar ahora?</translation>
     </message>
@@ -1873,7 +1873,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_PlaylistChooser</name>
     <message>
-        <location filename="src/GUI/Plugins/PlaylistChooser/GUI_PlaylistChooser.cpp" line="+94"/>
+        <location filename="src/Gui/Plugins/PlaylistChooser/GUI_PlaylistChooser.cpp" line="+94"/>
         <location line="+37"/>
         <source>No playlists found</source>
         <translation>0 listas halladas</translation>
@@ -1882,7 +1882,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_AbstractStream</name>
     <message>
-        <location filename="src/GUI/Plugins/Stream/GUI_AbstractStream.cpp" line="+227"/>
+        <location filename="src/Gui/Plugins/Stream/GUI_AbstractStream.cpp" line="+227"/>
         <source>Cannot open stream</source>
         <translation>No se puede abrir la fuente</translation>
     </message>
@@ -1900,7 +1900,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_Podcasts</name>
     <message>
-        <location filename="src/GUI/Plugins/Stream/GUI_Podcasts.cpp" line="+62"/>
+        <location filename="src/Gui/Plugins/Stream/GUI_Podcasts.cpp" line="+62"/>
         <source>Podcast</source>
         <translation>Podcast</translation>
     </message>
@@ -1908,7 +1908,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_Stream</name>
     <message>
-        <location filename="src/GUI/Plugins/Stream/GUI_Stream.cpp" line="+67"/>
+        <location filename="src/Gui/Plugins/Stream/GUI_Stream.cpp" line="+67"/>
         <source>Search radio station</source>
         <translation type="unfinished"/>
     </message>
@@ -1916,7 +1916,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_EnginePreferences</name>
     <message>
-        <location filename="src/GUI/Preferences/Engine/GUI_EnginePreferences.cpp" line="+44"/>
+        <location filename="src/Gui/Preferences/Engine/GUI_EnginePreferences.cpp" line="+44"/>
         <source>Audio</source>
         <translation>Audio</translation>
     </message>
@@ -1924,7 +1924,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_ShortcutEntry</name>
     <message>
-        <location filename="src/GUI/Preferences/Shortcuts/GUI_ShortcutEntry.cpp" line="+55"/>
+        <location filename="src/Gui/Preferences/Shortcuts/GUI_ShortcutEntry.cpp" line="+55"/>
         <source>Enter shortcut</source>
         <translation>Teclée el atajo</translation>
     </message>
@@ -1942,7 +1942,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_UiPreferences</name>
     <message>
-        <location filename="src/GUI/Preferences/UiPreferences/GUI_UiPreferences.cpp" line="+50"/>
+        <location filename="src/Gui/Preferences/UiPreferences/GUI_UiPreferences.cpp" line="+50"/>
         <source>User Interface</source>
         <translation>Interfaz de usuario</translation>
     </message>
@@ -1960,7 +1960,7 @@ Biblioteca</translation>
 <context>
     <name>TagTextInput</name>
     <message>
-        <location filename="src/GUI/TagEdit/TagTextInput.cpp" line="+78"/>
+        <location filename="src/Gui/TagEdit/TagTextInput.cpp" line="+78"/>
         <source>Very first letter to upper case</source>
         <translation>Sólo la primera letra en mayúscula</translation>
     </message>
@@ -1973,7 +1973,7 @@ Biblioteca</translation>
 <context>
     <name>LibraryContextMenu</name>
     <message>
-        <location filename="src/GUI/Utils/ContextMenu/LibraryContextMenu.cpp" line="+168"/>
+        <location filename="src/Gui/Utils/ContextMenu/LibraryContextMenu.cpp" line="+168"/>
         <source>Play in new tab</source>
         <translation>Reproducir en una nueva pestaña</translation>
     </message>
@@ -2001,7 +2001,7 @@ Biblioteca</translation>
 <context>
     <name>ImageSelectionDialog</name>
     <message>
-        <location filename="src/GUI/Utils/ImageSelectionDialog.cpp" line="+55"/>
+        <location filename="src/Gui/Utils/ImageSelectionDialog.cpp" line="+55"/>
         <source>Image files</source>
         <translation type="unfinished"/>
     </message>
@@ -2019,7 +2019,7 @@ Biblioteca</translation>
 <context>
     <name>GUI_DeleteDialog</name>
     <message>
-        <location filename="src/GUI/Utils/Library/GUI_DeleteDialog.cpp" line="+87"/>
+        <location filename="src/Gui/Utils/Library/GUI_DeleteDialog.cpp" line="+87"/>
         <source>Only from library</source>
         <translation>Sólo de la Biblioteca</translation>
     </message>
@@ -2032,7 +2032,7 @@ Biblioteca</translation>
 <context>
     <name>StreamRecorderPreferenceAction</name>
     <message>
-        <location filename="src/GUI/Utils/PreferenceAction.cpp" line="+161"/>
+        <location filename="src/Gui/Utils/PreferenceAction.cpp" line="+161"/>
         <location line="+7"/>
         <source>Stream Recorder</source>
         <translation>Grabador de emisión</translation>
@@ -2041,7 +2041,7 @@ Biblioteca</translation>
 <context>
     <name>MiniSearcher</name>
     <message>
-        <location filename="src/GUI/Utils/SearchableWidget/MiniSearcher.cpp" line="+89"/>
+        <location filename="src/Gui/Utils/SearchableWidget/MiniSearcher.cpp" line="+89"/>
         <source>Arrow up</source>
         <translation>Flecha envío</translation>
     </message>

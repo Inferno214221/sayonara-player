@@ -24,7 +24,7 @@
 #define GUI_SOMAFM_H
 
 #include "Utils/Pimpl.h"
-#include "GUI/Utils/Widgets/Widget.h"
+#include "Gui/Utils/Widgets/Widget.h"
 
 #include <QItemSelection>
 

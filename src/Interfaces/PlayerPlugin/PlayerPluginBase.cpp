@@ -19,8 +19,8 @@
  */
 
 #include "PlayerPluginBase.h"
-#include "GUI/Utils/Shortcuts/Shortcut.h"
-#include "GUI/Utils/Shortcuts/ShortcutHandler.h"
+#include "Gui/Utils/Shortcuts/Shortcut.h"
+#include "Gui/Utils/Shortcuts/ShortcutHandler.h"
 #include "Utils/Settings/Settings.h"
 
 #include <QAction>

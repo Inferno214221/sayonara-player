@@ -21,7 +21,7 @@
 #include "Database/Query.h"
 #include "Database/VisualStyles.h"
 
-#include "GUI/Plugins/Engine/VisualStyleTypes.h"
+#include "Gui/Plugins/Engine/VisualStyleTypes.h"
 #include "Utils/Utils.h"
 
 #include <QColor>

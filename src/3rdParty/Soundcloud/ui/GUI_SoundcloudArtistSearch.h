@@ -22,7 +22,7 @@
 #define GUI_SOUNDCLOUDARTISTSEARCH_H
 
 #include "Utils/Pimpl.h"
-#include "GUI/Utils/Widgets/Dialog.h"
+#include "Gui/Utils/Widgets/Dialog.h"
 
 class ArtistList;
 class MetaDataList;

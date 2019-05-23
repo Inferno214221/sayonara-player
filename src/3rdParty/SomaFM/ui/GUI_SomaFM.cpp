@@ -30,9 +30,9 @@
 #include "Utils/Utils.h"
 #include "Utils/Logger/Logger.h"
 
-#include "GUI/Utils/Style.h"
-#include "GUI/Utils/Delegates/StyledItemDelegate.h"
-#include "GUI/Utils/Widgets/ProgressBar.h"
+#include "Gui/Utils/Style.h"
+#include "Gui/Utils/Delegates/StyledItemDelegate.h"
+#include "Gui/Utils/Widgets/ProgressBar.h"
 
 #include "Components/Covers/CoverLocation.h"
 #include "Components/Covers/CoverLookup.h"

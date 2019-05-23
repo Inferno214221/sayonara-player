@@ -21,8 +21,8 @@
 #ifndef PLAYERPLUGIN_H
 #define PLAYERPLUGIN_H
 
-#include "GUI/Utils/Widgets/Widget.h"
-#include "GUI/Utils/Shortcuts/ShortcutWidget.h"
+#include "Gui/Utils/Widgets/Widget.h"
+#include "Gui/Utils/Shortcuts/ShortcutWidget.h"
 #include "Utils/Pimpl.h"
 
 class QAction;

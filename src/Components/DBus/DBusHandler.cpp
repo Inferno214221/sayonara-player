@@ -24,7 +24,7 @@
 #include "Components/DBus/DBusMediaKeysInterfaceGnome.h"
 #include "Components/DBus/DBusNotifications.h"
 
-#include "GUI/Utils/Widgets/Widget.h"
+#include "Gui/Utils/Widgets/Widget.h"
 #include "Utils/Logger/Logger.h"
 
 #include <QMainWindow>

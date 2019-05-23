@@ -19,11 +19,10 @@
  */
 
 
-
 #ifndef SOMAFMSTATIONVIEW_H
 #define SOMAFMSTATIONVIEW_H
 
-#include "GUI/Utils/SearchableWidget/SearchableView.h"
+#include "Gui/Utils/SearchableWidget/SearchableView.h"
 
 class SomaFMStationView :
 	public SearchableTableView

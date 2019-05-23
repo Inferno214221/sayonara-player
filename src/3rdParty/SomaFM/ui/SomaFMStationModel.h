@@ -24,7 +24,7 @@
 #ifndef SomaFMStationModel_H
 #define SomaFMStationModel_H
 
-#include "GUI/Utils/SearchableWidget/SearchableModel.h"
+#include "Gui/Utils/SearchableWidget/SearchableModel.h"
 #include "Utils/Pimpl.h"
 
 #include <QMimeData>

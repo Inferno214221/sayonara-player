@@ -346,7 +346,7 @@
   <customwidget>
    <class>Library::SearchBar</class>
    <extends>QLineEdit</extends>
-   <header>GUI/Library/Utils/LibrarySearchBar.h</header>
+   <header>Gui/Library/Utils/LibrarySearchBar.h</header>
   </customwidget>
   <customwidget>
    <class>SC::AlbumView</class>

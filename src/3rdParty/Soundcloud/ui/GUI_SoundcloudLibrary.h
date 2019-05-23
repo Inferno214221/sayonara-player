@@ -21,7 +21,7 @@
 #ifndef GUI_SOUNDCLOUDLIBRARY_H
 #define GUI_SOUNDCLOUDLIBRARY_H
 
-#include "GUI/Library/GUI_AbstractLibrary.h"
+#include "Gui/Library/GUI_AbstractLibrary.h"
 #include "Utils/Pimpl.h"
 
 #include "3rdParty/Soundcloud/ui/GUI_SoundcloudArtistSearch.h"

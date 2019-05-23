@@ -26,8 +26,8 @@
 
 #include "Utils/globals.h"
 
-#include "GUI/Utils/MimeDataUtils.h"
-#include "GUI/Utils/CustomMimeData.h"
+#include "Gui/Utils/MimeDataUtils.h"
+#include "Gui/Utils/CustomMimeData.h"
 
 #include <QUrl>
 

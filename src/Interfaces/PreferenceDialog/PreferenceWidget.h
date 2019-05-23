@@ -21,8 +21,8 @@
 #ifndef PREFERENCEWIDGETINTERFACE_H
 #define PREFERENCEWIDGETINTERFACE_H
 
-#include "GUI/Utils/GuiClass.h"
-#include "GUI/Utils/Widgets/Widget.h"
+#include "Gui/Utils/GuiClass.h"
+#include "Gui/Utils/Widgets/Widget.h"
 #include "Utils/Pimpl.h"
 
 namespace Preferences

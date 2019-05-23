@@ -30,10 +30,10 @@
 #include "Utils/Logger/Logger.h"
 #include "Utils/Language.h"
 
-#include "GUI/Utils/GuiUtils.h"
-#include "GUI/Utils/MimeDataUtils.h"
-#include "GUI/Utils/CustomMimeData.h"
-#include "GUI/Utils/Icons.h"
+#include "Gui/Utils/GuiUtils.h"
+#include "Gui/Utils/MimeDataUtils.h"
+#include "Gui/Utils/CustomMimeData.h"
+#include "Gui/Utils/Icons.h"
 
 #include <QUrl>
 #include <QIcon>

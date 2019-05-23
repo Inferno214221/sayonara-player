@@ -22,7 +22,7 @@
 #define LIBRARYPLUGINCOMBOBOX_H
 
 #include "Utils/Pimpl.h"
-#include "GUI/Utils/Widgets/ComboBox.h"
+#include "Gui/Utils/Widgets/ComboBox.h"
 
 class QEvent;
 
