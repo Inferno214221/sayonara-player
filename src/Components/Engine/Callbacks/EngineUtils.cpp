@@ -411,7 +411,7 @@ void Utils::config_queue(GstElement* queue, gulong max_time_ms)
 		"flush-on-eos", true,
 		"silent", true);
 
-	set_uint64_value(queue,  "max-size-time", max_time_ms);
+	set_uint64_value(queue,  "max-size-time", max_time_ms * GST_MSECOND);
 }
 
 void Utils::config_sink(GstElement* sink)
