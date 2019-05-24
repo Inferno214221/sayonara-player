@@ -1,4 +1,4 @@
-#include "Components/Engine/StreamRecorder.h"
+#include "Components/Engine/StreamRecorder/StreamRecorder.h"
 
 #include "Utils/Settings/Settings.h"
 #include "Utils/Settings/SettingRegistry.h"

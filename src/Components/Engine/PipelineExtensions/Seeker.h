@@ -29,13 +29,13 @@
 
 namespace PipelineExtensions
 {
-	class SeekHandler
+	class Seeker
 	{
-		PIMPL(SeekHandler)
+		PIMPL(Seeker)
 
 		public:
-			SeekHandler(GstElement* source);
-			virtual ~SeekHandler();
+			Seeker(GstElement* source);
+			virtual ~Seeker();
 
 			NanoSeconds seek_rel(double percent, NanoSeconds ref_ns);
 			NanoSeconds seek_abs(NanoSeconds ns);

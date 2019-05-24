@@ -19,7 +19,7 @@
  */
 
 #include "PipelineProbes.h"
-#include "StreamRecorderData.h"
+#include "../StreamRecorder/StreamRecorderData.h"
 #include "EngineUtils.h"
 
 #include "Utils/Logger/Logger.h"

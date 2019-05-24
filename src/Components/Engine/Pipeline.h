@@ -21,9 +21,9 @@
 #ifndef GSTPLAYBACKPIPELINE_H_
 #define GSTPLAYBACKPIPELINE_H_
 
-#include "Changeable.h"
-#include "Crossfadeable.h"
-#include "DelayedPlayable.h"
+#include "PipelineExtensions/Changeable.h"
+#include "PipelineExtensions/Crossfadeable.h"
+#include "PipelineExtensions/DelayedPlayable.h"
 #include "Utils/Pimpl.h"
 
 #include <QObject>
@@ -49,10 +49,10 @@ class Pipeline :
 		void sig_data(Byte* data, uint64_t size);
 
 	public:
-		explicit Pipeline(Engine* engine, const QString& name, QObject *parent=nullptr);
+		explicit Pipeline(const QString& name, QObject *parent=nullptr);
 		virtual ~Pipeline();
 
-		bool init(GstState state=GST_STATE_NULL);
+		bool init(Engine* engine, GstState state=GST_STATE_NULL);
 		bool set_uri(gchar* uri);
 
 		void set_data(Byte* data, uint64_t size);

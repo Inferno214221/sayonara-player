@@ -20,8 +20,9 @@
 
 #include "Engine.h"
 #include "Pipeline.h"
-#include "StreamRecorder.h"
 #include "EngineUtils.h"
+
+#include "StreamRecorder/StreamRecorder.h"
 #include "Callbacks/EngineCallbacks.h"
 
 #include "Utils/MetaData/MetaData.h"
@@ -123,10 +124,10 @@ bool Engine::init_pipeline(Pipeline** pipeline, const QString& name)
 		return true;
 	}
 
-	*pipeline = new Pipeline(this, name);
+	*pipeline = new Pipeline(name);
 	Pipeline* p = *pipeline;
 
-	if(!p->init()){
+	if(!p->init(this)){
 		m->change_gapless_state(GaplessState::NoGapless);
 		return false;
 	}

@@ -19,16 +19,17 @@
  */
 
 #include "Pipeline.h"
-#include "PipelineProbes.h"
 #include "Engine.h"
-
-#include "StreamRecorderHandler.h"
-#include "Pitcher.h"
-#include "Equalizer.h"
-#include "Seeker.h"
-#include "Broadcaster.h"
-#include "Visualizer.h"
 #include "EngineUtils.h"
+
+#include "PipelineExtensions/PipelineProbes.h"
+#include "PipelineExtensions/Pitcher.h"
+#include "PipelineExtensions/Equalizer.h"
+#include "PipelineExtensions/Seeker.h"
+#include "PipelineExtensions/Broadcaster.h"
+#include "PipelineExtensions/Visualizer.h"
+
+#include "StreamRecorder/StreamRecorderHandler.h"
 
 #include "Callbacks/EngineCallbacks.h"
 #include "Callbacks/PipelineCallbacks.h"
@@ -52,8 +53,6 @@ using namespace PipelineExtensions;
 struct Pipeline::Private
 {
 	QString				name;
-	Engine*				engine=nullptr;
-	GstBus*				bus=nullptr;
 
 	GstElement*			pipeline=nullptr;
 	GstElement*			source=nullptr;
@@ -65,8 +64,8 @@ struct Pipeline::Private
 	GstElement*			pb_volume=nullptr;
 	GstElement*			pb_sink=nullptr;
 
-	Pitcher*		speed_handler=nullptr;
-	SeekHandler*		seeker=nullptr;
+	Pitcher*			pitcher=nullptr;
+	Seeker*				seeker=nullptr;
 	StreamRecorderHandler* stream_recorder=nullptr;
 	Broadcaster*		broadcaster=nullptr;
 	Visualizer*			visualizer=nullptr;
@@ -78,32 +77,29 @@ struct Pipeline::Private
 	MilliSeconds		position_source_ms;
 	MilliSeconds		position_pipeline_ms;
 	bool				about_to_finish;
-	bool				initialized;
 
 	Private(const QString& name) :
 		name(name),
 		duration_ms(0),
 		position_source_ms(0),
 		position_pipeline_ms(0),
-		about_to_finish(false),
-		initialized(false)
+		about_to_finish(false)
 	{}
 };
 
 
-Pipeline::Pipeline(Engine* engine, const QString& name, QObject *parent) :
+Pipeline::Pipeline(const QString& name, QObject *parent) :
 	QObject(parent),
 	CrossFadeable(),
 	Changeable(),
 	DelayedPlayable()
 {
 	m = Pimpl::make<Private>(name);
-	m->engine = engine;
 }
 
 Pipeline::~Pipeline()
 {
-	if (m->pipeline)
+	if(m->pipeline)
 	{
 		EngineUtils::set_state(m->pipeline, GST_STATE_NULL);
 		gst_object_unref (GST_OBJECT(m->pipeline));
@@ -111,10 +107,9 @@ Pipeline::~Pipeline()
 	}
 }
 
-bool Pipeline::init(GstState state)
+bool Pipeline::init(Engine* engine, GstState state)
 {
-	bool success = false;
-	if(m->initialized) {
+	if(m->pipeline) {
 		return true;
 	}
 
@@ -124,9 +119,9 @@ bool Pipeline::init(GstState state)
 		return false;
 	}
 
-	m->bus = gst_pipeline_get_bus(GST_PIPELINE(m->pipeline));
+	GstBus* bus = gst_pipeline_get_bus(GST_PIPELINE(m->pipeline));
 
-	success = create_elements();
+	bool success = create_elements();
 	if(!success) {
 		return false;
 	}
@@ -137,13 +132,12 @@ bool Pipeline::init(GstState state)
 	}
 
 	configure_elements();
-
 	EngineUtils::set_state(m->pipeline, state);
 
 #ifdef Q_OS_WIN
-	gst_bus_set_sync_handler(m->bus, EngineCallbacks::bus_message_received, m->engine, EngineCallbacks::destroy_notify);
+	gst_bus_set_sync_handler(bus, EngineCallbacks::bus_message_received, engine, EngineCallbacks::destroy_notify);
 #else
-	gst_bus_add_watch(m->bus, EngineCallbacks::bus_state_changed, m->engine);
+	gst_bus_add_watch(bus, EngineCallbacks::bus_state_changed, engine);
 #endif
 
 	m->progress_timer = new QTimer(this);
@@ -172,8 +166,6 @@ bool Pipeline::init(GstState state)
 	ListenSettingNoCall(Set::Engine_PreservePitch, Pipeline::s_speed_changed);
 	ListenSetting(Set::Engine_SpeedActive, Pipeline::s_speed_active_changed);
 
-	m->initialized = true;
-
 	return true;
 }
 
@@ -188,9 +180,9 @@ bool Pipeline::create_elements()
 
 	m->pb_sink = create_sink(GetSetting(Set::Engine_Sink));
 
-	m->seeker = new SeekHandler(m->source);
+	m->seeker = new Seeker(m->source);
 	m->equalizer = new Equalizer();
-	m->speed_handler = new Pitcher();
+	m->pitcher = new Pitcher();
 	m->visualizer = new Visualizer(m->pipeline, m->tee);
 	m->broadcaster = new Broadcaster(m->pipeline, m->tee);
 
@@ -340,10 +332,8 @@ void Pipeline::stop()
 
 void Pipeline::s_vol_changed()
 {
-	int vol = GetSetting(Set::Engine_Vol);
-
-	float vol_val = ((vol * 1.0f) / 100.0f);
-	EngineUtils::set_value(G_OBJECT(m->pb_volume), "volume", vol_val);
+	float vol = GetSetting(Set::Engine_Vol) / 100.0;
+	EngineUtils::set_value(G_OBJECT(m->pb_volume), "volume", vol);
 }
 
 void Pipeline::s_mute_changed()
@@ -382,11 +372,8 @@ MilliSeconds Pipeline::get_time_to_go() const
 {
 	GstElement* element = m->pipeline;
 	MilliSeconds ms = EngineUtils::get_time_to_go(element);
-	if(ms < 100){
-		return 0;
-	}
 
-	return ms - 100;
+	return std::max<MilliSeconds>(ms - 100, 0);
 }
 
 
@@ -441,7 +428,7 @@ void Pipeline::s_speed_active_changed()
 {
 	bool active = GetSetting(Set::Engine_SpeedActive);
 
-	GstElement* speed = m->speed_handler->element();
+	GstElement* speed = m->pitcher->element();
 	if(!speed){
 		return;
 	}
@@ -465,7 +452,7 @@ void Pipeline::s_speed_active_changed()
 
 void Pipeline::s_speed_changed()
 {
-	m->speed_handler->set_speed
+	m->pitcher->set_speed
 	(
 		GetSetting(Set::Engine_Speed),
 		GetSetting(Set::Engine_Pitch) / 440.0,

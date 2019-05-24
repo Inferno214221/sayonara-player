@@ -18,10 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "StreamRecorderHandler.h"
-#include "PipelineProbes.h"
 #include "StreamRecorderData.h"
-#include "EngineUtils.h"
+#include "StreamRecorderHandler.h"
+
+#include "../EngineUtils.h"
+#include "../PipelineExtensions/PipelineProbes.h"
 
 #include "Utils/Utils.h"
 #include "Utils/Settings/Settings.h"

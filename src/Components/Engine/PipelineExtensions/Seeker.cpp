@@ -62,7 +62,7 @@ namespace Seek
 	}
 }
 
-struct SeekHandler::Private
+struct Seeker::Private
 {
 	GstElement* source=nullptr;
 
@@ -71,13 +71,13 @@ struct SeekHandler::Private
 	{}
 };
 
-SeekHandler::SeekHandler(GstElement* source)
+Seeker::Seeker(GstElement* source)
 {
 	m = Pimpl::make<Private>(source);
 }
-SeekHandler::~SeekHandler() {}
+Seeker::~Seeker() {}
 
-NanoSeconds SeekHandler::seek_rel(double percent, NanoSeconds ref_ns)
+NanoSeconds Seeker::seek_rel(double percent, NanoSeconds ref_ns)
 {
 	NanoSeconds new_time_ns;
 
@@ -101,7 +101,7 @@ NanoSeconds SeekHandler::seek_rel(double percent, NanoSeconds ref_ns)
 }
 
 
-NanoSeconds SeekHandler::seek_abs(NanoSeconds ns)
+NanoSeconds Seeker::seek_abs(NanoSeconds ns)
 {
 	if( Seek::seek_accurate(m->source, ns) ) {
 		return ns;
@@ -110,7 +110,7 @@ NanoSeconds SeekHandler::seek_abs(NanoSeconds ns)
 	return 0;
 }
 
-NanoSeconds SeekHandler::seek_nearest(NanoSeconds ns)
+NanoSeconds Seeker::seek_nearest(NanoSeconds ns)
 {
 	if( Seek::seek_nearest(m->source, ns) ) {
 		return ns;
@@ -119,22 +119,22 @@ NanoSeconds SeekHandler::seek_nearest(NanoSeconds ns)
 	return 0;
 }
 
-NanoSeconds SeekHandler::seek_rel_ms(double percent, MilliSeconds ref_ms)
+NanoSeconds Seeker::seek_rel_ms(double percent, MilliSeconds ref_ms)
 {
 	return seek_rel(percent, ref_ms	* 1000000);
 }
 
-NanoSeconds SeekHandler::seek_abs_ms(MilliSeconds ms)
+NanoSeconds Seeker::seek_abs_ms(MilliSeconds ms)
 {
 	return seek_abs(ms * 1000000);
 }
 
-NanoSeconds SeekHandler::seek_nearest_ms(MilliSeconds ms)
+NanoSeconds Seeker::seek_nearest_ms(MilliSeconds ms)
 {
 	return seek_nearest(ms * 1000000);
 }
 
-void SeekHandler::set_source(GstElement* source)
+void Seeker::set_source(GstElement* source)
 {
 	m->source = source;
 }
