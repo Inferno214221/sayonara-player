@@ -28,43 +28,37 @@
 
 class SpectrumReceiver;
 class LevelReceiver;
+class Pipeline;
 
 namespace StreamRecorder
 {
 	class StreamRecorder;
 }
 
-namespace Pipeline
+/**
+ * @brief The PlaybackEngine class
+ * @ingroup Engine
+ */
+class Engine :
+		public QObject
 {
-	class Playback;
-}
 
-namespace Engine
-{
+	Q_OBJECT
+	PIMPL(Engine)
+
+private:
 	/**
-	 * @brief The PlaybackEngine class
+	 * @brief The GaplessState enum
 	 * @ingroup Engine
 	 */
-	class Playback :
-			public QObject
+	enum class GaplessState : uint8_t
 	{
-
-		Q_OBJECT
-		PIMPL(Playback)
-
-	private:
-		/**
-		 * @brief The GaplessState enum
-		 * @ingroup Engine
-		 */
-		enum class GaplessState : uint8_t
-		{
-			NoGapless=0,		// no gapless enabled at all
-			AboutToFinish,		// the phase when the new track is already displayed but not played yet
-			TrackFetched,		// track is requested, but no yet there
-			Playing,			// currently playing
-			Stopped
-		};
+		NoGapless=0,		// no gapless enabled at all
+		AboutToFinish,		// the phase when the new track is already displayed but not played yet
+		TrackFetched,		// track is requested, but no yet there
+		Playing,			// currently playing
+		Stopped
+	};
 
 	signals:
 		void sig_data(const unsigned char* data, uint64_t n_bytes);
@@ -81,8 +75,8 @@ namespace Engine
 		void sig_error(const QString& error_message);
 
 	public:
-		explicit Playback(QObject* parent=nullptr);
-		~Playback();
+		explicit Engine(QObject* parent=nullptr);
+		~Engine();
 
 		bool init();
 
@@ -124,7 +118,7 @@ namespace Engine
 		void error(const QString& error);
 
 	private:
-		bool init_pipeline(Pipeline::Playback** pipeline);
+		bool init_pipeline(Pipeline** pipeline, const QString& name);
 		bool change_metadata(const MetaData& md);
 
 		bool change_track_crossfading(const MetaData& md);
@@ -138,7 +132,7 @@ namespace Engine
 		void s_streamrecorder_active_changed();
 
 		void cur_pos_ms_changed(MilliSeconds pos_ms);
-	};
-}
+};
+
 
 #endif /* GSTENGINE_H_ */

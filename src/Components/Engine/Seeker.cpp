@@ -18,12 +18,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "SeekHandler.h"
+#include "Seeker.h"
 #include "Utils/Logger/Logger.h"
+
 #include <gst/gst.h>
 #include <gst/base/gstbasesrc.h>
 
-using Pipeline::SeekHandler;
+using namespace PipelineExtensions;
 
 namespace Seek
 {

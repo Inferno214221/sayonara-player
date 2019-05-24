@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "EqualizerHandler.h"
-#include "../Callbacks/EngineUtils.h"
+#include "Equalizer.h"
+#include "EngineUtils.h"
 
 #include "Utils/Settings/Settings.h"
 #include "Utils/EqualizerPresets.h"
@@ -29,7 +29,7 @@
 #include <QString>
 #include <gst/gst.h>
 
-using Pipeline::Equalizer;
+using namespace PipelineExtensions;
 
 struct Equalizer::Private
 {
@@ -37,7 +37,7 @@ struct Equalizer::Private
 
 	Private()
 	{
-		Engine::Utils::create_element(&equalizer, "equalizer-10bands");
+		EngineUtils::create_element(&equalizer, "equalizer-10bands");
 	}
 };
 
@@ -82,7 +82,7 @@ void Equalizer::set_band(int band, int val)
 		new_val = val * 0.75;
 	}
 
-	Engine::Utils::set_value(m->equalizer, band_name.toUtf8().data(),	new_val);
+	EngineUtils::set_value(m->equalizer, band_name.toUtf8().data(),	new_val);
 }
 
 GstElement* Equalizer::element() const

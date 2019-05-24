@@ -21,26 +21,27 @@
 #ifndef GSTPLAYBACKPIPELINE_H_
 #define GSTPLAYBACKPIPELINE_H_
 
-#include "Components/Engine/Playback/PlaybackEngine.h"
 #include "ChangeablePipeline.h"
 #include "Crossfader.h"
 #include "DelayedPlayHandler.h"
 #include "Utils/Pimpl.h"
 
-namespace Pipeline
+#include <QObject>
+
+class Engine;
+
+/**
+ * @brief The PlaybackPipeline class
+ * @ingroup Engine
+ */
+class Pipeline :
+	public QObject,
+	public PipelineExtensions::CrossFader,
+	public PipelineExtensions::Changeable,
+	public PipelineExtensions::DelayedPlayHandler
 {
-	/**
-	 * @brief The PlaybackPipeline class
-	 * @ingroup Engine
-	 */
-	class Playback :
-			public QObject,
-			public CrossFader,
-			public Changeable,
-			public DelayedPlayHandler
-	{
-		Q_OBJECT
-		PIMPL(Playback)
+	Q_OBJECT
+	PIMPL(Pipeline)
 
 	signals:
 		void sig_about_to_finish(MilliSeconds ms);
@@ -48,39 +49,31 @@ namespace Pipeline
 		void sig_data(Byte* data, uint64_t size);
 
 	public:
-		explicit Playback(Engine::Playback* engine, QObject *parent=nullptr);
-		virtual ~Playback();
+		explicit Pipeline(Engine* engine, const QString& name, QObject *parent=nullptr);
+		virtual ~Pipeline();
 
 		bool init(GstState state=GST_STATE_NULL);
 		bool set_uri(gchar* uri);
 
+		void set_data(Byte* data, uint64_t size);
+		void set_current_volume(double volume) override; // Crossfader
+		double get_current_volume() const override;      // Crossfader
+
+		bool has_element(GstElement* e) const;
+		GstState get_state() const;
+		MilliSeconds get_time_to_go() const;
+
+		void refresh_duration();
+		void refresh_position();
+		void check_about_to_finish();
+
+		void enable_visualizer(bool b);
 		void enable_broadcasting(bool b);
 		void enable_streamrecorder(bool b);
 		void set_streamrecorder_path(const QString& session_path);
 
-		void enable_visualizer(bool b);
-
-		// Crossfader
-		void set_current_volume(double volume) override;
-		double get_current_volume() const override;
-
-
-
-		GstState	get_state() const;
-
-
-		MilliSeconds get_time_to_go() const;
-
-		void check_about_to_finish();
-		void update_duration_ms(MilliSeconds duration_ms, GstElement* src);
-		void refresh_position();
-
 		MilliSeconds	get_duration_ms() const;
 		MilliSeconds	get_position_ms() const;
-
-		bool			has_element(GstElement* e) const;
-
-		void set_data(Byte* data, uint64_t size);
 
 	public slots:
 
@@ -88,7 +81,7 @@ namespace Pipeline
 		void stop() override;	// Crossfader
 		void pause();
 
-		void set_eq_band(int band_name, int val);
+		void set_equalizer_band(int band_name, int val);
 
 		NanoSeconds seek_rel(double percent, NanoSeconds ref_ns);
 		NanoSeconds seek_abs(NanoSeconds ns );
@@ -108,21 +101,18 @@ namespace Pipeline
 		GstElement*		create_sink(const QString& name);
 
 		bool			add_and_link_elements();
-		bool			configure_elements();
+		void			configure_elements();
 
 		bool			init_streamrecorder();
-
-		GstElement* pipeline() const override;	// Changeable
 
 
 		MilliSeconds	get_about_to_finish_time() const;
 
+		GstElement*		pipeline() const override;	// Changeable
+
 		void			fade_in_handler() override;		// Crossfader
 		void			fade_out_handler() override;	// Crossfader
+};
 
-
-
-	};
-}
 
 #endif

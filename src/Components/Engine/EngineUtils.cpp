@@ -29,8 +29,6 @@
 #include <gst/gst.h>
 #include <gst/base/gstbasetransform.h>
 
-using namespace Engine;
-
 struct TeeProbeData
 {
 	GstState	state;
@@ -43,13 +41,13 @@ tee_probe_blocked(GstPad* pad, GstPadProbeInfo* info, gpointer p)
 	TeeProbeData* data = static_cast<TeeProbeData*>(p);
 	GstElement* queue = data->element;
 
-	if(!Engine::Utils::test_and_error(queue, "Connect to tee: Element is not GstElement")){
+	if(!EngineUtils::test_and_error(queue, "Connect to tee: Element is not GstElement")){
 		delete data; data = nullptr;
 		return GST_PAD_PROBE_DROP;
 	}
 
 	GstPad* queue_pad = gst_element_get_static_pad(queue, "sink");
-	if(!Engine::Utils::test_and_error(queue_pad, "Connect to tee: No valid pad from GstElement")){
+	if(!EngineUtils::test_and_error(queue_pad, "Connect to tee: No valid pad from GstElement")){
 		delete data; data = nullptr;
 		return GST_PAD_PROBE_DROP;
 	}
@@ -67,7 +65,7 @@ tee_probe_blocked(GstPad* pad, GstPadProbeInfo* info, gpointer p)
 	return GST_PAD_PROBE_DROP;
 }
 
-bool Utils::tee_connect(GstElement* tee, GstElement* queue, const QString& queue_name)
+bool EngineUtils::tee_connect(GstElement* tee, GstElement* queue, const QString& queue_name)
 {
 	if(!test_and_error(tee, "tee connect: tee is null")){
 		return false;
@@ -91,7 +89,7 @@ bool Utils::tee_connect(GstElement* tee, GstElement* queue, const QString& queue
 		return false;
 	}
 
-	GstState state	= Utils::get_state(tee);
+	GstState state	= EngineUtils::get_state(tee);
 
 	if(state == GST_STATE_PLAYING || state == GST_STATE_PAUSED)
 	{
@@ -127,7 +125,7 @@ bool Utils::tee_connect(GstElement* tee, GstElement* queue, const QString& queue
 	return true;
 }
 
-bool Utils::has_element(GstBin* bin, GstElement* element)
+bool EngineUtils::has_element(GstBin* bin, GstElement* element)
 {
 	if(!bin || !element){
 		return true;
@@ -165,7 +163,7 @@ bool Utils::has_element(GstBin* bin, GstElement* element)
 }
 
 
-bool Utils::test_and_error(void* element, const QString& errorstr)
+bool EngineUtils::test_and_error(void* element, const QString& errorstr)
 {
 	if(!element) {
 		sp_log(Log::Error, "EngineUtils") << errorstr;
@@ -175,7 +173,7 @@ bool Utils::test_and_error(void* element, const QString& errorstr)
 	return true;
 }
 
-bool Utils::test_and_error_bool(bool b, const QString& errorstr)
+bool EngineUtils::test_and_error_bool(bool b, const QString& errorstr)
 {
 	if(!b) {
 		sp_log(Log::Error, "EngineUtils") << errorstr;
@@ -185,12 +183,12 @@ bool Utils::test_and_error_bool(bool b, const QString& errorstr)
 	return true;
 }
 
-bool Utils::create_element(GstElement** elem, const QString& elem_name)
+bool EngineUtils::create_element(GstElement** elem, const QString& elem_name)
 {
 	return create_element(elem, elem_name, QString());
 }
 
-bool Utils::create_element(GstElement** elem, const QString& elem_name, const QString& prefix)
+bool EngineUtils::create_element(GstElement** elem, const QString& elem_name, const QString& prefix)
 {
 	gchar* g_elem_name = g_strdup(elem_name.toLocal8Bit().data());
 
@@ -212,7 +210,7 @@ bool Utils::create_element(GstElement** elem, const QString& elem_name, const QS
 	return test_and_error(*elem, error_msg);
 }
 
-MilliSeconds Utils::get_duration_ms(GstElement* element)
+MilliSeconds EngineUtils::get_duration_ms(GstElement* element)
 {
 	if(!element){
 		return -1;
@@ -227,7 +225,7 @@ MilliSeconds Utils::get_duration_ms(GstElement* element)
 	return GST_TIME_AS_MSECONDS(pos);
 }
 
-MilliSeconds Utils::get_position_ms(GstElement* element)
+MilliSeconds EngineUtils::get_position_ms(GstElement* element)
 {
 	if(!element){
 		return -1;
@@ -243,7 +241,7 @@ MilliSeconds Utils::get_position_ms(GstElement* element)
 }
 
 
-MilliSeconds Utils::get_time_to_go(GstElement* element)
+MilliSeconds EngineUtils::get_time_to_go(GstElement* element)
 {
 	if(!element){
 		return -1;
@@ -266,7 +264,7 @@ MilliSeconds Utils::get_time_to_go(GstElement* element)
 	return dur - pos;
 }
 
-GstState Utils::get_state(GstElement* element)
+GstState EngineUtils::get_state(GstElement* element)
 {
 	if(!element){
 		return GST_STATE_NULL;
@@ -277,7 +275,7 @@ GstState Utils::get_state(GstElement* element)
 	return state;
 }
 
-bool Utils::set_state(GstElement* element, GstState state)
+bool EngineUtils::set_state(GstElement* element, GstState state)
 {
 	if(!element){
 		return false;
@@ -288,7 +286,7 @@ bool Utils::set_state(GstElement* element, GstState state)
 }
 
 
-bool Utils::check_plugin_available(const gchar* str)
+bool EngineUtils::check_plugin_available(const gchar* str)
 {
 	GstRegistry* reg = gst_registry_get();
 	GstPlugin* plugin = gst_registry_find_plugin(reg, str);
@@ -299,17 +297,17 @@ bool Utils::check_plugin_available(const gchar* str)
 	return success;
 }
 
-bool Utils::check_pitch_available()
+bool EngineUtils::check_pitch_available()
 {
 	return check_plugin_available("soundtouch");
 }
 
-bool Utils::check_lame_available()
+bool EngineUtils::check_lame_available()
 {
 	return check_plugin_available("lame");
 }
 
-bool Utils::create_ghost_pad(GstBin* bin, GstElement* e)
+bool EngineUtils::create_ghost_pad(GstBin* bin, GstElement* e)
 {
 	GstPad* pad = gst_element_get_static_pad(e, "sink");
 	if(!test_and_error(pad, "CreateGhostPad: Cannot get static pad")){
@@ -331,7 +329,7 @@ bool Utils::create_ghost_pad(GstBin* bin, GstElement* e)
 	return true;
 }
 
-bool Utils::create_bin(GstElement** bin, const QList<GstElement*>& elements, const QString& prefix)
+bool EngineUtils::create_bin(GstElement** bin, const QList<GstElement*>& elements, const QString& prefix)
 {
 	QString prefixed = prefix + "bin";
 	gchar* g_name = g_strdup(prefixed.toLocal8Bit().data());
@@ -363,7 +361,7 @@ bool Utils::create_bin(GstElement** bin, const QList<GstElement*>& elements, con
 	return true;
 }
 
-bool Utils::link_elements(const QList<GstElement*>& elements)
+bool EngineUtils::link_elements(const QList<GstElement*>& elements)
 {
 	bool success = true;
 	for(int i=0; i<elements.size() - 1; i++)
@@ -391,21 +389,21 @@ bool Utils::link_elements(const QList<GstElement*>& elements)
 	return success;
 }
 
-void Utils::add_elements(GstBin* bin, const QList<GstElement*>& elements)
+void EngineUtils::add_elements(GstBin* bin, const QList<GstElement*>& elements)
 {
 	for(GstElement* e : elements){
 		gst_bin_add(bin, e);
 	}
 }
 
-void Utils::unref_elements(const QList<GstElement*>& elements)
+void EngineUtils::unref_elements(const QList<GstElement*>& elements)
 {
 	for(GstElement* e : elements){
 		gst_object_unref(e);
 	}
 }
 
-void Utils::config_queue(GstElement* queue, gulong max_time_ms)
+void EngineUtils::config_queue(GstElement* queue, gulong max_time_ms)
 {
 	set_values(queue,
 		"flush-on-eos", true,
@@ -414,14 +412,14 @@ void Utils::config_queue(GstElement* queue, gulong max_time_ms)
 	set_uint64_value(queue,  "max-size-time", max_time_ms * GST_MSECOND);
 }
 
-void Utils::config_sink(GstElement* sink)
+void EngineUtils::config_sink(GstElement* sink)
 {
 	set_values(sink,
 		"sync", true,
 		"async", false);
 }
 
-void Utils::config_lame(GstElement* lame)
+void EngineUtils::config_lame(GstElement* lame)
 {
 	set_values(lame,
 		"perfect-timestamp", true,
@@ -434,7 +432,7 @@ void Utils::config_lame(GstElement* lame)
 }
 
 
-void Utils::set_passthrough(GstElement* e, bool b)
+void EngineUtils::set_passthrough(GstElement* e, bool b)
 {
 	if(e && GST_IS_BASE_TRANSFORM(e))
 	{
@@ -444,7 +442,7 @@ void Utils::set_passthrough(GstElement* e, bool b)
 }
 
 
-GValue Utils::get_int64(gint64 value)
+GValue EngineUtils::get_int64(gint64 value)
 {
 	GValue ret = G_VALUE_INIT;
 	g_value_init(&ret, G_TYPE_INT64);
@@ -452,7 +450,7 @@ GValue Utils::get_int64(gint64 value)
 	return ret;
 }
 
-GValue Utils::get_uint64(guint64 value)
+GValue EngineUtils::get_uint64(guint64 value)
 {
 	GValue ret = G_VALUE_INIT;
 	g_value_init(&ret, G_TYPE_INT64);
@@ -460,7 +458,7 @@ GValue Utils::get_uint64(guint64 value)
 	return ret;
 }
 
-GValue Utils::get_uint(guint value)
+GValue EngineUtils::get_uint(guint value)
 {
 	GValue ret = G_VALUE_INIT;
 	g_value_init(&ret, G_TYPE_UINT);
@@ -468,7 +466,7 @@ GValue Utils::get_uint(guint value)
 	return ret;
 }
 
-GValue Utils::get_int(gint value)
+GValue EngineUtils::get_int(gint value)
 {
 	GValue ret = G_VALUE_INIT;
 	g_value_init(&ret, G_TYPE_INT);

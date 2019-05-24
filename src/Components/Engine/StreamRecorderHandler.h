@@ -31,7 +31,7 @@ namespace StreamRecorder
 	struct Data;
 }
 
-namespace Pipeline
+namespace PipelineExtensions
 {
 	class StreamRecorderHandler
 	{

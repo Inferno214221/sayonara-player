@@ -32,11 +32,7 @@
 #include <QPushButton>
 
 class VisualColorStyleChooser;
-
-namespace Engine
-{
-	class Handler;
-}
+class EngineHandler;
 
 class VisualPlugin : public PlayerPlugin::Base
 {
@@ -47,7 +43,7 @@ protected:
 	VisualColorStyleChooser*	m_ecsc=nullptr;
 
 	void				init_buttons(bool small);
-	Engine::Handler*	engine() const;
+	EngineHandler*		engine() const;
 
 	virtual void closeEvent(QCloseEvent* e) override;
 	virtual void resizeEvent(QResizeEvent* e) override;

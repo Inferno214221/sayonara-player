@@ -28,7 +28,7 @@ namespace StreamRecorder
 	struct Data;
 }
 
-namespace Pipeline
+namespace PipelineExtensions
 {
 	/**
 	 * @ingroup Engine

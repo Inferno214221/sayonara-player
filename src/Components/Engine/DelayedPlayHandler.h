@@ -1,4 +1,4 @@
-/* SpeedHandler.h */
+/* DelayedPlayHandler.h */
 
 /* Copyright (C) 2011-2019  Lucio Carreras
  *
@@ -18,28 +18,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef DELAYEDPLAYHANDLER_H
+#define DELAYEDPLAYHANDLER_H
 
-
-#ifndef SPEEDHANDLER_H
-#define SPEEDHANDLER_H
-
-#include "Components/Engine/gstfwd.h"
 #include "Utils/Pimpl.h"
+#include <QObject>
 
-namespace Pipeline
+namespace PipelineExtensions
 {
-	class SpeedHandler
+	class DelayedPlayHandler
 	{
-		PIMPL(SpeedHandler)
+		PIMPL(DelayedPlayHandler)
 
 		public:
-			SpeedHandler();
-			virtual ~SpeedHandler();
+			DelayedPlayHandler();
+			~DelayedPlayHandler();
 
-			void set_speed(float speed, double pitch, bool preserve_pitch);
+		public:
+			virtual void play()=0;
 
-			GstElement* element() const;
+			void play_in(MilliSeconds ms);
+			void abort_delayed_playing();
+	};
+
+	class Logic : public QObject
+	{
+		Q_OBJECT
+		PIMPL(Logic)
+
+		friend class DelayedPlayHandler;
+
+		private:
+			Logic(DelayedPlayHandler* dph);
+			~Logic();
+
+			void start_timer(MilliSeconds ms);
+			void stop_timer();
 	};
 }
 
-#endif // SPEEDHANDLER_H
+#endif // DELAYEDPLAYHANDLER_H

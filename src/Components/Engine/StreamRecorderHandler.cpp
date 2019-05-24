@@ -21,14 +21,14 @@
 #include "StreamRecorderHandler.h"
 #include "PipelineProbes.h"
 #include "StreamRecorderData.h"
-#include "Callbacks/EngineUtils.h"
+#include "EngineUtils.h"
 
 #include "Utils/Utils.h"
 #include "Utils/Settings/Settings.h"
 #include <QString>
 
 using StreamRecorder::Data;
-using Pipeline::StreamRecorderHandler;
+using namespace PipelineExtensions;
 
 struct StreamRecorderHandler::Private
 {
@@ -74,11 +74,11 @@ bool StreamRecorderHandler::init()
 	}
 
 	// stream recorder branch
-	if(	!Engine::Utils::create_element(&m->sr_queue, "queue", "sr_queue") ||
-		!Engine::Utils::create_element(&m->sr_converter, "audioconvert", "sr_converter") ||
-		!Engine::Utils::create_element(&m->sr_resampler, "audioresample", "sr_resample") ||
-		!Engine::Utils::create_element(&m->sr_lame, "lamemp3enc", "sr_lame")  ||
-		!Engine::Utils::create_element(&m->sr_sink, "filesink", "sr_filesink"))
+	if(	!EngineUtils::create_element(&m->sr_queue, "queue", "sr_queue") ||
+		!EngineUtils::create_element(&m->sr_converter, "audioconvert", "sr_converter") ||
+		!EngineUtils::create_element(&m->sr_resampler, "audioresample", "sr_resample") ||
+		!EngineUtils::create_element(&m->sr_lame, "lamemp3enc", "sr_lame")  ||
+		!EngineUtils::create_element(&m->sr_sink, "filesink", "sr_filesink"))
 	{
 		return false;
 	}
@@ -87,27 +87,27 @@ bool StreamRecorderHandler::init()
 	m->data->sink = m->sr_sink;
 
 	{ // configure
-		Engine::Utils::config_lame(m->sr_lame);
-		Engine::Utils::config_queue(m->sr_queue);
-		Engine::Utils::config_sink(m->sr_sink);
+		EngineUtils::config_lame(m->sr_lame);
+		EngineUtils::config_queue(m->sr_queue);
+		EngineUtils::config_sink(m->sr_sink);
 
-		Engine::Utils::set_values(G_OBJECT(m->sr_sink),
+		EngineUtils::set_values(G_OBJECT(m->sr_sink),
 								"location", Util::sayonara_path("bla.mp3").toLocal8Bit().data());
-		Engine::Utils::set_uint_value(G_OBJECT(m->sr_sink), "buffer-size", 8192);
+		EngineUtils::set_uint_value(G_OBJECT(m->sr_sink), "buffer-size", 8192);
 	}
 
 	{ // init bin
-		bool success = Engine::Utils::create_bin(&m->sr_bin, {m->sr_queue, m->sr_converter, m->sr_resampler, m->sr_lame, m->sr_sink}, "sr");
+		bool success = EngineUtils::create_bin(&m->sr_bin, {m->sr_queue, m->sr_converter, m->sr_resampler, m->sr_lame, m->sr_sink}, "sr");
 		if(!success){
 			return false;
 		}
 
 		gst_bin_add(GST_BIN(m->pipeline), m->sr_bin);
 
-		success = Engine::Utils::tee_connect(m->tee, m->sr_bin, "StreamRecorderQueue");
+		success = EngineUtils::tee_connect(m->tee, m->sr_bin, "StreamRecorderQueue");
 		if(!success)
 		{
-			Engine::Utils::set_state(m->sr_bin, GST_STATE_NULL);
+			EngineUtils::set_state(m->sr_bin, GST_STATE_NULL);
 			gst_object_unref(m->sr_bin);
 		}
 

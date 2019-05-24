@@ -22,7 +22,7 @@
 #define GUI_LEVELPAINTER_H
 
 #include "VisualPlugin.h"
-#include "Components/Engine/Playback/SoundOutReceiver.h"
+#include "Components/Engine/SoundOutReceiver.h"
 #include "Utils/Pimpl.h"
 
 UI_FWD(GUI_LevelPainter)

@@ -1,4 +1,4 @@
-/* DelayedPlayHandler.h */
+/* SeekHandler.h */
 
 /* Copyright (C) 2011-2019  Lucio Carreras
  *
@@ -20,44 +20,33 @@
 
 
 
-#ifndef DELAYEDPLAYHANDLER_H
-#define DELAYEDPLAYHANDLER_H
+#ifndef SEEKHANDLER_H
+#define SEEKHANDLER_H
 
+#include "Components/Engine/gstfwd.h"
+#include "Utils/typedefs.h"
 #include "Utils/Pimpl.h"
-#include <QObject>
 
-namespace Pipeline
+namespace PipelineExtensions
 {
-	class DelayedPlayHandler
+	class SeekHandler
 	{
-		PIMPL(DelayedPlayHandler)
+		PIMPL(SeekHandler)
 
 		public:
-			DelayedPlayHandler();
-			~DelayedPlayHandler();
+			SeekHandler(GstElement* source);
+			virtual ~SeekHandler();
 
-		public:
-			virtual void play()=0;
+			NanoSeconds seek_rel(double percent, NanoSeconds ref_ns);
+			NanoSeconds seek_abs(NanoSeconds ns);
+			NanoSeconds seek_nearest(NanoSeconds ns);
 
-			void play_in(MilliSeconds ms);
-			void abort_delayed_playing();
-	};
+			NanoSeconds seek_rel_ms(double percent, MilliSeconds ref_ns);
+			NanoSeconds seek_abs_ms(MilliSeconds ns);
+			NanoSeconds seek_nearest_ms(MilliSeconds ns);
 
-	class Logic : public QObject
-	{
-		Q_OBJECT
-		PIMPL(Logic)
-
-		friend class DelayedPlayHandler;
-
-		private:
-			Logic(DelayedPlayHandler* dph);
-			~Logic();
-
-			void start_timer(MilliSeconds ms);
-			void stop_timer();
+			void set_source(GstElement* source);
 	};
 }
 
-
-#endif // DELAYEDPLAYHANDLER_H
+#endif // SEEKHANDLER_H

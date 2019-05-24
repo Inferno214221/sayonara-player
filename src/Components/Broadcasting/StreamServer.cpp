@@ -65,10 +65,10 @@ StreamServer::StreamServer(QObject* parent) :
 	m = Pimpl::make<StreamServer::Private>();
 
 	PlayManagerPtr play_manager = PlayManager::instance();
-	Engine::Handler* engine = Engine::Handler::instance();
+	EngineHandler* engine = EngineHandler::instance();
 
 	connect(play_manager, &PlayManager::sig_track_changed, this, &StreamServer::track_changed);
-	connect(engine, &Engine::Handler::destroyed, this, &StreamServer::close);
+	connect(engine, &EngineHandler::destroyed, this, &StreamServer::close);
 
 	ListenSetting(Set::Broadcast_Active, StreamServer::active_changed);
 	ListenSetting(SetNoDB::MP3enc_found, StreamServer::active_changed);

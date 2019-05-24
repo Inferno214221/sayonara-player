@@ -22,7 +22,7 @@
 #include "Utils/Utils.h"
 #include "Utils/Logger/Logger.h"
 
-using Pipeline::Changeable;
+using PipelineExtensions::Changeable;
 
 const int SleepInterval = 50;
 

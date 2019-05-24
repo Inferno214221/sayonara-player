@@ -377,7 +377,7 @@ void Application::init_libraries()
 void Application::init_engine()
 {
 	measure("Engine")
-	Engine::Handler::instance()->init();
+	EngineHandler::instance()->init();
 }
 
 void Application::init_plugins()
@@ -428,7 +428,7 @@ void Application::session_end_requested(QSessionManager& manager)
 
 void Application::shutdown()
 {
-	Engine::Handler::instance()->shutdown();
+	EngineHandler::instance()->shutdown();
 	Playlist::Handler::instance()->shutdown();
 	PlayManager::instance()->shutdown();
 

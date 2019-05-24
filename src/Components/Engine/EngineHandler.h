@@ -33,20 +33,17 @@ class RawSoundReceiverInterface;
 class LevelReceiver;
 class SpectrumReceiver;
 
-namespace Engine
-{
-	class Playback;
 
-	/**
-	 * @brief The EngineHandler class
-	 * @ingroup Engine
-	 */
-	class Handler :
-			public QObject
-	{
-		Q_OBJECT
-		SINGLETON_QOBJECT(Handler)
-		PIMPL(Handler)
+/**
+ * @brief The EngineHandler class
+ * @ingroup Engine
+ */
+class EngineHandler :
+		public QObject
+{
+	Q_OBJECT
+	SINGLETON_QOBJECT(EngineHandler)
+	PIMPL(EngineHandler)
 
 	signals:
 		void sig_md_changed(const MetaData& md);
@@ -70,8 +67,8 @@ namespace Engine
 		void playstate_changed(PlayState state);
 
 		void new_data(const uchar* data, uint64_t n_bytes);
-	};
-}
+};
+
 #endif
 
 

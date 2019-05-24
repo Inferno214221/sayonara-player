@@ -19,7 +19,7 @@
  */
 
 #include "EngineCallbacks.h"
-#include "Components/Engine/Playback/PlaybackEngine.h"
+#include "Components/Engine/Engine.h"
 
 #include "Utils/Settings/Settings.h"
 #include "Utils/MetaData/MetaData.h"
@@ -34,12 +34,11 @@
 #include <memory>
 #include <algorithm>
 
-using namespace Engine;
 
 const char* ClassEngineCallbacks = "Engine Callbacks";
 
 #ifdef Q_OS_WIN
-	void Callbacks::destroy_notify(gpointer data) {}
+	void EngineCallbacks::destroy_notify(gpointer data) {}
 
 	GstBusSyncReply
 	EngineCallbacks::bus_message_received(GstBus* bus, GstMessage* msg, gpointer data) {
@@ -120,12 +119,12 @@ static bool parse_image(GstTagList* tags, QImage& img)
 
 
 // check messages from bus
-gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer data)
+gboolean EngineCallbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer data)
 {
 	Q_UNUSED(bus);
 
 	static MetaData md;
-	Playback* engine = static_cast<Playback*>(data);
+	Engine* engine = static_cast<Engine*>(data);
 	if(!engine){
 		return true;
 	}
@@ -304,13 +303,13 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 
 // level changed
 gboolean
-Callbacks::level_handler(GstBus* bus, GstMessage* message, gpointer data)
+EngineCallbacks::level_handler(GstBus* bus, GstMessage* message, gpointer data)
 {
 	Q_UNUSED(bus);
 
 	double					channel_values[2];
 
-	Playback* engine = static_cast<Playback*>(data);
+	Engine* engine = static_cast<Engine*>(data);
 	if(!engine) {
 		return true;
 	}
@@ -367,13 +366,13 @@ Callbacks::level_handler(GstBus* bus, GstMessage* message, gpointer data)
 
 // spectrum changed
 gboolean
-Callbacks::spectrum_handler(GstBus* bus, GstMessage* message, gpointer data)
+EngineCallbacks::spectrum_handler(GstBus* bus, GstMessage* message, gpointer data)
 {
 	Q_UNUSED(bus);
 
 	static SpectrumList	spectrum_vals;
 
-	Playback* engine = static_cast<Playback*>(data);
+	Engine* engine = static_cast<Engine*>(data);
 	if(!engine) {
 		return true;
 	}

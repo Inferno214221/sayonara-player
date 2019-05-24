@@ -19,21 +19,16 @@
  */
 
 #include "SpeedHandler.h"
-#include "../Callbacks/EngineUtils.h"
+#include "EngineUtils.h"
 #include "Utils/Settings/Settings.h"
 
 #include <gst/gst.h>
 
-using Pipeline::SpeedHandler;
+using namespace PipelineExtensions;
 
 struct SpeedHandler::Private
 {
 	GstElement* pitch=nullptr;
-
-	Private()
-	{
-
-	}
 };
 
 SpeedHandler::SpeedHandler()
@@ -55,7 +50,7 @@ void SpeedHandler::set_speed(float speed, double pitch, bool preserve_pitch)
 
 	if(preserve_pitch)
 	{
-		Engine::Utils::set_values(m->pitch,
+		EngineUtils::set_values(m->pitch,
 					 "tempo", speed,
 					 "rate", 1.0,
 					 "pitch", pitch);
@@ -63,7 +58,7 @@ void SpeedHandler::set_speed(float speed, double pitch, bool preserve_pitch)
 
 	else
 	{
-		Engine::Utils::set_values(m->pitch,
+		EngineUtils::set_values(m->pitch,
 					 "tempo", 1.0,
 					 "rate", speed,
 					 "pitch", pitch);

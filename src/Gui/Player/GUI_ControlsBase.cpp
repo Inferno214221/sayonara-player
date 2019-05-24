@@ -641,11 +641,11 @@ void GUI_ControlsBase::setup_connections()
 	connect(pm, &PlayManager::sig_record, this, &GUI_ControlsBase::rec_changed);
 
 	// engine
-	Engine::Handler* engine = Engine::Handler::instance();
-	connect(engine, &Engine::Handler::sig_md_changed,	this, &GUI_ControlsBase::md_changed);
-	connect(engine, &Engine::Handler::sig_duration_changed, this, &GUI_ControlsBase::dur_changed);
-	connect(engine, &Engine::Handler::sig_bitrate_changed,	this, &GUI_ControlsBase::br_changed);
-	connect(engine, &Engine::Handler::sig_cover_changed, this, &GUI_ControlsBase::force_cover);
+	EngineHandler* engine = EngineHandler::instance();
+	connect(engine, &EngineHandler::sig_md_changed,	this, &GUI_ControlsBase::md_changed);
+	connect(engine, &EngineHandler::sig_duration_changed, this, &GUI_ControlsBase::dur_changed);
+	connect(engine, &EngineHandler::sig_bitrate_changed,	this, &GUI_ControlsBase::br_changed);
+	connect(engine, &EngineHandler::sig_cover_changed, this, &GUI_ControlsBase::force_cover);
 
 	Tagging::ChangeNotifier* mdcn = Tagging::ChangeNotifier::instance();
 	connect(mdcn, &Tagging::ChangeNotifier::sig_metadata_changed, this, &GUI_ControlsBase::id3_tags_changed);

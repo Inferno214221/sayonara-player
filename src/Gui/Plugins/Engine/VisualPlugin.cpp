@@ -30,7 +30,7 @@ struct VisualPlugin::Private
 	GUI_StyleSettings*	style_settings=nullptr;
 
 	PlayManagerPtr		play_manager=nullptr;
-	Engine::Handler*	engine=nullptr;
+	EngineHandler*	engine=nullptr;
 	QPushButton*		btn_config=nullptr;
 	QPushButton*		btn_prev=nullptr;
 	QPushButton*		btn_next=nullptr;
@@ -43,7 +43,7 @@ struct VisualPlugin::Private
 		timer_stopped(true)
 	{
 		play_manager = PlayManager::instance();
-		engine = Engine::Handler::instance();
+		engine = EngineHandler::instance();
 	}
 };
 
@@ -132,7 +132,7 @@ void VisualPlugin::init_buttons(bool small)
 	m->btn_close->hide();
 }
 
-Engine::Handler *VisualPlugin::engine() const
+EngineHandler *VisualPlugin::engine() const
 {
 	return m->engine;
 }

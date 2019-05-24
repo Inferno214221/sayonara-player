@@ -199,7 +199,7 @@ void GUI_Equalizer::sli_changed(int idx, int new_val)
 	EqualizerSlider* s = m->sliders[idx];
 	s->label()->setText(calc_lab(new_val));
 
-	Engine::Handler* engine = Engine::Handler::instance();
+	EngineHandler* engine = EngineHandler::instance();
 	engine->set_equalizer(idx, new_val);
 
 	// this slider has been changed actively

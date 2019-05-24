@@ -1,11 +1,13 @@
 #include "Broadcaster.h"
 #include "PipelineProbes.h"
 
-#include "Callbacks/EngineUtils.h"
+#include "EngineUtils.h"
 #include "Callbacks/PipelineCallbacks.h"
 
 #include <QString>
 #include <QList>
+
+using namespace PipelineExtensions;
 
 struct Broadcaster::Private
 {
@@ -45,25 +47,25 @@ bool Broadcaster::init()
 	}
 
 	// create
-	if( !Engine::Utils::create_element(&m->bc_queue, "queue", "lame_queue") ||
-		!Engine::Utils::create_element(&m->bc_converter, "audioconvert", "lame_converter") ||
-		!Engine::Utils::create_element(&m->bc_resampler, "audioresample", "lame_resampler") ||
-		!Engine::Utils::create_element(&m->bc_lame, "lamemp3enc") ||
-		!Engine::Utils::create_element(&m->bc_app_sink, "appsink", "lame_appsink"))
+	if( !EngineUtils::create_element(&m->bc_queue, "queue", "lame_queue") ||
+		!EngineUtils::create_element(&m->bc_converter, "audioconvert", "lame_converter") ||
+		!EngineUtils::create_element(&m->bc_resampler, "audioresample", "lame_resampler") ||
+		!EngineUtils::create_element(&m->bc_lame, "lamemp3enc") ||
+		!EngineUtils::create_element(&m->bc_app_sink, "appsink", "lame_appsink"))
 	{
 		return false;
 	}
 
 	{ // init bin
-		bool success = Engine::Utils::create_bin(&m->bc_bin, {m->bc_queue,  m->bc_converter, m->bc_resampler, m->bc_lame, m->bc_app_sink}, "broadcast");
+		bool success = EngineUtils::create_bin(&m->bc_bin, {m->bc_queue,  m->bc_converter, m->bc_resampler, m->bc_lame, m->bc_app_sink}, "broadcast");
 		if(!success){
 			return false;
 		}
 
 		gst_bin_add(GST_BIN(m->pipeline), m->bc_bin);
-		success = Engine::Utils::tee_connect(m->tee, m->bc_bin, "BroadcastQueue");
+		success = EngineUtils::tee_connect(m->tee, m->bc_bin, "BroadcastQueue");
 		if(!success){
-			Engine::Utils::set_state(m->bc_bin, GST_STATE_NULL);
+			EngineUtils::set_state(m->bc_bin, GST_STATE_NULL);
 			gst_object_unref(m->bc_bin);
 			return false;
 		}
@@ -72,12 +74,12 @@ bool Broadcaster::init()
 	{ // configure
 		gst_object_ref(m->bc_app_sink);
 
-		Engine::Utils::config_lame(m->bc_lame);
-		Engine::Utils::config_queue(m->bc_queue);
-		Engine::Utils::config_sink(m->bc_app_sink);
-		Engine::Utils::set_values(G_OBJECT(m->bc_app_sink), "emit-signals", true);
+		EngineUtils::config_lame(m->bc_lame);
+		EngineUtils::config_queue(m->bc_queue);
+		EngineUtils::config_sink(m->bc_app_sink);
+		EngineUtils::set_values(G_OBJECT(m->bc_app_sink), "emit-signals", true);
 
-		g_signal_connect (m->bc_app_sink, "new-sample", G_CALLBACK(Pipeline::Callbacks::new_buffer), this);
+		g_signal_connect (m->bc_app_sink, "new-sample", G_CALLBACK(PipelineCallbacks::new_buffer), this);
 	}
 
 	return true;
@@ -90,7 +92,7 @@ bool Broadcaster::set_enabled(bool b)
 	}
 
 	m->is_running = b;
-	Pipeline::Probing::handle_probe(&m->is_running, m->bc_queue, &m->bc_probe, Pipeline::Probing::lame_probed);
+	Probing::handle_probe(&m->is_running, m->bc_queue, &m->bc_probe, Probing::lame_probed);
 
 	return true;
 }

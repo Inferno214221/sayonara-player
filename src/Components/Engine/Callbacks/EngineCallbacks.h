@@ -24,30 +24,27 @@
 #include <gst/gst.h>
 #include <qglobal.h>
 
-namespace Engine
+/**
+ * @ingroup Engine
+ */
+namespace EngineCallbacks
 {
-	/**
-	 * @ingroup Engine
-	 */
-	namespace Callbacks
-	{
 
-	#ifdef Q_OS_WIN
-		void destroy_notify(gpointer data);
+#ifdef Q_OS_WIN
+	void destroy_notify(gpointer data);
 
-		GstBusSyncReply
-		bus_message_received(GstBus* bus, GstMessage* msg, gpointer data);
-	#endif
+	GstBusSyncReply
+	bus_message_received(GstBus* bus, GstMessage* msg, gpointer data);
+#endif
 
-		gboolean
-		bus_state_changed(GstBus* bus, GstMessage* msg, gpointer data);
+	gboolean
+	bus_state_changed(GstBus* bus, GstMessage* msg, gpointer data);
 
-		gboolean
-		level_handler(GstBus* bus, GstMessage* message, gpointer data);
+	gboolean
+	level_handler(GstBus* bus, GstMessage* message, gpointer data);
 
-		gboolean
-		spectrum_handler(GstBus* bus, GstMessage* message, gpointer data);
-	}
+	gboolean
+	spectrum_handler(GstBus* bus, GstMessage* message, gpointer data);
 }
 
 #endif // ENGINECALLBACKS_H

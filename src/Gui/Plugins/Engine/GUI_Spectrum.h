@@ -23,7 +23,7 @@
 
 #include "VisualPlugin.h"
 #include "Utils/Pimpl.h"
-#include "Components/Engine/Playback/SoundOutReceiver.h"
+#include "Components/Engine/SoundOutReceiver.h"
 
 
 UI_FWD(GUI_Spectrum)

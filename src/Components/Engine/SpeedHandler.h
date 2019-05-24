@@ -1,4 +1,4 @@
-/* EqualizerHandler.h */
+/* SpeedHandler.h */
 
 /* Copyright (C) 2011-2019  Lucio Carreras
  *
@@ -18,26 +18,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef EQUALIZERHANDLER_H
-#define EQUALIZERHANDLER_H
+
+
+#ifndef SPEEDHANDLER_H
+#define SPEEDHANDLER_H
 
 #include "Components/Engine/gstfwd.h"
 #include "Utils/Pimpl.h"
 
-namespace Pipeline
+namespace PipelineExtensions
 {
-	class Equalizer
+	class SpeedHandler
 	{
-		PIMPL(Equalizer)
+		PIMPL(SpeedHandler)
 
 		public:
-			Equalizer();
-			virtual ~Equalizer();
+			SpeedHandler();
+			virtual ~SpeedHandler();
 
-			void set_band(int idx, int val);
+			void set_speed(float speed, double pitch, bool preserve_pitch);
 
 			GstElement* element() const;
 	};
 }
 
-#endif // EQUALIZERHANDLER_H
+#endif // SPEEDHANDLER_H

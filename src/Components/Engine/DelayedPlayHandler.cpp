@@ -18,21 +18,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "DelayedPlayHandler.h"
 #include "Utils/Utils.h"
 #include <QTimer>
 
-using Pipeline::DelayedPlayHandler;
-using Pipeline::Logic;
+using PipelineExtensions::Logic;
+using PipelineExtensions::DelayedPlayHandler;
 
 struct Logic::Private
 {
-	Pipeline::DelayedPlayHandler* dph=nullptr;
+	DelayedPlayHandler* dph=nullptr;
 	QTimer* t=nullptr;
 
-	Private(Pipeline::DelayedPlayHandler* dph) :
+	Private(DelayedPlayHandler* dph) :
 		dph(dph)
 	{
 		t = new QTimer();
@@ -52,7 +50,7 @@ struct Logic::Private
 	}
 };
 
-Logic::Logic(Pipeline::DelayedPlayHandler* dph)
+Logic::Logic(DelayedPlayHandler* dph)
 {
 	m = Pimpl::make<Private>(dph);
 

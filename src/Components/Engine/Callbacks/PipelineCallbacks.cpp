@@ -23,22 +23,19 @@
 
 #include "Utils/Logger/Logger.h"
 #include "Utils/WebAccess/Proxy.h"
-#include "Components/Engine/Playback/PlaybackPipeline.h"
+#include "Components/Engine/Pipeline.h"
 
 #include <gst/app/gstappsink.h>
 #include <gst/base/gstbasesrc.h>
 
 const char* ClassPipelineCallbacks="PipelineCallbacks";
 
-using Pipeline::Playback;
-using namespace Pipeline;
-
-gboolean Callbacks::position_changed(gpointer data)
+gboolean PipelineCallbacks::position_changed(gpointer data)
 {
 	GstState state;
-	Playback* pipeline;
+	Pipeline* pipeline;
 
-	pipeline = static_cast<Playback*>(data);
+	pipeline = static_cast<Pipeline*>(data);
 	if(!pipeline){
 		return false;
 	}
@@ -59,7 +56,7 @@ gboolean Callbacks::position_changed(gpointer data)
 }
 
 // dynamic linking, important for decodebin
-void Callbacks::decodebin_ready(GstElement* source, GstPad* new_src_pad, gpointer data)
+void PipelineCallbacks::decodebin_ready(GstElement* source, GstPad* new_src_pad, gpointer data)
 {
 	gchar* element_name = gst_element_get_name(source);
 	sp_log(Log::Develop, "Callback") << "Source: " << element_name;
@@ -119,11 +116,11 @@ void Callbacks::decodebin_ready(GstElement* source, GstPad* new_src_pad, gpointe
 
 
 #define TCP_BUFFER_SIZE 16384
-GstFlowReturn Callbacks::new_buffer(GstElement *sink, gpointer p)
+GstFlowReturn PipelineCallbacks::new_buffer(GstElement *sink, gpointer p)
 {
 	static uchar data[TCP_BUFFER_SIZE];
 
-	Playback* pipeline = static_cast<Playback*>(p);
+	Pipeline* pipeline = static_cast<Pipeline*>(p);
 	if(!pipeline){
 		return GST_FLOW_OK;
 	}
@@ -161,7 +158,7 @@ static bool is_source_soup(GstElement* source)
 }
 
 
-void Callbacks::source_ready(GstURIDecodeBin* bin, GstElement* source, gpointer data)
+void PipelineCallbacks::source_ready(GstURIDecodeBin* bin, GstElement* source, gpointer data)
 {
 	Q_UNUSED(bin);
 	Q_UNUSED(data);
@@ -180,7 +177,7 @@ void Callbacks::source_ready(GstURIDecodeBin* bin, GstElement* source, gpointer 
 			{
 				sp_log(Log::Develop, "Engine Callback") << "Will use proxy username: " << proxy->username();
 
-				Engine::Utils::set_values(source,
+				EngineUtils::set_values(source,
 						"proxy-id", proxy->username().toLocal8Bit().data(),
 						"proxy-pw", proxy->password().toLocal8Bit().data());
 			}
