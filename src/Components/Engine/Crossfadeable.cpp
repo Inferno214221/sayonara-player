@@ -21,7 +21,7 @@
 
 /* CrossFader.cpp */
 
-#include "Crossfader.h"
+#include "Crossfadeable.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Utils.h"
 #include "Utils/Logger/Logger.h"
@@ -31,54 +31,54 @@
 #include <glib.h>
 #include <functional>
 
-using PipelineExtensions::CrossFader;
+using PipelineExtensions::CrossFadeable;
 
 class FaderThreadData
 {
 private:
-	CrossFader*				_crossfader=nullptr;
-	int						_cycles;
-	int						_cycle_time_ms;
+	CrossFadeable*			m_crossfader=nullptr;
+	int						m_cycles;
+	int						m_cycle_time_ms;
 
 public:
 
-	FaderThreadData(CrossFader* crossfader) :
-		_crossfader(crossfader)
+	FaderThreadData(CrossFadeable* crossfader) :
+		m_crossfader(crossfader)
 	{
-		_cycles = 0;
-		_cycle_time_ms = 0;
+		m_cycles = 0;
+		m_cycle_time_ms = 0;
 	}
 
 	void set_fading_time(int fading_time)
 	{
-		_cycle_time_ms = fading_time / _cycles;
+		m_cycle_time_ms = fading_time / m_cycles;
 	}
 
 	void reset()
 	{
-		_cycles = get_max_cycles();
+		m_cycles = get_max_cycles();
 	}
 
 	bool is_active() const
 	{
-		return (_cycles > 0);
+		return (m_cycles > 0);
 	}
 
 	void abort()
 	{
-		_cycles = 0;
+		m_cycles = 0;
 	}
 
 	void wait()
 	{
-		Util::sleep_ms(_cycle_time_ms);
-		_cycles --;
-		_crossfader->fader_timed_out();
+		Util::sleep_ms(m_cycle_time_ms);
+		m_cycles --;
+		m_crossfader->fader_timed_out();
 	}
 
 	int get_cycles() const
 	{
-		return _cycles;
+		return m_cycles;
 	}
 
 	static int get_max_cycles()
@@ -110,7 +110,7 @@ class FaderThread : public QThread
 		}
 };
 
-struct CrossFader::Private
+struct CrossFadeable::Private
 {
 	FaderThread*    fader=nullptr;
 	FaderThreadData* fader_data=nullptr;
@@ -124,7 +124,7 @@ struct CrossFader::Private
 	Private() :
 		volume(0),
 		fade_step(0),
-		fade_mode(CrossFader::FadeMode::NoFading),
+		fade_mode(CrossFadeable::FadeMode::NoFading),
 		destructed(false)
 	{}
 
@@ -140,14 +140,14 @@ struct CrossFader::Private
 	}
 };
 
-CrossFader::CrossFader()
+CrossFadeable::CrossFadeable()
 {
 	m = Pimpl::make<Private>();
 
 	m->fader_data = new FaderThreadData(this);
 }
 
-CrossFader::~CrossFader()
+CrossFadeable::~CrossFadeable()
 {
 	m->destructed = true;
 
@@ -165,9 +165,9 @@ CrossFader::~CrossFader()
 	}
 }
 
-void CrossFader::init_fader()
+void CrossFadeable::init_fader()
 {
-	if(m->fade_mode == CrossFader::FadeMode::NoFading){
+	if(m->fade_mode == CrossFadeable::FadeMode::NoFading){
 		return;
 	}
 
@@ -192,13 +192,13 @@ void CrossFader::init_fader()
 
 
 
-void CrossFader::fade_in()
+void CrossFadeable::fade_in()
 {
 	sp_log(Log::Develop, this) << "Fading in";
 	double volume = GetSetting(Set::Engine_Vol) / 100.0;
 
 	m->volume = 0;
-	m->fade_mode = CrossFader::FadeMode::FadeIn;
+	m->fade_mode = CrossFadeable::FadeMode::FadeIn;
 	m->fade_step = volume / (FaderThreadData::get_max_cycles() * 1.0);
 
 	sp_log(Log::Crazy, this) << "Fading in: "
@@ -212,12 +212,12 @@ void CrossFader::fade_in()
 	play();
 }
 
-void CrossFader::fade_out()
+void CrossFadeable::fade_out()
 {
 	sp_log(Log::Develop, this) << "Fading out";
 
 	m->volume = GetSetting(Set::Engine_Vol) / 100.0;
-	m->fade_mode = CrossFader::FadeMode::FadeOut;
+	m->fade_mode = CrossFadeable::FadeMode::FadeOut;
 	m->fade_step = m->volume / (FaderThreadData::get_max_cycles() * 1.0);
 
 	sp_log(Log::Crazy, this) << "Fading out: "
@@ -230,38 +230,38 @@ void CrossFader::fade_out()
 	init_fader();
 }
 
-bool CrossFader::is_fading_out() const
+bool CrossFadeable::is_fading_out() const
 {
 	return (m->fader &&
 			m->fader->isRunning() &&
-			(m->fade_mode == CrossFader::FadeMode::FadeOut));
+			(m->fade_mode == CrossFadeable::FadeMode::FadeOut));
 }
 
-bool CrossFader::is_fading_int() const
+bool CrossFadeable::is_fading_int() const
 {
 	return (m->fader &&
 			m->fader->isRunning() &&
-			(m->fade_mode == CrossFader::FadeMode::FadeIn));
+			(m->fade_mode == CrossFadeable::FadeMode::FadeIn));
 }
 
 
-void CrossFader::fader_timed_out()
+void CrossFadeable::fader_timed_out()
 {
 	if(m->destructed){
 		return;
 	}
 
-	if(m->fade_mode == CrossFader::FadeMode::FadeIn){
+	if(m->fade_mode == CrossFadeable::FadeMode::FadeIn){
 		increase_volume();
 	}
 
-	else if(m->fade_mode == CrossFader::FadeMode::FadeOut){
+	else if(m->fade_mode == CrossFadeable::FadeMode::FadeOut){
 		decrease_volume();
 	}
 }
 
 
-void CrossFader::increase_volume()
+void CrossFadeable::increase_volume()
 {
 	double max_volume = GetSetting(Set::Engine_Vol) / 100.0;
 
@@ -283,7 +283,7 @@ void CrossFader::increase_volume()
 }
 
 
-void CrossFader::decrease_volume()
+void CrossFadeable::decrease_volume()
 {
 	double max_volume = GetSetting(Set::Engine_Vol) / 100.0;
 
@@ -309,7 +309,7 @@ void CrossFader::decrease_volume()
 	set_current_volume(m->volume);
 }
 
-MilliSeconds CrossFader::get_fading_time_ms() const
+MilliSeconds CrossFadeable::get_fading_time_ms() const
 {
 	if(GetSetting(Set::Engine_CrossFaderActive))
 	{
@@ -319,7 +319,7 @@ MilliSeconds CrossFader::get_fading_time_ms() const
 	return 0;
 }
 
-void CrossFader::abort_fader()
+void CrossFadeable::abort_fader()
 {
 	if(m->fader_data->is_active())
 	{

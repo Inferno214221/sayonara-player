@@ -21,9 +21,9 @@
 #ifndef GSTPLAYBACKPIPELINE_H_
 #define GSTPLAYBACKPIPELINE_H_
 
-#include "ChangeablePipeline.h"
-#include "Crossfader.h"
-#include "DelayedPlayHandler.h"
+#include "Changeable.h"
+#include "Crossfadeable.h"
+#include "DelayedPlayable.h"
 #include "Utils/Pimpl.h"
 
 #include <QObject>
@@ -36,9 +36,9 @@ class Engine;
  */
 class Pipeline :
 	public QObject,
-	public PipelineExtensions::CrossFader,
+	public PipelineExtensions::CrossFadeable,
 	public PipelineExtensions::Changeable,
-	public PipelineExtensions::DelayedPlayHandler
+	public PipelineExtensions::DelayedPlayable
 {
 	Q_OBJECT
 	PIMPL(Pipeline)

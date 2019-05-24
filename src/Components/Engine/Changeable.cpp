@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ChangeablePipeline.h"
+#include "Changeable.h"
 #include "Utils/Utils.h"
 #include "Utils/Logger/Logger.h"
 

@@ -32,9 +32,9 @@ namespace PipelineExtensions
 	 * @brief The CrossFader class
 	 * @ingroup EngineInterfaces
 	 */
-	class CrossFader
+	class CrossFadeable
 	{
-		PIMPL(CrossFader)
+		PIMPL(CrossFadeable)
 
 		public:
 
@@ -45,8 +45,8 @@ namespace PipelineExtensions
 				FadeOut
 			};
 
-			CrossFader();
-			~CrossFader();
+			CrossFadeable();
+			~CrossFadeable();
 
 			/**
 			 * @brief get current volume of pipeline
@@ -87,7 +87,7 @@ namespace PipelineExtensions
 
 
 		private:
-			CrossFader(const CrossFader& other)=delete;
+			CrossFadeable(const CrossFadeable& other)=delete;
 
 			void increase_volume();
 			void decrease_volume();

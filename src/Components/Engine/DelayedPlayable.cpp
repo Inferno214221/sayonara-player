@@ -18,19 +18,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "DelayedPlayHandler.h"
+#include "DelayedPlayable.h"
 #include "Utils/Utils.h"
 #include <QTimer>
 
 using PipelineExtensions::Logic;
-using PipelineExtensions::DelayedPlayHandler;
+using PipelineExtensions::DelayedPlayable;
 
 struct Logic::Private
 {
-	DelayedPlayHandler* dph=nullptr;
+	DelayedPlayable* dph=nullptr;
 	QTimer* t=nullptr;
 
-	Private(DelayedPlayHandler* dph) :
+	Private(DelayedPlayable* dph) :
 		dph(dph)
 	{
 		t = new QTimer();
@@ -50,7 +50,7 @@ struct Logic::Private
 	}
 };
 
-Logic::Logic(DelayedPlayHandler* dph)
+Logic::Logic(DelayedPlayable* dph)
 {
 	m = Pimpl::make<Private>(dph);
 
@@ -71,11 +71,11 @@ void Logic::stop_timer()
 	m->t->stop();
 }
 
-struct DelayedPlayHandler::Private
+struct DelayedPlayable::Private
 {
 	Logic* logic=nullptr;
 
-	Private(DelayedPlayHandler* dph)
+	Private(DelayedPlayable* dph)
 	{
 		logic = new Logic(dph);
 	}
@@ -86,14 +86,14 @@ struct DelayedPlayHandler::Private
 	}
 };
 
-DelayedPlayHandler::DelayedPlayHandler()
+DelayedPlayable::DelayedPlayable()
 {
 	m = Pimpl::make<Private>(this);
 }
 
-DelayedPlayHandler::~DelayedPlayHandler() {}
+DelayedPlayable::~DelayedPlayable() {}
 
-void DelayedPlayHandler::play_in(MilliSeconds ms)
+void DelayedPlayable::play_in(MilliSeconds ms)
 {
 	abort_delayed_playing();
 
@@ -106,7 +106,7 @@ void DelayedPlayHandler::play_in(MilliSeconds ms)
 	}
 }
 
-void DelayedPlayHandler::abort_delayed_playing()
+void DelayedPlayable::abort_delayed_playing()
 {
 	m->logic->stop_timer();
 }

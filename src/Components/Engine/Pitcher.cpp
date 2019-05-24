@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "SpeedHandler.h"
+#include "Pitcher.h"
 #include "EngineUtils.h"
 #include "Utils/Settings/Settings.h"
 
@@ -26,19 +26,19 @@
 
 using namespace PipelineExtensions;
 
-struct SpeedHandler::Private
+struct Pitcher::Private
 {
 	GstElement* pitch=nullptr;
 };
 
-SpeedHandler::SpeedHandler()
+Pitcher::Pitcher()
 {
 	m = Pimpl::make<Private>();
 }
 
-SpeedHandler::~SpeedHandler() {}
+Pitcher::~Pitcher() {}
 
-void SpeedHandler::set_speed(float speed, double pitch, bool preserve_pitch)
+void Pitcher::set_speed(float speed, double pitch, bool preserve_pitch)
 {
 	if(!GetSetting(Set::Engine_SpeedActive)) {
 		return;
@@ -65,7 +65,7 @@ void SpeedHandler::set_speed(float speed, double pitch, bool preserve_pitch)
 	}
 }
 
-GstElement* SpeedHandler::element() const
+GstElement* Pitcher::element() const
 {
 	return m->pitch;
 }

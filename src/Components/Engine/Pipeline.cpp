@@ -23,7 +23,7 @@
 #include "Engine.h"
 
 #include "StreamRecorderHandler.h"
-#include "SpeedHandler.h"
+#include "Pitcher.h"
 #include "Equalizer.h"
 #include "Seeker.h"
 #include "Broadcaster.h"
@@ -65,7 +65,7 @@ struct Pipeline::Private
 	GstElement*			pb_volume=nullptr;
 	GstElement*			pb_sink=nullptr;
 
-	SpeedHandler*		speed_handler=nullptr;
+	Pitcher*		speed_handler=nullptr;
 	SeekHandler*		seeker=nullptr;
 	StreamRecorderHandler* stream_recorder=nullptr;
 	Broadcaster*		broadcaster=nullptr;
@@ -93,9 +93,9 @@ struct Pipeline::Private
 
 Pipeline::Pipeline(Engine* engine, const QString& name, QObject *parent) :
 	QObject(parent),
-	CrossFader(),
+	CrossFadeable(),
 	Changeable(),
-	DelayedPlayHandler()
+	DelayedPlayable()
 {
 	m = Pimpl::make<Private>(name);
 	m->engine = engine;
@@ -190,7 +190,7 @@ bool Pipeline::create_elements()
 
 	m->seeker = new SeekHandler(m->source);
 	m->equalizer = new Equalizer();
-	m->speed_handler = new SpeedHandler();
+	m->speed_handler = new Pitcher();
 	m->visualizer = new Visualizer(m->pipeline, m->tee);
 	m->broadcaster = new Broadcaster(m->pipeline, m->tee);
 
