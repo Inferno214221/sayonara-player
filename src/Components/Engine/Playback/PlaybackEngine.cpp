@@ -22,8 +22,7 @@
 #include "PlaybackPipeline.h"
 #include "StreamRecorder.h"
 #include "Callbacks/EngineUtils.h"
-#include "Components/Engine/Callbacks/EngineCallbacks.h"
-#include "Components/PlayManager/PlayManager.h"
+#include "Callbacks/EngineCallbacks.h"
 
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/FileUtils.h"
@@ -31,53 +30,34 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/Tagging/Tagging.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/Language.h"
 
 #include <QUrl>
+#include <QList>
 
 #include <algorithm>
-#include <list>
 
 using Engine::Playback;
-namespace EngineUtils=Engine::Utils;
-
-/**
- * @brief The GaplessState enum
- * @ingroup Engine
- */
-enum class GaplessState : uint8_t
-{
-	NoGapless=0,		// no gapless enabled at all
-	AboutToFinish,		// the phase when the new track is already displayed but not played yet
-	TrackFetched,		// track is requested, but no yet there
-	Playing,			// currently playing
-	Stopped
-};
 
 struct Playback::Private
 {
 	MetaData		md;
-	QString			uri;
 	MilliSeconds	cur_pos_ms;
 
-	PlayManager*		play_manager=nullptr;
 	Pipeline::Playback*	pipeline=nullptr;
 	Pipeline::Playback*	other_pipeline=nullptr;
 
-	std::list<LevelReceiver*>		level_receiver;
-	std::list<SpectrumReceiver*>	spectrum_receiver;
+	QList<LevelReceiver*>		level_receiver;
+	QList<SpectrumReceiver*>	spectrum_receiver;
 
 	StreamRecorder::StreamRecorder*	stream_recorder=nullptr;
 
 	GaplessState gapless_state;
-	bool sr_active;
 
 	Private() :
 		cur_pos_ms(0),
-		gapless_state(GaplessState::Stopped),
-		sr_active(false)
-	{
-		play_manager = PlayManager::instance();
-	}
+		gapless_state(GaplessState::Stopped)
+	{}
 
 	~Private()
 	{
@@ -166,39 +146,32 @@ bool Playback::change_track_crossfading(const MetaData& md)
 
 	m->other_pipeline->fade_out();
 
+	bool success = change_metadata(md);
+	if (success)
 	{
-		m->cur_pos_ms = 0;
-		bool success = change_metadata(md);
-		if (!success) {
-			return false;
-		}
+		m->pipeline->fade_in();
+		m->change_gapless_state(GaplessState::Playing);
 	}
 
-	m->pipeline->fade_in();
-
-	m->change_gapless_state(GaplessState::Playing);
-
-	return true;
+	return success;
 }
 
 bool Playback::change_track_gapless(const MetaData& md)
 {
 	std::swap(m->pipeline, m->other_pipeline);
 
-	m->cur_pos_ms = 0;
 	bool success = change_metadata(md);
-	if (!success) {
-		return false;
+	if (success)
+	{
+		MilliSeconds time_to_go = m->other_pipeline->get_time_to_go();
+		m->pipeline->play_in(time_to_go);
+
+		m->change_gapless_state(GaplessState::TrackFetched);
+
+		sp_log(Log::Develop, this) << "Will start playing in " << time_to_go << "msec";
 	}
 
-	MilliSeconds time_to_go = m->other_pipeline->get_time_to_go();
-	m->pipeline->play_in(time_to_go);
-
-	sp_log(Log::Develop, this) << "Will start playing in " << time_to_go << "msec";
-
-	m->change_gapless_state(GaplessState::TrackFetched);
-
-	return true;
+	return success;
 }
 
 bool Playback::change_track_immediatly(const MetaData& md)
@@ -208,35 +181,9 @@ bool Playback::change_track_immediatly(const MetaData& md)
 	}
 
 	m->pipeline->stop();
-	m->cur_pos_ms = 0;
 
 	return change_metadata(md);
 }
-
-bool Playback::change_track_by_filename(const QString& filepath)
-{
-	MetaData md(filepath);
-
-	bool success = true;
-
-	bool got_md = Tagging::Utils::getMetaDataOfFile(md);
-	if( !got_md ) {
-		stop();
-		success = false;
-	}
-
-	else
-	{
-		m->cur_pos_ms = 0;
-		success = change_metadata(md);
-	}
-
-	return success;
-}
-
-
-
-
 
 bool Playback::change_track(const MetaData& md)
 {
@@ -256,54 +203,39 @@ bool Playback::change_track(const MetaData& md)
 
 bool Playback::change_metadata(const MetaData& md)
 {
-	bool success = false;
+	m->md = md;
+	set_current_position_ms(0);
+
+	const QString filepath = md.filepath();
+	QString uri = filepath;
+
+	bool playing_stream = Util::File::is_www(filepath);
+	if (playing_stream)
 	{
-		QString filepath = md.filepath();
-		bool playing_stream = Util::File::is_www(filepath);
-
-		// stream, but don't want to record
-		// stream is already uri
-		if (playing_stream)
-		{
-			m->uri = QUrl(filepath).toString();
-		}
-
-		// no stream (not quite right because of mms, rtsp or other streams
-		// normal filepath -> no uri
-		else if (!filepath.contains("://"))
-		{
-			QUrl url = QUrl::fromLocalFile(md.filepath());
-			m->uri = url.toString();
-		}
-
-		else {
-			m->uri = md.filepath();
-		}
-
-		if(m->uri.isEmpty())
-		{
-			m->md = MetaData();
-
-			sp_log(Log::Warning, this) << "uri = 0";
-			return false;
-		}
-
-		m->md = md;
-
-		success = change_uri(m->uri);
+		uri = QUrl(filepath).toString();
 	}
 
+	else if(!filepath.contains("://"))
+	{
+		QUrl url = QUrl::fromLocalFile(filepath);
+		uri = url.toString();
+	}
+
+	if(uri.isEmpty())
+	{
+		m->md = MetaData();
+
+		sp_log(Log::Warning, this) << "uri = 0";
+		return false;
+	}
+
+	bool success = m->pipeline->set_uri(uri.toUtf8().data());
 	if(!success)
 	{
 		m->change_gapless_state(GaplessState::Stopped);
 	}
 
 	return success;
-}
-
-bool Playback::change_uri(const QString& uri)
-{
-	return m->pipeline->set_uri(uri.toUtf8().data());
 }
 
 void Playback::play()
@@ -316,8 +248,7 @@ void Playback::play()
 
 	m->pipeline->play();
 
-	if(is_streamrecroder_recording())
-	{
+	if(is_streamrecroder_recording()) {
 		set_streamrecorder_recording(true);
 	}
 
@@ -341,7 +272,7 @@ void Playback::stop()
 	}
 
 	m->cur_pos_ms = 0;
-	m->play_manager->buffering(-1);
+	emit sig_buffering(-1);
 }
 
 
@@ -358,7 +289,7 @@ void Playback::jump_abs_ms(MilliSeconds pos_ms)
 
 void Playback::jump_rel_ms(MilliSeconds ms)
 {
-	MilliSeconds new_time_ms = m->pipeline->get_source_position_ms() + ms;
+	MilliSeconds new_time_ms = m->pipeline->get_position_ms() + ms;
 	m->pipeline->seek_abs(new_time_ms * GST_MSECOND);
 }
 
@@ -371,20 +302,15 @@ void Playback::jump_rel(double percent)
 
 void Playback::set_current_position_ms(MilliSeconds pos_ms)
 {
-	if ( m->cur_pos_ms / 100 == (pos_ms / 100)){
+	if(std::abs(m->cur_pos_ms - pos_ms) < 100)
+	{
 		return;
 	}
 
 	m->cur_pos_ms = pos_ms;
-	m->play_manager->set_position_ms(pos_ms);
+
+	emit sig_current_position_changed(pos_ms);
 }
-
-
-MilliSeconds Playback::current_position_ms() const
-{
-	return m->cur_pos_ms;
-}
-
 
 
 void Playback::cur_pos_ms_changed(MilliSeconds pos_ms)
@@ -400,7 +326,7 @@ void Playback::cur_pos_ms_changed(MilliSeconds pos_ms)
 void Playback::set_track_ready(GstElement* src)
 {
 	if(m->pipeline->has_element(src)){
-		m->play_manager->set_track_ready();
+		emit sig_track_ready();
 	}
 }
 
@@ -415,12 +341,11 @@ void Playback::set_track_almost_finished(MilliSeconds time2go)
 	if( m->gapless_state == GaplessState::NoGapless ||
 		m->gapless_state == GaplessState::AboutToFinish )
 	{
-		emit sig_track_almost_finished(time2go);
 		return;
 	}
 
 	sp_log(Log::Develop, this) << "About to finish: " <<
-								(int) m->gapless_state << " (" << time2go << "ms)";
+		static_cast<int>(m->gapless_state) << " (" << time2go << "ms)";
 
 	m->change_gapless_state(GaplessState::AboutToFinish);
 
@@ -429,7 +354,7 @@ void Playback::set_track_almost_finished(MilliSeconds time2go)
 		m->pipeline->fade_out();
 	}
 
-	m->play_manager->set_track_finished();
+	emit sig_track_finished();
 }
 
 
@@ -437,7 +362,7 @@ void Playback::set_track_finished(GstElement* src)
 {
 	if(m->pipeline->has_element(src))
 	{
-		m->play_manager->set_track_finished();
+		emit sig_track_finished();
 	}
 
 	if(m->other_pipeline && m->other_pipeline->has_element(src))
@@ -451,7 +376,8 @@ void Playback::set_track_finished(GstElement* src)
 
 bool Playback::is_streamrecroder_recording() const
 {
-	return (m->sr_active && m->stream_recorder && m->stream_recorder->is_recording());
+	bool sr_active = GetSetting(Set::Engine_SR_Active);
+	return (sr_active && m->stream_recorder && m->stream_recorder->is_recording());
 }
 
 
@@ -471,11 +397,11 @@ void Playback::set_buffer_state(int progress, GstElement* src)
 		progress = -1;
 	}
 
-	if(!m->pipeline->has_element(src)){
+	else if(!m->pipeline->has_element(src)){
 		progress = -1;
 	}
 
-	m->play_manager->buffering(progress);
+	emit sig_buffering(progress);
 }
 
 
@@ -501,9 +427,8 @@ void Playback::s_gapless_changed()
 
 void Playback::s_streamrecorder_active_changed()
 {
-	m->sr_active = GetSetting(Set::Engine_SR_Active);
-
-	if(!m->sr_active){
+	bool is_active = GetSetting(Set::Engine_SR_Active);
+	if(!is_active){
 		set_streamrecorder_recording(false);
 	}
 }
@@ -539,7 +464,8 @@ void Playback::set_streamrecorder_recording(bool b)
 		}
 	}
 
-	if(m->pipeline) {
+	if(m->pipeline)
+	{
 		m->pipeline->set_streamrecorder_path(dst_file);
 	}
 }
@@ -573,38 +499,30 @@ void Playback::update_metadata(const MetaData& md, GstElement* src)
 		return;
 	}
 
-	if(md.title().isEmpty()) {
-		return;
-	}
-
 	QString title = md.title();
-	QStringList splitted = md.title().split("-");
+
+	QStringList splitted = title.split("-");
 	if(splitted.size() == 2) {
 		title = splitted[1].trimmed();
 	}
 
-	// title is old title
-	if(m->md.title().compare(title) == 0) {
+	if(title.isEmpty() || title == m->md.title()) {
 		return;
 	}
 
 	set_current_position_ms(0);
 
-	MetaData md_update = m->md;
-	if(splitted.size() == 2){
-		md_update.set_artist(splitted[0].trimmed());
-		md_update.set_title(splitted[1].trimmed());
+	if(splitted.size() == 2)
+	{
+		m->md.set_artist(splitted[0].trimmed());
+		m->md.set_title(splitted[1].trimmed());
 	}
 
 	else {
-		md_update.set_title(md.title());
+		m->md.set_title(md.title());
 	}
 
-	m->md = md;
-	m->play_manager->change_metadata(md);
-	emit sig_md_changed(md);
-
-	this->update_metadata(md_update, src);
+	emit sig_md_changed(m->md);
 
 	if(is_streamrecroder_recording())
 	{
@@ -621,21 +539,14 @@ void Playback::update_duration(MilliSeconds duration_ms, GstElement* src)
 
 	m->pipeline->update_duration_ms(duration_ms, src);
 
-	Seconds duration_s = (duration_ms / 1000);
-	Seconds md_duration_s = (m->md.length_ms / 1000);
-
-	if(duration_s == 0 || duration_s > 1500000){
-		return;
-	}
-
-	if(duration_s == md_duration_s) {
+	MilliSeconds difference = std::abs(duration_ms - m->md.length_ms);
+	if(duration_ms < 1000 || difference < 1999 || duration_ms > 1500000000){
 		return;
 	}
 
 	m->md.length_ms = duration_ms;
 	update_metadata(m->md, src);
 
-	m->play_manager->change_duration(m->md.length_ms);
 	emit sig_duration_changed(m->md);
 }
 
@@ -659,11 +570,6 @@ void Playback::update_bitrate(Bitrate br, GstElement* src)
 void Playback::add_spectrum_receiver(SpectrumReceiver* receiver)
 {
 	m->spectrum_receiver.push_back(receiver);
-}
-
-int Playback::get_spectrum_bins() const
-{
-	return GetSetting(Set::Engine_SpectrumBins);
 }
 
 void Playback::set_spectrum(const SpectrumList& vals)
@@ -694,20 +600,19 @@ void Playback::set_level(float left, float right)
 
 void Playback::error(const QString& error)
 {
-	QString msg("Cannot play track");
+	QStringList msg{Lang::get(Lang::Error)};
 
 	if(m->md.filepath().contains("soundcloud", Qt::CaseInsensitive))
 	{
-		msg += QString("\n\n") +
-			   "Probably, Sayonara's Soundcloud limit of 15.000 "
+		msg << "Probably, Sayonara's Soundcloud limit of 15.000 "
 			   "tracks per day is reached :( Sorry.";
 	}
 
 	if(error.trimmed().length() > 0){
-		msg += QString("\n\n") + error;
+		msg << error;
 	}
 
-	m->play_manager->error(error);
-
 	stop();
+
+	emit sig_error(msg.join("\n\n"));
 }

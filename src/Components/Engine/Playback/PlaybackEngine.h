@@ -48,8 +48,23 @@ namespace Engine
 	class Playback :
 			public QObject
 	{
+
 		Q_OBJECT
 		PIMPL(Playback)
+
+	private:
+		/**
+		 * @brief The GaplessState enum
+		 * @ingroup Engine
+		 */
+		enum class GaplessState : uint8_t
+		{
+			NoGapless=0,		// no gapless enabled at all
+			AboutToFinish,		// the phase when the new track is already displayed but not played yet
+			TrackFetched,		// track is requested, but no yet there
+			Playing,			// currently playing
+			Stopped
+		};
 
 	signals:
 		void sig_data(const unsigned char* data, uint64_t n_bytes);
@@ -59,21 +74,17 @@ namespace Engine
 		void sig_bitrate_changed(const MetaData& md);
 		void sig_cover_changed(const QImage& img);
 
+		void sig_current_position_changed(MilliSeconds ms);
 		void sig_buffering(int progress);
-
-		void sig_track_ready();
-		void sig_track_almost_finished(MilliSeconds time2go);
 		void sig_track_finished();
-
-		void sig_error(const QString& message);
+		void sig_track_ready();
+		void sig_error(const QString& error_message);
 
 	public:
 		explicit Playback(QObject* parent=nullptr);
 		~Playback();
 
 		bool init();
-
-		bool change_track_by_filename(const QString& filepath);
 
 		void update_bitrate(Bitrate br, GstElement* src);
 		void update_duration(MilliSeconds duration_ms, GstElement* src);
@@ -85,7 +96,6 @@ namespace Engine
 		bool is_streamrecroder_recording() const;
 		void set_streamrecorder_recording(bool b);
 
-		int get_spectrum_bins() const;
 		void set_spectrum(const SpectrumList& vals);
 		void add_spectrum_receiver(SpectrumReceiver* receiver);
 
@@ -115,8 +125,6 @@ namespace Engine
 
 	private:
 		bool init_pipeline(Pipeline::Playback** pipeline);
-
-		bool change_uri(const QString& uri);
 		bool change_metadata(const MetaData& md);
 
 		bool change_track_crossfading(const MetaData& md);
@@ -124,8 +132,6 @@ namespace Engine
 		bool change_track_immediatly(const MetaData& md);
 
 		void set_current_position_ms(MilliSeconds pos_ms);
-		MilliSeconds		current_position_ms() const;
-
 
 	private slots:
 		void s_gapless_changed();

@@ -21,6 +21,7 @@
 #include "EngineCallbacks.h"
 #include "Components/Engine/Playback/PlaybackEngine.h"
 
+#include "Utils/Settings/Settings.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/globals.h"
@@ -389,7 +390,7 @@ Callbacks::spectrum_handler(GstBus* bus, GstMessage* message, gpointer data)
 
 	const GValue* magnitudes = gst_structure_get_value (structure, "magnitude");
 
-	int bins = engine->get_spectrum_bins();
+	int bins = GetSetting(Set::Engine_SpectrumBins);
 	if(spectrum_vals.empty()){
 		spectrum_vals.resize(bins, 0);
 	}

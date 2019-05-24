@@ -26,7 +26,20 @@
 
 using Pipeline::SpeedHandler;
 
-SpeedHandler::SpeedHandler() {}
+struct SpeedHandler::Private
+{
+	GstElement* pitch=nullptr;
+
+	Private()
+	{
+
+	}
+};
+
+SpeedHandler::SpeedHandler()
+{
+	m = Pimpl::make<Private>();
+}
 
 SpeedHandler::~SpeedHandler() {}
 
@@ -36,23 +49,28 @@ void SpeedHandler::set_speed(float speed, double pitch, bool preserve_pitch)
 		return;
 	}
 
-	GstElement* pitch_element = get_pitch_element();
-	if(!pitch_element){
+	if(!m->pitch){
 		return;
 	}
 
 	if(preserve_pitch)
 	{
-		Engine::Utils::set_values(pitch_element,
+		Engine::Utils::set_values(m->pitch,
 					 "tempo", speed,
 					 "rate", 1.0,
 					 "pitch", pitch);
 	}
 
-	else{
-		Engine::Utils::set_values(pitch_element,
+	else
+	{
+		Engine::Utils::set_values(m->pitch,
 					 "tempo", 1.0,
 					 "rate", speed,
 					 "pitch", pitch);
 	}
+}
+
+GstElement* SpeedHandler::element() const
+{
+	return m->pitch;
 }

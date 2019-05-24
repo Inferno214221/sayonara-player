@@ -24,17 +24,21 @@
 #define SPEEDHANDLER_H
 
 #include "Components/Engine/gstfwd.h"
+#include "Utils/Pimpl.h"
 
 namespace Pipeline
 {
 	class SpeedHandler
 	{
-	public:
-		SpeedHandler();
-		virtual ~SpeedHandler();
+		PIMPL(SpeedHandler)
 
-		void set_speed(float speed, double pitch, bool preserve_pitch);
-		virtual GstElement* get_pitch_element() const=0;
+		public:
+			SpeedHandler();
+			virtual ~SpeedHandler();
+
+			void set_speed(float speed, double pitch, bool preserve_pitch);
+
+			GstElement* element() const;
 	};
 }
 

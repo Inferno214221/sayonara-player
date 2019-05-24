@@ -22,19 +22,21 @@
 #define EQUALIZERHANDLER_H
 
 #include "Components/Engine/gstfwd.h"
+#include "Utils/Pimpl.h"
 
 namespace Pipeline
 {
-	class EqualizerHandler
+	class Equalizer
 	{
-		public:
-			EqualizerHandler();
-			virtual ~EqualizerHandler();
+		PIMPL(Equalizer)
 
-			void init_equalizer();
+		public:
+			Equalizer();
+			virtual ~Equalizer();
+
 			void set_band(int idx, int val);
 
-			virtual GstElement* get_equalizer_element() const=0;
+			GstElement* element() const;
 	};
 }
 

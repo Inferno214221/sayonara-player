@@ -23,21 +23,22 @@
 
 #include "Utils/Logger/Logger.h"
 #include "Utils/WebAccess/Proxy.h"
-#include "Components/Engine/AbstractPipeline.h"
+#include "Components/Engine/Playback/PlaybackPipeline.h"
 
 #include <gst/app/gstappsink.h>
 #include <gst/base/gstbasesrc.h>
 
 const char* ClassPipelineCallbacks="PipelineCallbacks";
 
+using Pipeline::Playback;
 using namespace Pipeline;
 
 gboolean Callbacks::position_changed(gpointer data)
 {
 	GstState state;
-	Base* pipeline;
+	Playback* pipeline;
 
-	pipeline = static_cast<Base*>(data);
+	pipeline = static_cast<Playback*>(data);
 	if(!pipeline){
 		return false;
 	}
@@ -122,7 +123,7 @@ GstFlowReturn Callbacks::new_buffer(GstElement *sink, gpointer p)
 {
 	static uchar data[TCP_BUFFER_SIZE];
 
-	Base* pipeline = static_cast<Base*>(p);
+	Playback* pipeline = static_cast<Playback*>(p);
 	if(!pipeline){
 		return GST_FLOW_OK;
 	}

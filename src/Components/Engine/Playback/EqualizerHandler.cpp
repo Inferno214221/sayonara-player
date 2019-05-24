@@ -29,14 +29,24 @@
 #include <QString>
 #include <gst/gst.h>
 
-using Pipeline::EqualizerHandler;
+using Pipeline::Equalizer;
 
-EqualizerHandler::EqualizerHandler() {}
-EqualizerHandler::~EqualizerHandler() {}
-
-void EqualizerHandler::init_equalizer()
+struct Equalizer::Private
 {
+	GstElement* equalizer=nullptr;
+
+	Private()
+	{
+		Engine::Utils::create_element(&equalizer, "equalizer-10bands");
+	}
+};
+
+Equalizer::Equalizer()
+{
+	m = Pimpl::make<Private>();
+
 	int last_idx = GetSetting(Set::Eq_Last);
+
 	QList<EQ_Setting> presets = GetSetting(Set::Eq_List);
 	presets.push_front(EQ_Setting());
 
@@ -53,12 +63,13 @@ void EqualizerHandler::init_equalizer()
 	}
 }
 
-void EqualizerHandler::set_band(int band, int val)
+Equalizer::~Equalizer() {}
+
+void Equalizer::set_band(int band, int val)
 {
 	QString band_name = QString("band%1").arg(band);
 
-	GstElement* equalizer_element = get_equalizer_element();
-	if(!equalizer_element){
+	if(!m->equalizer){
 		return;
 	}
 
@@ -71,6 +82,11 @@ void EqualizerHandler::set_band(int band, int val)
 		new_val = val * 0.75;
 	}
 
-	Engine::Utils::set_value(equalizer_element, band_name.toUtf8().data(),	new_val);
+	Engine::Utils::set_value(m->equalizer, band_name.toUtf8().data(),	new_val);
+}
+
+GstElement* Equalizer::element() const
+{
+	return m->equalizer;
 }
 

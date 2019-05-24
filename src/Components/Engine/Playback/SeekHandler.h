@@ -25,13 +25,16 @@
 
 #include "Components/Engine/gstfwd.h"
 #include "Utils/typedefs.h"
+#include "Utils/Pimpl.h"
 
 namespace Pipeline
 {
 	class SeekHandler
 	{
+		PIMPL(SeekHandler)
+
 		public:
-			SeekHandler();
+			SeekHandler(GstElement* source);
 			virtual ~SeekHandler();
 
 			NanoSeconds seek_rel(double percent, NanoSeconds ref_ns);
@@ -42,7 +45,7 @@ namespace Pipeline
 			NanoSeconds seek_abs_ms(MilliSeconds ns);
 			NanoSeconds seek_nearest_ms(MilliSeconds ns);
 
-			virtual GstElement* get_source() const=0;
+			void set_source(GstElement* source);
 	};
 }
 

@@ -38,15 +38,14 @@ namespace Pipeline
 		PIMPL(StreamRecorderHandler)
 
 	public:
-		StreamRecorderHandler();
+		StreamRecorderHandler(GstElement* pipeline, GstElement* tee);
 		virtual ~StreamRecorderHandler();
 
-		void init(GstElement* tee);
 
-		void set_streamrecorder_target_path(const QString& path);
-		StreamRecorder::Data* streamrecorder_data() const;
+		bool init();
+		bool set_enabled(bool b);
 
-		virtual GstElement* get_streamrecorder_sink_element() const=0;
+		void set_target_path(const QString& path);
 	};
 }
 

@@ -36,8 +36,6 @@ namespace Seek
 			return false;
 		}
 
-
-
 		bool success = gst_element_seek_simple (
 					audio_src,
 					GST_FORMAT_TIME,
@@ -63,8 +61,19 @@ namespace Seek
 	}
 }
 
+struct SeekHandler::Private
+{
+	GstElement* source=nullptr;
 
-SeekHandler::SeekHandler() {}
+	Private(GstElement* source) :
+		source(source)
+	{}
+};
+
+SeekHandler::SeekHandler(GstElement* source)
+{
+	m = Pimpl::make<Private>(source);
+}
 SeekHandler::~SeekHandler() {}
 
 NanoSeconds SeekHandler::seek_rel(double percent, NanoSeconds ref_ns)
@@ -83,8 +92,7 @@ NanoSeconds SeekHandler::seek_rel(double percent, NanoSeconds ref_ns)
 		new_time_ns = (percent * ref_ns); // nsecs
 	}
 
-
-	if( Seek::seek_accurate(get_source(), new_time_ns) ) {
+	if( Seek::seek_accurate(m->source, new_time_ns) ) {
 		return new_time_ns;
 	}
 
@@ -94,7 +102,7 @@ NanoSeconds SeekHandler::seek_rel(double percent, NanoSeconds ref_ns)
 
 NanoSeconds SeekHandler::seek_abs(NanoSeconds ns)
 {
-	if( Seek::seek_accurate(get_source(), ns) ) {
+	if( Seek::seek_accurate(m->source, ns) ) {
 		return ns;
 	}
 
@@ -103,7 +111,7 @@ NanoSeconds SeekHandler::seek_abs(NanoSeconds ns)
 
 NanoSeconds SeekHandler::seek_nearest(NanoSeconds ns)
 {
-	if( Seek::seek_nearest(get_source(), ns) ) {
+	if( Seek::seek_nearest(m->source, ns) ) {
 		return ns;
 	}
 
@@ -123,4 +131,9 @@ NanoSeconds SeekHandler::seek_abs_ms(MilliSeconds ms)
 NanoSeconds SeekHandler::seek_nearest_ms(MilliSeconds ms)
 {
 	return seek_nearest(ms * 1000000);
+}
+
+void SeekHandler::set_source(GstElement* source)
+{
+	m->source = source;
 }

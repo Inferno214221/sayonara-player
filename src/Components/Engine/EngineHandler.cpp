@@ -78,6 +78,16 @@ Handler::Handler(QObject* parent) :
 	connect(m->engine, &Playback::sig_duration_changed, this, &Handler::sig_duration_changed);
 	connect(m->engine, &Playback::sig_bitrate_changed, this, &Handler::sig_bitrate_changed);
 	connect(m->engine, &Playback::sig_cover_changed, this, &Handler::sig_cover_changed);
+
+	connect(m->engine, &Playback::sig_error, play_manager, &PlayManager::error);
+	connect(m->engine, &Playback::sig_current_position_changed, play_manager, &PlayManager::set_position_ms);
+	connect(m->engine, &Playback::sig_track_finished, play_manager, &PlayManager::set_track_finished);
+	connect(m->engine, &Playback::sig_track_ready, play_manager, &PlayManager::set_track_ready);
+	connect(m->engine, &Playback::sig_buffering, play_manager, &PlayManager::buffering);
+	connect(m->engine, &Playback::sig_md_changed, play_manager, &PlayManager::change_metadata);
+	connect(m->engine, &Playback::sig_duration_changed, this, [play_manager](const MetaData& md){
+		play_manager->change_duration(md.length_ms);
+	});
 }
 
 Handler::~Handler() {}
