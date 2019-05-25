@@ -93,7 +93,7 @@
 #include "Database/Connector.h"
 #include "Database/Settings.h"
 
-
+#include <QIcon>
 #include <QTime>
 #include <QDateTime>
 #include <QSessionManager>

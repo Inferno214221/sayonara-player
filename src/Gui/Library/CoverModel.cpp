@@ -161,7 +161,7 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 					return m->cvpc->pixmap(hash);
 				}
 
-				sp_log(Log::Debug, this) << "Need to fetch cover for " << hash;
+				sp_log(Log::Develop, this) << "Need to fetch cover for " << hash;
 				m->cover_thread->add_album(album);
 
 				return m->cvpc->invalid_pixmap();
@@ -221,10 +221,10 @@ void CoverModel::next_hash()
 		return;
 	}
 
-	sp_log(Log::Debug, this) << "Status cover fetch thread:";
-	sp_log(Log::Debug, this) << "  Lookups ready: " << acft->lookups_ready();
-	sp_log(Log::Debug, this) << "  Unprocessed hashes: " << acft->unprocessed_hashes();
-	sp_log(Log::Debug, this) << "  Queued hashes: " << acft->queued_hashes();
+	sp_log(Log::Develop, this) << "Status cover fetch thread:";
+	sp_log(Log::Develop, this) << "  Lookups ready: " << acft->lookups_ready();
+	sp_log(Log::Develop, this) << "  Unprocessed hashes: " << acft->unprocessed_hashes();
+	sp_log(Log::Develop, this) << "  Queued hashes: " << acft->queued_hashes();
 
 
 	Hash hash = hlp.first;

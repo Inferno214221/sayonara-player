@@ -50,9 +50,9 @@ bool DB::Settings::load_settings()
 		}
 
 		else {
-			sp_log(Log::Info, this) << "Setting " << db_key << ": Not found. Use default value...";
+			sp_log(Log::Debug, this) << "Setting " << db_key << ": Not found. Use default value...";
 			s->assign_default_value();
-			sp_log(Log::Info, this) << "Load Setting " << db_key << ": " << s->value_to_string();
+			sp_log(Log::Debug, this) << "Load Setting " << db_key << ": " << s->value_to_string();
 		}
 	}
 
@@ -134,7 +134,7 @@ bool DB::Settings::store_setting(QString key, const QVariant& value)
 			return false;
 		}
 
-		sp_log(Log::Info, this) << "Inserted " << key << " first time";
+		sp_log(Log::Debug, this) << "Inserted " << key << " first time";
 	}
 
 	else
