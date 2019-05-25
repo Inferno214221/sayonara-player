@@ -1,3 +1,23 @@
+/* TaggingCover.cpp */
+
+/* Copyright (C) 2011-2019  Lucio Carreras
+ *
+ * This file is part of sayonara player
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "TaggingCover.h"
 #include "TaggingEnums.h"
 #include "Tagging.h"
@@ -15,10 +35,13 @@
 #include <QString>
 #include <QPixmap>
 #include <QFile>
+#include <QFileInfo>
 
 #include <taglib/fileref.h>
 #include <taglib/flacpicture.h>
 #include <taglib/tlist.h>
+
+using Tagging::ParsedTag;
 
 bool Tagging::Covers::write_cover(const QString& filepath, const QPixmap& cover)
 {
@@ -44,7 +67,7 @@ bool Tagging::Covers::write_cover(const QString& filepath, const QString& cover_
 
 	TagLib::FileRef f(TagLib::FileName(filepath.toUtf8()));
 	if(!Tagging::Utils::is_valid_file(f)){
-		sp_log(Log::Warning, "Tagging") << "Cannot open tags for " << filepath;
+		sp_log(Log::Warning, "Tagging") << "Cannot write cover for " << filepath;
 		return false;
 	}
 
@@ -121,17 +144,9 @@ QPixmap Tagging::Covers::extract_cover(const QString& filepath)
 }
 
 
-bool Tagging::Covers::extract_cover(const QString& filepath, QByteArray& cover_data, QString& mime_type)
+bool Tagging::Covers::extract_cover(const ParsedTag& parsed_tag, QByteArray& cover_data, QString& mime_type)
 {
-	TagLib::FileRef f(TagLib::FileName(filepath.toUtf8()));
-
-	if(!Tagging::Utils::is_valid_file(f)){
-		sp_log(Log::Warning, "Tagging") << "Cannot open tags for " << filepath;
-		return false;
-	}
-
 	Models::Cover cover;
-	Tagging::ParsedTag parsed_tag = Tagging::Utils::tag_type_from_fileref(f);
 	Tagging::TagType tag_type = parsed_tag.type;
 
 	switch(tag_type)
@@ -183,16 +198,22 @@ bool Tagging::Covers::extract_cover(const QString& filepath, QByteArray& cover_d
 }
 
 
-bool Tagging::Covers::has_cover(const QString& filepath)
+bool Tagging::Covers::extract_cover(const QString& filepath, QByteArray& cover_data, QString& mime_type)
 {
-	TagLib::FileRef f(TagLib::FileName(filepath.toUtf8()));
-
-	if(!Tagging::Utils::is_valid_file(f)){
-		sp_log(Log::Warning, "Tagging") << "Cannot open tags for " << filepath;
+	TagLib::FileRef fileref(TagLib::FileName(filepath.toUtf8()));
+	if(!Tagging::Utils::is_valid_file(fileref)){
+		sp_log(Log::Warning, "Tagging") << "Cannot extract cover for " << filepath;
 		return false;
 	}
 
-	Tagging::ParsedTag parsed_tag = Tagging::Utils::tag_type_from_fileref(f);
+	Tagging::ParsedTag parsed_tag = Tagging::Utils::tag_type_from_fileref(fileref);
+
+	return extract_cover(parsed_tag, cover_data, mime_type);
+
+}
+
+bool Tagging::Covers::has_cover(const ParsedTag& parsed_tag)
+{
 	Tagging::TagType tag_type = parsed_tag.type;
 
 	switch(tag_type)
@@ -221,6 +242,24 @@ bool Tagging::Covers::has_cover(const QString& filepath)
 		default:
 			return false;
 	}
+}
+
+bool Tagging::Covers::has_cover(const QString& filepath)
+{
+	QFileInfo fi(filepath);
+	if(fi.size() <= 0){
+		return false;
+	}
+
+	TagLib::FileRef fileref(TagLib::FileName(filepath.toUtf8()));
+	if(!Tagging::Utils::is_valid_file(fileref)){
+		sp_log(Log::Warning, "Tagging") << "Cannot determine cover for " << filepath;
+		return false;
+	}
+
+	Tagging::ParsedTag parsed_tag = Tagging::Utils::tag_type_from_fileref(fileref);
+
+	return has_cover(parsed_tag);
 }
 
 

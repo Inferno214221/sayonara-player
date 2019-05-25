@@ -1,6 +1,6 @@
 /* SpeedHandler.cpp */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -18,9 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "SpeedHandler.h"
+#include "../Callbacks/EngineUtils.h"
 #include "Utils/Settings/Settings.h"
 
 #include <gst/gst.h>
@@ -42,19 +41,18 @@ void SpeedHandler::set_speed(float speed, double pitch, bool preserve_pitch)
 		return;
 	}
 
-	if(preserve_pitch){
-		g_object_set(pitch_element,
+	if(preserve_pitch)
+	{
+		Engine::Utils::set_values(pitch_element,
 					 "tempo", speed,
 					 "rate", 1.0,
-					 "pitch", pitch,
-					 nullptr);
+					 "pitch", pitch);
 	}
 
 	else{
-		g_object_set(pitch_element,
+		Engine::Utils::set_values(pitch_element,
 					 "tempo", 1.0,
 					 "rate", speed,
-					 "pitch", pitch,
-					 nullptr);
+					 "pitch", pitch);
 	}
 }

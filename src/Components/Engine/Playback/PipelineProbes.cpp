@@ -1,6 +1,6 @@
 /* PipelineProbes.cpp */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -20,6 +20,7 @@
 
 #include "PipelineProbes.h"
 #include "StreamRecorderData.h"
+#include "../Callbacks/EngineUtils.h"
 
 #include "Utils/Logger/Logger.h"
 #include "Utils/Utils.h"
@@ -155,10 +156,8 @@ Probing::stream_recorder_probed(GstPad *pad, GstPadProbeInfo *info, gpointer use
 	{
 		sp_log(Log::Develop, "PipelineProbes") << "set new filename streamrecorder: " << data->filename;
 
-		gst_element_set_state(data->sink, GST_STATE_NULL);
-		g_object_set( data->sink,
-					  "location", data->filename,
-					  nullptr);
+		Engine::Utils::set_state(data->sink, GST_STATE_NULL);
+		Engine::Utils::set_value(data->sink, "location", data->filename);
 
 		data->has_empty_filename = false;
 
@@ -167,19 +166,19 @@ Probing::stream_recorder_probed(GstPad *pad, GstPadProbeInfo *info, gpointer use
 			data->probe_id = 0;
 		}
 
-		gst_element_set_state(data->sink, GST_STATE_PLAYING);
+		Engine::Utils::set_state(data->sink, GST_STATE_PLAYING);
 
 		data->busy = false;
 		return GST_PAD_PROBE_REMOVE;
 	}
 
 	else{
-		if(!data->has_empty_filename){
-			gst_element_set_state(data->sink, GST_STATE_NULL);
-			g_object_set( data->sink,
-						  "location",
-						  (Util::sayonara_path() + "bla.mp3").toLocal8Bit().data(),
-						  nullptr);
+		if(!data->has_empty_filename)
+		{
+			Engine::Utils::set_state(data->sink, GST_STATE_NULL);
+			Engine::Utils::set_value(data->sink,
+									 "location",
+									 (Util::sayonara_path() + "bla.mp3").toLocal8Bit().data());
 
 			data->has_empty_filename = true;
 		}

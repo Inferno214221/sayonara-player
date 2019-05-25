@@ -1,6 +1,6 @@
 /* DatabaseArtists.cpp */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -59,22 +59,24 @@ Artists::~Artists() {}
 
 QString Artists::fetch_query_artists(bool also_empty) const
 {
-	QString sql =
-			"SELECT "
-			"artists.artistID AS artistID "
-			", artists.name AS artistName "
-			", COUNT(DISTINCT " + m->track_view + ".trackID) AS trackCount "
-			" FROM artists ";
+	QStringList fields
+	{
+			"artists.artistID           AS artistID",
+			"artists.name               AS artistName",
+			"COUNT(DISTINCT %1.trackID) AS trackCount"
+	};
+
+	QString query = "SELECT " + fields.join(", ") + " FROM artists ";
 
 	QString join = " INNER JOIN ";
 	if(also_empty){
 		join = " LEFT OUTER JOIN ";
 	}
 
-	sql += join + " " + m->track_view + " ON " + m->track_view + "." + artistid_field() + " = artists.artistID ";
-	sql += join + " albums ON " + m->track_view + ".albumID = albums.albumID ";
+	query += join + " %1 ON %1.%2 = artists.artistID ";
+	query += join + " albums ON %1.albumID = albums.albumID ";
 
-	return sql;
+	return query.arg(m->track_view).arg(artistid_field());
 }
 
 bool Artists::db_fetch_artists(Query& q, ArtistList& result)
@@ -90,10 +92,10 @@ bool Artists::db_fetch_artists(Query& q, ArtistList& result)
 	{
 		Artist artist;
 
-		artist.id = q.value(0).toInt();
-		artist.set_name(q.value(1).toString().trimmed());
-		artist.num_songs = q.value(2).toInt();
-		artist.set_db_id(db_id());
+		artist.id =			q.value(0).toInt();
+		artist.set_name(	q.value(1).toString().trimmed());
+		artist.num_songs =	q.value(2).toInt();
+		artist.set_db_id(	db_id());
 
 		result << std::move(artist);
 	}
@@ -101,53 +103,26 @@ bool Artists::db_fetch_artists(Query& q, ArtistList& result)
 	return true;
 }
 
-QString Artists::_create_order_string(Library::SortOrder sort)
-{
-	switch(sort) {
-		case Library::SortOrder::ArtistNameAsc:
-			return QString(" ORDER BY artistName ASC ");
-		case Library::SortOrder::ArtistNameDesc:
-			return QString(" ORDER BY artistName DESC ");
-		case Library::SortOrder::ArtistTrackcountAsc:
-			return QString(" ORDER BY trackCount ASC, artistName ASC ");
-		case Library::SortOrder::ArtistTrackcountDesc:
-			return QString(" ORDER BY trackCount DESC, artistName DESC ");
-		default:
-			return  "";
-	}
-}
-
-
 bool Artists::getArtistByID(int id, Artist& artist, bool also_empty)
 {
-	if(id < 0) return false;
-
-	Query q(this);
-
-	ArtistList artists;
-
-	QString query = fetch_query_artists(also_empty) +
-				"WHERE artists.artistID = ? "
-				"GROUP BY artistName;";
-
-	q.prepare(query);
-	q.addBindValue(id);
-
-	bool success = db_fetch_artists(q, artists);
-	if(!success){
+	if(id < 0) {
 		return false;
 	}
 
-	if(artists.size() > 0) {
-		success = true;
-		artist = artists.first();
+	QString query = fetch_query_artists(also_empty) + " WHERE artists.artistID = ?;";
+
+	Query q(this);
+	q.prepare(query);
+	q.addBindValue(id);
+
+	ArtistList artists;
+	bool success = db_fetch_artists(q, artists);
+	if(!success || artists.empty()){
+		return false;
 	}
 
-	else {
-		success = false;
-	}
-
-	return success;
+	artist = artists.first();
+	return true;
 }
 
 ArtistId Artists::getArtistID(const QString& artist)
@@ -172,66 +147,57 @@ ArtistId Artists::getArtistID(const QString& artist)
 
 bool Artists::getAllArtists(ArtistList& result, bool also_empty)
 {
-	return getAllArtists(result, Library::SortOrder::ArtistNameAsc, also_empty);
-}
-
-bool Artists::getAllArtists(ArtistList& result, Library::SortOrder sortorder, bool also_empty)
-{
-	Query q(this);
 	QString query = fetch_query_artists(also_empty);
+	query += "GROUP BY artists.artistID, artists.name; ";
 
-	query += "GROUP BY artists.artistID, artists.name ";
-	query += _create_order_string(sortorder) + ";";
-
+	Query q(this);
 	q.prepare(query);
 
 	return db_fetch_artists(q, result);
 }
 
-
-bool Artists::getAllArtistsBySearchString(const Library::Filter& filter, ArtistList& result, Library::SortOrder sortorder)
+bool Artists::getAllArtistsBySearchString(const Library::Filter& filter, ArtistList& result)
 {
 	QStringList filters = filter.filtertext(true);
 	QStringList search_filters = filter.search_mode_filtertext(true);
 	for(int i=0; i<filters.size(); i++)
 	{
 		Query q(this);
-		QString query;
-		QString select = "SELECT " +
+
+		QString query = "SELECT " +
 						 artistid_field() + ", " +
 						 artistname_field() + ", " +
 						 "COUNT(DISTINCT trackID) AS trackCount "
 						 "FROM " + m->search_view + " ";
 
-		QString where_clause;
+		query += " WHERE ";
 
 		switch(filter.mode())
 		{
 			case Library::Filter::Genre:
-				where_clause = "WHERE genre LIKE :searchterm ";
+				if(filter.is_invalid_genre()){
+					query += "genre = ''";
+				}
+				else {
+					query += "genre LIKE :searchterm";
+				}
 				break;
 
 			case Library::Filter::Filename:
-				where_clause = "WHERE filecissearch LIKE :cissearch ";
+				query += "filecissearch LIKE :cissearch";
 				break;
 
 			case Library::Filter::Fulltext:
 			default:
-				where_clause = "WHERE allCissearch LIKE :cissearch ";
+				query += "allCissearch LIKE :cissearch";
 				break;
 		}
 
-		if(query.isEmpty())
-		{
-				query = select +
-						where_clause +
-						"GROUP BY " + artistid_field() + ", " + artistname_field() + " ";
-		}
-
-		query += _create_order_string(sortorder) + ";";
+		query += QString(" GROUP BY %1, %2;")
+						.arg(artistid_field())
+						.arg(artistname_field());
 
 		q.prepare(query);
-
 		q.bindValue(":searchterm",	Util::cvt_not_null(filters[i]));
 		q.bindValue(":cissearch",	Util::cvt_not_null(search_filters[i]));
 
@@ -285,6 +251,12 @@ ArtistId Artists::updateArtist(const Artist& artist)
 
 ArtistId Artists::insertArtistIntoDatabase(const QString& artist)
 {
+	ArtistId id = getArtistID(artist);
+	if(id >= 0){
+		Artist a; a.set_name(artist);
+		return updateArtist(a);
+	}
+
 	QString cis = Library::Utils::convert_search_string(artist, search_mode());
 
 	QMap<QString, QVariant> bindings

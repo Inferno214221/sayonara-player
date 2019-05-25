@@ -1,6 +1,6 @@
 /* PlayerPlugin.cpp */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -19,8 +19,8 @@
  */
 
 #include "PlayerPluginBase.h"
-#include "GUI/Utils/Shortcuts/Shortcut.h"
-#include "GUI/Utils/Shortcuts/ShortcutHandler.h"
+#include "Gui/Utils/Shortcuts/Shortcut.h"
+#include "Gui/Utils/Shortcuts/ShortcutHandler.h"
 #include "Utils/Settings/Settings.h"
 
 #include <QAction>

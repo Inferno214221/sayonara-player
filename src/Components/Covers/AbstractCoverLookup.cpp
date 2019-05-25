@@ -1,6 +1,6 @@
 /* AbstractCoverLookup.cpp */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -19,11 +19,29 @@
  */
 
 #include "AbstractCoverLookup.h"
+#include "CoverLocation.h"
 
-Cover::LookupBase::LookupBase(QObject *parent) :
+struct Cover::LookupBase::Private
+{
+	Cover::Location cl;
+
+	Private(const Cover::Location& cl) : cl(cl) {}
+};
+
+Cover::LookupBase::LookupBase(const Cover::Location& cl, QObject *parent) :
     QObject(parent)
 {
-
+	m = Pimpl::make<Private>(cl);
 }
 
 Cover::LookupBase::~LookupBase() {}
+
+Cover::Location Cover::LookupBase::cover_location() const
+{
+	return m->cl;
+}
+
+void Cover::LookupBase::set_cover_location(const Cover::Location& cl)
+{
+	m->cl = cl;
+}

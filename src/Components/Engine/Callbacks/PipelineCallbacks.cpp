@@ -1,6 +1,6 @@
 /* PipelineCallbacks.cpp */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -18,9 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "PipelineCallbacks.h"
+#include "EngineUtils.h"
+
 #include "Utils/Logger/Logger.h"
 #include "Utils/WebAccess/Proxy.h"
-#include "PipelineCallbacks.h"
 #include "Components/Engine/AbstractPipeline.h"
 
 #include <gst/app/gstappsink.h>
@@ -168,8 +170,6 @@ void Callbacks::source_ready(GstURIDecodeBin* bin, GstElement* source, gpointer 
 
 	if(is_source_soup(source))
 	{
-		//g_object_set(G_OBJECT(source), "ssl-strict", false, nullptr);
-
 		Proxy* proxy = Proxy::instance();
 		if(proxy->active())
 		{
@@ -179,11 +179,9 @@ void Callbacks::source_ready(GstURIDecodeBin* bin, GstElement* source, gpointer 
 			{
 				sp_log(Log::Develop, "Engine Callback") << "Will use proxy username: " << proxy->username();
 
-				g_object_set(G_OBJECT(source),
-							 "proxy-id", proxy->username().toLocal8Bit().data(),
-							 "proxy-pw", proxy->password().toLocal8Bit().data(),
-							 nullptr
-				);
+				Engine::Utils::set_values(source,
+						"proxy-id", proxy->username().toLocal8Bit().data(),
+						"proxy-pw", proxy->password().toLocal8Bit().data());
 			}
 		}
 	}

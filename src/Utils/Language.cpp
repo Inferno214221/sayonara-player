@@ -1,6 +1,6 @@
 /* Language.cpp */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -122,6 +122,8 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Close others");
 		case CloseTab:
 			return l.tr("Close tab");
+		case Comment:
+			return l.tr("Comment");
 		case Continue:
 			return l.tr("Continue");
 		case Covers:

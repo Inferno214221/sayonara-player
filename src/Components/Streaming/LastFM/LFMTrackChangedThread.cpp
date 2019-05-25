@@ -1,6 +1,6 @@
 /* LFMTrackChangedThread.cpp
 
- * Copyright (C) 2011-2017 Lucio Carreras
+ * Copyright (C) 2011-2019 Lucio Carreras
  *
  * This file is part of sayonara-player
  *
@@ -70,7 +70,7 @@ TrackChangedThread::TrackChangedThread(QObject* parent) :
 	DB::Connector* db = DB::Connector::instance();
 	DB::LibraryDatabase* lib_db = db->library_db(-1, 0);
 
-	lib_db->getAllArtists(artists);
+	lib_db->getAllArtists(artists, false);
 
 #ifdef SMART_COMPARE
 	_smart_comparison = new SmartCompare(artists);

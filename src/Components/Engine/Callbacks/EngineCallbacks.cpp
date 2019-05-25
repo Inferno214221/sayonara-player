@@ -1,6 +1,6 @@
 /* EngineCallbacks.cpp */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -224,7 +224,8 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 			}
 
 			if( new_state == GST_STATE_PLAYING ||
-				new_state == GST_STATE_PAUSED)
+				new_state == GST_STATE_PAUSED ||
+				new_state == GST_STATE_READY)
 			{
 				engine->set_track_ready(src);
 			}

@@ -1,6 +1,6 @@
 /* LocalCoverSearcher.cpp */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -22,6 +22,7 @@
 
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
+#include "Utils/Logger/Logger.h"
 
 #include <QFile>
 #include <QDir>
@@ -32,28 +33,34 @@
 #include <cmath>
 
 using namespace Cover;
+static const char* ClassName="LocalSearcher";
 
-QStringList LocalSearcher::cover_paths_from_filename(const QString& filepath)
+QStringList LocalSearcher::cover_paths_from_path_hint(const QString& filepath_hint)
 {
-	QString file, dir;
-	Util::File::split_filename(filepath, dir, file);
-	return cover_paths_from_dirname(dir);
-}
+	sp_log(Log::Develop, ClassName) << "Search for covers. Hint: " << filepath_hint;
 
-QStringList LocalSearcher::cover_paths_from_dirname(const QString& filepath)
-{
-	QStringList ret;
+	QString filepath = filepath_hint;
+	QFileInfo info(filepath);
+	if(info.isFile())
+	{
+		filepath = Util::File::get_parent_directory(filepath_hint);
+		sp_log(Log::Develop, ClassName) << filepath_hint << " is not a directory. Using " << filepath << " instead";
+	}
 
-	QStringList filters;
-	filters << "*.jpg"
-			<< "*.png";
+	QStringList filters = Util::image_extensions();
+
+	int c = filters.size();
+	for(int i=0; i<c; i++){
+		filters << filters[i].toUpper();
+	}
 
 	QDir dir(filepath);
 	QStringList entries = dir.entryList(filters, (QDir::Files | QDir::NoDotAndDotDot));
 	if(entries.isEmpty()){
-		return ret;
+		return QStringList();
 	}
 
+	QStringList ret;
 	QMap<QString, double> size_map;
 	for(const QString& entry : entries)
 	{
@@ -72,6 +79,8 @@ QStringList LocalSearcher::cover_paths_from_dirname(const QString& filepath)
 		double pixels = static_cast<double>(width * height);
 
 		d = (d * d * std::max(width, height)) / pixels;
+
+		sp_log(Log::Develop, ClassName) << "  Coverfile " << filepath + "/" + entry << " has first rating " << QString::number(d, 'g', 2);
 
 		if( entry.contains(QStringLiteral("cover"), Qt::CaseInsensitive) ||
 			entry.contains(QStringLiteral("albumart"), Qt::CaseInsensitive) ||
@@ -96,6 +105,8 @@ QStringList LocalSearcher::cover_paths_from_dirname(const QString& filepath)
 			d = d * 5;
 		}
 
+		sp_log(Log::Develop, ClassName) << "  Coverfile " << filepath + "/" + entry << " has final rating " << QString::number(d, 'g', 2)  << " (Lower is better)";
+
 		QString f = filepath + "/" + entry;
 		size_map[f] = d;
 		ret << f;
@@ -104,6 +115,8 @@ QStringList LocalSearcher::cover_paths_from_dirname(const QString& filepath)
 	std::sort(ret.begin(), ret.end(), [=](const QString& f1, const QString& f2){
 		return (size_map[f1] < size_map[f2]);
 	});
+
+	sp_log(Log::Develop, ClassName) << "  Sorted cover files " << ret;
 
 	return ret;
 }

@@ -1,6 +1,6 @@
 /* GUI_SoundcloudArtistSearch.h */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -22,7 +22,7 @@
 #define GUI_SOUNDCLOUDARTISTSEARCH_H
 
 #include "Utils/Pimpl.h"
-#include "GUI/Utils/Widgets/Dialog.h"
+#include "Gui/Utils/Widgets/Dialog.h"
 
 class ArtistList;
 class MetaDataList;

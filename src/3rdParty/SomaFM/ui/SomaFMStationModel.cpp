@@ -1,6 +1,6 @@
 /* SomaFMStationModel.cpp */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -30,10 +30,10 @@
 #include "Utils/Logger/Logger.h"
 #include "Utils/Language.h"
 
-#include "GUI/Utils/GuiUtils.h"
-#include "GUI/Utils/MimeDataUtils.h"
-#include "GUI/Utils/CustomMimeData.h"
-#include "GUI/Utils/Icons.h"
+#include "Gui/Utils/GuiUtils.h"
+#include "Gui/Utils/MimeDataUtils.h"
+#include "Gui/Utils/CustomMimeData.h"
+#include "Gui/Utils/Icons.h"
 
 #include <QUrl>
 #include <QIcon>
@@ -104,7 +104,7 @@ QVariant SomaFM::StationModel::data(const QModelIndex& index, int role) const
 		}
 
 		if(m->stations[row].is_loved()){
-			return Gui::Icons::icon(Gui::Icons::Star);
+			return Gui::Icons::icon(Gui::Icons::Star, Gui::Icons::IconMode::ForceSayonaraIcon);
 		}
 
 		return Gui::Icons::icon(Gui::Icons::StarDisabled);
@@ -135,6 +135,11 @@ QVariant SomaFM::StationModel::data(const QModelIndex& index, int role) const
 		}
 
 		return m->stations[row].name();
+	}
+
+	else if(role == Qt::SizeHintRole && col == 0)
+	{
+		return QSize(30, 30);
 	}
 
 	return QVariant();

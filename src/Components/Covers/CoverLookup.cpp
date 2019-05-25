@@ -1,6 +1,6 @@
 /* CoverLookup.cpp */
 
-/* Copyright (C) 2011-2017 Lucio Carreras
+/* Copyright (C) 2011-2019 Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -30,6 +30,7 @@
 #include "CoverFetchThread.h"
 #include "CoverLocation.h"
 #include "CoverUtils.h"
+#include "CoverExtractor.h"
 
 #include "Database/Connector.h"
 #include "Database/CoverConnector.h"
@@ -38,7 +39,7 @@
 #include "Utils/Logger/Logger.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/Album.h"
-#include "Utils/Tagging/TaggingCover.h"
+
 #include "Utils/FileUtils.h"
 #include "Utils/Utils.h"
 
@@ -46,44 +47,47 @@
 #include <QImageWriter>
 #include <QStringList>
 #include <QThread>
+#include <QDir>
 #include <mutex>
 
-static std::mutex mtx;
 using Cover::Location;
 using Cover::Lookup;
 using Cover::FetchThread;
 
 namespace FileUtils=::Util::File;
 
+enum CoverSource : quint8
+{
+	Database=0,
+	AudioFile,
+	Filesystem,
+	WWW
+};
+
 struct Lookup::Private
 {
-	Location		cl;
 	QList<QPixmap>	pixmaps;
 	FetchThread*	cft=nullptr;
 	void*			user_data=nullptr;
 
 	int				n_covers;
+	CoverSource		source;
 	bool			thread_running;
 	bool			finished;
+	bool			stopped;
 
 	Private(int n_covers) :
 		n_covers(n_covers),
 		thread_running(false),
-		finished(false)
+		finished(false),
+		stopped(false)
 	{}
 };
 
-Lookup::Lookup(QObject* parent, int n_covers) :
-	LookupBase(parent)
+Lookup::Lookup(const Location& cl, int n_covers, QObject* parent) :
+	LookupBase(cl, parent)
 {
 	m = Pimpl::make<Private>(n_covers);
-}
-
-Lookup::Lookup(QObject* parent, int n_covers, const Cover::Location& cl) :
-	LookupBase(parent)
-{
-	m = Pimpl::make<Private>(n_covers);
-	m->cl = cl;
 }
 
 Lookup::~Lookup()
@@ -104,10 +108,8 @@ bool Lookup::start_new_thread(const Cover::Location& cl )
 	}
 
 	sp_log(Log::Develop, this) << "Start new cover fetch thread for " << cl.identifer();
-
-	m->cl = cl;
-
 	sp_log(Log::Develop, this) << cl.search_urls();
+
 	m->thread_running = true;
 
 	QThread* thread = new QThread(nullptr);
@@ -122,111 +124,102 @@ bool Lookup::start_new_thread(const Cover::Location& cl )
 	connect(thread, &QThread::started, m->cft, &FetchThread::start);
 	connect(thread, &QThread::finished, thread, &QThread::deleteLater);
 
+	m->source = CoverSource::WWW;
 	thread->start();
 	return true;
 }
 
 void Lookup::start()
 {
-	bool success = fetch_cover(m->cl, true);
-	if(!success)
-	{
-		emit_finished(false);
-	}
-}
-
-bool Lookup::fetch_cover(const Cover::Location& cl, bool also_www)
-{
-	m->cl = cl;
+	m->pixmaps.clear();
+	m->thread_running = false;
+	m->stopped = false;
 	m->finished = false;
 
-	bool success = false;
+	if(!cover_location().valid()){
+		emit_finished(false);
+		return;
+	}
 
 	if(m->n_covers == 1)
 	{
-		success = fetch_from_database();
-		if(success){
-			return true;
+		if(fetch_from_database()){
+			return;
 		}
 
-		if(cl.has_audio_file_source())
-		{
-			success = fetch_from_audio_source();
-			if(success){
-				return true;
-			}
+		if(fetch_from_audio_source()){
+			return;
 		}
 	}
 
-	success = fetch_from_file_system();
-	if(success){
-		return true;
+	if(fetch_from_file_system()){
+		return;
 	}
 
-	if(also_www)
-	{
-		success = fetch_from_www();
-		if(success){
-			return true;
-		}
+	if(fetch_from_www()){
+		return;
 	}
 
-	return false;
+	emit_finished(false);
 }
 
 
 bool Lookup::fetch_from_database()
 {
+	m->source = CoverSource::Database;
+
+	Cover::Location cl = cover_location();
+	QString hash = cl.hash();
+
 	DB::Covers* dbc = DB::Connector::instance()->cover_connector();
 
 	QPixmap pm;
-	QString hash = m->cl.hash();
 	bool success = dbc->get_cover(hash, pm);
 	if(success && !pm.isNull())
 	{
-		add_new_cover(pm);
-		emit_finished(true);
+		add_new_cover(pm, false);
+		return true;
 	}
 
-	return success;
+	return false;
 }
 
 bool Lookup::fetch_from_audio_source()
 {
-	Cover::Location cl = m->cl;
-	QPixmap pm;
+	m->source = CoverSource::AudioFile;
 
-	Cover::Extractor* extractor = new Cover::Extractor(cl.audio_file_source(), nullptr);
-	QThread* thread = new QThread();
-	extractor->moveToThread(thread);
+	Cover::Location cl = cover_location();
 
-	connect(extractor, &Cover::Extractor::sig_finished, this, &Cover::Lookup::extractor_finished);
-	connect(extractor, &Cover::Extractor::destroyed, thread, &QThread::quit);
+	if(!cl.has_audio_file_source()){
+		return false;
+	}
 
-	connect(thread, &QThread::started, extractor, &Cover::Extractor::start);
-	connect(thread, &QThread::finished, thread, &QThread::deleteLater);
+	QString audio_file_target = cl.audio_file_target();
+	if(FileUtils::exists(audio_file_target))
+	{
+		QPixmap pm = QPixmap(cl.audio_file_target());
+		bool success = add_new_cover(pm, true);
+		if(success && pm.isNull())
+		{
+			return true;
+		}
+	}
 
-	thread->start();
-
-	return true;
+	return start_extractor(cl);
 }
 
 bool Lookup::fetch_from_file_system()
 {
-	Cover::Location cl = m->cl;
+	m->source = CoverSource::Filesystem;
 
-	QString cover_path = cl.local_path_hint();
+	Cover::Location cl = cover_location();
+	QString local_path = cl.local_path();
 
 	// Look, if cover exists in .Sayonara/covers
-	if(FileUtils::exists(cover_path) && m->n_covers == 1)
+	if(FileUtils::exists(local_path) && m->n_covers == 1)
 	{
-		QPixmap pm(cover_path);
-		bool success = add_new_cover(pm, cl.hash());
-		if(success)
-		{
-			emit_finished(true);
-			return true;
-		}
+		QPixmap pm(local_path);
+		return add_new_cover(pm, true);
 	}
 
 	return false;
@@ -234,7 +227,7 @@ bool Lookup::fetch_from_file_system()
 
 bool Lookup::fetch_from_www()
 {
-	Cover::Location cl = m->cl;
+	Cover::Location cl = cover_location();
 
 	bool fetch_from_www_allowed = GetSetting(Set::Cover_FetchFromWWW);
 	if(fetch_from_www_allowed)
@@ -248,66 +241,105 @@ bool Lookup::fetch_from_www()
 
 void Lookup::thread_finished(bool success)
 {
-	emit_finished(success);
+	if(!success){
+		emit_finished(false);
+	}
 
 	m->cft = nullptr;
 	sender()->deleteLater();
 }
 
+
+bool Lookup::start_extractor(const Location& cl)
+{
+	Cover::Extractor* extractor = new Cover::Extractor(cl.audio_file_source(), this);
+	QThread* thread = new QThread(nullptr);
+	extractor->moveToThread(thread);
+
+	connect(extractor, &Cover::Extractor::sig_finished, this, &Cover::Lookup::extractor_finished);
+	connect(extractor, &Cover::Extractor::destroyed, thread, &QThread::quit);
+
+	connect(thread, &QThread::started, extractor, &Cover::Extractor::start);
+	connect(thread, &QThread::finished, thread, &QThread::deleteLater);
+
+	thread->start();
+
+	return true;
+}
+
+
 void Lookup::extractor_finished()
 {
+	sp_log(Log::Develop, this) << "Extractor finished";
+
 	Cover::Extractor* extractor = static_cast<Cover::Extractor*>(sender());
 	QPixmap pm = extractor->pixmap();
 
 	extractor->deleteLater();
 
-	bool success = this->add_new_cover(pm, m->cl.hash());
-	if(success){
-		emit_finished(true);
-		return;
-	}
+	sp_log(Log::Debug, this) << " finished: " << !pm.isNull();
 
-	success = fetch_from_file_system();
-	if(success){
-		return;
-	}
-
-	success = fetch_from_www();
-	if(!success){
-		emit_finished(false);
-	}
-}
-
-
-bool Lookup::add_new_cover(const QPixmap& pm)
-{
 	if(!pm.isNull())
 	{
-		LOCK_GUARD(mtx)
-		{
-			m->pixmaps.push_back(pm);
-		}
-
-		emit sig_cover_found(pm);
+		add_new_cover(pm, true);
 	}
 
-	return (!pm.isNull());
+	else
+	{
+		bool success = fetch_from_file_system();
+		if(success){
+			return;
+		}
+
+		success = fetch_from_www();
+		if(!success){
+			emit_finished(false);
+		}
+	}
 }
 
 
-bool Lookup::add_new_cover(const QPixmap& pm, const QString& hash)
+
+bool Lookup::add_new_cover(const QPixmap& pm, bool save)
 {
-	bool success = add_new_cover(pm);
-	if(success)
-	{
-		DB::Covers* dbc = DB::Connector::instance()->cover_connector();
-		if(!dbc->exists(hash))
-		{
-			dbc->set_cover(hash, pm);
-		}
+	if(m->stopped || pm.isNull()){
+		return false;
 	}
 
-	return success;
+	emit sig_cover_found(pm);
+	m->pixmaps.push_back(pm);
+
+	if(!save || m->n_covers > 1)
+	{
+		if(m->pixmaps.size() == m->n_covers){
+			emit_finished(true);
+		}
+
+		return true;
+	}
+
+	if(GetSetting(Set::Cover_SaveToDB))
+	{
+		Cover::Utils::write_cover_to_db(cover_location(), pm);
+	}
+
+	if( GetSetting(Set::Cover_SaveToLibrary) &&
+		(m->source == CoverSource::WWW))
+	{
+		Cover::Utils::write_cover_to_library(cover_location(), pm);
+	}
+
+	if(GetSetting(Set::Cover_SaveToSayonaraDir) &&
+	  (m->source == CoverSource::WWW))
+	{
+		Cover::Utils::write_cover_to_sayonara_dir(cover_location(), pm);
+	}
+
+	if(m->pixmaps.size() == m->n_covers){
+		emit_finished(true);
+	}
+
+	return true;
 }
 
 
@@ -319,15 +351,12 @@ void Lookup::cover_found(int idx)
 	}
 
 	QPixmap pm = cft->pixmap(idx);
-	add_new_cover(pm, m->cl.hash());
-	if(m->n_covers == 1)
-	{
-		pm.save(Cover::Utils::cover_directory(m->cl.hash() + ".jpg"));
-	}
+	add_new_cover(pm, true);
 }
 
 void Lookup::stop()
 {
+	m->stopped = true;
 	if(m->cft)
 	{
 		m->cft->stop();
@@ -337,7 +366,8 @@ void Lookup::stop()
 
 void Lookup::emit_finished(bool success)
 {
-	if(!m->finished){
+	if(!m->finished)
+	{
 		m->finished = true;
 		emit sig_finished(success);
 	}
@@ -364,47 +394,3 @@ QList<QPixmap> Lookup::pixmaps() const
 	return m->pixmaps;
 }
 
-QList<QPixmap> Lookup::take_pixmaps()
-{
-	QList<QPixmap> ret;
-	LOCK_GUARD(mtx)
-	{
-		ret = m->pixmaps;
-		m->pixmaps.clear();
-	}
-
-	return ret;
-}
-
-
-struct Cover::Extractor::Private
-{
-	QPixmap pixmap;
-	QString filepath;
-
-	Private(const QString& filepath) : filepath(filepath) {}
-};
-
-Cover::Extractor::Extractor(const QString& filepath, QObject* parent) :
-	QObject(parent)
-{
-	m = Pimpl::make<Private>(filepath);
-}
-
-Cover::Extractor::~Extractor() {}
-
-QPixmap Cover::Extractor::pixmap()
-{
-	return m->pixmap;
-}
-
-void Cover::Extractor::start()
-{
-	m->pixmap = QPixmap();
-
-	if(FileUtils::exists(m->filepath)){
-		m->pixmap = Tagging::Covers::extract_cover(m->filepath);
-	}
-
-	emit sig_finished();
-}

@@ -1,0 +1,13 @@
+== 1.4.0-stable1 ==
+
+  * Covers: Faster cover view
+  * Covers: File searcher reactivated 
+  * Covers: Save options
+  * Importer: Zip support
+  * Library: Show tracks w/o genre
+  * Library: Column resize saved
+  * Player: MPRIS revisited
+  * Player: KDE Plasma fix
+  * Streams: Radio station search support
+  * Raspberry: 32/64 bit issues fixed
+

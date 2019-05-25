@@ -1,6 +1,6 @@
 /* CoverHelper.h */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -22,11 +22,13 @@
 #define COVERHELPER_H
 
 class QString;
+class QPixmap;
 /**
  * @ingroup Covers
  */
 namespace Cover
 {
+	class Location;
 	namespace Utils
 	{
 		/**
@@ -37,10 +39,15 @@ namespace Cover
 		 */
 		QString calc_cover_token(const QString& artist, const QString& album);
 
+		bool add_temp_cover(const QPixmap& pm, const QString& hash);
 		void delete_temp_covers();
 
 		QString cover_directory();
 		QString cover_directory(const QString& append_filename);
+
+		void write_cover_to_sayonara_dir(const Cover::Location& cl, const QPixmap& pm);
+		void write_cover_to_db(const Cover::Location& cl, const QPixmap& pm);
+		void write_cover_to_library(const Cover::Location& cl, const QPixmap& pm);
 
 	}
 }

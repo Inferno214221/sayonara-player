@@ -1,6 +1,6 @@
 /* CoverFetchThread.h */
 
-/* Copyright (C) 2011-2017 Lucio Carreras
+/* Copyright (C) 2011-2019 Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -88,6 +88,7 @@ namespace Cover
 		void stop();
 
 		QPixmap pixmap(int idx) const;
+		int found_images() const;
 
 
 	private slots:

@@ -1,6 +1,6 @@
 /* DBusHandler.cpp */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -24,7 +24,7 @@
 #include "Components/DBus/DBusMediaKeysInterfaceGnome.h"
 #include "Components/DBus/DBusNotifications.h"
 
-#include "GUI/Utils/Widgets/Widget.h"
+#include "Gui/Utils/Widgets/Widget.h"
 #include "Utils/Logger/Logger.h"
 
 #include <QMainWindow>

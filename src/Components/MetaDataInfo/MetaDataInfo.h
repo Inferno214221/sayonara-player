@@ -1,6 +1,6 @@
 /* MetaDataInfo.h */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -28,6 +28,7 @@
 #include <QMap>
 #include <QList>
 
+class Genre;
 class LibraryDatabase;
 
 /**
@@ -45,7 +46,8 @@ enum class InfoStrings : uint8_t
 	Sampler,		// set by AlbumInfo
 	Bitrate,		// set by MetaDataInfo
 	Genre,			// set by MetaDataInfo
-	Filetype
+	Filetype,		// set by MetaDataInfo
+	Comment			// set by MetaDataInfo
 };
 
 
@@ -74,9 +76,10 @@ class MetaDataInfo :
 		virtual void calc_header();
 
 		void insert_playing_time(MilliSeconds ms);
-		void insert_genre(const QStringList& lst);
+		void insert_genre(const Util::Set<Genre>& genres);
 		void insert_filesize(uint64_t filesize);
-		void insert_filetype(const QStringList& filetypes);
+		void insert_filetype(const Util::Set<QString>& filetypes);
+		void insert_comment(const Util::Set<QString>& comments);
 
 		void insert_interval_info_field(InfoStrings key, int min, int max);
 		void insert_numeric_info_field(InfoStrings key, int number);

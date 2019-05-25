@@ -1,6 +1,6 @@
 /* CoverHelper.cpp */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -19,11 +19,18 @@
  */
 
 #include "CoverUtils.h"
+#include "CoverLocation.h"
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Logger/Logger.h"
-#include "Components/Directories/DirectoryReader.h"
+#include "Utils/Settings/Settings.h"
 
+#include "Components/Directories/DirectoryReader.h"
+#include "Database/Connector.h"
+#include "Database/CoverConnector.h"
+
+#include <QFileInfo>
+#include <QPixmap>
 #include <QDir>
 #include <QStringList>
 
@@ -77,4 +84,46 @@ void Cover::Utils::delete_temp_covers()
 	}
 
 	FileUtils::delete_files(files_to_delete);
+}
+
+
+bool Cover::Utils::add_temp_cover(const QPixmap& pm, const QString& hash)
+{
+	QDir cover_dir = QDir(cover_directory());
+	QString path = cover_dir.filePath("tmp_" + hash + ".jpg");
+	return pm.save(path);
+}
+
+
+void Cover::Utils::write_cover_to_sayonara_dir(const Cover::Location& cl, const QPixmap& pm)
+{
+	QFileInfo fi(cl.cover_path());
+	if(fi.isSymLink()){
+		QFile::remove(cl.cover_path());
+	}
+
+	pm.save(cl.cover_path());
+}
+
+void Cover::Utils::write_cover_to_db(const Cover::Location& cl, const QPixmap& pm)
+{
+	DB::Covers* dbc = DB::Connector::instance()->cover_connector();
+	dbc->set_cover(cl.hash(), pm);
+}
+
+
+void Cover::Utils::write_cover_to_library(const Cover::Location& cl, const QPixmap& pm)
+{
+	QString local_dir = cl.local_path_dir();
+	if(local_dir.isEmpty()){
+		return;
+	}
+
+	QString cover_template = GetSetting(Set::Cover_TemplatePath);
+	cover_template.replace("<h>", cl.hash());
+
+	QString filepath = QDir(local_dir).absoluteFilePath(cover_template);
+	QFileInfo fi(filepath);
+
+	pm.save(filepath);
 }

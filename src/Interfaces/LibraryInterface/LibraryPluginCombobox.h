@@ -1,6 +1,6 @@
 /* LibraryPluginCombobox.h */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -22,7 +22,7 @@
 #define LIBRARYPLUGINCOMBOBOX_H
 
 #include "Utils/Pimpl.h"
-#include "GUI/Utils/Widgets/ComboBox.h"
+#include "Gui/Utils/Widgets/ComboBox.h"
 
 class QEvent;
 

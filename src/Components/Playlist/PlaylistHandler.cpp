@@ -1,6 +1,6 @@
 /* Playlist.cpp */
 
-/* Copyright (C) 2011-2017 Lucio Carreras
+/* Copyright (C) 2011-2019 Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -128,15 +128,6 @@ int Handler::load_old_playlists()
 
 	else {
 		m->play_manager->stop();
-		return m->playlists.size();
-	}
-
-	if(GetSetting(Set::PL_StartPlaying)){
-		m->play_manager->play();
-	}
-
-	else{
-		m->play_manager->pause();
 	}
 
 	return m->playlists.size();

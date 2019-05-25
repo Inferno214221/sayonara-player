@@ -1,6 +1,6 @@
 /* CoverLookupAlternative.h */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -38,12 +38,14 @@ namespace Cover
 		Q_OBJECT
 		PIMPL(AlternativeLookup)
 
+	signals:
+		void sig_cover_changed(Cover::Location& cl);
+
 	private:
-		void go(const Location& cl);
+		void go(const Cover::Location& cl);
 
 	public:
-
-		AlternativeLookup(QObject* parent, int n_covers);
+		AlternativeLookup(const Cover::Location& cl, int n_covers, QObject* parent);
 		~AlternativeLookup();
 
 		void start();
@@ -53,9 +55,17 @@ namespace Cover
 		void start_text_search(const QString& search_term, const QString& cover_fetcher_identifier);
 
 		void stop() override;
+		void reset();
 
-		Cover::Location cover_location() const;
-		void set_cover_location(const Cover::Location& location);
+		bool save(const QPixmap& pm);
+		bool is_running() const;
+
+		QStringList get_activated_coverfetchers(bool fulltext_search) const;
+
+		private slots:
+			void started();
+			void finished(bool success);
+			void cover_found(const QPixmap& pm);
 	};
 }
 

@@ -1,6 +1,6 @@
 /* SettingRegistry.cpp */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -74,6 +74,11 @@ bool SettingRegistry::init()
 	register_setting<Set::Lib_ColsTitle>( "lib_shown_cols_title", shown_cols );
 	register_setting<Set::Lib_ColsArtist>( "lib_shown_cols_artist", shown_cols );
 	register_setting<Set::Lib_ColsAlbum>( "lib_shown_cols_album", shown_cols );
+
+	register_setting<Set::Lib_ColSizeTitle>( "lib_colsize_title", IntList() );
+	register_setting<Set::Lib_ColSizeArtist>( "lib_colsize_artist", IntList() );
+	register_setting<Set::Lib_ColSizeAlbum>( "lib_colsize_album", IntList() );
+
 	register_setting<Set::Lib_LiveSearch>( "lib_live_search", true );
 	register_setting<Set::Lib_Sorting>( "lib_sortings", Library::Sortings() );
 	register_setting<Set::Lib_Path>( "library_path", QString() );
@@ -131,6 +136,7 @@ bool SettingRegistry::init()
 	register_setting<Set::Player_Min2Tray>( "min_to_tray", false );
 	register_setting<Set::Player_StartInTray>( "start_in_tray", false );
 	register_setting<Set::Player_ShowTrayIcon>( "show_tray_icon", true );
+	register_setting<Set::Player_514Fix>("514_fix", true);
 	register_setting<Set::Player_NotifyNewVersion>( "notify_new_version", true );
 	register_setting<Set::Player_SplitterState >("splitter_state_player", QByteArray());
 	register_setting<Set::Player_Shortcuts>( "shortcuts", RawShortcutMap()); // deprecated
@@ -208,7 +214,11 @@ bool SettingRegistry::init()
 
 	register_setting<Set::Cover_Server>( "cover_server", QStringList());
 	register_setting<Set::Cover_FetchFromWWW>( "cover_fetch_from_www", true);
+	register_setting<Set::Cover_SaveToDB>("cover_save_to_db", true);
+	register_setting<Set::Cover_SaveToSayonaraDir>("cover_save_to_sayonara_dir", false);
 	register_setting<Set::Cover_StartSearch>("cover_start_search_automatically", true);
+	register_setting<Set::Cover_SaveToLibrary>("cover_save_to_library", false);
+	register_setting<Set::Cover_TemplatePath>("cover_template_path", QString("Cover.jpg"));
 
 	register_setting<Set::Icon_Theme>( "icon_theme", QString());
 	register_setting<Set::Icon_ForceInDarkTheme>( "icon_force_in_dark_theme", false);

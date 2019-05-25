@@ -1,6 +1,6 @@
 /* CoverLookup.h */
 
-/* Copyright (C) 2011-2017 Lucio Carreras
+/* Copyright (C) 2011-2019 Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -51,20 +51,8 @@ namespace Cover
 
 
 	public:
-
-		Lookup(QObject* parent=nullptr, int n_covers=1);
-		Lookup(QObject* parent, int n_covers, const Location& cl);
+		Lookup(const Location& cl, int n_covers, QObject* parent);
 		~Lookup() override;
-
-		/**
-		 * @brief fetches cover for a CoverLocation.
-		 *   1. Looks up CoverLocation::cover_path
-		 *   2. Looks up CoverLocation::local_paths
-		 *   3. Starts a CoverFetchThread
-		 * @param cl CoverLocation of interest
-		 * @return always true
-		 */
-		bool fetch_cover(const Location& cl, bool also_www=true);
 
 
 		/**
@@ -98,14 +86,6 @@ namespace Cover
 		 */
 		QList<QPixmap> pixmaps() const;
 
-		/**
-		 * @brief Get all pixmaps that where fetched and remove them
-		 * from Cover::Lookup
-		 * @return
-		 */
-		QList<QPixmap> take_pixmaps();
-
-
 	private:
 
 		bool fetch_from_database();
@@ -114,14 +94,14 @@ namespace Cover
 		bool fetch_from_www();
 
 
+		bool start_extractor(const Location& cl);
 		/**
 		 * @brief Starts a new CoverFetchThread
 		 * @param cl CoverLocation object
 		 */
 		bool start_new_thread(const Location& cl);
 
-		bool add_new_cover(const QPixmap& pm, const QString& hash);
-		bool add_new_cover(const QPixmap& pm);
+		bool add_new_cover(const QPixmap& pm, bool save);
 
 		void emit_finished(bool success);
 
@@ -143,23 +123,6 @@ namespace Cover
 		void extractor_finished();
 	};
 
-	class Extractor : public QObject
-	{
-		Q_OBJECT
-		PIMPL(Extractor)
-
-		signals:
-			void sig_finished();
-
-		public:
-			Extractor(const QString& filepath, QObject* parent);
-			~Extractor();
-
-			QPixmap pixmap();
-
-		public slots:
-			void start();
-	};
 
 	/**
 	 * @brief CoverLookupPtr

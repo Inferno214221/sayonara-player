@@ -1,6 +1,6 @@
 /* Filter.cpp */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -28,6 +28,11 @@ struct Filter::Private
 	QString					filtertext;
 	Filter::Mode			mode;
 	Library::SearchModeMask search_mode;
+	bool					invalid_genre;
+
+	Private() :
+		invalid_genre(false)
+	{}
 };
 
 Filter::Filter()
@@ -66,7 +71,12 @@ bool Filter::operator ==(const Filter& other)
 		same_filtertext = true;
 	}
 
-	return( same_filtertext && (m->mode == other.mode()) );
+	return
+	(
+		same_filtertext &&
+		(m->mode == other.mode()) &&
+		(m->invalid_genre == other.is_invalid_genre())
+	);
 }
 
 
@@ -143,7 +153,17 @@ void Filter::set_mode(Filter::Mode mode)
 
 bool Filter::cleared() const
 {
-	return m->filtertext.isEmpty();
+	return (m->filtertext.isEmpty() && !m->invalid_genre);
+}
+
+void Filter::set_invalid_genre(bool b)
+{
+	m->invalid_genre = b;
+}
+
+bool Filter::is_invalid_genre() const
+{
+	return m->invalid_genre;
 }
 
 QString Filter::get_text(Filter::Mode mode)

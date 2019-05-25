@@ -1,6 +1,6 @@
 /* TagEdit.cpp */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -71,6 +71,7 @@ struct Editor::Private
 		{
 			if(album_map.contains(it->name()))
 			{
+				Album album = *it;
 				sp_log(Log::Warning, this) << "Album " << it->name() << " already exists";
 				continue;
 			}
@@ -319,9 +320,11 @@ void Editor::load_entire_album()
 	}
 
 	AlbumId id = info.album_ids().first();
-	MetaDataList v_md;
 
-	m->ldb->getAllTracksByAlbum(id, v_md, ::Library::Filter(), ::Library::SortOrder::TrackNumAsc);
+	MetaDataList v_md;
+	m->ldb->getAllTracksByAlbum(IdList{id}, v_md, ::Library::Filter(), -1);
+	v_md.sort(::Library::SortOrder::TrackDiscnumberAsc);
+
 	set_metadata(v_md);
 }
 

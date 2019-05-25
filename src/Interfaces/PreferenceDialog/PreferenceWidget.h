@@ -1,6 +1,6 @@
 /* PreferenceWidgetInterface.h */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -21,8 +21,8 @@
 #ifndef PREFERENCEWIDGETINTERFACE_H
 #define PREFERENCEWIDGETINTERFACE_H
 
-#include "GUI/Utils/GuiClass.h"
-#include "GUI/Utils/Widgets/Widget.h"
+#include "Gui/Utils/GuiClass.h"
+#include "Gui/Utils/Widgets/Widget.h"
 #include "Utils/Pimpl.h"
 
 namespace Preferences

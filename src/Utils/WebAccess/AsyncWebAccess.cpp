@@ -1,6 +1,6 @@
 /* AsyncWebAccess.cpp */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -187,7 +187,7 @@ void AsyncWebAccess::run_post(const QString &url, const QByteArray &post_data, i
 
 void AsyncWebAccess::data_available()
 {
-	sp_log(Log::Develop, this) << "Data available";
+	sp_log(Log::Crazy, this) << "Data available";
 	QNetworkReply* reply = static_cast<QNetworkReply*>(sender());
 
 	int content_length = reply->header(QNetworkRequest::ContentLengthHeader).toInt();

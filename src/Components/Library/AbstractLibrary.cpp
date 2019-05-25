@@ -1,6 +1,6 @@
 /* AbstractLibrary.cpp */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -389,14 +389,20 @@ void AbstractLibrary::change_filter(Library::Filter filter, bool force)
 {
 	QStringList filtertext = filter.filtertext(false);
 
-	if(filtertext.join("").size() < 3){
-		filter.clear();
+	if(!filter.is_invalid_genre())
+	{
+		if( filtertext.join("").size() < 3){
+			filter.clear();
+		}
+
+		else {
+			Library::SearchModeMask mask = GetSetting(Set::Lib_SearchMode);
+			filter.set_filtertext(filtertext.join(","), mask);
+		}
 	}
 
-	else
-	{
-		Library::SearchModeMask mask = GetSetting(Set::Lib_SearchMode);
-		filter.set_filtertext(filtertext.join(","), mask);
+	else {
+		// get everything which has no genre attached to it
 	}
 
 	if(filter == m->filter){

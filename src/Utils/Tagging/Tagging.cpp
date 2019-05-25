@@ -1,6 +1,6 @@
 /* id3.cpp */
 
-/* Copyright (C) 2011-2017 Lucio Carreras
+/* Copyright (C) 2011-2019 Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -19,6 +19,7 @@
  */
 
 #include "Tagging.h"
+#include "Tagging/TaggingCover.h"
 #include "ID3v2/Popularimeter.h"
 #include "ID3v2/Discnumber.h"
 #include "ID3v2/AlbumArtist.h"
@@ -70,16 +71,15 @@ bool Tagging::Utils::is_valid_file(const TagLib::FileRef& f)
 
 bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 {
-	if(md.filepath().contains("never", Qt::CaseInsensitive)){
-		int x = 4;
-		sp_log(Log::Debug, "Tagging") << x;
-	}
 	bool success;
 
 	QFileInfo fi(md.filepath());
 	md.filesize = fi.size();
+	if(fi.size() <= 0){
+		return false;
+	}
 
-	TagLib::AudioProperties::ReadStyle read_style;
+	TagLib::AudioProperties::ReadStyle read_style = TagLib::AudioProperties::Fast;
 	bool read_audio_props=true;
 
 	switch(quality)
@@ -106,10 +106,9 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 	);
 
 	if(!is_valid_file(f)){
-		sp_log(Log::Warning, "Tagging") << "Cannot open tags for " << md.filepath();
+		sp_log(Log::Warning, "Tagging") << "Cannot open tags for " << md.filepath() << ": Err 1";
 		return false;
 	}
-
 
 	ParsedTag parsed_tag = tag_type_from_fileref(f);
 	TagLib::Tag* tag = parsed_tag.tag;
@@ -181,7 +180,6 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 			md.set_album_artist(album_artist);
 		}
 
-
 		MP4::DiscnumberFrame discnumber_frame(mp4);
 		success = discnumber_frame.read(discnumber);
 		if(success){
@@ -232,6 +230,7 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 	md.n_discs = discnumber.n_discs;
 	md.rating = popularimeter.get_rating();
 	md.set_comment(comment);
+	md.add_custom_field("has_album_art", "", QString::number(Tagging::Covers::has_cover(parsed_tag)));
 
 	if(md.title().length() == 0)
 	{
@@ -252,10 +251,15 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 bool Tagging::Utils::setMetaDataOfFile(const MetaData& md)
 {
 	QString filepath = md.filepath();
+	QFileInfo info(filepath);
+	if(info.size() <= 0){
+		return false;
+	}
+
 	TagLib::FileRef f(TagLib::FileName(filepath.toUtf8()));
 
 	if(!is_valid_file(f)){
-		sp_log(Log::Warning, "Tagging") << "Cannot open tags for " << md.filepath();
+		sp_log(Log::Warning, "Tagging") << "Cannot open tags for " << md.filepath() << ": Err 2";
 		return false;
 	}
 

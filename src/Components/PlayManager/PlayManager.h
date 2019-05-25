@@ -1,6 +1,6 @@
 /* PlayManager.h */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -107,12 +107,6 @@ signals:
 	 * @param idx index in playlist
 	 */
 	void sig_track_idx_changed(int idx);
-
-	/**
-	 * @brief playlist has changed
-	 * @param len new size of playlist
-	 */
-	void sig_playlist_changed(int len);
 
 	/**
 	 * @brief duration of track has changed

@@ -1,6 +1,6 @@
 /* MetaDataList.cpp */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -54,6 +54,16 @@ struct MetaDataList::Private
 		return (*this);
 	}
 };
+
+const MetaData& MetaDataList::operator[](int i) const
+{
+	return *(this->cbegin() + i);
+}
+
+MetaData& MetaDataList::operator[](int i)
+{
+	return *(this->begin() + i);
+}
 
 MetaDataList::MetaDataList() :
 	MetaDataList::Parent()
@@ -516,6 +526,10 @@ MetaData MetaDataList::take_at(int idx)
 
 void MetaDataList::sort(Library::SortOrder so)
 {
+	if(so == Library::SortOrder::NoSorting){
+		return;
+	}
+
 	MetaDataSorting::sort_metadata(*this, so);
 }
 

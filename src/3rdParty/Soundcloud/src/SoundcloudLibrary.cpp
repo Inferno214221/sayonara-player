@@ -1,6 +1,6 @@
 /* SoundcloudLibrary.cpp */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -109,7 +109,7 @@ void SC::Library::get_all_artists(ArtistList& artists)
 {
 	if(m->artists.empty())
 	{
-		m->scd->getAllArtists(artists, ::Library::SortOrder::NoSorting);
+		m->scd->getAllArtists(artists, false);
 		m->artists = artists;
 
 		for(int i=0; i<m->artists.count(); i++)

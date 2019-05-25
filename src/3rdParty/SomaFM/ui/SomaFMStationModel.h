@@ -1,6 +1,6 @@
 /* SomaFMStationModel.h */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -24,7 +24,7 @@
 #ifndef SomaFMStationModel_H
 #define SomaFMStationModel_H
 
-#include "GUI/Utils/SearchableWidget/SearchableModel.h"
+#include "Gui/Utils/SearchableWidget/SearchableModel.h"
 #include "Utils/Pimpl.h"
 
 #include <QMimeData>

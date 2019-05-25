@@ -1,6 +1,6 @@
 /* EqualizerHandler.cpp */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -19,6 +19,8 @@
  */
 
 #include "EqualizerHandler.h"
+#include "../Callbacks/EngineUtils.h"
+
 #include "Utils/Settings/Settings.h"
 #include "Utils/EqualizerPresets.h"
 #include "Utils/globals.h"
@@ -69,10 +71,6 @@ void EqualizerHandler::set_band(int band, int val)
 		new_val = val * 0.75;
 	}
 
-	g_object_set( G_OBJECT(equalizer_element),
-				  band_name.toUtf8().data(),
-				  new_val,
-				  nullptr
-	);
+	Engine::Utils::set_value(equalizer_element, band_name.toUtf8().data(),	new_val);
 }
 

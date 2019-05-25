@@ -1,6 +1,6 @@
 /* application.cpp */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -22,7 +22,7 @@
 #include "InstanceThread.h"
 #include "MetaTypeRegistry.h"
 
-#include "GUI/Utils/Icons.h"
+#include "Gui/Utils/Icons.h"
 
 #ifdef WITH_DBUS
 #include "Components/DBus/DBusHandler.h"
@@ -45,41 +45,41 @@
 #include "Interfaces/PlayerPlugin/PlayerPluginHandler.h"
 #include "Interfaces/Notification/NotificationHandler.h"
 
-#include "GUI/Utils/GuiUtils.h"
+#include "Gui/Utils/GuiUtils.h"
 
-#include "GUI/Player/GUI_Player.h"
-#include "GUI/Library/LocalLibraryContainer.h"
-#include "GUI/Directories/DirectoryWidgetContainer.h"
+#include "Gui/Player/GUI_Player.h"
+#include "Gui/Library/LocalLibraryContainer.h"
+#include "Gui/Directories/DirectoryWidgetContainer.h"
 
-#include "GUI/Plugins/PlaylistChooser/GUI_PlaylistChooser.h"
-#include "GUI/Plugins/AudioConverter/GUI_AudioConverter.h"
-#include "GUI/Plugins/Bookmarks/GUI_Bookmarks.h"
-#include "GUI/Plugins/Broadcasting/GUI_Broadcast.h"
-#include "GUI/Plugins/Engine/GUI_LevelPainter.h"
-#include "GUI/Plugins/Engine/GUI_Spectrum.h"
-#include "GUI/Plugins/Engine/Equalizer/GUI_Equalizer.h"
-#include "GUI/Plugins/Engine/Speed/GUI_Speed.h"
-#include "GUI/Plugins/Engine/Crossfader/GUI_Crossfader.h"
-#include "GUI/Plugins/Stream/GUI_Stream.h"
-#include "GUI/Plugins/Stream/GUI_Podcasts.h"
+#include "Gui/Plugins/PlaylistChooser/GUI_PlaylistChooser.h"
+#include "Gui/Plugins/AudioConverter/GUI_AudioConverter.h"
+#include "Gui/Plugins/Bookmarks/GUI_Bookmarks.h"
+#include "Gui/Plugins/Broadcasting/GUI_Broadcast.h"
+#include "Gui/Plugins/Engine/GUI_LevelPainter.h"
+#include "Gui/Plugins/Engine/GUI_Spectrum.h"
+#include "Gui/Plugins/Engine/GUI_Equalizer.h"
+#include "Gui/Plugins/Engine/GUI_Speed.h"
+#include "Gui/Plugins/Engine/GUI_Crossfader.h"
+#include "Gui/Plugins/Stream/GUI_Stream.h"
+#include "Gui/Plugins/Stream/GUI_Podcasts.h"
 
-#include "GUI/Preferences/Broadcast/GUI_BroadcastSetup.h"
-#include "GUI/Preferences/Covers/GUI_Covers.h"
-#include "GUI/Preferences/Engine/GUI_EnginePreferences.h"
-#include "GUI/Preferences/UiPreferences/GUI_UiPreferences.h"
-#include "GUI/Preferences/Language/GUI_LanguageChooser.h"
-#include "GUI/Preferences/LastFM/GUI_LastFM.h"
-#include "GUI/Preferences/Library/GUI_LibraryPreferences.h"
-#include "GUI/Preferences/Notifications/GUI_Notifications.h"
-#include "GUI/Preferences/Player/GUI_PlayerPreferences.h"
-#include "GUI/Preferences/Playlist/GUI_PlaylistPreferences.h"
-#include "GUI/Preferences/PreferenceDialog/GUI_PreferenceDialog.h"
-#include "GUI/Preferences/Proxy/GUI_Proxy.h"
-#include "GUI/Preferences/RemoteControl/GUI_RemoteControl.h"
-#include "GUI/Preferences/Search/GUI_SearchPreferences.h"
-#include "GUI/Preferences/Shortcuts/GUI_Shortcuts.h"
-#include "GUI/Preferences/Streams/GUI_StreamPreferences.h"
-#include "GUI/Preferences/StreamRecorder/GUI_StreamRecorder.h"
+#include "Gui/Preferences/Broadcast/GUI_BroadcastSetup.h"
+#include "Gui/Preferences/Covers/GUI_Covers.h"
+#include "Gui/Preferences/Engine/GUI_EnginePreferences.h"
+#include "Gui/Preferences/UiPreferences/GUI_UiPreferences.h"
+#include "Gui/Preferences/Language/GUI_LanguageChooser.h"
+#include "Gui/Preferences/LastFM/GUI_LastFM.h"
+#include "Gui/Preferences/Library/GUI_LibraryPreferences.h"
+#include "Gui/Preferences/Notifications/GUI_Notifications.h"
+#include "Gui/Preferences/Player/GUI_PlayerPreferences.h"
+#include "Gui/Preferences/Playlist/GUI_PlaylistPreferences.h"
+#include "Gui/Preferences/PreferenceDialog/GUI_PreferenceDialog.h"
+#include "Gui/Preferences/Proxy/GUI_Proxy.h"
+#include "Gui/Preferences/RemoteControl/GUI_RemoteControl.h"
+#include "Gui/Preferences/Search/GUI_SearchPreferences.h"
+#include "Gui/Preferences/Shortcuts/GUI_Shortcuts.h"
+#include "Gui/Preferences/Streams/GUI_StreamPreferences.h"
+#include "Gui/Preferences/StreamRecorder/GUI_StreamRecorder.h"
 
 #include "Utils/FileUtils.h"
 #include "Utils/Utils.h"
@@ -93,19 +93,19 @@
 #include "Database/Connector.h"
 #include "Database/Settings.h"
 
-
+#include <QIcon>
 #include <QTime>
 #include <QDateTime>
 #include <QSessionManager>
 
-class Measure
+class MeasureApp
 {
 	QTime*		m_t;
 	QString		m_component;
 	int			m_start;
 
 public:
-	Measure(const QString& component, QTime* t) :
+	MeasureApp(const QString& component, QTime* t) :
 		m_t(t),
 		m_component(component)
 	{
@@ -113,14 +113,14 @@ public:
 		sp_log(Log::Debug, this) << "Init " << m_component << ": " << m_start << "ms";
 	}
 
-	~Measure()
+	~MeasureApp()
 	{
 		int end = m_t->elapsed();
 		sp_log(Log::Debug, this) << "Init " << m_component << " finished: " << end << "ms (" << end - m_start << "ms)";
 	}
 };
 
-#define measure(c) Measure mt(c, m->timer); Q_UNUSED(mt);
+#define measure(c) MeasureApp mt(c, m->timer); Q_UNUSED(mt);
 
 struct Application::Private
 {

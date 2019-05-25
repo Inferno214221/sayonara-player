@@ -1,6 +1,6 @@
 /* Set.h */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -107,6 +107,17 @@ namespace Util
 
 		Util::Set<T>& operator<<(const T& t){
 			this->insert(t);
+			return *this;
+		}
+
+		template<template <typename> class A>
+		Util::Set<T>& operator<<(const A<T>& container)
+		{
+			for(const T& t : container)
+			{
+				this->insert(t);
+			}
+
 			return *this;
 		}
 

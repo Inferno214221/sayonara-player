@@ -1,6 +1,6 @@
 /* FileUtils.cpp */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -115,6 +115,7 @@ void Util::File::remove_files_in_directory(const QString& dir_name, const QStrin
 
 void Util::File::delete_files(const QStringList& paths)
 {
+	sp_log(Log::Develop, "Util::File") << "I will delete " << paths;
 	QStringList sorted_paths = paths;
 	Util::sort(sorted_paths, [](const QString& str1, const QString& str2){
 		return (str1.size() > str2.size());

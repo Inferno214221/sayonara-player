@@ -1,6 +1,6 @@
 /* CoverLocation.h */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -38,12 +38,11 @@ namespace Cover
 	{
 		PIMPL(Location)
 
-
 	private:
 		void set_valid(bool b);
 		void set_identifier(const QString& identifier);
 		void set_cover_path(const QString& cover_path);
-		void set_local_path_hint(const QString& base_path);
+		void set_local_path_hints(const QStringList& local_paths);
 
 		/**
 		 * @brief Set hash manually. You should never call this function
@@ -84,7 +83,6 @@ namespace Cover
 		 * @return
 		 */
 		static bool is_invalid(const QString& cover_path);
-
 
 		/**
 		 * @brief Returns the standard cover path in the .Sayonara
@@ -203,12 +201,27 @@ namespace Cover
 		QString			audio_file_target() const;
 
 
+
 		/**
-		 * @brief Get the path of an audio file where a cover is stored
+		 * @brief Calculates the directory where the cover is located
+		 * @return
+		 */
+		QString			local_path_dir() const;
+
+		/**
+		 * @brief Get the paths audio file where a cover is stored
 		 * in the same directory
 		 * @return
 		 */
-		QString			local_path_hint() const;
+		QStringList		local_path_hints() const;
+
+		/**
+		 * @brief Get the path which is nearest to the audio files.\n
+		 * Repair/Create a link in the Sayonara cover directory
+		 * This method does I/O work so handle with care
+		 * @return
+		 */
+		QString			local_path() const;
 
 
 		/**
@@ -273,6 +286,7 @@ namespace Cover
 		 * @return  CoverLocation object
 		 */
 		static Location cover_location(const MetaData& md);
+		static Location cover_location(const MetaData& md, bool check_for_coverart);
 
 
 		/**

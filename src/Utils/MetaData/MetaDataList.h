@@ -1,6 +1,6 @@
 	/* MetaDataList.h */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -53,7 +53,6 @@ public:
 
 	~MetaDataList();
 
-
 	void set_current_track(int idx);
 	int current_track() const;
 
@@ -75,6 +74,8 @@ public:
 
 	MetaDataList& operator <<(const MetaDataList& v_md);
 	MetaDataList& operator <<(const MetaData& md);
+	const MetaData& operator[](int i) const;
+	MetaData& operator[](int i);
 
 	MetaDataList& append(const MetaDataList& v_md);
 	MetaDataList& append(const MetaData& md);

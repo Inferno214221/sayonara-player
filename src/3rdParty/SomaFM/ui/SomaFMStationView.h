@@ -1,6 +1,6 @@
 /* SomaFMStationView.h */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -19,11 +19,10 @@
  */
 
 
-
 #ifndef SOMAFMSTATIONVIEW_H
 #define SOMAFMSTATIONVIEW_H
 
-#include "GUI/Utils/SearchableWidget/SearchableView.h"
+#include "Gui/Utils/SearchableWidget/SearchableView.h"
 
 class SomaFMStationView :
 	public SearchableTableView

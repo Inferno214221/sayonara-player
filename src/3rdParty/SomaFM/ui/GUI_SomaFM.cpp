@@ -1,6 +1,6 @@
 /* GUI_SomaFM.cpp */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -30,9 +30,9 @@
 #include "Utils/Utils.h"
 #include "Utils/Logger/Logger.h"
 
-#include "GUI/Utils/Style.h"
-#include "GUI/Utils/Delegates/StyledItemDelegate.h"
-#include "GUI/Utils/Widgets/ProgressBar.h"
+#include "Gui/Utils/Style.h"
+#include "Gui/Utils/Delegates/StyledItemDelegate.h"
+#include "Gui/Utils/Widgets/ProgressBar.h"
 
 #include "Components/Covers/CoverLocation.h"
 #include "Components/Covers/CoverLookup.h"
@@ -133,6 +133,7 @@ void GUI_SomaFM::stations_loaded(const QList<SomaFM::Station>& stations)
 	ui->tv_stations->setEnabled(true);
 	ui->tv_stations->setDragEnabled(true);
 	ui->tv_stations->setDragDropMode(QAbstractItemView::DragDrop);
+	ui->tv_stations->resizeColumnToContents(0);
 }
 
 void GUI_SomaFM::station_changed(const SomaFM::Station& station)
@@ -203,10 +204,11 @@ void GUI_SomaFM::station_index_changed(const QModelIndex& idx)
 
 	ui->lab_description->setText(station.description());
 
-	Cover::Lookup* cl = new Cover::Lookup(this);
+	Cover::Lookup* cl = new Cover::Lookup(station.cover_location(), 1, this);
 
 	connect(cl, &Cover::Lookup::sig_cover_found, this, &GUI_SomaFM::cover_found);
-	cl->fetch_cover(station.cover_location());
+
+	cl->start();
 }
 
 

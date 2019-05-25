@@ -1,6 +1,6 @@
 /* DatabaseArtists.h */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -22,7 +22,6 @@
 #define DATABASEARTISTS_H
 
 #include "Database/SearchableModule.h"
-#include "Utils/Library/Sortorder.h"
 
 namespace Library {class Filter;}
 
@@ -47,8 +46,7 @@ namespace DB
 			virtual bool getArtistByID(int id, Artist& artist, bool also_empty=false);
 
 			virtual bool getAllArtists(ArtistList& result, bool also_empty);
-			virtual bool getAllArtists(ArtistList& result, ::Library::SortOrder sortorder = ::Library::SortOrder::ArtistNameAsc, bool also_empty=false);
-			virtual bool getAllArtistsBySearchString(const ::Library::Filter& filter, ArtistList& result, ::Library::SortOrder sortorder = ::Library::SortOrder::ArtistNameAsc);
+			virtual bool getAllArtistsBySearchString(const ::Library::Filter& filter, ArtistList& result);
 
 			virtual bool deleteArtist(ArtistId id);
 
@@ -64,8 +62,6 @@ namespace DB
 			virtual QString artistname_field() const=0;
 
 		private:
-			QString _create_order_string(::Library::SortOrder sort);
-
 			virtual QString fetch_query_artists(bool also_empty=false) const;
 	};
 }

@@ -1,6 +1,6 @@
 /* DBusHandler.h */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -38,7 +38,7 @@ class DBusHandler :
 
 public:
 	explicit DBusHandler(QMainWindow* main_window, QObject* parent=nullptr);
-	~DBusHandler();
+	virtual ~DBusHandler();
 
 private slots:
 	void service_registered(const QString& service_name);

@@ -1,6 +1,6 @@
 /* LibraryPluginHandler.cpp */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -20,18 +20,19 @@
 
 #include "LibraryPluginHandler.h"
 #include "LibraryPluginCombobox.h"
-
-#include "GUI/Utils/GuiUtils.h"
-#include "GUI/Utils/Widgets/WidgetTemplate.h"
 #include "LibraryContainer/LibraryContainer.h"
+
 #include "Components/Library/LibraryManager.h"
-#include "Utils/Library/LibraryInfo.h"
-#include "GUI/Library/LocalLibraryContainer.h"
-#include "GUI/Library/EmptyLibraryContainer.h"
+
+#include "Gui/Utils/GuiUtils.h"
+#include "Gui/Utils/Widgets/WidgetTemplate.h"
+#include "Gui/Library/LocalLibraryContainer.h"
+#include "Gui/Library/EmptyLibraryContainer.h"
 
 #include "Utils/globals.h"
 #include "Utils/Utils.h"
 #include "Utils/Settings/Settings.h"
+#include "Utils/Library/LibraryInfo.h"
 #include "Utils/Logger/Logger.h"
 
 #include <QAction>

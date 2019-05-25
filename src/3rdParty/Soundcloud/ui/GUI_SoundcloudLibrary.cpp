@@ -1,6 +1,6 @@
 /* GUI_SoundCloudLibrary.cpp */
 
-/* Copyright (C) 2011-2017  Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -22,7 +22,7 @@
 #include "3rdParty/Soundcloud/ui_GUI_SoundcloudLibrary.h"
 #include "3rdParty/Soundcloud/src/SoundcloudLibrary.h"
 
-#include "GUI/Utils/ContextMenu/LibraryContextMenu.h"
+#include "Gui/Utils/ContextMenu/LibraryContextMenu.h"
 
 #include <QShortcut>
 #include <QMenu>

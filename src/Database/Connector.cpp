@@ -1,6 +1,6 @@
 /* DatabaseConnector.cpp */
 
-/* Copyright (C) 2011-2017 Lucio Carreras
+/* Copyright (C) 2011-2019 Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -28,7 +28,7 @@
 #include "Database/Session.h"
 #include "Database/Settings.h"
 #include "Database/Shortcuts.h"
-#include "Database/VisStyles.h"
+#include "Database/VisualStyles.h"
 #include "Database/CoverConnector.h"
 
 #include "Utils/MetaData/Album.h"
@@ -143,7 +143,7 @@ bool Connector::updateAlbumCissearchFix()
 	AlbumList albums;
 
 	LibraryDatabase* lib_db = library_db(-1, 0);
-	lib_db->getAllAlbums(albums);
+	lib_db->getAllAlbums(albums, true);
 
 	for(const Album& album : albums)
 	{
@@ -161,12 +161,11 @@ bool Connector::updateAlbumCissearchFix()
 	return true;
 }
 
-
 bool Connector::updateArtistCissearchFix()
 {
 	ArtistList artists;
 	LibraryDatabase* lib_db = library_db(-1, 0);
-	lib_db->getAllArtists(artists);
+	lib_db->getAllArtists(artists, true);
 	for(const Artist& artist : artists)
 	{
 		QString str =
