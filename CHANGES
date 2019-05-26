@@ -1,8 +1,10 @@
 == 1.4.1-stable1 ==
 
+  * Language: Added ability to check for updates
   * Language: Fixed some runtime tranlation issues
   * Library: Genre View issue fixed
   * Library: Artist field in Cover view fixed
+  * Streams: Remove jumping of time label
 
 == 1.4.0-stable1 ==
 

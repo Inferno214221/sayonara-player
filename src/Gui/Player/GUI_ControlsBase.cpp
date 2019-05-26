@@ -227,6 +227,7 @@ void GUI_ControlsBase::buffering(int progress)
 {
 	sli_buffer()->set_position(Gui::ProgressBar::Position::Middle);
 
+	// buffering
 	if(progress > 0 && progress < 100)
 	{
 		toggle_buffer_mode(true);
@@ -239,6 +240,7 @@ void GUI_ControlsBase::buffering(int progress)
 		lab_max_time()->setVisible(false);
 	}
 
+	//buffering stopped
 	else if(progress == 0)
 	{
 		toggle_buffer_mode(false);
@@ -247,10 +249,10 @@ void GUI_ControlsBase::buffering(int progress)
 		sli_buffer()->setMaximum(0);
 		sli_buffer()->setValue(progress);
 
-		lab_current_time()->setText("0%");
 		lab_max_time()->setVisible(false);
 	}
 
+	// no buffering
 	else
 	{
 		PlayManager* pm = PlayManager::instance();
@@ -259,7 +261,6 @@ void GUI_ControlsBase::buffering(int progress)
 		sli_buffer()->setMinimum(0);
 		sli_buffer()->setMaximum(0);
 
-		lab_current_time()->clear();
 		lab_max_time()->setVisible(pm->current_track().length_ms > 0);
 	}
 }
