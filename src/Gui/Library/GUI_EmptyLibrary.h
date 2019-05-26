@@ -47,6 +47,10 @@ namespace Library
 	private slots:
 		void set_lib_path_clicked();
 		void new_library_created();
+
+		// WidgetTemplateParent interface
+	protected:
+		void language_changed() override;
 	};
 }
 

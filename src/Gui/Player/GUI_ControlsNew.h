@@ -68,6 +68,9 @@ public:
 	bool is_resizable() const override;
 
 	void rating_changed_here(bool success);
+
+protected:
+	void language_changed() override;
 };
 
 #endif // GUI_CONTROLSNEW_H
