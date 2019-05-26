@@ -122,6 +122,28 @@ CoverModel::CoverModel(QObject* parent, AbstractLibrary* library) :
 
 CoverModel::~CoverModel() {}
 
+static QString get_artist(const Album& album)
+{
+	QStringList artists = album.album_artists();
+	artists.removeAll("");
+
+	if(artists.isEmpty())
+	{
+		artists = album.artists();
+		artists.removeAll("");
+	}
+
+	if(artists.isEmpty()){
+		return Lang::get(Lang::None);
+	}
+
+	if(artists.size() == 1){
+		return artists.first();
+	}
+
+	return Lang::get(Lang::VariousArtists);
+}
+
 QVariant CoverModel::data(const QModelIndex& index, int role) const
 {
 	if(!index.isValid()) {
@@ -138,6 +160,7 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 	const Album& album = albums[lin_idx];
 	switch(role)
 	{
+
 		case CoverModel::AlbumRole:
 		case Qt::DisplayRole:
 			{
@@ -171,33 +194,22 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 			return m->item_size;
 
 		case CoverModel::ArtistRole:
-		{
-			QString artist;
-
 			if(GetSetting(Set::Lib_CoverShowArtist))
 			{
-				if(album.album_artists().isEmpty())
-				{
-					if(!album.artists().isEmpty())
-					{
-						artist = album.artists().first();
-					}
-				}
-
-				else
-				{
-					artist = album.album_artists().first();
-				}
+				return get_artist(album);
 			}
 
-			return artist;
-		}
+			return QString();
+
+		case Qt::ToolTipRole:
+			return QString("<b>%1</b><br>%2")
+					.arg(get_artist(album))
+					.arg(album.name());
 
 		default:
 			return QVariant();
 	}
 }
-
 
 
 struct CoverLookupUserData
@@ -249,7 +261,6 @@ void CoverModel::next_hash()
 	clu->start();
 }
 
-
 void CoverModel::cover_lookup_finished(bool success)
 {
 	Lookup* clu = static_cast<Lookup*>(sender());
@@ -267,8 +278,6 @@ void CoverModel::cover_lookup_finished(bool success)
 		}
 	}
 
-	emit dataChanged(index(0, 0), index(rowCount() - 1, columnCount() - 1), {Qt::DecorationRole});
-
 	m->clus_running--;
 	sp_log(Log::Develop, this) << "CLU finished: " << m->clus_running << ", " << d->hash;
 	d->acft->done(d->hash);
@@ -276,6 +285,8 @@ void CoverModel::cover_lookup_finished(bool success)
 	clu->set_user_data(nullptr);
 
 	delete clu; clu = nullptr;
+
+	emit dataChanged(index(0, 0), index(rowCount() - 1, columnCount() - 1), {Qt::DecorationRole});
 }
 
 void CoverModel::cover_ready(const QString& hash)
@@ -445,22 +456,19 @@ void CoverModel::set_zoom(int zoom, const QSize& view_size)
 		m->cvpc->set_cache_size(visible_rows * columns * 3);
 
 		refresh_data();
-		emit dataChanged(index(0, 0), index(rowCount() - 1, columnCount() - 1), {Qt::SizeHintRole});
 	}
 }
-
 
 void CoverModel::show_artists_changed()
 {
 	m->item_size = calc_item_size(m->zoom, Gui::Util::main_window()->font());
 }
 
-
 void CoverModel::reload()
 {
-	m->cover_thread->clear();
-	m->cvpc->clear();
-	clear();
+//	m->cover_thread->clear();
+//	m->cvpc->clear();
+//	clear();
 
 	emit dataChanged(index(0,0), index(rowCount() - 1, columnCount() - 1));
 }
@@ -468,9 +476,7 @@ void CoverModel::reload()
 void CoverModel::clear()
 {
 	m->cover_thread->clear();
-
 	m->indexes.clear();
-	m->indexes.squeeze();
 }
 
 

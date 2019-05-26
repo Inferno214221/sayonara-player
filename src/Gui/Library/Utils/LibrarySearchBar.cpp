@@ -46,11 +46,13 @@ struct SearchBar::Private
 	QMenu*				context_menu=nullptr;
 	QList<Filter::Mode>	modes;
 	int					cur_idx;
-	bool				search_icon_initialized=false;
+	bool				search_icon_initialized;
+	bool				invald_genre_mode;
 
 	Private() :
 		cur_idx(-1),
-		search_icon_initialized(false)
+		search_icon_initialized(false),
+		invald_genre_mode(false)
 	{}
 };
 
@@ -72,6 +74,16 @@ SearchBar::SearchBar(QWidget* parent) :
 }
 
 SearchBar::~SearchBar() {}
+
+void SearchBar::set_invalid_genre_mode(bool b)
+{
+	m->invald_genre_mode = b;
+}
+
+bool SearchBar::has_invalid_genre_mode() const
+{
+	return m->invald_genre_mode;
+}
 
 void SearchBar::text_changed(const QString& text)
 {

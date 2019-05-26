@@ -65,12 +65,9 @@ class AlbumCoverFetchThread : public QThread
 	protected:
 		void run() override;
 
-	private:
-		bool thread_create_cover_location();
-
 	public:
-			explicit AlbumCoverFetchThread(QObject* parent=nullptr);
-		~AlbumCoverFetchThread();
+		explicit AlbumCoverFetchThread(QObject* parent=nullptr);
+		~AlbumCoverFetchThread() override;
 
 		/**
 		 * @brief add_data Add a new album request

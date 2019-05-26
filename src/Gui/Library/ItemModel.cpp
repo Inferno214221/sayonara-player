@@ -131,7 +131,7 @@ void ItemModel::refresh_data(int* n_rows_before, int* n_rows_after)
 		insertRows(old_size, new_size - old_size);
 	}
 
-	emit dataChanged(index(0,0), index(rowCount(), columnCount()));
+	emit dataChanged(index(0,0), index(rowCount() - 1, columnCount() - 1));
 }
 
 

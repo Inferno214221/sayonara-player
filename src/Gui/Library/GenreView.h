@@ -30,6 +30,7 @@
 class Genre;
 class TreeDelegate;
 class LocalLibrary;
+class QItemSelection;
 
 namespace Util
 {
@@ -50,10 +51,11 @@ namespace Library
 	signals:
 		void sig_progress(const QString& name, int progress);
 		void sig_genres_reloaded();
+		void sig_selected_cleared();
 
 	public:
 		explicit GenreView(QWidget* parent=nullptr);
-		~GenreView();
+		~GenreView() override;
 
 		void init(LocalLibrary* library);
 		void reload_genres();
@@ -84,10 +86,11 @@ namespace Library
 		void tree_action_changed();
 		void tree_action_toggled(bool b);
 
+		void selection_changed(const QItemSelection& selected, const QItemSelection& deselected);
+
 
 	protected:
 		void language_changed() override;
-
 		void dragEnterEvent(QDragEnterEvent* e) override;
 		void dragMoveEvent(QDragMoveEvent* e) override;
 		void dragLeaveEvent(QDragLeaveEvent* e) override;
