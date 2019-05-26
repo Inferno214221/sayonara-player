@@ -21,19 +21,29 @@
 #include "GUI_LanguageChooser.h"
 #include "Gui/Preferences/ui_GUI_LanguageChooser.h"
 
+#include "Utils/LanguageUtils.h"
+#include "Utils/WebAccess/AsyncWebAccess.h"
 #include "Utils/Utils.h"
-#include "Utils/FileUtils.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Language.h"
 #include "Gui/Utils/Style.h"
 
+
 #include <QFile>
 #include <QDir>
 #include <QRegExp>
 #include <QLocale>
+#include <QStringList>
+
+namespace Language = Util::Language;
 
 struct GUI_LanguageChooser::Private {};
+
+static QString get_four_letter(QComboBox* combo)
+{
+	return combo->currentData().toString();
+}
 
 GUI_LanguageChooser::GUI_LanguageChooser(const QString& identifier) :
 	Preferences::Base(identifier)
@@ -47,6 +57,11 @@ GUI_LanguageChooser::~GUI_LanguageChooser()
 	{
 		delete ui; ui=nullptr;
 	}
+}
+
+QString GUI_LanguageChooser::action_name() const
+{
+	return tr("Language") + QString(" (Language)");
 }
 
 
@@ -71,8 +86,7 @@ void GUI_LanguageChooser::skin_changed()
 
 bool GUI_LanguageChooser::commit()
 {
-	int cur_idx = ui->combo_lang->currentIndex();
-	QString four_letter = ui->combo_lang->itemData(cur_idx).toString();
+	QString four_letter = get_four_letter(ui->combo_lang);
 
 	SetSetting(Set::Player_Language, four_letter);
 
@@ -100,11 +114,10 @@ void GUI_LanguageChooser::renew_combo()
 		QString four_letter = it.key();
 		QLocale loc = it.value();
 
-		QString rel_icon_path = QString("translations/icons/%1.png").arg(four_letter);
-		QString abs_icon_path = Util::share_path(rel_icon_path);
+		QString icon_path = Language::get_icon_path(four_letter);
 
 		ui->combo_lang->addItem(
-			QIcon(abs_icon_path),
+			QIcon(icon_path),
 			Util::cvt_str_to_first_upper(loc.nativeLanguageName()),
 			four_letter
 		);
@@ -118,13 +131,146 @@ void GUI_LanguageChooser::renew_combo()
 }
 
 
-
 void GUI_LanguageChooser::init_ui()
 {
 	setup_parent(this, &ui);
 
+	ui->btn_download->setVisible(false);
+
+	connect(ui->combo_lang, combo_current_index_changed_int, this, &GUI_LanguageChooser::combo_index_changed);
+	connect(ui->btn_check_for_update, &QPushButton::clicked, this, &GUI_LanguageChooser::btn_check_for_update_clicked);
+	connect(ui->btn_download, &QPushButton::clicked, this, &GUI_LanguageChooser::btn_download_clicked);
+}
+
+
+void GUI_LanguageChooser::combo_index_changed(int idx)
+{
+	Q_UNUSED(idx)
+
+	QString four_letter = get_four_letter(ui->combo_lang);
+
+	ui->btn_check_for_update->setVisible(true);
+	ui->btn_download->setVisible(false);
+	ui->btn_check_for_update->setEnabled(true);
+	ui->lab_update_info->setText(QString());
+
+	if(four_letter.compare("en_us", Qt::CaseInsensitive) == 0){
+		ui->btn_check_for_update->setEnabled(false);
+	}
+}
+
+
+void GUI_LanguageChooser::btn_check_for_update_clicked()
+{
+	AsyncWebAccess* awa = new AsyncWebAccess(this);
+	ui->btn_check_for_update->setEnabled(false);
+
+	connect(awa, &AsyncWebAccess::sig_finished, this, &GUI_LanguageChooser::update_check_finished);
+	awa->run("ftp://sayonara-player.com/translation/checksum");
 
 }
+
+void GUI_LanguageChooser::update_check_finished()
+{
+	AsyncWebAccess* awa = static_cast<AsyncWebAccess*>(sender());
+	QString data = QString::fromUtf8(awa->data());
+	bool has_error = awa->has_error();
+
+	ui->btn_check_for_update->setEnabled(true);
+
+	awa->deleteLater();
+
+	if(has_error || data.isEmpty())
+	{
+		ui->lab_update_info->setText(tr("Cannot check for language update"));
+		sp_log(Log::Warning, this) << "Cannot download checksums " << awa->url();
+		return;
+	}
+
+	QStringList lines = data.split("\n");
+
+	QString four_letter = get_four_letter(ui->combo_lang);
+	QString current_checksum = Language::get_checksum(four_letter);
+
+	for(const QString& line : lines)
+	{
+		if(!line.contains(four_letter)){
+			continue;
+		}
+
+		QStringList splitted = line.split(" ");
+		QString checksum = splitted[0];
+
+		ui->btn_download->setVisible(current_checksum != checksum);
+		if(current_checksum != checksum)
+		{
+			sp_log(Log::Info, this) << "Language update available";
+			ui->lab_update_info->setText(tr("Language update available"));
+		}
+
+		else {
+			sp_log(Log::Info, this) << "No need to update language";
+			ui->lab_update_info->setText(tr("Language is up to date"));
+		}
+
+		break;
+	}
+}
+
+void GUI_LanguageChooser::btn_download_clicked()
+{
+	ui->btn_check_for_update->setEnabled(false);
+	ui->btn_download->setVisible(false);
+
+	QString four_letter = get_four_letter(ui->combo_lang);
+	QString url = Language::get_ftp_path(four_letter);
+
+	AsyncWebAccess* awa = new AsyncWebAccess(this);
+	connect(awa, &AsyncWebAccess::sig_finished, this, &GUI_LanguageChooser::download_finished);
+
+	awa->run(url);
+}
+
+
+
+void GUI_LanguageChooser::download_finished()
+{
+	AsyncWebAccess* awa = static_cast<AsyncWebAccess*>(sender());
+	QByteArray data	= awa->data();
+	bool has_error = awa->has_error();
+
+	awa->deleteLater();
+	ui->btn_check_for_update->setEnabled(true);
+
+	if(has_error || data.isEmpty()){
+		sp_log(Log::Warning, this) << "Cannot download file from " << awa->url();
+		ui->lab_update_info->setText(tr("Cannot fetch language update"));
+		return;
+	}
+
+	QString four_letter = get_four_letter(ui->combo_lang);
+	QString filepath = Language::get_home_target_path(four_letter);
+	QFile f(filepath);
+
+	f.open(QFile::WriteOnly);
+	bool b = f.write(data);
+	f.close();
+
+	if(b)
+	{
+		ui->lab_update_info->setText(tr("Language was updated successfully") + ".");
+		sp_log(Log::Info, this) << "Language file written to " << filepath;
+
+		Settings::instance()->shout<Set::Player_Language>();
+	}
+
+	else
+	{
+		ui->lab_update_info->setText(tr("Cannot fetch language update"));
+		sp_log(Log::Warning, this) << "Could not write language file to " << filepath;
+	}
+}
+
 
 void GUI_LanguageChooser::showEvent(QShowEvent* e)
 {
@@ -132,9 +278,3 @@ void GUI_LanguageChooser::showEvent(QShowEvent* e)
 
 	renew_combo();
 }
-
-QString GUI_LanguageChooser::action_name() const
-{
-	return tr("Language") + QString(" (Language)");
-}
-

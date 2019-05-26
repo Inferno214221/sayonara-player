@@ -31,6 +31,7 @@
 #include "Utils/Message/Message.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Language.h"
+#include "Utils/LanguageUtils.h"
 #include "Utils/Utils.h"
 #include "Utils/globals.h"
 #include "Utils/WebAccess/AsyncWebAccess.h"
@@ -554,9 +555,10 @@ void GUI_Player::splitter_controls_moved(int pos, int idx)
 	SetSetting(Set::Player_SplitterControls, splitter_state);
 }
 
+
 bool GUI_Player::init_translator(const QString& four_letter, const QString& dir)
 {
-	QString filename = QString("sayonara_lang_%1.qm").arg(four_letter);
+	QString filename = Util::Language::get_used_language_file(four_letter);
 
 	QTranslator* t = new QTranslator(this);
 	bool loaded = t->load(filename, dir);
@@ -578,10 +580,6 @@ bool GUI_Player::init_translator(const QString& four_letter, const QString& dir)
 void GUI_Player::language_changed()
 {
 	QString language = GetSetting(Set::Player_Language);
-	if(language == m->current_language)
-	{
-		return;
-	}
 
 	for(QTranslator* t : m->translators)
 	{
