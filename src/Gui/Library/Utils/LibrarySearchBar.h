@@ -43,7 +43,10 @@ namespace Library
 
 		public:
 			SearchBar(QWidget* parent=nullptr);
-			~SearchBar();
+			~SearchBar() override;
+
+			void set_invalid_genre_mode(bool b);
+			bool has_invalid_genre_mode() const;
 
 			void set_modes(const QList<Filter::Mode>& modes);
 			QList<Filter::Mode> modes() const;

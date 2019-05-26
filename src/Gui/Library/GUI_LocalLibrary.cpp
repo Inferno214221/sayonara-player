@@ -124,6 +124,9 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 	connect(ui->lv_genres, &QAbstractItemView::activated, this, &GUI_LocalLibrary::genre_selection_changed);
 	connect(ui->lv_genres, &GenreView::sig_progress, this, &GUI_LocalLibrary::progress_changed);
 	connect(ui->lv_genres, &GenreView::sig_genres_reloaded, this, &GUI_LocalLibrary::genres_reloaded);
+	connect(ui->lv_genres, &GenreView::sig_selected_cleared, this, [=](){
+		this->genre_selection_changed(QModelIndex());
+	});
 
 	connect(m->library_menu, &LocalLibraryMenu::sig_path_changed, m->library, &LocalLibrary::set_library_path);
 	connect(m->library_menu, &LocalLibraryMenu::sig_name_changed, m->library, &LocalLibrary::set_library_name);
@@ -257,6 +260,8 @@ void GUI_LocalLibrary::clear_selections()
 	{
 		ui->cover_view->table_view()->clearSelection();
 	}
+
+	ui->lv_genres->clearSelection();
 }
 
 void GUI_LocalLibrary::genre_selection_changed(const QModelIndex& idx)
@@ -271,6 +276,7 @@ void GUI_LocalLibrary::genre_selection_changed(const QModelIndex& idx)
 		genres << index.data().toString();
 		if(index.data(Qt::UserRole).toInt() == 5000)
 		{
+			ui->le_search->set_invalid_genre_mode(true);
 			genres.clear();
 			break;
 		}
@@ -278,7 +284,10 @@ void GUI_LocalLibrary::genre_selection_changed(const QModelIndex& idx)
 
 	ui->le_search->set_current_mode(::Library::Filter::Genre);
 	ui->le_search->setText(genres.join(","));
+
 	search_return_pressed();
+
+	ui->le_search->set_invalid_genre_mode(false);
 }
 
 Library::TrackDeletionMode GUI_LocalLibrary::show_delete_dialog(int n_tracks)
@@ -493,6 +502,14 @@ Library::SearchBar* GUI_LocalLibrary::le_search() const { return ui->le_search; 
 // LocalLibraryContainer
 QMenu* GUI_LocalLibrary::menu() const {	return m->library_menu; }
 QFrame* GUI_LocalLibrary::header_frame() const { return ui->header_frame; }
+
+bool GUI_LocalLibrary::has_selections() const
+{
+	Library::CoverView* view = ui->cover_view->table_view();
+	return GUI_AbstractLibrary::has_selections() ||
+			(ui->lv_genres->selectedItems().count() > 0) ||
+			(view && view->selected_items().count() > 0);
+}
 
 
 QList<Library::Filter::Mode> GUI_LocalLibrary::search_options() const

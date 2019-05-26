@@ -57,6 +57,7 @@ namespace Library
 	protected:
 		virtual void language_changed() override;
 		virtual void init_shortcuts();
+		virtual bool has_selections() const;
 
 		virtual TrackDeletionMode show_delete_dialog(int n_tracks)=0;
 

@@ -60,6 +60,8 @@ namespace Library
 		QFrame*		header_frame() const;
 
 	protected:
+
+		bool has_selections() const override;
 		void showEvent(QShowEvent* e) override;
 
 		TableView* lv_artist() const override;

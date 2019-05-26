@@ -79,6 +79,9 @@ GenreView::GenreView(QWidget* parent) :
 	setAlternatingRowColors(true);
 	setItemDelegate(new Gui::StyledItemDelegate(this));
 
+	QItemSelectionModel* ism = this->selectionModel();
+	connect(ism, &QItemSelectionModel::selectionChanged, this, &GenreView::selection_changed);
+
 	connect(this, &QTreeWidget::itemCollapsed, this, &GenreView::item_collapsed);
 	connect(this, &QTreeWidget::itemExpanded, this, &GenreView::item_expanded);
 
@@ -236,6 +239,16 @@ void GenreView::tree_action_toggled(bool b)
 	SetSetting(Set::Lib_GenreTree, b);
 }
 
+
+void GenreView::selection_changed(const QItemSelection& selected, const QItemSelection& deselected)
+{
+	Q_UNUSED(deselected);
+
+	if(selected.isEmpty()){
+		emit sig_selected_cleared();
+	}
+}
+
 void GenreView::language_changed()
 {
 	if(m->toggle_tree_action) {
@@ -255,6 +268,7 @@ void GenreView::language_changed()
 
 	}
 }
+
 
 void GenreView::reload_genres()
 {
@@ -513,6 +527,7 @@ void GenreView::dropEvent(QDropEvent* e)
 
 	m->genre_fetcher->add_genre_to_md(v_md, genre);
 }
+
 
 QString GenreView::no_genre_name() const
 {
