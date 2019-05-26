@@ -65,6 +65,9 @@ public:
 
 	void toggle_buffer_mode(bool buffering) override;
 	bool is_resizable() const override;
+
+protected:
+	void language_changed() override;
 };
 
 

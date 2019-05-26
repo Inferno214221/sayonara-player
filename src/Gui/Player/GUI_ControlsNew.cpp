@@ -92,3 +92,10 @@ void GUI_ControlsNew::rating_changed_here(bool success)
 	connect(uto, &Tagging::UserOperations::sig_finished, uto, &Tagging::UserOperations::deleteLater);
 	uto->set_track_rating(md, rating);
 }
+
+void GUI_ControlsNew::language_changed()
+{
+	if(ui){
+		ui->retranslateUi(this);
+	}
+}

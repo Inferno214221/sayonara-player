@@ -73,3 +73,10 @@ bool GUI_Controls::is_resizable() const
 {
 	return false;
 }
+
+void GUI_Controls::language_changed()
+{
+	if(ui){
+		ui->retranslateUi(this);
+	}
+}
