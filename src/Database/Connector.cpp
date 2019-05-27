@@ -69,8 +69,10 @@ struct Connector::Private
 	QList<LibraryDatabase*> library_dbs;
 	LibraryDatabase*		generic_library_database=nullptr;
 
+	int						old_db_version;
 
-	Private() {}
+
+	Private() : old_db_version(0) {}
 	~Private()
 	{
 		if(bookmark_connector){
@@ -111,15 +113,31 @@ struct Connector::Private
 	}
 };
 
+class DatabaseNotCreatedException : public std::exception
+{
+public:
+	const char* what() const noexcept;
+};
+
+
+
 Connector::Connector(const QString& from_dir, const QString& to_dir, const QString& db_filename) :
 	DB::Base(0, from_dir, to_dir, db_filename, nullptr)
 {
 	m = Pimpl::make<Private>();
 
-	m->generic_library_database = new LibraryDatabase(connection_name(), db_id(), -1);
-	m->library_dbs << m->generic_library_database;
+	if(!this->is_initialized()){
+		throw DatabaseNotCreatedException();
+	}
 
-	apply_fixes();
+	else
+	{
+
+		m->generic_library_database = new LibraryDatabase(connection_name(), db_id(), -1);
+		m->library_dbs << m->generic_library_database;
+
+		apply_fixes();
+	}
 }
 
 Connector::Connector(const QString& to_dir, const QString& db_filename) :
@@ -143,8 +161,6 @@ DB::Connector* Connector::instance(const QString& from_dir, const QString& to_di
 	static Connector db(from_dir, to_dir, db_filename);
 	return &db;
 }
-
-
 
 bool Connector::updateAlbumCissearchFix()
 {
@@ -276,15 +292,27 @@ bool Connector::updateLostAlbums()
 	return true;
 }
 
+int Connector::old_db_version() const
+{
+	return m->old_db_version;
+}
+
+int Connector::get_max_db_version()
+{
+	return 22;
+}
+
 bool Connector::apply_fixes()
 {
 	QString str_version;
 	int version;
 	bool success;
-	const int LatestVersion = 22;
+	const int LatestVersion = get_max_db_version();
 
 	success = settings_connector()->load_setting("version", str_version);
 	version = str_version.toInt(&success);
+	m->old_db_version = version;
+
 	sp_log(Log::Info, this)
 			<< "Database Version:  " << version << ". "
 			<< "Latest Version: " << LatestVersion;
@@ -852,4 +880,10 @@ DB::Session* DB::Connector::session_connector()
 	}
 
 	return m->session_connector;
+}
+
+
+const char* DatabaseNotCreatedException::what() const noexcept
+{
+	return "Database could not be created";
 }

@@ -83,6 +83,9 @@ namespace DB
 			DB::Covers*				cover_connector();
 			DB::Library*			library_connector();
 			DB::Session*			session_connector();
+
+			static int				get_max_db_version();
+			int						old_db_version() const;
 	};
 }
 #endif // DatabaseConnector_H

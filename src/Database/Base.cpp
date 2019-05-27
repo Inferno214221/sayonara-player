@@ -58,14 +58,15 @@ Base::Base(DbId db_id, const QString& from_dir, const QString& to_dir, const QSt
 	DB::Module(to_dir + "/" + filename, db_id)
 {
 	m = Pimpl::make<Private>(db_id, from_dir, to_dir, filename);
+	bool success = FileUtils::exists(m->connection_name);
 
-	if(!FileUtils::exists(m->connection_name))
+	if(!success)
 	{
 		sp_log(Log::Info, this) << "Database not existent. Creating database...";
-		create_db();
+		success = create_db();
 	}
 
-	m->initialized = this->db().isOpen();
+	m->initialized = success && this->db().isOpen();
 
 	if(!m->initialized) {
 		sp_log(Log::Error, this) << "Database is not open";

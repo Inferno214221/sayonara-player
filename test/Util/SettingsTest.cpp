@@ -4,7 +4,7 @@
 #include "Utils/Macros.h"
 #include "Utils/FileUtils.h"
 
-#include "TestMacros.h"
+#include "DBMacros.h"
 
 #include <QTest>
 #include <QObject>
@@ -18,7 +18,7 @@ class SettingsTest : public QObject
 public:
 	SettingsTest(QObject* parent=nullptr) :
 		QObject(parent),
-		m_db_source_path(TEST_DB_SOURCE_DIR)
+		m_db_source_path(DB_SOURCE_DIR)
 	{}
 
 private slots:
@@ -45,9 +45,19 @@ void SettingsTest::test_registry()
 	QVERIFY(db->db().isOpen());
 
 	QList<SettingKey> keys;
+
+	QString db_version;
+	db->settings_connector()->load_setting("version", db_version);
 	db->settings_connector()->load_settings(keys);
 
-	QList<SettingKey> undeploy_keys = s->undeploy_keys();
+	int old_db_version = db->old_db_version();
+	int max_db_version = DB::Connector::get_max_db_version();
+
+	QVERIFY(old_db_version == max_db_version);
+	QVERIFY(db_version.toInt() == max_db_version);
+
+
+	QList<SettingKey> undeploy_keys = s->undeployed_keys();
 
 	// 3 non db keys
 	int max_key = static_cast<int>(SettingKey::Num_Setting_Keys);

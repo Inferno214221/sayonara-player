@@ -138,7 +138,7 @@ void Settings::apply_fixes()
 	}
 }
 
-QList<SettingKey> Settings::undeploy_keys() const
+QList<SettingKey> Settings::undeployed_keys() const
 {
 	return QList<SettingKey>
 	{

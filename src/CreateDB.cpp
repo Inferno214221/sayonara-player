@@ -3,19 +3,33 @@
 #include "Database/Connector.h"
 #include "Database/Settings.h"
 #include "Utils/FileUtils.h"
+#include "DBMacros.h"
+
 #include <QApplication>
+#include <QDir>
+
+#include <iostream>
 
 int main(int argc, char** argv)
 {
 	QApplication app(argc, argv);
 
-	Util::File::delete_files({"./player.db"});
-	DB::Connector* db = DB::Connector::instance(".", "player.db");
+	if(argc < 2){
+		std::cerr << "Usage " << argv[0] << " <out_dir>" << std::endl;
+		return 1;
+	}
+
+	QString source_dir(DB_SOURCE_DIR);
+	QString target_dir(argv[1]);
+	QString db_filename("player.db");
+
+	Util::File::delete_files({db_filename});
+	DB::Connector* db = DB::Connector::instance(source_dir, target_dir, db_filename);
 	DB::Settings* setting_connector = db->settings_connector();
 
 	Settings* settings = Settings::instance();
 	settings->check_settings();
-	QList<SettingKey> invalid_keys = settings->undeploy_keys();
+	QList<SettingKey> invalid_keys = settings->undeployed_keys();
 	SettingArray arr = settings->settings();
 
 	QList<AbstrSetting*> invalid_settings;
@@ -39,6 +53,8 @@ int main(int argc, char** argv)
 	{
 		setting_connector->drop_setting(s->db_key());
 	}
+
+	std::cout << "Written to " << QDir(target_dir).absoluteFilePath(db_filename).toStdString() << std::endl;
 
 	return 0;
 }

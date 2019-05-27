@@ -90,7 +90,7 @@ class Settings
 
 		void apply_fixes();
 
-		QList<SettingKey> undeploy_keys() const;
+		QList<SettingKey> undeployed_keys() const;
 
 };
 
