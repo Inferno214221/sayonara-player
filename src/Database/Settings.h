@@ -36,6 +36,7 @@ namespace DB
 
 		bool load_setting(QString key, QString& val);
 		bool store_setting(QString key, const QVariant& val);
+		bool drop_setting(const QString& key);
 
 		bool load_settings();
 		bool store_settings();

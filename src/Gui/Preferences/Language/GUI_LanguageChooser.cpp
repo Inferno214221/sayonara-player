@@ -162,11 +162,13 @@ void GUI_LanguageChooser::combo_index_changed(int idx)
 
 void GUI_LanguageChooser::btn_check_for_update_clicked()
 {
-	AsyncWebAccess* awa = new AsyncWebAccess(this);
 	ui->btn_check_for_update->setEnabled(false);
 
+	AsyncWebAccess* awa = new AsyncWebAccess(this);
+	QString url = Util::Language::get_checksum_http_path();
+
 	connect(awa, &AsyncWebAccess::sig_finished, this, &GUI_LanguageChooser::update_check_finished);
-	awa->run("ftp://sayonara-player.com/translation/checksum");
+	awa->run(url);
 
 }
 
@@ -201,7 +203,7 @@ void GUI_LanguageChooser::update_check_finished()
 		QStringList splitted = line.split(" ");
 		QString checksum = splitted[0];
 
-		ui->btn_download->setVisible(current_checksum != checksum);
+		ui->btn_download->setVisible(current_checksum != checksum || true);
 		if(current_checksum != checksum)
 		{
 			sp_log(Log::Info, this) << "Language update available";
@@ -223,7 +225,7 @@ void GUI_LanguageChooser::btn_download_clicked()
 	ui->btn_download->setVisible(false);
 
 	QString four_letter = get_four_letter(ui->combo_lang);
-	QString url = Language::get_ftp_path(four_letter);
+	QString url = Language::get_http_path(four_letter);
 
 	AsyncWebAccess* awa = new AsyncWebAccess(this);
 	connect(awa, &AsyncWebAccess::sig_finished, this, &GUI_LanguageChooser::download_finished);
@@ -231,7 +233,7 @@ void GUI_LanguageChooser::btn_download_clicked()
 	awa->run(url);
 }
 
-
+#include "Utils/Settings/Settings.h"
 
 void GUI_LanguageChooser::download_finished()
 {
@@ -260,6 +262,9 @@ void GUI_LanguageChooser::download_finished()
 	{
 		ui->lab_update_info->setText(tr("Language was updated successfully") + ".");
 		sp_log(Log::Info, this) << "Language file written to " << filepath;
+
+		Util::Language::update_language_version(four_letter);
+
 
 		Settings::instance()->shout<Set::Player_Language>();
 	}

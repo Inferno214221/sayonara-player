@@ -85,11 +85,8 @@ add_subdirectory(Components)
 add_subdirectory(Languages)
 add_subdirectory(3rdParty)
 
-set(SOURCES
-	Main.cpp
-)
+add_executable(${PROJECT_NAME} Main.cpp ${QM_FILES})
 
-add_executable(${PROJECT_NAME} ${SOURCES} ${QM_FILES})
 
 #file(GLOB_RECURSE HeaderFiles "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
 #add_custom_target(headers SOURCES ${HeaderFiles})
@@ -102,12 +99,18 @@ if(WIN32)
 	)
 endif()
 
-
 target_link_libraries(${PROJECT_NAME}
 	say_application
 	say_gui_resources
 	say_lang
 	${OS_LIBRARIES}
+)
+
+add_executable("create_db" CreateDB.cpp)
+target_link_libraries("create_db"
+	say_utils
+	say_db
+	Qt5::Widgets
 )
 
 

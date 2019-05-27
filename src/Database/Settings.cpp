@@ -50,6 +50,7 @@ bool DB::Settings::load_settings()
 		}
 
 		else {
+
 			sp_log(Log::Debug, this) << "Setting " << db_key << ": Not found. Use default value...";
 			s->assign_default_value();
 			sp_log(Log::Debug, this) << "Load Setting " << db_key << ": " << s->value_to_string();
@@ -150,5 +151,17 @@ bool DB::Settings::store_setting(QString key, const QVariant& value)
 	}
 
 	return true;
+}
+
+bool DB::Settings::drop_setting(const QString& key)
+{
+	Query q = run_query
+	(
+		"DELETE FROM settings WHERE key = :key;",
+		{":key", key},
+		QString("Drop setting: Cannot drop setting %1").arg(key)
+	);
+
+	return (!q.has_error());
 }
 

@@ -69,6 +69,7 @@ struct Connector::Private
 	QList<LibraryDatabase*> library_dbs;
 	LibraryDatabase*		generic_library_database=nullptr;
 
+
 	Private() {}
 	~Private()
 	{
@@ -676,6 +677,7 @@ bool Connector::apply_fixes()
 
 	return true;
 }
+
 
 void Connector::clean_up()
 {

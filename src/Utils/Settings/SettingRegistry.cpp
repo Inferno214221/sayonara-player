@@ -122,7 +122,7 @@ bool SettingRegistry::init()
 	register_setting<Set::Dir_SplitterTracks>( "dir_splitter_tracks", QByteArray());
 
 	register_setting<Set::Player_Version>( "player_version", QString(SAYONARA_VERSION));
-	register_setting<Set::Player_Language>( "player_language", QString("en_US"));
+	register_setting<Set::Player_Language>( "player_language", QLocale().name());
 	register_setting<Set::Player_Style>( "player_style", 0 );
 	register_setting<Set::Player_ControlStyle>( "player_control_style", 0 );
 	register_setting<Set::Player_FontName>( "player_font", QApplication::font().family() );
