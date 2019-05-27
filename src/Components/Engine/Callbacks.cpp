@@ -41,6 +41,7 @@
 
 namespace EngineUtils=::Engine::Utils;
 namespace Callbacks=::Engine::Callbacks;
+using ::Engine::Engine;
 
 const char* ClassEngineCallbacks = "Engine Callbacks";
 
@@ -131,7 +132,7 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 	Q_UNUSED(bus);
 
 	static MetaData md;
-	Engine::Engine* engine = static_cast<Engine::Engine*>(data);
+	Engine* engine = static_cast<Engine*>(data);
 	if(!engine){
 		return true;
 	}
@@ -314,9 +315,7 @@ Callbacks::level_handler(GstBus* bus, GstMessage* message, gpointer data)
 {
 	Q_UNUSED(bus);
 
-	double					channel_values[2];
-
-	Engine::Engine* engine = static_cast<Engine::Engine*>(data);
+	Engine* engine = static_cast<Engine*>(data);
 	if(!engine) {
 		return true;
 	}
@@ -343,6 +342,7 @@ Callbacks::level_handler(GstBus* bus, GstMessage* message, gpointer data)
 		return true;
 	}
 
+	double channel_values[2];
 	n_peak_elements = std::min((guint) 2, n_peak_elements);
 	for(guint i=0; i<n_peak_elements; i++)
 	{
@@ -379,7 +379,7 @@ Callbacks::spectrum_handler(GstBus* bus, GstMessage* message, gpointer data)
 
 	static SpectrumList	spectrum_vals;
 
-	Engine::Engine* engine = static_cast<Engine::Engine*>(data);
+	Engine* engine = static_cast<Engine*>(data);
 	if(!engine) {
 		return true;
 	}

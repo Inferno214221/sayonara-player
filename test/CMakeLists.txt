@@ -12,6 +12,13 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+file(COPY ${CMAKE_SOURCE_DIR}/resources/player.db
+	DESTINATION	${CMAKE_CURRENT_BINARY_DIR}
+)
+
+set(TEST_DB_SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR})
+configure_file(TestMacros.h.in "${CMAKE_CURRENT_BINARY_DIR}/TestMacros.h" @ONLY)
+
 set(RESOURCES
 	resources/Test.qrc
 )

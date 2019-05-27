@@ -137,3 +137,17 @@ void Settings::apply_fixes()
 		this->set<Set::Player_PublicId>(id);
 	}
 }
+
+QList<SettingKey> Settings::undeploy_keys() const
+{
+	return QList<SettingKey>
+	{
+		SettingKey::Player_Language,
+		SettingKey::Player_Version,
+		SettingKey::Player_PublicId,
+		SettingKey::Player_PrivId,
+		SettingKey::Player_FontName,
+		SettingKey::Player_FontSize,
+		SettingKey::Player_Shortcuts
+	};
+}

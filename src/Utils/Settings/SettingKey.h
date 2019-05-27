@@ -416,8 +416,8 @@ class SettingIdentifier
 
 	INST(int,				Logger_Level)			/* Also log development: */
 
-	INST_NO_DB(bool,				MP3enc_found)
-	INST_NO_DB(bool,				Pitch_found)
-	INST_NO_DB(bool,				Player_Quit)
+	INST_NO_DB(bool,		MP3enc_found)
+	INST_NO_DB(bool,		Pitch_found)
+	INST_NO_DB(bool,		Player_Quit)
 
 #endif // SETTINGKEY_H

@@ -22,6 +22,7 @@
 #define DATABASESETTINGS_H
 
 #include "Database/Module.h"
+#include "Utils/Settings/SettingKey.h"
 
 class QVariant;
 
@@ -39,6 +40,7 @@ namespace DB
 		bool drop_setting(const QString& key);
 
 		bool load_settings();
+		bool load_settings(QList<SettingKey>& found_keys);
 		bool store_settings();
 	};
 }

@@ -27,6 +27,7 @@
 #include "Utils/Singleton.h"
 
 #include <array>
+#include <QList>
 
 #define GetSetting(x) Settings::instance()->get<x>()
 #define SetSetting(x, y) Settings::instance()->set<x>(y)
@@ -88,6 +89,8 @@ class Settings
 		}
 
 		void apply_fixes();
+
+		QList<SettingKey> undeploy_keys() const;
 
 };
 

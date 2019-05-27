@@ -37,7 +37,7 @@ namespace DB
 
 		public:
 			Base(DbId db_id, const QString& filename, QObject *parent=nullptr);
-			Base(DbId db_id, const QString& dir, const QString& filename, QObject *parent=nullptr);
+			Base(DbId db_id, const QString& from_dir, const QString& to_dir, const QString& filename, QObject *parent=nullptr);
 
 			virtual ~Base();
 

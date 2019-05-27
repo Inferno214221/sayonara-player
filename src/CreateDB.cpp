@@ -15,19 +15,10 @@ int main(int argc, char** argv)
 
 	Settings* settings = Settings::instance();
 	settings->check_settings();
-
-	QList<SettingKey> invalid_keys
-	{
-		SettingKey::Player_Version,
-		SettingKey::Player_Language,
-		SettingKey::Player_PrivId,
-		SettingKey::Player_PublicId
-	};
-
-	QList<AbstrSetting*> invalid_settings;
-
+	QList<SettingKey> invalid_keys = settings->undeploy_keys();
 	SettingArray arr = settings->settings();
 
+	QList<AbstrSetting*> invalid_settings;
 	for(AbstrSetting* s : arr)
 	{
 		if(!s->is_db_setting()){

@@ -31,8 +31,10 @@ DB::Settings::Settings(const QString& connection_name, DbId db_id) :
 
 DB::Settings::~Settings() {}
 
-bool DB::Settings::load_settings()
+bool DB::Settings::load_settings(QList<SettingKey>& found_keys)
 {
+	found_keys.clear();
+
 	const SettingArray& settings = ::Settings::instance()->settings();
 
 	for(AbstrSetting* s : settings)
@@ -47,6 +49,7 @@ bool DB::Settings::load_settings()
 		bool success = load_setting(db_key, value);
 		if(success) {
 			s->assign_value(value);
+			found_keys << s->get_key();
 		}
 
 		else {
@@ -58,6 +61,12 @@ bool DB::Settings::load_settings()
 	}
 
 	return true;
+}
+
+bool DB::Settings::load_settings()
+{
+	QList<SettingKey> keys;
+	return load_settings(keys);
 }
 
 bool DB::Settings::store_settings()

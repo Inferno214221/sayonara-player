@@ -109,7 +109,7 @@ Pipeline::~Pipeline()
 	}
 }
 
-bool Pipeline::init(Engine::Engine* engine, GstState state)
+bool Pipeline::init(Engine* engine, GstState state)
 {
 	if(m->pipeline) {
 		return true;

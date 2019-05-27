@@ -111,8 +111,8 @@ struct Connector::Private
 	}
 };
 
-Connector::Connector(const QString& dir, const QString& db_filename) :
-	DB::Base(0, dir, db_filename, nullptr)
+Connector::Connector(const QString& from_dir, const QString& to_dir, const QString& db_filename) :
+	DB::Base(0, from_dir, to_dir, db_filename, nullptr)
 {
 	m = Pimpl::make<Private>();
 
@@ -122,17 +122,28 @@ Connector::Connector(const QString& dir, const QString& db_filename) :
 	apply_fixes();
 }
 
+Connector::Connector(const QString& to_dir, const QString& db_filename) :
+	Connector(Util::share_path(), to_dir, db_filename)
+{}
+
 Connector::Connector() :
 	Connector(Util::sayonara_path(), "player.db")
 {}
 
 Connector::~Connector() {}
 
-DB::Connector* Connector::instance(const QString& dir, const QString& db_filename)
+DB::Connector* Connector::instance(const QString& to_dir, const QString& db_filename)
 {
-	static Connector db(dir, db_filename);
+	static Connector db(to_dir, db_filename);
 	return &db;
 }
+
+DB::Connector* Connector::instance(const QString& from_dir, const QString& to_dir, const QString& db_filename)
+{
+	static Connector db(from_dir, to_dir, db_filename);
+	return &db;
+}
+
 
 
 bool Connector::updateAlbumCissearchFix()
