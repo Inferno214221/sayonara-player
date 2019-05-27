@@ -69,7 +69,7 @@ bool SettingRegistry::init()
 	register_setting<Set::Eq_List>( "EQ_list", EQ_Setting::get_defaults() );
 	register_setting<Set::Eq_Gauss>( "EQ_Gauss", true );
 
-	BoolList shown_cols; shown_cols.reserve(10); while(shown_cols.count() < 10) { shown_cols << false; }
+	BoolList shown_cols; while(shown_cols.count() < 10) { shown_cols << true; }
 
 	register_setting<Set::Lib_ColsTitle>( "lib_shown_cols_title", shown_cols );
 	register_setting<Set::Lib_ColsArtist>( "lib_shown_cols_artist", shown_cols );
@@ -94,7 +94,7 @@ bool SettingRegistry::init()
 	register_setting<Set::Lib_DC_PlayImmediately >("lib_dc_play_immediately", false);
 	register_setting<Set::Lib_DD_DoNothing >("lib_dd_do_nothing", true);
 	register_setting<Set::Lib_DD_PlayIfStoppedAndEmpty >("lib_dd_play_if_stopped_and_empty", false);
-	register_setting<Set::Lib_SearchMode>( "lib_search_mode", (int) Library::CaseInsensitve);
+	register_setting<Set::Lib_SearchMode>( "lib_search_mode", static_cast<int>(Library::CaseInsensitve));
 	register_setting<Set::Lib_AutoUpdate>( "lib_auto_update", false);
 	register_setting<Set::Lib_ShowAlbumArtists>( "lib_show_album_artists", false);
 	register_setting<Set::Lib_ShowAlbumCovers>( "lib_show_album_covers", false);
@@ -123,8 +123,8 @@ bool SettingRegistry::init()
 
 	register_setting<Set::Player_Version>( "player_version", QString(SAYONARA_VERSION));
 	register_setting<Set::Player_Language>( "player_language", QLocale().name());
-	register_setting<Set::Player_Style>( "player_style", 0 );
-	register_setting<Set::Player_ControlStyle>( "player_control_style", 0 );
+	register_setting<Set::Player_Style>( "player_style", 1 );
+	register_setting<Set::Player_ControlStyle>( "player_control_style", 1 );
 	register_setting<Set::Player_FontName>( "player_font", QApplication::font().family() );
 	register_setting<Set::Player_FontSize>( "player_font_size", QApplication::font().pointSize() );
 	register_setting<Set::Player_Size>( "player_size", QSize(1200,800) );
