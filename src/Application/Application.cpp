@@ -93,7 +93,7 @@
 #include "Database/Connector.h"
 #include "Database/Settings.h"
 
-
+#include <QIcon>
 #include <QTime>
 #include <QDateTime>
 #include <QSessionManager>
@@ -377,7 +377,7 @@ void Application::init_libraries()
 void Application::init_engine()
 {
 	measure("Engine")
-	EngineHandler::instance()->init();
+	Engine::Handler::instance()->init();
 }
 
 void Application::init_plugins()
@@ -428,7 +428,7 @@ void Application::session_end_requested(QSessionManager& manager)
 
 void Application::shutdown()
 {
-	EngineHandler::instance()->shutdown();
+	Engine::Handler::instance()->shutdown();
 	Playlist::Handler::instance()->shutdown();
 	PlayManager::instance()->shutdown();
 

@@ -79,6 +79,11 @@ void CoverViewPixmapCache::add_pixmap(const Hash& hash, const QPixmap& pm)
 	m->pixmaps.insert(hash, new Util::Image(pm, QSize(200, 200)));
 }
 
+int CoverViewPixmapCache::cache_size() const
+{
+	return m->pixmaps.keys().size();
+}
+
 
 QPixmap CoverViewPixmapCache::pixmap(const Hash& hash) const
 {

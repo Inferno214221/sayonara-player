@@ -91,13 +91,13 @@
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="src/Gui/Covers/GUI_AlternativeCovers.cpp" line="+227"/>
-        <source>Cover web search is not enabled</source>
+        <location filename="src/Gui/Covers/GUI_AlternativeCovers.cpp" line="+231"/>
+        <source>%1 covers found</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location line="+80"/>
-        <source>%1 covers found</source>
+        <location line="+123"/>
+        <source>Cover web search is not enabled</source>
         <translation type="unfinished"/>
     </message>
 </context>
@@ -288,7 +288,7 @@
         <translation>Sayonara Player</translation>
     </message>
     <message>
-        <location filename="src/Gui/Player/GUI_Player.cpp" line="+409"/>
+        <location filename="src/Gui/Player/GUI_Player.cpp" line="+410"/>
         <source>A new version is available!</source>
         <translation>Nová verzia dostupná!</translation>
     </message>
@@ -424,6 +424,32 @@
     </message>
 </context>
 <context>
+    <name>GUI_Speed</name>
+    <message>
+        <location filename="src/Gui/Plugins/Engine/GUI_Speed.ui" line="+45"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_Speed.cpp" line="+117"/>
+        <source>Speed</source>
+        <translation>Rýchlosť</translation>
+    </message>
+    <message>
+        <location line="+39"/>
+        <source>Preserve pitch</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+30"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_Speed.cpp" line="+0"/>
+        <source>Pitch</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="src/Gui/Plugins/Engine/GUI_Speed.cpp" line="+64"/>
+        <location line="+1"/>
+        <source>%1 not found</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
     <name>GUI_Style</name>
     <message>
         <location filename="src/Gui/Plugins/Engine/GUI_Style.ui" line="+14"/>
@@ -505,32 +531,6 @@
     </message>
 </context>
 <context>
-    <name>GUI_Speed</name>
-    <message>
-        <location filename="src/Gui/Plugins/Engine/Speed/GUI_Speed.ui" line="+45"/>
-        <location filename="src/Gui/Plugins/Engine/Speed/GUI_Speed.cpp" line="+117"/>
-        <source>Speed</source>
-        <translation>Rýchlosť</translation>
-    </message>
-    <message>
-        <location line="+39"/>
-        <source>Preserve pitch</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+30"/>
-        <location filename="src/Gui/Plugins/Engine/Speed/GUI_Speed.cpp" line="+0"/>
-        <source>Pitch</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="src/Gui/Plugins/Engine/Speed/GUI_Speed.cpp" line="+64"/>
-        <location line="+1"/>
-        <source>%1 not found</source>
-        <translation type="unfinished"/>
-    </message>
-</context>
-<context>
     <name>GUI_TargetPlaylistDialog</name>
     <message>
         <location filename="src/Gui/Plugins/PlaylistChooser/GUI_TargetPlaylistDialog.ui" line="+14"/>
@@ -580,7 +580,7 @@
     </message>
     <message>
         <location filename="src/Gui/Plugins/Stream/GUI_StationSearcher.cpp" line="+58"/>
-        <source>Show stations from %1 to %2</source>
+        <source>Show radio stations from %1 to %2</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -615,17 +615,7 @@
 <context>
     <name>GUI_Covers</name>
     <message>
-        <location filename="src/Gui/Preferences/Covers/GUI_Covers.ui" line="+19"/>
-        <source>&lt;</source>
-        <translation>&lt;</translation>
-    </message>
-    <message>
-        <location line="+59"/>
-        <source>&gt;</source>
-        <translation>&gt;</translation>
-    </message>
-    <message>
-        <location line="+13"/>
+        <location filename="src/Gui/Preferences/Covers/GUI_Covers.ui" line="+62"/>
         <source>Inactive</source>
         <translation type="unfinished"/>
     </message>
@@ -635,37 +625,118 @@
         <translation>Aktívne</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+60"/>
+        <source>Delete all covers from the database</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>Clear cache</source>
         <translation>Vymazať vyrovnávaciu pamäť</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+7"/>
+        <source>Delete all covers from the Sayonara directory</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>Delete files</source>
         <translation>Odstrániť súbory</translation>
     </message>
     <message>
+        <location line="+9"/>
+        <source>Save found covers into the library directory where the audio files are located</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Save found covers into library</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
         <location line="+7"/>
-        <source>Fetch covers from the internet</source>
+        <source>Fetch missing covers from the internet</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Saving covers to the database leads to significantly faster access but results in a bigger database</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Save found covers to database</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Save found covers into Sayonara directory</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>Cover name</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Name of cover file</source>
         <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>GUI_LanguageChooser</name>
     <message>
-        <location filename="src/Gui/Preferences/Language/GUI_LanguageChooser.ui" line="+17"/>
-        <source>For new languages I am always looking for translators</source>
+        <location filename="src/Gui/Preferences/Language/GUI_LanguageChooser.ui" line="+29"/>
+        <source>Check for update</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+7"/>
+        <source>Download update</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+33"/>
         <source>English</source>
         <translation>Angličtina</translation>
     </message>
     <message>
-        <location filename="src/Gui/Preferences/Language/GUI_LanguageChooser.cpp" line="+138"/>
+        <location line="+28"/>
+        <source>For new languages I am always looking for translators</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="src/Gui/Preferences/Language/GUI_LanguageChooser.cpp" line="+64"/>
         <source>Language</source>
         <translation>Jazyk</translation>
+    </message>
+    <message>
+        <location line="+121"/>
+        <source>Cannot check for language update</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Language update available</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Language is up to date</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+34"/>
+        <location line="+22"/>
+        <source>Cannot fetch language update</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="-8"/>
+        <source>Language was updated successfully</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -792,13 +863,13 @@
     </message>
     <message>
         <location line="+7"/>
-        <source>Close to tray</source>
-        <translation>Zatvoriť do lišty</translation>
+        <source>Close to system tray</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+28"/>
-        <source>Start in tray</source>
-        <translation>Spustiť v lište</translation>
+        <source>Start in system tray</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -1193,17 +1264,7 @@
 <context>
     <name>GUI_TagEdit</name>
     <message>
-        <location filename="src/Gui/TagEdit/GUI_TagEdit.ui" line="+64"/>
-        <source>&lt;</source>
-        <translation>&lt;</translation>
-    </message>
-    <message>
-        <location line="+32"/>
-        <source>&gt;</source>
-        <translation>&gt;</translation>
-    </message>
-    <message>
-        <location line="+39"/>
+        <location filename="src/Gui/TagEdit/GUI_TagEdit.ui" line="+135"/>
         <source>Discnumber</source>
         <translation>Číslo disku</translation>
     </message>
@@ -1276,12 +1337,7 @@
         <translation>Výraz</translation>
     </message>
     <message>
-        <location line="+17"/>
-        <source>?</source>
-        <translation>?</translation>
-    </message>
-    <message>
-        <location line="+67"/>
+        <location line="+84"/>
         <source>Disc Nr</source>
         <translation>Číslo disku</translation>
     </message>
@@ -1289,11 +1345,6 @@
         <location line="+57"/>
         <source>Apply to all</source>
         <translation>Použiť pre všetky</translation>
-    </message>
-    <message>
-        <location line="+32"/>
-        <source>Warning</source>
-        <translation>Upozornenie</translation>
     </message>
     <message>
         <location filename="src/Gui/TagEdit/TagFromPath.cpp" line="+96"/>
@@ -1404,7 +1455,7 @@
 <context>
     <name>AbstractLibrary</name>
     <message>
-        <location filename="src/Components/Library/AbstractLibrary.cpp" line="+708"/>
+        <location filename="src/Components/Library/AbstractLibrary.cpp" line="+714"/>
         <source>All %1 could be removed</source>
         <translation>Všetkých %1 bolo odstránených</translation>
     </message>
@@ -1480,7 +1531,7 @@
 <context>
     <name>CoverButton</name>
     <message>
-        <location filename="src/Gui/Covers/CoverButton.cpp" line="+196"/>
+        <location filename="src/Gui/Covers/CoverButton.cpp" line="+202"/>
         <source>Cover source: Audio file</source>
         <translation type="unfinished"/>
     </message>
@@ -1549,7 +1600,7 @@
 <context>
     <name>Library::GenreView</name>
     <message>
-        <location filename="src/Gui/Library/GenreView.cpp" line="+121"/>
+        <location filename="src/Gui/Library/GenreView.cpp" line="+120"/>
         <source>Updating genres</source>
         <translation>Aktualizujem žánre</translation>
     </message>
@@ -1558,11 +1609,16 @@
         <source>Do you really want to remove %1 from all tracks?</source>
         <translation>Naozaj chcete odstrániť %1 zo všetkých skladieb?</translation>
     </message>
+    <message>
+        <location line="+312"/>
+        <source>No genre</source>
+        <translation type="unfinished"/>
+    </message>
 </context>
 <context>
     <name>Library::GUI_CoverView</name>
     <message>
-        <location filename="src/Gui/Library/GUI_CoverView.cpp" line="+203"/>
+        <location filename="src/Gui/Library/GUI_CoverView.cpp" line="+205"/>
         <source>Use Ctrl + mouse wheel to zoom</source>
         <translation>Použite Ctrl + koliesko myši pre priblíženie</translation>
     </message>
@@ -1599,6 +1655,14 @@
     </message>
 </context>
 <context>
+    <name>Library::HeaderView</name>
+    <message>
+        <location filename="src/Gui/Library/HeaderView.cpp" line="+61"/>
+        <source>Resize columns</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
     <name>Library::ItemView</name>
     <message>
         <location filename="src/Gui/Library/ItemView.cpp" line="+237"/>
@@ -1632,7 +1696,7 @@
 <context>
     <name>GUI_Logger</name>
     <message>
-        <location filename="src/Gui/Player/GUI_Logger.cpp" line="+199"/>
+        <location filename="src/Gui/Player/GUI_Logger.cpp" line="+272"/>
         <source>Cannot open file</source>
         <translation>Nepodarilo sa otvoriť súbor</translation>
     </message>
@@ -1702,7 +1766,7 @@
     </message>
     <message>
         <location line="+3"/>
-        <source>Special tanks to all the brave translators</source>
+        <source>Special thanks to all the brave translators</source>
         <translation type="unfinished"/>
     </message>
 </context>
@@ -1789,7 +1853,7 @@
 <context>
     <name>GUI_Crossfader</name>
     <message>
-        <location filename="src/Gui/Plugins/Engine/Crossfader/GUI_Crossfader.cpp" line="+74"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_Crossfader.cpp" line="+74"/>
         <location line="+11"/>
         <source>Crossfader</source>
         <translation>Prelínač</translation>
@@ -1798,7 +1862,7 @@
 <context>
     <name>GUI_Equalizer</name>
     <message>
-        <location filename="src/Gui/Plugins/Engine/Equalizer/GUI_Equalizer.cpp" line="+160"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_Equalizer.cpp" line="+160"/>
         <source>Equalizer</source>
         <translation>Ekvalizér</translation>
     </message>
@@ -1822,7 +1886,7 @@
 <context>
     <name>GUI_StyleSettings</name>
     <message>
-        <location filename="src/Gui/Plugins/Engine/GUI_StyleSettings.cpp" line="+189"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_StyleSettings.cpp" line="+188"/>
         <source>There are some unsaved settings&lt;br /&gt;Save now?</source>
         <translation>Nejaké zmeny nie sú uložené.&lt;br /&gt;Uložiť teraz?</translation>
     </message>
@@ -1869,6 +1933,14 @@
     <message>
         <location filename="src/Gui/Plugins/Stream/GUI_Podcasts.cpp" line="+62"/>
         <source>Podcast</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
+    <name>GUI_Stream</name>
+    <message>
+        <location filename="src/Gui/Plugins/Stream/GUI_Stream.cpp" line="+67"/>
+        <source>Search radio station</source>
         <translation type="unfinished"/>
     </message>
 </context>
@@ -1960,7 +2032,7 @@
 <context>
     <name>ImageSelectionDialog</name>
     <message>
-        <location filename="src/Gui/Utils/ImageSelectionDialog.cpp" line="+54"/>
+        <location filename="src/Gui/Utils/ImageSelectionDialog.cpp" line="+55"/>
         <source>Image files</source>
         <translation type="unfinished"/>
     </message>

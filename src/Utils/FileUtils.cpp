@@ -651,7 +651,7 @@ QByteArray Util::File::calc_md5_sum(const QString& filename)
 	{
 		QCryptographicHash hash(QCryptographicHash::Md5);
 		if (hash.addData(&f)) {
-			return hash.result();
+			return hash.result().toHex();
 		}
 	}
 

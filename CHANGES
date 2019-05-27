@@ -1,13 +1,21 @@
-Covers: Faster cover view
-Covers: File searcher reactivated 
-Covers: Save options
-Importer: Zip support
-Library: Show tracks w/o genre
-Library: Column resize saved
-Player: MPRIS revisited
-Player: KDE Plasma fix
-Streams: Radio station search support
+== 1.4.1-stable1 ==
 
+  * Language: Added ability to check for updates
+  * Language: Fixed some runtime tranlation issues
+  * Library: Genre View issue fixed
+  * Library: Artist field in Cover view fixed
+  * Streams: Remove jumping of time label
 
+== 1.4.0-stable1 ==
 
+  * Covers: Faster cover view
+  * Covers: File searcher reactivated 
+  * Covers: Save options
+  * Importer: Zip support
+  * Library: Show tracks w/o genre
+  * Library: Column resize saved
+  * Player: MPRIS revisited
+  * Player: KDE Plasma fix
+  * Streams: Radio station search support
+  * Raspberry: 32/64 bit issues fixed
 

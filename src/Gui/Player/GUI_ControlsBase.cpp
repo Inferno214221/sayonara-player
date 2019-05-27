@@ -227,6 +227,7 @@ void GUI_ControlsBase::buffering(int progress)
 {
 	sli_buffer()->set_position(Gui::ProgressBar::Position::Middle);
 
+	// buffering
 	if(progress > 0 && progress < 100)
 	{
 		toggle_buffer_mode(true);
@@ -239,6 +240,7 @@ void GUI_ControlsBase::buffering(int progress)
 		lab_max_time()->setVisible(false);
 	}
 
+	//buffering stopped
 	else if(progress == 0)
 	{
 		toggle_buffer_mode(false);
@@ -247,10 +249,10 @@ void GUI_ControlsBase::buffering(int progress)
 		sli_buffer()->setMaximum(0);
 		sli_buffer()->setValue(progress);
 
-		lab_current_time()->setText("0%");
 		lab_max_time()->setVisible(false);
 	}
 
+	// no buffering
 	else
 	{
 		PlayManager* pm = PlayManager::instance();
@@ -259,7 +261,6 @@ void GUI_ControlsBase::buffering(int progress)
 		sli_buffer()->setMinimum(0);
 		sli_buffer()->setMaximum(0);
 
-		lab_current_time()->clear();
 		lab_max_time()->setVisible(pm->current_track().length_ms > 0);
 	}
 }
@@ -641,11 +642,11 @@ void GUI_ControlsBase::setup_connections()
 	connect(pm, &PlayManager::sig_record, this, &GUI_ControlsBase::rec_changed);
 
 	// engine
-	EngineHandler* engine = EngineHandler::instance();
-	connect(engine, &EngineHandler::sig_md_changed,	this, &GUI_ControlsBase::md_changed);
-	connect(engine, &EngineHandler::sig_duration_changed, this, &GUI_ControlsBase::dur_changed);
-	connect(engine, &EngineHandler::sig_bitrate_changed,	this, &GUI_ControlsBase::br_changed);
-	connect(engine, &EngineHandler::sig_cover_changed, this, &GUI_ControlsBase::force_cover);
+	Engine::Handler* engine = Engine::Handler::instance();
+	connect(engine, &Engine::Handler::sig_md_changed,	this, &GUI_ControlsBase::md_changed);
+	connect(engine, &Engine::Handler::sig_duration_changed, this, &GUI_ControlsBase::dur_changed);
+	connect(engine, &Engine::Handler::sig_bitrate_changed,	this, &GUI_ControlsBase::br_changed);
+	connect(engine, &Engine::Handler::sig_cover_changed, this, &GUI_ControlsBase::force_cover);
 
 	Tagging::ChangeNotifier* mdcn = Tagging::ChangeNotifier::instance();
 	connect(mdcn, &Tagging::ChangeNotifier::sig_metadata_changed, this, &GUI_ControlsBase::id3_tags_changed);

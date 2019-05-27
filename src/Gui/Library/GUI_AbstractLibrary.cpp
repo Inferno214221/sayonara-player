@@ -106,6 +106,7 @@ void GUI_AbstractLibrary::init_shortcuts()
 	connect(kp_filter_lib, &KeyPressFilter::sig_key_pressed, this, &GUI_AbstractLibrary::key_pressed);
 }
 
+
 void GUI_AbstractLibrary::query_library()
 {
 	QString text;
@@ -120,7 +121,7 @@ void GUI_AbstractLibrary::query_library()
 	Filter filter = m->library->filter();
 	filter.set_mode(current_mode);
 	filter.set_filtertext(text, GetSetting(Set::Lib_SearchMode));
-	filter.set_invalid_genre((current_mode == Filter::Mode::Genre) && text.isEmpty());
+	filter.set_invalid_genre(m->le_search->has_invalid_genre_mode());
 
 	m->library->change_filter(filter);
 }
@@ -140,22 +141,36 @@ void GUI_AbstractLibrary::search_edited(const QString& search)
 	}
 }
 
+bool GUI_AbstractLibrary::has_selections() const
+{
+	return (m->library->selected_albums().count() > 0) ||
+	(m->library->selected_artists().count() > 0) ||
+	(m->library->selected_tracks().count() > 0);
+}
+
+
 void GUI_AbstractLibrary::key_pressed(int key)
 {
 	if(key == Qt::Key_Escape)
 	{
-		bool is_selected =
-			(m->library->selected_albums().count() > 0) ||
-			(m->library->selected_artists().count() > 0) ||
-			(m->library->selected_tracks().count() > 0);
+		bool is_selected = has_selections();
 
 		if(is_selected)
 		{
 			clear_selections();
 		}
 
-		else if(m->le_search){
-			m->le_search->clear();
+		else if(m->le_search)
+		{
+			if(m->le_search->text().size() > 0)
+			{
+				m->le_search->clear();
+			}
+
+			else
+			{
+				m->le_search->set_current_mode(Library::Filter::Mode::Fulltext);
+			}
 		}
 	}
 }

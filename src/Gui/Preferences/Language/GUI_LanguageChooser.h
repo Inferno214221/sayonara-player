@@ -51,6 +51,14 @@ protected:
 
 private:
 	void renew_combo();
+
+private slots:
+	void combo_index_changed(int index);
+	void btn_check_for_update_clicked();
+	void update_check_finished();
+
+	void btn_download_clicked();
+	void download_finished();
 };
 
 #endif // GUI_LANGUAGECHOOSER_H

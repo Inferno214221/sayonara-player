@@ -1,6 +1,6 @@
 #include "Visualizer.h"
-#include "PipelineProbes.h"
-#include "EngineUtils.h"
+#include "Probing.h"
+#include "Components/Engine/Utils.h"
 
 #include "Utils/Settings/Settings.h"
 
@@ -42,12 +42,12 @@ bool Visualizer::init()
 {
 
 	{ // create
-		if(	EngineUtils::create_element(&m->visualizer_queue, "queue", "visualizer") &&
-			EngineUtils::create_element(&m->level, "level") &&	// in case of renaming, also look in EngineCallbase GST_MESSAGE_EVENT
-			EngineUtils::create_element(&m->spectrum, "spectrum") &&
-			EngineUtils::create_element(&m->visualizer_sink,"fakesink", "visualizer"))
+		if(	Engine::Utils::create_element(&m->visualizer_queue, "queue", "visualizer") &&
+			Engine::Utils::create_element(&m->level, "level") &&	// in case of renaming, also look in EngineCallbase GST_MESSAGE_EVENT
+			Engine::Utils::create_element(&m->spectrum, "spectrum") &&
+			Engine::Utils::create_element(&m->visualizer_sink,"fakesink", "visualizer"))
 		{
-			EngineUtils::create_bin(&m->visualizer_bin, {m->visualizer_queue, m->level, m->spectrum, m->visualizer_sink}, "visualizer");
+			Engine::Utils::create_bin(&m->visualizer_bin, {m->visualizer_queue, m->level, m->spectrum, m->visualizer_sink}, "visualizer");
 		}
 
 		if(!m->visualizer_bin){
@@ -57,7 +57,7 @@ bool Visualizer::init()
 
 	{ // link
 		gst_bin_add(GST_BIN(m->pipeline), m->visualizer_bin);
-		bool success = EngineUtils::tee_connect(m->tee, m->visualizer_bin, "Visualizer");
+		bool success = Engine::Utils::tee_connect(m->tee, m->visualizer_bin, "Visualizer");
 		if(!success)
 		{
 			gst_bin_remove(GST_BIN(m->pipeline), m->visualizer_bin);
@@ -68,20 +68,20 @@ bool Visualizer::init()
 	}
 
 	{ // configure
-		EngineUtils::set_values(G_OBJECT(m->level), "post-messages", true);
-		EngineUtils::set_uint64_value(G_OBJECT(m->level), "interval", 20 * GST_MSECOND);
-		EngineUtils::set_values(G_OBJECT (m->spectrum),
+		Engine::Utils::set_values(G_OBJECT(m->level), "post-messages", true);
+		Engine::Utils::set_uint64_value(G_OBJECT(m->level), "interval", 20 * GST_MSECOND);
+		Engine::Utils::set_values(G_OBJECT (m->spectrum),
 					  "post-messages", true,
 					  "message-phase", false,
 					  "message-magnitude", true,
 					  "multi-channel", false);
 
-		EngineUtils::set_int_value(G_OBJECT(m->spectrum), "threshold", -75);
-		EngineUtils::set_uint_value(G_OBJECT(m->spectrum), "bands", GetSetting(Set::Engine_SpectrumBins));
-		EngineUtils::set_uint64_value(G_OBJECT(m->spectrum), "interval", 20 * GST_MSECOND);
+		Engine::Utils::set_int_value(G_OBJECT(m->spectrum), "threshold", -75);
+		Engine::Utils::set_uint_value(G_OBJECT(m->spectrum), "bands", GetSetting(Set::Engine_SpectrumBins));
+		Engine::Utils::set_uint64_value(G_OBJECT(m->spectrum), "interval", 20 * GST_MSECOND);
 
-		EngineUtils::config_queue(m->visualizer_queue, 1000);
-		EngineUtils::config_sink(m->visualizer_sink);
+		Engine::Utils::config_queue(m->visualizer_queue, 1000);
+		Engine::Utils::config_sink(m->visualizer_sink);
 	}
 
 	return true;
@@ -99,8 +99,8 @@ bool Visualizer::set_enabled(bool b)
 	bool show_level = GetSetting(Set::Engine_ShowLevel);
 	bool show_spectrum = GetSetting(Set::Engine_ShowSpectrum);
 
-	EngineUtils::set_value(G_OBJECT(m->level), "post-messages", show_level);
-	EngineUtils::set_value(G_OBJECT(m->spectrum), "post-messages", show_spectrum);
+	Engine::Utils::set_value(G_OBJECT(m->level), "post-messages", show_level);
+	Engine::Utils::set_value(G_OBJECT(m->spectrum), "post-messages", show_spectrum);
 
 	return true;
 }

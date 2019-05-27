@@ -1,4 +1,4 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="fr_FR" version="2.1">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="fr_FR" version="2.0">
 <context>
     <name>GUI_SomaFM</name>
     <message>
@@ -91,12 +91,12 @@
         <translation>Démarrer la recherche automatiquement</translation>
     </message>
     <message>
-        <location filename="src/Gui/Covers/GUI_AlternativeCovers.cpp" line="+289"/>
+        <location filename="src/Gui/Covers/GUI_AlternativeCovers.cpp" line="+231"/>
         <source>%1 covers found</source>
         <translation>%1 pochette(s) trouvée(s)</translation>
     </message>
     <message>
-        <location line="+139"/>
+        <location line="+123"/>
         <source>Cover web search is not enabled</source>
         <translation>La recherche de pochette sur le Web est désactivée</translation>
     </message>
@@ -288,7 +288,7 @@
         <translation>Sayonara Player</translation>
     </message>
     <message>
-        <location filename="src/Gui/Player/GUI_Player.cpp" line="+409"/>
+        <location filename="src/Gui/Player/GUI_Player.cpp" line="+410"/>
         <source>A new version is available!</source>
         <translation>Une nouvelle version est disponible !</translation>
     </message>
@@ -424,6 +424,32 @@
     </message>
 </context>
 <context>
+    <name>GUI_Speed</name>
+    <message>
+        <location filename="src/Gui/Plugins/Engine/GUI_Speed.ui" line="+45"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_Speed.cpp" line="+117"/>
+        <source>Speed</source>
+        <translation>Vitesse</translation>
+    </message>
+    <message>
+        <location line="+39"/>
+        <source>Preserve pitch</source>
+        <translation>Préserver la tonalité</translation>
+    </message>
+    <message>
+        <location line="+30"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_Speed.cpp" line="+0"/>
+        <source>Pitch</source>
+        <translation>Tonalité</translation>
+    </message>
+    <message>
+        <location filename="src/Gui/Plugins/Engine/GUI_Speed.cpp" line="+64"/>
+        <location line="+1"/>
+        <source>%1 not found</source>
+        <translation>%1 non trouvé(es)</translation>
+    </message>
+</context>
+<context>
     <name>GUI_Style</name>
     <message>
         <location filename="src/Gui/Plugins/Engine/GUI_Style.ui" line="+14"/>
@@ -505,32 +531,6 @@
     </message>
 </context>
 <context>
-    <name>GUI_Speed</name>
-    <message>
-        <location filename="src/Gui/Plugins/Engine/Speed/GUI_Speed.ui" line="+45"/>
-        <location filename="src/Gui/Plugins/Engine/Speed/GUI_Speed.cpp" line="+117"/>
-        <source>Speed</source>
-        <translation>Vitesse</translation>
-    </message>
-    <message>
-        <location line="+39"/>
-        <source>Preserve pitch</source>
-        <translation>Préserver la tonalité</translation>
-    </message>
-    <message>
-        <location line="+30"/>
-        <location filename="src/Gui/Plugins/Engine/Speed/GUI_Speed.cpp" line="+0"/>
-        <source>Pitch</source>
-        <translation>Tonalité</translation>
-    </message>
-    <message>
-        <location filename="src/Gui/Plugins/Engine/Speed/GUI_Speed.cpp" line="+64"/>
-        <location line="+1"/>
-        <source>%1 not found</source>
-        <translation>%1 non trouvé(es)</translation>
-    </message>
-</context>
-<context>
     <name>GUI_TargetPlaylistDialog</name>
     <message>
         <location filename="src/Gui/Plugins/PlaylistChooser/GUI_TargetPlaylistDialog.ui" line="+14"/>
@@ -581,7 +581,7 @@
     <message>
         <location filename="src/Gui/Plugins/Stream/GUI_StationSearcher.cpp" line="+58"/>
         <source>Show radio stations from %1 to %2</source>
-        <translation type="unfinished"/>
+        <translation>Affichage des stations de radio %1 à %2</translation>
     </message>
     <message>
         <location line="+204"/>
@@ -615,19 +615,49 @@
 <context>
     <name>GUI_Covers</name>
     <message>
-        <location filename="src/Gui/Preferences/Covers/GUI_Covers.ui" line="+17"/>
-        <source>Save found covers into Sayonara directory</source>
-        <translation>Enregistrer les pochettes trouvées dans le répertoire Sayonara</translation>
+        <location filename="src/Gui/Preferences/Covers/GUI_Covers.ui" line="+62"/>
+        <source>Inactive</source>
+        <translation>Inactif</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+13"/>
+        <source>Active</source>
+        <translation>Actif</translation>
+    </message>
+    <message>
+        <location line="+60"/>
+        <source>Delete all covers from the database</source>
+        <translation>Supprimer toutes les pochettes de la base de données</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Clear cache</source>
+        <translation>Effacer le cache</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Delete all covers from the Sayonara directory</source>
+        <translation>Supprimer toutes les pochettes du répertoire Sayonara</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Delete files</source>
+        <translation>Supprimer les fichiers</translation>
+    </message>
+    <message>
+        <location line="+9"/>
         <source>Save found covers into the library directory where the audio files are located</source>
-        <translation type="unfinished"/>
+        <translation>Enregistrer les pochettes trouvées dans le répertoire de la bibliothèque où se trouvent les fichiers audio</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Save found covers into library</source>
         <translation>Enregistrer les pochettes trouvées dans la bibliothèque</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Fetch missing covers from the internet</source>
+        <translation>Récupérer les pochettes manquantes sur Internet</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -640,67 +670,73 @@
         <translation>Enregistrer les pochettes trouvées dans la base de données</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+7"/>
+        <source>Save found covers into Sayonara directory</source>
+        <translation>Enregistrer les pochettes trouvées dans le répertoire Sayonara</translation>
+    </message>
+    <message>
+        <location line="+22"/>
         <source>Cover name</source>
-        <translation type="unfinished"/>
+        <translation>Nom de la pochette</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Name of cover file</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+36"/>
-        <source>Fetch missing covers from the internet</source>
-        <translation>Récupérer les pochettes manquantes sur Internet</translation>
-    </message>
-    <message>
-        <location line="+9"/>
-        <source>Delete all covers from the database</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Clear cache</source>
-        <translation>Effacer le cache</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Delete all covers from the Sayonara directory</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Delete files</source>
-        <translation>Supprimer les fichiers</translation>
-    </message>
-    <message>
-        <location line="+83"/>
-        <source>Inactive</source>
-        <translation>Inactif</translation>
-    </message>
-    <message>
-        <location line="+13"/>
-        <source>Active</source>
-        <translation>Actif</translation>
+        <translation>Nom du fichier de pochette</translation>
     </message>
 </context>
 <context>
     <name>GUI_LanguageChooser</name>
     <message>
-        <location filename="src/Gui/Preferences/Language/GUI_LanguageChooser.ui" line="+17"/>
-        <source>For new languages I am always looking for translators</source>
-        <translation>Je recherche toujours des traducteurs pour d&apos;autres langues</translation>
+        <location filename="src/Gui/Preferences/Language/GUI_LanguageChooser.ui" line="+29"/>
+        <source>Check for update</source>
+        <translation>Rechercher des mises à jour</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+7"/>
+        <source>Download update</source>
+        <translation>Télécharger la mise à jour</translation>
+    </message>
+    <message>
+        <location line="+33"/>
         <source>English</source>
         <translation>Anglais</translation>
     </message>
     <message>
-        <location filename="src/Gui/Preferences/Language/GUI_LanguageChooser.cpp" line="+138"/>
+        <location line="+28"/>
+        <source>For new languages I am always looking for translators</source>
+        <translation>Je recherche toujours des traducteurs pour d&apos;autres langues</translation>
+    </message>
+    <message>
+        <location filename="src/Gui/Preferences/Language/GUI_LanguageChooser.cpp" line="+64"/>
         <source>Language</source>
         <translation>Langue</translation>
+    </message>
+    <message>
+        <location line="+121"/>
+        <source>Cannot check for language update</source>
+        <translation>Impossible de rechercher une mise à jour de la langue</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Language update available</source>
+        <translation>Mise à jour disponible pour votre langue</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Language is up to date</source>
+        <translation>Votre langue est à jour</translation>
+    </message>
+    <message>
+        <location line="+34"/>
+        <location line="+22"/>
+        <source>Cannot fetch language update</source>
+        <translation>Impossible de récupérer la mise à jour de la langue</translation>
+    </message>
+    <message>
+        <location line="-8"/>
+        <source>Language was updated successfully</source>
+        <translation>La langue a été mise à jour avec succès</translation>
     </message>
 </context>
 <context>
@@ -828,12 +864,12 @@
     <message>
         <location line="+7"/>
         <source>Close to system tray</source>
-        <translation type="unfinished"/>
+        <translation>Réduire à la zone de notification</translation>
     </message>
     <message>
         <location line="+28"/>
         <source>Start in system tray</source>
-        <translation type="unfinished"/>
+        <translation>Démarrer minimisé dans la zone de notification</translation>
     </message>
 </context>
 <context>
@@ -1576,7 +1612,7 @@
     <message>
         <location line="+312"/>
         <source>No genre</source>
-        <translation type="unfinished"/>
+        <translation>Aucun genre</translation>
     </message>
 </context>
 <context>
@@ -1623,7 +1659,7 @@
     <message>
         <location filename="src/Gui/Library/HeaderView.cpp" line="+61"/>
         <source>Resize columns</source>
-        <translation type="unfinished"/>
+        <translation>Redimensionner les colonnes</translation>
     </message>
 </context>
 <context>
@@ -1731,7 +1767,7 @@
     <message>
         <location line="+3"/>
         <source>Special thanks to all the brave translators</source>
-        <translation type="unfinished"/>
+        <translation>Un remerciement particulier à tous les braves traducteurs</translation>
     </message>
 </context>
 <context>
@@ -1817,7 +1853,7 @@
 <context>
     <name>GUI_Crossfader</name>
     <message>
-        <location filename="src/Gui/Plugins/Engine/Crossfader/GUI_Crossfader.cpp" line="+74"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_Crossfader.cpp" line="+74"/>
         <location line="+11"/>
         <source>Crossfader</source>
         <translation>Crossfader</translation>
@@ -1826,7 +1862,7 @@
 <context>
     <name>GUI_Equalizer</name>
     <message>
-        <location filename="src/Gui/Plugins/Engine/Equalizer/GUI_Equalizer.cpp" line="+160"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_Equalizer.cpp" line="+160"/>
         <source>Equalizer</source>
         <translation>Égaliseur</translation>
     </message>
@@ -1850,7 +1886,7 @@
 <context>
     <name>GUI_StyleSettings</name>
     <message>
-        <location filename="src/Gui/Plugins/Engine/GUI_StyleSettings.cpp" line="+189"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_StyleSettings.cpp" line="+188"/>
         <source>There are some unsaved settings&lt;br /&gt;Save now?</source>
         <translation>Il y a des réglages non enregistrés&lt;br /&gt;Enregistrer ?</translation>
     </message>

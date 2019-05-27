@@ -1,4 +1,4 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="ru_RU" version="2.1">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="ru_RU" version="2.0">
 <context>
     <name>GUI_SomaFM</name>
     <message>
@@ -91,12 +91,12 @@
         <translation>Начать поиск автоматически</translation>
     </message>
     <message>
-        <location filename="src/Gui/Covers/GUI_AlternativeCovers.cpp" line="+289"/>
+        <location filename="src/Gui/Covers/GUI_AlternativeCovers.cpp" line="+231"/>
         <source>%1 covers found</source>
         <translation>Найдено %1 обложек</translation>
     </message>
     <message>
-        <location line="+139"/>
+        <location line="+123"/>
         <source>Cover web search is not enabled</source>
         <translation>Поиск обложек в интернете недоступен</translation>
     </message>
@@ -256,7 +256,7 @@
     <message>
         <location line="+127"/>
         <source>No genres found</source>
-        <translation>Жанри не найдены</translation>
+        <translation>Жанры не найдены</translation>
     </message>
 </context>
 <context>
@@ -288,7 +288,7 @@
         <translation>Sayonara Player</translation>
     </message>
     <message>
-        <location filename="src/Gui/Player/GUI_Player.cpp" line="+409"/>
+        <location filename="src/Gui/Player/GUI_Player.cpp" line="+410"/>
         <source>A new version is available!</source>
         <translation>Доступна новая версия!</translation>
     </message>
@@ -338,12 +338,12 @@
         <location line="-98"/>
         <location line="+14"/>
         <source>Playlist does not contain tracks which are supported by the converter</source>
-        <translation>Плейлист не содержит треки, которые поддерживаются конвертером</translation>
+        <translation>В плейлисте нет треков, которые поддерживаются конвертером</translation>
     </message>
     <message>
         <location line="-9"/>
         <source>No track will be converted.</source>
-        <translation>Ни один файл не был конвертирован</translation>
+        <translation>Треки не были конвертированы</translation>
     </message>
     <message>
         <location line="+14"/>
@@ -421,6 +421,32 @@
         <location line="+1"/>
         <source>Maybe another application is using this port?</source>
         <translation>Возможно, используется другое применение этого порта?</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_Speed</name>
+    <message>
+        <location filename="src/Gui/Plugins/Engine/GUI_Speed.ui" line="+45"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_Speed.cpp" line="+117"/>
+        <source>Speed</source>
+        <translation>Скорость</translation>
+    </message>
+    <message>
+        <location line="+39"/>
+        <source>Preserve pitch</source>
+        <translation>Не менять высоту</translation>
+    </message>
+    <message>
+        <location line="+30"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_Speed.cpp" line="+0"/>
+        <source>Pitch</source>
+        <translation>Высота</translation>
+    </message>
+    <message>
+        <location filename="src/Gui/Plugins/Engine/GUI_Speed.cpp" line="+64"/>
+        <location line="+1"/>
+        <source>%1 not found</source>
+        <translation>%1 не найден</translation>
     </message>
 </context>
 <context>
@@ -505,32 +531,6 @@
     </message>
 </context>
 <context>
-    <name>GUI_Speed</name>
-    <message>
-        <location filename="src/Gui/Plugins/Engine/Speed/GUI_Speed.ui" line="+45"/>
-        <location filename="src/Gui/Plugins/Engine/Speed/GUI_Speed.cpp" line="+117"/>
-        <source>Speed</source>
-        <translation>Скорость</translation>
-    </message>
-    <message>
-        <location line="+39"/>
-        <source>Preserve pitch</source>
-        <translation>Не менять высоту</translation>
-    </message>
-    <message>
-        <location line="+30"/>
-        <location filename="src/Gui/Plugins/Engine/Speed/GUI_Speed.cpp" line="+0"/>
-        <source>Pitch</source>
-        <translation>Высота</translation>
-    </message>
-    <message>
-        <location filename="src/Gui/Plugins/Engine/Speed/GUI_Speed.cpp" line="+64"/>
-        <location line="+1"/>
-        <source>%1 not found</source>
-        <translation>%1 не найден</translation>
-    </message>
-</context>
-<context>
     <name>GUI_TargetPlaylistDialog</name>
     <message>
         <location filename="src/Gui/Plugins/PlaylistChooser/GUI_TargetPlaylistDialog.ui" line="+14"/>
@@ -581,7 +581,7 @@
     <message>
         <location filename="src/Gui/Plugins/Stream/GUI_StationSearcher.cpp" line="+58"/>
         <source>Show radio stations from %1 to %2</source>
-        <translation type="unfinished"/>
+        <translation>Показать радиостанции из 1% до 2%</translation>
     </message>
     <message>
         <location line="+204"/>
@@ -615,19 +615,49 @@
 <context>
     <name>GUI_Covers</name>
     <message>
-        <location filename="src/Gui/Preferences/Covers/GUI_Covers.ui" line="+17"/>
-        <source>Save found covers into Sayonara directory</source>
-        <translation>Сохранить найденые обложки в папке Sayonara </translation>
+        <location filename="src/Gui/Preferences/Covers/GUI_Covers.ui" line="+62"/>
+        <source>Inactive</source>
+        <translation>Неактивный</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+13"/>
+        <source>Active</source>
+        <translation>Активный</translation>
+    </message>
+    <message>
+        <location line="+60"/>
+        <source>Delete all covers from the database</source>
+        <translation>Удалить все обложки из базы данных</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Clear cache</source>
+        <translation>Очистить кэш</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Delete all covers from the Sayonara directory</source>
+        <translation>Удалить все обложки из папки Sayonara</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Delete files</source>
+        <translation>Удалить файлы</translation>
+    </message>
+    <message>
+        <location line="+9"/>
         <source>Save found covers into the library directory where the audio files are located</source>
-        <translation type="unfinished"/>
+        <translation>Сохранить найденные обложки в папке библиотеки, где размещены аудиофайлы</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Save found covers into library</source>
         <translation>Сохранить найденные обложки в библиотеке </translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Fetch missing covers from the internet</source>
+        <translation>Отыскать обложки в интернете </translation>
     </message>
     <message>
         <location line="+7"/>
@@ -640,67 +670,73 @@
         <translation>Сохранить найденные обложки в базе данных</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+7"/>
+        <source>Save found covers into Sayonara directory</source>
+        <translation>Сохранить найденые обложки в папке Sayonara </translation>
+    </message>
+    <message>
+        <location line="+22"/>
         <source>Cover name</source>
-        <translation type="unfinished"/>
+        <translation>Название обложки</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Name of cover file</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+36"/>
-        <source>Fetch missing covers from the internet</source>
-        <translation>Отыскать обложки в интернете </translation>
-    </message>
-    <message>
-        <location line="+9"/>
-        <source>Delete all covers from the database</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Clear cache</source>
-        <translation>Очистить кэш</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Delete all covers from the Sayonara directory</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Delete files</source>
-        <translation>Удалить файлы</translation>
-    </message>
-    <message>
-        <location line="+83"/>
-        <source>Inactive</source>
-        <translation>Неактивный</translation>
-    </message>
-    <message>
-        <location line="+13"/>
-        <source>Active</source>
-        <translation>Активный</translation>
+        <translation>Название обложки файла</translation>
     </message>
 </context>
 <context>
     <name>GUI_LanguageChooser</name>
     <message>
-        <location filename="src/Gui/Preferences/Language/GUI_LanguageChooser.ui" line="+17"/>
-        <source>For new languages I am always looking for translators</source>
-        <translation>Для новых языков я постоянно ищу переводчиков</translation>
+        <location filename="src/Gui/Preferences/Language/GUI_LanguageChooser.ui" line="+29"/>
+        <source>Check for update</source>
+        <translation>Проверить обновления</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+7"/>
+        <source>Download update</source>
+        <translation>Скачать обновления</translation>
+    </message>
+    <message>
+        <location line="+33"/>
         <source>English</source>
         <translation>English</translation>
     </message>
     <message>
-        <location filename="src/Gui/Preferences/Language/GUI_LanguageChooser.cpp" line="+138"/>
+        <location line="+28"/>
+        <source>For new languages I am always looking for translators</source>
+        <translation>Для новых языков я активно ищу переводчиков</translation>
+    </message>
+    <message>
+        <location filename="src/Gui/Preferences/Language/GUI_LanguageChooser.cpp" line="+64"/>
         <source>Language</source>
         <translation>Язык</translation>
+    </message>
+    <message>
+        <location line="+121"/>
+        <source>Cannot check for language update</source>
+        <translation>Невозможно проверить обновления языка</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Language update available</source>
+        <translation>Обновления языка доступно</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Language is up to date</source>
+        <translation>Язык актуален</translation>
+    </message>
+    <message>
+        <location line="+34"/>
+        <location line="+22"/>
+        <source>Cannot fetch language update</source>
+        <translation>Невозможно получить обновления языка</translation>
+    </message>
+    <message>
+        <location line="-8"/>
+        <source>Language was updated successfully</source>
+        <translation>Язык успешно обновлен</translation>
     </message>
 </context>
 <context>
@@ -828,12 +864,12 @@
     <message>
         <location line="+7"/>
         <source>Close to system tray</source>
-        <translation type="unfinished"/>
+        <translation>Свернуть </translation>
     </message>
     <message>
         <location line="+28"/>
         <source>Start in system tray</source>
-        <translation type="unfinished"/>
+        <translation>Открыть в минимальном режиме </translation>
     </message>
 </context>
 <context>
@@ -921,7 +957,7 @@
     <message>
         <location line="+7"/>
         <source>Show rating</source>
-        <translation>Показывать оценку</translation>
+        <translation>Показать рейтинг</translation>
     </message>
     <message>
         <location filename="src/Gui/Preferences/Playlist/GUI_PlaylistPreferences.cpp" line="+204"/>
@@ -1105,7 +1141,7 @@
     <message>
         <location line="+65"/>
         <source>Target path is empty</source>
-        <translation>Адресная строка пустая</translation>
+        <translation>Пустая адресная строка</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -1157,7 +1193,7 @@
     <message>
         <location filename="src/Gui/Preferences/UiPreferences/GUI_FontConfig.ui" line="+17"/>
         <source>Bold</source>
-        <translation>Жырный</translation>
+        <translation>Жирный</translation>
     </message>
     <message>
         <location line="+41"/>
@@ -1452,7 +1488,7 @@
     <message>
         <location filename="src/Components/Library/Threads/ReloadThread.cpp" line="+223"/>
         <source>Looking for covers</source>
-        <translation>Ищу обложки</translation>
+        <translation>Поиск обложек</translation>
     </message>
     <message>
         <location line="+41"/>
@@ -1462,7 +1498,7 @@
     <message>
         <location line="+109"/>
         <source>Delete orphaned tracks...</source>
-        <translation>Удалить осиротевшие треки...</translation>
+        <translation>Удалить потерянные треки...</translation>
     </message>
 </context>
 <context>
@@ -1576,7 +1612,7 @@
     <message>
         <location line="+312"/>
         <source>No genre</source>
-        <translation type="unfinished"/>
+        <translation>Жанри не найдены </translation>
     </message>
 </context>
 <context>
@@ -1623,7 +1659,7 @@
     <message>
         <location filename="src/Gui/Library/HeaderView.cpp" line="+61"/>
         <source>Resize columns</source>
-        <translation type="unfinished"/>
+        <translation>Изменить размер столбцов</translation>
     </message>
 </context>
 <context>
@@ -1706,7 +1742,7 @@
     <message>
         <location line="+3"/>
         <source>FAQ</source>
-        <translation>ЧАВО</translation>
+        <translation>FAQ</translation>
     </message>
     <message>
         <location line="+20"/>
@@ -1731,7 +1767,7 @@
     <message>
         <location line="+3"/>
         <source>Special thanks to all the brave translators</source>
-        <translation type="unfinished"/>
+        <translation>Особая благодарность всем старательным переводчикам</translation>
     </message>
 </context>
 <context>
@@ -1747,7 +1783,7 @@
     <message>
         <location filename="src/Gui/Playlist/BottomBar.cpp" line="+250"/>
         <source>Please set library path first</source>
-        <translation>Пожалуйста, сначала задайте путь к библиотеке</translation>
+        <translation>Пожалуйста, задайте сначала путь к библиотеке</translation>
     </message>
     <message>
         <location line="+12"/>
@@ -1803,7 +1839,7 @@
     <message>
         <location filename="src/Gui/Playlist/Model.cpp" line="+393"/>
         <source>Goto row</source>
-        <translation>Прыгай к строке</translation>
+        <translation>Перейти к строке</translation>
     </message>
 </context>
 <context>
@@ -1817,7 +1853,7 @@
 <context>
     <name>GUI_Crossfader</name>
     <message>
-        <location filename="src/Gui/Plugins/Engine/Crossfader/GUI_Crossfader.cpp" line="+74"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_Crossfader.cpp" line="+74"/>
         <location line="+11"/>
         <source>Crossfader</source>
         <translation>Кросфейдер</translation>
@@ -1826,7 +1862,7 @@
 <context>
     <name>GUI_Equalizer</name>
     <message>
-        <location filename="src/Gui/Plugins/Engine/Equalizer/GUI_Equalizer.cpp" line="+160"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_Equalizer.cpp" line="+160"/>
         <source>Equalizer</source>
         <translation>Эквалайзер</translation>
     </message>
@@ -1850,7 +1886,7 @@
 <context>
     <name>GUI_StyleSettings</name>
     <message>
-        <location filename="src/Gui/Plugins/Engine/GUI_StyleSettings.cpp" line="+189"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_StyleSettings.cpp" line="+188"/>
         <source>There are some unsaved settings&lt;br /&gt;Save now?</source>
         <translation>Настройки еще не сохранены&lt;br /&gt;Сохранить?</translation>
     </message>
@@ -1957,7 +1993,7 @@
     <message>
         <location filename="src/Gui/TagEdit/TagTextInput.cpp" line="+78"/>
         <source>Very first letter to upper case</source>
-        <translation>Самые первые буквы писать с большой</translation>
+        <translation>Самая первая буква в верхнем регистре</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1990,7 +2026,7 @@
     <message>
         <location line="+202"/>
         <source>The toolbar is visible when there are tracks with differing file types listed in the track view</source>
-        <translation>Панель инструментов отображается при наличии дорожек с различными типами файлов, перечисленных в представлении дорожек</translation>
+        <translation>Панель инструментов отображается в том случае, когда в представлении дорожек перечислены дорожки с разными типами файлов</translation>
     </message>
 </context>
 <context>
@@ -2048,12 +2084,12 @@
     <message>
         <location line="+1"/>
         <source>Arrow down</source>
-        <translation>СТрелка вниз</translation>
+        <translation>Стрелка вниз</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Next search result</source>
-        <translation>Наступний результат пошуку</translation>
+        <translation>Следующий результат поиска</translation>
     </message>
 </context>
 <context>
@@ -2201,12 +2237,12 @@
     <message>
         <location line="+2"/>
         <source>Comment</source>
-        <translation>Закомментировать</translation>
+        <translation>Прокомментировать</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Continue</source>
-        <translation>Continue</translation>
+        <translation>Продолжить</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2337,7 +2373,7 @@
     <message>
         <location line="+2"/>
         <source>Filesize</source>
-        <translation>Размеру файла</translation>
+        <translation>Размер файла</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2397,7 +2433,7 @@
     <message>
         <location line="+2"/>
         <source>Import directory</source>
-        <translation>Испорт каталога</translation>
+        <translation>Импорт каталога</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2588,7 +2624,7 @@
     <message>
         <location line="+3"/>
         <source>on</source>
-        <translation>включена</translation>
+        <translation>в</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2773,7 +2809,7 @@
     <message>
         <location line="+2"/>
         <source>Save as</source>
-        <translation>Сохранить все</translation>
+        <translation>Сохранить как</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2794,7 +2830,7 @@
     <message>
         <location line="+2"/>
         <source>Search previous</source>
-        <translation>Искать предыдущий результат поиска</translation>
+        <translation>Искать предыдущий </translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2814,12 +2850,12 @@
     <message>
         <location line="+2"/>
         <source>Seek backward</source>
-        <translation>Перейти назад по дорожке</translation>
+        <translation>Искать в обратном направлении</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Seek forward</source>
-        <translation>Перейти вперёд по дорожке</translation>
+        <translation>Искать вперед </translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2849,7 +2885,7 @@
     <message>
         <location line="+2"/>
         <source>Sort by</source>
-        <translation>Сортировка</translation>
+        <translation>Сортировать по</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2914,7 +2950,7 @@
     <message>
         <location line="+2"/>
         <source>Unknown placeholder</source>
-        <translation>Неизвестный наполнитель</translation>
+        <translation>Неизвестный заполнитель</translation>
     </message>
     <message>
         <location line="+2"/>

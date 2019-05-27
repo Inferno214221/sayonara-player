@@ -19,10 +19,8 @@
  */
 
 #include "Pitcher.h"
-#include "EngineUtils.h"
+#include "Components/Engine/Utils.h"
 #include "Utils/Settings/Settings.h"
-
-#include <gst/gst.h>
 
 using namespace PipelineExtensions;
 
@@ -50,7 +48,7 @@ void Pitcher::set_speed(float speed, double pitch, bool preserve_pitch)
 
 	if(preserve_pitch)
 	{
-		EngineUtils::set_values(m->pitch,
+		Engine::Utils::set_values(m->pitch,
 					 "tempo", speed,
 					 "rate", 1.0,
 					 "pitch", pitch);
@@ -58,7 +56,7 @@ void Pitcher::set_speed(float speed, double pitch, bool preserve_pitch)
 
 	else
 	{
-		EngineUtils::set_values(m->pitch,
+		Engine::Utils::set_values(m->pitch,
 					 "tempo", 1.0,
 					 "rate", speed,
 					 "pitch", pitch);

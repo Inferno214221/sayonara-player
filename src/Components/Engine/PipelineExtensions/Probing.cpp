@@ -18,9 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "PipelineProbes.h"
-#include "../StreamRecorder/StreamRecorderData.h"
-#include "EngineUtils.h"
+#include "Probing.h"
+
+#include "Components/Engine/StreamRecorder/StreamRecorderData.h"
+#include "Components/Engine/Utils.h"
 
 #include "Utils/Logger/Logger.h"
 #include "Utils/Utils.h"
@@ -156,8 +157,8 @@ Probing::stream_recorder_probed(GstPad *pad, GstPadProbeInfo *info, gpointer use
 	{
 		sp_log(Log::Develop, "PipelineProbes") << "set new filename streamrecorder: " << data->filename;
 
-		EngineUtils::set_state(data->sink, GST_STATE_NULL);
-		EngineUtils::set_value(data->sink, "location", data->filename);
+		Engine::Utils::set_state(data->sink, GST_STATE_NULL);
+		Engine::Utils::set_value(data->sink, "location", data->filename);
 
 		data->has_empty_filename = false;
 
@@ -166,7 +167,7 @@ Probing::stream_recorder_probed(GstPad *pad, GstPadProbeInfo *info, gpointer use
 			data->probe_id = 0;
 		}
 
-		EngineUtils::set_state(data->sink, GST_STATE_PLAYING);
+		Engine::Utils::set_state(data->sink, GST_STATE_PLAYING);
 
 		data->busy = false;
 		return GST_PAD_PROBE_REMOVE;
@@ -175,8 +176,8 @@ Probing::stream_recorder_probed(GstPad *pad, GstPadProbeInfo *info, gpointer use
 	else{
 		if(!data->has_empty_filename)
 		{
-			EngineUtils::set_state(data->sink, GST_STATE_NULL);
-			EngineUtils::set_value(data->sink,
+			Engine::Utils::set_state(data->sink, GST_STATE_NULL);
+			Engine::Utils::set_value(data->sink,
 									 "location",
 									 (Util::sayonara_path() + "bla.mp3").toLocal8Bit().data());
 

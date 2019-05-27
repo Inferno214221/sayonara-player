@@ -1,4 +1,4 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="de_DE" version="2.1">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="de_DE" version="2.0">
 <context>
     <name>GUI_SomaFM</name>
     <message>
@@ -91,12 +91,12 @@
         <translation>Suche automatisch starten</translation>
     </message>
     <message>
-        <location filename="src/Gui/Covers/GUI_AlternativeCovers.cpp" line="+289"/>
+        <location filename="src/Gui/Covers/GUI_AlternativeCovers.cpp" line="+231"/>
         <source>%1 covers found</source>
         <translation>%1 Cover(s) gefunden</translation>
     </message>
     <message>
-        <location line="+139"/>
+        <location line="+123"/>
         <source>Cover web search is not enabled</source>
         <translation>Websuche für Covers ist nicht aktiviert</translation>
     </message>
@@ -288,7 +288,7 @@
         <translation>Sayonara Player</translation>
     </message>
     <message>
-        <location filename="src/Gui/Player/GUI_Player.cpp" line="+409"/>
+        <location filename="src/Gui/Player/GUI_Player.cpp" line="+410"/>
         <source>A new version is available!</source>
         <translation>Eine neue Version ist verfügbar!</translation>
     </message>
@@ -424,6 +424,32 @@
     </message>
 </context>
 <context>
+    <name>GUI_Speed</name>
+    <message>
+        <location filename="src/Gui/Plugins/Engine/GUI_Speed.ui" line="+45"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_Speed.cpp" line="+117"/>
+        <source>Speed</source>
+        <translation>Geschwindigkeit</translation>
+    </message>
+    <message>
+        <location line="+39"/>
+        <source>Preserve pitch</source>
+        <translation>Tonhöhe beibehalten</translation>
+    </message>
+    <message>
+        <location line="+30"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_Speed.cpp" line="+0"/>
+        <source>Pitch</source>
+        <translation>Tonhöhe</translation>
+    </message>
+    <message>
+        <location filename="src/Gui/Plugins/Engine/GUI_Speed.cpp" line="+64"/>
+        <location line="+1"/>
+        <source>%1 not found</source>
+        <translation>%1 nicht gefunden</translation>
+    </message>
+</context>
+<context>
     <name>GUI_Style</name>
     <message>
         <location filename="src/Gui/Plugins/Engine/GUI_Style.ui" line="+14"/>
@@ -502,32 +528,6 @@
         <location line="+7"/>
         <source>Color 4</source>
         <translation>Farbe 4</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_Speed</name>
-    <message>
-        <location filename="src/Gui/Plugins/Engine/Speed/GUI_Speed.ui" line="+45"/>
-        <location filename="src/Gui/Plugins/Engine/Speed/GUI_Speed.cpp" line="+117"/>
-        <source>Speed</source>
-        <translation>Geschwindigkeit</translation>
-    </message>
-    <message>
-        <location line="+39"/>
-        <source>Preserve pitch</source>
-        <translation>Tonhöhe beibehalten</translation>
-    </message>
-    <message>
-        <location line="+30"/>
-        <location filename="src/Gui/Plugins/Engine/Speed/GUI_Speed.cpp" line="+0"/>
-        <source>Pitch</source>
-        <translation>Tonhöhe</translation>
-    </message>
-    <message>
-        <location filename="src/Gui/Plugins/Engine/Speed/GUI_Speed.cpp" line="+64"/>
-        <location line="+1"/>
-        <source>%1 not found</source>
-        <translation>%1 nicht gefunden</translation>
     </message>
 </context>
 <context>
@@ -615,47 +615,17 @@
 <context>
     <name>GUI_Covers</name>
     <message>
-        <location filename="src/Gui/Preferences/Covers/GUI_Covers.ui" line="+17"/>
-        <source>Save found covers into Sayonara directory</source>
-        <translation>Gefundene Covers im Sayonara Verzeichnis speichern</translation>
+        <location filename="src/Gui/Preferences/Covers/GUI_Covers.ui" line="+62"/>
+        <source>Inactive</source>
+        <translation>Inaktiv</translation>
     </message>
     <message>
-        <location line="+14"/>
-        <source>Save found covers into the library directory where the audio files are located</source>
-        <translation>Speichere gefundene Covers in der Musiksammlung wo sich die Musikdateien befinden</translation>
+        <location line="+13"/>
+        <source>Active</source>
+        <translation>Aktiv</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Save found covers into library</source>
-        <translation>Gefundene Covers in Bibliothek speichern</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Saving covers to the database leads to significantly faster access but results in a bigger database</source>
-        <translation>Covers in der Datenbank zu speichern führt zu einer wesentlich höheren Performance aber auch zu einer größeren Datenbank</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Save found covers to database</source>
-        <translation>Gefundene Covers in Datenbank speichern</translation>
-    </message>
-    <message>
-        <location line="+9"/>
-        <source>Cover name</source>
-        <translation>Covername</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Name of cover file</source>
-        <translation>Name der Cover-Datei</translation>
-    </message>
-    <message>
-        <location line="+36"/>
-        <source>Fetch missing covers from the internet</source>
-        <translation>Hole fehlende Covers aus dem Internet</translation>
-    </message>
-    <message>
-        <location line="+9"/>
+        <location line="+60"/>
         <source>Delete all covers from the database</source>
         <translation>Lösche alle Covers aus der Datenbank</translation>
     </message>
@@ -675,32 +645,98 @@
         <translation>Dateien löschen</translation>
     </message>
     <message>
-        <location line="+83"/>
-        <source>Inactive</source>
-        <translation>Inaktiv</translation>
+        <location line="+9"/>
+        <source>Save found covers into the library directory where the audio files are located</source>
+        <translation>Speichere gefundene Covers in der Musiksammlung wo sich die Musikdateien befinden</translation>
     </message>
     <message>
-        <location line="+13"/>
-        <source>Active</source>
-        <translation>Aktiv</translation>
+        <location line="+3"/>
+        <source>Save found covers into library</source>
+        <translation>Gefundene Covers in Bibliothek speichern</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Fetch missing covers from the internet</source>
+        <translation>Hole fehlende Covers aus dem Internet</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Saving covers to the database leads to significantly faster access but results in a bigger database</source>
+        <translation>Covers in der Datenbank zu speichern führt zu einer wesentlich höheren Performance aber auch zu einer größeren Datenbank</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Save found covers to database</source>
+        <translation>Gefundene Covers in Datenbank speichern</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Save found covers into Sayonara directory</source>
+        <translation>Gefundene Covers im Sayonara Verzeichnis speichern</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>Cover name</source>
+        <translation>Covername</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Name of cover file</source>
+        <translation>Name der Cover-Datei</translation>
     </message>
 </context>
 <context>
     <name>GUI_LanguageChooser</name>
     <message>
-        <location filename="src/Gui/Preferences/Language/GUI_LanguageChooser.ui" line="+17"/>
-        <source>For new languages I am always looking for translators</source>
-        <translation>Für neue Sprachen bin ich immer auf der Suche nach Übersetzern</translation>
+        <location filename="src/Gui/Preferences/Language/GUI_LanguageChooser.ui" line="+29"/>
+        <source>Check for update</source>
+        <translation>Nach Aktualisierung suchen</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+7"/>
+        <source>Download update</source>
+        <translation>Aktualisierung herunterladen</translation>
+    </message>
+    <message>
+        <location line="+33"/>
         <source>English</source>
         <translation>Englisch</translation>
     </message>
     <message>
-        <location filename="src/Gui/Preferences/Language/GUI_LanguageChooser.cpp" line="+138"/>
+        <location line="+28"/>
+        <source>For new languages I am always looking for translators</source>
+        <translation>Für neue Sprachen bin ich immer auf der Suche nach Übersetzern</translation>
+    </message>
+    <message>
+        <location filename="src/Gui/Preferences/Language/GUI_LanguageChooser.cpp" line="+64"/>
         <source>Language</source>
         <translation>Sprache</translation>
+    </message>
+    <message>
+        <location line="+121"/>
+        <source>Cannot check for language update</source>
+        <translation>Aktualisierung kann nicht geprüft werden</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Language update available</source>
+        <translation>Aktualisierung verfügbar</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Language is up to date</source>
+        <translation>Sprache ist auf dem neuesten Stand</translation>
+    </message>
+    <message>
+        <location line="+34"/>
+        <location line="+22"/>
+        <source>Cannot fetch language update</source>
+        <translation>Aktualisierung kann nicht heruntergeladen werden</translation>
+    </message>
+    <message>
+        <location line="-8"/>
+        <source>Language was updated successfully</source>
+        <translation>Sprache wurde erfolgreich aktualisiert</translation>
     </message>
 </context>
 <context>
@@ -1817,7 +1853,7 @@
 <context>
     <name>GUI_Crossfader</name>
     <message>
-        <location filename="src/Gui/Plugins/Engine/Crossfader/GUI_Crossfader.cpp" line="+74"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_Crossfader.cpp" line="+74"/>
         <location line="+11"/>
         <source>Crossfader</source>
         <translation>Crossfader</translation>
@@ -1826,7 +1862,7 @@
 <context>
     <name>GUI_Equalizer</name>
     <message>
-        <location filename="src/Gui/Plugins/Engine/Equalizer/GUI_Equalizer.cpp" line="+160"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_Equalizer.cpp" line="+160"/>
         <source>Equalizer</source>
         <translation>Equalizer</translation>
     </message>
@@ -1850,7 +1886,7 @@
 <context>
     <name>GUI_StyleSettings</name>
     <message>
-        <location filename="src/Gui/Plugins/Engine/GUI_StyleSettings.cpp" line="+189"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_StyleSettings.cpp" line="+188"/>
         <source>There are some unsaved settings&lt;br /&gt;Save now?</source>
         <translation>Einstellungen sind noch nicht gespeichert&lt;br /&gt;Speichern?</translation>
     </message>

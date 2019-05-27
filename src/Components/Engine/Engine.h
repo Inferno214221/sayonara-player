@@ -28,111 +28,113 @@
 
 class SpectrumReceiver;
 class LevelReceiver;
-class Pipeline;
 
 namespace StreamRecorder
 {
 	class StreamRecorder;
 }
 
-/**
- * @brief The PlaybackEngine class
- * @ingroup Engine
- */
-class Engine :
-		public QObject
+namespace Engine
 {
-
-	Q_OBJECT
-	PIMPL(Engine)
-
-private:
+	class Pipeline;
 	/**
-	 * @brief The GaplessState enum
+	 * @brief The PlaybackEngine class
 	 * @ingroup Engine
 	 */
-	enum class GaplessState : uint8_t
+	class Engine :
+			public QObject
 	{
-		NoGapless=0,		// no gapless enabled at all
-		AboutToFinish,		// the phase when the new track is already displayed but not played yet
-		TrackFetched,		// track is requested, but no yet there
-		Playing,			// currently playing
-		Stopped
-	};
 
-	signals:
-		void sig_data(const unsigned char* data, uint64_t n_bytes);
-
-		void sig_md_changed(const MetaData& md);
-		void sig_duration_changed(const MetaData& md);
-		void sig_bitrate_changed(const MetaData& md);
-		void sig_cover_changed(const QImage& img);
-
-		void sig_current_position_changed(MilliSeconds ms);
-		void sig_buffering(int progress);
-		void sig_track_finished();
-		void sig_track_ready();
-		void sig_error(const QString& error_message);
-
-	public:
-		explicit Engine(QObject* parent=nullptr);
-		~Engine();
-
-		bool init();
-
-		void update_bitrate(Bitrate br, GstElement* src);
-		void update_duration(MilliSeconds duration_ms, GstElement* src);
-
-		void set_track_ready(GstElement* src);
-		void set_track_almost_finished(MilliSeconds time2go);
-		void set_track_finished(GstElement* src);
-
-		bool is_streamrecroder_recording() const;
-		void set_streamrecorder_recording(bool b);
-
-		void set_spectrum(const SpectrumList& vals);
-		void add_spectrum_receiver(SpectrumReceiver* receiver);
-
-		void set_level(float left, float right);
-		void add_level_receiver(LevelReceiver* receiver);
-
-		void set_n_sound_receiver(int num_sound_receiver);
-
-		void set_equalizer(int band, int value);
-
-
-	public slots:
-		void play();
-		void stop();
-		void pause();
-
-		void jump_abs_ms(MilliSeconds pos_ms);
-		void jump_rel_ms(MilliSeconds pos_ms);
-		void jump_rel(double percent);
-		void update_metadata(const MetaData& md, GstElement* src);
-		void update_cover(const QImage& img, GstElement* src);
-
-		bool change_track(const MetaData& md);
-
-		void set_buffer_state(int progress, GstElement* src);
-		void error(const QString& error);
+		Q_OBJECT
+		PIMPL(Engine)
 
 	private:
-		bool init_pipeline(Pipeline** pipeline, const QString& name);
-		bool change_metadata(const MetaData& md);
+		/**
+		 * @brief The GaplessState enum
+		 * @ingroup Engine
+		 */
+		enum class GaplessState : uint8_t
+		{
+			NoGapless=0,		// no gapless enabled at all
+			AboutToFinish,		// the phase when the new track is already displayed but not played yet
+			TrackFetched,		// track is requested, but no yet there
+			Playing,			// currently playing
+			Stopped
+		};
 
-		bool change_track_crossfading(const MetaData& md);
-		bool change_track_gapless(const MetaData& md);
-		bool change_track_immediatly(const MetaData& md);
+		signals:
+			void sig_data(const unsigned char* data, uint64_t n_bytes);
 
-		void set_current_position_ms(MilliSeconds pos_ms);
+			void sig_md_changed(const MetaData& md);
+			void sig_duration_changed(const MetaData& md);
+			void sig_bitrate_changed(const MetaData& md);
+			void sig_cover_changed(const QImage& img);
 
-	private slots:
-		void s_gapless_changed();
-		void s_streamrecorder_active_changed();
+			void sig_current_position_changed(MilliSeconds ms);
+			void sig_buffering(int progress);
+			void sig_track_finished();
+			void sig_track_ready();
+			void sig_error(const QString& error_message);
 
-		void cur_pos_ms_changed(MilliSeconds pos_ms);
-};
+		public:
+			explicit Engine(QObject* parent=nullptr);
+			~Engine();
 
+			bool init();
+
+			void update_bitrate(Bitrate br, GstElement* src);
+			void update_duration(MilliSeconds duration_ms, GstElement* src);
+
+			void set_track_ready(GstElement* src);
+			void set_track_almost_finished(MilliSeconds time2go);
+			void set_track_finished(GstElement* src);
+
+			bool is_streamrecroder_recording() const;
+			void set_streamrecorder_recording(bool b);
+
+			void set_spectrum(const SpectrumList& vals);
+			void add_spectrum_receiver(SpectrumReceiver* receiver);
+
+			void set_level(float left, float right);
+			void add_level_receiver(LevelReceiver* receiver);
+
+			void set_n_sound_receiver(int num_sound_receiver);
+
+			void set_equalizer(int band, int value);
+
+
+		public slots:
+			void play();
+			void stop();
+			void pause();
+
+			void jump_abs_ms(MilliSeconds pos_ms);
+			void jump_rel_ms(MilliSeconds pos_ms);
+			void jump_rel(double percent);
+			void update_metadata(const MetaData& md, GstElement* src);
+			void update_cover(const QImage& img, GstElement* src);
+
+			bool change_track(const MetaData& md);
+
+			void set_buffer_state(int progress, GstElement* src);
+			void error(const QString& error);
+
+		private:
+			bool init_pipeline(Pipeline** pipeline, const QString& name);
+			bool change_metadata(const MetaData& md);
+
+			bool change_track_crossfading(const MetaData& md);
+			bool change_track_gapless(const MetaData& md);
+			bool change_track_immediatly(const MetaData& md);
+
+			void set_current_position_ms(MilliSeconds pos_ms);
+
+		private slots:
+			void s_gapless_changed();
+			void s_streamrecorder_active_changed();
+
+			void cur_pos_ms_changed(MilliSeconds pos_ms);
+	};
+}
 
 #endif /* GSTENGINE_H_ */

@@ -19,11 +19,11 @@
  */
 
 #include "Engine.h"
-#include "Pipeline.h"
-#include "EngineUtils.h"
+#include "Components/Engine/Callbacks.h"
+#include "Components/Engine/Pipeline.h"
+#include "Components/Engine/Utils.h"
 
 #include "StreamRecorder/StreamRecorder.h"
-#include "Callbacks/EngineCallbacks.h"
 
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/FileUtils.h"
@@ -38,7 +38,9 @@
 
 #include <algorithm>
 
-struct Engine::Private
+using EngineImpl=Engine::Engine;
+
+struct EngineImpl::Private
 {
 	MetaData		md;
 	MilliSeconds	cur_pos_ms;
@@ -86,14 +88,14 @@ struct Engine::Private
 	}
 };
 
-Engine::Engine(QObject* parent) :
+EngineImpl::Engine(QObject* parent) :
 	QObject(parent)
 {
 	m = Pimpl::make<Private>();
 }
 
 
-Engine::~Engine()
+EngineImpl::~Engine()
 {
 	if(is_streamrecroder_recording())
 	{
@@ -102,7 +104,7 @@ Engine::~Engine()
 }
 
 
-bool Engine::init()
+bool EngineImpl::init()
 {
 	gst_init(nullptr, nullptr);
 
@@ -118,7 +120,7 @@ bool Engine::init()
 	return true;
 }
 
-bool Engine::init_pipeline(Pipeline** pipeline, const QString& name)
+bool EngineImpl::init_pipeline(Pipeline** pipeline, const QString& name)
 {
 	if(*pipeline){
 		return true;
@@ -139,7 +141,7 @@ bool Engine::init_pipeline(Pipeline** pipeline, const QString& name)
 	return true;
 }
 
-bool Engine::change_track_crossfading(const MetaData& md)
+bool EngineImpl::change_track_crossfading(const MetaData& md)
 {
 	std::swap(m->pipeline, m->other_pipeline);
 
@@ -155,7 +157,7 @@ bool Engine::change_track_crossfading(const MetaData& md)
 	return success;
 }
 
-bool Engine::change_track_gapless(const MetaData& md)
+bool EngineImpl::change_track_gapless(const MetaData& md)
 {
 	std::swap(m->pipeline, m->other_pipeline);
 
@@ -173,7 +175,7 @@ bool Engine::change_track_gapless(const MetaData& md)
 	return success;
 }
 
-bool Engine::change_track_immediatly(const MetaData& md)
+bool EngineImpl::change_track_immediatly(const MetaData& md)
 {
 	if(m->other_pipeline) {
 		m->other_pipeline->stop();
@@ -184,7 +186,7 @@ bool Engine::change_track_immediatly(const MetaData& md)
 	return change_metadata(md);
 }
 
-bool Engine::change_track(const MetaData& md)
+bool EngineImpl::change_track(const MetaData& md)
 {
 	bool crossfader_active = GetSetting(Set::Engine_CrossFaderActive);
 	if(m->gapless_state != GaplessState::Stopped && crossfader_active)
@@ -200,7 +202,7 @@ bool Engine::change_track(const MetaData& md)
 	return change_track_immediatly(md);
 }
 
-bool Engine::change_metadata(const MetaData& md)
+bool EngineImpl::change_metadata(const MetaData& md)
 {
 	m->md = md;
 	set_current_position_ms(0);
@@ -237,7 +239,7 @@ bool Engine::change_metadata(const MetaData& md)
 	return success;
 }
 
-void Engine::play()
+void EngineImpl::play()
 {
 	if( m->gapless_state == GaplessState::AboutToFinish ||
 		m->gapless_state == GaplessState::TrackFetched)
@@ -255,7 +257,7 @@ void Engine::play()
 }
 
 
-void Engine::stop()
+void EngineImpl::stop()
 {
 	m->change_gapless_state(GaplessState::Stopped);
 
@@ -275,31 +277,31 @@ void Engine::stop()
 }
 
 
-void Engine::pause()
+void EngineImpl::pause()
 {
 	m->pipeline->pause();
 }
 
 
-void Engine::jump_abs_ms(MilliSeconds pos_ms)
+void EngineImpl::jump_abs_ms(MilliSeconds pos_ms)
 {
 	m->pipeline->seek_abs(pos_ms * GST_MSECOND);
 }
 
-void Engine::jump_rel_ms(MilliSeconds ms)
+void EngineImpl::jump_rel_ms(MilliSeconds ms)
 {
 	MilliSeconds new_time_ms = m->pipeline->get_position_ms() + ms;
 	m->pipeline->seek_abs(new_time_ms * GST_MSECOND);
 }
 
 
-void Engine::jump_rel(double percent)
+void EngineImpl::jump_rel(double percent)
 {
 	m->pipeline->seek_rel(percent, m->md.length_ms * GST_MSECOND);
 }
 
 
-void Engine::set_current_position_ms(MilliSeconds pos_ms)
+void EngineImpl::set_current_position_ms(MilliSeconds pos_ms)
 {
 	if(std::abs(m->cur_pos_ms - pos_ms) < 100)
 	{
@@ -312,7 +314,7 @@ void Engine::set_current_position_ms(MilliSeconds pos_ms)
 }
 
 
-void Engine::cur_pos_ms_changed(MilliSeconds pos_ms)
+void EngineImpl::cur_pos_ms_changed(MilliSeconds pos_ms)
 {
 	if(sender() != m->pipeline){
 		return;
@@ -322,14 +324,14 @@ void Engine::cur_pos_ms_changed(MilliSeconds pos_ms)
 }
 
 
-void Engine::set_track_ready(GstElement* src)
+void EngineImpl::set_track_ready(GstElement* src)
 {
 	if(m->pipeline->has_element(src)){
 		emit sig_track_ready();
 	}
 }
 
-void Engine::set_track_almost_finished(MilliSeconds time2go)
+void EngineImpl::set_track_almost_finished(MilliSeconds time2go)
 {
 	Q_UNUSED(time2go)
 
@@ -357,7 +359,7 @@ void Engine::set_track_almost_finished(MilliSeconds time2go)
 }
 
 
-void Engine::set_track_finished(GstElement* src)
+void EngineImpl::set_track_finished(GstElement* src)
 {
 	if(m->pipeline->has_element(src))
 	{
@@ -373,14 +375,14 @@ void Engine::set_track_finished(GstElement* src)
 	}
 }
 
-bool Engine::is_streamrecroder_recording() const
+bool EngineImpl::is_streamrecroder_recording() const
 {
 	bool sr_active = GetSetting(Set::Engine_SR_Active);
 	return (sr_active && m->stream_recorder && m->stream_recorder->is_recording());
 }
 
 
-void Engine::set_equalizer(int band, int val)
+void EngineImpl::set_equalizer(int band, int val)
 {
 	m->pipeline->set_equalizer_band(band, val);
 
@@ -390,7 +392,7 @@ void Engine::set_equalizer(int band, int val)
 }
 
 
-void Engine::set_buffer_state(int progress, GstElement* src)
+void EngineImpl::set_buffer_state(int progress, GstElement* src)
 {
 	if(!Util::File::is_www(m->md.filepath())){
 		progress = -1;
@@ -404,7 +406,7 @@ void Engine::set_buffer_state(int progress, GstElement* src)
 }
 
 
-void Engine::s_gapless_changed()
+void EngineImpl::s_gapless_changed()
 {
 	Playlist::Mode plm = GetSetting(Set::PL_Mode);
 	bool gapless =	(Playlist::Mode::isActiveAndEnabled(plm.gapless()) ||
@@ -424,7 +426,7 @@ void Engine::s_gapless_changed()
 }
 
 
-void Engine::s_streamrecorder_active_changed()
+void EngineImpl::s_streamrecorder_active_changed()
 {
 	bool is_active = GetSetting(Set::Engine_SR_Active);
 	if(!is_active){
@@ -433,7 +435,7 @@ void Engine::s_streamrecorder_active_changed()
 }
 
 
-void Engine::set_streamrecorder_recording(bool b)
+void EngineImpl::set_streamrecorder_recording(bool b)
 {
 	if(b)
 	{
@@ -469,7 +471,7 @@ void Engine::set_streamrecorder_recording(bool b)
 	}
 }
 
-void Engine::set_n_sound_receiver(int num_sound_receiver)
+void EngineImpl::set_n_sound_receiver(int num_sound_receiver)
 {
 	m->pipeline->enable_broadcasting(num_sound_receiver > 0);
 
@@ -479,7 +481,7 @@ void Engine::set_n_sound_receiver(int num_sound_receiver)
 	}
 }
 
-void Engine::update_cover(const QImage& cover, GstElement* src)
+void EngineImpl::update_cover(const QImage& cover, GstElement* src)
 {
 	if( m->pipeline->has_element(src) )
 	{
@@ -488,7 +490,7 @@ void Engine::update_cover(const QImage& cover, GstElement* src)
 }
 
 
-void Engine::update_metadata(const MetaData& md, GstElement* src)
+void EngineImpl::update_metadata(const MetaData& md, GstElement* src)
 {
 	if(!m->pipeline->has_element(src)){
 		return;
@@ -530,7 +532,7 @@ void Engine::update_metadata(const MetaData& md, GstElement* src)
 }
 
 
-void Engine::update_duration(MilliSeconds duration_ms, GstElement* src)
+void EngineImpl::update_duration(MilliSeconds duration_ms, GstElement* src)
 {
 	if(! m->pipeline->has_element(src)){
 		return;
@@ -552,7 +554,7 @@ void Engine::update_duration(MilliSeconds duration_ms, GstElement* src)
 template<typename T>
 T br_diff(T a, T b){ return std::max(a, b) - std::min(a, b); }
 
-void Engine::update_bitrate(Bitrate br, GstElement* src)
+void EngineImpl::update_bitrate(Bitrate br, GstElement* src)
 {
 	if( (br <= 0) ||
 		(!m->pipeline->has_element(src)) ||
@@ -566,12 +568,12 @@ void Engine::update_bitrate(Bitrate br, GstElement* src)
 	emit sig_bitrate_changed(m->md);
 }
 
-void Engine::add_spectrum_receiver(SpectrumReceiver* receiver)
+void EngineImpl::add_spectrum_receiver(SpectrumReceiver* receiver)
 {
 	m->spectrum_receiver.push_back(receiver);
 }
 
-void Engine::set_spectrum(const SpectrumList& vals)
+void EngineImpl::set_spectrum(const SpectrumList& vals)
 {
 	for(SpectrumReceiver* rcv : m->spectrum_receiver)
 	{
@@ -581,12 +583,12 @@ void Engine::set_spectrum(const SpectrumList& vals)
 	}
 }
 
-void Engine::add_level_receiver(LevelReceiver* receiver)
+void EngineImpl::add_level_receiver(LevelReceiver* receiver)
 {
 	m->level_receiver.push_back(receiver);
 }
 
-void Engine::set_level(float left, float right)
+void EngineImpl::set_level(float left, float right)
 {
 	for(LevelReceiver* rcv : m->level_receiver)
 	{
@@ -597,7 +599,7 @@ void Engine::set_level(float left, float right)
 }
 
 
-void Engine::error(const QString& error)
+void EngineImpl::error(const QString& error)
 {
 	QStringList msg{Lang::get(Lang::Error)};
 

@@ -19,7 +19,7 @@
  */
 
 #include "Equalizer.h"
-#include "EngineUtils.h"
+#include "Components/Engine/Utils.h"
 
 #include "Utils/Settings/Settings.h"
 #include "Utils/EqualizerPresets.h"
@@ -27,7 +27,6 @@
 
 #include <QList>
 #include <QString>
-#include <gst/gst.h>
 
 using namespace PipelineExtensions;
 
@@ -37,7 +36,7 @@ struct Equalizer::Private
 
 	Private()
 	{
-		EngineUtils::create_element(&equalizer, "equalizer-10bands");
+		Engine::Utils::create_element(&equalizer, "equalizer-10bands");
 	}
 };
 
@@ -82,7 +81,7 @@ void Equalizer::set_band(int band, int val)
 		new_val = val * 0.75;
 	}
 
-	EngineUtils::set_value(m->equalizer, band_name.toUtf8().data(),	new_val);
+	Engine::Utils::set_value(m->equalizer, band_name.toUtf8().data(),	new_val);
 }
 
 GstElement* Equalizer::element() const

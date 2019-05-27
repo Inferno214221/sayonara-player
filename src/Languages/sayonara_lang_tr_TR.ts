@@ -1,4 +1,4 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="tr_TR" version="2.1">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="tr_TR" version="2.0">
 <context>
     <name>GUI_SomaFM</name>
     <message>
@@ -63,7 +63,7 @@
     <message>
         <location line="+19"/>
         <source>Text search</source>
-        <translation>Metin arama</translation>
+        <translation>Metin araması</translation>
     </message>
     <message>
         <location line="+55"/>
@@ -91,12 +91,12 @@
         <translation>Aramayı otomatik başlat</translation>
     </message>
     <message>
-        <location filename="src/Gui/Covers/GUI_AlternativeCovers.cpp" line="+289"/>
+        <location filename="src/Gui/Covers/GUI_AlternativeCovers.cpp" line="+231"/>
         <source>%1 covers found</source>
         <translation>%1 kapak bulundu</translation>
     </message>
     <message>
-        <location line="+139"/>
+        <location line="+123"/>
         <source>Cover web search is not enabled</source>
         <translation>Kapak web araması etkin değil</translation>
     </message>
@@ -144,12 +144,12 @@
     <message>
         <location line="+20"/>
         <source>Loading tracks</source>
-        <translation>Yükleniyor</translation>
+        <translation>Parçalar yükleniyor</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Importing</source>
-        <translation>İçe aktar</translation>
+        <translation>İçe aktarıldı</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -169,7 +169,7 @@
     <message>
         <location line="+4"/>
         <source>Rollback</source>
-        <translation>Geri Alma</translation>
+        <translation>Geri Al</translation>
     </message>
     <message>
         <location line="+78"/>
@@ -288,9 +288,9 @@
         <translation>Sayonara Oynatıcı</translation>
     </message>
     <message>
-        <location filename="src/Gui/Player/GUI_Player.cpp" line="+409"/>
+        <location filename="src/Gui/Player/GUI_Player.cpp" line="+410"/>
         <source>A new version is available!</source>
-        <translation>Yeni bir versiyon var!</translation>
+        <translation>Yeni bir sürüm mevcut!</translation>
     </message>
 </context>
 <context>
@@ -332,7 +332,7 @@
         <location line="+27"/>
         <location line="+108"/>
         <source>Cannot find encoder</source>
-        <translation>Kodlayıcı bulunamıyor</translation>
+        <translation>Çözücü bulunamadı</translation>
     </message>
     <message>
         <location line="-98"/>
@@ -400,7 +400,7 @@
     <message>
         <location line="+1"/>
         <source>Dismiss all</source>
-        <translation>Hepsini reddet</translation>
+        <translation>Tümünü reddet</translation>
     </message>
     <message>
         <location line="+44"/>
@@ -424,11 +424,37 @@
     </message>
 </context>
 <context>
+    <name>GUI_Speed</name>
+    <message>
+        <location filename="src/Gui/Plugins/Engine/GUI_Speed.ui" line="+45"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_Speed.cpp" line="+117"/>
+        <source>Speed</source>
+        <translation>Hız</translation>
+    </message>
+    <message>
+        <location line="+39"/>
+        <source>Preserve pitch</source>
+        <translation>Aralığı koru</translation>
+    </message>
+    <message>
+        <location line="+30"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_Speed.cpp" line="+0"/>
+        <source>Pitch</source>
+        <translation>Aralık</translation>
+    </message>
+    <message>
+        <location filename="src/Gui/Plugins/Engine/GUI_Speed.cpp" line="+64"/>
+        <location line="+1"/>
+        <source>%1 not found</source>
+        <translation>%1 bulunamadı</translation>
+    </message>
+</context>
+<context>
     <name>GUI_Style</name>
     <message>
         <location filename="src/Gui/Plugins/Engine/GUI_Style.ui" line="+14"/>
         <source>Style</source>
-        <translation>Stil</translation>
+        <translation>Biçim</translation>
     </message>
     <message>
         <location line="+38"/>
@@ -481,7 +507,7 @@
     <message>
         <location line="+54"/>
         <source>Style settings</source>
-        <translation>Stil ayarları</translation>
+        <translation>Biçim ayarları</translation>
     </message>
     <message>
         <location line="+129"/>
@@ -505,32 +531,6 @@
     </message>
 </context>
 <context>
-    <name>GUI_Speed</name>
-    <message>
-        <location filename="src/Gui/Plugins/Engine/Speed/GUI_Speed.ui" line="+45"/>
-        <location filename="src/Gui/Plugins/Engine/Speed/GUI_Speed.cpp" line="+117"/>
-        <source>Speed</source>
-        <translation>Hız</translation>
-    </message>
-    <message>
-        <location line="+39"/>
-        <source>Preserve pitch</source>
-        <translation>Aralığı koru</translation>
-    </message>
-    <message>
-        <location line="+30"/>
-        <location filename="src/Gui/Plugins/Engine/Speed/GUI_Speed.cpp" line="+0"/>
-        <source>Pitch</source>
-        <translation>Aralık</translation>
-    </message>
-    <message>
-        <location filename="src/Gui/Plugins/Engine/Speed/GUI_Speed.cpp" line="+64"/>
-        <location line="+1"/>
-        <source>%1 not found</source>
-        <translation>%1 bulunamadı</translation>
-    </message>
-</context>
-<context>
     <name>GUI_TargetPlaylistDialog</name>
     <message>
         <location filename="src/Gui/Plugins/PlaylistChooser/GUI_TargetPlaylistDialog.ui" line="+14"/>
@@ -545,7 +545,7 @@
     <message>
         <location line="+34"/>
         <source>Close</source>
-        <translation>Kapalı</translation>
+        <translation>Kapat</translation>
     </message>
     <message>
         <location line="+13"/>
@@ -581,7 +581,7 @@
     <message>
         <location filename="src/Gui/Plugins/Stream/GUI_StationSearcher.cpp" line="+58"/>
         <source>Show radio stations from %1 to %2</source>
-        <translation type="unfinished"/>
+        <translation>%1 ile %2 arasındaki radyo istasyonlarını göster</translation>
     </message>
     <message>
         <location line="+204"/>
@@ -615,19 +615,49 @@
 <context>
     <name>GUI_Covers</name>
     <message>
-        <location filename="src/Gui/Preferences/Covers/GUI_Covers.ui" line="+17"/>
-        <source>Save found covers into Sayonara directory</source>
-        <translation> Bulunan kapakları Sayonara dizinine kaydet</translation>
+        <location filename="src/Gui/Preferences/Covers/GUI_Covers.ui" line="+62"/>
+        <source>Inactive</source>
+        <translation>Etkisiz</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+13"/>
+        <source>Active</source>
+        <translation>Aktif</translation>
+    </message>
+    <message>
+        <location line="+60"/>
+        <source>Delete all covers from the database</source>
+        <translation>Tüm kapakları veritabanından sil</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Clear cache</source>
+        <translation>Arabelleği temizle</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Delete all covers from the Sayonara directory</source>
+        <translation>Tüm kapakları Sayonara dizininden sil</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Delete files</source>
+        <translation>Dosyaları sil</translation>
+    </message>
+    <message>
+        <location line="+9"/>
         <source>Save found covers into the library directory where the audio files are located</source>
-        <translation type="unfinished"/>
+        <translation>Bulunan kapakları ses dosyalarının bulunduğu kütüphane dizinine kaydet</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Save found covers into library</source>
         <translation> Bulunan kapakları kütüphaneye kaydet</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Fetch missing covers from the internet</source>
+        <translation>İnternetten eksik albüm kapaklarını alın</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -640,67 +670,73 @@
         <translation> Bulunan kapakları veritabanına kaydet</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+7"/>
+        <source>Save found covers into Sayonara directory</source>
+        <translation> Bulunan kapakları Sayonara dizinine kaydet</translation>
+    </message>
+    <message>
+        <location line="+22"/>
         <source>Cover name</source>
-        <translation type="unfinished"/>
+        <translation>Kapak adı</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Name of cover file</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+36"/>
-        <source>Fetch missing covers from the internet</source>
-        <translation>İnternetten eksik albüm kapaklarını alın</translation>
-    </message>
-    <message>
-        <location line="+9"/>
-        <source>Delete all covers from the database</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Clear cache</source>
-        <translation>Arabelleği temizle</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Delete all covers from the Sayonara directory</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Delete files</source>
-        <translation>Dosyaları sil</translation>
-    </message>
-    <message>
-        <location line="+83"/>
-        <source>Inactive</source>
-        <translation>Etkisiz</translation>
-    </message>
-    <message>
-        <location line="+13"/>
-        <source>Active</source>
-        <translation>Aktif</translation>
+        <translation>Kapak dosyasının adı</translation>
     </message>
 </context>
 <context>
     <name>GUI_LanguageChooser</name>
     <message>
-        <location filename="src/Gui/Preferences/Language/GUI_LanguageChooser.ui" line="+17"/>
-        <source>For new languages I am always looking for translators</source>
-        <translation>Yeni diller için her zaman çevirmen arıyorum</translation>
+        <location filename="src/Gui/Preferences/Language/GUI_LanguageChooser.ui" line="+29"/>
+        <source>Check for update</source>
+        <translation>Güncellemeleri kontrol et</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+7"/>
+        <source>Download update</source>
+        <translation>Güncellemeyi indir</translation>
+    </message>
+    <message>
+        <location line="+33"/>
         <source>English</source>
         <translation>İngilizce</translation>
     </message>
     <message>
-        <location filename="src/Gui/Preferences/Language/GUI_LanguageChooser.cpp" line="+138"/>
+        <location line="+28"/>
+        <source>For new languages I am always looking for translators</source>
+        <translation>Yeni diller için her zaman çevirmen arıyorum</translation>
+    </message>
+    <message>
+        <location filename="src/Gui/Preferences/Language/GUI_LanguageChooser.cpp" line="+64"/>
         <source>Language</source>
         <translation>Dil</translation>
+    </message>
+    <message>
+        <location line="+121"/>
+        <source>Cannot check for language update</source>
+        <translation>Dil güncellemesi kontrol edilemiyor</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Language update available</source>
+        <translation>Dil güncellemesi mevcut</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Language is up to date</source>
+        <translation>Dil güncel</translation>
+    </message>
+    <message>
+        <location line="+34"/>
+        <location line="+22"/>
+        <source>Cannot fetch language update</source>
+        <translation>Dil güncellemesi alınamıyor</translation>
+    </message>
+    <message>
+        <location line="-8"/>
+        <source>Language was updated successfully</source>
+        <translation>Dil başarıyla güncellendi</translation>
     </message>
 </context>
 <context>
@@ -713,7 +749,7 @@
     <message>
         <location line="+7"/>
         <source>Password</source>
-        <translation>Şifre</translation>
+        <translation>Parola</translation>
     </message>
     <message>
         <location line="+20"/>
@@ -723,7 +759,7 @@
     <message>
         <location line="+46"/>
         <source>Login now</source>
-        <translation>Şimdi giriş yap</translation>
+        <translation>Şimdi gir</translation>
     </message>
     <message>
         <location filename="src/Gui/Preferences/LastFM/GUI_LastFM.cpp" line="+163"/>
@@ -828,12 +864,12 @@
     <message>
         <location line="+7"/>
         <source>Close to system tray</source>
-        <translation type="unfinished"/>
+        <translation>Sistem tepsisine bırak</translation>
     </message>
     <message>
         <location line="+28"/>
         <source>Start in system tray</source>
-        <translation type="unfinished"/>
+        <translation>Sistem tepsisinde başla</translation>
     </message>
 </context>
 <context>
@@ -957,7 +993,7 @@
     <message>
         <location filename="src/Gui/Preferences/Proxy/GUI_Proxy.ui" line="+30"/>
         <source>Password</source>
-        <translation>Şifre</translation>
+        <translation>Parola</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -1576,7 +1612,7 @@
     <message>
         <location line="+312"/>
         <source>No genre</source>
-        <translation type="unfinished"/>
+        <translation>Tür yok</translation>
     </message>
 </context>
 <context>
@@ -1623,7 +1659,7 @@
     <message>
         <location filename="src/Gui/Library/HeaderView.cpp" line="+61"/>
         <source>Resize columns</source>
-        <translation type="unfinished"/>
+        <translation>Sütunları boyutlandır</translation>
     </message>
 </context>
 <context>
@@ -1731,7 +1767,7 @@
     <message>
         <location line="+3"/>
         <source>Special thanks to all the brave translators</source>
-        <translation type="unfinished"/>
+        <translation>Tüm cesur çevirmenlere özel teşekkürler</translation>
     </message>
 </context>
 <context>
@@ -1817,7 +1853,7 @@
 <context>
     <name>GUI_Crossfader</name>
     <message>
-        <location filename="src/Gui/Plugins/Engine/Crossfader/GUI_Crossfader.cpp" line="+74"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_Crossfader.cpp" line="+74"/>
         <location line="+11"/>
         <source>Crossfader</source>
         <translation>Geçiş yumuşatıcı</translation>
@@ -1826,7 +1862,7 @@
 <context>
     <name>GUI_Equalizer</name>
     <message>
-        <location filename="src/Gui/Plugins/Engine/Equalizer/GUI_Equalizer.cpp" line="+160"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_Equalizer.cpp" line="+160"/>
         <source>Equalizer</source>
         <translation>Ekolayzer</translation>
     </message>
@@ -1850,7 +1886,7 @@
 <context>
     <name>GUI_StyleSettings</name>
     <message>
-        <location filename="src/Gui/Plugins/Engine/GUI_StyleSettings.cpp" line="+189"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_StyleSettings.cpp" line="+188"/>
         <source>There are some unsaved settings&lt;br /&gt;Save now?</source>
         <translation>Kaydedilmemiş bazı ayarlar var&lt;br /&gt;Şimdi kaydedilsin mi?</translation>
     </message>

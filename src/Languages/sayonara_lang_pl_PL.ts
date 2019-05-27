@@ -1,4 +1,4 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="pl_PL" version="2.1">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="pl_PL" version="2.0">
 <context>
     <name>GUI_SomaFM</name>
     <message>
@@ -91,12 +91,12 @@
         <translation>Rozpocznij wyszukiwanie automatycznie</translation>
     </message>
     <message>
-        <location filename="src/Gui/Covers/GUI_AlternativeCovers.cpp" line="+289"/>
+        <location filename="src/Gui/Covers/GUI_AlternativeCovers.cpp" line="+231"/>
         <source>%1 covers found</source>
         <translation>Znaleziono %1 okładek albumów</translation>
     </message>
     <message>
-        <location line="+139"/>
+        <location line="+123"/>
         <source>Cover web search is not enabled</source>
         <translation>Wyszukiwarka okładek w sieci nie jest włączona</translation>
     </message>
@@ -272,7 +272,7 @@
     <message>
         <location filename="src/Gui/Player/GUI_ControlsNew.ui" line="+638"/>
         <source>Copyright 2011-2019</source>
-        <translation>Prawa autorskie 2011-2019</translation>
+        <translation>Prawa autorskie © 2011-2019</translation>
     </message>
     <message>
         <location line="+50"/>
@@ -288,7 +288,7 @@
         <translation>Sayonara Player</translation>
     </message>
     <message>
-        <location filename="src/Gui/Player/GUI_Player.cpp" line="+409"/>
+        <location filename="src/Gui/Player/GUI_Player.cpp" line="+410"/>
         <source>A new version is available!</source>
         <translation>Nowa wersja programu, jest dostępna!</translation>
     </message>
@@ -424,6 +424,32 @@
     </message>
 </context>
 <context>
+    <name>GUI_Speed</name>
+    <message>
+        <location filename="src/Gui/Plugins/Engine/GUI_Speed.ui" line="+45"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_Speed.cpp" line="+117"/>
+        <source>Speed</source>
+        <translation>Prędkość</translation>
+    </message>
+    <message>
+        <location line="+39"/>
+        <source>Preserve pitch</source>
+        <translation>Zachowaj wysokość</translation>
+    </message>
+    <message>
+        <location line="+30"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_Speed.cpp" line="+0"/>
+        <source>Pitch</source>
+        <translation>Ton</translation>
+    </message>
+    <message>
+        <location filename="src/Gui/Plugins/Engine/GUI_Speed.cpp" line="+64"/>
+        <location line="+1"/>
+        <source>%1 not found</source>
+        <translation>% 1 nie znaleziono</translation>
+    </message>
+</context>
+<context>
     <name>GUI_Style</name>
     <message>
         <location filename="src/Gui/Plugins/Engine/GUI_Style.ui" line="+14"/>
@@ -505,32 +531,6 @@
     </message>
 </context>
 <context>
-    <name>GUI_Speed</name>
-    <message>
-        <location filename="src/Gui/Plugins/Engine/Speed/GUI_Speed.ui" line="+45"/>
-        <location filename="src/Gui/Plugins/Engine/Speed/GUI_Speed.cpp" line="+117"/>
-        <source>Speed</source>
-        <translation>Prędkość</translation>
-    </message>
-    <message>
-        <location line="+39"/>
-        <source>Preserve pitch</source>
-        <translation>Zachowaj wysokość</translation>
-    </message>
-    <message>
-        <location line="+30"/>
-        <location filename="src/Gui/Plugins/Engine/Speed/GUI_Speed.cpp" line="+0"/>
-        <source>Pitch</source>
-        <translation>Ton</translation>
-    </message>
-    <message>
-        <location filename="src/Gui/Plugins/Engine/Speed/GUI_Speed.cpp" line="+64"/>
-        <location line="+1"/>
-        <source>%1 not found</source>
-        <translation>% 1 nie znaleziono</translation>
-    </message>
-</context>
-<context>
     <name>GUI_TargetPlaylistDialog</name>
     <message>
         <location filename="src/Gui/Plugins/PlaylistChooser/GUI_TargetPlaylistDialog.ui" line="+14"/>
@@ -581,7 +581,7 @@
     <message>
         <location filename="src/Gui/Plugins/Stream/GUI_StationSearcher.cpp" line="+58"/>
         <source>Show radio stations from %1 to %2</source>
-        <translation type="unfinished"/>
+        <translation>Pokaż stacje radiowe od %1 do %2</translation>
     </message>
     <message>
         <location line="+204"/>
@@ -615,49 +615,19 @@
 <context>
     <name>GUI_Covers</name>
     <message>
-        <location filename="src/Gui/Preferences/Covers/GUI_Covers.ui" line="+17"/>
-        <source>Save found covers into Sayonara directory</source>
-        <translation type="unfinished"/>
+        <location filename="src/Gui/Preferences/Covers/GUI_Covers.ui" line="+62"/>
+        <source>Inactive</source>
+        <translation>Nieaktywne</translation>
     </message>
     <message>
-        <location line="+14"/>
-        <source>Save found covers into the library directory where the audio files are located</source>
-        <translation type="unfinished"/>
+        <location line="+13"/>
+        <source>Active</source>
+        <translation>Aktywna</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Save found covers into library</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Saving covers to the database leads to significantly faster access but results in a bigger database</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Save found covers to database</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+9"/>
-        <source>Cover name</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Name of cover file</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+36"/>
-        <source>Fetch missing covers from the internet</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+9"/>
+        <location line="+60"/>
         <source>Delete all covers from the database</source>
-        <translation type="unfinished"/>
+        <translation>Usuń wszystkie okładki z bazy danych</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -667,7 +637,7 @@
     <message>
         <location line="+7"/>
         <source>Delete all covers from the Sayonara directory</source>
-        <translation type="unfinished"/>
+        <translation>Usuń wszystkie okładki z folderu Sayonara</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -675,32 +645,98 @@
         <translation>Usuń pliki</translation>
     </message>
     <message>
-        <location line="+83"/>
-        <source>Inactive</source>
-        <translation>Nieaktywne</translation>
+        <location line="+9"/>
+        <source>Save found covers into the library directory where the audio files are located</source>
+        <translation>Zapisz znalezione okładki w folderze biblioteki, w którym znajdują się pliki audio</translation>
     </message>
     <message>
-        <location line="+13"/>
-        <source>Active</source>
-        <translation>Aktywna</translation>
+        <location line="+3"/>
+        <source>Save found covers into library</source>
+        <translation>Zapisz znalezione okładki w bibliotece</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Fetch missing covers from the internet</source>
+        <translation>Pobierz brakujące okładki z Internetu</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Saving covers to the database leads to significantly faster access but results in a bigger database</source>
+        <translation>Zapisywanie okładek w bazie danych prowadzi do znacznie szybszego dostępu, ale skutkuje większą bazą danych</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Save found covers to database</source>
+        <translation>Zapisz znalezione okładki w bazie danych</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Save found covers into Sayonara directory</source>
+        <translation>Zapisz znalezione okładki w folderze Sayonara</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>Cover name</source>
+        <translation>Nazwa okładki</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Name of cover file</source>
+        <translation>Nazwa pliku okładki</translation>
     </message>
 </context>
 <context>
     <name>GUI_LanguageChooser</name>
     <message>
-        <location filename="src/Gui/Preferences/Language/GUI_LanguageChooser.ui" line="+17"/>
-        <source>For new languages I am always looking for translators</source>
-        <translation>W przypadku nowych języków zawsze szukam tłumaczy</translation>
+        <location filename="src/Gui/Preferences/Language/GUI_LanguageChooser.ui" line="+29"/>
+        <source>Check for update</source>
+        <translation>Sprawdź aktualizację</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+7"/>
+        <source>Download update</source>
+        <translation>Pobierz aktualizację</translation>
+    </message>
+    <message>
+        <location line="+33"/>
         <source>English</source>
         <translation>Angielska</translation>
     </message>
     <message>
-        <location filename="src/Gui/Preferences/Language/GUI_LanguageChooser.cpp" line="+138"/>
+        <location line="+28"/>
+        <source>For new languages I am always looking for translators</source>
+        <translation>W przypadku nowych języków zawsze szukam tłumaczy</translation>
+    </message>
+    <message>
+        <location filename="src/Gui/Preferences/Language/GUI_LanguageChooser.cpp" line="+64"/>
         <source>Language</source>
         <translation>Język</translation>
+    </message>
+    <message>
+        <location line="+121"/>
+        <source>Cannot check for language update</source>
+        <translation>Nie można sprawdzić aktualizacji języka</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Language update available</source>
+        <translation>Dostępna aktualizacja języka</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Language is up to date</source>
+        <translation>Język jest aktualny</translation>
+    </message>
+    <message>
+        <location line="+34"/>
+        <location line="+22"/>
+        <source>Cannot fetch language update</source>
+        <translation>Nie można pobrać aktualizacji języka</translation>
+    </message>
+    <message>
+        <location line="-8"/>
+        <source>Language was updated successfully</source>
+        <translation>Język został pomyślnie zaktualizowany</translation>
     </message>
 </context>
 <context>
@@ -772,7 +808,7 @@
     <message>
         <location line="+7"/>
         <source>(this is ignored when playlist is in &apos;append mode&apos;)</source>
-        <translation type="unfinished"/>
+        <translation>(jest to ignorowane, gdy lista odtwarzania znajduje się w „trybie dołączania”)</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -828,12 +864,12 @@
     <message>
         <location line="+7"/>
         <source>Close to system tray</source>
-        <translation type="unfinished"/>
+        <translation>Zamknij do zasobnika systemowego</translation>
     </message>
     <message>
         <location line="+28"/>
         <source>Start in system tray</source>
-        <translation type="unfinished"/>
+        <translation>Uruchom w zasobniku systemowym</translation>
     </message>
 </context>
 <context>
@@ -1452,7 +1488,7 @@
     <message>
         <location filename="src/Components/Library/Threads/ReloadThread.cpp" line="+223"/>
         <source>Looking for covers</source>
-        <translation type="unfinished"/>
+        <translation>Szukam okładek</translation>
     </message>
     <message>
         <location line="+41"/>
@@ -1576,7 +1612,7 @@
     <message>
         <location line="+312"/>
         <source>No genre</source>
-        <translation type="unfinished"/>
+        <translation>Brak gatunku</translation>
     </message>
 </context>
 <context>
@@ -1623,7 +1659,7 @@
     <message>
         <location filename="src/Gui/Library/HeaderView.cpp" line="+61"/>
         <source>Resize columns</source>
-        <translation type="unfinished"/>
+        <translation>Zmień rozmiar kolumn</translation>
     </message>
 </context>
 <context>
@@ -1731,7 +1767,7 @@
     <message>
         <location line="+3"/>
         <source>Special thanks to all the brave translators</source>
-        <translation type="unfinished"/>
+        <translation>Specjalne podziękowania dla wszystkich dzielnych tłumaczy!</translation>
     </message>
 </context>
 <context>
@@ -1817,7 +1853,7 @@
 <context>
     <name>GUI_Crossfader</name>
     <message>
-        <location filename="src/Gui/Plugins/Engine/Crossfader/GUI_Crossfader.cpp" line="+74"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_Crossfader.cpp" line="+74"/>
         <location line="+11"/>
         <source>Crossfader</source>
         <translation>Crossfader</translation>
@@ -1826,7 +1862,7 @@
 <context>
     <name>GUI_Equalizer</name>
     <message>
-        <location filename="src/Gui/Plugins/Engine/Equalizer/GUI_Equalizer.cpp" line="+160"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_Equalizer.cpp" line="+160"/>
         <source>Equalizer</source>
         <translation>Korektor graficzny</translation>
     </message>
@@ -1850,7 +1886,7 @@
 <context>
     <name>GUI_StyleSettings</name>
     <message>
-        <location filename="src/Gui/Plugins/Engine/GUI_StyleSettings.cpp" line="+189"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_StyleSettings.cpp" line="+188"/>
         <source>There are some unsaved settings&lt;br /&gt;Save now?</source>
         <translation>Istnieją niezapisane ustawienia. &lt;br /&gt;Czy zapisać ustawienia teraz?</translation>
     </message>

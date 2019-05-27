@@ -139,7 +139,7 @@ void GUI_LevelPainter::finalize_initialization()
 	m->set_level(0, 0);
 
 	PlayerPlugin::Base::finalize_initialization();
-	EngineHandler::instance()->add_level_receiver(this);
+	Engine::Handler::instance()->add_level_receiver(this);
 
 	reload();
 }

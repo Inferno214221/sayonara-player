@@ -32,7 +32,7 @@
 
 struct StreamWriter::Private
 {
-	EngineHandler*	engine=nullptr;
+	Engine::Handler*	engine=nullptr;
 	StreamHttpParser*	parser=nullptr;
 	StreamDataSender*	sender=nullptr;
 	QTcpSocket*			socket=nullptr;
@@ -70,7 +70,7 @@ StreamWriter::StreamWriter(QTcpSocket* socket, const QString& ip, const MetaData
 
 	connect(socket, &QTcpSocket::disconnected, this, &StreamWriter::socket_disconnected);
 	connect(socket, &QTcpSocket::readyRead, this, &StreamWriter::data_available);
-	connect(EngineHandler::instance(), &EngineHandler::destroyed, this, [=](){
+	connect(Engine::Handler::instance(), &Engine::Handler::destroyed, this, [=](){
 		m->engine = nullptr;
 	});
 }
@@ -244,7 +244,7 @@ void StreamWriter::data_available()
 
 			if(success){
 				m->send_data = true;
-				EngineHandler::instance()->register_raw_sound_receiver(this);
+				Engine::Handler::instance()->register_raw_sound_receiver(this);
 			}
 
 			emit sig_new_connection(ip);

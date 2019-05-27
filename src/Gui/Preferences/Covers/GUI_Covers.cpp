@@ -286,6 +286,7 @@ void GUI_Covers::cb_save_to_library_toggled(bool b)
 	ui->lab_cover_template->setVisible(b);
 }
 
+
 void GUI_Covers::le_cover_template_edited(const QString& text)
 {
 	bool valid = check_cover_template(text);

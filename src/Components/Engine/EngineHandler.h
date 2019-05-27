@@ -33,41 +33,43 @@ class RawSoundReceiverInterface;
 class LevelReceiver;
 class SpectrumReceiver;
 
-
-/**
- * @brief The EngineHandler class
- * @ingroup Engine
- */
-class EngineHandler :
-		public QObject
+namespace Engine
 {
-	Q_OBJECT
-	SINGLETON_QOBJECT(EngineHandler)
-	PIMPL(EngineHandler)
+	/**
+	 * @brief The EngineHandler class
+	 * @ingroup Engine
+	 */
+	class Handler :
+			public QObject
+	{
+		Q_OBJECT
+		SINGLETON_QOBJECT(Handler)
+		PIMPL(Handler)
 
-	signals:
-		void sig_md_changed(const MetaData& md);
-		void sig_duration_changed(const MetaData& md);
-		void sig_bitrate_changed(const MetaData& md);
-		void sig_cover_changed(const QImage& img);
+		signals:
+			void sig_md_changed(const MetaData& md);
+			void sig_duration_changed(const MetaData& md);
+			void sig_bitrate_changed(const MetaData& md);
+			void sig_cover_changed(const QImage& img);
 
-	public:
-		bool init();
-		void shutdown();
+		public:
+			bool init();
+			void shutdown();
 
-		void register_raw_sound_receiver(RawSoundReceiverInterface* receiver);
-		void unregister_raw_sound_receiver(RawSoundReceiverInterface* receiver);
+			void register_raw_sound_receiver(RawSoundReceiverInterface* receiver);
+			void unregister_raw_sound_receiver(RawSoundReceiverInterface* receiver);
 
-		void add_level_receiver(LevelReceiver* receiver);
-		void add_spectrum_receiver(SpectrumReceiver* receiver);
+			void add_level_receiver(LevelReceiver* receiver);
+			void add_spectrum_receiver(SpectrumReceiver* receiver);
 
-		void set_equalizer(int band, int value);
+			void set_equalizer(int band, int value);
 
-	private slots:
-		void playstate_changed(PlayState state);
+		private slots:
+			void playstate_changed(PlayState state);
 
-		void new_data(const uchar* data, uint64_t n_bytes);
-};
+			void new_data(const uchar* data, uint64_t n_bytes);
+	};
+}
 
 #endif
 

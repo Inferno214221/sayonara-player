@@ -23,14 +23,9 @@
 #include "Components/Engine/EngineHandler.h"
 #include "Components/PlayManager/PlayManager.h"
 
-#include <QResizeEvent>
-
 struct VisualPlugin::Private
 {
 	GUI_StyleSettings*	style_settings=nullptr;
-
-	PlayManagerPtr		play_manager=nullptr;
-	EngineHandler*	engine=nullptr;
 	QPushButton*		btn_config=nullptr;
 	QPushButton*		btn_prev=nullptr;
 	QPushButton*		btn_next=nullptr;
@@ -41,10 +36,7 @@ struct VisualPlugin::Private
 
 	Private() :
 		timer_stopped(true)
-	{
-		play_manager = PlayManager::instance();
-		engine = EngineHandler::instance();
-	}
+	{}
 };
 
 VisualPlugin::VisualPlugin(QWidget* parent) :
@@ -64,7 +56,7 @@ VisualPlugin::~VisualPlugin()
 
 void VisualPlugin::init_ui()
 {
-	connect(m->play_manager, &PlayManager::sig_playstate_changed, this, &VisualPlugin::playstate_changed);
+	connect(PlayManager::instance(), &PlayManager::sig_playstate_changed, this, &VisualPlugin::playstate_changed);
 
 	m_ecsc = new VisualColorStyleChooser(minimumWidth(), minimumHeight());
 	m->style_settings = new GUI_StyleSettings(this);
@@ -72,17 +64,6 @@ void VisualPlugin::init_ui()
 	m->timer = new QTimer();
 	m->timer->setInterval(30);
 	m->timer_stopped = true;
-
-	QWidget* w = widget();
-
-	m->btn_config = new QPushButton(QString::fromUtf8("≡"), w);
-	m->btn_prev = new QPushButton("<", w);
-	m->btn_next = new QPushButton(">", w);
-	m->btn_close = new QPushButton("x", w);
-
-	m->btn_close->setFocusProxy(w);
-
-	init_buttons( has_small_buttons() );
 
 	connect(m->timer, &QTimer::timeout, this, &VisualPlugin::do_fadeout_step);
 	connect(m->style_settings, &GUI_StyleSettings::sig_style_update, this, &VisualPlugin::style_changed);
@@ -95,46 +76,82 @@ bool VisualPlugin::is_title_shown() const
 }
 
 
-void VisualPlugin::init_buttons(bool small)
+void VisualPlugin::set_button_sizes()
 {
-	int height = this->height() - 4;
+	init_buttons();
+
+	QFont font = m->btn_config->font();
+	QFontMetrics fm(font);
+
 	int x = 10;
-	int y;
-	int width;
+	int y = 5;
+	int height = fm.height() + 2;
+	int width = fm.width("W") + 4;
+	int font_size = 6;
 
-	if(small){
-		width = 15;
+	if(!has_small_buttons())
+	{
 		y = 5;
+		height = fm.height() * 2;
+		width = fm.width("W") * 2;
+		font_size = 8;
 	}
 
-	else{
-		width = 20;
-		y = 10;
+	font.setPointSize(font_size);
+
+	//QList<QPushButton*> buttons ;
+	for(QPushButton* button : { m->btn_config, m->btn_prev, m->btn_next, m->btn_close })
+	{
+		button->setFont(font);
+		button->setMaximumHeight(height);
+		button->setMaximumWidth(width);
+		button->setGeometry(x, y, width, height);
+
+		QString css = QString("padding: 0; margin: 0; max-height: %1; min-height: %1;").arg(height);
+		button->setStyleSheet(css);
+
+		x += width + 5;
+	}
+}
+
+void VisualPlugin::set_buttons_visible(bool b)
+{
+	init_buttons();
+
+	m->btn_config->setVisible(b);
+	m->btn_prev->setVisible(b);
+	m->btn_next->setVisible(b);
+	m->btn_close->setVisible(b);
+}
+
+void VisualPlugin::init_buttons()
+{
+	if(m->btn_config){
+		return;
 	}
 
-	m->btn_config->setGeometry(x, y, width, height);
-	x += width + 5;
-	m->btn_prev->setGeometry(x, y, width, height);
-	x += width + 5;
-	m->btn_next->setGeometry(x, y, width, height);
-	x += width + 5;
-	m->btn_close->setGeometry(x, y, width, height);
+	QWidget* w = widget();
+	m->btn_config = new QPushButton(QString::fromUtf8("≡"), w);
+	m->btn_prev = new QPushButton("<", w);
+	m->btn_next = new QPushButton(">", w);
+	m->btn_close = new QPushButton("x", w);
+
+	m->btn_close->setFocusProxy(w);
+
+	set_button_sizes();
+	set_buttons_visible(false);
 
 	connect(m->btn_config, &QPushButton::clicked, this, &VisualPlugin::config_clicked);
 	connect(m->btn_prev, &QPushButton::clicked, this, &VisualPlugin::prev_clicked);
 	connect(m->btn_next, &QPushButton::clicked, this, &VisualPlugin::next_clicked);
 	connect(m->btn_close, &QPushButton::clicked, this, &VisualPlugin::close);
 	connect(m->btn_close, &QPushButton::clicked, this->parentWidget(), &QWidget::close);
-
-	m->btn_config->hide();
-	m->btn_prev->hide();
-	m->btn_next->hide();
-	m->btn_close->hide();
 }
 
-EngineHandler *VisualPlugin::engine() const
+void VisualPlugin::showEvent(QShowEvent* e)
 {
-	return m->engine;
+	PlayerPlugin::Base::showEvent(e);
+	init_buttons();
 }
 
 void VisualPlugin::config_clicked()
@@ -224,38 +241,7 @@ void VisualPlugin::resizeEvent(QResizeEvent* e)
 	}
 
 	update_style(current_style_index());
-
-	QSize new_size = e->size();
-
-	if(!m->btn_config) return;
-
-	if(new_size.height() >= 30){
-		m->btn_config->setGeometry(10, 10, 20, 20);
-		m->btn_prev->setGeometry(35, 10, 20, 20);
-		m->btn_next->setGeometry(60, 10, 20, 20);
-		m->btn_close->setGeometry(85, 10, 20, 20);
-
-		QFont font = m->btn_config->font();
-		font.setPointSize(8);
-		m->btn_config->setFont(font);
-		m->btn_prev->setFont(font);
-		m->btn_next->setFont(font);
-		m->btn_close->setFont(font);
-	}
-
-	else {
-		m->btn_config->setGeometry(10, 5, 15, 15);
-		m->btn_prev->setGeometry(30, 5, 15, 15);
-		m->btn_next->setGeometry(50, 5, 15, 15);
-		m->btn_close->setGeometry(70, 5, 15, 15);
-
-		QFont font = m->btn_config->font();
-		font.setPointSize(6);
-		m->btn_config->setFont(font);
-		m->btn_prev->setFont(font);
-		m->btn_next->setFont(font);
-		m->btn_close->setFont(font);
-	}
+	set_button_sizes();
 }
 
 
@@ -286,20 +272,16 @@ void VisualPlugin::enterEvent(QEvent* e)
 {
 	PlayerPlugin::Base::enterEvent(e);
 
-	m->btn_config->show();
-	m->btn_prev->show();
-	m->btn_next->show();
-	m->btn_close->show();
+	set_button_sizes();
+	set_buttons_visible(true);
+
 }
 
 void VisualPlugin::leaveEvent(QEvent* e)
 {
 	PlayerPlugin::Base::leaveEvent(e);
 
-	m->btn_config->hide();
-	m->btn_prev->hide();
-	m->btn_next->hide();
-	m->btn_close->hide();
+	set_buttons_visible(false);
 }
 
 

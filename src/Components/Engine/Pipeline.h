@@ -28,91 +28,93 @@
 
 #include <QObject>
 
-class Engine;
-
-/**
- * @brief The PlaybackPipeline class
- * @ingroup Engine
- */
-class Pipeline :
-	public QObject,
-	public PipelineExtensions::CrossFadeable,
-	public PipelineExtensions::Changeable,
-	public PipelineExtensions::DelayedPlayable
+namespace Engine
 {
-	Q_OBJECT
-	PIMPL(Pipeline)
+	class Engine;
 
-	signals:
-		void sig_about_to_finish(MilliSeconds ms);
-		void sig_pos_changed_ms(MilliSeconds ms);
-		void sig_data(Byte* data, uint64_t size);
+	/**
+	 * @brief The PlaybackPipeline class
+	 * @ingroup Engine
+	 */
+	class Pipeline :
+		public QObject,
+		public PipelineExtensions::CrossFadeable,
+		public PipelineExtensions::Changeable,
+		public PipelineExtensions::DelayedPlayable
+	{
+		Q_OBJECT
+		PIMPL(Pipeline)
 
-	public:
-		explicit Pipeline(const QString& name, QObject *parent=nullptr);
-		virtual ~Pipeline();
+		signals:
+			void sig_about_to_finish(MilliSeconds ms);
+			void sig_pos_changed_ms(MilliSeconds ms);
+			void sig_data(Byte* data, uint64_t size);
 
-		bool init(Engine* engine, GstState state=GST_STATE_NULL);
-		bool set_uri(gchar* uri);
+		public:
+			explicit Pipeline(const QString& name, QObject *parent=nullptr);
+			virtual ~Pipeline();
 
-		void set_data(Byte* data, uint64_t size);
-		void set_current_volume(double volume) override; // Crossfader
-		double get_current_volume() const override;      // Crossfader
+			bool init(Engine* engine, GstState state=GST_STATE_NULL);
+			bool set_uri(gchar* uri);
 
-		bool has_element(GstElement* e) const;
-		GstState get_state() const;
-		MilliSeconds get_time_to_go() const;
+			void set_data(Byte* data, uint64_t size);
+			void set_current_volume(double volume) override; // Crossfader
+			double get_current_volume() const override;      // Crossfader
 
-		void refresh_duration();
-		void refresh_position();
-		void check_about_to_finish();
+			bool has_element(GstElement* e) const;
+			GstState get_state() const;
+			MilliSeconds get_time_to_go() const;
 
-		void enable_visualizer(bool b);
-		void enable_broadcasting(bool b);
-		void enable_streamrecorder(bool b);
-		void set_streamrecorder_path(const QString& session_path);
+			void refresh_duration();
+			void refresh_position();
+			void check_about_to_finish();
 
-		MilliSeconds	get_duration_ms() const;
-		MilliSeconds	get_position_ms() const;
+			void enable_visualizer(bool b);
+			void enable_broadcasting(bool b);
+			void enable_streamrecorder(bool b);
+			void set_streamrecorder_path(const QString& session_path);
 
-	public slots:
+			MilliSeconds	get_duration_ms() const;
+			MilliSeconds	get_position_ms() const;
 
-		void play() override;	// Crossfader
-		void stop() override;	// Crossfader
-		void pause();
+		public slots:
 
-		void set_equalizer_band(int band_name, int val);
+			void play() override;	// Crossfader
+			void stop() override;	// Crossfader
+			void pause();
 
-		NanoSeconds seek_rel(double percent, NanoSeconds ref_ns);
-		NanoSeconds seek_abs(NanoSeconds ns );
+			void set_equalizer_band(int band_name, int val);
 
-	protected slots:
-		void s_vol_changed();
-		void s_show_visualizer_changed();
-		void s_mute_changed();
-		void s_speed_active_changed();
-		void s_speed_changed();
-		void s_sink_changed();
+			NanoSeconds seek_rel(double percent, NanoSeconds ref_ns);
+			NanoSeconds seek_abs(NanoSeconds ns );
 
-	private:
-		bool			create_elements();
-		bool			create_source(gchar* uri);
-		void			remove_source();
-		GstElement*		create_sink(const QString& name);
+		protected slots:
+			void s_vol_changed();
+			void s_show_visualizer_changed();
+			void s_mute_changed();
+			void s_speed_active_changed();
+			void s_speed_changed();
+			void s_sink_changed();
 
-		bool			add_and_link_elements();
-		void			configure_elements();
+		private:
+			bool			create_elements();
+			bool			create_source(gchar* uri);
+			void			remove_source();
+			GstElement*		create_sink(const QString& name);
 
-		bool			init_streamrecorder();
+			bool			add_and_link_elements();
+			void			configure_elements();
+
+			bool			init_streamrecorder();
 
 
-		MilliSeconds	get_about_to_finish_time() const;
+			MilliSeconds	get_about_to_finish_time() const;
 
-		GstElement*		pipeline() const override;	// Changeable
+			GstElement*		pipeline() const override;	// Changeable
 
-		void			fade_in_handler() override;		// Crossfader
-		void			fade_out_handler() override;	// Crossfader
-};
-
+			void			fade_in_handler() override;		// Crossfader
+			void			fade_out_handler() override;	// Crossfader
+	};
+}
 
 #endif

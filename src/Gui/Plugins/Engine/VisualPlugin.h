@@ -32,19 +32,23 @@
 #include <QPushButton>
 
 class VisualColorStyleChooser;
+
 class EngineHandler;
 
 class VisualPlugin : public PlayerPlugin::Base
 {
 	Q_OBJECT
 	PIMPL(VisualPlugin)
+private:
+	void set_button_sizes();
+	void set_buttons_visible(bool b);
 
 protected:
 	VisualColorStyleChooser*	m_ecsc=nullptr;
 
-	void				init_buttons(bool small);
-	EngineHandler*		engine() const;
+	void				init_buttons();
 
+	virtual void showEvent(QShowEvent* e) override;
 	virtual void closeEvent(QCloseEvent* e) override;
 	virtual void resizeEvent(QResizeEvent* e) override;
 	virtual void mousePressEvent(QMouseEvent* e) override;

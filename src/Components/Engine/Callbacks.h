@@ -21,30 +21,44 @@
 #ifndef ENGINECALLBACKS_H
 #define ENGINECALLBACKS_H
 
+#include <gst/app/gstappsink.h>
+#include <gst/base/gstbasesrc.h>
 #include <gst/gst.h>
+
 #include <qglobal.h>
 
+struct GstURIDecodeBin;
 /**
  * @ingroup Engine
  */
-namespace EngineCallbacks
+namespace Engine
 {
+	namespace Callbacks
+	{
 
-#ifdef Q_OS_WIN
-	void destroy_notify(gpointer data);
+	#ifdef Q_OS_WIN
+		void destroy_notify(gpointer data);
 
-	GstBusSyncReply
-	bus_message_received(GstBus* bus, GstMessage* msg, gpointer data);
-#endif
+		GstBusSyncReply
+		bus_message_received(GstBus* bus, GstMessage* msg, gpointer data);
+	#endif
 
-	gboolean
-	bus_state_changed(GstBus* bus, GstMessage* msg, gpointer data);
+		gboolean
+		bus_state_changed(GstBus* bus, GstMessage* msg, gpointer data);
 
-	gboolean
-	level_handler(GstBus* bus, GstMessage* message, gpointer data);
+		gboolean
+		level_handler(GstBus* bus, GstMessage* message, gpointer data);
 
-	gboolean
-	spectrum_handler(GstBus* bus, GstMessage* message, gpointer data);
+		gboolean
+		spectrum_handler(GstBus* bus, GstMessage* message, gpointer data);
+
+
+		void decodebin_ready(GstElement *src, GstPad *new_pad, gpointer data);
+		void source_ready(GstURIDecodeBin* bin, GstElement* source, gpointer user_data);
+
+		gboolean position_changed(gpointer data);
+		GstFlowReturn new_buffer(GstElement *sink, gpointer data);
+	}
 }
 
 #endif // ENGINECALLBACKS_H

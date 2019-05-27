@@ -1,4 +1,4 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="uk_UA" version="2.1">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="uk_UA" version="2.0">
 <context>
     <name>GUI_SomaFM</name>
     <message>
@@ -91,12 +91,12 @@
         <translation>Розпочати пошук автоматично</translation>
     </message>
     <message>
-        <location filename="src/Gui/Covers/GUI_AlternativeCovers.cpp" line="+289"/>
+        <location filename="src/Gui/Covers/GUI_AlternativeCovers.cpp" line="+231"/>
         <source>%1 covers found</source>
         <translation>Знайдено %1 обкладинок</translation>
     </message>
     <message>
-        <location line="+139"/>
+        <location line="+123"/>
         <source>Cover web search is not enabled</source>
         <translation>Пошуковий веб-перегляд не ввімкнено</translation>
     </message>
@@ -210,7 +210,7 @@
     <message>
         <location filename="src/Gui/InfoDialog/GUI_Lyrics.cpp" line="+299"/>
         <source>Save lyrics not supported</source>
-        <translation>Зберети текст не вдається</translation>
+        <translation>Не вдається зберегти текст</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -288,7 +288,7 @@
         <translation>Sayonara Player</translation>
     </message>
     <message>
-        <location filename="src/Gui/Player/GUI_Player.cpp" line="+409"/>
+        <location filename="src/Gui/Player/GUI_Player.cpp" line="+410"/>
         <source>A new version is available!</source>
         <translation>Доступна нова версія!</translation>
     </message>
@@ -382,7 +382,7 @@
     <message>
         <location line="+122"/>
         <source>Sorry, bookmarks can only be set for library tracks at the moment.</source>
-        <translation>Закладки можуть бути визначені тільки для треків із бібліотеки.</translation>
+        <translation>На жаль, закладки можуть бути встановлені лише для доріжок бібліотеки.</translation>
     </message>
 </context>
 <context>
@@ -421,6 +421,32 @@
         <location line="+1"/>
         <source>Maybe another application is using this port?</source>
         <translation>Можливо, використовується інше застосування цього порту?</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_Speed</name>
+    <message>
+        <location filename="src/Gui/Plugins/Engine/GUI_Speed.ui" line="+45"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_Speed.cpp" line="+117"/>
+        <source>Speed</source>
+        <translation>Швидкість</translation>
+    </message>
+    <message>
+        <location line="+39"/>
+        <source>Preserve pitch</source>
+        <translation>Не змінювати висоту</translation>
+    </message>
+    <message>
+        <location line="+30"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_Speed.cpp" line="+0"/>
+        <source>Pitch</source>
+        <translation>Висота</translation>
+    </message>
+    <message>
+        <location filename="src/Gui/Plugins/Engine/GUI_Speed.cpp" line="+64"/>
+        <location line="+1"/>
+        <source>%1 not found</source>
+        <translation>%1 не знайдено</translation>
     </message>
 </context>
 <context>
@@ -501,33 +527,7 @@
     <message>
         <location line="+7"/>
         <source>Color 4</source>
-        <translation>Коліра 4</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_Speed</name>
-    <message>
-        <location filename="src/Gui/Plugins/Engine/Speed/GUI_Speed.ui" line="+45"/>
-        <location filename="src/Gui/Plugins/Engine/Speed/GUI_Speed.cpp" line="+117"/>
-        <source>Speed</source>
-        <translation>Швидкість</translation>
-    </message>
-    <message>
-        <location line="+39"/>
-        <source>Preserve pitch</source>
-        <translation>Не змінювати висоту</translation>
-    </message>
-    <message>
-        <location line="+30"/>
-        <location filename="src/Gui/Plugins/Engine/Speed/GUI_Speed.cpp" line="+0"/>
-        <source>Pitch</source>
-        <translation>Висота</translation>
-    </message>
-    <message>
-        <location filename="src/Gui/Plugins/Engine/Speed/GUI_Speed.cpp" line="+64"/>
-        <location line="+1"/>
-        <source>%1 not found</source>
-        <translation>%1 не знайдено</translation>
+        <translation>Колір 4</translation>
     </message>
 </context>
 <context>
@@ -581,7 +581,7 @@
     <message>
         <location filename="src/Gui/Plugins/Stream/GUI_StationSearcher.cpp" line="+58"/>
         <source>Show radio stations from %1 to %2</source>
-        <translation type="unfinished"/>
+        <translation>Показати радіостанції з %1 до %2</translation>
     </message>
     <message>
         <location line="+204"/>
@@ -615,49 +615,19 @@
 <context>
     <name>GUI_Covers</name>
     <message>
-        <location filename="src/Gui/Preferences/Covers/GUI_Covers.ui" line="+17"/>
-        <source>Save found covers into Sayonara directory</source>
-        <translation>Зберігти знайдені обкладинки в папці Sayonara</translation>
+        <location filename="src/Gui/Preferences/Covers/GUI_Covers.ui" line="+62"/>
+        <source>Inactive</source>
+        <translation>Неактивний</translation>
     </message>
     <message>
-        <location line="+14"/>
-        <source>Save found covers into the library directory where the audio files are located</source>
-        <translation type="unfinished"/>
+        <location line="+13"/>
+        <source>Active</source>
+        <translation>Активний</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Save found covers into library</source>
-        <translation>Зберігти знайдені обкладинки в бібліотеці </translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Saving covers to the database leads to significantly faster access but results in a bigger database</source>
-        <translation>Зберігання обкладинок в базі даних призводить до кращої результативності роботи, але спричиняє розширення розміру бази даних</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Save found covers to database</source>
-        <translation>Зберігти знайдені обкладинки в базі даних</translation>
-    </message>
-    <message>
-        <location line="+9"/>
-        <source>Cover name</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Name of cover file</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+36"/>
-        <source>Fetch missing covers from the internet</source>
-        <translation>Отримати відсутні обкладинки з інтернету</translation>
-    </message>
-    <message>
-        <location line="+9"/>
+        <location line="+60"/>
         <source>Delete all covers from the database</source>
-        <translation type="unfinished"/>
+        <translation>Видалити всі обкладинки з бази даних</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -667,7 +637,7 @@
     <message>
         <location line="+7"/>
         <source>Delete all covers from the Sayonara directory</source>
-        <translation type="unfinished"/>
+        <translation>Видалити всі обкладинки із папки Sayonara</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -675,32 +645,98 @@
         <translation>Видалити файли</translation>
     </message>
     <message>
-        <location line="+83"/>
-        <source>Inactive</source>
-        <translation>Неактивний</translation>
+        <location line="+9"/>
+        <source>Save found covers into the library directory where the audio files are located</source>
+        <translation>Зберігти знайдені обкладинки в бібліотеці, де розташовані аудіофайли</translation>
     </message>
     <message>
-        <location line="+13"/>
-        <source>Active</source>
-        <translation>Активний</translation>
+        <location line="+3"/>
+        <source>Save found covers into library</source>
+        <translation>Зберігти знайдені обкладинки в бібліотеці </translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Fetch missing covers from the internet</source>
+        <translation>Отримати відсутні обкладинки з інтернету</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Saving covers to the database leads to significantly faster access but results in a bigger database</source>
+        <translation>Збереження обкладинок до бази даних призводить до значно швидшого доступу, але призводить до створення більшої бази даних</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Save found covers to database</source>
+        <translation>Зберігти знайдені обкладинки в базі даних</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Save found covers into Sayonara directory</source>
+        <translation>Зберігти знайдені обкладинки в папці Sayonara</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>Cover name</source>
+        <translation>Ім’я обкладинки</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Name of cover file</source>
+        <translation>Ім’я обкладинки файлу</translation>
     </message>
 </context>
 <context>
     <name>GUI_LanguageChooser</name>
     <message>
-        <location filename="src/Gui/Preferences/Language/GUI_LanguageChooser.ui" line="+17"/>
-        <source>For new languages I am always looking for translators</source>
-        <translation>Для нових мов я постійно шукаю перекладачів</translation>
+        <location filename="src/Gui/Preferences/Language/GUI_LanguageChooser.ui" line="+29"/>
+        <source>Check for update</source>
+        <translation>Перевірити оновлення</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+7"/>
+        <source>Download update</source>
+        <translation>Завантажити оновлення</translation>
+    </message>
+    <message>
+        <location line="+33"/>
         <source>English</source>
         <translation>English</translation>
     </message>
     <message>
-        <location filename="src/Gui/Preferences/Language/GUI_LanguageChooser.cpp" line="+138"/>
+        <location line="+28"/>
+        <source>For new languages I am always looking for translators</source>
+        <translation>Для нових мов я активно шукаю перекладачів</translation>
+    </message>
+    <message>
+        <location filename="src/Gui/Preferences/Language/GUI_LanguageChooser.cpp" line="+64"/>
         <source>Language</source>
         <translation>Мова</translation>
+    </message>
+    <message>
+        <location line="+121"/>
+        <source>Cannot check for language update</source>
+        <translation>Неможливо перевірити на оновлення мови</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Language update available</source>
+        <translation>Оновлення мови доступне</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Language is up to date</source>
+        <translation>Мова актуальна</translation>
+    </message>
+    <message>
+        <location line="+34"/>
+        <location line="+22"/>
+        <source>Cannot fetch language update</source>
+        <translation>Неможливо отримати оновлення мови</translation>
+    </message>
+    <message>
+        <location line="-8"/>
+        <source>Language was updated successfully</source>
+        <translation>Мова успішно оновлена</translation>
     </message>
 </context>
 <context>
@@ -805,7 +841,7 @@
     <message>
         <location filename="src/Gui/Preferences/Notifications/GUI_Notifications.ui" line="+17"/>
         <source>Timeout (ms)</source>
-        <translation>Затримка(мс)</translation>
+        <translation>Затримка (мс)</translation>
     </message>
     <message>
         <location filename="src/Gui/Preferences/Notifications/GUI_Notifications.cpp" line="+98"/>
@@ -828,12 +864,12 @@
     <message>
         <location line="+7"/>
         <source>Close to system tray</source>
-        <translation type="unfinished"/>
+        <translation>Згорнути</translation>
     </message>
     <message>
         <location line="+28"/>
         <source>Start in system tray</source>
-        <translation type="unfinished"/>
+        <translation>Відкрити в мінімальному режимі</translation>
     </message>
 </context>
 <context>
@@ -881,7 +917,7 @@
     <message>
         <location line="+6"/>
         <source>Load last track after pressing stop</source>
-        <translation>Завантажити останню назву, після натиску Стоп</translation>
+        <translation>Завантажити останню назву, після натиску стоп</translation>
     </message>
     <message>
         <location line="+11"/>
@@ -926,7 +962,7 @@
     <message>
         <location filename="src/Gui/Preferences/Playlist/GUI_PlaylistPreferences.cpp" line="+204"/>
         <source>Playlist look: Invalid expression</source>
-        <translation>Подивіться список відтворення: Недійсний вираз</translation>
+        <translation>Подивіться список відтворення: Неправильний вираз</translation>
     </message>
 </context>
 <context>
@@ -1457,12 +1493,12 @@
     <message>
         <location line="+41"/>
         <source>Reading files</source>
-        <translation>Читання файлів</translation>
+        <translation>Читаю файли</translation>
     </message>
     <message>
         <location line="+109"/>
         <source>Delete orphaned tracks...</source>
-        <translation>Видалити осиротілі треки...</translation>
+        <translation>Видалити зниклі треки...</translation>
     </message>
 </context>
 <context>
@@ -1483,7 +1519,7 @@
     <message>
         <location filename="src/Components/Shutdown/Shutdown.cpp" line="+96"/>
         <source>Computer will shutdown after playlist has finished</source>
-        <translation>Комп&apos;ютер завершить роботу після поточного плейлиста</translation>
+        <translation>Комп&apos;ютер завершить роботу після завершення поточного плейлиста</translation>
     </message>
     <message>
         <location line="+25"/>
@@ -1576,7 +1612,7 @@
     <message>
         <location line="+312"/>
         <source>No genre</source>
-        <translation type="unfinished"/>
+        <translation>Жанри не знайдені</translation>
     </message>
 </context>
 <context>
@@ -1623,7 +1659,7 @@
     <message>
         <location filename="src/Gui/Library/HeaderView.cpp" line="+61"/>
         <source>Resize columns</source>
-        <translation type="unfinished"/>
+        <translation>Змінити розмір стовпців</translation>
     </message>
 </context>
 <context>
@@ -1731,7 +1767,7 @@
     <message>
         <location line="+3"/>
         <source>Special thanks to all the brave translators</source>
-        <translation type="unfinished"/>
+        <translation>Особлива подяка всім старанним перекладачам</translation>
     </message>
 </context>
 <context>
@@ -1747,7 +1783,7 @@
     <message>
         <location filename="src/Gui/Playlist/BottomBar.cpp" line="+250"/>
         <source>Please set library path first</source>
-        <translation>Будь ласка,задайте спочатку шлях до бібліотеки</translation>
+        <translation>Будь ласка, задайте спочатку шлях до бібліотеки</translation>
     </message>
     <message>
         <location line="+12"/>
@@ -1803,7 +1839,7 @@
     <message>
         <location filename="src/Gui/Playlist/Model.cpp" line="+393"/>
         <source>Goto row</source>
-        <translation>Стрибни до рядка</translation>
+        <translation>Перейти до рядка</translation>
     </message>
 </context>
 <context>
@@ -1817,7 +1853,7 @@
 <context>
     <name>GUI_Crossfader</name>
     <message>
-        <location filename="src/Gui/Plugins/Engine/Crossfader/GUI_Crossfader.cpp" line="+74"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_Crossfader.cpp" line="+74"/>
         <location line="+11"/>
         <source>Crossfader</source>
         <translation>Кросфейдер</translation>
@@ -1826,7 +1862,7 @@
 <context>
     <name>GUI_Equalizer</name>
     <message>
-        <location filename="src/Gui/Plugins/Engine/Equalizer/GUI_Equalizer.cpp" line="+160"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_Equalizer.cpp" line="+160"/>
         <source>Equalizer</source>
         <translation>Еквалайзер</translation>
     </message>
@@ -1850,7 +1886,7 @@
 <context>
     <name>GUI_StyleSettings</name>
     <message>
-        <location filename="src/Gui/Plugins/Engine/GUI_StyleSettings.cpp" line="+189"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_StyleSettings.cpp" line="+188"/>
         <source>There are some unsaved settings&lt;br /&gt;Save now?</source>
         <translation>Налаштування ще не збережені&lt;br /&gt;Зберегти?</translation>
     </message>
@@ -2287,7 +2323,7 @@
     <message>
         <location line="+2"/>
         <source>Empty input</source>
-        <translation>Порожній введення</translation>
+        <translation>Порожній вхід</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2588,7 +2624,7 @@
     <message>
         <location line="+3"/>
         <source>on</source>
-        <translation>ввімкнено</translation>
+        <translation>в</translation>
     </message>
     <message>
         <location line="+2"/>

@@ -129,47 +129,39 @@ void AlbumCoverFetchThread::run()
 
 	while(!m->stopped)
 	{
-		while(m->may_run() && thread_create_cover_location())
+		if(!m->may_run()){
+			continue;
+		}
+
+		HashAlbumPair hap;
 		{
-			bool b = thread_create_cover_location();
-			if(b){
-				//m->pause(10);
-				emit sig_next();
+			LOCK_GUARD(m->mutex_album_list)
+			if(m->hash_album_list.isEmpty())
+			{
+				m->pause();
+				continue;
 			}
-		}
-	}
-}
 
-bool AlbumCoverFetchThread::thread_create_cover_location()
-{
-	HashAlbumPair hap;
-	{
-		LOCK_GUARD(m->mutex_album_list)
-		if(m->hash_album_list.isEmpty()){
-			m->pause();
-			return false;
+			hap = m->hash_album_list.takeLast();
 		}
 
-		hap = m->hash_album_list.takeLast();
+		Album album = hap.second;
+		Cover::Location cl = Cover::Location::xcover_location(album);
+		{
+			QString hash = hap.first;
+
+			LOCK_GUARD(m->mutex_lookup);
+			m->lookups << HashLocationPair(hash, cl);
+		}
+
+		emit sig_next();
 	}
-
-
-	Album album = hap.second;
-
-	Cover::Location cl = Cover::Location::xcover_location(album);
-	{
-		QString hash = hap.first;
-
-		LOCK_GUARD(m->mutex_lookup)
-		m->lookups << HashLocationPair(hash, cl);
-	}
-
-	return true;
 }
 
 void AlbumCoverFetchThread::add_album(const Album& album)
 {
 	if(m->stopped){
+		sp_log(Log::Develop, this) << "Currently inactive";
 		return;
 	}
 
@@ -177,7 +169,7 @@ void AlbumCoverFetchThread::add_album(const Album& album)
 
 	QString hash = get_hash(album);
 	if(check_album(hash)){
-		sp_log(Log::Debug, this) << "Already processing " << hash;
+		sp_log(Log::Develop, this) << "Already processing " << hash;
 		return;
 	}
 
@@ -195,7 +187,7 @@ bool AlbumCoverFetchThread::check_album(const QString& hash)
 	}
 
 	if(has_hash){
-		sp_log(Log::Develop, this) << "Cover " << hash << " already in lookups";
+		sp_log(Log::Crazy, this) << "Cover " << hash << " already in lookups";
 		emit sig_next();
 		return true;
 	}
@@ -203,7 +195,7 @@ bool AlbumCoverFetchThread::check_album(const QString& hash)
 	{
 		LOCK_GUARD(m->mutex_queued_hashes)
 		if(m->queued_hashes.contains(hash)){
-			sp_log(Log::Develop, this) << "Cover " << hash << " already in queued hashes";
+			sp_log(Log::Crazy, this) << "Cover " << hash << " already in queued hashes";
 			return true;
 		}
 	}
@@ -216,7 +208,7 @@ bool AlbumCoverFetchThread::check_album(const QString& hash)
 	}
 
 	if(has_hash){
-		sp_log(Log::Develop, this) << "Cover " << hash << " already in hash_album_list";
+		sp_log(Log::Crazy, this) << "Cover " << hash << " already in hash_album_list";
 	}
 
 	return has_hash;

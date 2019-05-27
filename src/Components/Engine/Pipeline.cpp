@@ -19,10 +19,11 @@
  */
 
 #include "Pipeline.h"
-#include "Engine.h"
-#include "EngineUtils.h"
+#include "Components/Engine/Engine.h"
+#include "Components/Engine/Utils.h"
+#include "Components/Engine/Callbacks.h"
 
-#include "PipelineExtensions/PipelineProbes.h"
+#include "PipelineExtensions/Probing.h"
 #include "PipelineExtensions/Pitcher.h"
 #include "PipelineExtensions/Equalizer.h"
 #include "PipelineExtensions/Seeker.h"
@@ -30,9 +31,6 @@
 #include "PipelineExtensions/Visualizer.h"
 
 #include "StreamRecorder/StreamRecorderHandler.h"
-
-#include "Callbacks/EngineCallbacks.h"
-#include "Callbacks/PipelineCallbacks.h"
 
 #include "Utils/globals.h"
 #include "Utils/Utils.h"
@@ -48,6 +46,10 @@
 #include <algorithm>
 #include <cmath>
 
+using Engine::Pipeline;
+namespace EngineUtils=::Engine::Utils;
+
+namespace Callbacks=::Engine::Callbacks;
 using namespace PipelineExtensions;
 
 struct Pipeline::Private
@@ -107,7 +109,7 @@ Pipeline::~Pipeline()
 	}
 }
 
-bool Pipeline::init(Engine* engine, GstState state)
+bool Pipeline::init(Engine::Engine* engine, GstState state)
 {
 	if(m->pipeline) {
 		return true;
@@ -135,9 +137,9 @@ bool Pipeline::init(Engine* engine, GstState state)
 	EngineUtils::set_state(m->pipeline, state);
 
 #ifdef Q_OS_WIN
-	gst_bus_set_sync_handler(bus, EngineCallbacks::bus_message_received, engine, EngineCallbacks::destroy_notify);
+	gst_bus_set_sync_handler(bus, Engine::Callbacks::bus_message_received, engine, EngineCallbacks::destroy_notify);
 #else
-	gst_bus_add_watch(bus, EngineCallbacks::bus_state_changed, engine);
+	gst_bus_add_watch(bus, Callbacks::bus_state_changed, engine);
 #endif
 
 	m->progress_timer = new QTimer(this);
@@ -145,7 +147,7 @@ bool Pipeline::init(Engine* engine, GstState state)
 	connect(m->progress_timer, &QTimer::timeout, this, [=]()
 	{
 		if(EngineUtils::get_state(m->pipeline) != GST_STATE_NULL){
-			PipelineCallbacks::position_changed(this);
+			Callbacks::position_changed(this);
 		}
 	});
 
@@ -203,8 +205,8 @@ bool Pipeline::create_source(gchar* uri)
 		EngineUtils::add_elements(GST_BIN(m->pipeline), {m->source});
 		EngineUtils::set_state(m->source, GST_STATE_NULL);
 
-		g_signal_connect (m->source, "pad-added", G_CALLBACK (PipelineCallbacks::decodebin_ready), m->audio_convert);
-		g_signal_connect (m->source, "source-setup", G_CALLBACK (PipelineCallbacks::source_ready), nullptr);
+		g_signal_connect (m->source, "pad-added", G_CALLBACK (Callbacks::decodebin_ready), m->audio_convert);
+		g_signal_connect (m->source, "source-setup", G_CALLBACK (Callbacks::source_ready), nullptr);
 	}
 
 	m->seeker->set_source(m->source);
