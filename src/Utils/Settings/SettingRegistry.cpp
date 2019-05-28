@@ -56,6 +56,8 @@ void register_setting(const typename KeyClass::Data& default_value)
 
 bool SettingRegistry::init()
 {
+	using ByteArrayConverter=SettingConverter<QByteArray>;
+
 	register_setting<Set::LFM_Login>("LastFM_login", StringPair("", ""));
 	register_setting<Set::LFM_Username>("lfm_username", QString());
 	register_setting<Set::LFM_Password>("lfm_password", QString());
@@ -84,9 +86,21 @@ bool SettingRegistry::init()
 	register_setting<Set::Lib_Path>( "library_path", QString() );
 	register_setting<Set::Lib_Show>( "show_library", true );
 	register_setting<Set::Lib_CurPlugin >("last_lib_plugin", QString("local_library"));
+
 	register_setting<Set::Lib_SplitterStateArtist >("splitter_state_artist", QByteArray());
-	register_setting<Set::Lib_SplitterStateGenre >("splitter_state_genre", QByteArray());
-	register_setting<Set::Lib_SplitterStateTrack >("splitter_state_track", QByteArray());
+
+	{
+		QByteArray splitter_genres;
+		ByteArrayConverter::from_string("0,0,0,255,0,0,0,1,0,0,0,2,0,0,2,65,0,0,0,186,1,255,255,255,255,1,0,0,0,1,0", splitter_genres);
+		register_setting<Set::Lib_SplitterStateGenre >("splitter_state_genre", splitter_genres);
+	}
+
+	{
+		QByteArray splitter_tracks;
+		ByteArrayConverter::from_string("0,0,0,255,0,0,0,1,0,0,0,2,0,0,1,150,0,0,1,48,1,255,255,255,255,1,0,0,0,2,0", splitter_tracks);
+		register_setting<Set::Lib_SplitterStateTrack >("splitter_state_track", splitter_tracks);
+	}
+
 	register_setting<Set::Lib_SplitterStateDate >("splitter_state_date", QByteArray());
 	register_setting<Set::Lib_OldWidth >("lib_old_width", 0);
 	register_setting<Set::Lib_DC_DoNothing >("lib_dc_do_nothing", true);
@@ -138,7 +152,13 @@ bool SettingRegistry::init()
 	register_setting<Set::Player_ShowTrayIcon>( "show_tray_icon", true );
 	register_setting<Set::Player_514Fix>("514_fix", true);
 	register_setting<Set::Player_NotifyNewVersion>( "notify_new_version", true );
-	register_setting<Set::Player_SplitterState >("splitter_state_player", QByteArray());
+
+	{
+		QByteArray splitter_state_player;
+		ByteArrayConverter::from_string("0,0,0,255,0,0,0,1,0,0,0,2,0,0,1,82,0,0,3,72,0,0,0,0,4,1,0,0,0,1,0", splitter_state_player);
+		register_setting<Set::Player_SplitterState >("splitter_state_player", splitter_state_player);
+	}
+
 	register_setting<Set::Player_Shortcuts>( "shortcuts", RawShortcutMap()); // deprecated
 	register_setting<Set::Player_SplitterControls>("player_splitter_controls", QByteArray());
 	register_setting<Set::Player_PrivId>("player_priv_id", QByteArray());

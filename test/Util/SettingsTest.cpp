@@ -83,6 +83,11 @@ void SettingsTest::test_registry()
 			QString str = abstr_setting->value_to_string();
 			abstr_setting->assign_default_value();
 			QString new_val = abstr_setting->value_to_string();
+			if(str != new_val){
+				qDebug() << "Error with " << abstr_setting->db_key();
+				qDebug() << "Current value: " << str;
+				qDebug() << "Default value: " << new_val;
+			}
 			QVERIFY(str == new_val);
 		}
 	}

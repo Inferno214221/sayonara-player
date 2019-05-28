@@ -41,11 +41,11 @@ template<typename T>
 class SettingConverter
 {
 public:
-	static QString cvt_to_string(const T& val){
+	static QString to_string(const T& val){
 		return val.toString();
 	}
 
-	static bool cvt_from_string(const QString& val, T& ret){
+	static bool from_string(const QString& val, T& ret){
 		try {
 			ret = T::fromString(val);
 			return true;
@@ -67,8 +67,8 @@ template<>
  */
 class SettingConverter<bool>{
 public:
-	static QString cvt_to_string(const bool& val);
-	static bool cvt_from_string(const QString& val, bool& b);
+	static QString to_string(const bool& val);
+	static bool from_string(const QString& val, bool& b);
 };
 
 
@@ -81,15 +81,15 @@ public:
 template<>
 class SettingConverter<int>{
 public:
-	static QString cvt_to_string(const int& val);
-	static bool cvt_from_string(const QString& val, int& i);
+	static QString to_string(const int& val);
+	static bool from_string(const QString& val, int& i);
 };
 
 template<>
 class SettingConverter<float>{
 public:
-	static QString cvt_to_string(const float& val);
-	static bool cvt_from_string(const QString& val, float& i);
+	static QString to_string(const float& val);
+	static bool from_string(const QString& val, float& i);
 };
 
 
@@ -101,8 +101,8 @@ template<>
  */
 class SettingConverter<QStringList>{
 public:
-	static QString cvt_to_string(const QStringList& val);
-	static bool cvt_from_string(const QString& val, QStringList& lst);
+	static QString to_string(const QStringList& val);
+	static bool from_string(const QString& val, QStringList& lst);
 };
 
 
@@ -114,8 +114,8 @@ template<>
  */
 class SettingConverter<QString>{
 public:
-	static QString cvt_to_string(const QString& val);
-	static bool cvt_from_string(const QString& val, QString& b);
+	static QString to_string(const QString& val);
+	static bool from_string(const QString& val, QString& b);
 };
 
 
@@ -127,8 +127,8 @@ template<>
  */
 class SettingConverter<QSize>{
 public:
-	static QString cvt_to_string(const QSize& val);
-	static bool cvt_from_string(const QString& val, QSize& sz);
+	static QString to_string(const QSize& val);
+	static bool from_string(const QString& val, QSize& sz);
 };
 
 
@@ -140,8 +140,8 @@ template<>
  */
 class SettingConverter<QPoint>{
 public:
-	static QString cvt_to_string(const QPoint& val);
-	static bool cvt_from_string(const QString& val, QPoint& sz);
+	static QString to_string(const QPoint& val);
+	static bool from_string(const QString& val, QPoint& sz);
 };
 
 
@@ -153,8 +153,8 @@ template<>
  */
 class SettingConverter<QByteArray>{
 public:
-	static QString cvt_to_string(const QByteArray& arr);
-	static bool cvt_from_string(const QString& str, QByteArray& arr);
+	static QString to_string(const QByteArray& arr);
+	static bool from_string(const QString& str, QByteArray& arr);
 };
 
 
@@ -166,20 +166,20 @@ template<typename T>
  */
 class SettingConverter< QList<T> >{
 public:
-	static QString cvt_to_string(const QList<T>& val)
+	static QString to_string(const QList<T>& val)
 	{
 		SettingConverter<T> sc;
 		QStringList lst;
 
 		for(const T& v : val){
-			lst << sc.cvt_to_string(v);
+			lst << sc.to_string(v);
 		}
 
 		return lst.join(",");
 	}
 
 
-	static bool cvt_from_string(const QString& val, QList<T>& ret)
+	static bool from_string(const QString& val, QList<T>& ret)
 	{
 		SettingConverter<T> sc;
 		ret.clear();
@@ -189,7 +189,7 @@ public:
 		{
 			T v;
 			try {
-				if(sc.cvt_from_string(l, v)){
+				if(sc.from_string(l, v)){
 					ret << v;
 				}
 			} catch (std::exception& e) {
@@ -209,20 +209,20 @@ template<>
  */
 class SettingConverter< BoolList >{
 public:
-	static QString cvt_to_string(const BoolList& val)
+	static QString to_string(const BoolList& val)
 	{
 		SettingConverter<bool> sc;
 		QStringList lst;
 
 		for(const bool& v : val){
-			lst << sc.cvt_to_string(v);
+			lst << sc.to_string(v);
 		}
 
 		return lst.join(",");
 	}
 
 
-	static bool cvt_from_string(const QString& val, BoolList& ret)
+	static bool from_string(const QString& val, BoolList& ret)
 	{
 		SettingConverter<bool> sc;
 		ret.clear();
@@ -230,7 +230,7 @@ public:
 
 		for(const QString& l : lst){
 			bool v;
-			sc.cvt_from_string(l, v);
+			sc.from_string(l, v);
 			ret.push_back(v);
 		}
 
@@ -245,16 +245,16 @@ template<typename A, typename B>
  */
 class SettingConverter< QPair<A,B> >{
 public:
-	static QString cvt_to_string(const QPair<A,B>& val){
+	static QString to_string(const QPair<A,B>& val){
 		A a = val.first;
 		B b = val.second;
 		SettingConverter<A> sc_a;
 		SettingConverter<B> sc_b;
 
-		return sc_a.cvt_to_string(val.first) + "," + sc_b.cvt_to_string(b);
+		return sc_a.to_string(val.first) + "," + sc_b.to_string(b);
 	}
 
-	static bool cvt_from_string(const QString& val, QPair<A,B>& ret){
+	static bool from_string(const QString& val, QPair<A,B>& ret){
 		SettingConverter<A> sc_a;
 		SettingConverter<B> sc_b;
 
@@ -273,8 +273,8 @@ public:
 			success = false;
 		}
 
-		sc_a.cvt_from_string (a, ret.first);
-		sc_b.cvt_from_string (b, ret.second);
+		sc_a.from_string (a, ret.first);
+		sc_b.from_string (b, ret.second);
 
 		return success;
 	}

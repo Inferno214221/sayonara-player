@@ -56,20 +56,20 @@ static QByteArray _encrypt(const QByteArray& src, QByteArray key)
 QString Util::Crypt::encrypt(const QString& src, const QByteArray& key)
 {
 	QByteArray enc = _encrypt(src.toUtf8(), key);
-	return SettingConverter<QByteArray>::cvt_to_string(enc);
+	return SettingConverter<QByteArray>::to_string(enc);
 }
 
 QString Util::Crypt::encrypt(const QByteArray& src, const QByteArray& key)
 {
 	QByteArray enc = _encrypt(src, key);
-	return SettingConverter<QByteArray>::cvt_to_string(enc);
+	return SettingConverter<QByteArray>::to_string(enc);
 }
 
 
 QString Util::Crypt::decrypt(const QString& src, const QByteArray& key)
 {
 	QByteArray srcba;
-	SettingConverter<QByteArray>::cvt_from_string(src, srcba);
+	SettingConverter<QByteArray>::from_string(src, srcba);
 
 	QByteArray dec = _encrypt(srcba, key);
 	return QString::fromUtf8(dec);

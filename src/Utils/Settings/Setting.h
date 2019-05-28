@@ -107,12 +107,12 @@ class Setting : public AbstrSetting
 
 		QString value_to_string() const override
 		{
-			 return SC<typename KeyClass::Data>::cvt_to_string(_val);
+			 return SC<typename KeyClass::Data>::to_string(_val);
 		}
 
 		bool load_value_from_string(const QString& str) override
 		{
-			return SC<typename KeyClass::Data>::cvt_from_string(str, _val);
+			return SC<typename KeyClass::Data>::from_string(str, _val);
 		}
 
 		/* ... */
