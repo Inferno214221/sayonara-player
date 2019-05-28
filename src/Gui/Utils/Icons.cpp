@@ -106,47 +106,38 @@ QIcon Icons::icon(Icons::IconName spec, Icons::IconMode mode)
 	QString std_name = s_icon_map[spec].first;
 	QString dark_name = s_icon_map[spec].second;
 
-	QIcon icon;
+	QList<QIcon> icons
+	{
+		QIcon::fromTheme(std_name),
+		Gui::Util::icon(dark_name)
+	};
 
+	bool is_dark = Style::is_dark(); // automatic mode
 	if(mode == IconMode::ForceSayonaraIcon){
-		icon = Gui::Util::icon(dark_name);
+		is_dark = true;
 	}
 
 	else if(mode == IconMode::ForceStdIcon){
-		icon = QIcon::fromTheme(std_name);
+		is_dark = false;
 	}
 
-	if(icon.isNull())
+	if(is_dark)
 	{
-		if(!Style::is_dark())
-		{
-	#ifdef Q_OS_WIN
-			icon = QIcon(get_win_icon_name(std_name));
-	#else
-			icon = QIcon::fromTheme(std_name);
-	#endif
+		if(icons[1].isNull()){
+			return icons[0];
 		}
 
-		else
-		{
-	#ifdef Q_OS_WIN
-			icon = QIcon(get_win_icon_name(std_name));
-	#else
-			icon = Gui::Util::icon(std_name);
-			if(icon.isNull())
-			{
-				icon = Gui::Util::icon(dark_name);
-			}
-	#endif
-		}
+		return icons[1];
 	}
 
-	if(!icon.isNull())
+	else
 	{
-		return icon;
-	}
+		if(icons[0].isNull()){
+			return icons[1];
+		}
 
-	return Gui::Util::icon(dark_name);
+		return icons[0];
+	}
 }
 
 

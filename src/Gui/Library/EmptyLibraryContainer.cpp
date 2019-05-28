@@ -76,5 +76,5 @@ QFrame* EmptyLibraryContainer::header() const
 
 QPixmap EmptyLibraryContainer::icon() const
 {
-	return Gui::Icons::icon(Gui::Icons::New).pixmap(32, 32);
+	return Gui::Icons::icon(Gui::Icons::Star).pixmap(32, 32);
 }
