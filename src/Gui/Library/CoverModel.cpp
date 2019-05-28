@@ -233,10 +233,10 @@ void CoverModel::next_hash()
 		return;
 	}
 
-	sp_log(Log::Develop, this) << "Status cover fetch thread:";
-	sp_log(Log::Develop, this) << "  Lookups ready: " << acft->lookups_ready();
-	sp_log(Log::Develop, this) << "  Unprocessed hashes: " << acft->unprocessed_hashes();
-	sp_log(Log::Develop, this) << "  Queued hashes: " << acft->queued_hashes();
+	sp_log(Log::Crazy, this) << "Status cover fetch thread:";
+	sp_log(Log::Crazy, this) << "  Lookups ready: " << acft->lookups_ready();
+	sp_log(Log::Crazy, this) << "  Unprocessed hashes: " << acft->unprocessed_hashes();
+	sp_log(Log::Crazy, this) << "  Queued hashes: " << acft->queued_hashes();
 
 
 	Hash hash = hlp.first;
@@ -257,7 +257,7 @@ void CoverModel::next_hash()
 
 
 	m->clus_running++;
-	sp_log(Log::Develop, this) << "CLU started: " << m->clus_running << ", " << d->hash;
+	sp_log(Log::Crazy, this) << "CLU started: " << m->clus_running << ", " << d->hash;
 	clu->start();
 }
 
@@ -279,7 +279,7 @@ void CoverModel::cover_lookup_finished(bool success)
 	}
 
 	m->clus_running--;
-	sp_log(Log::Develop, this) << "CLU finished: " << m->clus_running << ", " << d->hash;
+	sp_log(Log::Crazy, this) << "CLU finished: " << m->clus_running << ", " << d->hash;
 	d->acft->done(d->hash);
 
 	clu->set_user_data(nullptr);

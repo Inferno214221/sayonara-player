@@ -29,7 +29,6 @@
 #include "Utils/Language/LanguageUtils.h"
 #include "Gui/Utils/Style.h"
 
-
 #include <QFile>
 #include <QDir>
 #include <QRegExp>
@@ -203,7 +202,7 @@ void GUI_LanguageChooser::update_check_finished()
 		QStringList splitted = line.split(" ");
 		QString checksum = splitted[0];
 
-		ui->btn_download->setVisible(current_checksum != checksum || true);
+		ui->btn_download->setVisible(current_checksum != checksum);
 		if(current_checksum != checksum)
 		{
 			sp_log(Log::Info, this) << "Language update available";
@@ -233,7 +232,6 @@ void GUI_LanguageChooser::btn_download_clicked()
 	awa->run(url);
 }
 
-#include "Utils/Settings/Settings.h"
 
 void GUI_LanguageChooser::download_finished()
 {
