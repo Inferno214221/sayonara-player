@@ -62,6 +62,7 @@ public:
 	AlbumCoverFetchThread*		cover_thread=nullptr;
 
 	QHash<Hash, QModelIndex>	indexes;
+	Util::Set<Hash>				invalid_hashes;
 	QSize						item_size;
 
 	std::mutex					refresh_mtx;
@@ -184,6 +185,10 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 					return m->cvpc->pixmap(hash);
 				}
 
+				if(m->invalid_hashes.contains(hash)){
+					return m->cvpc->invalid_pixmap();
+				}
+
 				sp_log(Log::Develop, this) << "Need to fetch cover for " << hash;
 				m->cover_thread->add_album(album);
 
@@ -218,8 +223,6 @@ struct CoverLookupUserData
 	Location cl;
 	AlbumCoverFetchThread* acft=nullptr;
 };
-
-static std::mutex mtx;
 
 void CoverModel::next_hash()
 {
@@ -266,16 +269,21 @@ void CoverModel::cover_lookup_finished(bool success)
 	Lookup* clu = static_cast<Lookup*>(sender());
 	CoverLookupUserData* d = static_cast<CoverLookupUserData*>(clu->user_data());
 
+	QList<QPixmap> pixmaps;
 	if(success)
 	{
-		LOCK_GUARD(mtx);
+		pixmaps = clu->pixmaps();
+	}
 
-		QList<QPixmap> pixmaps = clu->pixmaps();
-		if(!pixmaps.isEmpty())
-		{
-			QPixmap pm(pixmaps.first());
-			m->cvpc->add_pixmap(d->hash, pm);
-		}
+	if(!pixmaps.isEmpty())
+	{
+		QPixmap pm(pixmaps.first());
+		m->cvpc->add_pixmap(d->hash, pm);
+	}
+
+	else
+	{
+		m->invalid_hashes.insert(d->hash);
 	}
 
 	m->clus_running--;
@@ -466,15 +474,15 @@ void CoverModel::show_artists_changed()
 
 void CoverModel::reload()
 {
-//	m->cover_thread->clear();
-//	m->cvpc->clear();
-//	clear();
+	m->cvpc->clear();
+	clear();
 
 	emit dataChanged(index(0,0), index(rowCount() - 1, columnCount() - 1));
 }
 
 void CoverModel::clear()
 {
+	m->invalid_hashes.clear();
 	m->cover_thread->clear();
 	m->indexes.clear();
 }
