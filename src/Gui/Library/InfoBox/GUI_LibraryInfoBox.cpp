@@ -32,7 +32,7 @@
 
 #include "Utils/FileUtils.h"
 #include "Utils/Utils.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 #include "Utils/Library/LibraryInfo.h"
 #include "Utils/MetaData/Album.h"
 #include "Utils/MetaData/Artist.h"

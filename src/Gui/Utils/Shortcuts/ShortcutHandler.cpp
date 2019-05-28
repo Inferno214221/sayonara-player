@@ -25,7 +25,7 @@
 #include "Database/Shortcuts.h"
 
 #include "Utils/Utils.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 #include "Utils/RawShortcutMap.h"
 #include "Utils/Logger/Logger.h"
 

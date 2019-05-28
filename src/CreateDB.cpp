@@ -1,3 +1,4 @@
+#include "Utils/Settings/SettingRegistry.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
 #include "Database/Connector.h"
@@ -29,7 +30,7 @@ int main(int argc, char** argv)
 
 	Settings* settings = Settings::instance();
 	settings->check_settings();
-	QList<SettingKey> invalid_keys = settings->undeployed_keys();
+	QList<SettingKey> invalid_keys = SettingRegistry::undeployable_keys();
 	SettingArray arr = settings->settings();
 
 	QList<AbstrSetting*> invalid_settings;

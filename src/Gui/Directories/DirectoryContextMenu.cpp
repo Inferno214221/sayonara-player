@@ -25,7 +25,7 @@
 #include "Gui/Utils/Icons.h"
 #include "Gui/Utils/PreferenceAction.h"
 
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 
 #include <QAction>
 

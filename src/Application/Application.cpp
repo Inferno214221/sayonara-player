@@ -86,7 +86,7 @@
 #include "Utils/Logger/Logger.h"
 #include "Utils/WebAccess/Proxy.h"
 #include "Utils/Macros.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/MetaData/MetaDataList.h"
 

@@ -24,7 +24,7 @@
 #include "Gui/Utils/PreferenceAction.h"
 
 #include "Utils/Utils.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 
 #include <QTimer>
 

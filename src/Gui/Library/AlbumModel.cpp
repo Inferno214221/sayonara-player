@@ -36,7 +36,7 @@
 
 #include "Utils/Utils.h"
 #include "Utils/MetaData/Album.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 #include "Utils/Set.h"
 
 #include <QImage>

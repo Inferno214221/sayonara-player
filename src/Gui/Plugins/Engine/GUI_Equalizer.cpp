@@ -37,7 +37,7 @@
 #include "Utils/Utils.h"
 #include "Utils/EqualizerPresets.h"
 #include "Utils/Settings/Settings.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 
 #include <QLineEdit>
 #include <array>

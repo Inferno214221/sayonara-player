@@ -23,7 +23,7 @@
 
 #include "GUI_DirectoryWidget.h"
 #include "Gui/Utils/Icons.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 
 #include <QIcon>
 #include <QPixmap>

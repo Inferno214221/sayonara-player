@@ -28,7 +28,7 @@
 #include <QStringList>
 #include <QListView>
 #include <QTreeView>
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 
 DirChooserDialog::DirChooserDialog(QWidget* parent) :
 	QFileDialog(parent)

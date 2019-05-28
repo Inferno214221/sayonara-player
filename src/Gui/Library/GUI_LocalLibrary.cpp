@@ -49,7 +49,7 @@
 #include "Utils/MetaData/Album.h"
 #include "Utils/MetaData/Artist.h"
 #include "Utils/Utils.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Library/LibraryInfo.h"
 #include "Utils/ExtensionSet.h"

@@ -31,7 +31,7 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/Tagging/Tagging.h"
 #include "Utils/Logger/Logger.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 
 #include <QUrl>
 #include <QList>

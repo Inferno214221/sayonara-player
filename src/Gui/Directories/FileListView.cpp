@@ -32,7 +32,7 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/Library/SearchMode.h"
 #include "Utils/FileUtils.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 #include "Utils/Logger/Logger.h"
 
 #include "Gui/Utils/InputDialog/LineInputDialog.h"

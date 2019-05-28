@@ -19,7 +19,7 @@
  */
 
 #include "GUI_DeleteDialog.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 #include "Gui/Utils/ui_GUI_DeleteDialog.h"
 #include "Gui/Utils/Icons.h"
 

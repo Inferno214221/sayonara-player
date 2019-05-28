@@ -20,7 +20,7 @@
 
 #include "GUI_EditLibrary.h"
 #include "Gui/Utils/ui_GUI_EditLibrary.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 #include "Utils/FileUtils.h"
 
 #include <QFileDialog>

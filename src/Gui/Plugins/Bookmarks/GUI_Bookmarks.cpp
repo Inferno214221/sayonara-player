@@ -26,7 +26,7 @@
 #include "Utils/Utils.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/Message/Message.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 
 #include "Components/Bookmarks/Bookmark.h"
 #include "Components/Bookmarks/Bookmarks.h"

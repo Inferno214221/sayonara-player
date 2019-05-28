@@ -25,7 +25,7 @@
 
 #include "Utils/Crypt.h"
 #include "Utils/Utils.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 
 #include <array>
 #include <iterator>
@@ -138,16 +138,3 @@ void Settings::apply_fixes()
 	}
 }
 
-QList<SettingKey> Settings::undeployed_keys() const
-{
-	return QList<SettingKey>
-	{
-		SettingKey::Player_Language,
-		SettingKey::Player_Version,
-		SettingKey::Player_PublicId,
-		SettingKey::Player_PrivId,
-		SettingKey::Player_FontName,
-		SettingKey::Player_FontSize,
-		SettingKey::Player_Shortcuts
-	};
-}

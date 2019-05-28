@@ -23,7 +23,7 @@
 #include "StreamRecorderUtils.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/FileUtils.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 
 #include <QStringList>
 #include <QDateTime>

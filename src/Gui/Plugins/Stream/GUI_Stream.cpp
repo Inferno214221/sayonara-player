@@ -24,7 +24,7 @@
 
 #include "Components/Streaming/Streams/StreamHandlerStreams.h"
 
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 #include <QAction>
 
 struct GUI_Stream::Private

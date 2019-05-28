@@ -25,7 +25,7 @@
 #include "Utils/Utils.h"
 #include "Utils/globals.h"
 #include "Utils/FileUtils.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/MetaData/Album.h"
 #include "Utils/MetaData/Genre.h"

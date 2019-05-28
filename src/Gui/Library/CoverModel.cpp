@@ -32,7 +32,7 @@
 #include "Utils/Utils.h"
 #include "Utils/Set.h"
 #include "Utils/Settings/Settings.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 #include "Utils/Logger/Logger.h"
 
 #include "Gui/Utils/GuiUtils.h"

@@ -21,7 +21,7 @@
 #include "Gui/Preferences/ui_GUI_FontConfig.h"
 
 #include "Utils/Settings/Settings.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 
 #include <QApplication>
 #include <QFont>

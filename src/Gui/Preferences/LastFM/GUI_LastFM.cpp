@@ -32,7 +32,7 @@
 
 #include "Components/Streaming/LastFM/LastFM.h"
 
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 #include "Utils/Settings/Settings.h"
 
 struct GUI_LastFM::Private

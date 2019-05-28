@@ -41,7 +41,7 @@
 #include "Utils/FileUtils.h"
 #include "Utils/Set.h"
 #include "Utils/globals.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Settings/Settings.h"
 

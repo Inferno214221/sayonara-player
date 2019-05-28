@@ -39,7 +39,7 @@
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 #include "Utils/globals.h"
 
 #include <QTabBar>

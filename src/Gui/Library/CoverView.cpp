@@ -33,7 +33,7 @@
 #include "Utils/Library/Sorting.h"
 #include "Utils/Library/Sortorder.h"
 #include "Utils/Settings/Settings.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 #include "Utils/Utils.h"
 #include "Utils/Logger/Logger.h"
 

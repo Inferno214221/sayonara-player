@@ -23,7 +23,7 @@
 
 #include "Utils/Playlist/PlaylistMode.h"
 #include "Utils/Settings/Settings.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 #include "Utils/Message/Message.h"
 
 #ifdef WITH_SHUTDOWN

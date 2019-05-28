@@ -22,7 +22,7 @@
 #include "Gui/Plugins/ui_GUI_Podcasts.h"
 #include "Components/Streaming/Streams/StreamHandlerPodcasts.h"
 
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 
 GUI_Podcasts::GUI_Podcasts(QWidget *parent) :
 	GUI_AbstractStream(parent)

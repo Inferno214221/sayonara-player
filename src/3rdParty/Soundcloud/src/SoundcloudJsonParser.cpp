@@ -29,7 +29,7 @@
 #include "Utils/MetaData/Genre.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 
 #include <QJsonDocument>
 #include <QJsonParseError>

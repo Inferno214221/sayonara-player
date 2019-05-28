@@ -28,7 +28,7 @@
 #include "Gui/Preferences/ui_GUI_UiPreferences.h"
 
 #include "Utils/Settings/Settings.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 
 
 struct GUI_UiPreferences::Private

@@ -21,12 +21,12 @@
 #include "GUI_LanguageChooser.h"
 #include "Gui/Preferences/ui_GUI_LanguageChooser.h"
 
-#include "Utils/LanguageUtils.h"
-#include "Utils/WebAccess/AsyncWebAccess.h"
 #include "Utils/Utils.h"
+#include "Utils/WebAccess/AsyncWebAccess.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
+#include "Utils/Language/LanguageUtils.h"
 #include "Gui/Utils/Style.h"
 
 

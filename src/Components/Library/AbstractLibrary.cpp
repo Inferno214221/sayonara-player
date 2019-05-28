@@ -31,7 +31,7 @@
 #include "Utils/MetaData/MetaDataSorting.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 #include "Utils/Library/SearchMode.h"
 #include "Utils/Playlist/PlaylistMode.h"
 #include "Utils/Utils.h"

@@ -24,7 +24,7 @@
 #include "ui_GUI_StreamPreferences.h"
 
 #include "Utils/Settings/Settings.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 
 
 GUI_StreamPreferences::GUI_StreamPreferences(const QString& identifier) :

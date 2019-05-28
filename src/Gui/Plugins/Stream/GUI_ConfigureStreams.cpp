@@ -20,7 +20,7 @@
 
 #include "GUI_ConfigureStreams.h"
 #include "Gui/Plugins/ui_GUI_ConfigureStreams.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 
 GUI_ConfigureStreams::GUI_ConfigureStreams(const QString& type, GUI_ConfigureStreams::Mode mode, QWidget* parent) :
 	Gui::Dialog(parent)

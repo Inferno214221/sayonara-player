@@ -1,5 +1,7 @@
 #include "Database/Connector.h"
 #include "Database/Settings.h"
+
+#include "Utils/Settings/SettingRegistry.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Macros.h"
 #include "Utils/FileUtils.h"
@@ -50,33 +52,38 @@ void SettingsTest::test_registry()
 	db->settings_connector()->load_setting("version", db_version);
 	db->settings_connector()->load_settings(keys);
 
-	int old_db_version = db->old_db_version();
-	int max_db_version = DB::Connector::get_max_db_version();
-
-	QVERIFY(old_db_version == max_db_version);
-	QVERIFY(db_version.toInt() == max_db_version);
-
-
-	QList<SettingKey> undeploy_keys = s->undeployed_keys();
-
-	// 3 non db keys
-	int max_key = static_cast<int>(SettingKey::Num_Setting_Keys);
-	QVERIFY(keys.count() == (max_key - undeploy_keys.size() - 3));
-	for(SettingKey key : undeploy_keys)
 	{
-		QVERIFY(keys.contains(key) == false);
+		int old_db_version = db->old_db_version();
+		int max_db_version = DB::Connector::get_max_db_version();
+
+		QVERIFY(old_db_version == max_db_version);
+		QVERIFY(db_version.toInt() == max_db_version);
 	}
 
-	QVERIFY(undeploy_keys.contains(SettingKey::Player_Version));
-	QVERIFY(undeploy_keys.contains(SettingKey::Player_Language));
-	QVERIFY(undeploy_keys.contains(SettingKey::Player_PublicId));
-	QVERIFY(undeploy_keys.contains(SettingKey::Player_PrivId));
+	QList<SettingKey> undeployable_keys = SettingRegistry::undeployable_keys();
+
+	int max_key = static_cast<int>(SettingKey::Num_Setting_Keys);
+	QVERIFY(keys.count() == (max_key - undeployable_keys.size()));
+
+	{ // undeployable keys must not be in keys
+		for(SettingKey key : undeployable_keys)
+		{
+			QVERIFY(keys.contains(key) == false);
+		}
+
+		// some examples
+		QVERIFY(undeployable_keys.contains(SettingKey::Player_Version));
+		QVERIFY(undeployable_keys.contains(SettingKey::Player_Language));
+		QVERIFY(undeployable_keys.contains(SettingKey::Player_PublicId));
+		QVERIFY(undeployable_keys.contains(SettingKey::Player_PrivId));
+	}
+
 
 	{ // test for default values
 		SettingArray abstr_settings = s->settings();
 		for(AbstrSetting* abstr_setting : abstr_settings)
 		{
-			if(undeploy_keys.contains(abstr_setting->get_key())){
+			if(undeployable_keys.contains(abstr_setting->get_key())){
 				continue;
 			}
 
@@ -91,8 +98,6 @@ void SettingsTest::test_registry()
 			QVERIFY(str == new_val);
 		}
 	}
-
-
 
 	{  // Actually not needed, but it does not affect tests
 		QVERIFY(GetSetting(Set::Player_Fullscreen) == false);

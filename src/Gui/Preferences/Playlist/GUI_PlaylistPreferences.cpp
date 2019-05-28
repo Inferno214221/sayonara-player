@@ -26,7 +26,7 @@
 
 #include "Utils/Utils.h"
 #include "Utils/Settings/Settings.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 
 static
 bool evaluate_expression(const QString& expr)

@@ -22,7 +22,7 @@
 #include "GUI_ShortcutEntry.h"
 #include "Gui/Preferences/ui_GUI_Shortcuts.h"
 #include "Gui/Utils/Shortcuts/ShortcutHandler.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 #include "Utils/Set.h"
 
 #include <QLineEdit>

@@ -18,7 +18,7 @@
  */
 
 #include "ColumnHeader.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 
 #include <QAction>
 

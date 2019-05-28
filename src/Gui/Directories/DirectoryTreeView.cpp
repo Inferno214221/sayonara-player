@@ -38,7 +38,7 @@
 #include "Utils/Library/LibraryInfo.h"
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 #include "Utils/Logger/Logger.h"
 
 #include <QDir>

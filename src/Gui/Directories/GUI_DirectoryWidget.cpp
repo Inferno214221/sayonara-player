@@ -46,7 +46,7 @@
 #include "Utils/Library/LibraryInfo.h"
 #include "Utils/FileUtils.h"
 #include "Utils/globals.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 #include "Utils/Settings/Settings.h"
 
 #include <QItemSelectionModel>

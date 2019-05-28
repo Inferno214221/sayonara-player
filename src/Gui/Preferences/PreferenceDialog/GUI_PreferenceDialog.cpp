@@ -27,7 +27,7 @@
 #include "Utils/globals.h"
 #include "Utils/Utils.h"
 #include "Utils/Message/Message.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 #include "Utils/Logger/Logger.h"
 
 #include "Gui/Utils/Icons.h"

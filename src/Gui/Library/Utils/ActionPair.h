@@ -25,7 +25,7 @@
 
 #include <QString>
 #include "Utils/Library/Sortorder.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 
 struct ActionPair
 {

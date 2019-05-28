@@ -28,7 +28,7 @@
 
 #include "Utils/globals.h"
 #include "Utils/Logger/Logger.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 
 #include "Gui/Utils/GuiUtils.h"
 #include "Gui/Utils/MimeDataUtils.h"

@@ -26,7 +26,7 @@
 
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Message/Message.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 
 #include <QPixmap>
 #include <QScrollBar>

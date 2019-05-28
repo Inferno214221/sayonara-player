@@ -31,7 +31,7 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/Library/Sortorder.h"
 #include "Utils/Library/Sorting.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 #include "Utils/ExtensionSet.h"
 
 #include <QStringList>

@@ -23,7 +23,7 @@
 #include "Interfaces/Notification/NotificationHandler.h"
 
 #include "Utils/Settings/Settings.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 
 GUI_Notifications::GUI_Notifications(const QString& identifier) :
 	Preferences::Base(identifier) {}

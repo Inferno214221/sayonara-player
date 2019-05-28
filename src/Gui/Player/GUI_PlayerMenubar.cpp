@@ -36,7 +36,7 @@
 
 #include "Utils/Settings/Settings.h"
 #include "Utils/Utils.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 #include "Utils/Message/Message.h"
 
 #include <QFileDialog>

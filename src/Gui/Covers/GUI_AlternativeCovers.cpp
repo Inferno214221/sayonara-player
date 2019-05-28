@@ -38,7 +38,7 @@
 #include "Gui/Utils/PreferenceAction.h"
 #include "Gui/Utils/ImageSelectionDialog.h"
 
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
 

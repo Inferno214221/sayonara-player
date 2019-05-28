@@ -22,7 +22,7 @@
 #include "Gui/Preferences/ui_GUI_ShortcutEntry.h"
 #include "Gui/Utils/Icons.h"
 
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 #include "Utils/Logger/Logger.h"
 
 #include <QKeySequence>

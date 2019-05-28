@@ -26,7 +26,7 @@
 #include "Gui/TagEdit/ui_GUI_TagFromPath.h"
 #include "Utils/Tagging/Tagging.h"
 #include "Utils/Message/Message.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 #include "Utils/Logger/Logger.h"
 
 #include <QDesktopServices>

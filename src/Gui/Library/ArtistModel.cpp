@@ -34,7 +34,7 @@
 #include "Gui/Utils/GuiUtils.h"
 
 #include "Utils/MetaData/Artist.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 #include "Utils/Set.h"
 
 #include <QPixmap>

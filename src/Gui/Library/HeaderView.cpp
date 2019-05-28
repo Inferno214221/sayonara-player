@@ -20,7 +20,7 @@
 #include "HeaderView.h"
 #include "Utils/globals.h"
 #include "Utils/Utils.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 
 #include <QFontMetrics>
 

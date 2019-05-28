@@ -23,7 +23,7 @@
 #include "Gui/Utils/RatingLabel.h"
 #include "Gui/Utils/Icons.h"
 
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 #include "Utils/MetaData/MetaData.h"
 
 struct PlaylistContextMenu::Private

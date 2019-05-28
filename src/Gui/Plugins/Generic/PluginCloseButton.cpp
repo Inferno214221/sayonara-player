@@ -25,7 +25,7 @@
 #include "Gui/Utils/GuiUtils.h"
 #include "Gui/Utils/Icons.h"
 #include "Gui/Utils/Style.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 
 #include <QEvent>
 

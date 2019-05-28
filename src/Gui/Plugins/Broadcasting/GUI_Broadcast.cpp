@@ -23,7 +23,7 @@
 #include "Components/Broadcasting/StreamServer.h"
 #include "Utils/Message/Message.h"
 #include "Utils/Logger/Logger.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 #include "Utils/Settings/Settings.h"
 
 #include "Gui/Utils/PreferenceAction.h"

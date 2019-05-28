@@ -28,7 +28,7 @@
 #include "Gui/Utils/Widgets/Completer.h"
 
 #include "Utils/MetaData/MetaData.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 #include "Utils/Settings/Settings.h"
 
 #include <QWheelEvent>

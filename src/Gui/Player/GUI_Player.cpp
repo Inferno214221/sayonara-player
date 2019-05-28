@@ -28,12 +28,12 @@
 
 #include "Components/PlayManager/PlayManager.h"
 
-#include "Utils/Message/Message.h"
-#include "Utils/Logger/Logger.h"
-#include "Utils/Language.h"
-#include "Utils/LanguageUtils.h"
 #include "Utils/Utils.h"
 #include "Utils/globals.h"
+#include "Utils/Message/Message.h"
+#include "Utils/Logger/Logger.h"
+#include "Utils/Language/Language.h"
+#include "Utils/Language/LanguageUtils.h"
 #include "Utils/WebAccess/AsyncWebAccess.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/MetaData/MetaData.h"

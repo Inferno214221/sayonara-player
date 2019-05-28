@@ -28,7 +28,7 @@
 #include "Gui/Utils/Shortcuts/Shortcut.h"
 
 #include "Utils/Settings/Settings.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 
 #include "Database/Connector.h"
 #include "Database/LibraryDatabase.h"

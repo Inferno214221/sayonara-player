@@ -71,11 +71,12 @@ bool SettingRegistry::init()
 	register_setting<Set::Eq_List>( "EQ_list", EQ_Setting::get_defaults() );
 	register_setting<Set::Eq_Gauss>( "EQ_Gauss", true );
 
-	BoolList shown_cols; while(shown_cols.count() < 10) { shown_cols << true; }
-
-	register_setting<Set::Lib_ColsTitle>( "lib_shown_cols_title", shown_cols );
-	register_setting<Set::Lib_ColsArtist>( "lib_shown_cols_artist", shown_cols );
-	register_setting<Set::Lib_ColsAlbum>( "lib_shown_cols_album", shown_cols );
+	{
+		BoolList shown_cols; while(shown_cols.count() < 10) { shown_cols << true; }
+		register_setting<Set::Lib_ColsTitle>( "lib_shown_cols_title", shown_cols );
+		register_setting<Set::Lib_ColsArtist>( "lib_shown_cols_artist", shown_cols );
+		register_setting<Set::Lib_ColsAlbum>( "lib_shown_cols_album", shown_cols );
+	}
 
 	register_setting<Set::Lib_ColSizeTitle>( "lib_colsize_title", IntList() );
 	register_setting<Set::Lib_ColSizeArtist>( "lib_colsize_artist", IntList() );
@@ -262,3 +263,26 @@ bool SettingRegistry::init()
 	return true;
 }
 
+QList<SettingKey> SettingRegistry::undeployable_keys()
+{
+	return QList<SettingKey>
+	{
+		SettingKey::Player_Version,
+		SettingKey::Player_Language,
+		SettingKey::Player_FontName,
+		SettingKey::Player_FontSize,
+
+		SettingKey::Player_PublicId,
+		SettingKey::Player_PrivId,
+
+		SettingKey::Player_Shortcuts,
+		SettingKey::AudioConvert_NumberThreads,
+
+		SettingKey::Engine_CovertTargetPath,
+		SettingKey::Engine_SR_Path,
+
+		SettingKey::MP3enc_found,
+		SettingKey::Pitch_found,
+		SettingKey::Player_Quit
+	};
+}

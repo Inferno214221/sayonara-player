@@ -25,7 +25,7 @@
 #include "Database/Connector.h"
 
 #include "Utils/Set.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 #include "Utils/MetaData/Album.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/MetaDataList.h"

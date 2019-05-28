@@ -26,7 +26,7 @@
 #include "Gui/Preferences/ui_GUI_RemoteControl.h"
 
 #include "Utils/Utils.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 #include "Utils/Settings/Settings.h"
 
 

@@ -27,7 +27,7 @@
 #include "Utils/Message/Message.h"
 
 #include "Utils/Playlist/CustomPlaylist.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 

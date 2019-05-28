@@ -21,7 +21,7 @@
 #include "Utils/MetaData/Artist.h"
 #include "Utils/MetaData/MetaDataSorting.h"
 #include "Utils/Logger/Logger.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 
 #include <QHash>
 #include <QVariant>

@@ -28,7 +28,7 @@
 #include "Components/Directories/DirectoryReader.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/FileUtils.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 
 #include <QShortcut>
 #include <QInputDialog>

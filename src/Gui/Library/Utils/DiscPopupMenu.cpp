@@ -21,7 +21,7 @@
 #include "DiscPopupMenu.h"
 #include "Gui/Utils/GuiUtils.h"
 #include "Utils/Utils.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 
 #include <QMouseEvent>
 #include <algorithm>

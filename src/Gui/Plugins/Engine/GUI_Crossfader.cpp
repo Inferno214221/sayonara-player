@@ -22,7 +22,7 @@
 #include "Gui/Plugins/ui_GUI_Crossfader.h"
 #include "Utils/Playlist/PlaylistMode.h"
 #include "Utils/Settings/Settings.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 
 
 GUI_Crossfader::GUI_Crossfader(QWidget *parent) :

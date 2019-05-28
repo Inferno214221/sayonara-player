@@ -37,7 +37,7 @@
 
 #include "Utils/Settings/Settings.h"
 #include "Utils/Library/Sorting.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 
 
 using namespace Library;

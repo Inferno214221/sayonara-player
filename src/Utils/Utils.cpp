@@ -55,8 +55,8 @@
 #include "Utils/Utils.h"
 #include "Utils/RandomGenerator.h"
 #include "Utils/Macros.h"
-#include "Utils/Language.h"
 #include "Utils/FileUtils.h"
+#include "Utils/Language/Language.h"
 
 template<typename T>
 QString cvtNum2String(T num, int digits) {

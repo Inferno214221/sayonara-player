@@ -23,7 +23,7 @@
 
 #include "Utils/Utils.h"
 #include "Utils/Playlist/CustomPlaylist.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 
 using Playlist::DBInterface;
 

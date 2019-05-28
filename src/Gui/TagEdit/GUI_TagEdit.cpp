@@ -40,7 +40,7 @@
 #include "Utils/MetaData/Album.h"
 #include "Utils/MetaData/Artist.h"
 #include "Utils/MetaData/Genre.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 
 #include "Database/Connector.h"
 #include "Database/LibraryDatabase.h"

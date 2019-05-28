@@ -21,7 +21,7 @@
 #include "MiniSearcher.h"
 #include "SearchableView.h"
 #include "Gui/Utils/GuiUtils.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 #include "Utils/Logger/Logger.h"
 
 #include <QBoxLayout>

@@ -1,10 +1,10 @@
 #include <QTest>
 #include <QObject>
+#include "Utils/Macros.h"
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
-#include "Utils/Language.h"
-#include "Utils/LanguageUtils.h"
-#include "Utils/Macros.h"
+#include "Utils/Language/Language.h"
+#include "Utils/Language/LanguageUtils.h"
 #include "Utils/Settings/Settings.h"
 #include <QStringList>
 

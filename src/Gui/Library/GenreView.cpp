@@ -32,7 +32,7 @@
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/MetaData/Genre.h"
 #include "Utils/Logger/Logger.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Message/Message.h"
 

@@ -18,6 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+ #include <QList>
+ #include "SettingKey.h"
+
 /**
  * @brief The SettingRegistry class
  * @ingroup Settings
@@ -25,5 +28,6 @@
 namespace SettingRegistry
 {
 	bool init();
+	QList<SettingKey> undeployable_keys();
 }
 

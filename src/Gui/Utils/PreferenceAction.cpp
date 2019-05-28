@@ -20,7 +20,7 @@
 
 #include "PreferenceAction.h"
 #include "Utils/Settings/Settings.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 #include "Gui/Utils/Icons.h"
 #include "Components/Preferences/PreferenceRegistry.h"
 

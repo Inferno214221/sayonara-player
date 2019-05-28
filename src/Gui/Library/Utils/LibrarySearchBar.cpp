@@ -22,7 +22,7 @@
 
 #include "LibrarySearchBar.h"
 #include "Utils/Utils.h"
-#include "Utils/Language.h"
+#include "Utils/Language/Language.h"
 #include "Utils/Settings/Settings.h"
 
 #include "Gui/Utils/EventFilter.h"
