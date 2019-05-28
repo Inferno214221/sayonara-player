@@ -70,7 +70,8 @@ const SettingArray& Settings::settings()
 void Settings::register_setting(AbstrSetting* s)
 {
 	SettingKey key  = s->get_key();
-	m->settings[ (int) key ] = s;
+	uint i = static_cast<uint>(key);
+	m->settings[i] = s;
 }
 
 

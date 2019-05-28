@@ -36,28 +36,28 @@ namespace FileUtils=::Util::File;
 
 struct Base::Private
 {
-	QString from_dir;
+	QString source_dir;
 	QString filename;		// player.db
 	QString connection_name;		// /home/user/.Sayonara/player.db
 	DbId	db_id;
 
 	bool initialized;
 
-	Private(DbId db_id, const QString& from_dir, const QString& to_dir, const QString& filename) :
-		from_dir(from_dir),
+	Private(DbId db_id, const QString& source_dir, const QString& target_dir, const QString& filename) :
+		source_dir(source_dir),
 		filename(filename),
 		db_id(db_id)
 	{
-		connection_name = to_dir + "/" +filename;
+		connection_name = target_dir + "/" +filename;
 	}
 };
 
 
-Base::Base(DbId db_id, const QString& from_dir, const QString& to_dir, const QString& filename, QObject* parent) :
+Base::Base(DbId db_id, const QString& source_dir, const QString& target_dir, const QString& filename, QObject* parent) :
 	QObject(parent),
-	DB::Module(to_dir + "/" + filename, db_id)
+	DB::Module(target_dir + "/" + filename, db_id)
 {
-	m = Pimpl::make<Private>(db_id, from_dir, to_dir, filename);
+	m = Pimpl::make<Private>(db_id, source_dir, target_dir, filename);
 	bool success = FileUtils::exists(m->connection_name);
 
 	if(!success)
@@ -72,10 +72,6 @@ Base::Base(DbId db_id, const QString& from_dir, const QString& to_dir, const QSt
 		sp_log(Log::Error, this) << "Database is not open";
 	}
 }
-
-Base::Base(DbId db_id, const QString& filename, QObject* parent) :
-	Base(db_id, Util::share_path(), Util::sayonara_path(), filename, parent)
-{}
 
 Base::~Base() {}
 
@@ -133,7 +129,7 @@ bool Base::create_db()
 		return false;
 	}
 
-	QString source_db_file = QDir(m->from_dir).absoluteFilePath(m->filename);
+	QString source_db_file = QDir(m->source_dir).absoluteFilePath(m->filename);
 
 	success = FileUtils::exists(m->connection_name);
 

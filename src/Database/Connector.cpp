@@ -120,9 +120,8 @@ public:
 };
 
 
-
-Connector::Connector(const QString& from_dir, const QString& to_dir, const QString& db_filename) :
-	DB::Base(0, from_dir, to_dir, db_filename, nullptr)
+Connector::Connector(const QString& source_dir, const QString& target_dir, const QString& db_filename) :
+	DB::Base(0, source_dir, target_dir, db_filename, nullptr)
 {
 	m = Pimpl::make<Private>();
 
@@ -132,7 +131,6 @@ Connector::Connector(const QString& from_dir, const QString& to_dir, const QStri
 
 	else
 	{
-
 		m->generic_library_database = new LibraryDatabase(connection_name(), db_id(), -1);
 		m->library_dbs << m->generic_library_database;
 
@@ -140,25 +138,23 @@ Connector::Connector(const QString& from_dir, const QString& to_dir, const QStri
 	}
 }
 
-Connector::Connector(const QString& to_dir, const QString& db_filename) :
-	Connector(Util::share_path(), to_dir, db_filename)
-{}
-
-Connector::Connector() :
-	Connector(Util::sayonara_path(), "player.db")
-{}
-
 Connector::~Connector() {}
 
-DB::Connector* Connector::instance(const QString& to_dir, const QString& db_filename)
+DB::Connector* Connector::instance(QString source_dir, QString target_dir, QString db_filename)
 {
-	static Connector db(to_dir, db_filename);
-	return &db;
-}
+	if(source_dir.isEmpty()){
+		source_dir = Util::share_path();
+	}
 
-DB::Connector* Connector::instance(const QString& from_dir, const QString& to_dir, const QString& db_filename)
-{
-	static Connector db(from_dir, to_dir, db_filename);
+	if(target_dir.isEmpty()){
+		target_dir = Util::sayonara_path();
+	}
+
+	if(db_filename.isEmpty()){
+		db_filename = "player.db";
+	}
+
+	static Connector db(source_dir, target_dir, db_filename);
 	return &db;
 }
 

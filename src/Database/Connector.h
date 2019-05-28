@@ -48,7 +48,6 @@ namespace DB
 	class Connector :
 			public Base
 	{
-		SINGLETON(Connector)
 		PIMPL(Connector)
 
 		protected:
@@ -58,15 +57,15 @@ namespace DB
 			bool updateLostArtists();
 			bool updateLostAlbums();
 
-			virtual bool apply_fixes();
+			virtual bool apply_fixes() override;
 
 		public:
-			Connector(const QString& to_dir, const QString& db_filename);
-			Connector(const QString& from_dir, const QString& to_dir, const QString& db_filename);
+			Connector(const QString& source_dir, const QString& target_dir, const QString& db_filename);
+			~Connector() override;
+
 			virtual void			clean_up();
 
-			static Connector*		instance(const QString& to_dir, const QString& db_filename);
-			static Connector*		instance(const QString& from_dir, const QString& to_dir, const QString& db_filename);
+			static Connector*		instance(QString source_dir=QString(), QString target_dir=QString(), QString db_filename=QString());
 
 			LibraryDatabases		library_dbs() const;
 			DB::LibraryDatabase*	library_db(LibraryId library_id, DbId db_id);

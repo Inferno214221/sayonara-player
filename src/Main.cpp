@@ -30,6 +30,7 @@
 #include "Utils/FileUtils.h"
 #include "Utils/Parser/CommandLineParser.h"
 #include "Utils/Logger/Logger.h"
+#include "Database/Connector.h"
 
 #include <QSharedMemory>
 #include <QTranslator>
@@ -181,6 +182,8 @@ int main(int argc, char *argv[])
 			memory.unlock();
 		}
 	}
+
+	DB::Connector::instance();
 
 #ifdef Q_OS_WIN
 	init_gio();

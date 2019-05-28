@@ -36,8 +36,7 @@ namespace DB
 		PIMPL(Base)
 
 		public:
-			Base(DbId db_id, const QString& filename, QObject *parent=nullptr);
-			Base(DbId db_id, const QString& from_dir, const QString& to_dir, const QString& filename, QObject *parent=nullptr);
+			Base(DbId db_id, const QString& source_dir, const QString& target_dir, const QString& filename, QObject *parent=nullptr);
 
 			virtual ~Base();
 

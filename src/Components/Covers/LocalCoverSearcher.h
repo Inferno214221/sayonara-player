@@ -33,7 +33,7 @@ namespace Cover
     namespace LocalSearcher
     {
         /**
-         * @brief Extracts dirname and calls get_local_cover_paths_from_dirname
+         * @brief Extracts dirname and calls get_local_cover_paths_source_dirname
          * @param filename filename of a file within the same directory. E.g. a mp3 file
          * @return Paths for all covers in that directory
          */

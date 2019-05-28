@@ -22,6 +22,7 @@
 #include "SoundcloudWebAccess.h"
 #include "SearchInformation.h"
 
+#include "Utils/Utils.h"
 #include "Utils/MetaData/Album.h"
 #include "Utils/MetaData/Artist.h"
 #include "Utils/MetaData/MetaDataList.h"
@@ -37,7 +38,7 @@
 using DB::Query;
 
 SC::Database::Database() :
-	::DB::Base(25, "soundcloud.db"),
+	::DB::Base(25, Util::share_path(), Util::sayonara_path(), "soundcloud.db"),
 	::DB::LibraryDatabase(module()->connection_name(), 25, -1)
 {
 	this->apply_fixes();
