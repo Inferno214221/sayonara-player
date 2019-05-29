@@ -19,13 +19,14 @@
  */
 
 #include "SettingConverter.h"
+#include "settingconvertible.h"
 
 #include <QStringList>
 #include <QSize>
 #include <QPoint>
 
 /** Bool **/
-QString SettingConverter<bool>::to_string(const bool& val)
+QString SettingConverter::to_string(const bool& val)
 {
 	if(val) {
 		return QString("true");
@@ -36,7 +37,7 @@ QString SettingConverter<bool>::to_string(const bool& val)
 	}
 }
 
-bool SettingConverter<bool>::from_string(const QString& val, bool& b)
+bool SettingConverter::from_string(const QString& val, bool& b)
 {
 	if( val.compare("true", Qt::CaseInsensitive) == 0 ||
 		val.toInt() > 0)
@@ -54,12 +55,12 @@ bool SettingConverter<bool>::from_string(const QString& val, bool& b)
 
 
 /** Integer **/
-QString SettingConverter<int>::to_string(const int& val)
+QString SettingConverter::to_string(const int& val)
 {
 	return QString::number(val);
 }
 
-bool SettingConverter<int>::from_string(const QString& val, int& i)
+bool SettingConverter::from_string(const QString& val, int& i)
 {
 	bool ok;
 	i = val.toInt(&ok);
@@ -69,12 +70,12 @@ bool SettingConverter<int>::from_string(const QString& val, int& i)
 
 
 /** Floating Point **/
-QString SettingConverter<float>::to_string(const float& val)
+QString SettingConverter::to_string(const float& val)
 {
 	return QString::number(val);
 }
 
-bool SettingConverter<float>::from_string(const QString& val, float& i)
+bool SettingConverter::from_string(const QString& val, float& i)
 {
 	bool ok;
 	i = val.toFloat(&ok);
@@ -84,36 +85,36 @@ bool SettingConverter<float>::from_string(const QString& val, float& i)
 
 
 /** QStringList **/
-QString SettingConverter<QStringList>::to_string(const QStringList& val)
+QString SettingConverter::to_string(const QStringList& val)
 {
 	return val.join(",");
 }
 
-bool SettingConverter<QStringList>::from_string(const QString& val, QStringList& lst)
+bool SettingConverter::from_string(const QString& val, QStringList& lst)
 {
 	lst = val.split(",");
 	return true;
 }
 
 /** QString **/
-QString SettingConverter<QString>::to_string(const QString& val)
+QString SettingConverter::to_string(const QString& val)
 {
 	return val;
 }
 
-bool SettingConverter<QString>::from_string(const QString& val, QString& b)
+bool SettingConverter::from_string(const QString& val, QString& b)
 {
 	b = val;
 	return true;
 }
 
 /** QSize **/
-QString SettingConverter<QSize>::to_string(const QSize& val)
+QString SettingConverter::to_string(const QSize& val)
 {
 	return QString::number(val.width()) + "," + QString::number(val.height());
 }
 
-bool SettingConverter<QSize>::from_string(const QString& val, QSize& sz)
+bool SettingConverter::from_string(const QString& val, QSize& sz)
 {
 	bool ok;
 	int width, height;
@@ -135,12 +136,12 @@ bool SettingConverter<QSize>::from_string(const QString& val, QSize& sz)
 }
 
 /** QPoint **/
-QString SettingConverter<QPoint>::to_string(const QPoint& val)
+QString SettingConverter::to_string(const QPoint& val)
 {
 	return QString::number(val.x()) + "," + QString::number(val.y());
 }
 
-bool SettingConverter<QPoint>::from_string(const QString& val, QPoint& sz)
+bool SettingConverter::from_string(const QString& val, QPoint& sz)
 {
 	bool ok;
 	int x, y;
@@ -162,7 +163,7 @@ bool SettingConverter<QPoint>::from_string(const QString& val, QPoint& sz)
 }
 
 /** QByteArray **/
-QString SettingConverter<QByteArray>::to_string(const QByteArray& arr)
+QString SettingConverter::to_string(const QByteArray& arr)
 {
 	if(arr.isEmpty()){
 		return QString();
@@ -177,7 +178,7 @@ QString SettingConverter<QByteArray>::to_string(const QByteArray& arr)
 	return numbers.join(",");
 }
 
-bool SettingConverter<QByteArray>::from_string(const QString& str, QByteArray& arr)
+bool SettingConverter::from_string(const QString& str, QByteArray& arr)
 {
 	arr.clear();
 	if(str.isEmpty()){
@@ -193,4 +194,14 @@ bool SettingConverter<QByteArray>::from_string(const QString& str, QByteArray& a
 	}
 
 	return (numbers.size() > 0);
+}
+
+QString SettingConverter::to_string(const SettingConvertible& t)
+{
+	return t.toString();
+}
+
+bool SettingConverter::from_string(const QString& val, SettingConvertible& t)
+{
+	return t.loadFromString(val);
 }

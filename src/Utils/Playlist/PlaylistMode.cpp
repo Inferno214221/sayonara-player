@@ -160,26 +160,26 @@ QString Mode::toString() const
 	return str;
 }
 
-Mode Mode::fromString(const QString& str)
+#define state_cast(x) static_cast<Mode::State>( x .toInt())
+bool Mode::loadFromString(const QString& str)
 {
-	Mode plm;
 	QStringList list = str.split(',');
 
 	if(list.size() < 6) {
-		return plm;
+		return false;
 	}
 
-	plm.setAppend((Mode::State) list[0].toInt());
-	plm.setRepAll((Mode::State) list[1].toInt());
-	plm.setRep1((Mode::State) list[2].toInt());
-	plm.setShuffle((Mode::State) list[4].toInt());
-	plm.setDynamic((Mode::State) list[5].toInt());
+	this->setAppend( state_cast(list[0]) );
+	this->setRepAll( state_cast(list[1]) );
+	this->setRep1(   state_cast(list[2]) );
+	this->setShuffle(state_cast(list[4]) );
+	this->setDynamic(state_cast(list[5]) );
 
 	if(list.size() > 6){
-		plm.setGapless((Mode::State) list[6].toInt());
+		this->setGapless(state_cast(list[6]));
 	}
 
-	return plm;
+	return true;
 }
 
 bool Mode::operator==(const Mode& pm) const

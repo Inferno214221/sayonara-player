@@ -100,7 +100,7 @@ enum class SettingKey : unsigned short
 	Player_514Fix,
 	Player_NotifyNewVersion,
 	Player_SplitterState,
-	Player_Shortcuts,
+	// Player_Shortcuts,  deprecated
 	Player_SplitterControls,
 	Player_PrivId,
 	Player_PublicId,
@@ -208,7 +208,7 @@ class QPoint;
 class QSize;
 class QByteArray;
 
-class EQ_Setting;
+class EqualizerSetting;
 struct RawShortcutMap;
 
 namespace Playlist
@@ -258,7 +258,7 @@ class SettingIdentifier
 	INST(QString,			LFM_SessionKey)			/* lfm session key */
 
 	INST(int,				Eq_Last)				/* last equalizer index */
-	INST(QList<EQ_Setting>,		Eq_List)			/* All equalizers */
+	INST(QList<EqualizerSetting>,		Eq_List)			/* All equalizers */
 	INST(bool,				Eq_Gauss)				/* do curve, when changing eq setting */
 
 	INST(bool,				Lib_Show)				/* show library */
@@ -322,7 +322,7 @@ class SettingIdentifier
 	INST(bool,				Player_514Fix)				/* https://bugs.archlinux.org/task/59451 */
 	INST(bool,				Player_NotifyNewVersion)		/* check for new version on startup */
 	INST(QByteArray,		Player_SplitterState)			/* spliter state between playlist and library */
-	INST(RawShortcutMap,	Player_Shortcuts)			/* player shortcuts */
+	//INST(RawShortcutMap,	Player_Shortcuts)			/* player shortcuts */
 	INST(QByteArray,		Player_SplitterControls)	/* Splitter state between controls and playlist */
 	INST(QByteArray,		Player_PrivId)				/* Unique identifier */
 	INST(QByteArray,		Player_PublicId)				/* Unique identifier */

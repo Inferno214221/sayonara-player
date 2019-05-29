@@ -23,7 +23,7 @@
 
 #include "Utils/Macros.h"
 #include "Utils/Playlist/PlaylistMode.h"
-#include "Utils/EqualizerPresets.h"
+#include "Utils/EqualizerSetting.h"
 #include "Utils/Library/SearchMode.h"
 #include "Utils/Library/Sorting.h"
 #include "Utils/Library/LibraryInfo.h"
@@ -56,8 +56,6 @@ void register_setting(const typename KeyClass::Data& default_value)
 
 bool SettingRegistry::init()
 {
-	using ByteArrayConverter=SettingConverter<QByteArray>;
-
 	register_setting<Set::LFM_Login>("LastFM_login", StringPair("", ""));
 	register_setting<Set::LFM_Username>("lfm_username", QString());
 	register_setting<Set::LFM_Password>("lfm_password", QString());
@@ -68,7 +66,7 @@ bool SettingRegistry::init()
 	register_setting<Set::LFM_SessionKey>( "lfm_session_key", QString() );
 
 	register_setting<Set::Eq_Last>( "eq_last", 0);
-	register_setting<Set::Eq_List>( "EQ_list", EQ_Setting::get_defaults() );
+	register_setting<Set::Eq_List>( "EQ_list", EqualizerSetting::get_defaults() );
 	register_setting<Set::Eq_Gauss>( "EQ_Gauss", true );
 
 	{
@@ -92,13 +90,13 @@ bool SettingRegistry::init()
 
 	{
 		QByteArray splitter_genres;
-		ByteArrayConverter::from_string("0,0,0,255,0,0,0,1,0,0,0,2,0,0,2,65,0,0,0,186,1,255,255,255,255,1,0,0,0,1,0", splitter_genres);
+		SettingConverter::from_string("0,0,0,255,0,0,0,1,0,0,0,2,0,0,2,65,0,0,0,186,1,255,255,255,255,1,0,0,0,1,0", splitter_genres);
 		register_setting<Set::Lib_SplitterStateGenre >("splitter_state_genre", splitter_genres);
 	}
 
 	{
 		QByteArray splitter_tracks;
-		ByteArrayConverter::from_string("0,0,0,255,0,0,0,1,0,0,0,2,0,0,1,150,0,0,1,48,1,255,255,255,255,1,0,0,0,2,0", splitter_tracks);
+		SettingConverter::from_string("0,0,0,255,0,0,0,1,0,0,0,2,0,0,1,150,0,0,1,48,1,255,255,255,255,1,0,0,0,2,0", splitter_tracks);
 		register_setting<Set::Lib_SplitterStateTrack >("splitter_state_track", splitter_tracks);
 	}
 
@@ -156,11 +154,11 @@ bool SettingRegistry::init()
 
 	{
 		QByteArray splitter_state_player;
-		ByteArrayConverter::from_string("0,0,0,255,0,0,0,1,0,0,0,2,0,0,1,82,0,0,3,72,0,0,0,0,4,1,0,0,0,1,0", splitter_state_player);
+		SettingConverter::from_string("0,0,0,255,0,0,0,1,0,0,0,2,0,0,1,82,0,0,3,72,0,0,0,0,4,1,0,0,0,1,0", splitter_state_player);
 		register_setting<Set::Player_SplitterState >("splitter_state_player", splitter_state_player);
 	}
 
-	register_setting<Set::Player_Shortcuts>( "shortcuts", RawShortcutMap()); // deprecated
+//	register_setting<Set::Player_Shortcuts>( "shortcuts", RawShortcutMap()); // deprecated
 	register_setting<Set::Player_SplitterControls>("player_splitter_controls", QByteArray());
 	register_setting<Set::Player_PrivId>("player_priv_id", QByteArray());
 	register_setting<Set::Player_PublicId>("player_pub_id", QByteArray());
@@ -275,7 +273,7 @@ QList<SettingKey> SettingRegistry::undeployable_keys()
 		SettingKey::Player_PublicId,
 		SettingKey::Player_PrivId,
 
-		SettingKey::Player_Shortcuts,
+//		SettingKey::Player_Shortcuts,
 		SettingKey::AudioConvert_NumberThreads,
 
 		SettingKey::Engine_CovertTargetPath,

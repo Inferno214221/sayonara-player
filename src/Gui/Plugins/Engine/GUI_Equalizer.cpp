@@ -35,13 +35,14 @@
 #include "Gui/Plugins/ui_GUI_Equalizer.h"
 
 #include "Utils/Utils.h"
-#include "Utils/EqualizerPresets.h"
+#include "Utils/EqualizerSetting.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language/Language.h"
 
 #include <QLineEdit>
 #include <array>
 
+using SliderArray=std::array<EqualizerSlider*, 10>;
 using ValueArray=std::array<int, 10>;
 
 static QString calc_lab(int val)
@@ -57,17 +58,19 @@ static QString calc_lab(int val)
 	return QString::number(val) + ".0";
 }
 
+
 struct GUI_Equalizer::Private
 {
-	QList<EQ_Setting>	presets;
-	QList<EqualizerSlider*>	sliders;
-
-	ValueArray			old_val;
-	int					active_idx;
+	QList<EqualizerSetting>	presets;
+	SliderArray				sliders;
+	ValueArray				old_val;
+	int						active_idx;
 
 	Private() :
 		active_idx(-1)
-	{}
+	{
+		old_val.fill(0);
+	}
 
 	int find_combo_text(const QComboBox* combo_presets, QString text)
 	{
@@ -114,16 +117,11 @@ void GUI_Equalizer::init_ui()
 	ui->sli_8->set_label(8, ui->label_9);
 	ui->sli_9->set_label(9, ui->label_10);
 
-	m->sliders.push_back(ui->sli_0);
-	m->sliders.push_back(ui->sli_1);
-	m->sliders.push_back(ui->sli_2);
-	m->sliders.push_back(ui->sli_3);
-	m->sliders.push_back(ui->sli_4);
-	m->sliders.push_back(ui->sli_5);
-	m->sliders.push_back(ui->sli_6);
-	m->sliders.push_back(ui->sli_7);
-	m->sliders.push_back(ui->sli_8);
-	m->sliders.push_back(ui->sli_9);
+	m->sliders = SliderArray
+	{
+		ui->sli_0, ui->sli_1, ui->sli_2, ui->sli_3, ui->sli_4,
+		ui->sli_5, ui->sli_6, ui->sli_7, ui->sli_8,	ui->sli_9
+	};
 
 	QAction* action_gauss = new QAction("Kurve", ui->btn_tool);
 	action_gauss->setCheckable(true);
@@ -193,10 +191,18 @@ static double scale[] = {1.0, 0.6, 0.20, 0.06, 0.01};
 
 void GUI_Equalizer::sli_changed(int idx, int new_val)
 {
+	int slider_size = static_cast<int>(m->sliders.size());
+
+	if(idx < 0 || idx >= slider_size){
+		return;
+	}
+
+	size_t uidx = static_cast<size_t>(idx);
+
 	bool gauss_on = GetSetting(Set::Eq_Gauss);
 	ui->btn_tool->show_action(ContextMenu::EntryUndo, true);
 
-	EqualizerSlider* s = m->sliders[idx];
+	EqualizerSlider* s = m->sliders[uidx];
 	s->label()->setText(calc_lab(new_val));
 
 	Engine::Handler* engine = Engine::Handler::instance();
@@ -205,22 +211,21 @@ void GUI_Equalizer::sli_changed(int idx, int new_val)
 	// this slider has been changed actively
 	if( idx == m->active_idx && gauss_on )
 	{
-		int delta = new_val - m->old_val[idx];
+		int delta = new_val - m->old_val[uidx];
+		int most_left = std::max(idx - 4, 0);
+		int most_right = std::min(idx + 4, static_cast<int>(m->sliders.size()));
 
-		for(int i=idx-9; i<idx+9; i++)
+		for(int i=most_left; i < most_right; i++)
 		{
-			if(i < 0) continue;
-			if(i == idx) continue;
-			if(i >= m->sliders.size()) break;
+			if(i == idx) {
+				continue;
+			}
 
 			// how far is the slider away from me?
 			int x = abs(m->active_idx - i);
-
-			if(x > 4) continue;
-
 			double new_val = m->old_val[i] + (delta * scale[x]);
 
-			m->sliders[i]->setValue(new_val);
+			m->sliders[i]->setValue(static_cast<int>(new_val));
 		}
 	}
 }
@@ -235,10 +240,10 @@ void GUI_Equalizer::fill_eq_presets()
 	int last_idx = GetSetting(Set::Eq_Last);
 
 	m->presets = GetSetting(Set::Eq_List);
-	m->presets.prepend(EQ_Setting());
+	m->presets.prepend(EqualizerSetting());
 
 	QStringList items;
-	for(const EQ_Setting& s : Util::AsConst(m->presets))
+	for(const EqualizerSetting& s : Util::AsConst(m->presets))
 	{
 		items << s.name();
 	}
@@ -266,7 +271,7 @@ void GUI_Equalizer::preset_changed(int index)
 		return;
 	}
 
-	EQ_Setting setting = m->presets[index];
+	EqualizerSetting setting = m->presets[index];
 
 	ui->btn_tool->show_action(ContextMenu::EntryUndo, false);
 
@@ -276,18 +281,12 @@ void GUI_Equalizer::preset_changed(int index)
 	bool is_default_name = setting.is_default_name();
 	ui->btn_tool->show_action(ContextMenu::EntryDelete, ((index > 0) && !is_default_name));
 
-	QList<int> values = setting.values();
+	EqualizerSetting::ValueArray values = setting.values();
 
-	for(int i=0; i<values.size(); i++)
+	for(size_t i=0; i<values.size(); i++)
 	{
-		if(i >= m->sliders.size()){
-			break;
-		}
-
-		int value = values[i];
-
-		m->sliders[i]->setValue(value);
-		m->old_val[i] = value;
+		m->sliders[i]->setValue(values[i]);
+		m->old_val[i] = values[i];
 	}
 
 	SetSetting(Set::Eq_Last, index);
@@ -308,11 +307,11 @@ void GUI_Equalizer::btn_default_clicked()
 		return;
 	}
 
-	if( !EQ_Setting::is_default_name(cur_text) ){
+	if( !EqualizerSetting::is_default_name(cur_text) ){
 		return;
 	}
 
-	m->presets[cur_idx].set_values( EQ_Setting::get_default_values(cur_text) );
+	m->presets[cur_idx].set_values( EqualizerSetting::get_default_values(cur_text) );
 	preset_changed(cur_idx);
 }
 
@@ -328,7 +327,7 @@ void GUI_Equalizer::btn_save_clicked()
 
 	if(found_idx <= 0)
 	{
-		EQ_Setting s = EQ_Setting::fromString(text + ":0:0:0:0:0:0:0:0:0:0");
+		EqualizerSetting s(text, ValueArray{0,0,0,0,0,0,0,0,0,0});
 		m->presets << s;
 
 		ui->combo_presets->addItem(text);
@@ -342,7 +341,7 @@ void GUI_Equalizer::btn_save_clicked()
 
 	m->presets.removeFirst();
 	SetSetting(Set::Eq_List, m->presets);
-	m->presets.prepend(EQ_Setting());
+	m->presets.prepend(EqualizerSetting());
 
 	ui->combo_presets->setCurrentIndex(found_idx);
 	preset_changed(found_idx);
@@ -360,7 +359,7 @@ void GUI_Equalizer::btn_delete_clicked()
 
 	m->presets.removeFirst();
 	SetSetting(Set::Eq_List, m->presets);
-	m->presets.prepend(EQ_Setting());
+	m->presets.prepend(EqualizerSetting());
 }
 
 void GUI_Equalizer::btn_undo_clicked()

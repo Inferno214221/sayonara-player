@@ -22,6 +22,7 @@
 #define LIBRARY_SORTING_H
 
 #include "Sortorder.h"
+#include "Utils/Settings/settingconvertible.h"
 
 class QString;
 namespace Library
@@ -30,7 +31,8 @@ namespace Library
 	 * @brief The Sortings class
 	 * @ingroup LibraryHelper
 	 */
-	class Sortings
+	class Sortings :
+		public SettingConvertible
 	{
 		public:
 			SortOrder so_albums;
@@ -44,9 +46,8 @@ namespace Library
 		Sortings& operator=(const Sortings& other);
 		bool operator==(Sortings so);
 
-		QString toString() const;
-
-		static Sortings fromString(const QString& str);
+		QString toString() const override;
+		bool loadFromString(const QString& str) override;
 	};
 }
 

@@ -117,11 +117,11 @@ bool Info::valid() const
 	return (!m->name.isEmpty()) && (!m->path.isEmpty());
 }
 
-Info Info::fromString(const QString& str)
+bool Info::loadFromString(const QString& str)
 {
 	QStringList lst = str.split("::");
 	if(lst.size() != 3){
-		throw  std::invalid_argument("Cannot convert Library::Info. Ignore");
+		throw std::invalid_argument("Cannot convert Library::Info. Ignore");
 	}
 
 	bool ok;
@@ -129,10 +129,14 @@ Info Info::fromString(const QString& str)
 	QString path = lst[1];
 	int id = lst[2].toInt(&ok);
 	if(!ok){
-		return Info();
+		return false;
 	}
 
-	return Info(name, path, id);
+	m->name = name;
+	m->path = Util::File::clean_filename(path);
+	m->id = static_cast<LibraryId>(id);
+
+	return true;
 }
 
 QString Info::toString() const

@@ -22,7 +22,7 @@
 #include "Components/Engine/Utils.h"
 
 #include "Utils/Settings/Settings.h"
-#include "Utils/EqualizerPresets.h"
+#include "Utils/EqualizerSetting.h"
 #include "Utils/globals.h"
 
 #include <QList>
@@ -46,17 +46,17 @@ Equalizer::Equalizer()
 
 	int last_idx = GetSetting(Set::Eq_Last);
 
-	QList<EQ_Setting> presets = GetSetting(Set::Eq_List);
-	presets.push_front(EQ_Setting());
+	QList<EqualizerSetting> presets = GetSetting(Set::Eq_List);
+	presets.push_front(EqualizerSetting());
 
 	if( !between(last_idx, presets)){
 		last_idx = 0;
 	}
 
-	EQ_Setting last_preset = presets[last_idx];
-	QList<int> values = last_preset.values();
+	EqualizerSetting last_preset = presets[last_idx];
+	EqualizerSetting::ValueArray values = last_preset.values();
 
-	for(int i=0; i<values.size(); i++)
+	for(int i=0; i< (int) values.size(); i++)
 	{
 		set_band(i, values[i]);
 	}

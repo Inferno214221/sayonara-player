@@ -64,8 +64,7 @@ class AbstrSetting
 };
 
 
-template< typename KeyClass,
-		 template <typename Arg> class SC = SettingConverter >
+template<typename KeyClass>
 /**
  * @brief The Setting class\n
  * T is the pure value type e.g. QString
@@ -107,12 +106,12 @@ class Setting : public AbstrSetting
 
 		QString value_to_string() const override
 		{
-			 return SC<typename KeyClass::Data>::to_string(_val);
+			 return SettingConverter::to_string(_val);
 		}
 
 		bool load_value_from_string(const QString& str) override
 		{
-			return SC<typename KeyClass::Data>::from_string(str, _val);
+			return SettingConverter::from_string(str, _val);
 		}
 
 		/* ... */

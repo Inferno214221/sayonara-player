@@ -22,11 +22,14 @@
 #define LIBRARYINFO_H
 
 #include "Utils/Pimpl.h"
+
+#include "Utils/Settings/settingconvertible.h"
 #include <QtGlobal>
 
 namespace Library
 {
-	class Info
+	class Info :
+		public SettingConvertible
 	{
 		PIMPL(Info)
 
@@ -44,8 +47,8 @@ namespace Library
 			LibraryId id() const;
 			bool valid() const;
 
-			static Info fromString(const QString& str);
-			QString toString() const;
+			bool loadFromString(const QString& str) override;
+			QString toString() const override;
 
 			bool operator==(const Info& other) const;
 	};

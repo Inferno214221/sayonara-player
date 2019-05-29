@@ -22,6 +22,7 @@
 #define PLAYLISTMODE_H_
 
 #include "Utils/Pimpl.h"
+#include "Utils/Settings/settingconvertible.h"
 
 namespace Playlist
 {
@@ -29,7 +30,8 @@ namespace Playlist
 	 * @brief The Mode class
 	 * @ingroup PlaylistHelper
 	 */
-	class Mode final
+	class Mode :
+		public SettingConvertible
 	{
 		PIMPL(Mode)
 
@@ -74,9 +76,8 @@ namespace Playlist
 
 			void print();
 
-			QString toString() const;
-
-			static Playlist::Mode fromString(const QString& str);
+			QString toString() const override;
+			bool loadFromString(const QString& str) override;
 
 			bool operator==(const Playlist::Mode& pm) const;
 	};

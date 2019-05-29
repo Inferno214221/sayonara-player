@@ -1,4 +1,4 @@
-/* Equalizer_presets.h */
+/* EqualizerSetting.h */
 
 /* Copyright (C) 2011  Lucio Carreras
  *
@@ -18,34 +18,42 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EQUALIZER_PRESETS_
-#define _EQUALIZER_PRESETS_
+#ifndef EQUALIZER_SETTING_H_
+#define EQUALIZER_SETTING_H_
 
 #include "Utils/Pimpl.h"
+#include "Utils/Settings/settingconvertible.h"
+
 #include <QString>
+#include <array>
 
 /**
  * @brief The EQ_Setting class. Container for Equalizer configurations
  * @ingroup Equalizer
  * @ingroup GUIHelper
  */
-class EQ_Setting final
+class EqualizerSetting :
+	public SettingConvertible
 {
-	PIMPL(EQ_Setting)
+	PIMPL(EqualizerSetting)
 
 public:
-	EQ_Setting(const QString& name=QString());
-	EQ_Setting(const EQ_Setting& other);
-	~EQ_Setting();
 
-	EQ_Setting& operator=(const EQ_Setting& s);
+	using ValueArray=std::array<int, 10>;
+
+	EqualizerSetting(const QString& name=QString());
+	EqualizerSetting(const QString& name, const ValueArray& values);
+	EqualizerSetting(const EqualizerSetting& other);
+	~EqualizerSetting() override;
+
+	EqualizerSetting& operator=(const EqualizerSetting& s);
 
 	/**
 	 * @brief Compares the case insensitive string representation of two settings
 	 * @param s other preset
 	 * @return
 	 */
-	bool operator==(const EQ_Setting& s) const;
+	bool operator==(const EqualizerSetting& s) const;
 
 	/**
 	 * @brief get name of setting
@@ -63,7 +71,7 @@ public:
 	 * @brief get database values for setting
 	 * @return
 	 */
-	QList<int> values() const;
+	ValueArray values() const;
 
 	/**
 	 * @brief get specific value for a band idx. if idx is not valid, 0 is returned
@@ -85,7 +93,7 @@ public:
 	 * If there are less, the list is filled with zeros
 	 * @param values
 	 */
-	void set_values(const QList<int> values);
+	void set_values(const ValueArray& values);
 
 	/**
 	 * @brief append a value.
@@ -110,7 +118,7 @@ public:
 	 * @brief get default settings
 	 * @return list of default settings
 	 */
-	static QList<EQ_Setting> get_defaults();
+	static QList<EqualizerSetting> get_defaults();
 
 	/**
 	 * @brief get default values for a specific preset.
@@ -118,7 +126,7 @@ public:
 	 * @param name preset name
 	 * @return value list if name belongs to a default preset. Empty list else
 	 */
-	static QList<int> get_default_values(const QString& name);
+	static ValueArray get_default_values(const QString& name);
 
 	/**
 	 * @brief static convenience function for is_default_name()
@@ -133,13 +141,13 @@ public:
 	 * @param str
 	 * @return
 	 */
-	static EQ_Setting fromString(const QString& str);
+	bool loadFromString(const QString& str) override;
 
 	/**
 	 * @brief converts EQ_Setting to string
 	 * @return
 	 */
-	QString toString() const;
+	QString toString() const override;
 };
 
 #endif

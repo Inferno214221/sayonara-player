@@ -48,7 +48,8 @@ Library::Sortings& Library::Sortings::operator=(const Library::Sortings& other)
 
 bool Library::Sortings::operator==(Library::Sortings so)
 {
-	return  (so.so_albums == so_albums) &&
+	return
+		(so.so_albums == so_albums) &&
 		(so.so_artists == so_artists) &&
 		(so.so_tracks == so_tracks);
 }
@@ -56,18 +57,24 @@ bool Library::Sortings::operator==(Library::Sortings so)
 
 QString Library::Sortings::toString() const
 {
-	return QString::number((int) so_albums) + "," +
-		QString::number((int) so_artists) + "," +
-		QString::number((int) so_tracks);
+	return
+		QString::number(static_cast<int>(so_albums)) + "," +
+		QString::number(static_cast<int>(so_artists)) + "," +
+		QString::number(static_cast<int>(so_tracks));
 }
 
 
-Library::Sortings Library::Sortings::fromString(const QString& str)
+bool Library::Sortings::loadFromString(const QString& str)
 {
-	Library::Sortings so;
 	QStringList lst = str.split(",");
-		so.so_albums = (Library::SortOrder) lst[0].toInt();
-		so.so_artists = (Library::SortOrder) lst[1].toInt();
-		so.so_tracks = (Library::SortOrder) lst[2].toInt();
-	return so;
+	if(lst.size() < 3){
+		return false;
+	}
+
+	this->so_albums = static_cast<Library::SortOrder>(lst[0].toInt());
+	this->so_artists = static_cast<Library::SortOrder>(lst[1].toInt());
+	this->so_tracks = static_cast<Library::SortOrder>(lst[2].toInt());
+
+	return true;
+
 }
