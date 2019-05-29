@@ -101,14 +101,6 @@ struct Location::Private
 
 		return (*this);
 	}
-
-	~Private()
-	{
-		if(FileUtils::exists(audio_file_target))
-		{
-			FileUtils::delete_files({audio_file_target});
-		}
-	}
 };
 
 
@@ -567,12 +559,20 @@ QString Location::local_path_dir() const
 	for(const QString& local_path : lph)
 	{
 		QFileInfo fi(local_path);
+		if(!fi.exists()){
+			continue;
+		}
+
 		if(fi.isFile()){
 			parent_dirs << Util::File::get_parent_directory(local_path);
 		}
 
 		else if(fi.isDir()){
 			parent_dirs << local_path;
+		}
+
+		if(parent_dirs.size() > 1){
+			break;
 		}
 	}
 
@@ -594,11 +594,10 @@ void Location::set_local_path_hints(const QStringList& path_hints)
 	m->local_path_hints.clear();
 	for(const QString& path_hint : path_hints)
 	{
-		if(Util::File::is_file(path_hint) && !Util::File::is_www(path_hint))
+		if(!Util::File::is_www(path_hint))
 		{
 			m->local_path_hints << path_hint;
 		}
-
 	}
 }
 

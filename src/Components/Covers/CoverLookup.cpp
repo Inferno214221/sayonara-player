@@ -136,6 +136,9 @@ void Lookup::start()
 	m->stopped = false;
 	m->finished = false;
 
+	QString id = cover_location().identifer();
+	sp_log(Log::Develop, this) << "Search cover for id " << id;
+
 	if(!cover_location().valid()){
 		emit_finished(false);
 		return;
@@ -147,13 +150,9 @@ void Lookup::start()
 			return;
 		}
 
-		if(fetch_from_audio_source()){
+		if(fetch_from_extractor()){
 			return;
 		}
-	}
-
-	if(fetch_from_file_system()){
-		return;
 	}
 
 	if(fetch_from_www()){
@@ -184,46 +183,14 @@ bool Lookup::fetch_from_database()
 	return false;
 }
 
-bool Lookup::fetch_from_audio_source()
+bool Lookup::fetch_from_extractor()
 {
 	m->source = CoverSource::AudioFile;
 
 	Cover::Location cl = cover_location();
-
-	if(!cl.has_audio_file_source()){
-		return false;
-	}
-
-	QString audio_file_target = cl.audio_file_target();
-	if(FileUtils::exists(audio_file_target))
-	{
-		QPixmap pm = QPixmap(cl.audio_file_target());
-		bool success = add_new_cover(pm, true);
-		if(success && pm.isNull())
-		{
-			return true;
-		}
-	}
-
 	return start_extractor(cl);
 }
 
-bool Lookup::fetch_from_file_system()
-{
-	m->source = CoverSource::Filesystem;
-
-	Cover::Location cl = cover_location();
-	QString local_path = cl.local_path();
-
-	// Look, if cover exists in .Sayonara/covers
-	if(FileUtils::exists(local_path) && m->n_covers == 1)
-	{
-		QPixmap pm(local_path);
-		return add_new_cover(pm, true);
-	}
-
-	return false;
-}
 
 bool Lookup::fetch_from_www()
 {
@@ -252,7 +219,7 @@ void Lookup::thread_finished(bool success)
 
 bool Lookup::start_extractor(const Location& cl)
 {
-	Cover::Extractor* extractor = new Cover::Extractor(cl.audio_file_source(), this);
+	Cover::Extractor* extractor = new Cover::Extractor(cl, nullptr);
 	QThread* thread = new QThread(nullptr);
 	extractor->moveToThread(thread);
 
@@ -270,14 +237,12 @@ bool Lookup::start_extractor(const Location& cl)
 
 void Lookup::extractor_finished()
 {
-	sp_log(Log::Develop, this) << "Extractor finished";
-
 	Cover::Extractor* extractor = static_cast<Cover::Extractor*>(sender());
 	QPixmap pm = extractor->pixmap();
 
 	extractor->deleteLater();
 
-	sp_log(Log::Debug, this) << " finished: " << !pm.isNull();
+	sp_log(Log::Develop, this) << "Extractor finished. Pixmap valid " << !pm.isNull();
 
 	if(!pm.isNull())
 	{
@@ -286,18 +251,12 @@ void Lookup::extractor_finished()
 
 	else
 	{
-		bool success = fetch_from_file_system();
-		if(success){
-			return;
-		}
-
-		success = fetch_from_www();
+		bool success = fetch_from_www();
 		if(!success){
 			emit_finished(false);
 		}
 	}
 }
-
 
 
 bool Lookup::add_new_cover(const QPixmap& pm, bool save)

@@ -7,6 +7,7 @@ class QPixmap;
 
 namespace Cover
 {
+	class Location;
 	class Extractor : public QObject
 	{
 		Q_OBJECT
@@ -16,7 +17,7 @@ namespace Cover
 			void sig_finished();
 
 		public:
-			Extractor(const QString& filepath, QObject* parent);
+			Extractor(const Cover::Location& cl, QObject* parent);
 			~Extractor();
 
 			QPixmap pixmap();

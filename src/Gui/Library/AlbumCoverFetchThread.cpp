@@ -133,28 +133,36 @@ void AlbumCoverFetchThread::run()
 			continue;
 		}
 
-		HashAlbumPair hap;
+		QList<HashAlbumPair> haps;
+
 		{
 			LOCK_GUARD(m->mutex_album_list)
-			if(m->hash_album_list.isEmpty())
+			haps = m->hash_album_list;
+		}
+		
+		if(haps.isEmpty())
 			{
 				m->pause();
 				continue;
 			}
 
-			hap = m->hash_album_list.takeLast();
-		}
-
-		Album album = hap.second;
-		Cover::Location cl = Cover::Location::xcover_location(album);
+		for(const HashAlbumPair& hap : haps)
 		{
 			QString hash = hap.first;
+			Album album = hap.second;
+			Cover::Location cl = Cover::Location::xcover_location(album);
+			{
+				LOCK_GUARD(m->mutex_lookup);
+				m->lookups << HashLocationPair(hash, cl);
+			}
 
-			LOCK_GUARD(m->mutex_lookup);
-			m->lookups << HashLocationPair(hash, cl);
+			emit sig_next();
 		}
 
-		emit sig_next();
+		{
+			LOCK_GUARD(m->mutex_album_list)
+			m->hash_album_list.clear();
+		}
 	}
 }
 
@@ -173,7 +181,8 @@ void AlbumCoverFetchThread::add_album(const Album& album)
 		return;
 	}
 
-	m->hash_album_list.push_back(HashAlbumPair(hash, album));
+	LOCK_GUARD(m->mutex_album_list)
+	m->hash_album_list.push_front(HashAlbumPair(hash, album));
 }
 
 bool AlbumCoverFetchThread::check_album(const QString& hash)

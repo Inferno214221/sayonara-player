@@ -70,7 +70,7 @@ QString Albums::fetch_query_albums(bool also_empty) const
 		"COUNT(DISTINCT %1.trackID)			AS trackCount",    // 6
 		"MAX(%1.year)						AS albumYear",     // 7
 		"GROUP_CONCAT(DISTINCT %1.discnumber) AS discnumbers", // 8
-		"GROUP_CONCAT(DISTINCT %1.filename) AS filenames"      // 9
+		"GROUP_CONCAT(%1.filename, '#') AS filenames"      // 9
 	};
 
 	QString query = "SELECT " + fields.join(", ") + " FROM albums ";
@@ -124,7 +124,7 @@ bool Albums::db_fetch_albums(Query& q, AlbumList& result)
 		album.is_sampler = (album.artists().size() > 1);
 		album.set_db_id(db_id());
 
-		album.set_path_hint(q.value(9).toString().split(','));
+		album.set_path_hint(q.value(9).toString().split("#"));
 
 		result.push_back(std::move(album));
 	};

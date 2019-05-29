@@ -89,8 +89,7 @@ namespace Cover
 	private:
 
 		bool fetch_from_database();
-		bool fetch_from_audio_source();
-		bool fetch_from_file_system();
+		bool fetch_from_extractor();
 		bool fetch_from_www();
 
 
