@@ -334,7 +334,7 @@ void GUI_Equalizer::btn_save_clicked()
 		found_idx = ui->combo_presets->count() - 1;
 	}
 
-	for(int i=0; i<m->sliders.size(); i++)
+	for(size_t i=0; i<m->sliders.size(); i++)
 	{
 		m->presets[found_idx].set_value(i, m->sliders[i]->value());
 	}
@@ -378,7 +378,7 @@ void GUI_Equalizer::btn_undo_clicked()
 
 	else
 	{
-		for(int i=0; i<m->sliders.size(); i++)
+		for(size_t i=0; i<m->sliders.size(); i++)
 		{
 			m->sliders[i]->setValue( m->presets[found_idx].value(i) );
 		}

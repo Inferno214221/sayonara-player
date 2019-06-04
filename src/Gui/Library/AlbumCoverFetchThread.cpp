@@ -134,7 +134,6 @@ void AlbumCoverFetchThread::run()
 		}
 
 		QList<HashAlbumPair> haps;
-
 		{
 			LOCK_GUARD(m->mutex_album_list)
 			haps = m->hash_album_list;
@@ -158,7 +157,6 @@ void AlbumCoverFetchThread::run()
 
 			emit sig_next();
 		}
-
 		{
 			LOCK_GUARD(m->mutex_album_list)
 			m->hash_album_list.clear();

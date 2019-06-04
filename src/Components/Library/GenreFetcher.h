@@ -32,6 +32,7 @@ class Genre;
 namespace Tagging
 {
 	class Editor;
+	class UserOperations;
 }
 
 class GenreFetcher :
@@ -44,6 +45,9 @@ signals:
 	void sig_genres_fetched();
 	void sig_progress(int progress);
 	void sig_finished();
+
+private:
+	Tagging::UserOperations* init_tagging();
 
 public:
 	explicit GenreFetcher(QObject* parent=nullptr);
@@ -65,6 +69,7 @@ private slots:
 	void metadata_changed(const MetaDataList& v_md_old, const MetaDataList& v_md_new);
 	void metadata_deleted(const MetaDataList& v_md_deleted);
 };
+
 
 
 #endif // GENREFETCHER_H

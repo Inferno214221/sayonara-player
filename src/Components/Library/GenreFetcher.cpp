@@ -37,12 +37,7 @@ struct GenreFetcher::Private
 	LocalLibrary*					local_library=nullptr;
 	Util::Set<Genre>				genres;
 	Util::Set<Genre>				additional_genres; // empty genres that are inserted
-	Tagging::UserOperations* uto=nullptr;
-
-	Private(GenreFetcher* parent)
-	{
-		uto = new Tagging::UserOperations(-1, parent);
-	}
+	Tagging::UserOperations*		uto=nullptr;
 
 	DB::LibraryDatabase* get_local_library_db()
 	{
@@ -62,15 +57,25 @@ struct GenreFetcher::Private
 GenreFetcher::GenreFetcher(QObject* parent) :
 	QObject(parent)
 {
-	m = Pimpl::make<Private>(this);
+	m = Pimpl::make<Private>();
 
 	Tagging::ChangeNotifier* mcn = Tagging::ChangeNotifier::instance();
 
 	connect(mcn, &Tagging::ChangeNotifier::sig_metadata_changed, this, &GenreFetcher::metadata_changed);
 	connect(mcn, &Tagging::ChangeNotifier::sig_metadata_deleted, this, &GenreFetcher::metadata_deleted);
+}
 
-	connect(m->uto, &Tagging::UserOperations::sig_progress, this, &GenreFetcher::sig_progress);
-	connect(m->uto, &Tagging::UserOperations::sig_finished, this, &GenreFetcher::sig_finished);
+
+Tagging::UserOperations* GenreFetcher::init_tagging()
+{
+	if(!m->uto)
+	{
+		m->uto = new Tagging::UserOperations(-1, this);
+		connect(m->uto, &Tagging::UserOperations::sig_progress, this, &GenreFetcher::sig_progress);
+		connect(m->uto, &Tagging::UserOperations::sig_finished, this, &GenreFetcher::sig_finished);
+	}
+
+	return m->uto;
 }
 
 GenreFetcher::~GenreFetcher() {}
@@ -121,17 +126,20 @@ void GenreFetcher::create_genre(const Genre& genre)
 
 void GenreFetcher::add_genre_to_md(const MetaDataList& v_md, const Genre& genre)
 {
-	m->uto->add_genre_to_md(v_md, genre);
+	Tagging::UserOperations* uto = init_tagging();
+	uto->add_genre_to_md(v_md, genre);
 }
 
 void GenreFetcher::delete_genre(const Genre& genre)
 {
-	m->uto->delete_genre(genre);
+	Tagging::UserOperations* uto = init_tagging();
+	uto->delete_genre(genre);
 }
 
 void GenreFetcher::rename_genre(const Genre& old_genre, const Genre& new_genre)
 {
-	m->uto->rename_genre(old_genre, new_genre);
+	Tagging::UserOperations* uto = init_tagging();
+	uto->rename_genre(old_genre, new_genre);
 }
 
 void GenreFetcher::set_local_library(LocalLibrary* local_library)
