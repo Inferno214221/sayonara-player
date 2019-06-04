@@ -22,7 +22,7 @@
 #define EQUALIZER_SETTING_H_
 
 #include "Utils/Pimpl.h"
-#include "Utils/Settings/settingconvertible.h"
+#include "Utils/Settings/SettingConvertible.h"
 
 #include <QString>
 #include <array>

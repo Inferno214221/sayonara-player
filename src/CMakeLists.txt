@@ -49,6 +49,7 @@ include_directories(${TAGLIB_INCLUDE_DIRS})
 
 include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_BINARY_DIR}/src)
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 add_definitions(${Qt5Core_DEFINITIONS})
 add_definitions(${QT_DEFINITIONS})

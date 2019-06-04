@@ -76,13 +76,14 @@ namespace SettingConverter
 	bool from_string(const QString& str, QPair<A, B>& pair)
 	{
 		QStringList lst = str.split(",");
-		if(lst.size() >= 2){
+
+		if(lst.size() >= 2)
+		{
 			from_string(lst[0], pair.first);
 			from_string(lst[1], pair.second);
-			return true;
 		}
 
-		return false;
+		return (lst.size() >= 2);
 	}
 
 	template<typename T>
@@ -90,7 +91,7 @@ namespace SettingConverter
 	{
 		QStringList lst;
 
-		for(const T& v : val){
+		for(const T& v : val) {
 			lst << to_string(v);
 		}
 

@@ -6,7 +6,6 @@ set(PLAYER_LIBRARIES
 	say_gui_playlist
 	say_interfaces_player_plugin
 	say_interfaces_notifications
-	say_gui_plugins
 )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES})

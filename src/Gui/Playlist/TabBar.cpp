@@ -56,8 +56,7 @@ struct PlaylistTabBar::Private
 };
 
 PlaylistTabBar::PlaylistTabBar(QWidget *parent) :
-	QTabBar(parent),
-	ShortcutWidget()
+	QTabBar(parent)
 {
 	m = Pimpl::make<Private>(this);
 

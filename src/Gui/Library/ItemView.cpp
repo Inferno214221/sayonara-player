@@ -30,8 +30,8 @@
 #include "HeaderView.h"
 #include "Components/Library/AbstractLibrary.h"
 #include "Components/Covers/CoverLocation.h"
-#include "Gui/Library/Utils/ColumnHeader.h"
 
+#include "Utils/Library/MergeData.h"
 #include "Utils/globals.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/MetaData/MetaDataList.h"
@@ -41,82 +41,25 @@
 #include "Utils/ExtensionSet.h"
 
 #include "Gui/Utils/ContextMenu/LibraryContextMenu.h"
-#include "Gui/Utils/SearchableWidget/MiniSearcher.h"
-#include "Gui/Utils/CustomMimeData.h"
 #include "Gui/Utils/PreferenceAction.h"
 #include "Gui/Utils/Shortcuts/ShortcutHandler.h"
 #include "Gui/Utils/Shortcuts/Shortcut.h"
+#include "Gui/Utils/CustomMimeData.h"
+#include "Gui/Utils/Library/Mergable.h"
 
-#include <QShortcut>
 #include <QKeySequence>
 #include <QDrag>
-#include <QDropEvent>
-#include <QMouseEvent>
 #include <QPushButton>
-#include <QScrollBar>
-#include <QBoxLayout>
-#include <QHeaderView>
 #include <QItemSelectionModel>
 
 using namespace Library;
 
-struct ItemView::MergeData::Private
-{
-	Util::Set<Id>	source_ids;
-	Id				target_id;
-	LibraryId		library_id;
-
-	Private(const Util::Set<Id>& source_ids, Id target_id, LibraryId library_id) :
-		source_ids(source_ids),
-		target_id(target_id),
-		library_id(library_id)
-	{}
-};
-
-ItemView::MergeData::MergeData(const Util::Set<Id>& source_ids, Id target_id, LibraryId library_id)
-{
-	m = Pimpl::make<Private>(source_ids, target_id, library_id);
-}
-
-ItemView::MergeData::MergeData(const ItemView::MergeData& other)
-{
-	m = Pimpl::make<Private>(other.source_ids(), other.target_id(), other.library_id());
-}
-
-ItemView::MergeData::~MergeData() {}
-
-ItemView::MergeData&ItemView::MergeData::operator=(const ItemView::MergeData& other)
-{
-	*m = *(other.m);
-	return *this;
-}
-
-bool ItemView::MergeData::is_valid() const
-{
-	return ((target_id() >= 0) && (source_ids().count() >= 2) && !(source_ids().contains(-1)));
-}
-
-Util::Set<Id> ItemView::MergeData::source_ids() const
-{
-	return m->source_ids;
-}
-
-Id ItemView::MergeData::target_id() const
-{
-	return m->target_id;
-}
-
-LibraryId ItemView::MergeData::library_id() const
-{
-	return m->library_id;
-}
-
 struct Library::ItemView::Private
 {
+	MergeMenu*			merge_menu=nullptr;
 	ItemModel*			model=nullptr;
 	QPushButton*		btn_clear_selection=nullptr;
-	QAction*			merge_action=nullptr;
-	QMenu*				merge_menu=nullptr;
+
 	LibraryContextMenu*	context_menu=nullptr;
 
 	MD::Interpretation	type;
@@ -134,8 +77,7 @@ struct Library::ItemView::Private
 ItemView::ItemView(QWidget* parent) :
 	SearchableTableView(parent),
 	InfoDialogContainer(),
-	Dragable(this),
-	ShortcutWidget()
+	Dragable(this)
 {
 	m = Pimpl::make<Private>();
 
@@ -226,22 +168,23 @@ void ItemView::init_context_menu_custom_type(LibraryContextMenu* menu)
 		return;
 	}
 
-	if(!menu){
+	if(!menu)
+	{
 		m->context_menu = new LibraryContextMenu(this);
+		m->merge_menu = new MergeMenu(m->context_menu);
+
+		connect(m->merge_menu, &MergeMenu::sig_merge_triggered, this, &ItemView::merge_action_triggered);
 	}
 
 	else {
 		m->context_menu = menu;
 	}
 
-	m->merge_menu = new QMenu(tr("Merge"), m->context_menu);
-	m->merge_action = m->context_menu->addMenu(m->merge_menu);
-	m->merge_action->setVisible(false);
-
 	QAction* after_edit_action = m->context_menu->get_action_after(LibraryContextMenu::EntryEdit);
+
 	if(after_edit_action)
 	{
-		m->context_menu->insertAction(after_edit_action, m->merge_action);
+		m->context_menu->insertAction(after_edit_action, m->merge_menu->action());
 	}
 
 	connect(m->context_menu, &LibraryContextMenu::sig_edit_clicked, this, [=](){ show_edit(); });
@@ -371,34 +314,16 @@ MetaDataList ItemView::info_dialog_data() const
 	return item_model()->mimedata_tracks();
 }
 
-ItemView::MergeData ItemView::calc_mergedata() const
-{
-	QAction* action = static_cast<QAction*>(sender());
-	Id target_id = action->data().toInt();
-
-	IndexSet selected_items = this->selected_items();
-	ItemModel* model = item_model();
-
-	Util::Set<Id> source_ids;
-	for(auto idx : selected_items)
-	{
-		source_ids.insert( model->id_by_index(idx) );
-	}
-
-	ItemView::MergeData ret(source_ids, target_id, -1);
-	return ret;
-}
-
 void ItemView::merge_action_triggered()
 {
-	ItemView::MergeData mergedata = calc_mergedata();
+	MergeData mergedata = m->merge_menu->mergedata();
 
 	if(mergedata.is_valid()){
 		run_merge_operation(mergedata);
 	}
 }
 
-void ItemView::run_merge_operation(const ItemView::MergeData& md) { Q_UNUSED(md) }
+void ItemView::run_merge_operation(const MergeData& md) { Q_UNUSED(md) }
 
 void ItemView::play_clicked() { emit sig_play_clicked(); }
 void ItemView::play_new_tab_clicked() {	emit sig_play_new_tab_clicked(); }
@@ -548,29 +473,19 @@ void ItemView::contextMenuEvent(QContextMenuEvent* event)
 
 	if(is_mergeable)
 	{
-		size_t n_selections = selections.size();
-
-		if(n_selections > 1)
+		QMap<Id, QString> data;
+		ItemModel* model = item_model();
+		for(int i : selections)
 		{
-			m->merge_menu->clear();
+			Id id = model->id_by_index(i);
+			QString name = item_model()->searchable_string(i);
+			name.replace("&", "&&");
 
-			ItemModel* model = item_model();
-			for(int i : selections)
-			{
-				QString name = item_model()->searchable_string(i);
-				name.replace("&", "&&");
-
-				QAction* action = new QAction(name, m->merge_menu);
-
-				int id = model->id_by_index(i);
-				action->setData(id);
-				connect(action, &QAction::triggered, this, &ItemView::merge_action_triggered);
-
-				m->merge_menu->addAction(action);
-			}
-
-			m->merge_action->setVisible(n_selections > 1);
+			data.insert(id, name);
+			m->merge_menu->set_data(data);
 		}
+
+		m->merge_menu->action()->setVisible( m->merge_menu->is_data_valid() );
 	}
 
 	m->context_menu->set_extensions(library()->extensions());

@@ -316,7 +316,7 @@ void Application::init_player()
 
 void Application::init_playlist(const QStringList& files_to_play)
 {
-	if(files_to_play.size() > 0)
+	if(!files_to_play.isEmpty())
 	{
 		QString playlist_name = m->plh->request_new_playlist_name();
 		m->plh->create_playlist(files_to_play, playlist_name);
@@ -360,7 +360,7 @@ void Application::init_libraries()
 	Library::PluginHandler* library_plugin_loader = Library::PluginHandler::instance();
 
 	QList<Library::Container*> library_containers;
-	Library::DirectoryContainer* directory_container = new Library::DirectoryContainer(this);
+	auto* directory_container = new Library::DirectoryContainer(this);
 
 	library_containers << static_cast<Library::Container*>(directory_container);
 
@@ -398,7 +398,7 @@ void Application::init_plugins()
 	pph->add_plugin(new GUI_Broadcast());
 	pph->add_plugin(new GUI_Crossfader());
 
-	sp_log(Log::Debug, this) << "Plugins finsihed: " << m->timer->elapsed() << "ms";
+	sp_log(Log::Debug, this) << "Plugins finished: " << m->timer->elapsed() << "ms";
 }
 
 void Application::init_single_instance_thread()
@@ -445,12 +445,12 @@ void Application::remote_control_activated()
 
 void Application::create_playlist()
 {
-	InstanceThread* t =	static_cast<InstanceThread*>(sender());
-	if(!t){
+	auto* instance_thread =	static_cast<InstanceThread*>(sender());
+	if(!instance_thread){
 		return;
 	}
 
-	QStringList paths = t->paths();
+	QStringList paths = instance_thread->paths();
 	QString new_name = Playlist::Handler::instance()->request_new_playlist_name();
 
 	Playlist::Handler::instance()->create_playlist(paths, new_name, true);

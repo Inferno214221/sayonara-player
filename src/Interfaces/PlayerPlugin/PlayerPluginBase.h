@@ -22,7 +22,6 @@
 #define PLAYERPLUGIN_H
 
 #include "Gui/Utils/Widgets/Widget.h"
-#include "Gui/Utils/Shortcuts/ShortcutWidget.h"
 #include "Utils/Pimpl.h"
 
 class QAction;
@@ -37,8 +36,7 @@ namespace PlayerPlugin
 {
 	class Handler;
 	class Base :
-		public Gui::Widget,
-		public ShortcutWidget
+		public Gui::Widget
 	{
 		friend class Handler;
 

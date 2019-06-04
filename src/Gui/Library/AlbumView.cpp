@@ -31,8 +31,10 @@
 #include "Components/Tagging/UserTaggingOperations.h"
 #include "Components/Library/AbstractLibrary.h"
 
+#include "Utils/Library/MergeData.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Utils.h"
+#include "Utils/Set.h"
 
 #include <QHeaderView>
 #include <QVBoxLayout>

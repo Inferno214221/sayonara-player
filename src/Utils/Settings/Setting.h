@@ -76,8 +76,8 @@ class Setting : public AbstrSetting
 		Setting();
 		Setting(const Setting&);
 
-		typename KeyClass::Data _val;
-		typename KeyClass::Data _default_val;
+		typename KeyClass::Data mValue;
+		typename KeyClass::Data mDefaultValue;
 
 	public:
 
@@ -85,15 +85,15 @@ class Setting : public AbstrSetting
 		Setting(const char* db_key, const typename KeyClass::Data& def) :
 			AbstrSetting(KeyClass::key, db_key)
 		{
-			_default_val = def;
-			_val = def;
+			mDefaultValue = def;
+			mValue = def;
 		}
 
 		Setting(const typename KeyClass::Data& def) :
 			AbstrSetting(KeyClass::key)
 		{
-			_default_val = def;
-			_val = def;
+			mDefaultValue = def;
+			mValue = def;
 		}
 
 		/* Destructor */
@@ -101,39 +101,39 @@ class Setting : public AbstrSetting
 
 		void assign_default_value() override
 		{
-			_val = _default_val;
+			mValue = mDefaultValue;
 		}
 
 		QString value_to_string() const override
 		{
-			 return SettingConverter::to_string(_val);
+			 return SettingConverter::to_string(mValue);
 		}
 
 		bool load_value_from_string(const QString& str) override
 		{
-			return SettingConverter::from_string(str, _val);
+			return SettingConverter::from_string(str, mValue);
 		}
 
 		/* ... */
 		const typename KeyClass::Data& value() const
 		{
-			return _val;
+			return mValue;
 		}
 
 		/* ... */
 		const typename KeyClass::Data& default_value() const
 		{
-			return _default_val;
+			return mDefaultValue;
 		}
 
 		/* ... */
 		bool assign_value(const typename KeyClass::Data& val)
 		{
-			if( _val == val ){
+			if( mValue == val ){
 				return false;
 			}
 
-			_val = val;
+			mValue = val;
 			return true;
 		}
 };

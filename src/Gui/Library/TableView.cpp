@@ -24,6 +24,8 @@
 #include "Gui/Library/Utils/ColumnHeader.h"
 #include "Gui/Library/HeaderView.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/Set.h"
+
 #include <algorithm>
 
 using namespace Library;

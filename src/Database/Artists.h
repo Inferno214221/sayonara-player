@@ -38,12 +38,13 @@ namespace DB
 		public:
 
 			Artists(const QString& connection_name, DbId db_id, LibraryId library_id);
-			~Artists();
+			~Artists() override;
 
 			virtual bool db_fetch_artists(Query& q, ArtistList& result);
 
 			virtual ArtistId getArtistID (const QString& artist);
-			virtual bool getArtistByID(int id, Artist& artist, bool also_empty=false);
+            virtual bool getArtistByID(ArtistId id, Artist& artist);
+			virtual bool getArtistByID(ArtistId id, Artist& artist, bool also_empty);
 
 			virtual bool getAllArtists(ArtistList& result, bool also_empty);
 			virtual bool getAllArtistsBySearchString(const ::Library::Filter& filter, ArtistList& result);
@@ -62,7 +63,7 @@ namespace DB
 			virtual QString artistname_field() const=0;
 
 		private:
-			virtual QString fetch_query_artists(bool also_empty=false) const;
+			virtual QString fetch_query_artists(bool also_empty) const;
 	};
 }
 

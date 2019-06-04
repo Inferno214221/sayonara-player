@@ -40,6 +40,10 @@ Visualizer::~Visualizer() {}
 
 bool Visualizer::init()
 {
+	if(m->visualizer_queue)
+	{
+		return true;
+	}
 
 	{ // create
 		if(	Engine::Utils::create_element(&m->visualizer_queue, "queue", "visualizer") &&

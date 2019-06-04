@@ -34,12 +34,11 @@
 
 #include "Gui/InfoDialog/InfoDialogContainer.h"
 #include "Gui/Utils/ContextMenu/LibraryContextMenu.h"
-#include "Gui/Utils/Shortcuts/ShortcutWidget.h"
 
-#include "Utils/Library/Sortorder.h"
-#include "Utils/Set.h"
+#include "Utils/SetFwd.h"
 #include "Utils/Pimpl.h"
 
+class MergeData;
 class AbstractLibrary;
 
 namespace Library
@@ -51,28 +50,10 @@ namespace Library
 	class ItemView :
 			public SearchableTableView,
 			public InfoDialogContainer,
-			protected Dragable,
-			protected ShortcutWidget
+			protected Dragable
 	{
 		Q_OBJECT
 		PIMPL(ItemView)
-
-	protected:
-		class MergeData
-		{
-			PIMPL(MergeData)
-
-			public:
-				MergeData(const Util::Set<Id>& source_ids, Id target_id, LibraryId library_id);
-				MergeData(const MergeData& other);
-				~MergeData();
-
-				MergeData& operator=(const MergeData& other);
-				bool			is_valid() const;
-				Util::Set<Id>	source_ids() const;
-				Id				target_id() const;
-				LibraryId		library_id() const;
-		};
 
 	signals:
 		void sig_all_selected();
@@ -146,7 +127,6 @@ namespace Library
 		virtual void selection_changed(const IndexSet& indexes);
 		virtual void import_requested(const QStringList& files);
 
-		MergeData calc_mergedata() const;
 		virtual void run_merge_operation(const MergeData& md);
 
 		int viewport_height() const override;

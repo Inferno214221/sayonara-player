@@ -32,9 +32,10 @@ using DB::Module;
 VisualStyles::VisualStyles(const QString& connection_name, DbId db_id) :
 	Module(connection_name, db_id) {}
 
-VisualStyles::~VisualStyles() {}
+VisualStyles::~VisualStyles() = default;
 
-QString col2String(QColor col) {
+QString col2String(const QColor& col)
+{
 	QString str;
 	str = QString::number(col.red()) + "," +
 	QString::number(col.green()) + "," +
@@ -44,7 +45,8 @@ QString col2String(QColor col) {
 }
 
 
-bool colFromString(QString str, QColor& c) {
+bool colFromString(const QString& str, QColor& c)
+{
 	QStringList colors = str.split(",");
 
 	if(colors.size() < 3) {

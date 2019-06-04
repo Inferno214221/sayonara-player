@@ -35,7 +35,7 @@ struct Albums::Private
 	QString search_view;
 	QString track_view;
 
-	Private(LibraryId library_id)
+	explicit Private(LibraryId library_id)
 	{
 		if(library_id < 0) {
 			track_view = "tracks";
@@ -55,13 +55,11 @@ Albums::Albums(const QString& connection_name, DbId db_id, LibraryId library_id)
 	m = Pimpl::make<Private>(library_id);
 }
 
-Albums::~Albums() {}
-
 QString Albums::fetch_query_albums(bool also_empty) const
 {
 	QStringList fields
 	{
-		"albums.albumID		AS albumID",		               // 0
+	    "albums.albumID		AS albumID",		               // 0
 		"albums.name		AS albumName",                     // 1
 		"albums.rating		AS albumRating",                   // 2
 		"GROUP_CONCAT(DISTINCT artists.name)      AS artistNames",	    // 3
@@ -87,6 +85,7 @@ QString Albums::fetch_query_albums(bool also_empty) const
 	return query.arg(m->track_view);
 }
 
+DB::Albums::~Albums() = default;
 
 bool Albums::db_fetch_albums(Query& q, AlbumList& result)
 {
@@ -153,6 +152,10 @@ AlbumId Albums::getAlbumID(const QString& album)
 	return albumID;
 }
 
+bool Albums::getAlbumByID(AlbumId id, Album& album)
+{
+    return getAlbumByID(id, album, false);
+}
 
 bool Albums::getAlbumByID(AlbumId id, Album& album, bool also_empty)
 {
@@ -161,43 +164,37 @@ bool Albums::getAlbumByID(AlbumId id, Album& album, bool also_empty)
 	}
 
 	Query q(this);
-	QString querytext =	fetch_query_albums(also_empty) +
+	QString query =	fetch_query_albums(also_empty) +
 						" WHERE albums.albumID = :id "
 						" GROUP BY albums.albumID, albums.name, albums.rating ";
 
-	q.prepare(querytext);
+	q.prepare(query);
 	q.bindValue(":id", id);
 
 	AlbumList albums;
 	db_fetch_albums(q, albums);
 
-	if(albums.size() > 0) {
+	if(!albums.empty()) {
 		album = albums.first();
 	}
 
-	return (albums.size() > 0);
+	return (!albums.empty());
 }
 
 bool Albums::getAllAlbums(AlbumList& result, bool also_empty)
 {
 	Query q(this);
-	QString querytext = fetch_query_albums(also_empty);
+	QString query = fetch_query_albums(also_empty);
 
-	querytext += " GROUP BY albums.albumID, albums.name, albums.rating; ";
+	query += " GROUP BY albums.albumID, albums.name, albums.rating; ";
 
-	q.prepare(querytext);
+	q.prepare(query);
 
 	return db_fetch_albums(q, result);
 }
 
 
-bool Albums::getAllAlbumsByArtist(IdList artists, AlbumList& result)
-{
-	return getAllAlbumsByArtist(artists, result, Library::Filter());
-}
-
-
-bool Albums::getAllAlbumsByArtist(IdList artists, AlbumList& result, const Library::Filter& filter)
+bool Albums::getAllAlbumsByArtist(const IdList &artists, AlbumList &result, const Library::Filter &filter)
 {
 	if(artists.isEmpty()) {
 		return false;
@@ -384,6 +381,7 @@ AlbumId Albums::insertAlbumIntoDatabase(const Album& album)
 
 	return q.lastInsertId().toInt();
 }
+
 
 static QString get_filter_clause(const Filter& filter, QString cis_placeholder, QString searchterm_placeholder)
 {

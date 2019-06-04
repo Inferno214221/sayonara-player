@@ -208,7 +208,7 @@ void GUI_LevelPainter::paintEvent(QPaintEvent* e)
 
 	for(int c=0; c<Channels; c++)
 	{
-		int n_colored_rects = n_rects * m->level[c];
+		int n_colored_rects = static_cast<int>(n_rects * m->level[c]);
 
 		QRect rect(0, y, w_rect, h_rect);
 

@@ -60,13 +60,13 @@ GUI_ImportDialog::GUI_ImportDialog(LocalLibrary* library, bool copy_enabled, QWi
 	connect(m->importer, &Library::Importer::sig_progress_no_percent, this, &GUI_ImportDialog::set_progress_no_percent);
 	connect(m->importer, &Library::Importer::sig_triggered, this, &GUI_ImportDialog::show);
 
-	ui->lab_target_path->setText( library->library_path() );
-	ui->lab_target_path->setVisible(copy_enabled);
-	ui->lab_target_info->setVisible(copy_enabled);
-	ui->pb_progress->setValue(0);
-	ui->pb_progress->setVisible(false);
-	ui->lab_progress->setText("");
-	ui->lab_progress->setVisible(false);
+    ui->lab_target_path->setText(library->library_path());
+    ui->lab_target_path->setVisible(copy_enabled);
+    ui->lab_target_info->setVisible(copy_enabled);
+    ui->pb_progress->setValue(0);
+    ui->pb_progress->setVisible(false);
+    ui->lab_progress->setText("");
+    ui->lab_progress->setVisible(false);
 	//ui->btn_edit->setVisible(false);
 
 	connect(ui->btn_ok, &QPushButton::clicked, this, &GUI_ImportDialog::bb_accepted);
@@ -150,10 +150,12 @@ void GUI_ImportDialog::set_status(Library::Importer::ImportStatus status)
 			thread_active = true;
 			break;
 
+        case Library::Importer::ImportStatus::WaitForUser:
 		default:
 			ui->btn_ok->setEnabled(true);
 			break;
-	}
+
+    }
 
 	if(thread_active){
 		ui->btn_cancel->setText(Lang::get(Lang::Cancel));
@@ -243,7 +245,8 @@ void GUI_ImportDialog::choose_dir()
 	}
 
 	dir.replace(library_path, "");
-	while(dir.startsWith(QDir::separator())){
+	while(dir.startsWith(QDir::separator()))
+	{
 		dir.remove(0, 1);
 	}
 

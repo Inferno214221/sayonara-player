@@ -32,9 +32,11 @@
 
 #include "Utils/Library/Sorting.h"
 #include "Utils/Library/Sortorder.h"
+#include "Utils/Library/MergeData.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Utils.h"
+#include "Utils/Set.h"
 #include "Utils/Logger/Logger.h"
 
 #include <QHeaderView>
@@ -312,7 +314,7 @@ void CoverView::refresh_clicked()
 	m->library->refresh_albums();
 }
 
-void CoverView::run_merge_operation(const Library::ItemView::MergeData& mergedata)
+void CoverView::run_merge_operation(const MergeData& mergedata)
 {
 	Tagging::UserOperations* uto = new Tagging::UserOperations(mergedata.library_id(), this);
 

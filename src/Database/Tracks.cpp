@@ -53,7 +53,7 @@ struct Tracks::Private
 
 	LibraryId library_id;
 
-	Private(LibraryId library_id) :
+	explicit Private(LibraryId library_id) :
 		library_id(library_id)
 	{
 		if(library_id < 0)
@@ -106,7 +106,7 @@ Tracks::Tracks(const QString& connection_name, DbId db_id, LibraryId library_id)
 	create_track_search_view(select);
 }
 
-Tracks::~Tracks() {}
+Tracks::~Tracks() = default;
 
 void Tracks::drop_track_view()
 {
@@ -232,8 +232,8 @@ MetaData Tracks::getTrackByPath(const QString& path)
 {
 	DB::Query q(this);
 
-	QString querytext = fetch_query_tracks() + "WHERE filename = :filename;";
-	q.prepare(querytext);
+	QString query = fetch_query_tracks() + "WHERE filename = :filename;";
+	q.prepare(query);
 	q.bindValue(":filename", Util::cvt_not_null(path));
 
 	MetaData md(path);
@@ -244,7 +244,7 @@ MetaData Tracks::getTrackByPath(const QString& path)
 		return md;
 	}
 
-	if(v_md.size() == 0)
+	if(v_md.empty())
 	{
 		md.is_extern = true;
 		return md;
@@ -257,9 +257,9 @@ MetaData Tracks::getTrackByPath(const QString& path)
 MetaData Tracks::getTrackById(TrackID id)
 {
 	Query q(this);
-	QString querytext = fetch_query_tracks() + "WHERE trackID = :track_id;";
+	QString query = fetch_query_tracks() + "WHERE trackID = :track_id;";
 
-	q.prepare(querytext);
+	q.prepare(query);
 	q.bindValue(":track_id", id);
 
 	MetaDataList v_md;
@@ -276,7 +276,7 @@ MetaData Tracks::getTrackById(TrackID id)
 	return v_md.first();
 }
 
-bool Tracks::getTracksbyIds(const QList<TrackID>& ids, MetaDataList& v_md)
+bool Tracks::getTracksByIds(const QList<TrackID> &ids, MetaDataList &v_md)
 {
 	QStringList queries;
 	for(const TrackID& id : ids)
@@ -284,11 +284,11 @@ bool Tracks::getTracksbyIds(const QList<TrackID>& ids, MetaDataList& v_md)
 		queries << fetch_query_tracks() + QString(" WHERE trackID = :track_id_%1").arg(id);
 	}
 
-	QString querytext = queries.join(" UNION ");
-	querytext += ";";
+	QString query = queries.join(" UNION ");
+	query += ";";
 
 	Query q(this);
-	q.prepare(querytext);
+	q.prepare(query);
 
 	for(const TrackID& id : ids)
 	{
@@ -302,21 +302,23 @@ bool Tracks::getAllTracks(MetaDataList& result)
 {
 	Query q(this);
 
-	QString querytext = fetch_query_tracks() + ";";
+	QString query = fetch_query_tracks() + ";";
 
-	q.prepare(querytext);
+	q.prepare(query);
 
 	return db_fetch_tracks(q, result);
 }
 
-bool Tracks::getAllTracksByAlbum(IdList albums, MetaDataList& result)
+
+bool DB::Tracks::getAllTracksByAlbum(const IdList& albumsIds, MetaDataList& result)
 {
-	return getAllTracksByAlbum(albums, result, Filter());
+    return getAllTracksByAlbum(albumsIds, result, Filter(), -1);
 }
 
-bool Tracks::getAllTracksByAlbum(IdList albums, MetaDataList& result, const Filter& filter, int discnumber)
+
+bool Tracks::getAllTracksByAlbum(const IdList& albumIds, MetaDataList& result, const Filter& filter, int discnumber)
 {
-	if(albums.isEmpty()) {
+	if(albumIds.isEmpty()) {
 		return false;
 	}
 
@@ -326,30 +328,30 @@ bool Tracks::getAllTracksByAlbum(IdList albums, MetaDataList& result, const Filt
 	{
 		Query q(this);
 
-		QString querytext = fetch_query_tracks();
-		querytext += " WHERE ";
+		QString query = fetch_query_tracks();
+		query += " WHERE ";
 		if( !filter.cleared() )
 		{
-			querytext += get_filter_clause(filter, "cissearch", "searchterm") + " AND ";
+			query += get_filter_clause(filter, "cissearch", "searchterm") + " AND ";
 		}
 
 		{ // album id clauses
-			QString aidf = m->search_view+ ".albumID ";
+			QString aidf = m->search_view + ".albumID ";
 			QStringList or_clauses;
-			for(int a=0; a<albums.size(); a++){
+			for(int a=0; a<albumIds.size(); a++){
 				or_clauses << QString("%1 = :album_id_%2").arg(aidf).arg(a);
 			}
 
-			querytext += " (" + or_clauses.join(" OR ") + ") ";
+			query += " (" + or_clauses.join(" OR ") + ") ";
 		}
 
-		querytext += ";";
+		query += ";";
 
 		{ // prepare & run
-			q.prepare(querytext);
+			q.prepare(query);
 
-			for(int i=0; i<albums.size(); i++) {
-				q.bindValue(QString(":album_id_%1").arg(i), albums[i]);
+			for(int i=0; i<albumIds.size(); i++) {
+				q.bindValue(QString(":album_id_%1").arg(i), albumIds[i]);
 			}
 
 			q.bindValue(":searchterm", filters[i]);
@@ -375,14 +377,14 @@ bool Tracks::getAllTracksByAlbum(IdList albums, MetaDataList& result, const Filt
 	return true;
 }
 
-bool Tracks::getAllTracksByArtist(IdList artists, MetaDataList& result)
+bool Tracks::getAllTracksByArtist(const IdList& artistIds, MetaDataList& result)
 {
-	return getAllTracksByArtist(artists, result, Filter());
+	return getAllTracksByArtist(artistIds, result, Filter());
 }
 
-bool Tracks::getAllTracksByArtist(IdList artists, MetaDataList& result, const Filter& filter)
+bool Tracks::getAllTracksByArtist(const IdList& artistIds, MetaDataList& result, const Filter& filter)
 {
-	if(artists.empty()){
+	if(artistIds.empty()){
 		return false;
 	}
 
@@ -404,7 +406,7 @@ bool Tracks::getAllTracksByArtist(IdList artists, MetaDataList& result, const Fi
 			QString aidf = m->search_view + "." + artistid_field();
 
 			QStringList or_clauses;
-			for(int a=0; a<artists.size(); a++) {
+			for(int a=0; a<artistIds.size(); a++) {
 				or_clauses << QString("%1 = :artist_id_%2").arg(aidf).arg(a);
 			}
 
@@ -416,8 +418,8 @@ bool Tracks::getAllTracksByArtist(IdList artists, MetaDataList& result, const Fi
 		{ // prepare & run
 			q.prepare(query);
 
-			for(int a=0; a<artists.size(); a++) {
-				q.bindValue(QString(":artist_id_%1").arg(a), artists[i]);
+			for(int a=0; a<artistIds.size(); a++) {
+				q.bindValue(QString(":artist_id_%1").arg(a), artistIds[i]);
 			}
 
 			q.bindValue(":searchterm", filters[i]);
@@ -441,21 +443,24 @@ bool Tracks::getAllTracksBySearchString(const Filter& filter, MetaDataList& resu
 	{
 		Query q(this);
 
-		QString querytext = fetch_query_tracks();
-		querytext += " WHERE " + get_filter_clause(filter, "cissearch", "searchterm");
-		querytext += ";";
+		QString query = fetch_query_tracks();
+		query += " WHERE " + get_filter_clause(filter, "cissearch", "searchterm");
+		query += ";";
 
-		q.prepare(querytext);
+		q.prepare(query);
 
 		q.bindValue(":searchterm", filters[i]);
 		q.bindValue(":cissearch", search_filters[i]);
 
-		MetaDataList tmp_list;
-		db_fetch_tracks(q, tmp_list);
-		if(tmp_list.size() == 0){
-			q.show_query();
-		}
-		result.append_unique(tmp_list);
+        {
+            MetaDataList tracks;
+
+            db_fetch_tracks(q, tracks);
+            if(tracks.empty()) {
+                q.show_query();
+            }
+            result.append_unique(tracks);
+        }
 	}
 
 	return true;
@@ -734,6 +739,7 @@ bool Tracks::insertTrackIntoDatabase(const MetaData& md, ArtistId artist_id, Alb
 
 	return (!q.has_error());
 }
+
 
 static QString get_filter_clause(const Filter& filter, QString cis_placeholder, QString searchterm_placeholder)
 {

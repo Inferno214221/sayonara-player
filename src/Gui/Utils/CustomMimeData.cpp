@@ -19,9 +19,11 @@
  */
 
 #include "CustomMimeData.h"
-#include "Utils/MetaData/MetaDataList.h"
+
 #include "Gui/Utils/MimeDataUtils.h"
+
 #include "Utils/FileUtils.h"
+#include "Utils/MetaData/MetaDataList.h"
 
 #include <QUrl>
 

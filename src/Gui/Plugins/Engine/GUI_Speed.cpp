@@ -49,15 +49,16 @@ void GUI_Speed::init_ui()
 	setup_parent(this, &ui);
 
 	bool active = GetSetting(Set::Engine_SpeedActive);
-	float speed = GetSetting(Set::Engine_Speed) * 1.0f;
+    float fSpeed = GetSetting(Set::Engine_Speed);
+    int speed = static_cast<int>(fSpeed * 100.0f);
 	int pitch = GetSetting(Set::Engine_Pitch) * 10;
 
 	active_changed(active);
 
-	ui->sli_speed->setValue(speed * 100);
+	ui->sli_speed->setValue(speed);
 	ui->sli_speed->setMouseTracking(true);
 
-	speed_changed(speed * 100);
+	speed_changed(speed);
 
 	ui->cb_preserve_pitch->setChecked( GetSetting(Set::Engine_PreservePitch));
 
@@ -65,11 +66,11 @@ void GUI_Speed::init_ui()
 	ui->sli_pitch->setMouseTracking(true);
 	pitch_changed(pitch);
 
-	MouseEnterFilter* mef_pitch = new MouseEnterFilter(ui->btn_pitch);
-	MouseEnterFilter* mef_speed = new MouseEnterFilter(ui->btn_speed);
+	auto* mef_pitch = new MouseEnterFilter(ui->btn_pitch);
+	auto* mef_speed = new MouseEnterFilter(ui->btn_speed);
 
-	MouseLeaveFilter* mlf_pitch = new MouseLeaveFilter(ui->btn_pitch);
-	MouseLeaveFilter* mlf_speed = new MouseLeaveFilter(ui->btn_speed);
+	auto* mlf_pitch = new MouseLeaveFilter(ui->btn_pitch);
+	auto* mlf_speed = new MouseLeaveFilter(ui->btn_speed);
 
 	connect(mef_pitch, &MouseEnterFilter::sig_mouse_entered, this, [=](){
 		ui->btn_pitch->setText("440 Hz");

@@ -20,8 +20,6 @@
 
 #include "Shortcut.h"
 #include "ShortcutHandler.h"
-#include "Database/Connector.h"
-#include "Database/Shortcuts.h"
 #include "Gui/Utils/Widgets/Widget.h"
 
 #include "Utils/RawShortcutMap.h"
@@ -29,36 +27,6 @@
 
 #include <QKeySequence>
 #include <QWidget>
-
-//static QList<QKeySequence> merge_key_sequences(const QList<QKeySequence>& sequences)
-//{
-//	QList<QKeySequence> ret = sequences;
-
-//	for(QKeySequence ks : sequences)
-//	{
-//		QString str = ks.toString();
-
-//		if(ks.toString().contains("return", Qt::CaseInsensitive))
-//		{
-//			str.replace("return", "Enter", Qt::CaseInsensitive);
-//			if(!ret.contains(QKeySequence(str))){
-//				ret << QKeySequence(str);
-//			}
-//		}
-
-//		else if(ks.toString().contains("enter", Qt::CaseInsensitive))
-//		{
-//			str.replace("num+enter", "enter", Qt::CaseInsensitive);
-//			str.replace("enter", "Return", Qt::CaseInsensitive);
-//			if(!ret.contains(QKeySequence(str))){
-//				ret << QKeySequence(str);
-//			}
-//		}
-//	}
-
-//	return ret;
-//}
-
 
 struct Shortcut::Private
 {

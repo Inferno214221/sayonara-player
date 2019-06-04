@@ -31,6 +31,7 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Language/Language.h"
+#include "Utils/Set.h"
 
 #include "Gui/Utils/EventFilter.h"
 #include "Gui/Utils/GuiUtils.h"

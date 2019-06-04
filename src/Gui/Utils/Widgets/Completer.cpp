@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "Completer.h"
 #include "Gui/Utils/Style.h"
 #include "Gui/Utils/Delegates/ComboBoxDelegate.h"

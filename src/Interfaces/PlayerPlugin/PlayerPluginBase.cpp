@@ -48,8 +48,7 @@ struct Base::Private
 };
 
 Base::Base(QWidget *parent) :
-	Widget(parent),
-	ShortcutWidget()
+	Widget(parent)
 {
 	m = Pimpl::make<Private>();
 
