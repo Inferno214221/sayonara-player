@@ -41,8 +41,6 @@ class QPixmap;
 	#define CAST_MACROS
 #endif
 
-#define LOCK_GUARD(locking_mutex) std::lock_guard<std::mutex> g(locking_mutex); Q_UNUSED(g)
-
 /**
  * @brief Helper functions
  * @ingroup Helper
@@ -173,6 +171,7 @@ namespace Util
 	 * @param ms milliseconds to sleep
 	 */
 	void sleep_ms(uint64_t ms);
+
 
 	/**
 	 * @brief get all ip addresses of the host

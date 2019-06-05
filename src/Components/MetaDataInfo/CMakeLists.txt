@@ -7,4 +7,5 @@ target_link_libraries(${PROJECT_NAME}
 	say_db
 	say_utils
 	say_comp_covers
+	say_comp_library
 )

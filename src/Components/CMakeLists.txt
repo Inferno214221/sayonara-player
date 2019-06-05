@@ -1,5 +1,3 @@
-project(say_comp)
-
 add_subdirectory(Bookmarks)
 add_subdirectory(Broadcasting)
 add_subdirectory(Converter)

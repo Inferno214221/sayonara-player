@@ -25,6 +25,8 @@
 #include "Components/Covers/CoverLookup.h"
 
 #include "Utils/Utils.h"
+#include "Utils/Set.h"
+#include "Utils/Mutex.h"
 #include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/FileUtils.h"
@@ -32,10 +34,6 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QSqlDatabase>
-#include "Utils/Set.h"
-
-#include <atomic>
-#include <mutex>
 
 using Cover::Location;
 using Cover::Lookup;

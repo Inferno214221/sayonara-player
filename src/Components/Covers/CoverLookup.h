@@ -49,7 +49,6 @@ namespace Cover
 		Q_OBJECT
 		PIMPL(Lookup)
 
-
 	public:
 		Lookup(const Location& cl, int n_covers, QObject* parent);
 		~Lookup() override;

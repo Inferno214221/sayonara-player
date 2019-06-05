@@ -16,6 +16,7 @@ endif()
 target_link_libraries(${PROJECT_NAME}
     say_gui_utils
     say_comp_playlist
+    say_comp_covers
     say_interfaces_library_container
 )
 

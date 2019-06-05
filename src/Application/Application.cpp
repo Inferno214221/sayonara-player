@@ -81,7 +81,6 @@
 #include "Gui/Preferences/Streams/GUI_StreamPreferences.h"
 #include "Gui/Preferences/StreamRecorder/GUI_StreamRecorder.h"
 
-#include "Utils/FileUtils.h"
 #include "Utils/Utils.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/WebAccess/Proxy.h"

@@ -31,10 +31,9 @@
 #include "CoverFetchManager.h"
 #include "CoverFetcherInterface.h"
 
+#include "Utils/Utils.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/WebAccess/AsyncWebAccess.h"
-#include "Utils/FileUtils.h"
-#include "Utils/Utils.h"
 
 #include <QPixmap>
 #include <QImage>

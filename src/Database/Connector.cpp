@@ -37,9 +37,7 @@
 #include "Utils/Logger/Logger.h"
 #include "Utils/Utils.h"
 #include "Utils/Algorithm.h"
-#include "Utils/FileUtils.h"
 #include "Utils/RawShortcutMap.h"
-#include "Utils/Algorithm.h"
 
 #include <QFileInfo>
 #include <QDateTime>

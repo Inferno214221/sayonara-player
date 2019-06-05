@@ -28,13 +28,12 @@
 
 #include "AlternativeCoverItemModel.h"
 #include "Components/Covers/CoverLocation.h"
+
 #include "Utils/globals.h"
-#include "Utils/Utils.h"
+#include "Utils/Mutex.h"
 
 #include <QStringList>
 #include <QPixmap>
-
-#include <mutex>
 
 using Cover::Location;
 
@@ -141,12 +140,6 @@ Qt::ItemFlags AlternativeCoverItemModel::flags(const QModelIndex& index) const
 	else {
 		return (Qt::NoItemFlags);
 	}
-
-	//TODO
-	/*bool invalid = Location::is_invalid(m->pathlist[index.row()]);
-	if(invalid){
-		return (Qt::NoItemFlags);
-	}*/
 
 	return QAbstractTableModel::flags(index);
 }

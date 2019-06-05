@@ -7,6 +7,7 @@ target_link_libraries(${PROJECT_NAME}
 	say_db
 	say_comp_playmanager
 	say_comp_directories
+	say_comp_tagging
 )
 
 if( WITH_COTIRE )

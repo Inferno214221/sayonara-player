@@ -4,12 +4,11 @@
 #include <QString>
 #include <QPixmap>
 
-#include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
+#include "Utils/Mutex.h"
+
 #include "Utils/Logger/Logger.h"
 #include "Utils/Tagging/TaggingCover.h"
-
-#include <mutex>
 
 static std::mutex mutex_io;
 

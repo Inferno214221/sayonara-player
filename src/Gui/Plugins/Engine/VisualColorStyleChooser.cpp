@@ -22,10 +22,8 @@
 #include "Database/Connector.h"
 #include "Database/VisualStyles.h"
 
-#include "Utils/Utils.h"
+#include "Utils/Mutex.h"
 #include "Utils/Algorithm.h"
-
-#include <mutex>
 
 namespace Algorithm=Util::Algorithm;
 

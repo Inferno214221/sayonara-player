@@ -27,9 +27,8 @@
 #include "Components/Covers/CoverLookup.h"
 #include "Components/Covers/CoverChangeNotifier.h"
 
-
 #include "Utils/MetaData/Album.h"
-#include "Utils/Utils.h"
+#include "Utils/Mutex.h"
 #include "Utils/Set.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language/Language.h"

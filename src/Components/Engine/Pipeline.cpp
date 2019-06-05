@@ -230,18 +230,21 @@ GstElement* Pipeline::create_sink(const QString& name)
 {
 	GstElement* ret=nullptr;
 
-	if(name == "pulse"){
+	if(name == "pulse")
+	{
 		sp_log(Log::Debug, this) << "Create pulseaudio sink";
 		EngineUtils::create_element(&ret, "pulsesink", name.toLocal8Bit().data());
 	}
 
-	else if(name == "alsa"){
+	else if(name == "alsa")
+	{
 		sp_log(Log::Debug, this) << "Create alsa sink";
 		EngineUtils::create_element(&ret, "alsasink", name.toLocal8Bit().data());
 	}
 
-	if(ret == nullptr){
-		sp_log(Log::Debug, this) << "Create automatic sink";
+	if(ret == nullptr)
+	{
+		sp_log(Log::Info, this) << "Will create auto audio sink";
 		EngineUtils::create_element(&ret, "autoaudiosink", name.toLocal8Bit().data());
 	}
 

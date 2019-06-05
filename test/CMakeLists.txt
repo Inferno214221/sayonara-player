@@ -1,4 +1,3 @@
-cmake_minimum_required(VERSION 2.8)
 project(say_tests)
 include(${CMAKE_CURRENT_SOURCE_DIR}/../src/compiler.cmake)
 

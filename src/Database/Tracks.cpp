@@ -24,12 +24,12 @@
 
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/MetaData/Genre.h"
-#include "Utils/Logger/Logger.h"
+
 #include "Utils/Utils.h"
-#include "Utils/FileUtils.h"
+#include "Utils/Set.h"
 #include "Utils/Library/Filter.h"
 #include "Utils/Library/SearchMode.h"
-#include "Utils/Set.h"
+#include "Utils/Logger/Logger.h"
 
 #include <QDateTime>
 #include <QMap>
