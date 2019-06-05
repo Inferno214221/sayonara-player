@@ -26,7 +26,7 @@ using Cover::ChangeNotfier;
 
 ChangeNotfier::ChangeNotfier() : QObject(nullptr) {}
 
-ChangeNotfier::~ChangeNotfier() {}
+ChangeNotfier::~ChangeNotfier() = default;
 
 void ChangeNotfier::shout()
 {

@@ -32,6 +32,8 @@ Slider::Slider(QWidget *parent) :
 	this->setPageStep(1);
 }
 
+Slider::~Slider() = default;
+
 bool Slider::event(QEvent *e){
 	/** We need this for activate an item as soon it is hovered.
 	Otherwise, the curve functionality with the mouse wheel event does not work **/

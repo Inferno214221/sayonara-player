@@ -34,7 +34,7 @@ Cover::LookupBase::LookupBase(const Cover::Location& cl, QObject *parent) :
 	m = Pimpl::make<Private>(cl);
 }
 
-Cover::LookupBase::~LookupBase() {}
+Cover::LookupBase::~LookupBase() = default;
 
 Cover::Location Cover::LookupBase::cover_location() const
 {

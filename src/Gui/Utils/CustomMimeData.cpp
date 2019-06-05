@@ -57,7 +57,7 @@ const void* CustomMimeData::ptr() const
 	return m->ptr;
 }
 
-CustomMimeData::~CustomMimeData() {}
+CustomMimeData::~CustomMimeData() = default;
 
 void CustomMimeData::set_metadata(const MetaDataList& v_md)
 {

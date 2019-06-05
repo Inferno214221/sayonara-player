@@ -91,7 +91,7 @@ namespace Gui
 				_awt = new AbstrWidgetTemplate(this, this);
 			}
 
-			virtual ~WidgetTemplate() {}
+			virtual ~WidgetTemplate() = default;
 
 			virtual void showEvent(QShowEvent* e) override
 			{

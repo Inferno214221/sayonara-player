@@ -20,4 +20,6 @@
 
 #include "RawSoundReceiverInterface.h"
 
-RawSoundReceiverInterface::RawSoundReceiverInterface() {}
+RawSoundReceiverInterface::RawSoundReceiverInterface() = default;
+
+RawSoundReceiverInterface::~RawSoundReceiverInterface() = default;

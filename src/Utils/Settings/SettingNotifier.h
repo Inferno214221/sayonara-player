@@ -56,7 +56,7 @@ private:
 	SettingNotifier(const SettingNotifier& other) = delete;
 
 public:
-	~SettingNotifier() {}
+	~SettingNotifier() = default;
 
 	static SettingNotifier<KeyClass>* instance()
 	{

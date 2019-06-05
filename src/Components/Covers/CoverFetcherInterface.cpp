@@ -22,5 +22,5 @@
 
 #include "CoverFetcherInterface.h"
 
-Cover::Fetcher::Base::Base() {}
-Cover::Fetcher::Base::~Base() {}
+Cover::Fetcher::Base::Base() = default;
+Cover::Fetcher::Base::~Base() = default;

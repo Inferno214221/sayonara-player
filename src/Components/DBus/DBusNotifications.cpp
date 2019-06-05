@@ -62,7 +62,7 @@ DBusNotifications::DBusNotifications(QObject* parent) :
 	NotificationHandler::instance()->register_notificator(this);
 }
 
-DBusNotifications::~DBusNotifications() {}
+DBusNotifications::~DBusNotifications() = default;
 
 void DBusNotifications::notify(const QString& title, const QString& text, const QString& image_path)
 {

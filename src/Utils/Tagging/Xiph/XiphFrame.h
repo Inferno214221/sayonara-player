@@ -72,7 +72,7 @@ namespace Xiph
 			XiphFrame(TagLib::Ogg::XiphComment* tag, const QString& identifier) :
 				Tagging::AbstractFrame<TagLib::Ogg::XiphComment>(tag, identifier) {}
 
-			virtual ~XiphFrame() {}
+			virtual ~XiphFrame() = default;
 
 			bool read(Model_t& model)
 			{

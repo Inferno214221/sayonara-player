@@ -97,7 +97,7 @@ class Setting : public AbstrSetting
 		}
 
 		/* Destructor */
-		~Setting() {}
+		~Setting() = default;
 
 		void assign_default_value() override
 		{

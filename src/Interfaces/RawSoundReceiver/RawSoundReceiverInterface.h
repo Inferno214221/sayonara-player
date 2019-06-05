@@ -31,7 +31,7 @@ class RawSoundReceiverInterface
 {
 public:
 	RawSoundReceiverInterface();
-	virtual ~RawSoundReceiverInterface() {}
+	virtual ~RawSoundReceiverInterface();
 
 	/**
 	 * @brief triggered when new audio data is available, has to be reimplentend
