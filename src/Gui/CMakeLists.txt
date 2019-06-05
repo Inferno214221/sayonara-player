@@ -8,7 +8,7 @@ file(GLOB_RECURSE SOURCES . *.cpp)
 add_library(${PROJECT_NAME} STATIC ${SOURCES})
 
 target_link_libraries(${PROJECT_NAME}
-	say_components
+	sayonara_components
 
 	say_interfaces_library_container
 	say_interfaces_notifications

@@ -11,7 +11,7 @@ set(APPLICATION_LIBRARIES
 	say_gui
 
 	say_interfaces_libraryinterface
-	say_components
+	sayonara_components
 )
 
 if(NOT WIN32 OR NOT DEFINED WIN32)

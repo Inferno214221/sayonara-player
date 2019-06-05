@@ -16,7 +16,7 @@ set(SOURCES
 add_library(${PROJECT_NAME} STATIC ${SOURCES})
 
 target_link_libraries(${PROJECT_NAME}
-	say_components
+	sayonara_components
 )
 
 
