@@ -29,7 +29,7 @@ DB::Covers::Covers(const QString& connection_name, DbId db_id) :
 	DB::Module(connection_name, db_id)
 {}
 
-DB::Covers::~Covers() {}
+DB::Covers::~Covers() = default;
 
 bool DB::Covers::exists(const QString& hash)
 {

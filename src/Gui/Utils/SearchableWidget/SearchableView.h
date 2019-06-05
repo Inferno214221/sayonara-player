@@ -120,7 +120,7 @@ class SearchableView :
 			View(parent),
 			SearchableViewInterface(this) {}
 
-		virtual ~SearchableView() {}
+		virtual ~SearchableView() = default;
 
 		virtual void set_model(Model* model)
 		{

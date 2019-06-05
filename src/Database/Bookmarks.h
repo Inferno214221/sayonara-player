@@ -31,7 +31,7 @@ namespace DB
 	{
 	public:
 		Bookmarks(const QString& connection_name, DbId db_id);
-		~Bookmarks();
+		~Bookmarks() override;
 
 		bool searchBookmarks(int track_id, QMap<Seconds, QString>& bookmarks);
 		bool insertBookmark(int track_id, Seconds time, const QString& text);

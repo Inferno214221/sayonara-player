@@ -18,20 +18,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef GUI_PLAYERMENUBAR_H
 #define GUI_PLAYERMENUBAR_H
 
+#include "Gui/Utils/Shortcuts/ShortcutIdentifier.h"
 #include "Gui/Utils/Widgets/WidgetTemplate.h"
-#include "Gui/Utils/Shortcuts/ShortcutWidget.h"
 #include "Utils/Pimpl.h"
 
 #include <QMenuBar>
 
 class Menubar :
-	public Gui::WidgetTemplate<QMenuBar>,
-	public ShortcutWidget
+	public Gui::WidgetTemplate<QMenuBar>
 {
 	Q_OBJECT
 	PIMPL(Menubar)

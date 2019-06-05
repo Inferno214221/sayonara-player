@@ -14,7 +14,7 @@ else()
 endif()
 
 target_link_libraries(${PROJECT_NAME}
-    say_gui
+	sayonara_gui
     say_interfaces_library_container
 )
 

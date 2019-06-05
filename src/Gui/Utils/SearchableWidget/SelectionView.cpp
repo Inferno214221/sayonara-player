@@ -40,7 +40,7 @@ SelectionViewInterface::SelectionViewInterface()
 	m = Pimpl::make<Private>();
 }
 
-SelectionViewInterface::~SelectionViewInterface() {}
+SelectionViewInterface::~SelectionViewInterface() = default;
 
 void SelectionViewInterface::select_all()
 {

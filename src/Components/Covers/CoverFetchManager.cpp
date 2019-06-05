@@ -175,7 +175,7 @@ Manager::Manager() :
 	ListenSetting(Set::Cover_Server, Manager::servers_changed);
 }
 
-Manager::~Manager() {}
+Manager::~Manager() = default;
 
 void Manager::register_coverfetcher(Base* t)
 {

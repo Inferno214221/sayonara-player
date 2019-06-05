@@ -73,7 +73,9 @@ Base::Base(DbId db_id, const QString& source_dir, const QString& target_dir, con
 	}
 }
 
-Base::~Base() {}
+
+DB::Base::~Base() = default;
+
 
 bool Base::is_initialized()
 {
@@ -188,6 +190,11 @@ bool Base::check_and_drop_table(const QString& tablename)
 }
 
 
+bool DB::Base::check_and_insert_column(const QString& tablename, const QString& column, const QString& sqltype)
+{
+    return check_and_insert_column(tablename, column, sqltype, QString());
+}
+
 bool Base::check_and_insert_column(const QString& tablename, const QString& column, const QString& sqltype, const QString& default_value)
 {
 	Query q(this);
@@ -237,4 +244,3 @@ bool Base::check_and_create_table(const QString& tablename, const QString& sql_c
 
 	return true;
 }
-

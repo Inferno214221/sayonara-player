@@ -30,7 +30,6 @@
 #include <QObject>
 
 class Shortcut;
-class ShortcutWidget;
 
 #define ShortcutPrivate private
 
@@ -45,8 +44,7 @@ class ShortcutHandler :
 	SINGLETON(ShortcutHandler)
 	PIMPL(ShortcutHandler)
 
-
-friend class Shortcut;
+	friend class Shortcut;
 ShortcutPrivate:
 	void qt_shortcuts_added(ShortcutIdentifier identifier, const QList<QShortcut*>& shortcuts);
 

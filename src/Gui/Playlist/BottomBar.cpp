@@ -28,7 +28,7 @@
 #include "Utils/Message/Message.h"
 
 #ifdef WITH_SHUTDOWN
-	#include "Gui/ShutdownDialog/GUI_Shutdown.h"
+	#include "Gui/Shutdown/GUI_Shutdown.h"
 #endif
 
 // Think about CMake

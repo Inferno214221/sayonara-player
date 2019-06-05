@@ -22,7 +22,7 @@
 #define PLAYLISTMODE_H_
 
 #include "Utils/Pimpl.h"
-#include "Utils/Settings/settingconvertible.h"
+#include "Utils/Settings/SettingConvertible.h"
 
 namespace Playlist
 {

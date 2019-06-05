@@ -88,7 +88,7 @@ QMap<QDateTime, MetaDataList> Session::get_history(QDateTime beginning)
 	}
 
 	MetaDataList v_md;
-	track_connector->getTracksbyIds(track_ids, v_md);
+    track_connector->getTracksByIds(track_ids, v_md);
 
 	for(auto it=v_md.begin(); it != v_md.end(); it++)
 	{

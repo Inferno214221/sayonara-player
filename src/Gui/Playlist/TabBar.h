@@ -22,14 +22,12 @@
 #define PLAYLISTTABBAR_H
 
 #include "MenuEntry.h"
-#include "Gui/Utils/Shortcuts/ShortcutWidget.h"
 #include "Utils/Pimpl.h"
 
 #include <QTabBar>
 
 class PlaylistTabBar :
-		public QTabBar,
-		public ShortcutWidget
+		public QTabBar
 {
 	Q_OBJECT
 	PIMPL(PlaylistTabBar)

@@ -26,7 +26,6 @@
 #include "Components/PlayManager/PlayState.h"
 
 #include "Gui/InfoDialog/InfoDialogContainer.h"
-#include "Gui/Utils/Shortcuts/ShortcutWidget.h"
 #include "Gui/Utils/Widgets/Widget.h"
 #include "Gui/Utils/Icons.h"
 
@@ -47,7 +46,6 @@ namespace Gui
 
 class GUI_ControlsBase :
 		public Gui::Widget,
-		public ShortcutWidget,
 		public InfoDialogContainer
 {
 	Q_OBJECT

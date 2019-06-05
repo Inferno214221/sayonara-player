@@ -43,9 +43,6 @@ endif()
 find_package(Qt5 COMPONENTS Core Widgets Sql Network DBus Xml REQUIRED)
 find_package(Qt5LinguistTools REQUIRED)
 
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 include_directories(${Qt5Core_INCLUDE_DIRS})
 include_directories(${Qt5Widgets_INCLUDE_DIRS})
@@ -62,6 +59,7 @@ include_directories(${TAGLIB_INCLUDE_DIRS})
 
 include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_BINARY_DIR}/src)
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 add_definitions(${Qt5Core_DEFINITIONS})
 add_definitions(${QT_DEFINITIONS})
@@ -88,6 +86,18 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
 	set(OS_LIBRARIES ${execinfo_LIB})
 endif()
 
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+include(CheckIncludeFileCXX)
+check_include_file_cxx("cxxabi.h" HAVE_CXX_ABI)
+if(${HAVE_CXX_ABI})
+	add_definitions("-DHAVE_CXX_ABI")
+	message("Compile with demangle")
+else()
+	message("Demangle not found")
+endif()
 
 add_subdirectory(Application)
 add_subdirectory(Gui)
@@ -114,7 +124,7 @@ endif()
 
 target_link_libraries(${PROJECT_NAME}
 	say_application
-	say_gui_resources
+	gui_resources
 	say_lang
 	${OS_LIBRARIES}
 )

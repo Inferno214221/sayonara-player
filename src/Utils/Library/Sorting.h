@@ -22,7 +22,7 @@
 #define LIBRARY_SORTING_H
 
 #include "Sortorder.h"
-#include "Utils/Settings/settingconvertible.h"
+#include "Utils/Settings/SettingConvertible.h"
 
 class QString;
 namespace Library

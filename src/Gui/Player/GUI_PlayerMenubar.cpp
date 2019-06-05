@@ -25,7 +25,7 @@
 
 #include "GUI_PlayerMenubar.h"
 
-#include "Gui/ShutdownDialog/GUI_Shutdown.h"
+#include "Gui/Shutdown/GUI_Shutdown.h"
 #include "Components/Playlist/PlaylistHandler.h"
 
 #include "Gui/Utils/Shortcuts/ShortcutHandler.h"
@@ -146,8 +146,7 @@ struct Menubar::Private
 };
 
 Menubar::Menubar(QWidget* parent) :
-	Gui::WidgetTemplate<QMenuBar>(parent),
-	ShortcutWidget()
+	Gui::WidgetTemplate<QMenuBar>(parent)
 {
 	m = Pimpl::make<Private>(this);
 

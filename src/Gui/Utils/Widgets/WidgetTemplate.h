@@ -25,6 +25,7 @@
 
 #include <QShowEvent>
 #include <QObject>
+#include <QVariant>
 
 class QWidget;
 
@@ -91,7 +92,7 @@ namespace Gui
 				_awt = new AbstrWidgetTemplate(this, this);
 			}
 
-			virtual ~WidgetTemplate() {}
+			virtual ~WidgetTemplate() = default;
 
 			virtual void showEvent(QShowEvent* e) override
 			{

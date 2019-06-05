@@ -8,7 +8,7 @@ include_directories(
 file(GLOB_RECURSE SOURCES . *.cpp)
 
 set(APPLICATION_LIBRARIES
-	say_gui
+	sayonara_gui
 
 	say_interfaces_libraryinterface
 	sayonara_components
@@ -35,7 +35,7 @@ target_link_libraries(${PROJECT_NAME}
 add_library(sayonara_test SHARED ${SOURCES})
 target_link_libraries(sayonara_test
 	${APPLICATION_LIBRARIES}
-	say_gui_resources
+	gui_resources
 )
 
 

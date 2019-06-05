@@ -34,7 +34,7 @@ struct Artists::Private
 	QString search_view;
 	QString track_view;
 
-	Private(LibraryId library_id)
+	explicit Private(LibraryId library_id)
 	{
 		if(library_id < 0) {
 			search_view = QString("track_search_view");
@@ -55,7 +55,8 @@ Artists::Artists(const QString& connection_name, DbId db_id, LibraryId library_i
 	m = Pimpl::make<Private>(library_id);
 }
 
-Artists::~Artists() {}
+DB::Artists::~Artists() = default;
+
 
 QString Artists::fetch_query_artists(bool also_empty) const
 {
@@ -79,6 +80,7 @@ QString Artists::fetch_query_artists(bool also_empty) const
 	return query.arg(m->track_view).arg(artistid_field());
 }
 
+
 bool Artists::db_fetch_artists(Query& q, ArtistList& result)
 {
 	result.clear();
@@ -97,13 +99,18 @@ bool Artists::db_fetch_artists(Query& q, ArtistList& result)
 		artist.num_songs =	q.value(2).toInt();
 		artist.set_db_id(	db_id());
 
-		result << std::move(artist);
+		result << artist;
 	}
 
 	return true;
 }
 
-bool Artists::getArtistByID(int id, Artist& artist, bool also_empty)
+bool Artists::getArtistByID(ArtistId id, Artist& artist)
+{
+    return getArtistByID(id, artist, false);
+}
+
+bool Artists::getArtistByID(ArtistId id, Artist& artist, bool also_empty)
 {
 	if(id < 0) {
 		return false;
@@ -273,7 +280,7 @@ ArtistId Artists::insertArtistIntoDatabase(const QString& artist)
 	return q.lastInsertId().toInt();
 }
 
-ArtistId Artists::insertArtistIntoDatabase (const Artist& artist)
+ArtistId Artists::insertArtistIntoDatabase(const Artist& artist)
 {
 	return insertArtistIntoDatabase(artist.name());
 }
@@ -303,3 +310,4 @@ void Artists::updateArtistCissearch()
 
 	db().commit();
 }
+

@@ -61,7 +61,7 @@ DBusAdaptor::DBusAdaptor(QStrRef object_path, QStrRef service_name, QStrRef dbus
 	m = Pimpl::make<Private>(object_path, service_name, dbus_service, dbus_interface);
 }
 
-DBusAdaptor::~DBusAdaptor() {}
+DBusAdaptor::~DBusAdaptor() = default;
 
 void DBusAdaptor::create_message(QString name, QVariant val)
 {

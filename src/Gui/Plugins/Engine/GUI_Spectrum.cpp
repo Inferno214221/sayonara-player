@@ -229,14 +229,10 @@ void GUI_Spectrum::paintEvent(QPaintEvent* e)
 	int border_y = style.ver_spacing;
 	int border_x = style.hor_spacing;
 
-	int x=3;
-	int ninety = 35;
-	int offset = 0;
+	const int ninety = 35;
+	const int offset = 0;
 	int n_zero = 0;
-
-	if(ninety == 0) {
-		return;
-	}
+    int x=3;
 
 	int w_bin = ((width() + 10) / (ninety - offset)) - border_x;
 

@@ -31,7 +31,7 @@ Cover::Extractor::Extractor(const Location& cl, QObject* parent) :
 
 }
 
-Cover::Extractor::~Extractor() {}
+Cover::Extractor::~Extractor() = default;
 
 QPixmap Cover::Extractor::pixmap()
 {

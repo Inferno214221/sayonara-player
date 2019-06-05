@@ -19,9 +19,11 @@
  */
 
 #include "CustomMimeData.h"
-#include "Utils/MetaData/MetaDataList.h"
+
 #include "Gui/Utils/MimeDataUtils.h"
+
 #include "Utils/FileUtils.h"
+#include "Utils/MetaData/MetaDataList.h"
 
 #include <QUrl>
 
@@ -55,7 +57,7 @@ const void* CustomMimeData::ptr() const
 	return m->ptr;
 }
 
-CustomMimeData::~CustomMimeData() {}
+CustomMimeData::~CustomMimeData() = default;
 
 void CustomMimeData::set_metadata(const MetaDataList& v_md)
 {

@@ -19,7 +19,7 @@
  */
 
 #include "SettingConverter.h"
-#include "settingconvertible.h"
+#include "SettingConvertible.h"
 
 #include <QStringList>
 #include <QSize>
@@ -39,16 +39,7 @@ QString SettingConverter::to_string(const bool& val)
 
 bool SettingConverter::from_string(const QString& val, bool& b)
 {
-	if( val.compare("true", Qt::CaseInsensitive) == 0 ||
-		val.toInt() > 0)
-	{
-		b = true;
-	}
-
-	else
-	{
-		b = false;
-	}
+    b = ((val.compare("true", Qt::CaseInsensitive) == 0) || (val.toInt() > 0));
 
 	return true;
 }
@@ -193,7 +184,7 @@ bool SettingConverter::from_string(const QString& str, QByteArray& arr)
 		arr.append((char) num);
 	}
 
-	return (numbers.size() > 0);
+	return (!numbers.empty());
 }
 
 QString SettingConverter::to_string(const SettingConvertible& t)

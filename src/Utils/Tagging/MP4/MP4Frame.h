@@ -57,7 +57,7 @@ public:
 	MP4Frame(TagLib::MP4::Tag* tag, const QString& identifier) :
 		Tagging::AbstractFrame<TagLib::MP4::Tag>(tag, identifier) {}
 
-	virtual ~MP4Frame() {}
+	virtual ~MP4Frame()	= default;
 
 	bool read(Model_t& model)
 	{

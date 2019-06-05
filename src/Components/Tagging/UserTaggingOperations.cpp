@@ -59,8 +59,7 @@ UserOperations::UserOperations(LibraryId library_id, QObject* parent) :
 	connect(m->editor, &Tagging::Editor::sig_progress, this, &UserOperations::sig_progress);
 }
 
-UserOperations::~UserOperations() {}
-
+UserOperations::~UserOperations() = default;
 
 void UserOperations::set_track_rating(const MetaData& md, Rating rating)
 {
@@ -149,6 +148,7 @@ void UserOperations::merge_albums(const Util::Set<Id>& album_ids, AlbumId target
 	}
 
 	MetaDataList v_md;
+
 	m->library_db->getAllTracksByAlbum(album_ids.toList(), v_md);
 	m->editor->set_metadata(v_md);
 

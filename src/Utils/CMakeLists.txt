@@ -1,13 +1,6 @@
 project(say_utils)
 
-include(CheckIncludeFileCXX)
-check_include_file_cxx("cxxabi.h" HAVE_CXX_ABI)
-if(${HAVE_CXX_ABI})
-	add_definitions("-DHAVE_CXX_ABI")
-	message("Compile with demangle")
-else()
-	message("Demangle not found")
-endif()
+
 
 pkg_check_modules(ZLIB REQUIRED zlib)
 include_directories(${ZLIB_INCLUDE_DIRS})

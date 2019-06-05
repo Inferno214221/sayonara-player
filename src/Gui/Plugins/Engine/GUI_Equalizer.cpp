@@ -74,7 +74,7 @@ struct GUI_Equalizer::Private
 		old_val.fill(0);
 	}
 
-	int find_combo_text(const QComboBox* combo_presets, QString text)
+	static int find_combo_text(const QComboBox* combo_presets, QString text)
 	{
 		int ret = -1;
 
@@ -171,7 +171,7 @@ void GUI_Equalizer::retranslate_ui()
 
 void GUI_Equalizer::sli_pressed()
 {
-	EqualizerSlider* sli = static_cast<EqualizerSlider*>(sender());
+	auto* sli = dynamic_cast<EqualizerSlider*>(sender());
 	int idx = sli->index();
 
 	m->active_idx= idx;
@@ -199,7 +199,7 @@ void GUI_Equalizer::sli_changed(int idx, int new_val)
 		return;
 	}
 
-	size_t uidx = static_cast<size_t>(idx);
+	auto uidx = static_cast<size_t>(idx);
 
 	bool gauss_on = GetSetting(Set::Eq_Gauss);
 	ui->btn_tool->show_action(ContextMenu::EntryUndo, true);
@@ -336,7 +336,7 @@ void GUI_Equalizer::btn_save_clicked()
 		found_idx = ui->combo_presets->count() - 1;
 	}
 
-	for(size_t i=0; i<m->sliders.size(); i++)
+	for(unsigned i=0; i<m->sliders.size(); i++)
 	{
 		m->presets[found_idx].set_value(i, m->sliders[i]->value());
 	}
@@ -380,7 +380,7 @@ void GUI_Equalizer::btn_undo_clicked()
 
 	else
 	{
-		for(size_t i=0; i<m->sliders.size(); i++)
+		for(unsigned i=0; i<m->sliders.size(); i++)
 		{
 			m->sliders[i]->setValue( m->presets[found_idx].value(i) );
 		}

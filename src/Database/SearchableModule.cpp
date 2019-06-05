@@ -43,7 +43,7 @@ SearchableModule::SearchableModule(const QString& connection_name, DbId db_id) :
 	m = Pimpl::make<Private>();
 }
 
-SearchableModule::~SearchableModule() {}
+SearchableModule::~SearchableModule() = default;
 
 
 void SearchableModule::init()

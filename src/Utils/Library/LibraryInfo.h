@@ -22,8 +22,8 @@
 #define LIBRARYINFO_H
 
 #include "Utils/Pimpl.h"
+#include "Utils/Settings/SettingConvertible.h"
 
-#include "Utils/Settings/settingconvertible.h"
 #include <QtGlobal>
 
 namespace Library

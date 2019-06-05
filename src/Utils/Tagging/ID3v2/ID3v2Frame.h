@@ -83,7 +83,7 @@ namespace ID3v2
 			}
 
 			// destructor
-			virtual ~ID3v2Frame() {}
+			virtual ~ID3v2Frame() = default;
 
 
 			//

@@ -51,7 +51,8 @@ namespace DB
 			virtual bool create_db();
 			virtual bool apply_fixes()=0;
 
-			virtual bool check_and_insert_column(const QString& tablename, const QString& column, const QString& sqltype, const QString& default_value=QString());
+            virtual bool check_and_insert_column(const QString& tablename, const QString& column, const QString& sqltype, const QString& default_value);
+			virtual bool check_and_insert_column(const QString& tablename, const QString& column, const QString& sqltype);
 			virtual bool check_and_create_table(const QString& tablename, const QString& sql_create_str);
 			virtual bool check_and_drop_table(const QString& tablename);
 	};

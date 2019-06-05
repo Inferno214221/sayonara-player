@@ -45,7 +45,7 @@ DB::Library::Library(const QString& connection_name, DbId db_id) :
 	Module(connection_name, db_id)
 {}
 
-DB::Library::~Library() {}
+DB::Library::~Library() = default;
 
 
 template<typename T>
@@ -289,3 +289,4 @@ void DB::Library::create_indexes()
 		}
 	}
 }
+

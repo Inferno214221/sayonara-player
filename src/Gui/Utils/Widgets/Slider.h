@@ -41,7 +41,7 @@ namespace Gui
 
 		public:
 			explicit Slider(QWidget* parent=nullptr);
-			virtual ~Slider() {}
+			virtual ~Slider();
 
 		protected:
 			void sliderChange(SliderChange change) override;

@@ -42,7 +42,7 @@ namespace DB
 
 		public:
 			Library(const QString& connection_name, DbId db_id);
-			~Library();
+			~Library() override;
 
 			using LibraryInfo=::Library::Info;
 			QList<LibraryInfo> get_all_libraries();

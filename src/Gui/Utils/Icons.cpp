@@ -22,9 +22,9 @@
 
 #include "Icons.h"
 
-#include "Components/Directories/DirectoryReader.h"
 #include "Gui/Utils/GuiUtils.h"
 #include "Gui/Utils/Style.h"
+
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
 

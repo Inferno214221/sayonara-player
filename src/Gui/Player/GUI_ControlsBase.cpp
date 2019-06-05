@@ -42,8 +42,7 @@ struct GUI_ControlsBase::Private
 };
 
 GUI_ControlsBase::GUI_ControlsBase(QWidget* parent) :
-	Gui::Widget(parent),
-	ShortcutWidget()
+	Gui::Widget(parent)
 {
 	m = Pimpl::make<Private>();
 }

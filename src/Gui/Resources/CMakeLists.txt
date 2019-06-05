@@ -1,4 +1,4 @@
-project(say_gui_resources)
+project(gui_resources)
 
 add_subdirectory(Icons)
 

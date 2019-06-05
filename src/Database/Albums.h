@@ -36,21 +36,21 @@ namespace DB
 
 		public:
 			Albums(const QString& connection_name, DbId db_id, LibraryId library_id);
-			virtual ~Albums();
+			~Albums();
 
 			virtual bool db_fetch_albums(Query& q, AlbumList& result);
 
 			virtual AlbumId getAlbumID (const QString& album);
 
-			virtual bool getAlbumByID(AlbumId id, Album& album, bool also_empty=false);
+            virtual bool getAlbumByID(AlbumId id, Album& album);
+			virtual bool getAlbumByID(AlbumId id, Album& album, bool also_empty);
 
 			virtual bool getAllAlbums(AlbumList& result, bool also_empty);
-			virtual bool getAllAlbumsByArtist(IdList artists, AlbumList& result);
-			virtual bool getAllAlbumsByArtist(IdList artists, AlbumList& result, const ::Library::Filter& filter);
+			virtual bool getAllAlbumsByArtist(const IdList& artists, AlbumList& result, const ::Library::Filter& filter);
 
 			virtual bool getAllAlbumsBySearchString(const ::Library::Filter& filter, AlbumList& result);
 
-			virtual AlbumId insertAlbumIntoDatabase (const QString & album);
+			virtual AlbumId insertAlbumIntoDatabase (const QString& album);
 			virtual AlbumId insertAlbumIntoDatabase (const Album& album);
 
 			virtual AlbumId updateAlbum(const Album& album);
@@ -61,7 +61,7 @@ namespace DB
 			virtual QString artistid_field() const=0;
 
 		private:
-			virtual QString fetch_query_albums(bool also_empty=false) const;
+			virtual QString fetch_query_albums(bool also_empty) const;
 	};
 }
 

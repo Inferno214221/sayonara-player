@@ -38,14 +38,17 @@ namespace DB
 		PIMPL(Query)
 
 		private:
-			explicit Query(const QString& query=QString(), const QSqlDatabase& db = QSqlDatabase()) = delete;
-			explicit Query(QSqlResult* result) = delete;
 			explicit Query(QSqlDatabase db);
 
 		public:
 			explicit Query(const Module* module);
+
 			Query(const QString& connection_name, DbId db_id);
 			Query(const Query& other);
+
+            explicit Query(QSqlResult* result) = delete;
+            explicit Query(const QString& query=QString(), const QSqlDatabase& db = QSqlDatabase()) = delete;
+
 			Query& operator=(const Query& other);
 
 			virtual ~Query();

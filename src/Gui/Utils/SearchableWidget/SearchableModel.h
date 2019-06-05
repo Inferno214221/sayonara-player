@@ -59,7 +59,7 @@ class SearchableModel :
 			Model(parent)
 		{}
 
-		virtual ~SearchableModel() {}
+		virtual ~SearchableModel() = default;
 
 		using Model::rowCount;
 

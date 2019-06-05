@@ -45,10 +45,11 @@
 #include "Components/Library/LocalLibrary.h"
 #include "Components/Library/LibraryManager.h"
 
+#include "Utils/Utils.h"
+#include "Utils/Set.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/MetaData/Album.h"
 #include "Utils/MetaData/Artist.h"
-#include "Utils/Utils.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Library/LibraryInfo.h"
