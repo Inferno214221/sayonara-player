@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "BookmarksBase.h"
 #include "Bookmark.h"
 
@@ -27,10 +25,11 @@
 #include "Database/Bookmarks.h"
 
 #include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/globals.h"
 #include "Utils/MetaData/MetaData.h"
 
-#include <algorithm>
+namespace Algorithm=Util::Algorithm;
 
 struct BookmarksBase::Private
 {
@@ -50,7 +49,7 @@ BookmarksBase::BookmarksBase(QObject* parent) :
 	m = Pimpl::make<Private>();
 }
 
-BookmarksBase::~BookmarksBase() {}
+BookmarksBase::~BookmarksBase() = default;
 
 bool BookmarksBase::load()
 {
@@ -74,7 +73,7 @@ bool BookmarksBase::load()
 
 void BookmarksBase::sort()
 {
-	::Util::sort(m->bookmarks, [](const Bookmark& bm1, const Bookmark& bm2){
+	Algorithm::sort(m->bookmarks, [](const Bookmark& bm1, const Bookmark& bm2){
 		return (bm1.timestamp() < bm2.timestamp());
 	});
 }
@@ -90,7 +89,7 @@ BookmarksBase::CreationStatus BookmarksBase::create(Seconds timestamp)
 		return CreationStatus::OtherError;
 	}
 
-	bool already_there = Util::contains(m->bookmarks, [&timestamp](const Bookmark& bm){
+	bool already_there = Algorithm::contains(m->bookmarks, [&timestamp](const Bookmark& bm){
 		return (bm.timestamp() == timestamp);
 	});
 

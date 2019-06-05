@@ -24,9 +24,11 @@
 #include "GUI_PlaylistPreferences.h"
 #include "Gui/Preferences/ui_GUI_PlaylistPreferences.h"
 
-#include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language/Language.h"
+
+namespace Algorithm=Util::Algorithm;
 
 static
 bool evaluate_expression(const QString& expr)
@@ -79,7 +81,7 @@ bool evaluate_expression(const QString& expr)
 	int correct_ones = 0;
 	int incorrect_ones = 0;
 
-	for(const QString& between_percent : Util::AsConst(between_percents))
+	for(const QString& between_percent : Algorithm::AsConst(between_percents))
 	{
 		if((between_percent.compare("nr") != 0) &&
 		   (between_percent.compare("title") != 0) &&

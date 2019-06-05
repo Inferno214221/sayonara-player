@@ -24,12 +24,14 @@
 #include "Utils/Library/LibraryInfo.h"
 #include "Interfaces/LibraryInterface/LibraryPluginHandler.h"
 
-#include "Utils/Utils.h"
 #include "Utils/globals.h"
+#include "Utils/Algorithm.h"
 
 #include <QList>
 
 using Library::Info;
+
+namespace Algorithm=Util::Algorithm;
 
 struct LibraryListModel::Private
 {
@@ -50,7 +52,7 @@ struct LibraryListModel::Private
 
 	void clear_operations()
 	{
-		for(ChangeOperation* op : Util::AsConst(operations))
+		for(ChangeOperation* op : Algorithm::AsConst(operations))
 		{
 			delete op;
 		}
@@ -161,7 +163,7 @@ QStringList LibraryListModel::all_names() const
 {
 	QStringList ret;
 
-	for(const Info& info : Util::AsConst(m->shown_library_info))
+	for(const Info& info : Algorithm::AsConst(m->shown_library_info))
 	{
 		ret << info.name();
 	}
@@ -173,7 +175,7 @@ QStringList LibraryListModel::all_paths() const
 {
 	QStringList ret;
 
-	for(const Info& info : Util::AsConst(m->shown_library_info))
+	for(const Info& info : Algorithm::AsConst(m->shown_library_info))
 	{
 		ret << info.path();
 	}
@@ -214,7 +216,7 @@ bool LibraryListModel::commit()
 	}
 
 	bool success = true;
-	for(ChangeOperation* op : Util::AsConst(m->operations))
+	for(ChangeOperation* op : Algorithm::AsConst(m->operations))
 	{
 		if(!op->exec()){
 			success = false;

@@ -20,7 +20,7 @@
 
 #include "PlaylistDBWrapper.h"
 
-#include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Parser/PlaylistParser.h"
 #include "Utils/MetaData/MetaDataList.h"
@@ -32,6 +32,7 @@
 
 #include <utility>
 
+namespace Algorithm=Util::Algorithm;
 using Playlist::DBWrapper;
 
 struct DBWrapper::Private
@@ -114,7 +115,7 @@ bool DBWrapper::get_playlists(CustomPlaylists& playlists, Playlist::StoreType ty
 	bool load_permanent = (type == Playlist::StoreType::OnlyPermanent ||
 						   type == Playlist::StoreType::TemporaryAndPermanent);
 
-	for(const CustomPlaylistSkeleton& skeleton : ::Util::AsConst(skeletons))
+	for(const CustomPlaylistSkeleton& skeleton : Algorithm::AsConst(skeletons))
 	{
 		CustomPlaylist pl(skeleton);
 		if(pl.id() < 0){

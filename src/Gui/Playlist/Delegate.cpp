@@ -18,19 +18,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QPainter>
-#include <QFontMetrics>
-#include <QTableView>
-
-#include "Utils/Utils.h"
-#include "Utils/MetaData/MetaData.h"
-#include "Utils/Settings/Settings.h"
-
 #include "Delegate.h"
 #include "Model.h"
 
+#include "Utils/MetaData/MetaData.h"
+#include "Utils/Settings/Settings.h"
+
 #include "Gui/Utils/RatingLabel.h"
 #include "Gui/Utils/Style.h"
+
+#include <QPainter>
+#include <QFontMetrics>
+#include <QTableView>
 
 const static int PLAYLIST_BOLD=70;
 

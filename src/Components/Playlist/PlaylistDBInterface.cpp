@@ -21,10 +21,11 @@
 #include "PlaylistDBWrapper.h"
 #include "PlaylistDBInterface.h"
 
-#include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/Playlist/CustomPlaylist.h"
 #include "Utils/Language/Language.h"
 
+namespace Algorithm=Util::Algorithm;
 using Playlist::DBInterface;
 
 struct DBInterface::Private
@@ -156,7 +157,7 @@ DBInterface::SaveAsAnswer DBInterface::save_as(const QString& name, bool force_o
 	m->playlist_db_connector->get_all_skeletons(skeletons);
 
 	// check if name already exists
-	for(const CustomPlaylistSkeleton& skeleton : ::Util::AsConst(skeletons))
+	for(const CustomPlaylistSkeleton& skeleton : Algorithm::AsConst(skeletons))
 	{
 		QString tmp_name = skeleton.name();
 
@@ -218,7 +219,7 @@ DBInterface::SaveAsAnswer DBInterface::rename(const QString& name)
 	m->playlist_db_connector->get_all_skeletons(skeletons);
 
 	// check if name already exists
-	for(const CustomPlaylistSkeleton& skeleton : Util::AsConst(skeletons))
+	for(const CustomPlaylistSkeleton& skeleton : Algorithm::AsConst(skeletons))
 	{
 		QString tmp_name = skeleton.name();
 
@@ -274,7 +275,7 @@ QString DBInterface::request_new_db_name()
 	{
 		bool found = false;
 		target_name = Lang::get(Lang::New) + " " + QString::number(idx);
-		for(const CustomPlaylistSkeleton& skeleton : ::Util::AsConst(skeletons))
+		for(const CustomPlaylistSkeleton& skeleton : Algorithm::AsConst(skeletons))
 		{
 			QString name = skeleton.name();
 

@@ -31,6 +31,7 @@
 
 #include "Utils/globals.h"
 #include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Library/LibraryInfo.h"
 #include "Utils/Logger/Logger.h"
@@ -52,6 +53,8 @@ using Library::PluginCombobox;
 
 using ContainerList=QList<Container*>;
 using LocalContainerList=QList<LocalLibraryContainer*>;
+
+namespace Algorithm=Util::Algorithm;
 
 struct PluginHandler::Private
 {
@@ -155,7 +158,7 @@ struct PluginHandler::Private
 	{
 		const ContainerList containers = all_libraries();
 
-		auto it = ::Util::find(containers, [&name](Container* c){
+		auto it = Algorithm::find(containers, [&name](Container* c){
 			return (c->name() == name);
 		});
 
@@ -313,7 +316,7 @@ void PluginHandler::local_library_added(LibraryId id)
 
 void PluginHandler::local_library_renamed(LibraryId id)
 {
-	for(LocalLibraryContainer* llc : Util::AsConst(m->local_libraries))
+	for(LocalLibraryContainer* llc : Algorithm::AsConst(m->local_libraries))
 	{
 		if(llc->id() == id)
 		{
@@ -335,7 +338,7 @@ void PluginHandler::local_library_removed(LibraryId id)
 	int i=0;
 
 	LocalLibraryContainer* removed_llc=nullptr;
-	for(LocalLibraryContainer* llc : Util::AsConst(m->local_libraries))
+	for(LocalLibraryContainer* llc : Algorithm::AsConst(m->local_libraries))
 	{
 		if(llc->id() == id)
 		{

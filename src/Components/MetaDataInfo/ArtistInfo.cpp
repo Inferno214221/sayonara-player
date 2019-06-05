@@ -24,7 +24,7 @@
 #include "Database/LibraryDatabase.h"
 
 #include "Utils/Set.h"
-#include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/globals.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Language/Language.h"
@@ -34,6 +34,8 @@
 #include "Utils/MetaData/MetaDataList.h"
 
 #include <QFile>
+
+namespace Algorithm=Util::Algorithm;
 
 struct ArtistInfo::Private
 {
@@ -124,7 +126,7 @@ void ArtistInfo::calc_similar_artists(Artist& artist)
 		sim_list << SimPair(it.value(), it.key());
 	}
 
-	Util::sort(sim_list, [](const SimPair& p1, const SimPair& p2){
+	Algorithm::sort(sim_list, [](const SimPair& p1, const SimPair& p2){
 		return (p2.first < p1.first);
 	});
 

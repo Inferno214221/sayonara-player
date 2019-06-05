@@ -32,7 +32,7 @@
 #include "LFMLoginThread.h"
 #include "LFMWebAccess.h"
 
-#include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/RandomGenerator.h"
 #include "Utils/Playlist/PlaylistMode.h"
 #include "Utils/Settings/Settings.h"
@@ -50,8 +50,9 @@
 #include <QDomDocument>
 #include <QUrl>
 
-#include <algorithm>
 #include <ctime>
+
+namespace Algorithm=Util::Algorithm;
 
 using namespace LastFM;
 
@@ -331,7 +332,7 @@ void Base::similar_artists_fetched(IdList artist_ids)
 			MetaData md = artist_tracks.take_at(rnd_track);
 
 			// two times the same track is not allowed
-			bool track_exists = Util::contains(v_md, [md](const MetaData& it_md){
+			bool track_exists = Algorithm::contains(v_md, [md](const MetaData& it_md){
 				return (md.id == it_md.id);
 			});
 

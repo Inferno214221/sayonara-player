@@ -34,13 +34,15 @@
 #include "Gui/Utils/Delegates/ComboBoxDelegate.h"
 #include "Gui/Plugins/ui_GUI_Equalizer.h"
 
-#include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/EqualizerSetting.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language/Language.h"
 
 #include <QLineEdit>
 #include <array>
+
+namespace Algorithm=Util::Algorithm;
 
 using SliderArray=std::array<EqualizerSlider*, 10>;
 using ValueArray=std::array<int, 10>;
@@ -129,7 +131,7 @@ void GUI_Equalizer::init_ui()
 
 	ui->btn_tool->register_action(action_gauss);
 
-	for(EqualizerSlider* s : Util::AsConst(m->sliders))
+	for(EqualizerSlider* s : Algorithm::AsConst(m->sliders))
 	{
 		connect(s, &EqualizerSlider::sig_value_changed, this, &GUI_Equalizer::sli_changed);
 		connect(s, &EqualizerSlider::sig_slider_got_focus, this, &GUI_Equalizer::sli_pressed);
@@ -175,7 +177,7 @@ void GUI_Equalizer::sli_pressed()
 	m->active_idx= idx;
 
 	int i=0;
-	for(const EqualizerSlider* slider : Util::AsConst(m->sliders))
+	for(const EqualizerSlider* slider : Algorithm::AsConst(m->sliders))
 	{
 		m->old_val[i] = slider->value();
 		i++;
@@ -243,7 +245,7 @@ void GUI_Equalizer::fill_eq_presets()
 	m->presets.prepend(EqualizerSetting());
 
 	QStringList items;
-	for(const EqualizerSetting& s : Util::AsConst(m->presets))
+	for(const EqualizerSetting& s : Algorithm::AsConst(m->presets))
 	{
 		items << s.name();
 	}
@@ -371,7 +373,7 @@ void GUI_Equalizer::btn_undo_clicked()
 
 	if(found_idx <= 0)
 	{
-		for(EqualizerSlider* sli : Util::AsConst(m->sliders)){
+		for(EqualizerSlider* sli : Algorithm::AsConst(m->sliders)){
 			sli->setValue(0);
 		}
 	}

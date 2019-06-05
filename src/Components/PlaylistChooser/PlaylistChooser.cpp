@@ -23,10 +23,12 @@
 #include "Components/Playlist/PlaylistHandler.h"
 #include "Components/Playlist/PlaylistDBWrapper.h"
 
+#include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
-#include "Utils/Utils.h"
 
 #include <QStringList>
+
+namespace Algorithm=Util::Algorithm;
 
 using Playlist::Handler;
 
@@ -85,7 +87,7 @@ void PlaylistChooser::load_single_playlist(int id)
 
 int PlaylistChooser::find_playlist(const QString& name) const
 {
-	for(const CustomPlaylistSkeleton& skeleton : Util::AsConst(m->skeletons))
+	for(const CustomPlaylistSkeleton& skeleton : Algorithm::AsConst(m->skeletons))
 	{
 		if(skeleton.name().compare(name) == 0)
 		{

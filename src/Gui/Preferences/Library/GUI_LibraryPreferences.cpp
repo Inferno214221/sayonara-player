@@ -25,17 +25,12 @@
 #include "Gui/Utils/Delegates/StyledItemDelegate.h"
 #include "Gui/Utils/Library/GUI_EditLibrary.h"
 
-#include "Utils/Utils.h"
-#include "Utils/FileUtils.h"
 #include "Utils/Library/SearchMode.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Logger/Logger.h"
 
-#include <QFileDialog>
-#include <QInputDialog>
 #include <QShowEvent>
-
 #include <QItemSelectionModel>
 
 struct GUI_LibraryPreferences::Private

@@ -18,14 +18,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "PlaylistStopBehavior.h"
+
+#include "Utils/Algorithm.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/globals.h"
-#include "Utils/Utils.h"
 
+namespace Algorithm=Util::Algorithm;
 using Playlist::StopBehavior;
 
 struct StopBehavior::Private
@@ -44,7 +44,7 @@ Playlist::StopBehavior::~StopBehavior() {}
 int Playlist::StopBehavior::restore_track_before_stop()
 {
 	const MetaDataList& v_md = metadata();
-	auto it = Util::find(v_md, [=](const MetaData& md){
+	auto it = Algorithm::find(v_md, [=](const MetaData& md){
 		return (md.id == m->id_before_stop);
 	});
 

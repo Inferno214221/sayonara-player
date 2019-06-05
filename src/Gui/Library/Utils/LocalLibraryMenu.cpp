@@ -20,7 +20,6 @@
 
 #include "LocalLibraryMenu.h"
 
-#include "Gui/Utils/GuiUtils.h"
 #include "Gui/Utils/Icons.h"
 #include "Gui/Utils/Library/GUI_EditLibrary.h"
 #include "Gui/Utils/PreferenceAction.h"

@@ -25,7 +25,7 @@
 #include "Interfaces/PreferenceDialog/PreferenceAction.h"
 
 #include "Utils/globals.h"
-#include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/Message/Message.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Logger/Logger.h"
@@ -38,6 +38,7 @@
 
 using Preferences::Base;
 using Preferences::Action;
+namespace Algorithm=Util::Algorithm;
 
 struct GUI_PreferenceDialog::Private
 {
@@ -73,7 +74,7 @@ void GUI_PreferenceDialog::show_preference(const QString& identifier)
 	init_ui();
 
 	int i=0;
-	for(Preferences::Base* pwi : Util::AsConst(m->pref_widgets))
+	for(Preferences::Base* pwi : Algorithm::AsConst(m->pref_widgets))
 	{
 		QString dialog_id = pwi->identifier();
 		if(identifier.compare(dialog_id) == 0)
@@ -101,7 +102,7 @@ void GUI_PreferenceDialog::language_changed()
 	bool is_empty = (ui->list_preferences->count() == 0);
 
 	int i=0;
-	for(Base* dialog : Util::AsConst(m->pref_widgets))
+	for(Base* dialog : Algorithm::AsConst(m->pref_widgets))
 	{
 		QListWidgetItem* item;
 		if(is_empty){
@@ -145,7 +146,7 @@ QAction* GUI_PreferenceDialog::action()
 QList<QAction*> GUI_PreferenceDialog::actions(QWidget* parent)
 {
 	QList<QAction*> ret;
-	for(Preferences::Base* dialog : Util::AsConst(m->pref_widgets))
+	for(Preferences::Base* dialog : Algorithm::AsConst(m->pref_widgets))
 	{
 		QString action_name = dialog->action_name();
 		QString identifier = dialog->identifier();
@@ -173,7 +174,7 @@ void GUI_PreferenceDialog::commit_and_close()
 bool GUI_PreferenceDialog::commit()
 {
 	bool success = true;
-	for(Base* iface : Util::AsConst(m->pref_widgets))
+	for(Base* iface : Algorithm::AsConst(m->pref_widgets))
 	{
 		if(iface->is_ui_initialized())
 		{
@@ -195,7 +196,7 @@ bool GUI_PreferenceDialog::commit()
 
 void GUI_PreferenceDialog::revert()
 {
-	for(Base* iface : Util::AsConst(m->pref_widgets))
+	for(Base* iface : Algorithm::AsConst(m->pref_widgets))
 	{
 		if(iface->is_ui_initialized()){
 			iface->revert();
@@ -232,7 +233,7 @@ void GUI_PreferenceDialog::row_changed(int row)
 
 void GUI_PreferenceDialog::hide_all()
 {
-	for(Base* iface : Util::AsConst(m->pref_widgets))
+	for(Base* iface : Algorithm::AsConst(m->pref_widgets))
 	{
 		iface->setParent(nullptr);
 		iface->hide();
@@ -255,7 +256,7 @@ void GUI_PreferenceDialog::init_ui()
 	ui = new Ui::GUI_PreferenceDialog();
 	ui->setupUi(this);
 
-	for(Base* widget : Util::AsConst(m->pref_widgets))
+	for(Base* widget : Algorithm::AsConst(m->pref_widgets))
 	{
 		ui->list_preferences->addItem(widget->action_name());
 	}

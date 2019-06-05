@@ -27,6 +27,7 @@
 #include "Database/Connector.h"
 
 #include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Library/LibraryInfo.h"
@@ -36,6 +37,8 @@
 #include <QFile>
 #include <QString>
 #include <QStringList>
+
+namespace Algorithm=Util::Algorithm;
 
 struct DirectoryCopyThread::Private
 {
@@ -65,7 +68,7 @@ LibraryId DirectoryCopyThread::target_library() const
 
 void DirectoryCopyThread::run()
 {
-	for(const QString& source_dir : Util::AsConst(m->source_dirs))
+	for(const QString& source_dir : Algorithm::AsConst(m->source_dirs))
 	{
 		Util::File::copy_dir(source_dir, m->target_dir);
 	}

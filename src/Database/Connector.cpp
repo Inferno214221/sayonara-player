@@ -36,8 +36,10 @@
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
 #include "Utils/RawShortcutMap.h"
+#include "Utils/Algorithm.h"
 
 #include <QFileInfo>
 #include <QDateTime>
@@ -50,6 +52,7 @@ using DB::Connector;
 using DB::LibraryDatabase;
 
 using LibDbIterator=DB::LibraryDatabases::Iterator;
+namespace Algorithm=Util::Algorithm;
 
 struct Connector::Private
 {
@@ -722,16 +725,14 @@ void Connector::clean_up()
 	q.exec();
 }
 
-
 DB::LibraryDatabases Connector::library_dbs() const
 {
 	return m->library_dbs;
 }
 
-
 DB::LibraryDatabase* Connector::library_db(LibraryId library_id, DbId db_id)
 {
-	LibDbIterator it = Util::find(m->library_dbs, [=](DB::LibraryDatabase* db){
+	LibDbIterator it = Algorithm::find(m->library_dbs, [=](DB::LibraryDatabase* db){
 		return (db->library_id() == library_id && db->db_id() == db_id);
 	});
 
@@ -751,7 +752,7 @@ DB::LibraryDatabase* Connector::library_db(LibraryId library_id, DbId db_id)
 DB::LibraryDatabase* Connector::register_library_db(LibraryId library_id)
 {
 	DB::LibraryDatabase* lib_db = nullptr;
-	LibDbIterator it = Util::find(m->library_dbs, [=](DB::LibraryDatabase* db){
+	LibDbIterator it = Algorithm::find(m->library_dbs, [=](DB::LibraryDatabase* db){
 		return (db->library_id() == library_id);
 	});
 
@@ -771,7 +772,7 @@ DB::LibraryDatabase* Connector::register_library_db(LibraryId library_id)
 
 void Connector::delete_library_db(LibraryId library_id)
 {
-	LibDbIterator it = Util::find(m->library_dbs, [=](DB::LibraryDatabase* db){
+	LibDbIterator it = Algorithm::find(m->library_dbs, [=](DB::LibraryDatabase* db){
 		return (db->library_id() == library_id);
 	});
 

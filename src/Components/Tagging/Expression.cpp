@@ -20,7 +20,7 @@
 
 #include "Expression.h"
 
-#include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Logger/Logger.h"
 
@@ -29,6 +29,7 @@
 #include <QRegExp>
 #include <QMap>
 
+namespace Algorithm=Util::Algorithm;
 using namespace Tagging;
 
 struct Expression::Private
@@ -57,7 +58,7 @@ Expression::Expression(const QString& tag_str, const QString& filepath)
 	m->valid = update_tag(tag_str, filepath);
 }
 
-Expression::~Expression() {}
+Expression::~Expression() = default;
 
 
 QMap<TagName, QString> Expression::captured_tags() const
@@ -218,7 +219,7 @@ bool Expression::update_tag(const QString& line_edit_str, const QString& filepat
 		sp_log(Log::Warning, this) << "Caps: ";
 		sp_log(Log::Warning, this) << "";
 
-		for(const QString& s : ::Util::AsConst(captured_texts))
+		for(const QString& s : Algorithm::AsConst(captured_texts))
 		{
 			sp_log(Log::Warning, this) << "  " << s;
 		}

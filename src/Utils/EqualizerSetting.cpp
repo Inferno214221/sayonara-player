@@ -20,10 +20,9 @@
 
 #include "EqualizerSetting.h"
 #include "Utils/Logger/Logger.h"
-#include "Utils/Utils.h"
 #include "Utils/globals.h"
+
 #include <QStringList>
-#include <iostream>
 
 static const int EqualizerSettingSize=10;
 

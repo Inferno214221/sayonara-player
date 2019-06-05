@@ -27,6 +27,7 @@
 #include "Gui/Utils/ContextMenu/ContextMenu.h"
 
 #include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/Tree.h"
 #include "Utils/Set.h"
 #include "Utils/MetaData/MetaDataList.h"
@@ -43,6 +44,7 @@
 #include <QTreeWidget>
 #include <QShortcut>
 
+namespace Algorithm=Util::Algorithm;
 using StringSet=Util::Set<QString>;
 using namespace Library;
 
@@ -272,7 +274,7 @@ void GenreView::language_changed()
 
 void GenreView::reload_genres()
 {
-	for(GenreNode* n : ::Util::AsConst(m->genres->children))
+	for(GenreNode* n : Algorithm::AsConst(m->genres->children))
 	{
 		m->genres->remove_child(n);
 		delete n; n=nullptr;
@@ -362,7 +364,7 @@ void GenreView::build_genre_data_tree(const Util::Set<Genre>& genres)
 		}
 	}
 
-	for(GenreNode* base_genre : ::Util::AsConst(m->genres->children))
+	for(GenreNode* base_genre : Algorithm::AsConst(m->genres->children))
 	{
 		build_genre_node(base_genre, children);
 	}
@@ -396,7 +398,7 @@ void GenreView::populate_widget(QTreeWidgetItem* parent_item, GenreNode* node)
 		item->setFlags(item->flags() & ~Qt::ItemIsDragEnabled & ~Qt::ItemIsDropEnabled);
 	}
 
-	for(GenreNode* child : ::Util::AsConst(node->children))
+	for(GenreNode* child : Algorithm::AsConst(node->children))
 	{
 		populate_widget(item, child);
 	}

@@ -85,11 +85,11 @@ NanoSeconds Seeker::seek_rel(double percent, NanoSeconds ref_ns)
 		new_time_ns = ref_ns;
 	}
 
-	else if(percent < 0){
+	else if(percent < 0) {
 		new_time_ns = 0;
 	}
 
-	else{
+	else {
 		new_time_ns = (percent * ref_ns); // nsecs
 	}
 

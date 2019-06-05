@@ -23,6 +23,7 @@
 #include "Components/Directories/DirectoryReader.h"
 
 #include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Tagging/Tagging.h"
@@ -32,6 +33,8 @@
 #include <QProcess>
 
 using Library::CachingThread;
+
+namespace Algorithm=Util::Algorithm;
 
 struct CachingThread::Private
 {
@@ -174,7 +177,7 @@ void CachingThread::scan_dir(const QString& dir)
 	dr.scan_files_recursive(dir, files);
 	sp_log(Log::Crazy, this) << "Found " << files.size() << " files";
 
-	for(const QString& dir_file : ::Util::AsConst(files))
+	for(const QString& dir_file : Algorithm::AsConst(files))
 	{
 		add_file(dir_file, dir);
 	}
@@ -194,7 +197,7 @@ void CachingThread::run()
 
 	sp_log(Log::Develop, this) << "Read files";
 
-	for(const QString& filename : ::Util::AsConst(m->file_list))
+	for(const QString& filename : Algorithm::AsConst(m->file_list))
 	{
 		if(m->cancelled) {
 			m->cache->clear();

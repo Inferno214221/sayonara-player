@@ -33,7 +33,6 @@
 #include "Utils/Language/Language.h"
 
 #include "Gui/Utils/EventFilter.h"
-#include "Gui/Utils/GuiUtils.h"
 
 #include <QLineEdit>
 #include <QMenu>

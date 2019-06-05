@@ -32,15 +32,17 @@
 #include "Database/Connector.h"
 
 #include "Utils/globals.h"
-#include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/Parser/PlaylistParser.h"
 #include "Utils/Playlist/CustomPlaylist.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Set.h"
 
-#include <algorithm>
+
 #include <memory>
+
+namespace Algorithm=Util::Algorithm;
 
 #define CHECK_IDX_VOID(idx) if(!between(idx, m->playlists)){ return; }
 #define CHECK_IDX_RET(idx, ret) if(!between(idx, m->playlists)){ return ret; }
@@ -209,7 +211,7 @@ int Handler::create_playlist(const CustomPlaylist& cpl)
 {
 	int idx;
 	int id = cpl.id();
-	auto it = Util::find(m->playlists, [id](const PlaylistPtr& pl){
+	auto it = Algorithm::find(m->playlists, [id](const PlaylistPtr& pl){
 		return (pl->get_id() == id);
 	});
 
@@ -249,7 +251,7 @@ void Handler::shutdown()
 	{
 		m->db->transaction();
 
-		for(const PlaylistPtr& pl : Util::AsConst(m->playlists))
+		for(const PlaylistPtr& pl : Algorithm::AsConst(m->playlists))
 		{
 			if(pl->is_temporary() && pl->was_changed() && pl->is_storable())
 			{
@@ -549,7 +551,7 @@ int Handler::exists(const QString& name) const
 		return m->current_playlist_idx;
 	}
 
-	return Util::indexOf(m->playlists, [&name](PlaylistPtr pl){
+	return Algorithm::indexOf(m->playlists, [&name](PlaylistPtr pl){
 		return (pl->get_name().compare(name, Qt::CaseInsensitive) == 0);
 	});
 }

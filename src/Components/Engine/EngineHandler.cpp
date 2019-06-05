@@ -25,11 +25,12 @@
 #include "Components/Engine/SoundOutReceiver.h"
 #include "Interfaces/RawSoundReceiver/RawSoundReceiverInterface.h"
 
-#include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/MetaData/MetaData.h"
 
 using Engine::Handler;
+namespace Algorithm=Util::Algorithm;
 
 struct Handler::Private
 {
@@ -123,7 +124,7 @@ void Handler::playstate_changed(PlayState state)
 
 void Handler::new_data(const uchar* data, uint64_t n_bytes)
 {
-	for(RawSoundReceiverInterface* receiver : ::Util::AsConst(m->raw_sound_receiver))
+	for(RawSoundReceiverInterface* receiver : Algorithm::AsConst(m->raw_sound_receiver))
 	{
 		receiver->new_audio_data(data, n_bytes);
 	}

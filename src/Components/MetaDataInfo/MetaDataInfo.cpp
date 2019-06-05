@@ -23,6 +23,7 @@
 
 #include "Utils/Set.h"
 #include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/globals.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Language/Language.h"
@@ -36,6 +37,8 @@
 
 #include <limits>
 #include <QStringList>
+
+namespace Algorithm=Util::Algorithm;
 
 struct MetaDataInfo::Private
 {
@@ -466,15 +469,15 @@ QStringList MetaDataInfo::paths() const
 		lib_paths << li.path();
 	}
 
-	Util::sort(lib_paths, [](const QString& lp1, const QString& lp2){
+	Algorithm::sort(lib_paths, [](const QString& lp1, const QString& lp2){
 		return (lp1.length() > lp2.length());
 	});
 
-	for(const QString& path : ::Util::AsConst(m->paths))
+	for(const QString& path : Algorithm::AsConst(m->paths))
 	{
 		QString name = path;
 
-		for(const QString& lp : ::Util::AsConst(lib_paths))
+		for(const QString& lp : Algorithm::AsConst(lib_paths))
 		{
 			if(name.contains(lp))
 			{
@@ -483,7 +486,7 @@ QStringList MetaDataInfo::paths() const
 			}
 		}
 
-		QString link = Util::create_link(name, dark, path, false);
+		QString link = Util::create_link(name, dark, false, path);
 		ret << link;
 	}
 

@@ -83,7 +83,7 @@ namespace Engine
 			bool init();
 
 			void update_bitrate(Bitrate br, GstElement* src);
-			void update_duration(MilliSeconds duration_ms, GstElement* src);
+			void update_duration(GstElement* src);
 
 			void set_track_ready(GstElement* src);
 			void set_track_almost_finished(MilliSeconds time2go);

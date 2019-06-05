@@ -382,7 +382,7 @@ QString SC::JsonParser::create_link(const QString& name, const QString& target)
 {
 	Settings* s = Settings::instance();
 	bool dark = (s->get<Set::Player_Style>() == 0);
-	return Util::create_link(name, dark, target);
+	return Util::create_link(name, dark, true, target);
 }
 
 

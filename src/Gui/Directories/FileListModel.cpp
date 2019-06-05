@@ -24,6 +24,7 @@
 
 #include "Utils/globals.h"
 #include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Library/LibraryInfo.h"
@@ -32,13 +33,14 @@
 #include "Gui/Utils/MimeDataUtils.h"
 #include "Gui/Utils/Icons.h"
 
-#include <QMap>
 #include <QVariant>
 #include <QModelIndex>
 #include <QMimeData>
 #include <QUrl>
 #include <QIcon>
 #include <QDir>
+
+namespace Algorithm=Util::Algorithm;
 
 struct FileListModel::Private
 {
@@ -51,8 +53,6 @@ struct FileListModel::Private
 		library_id(-1)
 	{}
 };
-
-
 
 
 FileListModel::FileListModel(QObject* parent) :
@@ -93,7 +93,8 @@ void FileListModel::set_parent_directory(LibraryId id, const QString& dir)
 		endRemoveRows();
 	}
 
-	Util::sort(m->files, [](const QString& f1, const QString& f2){
+	Algorithm::sort(m->files, [](const QString& f1, const QString& f2)
+	{
 		bool is_soundfile1 = Util::File::is_soundfile(f1);
 		bool is_soundfile2 = Util::File::is_soundfile(f2);
 

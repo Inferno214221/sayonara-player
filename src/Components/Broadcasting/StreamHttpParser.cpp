@@ -19,12 +19,13 @@
  */
 
 #include "StreamHttpParser.h"
-
-#include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
 
 #include <QRegExp>
 #include <QStringList>
+
+namespace Algorithm=Util::Algorithm;
 
 struct StreamHttpParser::Private
 {
@@ -101,7 +102,7 @@ StreamHttpParser::HttpAnswer StreamHttpParser::parse(const QByteArray& data)
 
 	sp_log(Log::Develop, this) << qmsg;
 
-	for(const QString& str : Util::AsConst(lst))
+	for(const QString& str : Algorithm::AsConst(lst))
 	{
 		QRegExp regex("(GET|HEAD)(\\s|/)*HTTP", Qt::CaseInsensitive);
 		QRegExp regex_pl("(GET)(\\s|/)*(playlist.m3u)(\\s|/)*HTTP", Qt::CaseInsensitive);

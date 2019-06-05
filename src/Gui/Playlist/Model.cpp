@@ -35,21 +35,24 @@
 #include "Gui/Utils/CustomMimeData.h"
 #include "Gui/Utils/GuiUtils.h"
 
-#include "Utils/MetaData/MetaDataList.h"
-#include "Utils/Library/SearchMode.h"
 #include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Set.h"
 #include "Utils/globals.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Settings/Settings.h"
+#include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Library/SearchMode.h"
 
 #include <QUrl>
 #include <QPalette>
 #include <QHash>
 #include <QPixmap>
 #include <QMainWindow>
+
+namespace Algorithm=Util::Algorithm;
 
 static const QChar ALBUM_SEARCH_PREFIX='%';
 static const QChar ARTIST_SEARCH_PREFIX='$';
@@ -403,13 +406,13 @@ QMimeData* PlaylistItemModel::mimeData(const QModelIndexList& indexes) const
 	}
 
 	QModelIndexList sorted(indexes);
-	Util::sort(sorted, [](const QModelIndex& idx1, const QModelIndex& idx2){
+	Algorithm::sort(sorted, [](const QModelIndex& idx1, const QModelIndex& idx2){
 		return (idx1.row() < idx2.row());
 	});
 
 	MetaDataList v_md;
 	v_md.reserve(sorted.size());
-	for(const QModelIndex& idx : Util::AsConst(sorted))
+	for(const QModelIndex& idx : Algorithm::AsConst(sorted))
 	{
 		if(idx.row() >= m->pl->count()){
 			continue;

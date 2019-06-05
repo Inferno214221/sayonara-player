@@ -52,6 +52,8 @@ namespace Engine
 		GValue get_uint(guint value);
 		GValue get_int(gint value);
 
+		MilliSeconds get_update_interval();
+
 		template<typename T>
 		struct Dont_Use_Integers_In_GObject_Set
 		{

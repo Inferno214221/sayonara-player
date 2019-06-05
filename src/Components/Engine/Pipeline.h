@@ -22,7 +22,7 @@
 #define GSTPLAYBACKPIPELINE_H_
 
 #include "PipelineExtensions/Changeable.h"
-#include "PipelineExtensions/Crossfadeable.h"
+#include "PipelineExtensions/Fadeable.h"
 #include "PipelineExtensions/DelayedPlayable.h"
 #include "Utils/Pimpl.h"
 
@@ -38,7 +38,7 @@ namespace Engine
 	 */
 	class Pipeline :
 		public QObject,
-		public PipelineExtensions::CrossFadeable,
+		public PipelineExtensions::Fadeable,
 		public PipelineExtensions::Changeable,
 		public PipelineExtensions::DelayedPlayable
 	{
@@ -58,15 +58,14 @@ namespace Engine
 			bool set_uri(gchar* uri);
 
 			void set_data(Byte* data, uint64_t size);
-			void set_current_volume(double volume) override; // Crossfader
-			double get_current_volume() const override;      // Crossfader
+			void set_internal_volume(double volume) override; // Crossfader
+			double get_internal_volume() const override;      // Crossfader
 
 			bool has_element(GstElement* e) const;
 			GstState get_state() const;
 			MilliSeconds get_time_to_go() const;
 
-			void refresh_duration();
-			void refresh_position();
+			void check_position();
 			void check_about_to_finish();
 
 			void enable_visualizer(bool b);
@@ -107,8 +106,10 @@ namespace Engine
 
 			bool			init_streamrecorder();
 
-
 			MilliSeconds	get_about_to_finish_time() const;
+
+			void			set_position_element(GstElement* element);
+			GstElement*		position_element();
 
 			GstElement*		pipeline() const override;	// Changeable
 

@@ -27,9 +27,12 @@
 
 #include "Utils/globals.h"
 #include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/Set.h"
+
 #include "Utils/Tagging/Tagging.h"
 #include "Utils/Tagging/TaggingCover.h"
+
 #include "Utils/MetaData/Genre.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/MetaData/Album.h"
@@ -42,7 +45,8 @@
 #include "Database/Connector.h"
 
 #include <QHash>
-#include <algorithm>
+
+namespace Algorithm=Util::Algorithm;
 
 using namespace Tagging;
 
@@ -235,7 +239,7 @@ int Editor::count() const
 
 bool Editor::has_changes() const
 {
-	return ::Util::contains(m->changed_md, [](bool b){
+	return Algorithm::contains(m->changed_md, [](bool b){
 		return (b);
 	});
 }

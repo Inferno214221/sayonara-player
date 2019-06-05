@@ -25,6 +25,7 @@
 #include "Components/Covers/CoverLookup.h"
 
 #include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/FileUtils.h"
 
@@ -42,6 +43,7 @@ using Hash=AlbumCoverFetchThread::Hash;
 using AtomicBool=std::atomic<bool>;
 using AtomicInt=std::atomic<int>;
 
+namespace Algorithm=Util::Algorithm;
 namespace FileUtils=::Util::File;
 static const int MaxThreads=20;
 
@@ -188,7 +190,7 @@ bool AlbumCoverFetchThread::check_album(const QString& hash)
 	bool has_hash = false;
 	{
 		LOCK_GUARD(m->mutex_lookup)
-		has_hash = ::Util::contains(m->lookups, [hash](const HashLocationPair& p){
+		has_hash = Algorithm::contains(m->lookups, [hash](const HashLocationPair& p){
 			return (p.first == hash);
 		});
 	}
@@ -209,7 +211,7 @@ bool AlbumCoverFetchThread::check_album(const QString& hash)
 
 	{
 		LOCK_GUARD(m->mutex_album_list)
-		has_hash = ::Util::contains(m->hash_album_list, [hash](const HashAlbumPair& p){
+		has_hash = Algorithm::contains(m->hash_album_list, [hash](const HashAlbumPair& p){
 			return (p.first == hash);
 		});
 	}

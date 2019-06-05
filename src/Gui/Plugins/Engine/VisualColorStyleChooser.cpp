@@ -23,10 +23,11 @@
 #include "Database/VisualStyles.h"
 
 #include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 
-#include <algorithm>
-#include <atomic>
 #include <mutex>
+
+namespace Algorithm=Util::Algorithm;
 
 QList<float> borders_4, borders_3, borders_2;
 
@@ -203,7 +204,7 @@ void VisualColorStyleChooser::reload(int widget_width, int widget_height)
 	}
 
 
-	for(const RawColorStyle& rcs : Util::AsConst(colors_active))
+	for(const RawColorStyle& rcs : Algorithm::AsConst(colors_active))
 	{
 		ColorStyle style_spectrum;
 		ColorStyle style_level;

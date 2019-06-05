@@ -36,15 +36,17 @@
 #include "Components/MetaDataInfo/AlbumInfo.h"
 #include "Components/MetaDataInfo/ArtistInfo.h"
 
-#include "Utils/MetaData/MetaDataList.h"
-#include "Utils/Utils.h"
+#include "Utils/globals.h"
+#include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Language/Language.h"
-#include "Utils/globals.h"
+#include "Utils/MetaData/MetaDataList.h"
 
 #include <QTabBar>
 #include <QTableWidget>
 #include <QTableWidgetItem>
+
+namespace Algorithm=Util::Algorithm;
 
 struct GUI_InfoDialog::Private
 {
@@ -215,7 +217,7 @@ void GUI_InfoDialog::show(GUI_InfoDialog::Tab tab)
 	QTabWidget* tab_widget = ui->tab_widget;
 
 	bool lyric_enabled = (m->v_md.size() == 1);
-	bool tag_edit_enabled = Util::contains(m->v_md, [](const MetaData& md){
+	bool tag_edit_enabled = Algorithm::contains(m->v_md, [](const MetaData& md){
 		return (!Util::File::is_www(md.filepath()));
 	});
 

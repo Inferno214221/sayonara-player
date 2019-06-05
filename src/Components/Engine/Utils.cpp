@@ -470,3 +470,8 @@ GValue Engine::Utils::get_int(gint value)
 	g_value_set_int(&ret, value);
 	return ret;
 }
+
+MilliSeconds Engine::Utils::get_update_interval()
+{
+	return 50;
+}

@@ -53,10 +53,12 @@
 
 #include "Utils/globals.h"
 #include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/RandomGenerator.h"
 #include "Utils/Macros.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Language/Language.h"
+
 
 template<typename T>
 QString cvtNum2String(T num, int digits) {
@@ -166,7 +168,7 @@ QString Util::cvt_ms_to_string(MilliSeconds msec, bool empty_zero, bool colon, b
 	return final_str;
 }
 
-
+QString Util::sayonara_path() { return sayonara_path(QString()); }
 QString Util::sayonara_path(const QString& append_path)
 {
 	return Util::File::clean_filename(
@@ -174,7 +176,7 @@ QString Util::sayonara_path(const QString& append_path)
 	);
 }
 
-
+QString Util::share_path() { return share_path(QString()); }
 QString Util::share_path(const QString& append_path)
 {
 	QString base_path;
@@ -188,6 +190,7 @@ QString Util::share_path(const QString& append_path)
 	return Util::File::clean_filename(base_path + "/" + append_path);
 }
 
+QString Util::lib_path() { return lib_path(QString()); }
 QString Util::lib_path(const QString& append_path)
 {
 	QString base_path;
@@ -201,8 +204,12 @@ QString Util::lib_path(const QString& append_path)
 	return Util::File::clean_filename(base_path + "/" + append_path);
 }
 
+QString Util::create_link(const QString& name, bool dark, bool underline)
+{
+	return create_link(name, dark, underline, QString());
+}
 
-QString Util::create_link(const QString& name, bool dark, const QString& target, bool underline)
+QString Util::create_link(const QString& name, bool dark, bool underline, const QString& target)
 {
 	QString new_target;
 	QString content;
@@ -404,7 +411,7 @@ QStringList Util::ip_addresses()
 	QList<QHostAddress> host_list;
 	host_list = QNetworkInterface::allAddresses();
 
-	for(const QHostAddress& host : Util::AsConst(host_list))
+	for(const QHostAddress& host : Algorithm::AsConst(host_list))
 	{
 		QString address = host.toString();
 		if(!address.startsWith("127") &&

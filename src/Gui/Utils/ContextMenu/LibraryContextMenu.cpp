@@ -26,7 +26,7 @@
 #include "Gui/Utils/Shortcuts/ShortcutHandler.h"
 #include "Gui/Utils/Shortcuts/Shortcut.h"
 
-#include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language/Language.h"
 #include "Utils/ExtensionSet.h"
@@ -34,6 +34,8 @@
 
 #include <QMap>
 #include <QTimer>
+
+namespace Algorithm=Util::Algorithm;
 
 struct LibraryContextMenu::Private
 {
@@ -134,7 +136,7 @@ LibraryContextMenu::LibraryContextMenu(QWidget* parent) :
 	m->entry_action_map[EntryCoverView] = m->cover_view_action;
 	m->entry_action_map[EntryFilterExtension] = m->filter_extension_action;
 
-	for(QAction* action : ::Util::AsConst(actions))
+	for(QAction* action : Algorithm::AsConst(actions))
 	{
 		action->setVisible(action->isSeparator());
 	}

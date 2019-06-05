@@ -18,14 +18,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "FMStreamParser.h"
 #include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
-#include "Utils/FileUtils.h"
 
 #include <QRegExp>
+
+namespace Algorithm=Util::Algorithm;
 
 struct FMStreamParser::Private
 {
@@ -237,7 +237,7 @@ FMStreamParser::FMStreamParser(const QByteArray& data, FMStreamParser::EncodingT
 		index = re.indexIn(text, offset);
 	}
 
-	Util::sort(stations, [](const RadioStation& s1, const RadioStation& s2){
+	Algorithm::sort(stations, [](const RadioStation& s1, const RadioStation& s2){
 		return (s1.name < s2.name);
 	});
 

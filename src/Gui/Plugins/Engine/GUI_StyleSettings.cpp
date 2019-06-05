@@ -22,7 +22,7 @@
 #include "Gui/Plugins/ui_GUI_Style.h"
 #include "VisualStyleTypes.h"
 
-#include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/Message/Message.h"
 
 #include "Database/Connector.h"
@@ -32,6 +32,7 @@
 #include <QCloseEvent>
 #include <QList>
 
+namespace Algorithm=Util::Algorithm;
 
 struct GUI_StyleSettings::Private
 {
@@ -103,7 +104,7 @@ void GUI_StyleSettings::init()
 
 	m->styles.push_front(style);
 
-	for(const RawColorStyle& style : Util::AsConst(m->styles))
+	for(const RawColorStyle& style : Algorithm::AsConst(m->styles))
 	{
 		ui->combo_styles->addItem(style.col_list.name);
 	}

@@ -28,11 +28,10 @@
 #ifndef UTIL_HELPER_H
 #define UTIL_HELPER_H
 
+class QString;
 class QDateTime;
 class QPixmap;
 
-#include <QObject>
-#include <algorithm>
 #include "typedefs.h"
 
 #ifndef CAST_MACROS
@@ -85,19 +84,23 @@ namespace Util
 	 * @brief get sayonara path in home directory
 	 * @return
 	 */
-	QString sayonara_path(const QString& append_path=QString());
+	QString sayonara_path();
+	QString sayonara_path(const QString& append_path);
+
 
 	/**
 	 * @brief get share path of sayonara
 	 * @return ./share on windows, share path of unix system
 	 */
-	QString share_path(const QString& append_path=QString());
+	QString share_path();
+	QString share_path(const QString& append_path);
 
 	/**
 	 * @brief get library path of sayonara
 	 * @return ./lib on windows, lib path of unix system
 	 */
-	QString lib_path(const QString& append_path=QString());
+	QString lib_path();
+	QString lib_path(const QString& append_path);
 
 	/**
 	 * @brief create a link string
@@ -108,8 +111,12 @@ namespace Util
 	 */
 	QString create_link(const QString& name,
 						bool dark=true,
-						const QString& target="",
 						bool underline=true);
+
+	QString create_link(const QString& name,
+						bool dark,
+						bool underline,
+						const QString& target);
 
 
 	/**
@@ -185,44 +192,6 @@ namespace Util
 	void set_environment(const QString& key, const QString& value);
 	void unset_environment(const QString& key);
 
-	template<typename T, typename FN>
-	bool contains(const T& container, FN fn)
-	{
-		return std::any_of(container.begin(), container.end(), fn);
-	}
-
-	template<typename T, typename FN>
-	void sort(T& container, FN fn)
-	{
-		std::sort(container.begin(), container.end(), fn);
-	}
-
-	template<typename T, typename FN>
-	typename T::iterator find(T& container, FN fn)
-	{
-		return std::find_if(container.begin(), container.end(), fn);
-	}
-
-	template<typename T, typename FN>
-	typename T::const_iterator find(const T& container, FN fn)
-	{
-		return std::find_if(container.begin(), container.end(), fn);
-	}
-
-	template<typename T>
-	constexpr typename std::add_const<T>::type& AsConst(T& t) {
-		return t;
-	}
-
-	template<typename T, typename FN>
-	int indexOf(const T& container, FN fn) {
-		auto it = Util::find(container, fn);
-		if(it == container.end())
-		{
-			return -1;
-		}
-		return std::distance(container.begin(), it);
-	}
 }
 
 #endif

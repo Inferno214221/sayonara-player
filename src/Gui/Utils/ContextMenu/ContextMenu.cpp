@@ -23,12 +23,14 @@
 #include "Gui/Utils/GuiUtils.h"
 #include "Gui/Utils/PreferenceAction.h"
 
-#include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/Language/Language.h"
 
 #include <QTimer>
 
 using namespace Gui;
+
+namespace Algorithm=::Util::Algorithm;
 
 struct ContextMenu::Private
 {
@@ -88,7 +90,7 @@ ContextMenu::ContextMenu(QWidget *parent) :
 
 	this->addActions(m->actions);
 
-	for(QAction* action : ::Util::AsConst(m->actions))
+	for(QAction* action : Algorithm::AsConst(m->actions))
 	{
 		action->setVisible(false);
 	}
@@ -183,7 +185,7 @@ void ContextMenu::show_action(ContextMenu::Entry entry, bool visible)
 
 bool ContextMenu::has_actions()
 {
-	return ::Util::contains(m->actions, [](QAction* a){
+	return Algorithm::contains(m->actions, [](QAction* a){
 		return a->isVisible();
 	});
 }
@@ -226,7 +228,7 @@ ContextMenuEntries ContextMenu::get_entries() const
 
 void ContextMenu::show_all()
 {
-	for(QAction* action : ::Util::AsConst(m->actions))
+	for(QAction* action : Algorithm::AsConst(m->actions))
 	{
 		action->setVisible(true);
 	}
@@ -250,7 +252,7 @@ void ContextMenu::add_preference_action(PreferenceAction* action)
 
 void ContextMenu::showEvent(QShowEvent* e)
 {
-	for(QAction* action : ::Util::AsConst(m->actions))
+	for(QAction* action : Algorithm::AsConst(m->actions))
 	{
 		action->setDisabled(true);
 	}
@@ -262,7 +264,7 @@ void ContextMenu::showEvent(QShowEvent* e)
 
 void ContextMenu::timed_out()
 {
-	for(QAction* action : ::Util::AsConst(m->actions))
+	for(QAction* action : Algorithm::AsConst(m->actions))
 	{
 		action->setDisabled(false);
 	}

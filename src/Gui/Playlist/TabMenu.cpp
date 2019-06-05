@@ -20,7 +20,6 @@
 #include "TabMenu.h"
 
 #include "Gui/Utils/Icons.h"
-#include "Gui/Utils/GuiUtils.h"
 #include "Gui/Utils/PreferenceAction.h"
 
 #include "Utils/Language/Language.h"

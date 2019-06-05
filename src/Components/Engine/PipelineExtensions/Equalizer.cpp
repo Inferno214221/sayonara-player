@@ -56,7 +56,7 @@ Equalizer::Equalizer()
 	EqualizerSetting last_preset = presets[last_idx];
 	EqualizerSetting::ValueArray values = last_preset.values();
 
-	for(int i=0; i< (int) values.size(); i++)
+	for(unsigned i=0; i<values.size(); i++)
 	{
 		set_band(i, values[i]);
 	}

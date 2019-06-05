@@ -20,14 +20,17 @@
 
 #include "PlayerPluginBase.h"
 #include "PlayerPluginHandler.h"
+
+#include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Settings/Settings.h"
-#include "Utils/Utils.h"
 
 #include <QAction>
 
 using PlayerPlugin::Handler;
 using PlayerPlugin::Base;
+
+namespace Algorithm=Util::Algorithm;
 
 struct Handler::Private
 {
@@ -50,7 +53,7 @@ Base* Handler::find_plugin(const QString& name)
 {
 	sp_log(Log::Debug, this) << "Search for plugin " << name;
 
-	for(Base* p : Util::AsConst(m->plugins))
+	for(Base* p : Algorithm::AsConst(m->plugins))
 	{
 		if(p->get_name().compare(name) == 0)
 		{
@@ -134,7 +137,7 @@ void Handler::plugin_closed()
 
 void Handler::language_changed()
 {
-	for(Base* p : Util::AsConst(m->plugins))
+	for(Base* p : Algorithm::AsConst(m->plugins))
 	{
 		p->language_changed();
 		p->get_action()->setText(p->get_display_name());

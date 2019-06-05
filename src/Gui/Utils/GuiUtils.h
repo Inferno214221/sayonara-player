@@ -24,9 +24,6 @@
 #ifndef GuiUtils_H
 #define GuiUtils_H
 
-#include <QSize>
-#include <QList>
-
 class QWidget;
 class QPixmap;
 class QImage;
@@ -35,6 +32,10 @@ class QIcon;
 class QPoint;
 class QMainWindow;
 class QScreen;
+class QSize;
+
+template<typename T>
+class QList;
 
 namespace Gui
 {
@@ -61,8 +62,12 @@ namespace Gui
 		 * @param keep_aspect if true, aspect ratio is kept
 		 * @return pixmap
 		 */
-		QPixmap pixmap(const QString& icon_name, QSize sz=QSize(0, 0), bool keep_aspect=true);
-		QImage image(const QString& icon_name, QSize sz=QSize(0, 0), bool keep_aspect=true);
+		QPixmap pixmap(const QString& icon_name);
+		QPixmap pixmap(const QString& icon_name, QSize sz, bool keep_aspect=true);
+
+		QImage image(const QString& icon_name);
+		QImage image(const QString& icon_name, QSize sz, bool keep_aspect=true);
+
 
 		/**
 		 * @brief set the applications' main window

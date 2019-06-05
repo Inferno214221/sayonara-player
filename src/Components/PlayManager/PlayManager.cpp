@@ -23,7 +23,6 @@
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
-#include "Utils/Utils.h"
 
 #include <QDateTime>
 #include <QTime>

@@ -18,10 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "LFMCoverFetcher.h"
-#include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
 #include "Components/Streaming/LastFM/LFMGlobals.h"
 
@@ -32,6 +30,7 @@
 #include <QMap>
 #include <QUrl>
 
+namespace Algorithm=Util::Algorithm;
 using namespace Cover::Fetcher;
 
 bool LastFM::can_fetch_cover_directly() const
@@ -95,7 +94,7 @@ QStringList LastFM::calc_addresses_from_website(const QByteArray& website) const
 	}
 
 	QStringList ret;
-	for(const QString& attr : ::Util::AsConst(attributes))
+	for(const QString& attr : Algorithm::AsConst(attributes))
 	{
 		QString url = lfm_covers[attr];
 		if(!url.isEmpty()){

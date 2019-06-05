@@ -25,13 +25,15 @@
 #include "Database/Library.h"
 #include "Database/LibraryDatabase.h"
 
-#include "Utils/Logger/Logger.h"
-#include "Utils/Library/LibraryInfo.h"
-#include "Utils/Utils.h"
-#include "Utils/FileUtils.h"
-#include "Utils/Settings/Settings.h"
 #include "Utils/globals.h"
+#include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
+#include "Utils/FileUtils.h"
 
+#include "Utils/Library/LibraryInfo.h"
+#include "Utils/Settings/Settings.h"
+
+#include "Utils/Logger/Logger.h"
 
 #include <QDir>
 #include <QFile>
@@ -40,6 +42,8 @@
 #include <QString>
 
 namespace FileUtils=::Util::File;
+namespace Algorithm=Util::Algorithm;
+
 using Library::Manager;
 using Library::Info;
 
@@ -101,7 +105,7 @@ public:
 
 	Info get_library_info(LibraryId id)
 	{
-		for(const Info& info : ::Util::AsConst(all_libs))
+		for(const Info& info : Algorithm::AsConst(all_libs))
 		{
 			if(info.id() == id){
 				return info;
@@ -115,7 +119,7 @@ public:
 	{
 		Info ret;
 
-		for(const Info& info : ::Util::AsConst(all_libs))
+		for(const Info& info : Algorithm::AsConst(all_libs))
 		{
 			if( path.startsWith(info.path()) &&
 				path.length() > ret.path().length())
@@ -132,7 +136,7 @@ public:
 	{
 		Info ret;
 
-		for(const Info& info : ::Util::AsConst(all_libs))
+		for(const Info& info : Algorithm::AsConst(all_libs))
 		{
 			if( sympath.startsWith(info.symlink_path()) &&
 				sympath.length() > ret.symlink_path().length())
@@ -159,7 +163,7 @@ public:
 
 		::Util::File::create_directories(dir);
 
-		for(const Info& info : ::Util::AsConst(all_libs))
+		for(const Info& info : Algorithm::AsConst(all_libs))
 		{
 			QString target = info.symlink_path();
 
@@ -173,7 +177,7 @@ public:
 	{
 		OrderMap order_map;
 		int i=0;
-		for(const ::Library::Info& info : ::Util::AsConst(all_libs))
+		for(const ::Library::Info& info : Algorithm::AsConst(all_libs))
 		{
 			order_map[info.id()] = i;
 			i++;
@@ -205,7 +209,7 @@ void Manager::reset()
 	{
 		m->all_libs = GetSetting(Set::Lib_AllLibraries);
 		int index = 0;
-		for(const Library::Info& info : ::Util::AsConst(m->all_libs))
+		for(const Library::Info& info : Algorithm::AsConst(m->all_libs))
 		{
 			sp_log(Log::Info, this) << "All libraries are empty: Insert " << info.toString();
 			ldb->insert_library(info.id(), info.name(), info.path(), index);
@@ -289,7 +293,7 @@ LibraryId Manager::add_library(const QString& name, const QString& path)
 
 bool Manager::rename_library(LibraryId id, const QString& new_name)
 {
-	auto it = ::Util::find(m->all_libs, [&id, &new_name](const Info& info)
+	auto it = Algorithm::find(m->all_libs, [&id, &new_name](const Info& info)
 	{
 		return ((info.id() == id) &&
 				(info.name() != new_name));
@@ -383,7 +387,7 @@ bool Manager::change_library_path(LibraryId id, const QString& new_path)
 		return false;
 	}
 
-	auto it = ::Util::find(m->all_libs, [&id](const Info& info){
+	auto it = Algorithm::find(m->all_libs, [&id](const Info& info){
 		return (id == info.id());
 	});
 
@@ -464,7 +468,7 @@ Library::Info Manager::library_info_by_sympath(const QString& sympath) const
 LocalLibrary* Manager::library_instance(LibraryId id)
 {
 	LocalLibrary* lib = nullptr;
-	auto it = ::Util::find(m->all_libs, [&id](const Info& info){
+	auto it = Algorithm::find(m->all_libs, [&id](const Info& info){
 		return (info.id() == id);
 	});
 

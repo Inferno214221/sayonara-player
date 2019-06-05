@@ -28,12 +28,13 @@
 #include "Database/Connector.h"
 #include "Database/CoverConnector.h"
 
+#include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Settings/Settings.h"
-#include "Utils/Utils.h"
 
 #include <QStringList>
 
+namespace Algorithm=Util::Algorithm;
 using Cover::AlternativeLookup;
 using Cover::Location;
 using Cover::Lookup;
@@ -131,7 +132,7 @@ QStringList AlternativeLookup::get_activated_coverfetchers(bool fulltext_search)
 		else
 		{
 			QStringList search_urls = cover_location().search_urls();
-			suitable = Util::contains(search_urls, [=](const QString& url){
+			suitable = Algorithm::contains(search_urls, [=](const QString& url){
 				QString id = cfm->identifier_by_url(url);
 				return (id == keyword);
 			});

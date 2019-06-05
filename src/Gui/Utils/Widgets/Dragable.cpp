@@ -21,9 +21,9 @@
 #include "Dragable.h"
 #include "Gui/Utils/GuiUtils.h"
 
-#include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Language/Language.h"
+#include "Utils/Algorithm.h"
 
 #include <QPoint>
 #include <QMimeData>
@@ -34,6 +34,8 @@
 #include <QWidget>
 #include <QUrl>
 #include <QFontMetrics>
+
+namespace Algorithm=Util::Algorithm;
 
 struct Dragable::Private
 {
@@ -164,7 +166,7 @@ QDrag* Dragable::drag_moving(const QPoint& p)
 
 	int pm_width = logo_height + 4;
 
-	for(const QString& str : ::Util::AsConst(strings))
+	for(const QString& str : Algorithm::AsConst(strings))
 	{
 		pm_width = std::max( pm_width, fm.width(str) );
 	}
@@ -187,7 +189,7 @@ QDrag* Dragable::drag_moving(const QPoint& p)
 	painter.setPen(QColor(255, 255, 255));
 	painter.translate(logo_width + 15, font_padding + font_height - 2);
 
-	for(const QString& str : ::Util::AsConst(strings))
+	for(const QString& str : Algorithm::AsConst(strings))
 	{
 		painter.drawText(0, 0, str);
 		painter.translate(0, font_height + 2);

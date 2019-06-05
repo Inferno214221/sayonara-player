@@ -24,9 +24,7 @@
 #include "Utils/Utils.h"
 #include "Utils/Message/Message.h"
 #include "Utils/Logger/Logger.h"
-#include "Utils/Language/Language.h"
 #include "Utils/Settings/Settings.h"
-#include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Set.h"
 
@@ -210,7 +208,7 @@ void GUI_AudioConverter::convert_finished()
 		Message::error( QStringList
 		{
 			tr("Failed to convert %1 tracks").arg(converter->num_errors()),
-			tr("Please check the log files") + ". " + Util::create_link(converter->log_directory(), Style::is_dark(), "file://" + converter->log_directory())
+			tr("Please check the log files") + ". " + Util::create_link(converter->log_directory(), Style::is_dark(), true, "file://" + converter->log_directory())
 		}.join("<br>"));
 
 		converter->deleteLater();

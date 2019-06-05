@@ -19,14 +19,18 @@
  */
 
 #include "Sorting.h"
+
+#include "Utils/Algorithm.h"
+
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/Artist.h"
 #include "Utils/MetaData/Album.h"
 #include "Utils/MetaData/MetaDataList.h"
-#include "Utils/Utils.h"
 
 #include <functional>
 #include <QMap>
+
+namespace Algorithm=Util::Algorithm;
 
 namespace Compare
 {
@@ -164,7 +168,7 @@ void SC::Sorting::sort_artists(ArtistList& artists, Library::SortOrder so)
 	};
 
 	if(functions.contains(so)){
-		Util::sort(artists, functions[so]);
+		Algorithm::sort(artists, functions[so]);
 	}
 }
 
@@ -183,7 +187,7 @@ void SC::Sorting::sort_albums(AlbumList& albums, Library::SortOrder so)
 	};
 
 	if(functions.contains(so)){
-		Util::sort(albums, functions[so]);
+		Algorithm::sort(albums, functions[so]);
 	}
 }
 
@@ -212,6 +216,6 @@ void SC::Sorting::sort_tracks(MetaDataList& tracks, Library::SortOrder so)
 	};
 
 	if(functions.contains(so)){
-		Util::sort(tracks, functions[so]);
+		Algorithm::sort(tracks, functions[so]);
 	}
 }

@@ -24,17 +24,36 @@
 #define CROSSFADER_H
 
 #include "Utils/Pimpl.h"
+#include <QThread>
 
 
 namespace PipelineExtensions
 {
+	class Fadeable;
+	class CrossFadeableTimer :
+		public QObject
+	{
+		Q_OBJECT
+		PIMPL(CrossFadeableTimer)
+
+		public:
+			CrossFadeableTimer(Fadeable* fadeable);
+			~CrossFadeableTimer();
+			void start(MilliSeconds ms);
+			void stop();
+
+		private slots:
+			void timed_out();
+	};
+
+
 	/**
 	 * @brief The CrossFader class
 	 * @ingroup EngineInterfaces
 	 */
-	class CrossFadeable
+	class Fadeable
 	{
-		PIMPL(CrossFadeable)
+		PIMPL(Fadeable)
 
 		public:
 
@@ -45,23 +64,15 @@ namespace PipelineExtensions
 				FadeOut
 			};
 
-			CrossFadeable();
-			~CrossFadeable();
+			Fadeable();
+			Fadeable(const Fadeable& other)=delete;
 
-			/**
-			 * @brief get current volume of pipeline
-			 * @return value between 0 and 1.0
-			 */
-			virtual double get_current_volume() const=0;
+			virtual ~Fadeable();
 
+		public:
 			/**
-			 * @brief set current volume of pipeline
-			 * @param vol value between 0 and 1.0
-			 */
-			virtual void set_current_volume(double vol)=0;
-
-			/**
-			 * @brief get fading time in ms
+			 * @brief get fading time in ms. This is useful to
+			 * calculate the beginning of the next track
 			 * @return fading time in ms
 			 */
 			MilliSeconds get_fading_time_ms() const;
@@ -76,30 +87,47 @@ namespace PipelineExtensions
 			 */
 			void fade_out();
 
-			bool is_fading_out() const;
-			bool is_fading_int() const;
+
+		private:
+			bool init_fader(FadeMode mode);
+
+		protected:
+			virtual void stop()=0;
+			virtual void play()=0;
 
 			/**
-			 * @brief function is called periodically. This function should not be used from outside
-			 * TODO
+			 * @brief Some additional stuff the parent class wants to do
+			 * when fading out
 			 */
-			void fader_timed_out();
+			virtual void fade_out_handler()=0;
+
+			/**
+			 * @brief Some additional stuff the parent class wants to do
+			 * when fading in
+			 */
+			virtual void fade_in_handler()=0;
+
+			/**
+			 * @brief get current volume of pipeline
+			 * @return value between 0 and 1.0
+			 */
+			virtual double get_internal_volume() const=0;
+
+			/**
+			 * @brief set current volume of pipeline
+			 * @param vol value between 0 and 1.0
+			 */
+			virtual void set_internal_volume(double vol)=0;
+
+			/**
+			 * @brief Stops the current fader process
+			 */
+			void abort_fader();
 
 
 		private:
-			CrossFadeable(const CrossFadeable& other)=delete;
-
-			void increase_volume();
-			void decrease_volume();
-			void init_fader();
-
-		protected:
-			void	    abort_fader();
-
-			virtual void stop()=0;
-			virtual void play()=0;
-			virtual void fade_out_handler()=0;
-			virtual void fade_in_handler()=0;
+			friend class CrossFadeableTimer;
+			void timed_out();
 	};
 }
 

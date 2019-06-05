@@ -23,10 +23,10 @@
 #include "Gui/Utils/Icons.h"
 #include "Components/Directories/DirectoryReader.h"
 
+#include "Utils/Algorithm.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Settings/Settings.h"
-#include "Utils/Utils.h"
 
 #include <QStringList>
 #include <QIcon>
@@ -34,6 +34,8 @@
 #include <QCheckBox>
 #include <QLabel>
 #include <QRadioButton>
+
+namespace Algorithm=Util::Algorithm;
 
 class IconRadioButton : public QRadioButton
 {
@@ -228,12 +230,12 @@ void GUI_IconPreferences::init_ui()
 	m->rb_map[standard_theme] = rb_automatic;
 
 	QStringList icon_paths = QIcon::themeSearchPaths();
-	Util::sort(icon_paths, [](const QString& s1, const QString& s2){
+	Algorithm::sort(icon_paths, [](const QString& s1, const QString& s2){
 		return (s1.size() < s2.size() || s1 < s2);
 	});
 	QIcon::setThemeSearchPaths(icon_paths);
 
-	for(const QString& icon_path : Util::AsConst(icon_paths))
+	for(const QString& icon_path : Algorithm::AsConst(icon_paths))
 	{
 		QDir d(icon_path);
 		QStringList subdirs = d.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
@@ -274,7 +276,7 @@ void GUI_IconPreferences::init_ui()
 			add_header_entry(icon_path, widget);
 		}
 
-		for(IconRadioButton* rb : Util::AsConst(buttons))
+		for(IconRadioButton* rb : Algorithm::AsConst(buttons))
 		{
 
 			layout->addWidget(rb);

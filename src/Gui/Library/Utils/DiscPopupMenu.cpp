@@ -19,12 +19,15 @@
  */
 
 #include "DiscPopupMenu.h"
-#include "Gui/Utils/GuiUtils.h"
-#include "Utils/Utils.h"
+
+#include "Utils/Algorithm.h"
 #include "Utils/Language/Language.h"
 
+#include "Gui/Utils/GuiUtils.h"
+
 #include <QMouseEvent>
-#include <algorithm>
+
+namespace Algorithm=Util::Algorithm;
 
 DiscAction::DiscAction(QWidget* parent, Disc disc) :
 	QAction(parent)
@@ -56,7 +59,7 @@ DiscAction::~DiscAction() {}
 
 DiscPopupMenu::DiscPopupMenu(QWidget* parent, QList<Disc> discs): QMenu(parent)
 {
-	Util::sort(discs, [](Disc disc1, Disc disc2){
+	Algorithm::sort(discs, [](Disc disc1, Disc disc2){
 		return (disc1 < disc2);
 	});
 

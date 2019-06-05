@@ -19,7 +19,6 @@
  */
 
 #include "MenuButton.h"
-#include "Gui/Utils/GuiUtils.h"
 #include "Gui/Utils/Icons.h"
 #include "Utils/Language/Language.h"
 

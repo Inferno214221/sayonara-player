@@ -27,6 +27,11 @@ using namespace PipelineExtensions;
 struct Pitcher::Private
 {
 	GstElement* pitch=nullptr;
+
+	Private()
+	{
+		Engine::Utils::create_element(&pitch, "pitch");
+	}
 };
 
 Pitcher::Pitcher()
@@ -42,7 +47,7 @@ void Pitcher::set_speed(float speed, double pitch, bool preserve_pitch)
 		return;
 	}
 
-	if(!m->pitch){
+	if(!m->pitch) {
 		return;
 	}
 

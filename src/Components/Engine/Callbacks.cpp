@@ -255,13 +255,7 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 			break;
 
 		case GST_MESSAGE_DURATION_CHANGED:
-			{
-				NanoSeconds duration_ns;
-				bool success = gst_element_query_duration(src, GST_FORMAT_TIME, &duration_ns);
-				if(success) {
-					engine->update_duration(GST_TIME_AS_MSECONDS(duration_ns), src);
-				}
-			}
+			engine->update_duration(src);
 			break;
 
 		case GST_MESSAGE_INFO:
@@ -409,7 +403,6 @@ Callbacks::spectrum_handler(GstBus* bus, GstMessage* message, gpointer data)
 		}
 
 		float f = g_value_get_float(mag);
-
 		spectrum_vals[i] = f;
 	}
 
@@ -438,8 +431,7 @@ gboolean Callbacks::position_changed(gpointer data)
 		return true;
 	}
 
-	pipeline->refresh_position();
-	pipeline->check_about_to_finish();
+	pipeline->check_position();
 
 	return true;
 }

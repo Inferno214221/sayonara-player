@@ -18,15 +18,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "MetaDataSorting.h"
 #include "MetaData.h"
 #include "MetaDataList.h"
 #include "Artist.h"
 #include "Album.h"
 
-#include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
+
+namespace Algorithm=Util::Algorithm;
 
 enum Relation
 {
@@ -554,70 +554,70 @@ void MetaDataSorting::sort_metadata(MetaDataList& v_md, Library::SortOrder so)
 	switch(so)
 	{
 		case So::TrackNumAsc:
-			Util::sort(v_md, TracksByTrackNumAsc);
+			Algorithm::sort(v_md, TracksByTrackNumAsc);
 			break;
 		case So::TrackNumDesc:
-			Util::sort(v_md, TracksByTrackNumDesc);
+			Algorithm::sort(v_md, TracksByTrackNumDesc);
 			break;
 		case So::TrackTitleAsc:
-			Util::sort(v_md, TracksByTitleAsc);
+			Algorithm::sort(v_md, TracksByTitleAsc);
 			break;
 		case So::TrackTitleDesc:
-			Util::sort(v_md, TracksByTitleDesc);
+			Algorithm::sort(v_md, TracksByTitleDesc);
 			break;
 		case So::TrackAlbumAsc:
-			Util::sort(v_md, TracksByAlbumAsc);
+			Algorithm::sort(v_md, TracksByAlbumAsc);
 			break;
 		case So::TrackAlbumDesc:
-			Util::sort(v_md, TracksByAlbumDesc);
+			Algorithm::sort(v_md, TracksByAlbumDesc);
 			break;
 		case So::TrackArtistAsc:
-			Util::sort(v_md, TracksByArtistAsc);
+			Algorithm::sort(v_md, TracksByArtistAsc);
 			break;
 		case So::TrackArtistDesc:
-			Util::sort(v_md, TracksByArtistDesc);
+			Algorithm::sort(v_md, TracksByArtistDesc);
 			break;
 		case So::TrackAlbumArtistAsc:
-			Util::sort(v_md, TracksByAlbumArtistAsc);
+			Algorithm::sort(v_md, TracksByAlbumArtistAsc);
 			break;
 		case So::TrackAlbumArtistDesc:
-			Util::sort(v_md, TracksByAlbumArtistDesc);
+			Algorithm::sort(v_md, TracksByAlbumArtistDesc);
 			break;
 		case So::TrackYearAsc:
-			Util::sort(v_md, TracksByYearAsc);
+			Algorithm::sort(v_md, TracksByYearAsc);
 			break;
 		case So::TrackYearDesc:
-			Util::sort(v_md, TracksByYearDesc);
+			Algorithm::sort(v_md, TracksByYearDesc);
 			break;
 		case So::TrackLenghtAsc:
-			Util::sort(v_md, TracksByLengthAsc);
+			Algorithm::sort(v_md, TracksByLengthAsc);
 			break;
 		case So::TrackLengthDesc:
-			Util::sort(v_md, TracksByLengthDesc);
+			Algorithm::sort(v_md, TracksByLengthDesc);
 			break;
 		case So::TrackBitrateAsc:
-			Util::sort(v_md, TracksByBitrateAsc);
+			Algorithm::sort(v_md, TracksByBitrateAsc);
 			break;
 		case So::TrackBitrateDesc:
-			Util::sort(v_md, TracksByBitrateDesc);
+			Algorithm::sort(v_md, TracksByBitrateDesc);
 			break;
 		case So::TrackSizeAsc:
-			Util::sort(v_md, TracksByFilesizeAsc);
+			Algorithm::sort(v_md, TracksByFilesizeAsc);
 			break;
 		case So::TrackSizeDesc:
-			Util::sort(v_md, TracksByFilesizeDesc);
+			Algorithm::sort(v_md, TracksByFilesizeDesc);
 			break;
 		case So::TrackDiscnumberAsc:
-			Util::sort(v_md, TracksByDiscnumberAsc);
+			Algorithm::sort(v_md, TracksByDiscnumberAsc);
 			break;
 		case So::TrackDiscnumberDesc:
-			Util::sort(v_md, TracksByDiscnumberDesc);
+			Algorithm::sort(v_md, TracksByDiscnumberDesc);
 			break;
 		case So::TrackRatingAsc:
-			Util::sort(v_md, TracksByRatingAsc);
+			Algorithm::sort(v_md, TracksByRatingAsc);
 			break;
 		case So::TrackRatingDesc:
-			Util::sort(v_md, TracksByRatingDesc);
+			Algorithm::sort(v_md, TracksByRatingDesc);
 			break;
 		default:
 			break;
@@ -631,40 +631,40 @@ void MetaDataSorting::sort_albums(AlbumList& albums, Library::SortOrder so)
 	switch(so)
 	{
 		case So::ArtistNameAsc:
-			Util::sort(albums, AlbumByArtistNameAsc);
+			Algorithm::sort(albums, AlbumByArtistNameAsc);
 			break;
 		case So::ArtistNameDesc:
-			Util::sort(albums, AlbumByArtistNameDesc);
+			Algorithm::sort(albums, AlbumByArtistNameDesc);
 			break;
 		case So::AlbumNameAsc:
-			Util::sort(albums, AlbumByNameAsc);
+			Algorithm::sort(albums, AlbumByNameAsc);
 			break;
 		case So::AlbumNameDesc:
-			Util::sort(albums, AlbumByNameDesc);
+			Algorithm::sort(albums, AlbumByNameDesc);
 			break;
 		case So::AlbumDurationAsc:
-			Util::sort(albums, AlbumByDurationAsc);
+			Algorithm::sort(albums, AlbumByDurationAsc);
 			break;
 		case So::AlbumDurationDesc:
-			Util::sort(albums, AlbumByDurationDesc);
+			Algorithm::sort(albums, AlbumByDurationDesc);
 			break;
 		case So::AlbumRatingAsc:
-			Util::sort(albums, AlbumByRatingAsc);
+			Algorithm::sort(albums, AlbumByRatingAsc);
 			break;
 		case So::AlbumRatingDesc:
-			Util::sort(albums, AlbumByRatingDesc);
+			Algorithm::sort(albums, AlbumByRatingDesc);
 			break;
 		case So::AlbumTracksAsc:
-			Util::sort(albums, AlbumByTracksAsc);
+			Algorithm::sort(albums, AlbumByTracksAsc);
 			break;
 		case So::AlbumTracksDesc:
-			Util::sort(albums, AlbumByTracksDesc);
+			Algorithm::sort(albums, AlbumByTracksDesc);
 			break;
 		case So::AlbumYearAsc:
-			Util::sort(albums, AlbumByYearAsc);
+			Algorithm::sort(albums, AlbumByYearAsc);
 			break;
 		case So::AlbumYearDesc:
-			Util::sort(albums, AlbumByYearDesc);
+			Algorithm::sort(albums, AlbumByYearDesc);
 			break;
 		default:
 			break;
@@ -677,16 +677,16 @@ void MetaDataSorting::sort_artists(ArtistList& artists, Library::SortOrder so)
 	switch(so)
 	{
 		case So::ArtistNameAsc:
-			Util::sort(artists, ArtistByNameAsc);
+			Algorithm::sort(artists, ArtistByNameAsc);
 			break;
 		case So::ArtistNameDesc:
-			Util::sort(artists, ArtistByNameDesc);
+			Algorithm::sort(artists, ArtistByNameDesc);
 			break;
 		case So::ArtistTrackcountAsc:
-			Util::sort(artists, ArtistByTrackCountAsc);
+			Algorithm::sort(artists, ArtistByTrackCountAsc);
 			break;
 		case So::ArtistTrackcountDesc:
-			Util::sort(artists, ArtistByTrackCountDesc);
+			Algorithm::sort(artists, ArtistByTrackCountDesc);
 			break;
 		default:
 			break;

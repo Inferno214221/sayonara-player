@@ -18,10 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "LibrarySearchBar.h"
-#include "Utils/Utils.h"
+
+#include "Utils/Algorithm.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Settings/Settings.h"
 
@@ -37,6 +36,7 @@
 
 using Library::SearchBar;
 using Library::Filter;
+namespace Algorithm=Util::Algorithm;
 
 struct SearchBar::Private
 {
@@ -145,7 +145,7 @@ QList<Filter::Mode> SearchBar::modes() const
 
 void SearchBar::set_current_mode(Filter::Mode mode)
 {
-	m->cur_idx = Util::indexOf(m->modes, [&mode](const Filter::Mode& f){
+	m->cur_idx = Algorithm::indexOf(m->modes, [&mode](const Filter::Mode& f){
 		return (f == mode);
 	});
 

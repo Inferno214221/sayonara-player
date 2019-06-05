@@ -29,14 +29,13 @@
 #include "LyricServer.h"
 
 #include "Utils/WebAccess/AsyncWebAccess.h"
-#include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 
 #include <QStringList>
 #include <QRegExp>
 #include <QMap>
 
-#include <algorithm>
-
+namespace Algorithm=Util::Algorithm;
 
 struct LyricLookupThread::Private
 {
@@ -369,7 +368,7 @@ void LyricLookupThread::init_server_list()
 QStringList LyricLookupThread::servers() const
 {
 	QStringList lst;
-	for(const ServerTemplate& t : Util::AsConst(m->server_list))
+	for(const ServerTemplate& t : Algorithm::AsConst(m->server_list))
 	{
 		lst << t.display_str;
 	}

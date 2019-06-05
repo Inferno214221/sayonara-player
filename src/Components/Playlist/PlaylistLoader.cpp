@@ -23,12 +23,15 @@
 #include "PlaylistDBWrapper.h"
 
 #include "Utils/globals.h"
+#include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/Playlist/CustomPlaylist.h"
 #include "Utils/Settings/Settings.h"
-#include "Utils/Utils.h"
 
 using Playlist::Loader;
 using Playlist::Handler;
+
+namespace Algorithm=Util::Algorithm;
 
 struct Loader::Private
 {
@@ -72,7 +75,7 @@ Loader::Loader(QObject* parent) :
 
 		if(success)
 		{
-			for(const CustomPlaylist& pl : Util::AsConst(playlists)){
+			for(const CustomPlaylist& pl : Algorithm::AsConst(playlists)){
 				playlist_db_connector->delete_playlist(pl.id());
 			}
 		}
@@ -96,7 +99,7 @@ Loader::Loader(QObject* parent) :
 		return;
 	}
 
-	bool has_playlist_id = Util::contains(m->playlists, [&saved_playlist_id](const CustomPlaylist& pl)
+	bool has_playlist_id = Algorithm::contains(m->playlists, [&saved_playlist_id](const CustomPlaylist& pl)
 	{
 		return (saved_playlist_id == pl.id());
 	});
@@ -165,8 +168,7 @@ Loader::Loader(QObject* parent) :
 	}
 }
 
-Loader::~Loader() {}
-
+Loader::~Loader() = default;
 
 CustomPlaylists Loader::get_playlists() const
 {
@@ -213,7 +215,7 @@ int Loader::create_playlists()
 	else
 	{
 		// add playlists
-		for(const CustomPlaylist& pl : Util::AsConst(m->playlists))
+		for(const CustomPlaylist& pl : Algorithm::AsConst(m->playlists))
 		{
 			plh->create_playlist(pl);
 		}

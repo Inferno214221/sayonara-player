@@ -24,15 +24,8 @@
 
 #include "Components/PlaylistChooser/PlaylistChooser.h"
 
-#include "Utils/Message/Message.h"
-
 #include "Utils/Playlist/CustomPlaylist.h"
 #include "Utils/Language/Language.h"
-#include "Utils/Utils.h"
-#include "Utils/FileUtils.h"
-
-#include <QDir>
-#include <QFileDialog>
 
 #include <algorithm>
 

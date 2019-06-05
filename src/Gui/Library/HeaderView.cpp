@@ -19,13 +19,11 @@
 
 #include "HeaderView.h"
 #include "Utils/globals.h"
-#include "Utils/Utils.h"
-#include "Utils/Language/Language.h"
+#include "Utils/Algorithm.h"
 
 #include <QFontMetrics>
 
-#include <algorithm>
-
+namespace Algorithm=Util::Algorithm;
 using namespace Library;
 
 struct HeaderView::Private
@@ -145,7 +143,7 @@ ColumnHeaderPtr HeaderView::column_header(int idx)
 
 void HeaderView::language_changed()
 {
-	for(ColumnHeaderPtr header : Util::AsConst(m->column_headers))
+	for(ColumnHeaderPtr header : Algorithm::AsConst(m->column_headers))
 	{
 		header->retranslate();
 	}

@@ -39,11 +39,11 @@
 #include <algorithm>
 
 using EngineImpl=Engine::Engine;
+namespace EngineUtils=::Engine::Utils;
 
 struct EngineImpl::Private
 {
 	MetaData		md;
-	MilliSeconds	cur_pos_ms;
 
 	Pipeline*		pipeline=nullptr;
 	Pipeline*		other_pipeline=nullptr;
@@ -53,7 +53,9 @@ struct EngineImpl::Private
 
 	StreamRecorder::StreamRecorder*	stream_recorder=nullptr;
 
-	GaplessState gapless_state;
+	MilliSeconds	cur_pos_ms;
+	GaplessState	gapless_state;
+
 
 	Private() :
 		cur_pos_ms(0),
@@ -303,7 +305,7 @@ void EngineImpl::jump_rel(double percent)
 
 void EngineImpl::set_current_position_ms(MilliSeconds pos_ms)
 {
-	if(std::abs(m->cur_pos_ms - pos_ms) < 100)
+	if(std::abs(m->cur_pos_ms - pos_ms) < EngineUtils::get_update_interval())
 	{
 		return;
 	}
@@ -532,14 +534,13 @@ void EngineImpl::update_metadata(const MetaData& md, GstElement* src)
 }
 
 
-void EngineImpl::update_duration(MilliSeconds duration_ms, GstElement* src)
+void EngineImpl::update_duration(GstElement* src)
 {
-	if(! m->pipeline->has_element(src)){
+	if(!m->pipeline->has_element(src)){
 		return;
 	}
 
-	m->pipeline->refresh_duration();
-
+	MilliSeconds duration_ms = m->pipeline->get_duration_ms();
 	MilliSeconds difference = std::abs(duration_ms - m->md.length_ms);
 	if(duration_ms < 1000 || difference < 1999 || duration_ms > 1500000000){
 		return;
@@ -549,6 +550,8 @@ void EngineImpl::update_duration(MilliSeconds duration_ms, GstElement* src)
 	update_metadata(m->md, src);
 
 	emit sig_duration_changed(m->md);
+
+	m->pipeline->check_position();
 }
 
 template<typename T>

@@ -25,6 +25,7 @@
 #include "Database/Tracks.h"
 
 #include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/MetaData/Album.h"
@@ -35,6 +36,8 @@
 #include <QList>
 
 using DB::Query;
+
+namespace Algorithm=Util::Algorithm;
 
 struct DB::Library::Private {};
 
@@ -99,7 +102,7 @@ QList<::Library::Info> DB::Library::get_all_libraries()
 		});
 
 
-		for(const InfoOrder& order : ::Util::AsConst(orders)){
+		for(const InfoOrder& order : Algorithm::AsConst(orders)){
 			infos << order.value;
 		}
 	}
@@ -250,7 +253,7 @@ void DB::Library::drop_indexes()
 	indexes << "track_search";
 	//indexes << "track_file_search";
 
-	for(const QString& idx : ::Util::AsConst(indexes))
+	for(const QString& idx : Algorithm::AsConst(indexes))
 	{
 		Query q(this);
 		QString text = "DROP INDEX IF EXISTS " + idx + ";";
@@ -273,7 +276,7 @@ void DB::Library::create_indexes()
 	indexes << std::make_tuple("track_search", "tracks", "trackID");
 	//indexes << std::make_tuple("track_file_search", "tracks", "trackID");
 
-	for(const IndexDescription& idx : ::Util::AsConst(indexes))
+	for(const IndexDescription& idx : Algorithm::AsConst(indexes))
 	{
 		Query q(this);
 		QString name = std::get<0>(idx);

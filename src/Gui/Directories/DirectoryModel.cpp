@@ -22,7 +22,7 @@
 #include "Gui/Utils/SearchableWidget/MiniSearcher.h"
 
 #include "Utils/Set.h"
-#include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Library/SearchMode.h"
 #include "Utils/Library/LibraryInfo.h"
@@ -39,7 +39,7 @@
 #include <QDirIterator>
 #include <QPair>
 
-
+namespace Algorithm=Util::Algorithm;
 using StringPair=QPair<QString, QString>;
 
 struct DirectoryModel::Private
@@ -115,7 +115,7 @@ void DirectoryModel::create_file_list(const QString& substr)
 			Util::File::split_filename(md.filepath(), parent_dir, pure_filename);
 			Util::File::split_filename(sym_filepath, sym_parent_dir, pure_filename);
 
-			bool contains = Util::contains(m->all_dirs, [&sym_parent_dir](const StringPair& sp){
+			bool contains = Algorithm::contains(m->all_dirs, [&sym_parent_dir](const StringPair& sp){
 				return (sym_parent_dir.compare(sp.first) == 0);
 			});
 

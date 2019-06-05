@@ -20,7 +20,8 @@
 
 #include "GUI_Logger.h"
 #include "Gui/Player/ui_GUI_Logger.h"
-#include "Utils/Utils.h"
+
+#include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Logger/LoggerUtils.h"
 #include "Utils/Language/Language.h"
@@ -33,6 +34,8 @@
 #include <QFile>
 #include <QDir>
 #include <QDateTime>
+
+namespace Algorithm=Util::Algorithm;
 
 Q_GLOBAL_STATIC(LogObject, log_object)
 
@@ -166,7 +169,7 @@ void GUI_Logger::init_ui()
 	ui = new Ui::GUI_Logger;
 	ui->setupUi(this);
 
-	for(const LogLine& line : Util::AsConst(m->buffer))
+	for(const LogLine& line : Algorithm::AsConst(m->buffer))
 	{
 		ui->te_log->append(line.to_string());
 	}

@@ -25,6 +25,7 @@
 #include "Database/Shortcuts.h"
 
 #include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/Language/Language.h"
 #include "Utils/RawShortcutMap.h"
 #include "Utils/Logger/Logger.h"
@@ -32,12 +33,13 @@
 #include <functional>
 #include <QStringList>
 
+namespace Algorithm=Util::Algorithm;
+
 struct ShortcutMapEntry
 {
 	ShortcutIdentifier identifier;
 	QString db_key;
 	QString default_shortcut;
-
 
 	ShortcutMapEntry(ShortcutIdentifier identifier, const QString& db_key, const QString& default_shortcut) :
 		identifier(identifier),
@@ -89,7 +91,7 @@ ShortcutHandler::ShortcutHandler() :
 	DB::Shortcuts* db = DB::Connector::instance()->shortcut_connector();
 	RawShortcutMap rsm = db->getAllShortcuts();
 
-	for(const ShortcutMapEntry& sme : Util::AsConst(m->shortcut_map))
+	for(const ShortcutMapEntry& sme : Algorithm::AsConst(m->shortcut_map))
 	{
 		QStringList shortcuts = rsm[sme.db_key];
 		if(shortcuts.isEmpty())
@@ -103,7 +105,7 @@ ShortcutHandler::ShortcutHandler() :
 	}
 }
 
-ShortcutHandler::~ShortcutHandler() {}
+ShortcutHandler::~ShortcutHandler() = default;
 
 Shortcut ShortcutHandler::shortcut(ShortcutIdentifier identifier) const
 {
@@ -152,7 +154,7 @@ QList<ShortcutIdentifier> ShortcutHandler::shortcuts_ids() const
 {
 	QList<ShortcutIdentifier> ids;
 
-	for(const ShortcutMapEntry& sme : ::Util::AsConst(m->shortcut_map))
+	for(const ShortcutMapEntry& sme : Algorithm::AsConst(m->shortcut_map))
 	{
 		ids << sme.identifier;
 	}
@@ -162,7 +164,7 @@ QList<ShortcutIdentifier> ShortcutHandler::shortcuts_ids() const
 
 QString ShortcutHandler::identifier(ShortcutIdentifier id) const
 {
-	auto it = ::Util::find(m->shortcut_map, [id](const ShortcutMapEntry& entry){
+	auto it = Algorithm::find(m->shortcut_map, [id](const ShortcutMapEntry& entry){
 		return (entry.identifier == id);
 	});
 

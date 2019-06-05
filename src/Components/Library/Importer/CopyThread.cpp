@@ -19,13 +19,17 @@
  */
 
 #include "CopyThread.h"
+
 #include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Logger/Logger.h"
 
 #include <QFile>
 #include <QDir>
+
+namespace Algorithm=Util::Algorithm;
 
 using Library::CopyThread;
 
@@ -128,7 +132,7 @@ void CopyThread::rollback()
 	int n_operations = m->copied_files.size();
 	int n_ops_todo = n_operations;
 
-	for(const QString& f : ::Util::AsConst(m->copied_files))
+	for(const QString& f : Algorithm::AsConst(m->copied_files))
 	{
 		QFile file(f);
 		file.remove();

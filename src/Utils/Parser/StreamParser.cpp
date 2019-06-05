@@ -20,6 +20,7 @@
 
 #include "StreamParser.h"
 #include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/FileUtils.h"
@@ -33,6 +34,8 @@
 #include <QFile>
 #include <QDir>
 #include <QUrl>
+
+namespace Algorithm=Util::Algorithm;
 
 struct StreamParser::Private
 {
@@ -289,7 +292,7 @@ QPair<MetaDataList, PlaylistFiles> StreamParser::parse_website(const QByteArray&
 
 	found_strings.removeDuplicates();
 
-	for(const QString& found_str : Util::AsConst(found_strings))
+	for(const QString& found_str : Algorithm::AsConst(found_strings))
 	{
 		QString child_url;
 

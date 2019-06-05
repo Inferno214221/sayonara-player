@@ -22,7 +22,7 @@
 #include "LibraryPluginHandler.h"
 #include "LibraryContainer/LibraryContainer.h"
 
-#include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
 
 #include <QList>
@@ -33,6 +33,8 @@
 using Library::Container;
 using Library::PluginHandler;
 using Library::PluginCombobox;
+
+namespace Algorithm=Util::Algorithm;
 
 struct PluginCombobox::Private
 {
@@ -100,7 +102,7 @@ void PluginCombobox::action_triggered(bool b)
 	QString name = action->data().toString();
 
 	PluginHandler::instance()->set_current_library(name);
-	for(QAction* library_action : Util::AsConst(m->actions))
+	for(QAction* library_action : Algorithm::AsConst(m->actions))
 	{
 		if(library_action == action){
 			continue;

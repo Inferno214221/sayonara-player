@@ -66,6 +66,8 @@ struct Pipeline::Private
 	GstElement*			pb_volume=nullptr;
 	GstElement*			pb_sink=nullptr;
 
+	GstElement*			position_element=nullptr;
+
 	Pitcher*			pitcher=nullptr;
 	Seeker*				seeker=nullptr;
 	StreamRecorderHandler* stream_recorder=nullptr;
@@ -75,24 +77,15 @@ struct Pipeline::Private
 
 	QTimer*				progress_timer=nullptr;
 
-	MilliSeconds		duration_ms;
-	MilliSeconds		position_source_ms;
-	MilliSeconds		position_pipeline_ms;
-	bool				about_to_finish;
-
 	Private(const QString& name) :
-		name(name),
-		duration_ms(0),
-		position_source_ms(0),
-		position_pipeline_ms(0),
-		about_to_finish(false)
+		name(name)
 	{}
 };
 
 
 Pipeline::Pipeline(const QString& name, QObject *parent) :
 	QObject(parent),
-	CrossFadeable(),
+	Fadeable(),
 	Changeable(),
 	DelayedPlayable()
 {
@@ -117,6 +110,8 @@ bool Pipeline::init(Engine* engine, GstState state)
 
 	// create equalizer element
 	m->pipeline = gst_pipeline_new(m->name.toStdString().c_str());
+	m->position_element = m->pipeline;
+
 	if(!EngineUtils::test_and_error(m->pipeline, "Engine: Pipeline sucks")){
 		return false;
 	}
@@ -143,7 +138,8 @@ bool Pipeline::init(Engine* engine, GstState state)
 #endif
 
 	m->progress_timer = new QTimer(this);
-	m->progress_timer->setInterval(200);
+	m->progress_timer->setTimerType(Qt::PreciseTimer);
+	m->progress_timer->setInterval( EngineUtils::get_update_interval() );
 	connect(m->progress_timer, &QTimer::timeout, this, [=]()
 	{
 		if(EngineUtils::get_state(m->pipeline) != GST_STATE_NULL){
@@ -209,7 +205,7 @@ bool Pipeline::create_source(gchar* uri)
 		g_signal_connect (m->source, "source-setup", G_CALLBACK (Callbacks::source_ready), nullptr);
 	}
 
-	m->seeker->set_source(m->source);
+	set_position_element(m->source);
 
 	return (m->source != nullptr);
 }
@@ -224,6 +220,8 @@ void Pipeline::remove_source()
 		gst_bin_remove(GST_BIN(m->pipeline), m->source);
 		m->source = nullptr;
 		m->seeker->set_source(nullptr);
+
+		set_position_element(m->pipeline);
 	}
 }
 
@@ -322,10 +320,6 @@ void Pipeline::stop()
 {
 	EngineUtils::set_state(m->pipeline, GST_STATE_NULL);
 
-	m->position_source_ms = 0;
-	m->position_pipeline_ms = 0;
-	m->duration_ms = 0;
-
 	abort_delayed_playing();
 	abort_fader();
 
@@ -334,7 +328,7 @@ void Pipeline::stop()
 
 void Pipeline::s_vol_changed()
 {
-	float vol = GetSetting(Set::Engine_Vol) / 100.0;
+	double vol = GetSetting(Set::Engine_Vol) / 100.0;
 	EngineUtils::set_value(G_OBJECT(m->pb_volume), "volume", vol);
 }
 
@@ -363,12 +357,10 @@ void Pipeline::enable_broadcasting(bool b)
 	m->broadcaster->set_enabled(b);
 }
 
-
 GstState Pipeline::get_state() const
 {
 	return EngineUtils::get_state(m->pipeline);
 }
-
 
 MilliSeconds Pipeline::get_time_to_go() const
 {
@@ -414,12 +406,12 @@ NanoSeconds Pipeline::seek_abs(NanoSeconds ns)
 	return m->seeker->seek_abs(ns);
 }
 
-void Pipeline::set_current_volume(double volume)
+void Pipeline::set_internal_volume(double volume)
 {
 	EngineUtils::set_value(G_OBJECT(m->pb_volume), "volume", volume);
 }
 
-double Pipeline::get_current_volume() const
+double Pipeline::get_internal_volume() const
 {
 	double volume;
 	g_object_get(m->pb_volume, "volume", &volume, nullptr);
@@ -435,13 +427,15 @@ void Pipeline::s_speed_active_changed()
 		return;
 	}
 
-	MilliSeconds pos_ms = EngineUtils::get_position_ms(m->source);
-	if(active) {
+	MilliSeconds pos_ms = get_position_ms();
+	if(active)
+	{
 		add_element(speed, m->audio_convert, m->equalizer->element());
 		s_speed_changed();
 	}
 
-	else {
+	else
+	{
 		remove_element(speed, m->audio_convert, m->equalizer->element());
 	}
 
@@ -450,6 +444,8 @@ void Pipeline::s_speed_active_changed()
 		pos_ms = std::max<MilliSeconds>(pos_ms, 0);
 		m->seeker->seek_nearest_ms(pos_ms);
 	}
+
+	check_position();
 }
 
 void Pipeline::s_speed_changed()
@@ -469,7 +465,7 @@ void Pipeline::s_sink_changed()
 		return;
 	}
 
-	MilliSeconds pos_ms = EngineUtils::get_position_ms(m->pipeline);
+	MilliSeconds pos_ms = get_position_ms();
 	GstState old_state = EngineUtils::get_state(m->pipeline);
 
 	{ //replace elements
@@ -495,61 +491,40 @@ void Pipeline::s_sink_changed()
 	m->pb_sink = new_sink;
 }
 
-void Pipeline::refresh_position()
+void Pipeline::check_position()
 {
-	GstElement* source = m->source;
-	if(!source){
-		source = m->pipeline;
-	}
+	MilliSeconds pos_ms = get_position_ms();
+	pos_ms = std::max<MilliSeconds>(0, pos_ms);
 
-	MilliSeconds pos_source_ms = EngineUtils::get_position_ms(source);
-	m->position_source_ms = std::max<MilliSeconds>(0, pos_source_ms);
+	emit sig_pos_changed_ms( pos_ms );
 
-	MilliSeconds pos_pipeline_ms = EngineUtils::get_position_ms(m->pipeline);
-	m->position_pipeline_ms = std::max<MilliSeconds>(0, pos_pipeline_ms);
-
-	emit sig_pos_changed_ms( m->position_pipeline_ms );
+	check_about_to_finish();
 }
-
-void Pipeline::refresh_duration()
-{
-	m->duration_ms = EngineUtils::get_duration_ms(m->source);
-	refresh_position();
-}
-
 
 void Pipeline::check_about_to_finish()
 {
-	if(!m->about_to_finish)
-	{
-		if(m->duration_ms < m->position_pipeline_ms || (m->duration_ms == 0))
-		{
-			m->duration_ms = EngineUtils::get_duration_ms(m->source);
-
-			if(m->duration_ms < 0){
-				return;
-			}
-		}
-	}
-
+	MilliSeconds pos_ms = get_position_ms();
+	MilliSeconds dur_ms = get_duration_ms();
 	MilliSeconds about_to_finish_time = get_about_to_finish_time();
-	if(!m->about_to_finish)
+
+	static bool about_to_finish = false;
+
+	if(dur_ms < pos_ms || (dur_ms <= about_to_finish_time) || (pos_ms <= 0))
 	{
-		if(m->position_pipeline_ms <= m->duration_ms)
-		{
-			if((m->duration_ms - m->position_pipeline_ms) < about_to_finish_time)
-			{
-				m->about_to_finish = true;
-
-				sp_log(Log::Develop, this) << "Duration: " << m->duration_ms << ", Position: " << m->position_pipeline_ms;
-
-				emit sig_about_to_finish(m->duration_ms - m->position_pipeline_ms);
-				return;
-			}
-		}
+		about_to_finish = false;
+		return;
 	}
 
-	m->about_to_finish = false;
+	MilliSeconds difference = dur_ms - pos_ms;
+
+	about_to_finish = (difference < about_to_finish_time);
+
+	if(about_to_finish)
+	{
+		sp_log(Log::Develop, this) << "About to finish in " << difference << ": Dur: " << dur_ms << ", Pos: " << pos_ms;
+
+		emit sig_about_to_finish(difference);
+	}
 }
 
 
@@ -559,15 +534,25 @@ MilliSeconds Pipeline::get_about_to_finish_time() const
 	return std::max(get_fading_time_ms(), AboutToFinishTime);
 }
 
+void Pipeline::set_position_element(GstElement* element)
+{
+	m->position_element = element;
+	m->seeker->set_source(m->position_element);
+}
+
+GstElement* Pipeline::position_element()
+{
+	return m->position_element;
+}
 
 MilliSeconds Pipeline::get_duration_ms() const
 {
-	return m->duration_ms;
+	return EngineUtils::get_duration_ms(m->position_element);
 }
 
 MilliSeconds Pipeline::get_position_ms() const
 {
-	return m->position_source_ms;
+	return EngineUtils::get_position_ms(m->position_element);
 }
 
 bool Pipeline::has_element(GstElement* e) const

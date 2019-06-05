@@ -26,7 +26,7 @@
 #include "StandardCoverFetcher.h"
 #include "DiscogsCoverFetcher.h"
 
-#include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Settings/SettingNotifier.h"
 #include "Utils/Logger/Logger.h"
@@ -34,8 +34,8 @@
 #include <QStringList>
 #include <QList>
 #include <QMap>
-#include <algorithm>
 
+namespace Algorithm=Util::Algorithm;
 using namespace Cover;
 using Cover::Fetcher::Manager;
 using Cover::Fetcher::Base;
@@ -44,7 +44,7 @@ using SortMap=QMap<QString, int>;
 
 static void sort_coverfetchers(QList<Fetcher::Base*>& lst, const SortMap& cf_order)
 {
-	std::sort(lst.begin(), lst.end(), [&cf_order](Fetcher::Base* t1, Fetcher::Base* t2)
+	Algorithm::sort(lst, [&cf_order](Fetcher::Base* t1, Fetcher::Base* t2)
 	{
 		int order1 = cf_order[t1->keyword()];
 		int order2 = cf_order[t2->keyword()];
@@ -269,7 +269,7 @@ QStringList Manager::artist_addresses(const QString& artist) const
 {
 	QStringList urls;
 
-	for(const Fetcher::Base* cfi : ::Util::AsConst(m->coverfetchers))
+	for(const Fetcher::Base* cfi : Algorithm::AsConst(m->coverfetchers))
 	{
 		if(cfi->is_artist_supported() && is_active(cfi->keyword()))
 		{
@@ -285,7 +285,7 @@ QStringList Manager::album_addresses(const QString& artist, const QString& album
 {
 	QStringList urls;
 
-	for(const Fetcher::Base* cfi : ::Util::AsConst(m->coverfetchers))
+	for(const Fetcher::Base* cfi : Algorithm::AsConst(m->coverfetchers))
 	{
 		if(cfi->is_album_supported() && is_active(cfi)){
 			urls << cfi->album_address(artist, album);
@@ -300,7 +300,7 @@ QStringList Manager::search_addresses(const QString& str) const
 {
 	QStringList urls;
 
-	for(const Fetcher::Base* cfi : ::Util::AsConst(m->coverfetchers))
+	for(const Fetcher::Base* cfi : Algorithm::AsConst(m->coverfetchers))
 	{
 		if(cfi->is_search_supported() && is_active(cfi))
 		{
@@ -315,7 +315,7 @@ QStringList Manager::search_addresses(const QString &str, const QString& cover_f
 {
 	QStringList urls;
 
-	for(const Fetcher::Base* cfi : ::Util::AsConst(m->coverfetchers))
+	for(const Fetcher::Base* cfi : Algorithm::AsConst(m->coverfetchers))
 	{
 		if( (cfi->is_search_supported()) &&
 			(is_active(cfi)) &&

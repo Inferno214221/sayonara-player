@@ -25,6 +25,7 @@
 
 #include "Utils/FileUtils.h"
 #include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/Tagging/Tagging.h"
 #include "Utils/Parser/PlaylistParser.h"
 #include "Utils/MetaData/MetaData.h"
@@ -34,6 +35,8 @@
 #include <QFileInfo>
 #include <QStringList>
 #include <QDir>
+
+namespace Algorithm=Util::Algorithm;
 
 struct DirectoryReader::Private
 {
@@ -53,7 +56,7 @@ DirectoryReader::DirectoryReader() :
 	DirectoryReader(QStringList())
 {}
 
-DirectoryReader::~DirectoryReader() {}
+DirectoryReader::~DirectoryReader() = default;
 
 void DirectoryReader::set_filter(const QStringList & filter)
 {
@@ -122,7 +125,7 @@ MetaDataList DirectoryReader::scan_metadata(const QStringList& lst)
 
 			QStringList files;
 			scan_files_recursive(dir, files);
-			for(const QString& file : ::Util::AsConst(files)){
+			for(const QString& file : Algorithm::AsConst(files)){
 				if(Util::File::is_soundfile(file)){
 					sound_files << file;
 				}
@@ -158,7 +161,7 @@ MetaDataList DirectoryReader::scan_metadata(const QStringList& lst)
 		}
 	}
 
-	for(const QString& playlist_file : ::Util::AsConst(playlist_files))
+	for(const QString& playlist_file : Algorithm::AsConst(playlist_files))
 	{
 		v_md << PlaylistParser::parse_playlist(playlist_file);
 	}

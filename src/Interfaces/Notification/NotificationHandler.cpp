@@ -19,12 +19,11 @@
 
 #include "NotificationHandler.h"
 
-#include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
 
-#include <algorithm>
-
+namespace Algorithm=::Util::Algorithm;
 
 struct NotificationHandler::Private
 {
@@ -82,7 +81,7 @@ void NotificationHandler::notificator_changed(const QString& name)
 	m->cur_idx = -1;
 	int i = 0;
 
-	for(NotificationInterface* n : ::Util::AsConst(m->notificators))
+	for(NotificationInterface* n : Algorithm::AsConst(m->notificators))
 	{
 		if(n->name().compare(name, Qt::CaseInsensitive) == 0){
 			m->cur_idx = i;

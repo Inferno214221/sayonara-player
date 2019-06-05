@@ -18,10 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "IcyWebAccess.h"
-#include "Utils/Utils.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Macros.h"
 

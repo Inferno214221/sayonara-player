@@ -25,7 +25,7 @@
 #include "Gui/Utils/Widgets/ProgressBar.h"
 #include "Gui/Utils/MenuTool/MenuTool.h"
 
-#include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Message/Message.h"
@@ -40,6 +40,7 @@
 #include <QAbstractItemView>
 
 using namespace Gui;
+namespace Algorithm=Util::Algorithm;
 
 struct GUI_AbstractStream::Private
 {
@@ -313,7 +314,7 @@ void GUI_AbstractStream::new_finished()
 
 
 	QString name = cs->name();
-	bool exists = Util::contains(m->stations.keys(), [&name](QString station){
+	bool exists = Algorithm::contains(m->stations.keys(), [&name](QString station){
 		return (station == name);
 	});
 

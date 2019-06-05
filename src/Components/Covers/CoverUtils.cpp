@@ -21,6 +21,7 @@
 #include "CoverUtils.h"
 #include "CoverLocation.h"
 #include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Settings/Settings.h"
@@ -34,13 +35,14 @@
 #include <QDir>
 #include <QStringList>
 
-namespace FileUtils=::Util::File;
+namespace Algorithm=Util::Algorithm;
+namespace FileUtils=Util::File;
 
 QString Cover::Utils::calc_cover_token(const QString& artist, const QString& album)
 {
 	QByteArray str = QString(artist.trimmed() + album.trimmed()).toLower().toUtf8();
 
-	return ::Util::calc_hash(str);
+	return Util::calc_hash(str);
 }
 
 QString Cover::Utils::cover_directory()
@@ -50,7 +52,7 @@ QString Cover::Utils::cover_directory()
 
 QString Cover::Utils::cover_directory(const QString& append_filename)
 {
-	QString cover_dir = ::Util::sayonara_path("covers");
+	QString cover_dir = Util::sayonara_path("covers");
 	if(!FileUtils::exists(cover_dir))
 	{
 		QDir().mkdir(cover_dir);
@@ -74,7 +76,7 @@ void Cover::Utils::delete_temp_covers()
 	reader.set_filter({"*.jpg", "*.png"});
 	reader.scan_files(cover_dir, files);
 
-	for(const QString& f : ::Util::AsConst(files))
+	for(const QString& f : Algorithm::AsConst(files))
 	{
 		QString pure_filename = FileUtils::get_filename_of_path(f);
 		if(pure_filename.startsWith("tmp"))

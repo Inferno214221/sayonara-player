@@ -20,6 +20,7 @@
 
 #include "Utils/FileUtils.h"
 #include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
 
 #include <QDir>
@@ -28,7 +29,7 @@
 #include <QStringList>
 #include <QCryptographicHash>
 
-#include <algorithm>
+namespace Algorithm=::Util::Algorithm;
 
 QString Util::File::clean_filename(const QString& path)
 {
@@ -117,11 +118,11 @@ void Util::File::delete_files(const QStringList& paths)
 {
 	sp_log(Log::Develop, "Util::File") << "I will delete " << paths;
 	QStringList sorted_paths = paths;
-	Util::sort(sorted_paths, [](const QString& str1, const QString& str2){
+	Algorithm::sort(sorted_paths, [](const QString& str1, const QString& str2){
 		return (str1.size() > str2.size());
 	});
 
-	for(const QString& path : Util::AsConst(sorted_paths))
+	for(const QString& path : Algorithm::AsConst(sorted_paths))
 	{
 		if(path.contains("..")){
 			continue;
@@ -247,7 +248,7 @@ bool Util::File::is_url(const QString& str)
 		return true;
 	}
 
-	return Util::contains(urls, [&l](const QString& w){
+	return Algorithm::contains(urls, [&l](const QString& w){
 		return l.startsWith(w + "://");
 	});
 }
@@ -258,7 +259,7 @@ bool Util::File::is_www(const QString& str)
 	QStringList www = {"http", "https", "ftp", "itpc", "feed"};
 	QString l = str.toLower().trimmed();
 
-	return Util::contains(www, [&l](const QString& w){
+	return Algorithm::contains(www, [&l](const QString& w){
 		return l.startsWith(w + "://");
 	});
 }
@@ -282,7 +283,7 @@ bool Util::File::is_soundfile(const QString& filename)
 {
 	QStringList exts = Util::soundfile_extensions(true);
 
-	return Util::contains(exts, [&filename](const QString& ext)
+	return Algorithm::contains(exts, [&filename](const QString& ext)
 	{
 		return (filename.endsWith(ext.rightRef(4), Qt::CaseInsensitive));
 	});
@@ -293,7 +294,7 @@ bool Util::File::is_playlistfile(const QString& filename)
 {
 	QStringList exts = Util::playlist_extensions(true);
 
-	return Util::contains(exts, [&filename](const QString& ext)
+	return Algorithm::contains(exts, [&filename](const QString& ext)
 	{
 		return (filename.endsWith(ext.rightRef(4), Qt::CaseInsensitive));
 	});
@@ -303,7 +304,7 @@ bool Util::File::is_imagefile(const QString& filename)
 {
 	QStringList exts = Util::image_extensions(true);
 
-	return Util::contains(exts, [&filename](const QString& ext)
+	return Algorithm::contains(exts, [&filename](const QString& ext)
 	{
 		return (filename.endsWith(ext.rightRef(4), Qt::CaseInsensitive));
 	});
@@ -508,7 +509,7 @@ QString Util::File::get_common_directory(const QStringList& paths)
 
 	ret = absolute_paths[0];
 
-	for(const QString& absolute_path : Util::AsConst(absolute_paths))
+	for(const QString& absolute_path : Algorithm::AsConst(absolute_paths))
 	{
 		ret = get_common_directory(ret, absolute_path);
 	}

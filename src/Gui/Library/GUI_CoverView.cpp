@@ -20,14 +20,16 @@
 
 #include "GUI_CoverView.h"
 #include "Gui/Library/ui_GUI_CoverView.h"
-
 #include "Gui/Library/Utils/ActionPair.h"
+
+#include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 
 #include "Utils/Library/Sorting.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language/Language.h"
-#include "Utils/Utils.h"
 
+namespace Algorithm=Util::Algorithm;
 using namespace Library;
 
 GUI_CoverView::GUI_CoverView(QWidget* parent) :
@@ -177,7 +179,7 @@ void GUI_CoverView::zoom_changed()
 	QStringList zoom_actions = CoverView::zoom_actions();
 
 	int zoom = GetSetting(Set::Lib_CoverZoom);
-	int idx = ::Util::indexOf(zoom_actions, [zoom](const QString& str){
+	int idx = Algorithm::indexOf(zoom_actions, [zoom](const QString& str){
 		return (str == QString::number(zoom));
 	});
 
