@@ -23,7 +23,7 @@
 
 #include "GUI_StyleSettings.h"
 #include "VisualStyleTypes.h"
-#include "Interfaces/PlayerPlugin/PlayerPluginBase.h"
+#include "Gui/Plugins/PlayerPluginBase.h"
 #include "Components/PlayManager/PlayState.h"
 
 #include "Utils/Pimpl.h"

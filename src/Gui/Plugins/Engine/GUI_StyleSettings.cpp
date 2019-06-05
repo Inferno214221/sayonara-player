@@ -19,7 +19,7 @@
  */
 
 #include "GUI_StyleSettings.h"
-#include "Gui/Plugins/ui_GUI_Style.h"
+#include "Gui/ui_GUI_Style.h"
 #include "VisualStyleTypes.h"
 
 #include "Utils/Algorithm.h"

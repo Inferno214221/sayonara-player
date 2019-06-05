@@ -25,7 +25,7 @@
 #ifndef GUISOCKETSETUP_H_
 #define GUISOCKETSETUP_H_
 
-#include "Interfaces/PreferenceDialog/PreferenceWidget.h"
+#include "Gui/Preferences/PreferenceWidget.h"
 
 UI_FWD(GUI_RemoteControl)
 

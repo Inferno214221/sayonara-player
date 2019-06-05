@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Gui/Preferences/ui_GUI_LibraryPreferences.h"
+#include "Gui/ui_GUI_LibraryPreferences.h"
 #include "GUI_LibraryPreferences.h"
 #include "LibraryListModel.h"
 

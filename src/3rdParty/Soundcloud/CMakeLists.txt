@@ -24,8 +24,7 @@ endif()
 
 target_link_libraries(${PROJECT_NAME}
 	say_db
-	say_gui_utils
-	say_gui_library
+	say_gui
 	say_interfaces_library_container
 )
 

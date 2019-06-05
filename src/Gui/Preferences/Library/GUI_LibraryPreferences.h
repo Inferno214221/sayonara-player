@@ -21,7 +21,7 @@
 #ifndef GUI_LIBRARYPREFERENCES_H
 #define GUI_LIBRARYPREFERENCES_H
 
-#include "Interfaces/PreferenceDialog/PreferenceWidget.h"
+#include "Gui/Preferences/PreferenceWidget.h"
 #include "Utils/Pimpl.h"
 
 UI_FWD(GUI_LibraryPreferences)

@@ -19,7 +19,7 @@
  */
 
 #include "GUI_LanguageChooser.h"
-#include "Gui/Preferences/ui_GUI_LanguageChooser.h"
+#include "Gui/ui_GUI_LanguageChooser.h"
 
 #include "Utils/Utils.h"
 #include "Utils/WebAccess/AsyncWebAccess.h"

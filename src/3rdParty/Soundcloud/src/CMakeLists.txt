@@ -16,9 +16,7 @@ set(SOURCES
 add_library(${PROJECT_NAME} STATIC ${SOURCES})
 
 target_link_libraries(${PROJECT_NAME}
-	Qt5::Core
-	Qt5::Xml
-	say_comp_library
+	say_components
 )
 
 

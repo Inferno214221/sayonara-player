@@ -21,7 +21,7 @@
 #ifndef GUI_NOTIFICATIONS_H
 #define GUI_NOTIFICATIONS_H
 
-#include "Interfaces/PreferenceDialog/PreferenceWidget.h"
+#include "Gui/Preferences/PreferenceWidget.h"
 
 UI_FWD(GUI_Notifications)
 

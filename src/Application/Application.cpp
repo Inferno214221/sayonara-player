@@ -42,7 +42,6 @@
 #include "Components/Session/Session.h"
 
 #include "Interfaces/LibraryInterface/LibraryPluginHandler.h"
-#include "Interfaces/PlayerPlugin/PlayerPluginHandler.h"
 #include "Interfaces/Notification/NotificationHandler.h"
 
 #include "Gui/Utils/GuiUtils.h"
@@ -51,6 +50,7 @@
 #include "Gui/Library/LocalLibraryContainer.h"
 #include "Gui/Directories/DirectoryWidgetContainer.h"
 
+#include "Gui/Plugins/PlayerPluginHandler.h"
 #include "Gui/Plugins/PlaylistChooser/GUI_PlaylistChooser.h"
 #include "Gui/Plugins/AudioConverter/GUI_AudioConverter.h"
 #include "Gui/Plugins/Bookmarks/GUI_Bookmarks.h"

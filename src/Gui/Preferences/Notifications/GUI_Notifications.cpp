@@ -19,7 +19,7 @@
  */
 
 #include "GUI_Notifications.h"
-#include "Gui/Preferences/ui_GUI_Notifications.h"
+#include "Gui/ui_GUI_Notifications.h"
 #include "Interfaces/Notification/NotificationHandler.h"
 
 #include "Utils/Settings/Settings.h"

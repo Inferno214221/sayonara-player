@@ -21,7 +21,7 @@
 
 
 #include "GUI_Controls.h"
-#include "Gui/Player/ui_GUI_Controls.h"
+#include "Gui/ui_GUI_Controls.h"
 
 GUI_Controls::GUI_Controls(QWidget* parent) :
 	GUI_ControlsBase(parent)

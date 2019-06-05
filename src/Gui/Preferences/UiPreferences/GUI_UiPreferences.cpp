@@ -25,7 +25,7 @@
 #include "GUI_FontConfig.h"
 #include "GUI_IconPreferences.h"
 #include "Gui/Utils/Style.h"
-#include "Gui/Preferences/ui_GUI_UiPreferences.h"
+#include "Gui/ui_GUI_UiPreferences.h"
 
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language/Language.h"

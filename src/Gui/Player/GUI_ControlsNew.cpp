@@ -19,7 +19,7 @@
  */
 
 #include "GUI_ControlsNew.h"
-#include "Gui/Player/ui_GUI_ControlsNew.h"
+#include "Gui/ui_GUI_ControlsNew.h"
 #include "Components/Tagging/UserTaggingOperations.h"
 #include "Components/PlayManager/PlayManager.h"
 #include "Utils/MetaData/MetaDataList.h"

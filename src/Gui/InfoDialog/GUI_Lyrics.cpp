@@ -19,7 +19,7 @@
  */
 
 #include "GUI_Lyrics.h"
-#include "Gui/InfoDialog/ui_GUI_Lyrics.h"
+#include "Gui/ui_GUI_Lyrics.h"
 #include "Gui/Utils/Widgets/ProgressBar.h"
 
 #include "Components/Lyrics/Lyrics.h"

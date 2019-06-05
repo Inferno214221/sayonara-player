@@ -9,8 +9,7 @@ set(SOURCES
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES})
 target_link_libraries(${PROJECT_NAME}
-    say_gui_utils
-    say_gui_library
+    say_gui
 )
 
 

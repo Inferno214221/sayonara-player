@@ -23,7 +23,7 @@
  */
 
 #include "GUI_StreamRecorder.h"
-#include "Gui/Preferences/ui_GUI_StreamRecorder.h"
+#include "Gui/ui_GUI_StreamRecorder.h"
 
 #include "Database/Connector.h"
 #include "Utils/Utils.h"

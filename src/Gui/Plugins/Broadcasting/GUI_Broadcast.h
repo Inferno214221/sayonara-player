@@ -21,7 +21,7 @@
 #ifndef GUI_BROADCAST_H
 #define GUI_BROADCAST_H
 
-#include "Interfaces/PlayerPlugin/PlayerPluginBase.h"
+#include "Gui/Plugins/PlayerPluginBase.h"
 #include "Utils/Pimpl.h"
 
 UI_FWD(GUI_Broadcast)

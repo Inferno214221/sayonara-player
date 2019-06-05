@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Gui/Preferences/ui_GUI_Covers.h"
+#include "Gui/ui_GUI_Covers.h"
 
 #include "GUI_Covers.h"
 

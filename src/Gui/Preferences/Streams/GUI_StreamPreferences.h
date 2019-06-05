@@ -23,7 +23,7 @@
 #ifndef GUI_STREAMPREFERENCES_H
 #define GUI_STREAMPREFERENCES_H
 
-#include "Interfaces/PreferenceDialog/PreferenceWidget.h"
+#include "Gui/Preferences/PreferenceWidget.h"
 
 UI_FWD(GUI_StreamPreferences)
 

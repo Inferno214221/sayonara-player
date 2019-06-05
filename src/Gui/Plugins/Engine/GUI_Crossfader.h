@@ -21,7 +21,7 @@
 #ifndef GUI_CROSSFADER_H
 #define GUI_CROSSFADER_H
 
-#include "Interfaces/PlayerPlugin/PlayerPluginBase.h"
+#include "Gui/Plugins/PlayerPluginBase.h"
 
 UI_FWD(GUI_Crossfader)
 

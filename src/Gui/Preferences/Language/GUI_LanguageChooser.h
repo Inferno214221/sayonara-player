@@ -21,7 +21,7 @@
 #ifndef GUI_LANGUAGECHOOSER_H
 #define GUI_LANGUAGECHOOSER_H
 
-#include "Interfaces/PreferenceDialog/PreferenceWidget.h"
+#include "Gui/Preferences/PreferenceWidget.h"
 #include "Utils/Pimpl.h"
 
 UI_FWD(GUI_LanguageChooser)

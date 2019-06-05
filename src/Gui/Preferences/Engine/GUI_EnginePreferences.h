@@ -23,7 +23,7 @@
 #ifndef GUI_ENGINEPREFERENCES_H
 #define GUI_ENGINEPREFERENCES_H
 
-#include "Interfaces/PreferenceDialog/PreferenceWidget.h"
+#include "Gui/Preferences/PreferenceWidget.h"
 
 UI_FWD(GUI_EnginePreferences)
 

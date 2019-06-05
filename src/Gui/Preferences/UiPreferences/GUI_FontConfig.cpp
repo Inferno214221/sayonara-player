@@ -18,7 +18,7 @@
  */
 
 #include "GUI_FontConfig.h"
-#include "Gui/Preferences/ui_GUI_FontConfig.h"
+#include "Gui/ui_GUI_FontConfig.h"
 
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language/Language.h"

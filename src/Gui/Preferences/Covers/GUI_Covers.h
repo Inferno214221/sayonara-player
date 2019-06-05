@@ -21,7 +21,7 @@
 #ifndef GUI_COVERS_H
 #define GUI_COVERS_H
 
-#include "Interfaces/PreferenceDialog/PreferenceWidget.h"
+#include "Gui/Preferences/PreferenceWidget.h"
 
 UI_FWD(GUI_Covers)
 

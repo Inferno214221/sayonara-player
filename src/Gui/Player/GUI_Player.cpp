@@ -24,7 +24,10 @@
 #include "GUI_PlayerMenubar.h"
 #include "GUI_Controls.h"
 #include "GUI_ControlsNew.h"
-#include "Gui/Player/ui_GUI_Player.h"
+#include "Gui/ui_GUI_Player.h"
+
+#include "Gui/Plugins/PlayerPluginBase.h"
+#include "Gui/Plugins/PlayerPluginHandler.h"
 
 #include "Components/PlayManager/PlayManager.h"
 
@@ -45,8 +48,8 @@
 
 #include "Interfaces/LibraryInterface/LibraryPluginHandler.h"
 #include "Interfaces/LibraryInterface/LibraryContainer/LibraryContainer.h"
-#include "Interfaces/PlayerPlugin/PlayerPluginBase.h"
-#include "Interfaces/PlayerPlugin/PlayerPluginHandler.h"
+
+
 
 #include <QTranslator>
 #include <QAction>

@@ -23,7 +23,7 @@
  */
 
 #include "GUI_Playlist.h"
-#include "Gui/Playlist/ui_GUI_Playlist.h"
+#include "Gui/ui_GUI_Playlist.h"
 
 #include "TabWidget.h"
 #include "ListView.h"

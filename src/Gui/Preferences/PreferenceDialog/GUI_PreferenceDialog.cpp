@@ -19,10 +19,10 @@
  */
 
 #include "GUI_PreferenceDialog.h"
-#include "Gui/Preferences/ui_GUI_PreferenceDialog.h"
+#include "Gui/ui_GUI_PreferenceDialog.h"
 
-#include "Interfaces/PreferenceDialog/PreferenceWidget.h"
-#include "Interfaces/PreferenceDialog/PreferenceAction.h"
+#include "Gui/Preferences/PreferenceWidget.h"
+#include "Gui/Preferences/PreferenceAction.h"
 
 #include "Utils/globals.h"
 #include "Utils/Algorithm.h"

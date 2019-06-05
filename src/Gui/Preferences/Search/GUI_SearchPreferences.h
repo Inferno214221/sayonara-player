@@ -18,12 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef GUI_SEARCHPREFERENCES_H
 #define GUI_SEARCHPREFERENCES_H
 
-#include "Interfaces/PreferenceDialog/PreferenceWidget.h"
+#include "Gui/Preferences/PreferenceWidget.h"
 #include "Utils/Pimpl.h"
 
 UI_FWD(GUI_SearchPreferences)

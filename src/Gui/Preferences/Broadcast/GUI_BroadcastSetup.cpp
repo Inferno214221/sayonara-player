@@ -19,7 +19,7 @@
  */
 
 #include "GUI_BroadcastSetup.h"
-#include "Gui/Preferences/ui_GUI_BroadcastSetup.h"
+#include "Gui/ui_GUI_BroadcastSetup.h"
 
 #include "Gui/Utils/Widgets/WidgetTemplate.h"
 

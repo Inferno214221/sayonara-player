@@ -19,7 +19,7 @@
  */
 
 #include "GUI_CoverView.h"
-#include "Gui/Library/ui_GUI_CoverView.h"
+#include "Gui/ui_GUI_CoverView.h"
 #include "Gui/Library/Utils/ActionPair.h"
 
 #include "Utils/Utils.h"

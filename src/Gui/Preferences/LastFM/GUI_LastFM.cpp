@@ -27,7 +27,7 @@
  */
 
 #include "GUI_LastFM.h"
-#include "Gui/Preferences/ui_GUI_LastFM.h"
+#include "Gui/ui_GUI_LastFM.h"
 #include "Utils/Crypt.h"
 
 #include "Components/Streaming/LastFM/LastFM.h"

@@ -25,7 +25,7 @@
 #ifndef GUI_STREAMRECORDER_H_
 #define GUI_STREAMRECORDER_H_
 
-#include "Interfaces/PreferenceDialog/PreferenceWidget.h"
+#include "Gui/Preferences/PreferenceWidget.h"
 #include "Utils/Pimpl.h"
 
 #include <QPushButton>

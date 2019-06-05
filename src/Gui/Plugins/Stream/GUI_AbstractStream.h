@@ -21,7 +21,7 @@
 #ifndef GUI_ABSTRACT_STREAM_H_
 #define GUI_ABSTRACT_STREAM_H_
 
-#include "Interfaces/PlayerPlugin/PlayerPluginBase.h"
+#include "Gui/Plugins/PlayerPluginBase.h"
 #include "Gui/Utils/PreferenceAction.h"
 #include "Utils/Pimpl.h"
 

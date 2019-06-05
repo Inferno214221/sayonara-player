@@ -19,7 +19,7 @@
  */
 
 #include "GUI_Shutdown.h"
-#include "Gui/ShutdownDialog/ui_GUI_Shutdown.h"
+#include "Gui/ui_GUI_Shutdown.h"
 
 #include "Gui/Utils/Icons.h"
 

@@ -19,7 +19,7 @@
  */
 
 #include "GUI_Logger.h"
-#include "Gui/Player/ui_GUI_Logger.h"
+#include "Gui/ui_GUI_Logger.h"
 
 #include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"

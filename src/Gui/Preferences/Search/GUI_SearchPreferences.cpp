@@ -21,7 +21,7 @@
 
 
 #include "GUI_SearchPreferences.h"
-#include "Gui/Preferences/ui_GUI_SearchPreferences.h"
+#include "Gui/ui_GUI_SearchPreferences.h"
 
 #include "Utils/Language/Language.h"
 #include "Utils/Library/SearchMode.h"

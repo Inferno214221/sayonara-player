@@ -8,16 +8,10 @@ include_directories(
 file(GLOB_RECURSE SOURCES . *.cpp)
 
 set(APPLICATION_LIBRARIES
-	say_gui_library
-	say_gui_directory_widget
-
-	say_gui_player
-	say_gui_preferences
-	say_gui_plugins
+	say_gui
 
 	say_interfaces_libraryinterface
-	say_comp_remote_control
-	say_comp_session
+	say_components
 )
 
 if(NOT WIN32 OR NOT DEFINED WIN32)

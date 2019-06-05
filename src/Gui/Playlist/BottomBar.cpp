@@ -19,6 +19,7 @@
 
 #include "BottomBar.h"
 
+#include "Gui/Plugins/PlayerPluginHandler.h"
 #include "Gui/Utils/Icons.h"
 
 #include "Utils/Playlist/PlaylistMode.h"
@@ -32,7 +33,6 @@
 
 // Think about CMake
 #include "Components/Library/LibraryManager.h"
-#include "Interfaces/PlayerPlugin/PlayerPluginHandler.h"
 
 #include <QFile>
 #include <QHBoxLayout>

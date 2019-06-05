@@ -21,7 +21,7 @@
 #ifndef GUI_TARGET_PLAYLIST_DIALOG_H
 #define GUI_TARGET_PLAYLIST_DIALOG_H
 
-#include "Gui/Plugins/ui_GUI_TargetPlaylistDialog.h"
+#include "Gui/ui_GUI_TargetPlaylistDialog.h"
 #include "Gui/Utils/Widgets/Dialog.h"
 
 class GUI_TargetPlaylistDialog :

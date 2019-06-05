@@ -23,7 +23,7 @@
  */
 
 #include "GUI_RemoteControl.h"
-#include "Gui/Preferences/ui_GUI_RemoteControl.h"
+#include "Gui/ui_GUI_RemoteControl.h"
 
 #include "Utils/Utils.h"
 #include "Utils/Language/Language.h"

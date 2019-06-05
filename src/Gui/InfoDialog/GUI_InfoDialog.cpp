@@ -23,7 +23,7 @@
  */
 
 #include "GUI_InfoDialog.h"
-#include "Gui/InfoDialog/ui_GUI_InfoDialog.h"
+#include "Gui/ui_GUI_InfoDialog.h"
 
 #include "InfoDialogContainer.h"
 

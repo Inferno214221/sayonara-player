@@ -21,7 +21,7 @@
 #ifndef GUI_SPEED_H
 #define GUI_SPEED_H
 
-#include "Interfaces/PlayerPlugin/PlayerPluginBase.h"
+#include "Gui/Plugins/PlayerPluginBase.h"
 
 UI_FWD(GUI_Speed)
 

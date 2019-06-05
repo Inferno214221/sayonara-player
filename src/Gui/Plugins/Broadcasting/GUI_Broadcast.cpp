@@ -19,6 +19,7 @@
  */
 
 #include "GUI_Broadcast.h"
+#include "Gui/ui_GUI_Broadcast.h"
 
 #include "Components/Broadcasting/StreamServer.h"
 #include "Utils/Message/Message.h"
@@ -27,8 +28,6 @@
 #include "Utils/Settings/Settings.h"
 
 #include "Gui/Utils/PreferenceAction.h"
-
-#include "Gui/Plugins/ui_GUI_Broadcast.h"
 
 class BroadcastAction :
 		public PreferenceAction

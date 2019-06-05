@@ -22,7 +22,7 @@
 #include "ImportCache.h"
 #include "CachingThread.h"
 #include "CopyThread.h"
-#include "LocalLibrary.h"
+#include "Components/Library/LocalLibrary.h"
 
 #include "Components/Tagging/ChangeNotifier.h"
 

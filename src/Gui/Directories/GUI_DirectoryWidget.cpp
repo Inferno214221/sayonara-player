@@ -22,7 +22,7 @@
 #include "FileListModel.h"
 #include "DirectoryModel.h"
 
-#include "Gui/Directories/ui_GUI_DirectoryWidget.h"
+#include "Gui/ui_GUI_DirectoryWidget.h"
 #include "Gui/Library/TrackModel.h"
 #include "Gui/ImportDialog/GUI_ImportDialog.h"
 

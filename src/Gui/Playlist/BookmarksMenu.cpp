@@ -20,13 +20,15 @@
 
 #include "BookmarksMenu.h"
 
+#include "Gui/Plugins/PlayerPluginHandler.h"
+#include "Gui/Utils/Icons.h"
+
 #include "Components/Bookmarks/Bookmarks.h"
 #include "Components/Bookmarks/Bookmark.h"
 #include "Components/PlayManager/PlayManager.h"
-#include "Gui/Utils/Icons.h"
+
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/Language/Language.h"
-#include "Interfaces/PlayerPlugin/PlayerPluginHandler.h"
 
 struct BookmarksMenu::Private
 {

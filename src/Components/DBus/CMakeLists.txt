@@ -8,7 +8,7 @@ file(GLOB_RECURSE SOURCES . *.cpp)
 
 QT5_ADD_DBUS_ADAPTOR(DBUS_SOURCES
 	resources/org.mpris.MediaPlayer2.xml
-	DBusMPRIS.h
+	Components/DBus/DBusMPRIS.h
 	DBusMPRIS::MediaPlayer2
 	org_mpris_media_player2_adaptor
 	OrgMprisMediaPlayer2Adaptor
@@ -16,7 +16,7 @@ QT5_ADD_DBUS_ADAPTOR(DBUS_SOURCES
 
 QT5_ADD_DBUS_ADAPTOR(DBUS_SOURCES
 	resources/org.mpris.MediaPlayer2.Player.xml
-	DBusMPRIS.h
+	Components/DBus/DBusMPRIS.h
 	DBusMPRIS::MediaPlayer2
 	org_mpris_media_player2_player_adaptor
 	OrgMprisMediaPlayer2PlayerAdaptor

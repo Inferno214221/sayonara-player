@@ -19,7 +19,7 @@
 
 #include "GUI_ShortcutEntry.h"
 
-#include "Gui/Preferences/ui_GUI_ShortcutEntry.h"
+#include "Gui/ui_GUI_ShortcutEntry.h"
 #include "Gui/Utils/Icons.h"
 
 #include "Utils/Language/Language.h"

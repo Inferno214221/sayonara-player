@@ -21,7 +21,7 @@
 #ifndef GUI_PLAYERPREFERENCES_H
 #define GUI_PLAYERPREFERENCES_H
 
-#include "Interfaces/PreferenceDialog/PreferenceWidget.h"
+#include "Gui/Preferences/PreferenceWidget.h"
 
 UI_FWD(GUI_PlayerPreferences)
 
