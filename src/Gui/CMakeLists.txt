@@ -1,24 +1,26 @@
 project(sayonara_gui)
 
-set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOUIC OFF)
 
-add_library(${PROJECT_NAME} STATIC ${SOURCES})
+file(GLOB_RECURSE UI_FILES . *.ui)
+qt5_wrap_ui(WRAPPED_UI_FILES ${UI_FILES})
 
-add_subdirectory(Covers)
-add_subdirectory(Directories)
-add_subdirectory(ImportDialog)
-add_subdirectory(InfoDialog)
-add_subdirectory(Library)
-add_subdirectory(Player)
-add_subdirectory(Playlist)
-add_subdirectory(Plugins)
-add_subdirectory(Preferences)
 add_subdirectory(Resources)
-add_subdirectory(Shutdown)
-add_subdirectory(TagEdit)
-add_subdirectory(Utils)
 
+file(GLOB_RECURSE SOURCES Covers *.cpp)
+file(GLOB_RECURSE SOURCES Directories *.cpp)
+file(GLOB_RECURSE SOURCES ImportDialog *.cpp)
+file(GLOB_RECURSE SOURCES InfoDialog *.cpp)
+file(GLOB_RECURSE SOURCES Library *.cpp)
+file(GLOB_RECURSE SOURCES Player *.cpp)
+file(GLOB_RECURSE SOURCES Playlist *.cpp)
+file(GLOB_RECURSE SOURCES Plugins *.cpp)
+file(GLOB_RECURSE SOURCES Preferences *.cpp)
+file(GLOB_RECURSE SOURCES Shutdown *.cpp)
+file(GLOB_RECURSE SOURCES TagEdit *.cpp)
+file(GLOB_RECURSE SOURCES Utils *.cpp)
 
+add_library(${PROJECT_NAME} STATIC ${SOURCES} ${WRAPPED_UI_FILES})
 target_link_libraries(${PROJECT_NAME}
 	sayonara_components
 
@@ -26,20 +28,6 @@ target_link_libraries(${PROJECT_NAME}
 	say_interfaces_notifications
 
 	say_utils
-
-	gui_covers
-	gui_directories
-	gui_importdialog
-	gui_infodialog
-	gui_library
-	gui_player
-	gui_playlist
-	gui_plugins
-	gui_preferences
-	gui_resources
-	gui_shutdown
-	gui_tagedit
-	gui_utils
 
 	Qt5::Widgets
 	Qt5::DBus

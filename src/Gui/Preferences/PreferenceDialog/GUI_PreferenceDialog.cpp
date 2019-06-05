@@ -21,6 +21,8 @@
 #include "GUI_PreferenceDialog.h"
 #include "Gui/ui_GUI_PreferenceDialog.h"
 
+#include "Components/Preferences/PreferenceRegistry.h"
+
 #include "Gui/Preferences/PreferenceWidget.h"
 #include "Gui/Preferences/PreferenceAction.h"
 
@@ -48,7 +50,7 @@ struct GUI_PreferenceDialog::Private
 
 GUI_PreferenceDialog::GUI_PreferenceDialog(QWidget* parent) :
 	Gui::Dialog(parent),
-	PreferenceDialog()
+	PreferenceUi()
 {
 	m = Pimpl::make<Private>();
 

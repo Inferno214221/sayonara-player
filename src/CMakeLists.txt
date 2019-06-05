@@ -87,7 +87,7 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
 endif()
 
 set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOUIC OFF)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 include(CheckIncludeFileCXX)
@@ -109,7 +109,6 @@ add_subdirectory(Languages)
 add_subdirectory(3rdParty)
 
 add_executable(${PROJECT_NAME} Main.cpp ${QM_FILES})
-
 
 #file(GLOB_RECURSE HeaderFiles "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
 #add_custom_target(headers SOURCES ${HeaderFiles})

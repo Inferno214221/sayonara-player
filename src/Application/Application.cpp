@@ -327,7 +327,7 @@ void Application::init_preferences()
 {
 	measure("Preferences")
 
-	PreferenceDialog* preferences = new GUI_PreferenceDialog(m->player);
+	auto* preferences = new GUI_PreferenceDialog(m->player);
 
 	preferences->register_preference_dialog(new GUI_PlayerPreferences("application"));
 	preferences->register_preference_dialog(new GUI_LanguageChooser("language"));

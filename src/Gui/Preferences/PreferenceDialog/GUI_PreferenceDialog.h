@@ -22,8 +22,8 @@
 #define GUI_PreferenceDialog_H
 
 #include "Utils/Pimpl.h"
-#include "Interfaces/PreferenceDialog/PreferenceDialog.h"
 #include "Gui/Utils/Widgets/Dialog.h"
+#include "Components/Preferences/PreferenceRegistry.h"
 
 namespace Preferences
 {
@@ -39,8 +39,7 @@ UI_FWD(GUI_PreferenceDialog)
  */
 class GUI_PreferenceDialog :
 		public Gui::Dialog,
-		public PreferenceDialog
-
+		public PreferenceUi
 {
 	Q_OBJECT
 	UI_CLASS(GUI_PreferenceDialog)
@@ -53,13 +52,13 @@ class GUI_PreferenceDialog :
 		explicit GUI_PreferenceDialog(QWidget* parent=nullptr);
 		~GUI_PreferenceDialog();
 
-		QString action_name() const override;
-		QAction* action() override;
+		QString action_name() const;
+		QAction* action();
 
-		QList<QAction*> actions(QWidget* parent) override;
+		QList<QAction*> actions(QWidget* parent);
 
-		void register_preference_dialog(Preferences::Base* dialog) override;
-		void show_preference(const QString& identifier) override;
+		void register_preference_dialog(Preferences::Base* dialog);
+		void show_preference(const QString& identifier);
 
 	protected slots:
 		void commit_and_close();

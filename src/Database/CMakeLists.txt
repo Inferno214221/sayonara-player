@@ -1,5 +1,7 @@
 project(say_db)
 
+set(CMAKE_AUTOMOC OFF)
+
 file(GLOB_RECURSE SOURCES . *.cpp)
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES} )
