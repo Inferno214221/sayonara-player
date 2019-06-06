@@ -21,7 +21,7 @@
 #include "Application.h"
 #include "InstanceThread.h"
 #include "MetaTypeRegistry.h"
-#include "LibraryWatcher.h"
+#include "LocalLibraryWatcher.h"
 
 #include "Gui/Utils/Icons.h"
 

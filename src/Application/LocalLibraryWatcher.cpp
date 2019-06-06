@@ -1,4 +1,4 @@
-#include "LibraryWatcher.h"
+#include "LocalLibraryWatcher.h"
 #include "Interfaces/LibraryInterface/LibraryPluginHandler.h"
 #include "Components/Library/LibraryManager.h"
 #include "Components/Library/LocalLibrary.h"
@@ -7,7 +7,6 @@
 #include "Utils/Library/LibraryInfo.h"
 #include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
-#include "Utils/Message/Message.h"
 
 #include <QMap>
 
@@ -49,23 +48,6 @@ QList<Container*> LocalLibraryWatcher::get_local_library_containers() const
 	return containers;
 }
 
-
-void LocalLibraryWatcher::new_library_requested(const QString& name, const QString& path)
-{
-	LibraryId id = Manager::instance()->add_library(name, path);
-	if(id < 0){
-		sp_log(Log::Warning, this) << "Could not create new library";
-	}
-
-	Message::Answer answer = Message::question_yn(tr("Do you want to reload the Library?"), "Library");
-
-	if(answer == Message::Answer::No){
-		return;
-	}
-
-	LocalLibrary* library = Manager::instance()->library_instance(id);
-	library->reload_library(false, Library::ReloadQuality::Accurate);
-}
 
 void LocalLibraryWatcher::library_added(LibraryId id)
 {

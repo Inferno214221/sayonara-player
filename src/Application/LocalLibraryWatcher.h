@@ -22,8 +22,6 @@ namespace Library
 			QList<Container*> get_local_library_containers() const;
 
 		private slots:
-			void new_library_requested(const QString& name, const QString& path);
-
 			void library_added(LibraryId id);
 			void library_moved(LibraryId id, int from, int to);
 			void library_renamed(LibraryId id);
