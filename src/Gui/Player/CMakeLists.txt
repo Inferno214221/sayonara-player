@@ -10,3 +10,8 @@ target_link_libraries(${PROJECT_NAME}
 	gui_covers
 	say_interfaces_library_container
 )
+
+if( WITH_COTIRE )
+	cotire(${PROJECT_NAME})
+endif()
+

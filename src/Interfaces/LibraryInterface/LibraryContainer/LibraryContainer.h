@@ -54,9 +54,6 @@ namespace Library
 		private:
 			void set_initialized();
 
-		private slots:
-			void language_changed();
-
 		public:
 			explicit Container(QObject* parent=nullptr);
 			virtual ~Container();

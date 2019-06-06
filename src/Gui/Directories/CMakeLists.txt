@@ -7,3 +7,8 @@ target_link_libraries(${PROJECT_NAME}
 	#gui_infodialog, gui_importdialog, gui_utils
 	gui_library
 )
+
+if( WITH_COTIRE )
+	cotire(${PROJECT_NAME})
+endif()
+

@@ -10,3 +10,8 @@ target_link_libraries(${PROJECT_NAME}
 	gui_plugins
 	gui_shutdown
 )
+
+if( WITH_COTIRE )
+	cotire(${PROJECT_NAME})
+endif()
+

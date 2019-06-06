@@ -27,3 +27,8 @@ target_link_libraries(${PROJECT_NAME}
 	say_interfaces_raw_sound_receiver
 	sayonara_engine
 )
+
+if( WITH_COTIRE )
+	cotire(${PROJECT_NAME})
+endif()
+

@@ -7,3 +7,8 @@ target_link_libraries(${PROJECT_NAME}
 	gui_utils
 	say_interfaces_notifications
 )
+
+if( WITH_COTIRE )
+	cotire(${PROJECT_NAME})
+endif()
+

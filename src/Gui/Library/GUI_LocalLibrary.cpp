@@ -40,6 +40,8 @@
 #include "Gui/ImportDialog/GUI_ImportDialog.h"
 #include "Gui/Utils/Library/GUI_DeleteDialog.h"
 #include "Gui/Utils/GuiUtils.h"
+#include "Gui/Utils/Icons.h"
+#include "Gui/Utils/Style.h"
 
 #include "Components/Covers/CoverLocation.h"
 #include "Components/Library/LocalLibrary.h"
@@ -124,7 +126,6 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 	connect(ui->lv_genres, &QAbstractItemView::clicked, this, &GUI_LocalLibrary::genre_selection_changed);
 	connect(ui->lv_genres, &QAbstractItemView::activated, this, &GUI_LocalLibrary::genre_selection_changed);
 	connect(ui->lv_genres, &GenreView::sig_progress, this, &GUI_LocalLibrary::progress_changed);
-	connect(ui->lv_genres, &GenreView::sig_genres_reloaded, this, &GUI_LocalLibrary::genres_reloaded);
 	connect(ui->lv_genres, &GenreView::sig_selected_cleared, this, [=](){
 		this->genre_selection_changed(QModelIndex());
 	});
@@ -182,7 +183,9 @@ void GUI_LocalLibrary::check_status_bar(bool is_reloading)
 
 	if(is_reloading || (m->library->tracks().isEmpty() && m->library->filter().cleared()))
 	{
-		ui->btn_reload_library->setVisible(!is_reloading);
+		int index = (is_reloading == true) ? 0 : 1;
+		ui->stacked_widget_reload->setCurrentIndex(index);
+
 		ui->pb_progress->setVisible(is_reloading);
 		ui->lab_progress->setVisible(is_reloading);
 
@@ -233,9 +236,24 @@ void GUI_LocalLibrary::check_status_bar(bool is_reloading)
 	}
 }
 
+
 void GUI_LocalLibrary::tracks_loaded()
 {
 	check_status_bar(false);
+
+	if(m->library->tracks().isEmpty() && m->library->filter().cleared())
+	{
+		ui->stacked_widget_reload->setCurrentIndex(1);
+	}
+
+	else
+	{
+		ui->stacked_widget_reload->setCurrentIndex(0);
+	}
+
+	ui->lab_library_name->setText(m->library->library_name());
+	ui->lab_path->setText(Util::create_link(m->library->library_path(), Style::is_dark(), true));
+	ui->btn_reload_library->setIcon(Gui::Icons::icon(Gui::Icons::Refresh));
 }
 
 
@@ -335,26 +353,12 @@ void GUI_LocalLibrary::reload_library_accepted(Library::ReloadQuality quality)
 }
 
 
-void GUI_LocalLibrary::genres_reloaded()
-{
-	if(ui->lv_genres->has_items()){
-		ui->stacked_genre_widget->setCurrentIndex(GenreWidgetIndex::GenreTree);
-	}
-
-	else {
-		ui->stacked_genre_widget->setCurrentIndex(GenreWidgetIndex::NoGenres);
-	}
-}
-
-
 void GUI_LocalLibrary::reload_finished()
 {
-	genres_reloaded();
-
 	m->library_menu->set_library_busy(false);
-	ui->btn_reload_library->setVisible(
-		m->library->tracks().isEmpty()
-	);
+
+	int index = (m->library->tracks().isEmpty()) ? 1 : 0;
+	ui->stacked_widget_reload->setCurrentIndex(index);
 }
 
 void GUI_LocalLibrary::show_info_box()

@@ -20,9 +20,7 @@
 
 #include "Interfaces/LibraryInterface/LibraryContainer/LibraryContainer.h"
 
-#include "Utils/Settings/Settings.h"
-#include "Utils/Settings/SettingNotifier.h"
-
+#include <QWidget>
 #include <QAction>
 
 using Library::Container;
@@ -41,8 +39,6 @@ Container::Container(QObject* parent) :
 	QObject(parent)
 {
 	m = Pimpl::make<Private>();
-
-	ListenSetting(Set::Player_Language, Container::language_changed);
 }
 
 Container::~Container() {}
@@ -84,22 +80,17 @@ bool Container::is_local() const
 	return false;
 }
 
-void Container::language_changed()
-{
-	if(m->action){
-		m->action->setText(this->display_name());
-	}
-}
-
 
 void Container::show()
 {
 	QWidget* own_widget = widget();
 
-	if(own_widget) {
+	if(own_widget)
+	{
 		own_widget->setVisible(true);
 		QWidget* parent_widget = own_widget->parentWidget();
-		if(parent_widget){
+		if(parent_widget)
+		{
 			own_widget->resize(parent_widget->size());
 		}
 

@@ -21,17 +21,7 @@
 #include "GUI_EmptyLibrary.h"
 #include "Gui/ui_GUI_EmptyLibrary.h"
 #include "Gui/Utils/Library/GUI_EditLibrary.h"
-
 #include "Components/Library/LibraryManager.h"
-#include "Components/Library/LocalLibrary.h"
-#include "Interfaces/LibraryInterface/LibraryPluginHandler.h"
-
-#include "Utils/Message/Message.h"
-#include "Utils/Library/LibraryNamespaces.h"
-
-#include <QDir>
-#include <QFileDialog>
-#include <QComboBox>
 
 using namespace Library;
 
@@ -83,21 +73,7 @@ void GUI_EmptyLibrary::new_library_created()
 	QString name = new_library->name();
 	QString path = new_library->path();
 
-	Manager* lib_manager = Manager::instance();
-
-	LibraryId id = lib_manager->add_library(name, path);
-	if(id < 0){
-		return;
-	}
-
-	Message::Answer answer = Message::question_yn(tr("Do you want to reload the Library?"), "Library");
-
-	if(answer == Message::Answer::No){
-		return;
-	}
-
-	LocalLibrary* library = lib_manager->library_instance(id);
-	library->reload_library(false, Library::ReloadQuality::Accurate);
+	Manager::instance()->add_library(name, path);
 }
 
 

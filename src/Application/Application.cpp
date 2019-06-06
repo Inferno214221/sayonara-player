@@ -49,7 +49,6 @@
 
 #include "Gui/Player/GUI_Player.h"
 #include "Gui/Library/LocalLibraryContainer.h"
-#include "Gui/Library/EmptyLibraryContainer.h"
 #include "Gui/Directories/DirectoryWidgetContainer.h"
 
 #include "Gui/Plugins/PlayerPluginHandler.h"
@@ -358,10 +357,10 @@ void Application::init_libraries()
 {
 	measure("Libraries")
 
-	auto* local_library_plugin_handler = new Library::LocalLibraryPluginHandler(this);
+	auto* local_library_watcher = new Library::LocalLibraryWatcher(this);
 	auto* library_plugin_loader = Library::PluginHandler::instance();
 
-	QList<Library::Container*> library_containers = local_library_plugin_handler->get_local_library_containers();
+	QList<Library::Container*> library_containers = local_library_watcher->get_local_library_containers();
 	auto* directory_container = new Library::DirectoryContainer(this);
 
 	library_containers << static_cast<Library::Container*>(directory_container);
@@ -373,7 +372,7 @@ void Application::init_libraries()
 	library_containers << static_cast<Library::ContainerInterface*>(somafm_container);
 #endif
 
-	library_plugin_loader->init(new EmptyLibraryContainer(), library_containers);
+	library_plugin_loader->init(library_containers);
 }
 
 void Application::init_engine()

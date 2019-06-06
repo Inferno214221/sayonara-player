@@ -44,6 +44,7 @@ namespace Library
 		SINGLETON(PluginHandler)
 
 	signals:
+		void sig_new_library_requested(const QString& name, const QString& path);
 		void sig_current_library_changed(const QString& name);
 		void sig_libraries_changed();
 
@@ -69,7 +70,7 @@ namespace Library
 		 * @brief Search for plugins and add some predefined plugins
 		 * @param containers Some predefined plugins
 		 */
-		void init(Container* empty_library_container, const QList<Container*>& containers);
+		void init(const QList<Container*>& containers);
 
 		/**
 		 * @brief Get a list for all found plugins. The ui is not necessarily initialized

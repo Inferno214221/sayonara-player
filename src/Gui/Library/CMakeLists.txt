@@ -8,3 +8,8 @@ target_link_libraries(${PROJECT_NAME}
 	gui_infodialog
 	say_interfaces_library_container
 )
+
+if( WITH_COTIRE )
+	cotire(${PROJECT_NAME})
+endif()
+

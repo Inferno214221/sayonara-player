@@ -84,7 +84,6 @@ namespace Library
 
 		void progress_changed(const QString& type, int progress);
 
-		void genres_reloaded();
 		void genre_selection_changed(const QModelIndex& index);
 
 		void reload_library_requested();

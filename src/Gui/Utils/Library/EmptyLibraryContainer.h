@@ -36,14 +36,14 @@ public:
 	EmptyLibraryContainer(QObject* parent=nullptr);
 	~EmptyLibraryContainer();
 
-	QString name() const override;
-	QString display_name() const override;
-	QWidget* widget() const override;
-	QMenu* menu() override;
-	QFrame* header() const override;
-	QPixmap icon() const override;
+	QString		name() const override;
+	QString		display_name() const override;
+	QWidget*	widget() const override;
+	QMenu*		menu() override;
+	QFrame*		header() const override;
+	QPixmap		icon() const override;
 
-	void init_ui() override;
+	void		init_ui() override;
 };
 
 #endif // EMPTYLIBRARYCONTAINER_H

@@ -597,6 +597,13 @@ void GUI_Player::language_changed()
 	if(ui) {
 		ui->retranslateUi(this);
 	}
+
+	Library::PluginHandler* lph = Library::PluginHandler::instance();
+	Library::Container* cur_lib = lph->current_library();
+	if(cur_lib && cur_lib->menu_action())
+	{
+		cur_lib->menu_action()->setText(cur_lib->display_name());
+	}
 }
 
 
