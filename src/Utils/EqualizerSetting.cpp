@@ -170,7 +170,7 @@ void EqualizerSetting::set_name(const QString& name)
 
 void EqualizerSetting::set_value(int idx, int val)
 {
-	if(!between(idx, m->values)){
+	if(!Util::between(idx, m->values)){
 		return;
 	}
 
@@ -190,7 +190,7 @@ EqualizerSetting::ValueArray EqualizerSetting::values() const
 
 int EqualizerSetting::value(int idx) const
 {
-	if(!between(idx, m->values)){
+	if(!Util::between(idx, m->values)){
 		return 0;
 	}
 

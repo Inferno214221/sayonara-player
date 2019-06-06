@@ -47,9 +47,8 @@ public:
 	QFrame*		header() const override;
 	QPixmap		icon() const override;
 	void        init_ui() override;
-	LibraryId	id();
-
-	void		set_name(const QString& name);
+	bool		is_local() const override;
+	void		set_name(const QString& name) override;
 };
 
 #endif // LOCALLIBRARYCONTAINER_H

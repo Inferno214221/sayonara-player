@@ -241,7 +241,7 @@ QStringList FileListView::selected_paths() const
 	for(const QModelIndex& idx : selections)
 	{
 		int row = idx.row();
-		if(between(row, paths)){
+		if(Util::between(row, paths)){
 			ret << paths[row];
 		}
 	}
@@ -327,7 +327,7 @@ void FileListView::rename_file_clicked()
 	int row = index.row();
 
 	QStringList files = m->model->files();
-	if(!between(row, files)){
+	if(!Util::between(row, files)){
 		return;
 	}
 
@@ -356,7 +356,7 @@ void FileListView::rename_file_clicked()
 
 		files = m->model->files();
 		int new_file_index = files.indexOf(new_filename);
-		if(between(new_file_index, files)){
+		if(Util::between(new_file_index, files)){
 			this->select_row(new_file_index);
 		}
 	}

@@ -27,12 +27,12 @@
 #include "Components/Covers/CoverLookup.h"
 #include "Components/Covers/CoverLocation.h"
 
+#include "Utils/globals.h"
 #include "Utils/MetaData/Album.h"
 #include "Utils/MetaData/Artist.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Set.h"
-#include "Utils/globals.h"
 #include "Utils/typedefs.h"
 
 #include <QHash>
@@ -198,7 +198,7 @@ void SC::Library::get_all_albums_by_artist(IdList artist_ids, AlbumList& albums,
 
 		for(int album_idx : album_idxs)
 		{
-			if(!between(album_idx, m->albums)){
+			if(!Util::between(album_idx, m->albums)){
 				sp_log(Log::Warning, this) << __FUNCTION__ << " Invalid index: " << album_idx << " (" << m->albums.size() << ")";
 			}
 			else {
@@ -227,7 +227,7 @@ void SC::Library::get_all_albums_by_searchstring(::Library::Filter filter, Album
 		for(int album_id : album_ids)
 		{
 			int idx = m->album_id_idx_map[album_id];
-			if(!between(idx, m->albums)) {
+			if(!Util::between(idx, m->albums)) {
 				sp_log(Log::Warning, this) << __FUNCTION__ << " Invalid index: " << idx << " (" << m->albums.size() << ")";
 				continue;
 			}
@@ -284,7 +284,7 @@ void SC::Library::get_all_tracks_by_artist(IdList artist_ids, MetaDataList& v_md
 
 		for(int idx : idxs)
 		{
-			if(!between(idx, m->v_md)) {
+			if(!Util::between(idx, m->v_md)) {
 				sp_log(Log::Warning, this) << __FUNCTION__ << " Invalid index: " << idx << " (" << m->v_md.size() << ")";
 			} else {
 				v_md << m->v_md[idx];

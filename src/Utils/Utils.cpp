@@ -51,7 +51,6 @@
 	#include <windows.h>
 #endif
 
-#include "Utils/globals.h"
 #include "Utils/Utils.h"
 #include "Utils/Algorithm.h"
 #include "Utils/RandomGenerator.h"
@@ -59,6 +58,7 @@
 #include "Utils/FileUtils.h"
 #include "Utils/Language/Language.h"
 
+namespace Algorithm=Util::Algorithm;
 
 template<typename T>
 QString cvtNum2String(T num, int digits) {

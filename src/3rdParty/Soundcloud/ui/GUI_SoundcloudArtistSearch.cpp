@@ -130,7 +130,7 @@ void SC::GUI_ArtistSearch::artist_selected(int idx)
 	m->v_md.clear();
 	m->albums.clear();
 
-	if(!between(idx, m->searched_artists)) {
+	if(!Util::between(idx, m->searched_artists)) {
 		return;
 	}
 

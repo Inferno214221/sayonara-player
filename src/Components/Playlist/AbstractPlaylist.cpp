@@ -19,9 +19,10 @@
  */
 
 #include "AbstractPlaylist.h"
-#include "Utils/FileUtils.h"
+
+#include "Utils/Algorithm.h"
 #include "Utils/Set.h"
-#include "Utils/globals.h"
+#include "Utils/FileUtils.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/MetaData/MetaDataList.h"
 
@@ -29,10 +30,11 @@
 #include "Components/Tagging/ChangeNotifier.h"
 
 #include <utility>
-#include <algorithm>
 #include <memory>
 
 using Playlist::Base;
+
+namespace File=Util::File;
 
 struct Base::Private
 {
@@ -152,7 +154,7 @@ void Base::append_tracks(const MetaDataList& lst)
 
 	for(auto it=m->v_md.begin() + old_size; it != m->v_md.end(); it++)
 	{
-		it->is_disabled = !(Util::File::check_file(it->filepath()));
+		it->is_disabled = !(File::check_file(it->filepath()));
 	}
 
 	set_changed(true);
@@ -165,7 +167,7 @@ bool Base::change_track(int idx)
 
 	SetSetting(Set::PL_LastTrackBeforeStop, -1);
 
-	if( !between(idx, m->v_md) )
+	if( !Util::between(idx, m->v_md) )
 	{
 		stop();
 		set_track_idx_before_stop(-1);
@@ -180,14 +182,14 @@ bool Base::change_track(int idx)
 
 void Base::replace_track(int idx, const MetaData& md)
 {
-	if( !between(idx, m->v_md) ) {
+	if( !Util::between(idx, m->v_md) ) {
 		return;
 	}
 
 	bool is_playing = m->v_md[idx].pl_playing;
 
 	m->v_md[idx] = md;
-	m->v_md[idx].is_disabled = !(Util::File::check_file(md.filepath()));
+	m->v_md[idx].is_disabled = !(File::check_file(md.filepath()));
 	m->v_md[idx].pl_playing = is_playing;
 
 	emit sig_items_changed( index() );

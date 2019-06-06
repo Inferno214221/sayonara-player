@@ -24,7 +24,6 @@
 #include "Utils/Set.h"
 #include "Utils/Utils.h"
 #include "Utils/Algorithm.h"
-#include "Utils/globals.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Language/Language.h"
 #include "Utils/MetaData/MetaDataList.h"

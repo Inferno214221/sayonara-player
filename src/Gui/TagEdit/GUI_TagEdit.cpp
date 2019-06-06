@@ -259,7 +259,7 @@ void GUI_TagEdit::apply_all_tag_from_path()
 
 bool GUI_TagEdit::check_idx(int idx) const
 {
-	return between(idx, m->tag_edit->count());
+	return Util::between(idx, m->tag_edit->count());
 }
 
 void GUI_TagEdit::next_button_clicked()
@@ -459,7 +459,7 @@ void GUI_TagEdit::cover_all_changed(bool b)
 {
 	if(!b)
 	{
-		if(between(m->cur_idx,m->tag_edit->count()) ){
+		if(Util::between(m->cur_idx,m->tag_edit->count()) ){
 			set_cover(m->tag_edit->metadata(m->cur_idx));
 		}
 	}

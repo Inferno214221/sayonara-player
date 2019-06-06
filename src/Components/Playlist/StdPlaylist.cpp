@@ -20,16 +20,15 @@
 
 #include "StdPlaylist.h"
 
-#include "Utils/globals.h"
+#include "Utils/Set.h"
+#include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Parser/PlaylistParser.h"
 #include "Utils/RandomGenerator.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Logger/Logger.h"
-#include "Utils/Set.h"
 
-#include <algorithm>
-
+namespace Algorithm=Util::Algorithm;
 using Playlist::Standard;
 
 struct Standard::Private
@@ -99,7 +98,7 @@ bool Standard::change_track(int idx)
 bool Standard::wake_up()
 {
 	int idx = track_idx_before_stop();
-	bool success = between(idx, count());
+	bool success = Util::between(idx, count());
 
 	if(success) {
 		success = change_track(idx);
@@ -313,7 +312,7 @@ void Standard::duration_changed(MilliSeconds ms)
 	MetaDataList& v_md = metadata();
 
 	int cur_track = v_md.current_track();
-	if(!between(cur_track, v_md.count())){
+	if(!Util::between(cur_track, v_md.count())){
 		return;
 	}
 

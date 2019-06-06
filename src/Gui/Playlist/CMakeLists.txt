@@ -1,5 +1,12 @@
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTOMOC ON)
+project(gui_playlist)
 
-file(GLOB_RECURSE SRC . *.cpp)
-target_sources(${PROJECT_NAME} PRIVATE ${SRC})
+file(GLOB_RECURSE SOURCES . *.cpp)
+
+add_library(${PROJECT_NAME} ${SOURCES})
+
+# InfoDialog, Plugins, Shutdown, Utils
+target_link_libraries(${PROJECT_NAME}
+	gui_infodialog
+	gui_plugins
+	gui_shutdown
+)

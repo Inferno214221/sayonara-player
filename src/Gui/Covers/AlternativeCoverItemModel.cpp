@@ -105,7 +105,7 @@ QVariant AlternativeCoverItemModel::data(const QModelIndex& index, int role) con
 
 	 else if(role == Qt::UserRole)
 	 {
-		 if(between(lin_idx, m->covers)){
+		 if(Util::between(lin_idx, m->covers)){
 			return m->covers[lin_idx];
 		 }
 
@@ -132,7 +132,7 @@ Qt::ItemFlags AlternativeCoverItemModel::flags(const QModelIndex& index) const
 	}
 
 	int lin_idx = cvt_2_idx(index.row(), index.column());
-	if(between(lin_idx, m->covers))
+	if(Util::between(lin_idx, m->covers))
 	{
 		return QAbstractTableModel::flags(index);
 	}
@@ -182,7 +182,7 @@ bool AlternativeCoverItemModel::is_valid(const QModelIndex& idx) const
 	int lin_idx = cvt_2_idx(idx.row(), idx.column());
 
 	// todo
-	return ( between(lin_idx, m->covers) );
+	return ( Util::between(lin_idx, m->covers) );
 }
 
 QSize AlternativeCoverItemModel::cover_size(const QModelIndex& idx) const

@@ -60,7 +60,7 @@ QVariant ItemModel::headerData ( int section, Qt::Orientation orientation, int r
 		return QVariant();
 	}
 
-	if(!between(section, m->header_names)){
+	if(!Util::between(section, m->header_names)){
 		return QVariant();
 	}
 

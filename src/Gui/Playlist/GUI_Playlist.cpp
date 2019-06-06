@@ -338,7 +338,7 @@ void GUI_Playlist::playlist_changed(int idx)
 
 void GUI_Playlist::playlist_idx_changed(int pl_idx)
 {
-	if(!between(pl_idx, ui->tw_playlists->count() - 1)){
+	if(!Util::between(pl_idx, ui->tw_playlists->count() - 1)){
 		return;
 	}
 
@@ -389,7 +389,7 @@ void GUI_Playlist::playlist_finished()
 void GUI_Playlist::tab_close_playlist_clicked(int idx)
 {
 	int count = ui->tw_playlists->count();
-	if( !between(idx, count - 1)) {
+	if( !Util::between(idx, count - 1)) {
 		return;
 	}
 
@@ -603,7 +603,7 @@ Message::Answer GUI_Playlist::show_save_message_box(Playlist::DBInterface::SaveA
 
 PlaylistView* GUI_Playlist::view_by_index(int idx)
 {
-	if(!between(idx, ui->tw_playlists->count() - 1)){
+	if(!Util::between(idx, ui->tw_playlists->count() - 1)){
 		return nullptr;
 	}
 
@@ -615,7 +615,7 @@ PlaylistView* GUI_Playlist::view_by_index(int idx)
 PlaylistView* GUI_Playlist::current_view()
 {
 	int idx = ui->tw_playlists->currentIndex();
-	if(!between(idx, ui->tw_playlists->count() - 1)){
+	if(!Util::between(idx, ui->tw_playlists->count() - 1)){
 		return nullptr;
 	}
 

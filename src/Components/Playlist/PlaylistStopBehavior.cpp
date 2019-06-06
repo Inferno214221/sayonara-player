@@ -23,7 +23,6 @@
 #include "Utils/Algorithm.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Settings/Settings.h"
-#include "Utils/globals.h"
 
 namespace Algorithm=Util::Algorithm;
 using Playlist::StopBehavior;
@@ -68,7 +67,7 @@ int Playlist::StopBehavior::track_idx_before_stop() const
 
 void Playlist::StopBehavior::set_track_idx_before_stop(int idx)
 {
-	bool valid = between(idx, metadata().count());
+	bool valid = Util::between(idx, metadata().count());
 	if(valid)
 	{
 		m->idx_before_stop = idx;

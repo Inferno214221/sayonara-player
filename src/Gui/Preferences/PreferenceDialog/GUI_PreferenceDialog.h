@@ -58,7 +58,7 @@ class GUI_PreferenceDialog :
 		QList<QAction*> actions(QWidget* parent);
 
 		void register_preference_dialog(Preferences::Base* dialog);
-		void show_preference(const QString& identifier);
+		void show_preference(const QString& identifier) override;
 
 	protected slots:
 		void commit_and_close();

@@ -1,8 +1,5 @@
 project(gui_plugins)
 
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTOMOC ON)
-
 file(GLOB_RECURSE SOURCES . *.cpp)
 
 add_library(${PROJECT_NAME} ${SOURCES})

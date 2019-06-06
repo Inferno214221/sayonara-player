@@ -193,7 +193,7 @@ Id TrackModel::id_by_index(int row) const
 {
 	const MetaDataList& tracks = library()->tracks();
 
-	if(!between(row, tracks)){
+	if(!Util::between(row, tracks)){
 		return -1;
 	}
 
@@ -206,7 +206,7 @@ QString TrackModel::searchable_string(int row) const
 {
 	const MetaDataList& tracks = library()->tracks();
 
-	if(!between(row, tracks)){
+	if(!Util::between(row, tracks)){
 		return QString();
 	}
 
@@ -227,7 +227,7 @@ Cover::Location TrackModel::cover(const IndexSet& indexes) const
 
 	for(int idx : indexes)
 	{
-		if(!between(idx, tracks)){
+		if(!Util::between(idx, tracks)){
 			continue;
 		}
 

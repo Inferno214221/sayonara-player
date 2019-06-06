@@ -132,7 +132,7 @@ void MetaDataList::set_current_track(int idx)
 {
 	m->current_track = -1;
 
-	if( !between(idx, this)) {
+	if( !Util::between(idx, this)) {
 		return;
 	}
 
@@ -267,8 +267,8 @@ MetaDataList& MetaDataList::remove_track(int idx)
 MetaDataList& MetaDataList::remove_tracks(int first, int last)
 {
 
-	if( !between(first, this) ||
-		!between(last, this))
+	if( !Util::between(first, this) ||
+		!Util::between(last, this))
 	{
 		return *this;
 	}

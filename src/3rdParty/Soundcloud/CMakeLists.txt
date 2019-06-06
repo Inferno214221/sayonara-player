@@ -23,8 +23,8 @@ else()
 endif()
 
 target_link_libraries(${PROJECT_NAME}
-	say_db
-	sayonara_gui
+	gui_resources
+	gui_library
 	say_interfaces_library_container
 )
 

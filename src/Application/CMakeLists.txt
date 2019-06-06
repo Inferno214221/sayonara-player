@@ -8,7 +8,11 @@ include_directories(
 file(GLOB_RECURSE SOURCES . *.cpp)
 
 set(APPLICATION_LIBRARIES
-	sayonara_gui
+	gui_player
+	gui_library
+	gui_directories
+	gui_plugins
+	gui_preferences
 
 	say_interfaces_libraryinterface
 	sayonara_components

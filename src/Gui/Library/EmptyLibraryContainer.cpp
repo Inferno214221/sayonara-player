@@ -19,9 +19,9 @@
  */
 
 #include "EmptyLibraryContainer.h"
+#include "GUI_EmptyLibrary.h"
+
 #include "Gui/Utils/Icons.h"
-#include "Gui/Library/GUI_EmptyLibrary.h"
-#include "Gui/Library/EmptyLibraryContainer.h"
 
 #include <QIcon>
 #include <QComboBox>

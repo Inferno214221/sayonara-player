@@ -26,7 +26,6 @@
 #include "Gui/Preferences/PreferenceWidget.h"
 #include "Gui/Preferences/PreferenceAction.h"
 
-#include "Utils/globals.h"
 #include "Utils/Algorithm.h"
 #include "Utils/Message/Message.h"
 #include "Utils/Language/Language.h"
@@ -211,7 +210,7 @@ void GUI_PreferenceDialog::revert()
 
 void GUI_PreferenceDialog::row_changed(int row)
 {
-	if(!between(row, m->pref_widgets)){
+	if(!Util::between(row, m->pref_widgets)){
 		return;
 	}
 

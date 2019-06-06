@@ -36,7 +36,6 @@
 #include "Components/MetaDataInfo/AlbumInfo.h"
 #include "Components/MetaDataInfo/ArtistInfo.h"
 
-#include "Utils/globals.h"
 #include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Language/Language.h"

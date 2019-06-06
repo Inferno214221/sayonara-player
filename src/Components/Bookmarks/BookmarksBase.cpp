@@ -26,7 +26,6 @@
 
 #include "Utils/Utils.h"
 #include "Utils/Algorithm.h"
-#include "Utils/globals.h"
 #include "Utils/MetaData/MetaData.h"
 
 namespace Algorithm=Util::Algorithm;
@@ -194,7 +193,7 @@ Bookmark&BookmarksBase::bookmark(int idx)
 
 bool BookmarksBase::remove(int idx)
 {
-	if(!between(idx, this->count())){
+	if(!Util::between(idx, this->count())){
 		return false;
 	}
 

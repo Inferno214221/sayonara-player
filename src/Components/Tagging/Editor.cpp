@@ -25,7 +25,6 @@
 #include "Components/Covers/CoverLocation.h"
 #include "Database/CoverConnector.h"
 
-#include "Utils/globals.h"
 #include "Utils/Utils.h"
 #include "Utils/Algorithm.h"
 #include "Utils/Set.h"
@@ -183,7 +182,7 @@ const MetaDataList& Editor::metadata() const
 
 bool Editor::apply_regex(const QString& regex, int idx)
 {
-	if(!between(idx, m->v_md)){
+	if(!Util::between(idx, m->v_md)){
 		return false;
 	}
 
@@ -246,7 +245,7 @@ bool Editor::has_changes() const
 
 void Editor::add_genre(int idx, const Genre& genre)
 {
-	if(!between(idx, m->v_md)){
+	if(!Util::between(idx, m->v_md)){
 		return;
 	}
 
@@ -259,7 +258,7 @@ void Editor::add_genre(int idx, const Genre& genre)
 
 void Editor::delete_genre(int idx, const Genre& genre)
 {
-	if(!between(idx, m->v_md)){
+	if(!Util::between(idx, m->v_md)){
 		return;
 	}
 
@@ -271,7 +270,7 @@ void Editor::delete_genre(int idx, const Genre& genre)
 
 void Editor::rename_genre(int idx, const Genre& genre, const Genre& new_genre)
 {
-	if(!between(idx, m->v_md)){
+	if(!Util::between(idx, m->v_md)){
 		return;
 	}
 
@@ -362,7 +361,7 @@ void Editor::update_cover(int idx, const QPixmap& cover)
 		return;
 	}
 
-	if(!between(idx, m->v_md) ){
+	if(!Util::between(idx, m->v_md) ){
 		return;
 	}
 

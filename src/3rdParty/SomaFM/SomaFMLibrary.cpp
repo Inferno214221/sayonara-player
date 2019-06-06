@@ -24,10 +24,10 @@
 #include "SomaFMStation.h"
 
 #include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
 #include "Utils/WebAccess/AsyncWebAccess.h"
 #include "Utils/Parser/StreamParser.h"
-#include "Utils/globals.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Logger/Logger.h"
 
@@ -36,7 +36,8 @@
 
 #include <QMap>
 #include <QSettings>
-#include <algorithm>
+
+namespace Algorithm=Util::Algorithm;
 
 struct SomaFM::Library::Private
 {
@@ -175,7 +176,7 @@ bool SomaFM::Library::create_playlist_from_playlist(int idx)
 	SomaFM::Station station = m->station_map[m->requested_station];
 	QStringList urls = station.urls();
 
-	if( !between(idx, urls)) {
+	if( !Util::between(idx, urls)) {
 		return false;
 	}
 
@@ -267,5 +268,5 @@ void SomaFM::Library::sort_stations(QList<SomaFM::Station>& stations)
 		return s1.name() < s2.name();
 	};
 
-	std::sort(stations.begin(), stations.end(), lambda);
+	Algorithm::sort(stations, lambda);
 }

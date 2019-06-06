@@ -1,5 +1,10 @@
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTOMOC ON)
+project(gui_library)
 
-file(GLOB_RECURSE SRC . *.cpp)
-target_sources(${PROJECT_NAME} PRIVATE ${SRC})
+file(GLOB_RECURSE SOURCES . *.cpp)
+
+add_library(${PROJECT_NAME} ${SOURCES})
+target_link_libraries(${PROJECT_NAME}
+	gui_importdialog
+	gui_infodialog
+	say_interfaces_library_container
+)

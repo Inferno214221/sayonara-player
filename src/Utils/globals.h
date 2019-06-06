@@ -45,22 +45,25 @@
 #define SAYONARA_ORANGE_STR QString("#e8841a")
 #define SAYONARA_ORANGE_COL QColor(232, 132, 26)
 
-template<typename TINT, typename T>
-typename std::enable_if<std::is_pointer<T>::value, bool>::type
-between( TINT idx, const T& cont){
-	return (idx >= 0 && idx < static_cast<TINT>(cont->size()));
-}
+namespace Util
+{
+	template<typename TINT, typename T>
+	typename std::enable_if<std::is_pointer<T>::value, bool>::type
+	between( TINT idx, const T& cont){
+		return (idx >= 0 && idx < static_cast<TINT>(cont->size()));
+	}
 
-template<typename TINT, typename T>
-typename std::enable_if<std::is_class<T>::value, bool>::type
-between( TINT idx, const T& cont){
-	return (idx >= 0 && idx < static_cast<TINT>(cont.size()));
-}
+	template<typename TINT, typename T>
+	typename std::enable_if<std::is_class<T>::value, bool>::type
+	between( TINT idx, const T& cont){
+		return (idx >= 0 && idx < static_cast<TINT>(cont.size()));
+	}
 
-template<typename TINT>
-typename std::enable_if<std::is_integral<TINT>::value, bool>::type
-between( TINT idx, TINT max){
-	return (idx >= 0 && idx < max);
+	template<typename TINT>
+	typename std::enable_if<std::is_integral<TINT>::value, bool>::type
+	between( TINT idx, TINT max){
+		return (idx >= 0 && idx < max);
+	}
 }
 
 #endif /* GLOBALS_H_ */

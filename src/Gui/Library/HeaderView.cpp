@@ -18,7 +18,6 @@
  */
 
 #include "HeaderView.h"
-#include "Utils/globals.h"
 #include "Utils/Algorithm.h"
 
 #include <QFontMetrics>
@@ -77,7 +76,7 @@ void HeaderView::set_column_headers(const ColumnHeaderList& column_headers, cons
 		}
 
 		bool is_shown = true;
-		if(between(i, shown_actions)){
+		if(Util::between(i, shown_actions)){
 			is_shown = shown_actions[i];
 		}
 
@@ -133,7 +132,7 @@ BoolList HeaderView::shown_columns() const
 
 ColumnHeaderPtr HeaderView::column_header(int idx)
 {
-	if(!between(idx, m->column_headers)){
+	if(!Util::between(idx, m->column_headers)){
 		return nullptr;
 	}
 

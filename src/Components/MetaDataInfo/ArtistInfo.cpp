@@ -25,7 +25,6 @@
 
 #include "Utils/Set.h"
 #include "Utils/Algorithm.h"
-#include "Utils/globals.h"
 #include "Utils/Language/Language.h"
 #include "Utils/SimilarArtists/SimilarArtists.h"
 #include "Utils/MetaData/Artist.h"

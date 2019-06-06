@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBRARYCONTAINER_H
-#define LIBRARYCONTAINER_H
+#ifndef LIBRARYCONTAINERINTERFACE_H
+#define LIBRARYCONTAINERINTERFACE_H
 
 #include "Utils/Pimpl.h"
 
@@ -66,6 +66,8 @@ namespace Library
 			 * @return name
 			 */
 			virtual QString				name() const=0;
+
+			virtual void				set_name(const QString& name);
 
 			/**
 			 * @brief Should return the translated name displayed in the library view combobox
@@ -115,6 +117,8 @@ namespace Library
 			 * @return true if ui has been initialized, false else
 			 */
 			bool						is_initialized() const;
+
+			virtual bool				is_local() const;
 
 			virtual	void				show();
 

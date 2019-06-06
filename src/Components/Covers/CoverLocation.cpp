@@ -23,15 +23,15 @@
 #include "CoverFetchManager.h"
 #include "LocalCoverSearcher.h"
 
-#include "Utils/Tagging/TaggingCover.h"
+#include "Utils/globals.h"
+#include "Utils/Set.h"
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/MetaData/Album.h"
 #include "Utils/MetaData/Artist.h"
-#include "Utils/globals.h"
+#include "Utils/Tagging/TaggingCover.h"
 #include "Utils/Logger/Logger.h"
-#include "Utils/Set.h"
 
 #include <QDir>
 #include <QUrl>
@@ -45,7 +45,7 @@ using Cover::Location;
 using namespace Cover::Fetcher;
 using Cover::StringMap;
 
-namespace FileUtils=::Util::File;
+namespace File=::Util::File;
 
 struct Location::Private
 {
@@ -163,7 +163,7 @@ Location Location::invalid_location()
 
 bool Location::is_invalid(const QString& cover_path)
 {
-	QString path1 = FileUtils::clean_filename(cover_path);
+	QString path1 = File::clean_filename(cover_path);
 	QString path2 = invalid_location().preferred_path();
 
 	return (path1 == path2);
@@ -296,7 +296,7 @@ Location Location::cover_location(const MetaData& md, bool check_for_coverart)
 
 	if(!md.cover_download_url().isEmpty())
 	{
-		QString extension = FileUtils::get_file_extension(md.cover_download_url());
+		QString extension = File::get_file_extension(md.cover_download_url());
 
 		QString cover_token = Cover::Utils::calc_cover_token(md.artist(), md.album());
 		QString cover_path = Cover::Utils::cover_directory(cover_token + "." + extension);
@@ -372,7 +372,7 @@ QString Location::preferred_path() const
 	// first search for cover in track
 	if(has_audio_file_source())
 	{
-		bool target_exists = FileUtils::exists(this->audio_file_target());
+		bool target_exists = File::exists(this->audio_file_target());
 		if(!target_exists)
 		{
 			QPixmap pm = Tagging::Covers::extract_cover(this->audio_file_source());
@@ -415,7 +415,7 @@ const QStringList& Location::search_urls() const
 
 QString Location::search_url(int idx) const
 {
-	if(!between(idx, m->search_urls)){
+	if(!Util::between(idx, m->search_urls)){
 		return QString();
 	}
 
@@ -471,7 +471,7 @@ bool Location::has_audio_file_source() const
 	(
 		(m->audio_file_target.size() > 0) &&
 		(m->audio_file_source.size() > 0) &&
-		(FileUtils::exists(m->audio_file_source))
+		(File::exists(m->audio_file_source))
 	);
 }
 
@@ -496,7 +496,7 @@ bool Location::set_audio_file_source(const QString& audio_filepath, const QStrin
 	}
 
 	QString dir, filename;
-	FileUtils::split_filename(cover_path, dir, filename);
+	File::split_filename(cover_path, dir, filename);
 	filename.prepend("fromtag_");
 
 	m->audio_file_source = audio_filepath;

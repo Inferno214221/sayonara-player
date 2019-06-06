@@ -21,9 +21,9 @@
 #include "Equalizer.h"
 #include "Components/Engine/Utils.h"
 
+#include "Utils/globals.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/EqualizerSetting.h"
-#include "Utils/globals.h"
 
 #include <QList>
 #include <QString>
@@ -49,7 +49,7 @@ Equalizer::Equalizer()
 	QList<EqualizerSetting> presets = GetSetting(Set::Eq_List);
 	presets.push_front(EqualizerSetting());
 
-	if( !between(last_idx, presets)){
+	if( !Util::between(last_idx, presets)){
 		last_idx = 0;
 	}
 

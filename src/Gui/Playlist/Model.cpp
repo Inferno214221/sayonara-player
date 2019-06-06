@@ -112,7 +112,7 @@ QVariant PlaylistItemModel::data(const QModelIndex& index, int role) const
 	int row = index.row();
 	int col = index.column();
 
-	if ( !between(row, m->pl->count())) {
+	if ( !Util::between(row, m->pl->count())) {
 		return QVariant();
 	}
 
@@ -208,7 +208,7 @@ Qt::ItemFlags PlaylistItemModel::flags(const QModelIndex &index) const
 		return (Qt::ItemIsEnabled | Qt::ItemIsDropEnabled);
 	}
 
-	if(between(row, m->pl->count()))
+	if(Util::between(row, m->pl->count()))
 	{
 		const MetaData& md = metadata(row);
 		if(md.is_disabled){
@@ -448,14 +448,14 @@ bool PlaylistItemModel::has_local_media(const IndexSet& rows) const
 
 void PlaylistItemModel::set_drag_index(int drag_index)
 {
-	if(between(m->drag_index, rowCount()))
+	if(Util::between(m->drag_index, rowCount()))
 	{
 		emit dataChanged(index(m->drag_index, 0), index(m->drag_index, columnCount() - 1));
 	}
 
 	m->drag_index = drag_index;
 
-	if(between(drag_index, rowCount()))
+	if(Util::between(drag_index, rowCount()))
 	{
 		emit dataChanged(index(drag_index, 0), index(drag_index, columnCount() - 1));
 	}

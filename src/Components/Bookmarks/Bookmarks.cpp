@@ -20,6 +20,7 @@
 
 #include "Bookmark.h"
 #include "Bookmarks.h"
+
 #include "Utils/globals.h"
 #include "Utils/MetaData/MetaData.h"
 
@@ -106,7 +107,7 @@ bool Bookmarks::remove(int idx)
 
 bool Bookmarks::jump_to(int idx)
 {
-	if(!between(idx, this->count()) )
+	if(!Util::between(idx, this->count()) )
 	{
 		return false;
 	}
@@ -126,7 +127,7 @@ bool Bookmarks::jump_to(int idx)
 
 bool Bookmarks::jump_next()
 {
-	if( !between(m->next_idx, this->count()) )
+	if( !Util::between(m->next_idx, this->count()) )
 	{
 		emit sig_next_changed(Bookmark());
 		return false;
@@ -189,14 +190,14 @@ void Bookmarks::pos_changed_ms(MilliSeconds pos_ms)
 		}
 	}
 
-	if( between(m->prev_idx, this->count()) ){
+	if( Util::between(m->prev_idx, this->count()) ){
 		emit sig_prev_changed(this->bookmark(m->prev_idx));
 	}
 	else{
 		emit sig_prev_changed(Bookmark());
 	}
 
-	if( between(m->next_idx, this->count()) ){
+	if( Util::between(m->next_idx, this->count()) ){
 		emit sig_next_changed(this->bookmark(m->next_idx));
 	}
 	else{
@@ -236,8 +237,8 @@ bool Bookmarks::set_loop(bool b)
 
 	if(b)
 	{
-		if( between(m->prev_idx, this->count()) &&
-			between(m->next_idx, this->count()) )
+		if( Util::between(m->prev_idx, this->count()) &&
+			Util::between(m->next_idx, this->count()) )
 		{
 			m->loop_start = bookmark(m->prev_idx).timestamp();
 			m->loop_end = bookmark(m->next_idx).timestamp();

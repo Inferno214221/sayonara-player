@@ -22,7 +22,6 @@
 #include "PlaylistHandler.h"
 #include "PlaylistDBWrapper.h"
 
-#include "Utils/globals.h"
 #include "Utils/Utils.h"
 #include "Utils/Algorithm.h"
 #include "Utils/Playlist/CustomPlaylist.h"
@@ -129,7 +128,7 @@ Loader::Loader(QObject* parent) :
 		// but this was the last one
 
 		if(pl.id() == saved_playlist_id){
-			if( between(saved_track_idx, pl) )
+			if( Util::between(saved_track_idx, pl) )
 			{
 				if(load_last_track)
 				{
@@ -177,7 +176,7 @@ CustomPlaylists Loader::get_playlists() const
 
 int	Loader::get_last_playlist_idx() const
 {
-	if( !between(m->last_playlist_idx, m->playlists))
+	if( !Util::between(m->last_playlist_idx, m->playlists))
 	{
 		return -1;
 	}
@@ -188,12 +187,12 @@ int	Loader::get_last_playlist_idx() const
 int	Loader::get_last_track_idx() const
 {
 	int n_tracks;
-	if(!between(m->last_playlist_idx, m->playlists.size())){
+	if(!Util::between(m->last_playlist_idx, m->playlists.size())){
 		return -1;
 	}
 
 	n_tracks = m->playlists[m->last_playlist_idx].count();
-	if(!between(m->last_track_idx, n_tracks))
+	if(!Util::between(m->last_track_idx, n_tracks))
 	{
 		 return -1;
 	}

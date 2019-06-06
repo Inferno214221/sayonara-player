@@ -19,6 +19,7 @@
  */
 
 #include "Interfaces/LibraryInterface/LibraryContainer/LibraryContainer.h"
+
 #include "Utils/Settings/Settings.h"
 #include "Utils/Settings/SettingNotifier.h"
 
@@ -45,6 +46,8 @@ Container::Container(QObject* parent) :
 }
 
 Container::~Container() {}
+
+void Container::set_name(const QString& name) { Q_UNUSED(name); }
 
 QString Container::display_name() const
 {
@@ -76,6 +79,10 @@ bool Container::is_initialized() const
 	return m->initialized;
 }
 
+bool Container::is_local() const
+{
+	return false;
+}
 
 void Container::language_changed()
 {

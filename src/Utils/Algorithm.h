@@ -1,6 +1,8 @@
 #ifndef ALGORITHM_H
 #define ALGORITHM_H
 
+#include "globals.h"
+#include "typedefs.h"
 #include <algorithm>
 
 namespace Util

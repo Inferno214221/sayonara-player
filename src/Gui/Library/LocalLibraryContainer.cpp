@@ -85,11 +85,10 @@ void LocalLibraryContainer::init_ui()
 	m->ui = new GUI_LocalLibrary(m->library.id());
 }
 
-LibraryId LocalLibraryContainer::id()
+bool LocalLibraryContainer::is_local() const
 {
-	return m->library.id();
+	return true;
 }
-
 
 QFrame* LocalLibraryContainer::header() const
 {

@@ -21,11 +21,10 @@
 #include "LibraryListModel.h"
 #include "ChangeOperations.h"
 #include "Components/Library/LibraryManager.h"
-#include "Utils/Library/LibraryInfo.h"
 #include "Interfaces/LibraryInterface/LibraryPluginHandler.h"
 
-#include "Utils/globals.h"
 #include "Utils/Algorithm.h"
+#include "Utils/Library/LibraryInfo.h"
 
 #include <QList>
 
@@ -105,7 +104,7 @@ void LibraryListModel::append_row(const LibName& name, const LibPath& path)
 
 void LibraryListModel::rename_row(int row, const LibName& new_name)
 {
-	if(!between(row, m->shown_library_info)) {
+	if(!Util::between(row, m->shown_library_info)) {
 		return;
 	}
 
@@ -118,7 +117,7 @@ void LibraryListModel::rename_row(int row, const LibName& new_name)
 
 void LibraryListModel::change_path(int row, const LibPath& path)
 {
-	if(!between(row, m->shown_library_info)) {
+	if(!Util::between(row, m->shown_library_info)) {
 		return;
 	}
 
@@ -131,11 +130,11 @@ void LibraryListModel::change_path(int row, const LibPath& path)
 
 void LibraryListModel::move_row(int from, int to)
 {
-	if(!between(from, m->shown_library_info)) {
+	if(!Util::between(from, m->shown_library_info)) {
 		return;
 	}
 
-	if(!between(to, m->shown_library_info)) {
+	if(!Util::between(to, m->shown_library_info)) {
 		return;
 	}
 
@@ -147,7 +146,7 @@ void LibraryListModel::move_row(int from, int to)
 
 void LibraryListModel::remove_row(int row)
 {
-	if(!between(row, m->shown_library_info)) {
+	if(!Util::between(row, m->shown_library_info)) {
 		return;
 	}
 
@@ -185,7 +184,7 @@ QStringList LibraryListModel::all_paths() const
 
 QString LibraryListModel::name(int idx) const
 {
-	if(between(idx, m->shown_library_info))
+	if(Util::between(idx, m->shown_library_info))
 	{
 		return m->shown_library_info.at(idx).name();
 	}
@@ -195,7 +194,7 @@ QString LibraryListModel::name(int idx) const
 
 QString LibraryListModel::path(int idx) const
 {
-	if(between(idx, m->shown_library_info))
+	if(Util::between(idx, m->shown_library_info))
 	{
 		return m->shown_library_info.at(idx).path();
 	}

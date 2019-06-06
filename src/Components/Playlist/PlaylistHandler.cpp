@@ -31,21 +31,19 @@
 #include "Components/PlayManager/PlayManager.h"
 #include "Database/Connector.h"
 
-#include "Utils/globals.h"
+#include "Utils/Set.h"
 #include "Utils/Algorithm.h"
 #include "Utils/Parser/PlaylistParser.h"
 #include "Utils/Playlist/CustomPlaylist.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
-#include "Utils/Set.h"
-
 
 #include <memory>
 
 namespace Algorithm=Util::Algorithm;
 
-#define CHECK_IDX_VOID(idx) if(!between(idx, m->playlists)){ return; }
-#define CHECK_IDX_RET(idx, ret) if(!between(idx, m->playlists)){ return ret; }
+#define CHECK_IDX_VOID(idx) if(!Util::between(idx, m->playlists)){ return; }
+#define CHECK_IDX_RET(idx, ret) if(!Util::between(idx, m->playlists)){ return ret; }
 
 using PlaylistCollection=QList<PlaylistPtr>;
 using Playlist::Handler;
@@ -342,7 +340,7 @@ void Handler::previous()
 
 void Handler::change_track(int track_idx, int playlist_idx)
 {
-	if( !between(playlist_idx, m->playlists) ) {
+	if( !Util::between(playlist_idx, m->playlists) ) {
 		playlist_idx = active_playlist()->index();
 	}
 
@@ -375,7 +373,7 @@ void Handler::set_active_idx(int idx)
 		m->active_playlist_idx = idx;
 	}
 
-	else if(between(idx, m->playlists)){
+	else if(Util::between(idx, m->playlists)){
 		m->active_playlist_idx = idx;
 	}
 
@@ -399,9 +397,9 @@ PlaylistPtr Handler::active_playlist()
 	}
 
 	// assure valid idx
-	if( !between(m->active_playlist_idx, m->playlists) )
+	if( !Util::between(m->active_playlist_idx, m->playlists) )
 	{
-		if(between(m->current_playlist_idx, m->playlists)){
+		if(Util::between(m->current_playlist_idx, m->playlists)){
 			m->active_playlist_idx = m->current_playlist_idx;
 		}
 
@@ -547,7 +545,7 @@ PlaylistPtr Handler::playlist(int idx, PlaylistPtr fallback) const
 
 int Handler::exists(const QString& name) const
 {
-	if( name.isEmpty() && between(m->current_playlist_idx, m->playlists)) {
+	if( name.isEmpty() && Util::between(m->current_playlist_idx, m->playlists)) {
 		return m->current_playlist_idx;
 	}
 

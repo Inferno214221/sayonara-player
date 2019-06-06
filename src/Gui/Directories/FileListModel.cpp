@@ -22,7 +22,6 @@
 #include "Components/Directories/DirectoryReader.h"
 #include "Components/Library/LibraryManager.h"
 
-#include "Utils/globals.h"
 #include "Utils/Utils.h"
 #include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
@@ -192,7 +191,7 @@ int FileListModel::rowCount(const QModelIndex &parent) const
 QVariant FileListModel::data(const QModelIndex &index, int role) const
 {
 	int row = index.row();
-	if(!between(row, m->files)) {
+	if(!Util::between(row, m->files)) {
 		return QVariant();
 	}
 
@@ -246,7 +245,7 @@ QMimeData* FileListModel::mimeData(const QModelIndexList& indexes) const
 	for(const QModelIndex& idx : indexes)
 	{
 		int row = idx.row();
-		if(!between(row, m->files)){
+		if(!Util::between(row, m->files)){
 			continue;
 		}
 

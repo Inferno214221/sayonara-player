@@ -234,7 +234,7 @@ QMimeData* SomaFM::StationModel::mimeData(const QModelIndexList& indexes) const
 		}
 
 		int row = idx.row();
-		if(!between(row, m->stations)){
+		if(!Util::between(row, m->stations)){
 			continue;
 		}
 

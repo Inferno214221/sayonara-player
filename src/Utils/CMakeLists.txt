@@ -1,4 +1,4 @@
-project(say_utils)
+project(sayonara_utils)
 
 set(CMAKE_AUTOMOC OFF)
 
