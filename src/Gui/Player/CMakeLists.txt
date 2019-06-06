@@ -1,0 +1,5 @@
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOMOC ON)
+
+file(GLOB_RECURSE SRC . *.cpp)
+target_sources(${PROJECT_NAME} PRIVATE ${SRC})
