@@ -1,3 +1,5 @@
+set(CMAKE_AUTOUIC ON)
+
 add_subdirectory(Covers)
 add_subdirectory(Directories)
 add_subdirectory(ImportDialog)

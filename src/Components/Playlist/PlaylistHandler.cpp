@@ -84,7 +84,7 @@ Handler::~Handler()	= default;
 
 void Handler::current_track_changed(int track_index)
 {
-	Q_UNUSED(index)
+	Q_UNUSED(track_index)
 
 	PlaylistPtr pl = active_playlist();
 
@@ -146,10 +146,10 @@ PlaylistPtr Handler::new_playlist(PlaylistType type, QString name)
 	int index = m->playlists.count();
 	if(type == PlaylistType::Stream)
 	{
-		return PlaylistPtr(new Playlist::Playlist(index, PlaylistType::Stream, name));
+		return PlaylistPtr(new ::Playlist::Playlist(index, PlaylistType::Stream, name));
 	}
 
-	return PlaylistPtr(new Playlist::Playlist(index, PlaylistType::Std, name));
+	return PlaylistPtr(new ::Playlist::Playlist(index, PlaylistType::Std, name));
 }
 
 
@@ -528,7 +528,7 @@ PlaylistConstPtr Handler::playlist(int idx) const
 {
 	CHECK_IDX_RET(idx, nullptr)
 
-	return m->playlists[idx];
+	return std::const_pointer_cast<const Playlist>(m->playlists[idx]);
 }
 
 PlaylistPtr Handler::playlist(int idx, PlaylistPtr fallback) const

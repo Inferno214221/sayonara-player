@@ -16,22 +16,10 @@ set(APPLICATION_LIBRARIES
 	gui_somafm
 	gui_soundcloud
 
-	say_interfaces_libraryinterface
 	sayonara_components
-)
 
-if(NOT WIN32 OR NOT DEFINED WIN32)
-	set(APPLICATION_LIBRARIES
-	${APPLICATION_LIBRARIES}
-	say_comp_dbus
-	)
-else()
-	set(APPLICATION_LIBRARIES
-		${APPLICATION_LIBRARIES}
-		sayonara_somafm
-		sayonara_soundcloud
-	)
-endif()
+	interface_library
+)
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES})
 target_link_libraries(${PROJECT_NAME}

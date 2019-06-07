@@ -24,6 +24,7 @@
 #include "Gui/Soundcloud/GUI_SoundcloudLibrary.h"
 #include "Components/Streaming/Soundcloud/SoundcloudLibrary.h"
 
+#include <qglobal.h>
 #include <QPixmap>
 
 static void sc_init_icons()

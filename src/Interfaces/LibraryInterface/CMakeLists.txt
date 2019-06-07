@@ -1,4 +1,4 @@
-project(say_interfaces_libraryinterface)
+project(interface_library)
 
 add_subdirectory(LibraryContainer)
 

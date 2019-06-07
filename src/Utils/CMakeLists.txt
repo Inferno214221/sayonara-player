@@ -11,7 +11,6 @@ qt5_wrap_cpp(MOC_FILES
 	Settings/SettingNotifier.h
 )
 
-
 pkg_check_modules(ZLIB REQUIRED zlib)
 include_directories(${ZLIB_INCLUDE_DIRS})
 
@@ -26,9 +25,10 @@ target_link_libraries(${PROJECT_NAME}
 	Qt5::Core
 	Qt5::Network
 	Qt5::Xml
-	Qt5::DBus
 	Qt5::Gui
-	tag
+	Qt5::DBus
+
+	${TAGLIB_LIBRARIES}
 	${ZLIB_LIBRARIES}
 )
 

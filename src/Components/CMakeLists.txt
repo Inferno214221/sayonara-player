@@ -1,13 +1,13 @@
 project(sayonara_components)
 
-add_subdirectory(DBus)
-add_subdirectory(Engine)
+set(CMAKE_AUTOUIC OFF)
 
 file(GLOB_RECURSE SOURCES Bookmarks *.cpp)
 file(GLOB_RECURSE SOURCES Broadcasting *.cpp)
 file(GLOB_RECURSE SOURCES Converter *.cpp)
 file(GLOB_RECURSE SOURCES Covers *.cpp)
 file(GLOB_RECURSE SOURCES Directories *.cpp)
+file(GLOB_RECURSE SOURCES Engine *.cpp)
 file(GLOB_RECURSE SOURCES Library *.cpp)
 file(GLOB_RECURSE SOURCES Lyrics *.cpp)
 file(GLOB_RECURSE SOURCES MetaDataInfo *.cpp)
@@ -22,11 +22,19 @@ file(GLOB_RECURSE SOURCES Streaming *.cpp)
 file(GLOB_RECURSE SOURCES Tagging *.cpp)
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES})
+add_subdirectory(DBus)
 
 target_link_libraries(${PROJECT_NAME}
 	say_db
 	say_interfaces_raw_sound_receiver
-	sayonara_engine
+	interface_notifications
+	comp_dbus
+
+	${GSTREAMER_LIBRARIES}
+	${GSTREAMER_BASE_LIBRARIES}
+	${GSTREAMER_BASE_APP_LIBRARIES}
+
+	Qt5::DBus
 )
 
 if( WITH_COTIRE )

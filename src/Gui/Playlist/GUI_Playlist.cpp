@@ -362,7 +362,7 @@ void GUI_Playlist::playlist_added(PlaylistPtr pl)
 	connect(plv, &PlaylistView::sig_double_clicked, this, &GUI_Playlist::double_clicked);
 	connect(plv, &PlaylistView::sig_delete_tracks, this, &GUI_Playlist::delete_tracks_clicked);
 	connect(plv, &PlaylistView::sig_bookmark_pressed, this, &GUI_Playlist::bookmark_selected);
-	connect(pl, &Playlist::Playlist::sig_items_changed, this, &GUI_Playlist::playlist_changed);
+	connect(pl.get(), &Playlist::Playlist::sig_items_changed, this, &GUI_Playlist::playlist_changed);
 
 	Handler::instance()->set_current_index(idx);
 }

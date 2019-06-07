@@ -1,5 +1,6 @@
 project(say_db)
 
+# No moc files in database
 set(CMAKE_AUTOMOC OFF)
 
 file(GLOB_RECURSE SOURCES . *.cpp)

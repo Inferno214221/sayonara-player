@@ -85,7 +85,7 @@ PlaylistItemModel::PlaylistItemModel(PlaylistPtr pl, QObject* parent) :
 {
 	m = Pimpl::make<Private>(pl);
 
-	connect(m->pl, &Playlist::Playlist::sig_items_changed, this, &PlaylistItemModel::playlist_changed);
+	connect(m->pl.get(), &Playlist::Playlist::sig_items_changed, this, &PlaylistItemModel::playlist_changed);
 
 	ListenSettingNoCall(Set::PL_EntryLook, PlaylistItemModel::look_changed);
 

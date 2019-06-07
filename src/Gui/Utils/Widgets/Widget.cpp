@@ -79,20 +79,6 @@ void MainWindow::raise()
 	this->setWindowFlags((Qt::WindowFlags) (windowFlags() & ~Qt::WindowMinimized));
 	this->activateWindow();
 	this->showNormal();
-
-	/*QDBusMessage msg = QDBusMessage::createMethodCall(
-		"com.canonical.AppMenu.Registrar",
-		"/com/canonical/AppMenu/Registrar",
-		"com.canonical.AppMenu.Registrar",
-		"RegisterWindow");
-
-	QList<QVariant> args;
-	QDBusObjectPath obj_path("/Menubar/1");
-	args << QVariant::fromValue(static_cast<uint32_t>(winId()))
-		 << QVariant::fromValue(obj_path);
-
-	msg.setArguments(args);
-	QDBusConnection::sessionBus().send(msg);*/
 }
 
 void MainWindow::showEvent(QShowEvent* e)

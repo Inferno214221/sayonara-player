@@ -1,8 +1,9 @@
-project(gui_covers)
+project(gui_soundcloud)
 
 file(GLOB_RECURSE SOURCES . *.cpp)
+qt5_add_resources(RESOURCES SoundcloudIcons.qrc)
 
-add_library(${PROJECT_NAME} ${SOURCES})
+add_library(${PROJECT_NAME} STATIC ${SOURCES} ${RESOURCES})
 target_link_libraries(${PROJECT_NAME}
 	gui_utils
 )
@@ -10,3 +11,4 @@ target_link_libraries(${PROJECT_NAME}
 if( WITH_COTIRE )
 	cotire(${PROJECT_NAME})
 endif()
+
