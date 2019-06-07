@@ -42,7 +42,7 @@ set_source_files_properties(${DBUS_SOURCES} PROPERTIES SKIP_AUTOGEN ON)
 add_library(${PROJECT_NAME} STATIC ${SOURCES} ${DBUS_SOURCES})
 target_link_libraries(${PROJECT_NAME}
 	Qt5::Gui
-	say_interfaces_notifications
+	interface_notifications
 )
 
 if( WITH_COTIRE )

@@ -1,4 +1,4 @@
-project(say_interfaces_library_container)
+project(interface_librarycontainer)
 
 set(SOURCES
 	LibraryContainer.cpp

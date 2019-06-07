@@ -15,7 +15,8 @@ endif()
 
 target_link_libraries(${PROJECT_NAME}
 	gui_utils
-    say_interfaces_library_container
+    interface_librarycontainer
+    interface_notifications
 )
 
 if( WITH_COTIRE )

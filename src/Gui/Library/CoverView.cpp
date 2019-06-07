@@ -199,7 +199,7 @@ void CoverView::init_context_menu()
 	}
 
 	CoverViewContextMenu* cm = new CoverViewContextMenu(this);
-	ItemView::init_context_menu_custom_type(cm);
+	ItemView::init_custom_context_menu(cm);
 
 	connect(cm, &CoverViewContextMenu::sig_zoom_changed, this, &CoverView::change_zoom);
 	connect(cm, &CoverViewContextMenu::sig_sorting_changed, this, &CoverView::change_sortorder);

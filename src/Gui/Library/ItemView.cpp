@@ -158,26 +158,28 @@ void ItemView::selected_items_changed(const QItemSelection& selected, const QIte
 
 void ItemView::init_context_menu()
 {
-	init_context_menu_custom_type(nullptr);
+	init_custom_context_menu(nullptr);
 }
 
 // Right click stuff
-void ItemView::init_context_menu_custom_type(LibraryContextMenu* menu)
+void ItemView::init_custom_context_menu(LibraryContextMenu* menu)
 {
 	if(m->context_menu){
 		return;
 	}
 
-	if(!menu)
-	{
-		m->context_menu = new LibraryContextMenu(this);
-		m->merge_menu = new MergeMenu(m->context_menu);
-
-		connect(m->merge_menu, &MergeMenu::sig_merge_triggered, this, &ItemView::merge_action_triggered);
+	if(menu) {
+		m->context_menu = menu;
 	}
 
 	else {
-		m->context_menu = menu;
+		m->context_menu = new LibraryContextMenu(this);
+	}
+
+	if(!m->merge_menu)
+	{
+		m->merge_menu = new MergeMenu(m->context_menu);
+		connect(m->merge_menu, &MergeMenu::sig_merge_triggered, this, &ItemView::merge_action_triggered);
 	}
 
 	QAction* after_edit_action = m->context_menu->get_action_after(LibraryContextMenu::EntryEdit);

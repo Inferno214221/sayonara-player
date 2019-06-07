@@ -1,4 +1,4 @@
-project(say_interfaces_notifications)
+project(interface_notifications)
 
 set(SOURCES
 	NotificationInterface.cpp
@@ -9,7 +9,6 @@ add_library(${PROJECT_NAME} STATIC ${SOURCES})
 target_link_libraries(${PROJECT_NAME}
 	sayonara_utils
 )
-
 
 if( WITH_COTIRE )
     cotire(${PROJECT_NAME})

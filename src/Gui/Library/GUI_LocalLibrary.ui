@@ -35,7 +35,7 @@
    <item row="1" column="0">
     <widget class="QStackedWidget" name="stacked_widget_reload">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="page">
       <layout class="QGridLayout" name="gridLayout_2">
@@ -537,9 +537,6 @@
            <width>0</width>
            <height>100</height>
           </size>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">padding: 10px;</string>
          </property>
          <property name="text">
           <string notr="true">Reload Library</string>

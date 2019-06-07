@@ -25,7 +25,7 @@ endif()
 target_link_libraries(${PROJECT_NAME}
 	gui_resources
 	gui_library
-	say_interfaces_library_container
+	interface_librarycontainer
 )
 
 if( WITH_COTIRE )

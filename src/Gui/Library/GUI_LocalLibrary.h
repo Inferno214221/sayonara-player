@@ -74,7 +74,9 @@ namespace Library
 		void language_changed() override;
 
 	private:
-		void check_status_bar(bool is_reloading);
+		void check_view_state(bool is_reloading);
+		void check_reload_status(bool is_reloading);
+		void check_file_extension_bar(bool is_reloading);
 
 	private slots:
 		void tracks_loaded();
@@ -86,6 +88,7 @@ namespace Library
 
 		void genre_selection_changed(const QModelIndex& index);
 
+		void reload_library_deep_requested();
 		void reload_library_requested();
 		void reload_library_requested_with_quality(ReloadQuality quality);
 		void reload_library_accepted(ReloadQuality quality);
