@@ -1,4 +1,4 @@
-/* GUI_Proxy.cpp */
+/* GUI_ProxyPreferences.cpp */
 
 /* Copyright (C) 2011-2019  Lucio Carreras
  *
@@ -18,19 +18,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
-#include "GUI_Proxy.h"
-#include "ui_GUI_Proxy.h"
+#include "GUI_ProxyPreferences.h"
+#include "ui_GUI_ProxyPreferences.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Utils.h"
 #include "Utils/Crypt.h"
 
-GUI_Proxy::GUI_Proxy(const QString& identifier) :
+GUI_ProxyPreferences::GUI_ProxyPreferences(const QString& identifier) :
 	Base(identifier)
 {}
 
-GUI_Proxy::~GUI_Proxy()
+GUI_ProxyPreferences::~GUI_ProxyPreferences()
 {
 	if(ui)
 	{
@@ -38,26 +36,26 @@ GUI_Proxy::~GUI_Proxy()
 	}
 }
 
-void GUI_Proxy::init_ui()
+void GUI_ProxyPreferences::init_ui()
 {
 	setup_parent(this, &ui);
 
-	connect(ui->cb_active, &QCheckBox::toggled, this, &GUI_Proxy::active_toggled);
+	connect(ui->cb_active, &QCheckBox::toggled, this, &GUI_ProxyPreferences::active_toggled);
 
 	revert();
 }
 
-void GUI_Proxy::retranslate_ui()
+void GUI_ProxyPreferences::retranslate_ui()
 {
 	ui->retranslateUi(this);
 }
 
-QString GUI_Proxy::action_name() const
+QString GUI_ProxyPreferences::action_name() const
 {
 	return tr("Proxy");
 }
 
-bool GUI_Proxy::commit()
+bool GUI_ProxyPreferences::commit()
 {
 	SetSetting(Set::Proxy_Active, ui->cb_active->isChecked());
 	SetSetting(Set::Proxy_Username, ui->le_username->text());
@@ -80,7 +78,7 @@ bool GUI_Proxy::commit()
 	return true;
 }
 
-void GUI_Proxy::revert()
+void GUI_ProxyPreferences::revert()
 {
 	bool active = GetSetting(Set::Proxy_Active);
 
@@ -97,7 +95,7 @@ void GUI_Proxy::revert()
 	active_toggled(active);
 }
 
-void GUI_Proxy::active_toggled(bool active)
+void GUI_ProxyPreferences::active_toggled(bool active)
 {
 	ui->le_host->setEnabled(active);
 	ui->le_password->setEnabled(active);

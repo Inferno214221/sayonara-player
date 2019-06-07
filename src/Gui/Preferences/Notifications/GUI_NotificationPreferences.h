@@ -1,4 +1,4 @@
-/* GUI_BroadcastSetup.h */
+/* GUI_NotificationPreferences.h */
 
 /* Copyright (C) 2011-2019  Lucio Carreras
  *
@@ -18,40 +18,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GUI_BROADCASTSETUP_H
-#define GUI_BROADCASTSETUP_H
+#ifndef GUI_NOTIFICATION_PREFERENCES_H
+#define GUI_NOTIFICATION_PREFERENCES_H
 
 #include "Gui/Preferences/PreferenceWidget.h"
 
-UI_FWD(GUI_BroadcastSetup)
+UI_FWD(GUI_NotificationPreferences)
 
-class GUI_BroadcastSetup :
+class NotificationHandler;
+
+class GUI_NotificationPreferences :
 		public Preferences::Base
 {
 	Q_OBJECT
-	UI_CLASS(GUI_BroadcastSetup)
+	UI_CLASS(GUI_NotificationPreferences)
 
 public:
-	explicit GUI_BroadcastSetup(const QString& identifier);
-	virtual ~GUI_BroadcastSetup();
+	explicit GUI_NotificationPreferences(const QString& identifier);
+	virtual ~GUI_NotificationPreferences();
 
 	bool commit() override;
 	void revert() override;
 
 	QString action_name() const override;
 
+private slots:
+	void notifications_changed();
+
 protected:
 	void init_ui() override;
-	void skin_changed() override;
 	void retranslate_ui() override;
-
-private slots:
-	void active_toggled(bool b);
-	void port_changed(int new_val);
-
-private:
-	QString get_url_string() const;
-	void refresh_url();
 };
 
-#endif // GUI_BROADCASTSETUP_H
+#endif // GUI_NotificationPreferences_H

@@ -27,7 +27,7 @@
  */
 
 #include "GUI_LocalLibrary.h"
-#include "Gui/ui_GUI_LocalLibrary.h"
+#include "Gui/Library/ui_GUI_LocalLibrary.h"
 
 #include "Gui/Library/DirChooserDialog.h"
 #include "Gui/Library/InfoBox/GUI_LibraryInfoBox.h"

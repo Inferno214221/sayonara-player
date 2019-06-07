@@ -1,4 +1,4 @@
-/* GUI_StreamRecorder.cpp
+/* GUI_StreamRecorderPreferences.cpp
 
  * Copyright (C) 2011-2019 Lucio Carreras
  *
@@ -22,8 +22,8 @@
  *
  */
 
-#include "GUI_StreamRecorder.h"
-#include "Gui/ui_GUI_StreamRecorder.h"
+#include "GUI_StreamRecorderPreferences.h"
+#include "Gui/Preferences/ui_GUI_StreamRecorderPreferences.h"
 
 #include "Database/Connector.h"
 #include "Utils/Utils.h"
@@ -44,18 +44,18 @@
 
 namespace SR=StreamRecorder;
 
-struct GUI_StreamRecorder::Private
+struct GUI_StreamRecorderPreferences::Private
 {
 	QString error_string;
 };
 
-GUI_StreamRecorder::GUI_StreamRecorder(const QString& identifier) :
+GUI_StreamRecorderPreferences::GUI_StreamRecorderPreferences(const QString& identifier) :
 	Base(identifier)
 {
 	m = Pimpl::make<Private>();
 }
 
-GUI_StreamRecorder::~GUI_StreamRecorder()
+GUI_StreamRecorderPreferences::~GUI_StreamRecorderPreferences()
 {
 	if(ui)
 	{
@@ -63,7 +63,7 @@ GUI_StreamRecorder::~GUI_StreamRecorder()
 	}
 }
 
-void GUI_StreamRecorder::init_ui()
+void GUI_StreamRecorderPreferences::init_ui()
 {
 	setup_parent(this, &ui);
 
@@ -106,15 +106,15 @@ void GUI_StreamRecorder::init_ui()
 
 	revert();
 
-	connect(ui->cb_activate, &QCheckBox::toggled, this, &GUI_StreamRecorder::sl_cb_activate_toggled);
-	connect(ui->btn_path, &QPushButton::clicked, this, &GUI_StreamRecorder::sl_btn_path_clicked);
-	connect(ui->le_template, &QLineEdit::textChanged, this, &GUI_StreamRecorder::sl_line_edit_changed);
-	connect(ui->le_path, &QLineEdit::textChanged, this, &GUI_StreamRecorder::sl_line_edit_changed);
+	connect(ui->cb_activate, &QCheckBox::toggled, this, &GUI_StreamRecorderPreferences::sl_cb_activate_toggled);
+	connect(ui->btn_path, &QPushButton::clicked, this, &GUI_StreamRecorderPreferences::sl_btn_path_clicked);
+	connect(ui->le_template, &QLineEdit::textChanged, this, &GUI_StreamRecorderPreferences::sl_line_edit_changed);
+	connect(ui->le_path, &QLineEdit::textChanged, this, &GUI_StreamRecorderPreferences::sl_line_edit_changed);
 	connect(ui->cb_create_session_path, &QCheckBox::toggled, this, [=](bool b){
 		ui->tabWidget->setTabEnabled(1, b);
 	});
 
-	connect(ui->btn_default, &QPushButton::clicked, this, &GUI_StreamRecorder::sl_btn_default_clicked);
+	connect(ui->btn_default, &QPushButton::clicked, this, &GUI_StreamRecorderPreferences::sl_btn_default_clicked);
 	connect(ui->btn_undo, &QPushButton::clicked, this, [=](){
 		ui->le_template->undo();
 	});
@@ -122,7 +122,7 @@ void GUI_StreamRecorder::init_ui()
 	sl_line_edit_changed(ui->le_template->text());
 }
 
-void GUI_StreamRecorder::retranslate_ui()
+void GUI_StreamRecorderPreferences::retranslate_ui()
 {
 	ui->retranslateUi(this);
 
@@ -131,13 +131,13 @@ void GUI_StreamRecorder::retranslate_ui()
 	ui->btn_default->setText(Lang::get(Lang::Default));
 }
 
-QString GUI_StreamRecorder::error_string() const
+QString GUI_StreamRecorderPreferences::error_string() const
 {
 	return m->error_string;
 }
 
 
-void GUI_StreamRecorder::sl_cb_activate_toggled(bool b)
+void GUI_StreamRecorderPreferences::sl_cb_activate_toggled(bool b)
 {
 	ui->le_path->setEnabled(b);
 	ui->btn_path->setEnabled(b);
@@ -151,7 +151,7 @@ void GUI_StreamRecorder::sl_cb_activate_toggled(bool b)
 }
 
 
-void GUI_StreamRecorder::sl_btn_path_clicked()
+void GUI_StreamRecorderPreferences::sl_btn_path_clicked()
 {
 	QString path = ui->cb_create_session_path->text();
 	QString dir = QFileDialog::getExistingDirectory(this, tr("Choose target directory"), path, QFileDialog::ShowDirsOnly);
@@ -160,14 +160,14 @@ void GUI_StreamRecorder::sl_btn_path_clicked()
 	}
 }
 
-void GUI_StreamRecorder::sl_btn_default_clicked()
+void GUI_StreamRecorderPreferences::sl_btn_default_clicked()
 {
 	QString default_template = SR::Utils::target_path_template_default(true);
 
 	ui->le_template->setText(default_template);
 }
 
-void GUI_StreamRecorder::sl_line_edit_changed(const QString& new_text)
+void GUI_StreamRecorderPreferences::sl_line_edit_changed(const QString& new_text)
 {
 	Q_UNUSED(new_text)
 
@@ -206,7 +206,7 @@ void GUI_StreamRecorder::sl_line_edit_changed(const QString& new_text)
 	}
 }
 
-bool GUI_StreamRecorder::commit()
+bool GUI_StreamRecorderPreferences::commit()
 {
 	bool everything_ok = true;
 
@@ -254,7 +254,7 @@ bool GUI_StreamRecorder::commit()
 	return everything_ok;
 }
 
-void GUI_StreamRecorder::revert()
+void GUI_StreamRecorderPreferences::revert()
 {
 	bool lame_available = GetSetting(SetNoDB::MP3enc_found);
 
@@ -293,7 +293,7 @@ void GUI_StreamRecorder::revert()
 	}
 }
 
-QString GUI_StreamRecorder::action_name() const
+QString GUI_StreamRecorderPreferences::action_name() const
 {
 	return tr("Stream recorder");
 }

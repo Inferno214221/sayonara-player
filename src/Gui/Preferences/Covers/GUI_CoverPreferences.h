@@ -1,4 +1,4 @@
-/* GUI_Shortcuts.h */
+/* GUI_CoverPreferences.h */
 
 /* Copyright (C) 2011-2019  Lucio Carreras
  *
@@ -18,42 +18,46 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GUI_SHORTCUTS_H
-#define GUI_SHORTCUTS_H
+#ifndef GUI_COVERPREFERENCES_H
+#define GUI_COVERPREFERENCES_H
 
 #include "Gui/Preferences/PreferenceWidget.h"
-#include "Utils/Pimpl.h"
 
-UI_FWD(GUI_Shortcuts)
+UI_FWD(GUI_CoverPreferences)
 
-/**
- * @brief The GUI_Shortcuts class
- * @ingroup Shortcuts
- */
-class GUI_Shortcuts final:
+class GUI_CoverPreferences :
 		public Preferences::Base
 {
 	Q_OBJECT
-	UI_CLASS(GUI_Shortcuts)
-	PIMPL(GUI_Shortcuts)
+	UI_CLASS(GUI_CoverPreferences)
 
 public:
-	explicit GUI_Shortcuts(const QString& identifier);
-	~GUI_Shortcuts();
+	explicit GUI_CoverPreferences(const QString& identifier);
+	virtual ~GUI_CoverPreferences();
 
-	void revert() override;
 	bool commit() override;
+	void revert() override;
 
 	QString action_name() const override;
 
 protected:
 	void init_ui() override;
 	void retranslate_ui() override;
-	QString error_string() const override;
 
 private slots:
-	void test_pressed(const QList<QKeySequence>& sequences);
-	void sequence_entered();
+	void up_clicked();
+	void down_clicked();
+	void add_clicked();
+	void remove_clicked();
+
+	void current_row_changed(int row);
+	void delete_covers_from_db();
+	void delete_cover_files();
+	void fetch_covers_www_triggered(bool b);
+
+	void cb_save_to_library_toggled(bool b);
+	void le_cover_template_edited(const QString& text);
 };
 
-#endif // GUI_SHORTCUTS_H
+
+#endif // GUI_CoverPreferences_H

@@ -22,18 +22,18 @@
  *
  */
 
-#include "GUI_RemoteControl.h"
-#include "Gui/ui_GUI_RemoteControl.h"
+#include "GUI_RemoteControlPreferences.h"
+#include "Gui/Preferences/ui_GUI_RemoteControlPreferences.h"
 
 #include "Utils/Utils.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Settings/Settings.h"
 
 
-GUI_RemoteControl::GUI_RemoteControl(const QString& identifier) :
+GUI_RemoteControlPreferences::GUI_RemoteControlPreferences(const QString& identifier) :
 	Base(identifier) {}
 
-GUI_RemoteControl::~GUI_RemoteControl()
+GUI_RemoteControlPreferences::~GUI_RemoteControlPreferences()
 {
 	if(ui)
 	{
@@ -41,24 +41,24 @@ GUI_RemoteControl::~GUI_RemoteControl()
 	}
 }
 
-void GUI_RemoteControl::init_ui()
+void GUI_RemoteControlPreferences::init_ui()
 {
 	setup_parent(this, &ui);
 
 	revert();
 
-	connect(ui->cb_activate, &QCheckBox::toggled, this, &GUI_RemoteControl::active_toggled);
-	connect(ui->sb_port, spinbox_value_changed_int, this, &GUI_RemoteControl::port_changed);
+	connect(ui->cb_activate, &QCheckBox::toggled, this, &GUI_RemoteControlPreferences::active_toggled);
+	connect(ui->sb_port, spinbox_value_changed_int, this, &GUI_RemoteControlPreferences::port_changed);
 }
 
-void GUI_RemoteControl::retranslate_ui()
+void GUI_RemoteControlPreferences::retranslate_ui()
 {
 	ui->retranslateUi(this);
 	ui->lab_active->setText(Lang::get(Lang::Active));
 }
 
 
-bool GUI_RemoteControl::commit()
+bool GUI_RemoteControlPreferences::commit()
 {
 	SetSetting(Set::Remote_Active, ui->cb_activate->isChecked());
 	SetSetting(Set::Remote_Port, ui->sb_port->value());
@@ -66,7 +66,7 @@ bool GUI_RemoteControl::commit()
 	return true;
 }
 
-void GUI_RemoteControl::revert()
+void GUI_RemoteControlPreferences::revert()
 {
 	ui->cb_activate->setChecked(GetSetting(Set::Remote_Active));
 	ui->sb_port->setValue(GetSetting(Set::Remote_Port));
@@ -75,26 +75,26 @@ void GUI_RemoteControl::revert()
 }
 
 
-QString GUI_RemoteControl::action_name() const
+QString GUI_RemoteControlPreferences::action_name() const
 {
 	return tr("Remote control");
 }
 
 
-void GUI_RemoteControl::active_toggled(bool b)
+void GUI_RemoteControlPreferences::active_toggled(bool b)
 {
 	Q_UNUSED(b)
 	refresh_url();
 }
 
-void GUI_RemoteControl::port_changed(int port)
+void GUI_RemoteControlPreferences::port_changed(int port)
 {
 	Q_UNUSED(port)
 	refresh_url();
 }
 
 
-QString GUI_RemoteControl::get_url_string()
+QString GUI_RemoteControlPreferences::get_url_string()
 {
 	int port = ui->sb_port->value();
 	QStringList ips = Util::ip_addresses();
@@ -108,7 +108,7 @@ QString GUI_RemoteControl::get_url_string()
 	return ret.join("; ");
 }
 
-void GUI_RemoteControl::refresh_url()
+void GUI_RemoteControlPreferences::refresh_url()
 {
 	bool active = ui->cb_activate->isChecked();
 

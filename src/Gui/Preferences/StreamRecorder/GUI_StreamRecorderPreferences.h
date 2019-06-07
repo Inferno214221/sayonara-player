@@ -1,4 +1,4 @@
-/* GUI_StreamRecorder.h
+/* GUI_StreamRecorderPreferences.h
 
  * Copyright (C) 2011-2019 Lucio Carreras
  *
@@ -22,15 +22,15 @@
  *
  */
 
-#ifndef GUI_STREAMRECORDER_H_
-#define GUI_STREAMRECORDER_H_
+#ifndef GUI_STREAMRECORDER_PREFERENCES_H
+#define GUI_STREAMRECORDER_PREFERENCES_H
 
 #include "Gui/Preferences/PreferenceWidget.h"
 #include "Utils/Pimpl.h"
 
 #include <QPushButton>
 
-UI_FWD(GUI_StreamRecorder)
+UI_FWD(GUI_StreamRecorderPreferences)
 
 
 class TagButton : public
@@ -48,16 +48,16 @@ protected:
 };
 
 
-class GUI_StreamRecorder :
+class GUI_StreamRecorderPreferences :
 	public Preferences::Base
 {
 	Q_OBJECT
-	PIMPL(GUI_StreamRecorder)
-	UI_CLASS(GUI_StreamRecorder)
+	PIMPL(GUI_StreamRecorderPreferences)
+	UI_CLASS(GUI_StreamRecorderPreferences)
 
 	public:
-		explicit GUI_StreamRecorder(const QString& identifier);
-		~GUI_StreamRecorder();
+		explicit GUI_StreamRecorderPreferences(const QString& identifier);
+		~GUI_StreamRecorderPreferences();
 
 		bool commit() override;
 		void revert() override;
@@ -76,5 +76,5 @@ class GUI_StreamRecorder :
 		void sl_line_edit_changed(const QString& new_text);
 };
 
-#endif /* GUI_STREAMRECORDER_H_ */
+#endif /* GUI_StreamRecorderPreferences_H_ */
 

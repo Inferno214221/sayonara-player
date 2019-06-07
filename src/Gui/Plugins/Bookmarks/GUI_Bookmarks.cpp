@@ -21,7 +21,7 @@
 
 #include "GUI_Bookmarks.h"
 
-#include "Gui/ui_GUI_Bookmarks.h"
+#include "Gui/Plugins/ui_GUI_Bookmarks.h"
 
 #include "Utils/Utils.h"
 #include "Utils/MetaData/MetaData.h"

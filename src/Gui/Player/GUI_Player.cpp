@@ -24,7 +24,7 @@
 #include "GUI_PlayerMenubar.h"
 #include "GUI_Controls.h"
 #include "GUI_ControlsNew.h"
-#include "Gui/ui_GUI_Player.h"
+#include "Gui/Player/ui_GUI_Player.h"
 
 #include "Gui/Plugins/PlayerPluginBase.h"
 #include "Gui/Plugins/PlayerPluginHandler.h"

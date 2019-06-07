@@ -64,23 +64,23 @@
 #include "Gui/Plugins/Stream/GUI_Stream.h"
 #include "Gui/Plugins/Stream/GUI_Podcasts.h"
 
-#include "Gui/Preferences/Broadcast/GUI_BroadcastSetup.h"
-#include "Gui/Preferences/Covers/GUI_Covers.h"
+#include "Gui/Preferences/Broadcast/GUI_BroadcastPreferences.h"
+#include "Gui/Preferences/Covers/GUI_CoverPreferences.h"
 #include "Gui/Preferences/Engine/GUI_EnginePreferences.h"
 #include "Gui/Preferences/UiPreferences/GUI_UiPreferences.h"
-#include "Gui/Preferences/Language/GUI_LanguageChooser.h"
-#include "Gui/Preferences/LastFM/GUI_LastFM.h"
+#include "Gui/Preferences/Language/GUI_LanguagePreferences.h"
+#include "Gui/Preferences/LastFM/GUI_LastFmPreferences.h"
 #include "Gui/Preferences/Library/GUI_LibraryPreferences.h"
-#include "Gui/Preferences/Notifications/GUI_Notifications.h"
+#include "Gui/Preferences/Notifications/GUI_NotificationPreferences.h"
 #include "Gui/Preferences/Player/GUI_PlayerPreferences.h"
 #include "Gui/Preferences/Playlist/GUI_PlaylistPreferences.h"
 #include "Gui/Preferences/PreferenceDialog/GUI_PreferenceDialog.h"
-#include "Gui/Preferences/Proxy/GUI_Proxy.h"
-#include "Gui/Preferences/RemoteControl/GUI_RemoteControl.h"
+#include "Gui/Preferences/Proxy/GUI_ProxyPreferences.h"
+#include "Gui/Preferences/RemoteControl/GUI_RemoteControlPreferences.h"
 #include "Gui/Preferences/Search/GUI_SearchPreferences.h"
-#include "Gui/Preferences/Shortcuts/GUI_Shortcuts.h"
+#include "Gui/Preferences/Shortcuts/GUI_ShortcutPreferences.h"
 #include "Gui/Preferences/Streams/GUI_StreamPreferences.h"
-#include "Gui/Preferences/StreamRecorder/GUI_StreamRecorder.h"
+#include "Gui/Preferences/StreamRecorder/GUI_StreamRecorderPreferences.h"
 
 #include "Utils/Utils.h"
 #include "Utils/Logger/Logger.h"
@@ -331,24 +331,24 @@ void Application::init_preferences()
 	auto* preferences = new GUI_PreferenceDialog(m->player);
 
 	preferences->register_preference_dialog(new GUI_PlayerPreferences("application"));
-	preferences->register_preference_dialog(new GUI_LanguageChooser("language"));
+	preferences->register_preference_dialog(new GUI_LanguagePreferences("language"));
 	preferences->register_preference_dialog(new GUI_UiPreferences("user-interface"));
-	preferences->register_preference_dialog(new GUI_Shortcuts("shortcuts"));
+	preferences->register_preference_dialog(new GUI_ShortcutPreferences("shortcuts"));
 
 	preferences->register_preference_dialog(new GUI_PlaylistPreferences("playlist"));
 	preferences->register_preference_dialog(new GUI_LibraryPreferences("library"));
-	preferences->register_preference_dialog(new GUI_Covers("covers"));
+	preferences->register_preference_dialog(new GUI_CoverPreferences("covers"));
 	preferences->register_preference_dialog(new GUI_EnginePreferences("engine"));
 	preferences->register_preference_dialog(new GUI_SearchPreferences("search"));
 
-	preferences->register_preference_dialog(new GUI_Proxy("proxy"));
+	preferences->register_preference_dialog(new GUI_ProxyPreferences("proxy"));
 	preferences->register_preference_dialog(new GUI_StreamPreferences("streams"));
-	preferences->register_preference_dialog(new GUI_StreamRecorder("streamrecorder"));
-	preferences->register_preference_dialog(new GUI_BroadcastSetup("broadcast"));
-	preferences->register_preference_dialog(new GUI_RemoteControl("remotecontrol"));
+	preferences->register_preference_dialog(new GUI_StreamRecorderPreferences("streamrecorder"));
+	preferences->register_preference_dialog(new GUI_BroadcastPreferences("broadcast"));
+	preferences->register_preference_dialog(new GUI_RemoteControlPreferences("remotecontrol"));
 
-	preferences->register_preference_dialog(new GUI_Notifications("notifications"));
-	preferences->register_preference_dialog(new GUI_LastFM("lastfm", new LastFM::Base()));
+	preferences->register_preference_dialog(new GUI_NotificationPreferences("notifications"));
+	preferences->register_preference_dialog(new GUI_LastFmPreferences("lastfm", new LastFM::Base()));
 
 	m->player->register_preference_dialog(preferences->action());
 }

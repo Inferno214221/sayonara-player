@@ -19,7 +19,7 @@
  */
 
 #include "GUI_Podcasts.h"
-#include "Gui/ui_GUI_Podcasts.h"
+#include "Gui/Plugins/ui_GUI_Podcasts.h"
 #include "Components/Streaming/Streams/StreamHandlerPodcasts.h"
 
 #include "Utils/Language/Language.h"

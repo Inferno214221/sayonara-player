@@ -19,7 +19,7 @@
  */
 
 #include "GUI_PlayerPreferences.h"
-#include "Gui/ui_GUI_PlayerPreferences.h"
+#include "Gui/Preferences/ui_GUI_PlayerPreferences.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language/Language.h"
 

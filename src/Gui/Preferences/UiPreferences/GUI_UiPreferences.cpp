@@ -18,14 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
-
 #include "GUI_UiPreferences.h"
-#include "GUI_FontConfig.h"
+#include "GUI_FontPreferences.h"
 #include "GUI_IconPreferences.h"
 #include "Gui/Utils/Style.h"
-#include "Gui/ui_GUI_UiPreferences.h"
+#include "Gui/Preferences/ui_GUI_UiPreferences.h"
 
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language/Language.h"
@@ -33,7 +30,7 @@
 
 struct GUI_UiPreferences::Private
 {
-	GUI_FontConfig* font_config=nullptr;
+	GUI_FontPreferences* font_config=nullptr;
 	GUI_IconPreferences* icon_config=nullptr;
 };
 
@@ -77,7 +74,7 @@ void GUI_UiPreferences::init_ui()
 
 	setup_parent(this, &ui);
 
-	m->font_config = new GUI_FontConfig(ui->tabWidget);
+	m->font_config = new GUI_FontPreferences(ui->tabWidget);
 	m->icon_config = new GUI_IconPreferences(ui->tabWidget);
 
 	ui->tabWidget->addTab(m->font_config, m->font_config->action_name());

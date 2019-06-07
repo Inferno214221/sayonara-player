@@ -21,7 +21,7 @@
 
 
 #include "GUI_StationSearcher.h"
-#include "Gui/ui_GUI_StationSearcher.h"
+#include "Gui/Plugins/ui_GUI_StationSearcher.h"
 #include "Components/Streaming/StationSearcher/StationSearcher.h"
 #include "Utils/Utils.h"
 #include "Utils/Language/Language.h"

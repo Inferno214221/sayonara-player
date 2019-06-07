@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>GUI_Shortcuts</class>
- <widget class="QWidget" name="GUI_Shortcuts">
+ <class>GUI_ShortcutPreferences</class>
+ <widget class="QWidget" name="GUI_ShortcutPreferences">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -21,8 +21,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>480</width>
-        <height>432</height>
+        <width>478</width>
+        <height>429</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">

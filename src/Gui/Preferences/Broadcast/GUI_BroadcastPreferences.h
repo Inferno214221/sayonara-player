@@ -1,4 +1,4 @@
-/* GUI_Proxy.h */
+/* GUI_BroadcastSetup.h */
 
 /* Copyright (C) 2011-2019  Lucio Carreras
  *
@@ -18,37 +18,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GUI_PROXY_H
-#define GUI_PROXY_H
+#ifndef GUI_BROADCASTSETUP_H
+#define GUI_BROADCASTSETUP_H
 
 #include "Gui/Preferences/PreferenceWidget.h"
 
-UI_FWD(GUI_Proxy)
+UI_FWD(GUI_BroadcastPreferences)
 
-class GUI_Proxy :
+class GUI_BroadcastPreferences :
 		public Preferences::Base
 {
 	Q_OBJECT
-	UI_CLASS(GUI_Proxy)
+	UI_CLASS(GUI_BroadcastPreferences)
 
 public:
-	explicit GUI_Proxy(const QString& identifier);
-	~GUI_Proxy();
+	explicit GUI_BroadcastPreferences(const QString& identifier);
+	virtual ~GUI_BroadcastPreferences();
 
-	// PreferenceInterface interface
-protected:
-	void init_ui() override;
-	void retranslate_ui() override;
-
-public:
-	QString action_name() const override;
 	bool commit() override;
 	void revert() override;
 
+	QString action_name() const override;
+
+protected:
+	void init_ui() override;
+	void skin_changed() override;
+	void retranslate_ui() override;
+
 private slots:
-	void active_toggled(bool active);
+	void active_toggled(bool b);
+	void port_changed(int new_val);
+
+private:
+	QString get_url_string() const;
+	void refresh_url();
 };
 
-
-
-#endif // GUI_PROXY_H
+#endif // GUI_BROADCASTSETUP_H

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>GUI_LanguageChooser</class>
- <widget class="QWidget" name="GUI_LanguageChooser">
+ <class>GUI_LanguagePreferences</class>
+ <widget class="QWidget" name="GUI_LanguagePreferences">
   <property name="geometry">
    <rect>
     <x>0</x>

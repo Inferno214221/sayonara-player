@@ -35,7 +35,7 @@
    <item row="1" column="0">
     <widget class="QStackedWidget" name="stacked_widget_reload">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="page">
       <layout class="QGridLayout" name="gridLayout_2">
@@ -129,11 +129,11 @@
                 <attribute name="horizontalHeaderCascadingSectionResizes">
                  <bool>false</bool>
                 </attribute>
-                <attribute name="horizontalHeaderMinimumSectionSize">
-                 <number>25</number>
-                </attribute>
                 <attribute name="horizontalHeaderHighlightSections">
                  <bool>false</bool>
+                </attribute>
+                <attribute name="horizontalHeaderMinimumSectionSize">
+                 <number>25</number>
                 </attribute>
                 <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
                  <bool>true</bool>
@@ -200,11 +200,11 @@
                 <attribute name="horizontalHeaderCascadingSectionResizes">
                  <bool>false</bool>
                 </attribute>
-                <attribute name="horizontalHeaderMinimumSectionSize">
-                 <number>25</number>
-                </attribute>
                 <attribute name="horizontalHeaderHighlightSections">
                  <bool>false</bool>
+                </attribute>
+                <attribute name="horizontalHeaderMinimumSectionSize">
+                 <number>25</number>
                 </attribute>
                 <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
                  <bool>true</bool>
@@ -280,11 +280,11 @@
               <attribute name="horizontalHeaderCascadingSectionResizes">
                <bool>false</bool>
               </attribute>
-              <attribute name="horizontalHeaderMinimumSectionSize">
-               <number>25</number>
-              </attribute>
               <attribute name="horizontalHeaderHighlightSections">
                <bool>false</bool>
+              </attribute>
+              <attribute name="horizontalHeaderMinimumSectionSize">
+               <number>25</number>
               </attribute>
               <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
                <bool>true</bool>

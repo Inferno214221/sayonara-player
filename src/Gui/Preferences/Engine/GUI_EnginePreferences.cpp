@@ -21,7 +21,7 @@
 
 
 #include "GUI_EnginePreferences.h"
-#include "Gui/ui_GUI_EnginePreferences.h"
+#include "Gui/Preferences/ui_GUI_EnginePreferences.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Language/Language.h"

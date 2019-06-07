@@ -22,7 +22,7 @@
 /* GUI_PlayerPlugin.cpp */
 
 #include "GUI_PlayerPlugin.h"
-#include "Gui/ui_GUI_PlayerPlugin.h"
+#include "Gui/Plugins/ui_GUI_PlayerPlugin.h"
 #include "Gui/Plugins/PlayerPluginBase.h"
 
 struct GUI_PlayerPlugin::Private

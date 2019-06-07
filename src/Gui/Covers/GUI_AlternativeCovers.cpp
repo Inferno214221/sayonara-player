@@ -27,7 +27,7 @@
  */
 
 #include "GUI_AlternativeCovers.h"
-#include "Gui/ui_GUI_AlternativeCovers.h"
+#include "Gui/Covers/ui_GUI_AlternativeCovers.h"
 #include "AlternativeCoverItemDelegate.h"
 #include "AlternativeCoverItemModel.h"
 

@@ -1,6 +1,6 @@
-/* GUI_Covers.h */
+/* GUI_LastFmPreferences.h */
 
-/* Copyright (C) 2011-2019  Lucio Carreras
+/* Copyright (C) 2011-2019 Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -18,22 +18,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GUI_COVERS_H
-#define GUI_COVERS_H
+
+/*
+ * GUI_LastFmPreferences.h
+ *
+ *  Created on: Apr 21, 2011
+ *      Author: Lucio Carreras
+ */
+
+#ifndef GUI_LASTFM_PREFERENCES_H
+#define GUI_LASTFM_PREFERENCES_H
 
 #include "Gui/Preferences/PreferenceWidget.h"
+#include "Utils/Pimpl.h"
 
-UI_FWD(GUI_Covers)
+UI_FWD(GUI_LastFmPreferences)
 
-class GUI_Covers :
+namespace LastFM
+{
+	class Base;
+}
+
+class GUI_LastFmPreferences :
 		public Preferences::Base
 {
 	Q_OBJECT
-	UI_CLASS(GUI_Covers)
+	UI_CLASS(GUI_LastFmPreferences)
+	PIMPL(GUI_LastFmPreferences)
 
 public:
-	explicit GUI_Covers(const QString& identifier);
-	virtual ~GUI_Covers();
+	explicit GUI_LastFmPreferences(const QString& identifier, LastFM::Base* lfm);
+	virtual ~GUI_LastFmPreferences();
 
 	bool commit() override;
 	void revert() override;
@@ -45,19 +60,9 @@ protected:
 	void retranslate_ui() override;
 
 private slots:
-	void up_clicked();
-	void down_clicked();
-	void add_clicked();
-	void remove_clicked();
-
-	void current_row_changed(int row);
-	void delete_covers_from_db();
-	void delete_cover_files();
-	void fetch_covers_www_triggered(bool b);
-
-	void cb_save_to_library_toggled(bool b);
-	void le_cover_template_edited(const QString& text);
+	void btn_login_clicked();
+	void active_changed(bool active);
+	void logged_in(bool success);
 };
 
-
-#endif // GUI_COVERS_H
+#endif /* GUI_LastFmPreferences_H_ */

@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "GUI_FontConfig.h"
-#include "Gui/ui_GUI_FontConfig.h"
+#include "GUI_FontPreferences.h"
+#include "Gui/Preferences/ui_GUI_FontPreferences.h"
 
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language/Language.h"
@@ -27,7 +27,7 @@
 #include <QFont>
 #include <QFontDatabase>
 
-struct GUI_FontConfig::Private
+struct GUI_FontPreferences::Private
 {
 	QFontDatabase*	font_db=nullptr;
 	int				cur_font_size;
@@ -39,14 +39,14 @@ struct GUI_FontConfig::Private
 	{}
 };
 
-GUI_FontConfig::GUI_FontConfig(QWidget* parent) :
+GUI_FontPreferences::GUI_FontPreferences(QWidget* parent) :
 	Gui::Widget(parent)
 {
 	m = Pimpl::make<Private>();
 
 }
 
-GUI_FontConfig::~GUI_FontConfig()
+GUI_FontPreferences::~GUI_FontPreferences()
 {
 	if(ui)
 	{
@@ -55,19 +55,19 @@ GUI_FontConfig::~GUI_FontConfig()
 }
 
 
-void GUI_FontConfig::init_ui()
+void GUI_FontPreferences::init_ui()
 {
 	if(ui){
 		return;
 	}
 
-	ui = new Ui::GUI_FontConfig();
+	ui = new Ui::GUI_FontPreferences();
 	ui->setupUi(this);
 
 	m->font_db = new QFontDatabase();
 
-	connect(ui->combo_fonts, &QFontComboBox::currentFontChanged, this, &GUI_FontConfig::combo_fonts_changed);
-	connect(ui->btn_default, &QPushButton::clicked, this, &GUI_FontConfig::default_clicked);
+	connect(ui->combo_fonts, &QFontComboBox::currentFontChanged, this, &GUI_FontPreferences::combo_fonts_changed);
+	connect(ui->btn_default, &QPushButton::clicked, this, &GUI_FontPreferences::default_clicked);
 
 	ui->combo_fonts->setEditable(false);
 	ui->combo_fonts->setFontFilters(QFontComboBox::ScalableFonts);
@@ -77,12 +77,12 @@ void GUI_FontConfig::init_ui()
 
 
 
-QString GUI_FontConfig::action_name() const
+QString GUI_FontPreferences::action_name() const
 {
 	return Lang::get(Lang::Fonts);
 }
 
-void GUI_FontConfig::combo_fonts_changed(const QFont& font)
+void GUI_FontPreferences::combo_fonts_changed(const QFont& font)
 {
 	m->cur_font_size = ui->combo_sizes->currentText().toInt();
 
@@ -105,7 +105,7 @@ void GUI_FontConfig::combo_fonts_changed(const QFont& font)
 }
 
 
-QStringList GUI_FontConfig::available_font_sizes(const QString& font_name, const QString& style)
+QStringList GUI_FontPreferences::available_font_sizes(const QString& font_name, const QString& style)
 {
 	QStringList ret;
 	QList<int> font_sizes =  m->font_db->pointSizes(font_name, style);
@@ -117,12 +117,12 @@ QStringList GUI_FontConfig::available_font_sizes(const QString& font_name, const
 	return ret;
 }
 
-QStringList GUI_FontConfig::available_font_sizes(const QFont& font)
+QStringList GUI_FontPreferences::available_font_sizes(const QFont& font)
 {
 	return available_font_sizes(font.family(), font.styleName());
 }
 
-void GUI_FontConfig::fill_sizes(const QStringList& sizes)
+void GUI_FontPreferences::fill_sizes(const QStringList& sizes)
 {
 	ui->combo_sizes->clear();
 	ui->combo_lib_size->clear();
@@ -144,7 +144,7 @@ void GUI_FontConfig::fill_sizes(const QStringList& sizes)
 	}
 }
 
-bool GUI_FontConfig::commit()
+bool GUI_FontPreferences::commit()
 {
 	if(!ui)
 	{
@@ -180,7 +180,7 @@ bool GUI_FontConfig::commit()
 	return true;
 }
 
-void GUI_FontConfig::revert()
+void GUI_FontPreferences::revert()
 {
 	if(!ui)
 	{
@@ -226,7 +226,7 @@ void GUI_FontConfig::revert()
 }
 
 
-void GUI_FontConfig::default_clicked()
+void GUI_FontPreferences::default_clicked()
 {
 	QFont font = QApplication::font();
 
@@ -246,7 +246,7 @@ void GUI_FontConfig::default_clicked()
 }
 
 
-void GUI_FontConfig::language_changed()
+void GUI_FontPreferences::language_changed()
 {
 	if(!ui){
 		return;
@@ -258,7 +258,7 @@ void GUI_FontConfig::language_changed()
 	ui->btn_default->setText(Lang::get(Lang::Default));
 }
 
-void GUI_FontConfig::showEvent(QShowEvent* e)
+void GUI_FontPreferences::showEvent(QShowEvent* e)
 {
 	if(!ui){
 		init_ui();

@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "GUI_BroadcastSetup.h"
-#include "Gui/ui_GUI_BroadcastSetup.h"
+#include "GUI_BroadcastPreferences.h"
+#include "Gui/Preferences/ui_GUI_BroadcastPreferences.h"
 
 #include "Gui/Utils/Widgets/WidgetTemplate.h"
 
@@ -28,10 +28,10 @@
 #include "Utils/Language/Language.h"
 
 
-GUI_BroadcastSetup::GUI_BroadcastSetup(const QString& identifier) :
+GUI_BroadcastPreferences::GUI_BroadcastPreferences(const QString& identifier) :
 	Base(identifier) {}
 
-GUI_BroadcastSetup::~GUI_BroadcastSetup()
+GUI_BroadcastPreferences::~GUI_BroadcastPreferences()
 {
 	if(ui)
 	{
@@ -39,17 +39,17 @@ GUI_BroadcastSetup::~GUI_BroadcastSetup()
 	}
 }
 
-void GUI_BroadcastSetup::init_ui()
+void GUI_BroadcastPreferences::init_ui()
 {
 	setup_parent(this, &ui);
 
 	revert();
 
-	connect(ui->cb_active, &QCheckBox::toggled, this, &GUI_BroadcastSetup::active_toggled);
-	connect(ui->sb_port, spinbox_value_changed_int, this, &GUI_BroadcastSetup::port_changed);
+	connect(ui->cb_active, &QCheckBox::toggled, this, &GUI_BroadcastPreferences::active_toggled);
+	connect(ui->sb_port, spinbox_value_changed_int, this, &GUI_BroadcastPreferences::port_changed);
 }
 
-bool GUI_BroadcastSetup::commit()
+bool GUI_BroadcastPreferences::commit()
 {
 	bool new_active = ui->cb_active->isChecked();
 	bool new_prompt = ui->cb_prompt->isChecked();
@@ -75,7 +75,7 @@ bool GUI_BroadcastSetup::commit()
 }
 
 
-void GUI_BroadcastSetup::revert()
+void GUI_BroadcastPreferences::revert()
 {
 	bool active = GetSetting(Set::Broadcast_Active);
 
@@ -89,14 +89,14 @@ void GUI_BroadcastSetup::revert()
 }
 
 
-void GUI_BroadcastSetup::skin_changed()
+void GUI_BroadcastPreferences::skin_changed()
 {
 	if(!is_ui_initialized()){
 		return;
 	}
 }
 
-void GUI_BroadcastSetup::retranslate_ui()
+void GUI_BroadcastPreferences::retranslate_ui()
 {
 	ui->retranslateUi(this);
 	ui->lab_activate->setText(Lang::get(Lang::Active));
@@ -104,25 +104,25 @@ void GUI_BroadcastSetup::retranslate_ui()
 }
 
 
-QString GUI_BroadcastSetup::action_name() const
+QString GUI_BroadcastPreferences::action_name() const
 {
 	return Lang::get(Lang::Broadcast);
 }
 
 
-void GUI_BroadcastSetup::active_toggled(bool b)
+void GUI_BroadcastPreferences::active_toggled(bool b)
 {
 	Q_UNUSED(b);
 	refresh_url();
 }
 
-void GUI_BroadcastSetup::port_changed(int new_val)
+void GUI_BroadcastPreferences::port_changed(int new_val)
 {
 	Q_UNUSED(new_val);
 	refresh_url();
 }
 
-QString GUI_BroadcastSetup::get_url_string() const
+QString GUI_BroadcastPreferences::get_url_string() const
 {
 	int port = ui->sb_port->value();
 	QStringList ips = Util::ip_addresses();
@@ -136,7 +136,7 @@ QString GUI_BroadcastSetup::get_url_string() const
 	return ret.join("; ");
 }
 
-void GUI_BroadcastSetup::refresh_url()
+void GUI_BroadcastPreferences::refresh_url()
 {
 	bool active = ui->cb_active->isChecked();
 

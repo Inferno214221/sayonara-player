@@ -1,6 +1,6 @@
-/* GUI_LastFM.h */
+/* GUI_LanguagePreferences.h */
 
-/* Copyright (C) 2011-2019 Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -18,37 +18,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-/*
- * GUI_LastFM.h
- *
- *  Created on: Apr 21, 2011
- *      Author: Lucio Carreras
- */
-
-#ifndef GUI_LASTFM_H_
-#define GUI_LASTFM_H_
+#ifndef GUI_LANGUAGE_PREFERENCES_H
+#define GUI_LANGUAGE_PREFERENCES_H
 
 #include "Gui/Preferences/PreferenceWidget.h"
 #include "Utils/Pimpl.h"
 
-UI_FWD(GUI_LastFM)
+UI_FWD(GUI_LanguagePreferences)
 
-namespace LastFM
-{
-	class Base;
-}
-
-class GUI_LastFM :
+class GUI_LanguagePreferences :
 		public Preferences::Base
 {
 	Q_OBJECT
-	UI_CLASS(GUI_LastFM)
-	PIMPL(GUI_LastFM)
+	UI_CLASS(GUI_LanguagePreferences)
+	PIMPL(GUI_LanguagePreferences)
 
 public:
-	explicit GUI_LastFM(const QString& identifier, LastFM::Base* lfm);
-	virtual ~GUI_LastFM();
+	explicit GUI_LanguagePreferences(const QString& identifier);
+	virtual ~GUI_LanguagePreferences();
 
 	bool commit() override;
 	void revert() override;
@@ -58,11 +45,20 @@ public:
 protected:
 	void init_ui() override;
 	void retranslate_ui() override;
+	void skin_changed() override;
+
+	void showEvent(QShowEvent*) override;
+
+private:
+	void renew_combo();
 
 private slots:
-	void btn_login_clicked();
-	void active_changed(bool active);
-	void logged_in(bool success);
+	void combo_index_changed(int index);
+	void btn_check_for_update_clicked();
+	void update_check_finished();
+
+	void btn_download_clicked();
+	void download_finished();
 };
 
-#endif /* GUI_LASTFM_H_ */
+#endif // GUI_LanguagePreferences_H

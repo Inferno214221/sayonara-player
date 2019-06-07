@@ -19,7 +19,7 @@
  */
 
 #include "GUI_Spectrum.h"
-#include "Gui/ui_GUI_Spectrum.h"
+#include "Gui/Plugins/ui_GUI_Spectrum.h"
 
 #include "VisualColorStyleChooser.h"
 

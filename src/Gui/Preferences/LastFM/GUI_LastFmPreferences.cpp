@@ -1,4 +1,4 @@
-/* GUI_LastFM.cpp */
+/* GUI_LastFmPreferences.cpp */
 
 /* Copyright (C) 2011-2019 Lucio Carreras
  *
@@ -20,14 +20,14 @@
 
 
 /*
- * GUI_LastFM.cpp
+ * GUI_LastFmPreferences.cpp
  *
  *  Created on: Apr 21, 2011
  *      Author: Lucio Carreras
  */
 
-#include "GUI_LastFM.h"
-#include "Gui/ui_GUI_LastFM.h"
+#include "GUI_LastFmPreferences.h"
+#include "Gui/Preferences/ui_GUI_LastFmPreferences.h"
 #include "Utils/Crypt.h"
 
 #include "Components/Streaming/LastFM/LastFM.h"
@@ -35,7 +35,7 @@
 #include "Utils/Language/Language.h"
 #include "Utils/Settings/Settings.h"
 
-struct GUI_LastFM::Private
+struct GUI_LastFmPreferences::Private
 {
 	LastFM::Base* lfm=nullptr;
 
@@ -49,13 +49,13 @@ struct GUI_LastFM::Private
 	}
 };
 
-GUI_LastFM::GUI_LastFM(const QString& identifier, LastFM::Base* lfm) :
+GUI_LastFmPreferences::GUI_LastFmPreferences(const QString& identifier, LastFM::Base* lfm) :
 	Base(identifier)
 {
 	m = Pimpl::make<Private>(lfm);
 }
 
-GUI_LastFM::~GUI_LastFM()
+GUI_LastFmPreferences::~GUI_LastFmPreferences()
 {
 	if(ui)
 	{
@@ -64,7 +64,7 @@ GUI_LastFM::~GUI_LastFM()
 }
 
 
-void GUI_LastFM::init_ui()
+void GUI_LastFmPreferences::init_ui()
 {
 	setup_parent(this, &ui);
 
@@ -72,18 +72,18 @@ void GUI_LastFM::init_ui()
 
 	logged_in(m->lfm->is_logged_in());
 
-	connect(ui->btn_login, &QPushButton::clicked, this, &GUI_LastFM::btn_login_clicked);
-	connect(ui->cb_activate, &QCheckBox::toggled, this, &GUI_LastFM::active_changed);
-	connect(m->lfm, &LastFM::Base::sig_logged_in, this, &GUI_LastFM::logged_in);
+	connect(ui->btn_login, &QPushButton::clicked, this, &GUI_LastFmPreferences::btn_login_clicked);
+	connect(ui->cb_activate, &QCheckBox::toggled, this, &GUI_LastFmPreferences::active_changed);
+	connect(m->lfm, &LastFM::Base::sig_logged_in, this, &GUI_LastFmPreferences::logged_in);
 }
 
 
-QString GUI_LastFM::action_name() const
+QString GUI_LastFmPreferences::action_name() const
 {
 	return "Last.fm";
 }
 
-void GUI_LastFM::retranslate_ui()
+void GUI_LastFmPreferences::retranslate_ui()
 {
 	ui->retranslateUi(this);
 	ui->lab_activate->setText(Lang::get(Lang::Active));
@@ -92,7 +92,7 @@ void GUI_LastFM::retranslate_ui()
 	logged_in(m->lfm->is_logged_in());
 }
 
-bool GUI_LastFM::commit()
+bool GUI_LastFmPreferences::commit()
 {
 	bool active = ui->cb_activate->isChecked();
 	QString username = ui->tf_username->text();
@@ -107,7 +107,7 @@ bool GUI_LastFM::commit()
 }
 
 
-void GUI_LastFM::revert()
+void GUI_LastFmPreferences::revert()
 {
 	bool active = GetSetting(Set::LFM_Active);
 	QString username = GetSetting(Set::LFM_Username);
@@ -123,7 +123,7 @@ void GUI_LastFM::revert()
 }
 
 
-void GUI_LastFM::btn_login_clicked()
+void GUI_LastFmPreferences::btn_login_clicked()
 {
 	if(ui->tf_username->text().length() < 3) {
 		return;
@@ -142,7 +142,7 @@ void GUI_LastFM::btn_login_clicked()
 }
 
 
-void GUI_LastFM::active_changed(bool active)
+void GUI_LastFmPreferences::active_changed(bool active)
 {
 	if(!is_ui_initialized()){
 		return;
@@ -153,7 +153,7 @@ void GUI_LastFM::active_changed(bool active)
 }
 
 
-void GUI_LastFM::logged_in(bool success)
+void GUI_LastFmPreferences::logged_in(bool success)
 {
 	if(!is_ui_initialized()){
 		return;

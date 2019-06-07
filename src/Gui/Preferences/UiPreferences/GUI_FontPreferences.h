@@ -17,27 +17,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GUI_FONTCONFIG_H
-#define GUI_FONTCONFIG_H
+#ifndef GUI_FONTPREFERENCES_H
+#define GUI_FONTPREFERENCES_H
 
 #include "Gui/Utils/Widgets/Widget.h"
 #include "Utils/Pimpl.h"
 
-UI_FWD(GUI_FontConfig)
+UI_FWD(GUI_FontPreferences)
 
 class QFont;
 class QFontDatabase;
 
-class GUI_FontConfig :
+class GUI_FontPreferences :
 		public Gui::Widget
 {
 	Q_OBJECT
-	UI_CLASS(GUI_FontConfig)
-	PIMPL(GUI_FontConfig)
+	UI_CLASS(GUI_FontPreferences)
+	PIMPL(GUI_FontPreferences)
 
 public:
-	explicit GUI_FontConfig(QWidget* parent=nullptr);
-	virtual ~GUI_FontConfig();
+	explicit GUI_FontPreferences(QWidget* parent=nullptr);
+	virtual ~GUI_FontPreferences();
 
 	bool commit();
 	void revert();

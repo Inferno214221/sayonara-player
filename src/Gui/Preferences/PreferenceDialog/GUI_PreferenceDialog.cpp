@@ -19,7 +19,7 @@
  */
 
 #include "GUI_PreferenceDialog.h"
-#include "Gui/ui_GUI_PreferenceDialog.h"
+#include "Gui/Preferences/ui_GUI_PreferenceDialog.h"
 
 #include "Components/Preferences/PreferenceRegistry.h"
 

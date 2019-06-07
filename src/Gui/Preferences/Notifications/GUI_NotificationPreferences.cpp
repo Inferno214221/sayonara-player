@@ -1,4 +1,4 @@
-/* GUI_Notifications.cpp */
+/* GUI_NotificationPreferences.cpp */
 
 /* Copyright (C) 2011-2019  Lucio Carreras
  *
@@ -18,17 +18,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "GUI_Notifications.h"
-#include "Gui/ui_GUI_Notifications.h"
+#include "GUI_NotificationPreferences.h"
+#include "Gui/Preferences/ui_GUI_NotificationPreferences.h"
 #include "Interfaces/Notification/NotificationHandler.h"
 
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language/Language.h"
 
-GUI_Notifications::GUI_Notifications(const QString& identifier) :
+GUI_NotificationPreferences::GUI_NotificationPreferences(const QString& identifier) :
 	Preferences::Base(identifier) {}
 
-GUI_Notifications::~GUI_Notifications()
+GUI_NotificationPreferences::~GUI_NotificationPreferences()
 {
 	if(ui)
 	{
@@ -36,7 +36,7 @@ GUI_Notifications::~GUI_Notifications()
 	}
 }
 
-void GUI_Notifications::retranslate_ui()
+void GUI_NotificationPreferences::retranslate_ui()
 {
 	ui->retranslateUi(this);
 	ui->cb_activate->setText(Lang::get(Lang::Active));
@@ -44,7 +44,7 @@ void GUI_Notifications::retranslate_ui()
 	notifications_changed();
 }
 
-void GUI_Notifications::notifications_changed()
+void GUI_NotificationPreferences::notifications_changed()
 {
 	if(!is_ui_initialized()){
 		return;
@@ -64,7 +64,7 @@ void GUI_Notifications::notifications_changed()
 }
 
 
-bool GUI_Notifications::commit()
+bool GUI_NotificationPreferences::commit()
 {
 	NotificationHandler* nh = NotificationHandler::instance();
 
@@ -81,7 +81,7 @@ bool GUI_Notifications::commit()
 	return true;
 }
 
-void GUI_Notifications::revert()
+void GUI_NotificationPreferences::revert()
 {
 	int timeout = GetSetting(Set::Notification_Timeout);
 	int active = GetSetting(Set::Notification_Show);
@@ -93,12 +93,12 @@ void GUI_Notifications::revert()
 }
 
 
-QString GUI_Notifications::action_name() const
+QString GUI_NotificationPreferences::action_name() const
 {
 	return tr("Notifications");
 }
 
-void GUI_Notifications::init_ui()
+void GUI_NotificationPreferences::init_ui()
 {
 	setup_parent(this, &ui);
 
@@ -107,5 +107,5 @@ void GUI_Notifications::init_ui()
 	revert();
 
 	connect(nh,	&NotificationHandler::sig_notifications_changed,
-			this, &GUI_Notifications::notifications_changed);
+			this, &GUI_NotificationPreferences::notifications_changed);
 }

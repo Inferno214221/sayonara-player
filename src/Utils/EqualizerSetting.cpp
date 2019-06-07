@@ -114,13 +114,13 @@ QList<EqualizerSetting> EqualizerSetting::get_defaults()
 {
 	QList<EqualizerSetting> defaults;
 
-	defaults << EqualizerSetting(QString(),		ValueArray{ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0});
-	defaults << EqualizerSetting("Flat",		ValueArray{ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0});
-	defaults << EqualizerSetting("Rock",		ValueArray{ 2,  4,  8,  3,  1,  3,  7, 10, 14, 14});
-	defaults << EqualizerSetting("Light Rock",	ValueArray{ 1,  1,  2,  1, -2, -3, -1,  3,  5,  8});
-	defaults << EqualizerSetting("Treble",		ValueArray{ 0,  0, -3, -5, -3,  2,  8, 15, 17, 13});
-	defaults << EqualizerSetting("Bass",		ValueArray{13, 17, 15,  8,  2, -3, -5, -3,  0,  0});
-	defaults << EqualizerSetting("Mid",			ValueArray{ 0,  0,  5,  9, 15, 15, 12,  7,  2,  0});
+	defaults << EqualizerSetting(QString(),		ValueArray{{ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0}});
+	defaults << EqualizerSetting("Flat",		ValueArray{{ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0}});
+	defaults << EqualizerSetting("Rock",		ValueArray{{ 2,  4,  8,  3,  1,  3,  7, 10, 14, 14}});
+	defaults << EqualizerSetting("Light Rock",	ValueArray{{ 1,  1,  2,  1, -2, -3, -1,  3,  5,  8}});
+	defaults << EqualizerSetting("Treble",		ValueArray{{ 0,  0, -3, -5, -3,  2,  8, 15, 17, 13}});
+	defaults << EqualizerSetting("Bass",		ValueArray{{13, 17, 15,  8,  2, -3, -5, -3,  0,  0}});
+	defaults << EqualizerSetting("Mid",			ValueArray{{ 0,  0,  5,  9, 15, 15, 12,  7,  2,  0}});
 
 	return defaults;
 }

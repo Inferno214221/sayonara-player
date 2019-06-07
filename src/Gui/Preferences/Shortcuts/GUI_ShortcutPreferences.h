@@ -1,4 +1,4 @@
-/* GUI_LanguageChooser.h */
+/* GUI_ShortcutPreferences.h */
 
 /* Copyright (C) 2011-2019  Lucio Carreras
  *
@@ -18,47 +18,42 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GUI_LANGUAGECHOOSER_H
-#define GUI_LANGUAGECHOOSER_H
+#ifndef GUI_SHORTCUT_PREFERENCES_H
+#define GUI_SHORTCUT_PREFERENCES_H
 
 #include "Gui/Preferences/PreferenceWidget.h"
 #include "Utils/Pimpl.h"
 
-UI_FWD(GUI_LanguageChooser)
+UI_FWD(GUI_ShortcutPreferences)
 
-class GUI_LanguageChooser :
+/**
+ * @brief The GUI_ShortcutPreferences class
+ * @ingroup Shortcuts
+ */
+class GUI_ShortcutPreferences final:
 		public Preferences::Base
 {
 	Q_OBJECT
-	UI_CLASS(GUI_LanguageChooser)
-	PIMPL(GUI_LanguageChooser)
+	UI_CLASS(GUI_ShortcutPreferences)
+	PIMPL(GUI_ShortcutPreferences)
 
 public:
-	explicit GUI_LanguageChooser(const QString& identifier);
-	virtual ~GUI_LanguageChooser();
+	explicit GUI_ShortcutPreferences(const QString& identifier);
+	~GUI_ShortcutPreferences();
 
-	bool commit() override;
 	void revert() override;
+	bool commit() override;
 
 	QString action_name() const override;
 
 protected:
 	void init_ui() override;
 	void retranslate_ui() override;
-	void skin_changed() override;
-
-	void showEvent(QShowEvent*) override;
-
-private:
-	void renew_combo();
+	QString error_string() const override;
 
 private slots:
-	void combo_index_changed(int index);
-	void btn_check_for_update_clicked();
-	void update_check_finished();
-
-	void btn_download_clicked();
-	void download_finished();
+	void test_pressed(const QList<QKeySequence>& sequences);
+	void sequence_entered();
 };
 
-#endif // GUI_LANGUAGECHOOSER_H
+#endif // GUI_ShortcutPreferences_H

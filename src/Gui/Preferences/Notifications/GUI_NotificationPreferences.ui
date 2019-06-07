@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>GUI_Notifications</class>
- <widget class="QWidget" name="GUI_Notifications">
+ <class>GUI_NotificationPreferences</class>
+ <widget class="QWidget" name="GUI_NotificationPreferences">
   <property name="geometry">
    <rect>
     <x>0</x>

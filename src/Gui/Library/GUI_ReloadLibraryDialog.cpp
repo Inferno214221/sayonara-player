@@ -18,10 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "GUI_ReloadLibraryDialog.h"
-#include "Gui/ui_GUI_ReloadLibraryDialog.h"
+#include "Gui/Library/ui_GUI_ReloadLibraryDialog.h"
 
 #include "Utils/Language/Language.h"
 #include <QComboBox>

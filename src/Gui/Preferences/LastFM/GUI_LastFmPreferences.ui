@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>GUI_LastFM</class>
- <widget class="QWidget" name="GUI_LastFM">
+ <class>GUI_LastFmPreferences</class>
+ <widget class="QWidget" name="GUI_LastFmPreferences">
   <property name="geometry">
    <rect>
     <x>0</x>

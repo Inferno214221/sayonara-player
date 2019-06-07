@@ -1,4 +1,4 @@
-/* GUI_Shortcuts.cpp */
+/* GUI_ShortcutPreferences.cpp */
 
 /* Copyright (C) 2011-2019  Lucio Carreras
  *
@@ -18,9 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "GUI_Shortcuts.h"
+#include "GUI_ShortcutPreferences.h"
 #include "GUI_ShortcutEntry.h"
-#include "Gui/ui_GUI_Shortcuts.h"
+#include "Gui/Preferences/ui_GUI_ShortcutPreferences.h"
 #include "Gui/Utils/Shortcuts/ShortcutHandler.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Set.h"
@@ -32,7 +32,7 @@
 
 #define ADD_TO_MAP(x) _btn_le_map[btn_##x] = le_##x
 
-struct GUI_Shortcuts::Private
+struct GUI_ShortcutPreferences::Private
 {
 	ShortcutHandler*			sch = nullptr;
 	QList<GUI_ShortcutEntry*>	entries;
@@ -43,13 +43,13 @@ struct GUI_Shortcuts::Private
 	{}
 };
 
-GUI_Shortcuts::GUI_Shortcuts(const QString& identifier) :
+GUI_ShortcutPreferences::GUI_ShortcutPreferences(const QString& identifier) :
 	Base(identifier)
 {
 	m = Pimpl::make<Private>();
 }
 
-GUI_Shortcuts::~GUI_Shortcuts()
+GUI_ShortcutPreferences::~GUI_ShortcutPreferences()
 {
 	if(ui)
 	{
@@ -58,7 +58,7 @@ GUI_Shortcuts::~GUI_Shortcuts()
 }
 
 
-void GUI_Shortcuts::init_ui()
+void GUI_ShortcutPreferences::init_ui()
 {
 	if(is_ui_initialized()){
 		return;
@@ -77,9 +77,9 @@ void GUI_Shortcuts::init_ui()
 		GUI_ShortcutEntry* entry = new GUI_ShortcutEntry(shortcut);
 
 		connect(entry, &GUI_ShortcutEntry::sig_test_pressed,
-				this, &GUI_Shortcuts::test_pressed);
+				this, &GUI_ShortcutPreferences::test_pressed);
 		connect(entry, &GUI_ShortcutEntry::sig_sequence_entered,
-				this, &GUI_Shortcuts::sequence_entered);
+				this, &GUI_ShortcutPreferences::sequence_entered);
 
 		ui->layout_entries->addWidget(entry);
 
@@ -97,13 +97,13 @@ void GUI_Shortcuts::init_ui()
 }
 
 
-QString GUI_Shortcuts::action_name() const
+QString GUI_ShortcutPreferences::action_name() const
 {
 	return tr("Shortcuts");
 }
 
 
-bool GUI_Shortcuts::commit()
+bool GUI_ShortcutPreferences::commit()
 {
 	m->error_strings.clear();
 
@@ -131,7 +131,7 @@ bool GUI_Shortcuts::commit()
 }
 
 
-void GUI_Shortcuts::revert()
+void GUI_ShortcutPreferences::revert()
 {
 	foreach(GUI_ShortcutEntry* entry, m->entries)
 	{
@@ -140,7 +140,7 @@ void GUI_Shortcuts::revert()
 }
 
 
-void GUI_Shortcuts::test_pressed(const QList<QKeySequence>& sequences)
+void GUI_ShortcutPreferences::test_pressed(const QList<QKeySequence>& sequences)
 {
 	if(sequences.isEmpty()){
 		return;
@@ -157,7 +157,7 @@ void GUI_Shortcuts::test_pressed(const QList<QKeySequence>& sequences)
 	ui->cb_test->setFocus();
 }
 
-void GUI_Shortcuts::sequence_entered()
+void GUI_ShortcutPreferences::sequence_entered()
 {
 	GUI_ShortcutEntry* entry = static_cast<GUI_ShortcutEntry*>(sender());
 	QList<QKeySequence> sequences = entry->sequences();
@@ -185,12 +185,12 @@ void GUI_Shortcuts::sequence_entered()
 	}
 }
 
-void GUI_Shortcuts::retranslate_ui()
+void GUI_ShortcutPreferences::retranslate_ui()
 {
 	ui->retranslateUi(this);
 }
 
-QString GUI_Shortcuts::error_string() const
+QString GUI_ShortcutPreferences::error_string() const
 {
 	return tr("Double shortcuts found") + ":" + m->error_strings.join("\n");
 }

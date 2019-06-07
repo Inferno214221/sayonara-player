@@ -22,7 +22,7 @@
 #include "TagFromPath.h"
 #include "TagLineEdit.h"
 
-#include "Gui/ui_GUI_TagEdit.h"
+#include "Gui/TagEdit/ui_GUI_TagEdit.h"
 
 #include "Components/Tagging/Expression.h"
 #include "Components/Tagging/Editor.h"

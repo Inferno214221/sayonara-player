@@ -19,7 +19,7 @@
  */
 
 #include "GUI_Broadcast.h"
-#include "Gui/ui_GUI_Broadcast.h"
+#include "Gui/Plugins/ui_GUI_Broadcast.h"
 
 #include "Components/Broadcasting/StreamServer.h"
 #include "Utils/Message/Message.h"

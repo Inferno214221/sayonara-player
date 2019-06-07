@@ -1,4 +1,4 @@
-/* GUI_Covers.cpp */
+/* GUI_CoverPreferences.cpp */
 
 /* Copyright (C) 2011-2019  Lucio Carreras
  *
@@ -18,9 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Gui/ui_GUI_Covers.h"
+#include "Gui/Preferences/ui_GUI_CoverPreferences.h"
 
-#include "GUI_Covers.h"
+#include "GUI_CoverPreferences.h"
 
 #include "Database/Connector.h"
 #include "Database/CoverConnector.h"
@@ -46,11 +46,11 @@
 
 using namespace Cover;
 
-GUI_Covers::GUI_Covers(const QString& identifier) :
+GUI_CoverPreferences::GUI_CoverPreferences(const QString& identifier) :
 	Base (identifier) {}
 
 
-GUI_Covers::~GUI_Covers()
+GUI_CoverPreferences::~GUI_CoverPreferences()
 {
 	if(ui){
 		delete ui; ui = nullptr;
@@ -81,7 +81,7 @@ static bool check_cover_template(const QString& cover_template)
 	return true;
 }
 
-bool GUI_Covers::commit()
+bool GUI_CoverPreferences::commit()
 {
 	QStringList active_items;
 
@@ -127,7 +127,7 @@ bool GUI_Covers::commit()
 	return true;
 }
 
-void GUI_Covers::revert()
+void GUI_CoverPreferences::revert()
 {
 	Cover::Fetcher::Manager* cfm = Cover::Fetcher::Manager::instance();
 
@@ -166,12 +166,12 @@ void GUI_Covers::revert()
 	current_row_changed(ui->lv_cover_searchers->currentRow());
 }
 
-QString GUI_Covers::action_name() const
+QString GUI_CoverPreferences::action_name() const
 {
 	return Lang::get(Lang::Covers);
 }
 
-void GUI_Covers::init_ui()
+void GUI_CoverPreferences::init_ui()
 {
 	if(ui){
 		return;
@@ -183,23 +183,23 @@ void GUI_Covers::init_ui()
 	ui->lv_cover_searchers_inactive->setItemDelegate(new Gui::StyledItemDelegate(ui->lv_cover_searchers_inactive));
 	ui->lab_template_error->setVisible(false);
 
-	connect(ui->btn_up, &QPushButton::clicked, this, &GUI_Covers::up_clicked);
-	connect(ui->btn_down, &QPushButton::clicked, this, &GUI_Covers::down_clicked);
-	connect(ui->lv_cover_searchers, &QListWidget::currentRowChanged, this, &GUI_Covers::current_row_changed);
-	connect(ui->btn_delete_album_covers, &QPushButton::clicked, this, &GUI_Covers::delete_covers_from_db);
-	connect(ui->btn_delete_files, &QPushButton::clicked, this, &GUI_Covers::delete_cover_files);
-	connect(ui->cb_fetch_from_www, &QCheckBox::toggled, this, &GUI_Covers::fetch_covers_www_triggered);
-	connect(ui->btn_add, &QPushButton::clicked, this, &GUI_Covers::add_clicked);
-	connect(ui->btn_remove, &QPushButton::clicked, this, &GUI_Covers::remove_clicked);
-	connect(ui->cb_save_to_library, &QCheckBox::toggled, this, &GUI_Covers::cb_save_to_library_toggled);
-	connect(ui->le_cover_template, &QLineEdit::textEdited, this, &GUI_Covers::le_cover_template_edited);
+	connect(ui->btn_up, &QPushButton::clicked, this, &GUI_CoverPreferences::up_clicked);
+	connect(ui->btn_down, &QPushButton::clicked, this, &GUI_CoverPreferences::down_clicked);
+	connect(ui->lv_cover_searchers, &QListWidget::currentRowChanged, this, &GUI_CoverPreferences::current_row_changed);
+	connect(ui->btn_delete_album_covers, &QPushButton::clicked, this, &GUI_CoverPreferences::delete_covers_from_db);
+	connect(ui->btn_delete_files, &QPushButton::clicked, this, &GUI_CoverPreferences::delete_cover_files);
+	connect(ui->cb_fetch_from_www, &QCheckBox::toggled, this, &GUI_CoverPreferences::fetch_covers_www_triggered);
+	connect(ui->btn_add, &QPushButton::clicked, this, &GUI_CoverPreferences::add_clicked);
+	connect(ui->btn_remove, &QPushButton::clicked, this, &GUI_CoverPreferences::remove_clicked);
+	connect(ui->cb_save_to_library, &QCheckBox::toggled, this, &GUI_CoverPreferences::cb_save_to_library_toggled);
+	connect(ui->le_cover_template, &QLineEdit::textEdited, this, &GUI_CoverPreferences::le_cover_template_edited);
 
 	ui->cb_save_to_sayonara_dir->setToolTip(Cover::Utils::cover_directory());
 
 	revert();
 }
 
-void GUI_Covers::retranslate_ui()
+void GUI_CoverPreferences::retranslate_ui()
 {
 	ui->retranslateUi(this);
 
@@ -207,7 +207,7 @@ void GUI_Covers::retranslate_ui()
 	ui->btn_down->setText(Lang::get(Lang::MoveDown));
 }
 
-void GUI_Covers::up_clicked()
+void GUI_CoverPreferences::up_clicked()
 {
 	int cur_row = ui->lv_cover_searchers->currentRow();
 
@@ -216,7 +216,7 @@ void GUI_Covers::up_clicked()
 	ui->lv_cover_searchers->setCurrentRow(cur_row - 1);
 }
 
-void GUI_Covers::down_clicked()
+void GUI_CoverPreferences::down_clicked()
 {
 	int cur_row = ui->lv_cover_searchers->currentRow();
 
@@ -225,7 +225,7 @@ void GUI_Covers::down_clicked()
 	ui->lv_cover_searchers->setCurrentRow(cur_row + 1);
 }
 
-void GUI_Covers::add_clicked()
+void GUI_CoverPreferences::add_clicked()
 {
 	QListWidgetItem* item = ui->lv_cover_searchers_inactive->takeItem(ui->lv_cover_searchers_inactive->currentRow());
 	if(!item){
@@ -236,7 +236,7 @@ void GUI_Covers::add_clicked()
 	delete item; item=nullptr;
 }
 
-void GUI_Covers::remove_clicked()
+void GUI_CoverPreferences::remove_clicked()
 {
 	QListWidgetItem* item = ui->lv_cover_searchers->takeItem(ui->lv_cover_searchers->currentRow());
 	if(!item){
@@ -247,24 +247,24 @@ void GUI_Covers::remove_clicked()
 	delete item; item=nullptr;
 }
 
-void GUI_Covers::current_row_changed(int row)
+void GUI_CoverPreferences::current_row_changed(int row)
 {
 	ui->btn_up->setDisabled(row <= 0 || row >= ui->lv_cover_searchers->count());
 	ui->btn_down->setDisabled(row < 0 || row >= ui->lv_cover_searchers->count() - 1);
 }
 
-void GUI_Covers::delete_covers_from_db()
+void GUI_CoverPreferences::delete_covers_from_db()
 {
 	DB::Connector::instance()->cover_connector()->clear();
 	Cover::ChangeNotfier::instance()->shout();
 }
 
-void GUI_Covers::delete_cover_files()
+void GUI_CoverPreferences::delete_cover_files()
 {
 	::Util::File::remove_files_in_directory(Cover::Utils::cover_directory());
 }
 
-void GUI_Covers::fetch_covers_www_triggered(bool b)
+void GUI_CoverPreferences::fetch_covers_www_triggered(bool b)
 {
 	ui->lv_cover_searchers->setEnabled(b);
 	ui->lv_cover_searchers_inactive->setEnabled(b);
@@ -280,14 +280,14 @@ void GUI_Covers::fetch_covers_www_triggered(bool b)
 	ui->lab_cover_template->setEnabled(b);
 }
 
-void GUI_Covers::cb_save_to_library_toggled(bool b)
+void GUI_CoverPreferences::cb_save_to_library_toggled(bool b)
 {
 	ui->le_cover_template->setVisible(b);
 	ui->lab_cover_template->setVisible(b);
 }
 
 
-void GUI_Covers::le_cover_template_edited(const QString& text)
+void GUI_CoverPreferences::le_cover_template_edited(const QString& text)
 {
 	bool valid = check_cover_template(text);
 	ui->lab_template_error->setVisible(!valid);

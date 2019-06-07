@@ -22,7 +22,7 @@
 /* GUI_PlaylistPreferences.cpp */
 
 #include "GUI_PlaylistPreferences.h"
-#include "Gui/ui_GUI_PlaylistPreferences.h"
+#include "Gui/Preferences/ui_GUI_PlaylistPreferences.h"
 
 #include "Utils/Algorithm.h"
 #include "Utils/Settings/Settings.h"

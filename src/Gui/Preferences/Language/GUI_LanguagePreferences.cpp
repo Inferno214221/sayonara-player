@@ -1,4 +1,4 @@
-/* GUI_LanguageChooser.cpp */
+/* GUI_LanguagePreferences.cpp */
 
 /* Copyright (C) 2011-2019  Lucio Carreras
  *
@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "GUI_LanguageChooser.h"
-#include "Gui/ui_GUI_LanguageChooser.h"
+#include "GUI_LanguagePreferences.h"
+#include "Gui/Preferences/ui_GUI_LanguagePreferences.h"
 
 #include "Utils/Utils.h"
 #include "Utils/WebAccess/AsyncWebAccess.h"
@@ -37,20 +37,20 @@
 
 namespace Language = Util::Language;
 
-struct GUI_LanguageChooser::Private {};
+struct GUI_LanguagePreferences::Private {};
 
 static QString get_four_letter(QComboBox* combo)
 {
 	return combo->currentData().toString();
 }
 
-GUI_LanguageChooser::GUI_LanguageChooser(const QString& identifier) :
+GUI_LanguagePreferences::GUI_LanguagePreferences(const QString& identifier) :
 	Preferences::Base(identifier)
 {
 	m = Pimpl::make<Private>();
 }
 
-GUI_LanguageChooser::~GUI_LanguageChooser()
+GUI_LanguagePreferences::~GUI_LanguagePreferences()
 {
 	if(ui)
 	{
@@ -58,13 +58,13 @@ GUI_LanguageChooser::~GUI_LanguageChooser()
 	}
 }
 
-QString GUI_LanguageChooser::action_name() const
+QString GUI_LanguagePreferences::action_name() const
 {
 	return tr("Language") + QString(" (Language)");
 }
 
 
-void GUI_LanguageChooser::retranslate_ui()
+void GUI_LanguagePreferences::retranslate_ui()
 {
 	ui->retranslateUi(this);
 
@@ -72,7 +72,7 @@ void GUI_LanguageChooser::retranslate_ui()
 }
 
 
-void GUI_LanguageChooser::skin_changed()
+void GUI_LanguagePreferences::skin_changed()
 {
 	if(is_ui_initialized())
 	{
@@ -83,7 +83,7 @@ void GUI_LanguageChooser::skin_changed()
 }
 
 
-bool GUI_LanguageChooser::commit()
+bool GUI_LanguagePreferences::commit()
 {
 	QString four_letter = get_four_letter(ui->combo_lang);
 
@@ -92,10 +92,10 @@ bool GUI_LanguageChooser::commit()
 	return true;
 }
 
-void GUI_LanguageChooser::revert() {}
+void GUI_LanguagePreferences::revert() {}
 
 // typically a qm file looks like sayonara_lang_lc.qm
-void GUI_LanguageChooser::renew_combo()
+void GUI_LanguagePreferences::renew_combo()
 {
 	if(!is_ui_initialized()){
 		return;
@@ -130,19 +130,19 @@ void GUI_LanguageChooser::renew_combo()
 }
 
 
-void GUI_LanguageChooser::init_ui()
+void GUI_LanguagePreferences::init_ui()
 {
 	setup_parent(this, &ui);
 
 	ui->btn_download->setVisible(false);
 
-	connect(ui->combo_lang, combo_current_index_changed_int, this, &GUI_LanguageChooser::combo_index_changed);
-	connect(ui->btn_check_for_update, &QPushButton::clicked, this, &GUI_LanguageChooser::btn_check_for_update_clicked);
-	connect(ui->btn_download, &QPushButton::clicked, this, &GUI_LanguageChooser::btn_download_clicked);
+	connect(ui->combo_lang, combo_current_index_changed_int, this, &GUI_LanguagePreferences::combo_index_changed);
+	connect(ui->btn_check_for_update, &QPushButton::clicked, this, &GUI_LanguagePreferences::btn_check_for_update_clicked);
+	connect(ui->btn_download, &QPushButton::clicked, this, &GUI_LanguagePreferences::btn_download_clicked);
 }
 
 
-void GUI_LanguageChooser::combo_index_changed(int idx)
+void GUI_LanguagePreferences::combo_index_changed(int idx)
 {
 	Q_UNUSED(idx)
 
@@ -159,19 +159,19 @@ void GUI_LanguageChooser::combo_index_changed(int idx)
 }
 
 
-void GUI_LanguageChooser::btn_check_for_update_clicked()
+void GUI_LanguagePreferences::btn_check_for_update_clicked()
 {
 	ui->btn_check_for_update->setEnabled(false);
 
 	AsyncWebAccess* awa = new AsyncWebAccess(this);
 	QString url = Util::Language::get_checksum_http_path();
 
-	connect(awa, &AsyncWebAccess::sig_finished, this, &GUI_LanguageChooser::update_check_finished);
+	connect(awa, &AsyncWebAccess::sig_finished, this, &GUI_LanguagePreferences::update_check_finished);
 	awa->run(url);
 
 }
 
-void GUI_LanguageChooser::update_check_finished()
+void GUI_LanguagePreferences::update_check_finished()
 {
 	AsyncWebAccess* awa = static_cast<AsyncWebAccess*>(sender());
 	QString data = QString::fromUtf8(awa->data());
@@ -218,7 +218,7 @@ void GUI_LanguageChooser::update_check_finished()
 	}
 }
 
-void GUI_LanguageChooser::btn_download_clicked()
+void GUI_LanguagePreferences::btn_download_clicked()
 {
 	ui->btn_check_for_update->setEnabled(false);
 	ui->btn_download->setVisible(false);
@@ -227,13 +227,13 @@ void GUI_LanguageChooser::btn_download_clicked()
 	QString url = Language::get_http_path(four_letter);
 
 	AsyncWebAccess* awa = new AsyncWebAccess(this);
-	connect(awa, &AsyncWebAccess::sig_finished, this, &GUI_LanguageChooser::download_finished);
+	connect(awa, &AsyncWebAccess::sig_finished, this, &GUI_LanguagePreferences::download_finished);
 
 	awa->run(url);
 }
 
 
-void GUI_LanguageChooser::download_finished()
+void GUI_LanguagePreferences::download_finished()
 {
 	AsyncWebAccess* awa = static_cast<AsyncWebAccess*>(sender());
 	QByteArray data	= awa->data();
@@ -275,7 +275,7 @@ void GUI_LanguageChooser::download_finished()
 }
 
 
-void GUI_LanguageChooser::showEvent(QShowEvent* e)
+void GUI_LanguagePreferences::showEvent(QShowEvent* e)
 {
 	Base::showEvent(e);
 

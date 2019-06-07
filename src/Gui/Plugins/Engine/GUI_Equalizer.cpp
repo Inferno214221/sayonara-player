@@ -28,7 +28,7 @@
 
 #include "GUI_Equalizer.h"
 #include "EqualizerSlider.h"
-#include "Gui/ui_GUI_Equalizer.h"
+#include "Gui/Plugins/ui_GUI_Equalizer.h"
 
 #include "Components/Engine/EngineHandler.h"
 

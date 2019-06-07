@@ -19,7 +19,7 @@
  */
 
 #include "GUI_EmptyLibrary.h"
-#include "Gui/ui_GUI_EmptyLibrary.h"
+#include "Gui/Utils/ui_GUI_EmptyLibrary.h"
 #include "Gui/Utils/Library/GUI_EditLibrary.h"
 #include "Components/Library/LibraryManager.h"
 

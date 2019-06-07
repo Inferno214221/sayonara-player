@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>GUI_StreamRecorder</class>
- <widget class="QWidget" name="GUI_StreamRecorder">
+ <class>GUI_StreamRecorderPreferences</class>
+ <widget class="QWidget" name="GUI_StreamRecorderPreferences">
   <property name="geometry">
    <rect>
     <x>0</x>

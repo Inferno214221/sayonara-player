@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>GUI_FontConfig</class>
- <widget class="QWidget" name="GUI_FontConfig">
+ <class>GUI_FontPreferences</class>
+ <widget class="QWidget" name="GUI_FontPreferences">
   <property name="geometry">
    <rect>
     <x>0</x>

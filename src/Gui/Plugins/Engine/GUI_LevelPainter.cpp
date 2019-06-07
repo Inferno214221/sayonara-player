@@ -21,7 +21,7 @@
 
 #include "GUI_LevelPainter.h"
 #include "VisualColorStyleChooser.h"
-#include "Gui/ui_GUI_LevelPainter.h"
+#include "Gui/Plugins/ui_GUI_LevelPainter.h"
 
 #include "Components/Engine/Engine.h"
 #include "Components/Engine/EngineHandler.h"
