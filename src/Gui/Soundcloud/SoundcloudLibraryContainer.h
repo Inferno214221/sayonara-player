@@ -1,4 +1,4 @@
-/* SomaFMLibraryContainer.h */
+/* SoundcloudLibraryContainer.h */
 
 /* Copyright (C) 2011-2019  Lucio Carreras
  *
@@ -19,28 +19,25 @@
  */
 
 
-/* SomaFMLibraryContainer.h */
+/* SoundcloudLibraryContainer.h */
 
-#ifndef GUI_SOMAFMLIBRARY_CONTAINER_H
-#define GUI_SOMAFMLIBRARY_CONTAINER_H
+#ifndef SOUNDCLOUD_LIBRARY_CONTAINER
+#define SOUNDCLOUD_LIBRARY_CONTAINER
 
 #include <QtGlobal>
 #include "Interfaces/LibraryInterface/LibraryContainer/LibraryContainer.h"
 
-namespace SomaFM
+namespace SC
 {
-	class GUI_SomaFM;
+	class GUI_Library;
 
 	class LibraryContainer :
 		public ::Library::Container
 	{
 		Q_OBJECT
 
-		Q_PLUGIN_METADATA(IID "com.sayonara-player.somafm_library")
-		Q_INTERFACES(LibraryContainerInterface)
-
 	private:
-		GUI_SomaFM*	ui=nullptr;
+		SC::GUI_Library*	ui=nullptr;
 
 	public:
 
@@ -51,10 +48,11 @@ namespace SomaFM
 		QString			name() const override;
 		QString			display_name() const override;
 		QWidget*		widget() const override;
-		QPixmap			icon() const override;
 		QMenu*			menu() override;
 		QFrame*			header() const override;
+		QPixmap			icon() const override;
 		void			init_ui() override;
 	};
 }
+
 #endif

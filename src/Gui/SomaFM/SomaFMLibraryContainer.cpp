@@ -21,8 +21,8 @@
 
 /* SomaFMLibraryContainer.cpp */
 
-#include "ui/SomaFMLibraryContainer.h"
-#include "ui/GUI_SomaFM.h"
+#include "SomaFMLibraryContainer.h"
+#include "GUI_SomaFM.h"
 
 static void soma_fm_init_icons()
 {

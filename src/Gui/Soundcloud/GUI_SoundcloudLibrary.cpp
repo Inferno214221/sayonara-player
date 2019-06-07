@@ -18,11 +18,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "3rdParty/Soundcloud/ui/GUI_SoundcloudLibrary.h"
-#include "3rdParty/Soundcloud/ui_GUI_SoundcloudLibrary.h"
-#include "3rdParty/Soundcloud/src/SoundcloudLibrary.h"
-
+#include "GUI_SoundcloudLibrary.h"
+#include "Gui/Soundcloud/ui_GUI_SoundcloudLibrary.h"
+#include "Gui/Soundcloud/GUI_SoundcloudArtistSearch.h"
 #include "Gui/Utils/ContextMenu/LibraryContextMenu.h"
+#include "Components/Streaming/Soundcloud/SoundcloudLibrary.h"
+
+#include "Utils/Settings/Settings.h"
 
 #include <QShortcut>
 #include <QMenu>
@@ -92,23 +94,24 @@ void GUI_Library::btn_add_clicked()
 
 Library::TableView* GUI_Library::lv_artist() const
 {
-	return ui->lv_artist;
+	return ui->tv_artists;
 }
 
 Library::TableView* GUI_Library::lv_album() const
 {
-	return ui->lv_album;
+	return ui->tv_albums;
 }
 
 Library::TableView* GUI_Library::lv_tracks() const
 {
-	return ui->tb_title;
+	return ui->tv_tracks;
 }
 
 Library::SearchBar* GUI_Library::le_search() const
 {
 	return ui->le_search;
 }
+
 
 void GUI_Library::showEvent(QShowEvent *e)
 {
@@ -117,5 +120,8 @@ void GUI_Library::showEvent(QShowEvent *e)
 	this->lv_album()->resizeRowsToContents();
 	this->lv_artist()->resizeRowsToContents();
 	this->lv_tracks()->resizeRowsToContents();
+
+	ui->splitter_artists->restoreState(GetSetting(Set::Lib_SplitterStateArtist));
+	ui->splitter_tracks->restoreState(GetSetting(Set::Lib_SplitterStateTrack));
 }
 

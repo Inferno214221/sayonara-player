@@ -24,8 +24,6 @@
 #include "Gui/Library/GUI_AbstractLibrary.h"
 #include "Utils/Pimpl.h"
 
-#include "3rdParty/Soundcloud/ui/GUI_SoundcloudArtistSearch.h"
-
 class QFrame;
 
 UI_FWD(GUI_SoundcloudLibrary)

@@ -21,8 +21,8 @@
 /* SoundcloudLibraryContainer.cpp */
 
 #include "SoundcloudLibraryContainer.h"
-#include "ui/GUI_SoundcloudLibrary.h"
-#include "src/SoundcloudLibrary.h"
+#include "Gui/Soundcloud/GUI_SoundcloudLibrary.h"
+#include "Components/Streaming/Soundcloud/SoundcloudLibrary.h"
 
 #include <QPixmap>
 
@@ -76,5 +76,6 @@ QFrame* SC::LibraryContainer::header() const
 
 QPixmap SC::LibraryContainer::icon() const
 {
-	return QPixmap(":/sc_icons/ui/icon.png");
+	sc_init_icons();
+	return QPixmap(":/sc_icons/icon.png");
 }

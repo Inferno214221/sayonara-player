@@ -23,7 +23,7 @@
 
 #include "SomaFMStationModel.h"
 
-#include "3rdParty/SomaFM/SomaFMStation.h"
+#include "Components/Streaming/SomaFM/SomaFMStation.h"
 #include "Components/Covers/CoverLocation.h"
 
 #include "Utils/globals.h"

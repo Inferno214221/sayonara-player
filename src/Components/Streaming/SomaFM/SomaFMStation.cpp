@@ -124,10 +124,7 @@ struct SomaFM::Station::Private
             cover = Cover::Location::cover_location(QUrl(url), cover_path);
 		}
 	}
-
-
 };
-
 
 SomaFM::Station::Station()
 {
@@ -162,7 +159,6 @@ SomaFM::Station& SomaFM::Station::operator=(const SomaFM::Station& other)
 }
 
 SomaFM::Station::~Station() {}
-
 
 QString SomaFM::Station::name() const
 {

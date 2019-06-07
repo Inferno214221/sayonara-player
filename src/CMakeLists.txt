@@ -119,12 +119,8 @@ add_subdirectory(Database)
 add_subdirectory(Interfaces)
 add_subdirectory(Components)
 add_subdirectory(Languages)
-add_subdirectory(3rdParty)
 
 add_executable(${PROJECT_NAME} Main.cpp ${QM_FILES})
-
-#file(GLOB_RECURSE HeaderFiles "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
-#add_custom_target(headers SOURCES ${HeaderFiles})
 
 if(WIN32)
 	set(OS_LIBRARIES

@@ -50,6 +50,8 @@
 #include "Gui/Player/GUI_Player.h"
 #include "Gui/Library/LocalLibraryContainer.h"
 #include "Gui/Directories/DirectoryWidgetContainer.h"
+#include "Gui/Soundcloud/SoundcloudLibraryContainer.h"
+#include "Gui/SomaFM/SomaFMLibraryContainer.h"
 
 #include "Gui/Plugins/PlayerPluginHandler.h"
 #include "Gui/Plugins/PlaylistChooser/GUI_PlaylistChooser.h"
@@ -362,8 +364,12 @@ void Application::init_libraries()
 
 	QList<Library::Container*> library_containers = local_library_watcher->get_local_library_containers();
 	auto* directory_container = new Library::DirectoryContainer(this);
+	auto* soundcloud_container = new SC::LibraryContainer(this);
+	auto* somafm_container = new SomaFM::LibraryContainer(this);
 
 	library_containers << static_cast<Library::Container*>(directory_container);
+	library_containers << static_cast<Library::Container*>(somafm_container);
+	library_containers << static_cast<Library::Container*>(soundcloud_container);
 
 #ifdef Q_OS_WIN
 	SC::LibraryContainer* soundcloud_container = new SC::LibraryContainer(this);

@@ -21,7 +21,7 @@
 /* SomaFMPlaylistModel.cpp */
 
 #include "SomaFMPlaylistModel.h"
-#include "3rdParty/SomaFM/SomaFMStation.h"
+#include "Components/Streaming/SomaFM/SomaFMStation.h"
 #include "Components/Covers/CoverLocation.h"
 
 #include "Utils/globals.h"
@@ -46,7 +46,6 @@ SomaFM::PlaylistModel::PlaylistModel(QObject* parent) :
 }
 
 SomaFM::PlaylistModel::~PlaylistModel() {}
-
 
 void SomaFM::PlaylistModel::set_station(const SomaFM::Station& station)
 {

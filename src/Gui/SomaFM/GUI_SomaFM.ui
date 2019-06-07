@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>856</width>
-    <height>978</height>
+    <width>783</width>
+    <height>592</height>
    </rect>
   </property>
   <layout class="QGridLayout" name="gridLayout">
@@ -235,7 +235,7 @@ border: 2px solid #202020;
   <customwidget>
    <class>SomaFMStationView</class>
    <extends>QTableView</extends>
-   <header>3rdParty/SomaFM/ui/SomaFMStationView.h</header>
+   <header>Gui/SomaFM/SomaFMStationView.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

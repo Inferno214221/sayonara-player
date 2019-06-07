@@ -35,6 +35,8 @@
 #include <QMenu>
 #include <QPluginLoader>
 #include <QVBoxLayout>
+#include <QJsonObject>
+#include <QVariantMap>
 
 using Library::PluginHandler;
 using Library::Container;
@@ -136,7 +138,44 @@ void PluginHandler::init_dll_libraries()
 
 	for(const QString& filename : dll_filenames)
 	{
-		QPluginLoader loader(plugin_dir.absoluteFilePath(filename));
+		QString absolute_path = plugin_dir.absoluteFilePath(filename);
+		QPluginLoader loader(absolute_path);
+		QJsonObject metadata = loader.metaData();
+		QVariantMap map = metadata.toVariantMap();
+		const auto keys = map.keys();
+
+		bool has_correct_iid = false;
+		for(const QString& key : keys)
+		{
+			if(key.trimmed() != "IID"){
+				continue;
+			}
+
+			QString value = map[key].toString();
+
+			if(value.startsWith("com.sayonara-player.apiv2."))
+			{
+				sp_log(Log::Debug, this) << "Have found valid plugin with iid = " << value;
+				has_correct_iid = true;
+			}
+
+			else if(value.startsWith("com.sayonara-player."))
+			{
+				sp_log(Log::Info, this) << "Ignoring *outdated* plugin with iid = " << value << " at " << absolute_path;
+			}
+
+			else
+			{
+				sp_log(Log::Warning, this) << "Ignoring *invalid* plugin with iid = " << value << " at " << absolute_path;
+			}
+
+			break;
+		}
+
+		if(!has_correct_iid)
+		{
+			continue;
+		}
 
 		QObject* raw_plugin = loader.instance();
 		if(!raw_plugin)

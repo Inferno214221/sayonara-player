@@ -19,9 +19,9 @@
  */
 
 #include "GUI_SoundcloudArtistSearch.h"
-#include "3rdParty/Soundcloud/src/SoundcloudLibrary.h"
-#include "3rdParty/Soundcloud/src/SoundcloudDataFetcher.h"
-#include "3rdParty/Soundcloud/ui_GUI_SoundcloudArtistSearch.h"
+#include "Components/Streaming/Soundcloud/SoundcloudLibrary.h"
+#include "Components/Streaming/Soundcloud/SoundcloudDataFetcher.h"
+#include "Gui/Soundcloud/ui_GUI_SoundcloudArtistSearch.h"
 
 #include "Utils/globals.h"
 #include "Utils/MetaData/Album.h"

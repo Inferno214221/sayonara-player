@@ -20,12 +20,12 @@
 
 /* GUI_SomaFM.cpp */
 
-#include "3rdParty/SomaFM/ui/GUI_SomaFM.h"
-#include "3rdParty/SomaFM/ui_GUI_SomaFM.h"
-#include "3rdParty/SomaFM/ui/SomaFMStationModel.h"
-#include "3rdParty/SomaFM/ui/SomaFMPlaylistModel.h"
-#include "3rdParty/SomaFM/SomaFMLibrary.h"
-#include "3rdParty/SomaFM/SomaFMStation.h"
+#include "GUI_SomaFM.h"
+#include "Gui/SomaFM/ui_GUI_SomaFM.h"
+#include "SomaFMStationModel.h"
+#include "SomaFMPlaylistModel.h"
+#include "Components/Streaming/SomaFM/SomaFMLibrary.h"
+#include "Components/Streaming/SomaFM/SomaFMStation.h"
 
 #include "Utils/Utils.h"
 #include "Utils/Logger/Logger.h"

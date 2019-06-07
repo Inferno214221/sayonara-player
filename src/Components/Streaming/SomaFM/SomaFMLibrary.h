@@ -52,7 +52,6 @@ namespace SomaFM
 			void search_stations();
 			void set_station_loved(const QString& station_name, bool loved);
 
-
 		private slots:
 			void soma_website_fetched();
 			void soma_playlist_content_fetched(bool success);

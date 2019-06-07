@@ -13,6 +13,8 @@ set(APPLICATION_LIBRARIES
 	gui_directories
 	gui_plugins
 	gui_preferences
+	gui_somafm
+	gui_soundcloud
 
 	say_interfaces_libraryinterface
 	sayonara_components
