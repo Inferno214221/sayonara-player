@@ -26,6 +26,15 @@
 
 namespace Playlist
 {
+	class Mode;	
+}
+
+using PlaylistMode=::Playlist::Mode;
+
+namespace Playlist
+{
+
+
 	/**
 	 * @brief The Mode class
 	 * @ingroup PlaylistHelper
@@ -49,19 +58,19 @@ namespace Playlist
 			Mode(const Mode& other);
 			Mode& operator=(const Mode& other);
 
-			Playlist::Mode::State rep1() const;
-			Playlist::Mode::State repAll() const;
-			Playlist::Mode::State append() const;
-			Playlist::Mode::State shuffle() const;
-			Playlist::Mode::State dynamic() const;
-			Playlist::Mode::State gapless() const;
+			PlaylistMode::State rep1() const;
+			PlaylistMode::State repAll() const;
+			PlaylistMode::State append() const;
+			PlaylistMode::State shuffle() const;
+			PlaylistMode::State dynamic() const;
+			PlaylistMode::State gapless() const;
 
-			void setRep1(Playlist::Mode::State state);
-			void setRepAll(Playlist::Mode::State state);
-			void setAppend(Playlist::Mode::State state);
-			void setShuffle(Playlist::Mode::State state);
-			void setDynamic(Playlist::Mode::State state);
-			void setGapless(Playlist::Mode::State state);
+			void setRep1(PlaylistMode::State state);
+			void setRepAll(PlaylistMode::State state);
+			void setAppend(PlaylistMode::State state);
+			void setShuffle(PlaylistMode::State state);
+			void setDynamic(PlaylistMode::State state);
+			void setGapless(PlaylistMode::State state);
 
 			void setRep1(bool on, bool enabled=true);
 			void setRepAll(bool on, bool enabled=true);
@@ -70,16 +79,16 @@ namespace Playlist
 			void setDynamic(bool on, bool enabled=true);
 			void setGapless(bool on, bool enabled=true);
 
-			static bool isActive(Playlist::Mode::State pl);
-			static bool isEnabled(Playlist::Mode::State pl);
-			static bool isActiveAndEnabled(Playlist::Mode::State pl);
+			static bool isActive(PlaylistMode::State pl);
+			static bool isEnabled(PlaylistMode::State pl);
+			static bool isActiveAndEnabled(PlaylistMode::State pl);
 
 			void print();
 
 			QString toString() const override;
 			bool loadFromString(const QString& str) override;
 
-			bool operator==(const Playlist::Mode& pm) const;
+			bool operator==(const PlaylistMode& pm) const;
 	};
 }
 

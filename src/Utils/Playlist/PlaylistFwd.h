@@ -24,28 +24,13 @@
 #include <memory>
 #include <QtGlobal>
 
-
 namespace Playlist
 {
-	class Base;
+	class Playlist;
 }
 
-/**
- * @brief PlaylistPtr Playlist Pointer (only used internally)
- * @ingroup Playlists
- * @ingroup PlaylistHelper
- */
-typedef std::shared_ptr<Playlist::Base> PlaylistPtr;
-
-/**
- * @brief PlaylistConstPtr read only Playlist Pointer
- * @ingroup Playlists
- * @ingroup PlaylistHelper
- */
-typedef std::shared_ptr<const Playlist::Base> PlaylistConstPtr;
-
-
-
+using PlaylistPtr = std::shared_ptr<Playlist::Playlist>;
+using PlaylistConstPtr = std::add_const<std::shared_ptr<Playlist::Playlist>>;
 /**
  * @ingroup PlaylistHelper
  */
@@ -58,6 +43,8 @@ namespace Playlist
 		Stream
 	};
 }
+
+using PlaylistType=::Playlist::Type;
 
 #endif
 

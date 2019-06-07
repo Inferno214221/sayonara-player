@@ -23,8 +23,8 @@
 #include "Components/DBus/org_mpris_media_player2_player_adaptor.h"
 #include "Components/Covers/CoverLocation.h"
 #include "Components/PlayManager/PlayManager.h"
+#include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistHandler.h"
-#include "Components/Playlist/AbstractPlaylist.h"
 
 #include "Utils/RandomGenerator.h"
 #include "Utils/Logger/Logger.h"

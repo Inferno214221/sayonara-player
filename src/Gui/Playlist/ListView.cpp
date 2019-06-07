@@ -42,7 +42,8 @@
 #include "Utils/Logger/Logger.h"
 #include "Utils/Set.h"
 #include "Utils/Settings/Settings.h"
-#include "Components/Playlist/AbstractPlaylist.h"
+#include "Components/Playlist/PlaylistHandler.h"
+#include "Components/Playlist/Playlist.h"
 
 #include <QShortcut>
 #include <QDropEvent>
@@ -57,14 +58,14 @@ using namespace Gui;
 
 struct PlaylistView::Private
 {
-	int						playlist_index;
 
+	PlaylistPtr				playlist;
 	PlaylistContextMenu*	context_menu=nullptr;
 	PlaylistItemModel*		model=nullptr;
 	ProgressBar*			progressbar=nullptr;
 
 	Private(PlaylistPtr pl, PlaylistView* parent) :
-		playlist_index(pl->index()),
+		playlist(pl),
 		model(new PlaylistItemModel(pl, parent))
 	{}
 };
@@ -75,6 +76,8 @@ PlaylistView::PlaylistView(PlaylistPtr pl, QWidget* parent) :
 	Dragable(this)
 {
 	m = Pimpl::make<Private>(pl, this);
+
+	auto* playlist_handler = Playlist::Handler::instance();
 
 	this->setObjectName("playlist_view" + QString::number(pl->index()));
 	this->set_model(m->model);
@@ -95,7 +98,7 @@ PlaylistView::PlaylistView(PlaylistPtr pl, QWidget* parent) :
 	new QShortcut(QKeySequence(Qt::Key_Enter), this, SLOT(play_selected_track()), nullptr, Qt::WidgetShortcut);
 
 	connect(m->model, &PlaylistItemModel::sig_data_ready, this, &PlaylistView::refresh);
-	connect(pl.get(), &Playlist::Base::sig_current_track_changed, this, &PlaylistView::goto_row);
+	connect(playlist_handler, &Playlist::Handler::sig_current_track_changed, this, &PlaylistView::current_track_changed);
 
 	QTimer::singleShot(100, this, [=](){
 		this->goto_to_current_track();
@@ -193,7 +196,7 @@ void PlaylistView::handle_drop(QDropEvent* event)
 		return;
 	}
 
-	bool is_inner_drag_drop = MimeData::is_inner_drag_drop(mimedata, m->playlist_index);
+	bool is_inner_drag_drop = MimeData::is_inner_drag_drop(mimedata, m->playlist->index());
 	if(is_inner_drag_drop)
 	{
 		bool copy = (event->keyboardModifiers() & Qt::ControlModifier);
@@ -551,4 +554,11 @@ void PlaylistView::refresh()
 
 	hh->resizeSection(PlaylistItemModel::ColumnName::Time, w_time);
 	hh->resizeSection(PlaylistItemModel::ColumnName::Description, viewport_width - (w_time));
+}
+
+void PlaylistView::current_track_changed(int track_index, int playlist_index)
+{
+	if(m->playlist->index() == playlist_index){
+		goto_row(track_index);
+	}
 }

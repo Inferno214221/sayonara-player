@@ -25,22 +25,27 @@
 
 #include "Utils/Pimpl.h"
 
+class MetaDataList;
+class MetaData;
+
 namespace Playlist
 {
 	class StopBehavior
 	{
 		PIMPL(StopBehavior)
 
-	public:
-		StopBehavior();
-		~StopBehavior();
+		public:
+			StopBehavior();
+			virtual ~StopBehavior();
 
-		virtual const MetaDataList& metadata() const=0;
+			virtual const MetaDataList& tracks() const=0;
+			virtual const MetaData& track(int index) const=0;
+			virtual int count() const=0;
 
-		int restore_track_before_stop();
+			int restore_track_before_stop();
 
-		int track_idx_before_stop() const;
-		void set_track_idx_before_stop(int idx);
+			int track_idx_before_stop() const;
+			void set_track_idx_before_stop(int idx);
 	};
 }
 

@@ -30,8 +30,8 @@
 
 #include "Gui/Utils/Style.h"
 
+#include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistHandler.h"
-#include "Components/Playlist/AbstractPlaylist.h"
 #include "Components/Converter/OggConverter.h"
 #include "Components/Converter/LameConverter.h"
 
@@ -133,7 +133,7 @@ void GUI_AudioConverter::btn_start_clicked()
 	int n_threads = GetSetting(Set::AudioConvert_NumberThreads);
 
 	PlaylistConstPtr pl = Playlist::Handler::instance()->playlist(Playlist::Handler::instance()->current_index());
-	MetaDataList v_md = pl->metadata();
+	MetaDataList v_md = pl->tracks();
 
 	Converter* converter = create_converter();
 	{ // create and check converter

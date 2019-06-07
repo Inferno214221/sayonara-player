@@ -105,6 +105,7 @@ private:
 
 private slots:
 	void refresh();
+	void current_track_changed(int track_index, int playlist_index);
 	void async_drop_finished(bool success, int async_drop_index);
 	void rating_changed(Rating rating);
 	void sl_columns_changed();

@@ -28,7 +28,9 @@ namespace Playlist
         IDDesc,
         NameAsc,
         NameDesc
-    };  
+    };
 }
+
+using PlaylistSortOrder=::Playlist::SortOrder;
 
 #endif

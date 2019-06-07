@@ -38,6 +38,8 @@
 #include "Utils/Playlist/PlaylistFwd.h"
 #include "Utils/Library/LibraryNamespaces.h"
 
+#include <QObject>
+
 class CustomPlaylist;
 
 namespace Playlist
@@ -91,18 +93,32 @@ namespace Playlist
 			void sig_playlist_name_changed(int idx);
 
 			/**
-			 * @brief emitted when saved playlists have changed
+			 * @brief emitted when saved playlists have changed. \\n
+			 * E.g. a temporary playlist was saved and so converted
+			 * to a saved playlist
 			 */
 			void sig_saved_playlists_changed();
 
-
+			/**
+			 * @brief emitted when tracks were added/removed or have changed
+			 * @param idx playlist index
+			 */
 			void sig_current_playlist_changed(int idx);
 
+			/**
+			 * @brief emitted when a track deletion was triggered over the Ui
+			 * @param v_md which tracks should be deleted
+			 * @param deletion_mode
+			 */
 			void sig_track_deletion_requested(const MetaDataList& v_md, Library::TrackDeletionMode deletion_mode);
 
 
 		public:
 
+			/**
+			 * @brief Call this before the program stops.
+			 * Singletons and Destructors don't work out so well
+			 */
 			void shutdown();
 
 			/**
@@ -238,8 +254,6 @@ namespace Playlist
 			 */
 			void save_playlist_to_file(int pl_idx, const QString& filename, bool relative);
 
-
-
 			/**
 			 * @brief create a new playlist
 			 * @param v_md track list
@@ -248,7 +262,7 @@ namespace Playlist
 			 * @param type deprecated
 			 * @return new playlist index
 			 */
-			int create_playlist(const MetaDataList& v_md, const QString& name=QString(), bool temporary=true, Playlist::Type type=Playlist::Type::Std);
+			int create_playlist(const MetaDataList& v_md, const QString& name=QString(), bool temporary=true, PlaylistType type=PlaylistType::Std);
 
 			/**
 			 * @brief create a new playlist (overloaded)
@@ -258,7 +272,7 @@ namespace Playlist
 			 * @param type deprecated
 			 * @return new playlist index
 			 */
-			int create_playlist(const QStringList& path_list, const QString& name=QString(), bool temporary=true, Playlist::Type type=Playlist::Type::Std);
+			int create_playlist(const QStringList& path_list, const QString& name=QString(), bool temporary=true, PlaylistType type=PlaylistType::Std);
 
 			/**
 			 * @brief create a new playlist (overloaded)
@@ -269,7 +283,7 @@ namespace Playlist
 			 * @return new playlist index
 			 */
 
-			int create_playlist(const QString& dir, const QString& name=QString(), bool temporary=true, Playlist::Type type=Playlist::Type::Std);
+			int create_playlist(const QString& dir, const QString& name=QString(), bool temporary=true, PlaylistType type=PlaylistType::Std);
 
 
 			/**
@@ -308,11 +322,6 @@ namespace Playlist
 			void played();
 
 			/**
-			 * @brief pause active playlist
-			 */
-			void paused();
-
-			/**
 			 * @brief stop active playlist
 			 */
 			void stopped();
@@ -337,15 +346,27 @@ namespace Playlist
 
 			void www_track_finished(const MetaData& md);
 
-
+			void current_track_changed(int index);
+			void playlist_stopped();
 
 		private:
-			// adds a new playlist, creates it, if name is not in the list of playlists. If name already exists,
-			// this function returns the index
-			int	add_new_playlist(const QString& name, bool editable, Playlist::Type type=Playlist::Type::Std);
+			/**
+			 * @brief adds a new playlist, creates it, if name is not in the list of playlists. If name already exists,
+			 * @param name
+			 * @param editable
+			 * @param type
+			 * @return index of new playlist
+			 */
+			int	add_new_playlist(const QString& name, bool editable, PlaylistType type=PlaylistType::Std);
 
-			// raw creation of playlists
-			PlaylistPtr new_playlist(Playlist::Type type, int idx, QString name="");
+			/**
+			 * @brief Create new playlist and return it
+			 * @param type
+			 * @param idx
+			 * @param name
+			 * @return
+			 */
+			PlaylistPtr new_playlist(PlaylistType type, QString name);
 
 
 			/**

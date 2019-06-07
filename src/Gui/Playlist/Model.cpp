@@ -27,7 +27,7 @@
  */
 
 #include "Model.h"
-#include "Components/Playlist/AbstractPlaylist.h"
+#include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistHandler.h"
 #include "Components/Tagging/UserTaggingOperations.h"
 #include "Components/Covers/CoverLocation.h"
@@ -85,7 +85,7 @@ PlaylistItemModel::PlaylistItemModel(PlaylistPtr pl, QObject* parent) :
 {
 	m = Pimpl::make<Private>(pl);
 
-	connect(m->pl.get(), &Playlist::Base::sig_items_changed, this, &PlaylistItemModel::playlist_changed);
+	connect(m->pl, &Playlist::Playlist::sig_items_changed, this, &PlaylistItemModel::playlist_changed);
 
 	ListenSettingNoCall(Set::PL_EntryLook, PlaylistItemModel::look_changed);
 
@@ -123,7 +123,7 @@ QVariant PlaylistItemModel::data(const QModelIndex& index, int role) const
 		}
 
 		else if(col == ColumnName::Time) {
-			auto l = m->pl->metadata(row).length_ms;
+			auto l = m->pl->track(row).length_ms;
 			return Util::cvt_ms_to_string(l, true, true, false);
 		}
 
@@ -168,10 +168,10 @@ QVariant PlaylistItemModel::data(const QModelIndex& index, int role) const
 	{
 		if(col == ColumnName::Cover)
 		{
-			AlbumId album_id = m->pl->metadata(row).album_id;
+			AlbumId album_id = m->pl->track(row).album_id;
 			if(!m->pms.contains(album_id))
 			{
-				Cover::Location cl = Cover::Location::cover_location(m->pl->metadata(row));
+				Cover::Location cl = Cover::Location::cover_location(m->pl->track(row));
 				m->pms[album_id] = QPixmap(cl.preferred_path()).scaled(QSize(20, 20), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 			}
 
@@ -276,7 +276,7 @@ void PlaylistItemModel::change_rating(const IndexSet& indexes, Rating rating)
 
 	for(auto idx : indexes)
 	{
-		v_md << m->pl->metadata(idx);
+		v_md << m->pl->track(idx);
 	}
 
 	Tagging::UserOperations* uto = new Tagging::UserOperations(-1, this);
@@ -302,7 +302,7 @@ void PlaylistItemModel::set_current_track(int row)
 
 const MetaData& PlaylistItemModel::metadata(int row) const
 {
-	return m->pl->metadata(row);
+	return m->pl->track(row);
 }
 
 MetaDataList PlaylistItemModel::metadata(const IndexSet &rows) const
@@ -312,7 +312,7 @@ MetaDataList PlaylistItemModel::metadata(const IndexSet &rows) const
 
 	for(int row : rows)
 	{
-		v_md << m->pl->metadata(row);
+		v_md << m->pl->track(row);
 	}
 
 	return v_md;
@@ -361,7 +361,7 @@ QModelIndexList PlaylistItemModel::search_results(const QString& substr)
 	int rows = rowCount();
 	for(int i=0; i<rows; i++)
 	{
-		MetaData md = m->pl->metadata(i);
+		MetaData md = m->pl->track(i);
 		QString str;
 		switch(plsm)
 		{
@@ -418,7 +418,7 @@ QMimeData* PlaylistItemModel::mimeData(const QModelIndexList& indexes) const
 			continue;
 		}
 
-		v_md << m->pl->metadata(idx.row());
+		v_md << m->pl->track(idx.row());
 	}
 
 	if(v_md.empty()){
@@ -434,7 +434,7 @@ QMimeData* PlaylistItemModel::mimeData(const QModelIndexList& indexes) const
 
 bool PlaylistItemModel::has_local_media(const IndexSet& rows) const
 {
-	const  MetaDataList& tracks = m->pl->playlist();
+	const  MetaDataList& tracks = m->pl->tracks();
 
 	for(int row : rows)
 	{
@@ -486,7 +486,8 @@ void PlaylistItemModel::playlist_changed(int pl_idx)
 		endInsertRows();
 	}
 
-	if(m->pl->is_empty()){
+	if(m->pl->count() == 0)
+	{
 		beginResetModel();
 		endResetModel();
 	}

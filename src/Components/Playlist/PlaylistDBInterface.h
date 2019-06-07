@@ -22,8 +22,8 @@
 #define PLAYLISTDBINTERFACE_H
 
 #include "Utils/Pimpl.h"
-#include <QObject>
 
+class QString;
 class MetaDataList;
 
 namespace Playlist
@@ -32,10 +32,8 @@ namespace Playlist
 	 * @brief The PlaylistDBInterface class
 	 * @ingroup Playlists
 	 */
-	class DBInterface :
-			public QObject
+	class DBInterface
 	{
-		Q_OBJECT
 		PIMPL(DBInterface)
 
 		public:
@@ -66,9 +64,7 @@ namespace Playlist
 			bool delete_playlist();
 			bool remove_from_db();
 
-			virtual const MetaDataList& playlist() const = 0;
-			virtual int count() const = 0;
-			virtual bool is_empty() const = 0;
+			virtual const MetaDataList& tracks() const = 0;
 			virtual void set_changed(bool b) = 0;
 			virtual bool was_changed() const = 0;
 			virtual bool is_storable() const =0;

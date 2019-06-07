@@ -42,26 +42,26 @@ namespace Playlist
 			~DBWrapper();
 
 			bool get_skeletons(CustomPlaylistSkeletons& skeletons,
-								   Playlist::StoreType type,
-								   Playlist::SortOrder so=Playlist::SortOrder::IDAsc);
+								   PlaylistStoreType type,
+								   PlaylistSortOrder so=PlaylistSortOrder::IDAsc);
 
 			bool get_all_skeletons(CustomPlaylistSkeletons& skeletons,
-								   Playlist::SortOrder so=Playlist::SortOrder::IDAsc);
+								   PlaylistSortOrder so=PlaylistSortOrder::IDAsc);
 
 			bool get_non_temporary_skeletons(CustomPlaylistSkeletons& skeletons,
-								   Playlist::SortOrder so=Playlist::SortOrder::IDAsc);
+								   PlaylistSortOrder so=PlaylistSortOrder::IDAsc);
 
 			bool get_temporary_skeletons(CustomPlaylistSkeletons& skeletons,
-										 Playlist::SortOrder so);
+										 PlaylistSortOrder so);
 
 			bool get_all_playlists(CustomPlaylists& playlists,
-								   Playlist::SortOrder so=Playlist::SortOrder::IDAsc);
+								   PlaylistSortOrder so=PlaylistSortOrder::IDAsc);
 
 			bool get_temporary_playlists(CustomPlaylists& playlists,
-										 Playlist::SortOrder so=Playlist::SortOrder::IDAsc);
+										 PlaylistSortOrder so=PlaylistSortOrder::IDAsc);
 
 			bool get_non_temporary_playlists(CustomPlaylists& playlists,
-											 Playlist::SortOrder so=Playlist::SortOrder::IDAsc);
+											 PlaylistSortOrder so=PlaylistSortOrder::IDAsc);
 
 			CustomPlaylist get_playlist_by_id(int id);
 			CustomPlaylist get_playlist_by_name(const QString& name);
@@ -79,8 +79,8 @@ namespace Playlist
 		private:
 			void apply_tags(MetaDataList& v_md);
 			bool get_playlists(CustomPlaylists& playlists,
-							   Playlist::StoreType type,
-							   Playlist::SortOrder sortorder);
+							   PlaylistStoreType type,
+							   PlaylistSortOrder sortorder);
 	};
 
 	using DBWrapperPtr=std::shared_ptr<DBWrapper>;

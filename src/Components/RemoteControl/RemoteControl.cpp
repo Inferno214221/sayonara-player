@@ -20,8 +20,8 @@
 
 #include "RemoteControl.h"
 #include "Components/Covers/CoverLocation.h"
+#include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistHandler.h"
-#include "Components/Playlist/AbstractPlaylist.h"
 #include "Components/PlayManager/PlayManager.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/MetaData/MetaDataList.h"
@@ -405,9 +405,10 @@ void RemoteControl::write_playlist()
 	QByteArray data;
 	PlaylistConstPtr pl = m->plh->playlist(m->plh->active_index());
 
-	if(pl){
+	if(pl)
+	{
 		int i=1;
-		for(const MetaData& md : pl->playlist())
+		for(const MetaData& md : pl->tracks())
 		{
 			data += QByteArray::number(i) + '\t' +
 					md.title().toUtf8() + '\t' +

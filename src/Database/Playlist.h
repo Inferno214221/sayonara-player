@@ -38,6 +38,8 @@ namespace Playlist
 	};
 }
 
+using PlaylistStoreType=::Playlist::StoreType;
+
 namespace DB
 {
 	class Playlist :

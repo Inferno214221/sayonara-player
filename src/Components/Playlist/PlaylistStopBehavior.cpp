@@ -38,22 +38,21 @@ Playlist::StopBehavior::StopBehavior()
 	m = Pimpl::make<Private>();
 }
 
-Playlist::StopBehavior::~StopBehavior() {}
+Playlist::StopBehavior::~StopBehavior() = default;
 
 int Playlist::StopBehavior::restore_track_before_stop()
 {
-	const MetaDataList& v_md = metadata();
+	const MetaDataList& v_md = tracks();
 	auto it = Algorithm::find(v_md, [=](const MetaData& md){
 		return (md.id == m->id_before_stop);
 	});
 
-	if(it == v_md.end()){
+	if(it == v_md.end()) {
 		set_track_idx_before_stop(-1);
 		return -1;
 	}
 
-	else
-	{
+	else {
 		m->idx_before_stop = std::distance(v_md.begin(), it);
 	}
 
@@ -67,11 +66,11 @@ int Playlist::StopBehavior::track_idx_before_stop() const
 
 void Playlist::StopBehavior::set_track_idx_before_stop(int idx)
 {
-	bool valid = Util::between(idx, metadata().count());
+	bool valid = Util::between(idx, tracks().count());
 	if(valid)
 	{
 		m->idx_before_stop = idx;
-		m->id_before_stop = metadata().at(idx).id;
+		m->id_before_stop = tracks().at(idx).id;
 	}
 
 	else {

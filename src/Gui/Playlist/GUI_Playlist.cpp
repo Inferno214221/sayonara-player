@@ -39,7 +39,7 @@
 #include "Utils/Message/Message.h"
 
 #include "Components/PlayManager/PlayManager.h"
-#include "Components/Playlist/AbstractPlaylist.h"
+#include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistHandler.h"
 
 #include <QFileDialog>
@@ -362,7 +362,7 @@ void GUI_Playlist::playlist_added(PlaylistPtr pl)
 	connect(plv, &PlaylistView::sig_double_clicked, this, &GUI_Playlist::double_clicked);
 	connect(plv, &PlaylistView::sig_delete_tracks, this, &GUI_Playlist::delete_tracks_clicked);
 	connect(plv, &PlaylistView::sig_bookmark_pressed, this, &GUI_Playlist::bookmark_selected);
-	connect(pl.get(), &Playlist::Base::sig_items_changed, this, &GUI_Playlist::playlist_changed);
+	connect(pl, &Playlist::Playlist::sig_items_changed, this, &GUI_Playlist::playlist_changed);
 
 	Handler::instance()->set_current_index(idx);
 }
@@ -520,15 +520,16 @@ void GUI_Playlist::check_playlist_menu(PlaylistConstPtr pl)
 	bool temporary =		pl->is_temporary();
 	bool was_changed =		pl->was_changed();
 	bool storable =			pl->is_storable();
+	bool is_empty =			(pl->count() == 0);
 
 	bool save_enabled =		(!temporary && storable);
 	bool save_as_enabled =	(storable);
-	bool save_to_file_enabled = (!pl->is_empty());
+	bool save_to_file_enabled = (!is_empty);
 	bool delete_enabled =	(!temporary && storable);
 	bool reset_enabled =	(!temporary && storable && was_changed);
 	bool close_enabled =	(ui->tw_playlists->count() > 2);
 	bool rename_enabled =	(storable);
-	bool clear_enabled =	(!pl->is_empty());
+	bool clear_enabled =	(!is_empty);
 
 	entries |= PlaylistMenuEntry::OpenFile;
 	entries |= PlaylistMenuEntry::OpenDir;
