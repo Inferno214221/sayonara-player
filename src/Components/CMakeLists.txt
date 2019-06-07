@@ -22,6 +22,7 @@ file(GLOB_RECURSE SOURCES Streaming *.cpp)
 file(GLOB_RECURSE SOURCES Tagging *.cpp)
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES})
+
 target_link_libraries(${PROJECT_NAME}
 	say_db
 	say_interfaces_raw_sound_receiver

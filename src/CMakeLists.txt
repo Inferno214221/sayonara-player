@@ -2,7 +2,16 @@ cmake_minimum_required(VERSION 3.7)
 project(sayonara)
 
 include(FindPkgConfig)
-include(compiler.cmake)
+include(CMake/Compiler.cmake)
+
+if( WITH_COTIRE )
+	include(CMake/Cotire.cmake)
+	message("Compiling with Cotire")
+	add_definitions(-D__STRICT_ANSI__)
+else()
+	message("Compiling without Cotire")
+endif()
+
 
 # absolute linker paths are no longer supoorted in -l parameter
 # use -L for path and -l for library itself
@@ -102,6 +111,7 @@ else()
 	message("Demangle not found")
 endif()
 
+#add_subdirectory(pch)
 add_subdirectory(Application)
 add_subdirectory(Gui)
 add_subdirectory(Utils)

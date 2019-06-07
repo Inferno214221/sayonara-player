@@ -1,5 +1,5 @@
 project(say_tests)
-include(${CMAKE_CURRENT_SOURCE_DIR}/../src/compiler.cmake)
+include(${CMAKE_SOURCE_DIR}/src/CMake/Compiler.cmake)
 
 if(POLICY CMP0071)
 	cmake_policy(SET CMP0071 NEW)

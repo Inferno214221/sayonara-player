@@ -1,3 +1,9 @@
+== 1.5.0-stable1 == 
+
+  * Engine: Bugfix in Pitch element
+  * Cover: Bugfix endless cover search
+  * Library: Empty Library usability improvement
+
 == 1.4.1-stable1 ==
 
   * Language: Added ability to check for updates

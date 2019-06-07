@@ -3,14 +3,6 @@ project("Sayonara Player")
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}")
 
-if( WITH_COTIRE )
-	include(cotire)
-	message("Compiling with Cotire")
-	add_definitions(-D__STRICT_ANSI__)
-else()
-	message("Compiling without Cotire")
-endif()
-
 set(VAR_SAYONARA_VERSION "1.5.0-beta1")
 
 set(SAYONARA_VERSION "${VAR_SAYONARA_VERSION}")

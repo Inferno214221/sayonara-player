@@ -42,6 +42,7 @@ class LocalLibrary :
 
 signals:
 	void sig_import_dialog_requested(const QString& target_dir);
+	void sig_renamed(const QString& new_name);
 
 protected:
 	LocalLibrary(LibraryId id, QObject* parent=nullptr);
@@ -65,6 +66,7 @@ protected slots:
 	void reload_thread_finished();
 	void search_mode_changed();
 	void show_album_artists_changed();
+	void renamed(LibraryId id);
 
 private:
 	void get_all_artists(ArtistList& artists) override;

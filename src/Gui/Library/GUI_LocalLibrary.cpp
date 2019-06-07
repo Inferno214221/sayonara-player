@@ -137,6 +137,7 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 	connect(m->library_menu, &LocalLibraryMenu::sig_info, this, &GUI_LocalLibrary::show_info_box);
 	connect(m->library_menu, &LocalLibraryMenu::sig_reload_library, this, [=](){ this->reload_library_requested(); });
 	connect(ui->btn_reload_library, &QPushButton::clicked, this, [=](){	this->reload_library_requested(); });
+	connect(ui->btn_reload_library_small, &QPushButton::clicked, this, [=](){	this->reload_library_requested(); });
 
 	connect(ui->splitter_artist_album, &QSplitter::splitterMoved, this, &GUI_LocalLibrary::splitter_artist_moved);
 	connect(ui->splitter_tracks, &QSplitter::splitterMoved, this, &GUI_LocalLibrary::splitter_tracks_moved);
@@ -147,6 +148,12 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 	connect(ui->tv_tracks, &Library::ItemView::sig_reload_clicked, this, &GUI_LocalLibrary::reload_library_requested);
 
 	connect(ui->btn_close_extensions, &QPushButton::clicked, this, &GUI_LocalLibrary::close_extensions_clicked);
+	connect(ui->btn_cancel, &QPushButton::clicked, this, [=](){
+		ui->stacked_widget_reload->setCurrentIndex(0);
+	});
+
+	ui->stacked_widget_reload->setCurrentIndex(0);
+	ui->btn_reload_library_small->setVisible(false);
 
 	setAcceptDrops(true);
 
@@ -171,7 +178,9 @@ void GUI_LocalLibrary::language_changed()
 	ui->retranslateUi(this);
 	ui->gb_genres->setTitle(Lang::get(Lang::Genres));
 	ui->btn_reload_library->setText(Lang::get(Lang::ReloadLibrary));
+	ui->btn_reload_library_small->setText(Lang::get(Lang::ReloadLibrary));
 	ui->lab_extension->setText(Lang::get(Lang::Filter) + ":");
+	ui->btn_cancel->setText(Lang::get(Lang::Cancel));
 
 	GUI_AbstractLibrary::language_changed();
 }
@@ -186,15 +195,18 @@ void GUI_LocalLibrary::check_status_bar(bool is_reloading)
 		int index = (is_reloading == true) ? 0 : 1;
 		ui->stacked_widget_reload->setCurrentIndex(index);
 
-		ui->pb_progress->setVisible(is_reloading);
-		ui->lab_progress->setVisible(is_reloading);
-
 		ui->sw_status->setVisible(true);
 		ui->sw_status->setCurrentIndex(StatusWidgetIndex::ReloadLibraryIndex);
+
+		ui->btn_reload_library_small->setVisible(!is_reloading);
+		ui->pb_progress->setVisible(is_reloading);
+		ui->lab_progress->setVisible(is_reloading);
 	}
 
 	else
 	{
+		ui->stacked_widget_reload->setCurrentIndex(0);
+
 		QLayout* l = ui->widget_extensions->layout();
 
 		for(QPushButton* btn : m->extension_buttons)
@@ -241,19 +253,10 @@ void GUI_LocalLibrary::tracks_loaded()
 {
 	check_status_bar(false);
 
-	if(m->library->tracks().isEmpty() && m->library->filter().cleared())
-	{
-		ui->stacked_widget_reload->setCurrentIndex(1);
-	}
-
-	else
-	{
-		ui->stacked_widget_reload->setCurrentIndex(0);
-	}
-
 	ui->lab_library_name->setText(m->library->library_name());
 	ui->lab_path->setText(Util::create_link(m->library->library_path(), Style::is_dark(), true));
 	ui->btn_reload_library->setIcon(Gui::Icons::icon(Gui::Icons::Refresh));
+	ui->btn_reload_library_small->setIcon(Gui::Icons::icon(Gui::Icons::Refresh));
 }
 
 
@@ -359,6 +362,8 @@ void GUI_LocalLibrary::reload_finished()
 
 	int index = (m->library->tracks().isEmpty()) ? 1 : 0;
 	ui->stacked_widget_reload->setCurrentIndex(index);
+
+	check_status_bar(false);
 }
 
 void GUI_LocalLibrary::show_info_box()
@@ -410,6 +415,7 @@ void GUI_LocalLibrary::name_changed(LibraryId id)
 	Library::Info info = m->manager->library_info(id);
 	if(info.valid()){
 		m->library_menu->refresh_name(info.name());
+		ui->lab_library_name->setText(info.name());
 	}
 }
 
@@ -427,6 +433,7 @@ void GUI_LocalLibrary::path_changed(LibraryId id)
 
 		if(this->isVisible()){
 			reload_library_requested_with_quality(Library::ReloadQuality::Accurate);
+			ui->lab_path->setText(info.path());
 		}
 	}
 }

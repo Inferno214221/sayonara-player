@@ -73,11 +73,14 @@ LocalLibrary::LocalLibrary(LibraryId library_id, QObject *parent) :
 	connect(plh, &Playlist::Handler::sig_track_deletion_requested,
 			this, &LocalLibrary::delete_tracks);
 
+	Library::Manager* manager = Library::Manager::instance();
+	connect(manager, &Library::Manager::sig_renamed, this, &LocalLibrary::renamed);
+
 	ListenSettingNoCall(Set::Lib_SearchMode, LocalLibrary::search_mode_changed);
 	ListenSettingNoCall(Set::Lib_ShowAlbumArtists, LocalLibrary::show_album_artists_changed);
 }
 
-LocalLibrary::~LocalLibrary() {}
+LocalLibrary::~LocalLibrary() = default;
 
 void LocalLibrary::apply_db_fixes() {}
 
@@ -143,6 +146,14 @@ void LocalLibrary::show_album_artists_changed()
 	}
 
 	refresh();
+}
+
+void LocalLibrary::renamed(LibraryId id)
+{
+	if(id == this->library_id())
+	{
+		emit sig_renamed( this->library_name() );
+	}
 }
 
 
