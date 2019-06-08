@@ -35,6 +35,7 @@
 #include <QDBusMessage>
 #include <QStringList>
 #include <QUrl>
+#include <QTimer>
 
 struct DBusMPRIS::MediaPlayer2::Private
 {
@@ -187,17 +188,22 @@ void DBusMPRIS::MediaPlayer2::SetFullscreen(bool b)
 
 void DBusMPRIS::MediaPlayer2::Quit()
 {
+	SetSetting(SetNoDB::Player_Quit, true);
 	m->player->close();
 }
+
 
 void DBusMPRIS::MediaPlayer2::Raise()
 {
 	sp_log(Log::Debug, this) << "Raise";
 
-	m->player->show();
-	m->player->raise();
-	m->player->show();
-	m->player->raise();
+	QSize sz = GetSetting(Set::Player_Size);
+	QPoint p = GetSetting(Set::Player_Pos);
+
+	m->player->showNormal();
+	QTimer::singleShot(200, [=](){
+		m->player->setGeometry(p.x(), p.y(), sz.width(), sz.height());
+	});
 }
 
 

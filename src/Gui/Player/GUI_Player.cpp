@@ -49,8 +49,6 @@
 #include "Interfaces/LibraryInterface/LibraryPluginHandler.h"
 #include "Interfaces/LibraryInterface/LibraryContainer/LibraryContainer.h"
 
-
-
 #include <QTranslator>
 #include <QAction>
 #include <QKeySequence>
@@ -707,7 +705,7 @@ void GUI_Player::closeEvent(QCloseEvent* e)
 	SetSetting(Set::Player_Fullscreen, this->isFullScreen());
 	SetSetting(Set::Player_Pos, this->pos());
 
-	if(!m->shutdown_requested && min_to_tray)
+	if(!m->shutdown_requested && min_to_tray && !GetSetting(SetNoDB::Player_Quit))
 	{
 		if(GetSetting(Set::Player_514Fix))
 		{
