@@ -108,12 +108,13 @@ else()
 endif()
 
 add_subdirectory(Application)
-add_subdirectory(Gui)
-add_subdirectory(Utils)
-add_subdirectory(Database)
-add_subdirectory(Interfaces)
 add_subdirectory(Components)
+add_subdirectory(Database)
+add_subdirectory(DBus)
+add_subdirectory(Interfaces)
+add_subdirectory(Gui)
 add_subdirectory(Languages)
+add_subdirectory(Utils)
 
 add_executable(${PROJECT_NAME} Main.cpp ${QM_FILES})
 
@@ -126,9 +127,10 @@ if(WIN32)
 endif()
 
 target_link_libraries(${PROJECT_NAME}
-	say_application
 	gui_resources
-	say_lang
+
+	sayonara_application
+	sayonara_languages
 
 	${OS_LIBRARIES}
 )
@@ -136,7 +138,7 @@ target_link_libraries(${PROJECT_NAME}
 add_executable("create_db" CreateDB.cpp)
 target_link_libraries("create_db"
 	sayonara_utils
-	say_db
+	sayonara_database
 	Qt5::Widgets
 )
 

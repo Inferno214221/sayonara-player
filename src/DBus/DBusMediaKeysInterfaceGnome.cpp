@@ -19,7 +19,7 @@
  */
 
 #include "DBusMediaKeysInterfaceGnome.h"
-#include "Components/DBus/gnome_settings_daemon.h"
+#include "DBus/gnome_settings_daemon.h"
 #include "Utils/Logger/Logger.h"
 
 struct DBusMediaKeysInterfaceGnome::Private

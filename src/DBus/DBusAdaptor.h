@@ -13,7 +13,7 @@ class DBusAdaptor :
 	PIMPL(DBusAdaptor)
 
 protected:
-	explicit DBusAdaptor(QStrRef object_path, QStrRef service_name, QStrRef dbus_service, QStrRef dbus_interface, QObject *parent=nullptr);
+	DBusAdaptor(QStrRef object_path, QStrRef service_name, QStrRef dbus_service, QStrRef dbus_interface, QObject *parent=nullptr);
 	virtual ~DBusAdaptor();
 
 	void create_message(QString name, QVariant val);

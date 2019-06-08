@@ -1,4 +1,4 @@
-project(say_interfaces_raw_sound_receiver)
+project(interface_rawsoundreceiver)
 
 set(SOURCES
 	RawSoundReceiverInterface.cpp

@@ -19,8 +19,8 @@
  */
 
 #include "DBusMediaKeysInterfaceMate.h"
+#include "DBus/mate_settings_daemon.h"
 #include "Utils/Logger/Logger.h"
-#include "Components/DBus/mate_settings_daemon.h"
 
 struct DBusMediaKeysInterfaceMate::Private
 {

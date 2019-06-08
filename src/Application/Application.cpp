@@ -26,7 +26,7 @@
 #include "Gui/Utils/Icons.h"
 
 #ifdef WITH_DBUS
-#include "Components/DBus/DBusHandler.h"
+#include "DBus/DBusHandler.h"
 #endif
 
 #ifdef Q_OS_WIN

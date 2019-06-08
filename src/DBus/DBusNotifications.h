@@ -20,8 +20,8 @@
 #ifndef DBUSNOTIFICATIONS_H
 #define DBUSNOTIFICATIONS_H
 
+#include "DBus/Notifications.h"
 #include "Interfaces/Notification/NotificationHandler.h"
-#include "Components/DBus/Notifications.h"
 #include "Utils/Pimpl.h"
 
 class DBusNotifications :

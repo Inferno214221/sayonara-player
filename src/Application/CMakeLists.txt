@@ -1,4 +1,4 @@
-project(say_application)
+project(sayonara_application)
 
 include_directories(
 	${CMAKE_CURRENT_BINARY_DIR},
@@ -15,8 +15,10 @@ set(APPLICATION_LIBRARIES
 	gui_preferences
 	gui_somafm
 	gui_soundcloud
+	gui_resources
 
 	sayonara_components
+	sayonara_dbus
 
 	interface_library
 )

@@ -19,10 +19,10 @@
  */
 
 #include "DBusHandler.h"
-#include "Components/DBus/DBusMPRIS.h"
-#include "Components/DBus/DBusMediaKeysInterfaceMate.h"
-#include "Components/DBus/DBusMediaKeysInterfaceGnome.h"
-#include "Components/DBus/DBusNotifications.h"
+#include "DBus/DBusMPRIS.h"
+#include "DBus/DBusMediaKeysInterfaceMate.h"
+#include "DBus/DBusMediaKeysInterfaceGnome.h"
+#include "DBus/DBusNotifications.h"
 
 #include "Gui/Utils/Widgets/Widget.h"
 #include "Utils/Logger/Logger.h"

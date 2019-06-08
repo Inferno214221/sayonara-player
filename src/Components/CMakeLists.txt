@@ -22,19 +22,15 @@ file(GLOB_RECURSE SOURCES Streaming *.cpp)
 file(GLOB_RECURSE SOURCES Tagging *.cpp)
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES})
-add_subdirectory(DBus)
 
 target_link_libraries(${PROJECT_NAME}
-	say_db
-	say_interfaces_raw_sound_receiver
+	sayonara_database
+	interface_rawsoundreceiver
 	interface_notifications
-	comp_dbus
 
 	${GSTREAMER_LIBRARIES}
 	${GSTREAMER_BASE_LIBRARIES}
 	${GSTREAMER_BASE_APP_LIBRARIES}
-
-	Qt5::DBus
 )
 
 if( WITH_COTIRE )

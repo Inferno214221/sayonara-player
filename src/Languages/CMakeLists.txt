@@ -1,4 +1,4 @@
-project(say_lang)
+project(sayonara_languages)
 
 file(GLOB TS_FILES . *.ts)
 file(GLOB QT_QM_FILES . *.qm)

@@ -1,5 +1,4 @@
 #include "DBusAdaptor.h"
-#include "Components/PlayManager/PlayManager.h"
 
 #include <QDBusConnection>
 #include <QDBusMessage>
@@ -14,16 +13,12 @@ struct DBusAdaptor::Private
 	QString		dbus_service;
 	QString		dbus_interface;
 
-	PlayManagerPtr play_manager=nullptr;
-
 	Private(QStrRef object_path, QStrRef service_name, QStrRef dbus_service, QStrRef dbus_interface) :
 		object_path(object_path),
 		service_name(service_name),
 		dbus_service(dbus_service),
 		dbus_interface(dbus_interface)
-	{
-		play_manager = PlayManager::instance();
-	}
+	{}
 };
 
 DBusAdaptor::DBusAdaptor(QStrRef object_path, QStrRef service_name, QStrRef dbus_service, QStrRef dbus_interface, QObject *parent) :

@@ -1,4 +1,4 @@
-project(say_db)
+project(sayonara_database)
 
 # No moc files in database
 set(CMAKE_AUTOMOC OFF)
