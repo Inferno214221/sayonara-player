@@ -67,15 +67,6 @@ struct PluginHandler::Private
 
 		return nullptr;
 	}
-
-	bool has_empty_library() const
-	{
-		if(library_containers.isEmpty()){
-			return false;
-		}
-
-		return (library_containers.first() == empty_library);
-	}
 };
 
 static QString convert_display_name(const QString& display_name)
@@ -105,13 +96,7 @@ void PluginHandler::init(const ContainerList& containers)
 	init_libraries(containers);
 	init_dll_libraries();
 
-	Container* container = m->find_library(last_plugin);
-	if(!container)
-	{
-		container = m->library_containers.first();
-	}
-
-	set_current_library(container);
+	set_current_library( last_plugin );
 }
 
 
@@ -127,8 +112,6 @@ void PluginHandler::init_libraries(const QList<Library::Container*>& containers)
 
 		m->library_containers << container;
 	}
-
-	check_local_library();
 }
 
 void PluginHandler::init_dll_libraries()
@@ -230,47 +213,9 @@ void PluginHandler::init_library(Container* library)
 	}
 }
 
-bool PluginHandler::check_local_library()
-{
-	bool has_local = Algorithm::contains(m->library_containers, [](Container* c){
-		return c->is_local();
-	});
-
-	if(!has_local)
-	{
-		if(!m->has_empty_library())
-		{
-			m->library_containers.push_front(m->empty_library);
-
-			return true;
-		}
-	}
-
-	else
-	{
-		if(m->has_empty_library())
-		{
-			m->library_containers.takeFirst();
-
-			if(m->current_library == m->empty_library)
-			{
-				this->set_current_library(m->library_containers.first());
-			}
-
-			return true;
-		}
-	}
-
-	return false;
-}
-
 void PluginHandler::current_library_changed(int library_idx)
 {
-	if(Util::between(library_idx, m->library_containers))
-	{
-		Container* c = m->library_containers[library_idx];
-		set_current_library(c);
-	}
+	set_current_library(library_idx - PluginCombobox::get_index_offset()); // combo box says empty library has index 0 and separator has 1
 }
 
 void PluginHandler::set_current_library(const QString& name)
@@ -278,10 +223,33 @@ void PluginHandler::set_current_library(const QString& name)
 	set_current_library( m->find_library(name) );
 }
 
+void PluginHandler::set_current_library(int index)
+{
+	Container* ret;
+	if(m->library_containers.isEmpty() || index < 0) {
+		ret = m->empty_library;
+	}
+
+	else {
+		index = std::min(index, m->library_containers.size() - 1);
+		ret = m->library_containers[index];
+	}
+
+	set_current_library(ret);
+}
+
 void PluginHandler::set_current_library(Container* cur_library)
 {
-	if(!cur_library) {
-		cur_library = m->library_containers.first();
+	if(!cur_library)
+	{
+		if(m->library_containers.isEmpty())
+		{
+			cur_library	= m->empty_library;
+		}
+
+		else {
+			cur_library = m->library_containers.first();
+		}
 	}
 
 	if(m->current_library)
@@ -317,25 +285,20 @@ QMenu* PluginHandler::current_library_menu() const
 
 void PluginHandler::add_local_library(Library::Container* container)
 {
-	if(container == nullptr)
-	{
+	if(container == nullptr) {
 		return;
 	}
 
-	int idx = 1;
-	if(!m->has_empty_library())
-	{
-		idx = Algorithm::indexOf(m->library_containers, [](Container* c){
-			return (c->is_local() == false);
-		});
-	}
+	int idx = Algorithm::indexOf(m->library_containers, [=](Container* c){
+		return (c->is_local() == false && c != m->empty_library);
+	});
 
-	m->library_containers.insert(std::max(idx, 0), container);
-	check_local_library();
+	idx = std::max(idx, 0);
+	m->library_containers.insert(idx, container);
 
 	emit sig_libraries_changed();
 
-	set_current_library(container);
+	set_current_library(idx);
 }
 
 void PluginHandler::rename_local_library(const QString& old_name, const QString& new_name)
@@ -355,11 +318,10 @@ void PluginHandler::remove_local_library(const QString& name)
 	{
 		c->hide();
 		m->library_containers.removeAll(c);
-		check_local_library();
 
 		if(m->current_library == c)
 		{
-			set_current_library(m->library_containers.first());
+			set_current_library(0);
 		}
 
 		emit sig_libraries_changed();
@@ -368,8 +330,8 @@ void PluginHandler::remove_local_library(const QString& name)
 
 void PluginHandler::move_local_library(int old_index, int new_index)
 {
-	if( m->has_empty_library() ||
-		!Util::between(old_index, m->library_containers) ||
+	// first index is empty library
+	if( !Util::between(old_index, m->library_containers) ||
 		!Util::between(new_index, m->library_containers))
 	{
 		return;
@@ -380,8 +342,12 @@ void PluginHandler::move_local_library(int old_index, int new_index)
 	emit sig_libraries_changed();
 }
 
-
-QList<Library::Container*> PluginHandler::get_libraries() const
+QList<Library::Container*> PluginHandler::get_libraries(bool also_empty) const
 {
-	return m->library_containers;
+	QList<Container*> containers = m->library_containers;
+	if(also_empty) {
+		containers.push_front(m->empty_library);
+	}
+
+	return containers;
 }

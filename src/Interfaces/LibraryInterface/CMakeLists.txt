@@ -4,6 +4,7 @@ add_subdirectory(LibraryContainer)
 
 set(SOURCES
 	Private/LibraryPluginCombobox.cpp
+	Private/LibraryPluginComboBoxDelegate.cpp
 	LibraryPluginHandler.cpp
 )
 

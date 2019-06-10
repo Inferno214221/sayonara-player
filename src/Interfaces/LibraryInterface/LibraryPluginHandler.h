@@ -56,11 +56,6 @@ namespace Library
 		 */
 		void init_library(Container* container);
 
-		/**
-		 * @brief Checks if there is a local library. if not, then create an empty one
-		 */
-		bool check_local_library();
-
 		void init_libraries(const QList<Container*>& containers);
 		void init_dll_libraries();
 
@@ -76,7 +71,7 @@ namespace Library
 		 * @brief Get a list for all found plugins. The ui is not necessarily initialized
 		 * @return list for all found library plugins
 		 */
-		QList<Container*> get_libraries() const;
+		QList<Container*> get_libraries(bool also_empty) const;
 
 		Container* current_library() const;
 		QMenu* current_library_menu() const;
@@ -91,6 +86,7 @@ namespace Library
 
 	public slots:
 		void set_current_library(const QString& name);
+		void set_current_library(int index);
 		void set_current_library(Container* container);
 	};
 }

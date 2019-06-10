@@ -20,6 +20,7 @@
 
 #include "LibraryPluginCombobox.h"
 #include "LibraryPluginHandler.h"
+#include "LibraryPluginComboBoxDelegate.h"
 #include "LibraryContainer/LibraryContainer.h"
 
 #include "Utils/Algorithm.h"
@@ -59,6 +60,8 @@ PluginCombobox::PluginCombobox(const QString& text, QWidget* parent) :
 	this->setIconSize(QSize(16, 16));
 	this->setFocusPolicy(Qt::ClickFocus);
 
+	this->setItemDelegate(new LibraryPluginComboBoxDelegate(this));
+
 	connect(m->lph, &PluginHandler::sig_libraries_changed, this, &PluginCombobox::setup_actions);
 	connect(m->lph, &PluginHandler::sig_current_library_changed, this, &PluginCombobox::current_library_changed);
 
@@ -68,13 +71,18 @@ PluginCombobox::PluginCombobox(const QString& text, QWidget* parent) :
 
 PluginCombobox::~PluginCombobox() {}
 
+int PluginCombobox::get_index_offset()
+{
+	return 2;
+}
+
 void PluginCombobox::setup_actions()
 {
 	QFontMetrics fm(this->font());
 
 	this->clear();
 
-	QList<Container*> libraries = m->lph->get_libraries();
+	const QList<Container*> libraries = m->lph->get_libraries(true);
 
 	for(const Container* container : libraries)
 	{
@@ -84,10 +92,12 @@ void PluginCombobox::setup_actions()
 					Qt::SmoothTransformation
 		);
 
-
 		QString display_name = fm.elidedText(container->display_name(), Qt::TextElideMode::ElideRight, 200);
 		this->addItem(QIcon(pm), display_name, container->name());
 	}
+
+	this->insertSeparator(1);
+	this->setItemIcon(1, QIcon());
 
 	current_library_changed(m->lph->current_library()->name());
 }
@@ -137,7 +147,7 @@ void PluginCombobox::skin_changed()
 		return;
 	}
 
-	QList<Container*> libraries = m->lph->get_libraries();
+	QList<Container*> libraries = m->lph->get_libraries(true);
 	int i=0;
 
 	for(const Container* container : libraries)
@@ -147,6 +157,11 @@ void PluginCombobox::skin_changed()
 					Qt::KeepAspectRatio,
 					Qt::SmoothTransformation
 		);
+
+		if(this->itemData(i, Qt::DisplayRole).toString().isEmpty())
+		{
+			i++;
+		}
 
 		this->setItemIcon(i, QIcon(pm));
 		i++;

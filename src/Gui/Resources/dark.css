@@ -844,8 +844,11 @@ CoverButton:hover,
 	border: 1px solid #e8841a;
 }
 
-#StackedReloadLibraryWidget
+#StackedReloadLibraryWidget,
+#EmptyLibraryCentralWidget
 {
 	background: rgba(50, 50, 50, 196);
 	border: 1px solid #282828;
 }
+
+

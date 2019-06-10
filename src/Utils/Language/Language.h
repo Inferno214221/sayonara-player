@@ -75,6 +75,7 @@ public:
 		Close,
 		CloseOthers,
 		CloseTab,
+		CreateNewLibrary,
 		DarkMode,
 		Date,
 		Days,

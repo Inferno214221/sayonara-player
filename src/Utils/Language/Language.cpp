@@ -128,6 +128,8 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Continue");
 		case Covers:
 			return l.tr("Covers");
+		case CreateNewLibrary:
+			return l.tr("Create a new library");
 		case DarkMode:
 			return l.tr("Dark Mode");
 		case Date:

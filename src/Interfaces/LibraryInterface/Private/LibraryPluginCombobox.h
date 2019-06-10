@@ -38,6 +38,8 @@ namespace Library
 			explicit PluginCombobox(const QString& text, QWidget* parent=nullptr);
 			~PluginCombobox();
 
+			static int get_index_offset();
+
 		protected:
 			void skin_changed() override;
 			void language_changed() override;

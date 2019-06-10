@@ -22,6 +22,7 @@
 #include "GUI_EmptyLibrary.h"
 
 #include "Gui/Utils/Icons.h"
+#include "Utils/Language/Language.h"
 
 #include <QIcon>
 #include <QComboBox>
@@ -50,7 +51,7 @@ QString EmptyLibraryContainer::name() const
 
 QString EmptyLibraryContainer::display_name() const
 {
-	return tr("Empty Library");
+	return Lang::get(Lang::New);
 }
 
 QWidget* EmptyLibraryContainer::widget() const

@@ -21,7 +21,6 @@
 #ifndef GUI_EMPTYLIBRARY_H
 #define GUI_EMPTYLIBRARY_H
 
-#include "Utils/Pimpl.h"
 #include "Gui/Utils/Widgets/Widget.h"
 
 UI_FWD(GUI_EmptyLibrary)
@@ -35,23 +34,29 @@ namespace Library
 	{
 		Q_OBJECT
 		UI_CLASS(GUI_EmptyLibrary)
-		PIMPL(GUI_EmptyLibrary)
 
-	public:
-		explicit GUI_EmptyLibrary(QWidget* parent=nullptr);
-		GUI_EmptyLibrary(const GUI_EmptyLibrary& other)  = delete;
-		~GUI_EmptyLibrary();
+		public:
+			explicit GUI_EmptyLibrary(QWidget* parent=nullptr);
+			GUI_EmptyLibrary(const GUI_EmptyLibrary& other)  = delete;
+			~GUI_EmptyLibrary();
 
-		QFrame* header_frame() const;
+			QFrame* header_frame() const;
 
-	private slots:
-		void set_lib_path_clicked();
-		void new_library_created();
+		private:
+			bool check_name();
+			bool check_path();
 
-		// WidgetTemplateParent interface
-	protected:
-		void language_changed() override;
+		private slots:
+			void ok_clicked();
+			void choose_dir_clicked();
+
+			void path_changed(const QString& str);
+			void name_changed(const QString& str);
+
+		protected:
+			void language_changed() override;
 	};
+
 }
 
 #endif // GUI_EMPTYLIBRARY_H
