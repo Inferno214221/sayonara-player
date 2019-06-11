@@ -107,13 +107,14 @@ void CoverButton::set_cover_location(const Location& cl)
 	}
 
 	set_cover_image(Cover::Location::invalid_location().preferred_path());
-	if(cl.hash().isEmpty()){
-		return;
-	}
 
 	m->cover_location = cl;
 	m->cover_forced = false;
 	m->hash = cl.hash();
+
+	if(cl.hash().isEmpty()){
+		return;
+	}
 
 	if(!m->cover_lookup)
 	{
