@@ -318,6 +318,8 @@ void Application::init_player()
 
 void Application::init_playlist(const QStringList& files_to_play)
 {
+	m->plh->load_old_playlists();
+
 	if(!files_to_play.isEmpty())
 	{
 		QString playlist_name = m->plh->request_new_playlist_name();
