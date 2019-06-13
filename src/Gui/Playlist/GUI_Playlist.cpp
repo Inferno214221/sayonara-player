@@ -87,9 +87,6 @@ GUI_Playlist::GUI_Playlist(QWidget *parent) :
 	connect(ui->btn_clear, &QPushButton::clicked, this, &GUI_Playlist::clear_button_pressed);
 
 	ListenSetting(Set::PL_ShowClearButton, GUI_Playlist::sl_show_clear_button_changed);
-
-	QTimer::singleShot(100, Handler::instance(), SLOT(load_old_playlists()));
-	//Handler::instance()->load_old_playlists();
 }
 
 GUI_Playlist::~GUI_Playlist()
