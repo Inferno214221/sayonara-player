@@ -66,27 +66,18 @@ namespace Library
 			int preferred_size() const;
 			void set_preferred_size(int size);
 
-
 			SortOrder sortorder_asc() const;
 			SortOrder sortorder_desc() const;
 
-			bool is_visible() const;
-			bool is_hidden() const;
-
 			void retranslate();
 
-			QAction* action();
 			QString	 title() const;
+			QAction* action();
+			bool is_action_checked() const;
 	};
 
 	using ColumnHeaderPtr = std::shared_ptr<ColumnHeader>;
-	class ColumnHeaderList :
-		public QList<ColumnHeaderPtr>
-	{
-		public:
-			int visible_columns() const;
-			int visible_column(int n) const;
-	};
+	using ColumnHeaderList=QList<ColumnHeaderPtr>;
 }
 
 #endif /* MYCOLUMNHEADER_H_ */

@@ -120,10 +120,10 @@ void GUI_Equalizer::init_ui()
 	ui->sli_9->set_label(9, ui->label_10);
 
 	m->sliders = SliderArray
-	{
+	{{
 		ui->sli_0, ui->sli_1, ui->sli_2, ui->sli_3, ui->sli_4,
 		ui->sli_5, ui->sli_6, ui->sli_7, ui->sli_8,	ui->sli_9
-	};
+	}};
 
 	QAction* action_gauss = new QAction("Kurve", ui->btn_tool);
 	action_gauss->setCheckable(true);

@@ -41,15 +41,16 @@
 #include "Utils/Language/Language.h"
 #include "Utils/Set.h"
 
+#include <QSize>
+
 using namespace Library;
 
 TrackModel::TrackModel(QObject* parent, AbstractLibrary* library) :
 	ItemModel(parent, library)
 {}
 
-TrackModel::~TrackModel() {}
+TrackModel::~TrackModel() = default;
 
-#include <QSize>
 QVariant TrackModel::data(const QModelIndex &index, int role) const
 {
 	int row = index.row();

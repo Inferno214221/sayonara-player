@@ -35,7 +35,7 @@
    <item row="1" column="0">
     <widget class="QStackedWidget" name="stacked_widget_reload">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="page">
       <layout class="QGridLayout" name="gridLayout_2">
@@ -138,9 +138,6 @@
                 <property name="cornerButtonEnabled">
                  <bool>false</bool>
                 </property>
-                <attribute name="horizontalHeaderCascadingSectionResizes">
-                 <bool>false</bool>
-                </attribute>
                 <attribute name="horizontalHeaderMinimumSectionSize">
                  <number>25</number>
                 </attribute>
@@ -151,7 +148,7 @@
                  <bool>true</bool>
                 </attribute>
                 <attribute name="horizontalHeaderStretchLastSection">
-                 <bool>false</bool>
+                 <bool>true</bool>
                 </attribute>
                 <attribute name="verticalHeaderVisible">
                  <bool>false</bool>
@@ -209,9 +206,6 @@
                 <property name="cornerButtonEnabled">
                  <bool>false</bool>
                 </property>
-                <attribute name="horizontalHeaderCascadingSectionResizes">
-                 <bool>false</bool>
-                </attribute>
                 <attribute name="horizontalHeaderMinimumSectionSize">
                  <number>25</number>
                 </attribute>
@@ -289,9 +283,6 @@
               <property name="cornerButtonEnabled">
                <bool>false</bool>
               </property>
-              <attribute name="horizontalHeaderCascadingSectionResizes">
-               <bool>false</bool>
-              </attribute>
               <attribute name="horizontalHeaderMinimumSectionSize">
                <number>25</number>
               </attribute>

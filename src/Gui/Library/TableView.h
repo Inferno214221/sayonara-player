@@ -61,7 +61,6 @@ namespace Library
 		virtual SortOrder sortorder() const=0;
 		virtual void save_sortorder(SortOrder s)=0;
 
-		void resizeEvent(QResizeEvent* e) override;
 		void language_changed() override;
 
 		// SayonaraSelectionView.h

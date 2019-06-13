@@ -47,12 +47,6 @@ struct TableView::Private
 	BoolList			shown_columns;
 	HeaderView*			header=nullptr;
 	Library::SortOrder  sortorder;
-	bool				header_connected;
-	IntList				sizes;
-
-	Private() :
-		header_connected(false)
-	{}
 };
 
 TableView::TableView(QWidget* parent) :
@@ -64,12 +58,13 @@ TableView::TableView(QWidget* parent) :
 	setHorizontalHeader(m->header);
 
 	connect(this, &ItemView::doubleClicked, this, &TableView::play_clicked);
-	connect(m->header, &HeaderView::sectionClicked, this, &TableView::sort_by_column);
+
 	connect(m->header, &HeaderView::sig_columns_changed, this, &TableView::header_actions_triggered);
+	connect(m->header, &QHeaderView::sectionClicked, this, &TableView::sort_by_column);
+	connect(m->header, &QHeaderView::sectionResized, this, &TableView::sizes_changed);
 }
 
-TableView::~TableView() {}
-
+TableView::~TableView() = default;
 
 void TableView::init(AbstractLibrary* library)
 {
@@ -99,7 +94,7 @@ void TableView::init(AbstractLibrary* library)
 	ItemModel* model = item_model();
 	model->set_header_data(header_names);
 
-	m->header->set_column_headers(headers, m->shown_columns, m->sortorder);
+	m->header->set_columns(headers, m->shown_columns, m->sortorder);
 
 	language_changed();
 }
@@ -125,7 +120,7 @@ void TableView::sort_by_column(int column_idx)
 	Library::SortOrder asc_sortorder, desc_sortorder;
 
 	int idx_col = m->header->visualIndex(column_idx);
-	ColumnHeaderPtr h = m->header->column_header(idx_col);
+	ColumnHeaderPtr h = m->header->column(idx_col);
 	if(!h){
 		return;
 	}
@@ -153,14 +148,13 @@ void TableView::sizes_changed()
 	save_column_header_sizes(sizes);
 }
 
-
 void TableView::language_changed()
 {
 	ItemModel* model = item_model();
 	QStringList header_names;
 	for(int i=0; i<model->columnCount(); i++)
 	{
-		ColumnHeaderPtr header = m->header->column_header(i);
+		ColumnHeaderPtr header = m->header->column(i);
 		if(header){
 			header_names << header->title();
 		}
@@ -169,19 +163,6 @@ void TableView::language_changed()
 	model->set_header_data(header_names);
 }
 
-
-void TableView::resizeEvent(QResizeEvent* event)
-{
-	ItemView::resizeEvent(event);
-
-	if(!m->header_connected)
-	{
-		m->header_connected = true;
-		connect(this->horizontalHeader(), &QHeaderView::sectionResized, this, [=](){
-			this->sizes_changed();
-		});
-	}
-}
 
 int TableView::index_by_model_index(const QModelIndex& idx) const
 {

@@ -43,10 +43,7 @@ class AbstractLibrary;
 
 namespace Library
 {
-	class ColumnHeaderList;
-
 	class ItemModel;
-
 	class ItemView :
 			public SearchableTableView,
 			public InfoDialogContainer,

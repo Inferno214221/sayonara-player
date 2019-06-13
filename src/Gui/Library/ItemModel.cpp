@@ -52,7 +52,7 @@ ItemModel::ItemModel(QObject* parent, AbstractLibrary* library) :
 	m = Pimpl::make<ItemModel::Private>(library);
 }
 
-ItemModel::~ItemModel() {}
+ItemModel::~ItemModel() = default;
 
 QVariant ItemModel::headerData ( int section, Qt::Orientation orientation, int role ) const
 {

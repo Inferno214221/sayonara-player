@@ -263,7 +263,7 @@ FMStreamParser::FMStreamParser(const QByteArray& data, FMStreamParser::EncodingT
 
 
 FMStreamParser::FMStreamParser(const QByteArray& data) :
-	FMStreamParser(data, EncodingTuple{Utf8, Utf8, Utf8, Latin1}, 0)
+	FMStreamParser(data, EncodingTuple{{Utf8, Utf8, Utf8, Latin1}}, 0)
 {}
 
 FMStreamParser::~FMStreamParser() {}

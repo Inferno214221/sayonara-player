@@ -56,9 +56,7 @@ struct ColumnHeader::Private
 	}
 };
 
-ColumnHeader::~ColumnHeader() {}
-
-
+ColumnHeader::~ColumnHeader() = default;
 
 ColumnHeader::ColumnHeader(HeaderType type, bool switchable, SortOrder sort_asc, SortOrder sort_desc, int preferred_size, bool stretchable)
 {
@@ -70,7 +68,6 @@ bool ColumnHeader::stretchable() const
 {
 	return m->stretchable;
 }
-
 
 int ColumnHeader::default_size() const
 {
@@ -103,7 +100,7 @@ QAction* ColumnHeader::action()
 	return m->action;
 }
 
-bool ColumnHeader::is_visible() const
+bool ColumnHeader::is_action_checked() const
 {
 	if(!m->switchable){
 		return true;
@@ -112,45 +109,9 @@ bool ColumnHeader::is_visible() const
 	return m->action->isChecked();
 }
 
-bool ColumnHeader::is_hidden() const
-{
-	return (!is_visible());
-}
-
 void ColumnHeader::retranslate()
 {
 	m->action->setText(this->title());
-}
-
-int ColumnHeaderList::visible_columns() const
-{
-	auto count = std::count_if(this->begin(), this->end(), [](ColumnHeaderPtr header){
-		return header->is_visible();
-	});
-
-	return static_cast<int>(count);
-}
-
-int ColumnHeaderList::visible_column(int n) const
-{
-	if(n < 0 || n > this->size())
-	{
-		return -1;
-	}
-
-	for(int i=0; i<this->size(); i++)
-	{
-		ColumnHeaderPtr header = this->at(i);
-		if(header->is_visible()){
-			n--;
-		}
-
-		if(n < 0){
-			return i;
-		}
-	}
-
-	return -1;
 }
 
 QString ColumnHeader::title() const
