@@ -12,6 +12,7 @@
 #include "Gui/Utils/ContextMenu/LibraryContextMenu.h"
 #include "Gui/Utils/Widgets/ProgressBar.h"
 #include "Gui/Utils/RatingLabel.h"
+#include "Gui/Utils/Widgets/Label.h"
 
 #include "Components/PlayManager/PlayManager.h"
 #include "Components/Covers/CoverLocation.h"
@@ -479,11 +480,22 @@ void GUI_ControlsBase::refresh_info_labels()
 	set_info_labels(PlayManager::instance()->current_track());
 }
 
+static void set_floating_text(QLabel* label, const QString& text)
+{
+	Gui::FloatingLabel* floating_label = dynamic_cast<Gui::FloatingLabel*>(label);
+	if(floating_label){
+		floating_label->setFloatingText(text);
+	}
+
+	else {
+		label->setText(text);
+	}
+}
+
 void GUI_ControlsBase::set_info_labels(const MetaData& md)
 {
 	// title
-	QString text = Gui::Util::elide_text(md.title(), lab_title(), 2);
-	lab_title()->setText(text);
+	set_floating_text(lab_title(), md.title());
 
 	//album
 	QString str_year = QString::number(md.year);
@@ -493,15 +505,8 @@ void GUI_ControlsBase::set_info_labels(const MetaData& md)
 		album_name += " (" + str_year + ")";
 	}
 
-	QString elided_text;
-	QFontMetrics fm_album = lab_album()->fontMetrics();
-	elided_text = fm_album.elidedText(album_name, Qt::ElideRight, lab_album()->width());
-	lab_album()->setText(elided_text);
-
-	//artist
-	QFontMetrics fm_artist = lab_artist()->fontMetrics();
-	elided_text = fm_artist.elidedText(md.artist(), Qt::ElideRight, lab_artist()->width());
-	lab_artist()->setText(elided_text);
+	set_floating_text(lab_album(), album_name);
+	set_floating_text(lab_artist(), md.artist());
 }
 
 void GUI_ControlsBase::file_info_changed()

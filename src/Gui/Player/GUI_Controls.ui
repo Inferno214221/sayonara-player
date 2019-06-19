@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>410</width>
-    <height>169</height>
+    <width>426</width>
+    <height>179</height>
    </rect>
   </property>
   <layout class="QGridLayout" name="gridLayout">
@@ -406,7 +406,7 @@
       <number>3</number>
      </property>
      <item row="0" column="1">
-      <widget class="QLabel" name="lab_title">
+      <widget class="Gui::FloatingLabel" name="lab_title">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
          <horstretch>0</horstretch>
@@ -621,7 +621,7 @@
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QLabel" name="lab_album">
+      <widget class="Gui::FloatingLabel" name="lab_album">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
          <horstretch>0</horstretch>
@@ -640,7 +640,7 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QLabel" name="lab_artist">
+      <widget class="Gui::FloatingLabel" name="lab_artist">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
          <horstretch>0</horstretch>
@@ -849,6 +849,11 @@
    <class>Gui::ProgressBar</class>
    <extends>QProgressBar</extends>
    <header>Gui/Utils/Widgets/ProgressBar.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Gui::FloatingLabel</class>
+   <extends>QLabel</extends>
+   <header>Gui/Utils/Widgets/FloatingLabel.h</header>
   </customwidget>
  </customwidgets>
  <resources>
