@@ -116,6 +116,13 @@ IndexSet PlaylistImpl::copy_tracks(const IndexSet& indexes, int tgt)
 	return new_track_positions;
 }
 
+void Playlist::Playlist::find_track(int idx)
+{
+	if(Util::between(idx, m->v_md)){
+		emit sig_find_track(m->v_md[idx].id);
+	}
+}
+
 void PlaylistImpl::remove_tracks(const IndexSet& indexes)
 {
 	m->v_md.remove_tracks(indexes);

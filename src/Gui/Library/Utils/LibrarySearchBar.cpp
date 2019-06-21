@@ -73,7 +73,7 @@ SearchBar::SearchBar(QWidget* parent) :
 	connect(this, &QLineEdit::textChanged, this, &SearchBar::text_changed);
 }
 
-SearchBar::~SearchBar() {}
+SearchBar::~SearchBar() = default;
 
 void SearchBar::set_invalid_genre_mode(bool b)
 {
@@ -115,6 +115,12 @@ void SearchBar::text_changed(const QString& text)
 		this->clear();
 		this->set_current_mode(Filter::Filename);
 	}
+
+	else if(text.startsWith("t:", Qt::CaseInsensitive))
+	{
+		this->clear();
+		this->set_current_mode(Filter::Track);
+	}
 }
 
 void SearchBar::search_shortcut_pressed()
@@ -127,8 +133,6 @@ void SearchBar::search_shortcut_pressed()
 		this->set_next_mode();
 	}
 }
-
-
 
 void SearchBar::set_modes(const QList<Filter::Mode>& modes)
 {

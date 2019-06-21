@@ -239,7 +239,7 @@ bool Albums::getAllAlbumsByArtist(const IdList &artists, AlbumList &result, cons
 		query += " GROUP BY albumID, albumName; ";
 
 		{ // prepare and run
-		Query q(this);
+			Query q(this);
 			q.prepare(query);
 
 			q.bindValue(":searchterm",	filters[i]);

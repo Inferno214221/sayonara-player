@@ -112,6 +112,8 @@ namespace Playlist
 			 */
 			void sig_track_deletion_requested(const MetaDataList& v_md, Library::TrackDeletionMode deletion_mode);
 
+			void sig_find_track_requested(TrackID track_id);
+
 
 		public:
 

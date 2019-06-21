@@ -83,6 +83,7 @@ namespace Library
 		void extension_button_toggled(bool b);
 		void close_extensions_clicked();
 		void switch_album_view();
+		void filter_changed();
 
 		void progress_changed(const QString& type, int progress);
 

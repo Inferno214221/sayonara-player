@@ -32,12 +32,15 @@ struct PlaylistContextMenu::Private
 	BookmarksMenu*	bookmarks_menu=nullptr;
 	QAction*		bookmarks_action=nullptr;
 	QAction*		rating_action=nullptr;
+	QAction*		find_track_action=nullptr;
 	QMenu*			rating_menu=nullptr;
 
 	Private(PlaylistContextMenu* parent)
 	{
 		current_track_action = new QAction(parent);
-		parent->addActions({current_track_action});
+		find_track_action = new QAction(parent);
+
+		parent->addActions({current_track_action, find_track_action});
 
 		rating_menu = new QMenu(parent);
 		rating_action = parent->addMenu(rating_menu);
@@ -62,6 +65,7 @@ PlaylistContextMenu::PlaylistContextMenu(QWidget *parent) :
 
 	connect(m->bookmarks_menu, &BookmarksMenu::sig_bookmark_pressed, this, &PlaylistContextMenu::bookmark_pressed);
 	connect(m->current_track_action, &QAction::triggered, this, &PlaylistContextMenu::sig_jump_to_current_track);
+	connect(m->find_track_action, &QAction::triggered, this, &PlaylistContextMenu::sig_find_track_triggered);
 
 	skin_changed();
 }
@@ -83,6 +87,10 @@ PlaylistContextMenu::Entries PlaylistContextMenu::get_entries() const
 		entries |= PlaylistContextMenu::EntryCurrentTrack;
 	}
 
+	if(m->find_track_action->isVisible()){
+		entries |= PlaylistContextMenu::EntryFindInLibrary;
+	}
+
 	return entries;
 }
 
@@ -93,6 +101,7 @@ void PlaylistContextMenu::show_actions(PlaylistContextMenu::Entries entries)
 	m->rating_action->setVisible(entries & PlaylistContextMenu::EntryRating);
 	m->bookmarks_action->setVisible((entries & PlaylistContextMenu::EntryBookmarks) && m->bookmarks_menu->has_bookmarks());
 	m->current_track_action->setVisible(entries & PlaylistContextMenu::EntryCurrentTrack);
+	m->find_track_action->setVisible(entries & PlaylistContextMenu::EntryFindInLibrary);
 }
 
 void PlaylistContextMenu::set_rating(Rating rating)
@@ -138,6 +147,7 @@ void PlaylistContextMenu::language_changed()
 	LibraryContextMenu::language_changed();
 	m->rating_action->setText(Lang::get(Lang::Rating));
 	m->current_track_action->setText(tr("Jump to current track"));
+	m->find_track_action->setText(tr("Show track in library"));
 }
 
 void PlaylistContextMenu::skin_changed()
@@ -146,6 +156,7 @@ void PlaylistContextMenu::skin_changed()
 
 	using namespace Gui;
 	m->rating_action->setIcon(Icons::icon(Icons::Star));
+	m->find_track_action->setIcon(Icons::icon(Icons::Search));
 }
 
 void PlaylistContextMenu::bookmark_pressed(Seconds timestamp)

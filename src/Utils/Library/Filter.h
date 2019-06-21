@@ -47,6 +47,7 @@ namespace Library
 				Fulltext=0,
 				Filename,
 				Genre,
+				Track,
 				Invalid
 			};
 
@@ -58,19 +59,58 @@ namespace Library
 
 			bool operator==(const Filter& other);
 
+			/**
+			 * @brief get splitted filtertext with or without percent. Needed for file search
+			 * for example where cissearch is not suitable
+			 * @param with_percent appends and prepends a percent sign to each filtertext
+			 * @return
+			 */
 			QStringList filtertext(bool with_percent) const;
+
+			/**
+			 * @brief get splitted filtertext with or without percent
+			 * but converts the search string suitable for cissearch first.
+			 * @param with_percent appends and prepends a percent sign to each filtertext
+			 * @return
+			 */
 			QStringList search_mode_filtertext(bool with_percent) const;
+
+
+			/**
+			 * @brief set comma separated filtertext. Usually this is the string
+			 * found at the search box in the library
+			 * @param str searchstring
+			 * @param search_mode what do we want to search?
+			 */
 			void set_filtertext(const QString& str, SearchModeMask search_mode);
 
 			Filter::Mode mode() const;
 			void set_mode(Filter::Mode mode);
 
+			/**
+			 * @brief Clear the searchterm. We are not looking for an invalid genre, too
+			 */
 			void clear();
+
+			/**
+			 * @brief Is the searchterm empty?
+			 * @return true if the searchterm is empty. If the current mode indicates
+			 * that we are looking for an invalid genre, false is returned, too
+			 */
 			bool cleared() const;
 
 			void set_invalid_genre(bool b);
 			bool is_invalid_genre() const;
 
+			bool is_usable() const;
+
+			TrackID track_id() const;
+
+			/**
+			 * @brief Get an human readable string for the mode
+			 * @param mode
+			 * @return
+			 */
 			static QString get_text(Mode mode);
 	};
 }

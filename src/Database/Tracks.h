@@ -59,9 +59,10 @@ namespace DB
 			virtual bool updateTrack(const MetaData& data);
 			virtual bool updateTracks(const MetaDataList& lst);
 
+			virtual int getNumTracks();
 			virtual bool getAllTracks(MetaDataList& result);
 
-			virtual MetaData getTrackById(int id);
+			virtual MetaData getTrackById(TrackID id);
 			virtual bool getTracksByIds(const QList<TrackID> &ids, MetaDataList &v_md);
 			virtual MetaData getTrackByPath(const QString& path);
 			virtual bool getMultipleTracksByPath(const QStringList& paths, MetaDataList& v_md);

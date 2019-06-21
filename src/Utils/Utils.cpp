@@ -27,16 +27,19 @@
  */
 
 #include <QtGlobal>
-#include <QNetworkInterface>
-#include <QHostAddress>
-#include <QString>
-#include <QCryptographicHash>
-#include <QDir>
-#include <QRegExp>
-#include <QDateTime>
-#include <QByteArray>
-#include <QPixmap>
+
 #include <QBuffer>
+#include <QByteArray>
+#include <QColor>
+#include <QCryptographicHash>
+#include <QDateTime>
+#include <QDir>
+#include <QHostAddress>
+#include <QNetworkInterface>
+#include <QPalette>
+#include <QPixmap>
+#include <QRegExp>
+#include <QString>
 
 #include <thread>
 #include <chrono>
@@ -209,6 +212,7 @@ QString Util::create_link(const QString& name, bool dark, bool underline)
 	return create_link(name, dark, underline, QString());
 }
 
+
 QString Util::create_link(const QString& name, bool dark, bool underline, const QString& target)
 {
 	QString new_target;
@@ -224,13 +228,17 @@ QString Util::create_link(const QString& name, bool dark, bool underline, const 
 		new_target = target;
 	}
 
-	if(!underline) style = " style: \"text-decoration=none;\" ";
+	if(!underline) {
+		style = " style: \"text-decoration=none;\" ";
+	};
 
 	if(dark) {
 		content = LIGHT_BLUE(name);
 	}
 	else {
-		content = DARK_BLUE(name);
+		QColor color = QPalette().color(QPalette::Link);
+		QString color_name = color.name(QColor::HexRgb);
+		content = QString("<font color=%1>%2</font>").arg(color_name).arg(name);
 	}
 
 	if(new_target.contains("://") || new_target.contains("mailto:")){
@@ -365,8 +373,8 @@ QString Util::easy_tag_finder(const QString& tag, const QString& xml_doc)
 
 	ret = new_tag;
 
-	QString str2search_start = QString("<") + ret + QString(".*>");
-	QString str2search_end = QString("</") + ret + QString(">");
+	QString str2search_start = QString("<%1.*>").arg(ret);
+	QString str2search_end = QString("</%1>").arg(ret);
 	QString str2search = str2search_start + "(.+)" + str2search_end;
 	QRegExp rx(str2search);
 	rx.setMinimal(true);
@@ -454,7 +462,7 @@ QString Util::random_string(int max_chars)
 	QString ret;
 	for(int i=0; i<max_chars; i++)
 	{
-		char c = random_number(97, 122);
+		char c = static_cast<char>(random_number(97, 122));
 		ret.append(QChar(c));
 	}
 

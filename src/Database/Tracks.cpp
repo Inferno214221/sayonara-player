@@ -257,7 +257,8 @@ MetaData Tracks::getTrackByPath(const QString& path)
 MetaData Tracks::getTrackById(TrackID id)
 {
 	Query q(this);
-	QString query = fetch_query_tracks() + "WHERE trackID = :track_id;";
+	QString query = fetch_query_tracks() +
+		" WHERE trackID = :track_id; ";
 
 	q.prepare(query);
 	q.bindValue(":track_id", id);
@@ -275,6 +276,23 @@ MetaData Tracks::getTrackById(TrackID id)
 
 	return v_md.first();
 }
+
+int Tracks::getNumTracks()
+{
+	DB::Query q = this->run_query(
+		"SELECT COUNT(tracks.trackid) FROM tracks WHERE libraryID=:libraryID;",
+		{":libraryID", m->library_id},
+		"Cannot count tracks"
+	);
+
+	if(q.has_error() || !q.next()){
+		return -1;
+	}
+
+	int ret = q.value(0).toInt();
+	return ret;
+}
+
 
 bool Tracks::getTracksByIds(const QList<TrackID> &ids, MetaDataList &v_md)
 {
@@ -696,6 +714,7 @@ bool Tracks::updateTracks(const MetaDataList& v_md)
 	return success && (n_files == v_md.size());
 }
 
+
 bool Tracks::insertTrackIntoDatabase(const MetaData& md, ArtistId artist_id, AlbumId album_id)
 {
 	return insertTrackIntoDatabase(md, artist_id, album_id, artist_id);
@@ -750,7 +769,8 @@ static QString get_filter_clause(const Filter& filter, QString cis_placeholder, 
 	switch( filter.mode() )
 	{
 		case Filter::Genre:
-			if(filter.is_invalid_genre()){
+			if(filter.is_invalid_genre())
+			{
 				return "genre = ''";
 			}
 

@@ -132,6 +132,7 @@ bool Artists::getArtistByID(ArtistId id, Artist& artist, bool also_empty)
 	return true;
 }
 
+
 ArtistId Artists::getArtistID(const QString& artist)
 {
 	Query q = run_query

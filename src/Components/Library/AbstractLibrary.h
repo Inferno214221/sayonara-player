@@ -85,6 +85,8 @@ signals:
 	void sig_delete_answer(QString);
 	void sig_import_dialog_requested();
 
+	void sig_filter_changed();
+
 
 public slots:
 
@@ -100,6 +102,7 @@ public slots:
 	   the user won't recognize anything at all */
 	virtual void refresh();
 
+	virtual void find_track(TrackID id);
 
 	/* selection changed */
 	virtual void selected_artists_changed(const IndexSet& indexes);
@@ -168,12 +171,15 @@ protected:
 	virtual	void		get_all_tracks_by_album(IdList album_ids, MetaDataList& v_md, Library::Filter filter)=0;
 	virtual void		get_all_tracks_by_searchstring(Library::Filter filter, MetaDataList& v_md)=0;
 
+	virtual void		get_track_by_id(TrackID track_id, MetaData& md)=0;
 	virtual void		get_album_by_id(AlbumId album_id, Album& album)=0;
 	virtual void		get_artist_by_id(ArtistId artist_id, Artist& artist)=0;
 
 	virtual void		update_track(const MetaData& md)=0;
 	virtual void		update_tracks(const MetaDataList& v_md);
 	virtual void		update_album(const Album& album)=0;
+
+	virtual bool		is_empty() const=0;
 
 	void				prepare_tracks();
 	void				prepare_albums();

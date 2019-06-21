@@ -30,8 +30,11 @@
 
 #include "Gui/Utils/Delegates/ComboBoxDelegate.h"
 #include "Gui/Utils/Widgets/Completer.h"
+#include "Gui/Utils/Style.h"
 
 #include "Utils/globals.h"
+#include "Utils/Utils.h"
+#include "Utils/FileUtils.h"
 #include "Utils/Message/Message.h"
 #include "Utils/Tagging/Tagging.h"
 #include "Utils/Tagging/TaggingCover.h"
@@ -48,6 +51,7 @@
 #include <QMap>
 #include <QStringList>
 #include <QPixmap>
+#include <QFileInfo>
 
 
 using namespace Tagging;
@@ -293,7 +297,22 @@ void GUI_TagEdit::refresh_current_track()
 	}
 
 	MetaData md = m->tag_edit->metadata(m->cur_idx);
-	m->ui_tag_from_path->set_filepath(md.filepath());
+
+	{ // set filepath label
+		QString filepath_link = Util::create_link
+		(
+			md.filepath(),
+			Style::is_dark(),
+			true,
+			Util::File::get_parent_directory(md.filepath())
+		);
+
+		ui->lab_filepath->setText(filepath_link);
+		m->ui_tag_from_path->set_filepath(md.filepath());
+
+		QFileInfo fi(md.filepath());
+		ui->lab_read_only->setVisible(!fi.isWritable());
+	}
 
 	ui->le_title->setText(md.title());
 
@@ -343,10 +362,6 @@ void GUI_TagEdit::refresh_current_track()
 	}
 
 	ui->sb_track_num->setValue(md.track_num);
-
-	QString filepath = md.filepath();
-	ui->lab_filepath->setText(filepath);
-
 	ui->lab_track_index->setText(
 		Lang::get(Lang::Track).toFirstUpper().space() +
 		QString::number(m->cur_idx+1 ) + "/" + QString::number( n_tracks )

@@ -158,6 +158,13 @@ void PlaylistView::init_context_menu()
 		}
 	});
 
+	connect(m->context_menu, &PlaylistContextMenu::sig_find_track_triggered, this, [=](){
+		IndexSet idxs = this->selected_items();
+		if(idxs.size() > 0){
+			m->playlist->find_track(idxs.first());
+		}
+	});
+
 	m->context_menu->add_preference_action(new PlaylistPreferenceAction(m->context_menu));
 }
 
@@ -308,6 +315,14 @@ void PlaylistView::goto_to_current_track()
 	goto_row(m->model->current_track());
 }
 
+void PlaylistView::find_track_triggered()
+{
+	int row = this->currentIndex().row();
+	if(row >= 0){
+		m->playlist->find_track(row);
+	}
+}
+
 void PlaylistView::remove_selected_rows()
 {
 	int min_row = min_selected_item();
@@ -392,6 +407,7 @@ void PlaylistView::contextMenuEvent(QContextMenuEvent* e)
 		if(md.id >= 0)
 		{
 			entry_mask |= PlaylistContextMenu::EntryBookmarks;
+			entry_mask |= PlaylistContextMenu::EntryFindInLibrary;
 		}
 	}
 
@@ -411,6 +427,11 @@ void PlaylistView::mousePressEvent(QMouseEvent* event)
 
 	if(event->buttons() & Qt::LeftButton){
 		drag_pressed(event->pos());
+	}
+
+	else if(event->button() & Qt::MiddleButton)
+	{
+		find_track_triggered();
 	}
 }
 

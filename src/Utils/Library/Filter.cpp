@@ -41,7 +41,6 @@ Filter::Filter()
 	clear();
 }
 
-
 Filter::Filter(const Filter& other)
 {
 	m = Pimpl::make<Filter::Private>();
@@ -55,13 +54,17 @@ Filter& Filter::operator=(const Filter& other)
 	return *this;
 }
 
-Filter::~Filter() {}
+Filter::~Filter() = default;
 
 bool Filter::operator ==(const Filter& other)
 {
+	if(!this->is_usable() && !other.is_usable()) {
+		return false;
+	}
+
 	bool same_filtertext = false;
 
-	if(m->filtertext.size() < 3 && other.m->filtertext.size() < 3)
+	if(m->filtertext.size() < 3 && other.m->filtertext.size() < 3 && m->mode != Filter::Mode::Track)
 	{
 		same_filtertext = true;
 	}
@@ -75,7 +78,8 @@ bool Filter::operator ==(const Filter& other)
 	(
 		same_filtertext &&
 		(m->mode == other.mode()) &&
-		(m->invalid_genre == other.is_invalid_genre())
+		(m->invalid_genre == other.is_invalid_genre() &&
+		(this->track_id() == other.track_id()))
 	);
 }
 
@@ -153,6 +157,11 @@ void Filter::set_mode(Filter::Mode mode)
 
 bool Filter::cleared() const
 {
+	if(m->mode == Filter::Mode::Track && track_id() == -1)
+	{
+		return true;
+	}
+
 	return (m->filtertext.isEmpty() && !m->invalid_genre);
 }
 
@@ -164,6 +173,48 @@ void Filter::set_invalid_genre(bool b)
 bool Filter::is_invalid_genre() const
 {
 	return m->invalid_genre;
+}
+
+bool Filter::is_usable() const
+{
+	if(m->mode == Filter::Mode::Invalid)
+	{
+		return false;
+	}
+
+	if(is_invalid_genre()){
+		return true;
+	}
+
+	if(m->mode == Filter::Mode::Track)
+	{
+		TrackID id = track_id();
+		return (id >= 0);
+	}
+
+	QStringList filters = filtertext(false);
+	if(filters.join("").size() < 3)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+TrackID Filter::track_id() const
+{
+	if(m->filtertext.isEmpty()){
+		return -1;
+	}
+
+	bool ok;
+	TrackID id = m->filtertext.toInt(&ok);
+
+	if(!ok){
+		return -1;
+	}
+
+	return id;
 }
 
 QString Filter::get_text(Filter::Mode mode)
@@ -180,6 +231,9 @@ QString Filter::get_text(Filter::Mode mode)
 
 		case Filter::Mode::Genre:
 			return Lang::get(Lang::Genre);
+
+		case Filter::Mode::Track:
+			return Lang::get(Lang::Tracks) + " ID";
 
 		default:
 			return QString();

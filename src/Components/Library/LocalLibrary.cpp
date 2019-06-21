@@ -73,6 +73,9 @@ LocalLibrary::LocalLibrary(LibraryId library_id, QObject *parent) :
 	connect(plh, &Playlist::Handler::sig_track_deletion_requested,
 			this, &LocalLibrary::delete_tracks);
 
+	connect(plh, &Playlist::Handler::sig_find_track_requested,
+			this, &LocalLibrary::find_track);
+
 	Library::Manager* manager = Library::Manager::instance();
 	connect(manager, &Library::Manager::sig_renamed, this, &LocalLibrary::renamed);
 
@@ -156,6 +159,10 @@ void LocalLibrary::renamed(LibraryId id)
 	}
 }
 
+bool LocalLibrary::is_empty() const
+{
+	return (m->library_db->getNumTracks() <= 0);
+}
 
 void LocalLibrary::library_reloading_state_new_block()
 {
@@ -214,6 +221,18 @@ void LocalLibrary::get_all_tracks_by_album(IdList album_ids, MetaDataList& v_md,
 void LocalLibrary::get_all_tracks_by_searchstring(Library::Filter filter, MetaDataList& v_md)
 {
 	m->library_db->getAllTracksBySearchString(filter, v_md);
+}
+
+void LocalLibrary::get_track_by_id(TrackID track_id, MetaData& md)
+{
+	MetaData md_tmp = m->library_db->getTrackById(track_id);
+	if(md_tmp.library_id == m->library_id) {
+		md = md_tmp;
+	}
+
+	else {
+		md = MetaData();
+	}
 }
 
 void LocalLibrary::get_album_by_id(AlbumId album_id, Album& album)

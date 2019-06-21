@@ -49,6 +49,7 @@ namespace Playlist
 			void sig_items_changed(int idx);
 			void sig_current_track_changed(int idx);
 			void sig_stopped();
+			void sig_find_track(TrackID track_id);
 
 		public:
 			explicit Playlist(int idx, Type type, const QString& name);
@@ -85,6 +86,8 @@ namespace Playlist
 
 			IndexSet move_tracks(const IndexSet& indexes, int tgt);
 			IndexSet copy_tracks(const IndexSet& indexes, int tgt);
+
+			void find_track(int idx);
 
 			bool change_track(int idx);
 

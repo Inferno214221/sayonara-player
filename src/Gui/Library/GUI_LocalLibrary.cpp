@@ -118,6 +118,7 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 	connect(m->library, &LocalLibrary::sig_reloading_library_finished, ui->lv_genres, &GenreView::reload_genres);
 	connect(m->library, &LocalLibrary::sig_all_tracks_loaded, this, &GUI_LocalLibrary::tracks_loaded);
 	connect(m->library, &LocalLibrary::sig_import_dialog_requested, this, &GUI_LocalLibrary::import_dialog_requested);
+	connect(m->library, &LocalLibrary::sig_filter_changed, this, &GUI_LocalLibrary::filter_changed);
 
 	connect(m->manager, &Manager::sig_path_changed, this, &GUI_LocalLibrary::path_changed);
 	connect(m->manager, &Manager::sig_renamed, this, &GUI_LocalLibrary::name_changed);
@@ -199,7 +200,7 @@ void GUI_LocalLibrary::check_view_state(bool is_reloading)
 
 void GUI_LocalLibrary::check_reload_status(bool is_reloading)
 {
-	bool is_library_empty = m->library->tracks().isEmpty() && m->library->filter().cleared();
+	bool is_library_empty = m->library->is_empty();
 
 	ui->sw_status->setVisible(is_reloading || is_library_empty);
 	ui->pb_progress->setVisible(is_reloading);
@@ -541,6 +542,13 @@ void GUI_LocalLibrary::switch_album_view()
 	}
 }
 
+void GUI_LocalLibrary::filter_changed()
+{
+	Library::Filter filter = m->library->filter();
+	ui->le_search->set_current_mode(filter.mode());
+	ui->le_search->setText(filter.filtertext(false).join(","));
+}
+
 // GUI_AbstractLibrary
 Library::TableView* GUI_LocalLibrary::lv_artist() const { return ui->tv_artists; }
 Library::TableView* GUI_LocalLibrary::lv_album() const { return ui->tv_albums; }
@@ -565,7 +573,8 @@ QList<Library::Filter::Mode> GUI_LocalLibrary::search_options() const
 	return {
 		::Library::Filter::Fulltext,
 		::Library::Filter::Filename,
-		::Library::Filter::Genre
+		::Library::Filter::Genre,
+		::Library::Filter::Track
 	};
 }
 

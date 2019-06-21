@@ -181,6 +181,42 @@ void AbstractLibrary::refresh()
 	}
 }
 
+void AbstractLibrary::find_track(TrackID id)
+{
+	m->tracks.clear();
+	m->artists.clear();
+	m->albums.clear();
+
+	m->selected_tracks.clear();
+	m->selected_artists.clear();
+	m->selected_albums.clear();
+
+	MetaData md;
+	get_track_by_id(id, md);
+
+	if(md.id >= 0)
+	{
+		m->tracks << md;
+
+		Artist artist;
+		get_artist_by_id(md.artist_id, artist);
+		m->artists << artist;
+
+		Album album;
+		get_album_by_id(md.album_id, album);
+		m->albums << album;
+
+		get_all_tracks_by_album({album.id}, m->tracks, Library::Filter());
+		m->selected_tracks << md.id;
+	}
+
+	m->filter.set_mode(Library::Filter::Mode::Track);
+	m->filter.set_filtertext(QString::number(id), 0);
+	emit sig_filter_changed();
+
+	emit_stuff();
+}
+
 
 void AbstractLibrary::prepare_fetched_tracks_for_playlist(bool new_playlist)
 {
@@ -384,18 +420,18 @@ Library::Filter AbstractLibrary::filter() const
 	return m->filter;
 }
 
-
 void AbstractLibrary::change_filter(Library::Filter filter, bool force)
 {
 	QStringList filtertext = filter.filtertext(false);
 
 	if(!filter.is_invalid_genre())
 	{
-		if( filtertext.join("").size() < 3){
+		if(filtertext.join("").size() < 3 && filter.track_id() < 0){
 			filter.clear();
 		}
 
-		else {
+		else
+		{
 			Library::SearchModeMask mask = GetSetting(Set::Lib_SearchMode);
 			filter.set_filtertext(filtertext.join(","), mask);
 		}
@@ -522,7 +558,6 @@ void AbstractLibrary::selected_tracks_changed(const IndexSet& indexes)
 	change_track_selection(indexes);
 }
 
-
 void AbstractLibrary::fetch_by_filter(Library::Filter filter, bool force)
 {
 	if( (m->filter == filter) &&
@@ -549,7 +584,13 @@ void AbstractLibrary::fetch_by_filter(Library::Filter filter, bool force)
 		get_all_tracks(m->tracks);
 	}
 
-	else {
+	else if(m->filter.mode() == Library::Filter::Mode::Track)
+	{
+		find_track(m->filter.track_id());
+	}
+
+	else
+	{
 		get_all_artists_by_searchstring(m->filter, m->artists);
 		get_all_albums_by_searchstring(m->filter, m->albums);
 		get_all_tracks_by_searchstring(m->filter, m->tracks);

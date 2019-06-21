@@ -174,6 +174,7 @@ int Handler::add_new_playlist(const QString& name, bool temporary, PlaylistType 
 
 	connect(pl.get(), &Playlist::Playlist::sig_current_track_changed, this, &Handler::current_track_changed);
 	connect(pl.get(), &Playlist::Playlist::sig_stopped, this, &Handler::playlist_stopped);
+	connect(pl.get(), &Playlist::Playlist::sig_find_track, this, &Handler::sig_find_track_requested);
 
 	return pl->index();
 }

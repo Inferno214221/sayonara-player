@@ -49,6 +49,7 @@ protected:
 
 public:
 	virtual ~LocalLibrary();
+	bool is_empty() const override;
 
 public slots:
 	void delete_tracks(const MetaDataList& v_md, Library::TrackDeletionMode answer) override;
@@ -82,6 +83,7 @@ private:
 	void get_all_tracks_by_album(IdList album_ids, MetaDataList& v_md, Library::Filter filter) override;
 	void get_all_tracks_by_searchstring(Library::Filter filter, MetaDataList& v_md) override;
 
+	void get_track_by_id(TrackID track_id, MetaData& md) override;
 	void get_album_by_id(AlbumId album_id, Album& album) override;
 	void get_artist_by_id(ArtistId artist_id, Artist& artist) override;
 
@@ -92,6 +94,7 @@ private:
 	void insert_tracks(const MetaDataList& v_md) override;
 	void apply_db_fixes();
 	void init_reload_thread();
+
 
 public:
 	bool set_library_path(const QString& library_path);

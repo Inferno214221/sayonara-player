@@ -109,6 +109,7 @@ private slots:
 	void async_drop_finished(bool success, int async_drop_index);
 	void rating_changed(Rating rating);
 	void sl_columns_changed();
+	void find_track_triggered();
 
 	void move_selected_rows_up();
 	void move_selected_rows_down();

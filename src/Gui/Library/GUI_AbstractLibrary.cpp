@@ -57,7 +57,7 @@ GUI_AbstractLibrary::GUI_AbstractLibrary(AbstractLibrary* library, QWidget *pare
 	m = Pimpl::make<Private>(library);
 }
 
-GUI_AbstractLibrary::~GUI_AbstractLibrary() {}
+GUI_AbstractLibrary::~GUI_AbstractLibrary() = default;
 
 void GUI_AbstractLibrary::init()
 {

@@ -242,6 +242,11 @@ void SC::Library::get_all_albums_by_searchstring(::Library::Filter filter, Album
 	albums.sort(sortorder().so_albums);
 }
 
+bool SC::Library::is_empty() const
+{
+	return false;
+}
+
 void SC::Library::get_all_tracks(const QStringList& paths, MetaDataList& v_md)
 {
 	Q_UNUSED(paths)
@@ -455,6 +460,7 @@ void SC::Library::insert_tracks(const MetaDataList& v_md, const ArtistList& arti
 }
 
 
+
 void SC::Library::artists_fetched(const ArtistList& artists)
 {
 	for(const Artist& artist : artists)
@@ -509,14 +515,20 @@ void SC::Library::albums_fetched(const AlbumList& albums)
 }
 
 
-void SC::Library::get_artist_by_id(int artist_id, Artist& artist)
+void SC::Library::get_track_by_id(TrackID track_id, MetaData& md)
+{
+	Q_UNUSED(track_id)
+	Q_UNUSED(md)
+}
+
+void SC::Library::get_artist_by_id(ArtistId artist_id, Artist& artist)
 {
 	Q_UNUSED(artist_id)
 	Q_UNUSED(artist)
 }
 
 
-void SC::Library::get_album_by_id(int album_id, Album& album)
+void SC::Library::get_album_by_id(AlbumId album_id, Album& album)
 {
 	Q_UNUSED(album_id)
 	Q_UNUSED(album)
