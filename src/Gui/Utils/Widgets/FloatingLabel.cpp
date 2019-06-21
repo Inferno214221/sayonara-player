@@ -1,4 +1,4 @@
-#include "Label.h"
+#include "FloatingLabel.h"
 #include <QPaintEvent>
 #include <QPainter>
 #include <QTimer>

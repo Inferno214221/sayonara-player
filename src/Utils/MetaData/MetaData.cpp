@@ -140,6 +140,7 @@ struct MetaData::Private
 			CMP(title) &&
 			CMP(genres) &&
 			CMP(album_artist_id) &&
+			CMP(album_artist_idx) &&
 			CMP(album_idx) &&
 			CMP(artist_idx) &&
 			CMP(comment) &&

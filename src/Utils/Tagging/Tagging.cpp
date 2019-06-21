@@ -263,8 +263,6 @@ bool Tagging::Utils::setMetaDataOfFile(const MetaData& md)
 		return false;
 	}
 
-	bool success;
-
 	TagLib::String album(md.album().toUtf8().data(), TagLib::String::UTF8);
 	TagLib::String artist(md.artist().toUtf8().data(), TagLib::String::UTF8);
 	TagLib::String title(md.title().toUtf8().data(), TagLib::String::UTF8);
@@ -325,12 +323,13 @@ bool Tagging::Utils::setMetaDataOfFile(const MetaData& md)
 		popularimeter_frame.write(popularimeter);
 	}
 
-	success = f.save();
+	bool success = f.save();
 	if(!success){
 		sp_log(Log::Warning, "Tagging") << "Could not save " << md.filepath();
+
 	}
 
-	return true;
+	return success;
 }
 
 Tagging::ParsedTag Tagging::Utils::tag_type_from_fileref(const TagLib::FileRef& f)

@@ -12,7 +12,7 @@
 #include "Gui/Utils/ContextMenu/LibraryContextMenu.h"
 #include "Gui/Utils/Widgets/ProgressBar.h"
 #include "Gui/Utils/RatingLabel.h"
-#include "Gui/Utils/Widgets/Label.h"
+#include "Gui/Utils/Widgets/FloatingLabel.h"
 
 #include "Components/PlayManager/PlayManager.h"
 #include "Components/Covers/CoverLocation.h"
@@ -29,7 +29,6 @@
 #include <QPixmap>
 #include <QIcon>
 #include <QDateTime>
-#include <QLabel>
 #include <QFont>
 
 #include <algorithm>

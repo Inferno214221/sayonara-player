@@ -324,6 +324,7 @@ bool Tracks::getAllTracksByAlbum(const IdList& albumIds, MetaDataList& result, c
 
 	QStringList filters = filter.filtertext(true);
 	QStringList search_filters = filter.search_mode_filtertext(true);
+
 	for(int i=0; i<filters.size(); i++)
 	{
 		Query q(this);
@@ -350,8 +351,8 @@ bool Tracks::getAllTracksByAlbum(const IdList& albumIds, MetaDataList& result, c
 		{ // prepare & run
 			q.prepare(query);
 
-			for(int i=0; i<albumIds.size(); i++) {
-				q.bindValue(QString(":album_id_%1").arg(i), albumIds[i]);
+			for(int a=0; a<albumIds.size(); a++) {
+				q.bindValue(QString(":album_id_%1").arg(a), albumIds[a]);
 			}
 
 			q.bindValue(":searchterm", filters[i]);
@@ -419,7 +420,7 @@ bool Tracks::getAllTracksByArtist(const IdList& artistIds, MetaDataList& result,
 			q.prepare(query);
 
 			for(int a=0; a<artistIds.size(); a++) {
-				q.bindValue(QString(":artist_id_%1").arg(a), artistIds[i]);
+				q.bindValue(QString(":artist_id_%1").arg(a), artistIds[a]);
 			}
 
 			q.bindValue(":searchterm", filters[i]);

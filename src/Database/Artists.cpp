@@ -225,8 +225,8 @@ bool Artists::deleteArtist(ArtistId id)
 
 	Query q = run_query
 	(
-		"delete from artists where artist_id=:artist_id;",
-		{":artist_id", id},
+		"delete from artists where artistId=:artistId;",
+		{":artistId", id},
 		QString("Cannot delete artist %1").arg(id)
 	);
 
