@@ -448,7 +448,8 @@ void PlaylistView::mouseMoveEvent(QMouseEvent* event)
 
 QMimeData* PlaylistView::dragable_mimedata() const
 {
-	return m->model->mimeData( selectedIndexes() );
+	QModelIndexList indexes = selectedIndexes();
+	return m->model->mimeData(indexes);
 }
 
 void PlaylistView::mouseDoubleClickEvent(QMouseEvent* event)

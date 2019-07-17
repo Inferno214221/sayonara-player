@@ -52,7 +52,7 @@ signals:
 
 public:
 	explicit PlaylistTabBar(QWidget *parent=nullptr);
-	virtual ~PlaylistTabBar();
+	~PlaylistTabBar();
 
 	void show_menu_items(PlaylistMenuEntries entries);
 	void setTabsClosable(bool b);

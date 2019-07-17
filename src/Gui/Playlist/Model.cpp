@@ -405,20 +405,29 @@ QMimeData* PlaylistItemModel::mimeData(const QModelIndexList& indexes) const
 		return nullptr;
 	}
 
-	QModelIndexList sorted(indexes);
-	Algorithm::sort(sorted, [](const QModelIndex& idx1, const QModelIndex& idx2){
-		return (idx1.row() < idx2.row());
+	QList<int> rows;
+	for(const QModelIndex& index : indexes)
+	{
+		if(!rows.contains(index.row()))
+		{
+			rows << index.row();
+		}
+	}
+
+	Algorithm::sort(rows, [](int row1, int row2){
+		return (row1 < row2);
 	});
 
 	MetaDataList v_md;
-	v_md.reserve(sorted.size());
-	for(const QModelIndex& idx : Algorithm::AsConst(sorted))
+	v_md.reserve(rows.size());
+
+	for(int row : Algorithm::AsConst(rows))
 	{
-		if(idx.row() >= m->pl->count()){
+		if(row >= m->pl->count()){
 			continue;
 		}
 
-		v_md << m->pl->track(idx.row());
+		v_md << m->pl->track(row);
 	}
 
 	if(v_md.empty()){

@@ -44,7 +44,6 @@ struct PlaylistTabBar::Private
 	int					drag_origin_tab;
 	bool				drag_from_playlist;
 
-
 	Private(QWidget* parent) :
 		menu(new PlaylistTabMenu(parent)),
 		tab_before_dd(-1),
@@ -78,7 +77,7 @@ PlaylistTabBar::PlaylistTabBar(QWidget *parent) :
 	connect(m->menu, &PlaylistTabMenu::sig_close_others_clicked, this, &PlaylistTabBar::close_others_pressed);
 }
 
-PlaylistTabBar::~PlaylistTabBar() {}
+PlaylistTabBar::~PlaylistTabBar() = default;
 
 void PlaylistTabBar::save_pressed()
 {
@@ -311,12 +310,12 @@ void PlaylistTabBar::dropEvent(QDropEvent* e)
 
 	m->tab_before_dd = -1;
 
-	const QMimeData* mime_data = e->mimeData();
+	auto* mime_data = e->mimeData();
 	if(!mime_data){
 		return;
 	}
 
-	const CustomMimeData* cmd = dynamic_cast<const CustomMimeData*>(mime_data);
+	auto* cmd = dynamic_cast<const CustomMimeData*>(mime_data);
 	if(!cmd)
 	{
 		if(!mime_data->hasUrls()){

@@ -85,7 +85,7 @@ IndexSet PlaylistImpl::move_tracks(const IndexSet& indexes, int tgt_row)
 {
 	m->v_md.move_tracks(indexes, tgt_row);
 
-	int n_lines_before_tgt = std::count_if(indexes.begin(), indexes.end(), [&tgt_row](int sel){
+	int n_lines_before_tgt = Algorithm::count_if(indexes, [&tgt_row](int sel){
 		return (sel < tgt_row);
 	});
 

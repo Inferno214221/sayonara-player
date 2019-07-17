@@ -21,10 +21,12 @@
 #include "MetaDataList.h"
 #include "MetaDataSorting.h"
 
+#include "Utils/Algorithm.h"
 #include "Utils/Set.h"
 #include "Utils/globals.h"
+
 #include <QStringList>
-#include <algorithm>
+
 #include <assert.h>
 
 struct MetaDataList::Private
@@ -316,7 +318,7 @@ MetaDataList& MetaDataList::remove_tracks(const IndexSet& indexes)
 
 	else
 	{
-		int n_tracks_before_cur_track = std::count_if(indexes.begin(), indexes.end(), [=](int idx){
+		int n_tracks_before_cur_track = Util::Algorithm::count_if(indexes, [=](int idx){
 			return (idx < m->current_track);
 		});
 

@@ -25,6 +25,7 @@
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/MetaData/Genre.h"
 
+#include "Utils/Algorithm.h"
 #include "Utils/Utils.h"
 #include "Utils/Set.h"
 #include "Utils/Library/Filter.h"
@@ -522,7 +523,7 @@ bool Tracks::deleteTracks(const MetaDataList& v_md)
 
 	db().transaction();
 
-	auto deleted_tracks = std::count_if(v_md.begin(), v_md.end(), [=](const MetaData& md)
+	auto deleted_tracks = Util::Algorithm::count_if(v_md, [=](const MetaData& md)
 	{
 		return this->deleteTrack(md.id);
 	});
@@ -705,13 +706,13 @@ bool Tracks::updateTracks(const MetaDataList& v_md)
 {
 	db().transaction();
 
-	size_t n_files = std::count_if(v_md.begin(), v_md.end(), [=](const MetaData& md){
+	int n_files = Util::Algorithm::count_if(v_md, [=](const MetaData& md){
 		return this->updateTrack(md);
 	});
 
 	bool success = db().commit();
 
-	return success && (n_files == v_md.size());
+	return success && (n_files == v_md.count());
 }
 
 
