@@ -41,16 +41,16 @@ namespace PipelineExtensions
 			void abort_delayed_playing();
 	};
 
-	class Logic : public QObject
+	class DelayedPlayableLogic : public QObject
 	{
 		Q_OBJECT
-		PIMPL(Logic)
+		PIMPL(DelayedPlayableLogic)
 
 		friend class DelayedPlayable;
 
 		private:
-			Logic(DelayedPlayable* dph);
-			~Logic();
+			DelayedPlayableLogic(DelayedPlayable* dph);
+			~DelayedPlayableLogic();
 
 			void start_timer(MilliSeconds ms);
 			void stop_timer();

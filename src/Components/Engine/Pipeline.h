@@ -55,7 +55,7 @@ namespace Engine
 			virtual ~Pipeline();
 
 			bool init(Engine* engine, GstState state=GST_STATE_NULL);
-			bool set_uri(gchar* uri);
+			bool prepare(const QString& uri);
 
 			void set_data(Byte* data, uint64_t size);
 			void set_internal_volume(double volume) override; // Crossfader
@@ -73,8 +73,8 @@ namespace Engine
 			void enable_streamrecorder(bool b);
 			void set_streamrecorder_path(const QString& session_path);
 
-			MilliSeconds	get_duration_ms() const;
-			MilliSeconds	get_position_ms() const;
+			MilliSeconds	duration_ms() const;
+			MilliSeconds	position_ms() const;
 
 		public slots:
 
@@ -88,7 +88,7 @@ namespace Engine
 			NanoSeconds seek_abs(NanoSeconds ns );
 
 		protected slots:
-			void s_vol_changed();
+			void s_volume_changed();
 			void s_show_visualizer_changed();
 			void s_mute_changed();
 			void s_speed_active_changed();
@@ -97,7 +97,7 @@ namespace Engine
 
 		private:
 			bool			create_elements();
-			bool			create_source(gchar* uri);
+			bool			create_source(const QString& uri);
 			void			remove_source();
 			GstElement*		create_sink(const QString& name);
 

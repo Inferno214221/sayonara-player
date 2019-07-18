@@ -152,7 +152,7 @@ bool Pipeline::init(Engine* engine, GstState state)
 	SetSetting(SetNoDB::MP3enc_found, EngineUtils::check_lame_available());
 	SetSetting(SetNoDB::Pitch_found, EngineUtils::check_pitch_available());
 
-	ListenSetting(Set::Engine_Vol, Pipeline::s_vol_changed);
+	ListenSetting(Set::Engine_Vol, Pipeline::s_volume_changed);
 	ListenSetting(Set::Engine_Mute, Pipeline::s_mute_changed);
 	ListenSettingNoCall(Set::Engine_Sink, Pipeline::s_sink_changed);
 
@@ -188,13 +188,13 @@ bool Pipeline::create_elements()
 }
 
 
-bool Pipeline::create_source(gchar* uri)
+bool Pipeline::create_source(const QString& uri)
 {
 	if(EngineUtils::create_element(&m->source, "uridecodebin", "src"))
 	{
 		EngineUtils::set_values(G_OBJECT(m->source),
 								"use-buffering", Util::File::is_www(uri),
-								"uri", uri);
+								"uri", uri.toUtf8().data());
 
 		EngineUtils::set_uint64_value(G_OBJECT(m->source), "buffer-duration", GetSetting(Set::Engine_BufferSizeMS));
 
@@ -293,11 +293,15 @@ void Pipeline::configure_elements()
 }
 
 
-bool Pipeline::set_uri(gchar* uri)
+bool Pipeline::prepare(const QString& uri)
 {
 	stop();
 	create_source(uri);
+
 	EngineUtils::set_state(m->pipeline, GST_STATE_PAUSED);
+
+	s_volume_changed();
+	s_mute_changed();
 
 	return true;
 }
@@ -329,10 +333,10 @@ void Pipeline::stop()
 	remove_source();
 }
 
-void Pipeline::s_vol_changed()
+void Pipeline::s_volume_changed()
 {
 	double vol = GetSetting(Set::Engine_Vol) / 100.0;
-	EngineUtils::set_value(G_OBJECT(m->pb_volume), "volume", vol);
+	set_internal_volume(vol);
 }
 
 void Pipeline::s_mute_changed()
@@ -430,7 +434,7 @@ void Pipeline::s_speed_active_changed()
 		return;
 	}
 
-	MilliSeconds pos_ms = get_position_ms();
+	MilliSeconds pos_ms = position_ms();
 	if(active)
 	{
 		add_element(speed, m->audio_convert, m->equalizer->element());
@@ -468,7 +472,7 @@ void Pipeline::s_sink_changed()
 		return;
 	}
 
-	MilliSeconds pos_ms = get_position_ms();
+	MilliSeconds pos_ms = position_ms();
 	GstState old_state = EngineUtils::get_state(m->pipeline);
 
 	{ //replace elements
@@ -496,7 +500,7 @@ void Pipeline::s_sink_changed()
 
 void Pipeline::check_position()
 {
-	MilliSeconds pos_ms = get_position_ms();
+	MilliSeconds pos_ms = position_ms();
 	pos_ms = std::max<MilliSeconds>(0, pos_ms);
 
 	emit sig_pos_changed_ms( pos_ms );
@@ -506,8 +510,8 @@ void Pipeline::check_position()
 
 void Pipeline::check_about_to_finish()
 {
-	MilliSeconds pos_ms = get_position_ms();
-	MilliSeconds dur_ms = get_duration_ms();
+	MilliSeconds pos_ms = position_ms();
+	MilliSeconds dur_ms = duration_ms();
 	MilliSeconds about_to_finish_time = get_about_to_finish_time();
 
 	static bool about_to_finish = false;
@@ -548,12 +552,12 @@ GstElement* Pipeline::position_element()
 	return m->position_element;
 }
 
-MilliSeconds Pipeline::get_duration_ms() const
+MilliSeconds Pipeline::duration_ms() const
 {
 	return EngineUtils::get_duration_ms(m->position_element);
 }
 
-MilliSeconds Pipeline::get_position_ms() const
+MilliSeconds Pipeline::position_ms() const
 {
 	return EngineUtils::get_position_ms(m->position_element);
 }

@@ -232,7 +232,7 @@ bool EngineImpl::change_metadata(const MetaData& md)
 		return false;
 	}
 
-	bool success = m->pipeline->set_uri(uri.toUtf8().data());
+	bool success = m->pipeline->prepare(uri);
 	if(!success)
 	{
 		m->change_gapless_state(GaplessState::Stopped);
@@ -292,7 +292,7 @@ void EngineImpl::jump_abs_ms(MilliSeconds pos_ms)
 
 void EngineImpl::jump_rel_ms(MilliSeconds ms)
 {
-	MilliSeconds new_time_ms = m->pipeline->get_position_ms() + ms;
+	MilliSeconds new_time_ms = m->pipeline->position_ms() + ms;
 	m->pipeline->seek_abs(new_time_ms * GST_MSECOND);
 }
 
@@ -540,7 +540,7 @@ void EngineImpl::update_duration(GstElement* src)
 		return;
 	}
 
-	MilliSeconds duration_ms = m->pipeline->get_duration_ms();
+	MilliSeconds duration_ms = m->pipeline->duration_ms();
 	MilliSeconds difference = std::abs(duration_ms - m->md.length_ms);
 	if(duration_ms < 1000 || difference < 1999 || duration_ms > 1500000000){
 		return;

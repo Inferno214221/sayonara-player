@@ -22,62 +22,62 @@
 #include "Utils/Utils.h"
 #include <QTimer>
 
-using PipelineExtensions::Logic;
+using PipelineExtensions::DelayedPlayableLogic;
 using PipelineExtensions::DelayedPlayable;
 
-struct Logic::Private
+struct DelayedPlayableLogic::Private
 {
 	DelayedPlayable* dph=nullptr;
-	QTimer* t=nullptr;
+	QTimer* timer=nullptr;
 
 	Private(DelayedPlayable* dph) :
 		dph(dph)
 	{
-		t = new QTimer();
-		t->setTimerType(Qt::PreciseTimer);
-		t->setSingleShot(true);
+		timer = new QTimer();
+		timer->setTimerType(Qt::PreciseTimer);
+		timer->setSingleShot(true);
 	}
 
 	~Private()
 	{
-		while(t->isActive())
+		while(timer->isActive())
 		{
-			t->stop();
+			timer->stop();
 			::Util::sleep_ms(100);
 		}
 
-		delete t; t = nullptr;
+		delete timer; timer = nullptr;
 	}
 };
 
-Logic::Logic(DelayedPlayable* dph)
+DelayedPlayableLogic::DelayedPlayableLogic(DelayedPlayable* dph)
 {
 	m = Pimpl::make<Private>(dph);
 
-	connect(m->t, &QTimer::timeout, this, [=](){
+	connect(m->timer, &QTimer::timeout, this, [=](){
 		m->dph->play();
 	});
 }
 
-Logic::~Logic() {}
+DelayedPlayableLogic::~DelayedPlayableLogic() = default;
 
-void Logic::start_timer(MilliSeconds ms)
+void DelayedPlayableLogic::start_timer(MilliSeconds ms)
 {
-	m->t->start(ms);
+	m->timer->start(ms);
 }
 
-void Logic::stop_timer()
+void DelayedPlayableLogic::stop_timer()
 {
-	m->t->stop();
+	m->timer->stop();
 }
 
 struct DelayedPlayable::Private
 {
-	Logic* logic=nullptr;
+	DelayedPlayableLogic* logic=nullptr;
 
 	Private(DelayedPlayable* dph)
 	{
-		logic = new Logic(dph);
+		logic = new DelayedPlayableLogic(dph);
 	}
 
 	~Private()
@@ -91,7 +91,7 @@ DelayedPlayable::DelayedPlayable()
 	m = Pimpl::make<Private>(this);
 }
 
-DelayedPlayable::~DelayedPlayable() {}
+DelayedPlayable::~DelayedPlayable() = default;
 
 void DelayedPlayable::play_in(MilliSeconds ms)
 {
