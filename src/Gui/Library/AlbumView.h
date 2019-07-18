@@ -69,6 +69,9 @@ namespace Library
 		void selection_changed(const IndexSet& indexes) override;
 		void refresh_clicked() override;
 		void run_merge_operation(const MergeData& mergedata) override;
+		bool is_mergeable() const override;
+		MD::Interpretation metadata_interpretation() const override;
+
 
 		void calc_discmenu_point(QModelIndex idx);
 		void delete_discmenu();

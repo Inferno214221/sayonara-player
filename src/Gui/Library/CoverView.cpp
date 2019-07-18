@@ -78,7 +78,6 @@ void CoverView::init(LocalLibrary* library)
 	m->model = new Library::CoverModel(this, library);
 
 	ItemView::set_selection_type( SelectionViewInterface::SelectionType::Items );
-	ItemView::set_metadata_interpretation(MD::Interpretation::Albums);
 	ItemView::set_item_model(m->model);
 
 	this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -269,6 +268,16 @@ void CoverView::hideEvent(QHideEvent* e)
 	}
 
 	ItemView::hideEvent(e);
+}
+
+bool CoverView::is_mergeable() const
+{
+	return true;
+}
+
+MD::Interpretation CoverView::metadata_interpretation() const
+{
+	return MD::Interpretation::Albums;
 }
 
 int CoverView::index_by_model_index(const QModelIndex& idx) const

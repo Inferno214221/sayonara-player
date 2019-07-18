@@ -81,12 +81,10 @@ namespace Library
 
 		virtual LibraryContextMenu::Entries context_menu_entries() const;
 
-
 		/** Dragable **/
 		QMimeData* dragable_mimedata() const override;
 		QPixmap drag_pixmap() const override;
 
-		void set_metadata_interpretation(MD::Interpretation type);
 		void set_selection_type(SelectionViewInterface::SelectionType type) override;
 
 		void show_clear_button(bool visible);
@@ -117,8 +115,8 @@ namespace Library
 		ItemModel* item_model() const;
 		virtual AbstractLibrary* library() const;
 
-		// InfoDialogContainer
-		virtual MD::Interpretation metadata_interpretation() const override final;
+		virtual bool is_mergeable() const=0;
+
 		MetaDataList info_dialog_data() const override;
 
 		virtual void selection_changed(const IndexSet& indexes);

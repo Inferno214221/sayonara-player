@@ -72,6 +72,10 @@ namespace Library
 		void resizeEvent(QResizeEvent* e) override;
 		void hideEvent(QHideEvent* e) override;
 
+		// ItemView
+		bool is_mergeable() const override;
+		MD::Interpretation metadata_interpretation() const override;
+
 		int sizeHintForColumn(int) const override;
 
 	private:

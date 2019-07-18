@@ -20,6 +20,7 @@
 
 #include "SelectionView.h"
 #include "Utils/Set.h"
+#include "Utils/Algorithm.h"
 #include "Gui/Utils/Delegates/ComboBoxDelegate.h"
 
 #include <QItemSelection>
@@ -215,14 +216,19 @@ void SelectionViewInterface::clear_selection()
 IndexSet SelectionViewInterface::selected_items() const
 {
 	QItemSelectionModel* sel_model = this->selection_model();
-	if(!sel_model){
+	if(!sel_model) {
 		return IndexSet();
 	}
 
 	QModelIndexList idx_list = sel_model->selectedIndexes();
 	IndexSet ret;
-	for(auto idx : idx_list) {
-		ret.insert(index_by_model_index(idx));
+	for(auto idx : idx_list)
+	{
+		int row = index_by_model_index(idx);
+		if(!ret.contains(row))
+		{
+			ret.insert(row);
+		}
 	}
 
 	return ret;

@@ -65,7 +65,6 @@ void TrackView::init_view(AbstractLibrary* library)
 
 	this->set_item_model(track_model);
 	this->setItemDelegate(track_delegate);
-	this->set_metadata_interpretation(MD::Interpretation::Tracks);
 
 	connect(library, &AbstractLibrary::sig_all_tracks_loaded, this, &TrackView::fill);
 }
@@ -161,4 +160,14 @@ void TrackView::refresh_clicked()
 {
 	TableView::refresh_clicked();
 	m->library->refresh_tracks();
+}
+
+bool TrackView::is_mergeable() const
+{
+	return false;
+}
+
+MD::Interpretation TrackView::metadata_interpretation() const
+{
+	return MD::Interpretation::Tracks;
 }

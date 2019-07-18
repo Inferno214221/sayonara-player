@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef ARTISTVIEW_H
 #define ARTISTVIEW_H
 
@@ -61,6 +59,10 @@ namespace Library
 
 			SortOrder sortorder() const override;
 			void save_sortorder(SortOrder s) override;
+
+			// ItemView
+			bool is_mergeable() const override;
+			MD::Interpretation metadata_interpretation() const override;
 
 			void language_changed() override;
 

@@ -68,7 +68,6 @@ void AlbumView::init_view(AbstractLibrary* library)
 
 	this->set_item_model(album_model);
 	this->setItemDelegate(album_delegate);
-	this->set_metadata_interpretation(MD::Interpretation::Albums);
 
 	connect(m->library, &AbstractLibrary::sig_all_albums_loaded, this, &AlbumView::fill);
 
@@ -264,6 +263,16 @@ void AlbumView::run_merge_operation(const MergeData& mergedata)
 	connect(uto, &Tagging::UserOperations::sig_finished, uto, &Tagging::UserOperations::deleteLater);
 
 	uto->merge_albums(mergedata.source_ids(), mergedata.target_id());
+}
+
+bool AlbumView::is_mergeable() const
+{
+	return true;
+}
+
+MD::Interpretation AlbumView::metadata_interpretation() const
+{
+	return MD::Interpretation::Albums;
 }
 
 void AlbumView::use_clear_button_changed()

@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef TRACKVIEW_H
 #define TRACKVIEW_H
 
@@ -63,6 +61,9 @@ namespace Library
 		void append_clicked() override;
 		void selection_changed(const IndexSet& lst) override;
 		void refresh_clicked() override;
+
+		bool is_mergeable() const override;
+		MD::Interpretation metadata_interpretation() const override;
 	};
 }
 

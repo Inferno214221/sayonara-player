@@ -108,7 +108,7 @@ ItemView::ItemView(QWidget* parent) :
 	new QShortcut(QKeySequence(Qt::Key_Backspace), this, SLOT(clearSelection()), nullptr, Qt::WidgetShortcut);
 }
 
-ItemView::~ItemView() {}
+ItemView::~ItemView() = default;
 
 AbstractLibrary* ItemView::library() const { return nullptr; }
 
@@ -300,17 +300,6 @@ bool ItemView::is_valid_drag_position(const QPoint &p) const
 	return (idx.isValid() && (this->model()->flags(idx) & Qt::ItemFlag::ItemIsSelectable));
 }
 
-
-void ItemView::set_metadata_interpretation(MD::Interpretation type)
-{
-	m->type = type;
-}
-
-MD::Interpretation ItemView::metadata_interpretation() const
-{
-	return m->type;
-}
-
 MetaDataList ItemView::info_dialog_data() const
 {
 	return item_model()->mimedata_tracks();
@@ -461,7 +450,7 @@ void ItemView::contextMenuEvent(QContextMenuEvent* event)
 
 	QPoint pos = event->globalPos();
 
-	if(m->type == MD::Interpretation::Tracks && selections.size() == 1)
+	if(metadata_interpretation() == MD::Interpretation::Tracks && selections.size() == 1)
 	{
 		m->context_menu->show_action(LibraryContextMenu::EntryLyrics, true);
 	}
@@ -469,11 +458,7 @@ void ItemView::contextMenuEvent(QContextMenuEvent* event)
 		m->context_menu->show_action(LibraryContextMenu::EntryLyrics, false);
 	}
 
-	bool is_mergeable =
-			(m->type == MD::Interpretation::Artists ||
-			 m->type == MD::Interpretation::Albums);
-
-	if(is_mergeable)
+	if(is_mergeable())
 	{
 		QMap<Id, QString> data;
 		ItemModel* model = item_model();
@@ -484,9 +469,9 @@ void ItemView::contextMenuEvent(QContextMenuEvent* event)
 			name.replace("&", "&&");
 
 			data.insert(id, name);
-			m->merge_menu->set_data(data);
 		}
 
+		m->merge_menu->set_data(data);
 		m->merge_menu->action()->setVisible( m->merge_menu->is_data_valid() );
 	}
 

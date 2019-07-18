@@ -56,13 +56,13 @@ MergeMenu::~MergeMenu() = default;
 
 void MergeMenu::set_data(const QMap<Id, QString>& data)
 {
+	this->clear();
+	m->data = data;
+
 	if(data.size() < 2){
 		return;
 	}
 
-	this->clear();
-
-	m->data = data;
 	for(Id key : data.keys())
 	{
 		QString val	= data[key];

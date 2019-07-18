@@ -70,7 +70,6 @@ void ArtistView::init_view(AbstractLibrary* library)
 
 	this->set_item_model(artist_model);
 	this->setItemDelegate(new Gui::StyledItemDelegate(this));
-	this->set_metadata_interpretation(MD::Interpretation::Artists);
 
 	connect(m->library, &AbstractLibrary::sig_all_artists_loaded, this, &ArtistView::fill);
 
@@ -154,6 +153,16 @@ void ArtistView::language_changed()
 		m->album_artist_action->setText(Lang::get(Lang::ShowAlbumArtists));
 		m->album_artist_action->setShortcut(sch->shortcut(ShortcutIdentifier::AlbumArtists).sequence());
 	}
+}
+
+bool ArtistView::is_mergeable() const
+{
+	return true;
+}
+
+MD::Interpretation ArtistView::metadata_interpretation() const
+{
+	return MD::Interpretation::Artists;
 }
 
 void ArtistView::selection_changed(const IndexSet& indexes)
