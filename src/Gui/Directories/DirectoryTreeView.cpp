@@ -319,10 +319,10 @@ void DirectoryTreeView::create_dir_clicked()
 		return;
 	}
 
-	LineInputDialog dialog(Lang::get(Lang::Rename), tr("Enter new name"), this);
+	Gui::LineInputDialog dialog(Lang::get(Lang::Rename), tr("Enter new name"), this);
 	dialog.exec();
 
-	QString new_dir_name = dialog.textValue();
+	QString new_dir_name = dialog.text();
 
 	if(!new_dir_name.isEmpty() && !new_dir_name.contains("/") && !new_dir_name.contains("\\"))
 	{
@@ -346,12 +346,12 @@ void DirectoryTreeView::rename_dir_clicked()
 	QString dir = m->model->filepath_origin(index);
 	QDir d(dir);
 
-	LineInputDialog dialog(Lang::get(Lang::Rename), tr("Enter new name"), d.dirName(), this);
+	Gui::LineInputDialog dialog(Lang::get(Lang::Rename), tr("Enter new name"), d.dirName(), this);
 	dialog.exec();
 
-	QString dir_renamed = dialog.textValue();
+	QString dir_renamed = dialog.text();
 
-	if(!dir_renamed.isEmpty())
+	if(!dir_renamed.isEmpty() && (dialog.return_value() == Gui::LineInputDialog::Ok))
 	{
 		d.cdUp();
 		m->file_operations->rename_dir(dir, d.filePath(dir_renamed));

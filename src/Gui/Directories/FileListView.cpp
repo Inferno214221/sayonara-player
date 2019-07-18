@@ -337,12 +337,12 @@ void FileListView::rename_file_clicked()
 	int last_dot = file.lastIndexOf(".");
 	file = file.left(last_dot);
 
-	LineInputDialog dialog(Lang::get(Lang::Rename), tr("Enter new name"), file, this);
+	Gui::LineInputDialog dialog(Lang::get(Lang::Rename), tr("Enter new name"), file, this);
 	dialog.exec();
 
-	QString file_renamed = dialog.textValue();
+	QString file_renamed = dialog.text();
 
-	if(!file_renamed.isEmpty())
+	if(!file_renamed.isEmpty() && (dialog.return_value() == Gui::LineInputDialog::Ok))
 	{
 
 		QDir d(files[row]);

@@ -97,6 +97,7 @@ PlaylistView::PlaylistView(PlaylistPtr pl, QWidget* parent) :
 	new QShortcut(QKeySequence(Qt::Key_Return), this, SLOT(play_selected_track()), nullptr, Qt::WidgetShortcut);
 	new QShortcut(QKeySequence(Qt::Key_Enter), this, SLOT(play_selected_track()), nullptr, Qt::WidgetShortcut);
 
+
 	connect(m->model, &PlaylistItemModel::sig_data_ready, this, &PlaylistView::refresh);
 	connect(playlist_handler, &Playlist::Handler::sig_current_track_changed, this, &PlaylistView::current_track_changed);
 
@@ -202,6 +203,8 @@ void PlaylistView::handle_drop(QDropEvent* event)
 	if(!mimedata) {
 		return;
 	}
+
+	this->setFocus();
 
 	bool is_inner_drag_drop = MimeData::is_inner_drag_drop(mimedata, m->playlist->index());
 	if(is_inner_drag_drop)

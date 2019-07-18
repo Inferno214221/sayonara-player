@@ -104,6 +104,8 @@ public:
 
 	void set_extensions(const ExtensionSet& extensions);
 
+	QKeySequence shortcut(LibraryContextMenu::Entry entry) const;
+
 
 signals:
 	void sig_info_clicked();

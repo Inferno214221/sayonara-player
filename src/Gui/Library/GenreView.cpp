@@ -25,6 +25,7 @@
 #include "Gui/Utils/CustomMimeData.h"
 #include "Gui/Utils/Delegates/StyledItemDelegate.h"
 #include "Gui/Utils/ContextMenu/ContextMenu.h"
+#include "Gui/Utils/InputDialog/LineInputDialog.h"
 
 #include "Utils/Utils.h"
 #include "Utils/Algorithm.h"
@@ -39,7 +40,6 @@
 
 #include <QDropEvent>
 #include <QContextMenuEvent>
-#include <QInputDialog>
 #include <QStyledItemDelegate>
 #include <QTreeWidget>
 #include <QShortcut>
@@ -95,11 +95,10 @@ GenreView::GenreView(QWidget* parent) :
 
 	new QShortcut(QKeySequence(Qt::Key_Enter), this, SLOT(expand_current_item()), nullptr, Qt::WidgetShortcut);
 	new QShortcut(QKeySequence(Qt::Key_Return), this, SLOT(expand_current_item()), nullptr, Qt::WidgetShortcut);
+	new QShortcut(QKeySequence(Qt::Key_F2), this, SLOT(rename_pressed()), nullptr, Qt::WidgetShortcut);
 }
 
-
-GenreView::~GenreView() {}
-
+GenreView::~GenreView() = default;
 
 bool GenreView::has_items() const
 {
@@ -155,16 +154,20 @@ void GenreView::expand_current_item()
 	}
 }
 
-
 void GenreView::new_pressed()
 {
-	bool ok;
-	QString new_name = QInputDialog::getText(this,
-					Lang::get(Lang::Genre),
-					Lang::get(Lang::New),
-					QLineEdit::Normal, QString(), &ok);
+	Gui::LineInputDialog dialog
+	(
+		Lang::get(Lang::Genre),
+		Lang::get(Lang::Genre) + ": " + Lang::get(Lang::New),
+		this
+	);
 
-	if(ok && !new_name.isEmpty()){
+	dialog.exec();
+
+	QString new_name = dialog.text();
+	if(dialog.was_accepted() && !new_name.isEmpty())
+	{
 		m->genre_fetcher->create_genre(Genre(new_name));
 	}
 }
@@ -176,17 +179,33 @@ void GenreView::rename_pressed()
 		return;
 	}
 
+	Util::Set<Genre> genres = m->genre_fetcher->genres();
+	QStringList genre_list;
+	for(Genre genre : genres)
+	{
+		genre_list << genre.name().trimmed();
+	}
+
+	std::sort(genre_list.begin(), genre_list.end());
+
 	for(const QTreeWidgetItem* item : selected_items)
 	{
-		bool ok;
-		QString text = item->text(0);
+		QString item_text = item->text(0);
+		Gui::LineInputDialog dialog
+		(
+			Lang::get(Lang::Genre),
+			Lang::get(Lang::Rename) + ": " + item_text,
+			item_text,
+			this
+		);
 
-		QString new_name = QInputDialog::getText(this,
-						Lang::get(Lang::Genre),
-						Lang::get(Lang::Rename) + " " + text + ": ",
-						QLineEdit::Normal, text, &ok);
-		if(ok && !new_name.isEmpty()){
-			m->genre_fetcher->rename_genre(Genre(text), Genre(new_name));
+		dialog.set_completer_text(genre_list);
+		dialog.exec();
+
+		QString new_name = dialog.text();
+		if(dialog.was_accepted() && !new_name.isEmpty())
+		{
+			m->genre_fetcher->rename_genre(Genre(item_text), Genre(new_name));
 		}
 	}
 }

@@ -35,6 +35,7 @@ Completer::Completer(const QStringList& lst, QObject* parent) :
 
 	popup()->setItemDelegate(new ComboBoxDelegate(this));
 	popup()->setStyleSheet(Style::current_style());
+	popup()->setObjectName("CompleterPopup");
 }
 
 Completer::~Completer() {}

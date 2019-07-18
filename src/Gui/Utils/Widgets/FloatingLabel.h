@@ -9,6 +9,10 @@ class QTimer;
 class QString;
 namespace Gui
 {
+	/**
+	 * @brief The FloatingLabel class. A QLabel where the text floats
+	 * from left to right and vice versa so there's no need for word wrapping anymore.
+	 */
 	class FloatingLabel :
 		public Gui::WidgetTemplate<QLabel>
 	{

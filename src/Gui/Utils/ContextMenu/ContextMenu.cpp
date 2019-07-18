@@ -27,6 +27,7 @@
 #include "Utils/Language/Language.h"
 
 #include <QTimer>
+#include <QKeySequence>
 
 using namespace Gui;
 
@@ -106,19 +107,27 @@ ContextMenu::ContextMenu(QWidget *parent) :
 	connect(m->action_delete, &QAction::triggered, this, &ContextMenu::sig_delete);
 }
 
-ContextMenu::~ContextMenu() {}
+ContextMenu::~ContextMenu() = default;
 
 void ContextMenu::language_changed()
 {
-	 m->action_new->setText(Lang::get(Lang::New));
-	 m->action_edit->setText(Lang::get(Lang::Edit));
-	 m->action_open->setText(Lang::get(Lang::Open));
-	 m->action_save->setText(Lang::get(Lang::Save));
-	 m->action_save_as->setText(Lang::get(Lang::SaveAs).triplePt());
-	 m->action_rename->setText(Lang::get(Lang::Rename));
-	 m->action_undo->setText(Lang::get(Lang::Undo));
-	 m->action_default->setText(Lang::get(Lang::Default));
-	 m->action_delete->setText(Lang::get(Lang::Delete));
+	m->action_new->setText(Lang::get(Lang::New));
+	m->action_edit->setText(Lang::get(Lang::Edit));
+	m->action_open->setText(Lang::get(Lang::Open));
+	m->action_save->setText(Lang::get(Lang::Save));
+	m->action_save_as->setText(Lang::get(Lang::SaveAs).triplePt());
+	m->action_rename->setText(Lang::get(Lang::Rename));
+	m->action_undo->setText(Lang::get(Lang::Undo));
+	m->action_default->setText(Lang::get(Lang::Default));
+	m->action_delete->setText(Lang::get(Lang::Delete));
+
+	m->action_open->setShortcut(QKeySequence::Open);
+	m->action_new->setShortcut(QKeySequence::New);
+	m->action_undo->setShortcut(QKeySequence::Undo);
+	m->action_save->setShortcut(QKeySequence::Save);
+	m->action_save_as->setShortcut(QKeySequence::SaveAs);
+	m->action_rename->setShortcut(QKeySequence("F2"));
+	m->action_delete->setShortcut(QKeySequence::Delete);
 }
 
 void ContextMenu::skin_changed()

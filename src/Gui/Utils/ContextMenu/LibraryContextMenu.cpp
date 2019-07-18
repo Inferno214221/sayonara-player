@@ -157,7 +157,7 @@ LibraryContextMenu::LibraryContextMenu(QWidget* parent) :
 	connect(m->show_filter_extension_bar_action, &QAction::triggered, this, &LibraryContextMenu::show_filter_extension_bar_triggered);
 }
 
-LibraryContextMenu::~LibraryContextMenu() {}
+LibraryContextMenu::~LibraryContextMenu() = default;
 
 void LibraryContextMenu::language_changed()
 {
@@ -178,7 +178,7 @@ void LibraryContextMenu::language_changed()
 	m->show_filter_extension_bar_action->setText(Lang::get(Lang::Show) + ": " + tr("Toolbar"));
 
 	m->play_action->setShortcut(QKeySequence(Qt::Key_Enter));
-	m->delete_action->setShortcut(QKeySequence(tr("Ctrl+X")));
+	m->delete_action->setShortcut(QKeySequence(Qt::ControlModifier | Qt::Key_Delete));
 	m->remove_action->setShortcut(QKeySequence(QKeySequence::Delete));
 	m->clear_action->setShortcut(QKeySequence(Qt::Key_Backspace));
 
@@ -355,6 +355,16 @@ void LibraryContextMenu::set_extensions(const ExtensionSet& extensions)
 
 		fem->insertAction(sep, a);
 	}
+}
+
+QKeySequence LibraryContextMenu::shortcut(LibraryContextMenu::Entry entry) const
+{
+	QAction* a = get_action(entry);
+	if(!a){
+		return QKeySequence();
+	}
+
+	return a->shortcut();
 }
 
 void LibraryContextMenu::show_cover_view_changed()

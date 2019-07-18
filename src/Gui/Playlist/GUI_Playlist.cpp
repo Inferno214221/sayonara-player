@@ -45,6 +45,7 @@
 #include <QFileDialog>
 #include <QTimer>
 #include <QTabBar>
+#include <QShortcut>
 
 using Playlist::Handler;
 
@@ -448,6 +449,7 @@ void GUI_Playlist::tab_save_playlist_as_clicked(int idx, const QString& str)
 
 	show_save_message_box(success);
 }
+
 
 void GUI_Playlist::tab_save_playlist_to_file_clicked(int pl_idx, const QString &filename)
 {

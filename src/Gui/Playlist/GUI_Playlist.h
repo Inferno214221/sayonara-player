@@ -71,6 +71,7 @@ private:
 
 	Message::Answer show_save_message_box(Playlist::DBInterface::SaveAsAnswer answer);
 
+
 private slots:
 
 	// triggered from playlist

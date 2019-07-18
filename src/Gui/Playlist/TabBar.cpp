@@ -94,7 +94,8 @@ void PlaylistTabBar::save_as_pressed()
 				Lang::get(Lang::SaveAs).triplePt(),
 				cur_text + ": " + Lang::get(Lang::SaveAs));
 
-	if(!name.isEmpty()){
+	if(!name.isEmpty())
+	{
 		emit sig_tab_save_as(cur_idx, name);
 	}
 }
@@ -155,7 +156,7 @@ void PlaylistTabBar::rename_pressed()
 	QString name = QInputDialog::getText(
 				this,
 				Lang::get(Lang::Rename),
-				cur_text + ": " + Lang::get(Lang::Rename));
+				Lang::get(Lang::Rename) + ": " + cur_text);
 
 	if(name.isEmpty()){
 		return;
@@ -224,11 +225,38 @@ void PlaylistTabBar::wheelEvent(QWheelEvent* e)
 	}
 }
 
+static QShortcut* init_shortcut(QWidget* parent, QKeySequence key)
+{
+	QShortcut* sc;
+	sc = new QShortcut(parent);
+	sc->setKey(key);
+	sc->setContext(Qt::WidgetWithChildrenShortcut);
+	return sc;
+}
+
+
 void PlaylistTabBar::init_shortcuts()
 {
 	ShortcutHandler* sch = ShortcutHandler::instance();
 	sch->shortcut(ShortcutIdentifier::AddTab).connect(this, this, SIGNAL(sig_add_tab_clicked()));
 	sch->shortcut(ShortcutIdentifier::CloseTab).connect(this, this, SLOT(close_pressed()));
+
+	QShortcut* sc1 = init_shortcut(this->parentWidget(), QKeySequence::Save);
+	connect(sc1, &QShortcut::activated, this, &PlaylistTabBar::save_pressed);
+
+	QShortcut* sc2 = init_shortcut(this->parentWidget(), QKeySequence::SaveAs);
+	connect(sc2, &QShortcut::activated, this, &PlaylistTabBar::save_as_pressed);
+
+	QShortcut* sc3 = init_shortcut(this->parentWidget(), QKeySequence("F2"));
+	connect(sc3, &QShortcut::activated, this, &PlaylistTabBar::rename_pressed);
+
+	QShortcut* sc4 = init_shortcut(this->parentWidget(), QKeySequence::Open);
+	connect(sc4, &QShortcut::activated, this, &PlaylistTabBar::open_file_pressed);
+
+	QKeySequence ks(QKeySequence::Open);
+	QShortcut* sc5 = init_shortcut(this->parentWidget(), QKeySequence("Shift+" + ks.toString()));
+	connect(sc5, &QShortcut::activated, this, &PlaylistTabBar::open_dir_pressed);
+
 }
 
 

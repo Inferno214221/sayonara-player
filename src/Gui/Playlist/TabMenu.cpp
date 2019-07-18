@@ -53,6 +53,7 @@ PlaylistTabMenu::PlaylistTabMenu(QWidget* parent) :
 	m = Pimpl::make<Private>();
 
 	m->action_open_file = new QAction(this);
+
 	m->action_open_dir = new QAction(this);
 	m->action_reset = new QAction(this);
 	m->action_rename = new QAction(this);
@@ -62,6 +63,7 @@ PlaylistTabMenu::PlaylistTabMenu(QWidget* parent) :
 	m->action_save_to_file = new QAction(this);
 	m->action_clear = new QAction(this);
 	m->action_close = new QAction(this);
+
 	m->action_close_others = new QAction(this);
 
 	QList<QAction*> actions;
@@ -116,6 +118,14 @@ void PlaylistTabMenu::language_changed()
 	m->action_clear->setText(Lang::get(Lang::Clear));
 	m->action_close->setText(Lang::get(Lang::Close));
 	m->action_close_others->setText(Lang::get(Lang::CloseOthers));
+
+	m->action_rename->setShortcut(QKeySequence("F2"));
+	m->action_save->setShortcut(QKeySequence::Save);
+	m->action_save_as->setShortcut(QKeySequence::SaveAs);
+	m->action_open_file->setShortcut(QKeySequence::Open);
+
+	QKeySequence ks(QKeySequence::Open);
+	m->action_open_dir->setShortcut(QKeySequence("Shift+" + ks.toString()));
 }
 
 void PlaylistTabMenu::skin_changed()
