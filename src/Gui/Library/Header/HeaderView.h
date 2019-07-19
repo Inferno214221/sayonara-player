@@ -20,7 +20,7 @@
 #ifndef HEADERVIEW_H
 #define HEADERVIEW_H
 
-#include "Gui/Library/Utils/ColumnHeader.h"
+#include "Gui/Library/Header/ColumnHeader.h"
 #include "Gui/Utils/Widgets/WidgetTemplate.h"
 #include "Utils/Library/Sortorder.h"
 #include "Utils/Pimpl.h"

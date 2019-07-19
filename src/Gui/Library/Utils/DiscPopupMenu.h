@@ -26,29 +26,32 @@
 #include <QList>
 #include "Utils/typedefs.h"
 
-class DiscAction : public QAction
+namespace Library
 {
-	Q_OBJECT
+	class DiscAction : public QAction
+	{
+		Q_OBJECT
 
-	signals:
-		void sig_disc_pressed(int);
+		signals:
+			void sig_disc_pressed(int);
 
-	public:
-		DiscAction(QWidget* parent, Disc d);
-		~DiscAction();
-};
+		public:
+			DiscAction(QWidget* parent, Disc d);
+			~DiscAction();
+	};
 
 
-class DiscPopupMenu : public QMenu
-{
-	Q_OBJECT
+	class DiscPopupMenu : public QMenu
+	{
+		Q_OBJECT
 
-	signals:
-		void sig_disc_pressed(Disc disc);
+		signals:
+			void sig_disc_pressed(Disc disc);
 
-	public:
-		DiscPopupMenu(QWidget* parent, QList<Disc> discs);
-		~DiscPopupMenu();
-};
+		public:
+			DiscPopupMenu(QWidget* parent, QList<Disc> discs);
+			~DiscPopupMenu();
+	};
+}
 
 #endif

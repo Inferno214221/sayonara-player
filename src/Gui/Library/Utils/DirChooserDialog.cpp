@@ -30,6 +30,8 @@
 #include <QTreeView>
 #include "Utils/Language/Language.h"
 
+using Library::DirChooserDialog;
+
 DirChooserDialog::DirChooserDialog(QWidget* parent) :
 	QFileDialog(parent)
 {

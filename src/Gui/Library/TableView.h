@@ -22,13 +22,13 @@
 #define LIBRARYTABLEVIEW_H
 
 #include "ItemView.h"
-#include "Utils/Library/Sortorder.h"
-#include "Gui/Library/Utils/ColumnHeader.h"
+#include "Gui/Library/Header/ColumnHeader.h"
+
 #include "Utils/Pimpl.h"
+#include "Utils/Library/Sortorder.h"
 
 namespace Library
 {
-	class HeaderView;
 	class TableView :
 		public ItemView
 	{

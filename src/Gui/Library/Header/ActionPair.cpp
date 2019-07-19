@@ -18,18 +18,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "ActionPair.h"
 
-ActionPair::ActionPair() {}
+using Library::ActionPair;
+
+ActionPair::ActionPair() = default;
 ActionPair::ActionPair(const QString& name, Library::SortOrder so) :
 	name(name),
 	so(so)
 {}
 
-ActionPair::ActionPair(Lang::Term t1, Lang::Term t2, Library::SortOrder so)
+ActionPair::ActionPair(Lang::Term t1, bool ascending, Library::SortOrder so)
 {
-	this->name = QString("%1 (%2)").arg(Lang::get(t1), Lang::get(t2));
+	QString asc_desc = Lang::get(Lang::Ascending);
+	if(!ascending)
+	{
+		asc_desc = Lang::get(Lang::Descending);
+	}
+
+	this->name = QString("%1 (%2)").arg(Lang::get(t1), asc_desc);
 	this->so = so;
 }

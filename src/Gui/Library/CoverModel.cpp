@@ -19,7 +19,7 @@
  */
 
 #include "CoverModel.h"
-#include "AlbumCoverFetchThread.h"
+#include "Utils/AlbumCoverFetchThread.h"
 #include "Utils/CoverViewPixmapCache.h"
 
 #include "Components/Library/AbstractLibrary.h"
@@ -49,8 +49,10 @@
 using Cover::Location;
 using Cover::Lookup;
 using Library::CoverModel;
+using Library::AlbumCoverFetchThread;
 
 using Hash=AlbumCoverFetchThread::Hash;
+using HashSet=Util::Set<Hash>;
 
 struct CoverModel::Private
 {
@@ -61,7 +63,7 @@ public:
 	AlbumCoverFetchThread*		cover_thread=nullptr;
 
 	QHash<Hash, QModelIndex>	indexes;
-	Util::Set<Hash>				invalid_hashes;
+	HashSet						invalid_hashes;
 	QSize						item_size;
 
 	std::mutex					refresh_mtx;

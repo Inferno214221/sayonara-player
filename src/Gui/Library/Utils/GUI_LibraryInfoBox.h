@@ -30,22 +30,25 @@
 
 UI_FWD(GUI_LibraryInfoBox)
 
-class GUI_LibraryInfoBox :
-		public Gui::Dialog
+namespace Library
 {
-	Q_OBJECT
-	UI_CLASS(GUI_LibraryInfoBox)
-	PIMPL(GUI_LibraryInfoBox)
+	class GUI_LibraryInfoBox :
+			public Gui::Dialog
+	{
+		Q_OBJECT
+		UI_CLASS(GUI_LibraryInfoBox)
+		PIMPL(GUI_LibraryInfoBox)
 
-public:
-	explicit GUI_LibraryInfoBox(LibraryId library_id, QWidget* parent=nullptr);
-	virtual ~GUI_LibraryInfoBox();
+	public:
+		explicit GUI_LibraryInfoBox(LibraryId library_id, QWidget* parent=nullptr);
+		virtual ~GUI_LibraryInfoBox();
 
-protected:
-	void language_changed() override;
-	void skin_changed() override;
-	void showEvent(QShowEvent* e) override;
-	void refresh();
-};
+	protected:
+		void language_changed() override;
+		void skin_changed() override;
+		void showEvent(QShowEvent* e) override;
+		void refresh();
+	};
+}
 
 #endif /* GUILIBRARYINFOBOX_H_ */

@@ -20,7 +20,7 @@
 
 #include "GUI_CoverView.h"
 #include "Gui/Library/ui_GUI_CoverView.h"
-#include "Gui/Library/Utils/ActionPair.h"
+#include "Gui/Library/Header/ActionPair.h"
 
 #include "Utils/Utils.h"
 #include "Utils/Algorithm.h"

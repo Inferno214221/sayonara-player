@@ -46,56 +46,58 @@ namespace Cover
  * and current_cover_location().
  */
 
-
-class AlbumCoverFetchThread : public QThread
+namespace Library
 {
-	Q_OBJECT
-	PIMPL(AlbumCoverFetchThread)
+	class AlbumCoverFetchThread : public QThread
+	{
+		Q_OBJECT
+		PIMPL(AlbumCoverFetchThread)
 
-	public:
-		using Hash=QString;
-		using HashAlbumPair = QPair<Hash, Album>;
-		using HashAlbumList = QList<HashAlbumPair>;
-		using HashLocationPair = QPair<Hash, Cover::Location>;
-		using HashLocationList = QList<HashLocationPair>;
+		public:
+			using Hash=QString;
+			using HashAlbumPair = QPair<Hash, Album>;
+			using HashAlbumList = QList<HashAlbumPair>;
+			using HashLocationPair = QPair<Hash, Cover::Location>;
+			using HashLocationList = QList<HashLocationPair>;
 
-	signals:
-		void sig_next();
+		signals:
+			void sig_next();
 
-	protected:
-		void run() override;
+		protected:
+			void run() override;
 
-	public:
-		explicit AlbumCoverFetchThread(QObject* parent=nullptr);
-		~AlbumCoverFetchThread() override;
+		public:
+			explicit AlbumCoverFetchThread(QObject* parent=nullptr);
+			~AlbumCoverFetchThread() override;
 
-		/**
-		 * @brief add_data Add a new album request
-		 * @param hash hashed album info
-		 * @param cl Cover Location of the album
-		 */
-		void add_album(const Album& album);
+			/**
+			 * @brief add_data Add a new album request
+			 * @param hash hashed album info
+			 * @param cl Cover Location of the album
+			 */
+			void add_album(const Album& album);
 
-		bool check_album(const QString& hash);
+			bool check_album(const QString& hash);
 
-		int lookups_ready() const;
-		int queued_hashes() const;
-		int unprocessed_hashes() const;
-
-
-		HashLocationPair take_current_lookup();
+			int lookups_ready() const;
+			int queued_hashes() const;
+			int unprocessed_hashes() const;
 
 
-		/**
-		 * @brief stop Stop the thread
-		 */
-		void pause();
-		void stop();
-		void resume();
-		void clear();
-		void done(const Hash& hash);
+			HashLocationPair take_current_lookup();
 
-		static Hash get_hash(const Album& album);
-};
+
+			/**
+			 * @brief stop Stop the thread
+			 */
+			void pause();
+			void stop();
+			void resume();
+			void clear();
+			void done(const Hash& hash);
+
+			static Hash get_hash(const Album& album);
+	};
+}
 
 #endif // ALBUMCOVERFETCHTHREAD_H

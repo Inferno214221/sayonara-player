@@ -20,7 +20,7 @@
 
 #include "ItemModel.h"
 #include "Components/Library/AbstractLibrary.h"
-#include "Gui/Library/Utils/ColumnHeader.h"
+#include "Gui/Library/Header/ColumnHeader.h"
 #include "Gui/Utils/CustomMimeData.h"
 #include "Utils/MetaData/MetaDataList.h"
 

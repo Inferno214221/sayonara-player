@@ -22,9 +22,9 @@
 
 #include "Components/Library/GenreFetcher.h"
 
+#include "Gui/Library/Utils/GenreViewContextMenu.h"
 #include "Gui/Utils/CustomMimeData.h"
 #include "Gui/Utils/Delegates/StyledItemDelegate.h"
-#include "Gui/Utils/ContextMenu/ContextMenu.h"
 #include "Gui/Utils/InputDialog/LineInputDialog.h"
 
 #include "Utils/Utils.h"
@@ -52,16 +52,18 @@ struct GenreView::Private
 {
 	QStringList				expanded_items;
 	GenreFetcher*			genre_fetcher=nullptr;
-	ContextMenu*			context_menu=nullptr;
+	GenreViewContextMenu*	context_menu=nullptr;
 	GenreNode*				genres=nullptr;
-	QAction*				toggle_tree_action=nullptr;
+
 	int						default_indent;
 	bool					filled;
+	bool					is_dragging;
 
 	Private(QWidget* parent) :
 		genre_fetcher(new GenreFetcher(parent)),
 		genres(new GenreNode("root")),
-		filled(false)
+		filled(false),
+		is_dragging(false)
 	{}
 
 	~Private()
@@ -99,20 +101,6 @@ GenreView::GenreView(QWidget* parent) :
 }
 
 GenreView::~GenreView() = default;
-
-bool GenreView::has_items() const
-{
-	int n_rows = m->genres->children.size();
-	if(n_rows == 1)
-	{
-		QString data = m->genres->children[0]->data;
-		if(data.trimmed().isEmpty()){
-			return false;
-		}
-	}
-
-	return (n_rows > 0);
-}
 
 void GenreView::init(LocalLibrary* library)
 {
@@ -255,27 +243,27 @@ void GenreView::tree_action_changed()
 	}
 }
 
-void GenreView::tree_action_toggled(bool b)
-{
-	SetSetting(Set::Lib_GenreTree, b);
-}
-
-
 void GenreView::selection_changed(const QItemSelection& selected, const QItemSelection& deselected)
 {
+	Q_UNUSED(selected)
 	Q_UNUSED(deselected);
 
-	if(selected.isEmpty()){
-		emit sig_selected_cleared();
+	if(m->is_dragging){
+		return;
 	}
+
+	QStringList genres;
+	const QModelIndexList indexes = this->selectionModel()->selectedRows();
+	for(const QModelIndex& index : indexes)
+	{
+		genres << index.data().toString();
+	}
+
+	emit sig_selected_changed(genres);
 }
 
 void GenreView::language_changed()
 {
-	if(m->toggle_tree_action) {
-		m->toggle_tree_action->setText(Lang::get(Lang::Tree));
-	}
-
 	QAbstractItemModel* model = this->model();
 	int rc = model->rowCount();
 	for(int i=0; i<rc; i++)
@@ -286,7 +274,6 @@ void GenreView::language_changed()
 			model->setData(idx, no_genre_name(), Qt::DisplayRole);
 			break;
 		}
-
 	}
 }
 
@@ -306,8 +293,6 @@ void GenreView::reload_genres()
 
 	Util::Set<Genre> genres = m->genre_fetcher->genres();
 	set_genres(genres);
-
-	emit sig_genres_reloaded();
 }
 
 void GenreView::set_genres(const Util::Set<Genre>& genres)
@@ -439,36 +424,22 @@ QTreeWidgetItem* GenreView::find_genre(const QString& genre)
 	return items.first();
 }
 
-
-
 void GenreView::init_context_menu()
 {
 	if(m->context_menu){
 		return;
 	}
 
-	bool show_tree = GetSetting(Set::Lib_GenreTree);
-
-	m->context_menu = new ContextMenu(this);
-	m->toggle_tree_action = new QAction(m->context_menu);
-	m->toggle_tree_action->setCheckable(true);
-	m->toggle_tree_action->setChecked(show_tree);
-	m->toggle_tree_action->setText(Lang::get(Lang::Tree));
-
+	m->context_menu = new GenreViewContextMenu(this);
 	m->context_menu->show_actions(
 				ContextMenu::EntryDelete |
 				ContextMenu::EntryNew |
 				ContextMenu::EntryRename );
 
-	m->context_menu->register_action(m->toggle_tree_action);
-
 	connect( m->context_menu, &ContextMenu::sig_delete, this, &GenreView::delete_pressed);
 	connect( m->context_menu, &ContextMenu::sig_rename, this, &GenreView::rename_pressed);
 	connect( m->context_menu, &ContextMenu::sig_new, this, &GenreView::new_pressed);
-
-	connect( m->toggle_tree_action, &QAction::triggered, this, &GenreView::tree_action_toggled);
 }
-
 
 void GenreView::contextMenuEvent(QContextMenuEvent* e)
 {
@@ -501,12 +472,12 @@ void GenreView::dragMoveEvent(QDragMoveEvent* e)
 	}
 
 	if(!idx.isValid()){
-		sp_log(Log::Debug, this) << "drag: Invalid index";
 		return;
 	}
 
-	QItemSelectionModel* ism = this->selectionModel();
+	m->is_dragging=true;
 
+	QItemSelectionModel* ism = this->selectionModel();
 	ism->select(idx, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
 
 	e->accept();
@@ -514,12 +485,16 @@ void GenreView::dragMoveEvent(QDragMoveEvent* e)
 
 void GenreView::dragLeaveEvent(QDragLeaveEvent* e)
 {
+	m->is_dragging = false;
+
 	this->clearSelection();
 	e->accept();
 }
 
 void GenreView::dropEvent(QDropEvent* e)
 {
+	m->is_dragging = false;
+
 	QModelIndex idx = this->indexAt(e->pos());
 	if(idx.data(Qt::UserRole) == 5000){
 		e->ignore();

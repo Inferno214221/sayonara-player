@@ -22,8 +22,8 @@
 
 #include "Gui/Library/TrackModel.h"
 #include "Gui/Library/RatingDelegate.h"
-#include "Gui/Library/Utils/ColumnHeader.h"
-#include "Gui/Library/Utils/ColumnIndex.h"
+#include "Gui/Library/Header/ColumnHeader.h"
+#include "Gui/Library/Header/ColumnIndex.h"
 
 #include "Components/Library/AbstractLibrary.h"
 

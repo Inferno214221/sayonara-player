@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef ACTIONPAIR_H
 #define ACTIONPAIR_H
 
@@ -27,14 +25,32 @@
 #include "Utils/Library/Sortorder.h"
 #include "Utils/Language/Language.h"
 
-struct ActionPair
+namespace Library
 {
-	QString name;
-	Library::SortOrder so;
+	/**
+	 * @brief A mapping between a name and a sortorder
+	 */
+	struct ActionPair
+	{
+		QString name;
+		Library::SortOrder so;
 
-	ActionPair();
-	ActionPair(const QString& name, Library::SortOrder so);
-	ActionPair(Lang::Term t1, Lang::Term t2, Library::SortOrder so);
-};
+		ActionPair();
+		/**
+		 * @brief Constructor for setting name and sortorder. No magic
+		 * @param name
+		 * @param so
+		 */
+		ActionPair(const QString& name, Library::SortOrder so);
+
+		/**
+		 * @brief appends "Ascending" or "Descending" behind the name
+		 * @param t1 a term like e.g. 'Lang::Title'
+		 * @param ascending indicates if the so is ascending or descending
+		 * @param so
+		 */
+		ActionPair(Lang::Term t1, bool ascending, Library::SortOrder so);
+	};
+}
 
 #endif // ACTIONPAIR_H

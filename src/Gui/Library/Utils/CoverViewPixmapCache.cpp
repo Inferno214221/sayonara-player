@@ -29,6 +29,8 @@
 #include <QString>
 #include <QPixmap>
 
+using Library::CoverViewPixmapCache;
+
 struct Pair
 {
 	Hash hash;

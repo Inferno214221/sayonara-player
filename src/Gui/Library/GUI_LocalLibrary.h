@@ -33,18 +33,10 @@
 #include "Utils/Pimpl.h"
 #include "Utils/Library/LibraryNamespaces.h"
 
-class GUI_LibraryInfoBox;
-class GUI_ImportFolder;
-class QLabel;
-
 UI_FWD(GUI_LocalLibrary)
 
 namespace Library
 {
-	class LocalLibraryMenu;
-	class CoverView;
-	class CoverModel;
-
 	class GUI_LocalLibrary :
 			public GUI_AbstractLibrary
 	{
@@ -87,7 +79,7 @@ namespace Library
 
 		void progress_changed(const QString& type, int progress);
 
-		void genre_selection_changed(const QModelIndex& index);
+		void genre_selection_changed(const QStringList& genres);
 
 		void reload_library_deep_requested();
 		void reload_library_requested();
@@ -112,7 +104,6 @@ namespace Library
 		void clear_selections() override;
 
 		void show_info_box();
-
 	};
 }
 

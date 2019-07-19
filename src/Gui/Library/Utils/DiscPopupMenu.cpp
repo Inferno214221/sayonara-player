@@ -28,6 +28,8 @@
 #include <QMouseEvent>
 
 namespace Algorithm=Util::Algorithm;
+using Library::DiscAction;
+using Library::DiscPopupMenu;
 
 DiscAction::DiscAction(QWidget* parent, Disc disc) :
 	QAction(parent)
@@ -55,7 +57,7 @@ DiscAction::DiscAction(QWidget* parent, Disc disc) :
 	});
 }
 
-DiscAction::~DiscAction() {}
+DiscAction::~DiscAction() = default;
 
 DiscPopupMenu::DiscPopupMenu(QWidget* parent, QList<Disc> discs): QMenu(parent)
 {

@@ -94,12 +94,16 @@ public slots:
 
 	virtual void reload_library(bool clear_first, Library::ReloadQuality quality)=0;
 
-	/* Clears all filters and searchstrings and fetches everything again */
+	/**
+	 * @brief Clears all filters and searchstrings and fetches everything again
+	 */
 	virtual void refetch();
 
 
-	/* refetches everything from database as it is, keeping selected elements,
-	   the user won't recognize anything at all */
+	/**
+	 * @brief refetches everything from database as it is, keeping selected elements,
+	 * the user won't recognize anything at all
+	 */
 	virtual void refresh();
 
 	virtual void find_track(TrackID id);

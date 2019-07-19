@@ -37,6 +37,7 @@
 
 using Cover::Location;
 using Cover::Lookup;
+using Library::AlbumCoverFetchThread;
 using Hash=AlbumCoverFetchThread::Hash;
 using AtomicBool=std::atomic<bool>;
 using AtomicInt=std::atomic<int>;

@@ -18,21 +18,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef COVERVIEW_H
 #define COVERVIEW_H
 
 #include "Gui/Library/ItemView.h"
-#include "Gui/Library/Utils/ActionPair.h"
+#include "Gui/Library/Header/ActionPair.h"
 #include "Utils/Library/Sortorder.h"
 
 class LocalLibrary;
-struct ActionPair;
 class QAction;
 
 namespace Library
 {
+	struct ActionPair;
 	class CoverView :
 			public ItemView
 	{

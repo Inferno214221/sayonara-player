@@ -24,7 +24,8 @@
 #include "Utils/Language/Language.h"
 #include <QComboBox>
 
-struct GUI_ReloadLibraryDialog::Private
+using Library::GUI_LibraryReloadDialog;
+struct GUI_LibraryReloadDialog::Private
 {
 	QString library_name;
 
@@ -33,9 +34,9 @@ struct GUI_ReloadLibraryDialog::Private
 	{}
 };
 
-GUI_ReloadLibraryDialog::GUI_ReloadLibraryDialog(const QString& library_name, QWidget *parent) :
+GUI_LibraryReloadDialog::GUI_LibraryReloadDialog(const QString& library_name, QWidget *parent) :
 	Gui::Dialog(parent),
-	ui(new Ui::GUI_ReloadLibraryDialog)
+	ui(new Ui::GUI_LibraryReloadDialog)
 {
 	m = Pimpl::make<Private>(library_name);
 
@@ -43,18 +44,18 @@ GUI_ReloadLibraryDialog::GUI_ReloadLibraryDialog(const QString& library_name, QW
 
 	this->setModal(true);
 
-	connect(ui->btn_ok, &QPushButton::clicked, this, &GUI_ReloadLibraryDialog::ok_clicked);
-	connect(ui->btn_cancel, &QPushButton::clicked, this, &GUI_ReloadLibraryDialog::cancel_clicked);
-	connect(ui->combo_quality, combo_activated_int, this, &GUI_ReloadLibraryDialog::combo_changed);
+	connect(ui->btn_ok, &QPushButton::clicked, this, &GUI_LibraryReloadDialog::ok_clicked);
+	connect(ui->btn_cancel, &QPushButton::clicked, this, &GUI_LibraryReloadDialog::cancel_clicked);
+	connect(ui->combo_quality, combo_activated_int, this, &GUI_LibraryReloadDialog::combo_changed);
 }
 
 
-GUI_ReloadLibraryDialog::~GUI_ReloadLibraryDialog()
+GUI_LibraryReloadDialog::~GUI_LibraryReloadDialog()
 {
 	delete ui;
 }
 
-void GUI_ReloadLibraryDialog::set_quality(Library::ReloadQuality quality)
+void GUI_LibraryReloadDialog::set_quality(Library::ReloadQuality quality)
 {
 	switch(quality)
 	{
@@ -67,7 +68,7 @@ void GUI_ReloadLibraryDialog::set_quality(Library::ReloadQuality quality)
 }
 
 
-void GUI_ReloadLibraryDialog::language_changed()
+void GUI_LibraryReloadDialog::language_changed()
 {
 	ui->btn_ok->setText(Lang::get(Lang::OK));
 	ui->btn_cancel->setText(Lang::get(Lang::Cancel));
@@ -82,7 +83,7 @@ void GUI_ReloadLibraryDialog::language_changed()
 	this->setWindowTitle(Lang::get(Lang::ReloadLibrary) + ": " + m->library_name);
 }
 
-void GUI_ReloadLibraryDialog::ok_clicked()
+void GUI_LibraryReloadDialog::ok_clicked()
 {
 	int cur_idx = ui->combo_quality->currentIndex();
 	if(cur_idx == 0)
@@ -98,14 +99,14 @@ void GUI_ReloadLibraryDialog::ok_clicked()
 	close();
 }
 
-void GUI_ReloadLibraryDialog::cancel_clicked()
+void GUI_LibraryReloadDialog::cancel_clicked()
 {
 	ui->combo_quality->setCurrentIndex(0);
 
 	close();
 }
 
-void GUI_ReloadLibraryDialog::combo_changed(int i)
+void GUI_LibraryReloadDialog::combo_changed(int i)
 {
 	if(i == 0){
 		ui->lab_description->setText(tr("Only scan for new and deleted files"));

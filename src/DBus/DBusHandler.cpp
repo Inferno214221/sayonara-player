@@ -62,7 +62,7 @@ DBusHandler::DBusHandler(QMainWindow* main_window, QObject* parent) :
 	}
 }
 
-DBusHandler::~DBusHandler() = default;
+DBusHandler::~DBusHandler() {}
 
 void DBusHandler::service_registered(const QString& service_name)
 {

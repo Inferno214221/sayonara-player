@@ -278,5 +278,3 @@ void ContextMenu::timed_out()
 		action->setDisabled(false);
 	}
 }
-
-

@@ -27,7 +27,6 @@
 #include "ItemView.h"
 #include "ItemModel.h"
 
-#include "HeaderView.h"
 #include "Components/Library/AbstractLibrary.h"
 #include "Components/Covers/CoverLocation.h"
 
@@ -40,6 +39,7 @@
 #include "Utils/Logger/Logger.h"
 #include "Utils/ExtensionSet.h"
 
+#include "Gui/Library/Header/HeaderView.h"
 #include "Gui/Utils/ContextMenu/LibraryContextMenu.h"
 #include "Gui/Utils/PreferenceAction.h"
 #include "Gui/Utils/Shortcuts/ShortcutHandler.h"

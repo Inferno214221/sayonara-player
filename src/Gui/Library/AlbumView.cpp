@@ -24,8 +24,8 @@
 #include "Gui/Library/AlbumModel.h"
 #include "Gui/Library/RatingDelegate.h"
 #include "Gui/Library/Utils/DiscPopupMenu.h"
-#include "Gui/Library/Utils/ColumnIndex.h"
-#include "Gui/Library/Utils/ColumnHeader.h"
+#include "Gui/Library/Header/ColumnIndex.h"
+#include "Gui/Library/Header/ColumnHeader.h"
 #include "Gui/Utils/ContextMenu/LibraryContextMenu.h"
 
 #include "Components/Tagging/UserTaggingOperations.h"

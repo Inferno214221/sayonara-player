@@ -45,13 +45,19 @@ namespace Library
 	class GenreView :
 			public Gui::WidgetTemplate<QTreeWidget>
 	{
+		using Parent=Gui::WidgetTemplate<QTreeWidget>;
+
 		Q_OBJECT
 		PIMPL(GenreView)
 
 	signals:
 		void sig_progress(const QString& name, int progress);
-		void sig_genres_reloaded();
-		void sig_selected_cleared();
+		void sig_selected_changed(const QStringList& genres);
+
+	private:
+		using Parent::activated;
+		using Parent::clicked;
+		using Parent::pressed;
 
 	public:
 		explicit GenreView(QWidget* parent=nullptr);
@@ -59,7 +65,6 @@ namespace Library
 
 		void init(LocalLibrary* library);
 		void reload_genres();
-		bool has_items() const;
 
 	private:
 		void set_genres(const Util::Set<Genre>& genres);
@@ -84,7 +89,6 @@ namespace Library
 		void delete_pressed();
 
 		void tree_action_changed();
-		void tree_action_toggled(bool b);
 
 		void selection_changed(const QItemSelection& selected, const QItemSelection& deselected);
 

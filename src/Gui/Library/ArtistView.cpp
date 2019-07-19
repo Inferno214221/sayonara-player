@@ -27,8 +27,8 @@
 #include "Components/Tagging/UserTaggingOperations.h"
 
 #include "Gui/Library/ArtistModel.h"
-#include "Gui/Library/Utils/ColumnIndex.h"
-#include "Gui/Library/Utils/ColumnHeader.h"
+#include "Gui/Library/Header/ColumnIndex.h"
+#include "Gui/Library/Header/ColumnHeader.h"
 
 #include "Gui/Utils/Delegates/StyledItemDelegate.h"
 #include "Gui/Utils/ContextMenu/LibraryContextMenu.h"

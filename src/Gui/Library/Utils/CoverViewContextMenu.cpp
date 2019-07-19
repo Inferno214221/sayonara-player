@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "CoverViewContextMenu.h"
 #include "CoverView.h"
 #include "Gui/Utils/PreferenceAction.h"
@@ -28,10 +26,12 @@
 #include "Utils/Library/Sortorder.h"
 #include "Utils/Settings/Settings.h"
 
-#include "Utils/ActionPair.h"
+#include "Gui/Library/Header/ActionPair.h"
 
 #include <QStringList>
 
+using Library::CoverViewContextMenu;
+using Library::ActionPair;
 using ActionPairList=QList<ActionPair>;
 
 struct CoverViewContextMenu::Private

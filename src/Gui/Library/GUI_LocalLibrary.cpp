@@ -29,13 +29,13 @@
 #include "GUI_LocalLibrary.h"
 #include "Gui/Library/ui_GUI_LocalLibrary.h"
 
-#include "Gui/Library/DirChooserDialog.h"
-#include "Gui/Library/InfoBox/GUI_LibraryInfoBox.h"
-#include "Gui/Library/GUI_ReloadLibraryDialog.h"
-#include "Gui/Library/Utils/LocalLibraryMenu.h"
 #include "Gui/Library/GUI_CoverView.h"
 #include "Gui/Library/CoverView.h"
 #include "Gui/Library/Utils/LibrarySearchBar.h"
+#include "Gui/Library/Utils/DirChooserDialog.h"
+#include "Gui/Library/Utils/GUI_ReloadLibraryDialog.h"
+#include "Gui/Library/Utils/GUI_LibraryInfoBox.h"
+#include "Gui/Library/Utils/LocalLibraryMenu.h"
 
 #include "Gui/ImportDialog/GUI_ImportDialog.h"
 #include "Gui/Utils/Library/GUI_DeleteDialog.h"
@@ -124,12 +124,8 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 	connect(m->manager, &Manager::sig_renamed, this, &GUI_LocalLibrary::name_changed);
 
 	connect(ui->tv_albums, &AlbumView::sig_disc_pressed, m->library, &LocalLibrary::change_current_disc);
-	connect(ui->lv_genres, &QAbstractItemView::clicked, this, &GUI_LocalLibrary::genre_selection_changed);
-	connect(ui->lv_genres, &QAbstractItemView::activated, this, &GUI_LocalLibrary::genre_selection_changed);
+	connect(ui->lv_genres, &GenreView::sig_selected_changed, this, &GUI_LocalLibrary::genre_selection_changed);
 	connect(ui->lv_genres, &GenreView::sig_progress, this, &GUI_LocalLibrary::progress_changed);
-	connect(ui->lv_genres, &GenreView::sig_selected_cleared, this, [=](){
-		this->genre_selection_changed(QModelIndex());
-	});
 
 	connect(m->library_menu, &LocalLibraryMenu::sig_path_changed, m->library, &LocalLibrary::set_library_path);
 	connect(m->library_menu, &LocalLibraryMenu::sig_name_changed, m->library, &LocalLibrary::set_library_name);
@@ -305,22 +301,15 @@ void GUI_LocalLibrary::clear_selections()
 	ui->lv_genres->clearSelection();
 }
 
-void GUI_LocalLibrary::genre_selection_changed(const QModelIndex& idx)
+void GUI_LocalLibrary::genre_selection_changed(const QStringList& genres)
 {
-	Q_UNUSED(idx)
+	if(genres.isEmpty()) {
+		return;
+	}
 
-	QModelIndexList indexes = ui->lv_genres->selectionModel()->selectedIndexes();
-
-	QStringList genres;
-	for(const QModelIndex& index : indexes)
+	if(genres.contains(""))
 	{
-		genres << index.data().toString();
-		if(index.data(Qt::UserRole).toInt() == 5000)
-		{
-			ui->le_search->set_invalid_genre_mode(true);
-			genres.clear();
-			break;
-		}
+		ui->le_search->set_invalid_genre_mode(true);
 	}
 
 	ui->le_search->set_current_mode(::Library::Filter::Genre);
@@ -366,13 +355,13 @@ void GUI_LocalLibrary::reload_library_requested_with_quality(Library::ReloadQual
 {
 	if(quality == Library::ReloadQuality::Unknown)
 	{
-		GUI_ReloadLibraryDialog* dialog =
-				new GUI_ReloadLibraryDialog(m->library->library_name(), this);
+		GUI_LibraryReloadDialog* dialog =
+				new GUI_LibraryReloadDialog(m->library->library_name(), this);
 
 		dialog->set_quality(quality);
 		dialog->show();
 
-		connect(dialog, &GUI_ReloadLibraryDialog::sig_accepted, this, &GUI_LocalLibrary::reload_library_accepted);
+		connect(dialog, &GUI_LibraryReloadDialog::sig_accepted, this, &GUI_LocalLibrary::reload_library_accepted);
 	}
 
 	else
@@ -383,7 +372,7 @@ void GUI_LocalLibrary::reload_library_requested_with_quality(Library::ReloadQual
 
 void GUI_LocalLibrary::reload_library_accepted(Library::ReloadQuality quality)
 {
-	if(dynamic_cast<GUI_ReloadLibraryDialog*>(sender())){
+	if(dynamic_cast<GUI_LibraryReloadDialog*>(sender())){
 		sender()->deleteLater();
 	}
 

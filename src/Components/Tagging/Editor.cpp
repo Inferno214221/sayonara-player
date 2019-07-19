@@ -396,14 +396,13 @@ void Editor::run()
 						  std::count(m->changed_md.begin(), m->changed_md.end(), true)
 					   << " tracks";
 
-	int i=0;
 	int n_operations = m->v_md.count() + m->cover_map.size();
 
 	for(auto i=0; i < m->v_md.count(); i++)
 	{
 		const MetaData& md = m->v_md[i];
 
-		if(n_operations > 5){
+		if(n_operations >= 3){
 			emit sig_progress( (i * 100) / n_operations);
 		}
 
@@ -429,6 +428,7 @@ void Editor::run()
 	DB::Connector* db = DB::Connector::instance();
 	DB::Covers* db_covers = db->cover_connector();
 
+	int i=0;
 	for(auto it=m->cover_map.cbegin(); it != m->cover_map.cend(); it++)
 	{
 		int idx = it.key();
@@ -437,7 +437,7 @@ void Editor::run()
 		const MetaData& md = *(m->v_md.cbegin() + idx);
 
 		Tagging::Covers::write_cover(md.filepath(), pm);
-		if(n_operations > 5){
+		if(n_operations >= 3){
 			emit sig_progress( (i++ * 100) / n_operations);
 		}
 

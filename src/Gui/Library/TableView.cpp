@@ -21,8 +21,8 @@
 #include "TableView.h"
 #include "ItemModel.h"
 
-#include "Gui/Library/Utils/ColumnHeader.h"
-#include "Gui/Library/HeaderView.h"
+#include "Gui/Library/Header/ColumnHeader.h"
+#include "Gui/Library/Header/HeaderView.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Set.h"
 

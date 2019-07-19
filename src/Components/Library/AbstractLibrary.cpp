@@ -700,7 +700,7 @@ void AbstractLibrary::insert_tracks(const MetaDataList &v_md)
 	refresh();
 }
 
-void AbstractLibrary::import_files(const QStringList &files)
+void AbstractLibrary::import_files(const QStringList& files)
 {
 	Q_UNUSED(files)
 }

@@ -32,7 +32,7 @@
 #include "Components/Covers/CoverLocation.h"
 #include "Components/Tagging/UserTaggingOperations.h"
 
-#include "Gui/Library/Utils/ColumnIndex.h"
+#include "Gui/Library/Header/ColumnIndex.h"
 
 #include "Utils/globals.h"
 #include "Utils/Utils.h"

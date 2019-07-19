@@ -18,41 +18,42 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
-#ifndef GUI_RELOADLIBRARYDIALOG_H
-#define GUI_RELOADLIBRARYDIALOG_H
+#ifndef GUI_LIBRARYRELOAD_DIALOG_H
+#define GUI_LIBRARYRELOAD_DIALOG_H
 
 #include "Gui/Utils/Widgets/Dialog.h"
 
 #include "Utils/Pimpl.h"
 #include "Utils/Library/LibraryNamespaces.h"
 
-UI_FWD(GUI_ReloadLibraryDialog)
+UI_FWD(GUI_LibraryReloadDialog)
 
-class GUI_ReloadLibraryDialog :
-	public Gui::Dialog
+namespace Library
 {
-	Q_OBJECT
-	PIMPL(GUI_ReloadLibraryDialog)
-	UI_CLASS(GUI_ReloadLibraryDialog)
+	class GUI_LibraryReloadDialog :
+		public Gui::Dialog
+	{
+		Q_OBJECT
+		PIMPL(GUI_LibraryReloadDialog)
+		UI_CLASS(GUI_LibraryReloadDialog)
 
-signals:
-	void sig_accepted(Library::ReloadQuality quality);
+		signals:
+			void sig_accepted(ReloadQuality quality);
 
-public:
-	explicit GUI_ReloadLibraryDialog(const QString& library_name, QWidget *parent=nullptr);
-	~GUI_ReloadLibraryDialog();
+		public:
+			explicit GUI_LibraryReloadDialog(const QString& library_name, QWidget *parent=nullptr);
+			~GUI_LibraryReloadDialog();
 
-	void set_quality(Library::ReloadQuality quality);
+			void set_quality(ReloadQuality quality);
 
-private slots:
-	void ok_clicked();
-	void cancel_clicked();
-	void combo_changed(int);
+		private slots:
+			void ok_clicked();
+			void cancel_clicked();
+			void combo_changed(int);
 
-protected:
-	void language_changed() override;
-};
+		protected:
+			void language_changed() override;
+	};
+}
 
-#endif // GUI_RELOADLIBRARYDIALOG_H
+#endif // GUI_LIBRARYRELOAD_DIALOG_H

@@ -31,7 +31,7 @@
 #include "Components/Library/AbstractLibrary.h"
 #include "Components/Covers/CoverLocation.h"
 
-#include "Gui/Library/Utils/ColumnIndex.h"
+#include "Gui/Library/Header/ColumnIndex.h"
 #include "Gui/Utils/GuiUtils.h"
 
 #include "Utils/Utils.h"

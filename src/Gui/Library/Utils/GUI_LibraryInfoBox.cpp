@@ -44,6 +44,8 @@
 #include <QMap>
 #include <QPixmap>
 
+using Library::GUI_LibraryInfoBox;
+
 struct GUI_LibraryInfoBox::Private
 {
 	LibraryId library_id;

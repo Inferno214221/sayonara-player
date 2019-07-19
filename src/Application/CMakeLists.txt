@@ -18,21 +18,12 @@ set(APPLICATION_LIBRARIES
 	gui_resources
 
 	sayonara_components
-	sayonara_dbus
-
 	interface_library
 )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES})
 target_link_libraries(${PROJECT_NAME}
 	${APPLICATION_LIBRARIES}
+	sayonara_dbus
 )
-
-add_library(sayonara_test SHARED ${SOURCES})
-target_link_libraries(sayonara_test
-	${APPLICATION_LIBRARIES}
-	gui_resources
-)
-
-
 

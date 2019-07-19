@@ -18,16 +18,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "CoverView.h"
 #include "CoverModel.h"
 #include "CoverDelegate.h"
-#include "CoverViewContextMenu.h"
 
 #include "Components/Library/LocalLibrary.h"
 #include "Components/Tagging/UserTaggingOperations.h"
 
+#include "Gui/Library/Header/ActionPair.h"
+#include "Gui/Library/Utils/CoverViewContextMenu.h"
 #include "Gui/Utils/ContextMenu/LibraryContextMenu.h"
 
 #include "Utils/Library/Sorting.h"
@@ -47,6 +46,7 @@
 
 #include <mutex>
 
+using Library::ActionPair;
 using Library::CoverView;
 using Library::CoverModel;
 using AtomicBool=std::atomic<bool>;
@@ -169,16 +169,16 @@ QList<ActionPair> CoverView::sorting_actions()
 
 	QList<ActionPair> ret
 	{
-		ActionPair(Lang::Name, Lang::Ascending, SortOrder::AlbumNameAsc),
-		ActionPair(Lang::Name, Lang::Descending, SortOrder::AlbumNameDesc),
-		ActionPair(Lang::Year, Lang::Ascending, SortOrder::AlbumYearAsc),
-		ActionPair(Lang::Year, Lang::Descending, SortOrder::AlbumYearDesc),
-		ActionPair(Lang::Artist, Lang::Ascending, SortOrder::ArtistNameAsc),
-		ActionPair(Lang::Artist, Lang::Descending, SortOrder::ArtistNameDesc),
-		ActionPair(Lang::NumTracks, Lang::Ascending, SortOrder::AlbumTracksAsc),
-		ActionPair(Lang::NumTracks, Lang::Descending, SortOrder::AlbumTracksDesc),
-		ActionPair(Lang::Duration, Lang::Ascending, SortOrder::AlbumDurationAsc),
-		ActionPair(Lang::Duration, Lang::Descending, SortOrder::AlbumDurationDesc)
+		ActionPair(Lang::Name, true, SortOrder::AlbumNameAsc),
+		ActionPair(Lang::Name, false, SortOrder::AlbumNameDesc),
+		ActionPair(Lang::Year, true, SortOrder::AlbumYearAsc),
+		ActionPair(Lang::Year, false, SortOrder::AlbumYearDesc),
+		ActionPair(Lang::Artist, true, SortOrder::ArtistNameAsc),
+		ActionPair(Lang::Artist, false, SortOrder::ArtistNameDesc),
+		ActionPair(Lang::NumTracks, true, SortOrder::AlbumTracksAsc),
+		ActionPair(Lang::NumTracks, false, SortOrder::AlbumTracksDesc),
+		ActionPair(Lang::Duration, true, SortOrder::AlbumDurationAsc),
+		ActionPair(Lang::Duration, false, SortOrder::AlbumDurationDesc)
 	};
 
 	return ret;

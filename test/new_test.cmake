@@ -5,7 +5,17 @@ function(NEW_TEST ...)
 
 	add_executable(${TEST_NAME} ${ARGV})
 	target_link_libraries(${TEST_NAME}
-		sayonara_test
+		gui_player
+		gui_library
+		gui_directories
+		gui_plugins
+		gui_preferences
+		gui_somafm
+		gui_soundcloud
+		gui_resources
+
+		sayonara_components
+		interface_library
 		Qt5::Test
 	)
 

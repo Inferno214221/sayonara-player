@@ -26,10 +26,9 @@
 #include <QList>
 #include <QModelIndex>
 
-class DiscPopupMenu;
-
 namespace Library
 {
+	class DiscPopupMenu;
 	class AlbumView :
 			public TableView
 	{

@@ -30,7 +30,7 @@
 #include "Components/Covers/CoverLocation.h"
 #include "Components/Library/AbstractLibrary.h"
 
-#include "Gui/Library/Utils/ColumnIndex.h"
+#include "Gui/Library/Header/ColumnIndex.h"
 #include "Gui/Utils/GuiUtils.h"
 
 #include "Utils/MetaData/Artist.h"
