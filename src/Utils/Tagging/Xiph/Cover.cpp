@@ -18,12 +18,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "Cover.h"
 #include <taglib/flacpicture.h>
 #include <taglib/flacfile.h>
 #include <taglib/oggfile.h>
+#include <taglib/tmap.h>
+
+#include "Utils/Logger/Logger.h"
 
 namespace TL=TagLib;
 
@@ -35,7 +36,17 @@ Xiph::CoverFrame::~CoverFrame() {}
 
 bool Xiph::CoverFrame::is_frame_found() const
 {
-	return this->tag()->contains("METADTA_BLOCK_PICTURE");
+	// string, stringlist
+//	TagLib::Ogg::FieldListMap field_list_map = this->tag()->fieldListMap();
+//	for(auto it=field_list_map.begin(); it!=field_list_map.end(); it++)
+//	{
+//		sp_log(Log::Develop, this) << it->first.toCString() << ": " << it->second.toString(", ").toCString();
+//	}
+
+	bool has_entries = (this->tag()->pictureList().isEmpty() == false);
+	sp_log(Log::Develop, this) << "Picture list has " << this->tag()->pictureList().size() << " entries";
+
+	return has_entries;
 }
 
 bool Xiph::CoverFrame::map_tag_to_model(Models::Cover& model)

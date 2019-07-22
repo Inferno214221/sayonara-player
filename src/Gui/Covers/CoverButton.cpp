@@ -87,7 +87,8 @@ CoverButton::~CoverButton()
 
 void CoverButton::refresh()
 {
-	this->setIcon(current_icon());
+	QIcon icon = current_icon();
+	this->setIcon(icon);
 }
 
 

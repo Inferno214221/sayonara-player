@@ -74,10 +74,7 @@ signals:
 
 
 private:
-	bool is_cover_replacement_active() const;
-	void update_cover(int idx, const QString& cover_path);
-	void set_cover(const MetaData& md);
-	void show_replacement_field(bool b);
+	void set_current_index(int index);
 	void init_completer();
 
 
@@ -121,13 +118,6 @@ private slots:
 	void prev_button_clicked();
 
 
-
-	/**
-	 * @brief (un)sets _cover_all
-	 */
-	void cover_all_changed(bool b);
-
-
 	/**
 	 * @brief Undo on current track
 	 */
@@ -167,8 +157,6 @@ private slots:
 	 */
 	void commit_finished();
 
-
-	void cb_replace_toggled(bool b);
 
 	/**
 	 * @brief loads the complete album for the current track

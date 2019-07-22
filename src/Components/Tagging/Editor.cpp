@@ -397,13 +397,13 @@ void Editor::run()
 					   << " tracks";
 
 	int n_operations = m->v_md.count() + m->cover_map.size();
-
+	int progress = 0;
 	for(auto i=0; i < m->v_md.count(); i++)
 	{
 		const MetaData& md = m->v_md[i];
 
 		if(n_operations >= 3){
-			emit sig_progress( (i * 100) / n_operations);
+			emit sig_progress( ((progress++) * 100) / n_operations);
 		}
 
 		if( m->changed_md[i] == false ) {
@@ -428,23 +428,29 @@ void Editor::run()
 	DB::Connector* db = DB::Connector::instance();
 	DB::Covers* db_covers = db->cover_connector();
 
-	int i=0;
 	for(auto it=m->cover_map.cbegin(); it != m->cover_map.cend(); it++)
 	{
 		int idx = it.key();
 		QPixmap pm = it.value();
+		if(pm.size().width() > 600 || pm.size().height() > 600){
+			pm = pm.scaled(QSize(600, 600), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+		}
 
 		const MetaData& md = *(m->v_md.cbegin() + idx);
 
-		Tagging::Covers::write_cover(md.filepath(), pm);
+		bool success = Tagging::Covers::write_cover(md.filepath(), pm);
+		if(!success)
+		{
+			sp_log(Log::Warning, this) << "Failed to write cover";
+		}
+
 		if(n_operations >= 3){
-			emit sig_progress( (i++ * 100) / n_operations);
+			emit sig_progress( ((progress++) * 100) / n_operations);
 		}
 
 		Cover::Location cl = Cover::Location::cover_location(md);
 		db_covers->set_cover(cl.hash(), pm);
 	}
-
 
 	DB::Library* db_library = db->library_connector();
 
