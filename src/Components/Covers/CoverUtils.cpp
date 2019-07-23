@@ -99,12 +99,13 @@ bool Cover::Utils::add_temp_cover(const QPixmap& pm, const QString& hash)
 
 void Cover::Utils::write_cover_to_sayonara_dir(const Cover::Location& cl, const QPixmap& pm)
 {
-	QFileInfo fi(cl.cover_path());
+	QString path = cl.cover_path();
+	QFileInfo fi(path);
 	if(fi.isSymLink()){
-		QFile::remove(cl.cover_path());
+		QFile::remove(path);
 	}
 
-	pm.save(cl.cover_path());
+	pm.save(path);
 }
 
 void Cover::Utils::write_cover_to_db(const Cover::Location& cl, const QPixmap& pm)

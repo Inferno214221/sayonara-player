@@ -50,7 +50,7 @@ struct CoverButton::Private
 
 	Private() :
 		cover_location(Location::invalid_location()),
-		current_cover(Location::invalid_location().preferred_path()),
+		current_cover(Location::invalid_path()),
 		cover_forced(false)
 	{
 		class_tmp_file = Cover::Utils::cover_directory("cb_" + Util::random_string(16) + ".jpg");
@@ -92,7 +92,13 @@ void CoverButton::refresh()
 }
 
 
-void CoverButton::set_cover_image(const QPixmap& pm)
+void CoverButton::set_cover_image(const QString& path)
+{
+	set_cover_image_pixmap(QPixmap(path));
+}
+
+
+void CoverButton::set_cover_image_pixmap(const QPixmap& pm)
 {
 	m->current_cover = pm;
 	m->cover_forced = false;
@@ -107,7 +113,7 @@ void CoverButton::set_cover_location(const Location& cl)
 		return;
 	}
 
-	set_cover_image(Cover::Location::invalid_location().preferred_path());
+	set_cover_image(Cover::Location::invalid_path());
 
 	m->cover_location = cl;
 	m->cover_forced = false;
@@ -120,7 +126,8 @@ void CoverButton::set_cover_location(const Location& cl)
 	if(!m->cover_lookup)
 	{
 		m->cover_lookup = new Lookup(cl, 1, this);
-		connect(m->cover_lookup, &Lookup::sig_cover_found, this, &CoverButton::set_cover_image);
+
+		connect(m->cover_lookup, &Lookup::sig_cover_found, this, &CoverButton::set_cover_image_pixmap);
 		connect(m->cover_lookup, &Lookup::sig_finished, this, &CoverButton::cover_lookup_finished);
 	}
 
@@ -130,7 +137,6 @@ void CoverButton::set_cover_location(const Location& cl)
 
 	m->cover_lookup->start();
 }
-
 
 
 QIcon CoverButton::current_icon() const
@@ -184,7 +190,8 @@ void CoverButton::alternative_cover_fetched(const Location& cl)
 	}
 
 	m->hash = QString();
-	set_cover_image(cl.preferred_path());
+
+	set_cover_image(cl.cover_path());
 }
 
 
@@ -193,7 +200,7 @@ void CoverButton::cover_lookup_finished(bool success)
 	if(!success)
 	{
 		sp_log(Log::Warning, this) << "Cover lookup finished: false";
-		set_cover_image(Location::invalid_location().preferred_path());
+		set_cover_image(Location::invalid_path());
 	}
 }
 
@@ -205,7 +212,6 @@ void CoverButton::force_cover(const QPixmap& pm)
 	m->current_cover = pm;
 	refresh();
 }
-
 
 void CoverButton::force_cover(const QImage& img)
 {

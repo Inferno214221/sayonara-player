@@ -437,6 +437,7 @@ void Editor::run()
 		}
 
 		const MetaData& md = *(m->v_md.cbegin() + idx);
+		Cover::Location cl = Cover::Location::cover_location(md);
 
 		bool success = Tagging::Covers::write_cover(md.filepath(), pm);
 		if(!success)
@@ -444,11 +445,12 @@ void Editor::run()
 			sp_log(Log::Warning, this) << "Failed to write cover";
 		}
 
+		pm.save(cl.audio_file_target());
+
 		if(n_operations >= 3){
 			emit sig_progress( ((progress++) * 100) / n_operations);
 		}
 
-		Cover::Location cl = Cover::Location::cover_location(md);
 		db_covers->set_cover(cl.hash(), pm);
 	}
 

@@ -59,10 +59,6 @@ public:
 
 	void set_cover_location(const Cover::Location& cl);
 
-
-public slots:
-	//void start(const Cover::Location& cl);
-
 signals:
 	void sig_cover_changed(const Cover::Location& cl);
 
@@ -92,7 +88,6 @@ private:
 protected:
 	void showEvent(QShowEvent* e) override;
 	void resizeEvent(QResizeEvent* e) override;
-	void closeEvent(QCloseEvent* e) override;
 	void language_changed() override;
 };
 

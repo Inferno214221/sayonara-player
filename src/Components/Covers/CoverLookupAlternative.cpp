@@ -70,7 +70,7 @@ AlternativeLookup::AlternativeLookup(const Cover::Location& cl, int n_covers, QO
 	connect(m->lookup, &Lookup::sig_finished, this, &AlternativeLookup::finished);
 }
 
-AlternativeLookup::~AlternativeLookup() {}
+AlternativeLookup::~AlternativeLookup() = default;
 
 void AlternativeLookup::stop()
 {
@@ -110,7 +110,6 @@ bool AlternativeLookup::is_running() const
 {
 	return m->running;
 }
-
 
 QStringList AlternativeLookup::get_activated_coverfetchers(bool fulltext_search) const
 {

@@ -145,6 +145,12 @@ Location& Location::operator=(const Location& other)
 }
 
 
+QString Location::invalid_path()
+{
+	return invalid_location().cover_path();
+}
+
+
 Location Location::invalid_location()
 {
 	Location cl;
@@ -164,7 +170,7 @@ Location Location::invalid_location()
 bool Location::is_invalid(const QString& cover_path)
 {
 	QString path1 = File::clean_filename(cover_path);
-	QString path2 = invalid_location().preferred_path();
+	QString path2 = invalid_path();
 
 	return (path1 == path2);
 }
@@ -362,11 +368,10 @@ bool Location::valid() const
 	return m->valid;
 }
 
-
 QString Location::preferred_path() const
 {
 	if(!m->valid){
-		return invalid_location().cover_path();
+		return invalid_path();
 	}
 
 	// first search for cover in track
@@ -393,7 +398,7 @@ QString Location::preferred_path() const
 		return local_path();
 	}
 
-	return invalid_location().preferred_path();
+	return invalid_path();
 }
 
 
@@ -464,6 +469,7 @@ bool Location::is_freetext_search_enabled() const
 {
 	return m->freetext_search;
 }
+
 
 bool Location::has_audio_file_source() const
 {

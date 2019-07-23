@@ -141,7 +141,7 @@ void GUI_CoverEdit::set_cover(const MetaData& md)
 	ui->cb_cover_all->setEnabled(cl.valid());
 	ui->btn_cover_replacement->setEnabled(cl.valid() && !ui->cb_cover_all->isChecked());
 
-	if(cl.valid()){
+	if(cl.valid()) {
 		m->cover_path_map[m->cur_idx] = cl.cover_path();
 	}
 }
@@ -165,13 +165,11 @@ void GUI_CoverEdit::cover_all_toggled(bool b)
 	ui->btn_search->setEnabled(!b);
 }
 
-
 bool GUI_CoverEdit::is_cover_replacement_active() const
 {
 	return (ui->btn_replace->isChecked() &&
 			ui->btn_cover_replacement->isVisible());
 }
-
 
 void GUI_CoverEdit::language_changed()
 {

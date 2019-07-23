@@ -298,6 +298,8 @@ namespace Cover
 		static Location cover_location(const QUrl& url, const QString& target_path);
 
 
+		static QString invalid_path();
+
 		/**
 		 * @brief returns an invalid location
 		 * @return  CoverLocation object

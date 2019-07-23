@@ -64,8 +64,10 @@ struct GUI_AlternativeCovers::Private
 
 	~Private()
 	{
-		if(cl_alternative){
+		if(cl_alternative)
+		{
 			cl_alternative->stop();
+			cl_alternative->reset();
 		}
 	}
 };
@@ -383,10 +385,4 @@ void GUI_AlternativeCovers::resizeEvent(QResizeEvent *e)
 		m->loading_bar->hide();
 		m->loading_bar->show();
 	}
-}
-
-void GUI_AlternativeCovers::closeEvent(QCloseEvent *e)
-{
-	m->cl_alternative->reset();
-	Dialog::closeEvent(e);
 }

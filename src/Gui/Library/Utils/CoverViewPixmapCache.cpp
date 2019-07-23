@@ -50,7 +50,7 @@ struct CoverViewPixmapCache::Private
 	Private()
 	{
 		pixmaps.setMaxCost(1000);
-		invalid_cover = QPixmap(Cover::Location::invalid_location().preferred_path());
+		invalid_cover = QPixmap(Cover::Location::invalid_path());
 	}
 };
 
