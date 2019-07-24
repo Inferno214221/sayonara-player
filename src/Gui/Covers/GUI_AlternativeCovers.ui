@@ -207,7 +207,14 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string/>
+            <string notr="true">Search</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btn_stop_search">
+           <property name="text">
+            <string notr="true">Stop</string>
            </property>
           </widget>
          </item>

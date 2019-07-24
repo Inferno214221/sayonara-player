@@ -46,10 +46,12 @@ struct AlternativeLookup::Private
 	Lookup*		lookup=nullptr;
 	int			n_covers;
 	bool		running;
+	bool		silent;
 
-	Private(const Cover::Location& cl, int n_covers, AlternativeLookup* parent) :
+	Private(const Cover::Location& cl, int n_covers, bool silent, AlternativeLookup* parent) :
 		n_covers(n_covers),
-		running(false)
+		running(false),
+		silent(silent)
 	{
 		lookup = new Lookup(cl, n_covers, parent);
 	}
@@ -60,10 +62,10 @@ struct AlternativeLookup::Private
 	}
 };
 
-AlternativeLookup::AlternativeLookup(const Cover::Location& cl, int n_covers, QObject* parent) :
+AlternativeLookup::AlternativeLookup(const Cover::Location& cl, int n_covers, bool silent, QObject* parent) :
 	LookupBase(cl, parent)
 {
-	m = Pimpl::make<Private>(cl, n_covers, this);
+	m = Pimpl::make<Private>(cl, n_covers, silent, this);
 
 	connect(m->lookup, &Lookup::sig_started, this, &AlternativeLookup::started);
 	connect(m->lookup, &Lookup::sig_cover_found, this, &AlternativeLookup::cover_found);
@@ -94,11 +96,19 @@ bool AlternativeLookup::save(const QPixmap& cover)
 
 	Cover::Location cl = cover_location();
 
-	Cover::Utils::write_cover_to_db(cl, cover);
-	Cover::Utils::write_cover_to_sayonara_dir(cl, cover);
+	if(!m->silent)
+	{
+		Cover::Utils::write_cover_to_db(cl, cover);
+		Cover::Utils::write_cover_to_sayonara_dir(cl, cover);
 
-	if(GetSetting(Set::Cover_SaveToLibrary)) {
-		Cover::Utils::write_cover_to_library(cl, cover);
+		if(GetSetting(Set::Cover_SaveToLibrary)) {
+			Cover::Utils::write_cover_to_library(cl, cover);
+		}
+	}
+
+	else
+	{
+		cover.save(cl.alternative_path());
 	}
 
 	emit sig_cover_changed(cl);
@@ -172,6 +182,7 @@ void AlternativeLookup::go(const Cover::Location& cl)
 
 	emit sig_started();
 }
+
 
 void AlternativeLookup::start()
 {

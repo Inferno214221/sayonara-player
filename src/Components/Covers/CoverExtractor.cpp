@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "CoverExtractor.h"
 #include "CoverLocation.h"
 
@@ -39,9 +37,11 @@ namespace FileUtils=::Util::File;
 struct Cover::Extractor::Private
 {
 	QPixmap pixmap;
+	Cover::Source source;
 	Cover::Location cl;
 
 	Private(const Cover::Location& cl) :
+		source(Cover::Source::Unknown),
 		cl(cl)
 	{}
 };
@@ -53,11 +53,18 @@ Cover::Extractor::Extractor(const Location& cl, QObject* parent) :
 
 }
 
+
 Cover::Extractor::~Extractor() = default;
 
-QPixmap Cover::Extractor::pixmap()
+QPixmap Cover::Extractor::pixmap() const
 {
 	return m->pixmap;
+}
+
+
+Cover::Source Cover::Extractor::source() const
+{
+	return m->source;
 }
 
 void Cover::Extractor::start()
@@ -70,6 +77,7 @@ void Cover::Extractor::start()
 		if(FileUtils::exists(audio_file_target))
 		{
 			m->pixmap = QPixmap(m->cl.audio_file_target());
+			m->source = Cover::Source::AudioFile;
 		}
 	}
 
@@ -81,6 +89,7 @@ void Cover::Extractor::start()
 		if(FileUtils::exists(cover_path))
 		{
 			m->pixmap = QPixmap(cover_path);
+			m->source = Cover::Source::SayonaraDir;
 		}
 	}
 
@@ -92,6 +101,7 @@ void Cover::Extractor::start()
 		if(FileUtils::exists(audio_file_source))
 		{
 			m->pixmap = Tagging::Covers::extract_cover(audio_file_source);
+			m->source = Cover::Source::AudioFile;
 		}
 	}
 
@@ -103,6 +113,7 @@ void Cover::Extractor::start()
 		if(FileUtils::exists(local_path))
 		{
 			m->pixmap = QPixmap(local_path);
+			m->source = Cover::Source::Library;
 		}
 	}
 

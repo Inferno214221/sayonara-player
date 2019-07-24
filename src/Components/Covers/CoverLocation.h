@@ -114,6 +114,7 @@ namespace Cover
 		 */
 		QString search_url(int idx) const;
 
+
 		/**
 		 * @brief Check for existing search urls
 		 * @return
@@ -230,6 +231,9 @@ namespace Cover
 		 * @return
 		 */
 		QString			preferred_path() const;
+
+
+		QString			alternative_path() const;
 
 
 		/**

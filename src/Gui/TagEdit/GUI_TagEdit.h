@@ -61,6 +61,7 @@ public:
 	void cancel();
 
 	void show_close_button(bool show);
+	void show_cover_tab();
 
 	void set_metadata(const MetaDataList& v_md);
 	int count() const;

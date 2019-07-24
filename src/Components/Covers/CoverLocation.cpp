@@ -401,6 +401,16 @@ QString Location::preferred_path() const
 	return invalid_path();
 }
 
+QString Location::alternative_path() const
+{
+	QString path = cover_path();
+	QString dir, filename;
+	Util::File::split_filename(path, dir, filename);
+	filename.prepend("alt_");
+
+	return dir + QDir::separator() + filename;
+}
+
 
 QString Location::identifer() const
 {

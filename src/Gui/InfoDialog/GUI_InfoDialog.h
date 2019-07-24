@@ -65,18 +65,18 @@ public:
 	void set_metadata(const MetaDataList& vd, MD::Interpretation interpretation);
 	bool has_metadata() const;
 
-	void show(GUI_InfoDialog::Tab tab);
-
+	GUI_InfoDialog::Tab show(GUI_InfoDialog::Tab tab);
+	void show_cover_edit_tab();
 
 protected:
 	void skin_changed() override;
 	void language_changed() override;
 
-
 private slots:
 	void tab_index_changed_int(int idx);
 	void tab_index_changed(GUI_InfoDialog::Tab idx);
-
+	void write_cover_to_tracks_clicked();
+	void cover_changed();
 
 private:
 	void init();

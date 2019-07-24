@@ -148,7 +148,7 @@ void Fadeable::timed_out()
 	{
 		if(m->mode == Fadeable::FadeMode::FadeIn)
 		{
-			sp_log(Log::Develop, this) << "Set volume from " << current_volume << " to " << new_volume;
+			sp_log(Log::Crazy, this) << "Set volume from " << current_volume << " to " << new_volume;
 		}
 
 		set_internal_volume(new_volume);

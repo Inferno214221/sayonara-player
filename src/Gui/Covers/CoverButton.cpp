@@ -41,25 +41,18 @@ using CoverButtonBase=Gui::WidgetTemplate<QPushButton>;
 
 struct CoverButton::Private
 {
-	QString			hash;
-	Location		cover_location;
-	QPixmap			current_cover;
-	QString			class_tmp_file;
-	Lookup*			cover_lookup=nullptr;
-	bool			cover_forced;
+	QString					hash;
+	Location				cover_location;
+	QPixmap					current_cover;
+	Lookup*					cover_lookup=nullptr;
+	Cover::Source			cover_source;
+	bool					silent;
 
 	Private() :
 		cover_location(Location::invalid_location()),
 		current_cover(Location::invalid_path()),
-		cover_forced(false)
-	{
-		class_tmp_file = Cover::Utils::cover_directory("cb_" + Util::random_string(16) + ".jpg");
-	}
-
-	~Private()
-	{
-		::Util::File::delete_files({class_tmp_file});
-	}
+		silent(false)
+	{}
 };
 
 
@@ -70,10 +63,8 @@ CoverButton::CoverButton(QWidget* parent) :
 
 	this->setObjectName("CoverButton");
 
-	connect(this, &QPushButton::clicked, this, &CoverButton::cover_button_clicked);
-
 	Cover::ChangeNotfier* cn = Cover::ChangeNotfier::instance();
-	connect(cn, &Cover::ChangeNotfier::sig_covers_changed, this, &CoverButton::refresh);
+	connect(cn, &Cover::ChangeNotfier::sig_covers_changed, this, &CoverButton::covers_changed);
 }
 
 CoverButton::~CoverButton()
@@ -85,27 +76,57 @@ CoverButton::~CoverButton()
 	}
 }
 
+QIcon CoverButton::current_icon() const
+{
+	QIcon icon;
+	QPixmap pm = QPixmap(m->current_cover)
+			.scaled(this->iconSize(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+	if(pm.isNull())
+	{
+		sp_log(Log::Warning, this) << "Pixmap not valid";
+		return QIcon();
+	}
+
+	for(QIcon::Mode m : { QIcon::Mode::Normal, QIcon::Mode::Disabled, QIcon::Mode::Active, QIcon::Mode::Selected })
+	{
+		for(QIcon::State s : {QIcon::State::On, QIcon::State::Off})
+		{
+			icon.addPixmap(pm, m, s);
+		}
+	}
+
+	return icon;
+}
+
 void CoverButton::refresh()
 {
 	QIcon icon = current_icon();
 	this->setIcon(icon);
-}
 
+	emit sig_cover_changed();
+}
 
 void CoverButton::set_cover_image(const QString& path)
 {
 	set_cover_image_pixmap(QPixmap(path));
 }
 
-
 void CoverButton::set_cover_image_pixmap(const QPixmap& pm)
 {
 	m->current_cover = pm;
-	m->cover_forced = false;
 
 	this->refresh();
 }
 
+void CoverButton::covers_changed()
+{
+	if(!is_silent())
+	{
+		m->hash = QString();
+		set_cover_location(m->cover_location);
+	}
+}
 
 void CoverButton::set_cover_location(const Location& cl)
 {
@@ -116,10 +137,9 @@ void CoverButton::set_cover_location(const Location& cl)
 	set_cover_image(Cover::Location::invalid_path());
 
 	m->cover_location = cl;
-	m->cover_forced = false;
 	m->hash = cl.hash();
 
-	if(cl.hash().isEmpty()){
+	if(cl.hash().isEmpty()) {
 		return;
 	}
 
@@ -139,62 +159,6 @@ void CoverButton::set_cover_location(const Location& cl)
 }
 
 
-QIcon CoverButton::current_icon() const
-{
-	QIcon icon;
-	QPixmap pm = QPixmap(m->current_cover)
-			.scaled(this->iconSize(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-
-	if(pm.isNull()){
-		sp_log(Log::Warning, this) << "Pixmap not valid";
-		return QIcon();
-	}
-
-	for(QIcon::Mode m : { QIcon::Mode::Normal, QIcon::Mode::Disabled, QIcon::Mode::Active, QIcon::Mode::Selected })
-	{
-		for(QIcon::State s : {QIcon::State::On, QIcon::State::Off})
-		{
-			icon.addPixmap(pm, m, s);
-		}
-	}
-
-	return icon;
-}
-
-
-void CoverButton::cover_button_clicked()
-{
-	// The cover comes from the ID3 file
-	if(m->cover_forced)
-	{
-		emit sig_rejected();
-	}
-
-	else
-	{
-		GUI_AlternativeCovers* alt_cover = new GUI_AlternativeCovers(m->cover_location, this->parentWidget());
-
-		connect(alt_cover, &GUI_AlternativeCovers::sig_cover_changed, this, &CoverButton::alternative_cover_fetched);
-		connect(alt_cover, &GUI_AlternativeCovers::sig_closed, alt_cover, &GUI_AlternativeCovers::deleteLater);
-
-		alt_cover->show();
-	}
-}
-
-
-void CoverButton::alternative_cover_fetched(const Location& cl)
-{
-	if(cl.valid())
-	{
-		ChangeNotfier::instance()->shout();
-	}
-
-	m->hash = QString();
-
-	set_cover_image(cl.cover_path());
-}
-
-
 void CoverButton::cover_lookup_finished(bool success)
 {
 	if(!success)
@@ -202,14 +166,39 @@ void CoverButton::cover_lookup_finished(bool success)
 		sp_log(Log::Warning, this) << "Cover lookup finished: false";
 		set_cover_image(Location::invalid_path());
 	}
+
+	Cover::Lookup* lookup = static_cast<Cover::Lookup*>(sender());
+	m->source = lookup->source();
+}
+
+
+void CoverButton::alternative_cover_fetched(const Location& cl)
+{
+	m->hash = QString();
+	m->source = Cover::Source::Unknown;
+
+	if(!is_silent())
+	{
+		if(cl.valid())
+		{
+			ChangeNotfier::instance()->shout();
+		}
+
+		set_cover_image(cl.cover_path());
+	}
+
+	else
+	{
+		set_cover_image(cl.alternative_path());
+	}
 }
 
 
 void CoverButton::force_cover(const QPixmap& pm)
 {
-	this->setToolTip(tr("Cover source: Audio file"));
-
+	m->source = Cover::Source::AudioFile;
 	m->current_cover = pm;
+
 	refresh();
 }
 
@@ -218,6 +207,15 @@ void CoverButton::force_cover(const QImage& img)
 	force_cover(QPixmap::fromImage(img));
 }
 
+void CoverButton::set_silent(bool silent)
+{
+	m->silent = silent;
+}
+
+bool CoverButton::is_silent() const
+{
+	return m->silent;
+}
 
 void CoverButton::showEvent(QShowEvent* e)
 {
@@ -226,7 +224,6 @@ void CoverButton::showEvent(QShowEvent* e)
 
 	CoverButtonBase::showEvent(e);
 }
-
 
 void CoverButton::paintEvent(QPaintEvent* event)
 {
@@ -238,19 +235,38 @@ void CoverButton::paintEvent(QPaintEvent* event)
 	int h = this->height() - 2;
 	int w = this->width() - 2;
 
-	QSize size(w, h);
-
-	QPixmap pm = m->current_cover.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+	QPixmap pm = m->current_cover.scaled(QSize(w,h), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
 	int x = (w - pm.width()) / 2;
 	int y = (h - pm.height()) / 2;
 
 	painter.drawPixmap
 	(
-		QRect(x, y, pm.width(), pm.height()),
+		x, y, pm.width(), pm.height(),
 		pm
 	);
 
 	painter.restore();
+}
+
+void CoverButton::mouseReleaseEvent(QMouseEvent* event)
+{
+	if(event->button() | Qt::LeftButton)
+	{
+		if(m->cover_source == Cover::Source::AudioFile && !is_silent())
+		{
+			emit sig_rejected();
+			return;
+		}
+
+		GUI_AlternativeCovers* alt_cover = new GUI_AlternativeCovers(m->cover_location, m->silent, this->parentWidget());
+
+		connect(alt_cover, &GUI_AlternativeCovers::sig_cover_changed, this, &CoverButton::alternative_cover_fetched);
+		connect(alt_cover, &GUI_AlternativeCovers::sig_closed, alt_cover, &GUI_AlternativeCovers::deleteLater);
+
+		alt_cover->show();
+	}
+
+	QPushButton::mouseReleaseEvent(event);
 }
 

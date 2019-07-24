@@ -28,6 +28,17 @@ class QPixmap;
  */
 namespace Cover
 {
+	enum Source
+	{
+		Database,
+		SayonaraDir,
+		Library,
+		AudioFile,
+		WWW,
+		Unknown
+	};
+
+
 	class Location;
 	namespace Utils
 	{

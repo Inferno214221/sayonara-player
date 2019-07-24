@@ -53,16 +53,9 @@
 using Cover::Location;
 using Cover::Lookup;
 using Cover::FetchThread;
+using Cover::Source;
 
 namespace FileUtils=::Util::File;
-
-enum CoverSource : quint8
-{
-	Database=0,
-	AudioFile,
-	Filesystem,
-	WWW
-};
 
 struct Lookup::Private
 {
@@ -71,7 +64,7 @@ struct Lookup::Private
 	void*			user_data=nullptr;
 
 	int				n_covers;
-	CoverSource		source;
+	Source			source;
 	bool			thread_running;
 	bool			finished;
 	bool			stopped;
@@ -124,7 +117,7 @@ bool Lookup::start_new_thread(const Cover::Location& cl )
 	connect(thread, &QThread::started, m->cft, &FetchThread::start);
 	connect(thread, &QThread::finished, thread, &QThread::deleteLater);
 
-	m->source = CoverSource::WWW;
+	m->source = Source::WWW;
 	thread->start();
 	return true;
 }
@@ -165,7 +158,7 @@ void Lookup::start()
 
 bool Lookup::fetch_from_database()
 {
-	m->source = CoverSource::Database;
+	m->source = Source::Database;
 
 	Cover::Location cl = cover_location();
 	QString hash = cl.hash();
@@ -185,7 +178,7 @@ bool Lookup::fetch_from_database()
 
 bool Lookup::fetch_from_extractor()
 {
-	m->source = CoverSource::AudioFile;
+	m->source = Source::AudioFile;
 
 	Cover::Location cl = cover_location();
 	return start_extractor(cl);
@@ -239,6 +232,7 @@ void Lookup::extractor_finished()
 {
 	Cover::Extractor* extractor = static_cast<Cover::Extractor*>(sender());
 	QPixmap pm = extractor->pixmap();
+	m->source = extractor->source();
 
 	extractor->deleteLater();
 
@@ -283,13 +277,13 @@ bool Lookup::add_new_cover(const QPixmap& pm, bool save)
 	}
 
 	if( GetSetting(Set::Cover_SaveToLibrary) &&
-		(m->source == CoverSource::WWW))
+		(m->source == Source::WWW))
 	{
 		Cover::Utils::write_cover_to_library(cover_location(), pm);
 	}
 
 	if(GetSetting(Set::Cover_SaveToSayonaraDir) &&
-	  (m->source == CoverSource::WWW))
+	  (m->source == Source::WWW))
 	{
 		Cover::Utils::write_cover_to_sayonara_dir(cover_location(), pm);
 	}
@@ -351,5 +345,10 @@ void* Lookup::user_data()
 QList<QPixmap> Lookup::pixmaps() const
 {
 	return m->pixmaps;
+}
+
+Source Lookup::source() const
+{
+	return m->source;
 }
 

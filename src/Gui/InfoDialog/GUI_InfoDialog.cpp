@@ -40,6 +40,7 @@
 #include "Utils/FileUtils.h"
 #include "Utils/Language/Language.h"
 #include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Logger/Logger.h"
 
 #include <QTabBar>
 #include <QTableWidget>
@@ -55,20 +56,21 @@ struct GUI_InfoDialog::Private
 	Cover::Location			cl;
 	MetaDataList			v_md;
 	MD::Interpretation		md_interpretation;
+
+	Private(InfoDialogContainer* container) :
+		info_dialog_container(container),
+		md_interpretation(MD::Interpretation::None)
+	{}
 };
 
 
 GUI_InfoDialog::GUI_InfoDialog(InfoDialogContainer* container, QWidget* parent) :
 	Dialog(parent)
 {
-	ui = nullptr;
-	m = Pimpl::make<Private>();
-
-	m->info_dialog_container = container;
-	m->md_interpretation = MD::Interpretation::None;
+	m = Pimpl::make<Private>(container);
 }
 
-GUI_InfoDialog::~GUI_InfoDialog() {}
+GUI_InfoDialog::~GUI_InfoDialog() = default;
 
 void GUI_InfoDialog::language_changed()
 {
@@ -83,6 +85,10 @@ void GUI_InfoDialog::language_changed()
 	ui->tab_widget->setTabText(1, Lang::get(Lang::Lyrics));
 	ui->tab_widget->setTabText(2, Lang::get(Lang::Edit));
 	ui->btn_close1->setText(Lang::get(Lang::Close));
+	ui->btn_write_cover_to_tracks->setText
+	(
+		tr("Write cover to tracks") + "..."
+	);
 }
 
 void GUI_InfoDialog::skin_changed()
@@ -91,14 +97,12 @@ void GUI_InfoDialog::skin_changed()
 		return;
 	}
 
+	using namespace Gui;
+
 	QTabBar* tab_bar = ui->tab_widget->tabBar();
-	if(tab_bar)
-	{
-		using namespace Gui;
-		tab_bar->setTabIcon(0, Icons::icon(Icons::Info));
-		tab_bar->setTabIcon(1, Icons::icon(Icons::Lyrics));
-		tab_bar->setTabIcon(2, Icons::icon(Icons::Edit));
-	}
+	tab_bar->setTabIcon(0, Icons::icon(Icons::Info));
+	tab_bar->setTabIcon(1, Icons::icon(Icons::Lyrics));
+	tab_bar->setTabIcon(2, Icons::icon(Icons::Edit));
 }
 
 
@@ -203,14 +207,15 @@ bool GUI_InfoDialog::has_metadata() const
 }
 
 
-void GUI_InfoDialog::show(GUI_InfoDialog::Tab tab)
+GUI_InfoDialog::Tab GUI_InfoDialog::show(GUI_InfoDialog::Tab tab)
 {
+	int iTab = static_cast<int>(tab);
 	if(!ui){
 		init();
 	}
 
 	if(m->v_md.isEmpty()){
-		return;
+		return GUI_InfoDialog::Tab::Info;
 	}
 
 	QTabWidget* tab_widget = ui->tab_widget;
@@ -223,23 +228,24 @@ void GUI_InfoDialog::show(GUI_InfoDialog::Tab tab)
 	tab_widget->setTabEnabled((int) GUI_InfoDialog::Tab::Edit, tag_edit_enabled);
 	tab_widget->setTabEnabled((int) GUI_InfoDialog::Tab::Lyrics, lyric_enabled);
 
-	if( !tab_widget->isTabEnabled((int) tab) )
+	if( !tab_widget->isTabEnabled(iTab))
 	{
 		tab = GUI_InfoDialog::Tab::Info;
 	}
 
-	if(tab_widget->currentIndex() == ((int) tab))
+	if(tab_widget->currentIndex() == iTab)
 	{
 		tab_index_changed(tab);
 	}
 
 	else
 	{
-		tab_widget->setCurrentIndex((int) tab);
+		tab_widget->setCurrentIndex(iTab);
 	}
 
-
 	Dialog::show();
+
+	return static_cast<GUI_InfoDialog::Tab>(tab_widget->currentIndex());
 }
 
 void GUI_InfoDialog::prepare_cover(const Cover::Location& cl)
@@ -261,6 +267,9 @@ void GUI_InfoDialog::init()
 	tab_widget->setFocusPolicy(Qt::NoFocus);
 
 	connect(tab_widget, &QTabWidget::currentChanged, this, &GUI_InfoDialog::tab_index_changed_int);
+	connect(ui->btn_write_cover_to_tracks, &QPushButton::clicked, this, &GUI_InfoDialog::write_cover_to_tracks_clicked);
+	connect(ui->btn_image, &CoverButton::sig_rejected, this, &GUI_InfoDialog::write_cover_to_tracks_clicked);
+	connect(ui->btn_image, &CoverButton::sig_cover_changed, this, &GUI_InfoDialog::cover_changed);
 
 	ui->btn_image->setStyleSheet("QPushButton:hover {background-color: transparent;}");
 }
@@ -322,7 +331,20 @@ void GUI_InfoDialog::tab_index_changed(GUI_InfoDialog::Tab idx)
 	}
 }
 
-#include "Utils/Logger/Logger.h"
+void GUI_InfoDialog::write_cover_to_tracks_clicked()
+{
+	show_cover_edit_tab();
+}
+
+void GUI_InfoDialog::cover_changed()
+{
+	int w = ui->btn_image->width();
+	ui->btn_image->resize(w, w);
+	ui->btn_image->setStyleSheet("border: 1px solid red;");
+
+}
+
+
 void GUI_InfoDialog::show_info_tab()
 {
 	prepare_info(m->md_interpretation);
@@ -381,6 +403,14 @@ void GUI_InfoDialog::show_tag_edit_tab()
 	m->ui_tag_edit->show();
 }
 
+void GUI_InfoDialog::show_cover_edit_tab()
+{
+	auto tab = show(GUI_InfoDialog::Tab::Edit);
+	if(tab == GUI_InfoDialog::Tab::Edit)
+	{
+		m->ui_tag_edit->show_cover_tab();
+	}
+}
 
 void GUI_InfoDialog::closeEvent(QCloseEvent* e)
 {

@@ -109,10 +109,11 @@ QStringList LastFM::calc_addresses_from_website(const QByteArray& website) const
 
 QString LastFM::artist_address(const QString& artist) const
 {
-	QString str = QString("http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist=" +
+	QString str;
+	/*str = QString("http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist=" +
 						  QUrl::toPercentEncoding(artist) +
 						  "&api_key=") + LFM_API_KEY;
-
+	*/
 	return str;
 }
 
@@ -145,7 +146,7 @@ bool LastFM::is_album_supported() const
 
 bool LastFM::is_artist_supported() const
 {
-	return true;
+	return false;
 }
 
 int LastFM::estimated_size() const

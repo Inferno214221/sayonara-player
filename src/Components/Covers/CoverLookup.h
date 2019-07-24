@@ -31,6 +31,7 @@
 
 #include "AbstractCoverLookup.h"
 #include "Utils/Pimpl.h"
+#include "CoverUtils.h"
 
 #include <QPixmap>
 #include <QList>
@@ -50,6 +51,7 @@ namespace Cover
 		PIMPL(Lookup)
 
 	public:
+
 		Lookup(const Location& cl, int n_covers, QObject* parent);
 		~Lookup() override;
 
@@ -84,6 +86,8 @@ namespace Cover
 		 * @return
 		 */
 		QList<QPixmap> pixmaps() const;
+
+		Cover::Source source() const;
 
 	private:
 

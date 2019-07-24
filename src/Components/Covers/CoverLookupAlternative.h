@@ -45,7 +45,7 @@ namespace Cover
 		void go(const Cover::Location& cl);
 
 	public:
-		AlternativeLookup(const Cover::Location& cl, int n_covers, QObject* parent);
+		AlternativeLookup(const Cover::Location& cl, int n_covers, bool silent, QObject* parent);
 		~AlternativeLookup();
 
 		void start();

@@ -25,6 +25,8 @@
 #include "LFMCoverFetcher.h"
 #include "StandardCoverFetcher.h"
 #include "DiscogsCoverFetcher.h"
+#include "AllMusicCoverFetcher.h"
+#include "AmazonCoverFetcher.h"
 
 #include "Utils/Algorithm.h"
 #include "Utils/Settings/Settings.h"
@@ -169,6 +171,8 @@ Manager::Manager() :
 	register_coverfetcher(new Fetcher::LastFM());
 	register_coverfetcher(new Fetcher::Discogs());
 	register_coverfetcher(new Fetcher::Google());
+	register_coverfetcher(new Fetcher::AllMusicCoverFetcher());
+	register_coverfetcher(new Fetcher::Amazon());
 
 	register_coverfetcher(m->std_cover_fetcher);
 

@@ -144,6 +144,7 @@ private slots:
 
 	// cover changed by engine
 	void force_cover(const QImage &img);
+	void cover_click_rejected();
 
 
 	// InfoDialogContainer interface

@@ -23,6 +23,7 @@
 #include "ChangeNotifier.h"
 #include "Components/MetaDataInfo/MetaDataInfo.h"
 #include "Components/Covers/CoverLocation.h"
+#include "Components/Covers/CoverChangeNotifier.h"
 #include "Database/CoverConnector.h"
 
 #include "Utils/Utils.h"
@@ -454,6 +455,7 @@ void Editor::run()
 		db_covers->set_cover(cl.hash(), pm);
 	}
 
+	Cover::ChangeNotfier::instance()->shout();
 	DB::Library* db_library = db->library_connector();
 
 	db_library->create_indexes();

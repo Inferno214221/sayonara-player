@@ -547,6 +547,11 @@ void GUI_TagEdit::show_close_button(bool show)
 	ui->btn_close->setVisible(show);
 }
 
+void GUI_TagEdit::show_cover_tab()
+{
+	ui->tab_widget->setCurrentIndex(2);
+}
+
 void GUI_TagEdit::load_entire_album()
 {
 	if(m->tag_edit->has_changes())
