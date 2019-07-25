@@ -125,6 +125,11 @@ bool AlternativeLookup::is_running() const
 	return m->running;
 }
 
+bool AlternativeLookup::is_silent() const
+{
+	return m->silent;
+}
+
 QStringList AlternativeLookup::active_coverfetchers(AlternativeLookup::SearchMode mode) const
 {
 	QStringList ret;

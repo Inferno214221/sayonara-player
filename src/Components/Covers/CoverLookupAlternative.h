@@ -60,6 +60,7 @@ namespace Cover
 
 		bool save(const QPixmap& pm, bool save_to_library);
 		bool is_running() const;
+		bool is_silent() const;
 
 		enum SearchMode
 		{

@@ -217,7 +217,7 @@ void GUI_AlternativeCovers::search_clicked()
 		return;
 	}
 
-	connect_and_start();
+	start();
 }
 
 void GUI_AlternativeCovers::lookup_started()
