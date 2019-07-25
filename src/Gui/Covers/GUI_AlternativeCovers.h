@@ -88,6 +88,7 @@ private:
 	void reset();
 	void connect_and_start();
 	void init_combobox();
+	void init_save_to_library();
 
 protected:
 	void showEvent(QShowEvent* e) override;

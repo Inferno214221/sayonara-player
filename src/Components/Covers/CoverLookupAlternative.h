@@ -57,7 +57,7 @@ namespace Cover
 		void stop() override;
 		void reset();
 
-		bool save(const QPixmap& pm);
+		bool save(const QPixmap& pm, bool save_to_library);
 		bool is_running() const;
 
 		QStringList get_activated_coverfetchers(bool fulltext_search) const;

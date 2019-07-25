@@ -280,9 +280,9 @@ void PlaylistImpl::stop()
 	{
 		set_track_idx_before_stop(current_track_index());
 		m->v_md.set_current_track(-1);
-
-		emit sig_stopped();
 	}
+
+	emit sig_stopped();
 }
 
 void PlaylistImpl::fwd()
@@ -316,6 +316,7 @@ void PlaylistImpl::next()
 	// stopped
 	int cur_track = m->v_md.current_track();
 	int track_num = -1;
+
 	if(cur_track == -1){
 		track_num = 0;
 	}

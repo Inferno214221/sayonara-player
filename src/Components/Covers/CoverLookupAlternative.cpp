@@ -85,7 +85,7 @@ void AlternativeLookup::reset()
 }
 
 
-bool AlternativeLookup::save(const QPixmap& cover)
+bool AlternativeLookup::save(const QPixmap& cover, bool save_to_library)
 {
 	if(cover.isNull()){
 		sp_log(Log::Warning, this) << "Cannot save invalid cover";
@@ -97,7 +97,7 @@ bool AlternativeLookup::save(const QPixmap& cover)
 	Cover::Utils::write_cover_to_db(cl, cover);
 	Cover::Utils::write_cover_to_sayonara_dir(cl, cover);
 
-	if(GetSetting(Set::Cover_SaveToLibrary)) {
+	if(save_to_library) {
 		Cover::Utils::write_cover_to_library(cl, cover);
 	}
 

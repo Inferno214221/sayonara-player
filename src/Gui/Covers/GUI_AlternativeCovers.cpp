@@ -72,7 +72,8 @@ struct GUI_AlternativeCovers::Private
 
 
 GUI_AlternativeCovers::GUI_AlternativeCovers(const Cover::Location& cl, QWidget* parent) :
-	Dialog(parent)
+	Dialog(parent),
+	ui(nullptr)
 {
 	m = Pimpl::make<GUI_AlternativeCovers::Private>(cl, this);
 }
@@ -84,7 +85,6 @@ GUI_AlternativeCovers::~GUI_AlternativeCovers()
 
 	delete ui; ui=nullptr;
 }
-
 
 void GUI_AlternativeCovers::init_ui()
 {
@@ -110,6 +110,7 @@ void GUI_AlternativeCovers::init_ui()
 		}
 
 		ui->cb_autostart->setChecked(GetSetting(Set::Cover_StartSearch));
+		ui->cb_save_to_library->setChecked(GetSetting(Set::Cover_SaveToLibrary));
 
 		connect(ui->btn_ok, &QPushButton::clicked, this, &GUI_AlternativeCovers::ok_clicked);
 		connect(ui->btn_apply, &QPushButton::clicked, this, &GUI_AlternativeCovers::apply_clicked);
@@ -131,12 +132,14 @@ void GUI_AlternativeCovers::init_ui()
 		ListenSetting(Set::Cover_FetchFromWWW, GUI_AlternativeCovers::www_active_changed);
 	}
 
+	Cover::Location cl = m->cl_alternative->cover_location();
 	m->loading_bar->hide();
 	ui->tabWidget->setCurrentIndex(0);
 	ui->lab_status->setText("");
 	ui->rb_auto_search->setChecked(true);
-	ui->le_search->setText( m->cl_alternative->cover_location().search_term() );
+	ui->le_search->setText( cl.search_term() );
 
+	init_save_to_library();
 	init_combobox();
 }
 
@@ -193,7 +196,7 @@ void GUI_AlternativeCovers::apply_clicked()
 	QModelIndex current_idx = ui->tv_images->currentIndex();
 
 	QPixmap cover = m->model->data(current_idx, Qt::UserRole).value<QPixmap>();
-	m->cl_alternative->save(cover);
+	m->cl_alternative->save(cover, ui->cb_save_to_library->isChecked());
 }
 
 void GUI_AlternativeCovers::search_clicked()
@@ -343,6 +346,22 @@ void GUI_AlternativeCovers::init_combobox()
 	}
 }
 
+void GUI_AlternativeCovers::init_save_to_library()
+{
+	Cover::Location cl = m->cl_alternative->cover_location();
+
+	QString text = QString("Also save cover to %1").arg(cl.local_path_dir());
+	QFontMetrics fm = this->fontMetrics();
+
+	ui->cb_save_to_library->setText(
+		fm.elidedText(text, Qt::ElideRight, this->width() - 50)
+	);
+
+	ui->cb_save_to_library->setToolTip(cl.local_path_dir());
+	ui->cb_save_to_library->setChecked(GetSetting(Set::Cover_SaveToLibrary));
+	ui->cb_save_to_library->setVisible(!cl.local_path_dir().isEmpty());
+}
+
 
 void GUI_AlternativeCovers::language_changed()
 {
@@ -352,6 +371,8 @@ void GUI_AlternativeCovers::language_changed()
 	ui->btn_close->setText(Lang::get(Lang::Close));
 	ui->btn_apply->setText(Lang::get(Lang::Apply));
 	ui->lab_websearch_disabled->setText(tr("Cover web search is not enabled"));
+
+	init_save_to_library();
 
 	if(m->cl_alternative->is_running()){
 		ui->btn_search->setText(Lang::get(Lang::Stop));
@@ -377,6 +398,14 @@ void GUI_AlternativeCovers::showEvent(QShowEvent* e)
 void GUI_AlternativeCovers::resizeEvent(QResizeEvent *e)
 {
 	Gui::Dialog::resizeEvent(e);
+
+	if(ui && ui->cb_save_to_library)
+	{
+		QCheckBox* cb = ui->cb_save_to_library;
+		bool checked = cb->isChecked();
+		init_save_to_library();
+		cb->setChecked(checked);
+	}
 
 	if(m->loading_bar && m->loading_bar->isVisible())
 	{
