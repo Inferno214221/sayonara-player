@@ -196,7 +196,11 @@ void GUI_LocalLibrary::check_view_state(bool is_reloading)
 
 void GUI_LocalLibrary::check_reload_status(bool is_reloading)
 {
-	bool is_library_empty = m->library->is_empty();
+	bool is_library_empty = false;
+	if(!is_reloading)
+	{
+		is_library_empty = m->library->is_empty();
+	}
 
 	ui->sw_status->setVisible(is_reloading || is_library_empty);
 	ui->pb_progress->setVisible(is_reloading);
