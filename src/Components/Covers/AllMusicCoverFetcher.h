@@ -14,7 +14,7 @@ namespace Fetcher
 		public:
 			bool can_fetch_cover_directly() const;
 			QStringList calc_addresses_from_website(const QByteArray& website) const;
-			QString keyword() const;
+			QString identifier() const;
 			QString artist_address(const QString& artist) const;
 			QString album_address(const QString& artist, const QString& album) const;
 			QString search_address(const QString& str) const;

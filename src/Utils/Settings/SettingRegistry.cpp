@@ -41,6 +41,17 @@
 template<typename KeyClass>
 void register_setting(const char* db_key, const typename KeyClass::Data& default_value)
 {
+//	const char* name = typeid(typename KeyClass::Data).name();
+
+//	std::cout
+//		<< "Register setting "
+//		<< db_key
+//		<< " of type "
+//		<< name
+//		<< " and index "
+//		<< (int) KeyClass::key
+//		<< std::endl;
+
 	auto setting = new Setting<KeyClass>(db_key, default_value);
 
 	Settings::instance()->register_setting( setting );
@@ -121,6 +132,7 @@ bool SettingRegistry::init()
 	register_setting<Set::Lib_AllLibraries>( "lib_all_libraries", QList<Library::Info>()); // deprecated
 	register_setting<Set::Lib_UseViewClearButton>( "lib_view_clear_button", false);
 	register_setting<Set::Lib_ShowFilterExtBar>("lib_show_filter_ext_bar", true);
+	register_setting<Set::Lib_SortIgnoreArtistArticle>("lib_ignore_artist_article", false);
 
 #ifdef Q_OS_WIN
 	register_setting<Set::Lib_FontBold >("lib_font_bold", false);
@@ -158,7 +170,6 @@ bool SettingRegistry::init()
 		register_setting<Set::Player_SplitterState >("splitter_state_player", splitter_state_player);
 	}
 
-//	register_setting<Set::Player_Shortcuts>( "shortcuts", RawShortcutMap()); // deprecated
 	register_setting<Set::Player_SplitterControls>("player_splitter_controls", QByteArray());
 	register_setting<Set::Player_PrivId>("player_priv_id", QByteArray());
 	register_setting<Set::Player_PublicId>("player_pub_id", QByteArray());
@@ -273,7 +284,6 @@ QList<SettingKey> SettingRegistry::undeployable_keys()
 		SettingKey::Player_PublicId,
 		SettingKey::Player_PrivId,
 
-//		SettingKey::Player_Shortcuts,
 		SettingKey::AudioConvert_NumberThreads,
 
 		SettingKey::Engine_CovertTargetPath,

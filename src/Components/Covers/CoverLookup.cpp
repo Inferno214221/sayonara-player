@@ -101,7 +101,6 @@ bool Lookup::start_new_thread(const Cover::Location& cl )
 	}
 
 	sp_log(Log::Develop, this) << "Start new cover fetch thread for " << cl.identifer();
-	sp_log(Log::Develop, this) << cl.search_urls();
 
 	m->thread_running = true;
 

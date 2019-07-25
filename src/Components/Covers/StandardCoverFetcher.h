@@ -50,7 +50,7 @@ namespace Fetcher
         bool is_artist_supported() const override;
 
         int estimated_size() const override;
-        QString keyword() const override;
+        QString identifier() const override;
     };
 
 }

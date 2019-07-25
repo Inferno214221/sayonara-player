@@ -48,7 +48,7 @@ namespace Fetcher
         bool is_album_supported() const override;
         bool is_artist_supported() const override;
         int estimated_size() const override;
-        QString keyword() const override;
+        QString identifier() const override;
     };
 
 } // fetcher

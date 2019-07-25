@@ -28,6 +28,8 @@
 
 namespace Algorithm=Util::Algorithm;
 
+static bool ignore_article=false;
+
 enum Relation
 {
 	Lesser,
@@ -149,7 +151,21 @@ bool MetaDataSorting::TracksByAlbumDesc(const MetaData& md1, const MetaData& md2
 
 bool MetaDataSorting::TracksByArtistAsc(const MetaData& md1, const MetaData& md2)
 {
-	switch(compare_string(md1.artist(), md2.artist())){
+	QString n1 = md1.artist();
+	QString n2 = md2.artist();
+
+	if(!ignore_article)
+	{
+		if(n1.startsWith("the ", Qt::CaseInsensitive)){
+			n1.remove(0, 4);
+		}
+
+		if(n2.startsWith("the ", Qt::CaseInsensitive)){
+			n2.remove(0, 4);
+		}
+	}
+
+	switch(compare_string(n1, n2)){
 		case Equal:
 			return TracksByAlbumAsc(md1, md2);
 		case Greater:
@@ -162,7 +178,21 @@ bool MetaDataSorting::TracksByArtistAsc(const MetaData& md1, const MetaData& md2
 
 bool MetaDataSorting::TracksByArtistDesc(const MetaData& md1, const MetaData& md2)
 {
-	switch(compare_string(md2.artist(), md1.artist())){
+	QString n1 = md1.artist();
+	QString n2 = md2.artist();
+
+	if(!ignore_article)
+	{
+		if(n1.startsWith("the ", Qt::CaseInsensitive)){
+			n1.remove(0, 4);
+		}
+
+		if(n2.startsWith("the ", Qt::CaseInsensitive)){
+			n2.remove(0, 4);
+		}
+	}
+
+	switch(compare_string(n2, n1)){
 		case Equal:
 			return TracksByAlbumAsc(md1, md2);
 		case Greater:
@@ -332,7 +362,21 @@ bool MetaDataSorting::TracksByRatingDesc(const MetaData& md1, const MetaData& md
 
 bool MetaDataSorting::ArtistByNameAsc(const Artist& artist1, const Artist& artist2)
 {
-	switch(compare_string(artist1.name(), artist2.name())){
+	QString n1 = artist1.name();
+	QString n2 = artist2.name();
+
+	if(!ignore_article)
+	{
+		if(n1.startsWith("the ", Qt::CaseInsensitive)){
+			n1.remove(0, 4);
+		}
+
+		if(n2.startsWith("the ", Qt::CaseInsensitive)){
+			n2.remove(0, 4);
+		}
+	}
+
+	switch(compare_string(n1, n2)){
 		case Equal:
 			return (artist1.id < artist2.id);
 		case Greater:
@@ -345,7 +389,21 @@ bool MetaDataSorting::ArtistByNameAsc(const Artist& artist1, const Artist& artis
 
 bool MetaDataSorting::ArtistByNameDesc(const Artist& artist1, const Artist& artist2)
 {
-	switch(compare_string(artist2.name(), artist1.name())){
+	QString n1 = artist1.name();
+	QString n2 = artist2.name();
+
+	if(!ignore_article)
+	{
+		if(n1.startsWith("the ", Qt::CaseInsensitive)){
+			n1.remove(0, 4);
+		}
+
+		if(n2.startsWith("the ", Qt::CaseInsensitive)){
+			n2.remove(0, 4);
+		}
+	}
+
+	switch(compare_string(n2, n1)){
 		case Equal:
 			return (artist1.id < artist2.id);
 		case Greater:
@@ -546,8 +604,6 @@ bool MetaDataSorting::AlbumByRatingDesc(const Album& album1, const Album& album2
 	return false;
 }
 
-
-
 void MetaDataSorting::sort_metadata(MetaDataList& v_md, Library::SortOrder so)
 {
 	using So=Library::SortOrder;
@@ -691,4 +747,9 @@ void MetaDataSorting::sort_artists(ArtistList& artists, Library::SortOrder so)
 		default:
 			break;
 	}
+}
+
+void MetaDataSorting::set_ignore_article(bool b)
+{
+	ignore_article = b;
 }

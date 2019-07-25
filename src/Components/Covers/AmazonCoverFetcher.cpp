@@ -63,7 +63,7 @@ QStringList Cover::Fetcher::Amazon::calc_addresses_from_website(const QByteArray
 	return sources;
 }
 
-QString Cover::Fetcher::Amazon::keyword() const
+QString Cover::Fetcher::Amazon::identifier() const
 {
 	return "Amazon";
 }
@@ -75,14 +75,21 @@ QString Cover::Fetcher::Amazon::artist_address(const QString& artist) const
 
 QString Cover::Fetcher::Amazon::album_address(const QString& artist, const QString& album) const
 {
-	QString str = QString::fromLocal8Bit(QUrl::toPercentEncoding(artist + " " + album));
-	return QString("https://www.amazon.com/s?k=%1&i=music-intl-ship&ref=nb_sb_noss_1").arg(str);
+	QString str(artist + "+" + album);
+	str.replace(" ", "+");
+	str = QString::fromLocal8Bit(QUrl::toPercentEncoding(str));
+
+	return QString("https://www.amazon.com/s?k=%1&i=digital-music&ref=nb_sb_noss").arg(str);
+	//return QString("https://www.amazon.com/s?k=%1&i=music-intl-ship&ref=nb_sb_noss_1").arg(str);
 }
 
 QString Cover::Fetcher::Amazon::search_address(const QString& search_string) const
 {
-	QString str = QString::fromLocal8Bit(QUrl::toPercentEncoding(search_string));
-	return QString("https://www.amazon.com/s?k=%1&ref=nb_sb_noss_1").arg(str);
+	QString str(search_string);
+	str.replace(" ", "+");
+	str = QString::fromLocal8Bit(QUrl::toPercentEncoding(search_string));
+
+	return QString("https://www.amazon.com/s?k=%1&i=digital-music&ref=nb_sb_noss").arg(str);
 }
 
 bool Cover::Fetcher::Amazon::is_search_supported() const

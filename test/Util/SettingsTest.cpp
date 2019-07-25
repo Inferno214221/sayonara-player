@@ -36,7 +36,7 @@ void SettingsTest::test_registry()
 	bool checked = s->check_settings();
 	QVERIFY(checked == true);
 
-	QVERIFY(GetSetting(Set::Player_Language) == QLocale().name());
+	//QVERIFY(GetSetting(Set::Player_Language) == QLocale().name());
 	QVERIFY(GetSetting(Set::Player_PublicId).isEmpty());
 	QVERIFY(GetSetting(Set::Player_PrivId).isEmpty());
 
@@ -52,6 +52,17 @@ void SettingsTest::test_registry()
 	db->settings_connector()->load_setting("version", db_version);
 	db->settings_connector()->load_settings(keys);
 
+	std::sort(keys.begin(), keys.end());
+	for(int i=0; i<keys.size(); i++)
+	{
+		int key = static_cast<int>(keys.at(i));
+		if(key != i)
+		{
+			qDebug() << " key, i " << key << " " << i;
+		}
+		QVERIFY(key == i);
+	}
+
 	{
 		int old_db_version = db->old_db_version();
 		int max_db_version = DB::Connector::get_max_db_version();
@@ -63,7 +74,10 @@ void SettingsTest::test_registry()
 	QList<SettingKey> undeployable_keys = SettingRegistry::undeployable_keys();
 
 	int max_key = static_cast<int>(SettingKey::Num_Setting_Keys);
-	QVERIFY(keys.count() == (max_key - undeployable_keys.size()));
+	int c = keys.count();
+	int uks = undeployable_keys.size();
+	qDebug() << " c, uks, maxkey " << c << " " << uks << " " << max_key;
+	QVERIFY(c == (max_key - uks));
 
 	{ // undeployable keys must not be in keys
 		for(SettingKey key : undeployable_keys)

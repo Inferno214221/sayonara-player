@@ -28,6 +28,11 @@ class QUrl;
 
 namespace Cover
 {
+	namespace Fetcher
+	{
+		struct FetchUrl;
+	}
+
 	using StringMap=QMap<QString, QString>;
 
 	/**
@@ -102,7 +107,7 @@ namespace Cover
 		 * @brief Retrieve the urls where a new cover can be searched
 		 * @return
 		 */
-		const QStringList& search_urls() const;
+		QList<Fetcher::FetchUrl> search_urls(bool also_inactive) const;
 
 		/**
 		 * @brief Search urls contains urls from
@@ -112,7 +117,7 @@ namespace Cover
 		 * @param idx
 		 * @return
 		 */
-		QString search_url(int idx) const;
+		Fetcher::FetchUrl search_url(int idx) const;
 
 
 		/**
@@ -138,7 +143,7 @@ namespace Cover
 		/**
 		 * @brief Set a new search term for a specific cover fetcher
 		 * Cover fetcher strings can be found in the Cover::Fetcher::Base implementations
-		 * by calling Cover::Fetcher::Base::keyword()
+		 * by calling Cover::Fetcher::Base::identifier()
 		 * @param search_term A searchterm suitable for the specific Cover::Fetcher::Base.
 		 * For example "Master of puppets Metallica"
 		 * @param cover_fetcher_identifier
@@ -150,7 +155,7 @@ namespace Cover
 		 * @brief Set urls where to look for Covers in the internet
 		 * @param urls
 		 */
-		void			set_search_urls(const QStringList& urls);
+		void			set_search_urls(const QList<Fetcher::FetchUrl>& urls);
 
 		/**
 		 * @brief When enabling freetext search you specify the

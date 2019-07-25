@@ -97,7 +97,7 @@ int Discogs::estimated_size() const
 	return 350;
 }
 
-QString Discogs::keyword() const
+QString Discogs::identifier() const
 {
 	return "discogs";
 }

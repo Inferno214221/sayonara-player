@@ -33,6 +33,7 @@
 
 #include "Components/Playlist/PlaylistHandler.h"
 #include "Components/Covers/CoverLocation.h"
+#include "Components/Covers/CoverFetchManager.h"
 
 #include <QMap>
 #include <QSettings>
@@ -146,9 +147,11 @@ void SomaFM::Library::soma_station_playlists_fetched(bool success)
 	SomaFM::Station station = m->station_map[m->requested_station];
 	QString cover_url;
 	Cover::Location cl = station.cover_location();
-	if(cl.has_search_urls()){
-		QStringList search_urls = cl.search_urls();
-		cover_url = search_urls.first();
+
+	if(cl.has_search_urls())
+	{
+		auto search_urls = cl.search_urls(false);
+		cover_url = search_urls.first().url;
 	}
 
 	for(MetaData& md : v_md){
@@ -207,9 +210,10 @@ void SomaFM::Library::soma_playlist_content_fetched(bool success)
 	SomaFM::Station station = m->station_map[m->requested_station];
 	Cover::Location cl = station.cover_location();
 	QString cover_url;
-	if(cl.has_search_urls()){
-		QStringList search_urls = cl.search_urls();
-		cover_url = search_urls.first();
+	if(cl.has_search_urls())
+	{
+		QList<Cover::Fetcher::FetchUrl> search_urls = cl.search_urls(false);
+		cover_url = search_urls.first().url;
 	}
 
 	for(auto it = v_md.begin(); it != v_md.end(); it++){

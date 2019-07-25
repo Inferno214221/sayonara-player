@@ -91,6 +91,7 @@
 #include "Utils/Language/Language.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/MetaData/MetaDataList.h"
+#include "Utils/MetaData/MetaDataSorting.h"
 
 #include "Database/Connector.h"
 #include "Database/Settings.h"
@@ -302,6 +303,8 @@ bool Application::init(const QStringList& files_to_play)
 
 	//connect(this, &Application::commitDataRequest, this, &Application::session_end_requested);
 
+	ListenSetting(Set::Lib_SortIgnoreArtistArticle, Application::ignore_artist_article_changed);
+
 	return true;
 }
 
@@ -450,6 +453,14 @@ void Application::remote_control_activated()
 	{
 		m->remote_control = new RemoteControl(this);
 	}
+}
+
+void Application::ignore_artist_article_changed()
+{
+	//MetaDataSorting::set_ignore_article();
+//	MetaDataList v_md;
+//	MetaDataSorting::sort_metadata(v_md, Library::SortOrder::TrackAlbumAsc);
+	MetaDataSorting::set_ignore_article(GetSetting(Set::Lib_SortIgnoreArtistArticle));
 }
 
 void Application::create_playlist()

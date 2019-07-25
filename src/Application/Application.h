@@ -52,6 +52,7 @@ private:
 
 private slots:
 	void remote_control_activated();
+	void ignore_artist_article_changed();
 	void session_end_requested(QSessionManager& manager);
 	void create_playlist();
 };

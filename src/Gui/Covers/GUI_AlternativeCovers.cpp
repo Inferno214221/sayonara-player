@@ -76,6 +76,8 @@ GUI_AlternativeCovers::GUI_AlternativeCovers(const Cover::Location& cl, bool sil
 	Gui::Dialog(parent)
 {
 	m = Pimpl::make<GUI_AlternativeCovers::Private>(cl, silent, this);
+
+	connect(m->cl_alternative, &AlternativeLookup::sig_coverfetchers_changed, this, &GUI_AlternativeCovers::reload_combobox);
 }
 
 GUI_AlternativeCovers::~GUI_AlternativeCovers()
@@ -138,7 +140,7 @@ void GUI_AlternativeCovers::init_ui()
 	ui->rb_auto_search->setChecked(true);
 	ui->le_search->setText( m->cl_alternative->cover_location().search_term() );
 
-	init_combobox();
+	reload_combobox();
 }
 
 
@@ -231,7 +233,7 @@ void GUI_AlternativeCovers::cover_found(const QPixmap& pm)
 
 void GUI_AlternativeCovers::servers_changed()
 {
-	init_combobox();
+	reload_combobox();
 }
 
 void GUI_AlternativeCovers::autostart_toggled(bool b)
@@ -242,7 +244,7 @@ void GUI_AlternativeCovers::autostart_toggled(bool b)
 void GUI_AlternativeCovers::rb_autosearch_toggled(bool b)
 {
 	if(b){
-		init_combobox();
+		reload_combobox();
 	}
 }
 
@@ -251,7 +253,7 @@ void GUI_AlternativeCovers::rb_textsearch_toggled(bool b)
 	ui->le_search->setEnabled(b);
 
 	if(b){
-		init_combobox();
+		reload_combobox();
 	}
 }
 
@@ -328,13 +330,19 @@ void GUI_AlternativeCovers::open_file_dialog()
 }
 
 
-void GUI_AlternativeCovers::init_combobox()
+void GUI_AlternativeCovers::reload_combobox()
 {
 	bool fulltext_search = ui->rb_text_search->isChecked();
 
-	ui->combo_search_fetchers->clear();
+	AlternativeLookup::SearchMode search_mode = AlternativeLookup::SearchMode::Default;
+	if(fulltext_search) {
+		search_mode = AlternativeLookup::SearchMode::Fulltext;
+	}
 
-	const QStringList coverfetchers = m->cl_alternative->get_activated_coverfetchers(fulltext_search);
+	ui->combo_search_fetchers->clear();
+	ui->combo_search_fetchers->addItem(Lang::get(Lang::All));
+
+	const QStringList coverfetchers = m->cl_alternative->active_coverfetchers(search_mode);
 	for(const QString& coverfetcher : coverfetchers)
 	{
 		ui->combo_search_fetchers->addItem(coverfetcher);

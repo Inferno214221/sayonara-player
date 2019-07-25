@@ -168,14 +168,14 @@ void CoverButton::cover_lookup_finished(bool success)
 	}
 
 	Cover::Lookup* lookup = static_cast<Cover::Lookup*>(sender());
-	m->source = lookup->source();
+	m->cover_source = lookup->source();
 }
 
 
 void CoverButton::alternative_cover_fetched(const Location& cl)
 {
 	m->hash = QString();
-	m->source = Cover::Source::Unknown;
+	m->cover_source = Cover::Source::Unknown;
 
 	if(!is_silent())
 	{
@@ -196,7 +196,7 @@ void CoverButton::alternative_cover_fetched(const Location& cl)
 
 void CoverButton::force_cover(const QPixmap& pm)
 {
-	m->source = Cover::Source::AudioFile;
+	m->cover_source = Cover::Source::AudioFile;
 	m->current_cover = pm;
 
 	refresh();

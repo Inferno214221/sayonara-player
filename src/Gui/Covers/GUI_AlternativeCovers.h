@@ -78,6 +78,7 @@ private slots:
 	void rb_textsearch_toggled(bool b);
 	void www_active_changed();
 
+
 public slots:
 	void start();
 	void stop();
@@ -85,9 +86,7 @@ public slots:
 private:
 	void init_ui();
 	void reset();
-
-	void init_combobox();
-
+	void reload_combobox();
 
 protected:
 	void showEvent(QShowEvent* e) override;

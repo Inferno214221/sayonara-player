@@ -17,7 +17,7 @@
    <item row="0" column="0">
     <widget class="QTabWidget" name="tab_widget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="tab_libraries">
       <attribute name="title">
@@ -203,7 +203,7 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="0">
+       <item row="2" column="0">
         <spacer name="verticalSpacer_5">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -215,6 +215,13 @@
           </size>
          </property>
         </spacer>
+       </item>
+       <item row="1" column="0">
+        <widget class="QCheckBox" name="cb_ignore_article">
+         <property name="text">
+          <string>Ignore English article &quot;The&quot; in artist name</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
