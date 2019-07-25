@@ -72,7 +72,7 @@ enum class SettingKey : unsigned short
 	Lib_CoverScaledPMCache,
 	Lib_GenreTree,
 	Lib_LastIndex,
-	Lib_AllLibraries,				// deprecated
+	Lib_AllLibraries,
 	Lib_UseViewClearButton,
 	Lib_ShowFilterExtBar,
 	Lib_SortIgnoreArtistArticle,

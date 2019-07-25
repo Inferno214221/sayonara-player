@@ -33,47 +33,60 @@
 
 #include "Utils/Pimpl.h"
 
-struct ServerTemplate;
-
-/**
- * @brief The LyricLookupThread class
- * @ingroup Lyrics
- */
-class LyricLookupThread :
-		public QObject
+namespace Lyrics
 {
-	Q_OBJECT
+	class Server;
 
-signals:
-	void sig_finished();
+	/**
+	 * @brief The LyricLookupThread class
+	 * @ingroup Lyrics
+	 */
+	class LookupThread :
+			public QObject
+	{
+		Q_OBJECT
+
+	signals:
+		void sig_finished();
+
+	public:
+		explicit LookupThread(QObject* parent=nullptr);
+		virtual	~LookupThread();
+
+		QString	lyric_data() const;
+		QString lyric_header() const;
+		QStringList servers() const;
+
+		void run(const QString& artist, const QString& title, int server_idx);
+
+		void stop();
+		bool has_error() const;
+
+	private:
+		PIMPL(LookupThread)
+
+		QString	convert_to_regex(const QString& str) const;
+		QString	parse_webpage(const QByteArray& raw, Server* server) const;
+
+		void init_server_list();
+
+		/**
+		 * @brief Calculate final server url out of server replacements, call policy
+		 * and so on
+		 * @param artist
+		 * @param song
+		 * @return
+		 */
+		QString	calc_server_url(QString artist, QString song);
+
+		void start_search(const QString& url);
+		void call_website(const QString& url);
 
 
-public:
-	explicit LyricLookupThread(QObject* parent=nullptr);
-	virtual	~LyricLookupThread();
-
-	QString	lyric_data() const;
-	QString lyric_header() const;
-	QStringList servers() const;
-
-	void run(const QString& artist, const QString& title, int server_idx);
-	void stop();
-	bool has_error() const;
-
-
-
-private:
-	PIMPL(LyricLookupThread)
-
-	QString	convert_to_regex(const QString& str) const;
-	QString	parse_webpage(const QByteArray& raw, const ServerTemplate& t) const;
-
-	void init_server_list();
-	QString	calc_server_url(QString artist, QString song);
-
-
-private slots:
-	void content_fetched();
-};
+	private slots:
+		void content_fetched();
+		void search_finished();
+	};
+}
 
 #endif /* LYRICLOOKUP_H_ */

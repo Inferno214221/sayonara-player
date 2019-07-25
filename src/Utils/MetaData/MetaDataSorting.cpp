@@ -154,7 +154,7 @@ bool MetaDataSorting::TracksByArtistAsc(const MetaData& md1, const MetaData& md2
 	QString n1 = md1.artist();
 	QString n2 = md2.artist();
 
-	if(!ignore_article)
+	if(ignore_article)
 	{
 		if(n1.startsWith("the ", Qt::CaseInsensitive)){
 			n1.remove(0, 4);
@@ -181,7 +181,7 @@ bool MetaDataSorting::TracksByArtistDesc(const MetaData& md1, const MetaData& md
 	QString n1 = md1.artist();
 	QString n2 = md2.artist();
 
-	if(!ignore_article)
+	if(ignore_article)
 	{
 		if(n1.startsWith("the ", Qt::CaseInsensitive)){
 			n1.remove(0, 4);
@@ -365,7 +365,7 @@ bool MetaDataSorting::ArtistByNameAsc(const Artist& artist1, const Artist& artis
 	QString n1 = artist1.name();
 	QString n2 = artist2.name();
 
-	if(!ignore_article)
+	if(ignore_article)
 	{
 		if(n1.startsWith("the ", Qt::CaseInsensitive)){
 			n1.remove(0, 4);
@@ -392,7 +392,7 @@ bool MetaDataSorting::ArtistByNameDesc(const Artist& artist1, const Artist& arti
 	QString n1 = artist1.name();
 	QString n2 = artist2.name();
 
-	if(!ignore_article)
+	if(ignore_article)
 	{
 		if(n1.startsWith("the ", Qt::CaseInsensitive)){
 			n1.remove(0, 4);

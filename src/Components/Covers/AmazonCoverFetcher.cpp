@@ -70,6 +70,7 @@ QString Cover::Fetcher::Amazon::identifier() const
 
 QString Cover::Fetcher::Amazon::artist_address(const QString& artist) const
 {
+	Q_UNUSED(artist)
 	return QString();
 }
 

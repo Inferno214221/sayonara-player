@@ -109,6 +109,7 @@ QStringList LastFM::calc_addresses_from_website(const QByteArray& website) const
 
 QString LastFM::artist_address(const QString& artist) const
 {
+	Q_UNUSED(artist)
 	QString str;
 	/*str = QString("http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist=" +
 						  QUrl::toPercentEncoding(artist) +

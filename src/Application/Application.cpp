@@ -457,9 +457,6 @@ void Application::remote_control_activated()
 
 void Application::ignore_artist_article_changed()
 {
-	//MetaDataSorting::set_ignore_article();
-//	MetaDataList v_md;
-//	MetaDataSorting::sort_metadata(v_md, Library::SortOrder::TrackAlbumAsc);
 	MetaDataSorting::set_ignore_article(GetSetting(Set::Lib_SortIgnoreArtistArticle));
 }
 

@@ -24,27 +24,55 @@
 #include <QString>
 #include <QMap>
 
-
-/**
- * @brief The ServerTemplate struct
- * @ingroup Lyrics
- */
-struct ServerTemplate
+namespace Lyrics
 {
-    QString display_str;
-    QString server_address;
-    QMap<QString, QString> replacements;
-    QString call_policy;
-    QMap<QString, QString> start_end_tag;
-    bool include_start_tag;
-    bool include_end_tag;
-    bool is_numeric;
-    bool to_lower;
-    QString error;
+	/**
+	 * @brief The ServerTemplate struct
+	 * @ingroup Lyrics
+	 */
+	class Server
+	{
+		public:
+			virtual QString name() const=0;
+			virtual QString address() const=0;
+			virtual QMap<QString, QString> replacements() const=0;
+			virtual QString call_policy() const=0;
+			virtual QMap<QString, QString> start_end_tag() const=0;
+			virtual bool is_start_tag_included() const=0;
+			virtual bool is_end_tag_included() const=0;
+			virtual bool is_numeric() const=0;
+			virtual bool is_lowercase() const=0;
+			virtual QString error_string() const=0;
 
-    void addReplacement(const QString& rep, const QString& rep_with);
-    void print_xml() const;
-    void print_json() const;
-};
+			virtual bool can_fetch_directly() const;
+			virtual bool can_search() const;
+
+			/**
+			 * @brief return the url to the search site
+			 * @param artist
+			 * @param title
+			 * @return
+			 */
+			virtual QString search_address(QString artist, QString title) const;
+
+			/**
+			 * @brief Parse the result page and return the real address
+			 * @param search_result website appearing after search was triggered
+			 * @return
+			 */
+			virtual QString parse_search_result(const QString& search_result);
+	};
+
+	class SearchableServer : public Server
+	{
+		public:
+			QString address() const;
+			QMap<QString, QString> replacements() const;
+			QString call_policy() const;
+			bool can_search() const;
+	};
+}
+
+
 
 #endif /* LYRICSERVER_H_ */

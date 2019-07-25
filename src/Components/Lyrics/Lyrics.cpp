@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "Lyrics.h"
 #include "LyricLookup.h"
 #include "Utils/MetaData/MetaData.h"
@@ -28,7 +26,9 @@
 
 #include <QStringList>
 
-struct Lyrics::Private
+using LyricsImpl=::Lyrics::Lyrics;
+
+struct LyricsImpl::Private
 {
 	QStringList servers;
 	MetaData md;
@@ -44,7 +44,7 @@ struct Lyrics::Private
 	{
 		is_valid = false;
 
-		LyricLookupThread* lyric_thread = new LyricLookupThread();
+		auto* lyric_thread = new ::Lyrics::LookupThread();
 		servers = lyric_thread->servers();
 		delete lyric_thread;
 	}
@@ -52,15 +52,15 @@ struct Lyrics::Private
 	void guess_artist_and_title();
 };
 
-Lyrics::Lyrics(QObject* parent) :
+LyricsImpl::Lyrics(QObject* parent) :
 	QObject(parent)
 {
 	m = Pimpl::make<Private>();
 }
 
-Lyrics::~Lyrics() {}
+LyricsImpl::~Lyrics() {}
 
-bool Lyrics::fetch_lyrics(const QString& artist, const QString& title, int server_index)
+bool LyricsImpl::fetch_lyrics(const QString& artist, const QString& title, int server_index)
 {
 	if(artist.isEmpty() || title.isEmpty()) {
 		return false;
@@ -70,14 +70,14 @@ bool Lyrics::fetch_lyrics(const QString& artist, const QString& title, int serve
 		return false;
 	}
 
-	LyricLookupThread* lyric_thread = new LyricLookupThread(this);
-	connect(lyric_thread, &LyricLookupThread::sig_finished, this, &Lyrics::lyrics_fetched);
+	auto* lyric_thread = new ::Lyrics::LookupThread(this);
+	connect(lyric_thread, &::Lyrics::LookupThread::sig_finished, this, &LyricsImpl::lyrics_fetched);
 
 	lyric_thread->run(artist, title, server_index);
 	return true;
 }
 
-bool Lyrics::save_lyrics(const QString& plain_text)
+bool LyricsImpl::save_lyrics(const QString& plain_text)
 {
 	if(plain_text.isEmpty()){
 		return false;
@@ -96,12 +96,12 @@ bool Lyrics::save_lyrics(const QString& plain_text)
 	return success;
 }
 
-QStringList Lyrics::servers() const
+QStringList LyricsImpl::servers() const
 {
 	return m->servers;
 }
 
-void Lyrics::set_metadata(const MetaData& md)
+void LyricsImpl::set_metadata(const MetaData& md)
 {
 	m->md = md;
 	m->guess_artist_and_title();
@@ -116,32 +116,32 @@ void Lyrics::set_metadata(const MetaData& md)
 	}
 }
 
-QString Lyrics::artist() const
+QString LyricsImpl::artist() const
 {
 	return m->artist;
 }
 
-QString Lyrics::title() const
+QString LyricsImpl::title() const
 {
 	return m->title;
 }
 
-QString Lyrics::lyric_header() const
+QString LyricsImpl::lyric_header() const
 {
 	return m->lyric_header;
 }
 
-QString Lyrics::local_lyric_header() const
+QString LyricsImpl::local_lyric_header() const
 {
 	return "<b>" + artist() + " - " + title() + "</b>";
 }
 
-QString Lyrics::lyrics() const
+QString LyricsImpl::lyrics() const
 {
 	return m->lyrics.trimmed();
 }
 
-QString Lyrics::local_lyrics() const
+QString LyricsImpl::local_lyrics() const
 {
 	if(is_lyric_tag_available()){
 		return m->lyric_tag_content.trimmed();
@@ -150,24 +150,24 @@ QString Lyrics::local_lyrics() const
 	return QString();
 }
 
-bool Lyrics::is_lyric_valid() const
+bool LyricsImpl::is_lyric_valid() const
 {
 	return m->is_valid;
 }
 
-bool Lyrics::is_lyric_tag_available() const
+bool LyricsImpl::is_lyric_tag_available() const
 {
 	return (!m->lyric_tag_content.isEmpty());
 }
 
-bool Lyrics::is_lyric_tag_supported() const
+bool LyricsImpl::is_lyric_tag_supported() const
 {
 	return Tagging::Lyrics::is_lyrics_supported(m->md.filepath());
 }
 
-void Lyrics::lyrics_fetched()
+void LyricsImpl::lyrics_fetched()
 {
-	LyricLookupThread* lyric_thread = static_cast<LyricLookupThread*>(sender());
+	auto* lyric_thread = static_cast<::Lyrics::LookupThread*>(sender());
 
 	m->lyrics = lyric_thread->lyric_data();
 	m->lyric_header = lyric_thread->lyric_header();
@@ -179,7 +179,7 @@ void Lyrics::lyrics_fetched()
 }
 
 
-void Lyrics::Private::guess_artist_and_title()
+void LyricsImpl::Private::guess_artist_and_title()
 {
 	bool guessed = false;
 

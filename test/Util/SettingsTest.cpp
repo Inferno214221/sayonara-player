@@ -52,17 +52,6 @@ void SettingsTest::test_registry()
 	db->settings_connector()->load_setting("version", db_version);
 	db->settings_connector()->load_settings(keys);
 
-	std::sort(keys.begin(), keys.end());
-	for(int i=0; i<keys.size(); i++)
-	{
-		int key = static_cast<int>(keys.at(i));
-		if(key != i)
-		{
-			qDebug() << " key, i " << key << " " << i;
-		}
-		QVERIFY(key == i);
-	}
-
 	{
 		int old_db_version = db->old_db_version();
 		int max_db_version = DB::Connector::get_max_db_version();

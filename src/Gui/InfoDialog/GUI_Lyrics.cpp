@@ -42,17 +42,15 @@ using Gui::Completer;
 
 struct GUI_Lyrics::Private
 {
-	Lyrics*         lyrics=nullptr;
+	Lyrics::Lyrics*	lyrics=nullptr;
 	ProgressBar*    loading_bar=nullptr;
 	qreal           font_size;
 	qreal           initial_font_size;
 
 	Private(QObject* parent)
 	{
-		lyrics = new Lyrics(parent);
+		lyrics = new Lyrics::Lyrics(parent);
 	}
-
-	~Private() {}
 };
 
 GUI_Lyrics::GUI_Lyrics(QWidget *parent) :
@@ -117,8 +115,9 @@ void GUI_Lyrics::init()
 	});
 
 	connect(ui->btn_save_lyrics, &QPushButton::clicked, this, &GUI_Lyrics::save_lyrics_clicked);
-	connect(m->lyrics, &Lyrics::sig_lyrics_fetched, this, &GUI_Lyrics::lyrics_fetched);
+	connect(m->lyrics, &Lyrics::Lyrics::sig_lyrics_fetched, this, &GUI_Lyrics::lyrics_fetched);
 
+	setup_sources();
 	prepare_lyrics();
 
 	new QShortcut(QKeySequence(QKeySequence::ZoomIn), this, SLOT(zoom_in()), nullptr, Qt::WidgetWithChildrenShortcut);
@@ -154,13 +153,14 @@ void GUI_Lyrics::prepare_lyrics()
 	ui->te_lyrics->clear();
 
 	int current_server_index = ui->combo_servers->currentData().toInt();
-	if(current_server_index < 0){
+	if(current_server_index < 0) {
 		show_local_lyrics();
 	}
 
 	else
 	{
-		bool running = m->lyrics->fetch_lyrics(
+		bool running = m->lyrics->fetch_lyrics
+		(
 					ui->le_artist->text(),
 					ui->le_title->text(),
 					current_server_index
@@ -207,7 +207,7 @@ void GUI_Lyrics::lyrics_fetched()
 	show_lyrics(m->lyrics->lyrics(), m->lyrics->lyric_header(), true);
 }
 
-void GUI_Lyrics::set_metadata(const MetaData &md)
+void GUI_Lyrics::set_metadata(const MetaData& md)
 {
 	m->lyrics->set_metadata(md);
 
