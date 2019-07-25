@@ -90,6 +90,9 @@ namespace MetaDataSorting
 	void sort_metadata(MetaDataList& v_md, Library::SortOrder);
 	void sort_albums(AlbumList& v_md, Library::SortOrder);
 	void sort_artists(ArtistList& v_md, Library::SortOrder);
+
+	void set_ignore_article(bool b);
 }
+
 
 #endif // METADATASORTING_H

@@ -61,7 +61,7 @@ namespace Fetcher
 			 * @brief get name of CoverFetcherInterface like e.g. Discogs
 			 * @return
 			 */
-			virtual QString keyword() const=0;
+			virtual QString identifier() const=0;
 
 			/**
 			 * @brief Get the artist search url.

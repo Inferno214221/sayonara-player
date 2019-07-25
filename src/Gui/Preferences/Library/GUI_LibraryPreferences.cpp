@@ -93,6 +93,7 @@ bool GUI_LibraryPreferences::commit()
 	SetSetting(Set::Lib_DD_DoNothing, ui->rb_dd_do_nothing->isChecked());
 	SetSetting(Set::Lib_DD_PlayIfStoppedAndEmpty, ui->rb_dd_start_if_stopped_and_empty->isChecked());
 	SetSetting(Set::Lib_UseViewClearButton, ui->cb_show_clear_buttons->isChecked());
+	SetSetting(Set::Lib_SortIgnoreArtistArticle, ui->cb_ignore_article->isChecked());
 
 	return m->model->commit();
 }
@@ -105,6 +106,7 @@ void GUI_LibraryPreferences::revert()
 	ui->rb_dd_do_nothing->setChecked(GetSetting(Set::Lib_DD_DoNothing));
 	ui->rb_dd_start_if_stopped_and_empty->setChecked(GetSetting(Set::Lib_DD_PlayIfStoppedAndEmpty));
 	ui->cb_show_clear_buttons->setChecked(GetSetting(Set::Lib_UseViewClearButton));
+	ui->cb_ignore_article->setChecked(GetSetting(Set::Lib_SortIgnoreArtistArticle));
 
 	m->model->reset();
 }

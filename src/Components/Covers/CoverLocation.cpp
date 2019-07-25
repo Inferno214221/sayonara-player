@@ -45,13 +45,17 @@ using Cover::Location;
 using namespace Cover::Fetcher;
 using Cover::StringMap;
 
+using FetchManager=Cover::Fetcher::Manager;
+using Cover::Fetcher::FetchUrl;
+using FetchUrlList=QList<FetchUrl>;
+
 namespace File=::Util::File;
 
 struct Location::Private
 {
 	QString			search_term;		// Term provided to search engine
-	QStringList		search_urls;		// Search url where to fetch covers
-	QStringList		search_term_urls;	// Search urls where to fetch cover when using freetext search
+	FetchUrlList	search_urls;		// Search url where to fetch covers
+	FetchUrlList	search_term_urls;	// Search urls where to fetch cover when using freetext search
 	QStringList		local_path_hints;
 	StringMap		all_search_urls;	// key = identifier of coverfetcher, value = search url
 	QString			cover_path;			// cover_path path, in .Sayonara, where cover is stored. Ignored if local_paths are not empty
@@ -145,13 +149,19 @@ Location& Location::operator=(const Location& other)
 }
 
 
+QString Location::invalid_path()
+{
+	return invalid_location().cover_path();
+}
+
+
 Location Location::invalid_location()
 {
 	Location cl;
 
 	cl.set_valid(false);
 	cl.set_cover_path(::Util::share_path("logo.png"));
-	cl.set_search_urls(QStringList());
+	cl.set_search_urls(FetchUrlList());
 	cl.set_search_term(QString());
 	cl.set_identifier("Invalid location");
 	cl.set_audio_file_source(QString(), QString());
@@ -164,7 +174,7 @@ Location Location::invalid_location()
 bool Location::is_invalid(const QString& cover_path)
 {
 	QString path1 = File::clean_filename(cover_path);
-	QString path2 = invalid_location().preferred_path();
+	QString path2 = invalid_path();
 
 	return (path1 == path2);
 }
@@ -188,7 +198,7 @@ Location Location::cover_location(const QString& album_name, const QString& arti
 	ret.set_cover_path(cover_path);
 	ret.set_hash(cover_token);
 	ret.set_search_term(artist_name + " " + album_name);
-	ret.set_search_urls(cfm->album_addresses(artist_name, album_name));
+	ret.set_search_urls(cfm->album_addresses(artist_name, album_name, true));
 	ret.set_identifier("CL:By album: " + album_name + " by " + artist_name);
 
 	return ret;
@@ -228,7 +238,8 @@ Location Location::xcover_location(const Album& album)
 
 		if(!album.cover_download_url().isEmpty())
 		{
-			cl.set_search_urls({album.cover_download_url()});
+			FetchUrl url(true, "Direct", album.cover_download_url());
+			cl.set_search_urls({url});
 		}
 	}
 
@@ -253,7 +264,8 @@ Location Location::cover_location(const Artist& artist)
 
 	if(!artist.cover_download_url().trimmed().isEmpty())
 	{
-		cl.set_search_urls({ artist.cover_download_url() });
+		FetchUrl url(true, "Direct", artist.cover_download_url());
+		cl.set_search_urls({url});
 	}
 
 	cl.set_search_term(artist.name());
@@ -277,7 +289,7 @@ Location Location::cover_location(const QString& artist)
 
 	ret.set_valid(true);
 	ret.set_cover_path(cover_path);
-	ret.set_search_urls(cfm->artist_addresses(artist));
+	ret.set_search_urls(cfm->artist_addresses(artist, true));
 	ret.set_search_term(artist);
 	ret.set_identifier("CL:By artist name: " + artist);
 	ret.set_hash(cover_token);
@@ -334,8 +346,10 @@ Location Location::cover_location(const MetaData& md, bool check_for_coverart)
 		cl.set_audio_file_source(md.filepath(), cl.cover_path());
 	}
 
-	if(cl.search_urls().isEmpty()){
-		cl.set_search_urls({md.cover_download_url()});
+	if(cl.search_urls(true).isEmpty())
+	{
+		FetchUrl url(true, "Direct", md.cover_download_url());
+		cl.set_search_urls({url});
 	}
 
 	cl.set_local_path_hints(QStringList{md.filepath()});
@@ -351,7 +365,8 @@ Location Location::cover_location(const QUrl& url, const QString& target_path)
 
 	cl.set_valid(true);
 	cl.set_cover_path(target_path);
-	cl.set_search_urls({url.toString()});
+	cl.set_search_urls({FetchUrl(true, "Direct", url.toString())});
+
 	cl.set_identifier("CL:By direct download url: " + url.toString());
 
 	return cl;
@@ -362,11 +377,10 @@ bool Location::valid() const
 	return m->valid;
 }
 
-
 QString Location::preferred_path() const
 {
 	if(!m->valid){
-		return invalid_location().cover_path();
+		return invalid_path();
 	}
 
 	// first search for cover in track
@@ -393,7 +407,17 @@ QString Location::preferred_path() const
 		return local_path();
 	}
 
-	return invalid_location().preferred_path();
+	return invalid_path();
+}
+
+QString Location::alternative_path() const
+{
+	QString path = cover_path();
+	QString dir, filename;
+	Util::File::split_filename(path, dir, filename);
+	filename.prepend("alt_");
+
+	return dir + QDir::separator() + filename;
 }
 
 
@@ -402,21 +426,36 @@ QString Location::identifer() const
 	return m->identifier;
 }
 
-const QStringList& Location::search_urls() const
+FetchUrlList Location::search_urls(bool also_inactive) const
 {
+	FetchUrlList container;
 	if(m->freetext_search) {
-		return m->search_term_urls;
+		container = m->search_term_urls;
 	}
 
 	else {
-		return m->search_urls;
+		container = m->search_urls;
 	}
+
+	FetchUrlList ret;
+	for(FetchUrl url : container)
+	{
+		bool active = Manager::instance()->is_active(url.identifier);
+		url.active = active;
+
+		if(active || also_inactive)
+		{
+			ret << url;
+		}
+	}
+
+	return ret;
 }
 
-QString Location::search_url(int idx) const
+FetchUrl Location::search_url(int idx) const
 {
 	if(!Util::between(idx, m->search_urls)){
-		return QString();
+		return FetchUrl();
 	}
 
 	return m->search_urls.at(idx);
@@ -438,7 +477,7 @@ void Location::set_search_term(const QString& search_term)
 	Fetcher::Manager* cfm = Fetcher::Manager::instance();
 
 	m->search_term = search_term;
-	m->search_term_urls = cfm->search_addresses(search_term);
+	m->search_term_urls = cfm->search_addresses(search_term, true);
 }
 
 void Location::set_search_term(const QString& search_term,
@@ -447,10 +486,10 @@ void Location::set_search_term(const QString& search_term,
 	Fetcher::Manager* cfm = Fetcher::Manager::instance();
 
 	m->search_term = search_term;
-	m->search_term_urls = cfm->search_addresses(search_term, cover_fetcher_identifier);
+	m->search_term_urls = cfm->search_addresses(search_term, cover_fetcher_identifier, true);
 }
 
-void Location::set_search_urls(const QStringList &urls)
+void Location::set_search_urls(const FetchUrlList& urls)
 {
 	m->search_urls = urls;
 }
@@ -464,6 +503,7 @@ bool Location::is_freetext_search_enabled() const
 {
 	return m->freetext_search;
 }
+
 
 bool Location::has_audio_file_source() const
 {
@@ -616,7 +656,7 @@ QString Location::to_string() const
 {
 	return	"Cover Location: Valid? " + QString::number(m->valid) + ", "
 //			"Preferred Path: " + preferred_path() + ", "
-			"Search Urls: " + search_urls().join(',') + ", "
+//			"Search Urls: " + search_urls().join(',') + ", "
 			"Search Term: " + search_term() + ", "
 											  "Identifier: " + identifer();
 }

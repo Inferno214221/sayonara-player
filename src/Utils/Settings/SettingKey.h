@@ -35,11 +35,9 @@ enum class SettingKey : unsigned short
 	LFM_Corrections,
 	LFM_ShowErrors,
 	LFM_SessionKey,
-
 	Eq_Last,
 	Eq_List,
 	Eq_Gauss,
-
 	Lib_Show,
 	Lib_Path,
 	Lib_ColsTitle,
@@ -74,14 +72,13 @@ enum class SettingKey : unsigned short
 	Lib_CoverScaledPMCache,
 	Lib_GenreTree,
 	Lib_LastIndex,
-	Lib_AllLibraries,				// deprecated
+	Lib_AllLibraries,
 	Lib_UseViewClearButton,
 	Lib_ShowFilterExtBar,
-
+	Lib_SortIgnoreArtistArticle,
 	Dir_ShowTracks,
 	Dir_SplitterDirFile,
 	Dir_SplitterTracks,
-
 	Player_Version,
 	Player_Language,
 	Player_FontName,
@@ -100,11 +97,9 @@ enum class SettingKey : unsigned short
 	Player_514Fix,
 	Player_NotifyNewVersion,
 	Player_SplitterState,
-	// Player_Shortcuts,  deprecated
 	Player_SplitterControls,
 	Player_PrivId,
 	Player_PublicId,
-
 	PL_Playlist,
 	PL_LoadSavedPlaylists,
 	PL_LoadTemporaryPlaylists,
@@ -122,11 +117,9 @@ enum class SettingKey : unsigned short
 	PL_RememberTrackAfterStop,
 	PL_ShowCovers,
 	PL_ShowRating,
-
 	Notification_Show,
 	Notification_Timeout,
 	Notification_Name,
-
 	Engine_Name,
 	Engine_Vol,
 	Engine_Mute,
@@ -148,35 +141,27 @@ enum class SettingKey : unsigned short
 	Engine_SpeedActive,
 	Engine_Sink,
 	Engine_BufferSizeMS,
-
 	Engine_SR_Active,
 	Engine_SR_Warning,
 	Engine_SR_Path,
 	Engine_SR_SessionPath,
 	Engine_SR_SessionPathTemplate,
 	Engine_SR_AutoRecord,
-
 	Spectrum_Style,
 	Level_Style,
-
 	Broadcast_Active,
 	Broadcast_Prompt,
 	Broadcast_Port,
-
 	MP3enc_found,
 	Pitch_found,
 	Player_Quit,
-
 	Remote_Active,
 	Remote_Port,
-
 	Stream_NewTab,
 	Stream_ShowHistory,
 	Stream_SearchWindowSize,
-
 	Lyrics_Zoom,
 	Lyrics_Server,
-
 	Cover_Server,
 	Cover_FetchFromWWW,
 	Cover_SaveToDB,
@@ -186,17 +171,14 @@ enum class SettingKey : unsigned short
 	Cover_TemplatePath,
 	Icon_Theme,
 	Icon_ForceInDarkTheme,
-
 	Proxy_Active,
 	Proxy_Username,
 	Proxy_Password,
 	Proxy_Hostname,
 	Proxy_Port,
 	Proxy_SavePw,
-
 	Logger_Level,
 	Settings_Revision,
-
 	Num_Setting_Keys
 };
 
@@ -298,6 +280,7 @@ class SettingIdentifier
 	INST(int,				Lib_LastIndex)				/* Last selected library */
 	INST(bool,				Lib_UseViewClearButton)	/* Show clear button in single view */
 	INST(bool,				Lib_ShowFilterExtBar) /* Show the file extension filter bar in track view */
+	INST(bool,				Lib_SortIgnoreArtistArticle) /* ignore article for artist */
 
 	INST(bool,				Dir_ShowTracks)			/* show tracks panel in directory view */
 	INST(QByteArray,		Dir_SplitterDirFile)		/* Splitter state between dirs and files */

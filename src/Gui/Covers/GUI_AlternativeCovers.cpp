@@ -57,25 +57,27 @@ struct GUI_AlternativeCovers::Private
 
 	ProgressBar*					loading_bar=nullptr;
 
-	Private(const Cover::Location& cl, QObject* parent)
+	Private(const Cover::Location& cl, bool silent, QObject* parent)
 	{
-		cl_alternative = new AlternativeLookup(cl, 20, parent);
+		cl_alternative = new AlternativeLookup(cl, 20, silent, parent);
 	}
 
 	~Private()
 	{
-		if(cl_alternative){
+		if(cl_alternative)
+		{
 			cl_alternative->stop();
+			cl_alternative->reset();
 		}
 	}
 };
 
-
-GUI_AlternativeCovers::GUI_AlternativeCovers(const Cover::Location& cl, QWidget* parent) :
-	Dialog(parent),
-	ui(nullptr)
+GUI_AlternativeCovers::GUI_AlternativeCovers(const Cover::Location& cl, bool silent, QWidget* parent) :
+	Gui::Dialog(parent)
 {
-	m = Pimpl::make<GUI_AlternativeCovers::Private>(cl, this);
+	m = Pimpl::make<GUI_AlternativeCovers::Private>(cl, silent, this);
+
+	connect(m->cl_alternative, &AlternativeLookup::sig_coverfetchers_changed, this, &GUI_AlternativeCovers::reload_combobox);
 }
 
 
@@ -85,6 +87,7 @@ GUI_AlternativeCovers::~GUI_AlternativeCovers()
 
 	delete ui; ui=nullptr;
 }
+
 
 void GUI_AlternativeCovers::init_ui()
 {
@@ -110,11 +113,15 @@ void GUI_AlternativeCovers::init_ui()
 		}
 
 		ui->cb_autostart->setChecked(GetSetting(Set::Cover_StartSearch));
-		ui->cb_save_to_library->setChecked(GetSetting(Set::Cover_SaveToLibrary));
+
+		bool is_silent = m->cl_alternative->is_silent();
+		ui->cb_save_to_library->setChecked(GetSetting(Set::Cover_SaveToLibrary) && !is_silent);
+		ui->cb_save_to_library->setEnabled(!is_silent);
 
 		connect(ui->btn_ok, &QPushButton::clicked, this, &GUI_AlternativeCovers::ok_clicked);
 		connect(ui->btn_apply, &QPushButton::clicked, this, &GUI_AlternativeCovers::apply_clicked);
-		connect(ui->btn_search, &QPushButton::clicked, this, &GUI_AlternativeCovers::search_clicked);
+		connect(ui->btn_search, &QPushButton::clicked, this, &GUI_AlternativeCovers::start);
+		connect(ui->btn_stop_search, &QPushButton::clicked, this, &GUI_AlternativeCovers::stop);
 		connect(ui->tv_images, &QTableView::pressed, this, &GUI_AlternativeCovers::cover_pressed);
 		connect(ui->btn_file, &QPushButton::clicked, this, &GUI_AlternativeCovers::open_file_dialog);
 		connect(ui->btn_close, &QPushButton::clicked, this, &Dialog::close);
@@ -140,7 +147,7 @@ void GUI_AlternativeCovers::init_ui()
 	ui->le_search->setText( cl.search_term() );
 
 	init_save_to_library();
-	init_combobox();
+	reload_combobox();
 }
 
 
@@ -150,7 +157,7 @@ void GUI_AlternativeCovers::set_cover_location(const Cover::Location& cl)
 }
 
 
-void GUI_AlternativeCovers::connect_and_start()
+void GUI_AlternativeCovers::start()
 {
 	this->reset();
 
@@ -184,6 +191,10 @@ void GUI_AlternativeCovers::connect_and_start()
 	this->show();
 }
 
+void GUI_AlternativeCovers::stop()
+{
+	m->cl_alternative->stop();
+}
 
 void GUI_AlternativeCovers::ok_clicked()
 {
@@ -213,7 +224,8 @@ void GUI_AlternativeCovers::lookup_started()
 {
 	m->loading_bar->show();
 
-	ui->btn_search->setText(Lang::get(Lang::Stop));
+	ui->btn_search->setVisible(false);
+	ui->btn_stop_search->setVisible(true);
 }
 
 void GUI_AlternativeCovers::lookup_finished(bool success)
@@ -222,7 +234,8 @@ void GUI_AlternativeCovers::lookup_finished(bool success)
 
 	m->loading_bar->hide();
 
-	ui->btn_search->setText(Lang::get(Lang::SearchVerb));
+	ui->btn_search->setVisible(true);
+	ui->btn_stop_search->setVisible(false);
 }
 
 void GUI_AlternativeCovers::cover_found(const QPixmap& pm)
@@ -236,7 +249,7 @@ void GUI_AlternativeCovers::cover_found(const QPixmap& pm)
 
 void GUI_AlternativeCovers::servers_changed()
 {
-	init_combobox();
+	reload_combobox();
 }
 
 void GUI_AlternativeCovers::autostart_toggled(bool b)
@@ -247,7 +260,7 @@ void GUI_AlternativeCovers::autostart_toggled(bool b)
 void GUI_AlternativeCovers::rb_autosearch_toggled(bool b)
 {
 	if(b){
-		init_combobox();
+		reload_combobox();
 	}
 }
 
@@ -256,7 +269,7 @@ void GUI_AlternativeCovers::rb_textsearch_toggled(bool b)
 	ui->le_search->setEnabled(b);
 
 	if(b){
-		init_combobox();
+		reload_combobox();
 	}
 }
 
@@ -293,7 +306,8 @@ void GUI_AlternativeCovers::reset()
 	{
 		ui->btn_ok->setEnabled(false);
 		ui->btn_apply->setEnabled(false);
-		ui->btn_search->setText(Lang::get(Lang::Stop));
+		ui->btn_search->setVisible(false);
+		ui->btn_stop_search->setVisible(true);
 		ui->lab_status->clear();
 
 		m->model->reset();
@@ -333,13 +347,19 @@ void GUI_AlternativeCovers::open_file_dialog()
 }
 
 
-void GUI_AlternativeCovers::init_combobox()
+void GUI_AlternativeCovers::reload_combobox()
 {
 	bool fulltext_search = ui->rb_text_search->isChecked();
 
-	ui->combo_search_fetchers->clear();
+	AlternativeLookup::SearchMode search_mode = AlternativeLookup::SearchMode::Default;
+	if(fulltext_search) {
+		search_mode = AlternativeLookup::SearchMode::Fulltext;
+	}
 
-	const QStringList coverfetchers = m->cl_alternative->get_activated_coverfetchers(fulltext_search);
+	ui->combo_search_fetchers->clear();
+	ui->combo_search_fetchers->addItem(Lang::get(Lang::All));
+
+	const QStringList coverfetchers = m->cl_alternative->active_coverfetchers(search_mode);
 	for(const QString& coverfetcher : coverfetchers)
 	{
 		ui->combo_search_fetchers->addItem(coverfetcher);
@@ -374,13 +394,11 @@ void GUI_AlternativeCovers::language_changed()
 
 	init_save_to_library();
 
-	if(m->cl_alternative->is_running()){
-		ui->btn_search->setText(Lang::get(Lang::Stop));
-	}
+	ui->btn_search->setText(Lang::get(Lang::SearchVerb));
+	ui->btn_stop_search->setText(Lang::get(Lang::Stop));
 
-	else {
-		ui->btn_search->setText(Lang::get(Lang::SearchVerb));
-	}
+	ui->btn_search->setVisible(!m->cl_alternative->is_running());
+	ui->btn_stop_search->setVisible(m->cl_alternative->is_running());
 }
 
 void GUI_AlternativeCovers::showEvent(QShowEvent* e)
@@ -390,7 +408,7 @@ void GUI_AlternativeCovers::showEvent(QShowEvent* e)
 	Gui::Dialog::showEvent(e);
 	if(GetSetting(Set::Cover_StartSearch) && GetSetting(Set::Cover_FetchFromWWW))
 	{
-		connect_and_start();
+		start();
 	}
 }
 
@@ -412,10 +430,4 @@ void GUI_AlternativeCovers::resizeEvent(QResizeEvent *e)
 		m->loading_bar->hide();
 		m->loading_bar->show();
 	}
-}
-
-void GUI_AlternativeCovers::closeEvent(QCloseEvent *e)
-{
-	m->cl_alternative->reset();
-	Dialog::closeEvent(e);
 }

@@ -145,7 +145,7 @@ int Google::estimated_size() const
 }
 
 
-QString Google::keyword() const
+QString Google::identifier() const
 {
 	// DO NOT EDIT THAT! It's also used in CoverFetchManager
 	return "google";

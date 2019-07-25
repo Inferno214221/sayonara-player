@@ -21,12 +21,12 @@
 #include "GUI_TagEdit.h"
 #include "TagFromPath.h"
 #include "TagLineEdit.h"
+#include "GUI_CoverEdit.h"
 
 #include "Gui/TagEdit/ui_GUI_TagEdit.h"
 
 #include "Components/Tagging/Expression.h"
 #include "Components/Tagging/Editor.h"
-#include "Components/Covers/CoverLocation.h"
 
 #include "Gui/Utils/Delegates/ComboBoxDelegate.h"
 #include "Gui/Utils/Widgets/Completer.h"
@@ -37,7 +37,6 @@
 #include "Utils/FileUtils.h"
 #include "Utils/Message/Message.h"
 #include "Utils/Tagging/Tagging.h"
-#include "Utils/Tagging/TaggingCover.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/MetaData/Album.h"
@@ -48,20 +47,18 @@
 #include "Database/Connector.h"
 #include "Database/LibraryDatabase.h"
 
-#include <QMap>
 #include <QStringList>
 #include <QPixmap>
 #include <QFileInfo>
-
 
 using namespace Tagging;
 
 struct GUI_TagEdit::Private
 {
-	GUI_TagFromPath*	ui_tag_from_path=nullptr;
 	Editor*				tag_edit=nullptr;
+	GUI_TagFromPath*	ui_tag_from_path=nullptr;
+	GUI_CoverEdit*		ui_cover_edit=nullptr;
 
-	QMap<int, QString>	cover_path_map;
 	int					cur_idx;
 };
 
@@ -74,13 +71,15 @@ GUI_TagEdit::GUI_TagEdit(QWidget* parent) :
 	m = Pimpl::make<Private>();
 	m->tag_edit = new Tagging::Editor(this);
 	m->ui_tag_from_path = new GUI_TagFromPath(ui->tab_from_path);
+	m->ui_cover_edit = new GUI_CoverEdit(m->tag_edit, ui->tab_cover);
+
 	ui->tab_from_path->layout()->addWidget(m->ui_tag_from_path);
+	ui->tab_cover->layout()->addWidget(m->ui_cover_edit);
 
 	ui->tab_widget->setCurrentIndex(0);
 
 	connect(ui->btn_next, &QPushButton::clicked, this, &GUI_TagEdit::next_button_clicked);
 	connect(ui->btn_prev, &QPushButton::clicked, this, &GUI_TagEdit::prev_button_clicked);
-	connect(ui->cb_replace, &QCheckBox::toggled, this, &GUI_TagEdit::cb_replace_toggled);
 
 	connect(ui->cb_album_all, &QCheckBox::toggled, ui->le_album, &QWidget::setDisabled);
 	connect(ui->cb_artist_all, &QCheckBox::toggled, ui->le_artist, &QWidget::setDisabled);
@@ -91,8 +90,6 @@ GUI_TagEdit::GUI_TagEdit(QWidget* parent) :
 	connect(ui->cb_rating_all, &QCheckBox::toggled, ui->lab_rating, &QWidget::setDisabled);
 	connect(ui->cb_comment_all, &QCheckBox::toggled, ui->te_comment, &QWidget::setDisabled);
 
-	connect(ui->cb_cover_all, &QCheckBox::toggled, this, &GUI_TagEdit::cover_all_changed);
-
 	connect(ui->btn_save, &QPushButton::clicked, this, &GUI_TagEdit::commit);
 	connect(ui->btn_undo, &QPushButton::clicked, this, &GUI_TagEdit::undo_clicked);
 	connect(ui->btn_undo_all, &QPushButton::clicked, this, &GUI_TagEdit::undo_all_clicked);
@@ -102,7 +99,6 @@ GUI_TagEdit::GUI_TagEdit(QWidget* parent) :
 	connect(m->tag_edit, &Editor::sig_metadata_received, this, &GUI_TagEdit::metadata_changed);
 	connect(m->tag_edit, &Editor::finished, this, &GUI_TagEdit::commit_finished);
 
-	connect(ui->btn_replacement, &QPushButton::clicked, ui->btn_cover_replacement, &QPushButton::click);
 	connect(ui->btn_load_entire_album, &QPushButton::clicked, this, &GUI_TagEdit::load_entire_album);
 
 	connect(m->ui_tag_from_path, &GUI_TagFromPath::sig_apply, this, &GUI_TagEdit::apply_tag_from_path);
@@ -111,8 +107,7 @@ GUI_TagEdit::GUI_TagEdit(QWidget* parent) :
 	metadata_changed(m->tag_edit->metadata());
 }
 
-
-GUI_TagEdit::~GUI_TagEdit() {}
+GUI_TagEdit::~GUI_TagEdit() = default;
 
 static void set_all_text(QCheckBox* label, int n)
 {
@@ -143,15 +138,11 @@ void GUI_TagEdit::language_changed()
 	set_all_text(ui->cb_year_all, m->tag_edit->count());
 	set_all_text(ui->cb_discnumber_all, m->tag_edit->count());
 	set_all_text(ui->cb_rating_all, m->tag_edit->count());
-	set_all_text(ui->cb_cover_all, m->tag_edit->count());
 	set_all_text(ui->cb_comment_all, m->tag_edit->count());
 
 	ui->btn_undo->setText(Lang::get(Lang::Undo));
 	ui->btn_close->setText(Lang::get(Lang::Close));
 	ui->btn_save->setText(Lang::get(Lang::Save));
-
-	ui->btn_replacement->setText(Lang::get(Lang::SearchVerb));
-	ui->lab_replacement->setText(Lang::get(Lang::Replace));
 }
 
 void GUI_TagEdit::commit_finished()
@@ -189,7 +180,6 @@ void GUI_TagEdit::metadata_changed(const MetaDataList& md)
 	reset();
 	language_changed();
 
-
 	QStringList filepaths;
 	const MetaDataList& v_md = m->tag_edit->metadata();
 	for(const MetaData& md : v_md)
@@ -199,11 +189,9 @@ void GUI_TagEdit::metadata_changed(const MetaDataList& md)
 
 	ui->btn_load_entire_album->setVisible(m->tag_edit->can_load_entire_album());
 
-	m->cur_idx = 0;
+	set_current_index(0);
 	refresh_current_track();
 }
-
-
 
 void GUI_TagEdit::apply_tag_from_path()
 {
@@ -266,11 +254,17 @@ bool GUI_TagEdit::check_idx(int idx) const
 	return Util::between(idx, m->tag_edit->count());
 }
 
+void GUI_TagEdit::set_current_index(int index)
+{
+	m->cur_idx = index;
+	m->ui_cover_edit->set_current_index(index);
+}
+
 void GUI_TagEdit::next_button_clicked()
 {
 	write_changes(m->cur_idx);
 
-	m->cur_idx++;
+	set_current_index(m->cur_idx + 1);
 
 	refresh_current_track();
 }
@@ -280,7 +274,7 @@ void GUI_TagEdit::prev_button_clicked()
 {
 	write_changes(m->cur_idx);
 
-	m->cur_idx--;
+	set_current_index(m->cur_idx - 1);
 
 	refresh_current_track();
 }
@@ -348,18 +342,13 @@ void GUI_TagEdit::refresh_current_track()
 		ui->te_comment->setPlainText(md.comment());
 	}
 
-	if(!ui->cb_cover_all->isChecked()){
-		set_cover(md);
-
-		bool has_replacement = m->tag_edit->has_cover_replacement(m->cur_idx);
-		ui->cb_replace->setChecked(has_replacement);
-	}
-
 	bool is_cover_supported = m->tag_edit->is_cover_supported(m->cur_idx);
 	ui->tab_cover->setEnabled(is_cover_supported);
 	if(!is_cover_supported){
 		ui->tab_widget->setCurrentIndex(0);
 	}
+
+	m->ui_cover_edit->refresh_current_track();
 
 	ui->sb_track_num->setValue(md.track_num);
 	ui->lab_track_index->setText(
@@ -370,9 +359,10 @@ void GUI_TagEdit::refresh_current_track()
 
 void GUI_TagEdit::reset()
 {
-	m->cur_idx = -1;
+	set_current_index(-1);
 
 	m->ui_tag_from_path->reset();
+	m->ui_cover_edit->reset();
 
 	ui->cb_album_all->setChecked(false);
 	ui->cb_artist_all->setChecked(false);
@@ -381,7 +371,6 @@ void GUI_TagEdit::reset()
 	ui->cb_discnumber_all->setChecked(false);
 	ui->cb_rating_all->setChecked(false);
 	ui->cb_year_all->setChecked(false);
-	ui->cb_cover_all->setChecked(false);
 	ui->cb_comment_all->setChecked(false);
 
 	ui->lab_track_index ->setText(Lang::get(Lang::Track) + " 0/0");
@@ -406,20 +395,11 @@ void GUI_TagEdit::reset()
 	ui->sb_discnumber->setEnabled(true);
 	ui->lab_rating->setEnabled(true);
 
-	ui->cb_replace->setChecked(false);
-
-	ui->btn_cover_replacement->setEnabled(true);
-	show_replacement_field(false);
-
-	QIcon icon(Cover::Location::invalid_location().preferred_path());
-	ui->btn_cover_replacement->setIcon( icon );
-
 	ui->lab_filepath->clear();
 	ui->pb_progress->setVisible(false);
 
 	ui->btn_load_entire_album->setVisible(false);
 
-	m->cover_path_map.clear();
 	init_completer();
 }
 
@@ -469,21 +449,6 @@ void GUI_TagEdit::init_completer()
 	ui->le_artist->setCompleter(artist_completer);
 }
 
-
-void GUI_TagEdit::cover_all_changed(bool b)
-{
-	if(!b)
-	{
-		if(Util::between(m->cur_idx,m->tag_edit->count()) ){
-			set_cover(m->tag_edit->metadata(m->cur_idx));
-		}
-	}
-
-	ui->cb_replace->setEnabled(!b);
-	ui->btn_cover_replacement->setEnabled(!b);
-	ui->btn_replacement->setEnabled(!b);
-}
-
 void GUI_TagEdit::undo_clicked()
 {
 	m->tag_edit->undo(m->cur_idx);
@@ -503,7 +468,7 @@ void GUI_TagEdit::write_changes(int idx)
 		return;
 	}
 
-	MetaData md =m->tag_edit->metadata(idx);
+	MetaData md = m->tag_edit->metadata(idx);
 
 	md.set_title(ui->le_title->text());
 	md.set_artist(ui->le_artist->text());
@@ -517,10 +482,8 @@ void GUI_TagEdit::write_changes(int idx)
 	md.set_comment(ui->te_comment->toPlainText());
 
 	m->tag_edit->update_track(idx, md);
-
-	if(is_cover_replacement_active()){
-		update_cover(idx, m->cover_path_map[idx]);
-	}
+	QPixmap cover = m->ui_cover_edit->selected_cover(idx);
+	m->tag_edit->update_cover(idx, cover);
 }
 
 void GUI_TagEdit::commit()
@@ -533,7 +496,9 @@ void GUI_TagEdit::commit()
 
 	for(int i=0; i<m->tag_edit->count(); i++)
 	{
-		if(i == m->cur_idx) continue;
+		if(i == m->cur_idx) {
+			continue;
+		}
 
 		MetaData md =m->tag_edit->metadata(i);
 
@@ -564,15 +529,14 @@ void GUI_TagEdit::commit()
 			md.year = ui->sb_year->value();
 		}
 
-		if( ui->cb_cover_all->isChecked() ){
-			update_cover(i, m->cover_path_map[m->cur_idx]);
-		}
-
 		if( ui->cb_comment_all->isChecked() ){
 			md.set_comment(ui->te_comment->toPlainText());
 		}
 
 		m->tag_edit->update_track(i, md);
+
+		QPixmap cover = m->ui_cover_edit->selected_cover(i);
+		m->tag_edit->update_cover(i, cover);
 	}
 
 	m->tag_edit->commit();
@@ -583,68 +547,9 @@ void GUI_TagEdit::show_close_button(bool show)
 	ui->btn_close->setVisible(show);
 }
 
-
-void GUI_TagEdit::show_replacement_field(bool b)
+void GUI_TagEdit::show_cover_tab()
 {
-	ui->lab_replacement->setVisible(b);
-	ui->btn_cover_replacement->setVisible(b);
-	ui->btn_replacement->setVisible(b);
-	ui->cb_cover_all->setVisible(b);
-	ui->cb_cover_all->setChecked(false);
-}
-
-bool GUI_TagEdit::is_cover_replacement_active() const
-{
-	return (ui->cb_replace->isChecked() &&
-			ui->btn_cover_replacement->isVisible());
-}
-
-void GUI_TagEdit::set_cover(const MetaData& md)
-{
-	bool has_cover = Tagging::Covers::has_cover(md.filepath());
-
-	if(!has_cover)
-	{
-		ui->btn_cover_original->setIcon(QIcon());
-		ui->btn_cover_original->setText(Lang::get(Lang::None));
-	}
-
-	else
-	{
-		QSize sz = ui->btn_cover_original->size();
-
-		QPixmap pm = Tagging::Covers::extract_cover(md.filepath())
-			.scaled(sz, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-
-		QIcon icon;
-		icon.addPixmap(pm);
-
-		ui->btn_cover_original->setIcon(icon);
-		ui->btn_cover_original->setIconSize(sz);
-		ui->btn_cover_original->setText(QString());
-	}
-
-	Cover::Location cl = Cover::Location::cover_location(md);
-	ui->btn_cover_replacement->set_cover_location(cl);
-
-	ui->cb_cover_all->setEnabled(cl.valid());
-	ui->btn_cover_replacement->setEnabled(cl.valid() && !ui->cb_cover_all->isChecked());
-
-	if(cl.valid()){
-		m->cover_path_map[m->cur_idx] = cl.cover_path();
-	}
-}
-
-void GUI_TagEdit::update_cover(int idx, const QString& cover_path)
-{
-	QPixmap img(cover_path);
-	m->tag_edit->update_cover(idx, img);
-}
-
-
-void GUI_TagEdit::cb_replace_toggled(bool b)
-{
-	show_replacement_field(b);
+	ui->tab_widget->setCurrentIndex(2);
 }
 
 void GUI_TagEdit::load_entire_album()

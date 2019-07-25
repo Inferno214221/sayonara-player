@@ -25,6 +25,7 @@
 
 #include "Components/Streaming/SomaFM/SomaFMStation.h"
 #include "Components/Covers/CoverLocation.h"
+#include "Components/Covers/CoverFetchManager.h"
 
 #include "Utils/globals.h"
 #include "Utils/Logger/Logger.h"
@@ -246,7 +247,7 @@ QMimeData* SomaFM::StationModel::mimeData(const QModelIndexList& indexes) const
 			Cover::Location cl = m->stations[row].cover_location();
 			if(cl.has_search_urls())
 			{
-				cover_url = cl.search_url(0);
+				cover_url = cl.search_url(0).url;
 			}
 		}
 	}

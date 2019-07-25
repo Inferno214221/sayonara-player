@@ -140,7 +140,7 @@ void GUI_CoverPreferences::revert()
 	QList<Cover::Fetcher::Base*> cover_fetchers = cfm->coverfetchers();
 	for(const Cover::Fetcher::Base* b : cover_fetchers)
 	{
-		QString name = b->keyword();
+		QString name = b->identifier();
 		if(name.trimmed().isEmpty()) {
 			continue;
 		}

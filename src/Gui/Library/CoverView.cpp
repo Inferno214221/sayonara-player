@@ -49,6 +49,7 @@
 using Library::ActionPair;
 using Library::CoverView;
 using Library::CoverModel;
+using Library::CoverViewContextMenu;
 using AtomicBool=std::atomic<bool>;
 using AtomicInt=std::atomic<int>;
 
@@ -193,6 +194,7 @@ void CoverView::change_sortorder(Library::SortOrder so)
 
 void CoverView::init_context_menu()
 {
+
 	if(context_menu()){
 		return;
 	}

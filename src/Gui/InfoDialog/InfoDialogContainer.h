@@ -90,6 +90,8 @@ class InfoDialogContainer
 		 * @brief Show the tag editor
 		 */
 		virtual void show_edit();
+
+		virtual void show_cover_edit();
 };
 
 #endif

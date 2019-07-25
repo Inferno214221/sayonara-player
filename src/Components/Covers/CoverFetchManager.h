@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef COVERFETCHMANAGER_H
 #define COVERFETCHMANAGER_H
 
@@ -33,6 +31,23 @@ namespace Cover
 {
 namespace Fetcher
 {
+	struct FetchUrl
+	{
+		bool active;
+		QString identifier;
+		QString url;
+
+		FetchUrl()
+		{
+			active=false;
+			identifier=QString();
+			url=QString();
+		}
+
+		FetchUrl(bool active, const QString& identifier, const QString& url) :
+			active(active), identifier(identifier), url(url)
+		{}
+	};
 
 	class Base;
 	/**
@@ -65,7 +80,7 @@ namespace Fetcher
 			 * @param artist name
 			 * @return list of urls
 			 */
-			QStringList artist_addresses(const QString& artist) const;
+			QList<FetchUrl> artist_addresses(const QString& artist, bool also_inactive) const;
 
 			/**
 			 * @brief get urls for a album search query
@@ -73,14 +88,14 @@ namespace Fetcher
 			 * @param album album name
 			 * @return list of urls
 			 */
-			QStringList album_addresses(const QString& artist, const QString& album) const;
+			QList<FetchUrl> album_addresses(const QString& artist, const QString& album, bool also_inactive) const;
 
 			/**
 			 * @brief get urls for a fuzzy query
 			 * @param str query string
 			 * @return list of urls
 			 */
-			QStringList search_addresses(const QString& str) const;
+			QList<FetchUrl> search_addresses(const QString& str, bool also_inactive) const;
 
 
 			/**
@@ -88,8 +103,8 @@ namespace Fetcher
 			 * @param str query string
 			 * @return list of urls
 			 */
-			QStringList search_addresses(const QString& str,
-										 const QString& cover_fetcher_identifier) const;
+			QList<FetchUrl> search_addresses(const QString& str,
+										 const QString& cover_fetcher_identifier, bool also_inactive) const;
 
 			/**
 			 * @brief get a CoverFetcherInterface by a specific url

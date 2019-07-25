@@ -40,16 +40,20 @@ using Cover::Location;
 using Cover::Lookup;
 using Cover::LookupBase;
 using Cover::Fetcher::Manager;
+using Cover::Fetcher::FetchUrl;
+using FetchUrlList=QList<FetchUrl>;
 
 struct AlternativeLookup::Private
 {
 	Lookup*		lookup=nullptr;
 	int			n_covers;
 	bool		running;
+	bool		silent;
 
-	Private(const Cover::Location& cl, int n_covers, AlternativeLookup* parent) :
+	Private(const Cover::Location& cl, int n_covers, bool silent, AlternativeLookup* parent) :
 		n_covers(n_covers),
-		running(false)
+		running(false),
+		silent(silent)
 	{
 		lookup = new Lookup(cl, n_covers, parent);
 	}
@@ -60,17 +64,19 @@ struct AlternativeLookup::Private
 	}
 };
 
-AlternativeLookup::AlternativeLookup(const Cover::Location& cl, int n_covers, QObject* parent) :
+AlternativeLookup::AlternativeLookup(const Cover::Location& cl, int n_covers, bool silent, QObject* parent) :
 	LookupBase(cl, parent)
 {
-	m = Pimpl::make<Private>(cl, n_covers, this);
+	m = Pimpl::make<Private>(cl, n_covers, silent, this);
 
 	connect(m->lookup, &Lookup::sig_started, this, &AlternativeLookup::started);
 	connect(m->lookup, &Lookup::sig_cover_found, this, &AlternativeLookup::cover_found);
 	connect(m->lookup, &Lookup::sig_finished, this, &AlternativeLookup::finished);
+
+	ListenSettingNoCall(Set::Cover_Server, AlternativeLookup::coverfetchers_changed);
 }
 
-AlternativeLookup::~AlternativeLookup() {}
+AlternativeLookup::~AlternativeLookup() = default;
 
 void AlternativeLookup::stop()
 {
@@ -94,11 +100,19 @@ bool AlternativeLookup::save(const QPixmap& cover, bool save_to_library)
 
 	Cover::Location cl = cover_location();
 
-	Cover::Utils::write_cover_to_db(cl, cover);
-	Cover::Utils::write_cover_to_sayonara_dir(cl, cover);
+	if(!m->silent)
+	{
+		Cover::Utils::write_cover_to_db(cl, cover);
+		Cover::Utils::write_cover_to_sayonara_dir(cl, cover);
 
-	if(save_to_library) {
-		Cover::Utils::write_cover_to_library(cl, cover);
+		if(save_to_library) {
+			Cover::Utils::write_cover_to_library(cl, cover);
+		}
+	}
+
+	else
+	{
+		cover.save(cl.alternative_path());
 	}
 
 	emit sig_cover_changed(cl);
@@ -111,35 +125,41 @@ bool AlternativeLookup::is_running() const
 	return m->running;
 }
 
-
-QStringList AlternativeLookup::get_activated_coverfetchers(bool fulltext_search) const
+QStringList AlternativeLookup::active_coverfetchers(AlternativeLookup::SearchMode mode) const
 {
 	QStringList ret;
 	Cover::Fetcher::Manager* cfm = Cover::Fetcher::Manager::instance();
 	QList<Cover::Fetcher::Base*> cover_fetchers = cfm->coverfetchers();
 	for(const Cover::Fetcher::Base* cover_fetcher : cover_fetchers)
 	{
-		QString keyword = cover_fetcher->keyword();
-		if(keyword.isEmpty()){
+		QString identifier = cover_fetcher->identifier();
+		if(identifier.isEmpty()){
+			continue;
+		}
+
+		if(!cfm->is_active(identifier))
+		{
 			continue;
 		}
 
 		bool suitable = false;
-		if(fulltext_search) {
+		if(mode == AlternativeLookup::SearchMode::Fulltext)
+		{
 			suitable = cover_fetcher->is_search_supported();
 		}
 
 		else
 		{
-			QStringList search_urls = cover_location().search_urls();
-			suitable = Algorithm::contains(search_urls, [=](const QString& url){
-				QString id = cfm->identifier_by_url(url);
-				return (id == keyword);
+			FetchUrlList search_urls = cover_location().search_urls(false);
+
+			suitable = Algorithm::contains(search_urls, [identifier](const FetchUrl& url){
+				return (url.identifier.toLower() == identifier.toLower());
 			});
 		}
 
-		if(suitable){
-			ret << cover_fetcher->keyword();
+		if(suitable && cfm->is_active(identifier))
+		{
+			ret << identifier;
 		}
 	}
 
@@ -163,16 +183,19 @@ void AlternativeLookup::cover_found(const QPixmap& pm)
 	emit sig_cover_found(pm);
 }
 
+void AlternativeLookup::coverfetchers_changed()
+{
+	emit sig_coverfetchers_changed();
+}
 
 void AlternativeLookup::go(const Cover::Location& cl)
 {
-	set_cover_location(cl);
-
 	m->lookup->set_cover_location(cl);
 	m->lookup->start();
 
 	emit sig_started();
 }
+
 
 void AlternativeLookup::start()
 {
@@ -180,24 +203,19 @@ void AlternativeLookup::start()
 }
 
 
-void AlternativeLookup::start(const QString& cover_fetcher_identifier)
+void AlternativeLookup::start(const QString& identifier)
 {
 	Location cl = cover_location();
-	QStringList search_urls = cover_location().search_urls();
-	QString search_url;
+	FetchUrlList search_urls = cover_location().search_urls(false);
 
-	Manager* cfm = Manager::instance();
-	for(const QString& url : search_urls)
+	auto it = Algorithm::find(search_urls, [&identifier](const FetchUrl& url){
+		return (identifier == url.identifier);
+	});
+
+	if(it != search_urls.end())
 	{
-		QString identifier = cfm->identifier_by_url(url);
-		if(identifier == cover_fetcher_identifier){
-			search_url = url;
-			break;
-		}
-	}
-
-	if(!search_url.isEmpty()){
-		cl.set_search_urls({search_url});
+		FetchUrl url = *it;
+		cl.set_search_urls({url});
 	}
 
 	go(cl);

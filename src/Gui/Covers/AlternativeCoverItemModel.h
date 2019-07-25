@@ -81,6 +81,7 @@ public:
 	RowColumn cvt_2_row_col(int idx) const ;
 	int cvt_2_idx(int row, int col) const ;
 
+	QString cover_source(const QModelIndex& idx) const;
 	QSize cover_size(const QModelIndex& idx) const;
 	int cover_count() const;
 };

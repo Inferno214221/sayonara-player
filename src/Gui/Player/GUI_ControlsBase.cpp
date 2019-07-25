@@ -80,9 +80,7 @@ void GUI_ControlsBase::init()
 		}
 	}
 
-	connect(btn_cover(), &CoverButton::sig_rejected, this, [=](){
-		show_edit();
-	});
+	connect(btn_cover(), &CoverButton::sig_rejected, this, &GUI_ControlsBase::cover_click_rejected);
 
 	ListenSetting(Set::Engine_SR_Active, GUI_ControlsBase::sr_active_changed);
 	ListenSetting(Set::Engine_Pitch, GUI_ControlsBase::file_info_changed);
@@ -619,6 +617,10 @@ void GUI_ControlsBase::force_cover(const QImage& img)
 	btn_cover()->force_cover(img);
 }
 
+void GUI_ControlsBase::cover_click_rejected()
+{
+	show_cover_edit();
+}
 
 void GUI_ControlsBase::setup_connections()
 {

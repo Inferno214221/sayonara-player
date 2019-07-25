@@ -175,9 +175,8 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 
 		case GST_MESSAGE_TAG:
 		{
-			if( msg_src_name.compare("sr_filesink") == 0 ||
-				msg_src_name.compare("level_sink") == 0 ||
-				msg_src_name.compare("spectrum_sink") == 0)
+			if( msg_src_name.contains("fake") ||
+				!msg_src_name.contains("sink") )
 			{
 				break;
 			}

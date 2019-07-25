@@ -62,6 +62,14 @@ void InfoDialogContainer::show_edit()
 	}
 }
 
+void InfoDialogContainer::show_cover_edit()
+{
+	if(init_dialog())
+	{
+		m->info_dialog->show_cover_edit_tab();
+	}
+}
+
 bool InfoDialogContainer::init_dialog()
 {
 	if(!m->info_dialog)

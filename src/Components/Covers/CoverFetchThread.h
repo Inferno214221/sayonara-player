@@ -87,6 +87,11 @@ namespace Cover
 		 */
 		void stop();
 
+		/**
+		 * @brief Google, Amazon, Last.Fm
+		 * @return
+		 */
+		QString url(int idx) const;
 		QPixmap pixmap(int idx) const;
 		int found_images() const;
 

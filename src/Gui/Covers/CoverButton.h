@@ -46,6 +46,7 @@ class CoverButton :
 	PIMPL(CoverButton)
 
 signals:
+	void sig_cover_changed();
 	void sig_rejected();
 
 public:
@@ -73,19 +74,33 @@ public:
 	 */
 	void force_cover(const QPixmap& img);
 
+	/**
+	 * @brief silent results that the cover is not stored
+	 * productively. The AlternativeCoverFetcher will
+	 * save the cover to a temporary path which can be re-
+	 * trieved by Cover::Location::alternative_path()
+	 * @param silent
+	 */
+	void set_silent(bool silent);
+	bool is_silent() const;
+
 
 private:
+	using QPushButton::setIcon;
 	QIcon current_icon() const;
 
+
 protected:
+	void mouseReleaseEvent(QMouseEvent* event) override;
 	void paintEvent(QPaintEvent* event) override;
 	void showEvent(QShowEvent* e) override;
 
 private slots:
-	void cover_button_clicked();
 	void alternative_cover_fetched(const Cover::Location& cl);
 	void cover_lookup_finished(bool success);
-	void set_cover_image(const QPixmap& pm);
+	void set_cover_image(const QString& path);
+	void set_cover_image_pixmap(const QPixmap& pm);
+	void covers_changed();
 
 public slots:
 	void refresh();

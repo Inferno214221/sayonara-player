@@ -23,6 +23,7 @@
 #include "SomaFMPlaylistModel.h"
 #include "Components/Streaming/SomaFM/SomaFMStation.h"
 #include "Components/Covers/CoverLocation.h"
+#include "Components/Covers/CoverFetchManager.h"
 
 #include "Utils/globals.h"
 
@@ -89,9 +90,10 @@ QMimeData* SomaFM::PlaylistModel::mimeData(const QModelIndexList& indexes) const
 	Cover::Location location = m->station.cover_location();
 
 	mime_data->setUrls({url});
-	if(!location.search_urls().isEmpty())
+	if(location.has_search_urls())
 	{
-		mime_data->set_cover_url(location.search_url(0));
+		auto search_urls = location.search_urls(false);
+		mime_data->set_cover_url(search_urls.first().url);
 	}
 
 	return mime_data;

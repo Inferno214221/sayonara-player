@@ -24,7 +24,9 @@
 #define COVEREXTRACTOR_H
 
 #include <QObject>
+#include "CoverUtils.h"
 #include "Utils/Pimpl.h"
+
 class QPixmap;
 
 namespace Cover
@@ -42,7 +44,8 @@ namespace Cover
 			Extractor(const Cover::Location& cl, QObject* parent);
 			~Extractor();
 
-			QPixmap pixmap();
+			QPixmap pixmap() const;
+			Cover::Source source() const;
 
 		public slots:
 			void start();
