@@ -80,7 +80,7 @@ namespace Cover
 		 * a standard constructed location
 		 * @return
 		 */
-		bool			valid() const;
+		bool			is_valid() const;
 
 		/**
 		 * @brief returns if path is the same as the invalid location path

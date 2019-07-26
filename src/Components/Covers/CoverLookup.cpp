@@ -96,7 +96,7 @@ Lookup::~Lookup()
 bool Lookup::start_new_thread(const Cover::Location& cl )
 {
 	bool has_search_urls = cl.has_search_urls();
-	if(!has_search_urls || !cl.valid()){
+	if(!has_search_urls || !cl.is_valid()){
 		return false;
 	}
 
@@ -131,7 +131,7 @@ void Lookup::start()
 	QString id = cover_location().identifer();
 	sp_log(Log::Develop, this) << "Search cover for id " << id;
 
-	if(!cover_location().valid()){
+	if(!cover_location().is_valid()){
 		emit_finished(false);
 		return;
 	}

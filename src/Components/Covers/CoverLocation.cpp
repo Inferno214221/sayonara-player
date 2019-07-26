@@ -329,7 +329,7 @@ Location Location::cover_location(const MetaData& md, bool check_for_coverart)
 		cl = xcover_location(album);
 	}
 
-	if(!cl.valid() && !md.album().isEmpty() && !md.artist().isEmpty()){
+	if(!cl.is_valid() && !md.album().isEmpty() && !md.artist().isEmpty()){
 		cl = cover_location(md.album(), md.artist());
 	}
 
@@ -372,7 +372,7 @@ Location Location::cover_location(const QUrl& url, const QString& target_path)
 	return cl;
 }
 
-bool Location::valid() const
+bool Location::is_valid() const
 {
 	return m->valid;
 }

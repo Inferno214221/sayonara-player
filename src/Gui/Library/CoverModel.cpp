@@ -233,7 +233,7 @@ void CoverModel::next_hash()
 	}
 
 	AlbumCoverFetchThread::HashLocationPair hlp = acft->take_current_lookup();
-	if(hlp.first.isEmpty() || !hlp.second.valid()){
+	if(hlp.first.isEmpty() || !hlp.second.is_valid()){
 		return;
 	}
 

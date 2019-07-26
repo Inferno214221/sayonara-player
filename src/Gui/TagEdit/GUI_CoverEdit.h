@@ -40,6 +40,10 @@ class GUI_CoverEdit :
 		void language_changed() override;
 
 	private slots:
+		/**
+		 * @brief When button has finished setting up its button
+		 */
+		void cover_changed();
 		void replace_toggled(bool b);
 		void cover_all_toggled(bool b);
 		void set_metadata(const MetaDataList& v_md);

@@ -234,7 +234,7 @@ void ReloadThread::store_metadata_block(const MetaDataList& v_md)
 			emit sig_reloading_library(status, progress);
 
 			Cover::Location cl = Cover::Location::cover_location(md, false);
-			if(!cl.valid()){
+			if(!cl.is_valid()){
 				continue;
 			}
 

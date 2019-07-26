@@ -99,6 +99,12 @@ QIcon CoverButton::current_icon() const
 	return icon;
 }
 
+QPixmap CoverButton::pixmap() const
+{
+	return m->current_cover;
+}
+
+
 void CoverButton::refresh()
 {
 	QIcon icon = current_icon();
@@ -179,7 +185,7 @@ void CoverButton::alternative_cover_fetched(const Location& cl)
 
 	if(!is_silent())
 	{
-		if(cl.valid())
+		if(cl.is_valid())
 		{
 			ChangeNotfier::instance()->shout();
 		}
@@ -216,6 +222,7 @@ bool CoverButton::is_silent() const
 {
 	return m->silent;
 }
+
 
 void CoverButton::showEvent(QShowEvent* e)
 {

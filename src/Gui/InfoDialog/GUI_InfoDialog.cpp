@@ -41,6 +41,7 @@
 #include "Utils/Language/Language.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/Set.h"
 
 #include <QTabBar>
 #include <QTableWidget>
@@ -179,6 +180,7 @@ void GUI_InfoDialog::prepare_info(MD::Interpretation md_interpretation)
 			return;
 	}
 
+	ui->btn_write_cover_to_tracks->setVisible(info->albums().size() == 1);
 	ui->lab_title->setText(info->header());
 	ui->lab_subheader->setText(info->subheader());
 
@@ -190,6 +192,7 @@ void GUI_InfoDialog::prepare_info(MD::Interpretation md_interpretation)
 
 	m->cl = info->cover_location();
 	prepare_cover(m->cl);
+	ui->btn_image->setEnabled(m->cl.is_valid());
 
 	delete info; info = nullptr;
 }
@@ -340,10 +343,7 @@ void GUI_InfoDialog::cover_changed()
 {
 	int w = ui->btn_image->width();
 	ui->btn_image->resize(w, w);
-	ui->btn_image->setStyleSheet("border: 1px solid red;");
-
 }
-
 
 void GUI_InfoDialog::show_info_tab()
 {

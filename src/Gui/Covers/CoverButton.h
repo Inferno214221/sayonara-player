@@ -84,6 +84,8 @@ public:
 	void set_silent(bool silent);
 	bool is_silent() const;
 
+	QPixmap pixmap() const;
+
 
 private:
 	using QPushButton::setIcon;

@@ -190,7 +190,7 @@ bool SomaFM::Station::is_valid() const
 	return (!m->station_name.isEmpty() &&
 			!m->urls.isEmpty() &&
 			!m->description.isEmpty() &&
-			m->cover.valid());
+			m->cover.is_valid());
 }
 
 MetaDataList SomaFM::Station::metadata() const

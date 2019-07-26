@@ -13,14 +13,13 @@
 #include <QPixmap>
 
 using namespace Tagging;
-using CoverPathMap=QMap<int, QString>;
+using CoverPathMap=QMap<int, QPixmap>;
 
 struct GUI_CoverEdit::Private
 {
 	Editor*				tag_edit=nullptr;
-	CoverPathMap		cover_path_map;
-
-	int cur_idx;
+	CoverPathMap		index_cover_map;
+	int					cur_idx;
 
 	Private(Editor* editor) :
 		tag_edit(editor),
@@ -40,6 +39,7 @@ GUI_CoverEdit::GUI_CoverEdit(Tagging::Editor* editor, QWidget* parent) :
 	connect(ui->cb_cover_all, &QCheckBox::toggled, this, &GUI_CoverEdit::cover_all_toggled);
 	connect(ui->btn_search, &QPushButton::clicked, ui->btn_cover_replacement, &QPushButton::click);
 	connect(ui->btn_replace, &QPushButton::toggled, this, &GUI_CoverEdit::replace_toggled);
+	connect(ui->btn_cover_replacement, &CoverButton::sig_cover_changed, this, &GUI_CoverEdit::cover_changed);
 
 	language_changed();
 }
@@ -55,7 +55,7 @@ void GUI_CoverEdit::reset()
 
 	ui->btn_cover_replacement->set_cover_location(Cover::Location());
 
-	m->cover_path_map.clear();
+	m->index_cover_map.clear();
 }
 
 static void refresh_all_checkbox_text(QCheckBox* cb, int count)
@@ -71,6 +71,7 @@ static void refresh_all_checkbox_text(QCheckBox* cb, int count)
 void GUI_CoverEdit::set_metadata(const MetaDataList& v_md)
 {
 	Q_UNUSED(v_md)
+
 	refresh_current_track();
 	refresh_all_checkbox_text(ui->cb_cover_all, v_md.count());
 }
@@ -86,20 +87,16 @@ QPixmap GUI_CoverEdit::selected_cover(int index) const
 		return QPixmap();
 	}
 
-	QString cover_path;
+	QPixmap pm;
 	if(ui->cb_cover_all->isChecked()) {
-		cover_path = m->cover_path_map[m->cur_idx];
+		pm = m->index_cover_map[m->cur_idx];
 	}
 
 	else {
-		cover_path = m->cover_path_map[index];
+		pm = m->index_cover_map[index];
 	}
 
-	if(cover_path.isEmpty()) {
-		return QPixmap();
-	}
-
-	return QPixmap(cover_path);
+	return pm;
 }
 
 void GUI_CoverEdit::refresh_current_track()
@@ -152,13 +149,9 @@ void GUI_CoverEdit::set_cover(const MetaData& md)
 
 	Cover::Location cl = Cover::Location::cover_location(md);
 	ui->btn_cover_replacement->set_cover_location(cl);
+	ui->btn_cover_replacement->setEnabled(cl.is_valid() && !ui->cb_cover_all->isChecked());
 
-	ui->cb_cover_all->setEnabled(cl.valid());
-	ui->btn_cover_replacement->setEnabled(cl.valid() && !ui->cb_cover_all->isChecked());
-
-	if(cl.valid()) {
-		m->cover_path_map[m->cur_idx] = cl.alternative_path();
-	}
+	ui->cb_cover_all->setEnabled(cl.is_valid());
 }
 
 void GUI_CoverEdit::replace_toggled(bool b)
@@ -192,4 +185,10 @@ void GUI_CoverEdit::language_changed()
 	ui->btn_search->setText(Lang::get(Lang::SearchVerb));
 	ui->lab_replacement->setText(Lang::get(Lang::Replace));
 	ui->btn_replace->setText(Lang::get(Lang::Replace));
+}
+
+void GUI_CoverEdit::cover_changed()
+{
+	QPixmap pm = ui->btn_cover_replacement->pixmap();
+	m->index_cover_map[m->cur_idx] = pm;
 }
