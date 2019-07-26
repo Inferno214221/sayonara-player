@@ -371,9 +371,9 @@ QString LookupThread::lyric_data() const
 }
 
 
-static QString convert_to_regex(const QString& str, const QMap<QString, QString>& regex_conversions)
+static QString convert_tag_to_regex(const QString& tag, const QMap<QString, QString>& regex_conversions)
 {
-	QString ret = str;
+	QString ret(tag);
 
 	const QList<QString> keys = regex_conversions.keys();
 	for(const QString& key : keys)
@@ -394,12 +394,12 @@ QString LookupThread::parse_webpage(const QByteArray& raw, Server* server) const
 	Server::StartEndTags tags = server->start_end_tag();
 	for(const Server::StartEndTag& tag : tags)
 	{
-		QString start_tag = convert_to_regex(tag.first, m->regex_conversions);
+		QString start_tag = convert_tag_to_regex(tag.first, m->regex_conversions);
 		if(start_tag.startsWith("<") && !start_tag.endsWith(">")){
 			start_tag.append(".*>");
 		}
 
-		QString end_tag = convert_to_regex(tag.second, m->regex_conversions);
+		QString end_tag = convert_tag_to_regex(tag.second, m->regex_conversions);
 
 		QString content;
 		QRegExp regex;

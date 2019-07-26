@@ -40,6 +40,7 @@ namespace Lyrics
 		PIMPL(Server)
 
 		public:
+			Server();
 			~Server();
 
 			using StartEndTag=QPair<QString, QString>;
@@ -51,18 +52,43 @@ namespace Lyrics
 			bool can_search() const;
 
 			QString name() const;
+			void set_name(const QString& name);
+
 			QString address() const;
+			void set_address(const QString& address);
+
 			Replacements replacements() const;
+			void set_replacements(const Replacements& replacements);
+
 			QString direct_url_template() const;
+			void set_direct_url_template(const QString& direct_url_template);
+
 			StartEndTags start_end_tag() const;
+			void set_start_end_tag(const StartEndTags& start_end_tag);
+
 			bool is_start_tag_included() const;
+			void set_is_start_tag_included(bool is_start_tag_included);
+
 			bool is_end_tag_included() const;
+			void set_is_end_tag_included(bool is_end_tag_included);
+
 			bool is_numeric() const;
+			void set_is_numeric(bool is_numeric);
+
 			bool is_lowercase() const;
+			void set_is_lowercase(bool is_lowercase);
+
 			QString error_string() const;
+			void set_error_string(const QString& error_string);
+
 			QString search_result_regex() const;
+			void set_search_result_regex(const QString& search_result_regex);
+
 			QString search_result_url_template() const;
+			void set_search_result_url_template(const QString& search_result_url_template);
+
 			QString search_url_template() const;
+			void set_search_url_template(const QString& search_url_template);
 
 			QJsonObject to_json();
 			static Lyrics::Server* from_json(const QJsonObject& json);
@@ -70,23 +96,6 @@ namespace Lyrics
 			static QString apply_replacements(const QString& str, const Server::Replacements& replacements);
 
 		private:
-			Server();
-
-			void set_name(const QString& name);
-			void set_address(const QString& address);
-			void set_replacements(const Replacements& replacements);
-			void set_direct_url_template(const QString& direct_url_template);
-			void set_start_end_tag(const StartEndTags& start_end_tag);
-			void set_is_start_tag_included(bool is_start_tag_included);
-			void set_is_end_tag_included(bool is_end_tag_included);
-			void set_is_numeric(bool is_numeric);
-			void set_is_lowercase(bool is_lowercase);
-			void set_error_string(const QString& error_string);
-			void set_search_result_regex(const QString& search_result_regex);
-			void set_search_result_url_template(const QString& search_result_url_template);
-			void set_search_url_template(const QString& search_url_template);
-
-		protected:
 			QString apply_replacements(const QString& str) const;
 	};
 }
