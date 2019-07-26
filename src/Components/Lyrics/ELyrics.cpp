@@ -10,13 +10,13 @@ QString Lyrics::ELyrics::address() const
 	return "http://www.elyrics.net/read";
 }
 
-QMap<QString, QString> Lyrics::ELyrics::replacements() const
+Lyrics::Server::Replacements Lyrics::ELyrics::replacements() const
 {
-	return QMap<QString, QString>
+	return Lyrics::Server::Replacements
 	{
-		{" ", "-"},
 		{"the ", ""},
 		{"The ", ""},
+		{" ", "-"},
 		{"'", "_"}
 	};
 }
@@ -26,12 +26,13 @@ QString Lyrics::ELyrics::call_policy() const
 	return "<SERVER>/<FIRST_ARTIST_LETTER>/<ARTIST>-lyrics/<TITLE>-lyrics.html";
 }
 
-QMap<QString, QString> Lyrics::ELyrics::start_end_tag() const
+Lyrics::Server::StartEndTags Lyrics::ELyrics::start_end_tag() const
 {
-	return QMap<QString, QString>
+	return Lyrics::Server::StartEndTags
 	{
-		{"lyrics</strong><br>", "</div>"},
-		{"<div id='inlyr' style='font-size:14px;'>", "</div>"}
+		{"<div id=\"inlyr\"", "</div>"},
+		{"<div id='inlyr'", "</div>"},
+		{"not found on eLyrics.net. <br> ", "</strong>"}
 	};
 }
 

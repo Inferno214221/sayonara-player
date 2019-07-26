@@ -1,15 +1,18 @@
 #include "Musixmatch.h"
 #include "Utils/Logger/Logger.h"
 
+#include <QUrl>
+
 QString Lyrics::Musixmatch::name() const
 {
 	return "Musixmatch";
 }
 
-QMap<QString, QString> Lyrics::Musixmatch::start_end_tag() const
+Lyrics::Server::StartEndTags Lyrics::Musixmatch::start_end_tag() const
 {
-	return QMap<QString, QString>
+	return Lyrics::Server::StartEndTags
 	{
+		{"<div class=\"empty-message\">", "</div>"},
 		{"<div id=\"selectable-lyrics\"", "</span><span data-reactid"},
 		{"<p class=.*content", "</p>"},
 		{"\"body\":\"", "\",\""}
@@ -47,15 +50,15 @@ bool Lyrics::Musixmatch::can_fetch_directly() const
 	return false;
 }
 
-#include <QUrl>
 QString Lyrics::Musixmatch::search_address(QString artist, QString title) const
 {
+	artist = apply_replacements(artist);
+	title = apply_replacements(title);
+
 	return
-		QString("https://www.musixmatch.com/search/") +
-		QUrl::toPercentEncoding(artist) +
-		"%20" +
-		QUrl::toPercentEncoding(title) +
-		"#";
+		QString("https://www.musixmatch.com/search/%1 %2#")
+			.arg(artist)
+			.arg(title);
 }
 
 QString Lyrics::Musixmatch::parse_search_result(const QString& search_result)
@@ -71,4 +74,24 @@ QString Lyrics::Musixmatch::parse_search_result(const QString& search_result)
 	QString part_url = re.cap(1);
 
 	return "https://www.musixmatch.com/" + part_url;
+}
+
+
+Lyrics::Server::Replacements Lyrics::Musixmatch::replacements() const
+{
+	return Lyrics::Server::Replacements
+	{
+		{"  ", " "},
+		{"?", " "},
+		{"=", " "},
+		{"&", " "},
+		{"/", " "},
+		{"(", ""},
+		{")", ""},
+		{"\"", ""},
+		{"[", ""},
+		{"]", ""},
+		{"{", ""},
+		{"}", ""}
+	};
 }

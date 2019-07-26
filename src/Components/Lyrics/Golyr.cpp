@@ -10,9 +10,9 @@ QString Lyrics::Golyr::address() const
 	return "http://www.golyr.de";
 }
 
-QMap<QString, QString> Lyrics::Golyr::replacements() const
+Lyrics::Server::Replacements Lyrics::Golyr::replacements() const
 {
-	return QMap<QString, QString>
+	return Lyrics::Server::Replacements
 	{
 		{"'", "-"},
 		{" ", "-"},
@@ -26,9 +26,9 @@ QString Lyrics::Golyr::call_policy() const
 	return "<SERVER>/<ARTIST>/songtext-<TITLE>";
 }
 
-QMap<QString, QString> Lyrics::Golyr::start_end_tag() const
+Lyrics::Server::StartEndTags Lyrics::Golyr::start_end_tag() const
 {
-	return QMap<QString, QString>
+	return Lyrics::Server::StartEndTags
 	{
 		{"<div id=\"lyrics\">", "</div> <div class=\"fads\""}
 	};

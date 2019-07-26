@@ -10,9 +10,9 @@ QString Lyrics::Wikia::address() const
 	return "http://lyrics.Wikia.com";
 }
 
-QMap<QString, QString> Lyrics::Wikia::replacements() const
+Lyrics::Server::Replacements Lyrics::Wikia::replacements() const
 {
-	return QMap<QString, QString>
+	return Lyrics::Server::Replacements
 	{
 		{"'", ""},
 		{"ö", "o"},
@@ -27,9 +27,9 @@ QString Lyrics::Wikia::call_policy() const
 	return "<SERVER>/wiki/<ARTIST>:<TITLE>";
 }
 
-QMap<QString, QString> Lyrics::Wikia::start_end_tag() const
+Lyrics::Server::StartEndTags Lyrics::Wikia::start_end_tag() const
 {
-	return QMap<QString, QString>
+	return Lyrics::Server::StartEndTags
 	{
 		{"<div class='lyricbox'>", "<!--"}
 	};

@@ -23,15 +23,35 @@ QString Lyrics::Server::parse_search_result(const QString& search_result)
 	return QString();
 }
 
+QString Lyrics::Server::apply_replacements(const QString& str, const Lyrics::Server::Replacements& replacements)
+{
+	QString ret(str);
+
+	for(const Server::Replacement& r : replacements)
+	{
+		while(ret.contains(r.first))
+		{
+			ret.replace(r.first, r.second);
+		}
+	}
+
+	return ret;
+}
+
+QString Lyrics::Server::apply_replacements(const QString& str) const
+{
+	return apply_replacements(str, this->replacements());
+}
+
 
 QString Lyrics::SearchableServer::address() const
 {
 	return QString();
 }
 
-QMap<QString, QString> Lyrics::SearchableServer::replacements() const
+Lyrics::Server::Replacements Lyrics::SearchableServer::replacements() const
 {
-	return QMap<QString, QString>();
+	return Lyrics::Server::Replacements();
 }
 
 QString Lyrics::SearchableServer::call_policy() const

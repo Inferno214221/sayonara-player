@@ -1,16 +1,16 @@
-#ifndef WIKIA_H
-#define WIKIA_H
+#ifndef GENIUS_H
+#define GENIUS_H
 
 #include "LyricServer.h"
 
 namespace Lyrics
 {
-	class Wikia : public Server
+	class Genius : public Server
 	{
 		public:
 			QString name() const override;
 			QString address() const override;
-			Server::Replacements replacements() const override;
+			Lyrics::Server::Replacements replacements() const override;
 			QString call_policy() const override;
 			Server::StartEndTags start_end_tag() const override;
 			bool is_start_tag_included() const override;
@@ -21,4 +21,5 @@ namespace Lyrics
 	};
 }
 
-#endif // WIKIA_H
+
+#endif // GENIUS_H

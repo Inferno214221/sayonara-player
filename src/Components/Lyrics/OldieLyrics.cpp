@@ -10,9 +10,9 @@ QString Lyrics::OldieLyrics::address() const
 	return "http://www.oldielyrics.com/lyrics";
 }
 
-QMap<QString, QString> Lyrics::OldieLyrics::replacements() const
+Lyrics::Server::Replacements Lyrics::OldieLyrics::replacements() const
 {
-	return QMap<QString, QString>
+	return Lyrics::Server::Replacements
 	{
 		{" ", "_"},
 		{"(", "_"},
@@ -29,9 +29,9 @@ QString Lyrics::OldieLyrics::call_policy() const
 	return "<SERVER>/<ARTIST>/<TITLE>.html";
 }
 
-QMap<QString, QString> Lyrics::OldieLyrics::start_end_tag() const
+Lyrics::Server::StartEndTags Lyrics::OldieLyrics::start_end_tag() const
 {
-	return QMap<QString, QString>
+	return Lyrics::Server::StartEndTags
 	{
 		{"<div itemprop=\"text\">", "</div>"}
 	};

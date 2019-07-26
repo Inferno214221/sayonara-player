@@ -10,9 +10,9 @@ QString Lyrics::MetroLyrics::address() const
 	return "http://www.metrolyrics.com";
 }
 
-QMap<QString, QString> Lyrics::MetroLyrics::replacements() const
+Lyrics::Server::Replacements Lyrics::MetroLyrics::replacements() const
 {
-	return QMap<QString, QString>
+	return Lyrics::Server::Replacements
 	{
 		{"&", "and"},
 		{" ", "-"}
@@ -24,11 +24,12 @@ QString Lyrics::MetroLyrics::call_policy() const
 	return "<SERVER>/<TITLE>-lyrics-<ARTIST>.html";
 }
 
-QMap<QString, QString> Lyrics::MetroLyrics::start_end_tag() const
+Lyrics::Server::StartEndTags Lyrics::MetroLyrics::start_end_tag() const
 {
-	return QMap<QString, QString>
+	return Lyrics::Server::StartEndTags
 	{
-		{"<div id=\"lyrics-body-text\" class=\"js-lyric-text\">", "</div>"}
+		{"class=\"lyric-message\">", "</p>"},
+		{"<div id=\"lyrics-body-text\" class=\"js-lyric-text\">", "</p>"}
 	};
 }
 

@@ -6,10 +6,11 @@ QString Lyrics::Songtexte::name() const
 	return "Songtexte.com";
 }
 
-QMap<QString, QString> Lyrics::Songtexte::start_end_tag() const
+Lyrics::Server::StartEndTags Lyrics::Songtexte::start_end_tag() const
 {
-	return QMap<QString, QString>
+	return Lyrics::Server::StartEndTags
 	{
+		{"class=\"blockedArtist\">", "</p>"},
 		{"<div id=\"lyrics\">", "</div> <div"}
 	};
 }
@@ -46,8 +47,8 @@ bool Lyrics::Songtexte::can_fetch_directly() const
 
 QString Lyrics::Songtexte::search_address(QString artist, QString title) const
 {
-	artist.replace(" ", "+");
-	title.replace(" ", "+");
+	artist = apply_replacements(artist);
+	title = apply_replacements(title);
 
 	return QString("https://www.songtexte.com/search?q=%1+%2&c=all").arg(title).arg(artist);
 }
@@ -65,4 +66,25 @@ QString Lyrics::Songtexte::parse_search_result(const QString& search_result)
 	QString part_url = re.cap(1);
 
 	return "https://www.songtexte.com/" + part_url;
+}
+
+
+Lyrics::Server::Replacements Lyrics::Songtexte::replacements() const
+{
+	return Lyrics::Server::Replacements
+	{
+		{"  ", " "},
+		{" ", "+"},
+		{"?", "+"},
+		{"=", "+"},
+		{"&", "+"},
+		{"/", "+"},
+		{"(", ""},
+		{")", ""},
+		{"\"", ""},
+		{"[", ""},
+		{"]", ""},
+		{"{", ""},
+		{"}", ""}
+	};
 }

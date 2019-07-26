@@ -10,9 +10,9 @@ QString Lyrics::LyricsKeeper::address() const
 	return "http://lyrics-keeper.com";
 }
 
-QMap<QString, QString> Lyrics::LyricsKeeper::replacements() const
+Lyrics::Server::Replacements Lyrics::LyricsKeeper::replacements() const
 {
-	return QMap<QString, QString>
+	return Lyrics::Server::Replacements
 	{
 		{"&", ""},
 		{" ", "-"},
@@ -27,9 +27,9 @@ QString Lyrics::LyricsKeeper::call_policy() const
 	return "<SERVER>/en/<ARTIST>/<TITLE>.html";
 }
 
-QMap<QString, QString> Lyrics::LyricsKeeper::start_end_tag() const
+Lyrics::Server::StartEndTags Lyrics::LyricsKeeper::start_end_tag() const
 {
-	return QMap<QString, QString>
+	return Lyrics::Server::StartEndTags
 	{
 		{"<div id=\"lyrics\">", "</div>"}
 	};

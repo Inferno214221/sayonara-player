@@ -9,7 +9,7 @@ namespace Lyrics
 	{
 		public:
 			QString name() const;
-			QMap<QString, QString> start_end_tag() const;
+			Server::StartEndTags start_end_tag() const;
 			bool is_start_tag_included() const;
 			bool is_end_tag_included() const;
 			bool is_numeric() const;
@@ -18,6 +18,8 @@ namespace Lyrics
 			bool can_fetch_directly() const;
 			QString search_address(QString artist, QString title) const;
 			QString parse_search_result(const QString& search_result);
+
+			Lyrics::Server::Replacements replacements() const override;
 	};
 }
 

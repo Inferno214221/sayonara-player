@@ -70,15 +70,6 @@ namespace Lyrics
 
 		void init_server_list();
 
-		/**
-		 * @brief Calculate final server url out of server replacements, call policy
-		 * and so on
-		 * @param artist
-		 * @param song
-		 * @return
-		 */
-		QString	calc_server_url(QString artist, QString song);
-
 		void start_search(const QString& url);
 		void call_website(const QString& url);
 

@@ -22,6 +22,8 @@
 #define LYRICSERVER_H_
 
 #include <QString>
+#include <QList>
+#include <QPair>
 #include <QMap>
 
 namespace Lyrics
@@ -33,11 +35,16 @@ namespace Lyrics
 	class Server
 	{
 		public:
+			using StartEndTag=QPair<QString, QString>;
+			using StartEndTags=QList<StartEndTag>;
+			using Replacement=QPair<QString, QString>;
+			using Replacements=QList<Replacement>;
+
 			virtual QString name() const=0;
 			virtual QString address() const=0;
-			virtual QMap<QString, QString> replacements() const=0;
+			virtual Replacements replacements() const=0;
 			virtual QString call_policy() const=0;
-			virtual QMap<QString, QString> start_end_tag() const=0;
+			virtual StartEndTags start_end_tag() const=0;
 			virtual bool is_start_tag_included() const=0;
 			virtual bool is_end_tag_included() const=0;
 			virtual bool is_numeric() const=0;
@@ -61,13 +68,19 @@ namespace Lyrics
 			 * @return
 			 */
 			virtual QString parse_search_result(const QString& search_result);
+
+			static QString apply_replacements(const QString& str, const Server::Replacements& replacements);
+
+			protected:
+			QString apply_replacements(const QString& str) const;
+
 	};
 
 	class SearchableServer : public Server
 	{
 		public:
 			QString address() const;
-			QMap<QString, QString> replacements() const;
+			Server::Replacements replacements() const;
 			QString call_policy() const;
 			bool can_search() const;
 	};
