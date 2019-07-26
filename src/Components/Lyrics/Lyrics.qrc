@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/lyrics">
+        <file>lyrics.json</file>
+    </qresource>
+</RCC>

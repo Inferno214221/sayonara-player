@@ -60,8 +60,6 @@ namespace Lyrics
 
 	private slots:
 		void lyrics_fetched();
-
-
 	};
 }
 

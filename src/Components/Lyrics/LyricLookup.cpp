@@ -28,27 +28,25 @@
 #include "LyricLookup.h"
 #include "LyricServer.h"
 
-#include "Golyr.h"
-#include "ELyrics.h"
-#include "LyricsKeeper.h"
-#include "MetroLyrics.h"
-#include "Musixmatch.h"
-#include "OldieLyrics.h"
-#include "Wikia.h"
-#include "Songtexte.h"
-#include "Genius.h"
-
 #include "Utils/WebAccess/AsyncWebAccess.h"
 #include "Utils/Algorithm.h"
+#include "Utils/FileUtils.h"
+#include "Utils/Utils.h"
 #include "Utils/Logger/Logger.h"
 
+#include <QJsonDocument>
+#include <QJsonArray>
+#include <QJsonObject>
 #include <QStringList>
 #include <QRegExp>
 #include <QMap>
+#include <QFile>
 
 namespace Algorithm=Util::Algorithm;
 using namespace Lyrics;
 
+static QString calc_url(Server* server, const QString& url_template, QString artist, QString song);
+static QString calc_search_url(Server* server, QString artist, QString song);
 static QString calc_server_url(Server* server, QString artist, QString song);
 
 struct LookupThread::Private
@@ -98,20 +96,6 @@ LookupThread::LookupThread(QObject* parent) :
 
 LookupThread::~LookupThread()=default;
 
-QString LookupThread::convert_to_regex(const QString& str) const
-{
-	QString ret = str;
-
-	const QList<QString> keys = m->regex_conversions.keys();
-	for(const QString& key : keys)
-	{
-		ret.replace(key, m->regex_conversions.value(key));
-	}
-
-	ret.replace(" ", "\\s+");
-
-	return ret;
-}
 
 void LookupThread::run(const QString& artist, const QString& title, int server_idx)
 {
@@ -137,14 +121,15 @@ void LookupThread::run(const QString& artist, const QString& title, int server_i
 
 	else if(server->can_search())
 	{
-		QString url = server->search_address(artist, title);
-		if(!url.isEmpty())
-		{
-			start_search(url);
-		}
+		QString url = calc_search_url(server, artist, title);
+		start_search(url);
+	}
+
+	else {
+		sp_log(Log::Warning, this) << "Search server " << server->name() << " cannot do anything at all!";
+		emit sig_finished();
 	}
 }
-
 
 void LookupThread::start_search(const QString& url)
 {
@@ -159,12 +144,23 @@ void LookupThread::start_search(const QString& url)
 void LookupThread::search_finished()
 {
 	AsyncWebAccess* awa = static_cast<AsyncWebAccess*>(sender());
-	Server* server = m->server_list[m->cur_server];
-	QString original_url = awa->url();
-	QByteArray data = awa->data();
-	awa->deleteLater();
 
-	QString url = server->parse_search_result(QString::fromLocal8Bit(data));
+	QString url;
+	{ // extract url out of the search result
+		Server* server = m->server_list[m->cur_server];
+		QByteArray data = awa->data();
+		QString website = QString::fromLocal8Bit(data);
+		QRegExp re(server->search_result_regex());
+		re.setMinimal(true);
+		if(re.indexIn(website) > 0)
+		{
+			QString parsed_url = re.cap(1);
+			url = server->search_result_url_template();
+			url.replace("<SERVER>", server->address());
+			url.replace("<SEARCH_RESULT_CAPTION>", parsed_url);
+		}
+	}
+
 	if(!url.isEmpty())
 	{
 		call_website(url);
@@ -173,10 +169,12 @@ void LookupThread::search_finished()
 	else
 	{
 		sp_log(Log::Debug, this) << "Search Lyrics not successful ";
-		m->final_wp = tr("Cannot fetch lyrics from %1").arg(original_url);
+		m->final_wp = tr("Cannot fetch lyrics from %1").arg(awa->url());
 		m->has_error = true;
 		emit sig_finished();
 	}
+
+	awa->deleteLater();
 }
 
 
@@ -245,6 +243,41 @@ bool LookupThread::has_error() const
 	return m->has_error;
 }
 
+#include <QDir>
+
+static QList<Server*> parse_json_file(const QString& filename)
+{
+	QList<Server*> ret;
+
+	QFile f(filename);
+	f.open(QFile::ReadOnly);
+	QByteArray data = f.readAll();
+	f.close();
+
+	QJsonDocument doc = QJsonDocument::fromJson(data);
+	if(doc.isArray())
+	{
+		QJsonArray arr = doc.array();
+		for(auto it=arr.begin(); it != arr.end(); it++)
+		{
+			Server* server = Server::from_json( (*it).toObject() );
+			if(server){
+				ret << server;
+			}
+		}
+	}
+
+	else if(doc.isObject())
+	{
+		Server* server = Server::from_json( doc.object() );
+		if(server){
+			ret << server;
+		}
+	}
+
+	return ret;
+}
+
 void LookupThread::init_server_list()
 {
 	// motörhead
@@ -257,15 +290,63 @@ void LookupThread::init_server_list()
 	// eric burdon and the animals
 	// Don't speak
 
-	m->server_list.push_back(new Wikia());
-	m->server_list.push_back(new Musixmatch());
-	m->server_list.push_back(new Songtexte());
-	m->server_list.push_back(new Genius());
-	m->server_list.push_back(new MetroLyrics());
-	m->server_list.push_back(new OldieLyrics());
-	m->server_list.push_back(new LyricsKeeper);
-	m->server_list.push_back(new ELyrics());
-	m->server_list.push_back(new Golyr());
+	QList<Server*> servers = parse_json_file(":/lyrics/lyrics.json");
+	for(Server* server : servers)
+	{
+		add_server(server);
+	}
+
+	init_custom_servers();
+}
+
+void LookupThread::init_custom_servers()
+{
+	QString lyrics_path = Util::sayonara_path("lyrics");
+	QDir dir(lyrics_path);
+	QStringList json_files = dir.entryList(QStringList{"*.json"}, QDir::Files);
+
+	for(QString json_file : json_files)
+	{
+		json_file.prepend(lyrics_path + "/");
+		QList<Server*> servers = parse_json_file(json_file);
+		for(Server* server : servers)
+		{
+			add_server(server);
+		}
+	}
+}
+
+void LookupThread::add_server(Server* server)
+{
+	if(!server) {
+		return;
+	}
+
+	if(!server->can_fetch_directly() && !server->can_search()){
+		return;
+	}
+
+	QString name = server->name();
+	bool found = false;
+	for(int i=0; i<m->server_list.size(); i++)
+	{
+		Server* s = m->server_list[i];
+		if(s->name() == name)
+		{
+			delete s;
+
+			m->server_list.removeAt(i);
+			m->server_list.insert(i, server);
+
+			found = true;
+			break;
+		}
+	}
+
+	if(!found)
+	{
+		m->server_list << server;
+	}
 }
 
 QStringList LookupThread::servers() const
@@ -289,6 +370,23 @@ QString LookupThread::lyric_data() const
 	return m->final_wp;
 }
 
+
+static QString convert_to_regex(const QString& str, const QMap<QString, QString>& regex_conversions)
+{
+	QString ret = str;
+
+	const QList<QString> keys = regex_conversions.keys();
+	for(const QString& key : keys)
+	{
+		ret.replace(key, regex_conversions.value(key));
+	}
+
+	ret.replace(" ", "\\s+");
+
+	return ret;
+}
+
+
 QString LookupThread::parse_webpage(const QByteArray& raw, Server* server) const
 {
 	QString dst(raw);
@@ -296,12 +394,12 @@ QString LookupThread::parse_webpage(const QByteArray& raw, Server* server) const
 	Server::StartEndTags tags = server->start_end_tag();
 	for(const Server::StartEndTag& tag : tags)
 	{
-		QString start_tag = convert_to_regex(tag.first);
+		QString start_tag = convert_to_regex(tag.first, m->regex_conversions);
 		if(start_tag.startsWith("<") && !start_tag.endsWith(">")){
 			start_tag.append(".*>");
 		}
 
-		QString end_tag = convert_to_regex(tag.second);
+		QString end_tag = convert_to_regex(tag.second, m->regex_conversions);
 
 		QString content;
 		QRegExp regex;
@@ -357,6 +455,8 @@ QString LookupThread::parse_webpage(const QByteArray& raw, Server* server) const
 			dst = content;
 		}
 
+		dst.replace("<br>\n", "<br>");
+		dst.replace(QRegExp("<br\\s*/>\n"), "<br>");
 		dst.replace("\n", "<br>");
 		dst.replace("\\n", "<br>");
 		dst.replace(QRegExp("<br\\s*/>"), "<br>");
@@ -396,14 +496,12 @@ QString LookupThread::parse_webpage(const QByteArray& raw, Server* server) const
 	return dst.trimmed();
 }
 
-
-
-QString calc_server_url(Server* server, QString artist, QString song)
+QString calc_url(Server* server, const QString& url_template, QString artist, QString song)
 {
 	artist = Server::apply_replacements(artist, server->replacements());
 	song =  Server::apply_replacements(song, server->replacements());
 
-	QString url = server->call_policy();
+	QString url = url_template;
 	url.replace("<SERVER>", server->address());
 	url.replace("<FIRST_ARTIST_LETTER>", QString(artist[0]).trimmed());
 	url.replace("<ARTIST>", artist.trimmed());
@@ -414,4 +512,14 @@ QString calc_server_url(Server* server, QString artist, QString song)
 	}
 
 	return url;
+}
+
+QString calc_search_url(Server* server, QString artist, QString song)
+{
+	return calc_url(server, server->search_url_template(), artist, song);
+}
+
+QString calc_server_url(Server* server, QString artist, QString song)
+{
+	return calc_url(server, server->direct_url_template(), artist, song);
 }

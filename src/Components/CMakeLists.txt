@@ -21,7 +21,10 @@ file(GLOB_RECURSE SOURCES Shutdown *.cpp)
 file(GLOB_RECURSE SOURCES Streaming *.cpp)
 file(GLOB_RECURSE SOURCES Tagging *.cpp)
 
-add_library(${PROJECT_NAME} STATIC ${SOURCES})
+qt5_add_resources(LYRIC_RESOURCE "Lyrics/Lyrics.qrc")
+message("${LYRIC_RESOURCE}")
+
+add_library(${PROJECT_NAME} STATIC ${SOURCES} ${LYRIC_RESOURCE})
 
 target_link_libraries(${PROJECT_NAME}
 	sayonara_database

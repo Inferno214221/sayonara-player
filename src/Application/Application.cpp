@@ -162,6 +162,7 @@ struct Application::Private
 		Settings::instance()->apply_fixes();
 
 		Q_INIT_RESOURCE(Icons);
+		Q_INIT_RESOURCE(Lyrics);
 
 #ifdef Q_OS_WIN
 		Q_INIT_RESOURCE(IconsWindows);

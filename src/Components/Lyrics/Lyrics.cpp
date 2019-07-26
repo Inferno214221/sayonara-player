@@ -178,7 +178,6 @@ void LyricsImpl::lyrics_fetched()
 	emit sig_lyrics_fetched();
 }
 
-
 void LyricsImpl::Private::guess_artist_and_title()
 {
 	bool guessed = false;

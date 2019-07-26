@@ -65,11 +65,12 @@ namespace Lyrics
 	private:
 		PIMPL(LookupThread)
 
-		QString	convert_to_regex(const QString& str) const;
 		QString	parse_webpage(const QByteArray& raw, Server* server) const;
 
 		void init_server_list();
+		void init_custom_servers();
 
+		void add_server(Server* server);
 		void start_search(const QString& url);
 		void call_website(const QString& url);
 
