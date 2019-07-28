@@ -10,6 +10,9 @@ namespace Fetcher
 	class Amazon :
             public Cover::Fetcher::Base
 	{
+		private:
+			QString priv_identifier() const override;
+
 		public:
 			bool can_fetch_cover_directly() const override;
 			QStringList calc_addresses_from_website(const QByteArray& website) const override;
@@ -20,9 +23,8 @@ namespace Fetcher
 			bool is_album_supported() const override;
 			bool is_artist_supported() const override;
 			int estimated_size() const override;
-			QString identifier() const override;
 		};
-}
+	}
 }
 
 #endif // AMAZONCOVERFETCHER_H

@@ -39,6 +39,9 @@ namespace Fetcher
 	class Base
 	{
 
+		private:
+			virtual QString priv_identifier() const=0;
+
 		public:
 			Base();
 			virtual ~Base();
@@ -61,7 +64,8 @@ namespace Fetcher
 			 * @brief get name of CoverFetcherInterface like e.g. Discogs
 			 * @return
 			 */
-			virtual QString identifier() const=0;
+			virtual QString identifier() const final;
+
 
 			/**
 			 * @brief Get the artist search url.

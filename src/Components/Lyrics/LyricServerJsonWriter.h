@@ -1,6 +1,8 @@
 #ifndef LYRICSERVERJSONWRITER_H
 #define LYRICSERVERJSONWRITER_H
 
+#include <QList>
+
 class QJsonObject;
 
 namespace Lyrics
@@ -13,7 +15,8 @@ namespace Lyrics
 
 	namespace ServerJsonReader
 	{
-		Lyrics::Server* from_json(const QJsonObject& object);
+		Server* from_json(const QJsonObject& json);
+		QList<Server*> parse_json_file(const QString& filename);
 	}
 }
 

@@ -65,8 +65,6 @@ namespace Lyrics
 	private:
 		PIMPL(LookupThread)
 
-		QString	parse_webpage(const QByteArray& raw, Server* server) const;
-
 		void init_server_list();
 		void init_custom_servers();
 

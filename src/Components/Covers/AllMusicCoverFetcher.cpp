@@ -32,9 +32,9 @@ QStringList Cover::Fetcher::AllMusicCoverFetcher::calc_addresses_from_website(co
 	return ret;
 }
 
-QString Cover::Fetcher::AllMusicCoverFetcher::identifier() const
+QString Cover::Fetcher::AllMusicCoverFetcher::priv_identifier() const
 {
-	return "Allmusic";
+	return "allmusic";
 }
 
 QString Cover::Fetcher::AllMusicCoverFetcher::artist_address(const QString& artist) const

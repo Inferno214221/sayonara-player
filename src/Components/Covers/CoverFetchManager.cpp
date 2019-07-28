@@ -148,13 +148,14 @@ struct Manager::Private
 		coverfetchers.clear();
 	}
 
-	void set_active(const QString& identifier, bool enabled)
+	void set_active(QString identifier, bool enabled)
 	{
-		active_map[identifier] = enabled;
+		active_map[identifier.toLower()] = enabled;
 	}
 
-	bool is_active(const QString& identifier) const
+	bool is_active(QString identifier) const
 	{
+		identifier = identifier.toLower();
 		if(!active_map.keys().contains(identifier)){
 			return false;
 		}

@@ -120,7 +120,7 @@ bool SettingRegistry::init()
 	register_setting<Set::Lib_DD_PlayIfStoppedAndEmpty >("lib_dd_play_if_stopped_and_empty", false);
 	register_setting<Set::Lib_SearchMode>( "lib_search_mode", static_cast<int>(Library::CaseInsensitve));
 	register_setting<Set::Lib_AutoUpdate>( "lib_auto_update", false);
-	register_setting<Set::Lib_ShowAlbumArtists>( "lib_show_album_artists", false);
+	register_setting<Set::Lib_ShowAlbumArtists>( "lib_show_album_artists", true);
 	register_setting<Set::Lib_ShowAlbumCovers>( "lib_show_album_covers", false);
 	register_setting<Set::Lib_CoverZoom>( "lib_cover_zoom", 100);
 	register_setting<Set::Lib_CoverShowUtils>( "lib_cover_show_utils", false);
@@ -217,7 +217,7 @@ bool SettingRegistry::init()
 	register_setting<Set::Engine_SR_SessionPathTemplate>( "streamripper_session_path_template", QString());
 	register_setting<Set::Engine_SR_AutoRecord>( "streamripper_auto_recording", false);
 	register_setting<Set::Engine_CrossFaderActive>( "crossfader_active", false);
-	register_setting<Set::Engine_CrossFaderTime>( "crossfader_time", 5000);
+	register_setting<Set::Engine_CrossFaderTime>( "crossfader_time", 2000);
 	register_setting<Set::Engine_Pitch>( "engine_pitch", 440);
 	register_setting<Set::Engine_PreservePitch>( "engine_preserve_pitch", false);
 	register_setting<Set::Engine_SpeedActive>( "engine_speed_active", false);
@@ -242,7 +242,7 @@ bool SettingRegistry::init()
 	register_setting<Set::Lyrics_Server>( "lyrics_server", QString());
 	register_setting<Set::Lyrics_Zoom>( "lyrics_zoom", 100);
 
-	register_setting<Set::Cover_Server>( "cover_server", QStringList());
+	register_setting<Set::Cover_Server>( "cover_server", QStringList{"discogs", "audioscrobbler", "amazon", "allmusic", "google"});
 	register_setting<Set::Cover_FetchFromWWW>( "cover_fetch_from_www", true);
 	register_setting<Set::Cover_SaveToDB>("cover_save_to_db", true);
 	register_setting<Set::Cover_SaveToSayonaraDir>("cover_save_to_sayonara_dir", false);

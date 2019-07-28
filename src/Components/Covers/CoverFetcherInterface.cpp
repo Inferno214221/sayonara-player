@@ -18,9 +18,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "CoverFetcherInterface.h"
+#include <QString>
 
 Cover::Fetcher::Base::Base() = default;
 Cover::Fetcher::Base::~Base() = default;
+
+QString Cover::Fetcher::Base::identifier() const
+{
+	return this->priv_identifier().toLower();
+}

@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef COVERCHANGENOTIFIER_H
 #define COVERCHANGENOTIFIER_H
 

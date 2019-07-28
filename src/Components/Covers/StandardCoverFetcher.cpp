@@ -75,7 +75,7 @@ int Standard::estimated_size() const
 	return -1;
 }
 
-QString Standard::identifier() const
+QString Standard::priv_identifier() const
 {
 	return QString();
 }

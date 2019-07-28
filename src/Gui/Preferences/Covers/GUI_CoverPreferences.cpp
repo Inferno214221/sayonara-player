@@ -88,7 +88,7 @@ bool GUI_CoverPreferences::commit()
 	for(int i=0; i<ui->lv_cover_searchers->count(); i++)
 	{
 		QListWidgetItem* item = ui->lv_cover_searchers->item(i);
-		active_items << item->text();
+		active_items << item->text().toLower();
 	}
 
 	SetSetting(Set::Cover_Server, active_items);
@@ -141,16 +141,19 @@ void GUI_CoverPreferences::revert()
 	for(const Cover::Fetcher::Base* b : cover_fetchers)
 	{
 		QString name = b->identifier();
+
+
 		if(name.trimmed().isEmpty()) {
 			continue;
 		}
 
-		if(cover_servers.contains(name)) {
-			ui->lv_cover_searchers->addItem(name);
+		if(cover_servers.contains(name))
+		{
+			ui->lv_cover_searchers->addItem(Util::cvt_str_to_very_first_upper(name));
 		}
 
 		else {
-			ui->lv_cover_searchers_inactive->addItem(name);
+			ui->lv_cover_searchers_inactive->addItem(Util::cvt_str_to_very_first_upper(name));
 		}
 	}
 

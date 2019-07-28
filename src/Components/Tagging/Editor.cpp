@@ -433,8 +433,8 @@ void Editor::run()
 	{
 		int idx = it.key();
 		QPixmap pm = it.value();
-		if(pm.size().width() > 600 || pm.size().height() > 600){
-			pm = pm.scaled(QSize(600, 600), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+		if(pm.size().width() > 1000 || pm.size().height() > 1000){
+			pm = pm.scaled(QSize(1000, 1000), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 		}
 
 		const MetaData& md = *(m->v_md.cbegin() + idx);

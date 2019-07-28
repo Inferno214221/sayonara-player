@@ -63,9 +63,9 @@ QStringList Cover::Fetcher::Amazon::calc_addresses_from_website(const QByteArray
 	return sources;
 }
 
-QString Cover::Fetcher::Amazon::identifier() const
+QString Cover::Fetcher::Amazon::priv_identifier() const
 {
-	return "Amazon";
+	return "amazon";
 }
 
 QString Cover::Fetcher::Amazon::artist_address(const QString& artist) const

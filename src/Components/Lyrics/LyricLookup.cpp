@@ -27,6 +27,8 @@
 
 #include "LyricLookup.h"
 #include "LyricServer.h"
+#include "LyricWebpageParser.h"
+#include "LyricServerJsonWriter.h"
 
 #include "Utils/WebAccess/AsyncWebAccess.h"
 #include "Utils/Algorithm.h"
@@ -34,13 +36,11 @@
 #include "Utils/Utils.h"
 #include "Utils/Logger/Logger.h"
 
-#include <QJsonDocument>
-#include <QJsonArray>
-#include <QJsonObject>
 #include <QStringList>
 #include <QRegExp>
 #include <QMap>
 #include <QFile>
+#include <QDir>
 
 namespace Algorithm=Util::Algorithm;
 using namespace Lyrics;
@@ -210,7 +210,7 @@ void LookupThread::content_fetched()
 		return;
 	}
 
-	m->final_wp = parse_webpage(awa->data(), server);
+	m->final_wp = Lyrics::WebpageParser::parse_webpage(awa->data(), m->regex_conversions, server);
 
 	if ( m->final_wp.isEmpty() )
 	{
@@ -243,40 +243,6 @@ bool LookupThread::has_error() const
 	return m->has_error;
 }
 
-#include <QDir>
-
-static QList<Server*> parse_json_file(const QString& filename)
-{
-	QList<Server*> ret;
-
-	QFile f(filename);
-	f.open(QFile::ReadOnly);
-	QByteArray data = f.readAll();
-	f.close();
-
-	QJsonDocument doc = QJsonDocument::fromJson(data);
-	if(doc.isArray())
-	{
-		QJsonArray arr = doc.array();
-		for(auto it=arr.begin(); it != arr.end(); it++)
-		{
-			Server* server = Server::from_json( (*it).toObject() );
-			if(server){
-				ret << server;
-			}
-		}
-	}
-
-	else if(doc.isObject())
-	{
-		Server* server = Server::from_json( doc.object() );
-		if(server){
-			ret << server;
-		}
-	}
-
-	return ret;
-}
 
 void LookupThread::init_server_list()
 {
@@ -290,7 +256,7 @@ void LookupThread::init_server_list()
 	// eric burdon and the animals
 	// Don't speak
 
-	QList<Server*> servers = parse_json_file(":/lyrics/lyrics.json");
+	QList<Server*> servers = Lyrics::ServerJsonReader::parse_json_file(":/lyrics/lyrics.json");
 	for(Server* server : servers)
 	{
 		add_server(server);
@@ -308,7 +274,7 @@ void LookupThread::init_custom_servers()
 	for(QString json_file : json_files)
 	{
 		json_file.prepend(lyrics_path + "/");
-		QList<Server*> servers = parse_json_file(json_file);
+		QList<Server*> servers = Lyrics::ServerJsonReader::parse_json_file(json_file);
 		for(Server* server : servers)
 		{
 			add_server(server);
@@ -370,131 +336,6 @@ QString LookupThread::lyric_data() const
 	return m->final_wp;
 }
 
-
-static QString convert_tag_to_regex(const QString& tag, const QMap<QString, QString>& regex_conversions)
-{
-	QString ret(tag);
-
-	const QList<QString> keys = regex_conversions.keys();
-	for(const QString& key : keys)
-	{
-		ret.replace(key, regex_conversions.value(key));
-	}
-
-	ret.replace(" ", "\\s+");
-
-	return ret;
-}
-
-
-QString LookupThread::parse_webpage(const QByteArray& raw, Server* server) const
-{
-	QString dst(raw);
-
-	Server::StartEndTags tags = server->start_end_tag();
-	for(const Server::StartEndTag& tag : tags)
-	{
-		QString start_tag = convert_tag_to_regex(tag.first, m->regex_conversions);
-		if(start_tag.startsWith("<") && !start_tag.endsWith(">")){
-			start_tag.append(".*>");
-		}
-
-		QString end_tag = convert_tag_to_regex(tag.second, m->regex_conversions);
-
-		QString content;
-		QRegExp regex;
-		regex.setMinimal(true);
-		regex.setPattern(start_tag + "(.+)" + end_tag);
-		if(regex.indexIn(dst) != -1){
-			content  = regex.cap(1);
-		}
-
-		if(content.isEmpty()){
-			continue;
-		}
-
-		QRegExp re_script;
-		re_script.setPattern("<script.+</script>");
-		re_script.setMinimal(true);
-		while(re_script.indexIn(content) != -1){
-			content.replace(re_script, "");
-		}
-
-		QString word;
-		if(server->is_numeric())
-		{
-			QRegExp rx("&#(\\d+);|<br />|</span>|</p>");
-
-			QStringList tmplist;
-			int pos = 0;
-			while ((pos = rx.indexIn(content, pos)) != -1)
-			{
-				QString str = rx.cap(1);
-
-				pos += rx.matchedLength();
-				if(str.size() == 0)
-				{
-					tmplist.push_back(word);
-					word = "";
-					tmplist.push_back("<br>");
-				}
-
-				else{
-					word.append(QChar(str.toInt()));
-				}
-			}
-
-			dst = "";
-
-			for(const QString& str : tmplist) {
-				dst.append(str);
-			}
-		}
-
-		else {
-			dst = content;
-		}
-
-		dst.replace("<br>\n", "<br>");
-		dst.replace(QRegExp("<br\\s*/>\n"), "<br>");
-		dst.replace("\n", "<br>");
-		dst.replace("\\n", "<br>");
-		dst.replace(QRegExp("<br\\s*/>"), "<br>");
-		dst.replace("\\\"", "\"");
-
-		QRegExp re_ptag("<p\\s.*>");
-		re_ptag.setMinimal(true);
-		dst.remove(re_ptag);
-		dst.remove(QRegExp("</p>"));
-
-		QRegExp re_comment("<!--.*-->");
-		re_comment.setMinimal(true);
-		dst.remove(re_comment);
-
-		QRegExp re_linefeed("<br>\\s*<br>\\s*<br>");
-		while(dst.contains(re_linefeed)) {
-			dst.replace(re_linefeed, "<br><br>");
-		}
-
-		while(dst.startsWith("<br>")){
-			dst = dst.right(dst.count() - 4);
-		}
-
-		int idx = dst.indexOf("<a");
-		while(idx >= 0)
-		{
-			int idx2 = dst.indexOf("\">", idx);
-			dst.remove(idx, idx2 - idx + 2);
-			idx = dst.indexOf("<a");
-		}
-
-		if(dst.size() > 100){
-			break;
-		}
-	}
-
-	return dst.trimmed();
-}
 
 QString calc_url(Server* server, const QString& url_template, QString artist, QString song)
 {

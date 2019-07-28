@@ -5,6 +5,8 @@
 #include <QJsonValue>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QFile>
+#include <QDir>
 
 using Lyrics::Server;
 
@@ -188,4 +190,38 @@ Lyrics::Server* Lyrics::ServerJsonReader::from_json(const QJsonObject& json)
 	}
 
 	return server;
+}
+
+
+QList<Lyrics::Server*> Lyrics::ServerJsonReader::parse_json_file(const QString& filename)
+{
+	QList<Server*> ret;
+
+	QFile f(filename);
+	f.open(QFile::ReadOnly);
+	QByteArray data = f.readAll();
+	f.close();
+
+	QJsonDocument doc = QJsonDocument::fromJson(data);
+	if(doc.isArray())
+	{
+		QJsonArray arr = doc.array();
+		for(auto it=arr.begin(); it != arr.end(); it++)
+		{
+			Server* server = from_json( (*it).toObject() );
+			if(server){
+				ret << server;
+			}
+		}
+	}
+
+	else if(doc.isObject())
+	{
+		Server* server = from_json( doc.object() );
+		if(server){
+			ret << server;
+		}
+	}
+
+	return ret;
 }

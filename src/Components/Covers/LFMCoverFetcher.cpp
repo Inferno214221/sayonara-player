@@ -155,7 +155,7 @@ int LastFM::estimated_size() const
 	return 300;
 }
 
-QString LastFM::identifier() const
+QString LastFM::priv_identifier() const
 {
 	return "audioscrobbler";
 }
