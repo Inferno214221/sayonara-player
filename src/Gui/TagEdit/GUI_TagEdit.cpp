@@ -22,6 +22,7 @@
 #include "TagFromPath.h"
 #include "TagLineEdit.h"
 #include "GUI_CoverEdit.h"
+#include "FailMessageBox.h"
 
 #include "Gui/TagEdit/ui_GUI_TagEdit.h"
 
@@ -145,9 +146,20 @@ void GUI_TagEdit::language_changed()
 	ui->btn_save->setText(Lang::get(Lang::Save));
 }
 
+
 void GUI_TagEdit::commit_finished()
 {
 	ui->btn_save->setEnabled(true);
+	QMap<QString, Editor::FailReason> failed_files = m->tag_edit->failed_files();
+	if(!failed_files.isEmpty())
+	{
+		auto* fmb = new FailMessageBox(this);
+		fmb->set_failed_files(failed_files);
+		fmb->setModal(true);
+
+		connect(fmb, &FailMessageBox::sig_closed, fmb, &QObject::deleteLater);
+		fmb->show();
+	}
 }
 
 void GUI_TagEdit::progress_changed(int val)

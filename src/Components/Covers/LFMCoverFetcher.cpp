@@ -59,7 +59,7 @@ QDomNode find_artist_node(const QDomNode& node, const QString& prefix)
 	}
 }
 
-QStringList LastFM::calc_addresses_from_website(const QByteArray& website) const
+QStringList LastFM::parse_addresses(const QByteArray& website) const
 {
 	QDomDocument doc("LastFM Cover");
 	doc.setContent(website);
@@ -71,19 +71,27 @@ QStringList LastFM::calc_addresses_from_website(const QByteArray& website) const
 		return QStringList();
 	}
 
-	QDomNodeList nodes = artist_node.childNodes();
+	const QDomNodeList nodes = artist_node.childNodes();
 	if(nodes.isEmpty()){
 		return QStringList();
 	}
 
-	QStringList attributes; attributes << "mega" << "extralarge" << "large" << "";
+	const QStringList attributes
+	{
+		"mega",
+		"extralarge",
+		"large",
+		""
+	};
+
 	QMap<QString, QString> lfm_covers;
 
 	for(int i=0; i<nodes.size(); i++)
 	{
 		QDomNode node = nodes.item(i);
 		QString name = node.toElement().tagName();
-		if(name.compare("image", Qt::CaseInsensitive) == 0){
+		if(name.compare("image", Qt::CaseInsensitive) == 0)
+		{
 			QDomNode attr_node = node.attributes().namedItem("size");
 			QString size_attr = attr_node.nodeValue();
 
@@ -94,7 +102,7 @@ QStringList LastFM::calc_addresses_from_website(const QByteArray& website) const
 	}
 
 	QStringList ret;
-	for(const QString& attr : Algorithm::AsConst(attributes))
+	for(const QString& attr : attributes)
 	{
 		QString url = lfm_covers[attr];
 		if(!url.isEmpty()){
@@ -104,18 +112,6 @@ QStringList LastFM::calc_addresses_from_website(const QByteArray& website) const
 
 	sp_log(Log::Debug, this) << "Got " << ret.size() << " addresses";
 	return ret;
-}
-
-
-QString LastFM::artist_address(const QString& artist) const
-{
-	Q_UNUSED(artist)
-	QString str;
-	/*str = QString("http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist=" +
-						  QUrl::toPercentEncoding(artist) +
-						  "&api_key=") + LFM_API_KEY;
-	*/
-	return str;
 }
 
 QString LastFM::album_address(const QString& artist, const QString& album) const
@@ -129,26 +125,6 @@ QString LastFM::album_address(const QString& artist, const QString& album) const
 	return str;
 }
 
-QString LastFM::search_address(const QString& str) const
-{
-	Q_UNUSED(str)
-	return QString();
-}
-
-bool LastFM::is_search_supported() const
-{
-	return false;
-}
-
-bool LastFM::is_album_supported() const
-{
-	return true;
-}
-
-bool LastFM::is_artist_supported() const
-{
-	return false;
-}
 
 int LastFM::estimated_size() const
 {

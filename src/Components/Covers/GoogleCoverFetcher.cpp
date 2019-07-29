@@ -35,7 +35,7 @@ bool Google::can_fetch_cover_directly() const
 	return false;
 }
 
-QStringList Google::calc_addresses_from_website(const QByteArray& website) const
+QStringList Google::parse_addresses(const QByteArray& website) const
 {
 	QString regex = "(https://encrypted-tbn.+)\"";
 	QStringList addresses;
@@ -122,22 +122,6 @@ QString Google::search_address(const QString& str) const
 
 	return url;
 }
-
-bool Google::is_search_supported() const
-{
-	return true;
-}
-
-bool Google::is_album_supported() const
-{
-	return true;
-}
-
-bool Google::is_artist_supported() const
-{
-	return true;
-}
-
 
 int Google::estimated_size() const
 {

@@ -150,7 +150,8 @@ QStringList AlternativeLookup::active_coverfetchers(AlternativeLookup::SearchMod
 		bool suitable = false;
 		if(mode == AlternativeLookup::SearchMode::Fulltext)
 		{
-			suitable = cover_fetcher->is_search_supported();
+			QString address = cover_fetcher->search_address("search_string");
+			suitable = (!address.isEmpty());
 		}
 
 		else

@@ -173,7 +173,7 @@ Manager::Manager() :
 	register_coverfetcher(new Fetcher::LastFM());
 	register_coverfetcher(new Fetcher::Discogs());
 	register_coverfetcher(new Fetcher::Google());
-	register_coverfetcher(new Fetcher::AllMusicCoverFetcher());
+	register_coverfetcher(new Fetcher::AllMusic());
 	register_coverfetcher(new Fetcher::Amazon());
 
 	register_coverfetcher(m->std_cover_fetcher);
@@ -277,13 +277,16 @@ QList<FetchUrl> Manager::artist_addresses(const QString& artist, bool also_inact
 
 	for(const Fetcher::Base* cfi : Algorithm::AsConst(m->coverfetchers))
 	{
-		if(cfi->is_artist_supported())
+		QString identifier = cfi->identifier();
+		QString adress = cfi->artist_address(artist);
+
+		if(!adress.isEmpty())
 		{
 			FetchUrl url
 			(
-				is_active(cfi->identifier()),
-				cfi->identifier(),
-				cfi->artist_address(artist)
+				is_active(identifier),
+				identifier,
+				adress
 			);
 
 			if(url.active || also_inactive)
@@ -303,13 +306,16 @@ QList<FetchUrl> Manager::album_addresses(const QString& artist, const QString& a
 
 	for(const Fetcher::Base* cfi : Algorithm::AsConst(m->coverfetchers))
 	{
-		if(cfi->is_album_supported())
+		QString identifier = cfi->identifier();
+		QString adress = cfi->album_address(artist, album);
+
+		if(!adress.isEmpty())
 		{
 			FetchUrl url
 			(
-				is_active(cfi->identifier()),
-				cfi->identifier(),
-				cfi->album_address(artist, album)
+				is_active(identifier),
+				identifier,
+				adress
 			);
 
 			if(url.active || also_inactive)
@@ -329,12 +335,15 @@ QList<FetchUrl> Manager::search_addresses(const QString& str, bool also_inactive
 
 	for(const Fetcher::Base* cfi : Algorithm::AsConst(m->coverfetchers))
 	{
-		if(cfi->is_search_supported())
+		QString identifier = cfi->identifier();
+		QString adress = cfi->search_address(str);
+
+		if(!adress.isEmpty())
 		{
 			FetchUrl url
 			(
-				is_active(cfi->identifier()),
-				cfi->identifier(),
+				is_active(identifier),
+				identifier,
 				cfi->search_address(str)
 			);
 
@@ -348,20 +357,23 @@ QList<FetchUrl> Manager::search_addresses(const QString& str, bool also_inactive
 	return urls;
 }
 
-QList<FetchUrl> Manager::search_addresses(const QString &str, const QString& cover_fetcher_identifier, bool also_inactive) const
+QList<FetchUrl> Manager::search_addresses(const QString& str, const QString& cover_fetcher_identifier, bool also_inactive) const
 {
 	QList<FetchUrl> urls;
 
 	for(const Fetcher::Base* cfi : Algorithm::AsConst(m->coverfetchers))
 	{
-		if( (cfi->is_search_supported()) &&
+		QString address = cfi->search_address(str);
+		QString identifier = cfi->identifier();
+
+		if( (!address.isEmpty()) &&
 			(is_active(cfi)) &&
-			(cover_fetcher_identifier.compare(cfi->identifier()) == 0))
+			(cover_fetcher_identifier.compare(identifier, Qt::CaseInsensitive) == 0))
 		{
 			FetchUrl url
 			(
-				is_active(cfi->identifier()),
-				cfi->identifier(),
+				is_active(identifier),
+				identifier,
 				cfi->search_address(str)
 			);
 

@@ -60,8 +60,9 @@ struct Editor::Private
 	BoolList				changed_md;	// indicates if metadata at idx was changed
 	QMap<int, QPixmap>		cover_map;
 
-	QHash<QString, ArtistId>	artist_map;
-	QHash<QString, AlbumId>		album_map;
+	QHash<QString, ArtistId>			artist_map;
+	QHash<QString, AlbumId>				album_map;
+	QMap<QString, Editor::FailReason>	failed_files;
 
 	DB::LibraryDatabase*	ldb=nullptr;	// database of LocalLibrary
 
@@ -137,8 +138,7 @@ Editor::Editor(const MetaDataList& v_md, QObject* parent) :
 	set_metadata(v_md);
 }
 
-Editor::~Editor() {}
-
+Editor::~Editor() = default;
 
 void Editor::update_track(int idx, const MetaData& md)
 {
@@ -293,6 +293,7 @@ void Editor::set_metadata(const MetaDataList& v_md)
 
 	m->cover_map.clear();
 	m->changed_md.clear();
+	m->failed_files.clear();
 
 	m->changed_md.reserve(v_md.count());
 	for(const MetaData& md : v_md) { Q_UNUSED(md); m->changed_md << false; }
@@ -331,6 +332,7 @@ void Editor::load_entire_album()
 
 	set_metadata(v_md);
 }
+
 
 
 void Editor::apply_artists_and_albums_to_md()
@@ -385,6 +387,7 @@ void Editor::commit()
 	this->start();
 }
 
+#include <QFileInfo>
 void Editor::run()
 {
 	MetaDataList v_md;
@@ -412,7 +415,19 @@ void Editor::run()
 		}
 
 		bool success = Tagging::Utils::setMetaDataOfFile(md);
-		if( !success ) {
+		if( !success )
+		{
+			QFileInfo fi(md.filepath());
+			if(!fi.exists()){
+				m->failed_files.insert(md.filepath(), FailReason::FileNotFound);
+				sp_log(Log::Warning, this) << "Failed to write cover: File not found";
+			}
+
+			else if(!fi.isWritable()){
+				m->failed_files.insert(md.filepath(), FailReason::FileNotWriteable);
+				sp_log(Log::Warning, this) << "Failed to write cover: File not writeable";
+			}
+
 			continue;
 		}
 
@@ -475,5 +490,7 @@ void Editor::thread_finished()
 	emit sig_finished();
 }
 
-
-
+QMap<QString, Editor::FailReason> Editor::failed_files() const
+{
+	return m->failed_files;
+}

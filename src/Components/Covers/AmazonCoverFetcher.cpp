@@ -10,7 +10,7 @@ bool Cover::Fetcher::Amazon::can_fetch_cover_directly() const
 	return false;
 }
 
-QStringList Cover::Fetcher::Amazon::calc_addresses_from_website(const QByteArray& website) const
+QStringList Cover::Fetcher::Amazon::parse_addresses(const QByteArray& website) const
 {
 	QRegExp re("<img.*class=\"s-image\".*srcset=\"(.+[0-9]+x)\"");
 	re.setMinimal(true);
@@ -68,12 +68,6 @@ QString Cover::Fetcher::Amazon::priv_identifier() const
 	return "amazon";
 }
 
-QString Cover::Fetcher::Amazon::artist_address(const QString& artist) const
-{
-	Q_UNUSED(artist)
-	return QString();
-}
-
 QString Cover::Fetcher::Amazon::album_address(const QString& artist, const QString& album) const
 {
 	QString str(artist + "+" + album);
@@ -91,21 +85,6 @@ QString Cover::Fetcher::Amazon::search_address(const QString& search_string) con
 	str = QString::fromLocal8Bit(QUrl::toPercentEncoding(search_string));
 
 	return QString("https://www.amazon.com/s?k=%1&i=digital-music&ref=nb_sb_noss").arg(str);
-}
-
-bool Cover::Fetcher::Amazon::is_search_supported() const
-{
-	return true;
-}
-
-bool Cover::Fetcher::Amazon::is_album_supported() const
-{
-	return true;
-}
-
-bool Cover::Fetcher::Amazon::is_artist_supported() const
-{
-	return false;
 }
 
 int Cover::Fetcher::Amazon::estimated_size() const

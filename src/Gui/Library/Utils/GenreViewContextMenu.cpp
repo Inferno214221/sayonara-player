@@ -34,5 +34,6 @@ void GenreViewContextMenu::toggle_tree_triggered()
 
 void GenreViewContextMenu::language_changed()
 {
+	ContextMenu::language_changed();
 	m->toggle_tree_action->setText(Lang::get(Lang::Tree));
 }

@@ -28,7 +28,9 @@ using Gui::WidgetTemplate;
 
 Dialog::Dialog(QWidget* parent) :
 	WidgetTemplate<QDialog>(parent)
-{}
+{
+	setSizeGripEnabled(true);
+}
 
 Dialog::~Dialog() {}
 

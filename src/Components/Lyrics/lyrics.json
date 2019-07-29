@@ -234,7 +234,7 @@
             },
             {
                 "replacement_from": "'",
-                "replacement_to": " "
+                "replacement_to": ""
             },
             {
                 "replacement_from": "--",

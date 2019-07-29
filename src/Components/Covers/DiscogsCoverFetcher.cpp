@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "DiscogsCoverFetcher.h"
 #include <QRegExp>
 #include <QStringList>
@@ -44,7 +42,7 @@ bool Discogs::can_fetch_cover_directly() const
 	return false;
 }
 
-QStringList Discogs::calc_addresses_from_website(const QByteArray& website) const
+QStringList Discogs::parse_addresses(const QByteArray& website) const
 {
 	QStringList ret;
 
@@ -75,21 +73,6 @@ QString Discogs::album_address(const QString& artist, const QString& album) cons
 QString Discogs::search_address(const QString& str) const
 {
     return basic_url(str) + "&type=all";
-}
-
-bool Discogs::is_search_supported() const
-{
-	return true;
-}
-
-bool Discogs::is_album_supported() const
-{
-	return true;
-}
-
-bool Discogs::is_artist_supported() const
-{
-	return true;
 }
 
 int Discogs::estimated_size() const

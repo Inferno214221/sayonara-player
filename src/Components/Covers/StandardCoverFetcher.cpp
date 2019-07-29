@@ -28,47 +28,11 @@ bool Standard::can_fetch_cover_directly() const
     return true;
 }
 
-QStringList Standard::calc_addresses_from_website(const QByteArray& website) const
+QStringList Standard::parse_addresses(const QByteArray& website) const
 {
 	Q_UNUSED(website)
     return QStringList();
 }
-
-
-QString Standard::artist_address(const QString& artist) const
-{
-	Q_UNUSED(artist)
-	return QString();
-}
-
-QString Standard::album_address(const QString& artist, const QString& album) const
-{
-	Q_UNUSED(artist)
-	Q_UNUSED(album)
-	return QString();
-}
-
-QString Standard::search_address(const QString& str) const
-{
-	Q_UNUSED(str)
-	return QString();
-}
-
-bool Standard::is_search_supported() const
-{
-	return false;
-}
-
-bool Standard::is_album_supported() const
-{
-	return false;
-}
-
-bool Standard::is_artist_supported() const
-{
-	return false;
-}
-
 
 int Standard::estimated_size() const
 {

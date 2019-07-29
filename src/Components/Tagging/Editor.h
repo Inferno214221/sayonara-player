@@ -55,6 +55,12 @@ namespace Tagging
 		explicit Editor(const MetaDataList& v_md, QObject* parent=nullptr);
 		~Editor();
 
+		enum FailReason
+		{
+			FileNotWriteable,
+			FileNotFound
+		};
+
 
 		/**
 		 * @brief undo changes for a specific track
@@ -151,6 +157,7 @@ namespace Tagging
 		bool can_load_entire_album() const;
 		void load_entire_album();
 
+		QMap<QString, FailReason> failed_files() const;
 
 
 	public slots:

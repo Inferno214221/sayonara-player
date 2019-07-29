@@ -28,3 +28,24 @@ QString Cover::Fetcher::Base::identifier() const
 {
 	return this->priv_identifier().toLower();
 }
+
+QString Cover::Fetcher::Base::artist_address(const QString& artist) const
+{
+	Q_UNUSED(artist)
+	return QString();
+}
+
+QString Cover::Fetcher::Base::album_address(const QString& artist, const QString& album) const
+{
+	Q_UNUSED(artist)
+	Q_UNUSED(album)
+
+	return QString();
+}
+
+QString Cover::Fetcher::Base::search_address(const QString& str) const
+{
+	Q_UNUSED(str)
+
+	return QString();
+}

@@ -153,7 +153,7 @@ void FetchThread::content_fetched()
 		if(awa->status() == AsyncWebAccess::Status::GotData)
 		{
 			QByteArray website = awa->data();
-			m->addresses = m->acf->calc_addresses_from_website(website);
+			m->addresses = m->acf->parse_addresses(website);
 		}
 	}
 
