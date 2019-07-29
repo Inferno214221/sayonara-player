@@ -80,7 +80,10 @@ public:
 	virtual CoverButton* btn_cover() const=0;
 
 	virtual void toggle_buffer_mode(bool buffering)=0;
-	virtual bool is_resizable() const=0;
+	//virtual bool is_resizable() const=0;
+
+	virtual QSize image_size() const;
+	virtual bool is_extern_resize_allowed() const=0;
 
 
 private:

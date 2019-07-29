@@ -67,7 +67,12 @@ void GUI_Controls::toggle_buffer_mode(bool buffering)
 	}
 }
 
-bool GUI_Controls::is_resizable() const
+//bool GUI_Controls::is_resizable() const
+//{
+//	return false;
+//}
+
+bool GUI_Controls::is_extern_resize_allowed() const
 {
 	return false;
 }

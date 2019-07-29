@@ -69,10 +69,13 @@ private:
 	void init_sizes();
 	void init_main_splitter();
 	void init_font_change_fix();
+	void check_control_splitter(bool force);
 
 	void closeEvent(QCloseEvent* e) override;
 	void resizeEvent(QResizeEvent* e) override;
 	void moveEvent(QMoveEvent* e) override;
+	void keyPressEvent(QKeyEvent* e) override;
+	void keyReleaseEvent(QKeyEvent *e) override;
 
 	void language_changed() override;
 	void skin_changed() override;

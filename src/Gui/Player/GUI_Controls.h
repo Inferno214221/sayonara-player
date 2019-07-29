@@ -64,7 +64,8 @@ public:
 	CoverButton* btn_cover() const override;
 
 	void toggle_buffer_mode(bool buffering) override;
-	bool is_resizable() const override;
+	//bool is_resizable() const override;
+	bool is_extern_resize_allowed() const override;
 
 protected:
 	void language_changed() override;

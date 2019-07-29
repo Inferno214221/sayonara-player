@@ -73,10 +73,6 @@ void GUI_ControlsNew::toggle_buffer_mode(bool buffering)
 	}
 }
 
-bool GUI_ControlsNew::is_resizable() const
-{
-	return true;
-}
 
 void GUI_ControlsNew::rating_changed_here(bool success)
 {
@@ -91,6 +87,16 @@ void GUI_ControlsNew::rating_changed_here(bool success)
 	Tagging::UserOperations* uto = new Tagging::UserOperations(md.library_id, this);
 	connect(uto, &Tagging::UserOperations::sig_finished, uto, &Tagging::UserOperations::deleteLater);
 	uto->set_track_rating(md, rating);
+}
+
+//bool GUI_ControlsNew::is_resizable() const
+//{
+//	return true;
+//}
+
+bool GUI_ControlsNew::is_extern_resize_allowed() const
+{
+	return true;
 }
 
 void GUI_ControlsNew::language_changed()

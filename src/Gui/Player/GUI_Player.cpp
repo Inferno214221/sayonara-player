@@ -79,10 +79,13 @@ struct GUI_Player::Private
 	bool						is_maximizable;
 	bool						is_fullscreenable;
 
+	bool						ctrl_pressed;
+
 	Private() :
 		shutdown_requested(false),
 		is_maximizable(true),
-		is_fullscreenable(true)
+		is_fullscreenable(true),
+		ctrl_pressed(false)
 	{
 		logger = new GUI_Logger();
 
@@ -451,6 +454,10 @@ void GUI_Player::controlstyle_changed()
 	ui->controls->layout()->addWidget(m->controls);
 	ui->splitterControls->setSizes({h, this->height() - h});
 
+	QByteArray splitter_state = ui->splitterControls->saveState();
+	SetSetting(Set::Player_SplitterControls, splitter_state);
+
+	splitter_main_moved(0, 0);
 	splitter_controls_moved(0, 0);
 }
 
@@ -540,9 +547,28 @@ void GUI_Player::check_library_menu_action()
 	}
 }
 
+
+void GUI_Player::check_control_splitter(bool force)
+{
+	if(m->controls->is_extern_resize_allowed())
+	{
+		QSize cover_size = m->controls->image_size();
+		int difference = cover_size.height() - cover_size.width();
+		if(difference > 0 || force)
+		{
+			auto sizes = ui->splitterControls->sizes();
+				sizes[0] -= difference;
+				sizes[1] += difference;
+			ui->splitterControls->setSizes(sizes);
+		}
+	}
+}
+
 void GUI_Player::splitter_main_moved(int pos, int idx)
 {
-	Q_UNUSED(pos) Q_UNUSED(idx)
+	Q_UNUSED(pos); Q_UNUSED(idx);
+
+	check_control_splitter(m->ctrl_pressed);
 
 	QByteArray splitter_state = ui->splitter->saveState();
 	SetSetting(Set::Player_SplitterState, splitter_state);
@@ -551,6 +577,16 @@ void GUI_Player::splitter_main_moved(int pos, int idx)
 void GUI_Player::splitter_controls_moved(int pos, int idx)
 {
 	Q_UNUSED(pos) Q_UNUSED(idx)
+
+	if(m->controls->is_extern_resize_allowed() == false)
+	{
+		QByteArray state = GetSetting(Set::Player_SplitterControls);
+		ui->splitterControls->restoreState(state);
+
+		return;
+	}
+
+	check_control_splitter(false);
 
 	QByteArray splitter_state = ui->splitterControls->saveState();
 	SetSetting(Set::Player_SplitterControls, splitter_state);
@@ -674,6 +710,16 @@ void GUI_Player::moveEvent(QMoveEvent* e)
 	SetSetting(Set::Player_Pos, pos());
 }
 
+void GUI_Player::keyPressEvent(QKeyEvent* e)
+{
+	m->ctrl_pressed = ((e->modifiers() & Qt::ControlModifier) != 0);
+}
+
+void GUI_Player::keyReleaseEvent(QKeyEvent* e)
+{
+	m->ctrl_pressed = ((e->modifiers() & Qt::ControlModifier) != 0);
+}
+
 void GUI_Player::resizeEvent(QResizeEvent* e)
 {
 	Gui::MainWindow::resizeEvent(e);
@@ -694,6 +740,14 @@ void GUI_Player::resizeEvent(QResizeEvent* e)
 	m->menubar->set_show_library_action_enabled(
 		!(this->isMaximized() || this->isFullScreen())
 	);
+
+	if(m->controls)
+	{
+		bool b = m->ctrl_pressed;
+		m->ctrl_pressed = true;
+		this->splitter_main_moved(0, 0);
+		m->ctrl_pressed = b;
+	}
 }
 
 
