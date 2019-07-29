@@ -1,24 +1,28 @@
-#include "FailMessageBox.h"
+#include "GUI_FailMessageBox.h"
 #include "Gui/TagEdit/ui_GUI_FailMessageBox.h"
 
 #include "Utils/Language/Language.h"
 #include <QVBoxLayout>
 
-
-FailMessageBox::FailMessageBox(QWidget* parent) :
+GUI_FailMessageBox::GUI_FailMessageBox(QWidget* parent) :
 	Gui::Dialog(parent)
 {
 	ui = new Ui::GUI_FailMessageBox();
 	ui->setupUi(this);
 	ui->tv_files->setVisible(false);
 
-	connect(ui->cb_details, &QCheckBox::toggled, this, &FailMessageBox::details_toggled);
-	connect(ui->btn_ok, &QPushButton::clicked, this, &FailMessageBox::close);
+	connect(ui->cb_details, &QCheckBox::toggled, this, &GUI_FailMessageBox::details_toggled);
+	connect(ui->btn_ok, &QPushButton::clicked, this, &GUI_FailMessageBox::close);
 
 	language_changed();
 }
 
-void FailMessageBox::set_failed_files(const QMap<QString, Tagging::Editor::FailReason>& files)
+GUI_FailMessageBox::~GUI_FailMessageBox()
+{
+	delete ui; ui=nullptr;
+}
+
+void GUI_FailMessageBox::set_failed_files(const QMap<QString, Tagging::Editor::FailReason>& files)
 {
 	ui->tv_files->clear();
 
@@ -74,7 +78,7 @@ void FailMessageBox::set_failed_files(const QMap<QString, Tagging::Editor::FailR
 	}
 }
 
-void FailMessageBox::details_toggled(bool b)
+void GUI_FailMessageBox::details_toggled(bool b)
 {
 	ui->tv_files->setVisible(b);
 
@@ -90,13 +94,13 @@ void FailMessageBox::details_toggled(bool b)
 	}
 }
 
-void FailMessageBox::language_changed()
+void GUI_FailMessageBox::language_changed()
 {
 	ui->lab_warning->setText(tr("Some files could not be saved"));
 	ui->lab_header->setText(Lang::get(Lang::Warning));
 }
 
-void FailMessageBox::showEvent(QShowEvent* e)
+void GUI_FailMessageBox::showEvent(QShowEvent* e)
 {
 	Gui::Dialog::showEvent(e);
 	this->adjustSize();

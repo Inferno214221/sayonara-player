@@ -22,7 +22,7 @@
 #include "TagFromPath.h"
 #include "TagLineEdit.h"
 #include "GUI_CoverEdit.h"
-#include "FailMessageBox.h"
+#include "GUI_FailMessageBox.h"
 
 #include "Gui/TagEdit/ui_GUI_TagEdit.h"
 
@@ -153,11 +153,11 @@ void GUI_TagEdit::commit_finished()
 	QMap<QString, Editor::FailReason> failed_files = m->tag_edit->failed_files();
 	if(!failed_files.isEmpty())
 	{
-		auto* fmb = new FailMessageBox(this);
+		auto* fmb = new GUI_FailMessageBox(this);
 		fmb->set_failed_files(failed_files);
 		fmb->setModal(true);
 
-		connect(fmb, &FailMessageBox::sig_closed, fmb, &QObject::deleteLater);
+		connect(fmb, &GUI_FailMessageBox::sig_closed, fmb, &QObject::deleteLater);
 		fmb->show();
 	}
 }

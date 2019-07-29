@@ -591,7 +591,7 @@
   <customwidget>
    <class>TagTextInput</class>
    <extends>QLineEdit</extends>
-   <header>Gui/TagEdit/TagTextInput.h</header>
+   <header>Gui/Tagging/TagTextInput.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

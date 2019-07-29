@@ -27,7 +27,7 @@
 
 #include "InfoDialogContainer.h"
 
-#include "Gui/TagEdit/GUI_TagEdit.h"
+#include "Gui/Tagging/GUI_TagEdit.h"
 #include "Gui/InfoDialog/GUI_Lyrics.h"
 #include "Gui/Utils/Icons.h"
 

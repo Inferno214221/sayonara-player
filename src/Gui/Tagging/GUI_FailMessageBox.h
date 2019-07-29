@@ -9,14 +9,14 @@
 
 UI_FWD(GUI_FailMessageBox)
 
-class FailMessageBox : public Gui::Dialog
+class GUI_FailMessageBox : public Gui::Dialog
 {
 	Q_OBJECT
 	UI_CLASS(GUI_FailMessageBox)
 
 public:
-	FailMessageBox(QWidget* parent=nullptr);
-	~FailMessageBox()=default;
+	GUI_FailMessageBox(QWidget* parent=nullptr);
+	~GUI_FailMessageBox();
 
 	void set_failed_files(const QMap<QString, Tagging::Editor::FailReason>& failed_files);
 

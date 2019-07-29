@@ -221,7 +221,7 @@
   <customwidget>
    <class>TagLineEdit</class>
    <extends>QLineEdit</extends>
-   <header>Gui/TagEdit/TagLineEdit.h</header>
+   <header>Gui/Tagging/TagLineEdit.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
