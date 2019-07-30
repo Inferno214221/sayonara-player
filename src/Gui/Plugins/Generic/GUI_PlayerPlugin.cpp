@@ -24,6 +24,7 @@
 #include "GUI_PlayerPlugin.h"
 #include "Gui/Plugins/ui_GUI_PlayerPlugin.h"
 #include "Gui/Plugins/PlayerPluginBase.h"
+#include "Gui/Plugins/PlayerPluginHandler.h"
 
 struct GUI_PlayerPlugin::Private
 {
@@ -50,7 +51,7 @@ GUI_PlayerPlugin::~GUI_PlayerPlugin()
 
 void GUI_PlayerPlugin::show(PlayerPlugin::Base* player_plugin)
 {
-	close_cur_plugin();
+	close_current_plugin();
 	m->current_plugin = player_plugin;
 
 	if(!player_plugin){
@@ -72,6 +73,25 @@ void GUI_PlayerPlugin::show(PlayerPlugin::Base* player_plugin)
 }
 
 
+void GUI_PlayerPlugin::show_current_plugin()
+{
+	PlayerPlugin::Handler* pph = PlayerPlugin::Handler::instance();
+	show(pph->current_plugin());
+}
+
+
+void GUI_PlayerPlugin::close_current_plugin()
+{
+	if(m->current_plugin){
+		m->current_plugin->close();
+	}
+
+	m->current_plugin = nullptr;
+}
+
+
+
+
 void GUI_PlayerPlugin::language_changed()
 {
 	if(m->current_plugin){
@@ -81,16 +101,7 @@ void GUI_PlayerPlugin::language_changed()
 
 void GUI_PlayerPlugin::closeEvent(QCloseEvent* e)
 {
-	close_cur_plugin();
+	close_current_plugin();
 
 	Widget::closeEvent(e);
-}
-
-void GUI_PlayerPlugin::close_cur_plugin()
-{
-	if(m->current_plugin){
-		m->current_plugin->close();
-	}
-
-	m->current_plugin = nullptr;
 }

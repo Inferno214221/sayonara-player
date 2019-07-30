@@ -26,15 +26,16 @@
 
 #include <QToolTip>
 #include <QImage>
-#include <QPixmap>
 #include <QIcon>
 #include <QDateTime>
-#include <QFont>
 
 #include <algorithm>
 #include <cmath>
 
-using Cover::Location;
+static MetaData current_track()
+{
+	return PlayManager::instance()->current_track();
+}
 
 struct GUI_ControlsBase::Private
 {
@@ -47,7 +48,7 @@ GUI_ControlsBase::GUI_ControlsBase(QWidget* parent) :
 	m = Pimpl::make<Private>();
 }
 
-GUI_ControlsBase::~GUI_ControlsBase() {}
+GUI_ControlsBase::~GUI_ControlsBase() = default;
 
 void GUI_ControlsBase::init()
 {
@@ -56,40 +57,38 @@ void GUI_ControlsBase::init()
 	lab_sayonara()->setText(tr("Sayonara Player"));
 	lab_version()->setText( version );
 	lab_writtenby()->setText(tr("Written by") + " Lucio Carreras");
-	lab_copyright()->setText(tr("Copyright") + " 2011-" + QString::number(QDateTime::currentDateTime().date().year()));
+	lab_copyright()->setText(tr("Copyright") + " 2011 - " + QString::number(QDateTime::currentDateTime().date().year()));
 	btn_rec()->setVisible(false);
 
-	PlayManager* play_manager = PlayManager::instance();
-	int volume = play_manager->volume();
-	volume_changed(volume);
+	PlayManager* pm = PlayManager::instance();
 
-	bool muted = play_manager->is_muted();
-	mute_changed(muted);
+	volume_changed(pm->volume());
+	mute_changed(pm->is_muted());
 
 	setup_connections();
 	setup_shortcuts();
 
-	if(play_manager->playstate() != PlayState::FirstStartup)
+	if(pm->playstate() != PlayState::FirstStartup)
 	{
-		playstate_changed(play_manager->playstate());
+		playstate_changed(pm->playstate());
 
-		if(play_manager->playstate() != PlayState::Stopped)
+		if(pm->playstate() != PlayState::Stopped)
 		{
-			track_changed(play_manager->current_track());
-			cur_pos_changed(play_manager->initial_position_ms());
+			track_changed(pm->current_track());
+			cur_pos_changed(pm->initial_position_ms());
 		}
 	}
 
 	connect(btn_cover(), &CoverButton::sig_rejected, this, &GUI_ControlsBase::cover_click_rejected);
 
 	ListenSetting(Set::Engine_SR_Active, GUI_ControlsBase::sr_active_changed);
-	ListenSetting(Set::Engine_Pitch, GUI_ControlsBase::file_info_changed);
-	ListenSettingNoCall(Set::Engine_SpeedActive, GUI_ControlsBase::file_info_changed);
+	ListenSetting(Set::Engine_Pitch, GUI_ControlsBase::refresh_current_track);
+	ListenSettingNoCall(Set::Engine_SpeedActive, GUI_ControlsBase::refresh_current_track);
 
 	skin_changed();
 }
 
-RatingLabel*GUI_ControlsBase::lab_rating() const
+RatingLabel* GUI_ControlsBase::lab_rating() const
 {
 	return nullptr;
 }
@@ -100,37 +99,25 @@ QSize GUI_ControlsBase::image_size() const
 }
 
 // new track
-void GUI_ControlsBase::track_changed(const MetaData & md)
+void GUI_ControlsBase::track_changed(const MetaData& md)
 {
 	lab_sayonara()->hide();
-
-	lab_title()->show();
-
 	lab_version()->hide();
-	lab_artist()->show();
-
 	lab_writtenby()->hide();
-	lab_album()->show();
-
 	lab_copyright()->hide();
 
-	lab_bitrate()->show();
-	lab_filesize()->show();
+	lab_title()->show();
+	lab_artist()->show();
+	lab_album()->show();
 	widget_details()->show();
 
-	set_info_labels(md);
-	set_cur_pos_label(0);
-	set_total_time_label(md.length_ms);
-	file_info_changed();
+	refresh_current_position(0);
+	refresh_labels(md);
+
 	set_cover_location(md);
 	set_radio_mode( md.radio_mode() );
 
-	sli_progress()->setEnabled( (md.length_ms / 1000) > 0 );
-
-	if(lab_rating()){
-		lab_rating()->setVisible(md.radio_mode() == RadioMode::Off);
-		lab_rating()->set_rating(md.rating);
-	}
+	sli_progress()->setEnabled( (md.duration_ms / 1000) > 0 );
 }
 
 
@@ -151,8 +138,7 @@ void GUI_ControlsBase::playstate_changed(PlayState state)
 			break;
 	}
 
-	check_record_button_visible();
-	return;
+	check_record_button_visible();	
 }
 
 
@@ -191,26 +177,22 @@ void GUI_ControlsBase::stopped()
 	toggle_buffer_mode(false);
 
 	lab_title()->hide();
-	lab_sayonara()->show();
-
 	lab_artist()->hide();
-	lab_writtenby()->show();
-
 	lab_album()->hide();
-	lab_version()->show();
-
 	widget_details()->hide();
 
+	lab_current_time()->setText("00:00");
+	lab_current_time()->hide();
+	lab_max_time()->clear();
+	lab_max_time()->setVisible(false);
+
+	lab_sayonara()->show();
+	lab_writtenby()->show();
+	lab_version()->show();
 	lab_copyright()->show();
 
 	sli_progress()->setValue(0);
 	sli_progress()->setEnabled(false);
-
-	lab_current_time()->setText("00:00");
-	lab_current_time()->hide();
-
-	lab_max_time()->clear();
-	lab_max_time()->setVisible(false);
 
 	set_standard_cover();
 
@@ -256,13 +238,12 @@ void GUI_ControlsBase::buffering(int progress)
 	// no buffering
 	else
 	{
-		PlayManager* pm = PlayManager::instance();
 		toggle_buffer_mode(false);
 
 		sli_buffer()->setMinimum(0);
 		sli_buffer()->setMaximum(0);
 
-		lab_max_time()->setVisible(pm->current_track().length_ms > 0);
+		lab_max_time()->setVisible(current_track().duration_ms > 0);
 	}
 }
 
@@ -270,7 +251,7 @@ void GUI_ControlsBase::progress_moved(int val)
 {
 	val = std::max(val, 0);
 
-	set_cur_pos_label(val);
+	refresh_current_position(val);
 
 	double percent = (val * 1.0) / sli_progress()->maximum();
 	PlayManager::instance()->seek_rel(percent);
@@ -306,7 +287,7 @@ void GUI_ControlsBase::cur_pos_changed(MilliSeconds pos_ms)
 }
 
 
-void GUI_ControlsBase::set_cur_pos_label(int val)
+void GUI_ControlsBase::refresh_current_position(int val)
 {
 	MilliSeconds duration = PlayManager::instance()->duration_ms();
 	int max = sli_progress()->maximum();
@@ -392,23 +373,20 @@ void GUI_ControlsBase::decrease_volume()
 
 void GUI_ControlsBase::change_volume_by_tick(int val)
 {
-	if(val > 0){
+	if(val > 0) {
 		increase_volume();
 	}
-	else{
+
+	else {
 		decrease_volume();
 	}
 }
 
 void GUI_ControlsBase::mute_changed(bool muted)
 {
-	int val;
-	if(muted){
+	int val = PlayManager::instance()->volume();
+	if(muted) {
 		val = 0;
-	}
-
-	else {
-		val = PlayManager::instance()->volume();
 	}
 
 	sli_volume()->setValue(val);
@@ -420,72 +398,32 @@ void GUI_ControlsBase::mute_changed(bool muted)
 
 // public slot:
 // id3 tags have changed
-void GUI_ControlsBase::id3_tags_changed(const MetaDataList& v_md_old, const MetaDataList& v_md_new)
+void GUI_ControlsBase::id3_tags_changed(const MetaDataList& old_md, const MetaDataList& new_md)
 {
-	PlayManager* pm = PlayManager::instance();
-	const MetaData& cur_md = pm->current_track();
-
-	IdxList idxs = v_md_old.findTracks(cur_md.filepath());
-	if(idxs.empty())
-	{
+	IdxList idxs = old_md.findTracks(current_track().filepath());
+	if(idxs.empty()) {
 		return;
 	}
 
-	const MetaData& md = v_md_new[idxs.first()];
-	set_info_labels(md);
+	MetaData md = new_md[idxs.first()];
+
+	refresh_labels(md);
 	set_cover_location(md);
 
-	setWindowTitle(QString("Sayonara - ") + md.title());
-
-	if(lab_rating())
-	{
-		lab_rating()->set_rating(md.rating);
-	}
+	setWindowTitle(
+		QString("Sayonara - %1").arg(md.title())
+	);
 }
 
-void GUI_ControlsBase::md_changed(const MetaData& md)
+void GUI_ControlsBase::refresh_current_track()
 {
-	MetaData modified_md(md);
-
-	if(md.radio_mode() == RadioMode::Station){
-		modified_md.set_album(md.album() + " (" + md.filepath() + ")");
-	}
-
-	set_info_labels(modified_md);
-}
-
-void GUI_ControlsBase::dur_changed(const MetaData& md)
-{
-	set_total_time_label(md.length_ms);
-}
-
-
-void GUI_ControlsBase::br_changed(const MetaData& md)
-{
-	if(md.bitrate / 1000 > 0)
-	{
-		sp_log(Log::Develop, this) << "Bitrate " << md.bitrate;
-
-		QString bitrate = QString::number(std::nearbyint(md.bitrate / 1000.)) + " kBit/s";
-		lab_bitrate()->setText(bitrate);
-	}
-
-	if(md.filesize > 0)
-	{
-		QString filesize = QString::number( static_cast<double>(md.filesize / 1024) / 1024.0, 'f', 2) + " MB";
-		lab_filesize()->setText(filesize);
-	}
-}
-
-void GUI_ControlsBase::refresh_info_labels()
-{
-	set_info_labels(PlayManager::instance()->current_track());
+	refresh_labels( current_track() );
 }
 
 static void set_floating_text(QLabel* label, const QString& text)
 {
 	Gui::FloatingLabel* floating_label = dynamic_cast<Gui::FloatingLabel*>(label);
-	if(floating_label){
+	if(floating_label) {
 		floating_label->setFloatingText(text);
 	}
 
@@ -494,57 +432,68 @@ static void set_floating_text(QLabel* label, const QString& text)
 	}
 }
 
-void GUI_ControlsBase::set_info_labels(const MetaData& md)
+void GUI_ControlsBase::refresh_labels(const MetaData& md)
 {
-	// title
+	// title, artist
 	set_floating_text(lab_title(), md.title());
-
-	//album
-	QString str_year = QString::number(md.year);
-	QString album_name(md.album());
-
-	if(md.year > 1000 && !album_name.contains(str_year)){
-		album_name += " (" + str_year + ")";
-	}
-
-	set_floating_text(lab_album(), album_name);
 	set_floating_text(lab_artist(), md.artist());
-}
 
-void GUI_ControlsBase::file_info_changed()
-{
-	const MetaData& md = PlayManager::instance()->current_track();
+	{ //album
+		QString str_year = QString::number(md.year);
+		QString album_name;
 
-	QString rating_text;
-	if( (GetSetting(Set::Engine_Pitch) != 440) &&
-		GetSetting(Set::Engine_SpeedActive))
-	{
-		if(!rating_text.isEmpty()){
-			rating_text += ", ";
+		if(md.year > 1000 && !album_name.contains(str_year)) {
+			album_name = md.album() + " (" + str_year + ")";
 		}
 
-		rating_text += QString::number(GetSetting(Set::Engine_Pitch)) + "Hz";
+		else if(md.radio_mode() == RadioMode::Station) {
+			album_name = md.album() + " (" + md.filepath() + ")";
+		}
+
+		set_floating_text(lab_album(), album_name);
 	}
 
+	{ // pitch/speed
 
-	QString sBitrate;
-	if(md.bitrate / 1000 > 0)
-	{
-		sBitrate = QString::number(md.bitrate / 1000) + " kBit/s";
-		lab_bitrate()->setText(sBitrate);
+		if( (GetSetting(Set::Engine_Pitch) != 440) &&
+			GetSetting(Set::Engine_SpeedActive))
+		{
+			QString pitch_text = QString::number(GetSetting(Set::Engine_Pitch)) + "Hz";
+			Q_UNUSED(pitch_text)
+		}
 	}
 
-	lab_bitrate()->setVisible(!sBitrate.isEmpty());
+	{ // bitrate
+		QString sBitrate;
+		if(md.bitrate / 1000 > 0)
+		{
+			sBitrate = QString::number(std::nearbyint(md.bitrate / 1000.0)) + " kBit/s";
+			lab_bitrate()->setText(sBitrate);
+		}
 
-
-	QString sFilesize;
-	if(md.filesize > 0)
-	{
-		sFilesize = QString::number( static_cast<double>(md.filesize / 1024) / 1024.0, 'f', 2) + " MB";
-		lab_filesize()->setText(sFilesize);
+		lab_bitrate()->setVisible(!sBitrate.isEmpty());
 	}
 
-	lab_filesize()->setVisible(!sFilesize.isEmpty());
+	{ // filesize
+		QString sFilesize;
+		if(md.filesize > 0)
+		{
+			sFilesize = QString::number( static_cast<double>(md.filesize / 1024) / 1024.0, 'f', 2) + " MB";
+			lab_filesize()->setText(sFilesize);
+		}
+
+		lab_filesize()->setVisible(!sFilesize.isEmpty());
+	}
+
+	{ // rating
+		if(lab_rating())
+		{
+			lab_rating()->setVisible(md.radio_mode() == RadioMode::Off);
+			lab_rating()->set_rating(md.rating);
+		}
+	}
+
+	set_total_time_label(md.duration_ms);
 }
 
 
@@ -581,25 +530,20 @@ void GUI_ControlsBase::sr_active_changed()
 
 void GUI_ControlsBase::check_record_button_visible()
 {
-	PlayManagerPtr play_manager = PlayManager::instance();
+	PlayManager* pm = PlayManager::instance();
 
-	const MetaData& md = play_manager->current_track();
-	PlayState playstate = play_manager->playstate();
-
-	bool is_lame_available = GetSetting(SetNoDB::MP3enc_found);
-	bool is_sr_active = GetSetting(Set::Engine_SR_Active);
-	bool is_radio = ((md.radio_mode() != RadioMode::Off));
-	bool is_playing = (playstate == PlayState::Playing);
-
-	bool recording_enabled = (is_lame_available &&
-							  is_sr_active &&
-							  is_radio &&
-							  is_playing);
+	bool recording_enabled =
+	(
+		GetSetting(SetNoDB::MP3enc_found) &&	// Lame Available
+		GetSetting(Set::Engine_SR_Active) &&	// Streamrecorder active
+		(current_track().radio_mode() != RadioMode::Off) &&		// Radio on
+		(pm->playstate() == PlayState::Playing)	// Is Playing
+	);
 
 	btn_play()->setVisible(!recording_enabled);
 	btn_rec()->setVisible(recording_enabled);
 
-	if(!recording_enabled){
+	if(!recording_enabled) {
 		btn_rec()->setChecked(false);
 	}
 }
@@ -607,17 +551,17 @@ void GUI_ControlsBase::check_record_button_visible()
 
 void GUI_ControlsBase::set_cover_location(const MetaData& md)
 {
-	Location cl = Location::cover_location(md);
-
+	auto cl = Cover::Location::cover_location(md);
 	btn_cover()->set_cover_location(cl);
 }
 
 void GUI_ControlsBase::set_standard_cover()
 {
-	btn_cover()->set_cover_location(Location::invalid_location());
+	auto cl = Cover::Location::invalid_location();
+	btn_cover()->set_cover_location(cl);
 }
 
-void GUI_ControlsBase::force_cover(const QImage& img)
+void GUI_ControlsBase::cover_changed(const QImage& img)
 {
 	btn_cover()->force_cover(img);
 }
@@ -644,18 +588,17 @@ void GUI_ControlsBase::setup_connections()
 
 	connect(pm, &PlayManager::sig_playstate_changed, this, &GUI_ControlsBase::playstate_changed);
 	connect(pm, &PlayManager::sig_track_changed, this, &GUI_ControlsBase::track_changed);
+	connect(pm, &PlayManager::sig_track_metadata_changed, this, &GUI_ControlsBase::refresh_current_track);
+	connect(pm, &PlayManager::sig_duration_changed, this, &GUI_ControlsBase::refresh_current_track);
+	connect(pm, &PlayManager::sig_bitrate_changed,	this, &GUI_ControlsBase::refresh_current_track);
 	connect(pm, &PlayManager::sig_position_changed_ms, this,	&GUI_ControlsBase::cur_pos_changed);
 	connect(pm, &PlayManager::sig_buffer, this, &GUI_ControlsBase::buffering);
 	connect(pm, &PlayManager::sig_volume_changed, this, &GUI_ControlsBase::volume_changed);
 	connect(pm, &PlayManager::sig_mute_changed, this, &GUI_ControlsBase::mute_changed);
 	connect(pm, &PlayManager::sig_record, this, &GUI_ControlsBase::rec_changed);
 
-	// engine
 	Engine::Handler* engine = Engine::Handler::instance();
-	connect(engine, &Engine::Handler::sig_md_changed,	this, &GUI_ControlsBase::md_changed);
-	connect(engine, &Engine::Handler::sig_duration_changed, this, &GUI_ControlsBase::dur_changed);
-	connect(engine, &Engine::Handler::sig_bitrate_changed,	this, &GUI_ControlsBase::br_changed);
-	connect(engine, &Engine::Handler::sig_cover_changed, this, &GUI_ControlsBase::force_cover);
+	connect(engine, &Engine::Handler::sig_cover_changed, this, &GUI_ControlsBase::cover_changed);
 
 	Tagging::ChangeNotifier* mdcn = Tagging::ChangeNotifier::instance();
 	connect(mdcn, &Tagging::ChangeNotifier::sig_metadata_changed, this, &GUI_ControlsBase::id3_tags_changed);
@@ -715,21 +658,19 @@ MetaDataList GUI_ControlsBase::info_dialog_data() const
 		return MetaDataList();
 	}
 
-	return MetaDataList(
-		PlayManager::instance()->current_track()
-	);
+	return MetaDataList(current_track());
 }
 
 void GUI_ControlsBase::resizeEvent(QResizeEvent* e)
 {
 	Widget::resizeEvent(e);
-	refresh_info_labels();
+	refresh_current_track();
 }
 
 void GUI_ControlsBase::showEvent(QShowEvent* e)
 {
 	Widget::showEvent(e);
-	refresh_info_labels();
+	refresh_current_track();
 }
 
 void GUI_ControlsBase::contextMenuEvent(QContextMenuEvent* e)

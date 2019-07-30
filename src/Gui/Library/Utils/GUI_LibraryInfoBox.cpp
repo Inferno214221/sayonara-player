@@ -128,7 +128,7 @@ void GUI_LibraryInfoBox::refresh()
 	MilliSeconds filesize = 0;
 
 	for( const MetaData& md : v_md ) {
-		duration_ms += md.length_ms;
+		duration_ms += md.duration_ms;
 		filesize += md.filesize;
 	}
 

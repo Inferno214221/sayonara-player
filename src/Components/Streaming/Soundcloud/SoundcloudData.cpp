@@ -236,7 +236,7 @@ bool SC::Database::db_fetch_tracks(Query& q, MetaDataList& result)
 
 		data.id = 		 q.value(0).toInt();
 		data.set_title(q.value(1).toString());
-		data.length_ms = q.value(2).toInt();
+		data.duration_ms = q.value(2).toInt();
 		data.year = 	 q.value(3).toInt();
 		data.bitrate = 	 q.value(4).toInt();
 		data.set_filepath(q.value(5).toString());
@@ -513,7 +513,7 @@ bool SC::Database::updateTrack(const MetaData& md)
 	q.bindValue(":filename",	md.filepath());
 	q.bindValue(":albumID",		md.album_id);
 	q.bindValue(":artistID",	md.artist_id);
-	q.bindValue(":length",		QVariant::fromValue(md.length_ms));
+	q.bindValue(":length",		QVariant::fromValue(md.duration_ms));
 	q.bindValue(":year",		md.year);
 	q.bindValue(":title",		md.title());
 	q.bindValue(":track",		md.track_num);
@@ -562,7 +562,7 @@ bool SC::Database::insertTrackIntoDatabase(const MetaData &md, int artist_id, in
 	q.bindValue(":filename",	md.filepath());
 	q.bindValue(":albumID",		album_id);
 	q.bindValue(":artistID",	artist_id);
-	q.bindValue(":length",		QVariant::fromValue(md.length_ms));
+	q.bindValue(":length",		QVariant::fromValue(md.duration_ms));
 	q.bindValue(":year",		md.year);
 	q.bindValue(":title",		md.title());
 	q.bindValue(":track",		md.track_num);

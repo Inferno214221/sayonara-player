@@ -79,12 +79,8 @@ public:
 	virtual QPushButton* btn_stop() const=0;
 	virtual CoverButton* btn_cover() const=0;
 
-	virtual void toggle_buffer_mode(bool buffering)=0;
-	//virtual bool is_resizable() const=0;
-
 	virtual QSize image_size() const;
 	virtual bool is_extern_resize_allowed() const=0;
-
 
 private:
 	QIcon icon(Gui::Icons::IconName name);
@@ -93,34 +89,22 @@ private:
 	void paused();
 	void stopped();
 
-	void check_record_button_visible();
-
-	void set_cover_location(const MetaData &md);
+	void set_cover_location(const MetaData& md);
 	void set_standard_cover();
+
 	void set_radio_mode(RadioMode radio);
+	void check_record_button_visible();
 
 	void setup_volume_button(int percent);
 	void increase_volume();
 	void decrease_volume();
 
-	void set_cur_pos_label(int val);
+	void refresh_current_position(int val);
 	void set_total_time_label(MilliSeconds total_time);
-	void set_info_labels(const MetaData &md);
-	void refresh_info_labels();
 
 	void setup_shortcuts();
 	void setup_connections();
 
-
-protected:
-	void resizeEvent(QResizeEvent* e) override;
-	void showEvent(QShowEvent* e) override;
-	void contextMenuEvent(QContextMenuEvent* e) override;
-	void skin_changed() override;
-
-public:
-	void file_info_changed();
-	void sr_active_changed();
 
 public slots:
 	void change_volume_by_tick(int val);
@@ -140,20 +124,28 @@ private slots:
 	void mute_changed(bool muted);
 
 	void track_changed(const MetaData& md);
-	void id3_tags_changed(const MetaDataList &v_md_old, const MetaDataList &v_md_new);
-	void md_changed(const MetaData &md);
-	void dur_changed(const MetaData &md);
-	void br_changed(const MetaData &md);
+	void id3_tags_changed(const MetaDataList& v_md_old, const MetaDataList& v_md_new);
+
+	void refresh_labels(const MetaData& md);
+	void refresh_current_track();
 
 	// cover changed by engine
-	void force_cover(const QImage &img);
+	void cover_changed(const QImage& img);
 	void cover_click_rejected();
 
+	void sr_active_changed();
 
-	// InfoDialogContainer interface
 protected:
+
+	virtual void toggle_buffer_mode(bool buffering)=0;
+
 	MD::Interpretation metadata_interpretation() const override;
 	MetaDataList info_dialog_data() const override;
+
+	void resizeEvent(QResizeEvent* e) override;
+	void showEvent(QShowEvent* e) override;
+	void contextMenuEvent(QContextMenuEvent* e) override;
+	void skin_changed() override;
 };
 
 #endif // GUI_CONTROLSBASE_H

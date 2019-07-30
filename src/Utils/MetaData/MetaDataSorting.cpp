@@ -257,11 +257,11 @@ bool MetaDataSorting::TracksByYearDesc(const MetaData& md1, const MetaData& md2)
 
 bool MetaDataSorting::TracksByLengthAsc(const MetaData& md1, const MetaData& md2)
 {
-	if(md1.length_ms < md2.length_ms){
+	if(md1.duration_ms < md2.duration_ms){
 		return true;
 	}
 
-	if(md1.length_ms == md2.length_ms){
+	if(md1.duration_ms == md2.duration_ms){
 		return TracksByArtistAsc(md1, md2);
 	}
 
@@ -270,11 +270,11 @@ bool MetaDataSorting::TracksByLengthAsc(const MetaData& md1, const MetaData& md2
 
 bool MetaDataSorting::TracksByLengthDesc(const MetaData& md1, const MetaData& md2)
 {
-	if(md2.length_ms < md1.length_ms){
+	if(md2.duration_ms < md1.duration_ms){
 		return true;
 	}
 
-	if(md1.length_ms == md2.length_ms){
+	if(md1.duration_ms == md2.duration_ms){
 		return TracksByArtistAsc(md1, md2);
 	}
 

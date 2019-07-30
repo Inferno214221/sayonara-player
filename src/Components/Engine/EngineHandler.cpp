@@ -73,23 +73,27 @@ Handler::Handler(QObject* parent) :
 		m->engine->change_track(md);
 	}
 
-	connect(m->engine, &Engine::sig_md_changed, this, &Handler::sig_md_changed);
-	connect(m->engine, &Engine::sig_duration_changed, this, &Handler::sig_duration_changed);
-	connect(m->engine, &Engine::sig_bitrate_changed, this, &Handler::sig_bitrate_changed);
 	connect(m->engine, &Engine::sig_cover_changed, this, &Handler::sig_cover_changed);
-
 	connect(m->engine, &Engine::sig_error, play_manager, &PlayManager::error);
 	connect(m->engine, &Engine::sig_current_position_changed, play_manager, &PlayManager::set_position_ms);
 	connect(m->engine, &Engine::sig_track_finished, play_manager, &PlayManager::set_track_finished);
 	connect(m->engine, &Engine::sig_track_ready, play_manager, &PlayManager::set_track_ready);
 	connect(m->engine, &Engine::sig_buffering, play_manager, &PlayManager::buffering);
-	connect(m->engine, &Engine::sig_md_changed, play_manager, &PlayManager::change_metadata);
+
 	connect(m->engine, &Engine::sig_duration_changed, this, [play_manager](const MetaData& md){
-		play_manager->change_duration(md.length_ms);
+		play_manager->change_duration(md.duration_ms);
+	});
+
+	connect(m->engine, &Engine::sig_bitrate_changed, this, [play_manager](const MetaData& md){
+		play_manager->change_bitrate(md.bitrate);
+	});
+
+	connect(m->engine, &Engine::sig_metadata_changed, this, [play_manager](const MetaData& md){
+		play_manager->change_track_metadata(md);
 	});
 }
 
-Handler::~Handler() {}
+Handler::~Handler() = default;
 
 bool Handler::init()
 {

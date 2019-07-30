@@ -187,7 +187,7 @@ bool Tracks::db_fetch_tracks(Query& q, MetaDataList& result)
 
 		data.id = 		 	q.value(0).toInt();
 		data.set_title(		q.value(1).toString());
-		data.length_ms = 	q.value(2).toInt();
+		data.duration_ms = 	q.value(2).toInt();
 		data.year = 	 	q.value(3).toInt();
 		data.bitrate = 	 	q.value(4).toInt();
 		data.set_filepath(	q.value(5).toString());
@@ -687,7 +687,7 @@ bool Tracks::updateTrack(const MetaData& md)
 		{"filename",		Util::cvt_not_null(md.filepath())},
 		{"filesize",		QVariant::fromValue(md.filesize)},
 		{"genre",			Util::cvt_not_null(md.genres_to_string())},
-		{"length",			QVariant::fromValue(md.length_ms)},
+		{"length",			QVariant::fromValue(md.duration_ms)},
 		{"libraryID",		md.library_id},
 		{"modifydate",		QVariant::fromValue(Util::current_date_to_int())},
 		{"rating",			md.rating},
@@ -741,7 +741,7 @@ bool Tracks::insertTrackIntoDatabase(const MetaData& md, ArtistId artist_id, Alb
 		{"albumArtistID",	album_artist_id},
 		{"title",			Util::cvt_not_null(md.title())},
 		{"year",			md.year},
-		{"length",			QVariant::fromValue(md.length_ms)},
+		{"length",			QVariant::fromValue(md.duration_ms)},
 		{"track",			md.track_num},
 		{"bitrate",			md.bitrate},
 		{"genre",			Util::cvt_not_null(md.genres_to_string())},

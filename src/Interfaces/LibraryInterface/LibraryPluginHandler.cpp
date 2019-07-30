@@ -92,11 +92,13 @@ void PluginHandler::init(const ContainerList& containers)
 {
 	m->empty_library = new EmptyLibraryContainer(this);
 
-	QString last_plugin = GetSetting(Set::Lib_CurPlugin);
+	QString last_library = GetSetting(Set::Lib_CurPlugin);
 	init_libraries(containers);
 	init_dll_libraries();
 
-	set_current_library( last_plugin );
+	set_current_library(last_library);
+
+	ListenSetting(Set::Player_Language, PluginHandler::language_changed);
 }
 
 
@@ -266,7 +268,7 @@ void PluginHandler::set_current_library(Container* cur_library)
 
 	SetSetting(Set::Lib_CurPlugin, cur_library->name() );
 
-	emit sig_current_library_changed( cur_library->name() );
+	emit sig_current_library_changed();
 }
 
 Container* PluginHandler::current_library() const
@@ -281,6 +283,15 @@ QMenu* PluginHandler::current_library_menu() const
 	}
 
 	return m->current_library->menu();
+}
+
+QWidget*PluginHandler::current_library_widget() const
+{
+	if(!m->current_library) {
+		return nullptr;
+	}
+
+	return m->current_library->widget();
 }
 
 void PluginHandler::add_local_library(Library::Container* container)
@@ -351,3 +362,13 @@ QList<Library::Container*> PluginHandler::get_libraries(bool also_empty) const
 
 	return containers;
 }
+
+void PluginHandler::language_changed()
+{
+	Library::Container* cur_lib = current_library();
+	if(cur_lib)
+	{
+		cur_lib->retranslate();
+	}
+}
+

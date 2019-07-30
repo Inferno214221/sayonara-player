@@ -152,7 +152,7 @@ struct MetaData::Private
 
 MetaData::MetaData() :
 	LibraryItem(),
-	length_ms(0),
+	duration_ms(0),
 	filesize(0),
 
 	id(-1),
@@ -182,7 +182,7 @@ MetaData::MetaData() :
 
 MetaData::MetaData(const MetaData& other) :
 	LibraryItem(other),
-	CASSIGN(length_ms),
+	CASSIGN(duration_ms),
 	CASSIGN(filesize),
 	CASSIGN(id),
 	CASSIGN(artist_id),
@@ -208,7 +208,7 @@ MetaData::MetaData(const MetaData& other) :
 
 MetaData::MetaData(MetaData&& other) :
 	LibraryItem(other),
-	CMOVE(length_ms),
+	CMOVE(duration_ms),
 	CMOVE(filesize),
 	CMOVE(id),
 	CMOVE(artist_id),
@@ -407,7 +407,7 @@ MetaData& MetaData::operator=(const MetaData& other)
 
 	(*m) = *(other.m);
 
-	ASSIGN(length_ms);
+	ASSIGN(duration_ms);
 	ASSIGN(filesize);
 	ASSIGN(id);
 	ASSIGN(artist_id);
@@ -433,7 +433,7 @@ MetaData& MetaData::operator=(MetaData&& other)
 
 	(*m) = std::move(*(other.m));
 
-	MOVE(length_ms);
+	MOVE(duration_ms);
 	MOVE(filesize);
 	MOVE(id);
 	MOVE(artist_id);
@@ -485,7 +485,7 @@ bool MetaData::is_equal_deep(const MetaData& other) const
 {
 	return
 	(
-		CMP(length_ms) &&
+		CMP(duration_ms) &&
 		CMP(filesize) &&
 		CMP(id) &&
 		CMP(artist_id) &&

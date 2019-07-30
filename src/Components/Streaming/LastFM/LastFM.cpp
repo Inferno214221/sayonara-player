@@ -211,7 +211,7 @@ bool Base::check_scrobble(MilliSeconds pos_ms)
 		return false;
 	}
 
-	if(m->md.length_ms <= 0){
+	if(m->md.duration_ms <= 0){
 		return false;
 	}
 
@@ -237,7 +237,7 @@ bool Base::check_scrobble(MilliSeconds pos_ms)
 			m->old_pos = pos_ms;
 
 			if( (m->old_pos_difference > scrobble_time_ms) ||
-				(m->old_pos_difference >= ((m->md.length_ms  * 3) / 4) && m->md.length_ms >= 1000))
+				(m->old_pos_difference >= ((m->md.duration_ms  * 3) / 4) && m->md.duration_ms >= 1000))
 			{
 				scrobble(m->md);
 			}
@@ -275,7 +275,7 @@ void Base::scrobble(const MetaData& md)
 	UrlParams sig_data;
 	sig_data["api_key"] = LFM_API_KEY;
 	sig_data["artist"] = artist.toLocal8Bit();
-	sig_data["duration"] = QString::number(md.length_ms / 1000).toLocal8Bit();
+	sig_data["duration"] = QString::number(md.duration_ms / 1000).toLocal8Bit();
 	sig_data["method"] = "track.scrobble";
 	sig_data["sk"] = m->session_key.toLocal8Bit();
 	sig_data["timestamp"] = QString::number(started).toLocal8Bit();

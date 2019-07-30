@@ -24,6 +24,9 @@
 #include "GUI_PlayerMenubar.h"
 #include "GUI_Controls.h"
 #include "GUI_ControlsNew.h"
+#include "VersionChecker.h"
+#include "Translator.h"
+
 #include "Gui/Player/ui_GUI_Player.h"
 
 #include "Gui/Plugins/PlayerPluginBase.h"
@@ -36,8 +39,6 @@
 #include "Utils/Message/Message.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Language/Language.h"
-#include "Utils/Language/LanguageUtils.h"
-#include "Utils/WebAccess/AsyncWebAccess.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/MetaData/MetaData.h"
 
@@ -49,7 +50,6 @@
 #include "Interfaces/LibraryInterface/LibraryPluginHandler.h"
 #include "Interfaces/LibraryInterface/LibraryContainer/LibraryContainer.h"
 
-#include <QTranslator>
 #include <QAction>
 #include <QKeySequence>
 #include <QCloseEvent>
@@ -59,7 +59,6 @@
 struct GUI_Player::Private
 {
 	Menubar*					menubar=nullptr;
-	QList<QTranslator*>			translators;
 	GUI_Logger*					logger=nullptr;
 	GUI_TrayIcon*				tray_icon=nullptr;
 	GUI_ControlsBase*			controls=nullptr;
@@ -67,24 +66,17 @@ struct GUI_Player::Private
 	// hack for resizing the player after library show/hide:
 	// star resizing after splitter has finished painting
 	GenericFilter*				splitter_paint_event_filter=nullptr;
-	GenericFilter*				style_changed_event_filter=nullptr;
 
 	QPoint						initial_pos;
 	QSize						initial_sz;
 	QSize						new_size;
-	QString						current_language;
 
 	int							style;
 	bool						shutdown_requested;
-	bool						is_maximizable;
-	bool						is_fullscreenable;
-
 	bool						ctrl_pressed;
 
 	Private() :
 		shutdown_requested(false),
-		is_maximizable(true),
-		is_fullscreenable(true),
 		ctrl_pressed(false)
 	{
 		logger = new GUI_Logger();
@@ -106,10 +98,7 @@ GUI_Player::GUI_Player(QWidget* parent) :
 	MessageReceiverInterface("Player Main Window")
 {
 	m = Pimpl::make<Private>();
-	m->style_changed_event_filter = new GenericFilter(
-		QList<QEvent::Type>{QEvent::Paint},
-		this
-	);
+
 
 	language_changed();
 
@@ -140,9 +129,8 @@ GUI_Player::GUI_Player(QWidget* parent) :
 
 	if(GetSetting(Set::Player_NotifyNewVersion))
 	{
-		AsyncWebAccess* awa = new AsyncWebAccess(this);
-		awa->run("http://sayonara-player.com/current_version");
-		connect(awa, &AsyncWebAccess::sig_finished, this, &GUI_Player::awa_version_finished);
+		VersionChecker* vc = new VersionChecker(this);
+		connect(vc, &VersionChecker::sig_finished, vc, &QObject::deleteLater);
 	}
 
 	ListenSettingNoCall(Set::Player_Fullscreen, GUI_Player::fullscreen_changed);
@@ -219,12 +207,17 @@ void GUI_Player::init_main_splitter()
 
 void GUI_Player::init_font_change_fix()
 {
-	installEventFilter(m->style_changed_event_filter);
+	auto* filter = new GenericFilter(
+		QList<QEvent::Type>{QEvent::Paint},
+		this
+	);
 
-	connect(m->style_changed_event_filter, &GenericFilter::sig_event, this, [=](QEvent::Type t){
+	installEventFilter(filter);
+
+	connect(filter, &GenericFilter::sig_event, this, [=](QEvent::Type t){
 		Q_UNUSED(t)
 
-		this->removeEventFilter(m->style_changed_event_filter);
+		this->removeEventFilter(filter);
 		this->skin_changed();
 		this->update();
 	});
@@ -233,16 +226,14 @@ void GUI_Player::init_font_change_fix()
 
 void GUI_Player::init_connections()
 {
-	PlayManager* play_manager = PlayManager::instance();
 	Library::PluginHandler* lph = Library::PluginHandler::instance();
-	PlayerPlugin::Handler* pph = PlayerPlugin::Handler::instance();
-
 	connect(lph, &Library::PluginHandler::sig_current_library_changed,
 			this, &GUI_Player::current_library_changed);
 
 	connect(lph, &Library::PluginHandler::sig_libraries_changed,
 			this, &GUI_Player::check_library_menu_action);
 
+	PlayManager* play_manager = PlayManager::instance();
 	connect(play_manager, &PlayManager::sig_track_changed, this, &GUI_Player::current_track_changed);
 	connect(play_manager, &PlayManager::sig_playstate_changed, this, &GUI_Player::playstate_changed);
 	connect(play_manager, &PlayManager::sig_error, this, &GUI_Player::play_error);
@@ -254,8 +245,9 @@ void GUI_Player::init_connections()
 	connect(m->menubar, &Menubar::sig_logger_clicked, m->logger, &GUI_Logger::show);
 	connect(m->menubar, &Menubar::sig_minimize_clicked, this, &GUI_Player::minimize);
 
+	PlayerPlugin::Handler* pph = PlayerPlugin::Handler::instance();
 	connect(pph, &PlayerPlugin::Handler::sig_plugin_added, this, &GUI_Player::plugin_added);
-	connect(pph, &PlayerPlugin::Handler::sig_plugin_closed, this, &GUI_Player::plugin_closed);
+	connect(pph, &PlayerPlugin::Handler::sig_plugin_closed, ui->plugin_widget, &QWidget::close);
 	connect(pph, &PlayerPlugin::Handler::sig_plugin_action_triggered, this, &GUI_Player::plugin_action_triggered);
 }
 
@@ -356,7 +348,7 @@ void GUI_Player::plugin_added(PlayerPlugin::Base* plugin)
 
 	if(plugin == pph->current_plugin())
 	{
-		plugin_opened();
+		ui->plugin_widget->show_current_plugin();
 	}
 }
 
@@ -364,57 +356,12 @@ void GUI_Player::plugin_added(PlayerPlugin::Base* plugin)
 void GUI_Player::plugin_action_triggered(bool b)
 {
 	if(b) {
-		plugin_opened();
+		ui->plugin_widget->show_current_plugin();
 	}
 
 	else {
-		plugin_closed();
+		ui->plugin_widget->close();
 	}
-}
-
-
-void GUI_Player::plugin_opened()
-{
-	PlayerPlugin::Handler* pph = PlayerPlugin::Handler::instance();
-	PlayerPlugin::Base* current_plugin = pph->current_plugin();
-	ui->plugin_widget->show(current_plugin);
-}
-
-
-void GUI_Player::plugin_closed()
-{
-	ui->plugin_widget->close();
-}
-
-
-void GUI_Player::awa_version_finished()
-{
-	AsyncWebAccess* awa = static_cast<AsyncWebAccess*>(sender());
-	if(!awa){
-		return;
-	}
-
-	if(awa->status() != AsyncWebAccess::Status::GotData) {
-		awa->deleteLater();
-		return;
-	}
-
-	QString new_version = QString(awa->data()).trimmed();
-	QString cur_version = GetSetting(Set::Player_Version);
-
-	bool notify_new_version = GetSetting(Set::Player_NotifyNewVersion);
-	bool dark = Style::is_dark();
-
-	sp_log(Log::Info, this) << "Newest Version: " << new_version;
-	sp_log(Log::Info, this) << "This Version:   " << cur_version;
-
-	QString link = Util::create_link("http://sayonara-player.com", dark);
-
-	if(new_version > cur_version && notify_new_version) {
-		Message::info(tr("A new version is available!") + "<br />" +  link);
-	}
-
-	awa->deleteLater();
 }
 
 
@@ -462,10 +409,8 @@ void GUI_Player::controlstyle_changed()
 }
 
 
-void GUI_Player::current_library_changed(const QString& name)
+void GUI_Player::current_library_changed()
 {
-	Q_UNUSED(name)
-
 	show_library_changed();
 	check_library_menu_action();
 }
@@ -474,12 +419,14 @@ void GUI_Player::current_library_changed(const QString& name)
 void GUI_Player::show_library_changed()
 {
 	Library::PluginHandler* lph = Library::PluginHandler::instance();
-	Library::Container* cur_lib = lph->current_library();
-	if(cur_lib && cur_lib->is_initialized() && cur_lib->widget())
+	QWidget* cur_library_widget = lph->current_library_widget();
+
+	if(cur_library_widget)
 	{
-		ui->library_widget->layout()->addWidget(cur_lib->widget());
-		if(ui->library_widget->isVisible()){
-			cur_lib->widget()->setVisible(true);
+		ui->library_widget->layout()->addWidget(cur_library_widget);
+		if(ui->library_widget->isVisible())
+		{
+			cur_library_widget->setVisible(true);
 		}
 	}
 
@@ -489,12 +436,7 @@ void GUI_Player::show_library_changed()
 
 void GUI_Player::show_library(bool is_library_visible, bool was_library_visible)
 {
-	if(this->isMaximized() || this->isFullScreen())
-	{
-		return;
-	}
-
-	if(is_library_visible == was_library_visible)
+	if(isMaximized() || isFullScreen() || (is_library_visible == was_library_visible))
 	{
 		return;
 	}
@@ -505,8 +447,6 @@ void GUI_Player::show_library(bool is_library_visible, bool was_library_visible)
 	{
 		int old_lib_width = GetSetting(Set::Lib_OldWidth);
 		m->new_size = QSize(this->width() + old_lib_width, this->height());
-
-		m->is_maximizable = true;
 	}
 
 	else
@@ -535,16 +475,9 @@ void GUI_Player::splitter_painted()
 }
 
 void GUI_Player::check_library_menu_action()
-{
+{	
 	Library::PluginHandler* lph = Library::PluginHandler::instance();
-
-	if(!lph->current_library()) {
-		m->menubar->show_library_action(false);
-	}
-
-	else {
-		m->menubar->update_library_action(lph->current_library_menu(), lph->current_library()->display_name());
-	}
+	m->menubar->update_current_library(lph->current_library());
 }
 
 
@@ -576,7 +509,7 @@ void GUI_Player::splitter_main_moved(int pos, int idx)
 
 void GUI_Player::splitter_controls_moved(int pos, int idx)
 {
-	Q_UNUSED(pos) Q_UNUSED(idx)
+	Q_UNUSED(pos); Q_UNUSED(idx);
 
 	if(m->controls->is_extern_resize_allowed() == false)
 	{
@@ -593,50 +526,13 @@ void GUI_Player::splitter_controls_moved(int pos, int idx)
 }
 
 
-bool GUI_Player::init_translator(const QString& four_letter, const QString& dir)
-{
-	QString filename = Util::Language::get_used_language_file(four_letter);
-
-	QTranslator* t = new QTranslator(this);
-	bool loaded = t->load(filename, dir);
-	if(!loaded){
-		sp_log(Log::Warning, this) << "Translator " << dir << "/" << filename << " could not be loaded";
-		return false;
-	}
-
-	bool installed = QApplication::installTranslator(t);
-	if(!installed){
-		sp_log(Log::Warning, this) << "Translator " << dir << "/" << filename << " could not be installed";
-		return false;
-	}
-
-	m->translators << t;
-	return true;
-}
-
 void GUI_Player::language_changed()
 {
 	QString language = GetSetting(Set::Player_Language);
-
-	for(QTranslator* t : m->translators)
-	{
-		QApplication::removeTranslator(t);
-	}
-
-	m->translators.clear();
-	m->current_language = language;
-
-	init_translator(m->current_language, Util::share_path("translations/"));
+	Translator::instance()->change_language(this, language);
 
 	if(ui) {
 		ui->retranslateUi(this);
-	}
-
-	Library::PluginHandler* lph = Library::PluginHandler::instance();
-	Library::Container* cur_lib = lph->current_library();
-	if(cur_lib && cur_lib->menu_action())
-	{
-		cur_lib->menu_action()->setText(cur_lib->display_name());
 	}
 }
 
@@ -706,18 +602,19 @@ void GUI_Player::request_shutdown()
 void GUI_Player::moveEvent(QMoveEvent* e)
 {
 	Gui::MainWindow::moveEvent(e);
-
 	SetSetting(Set::Player_Pos, pos());
 }
 
 void GUI_Player::keyPressEvent(QKeyEvent* e)
 {
 	m->ctrl_pressed = ((e->modifiers() & Qt::ControlModifier) != 0);
+	Gui::MainWindow::keyPressEvent(e);
 }
 
 void GUI_Player::keyReleaseEvent(QKeyEvent* e)
 {
 	m->ctrl_pressed = ((e->modifiers() & Qt::ControlModifier) != 0);
+	Gui::MainWindow::keyReleaseEvent(e);
 }
 
 void GUI_Player::resizeEvent(QResizeEvent* e)
@@ -737,7 +634,8 @@ void GUI_Player::resizeEvent(QResizeEvent* e)
 		SetSetting(Set::Player_Size, this->size());
 	}
 
-	m->menubar->set_show_library_action_enabled(
+	m->menubar->set_show_library_action_enabled
+	(
 		!(this->isMaximized() || this->isFullScreen())
 	);
 

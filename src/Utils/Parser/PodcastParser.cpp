@@ -198,7 +198,7 @@ MetaDataList PodcastParser::parse_podcast_xml_file_content(const QString& conten
 						}
 					}
 
-					md.length_ms = len * 1000;
+					md.duration_ms = len * 1000;
 				} // curation
 
 				else if(!item_nodename.compare("pubDate", Qt::CaseInsensitive) ||

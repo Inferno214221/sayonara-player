@@ -120,6 +120,8 @@ namespace Library
 			virtual	void				show();
 
 			virtual void				hide();
+
+			void						retranslate();
 	};
 }
 

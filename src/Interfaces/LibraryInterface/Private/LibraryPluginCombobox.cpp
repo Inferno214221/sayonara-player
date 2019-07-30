@@ -39,13 +39,7 @@ namespace Algorithm=Util::Algorithm;
 
 struct PluginCombobox::Private
 {
-	PluginHandler* lph=nullptr;
 	QList<QAction*> actions;
-
-	Private()
-	{
-		lph = PluginHandler::instance();
-	}
 };
 
 
@@ -53,6 +47,7 @@ PluginCombobox::PluginCombobox(const QString& text, QWidget* parent) :
 	ComboBox(parent)
 {
 	m = Pimpl::make<Private>();
+
 
 	this->setSizeAdjustPolicy(QComboBox::AdjustToContents);
 	this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
@@ -62,8 +57,9 @@ PluginCombobox::PluginCombobox(const QString& text, QWidget* parent) :
 
 	this->setItemDelegate(new LibraryPluginComboBoxDelegate(this));
 
-	connect(m->lph, &PluginHandler::sig_libraries_changed, this, &PluginCombobox::setup_actions);
-	connect(m->lph, &PluginHandler::sig_current_library_changed, this, &PluginCombobox::current_library_changed);
+	PluginHandler* lph = PluginHandler::instance();
+	connect(lph, &PluginHandler::sig_libraries_changed, this, &PluginCombobox::setup_actions);
+	connect(lph, &PluginHandler::sig_current_library_changed, this, &PluginCombobox::current_library_changed);
 
 	setup_actions();
 	setCurrentText(text);
@@ -82,7 +78,8 @@ void PluginCombobox::setup_actions()
 
 	this->clear();
 
-	const QList<Container*> libraries = m->lph->get_libraries(true);
+	PluginHandler* lph = PluginHandler::instance();
+	const QList<Container*> libraries = lph->get_libraries(true);
 
 	for(const Container* container : libraries)
 	{
@@ -99,7 +96,7 @@ void PluginCombobox::setup_actions()
 	this->insertSeparator(1);
 	this->setItemIcon(1, QIcon());
 
-	current_library_changed(m->lph->current_library()->name());
+	current_library_changed();
 }
 
 void PluginCombobox::action_triggered(bool b)
@@ -122,10 +119,18 @@ void PluginCombobox::action_triggered(bool b)
 	}
 }
 
-void PluginCombobox::current_library_changed(const QString& name)
+void PluginCombobox::current_library_changed()
 {
-	for(int i=0; i<this->count(); i++) {
-		if(this->itemData(i).toString().compare(name) == 0){
+	Library::Container* current_library = PluginHandler::instance()->current_library();
+	if(!current_library) {
+		return;
+	}
+
+	QString name = current_library->name();
+	for(int i=0; i<this->count(); i++)
+	{
+		if(this->itemData(i).toString().compare(name) == 0)
+		{
 			this->setCurrentIndex(i);
 			break;
 		}
@@ -147,7 +152,8 @@ void PluginCombobox::skin_changed()
 		return;
 	}
 
-	QList<Container*> libraries = m->lph->get_libraries(true);
+	PluginHandler* lph = PluginHandler::instance();
+	QList<Container*> libraries = lph->get_libraries(true);
 	int i=0;
 
 	for(const Container* container : libraries)

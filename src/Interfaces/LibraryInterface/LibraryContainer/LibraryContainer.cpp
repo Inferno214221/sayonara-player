@@ -119,5 +119,13 @@ void Container::hide()
 	}
 }
 
+void Container::retranslate()
+{
+	if(menu_action())
+	{
+		menu_action()->setText(display_name());
+	}
+}
+
 
 

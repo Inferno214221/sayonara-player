@@ -47,9 +47,10 @@ public:
 
 	void set_content(PlayerPlugin::Base* player_plugin);
 	void show(PlayerPlugin::Base* player_plugin);
+	void show_current_plugin();
 
 private:
-	void close_cur_plugin();
+	void close_current_plugin();
 
 protected:
 	void language_changed() override;

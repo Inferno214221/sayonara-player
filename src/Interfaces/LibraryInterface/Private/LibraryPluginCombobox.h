@@ -49,7 +49,7 @@ namespace Library
 
 		private slots:
 			void action_triggered(bool b);
-			void current_library_changed(const QString& name);
+			void current_library_changed();
 
 	};
 }

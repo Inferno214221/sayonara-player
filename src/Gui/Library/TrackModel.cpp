@@ -105,7 +105,7 @@ QVariant TrackModel::data(const QModelIndex &index, int role) const
 				return QVariant( md.artist() );
 
 			case ColumnIndex::Track::Length:
-				return QVariant( ::Util::cvt_ms_to_string(md.length_ms) );
+				return QVariant( ::Util::cvt_ms_to_string(md.duration_ms) );
 
 			case ColumnIndex::Track::Album:
 				return QVariant(md.album());

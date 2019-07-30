@@ -64,7 +64,7 @@ PlaylistImpl::Playlist(int idx, PlaylistType type, const QString& name) :
 	connect(md_change_notifier, &Tagging::ChangeNotifier::sig_metadata_deleted, this, &Playlist::metadata_deleted);
 
 	PlayManager* play_manager = PlayManager::instance();
-	connect(play_manager, &PlayManager::sig_md_changed, this, &Playlist::metadata_changed_single);
+	connect(play_manager, &PlayManager::sig_track_metadata_changed, this, &Playlist::metadata_changed_single);
 	connect(play_manager, &PlayManager::sig_duration_changed, this, &Playlist::duration_changed);
 
 	ListenSetting(Set::PL_Mode, Playlist::setting_playlist_mode_changed);
@@ -217,8 +217,9 @@ void PlaylistImpl::metadata_changed(const MetaDataList& v_md_old, const MetaData
 	emit sig_items_changed( index() );
 }
 
-void PlaylistImpl::metadata_changed_single(const MetaData& md)
+void PlaylistImpl::metadata_changed_single()
 {
+	MetaData md = PlayManager::instance()->current_track();
 	IdxList idx_list = m->v_md.findTracks(md.filepath());
 
 	for(int i : idx_list) {
@@ -226,8 +227,11 @@ void PlaylistImpl::metadata_changed_single(const MetaData& md)
 	}
 }
 
-void PlaylistImpl::duration_changed(MilliSeconds duration)
+void PlaylistImpl::duration_changed()
 {
+	PlayManager* pm = PlayManager::instance();
+	MilliSeconds duration = pm->duration_ms();
+
 	MetaDataList& v_md = m->v_md;
 
 	int cur_track = v_md.current_track();
@@ -240,7 +244,7 @@ void PlaylistImpl::duration_changed(MilliSeconds duration)
 	for(int i : idx_list)
 	{
 		MetaData changed_md(v_md[i]);
-		changed_md.length_ms = std::max<MilliSeconds>(0, duration);
+		changed_md.duration_ms = std::max<MilliSeconds>(0, duration);
 
 		replace_track(i, changed_md);
 	}
@@ -458,7 +462,7 @@ PlaylistMode PlaylistImpl::mode() const
 MilliSeconds PlaylistImpl::running_time() const
 {
 	MilliSeconds dur_ms  = std::accumulate(m->v_md.begin(), m->v_md.end(), 0, [](MilliSeconds time, const MetaData& md){
-		return time + md.length_ms;
+		return time + md.duration_ms;
 	});
 
 	return dur_ms;

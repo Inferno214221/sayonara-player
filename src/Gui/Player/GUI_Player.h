@@ -63,7 +63,6 @@ public:
 	void request_shutdown();
 
 private:
-	bool init_translator(const QString& four_letter, const QString& dir);
 	void init_tray_actions();
 	void init_connections();
 	void init_sizes();
@@ -104,11 +103,9 @@ private slots:
 	void splitter_main_moved(int pos, int idx);
 	void splitter_controls_moved(int pos, int idx);
 
-	void current_library_changed(const QString& name);
+	void current_library_changed();
 	void check_library_menu_action();
 	void splitter_painted();
-
-	void awa_version_finished();
 
 	void minimize();
 	void minimize_to_tray();
@@ -119,8 +116,6 @@ private slots:
 
 	/* Plugins */
 	void plugin_added(PlayerPlugin::Base* plugin);
-	void plugin_opened();
-	void plugin_closed();
 	void plugin_action_triggered(bool b);
 };
 

@@ -171,7 +171,7 @@ bool ReloadThread::get_and_save_all_files(const QHash<QString, MetaData>& md_map
 			}
 
 			// file is already in library
-			if( md_lib.length_ms > 1000 && md_lib.length_ms < 3600000 && compare_md(md, md_lib)){
+			if( md_lib.duration_ms > 1000 && md_lib.duration_ms < 3600000 && compare_md(md, md_lib)){
 				continue;
 			}
 		}

@@ -45,7 +45,7 @@ namespace Library
 
 	signals:
 		void sig_new_library_requested(const QString& name, const QString& path);
-		void sig_current_library_changed(const QString& name);
+		void sig_current_library_changed();
 		void sig_libraries_changed();
 
 	private:
@@ -75,11 +75,14 @@ namespace Library
 
 		Container* current_library() const;
 		QMenu* current_library_menu() const;
+		QWidget* current_library_widget() const;
 
 		void add_local_library(Container* container);
 		void rename_local_library(const QString& old_name, const QString& new_name);
 		void remove_local_library(const QString& name);
 		void move_local_library(int old_local_library_index, int new_local_library_index);
+
+		void language_changed();
 
 	private slots:
 		void current_library_changed(int library_idx);

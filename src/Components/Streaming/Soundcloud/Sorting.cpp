@@ -135,7 +135,7 @@ namespace Compare
 	}
 
 	bool trackLengthAsc(const MetaData& md1, const MetaData& md2){
-		return (md1.length_ms < md2.length_ms);
+		return (md1.duration_ms < md2.duration_ms);
 	}
 
 	bool trackLengthDesc(const MetaData& md1, const MetaData& md2){

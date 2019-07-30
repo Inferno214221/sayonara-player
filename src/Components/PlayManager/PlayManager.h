@@ -102,6 +102,8 @@ signals:
 	 */
 	void sig_track_changed(const MetaData& md);
 
+	void sig_track_metadata_changed();
+
 	/**
 	 * @brief track has changed
 	 * @param idx index in playlist
@@ -112,7 +114,9 @@ signals:
 	 * @brief duration of track has changed
 	 * @param ms duration of track in milliseconds
 	 */
-	void sig_duration_changed(MilliSeconds ms);
+	void sig_duration_changed();
+
+	void sig_bitrate_changed();
 
 	/**
 	 * @brief playlist has finished
@@ -145,8 +149,6 @@ signals:
 	 * @param b true if muted, false else
 	 */
 	void sig_mute_changed(bool b);
-
-	void sig_md_changed(const MetaData& md);
 
 	void sig_error(const QString& message);
 
@@ -227,6 +229,12 @@ public slots:
 	 */
 	void change_track(const MetaData& md, int track_idx);
 
+	/**
+	 * @brief change_track
+	 * @param md
+	 */
+	void change_track_metadata(const MetaData& md);
+
 
 	/**
 	 * @brief notify, that track is ready for playback
@@ -267,12 +275,6 @@ public slots:
 	 */
 	void toggle_mute();
 
-	/**
-	 * @brief Change the current MetaData object. This may happen
-	 * if the current track is edited while playing
-	 * @param md
-	 */
-	void change_metadata(const MetaData& md);
 
 	/**
 	 * @brief Change the duration. This is usually called when
@@ -281,6 +283,8 @@ public slots:
 	 * @param ms
 	 */
 	void change_duration(MilliSeconds ms);
+
+	void change_bitrate(Bitrate br);
 
 	/**
 	 * @brief Some playback error occured
@@ -312,6 +316,9 @@ public:
 	 * @return duration in milliseconds
 	 */
 	MilliSeconds		duration_ms() const;
+
+
+	Bitrate				bitrate() const;
 
 	/**
 	 * @brief get current track

@@ -204,7 +204,7 @@ bool DB::Playlist::getPlaylistById(CustomPlaylist& pl)
 
 			data.id = 		 q.value(0).toInt();
 			data.set_title(q.value(1).toString());
-			data.length_ms = q.value(2).toInt();
+			data.duration_ms = q.value(2).toInt();
 			data.year = 	 q.value(3).toInt();
 			data.bitrate = 	 q.value(4).toInt();
 			data.set_filepath(q.value(5).toString());

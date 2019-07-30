@@ -97,8 +97,8 @@ namespace Playlist
 		public slots:
 			void metadata_deleted(const MetaDataList& v_md_deleted);
 			void metadata_changed(const MetaDataList& v_md_old, const MetaDataList& v_md_new);
-			void metadata_changed_single(const MetaData& metadata);
-			void duration_changed(MilliSeconds duration);
+			void metadata_changed_single();
+			void duration_changed();
 
 		private slots:
 			void setting_playlist_mode_changed();

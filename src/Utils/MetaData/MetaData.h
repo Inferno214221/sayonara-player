@@ -47,7 +47,7 @@ class MetaData :
 	PIMPL(MetaData)
 
 public:
-	MilliSeconds length_ms;
+	MilliSeconds duration_ms;
 	Filesize filesize;
 
 	TrackID id;

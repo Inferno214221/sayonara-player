@@ -221,7 +221,7 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 	md.set_album(album);
 	md.set_artist(artist);
 	md.set_title(title);
-	md.length_ms = length;
+	md.duration_ms = length;
 	md.year = year;
 	md.track_num = track;
 	md.bitrate = bitrate;

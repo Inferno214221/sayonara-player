@@ -87,7 +87,7 @@ MetaDataInfo::MetaDataInfo(const MetaDataList& v_md) :
 		m->artist_ids.insert(md.artist_id);
 		m->album_artist_ids.insert(md.album_artist_id());
 
-		length += md.length_ms;
+		length += md.duration_ms;
 		filesize += md.filesize;
 
 		if(calc_track_num){

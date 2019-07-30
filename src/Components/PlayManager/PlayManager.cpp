@@ -150,7 +150,12 @@ MilliSeconds PlayManager::initial_position_ms() const
 
 MilliSeconds PlayManager::duration_ms() const
 {
-	return m->md.length_ms;
+	return m->md.duration_ms;
+}
+
+Bitrate PlayManager::bitrate() const
+{
+	return m->md.bitrate;
 }
 
 const MetaData& PlayManager::current_track() const
@@ -302,23 +307,57 @@ void PlayManager::change_track(const MetaData& md, int track_idx)
 
 	if(!is_first_start)
 	{
-
 		// save last track
 		if(md.db_id() == 0) {
 			SetSetting(Set::PL_LastTrack, m->track_idx);
 		}
 
-		else{
+		else {
 			SetSetting(Set::PL_LastTrack, -1);
 		}
 	}
 
 	// show notification
-	if(GetSetting(Set::Notification_Show)) {
+	if(GetSetting(Set::Notification_Show))
+	{
 		if(m->track_idx > -1 && !m->md.filepath().isEmpty()) {
 			NotificationHandler::instance()->notify(m->md);
 		}
 	}
+}
+
+
+void PlayManager::change_track_metadata(const MetaData& md)
+{
+	MetaData md_old = m->md;
+	m->md = md;
+
+	QString str = md.title() + md.artist() + md.album();
+	bool has_data = m->ring_buffer.has_item(str);
+
+	if(!has_data)
+	{
+		if(GetSetting(Set::Notification_Show)) {
+			NotificationHandler::instance()->notify(m->md);
+		}
+
+		if( m->ring_buffer.count() > 0 )
+		{
+			md_old.set_album("");
+			md_old.is_disabled = true;
+			md_old.set_filepath("");
+
+			QDateTime date = QDateTime::currentDateTime();
+			QTime time = date.time();
+			md_old.duration_ms = (time.hour() * 60 + time.minute()) * 1000;
+
+			emit sig_www_track_finished(md_old);
+		}
+
+		m->ring_buffer.insert(str);
+	}
+
+	emit sig_track_metadata_changed();
 }
 
 void PlayManager::set_track_ready()
@@ -385,50 +424,24 @@ void PlayManager::toggle_mute()
 	set_muted(!muted);
 }
 
-void PlayManager::change_duration(MilliSeconds ms)
-{
-	m->md.length_ms = ms;
-
-	emit sig_duration_changed(ms);
-}
 
 void PlayManager::error(const QString& message)
 {
 	emit sig_error(message);
 }
 
-void PlayManager::change_metadata(const MetaData& md)
+void PlayManager::change_duration(MilliSeconds ms)
 {
-	MetaData md_old = m->md;
-	m->md = md;
-
-	QString str = md.title() + md.artist() + md.album();
-	bool has_data = m->ring_buffer.has_item(str);
-
-	if(!has_data)
-	{
-		if(GetSetting(Set::Notification_Show)) {
-			NotificationHandler::instance()->notify(m->md);
-		}
-
-		if( m->ring_buffer.count() > 0 )
-		{
-			md_old.set_album("");
-			md_old.is_disabled = true;
-			md_old.set_filepath("");
-
-			QDateTime date = QDateTime::currentDateTime();
-			QTime time = date.time();
-			md_old.length_ms = (time.hour() * 60 + time.minute()) * 1000;
-
-			emit sig_www_track_finished(md_old);
-		}
-
-		m->ring_buffer.insert(str);
-	}
-
-	emit sig_md_changed(md);
+	m->md.duration_ms = ms;
+	emit sig_duration_changed();
 }
+
+void PlayManager::change_bitrate(Bitrate br)
+{
+	m->md.bitrate = br;
+	emit sig_bitrate_changed();
+}
+
 
 void PlayManager::shutdown()
 {

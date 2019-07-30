@@ -27,7 +27,7 @@ static MetaData create_md()
 	md.set_title("Title");
 	md.set_artist("Artist");
 	md.set_album("Album");
-	md.length_ms = 100000;
+	md.duration_ms = 100000;
 	md.filesize = 1234567;
 	md.id = 5;
 	md.artist_id = 6;
@@ -59,7 +59,7 @@ void MetaDataTest::copy_test()
 	md.set_title("Title");
 	md.set_artist("Artist");
 	md.set_album("Album");
-	md.length_ms = 100000;
+	md.duration_ms = 100000;
 	md.filesize = 1234567;
 	md.id = 5;
 	md.artist_id = 6;

@@ -27,6 +27,11 @@
 
 #include <QMenuBar>
 
+namespace Library
+{
+	class Container;
+}
+
 class Menubar :
 	public Gui::WidgetTemplate<QMenuBar>
 {
@@ -44,7 +49,7 @@ public:
 
 	void insert_player_plugin_action(QAction* action);
 	void insert_preference_action(QAction* action);
-	QAction* update_library_action(QMenu* new_library_menu, const QString& name);
+	QAction* update_current_library(Library::Container* library);
 	void show_library_action(bool visible);
 	void set_show_library_action_enabled(bool b);
 

@@ -65,7 +65,7 @@ namespace Engine
 		signals:
 			void sig_data(const unsigned char* data, uint64_t n_bytes);
 
-			void sig_md_changed(const MetaData& md);
+			void sig_metadata_changed(const MetaData& md);
 			void sig_duration_changed(const MetaData& md);
 			void sig_bitrate_changed(const MetaData& md);
 			void sig_cover_changed(const QImage& img);

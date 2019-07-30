@@ -39,6 +39,8 @@
 #include "Utils/Language/Language.h"
 #include "Utils/Message/Message.h"
 
+#include "Interfaces/LibraryInterface/LibraryContainer/LibraryContainer.h"
+
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QStringList>
@@ -188,27 +190,35 @@ void Menubar::insert_preference_action(QAction* action)
 	m->menu_file->insertAction(m->sep_after_preferences, action);
 }
 
-QAction* Menubar::update_library_action(QMenu* new_library_menu, const QString& name)
+
+QAction* Menubar::update_current_library(Library::Container* library)
 {
-	if(m->current_library_menu_action){
-		this->removeAction(m->current_library_menu_action);
-	}
+	show_library_action(false);
 
-	if(!new_library_menu)
-	{
-		m->current_library_menu = nullptr;
-		m->current_library_menu_action = nullptr;
-
+	if(!library) {
 		return nullptr;
 	}
 
+	QMenu* new_library_menu = library->menu();
+	QString name = library->display_name();
+
+	if(m->current_library_menu_action) {
+		this->removeAction(m->current_library_menu_action);
+	}
+
 	m->current_library_menu = new_library_menu;
+	m->current_library_menu_action = nullptr;
+
+	if(!new_library_menu) {
+		show_library_action(false);
+		return nullptr;
+	}
 
 	m->current_library_menu_action = this->insertMenu(m->menu_help_action, new_library_menu);
 	m->current_library_menu_action->setText(name);
 
 	bool library_visible = GetSetting(Set::Lib_Show);
-	m->current_library_menu_action->setVisible(library_visible);
+	show_library_action(library_visible);
 
 	return m->current_library_menu_action;
 }

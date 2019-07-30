@@ -122,7 +122,7 @@ void PLSParser::parse()
 			int len = line_entry.value.toInt();
 
 			len = std::max(0, len);
-			md.length_ms = len * 1000;
+			md.duration_ms = len * 1000;
 		}
 	}
 

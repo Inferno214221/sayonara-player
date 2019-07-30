@@ -299,7 +299,7 @@ void EngineImpl::jump_rel_ms(MilliSeconds ms)
 
 void EngineImpl::jump_rel(double percent)
 {
-	m->pipeline->seek_rel(percent, m->md.length_ms * GST_MSECOND);
+	m->pipeline->seek_rel(percent, m->md.duration_ms * GST_MSECOND);
 }
 
 
@@ -525,7 +525,7 @@ void EngineImpl::update_metadata(const MetaData& md, GstElement* src)
 		m->md.set_title(md.title());
 	}
 
-	emit sig_md_changed(m->md);
+	emit sig_metadata_changed(m->md);
 
 	if(is_streamrecroder_recording())
 	{
@@ -541,12 +541,12 @@ void EngineImpl::update_duration(GstElement* src)
 	}
 
 	MilliSeconds duration_ms = m->pipeline->duration_ms();
-	MilliSeconds difference = std::abs(duration_ms - m->md.length_ms);
+	MilliSeconds difference = std::abs(duration_ms - m->md.duration_ms);
 	if(duration_ms < 1000 || difference < 1999 || duration_ms > 1500000000){
 		return;
 	}
 
-	m->md.length_ms = duration_ms;
+	m->md.duration_ms = duration_ms;
 	update_metadata(m->md, src);
 
 	emit sig_duration_changed(m->md);

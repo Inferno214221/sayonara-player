@@ -47,9 +47,6 @@ namespace Engine
 		PIMPL(Handler)
 
 		signals:
-			void sig_md_changed(const MetaData& md);
-			void sig_duration_changed(const MetaData& md);
-			void sig_bitrate_changed(const MetaData& md);
 			void sig_cover_changed(const QImage& img);
 
 		public:
