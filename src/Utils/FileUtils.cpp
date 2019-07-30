@@ -116,6 +116,10 @@ void Util::File::remove_files_in_directory(const QString& dir_name, const QStrin
 
 void Util::File::delete_files(const QStringList& paths)
 {
+	if(paths.isEmpty()){
+		return;
+	}
+
 	sp_log(Log::Develop, "Util::File") << "I will delete " << paths;
 	QStringList sorted_paths = paths;
 	Algorithm::sort(sorted_paths, [](const QString& str1, const QString& str2){

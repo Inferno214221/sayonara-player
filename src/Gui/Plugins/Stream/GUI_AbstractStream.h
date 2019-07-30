@@ -99,7 +99,7 @@ protected:
 	virtual AbstractStreamHandler* stream_handler() const=0;
 	virtual QString url() const;
 	QString current_station() const;
-	void add_stream(const QString& name, const QString& url, bool keep_old=true);
+	void add_stream(const QString& name, const QString& url);
 
 private:
 	PIMPL(GUI_AbstractStream)

@@ -42,10 +42,11 @@
 using namespace Gui;
 namespace Algorithm=Util::Algorithm;
 
+using StreamMap = QMap<QString, QString>;
 struct GUI_AbstractStream::Private
 {
-	QMap<QString, QString>	stations;
-	QMap<QString, QString>	temporary_stations;
+	StreamMap				stations;
+	StreamMap				temporary_stations;
 	ProgressBar*			loading_bar=nullptr;
 	QComboBox*				combo_stream=nullptr;
 	QPushButton*			btn_play=nullptr;
@@ -259,21 +260,8 @@ QString GUI_AbstractStream::url() const
 }
 
 
-void GUI_AbstractStream::add_stream(const QString& name, const QString& url, bool keep_old)
+void GUI_AbstractStream::add_stream(const QString& name, const QString& url)
 {
-	if(!keep_old)
-	{
-		for(QString key : m->temporary_stations.keys())
-		{
-			int idx = m->combo_stream->findText(key);
-			if(idx >= 0){
-				m->combo_stream->removeItem(idx);
-			}
-		}
-
-		m->temporary_stations.clear();
-	}
-
 	m->temporary_stations[name] = url;
 
 	m->combo_stream->addItem(name, url);
@@ -327,7 +315,12 @@ void GUI_AbstractStream::new_finished()
 		return;
 	}
 
-	m->stream_handler->add_stream(cs->name(),  cs->url());
+	bool success = m->stream_handler->add_stream(name,  cs->url());
+	if(success)
+	{
+		m->temporary_stations.remove(name);
+	}
+
 	cs->deleteLater();
 
 	setup_stations();

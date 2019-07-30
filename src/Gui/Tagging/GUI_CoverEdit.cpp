@@ -37,7 +37,7 @@ GUI_CoverEdit::GUI_CoverEdit(Tagging::Editor* editor, QWidget* parent) :
 
 	connect(m->tag_edit, &Editor::sig_metadata_received, this, &GUI_CoverEdit::set_metadata);
 	connect(ui->cb_cover_all, &QCheckBox::toggled, this, &GUI_CoverEdit::cover_all_toggled);
-	connect(ui->btn_search, &QPushButton::clicked, ui->btn_cover_replacement, &QPushButton::click);
+	connect(ui->btn_search, &QPushButton::clicked, ui->btn_cover_replacement, &CoverButton::trigger);
 	connect(ui->btn_replace, &QPushButton::toggled, this, &GUI_CoverEdit::replace_toggled);
 	connect(ui->btn_cover_replacement, &CoverButton::sig_cover_changed, this, &GUI_CoverEdit::cover_changed);
 

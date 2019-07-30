@@ -62,6 +62,7 @@ CoverButton::CoverButton(QWidget* parent) :
 	m = Pimpl::make<CoverButton::Private>();
 
 	this->setObjectName("CoverButton");
+	this->setMouseTracking(true);
 
 	Cover::ChangeNotfier* cn = Cover::ChangeNotfier::instance();
 	connect(cn, &Cover::ChangeNotfier::sig_covers_changed, this, &CoverButton::covers_changed);
@@ -99,9 +100,26 @@ QIcon CoverButton::current_icon() const
 	return icon;
 }
 
+
 QPixmap CoverButton::pixmap() const
 {
 	return m->current_cover;
+}
+
+void CoverButton::trigger()
+{
+	if(m->cover_source == Cover::Source::AudioFile && !is_silent())
+	{
+		emit sig_rejected();
+		return;
+	}
+
+	GUI_AlternativeCovers* alt_cover = new GUI_AlternativeCovers(m->cover_location, m->silent, this->parentWidget());
+
+	connect(alt_cover, &GUI_AlternativeCovers::sig_cover_changed, this, &CoverButton::alternative_cover_fetched);
+	connect(alt_cover, &GUI_AlternativeCovers::sig_closed, alt_cover, &GUI_AlternativeCovers::deleteLater);
+
+	alt_cover->show();
 }
 
 
@@ -256,22 +274,56 @@ void CoverButton::paintEvent(QPaintEvent* event)
 	painter.restore();
 }
 
+static bool check_if_within_cover(QPoint pos, QRect geometry)
+{
+	int difference = geometry.width() - geometry.height();
+	if(difference > 0)
+	{
+		int smaller_site = geometry.height();
+
+		if ((pos.x() < (difference / 2)) ||
+			(pos.x() >= (difference / 2 + smaller_site)))
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+void CoverButton::mouseMoveEvent(QMouseEvent* event)
+{
+	bool within = check_if_within_cover(event->pos() - this->geometry().topLeft(), this->geometry());
+	QCursor c;
+
+	if(within)
+	{
+		c.setShape(Qt::PointingHandCursor);
+	}
+
+	else
+	{
+		c.setShape(Qt::ArrowCursor);
+	}
+
+	this->setCursor(c);
+
+	QPushButton::mouseMoveEvent(event);
+}
+
+
 void CoverButton::mouseReleaseEvent(QMouseEvent* event)
 {
 	if(event->button() | Qt::LeftButton)
 	{
-		if(m->cover_source == Cover::Source::AudioFile && !is_silent())
+		bool within = check_if_within_cover(event->pos() - this->geometry().topLeft(), this->geometry());
+		if(!within)
 		{
-			emit sig_rejected();
+			QPushButton::mouseReleaseEvent(event);
 			return;
 		}
 
-		GUI_AlternativeCovers* alt_cover = new GUI_AlternativeCovers(m->cover_location, m->silent, this->parentWidget());
-
-		connect(alt_cover, &GUI_AlternativeCovers::sig_cover_changed, this, &CoverButton::alternative_cover_fetched);
-		connect(alt_cover, &GUI_AlternativeCovers::sig_closed, alt_cover, &GUI_AlternativeCovers::deleteLater);
-
-		alt_cover->show();
+		trigger();
 	}
 
 	QPushButton::mouseReleaseEvent(event);

@@ -134,8 +134,8 @@ void AbstractStreamHandler::stream_parser_finished(bool success)
 }
 
 
-void AbstractStreamHandler::save(const QString& station_name, const QString& url)
+bool AbstractStreamHandler::save(const QString& station_name, const QString& url)
 {
-	add_stream(station_name, url);
+	return add_stream(station_name, url);
 }
 

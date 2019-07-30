@@ -86,13 +86,13 @@ public:
 
 	QPixmap pixmap() const;
 
-
 private:
 	using QPushButton::setIcon;
 	QIcon current_icon() const;
 
 
 protected:
+	void mouseMoveEvent(QMouseEvent* e) override;
 	void mouseReleaseEvent(QMouseEvent* event) override;
 	void paintEvent(QPaintEvent* event) override;
 	void showEvent(QShowEvent* e) override;
@@ -106,7 +106,7 @@ private slots:
 
 public slots:
 	void refresh();
-
+	void trigger();
 };
 
 #endif

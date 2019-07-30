@@ -401,7 +401,9 @@ QComboBox QAbstractItemView:focus
 	background-color: #484848;
 	border: 1px solid #202020;
 	selection-background-color: #424e72;
-	padding-bottom: -7px;
+	margin: 3px 0px;
+	padding: 2px 0px;
+
 }
 
 QComboBox QAbstractItemView::item:focus,
@@ -851,4 +853,8 @@ CoverButton:hover,
 	border: 1px solid #282828;
 }
 
-
+#CompleterPopup
+{
+	border: 1px solid #e8841a;
+	border-top: none;
+}

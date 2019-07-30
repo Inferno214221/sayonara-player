@@ -24,7 +24,7 @@ private slots:
 	void details_toggled(bool b);
 
 protected:
-	void language_changed();
+	void language_changed() override;
 	void showEvent(QShowEvent* e) override;
 };
 

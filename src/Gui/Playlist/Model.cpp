@@ -123,7 +123,7 @@ QVariant PlaylistItemModel::data(const QModelIndex& index, int role) const
 		}
 
 		else if(col == ColumnName::Time) {
-			auto l = m->pl->track(row).length_ms;
+			auto l = m->pl->track(row).duration_ms;
 			return Util::cvt_ms_to_string(l, true, true, false);
 		}
 

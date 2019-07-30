@@ -63,7 +63,7 @@ class AbstractStreamHandler : public QObject
 		 * @param station_name The station name.
 		 * @param url the station url.
 		 */
-		void save(const QString& station_name, const QString& url);
+		bool save(const QString& station_name, const QString& url);
 
 		/**
 		 * @brief This method should return all stations in database
