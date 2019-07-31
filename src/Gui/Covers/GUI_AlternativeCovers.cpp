@@ -244,7 +244,9 @@ void GUI_AlternativeCovers::cover_found(const QPixmap& pm)
 
 	ui->btn_ok->setEnabled(true);
 	ui->btn_apply->setEnabled(true);
-	ui->lab_status->setText( tr("%1 covers found").arg(m->model->cover_count()) ) ;
+
+	QString text = tr("%n cover(s) found", "", m->model->cover_count());
+	ui->lab_status->setText(text) ;
 }
 
 void GUI_AlternativeCovers::servers_changed()
@@ -370,7 +372,7 @@ void GUI_AlternativeCovers::init_save_to_library()
 {
 	Cover::Location cl = m->cl_alternative->cover_location();
 
-	QString text = QString("Also save cover to %1").arg(cl.local_path_dir());
+	QString text = tr("Also save cover to %1").arg(cl.local_path_dir());
 	QFontMetrics fm = this->fontMetrics();
 
 	ui->cb_save_to_library->setText(
@@ -399,6 +401,10 @@ void GUI_AlternativeCovers::language_changed()
 
 	ui->btn_search->setVisible(!m->cl_alternative->is_running());
 	ui->btn_stop_search->setVisible(m->cl_alternative->is_running());
+
+	Cover::Location cl = m->cl_alternative->cover_location();
+	QString text = tr("Also save cover to %1").arg(cl.local_path_dir());
+	ui->cb_save_to_library->setText(text);
 }
 
 void GUI_AlternativeCovers::showEvent(QShowEvent* e)

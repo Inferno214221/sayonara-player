@@ -22,20 +22,52 @@
 
 using Library::ActionPair;
 
-ActionPair::ActionPair() = default;
-ActionPair::ActionPair(const QString& name, Library::SortOrder so) :
-	name(name),
-	so(so)
-{}
+struct ActionPair::Private
+{
+	Lang::Term term;
+	Library::SortOrder sortorder;
+	bool ascending;
 
-ActionPair::ActionPair(Lang::Term t1, bool ascending, Library::SortOrder so)
+	Private(Lang::Term term, bool ascending, Library::SortOrder sortorder) :
+		term(term),
+		sortorder(sortorder),
+		ascending(ascending)
+	{}
+};
+
+ActionPair::ActionPair(Lang::Term term, bool ascending, Library::SortOrder sortorder)
+{
+	m = Pimpl::make<Private>(term, ascending, sortorder);
+}
+
+ActionPair::ActionPair(const Library::ActionPair& other)
+{
+	m = Pimpl::make<Private>(other.m->term, other.m->ascending, other.m->sortorder);
+}
+
+Library::ActionPair& ActionPair::operator=(const Library::ActionPair& other)
+{
+	m->term = other.m->term;
+	m->ascending = other.m->ascending;
+	m->sortorder = other.m->sortorder;
+
+	return *this;
+}
+
+ActionPair::~ActionPair() = default;
+
+QString ActionPair::name() const
 {
 	QString asc_desc = Lang::get(Lang::Ascending);
-	if(!ascending)
+	if(!m->ascending)
 	{
 		asc_desc = Lang::get(Lang::Descending);
 	}
 
-	this->name = QString("%1 (%2)").arg(Lang::get(t1), asc_desc);
-	this->so = so;
+	return QString("%1 (%2)").arg(Lang::get(m->term), asc_desc);
+}
+
+Library::SortOrder ActionPair::sortorder() const
+{
+	return m->sortorder;
 }

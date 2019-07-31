@@ -25,7 +25,7 @@ QMainWindow, QDialog
 QGroupBox 
 {
 	border: none;
-	padding-top: 16px; /* 1ex */ 
+	padding-top: 2ex; /* 1ex */ 
 }
 
 QGroupBox::title 
@@ -86,11 +86,11 @@ MiniSearcher
 
 QLabel
 {
-	height: 25px;
+	min-height: 3ex;
 }
 
-QLabel, QScrollArea{
-
+QLabel, QScrollArea
+{
 	border: none;
 	background: transparent;
 }
@@ -170,7 +170,7 @@ QTreeView::branch:has-children:!has-siblings:closed,
 QTreeView::branch:closed:has-children:has-siblings
 {
 	border-image: none;
-	padding: 7px;
+	padding: 1ex;
 	image: url(:/Icons/arrow_filled_right.svg.png);
 }
 
@@ -178,7 +178,7 @@ QTreeView::branch:open:has-children:!has-siblings,
 QTreeView::branch:open:has-children:has-siblings 
 {
 	border-image: none;
-	padding: 7px;
+	padding: 1ex;
 	image: url(:/Icons/arrow_filled_down.svg.png);
 }
 
@@ -189,7 +189,7 @@ QScrollBar::vertical
 	padding-right: 1px;
 	padding-top: 2px;
 	padding-bottom: 2px;
-	width: 14px;
+	width: 2.4ex;
 	background: #323232;
 	border-left: 1px solid #242424;
 }
@@ -208,7 +208,7 @@ QScrollBar::handle:vertical
 {
 	background: #484848;
 	border: 1px solid #323232;
-	min-height: 30px;
+	min-height: 4ex;
 	margin: 1px;
 }
 
@@ -225,7 +225,7 @@ QScrollBar::horizontal
 	padding-bottom: 1px;
 	padding-left: 2px;
 	padding-right: 2px;
-	height: 14px;
+	height: 2.4ex;
 	background: #323232;
 	border-top: 1px solid #242424;
 }
@@ -243,7 +243,7 @@ QScrollBar::handle:horizontal
 {
 	background: #484848;
 	border: 1px solid #323232;
-	min-width: 30px;
+	min-width: 3em;
 	margin: 1px;
 }
 
@@ -422,11 +422,11 @@ QTextEdit,
 QPlainTextEdit
 {
 	padding: 3px;
-	min-height: 22px; /*4ex;*/
 	border: 1px solid #2B2B2B;
 	border-radius: 2px;
 	background: #505050;
-	min-width: 80px;
+	min-width: 10em;
+	min-height: 4ex;
 }
 
 QComboBox 
@@ -463,7 +463,7 @@ QSpinBox::up-button
 {
 	subcontrol-origin: margin;
 	subcontrol-position: top right;
-	width: 12px;
+	width: 1em;
 	margin-top: 1px;
 	margin-right: 1px;
 	padding: 2px;
@@ -478,8 +478,8 @@ QSpinBox::up-button:hover
 QSpinBox::up-arrow
 {
 	image: url(:/Icons/arrow_up.svg.png);
-	width: 7px;
-	height: 7px;
+	width: 1ex;
+	height: 1ex;
 }
 
 QSpinBox::down-button
@@ -489,7 +489,7 @@ QSpinBox::down-button
 	padding: 2px;
 	margin-bottom: 1px;
 	margin-right: 1px;
-	width: 12px;
+	width: 1em;
 	background: #383838;
 }
 
@@ -501,8 +501,8 @@ QSpinBox::down-button:hover
 QSpinBox::down-arrow
 {
 	image: url(:/Icons/arrow_down.svg.png);
-	width: 7px;
-	height: 7px;
+	width: 1ex;
+	height: 1ex;
 }
 
 QTabWidget::pane
@@ -526,8 +526,8 @@ QTabBar::tab
 	border-top-right-radius: 2px;
 	min-width: 4em;
 	padding: 3px 5px 3px 5px;
-	max-height: 72px; /* 6ex */
-	min-height: 16px; /* 1ex */
+	max-height: 5ex; /* 6ex */
+	min-height: 2.5ex; /* 1ex */
 }
 
 PlaylistTabBar::tab:last
@@ -573,7 +573,7 @@ QTabBar::close-button:disabled
 QTabBar::close-button:hover
 {
 	image: url(:/Icons/tool_grey_small.svg.png);
-	max-height: 12px;
+	max-height: 2ex;
 }
 
 QTabBar QToolButton
@@ -625,17 +625,17 @@ QSlider:focus
 QSlider::groove:vertical
 {
 	background: transparent;
-	width: 12px;
-	padding-left: -4px;
-	padding-right: -5px;
+	width: 1.1em;
+	padding-left: -0.5em;
+	padding-right: -0.5em;
 }
 
 QSlider::groove:horizontal
 {
 	background: #383838;
-	height: 12px;
-	padding-top: -4px;
-	padding-bottom: -5px;
+	height: 1.1em;
+	padding-top: -0.5em;
+	padding-bottom: -0.5em;
 }
 
 QSlider::sub-page:vertical,
@@ -667,8 +667,8 @@ QRadioButton::indicator,
 QCheckBox::indicator
 {
 	padding: 5px 1px;
-	width: 14px;
-	height: 14px;
+	width: 2ex;
+	height: 2ex;
 }
 
 QRadioButton::indicator:checked,
@@ -699,7 +699,7 @@ QCheckBox::indicator:disabled
 
 QPushButton
 {
-	min-height: 28px; /*4ex;*/
+	min-height: 4ex;
 	border-radius: 2px;
 }
 
@@ -722,8 +722,8 @@ QPushButton[flat=false]
 {
 	border: 1px solid #282828;
 	background: #505050;
-	padding-left: 10px;
-	padding-right: 10px;
+	padding-left: 0.6em;
+	padding-right: 0.6em;
 
 }
 
@@ -776,7 +776,7 @@ QProgressBar
 {
 	border: 2px solid #2B2B2B;
 	border-radius: 2px;
-	max-height: 20px;
+	max-height: 3ex;
 	background: #828282;
 	text-align: center;
 	vertical-align: center;
@@ -786,8 +786,8 @@ QProgressBar
 QProgressBar::chunk
 {
 	background-color: #424e72;
-	width: 8px;
-	margin: 0.5px;
+	width: 1em;
+	margin: 0.5ex;
 }
 
 QProgressBar#loading_bar,
@@ -803,21 +803,24 @@ QProgressBar#sli_buffer
 QProgressBar#loading_bar::chunk,
 QProgressBar#sli_buffer::chunk
 {
-	width: 8px;
+	width: 1em;
 	background: #e8841a; 
 	margin: 0;
 }
 
-QPushButton#btn_stop,
-QPushButton#btn_fw,
-QPushButton#btn_bw,
-QPushButton#btn_play,
-QPushButton#btn_rec,
-QPushButton#btn_pause,
-QLabel#lab_rec_icon
+QPushButton#btn_ctrl_stop,
+QPushButton#btn_ctrl_fw,
+QPushButton#btn_ctrl_bw,
+QPushButton#btn_ctrl_play,
+QPushButton#btn_ctrl_rec,
+QPushButton#btn_ctrl_pause,
+QLabel#lab_ctrl_rec_icon
 {
-	height: 25px;
-	width: 25px;
+	min-height: 4.5ex;
+	min-width:  4.5ex;
+	max-height: 4.5ex;
+	max-width:  4.5ex;
+
 	border-image: url(:/Icons/dark_bg.svg.png);
 }
 

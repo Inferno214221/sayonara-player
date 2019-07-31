@@ -100,7 +100,7 @@ void GUI_ImportDialog::language_changed()
 void GUI_ImportDialog::set_metadata(const MetaDataList& v_md)
 {
 	if(!v_md.isEmpty()){
-		ui->lab_status->setText(tr("%1 tracks available").arg(v_md.size()));
+		ui->lab_status->setText(tr("%n track(s) available", "", v_md.count()));
 	}
 
 	m->tag_edit->set_metadata(v_md);

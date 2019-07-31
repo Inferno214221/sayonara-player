@@ -64,6 +64,7 @@ static QString calc_lab(int val)
 struct GUI_Equalizer::Private
 {
 	QList<EqualizerSetting>	presets;
+	QAction*				action_gauss=nullptr;
 	SliderArray				sliders;
 	ValueArray				old_val;
 	int						active_idx;
@@ -125,11 +126,12 @@ void GUI_Equalizer::init_ui()
 		ui->sli_5, ui->sli_6, ui->sli_7, ui->sli_8,	ui->sli_9
 	}};
 
-	QAction* action_gauss = new QAction("Kurve", ui->btn_tool);
-	action_gauss->setCheckable(true);
-	action_gauss->setChecked(GetSetting(Set::Eq_Gauss));
+	m->action_gauss = new QAction(ui->btn_tool);
+	m->action_gauss->setCheckable(true);
+	m->action_gauss->setChecked(GetSetting(Set::Eq_Gauss));
+	m->action_gauss->setText(tr("Linked sliders"));
 
-	ui->btn_tool->register_action(action_gauss);
+	ui->btn_tool->register_action(m->action_gauss);
 
 	for(EqualizerSlider* s : Algorithm::AsConst(m->sliders))
 	{
@@ -143,7 +145,7 @@ void GUI_Equalizer::init_ui()
 	connect(ui->btn_tool, &MenuToolButton::sig_undo, this, &GUI_Equalizer::btn_undo_clicked);
 	connect(ui->btn_tool, &MenuToolButton::sig_default, this, &GUI_Equalizer::btn_default_clicked);
 
-	connect(action_gauss, &QAction::toggled, this, &GUI_Equalizer::cb_gauss_toggled);
+	connect(m->action_gauss, &QAction::toggled, this, &GUI_Equalizer::cb_gauss_toggled);
 	connect(ui->combo_presets, &QComboBox::editTextChanged, this, &GUI_Equalizer::text_changed);
 
 	fill_eq_presets();
@@ -167,6 +169,11 @@ void GUI_Equalizer::retranslate_ui()
 
 	QLineEdit* le = ui->combo_presets->lineEdit();
 	le->setPlaceholderText(Lang::get(Lang::EnterName));
+
+	if(m->action_gauss)
+	{
+		m->action_gauss->setText(tr("Linked sliders"));
+	}
 }
 
 void GUI_Equalizer::sli_pressed()

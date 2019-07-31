@@ -108,10 +108,10 @@ void CoverViewContextMenu::init_sorting_actions()
 
 	for(const ActionPair& ap : m->sorting_actions)
 	{
-		QAction* a = m->menu_sorting->addAction(ap.name);
+		QAction* a = m->menu_sorting->addAction(ap.name());
 
 		a->setCheckable(true);
-		a->setData((int) ap.so);
+		a->setData((int) ap.sortorder());
 
 		connect(a, &QAction::triggered, this, &CoverViewContextMenu::action_sorting_triggered);
 	}
@@ -212,9 +212,13 @@ void CoverViewContextMenu::language_changed()
 	LibraryContextMenu::language_changed();
 
 	init_sorting_actions();
+
 	m->action_zoom->setText(Lang::get(Lang::Zoom));
 	m->action_show_utils->setText(Lang::get(Lang::Show) + ": " + tr("Toolbar"));
 	m->action_show_artist->setText(Lang::get(Lang::Show) + ": " + Lang::get(Lang::Artist));
+
+	m->menu_sorting->clear();
+	init_sorting_actions();
 }
 
 void CoverViewContextMenu::skin_changed()

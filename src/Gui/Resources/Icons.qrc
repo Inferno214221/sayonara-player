@@ -47,7 +47,7 @@
         <file>Icons/tool_grey.svg.png</file>
         <file>Icons/tool_orange.svg.png</file>
         <file>Icons/tool_disabled.svg.png</file>
-	<file>Icons/dark_bg.svg.png</file>
+        <file>Icons/dark_bg.svg.png</file>
         <file>Icons/tool_grey_std.svg.png</file>
         <file>Icons/new.svg.png</file>
         <file>Icons/play_bordered.svg.png</file>
@@ -76,5 +76,11 @@
         <file>Icons/cd.png</file>
         <file>Icons/cds.png</file>
         <file>Icons/append.svg</file>
+        <file>Icons/bwd.svg</file>
+        <file>Icons/fwd.svg</file>
+        <file>Icons/pause.svg</file>
+        <file>Icons/play_orange.svg</file>
+        <file>Icons/rec.svg</file>
+        <file>Icons/stop.svg</file>
     </qresource>
 </RCC>

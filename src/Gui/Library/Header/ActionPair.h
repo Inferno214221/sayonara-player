@@ -24,32 +24,33 @@
 #include <QString>
 #include "Utils/Library/Sortorder.h"
 #include "Utils/Language/Language.h"
+#include "Utils/Pimpl.h"
 
 namespace Library
 {
 	/**
 	 * @brief A mapping between a name and a sortorder
 	 */
-	struct ActionPair
+	class ActionPair
 	{
-		QString name;
-		Library::SortOrder so;
+		PIMPL(ActionPair)
 
-		ActionPair();
-		/**
-		 * @brief Constructor for setting name and sortorder. No magic
-		 * @param name
-		 * @param so
-		 */
-		ActionPair(const QString& name, Library::SortOrder so);
+		public:
 
-		/**
-		 * @brief appends "Ascending" or "Descending" behind the name
-		 * @param t1 a term like e.g. 'Lang::Title'
-		 * @param ascending indicates if the so is ascending or descending
-		 * @param so
-		 */
-		ActionPair(Lang::Term t1, bool ascending, Library::SortOrder so);
+			/**
+			 * @brief appends "Ascending" or "Descending" behind the name
+			 * @param t1 a term like e.g. 'Lang::Title'
+			 * @param ascending indicates if the so is ascending or descending
+			 * @param so
+			 */
+			ActionPair(Lang::Term term, bool ascending, Library::SortOrder so);
+			ActionPair(const ActionPair& other);
+			ActionPair& operator=(const ActionPair& other);
+
+			~ActionPair();
+
+			QString name() const;
+			Library::SortOrder sortorder() const;
 	};
 }
 

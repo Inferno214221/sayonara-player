@@ -37,11 +37,11 @@ using namespace Gui;
 static QString icon_path(const QString& icon_name)
 {
 	QString path = QString(":/Icons/") + icon_name;
-	if(path.endsWith(".png")){
+	if(path.endsWith(".svg")){
 		// alles paletti
 	}
 
-	else if(path.endsWith(".svg")){
+	else if(path.endsWith(".png")){
 		// svg
 	}
 

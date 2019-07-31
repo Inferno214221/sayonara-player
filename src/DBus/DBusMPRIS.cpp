@@ -29,6 +29,7 @@
 #include "Utils/RandomGenerator.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Settings/Settings.h"
+#include "Utils/Language/Language.h"
 
 #include <QMainWindow>
 #include <QDBusConnection>
@@ -249,15 +250,15 @@ QVariantMap DBusMPRIS::MediaPlayer2::Metadata()
 
 	QString title = m->md.title();
 	if(title.isEmpty()){
-		title = tr("None");
+		title = Lang::get(Lang::None);
 	}
 	QString album = m->md.album();
 	if(album.isEmpty()){
-		album = tr("None");
+		album = Lang::get(Lang::None);
 	}
 	QString artist = m->md.artist();
 	if(artist.isEmpty()){
-		artist = tr("None");
+		artist = Lang::get(Lang::None);
 	}
 
 	map["mpris:trackid"] = v_object_path;

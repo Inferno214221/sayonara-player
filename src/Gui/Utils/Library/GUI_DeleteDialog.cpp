@@ -87,7 +87,7 @@ void GUI_DeleteDialog::showEvent(QShowEvent* e)
 	ui->btn_only_from_library->setText(tr("Only from library"));
 	ui->lab_warning->setText(Lang::get(Lang::Warning) + "!");
 	ui->lab_info->setText(
-			tr("You are about to delete %1 files").arg(m->n_tracks) +
+			tr("You are about to delete %n file(s)", "", m->n_tracks) +
 				"\n" +
 				Lang::get(Lang::Continue).question());
 }

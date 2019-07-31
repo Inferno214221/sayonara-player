@@ -370,7 +370,7 @@ void ReloadThread::run()
 	MetaDataList v_md, v_to_delete, v_md_needs_update;
 	QHash<QString, MetaData> v_md_map;
 
-	emit sig_reloading_library(tr("Delete orphaned tracks..."), 0);
+	emit sig_reloading_library(tr("Deleting orphaned tracks") + "...", 0);
 
 	lib_db->deleteInvalidTracks(m->library_path, v_md_needs_update);
 	if(!m->may_run){

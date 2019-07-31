@@ -130,15 +130,8 @@ void GUI_Broadcast::set_status_label()
 	}
 
 	int n_listeners = ui->combo_clients->count();
-	QString str_listeners;
 
-	if(n_listeners == 1){
-		str_listeners = tr("%1 listener").arg(n_listeners);
-	}
-
-	else{
-		str_listeners = tr("%1 listeners").arg(n_listeners);
-	}
+	QString str_listeners = tr("%n listener(s)", "", n_listeners);
 
 	ui->lab_status->setText(str_listeners);
 }

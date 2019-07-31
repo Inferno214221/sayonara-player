@@ -10,9 +10,6 @@
     <height>292</height>
    </rect>
   </property>
-  <property name="windowTitle">
-   <string>Dialog</string>
-  </property>
   <property name="sizeGripEnabled">
    <bool>true</bool>
   </property>

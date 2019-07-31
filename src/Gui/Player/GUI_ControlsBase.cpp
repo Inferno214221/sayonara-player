@@ -496,6 +496,23 @@ void GUI_ControlsBase::refresh_labels(const MetaData& md)
 	set_total_time_label(md.duration_ms);
 }
 
+static void set_icon(QPushButton* btn, QIcon icon)
+{
+	QSize sz = btn->size();
+	int w = std::min(sz.width(), sz.height());
+	int h = w;
+
+	sz.setWidth(w);
+	sz.setHeight(h);
+
+	btn->setFixedSize(sz);
+
+	sz.setWidth((w * 800) / 1000);
+	sz.setHeight((h * 800) / 1000);
+
+	btn->setIconSize(sz);
+	btn->setIcon(icon);
+}
 
 void GUI_ControlsBase::skin_changed()
 {
@@ -503,19 +520,20 @@ void GUI_ControlsBase::skin_changed()
 
 	using namespace Gui;
 
-	btn_fwd()->setIcon(icon(Icons::Forward));
-	btn_bwd()->setIcon(icon(Icons::Backward));
+	set_icon(btn_fwd(), icon(Icons::Forward));
+	set_icon(btn_bwd(), icon(Icons::Backward));
 
-	if(PlayManager::instance()->playstate() == PlayState::Playing){
-		btn_play()->setIcon(icon(Icons::Pause));
+	if(PlayManager::instance()->playstate() == PlayState::Playing)
+	{
+		set_icon(btn_play(), icon(Icons::Pause));
 	}
 
 	else{
-		btn_play()->setIcon(icon(Icons::Play));
+		set_icon(btn_play(), icon(Icons::Play));
 	}
 
-	btn_stop()->setIcon(icon(Icons::Stop));
-	btn_rec()->setIcon(icon(Icons::Record));
+	set_icon(btn_stop(), icon(Icons::Stop));
+	set_icon(btn_rec(), icon(Icons::Record));
 
 	setup_volume_button(sli_volume()->value());
 }

@@ -158,7 +158,7 @@ void SC::GUI_ArtistSearch::artists_fetched(const ArtistList& artists)
 	}
 
 	else{
-		ui->lab_n_artists->setText( tr("Found %1 artists").arg(artists.size()) );
+		ui->lab_n_artists->setText( tr("Found %n artist(s)", "", artists.size()) );
 		for(const Artist& artist: artists){
 			ui->list_artists->addItem(artist.name());
 		}
@@ -206,7 +206,7 @@ void SC::GUI_ArtistSearch::tracks_fetched(const MetaDataList& v_md)
 void SC::GUI_ArtistSearch::set_tracks_label(int n_tracks)
 {
 	if(n_tracks >= 0){
-		ui->lab_n_tracks->setText( tr("%1 tracks found").arg(n_tracks) );
+		ui->lab_n_tracks->setText( tr("%n track(s) found", "", n_tracks) );
 	}
 
 	ui->lab_n_tracks->setVisible(n_tracks >= 0);
@@ -215,7 +215,7 @@ void SC::GUI_ArtistSearch::set_tracks_label(int n_tracks)
 void SC::GUI_ArtistSearch::set_playlist_label(int n_playlists)
 {
 	if(n_playlists >= 0){
-		ui->lab_n_playlists->setText( tr("%1 playlists found").arg(n_playlists) );
+		ui->lab_n_playlists->setText( tr("%n playlist(s) found", "", n_playlists) );
 	}
 
 	ui->lab_n_playlists->setVisible(n_playlists >= 0);

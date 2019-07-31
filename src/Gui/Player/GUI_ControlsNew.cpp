@@ -55,11 +55,11 @@ SearchSlider* GUI_ControlsNew::sli_progress() const { return ui->sli_progress; }
 SearchSlider* GUI_ControlsNew::sli_volume() const { return ui->sli_volume; }
 Gui::ProgressBar* GUI_ControlsNew::sli_buffer() const { return ui->sli_buffer; }
 QPushButton* GUI_ControlsNew::btn_mute() const { return ui->btn_mute; }
-QPushButton* GUI_ControlsNew::btn_play() const { return ui->btn_play; }
-QPushButton* GUI_ControlsNew::btn_rec() const { return ui->btn_rec; }
-QPushButton* GUI_ControlsNew::btn_bwd() const { return ui->btn_bw; }
-QPushButton* GUI_ControlsNew::btn_fwd() const { return ui->btn_fw; }
-QPushButton* GUI_ControlsNew::btn_stop() const { return ui->btn_stop; }
+QPushButton* GUI_ControlsNew::btn_play() const { return ui->btn_ctrl_play; }
+QPushButton* GUI_ControlsNew::btn_rec() const { return ui->btn_ctrl_rec; }
+QPushButton* GUI_ControlsNew::btn_bwd() const { return ui->btn_ctrl_bw; }
+QPushButton* GUI_ControlsNew::btn_fwd() const { return ui->btn_ctrl_fw; }
+QPushButton* GUI_ControlsNew::btn_stop() const { return ui->btn_ctrl_stop; }
 CoverButton* GUI_ControlsNew::btn_cover() const { return ui->btn_cover; }
 
 void GUI_ControlsNew::toggle_buffer_mode(bool buffering)

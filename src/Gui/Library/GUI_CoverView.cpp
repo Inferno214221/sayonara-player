@@ -99,7 +99,7 @@ void GUI_CoverView::init_sorting_actions()
 	const QList<ActionPair> action_pairs = CoverView::sorting_actions();
 	for(const ActionPair& ap : action_pairs)
 	{
-		ui->combo_sorting->addItem(ap.name, static_cast<int>(ap.so));
+		ui->combo_sorting->addItem(ap.name(), static_cast<int>(ap.sortorder()));
 	}
 
 	sortorder_changed();

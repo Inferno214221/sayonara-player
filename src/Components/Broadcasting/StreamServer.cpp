@@ -28,6 +28,7 @@
 #include "Utils/Settings/SettingNotifier.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Message/Message.h"
+#include "Utils/Language/Language.h"
 
 #include "Components/Engine/EngineHandler.h"
 #include "Components/PlayManager/PlayManager.h"
@@ -212,7 +213,10 @@ void StreamServer::new_client_request()
 		{
 			if(!m->allowed_ips.contains(pending_ip))
 			{
-				QString question = tr("%1 wants to listen to your music.").arg(pending_ip).append("\nOk?");
+				QString question = tr("%1 wants to listen to your music.")
+										.arg(pending_ip);
+
+				question += "\n" + Lang::get(Lang::OK) + "?";
 
 				Message::Answer answer = Message::question_yn(question, "Stream Server");
 				if(answer==Message::Answer::Yes)

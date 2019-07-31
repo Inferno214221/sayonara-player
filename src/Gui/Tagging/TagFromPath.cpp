@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "TagFromPath.h"
 #include "TextSelection.h"
 
@@ -239,6 +237,8 @@ void GUI_TagFromPath::btn_tag_help_clicked()
 
 void GUI_TagFromPath::language_changed()
 {
+	ui->retranslateUi(this);
+
 	ui->btn_title->setText(Lang::get(Lang::Title));
 	ui->btn_album->setText(Lang::get(Lang::Album));
 	ui->btn_artist->setText(Lang::get(Lang::Artist));

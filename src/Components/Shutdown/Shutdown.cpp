@@ -117,8 +117,10 @@ void Shutdown::shutdown(MilliSeconds ms)
 	m->timer_countdown->start(1000);
 	emit sig_started(ms);
 
+	int minutes = ms / 60000;
+
 	NotificationHandler::instance()->notify(Lang::get(Lang::Shutdown),
-											   tr("Computer will shutdown in %1 minutes").arg(Util::cvt_ms_to_string(ms, false, true, false)),
+											   tr("Computer will shutdown in %n minute(s)", "", minutes),
 											   Util::share_path("logo.png"));
 }
 
@@ -146,9 +148,12 @@ void Shutdown::countdown_timeout()
 	emit sig_time_to_go(m->msecs2go);
 	sp_log(Log::Debug, this) << "Time to go: " << m->msecs2go;
 
-	if(m->msecs2go % 60000 == 0){
+
+	if(m->msecs2go % 60000 == 0)
+	{
+		int minutes = m->msecs2go / 60000;
 		NotificationHandler::instance()->notify(Lang::get(Lang::Shutdown),
-												   tr("Computer will shutdown in %1 minutes").arg(Util::cvt_ms_to_string(m->msecs2go, false, true, false)),
+												   tr("Computer will shutdown in %n minute(s)", "", minutes),
 												   Util::share_path("logo.png"));
 	}
 }

@@ -57,7 +57,7 @@
         <item row="3" column="3">
          <widget class="QPushButton" name="btn_choose_dir">
           <property name="text">
-           <string>≡</string>
+           <string notr="true">≡</string>
           </property>
          </widget>
         </item>

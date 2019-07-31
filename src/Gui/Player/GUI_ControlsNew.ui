@@ -48,7 +48,7 @@
       <number>0</number>
      </property>
      <item>
-      <widget class="QPushButton" name="btn_bw">
+      <widget class="QPushButton" name="btn_ctrl_bw">
        <property name="enabled">
         <bool>true</bool>
        </property>
@@ -57,18 +57,6 @@
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>27</width>
-         <height>27</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>27</width>
-         <height>27</height>
-        </size>
        </property>
        <property name="focusPolicy">
         <enum>Qt::ClickFocus</enum>
@@ -81,36 +69,18 @@
          <normaloff>:/Icons/bwd.svg.png</normaloff>
          <disabledoff>:/Icons/bwd_disabled.svg</disabledoff>:/Icons/bwd.svg.png</iconset>
        </property>
-       <property name="iconSize">
-        <size>
-         <width>21</width>
-         <height>21</height>
-        </size>
-       </property>
        <property name="flat">
         <bool>true</bool>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_play">
+      <widget class="QPushButton" name="btn_ctrl_play">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>27</width>
-         <height>27</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>27</width>
-         <height>27</height>
-        </size>
        </property>
        <property name="focusPolicy">
         <enum>Qt::ClickFocus</enum>
@@ -122,42 +92,18 @@
         <iconset resource="../Resources/Icons.qrc">
          <normaloff>:/Icons/play.svg.png</normaloff>:/Icons/play.svg.png</iconset>
        </property>
-       <property name="iconSize">
-        <size>
-         <width>21</width>
-         <height>21</height>
-        </size>
-       </property>
-       <property name="autoDefault">
-        <bool>false</bool>
-       </property>
-       <property name="default">
-        <bool>false</bool>
-       </property>
        <property name="flat">
         <bool>true</bool>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_rec">
+      <widget class="QPushButton" name="btn_ctrl_rec">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>27</width>
-         <height>27</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>27</width>
-         <height>27</height>
-        </size>
        </property>
        <property name="focusPolicy">
         <enum>Qt::ClickFocus</enum>
@@ -169,12 +115,6 @@
         <iconset resource="../Resources/Icons.qrc">
          <normaloff>:/Icons/rec.svg.png</normaloff>:/Icons/rec.svg.png</iconset>
        </property>
-       <property name="iconSize">
-        <size>
-         <width>21</width>
-         <height>21</height>
-        </size>
-       </property>
        <property name="checkable">
         <bool>true</bool>
        </property>
@@ -184,7 +124,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_fw">
+      <widget class="QPushButton" name="btn_ctrl_fw">
        <property name="enabled">
         <bool>true</bool>
        </property>
@@ -193,18 +133,6 @@
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>27</width>
-         <height>27</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>27</width>
-         <height>27</height>
-        </size>
        </property>
        <property name="focusPolicy">
         <enum>Qt::ClickFocus</enum>
@@ -217,36 +145,18 @@
          <normaloff>:/Icons/fwd.svg.png</normaloff>
          <disabledoff>:/Icons/fwd_disabled.svg.png</disabledoff>:/Icons/fwd.svg.png</iconset>
        </property>
-       <property name="iconSize">
-        <size>
-         <width>21</width>
-         <height>21</height>
-        </size>
-       </property>
        <property name="flat">
         <bool>true</bool>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_stop">
+      <widget class="QPushButton" name="btn_ctrl_stop">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>27</width>
-         <height>27</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>27</width>
-         <height>27</height>
-        </size>
        </property>
        <property name="focusPolicy">
         <enum>Qt::ClickFocus</enum>
@@ -257,12 +167,6 @@
        <property name="icon">
         <iconset resource="../Resources/Icons.qrc">
          <normaloff>:/Icons/stop.svg.png</normaloff>:/Icons/stop.svg.png</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>21</width>
-         <height>21</height>
-        </size>
        </property>
        <property name="flat">
         <bool>true</bool>
@@ -862,14 +766,14 @@
    <header>Gui/Utils/Widgets/ProgressBar.h</header>
   </customwidget>
   <customwidget>
-   <class>RatingLabel</class>
-   <extends>QLabel</extends>
-   <header>Gui/Utils/RatingLabel.h</header>
-  </customwidget>
-  <customwidget>
    <class>Gui::FloatingLabel</class>
    <extends>QLabel</extends>
    <header>Gui/Utils/Widgets/FloatingLabel.h</header>
+  </customwidget>
+  <customwidget>
+   <class>RatingLabel</class>
+   <extends>QLabel</extends>
+   <header>Gui/Utils/RatingLabel.h</header>
   </customwidget>
  </customwidgets>
  <resources>

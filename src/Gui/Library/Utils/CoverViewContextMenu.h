@@ -29,7 +29,7 @@ class MetaData;
 
 namespace Library
 {
-	struct ActionPair;
+	class ActionPair;
 	class CoverViewContextMenu :
 			public LibraryContextMenu
 	{

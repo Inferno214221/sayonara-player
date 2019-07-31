@@ -30,7 +30,7 @@ class QAction;
 
 namespace Library
 {
-	struct ActionPair;
+	class ActionPair;
 	class CoverView :
 			public ItemView
 	{
