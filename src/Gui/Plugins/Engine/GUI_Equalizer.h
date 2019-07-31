@@ -58,6 +58,7 @@ public slots:
 private:
 	void init_ui() override;
 	void retranslate_ui() override;
+	void save_current_preset(const QString& name);
 
 private slots:
 	void sli_changed(int idx, int value);
@@ -69,10 +70,11 @@ private slots:
 
 	void btn_default_clicked();
 	void btn_save_clicked();
+	void btn_save_as_clicked();
 	void btn_delete_clicked();
 	void btn_undo_clicked();
 
-	void text_changed(const QString&);
+	void save_as_ok_clicked();
 };
 
 #endif /* GUI_EQUALIZER_H_ */

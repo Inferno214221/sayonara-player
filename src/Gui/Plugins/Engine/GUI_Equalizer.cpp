@@ -29,6 +29,7 @@
 #include "GUI_Equalizer.h"
 #include "EqualizerSlider.h"
 #include "Gui/Plugins/ui_GUI_Equalizer.h"
+#include "Gui/Utils/InputDialog/LineInputDialog.h"
 
 #include "Components/Engine/EngineHandler.h"
 
@@ -141,12 +142,12 @@ void GUI_Equalizer::init_ui()
 	}
 
 	connect(ui->btn_tool, &MenuToolButton::sig_save, this, &GUI_Equalizer::btn_save_clicked);
+	connect(ui->btn_tool, &MenuToolButton::sig_save_as, this, &GUI_Equalizer::btn_save_as_clicked);
 	connect(ui->btn_tool, &MenuToolButton::sig_delete, this, &GUI_Equalizer::btn_delete_clicked);
 	connect(ui->btn_tool, &MenuToolButton::sig_undo, this, &GUI_Equalizer::btn_undo_clicked);
 	connect(ui->btn_tool, &MenuToolButton::sig_default, this, &GUI_Equalizer::btn_default_clicked);
 
 	connect(m->action_gauss, &QAction::toggled, this, &GUI_Equalizer::cb_gauss_toggled);
-	connect(ui->combo_presets, &QComboBox::editTextChanged, this, &GUI_Equalizer::text_changed);
 
 	fill_eq_presets();
 }
@@ -166,9 +167,6 @@ QString GUI_Equalizer::get_display_name() const
 void GUI_Equalizer::retranslate_ui()
 {
 	ui->retranslateUi(this);
-
-	QLineEdit* le = ui->combo_presets->lineEdit();
-	le->setPlaceholderText(Lang::get(Lang::EnterName));
 
 	if(m->action_gauss)
 	{
@@ -249,7 +247,6 @@ void GUI_Equalizer::fill_eq_presets()
 	int last_idx = GetSetting(Set::Eq_Last);
 
 	m->presets = GetSetting(Set::Eq_List);
-	m->presets.prepend(EqualizerSetting());
 
 	QStringList items;
 	for(const EqualizerSetting& s : Algorithm::AsConst(m->presets))
@@ -288,7 +285,10 @@ void GUI_Equalizer::preset_changed(int index)
 	ui->btn_tool->show_action(ContextMenu::EntryDefault, !is_default);
 
 	bool is_default_name = setting.is_default_name();
-	ui->btn_tool->show_action(ContextMenu::EntryDelete, ((index > 0) && !is_default_name));
+	ui->btn_tool->show_action(ContextMenu::EntryDelete, !is_default_name);
+
+	ui->btn_tool->show_action(ContextMenu::EntrySave, !is_default_name);
+	ui->btn_tool->show_action(ContextMenu::EntrySaveAs, true);
 
 	EqualizerSetting::ValueArray values = setting.values();
 
@@ -327,49 +327,41 @@ void GUI_Equalizer::btn_default_clicked()
 
 void GUI_Equalizer::btn_save_clicked()
 {
-	QString text = ui->combo_presets->currentText();
-	if(text.isEmpty()){
-		return;
-	}
-
-	int found_idx = m->find_combo_text(ui->combo_presets, text);
-
-	if(found_idx <= 0)
-	{
-		EqualizerSetting s(text, ValueArray{0,0,0,0,0,0,0,0,0,0});
-		m->presets << s;
-
-		ui->combo_presets->addItem(text);
-		found_idx = ui->combo_presets->count() - 1;
-	}
-
-	for(unsigned i=0; i<m->sliders.size(); i++)
-	{
-		m->presets[found_idx].set_value(i, m->sliders[i]->value());
-	}
-
-	m->presets.removeFirst();
-	SetSetting(Set::Eq_List, m->presets);
-	m->presets.prepend(EqualizerSetting());
-
-	ui->combo_presets->setCurrentIndex(found_idx);
-	preset_changed(found_idx);
+	save_current_preset(ui->combo_presets->currentText());
 }
+
+void GUI_Equalizer::btn_save_as_clicked()
+{
+	Gui::LineInputDialog* dialog = new Gui::LineInputDialog(Lang::get(Lang::SaveAs), Lang::get(Lang::SaveAs), QString(), this);
+	dialog->setModal(true);
+
+	connect(dialog, &QDialog::accepted, this, &GUI_Equalizer::save_as_ok_clicked);
+	dialog->show();
+}
+
 
 void GUI_Equalizer::btn_delete_clicked()
 {
 	ui->btn_tool->show_action(ContextMenu::EntryUndo, false);
 	int idx = ui->combo_presets->currentIndex();
 
-	ui->combo_presets->setCurrentIndex(0);
-
 	m->presets.removeAt(idx);
 	ui->combo_presets->removeItem(idx);
 
-	m->presets.removeFirst();
+	if(ui->combo_presets->count() == 0)
+	{
+		EqualizerSetting s;
+		s.set_name(Lang::get(Lang::Default));
+
+		m->presets << s;
+		ui->combo_presets->addItem(s.name());
+	}
+
+	ui->combo_presets->setCurrentIndex(0);
+
 	SetSetting(Set::Eq_List, m->presets);
-	m->presets.prepend(EqualizerSetting());
 }
+
 
 void GUI_Equalizer::btn_undo_clicked()
 {
@@ -377,7 +369,6 @@ void GUI_Equalizer::btn_undo_clicked()
 	QString text = ui->combo_presets->currentText();
 
 	int found_idx = m->find_combo_text(ui->combo_presets, text);
-
 	if(found_idx <= 0)
 	{
 		for(EqualizerSlider* sli : Algorithm::AsConst(m->sliders)){
@@ -394,6 +385,54 @@ void GUI_Equalizer::btn_undo_clicked()
 	}
 }
 
-void GUI_Equalizer::text_changed(const QString& str){
-	ui->btn_tool->show_action(ContextMenu::EntrySave, str.size() > 0);
+#include "Utils/Message/Message.h"
+void GUI_Equalizer::save_current_preset(const QString &name)
+{
+	if(name.isEmpty()){
+		return;
+	}
+
+	int found_idx = m->find_combo_text(ui->combo_presets, name);
+	if(found_idx < 0)
+	{
+		EqualizerSetting s;
+		s.set_name(name);
+		m->presets << s;
+
+		ui->combo_presets->addItem(name);
+		found_idx = ui->combo_presets->count() - 1;
+	}
+
+	else
+	{
+		const EqualizerSetting& s = m->presets[found_idx];
+		if(s.is_default_name())
+		{
+			Message::error(tr("Name %1 not allowed").arg(s.name()), this->get_display_name());
+			return;
+		}
+	}
+
+	for(unsigned i=0; i<m->sliders.size(); i++)
+	{
+		m->presets[found_idx].set_value(i, m->sliders[i]->value());
+	}
+
+	SetSetting(Set::Eq_List, m->presets);
+
+	ui->combo_presets->setCurrentIndex(found_idx);
+	preset_changed(found_idx);
+}
+
+void GUI_Equalizer::save_as_ok_clicked()
+{
+	auto dialog = static_cast<Gui::LineInputDialog*>(sender());
+	if(!dialog){
+		return;
+	}
+
+	QString name = dialog->text();
+	dialog->deleteLater();
+
+	save_current_preset(name);
 }

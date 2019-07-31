@@ -527,5 +527,5 @@ void GenreView::dropEvent(QDropEvent* e)
 
 QString GenreView::no_genre_name() const
 {
-	return "<" + tr("No genre") + ">";
+	return "<" + Lang::get(Lang::UnknownGenre) + ">";
 }

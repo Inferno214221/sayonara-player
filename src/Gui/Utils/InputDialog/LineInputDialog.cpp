@@ -84,11 +84,13 @@ void LineInputDialog::ok_clicked()
 {
 	m->return_value = LineInputDialog::Ok;
 	close();
+	emit accepted();
 }
 
 void LineInputDialog::cancel_clicked()
 {
 	close();
+	emit rejected();
 }
 
 void LineInputDialog::showEvent(QShowEvent* e)

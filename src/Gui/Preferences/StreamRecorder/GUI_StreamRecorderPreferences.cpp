@@ -219,7 +219,7 @@ bool GUI_StreamRecorderPreferences::commit()
 		{
 			if(path.isEmpty())
 			{
-				m->error_string = tr("Target path is empty").arg(path) + "\n" + tr("Please choose another directory");
+				m->error_string = tr("Target directory is empty").arg(path) + "\n" + tr("Please choose another directory");
 				everything_ok = false;
 			}
 

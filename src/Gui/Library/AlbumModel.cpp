@@ -164,18 +164,17 @@ QVariant AlbumModel::data(const QModelIndex& index, int role) const
 		switch(col)
 		{
 			case ColumnIndex::Album::NumSongs:
-				return  QString::number(album.num_songs) + " " +
-						Lang::get(Lang::Tracks).toLower();
+				return tr("%n track(s)", "", album.num_songs);
 
 			case ColumnIndex::Album::Year:
 				if(album.year == 0){
-					return Lang::get(Lang::None);
+					return Lang::get(Lang::UnknownYear);
 				}
 				return album.year;
 
 			case ColumnIndex::Album::Name:
 				if(album.name().trimmed().isEmpty()){
-					return Lang::get(Lang::None);
+					return Lang::get(Lang::UnknownAlbum);
 				}
 				return album.name();
 

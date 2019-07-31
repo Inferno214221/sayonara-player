@@ -136,7 +136,7 @@ static QString get_artist(const Album& album)
 	}
 
 	if(artists.isEmpty()){
-		return Lang::get(Lang::None);
+		return Lang::get(Lang::UnknownArtist);
 	}
 
 	if(artists.size() == 1){
@@ -168,7 +168,7 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 			{
 				QString name = album.name();
 				if(name.trimmed().isEmpty()){
-					name = Lang::get(Lang::None);
+					name = Lang::get(Lang::UnknownAlbum);
 				}
 				return name;
 			}

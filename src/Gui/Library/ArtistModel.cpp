@@ -106,7 +106,8 @@ QVariant ArtistModel::data(const QModelIndex & index, int role) const
 
 	if(role == Qt::TextAlignmentRole)
 	{
-		switch(idx_col) {
+		switch(idx_col)
+		{
 			case ColumnIndex::Artist::Name:
 				return (int) (Qt::AlignLeft | Qt::AlignVCenter);
 			default:
@@ -132,12 +133,12 @@ QVariant ArtistModel::data(const QModelIndex & index, int role) const
 		{
 			case ColumnIndex::Artist::Name:
 				if(artist.name().isEmpty()){
-					return "None";
+					return Lang::get(Lang::UnknownArtist);
 				}
 				return artist.name();
 
 			case ColumnIndex::Artist::Tracks:
-				return QString::number(artist.num_songs) + " " + Lang::get(Lang::Tracks);
+				return tr("%n track(s)", "", artist.num_songs);
 
 			default:
 				return QVariant();

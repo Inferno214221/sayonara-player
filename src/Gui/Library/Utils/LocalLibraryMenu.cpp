@@ -182,8 +182,8 @@ void LocalLibraryMenu::language_changed()
 		return;
 	}
 
-	m->info_action->setText(Lang::get(Lang::Library) + ": " + Lang::get(Lang::Info));
-	m->edit_action->setText(Lang::get(Lang::Library) + ": " + Lang::get(Lang::Edit));
+	m->info_action->setText(tr("Statistics"));
+	m->edit_action->setText(tr("Edit library"));
 
 	m->import_file_action->setText(Lang::get(Lang::ImportFiles));
 	m->import_folder_action->setText(Lang::get(Lang::ImportDir));

@@ -115,7 +115,12 @@ QString GUI_Speed::get_name() const
 
 QString GUI_Speed::get_display_name() const
 {
-	return tr("Speed") + "/" + tr("Pitch");
+	QString s = tr("Speed");
+	QString p = tr("Pitch");
+
+	return tr("%1 and %2")
+		.arg(s)
+		.arg(p);
 }
 
 

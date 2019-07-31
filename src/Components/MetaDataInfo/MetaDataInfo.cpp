@@ -425,9 +425,10 @@ QList<StringPair> MetaDataInfo::infostring_map() const
 	for(auto it=_info.cbegin(); it != _info.cend(); it++)
 	{
 		QString value = it.value();
-		if(value.isEmpty()){
-			value = Lang::get(Lang::None);
-
+		if(value.isEmpty())
+		{
+			/// todo: none
+			value = "-";
 		}
 
 		ret << StringPair(get_info_string(it.key()), value);

@@ -51,7 +51,10 @@ void GUI_StreamPreferences::revert()
 
 QString GUI_StreamPreferences::action_name() const
 {
-	return Lang::get(Lang::Streams) + " & " + Lang::get(Lang::Podcasts);
+	QString s = Lang::get(Lang::Streams);
+	QString p = Lang::get(Lang::Podcasts);
+
+	return tr("%1 and %2").arg(s).arg(p);
 }
 
 void GUI_StreamPreferences::init_ui()

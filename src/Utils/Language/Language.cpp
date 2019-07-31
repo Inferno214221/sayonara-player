@@ -274,8 +274,8 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Next track");
 		case No:
 			return l.tr("No");
-		case None:
-			return l.tr("None");
+		case NoAlbums:
+			return l.tr("No albums");
 		case NumTracks:
 			return QString("#") + l.tr("Tracks");
 		case MoveDown:
@@ -420,8 +420,23 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Tree");
 		case Undo:
 			return l.tr("Undo");
+		case UnknownAlbum:
+			return l.tr("Unknown album");
+		case UnknownArtist:
+			return l.tr("Unknown artist");
+		case UnknownTitle:
+			return l.tr("Unknown title");
+		case UnknownGenre:
+			return l.tr("Unknown genre");
 		case UnknownPlaceholder:
 			return l.tr("Unknown placeholder");
+		case UnknownYear:
+			{
+				QString s = l.tr("Unknown year");
+				Q_UNUSED(s)
+			}
+			return LanguageString("-");
+
 		case Various:
 			return l.tr("Various");
 		case VariousAlbums:

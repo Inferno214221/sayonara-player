@@ -86,6 +86,7 @@ struct Menubar::Private
 	QAction*		current_library_menu_action=nullptr;
 
 	QMessageBox*	about_box=nullptr;
+	Library::Container* current_library=nullptr;
 
 	const QString SC_ID_VIEW_LIBRARY=QString("view_library");
 
@@ -194,13 +195,13 @@ void Menubar::insert_preference_action(QAction* action)
 QAction* Menubar::update_current_library(Library::Container* library)
 {
 	show_library_action(false);
+	m->current_library = library;
 
 	if(!library) {
 		return nullptr;
 	}
 
 	QMenu* new_library_menu = library->menu();
-	QString name = library->display_name();
 
 	if(m->current_library_menu_action) {
 		this->removeAction(m->current_library_menu_action);
@@ -215,7 +216,15 @@ QAction* Menubar::update_current_library(Library::Container* library)
 	}
 
 	m->current_library_menu_action = this->insertMenu(m->menu_help_action, new_library_menu);
-	m->current_library_menu_action->setText(name);
+
+	if(library->is_local())
+	{
+		m->current_library_menu_action->setText(Lang::get(Lang::Library));
+	}
+
+	else {
+		m->current_library_menu_action->setText(library->display_name());
+	}
 
 	bool library_visible = GetSetting(Set::Lib_Show);
 	show_library_action(library_visible);
@@ -284,6 +293,18 @@ void Menubar::language_changed()
 
 	m->action_help->setText(tr("Help"));
 	m->action_about->setText(Lang::get(Lang::About).triplePt());
+
+	if(m->current_library && m->current_library_menu_action)
+	{
+		if(m->current_library->is_local())
+		{
+			m->current_library_menu_action->setText(Lang::get(Lang::Library));
+		}
+
+		else {
+			m->current_library_menu_action->setText(m->current_library->display_name());
+		}
+	}
 }
 
 void Menubar::skin_changed()

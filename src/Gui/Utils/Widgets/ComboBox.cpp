@@ -33,10 +33,10 @@ ComboBox::ComboBox(QWidget* parent) :
 {
 	Q_UNUSED(parent)
 
-	this->setItemDelegate(new ComboBoxDelegate(this));
+	this->setItemDelegate(new Gui::ComboBoxDelegate(this));
 }
 
-ComboBox::~ComboBox() {}
+ComboBox::~ComboBox() = default;
 
 void ComboBox::changeEvent(QEvent* event)
 {

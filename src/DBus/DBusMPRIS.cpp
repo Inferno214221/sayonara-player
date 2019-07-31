@@ -250,15 +250,15 @@ QVariantMap DBusMPRIS::MediaPlayer2::Metadata()
 
 	QString title = m->md.title();
 	if(title.isEmpty()){
-		title = Lang::get(Lang::None);
+		title = Lang::get(Lang::UnknownTitle);
 	}
 	QString album = m->md.album();
 	if(album.isEmpty()){
-		album = Lang::get(Lang::None);
+		album = Lang::get(Lang::UnknownAlbum);
 	}
 	QString artist = m->md.artist();
 	if(artist.isEmpty()){
-		artist = Lang::get(Lang::None);
+		artist = Lang::get(Lang::UnknownArtist);
 	}
 
 	map["mpris:trackid"] = v_object_path;

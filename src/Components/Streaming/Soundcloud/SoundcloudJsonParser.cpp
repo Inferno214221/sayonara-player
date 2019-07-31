@@ -228,7 +228,7 @@ bool SC::JsonParser::parse_track(Artist& artist, MetaData& md, QJsonObject objec
 
 			if(md.album_id < 0){
 				md.album_id = 0;
-				md.set_album(Lang::get(Lang::None));
+				md.set_album(Lang::get(Lang::UnknownAlbum));
 			}
 		}
 	}

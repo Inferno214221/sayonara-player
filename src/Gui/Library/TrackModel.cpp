@@ -115,13 +115,13 @@ QVariant TrackModel::data(const QModelIndex &index, int role) const
 
 			case ColumnIndex::Track::Year:
 				if(md.year == 0){
-					return Lang::get(Lang::None);
+					return Lang::get(Lang::UnknownYear);
 				}
 
 				return md.year;
 
 			case ColumnIndex::Track::Bitrate:
-				return QString::number(md.bitrate / 1000) + " kbit/s";
+				return QString::number(md.bitrate / 1000) + " kBit/s";
 
 			case ColumnIndex::Track::Filesize:
 				return ::Util::File::calc_filesize_str(md.filesize);
