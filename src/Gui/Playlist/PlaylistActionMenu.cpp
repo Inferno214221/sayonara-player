@@ -73,7 +73,7 @@ PlaylistActionMenu::PlaylistActionMenu(QWidget* parent) :
 	connect(m->action_append, &QAction::toggled, this, &PlaylistActionMenu::playlist_mode_changed);
 	connect(m->action_shuffle, &QAction::toggled, this, &PlaylistActionMenu::shuffle_checked);
 	connect(m->action_dynamic, &QAction::toggled, this, &PlaylistActionMenu::playlist_mode_changed);
-	connect(m->action_gapless, &QAction::toggled, this, &PlaylistActionMenu::gapless_clicked);
+	connect(m->action_gapless, &QAction::triggered, this, &PlaylistActionMenu::gapless_clicked);
 
 	ListenSetting(Set::PL_Mode, PlaylistActionMenu::s_playlist_mode_changed);
 

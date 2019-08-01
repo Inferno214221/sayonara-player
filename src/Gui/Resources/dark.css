@@ -726,11 +726,6 @@ QSlider::sub-page:horizontal
 	background: #e8841a; 
 }
 
-QRadioButton,
-QCheckbox 
-{
-	border: 1px solid red;
-}
 
 QRadioButton:disabled,
 QCheckbox:disabled 
@@ -835,14 +830,21 @@ QPushButton#btn_ctrl_bw,
 QPushButton#btn_ctrl_play,
 QPushButton#btn_ctrl_rec,
 QPushButton#btn_ctrl_pause,
+QPushButton#btn_mute,
 QLabel#lab_ctrl_rec_icon
 {
-	min-height: 4.5ex;
-	min-width:  4.5ex;
-	max-height: 4.5ex;
-	max-width:  4.5ex;
+	min-height: 4ex;
+	min-width:  4ex;
+	max-height: 4ex;
+	max-width:  4ex;
 
 	border-image: url(:/Icons/dark_bg.svg.png);
+}
+
+QPushButton#btn_mute
+{
+	border-image: none;
+	background: transparent;
 }
 
 RatingLabel:focus

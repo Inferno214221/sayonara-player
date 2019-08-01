@@ -40,9 +40,6 @@
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QSpacerItem>
-#include <QToolButton>
-
-
 
 struct GUI_PlaylistBottomBar::Private
 {
@@ -60,9 +57,6 @@ struct GUI_PlaylistBottomBar::Private
 	BottomBarButton*		btn_shuffle=nullptr;
 	BottomBarButton*		btn_gapless=nullptr;
 	BottomBarButton*		btn_shutdown=nullptr;
-	QToolButton*			menu_button=nullptr;
-
-
 
 	Private()
 	{
@@ -88,11 +82,6 @@ GUI_PlaylistBottomBar::GUI_PlaylistBottomBar(QWidget *parent) :
 {
 	m = Pimpl::make<Private>();
 
-	m->menu_button = new QToolButton(this);
-	m->menu_button->setMenu(new PlaylistActionMenu(nullptr));
-	m->menu_button->setPopupMode(QToolButton::InstantPopup);
-	m->menu_button->setText(QString::fromLocal8Bit("≡"));
-
 	using namespace Gui;
 	m->btn_rep1 = new BottomBarButton(Icons::icon(Icons::Repeat1, Icons::ForceSayonaraIcon), "", this);
 	m->btn_repAll = new BottomBarButton(Icons::icon(Icons::RepeatAll, Icons::ForceSayonaraIcon), "", this);
@@ -102,16 +91,9 @@ GUI_PlaylistBottomBar::GUI_PlaylistBottomBar(QWidget *parent) :
 	m->btn_gapless = new BottomBarButton(Icons::icon(Icons::Gapless, Icons::ForceSayonaraIcon), "", this);
 	m->btn_shutdown = new BottomBarButton(Icons::icon(Icons::Shutdown), "", this);
 
-	QFontMetrics fm = this->fontMetrics();
-	const int w = (fm.width("x") * 45) / 10;
-
-
-	const QList<BottomBarButton*> buttons = m->buttons();
-
-
 	QLayout* layout = new QHBoxLayout(this);
 	this->setLayout(layout);
-	layout->addWidget(m->menu_button);
+
 	layout->addWidget(m->btn_rep1);
 	layout->addWidget(m->btn_repAll);
 	layout->addWidget(m->btn_shuffle);
@@ -124,6 +106,10 @@ GUI_PlaylistBottomBar::GUI_PlaylistBottomBar(QWidget *parent) :
 	layout->setContentsMargins(3, 2, 3, 5);
 	layout->setSpacing(5);
 
+	QFontMetrics fm = this->fontMetrics();
+	const int w = (fm.width("x") * 45) / 10;
+
+	const QList<BottomBarButton*> buttons = m->buttons();
 	for(BottomBarButton* btn : buttons)
 	{
 		QSize btn_size;
@@ -131,7 +117,7 @@ GUI_PlaylistBottomBar::GUI_PlaylistBottomBar(QWidget *parent) :
 		btn_size.setHeight((w * 800) / 1000);
 		btn->setIconSize(btn_size);
 
-		QString style = QString("padding: 0px; min-width: %1px; min-height: %1px; max-width: %1px; max-height: %1px;").arg(w);
+		QString style = QString("padding: 0px; min-width: %1px; min-height: %1px; max-width: %1px; max-height: %1px; width: %1px; height: %1px;").arg(w);
 		btn->setStyleSheet(style);
 		btn->setCheckable(true);
 		btn->setFlat(false);
@@ -139,8 +125,6 @@ GUI_PlaylistBottomBar::GUI_PlaylistBottomBar(QWidget *parent) :
 
 		QSize sz(w, w);
 		btn->resize(sz);
-
-		btn->setVisible(false);
 	}
 
 	m->btn_gapless->setCheckable(false);

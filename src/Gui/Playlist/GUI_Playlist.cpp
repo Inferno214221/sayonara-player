@@ -62,7 +62,8 @@ GUI_Playlist::GUI_Playlist(QWidget *parent) :
 
 	setAcceptDrops(true);
 
-	ui->btn_tool->setMenu(new PlaylistActionMenu(this));
+//	ui->btn_tool->setMenu(new PlaylistActionMenu(this));
+	ui->btn_tool->setVisible(false);
 
 	Handler* handler = Handler::instance();
 	connect(handler, &Handler::sig_playlist_created, this, &GUI_Playlist::playlist_created);

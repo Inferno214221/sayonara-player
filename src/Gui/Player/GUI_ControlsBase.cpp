@@ -32,6 +32,24 @@
 #include <algorithm>
 #include <cmath>
 
+static void set_icon(QPushButton* btn, QIcon icon)
+{
+	QSize sz = btn->size();
+	int w = std::min(sz.width(), sz.height());
+	int h = w;
+
+	sz.setWidth(w);
+	sz.setHeight(h);
+
+	btn->setFixedSize(sz);
+
+	sz.setWidth((w * 800) / 1000);
+	sz.setHeight((h * 800) / 1000);
+
+	btn->setIconSize(sz);
+	btn->setIcon(icon);
+}
+
 static MetaData current_track()
 {
 	return PlayManager::instance()->current_track();
@@ -358,7 +376,7 @@ void GUI_ControlsBase::setup_volume_button(int percent)
 		icon = Icons::icon(Icons::Vol3);
 	}
 
-	btn_mute()->setIcon(icon);
+	set_icon(btn_mute(), icon);
 }
 
 void GUI_ControlsBase::increase_volume()
@@ -496,23 +514,6 @@ void GUI_ControlsBase::refresh_labels(const MetaData& md)
 	set_total_time_label(md.duration_ms);
 }
 
-static void set_icon(QPushButton* btn, QIcon icon)
-{
-	QSize sz = btn->size();
-	int w = std::min(sz.width(), sz.height());
-	int h = w;
-
-	sz.setWidth(w);
-	sz.setHeight(h);
-
-	btn->setFixedSize(sz);
-
-	sz.setWidth((w * 800) / 1000);
-	sz.setHeight((h * 800) / 1000);
-
-	btn->setIconSize(sz);
-	btn->setIcon(icon);
-}
 
 void GUI_ControlsBase::skin_changed()
 {
