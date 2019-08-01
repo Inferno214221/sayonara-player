@@ -807,8 +807,8 @@ QProgressBar
 QProgressBar::chunk
 {
 	background-color: #424e72;
-	width: 1em;
-	margin: 0.5ex;
+	width: 0.5ex;
+	margin: 0.1ex;
 }
 
 QProgressBar#loading_bar,

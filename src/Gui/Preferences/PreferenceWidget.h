@@ -52,6 +52,10 @@ namespace Preferences
 		explicit Base(const QString& identifier);
 		virtual ~Base();
 
+		/**
+		 * @brief return the unique identifier
+		 * @return
+		 */
 		QString	identifier() const;
 
 	private:
@@ -158,8 +162,17 @@ namespace Preferences
 		 */
 		virtual void retranslate_ui()=0;
 
-
+		/**
+		 * @brief indicates if there was an error on the settings page like
+		 * an invalid expression or combination of settings
+		 * @return
+		 */
 		virtual bool has_error() const;
+
+		/**
+		 * @brief A closer description of the error
+		 * @return
+		 */
 		virtual QString error_string() const;
 
 	};

@@ -72,7 +72,7 @@ GUI_TagEdit::GUI_TagEdit(QWidget* parent) :
 	m = Pimpl::make<Private>();
 	m->tag_edit = new Tagging::Editor(this);
 	m->ui_tag_from_path = new GUI_TagFromPath(ui->tab_from_path);
-	m->ui_cover_edit = new GUI_CoverEdit(m->tag_edit, ui->tab_cover);
+	m->ui_cover_edit = new GUI_CoverEdit(this);
 
 	ui->tab_from_path->layout()->addWidget(m->ui_tag_from_path);
 	ui->tab_cover->layout()->addWidget(m->ui_cover_edit);
@@ -182,6 +182,11 @@ void GUI_TagEdit::progress_changed(int val)
 int GUI_TagEdit::count() const
 {
 	return m->tag_edit->count();
+}
+
+Editor*GUI_TagEdit::editor() const
+{
+	return m->tag_edit;
 }
 
 void GUI_TagEdit::set_metadata(const MetaDataList& v_md)

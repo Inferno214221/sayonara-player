@@ -177,6 +177,7 @@ void GUI_LanguagePreferences::update_check_finished()
 	QString data = QString::fromUtf8(awa->data());
 	bool has_error = awa->has_error();
 
+	ui->btn_check_for_update->setVisible(false);
 	ui->btn_check_for_update->setEnabled(true);
 
 	awa->deleteLater();
@@ -184,6 +185,7 @@ void GUI_LanguagePreferences::update_check_finished()
 	if(has_error || data.isEmpty())
 	{
 		ui->lab_update_info->setText(tr("Cannot check for language update"));
+
 		sp_log(Log::Warning, this) << "Cannot download checksums " << awa->url();
 		return;
 	}
@@ -193,6 +195,7 @@ void GUI_LanguagePreferences::update_check_finished()
 	QString four_letter = get_four_letter(ui->combo_lang);
 	QString current_checksum = Language::get_checksum(four_letter);
 
+	bool download_enabled = false;
 	for(const QString& line : lines)
 	{
 		if(!line.contains(four_letter)){
@@ -202,7 +205,8 @@ void GUI_LanguagePreferences::update_check_finished()
 		QStringList splitted = line.split(" ");
 		QString checksum = splitted[0];
 
-		ui->btn_download->setVisible(current_checksum != checksum);
+		download_enabled = (current_checksum != checksum);
+
 		if(current_checksum != checksum)
 		{
 			sp_log(Log::Info, this) << "Language update available";
@@ -216,12 +220,15 @@ void GUI_LanguagePreferences::update_check_finished()
 
 		break;
 	}
+
+	ui->btn_download->setVisible(download_enabled);
+	ui->btn_download->setEnabled(download_enabled);
+	ui->btn_check_for_update->setVisible(!download_enabled);
 }
 
 void GUI_LanguagePreferences::btn_download_clicked()
 {
-	ui->btn_check_for_update->setEnabled(false);
-	ui->btn_download->setVisible(false);
+	ui->btn_download->setEnabled(false);
 
 	QString four_letter = get_four_letter(ui->combo_lang);
 	QString url = Language::get_http_path(four_letter);
@@ -240,9 +247,14 @@ void GUI_LanguagePreferences::download_finished()
 	bool has_error = awa->has_error();
 
 	awa->deleteLater();
-	ui->btn_check_for_update->setEnabled(true);
 
-	if(has_error || data.isEmpty()){
+	ui->btn_check_for_update->setVisible(true);
+
+	ui->btn_download->setEnabled(true);
+	ui->btn_download->setVisible(false);
+
+	if(has_error || data.isEmpty())
+	{
 		sp_log(Log::Warning, this) << "Cannot download file from " << awa->url();
 		ui->lab_update_info->setText(tr("Cannot fetch language update"));
 		return;
@@ -262,7 +274,6 @@ void GUI_LanguagePreferences::download_finished()
 		sp_log(Log::Info, this) << "Language file written to " << filepath;
 
 		Util::Language::update_language_version(four_letter);
-
 
 		Settings::instance()->shout<Set::Player_Language>();
 	}

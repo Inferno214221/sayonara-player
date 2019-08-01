@@ -4,7 +4,7 @@
  */
 
 /**
- * @defgroup Equalizer 
+ * @defgroup Equalizer Equalizer
  * @ingroup PlayerPlugins
  */
 
@@ -13,7 +13,7 @@
  */
 
 /**
- * @defgroup Broadcasting
+ * @defgroup Broadcasting Broadcasting
  * @ingroup Components
  */
 
@@ -24,32 +24,32 @@
  */
 
 /**
- * @defgroup Engine
+ * @defgroup Engine Engine
  * @brief Contains classes used for Sound
  * @ingroup Components
  */
 
 /**
- * @defgroup EngineHelper
+ * @defgroup EngineHelper EngineHelper
  * @ingroup Engine
  * @ingroup Helper
  */
 
 
 /**
- * @defgroup GUICovers
+ * @defgroup GUICovers GUI Covers
  * @brief UI side of cover management
  * @ingroup Covers
  * @ingroup GUI
  */
 
 /** 
- * @defgroup Playlists
+ * @defgroup Playlists Playlists
  * @ingroup Components
  */
 
 /**
- * @defgroup Streams
+ * @defgroup Streams Streams
  * @ingroup Components
  */
 
@@ -74,13 +74,13 @@
  */
 
 /**
- * @defgroup Xiph
+ * @defgroup Xiph Xiph
  * @brief Xiph related header
  * @ingroup Tagging
  */
 
 /**
- * @defgroup ID3v2
+ * @defgroup ID3v2 ID3v2
  * @brief ID3v2 related header
  * @ingroup Tagging
  */
@@ -119,14 +119,14 @@
  */
 
 /**
- * @defgroup EngineInterfaces
+ * @defgroup EngineInterfaces EngineInterfaces
  * @ingroup Engine
  * @ingroup Interfaces
  */
 
 
 /**
- * @defgroup Library
+ * @defgroup Library Library
  * @brief Basic library functions
  * @ingroup Components
  */
@@ -140,7 +140,7 @@
 
 
 /**
- * @defgroup Plugins
+ * @defgroup Plugins Plugins
  * @brief Library and player plugins
  */
 
@@ -157,7 +157,7 @@
  */
 
 /**
- * @defgroup GUI
+ * @defgroup GUI GUI
  * @brief everything that belongs to the GUI
  */
 
@@ -168,12 +168,12 @@
  */
 
 /**
- * @defgroup GUIInterfaces
+ * @defgroup GUIInterfaces GUIInterfaces
  * @brief Interfaces for common GUI classes
  */
 
 /**
- * @defgroup Widgets
+ * @defgroup Widgets Widgets
  * @brief Sayonara widgets
  * @ingroup GUIHelper
  */

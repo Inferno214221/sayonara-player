@@ -138,7 +138,7 @@ QVariant ArtistModel::data(const QModelIndex & index, int role) const
 				return artist.name();
 
 			case ColumnIndex::Artist::Tracks:
-				return tr("%n track(s)", "", artist.num_songs);
+				return QString::number(artist.num_songs);
 
 			default:
 				return QVariant();

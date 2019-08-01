@@ -1,5 +1,7 @@
 #include "GUI_CoverEdit.h"
+#include "GUI_TagEdit.h"
 #include "Gui/TagEdit/ui_GUI_CoverEdit.h"
+
 #include "Components/Covers/CoverLocation.h"
 #include "Components/Tagging/Editor.h"
 
@@ -27,10 +29,10 @@ struct GUI_CoverEdit::Private
 	{}
 };
 
-GUI_CoverEdit::GUI_CoverEdit(Tagging::Editor* editor, QWidget* parent) :
+GUI_CoverEdit::GUI_CoverEdit(GUI_TagEdit* parent) :
 	Widget(parent)
 {
-	m = Pimpl::make<Private>(editor);
+	m = Pimpl::make<Private>(parent->editor());
 	ui = new Ui::GUI_CoverEdit();
 	ui->setupUi(this);
 	ui->btn_cover_replacement->set_silent(true);

@@ -52,6 +52,13 @@ LanguageString LanguageString::triplePt() const
 	return str + "...";
 }
 
+LanguageString& LanguageString::operator=(const LanguageString& other)
+{
+	this->clear();
+	this->append(other);
+	return *this;
+}
+
 Lang::Lang() {}
 
 Lang::~Lang() {}
@@ -277,7 +284,7 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 		case NoAlbums:
 			return l.tr("No albums");
 		case NumTracks:
-			return QString("#") + l.tr("Tracks");
+			return l.tr("Tracks");
 		case MoveDown:
 			return l.tr("Move down");
 		case MoveUp:

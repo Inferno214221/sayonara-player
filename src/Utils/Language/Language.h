@@ -34,6 +34,8 @@ public:
 	LanguageString space() const;
 	LanguageString question() const;
 	LanguageString triplePt() const;
+
+	LanguageString& operator=(const LanguageString& other);
 };
 
 class Lang :

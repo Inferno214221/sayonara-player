@@ -121,27 +121,27 @@ QString ColumnHeader::title() const
 		case ColumnHeader::Sharp:
 			return "#";
 		case ColumnHeader::Artist:
-			return Lang::get(Lang::Artist);
+			return Lang::get(Lang::Artist).toFirstUpper();
 		case ColumnHeader::Album:
-			return Lang::get(Lang::Album);
+			return Lang::get(Lang::Album).toFirstUpper();
 		case ColumnHeader::Title:
-			return Lang::get(Lang::Title);
+			return Lang::get(Lang::Title).toFirstUpper();
 		case ColumnHeader::NumTracks:
-			return Lang::get(Lang::NumTracks);
+			return Lang::get(Lang::NumTracks).toFirstUpper();
 		case ColumnHeader::Duration:
-			return Lang::get(Lang::Duration);
+			return Lang::get(Lang::Duration).toFirstUpper();
 		case ColumnHeader::DurationShort:
-			return Lang::get(Lang::DurationShort);
+			return Lang::get(Lang::DurationShort).toFirstUpper();
 		case ColumnHeader::Year:
-			return Lang::get(Lang::Year);
+			return Lang::get(Lang::Year).toFirstUpper();
 		case ColumnHeader::Rating:
-			return Lang::get(Lang::Rating);
+			return Lang::get(Lang::Rating).toFirstUpper();
 		case ColumnHeader::Bitrate:
-			return Lang::get(Lang::Bitrate);
+			return Lang::get(Lang::Bitrate).toFirstUpper();
 		case ColumnHeader::Filesize:
-			return Lang::get(Lang::Filesize);
+			return Lang::get(Lang::Filesize).toFirstUpper();
 		case ColumnHeader::Discnumber:
-			return Lang::get(Lang::Disc);
+			return Lang::get(Lang::Disc).toFirstUpper();
 		default:
 			return QString();
 	}

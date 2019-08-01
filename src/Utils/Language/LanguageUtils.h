@@ -31,23 +31,100 @@ namespace Util
 {
 	namespace Language
 	{
+		/**
+		 * @brief get the complete path to a language file out of the share directory
+		 * @param four_letter
+		 * @return
+		 */
 		QString get_share_path(const QString& four_letter);
+
+		/**
+		 * @brief get the complete path to a language file out of the ftp directory
+		 * @param four_letter
+		 * @return
+		 */
 		QString get_ftp_path(const QString& four_letter);
+
+		/**
+		 * @brief get the complete http url to a language file
+		 * @param four_letter
+		 * @return
+		 */
 		QString get_http_path(const QString& four_letter);
 
+		/**
+		 * @brief Returns the path where checksums can be fetched from
+		 * @return ftp url
+		 */
 		QString get_checksum_ftp_path();
+
+		/**
+		 * @brief Returns the path where checksums can be fetched from
+		 * @return http url
+		 */
 		QString get_checksum_http_path();
 
 		QString get_home_target_path(const QString& four_letter);
+
+		/**
+		 * @brief Returns the correct language file either from share dir
+		 * or home dir
+		 * @param four_letter language code
+		 * @return path to qm language file
+		 */
 		QString get_used_language_file(const QString& four_letter);
+
+		/**
+		 * @brief Returns the icon path in share directory
+		 * @param four_letter language code
+		 * @return
+		 */
 		QString get_icon_path(const QString& four_letter);
+
+		/**
+		 * @brief Extracts the language Code out of a sayonara_lang string
+		 * @param language_file filename containing sayonara_lang
+		 * @return
+		 */
 		QString extract_four_letter(const QString& language_file);
+
+		/**
+		 * @brief calculates the checksum for the currently used language
+		 * file (either home or share directory)
+		 * @param four_letter language code
+		 * @return md5 checksum
+		 */
 		QString get_checksum(const QString& four_letter);
 
+		/**
+		 * @brief Get the language version out of translations/versions file
+		 * in home dir
+		 * @param four_letter language code
+		 * @return Sayonara version where the file belongs to
+		 */
 		QString get_language_version(const QString& four_letter);
+
+		/**
+		 * @brief Update language version in translations/versions file
+		 * to current Sayonara Version
+		 * @param four_letter
+		 */
 		void update_language_version(const QString& four_letter);
 
+		/**
+		 * @brief Returns if the language version in translations/versions
+		 * file is smaller than the current sayonara version
+		 * @param four_letter
+		 * @return false if Sayonara Version <= Language version, true else
+		 */
 		bool is_outdated(const QString& four_letter);
+
+		/**
+		 * @brief get_similar_language_4
+		 * @param four_letter language code
+		 * @return four letter code if there's a language from another region,
+		 * empty string else
+		 */
 		QString get_similar_language_4(const QString& four_letter);
 
 		#ifdef DEBUG

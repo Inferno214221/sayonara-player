@@ -1,10 +1,5 @@
-/*QListView, QTableView{
-background: #FFFFFF;
-alternate-background-color: #DADADA;
-}
- */
-
-QWidget {
+QWidget 
+{
 	font-family: <<FONT_FAMILY>>;
 	font-size: <<FONT_SIZE>>pt;
 }
@@ -55,12 +50,12 @@ PlaylistView
 QComboBox
 {
 	padding-left: 2px;
-	padding-right: 12px;
+	padding-right: 1ex;
 }
 
 QComboBox,
 QLineEdit
 {
-	min-height: 22px;
-	height: 22px;
+	min-height: 3ex;
+	height: 3ex;
 }

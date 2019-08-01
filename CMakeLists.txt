@@ -37,4 +37,23 @@ endif()
 set(CMAKE_SKIP_RPATH:BOOL ON)
 set(CMAKE_INSTALL_MANIFEST "install_manifest.txt")
 
+message ("Looking for doxygen")
+find_package(Doxygen)
 
+if (DOXYGEN_FOUND)
+	message ("Doxygen found")
+	set(DOXYFILE_IN "${CMAKE_SOURCE_DIR}/docs/doxygen.in")
+	set(DOXYFILE_OUT "${CMAKE_BINARY_DIR}/docs/doxygen.cfg")
+	set(DOXYFILE_SRC_DIR "${CMAKE_SOURCE_DIR}")
+	set(DOXYFILE_OUTPUT_DIR "${CMAKE_BINARY_DIR}/docs")
+
+	configure_file(${DOXYFILE_IN} ${DOXYFILE_OUT} @ONLY)
+
+	add_custom_target(doc
+		COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYFILE_OUT}
+		WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/src"
+		COMMENT "Generating documentation..."
+		VERBATIM
+	)
+
+endif (DOXYGEN_FOUND)

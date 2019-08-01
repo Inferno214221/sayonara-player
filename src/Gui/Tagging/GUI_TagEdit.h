@@ -60,11 +60,22 @@ public:
 	 */
 	void cancel();
 
+	/**
+	 * @brief shows/hides the close button. We don't need a close button
+	 * when this widget is part of another
+	 * @param show
+	 */
 	void show_close_button(bool show);
+
+	/**
+	 * @brief Directly go to the cover tab
+	 */
 	void show_cover_tab();
 
 	void set_metadata(const MetaDataList& v_md);
 	int count() const;
+
+	Tagging::Editor* editor() const;
 
 
 signals:

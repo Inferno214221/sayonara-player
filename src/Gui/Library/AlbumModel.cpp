@@ -164,7 +164,7 @@ QVariant AlbumModel::data(const QModelIndex& index, int role) const
 		switch(col)
 		{
 			case ColumnIndex::Album::NumSongs:
-				return tr("%n track(s)", "", album.num_songs);
+				return QString::number(album.num_songs);
 
 			case ColumnIndex::Album::Year:
 				if(album.year == 0){

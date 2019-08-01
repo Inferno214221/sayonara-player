@@ -124,10 +124,6 @@ namespace PlayerPlugin
 			finalize_initialization();
 		}
 
-		/**
-		 * @brief Event fired when closed overrides QWidget::closeEvent
-		 * @param e the event
-		 */
 		void closeEvent(QCloseEvent* e) override;
 		void showEvent(QShowEvent* e) override;
 
