@@ -51,7 +51,8 @@ signals:
 	void sig_default();
 
 public:
-	explicit MenuToolButton(QWidget *parent=nullptr);
+	explicit MenuToolButton(QWidget *parent);
+	explicit MenuToolButton(QMenu* menu, QWidget *parent);
 	virtual ~MenuToolButton() override;
 
 	/**

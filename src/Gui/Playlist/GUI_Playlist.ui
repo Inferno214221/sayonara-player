@@ -112,6 +112,16 @@
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QToolButton" name="btn_tool">
+       <property name="text">
+        <string notr="true">≡</string>
+       </property>
+       <property name="popupMode">
+        <enum>QToolButton::InstantPopup</enum>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item row="1" column="0" colspan="2">

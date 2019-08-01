@@ -17,7 +17,6 @@
         <file>Icons/fwd_orange.svg.png</file>
         <file>Icons/fwd.svg.png</file>
         <file>Icons/gapless.svg.png</file>
-        <file>Icons/id3.svg.png</file>
         <file>Icons/info.svg.png</file>
         <file>Icons/logo.png</file>
         <file>Icons/lyrics.svg.png</file>
@@ -39,7 +38,6 @@
         <file>Icons/vol_3_dark.svg.png</file>
         <file>Icons/vol_mute_dark.svg.png</file>
         <file>Icons/close.svg.png</file>
-        <file>Icons/play_orange.svg.png</file>
         <file>Icons/arrow_left_disabled.svg.png</file>
         <file>Icons/arrow_right_disabled.svg.png</file>
         <file>Icons/border_c.png</file>
@@ -79,7 +77,6 @@
         <file>Icons/bwd.svg</file>
         <file>Icons/fwd.svg</file>
         <file>Icons/pause.svg</file>
-        <file>Icons/play_orange.svg</file>
         <file>Icons/rec.svg</file>
         <file>Icons/stop.svg</file>
     </qresource>

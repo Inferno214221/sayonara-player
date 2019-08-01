@@ -18,6 +18,8 @@
  */
 
 #include "BottomBar.h"
+#include "BottomBarButton.h"
+#include "PlaylistActionMenu.h"
 
 #include "Gui/Plugins/PlayerPluginHandler.h"
 #include "Gui/Utils/Icons.h"
@@ -38,6 +40,9 @@
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QSpacerItem>
+#include <QToolButton>
+
+
 
 struct GUI_PlaylistBottomBar::Private
 {
@@ -48,20 +53,23 @@ struct GUI_PlaylistBottomBar::Private
 	Shutdown*			shutdown=nullptr;
 #endif
 
-	QPushButton*		btn_rep1=nullptr;
-	QPushButton*		btn_append=nullptr;
-	QPushButton*		btn_repAll=nullptr;
-	QPushButton*		btn_dynamic=nullptr;
-	QPushButton*		btn_shuffle=nullptr;
-	QPushButton*		btn_gapless=nullptr;
-	QPushButton*		btn_shutdown=nullptr;
+	BottomBarButton*		btn_rep1=nullptr;
+	BottomBarButton*		btn_append=nullptr;
+	BottomBarButton*		btn_repAll=nullptr;
+	BottomBarButton*		btn_dynamic=nullptr;
+	BottomBarButton*		btn_shuffle=nullptr;
+	BottomBarButton*		btn_gapless=nullptr;
+	BottomBarButton*		btn_shutdown=nullptr;
+	QToolButton*			menu_button=nullptr;
+
+
 
 	Private()
 	{
 		shutdown = Shutdown::instance();
 	}
 
-	QList<QPushButton*> buttons()
+	QList<BottomBarButton*> buttons()
 	{
 		return {
 			btn_rep1,
@@ -80,30 +88,30 @@ GUI_PlaylistBottomBar::GUI_PlaylistBottomBar(QWidget *parent) :
 {
 	m = Pimpl::make<Private>();
 
+	m->menu_button = new QToolButton(this);
+	m->menu_button->setMenu(new PlaylistActionMenu(nullptr));
+	m->menu_button->setPopupMode(QToolButton::InstantPopup);
+	m->menu_button->setText(QString::fromLocal8Bit("≡"));
+
 	using namespace Gui;
-	m->btn_rep1 = new QPushButton(Icons::icon(Icons::Repeat1, Icons::ForceSayonaraIcon), "", this);
-	m->btn_repAll = new QPushButton(Icons::icon(Icons::RepeatAll, Icons::ForceSayonaraIcon), "", this);
-	m->btn_append = new QPushButton(Icons::icon(Icons::Append, Icons::ForceSayonaraIcon), "", this);
-	m->btn_dynamic = new QPushButton(Icons::icon(Icons::Dynamic, Icons::ForceSayonaraIcon), "", this);
-	m->btn_shuffle = new QPushButton(Icons::icon(Icons::Shuffle, Icons::ForceSayonaraIcon), "", this);
-	m->btn_gapless = new QPushButton(Icons::icon(Icons::Gapless, Icons::ForceSayonaraIcon), "", this);
-	m->btn_shutdown = new QPushButton(Icons::icon(Icons::Shutdown), "", this);
+	m->btn_rep1 = new BottomBarButton(Icons::icon(Icons::Repeat1, Icons::ForceSayonaraIcon), "", this);
+	m->btn_repAll = new BottomBarButton(Icons::icon(Icons::RepeatAll, Icons::ForceSayonaraIcon), "", this);
+	m->btn_append = new BottomBarButton(Icons::icon(Icons::Append, Icons::ForceSayonaraIcon), "", this);
+	m->btn_dynamic = new BottomBarButton(Icons::icon(Icons::Dynamic, Icons::ForceSayonaraIcon), "", this);
+	m->btn_shuffle = new BottomBarButton(Icons::icon(Icons::Shuffle, Icons::ForceSayonaraIcon), "", this);
+	m->btn_gapless = new BottomBarButton(Icons::icon(Icons::Gapless, Icons::ForceSayonaraIcon), "", this);
+	m->btn_shutdown = new BottomBarButton(Icons::icon(Icons::Shutdown), "", this);
 
-	const QList<QPushButton*> buttons = m->buttons();
-	for(QPushButton* btn : buttons)
-	{
-		btn->setIconSize(QSize(20, 20));
-		btn->setCheckable(true);
-		btn->setFlat(false);
-		btn->setFocusPolicy(Qt::NoFocus);
-		btn->setMinimumSize(28, 28);
-		btn->setMaximumSize(28, 28);
-	}
+	QFontMetrics fm = this->fontMetrics();
+	const int w = (fm.width("x") * 45) / 10;
 
-	m->btn_gapless->setCheckable(false);
+
+	const QList<BottomBarButton*> buttons = m->buttons();
+
 
 	QLayout* layout = new QHBoxLayout(this);
 	this->setLayout(layout);
+	layout->addWidget(m->menu_button);
 	layout->addWidget(m->btn_rep1);
 	layout->addWidget(m->btn_repAll);
 	layout->addWidget(m->btn_shuffle);
@@ -115,6 +123,27 @@ GUI_PlaylistBottomBar::GUI_PlaylistBottomBar(QWidget *parent) :
 
 	layout->setContentsMargins(3, 2, 3, 5);
 	layout->setSpacing(5);
+
+	for(BottomBarButton* btn : buttons)
+	{
+		QSize btn_size;
+		btn_size.setWidth((w * 800) / 1000);
+		btn_size.setHeight((w * 800) / 1000);
+		btn->setIconSize(btn_size);
+
+		QString style = QString("padding: 0px; min-width: %1px; min-height: %1px; max-width: %1px; max-height: %1px;").arg(w);
+		btn->setStyleSheet(style);
+		btn->setCheckable(true);
+		btn->setFlat(false);
+		btn->setFocusPolicy(Qt::NoFocus);
+
+		QSize sz(w, w);
+		btn->resize(sz);
+
+		btn->setVisible(false);
+	}
+
+	m->btn_gapless->setCheckable(false);
 
 
 #ifdef WITH_SHUTDOWN

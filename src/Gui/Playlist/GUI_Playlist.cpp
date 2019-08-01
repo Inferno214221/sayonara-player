@@ -23,6 +23,7 @@
  */
 
 #include "GUI_Playlist.h"
+#include "PlaylistActionMenu.h"
 #include "Gui/Playlist/ui_GUI_Playlist.h"
 
 #include "TabWidget.h"
@@ -60,6 +61,8 @@ GUI_Playlist::GUI_Playlist(QWidget *parent) :
 	ui->setupUi(this);
 
 	setAcceptDrops(true);
+
+	ui->btn_tool->setMenu(new PlaylistActionMenu(this));
 
 	Handler* handler = Handler::instance();
 	connect(handler, &Handler::sig_playlist_created, this, &GUI_Playlist::playlist_created);

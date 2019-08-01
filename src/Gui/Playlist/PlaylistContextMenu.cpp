@@ -22,6 +22,7 @@
 #include "BookmarksMenu.h"
 #include "Gui/Utils/RatingLabel.h"
 #include "Gui/Utils/Icons.h"
+#include "Gui/Playlist/PlaylistActionMenu.h"
 
 #include "Utils/Language/Language.h"
 #include "Utils/MetaData/MetaData.h"
@@ -35,6 +36,9 @@ struct PlaylistContextMenu::Private
 	QAction*		find_track_action=nullptr;
 	QMenu*			rating_menu=nullptr;
 
+	QAction*		playlist_mode_action=nullptr;
+	QMenu*			playlist_mode_menu=nullptr;
+
 	Private(PlaylistContextMenu* parent)
 	{
 		current_track_action = new QAction(parent);
@@ -47,6 +51,9 @@ struct PlaylistContextMenu::Private
 
 		bookmarks_menu = new BookmarksMenu(parent);
 		bookmarks_action = parent->addMenu(bookmarks_menu);
+
+		playlist_mode_menu = new PlaylistActionMenu(parent);
+		playlist_mode_action = parent->addMenu(playlist_mode_menu);
 	}
 };
 
@@ -148,6 +155,7 @@ void PlaylistContextMenu::language_changed()
 	m->rating_action->setText(Lang::get(Lang::Rating));
 	m->current_track_action->setText(tr("Jump to current track"));
 	m->find_track_action->setText(tr("Show track in library"));
+	m->playlist_mode_action->setText(tr("Playlist mode"));
 }
 
 void PlaylistContextMenu::skin_changed()
