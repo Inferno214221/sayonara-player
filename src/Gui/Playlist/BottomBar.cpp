@@ -83,13 +83,13 @@ GUI_PlaylistBottomBar::GUI_PlaylistBottomBar(QWidget *parent) :
 	m = Pimpl::make<Private>();
 
 	using namespace Gui;
-	m->btn_rep1 = new BottomBarButton(Icons::icon(Icons::Repeat1, Icons::ForceSayonaraIcon), "", this);
-	m->btn_repAll = new BottomBarButton(Icons::icon(Icons::RepeatAll, Icons::ForceSayonaraIcon), "", this);
-	m->btn_append = new BottomBarButton(Icons::icon(Icons::Append, Icons::ForceSayonaraIcon), "", this);
-	m->btn_dynamic = new BottomBarButton(Icons::icon(Icons::Dynamic, Icons::ForceSayonaraIcon), "", this);
-	m->btn_shuffle = new BottomBarButton(Icons::icon(Icons::Shuffle, Icons::ForceSayonaraIcon), "", this);
-	m->btn_gapless = new BottomBarButton(Icons::icon(Icons::Gapless, Icons::ForceSayonaraIcon), "", this);
-	m->btn_shutdown = new BottomBarButton(Icons::icon(Icons::Shutdown), "", this);
+	m->btn_rep1 = new BottomBarButton(Icons::pixmap(Icons::Repeat1, Icons::ForceSayonaraIcon), this);
+	m->btn_repAll = new BottomBarButton(Icons::pixmap(Icons::RepeatAll, Icons::ForceSayonaraIcon), this);
+	m->btn_append = new BottomBarButton(Icons::pixmap(Icons::Append, Icons::ForceSayonaraIcon), this);
+	m->btn_dynamic = new BottomBarButton(Icons::pixmap(Icons::Dynamic, Icons::ForceSayonaraIcon), this);
+	m->btn_shuffle = new BottomBarButton(Icons::pixmap(Icons::Shuffle, Icons::ForceSayonaraIcon), this);
+	m->btn_gapless = new BottomBarButton(Icons::pixmap(Icons::Gapless, Icons::ForceSayonaraIcon), this);
+	m->btn_shutdown = new BottomBarButton(Icons::pixmap(Icons::Shutdown), this);
 
 	QLayout* layout = new QHBoxLayout(this);
 	this->setLayout(layout);
@@ -106,25 +106,12 @@ GUI_PlaylistBottomBar::GUI_PlaylistBottomBar(QWidget *parent) :
 	layout->setContentsMargins(3, 2, 3, 5);
 	layout->setSpacing(5);
 
-	QFontMetrics fm = this->fontMetrics();
-	const int w = (fm.width("x") * 45) / 10;
-
 	const QList<BottomBarButton*> buttons = m->buttons();
 	for(BottomBarButton* btn : buttons)
 	{
-		QSize btn_size;
-		btn_size.setWidth((w * 800) / 1000);
-		btn_size.setHeight((w * 800) / 1000);
-		btn->setIconSize(btn_size);
-
-		QString style = QString("padding: 0px; min-width: %1px; min-height: %1px; max-width: %1px; max-height: %1px; width: %1px; height: %1px;").arg(w);
-		btn->setStyleSheet(style);
 		btn->setCheckable(true);
 		btn->setFlat(false);
 		btn->setFocusPolicy(Qt::NoFocus);
-
-		QSize sz(w, w);
-		btn->resize(sz);
 	}
 
 	m->btn_gapless->setCheckable(false);
@@ -214,19 +201,6 @@ void GUI_PlaylistBottomBar::gapless_clicked()
 	PlayerPlugin::Handler::instance()->show_plugin("Crossfader");
 }
 
-void GUI_PlaylistBottomBar::language_changed()
-{
-	m->btn_append->setToolTip(Lang::get(Lang::Append));
-	m->btn_dynamic->setToolTip(Lang::get(Lang::DynamicPlayback));
-	m->btn_gapless->setToolTip(Lang::get(Lang::GaplessPlayback));
-	m->btn_rep1->setToolTip(Lang::get(Lang::Repeat1));
-	m->btn_repAll->setToolTip(Lang::get(Lang::RepeatAll));
-	m->btn_shuffle->setToolTip(Lang::get(Lang::Shuffle));
-	m->btn_shutdown->setToolTip(Lang::get(Lang::Shutdown) + ": " + Lang::get(Lang::Cancel));
-
-	check_dynamic_play_button();
-}
-
 // setting slot
 void GUI_PlaylistBottomBar::s_playlist_mode_changed()
 {
@@ -269,6 +243,51 @@ void GUI_PlaylistBottomBar::check_dynamic_play_button()
 }
 
 
+void GUI_PlaylistBottomBar::language_changed()
+{
+	m->btn_append->setToolTip(Lang::get(Lang::Append));
+	m->btn_dynamic->setToolTip(Lang::get(Lang::DynamicPlayback));
+	m->btn_gapless->setToolTip(Lang::get(Lang::GaplessPlayback));
+	m->btn_rep1->setToolTip(Lang::get(Lang::Repeat1));
+	m->btn_repAll->setToolTip(Lang::get(Lang::RepeatAll));
+	m->btn_shuffle->setToolTip(Lang::get(Lang::Shuffle));
+	m->btn_shutdown->setToolTip(Lang::get(Lang::Shutdown) + ": " + Lang::get(Lang::Cancel));
+
+	check_dynamic_play_button();
+}
+
+#include <QVBoxLayout>
+void GUI_PlaylistBottomBar::skin_changed()
+{
+	QFontMetrics fm = this->fontMetrics();
+	int w = (fm.width("x") * 45) / 10;
+	w = std::max(29, w);
+
+	const QList<BottomBarButton*> buttons = m->buttons();
+	for(BottomBarButton* btn : buttons)
+	{
+		QSize sz(w, w);
+
+		btn->setFixedSize(sz);
+	}
+}
+
+void GUI_PlaylistBottomBar::showEvent(QShowEvent* e)
+{
+	Gui::Widget::showEvent(e);
+
+	skin_changed();
+}
+
+void GUI_PlaylistBottomBar::resizeEvent(QResizeEvent* e)
+{
+	Gui::Widget::resizeEvent(e);
+
+	skin_changed();
+}
+
+
+
 #ifdef WITH_SHUTDOWN
 	void GUI_PlaylistBottomBar::shutdown_clicked()
 	{
@@ -297,3 +316,4 @@ void GUI_PlaylistBottomBar::check_dynamic_play_button()
 	}
 
 #endif
+

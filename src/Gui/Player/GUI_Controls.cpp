@@ -47,7 +47,6 @@ QLabel* GUI_Controls::lab_max_time() const { return ui->lab_max_time; }
 QWidget* GUI_Controls::widget_details() const { return ui->widget_details; }
 SearchSlider* GUI_Controls::sli_progress() const { return ui->sli_progress; }
 SearchSlider* GUI_Controls::sli_volume() const { return ui->sli_volume; }
-Gui::ProgressBar* GUI_Controls::sli_buffer() const { return ui->sli_buffer; }
 QPushButton* GUI_Controls::btn_mute() const { return ui->btn_mute; }
 QPushButton* GUI_Controls::btn_play() const { return ui->btn_ctrl_play; }
 QPushButton* GUI_Controls::btn_rec() const { return ui->btn_ctrl_rec; }
@@ -55,22 +54,6 @@ QPushButton* GUI_Controls::btn_bwd() const { return ui->btn_ctrl_bw; }
 QPushButton* GUI_Controls::btn_fwd() const { return ui->btn_ctrl_fw; }
 QPushButton* GUI_Controls::btn_stop() const { return ui->btn_ctrl_stop; }
 CoverButton* GUI_Controls::btn_cover() const { return ui->btn_cover; }
-
-void GUI_Controls::toggle_buffer_mode(bool buffering)
-{
-	if(!buffering){
-		ui->progress_widget->setCurrentIndex(0);
-	}
-
-	else {
-		ui->progress_widget->setCurrentIndex(1);
-	}
-}
-
-//bool GUI_Controls::is_resizable() const
-//{
-//	return false;
-//}
 
 bool GUI_Controls::is_extern_resize_allowed() const
 {

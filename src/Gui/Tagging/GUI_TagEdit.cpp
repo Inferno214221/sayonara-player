@@ -164,6 +164,10 @@ void GUI_TagEdit::commit_finished()
 		connect(fmb, &GUI_FailMessageBox::sig_closed, fmb, &QObject::deleteLater);
 		fmb->show();
 	}
+
+	else {
+		this->close();
+	}
 }
 
 void GUI_TagEdit::progress_changed(int val)
@@ -209,6 +213,9 @@ void GUI_TagEdit::metadata_changed(const MetaDataList& md)
 	}
 
 	ui->btn_load_entire_album->setVisible(m->tag_edit->can_load_entire_album());
+	ui->btn_save->setEnabled(true);
+	ui->btn_undo->setEnabled(true);
+	ui->btn_undo_all->setEnabled(true);
 
 	set_current_index(0);
 	refresh_current_track();
@@ -385,6 +392,7 @@ void GUI_TagEdit::reset()
 	m->ui_tag_from_path->reset();
 	m->ui_cover_edit->reset();
 
+	ui->tab_widget->tabBar()->setEnabled(true);
 	ui->cb_album_all->setChecked(false);
 	ui->cb_artist_all->setChecked(false);
 	ui->cb_album_artist_all->setChecked(false);
@@ -513,6 +521,13 @@ void GUI_TagEdit::commit()
 		return;
 	}
 
+	ui->btn_save->setEnabled(false);
+	ui->btn_undo->setEnabled(false);
+	ui->btn_undo_all->setEnabled(false);
+	ui->btn_load_entire_album->setEnabled(false);
+
+	ui->tab_widget->tabBar()->setEnabled(false);
+
 	write_changes(m->cur_idx);
 
 	for(int i=0; i<m->tag_edit->count(); i++)
@@ -592,4 +607,6 @@ void GUI_TagEdit::showEvent(QShowEvent *e)
 {
 	Widget::showEvent(e);
 	refresh_current_track();
+
+	ui->le_title->setFocus();
 }

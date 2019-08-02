@@ -247,8 +247,12 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 			int64_t buffering_left;
 
 			GstBufferingMode mode;
+
 			gst_message_parse_buffering(msg, &percent);
 			gst_message_parse_buffering_stats(msg, &mode, &avg_in, &avg_out, &buffering_left );
+
+			sp_log(Log::Develop, "Engine Callback") << "Buffering: " << percent;
+			sp_log(Log::Develop, "Engine Callback") << "Avg In: " << avg_in << " Avg Out: " << avg_out << " buffering_left: " << buffering_left;
 
 			engine->set_buffer_state(percent, src);
 			break;

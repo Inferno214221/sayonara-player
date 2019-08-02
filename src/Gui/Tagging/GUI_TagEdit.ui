@@ -412,6 +412,9 @@
            <height>100</height>
           </size>
          </property>
+         <property name="tabChangesFocus">
+          <bool>true</bool>
+         </property>
         </widget>
        </item>
        <item row="3" column="6">
@@ -595,12 +598,32 @@
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>btn_prev</tabstop>
-  <tabstop>btn_next</tabstop>
+  <tabstop>le_title</tabstop>
+  <tabstop>le_album</tabstop>
+  <tabstop>cb_album_all</tabstop>
+  <tabstop>le_artist</tabstop>
+  <tabstop>cb_artist_all</tabstop>
+  <tabstop>le_album_artist</tabstop>
+  <tabstop>cb_album_artist_all</tabstop>
+  <tabstop>le_genre</tabstop>
+  <tabstop>cb_genre_all</tabstop>
+  <tabstop>te_comment</tabstop>
+  <tabstop>cb_comment_all</tabstop>
+  <tabstop>sb_track_num</tabstop>
+  <tabstop>sb_year</tabstop>
+  <tabstop>cb_year_all</tabstop>
+  <tabstop>sb_discnumber</tabstop>
+  <tabstop>cb_discnumber_all</tabstop>
+  <tabstop>lab_rating</tabstop>
+  <tabstop>cb_rating_all</tabstop>
   <tabstop>btn_undo_all</tabstop>
   <tabstop>btn_undo</tabstop>
   <tabstop>btn_close</tabstop>
   <tabstop>btn_save</tabstop>
+  <tabstop>btn_prev</tabstop>
+  <tabstop>btn_next</tabstop>
+  <tabstop>tab_widget</tabstop>
+  <tabstop>btn_load_entire_album</tabstop>
  </tabstops>
  <resources/>
  <connections/>

@@ -185,6 +185,7 @@ QScrollBar::vertical
 	padding-top: 2px;
 	padding-bottom: 2px;
 	width: 2.4ex;
+	max-width: 24px;
 	background: #323232;
 	border-left: 1px solid #242424;
 }
@@ -221,6 +222,7 @@ QScrollBar::horizontal
 	padding-left: 2px;
 	padding-right: 2px;
 	height: 2.4ex;
+	max-height: 24px;
 	background: #323232;
 	border-top: 1px solid #242424;
 }
@@ -370,7 +372,6 @@ QMenu::separator
 
 QLabel
 {
-	min-height: 3ex;
 }
 
 QLabel, QScrollArea
@@ -387,7 +388,7 @@ QPlainTextEdit,
 QPushButton
 {
 	padding: 3px;
-	min-height: 4ex;
+	height: 4ex;
 }
 
 QComboBox,
@@ -417,6 +418,7 @@ QLineEdit:hover,
 QSpinBox:hover,
 QPlainTextEdit:hover,
 QPushButton[flat=false]:hover,
+QPushButton[flat=false]:focus,
 QLineEdit:focus,
 QSpinBox:focus,
 QTextEdit:hover,
@@ -424,7 +426,6 @@ QTextEdit:focus,
 QPlainTextEdit:hover,
 QPlainTextEdit:focus,
 QPlainTextEdit:focus,
-QPushButton[flat=false]:focus,
 QToolButton:hover,
 QToolButton:focus,
 ToolButton:hover,
@@ -454,7 +455,8 @@ QComboBox
 
 QComboBox::drop-down
 {
-	width: 32px; /* 4.5ex */
+	width: 4.5ex; /* 4.5ex */
+	max-width: 50px;
 	border-left: 1px solid #242424;
 	border-top-right-radius: 3px;
 	border-bottom-right-radius: 3px;
@@ -690,40 +692,10 @@ QTabBar::tear
 	width: 0px;
 }
 
-QSlider:hover,
-QSlider:focus
+QCheckBox:hover,
+QCheckBox:focus
 {
-	background: rgba(128, 128, 128, 40);
-	border-radius: 4px;
-}
-
-QSlider::groove:vertical
-{
-	background: transparent;
-	width: 1.1em;
-	padding-left: -0.5em;
-	padding-right: -0.5em;
-}
-
-QSlider::groove:horizontal
-{
-	background: #383838;
-	height: 1.1em;
-	padding-top: -0.5em;
-	padding-bottom: -0.5em;
-}
-
-QSlider::sub-page:vertical,
-QSlider::add-page:horizontal,
-QSlider::sub-page:horizontal:disabled 
-{
-	background: #282828;
-}
-
-QSlider::add-page:vertical,
-QSlider::sub-page:horizontal
-{
-	background: #e8841a; 
+	color: #e8841a;
 }
 
 
@@ -833,10 +805,10 @@ QPushButton#btn_ctrl_pause,
 QPushButton#btn_mute,
 QLabel#lab_ctrl_rec_icon
 {
-	min-height: 4ex;
+/*	min-height: 4ex;
 	min-width:  4ex;
 	max-height: 4ex;
-	max-width:  4ex;
+	max-width:  4ex;*/
 
 	border-image: url(:/Icons/dark_bg.svg.png);
 }

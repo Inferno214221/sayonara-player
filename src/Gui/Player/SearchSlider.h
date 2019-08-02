@@ -27,10 +27,12 @@
 
 #include "Gui/Utils/Widgets/Slider.h"
 
+class QColor;
 class SearchSlider:
 		public Gui::Slider
 {
 	Q_OBJECT
+	PIMPL(SearchSlider)
 
 signals:
 	void sig_slider_moved(int);
@@ -40,12 +42,18 @@ public:
 	virtual ~SearchSlider();
 
 	bool is_busy() const;
+	void set_buffering(int progress);
 
 protected:
 	void mousePressEvent(QMouseEvent* e) override;
 	void mouseReleaseEvent(QMouseEvent* e) override;
 	void mouseMoveEvent(QMouseEvent* e) override;
 	bool event(QEvent *event) override;
+
+	bool has_other_value() const override;
+	int other_value() const override;
+	QColor other_value_color() const override;
+
 
 private:
 	void emit_new_val(int value);

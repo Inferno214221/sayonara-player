@@ -313,6 +313,11 @@ void Base::similar_artists_fetched(IdList artist_ids)
 
 	int active_idx = plh->active_index();
 	PlaylistConstPtr active_playlist = plh->playlist(active_idx);
+
+	if(!active_playlist){
+		return;
+	}
+
 	const MetaDataList& v_md = active_playlist->tracks();
 
 	std::random_shuffle(artist_ids.begin(), artist_ids.end());

@@ -55,7 +55,6 @@ public:
 	RatingLabel* lab_rating() const override;
 	SearchSlider* sli_progress() const override;
 	SearchSlider* sli_volume() const override;
-	Gui::ProgressBar* sli_buffer() const override;
 	QPushButton* btn_mute() const override;
 	QPushButton* btn_play() const override;
 	QPushButton* btn_rec() const override;
@@ -63,9 +62,6 @@ public:
 	QPushButton* btn_fwd() const override;
 	QPushButton* btn_stop() const override;
 	CoverButton* btn_cover() const override;
-
-	void toggle_buffer_mode(bool buffering) override;
-	//bool is_resizable() const override;
 
 	void rating_changed_here(bool success);
 	bool is_extern_resize_allowed() const override;

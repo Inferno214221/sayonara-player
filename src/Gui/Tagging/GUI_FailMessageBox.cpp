@@ -28,11 +28,12 @@ void GUI_FailMessageBox::set_failed_files(const QMap<QString, Tagging::Editor::F
 
 	using Reason=Tagging::Editor::FailReason;
 	ui->tv_files->setRowCount(files.size());
-	ui->tv_files->setColumnCount(3);
+	ui->tv_files->setColumnCount(4);
 	ui->tv_files->setHorizontalHeaderLabels(QStringList{
 		Lang::get(Lang::Filename),
 		tr("File exists") + "?",
-		tr("Writeable") + "?"
+		tr("Writeable") + "?",
+		Lang::get(Lang::Error)
 	});
 
 	const QList<QString> keys = files.keys();
@@ -49,6 +50,10 @@ void GUI_FailMessageBox::set_failed_files(const QMap<QString, Tagging::Editor::F
 
 		auto twi_writable = new QTableWidgetItem();
 		twi_writable->setTextAlignment(Qt::AlignCenter);
+
+		auto twi_error = new QTableWidgetItem();
+		twi_writable->setTextAlignment(Qt::AlignCenter);
+		twi_error->setText(QString::number(static_cast<int>(reason)));
 
 		if(reason == Reason::FileNotFound)
 		{
@@ -71,6 +76,7 @@ void GUI_FailMessageBox::set_failed_files(const QMap<QString, Tagging::Editor::F
 		ui->tv_files->setItem(row, 0, twi_filename);
 		ui->tv_files->setItem(row, 1, twi_exists);
 		ui->tv_files->setItem(row, 2, twi_writable);
+		ui->tv_files->setItem(row, 3, twi_error);
 
 		ui->tv_files->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
 

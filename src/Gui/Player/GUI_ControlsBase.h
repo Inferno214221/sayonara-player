@@ -70,7 +70,6 @@ public:
 
 	virtual SearchSlider* sli_progress() const=0;
 	virtual SearchSlider* sli_volume() const=0;
-	virtual Gui::ProgressBar* sli_buffer() const=0;
 	virtual QPushButton* btn_mute() const=0;
 	virtual QPushButton* btn_play() const=0;
 	virtual QPushButton* btn_rec() const=0;
@@ -136,8 +135,6 @@ private slots:
 	void sr_active_changed();
 
 protected:
-
-	virtual void toggle_buffer_mode(bool buffering)=0;
 
 	MD::Interpretation metadata_interpretation() const override;
 	MetaDataList info_dialog_data() const override;

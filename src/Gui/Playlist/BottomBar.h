@@ -47,6 +47,12 @@ public:
 
 	void check_dynamic_play_button();
 
+protected:
+	void language_changed() override;
+	void skin_changed() override;
+	void showEvent(QShowEvent* e) override;
+	void resizeEvent(QResizeEvent* e) override;
+
 private slots:
 	void rep1_checked(bool checked);
 	void rep_all_checked(bool checked);
@@ -54,7 +60,7 @@ private slots:
 	void playlist_mode_changed();
 	void gapless_clicked();
 
-	void language_changed() override;
+
 
 	void s_playlist_mode_changed();
 

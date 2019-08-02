@@ -24,13 +24,23 @@
 
 #include "SearchSlider.h"
 
-#include <algorithm>
+#include <QColor>
 #include <QEvent>
 #include <QWheelEvent>
+
+#include <algorithm>
+
+struct SearchSlider::Private
+{
+	int buffer_progress;
+
+	Private() : buffer_progress(-1) {}
+};
 
 SearchSlider::SearchSlider(QWidget* parent) :
 	Gui::Slider(parent)
 {
+	m = Pimpl::make<Private>();
 	this->setMouseTracking(true);
 }
 
@@ -76,6 +86,28 @@ bool SearchSlider::event(QEvent *e)
 	return Gui::Slider::event(e);
 }
 
+bool SearchSlider::has_other_value() const
+{
+	return (m->buffer_progress >= 0);
+}
+
+int SearchSlider::other_value() const
+{
+	return (m->buffer_progress * (this->maximum() - this->minimum())) / 100;
+}
+
+QColor SearchSlider::other_value_color() const
+{
+	return QColor(66, 78, 114);
+}
+
+void SearchSlider::set_buffering(int progress)
+{
+	m->buffer_progress = progress;
+	this->repaint();
+}
+
+
 
 void SearchSlider::mousePressEvent(QMouseEvent* e)
 {
@@ -99,7 +131,6 @@ void SearchSlider::mouseMoveEvent(QMouseEvent *e)
 	}
 }
 
-
 void SearchSlider::emit_new_val(int value)
 {
 	value = std::max(value, 0);
@@ -108,8 +139,8 @@ void SearchSlider::emit_new_val(int value)
 	emit sig_slider_moved(value);
 }
 
-
 bool SearchSlider::is_busy() const
 {
 	return this->isSliderDown();
 }
+

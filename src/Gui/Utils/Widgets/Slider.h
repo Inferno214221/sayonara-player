@@ -21,7 +21,12 @@
 #ifndef SAYONARA_SLIDER_H
 #define SAYONARA_SLIDER_H
 
+#include "Utils/Pimpl.h"
+
+#include <QMap>
 #include <QSlider>
+
+class QColor;
 
 namespace Gui
 {
@@ -33,6 +38,7 @@ namespace Gui
 			public QSlider
 	{
 		Q_OBJECT
+		PIMPL(Slider)
 
 		signals:
 			void sig_slider_got_focus();
@@ -52,7 +58,13 @@ namespace Gui
 			virtual void mousePressEvent(QMouseEvent* e) override;
 			virtual void mouseMoveEvent(QMouseEvent* e) override;
 			virtual void mouseReleaseEvent(QMouseEvent* e) override;
+
+			virtual bool has_other_value() const;
+			virtual int other_value() const;
+			virtual QColor other_value_color() const;
+
 			virtual bool event(QEvent* e) override;
+			void paintEvent(QPaintEvent *e) override;
 	};
 
 }
