@@ -26,6 +26,8 @@
 #include <QStringList>
 #include <QDialog>
 
+using Gui::ImageSelectionDialog;
+
 struct ImageSelectionDialog::Private
 {
 	QString start_dir;

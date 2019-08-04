@@ -27,6 +27,8 @@
 #include <QFont>
 #include <QPushButton>
 
+using namespace Gui;
+
 struct PreferenceAction::Private
 {
 	QString identifier;

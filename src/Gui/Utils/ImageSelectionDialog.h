@@ -28,21 +28,28 @@
 
 #include <QFileDialog>
 
-class ImageSelectionDialog :
-		public Gui::WidgetTemplate<QFileDialog>
+namespace Gui
 {
-	Q_OBJECT
-	PIMPL(ImageSelectionDialog)
+	/**
+	 * @brief A selection dialog that displays an image and also its size
+	 * @ingroup GUIHelper
+	 */
+	class ImageSelectionDialog :
+			public Gui::WidgetTemplate<QFileDialog>
+	{
+		Q_OBJECT
+		PIMPL(ImageSelectionDialog)
 
-public:
-	ImageSelectionDialog(const QString& dir, QWidget* parent=nullptr);
-	~ImageSelectionDialog();
+	public:
+		ImageSelectionDialog(const QString& dir, QWidget* parent=nullptr);
+		~ImageSelectionDialog();
 
-private slots:
-	void file_selected(const QString& file);
+	private slots:
+		void file_selected(const QString& file);
 
-protected:
-	void showEvent(QShowEvent* e) override;
-};
+	protected:
+		void showEvent(QShowEvent* e) override;
+	};
+}
 
 #endif // IMAGESELECTIONDIALOG_H

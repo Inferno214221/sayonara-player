@@ -150,39 +150,6 @@ void GUI_TagEdit::language_changed()
 	ui->tab_widget->setTabText(2, Lang::get(Lang::Covers));
 }
 
-
-void GUI_TagEdit::commit_finished()
-{
-	ui->btn_save->setEnabled(true);
-	QMap<QString, Editor::FailReason> failed_files = m->tag_edit->failed_files();
-	if(!failed_files.isEmpty())
-	{
-		auto* fmb = new GUI_FailMessageBox(this);
-		fmb->set_failed_files(failed_files);
-		fmb->setModal(true);
-
-		connect(fmb, &GUI_FailMessageBox::sig_closed, fmb, &QObject::deleteLater);
-		fmb->show();
-	}
-
-	else {
-		this->close();
-	}
-}
-
-void GUI_TagEdit::progress_changed(int val)
-{
-	ui->pb_progress->setVisible(val >= 0);
-
-	if(val >= 0){
-		ui->pb_progress->setValue(val);
-	}
-
-	if(val < 0){
-		metadata_changed(m->tag_edit->metadata() );
-	}
-}
-
 int GUI_TagEdit::count() const
 {
 	return m->tag_edit->count();
@@ -577,6 +544,38 @@ void GUI_TagEdit::commit()
 
 	m->tag_edit->commit();
 }
+
+
+
+void GUI_TagEdit::commit_finished()
+{
+	ui->btn_save->setEnabled(true);
+
+	QMap<QString, Editor::FailReason> failed_files = m->tag_edit->failed_files();
+	if(!failed_files.isEmpty())
+	{
+		auto* fmb = new GUI_FailMessageBox(this);
+		fmb->set_failed_files(failed_files);
+		fmb->setModal(true);
+
+		connect(fmb, &GUI_FailMessageBox::sig_closed, fmb, &QObject::deleteLater);
+		fmb->show();
+	}
+}
+
+void GUI_TagEdit::progress_changed(int val)
+{
+	ui->pb_progress->setVisible(val >= 0);
+
+	if(val >= 0){
+		ui->pb_progress->setValue(val);
+	}
+
+	if(val < 0){
+		metadata_changed(m->tag_edit->metadata() );
+	}
+}
+
 
 void GUI_TagEdit::show_close_button(bool show)
 {

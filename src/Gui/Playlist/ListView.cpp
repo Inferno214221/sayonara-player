@@ -73,7 +73,7 @@ struct PlaylistView::Private
 PlaylistView::PlaylistView(PlaylistPtr pl, QWidget* parent) :
 	SearchableTableView(parent),
 	InfoDialogContainer(),
-	Dragable(this)
+	Gui::Dragable(this)
 {
 	m = Pimpl::make<Private>(pl, this);
 

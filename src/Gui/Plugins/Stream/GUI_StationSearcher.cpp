@@ -112,10 +112,10 @@ GUI_StationSearcher::~GUI_StationSearcher() {}
 
 void GUI_StationSearcher::init_line_edit()
 {
-	ContextMenuFilter* cmf = new ContextMenuFilter(ui->le_search);
-	QMenu* menu = new QMenu(ui->le_search);
+	auto* cmf = new Gui::ContextMenuFilter(ui->le_search);
+	auto* menu = new QMenu(ui->le_search);
 	m->context_menu = menu;
-	connect(cmf, &ContextMenuFilter::sig_context_menu, this, [menu](const QPoint& p, QAction* action)
+	connect(cmf, &Gui::ContextMenuFilter::sig_context_menu, this, [menu](const QPoint& p, QAction* action)
 	{
 		Q_UNUSED(action)
 		menu->exec(p);

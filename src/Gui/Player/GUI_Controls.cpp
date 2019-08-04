@@ -45,15 +45,15 @@ QLabel* GUI_Controls::lab_copyright() const { return ui->lab_copyright; }
 QLabel* GUI_Controls::lab_current_time() const { return ui->lab_cur_time; }
 QLabel* GUI_Controls::lab_max_time() const { return ui->lab_max_time; }
 QWidget* GUI_Controls::widget_details() const { return ui->widget_details; }
-SearchSlider* GUI_Controls::sli_progress() const { return ui->sli_progress; }
-SearchSlider* GUI_Controls::sli_volume() const { return ui->sli_volume; }
+Gui::SearchSlider* GUI_Controls::sli_progress() const { return ui->sli_progress; }
+Gui::SearchSlider* GUI_Controls::sli_volume() const { return ui->sli_volume; }
 QPushButton* GUI_Controls::btn_mute() const { return ui->btn_mute; }
 QPushButton* GUI_Controls::btn_play() const { return ui->btn_ctrl_play; }
 QPushButton* GUI_Controls::btn_rec() const { return ui->btn_ctrl_rec; }
 QPushButton* GUI_Controls::btn_bwd() const { return ui->btn_ctrl_bw; }
 QPushButton* GUI_Controls::btn_fwd() const { return ui->btn_ctrl_fw; }
 QPushButton* GUI_Controls::btn_stop() const { return ui->btn_ctrl_stop; }
-CoverButton* GUI_Controls::btn_cover() const { return ui->btn_cover; }
+Gui::CoverButton* GUI_Controls::btn_cover() const { return ui->btn_cover; }
 
 bool GUI_Controls::is_extern_resize_allowed() const
 {

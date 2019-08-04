@@ -34,64 +34,68 @@ class QKeyEvent;
 class QFocusEvent;
 class QHideEvent;
 
-class MiniSearchEventFilter :
-		public QObject
+namespace Gui
 {
-	Q_OBJECT
 
-signals:
-	void sig_tab_pressed();
-	void sig_focus_lost();
+	class MiniSearchEventFilter :
+			public QObject
+	{
+		Q_OBJECT
 
-public:
-	using QObject::QObject;
+		signals:
+			void sig_tab_pressed();
+			void sig_focus_lost();
 
-protected:
-	bool eventFilter(QObject* o, QEvent* e) override;
-};
+		public:
+			using QObject::QObject;
+
+		protected:
+			bool eventFilter(QObject* o, QEvent* e) override;
+	};
 
 
-class MiniSearcher :
-		public Gui::WidgetTemplate<QFrame>
-{
-	Q_OBJECT
-	PIMPL(MiniSearcher)
+	class MiniSearcher :
+			public Gui::WidgetTemplate<QFrame>
+	{
+		Q_OBJECT
+		PIMPL(MiniSearcher)
 
-signals:
-	void sig_reset();
-	void sig_text_changed(const QString&);
-	void sig_find_next_row();
-	void sig_find_prev_row();
+		signals:
+			void sig_reset();
+			void sig_text_changed(const QString&);
+			void sig_find_next_row();
+			void sig_find_prev_row();
 
-private slots:
-	void prev_result();
-	void next_result();
+		private slots:
+			void prev_result();
+			void next_result();
 
-private:
-	bool is_initiator(QKeyEvent* event) const;
-	void init(const QString& text);
-	bool check_and_init(QKeyEvent* event);
-	QRect calc_geo() const;
+		private:
+			bool is_initiator(QKeyEvent* event) const;
+			void init(const QString& text);
+			bool check_and_init(QKeyEvent* event);
+			QRect calc_geo() const;
 
-protected:
-	void language_changed() override;
+		protected:
+			void language_changed() override;
 
-	void keyPressEvent(QKeyEvent* e) override;
-	void showEvent(QShowEvent* e) override;
-	void hideEvent(QHideEvent* e) override;
-	void focusOutEvent(QFocusEvent* e) override;
+			void keyPressEvent(QKeyEvent* e) override;
+			void showEvent(QShowEvent* e) override;
+			void hideEvent(QHideEvent* e) override;
+			void focusOutEvent(QFocusEvent* e) override;
 
-public:
-	MiniSearcher(SearchableViewInterface* parent);
-	virtual ~MiniSearcher();
+		public:
+			MiniSearcher(SearchableViewInterface* parent);
+			virtual ~MiniSearcher();
 
-	void    handle_key_press(QKeyEvent* e);
-	void    set_extra_triggers(const QMap<QChar, QString>& triggers);
-	QString current_text();
-	void    set_number_results(int results);
+			void    handle_key_press(QKeyEvent* e);
+			void    set_extra_triggers(const QMap<QChar, QString>& triggers);
+			QString current_text();
+			void    set_number_results(int results);
 
-public slots:
-	void reset();
-};
+		public slots:
+			void reset();
+	};
+}
 
 #endif // MINISEARCHER_H

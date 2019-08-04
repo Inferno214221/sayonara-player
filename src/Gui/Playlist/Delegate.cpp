@@ -32,6 +32,7 @@
 #include <QTableView>
 
 const static int PLAYLIST_BOLD=70;
+using Gui::RatingLabel;
 
 struct PlaylistItemDelegate::Private
 {

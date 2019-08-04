@@ -252,7 +252,7 @@ QMimeData* SomaFM::StationModel::mimeData(const QModelIndexList& indexes) const
 		}
 	}
 
-	CustomMimeData* mime_data = new CustomMimeData(this);
+	auto* mime_data = new Gui::CustomMimeData(this);
 
 	mime_data->set_cover_url(cover_url);
 	mime_data->setUrls(urls);

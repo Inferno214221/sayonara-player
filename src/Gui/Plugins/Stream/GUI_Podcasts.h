@@ -26,31 +26,31 @@
 UI_FWD(GUI_Podcasts)
 
 class GUI_Podcasts :
-		public GUI_AbstractStream
+		public Gui::AbstractStream
 {
 	Q_OBJECT
 	UI_CLASS(GUI_Podcasts)
 
-public:
-	explicit GUI_Podcasts(QWidget *parent=nullptr);
-	virtual ~GUI_Podcasts();
+	public:
+		explicit GUI_Podcasts(QWidget *parent=nullptr);
+		virtual ~GUI_Podcasts();
 
-	QString get_name() const override;
-	QString get_display_name() const override;
+		QString get_name() const override;
+		QString get_display_name() const override;
 
 
-private:
-	void init_ui() override;
-	void retranslate_ui() override;
-	QString get_title_fallback_name() const override;
+	private:
+		void init_ui() override;
+		void retranslate_ui() override;
+		QString get_title_fallback_name() const override;
 
 	// GUI_AbstractStream interface
 	protected:
-	QComboBox* combo_stream() override;
-	QPushButton* btn_play() override;
-	MenuToolButton* btn_menu() override;
+		QComboBox* combo_stream() override;
+		QPushButton* btn_play() override;
+		Gui::MenuToolButton* btn_menu() override;
 
-	AbstractStreamHandler* stream_handler() const override;
+		AbstractStreamHandler* stream_handler() const override;
 };
 
 #endif // GUI_PODCASTS_H

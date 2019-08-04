@@ -109,9 +109,11 @@ void TrackView::save_visible_columns(const BoolList& lst)
 	SetSetting(Set::Lib_ColsTitle, lst);
 }
 
-LibraryContextMenu::Entries TrackView::context_menu_entries() const
+Gui::LibraryContextMenu::Entries TrackView::context_menu_entries() const
 {
-	return (ItemView::context_menu_entries() | LibraryContextMenu::EntryLyrics | LibraryContextMenu::EntryFilterExtension);
+	return (ItemView::context_menu_entries() |
+			Gui::LibraryContextMenu::EntryLyrics |
+			Gui::LibraryContextMenu::EntryFilterExtension);
 }
 
 SortOrder TrackView::sortorder() const

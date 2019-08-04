@@ -43,7 +43,7 @@ class QPoint;
 class PlaylistView :
 		public SearchableTableView,
 		public InfoDialogContainer,
-		private Dragable
+		private Gui::Dragable
 {
 	Q_OBJECT
 	PIMPL(PlaylistView)

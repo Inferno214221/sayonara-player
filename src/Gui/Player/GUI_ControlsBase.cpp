@@ -53,7 +53,7 @@ static MetaData current_track()
 
 struct GUI_ControlsBase::Private
 {
-	LibraryContextMenu* context_menu=nullptr;
+	Gui::LibraryContextMenu* context_menu=nullptr;
 };
 
 GUI_ControlsBase::GUI_ControlsBase(QWidget* parent) :
@@ -93,7 +93,7 @@ void GUI_ControlsBase::init()
 		}
 	}
 
-	connect(btn_cover(), &CoverButton::sig_rejected, this, &GUI_ControlsBase::cover_click_rejected);
+	connect(btn_cover(), &Gui::CoverButton::sig_rejected, this, &GUI_ControlsBase::cover_click_rejected);
 
 	ListenSetting(Set::Engine_SR_Active, GUI_ControlsBase::sr_active_changed);
 	ListenSetting(Set::Engine_Pitch, GUI_ControlsBase::refresh_current_track);
@@ -102,7 +102,7 @@ void GUI_ControlsBase::init()
 	skin_changed();
 }
 
-RatingLabel* GUI_ControlsBase::lab_rating() const
+Gui::RatingLabel* GUI_ControlsBase::lab_rating() const
 {
 	return nullptr;
 }
@@ -584,9 +584,9 @@ void GUI_ControlsBase::setup_connections()
 	connect(btn_mute(), &QPushButton::clicked, pm, &PlayManager::toggle_mute);
 	connect(btn_rec(), &QPushButton::clicked, pm, &PlayManager::record);
 
-	connect(sli_volume(), &SearchSlider::sig_slider_moved, pm, &PlayManager::set_volume);
-	connect(sli_progress(), &SearchSlider::sig_slider_moved, this, &GUI_ControlsBase::progress_moved);
-	connect(sli_progress(), &SearchSlider::sig_slider_hovered, this, &GUI_ControlsBase::progress_hovered);
+	connect(sli_volume(), &Gui::SearchSlider::sig_slider_moved, pm, &PlayManager::set_volume);
+	connect(sli_progress(), &Gui::SearchSlider::sig_slider_moved, this, &GUI_ControlsBase::progress_moved);
+	connect(sli_progress(), &Gui::SearchSlider::sig_slider_hovered, this, &GUI_ControlsBase::progress_hovered);
 
 	connect(pm, &PlayManager::sig_playstate_changed, this, &GUI_ControlsBase::playstate_changed);
 	connect(pm, &PlayManager::sig_track_changed, this, &GUI_ControlsBase::track_changed);
@@ -677,6 +677,8 @@ void GUI_ControlsBase::showEvent(QShowEvent* e)
 
 void GUI_ControlsBase::contextMenuEvent(QContextMenuEvent* e)
 {
+	using Gui::LibraryContextMenu;
+
 	if(!m->context_menu)
 	{
 		m->context_menu = new LibraryContextMenu(this);
@@ -699,8 +701,8 @@ void GUI_ControlsBase::contextMenuEvent(QContextMenuEvent* e)
 			show_lyrics();
 		});
 
-		m->context_menu->add_preference_action(new PlayerPreferencesAction(m->context_menu));
-		m->context_menu->add_preference_action(new CoverPreferenceAction(m->context_menu));
+		m->context_menu->add_preference_action(new Gui::PlayerPreferencesAction(m->context_menu));
+		m->context_menu->add_preference_action(new Gui::CoverPreferenceAction(m->context_menu));
 	}
 
 	m->context_menu->exec(e->globalPos());

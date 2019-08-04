@@ -46,6 +46,9 @@ void GUI_Speed::retranslate_ui()
 
 void GUI_Speed::init_ui()
 {
+	using Gui::MouseEnterFilter;
+	using Gui::MouseLeaveFilter;
+
 	setup_parent(this, &ui);
 
 	bool active = GetSetting(Set::Engine_SpeedActive);

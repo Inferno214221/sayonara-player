@@ -45,6 +45,11 @@
 
 namespace Algorithm=Util::Algorithm;
 
+using Gui::ContextMenu;
+using Gui::MenuButton;
+using Gui::MenuToolButton;
+using Gui::EqualizerSlider;
+
 using SliderArray=std::array<EqualizerSlider*, 10>;
 using ValueArray=std::array<int, 10>;
 

@@ -65,8 +65,13 @@ namespace Library
 
 
 			QString create_temp_dir();
-
-			bool scan_archive(const QString& temp_dir, const QString& binary, const QStringList& args);
+			bool scan_archive
+			(
+				const QString& temp_dir,
+				const QString& binary,
+				const QStringList& args,
+				const QList<int>& success_codes=QList<int>{0}
+			);
 	};
 }
 

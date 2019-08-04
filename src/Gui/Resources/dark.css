@@ -370,15 +370,17 @@ QMenu::separator
 	margin: 3px 5px;
 }
 
-QLabel
-{
-}
-
 QLabel, QScrollArea
 {
 	border: none;
 	background: transparent;
 }
+
+QLabel:disabled
+{
+	color: #7F7F7F;
+}
+
 
 QComboBox,
 QLineEdit,
@@ -436,7 +438,6 @@ MenuToolButton:hover
 	border: 1px solid #e8841a;
 }
 
-QLabel:disabled,
 QLineEdit:disabled,
 QTextEdit:disabled,
 QPlainTextEdit:disabled,

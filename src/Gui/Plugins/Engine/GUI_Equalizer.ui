@@ -45,7 +45,7 @@
       </widget>
      </item>
      <item>
-      <widget class="MenuToolButton" name="btn_tool">
+      <widget class="Gui::MenuToolButton" name="btn_tool">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
          <horstretch>0</horstretch>
@@ -92,7 +92,7 @@
       </widget>
      </item>
      <item>
-      <widget class="EqualizerSlider" name="sli_3">
+      <widget class="Gui::EqualizerSlider" name="sli_3">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
@@ -157,7 +157,7 @@
       </widget>
      </item>
      <item>
-      <widget class="EqualizerSlider" name="sli_0">
+      <widget class="Gui::EqualizerSlider" name="sli_0">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
@@ -222,7 +222,7 @@
       </widget>
      </item>
      <item>
-      <widget class="EqualizerSlider" name="sli_6">
+      <widget class="Gui::EqualizerSlider" name="sli_6">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
@@ -287,7 +287,7 @@
       </widget>
      </item>
      <item>
-      <widget class="EqualizerSlider" name="sli_8">
+      <widget class="Gui::EqualizerSlider" name="sli_8">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
@@ -352,7 +352,7 @@
       </widget>
      </item>
      <item>
-      <widget class="EqualizerSlider" name="sli_9">
+      <widget class="Gui::EqualizerSlider" name="sli_9">
        <property name="layoutDirection">
         <enum>Qt::LeftToRight</enum>
        </property>
@@ -420,7 +420,7 @@
       </widget>
      </item>
      <item>
-      <widget class="EqualizerSlider" name="sli_5">
+      <widget class="Gui::EqualizerSlider" name="sli_5">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
@@ -485,7 +485,7 @@
       </widget>
      </item>
      <item>
-      <widget class="EqualizerSlider" name="sli_4">
+      <widget class="Gui::EqualizerSlider" name="sli_4">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
@@ -557,7 +557,7 @@
       </widget>
      </item>
      <item>
-      <widget class="EqualizerSlider" name="sli_7">
+      <widget class="Gui::EqualizerSlider" name="sli_7">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
@@ -622,7 +622,7 @@
       </widget>
      </item>
      <item>
-      <widget class="EqualizerSlider" name="sli_2">
+      <widget class="Gui::EqualizerSlider" name="sli_2">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
@@ -687,7 +687,7 @@
       </widget>
      </item>
      <item>
-      <widget class="EqualizerSlider" name="sli_1">
+      <widget class="Gui::EqualizerSlider" name="sli_1">
        <property name="pageStep">
         <number>1</number>
        </property>
@@ -731,7 +731,7 @@
    <header>Gui/Utils/Widgets/ComboBox.h</header>
   </customwidget>
   <customwidget>
-   <class>MenuToolButton</class>
+   <class>Gui::MenuToolButton</class>
    <extends>QPushButton</extends>
    <header location="global">Gui/Utils/MenuTool/MenuTool.h</header>
   </customwidget>
@@ -742,7 +742,7 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>EqualizerSlider</class>
+   <class>Gui::EqualizerSlider</class>
    <extends>QSlider</extends>
    <header>Gui/Plugins/Engine/EqualizerSlider.h</header>
   </customwidget>

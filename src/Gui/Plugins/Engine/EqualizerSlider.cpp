@@ -23,6 +23,8 @@
 #include <QLabel>
 #include <QShortcut>
 
+using Gui::EqualizerSlider;
+
 struct EqualizerSlider::Private
 {
 	QLabel* label=nullptr;

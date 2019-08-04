@@ -295,12 +295,15 @@ void Editor::set_metadata(const MetaDataList& v_md)
 	m->changed_md.clear();
 	m->failed_files.clear();
 
-	m->changed_md.reserve(v_md.count());
-	for(const MetaData& md : v_md) { Q_UNUSED(md); m->changed_md << false; }
-
-	if( v_md.size() > 0)
+	if(v_md.count() > 0)
 	{
+		m->changed_md.reserve(v_md.count());
 		m->ldb = DB::Connector::instance()->library_db(v_md.first().library_id, 0);
+	}
+
+	for(const MetaData& md : v_md)
+	{
+		Q_UNUSED(md); m->changed_md << false;
 	}
 
 	emit sig_metadata_received(m->v_md);

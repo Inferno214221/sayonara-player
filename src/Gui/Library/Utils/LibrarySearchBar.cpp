@@ -201,11 +201,11 @@ void SearchBar::init_context_menu()
 	}
 
 	{
-		m->preference_action = new SearchPreferenceAction(m->context_menu);
+		m->preference_action = new Gui::SearchPreferenceAction(m->context_menu);
 	}
 
-	ContextMenuFilter* cm_filter = new ContextMenuFilter(this);
-	connect(cm_filter, &ContextMenuFilter::sig_context_menu, m->context_menu, &QMenu::popup);
+	auto* cm_filter = new Gui::ContextMenuFilter(this);
+	connect(cm_filter, &Gui::ContextMenuFilter::sig_context_menu, m->context_menu, &QMenu::popup);
 	this->installEventFilter(cm_filter);
 
 	QList<QAction*> actions;

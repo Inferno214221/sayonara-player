@@ -241,7 +241,7 @@ void GUI_LocalLibrary::check_file_extension_bar(bool is_reloading)
 		return;
 	}
 
-	ExtensionSet extensions = m->library->extensions();
+	Gui::ExtensionSet extensions = m->library->extensions();
 	const QStringList ext_str = extensions.extensions();
 
 	bool has_multiple_extensions = (ext_str.size() > 1);
@@ -282,7 +282,7 @@ void GUI_LocalLibrary::tracks_loaded()
 void GUI_LocalLibrary::extension_button_toggled(bool b)
 {
 	QPushButton* btn = scast(QPushButton*, sender());
-	ExtensionSet extensions = m->library->extensions();
+	Gui::ExtensionSet extensions = m->library->extensions();
 	extensions.set_enabled(btn->text(), b);
 
 	m->library->set_extensions(extensions);

@@ -46,7 +46,7 @@ struct DirectoryContextMenu::Private
 };
 
 DirectoryContextMenu::DirectoryContextMenu(DirectoryContextMenu::Mode mode, QWidget* parent) :
-	LibraryContextMenu(parent)
+	Gui::LibraryContextMenu(parent)
 {
 	m = Pimpl::make<Private>(mode, this);
 
@@ -76,7 +76,7 @@ DirectoryContextMenu::DirectoryContextMenu(DirectoryContextMenu::Mode mode, QWid
 	connect(m->action_rename, &QAction::triggered, this, &DirectoryContextMenu::sig_rename_clicked);
 	connect(m->action_collapse_all, &QAction::triggered, this, &DirectoryContextMenu::sig_collapse_all_clicked);
 
-	action = this->add_preference_action(new LibraryPreferenceAction(this));
+	action = this->add_preference_action(new Gui::LibraryPreferenceAction(this));
 
 	separator = this->addSeparator();
 	this->insertActions(

@@ -53,7 +53,7 @@ struct AbstractLibrary::Private
 	MetaDataList		current_tracks;
 	MetaDataList		filtered_tracks;
 
-	ExtensionSet		extensions;
+	Gui::ExtensionSet	extensions;
 
 	Playlist::Handler*	playlist=nullptr;
 
@@ -808,12 +808,12 @@ void AbstractLibrary::prepare_artists()
 	m->artists.sort(m->sortorder.so_artists);
 }
 
-ExtensionSet AbstractLibrary::extensions() const
+Gui::ExtensionSet AbstractLibrary::extensions() const
 {
 	return m->extensions;
 }
 
-void AbstractLibrary::set_extensions(const ExtensionSet& extensions)
+void AbstractLibrary::set_extensions(const Gui::ExtensionSet& extensions)
 {
 	m->extensions = extensions;
 	m->filtered_tracks.clear();

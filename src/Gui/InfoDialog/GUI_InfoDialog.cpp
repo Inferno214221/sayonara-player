@@ -276,8 +276,8 @@ void GUI_InfoDialog::init()
 
 	connect(tab_widget, &QTabWidget::currentChanged, this, &GUI_InfoDialog::tab_index_changed_int);
 	connect(ui->btn_write_cover_to_tracks, &QPushButton::clicked, this, &GUI_InfoDialog::write_cover_to_tracks_clicked);
-	connect(ui->btn_image, &CoverButton::sig_rejected, this, &GUI_InfoDialog::write_cover_to_tracks_clicked);
-	connect(ui->btn_image, &CoverButton::sig_cover_changed, this, &GUI_InfoDialog::cover_changed);
+	connect(ui->btn_image, &Gui::CoverButton::sig_rejected, this, &GUI_InfoDialog::write_cover_to_tracks_clicked);
+	connect(ui->btn_image, &Gui::CoverButton::sig_cover_changed, this, &GUI_InfoDialog::cover_changed);
 
 	ui->btn_image->setStyleSheet("QPushButton:hover {background-color: transparent;}");
 

@@ -31,7 +31,7 @@ class LibraryContextMenu;
 
 class FileListView :
 		public SearchableListView,
-		private Dragable
+		private Gui::Dragable
 {
 	Q_OBJECT
 	PIMPL(FileListView)

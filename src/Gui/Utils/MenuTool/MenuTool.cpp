@@ -21,6 +21,8 @@
 #include "MenuTool.h"
 #include "Gui/Utils/PreferenceAction.h"
 
+using Gui::MenuToolButton;
+
 struct MenuToolButton::Private
 {
 	ContextMenu* menu=nullptr;
@@ -97,7 +99,7 @@ void MenuToolButton::show_actions(ContextMenuEntries entries)
 	prove_enabled();
 }
 
-ContextMenuEntries MenuToolButton::get_entries() const
+Gui::ContextMenuEntries MenuToolButton::get_entries() const
 {
 	return m->menu->get_entries();
 }

@@ -100,7 +100,7 @@ void LocalLibraryMenu::set_library_busy(bool b)
 	m->import_folder_action->setEnabled(!b);
 }
 
-void LocalLibraryMenu::add_preference_action(PreferenceAction* action)
+void LocalLibraryMenu::add_preference_action(Gui::PreferenceAction* action)
 {
 	QList<QAction*> actions;
 
@@ -163,7 +163,7 @@ void LocalLibraryMenu::init_menu()
 		m->show_album_artists_action;
 
 	this->addActions(actions);
-	this->add_preference_action(new LibraryPreferenceAction(this));
+	this->add_preference_action(new Gui::LibraryPreferenceAction(this));
 
 	m->initialized = true;
 

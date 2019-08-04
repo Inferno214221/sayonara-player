@@ -61,7 +61,7 @@
       </widget>
      </item>
      <item>
-      <widget class="SearchSlider" name="sli_progress">
+      <widget class="Gui::SearchSlider" name="sli_progress">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -315,7 +315,7 @@
       </widget>
      </item>
      <item>
-      <widget class="SearchSlider" name="sli_volume">
+      <widget class="Gui::SearchSlider" name="sli_volume">
        <property name="enabled">
         <bool>true</bool>
        </property>
@@ -604,7 +604,7 @@
          </spacer>
         </item>
         <item row="0" column="3">
-         <widget class="RatingLabel" name="lab_rating">
+         <widget class="Gui::RatingLabel" name="lab_rating">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -646,7 +646,7 @@
       </spacer>
      </item>
      <item>
-      <widget class="CoverButton" name="btn_cover">
+      <widget class="Gui::CoverButton" name="btn_cover">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
          <horstretch>0</horstretch>
@@ -683,12 +683,12 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>CoverButton</class>
+   <class>Gui::CoverButton</class>
    <extends>QPushButton</extends>
    <header>Gui/Covers/CoverButton.h</header>
   </customwidget>
   <customwidget>
-   <class>SearchSlider</class>
+   <class>Gui::SearchSlider</class>
    <extends>QSlider</extends>
    <header>Gui/Player/SearchSlider.h</header>
   </customwidget>
@@ -698,7 +698,7 @@
    <header>Gui/Utils/Widgets/FloatingLabel.h</header>
   </customwidget>
   <customwidget>
-   <class>RatingLabel</class>
+   <class>Gui::RatingLabel</class>
    <extends>QLabel</extends>
    <header>Gui/Utils/RatingLabel.h</header>
   </customwidget>

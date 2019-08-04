@@ -259,7 +259,7 @@ QMimeData* FileListModel::mimeData(const QModelIndexList& indexes) const
 		return nullptr;
 	}
 
-	CustomMimeData* data = new CustomMimeData(this);
+	auto* data = new Gui::CustomMimeData(this);
 	data->setUrls(urls);
 
 	return data;

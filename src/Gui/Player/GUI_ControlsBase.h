@@ -33,12 +33,12 @@
 class QLabel;
 class QSlider;
 class QPushButton;
-class CoverButton;
-class SearchSlider;
-class RatingLabel;
 
 namespace Gui
 {
+	class CoverButton;
+	class SearchSlider;
+	class RatingLabel;
 	class ProgressBar;
 }
 
@@ -65,18 +65,18 @@ public:
 	virtual QLabel* lab_copyright() const=0;
 	virtual QLabel* lab_current_time() const=0;
 	virtual QLabel* lab_max_time() const=0;
-	virtual RatingLabel* lab_rating() const;
+	virtual Gui::RatingLabel* lab_rating() const;
 	virtual QWidget* widget_details() const=0;
 
-	virtual SearchSlider* sli_progress() const=0;
-	virtual SearchSlider* sli_volume() const=0;
+	virtual Gui::SearchSlider* sli_progress() const=0;
+	virtual Gui::SearchSlider* sli_volume() const=0;
 	virtual QPushButton* btn_mute() const=0;
 	virtual QPushButton* btn_play() const=0;
 	virtual QPushButton* btn_rec() const=0;
 	virtual QPushButton* btn_bwd() const=0;
 	virtual QPushButton* btn_fwd() const=0;
 	virtual QPushButton* btn_stop() const=0;
-	virtual CoverButton* btn_cover() const=0;
+	virtual Gui::CoverButton* btn_cover() const=0;
 
 	virtual QSize image_size() const;
 	virtual bool is_extern_resize_allowed() const=0;

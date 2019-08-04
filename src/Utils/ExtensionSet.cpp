@@ -19,10 +19,11 @@
  */
 
 
-
 #include "ExtensionSet.h"
 #include "Utils/Set.h"
 #include <QString>
+
+using Gui::ExtensionSet;
 
 struct ExtensionSet::Private
 {

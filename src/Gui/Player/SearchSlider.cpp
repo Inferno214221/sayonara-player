@@ -30,6 +30,8 @@
 
 #include <algorithm>
 
+using Gui::SearchSlider;
+
 struct SearchSlider::Private
 {
 	int buffer_progress;

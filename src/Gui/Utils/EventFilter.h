@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef EVENTFILTER_H
 #define EVENTFILTER_H
 
@@ -29,153 +27,187 @@
 
 class QAction;
 
-class GenericFilter :
-		public QObject
+namespace Gui
 {
-	Q_OBJECT
+	/**
+	 * @brief The GenericFilter class
+	 * @ingroup EventFilter
+	 */
+	class GenericFilter :
+			public QObject
+	{
+		Q_OBJECT
 
-signals:
-	void sig_event(QEvent::Type);
+		signals:
+			void sig_event(QEvent::Type);
 
-private:
-	QList<QEvent::Type> m_types;
+		private:
+			QList<QEvent::Type> m_types;
 
-public:
-	explicit GenericFilter(const QEvent::Type& type, QObject* parent=nullptr);
-	explicit GenericFilter(const QList<QEvent::Type>& types, QObject* parent=nullptr);
+		public:
+			explicit GenericFilter(const QEvent::Type& type, QObject* parent=nullptr);
+			explicit GenericFilter(const QList<QEvent::Type>& types, QObject* parent=nullptr);
 
-protected:
-	bool eventFilter(QObject* o , QEvent* e);
-};
+		protected:
+			bool eventFilter(QObject* o , QEvent* e);
+	};
 
-class KeyPressFilter :
-		public QObject
-{
-	Q_OBJECT
+	/**
+	 * @brief The KeyPressFilter class
+	 * @ingroup EventFilter
+	 */
+	class KeyPressFilter :
+			public QObject
+	{
+		Q_OBJECT
 
-public:
-	explicit KeyPressFilter(QObject* parent=nullptr);
+		public:
+			explicit KeyPressFilter(QObject* parent=nullptr);
 
-signals:
-	void sig_key_pressed(int key);
+		signals:
+			void sig_key_pressed(int key);
 
-protected:
-	bool eventFilter(QObject* o , QEvent* e);
-};
+		protected:
+			bool eventFilter(QObject* o , QEvent* e);
+	};
 
+	/**
+	 * @brief The ContextMenuFilter class
+	 * @ingroup EventFilter
+	 */
+	class ContextMenuFilter :
+			public QObject
+	{
+		Q_OBJECT
 
+		public:
+			explicit ContextMenuFilter(QObject* parent=nullptr);
 
+		signals:
+			// directly connect this signal to QMenu::popup
+			void sig_context_menu(const QPoint& p, QAction* action);
 
-class ContextMenuFilter :
-		public QObject
-{
-	Q_OBJECT
+		protected:
+			bool eventFilter(QObject* o , QEvent* e);
+	};
 
-public:
-	explicit ContextMenuFilter(QObject* parent=nullptr);
+	/**
+	 * @brief The MouseMoveFilter class
+	 * @ingroup EventFilter
+	 */
+	class MouseMoveFilter :
+			public QObject
+	{
+		Q_OBJECT
 
-signals:
-	// directly connect this signal to QMenu::popup
-	void sig_context_menu(const QPoint& p, QAction* action);
+		public:
+			explicit MouseMoveFilter(QObject* parent=nullptr);
 
-protected:
-	bool eventFilter(QObject* o , QEvent* e);
-};
+		signals:
+			void sig_mouse_moved(const QPoint& p);
 
-class MouseMoveFilter :
-		public QObject
-{
-	Q_OBJECT
+		protected:
+			bool eventFilter(QObject* o , QEvent* e);
+	};
 
-public:
-	explicit MouseMoveFilter(QObject* parent=nullptr);
+	/**
+	 * @brief The MouseEnterFilter class
+	 * @ingroup EventFilter
+	 */
+	class MouseEnterFilter :
+			public QObject
+	{
+		Q_OBJECT
 
-signals:
-	void sig_mouse_moved(const QPoint& p);
+		public:
+			explicit MouseEnterFilter(QObject* parent=nullptr);
 
-protected:
-	bool eventFilter(QObject* o , QEvent* e);
-};
+		signals:
+			void sig_mouse_entered();
 
-class MouseEnterFilter :
-		public QObject
-{
-	Q_OBJECT
-
-public:
-	explicit MouseEnterFilter(QObject* parent=nullptr);
-
-signals:
-	void sig_mouse_entered();
-
-protected:
-	bool eventFilter(QObject* o, QEvent* e);
-};
-
-
-class MouseLeaveFilter :
-		public QObject
-{
-	Q_OBJECT
-
-public:
-	explicit MouseLeaveFilter(QObject* parent=nullptr);
-
-signals:
-	void sig_mouse_left();
-
-protected:
-	bool eventFilter(QObject* o, QEvent* e);
-};
-
-
-class HideFilter :
-		public QObject
-{
-	Q_OBJECT
-
-public:
-	explicit HideFilter(QObject* parent=nullptr);
-
-signals:
-	void sig_hidden();
-
-protected:
-	bool eventFilter(QObject* o, QEvent* e);
-};
+		protected:
+			bool eventFilter(QObject* o, QEvent* e);
+	};
 
 
+	/**
+	 * @brief The MouseLeaveFilter class
+	 * @ingroup EventFilter
+	 */
+	class MouseLeaveFilter :
+			public QObject
+	{
+		Q_OBJECT
 
-class ShowFilter :
-		public QObject
-{
-	Q_OBJECT
+		public:
+			explicit MouseLeaveFilter(QObject* parent=nullptr);
 
-public:
-	explicit ShowFilter(QObject* parent=nullptr);
+		signals:
+			void sig_mouse_left();
 
-signals:
-	void sig_shown();
-
-protected:
-	bool eventFilter(QObject* o, QEvent* e);
-};
+		protected:
+			bool eventFilter(QObject* o, QEvent* e);
+	};
 
 
-class PaintFilter :
-		public QObject
-{
-	Q_OBJECT
+	/**
+	 * @brief The HideFilter class
+	 * @ingroup
+	 */
+	class HideFilter :
+			public QObject
+	{
+		Q_OBJECT
 
-public:
-	explicit PaintFilter(QObject* parent=nullptr);
+		public:
+			explicit HideFilter(QObject* parent=nullptr);
 
-signals:
-	void sig_painted();
+		signals:
+			void sig_hidden();
 
-protected:
-	bool eventFilter(QObject* o, QEvent* e);
-};
+		protected:
+			bool eventFilter(QObject* o, QEvent* e);
+	};
 
+
+	/**
+	 * @brief The ShowFilter class
+	 * @ingroup EventFilter
+	 */
+	class ShowFilter :
+			public QObject
+	{
+		Q_OBJECT
+
+		public:
+			explicit ShowFilter(QObject* parent=nullptr);
+
+		signals:
+			void sig_shown();
+
+		protected:
+			bool eventFilter(QObject* o, QEvent* e);
+	};
+
+
+	/**
+	 * @brief The PaintFilter class
+	 * @ingroup EventFilter
+	 */
+	class PaintFilter :
+			public QObject
+	{
+		Q_OBJECT
+
+		public:
+			explicit PaintFilter(QObject* parent=nullptr);
+
+		signals:
+			void sig_painted();
+
+		protected:
+			bool eventFilter(QObject* o, QEvent* e);
+	};
+}
 
 #endif // EVENTFILTER_H

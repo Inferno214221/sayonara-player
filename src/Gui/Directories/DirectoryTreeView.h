@@ -31,10 +31,14 @@
 #include <QModelIndexList>
 #include <QTreeView>
 
-class LibraryContextMenu;
 class DirectoryModel;
 class IconProvider;
-class CustomMimeData;
+
+namespace Gui
+{
+	class LibraryContextMenu;
+	class CustomMimeData;
+}
 
 namespace Library
 {
@@ -44,7 +48,7 @@ namespace Library
 using SearchableTreeView=Gui::WidgetTemplate<SearchableView<QTreeView, DirectoryModel>>;
 class DirectoryTreeView :
 		public SearchableTreeView,
-		protected Dragable
+		protected Gui::Dragable
 {
 	Q_OBJECT
 	PIMPL(DirectoryTreeView)
@@ -121,7 +125,7 @@ protected:
 	void skin_changed() override;
 	void language_changed() override;
 
-	void handle_sayonara_drop(const CustomMimeData* mimedata, const QString& target_dir);
+	void handle_sayonara_drop(const Gui::CustomMimeData* mimedata, const QString& target_dir);
 
 
 };

@@ -34,7 +34,7 @@ struct GUI_Stream::Private
 };
 
 GUI_Stream::GUI_Stream(QWidget *parent) :
-	GUI_AbstractStream(parent)
+	Gui::AbstractStream(parent)
 {
 	m = Pimpl::make<Private>();
 }
@@ -59,7 +59,7 @@ QString GUI_Stream::get_display_name() const
 
 void GUI_Stream::retranslate_ui()
 {
-	GUI_AbstractStream::retranslate_ui();
+	Gui::AbstractStream::retranslate_ui();
 	ui->retranslateUi(this);
 
 	if(m->radio_action)
@@ -96,7 +96,7 @@ QPushButton* GUI_Stream::btn_play()
 	return ui->btn_listen;
 }
 
-MenuToolButton* GUI_Stream::btn_menu()
+Gui::MenuToolButton* GUI_Stream::btn_menu()
 {
 	return ui->btn_tool;
 }

@@ -497,7 +497,7 @@
       </widget>
      </item>
      <item>
-      <widget class="SearchSlider" name="sli_volume">
+      <widget class="Gui::SearchSlider" name="sli_volume">
        <property name="enabled">
         <bool>true</bool>
        </property>
@@ -550,7 +550,7 @@
    <item row="0" column="1" rowspan="3">
     <layout class="QGridLayout" name="layout_cover">
      <item row="0" column="0">
-      <widget class="CoverButton" name="btn_cover">
+      <widget class="Gui::CoverButton" name="btn_cover">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
          <horstretch>0</horstretch>
@@ -705,7 +705,7 @@
       </spacer>
      </item>
      <item row="0" column="0" colspan="3">
-      <widget class="SearchSlider" name="sli_progress">
+      <widget class="Gui::SearchSlider" name="sli_progress">
        <property name="focusPolicy">
         <enum>Qt::NoFocus</enum>
        </property>
@@ -723,12 +723,12 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>CoverButton</class>
+   <class>Gui::CoverButton</class>
    <extends>QPushButton</extends>
    <header>Gui/Covers/CoverButton.h</header>
   </customwidget>
   <customwidget>
-   <class>SearchSlider</class>
+   <class>Gui::SearchSlider</class>
    <extends>QSlider</extends>
    <header>Gui/Player/SearchSlider.h</header>
   </customwidget>

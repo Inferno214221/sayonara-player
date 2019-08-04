@@ -396,13 +396,13 @@ void EngineImpl::set_equalizer(int band, int val)
 
 void EngineImpl::set_buffer_state(int progress, GstElement* src)
 {
-//	if(!Util::File::is_www(m->md.filepath())){
-//		progress = -1;
-//	}
+	if(!Util::File::is_www(m->md.filepath())){
+		progress = -1;
+	}
 
-//	else if(!m->pipeline->has_element(src)){
-//		progress = -1;
-//	}
+	else if(!m->pipeline->has_element(src)){
+		progress = -1;
+	}
 
 	emit sig_buffering(progress);
 }

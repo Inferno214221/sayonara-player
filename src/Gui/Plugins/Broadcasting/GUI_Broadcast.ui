@@ -43,7 +43,7 @@
     </widget>
    </item>
    <item row="2" column="2">
-    <widget class="MenuToolButton" name="btn_menu">
+    <widget class="Gui::MenuToolButton" name="btn_menu">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
        <horstretch>0</horstretch>
@@ -117,7 +117,7 @@
    <header>Gui/Utils/Widgets/ComboBox.h</header>
   </customwidget>
   <customwidget>
-   <class>MenuToolButton</class>
+   <class>Gui::MenuToolButton</class>
    <extends>QPushButton</extends>
    <header location="global">Gui/Utils/MenuTool/MenuTool.h</header>
   </customwidget>

@@ -168,6 +168,18 @@
  */
 
 /**
+ * @defgroup EventFilter Event Filter
+ * @brief Collection of event filters
+ * @ingroup GUI
+ */
+
+/**
+ * @defgroup MimeData Mimedata utils
+ * @brief Everything to handle Mimedata more efficiently
+ * @ingroup GUIHelper
+ */
+
+/**
  * @defgroup GUIInterfaces GUIInterfaces
  * @brief Interfaces for common GUI classes
  */
@@ -177,7 +189,6 @@
  * @brief Sayonara widgets
  * @ingroup GUIHelper
  */
-
 
 
 /**

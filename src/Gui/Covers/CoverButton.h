@@ -35,78 +35,81 @@ namespace Cover
 }
 
 
-/**
- * @brief The CoverButton class
- * @ingroup GUICovers
- */
-class CoverButton :
-		public Gui::WidgetTemplate<QPushButton>
+namespace Gui
 {
-	Q_OBJECT
-	PIMPL(CoverButton)
-
-signals:
-	void sig_cover_changed();
-	void sig_rejected();
-
-public:
-	explicit CoverButton(QWidget* parent=nullptr);
-	virtual ~CoverButton();
-
 	/**
-	 * @brief Set an appropriate cover location.
-	 * Afterwards a search is triggered to find the cover.
-	 * @param cl
+	 * @brief The CoverButton class
+	 * @ingroup GUICovers
 	 */
-	void set_cover_location(const Cover::Location& cl);
+	class CoverButton :
+			public Gui::WidgetTemplate<QPushButton>
+	{
+		Q_OBJECT
+		PIMPL(CoverButton)
 
-	/**
-	 * @brief Force a cover in order to override a searched cover.
-	 * This is intended if the audio file contains a cover itself
-	 * @param img
-	 */
-	void force_cover(const QImage& img);
+		signals:
+			void sig_cover_changed();
+			void sig_rejected();
 
-	/**
-	 * @brief Force a cover in order to override a searched cover.
-	 * This is intended if the audio file contains a cover itself
-	 * @param img
-	 */
-	void force_cover(const QPixmap& img);
+		public:
+			explicit CoverButton(QWidget* parent=nullptr);
+			virtual ~CoverButton();
 
-	/**
-	 * @brief silent results that the cover is not stored
-	 * productively. The AlternativeCoverFetcher will
-	 * save the cover to a temporary path which can be re-
-	 * trieved by Cover::Location::alternative_path()
-	 * @param silent
-	 */
-	void set_silent(bool silent);
-	bool is_silent() const;
+			/**
+			 * @brief Set an appropriate cover location.
+			 * Afterwards a search is triggered to find the cover.
+			 * @param cl
+			 */
+			void set_cover_location(const Cover::Location& cl);
 
-	QPixmap pixmap() const;
+			/**
+			 * @brief Force a cover in order to override a searched cover.
+			 * This is intended if the audio file contains a cover itself
+			 * @param img
+			 */
+			void force_cover(const QImage& img);
 
-private:
-	using QPushButton::setIcon;
-	QIcon current_icon() const;
+			/**
+			 * @brief Force a cover in order to override a searched cover.
+			 * This is intended if the audio file contains a cover itself
+			 * @param img
+			 */
+			void force_cover(const QPixmap& img);
+
+			/**
+			 * @brief silent results that the cover is not stored
+			 * productively. The AlternativeCoverFetcher will
+			 * save the cover to a temporary path which can be re-
+			 * trieved by Cover::Location::alternative_path()
+			 * @param silent
+			 */
+			void set_silent(bool silent);
+			bool is_silent() const;
+
+			QPixmap pixmap() const;
+
+		private:
+			using QPushButton::setIcon;
+			QIcon current_icon() const;
 
 
-protected:
-	void mouseMoveEvent(QMouseEvent* e) override;
-	void mouseReleaseEvent(QMouseEvent* event) override;
-	void paintEvent(QPaintEvent* event) override;
-	void showEvent(QShowEvent* e) override;
+		protected:
+			void mouseMoveEvent(QMouseEvent* e) override;
+			void mouseReleaseEvent(QMouseEvent* event) override;
+			void paintEvent(QPaintEvent* event) override;
+			void showEvent(QShowEvent* e) override;
 
-private slots:
-	void alternative_cover_fetched(const Cover::Location& cl);
-	void cover_lookup_finished(bool success);
-	void set_cover_image(const QString& path);
-	void set_cover_image_pixmap(const QPixmap& pm);
-	void covers_changed();
+		private slots:
+			void alternative_cover_fetched(const Cover::Location& cl);
+			void cover_lookup_finished(bool success);
+			void set_cover_image(const QString& path);
+			void set_cover_image_pixmap(const QPixmap& pm);
+			void covers_changed();
 
-public slots:
-	void refresh();
-	void trigger();
-};
+		public slots:
+			void refresh();
+			void trigger();
+	};
+}
 
 #endif

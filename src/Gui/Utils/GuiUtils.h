@@ -42,7 +42,6 @@ namespace Gui
 
 	/**
 	 * @ingroup GUI
-	 * @ingroup Helper
 	 * @ingroup GUIHelper
 	 */
 	namespace Util

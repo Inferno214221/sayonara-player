@@ -45,7 +45,7 @@
       </widget>
      </item>
      <item>
-      <widget class="MenuToolButton" name="btn_tool">
+      <widget class="Gui::MenuToolButton" name="btn_tool">
        <property name="text">
         <string notr="true">Menu</string>
        </property>
@@ -149,7 +149,7 @@
    <header>Gui/Utils/Widgets/ComboBox.h</header>
   </customwidget>
   <customwidget>
-   <class>MenuToolButton</class>
+   <class>Gui::MenuToolButton</class>
    <extends>QPushButton</extends>
    <header location="global">Gui/Utils/MenuTool/MenuTool.h</header>
   </customwidget>

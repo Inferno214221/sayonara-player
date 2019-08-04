@@ -47,7 +47,7 @@ namespace Library
 	class ItemView :
 			public SearchableTableView,
 			public InfoDialogContainer,
-			protected Dragable
+			protected Gui::Dragable
 	{
 		Q_OBJECT
 		PIMPL(ItemView)
@@ -69,7 +69,7 @@ namespace Library
 		ItemView(const ItemView& other)=delete;
 		ItemView& operator =(const ItemView& other)=delete;
 
-		void show_context_menu_actions(LibraryContextMenu::Entries entries);
+		void show_context_menu_actions(Gui::LibraryContextMenu::Entries entries);
 
 		using SearchableTableView::set_model;
 
@@ -79,7 +79,7 @@ namespace Library
 
 		void set_item_model(ItemModel* model);
 
-		virtual LibraryContextMenu::Entries context_menu_entries() const;
+		virtual Gui::LibraryContextMenu::Entries context_menu_entries() const;
 
 		/** Dragable **/
 		QMimeData* dragable_mimedata() const override;
@@ -108,9 +108,9 @@ namespace Library
 		virtual void selected_items_changed (const QItemSelection& selected, const QItemSelection& deselected );
 
 		virtual void init_context_menu();
-		virtual void init_custom_context_menu(LibraryContextMenu* menu);
+		virtual void init_custom_context_menu(Gui::LibraryContextMenu* menu);
 
-		LibraryContextMenu* context_menu() const;
+		Gui::LibraryContextMenu* context_menu() const;
 
 		ItemModel* item_model() const;
 		virtual AbstractLibrary* library() const;

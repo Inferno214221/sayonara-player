@@ -34,6 +34,7 @@
 #include <QPainter>
 #include <QMenu>
 
+using Gui::CoverButton;
 using Cover::Location;
 using Cover::Lookup;
 using Cover::ChangeNotfier;

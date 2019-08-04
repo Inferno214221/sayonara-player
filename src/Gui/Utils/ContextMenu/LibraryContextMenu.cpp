@@ -35,6 +35,7 @@
 #include <QMap>
 #include <QTimer>
 
+using Gui::LibraryContextMenu;
 namespace Algorithm=Util::Algorithm;
 
 struct LibraryContextMenu::Private
@@ -325,7 +326,7 @@ void LibraryContextMenu::set_action_shortcut(LibraryContextMenu::Entry entry, co
 	}
 }
 
-void LibraryContextMenu::set_extensions(const ExtensionSet& extensions)
+void LibraryContextMenu::set_extensions(const Gui::ExtensionSet& extensions)
 {
 	QMenu* fem = m->filter_extension_menu;
 	if(fem->isEmpty())

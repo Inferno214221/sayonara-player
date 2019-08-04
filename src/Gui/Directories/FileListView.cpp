@@ -66,7 +66,7 @@ struct FileListView::Private
 
 FileListView::FileListView(QWidget* parent) :
 	SearchableListView(parent),
-	Dragable(this)
+	Gui::Dragable(this)
 {
 	m = Pimpl::make<Private>(this);
 
@@ -101,7 +101,7 @@ void FileListView::mousePressEvent(QMouseEvent* event)
 		}
 
 		m->context_menu->show_action(
-			LibraryContextMenu::EntryLyrics,
+			Gui::LibraryContextMenu::EntryLyrics,
 			(selected_rows().size()==1)
 		);
 
@@ -137,7 +137,7 @@ void FileListView::dragEnterEvent(QDragEnterEvent *event)
 void FileListView::dragMoveEvent(QDragMoveEvent *event)
 {
 	const QMimeData* mime_data = event->mimeData();
-	const CustomMimeData* cmd = Gui::MimeData::custom_mimedata(mime_data);
+	const auto* cmd = Gui::MimeData::custom_mimedata(mime_data);
 	if(cmd){
 		event->setAccepted(false);
 	}
@@ -293,7 +293,7 @@ void FileListView::set_search_filter(const QString& search_string)
 
 QMimeData* FileListView::dragable_mimedata() const
 {
-	CustomMimeData* mimedata = new CustomMimeData(this);
+	auto* mimedata = new Gui::CustomMimeData(this);
 	mimedata->set_metadata(selected_metadata());
 	return mimedata;
 }
