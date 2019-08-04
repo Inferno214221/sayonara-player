@@ -21,11 +21,12 @@
 #include "GUI_Shutdown.h"
 #include "Gui/Shutdown/ui_GUI_Shutdown.h"
 
+#include "Utils/Macros.h"
 #include "Gui/Utils/Icons.h"
 
 #include "Components/Shutdown/Shutdown.h"
 
-#ifdef WITH_SHUTDOWN
+#ifdef SAYONARA_WITH_SHUTDOWN
 
 GUI_Shutdown::GUI_Shutdown(QWidget* parent):
 	Gui::Dialog(parent)
@@ -85,4 +86,4 @@ void GUI_Shutdown::rb_after_minutes_clicked(bool b)
 	ui->sb_minutes->setEnabled(true);
 }
 
-#endif // WITH_SHUTDOWN
+#endif // SAYONARA_WITH_SHUTDOWN

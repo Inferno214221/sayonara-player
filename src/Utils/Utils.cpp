@@ -44,12 +44,6 @@
 #include <thread>
 #include <chrono>
 
-#ifdef Q_OS_UNIX
-#ifndef LIB_INSTALL_DIR
-#define LIB_INSTALL_DIR "/usr/lib"
-#endif
-#endif
-
 #ifdef Q_OS_WIN
 	#include <windows.h>
 #endif
@@ -60,6 +54,13 @@
 #include "Utils/Macros.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Language/Language.h"
+
+#ifdef Q_OS_UNIX
+	#ifndef SAYONARA_INSTALL_LIB_PATH
+		#define SAYONARA_INSTALL_LIB_PATH "/usr/lib/sayonara"
+	#endif
+#endif
+
 
 namespace Algorithm=Util::Algorithm;
 

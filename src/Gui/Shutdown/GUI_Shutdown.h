@@ -23,8 +23,9 @@
 
 #include "Gui/Utils/Widgets/Dialog.h"
 #include "Gui/Utils/GuiClass.h"
+#include "Utils/Macros.h"
 
-#ifdef WITH_SHUTDOWN
+#ifdef SAYONARA_WITH_SHUTDOWN
 
 UI_FWD(GUI_Shutdown)
 
@@ -48,6 +49,6 @@ class GUI_Shutdown :
 		void skin_changed();
 };
 
-#endif
+#endif // SAYONARA_WITH_SHUTDOWN
 
 #endif // GUI_SHUTDOWN_H

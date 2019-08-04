@@ -24,12 +24,13 @@
 #include "Gui/Plugins/PlayerPluginHandler.h"
 #include "Gui/Utils/Icons.h"
 
+#include "Utils/Macros.h"
 #include "Utils/Playlist/PlaylistMode.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Message/Message.h"
 
-#ifdef WITH_SHUTDOWN
+#ifdef SAYONARA_WITH_SHUTDOWN
 	#include "Gui/Shutdown/GUI_Shutdown.h"
 #endif
 
@@ -45,7 +46,7 @@ struct GUI_PlaylistBottomBar::Private
 {
 	Playlist::Mode		plm;
 
-#ifdef WITH_SHUTDOWN
+#ifdef SAYONARA_WITH_SHUTDOWN
 	GUI_Shutdown*		ui_shutdown=nullptr;
 	Shutdown*			shutdown=nullptr;
 #endif
@@ -117,7 +118,7 @@ GUI_PlaylistBottomBar::GUI_PlaylistBottomBar(QWidget *parent) :
 	m->btn_gapless->setCheckable(false);
 
 
-#ifdef WITH_SHUTDOWN
+#ifdef SAYONARA_WITH_SHUTDOWN
 	m->ui_shutdown = new GUI_Shutdown(this);
 #endif
 
@@ -288,7 +289,7 @@ void GUI_PlaylistBottomBar::resizeEvent(QResizeEvent* e)
 
 
 
-#ifdef WITH_SHUTDOWN
+#ifdef SAYONARA_WITH_SHUTDOWN
 	void GUI_PlaylistBottomBar::shutdown_clicked()
 	{
 		Message::Answer answer = Message::question_yn(tr("Cancel shutdown?"));

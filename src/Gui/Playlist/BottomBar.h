@@ -25,9 +25,10 @@
 #include "Components/Shutdown/Shutdown.h"
 #include "Utils/Playlist/PlaylistFwd.h"
 #include "Utils/Pimpl.h"
+#include "Utils/Macros.h"
 
 class PlaylistMenu;
-#ifdef WITH_SHUTDOWN
+#ifdef SAYONARA_WITH_SHUTDOWN
 	class GUI_Shutdown;
 #endif
 
@@ -64,7 +65,7 @@ private slots:
 
 	void s_playlist_mode_changed();
 
-#ifdef WITH_SHUTDOWN
+#ifdef SAYONARA_WITH_SHUTDOWN
 	void shutdown_clicked();
 	void shutdown_started(MilliSeconds time2go);
 	void shutdown_closed();

@@ -11,8 +11,6 @@ set(SAYONARA_INSTALL_LIB_PATH "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/sayonara
 set(SAYONARA_INSTALL_BIN_PATH "${CMAKE_INSTALL_PREFIX}/bin/")
 set(SAYONARA_INSTALL_SHARE_PATH "${CMAKE_INSTALL_PREFIX}/share/sayonara/")
 
-configure_file(Macros.h.in "${CMAKE_CURRENT_BINARY_DIR}/src/Utils/Macros.h" @ONLY)
-
 message("Build Sayonara ${VAR_SAYONARA_VERSION}")
 message("Will install to ${CMAKE_INSTALL_PREFIX}")
 
