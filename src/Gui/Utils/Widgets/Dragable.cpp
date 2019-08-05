@@ -179,7 +179,7 @@ QDrag* Dragable::drag_moving(const QPoint& p)
 
 	QPixmap cover = drag_pixmap();
 	if(cover.isNull()){
-		cover = Gui::Util::pixmap("logo.png", logo_size, true);
+		cover = Gui::Util::pixmap("logo.png", Gui::Util::NoTheme, logo_size, true);
 	}
 
 	QPixmap pm(pm_width, pm_height);

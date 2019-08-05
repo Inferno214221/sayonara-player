@@ -104,10 +104,9 @@ PlaylistView::PlaylistView(PlaylistPtr pl, QWidget* parent) :
 	QTimer::singleShot(100, this, [=](){
 		this->goto_to_current_track();
 	});
-
 }
 
-PlaylistView::~PlaylistView() {}
+PlaylistView::~PlaylistView() = default;
 
 void PlaylistView::init_view()
 {
@@ -352,6 +351,7 @@ void PlaylistView::clear()
 	clear_selection();
 	m->model->clear();
 }
+
 
 MD::Interpretation PlaylistView::metadata_interpretation() const
 {

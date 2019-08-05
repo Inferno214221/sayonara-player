@@ -41,24 +41,11 @@
 
 using namespace Library;
 
-struct ArtistModel::Private
-{
-	QPixmap		pm_single;
-	QPixmap		pm_multi;
-
-	Private() :
-		pm_single(Gui::Util::pixmap("play", QSize(16, 16))),
-		pm_multi(Gui::Util::pixmap("sampler", QSize(16, 16)))
-	{}
-};
-
 ArtistModel::ArtistModel(QObject* parent, AbstractLibrary* library) :
 	ItemModel(parent, library)
-{
-	m = Pimpl::make<ArtistModel::Private>();
-}
+{}
 
-ArtistModel::~ArtistModel() {}
+ArtistModel::~ArtistModel() = default;
 
 Id ArtistModel::id_by_index(int row) const
 {
@@ -119,11 +106,7 @@ QVariant ArtistModel::data(const QModelIndex & index, int role) const
 	{
 		if(idx_col == ColumnIndex::Artist::NumAlbums)
 		{
-			if(artist.num_albums > 1){
-				return m->pm_multi;
-			}
-
-			return m->pm_single;
+			return QPixmap();
 		}
 	}
 

@@ -180,7 +180,8 @@ bool PlaylistImpl::change_track(int idx)
 void PlaylistImpl::metadata_deleted()
 {
 	IndexSet indexes;
-	MetaDataList v_md_deleted = Tagging::ChangeNotifier::instance()->deleted_metadata();
+	auto* mdcn = Tagging::ChangeNotifier::instance();
+	MetaDataList v_md_deleted = mdcn->deleted_metadata();
 
 	int i=0;
 	for(const MetaData& md : m->v_md)
@@ -202,7 +203,9 @@ void PlaylistImpl::metadata_deleted()
 
 void PlaylistImpl::metadata_changed()
 {
-	auto changed_metadata = Tagging::ChangeNotifier::instance()->changed_metadata();
+	auto* mdcn = Tagging::ChangeNotifier::instance();
+	auto changed_metadata = mdcn->changed_metadata();
+
 	const MetaDataList& v_md_new = changed_metadata.second;
 
 	for(auto it=m->v_md.begin(); it !=m->v_md.end(); it++)

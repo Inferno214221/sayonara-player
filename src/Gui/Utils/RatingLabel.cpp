@@ -53,8 +53,8 @@ struct RatingLabel::Private
 		icon_size(14),
 		enabled(enabled)
 	{
-		pm_active = Gui::Util::pixmap("star.png", QSize(icon_size, icon_size), true);
-		pm_inactive = Gui::Util::pixmap("star_disabled.png", QSize(icon_size, icon_size), true);
+		pm_active = Gui::Util::pixmap("star.png", Gui::Util::NoTheme, QSize(icon_size, icon_size), true);
+		pm_inactive = Gui::Util::pixmap("star_disabled.png", Gui::Util::NoTheme, QSize(icon_size, icon_size), true);
 	}
 };
 

@@ -34,6 +34,7 @@
 
 #include "Gui/Library/Header/ColumnIndex.h"
 #include "Gui/Utils/GuiUtils.h"
+#include "Gui/Utils/Icons.h"
 
 #include "Utils/Utils.h"
 #include "Utils/MetaData/Album.h"
@@ -51,8 +52,8 @@ struct AlbumModel::Private
 	QImage		pm_multi;
 
 	Private() :
-		pm_single(Gui::Util::image("cd.png", QSize(14, 14))),
-		pm_multi(Gui::Util::image("cds.png", QSize(16, 16)))
+		pm_single(Gui::Util::image("cd.png", Gui::Util::NoTheme, QSize(14, 14))),
+		pm_multi(Gui::Util::image("cds.png", Gui::Util::NoTheme, QSize(16, 16)))
 	{}
 };
 

@@ -37,12 +37,12 @@ DiscAction::DiscAction(QWidget* parent, Disc disc) :
 	if(disc == std::numeric_limits<Disc>::max())
 	{
 		this->setText(Lang::get(Lang::All));
-		this->setIcon(Gui::Util::icon("cds.png"));
+		this->setIcon(Gui::Util::icon("cds.png", Gui::Util::NoTheme));
 	}
 
 	else {
 		this->setText(Lang::get(Lang::Disc) + " " + QString::number(disc));
-		this->setIcon(Gui::Util::icon("cd.png"));
+		this->setIcon(Gui::Util::icon("cd.png", Gui::Util::NoTheme));
 	}
 
 	this->setData(disc);

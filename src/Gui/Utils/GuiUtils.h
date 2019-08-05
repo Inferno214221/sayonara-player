@@ -46,12 +46,19 @@ namespace Gui
 	 */
 	namespace Util
 	{
+		enum IconTheme
+		{
+			Breeze,
+			MintY,
+			NoTheme
+		};
+
 		/**
 		 * @brief fetch a icon from resources
 		 * @param icon_name if icon_name ends with png the input string is not modified, else a .svg.png is appended
 		 * @return icon
 		 */
-		QIcon icon(const QString& icon_name);
+		QIcon icon(const QString& icon_name, IconTheme theme_name);
 
 
 		/**
@@ -61,11 +68,11 @@ namespace Gui
 		 * @param keep_aspect if true, aspect ratio is kept
 		 * @return pixmap
 		 */
-		QPixmap pixmap(const QString& icon_name);
-		QPixmap pixmap(const QString& icon_name, QSize sz, bool keep_aspect=true);
+		QPixmap pixmap(const QString& icon_name, IconTheme theme_name);
+		QPixmap pixmap(const QString& icon_name, IconTheme theme_name, QSize sz, bool keep_aspect=true);
 
-		QImage image(const QString& icon_name);
-		QImage image(const QString& icon_name, QSize sz, bool keep_aspect=true);
+		QImage image(const QString& icon_name, IconTheme theme_name);
+		QImage image(const QString& icon_name, IconTheme theme_name, QSize sz, bool keep_aspect=true);
 
 
 		/**

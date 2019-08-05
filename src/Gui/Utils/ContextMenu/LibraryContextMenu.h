@@ -131,6 +131,7 @@ namespace Gui
 		void show_cover_triggered(bool b);
 		void shortcut_changed(ShortcutIdentifier identifier);
 		void show_filter_extension_bar_triggered(bool b);
+		void skin_timer_timeout();
 
 
 	protected:
