@@ -27,42 +27,45 @@
 #include <QPoint>
 #include <QSize>
 
-/**
- * @brief The RatingLabel class
- * @ingroup GUIHelper
- */
-class RatingLabel : public QLabel
+namespace Gui
 {
-	Q_OBJECT
-	PIMPL(RatingLabel)
+	/**
+	 * @brief The RatingLabel class
+	 * @ingroup GUIHelper
+	 */
+	class RatingLabel : public QLabel
+	{
+		Q_OBJECT
+		PIMPL(RatingLabel)
 
-signals:
-	void sig_finished(bool);
+	signals:
+		void sig_finished(bool);
 
 
-public:
-	RatingLabel(QWidget *parent, bool enabled=true);
-	virtual ~RatingLabel();
+	public:
+		RatingLabel(QWidget *parent, bool enabled=true);
+		virtual ~RatingLabel();
 
-	void set_rating(Rating rating);
-	Rating get_rating() const;
+		void set_rating(Rating rating);
+		Rating get_rating() const;
 
-	void set_offset_y(int offset);
+		void set_offset_y(int offset);
 
-protected:
-	void paintEvent(QPaintEvent *e) override;
-	void focusInEvent(QFocusEvent* e) override;
-	void focusOutEvent(QFocusEvent* e) override;
-	void mousePressEvent(QMouseEvent *ev) override;
-	void mouseReleaseEvent(QMouseEvent* ev) override;
-	void mouseMoveEvent(QMouseEvent *ev) override;
+	protected:
+		void paintEvent(QPaintEvent *e) override;
+		void focusInEvent(QFocusEvent* e) override;
+		void focusOutEvent(QFocusEvent* e) override;
+		void mousePressEvent(QMouseEvent *ev) override;
+		void mouseReleaseEvent(QMouseEvent* ev) override;
+		void mouseMoveEvent(QMouseEvent *ev) override;
 
-	QSize sizeHint() const override;
-	QSize minimumSizeHint() const override;
+		QSize sizeHint() const override;
+		QSize minimumSizeHint() const override;
 
-private:
-	void update_rating(Rating rating);
-	Rating calc_rating(QPoint pos) const;
-};
+	private:
+		void update_rating(Rating rating);
+		Rating calc_rating(QPoint pos) const;
+	};
+}
 
 #endif // RATINGLABEL_H

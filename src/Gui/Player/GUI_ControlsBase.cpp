@@ -34,17 +34,13 @@
 
 static void set_icon(QPushButton* btn, QIcon icon)
 {
-	QSize sz = btn->size();
-	int w = std::min(sz.width(), sz.height());
-	int h = w;
+	int w = (btn->fontMetrics().width("m") * 250) / 100;
 
-	sz.setWidth(w);
-	sz.setHeight(h);
-
+	QSize sz(w, w);
 	btn->setFixedSize(sz);
 
 	sz.setWidth((w * 800) / 1000);
-	sz.setHeight((h * 800) / 1000);
+	sz.setHeight((w * 800) / 1000);
 
 	btn->setIconSize(sz);
 	btn->setIcon(icon);
@@ -57,7 +53,7 @@ static MetaData current_track()
 
 struct GUI_ControlsBase::Private
 {
-	LibraryContextMenu* context_menu=nullptr;
+	Gui::LibraryContextMenu* context_menu=nullptr;
 };
 
 GUI_ControlsBase::GUI_ControlsBase(QWidget* parent) :
@@ -97,7 +93,7 @@ void GUI_ControlsBase::init()
 		}
 	}
 
-	connect(btn_cover(), &CoverButton::sig_rejected, this, &GUI_ControlsBase::cover_click_rejected);
+	connect(btn_cover(), &Gui::CoverButton::sig_rejected, this, &GUI_ControlsBase::cover_click_rejected);
 
 	ListenSetting(Set::Engine_SR_Active, GUI_ControlsBase::sr_active_changed);
 	ListenSetting(Set::Engine_Pitch, GUI_ControlsBase::refresh_current_track);
@@ -106,7 +102,7 @@ void GUI_ControlsBase::init()
 	skin_changed();
 }
 
-RatingLabel* GUI_ControlsBase::lab_rating() const
+Gui::RatingLabel* GUI_ControlsBase::lab_rating() const
 {
 	return nullptr;
 }
@@ -191,8 +187,7 @@ void GUI_ControlsBase::stopped()
 	setWindowTitle("Sayonara");
 
 	btn_play()->setIcon(icon(Gui::Icons::Play));
-
-	toggle_buffer_mode(false);
+	sli_progress()->set_buffering(-1);
 
 	lab_title()->hide();
 	lab_artist()->hide();
@@ -226,16 +221,10 @@ void GUI_ControlsBase::rec_changed(bool b)
 
 void GUI_ControlsBase::buffering(int progress)
 {
-	sli_buffer()->set_position(Gui::ProgressBar::Position::Middle);
-
 	// buffering
 	if(progress > 0 && progress < 100)
 	{
-		toggle_buffer_mode(true);
-
-		sli_buffer()->setMinimum(0);
-		sli_buffer()->setMaximum(100);
-		sli_buffer()->setValue(progress);
+		sli_progress()->set_buffering(progress);
 
 		lab_current_time()->setText(QString("%1%").arg(progress));
 		lab_max_time()->setVisible(false);
@@ -244,23 +233,14 @@ void GUI_ControlsBase::buffering(int progress)
 	//buffering stopped
 	else if(progress == 0)
 	{
-		toggle_buffer_mode(false);
-
-		sli_buffer()->setMinimum(0);
-		sli_buffer()->setMaximum(0);
-		sli_buffer()->setValue(progress);
-
+		sli_progress()->set_buffering(-1);
 		lab_max_time()->setVisible(false);
 	}
 
 	// no buffering
 	else
 	{
-		toggle_buffer_mode(false);
-
-		sli_buffer()->setMinimum(0);
-		sli_buffer()->setMaximum(0);
-
+		sli_progress()->set_buffering(-1);
 		lab_max_time()->setVisible(current_track().duration_ms > 0);
 	}
 }
@@ -314,7 +294,7 @@ void GUI_ControlsBase::refresh_current_position(int val)
 	val = std::min(max, val);
 
 	double percent = (val * 1.0) / max;
-	MilliSeconds cur_pos_ms =  (MilliSeconds) (percent * duration);
+	MilliSeconds cur_pos_ms = static_cast<MilliSeconds>(percent * duration);
 	QString cur_pos_string = Util::cvt_ms_to_string(cur_pos_ms);
 
 	lab_current_time()->setText(cur_pos_string);
@@ -341,7 +321,7 @@ void GUI_ControlsBase::progress_hovered(int val)
 	val = std::min(max, val);
 
 	double percent = (val * 1.0) / max;
-	MilliSeconds cur_pos_ms =  (MilliSeconds) (percent * duration);
+	MilliSeconds cur_pos_ms = static_cast<MilliSeconds>(percent * duration);
 	QString cur_pos_string = Util::cvt_ms_to_string(cur_pos_ms);
 
 	QToolTip::showText( QCursor::pos(), cur_pos_string );
@@ -460,12 +440,14 @@ void GUI_ControlsBase::refresh_labels(const MetaData& md)
 		QString str_year = QString::number(md.year);
 		QString album_name;
 
+		lab_album()->setToolTip("");
 		if(md.year > 1000 && !album_name.contains(str_year)) {
 			album_name = md.album() + " (" + str_year + ")";
 		}
 
 		else if(md.radio_mode() == RadioMode::Station) {
-			album_name = md.album() + " (" + md.filepath() + ")";
+			album_name = md.album();
+			lab_album()->setToolTip(md.filepath());
 		}
 
 		set_floating_text(lab_album(), album_name);
@@ -529,7 +511,8 @@ void GUI_ControlsBase::skin_changed()
 		set_icon(btn_play(), icon(Icons::Pause));
 	}
 
-	else{
+	else
+	{
 		set_icon(btn_play(), icon(Icons::Play));
 	}
 
@@ -601,9 +584,9 @@ void GUI_ControlsBase::setup_connections()
 	connect(btn_mute(), &QPushButton::clicked, pm, &PlayManager::toggle_mute);
 	connect(btn_rec(), &QPushButton::clicked, pm, &PlayManager::record);
 
-	connect(sli_volume(), &SearchSlider::sig_slider_moved, pm, &PlayManager::set_volume);
-	connect(sli_progress(), &SearchSlider::sig_slider_moved, this, &GUI_ControlsBase::progress_moved);
-	connect(sli_progress(), &SearchSlider::sig_slider_hovered, this, &GUI_ControlsBase::progress_hovered);
+	connect(sli_volume(), &Gui::SearchSlider::sig_slider_moved, pm, &PlayManager::set_volume);
+	connect(sli_progress(), &Gui::SearchSlider::sig_slider_moved, this, &GUI_ControlsBase::progress_moved);
+	connect(sli_progress(), &Gui::SearchSlider::sig_slider_hovered, this, &GUI_ControlsBase::progress_hovered);
 
 	connect(pm, &PlayManager::sig_playstate_changed, this, &GUI_ControlsBase::playstate_changed);
 	connect(pm, &PlayManager::sig_track_changed, this, &GUI_ControlsBase::track_changed);
@@ -694,6 +677,8 @@ void GUI_ControlsBase::showEvent(QShowEvent* e)
 
 void GUI_ControlsBase::contextMenuEvent(QContextMenuEvent* e)
 {
+	using Gui::LibraryContextMenu;
+
 	if(!m->context_menu)
 	{
 		m->context_menu = new LibraryContextMenu(this);
@@ -716,8 +701,8 @@ void GUI_ControlsBase::contextMenuEvent(QContextMenuEvent* e)
 			show_lyrics();
 		});
 
-		m->context_menu->add_preference_action(new PlayerPreferencesAction(m->context_menu));
-		m->context_menu->add_preference_action(new CoverPreferenceAction(m->context_menu));
+		m->context_menu->add_preference_action(new Gui::PlayerPreferencesAction(m->context_menu));
+		m->context_menu->add_preference_action(new Gui::CoverPreferenceAction(m->context_menu));
 	}
 
 	m->context_menu->exec(e->globalPos());

@@ -25,12 +25,17 @@
 
 class QMimeData;
 class MetaDataList;
-class CustomMimeData;
+
 class QStringList;
 class QString;
 
 namespace Gui
 {
+	class CustomMimeData;
+	/**
+	 * @brief MimeData Utils
+	 * @ingroup MimeData
+	 */
 	namespace MimeData
 	{
 		MetaDataList metadata(const QMimeData* data);

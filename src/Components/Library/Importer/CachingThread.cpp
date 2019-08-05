@@ -86,7 +86,7 @@ CachingThread::CachingThread(const QStringList& file_list, const QString& librar
 
 CachingThread::~CachingThread() {}
 
-bool CachingThread::scan_archive(const QString& temp_dir, const QString& binary, const QStringList& args)
+bool CachingThread::scan_archive(const QString& temp_dir, const QString& binary, const QStringList& args, const QList<int>& success_codes)
 {
 #ifndef Q_OS_UNIX
 	return false;
@@ -94,13 +94,20 @@ bool CachingThread::scan_archive(const QString& temp_dir, const QString& binary,
 
 	QDir dir(temp_dir);
 	int ret = QProcess::execute(binary, args);
-	if(ret < 0){
-		sp_log(Log::Warning, "Scan archive") << binary << " not found or crashed";
+	if(ret < 0)
+	{
+		sp_log(Log::Error, this) << binary << " not found or crashed";
 	}
 
-	else if(ret > 0){
-		sp_log(Log::Warning, "Scan archive") << binary << " exited with error " << ret;
+	else if(!success_codes.contains(ret))
+	{
+		sp_log(Log::Error, this) << binary << " exited with error " << ret;
 		return false;
+	}
+
+	else if(ret > 0)
+	{
+		sp_log(Log::Warning, this) << binary << " exited with warning " << ret;
 	}
 
 	QStringList entries = dir.entryList(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
@@ -128,7 +135,8 @@ QString CachingThread::create_temp_dir()
 	QString abs_dir = dir.absolutePath();
 
 	bool b = Util::File::create_directories(abs_dir);
-	if(!b){
+	if(!b)
+	{
 		sp_log(Log::Warning, this) << "Cannot create temp directory " << abs_dir;
 		return QString();
 	}
@@ -156,7 +164,7 @@ bool CachingThread::scan_zip(const QString& zip_file)
 #endif
 
 	QString temp_dir = create_temp_dir();
-	return scan_archive(temp_dir, "unzip", {zip_file, "-d", temp_dir});
+	return scan_archive(temp_dir, "unzip", {zip_file, "-d", temp_dir}, QList<int>{0, 1, 2});
 }
 
 bool CachingThread::scan_tgz(const QString& tgz)

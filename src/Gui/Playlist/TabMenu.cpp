@@ -166,7 +166,7 @@ void PlaylistTabMenu::show_close(bool b)
 	m->action_close_others->setVisible(b);
 }
 
-void PlaylistTabMenu::add_preference_action(PreferenceAction* action)
+void PlaylistTabMenu::add_preference_action(Gui::PreferenceAction* action)
 {
 	QList<QAction*> actions;
 

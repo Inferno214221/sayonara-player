@@ -31,7 +31,7 @@ namespace Library
 {
 	class ActionPair;
 	class CoverViewContextMenu :
-			public LibraryContextMenu
+			public Gui::LibraryContextMenu
 	{
 		Q_OBJECT
 		PIMPL(CoverViewContextMenu)

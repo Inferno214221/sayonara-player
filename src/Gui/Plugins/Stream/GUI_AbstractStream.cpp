@@ -43,7 +43,7 @@ using namespace Gui;
 namespace Algorithm=Util::Algorithm;
 
 using StreamMap = QMap<QString, QString>;
-struct GUI_AbstractStream::Private
+struct AbstractStream::Private
 {
 	StreamMap				stations;
 	StreamMap				temporary_stations;
@@ -60,15 +60,15 @@ struct GUI_AbstractStream::Private
 	{}
 };
 
-GUI_AbstractStream::GUI_AbstractStream(QWidget* parent) :
+AbstractStream::AbstractStream(QWidget* parent) :
 	PlayerPlugin::Base(parent)
 {
 	m = Pimpl::make<Private>();
 }
 
-GUI_AbstractStream::~GUI_AbstractStream() {}
+AbstractStream::~AbstractStream() {}
 
-void GUI_AbstractStream::init_connections()
+void AbstractStream::init_connections()
 {
 	m->btn_play->setFocusPolicy(Qt::StrongFocus);
 
@@ -78,24 +78,24 @@ void GUI_AbstractStream::init_connections()
 
 	setTabOrder(m->combo_stream, m->btn_play);
 
-	connect(m->btn_play, &QPushButton::clicked, this, &GUI_AbstractStream::listen_clicked);
-	connect(m->btn_tool, &MenuToolButton::sig_edit, this, &GUI_AbstractStream::edit_clicked);
-	connect(m->btn_tool, &MenuToolButton::sig_delete, this, &GUI_AbstractStream::delete_clicked);
-	connect(m->btn_tool, &MenuToolButton::sig_new, this, &GUI_AbstractStream::new_clicked);
-	connect(m->btn_tool, &MenuToolButton::sig_save, this, &GUI_AbstractStream::save_clicked);
+	connect(m->btn_play, &QPushButton::clicked, this, &AbstractStream::listen_clicked);
+	connect(m->btn_tool, &MenuToolButton::sig_edit, this, &AbstractStream::edit_clicked);
+	connect(m->btn_tool, &MenuToolButton::sig_delete, this, &AbstractStream::delete_clicked);
+	connect(m->btn_tool, &MenuToolButton::sig_new, this, &AbstractStream::new_clicked);
+	connect(m->btn_tool, &MenuToolButton::sig_save, this, &AbstractStream::save_clicked);
 
-	connect(m->combo_stream, combo_activated_int, this, &GUI_AbstractStream::combo_idx_changed);
-	connect(m->stream_handler, &AbstractStreamHandler::sig_error, this, &GUI_AbstractStream::error);
-	connect(m->stream_handler, &AbstractStreamHandler::sig_data_available, this, &GUI_AbstractStream::data_available);
-	connect(m->stream_handler, &AbstractStreamHandler::sig_stopped, this, &GUI_AbstractStream::stopped);
+	connect(m->combo_stream, combo_activated_int, this, &AbstractStream::combo_idx_changed);
+	connect(m->stream_handler, &AbstractStreamHandler::sig_error, this, &AbstractStream::error);
+	connect(m->stream_handler, &AbstractStreamHandler::sig_data_available, this, &AbstractStream::data_available);
+	connect(m->stream_handler, &AbstractStreamHandler::sig_stopped, this, &AbstractStream::stopped);
 }
 
 
-void GUI_AbstractStream::init_ui()
+void AbstractStream::init_ui()
 {
 	m->stream_handler = stream_handler();
 	connect(m->stream_handler, &AbstractStreamHandler::sig_too_many_urls_found,
-			this, &GUI_AbstractStream::too_many_urls_found);
+			this, &AbstractStream::too_many_urls_found);
 
 	m->loading_bar = new ProgressBar(this);
 
@@ -105,11 +105,11 @@ void GUI_AbstractStream::init_ui()
 
 	set_searching(false);
 
-	ListenSetting(Set::Player_Style, GUI_AbstractStream::_sl_skin_changed);
+	ListenSetting(Set::Player_Style, AbstractStream::_sl_skin_changed);
 }
 
 
-void GUI_AbstractStream::setup_stations()
+void AbstractStream::setup_stations()
 {
 	QString old_name = current_station();
 	QString old_url = url();
@@ -142,7 +142,7 @@ void GUI_AbstractStream::setup_stations()
 }
 
 
-void GUI_AbstractStream::combo_idx_changed(int idx)
+void AbstractStream::combo_idx_changed(int idx)
 {
 	QString current_text = m->combo_stream->currentText();
 	bool is_temporary = m->temporary_stations.contains(current_text);
@@ -158,13 +158,13 @@ void GUI_AbstractStream::combo_idx_changed(int idx)
 }
 
 
-void GUI_AbstractStream::data_available()
+void AbstractStream::data_available()
 {
 	set_searching(false);
 }
 
 
-void GUI_AbstractStream::listen_clicked()
+void AbstractStream::listen_clicked()
 {
 	if(m->searching)
 	{
@@ -191,7 +191,7 @@ void GUI_AbstractStream::listen_clicked()
 }
 
 
-void GUI_AbstractStream::play(QString url, QString station_name)
+void AbstractStream::play(QString url, QString station_name)
 {
 	bool success = m->stream_handler->parse_station(url, station_name);
 	if(!success)
@@ -202,13 +202,13 @@ void GUI_AbstractStream::play(QString url, QString station_name)
 }
 
 
-void GUI_AbstractStream::stopped()
+void AbstractStream::stopped()
 {
 	set_searching(false);
 }
 
 
-void GUI_AbstractStream::set_searching(bool searching)
+void AbstractStream::set_searching(bool searching)
 {
 	QString text = (searching == true) ? Lang::get(Lang::Stop) : Lang::get(Lang::Listen);
 
@@ -219,7 +219,7 @@ void GUI_AbstractStream::set_searching(bool searching)
 }
 
 
-void GUI_AbstractStream::error()
+void AbstractStream::error()
 {
 	set_searching(false);
 
@@ -248,19 +248,19 @@ void GUI_AbstractStream::error()
 }
 
 
-QString GUI_AbstractStream::current_station() const
+QString AbstractStream::current_station() const
 {
 	return m->combo_stream->currentText();
 }
 
 
-QString GUI_AbstractStream::url() const
+QString AbstractStream::url() const
 {
 	return m->combo_stream->currentData().toString();
 }
 
 
-void GUI_AbstractStream::add_stream(const QString& name, const QString& url)
+void AbstractStream::add_stream(const QString& name, const QString& url)
 {
 	m->temporary_stations[name] = url;
 
@@ -270,19 +270,19 @@ void GUI_AbstractStream::add_stream(const QString& name, const QString& url)
 }
 
 
-void GUI_AbstractStream::new_clicked()
+void AbstractStream::new_clicked()
 {
 	GUI_ConfigureStreams* cs = new GUI_ConfigureStreams(this->get_display_name(), GUI_ConfigureStreams::New, this);
-	connect(cs, &Gui::Dialog::finished, this, &GUI_AbstractStream::new_finished);
+	connect(cs, &Gui::Dialog::finished, this, &AbstractStream::new_finished);
 
 	cs->open();
 }
 
 
-void GUI_AbstractStream::save_clicked()
+void AbstractStream::save_clicked()
 {
 	GUI_ConfigureStreams* cs = new GUI_ConfigureStreams(this->get_display_name(), GUI_ConfigureStreams::New, this);
-	connect(cs, &Gui::Dialog::finished, this, &GUI_AbstractStream::new_finished);
+	connect(cs, &Gui::Dialog::finished, this, &AbstractStream::new_finished);
 
 	cs->set_name(current_station());
 	cs->set_url(url());
@@ -290,7 +290,7 @@ void GUI_AbstractStream::save_clicked()
 	cs->open();
 }
 
-void GUI_AbstractStream::new_finished()
+void AbstractStream::new_finished()
 {
 	GUI_ConfigureStreams* cs = static_cast<GUI_ConfigureStreams*>(sender());
 
@@ -327,10 +327,10 @@ void GUI_AbstractStream::new_finished()
 }
 
 
-void GUI_AbstractStream::edit_clicked()
+void AbstractStream::edit_clicked()
 {
 	GUI_ConfigureStreams* cs = new GUI_ConfigureStreams(this->get_display_name(), GUI_ConfigureStreams::Edit, this);
-	connect(cs, &Gui::Dialog::finished, this, &GUI_AbstractStream::edit_finished);
+	connect(cs, &Gui::Dialog::finished, this, &AbstractStream::edit_finished);
 
 	cs->set_name(current_station());
 	cs->set_url(url());
@@ -339,7 +339,7 @@ void GUI_AbstractStream::edit_clicked()
 }
 
 
-void GUI_AbstractStream::edit_finished()
+void AbstractStream::edit_finished()
 {
 	GUI_ConfigureStreams* cs = static_cast<GUI_ConfigureStreams*>(sender());
 
@@ -368,7 +368,7 @@ void GUI_AbstractStream::edit_finished()
 }
 
 
-void GUI_AbstractStream::delete_clicked()
+void AbstractStream::delete_clicked()
 {
 	QString cur_station = current_station();
 	if(cur_station.isEmpty()) {
@@ -393,7 +393,7 @@ void GUI_AbstractStream::delete_clicked()
 }
 
 
-void GUI_AbstractStream::too_many_urls_found(int n_urls, int n_max_urls)
+void AbstractStream::too_many_urls_found(int n_urls, int n_max_urls)
 {
 	Message::error(QString("Found %1 urls").arg(n_urls) + "<br />" +
 				   QString("Maximum number is %1").arg(n_max_urls)
@@ -403,13 +403,13 @@ void GUI_AbstractStream::too_many_urls_found(int n_urls, int n_max_urls)
 }
 
 
-bool GUI_AbstractStream::has_loading_bar() const
+bool AbstractStream::has_loading_bar() const
 {
 	return true;
 }
 
 
-void GUI_AbstractStream::assign_ui_vars()
+void AbstractStream::assign_ui_vars()
 {
 	m->combo_stream=combo_stream();
 	m->btn_play=btn_play();
@@ -417,7 +417,7 @@ void GUI_AbstractStream::assign_ui_vars()
 }
 
 
-void GUI_AbstractStream::retranslate_ui()
+void AbstractStream::retranslate_ui()
 {
 	QString text = (m->searching) ? Lang::get(Lang::Stop) : Lang::get(Lang::Listen);
 
@@ -425,7 +425,7 @@ void GUI_AbstractStream::retranslate_ui()
 }
 
 
-void GUI_AbstractStream::_sl_skin_changed()
+void AbstractStream::_sl_skin_changed()
 {
 	if(!is_ui_initialized()){
 		return;

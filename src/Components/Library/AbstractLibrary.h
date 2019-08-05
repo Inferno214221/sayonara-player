@@ -33,7 +33,10 @@
 #define prepare_tracks_for_playlist_idxs static_cast<void (AbstractLibrary::*) (const IdxList&)>(&AbstractLibrary::psl_prepare_tracks_for_playlist)
 
 class Genre;
-class ExtensionSet;
+namespace Gui
+{
+	class ExtensionSet;
+}
 
 class AbstractLibrary :
 		public QObject
@@ -70,8 +73,8 @@ public:
 
 	bool is_loaded() const;
 
-	void set_extensions(const ExtensionSet& extensions);
-	ExtensionSet extensions() const;
+	void set_extensions(const Gui::ExtensionSet& extensions);
+	Gui::ExtensionSet extensions() const;
 
 signals:
 	void sig_track_mime_data_available();

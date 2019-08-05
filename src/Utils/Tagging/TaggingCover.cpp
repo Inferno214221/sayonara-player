@@ -119,6 +119,15 @@ bool Tagging::Covers::write_cover(const QString& filepath, const QString& cover_
 
 	else if(tag_type == Tagging::TagType::Xiph)
 	{
+
+#ifdef WITH_SYSTEM_TAGLIB
+		if(TAGLIB_MINOR_VERSION == 11 && TAGLIB_PATCH_VERSION == 1)
+		{
+			sp_log(Log::Warning, "TaggingCover") << "Not writing cover due to taglib bug";
+			return false;
+		}
+#endif
+
 		auto xiph = parsed_tag.xiph_tag();
 		Xiph::CoverFrame cover_frame(xiph);
 		if(!cover_frame.write(cover)){
@@ -275,10 +284,18 @@ bool Tagging::Covers::is_cover_supported(const QString& filepath)
 
 	bool supported = (tag_type == Tagging::TagType::ID3v2 || tag_type == Tagging::TagType::MP4);
 
-#if TAGLIB_MAJOR_VERSION == 1 && TAGLIB_MINOR_VERSION < 10
-	return supported;
+#ifdef SAYONARA_INTERNAL_TAGLIB
+	return supported || (tag_type == Tagging::TagType::Xiph);
 #else
-	return supported | (tag_type == Tagging::TagType::Xiph);
+	if(	((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION == 11) && (TAGLIB_PATCH_VERSION == 1)) ||
+		((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION < 10)) )
+	{
+		return supported;
+	}
+
+	else {
+		return supported || (tag_type == Tagging::TagType::Xiph);
+	}
 #endif
 }
 

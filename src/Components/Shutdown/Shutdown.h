@@ -21,7 +21,8 @@
 #ifndef SHUTDOWN_H
 #define SHUTDOWN_H
 
-#ifdef WITH_SHUTDOWN
+#include "Utils/Macros.h"
+#ifdef SAYONARA_WITH_SHUTDOWN
 
 #include "Utils/Singleton.h"
 #include "Utils/Pimpl.h"
@@ -55,6 +56,6 @@ public:
 	void shutdown_after_end();
 };
 
-#endif // WITH_SHUTDOWN
+#endif // SAYONARA_WITH_SHUTDOWN
 
 #endif // SHUTDOWN_H

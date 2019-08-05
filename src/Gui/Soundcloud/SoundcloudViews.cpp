@@ -18,9 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "SoundcloudViews.h"
+
+using Gui::LibraryContextMenu;
 
 static LibraryContextMenu::Entries entry_mask()
 {

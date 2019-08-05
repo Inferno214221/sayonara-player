@@ -53,6 +53,7 @@
 #include <QItemSelectionModel>
 
 using namespace Library;
+using Gui::LibraryContextMenu;
 
 struct Library::ItemView::Private
 {
@@ -77,7 +78,7 @@ struct Library::ItemView::Private
 ItemView::ItemView(QWidget* parent) :
 	SearchableTableView(parent),
 	InfoDialogContainer(),
-	Dragable(this)
+	Gui::Dragable(this)
 {
 	m = Pimpl::make<Private>();
 
@@ -127,9 +128,10 @@ void ItemView::set_item_model(ItemModel* model)
 	connect(sm, &QItemSelectionModel::selectionChanged, this, &ItemView::selected_items_changed);
 }
 
-LibraryContextMenu::Entries ItemView::context_menu_entries() const
+Gui::LibraryContextMenu::Entries ItemView::context_menu_entries() const
 {
-	LibraryContextMenu::Entries entries = (
+	Gui::LibraryContextMenu::Entries entries =
+	(
 			LibraryContextMenu::EntryPlay |
 			LibraryContextMenu::EntryPlayNewTab |
 			LibraryContextMenu::EntryInfo |
@@ -139,7 +141,8 @@ LibraryContextMenu::Entries ItemView::context_menu_entries() const
 			LibraryContextMenu::EntryAppend |
 			LibraryContextMenu::EntryCoverView |
 			LibraryContextMenu::EntryFilterExtension |
-			LibraryContextMenu::EntryReload);
+			LibraryContextMenu::EntryReload
+	);
 
 	return entries;
 }
@@ -203,7 +206,7 @@ void ItemView::init_custom_context_menu(LibraryContextMenu* menu)
 
 	this->show_context_menu_actions(context_menu_entries());
 
-	m->context_menu->add_preference_action(new LibraryPreferenceAction(m->context_menu));
+	m->context_menu->add_preference_action(new Gui::LibraryPreferenceAction(m->context_menu));
 	m->context_menu->set_extensions(library()->extensions());
 }
 
@@ -217,7 +220,7 @@ void ItemView::show_context_menu(const QPoint& p)
 	m->context_menu->exec(p);
 }
 
-void ItemView::show_context_menu_actions(LibraryContextMenu::Entries entries)
+void ItemView::show_context_menu_actions(Gui::LibraryContextMenu::Entries entries)
 {
 	m->context_menu->show_actions(entries);
 }
@@ -343,7 +346,7 @@ void ItemView::filter_extensions_triggered(const QString& extension, bool b)
 		return;
 	}
 
-	ExtensionSet extensions = lib->extensions();
+	Gui::ExtensionSet extensions = lib->extensions();
 	extensions.set_enabled(extension, b);
 	lib->set_extensions(extensions);
 }

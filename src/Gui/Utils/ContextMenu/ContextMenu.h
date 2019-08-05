@@ -26,121 +26,124 @@
 
 #include <QMenu>
 
-class PreferenceAction;
 
-/**
- * @brief Combination of ContextMenu::Entry values
- * @ingroup GUIHelper
- */
-using ContextMenuEntries=uint16_t;
-
-/**
- * @brief A context menu with some standard actions
- * @ingroup GUIHelper
- */
-class ContextMenu :
-		public Gui::WidgetTemplate<QMenu>
+namespace Gui
 {
-	Q_OBJECT
-	PIMPL(ContextMenu)
-
-public:
+	class PreferenceAction;
+	/**
+	 * @brief Combination of ContextMenu::Entry values
+	 * @ingroup GUIHelper
+	 */
+	using ContextMenuEntries=uint16_t;
 
 	/**
-	 * @brief The Entry enum
+	 * @brief A context menu with some standard actions
+	 * @ingroup GUIHelper
 	 */
-	enum Entry
+	class ContextMenu :
+			public Gui::WidgetTemplate<QMenu>
 	{
-		EntryNone	=0,
-		EntryNew	=(1<<0),
-		EntryEdit	=(1<<1),
-		EntryUndo	=(1<<2),
-		EntrySave	=(1<<3),
-		EntrySaveAs	=(1<<4),
-		EntryRename	=(1<<5),
-		EntryDelete	=(1<<6),
-		EntryOpen	=(1<<7),
-		EntryDefault=(1<<8)
+		Q_OBJECT
+		PIMPL(ContextMenu)
+
+		public:
+
+			/**
+			 * @brief The Entry enum
+			 */
+			enum Entry
+			{
+				EntryNone	=0,
+				EntryNew	=(1<<0),
+				EntryEdit	=(1<<1),
+				EntryUndo	=(1<<2),
+				EntrySave	=(1<<3),
+				EntrySaveAs	=(1<<4),
+				EntryRename	=(1<<5),
+				EntryDelete	=(1<<6),
+				EntryOpen	=(1<<7),
+				EntryDefault=(1<<8)
+			};
+
+		signals:
+			void sig_new();
+			void sig_edit();
+			void sig_undo();
+			void sig_save();
+			void sig_save_as();
+			void sig_rename();
+			void sig_delete();
+			void sig_open();
+			void sig_default();
+
+
+		private:
+			/**
+			 * @brief show_action
+			 * @param b
+			 * @param action
+			 */
+			void show_action(bool b, QAction* action);
+
+
+		public:
+			explicit ContextMenu(QWidget *parent=nullptr);
+			virtual ~ContextMenu();
+
+			/**
+			 * @brief register a custom action
+			 * @param action the action. You have to set up the connection manually
+			 */
+			void register_action(QAction* action);
+
+			/**
+			 * @brief query, if there are visible actions
+			 * @return true, if at least one action is visible. false else
+			 */
+			bool has_actions();
+
+			/**
+			 * @brief get all visible entries
+			 * @return ContextMenuEntry mask
+			 */
+			ContextMenuEntries get_entries() const;
+
+
+		protected:
+			void showEvent(QShowEvent* e) override;
+			void language_changed() override;
+			void skin_changed() override;
+
+
+		public slots:
+			/**
+			 * @brief show actions defined by ContextMenuEntry mask. Hide other actions
+			 * @param mask of ContextMenu::Entry
+			 */
+			void show_actions(ContextMenuEntries entries);
+
+			/**
+			 * @brief show/hide specific action
+			 * @param entry the entry of interes
+			 * @param visible show/hide
+			 */
+			void show_action(ContextMenu::Entry entry, bool visible);
+
+			/**
+			 * @brief show all actions
+			 */
+			void show_all();
+
+			void add_preference_action(PreferenceAction* action);
+
+
+		private slots:
+			/**
+			 * @brief enable actions
+			 */
+			void timed_out();
+
 	};
-
-signals:
-	void sig_new();
-	void sig_edit();
-	void sig_undo();
-	void sig_save();
-	void sig_save_as();
-	void sig_rename();
-	void sig_delete();
-	void sig_open();
-	void sig_default();
-
-
-private:
-	/**
-	 * @brief show_action
-	 * @param b
-	 * @param action
-	 */
-	void show_action(bool b, QAction* action);
-
-
-public:
-	explicit ContextMenu(QWidget *parent=nullptr);
-	virtual ~ContextMenu();
-
-	/**
-	 * @brief register a custom action
-	 * @param action the action. You have to set up the connection manually
-	 */
-	void register_action(QAction* action);
-
-	/**
-	 * @brief query, if there are visible actions
-	 * @return true, if at least one action is visible. false else
-	 */
-	bool has_actions();
-
-	/**
-	 * @brief get all visible entries
-	 * @return ContextMenuEntry mask
-	 */
-	ContextMenuEntries get_entries() const;
-
-
-protected:
-	void showEvent(QShowEvent* e) override;
-	void language_changed() override;
-	void skin_changed() override;
-
-
-public slots:
-	/**
-	 * @brief show actions defined by ContextMenuEntry mask. Hide other actions
-	 * @param mask of ContextMenu::Entry
-	 */
-	void show_actions(ContextMenuEntries entries);
-
-	/**
-	 * @brief show/hide specific action
-	 * @param entry the entry of interes
-	 * @param visible show/hide
-	 */
-	void show_action(ContextMenu::Entry entry, bool visible);
-
-	/**
-	 * @brief show all actions
-	 */
-	void show_all();
-
-	void add_preference_action(PreferenceAction* action);
-
-
-private slots:
-	/**
-	 * @brief enable actions
-	 */
-	void timed_out();
-
-};
+}
 
 #endif // CONTEXTMENU_H

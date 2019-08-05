@@ -69,6 +69,7 @@ static void parse_stn1_block(const QString& data, RadioStation& station)
 	station.frequency =			extract_regexp(data, "class=\"frq\".*>(.*)<.{0,1}span");
 	station.description =		Util::cvt_str_to_first_upper(extract_regexp(data, "class=\"desc\".*>(.*)<.{0,1}span"));
 	station.short_description = Util::cvt_str_to_first_upper(extract_regexp(data, "class=\"bra\".*>(.*)<.{0,1}span"));
+	station.home_url =			extract_regexp(data, "href=\"(.+)\"");
 
 	if(station.description.isEmpty()){
 		station.description = station.short_description;

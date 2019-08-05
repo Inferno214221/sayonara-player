@@ -135,9 +135,10 @@ void ItemModel::refresh_data(int* n_rows_before, int* n_rows_after)
 }
 
 
-CustomMimeData* ItemModel::custom_mimedata() const
+Gui::CustomMimeData* ItemModel::custom_mimedata() const
 {
-	CustomMimeData* mimedata = new CustomMimeData(this);
+	auto* mimedata = new Gui::CustomMimeData(this);
+
 	MetaDataList v_md = mimedata_tracks();
 	mimedata->set_metadata(v_md);
 

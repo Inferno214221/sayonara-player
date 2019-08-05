@@ -150,35 +150,6 @@ void GUI_TagEdit::language_changed()
 	ui->tab_widget->setTabText(2, Lang::get(Lang::Covers));
 }
 
-
-void GUI_TagEdit::commit_finished()
-{
-	ui->btn_save->setEnabled(true);
-	QMap<QString, Editor::FailReason> failed_files = m->tag_edit->failed_files();
-	if(!failed_files.isEmpty())
-	{
-		auto* fmb = new GUI_FailMessageBox(this);
-		fmb->set_failed_files(failed_files);
-		fmb->setModal(true);
-
-		connect(fmb, &GUI_FailMessageBox::sig_closed, fmb, &QObject::deleteLater);
-		fmb->show();
-	}
-}
-
-void GUI_TagEdit::progress_changed(int val)
-{
-	ui->pb_progress->setVisible(val >= 0);
-
-	if(val >= 0){
-		ui->pb_progress->setValue(val);
-	}
-
-	if(val < 0){
-		metadata_changed(m->tag_edit->metadata() );
-	}
-}
-
 int GUI_TagEdit::count() const
 {
 	return m->tag_edit->count();
@@ -209,6 +180,9 @@ void GUI_TagEdit::metadata_changed(const MetaDataList& md)
 	}
 
 	ui->btn_load_entire_album->setVisible(m->tag_edit->can_load_entire_album());
+	ui->btn_save->setEnabled(true);
+	ui->btn_undo->setEnabled(true);
+	ui->btn_undo_all->setEnabled(true);
 
 	set_current_index(0);
 	refresh_current_track();
@@ -385,6 +359,7 @@ void GUI_TagEdit::reset()
 	m->ui_tag_from_path->reset();
 	m->ui_cover_edit->reset();
 
+	ui->tab_widget->tabBar()->setEnabled(true);
 	ui->cb_album_all->setChecked(false);
 	ui->cb_artist_all->setChecked(false);
 	ui->cb_album_artist_all->setChecked(false);
@@ -513,6 +488,13 @@ void GUI_TagEdit::commit()
 		return;
 	}
 
+	ui->btn_save->setEnabled(false);
+	ui->btn_undo->setEnabled(false);
+	ui->btn_undo_all->setEnabled(false);
+	ui->btn_load_entire_album->setEnabled(false);
+
+	ui->tab_widget->tabBar()->setEnabled(false);
+
 	write_changes(m->cur_idx);
 
 	for(int i=0; i<m->tag_edit->count(); i++)
@@ -563,6 +545,38 @@ void GUI_TagEdit::commit()
 	m->tag_edit->commit();
 }
 
+
+
+void GUI_TagEdit::commit_finished()
+{
+	ui->btn_save->setEnabled(true);
+
+	QMap<QString, Editor::FailReason> failed_files = m->tag_edit->failed_files();
+	if(!failed_files.isEmpty())
+	{
+		auto* fmb = new GUI_FailMessageBox(this);
+		fmb->set_failed_files(failed_files);
+		fmb->setModal(true);
+
+		connect(fmb, &GUI_FailMessageBox::sig_closed, fmb, &QObject::deleteLater);
+		fmb->show();
+	}
+}
+
+void GUI_TagEdit::progress_changed(int val)
+{
+	ui->pb_progress->setVisible(val >= 0);
+
+	if(val >= 0){
+		ui->pb_progress->setValue(val);
+	}
+
+	if(val < 0){
+		metadata_changed(m->tag_edit->metadata() );
+	}
+}
+
+
 void GUI_TagEdit::show_close_button(bool show)
 {
 	ui->btn_close->setVisible(show);
@@ -592,4 +606,6 @@ void GUI_TagEdit::showEvent(QShowEvent *e)
 {
 	Widget::showEvent(e);
 	refresh_current_track();
+
+	ui->le_title->setFocus();
 }

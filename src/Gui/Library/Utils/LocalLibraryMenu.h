@@ -28,7 +28,10 @@
 #include <QMenu>
 #include <QAction>
 
-class PreferenceAction;
+namespace Gui
+{
+	class PreferenceAction;
+}
 
 namespace Library
 {
@@ -56,7 +59,7 @@ namespace Library
 
 		void set_show_album_covers_checked(bool checked);
 		void set_library_busy(bool b);
-		void add_preference_action(PreferenceAction* action);
+		void add_preference_action(Gui::PreferenceAction* action);
 
 	private:
 		void init_menu();

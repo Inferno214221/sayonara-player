@@ -29,7 +29,11 @@ namespace Cover
 	class Location;
 }
 
-class CustomMimeData;
+namespace Gui
+{
+	class CustomMimeData;
+}
+
 class AbstractLibrary;
 
 namespace Library
@@ -63,7 +67,7 @@ namespace Library
 			virtual Cover::Location	cover(const IndexSet& indexes) const=0;
 
 			virtual const MetaDataList&	mimedata_tracks() const=0;
-			CustomMimeData*				custom_mimedata() const;
+			Gui::CustomMimeData*		custom_mimedata() const;
 
 			void refresh_data(int* n_rows_before=nullptr, int* n_rows_after=nullptr); //returns the size difference
 

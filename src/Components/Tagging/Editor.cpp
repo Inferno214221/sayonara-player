@@ -295,12 +295,15 @@ void Editor::set_metadata(const MetaDataList& v_md)
 	m->changed_md.clear();
 	m->failed_files.clear();
 
-	m->changed_md.reserve(v_md.count());
-	for(const MetaData& md : v_md) { Q_UNUSED(md); m->changed_md << false; }
-
-	if( v_md.size() > 0)
+	if(v_md.count() > 0)
 	{
+		m->changed_md.reserve(v_md.count());
 		m->ldb = DB::Connector::instance()->library_db(v_md.first().library_id, 0);
+	}
+
+	for(const MetaData& md : v_md)
+	{
+		Q_UNUSED(md); m->changed_md << false;
 	}
 
 	emit sig_metadata_received(m->v_md);
@@ -405,10 +408,7 @@ void Editor::run()
 	for(auto i=0; i < m->v_md.count(); i++)
 	{
 		const MetaData& md = m->v_md[i];
-
-		if(n_operations >= 3){
-			emit sig_progress( ((progress++) * 100) / n_operations);
-		}
+		emit sig_progress( ((progress++) * 100) / n_operations);
 
 		if( m->changed_md[i] == false ) {
 			continue;
@@ -420,12 +420,16 @@ void Editor::run()
 			QFileInfo fi(md.filepath());
 			if(!fi.exists()){
 				m->failed_files.insert(md.filepath(), FailReason::FileNotFound);
-				sp_log(Log::Warning, this) << "Failed to write cover: File not found";
+				sp_log(Log::Warning, this) << "Failed to write tags to file: File not found";
 			}
 
 			else if(!fi.isWritable()){
 				m->failed_files.insert(md.filepath(), FailReason::FileNotWriteable);
-				sp_log(Log::Warning, this) << "Failed to write cover: File not writeable";
+				sp_log(Log::Warning, this) << "Failed to write tags to file: File not writeable";
+			}
+
+			else {
+				m->failed_files.insert(md.filepath(), FailReason::TagLibError);
 			}
 
 			continue;
@@ -463,9 +467,7 @@ void Editor::run()
 
 		pm.save(cl.audio_file_target());
 
-		if(n_operations >= 3){
-			emit sig_progress( ((progress++) * 100) / n_operations);
-		}
+		emit sig_progress( ((progress++) * 100) / n_operations);
 
 		db_covers->set_cover(cl.hash(), pm);
 	}

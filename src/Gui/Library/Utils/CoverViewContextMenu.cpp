@@ -55,19 +55,19 @@ struct CoverViewContextMenu::Private
 };
 
 CoverViewContextMenu::CoverViewContextMenu(QWidget* parent) :
-	LibraryContextMenu(parent)
+	Gui::LibraryContextMenu(parent)
 {
 	m = Pimpl::make<Private>();
 
 	init();
 }
 
-CoverViewContextMenu::~CoverViewContextMenu() {}
+CoverViewContextMenu::~CoverViewContextMenu() = default;
 
 
 void CoverViewContextMenu::init()
 {
-	this->add_preference_action(new CoverPreferenceAction(this));
+	this->add_preference_action(new Gui::CoverPreferenceAction(this));
 	this->addSeparator();
 
 	// insert everything before the preferences

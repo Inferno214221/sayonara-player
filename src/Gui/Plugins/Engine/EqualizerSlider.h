@@ -26,56 +26,59 @@
 
 class QLabel;
 
-/**
- * @brief The EqSlider class
- * @ingroup Equalizer
- */
-class EqualizerSlider :
-	public Gui::Slider
+namespace Gui
 {
-	Q_OBJECT
-	PIMPL(EqualizerSlider)
+	/**
+	 * @brief The EqSlider class
+	 * @ingroup Equalizer
+	 */
+	class EqualizerSlider :
+		public Gui::Slider
+	{
+		Q_OBJECT
+		PIMPL(EqualizerSlider)
 
-	signals:
-		void sig_value_changed(int idx, int val);
+		signals:
+			void sig_value_changed(int idx, int val);
 
-	public:
-		explicit EqualizerSlider(QWidget* parent);
-		virtual ~EqualizerSlider();
+		public:
+			explicit EqualizerSlider(QWidget* parent);
+			virtual ~EqualizerSlider();
 
-		/**
-		 * @brief sets everything the slider has to be aware about
-		 * @param idx the index of the slider
-		 * @param label the value label of the slider
-		 */
-		void set_label(int idx, QLabel* label);
+			/**
+			 * @brief sets everything the slider has to be aware about
+			 * @param idx the index of the slider
+			 * @param label the value label of the slider
+			 */
+			void set_label(int idx, QLabel* label);
 
-		/**
-		 * @brief get the value label
-		 * @return
-		 */
-		QLabel* label() const;
+			/**
+			 * @brief get the value label
+			 * @return
+			 */
+			QLabel* label() const;
 
-		/**
-		 * @brief get the index of the slider
-		 * @return
-		 */
-		int index() const;
+			/**
+			 * @brief get the index of the slider
+			 * @return
+			 */
+			int index() const;
 
-		/**
-		 * @brief get the gstreamer compatible value
-		 * @return
-		 */
-		double eq_value() const;
+			/**
+			 * @brief get the gstreamer compatible value
+			 * @return
+			 */
+			double eq_value() const;
 
-		QSize minimumSizeHint() const override;
+			QSize minimumSizeHint() const override;
 
-	private slots:
-		void set_zero();
+		private slots:
+			void set_zero();
 
 
-	protected:
-		void sliderChange(SliderChange change) override;
-};
+		protected:
+			void sliderChange(SliderChange change) override;
+	};
+}
 
 #endif // EQSLIDER_H

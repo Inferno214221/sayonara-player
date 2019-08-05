@@ -82,6 +82,7 @@ void GUI_InfoDialog::language_changed()
 	ui->retranslateUi(this);
 
 	prepare_info(m->md_interpretation);
+
 	ui->tab_widget->setTabText(0, Lang::get(Lang::Info));
 	ui->tab_widget->setTabText(1, Lang::get(Lang::Lyrics));
 	ui->tab_widget->setTabText(2, Lang::get(Lang::Edit));
@@ -91,6 +92,7 @@ void GUI_InfoDialog::language_changed()
 		tr("Write cover to tracks") + "..."
 	);
 }
+
 
 void GUI_InfoDialog::skin_changed()
 {
@@ -134,6 +136,7 @@ static void prepare_info_table(QTableWidget* table, const QList<StringPair>& dat
 
 	table->resizeColumnToContents(0);
 }
+
 
 static void prepare_paths(QListWidget* path_list_widget, const QStringList& paths)
 {
@@ -204,6 +207,7 @@ void GUI_InfoDialog::set_metadata(const MetaDataList& v_md, MD::Interpretation m
 	m->v_md = v_md;
 }
 
+
 bool GUI_InfoDialog::has_metadata() const
 {
 	return (m->v_md.size() > 0);
@@ -251,6 +255,7 @@ GUI_InfoDialog::Tab GUI_InfoDialog::show(GUI_InfoDialog::Tab tab)
 	return static_cast<GUI_InfoDialog::Tab>(tab_widget->currentIndex());
 }
 
+
 void GUI_InfoDialog::prepare_cover(const Cover::Location& cl)
 {
 	ui->btn_image->set_cover_location(cl);
@@ -271,10 +276,12 @@ void GUI_InfoDialog::init()
 
 	connect(tab_widget, &QTabWidget::currentChanged, this, &GUI_InfoDialog::tab_index_changed_int);
 	connect(ui->btn_write_cover_to_tracks, &QPushButton::clicked, this, &GUI_InfoDialog::write_cover_to_tracks_clicked);
-	connect(ui->btn_image, &CoverButton::sig_rejected, this, &GUI_InfoDialog::write_cover_to_tracks_clicked);
-	connect(ui->btn_image, &CoverButton::sig_cover_changed, this, &GUI_InfoDialog::cover_changed);
+	connect(ui->btn_image, &Gui::CoverButton::sig_rejected, this, &GUI_InfoDialog::write_cover_to_tracks_clicked);
+	connect(ui->btn_image, &Gui::CoverButton::sig_cover_changed, this, &GUI_InfoDialog::cover_changed);
 
 	ui->btn_image->setStyleSheet("QPushButton:hover {background-color: transparent;}");
+
+	this->setModal(false);
 }
 
 
@@ -289,6 +296,7 @@ void GUI_InfoDialog::init_tag_edit()
 		connect(m->ui_tag_edit, &GUI_TagEdit::sig_cancelled, this, &GUI_InfoDialog::close);
 	}
 }
+
 
 void GUI_InfoDialog::init_lyrics()
 {
@@ -334,16 +342,19 @@ void GUI_InfoDialog::tab_index_changed(GUI_InfoDialog::Tab idx)
 	}
 }
 
+
 void GUI_InfoDialog::write_cover_to_tracks_clicked()
 {
 	show_cover_edit_tab();
 }
+
 
 void GUI_InfoDialog::cover_changed()
 {
 	int w = ui->btn_image->width();
 	ui->btn_image->resize(w, w);
 }
+
 
 void GUI_InfoDialog::show_info_tab()
 {
@@ -354,6 +365,7 @@ void GUI_InfoDialog::show_info_tab()
 	prepare_cover(m->cl);
 }
 
+
 void GUI_InfoDialog::show_lyrics_tab()
 {
 	init_lyrics();
@@ -363,6 +375,7 @@ void GUI_InfoDialog::show_lyrics_tab()
 	m->ui_lyrics->set_metadata(m->v_md.first());
 	m->ui_lyrics->show();
 }
+
 
 void GUI_InfoDialog::show_tag_edit_tab()
 {
@@ -403,6 +416,7 @@ void GUI_InfoDialog::show_tag_edit_tab()
 	m->ui_tag_edit->show();
 }
 
+
 void GUI_InfoDialog::show_cover_edit_tab()
 {
 	auto tab = show(GUI_InfoDialog::Tab::Edit);
@@ -412,6 +426,7 @@ void GUI_InfoDialog::show_cover_edit_tab()
 	}
 }
 
+
 void GUI_InfoDialog::closeEvent(QCloseEvent* e)
 {
 	Dialog::closeEvent(e);
@@ -419,6 +434,7 @@ void GUI_InfoDialog::closeEvent(QCloseEvent* e)
 	m->v_md.clear();
 	m->info_dialog_container->info_dialog_closed();
 }
+
 
 void GUI_InfoDialog::showEvent(QShowEvent *e)
 {
@@ -428,5 +444,3 @@ void GUI_InfoDialog::showEvent(QShowEvent *e)
 
 	Dialog::showEvent(e);
 }
-
-

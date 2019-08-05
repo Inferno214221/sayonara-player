@@ -25,67 +25,71 @@
 
 #include <QMimeData>
 
-/**
- * @brief Mimedata class for drag and dropping metadata
- * @ingroup GUIHelper
- */
-class CustomMimeData : public QMimeData
+
+namespace Gui
 {
-
-private:
-	PIMPL(CustomMimeData)
-
-	CustomMimeData(const void* p);
-	const void* ptr() const;
-
-public:
 	/**
-	 * @brief Constructor
+	 * @brief Mimedata class for drag and dropping metadata
+	 * @ingroup MimeData
 	 */
-
-	template<typename T>
-	CustomMimeData(const T* class_instance) :
-		CustomMimeData(static_cast<const void*>(class_instance))
-	{}
-
-	virtual ~CustomMimeData();
-
-	/**
-	 * @brief Set metadata you want to drag and drop
-	 * @param v_md metadata that should be sent
-	 */
-	void set_metadata(const MetaDataList& v_md);
-
-	/**
-	 * @brief get metadata from drag and drop
-	 * @param v_md reference to metadata
-	 * @return size of metadata
-	 */
-	const MetaDataList& metadata() const;
-
-	/**
-	 * @brief check, if the custom mimedata has metadata
-	 * @return true if yes, false else
-	 */
-	bool has_metadata() const;
-
-	void set_playlist_source_index(int playlist_idx);
-	int playlist_source_index() const;
-
-	QString cover_url() const;
-	void set_cover_url(const QString& url);
-
-	template<typename T>
-	bool has_source(const T* class_instance) const
+	class CustomMimeData : public QMimeData
 	{
-		const void* void_ptr = ptr();
-		const T* p = static_cast<const T*>(void_ptr);
-		if(!p){
-			return false;
-		}
 
-		return (p == class_instance);
-	}
-};
+	private:
+		PIMPL(CustomMimeData)
+
+		CustomMimeData(const void* p);
+		const void* ptr() const;
+
+	public:
+		/**
+		 * @brief Constructor
+		 */
+
+		template<typename T>
+		CustomMimeData(const T* class_instance) :
+			CustomMimeData(static_cast<const void*>(class_instance))
+		{}
+
+		virtual ~CustomMimeData();
+
+		/**
+		 * @brief Set metadata you want to drag and drop
+		 * @param v_md metadata that should be sent
+		 */
+		void set_metadata(const MetaDataList& v_md);
+
+		/**
+		 * @brief get metadata from drag and drop
+		 * @param v_md reference to metadata
+		 * @return size of metadata
+		 */
+		const MetaDataList& metadata() const;
+
+		/**
+		 * @brief check, if the custom mimedata has metadata
+		 * @return true if yes, false else
+		 */
+		bool has_metadata() const;
+
+		void set_playlist_source_index(int playlist_idx);
+		int playlist_source_index() const;
+
+		QString cover_url() const;
+		void set_cover_url(const QString& url);
+
+		template<typename T>
+		bool has_source(const T* class_instance) const
+		{
+			const void* void_ptr = ptr();
+			const T* p = static_cast<const T*>(void_ptr);
+			if(!p){
+				return false;
+			}
+
+			return (p == class_instance);
+		}
+	};
+}
 
 #endif

@@ -26,7 +26,7 @@
 #include "Gui/Utils/ContextMenu/LibraryContextMenu.h"
 
 class DirectoryContextMenu :
-		public LibraryContextMenu
+		public Gui::LibraryContextMenu
 {
 	Q_OBJECT
 	PIMPL(DirectoryContextMenu)

@@ -44,6 +44,7 @@ struct RadioStation
 	QString short_description;
 	QString description;
 	QString image;
+	QString home_url;
 
 	QList<Stream> streams;
 };

@@ -25,9 +25,10 @@
 #include "Components/Shutdown/Shutdown.h"
 #include "Utils/Playlist/PlaylistFwd.h"
 #include "Utils/Pimpl.h"
+#include "Utils/Macros.h"
 
 class PlaylistMenu;
-#ifdef WITH_SHUTDOWN
+#ifdef SAYONARA_WITH_SHUTDOWN
 	class GUI_Shutdown;
 #endif
 
@@ -47,6 +48,12 @@ public:
 
 	void check_dynamic_play_button();
 
+protected:
+	void language_changed() override;
+	void skin_changed() override;
+	void showEvent(QShowEvent* e) override;
+	void resizeEvent(QResizeEvent* e) override;
+
 private slots:
 	void rep1_checked(bool checked);
 	void rep_all_checked(bool checked);
@@ -54,11 +61,11 @@ private slots:
 	void playlist_mode_changed();
 	void gapless_clicked();
 
-	void language_changed() override;
+
 
 	void s_playlist_mode_changed();
 
-#ifdef WITH_SHUTDOWN
+#ifdef SAYONARA_WITH_SHUTDOWN
 	void shutdown_clicked();
 	void shutdown_started(MilliSeconds time2go);
 	void shutdown_closed();

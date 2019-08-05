@@ -28,6 +28,7 @@ GUI_ConfigureStreams::GUI_ConfigureStreams(const QString& type, GUI_ConfigureStr
 	ui = new Ui::GUI_ConfigureStreams();
 	ui->setupUi(this);
 	ui->lab_error->setVisible(false);
+	ui->btn_ok->setFocus();
 
 	connect(ui->btn_ok, &QPushButton::clicked, this, &Gui::Dialog::accept);
 	connect(ui->btn_cancel, &QPushButton::clicked, this, &Gui::Dialog::reject);

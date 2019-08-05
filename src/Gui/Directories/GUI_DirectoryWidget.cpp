@@ -178,12 +178,12 @@ GUI_DirectoryWidget::GUI_DirectoryWidget(QWidget *parent) :
 		check_libraries();
 	});
 
-	QMenu* search_context_menu = new QMenu(ui->le_search);
-	QAction* action = new SearchPreferenceAction(ui->le_search);
+	auto* search_context_menu = new QMenu(ui->le_search);
+	auto* action = new Gui::SearchPreferenceAction(ui->le_search);
 	search_context_menu->addActions({action});
 
-	ContextMenuFilter* cmf = new ContextMenuFilter(ui->le_search);
-	connect(cmf, &ContextMenuFilter::sig_context_menu, search_context_menu, &QMenu::popup);
+	auto* cmf = new Gui::ContextMenuFilter(ui->le_search);
+	connect(cmf, &Gui::ContextMenuFilter::sig_context_menu, search_context_menu, &QMenu::popup);
 	ui->le_search->installEventFilter(cmf);
 
 	init_shortcuts();

@@ -1,3 +1,25 @@
+/* GUI_CoverEdit.cpp */
+
+/* Copyright (C) 2011-2019 Lucio Carreras
+ *
+ * This file is part of sayonara player
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
+
 #include "GUI_CoverEdit.h"
 #include "GUI_TagEdit.h"
 #include "Gui/TagEdit/ui_GUI_CoverEdit.h"
@@ -39,9 +61,9 @@ GUI_CoverEdit::GUI_CoverEdit(GUI_TagEdit* parent) :
 
 	connect(m->tag_edit, &Editor::sig_metadata_received, this, &GUI_CoverEdit::set_metadata);
 	connect(ui->cb_cover_all, &QCheckBox::toggled, this, &GUI_CoverEdit::cover_all_toggled);
-	connect(ui->btn_search, &QPushButton::clicked, ui->btn_cover_replacement, &CoverButton::trigger);
+	connect(ui->btn_search, &QPushButton::clicked, ui->btn_cover_replacement, &Gui::CoverButton::trigger);
 	connect(ui->btn_replace, &QPushButton::toggled, this, &GUI_CoverEdit::replace_toggled);
-	connect(ui->btn_cover_replacement, &CoverButton::sig_cover_changed, this, &GUI_CoverEdit::cover_changed);
+	connect(ui->btn_cover_replacement, &Gui::CoverButton::sig_cover_changed, this, &GUI_CoverEdit::cover_changed);
 
 	language_changed();
 }
@@ -68,6 +90,7 @@ static void refresh_all_checkbox_text(QCheckBox* cb, int count)
 		.arg(Lang::get(Lang::Tracks));
 
 	cb->setText(text);
+	cb->setEnabled(count > 0);
 }
 
 void GUI_CoverEdit::set_metadata(const MetaDataList& v_md)
@@ -103,6 +126,10 @@ QPixmap GUI_CoverEdit::selected_cover(int index) const
 
 void GUI_CoverEdit::refresh_current_track()
 {
+	if(m->cur_idx < 0 || m->cur_idx >= m->tag_edit->count()) {
+		return;
+	}
+
 	MetaData md = m->tag_edit->metadata(m->cur_idx);
 	set_cover(md);
 

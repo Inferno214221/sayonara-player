@@ -149,7 +149,7 @@
               <number>0</number>
              </property>
              <item>
-              <widget class="CoverButton" name="btn_image">
+              <widget class="Gui::CoverButton" name="btn_image">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                  <horstretch>0</horstretch>
@@ -245,7 +245,7 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>CoverButton</class>
+   <class>Gui::CoverButton</class>
    <extends>QPushButton</extends>
    <header>Gui/Covers/CoverButton.h</header>
   </customwidget>

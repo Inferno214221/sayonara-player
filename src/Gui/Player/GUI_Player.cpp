@@ -65,7 +65,7 @@ struct GUI_Player::Private
 
 	// hack for resizing the player after library show/hide:
 	// star resizing after splitter has finished painting
-	GenericFilter*				splitter_paint_event_filter=nullptr;
+	Gui::GenericFilter*			splitter_paint_event_filter=nullptr;
 
 	QPoint						initial_pos;
 	QSize						initial_sz;
@@ -197,8 +197,8 @@ void GUI_Player::init_main_splitter()
 		ui->splitter->restoreState(splitter_state_main);
 	}
 
-	m->splitter_paint_event_filter = new GenericFilter(QEvent::Paint, ui->splitter);
-	connect(m->splitter_paint_event_filter, &GenericFilter::sig_event, this, [=](QEvent::Type t)
+	m->splitter_paint_event_filter = new Gui::GenericFilter(QEvent::Paint, ui->splitter);
+	connect(m->splitter_paint_event_filter, &Gui::GenericFilter::sig_event, this, [=](QEvent::Type t)
 	{
 		Q_UNUSED(t)
 		this->splitter_painted();
@@ -207,14 +207,14 @@ void GUI_Player::init_main_splitter()
 
 void GUI_Player::init_font_change_fix()
 {
-	auto* filter = new GenericFilter(
+	auto* filter = new Gui::GenericFilter(
 		QList<QEvent::Type>{QEvent::Paint},
 		this
 	);
 
 	installEventFilter(filter);
 
-	connect(filter, &GenericFilter::sig_event, this, [=](QEvent::Type t){
+	connect(filter, &Gui::GenericFilter::sig_event, this, [=](QEvent::Type t){
 		Q_UNUSED(t)
 
 		this->removeEventFilter(filter);

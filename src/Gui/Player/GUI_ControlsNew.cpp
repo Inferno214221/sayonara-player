@@ -30,7 +30,7 @@ GUI_ControlsNew::GUI_ControlsNew(QWidget* parent) :
 	ui = new Ui::GUI_ControlsNew();
 	ui->setupUi(this);
 
-	connect(ui->lab_rating, &RatingLabel::sig_finished, this, &GUI_ControlsNew::rating_changed_here);
+	connect(ui->lab_rating, &Gui::RatingLabel::sig_finished, this, &GUI_ControlsNew::rating_changed_here);
 }
 
 GUI_ControlsNew::~GUI_ControlsNew()
@@ -50,29 +50,16 @@ QLabel* GUI_ControlsNew::lab_filesize() const { return ui->lab_filesize; }
 QLabel* GUI_ControlsNew::lab_current_time() const { return ui->lab_cur_time; }
 QLabel* GUI_ControlsNew::lab_max_time() const { return ui->lab_max_time; }
 QWidget* GUI_ControlsNew::widget_details() const { return ui->widget_details; }
-RatingLabel*GUI_ControlsNew::lab_rating() const { return ui->lab_rating; }
-SearchSlider* GUI_ControlsNew::sli_progress() const { return ui->sli_progress; }
-SearchSlider* GUI_ControlsNew::sli_volume() const { return ui->sli_volume; }
-Gui::ProgressBar* GUI_ControlsNew::sli_buffer() const { return ui->sli_buffer; }
+Gui::RatingLabel* GUI_ControlsNew::lab_rating() const { return ui->lab_rating; }
+Gui::SearchSlider* GUI_ControlsNew::sli_progress() const { return ui->sli_progress; }
+Gui::SearchSlider* GUI_ControlsNew::sli_volume() const { return ui->sli_volume; }
 QPushButton* GUI_ControlsNew::btn_mute() const { return ui->btn_mute; }
 QPushButton* GUI_ControlsNew::btn_play() const { return ui->btn_ctrl_play; }
 QPushButton* GUI_ControlsNew::btn_rec() const { return ui->btn_ctrl_rec; }
 QPushButton* GUI_ControlsNew::btn_bwd() const { return ui->btn_ctrl_bw; }
 QPushButton* GUI_ControlsNew::btn_fwd() const { return ui->btn_ctrl_fw; }
 QPushButton* GUI_ControlsNew::btn_stop() const { return ui->btn_ctrl_stop; }
-CoverButton* GUI_ControlsNew::btn_cover() const { return ui->btn_cover; }
-
-void GUI_ControlsNew::toggle_buffer_mode(bool buffering)
-{
-	if(!buffering){
-		ui->progress_widget->setCurrentIndex(0);
-	}
-
-	else {
-		ui->progress_widget->setCurrentIndex(1);
-	}
-}
-
+Gui::CoverButton* GUI_ControlsNew::btn_cover() const { return ui->btn_cover; }
 
 void GUI_ControlsNew::rating_changed_here(bool success)
 {
@@ -88,11 +75,6 @@ void GUI_ControlsNew::rating_changed_here(bool success)
 	connect(uto, &Tagging::UserOperations::sig_finished, uto, &Tagging::UserOperations::deleteLater);
 	uto->set_track_rating(md, rating);
 }
-
-//bool GUI_ControlsNew::is_resizable() const
-//{
-//	return true;
-//}
 
 bool GUI_ControlsNew::is_extern_resize_allowed() const
 {

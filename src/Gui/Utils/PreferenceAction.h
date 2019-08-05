@@ -26,98 +26,121 @@
 #include <QAction>
 
 class QPushButton;
-class PreferenceAction :
-		public QAction
+
+namespace Gui
 {
-	Q_OBJECT
-	PIMPL(PreferenceAction)
+	/**
+	 * @brief The PreferenceAction class
+	 */
+	class PreferenceAction :
+			public QAction
+	{
+		Q_OBJECT
+		PIMPL(PreferenceAction)
 
-	public:
-		PreferenceAction(const QString& display_name, const QString& identifier, QWidget* parent);
-		virtual ~PreferenceAction();
+		public:
+			PreferenceAction(const QString& display_name, const QString& identifier, QWidget* parent);
+			virtual ~PreferenceAction();
 
-		virtual QString label() const;
-		virtual QString identifier() const=0;
+			virtual QString label() const;
+			virtual QString identifier() const=0;
 
-		virtual QPushButton* create_button(QWidget* parent);
+			virtual QPushButton* create_button(QWidget* parent);
 
-	protected:
-		virtual QString display_name() const=0;
-		void language_changed();
-};
+		protected:
+			virtual QString display_name() const=0;
+			void language_changed();
+	};
 
-class LibraryPreferenceAction :
-	public PreferenceAction
-{
-	Q_OBJECT
-	public:
-		LibraryPreferenceAction(QWidget* parent);
-		~LibraryPreferenceAction();
-
-		QString display_name() const override;
-		QString identifier() const override;
-};
-
-class PlaylistPreferenceAction :
-	public PreferenceAction
-{
-	Q_OBJECT
-	public:
-		PlaylistPreferenceAction(QWidget* parent);
-		~PlaylistPreferenceAction();
-
-		QString display_name() const override;
-		QString identifier() const override;
-};
-
-class SearchPreferenceAction :
-	public PreferenceAction
-{
-	Q_OBJECT
-	public:
-		SearchPreferenceAction(QWidget* parent);
-		~SearchPreferenceAction();
-
-		QString display_name() const override;
-		QString identifier() const override;
-};
-
-class CoverPreferenceAction :
-	public PreferenceAction
-{
-	Q_OBJECT
-	public:
-		CoverPreferenceAction(QWidget* parent);
-		~CoverPreferenceAction();
-
-		QString display_name() const override;
-		QString identifier() const override;
-};
-
-
-class PlayerPreferencesAction :
-	public PreferenceAction
-{
-	Q_OBJECT
-	public:
-		PlayerPreferencesAction(QWidget* parent);
-		~PlayerPreferencesAction();
-
-		QString display_name() const override;
-		QString identifier() const override;
-};
-
-
-class StreamRecorderPreferenceAction :
+	/**
+	 * @brief The LibraryPreferenceAction class
+	 */
+	class LibraryPreferenceAction :
 		public PreferenceAction
-{
-	Q_OBJECT
-	public:
-		StreamRecorderPreferenceAction(QWidget* parent);
-		~StreamRecorderPreferenceAction();
+	{
+		Q_OBJECT
+		public:
+			LibraryPreferenceAction(QWidget* parent);
+			~LibraryPreferenceAction();
 
-		QString display_name() const override;
-		QString identifier() const override;
-};
+			QString display_name() const override;
+			QString identifier() const override;
+	};
+
+	/**
+	 * @brief The PlaylistPreferenceAction class
+	 */
+	class PlaylistPreferenceAction :
+		public PreferenceAction
+	{
+		Q_OBJECT
+		public:
+			PlaylistPreferenceAction(QWidget* parent);
+			~PlaylistPreferenceAction();
+
+			QString display_name() const override;
+			QString identifier() const override;
+	};
+
+	/**
+	 * @brief The SearchPreferenceAction class
+	 */
+	class SearchPreferenceAction :
+		public PreferenceAction
+	{
+		Q_OBJECT
+		public:
+			SearchPreferenceAction(QWidget* parent);
+			~SearchPreferenceAction();
+
+			QString display_name() const override;
+			QString identifier() const override;
+	};
+
+	/**
+	 * @brief The CoverPreferenceAction class
+	 */
+	class CoverPreferenceAction :
+		public PreferenceAction
+	{
+		Q_OBJECT
+		public:
+			CoverPreferenceAction(QWidget* parent);
+			~CoverPreferenceAction();
+
+			QString display_name() const override;
+			QString identifier() const override;
+	};
+
+	/**
+	 * @brief The PlayerPreferencesAction class
+	 */
+	class PlayerPreferencesAction :
+		public PreferenceAction
+	{
+		Q_OBJECT
+		public:
+			PlayerPreferencesAction(QWidget* parent);
+			~PlayerPreferencesAction();
+
+			QString display_name() const override;
+			QString identifier() const override;
+	};
+
+	/**
+	 * @brief The StreamRecorderPreferenceAction class
+	 */
+	class StreamRecorderPreferenceAction :
+			public PreferenceAction
+	{
+		Q_OBJECT
+		public:
+			StreamRecorderPreferenceAction(QWidget* parent);
+			~StreamRecorderPreferenceAction();
+
+			QString display_name() const override;
+			QString identifier() const override;
+	};
+}
 
 #endif // PREFERENCEACTION_H

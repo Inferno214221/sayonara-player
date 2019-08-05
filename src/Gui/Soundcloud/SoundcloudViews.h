@@ -33,7 +33,7 @@ namespace SC
 		Q_OBJECT
 		public:
 			using ::Library::TrackView::TrackView;
-			LibraryContextMenu::Entries context_menu_entries() const override;
+			Gui::LibraryContextMenu::Entries context_menu_entries() const override;
 	};
 
 	class AlbumView : public ::Library::AlbumView
@@ -41,7 +41,7 @@ namespace SC
 		Q_OBJECT
 		public:
 			using ::Library::AlbumView::AlbumView;
-			LibraryContextMenu::Entries context_menu_entries() const override;
+			Gui::LibraryContextMenu::Entries context_menu_entries() const override;
 	};
 
 	class ArtistView : public ::Library::ArtistView
@@ -49,9 +49,8 @@ namespace SC
 		Q_OBJECT
 		public:
 			using ::Library::ArtistView::ArtistView;
-			LibraryContextMenu::Entries context_menu_entries() const override;
+			Gui::LibraryContextMenu::Entries context_menu_entries() const override;
 	};
-
 }
 
 #endif // SOUNDCLOUDVIEWS_H

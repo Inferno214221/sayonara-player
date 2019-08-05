@@ -18,13 +18,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "EventFilter.h"
 
 #include <QAction>
 #include <QContextMenuEvent>
 #include <QKeyEvent>
+
+using namespace Gui;
 
 KeyPressFilter::KeyPressFilter(QObject *parent) :
 	QObject(parent)

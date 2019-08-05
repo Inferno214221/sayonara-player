@@ -33,6 +33,7 @@ class QDateTime;
 class QPixmap;
 
 #include "typedefs.h"
+#include "Utils/Macros.h"
 
 #ifndef CAST_MACROS
 	#define scast(x, y) static_cast<x>(y)

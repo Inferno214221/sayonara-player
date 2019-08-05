@@ -343,7 +343,7 @@ void PlaylistTabBar::dropEvent(QDropEvent* e)
 		return;
 	}
 
-	auto* cmd = dynamic_cast<const CustomMimeData*>(mime_data);
+	auto* cmd = dynamic_cast<const Gui::CustomMimeData*>(mime_data);
 	if(!cmd)
 	{
 		if(!mime_data->hasUrls()){

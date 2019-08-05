@@ -57,8 +57,9 @@ namespace Tagging
 
 		enum FailReason
 		{
-			FileNotWriteable,
-			FileNotFound
+			FileNotWriteable=1,
+			FileNotFound,
+			TagLibError
 		};
 
 

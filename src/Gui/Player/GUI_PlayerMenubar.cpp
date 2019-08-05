@@ -166,7 +166,7 @@ Menubar::Menubar(QWidget* parent) :
 	m->action_fullscreen->setShortcut(QKeySequence("F11"));
 	m->action_fullscreen->setChecked(GetSetting(Set::Player_Fullscreen));
 
-#ifdef WITH_SHUTDOWN
+#ifdef SAYONARA_WITH_SHUTDOWN
 	m->action_shutdown->setVisible(true);
 #else
 	m->action_shutdown->setVisible(false);

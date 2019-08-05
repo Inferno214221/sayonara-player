@@ -33,6 +33,9 @@
 
 #define NoBookmarkText QStringLiteral("--:--")
 
+using Gui::ContextMenu;
+using Gui::ContextMenuEntries;
+
 struct GUI_Bookmarks::Private
 {
 	Bookmarks*	bookmarks=nullptr;
@@ -90,15 +93,15 @@ void GUI_Bookmarks::init_ui()
 	connect(m->bookmarks, &Bookmarks::sig_next_changed, this, &GUI_Bookmarks::next_changed);
 	connect(m->bookmarks, &Bookmarks::sig_prev_changed, this, &GUI_Bookmarks::prev_changed);
 
-	connect(ui->btn_tool, &MenuToolButton::sig_new, this, &GUI_Bookmarks::new_clicked);
-	connect(ui->btn_tool, &MenuToolButton::sig_delete, this, &GUI_Bookmarks::del_clicked);
+	connect(ui->btn_tool, &Gui::MenuToolButton::sig_new, this, &GUI_Bookmarks::new_clicked);
+	connect(ui->btn_tool, &Gui::MenuToolButton::sig_delete, this, &GUI_Bookmarks::del_clicked);
 	connect(ui->btn_prev, &QPushButton::clicked, this, &GUI_Bookmarks::prev_clicked);
 	connect(ui->btn_next, &QPushButton::clicked, this, &GUI_Bookmarks::next_clicked);
 	connect(ui->cb_loop, &QCheckBox::clicked, this, &GUI_Bookmarks::loop_clicked);
 	connect(ui->cb_bookmarks, combo_current_index_changed_int, this, &GUI_Bookmarks::combo_changed);
 
-	ui->btn_tool->show_action(ContextMenu::EntryNew, false);
-	ui->btn_tool->show_action(ContextMenu::EntryDelete, false);
+	ui->btn_tool->show_action(Gui::ContextMenu::EntryNew, false);
+	ui->btn_tool->show_action(Gui::ContextMenu::EntryDelete, false);
 
 	disable_prev();
 	disable_next();

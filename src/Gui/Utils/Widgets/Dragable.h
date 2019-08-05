@@ -29,38 +29,39 @@ class QMimeData;
 class QWidget;
 class QDrag;
 
-/**
- * @brief The Dragable class
- * @ingroup GUI
- * @ingroup GUIInterfaces
- */
-class Dragable
+namespace Gui
 {
-public:
-	explicit Dragable(QWidget* parent);
-	virtual ~Dragable();
-
-	enum class ReleaseReason : char
+	/**
+	 * @brief The Dragable class
+	 * @ingroup GUI
+	 * @ingroup GUIInterfaces
+	 */
+	class Dragable
 	{
-		Dropped,
-		Destroyed
+		public:
+			explicit Dragable(QWidget* parent);
+			virtual ~Dragable();
+
+			enum class ReleaseReason : char
+			{
+				Dropped,
+				Destroyed
+			};
+
+		private:
+			PIMPL(Dragable)
+
+		protected:
+			virtual void	drag_pressed(const QPoint& p) final;
+			virtual QDrag*	drag_moving(const QPoint& p) final;
+			virtual void	drag_released(ReleaseReason reason);
+
+			virtual QMimeData*	dragable_mimedata() const=0;
+			virtual bool		is_valid_drag_position(const QPoint& p) const;
+			virtual QPixmap		drag_pixmap() const;
+			virtual bool		has_drag_label() const;
+			virtual QString		drag_label() const;
 	};
-
-private:
-	PIMPL(Dragable)
-
-protected:
-	virtual void	drag_pressed(const QPoint& p) final;
-	virtual QDrag*	drag_moving(const QPoint& p) final;
-	virtual void	drag_released(ReleaseReason reason);
-
-	virtual QMimeData*	dragable_mimedata() const=0;
-	virtual bool		is_valid_drag_position(const QPoint& p) const;
-	virtual QPixmap		drag_pixmap() const;
-	virtual bool		has_drag_label() const;
-	virtual QString		drag_label() const;
-};
-
-
+}
 
 #endif // DRAGGABLE_H

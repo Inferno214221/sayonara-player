@@ -426,6 +426,8 @@ QTreeWidgetItem* GenreView::find_genre(const QString& genre)
 
 void GenreView::init_context_menu()
 {
+	using Gui::ContextMenu;
+
 	if(m->context_menu){
 		return;
 	}
@@ -504,8 +506,8 @@ void GenreView::dropEvent(QDropEvent* e)
 	this->clearSelection();
 
 	e->accept();
-	const CustomMimeData* cmd = static_cast<const CustomMimeData*>(e->mimeData());
 
+	auto* cmd = static_cast<const Gui::CustomMimeData*>(e->mimeData());
 	if(!cmd){
 		sp_log(Log::Debug, this) << "Cannot apply genre to data";
 		return;

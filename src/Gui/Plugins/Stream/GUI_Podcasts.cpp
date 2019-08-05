@@ -25,7 +25,7 @@
 #include "Utils/Language/Language.h"
 
 GUI_Podcasts::GUI_Podcasts(QWidget *parent) :
-	GUI_AbstractStream(parent)
+	Gui::AbstractStream(parent)
 {}
 
 GUI_Podcasts::~GUI_Podcasts()
@@ -53,7 +53,7 @@ void GUI_Podcasts::init_ui()
 
 void GUI_Podcasts::retranslate_ui()
 {
-	GUI_AbstractStream::retranslate_ui();
+	Gui::AbstractStream::retranslate_ui();
 	ui->retranslateUi(this);
 }
 
@@ -72,7 +72,7 @@ QPushButton* GUI_Podcasts::btn_play()
 	return ui->btn_listen;
 }
 
-MenuToolButton* GUI_Podcasts::btn_menu()
+Gui::MenuToolButton* GUI_Podcasts::btn_menu()
 {
 	return ui->btn_tool;
 }

@@ -31,6 +31,9 @@
 #include <QFocusEvent>
 #include <QLabel>
 
+using Gui::MiniSearchEventFilter;
+using Gui::MiniSearcher;
+
 bool MiniSearchEventFilter::eventFilter(QObject* o, QEvent* e)
 {
 	switch(e->type())

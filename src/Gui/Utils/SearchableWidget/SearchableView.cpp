@@ -38,7 +38,7 @@ struct MiniSearcherViewConnector::Private
 	QMap<QChar, QString>		trigger_map;
 	QString						current_searchstring;
 
-	MiniSearcher*				mini_searcher=nullptr;
+	Gui::MiniSearcher*			mini_searcher=nullptr;
 	SearchableViewInterface*	svi=nullptr;
 };
 
@@ -53,12 +53,12 @@ MiniSearcherViewConnector::~MiniSearcherViewConnector() {}
 
 void MiniSearcherViewConnector::init()
 {
-	m->mini_searcher = new MiniSearcher(m->svi);
+	m->mini_searcher = new Gui::MiniSearcher(m->svi);
 	m->mini_searcher->set_extra_triggers(m->trigger_map);
 
-	connect(m->mini_searcher, &MiniSearcher::sig_text_changed, this, &MiniSearcherViewConnector::edit_changed);
-	connect(m->mini_searcher, &MiniSearcher::sig_find_next_row, this, &MiniSearcherViewConnector::select_next);
-	connect(m->mini_searcher, &MiniSearcher::sig_find_prev_row, this, &MiniSearcherViewConnector::select_previous);
+	connect(m->mini_searcher, &Gui::MiniSearcher::sig_text_changed, this, &MiniSearcherViewConnector::edit_changed);
+	connect(m->mini_searcher, &Gui::MiniSearcher::sig_find_next_row, this, &MiniSearcherViewConnector::select_next);
+	connect(m->mini_searcher, &Gui::MiniSearcher::sig_find_prev_row, this, &MiniSearcherViewConnector::select_previous);
 }
 
 bool MiniSearcherViewConnector::is_active() const

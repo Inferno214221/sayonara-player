@@ -29,89 +29,96 @@ class QComboBox;
 class QPushButton;
 class QLineEdit;
 class QLabel;
-class MenuToolButton;
 class AbstractStreamHandler;
 
-class StreamPreferenceAction :
-		public PreferenceAction
+namespace Gui
 {
-	Q_OBJECT
+	class MenuToolButton;
 
-public:
-	StreamPreferenceAction(QWidget* parent);
-	~StreamPreferenceAction();
-
-	QString identifier() const override;
-
-protected:
-	QString display_name() const override;
-};
-
-class GUI_AbstractStream :
-		public PlayerPlugin::Base
-{
-	Q_OBJECT
-
-public:
-	explicit GUI_AbstractStream(QWidget* parent=nullptr);
-	virtual ~GUI_AbstractStream();
-
-protected:
-	virtual void		retranslate_ui() override;
-	virtual void		play(QString url, QString station_name);
-
-	virtual QString		get_title_fallback_name() const=0;
-
-	bool				has_loading_bar() const override;
-
-	template<typename T, typename UiType>
-	void setup_parent(T* subclass, UiType** uiptr)
+	/**
+	 * @brief Currently only a Radio Search Entry action
+	 */
+	class StreamPreferenceAction :
+			public PreferenceAction
 	{
-		PlayerPlugin::Base::setup_parent(subclass, uiptr);
-		GUI_AbstractStream::init_ui();
-	}
+		Q_OBJECT
 
-private slots:
-	void edit_finished();
-	void new_finished();
+		public:
+			StreamPreferenceAction(QWidget* parent);
+			~StreamPreferenceAction();
 
-protected slots:
-	void listen_clicked();
-	void combo_idx_changed(int idx);
+			QString identifier() const override;
 
-	void new_clicked();
-	void save_clicked();
-	void edit_clicked();
-	void delete_clicked();
+		protected:
+			QString display_name() const override;
+	};
 
-	void too_many_urls_found(int n_urls, int n_max_urls);
+	class AbstractStream :
+			public PlayerPlugin::Base
+	{
+		Q_OBJECT
 
-	void stopped();
-	void error();
-	void data_available();
-	void _sl_skin_changed();
+		public:
+			explicit AbstractStream(QWidget* parent=nullptr);
+			virtual ~AbstractStream();
+
+		protected:
+			virtual void		retranslate_ui() override;
+			virtual void		play(QString url, QString station_name);
+
+			virtual QString		get_title_fallback_name() const=0;
+
+			bool				has_loading_bar() const override;
+
+			template<typename T, typename UiType>
+			void setup_parent(T* subclass, UiType** uiptr)
+			{
+				PlayerPlugin::Base::setup_parent(subclass, uiptr);
+				AbstractStream::init_ui();
+			}
+
+		private slots:
+			void edit_finished();
+			void new_finished();
+
+		protected slots:
+			void listen_clicked();
+			void combo_idx_changed(int idx);
+
+			void new_clicked();
+			void save_clicked();
+			void edit_clicked();
+			void delete_clicked();
+
+			void too_many_urls_found(int n_urls, int n_max_urls);
+
+			void stopped();
+			void error();
+			void data_available();
+			void _sl_skin_changed();
 
 
-protected:
-	virtual QComboBox* combo_stream()=0;
-	virtual QPushButton* btn_play()=0;
-	virtual MenuToolButton* btn_menu()=0;
-	virtual AbstractStreamHandler* stream_handler() const=0;
-	virtual QString url() const;
-	QString current_station() const;
-	void add_stream(const QString& name, const QString& url);
+		protected:
+			virtual QComboBox* combo_stream()=0;
+			virtual QPushButton* btn_play()=0;
+			virtual MenuToolButton* btn_menu()=0;
+			virtual AbstractStreamHandler* stream_handler() const=0;
+			virtual QString url() const;
+			QString current_station() const;
+			void add_stream(const QString& name, const QString& url);
 
-private:
-	PIMPL(GUI_AbstractStream)
+		private:
+			PIMPL(AbstractStream)
 
-	void assign_ui_vars() override;
+			void assign_ui_vars() override;
 
-	void init_connections();
-	void setup_stations();
+			void init_connections();
+			void setup_stations();
 
-	void set_searching(bool searching);
+			void set_searching(bool searching);
 
-	virtual void init_ui() override;
-};
+			virtual void init_ui() override;
+	};
+}
 
 #endif // GUI_ABSTRACT_STREAM_H_

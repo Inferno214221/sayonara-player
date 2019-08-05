@@ -243,7 +243,7 @@ void ContextMenu::show_all()
 	}
 }
 
-void ContextMenu::add_preference_action(PreferenceAction* action)
+void ContextMenu::add_preference_action(Gui::PreferenceAction* action)
 {
 	QList<QAction*> actions;
 

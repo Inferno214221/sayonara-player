@@ -36,6 +36,9 @@
 #include <QFontMetrics>
 
 namespace Algorithm=Util::Algorithm;
+namespace UtilFile=Util::File;
+
+using Gui::Dragable;
 
 struct Dragable::Private
 {
@@ -63,15 +66,15 @@ struct Dragable::Private
 		for(const QUrl& url : urls)
 		{
 			QString filename = url.toLocalFile();
-			if(Util::File::is_playlistfile(filename)){
+			if(UtilFile::is_playlistfile(filename)){
 				playlists++;
 			}
 
-			else if(Util::File::is_soundfile(filename)){
+			else if(UtilFile::is_soundfile(filename)){
 				tracks++;
 			}
 
-			else if(Util::File::is_dir(filename)){
+			else if(UtilFile::is_dir(filename)){
 				dirs++;
 			}
 		}

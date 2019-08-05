@@ -434,7 +434,7 @@ QMimeData* PlaylistItemModel::mimeData(const QModelIndexList& indexes) const
 		return nullptr;
 	}
 
-	CustomMimeData* mimedata = new CustomMimeData(this);
+	auto* mimedata = new Gui::CustomMimeData(this);
 	mimedata->set_metadata(v_md);
 	mimedata->set_playlist_source_index(m->pl->index());
 

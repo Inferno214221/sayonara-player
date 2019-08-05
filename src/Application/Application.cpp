@@ -22,10 +22,11 @@
 #include "InstanceThread.h"
 #include "MetaTypeRegistry.h"
 #include "LocalLibraryWatcher.h"
+#include "Utils/Macros.h"
 
 #include "Gui/Utils/Icons.h"
 
-#ifdef WITH_DBUS
+#ifdef SAYONARA_WITH_DBUS
 #include "DBus/DBusHandler.h"
 #endif
 
@@ -275,7 +276,7 @@ bool Application::init(const QStringList& files_to_play)
 	init_engine();
 	init_player();
 
-#ifdef WITH_DBUS
+#ifdef SAYONARA_WITH_DBUS
 	{
 		measure("DBUS")
 		new DBusHandler(m->player, this);

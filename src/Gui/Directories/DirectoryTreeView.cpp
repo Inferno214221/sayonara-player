@@ -47,6 +47,7 @@
 #include <QTimer>
 #include <QAction>
 
+#include <algorithm>
 
 struct DirectoryTreeView::Private
 {
@@ -79,7 +80,7 @@ struct DirectoryTreeView::Private
 
 DirectoryTreeView::DirectoryTreeView(QWidget *parent) :
 	SearchableTreeView(parent),
-	Dragable(this)
+	Gui::Dragable(this)
 {
 	m = Pimpl::make<Private>(this);
 
@@ -307,7 +308,7 @@ void DirectoryTreeView::mousePressEvent(QMouseEvent* event)
 			(this->selected_indexes().size()==1)
 		);
 
-		m->context_menu->show_action(LibraryContextMenu::EntryDelete, !is_root);
+		m->context_menu->show_action(Gui::LibraryContextMenu::EntryDelete, !is_root);
 		m->context_menu->exec(pos);
 	}
 }
@@ -425,7 +426,7 @@ void DirectoryTreeView::dragMoveEvent(QDragMoveEvent* event)
 		return;
 	}
 
-	const CustomMimeData* cmd = Gui::MimeData::custom_mimedata(mime_data);
+	const auto* cmd = Gui::MimeData::custom_mimedata(mime_data);
 	if(cmd)
 	{
 		if(cmd->has_source(this)){
@@ -486,7 +487,7 @@ void DirectoryTreeView::dropEvent(QDropEvent* event)
 	}
 
 	QString target_dir = m->model->filepath_origin(index);
-	const CustomMimeData* cmd = Gui::MimeData::custom_mimedata(mimedata);
+	const auto* cmd = Gui::MimeData::custom_mimedata(mimedata);
 	if(cmd)
 	{
 		handle_sayonara_drop(cmd, target_dir);
@@ -516,7 +517,7 @@ void DirectoryTreeView::dropEvent(QDropEvent* event)
 	}
 }
 
-void DirectoryTreeView::handle_sayonara_drop(const CustomMimeData* cmd, const QString& target_dir)
+void DirectoryTreeView::handle_sayonara_drop(const Gui::CustomMimeData* cmd, const QString& target_dir)
 {
 	QList<QUrl> urls = cmd->urls();
 	QStringList source_files, source_dirs;
@@ -601,7 +602,7 @@ DirectoryTreeView::DropAction DirectoryTreeView::show_drop_menu(const QPoint& po
 	return drop_action;
 }
 
-#include <algorithm>
+
 QMimeData* DirectoryTreeView::dragable_mimedata() const
 {
 	QModelIndexList selected_items = this->selected_indexes();
@@ -613,7 +614,7 @@ QMimeData* DirectoryTreeView::dragable_mimedata() const
 		}
 	}
 
-	CustomMimeData* cmd	= new CustomMimeData(this);
+	auto* cmd = new Gui::CustomMimeData(this);
 	MetaDataList v_md = this->selected_metadata();
 
 	cmd->set_metadata(v_md);

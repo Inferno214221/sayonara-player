@@ -12,7 +12,6 @@ else()
 	message("Compiling without Cotire")
 endif()
 
-
 # absolute linker paths are no longer supoorted in -l parameter
 # use -L for path and -l for library itself
 if(POLICY CMP0003)
@@ -29,12 +28,29 @@ if(POLICY CMP0071)
 	cmake_policy(SET CMP0071 NEW)
 endif()
 
-
 if(WIN32)
 	pkg_check_modules(GIO gio-windows-2.0 REQUIRED)
 endif()
 
-pkg_check_modules(TAGLIB taglib>=1.6 REQUIRED)
+
+set(TAGLIB_FOUND 0)
+
+if(WITH_SYSTEM_TAGLIB)
+	message("Looking for system taglib")
+	# overwrites TAGLIB_FOUND, TAGLIB_LIBRARY_DIRS, TAGLIB_LIBRARIES
+	pkg_check_modules(TAGLIB taglib>=1.10 REQUIRED)
+endif()
+
+if(NOT TAGLIB_FOUND)
+	message("TAGLIB: TAGLIB NOT FOUND! USING SAYONARAS TAGLIB")
+	set(WITH_SYSTEM_TAGLIB 0)
+	set(TAGLIB_LIBARARY_DIRS ${CMAKE_CURRENT_BINARY_DIR}/3rdParty/taglib/taglib)
+	set(TAGLIB_LIBRARIES tag)
+	set(SAYONARA_INTERNAL_TAGLIB 1)
+else()
+	set(SAYONARA_SYSTEM_TAGLIB 1)
+endif()
+
 pkg_check_modules(GLIB glib-2.0 REQUIRED)
 pkg_check_modules(GOBJECT gobject-2.0 REQUIRED)
 pkg_check_modules(GSTREAMER gstreamer-1.0 REQUIRED)
@@ -58,7 +74,6 @@ include_directories(${Qt5Xml_INCLUDE_DIRS})
 include_directories(${Qt5Sql_INCLUDE_DIRS})
 include_directories(${Qt5DBus_INCLUDE_DIRS})
 include_directories(${Qt5Network_INCLUDE_DIRS})
-include_directories(${GSTREAMER_INCLUDE_DIRS})
 include_directories(${GLIB_INCLUDE_DIRS})
 include_directories(${GOBJECT_INCLUDE_DIRS})
 include_directories(${GSTREAMER_INCLUDE_DIRS})
@@ -71,19 +86,23 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 add_definitions(${Qt5Core_DEFINITIONS})
 add_definitions(${QT_DEFINITIONS})
-add_definitions(-DLIB_INSTALL_DIR="${CMAKE_INSTALL_PREFIX}/lib/sayonara")
+
+link_directories(${TAGLIB_LIBRARY_DIRS})
+link_directories(${GLIB_LIBRARY_DIRS})
+link_directories(${GSTREAMER_LIBRARY_DIRS})
+
+# DBus and Shutdown
 if(WIN32)
 	message("Windows: host Will compile without dbus and shutdown support")
-
 else()
 	message("No Windows: Will compile with dbus and shutdown support")
-	add_definitions(-DWITH_DBUS)
-	add_definitions(-DWITH_SHUTDOWN)
+	set(SAYONARA_WITH_DBUS 1)
+	set(SAYONARA_WITH_SHUTDOWN 1)
 	set(WIN32 0)
 endif()
 
-link_directories(${GSTREAMER_LIBRARY_DIRS})
 
+# check execinfo for FreeBSD
 if(WIN32)
 	link_directories(${GIO_LIBRARY_DIRS})
 elseif(${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
@@ -94,10 +113,8 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
 	set(OS_LIBRARIES ${execinfo_LIB})
 endif()
 
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTOUIC OFF)
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+# Check demangle
 include(CheckIncludeFileCXX)
 check_include_file_cxx("cxxabi.h" HAVE_CXX_ABI)
 if(${HAVE_CXX_ABI})
@@ -107,6 +124,13 @@ else()
 	message("Demangle not found")
 endif()
 
+configure_file(Macros.h.in "${CMAKE_CURRENT_BINARY_DIR}/Utils/Macros.h" @ONLY)
+
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC OFF)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+add_subdirectory(3rdParty)
 add_subdirectory(Application)
 add_subdirectory(Components)
 add_subdirectory(Database)

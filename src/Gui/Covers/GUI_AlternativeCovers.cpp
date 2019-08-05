@@ -106,7 +106,7 @@ void GUI_AlternativeCovers::init_ui()
 		}
 
 		{ // add preference button
-			CoverPreferenceAction* cpa = new CoverPreferenceAction(this);
+			auto* cpa = new Gui::CoverPreferenceAction(this);
 			QPushButton* pref_button = cpa->create_button(this);
 			pref_button->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
 			ui->layout_server->addWidget(pref_button);
@@ -329,7 +329,7 @@ void GUI_AlternativeCovers::open_file_dialog()
 		dir = cl.local_path_dir();
 	}
 
-	ImageSelectionDialog* dialog = new ImageSelectionDialog(dir, this);
+	auto* dialog = new Gui::ImageSelectionDialog(dir, this);
 	if(dialog->exec())
 	{
 		QStringList selected_files = dialog->selectedFiles();

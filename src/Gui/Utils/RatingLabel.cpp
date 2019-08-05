@@ -29,7 +29,7 @@
 
 #include <algorithm>
 
-
+using Gui::RatingLabel;
 
 struct RatingLabel::Private
 {

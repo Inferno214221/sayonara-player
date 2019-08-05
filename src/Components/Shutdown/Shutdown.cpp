@@ -41,7 +41,7 @@
 #include <QProcess>
 #include <QTimer>
 
-#ifdef WITH_SHUTDOWN
+#ifdef SAYONARA_WITH_SHUTDOWN
 
 struct Shutdown::Private
 {

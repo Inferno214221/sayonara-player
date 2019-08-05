@@ -25,42 +25,45 @@
 #include "Gui/Utils/Widgets/WidgetTemplate.h"
 
 
-/**
- * @brief The MenuButton class.\n
- * A button that sends a signal when clicked. \n
- * This Class is meant for inheritance like MenuToolButton does.
- * @ingroup GUIHelper
- */
-class MenuButton :
-        public Gui::WidgetTemplate<QPushButton>
+namespace Gui
 {
-	Q_OBJECT
-
-signals:
-	void sig_triggered(QPoint);
-
-protected:
-	virtual void mousePressEvent(QMouseEvent* e) override;
-
 	/**
-	 * @brief subclasses should call this function and show their menu
-	 * @param pos position of mouse pointer
+	 * @brief The MenuButton class.\n
+	 * A button that sends a signal when clicked. \n
+	 * This Class is meant for inheritance like MenuToolButton does.
+	 * @ingroup GUIHelper
 	 */
-	virtual void show_menu(QPoint pos);
+	class MenuButton :
+			public Gui::WidgetTemplate<QPushButton>
+	{
+		Q_OBJECT
 
-	/**
-	 * @brief subclasses should reimplement this function.\n
-	 * This method should return false if the button should be disabled and false else
-	 * @return true if button should be enabled, false else
-	 */
-	virtual bool prove_enabled();
+		signals:
+			void sig_triggered(QPoint);
 
-    void skin_changed() override;
-    void language_changed() override;
+		protected:
+			virtual void mousePressEvent(QMouseEvent* e) override;
 
-public:
-	explicit MenuButton(QWidget* parent=nullptr);
-	virtual ~MenuButton();
-};
+			/**
+			 * @brief subclasses should call this function and show their menu
+			 * @param pos position of mouse pointer
+			 */
+			virtual void show_menu(QPoint pos);
+
+			/**
+			 * @brief subclasses should reimplement this function.\n
+			 * This method should return false if the button should be disabled and false else
+			 * @return true if button should be enabled, false else
+			 */
+			virtual bool prove_enabled();
+
+			void skin_changed() override;
+			void language_changed() override;
+
+		public:
+			explicit MenuButton(QWidget* parent=nullptr);
+			virtual ~MenuButton();
+	};
+}
 
 #endif // MENUBUTTON_H

@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef PLAYLISTCONTEXTMENU_H
 #define PLAYLISTCONTEXTMENU_H
 
@@ -27,7 +25,7 @@
 
 class MetaData;
 class PlaylistContextMenu :
-		public LibraryContextMenu
+		public Gui::LibraryContextMenu
 {
 	Q_OBJECT
 	PIMPL(PlaylistContextMenu)

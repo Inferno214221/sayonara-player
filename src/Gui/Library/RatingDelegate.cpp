@@ -24,6 +24,7 @@
 #include <QPainter>
 #include <QStyle>
 
+using Gui::RatingLabel;
 using namespace Library;
 
 struct RatingDelegate::Private

@@ -58,7 +58,7 @@ struct PlaylistContextMenu::Private
 };
 
 PlaylistContextMenu::PlaylistContextMenu(QWidget *parent) :
-	LibraryContextMenu(parent)
+	Gui::LibraryContextMenu(parent)
 {
 	m = Pimpl::make<Private>(this);
 

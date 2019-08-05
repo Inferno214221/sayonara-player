@@ -101,9 +101,9 @@ void GUI_AbstractLibrary::language_changed() {}
 
 void GUI_AbstractLibrary::init_shortcuts()
 {
-	KeyPressFilter* kp_filter_lib = new KeyPressFilter(this);
+	auto* kp_filter_lib = new Gui::KeyPressFilter(this);
 	this->installEventFilter(kp_filter_lib);
-	connect(kp_filter_lib, &KeyPressFilter::sig_key_pressed, this, &GUI_AbstractLibrary::key_pressed);
+	connect(kp_filter_lib, &Gui::KeyPressFilter::sig_key_pressed, this, &GUI_AbstractLibrary::key_pressed);
 }
 
 

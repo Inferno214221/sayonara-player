@@ -112,10 +112,10 @@ GUI_StationSearcher::~GUI_StationSearcher() {}
 
 void GUI_StationSearcher::init_line_edit()
 {
-	ContextMenuFilter* cmf = new ContextMenuFilter(ui->le_search);
-	QMenu* menu = new QMenu(ui->le_search);
+	auto* cmf = new Gui::ContextMenuFilter(ui->le_search);
+	auto* menu = new QMenu(ui->le_search);
 	m->context_menu = menu;
-	connect(cmf, &ContextMenuFilter::sig_context_menu, this, [menu](const QPoint& p, QAction* action)
+	connect(cmf, &Gui::ContextMenuFilter::sig_context_menu, this, [menu](const QPoint& p, QAction* action)
 	{
 		Q_UNUSED(action)
 		menu->exec(p);
@@ -257,10 +257,11 @@ void GUI_StationSearcher::stations_fetched()
 	m->set_from_to_label(ui->lab_from_to);
 
 	ui->tw_stations->setRowCount(m->stations.size());
-	ui->tw_stations->setColumnCount(3);
+	ui->tw_stations->setColumnCount(4);
 	ui->tw_stations->setHorizontalHeaderItem(0, new QTableWidgetItem(Lang::get(Lang::Name)));
 	ui->tw_stations->setHorizontalHeaderItem(1, new QTableWidgetItem(tr("Country")));
 	ui->tw_stations->setHorizontalHeaderItem(2, new QTableWidgetItem(Lang::get(Lang::Info)));
+	ui->tw_stations->setHorizontalHeaderItem(3, new QTableWidgetItem("Url"));
 
 	int row=0;
 	for(const RadioStation& station : m->stations)
@@ -268,10 +269,12 @@ void GUI_StationSearcher::stations_fetched()
 		QTableWidgetItem* item_name = new QTableWidgetItem(station.name);
 		QTableWidgetItem* item_location = new QTableWidgetItem(station.location);
 		QTableWidgetItem* item_desc = new QTableWidgetItem(station.description);
+		QTableWidgetItem* item_url = new QTableWidgetItem(station.home_url);
 
 		ui->tw_stations->setItem(row, 0, item_name);
 		ui->tw_stations->setItem(row, 1, item_location);
 		ui->tw_stations->setItem(row, 2, item_desc);
+		ui->tw_stations->setItem(row, 3, item_url);
 
 		item_name->setToolTip(station.description);
 

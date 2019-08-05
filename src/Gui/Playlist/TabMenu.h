@@ -26,7 +26,10 @@
 
 #include <QMenu>
 
-class PreferenceAction;
+namespace Gui
+{
+	class PreferenceAction;
+}
 
 class PlaylistTabMenu :
 		public Gui::WidgetTemplate<QMenu>
@@ -34,32 +37,33 @@ class PlaylistTabMenu :
 	Q_OBJECT
 	PIMPL(PlaylistTabMenu)
 
-signals:
-	void sig_delete_clicked();
-	void sig_save_clicked();
-	void sig_save_as_clicked();
-	void sig_close_clicked();
-	void sig_close_others_clicked();
-	void sig_reset_clicked();
-	void sig_rename_clicked();
-	void sig_clear_clicked();
-	void sig_open_file_clicked();
-	void sig_open_dir_clicked();
-	void sig_save_to_file_clicked();
+	signals:
+		void sig_delete_clicked();
+		void sig_save_clicked();
+		void sig_save_as_clicked();
+		void sig_close_clicked();
+		void sig_close_others_clicked();
+		void sig_reset_clicked();
+		void sig_rename_clicked();
+		void sig_clear_clicked();
+		void sig_open_file_clicked();
+		void sig_open_dir_clicked();
+		void sig_save_to_file_clicked();
 
-protected:
-	void language_changed() override;
-	void skin_changed() override;
+	protected:
+		void language_changed() override;
+		void skin_changed() override;
 
 
-public:
-	explicit PlaylistTabMenu(QWidget* parent=nullptr);
-	~PlaylistTabMenu();
+	public:
+		explicit PlaylistTabMenu(QWidget* parent=nullptr);
+		~PlaylistTabMenu();
 
-	void show_menu_items(PlaylistMenuEntries entries);
-	void show_close(bool b);
+		void show_menu_items(PlaylistMenuEntries entries);
+		void show_close(bool b);
 
-	void add_preference_action(PreferenceAction* action);
+		void add_preference_action(Gui::PreferenceAction* action);
 };
+
 
 #endif // PLAYLISTTABMENU_H

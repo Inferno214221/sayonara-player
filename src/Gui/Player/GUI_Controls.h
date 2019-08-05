@@ -52,19 +52,16 @@ public:
 	QLabel* lab_current_time() const override;
 	QLabel* lab_max_time() const override;
 	QWidget* widget_details() const override;
-	SearchSlider* sli_progress() const override;
-	SearchSlider* sli_volume() const override;
-	Gui::ProgressBar* sli_buffer() const override;
+	Gui::SearchSlider* sli_progress() const override;
+	Gui::SearchSlider* sli_volume() const override;
 	QPushButton* btn_mute() const override;
 	QPushButton* btn_play() const override;
 	QPushButton* btn_rec() const override;
 	QPushButton* btn_bwd() const override;
 	QPushButton* btn_fwd() const override;
 	QPushButton* btn_stop() const override;
-	CoverButton* btn_cover() const override;
+	Gui::CoverButton* btn_cover() const override;
 
-	void toggle_buffer_mode(bool buffering) override;
-	//bool is_resizable() const override;
 	bool is_extern_resize_allowed() const override;
 
 protected:

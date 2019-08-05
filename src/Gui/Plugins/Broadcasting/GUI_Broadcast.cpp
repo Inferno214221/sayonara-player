@@ -30,15 +30,15 @@
 #include "Gui/Utils/PreferenceAction.h"
 
 class BroadcastAction :
-		public PreferenceAction
+		public Gui::PreferenceAction
 {
-public:
-	BroadcastAction(QWidget* parent) : PreferenceAction(Lang::get(Lang::Broadcast), identifier(), parent) {}
+	public:
+		BroadcastAction(QWidget* parent) : PreferenceAction(Lang::get(Lang::Broadcast), identifier(), parent) {}
 
-	QString identifier() const override { return "broadcast"; }
+		QString identifier() const override { return "broadcast"; }
 
-protected:
-	QString display_name() const override { return Lang::get(Lang::Broadcast); }
+	protected:
+		QString display_name() const override { return Lang::get(Lang::Broadcast); }
 };
 
 struct GUI_Broadcast::Private
