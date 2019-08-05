@@ -191,6 +191,7 @@ namespace Util
 	 */
 	void set_environment(const QString& key, const QString& value);
 	void unset_environment(const QString& key);
+	QString get_environment(const char* key);
 
 }
 

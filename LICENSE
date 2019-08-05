@@ -1,6 +1,6 @@
 * Sayonara Player
 
-  Copyright (C) 2011-2016  Lucio Carreras
+  Copyright (C) 2011-2019 Lucio Carreras
  
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -38,6 +38,22 @@
     Copyright (C) 2010-2015 Christian Metscher <hakaishi@web.de>
 
   See license text below
+
+
+* Taglib sources used in this project were fetched from 
+  https://github.com/taglib/taglib
+  The Taglib project itself is located on http://taglib.org/
+
+  Authors of the Taglib project are located in 
+  	src/3rdParty/taglib/AUTHORS
+
+  Taglib is released under the LGPL and MPL License. The license texts
+  are stored in
+    src/3rdParty/taglib/COPYING.LGPL
+    src/3rdParty/taglib/COPYING.MPL
+
+  Changes made in the Taglib project can be fetched from
+    https://sayonara-player.com/sw/patches/taglib.patch
 
 
 === GPL3 License ===

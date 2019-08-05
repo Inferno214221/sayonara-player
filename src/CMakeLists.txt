@@ -125,7 +125,7 @@ include(CheckIncludeFileCXX)
 check_include_file_cxx("cxxabi.h" HAVE_CXX_ABI)
 if(${HAVE_CXX_ABI})
 	# Macros.h.in
-	set(SAYONARA_CXX_ABI 1)
+	set(SAYONARA_HAS_CXX_ABI 1)
 	message("Compile with demangle")
 else()
 	message("Demangle not found")

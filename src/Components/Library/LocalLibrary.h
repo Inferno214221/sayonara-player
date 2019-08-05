@@ -63,7 +63,7 @@ public slots:
 	void import_files_to(const QStringList& files, const QString& target_dir);
 
 protected slots:
-	void library_reloading_state_new_block();
+	void reload_thread_new_block();
 	void reload_thread_finished();
 	void search_mode_changed();
 	void show_album_artists_changed();
@@ -87,11 +87,6 @@ private:
 	void get_album_by_id(AlbumId album_id, Album& album) override;
 	void get_artist_by_id(ArtistId artist_id, Artist& artist) override;
 
-	void update_track(const MetaData& md) override;
-	void update_tracks(const MetaDataList& v_md) override;
-	void update_album(const Album& album) override;
-
-	void insert_tracks(const MetaDataList& v_md) override;
 	void apply_db_fixes();
 	void init_reload_thread();
 

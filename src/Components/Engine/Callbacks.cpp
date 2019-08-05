@@ -553,18 +553,17 @@ void Callbacks::source_ready(GstURIDecodeBin* bin, GstElement* source, gpointer 
 
 	if(is_source_soup(source))
 	{
-		Proxy* proxy = Proxy::instance();
-		if(proxy->active())
+		if(Proxy::active())
 		{
-			sp_log(Log::Develop, "Engine Callback") << "Will use proxy: " << proxy->full_url();
+			sp_log(Log::Develop, "Engine Callback") << "Will use proxy: " << Proxy::full_url();
 
-			if(proxy->has_username())
+			if(Proxy::has_username())
 			{
-				sp_log(Log::Develop, "Engine Callback") << "Will use proxy username: " << proxy->username();
+				sp_log(Log::Develop, "Engine Callback") << "Will use proxy username: " << Proxy::username();
 
 				EngineUtils::set_values(source,
-						"proxy-id", proxy->username().toLocal8Bit().data(),
-						"proxy-pw", proxy->password().toLocal8Bit().data());
+						"proxy-id", Proxy::username().toLocal8Bit().data(),
+						"proxy-pw", Proxy::password().toLocal8Bit().data());
 			}
 		}
 	}

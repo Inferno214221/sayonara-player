@@ -18,10 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "Utils/Utils.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Logger/LogListener.h"
-#include "Utils/Utils.h"
+
 
 #include <QString>
 #include <QStringList>

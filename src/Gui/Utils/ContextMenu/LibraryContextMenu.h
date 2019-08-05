@@ -105,6 +105,7 @@ namespace Gui
 		void set_action_shortcut(LibraryContextMenu::Entry entry, const QString& shortcut);
 
 		void set_extensions(const ExtensionSet& extensions);
+		void set_selection_count(int num_selections);
 
 		QKeySequence shortcut(LibraryContextMenu::Entry entry) const;
 

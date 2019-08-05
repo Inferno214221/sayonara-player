@@ -59,8 +59,7 @@ CoverViewPixmapCache::CoverViewPixmapCache()
 	m = Pimpl::make<Private>();
 }
 
-CoverViewPixmapCache::~CoverViewPixmapCache() {}
-
+CoverViewPixmapCache::~CoverViewPixmapCache() = default;
 
 bool CoverViewPixmapCache::has_pixmap(const Hash& hash) const
 {
@@ -78,6 +77,7 @@ void CoverViewPixmapCache::add_pixmap(const Hash& hash, const QPixmap& pm)
 		return;
 	}
 
+	m->valid_hashes.insert(hash);
 	m->pixmaps.insert(hash, new Util::Image(pm, QSize(200, 200)));
 }
 
@@ -105,6 +105,16 @@ QPixmap CoverViewPixmapCache::pixmap(const Hash& hash) const
 bool CoverViewPixmapCache::is_outdated(const Hash& hash) const
 {
 	return (!m->valid_hashes.contains(hash));
+}
+
+void CoverViewPixmapCache::set_outdated(const Hash& hash)
+{
+	m->valid_hashes.remove(hash);
+}
+
+void CoverViewPixmapCache::set_all_outdated()
+{
+	m->valid_hashes.clear();
 }
 
 void CoverViewPixmapCache::set_cache_size(int cache_size)

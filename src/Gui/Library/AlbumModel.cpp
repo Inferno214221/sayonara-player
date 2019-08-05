@@ -30,6 +30,7 @@
 
 #include "Components/Library/AbstractLibrary.h"
 #include "Components/Covers/CoverLocation.h"
+#include "Components/Tagging/UserTaggingOperations.h"
 
 #include "Gui/Library/Header/ColumnIndex.h"
 #include "Gui/Utils/GuiUtils.h"
@@ -120,7 +121,7 @@ QVariant AlbumModel::data(const QModelIndex& index, int role) const
 
 	int row = index.row();
 	int column = index.column();
-	ColumnIndex::Album col = (ColumnIndex::Album) column;
+	ColumnIndex::Album col = scast(ColumnIndex::Album, column);
 
 	const Album& album = albums[row];
 
@@ -211,12 +212,24 @@ bool AlbumModel::setData(const QModelIndex & index, const QVariant & value, int 
 		int row = index.row();
 		int col = index.column();
 
-		if(col == (int) ColumnIndex::Album::Rating)
+		if(col == scast(int, ColumnIndex::Album::Rating))
 		{
-			library()->change_album_rating(row, value.toInt());
-			emit dataChanged(index, this->index(row, columnCount() - 1));
+			const AlbumList& albums = library()->albums();
+			if(row >= 0 && row < albums.count())
+			{
+				const Album& album = albums[row];
 
-			return true;
+				auto* tagging = new Tagging::UserOperations(-1, this);
+				tagging->set_album_rating(album, value.value<Rating>());
+				connect(tagging, &Tagging::UserOperations::sig_finished, tagging, &QObject::deleteLater);
+
+				emit dataChanged(index, this->index(row, columnCount() - 1));
+
+				return true;
+			}
+
+			return false;
+
 		}
 	}
 
@@ -236,7 +249,7 @@ Qt::ItemFlags AlbumModel::flags(const QModelIndex& index) const
 	}
 
 	int col = index.column();
-	if(col == (int) ColumnIndex::Album::Rating)
+	if(col == scast(int, ColumnIndex::Album::Rating))
 	{
 		return (ItemModel::flags(index) | Qt::ItemIsEditable);
 	}
@@ -247,7 +260,7 @@ Qt::ItemFlags AlbumModel::flags(const QModelIndex& index) const
 
 int AlbumModel::searchable_column() const
 {
-	return (int) ColumnIndex::Album::Name;
+	return scast(int, ColumnIndex::Album::Name);
 }
 
 

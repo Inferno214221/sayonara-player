@@ -123,7 +123,7 @@ private slots:
 	void mute_changed(bool muted);
 
 	void track_changed(const MetaData& md);
-	void id3_tags_changed(const MetaDataList& v_md_old, const MetaDataList& v_md_new);
+	void id3_tags_changed();
 
 	void refresh_labels(const MetaData& md);
 	void refresh_current_track();

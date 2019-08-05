@@ -80,6 +80,13 @@ void UserOperations::set_track_rating(const MetaDataList& v_md, Rating rating)
 	m->editor->commit();
 }
 
+void UserOperations::set_album_rating(const Album& album, Rating rating)
+{
+	Album new_album(album);
+	new_album.rating = rating;
+	m->library_db->updateAlbum(album);
+}
+
 void UserOperations::merge_artists(const Util::Set<Id>& artist_ids, ArtistId target_artist)
 {
 	if(artist_ids.isEmpty()) {

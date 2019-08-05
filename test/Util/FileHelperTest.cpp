@@ -1,5 +1,7 @@
 #include <QTest>
 #include <QObject>
+#include <QRegExp>
+#include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 
 class FileHelperTest : public QObject
@@ -10,6 +12,8 @@ private slots:
 	void test();
 	void create_and_delete();
 	void common_path_test();
+
+	void system_paths_test();
 };
 
 
@@ -117,6 +121,18 @@ void FileHelperTest::common_path_test()
 	QVERIFY(ret.compare("/tmp") == 0);
 
 	Util::File::delete_files({"/tmp/path", "/tmp/other"});
+}
+
+void FileHelperTest::system_paths_test()
+{
+	QString lib_path = Util::lib_path();
+	QString share_path = Util::share_path();
+
+	QRegExp re_lib("/usr(/[A-Za-z]*)/lib(64|32)*/sayonara");
+	QRegExp re_share("/usr(/[A-Za-z]*)/share/sayonara");
+
+	QVERIFY(re_lib.indexIn(lib_path) == 0);
+	QVERIFY(re_share.indexIn(share_path) == 0);
 }
 
 QTEST_MAIN(FileHelperTest)

@@ -435,6 +435,23 @@ QStringList Util::ip_addresses()
 
 #include <cstdlib>
 
+
+QString Util::get_environment(const char* key)
+{
+#ifdef Q_OS_WIN
+	_getenv(key.toLocal8Bit().constData());
+	sp_log(Log::Info) << "Windows: Get environment variable " << key;
+#else
+	const char* c = getenv(key);
+	if(c == nullptr){
+		return QString();
+	}
+
+	return QString(c);
+#endif
+}
+
+
 void Util::set_environment(const QString& key, const QString& value)
 {
 #ifdef Q_OS_WIN
@@ -456,6 +473,7 @@ void Util::unset_environment(const QString& key)
 	unsetenv(key.toLocal8Bit().constData());
 #endif
 }
+
 
 
 QString Util::random_string(int max_chars)
@@ -496,4 +514,3 @@ QPixmap Util::cvt_bytearray_to_pixmap(const QByteArray& arr)
 	pm.loadFromData(arr, "JPG");
 	return pm;
 }
-

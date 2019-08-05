@@ -47,6 +47,7 @@ public:
 
 private slots:
 	void active_toggled(bool active);
+	void autosearch_clicked();
 };
 
 

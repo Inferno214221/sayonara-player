@@ -74,11 +74,11 @@ RatingLabel::~RatingLabel() {}
 
 Rating RatingLabel::calc_rating(QPoint pos) const
 {
-	double drating = (double) ((pos.x() * 1.0) / (m->icon_size + 2.0)) + 0.5;
-	Rating rating = (Rating) (drating);
+	double drating = ((pos.x() * 1.0) / (m->icon_size + 2.0)) + 0.5;
+	Rating rating = scast(Rating, drating);
 
-	rating=std::min(rating, (Rating) 5);
-	rating=std::max(rating, (Rating) 0);
+	rating=std::min(rating, Rating(5));
+	rating=std::max(rating, Rating(0));
 
 	return rating;
 }
@@ -89,14 +89,9 @@ void RatingLabel::paintEvent(QPaintEvent *e)
 
 	QPainter painter(this);
 
-	painter.save();
-	int offset_y;
+	int offset_y = m->offset_y;
 	if(m->offset_y == 0) {
 		offset_y = (this->height() - m->icon_size) / 2;
-	}
-
-	else{
-		offset_y = m->offset_y;
 	}
 
 	painter.translate(rect().x() + m->offset_x, rect().y() + offset_y );
@@ -111,8 +106,6 @@ void RatingLabel::paintEvent(QPaintEvent *e)
 		painter.drawPixmap(0, 0, m->icon_size, m->icon_size, m->pm_inactive);
 		painter.translate(m->icon_size + 2, 0);
 	}
-
-	painter.restore();
 }
 
 QSize RatingLabel::sizeHint() const

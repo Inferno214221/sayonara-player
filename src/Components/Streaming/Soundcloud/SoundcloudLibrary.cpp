@@ -414,11 +414,11 @@ void SC::Library::cover_found(const Cover::Location& cl)
 }
 
 
-void SC::Library::insert_tracks(const MetaDataList& v_md)
-{
-	Q_UNUSED(v_md)
-	return;
-}
+//void SC::Library::insert_tracks(const MetaDataList& v_md)
+//{
+//	Q_UNUSED(v_md)
+//	return;
+//}
 
 void SC::Library::insert_tracks(const MetaDataList& v_md, const ArtistList& artists, const AlbumList& albums)
 {
@@ -454,7 +454,7 @@ void SC::Library::insert_tracks(const MetaDataList& v_md, const ArtistList& arti
 
 	m->scd->store_metadata(v_md);
 
-	AbstractLibrary::insert_tracks(v_md);
+	AbstractLibrary::refresh_current_view();
 
 	refetch();
 }

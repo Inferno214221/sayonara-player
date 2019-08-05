@@ -270,7 +270,7 @@ bool Application::init(const QStringList& files_to_play)
 
 	{
 		measure("Proxy")
-		Proxy::instance()->init();
+		Proxy::init();
 	}
 
 	init_engine();

@@ -396,14 +396,16 @@ void GUI_ControlsBase::mute_changed(bool muted)
 
 // public slot:
 // id3 tags have changed
-void GUI_ControlsBase::id3_tags_changed(const MetaDataList& old_md, const MetaDataList& new_md)
+void GUI_ControlsBase::id3_tags_changed()
 {
-	IdxList idxs = old_md.findTracks(current_track().filepath());
+	auto changed_metadata = Tagging::ChangeNotifier::instance()->changed_metadata();
+
+	IdxList idxs = changed_metadata.first.findTracks(current_track().filepath());
 	if(idxs.empty()) {
 		return;
 	}
 
-	MetaData md = new_md[idxs.first()];
+	MetaData md = changed_metadata.second[idxs.first()];
 
 	refresh_labels(md);
 	set_cover_location(md);

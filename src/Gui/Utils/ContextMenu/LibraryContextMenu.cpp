@@ -358,6 +358,18 @@ void LibraryContextMenu::set_extensions(const Gui::ExtensionSet& extensions)
 	}
 }
 
+void LibraryContextMenu::set_selection_count(int num_selections)
+{
+	bool has_selections = (num_selections > 0);
+	for(auto it : m->entry_action_map)
+	{
+		it->setEnabled(has_selections);
+	}
+
+	m->entry_action_map[EntryCoverView]->setEnabled(true);
+	m->entry_action_map[EntryReload]->setEnabled(true);
+}
+
 QKeySequence LibraryContextMenu::shortcut(LibraryContextMenu::Entry entry) const
 {
 	QAction* a = get_action(entry);
