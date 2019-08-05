@@ -55,7 +55,7 @@
 	#define LOG_COL_END ""
 #endif
 
-#ifdef HAVE_CXX_ABI
+#ifdef SAYONARA_HAS_CXX_ABI
 	#include "cxxabi.h"
 #endif
 
@@ -306,7 +306,7 @@ Logger sp_log(const Log& type, const std::string& data)
 	QString class_name;
 	if(!data.empty())
 	{
-#ifdef HAVE_CXX_ABI
+#ifdef SAYONARA_HAS_CXX_ABI
 		int status;
 		char* content = abi::__cxa_demangle(data.c_str(), nullptr, nullptr, &status);
 		if(content && strnlen(content, 3) > 1){

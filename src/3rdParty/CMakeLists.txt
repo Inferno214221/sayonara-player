@@ -1,5 +1,12 @@
 project(sayonara_3rdParty)
 
+cmake_minimum_required(VERSION 2.8)
+
+# Taglib needs this policy
+if(POLICY CMP0022)
+	cmake_policy(SET CMP0022 NEW)
+endif()
+
 if(WITH_SYSTEM_TAGLIB)
 	message("Using system's taglib")
 else()
