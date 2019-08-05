@@ -46,6 +46,7 @@ public:
 	virtual QString binary() const=0;
 
 	QString		log_directory() const;
+	QString		target_directory() const;
 	QString		target_file(const MetaData& md) const;
 	void 		add_metadata(const MetaDataList& v_md);
 	int 		num_errors() const;

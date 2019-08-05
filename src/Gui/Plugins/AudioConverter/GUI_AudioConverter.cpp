@@ -205,11 +205,27 @@ void GUI_AudioConverter::convert_finished()
 
 	if(converter)
 	{
-		Message::error( QStringList
+		int num_errors = converter->num_errors();
+
+		if(num_errors > 0)
 		{
-			tr("Failed to convert %n track(s)", "", converter->num_errors()),
-			tr("Please check the log files") + ". " + Util::create_link(converter->log_directory(), Style::is_dark(), true, "file://" + converter->log_directory())
-		}.join("<br>"));
+			Message::error( QStringList
+			{
+				tr("Failed to convert %n track(s)", "", num_errors),
+				tr("Please check the log files") + ".",
+				Util::create_link(converter->log_directory(), Style::is_dark(), true, "file://" + converter->log_directory())
+			}.join("<br>"));
+		}
+
+		else
+		{
+			Message::info(QStringList
+			{
+				tr("All tracks could be converted"),
+				QString(),
+				Util::create_link(converter->target_directory(), Style::is_dark(), true)
+			}.join("<br>"));
+		}
 
 		converter->deleteLater();
 	}

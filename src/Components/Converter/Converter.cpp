@@ -75,6 +75,11 @@ QString Converter::log_directory() const
 	return Util::File::clean_filename(Util::sayonara_path("encoder-logs"));
 }
 
+QString Converter::target_directory() const
+{
+	return m->target_dir;
+}
+
 void Converter::add_metadata(const MetaDataList& v_md)
 {
 	m->v_md.clear();
