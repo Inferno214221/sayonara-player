@@ -4,6 +4,9 @@ project(sayonara)
 include(FindPkgConfig)
 include(CMake/Compiler.cmake)
 
+option(WITH_COTIRE "Building with cotire PCH and compile time optimizations" OFF)
+option(WITH_SYSTEM_TAGLIB "Use the taglib provided by the destribution, which contains critical bugs in 1.11" OFF)
+
 # absolute linker paths are no longer supoorted in -l parameter
 # use -L for path and -l for library itself
 if(POLICY CMP0003)
