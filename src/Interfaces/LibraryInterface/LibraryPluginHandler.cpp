@@ -202,7 +202,7 @@ void PluginHandler::init_library(Container* library)
 	QFrame* header_frame = library->header();
 	if(header_frame)
 	{
-		PluginCombobox* combo_box = new PluginCombobox(library->display_name(), nullptr);
+		PluginCombobox* combo_box = new PluginCombobox(library->display_name(), header_frame);
 
 		QLayout* layout = new QVBoxLayout(header_frame);
 		layout->setContentsMargins(0, 0, 0, 0);

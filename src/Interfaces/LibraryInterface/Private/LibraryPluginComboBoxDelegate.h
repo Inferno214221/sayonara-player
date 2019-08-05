@@ -8,8 +8,11 @@ class LibraryPluginComboBoxDelegate :
 {
 	Q_OBJECT
 
+	private:
+		QWidget* mParent=nullptr;
+
 	public:
-		explicit LibraryPluginComboBoxDelegate(QObject* parent=nullptr);
+		explicit LibraryPluginComboBoxDelegate(QWidget* parent);
 		~LibraryPluginComboBoxDelegate();
 
 	public:
