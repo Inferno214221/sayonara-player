@@ -429,7 +429,7 @@ void Menubar::about_clicked()
 	{
 		m->about_box = new QMessageBox(this);
 		m->about_box->setParent(this);
-		m->about_box->setIconPixmap(Gui::Util::pixmap("logo.png", QSize(150, 150), true));
+		m->about_box->setIconPixmap(Gui::Util::pixmap("logo.png", Gui::Util::NoTheme, QSize(150, 150), true));
 		m->about_box->setWindowFlags(Qt::Dialog);
 		m->about_box->setModal(true);
 		m->about_box->setStandardButtons(QMessageBox::Ok);

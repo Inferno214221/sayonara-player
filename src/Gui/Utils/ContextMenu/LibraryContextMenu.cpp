@@ -203,21 +203,23 @@ void LibraryContextMenu::skin_changed()
 {
 	using namespace Gui;
 
-	QTimer::singleShot(100, this, [=]()
-	{
-		m->info_action->setIcon(Icons::icon(Icons::Info));
-		m->lyrics_action->setIcon(Icons::icon(Icons::Lyrics));
-		m->edit_action->setIcon(Icons::icon(Icons::Edit));
-		m->remove_action->setIcon(Icons::icon(Icons::Remove));
-		m->delete_action->setIcon(Icons::icon(Icons::Delete));
-		m->play_action->setIcon(Icons::icon(Icons::PlaySmall));
-		m->play_new_tab_action->setIcon(Icons::icon(Icons::PlaySmall));
-		m->play_next_action->setIcon(Icons::icon(Icons::PlaySmall));
-		m->append_action->setIcon(Icons::icon(Icons::Append));
-		m->refresh_action->setIcon(Icons::icon(Icons::Undo));
-		m->reload_library_action->setIcon(Icons::icon(Icons::Refresh));
-		m->clear_action->setIcon(Icons::icon(Icons::Clear));
-	});
+	QTimer::singleShot(100, this, &LibraryContextMenu::skin_timer_timeout);
+}
+
+void LibraryContextMenu::skin_timer_timeout()
+{
+	m->info_action->setIcon(Icons::icon(Icons::Info));
+	m->lyrics_action->setIcon(Icons::icon(Icons::Lyrics));
+	m->edit_action->setIcon(Icons::icon(Icons::Edit));
+	m->remove_action->setIcon(Icons::icon(Icons::Remove));
+	m->delete_action->setIcon(Icons::icon(Icons::Delete));
+	m->play_action->setIcon(Icons::icon(Icons::PlaySmall));
+	m->play_new_tab_action->setIcon(Icons::icon(Icons::PlaySmall));
+	m->play_next_action->setIcon(Icons::icon(Icons::PlaySmall));
+	m->append_action->setIcon(Icons::icon(Icons::Append));
+	m->refresh_action->setIcon(Icons::icon(Icons::Undo));
+	m->reload_library_action->setIcon(Icons::icon(Icons::Refresh));
+	m->clear_action->setIcon(Icons::icon(Icons::Clear));
 }
 
 LibraryContextMenu::Entries LibraryContextMenu::get_entries() const
@@ -356,6 +358,18 @@ void LibraryContextMenu::set_extensions(const Gui::ExtensionSet& extensions)
 
 		fem->insertAction(sep, a);
 	}
+}
+
+void LibraryContextMenu::set_selection_count(int num_selections)
+{
+	bool has_selections = (num_selections > 0);
+	for(auto it : m->entry_action_map)
+	{
+		it->setEnabled(has_selections);
+	}
+
+	m->entry_action_map[EntryCoverView]->setEnabled(true);
+	m->entry_action_map[EntryReload]->setEnabled(true);
 }
 
 QKeySequence LibraryContextMenu::shortcut(LibraryContextMenu::Entry entry) const

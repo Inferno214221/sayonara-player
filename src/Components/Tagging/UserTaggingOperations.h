@@ -47,6 +47,8 @@ namespace Tagging
 		void set_track_rating(const MetaData& md, Rating rating);
 		void set_track_rating(const MetaDataList& v_md, Rating rating);
 
+		void set_album_rating(const Album& album, Rating rating);
+
 		void merge_artists(const Util::Set<Id>& artist_ids, ArtistId target_artist_id);
 		void merge_albums(const Util::Set<Id>& albums_ids, AlbumId target_album_id);
 

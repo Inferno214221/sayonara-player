@@ -4,13 +4,8 @@ project(sayonara)
 include(FindPkgConfig)
 include(CMake/Compiler.cmake)
 
-if( WITH_COTIRE )
-	include(CMake/Cotire.cmake)
-	message("Compiling with Cotire")
-	add_definitions(-D__STRICT_ANSI__)
-else()
-	message("Compiling without Cotire")
-endif()
+option(WITH_COTIRE "Building with cotire PCH and compile time optimizations" OFF)
+option(WITH_SYSTEM_TAGLIB "Use the taglib provided by the destribution, which contains critical bugs in 1.11" OFF)
 
 # absolute linker paths are no longer supoorted in -l parameter
 # use -L for path and -l for library itself
@@ -28,6 +23,14 @@ if(POLICY CMP0071)
 	cmake_policy(SET CMP0071 NEW)
 endif()
 
+if( WITH_COTIRE )
+	include(CMake/Cotire.cmake)
+	message("Compiling with Cotire")
+	add_definitions(-D__STRICT_ANSI__)
+else()
+	message("Compiling without Cotire")
+endif()
+
 if(WIN32)
 	pkg_check_modules(GIO gio-windows-2.0 REQUIRED)
 endif()
@@ -42,12 +45,14 @@ if(WITH_SYSTEM_TAGLIB)
 endif()
 
 if(NOT TAGLIB_FOUND)
-	message("TAGLIB: TAGLIB NOT FOUND! USING SAYONARAS TAGLIB")
 	set(WITH_SYSTEM_TAGLIB 0)
 	set(TAGLIB_LIBARARY_DIRS ${CMAKE_CURRENT_BINARY_DIR}/3rdParty/taglib/taglib)
 	set(TAGLIB_LIBRARIES tag)
+	
+	# Macros.h.in
 	set(SAYONARA_INTERNAL_TAGLIB 1)
 else()
+	# Macros.h.in
 	set(SAYONARA_SYSTEM_TAGLIB 1)
 endif()
 
@@ -96,6 +101,7 @@ if(WIN32)
 	message("Windows: host Will compile without dbus and shutdown support")
 else()
 	message("No Windows: Will compile with dbus and shutdown support")
+	# Macros.h.in
 	set(SAYONARA_WITH_DBUS 1)
 	set(SAYONARA_WITH_SHUTDOWN 1)
 	set(WIN32 0)
@@ -118,7 +124,8 @@ endif()
 include(CheckIncludeFileCXX)
 check_include_file_cxx("cxxabi.h" HAVE_CXX_ABI)
 if(${HAVE_CXX_ABI})
-	add_definitions("-DHAVE_CXX_ABI")
+	# Macros.h.in
+	set(SAYONARA_HAS_CXX_ABI 1)
 	message("Compile with demangle")
 else()
 	message("Demangle not found")

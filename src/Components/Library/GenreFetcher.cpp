@@ -61,8 +61,8 @@ GenreFetcher::GenreFetcher(QObject* parent) :
 
 	Tagging::ChangeNotifier* mcn = Tagging::ChangeNotifier::instance();
 
-	connect(mcn, &Tagging::ChangeNotifier::sig_metadata_changed, this, &GenreFetcher::metadata_changed);
-	connect(mcn, &Tagging::ChangeNotifier::sig_metadata_deleted, this, &GenreFetcher::metadata_deleted);
+	connect(mcn, &Tagging::ChangeNotifier::sig_metadata_changed, this, &GenreFetcher::reload_genres);
+	connect(mcn, &Tagging::ChangeNotifier::sig_metadata_deleted, this, &GenreFetcher::reload_genres);
 }
 
 
@@ -103,20 +103,6 @@ Util::Set<Genre> GenreFetcher::genres() const
 	return genres;
 }
 
-void GenreFetcher::metadata_changed(const MetaDataList& v_md_old, const MetaDataList& v_md_new)
-{
-	Q_UNUSED(v_md_old)
-	Q_UNUSED(v_md_new)
-
-	reload_genres();
-}
-
-void GenreFetcher::metadata_deleted(const MetaDataList& v_md_deleted)
-{
-	Q_UNUSED(v_md_deleted)
-
-	reload_genres();
-}
 
 void GenreFetcher::create_genre(const Genre& genre)
 {

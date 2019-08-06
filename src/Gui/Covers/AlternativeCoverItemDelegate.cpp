@@ -37,7 +37,7 @@ using Cover::Location;
 AlternativeCoverItemDelegate::AlternativeCoverItemDelegate(QObject* parent) :
 	QItemDelegate(parent)
 {
-	QPixmap pm = Gui::Util::pixmap("logo.png");
+	QPixmap pm = Gui::Util::pixmap("logo.png", Gui::Util::NoTheme);
 
 	label = new QLabel();
 	label->setScaledContents(true);

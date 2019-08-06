@@ -19,6 +19,7 @@
  */
 
 #include "DirectoryDelegate.h"
+#include <QFontMetrics>
 
 DirectoryDelegate::DirectoryDelegate(QObject* parent) :
 	QItemDelegate(parent) {}
@@ -30,6 +31,8 @@ QSize DirectoryDelegate::sizeHint(const QStyleOptionViewItem &option, const QMod
 	Q_UNUSED(option)
 	Q_UNUSED(index)
 
-	return QSize(0, 20);
+	QFontMetrics fm = option.fontMetrics;
+	int h = (fm.height() + 4);
+	return QSize(0, std::min(h, 20));
 }
 

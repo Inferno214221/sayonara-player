@@ -25,27 +25,24 @@
 
 #include <QObject>
 
-class QString;
-class Proxy :
-		public QObject
+namespace Proxy
 {
-	Q_OBJECT
-	SINGLETON(Proxy)
+	void init();
+	void set_proxy();
+	void unset_proxy();
 
-	private slots:
-		void proxy_changed();
+	QString hostname();
+	int port();
+	QString username();
+	QString password();
+	bool active();
+	bool has_username();
 
-	public:
-		void init();
+	QString full_url();
 
-		QString hostname() const;
-		int port() const;
-		QString username() const;
-		QString password() const;
-		bool active() const;
-		bool has_username() const;
-
-		QString full_url() const;
+	QString env_hostname();
+	int env_port();
 };
+
 
 #endif // PROXY_H

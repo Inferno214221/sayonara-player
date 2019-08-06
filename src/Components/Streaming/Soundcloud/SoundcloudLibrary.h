@@ -54,7 +54,7 @@ namespace SC
 		void	search_artist(const QString& artist_name);
 		void	fetch_tracks_by_artist(int64_t artist_sc_id);
 		void	fetch_playlists_by_artist(int64_t artist_sc_id);
-		void	insert_tracks(const MetaDataList& v_md) override;
+		//void	insert_tracks(const MetaDataList& v_md) override;
 		void	insert_tracks(const MetaDataList& v_md, const ArtistList& artists, const AlbumList& albums);
 		void	get_track_by_id(TrackID track_id, MetaData& md) override;
 		void	get_album_by_id(AlbumId album_id, Album& album) override;
@@ -75,8 +75,8 @@ namespace SC
 		void	get_all_tracks_by_album(IdList album_ids, MetaDataList& v_md, ::Library::Filter filter) override;
 		void	get_all_tracks_by_searchstring(::Library::Filter filter, MetaDataList& v_md) override;
 
-		void	update_track(const MetaData& md) override;
-		void	update_album(const Album& album) override;
+		void	update_track(const MetaData& md);
+		void	update_album(const Album& album);
 		void	delete_tracks(const MetaDataList& v_md, ::Library::TrackDeletionMode mode) override;
 
 		void    refetch() override;

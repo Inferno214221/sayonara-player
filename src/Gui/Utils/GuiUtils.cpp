@@ -34,48 +34,106 @@
 
 using namespace Gui;
 
-static QString icon_path(const QString& icon_name)
+#include <QDir>
+#include <QDirIterator>
+
+static QStringList icon_paths(const QString& icon_name, Gui::Util::IconTheme theme)
 {
-	QString path = QString(":/Icons/") + icon_name;
-	if(path.endsWith(".svg")){
-		// alles paletti
+	if(icon_name.trimmed().isEmpty()){
+		return QStringList();
 	}
 
-	else if(path.endsWith(".png")){
-		// svg
+	QString theme_name;
+	if(theme == Gui::Util::Breeze)
+	{
+		theme_name = "BreezeIcons";
 	}
 
-	else if(!path.endsWith(".svg.png")){
-		path += ".svg.png";
+	else if(theme == Gui::Util::MintY)
+	{
+		theme_name = "MintYIcons";
 	}
 
-	return path;
+
+	QStringList paths;
+	if(theme == Gui::Util::Breeze || theme == Gui::Util::MintY)
+	{
+		QString re_string = QString(".*%1/%2-[0-9]+.*")
+			.arg(theme_name)
+			.arg(icon_name);
+
+		QRegExp re(re_string);
+
+		QDirIterator it(":/" + theme_name);
+		while(it.hasNext())
+		{
+			QString path = it.next();
+
+			if(re.indexIn(path) >= 0){
+				paths << path;
+			}
+		}
+	}
+
+	if(paths.isEmpty())
+	{
+		QString re_string = QString(".*/%1(\\.[a-z][a-z][a-z])*$").arg(icon_name);
+		QRegExp re(re_string);
+
+		QDirIterator it(":/Icons");
+		while(it.hasNext())
+		{
+			QString path = it.next();
+
+			if(re.indexIn(path) >= 0){
+				paths << path;
+			}
+		}
+	}
+
+	paths.sort();
+	return paths;
 }
 
-QIcon Util::icon(const QString& icon_name)
+QIcon Util::icon(const QString& icon_name, IconTheme theme_name)
 {
-	QString path = icon_path(icon_name);
-	QIcon icon = QIcon(path);
+	if(icon_name.isEmpty()){
+		return QIcon();
+	}
+
+	QStringList paths = icon_paths(icon_name, theme_name);
+	if(paths.isEmpty()){
+		return QIcon();
+	}
+
+	QIcon icon;
+	for(const QString& path : paths) {
+		icon.addFile(path);
+	}
 
 	if(icon.isNull()){
-		sp_log(Log::Warning, "GuiUtils") << "Icon " << path << " does not exist";
+		sp_log(Log::Warning, "GuiUtils") << "Icon " << icon_name << " does not exist";
 	}
 
 	return icon;
 }
 
-QImage Util::image(const QString& icon_name)
+QImage Util::image(const QString& icon_name, IconTheme theme_name)
 {
-	return image(icon_name, QSize(0, 0));
+	return image(icon_name, theme_name, QSize(0, 0));
 }
 
-QImage Util::image(const QString& icon_name, QSize sz, bool keep_aspect)
+QImage Util::image(const QString& icon_name, IconTheme theme_name, QSize sz, bool keep_aspect)
 {
-	QString path = icon_path(icon_name);
-	QImage image(path);
+	QStringList paths = icon_paths(icon_name, theme_name);
+	if(paths.isEmpty()){
+		return QImage();
+	}
+
+	QImage image(paths.first());
 
 	if(image.isNull()){
-		sp_log(Log::Warning, "GuiUtils") << "Pixmap " << path << " does not exist";
+		sp_log(Log::Warning, "GuiUtils") << "Pixmap " << paths.first() << " does not exist";
 	}
 
 	if(sz.width() == 0){
@@ -95,18 +153,22 @@ QImage Util::image(const QString& icon_name, QSize sz, bool keep_aspect)
 	return image;
 }
 
-QPixmap Util::pixmap(const QString& icon_name)
+QPixmap Util::pixmap(const QString& icon_name, IconTheme theme_name)
 {
-	return pixmap(icon_name, QSize(0, 0));
+	return pixmap(icon_name, theme_name, QSize(0, 0));
 }
 
-QPixmap Util::pixmap(const QString& icon_name, QSize sz, bool keep_aspect)
+QPixmap Util::pixmap(const QString& icon_name, IconTheme theme_name, QSize sz, bool keep_aspect)
 {
-	QString path = icon_path(icon_name);
-	QPixmap pixmap(path);
+	QStringList paths = icon_paths(icon_name, theme_name);
+	if(paths.isEmpty()){
+		return QPixmap();
+	}
+
+	QPixmap pixmap(paths.first());
 
 	if(pixmap.isNull()){
-		sp_log(Log::Warning, "GuiUtils") << "Pixmap " << path << " does not exist";
+		sp_log(Log::Warning, "GuiUtils") << "Pixmap " << paths.first() << " does not exist";
 	}
 
 	if(sz.width() == 0){

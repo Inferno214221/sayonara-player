@@ -45,7 +45,11 @@ namespace Library
 		int		cache_size() const;
 
 		bool is_outdated(const Hash& hash) const;
+		void set_outdated(const Hash& hash);
+		void set_all_outdated();
+
 		void set_cache_size(int cache_size);
+
 		void clear();
 	};
 }

@@ -64,10 +64,6 @@ public:
 
 public slots:
 	void reload_genres();
-
-private slots:
-	void metadata_changed(const MetaDataList& v_md_old, const MetaDataList& v_md_new);
-	void metadata_deleted(const MetaDataList& v_md_deleted);
 };
 
 

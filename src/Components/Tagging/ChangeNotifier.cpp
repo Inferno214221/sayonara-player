@@ -23,17 +23,46 @@
 
 using namespace Tagging;
 
+struct ChangeNotifier::Private
+{
+	MetaDataList v_md_old;
+	MetaDataList v_md_new;
+	MetaDataList v_md_deleted;
+};
+
 ChangeNotifier::ChangeNotifier(QObject *parent) :
-	QObject(parent) {}
+	QObject(parent)
+{
+	m = Pimpl::make<Private>();
+}
 
 ChangeNotifier::~ChangeNotifier() {}
 
 void ChangeNotifier::change_metadata(const MetaDataList& v_md_old, const MetaDataList& v_md_new)
 {
-	emit sig_metadata_changed(v_md_old, v_md_new);
+	m->v_md_old = v_md_old;
+	m->v_md_new = v_md_new;
+
+	emit sig_metadata_changed();
 }
 
 void ChangeNotifier::delete_metadata(const MetaDataList& v_md_deleted)
 {
-	emit sig_metadata_deleted(v_md_deleted);
+	m->v_md_deleted = v_md_deleted;
+
+	emit sig_metadata_deleted();
+}
+
+QPair<MetaDataList, MetaDataList> ChangeNotifier::changed_metadata() const
+{
+	QPair<MetaDataList, MetaDataList> ret;
+	ret.first = m->v_md_old;
+	ret.second = m->v_md_old;
+
+	return ret;
+}
+
+MetaDataList ChangeNotifier::deleted_metadata() const
+{
+	return m->v_md_deleted;
 }

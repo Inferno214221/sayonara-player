@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "Proxy.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Settings/SettingNotifier.h"
@@ -27,30 +25,22 @@
 #include "Utils/Crypt.h"
 #include "Utils/Logger/Logger.h"
 
-
 #include <QNetworkProxy>
 
-Proxy::Proxy() :
-	QObject()
+void Proxy::init()
 {
-	ListenSetting(Set::Proxy_Active, Proxy::proxy_changed);
-	ListenSetting(Set::Proxy_Hostname, Proxy::proxy_changed);
-	ListenSetting(Set::Proxy_Port, Proxy::proxy_changed);
-	ListenSetting(Set::Proxy_Username, Proxy::proxy_changed);
-	ListenSetting(Set::Proxy_Password, Proxy::proxy_changed);
+	Proxy::set_proxy();
 }
 
-Proxy::~Proxy() {}
-
-void Proxy::proxy_changed()
+void Proxy::set_proxy()
 {
 	QNetworkProxy proxy;
 
 	if(active())
 	{
 		proxy.setType(QNetworkProxy::HttpProxy);
-		proxy.setHostName(hostname());
-		proxy.setPort(port());
+		proxy.setHostName(Proxy::hostname());
+		proxy.setPort(Proxy::port());
 
 		if(has_username()){
 			proxy.setUser(username());
@@ -65,55 +55,48 @@ void Proxy::proxy_changed()
 		Util::set_environment("HTTPS_PROXY", url.toLocal8Bit().data());
 	}
 
-	else {
-		proxy.setType(QNetworkProxy::NoProxy);
-
-		Util::unset_environment("http_proxy");
-		Util::unset_environment("https_proxy");
-		Util::unset_environment("HTTP_PROXY");
-		Util::unset_environment("HTTPS_PROXY");
-	}
-
 	QNetworkProxy::setApplicationProxy(proxy);
 }
 
-void Proxy::init()
+void Proxy::unset_proxy()
 {
-	proxy_changed();
+	QNetworkProxy proxy;
+	proxy.setType(QNetworkProxy::NoProxy);
+	QNetworkProxy::setApplicationProxy(proxy);
 }
 
 
-QString Proxy::hostname() const
+QString Proxy::hostname()
 {
 	return GetSetting(Set::Proxy_Hostname);
 }
 
-int Proxy::port() const
+int Proxy::port()
 {
 	return GetSetting(Set::Proxy_Port);
 }
 
-QString Proxy::username() const
+QString Proxy::username()
 {
 	return GetSetting(Set::Proxy_Username);
 }
 
-QString Proxy::password() const
+QString Proxy::password()
 {
 	return Util::Crypt::decrypt(GetSetting(Set::Proxy_Password));
 }
 
-bool Proxy::active() const
+bool Proxy::active()
 {
 	return GetSetting(Set::Proxy_Active);
 }
 
-bool Proxy::has_username() const
+bool Proxy::has_username()
 {
 	return ((username() + password()).size() > 0);
 }
 
-QString Proxy::full_url() const
+QString Proxy::full_url()
 {
 	if(!active()){
 		return QString();
@@ -127,3 +110,31 @@ QString Proxy::full_url() const
 	return host_name + ":" + QString::number(port());
 }
 
+QString Proxy::env_hostname()
+{
+	QList<QNetworkProxy> proxies = QNetworkProxyFactory::systemProxyForQuery();
+	for(const QNetworkProxy& proxy : proxies)
+	{
+		QString hostname = proxy.hostName();
+		if(!hostname.isEmpty()){
+			return hostname;
+		}
+	}
+
+	return QString();
+}
+
+
+int Proxy::env_port()
+{
+	QList<QNetworkProxy> proxies = QNetworkProxyFactory::systemProxyForQuery();
+	for(const QNetworkProxy& proxy : proxies)
+	{
+		int port = proxy.port();
+		if(port > 0){
+			return port;
+		}
+	}
+
+	return 3128;
+}

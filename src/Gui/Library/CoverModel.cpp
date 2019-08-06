@@ -62,7 +62,7 @@ public:
 	CoverViewPixmapCache*		cvpc=nullptr;
 	AlbumCoverFetchThread*		cover_thread=nullptr;
 
-	QHash<Hash, QModelIndex>	indexes;
+	QHash<Hash, QModelIndex>	hash_index_map;
 	HashSet						invalid_hashes;
 	QSize						item_size;
 
@@ -179,11 +179,17 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 		case Qt::DecorationRole:
 			{
 				Hash hash = AlbumCoverFetchThread::get_hash(album);
-				m->indexes[hash] = index;
+				m->hash_index_map[hash] = index;
 
 				if(m->cvpc->has_pixmap(hash))
 				{
-					return m->cvpc->pixmap(hash);
+					QPixmap pm = m->cvpc->pixmap(hash);
+					if(m->cvpc->is_outdated(hash))
+					{
+						m->cover_thread->add_album(album);
+					}
+
+					return pm;
 				}
 
 				if(m->invalid_hashes.contains(hash)){
@@ -300,7 +306,7 @@ void CoverModel::cover_lookup_finished(bool success)
 
 void CoverModel::cover_ready(const QString& hash)
 {
-	QModelIndex index = m->indexes.value(hash);
+	QModelIndex index = m->hash_index_map.value(hash);
 	emit dataChanged(index, index);
 }
 
@@ -475,7 +481,7 @@ void CoverModel::show_artists_changed()
 
 void CoverModel::reload()
 {
-	m->cvpc->clear();
+	m->cvpc->set_all_outdated();
 	clear();
 
 	emit dataChanged(index(0,0), index(rowCount() - 1, columnCount() - 1));
@@ -485,7 +491,7 @@ void CoverModel::clear()
 {
 	m->invalid_hashes.clear();
 	m->cover_thread->clear();
-	m->indexes.clear();
+	m->hash_index_map.clear();
 }
 
 

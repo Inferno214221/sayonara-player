@@ -107,7 +107,7 @@ public slots:
 	 * @brief refetches everything from database as it is, keeping selected elements,
 	 * the user won't recognize anything at all
 	 */
-	virtual void refresh();
+	virtual void refresh_current_view();
 
 	virtual void find_track(TrackID id);
 
@@ -131,9 +131,6 @@ public slots:
 	virtual void append_fetched_tracks();
 	virtual void append_current_tracks();
 
-	/* triggered by tagedit */
-	virtual void metadata_id3_changed(const MetaDataList&, const MetaDataList&);
-
 	/* a searchfilter has been entered, nothing is emitted */
 	virtual void fetch_by_filter(Library::Filter filter, bool force);
 	virtual void fetch_tracks_by_paths(const QStringList& paths);
@@ -145,11 +142,8 @@ public slots:
 	virtual void delete_current_tracks(Library::TrackDeletionMode mode);
 	virtual void delete_all_tracks();
 
-	virtual void insert_tracks(const MetaDataList& v_md);
+	//virtual void insert_tracks(const MetaDataList& v_md);
 	virtual void import_files(const QStringList& files);
-
-	/* write new rating to database */
-	virtual void change_album_rating(int idx, Rating rating);
 
 	virtual void change_track_sortorder(Library::SortOrder s);
 	virtual void change_album_sortorder(Library::SortOrder s);
@@ -181,10 +175,6 @@ protected:
 	virtual void		get_track_by_id(TrackID track_id, MetaData& md)=0;
 	virtual void		get_album_by_id(AlbumId album_id, Album& album)=0;
 	virtual void		get_artist_by_id(ArtistId artist_id, Artist& artist)=0;
-
-	virtual void		update_track(const MetaData& md)=0;
-	virtual void		update_tracks(const MetaDataList& v_md);
-	virtual void		update_album(const Album& album)=0;
 
 	virtual bool		is_empty() const=0;
 

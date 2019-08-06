@@ -23,6 +23,7 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/Utils.h"
 #include "Utils/Crypt.h"
+#include "Utils/WebAccess/Proxy.h"
 
 GUI_ProxyPreferences::GUI_ProxyPreferences(const QString& identifier) :
 	Base(identifier)
@@ -41,6 +42,7 @@ void GUI_ProxyPreferences::init_ui()
 	setup_parent(this, &ui);
 
 	connect(ui->cb_active, &QCheckBox::toggled, this, &GUI_ProxyPreferences::active_toggled);
+	connect(ui->btn_autosearch, &QPushButton::clicked, this, &GUI_ProxyPreferences::autosearch_clicked);
 
 	revert();
 }
@@ -102,4 +104,19 @@ void GUI_ProxyPreferences::active_toggled(bool active)
 	ui->sb_port->setEnabled(active);
 	ui->le_username->setEnabled(active);
 	ui->cb_save_pw->setEnabled(active);
+}
+
+void GUI_ProxyPreferences::autosearch_clicked()
+{
+	QString hostname = Proxy::env_hostname();
+	int port = Proxy::env_port();
+
+	if(!hostname.isEmpty())
+	{
+		ui->cb_active->setChecked(true);
+		active_toggled(true);
+	}
+
+	ui->le_host->setText(hostname);
+	ui->sb_port->setValue(port);
 }

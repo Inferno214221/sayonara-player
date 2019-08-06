@@ -148,7 +148,7 @@ void LocalLibrary::show_album_artists_changed()
 		}
 	}
 
-	refresh();
+	refresh_current_view();
 }
 
 void LocalLibrary::renamed(LibraryId id)
@@ -164,11 +164,11 @@ bool LocalLibrary::is_empty() const
 	return (m->library_db->getNumTracks() <= 0);
 }
 
-void LocalLibrary::library_reloading_state_new_block()
+void LocalLibrary::reload_thread_new_block()
 {
 	m->reload_thread->pause();
 
-	this->refresh();
+	refresh_current_view();
 
 	m->reload_thread->goon();
 }
@@ -245,27 +245,6 @@ void LocalLibrary::get_artist_by_id(ArtistId artist_id, Artist& artist)
 	m->library_db->getArtistByID(artist_id, artist);
 }
 
-void LocalLibrary::update_track(const MetaData& md)
-{
-	m->library_db->updateTrack(md);
-}
-
-void LocalLibrary::update_tracks(const MetaDataList& v_md)
-{
-	m->library_db->updateTracks(v_md);
-}
-
-void LocalLibrary::update_album(const Album& album)
-{
-	m->library_db->updateAlbum(album);
-}
-
-void LocalLibrary::insert_tracks(const MetaDataList &v_md)
-{
-	m->library_db->store_metadata(v_md);
-	AbstractLibrary::insert_tracks(v_md);
-}
-
 void LocalLibrary::init_reload_thread()
 {
 	if(m->reload_thread){
@@ -278,7 +257,7 @@ void LocalLibrary::init_reload_thread()
 			this, &LocalLibrary::sig_reloading_library);
 
 	connect(m->reload_thread, &Library::ReloadThread::sig_new_block_saved,
-			this, &LocalLibrary::library_reloading_state_new_block);
+			this, &LocalLibrary::reload_thread_new_block);
 
 	connect(m->reload_thread, &Library::ReloadThread::finished,
 			this, &LocalLibrary::reload_thread_finished);

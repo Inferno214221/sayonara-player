@@ -77,7 +77,7 @@ namespace Library
 		void caching_thread_finished();
 		void copy_thread_finished();
 		void emit_status(Importer::ImportStatus status);
-		void metadata_changed(const MetaDataList& old_md, const MetaDataList& new_md);
+		void metadata_changed();
 
 	};
 }

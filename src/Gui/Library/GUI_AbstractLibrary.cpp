@@ -202,11 +202,6 @@ void GUI_AbstractLibrary::tracks_delete_clicked()
 	}
 }
 
-void GUI_AbstractLibrary::id3_tags_changed()
-{
-	m->library->refresh();
-}
-
 void GUI_AbstractLibrary::show_delete_answer(QString answer)
 {
 	Message::info(answer, Lang::get(Lang::Library));

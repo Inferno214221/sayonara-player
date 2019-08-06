@@ -54,7 +54,7 @@ void PluginCloseButton::enterEvent(QEvent* e)
 	QIcon icon;
 
 	if(Style::is_dark()){
-		icon = Gui::Util::icon("tool_grey");
+		icon = Gui::Util::icon("tool_grey", Gui::Util::NoTheme);
 	}
 
 	else{
@@ -84,8 +84,8 @@ void PluginCloseButton::set_std_icon()
 	QPixmap pixmap_disabled;
 
 	if(Style::is_dark()){
-		pixmap = Gui::Util::pixmap("tool_dark_grey");
-		pixmap_disabled = Gui::Util::pixmap("tool_disabled");
+		pixmap = Gui::Util::pixmap("tool_dark_grey", Gui::Util::NoTheme);
+		pixmap_disabled = Gui::Util::pixmap("tool_disabled", Gui::Util::NoTheme);
 		icon.addPixmap(pixmap, QIcon::Normal, QIcon::On);
 		icon.addPixmap(pixmap, QIcon::Normal, QIcon::Off);
 		icon.addPixmap(pixmap_disabled, QIcon::Disabled, QIcon::On);

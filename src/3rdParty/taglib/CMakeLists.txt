@@ -1,168 +1,390 @@
-cmake_minimum_required(VERSION 2.8.0 FATAL_ERROR)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+include_directories(
+  ${CMAKE_CURRENT_SOURCE_DIR}/toolkit
+  ${CMAKE_CURRENT_SOURCE_DIR}/asf
+  ${CMAKE_CURRENT_SOURCE_DIR}/mpeg
+  ${CMAKE_CURRENT_SOURCE_DIR}/ogg
+  ${CMAKE_CURRENT_SOURCE_DIR}/ogg/flac
+  ${CMAKE_CURRENT_SOURCE_DIR}/flac
+  ${CMAKE_CURRENT_SOURCE_DIR}/mpc
+  ${CMAKE_CURRENT_SOURCE_DIR}/mp4
+  ${CMAKE_CURRENT_SOURCE_DIR}/ogg/vorbis
+  ${CMAKE_CURRENT_SOURCE_DIR}/ogg/speex
+  ${CMAKE_CURRENT_SOURCE_DIR}/ogg/opus
+  ${CMAKE_CURRENT_SOURCE_DIR}/mpeg/id3v2
+  ${CMAKE_CURRENT_SOURCE_DIR}/mpeg/id3v2/frames
+  ${CMAKE_CURRENT_SOURCE_DIR}/mpeg/id3v1
+  ${CMAKE_CURRENT_SOURCE_DIR}/ape
+  ${CMAKE_CURRENT_SOURCE_DIR}/wavpack
+  ${CMAKE_CURRENT_SOURCE_DIR}/trueaudio
+  ${CMAKE_CURRENT_SOURCE_DIR}/riff
+  ${CMAKE_CURRENT_SOURCE_DIR}/riff/aiff
+  ${CMAKE_CURRENT_SOURCE_DIR}/riff/wav
+  ${CMAKE_CURRENT_SOURCE_DIR}/mod
+  ${CMAKE_CURRENT_SOURCE_DIR}/s3m
+  ${CMAKE_CURRENT_SOURCE_DIR}/it
+  ${CMAKE_CURRENT_SOURCE_DIR}/xm
+  ${CMAKE_CURRENT_SOURCE_DIR}/dsf
+  ${CMAKE_CURRENT_SOURCE_DIR}/dsdiff
+  ${CMAKE_SOURCE_DIR}/3rdparty
+)
 
-project(taglib)
-
-if(NOT ${CMAKE_VERSION} VERSION_LESS 2.8.12)
-  cmake_policy(SET CMP0022 OLD)
+if(ZLIB_FOUND)
+  include_directories(${ZLIB_INCLUDE_DIR})
+elseif(HAVE_ZLIB_SOURCE)
+  include_directories(${ZLIB_SOURCE})
 endif()
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
+set(tag_HDRS
+  tag.h
+  fileref.h
+  audioproperties.h
+  taglib_export.h
+  ${CMAKE_CURRENT_BINARY_DIR}/taglib_config.h
+  toolkit/taglib.h
+  toolkit/tstring.h
+  toolkit/tlist.h
+  toolkit/tlist.tcc
+  toolkit/tstringlist.h
+  toolkit/tbytevector.h
+  toolkit/tbytevectorlist.h
+  toolkit/tbytevectorstream.h
+  toolkit/tiostream.h
+  toolkit/tfile.h
+  toolkit/tfilestream.h
+  toolkit/tmap.h
+  toolkit/tmap.tcc
+  toolkit/tpropertymap.h
+  toolkit/trefcounter.h
+  toolkit/tdebuglistener.h
+  mpeg/mpegfile.h
+  mpeg/mpegproperties.h
+  mpeg/mpegheader.h
+  mpeg/xingheader.h
+  mpeg/id3v1/id3v1tag.h
+  mpeg/id3v1/id3v1genres.h
+  mpeg/id3v2/id3v2extendedheader.h
+  mpeg/id3v2/id3v2frame.h
+  mpeg/id3v2/id3v2header.h
+  mpeg/id3v2/id3v2synchdata.h
+  mpeg/id3v2/id3v2footer.h
+  mpeg/id3v2/id3v2framefactory.h
+  mpeg/id3v2/id3v2tag.h
+  mpeg/id3v2/frames/attachedpictureframe.h
+  mpeg/id3v2/frames/commentsframe.h
+  mpeg/id3v2/frames/eventtimingcodesframe.h
+  mpeg/id3v2/frames/generalencapsulatedobjectframe.h
+  mpeg/id3v2/frames/ownershipframe.h
+  mpeg/id3v2/frames/popularimeterframe.h
+  mpeg/id3v2/frames/privateframe.h
+  mpeg/id3v2/frames/relativevolumeframe.h
+  mpeg/id3v2/frames/synchronizedlyricsframe.h
+  mpeg/id3v2/frames/textidentificationframe.h
+  mpeg/id3v2/frames/uniquefileidentifierframe.h
+  mpeg/id3v2/frames/unknownframe.h
+  mpeg/id3v2/frames/unsynchronizedlyricsframe.h
+  mpeg/id3v2/frames/urllinkframe.h
+  mpeg/id3v2/frames/chapterframe.h
+  mpeg/id3v2/frames/tableofcontentsframe.h
+  mpeg/id3v2/frames/podcastframe.h
+  ogg/oggfile.h
+  ogg/oggpage.h
+  ogg/oggpageheader.h
+  ogg/xiphcomment.h
+  ogg/vorbis/vorbisfile.h
+  ogg/vorbis/vorbisproperties.h
+  ogg/flac/oggflacfile.h
+  ogg/speex/speexfile.h
+  ogg/speex/speexproperties.h
+  ogg/opus/opusfile.h
+  ogg/opus/opusproperties.h
+  flac/flacfile.h
+  flac/flacpicture.h
+  flac/flacproperties.h
+  flac/flacmetadatablock.h
+  ape/apefile.h
+  ape/apeproperties.h
+  ape/apetag.h
+  ape/apefooter.h
+  ape/apeitem.h
+  mpc/mpcfile.h
+  mpc/mpcproperties.h
+  wavpack/wavpackfile.h
+  wavpack/wavpackproperties.h
+  trueaudio/trueaudiofile.h
+  trueaudio/trueaudioproperties.h
+  riff/rifffile.h
+  riff/aiff/aifffile.h
+  riff/aiff/aiffproperties.h
+  riff/wav/wavfile.h
+  riff/wav/wavproperties.h
+  riff/wav/infotag.h
+  asf/asffile.h
+  asf/asfproperties.h
+  asf/asftag.h
+  asf/asfattribute.h
+  asf/asfpicture.h
+  mp4/mp4file.h
+  mp4/mp4atom.h
+  mp4/mp4tag.h
+  mp4/mp4item.h
+  mp4/mp4properties.h
+  mp4/mp4coverart.h
+  mod/modfilebase.h
+  mod/modfile.h
+  mod/modtag.h
+  mod/modproperties.h
+  it/itfile.h
+  it/itproperties.h
+  s3m/s3mfile.h
+  s3m/s3mproperties.h
+  xm/xmfile.h
+  xm/xmproperties.h
+  dsf/dsffile.h
+  dsf/dsfproperties.h
+  dsdiff/dsdifffile.h
+  dsdiff/dsdiffproperties.h
+  dsdiff/dsdiffdiintag.h
+)
 
-if(DEFINED ENABLE_STATIC)
-  message(FATAL_ERROR "This option is no longer available, use BUILD_SHARED_LIBS instead")
+set(mpeg_SRCS
+  mpeg/mpegfile.cpp
+  mpeg/mpegproperties.cpp
+  mpeg/mpegheader.cpp
+  mpeg/xingheader.cpp
+)
+
+set(id3v1_SRCS
+  mpeg/id3v1/id3v1tag.cpp
+  mpeg/id3v1/id3v1genres.cpp
+)
+
+set(id3v2_SRCS
+  mpeg/id3v2/id3v2framefactory.cpp
+  mpeg/id3v2/id3v2synchdata.cpp
+  mpeg/id3v2/id3v2tag.cpp
+  mpeg/id3v2/id3v2header.cpp
+  mpeg/id3v2/id3v2frame.cpp
+  mpeg/id3v2/id3v2footer.cpp
+  mpeg/id3v2/id3v2extendedheader.cpp
+  )
+
+set(frames_SRCS
+  mpeg/id3v2/frames/attachedpictureframe.cpp
+  mpeg/id3v2/frames/commentsframe.cpp
+  mpeg/id3v2/frames/eventtimingcodesframe.cpp
+  mpeg/id3v2/frames/generalencapsulatedobjectframe.cpp
+  mpeg/id3v2/frames/ownershipframe.cpp
+  mpeg/id3v2/frames/popularimeterframe.cpp
+  mpeg/id3v2/frames/privateframe.cpp
+  mpeg/id3v2/frames/relativevolumeframe.cpp
+  mpeg/id3v2/frames/synchronizedlyricsframe.cpp
+  mpeg/id3v2/frames/textidentificationframe.cpp
+  mpeg/id3v2/frames/uniquefileidentifierframe.cpp
+  mpeg/id3v2/frames/unknownframe.cpp
+  mpeg/id3v2/frames/unsynchronizedlyricsframe.cpp
+  mpeg/id3v2/frames/urllinkframe.cpp
+  mpeg/id3v2/frames/chapterframe.cpp
+  mpeg/id3v2/frames/tableofcontentsframe.cpp
+  mpeg/id3v2/frames/podcastframe.cpp
+)
+
+set(ogg_SRCS
+  ogg/oggfile.cpp
+  ogg/oggpage.cpp
+  ogg/oggpageheader.cpp
+  ogg/xiphcomment.cpp
+)
+
+set(vorbis_SRCS
+  ogg/vorbis/vorbisfile.cpp
+  ogg/vorbis/vorbisproperties.cpp
+)
+
+set(flacs_SRCS
+  flac/flacfile.cpp
+  flac/flacpicture.cpp
+  flac/flacproperties.cpp
+  flac/flacmetadatablock.cpp
+  flac/flacunknownmetadatablock.cpp
+)
+
+set(oggflacs_SRCS
+  ogg/flac/oggflacfile.cpp
+)
+
+set(mpc_SRCS
+  mpc/mpcfile.cpp
+  mpc/mpcproperties.cpp
+)
+
+set(mp4_SRCS
+  mp4/mp4file.cpp
+  mp4/mp4atom.cpp
+  mp4/mp4tag.cpp
+  mp4/mp4item.cpp
+  mp4/mp4properties.cpp
+  mp4/mp4coverart.cpp
+)
+
+set(ape_SRCS
+  ape/apetag.cpp
+  ape/apefooter.cpp
+  ape/apeitem.cpp
+  ape/apefile.cpp
+  ape/apeproperties.cpp
+)
+
+set(wavpack_SRCS
+  wavpack/wavpackfile.cpp
+  wavpack/wavpackproperties.cpp
+)
+
+set(speex_SRCS
+  ogg/speex/speexfile.cpp
+  ogg/speex/speexproperties.cpp
+)
+
+set(opus_SRCS
+  ogg/opus/opusfile.cpp
+  ogg/opus/opusproperties.cpp
+)
+
+set(trueaudio_SRCS
+  trueaudio/trueaudiofile.cpp
+  trueaudio/trueaudioproperties.cpp
+)
+
+set(asf_SRCS
+  asf/asftag.cpp
+  asf/asffile.cpp
+  asf/asfproperties.cpp
+  asf/asfattribute.cpp
+  asf/asfpicture.cpp
+)
+
+set(riff_SRCS
+  riff/rifffile.cpp
+)
+
+set(aiff_SRCS
+  riff/aiff/aifffile.cpp
+  riff/aiff/aiffproperties.cpp
+)
+
+set(wav_SRCS
+  riff/wav/wavfile.cpp
+  riff/wav/wavproperties.cpp
+  riff/wav/infotag.cpp
+)
+
+set(mod_SRCS
+  mod/modfilebase.cpp
+  mod/modfile.cpp
+  mod/modtag.cpp
+  mod/modproperties.cpp
+)
+
+set(s3m_SRCS
+  s3m/s3mfile.cpp
+  s3m/s3mproperties.cpp
+)
+
+set(it_SRCS
+  it/itfile.cpp
+  it/itproperties.cpp
+)
+
+set(xm_SRCS
+  xm/xmfile.cpp
+  xm/xmproperties.cpp
+)
+
+set(dsf_SRCS
+  dsf/dsffile.cpp
+  dsf/dsfproperties.cpp
+)
+
+set(dsdiff_SRCS
+  dsdiff/dsdifffile.cpp
+  dsdiff/dsdiffproperties.cpp
+  dsdiff/dsdiffdiintag.cpp
+)
+
+set(toolkit_SRCS
+  toolkit/tstring.cpp
+  toolkit/tstringlist.cpp
+  toolkit/tbytevector.cpp
+  toolkit/tbytevectorlist.cpp
+  toolkit/tbytevectorstream.cpp
+  toolkit/tiostream.cpp
+  toolkit/tfile.cpp
+  toolkit/tfilestream.cpp
+  toolkit/tdebug.cpp
+  toolkit/tpropertymap.cpp
+  toolkit/trefcounter.cpp
+  toolkit/tdebuglistener.cpp
+  toolkit/tzlib.cpp
+)
+
+if(HAVE_ZLIB_SOURCE)
+  set(zlib_SRCS
+    ${ZLIB_SOURCE}/adler32.c
+    ${ZLIB_SOURCE}/crc32.c
+    ${ZLIB_SOURCE}/inffast.c
+    ${ZLIB_SOURCE}/inflate.c
+    ${ZLIB_SOURCE}/inftrees.c
+    ${ZLIB_SOURCE}/zutil.c
+  )
 endif()
 
-option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
-if(APPLE)
-  option(BUILD_FRAMEWORK "Build an OS X framework" OFF)
-  if(BUILD_FRAMEWORK)
-    set(BUILD_SHARED_LIBS ON)
-    #set(CMAKE_MACOSX_RPATH 1)
-    set(FRAMEWORK_INSTALL_DIR "/Library/Frameworks" CACHE STRING "Directory to install frameworks to.")
-  endif()
-endif()
-if(NOT BUILD_SHARED_LIBS)
-  add_definitions(-DTAGLIB_STATIC)
-endif()
-option(ENABLE_STATIC_RUNTIME "Visual Studio, link with runtime statically" OFF)
+set(tag_LIB_SRCS
+  ${mpeg_SRCS} ${id3v1_SRCS} ${id3v2_SRCS} ${frames_SRCS} ${ogg_SRCS}
+  ${vorbis_SRCS} ${oggflacs_SRCS} ${mpc_SRCS} ${ape_SRCS} ${toolkit_SRCS} ${flacs_SRCS}
+  ${wavpack_SRCS} ${speex_SRCS} ${trueaudio_SRCS} ${riff_SRCS} ${aiff_SRCS} ${wav_SRCS}
+  ${asf_SRCS} ${mp4_SRCS} ${mod_SRCS} ${s3m_SRCS} ${it_SRCS} ${xm_SRCS} ${opus_SRCS} ${dsf_SRCS} ${dsdiff_SRCS}
+  ${zlib_SRCS}
+  tag.cpp
+  tagunion.cpp
+  fileref.cpp
+  audioproperties.cpp
+  tagutils.cpp
+)
 
-option(ENABLE_CCACHE "Use ccache when building libtag" OFF)
-if(ENABLE_CCACHE)
-  find_program(CCACHE_FOUND ccache)
-  if(CCACHE_FOUND)
-    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
-    set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
-  endif()
+add_library(tag ${tag_LIB_SRCS} ${tag_HDRS})
+
+if(HAVE_ZLIB AND NOT HAVE_ZLIB_SOURCE)
+  target_link_libraries(tag ${ZLIB_LIBRARIES})
 endif()
 
-option(VISIBILITY_HIDDEN "Build with -fvisibility=hidden" OFF)
-option(BUILD_TESTS "Build the test suite" OFF)
-option(BUILD_EXAMPLES "Build the examples" OFF)
-option(BUILD_BINDINGS "Build the bindings" ON)
 
-option(NO_ITUNES_HACKS "Disable workarounds for iTunes bugs" OFF)
-
-option(PLATFORM_WINRT "Enable WinRT support" OFF)
-if(PLATFORM_WINRT)
-  add_definitions(-DPLATFORM_WINRT)
+set_target_properties(tag PROPERTIES
+  VERSION ${TAGLIB_SOVERSION_MAJOR}.${TAGLIB_SOVERSION_MINOR}.${TAGLIB_SOVERSION_PATCH}
+  SOVERSION ${TAGLIB_SOVERSION_MAJOR}
+  INSTALL_NAME_DIR ${LIB_INSTALL_DIR}
+  DEFINE_SYMBOL MAKE_TAGLIB_LIB
+  INTERFACE_LINK_LIBRARIES ""
+  PUBLIC_HEADER "${tag_HDRS}"
+)
+if(VISIBILITY_HIDDEN)
+	set_target_properties(tag PROPERTIES C_VISIBILITY_PRESET hidden
+	)
 endif()
 
-add_definitions(-DHAVE_CONFIG_H)
-set(TESTS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tests/")
-
-## the following are directories where stuff will be installed to
-set(LIB_SUFFIX "" CACHE STRING "Define suffix of directory name (32/64)")
-set(EXEC_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" CACHE PATH "Base directory for executables and libraries")
-set(BIN_INSTALL_DIR "${EXEC_INSTALL_PREFIX}/bin" CACHE PATH "The subdirectory to the binaries prefix (default prefix/bin)")
-set(LIB_INSTALL_DIR "${EXEC_INSTALL_PREFIX}/lib${LIB_SUFFIX}" CACHE PATH "The subdirectory relative to the install prefix where libraries will be installed (default is /lib${LIB_SUFFIX})")
-set(INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE PATH "The subdirectory to the header prefix")
-
-if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
+if(BUILD_FRAMEWORK)
+  unset(INSTALL_NAME_DIR)
+  set_target_properties(tag PROPERTIES 
+      FRAMEWORK TRUE
+      MACOSX_RPATH 1
+      VERSION "A"
+      SOVERSION "A"
+      )
 endif()
 
-if(MSVC AND ENABLE_STATIC_RUNTIME)
-  foreach(flag_var CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
-    string(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
-  endforeach(flag_var)
-endif()
-
-# Read version information from file taglib/toolkit/taglib.h into variables
-# TAGLIB_LIB_MAJOR_VERSION, TAGLIB_LIB_MINOR_VERSION, TAGLIB_LIB_PATCH_VERSION.
-foreach(version_part MAJOR MINOR PATCH)
-  set(version_var_name "TAGLIB_${version_part}_VERSION")
-  file(STRINGS taglib/toolkit/taglib.h version_line
-       REGEX "^#define +${version_var_name}")
-  if(NOT version_line)
-    message(FATAL_ERROR "${version_var_name} not found in taglib.h")
-  endif()
-  string(REGEX MATCH "${version_var_name} +([^ ]+)" result ${version_line})
-  set(TAGLIB_LIB_${version_part}_VERSION ${CMAKE_MATCH_1})
-endforeach(version_part)
-
-# Only used to force cmake rerun when taglib.h changes.
-configure_file(taglib/toolkit/taglib.h ${CMAKE_CURRENT_BINARY_DIR}/taglib.h.stamp)
-
-if("${TAGLIB_LIB_PATCH_VERSION}" EQUAL "0")
-  set(TAGLIB_LIB_VERSION_STRING "${TAGLIB_LIB_MAJOR_VERSION}.${TAGLIB_LIB_MINOR_VERSION}")
-else()
-  set(TAGLIB_LIB_VERSION_STRING "${TAGLIB_LIB_MAJOR_VERSION}.${TAGLIB_LIB_MINOR_VERSION}.${TAGLIB_LIB_PATCH_VERSION}")
-endif()
-
-# 1. If the library source code has changed at all since the last update, then increment revision.
-# 2. If any interfaces have been added, removed, or changed since the last update, increment current, and set revision to 0.
-# 3. If any interfaces have been added since the last public release, then increment age.
-# 4. If any interfaces have been removed since the last public release, then set age to 0.
-set(TAGLIB_SOVERSION_CURRENT  18)
-set(TAGLIB_SOVERSION_REVISION 0)
-set(TAGLIB_SOVERSION_AGE      17)
-
-math(EXPR TAGLIB_SOVERSION_MAJOR "${TAGLIB_SOVERSION_CURRENT} - ${TAGLIB_SOVERSION_AGE}")
-math(EXPR TAGLIB_SOVERSION_MINOR "${TAGLIB_SOVERSION_AGE}")
-math(EXPR TAGLIB_SOVERSION_PATCH "${TAGLIB_SOVERSION_REVISION}")
-
-include(ConfigureChecks.cmake)
-
-if(NOT WIN32)
-  configure_file("${CMAKE_CURRENT_SOURCE_DIR}/taglib-config.cmake" "${CMAKE_CURRENT_BINARY_DIR}/taglib-config" @ONLY)
-  install(PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/taglib-config" DESTINATION "${BIN_INSTALL_DIR}")
-endif()
-
-if(WIN32)
-  configure_file("${CMAKE_CURRENT_SOURCE_DIR}/taglib-config.cmd.cmake" "${CMAKE_CURRENT_BINARY_DIR}/taglib-config.cmd")
-  install(PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/taglib-config.cmd" DESTINATION "${BIN_INSTALL_DIR}")
-endif()
-
-if(NOT BUILD_FRAMEWORK)
-  configure_file("${CMAKE_CURRENT_SOURCE_DIR}/taglib.pc.cmake" "${CMAKE_CURRENT_BINARY_DIR}/taglib.pc" @ONLY)
-  install(FILES "${CMAKE_CURRENT_BINARY_DIR}/taglib.pc" DESTINATION "${LIB_INSTALL_DIR}/pkgconfig")
-endif()
-
-if(NOT HAVE_ZLIB AND ZLIB_SOURCE)
-  set(HAVE_ZLIB 1)
-  set(HAVE_ZLIB_SOURCE 1)
-endif()
-
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
-configure_file(config.h.cmake "${CMAKE_CURRENT_BINARY_DIR}/config.h")
-
-if(WITH_ASF)
-  set(TAGLIB_WITH_ASF TRUE)
-endif()
-if(WITH_MP4)
-  set(TAGLIB_WITH_MP4 TRUE)
-endif()
-
-option(TRACE_IN_RELEASE "Output debug messages even in release mode" OFF)
-if(TRACE_IN_RELEASE)
-  set(TRACE_IN_RELEASE TRUE)
-endif()
-
-configure_file(taglib/taglib_config.h.cmake "${CMAKE_CURRENT_BINARY_DIR}/taglib_config.h")
-
-add_subdirectory(taglib)
-
-if(BUILD_BINDINGS)
-  add_subdirectory(bindings)
-endif()
-
-if(BUILD_TESTS AND NOT BUILD_SHARED_LIBS)
-  enable_testing()
-  add_subdirectory(tests)
-endif()
-
-if(BUILD_EXAMPLES)
-  add_subdirectory(examples)
-endif()
-
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.cmake" "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile")
-file(COPY doc/taglib.png DESTINATION doc)
-add_custom_target(docs doxygen)
-
-# uninstall target
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake" IMMEDIATE @ONLY)
-
-if(NOT TARGET uninstall)
-  add_custom_target(uninstall COMMAND "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
-endif()
+#install(TARGETS tag
+#  FRAMEWORK DESTINATION ${FRAMEWORK_INSTALL_DIR}
+#  LIBRARY DESTINATION ${LIB_INSTALL_DIR}
+#  RUNTIME DESTINATION ${BIN_INSTALL_DIR}
+#  ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
+#  PUBLIC_HEADER DESTINATION ${INCLUDE_INSTALL_DIR}/taglib
+#)

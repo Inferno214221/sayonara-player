@@ -80,7 +80,7 @@ AbstractLibrary::AbstractLibrary(QObject *parent) :
 
 	Tagging::ChangeNotifier* mdcn = Tagging::ChangeNotifier::instance();
 	connect(mdcn, &Tagging::ChangeNotifier::sig_metadata_changed,
-			this, &AbstractLibrary::metadata_id3_changed);
+			this, &AbstractLibrary::refresh_current_view);
 }
 
 AbstractLibrary::~AbstractLibrary() {}
@@ -129,7 +129,7 @@ void AbstractLibrary::refetch()
 }
 
 
-void AbstractLibrary::refresh()
+void AbstractLibrary::refresh_current_view()
 {
 	/* Waring! Sorting after each fetch is important here! */
 	/* Do not call emit_stuff() in order to avoid double sorting */
@@ -142,11 +142,15 @@ void AbstractLibrary::refresh()
 	fetch_by_filter(m->filter, true);
 
 	prepare_artists();
-	for(int i=0; i<m->artists.count(); i++)
+	int i=0;
+	for(const Artist& artist : m->artists)
 	{
-		if(sel_artists.contains(m->artists[i].id)) {
+		if(sel_artists.contains(artist.id))
+		{
 			sel_artists_idx.insert(i);
 		}
+
+		i++;
 	}
 
 	change_artist_selection(sel_artists_idx);
@@ -310,9 +314,8 @@ void AbstractLibrary::append_current_tracks()
 void AbstractLibrary::change_artist_selection(const IndexSet& indexes)
 {
 	Util::Set<ArtistId> selected_artists;
-	for(auto it=indexes.begin(); it!=indexes.end(); it++)
+	for(int idx : indexes)
 	{
-		int idx = *it;
 		const Artist& artist = m->artists[idx];
 		selected_artists.insert(artist.id);
 	}
@@ -618,11 +621,6 @@ void AbstractLibrary::fetch_tracks_by_paths(const QStringList& paths)
 	emit_stuff();
 }
 
-void AbstractLibrary::change_album_rating(int idx, Rating rating)
-{
-	m->albums[idx].rating = rating;
-	update_album(m->albums[idx]);
-}
 
 void AbstractLibrary::change_track_sortorder(Library::SortOrder s)
 {
@@ -671,33 +669,9 @@ void AbstractLibrary::change_artist_sortorder(Library::SortOrder s)
 	emit sig_all_artists_loaded();
 }
 
-
-void AbstractLibrary::metadata_id3_changed(const MetaDataList& v_md_old, const MetaDataList& v_md_new)
-{
-	Q_UNUSED(v_md_old)
-	Q_UNUSED(v_md_new)
-
-	refresh();
-}
-
-void AbstractLibrary::update_tracks(const MetaDataList& v_md)
-{
-	for(const MetaData& md : v_md){
-		update_track(md);
-	}
-
-	refresh();
-}
-
 Library::Sortings AbstractLibrary::sortorder() const
 {
 	return m->sortorder;
-}
-
-void AbstractLibrary::insert_tracks(const MetaDataList &v_md)
-{
-	Q_UNUSED(v_md)
-	refresh();
 }
 
 void AbstractLibrary::import_files(const QStringList& files)
@@ -708,14 +682,20 @@ void AbstractLibrary::import_files(const QStringList& files)
 
 void AbstractLibrary::delete_current_tracks(Library::TrackDeletionMode mode)
 {
-	if(mode == Library::TrackDeletionMode::None) return;
+	if(mode == Library::TrackDeletionMode::None) {
+		return;
+	}
+
 	delete_tracks( current_tracks(), mode);
 }
 
 
 void AbstractLibrary::delete_fetched_tracks(Library::TrackDeletionMode mode)
 {
-	if(mode == Library::TrackDeletionMode::None) return;
+	if(mode == Library::TrackDeletionMode::None) {
+		return;
+	}
+
 	delete_tracks( tracks(), mode);
 }
 
@@ -766,7 +746,7 @@ void AbstractLibrary::delete_tracks(const MetaDataList& v_md, Library::TrackDele
 	emit sig_delete_answer(answer_str);
 	Tagging::ChangeNotifier::instance()->delete_metadata(v_md);
 
-	refresh();
+	refresh_current_view();
 }
 
 

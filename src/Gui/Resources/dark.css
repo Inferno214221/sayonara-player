@@ -74,13 +74,13 @@ QSplitter:handle
 QSplitter:handle:vertical
 {
 
-	image: url(:/Icons/splitter_ver.svg.png);
+	image: url(:/Icons/splitter_ver.svg);
 }
 
 QSplitter:handle:horizontal
 {
 
-	image: url(:/Icons/splitter_hor.svg.png);
+	image: url(:/Icons/splitter_hor.svg);
 }
 
 MiniSearcher
@@ -166,7 +166,7 @@ QTreeView::branch:closed:has-children:has-siblings
 {
 	border-image: none;
 	padding: 1ex;
-	image: url(:/Icons/arrow_filled_right.svg.png);
+	image: url(:/Icons/arrow_filled_right.svg);
 }
 
 QTreeView::branch:open:has-children:!has-siblings,
@@ -174,7 +174,7 @@ QTreeView::branch:open:has-children:has-siblings
 {
 	border-image: none;
 	padding: 1ex;
-	image: url(:/Icons/arrow_filled_down.svg.png);
+	image: url(:/Icons/arrow_filled_down.svg);
 }
 
 QScrollBar::vertical
@@ -269,14 +269,14 @@ QTableView QHeaderView::up-arrow
 	width: 8px;
 	margin-right: 3px;
 	background: #323232;
-	image: url(:/Icons/arrow_up.svg.png);
+	image: url(:/Icons/arrow_up.svg);
 }
 
 QTableView QHeaderView::down-arrow
 {
 	width: 8px;
 	background: #323232;
-	image: url(:/Icons/arrow_down.svg.png);
+	image: url(:/Icons/arrow_down.svg);
 	margin-right: 3px;
 }
 
@@ -333,7 +333,7 @@ QMenu::indicator:checked
 	margin-left: 5px;
 	width: 8px;
 	height: 8px;
-	image: url(:/Icons/tool_orange.svg.png);
+	image: url(:/Icons/tool_orange.svg);
 }
 
 QMenu::indicator:unchecked
@@ -341,26 +341,26 @@ QMenu::indicator:unchecked
 	margin-left: 5px;
 	width: 8px;
 	height: 8px;
-	image: url(:/Icons/tool_dark_grey.svg.png);
+	image: url(:/Icons/tool_dark_grey.svg);
 }
 
 QMenu::indicator:unchecked:pressed
 {
-	image: url(:/Icons/tool_grey.svg.png);
+	image: url(:/Icons/tool_grey.svg);
 }
 
 QMenu::Icon:checked
 {
 	max-height: 0;
 	max-width: 0;
-	image: url(:/Icons/tool_orange.svg.png);
+	image: url(:/Icons/tool_orange.svg);
 }
 
 QMenu::Icon:unchecked
 {
 	max-height: 0;
 	max-width: 0;
-	image: url(:/Icons/tool_dark_grey.svg.png);
+	image: url(:/Icons/tool_dark_grey.svg);
 }
 
 QMenu::separator
@@ -468,7 +468,7 @@ QComboBox::down-arrow
 	height: 1ex;
 	width: 0.5em;
 	padding: 2px;
-	image: url(:/Icons/arrow_down.svg.png);
+	image: url(:/Icons/arrow_down.svg);
 }
 
 QComboBox QAbstractItemView,
@@ -559,7 +559,7 @@ QSpinBox::up-button:hover
 
 QSpinBox::up-arrow
 {
-	image: url(:/Icons/arrow_up.svg.png);
+	image: url(:/Icons/arrow_up.svg);
 	width: 1ex;
 	height: 1ex;
 }
@@ -582,7 +582,7 @@ QSpinBox::down-button:hover
 
 QSpinBox::down-arrow
 {
-	image: url(:/Icons/arrow_down.svg.png);
+	image: url(:/Icons/arrow_down.svg);
 	width: 1ex;
 	height: 1ex;
 }
@@ -639,18 +639,18 @@ QTabBar::tab:selected
 
 QTabBar::close-button
 {
-	image: url(:/Icons/tool_dark_grey_small.svg.png);
+	image: url(:/Icons/tool_dark_grey_small.svg);
 }
 
 QTabBar::close-button:disabled
 {
 
-	image: url(:/Icons/close_disabled.svg.png)
+	image: url(:/Icons/close_disabled.svg)
 }
 
 QTabBar::close-button:hover
 {
-	image: url(:/Icons/tool_grey_small.svg.png);
+	image: url(:/Icons/tool_grey_small.svg);
 	max-height: 2ex;
 }
 
@@ -662,30 +662,30 @@ QTabBar QToolButton
 }
 
 QTabBar QToolButton::right-arrow { /* the arrow mark in the tool buttons */
-	image: url(:/Icons/arrow_right.svg.png);
+	image: url(:/Icons/arrow_right.svg);
 }
 
 QTabBar QToolButton::left-arrow
 {
-	image: url(:/Icons/arrow_left.svg.png);
+	image: url(:/Icons/arrow_left.svg);
 }
 
 QTabBar QToolButton::right-arrow:hover { /* the arrow mark in the tool buttons */
-	image: url(:/Icons/arrow_right_orange.svg.png);
+	image: url(:/Icons/arrow_right_orange.svg);
 }
 
 QTabBar QToolButton::left-arrow:hover
 {
-	image: url(:/Icons/arrow_left_orange.svg.png);
+	image: url(:/Icons/arrow_left_orange.svg);
 }
 
 QTabBar QToolButton::right-arrow:disabled { /* the arrow mark in the tool buttons */
-	image: url(:/Icons/arrow_right_disabled.svg.png);
+	image: url(:/Icons/arrow_right_disabled.svg);
 }
 
 QTabBar QToolButton::left-arrow:disabled
 {
-	image: url(:/Icons/arrow_left_disabled.svg.png);
+	image: url(:/Icons/arrow_left_disabled.svg);
 }
 
 QTabBar::tear
@@ -719,25 +719,25 @@ QRadioButton::indicator:pressed,
 QCheckBox::indicator:checked:enabled,
 QCheckBox::indicator:pressed 
 {
-	image: url(:/Icons/tool_orange.svg.png);
+	image: url(:/Icons/tool_orange.svg);
 }
 
 QRadioButton::indicator:unchecked,
 QCheckBox::indicator:unchecked 
 {
-	image: url(:/Icons/tool_dark_grey.svg.png);
+	image: url(:/Icons/tool_dark_grey.svg);
 }
 
 QRadioButton::indicator:unchecked:hover,
 QCheckBox::indicator:unchecked:hover 
 {
-	image: url(:/Icons/tool_grey.svg.png);
+	image: url(:/Icons/tool_grey.svg);
 }
 
 QRadioButton::indicator:disabled,
 QCheckBox::indicator:disabled
 {
-	image: url(:/Icons/tool_disabled.svg.png);
+	image: url(:/Icons/tool_disabled.svg);
 }
 
 MenuButton,
@@ -811,7 +811,7 @@ QLabel#lab_ctrl_rec_icon
 	max-height: 4ex;
 	max-width:  4ex;*/
 
-	border-image: url(:/Icons/dark_bg.svg.png);
+	border-image: url(:/Icons/dark_bg.svg);
 }
 
 QPushButton#btn_mute

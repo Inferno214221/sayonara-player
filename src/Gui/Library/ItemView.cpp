@@ -450,6 +450,7 @@ void ItemView::contextMenuEvent(QContextMenuEvent* event)
 	}
 
 	IndexSet selections = selected_items();
+	bool has_selections = (selections.size() > 0);
 
 	QPoint pos = event->globalPos();
 
@@ -457,7 +458,9 @@ void ItemView::contextMenuEvent(QContextMenuEvent* event)
 	{
 		m->context_menu->show_action(LibraryContextMenu::EntryLyrics, true);
 	}
-	else {
+
+	else
+	{
 		m->context_menu->show_action(LibraryContextMenu::EntryLyrics, false);
 	}
 
@@ -479,8 +482,9 @@ void ItemView::contextMenuEvent(QContextMenuEvent* event)
 	}
 
 	m->context_menu->set_extensions(library()->extensions());
-	show_context_menu(pos);
+	m->context_menu->set_selection_count(selections.count());
 
+	show_context_menu(pos);
 	QTableView::contextMenuEvent(event);
 }
 

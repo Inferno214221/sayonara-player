@@ -21,8 +21,11 @@
 #ifndef METADATACHANGENOTIFIER_H
 #define METADATACHANGENOTIFIER_H
 
-#include <QObject>
 #include "Utils/Singleton.h"
+#include "Utils/Pimpl.h"
+
+#include <QObject>
+#include <QPair>
 
 class MetaDataList;
 
@@ -37,16 +40,20 @@ namespace Tagging
         Q_OBJECT
 
         SINGLETON_QOBJECT(ChangeNotifier)
+        PIMPL(ChangeNotifier)
 
     public:
-            /**
-             * @brief change_metadata Tell the MetaDataChangeNotifier that MetaData has been changed
-             * @param v_md_old The original Metadata used for comparison
-             * @param v_md_new The actualized Metadata
-             */
-        void change_metadata(const MetaDataList& v_md_old, const MetaDataList& v_md_new);
+		/**
+		 * @brief change_metadata Tell the MetaDataChangeNotifier that MetaData has been changed
+		 * @param v_md_old The original Metadata used for comparison
+		 * @param v_md_new The actualized Metadata
+		 */
+		void change_metadata(const MetaDataList& v_md_old, const MetaDataList& v_md_new);
 
         void delete_metadata(const MetaDataList& v_md_deleted);
+
+        QPair<MetaDataList, MetaDataList> changed_metadata() const;
+        MetaDataList deleted_metadata() const;
 
     signals:
         /**
@@ -54,9 +61,9 @@ namespace Tagging
          * @param v_md_oldThe original Metadata used for comparison
          * @param v_md_new The actualized Metadata
          */
-        void sig_metadata_changed(const MetaDataList& v_md_old, const MetaDataList& v_md_new);
+        void sig_metadata_changed();
 
-        void sig_metadata_deleted(const MetaDataList& v_md_deleted);
+        void sig_metadata_deleted();
     };
 }
 

@@ -95,8 +95,8 @@ namespace Playlist
 			bool is_storable() const override;
 
 		public slots:
-			void metadata_deleted(const MetaDataList& v_md_deleted);
-			void metadata_changed(const MetaDataList& v_md_old, const MetaDataList& v_md_new);
+			void metadata_deleted();
+			void metadata_changed();
 			void metadata_changed_single();
 			void duration_changed();
 

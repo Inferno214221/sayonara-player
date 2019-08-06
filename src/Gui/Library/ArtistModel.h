@@ -30,7 +30,6 @@
 #define LIBRARYITEMMODELARTISTS_H_
 
 #include "ItemModel.h"
-#include "Utils/Pimpl.h"
 
 namespace Library
 {
@@ -38,7 +37,6 @@ namespace Library
 			public ItemModel
 	{
 		Q_OBJECT
-		PIMPL(ArtistModel)
 
 		public:
 			ArtistModel(QObject* parent, AbstractLibrary* library);

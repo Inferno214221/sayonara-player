@@ -72,7 +72,6 @@ namespace Library
 
 		virtual void item_delete_clicked();
 		virtual void show_delete_answer(QString);
-		virtual void id3_tags_changed();
 
 		void tracks_delete_clicked();
 

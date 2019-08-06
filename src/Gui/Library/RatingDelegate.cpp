@@ -46,20 +46,34 @@ RatingDelegate::RatingDelegate(QObject* parent, int rating_column, bool enabled)
 
 RatingDelegate::~RatingDelegate() {}
 
+#include <QDebug>
 void RatingDelegate::paint(QPainter *painter, const QStyleOptionViewItem & option, const QModelIndex & index) const
 {
-	if(!index.isValid()) return;
+	if(!index.isValid()) {
+		return;
+	}
 
 	QStyledItemDelegate::paint(painter, option, index);
 
 	if(index.column() == m->rating_column)
 	{
 		RatingLabel label(nullptr, true);
-		label.set_rating(index.data(Qt::EditRole).toInt());
-		label.setGeometry(option.rect);
+
+		QRect rect = option.rect;
+		int parent_width = option.widget->width();
+		int remainder = parent_width - (option.rect.x() + option.rect.width());
+		if(remainder < 0)
+		{
+			rect.setWidth(option.rect.width() + remainder);
+		}
+
+		label.set_rating(index.data(Qt::EditRole).value<Rating>());
+		label.setGeometry(rect);
+		painter->setClipping(true);
+		painter->setClipRect(rect);
 
 		painter->save();
-		painter->translate(option.rect.left(), option.rect.top() );
+		painter->translate(rect.left(), rect.top() );
 
 		label.render(painter);
 

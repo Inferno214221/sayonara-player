@@ -115,7 +115,7 @@ GUI_Player::GUI_Player(QWidget* parent) :
 
 	QString version = GetSetting(Set::Player_Version);
 	setWindowTitle(QString("Sayonara %1").arg(version));
-	setWindowIcon(Gui::Util::icon("logo.png"));
+	setWindowIcon(Gui::Util::icon("logo.png", Gui::Util::NoTheme));
 	setAttribute(Qt::WA_DeleteOnClose, false);
 
 	init_font_change_fix();

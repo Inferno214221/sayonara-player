@@ -223,10 +223,12 @@ void Importer::copy_thread_finished()
 }
 
 
-void Importer::metadata_changed(const MetaDataList& old_md, const MetaDataList& new_md)
+void Importer::metadata_changed()
 {
+	auto changed_metadata = Tagging::ChangeNotifier::instance()->changed_metadata();
+
 	if(m->cache_thread){
-		m->cache_thread->change_metadata(old_md, new_md);
+		m->cache_thread->change_metadata(changed_metadata.first, changed_metadata.second);
 	}
 }
 
