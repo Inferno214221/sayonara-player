@@ -96,7 +96,22 @@ void PluginHandler::init(const ContainerList& containers)
 	init_libraries(containers);
 	init_dll_libraries();
 
-	set_current_library(last_library);
+	{ // First startup handling
+		bool has_local_library = Util::Algorithm::contains(m->library_containers, [](Container* container){
+			return container->is_local();
+		});
+
+		Container* c = m->find_library(last_library);
+		if(!has_local_library && (c == nullptr))
+		{
+			set_current_library(-1);
+		}
+
+		else
+		{
+			set_current_library(last_library);
+		}
+	}
 
 	ListenSetting(Set::Player_Language, PluginHandler::language_changed);
 }

@@ -262,8 +262,6 @@ void EngineImpl::play()
 void EngineImpl::stop()
 {
 	m->change_gapless_state(GaplessState::Stopped);
-
-	sp_log(Log::Info, this) << "Stop";
 	m->pipeline->stop();
 
 	if(m->other_pipeline){

@@ -450,8 +450,6 @@ void ItemView::contextMenuEvent(QContextMenuEvent* event)
 	}
 
 	IndexSet selections = selected_items();
-	bool has_selections = (selections.size() > 0);
-
 	QPoint pos = event->globalPos();
 
 	if(metadata_interpretation() == MD::Interpretation::Tracks && selections.size() == 1)

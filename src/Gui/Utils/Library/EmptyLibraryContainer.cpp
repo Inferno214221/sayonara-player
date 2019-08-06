@@ -33,7 +33,6 @@ using namespace Library;
 struct EmptyLibraryContainer::Private
 {
 	GUI_EmptyLibrary* ui=nullptr;
-
 };
 
 EmptyLibraryContainer::EmptyLibraryContainer(QObject* parent) :

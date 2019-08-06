@@ -37,6 +37,32 @@ using namespace Gui;
 #include <QDir>
 #include <QDirIterator>
 
+static QString best_resolution_path(const QStringList& paths)
+{
+	if(paths.isEmpty()){
+		return QString();
+	}
+
+	int max_size = 0;
+	QString max_path = paths.first();
+	for(const QString& path : paths)
+	{
+		QRegExp re(".*([0-9][0-9]+).*");
+		int idx = re.indexIn(path);
+		if(idx >= 0)
+		{
+			int size = re.cap(1).toInt();
+			if(size > max_size)
+			{
+				max_size = size;
+				max_path = path;
+			}
+		}
+	}
+
+	return max_path;
+}
+
 static QStringList icon_paths(const QString& icon_name, Gui::Util::IconTheme theme)
 {
 	if(icon_name.trimmed().isEmpty()){
@@ -44,19 +70,14 @@ static QStringList icon_paths(const QString& icon_name, Gui::Util::IconTheme the
 	}
 
 	QString theme_name;
-	if(theme == Gui::Util::Breeze)
-	{
-		theme_name = "BreezeIcons";
-	}
-
-	else if(theme == Gui::Util::MintY)
+	if(theme == Gui::Util::MintY)
 	{
 		theme_name = "MintYIcons";
 	}
 
 
 	QStringList paths;
-	if(theme == Gui::Util::Breeze || theme == Gui::Util::MintY)
+	if(theme == Gui::Util::MintY)
 	{
 		QString re_string = QString(".*%1/%2-[0-9]+.*")
 			.arg(theme_name)
@@ -95,6 +116,7 @@ static QStringList icon_paths(const QString& icon_name, Gui::Util::IconTheme the
 	return paths;
 }
 
+#include <QRegExp>
 QIcon Util::icon(const QString& icon_name, IconTheme theme_name)
 {
 	if(icon_name.isEmpty()){
@@ -107,8 +129,18 @@ QIcon Util::icon(const QString& icon_name, IconTheme theme_name)
 	}
 
 	QIcon icon;
-	for(const QString& path : paths) {
-		icon.addFile(path);
+	QString path = best_resolution_path(paths);
+	if(!path.isEmpty())
+	{
+		QPixmap pm(path);
+		if(!pm.isNull())
+		{
+			icon.addPixmap(pm);
+		}
+
+		else {
+			icon.addFile(path);
+		}
 	}
 
 	if(icon.isNull()){
@@ -130,8 +162,9 @@ QImage Util::image(const QString& icon_name, IconTheme theme_name, QSize sz, boo
 		return QImage();
 	}
 
-	QImage image(paths.first());
+	QString path = best_resolution_path(paths);
 
+	QImage image(path);
 	if(image.isNull()){
 		sp_log(Log::Warning, "GuiUtils") << "Pixmap " << paths.first() << " does not exist";
 	}
@@ -140,8 +173,10 @@ QImage Util::image(const QString& icon_name, IconTheme theme_name, QSize sz, boo
 		return image;
 	}
 
-	else{
-		if(keep_aspect){
+	else
+	{
+		if(keep_aspect)
+		{
 			return image.scaled(sz, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 		}
 
@@ -149,8 +184,6 @@ QImage Util::image(const QString& icon_name, IconTheme theme_name, QSize sz, boo
 			return image.scaled(sz, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 		}
 	}
-
-	return image;
 }
 
 QPixmap Util::pixmap(const QString& icon_name, IconTheme theme_name)
@@ -165,8 +198,9 @@ QPixmap Util::pixmap(const QString& icon_name, IconTheme theme_name, QSize sz, b
 		return QPixmap();
 	}
 
-	QPixmap pixmap(paths.first());
+	QString path = best_resolution_path(paths);
 
+	QPixmap pixmap(path);
 	if(pixmap.isNull()){
 		sp_log(Log::Warning, "GuiUtils") << "Pixmap " << paths.first() << " does not exist";
 	}
@@ -175,17 +209,18 @@ QPixmap Util::pixmap(const QString& icon_name, IconTheme theme_name, QSize sz, b
 		return pixmap;
 	}
 
-	else{
-		if(keep_aspect){
+	else
+	{
+		if(keep_aspect)
+		{
 			return pixmap.scaled(sz, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 		}
 
-		else{
+		else
+		{
 			return pixmap.scaled(sz, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 		}
 	}
-
-	return pixmap;
 }
 
 

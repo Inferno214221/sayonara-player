@@ -156,6 +156,24 @@ void SearchBar::set_current_mode(Filter::Mode mode)
 	language_changed();
 }
 
+void SearchBar::set_previous_mode()
+{
+	if(m->modes.isEmpty()){
+		return;
+	}
+
+	else
+	{
+		m->cur_idx --;
+		if(m->cur_idx < 0)
+		{
+			m->cur_idx = m->modes.size() -  1;
+		}
+	}
+
+	set_current_mode(m->modes[m->cur_idx]);
+}
+
 void SearchBar::set_next_mode()
 {
 	if(m->modes.isEmpty()){
@@ -247,6 +265,16 @@ void SearchBar::keyPressEvent(QKeyEvent* e)
 		{
 			this->set_current_mode(Filter::Fulltext);
 		}
+	}
+
+	else if(e->key() == Qt::Key_Up)
+	{
+		this->set_previous_mode();
+	}
+
+	else if(e->key() == Qt::Key_Down)
+	{
+		this->set_next_mode();
 	}
 
 	Parent::keyPressEvent(e);

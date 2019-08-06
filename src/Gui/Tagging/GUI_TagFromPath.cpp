@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "TagFromPath.h"
+#include "GUI_TagFromPath.h"
 #include "TextSelection.h"
 
 #include "Gui/TagEdit/ui_GUI_TagFromPath.h"
@@ -63,8 +63,7 @@ GUI_TagFromPath::GUI_TagFromPath(QWidget* parent) :
 	language_changed();
 }
 
-GUI_TagFromPath::~GUI_TagFromPath() {}
-
+GUI_TagFromPath::~GUI_TagFromPath() = default;
 
 void GUI_TagFromPath::set_filepath(const QString& filepath)
 {
@@ -189,6 +188,9 @@ bool GUI_TagFromPath::replace_selected_tag_text(TagName tag_name, bool b)
 
 void GUI_TagFromPath::btn_checked(QPushButton* btn, bool b, TagName tag_name)
 {
+	ui->lab_tag_from_path_warning->setVisible(false);
+	ui->lv_tag_from_path_files->setVisible(false);
+
 	if(!replace_selected_tag_text(tag_name, b)){
 		btn->setChecked(false);
 	}

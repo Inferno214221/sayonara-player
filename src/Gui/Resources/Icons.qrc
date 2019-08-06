@@ -1,131 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>BreezeIcons/application-exit-16.svg</file>
-        <file>BreezeIcons/application-exit-22.svg</file>
-        <file>BreezeIcons/application-exit-24.svg</file>
-        <file>BreezeIcons/application-exit-32.svg</file>
-        <file>BreezeIcons/applications-system-32.svg</file>
-        <file>BreezeIcons/audio-volume-high-16.svg</file>
-        <file>BreezeIcons/audio-volume-high-22.svg</file>
-        <file>BreezeIcons/audio-volume-high-24.svg</file>
-        <file>BreezeIcons/audio-volume-low-16.svg</file>
-        <file>BreezeIcons/audio-volume-low-22.svg</file>
-        <file>BreezeIcons/audio-volume-low-24.svg</file>
-        <file>BreezeIcons/audio-volume-medium-16.svg</file>
-        <file>BreezeIcons/audio-volume-medium-22.svg</file>
-        <file>BreezeIcons/audio-volume-medium-24.svg</file>
-        <file>BreezeIcons/audio-volume-muted-16.svg</file>
-        <file>BreezeIcons/audio-volume-muted-22.svg</file>
-        <file>BreezeIcons/audio-volume-muted-24.svg</file>
-        <file>BreezeIcons/audio-x-generic-16.svg</file>
-        <file>BreezeIcons/audio-x-generic-22.svg</file>
-        <file>BreezeIcons/audio-x-generic-32.svg</file>
-        <file>BreezeIcons/audio-x-generic-64.svg</file>
-        <file>BreezeIcons/dialog-information-16.svg</file>
-        <file>BreezeIcons/dialog-information-22.svg</file>
-        <file>BreezeIcons/dialog-information-24.svg</file>
-        <file>BreezeIcons/dialog-information-64.svg</file>
-        <file>BreezeIcons/document-new-16.svg</file>
-        <file>BreezeIcons/document-new-22.svg</file>
-        <file>BreezeIcons/document-new-24.svg</file>
-        <file>BreezeIcons/document-new-32.svg</file>
-        <file>BreezeIcons/document-open-16.svg</file>
-        <file>BreezeIcons/document-open-22.svg</file>
-        <file>BreezeIcons/document-open-24.svg</file>
-        <file>BreezeIcons/document-open-32.svg</file>
-        <file>BreezeIcons/document-save-16.svg</file>
-        <file>BreezeIcons/document-save-22.svg</file>
-        <file>BreezeIcons/document-save-24.svg</file>
-        <file>BreezeIcons/document-save-32.svg</file>
-        <file>BreezeIcons/document-save-as-16.svg</file>
-        <file>BreezeIcons/document-save-as-22.svg</file>
-        <file>BreezeIcons/document-save-as-24.svg</file>
-        <file>BreezeIcons/document-save-as-32.svg</file>
-        <file>BreezeIcons/edit-clear-16.svg</file>
-        <file>BreezeIcons/edit-clear-22.svg</file>
-        <file>BreezeIcons/edit-clear-24.svg</file>
-        <file>BreezeIcons/edit-copy-16.svg</file>
-        <file>BreezeIcons/edit-copy-22.svg</file>
-        <file>BreezeIcons/edit-copy-24.svg</file>
-        <file>BreezeIcons/edit-delete-16.svg</file>
-        <file>BreezeIcons/edit-delete-22.svg</file>
-        <file>BreezeIcons/edit-delete-24.svg</file>
-        <file>BreezeIcons/edit-delete-32.svg</file>
-        <file>BreezeIcons/edit-find-16.svg</file>
-        <file>BreezeIcons/edit-find-22.svg</file>
-        <file>BreezeIcons/edit-find-24.svg</file>
-        <file>BreezeIcons/edit-undo-16.svg</file>
-        <file>BreezeIcons/edit-undo-22.svg</file>
-        <file>BreezeIcons/edit-undo-24.svg</file>
-        <file>BreezeIcons/edit-undo-32.svg</file>
-        <file>BreezeIcons/folder-16.svg</file>
-        <file>BreezeIcons/folder-22.svg</file>
-        <file>BreezeIcons/folder-32.svg</file>
-        <file>BreezeIcons/folder-64.svg</file>
-        <file>BreezeIcons/folder-open-16.svg</file>
-        <file>BreezeIcons/folder-open-22.svg</file>
-        <file>BreezeIcons/folder-open-32.svg</file>
-        <file>BreezeIcons/folder-open-64.svg</file>
-        <file>BreezeIcons/format-justify-fill-16.svg</file>
-        <file>BreezeIcons/format-justify-fill-22.svg</file>
-        <file>BreezeIcons/format-justify-fill-24.svg</file>
-        <file>BreezeIcons/format-justify-left-16.svg</file>
-        <file>BreezeIcons/format-justify-left-22.svg</file>
-        <file>BreezeIcons/format-justify-left-24.svg</file>
-        <file>BreezeIcons/image-x-generic-16.svg</file>
-        <file>BreezeIcons/image-x-generic-22.svg</file>
-        <file>BreezeIcons/image-x-generic-32.svg</file>
-        <file>BreezeIcons/image-x-generic-64.svg</file>
-        <file>BreezeIcons/list-add-16.svg</file>
-        <file>BreezeIcons/list-add-22.svg</file>
-        <file>BreezeIcons/list-add-24.svg</file>
-        <file>BreezeIcons/list-remove-16.svg</file>
-        <file>BreezeIcons/list-remove-22.svg</file>
-        <file>BreezeIcons/list-remove-24.svg</file>
-        <file>BreezeIcons/media-playback-pause-16.svg</file>
-        <file>BreezeIcons/media-playback-pause-22.svg</file>
-        <file>BreezeIcons/media-playback-pause-24.svg</file>
-        <file>BreezeIcons/media-playback-pause-32.svg</file>
-        <file>BreezeIcons/media-playback-start-16.svg</file>
-        <file>BreezeIcons/media-playback-start-22.svg</file>
-        <file>BreezeIcons/media-playback-start-24.svg</file>
-        <file>BreezeIcons/media-playback-start-32.svg</file>
-        <file>BreezeIcons/media-playback-stop-16.svg</file>
-        <file>BreezeIcons/media-playback-stop-22.svg</file>
-        <file>BreezeIcons/media-playback-stop-24.svg</file>
-        <file>BreezeIcons/media-playback-stop-32.svg</file>
-        <file>BreezeIcons/media-record-16.svg</file>
-        <file>BreezeIcons/media-record-22.svg</file>
-        <file>BreezeIcons/media-record-24.svg</file>
-        <file>BreezeIcons/media-record-32.svg</file>
-        <file>BreezeIcons/media-skip-backward-16.svg</file>
-        <file>BreezeIcons/media-skip-backward-22.svg</file>
-        <file>BreezeIcons/media-skip-backward-24.svg</file>
-        <file>BreezeIcons/media-skip-backward-32.svg</file>
-        <file>BreezeIcons/media-skip-forward-16.svg</file>
-        <file>BreezeIcons/media-skip-forward-22.svg</file>
-        <file>BreezeIcons/media-skip-forward-24.svg</file>
-        <file>BreezeIcons/media-skip-forward-32.svg</file>
-        <file>BreezeIcons/rating-16.svg</file>
-        <file>BreezeIcons/system-file-manager-16.svg</file>
-        <file>BreezeIcons/system-file-manager-22.svg</file>
-        <file>BreezeIcons/system-file-manager-32.svg</file>
-        <file>BreezeIcons/system-file-manager-48.svg</file>
-        <file>BreezeIcons/system-file-manager-64.svg</file>
-        <file>BreezeIcons/system-shutdown-22.svg</file>
-        <file>BreezeIcons/system-shutdown-32.svg</file>
-        <file>BreezeIcons/text-x-generic-16.svg</file>
-        <file>BreezeIcons/text-x-generic-22.svg</file>
-        <file>BreezeIcons/text-x-generic-32.svg</file>
-        <file>BreezeIcons/text-x-generic-64.svg</file>
-        <file>BreezeIcons/view-refresh-16.svg</file>
-        <file>BreezeIcons/view-refresh-22.svg</file>
-        <file>BreezeIcons/view-refresh-24.svg</file>
-        <file>BreezeIcons/view-refresh-32.svg</file>
-        <file>BreezeIcons/window-close-16.svg</file>
-        <file>BreezeIcons/window-close-22.svg</file>
-        <file>BreezeIcons/window-close-24.svg</file>
-        <file>BreezeIcons/window-close-32.svg</file>
         <file>Icons/append.svg</file>
         <file>Icons/arrow_down.svg</file>
         <file>Icons/arrow_down_orange.svg</file>
@@ -174,7 +48,6 @@
         <file>MintYIcons/applications-system-16.png</file>
         <file>MintYIcons/applications-system-22.png</file>
         <file>MintYIcons/applications-system-24.png</file>
-        <file>MintYIcons/applications-system-256.png</file>
         <file>MintYIcons/applications-system-32.png</file>
         <file>MintYIcons/applications-system-48.png</file>
         <file>MintYIcons/applications-system-64.png</file>
@@ -191,7 +64,6 @@
         <file>MintYIcons/audio-volume-muted-16.svg</file>
         <file>MintYIcons/audio-volume-muted-22.svg</file>
         <file>MintYIcons/audio-volume-muted-24.svg</file>
-        <file>MintYIcons/audio-x-generic-128.png</file>
         <file>MintYIcons/audio-x-generic-16.png</file>
         <file>MintYIcons/audio-x-generic-24.png</file>
         <file>MintYIcons/audio-x-generic-32.png</file>
@@ -225,15 +97,12 @@
         <file>MintYIcons/edit-find-22.svg</file>
         <file>MintYIcons/edit-undo-16.svg</file>
         <file>MintYIcons/edit-undo-22.svg</file>
-        <file>MintYIcons/folder-128.png</file>
         <file>MintYIcons/folder-16.png</file>
         <file>MintYIcons/folder-22.png</file>
         <file>MintYIcons/folder-24.png</file>
         <file>MintYIcons/folder-32.png</file>
         <file>MintYIcons/folder-48.png</file>
         <file>MintYIcons/folder-64.png</file>
-        <file>MintYIcons/folder-96.png</file>
-        <file>MintYIcons/folder-open-128.png</file>
         <file>MintYIcons/folder-open-16.png</file>
         <file>MintYIcons/folder-open-16.svg</file>
         <file>MintYIcons/folder-open-22.png</file>
@@ -242,17 +111,14 @@
         <file>MintYIcons/folder-open-32.png</file>
         <file>MintYIcons/folder-open-48.png</file>
         <file>MintYIcons/folder-open-64.png</file>
-        <file>MintYIcons/folder-open-96.png</file>
         <file>MintYIcons/format-justify-fill-16.svg</file>
         <file>MintYIcons/format-justify-fill-22.svg</file>
         <file>MintYIcons/format-justify-left-16.svg</file>
         <file>MintYIcons/format-justify-left-22.svg</file>
-        <file>MintYIcons/image-x-generic-128.png</file>
         <file>MintYIcons/image-x-generic-16.png</file>
         <file>MintYIcons/image-x-generic-24.png</file>
         <file>MintYIcons/image-x-generic-32.png</file>
         <file>MintYIcons/image-x-generic-48.png</file>
-        <file>MintYIcons/image-x-generic-64.png</file>
         <file>MintYIcons/list-add-16.svg</file>
         <file>MintYIcons/list-add-22.svg</file>
         <file>MintYIcons/list-remove-16.svg</file>
@@ -271,14 +137,12 @@
         <file>MintYIcons/media-skip-forward-22.svg</file>
         <file>MintYIcons/rating-16.svg</file>
         <file>MintYIcons/rating-22.svg</file>
-        <file>MintYIcons/system-file-manager-128.png</file>
         <file>MintYIcons/system-file-manager-16.png</file>
         <file>MintYIcons/system-file-manager-22.png</file>
         <file>MintYIcons/system-file-manager-24.png</file>
         <file>MintYIcons/system-file-manager-32.png</file>
         <file>MintYIcons/system-file-manager-48.png</file>
         <file>MintYIcons/system-file-manager-64.png</file>
-        <file>MintYIcons/system-file-manager-96.png</file>
         <file>MintYIcons/system-shutdown-16.png</file>
         <file>MintYIcons/system-shutdown-22.png</file>
         <file>MintYIcons/system-shutdown-24.png</file>
@@ -287,7 +151,6 @@
         <file>MintYIcons/system-shutdown-48.png</file>
         <file>MintYIcons/system-shutdown-64.png</file>
         <file>MintYIcons/system-shutdown-96.png</file>
-        <file>MintYIcons/text-x-generic-128.png</file>
         <file>MintYIcons/text-x-generic-16.png</file>
         <file>MintYIcons/text-x-generic-24.png</file>
         <file>MintYIcons/text-x-generic-32.png</file>

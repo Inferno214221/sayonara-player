@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>403</width>
-    <height>111</height>
+    <width>376</width>
+    <height>119</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,7 +30,27 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="1">
+   <item row="1" column="1">
+    <widget class="QLabel" name="lab_info">
+     <property name="text">
+      <string notr="true">TextLabel</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0" rowspan="2">
+    <widget class="QLabel" name="lab_icon">
+     <property name="styleSheet">
+      <string notr="true">min-width: 10ex; min-height: 10ex; max-height: 10ex; max-width: 10ex;</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="scaledContents">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="2">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <property name="spacing">
       <number>6</number>
@@ -70,26 +90,6 @@
       </widget>
      </item>
     </layout>
-   </item>
-   <item row="1" column="1">
-    <widget class="QLabel" name="lab_info">
-     <property name="text">
-      <string notr="true">TextLabel</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="0" rowspan="2">
-    <widget class="QLabel" name="lab_icon">
-     <property name="minimumSize">
-      <size>
-       <width>50</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
    </item>
   </layout>
  </widget>

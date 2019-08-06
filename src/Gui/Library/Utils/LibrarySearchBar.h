@@ -50,6 +50,7 @@ namespace Library
 			QList<Filter::Mode> modes() const;
 
 			void set_current_mode(Filter::Mode mode);
+			void set_previous_mode();
 			void set_next_mode();
 			Filter::Mode current_mode() const;
 

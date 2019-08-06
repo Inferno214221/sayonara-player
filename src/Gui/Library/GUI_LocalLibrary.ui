@@ -659,6 +659,11 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>Library::TrackView</class>
+   <extends>QTableView</extends>
+   <header>Gui/Library/TrackView.h</header>
+  </customwidget>
+  <customwidget>
    <class>Library::GenreView</class>
    <extends>QTreeWidget</extends>
    <header>Gui/Library/GenreView.h</header>
@@ -667,11 +672,6 @@
    <class>Library::AlbumView</class>
    <extends>QTableView</extends>
    <header>Gui/Library/AlbumView.h</header>
-  </customwidget>
-  <customwidget>
-   <class>Library::TrackView</class>
-   <extends>QTableView</extends>
-   <header>Gui/Library/TrackView.h</header>
   </customwidget>
   <customwidget>
    <class>Library::ArtistView</class>

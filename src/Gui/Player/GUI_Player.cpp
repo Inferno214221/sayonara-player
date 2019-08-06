@@ -492,6 +492,7 @@ void GUI_Player::check_control_splitter(bool force)
 			auto sizes = ui->splitterControls->sizes();
 				sizes[0] -= difference;
 				sizes[1] += difference;
+
 			ui->splitterControls->setSizes(sizes);
 		}
 	}

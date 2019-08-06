@@ -56,6 +56,7 @@ private:
 
 private slots:
 	void theme_changed(const QString& theme);
+	void radio_button_toggled(bool b);
 };
 
 #endif // GUI_ICONPREFERENCES_H

@@ -475,6 +475,8 @@ void GUI_DirectoryWidget::language_changed()
 	else{
 		ui->btn_search->setText(Lang::get(Lang::SearchVerb));
 	}
+
+	ui->btn_set_library_path->setText(Lang::get(Lang::CreateNewLibrary));
 }
 
 void GUI_DirectoryWidget::skin_changed()
@@ -523,10 +525,13 @@ void GUI_DirectoryWidget::check_libraries()
 	if(lib_manager->count() == 0)
 	{
 		ui->stackedWidget->setCurrentIndex(1);
+		ui->widget_search->setVisible(false);
+
 	}
 
 	else {
 		ui->stackedWidget->setCurrentIndex(0);
+		ui->widget_search->setVisible(true);
 	}
 }
 

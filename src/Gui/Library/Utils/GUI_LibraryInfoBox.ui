@@ -239,17 +239,8 @@
      </property>
      <item>
       <widget class="QLabel" name="lab_icon">
-       <property name="minimumSize">
-        <size>
-         <width>24</width>
-         <height>24</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>24</width>
-         <height>24</height>
-        </size>
+       <property name="styleSheet">
+        <string notr="true">min-width: 5ex; min-height: 5ex; max-width: 5ex; max-height: 5ex;</string>
        </property>
        <property name="text">
         <string/>

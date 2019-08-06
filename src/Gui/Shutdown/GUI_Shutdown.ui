@@ -6,52 +6,25 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>394</width>
-    <height>161</height>
+    <width>364</width>
+    <height>166</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Shutdown</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="3" column="0" colspan="4">
-    <widget class="QRadioButton" name="rb_after_finished">
-     <property name="text">
-      <string>Shutdown after playlist finished</string>
-     </property>
-     <property name="checked">
-      <bool>true</bool>
+   <item row="2" column="0" colspan="4">
+    <widget class="Line" name="line">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
      </property>
     </widget>
    </item>
-   <item row="5" column="2">
-    <widget class="QPushButton" name="btn_cancel">
-     <property name="text">
-      <string>Cancel</string>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="3">
+   <item row="6" column="3">
     <widget class="QPushButton" name="btn_ok">
      <property name="text">
       <string>OK</string>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="2">
-    <widget class="QSpinBox" name="sb_minutes">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="value">
-      <number>30</number>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="0">
-    <widget class="QRadioButton" name="rb_after_minutes">
-     <property name="text">
-      <string>Shutdown after</string>
      </property>
     </widget>
    </item>
@@ -62,31 +35,35 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="0" colspan="4">
-    <widget class="Line" name="line">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+   <item row="6" column="2">
+    <widget class="QPushButton" name="btn_cancel">
+     <property name="text">
+      <string>Cancel</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="4">
+    <widget class="QRadioButton" name="rb_after_finished">
+     <property name="text">
+      <string>Shutdown after playlist finished</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
    <item row="1" column="0" colspan="4">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <property name="spacing">
-      <number>10</number>
+      <number>15</number>
      </property>
      <item>
       <widget class="QLabel" name="lab_icon">
-       <property name="maximumSize">
-        <size>
-         <width>30</width>
-         <height>30</height>
-        </size>
+       <property name="styleSheet">
+        <string notr="true">min-width: 6ex; max-width: 6ex; min-height: 6ex; max-height: 6ex;</string>
        </property>
        <property name="text">
         <string/>
-       </property>
-       <property name="pixmap">
-        <pixmap resource="../Resources/Icons.qrc">:/Icons/power_on.svg.png</pixmap>
        </property>
        <property name="scaledContents">
         <bool>true</bool>
@@ -108,6 +85,30 @@
       </widget>
      </item>
     </layout>
+   </item>
+   <item row="4" column="2">
+    <widget class="QSpinBox" name="sb_minutes">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="value">
+      <number>30</number>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QRadioButton" name="rb_after_minutes">
+     <property name="text">
+      <string>Shutdown after</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0" colspan="4">
+    <widget class="Line" name="line_2">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

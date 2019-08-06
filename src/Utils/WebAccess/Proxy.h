@@ -21,9 +21,8 @@
 #ifndef PROXY_H
 #define PROXY_H
 
-#include "Utils/Singleton.h"
-
-#include <QObject>
+#include "Utils/typedefs.h"
+class QString;
 
 namespace Proxy
 {
@@ -32,7 +31,7 @@ namespace Proxy
 	void unset_proxy();
 
 	QString hostname();
-	int port();
+	uint16_t port();
 	QString username();
 	QString password();
 	bool active();

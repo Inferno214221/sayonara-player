@@ -111,13 +111,18 @@ void GUI_LanguagePreferences::renew_combo()
 	for(auto it=locales.begin(); it != locales.end(); it++)
 	{
 		QString four_letter = it.key();
-		QLocale loc = it.value();
-
 		QString icon_path = Language::get_icon_path(four_letter);
 
-		ui->combo_lang->addItem(
+		QLocale loc = it.value();
+		QString language_name = Util::cvt_str_to_first_upper(loc.nativeLanguageName());
+		if(four_letter.startsWith("en_")){
+			language_name = "English";
+		}
+
+		ui->combo_lang->addItem
+		(
 			QIcon(icon_path),
-			Util::cvt_str_to_first_upper(loc.nativeLanguageName()),
+			language_name,
 			four_letter
 		);
 

@@ -1,4 +1,4 @@
-/* TagFromPath.h */
+/* GUI_TagFromPath.h */
 
 /* Copyright (C) 2011-2019  Lucio Carreras
  *
@@ -18,10 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
-#ifndef TAGFROMPATH_H
-#define TAGFROMPATH_H
+#ifndef GUI_TAGFROMPATH_H
+#define GUI_TAGFROMPATH_H
 
 #include "Gui/Utils/Widgets/Widget.h"
 #include "Gui/Utils/GuiClass.h"
@@ -48,7 +46,6 @@ class GUI_TagFromPath :
 signals:
 	void sig_apply();
 	void sig_apply_all();
-
 
 public:
 	GUI_TagFromPath(QWidget* parent=nullptr);
@@ -94,4 +91,4 @@ private slots:
 	void btn_year_checked(bool b);
 };
 
-#endif // TAGFROMPATH_H
+#endif // GUI_TAGFROMPATH_H

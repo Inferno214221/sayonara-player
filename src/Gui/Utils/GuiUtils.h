@@ -48,7 +48,6 @@ namespace Gui
 	{
 		enum IconTheme
 		{
-			Breeze,
 			MintY,
 			NoTheme
 		};

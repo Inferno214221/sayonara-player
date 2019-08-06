@@ -71,9 +71,9 @@ QString Proxy::hostname()
 	return GetSetting(Set::Proxy_Hostname);
 }
 
-int Proxy::port()
+uint16_t Proxy::port()
 {
-	return GetSetting(Set::Proxy_Port);
+	return static_cast<uint16_t>(GetSetting(Set::Proxy_Port));
 }
 
 QString Proxy::username()

@@ -121,11 +121,11 @@ void GUI_LibraryInfoBox::refresh()
 	lib_db->getAllAlbums(v_albums, false);
 	lib_db->getAllArtists(v_artists, false);
 
-	int n_tracks = v_md.size();
-	int n_albums = v_albums.size();
-	int n_artists = v_artists.size();
+	auto n_tracks = v_md.size();
+	auto n_albums = v_albums.size();
+	auto n_artists = v_artists.size();
 	MilliSeconds duration_ms = 0;
-	MilliSeconds filesize = 0;
+	auto filesize = MetaData().filesize;
 
 	for( const MetaData& md : v_md ) {
 		duration_ms += md.duration_ms;

@@ -25,6 +25,7 @@
 #include "Gui/Utils/GuiUtils.h"
 #include "Gui/Utils/Style.h"
 
+#include "Utils/Algorithm.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
 
@@ -81,7 +82,7 @@ static const QMap<Icons::IconName, QPair<QString, QString>> s_icon_map =
 	{Icons::Search,			P("edit-find", "")},
 	{Icons::Shuffle,		P("shuffle", "shuffle")},
 	{Icons::Shutdown,		P("system-shutdown", "")},
-	{Icons::Star,			P("rating", "star.png")},
+	{Icons::Star,			P("star.png", "star.png")},
 	{Icons::StarDisabled,	P("star_disabled.png", "star_disabled.png")},
 	{Icons::Stop,			P("media-playback-stop", "stop")},
 	{Icons::Table,			P("format-justify-fill", "")},
@@ -190,12 +191,28 @@ QPixmap Icons::pixmap(Icons::IconName spec, Icons::IconMode mode)
 		pm = Gui::Util::pixmap(dark_name, Gui::Util::NoTheme);
 	}
 
-	else if(mode == IconMode::ForceStdIcon){
-		pm = QIcon::fromTheme(std_name).pixmap(QSize(32,32));
+	else if(mode == IconMode::ForceStdIcon)
+	{
+		QIcon icon = QIcon::fromTheme(std_name);
+		if(!icon.isNull())
+		{
+			QList<QSize> sizes = icon.availableSizes();
+			::Util::Algorithm::sort(sizes, [](QSize sz1, QSize sz2){
+				return (sz1.width() < sz2.width());
+			});
+
+			QSize sz(32, 32);
+			if(!sizes.isEmpty())
+			{
+				sz = sizes.last();
+			}
+
+			pm = icon.pixmap(sz);
+		}
 	}
 
 	else {
-		pm = Gui::Util::pixmap(std_name, Gui::Util::Breeze);
+		pm = Gui::Util::pixmap(std_name, Gui::Util::MintY);
 	}
 
 	if(pm.isNull())
@@ -205,7 +222,6 @@ QPixmap Icons::pixmap(Icons::IconName spec, Icons::IconMode mode)
 	#ifdef Q_OS_WIN
 			pm = QIcon(get_win_icon_name(std_name)).pixmap(QSize(32,32));
 	#else
-
 			pm = QIcon::fromTheme(std_name).pixmap(QSize(32,32));
 	#endif
 		}
@@ -215,7 +231,7 @@ QPixmap Icons::pixmap(Icons::IconName spec, Icons::IconMode mode)
 	#ifdef Q_OS_WIN
 			pm = QIcon(get_win_icon_name(std_name)).pixmap(QSize(32,32));
 	#else
-			pm = Gui::Util::pixmap(dark_name, Gui::Util::Breeze);
+			pm = Gui::Util::pixmap(dark_name, Gui::Util::MintY);
 	#endif
 		}
 	}

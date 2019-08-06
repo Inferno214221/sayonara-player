@@ -27,6 +27,12 @@
    </item>
    <item row="0" column="0" colspan="3">
     <widget class="QLabel" name="lab_title">
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
      <property name="text">
       <string notr="true"/>
      </property>

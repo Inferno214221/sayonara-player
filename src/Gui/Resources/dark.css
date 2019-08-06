@@ -97,7 +97,8 @@ QListWidget,
 QTreeWidget,
 Library--View,
 Library--ItemView,
-Library--GenreView
+Library--GenreView,
+IconThemeScrollWidget
 {
 	border: 1px solid #282828;
 	color: #D8D8D8;
@@ -113,7 +114,7 @@ Library--View,
 Library--GenreView,
 Library--ItemView
 {
-    font-size: <<FONT_SIZE_LIB>>pt;
+	font-size: <<FONT_SIZE_LIB>>pt;
 	font-weight: <<FONT_WEIGHT_LIB>>;
 }
 
@@ -854,3 +855,7 @@ CoverButton:hover,
 }
 
 
+QScrollArea
+{
+	border: 1px solid #282828;
+}

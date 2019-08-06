@@ -19,7 +19,7 @@
  */
 
 #include "GUI_TagEdit.h"
-#include "TagFromPath.h"
+#include "GUI_TagFromPath.h"
 #include "TagLineEdit.h"
 #include "GUI_CoverEdit.h"
 #include "GUI_FailMessageBox.h"
@@ -239,6 +239,11 @@ void GUI_TagEdit::apply_all_tag_from_path()
 		{
 			ui->tab_widget->setCurrentIndex(0);
 		}
+	}
+
+	else
+	{
+		ui->tab_widget->setCurrentIndex(0);
 	}
 
 	refresh_current_track();
@@ -471,14 +476,16 @@ void GUI_TagEdit::write_changes(int idx)
 	md.set_album(ui->le_album->text());
 	md.set_album_artist(ui->le_album_artist->text());
 	md.set_genres(ui->le_genre->text().split(", "));
-	md.discnumber = ui->sb_discnumber->value();
-	md.year = ui->sb_year->value();
-	md.track_num = ui->sb_track_num->value();
-	md.rating = ui->lab_rating->get_rating();
 	md.set_comment(ui->te_comment->toPlainText());
 
-	m->tag_edit->update_track(idx, md);
+	md.discnumber = scast(Disc, ui->sb_discnumber->value());
+	md.year =		scast(uint16_t, ui->sb_year->value());
+	md.track_num =	scast(uint16_t, ui->sb_track_num->value());
+	md.rating =		ui->lab_rating->get_rating();
+
 	QPixmap cover = m->ui_cover_edit->selected_cover(idx);
+
+	m->tag_edit->update_track(idx, md);
 	m->tag_edit->update_cover(idx, cover);
 }
 
@@ -521,7 +528,7 @@ void GUI_TagEdit::commit()
 		}
 
 		if( ui->cb_discnumber_all->isChecked() ){
-			md.discnumber = ui->sb_discnumber->value();
+			md.discnumber = scast(Disc, ui->sb_discnumber->value());
 		}
 
 		if( ui->cb_rating_all->isChecked()){
@@ -529,7 +536,7 @@ void GUI_TagEdit::commit()
 		}
 
 		if( ui->cb_year_all->isChecked()){
-			md.year = ui->sb_year->value();
+			md.year = scast(uint16_t, ui->sb_year->value());
 		}
 
 		if( ui->cb_comment_all->isChecked() ){

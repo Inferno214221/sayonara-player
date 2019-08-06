@@ -316,6 +316,8 @@ void Menubar::skin_changed()
 	m->action_open_file->setIcon(Icons::icon(Icons::Open));
 	m->action_open_dir->setIcon(Icons::icon(Icons::Open));
 	m->action_close->setIcon(Icons::icon(Icons::Exit));
+	m->action_shutdown->setIcon(Icons::icon(Icons::Shutdown));
+	m->action_about->setIcon(Icons::icon(Icons::Info));
 }
 
 void Menubar::open_dir_clicked()
