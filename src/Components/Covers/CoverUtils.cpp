@@ -65,34 +65,27 @@ QString Cover::Utils::cover_directory(const QString& append_filename)
 	return FileUtils::clean_filename(cover_dir);
 }
 
+QString Cover::Utils::cover_temp_directory()
+{
+	return cover_directory("tmp");
+}
+
 
 void Cover::Utils::delete_temp_covers()
 {
-	QDir cover_dir = QDir(cover_directory());
+	QString dir = cover_temp_directory();
 
-	QStringList files, files_to_delete;
-
-	DirectoryReader reader;
-	reader.set_filter({"*.jpg", "*.png"});
-	reader.scan_files(cover_dir, files);
-
-	for(const QString& f : Algorithm::AsConst(files))
+	if(QFile::exists(dir))
 	{
-		QString pure_filename = FileUtils::get_filename_of_path(f);
-		if(pure_filename.startsWith("tmp"))
-		{
-			files_to_delete << f;
-		}
+		FileUtils::remove_files_in_directory(dir);
 	}
-
-	FileUtils::delete_files(files_to_delete);
 }
 
 
 bool Cover::Utils::add_temp_cover(const QPixmap& pm, const QString& hash)
 {
-	QDir cover_dir = QDir(cover_directory());
-	QString path = cover_dir.filePath("tmp_" + hash + ".jpg");
+	QDir cover_temp_dir = QDir(cover_temp_directory());
+	QString path = cover_temp_dir.filePath("tmp_" + hash + ".jpg");
 	return pm.save(path);
 }
 

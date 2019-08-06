@@ -609,10 +609,10 @@ QTabBar::tab
 	border-bottom: none;
 	border-top-left-radius: 2px;
 	border-top-right-radius: 2px;
-	min-width: 4em;
-	padding: 3px 5px 3px 5px;
-	max-height: 5ex; /* 6ex */
-	min-height: 2.5ex; /* 1ex */
+	min-width: 3.5em;
+	padding: 0.4ex 0.4ex;
+	max-height: 2.5ex; 
+	min-height: 2.5ex;
 }
 
 PlaylistTabBar::tab:last
@@ -646,13 +646,14 @@ QTabBar::tab:selected
 
 QTabBar::close-button
 {
+	padding-top: 0.3ex;
+	padding-bottom: 0.3ex;
 	image: url(:/Icons/tool_dark_grey_small.svg);
 }
 
 QTabBar::close-button:disabled
 {
-
-	image: url(:/Icons/close_disabled.svg)
+	image: none;
 }
 
 QTabBar::close-button:hover
@@ -664,20 +665,33 @@ QTabBar::close-button:hover
 QTabBar QToolButton
 {
 	background: #3c3c3c;
-	padding-top: 8px;
-	padding-bottom: 8px;
+	padding-top: 1ex;
+	padding-bottom: 1ex;
+	border: none;
 }
 
-QTabBar QToolButton::right-arrow { /* the arrow mark in the tool buttons */
+QTabBar QToolButton:hover
+{
+	border: none;
+}
+
+
+QTabBar QToolButton::right-arrow 
+{ 
+	padding-top: 0.5ex;
+	padding-bottom: 0.5ex;
 	image: url(:/Icons/arrow_right.svg);
 }
 
 QTabBar QToolButton::left-arrow
 {
+	padding-top: 0.5ex;
+	padding-bottom: 0.5ex;
 	image: url(:/Icons/arrow_left.svg);
 }
 
-QTabBar QToolButton::right-arrow:hover { /* the arrow mark in the tool buttons */
+QTabBar QToolButton::right-arrow:hover 
+{ 
 	image: url(:/Icons/arrow_right_orange.svg);
 }
 
@@ -686,7 +700,8 @@ QTabBar QToolButton::left-arrow:hover
 	image: url(:/Icons/arrow_left_orange.svg);
 }
 
-QTabBar QToolButton::right-arrow:disabled { /* the arrow mark in the tool buttons */
+QTabBar QToolButton::right-arrow:disabled 
+{ 
 	image: url(:/Icons/arrow_right_disabled.svg);
 }
 
@@ -813,11 +828,6 @@ QPushButton#btn_ctrl_pause,
 QPushButton#btn_mute,
 QLabel#lab_ctrl_rec_icon
 {
-/*	min-height: 4ex;
-	min-width:  4ex;
-	max-height: 4ex;
-	max-width:  4ex;*/
-
 	border-image: url(:/Icons/dark_bg.svg);
 }
 

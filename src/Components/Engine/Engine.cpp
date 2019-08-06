@@ -391,6 +391,11 @@ void EngineImpl::set_equalizer(int band, int val)
 	}
 }
 
+MetaData Engine::Engine::current_track() const
+{
+	return m->md;
+}
+
 
 void EngineImpl::set_buffer_state(int progress, GstElement* src)
 {
@@ -500,28 +505,9 @@ void EngineImpl::update_metadata(const MetaData& md, GstElement* src)
 		return;
 	}
 
-	QString title = md.title();
-
-	QStringList splitted = title.split("-");
-	if(splitted.size() == 2) {
-		title = splitted[1].trimmed();
-	}
-
-	if(title.isEmpty() || title == m->md.title()) {
-		return;
-	}
+	m->md = md;
 
 	set_current_position_ms(0);
-
-	if(splitted.size() == 2)
-	{
-		m->md.set_artist(splitted[0].trimmed());
-		m->md.set_title(splitted[1].trimmed());
-	}
-
-	else {
-		m->md.set_title(md.title());
-	}
 
 	emit sig_metadata_changed(m->md);
 

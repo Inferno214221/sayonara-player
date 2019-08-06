@@ -197,6 +197,20 @@ void LibraryItem::add_custom_field(const QString& id, const QString& display_nam
 	m->additional_data.push_back(CustomField(id, display_name, value));
 }
 
+void LibraryItem::replace_custom_field(const QString& id, const QString& display_name, const QString& value)
+{
+	for(int i=m->additional_data.size()-1; i>=0; i--)
+	{
+		CustomField field = m->additional_data.at(i);
+
+		if(field.get_id() == id){
+			m->additional_data.removeAt(i);
+		}
+	}
+
+	this->add_custom_field(id, display_name, value);
+}
+
 const CustomFieldList& LibraryItem::get_custom_fields() const
 {
 	return m->additional_data;

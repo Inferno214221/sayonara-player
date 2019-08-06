@@ -102,6 +102,8 @@ namespace Engine
 
 			void set_equalizer(int band, int value);
 
+			MetaData current_track() const;
+
 
 		public slots:
 			void play();

@@ -47,11 +47,13 @@ struct AsyncWebAccess::Private
 	AsyncWebAccess::Behavior	behavior;
 	AsyncWebAccess::Status		status;
 	bool						ignore_finished;
+	bool						aborted;
 
 	Private(AsyncWebAccess::Behavior behavior) :
 		behavior(behavior),
 		status(AsyncWebAccess::Status::NoData),
-		ignore_finished(false)
+		ignore_finished(false),
+		aborted(false)
 	{}
 
 	~Private()
@@ -64,13 +66,14 @@ struct AsyncWebAccess::Private
 	void abort_request(bool ignore_finished_slot=false)
 	{
 		ignore_finished = ignore_finished_slot;
+		aborted = true;
 
 		if(reply)
 		{
-			if(reply->isRunning() )
+			if(reply->isRunning())
 			{
 				reply->abort();
-				sp_log(Log::Warning, this) << "Request was aborted: " << url;
+				sp_log(Log::Debug, this) << "Request was aborted: " << url;
 			}
 
 			delete_reply();
@@ -104,7 +107,7 @@ AsyncWebAccess::AsyncWebAccess(QObject* parent, const QByteArray& header, AsyncW
 	connect(parent, &QObject::destroyed, this, &AsyncWebAccess::stop);
 }
 
-AsyncWebAccess::~AsyncWebAccess() {}
+AsyncWebAccess::~AsyncWebAccess() = default;
 
 void AsyncWebAccess::run(const QString& url, int timeout)
 {
@@ -114,6 +117,7 @@ void AsyncWebAccess::run(const QString& url, int timeout)
 	m->url = url;
 	m->nam->clearAccessCache();
 	m->ignore_finished = false;
+	m->aborted = false;
 
 	QRegExp re("(itpc|feed)://");
 	if(re.indexIn(url) >= 0){
@@ -164,6 +168,7 @@ void AsyncWebAccess::run_post(const QString &url, const QByteArray &post_data, i
 	m->url = url;
 	m->nam->clearAccessCache();
 	m->ignore_finished = false;
+	m->aborted = false;
 
 	QUrl my_url(url);
 	QNetworkRequest request(my_url);
@@ -252,11 +257,14 @@ void AsyncWebAccess::finished()
 		}
 	}
 
-	else {
-
-		sp_log(Log::Warning, this) << "Cannot open " << m->url << ": "
+	else
+	{
+		if(!m->aborted)
+		{
+			sp_log(Log::Warning, this) << "Cannot open " << m->url << ": "
 								   << reply->errorString()
 								   << " (" << (int) err << ")";
+		}
 
 		if(err == QNetworkReply::TimeoutError)
 		{

@@ -98,13 +98,16 @@ Loader::Loader(QObject* parent) :
 		return;
 	}
 
-	bool has_playlist_id = Algorithm::contains(m->playlists, [&saved_playlist_id](const CustomPlaylist& pl)
+	if(saved_playlist_id >= 0)
 	{
-		return (saved_playlist_id == pl.id());
-	});
+		bool has_playlist_id = Algorithm::contains(m->playlists, [&saved_playlist_id](const CustomPlaylist& pl)
+		{
+			return (saved_playlist_id == pl.id());
+		});
 
-	if(!has_playlist_id){
-		m->playlists.prepend(playlist_db_connector->get_playlist_by_id(saved_playlist_id));
+		if(!has_playlist_id){
+			m->playlists.prepend(playlist_db_connector->get_playlist_by_id(saved_playlist_id));
+		}
 	}
 
 	for(int i=0; i<m->playlists.size(); i++)

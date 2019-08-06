@@ -55,6 +55,7 @@ namespace Cover
 
 		QString cover_directory();
 		QString cover_directory(const QString& append_filename);
+		QString cover_temp_directory();
 
 		void write_cover_to_sayonara_dir(const Cover::Location& cl, const QPixmap& pm);
 		void write_cover_to_db(const Cover::Location& cl, const QPixmap& pm);

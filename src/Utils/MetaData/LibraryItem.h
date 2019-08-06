@@ -76,6 +76,7 @@ public:
 
 	void add_custom_field(const CustomField& field);
 	void add_custom_field(const QString& id, const QString& display_name, const QString& value);
+	void replace_custom_field(const QString& id, const QString& display_name, const QString& value);
 
 	const CustomFieldList& get_custom_fields() const;
 	QString get_custom_field(const QString& id) const;

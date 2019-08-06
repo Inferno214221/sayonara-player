@@ -23,6 +23,7 @@
 #include "Components/Engine/Engine.h"
 #include "Components/Engine/Pipeline.h"
 
+#include "Utils/Utils.h"
 #include "Utils/WebAccess/Proxy.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/MetaData/MetaData.h"
@@ -129,9 +130,25 @@ static bool parse_image(GstTagList* tags, QImage& img)
 // check messages from bus
 gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer data)
 {
+	static QStringList string_tags
+	{
+		GST_TAG_TITLE,
+		GST_TAG_ARTIST,
+		GST_TAG_ALBUM,
+		GST_TAG_ALBUM_ARTIST,
+		GST_TAG_COMMENT,
+
+		GST_TAG_PERFORMER,
+		GST_TAG_HOMEPAGE,
+		GST_TAG_DESCRIPTION,
+		GST_TAG_ORGANIZATION,
+		GST_TAG_CONTACT,
+		GST_TAG_SHOW_NAME,
+		GST_TAG_PUBLISHER
+	};
+
 	Q_UNUSED(bus);
 
-	static MetaData md;
 	Engine* engine = static_cast<Engine*>(data);
 	if(!engine){
 		return true;
@@ -193,20 +210,60 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 				engine->update_cover(img, src);
 			}
 
+			MetaData md = engine->current_track();
+			bool update_metadata = false;
+			for(const QString& tag : string_tags)
+			{
+				gchar* value;
+				success = gst_tag_list_get_string(tags, tag.toLocal8Bit().constData(), &value);
+				if(!success) {
+					continue;
+				}
+
+				update_metadata = true;
+
+				if(tag == GST_TAG_TITLE) {
+					md.set_title(value);
+				}
+
+				else if(tag == GST_TAG_ARTIST) {
+					md.set_artist(value);
+				}
+
+				else if(tag == GST_TAG_ALBUM) {
+					md.set_album(value);
+				}
+
+				else if(tag == GST_TAG_ALBUM_ARTIST) {
+					md.set_album_artist(value);
+				}
+
+				else if(tag == GST_TAG_COMMENT) {
+					md.set_comment(value);
+				}
+
+				else {
+					const gchar* nick = gst_tag_get_nick(tag.toLocal8Bit().constData());
+
+					QString sNick = tag;
+					if(nick && strnlen(nick, 3) > 0) {
+						sNick = QString::fromLocal8Bit(nick);
+					}
+
+					md.replace_custom_field(tag, Util::cvt_str_to_first_upper(sNick), value);
+				}
+
+				g_free(value);
+			}
+
 			Bitrate bitrate;
 			success = gst_tag_list_get_uint(tags, GST_TAG_BITRATE, &bitrate);
-			if(success){
+			if(success) {
 				engine->update_bitrate((bitrate / 1000) * 1000, src);
 			}
 
-			gchar* title=nullptr;
-			success = gst_tag_list_get_string(tags, GST_TAG_TITLE, (gchar**) &title);
-			if(success)
-			{
-				md.set_title(title);
+			if(update_metadata) {
 				engine->update_metadata(md, src);
-
-				g_free(title);
 			}
 
 			gst_tag_list_unref(tags);
