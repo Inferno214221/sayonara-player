@@ -1,19 +1,20 @@
-== 1.6.0-stable1 ==
+== 1.5.0-stable1 ==
 
   * Player: Floating text instead of wrapping
   * Lyrics: Lyrics enhanced
   * Lyrics: Songtexte.de added
+  * Lyrics: Lyrics server customizable 
   * Covers: Cover fetcher enhanced
   * Covers: added Amazon cover server
   * Covers: added Allmusic cover server
   * Covers: Also save covers in Library
   * Genres: Select all tracks without genre
   * Tagging: write covers easier into tags
+  * Tagging: Removed OggVorbis critcal bug
   * Playlist: 'Find' tracks in library
-  * Libraray: Optionally ignore english 'the' article in artists
-
-== 1.5.0-stable1 == 
-
+  * Library: Optionally ignore english 'the' article in artists
+  * Library: Find track in library
+  * Library: First startup enhanced
   * Engine: Bugfix in Pitch element
   * Cover: Bugfix endless cover search
   * Library: Empty Library usability improvement
