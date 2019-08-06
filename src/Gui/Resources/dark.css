@@ -371,9 +371,15 @@ QMenu::separator
 	margin: 3px 5px;
 }
 
-QLabel, QScrollArea
+QLabel
 {
 	border: none;
+	background: transparent;
+}
+
+QScrollArea
+{
+	border: 1px solid #282828;
 	background: transparent;
 }
 
@@ -842,7 +848,8 @@ CoverButton:hover,
 }
 
 #StackedReloadLibraryWidget,
-#EmptyLibraryCentralWidget
+#EmptyLibraryCentralWidget,
+#DirectoryViewNoLibraryWidget
 {
 	background: rgba(50, 50, 50, 196);
 	border: 1px solid #282828;
@@ -854,8 +861,3 @@ CoverButton:hover,
 	border-top: none;
 }
 
-
-QScrollArea
-{
-	border: 1px solid #282828;
-}
