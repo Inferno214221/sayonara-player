@@ -141,7 +141,7 @@ QString ColumnHeader::title() const
 		case ColumnHeader::Filesize:
 			return Lang::get(Lang::Filesize).toFirstUpper();
 		case ColumnHeader::Discnumber:
-			return Lang::get(Lang::Disc).toFirstUpper();
+			return Lang::get(Lang::Disc);
 		default:
 			return QString();
 	}

@@ -41,6 +41,19 @@
 #include "Utils/Language/Language.h"
 #include "Utils/Set.h"
 
+
+template<typename T>
+auto check_vector_size(const T& t) -> T
+{
+	T copy = t;
+	if(copy.size() > 2)
+	{
+		copy.removeFirst();
+	}
+
+	return copy;
+}
+
 using namespace Library;
 
 struct ArtistView::Private
@@ -55,7 +68,7 @@ ArtistView::ArtistView(QWidget* parent) :
 	m = Pimpl::make<Private>();
 }
 
-ArtistView::~ArtistView() {}
+ArtistView::~ArtistView() = default;
 
 AbstractLibrary* ArtistView::library() const
 {
@@ -88,6 +101,7 @@ void ArtistView::init_context_menu()
 	m->album_artist_action->setCheckable(true);
 	m->album_artist_action->setChecked(GetSetting(Set::Lib_ShowAlbumArtists));
 	m->album_artist_action->setShortcut(sch->shortcut(ShortcutIdentifier::AlbumArtists).sequence());
+
 	ListenSetting(Set::Lib_ShowAlbumCovers, ArtistView::album_artists_changed);
 
 	connect(m->album_artist_action, &QAction::triggered, this, &ArtistView::album_artists_triggered);
@@ -107,29 +121,29 @@ ColumnHeaderList ArtistView::column_headers() const
 	columns << std::make_shared<ColumnHeader>(ColumnHeader::Artist, false, SortOrder::ArtistNameAsc, SortOrder::ArtistNameDesc, 160, true);
 	columns << std::make_shared<ColumnHeader>(ColumnHeader::NumTracks, true, SortOrder::ArtistTrackcountAsc, SortOrder::ArtistTrackcountDesc, 80);
 
-	return columns;
+	return check_vector_size(columns);
 }
 
 IntList ArtistView::column_header_sizes() const
 {
-	return GetSetting(Set::Lib_ColSizeArtist);
+	return check_vector_size(GetSetting(Set::Lib_ColSizeArtist));
 }
 
 void ArtistView::save_column_header_sizes(const IntList& sizes)
 {
-	SetSetting(Set::Lib_ColSizeArtist, sizes);
+	SetSetting(Set::Lib_ColSizeArtist, check_vector_size(sizes));
 }
 
 BoolList ArtistView::visible_columns() const
 {
 	BoolList columns = GetSetting(Set::Lib_ColsArtist);
-	columns[0] = false;
-	return columns;
+
+	return check_vector_size(columns);
 }
 
 void ArtistView::save_visible_columns(const BoolList& columns)
 {
-	SetSetting(Set::Lib_ColsArtist, columns);
+	SetSetting(Set::Lib_ColsArtist, check_vector_size(columns));
 }
 
 SortOrder ArtistView::sortorder() const

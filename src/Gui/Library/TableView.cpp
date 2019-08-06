@@ -100,7 +100,6 @@ void TableView::init(AbstractLibrary* library)
 }
 
 
-
 void TableView::header_actions_triggered()
 {
 	IndexSet sel_indexes = selected_items();

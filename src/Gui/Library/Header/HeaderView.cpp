@@ -39,8 +39,8 @@ HeaderView::HeaderView(Qt::Orientation orientation, QWidget* parent) :
 	m = Pimpl::make<Private>();
 
 	m->action_resize = new QAction(resize_text(), this);
-	this->addAction(m->action_resize);
 
+	addAction(m->action_resize);
 	connect(m->action_resize, &QAction::triggered, this, &HeaderView::action_resize_triggered);
 
 	this->setSectionsClickable(true);

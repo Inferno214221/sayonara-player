@@ -24,9 +24,11 @@
 #define COL_ALBUM_MACROS
 #define COL_ARTIST_MACROS
 
+#include <cstdint>
+
 namespace ColumnIndex
 {
-	enum class Album : quint8
+	enum class Album : uint8_t
 	{
 		MultiDisc=0,
 		Name=1,
@@ -36,14 +38,13 @@ namespace ColumnIndex
 		Rating=5
 	};
 
-	enum class Artist : quint8
+	enum class Artist : uint8_t
 	{
-		NumAlbums=0,
-		Name=1,
-		Tracks=2
+		Name=0,
+		Tracks=1
 	};
 
-	enum class Track : quint8
+	enum class Track : uint8_t
 	{
 		TrackNumber=0,
 		Title,

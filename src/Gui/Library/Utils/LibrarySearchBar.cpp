@@ -269,11 +269,13 @@ void SearchBar::keyPressEvent(QKeyEvent* e)
 
 	else if(e->key() == Qt::Key_Up)
 	{
+		this->clear();
 		this->set_previous_mode();
 	}
 
 	else if(e->key() == Qt::Key_Down)
 	{
+		this->clear();
 		this->set_next_mode();
 	}
 

@@ -57,7 +57,7 @@ AlbumView::AlbumView(QWidget* parent) :
 	connect(this, &QTableView::clicked, this, &AlbumView::index_clicked);
 }
 
-AlbumView::~AlbumView() {}
+AlbumView::~AlbumView() = default;
 
 void AlbumView::init_view(AbstractLibrary* library)
 {
