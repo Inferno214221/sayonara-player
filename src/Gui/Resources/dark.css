@@ -619,7 +619,7 @@ QTabBar::tab
 	border-top-left-radius: 2px;
 	border-top-right-radius: 2px;
 	min-width: 3.5em;
-	padding: 0.4ex 0.4ex;
+	padding: 0.6ex 0.6ex;
 	max-height: 2.5ex; 
 	min-height: 2.5ex;
 }
