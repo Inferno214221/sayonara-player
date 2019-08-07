@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>406</width>
-    <height>234</height>
+    <width>778</width>
+    <height>357</height>
    </rect>
   </property>
   <layout class="QGridLayout" name="gridLayout">
@@ -40,7 +40,7 @@
         </sizepolicy>
        </property>
        <property name="focusPolicy">
-        <enum>Qt::ClickFocus</enum>
+        <enum>Qt::StrongFocus</enum>
        </property>
       </widget>
      </item>
@@ -78,7 +78,7 @@
         </font>
        </property>
        <property name="focusPolicy">
-        <enum>Qt::StrongFocus</enum>
+        <enum>Qt::NoFocus</enum>
        </property>
        <property name="layoutDirection">
         <enum>Qt::LeftToRight</enum>
@@ -112,7 +112,7 @@
         </font>
        </property>
        <property name="focusPolicy">
-        <enum>Qt::StrongFocus</enum>
+        <enum>Qt::NoFocus</enum>
        </property>
        <property name="text">
         <string notr="true">237</string>
@@ -143,7 +143,7 @@
         </font>
        </property>
        <property name="focusPolicy">
-        <enum>Qt::StrongFocus</enum>
+        <enum>Qt::NoFocus</enum>
        </property>
        <property name="layoutDirection">
         <enum>Qt::LeftToRight</enum>
@@ -177,7 +177,7 @@
         </font>
        </property>
        <property name="focusPolicy">
-        <enum>Qt::StrongFocus</enum>
+        <enum>Qt::NoFocus</enum>
        </property>
        <property name="text">
         <string notr="true">29</string>
@@ -208,7 +208,7 @@
         </font>
        </property>
        <property name="focusPolicy">
-        <enum>Qt::StrongFocus</enum>
+        <enum>Qt::NoFocus</enum>
        </property>
        <property name="layoutDirection">
         <enum>Qt::LeftToRight</enum>
@@ -242,7 +242,7 @@
         </font>
        </property>
        <property name="focusPolicy">
-        <enum>Qt::StrongFocus</enum>
+        <enum>Qt::NoFocus</enum>
        </property>
        <property name="text">
         <string notr="true">1.9k</string>
@@ -273,7 +273,7 @@
         </font>
        </property>
        <property name="focusPolicy">
-        <enum>Qt::StrongFocus</enum>
+        <enum>Qt::NoFocus</enum>
        </property>
        <property name="layoutDirection">
         <enum>Qt::LeftToRight</enum>
@@ -307,7 +307,7 @@
         </font>
        </property>
        <property name="focusPolicy">
-        <enum>Qt::StrongFocus</enum>
+        <enum>Qt::NoFocus</enum>
        </property>
        <property name="text">
         <string notr="true">7.5k</string>
@@ -338,7 +338,7 @@
         </font>
        </property>
        <property name="focusPolicy">
-        <enum>Qt::StrongFocus</enum>
+        <enum>Qt::NoFocus</enum>
        </property>
        <property name="layoutDirection">
         <enum>Qt::LeftToRight</enum>
@@ -375,7 +375,7 @@
         </font>
        </property>
        <property name="focusPolicy">
-        <enum>Qt::StrongFocus</enum>
+        <enum>Qt::NoFocus</enum>
        </property>
        <property name="text">
         <string notr="true">15k</string>
@@ -406,7 +406,7 @@
         </font>
        </property>
        <property name="focusPolicy">
-        <enum>Qt::StrongFocus</enum>
+        <enum>Qt::NoFocus</enum>
        </property>
        <property name="layoutDirection">
         <enum>Qt::LeftToRight</enum>
@@ -440,7 +440,7 @@
         </font>
        </property>
        <property name="focusPolicy">
-        <enum>Qt::StrongFocus</enum>
+        <enum>Qt::NoFocus</enum>
        </property>
        <property name="text">
         <string notr="true">947</string>
@@ -471,7 +471,7 @@
         </font>
        </property>
        <property name="focusPolicy">
-        <enum>Qt::StrongFocus</enum>
+        <enum>Qt::NoFocus</enum>
        </property>
        <property name="layoutDirection">
         <enum>Qt::LeftToRight</enum>
@@ -505,7 +505,7 @@
         </font>
        </property>
        <property name="focusPolicy">
-        <enum>Qt::StrongFocus</enum>
+        <enum>Qt::NoFocus</enum>
        </property>
        <property name="text">
         <string notr="true">474</string>
@@ -543,7 +543,7 @@
         </font>
        </property>
        <property name="focusPolicy">
-        <enum>Qt::StrongFocus</enum>
+        <enum>Qt::NoFocus</enum>
        </property>
        <property name="layoutDirection">
         <enum>Qt::LeftToRight</enum>
@@ -577,7 +577,7 @@
         </font>
        </property>
        <property name="focusPolicy">
-        <enum>Qt::StrongFocus</enum>
+        <enum>Qt::NoFocus</enum>
        </property>
        <property name="text">
         <string notr="true">3.8k</string>
@@ -608,7 +608,7 @@
         </font>
        </property>
        <property name="focusPolicy">
-        <enum>Qt::StrongFocus</enum>
+        <enum>Qt::NoFocus</enum>
        </property>
        <property name="layoutDirection">
         <enum>Qt::LeftToRight</enum>
@@ -642,7 +642,7 @@
         </font>
        </property>
        <property name="focusPolicy">
-        <enum>Qt::StrongFocus</enum>
+        <enum>Qt::NoFocus</enum>
        </property>
        <property name="text">
         <string notr="true">119</string>
@@ -673,7 +673,7 @@
         </font>
        </property>
        <property name="focusPolicy">
-        <enum>Qt::StrongFocus</enum>
+        <enum>Qt::NoFocus</enum>
        </property>
        <property name="layoutDirection">
         <enum>Qt::LeftToRight</enum>
@@ -710,7 +710,7 @@
         </font>
        </property>
        <property name="focusPolicy">
-        <enum>Qt::StrongFocus</enum>
+        <enum>Qt::NoFocus</enum>
        </property>
        <property name="text">
         <string notr="true">59</string>
@@ -733,7 +733,7 @@
   <customwidget>
    <class>Gui::MenuToolButton</class>
    <extends>QPushButton</extends>
-   <header location="global">Gui/Utils/MenuTool/MenuTool.h</header>
+   <header location="global">Gui/Utils/MenuTool/MenuToolButton.h</header>
   </customwidget>
   <customwidget>
    <class>PlayerPlugin::Base</class>
@@ -748,6 +748,8 @@
   </customwidget>
  </customwidgets>
  <tabstops>
+  <tabstop>combo_presets</tabstop>
+  <tabstop>btn_tool</tabstop>
   <tabstop>sli_0</tabstop>
   <tabstop>sli_1</tabstop>
   <tabstop>sli_2</tabstop>
@@ -758,26 +760,6 @@
   <tabstop>sli_7</tabstop>
   <tabstop>sli_8</tabstop>
   <tabstop>sli_9</tabstop>
-  <tabstop>label_10</tabstop>
-  <tabstop>label_18</tabstop>
-  <tabstop>label_20</tabstop>
-  <tabstop>label_6</tabstop>
-  <tabstop>label_14</tabstop>
-  <tabstop>label_16</tabstop>
-  <tabstop>label_7</tabstop>
-  <tabstop>label</tabstop>
-  <tabstop>label_17</tabstop>
-  <tabstop>label_2</tabstop>
-  <tabstop>label_3</tabstop>
-  <tabstop>label_12</tabstop>
-  <tabstop>label_5</tabstop>
-  <tabstop>label_4</tabstop>
-  <tabstop>label_15</tabstop>
-  <tabstop>label_9</tabstop>
-  <tabstop>label_19</tabstop>
-  <tabstop>label_13</tabstop>
-  <tabstop>label_11</tabstop>
-  <tabstop>label_8</tabstop>
  </tabstops>
  <resources/>
  <connections/>

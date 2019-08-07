@@ -22,7 +22,7 @@
 
 #include "GUI_FailMessageBox.h"
 #include "Gui/TagEdit/ui_GUI_FailMessageBox.h"
-
+#include "Gui/Utils/Delegates/StyledItemDelegate.h"
 #include "Utils/Language/Language.h"
 #include <QVBoxLayout>
 
@@ -32,6 +32,7 @@ GUI_FailMessageBox::GUI_FailMessageBox(QWidget* parent) :
 	ui = new Ui::GUI_FailMessageBox();
 	ui->setupUi(this);
 	ui->tv_files->setVisible(false);
+	ui->tv_files->setItemDelegate(new Gui::StyledItemDelegate());
 
 	connect(ui->cb_details, &QCheckBox::toggled, this, &GUI_FailMessageBox::details_toggled);
 	connect(ui->btn_ok, &QPushButton::clicked, this, &GUI_FailMessageBox::close);

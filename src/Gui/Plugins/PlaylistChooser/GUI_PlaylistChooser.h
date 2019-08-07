@@ -45,6 +45,10 @@ public:
 
 private slots:
 	void playlists_changed();
+	void rename_triggered();
+	void rename_dialog_closed();
+
+	void delete_triggered();
 
 private:
 	void retranslate_ui() override;

@@ -221,9 +221,11 @@ void GUI_PreferenceDialog::row_changed(int row)
 	QLayout* layout = ui->widget_preferences->layout();
 	layout->setContentsMargins(0,0,0,0);
 
-	if(layout){
+	if(layout)
+	{
 		layout->addWidget(widget);
 		layout->setAlignment(Qt::AlignTop);
+		ui->widget_preferences->setFocusProxy(widget);
 	}
 
 	ui->lab_pref_title->setText(widget->action_name());
@@ -245,6 +247,8 @@ void GUI_PreferenceDialog::showEvent(QShowEvent* e)
 {
 	init_ui();
 	Gui::Dialog::showEvent(e);
+
+	ui->list_preferences->setFocus();
 }
 
 

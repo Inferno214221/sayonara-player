@@ -103,7 +103,7 @@ int PlaylistItemModel::rowCount(const QModelIndex& parent) const
 int PlaylistItemModel::columnCount(const QModelIndex& parent) const
 {
 	Q_UNUSED(parent);
-	return (int)(ColumnName::NumColumns);
+	return static_cast<int>(ColumnName::NumColumns);
 }
 
 
@@ -193,7 +193,7 @@ bool PlaylistItemModel::setData(const QModelIndex& index, const QVariant& value,
 	if(role == Qt::EditRole && index.isValid())
 	{
 		int row = index.row();
-		change_rating({row}, (Rating) (value.toInt()) );
+		change_rating({row}, value.value<Rating>());
 		return true;
 	}
 
@@ -300,7 +300,7 @@ void PlaylistItemModel::set_current_track(int row)
 	m->pl->change_track(row);
 }
 
-const MetaData& PlaylistItemModel::metadata(int row) const
+MetaData PlaylistItemModel::metadata(int row) const
 {
 	return m->pl->track(row);
 }

@@ -78,6 +78,11 @@
    <header>Gui/Utils/Widgets/Slider.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>cb_gapless</tabstop>
+  <tabstop>cb_crossfader</tabstop>
+  <tabstop>sli_crossfader</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

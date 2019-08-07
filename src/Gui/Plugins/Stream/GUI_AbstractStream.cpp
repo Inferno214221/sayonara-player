@@ -23,7 +23,7 @@
 
 #include "Gui/Utils/Style.h"
 #include "Gui/Utils/Widgets/ProgressBar.h"
-#include "Gui/Utils/MenuTool/MenuTool.h"
+#include "Gui/Utils/MenuTool/MenuToolButton.h"
 
 #include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"

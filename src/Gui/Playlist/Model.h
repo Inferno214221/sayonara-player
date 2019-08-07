@@ -83,7 +83,7 @@ public:
 	void		set_current_track(int row);
 	int			current_track() const;
 
-	const MetaData&	metadata(int row) const;
+	MetaData		metadata(int row) const;
 	MetaDataList	metadata(const IndexSet& rows) const;
 
 	QMimeData*		mimeData(const QModelIndexList& indexes) const override;

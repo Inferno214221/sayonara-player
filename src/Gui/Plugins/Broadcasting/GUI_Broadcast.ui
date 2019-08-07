@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>364</width>
-    <height>67</height>
+    <width>372</width>
+    <height>77</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -95,7 +95,7 @@
         <string notr="true">Retry</string>
        </property>
        <property name="icon">
-        <iconset resource="../../Resources/Icons.qrc">
+        <iconset>
          <normaloff>:/Icons/undo.svg.png</normaloff>:/Icons/undo.svg.png</iconset>
        </property>
        <property name="iconSize">
@@ -119,9 +119,13 @@
   <customwidget>
    <class>Gui::MenuToolButton</class>
    <extends>QPushButton</extends>
-   <header location="global">Gui/Utils/MenuTool/MenuTool.h</header>
+   <header location="global">Gui/Utils/MenuTool/MenuToolButton.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>btn_retry</tabstop>
+  <tabstop>btn_menu</tabstop>
+ </tabstops>
  <resources>
   <include location="../../Resources/Icons.qrc"/>
  </resources>

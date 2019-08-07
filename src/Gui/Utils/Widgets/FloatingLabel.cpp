@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "FloatingLabel.h"
 #include <QPaintEvent>
 #include <QPainter>
@@ -51,6 +49,7 @@ FloatingLabel::FloatingLabel(QWidget* parent) :
 	Gui::WidgetTemplate<QLabel>(parent)
 {
 	m = Pimpl::make<Private>();
+
 	m->timer = new QTimer(this);
 	connect(m->timer, &QTimer::timeout, this, &FloatingLabel::updateOffset);
 }
@@ -59,16 +58,23 @@ FloatingLabel::~FloatingLabel() = default;
 
 void FloatingLabel::paintEvent(QPaintEvent* event)
 {
+	QPainter painter(this);
+	event->ignore();
+
 	if(!m->floating)
 	{
-		QLabel::paintEvent(event);
+		painter.drawText
+		(
+			QRectF(0, 0, this->width(), this->height()),
+			this->alignment(),
+			m->text
+		);
+
 		return;
 	}
 
-	event->ignore();
-
 	QFontMetrics fm = this->fontMetrics();
-	QPainter painter(this);
+
 
 	painter.drawText(
 		QRectF(static_cast<int>(m->offset), 0, fm.width(m->text), fm.height()),
@@ -86,6 +92,12 @@ void FloatingLabel::resizeEvent(QResizeEvent* event)
 	if(difference <= 0)
 	{
 		m->timer->stop();
+
+		m->offset = 0;
+		m->offset_direction = -1.0;
+		m->floating = false;
+
+		this->update();
 	}
 
 	else if(!m->timer->isActive()){
@@ -95,13 +107,17 @@ void FloatingLabel::resizeEvent(QResizeEvent* event)
 
 void FloatingLabel::setFloatingText(const QString& text)
 {
-	QLabel::setText(text);
+	if(text == m->text){
+		return;
+	}
+
 	m->text = text;
 	m->offset = 0;
 	m->offset_direction = -1.0;
 	m->floating = false;
 
 	updateOffset();
+	repaint();
 }
 
 void FloatingLabel::setCharsPerSecond(int chars_per_second)

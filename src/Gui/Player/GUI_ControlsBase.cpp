@@ -107,10 +107,11 @@ Gui::RatingLabel* GUI_ControlsBase::lab_rating() const
 	return nullptr;
 }
 
-QSize GUI_ControlsBase::image_size() const
+QSize GUI_ControlsBase::button_size() const
 {
 	return btn_cover()->size();
 }
+
 
 // new track
 void GUI_ControlsBase::track_changed(const MetaData& md)

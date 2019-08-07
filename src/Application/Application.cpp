@@ -42,8 +42,8 @@
 #include "Components/PlayManager/PlayManager.h"
 #include "Components/Streaming/LastFM/LastFM.h"
 #include "Components/Session/Session.h"
+#include "Interfaces/Library/LibraryPluginHandler.h"
 
-#include "Interfaces/LibraryInterface/LibraryPluginHandler.h"
 #include "Interfaces/Notification/NotificationHandler.h"
 
 #include "Gui/Utils/GuiUtils.h"

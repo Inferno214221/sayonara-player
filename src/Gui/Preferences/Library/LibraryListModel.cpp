@@ -21,7 +21,7 @@
 #include "LibraryListModel.h"
 #include "ChangeOperations.h"
 #include "Components/Library/LibraryManager.h"
-#include "Interfaces/LibraryInterface/LibraryPluginHandler.h"
+#include "Interfaces/Library/LibraryPluginHandler.h"
 
 #include "Utils/Algorithm.h"
 #include "Utils/Library/LibraryInfo.h"

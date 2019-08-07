@@ -49,7 +49,7 @@
   <customwidget>
    <class>Gui::MenuToolButton</class>
    <extends>QPushButton</extends>
-   <header location="global">Gui/Utils/MenuTool/MenuTool.h</header>
+   <header location="global">Gui/Utils/MenuTool/MenuToolButton.h</header>
   </customwidget>
   <customwidget>
    <class>PlayerPlugin::Base</class>

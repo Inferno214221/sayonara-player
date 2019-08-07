@@ -146,7 +146,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../Resources/Icons.qrc">
+        <iconset>
          <normaloff>:/Icons/bwd.svg.png</normaloff>
          <disabledoff>:/Icons/bwd_disabled.svg</disabledoff>:/Icons/bwd.svg.png</iconset>
        </property>
@@ -170,7 +170,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../Resources/Icons.qrc">
+        <iconset>
          <normaloff>:/Icons/play.svg.png</normaloff>:/Icons/play.svg.png</iconset>
        </property>
        <property name="flat">
@@ -193,7 +193,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../Resources/Icons.qrc">
+        <iconset>
          <normaloff>:/Icons/rec.svg.png</normaloff>:/Icons/rec.svg.png</iconset>
        </property>
        <property name="checkable">
@@ -222,7 +222,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../Resources/Icons.qrc">
+        <iconset>
          <normaloff>:/Icons/fwd.svg.png</normaloff>
          <disabledoff>:/Icons/fwd_disabled.svg.png</disabledoff>:/Icons/fwd.svg.png</iconset>
        </property>
@@ -246,7 +246,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../Resources/Icons.qrc">
+        <iconset>
          <normaloff>:/Icons/stop.svg.png</normaloff>:/Icons/stop.svg.png</iconset>
        </property>
        <property name="flat">
@@ -683,6 +683,11 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>Gui::RatingLabel</class>
+   <extends>QLabel</extends>
+   <header>Gui/Utils/RatingLabel.h</header>
+  </customwidget>
+  <customwidget>
    <class>Gui::CoverButton</class>
    <extends>QPushButton</extends>
    <header>Gui/Covers/CoverButton.h</header>
@@ -696,11 +701,6 @@
    <class>Gui::FloatingLabel</class>
    <extends>QLabel</extends>
    <header>Gui/Utils/Widgets/FloatingLabel.h</header>
-  </customwidget>
-  <customwidget>
-   <class>Gui::RatingLabel</class>
-   <extends>QLabel</extends>
-   <header>Gui/Utils/RatingLabel.h</header>
   </customwidget>
  </customwidgets>
  <resources>

@@ -2,9 +2,23 @@
 <ui version="4.0">
  <class>GUI_CoverPreferences</class>
  <widget class="QWidget" name="GUI_CoverPreferences">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>504</width>
+    <height>512</height>
+   </rect>
+  </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="6" column="0">
     <widget class="QWidget" name="widget" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Ignored" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <layout class="QGridLayout" name="gridLayout_3">
       <item row="1" column="1">
        <widget class="QListWidget" name="lv_cover_searchers">
@@ -211,6 +225,21 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>cb_save_to_db</tabstop>
+  <tabstop>cb_fetch_from_www</tabstop>
+  <tabstop>lv_cover_searchers_inactive</tabstop>
+  <tabstop>btn_add</tabstop>
+  <tabstop>lv_cover_searchers</tabstop>
+  <tabstop>btn_remove</tabstop>
+  <tabstop>btn_up</tabstop>
+  <tabstop>btn_down</tabstop>
+  <tabstop>cb_save_to_sayonara_dir</tabstop>
+  <tabstop>cb_save_to_library</tabstop>
+  <tabstop>le_cover_template</tabstop>
+  <tabstop>btn_delete_album_covers</tabstop>
+  <tabstop>btn_delete_files</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>585</width>
+    <width>600</width>
     <height>371</height>
    </rect>
   </property>
@@ -266,7 +266,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../../Resources/Icons.qrc">
+        <iconset>
          <normaloff>:/Icons/undo.svg.png</normaloff>:/Icons/undo.svg.png</iconset>
        </property>
        <property name="iconSize">
@@ -298,7 +298,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../../Resources/Icons.qrc">
+        <iconset>
          <normaloff>:/Icons/save.svg.png</normaloff>:/Icons/save.svg.png</iconset>
        </property>
        <property name="iconSize">
@@ -330,7 +330,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../../Resources/Icons.qrc">
+        <iconset>
          <normaloff>:/Icons/delete.svg.png</normaloff>:/Icons/delete.svg.png</iconset>
        </property>
        <property name="iconSize">
@@ -592,6 +592,30 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>combo_styles</tabstop>
+  <tabstop>btn_undo</tabstop>
+  <tabstop>btn_save</tabstop>
+  <tabstop>btn_delete</tabstop>
+  <tabstop>checkBox</tabstop>
+  <tabstop>btn_col1</tabstop>
+  <tabstop>checkBox_2</tabstop>
+  <tabstop>btn_col2</tabstop>
+  <tabstop>cb_col3</tabstop>
+  <tabstop>btn_col3</tabstop>
+  <tabstop>cb_col4</tabstop>
+  <tabstop>btn_col4</tabstop>
+  <tabstop>sb_fading_steps_sp</tabstop>
+  <tabstop>sb_h_spacing_sp</tabstop>
+  <tabstop>sb_v_spacing_sp</tabstop>
+  <tabstop>sb_rect_height_sp</tabstop>
+  <tabstop>sb_fading_steps_lv</tabstop>
+  <tabstop>sb_h_spacing_lv</tabstop>
+  <tabstop>sb_v_spacing_lv</tabstop>
+  <tabstop>sb_rect_height_lv</tabstop>
+  <tabstop>sb_rect_width_lv</tabstop>
+  <tabstop>btn_close</tabstop>
+ </tabstops>
  <resources>
   <include location="../../Resources/Icons.qrc"/>
  </resources>

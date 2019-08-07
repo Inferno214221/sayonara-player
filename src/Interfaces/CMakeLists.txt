@@ -1,3 +1,3 @@
 add_subdirectory(Notification)
-add_subdirectory(LibraryInterface)
+add_subdirectory(Library)
 add_subdirectory(RawSoundReceiver)

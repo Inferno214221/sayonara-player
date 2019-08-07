@@ -98,6 +98,7 @@ namespace Gui
 			void mouseReleaseEvent(QMouseEvent* event) override;
 			void paintEvent(QPaintEvent* event) override;
 			void showEvent(QShowEvent* e) override;
+			void resizeEvent(QResizeEvent* e) override;
 
 		private slots:
 			void alternative_cover_fetched(const Cover::Location& cl);
@@ -105,6 +106,7 @@ namespace Gui
 			void set_cover_image(const QString& path);
 			void set_cover_image_pixmap(const QPixmap& pm);
 			void covers_changed();
+			void timer_timed_out();
 
 		public slots:
 			void refresh();

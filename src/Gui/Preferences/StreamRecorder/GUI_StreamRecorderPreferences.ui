@@ -19,8 +19,11 @@
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -234,6 +237,18 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>cb_activate</tabstop>
+  <tabstop>cb_auto_rec</tabstop>
+  <tabstop>cb_create_session_path</tabstop>
+  <tabstop>le_path</tabstop>
+  <tabstop>btn_path</tabstop>
+  <tabstop>le_template</tabstop>
+  <tabstop>le_result_path</tabstop>
+  <tabstop>btn_default</tabstop>
+  <tabstop>btn_undo</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

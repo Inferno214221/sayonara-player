@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Interfaces/LibraryInterface/LibraryContainer/LibraryContainer.h"
+#include "Interfaces/Library/LibraryContainer/LibraryContainer.h"
 
 #include <QWidget>
 #include <QAction>

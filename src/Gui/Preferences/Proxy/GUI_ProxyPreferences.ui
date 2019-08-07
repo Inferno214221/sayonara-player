@@ -108,6 +108,15 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>cb_active</tabstop>
+  <tabstop>le_host</tabstop>
+  <tabstop>sb_port</tabstop>
+  <tabstop>le_username</tabstop>
+  <tabstop>le_password</tabstop>
+  <tabstop>cb_save_pw</tabstop>
+  <tabstop>btn_autosearch</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

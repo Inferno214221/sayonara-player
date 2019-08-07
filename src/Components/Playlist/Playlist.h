@@ -75,8 +75,8 @@ namespace Playlist
 			bool			wake_up();
 
 		public:
-			const MetaData& track(int idx) const override;
-			const MetaDataList& tracks() const override;
+			MetaData track(int idx) const override;
+			MetaDataList tracks() const override;
 
 			void insert_tracks(const MetaDataList& lst, int tgt);
 			void append_tracks(const MetaDataList& lst);

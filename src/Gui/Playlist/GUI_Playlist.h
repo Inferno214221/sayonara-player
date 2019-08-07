@@ -69,7 +69,7 @@ private:
 	void dropEvent(QDropEvent* event) override;
 	void dragMoveEvent(QDragMoveEvent* event) override;
 
-	Message::Answer show_save_message_box(Playlist::DBInterface::SaveAsAnswer answer);
+	Message::Answer show_save_message_box(Util::SaveAsAnswer answer);
 
 
 private slots:

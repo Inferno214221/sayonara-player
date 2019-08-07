@@ -39,7 +39,7 @@
 #include "Utils/Language/Language.h"
 #include "Utils/Message/Message.h"
 
-#include "Interfaces/LibraryInterface/LibraryContainer/LibraryContainer.h"
+#include "Interfaces/Library/LibraryContainer/LibraryContainer.h"
 
 #include <QFileDialog>
 #include <QMessageBox>

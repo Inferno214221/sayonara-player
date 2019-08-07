@@ -1,4 +1,4 @@
-/* MenuTool.h */
+/* MenuToolButton.h */
 
 /* Copyright (C) 2011-2019  Lucio Carreras
  *
@@ -53,7 +53,7 @@ namespace Gui
 			void sig_default();
 
 		public:
-			explicit MenuToolButton(QWidget *parent);
+			explicit MenuToolButton(QWidget* parent);
 			explicit MenuToolButton(QMenu* menu, QWidget *parent);
 			virtual ~MenuToolButton() override;
 

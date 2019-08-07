@@ -63,6 +63,11 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>cb_new_tab</tabstop>
+  <tabstop>cb_show_history</tabstop>
+  <tabstop>sb_buffer_size</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

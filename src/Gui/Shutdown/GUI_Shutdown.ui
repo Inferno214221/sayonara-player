@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>364</width>
-    <height>166</height>
+    <width>383</width>
+    <height>183</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -112,6 +112,13 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>rb_after_finished</tabstop>
+  <tabstop>rb_after_minutes</tabstop>
+  <tabstop>sb_minutes</tabstop>
+  <tabstop>btn_cancel</tabstop>
+  <tabstop>btn_ok</tabstop>
+ </tabstops>
  <resources>
   <include location="../Resources/Icons.qrc"/>
  </resources>

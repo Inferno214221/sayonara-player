@@ -16,8 +16,11 @@
    </property>
    <item row="0" column="0">
     <widget class="QTabWidget" name="tab_widget">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab_libraries">
       <attribute name="title">
@@ -229,6 +232,22 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>tab_widget</tabstop>
+  <tabstop>lv_libs</tabstop>
+  <tabstop>btn_up</tabstop>
+  <tabstop>btn_new</tabstop>
+  <tabstop>btn_edit</tabstop>
+  <tabstop>btn_delete</tabstop>
+  <tabstop>btn_down</tabstop>
+  <tabstop>rb_dc_do_nothing</tabstop>
+  <tabstop>rb_dc_play_if_stopped</tabstop>
+  <tabstop>rb_dc_play_immediately</tabstop>
+  <tabstop>rb_dd_do_nothing</tabstop>
+  <tabstop>rb_dd_start_if_stopped_and_empty</tabstop>
+  <tabstop>cb_show_clear_buttons</tabstop>
+  <tabstop>cb_ignore_article</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

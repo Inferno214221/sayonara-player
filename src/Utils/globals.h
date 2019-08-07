@@ -64,6 +64,16 @@ namespace Util
 	between( TINT idx, TINT max){
 		return (idx >= 0 && idx < max);
 	}
+
+	enum SaveAsAnswer
+	{
+		Success,
+		InvalidName,
+		NotStorable,
+		NameAlreadyThere,
+		InvalidObject,
+		OtherError
+	};
 }
 
 #endif /* GLOBALS_H_ */

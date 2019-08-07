@@ -284,6 +284,15 @@
    <header>Gui/Utils/Widgets/ComboBox.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>combo_cbr</tabstop>
+  <tabstop>sb_threads</tabstop>
+  <tabstop>btn_stop_encoding</tabstop>
+  <tabstop>btn_start</tabstop>
+  <tabstop>sb_ogg_quality</tabstop>
+  <tabstop>combo_codecs</tabstop>
+  <tabstop>sb_lame_vbr</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

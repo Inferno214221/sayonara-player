@@ -18,10 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "LocalLibraryWatcher.h"
-#include "Interfaces/LibraryInterface/LibraryPluginHandler.h"
+#include "Interfaces/Library/LibraryPluginHandler.h"
 #include "Components/Library/LibraryManager.h"
 #include "Components/Library/LocalLibrary.h"
 #include "Gui/Library/LocalLibraryContainer.h"

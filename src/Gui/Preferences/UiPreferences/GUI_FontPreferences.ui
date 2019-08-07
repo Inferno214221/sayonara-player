@@ -189,6 +189,15 @@
    <header>Gui/Utils/Widgets/ComboBox.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>scrollArea</tabstop>
+  <tabstop>combo_fonts</tabstop>
+  <tabstop>combo_sizes</tabstop>
+  <tabstop>combo_lib_size</tabstop>
+  <tabstop>cb_lib_bold</tabstop>
+  <tabstop>combo_pl_size</tabstop>
+  <tabstop>btn_default</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

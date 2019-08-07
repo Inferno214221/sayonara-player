@@ -91,6 +91,12 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>cb_active</tabstop>
+  <tabstop>cb_prompt</tabstop>
+  <tabstop>sb_port</tabstop>
+  <tabstop>le_url</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

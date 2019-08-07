@@ -19,6 +19,7 @@ set(APPLICATION_LIBRARIES
 
 	sayonara_components
 	interface_library
+	interface_librarycontainer
 )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES})

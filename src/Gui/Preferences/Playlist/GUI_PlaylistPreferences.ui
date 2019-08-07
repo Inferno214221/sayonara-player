@@ -25,8 +25,11 @@
    </property>
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -319,6 +322,21 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>cb_load_temporary_playlists</tabstop>
+  <tabstop>cb_load_saved_playlists</tabstop>
+  <tabstop>cb_start_playing</tabstop>
+  <tabstop>cb_load_last_track</tabstop>
+  <tabstop>cb_remember_time</tabstop>
+  <tabstop>cb_remember_after_stop</tabstop>
+  <tabstop>cb_show_clear_button</tabstop>
+  <tabstop>cb_show_numbers</tabstop>
+  <tabstop>cb_show_covers</tabstop>
+  <tabstop>cb_show_rating</tabstop>
+  <tabstop>le_expression</tabstop>
+  <tabstop>btn_default</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

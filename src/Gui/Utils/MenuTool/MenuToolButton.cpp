@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "MenuTool.h"
+#include "MenuToolButton.h"
 #include "Gui/Utils/PreferenceAction.h"
 
 using Gui::MenuToolButton;

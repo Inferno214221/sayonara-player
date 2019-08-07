@@ -450,8 +450,9 @@ Callbacks::spectrum_handler(GstBus* bus, GstMessage* message, gpointer data)
 
 	const GValue* magnitudes = gst_structure_get_value (structure, "magnitude");
 
-	int bins = GetSetting(Set::Engine_SpectrumBins);
-	if(spectrum_vals.empty()){
+	int bins = std::max(1, GetSetting(Set::Engine_SpectrumBins));
+	if(spectrum_vals.empty())
+	{
 		spectrum_vals.resize(bins, 0);
 	}
 

@@ -67,6 +67,11 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>cb_activate</tabstop>
+  <tabstop>sb_port</tabstop>
+  <tabstop>le_url</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

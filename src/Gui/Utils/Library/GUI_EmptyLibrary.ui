@@ -63,6 +63,9 @@
         </item>
         <item row="3" column="2">
          <widget class="QLineEdit" name="le_path">
+          <property name="focusPolicy">
+           <enum>Qt::ClickFocus</enum>
+          </property>
           <property name="readOnly">
            <bool>true</bool>
           </property>
@@ -181,6 +184,12 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>btn_choose_dir</tabstop>
+  <tabstop>le_name</tabstop>
+  <tabstop>btn_ok</tabstop>
+  <tabstop>le_path</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

@@ -107,6 +107,9 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
+     <property name="focusPolicy">
+      <enum>Qt::ClickFocus</enum>
+     </property>
      <property name="readOnly">
       <bool>true</bool>
      </property>
@@ -131,9 +134,11 @@
   </layout>
  </widget>
  <tabstops>
+  <tabstop>le_path</tabstop>
+  <tabstop>btn_choose_dir</tabstop>
   <tabstop>le_name</tabstop>
-  <tabstop>btn_ok</tabstop>
   <tabstop>btn_cancel</tabstop>
+  <tabstop>btn_ok</tabstop>
  </tabstops>
  <resources/>
  <connections/>

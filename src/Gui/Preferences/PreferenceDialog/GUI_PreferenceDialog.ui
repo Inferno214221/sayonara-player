@@ -100,6 +100,9 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="focusPolicy">
+          <enum>Qt::TabFocus</enum>
+         </property>
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <property name="leftMargin">
            <number>5</number>
@@ -168,6 +171,9 @@
      </item>
      <item>
       <widget class="QPushButton" name="btn_cancel">
+       <property name="focusPolicy">
+        <enum>Qt::TabFocus</enum>
+       </property>
        <property name="text">
         <string>Cancel</string>
        </property>
@@ -175,6 +181,9 @@
      </item>
      <item>
       <widget class="QPushButton" name="btn_apply">
+       <property name="focusPolicy">
+        <enum>Qt::TabFocus</enum>
+       </property>
        <property name="text">
         <string>Apply</string>
        </property>
@@ -182,6 +191,9 @@
      </item>
      <item>
       <widget class="QPushButton" name="btn_ok">
+       <property name="focusPolicy">
+        <enum>Qt::TabFocus</enum>
+       </property>
        <property name="text">
         <string>OK</string>
        </property>
@@ -191,6 +203,13 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>list_preferences</tabstop>
+  <tabstop>widget_preferences</tabstop>
+  <tabstop>btn_cancel</tabstop>
+  <tabstop>btn_apply</tabstop>
+  <tabstop>btn_ok</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

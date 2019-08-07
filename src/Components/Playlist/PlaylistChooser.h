@@ -23,32 +23,44 @@
 
 #include "Utils/Playlist/CustomPlaylistFwd.h"
 #include "Utils/Pimpl.h"
+#include "Utils/globals.h"
 #include <QObject>
 
-/**
- * @brief The PlaylistChooser class
- * @ingroup Components
- */
-class PlaylistChooser :
-		public QObject
+namespace Playlist
 {
-	Q_OBJECT
-	PIMPL(PlaylistChooser)
+	/**
+	 * @brief The Chooser class is used to select playlists out of
+	 * all saved playlists
+	 * @ingroup Playlist
+	 */
+	class Chooser :
+			public QObject
+	{
+		Q_OBJECT
+		PIMPL(Chooser)
 
-public:
-	PlaylistChooser();
-	~PlaylistChooser();
+		public:
+			Chooser(QObject* parent);
+			~Chooser();
 
-	void load_single_playlist(int id);
-	int find_playlist(const QString& name) const;
+			void load_single_playlist(int id);
+			int find_playlist(const QString& name) const;
 
-	const CustomPlaylistSkeletons& playlists();
+			const CustomPlaylistSkeletons& playlists();
 
-signals:
-	void sig_playlists_changed();
+			Util::SaveAsAnswer rename_playlist(int id, const QString& new_name);
+			bool delete_playlist(int id);
 
-private slots:
-	void playlists_changed();
-};
+		signals:
+			void sig_playlists_changed();
+
+		private slots:
+			void playlists_changed();
+
+			void playlist_deleted(int id);
+			void playlist_added(int id, const QString& name);
+			void playlist_renamed(int id, const QString& old_name, const QString& new_name);
+	};
+}
 
 #endif /* PLAYLISTS_H_ */

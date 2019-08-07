@@ -226,6 +226,16 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>le_search</tabstop>
+  <tabstop>btn_search_prev</tabstop>
+  <tabstop>btn_search_next</tabstop>
+  <tabstop>btn_search</tabstop>
+  <tabstop>tw_stations</tabstop>
+  <tabstop>tw_streams</tabstop>
+  <tabstop>btn_close</tabstop>
+  <tabstop>btn_listen</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

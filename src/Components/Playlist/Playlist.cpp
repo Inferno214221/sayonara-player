@@ -518,12 +518,17 @@ void PlaylistImpl::setting_playlist_mode_changed()
 	set_mode( GetSetting(Set::PL_Mode) );
 }
 
-const MetaDataList& PlaylistImpl::tracks() const
+MetaDataList PlaylistImpl::tracks() const
 {
 	return m->v_md;
 }
 
-const MetaData& PlaylistImpl::track(int idx) const
+MetaData PlaylistImpl::track(int idx) const
 {
-	return m->v_md[idx];
+	if(idx >= 0 && idx < m->v_md.count())
+	{
+		return m->v_md[idx];
+	}
+
+	return MetaData();
 }

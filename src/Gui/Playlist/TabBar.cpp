@@ -24,6 +24,7 @@
 #include "Gui/Utils/CustomMimeData.h"
 #include "Gui/Utils/Shortcuts/ShortcutHandler.h"
 #include "Gui/Utils/Shortcuts/Shortcut.h"
+#include "Gui/Utils/InputDialog/LineInputDialog.h"
 
 #include "Components/Directories/DirectoryReader.h"
 #include "Utils/MetaData/MetaDataList.h"
@@ -153,11 +154,19 @@ void PlaylistTabBar::rename_pressed()
 	int cur_idx = currentIndex();
 	QString cur_text = tabText(cur_idx);
 
-	QString name = QInputDialog::getText(
-				this,
-				Lang::get(Lang::Rename),
-				Lang::get(Lang::Rename) + ": " + cur_text);
+	Gui::LineInputDialog dialog(
+		Lang::get(Lang::Rename),
+		Lang::get(Lang::Rename),
+		cur_text,
+		this
+	);
 
+	dialog.exec();
+	if(dialog.return_value() != Gui::LineInputDialog::ReturnValue::Ok) {
+		return;
+	}
+
+	QString name = dialog.text();
 	if(name.isEmpty()){
 		return;
 	}
@@ -256,7 +265,6 @@ void PlaylistTabBar::init_shortcuts()
 	QKeySequence ks(QKeySequence::Open);
 	QShortcut* sc5 = init_shortcut(this->parentWidget(), QKeySequence("Shift+" + ks.toString()));
 	connect(sc5, &QShortcut::activated, this, &PlaylistTabBar::open_dir_pressed);
-
 }
 
 

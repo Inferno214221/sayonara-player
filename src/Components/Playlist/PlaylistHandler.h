@@ -93,13 +93,6 @@ namespace Playlist
 			void sig_playlist_name_changed(int idx);
 
 			/**
-			 * @brief emitted when saved playlists have changed. \\n
-			 * E.g. a temporary playlist was saved and so converted
-			 * to a saved playlist
-			 */
-			void sig_saved_playlists_changed();
-
-			/**
 			 * @brief emitted when tracks were added/removed or have changed
 			 * @param idx playlist index
 			 */
@@ -227,7 +220,7 @@ namespace Playlist
 			 * @param pl_idx playlist index
 			 * @return SaveAnswer
 			 */
-			DBInterface::SaveAsAnswer save_playlist(int pl_idx);
+			Util::SaveAsAnswer save_playlist(int pl_idx);
 
 
 			/**
@@ -237,7 +230,7 @@ namespace Playlist
 			 * @param force_override override if name exists
 			 * @return AlreadyThere if name exists and force_override is false
 			 */
-			DBInterface::SaveAsAnswer save_playlist_as(int pl_idx, const QString& name, bool force_override);
+			Util::SaveAsAnswer save_playlist_as(int pl_idx, const QString& name, bool force_override);
 
 
 			/**
@@ -246,7 +239,7 @@ namespace Playlist
 			 * @param name new playlist name
 			 * @return
 			 */
-			DBInterface::SaveAsAnswer rename_playlist(int pl_idx, const QString& name);
+			Util::SaveAsAnswer rename_playlist(int pl_idx, const QString& name);
 
 
 			/**
@@ -350,6 +343,9 @@ namespace Playlist
 
 			void current_track_changed(int index);
 			void playlist_stopped();
+
+			void playlist_renamed(int id, const QString& old_name, const QString& new_name);
+			void playlist_deleted(int id);
 
 		private:
 			/**

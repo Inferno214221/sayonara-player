@@ -59,6 +59,10 @@ GUI_CoverEdit::GUI_CoverEdit(GUI_TagEdit* parent) :
 	ui->setupUi(this);
 	ui->btn_cover_replacement->set_silent(true);
 
+	QString style = QString("min-width: %1ex; min-height: %1ex; max-width: %1ex; max-height: %1ex;").arg(20);
+	ui->lab_cover_original->setStyleSheet(style);
+	ui->btn_cover_replacement->setStyleSheet(style);
+
 	connect(m->tag_edit, &Editor::sig_metadata_received, this, &GUI_CoverEdit::set_metadata);
 	connect(ui->cb_cover_all, &QCheckBox::toggled, this, &GUI_CoverEdit::cover_all_toggled);
 	connect(ui->btn_search, &QPushButton::clicked, ui->btn_cover_replacement, &Gui::CoverButton::trigger);
@@ -149,34 +153,38 @@ void GUI_CoverEdit::show_replacement_field(bool b)
 
 void GUI_CoverEdit::set_cover(const MetaData& md)
 {
+	QSize sz(this->height() / 2, this->height() / 2);
+	ui->lab_cover_original->setFixedSize(sz);
+	ui->btn_cover_replacement->setFixedSize(sz);
+
 	bool has_cover = Tagging::Covers::has_cover(md.filepath());
 
 	if(!has_cover)
 	{
-		ui->btn_cover_original->setIcon(QIcon());
-		ui->btn_cover_original->setText(tr("File has no cover"));
-
-		ui->btn_cover_original->setMinimumSize(200, 200);
-		ui->btn_cover_original->setMaximumSize(200, 200);
-		ui->btn_cover_original->resize(200, 200);
+		ui->lab_cover_original->clear();
+		ui->lab_cover_original->setText(tr("File has no cover"));
 	}
 
 	else
 	{
-		QSize sz = ui->btn_cover_original->size();
+		QPixmap pm = Tagging::Covers::extract_cover(md.filepath());
+		if(pm.isNull())
+		{
+			ui->lab_cover_original->clear();
+			ui->lab_cover_original->setText(tr("File has no cover"));
+		}
 
-		QPixmap pm = Tagging::Covers::extract_cover(md.filepath())
-			.scaled(sz, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+		else
+		{
+			QPixmap pm_scaled = pm.scaled(sz, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
-		QIcon icon;
-		icon.addPixmap(pm);
-
-		ui->btn_cover_original->setIcon(icon);
-		ui->btn_cover_original->setIconSize(sz);
-		ui->btn_cover_original->setText(QString());
+			ui->lab_cover_original->setPixmap(pm_scaled);
+			ui->lab_cover_original->setText(QString());
+		}
 	}
 
 	Cover::Location cl = Cover::Location::cover_location(md);
+
 	ui->btn_cover_replacement->set_cover_location(cl);
 	ui->btn_cover_replacement->setEnabled(cl.is_valid() && !ui->cb_cover_all->isChecked());
 

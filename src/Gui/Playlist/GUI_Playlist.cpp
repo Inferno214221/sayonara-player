@@ -411,10 +411,10 @@ void GUI_Playlist::tab_close_playlist_clicked(int idx)
 
 void GUI_Playlist::tab_save_playlist_clicked(int idx)
 {
-	Playlist::DBInterface::SaveAsAnswer success =
+	Util::SaveAsAnswer success =
 			Handler::instance()->save_playlist(idx);
 
-	if(success == Playlist::DBInterface::SaveAsAnswer::Success)
+	if(success == Util::SaveAsAnswer::Success)
 	{
 		QString old_string = ui->tw_playlists->tabText(idx);
 
@@ -437,10 +437,10 @@ void GUI_Playlist::tab_save_playlist_as_clicked(int idx, const QString& str)
 
 	Handler* handler = Handler::instance();
 
-	Playlist::DBInterface::SaveAsAnswer success =
+	Util::SaveAsAnswer success =
 			handler->save_playlist_as(idx, str, false);
 
-	if(success == Playlist::DBInterface::SaveAsAnswer::AlreadyThere)
+	if(success == Util::SaveAsAnswer::NameAlreadyThere)
 	{
 		Message::Answer answer = show_save_message_box(success);
 
@@ -463,13 +463,13 @@ void GUI_Playlist::tab_save_playlist_to_file_clicked(int pl_idx, const QString &
 
 void GUI_Playlist::tab_rename_clicked(int idx, const QString& str)
 {
-	Playlist::DBInterface::SaveAsAnswer success = Handler::instance()->rename_playlist(idx, str);
+	Util::SaveAsAnswer success = Handler::instance()->rename_playlist(idx, str);
 
-	if(success == Playlist::DBInterface::SaveAsAnswer::AlreadyThere){
+	if(success == Util::SaveAsAnswer::NameAlreadyThere) {
 		Message::error(tr("Playlist name already exists"));
 	}
 
-	else{
+	else {
 		show_save_message_box(success);
 	}
 }
@@ -582,19 +582,19 @@ void GUI_Playlist::check_playlist_name(PlaylistConstPtr pl)
 }
 
 
-Message::Answer GUI_Playlist::show_save_message_box(Playlist::DBInterface::SaveAsAnswer answer)
+Message::Answer GUI_Playlist::show_save_message_box(Util::SaveAsAnswer answer)
 {
 	switch(answer)
 	{
-		case Playlist::DBInterface::SaveAsAnswer::Error:
+		case Util::SaveAsAnswer::OtherError:
 			Message::warning(tr("Cannot save playlist."), Lang::get(Lang::SaveAs));
 			break;
 
-		case Playlist::DBInterface::SaveAsAnswer::AlreadyThere:
+		case Util::SaveAsAnswer::NameAlreadyThere:
 			return Message::question_yn(tr("Playlist exists") + "\n" + Lang::get(Lang::Overwrite).question(),
 										Lang::get(Lang::SaveAs));
 
-		case Playlist::DBInterface::SaveAsAnswer::ExternTracksError:
+		case Util::SaveAsAnswer::NotStorable:
 			return Message::warning(tr("Playlists are currently only supported for library tracks."), tr("Save playlist"));
 
 		default:

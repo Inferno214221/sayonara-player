@@ -47,8 +47,8 @@
 #include "Gui/Utils/Icons.h"
 #include "Gui/Utils/EventFilter.h"
 
-#include "Interfaces/LibraryInterface/LibraryPluginHandler.h"
-#include "Interfaces/LibraryInterface/LibraryContainer/LibraryContainer.h"
+#include "Interfaces/Library/LibraryPluginHandler.h"
+#include "Interfaces/Library/LibraryContainer/LibraryContainer.h"
 
 #include <QAction>
 #include <QKeySequence>
@@ -485,7 +485,7 @@ void GUI_Player::check_control_splitter(bool force)
 {
 	if(m->controls->is_extern_resize_allowed())
 	{
-		QSize cover_size = m->controls->image_size();
+		QSize cover_size = m->controls->button_size();
 		int difference = cover_size.height() - cover_size.width();
 		if(difference > 0 || force)
 		{

@@ -151,9 +151,16 @@
   <customwidget>
    <class>Gui::MenuToolButton</class>
    <extends>QPushButton</extends>
-   <header location="global">Gui/Utils/MenuTool/MenuTool.h</header>
+   <header location="global">Gui/Utils/MenuTool/MenuToolButton.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>cb_bookmarks</tabstop>
+  <tabstop>btn_tool</tabstop>
+  <tabstop>btn_prev</tabstop>
+  <tabstop>cb_loop</tabstop>
+  <tabstop>btn_next</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

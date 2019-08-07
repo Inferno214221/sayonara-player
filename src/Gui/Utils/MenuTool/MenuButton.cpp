@@ -42,7 +42,6 @@ void MenuButton::show_menu(QPoint pos)
 	Q_UNUSED(pos)
 	this->setAttribute( Qt::WA_Hover, false);
 	this->setAttribute( Qt::WA_UnderMouse, false);
-	return;
 }
 
 bool MenuButton::prove_enabled()

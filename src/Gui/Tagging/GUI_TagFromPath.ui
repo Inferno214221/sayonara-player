@@ -21,14 +21,14 @@
    <item row="0" column="1">
     <widget class="TagLineEdit" name="le_tag">
      <property name="focusPolicy">
-      <enum>Qt::ClickFocus</enum>
+      <enum>Qt::TabFocus</enum>
      </property>
     </widget>
    </item>
    <item row="1" column="0">
     <widget class="QPushButton" name="btn_tag_help">
      <property name="focusPolicy">
-      <enum>Qt::NoFocus</enum>
+      <enum>Qt::TabFocus</enum>
      </property>
      <property name="text">
       <string notr="true">?</string>
@@ -43,7 +43,7 @@
      <item>
       <widget class="QPushButton" name="btn_title">
        <property name="focusPolicy">
-        <enum>Qt::ClickFocus</enum>
+        <enum>Qt::TabFocus</enum>
        </property>
        <property name="text">
         <string notr="true">Title</string>
@@ -56,7 +56,7 @@
      <item>
       <widget class="QPushButton" name="btn_album">
        <property name="focusPolicy">
-        <enum>Qt::ClickFocus</enum>
+        <enum>Qt::TabFocus</enum>
        </property>
        <property name="text">
         <string notr="true">Album</string>
@@ -69,7 +69,7 @@
      <item>
       <widget class="QPushButton" name="btn_artist">
        <property name="focusPolicy">
-        <enum>Qt::ClickFocus</enum>
+        <enum>Qt::TabFocus</enum>
        </property>
        <property name="text">
         <string notr="true">Artist</string>
@@ -82,7 +82,7 @@
      <item>
       <widget class="QPushButton" name="btn_year">
        <property name="focusPolicy">
-        <enum>Qt::ClickFocus</enum>
+        <enum>Qt::TabFocus</enum>
        </property>
        <property name="text">
         <string notr="true">Year</string>
@@ -95,7 +95,7 @@
      <item>
       <widget class="QPushButton" name="btn_disc_nr">
        <property name="focusPolicy">
-        <enum>Qt::ClickFocus</enum>
+        <enum>Qt::TabFocus</enum>
        </property>
        <property name="text">
         <string>Disc Nr</string>
@@ -108,7 +108,7 @@
      <item>
       <widget class="QPushButton" name="btn_track_nr">
        <property name="focusPolicy">
-        <enum>Qt::ClickFocus</enum>
+        <enum>Qt::TabFocus</enum>
        </property>
        <property name="text">
         <string notr="true"># Track</string>
@@ -152,7 +152,7 @@
      <item>
       <widget class="QPushButton" name="btn_apply_tag_all">
        <property name="focusPolicy">
-        <enum>Qt::NoFocus</enum>
+        <enum>Qt::TabFocus</enum>
        </property>
        <property name="text">
         <string>Apply to all</string>
@@ -162,7 +162,7 @@
      <item>
       <widget class="QPushButton" name="btn_apply_tag">
        <property name="focusPolicy">
-        <enum>Qt::NoFocus</enum>
+        <enum>Qt::TabFocus</enum>
        </property>
        <property name="text">
         <string notr="true">Apply</string>

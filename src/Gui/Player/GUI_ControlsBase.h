@@ -78,7 +78,7 @@ public:
 	virtual QPushButton* btn_stop() const=0;
 	virtual Gui::CoverButton* btn_cover() const=0;
 
-	virtual QSize image_size() const;
+	virtual QSize button_size() const final;
 	virtual bool is_extern_resize_allowed() const=0;
 
 private:

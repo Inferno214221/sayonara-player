@@ -25,6 +25,7 @@
 #include "Playlist.h"
 #include "PlaylistLoader.h"
 #include "PlaylistDBWrapper.h"
+#include "PlaylistChangeNotifier.h"
 
 #include "Components/Directories/DirectoryReader.h"
 #include "Components/PlayManager/PlayManager.h"
@@ -52,6 +53,7 @@ struct Handler::Private
 {
 	DB::Connector*			db=nullptr;
 	PlayManagerPtr			play_manager=nullptr;
+	PlaylistChangeNotifier*	pcn=nullptr;
 	PlaylistCollection		playlists;
 	int						active_playlist_idx;
 	int						current_playlist_idx;
@@ -59,6 +61,7 @@ struct Handler::Private
 	Private() :
 		db(DB::Connector::instance()),
 		play_manager(PlayManager::instance()),
+		pcn(PlaylistChangeNotifier::instance()),
 		active_playlist_idx(-1),
 		current_playlist_idx(-1)
 	{}
@@ -77,6 +80,9 @@ Handler::Handler(QObject * parent) :
 	connect(m->play_manager, &PlayManager::sig_wake_up, this, &Handler::wake_up);
 	connect(m->play_manager, &PlayManager::sig_previous, this, &Handler::previous);
 	connect(m->play_manager, &PlayManager::sig_www_track_finished, this, &Handler::www_track_finished);
+
+	connect(m->pcn, &PlaylistChangeNotifier::sig_playlist_renamed, this, &Handler::playlist_renamed);
+	connect(m->pcn, &PlaylistChangeNotifier::sig_playlist_deleted, this, &Handler::playlist_deleted);
 }
 
 Handler::~Handler()	= default;
@@ -501,7 +507,7 @@ int Handler::close_playlist(int pl_idx)
 		set_active_idx(m->playlists.isEmpty() ? -1 : 0);
 	}
 
-	else if(m->active_playlist_idx > pl_idx){
+	else if(m->active_playlist_idx > pl_idx) {
 		m->active_playlist_idx --;
 	}
 
@@ -518,7 +524,7 @@ int Handler::close_playlist(int pl_idx)
 		SetSetting(Set::PL_LastTrack, -1);
 	}
 
-	else{
+	else {
 		SetSetting(Set::PL_LastPlaylist, active_playlist()->get_id());
 	}
 
@@ -576,93 +582,111 @@ void Handler::reset_playlist(int pl_idx)
 	delete db_connector; db_connector = nullptr;
 }
 
-
-DBInterface::SaveAsAnswer Handler::save_playlist(int pl_idx)
+Util::SaveAsAnswer Handler::save_playlist(int pl_idx)
 {
-	CHECK_IDX_RET(pl_idx, DBInterface::SaveAsAnswer::Error)
+	CHECK_IDX_RET(pl_idx, Util::SaveAsAnswer::OtherError)
 
 	PlaylistPtr pl = m->playlists[pl_idx];
 
 	m->db->transaction();
-	DBInterface::SaveAsAnswer ret = pl->save();
+	Util::SaveAsAnswer ret = pl->save();
 	m->db->commit();
 
-	if(!pl->is_temporary()){
-		emit sig_saved_playlists_changed();
+	if(ret == Util::SaveAsAnswer::Success)
+	{
+		PlaylistChangeNotifier::instance()->add_playlist(pl->get_id(), pl->get_name());
 	}
 
 	return ret;
 }
 
 
-DBInterface::SaveAsAnswer Handler::save_playlist_as(int pl_idx, const QString& name, bool force_override)
+Util::SaveAsAnswer Handler::save_playlist_as(int pl_idx, const QString& new_name, bool force_override)
 {
-	CHECK_IDX_RET(pl_idx, DBInterface::SaveAsAnswer::Error)
+	CHECK_IDX_RET(pl_idx, Util::SaveAsAnswer::OtherError)
 
 	PlaylistPtr pl = m->playlists[pl_idx];
-
-	// no empty playlists
-	if(name.isEmpty())
-	{
-		return DBInterface::SaveAsAnswer::Error;
-	}
-
-	DBInterface::SaveAsAnswer ret = pl->save_as(name, force_override);
-	if(ret != DBInterface::SaveAsAnswer::Success)
-	{
+	Util::SaveAsAnswer ret = pl->save_as(new_name, force_override);
+	if(ret != Util::SaveAsAnswer::Success) {
 		return ret;
 	}
 
-	if(!pl->is_temporary()){
-		emit sig_saved_playlists_changed();
+	{ // fetch id of new playlist
+		auto db_connector = std::make_unique<DBWrapper>();
+		CustomPlaylist pl_new = db_connector->get_playlist_by_name(new_name);
+		if(pl_new.id() >= 0)
+		{
+			PlaylistChangeNotifier::instance()->add_playlist(pl_new.id(), new_name);
+		}
 	}
 
 	emit sig_playlist_name_changed(pl_idx);
 
-	return DBInterface::SaveAsAnswer::Success;
+	return Util::SaveAsAnswer::Success;
 }
 
 
-DBInterface::SaveAsAnswer Handler::rename_playlist(int pl_idx, const QString& name)
+Util::SaveAsAnswer Handler::rename_playlist(int pl_idx, const QString& new_name)
 {
-	CHECK_IDX_RET(pl_idx, DBInterface::SaveAsAnswer::Error)
-
-	// no empty playlists
-	if(name.isEmpty()){
-		return DBInterface::SaveAsAnswer::Error;
-	}
+	CHECK_IDX_RET(pl_idx, Util::SaveAsAnswer::OtherError)
 
 	// get playlist we want to save
 	PlaylistPtr pl = m->playlists[pl_idx];
+	QString old_name = pl->get_name();
 
-	DBInterface::SaveAsAnswer ret = pl->rename(name);
-	if(ret != DBInterface::SaveAsAnswer::Success){
-		return ret;
+	Util::SaveAsAnswer ret = pl->rename(new_name);
+	if(ret == Util::SaveAsAnswer::Success)
+	{
+		PlaylistChangeNotifier::instance()->rename_playlist(pl->get_id(), old_name, new_name);
 	}
 
-	emit sig_playlist_name_changed(pl_idx);
-
-	// for PlaylistChooser
-	if(!pl->is_temporary()){
-		emit sig_saved_playlists_changed();
-	}
-
-	return DBInterface::SaveAsAnswer::Success;
+	return ret;
 }
+
+void Handler::playlist_renamed(int id, const QString& old_name, const QString& new_name)
+{
+	Q_UNUSED(old_name)
+
+	auto it=Algorithm::find(m->playlists, [&id](auto playlist){
+		return (playlist->get_id() == id);
+	});
+
+	if(it == m->playlists.end()){
+		return;
+	}
+
+	PlaylistPtr pl = *it;
+	pl->set_name(new_name);
+
+	emit sig_playlist_name_changed(pl->index());
+}
+
 
 void Handler::delete_playlist(int pl_idx)
 {
 	CHECK_IDX_VOID(pl_idx)
 
 	PlaylistPtr pl = m->playlists[pl_idx];
+	int id = pl->get_id();
 
-	bool was_temporary = pl->is_temporary();
 	bool success = pl->remove_from_db();
-
-	// for PlaylistChooser
-	if(success && !was_temporary){
-		emit sig_saved_playlists_changed();
+	if(success){
+		PlaylistChangeNotifier::instance()->delete_playlist(id);
 	}
+}
+
+void Handler::playlist_deleted(int id)
+{
+	auto it=Algorithm::find(m->playlists, [&id](auto playlist){
+		return (playlist->get_id() == id);
+	});
+
+	if(it == m->playlists.end()){
+		return;
+	}
+
+	PlaylistPtr pl = *it;
+	pl->set_temporary(true);
 }
 
 void Handler::delete_tracks(int pl_idx, const IndexSet& rows, Library::TrackDeletionMode deletion_mode)
@@ -670,20 +694,19 @@ void Handler::delete_tracks(int pl_idx, const IndexSet& rows, Library::TrackDele
 	CHECK_IDX_VOID(pl_idx)
 
 	PlaylistPtr pl = m->playlists[pl_idx];
-	const MetaDataList& tracks = pl->tracks();
 
 	MetaDataList v_md;
-	v_md.reserve(tracks.size());
+	v_md.reserve(rows.size());
 
 	for(int i : rows)
 	{
-		if(i >= 0 && i < tracks.count())
+		if(Util::between(i, pl->count()))
 		{
-			v_md << tracks[i];
+			v_md << pl->track(i);
 		}
 	}
 
-	if(v_md.isEmpty()){
+	if(v_md.isEmpty()) {
 		return;
 	}
 

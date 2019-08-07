@@ -22,6 +22,7 @@
 #define PLAYLISTDBINTERFACE_H
 
 #include "Utils/Pimpl.h"
+#include "Utils/globals.h"
 
 class QString;
 class MetaDataList;
@@ -37,14 +38,6 @@ namespace Playlist
 		PIMPL(DBInterface)
 
 		public:
-			enum class SaveAsAnswer : uint8_t
-			{
-				Success=0,
-				AlreadyThere,
-				ExternTracksError,
-				Error
-			};
-
 			explicit DBInterface(const QString& name);
 			virtual ~DBInterface();
 
@@ -58,13 +51,13 @@ namespace Playlist
 			void set_temporary(bool b);
 
 			bool insert_temporary_into_db();
-			SaveAsAnswer save();
-			SaveAsAnswer save_as(const QString& str, bool force_override);
-			SaveAsAnswer rename(const QString& str);
+			Util::SaveAsAnswer save();
+			Util::SaveAsAnswer save_as(const QString& str, bool force_override);
+			Util::SaveAsAnswer rename(const QString& str);
 			bool delete_playlist();
 			bool remove_from_db();
 
-			virtual const MetaDataList& tracks() const = 0;
+			virtual MetaDataList tracks() const = 0;
 			virtual void set_changed(bool b) = 0;
 			virtual bool was_changed() const = 0;
 			virtual bool is_storable() const =0;

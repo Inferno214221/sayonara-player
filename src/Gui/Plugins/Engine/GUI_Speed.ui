@@ -37,6 +37,9 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="currentIndex">
       <number>1</number>
      </property>
@@ -169,6 +172,14 @@
    <header>Gui/Utils/Widgets/Slider.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>cb_active</tabstop>
+  <tabstop>sli_speed</tabstop>
+  <tabstop>btn_speed</tabstop>
+  <tabstop>cb_preserve_pitch</tabstop>
+  <tabstop>sli_pitch</tabstop>
+  <tabstop>btn_pitch</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

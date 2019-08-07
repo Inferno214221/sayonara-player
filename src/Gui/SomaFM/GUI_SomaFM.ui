@@ -189,10 +189,10 @@
      <attribute name="verticalHeaderVisible">
       <bool>false</bool>
      </attribute>
-     <attribute name="verticalHeaderDefaultSectionSize">
+     <attribute name="verticalHeaderMinimumSectionSize">
       <number>20</number>
      </attribute>
-     <attribute name="verticalHeaderMinimumSectionSize">
+     <attribute name="verticalHeaderDefaultSectionSize">
       <number>20</number>
      </attribute>
     </widget>
@@ -238,6 +238,10 @@ border: 2px solid #202020;
    <header>Gui/SomaFM/SomaFMStationView.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>tv_stations</tabstop>
+  <tabstop>lv_playlists</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
