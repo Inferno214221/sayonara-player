@@ -427,7 +427,7 @@ QLineEdit:hover,
 QSpinBox:hover,
 QPlainTextEdit:hover,
 QPushButton[flat=false]:hover,
-QPushButton[flat=false]:focus,
+QPushButton[flat=false]:pressed,
 QLineEdit:focus,
 QSpinBox:focus,
 QTextEdit:hover,
@@ -443,6 +443,11 @@ MenuToolButton:focus,
 MenuToolButton:hover
 {
 	border: 1px solid #e8841a;
+}
+
+QPushButton[flat=false]:focus
+{
+	color: #e8841a;
 }
 
 QLineEdit:disabled,
@@ -538,8 +543,12 @@ QPushButton[flat=false]:disabled
 
 QPushButton[flat=false]:pressed
 {
-	border: 1px solid #282828;
 	background: #505050;
+}
+
+QPushButton[flat=false]:released
+{
+	border: 1px solid #282828;
 }
 
 
