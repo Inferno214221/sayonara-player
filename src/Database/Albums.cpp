@@ -101,7 +101,7 @@ bool Albums::db_fetch_albums(Query& q, AlbumList& result)
 		Album album;
 
 		album.id =			q.value(0).toInt();
-		album.set_name(		q.value(1).toString().trimmed());
+		album.set_name(		q.value(1).toString());
 		album.rating =		q.value(2).toInt();
 		album.set_artists(	q.value(3).toString().split(','));
 		album.set_album_artists(q.value(4).toString().split(','));

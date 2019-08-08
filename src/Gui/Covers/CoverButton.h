@@ -97,7 +97,6 @@ namespace Gui
 			void mouseMoveEvent(QMouseEvent* e) override;
 			void mouseReleaseEvent(QMouseEvent* event) override;
 			void paintEvent(QPaintEvent* event) override;
-			void showEvent(QShowEvent* e) override;
 			void resizeEvent(QResizeEvent* e) override;
 
 		private slots:

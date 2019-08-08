@@ -191,35 +191,34 @@ void Importer::copy_thread_finished()
 	int n_files_copied = copy_thread->get_n_copied_files();
 	int n_files_to_copy = m->import_cache->files().size();
 
+	copy_thread->deleteLater();
+
 	// error and success messages
-	if(success)
+	if(!success)
 	{
-		m->db->clean_up();
+		QString warning = tr("Cannot import tracks");
+		Message::warning(warning);
+		return;
+	}
 
-		QString str = "";
-		if(n_files_to_copy == n_files_copied) {
-			str =  tr("All files could be imported");
-		}
+	m->db->clean_up();
 
-		else {
-			str = tr("%1 of %2 files could be imported")
-					.arg(n_files_copied)
-					.arg(n_files_to_copy);
-		}
-
-		Message::info(str);
-
-		emit_status(ImportStatus::Imported);
-
-		Tagging::ChangeNotifier::instance()->change_metadata(MetaDataList(), MetaDataList());
+	QString str = "";
+	if(n_files_to_copy == n_files_copied) {
+		str =  tr("All files could be imported");
 	}
 
 	else {
-		QString warning = tr("Cannot import tracks");
-		Message::warning(warning);
+		str = tr("%1 of %2 files could be imported")
+				.arg(n_files_copied)
+				.arg(n_files_to_copy);
 	}
 
-	copy_thread->deleteLater();
+	Message::info(str);
+
+	emit_status(ImportStatus::Imported);
+
+	Tagging::ChangeNotifier::instance()->change_metadata(MetaDataList(), MetaDataList());
 }
 
 

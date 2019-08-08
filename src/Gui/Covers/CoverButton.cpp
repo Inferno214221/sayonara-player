@@ -73,10 +73,13 @@ CoverButton::CoverButton(QWidget* parent) :
 {
 	m = Pimpl::make<CoverButton::Private>();
 	m->timer = new QTimer(this);
+	m->timer->setTimerType(Qt::TimerType::PreciseTimer);
 	m->timer->setInterval(10);
 
 	this->setObjectName("CoverButton");
 	this->setMouseTracking(true);
+	this->setFlat(true);
+	this->setToolTip(tr("Search an alternative cover"));
 
 	Cover::ChangeNotfier* cn = Cover::ChangeNotfier::instance();
 	connect(cn, &Cover::ChangeNotfier::sig_covers_changed, this, &CoverButton::covers_changed);
@@ -147,6 +150,18 @@ void CoverButton::refresh()
 	emit sig_cover_changed();
 }
 
+void CoverButton::force_cover(const QImage& img)
+{
+	force_cover(QPixmap::fromImage(img));
+}
+
+void CoverButton::force_cover(const QPixmap& pm)
+{
+	m->cover_source = Cover::Source::AudioFile;
+
+	set_cover_image_pixmap(pm);
+}
+
 void CoverButton::set_cover_image(const QString& path)
 {
 	set_cover_image_pixmap(QPixmap(path));
@@ -154,20 +169,24 @@ void CoverButton::set_cover_image(const QString& path)
 
 void CoverButton::set_cover_image_pixmap(const QPixmap& pm)
 {
-	auto h1 = Util::calc_hash(Util::cvt_pixmap_to_bytearray(pm));
-	auto h2 = Util::calc_hash(Util::cvt_pixmap_to_bytearray(m->current_cover));
-	if(h1 == h2 && !pm.isNull()){
-		return;
+	{ // check if current cover is the same
+		auto h1 = Util::calc_hash(Util::cvt_pixmap_to_bytearray(pm));
+		auto h2 = Util::calc_hash(Util::cvt_pixmap_to_bytearray(m->current_cover));
+		if(h1 == h2 && !pm.isNull()){
+			return;
+		}
 	}
 
-	if(!m->timer->isActive())
-	{
+	// don't change the currently fading out cover
+	if(!m->timer->isActive()) {
 		m->old_cover = m->current_cover;
 	}
 
 	m->current_cover = pm;
 
 	this->refresh();
+
+	// if timer is not active, start new timer loop
 	if(!m->timer->isActive())
 	{
 		m->opacity = 0;
@@ -175,27 +194,23 @@ void CoverButton::set_cover_image_pixmap(const QPixmap& pm)
 	}
 }
 
-void CoverButton::covers_changed()
-{
-	if(!is_silent())
-	{
-		m->hash = QString();
-		set_cover_location(m->cover_location);
-	}
-}
 
 void CoverButton::timer_timed_out()
 {
-	m->opacity = std::min(1.0, m->opacity + 0.1);
+	m->opacity = std::min(1.0, m->opacity + 0.025);
 	if(m->opacity < 1.0)
 	{
 		repaint();
 	}
 
-	else {
+	else
+	{
+		m->old_cover = QPixmap();
+		m->old_cover_scaled = QPixmap();
 		m->timer->stop();
 	}
 }
+
 
 void CoverButton::set_cover_location(const Location& cl)
 {
@@ -203,13 +218,15 @@ void CoverButton::set_cover_location(const Location& cl)
 		return;
 	}
 
+	m->hash = cl.hash();
+
 	if(!cl.is_valid())
 	{
 		set_cover_image_pixmap(m->invalid_cover);
 	}
 
 	m->cover_location = cl;
-	m->hash = cl.hash();
+
 
 	if(cl.hash().isEmpty() || !cl.is_valid()) {
 		return;
@@ -244,6 +261,16 @@ void CoverButton::cover_lookup_finished(bool success)
 }
 
 
+void CoverButton::covers_changed()
+{
+	if(!is_silent())
+	{
+		m->hash = QString();
+		set_cover_location(m->cover_location);
+	}
+}
+
+
 void CoverButton::alternative_cover_fetched(const Location& cl)
 {
 	m->hash = QString();
@@ -266,17 +293,6 @@ void CoverButton::alternative_cover_fetched(const Location& cl)
 }
 
 
-void CoverButton::force_cover(const QPixmap& pm)
-{
-	m->cover_source = Cover::Source::AudioFile;
-
-	set_cover_image_pixmap(pm);
-}
-
-void CoverButton::force_cover(const QImage& img)
-{
-	force_cover(QPixmap::fromImage(img));
-}
 
 void CoverButton::set_silent(bool silent)
 {
@@ -322,6 +338,7 @@ void CoverButton::paintEvent(QPaintEvent* event)
 
 	QPixmap pm, pm_old;
 
+	// we have seen this cover before and so, we have a scaled version of it
 	if(m->current_cover.cacheKey() == m->cache_key)
 	{
 		pm = m->current_cover_scaled;
@@ -373,14 +390,6 @@ void CoverButton::paintEvent(QPaintEvent* event)
 	}
 
 	painter.restore();
-}
-
-void CoverButton::showEvent(QShowEvent* e)
-{
-	this->setFlat(true);
-	this->setToolTip(tr("Search an alternative cover"));
-
-	CoverButtonBase::showEvent(e);
 }
 
 void CoverButton::resizeEvent(QResizeEvent* e)

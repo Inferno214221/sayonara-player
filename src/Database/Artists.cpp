@@ -95,7 +95,7 @@ bool Artists::db_fetch_artists(Query& q, ArtistList& result)
 		Artist artist;
 
 		artist.id =			q.value(0).toInt();
-		artist.set_name(	q.value(1).toString().trimmed());
+		artist.set_name(	q.value(1).toString());
 		artist.num_songs =	q.value(2).toInt();
 		artist.set_db_id(	db_id());
 
