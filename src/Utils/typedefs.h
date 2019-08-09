@@ -24,6 +24,7 @@
 #include <cstdint>
 #include "Utils/SetFwd.h"
 #include "Utils/MetaData/MetaDataFwd.h"
+#include <QMetaType>
 
 class QByteArray;
 class QString;
@@ -52,7 +53,6 @@ using LibraryId=int8_t;
 using DbId=uint8_t;
 using Byte=uint8_t;
 using Disc=uint8_t;
-using Rating=uint8_t;
 using Seconds=int32_t;
 using MilliSeconds=int64_t;
 using MicroSeconds=int64_t;
@@ -62,5 +62,19 @@ using Filesize=uint32_t;
 
 template<typename K, typename V>
 using PairList = QList<QPair<K,V>>;
+
+enum class Rating : uint8_t
+{
+	Zero=0,
+	One=1,
+	Two=2,
+	Three=3,
+	Four=4,
+	Five=5,
+	Last=6
+};
+
+
+Q_DECLARE_METATYPE(Rating)
 
 #endif

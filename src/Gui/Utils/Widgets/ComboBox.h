@@ -26,6 +26,9 @@
 
 namespace Gui
 {
+	/**
+	 * @brief A custom combobox which also uses the Gui::ComboBoxDelegate
+	 */
 	class ComboBox :
 			public Gui::WidgetTemplate<QComboBox>
 	{

@@ -28,16 +28,26 @@
 
 #include <QObject>
 
+/**
+ * @brief Removes or replaces the current QTranslator object by
+ * calling the change_language() method
+ */
 class Translator
 {
 	SINGLETON(Translator)
 	PIMPL(Translator)
 
-private:
-	bool switch_translator(QObject* parent, const QString& four_letter, const QString& dir);
+	private:
+		bool switch_translator(QObject* parent, const QString& four_letter, const QString& dir);
 
-public:
-	void change_language(QObject* parent, const QString& language);
+	public:
+		/**
+		 * @brief Sets a new language. Creates and installs a new QTranslator object
+		 * with parent as QObject parent.
+		 * @param parent
+		 * @param language
+		 */
+		void change_language(QObject* parent, const QString& language);
 
 };
 

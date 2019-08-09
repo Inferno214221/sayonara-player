@@ -302,7 +302,7 @@ void SearchBar::language_changed()
 			continue;
 		}
 
-		Filter::Mode mode = static_cast<Filter::Mode>(action->data().toInt());
+		Filter::Mode mode = Filter::Mode(action->data().toInt());
 		action->setText(Filter::get_text(mode));
 	}
 

@@ -47,8 +47,8 @@ void VersionChecker::version_check_finished()
 	QByteArray data;
 
 	{
-		AsyncWebAccess* awa = static_cast<AsyncWebAccess*>(sender());
-		if(!awa){
+		auto* awa = static_cast<AsyncWebAccess*>(sender());
+		if(awa){
 			return;
 		}
 

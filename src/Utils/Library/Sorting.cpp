@@ -58,9 +58,10 @@ bool Library::Sortings::operator==(Library::Sortings so)
 QString Library::Sortings::toString() const
 {
 	return
-		QString::number(static_cast<int>(so_albums)) + "," +
-		QString::number(static_cast<int>(so_artists)) + "," +
-		QString::number(static_cast<int>(so_tracks));
+		QString("%1,%2,%3")
+			.arg(int(so_albums))
+			.arg(int(so_artists))
+			.arg(int(so_tracks));
 }
 
 

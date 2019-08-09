@@ -123,7 +123,7 @@ namespace Util
 
 		int count() const
 		{
-			return static_cast<int>(this->size());
+			return int(this->size());
 		}
 	};
 }

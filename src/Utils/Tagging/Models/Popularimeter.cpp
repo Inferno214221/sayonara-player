@@ -23,7 +23,7 @@
 Models::Popularimeter::Popularimeter()
 {
 	email = "sayonara player";
-	rating = 0;
+	rating = Rating::Zero;
 	playcount = 0;
 }
 
@@ -42,22 +42,22 @@ void Models::Popularimeter::set_rating(Rating max_5)
 void Models::Popularimeter::set_rating_byte(Byte byte)
 {
 	if(byte == 0x00){
-		rating = 0;
+		rating = Rating::Zero;
 	}
 	else if(byte < 0x30){   //48
-		rating = 1;
+		rating = Rating::One;
 	}
 	else if(byte < 0x60){	// 92
-		rating = 2;
+		rating = Rating::Two;
 	}
 	else if(byte < 0xA0){	// 160
-		rating = 3;
+		rating = Rating::Three;
 	}
 	else if(byte < 0xD8){	// 216
-		rating = 4;
+		rating = Rating::Four;
 	}
 	else{
-		rating = 5;			// 255
+		rating = Rating::Five;			// 255
 	}
 }
 
@@ -72,23 +72,26 @@ Byte Models::Popularimeter::get_rating_byte() const
 
 	switch(rating)
 	{
-		case 0:
+		case Rating::Zero:
 			rating_byte = 0x00;
 			break;
-		case 1:
+		case Rating::One:
 			rating_byte = 0x01; // 1
 			break;
-		case 2:
+		case Rating::Two:
 			rating_byte = 0x40; // 64
 			break;
-		case 3:
+		case Rating::Three:
 			rating_byte = 0x7F; // 128
 			break;
-		case 4:
+		case Rating::Four:
 			rating_byte = 0xC0; // 192
 			break;
-		default:
+		case Rating::Five:
 			rating_byte = 0xFF; // 255
+			break;
+		default:
+			rating_byte = 0x00;
 	}
 
 	return rating_byte;

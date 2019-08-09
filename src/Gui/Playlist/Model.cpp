@@ -71,11 +71,13 @@ struct PlaylistItemModel::Private
 	QHash<AlbumId, QPixmap>	pms;
 	int						old_row_count;
 	int						drag_index;
+	int						row_height;
 	PlaylistPtr				pl=nullptr;
 
 	Private(PlaylistPtr pl) :
 		old_row_count(0),
 		drag_index(-1),
+		row_height(20),
 		pl(pl)
 	{}
 };
@@ -92,7 +94,7 @@ PlaylistItemModel::PlaylistItemModel(PlaylistPtr pl, QObject* parent) :
 	playlist_changed(0);
 }
 
-PlaylistItemModel::~PlaylistItemModel() {}
+PlaylistItemModel::~PlaylistItemModel() = default;
 
 int PlaylistItemModel::rowCount(const QModelIndex& parent) const
 {
@@ -103,7 +105,7 @@ int PlaylistItemModel::rowCount(const QModelIndex& parent) const
 int PlaylistItemModel::columnCount(const QModelIndex& parent) const
 {
 	Q_UNUSED(parent);
-	return static_cast<int>(ColumnName::NumColumns);
+	return int(ColumnName::NumColumns);
 }
 
 
@@ -171,8 +173,9 @@ QVariant PlaylistItemModel::data(const QModelIndex& index, int role) const
 			AlbumId album_id = m->pl->track(row).album_id;
 			if(!m->pms.contains(album_id))
 			{
+				int height = m->row_height - 6;
 				Cover::Location cl = Cover::Location::cover_location(m->pl->track(row));
-				m->pms[album_id] = QPixmap(cl.preferred_path()).scaled(QSize(20, 20), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+				m->pms[album_id] = QPixmap(cl.preferred_path()).scaled(QSize(height, height), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 			}
 
 			return m->pms[album_id];
@@ -182,6 +185,15 @@ QVariant PlaylistItemModel::data(const QModelIndex& index, int role) const
 	else if(role == Qt::UserRole)
 	{
 		return (row == m->drag_index);
+	}
+
+	else if(role == Qt::SizeHintRole)
+	{
+		if(col == ColumnName::Cover)
+		{
+			int h = m->row_height - 4;
+			return QSize(h, h);
+		}
 	}
 
 	return QVariant();
@@ -468,6 +480,12 @@ void PlaylistItemModel::set_drag_index(int drag_index)
 	{
 		emit dataChanged(index(drag_index, 0), index(drag_index, columnCount() - 1));
 	}
+}
+
+void PlaylistItemModel::set_row_height(int row_height)
+{
+	m->pms.clear();
+	m->row_height = row_height;
 }
 
 void PlaylistItemModel::refresh_data()

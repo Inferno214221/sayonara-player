@@ -44,9 +44,8 @@ RatingDelegate::RatingDelegate(QObject* parent, int rating_column, bool enabled)
 	m = Pimpl::make<Private>(enabled, rating_column);
 }
 
-RatingDelegate::~RatingDelegate() {}
+RatingDelegate::~RatingDelegate() = default;
 
-#include <QDebug>
 void RatingDelegate::paint(QPainter *painter, const QStyleOptionViewItem & option, const QModelIndex & index) const
 {
 	if(!index.isValid()) {
@@ -85,11 +84,12 @@ QWidget* RatingDelegate::createEditor(QWidget *parent, const QStyleOptionViewIte
 {
 	Q_UNUSED(option)
 
-	RatingLabel *label = new RatingLabel(parent, m->enabled);
+	auto* label = new RatingLabel(parent, m->enabled);
 
 	connect(label, &RatingLabel::sig_finished, this, &RatingDelegate::destroy_editor);
 
-	label->set_rating(index.data(Qt::EditRole).toInt());
+	Rating rating = index.data(Qt::EditRole).value<Rating>();
+	label->set_rating(rating);
 
 	return label;
 }
@@ -99,8 +99,10 @@ void RatingDelegate::destroy_editor(bool save)
 {
 	Q_UNUSED(save)
 
-	RatingLabel *label = qobject_cast<RatingLabel *>(sender());
-	if(!label) return;
+	auto* label = qobject_cast<RatingLabel *>(sender());
+	if(!label) {
+		return;
+	}
 
 	disconnect(label, &RatingLabel::sig_finished, this, &RatingDelegate::destroy_editor);
 
@@ -111,18 +113,22 @@ void RatingDelegate::destroy_editor(bool save)
 
 void RatingDelegate::setEditorData(QWidget *editor, const QModelIndex & index) const
 {
-	Rating rating = index.data(Qt::EditRole).toInt();
+	auto* label = qobject_cast<RatingLabel *>(editor);
+	if(!label) {
+		return;
+	}
 
-	RatingLabel* label = qobject_cast<RatingLabel *>(editor);
-	if(!label) return;
-
+	Rating rating = index.data(Qt::EditRole).value<Rating>();
 	label->set_rating(rating);
 }
 
 
 void RatingDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex & index) const
 {
-	RatingLabel* label = qobject_cast<RatingLabel *>(editor);
-	if(!label) return;
-	model->setData(index, label->get_rating());
+	auto* label = qobject_cast<RatingLabel *>(editor);
+	if(label)
+	{
+		Rating rating = label->get_rating();
+		model->setData(index, QVariant::fromValue(rating));
+	}
 }

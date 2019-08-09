@@ -62,10 +62,12 @@ PlaylistContextMenu::PlaylistContextMenu(QWidget *parent) :
 {
 	m = Pimpl::make<Private>(this);
 
+
 	QList<QAction*> rating_actions;
-	for(Rating i=0; i<=5; i++)
+
+	for(int i=int(Rating::Zero); i != int(Rating::Last); i++)
 	{
-		rating_actions << init_rating_action(i, m->rating_menu);
+		rating_actions << init_rating_action(Rating(i), m->rating_menu);
 	}
 
 	m->rating_menu->addActions(rating_actions);
@@ -114,14 +116,20 @@ void PlaylistContextMenu::show_actions(PlaylistContextMenu::Entries entries)
 void PlaylistContextMenu::set_rating(Rating rating)
 {
 	QList<QAction*> actions = m->rating_menu->actions();
-	for(QAction* action : actions){
-		int data = action->data().toInt();
+	for(QAction* action : actions)
+	{
+		auto data = action->data().value<Rating>();
 		action->setChecked(data == rating);
 	}
 
 	QString rating_text = Lang::get(Lang::Rating);
-	if(rating > 0){
-		m->rating_action->setText(rating_text + " (" + QString::number(rating) + ")");
+	if(rating != Rating::Zero && rating != Rating::Last)
+	{
+		QString text = QString("%1 (%2)")
+							.arg(rating_text)
+							.arg(int(rating));
+
+		m->rating_action->setText(text);
 	}
 
 	else{
@@ -136,8 +144,13 @@ void PlaylistContextMenu::set_metadata(const MetaData& md)
 
 QAction* PlaylistContextMenu::init_rating_action(Rating rating, QObject* parent)
 {
-	QAction* action = new QAction(QString::number(rating), parent);
-	action->setData(rating);
+	QAction* action = new QAction
+	(
+		QString::number(int(rating)),
+		parent
+	);
+
+	action->setData(QVariant::fromValue(rating));
 	action->setCheckable(true);
 
 	connect(action, &QAction::triggered, this, [=](bool b)

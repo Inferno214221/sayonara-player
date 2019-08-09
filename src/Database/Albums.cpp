@@ -102,12 +102,12 @@ bool Albums::db_fetch_albums(Query& q, AlbumList& result)
 
 		album.id =			q.value(0).toInt();
 		album.set_name(		q.value(1).toString());
-		album.rating =		q.value(2).toInt();
+		album.rating =		q.value(2).value<Rating>();
 		album.set_artists(	q.value(3).toString().split(','));
 		album.set_album_artists(q.value(4).toString().split(','));
-		album.length_sec =	q.value(5).toInt();
-		album.num_songs =	q.value(6).toInt();
-		album.year =		q.value(7).toInt();
+		album.length_sec =	q.value(5).value<Seconds>();
+		album.num_songs =	q.value(6).value<uint16_t>();
+		album.year =		q.value(7).value<uint16_t>();
 
 		QStringList discs =	q.value(8).toString().split(',');
 		if(discs.isEmpty()){
@@ -116,7 +116,7 @@ bool Albums::db_fetch_albums(Query& q, AlbumList& result)
 
 		discs.removeDuplicates();
 		for(const QString& disc : discs) {
-			album.discnumbers << disc.toInt();
+			album.discnumbers << Disc(disc.toInt());
 		}
 
 		album.n_discs = album.discnumbers.size();
@@ -310,7 +310,7 @@ AlbumId Albums::updateAlbum(const Album& album)
 	{
 		{"name",		Util::cvt_not_null(album.name())},
 		{"cissearch",	Util::cvt_not_null(cissearch)},
-		{"rating",		album.rating}
+		{"rating",		QVariant::fromValue(album.rating)}
 	};
 
 	Query q = update("albums", bindings, {"albumID", album.id}, QString("Cannot update album %1").arg(album.name()));
@@ -371,7 +371,7 @@ AlbumId Albums::insertAlbumIntoDatabase(const Album& album)
 	{
 		{"name",		Util::cvt_not_null(album.name())},
 		{"cissearch",	Util::cvt_not_null(cissearch)},
-		{"rating",		album.rating}
+		{"rating",		QVariant::fromValue(album.rating)}
 	};
 
 	Query q = insert("albums", bindings, QString("2. Cannot insert album %1").arg(album.name()));

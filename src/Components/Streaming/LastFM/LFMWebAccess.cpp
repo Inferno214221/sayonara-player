@@ -58,7 +58,7 @@ void WebAccess::call_post_url(const QString& url, const QByteArray& post_data)
 
 void WebAccess::awa_finished()
 {
-	AsyncWebAccess* awa = static_cast<AsyncWebAccess*>(sender());
+	auto* awa = static_cast<AsyncWebAccess*>(sender());
 	if(awa->status() != AsyncWebAccess::Status::GotData)
 	{
 		emit sig_error("Cannot get data");

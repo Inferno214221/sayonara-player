@@ -37,9 +37,9 @@ QByteArray Compressor::compress(const QByteArray &arr)
 	comp_stream.zfree = Z_NULL;
 	comp_stream.opaque = Z_NULL;
 
-	comp_stream.avail_in = static_cast<uInt>(arr.size() + 1);
+	comp_stream.avail_in = uInt(arr.size() + 1);
 	comp_stream.next_in = reinterpret_cast<Bytef*>(const_cast<char*>(arr.data()));
-	comp_stream.avail_out = static_cast<uInt>(target.size());
+	comp_stream.avail_out = uInt(target.size());
 	comp_stream.next_out = reinterpret_cast<Bytef*>(const_cast<char*>(target.data()));
 
 	deflateInit(&comp_stream, Z_BEST_COMPRESSION);

@@ -257,11 +257,13 @@ void GUI_PlaylistBottomBar::language_changed()
 	check_dynamic_play_button();
 }
 
-#include <QVBoxLayout>
+
 void GUI_PlaylistBottomBar::skin_changed()
 {
+	Gui::Widget::skin_changed();
+
 	QFontMetrics fm = this->fontMetrics();
-	int w = (fm.width("x") * 45) / 10;
+	int w = (this->fontMetrics().width("m") * 250) / 100;
 	w = std::max(29, w);
 
 	const QList<BottomBarButton*> buttons = m->buttons();

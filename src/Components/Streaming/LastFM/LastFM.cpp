@@ -137,7 +137,7 @@ void Base::login_thread_finished(bool success)
 		return;
 	}
 
-	LoginThread* login_thread = static_cast<LoginThread*>(sender());
+	auto* login_thread = static_cast<LoginThread*>(sender());
 	LoginStuff login_info = login_thread->getLoginStuff();
 
 	m->logged_in = login_info.logged_in;

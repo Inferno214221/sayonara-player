@@ -45,7 +45,7 @@ public:
 	QList<Disc>	discnumbers;
 
 	AlbumId		id;
-	Seconds length_sec;
+	Seconds		length_sec;
 	uint16_t	num_songs;
 	uint16_t	year;
 

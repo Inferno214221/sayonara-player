@@ -158,7 +158,7 @@ void GUI_ShortcutPreferences::test_pressed(const QList<QKeySequence>& sequences)
 
 void GUI_ShortcutPreferences::sequence_entered()
 {
-	GUI_ShortcutEntry* entry = static_cast<GUI_ShortcutEntry*>(sender());
+	auto* entry = static_cast<GUI_ShortcutEntry*>(sender());
 	QList<QKeySequence> sequences = entry->sequences();
 
 	foreach(const GUI_ShortcutEntry* lst_entry, m->entries)

@@ -237,20 +237,20 @@ bool SC::Database::db_fetch_tracks(Query& q, MetaDataList& result)
 		data.id = 		 q.value(0).toInt();
 		data.set_title(q.value(1).toString());
 		data.duration_ms = q.value(2).toInt();
-		data.year = 	 q.value(3).toInt();
-		data.bitrate = 	 q.value(4).toInt();
+		data.year = 	 q.value(3).value<uint16_t>();
+		data.bitrate = 	 q.value(4).value<Bitrate>();
 		data.set_filepath(q.value(5).toString());
-		data.track_num = q.value(6).toInt();
+		data.track_num = q.value(6).value<uint16_t>();
 		data.album_id =  q.value(7).toInt();
 		data.artist_id = q.value(8).toInt();
 		data.set_album(q.value(9).toString().trimmed());
 		data.set_artist(q.value(10).toString().trimmed());
 		data.set_genres(q.value(11).toString().split(","));
-		data.filesize =  q.value(12).toInt();
-		data.discnumber = q.value(13).toInt();
+		data.filesize =  q.value(12).value<Filesize>();
+		data.discnumber = q.value(13).value<Disc>();
 		data.add_custom_field("purchase_url", tr("Purchase Url"), q.value(14).toString());
 		data.set_cover_download_url(q.value(15).toString());
-		data.rating = q.value(16).toInt();
+		data.rating = q.value(16).value<Rating>();
 		data.set_db_id(module()->db_id());
 
 		result << data;
@@ -275,12 +275,12 @@ bool SC::Database::db_fetch_albums(Query& q, AlbumList& result)
 		album.id =					q.value(0).toInt();
 		album.set_name(q.value(1).toString().trimmed());
 		album.length_sec =			q.value(2).toInt();
-		album.rating =				q.value(3).toInt();
+		album.rating =				q.value(3).value<Rating>();
 		album.add_custom_field("permalink_url", "Permalink Url", q.value(4).toString());
 		album.add_custom_field("purchase_url", "Purchase Url", q.value(5).toString());
 		album.set_cover_download_url(q.value(6).toString());
-		album.num_songs =			q.value(7).toInt();
-		album.year =				q.value(8).toInt();
+		album.num_songs =			q.value(7).value<uint16_t>();
+		album.year =				q.value(8).value<uint16_t>();
 
 		QStringList lst_artists =	q.value(9).toString().split(',');
 		album.set_artists(lst_artists);
@@ -288,8 +288,9 @@ bool SC::Database::db_fetch_albums(Query& q, AlbumList& result)
 		QStringList lst_discnumbers = q.value(10).toString().split(',');
 		album.discnumbers.clear();
 
-		for(const QString& disc : lst_discnumbers) {
-			int d = disc.toInt();
+		for(const QString& disc : lst_discnumbers)
+		{
+			auto d = Disc(disc.toInt());
 			if(album.discnumbers.contains(d)) continue;
 
 			album.discnumbers << d;
@@ -299,7 +300,7 @@ bool SC::Database::db_fetch_albums(Query& q, AlbumList& result)
 			album.discnumbers << 1;
 		}
 
-		album.n_discs = album.discnumbers.size();
+		album.n_discs = Disc(album.discnumbers.size());
 		album.is_sampler = (lst_artists.size() > 1);
 		album.set_db_id(module()->db_id());
 
@@ -322,7 +323,8 @@ bool SC::Database::db_fetch_artists(Query& q, ArtistList& result)
 		return true;
 	}
 
-	for(bool is_element=q.first(); is_element; is_element = q.next()){
+	for(bool is_element=q.first(); is_element; is_element = q.next())
+	{
 		Artist artist;
 
 		artist.id =						q.value(0).toInt();
@@ -333,9 +335,9 @@ bool SC::Database::db_fetch_artists(Query& q, ArtistList& result)
 		artist.add_custom_field("followers_following", "Followers/Following", q.value(4).toString());
 
 		artist.set_cover_download_url(q.value(5).toString());
-		artist.num_songs =				q.value(7).toInt();
+		artist.num_songs =				q.value(7).value<uint16_t>();
 		QStringList list =				q.value(8).toString().split(',');
-		artist.num_albums =				list.size();
+		artist.num_albums =				uint16_t(list.size());
 		artist.set_db_id(module()->db_id());
 
 		result << artist;

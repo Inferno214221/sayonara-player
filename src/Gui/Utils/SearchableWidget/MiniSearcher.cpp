@@ -40,7 +40,7 @@ bool MiniSearchEventFilter::eventFilter(QObject* o, QEvent* e)
 	{
 		case QEvent::KeyPress:
 			{
-				QKeyEvent* ke = static_cast<QKeyEvent*>(e);
+				auto* ke = static_cast<QKeyEvent*>(e);
 				if(ke->key() == Qt::Key_Tab)
 				{
 					emit sig_tab_pressed();

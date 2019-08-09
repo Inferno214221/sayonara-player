@@ -130,7 +130,7 @@ bool StreamParser::parse_next_url()
 
 void StreamParser::awa_finished()
 {
-	AsyncWebAccess* awa = static_cast<AsyncWebAccess*>(sender());
+	auto* awa = static_cast<AsyncWebAccess*>(sender());
 	AsyncWebAccess::Status status = awa->status();
 	m->last_url = awa->url();
 	m->active_awa = nullptr;
@@ -200,7 +200,7 @@ void StreamParser::awa_finished()
 
 void StreamParser::icy_finished()
 {
-	IcyWebAccess* iwa = static_cast<IcyWebAccess*>(sender());
+	auto* iwa = static_cast<IcyWebAccess*>(sender());
 	IcyWebAccess::Status status = iwa->status();
 	m->active_icy = nullptr;
 

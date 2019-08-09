@@ -35,7 +35,7 @@ bool KeyPressFilter::eventFilter(QObject *o, QEvent *e)
 {
 	if(e->type() == QEvent::KeyPress)
 	{
-		QKeyEvent* ke = static_cast<QKeyEvent*>(e);
+		auto* ke = static_cast<QKeyEvent*>(e);
 		ke->accept();
 		emit sig_key_pressed(ke->key());
 	}
@@ -54,9 +54,10 @@ bool ContextMenuFilter::eventFilter(QObject *o, QEvent *e)
 	if(e->type() == QEvent::ContextMenu)
 	{
 		e->accept();
-		QContextMenuEvent* cme = static_cast<QContextMenuEvent*>(e);
 
+		auto* cme = static_cast<QContextMenuEvent*>(e);
 		emit sig_context_menu(cme->globalPos(), nullptr);
+
 		return true;
 	}
 
@@ -73,15 +74,13 @@ bool MouseMoveFilter::eventFilter(QObject *o, QEvent *e)
 	if(e->type() == QEvent::MouseMove)
 	{
 		e->accept();
-		QMouseEvent* me = static_cast<QMouseEvent*>(e);
 
+		auto* me = static_cast<QMouseEvent*>(e);
 		emit sig_mouse_moved(me->pos());
 	}
 
 	return QObject::eventFilter(o, e);
 }
-
-
 
 MouseEnterFilter::MouseEnterFilter(QObject *parent) :
 	QObject(parent)

@@ -168,7 +168,7 @@ MetaData::MetaData() :
 
 	library_id(-1),
 
-	rating(0),
+	rating(Rating::Zero),
 	played(false),
 	is_extern(false),
 	pl_playing(false),
@@ -367,7 +367,7 @@ QString MetaData::to_string() const
 	lst << m->title;
 	lst << "by " << this->artist() << " (" << album_artist() << ")";
 	lst << "on " << this->album();
-	lst << "Rating: " << QString::number(rating);
+	lst << "Rating: " << QString::number( int(rating) );
 	lst << "Disc: " << QString::number(discnumber);
 	lst << "Filepath: " << filepath();
 

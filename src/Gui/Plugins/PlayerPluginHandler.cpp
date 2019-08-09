@@ -101,7 +101,7 @@ void Handler::show_plugin(const QString& name)
 
 void Handler::plugin_action_triggered(bool b)
 {
-	Base* plugin = static_cast<Base*>(sender());
+	auto* plugin = static_cast<Base*>(sender());
 
 	if(b){
 		m->current_plugin = plugin;
@@ -123,7 +123,7 @@ void Handler::plugin_opened(Base* p)
 
 void Handler::plugin_opened()
 {
-	Base* p = static_cast<Base*>(sender());
+	auto* p = static_cast<Base*>(sender());
 	plugin_opened(p);
 }
 

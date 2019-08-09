@@ -33,11 +33,11 @@ namespace Models
 	struct Popularimeter
 	{
 		QString		email;
-		int			rating;
+		Rating		rating;
 		int			playcount;
 
 		Popularimeter();
-		Popularimeter(const QString& email, Byte rating_byte, int playcount);
+		Popularimeter(const QString& email, Rating rating_byte, int playcount);
 		void set_rating(Rating max_5);
 		void set_rating_byte(Byte byte);
 		Rating get_rating() const;

@@ -90,6 +90,7 @@ public:
 
 	bool			has_local_media(const IndexSet& rows) const;
 	void			set_drag_index(int drag_index);
+	void			set_row_height(int row_height);
 
 public slots:
 	void			refresh_data();

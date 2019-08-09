@@ -88,7 +88,7 @@ QVariant ArtistModel::data(const QModelIndex & index, int role) const
 	int row = index.row();
 	int col = index.column();
 
-	ColumnIndex::Artist idx_col = static_cast<ColumnIndex::Artist>(col);
+	ColumnIndex::Artist idx_col = ColumnIndex::Artist(col);
 	const Artist& artist = artists[row];
 
 	if(role == Qt::TextAlignmentRole)
@@ -96,9 +96,9 @@ QVariant ArtistModel::data(const QModelIndex & index, int role) const
 		switch(idx_col)
 		{
 			case ColumnIndex::Artist::Name:
-				return static_cast<int>(Qt::AlignLeft | Qt::AlignVCenter);
+				return int(Qt::AlignLeft | Qt::AlignVCenter);
 			default:
-				return static_cast<int>(Qt::AlignRight | Qt::AlignVCenter);
+				return int(Qt::AlignRight | Qt::AlignVCenter);
 		}
 	}
 

@@ -225,7 +225,7 @@ void GUI_Spectrum::paintEvent(QPaintEvent* e)
 	ColorStyle style = current_style();
 	int n_rects = style.n_rects;
 	int n_fading_steps = style.n_fading_steps;
-	int h_rect = static_cast<int>((widget_height / n_rects) - style.ver_spacing);
+	int h_rect = int((widget_height / n_rects) - style.ver_spacing);
 	int border_y = style.ver_spacing;
 	int border_x = style.hor_spacing;
 
@@ -240,7 +240,7 @@ void GUI_Spectrum::paintEvent(QPaintEvent* e)
 	for(int i=offset; i<ninety + 1; i++)
 	{
 		// if this is one bar, how tall would it be?
-		int h =  static_cast<int>(m->spec.at(i) * widget_height);
+		int h = int(m->spec.at(i) * widget_height);
 
 		// how many colored rectangles would fit into this bar?
 		int colored_rects = h / (h_rect + border_y) - 1 ;
@@ -248,7 +248,7 @@ void GUI_Spectrum::paintEvent(QPaintEvent* e)
 		colored_rects = std::max(colored_rects, 0);
 
 		// we start from bottom with painting
-		int y = static_cast<int>(widget_height - h_rect);
+		int y = int(widget_height - h_rect);
 
 		// run vertical
 

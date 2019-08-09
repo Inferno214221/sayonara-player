@@ -49,7 +49,7 @@ struct RatingLabel::Private
 		parent(parent),
 		offset_x(3),
 		offset_y(0),
-		rating(0),
+		rating(Rating::Zero),
 		icon_size(14),
 		enabled(enabled)
 	{
@@ -95,15 +95,19 @@ void RatingLabel::paintEvent(QPaintEvent *e)
 	}
 
 	painter.translate(rect().x() + m->offset_x, rect().y() + offset_y );
-	for(Rating rating = 0; rating < m->rating; rating++)
-	{
-		painter.drawPixmap(0, 0, m->icon_size, m->icon_size, m->pm_active);
-		painter.translate(m->icon_size + 2, 0);
-	}
 
-	for(Rating rating = m->rating; rating < 5; rating++)
+	for(int i=0; i<uchar(Rating::Five); i++)
 	{
-		painter.drawPixmap(0, 0, m->icon_size, m->icon_size, m->pm_inactive);
+		Rating rating = Rating(i);
+		if(rating < m->rating)
+		{
+			painter.drawPixmap(0, 0, m->icon_size, m->icon_size, m->pm_active);
+		}
+
+		else {
+			painter.drawPixmap(0, 0, m->icon_size, m->icon_size, m->pm_inactive);
+		}
+
 		painter.translate(m->icon_size + 2, 0);
 	}
 }

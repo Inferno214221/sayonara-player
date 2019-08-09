@@ -215,7 +215,7 @@ bool ArtistList::contains(ArtistId artist_id) const
 
 int ArtistList::count() const
 {
-	return static_cast<int>(this->size());
+	return int(this->size());
 }
 
 ArtistList& ArtistList::operator <<(const Artist& artist)

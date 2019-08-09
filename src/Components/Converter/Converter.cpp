@@ -205,10 +205,9 @@ bool Converter::start_process(const QString& command, const QStringList& argumen
 
 void Converter::process_finished(int ret)
 {
-	sp_log(Log::Debug, this) << "process finished";
-	QProcess* process = static_cast<QProcess*>(sender());
-	Q_UNUSED(process);
+	auto* process = static_cast<QProcess*>(sender());
 
+	sp_log(Log::Debug, this) << "process finished";
 	if(ret != 0){
 		m->num_errors++;
 		sp_log(Log::Warning, this) << "Encoding process failed with code " << ret << process->program();
@@ -236,7 +235,7 @@ void Converter::process_finished(int ret)
 
 void Converter::error_occured(QProcess::ProcessError err)
 {
-	QProcess* p = static_cast<QProcess*>(this->sender());
+	auto* p = static_cast<QProcess*>(this->sender());
 
 	sp_log(Log::Warning, this) << p->program() << ": " << p->arguments().join(", ");
 	sp_log(Log::Warning, this) << "Error: QProcess:ProcessError " << p->errorString();

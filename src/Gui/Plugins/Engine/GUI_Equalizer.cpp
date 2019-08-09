@@ -203,7 +203,7 @@ static double scale[] = {1.0, 0.6, 0.20, 0.06, 0.01};
 
 void GUI_Equalizer::sli_changed(int idx, int new_val)
 {
-	int slider_size = static_cast<int>(m->sliders.size());
+	int slider_size = int(m->sliders.size());
 
 	if(idx < 0 || idx >= slider_size){
 		return;

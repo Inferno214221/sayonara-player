@@ -79,7 +79,7 @@ void Util::File::remove_files_in_directory(const QString& dir_name, const QStrin
 
 	QFileInfoList info_lst = dir.entryInfoList
 	(
-		static_cast<QDir::Filters>(QDir::System | QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot)
+		QDir::Filters(QDir::System | QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot)
 	);
 
 	for(const QFileInfo& info : info_lst)

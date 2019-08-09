@@ -82,7 +82,7 @@ SomaFM::Station SomaFM::Library::station(const QString& name)
 
 void SomaFM::Library::soma_website_fetched()
 {
-	AsyncWebAccess* awa = static_cast<AsyncWebAccess*>(sender());
+	auto* awa = static_cast<AsyncWebAccess*>(sender());
 	QList<SomaFM::Station> stations;
 
 	if(awa->status() != AsyncWebAccess::Status::GotData)
@@ -197,7 +197,7 @@ bool SomaFM::Library::create_playlist_from_playlist(int idx)
 
 void SomaFM::Library::soma_playlist_content_fetched(bool success)
 {
-	StreamParser* parser = static_cast<StreamParser*>(sender());
+	auto* parser = static_cast<StreamParser*>(sender());
 
 	if(!success){
 		parser->deleteLater();

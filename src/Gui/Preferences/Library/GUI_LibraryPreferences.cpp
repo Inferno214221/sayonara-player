@@ -197,7 +197,7 @@ void GUI_LibraryPreferences::down_clicked()
 
 void GUI_LibraryPreferences::edit_dialog_accepted()
 {
-	GUI_EditLibrary* edit_dialog = static_cast<GUI_EditLibrary*>(sender());
+	auto* edit_dialog = static_cast<GUI_EditLibrary*>(sender());
 
 	GUI_EditLibrary::EditMode edit_mode = edit_dialog->edit_mode();
 

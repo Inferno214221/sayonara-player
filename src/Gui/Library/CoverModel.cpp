@@ -174,7 +174,7 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 			}
 
 		case Qt::TextAlignmentRole:
-			return static_cast<int>(Qt::AlignHCenter | Qt::AlignTop);
+			return int(Qt::AlignHCenter | Qt::AlignTop);
 
 		case Qt::DecorationRole:
 			{
@@ -273,8 +273,9 @@ void CoverModel::next_hash()
 
 void CoverModel::cover_lookup_finished(bool success)
 {
-	Lookup* clu = static_cast<Lookup*>(sender());
-	CoverLookupUserData* d = static_cast<CoverLookupUserData*>(clu->user_data());
+	auto* clu = static_cast<Lookup*>(sender());
+	auto* data = static_cast<CoverLookupUserData*>(clu->user_data());
+	Hash hash = data->hash;
 
 	QList<QPixmap> pixmaps;
 	if(success)
@@ -285,17 +286,17 @@ void CoverModel::cover_lookup_finished(bool success)
 	if(!pixmaps.isEmpty())
 	{
 		QPixmap pm(pixmaps.first());
-		m->cvpc->add_pixmap(d->hash, pm);
+		m->cvpc->add_pixmap(hash, pm);
 	}
 
 	else
 	{
-		m->invalid_hashes.insert(d->hash);
+		m->invalid_hashes.insert(hash);
 	}
 
 	m->clus_running--;
-	sp_log(Log::Crazy, this) << "CLU finished: " << m->clus_running << ", " << d->hash;
-	d->acft->done(d->hash);
+	sp_log(Log::Crazy, this) << "CLU finished: " << m->clus_running << ", " << hash;
+	data->acft->done(hash);
 
 	clu->set_user_data(nullptr);
 

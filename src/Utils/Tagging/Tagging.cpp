@@ -74,7 +74,7 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 	bool success;
 
 	QFileInfo fi(md.filepath());
-	md.filesize = fi.size();
+	md.filesize = static_cast<unsigned int>(fi.size());
 	if(fi.size() <= 0){
 		return false;
 	}
@@ -222,9 +222,9 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 	md.set_artist(artist);
 	md.set_title(title);
 	md.duration_ms = length;
-	md.year = year;
-	md.track_num = track;
-	md.bitrate = bitrate;
+	md.year = static_cast<unsigned short>(year);
+	md.track_num = static_cast<unsigned short>(track);
+	md.bitrate = static_cast<unsigned int>(bitrate);
 	md.set_genres(genres);
 	md.discnumber = discnumber.disc;
 	md.n_discs = discnumber.n_discs;
@@ -280,7 +280,7 @@ bool Tagging::Utils::setMetaDataOfFile(const MetaData& md)
 	tag->setTrack(md.track_num);
 	tag->setComment(comment);
 
-	Models::Popularimeter popularimeter("sayonara player", 0, 0);
+	Models::Popularimeter popularimeter("sayonara player", Rating::Zero, 0);
 	popularimeter.set_rating(md.rating);
 	Models::Discnumber discnumber(md.discnumber, md.n_discs);
 

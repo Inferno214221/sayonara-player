@@ -135,7 +135,7 @@ void CoverViewContextMenu::init_zoom_actions()
 void CoverViewContextMenu::action_zoom_triggered(bool b)
 {
 	Q_UNUSED(b)
-	QAction* action = static_cast<QAction*>(sender());
+	auto* action = static_cast<QAction*>(sender());
 
 	int zoom = action->data().toInt();
 	emit sig_zoom_changed(zoom);
@@ -144,9 +144,9 @@ void CoverViewContextMenu::action_zoom_triggered(bool b)
 void CoverViewContextMenu::action_sorting_triggered(bool b)
 {
 	Q_UNUSED(b)
-	QAction* action = static_cast<QAction*>(sender());
+	auto* action = static_cast<QAction*>(sender());
 
-	Library::SortOrder so = static_cast<Library::SortOrder>(action->data().toInt());
+	Library::SortOrder so = Library::SortOrder(action->data().toInt());
 	emit sig_sorting_changed(so);
 }
 

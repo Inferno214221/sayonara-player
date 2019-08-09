@@ -205,20 +205,20 @@ bool DB::Playlist::getPlaylistById(CustomPlaylist& pl)
 			data.id = 		 q.value(0).toInt();
 			data.set_title(q.value(1).toString());
 			data.duration_ms = q.value(2).toInt();
-			data.year = 	 q.value(3).toInt();
-			data.bitrate = 	 q.value(4).toInt();
+			data.year = 	 q.value(3).value<uint16_t>();
+			data.bitrate = 	 q.value(4).value<Bitrate>();
 			data.set_filepath(q.value(5).toString());
-			data.track_num = q.value(6).toInt();
+			data.track_num = q.value(6).value<uint16_t>();
 			data.album_id =  q.value(7).toInt();
 			data.artist_id = q.value(8).toInt();
 			data.set_album(q.value(9).toString().trimmed());
 			data.set_artist(q.value(10).toString().trimmed());
 			QStringList genres = q.value(11).toString().split(",");
 			data.set_genres(genres);
-			data.filesize =  q.value(12).toInt();
-			data.discnumber = q.value(13).toInt();
-			data.rating = q.value(14).toInt();
-			data.library_id = q.value(17).toInt();
+			data.filesize =  q.value(12).value<Filesize>();
+			data.discnumber = q.value(13).value<Disc>();
+			data.rating = q.value(14).value<Rating>();
+			data.library_id = q.value(17).value<LibraryId>();
 
 			data.is_extern = false;
 			data.set_db_id(db_id());

@@ -127,7 +127,7 @@ void GUI_SomaFM::stations_loaded(const QList<SomaFM::Station>& stations)
 	}
 
 	sp_log(Log::Debug, this) << "Stations loaded";
-	SomaFM::StationModel* model = static_cast<SomaFM::StationModel*>(ui->tv_stations->model());
+	auto* model = static_cast<SomaFM::StationModel*>(ui->tv_stations->model());
 	model->set_stations(stations);
 
 	ui->tv_stations->setEnabled(true);
@@ -138,7 +138,7 @@ void GUI_SomaFM::stations_loaded(const QList<SomaFM::Station>& stations)
 
 void GUI_SomaFM::station_changed(const SomaFM::Station& station)
 {
-	SomaFM::StationModel* model = static_cast<SomaFM::StationModel*>(ui->tv_stations->model());
+	auto* model = static_cast<SomaFM::StationModel*>(ui->tv_stations->model());
 	model->replace_station(station);
 }
 
@@ -159,7 +159,8 @@ void GUI_SomaFM::selection_changed(const QModelIndexList& indexes)
 
 SomaFM::Station GUI_SomaFM::get_station(int row) const
 {
-	SomaFM::StationModel* station_model = static_cast<SomaFM::StationModel*>(ui->tv_stations->model());
+	auto* station_model = static_cast<SomaFM::StationModel*>(ui->tv_stations->model());
+
 	QModelIndex idx = station_model->index(row, 1);
 	QString station_name = station_model->data(idx).toString();
 
@@ -172,7 +173,7 @@ void GUI_SomaFM::station_clicked(const QModelIndex &idx)
 		return;
 	}
 
-	SomaFM::StationModel* station_model = static_cast<SomaFM::StationModel*>(ui->tv_stations->model());
+	auto* station_model = static_cast<SomaFM::StationModel*>(ui->tv_stations->model());
 	if(!station_model->has_stations() && idx.column() == 0)
 	{
 		station_model->set_waiting();
@@ -196,10 +197,9 @@ void GUI_SomaFM::station_index_changed(const QModelIndex& idx)
 		return;
 	}
 
-	SomaFM::PlaylistModel* pl_model;
 	SomaFM::Station station = get_station(idx.row());
 
-	pl_model = static_cast<SomaFM::PlaylistModel*>(ui->lv_playlists->model());
+	auto pl_model = static_cast<SomaFM::PlaylistModel*>(ui->lv_playlists->model());
 	pl_model->set_station(station);
 
 	ui->lab_description->setText(station.description());
@@ -220,7 +220,7 @@ void GUI_SomaFM::playlist_double_clicked(const QModelIndex& idx)
 
 void GUI_SomaFM::cover_found(const QPixmap& cover)
 {
-	Cover::Lookup* cl = static_cast<Cover::Lookup*>(sender());
+	auto* cl = static_cast<Cover::Lookup*>(sender());
 
 	QPixmap pixmap = cover.scaled(QSize(200, 200), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 	if(pixmap.isNull()){

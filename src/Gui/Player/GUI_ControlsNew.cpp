@@ -21,6 +21,7 @@
 #include "GUI_ControlsNew.h"
 #include "Gui/Player/ui_GUI_ControlsNew.h"
 #include "Components/Tagging/UserTaggingOperations.h"
+#include "Components/Tagging/ChangeNotifier.h"
 #include "Components/PlayManager/PlayManager.h"
 #include "Utils/MetaData/MetaDataList.h"
 
@@ -72,10 +73,9 @@ void GUI_ControlsNew::rating_changed_here(bool success)
 	MetaData md = PlayManager::instance()->current_track();
 
 	Tagging::UserOperations* uto = new Tagging::UserOperations(md.library_id, this);
-	connect(uto, &Tagging::UserOperations::sig_finished, uto, &Tagging::UserOperations::deleteLater);
+	connect(uto, &Tagging::UserOperations::sig_finished, uto, &QObject::deleteLater);
 	uto->set_track_rating(md, rating);
 }
-
 bool GUI_ControlsNew::is_extern_resize_allowed() const
 {
 	return true;

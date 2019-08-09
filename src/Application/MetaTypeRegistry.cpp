@@ -56,6 +56,7 @@ MetaTypeRegistry::MetaTypeRegistry(QObject* parent) :
 	qRegisterMetaType<Artist>("Artist");
 	qRegisterMetaType<ArtistList>("ArtistList");
 	qRegisterMetaType<Genre>("Genre");
+	qRegisterMetaType<Rating>("Rating");
 
 	qRegisterMetaType<Log>("Log");
 	qRegisterMetaType<Cover::Location>("Cover::Location");

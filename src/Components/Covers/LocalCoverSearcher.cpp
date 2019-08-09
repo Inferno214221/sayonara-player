@@ -76,7 +76,7 @@ QStringList LocalSearcher::cover_paths_from_path_hint(const QString& filepath_hi
 		}
 
 		double d = std::abs(height - width) / (width * 1.0) + 1.0;
-		double pixels = static_cast<double>(width * height);
+		double pixels = double(width * height);
 
 		d = (d * d * std::max(width, height)) / pixels;
 

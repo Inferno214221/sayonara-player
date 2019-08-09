@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef STYLEDITEMDELEGATE_H
 #define STYLEDITEMDELEGATE_H
 
@@ -27,6 +25,10 @@
 
 namespace Gui
 {
+	/**
+	 * @brief The StyledItemDelegate class assures a certain
+	 * height of rows in a table and tree view
+	 */
 	class StyledItemDelegate : public QStyledItemDelegate
 	{
 	public:

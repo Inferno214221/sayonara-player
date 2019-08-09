@@ -25,21 +25,21 @@ void RatingTest::run_test(const QString& filename)
 
 	Tagging::Utils::getMetaDataOfFile(md);
 
-	md.rating = 3;
+	md.rating = Rating::Three;
 	Tagging::Utils::setMetaDataOfFile(md);
-	QVERIFY(md.rating == 3);
+	QVERIFY(md.rating == Rating::Three);
 
 	Tagging::Utils::getMetaDataOfFile(md2);
-	qDebug() << "Expect 3, get " << md2.rating;
-	QVERIFY(md2.rating == 3);
+	qDebug() << "Expect 3, get " << static_cast<int>(md2.rating);
+	QVERIFY(md2.rating == Rating::Three);
 
-	md.rating = 0;
+	md.rating = Rating::Zero;
 	Tagging::Utils::setMetaDataOfFile(md);
-	QVERIFY(md.rating == 0);
+	QVERIFY(md.rating == Rating::Zero);
 
 	Tagging::Utils::getMetaDataOfFile(md2);
-	qDebug() << "Expect 0, get " << md2.rating;
-	QVERIFY(md2.rating == 0);
+	qDebug() << "Expect 0, get " << static_cast<int>(md2.rating);
+	QVERIFY(md2.rating == Rating::Zero);
 }
 
 void RatingTest::id3_test()

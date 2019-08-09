@@ -134,7 +134,7 @@ bool Info::loadFromString(const QString& str)
 
 	m->name = name;
 	m->path = Util::File::clean_filename(path);
-	m->id = static_cast<LibraryId>(id);
+	m->id = LibraryId(id);
 
 	return true;
 }

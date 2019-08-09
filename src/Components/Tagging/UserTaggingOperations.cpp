@@ -231,8 +231,6 @@ void UserOperations::rename_genre(const Genre& genre, const Genre& new_genre)
 	m->editor->commit();
 }
 
-
-
 void UserOperations::add_genre_to_md(const MetaDataList& v_md, const Genre& genre)
 {
 	m->editor->set_metadata(v_md);

@@ -135,7 +135,7 @@ bool FileOperations::copy_dirs(const QStringList& source_dirs, const QString& ta
 
 void FileOperations::copy_dir_thread_finished()
 {
-	DirectoryCopyThread* t = static_cast<DirectoryCopyThread*>(sender());
+	auto* t = static_cast<DirectoryCopyThread*>(sender());
 	LibraryId target_id = -1;
 	if(t){
 		target_id = t->target_library();
@@ -297,7 +297,7 @@ bool FileOperations::rename_file(const QString& old_name, const QString& new_nam
 
 void FileOperations::copy_file_thread_finished()
 {
-	FileCopyThread* t = static_cast<FileCopyThread*>(sender());
+	auto* t = static_cast<FileCopyThread*>(sender());
 	LibraryId target_id = -1;
 	if(t){
 		target_id = t->target_library();

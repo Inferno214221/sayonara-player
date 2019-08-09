@@ -77,7 +77,7 @@ void FloatingLabel::paintEvent(QPaintEvent* event)
 
 
 	painter.drawText(
-		QRectF(static_cast<int>(m->offset), 0, fm.width(m->text), fm.height()),
+		QRectF(int(m->offset), 0, fm.width(m->text), fm.height()),
 		m->text
 	);
 }

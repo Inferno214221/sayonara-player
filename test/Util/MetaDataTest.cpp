@@ -39,7 +39,7 @@ static MetaData create_md()
 	md.is_extern = true;
 	md.pl_playing = true;
 	md.is_disabled = true;
-	md.rating = 4;
+	md.rating = Rating::Four;
 	md.discnumber = 2;
 	md.n_discs = 5;
 	md.library_id = 2;
@@ -71,7 +71,7 @@ void MetaDataTest::copy_test()
 	md.is_extern = true;
 	md.pl_playing = true;
 	md.is_disabled = true;
-	md.rating = 4;
+	md.rating = Rating::Four;
 	md.discnumber = 2;
 	md.n_discs = 5;
 	md.library_id = 2;

@@ -188,7 +188,7 @@ QVariant AlbumModel::data(const QModelIndex& index, int role) const
 					return QVariant();
 				}
 
-				return QVariant(album.rating);
+				return QVariant::fromValue(album.rating);
 
 			default:
 				return QVariant();

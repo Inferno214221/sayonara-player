@@ -344,6 +344,10 @@ public:
 	 * @brief Shutdown the computer
 	 */
 	void		shutdown();
+
+private slots:
+	void		track_metadata_changed();
+	void		tracks_deleted();
 };
 
 using PlayManagerPtr=PlayManager*;

@@ -72,7 +72,7 @@ void AbstractStream::init_connections()
 {
 	m->btn_play->setFocusPolicy(Qt::StrongFocus);
 
-	m->btn_tool->show_actions(static_cast<ContextMenuEntries>(ContextMenu::EntryNew));
+	m->btn_tool->show_actions(ContextMenuEntries(ContextMenu::EntryNew));
 	m->btn_tool->register_preference_action(new StreamPreferenceAction(m->btn_tool));
 	m->btn_tool->register_preference_action(new StreamRecorderPreferenceAction(m->btn_tool));
 
@@ -292,7 +292,7 @@ void AbstractStream::save_clicked()
 
 void AbstractStream::new_finished()
 {
-	GUI_ConfigureStreams* cs = static_cast<GUI_ConfigureStreams*>(sender());
+	auto* cs = static_cast<GUI_ConfigureStreams*>(sender());
 
 	bool b = cs->was_accepted();
 	if(!b){
@@ -341,7 +341,7 @@ void AbstractStream::edit_clicked()
 
 void AbstractStream::edit_finished()
 {
-	GUI_ConfigureStreams* cs = static_cast<GUI_ConfigureStreams*>(sender());
+	auto* cs = static_cast<GUI_ConfigureStreams*>(sender());
 
 	QString new_name = cs->name();
 	QString new_url	= cs->url();

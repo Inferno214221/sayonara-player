@@ -201,8 +201,7 @@ void GUI_AudioConverter::btn_start_clicked()
 
 void GUI_AudioConverter::convert_finished()
 {
-	OggConverter* converter = static_cast<OggConverter*>(sender());
-
+	auto* converter = static_cast<OggConverter*>(sender());
 	if(converter)
 	{
 		int num_errors = converter->num_errors();

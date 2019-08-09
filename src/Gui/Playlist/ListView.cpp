@@ -82,6 +82,7 @@ PlaylistView::PlaylistView(PlaylistPtr pl, QWidget* parent) :
 	this->setObjectName("playlist_view" + QString::number(pl->index()));
 	this->set_model(m->model);
 	this->setItemDelegate(new PlaylistItemDelegate(this));
+	this->horizontalHeader()->setMinimumSectionSize(10);
 
 	init_view();
 
@@ -565,7 +566,7 @@ void PlaylistView::refresh()
 
 	if(GetSetting(Set::PL_ShowCovers))
 	{
-		int w_cov = 30;
+		int w_cov = h;
 		viewport_width -= w_cov;
 		hh->resizeSection(PlaylistItemModel::ColumnName::Cover, w_cov);
 	}
@@ -579,6 +580,8 @@ void PlaylistView::refresh()
 
 	hh->resizeSection(PlaylistItemModel::ColumnName::Time, w_time);
 	hh->resizeSection(PlaylistItemModel::ColumnName::Description, viewport_width - (w_time));
+
+	m->model->set_row_height(h);
 }
 
 void PlaylistView::current_track_changed(int track_index, int playlist_index)

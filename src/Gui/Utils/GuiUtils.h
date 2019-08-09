@@ -63,6 +63,7 @@ namespace Gui
 		/**
 		 * @brief fetch a pixmap from resources
 		 * @param icon_name if icon_name ends with png the input string is not modified, else a .svg.png is appended
+		 * @param theme name use the MintY theme or the standard theme
 		 * @param sz target size of pixmap
 		 * @param keep_aspect if true, aspect ratio is kept
 		 * @return pixmap
@@ -85,9 +86,6 @@ namespace Gui
 		 * @return main window of application
 		 */
 		QMainWindow* main_window();
-
-
-		QString elide_text(const QString &text, QWidget *widget, int max_lines);
 	}
 }
 

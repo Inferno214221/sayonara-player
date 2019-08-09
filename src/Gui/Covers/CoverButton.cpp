@@ -256,7 +256,7 @@ void CoverButton::cover_lookup_finished(bool success)
 		set_cover_image(Location::invalid_path());
 	}
 
-	Cover::Lookup* lookup = static_cast<Cover::Lookup*>(sender());
+	auto* lookup = static_cast<Cover::Lookup*>(sender());
 	m->cover_source = lookup->source();
 }
 

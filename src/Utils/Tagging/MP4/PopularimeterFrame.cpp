@@ -39,9 +39,11 @@ bool MP4::PopularimeterFrame::map_tag_to_model(Models::Popularimeter& model)
 
 	if(item.isValid())
 	{
-		uint8_t rating = (uint8_t) item.toByte();
-		if(rating <= 5){
-			model.set_rating(rating);
+		auto rating = item.toByte();
+		if(rating <= 5)
+		{
+			Rating r = static_cast<Rating>(rating);
+			model.set_rating(r);
 		}
 
 		else{

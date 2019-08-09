@@ -33,7 +33,7 @@ Probing::level_probed(GstPad *pad, GstPadProbeInfo *info, gpointer user_data){
 	Q_UNUSED(pad)
 	Q_UNUSED(info)
 
-	bool* b = static_cast<bool*>( user_data );
+	auto* b = static_cast<bool*>( user_data );
 	if(*b){
 		return GST_PAD_PROBE_REMOVE;
 	}
@@ -49,7 +49,7 @@ Probing::spectrum_probed(GstPad *pad, GstPadProbeInfo *info, gpointer user_data)
 	Q_UNUSED(pad)
 	Q_UNUSED(info)
 
-	bool* b = static_cast<bool*>( user_data );
+	auto* b = static_cast<bool*>( user_data );
 	if(*b){
 		return GST_PAD_PROBE_REMOVE;
 	}
@@ -65,7 +65,7 @@ Probing::lame_probed(GstPad *pad, GstPadProbeInfo *info, gpointer user_data){
 	Q_UNUSED(pad)
 	Q_UNUSED(info)
 
-	bool* b = static_cast<bool*>( user_data );
+	auto* b = static_cast<bool*>( user_data );
 	if(*b){
 		return GST_PAD_PROBE_REMOVE;
 	}
@@ -80,7 +80,7 @@ Probing::pitch_probed(GstPad *pad, GstPadProbeInfo *info, gpointer user_data){
 	Q_UNUSED(pad)
 	Q_UNUSED(info)
 
-	bool* b = static_cast<bool*>( user_data );
+	auto* b = static_cast<bool*>( user_data );
 	if(*b){
 		return GST_PAD_PROBE_REMOVE;
 	}
@@ -147,7 +147,7 @@ Probing::stream_recorder_probed(GstPad *pad, GstPadProbeInfo *info, gpointer use
 	Q_UNUSED(pad)
 	Q_UNUSED(info)
 
-	StreamRecorder::Data* data = static_cast<StreamRecorder::Data*>(user_data);
+	auto* data = static_cast<StreamRecorder::Data*>(user_data);
 
 	if(!data){
 		return GST_PAD_PROBE_DROP;

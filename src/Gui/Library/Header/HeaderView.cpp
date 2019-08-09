@@ -194,7 +194,7 @@ void HeaderView::action_resize_triggered()
 
 			if(ch->stretchable() && !this->isSectionHidden(i))
 			{
-				int sz = static_cast<int>(ch->default_size() * scale_factor);
+				int sz = int(ch->default_size() * scale_factor);
 				this->resizeSection(i, sz);
 			}
 		}

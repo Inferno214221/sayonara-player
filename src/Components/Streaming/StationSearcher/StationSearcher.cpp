@@ -148,7 +148,7 @@ QList<RadioStation> StationSearcher::found_stations() const
 
 void StationSearcher::search_finished()
 {
-	AsyncWebAccess* wa = static_cast<AsyncWebAccess*>(sender());
+	auto* wa = static_cast<AsyncWebAccess*>(sender());
 
 	FMStreamParser parser(wa->data());
 	m->found_stations = parser.stations();

@@ -42,12 +42,25 @@
 #include "Utils/Set.h"
 
 #include <QSize>
+#include <QPair>
 
 using namespace Library;
 
+struct TrackModel::Private
+{
+	QPair<int, Rating> tmp_rating;
+
+	Private()
+	{
+		tmp_rating.first = -1;
+	}
+};
+
 TrackModel::TrackModel(QObject* parent, AbstractLibrary* library) :
 	ItemModel(parent, library)
-{}
+{
+	m = Pimpl::make<Private>();
+}
 
 TrackModel::~TrackModel() = default;
 
@@ -66,7 +79,7 @@ QVariant TrackModel::data(const QModelIndex &index, int role) const
 		return QVariant();
 	}
 
-	ColumnIndex::Track idx_col = (ColumnIndex::Track) col;
+	auto idx_col = ColumnIndex::Track(col);
 
 	if (role == Qt::TextAlignmentRole)
 	{
@@ -127,11 +140,19 @@ QVariant TrackModel::data(const QModelIndex &index, int role) const
 				return ::Util::File::calc_filesize_str(md.filesize);
 
 			case ColumnIndex::Track::Rating:
+			{
 				if(role == Qt::DisplayRole) {
 					return QVariant();
 				}
 
-				return QVariant(md.rating);
+				Rating rating = md.rating;
+				if(m->tmp_rating.first == row)
+				{
+					rating = m->tmp_rating.second;
+				}
+
+				return QVariant::fromValue(rating);
+			}
 
 			default:
 				return QVariant();
@@ -148,7 +169,8 @@ Qt::ItemFlags TrackModel::flags(const QModelIndex &index = QModelIndex()) const
 		return Qt::ItemIsEnabled;
 	}
 
-	if(index.column() == (int) ColumnIndex::Track::Rating) {
+	auto column_index = ColumnIndex::Track(index.column());
+	if(column_index == ColumnIndex::Track::Rating) {
 		return (QAbstractTableModel::flags(index) | Qt::ItemIsEditable);
 	}
 
@@ -164,15 +186,19 @@ bool TrackModel::setData(const QModelIndex& index, const QVariant& value, int ro
 	if (role == Qt::DisplayRole || role == Qt::EditRole)
 	{
 		int row = index.row();
-		int col = index.column();
+		auto col = ColumnIndex::Track(index.column());
 
-		if(col == (int) ColumnIndex::Track::Rating)
+		if(col == ColumnIndex::Track::Rating)
 		{
+			Rating rating = value.value<Rating>();
+
 			MetaData md = library()->tracks()[row];
+			m->tmp_rating.first = row;
+			m->tmp_rating.second = rating;
 
 			Tagging::UserOperations* uto = new Tagging::UserOperations(-1, this);
-			connect(uto, &Tagging::UserOperations::sig_finished, uto, &Tagging::UserOperations::deleteLater);
-			uto->set_track_rating(md, (Rating) (value.toInt()));
+			connect(uto, &Tagging::UserOperations::sig_finished, this, &TrackModel::rating_operation_finished);
+			uto->set_track_rating(md, rating);
 
 			return true;
 		}
@@ -180,6 +206,17 @@ bool TrackModel::setData(const QModelIndex& index, const QVariant& value, int ro
 
 	return false;
 }
+
+
+void TrackModel::rating_operation_finished()
+{
+	m->tmp_rating.first = -1;
+
+	if(sender()){
+		sender()->deleteLater();
+	}
+}
+
 
 int TrackModel::rowCount(const QModelIndex&) const
 {
@@ -217,6 +254,7 @@ QString TrackModel::searchable_string(int row) const
 }
 
 
+
 Cover::Location TrackModel::cover(const IndexSet& indexes) const
 {
 	if(indexes.isEmpty()){
@@ -244,7 +282,7 @@ Cover::Location TrackModel::cover(const IndexSet& indexes) const
 
 int TrackModel::searchable_column() const
 {
-	return (int) ColumnIndex::Track::Title;
+	return int(ColumnIndex::Track::Title);
 }
 
 

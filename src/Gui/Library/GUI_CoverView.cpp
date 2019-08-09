@@ -99,7 +99,7 @@ void GUI_CoverView::init_sorting_actions()
 	const QList<ActionPair> action_pairs = CoverView::sorting_actions();
 	for(const ActionPair& ap : action_pairs)
 	{
-		ui->combo_sorting->addItem(ap.name(), static_cast<int>(ap.sortorder()));
+		ui->combo_sorting->addItem(ap.name(), int(ap.sortorder()));
 	}
 
 	sortorder_changed();
@@ -112,7 +112,7 @@ void GUI_CoverView::combo_sorting_changed(int idx)
 
 	int data = ui->combo_sorting->currentData().toInt();
 
-	Library::SortOrder so = static_cast<Library::SortOrder>(data);
+	auto so = Library::SortOrder(data);
 	ui->tb_view->change_sortorder(so);
 }
 
@@ -124,7 +124,7 @@ void GUI_CoverView::sortorder_changed()
 
 	for(int i=0; i<ui->combo_sorting->count(); i++)
 	{
-		if(ui->combo_sorting->itemData(i).toInt() == static_cast<int>(so))
+		if(ui->combo_sorting->itemData(i).toInt() == int(so))
 		{
 			ui->combo_sorting->setCurrentIndex(i);
 			break;

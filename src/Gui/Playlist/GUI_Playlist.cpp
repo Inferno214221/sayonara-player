@@ -611,8 +611,7 @@ PlaylistView* GUI_Playlist::view_by_index(int idx)
 		return nullptr;
 	}
 
-	PlaylistView* plv = static_cast<PlaylistView*>(ui->tw_playlists->widget(idx));
-	return plv;
+	return static_cast<PlaylistView*>(ui->tw_playlists->widget(idx));
 }
 
 
@@ -623,8 +622,7 @@ PlaylistView* GUI_Playlist::current_view()
 		return nullptr;
 	}
 
-	PlaylistView* plv = static_cast<PlaylistView*>(ui->tw_playlists->widget(idx));
-	return plv;
+	return static_cast<PlaylistView*>(ui->tw_playlists->widget(idx));
 }
 
 void GUI_Playlist::sl_show_clear_button_changed()

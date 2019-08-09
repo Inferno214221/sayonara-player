@@ -19,15 +19,19 @@
  */
 
 #include "PlayManager.h"
+#include "Components/Tagging/ChangeNotifier.h"
+
 #include "Interfaces/Notification/NotificationHandler.h"
+
+#include "Utils/Algorithm.h"
 #include "Utils/MetaData/MetaData.h"
+#include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
 
 #include <QDateTime>
 #include <QTime>
 
-#include <algorithm>
 #include <array>
 
 const int InvalidTimeStamp=-1;
@@ -129,9 +133,13 @@ PlayManager::PlayManager(QObject* parent) :
 	else {
 		m->initial_position_ms = InvalidTimeStamp;
 	}
+
+	auto* mdcn = Tagging::ChangeNotifier::instance();
+	connect(mdcn, &Tagging::ChangeNotifier::sig_metadata_changed, this, &PlayManager::track_metadata_changed);
+	connect(mdcn, &Tagging::ChangeNotifier::sig_metadata_deleted, this, &PlayManager::tracks_deleted);
 }
 
-PlayManager::~PlayManager() {}
+PlayManager::~PlayManager() = default;
 
 PlayState PlayManager::playstate() const
 {
@@ -256,7 +264,7 @@ void PlayManager::set_position_ms(MilliSeconds ms)
 {
 	m->position_ms = ms;
 
-	SetSetting(Set::Engine_CurTrackPos_s, (int) (m->position_ms / 1000));
+	SetSetting(Set::Engine_CurTrackPos_s, int(m->position_ms / 1000));
 
 	emit sig_position_changed_ms(ms);
 }
@@ -452,6 +460,36 @@ void PlayManager::shutdown()
 	}
 
 	else {
-		SetSetting(Set::Engine_CurTrackPos_s, (int) (m->position_ms / 1000));
+		SetSetting(Set::Engine_CurTrackPos_s, int(m->position_ms / 1000));
+	}
+}
+
+
+void PlayManager::track_metadata_changed()
+{
+	auto* mdcn = static_cast<Tagging::ChangeNotifier*>(sender());
+	const QPair<MetaDataList, MetaDataList> changed_md = mdcn->changed_metadata();
+
+	for(int i=0; i<changed_md.first.count(); i++)
+	{
+		const MetaData& md = changed_md.first[i];
+		if(md == m->md){
+			this->change_track_metadata(changed_md.second[i]);
+			return;
+		}
+	}
+}
+
+void PlayManager::tracks_deleted()
+{
+	auto* mdcn = static_cast<Tagging::ChangeNotifier*>(sender());
+	const MetaDataList v_md = mdcn->deleted_metadata();
+
+	bool contains = Util::Algorithm::contains(v_md, [this](const MetaData& md){
+		return (m->md.filepath() == md.filepath());
+	});
+
+	if(contains) {
+		stop();
 	}
 }

@@ -46,9 +46,17 @@ namespace Gui
 		RatingLabel(QWidget *parent, bool enabled=true);
 		virtual ~RatingLabel();
 
+		/**
+		 * @brief Set a rating from one to 5
+		 * @param rating
+		 */
 		void set_rating(Rating rating);
 		Rating get_rating() const;
 
+		/**
+		 * @brief The y-offset where the stars should be painted
+		 * @param offset
+		 */
 		void set_offset_y(int offset);
 
 	protected:

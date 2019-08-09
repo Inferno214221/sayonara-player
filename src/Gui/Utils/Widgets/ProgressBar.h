@@ -30,7 +30,9 @@
 namespace Gui
 {
 	/**
-	 * @brief The ProgressBar class
+	 * @brief Create a new Progress bar indicating progress of its parent widget
+	 * Set the position. Every time when QWidget::show() or QWidget::setVisible(true)
+	 * is called the progress bar is shown
 	 * @ingroup Widgets
 	 */
 	class ProgressBar :

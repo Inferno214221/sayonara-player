@@ -339,7 +339,7 @@ Location Location::cover_location(const MetaData& md, bool check_for_coverart)
 	}
 
 	else {
-		has_cover_art = static_cast<bool>((md.get_custom_field("has_album_art").toInt()));
+		has_cover_art = bool(md.get_custom_field("has_album_art").toInt());
 	}
 
 	if(cl.audio_file_source().isEmpty() && !md.filepath().isEmpty() && has_cover_art) {

@@ -386,7 +386,7 @@ void GUI_TagEdit::reset()
 	ui->te_comment->clear();
 	ui->sb_year->setValue(0);
 	ui->sb_discnumber->setValue(0);
-	ui->lab_rating->set_rating(0);
+	ui->lab_rating->set_rating(Rating::Zero);
 	ui->sb_track_num->setValue(0);
 	ui->le_album->setEnabled(true);
 	ui->le_artist->setEnabled(true);

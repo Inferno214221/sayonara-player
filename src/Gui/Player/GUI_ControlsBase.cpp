@@ -34,7 +34,7 @@
 
 static void set_icon(QPushButton* btn, QIcon icon)
 {
-	int w = (btn->fontMetrics().width("m") * 250) / 100;
+	int w = (btn->fontMetrics().width("m") * 280) / 100;
 
 	QSize sz(w, w);
 	btn->setFixedSize(sz);
@@ -263,10 +263,11 @@ void GUI_ControlsBase::cur_pos_changed(MilliSeconds pos_ms)
 
 	MilliSeconds duration = PlayManager::instance()->duration_ms();
 	int max = sli_progress()->maximum();
-	int new_val;
+	int new_val=0;
+	double percent = (pos_ms * 1.0) / duration;
 
 	if ( duration > 0 ) {
-		new_val = ( pos_ms * max ) / (duration);
+		new_val = int(max * percent);
 	}
 
 	else if(pos_ms > duration) {
@@ -295,7 +296,8 @@ void GUI_ControlsBase::refresh_current_position(int val)
 	val = std::min(max, val);
 
 	double percent = (val * 1.0) / max;
-	MilliSeconds cur_pos_ms = static_cast<MilliSeconds>(percent * duration);
+
+	MilliSeconds cur_pos_ms = MilliSeconds(percent * duration);
 	QString cur_pos_string = Util::cvt_ms_to_string(cur_pos_ms);
 
 	lab_current_time()->setText(cur_pos_string);
@@ -322,7 +324,8 @@ void GUI_ControlsBase::progress_hovered(int val)
 	val = std::min(max, val);
 
 	double percent = (val * 1.0) / max;
-	MilliSeconds cur_pos_ms = static_cast<MilliSeconds>(percent * duration);
+
+	MilliSeconds cur_pos_ms = MilliSeconds(percent * duration);
 	QString cur_pos_string = Util::cvt_ms_to_string(cur_pos_ms);
 
 	QToolTip::showText( QCursor::pos(), cur_pos_string );

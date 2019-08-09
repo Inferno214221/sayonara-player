@@ -143,7 +143,7 @@ void LookupThread::start_search(const QString& url)
 
 void LookupThread::search_finished()
 {
-	AsyncWebAccess* awa = static_cast<AsyncWebAccess*>(sender());
+	auto* awa = static_cast<AsyncWebAccess*>(sender());
 
 	QString url;
 	{ // extract url out of the search result
@@ -191,7 +191,7 @@ void LookupThread::call_website(const QString& url)
 
 void LookupThread::content_fetched()
 {
-	AsyncWebAccess* awa = static_cast<AsyncWebAccess*>(sender());
+	auto* awa = static_cast<AsyncWebAccess*>(sender());
 	QString url = awa->url();
 
 	Server* server = m->server_list[m->cur_server];

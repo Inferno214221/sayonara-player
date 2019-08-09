@@ -74,47 +74,55 @@ void PlaylistItemDelegate::paint(QPainter *painter,	const QStyleOptionViewItem &
 	int row_height = rect.height();
 
 	StyledItemDelegate::paint(painter, option, index);
-	if(index.data(Qt::UserRole).toBool() == true)
-	{
-		int y = rect.topLeft().y() + row_height - 1;
-		painter->drawLine(QLine(rect.x(), y, rect.x() + rect.width(), y));
+
+	{ // drag and drop active
+		if(index.data(Qt::UserRole).toBool() == true)
+		{
+			int y = rect.topLeft().y() + row_height - 1;
+			painter->drawLine(QLine(rect.x(), y, rect.x() + rect.width(), y));
+		}
 	}
 
-	if(col != PlaylistItemModel::ColumnName::Description) {
-		return;
+	{ // finished if not the middle column
+		if(col != PlaylistItemModel::ColumnName::Description) {
+			return;
+		}
 	}
 
 	painter->save();
 
-	const PlaylistItemModel* model = static_cast<const PlaylistItemModel*>(index.model());
+	auto model = static_cast<const PlaylistItemModel*>(index.model());
 	const MetaData& md = model->metadata(row);
 
-	if(md.is_disabled)
-	{
-		QColor col_text = palette.color(QPalette::Disabled, QPalette::Foreground);
-		if(Style::is_dark())
+	{ // give that pen some alpha value, so it appears lighter
+		if(md.is_disabled)
 		{
-			col_text.setAlpha(196);
+			QColor col_text = palette.color(QPalette::Disabled, QPalette::Foreground);
+			if(Style::is_dark())
+			{
+				col_text.setAlpha(196);
+			}
+
+			QPen pen = painter->pen();
+			pen.setColor(col_text);
+			painter->setPen(pen);
 		}
-
-		QPen pen = painter->pen();
-		pen.setColor(col_text);
-		painter->setPen(pen);
 	}
-
-	QFont font = option.font;
-
-
 
 	painter->translate(-4, 0);
-	font.setWeight(QFont::Normal);
-	painter->setFont(font);
 
-	if(font.bold()){
-		font.setWeight(PLAYLIST_BOLD);
+	QFont font = option.font;
+	{ // set the font
+		font.setWeight(QFont::Normal);
+		painter->setFont(font);
+		if(font.bold()){
+			font.setWeight(PLAYLIST_BOLD);
+		}
+
+		painter->setFont(font);
 	}
 
-	painter->setFont(font);
+
 	painter->translate(4, 0);
 
 	QString str;
@@ -223,7 +231,7 @@ QWidget* PlaylistItemDelegate::createEditor(QWidget* parent, const QStyleOptionV
 {
 	Q_UNUSED(option)
 
-	const PlaylistItemModel* model = static_cast<const PlaylistItemModel*>(index.model());
+	auto model = static_cast<const PlaylistItemModel*>(index.model());
 	const MetaData& md = model->metadata(index.row());
 	if(md.is_disabled || (md.radio_mode() == RadioMode::Station || !m->show_rating)){
 		return nullptr;
@@ -256,7 +264,7 @@ void PlaylistItemDelegate::destroy_editor(bool save)
 
 void PlaylistItemDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const
 {
-	Rating rating = index.data(Qt::EditRole).toInt();
+	Rating rating = index.data(Qt::EditRole).value<Rating>();
 
 	RatingLabel* label = qobject_cast<RatingLabel*>(editor);
 	if(!label) {
@@ -270,8 +278,11 @@ void PlaylistItemDelegate::setEditorData(QWidget* editor, const QModelIndex& ind
 void PlaylistItemDelegate::setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const
 {
 	RatingLabel* label = qobject_cast<RatingLabel *>(editor);
-	if(!label) return;
-	model->setData(index, label->get_rating());
+	if(label)
+	{
+		auto variant = QVariant::fromValue(label->get_rating());
+		model->setData(index, variant);
+	}
 }
 
 int PlaylistItemDelegate::rating_height() const

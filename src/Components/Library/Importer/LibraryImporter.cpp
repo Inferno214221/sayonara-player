@@ -106,7 +106,7 @@ void Importer::import_files(const QStringList& files, const QString& target_dir)
 void Importer::caching_thread_finished()
 {
 	MetaDataList v_md;
-	CachingThread* thread = static_cast<CachingThread*>(sender());
+	auto* thread = static_cast<CachingThread*>(sender());
 
 	m->temporary_files << thread->temporary_files();
 	m->import_cache = thread->cache();
@@ -158,7 +158,7 @@ void  Importer::accept_import(const QString& target_dir)
 
 void Importer::copy_thread_finished()
 {
-	CopyThread* copy_thread = static_cast<CopyThread*>(sender());
+	auto* copy_thread = static_cast<CopyThread*>(sender());
 
 	MetaDataList v_md = copy_thread->get_copied_metadata();
 

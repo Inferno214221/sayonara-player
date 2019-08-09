@@ -45,7 +45,16 @@ namespace Gui
 			explicit FloatingLabel(QWidget* parent=nullptr);
 			~FloatingLabel();
 
+			/**
+			 * @brief Use this method insteas of using QLabel::setText()
+			 * @param text
+			 */
 			void setFloatingText(const QString& text);
+
+			/**
+			 * @brief set the desired speed
+			 * @param charsPerSecond a good value is 3
+			 */
 			void setCharsPerSecond(int charsPerSecond);
 
 		public slots:

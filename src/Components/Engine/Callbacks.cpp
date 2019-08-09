@@ -149,7 +149,7 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 
 	Q_UNUSED(bus);
 
-	Engine* engine = static_cast<Engine*>(data);
+	auto* engine = static_cast<Engine*>(data);
 	if(!engine){
 		return true;
 	}
@@ -369,7 +369,7 @@ Callbacks::level_handler(GstBus* bus, GstMessage* message, gpointer data)
 {
 	Q_UNUSED(bus);
 
-	Engine* engine = static_cast<Engine*>(data);
+	auto* engine = static_cast<Engine*>(data);
 	if(!engine) {
 		return true;
 	}
@@ -390,7 +390,7 @@ Callbacks::level_handler(GstBus* bus, GstMessage* message, gpointer data)
 		return true;
 	}
 
-	GValueArray* rms_arr = static_cast<GValueArray*>(g_value_get_boxed(peak_value));
+	auto* rms_arr = static_cast<GValueArray*>(g_value_get_boxed(peak_value));
 	guint n_peak_elements = rms_arr->n_values;
 	if(n_peak_elements == 0) {
 		return true;
@@ -433,7 +433,7 @@ Callbacks::spectrum_handler(GstBus* bus, GstMessage* message, gpointer data)
 
 	static SpectrumList	spectrum_vals;
 
-	Engine* engine = static_cast<Engine*>(data);
+	auto* engine = static_cast<Engine*>(data);
 	if(!engine) {
 		return true;
 	}
@@ -476,15 +476,12 @@ Callbacks::spectrum_handler(GstBus* bus, GstMessage* message, gpointer data)
 
 gboolean Callbacks::position_changed(gpointer data)
 {
-	GstState state;
-
-	Pipeline* pipeline = static_cast<Pipeline*>(data);
+	auto* pipeline = static_cast<Pipeline*>(data);
 	if(!pipeline){
 		return false;
 	}
 
-	state = pipeline->get_state();
-
+	GstState state = pipeline->get_state();
 	if( state != GST_STATE_PLAYING &&
 		state != GST_STATE_PAUSED &&
 		state != GST_STATE_READY)
@@ -504,7 +501,7 @@ void Callbacks::decodebin_ready(GstElement* source, GstPad* new_src_pad, gpointe
 	sp_log(Log::Develop, "Callback") << "Source: " << element_name;
 	g_free(element_name);
 
-	GstElement* element = static_cast<GstElement*>(data);
+	auto* element = static_cast<GstElement*>(data);
 	if(!element){
 		return;
 	}

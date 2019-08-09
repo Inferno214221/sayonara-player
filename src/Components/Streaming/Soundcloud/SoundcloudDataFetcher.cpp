@@ -92,8 +92,7 @@ void SC::DataFetcher::get_tracks_by_artist(int artist_id)
 
 void SC::DataFetcher::artists_fetched()
 {
-	ArtistList artists;
-	AsyncWebAccess* awa = static_cast<AsyncWebAccess*>(sender());
+	auto* awa = static_cast<AsyncWebAccess*>(sender());
 	if(awa->status() != AsyncWebAccess::Status::GotData) {
 		awa->deleteLater();
 		return;
@@ -101,6 +100,8 @@ void SC::DataFetcher::artists_fetched()
 
 	QByteArray data = awa->data();
 	SC::JsonParser parser(data);
+
+	ArtistList artists;
 	parser.parse_artists(artists);
 
 	emit sig_artists_fetched(artists);
@@ -110,8 +111,7 @@ void SC::DataFetcher::artists_fetched()
 
 void SC::DataFetcher::playlist_tracks_fetched()
 {
-	AsyncWebAccess* awa = static_cast<AsyncWebAccess*>(sender());
-
+	auto* awa = static_cast<AsyncWebAccess*>(sender());
 	if(awa->status() != AsyncWebAccess::Status::GotData) {
 		awa->deleteLater();
 		return;
@@ -132,10 +132,7 @@ void SC::DataFetcher::playlist_tracks_fetched()
 
 void SC::DataFetcher::tracks_fetched()
 {
-	MetaDataList v_md;
-	ArtistList artists;
-	AsyncWebAccess* awa = static_cast<AsyncWebAccess*>(sender());
-
+	auto* awa = static_cast<AsyncWebAccess*>(sender());
 	if(awa->status() != AsyncWebAccess::Status::GotData) {
 		awa->deleteLater();
 		return;
@@ -143,6 +140,9 @@ void SC::DataFetcher::tracks_fetched()
 
 	QByteArray data = awa->data();
 	SC::JsonParser parser(data);
+
+	MetaDataList v_md;
+	ArtistList artists;
 	parser.parse_tracks(artists, v_md);
 
 	for(const MetaData& md : v_md){

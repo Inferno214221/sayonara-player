@@ -216,13 +216,13 @@ bool GUI_InfoDialog::has_metadata() const
 
 GUI_InfoDialog::Tab GUI_InfoDialog::show(GUI_InfoDialog::Tab tab)
 {
-	int iTab = static_cast<int>(tab);
+	int iTab = int(tab);
 	if(!ui){
 		init();
 	}
 
 	if(m->v_md.isEmpty()){
-		return GUI_InfoDialog::Tab::Info;
+		return Tab::Info;
 	}
 
 	QTabWidget* tab_widget = ui->tab_widget;
@@ -232,12 +232,12 @@ GUI_InfoDialog::Tab GUI_InfoDialog::show(GUI_InfoDialog::Tab tab)
 		return (!Util::File::is_www(md.filepath()));
 	});
 
-	tab_widget->setTabEnabled((int) GUI_InfoDialog::Tab::Edit, tag_edit_enabled);
-	tab_widget->setTabEnabled((int) GUI_InfoDialog::Tab::Lyrics, lyric_enabled);
+	tab_widget->setTabEnabled(int(Tab::Edit), tag_edit_enabled);
+	tab_widget->setTabEnabled(int(Tab::Lyrics), lyric_enabled);
 
 	if( !tab_widget->isTabEnabled(iTab))
 	{
-		tab = GUI_InfoDialog::Tab::Info;
+		tab = Tab::Info;
 	}
 
 	if(tab_widget->currentIndex() == iTab)
@@ -252,7 +252,7 @@ GUI_InfoDialog::Tab GUI_InfoDialog::show(GUI_InfoDialog::Tab tab)
 
 	Dialog::show();
 
-	return static_cast<GUI_InfoDialog::Tab>(tab_widget->currentIndex());
+	return Tab(tab_widget->currentIndex());
 }
 
 

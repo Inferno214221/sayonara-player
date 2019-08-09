@@ -59,7 +59,6 @@ void LoginThread::login(const QString& username, const QString& password)
 
 void LoginThread::wa_response(const QByteArray& data)
 {
-	WebAccess* lfm_wa = static_cast<WebAccess*>(sender());
 	QString str = QString::fromUtf8(data);
 
 	_login_info.logged_in = true;
@@ -75,20 +74,22 @@ void LoginThread::wa_response(const QByteArray& data)
 		emit sig_logged_in(false);
 	}
 
-	lfm_wa->deleteLater();
+	if(sender()){
+		sender()->deleteLater();
+	}
 }
 
 
 void LoginThread::wa_error(const QString& error)
 {
-	WebAccess* lfm_wa = static_cast<WebAccess*>(sender());
-
 	sp_log(Log::Warning, this) << "LastFM: Cannot login";
 	sp_log(Log::Warning, this) << error;
 
 	emit sig_error(error);
 
-	lfm_wa->deleteLater();
+	if(sender()){
+		sender()->deleteLater();
+	}
 }
 
 

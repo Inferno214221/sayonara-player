@@ -140,7 +140,7 @@ bool FetchThread::start()
 
 void FetchThread::content_fetched()
 {
-	AsyncWebAccess* awa = static_cast<AsyncWebAccess*>(sender());
+	auto* awa = static_cast<AsyncWebAccess*>(sender());
 	m->active_connections.removeAll(awa);
 
 	if(!m->may_run){
@@ -254,7 +254,7 @@ void FetchThread::emit_finished(bool success)
 
 void FetchThread::single_image_fetched()
 {
-	AsyncWebAccess* awa = static_cast<AsyncWebAccess*>(sender());
+	auto* awa = static_cast<AsyncWebAccess*>(sender());
 	AsyncWebAccess::Status status = awa->status();
 	QImage image = awa->image();
 
@@ -292,20 +292,17 @@ void FetchThread::single_image_fetched()
 
 void FetchThread::multi_image_fetched()
 {
-	AsyncWebAccess* awa = static_cast<AsyncWebAccess*>(sender());
-	AsyncWebAccess::Status status = awa->status();
-	QImage img = awa->image();
+	auto* awa = static_cast<AsyncWebAccess*>(sender());
 
 	m->active_connections.removeAll(awa);
-	awa->deleteLater();
 
 	if(!m->may_run){
 		return;
 	}
 
-	if(status == AsyncWebAccess::Status::GotData)
+	if(awa->status() == AsyncWebAccess::Status::GotData)
 	{
-		QPixmap pm = QPixmap::fromImage(img);
+		QPixmap pm = QPixmap::fromImage(awa->image());
 		if(!pm.isNull())
 		{
 			m->pixmaps << pm;
@@ -318,6 +315,8 @@ void FetchThread::multi_image_fetched()
 	{
 		sp_log(Log::Warning, this) << "Could not fetch multi cover " << m->acf->identifier();
 	}
+
+	awa->deleteLater();
 
 	fetch_next_cover();
 }

@@ -165,7 +165,7 @@ MilliSeconds Fadeable::get_fading_time_ms() const
 	if(GetSetting(Set::Engine_CrossFaderActive))
 	{
 		auto ms = GetSetting(Set::Engine_CrossFaderTime);
-		return static_cast<MilliSeconds>(ms);
+		return MilliSeconds(ms);
 	}
 
 	return 0;

@@ -63,11 +63,11 @@ void AlbumView::init_view(AbstractLibrary* library)
 {
 	m->library = library;
 
-	AlbumModel* album_model = new AlbumModel(this, m->library);
-	RatingDelegate* album_delegate = new RatingDelegate(this, static_cast<int>(ColumnIndex::Album::Rating), true);
+	auto* model = new AlbumModel(this, m->library);
+	auto* delegate = new RatingDelegate(this, static_cast<int>(ColumnIndex::Album::Rating), true);
 
-	this->set_item_model(album_model);
-	this->setItemDelegate(album_delegate);
+	this->set_item_model(model);
+	this->setItemDelegate(delegate);
 
 	connect(m->library, &AbstractLibrary::sig_all_albums_loaded, this, &AlbumView::fill);
 
@@ -134,7 +134,7 @@ void AlbumView::show_context_menu(const QPoint& p)
 
 void AlbumView::index_clicked(const QModelIndex& idx)
 {
-	if(idx.column() == static_cast<int>(ColumnIndex::Album::MultiDisc))
+	if(idx.column() == int(ColumnIndex::Album::MultiDisc))
 	{
 		QModelIndexList selections = this->selectionModel()->selectedRows();
 		if(selections.size() == 1){
@@ -183,7 +183,7 @@ void AlbumView::init_discmenu(QModelIndex idx)
 		return;
 	}
 
-	const Album& album = m->library->albums().at(static_cast<size_t>(row));
+	const Album& album = m->library->albums().at(size_t(row));
 	if(album.discnumbers.size() < 2) {
 		return;
 	}

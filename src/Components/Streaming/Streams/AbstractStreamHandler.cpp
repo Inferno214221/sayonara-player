@@ -99,7 +99,7 @@ bool AbstractStreamHandler::parse_station(const QString& url, const QString& sta
 
 void AbstractStreamHandler::stream_parser_finished(bool success)
 {
-	StreamParser* stream_parser = static_cast<StreamParser*>(sender());
+	auto* stream_parser = static_cast<StreamParser*>(sender());
 
 	if(!success)
 	{

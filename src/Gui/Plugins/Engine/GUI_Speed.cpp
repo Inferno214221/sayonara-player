@@ -53,7 +53,7 @@ void GUI_Speed::init_ui()
 
 	bool active = GetSetting(Set::Engine_SpeedActive);
     float fSpeed = GetSetting(Set::Engine_Speed);
-    int speed = static_cast<int>(fSpeed * 100.0f);
+    int speed = int(fSpeed * 100.0f);
 	int pitch = GetSetting(Set::Engine_Pitch) * 10;
 
 	active_changed(active);

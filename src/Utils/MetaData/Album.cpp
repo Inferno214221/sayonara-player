@@ -77,7 +77,7 @@ Album::Album() :
 	num_songs(0),
 	year(0),
 	n_discs(1),
-	rating(0),
+	rating(Rating::Zero),
 	is_sampler(false)
 {
 	m = Pimpl::make<Private>();
@@ -274,7 +274,7 @@ bool AlbumList::contains(AlbumId album_id) const
 
 int AlbumList::count() const
 {
-	return static_cast<int>(this->size());
+	return int(this->size());
 }
 
 AlbumList& AlbumList::operator <<(const Album &album)

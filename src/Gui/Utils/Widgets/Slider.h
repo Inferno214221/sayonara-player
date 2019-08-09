@@ -31,7 +31,7 @@ class QColor;
 namespace Gui
 {
 	/**
-	 * @brief The Slider class
+	 * @brief Dont use it directly but inherit it
 	 * @ingroup Widgets
 	 */
 	class Slider :

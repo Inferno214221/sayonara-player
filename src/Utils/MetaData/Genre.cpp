@@ -35,7 +35,8 @@ struct Genre::Private
 			return 0;
 		}
 
-		return static_cast<GenreID> (qHash(name.trimmed().toLower().toLocal8Bit()));
+		QByteArray name_data = name.trimmed().toLower().toLocal8Bit();
+		return GenreID(qHash(name_data));
 	}
 };
 

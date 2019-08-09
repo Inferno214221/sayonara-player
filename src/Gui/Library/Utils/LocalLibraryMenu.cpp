@@ -256,7 +256,7 @@ void LocalLibraryMenu::edit_clicked()
 
 void LocalLibraryMenu::edit_accepted()
 {
-	GUI_EditLibrary* edit_dialog = static_cast<GUI_EditLibrary*>(sender());
+	auto* edit_dialog = static_cast<GUI_EditLibrary*>(sender());
 	QString name = edit_dialog->name();
 	QString path = edit_dialog->path();
 

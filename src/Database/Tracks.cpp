@@ -188,19 +188,19 @@ bool Tracks::db_fetch_tracks(Query& q, MetaDataList& result)
 		data.id = 		 	q.value(0).toInt();
 		data.set_title(		q.value(1).toString());
 		data.duration_ms = 	q.value(2).toInt();
-		data.year = 	 	q.value(3).toInt();
-		data.bitrate = 	 	q.value(4).toInt();
+		data.year = 	 	q.value(3).value<uint16_t>();
+		data.bitrate = 	 	q.value(4).value<Bitrate>();
 		data.set_filepath(	q.value(5).toString());
-		data.filesize =  	q.value(6).toInt();
-		data.track_num = 	q.value(7).toInt();
+		data.filesize =  	q.value(6).value<Filesize>();
+		data.track_num = 	q.value(7).value<uint16_t>();
 		data.set_genres(	q.value(8).toString().split(","));
-		data.discnumber = 	q.value(9).toInt();
-		data.rating = 		q.value(10).toInt();
+		data.discnumber = 	q.value(9).value<Disc>();
+		data.rating = 		q.value(10).value<Rating>();
 		data.album_id =  	q.value(11).toInt();
 		data.artist_id = 	q.value(12).toInt();
 		data.set_comment(	q.value(14).toString());
 
-		data.library_id = 	q.value(17).toInt();
+		data.library_id = 	q.value(17).value<LibraryId>();
 		data.set_album(		q.value(18).toString().trimmed());
 		data.set_artist(	q.value(20).toString().trimmed());
 		data.set_album_artist(q.value(21).toString(), q.value(13).toInt());
@@ -690,7 +690,7 @@ bool Tracks::updateTrack(const MetaData& md)
 		{"length",			QVariant::fromValue(md.duration_ms)},
 		{"libraryID",		md.library_id},
 		{"modifydate",		QVariant::fromValue(Util::current_date_to_int())},
-		{"rating",			md.rating},
+		{"rating",			QVariant(int(md.rating))},
 		{"title",			Util::cvt_not_null(md.title())},
 		{"track",			md.track_num},
 		{"year",			md.year},
@@ -747,7 +747,7 @@ bool Tracks::insertTrackIntoDatabase(const MetaData& md, ArtistId artist_id, Alb
 		{"genre",			Util::cvt_not_null(md.genres_to_string())},
 		{"filesize",		QVariant::fromValue(md.filesize)},
 		{"discnumber",		md.discnumber},
-		{"rating",			md.rating},
+		{"rating",			QVariant(int(md.rating))},
 		{"comment",			Util::cvt_not_null(md.comment())},
 		{"cissearch",		Util::cvt_not_null(cissearch)},
 		{"filecissearch",	Util::cvt_not_null(file_cissearch)},

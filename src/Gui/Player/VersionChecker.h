@@ -18,14 +18,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef VERSIONCHECKER_H
 #define VERSIONCHECKER_H
 
 #include <QObject>
 #include "Utils/Pimpl.h"
 
+/**
+ * @brief Checks if the version is up to date when instantiated
+ */
 class VersionChecker : public QObject
 {
 	Q_OBJECT

@@ -38,6 +38,7 @@ namespace Library
 			public ItemModel
 	{
 		Q_OBJECT
+		PIMPL(TrackModel)
 
 		public:
 			TrackModel(QObject* parent, AbstractLibrary* library);
@@ -58,6 +59,9 @@ namespace Library
 
 		protected:
 			const MetaDataList& mimedata_tracks() const override;
+
+		private slots:
+			void rating_operation_finished();
 	};
 }
 

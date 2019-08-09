@@ -175,13 +175,13 @@ eos_probe_installed_remove(GstPad* pad, GstPadProbeInfo * info, gpointer data)
 static GstPadProbeReturn
 src_blocked_remove(GstPad* pad, GstPadProbeInfo* info, gpointer data)
 {
-	ProbeData* probe_data = static_cast<ProbeData*>(data);
+	auto* probe_data = static_cast<ProbeData*>(data);
 
 	gst_pad_remove_probe (pad, GST_PAD_PROBE_INFO_ID (info));
 
 	GstPad* srcpad = gst_element_get_static_pad(probe_data->element_of_interest, "src");
 	gst_pad_add_probe (srcpad,
-					   (GstPadProbeType)(GST_PAD_PROBE_TYPE_BLOCK | GST_PAD_PROBE_TYPE_EVENT_DOWNSTREAM),
+					   GstPadProbeType(GST_PAD_PROBE_TYPE_BLOCK | GST_PAD_PROBE_TYPE_EVENT_DOWNSTREAM),
 					   eos_probe_installed_remove,
 					   probe_data,
 					   NULL);

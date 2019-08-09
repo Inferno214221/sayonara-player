@@ -29,6 +29,10 @@ class QStringList;
 
 namespace Gui
 {
+	/**
+	 * @brief A QCompleter where you can easily change the underlying
+	 * QStringList without allocating a new object
+	 */
 	class Completer :
 			public QCompleter
 	{

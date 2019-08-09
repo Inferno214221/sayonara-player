@@ -30,7 +30,9 @@ class QPushButton;
 namespace Gui
 {
 	/**
-	 * @brief The PreferenceAction class
+	 * @brief A PreferenceAction can be added to each widget supporting
+	 * QActions. When triggering this action, the PreferenceDialog is
+	 * openend with the appropriate entry chosen
 	 */
 	class PreferenceAction :
 			public QAction

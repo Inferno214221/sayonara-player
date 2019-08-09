@@ -119,18 +119,20 @@ void TrackChangedThread::update_now_playing(const QString& session_key, const Me
 void TrackChangedThread::response_update(const QByteArray& data)
 {
 	Q_UNUSED(data)
-	WebAccess* lfm_wa = static_cast<WebAccess*>(sender());
-	lfm_wa->deleteLater();
+	if(sender()){
+		sender()->deleteLater();
+	}
 }
 
 
-void TrackChangedThread::error_update(const QString& error){
-	WebAccess* lfm_wa = static_cast<WebAccess*>(sender());
-
+void TrackChangedThread::error_update(const QString& error)
+{
 	sp_log(Log::Warning, this) << "Last.fm: Cannot update track";
 	sp_log(Log::Warning, this) << "Last.fm: " << error;
 
-	lfm_wa->deleteLater();
+	if(sender()){
+		sender()->deleteLater();
+	}
 }
 
 

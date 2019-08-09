@@ -30,6 +30,12 @@
 class QColor;
 namespace Gui
 {
+	/**
+	 * @brief A slider as it is used by the progress bar
+	 * You can also set a different value by calling set_buffering
+	 * which is displayed in a different color when using the
+	 * dark skin
+	 */
 	class SearchSlider:
 			public Gui::Slider
 	{
@@ -43,7 +49,17 @@ namespace Gui
 		explicit SearchSlider(QWidget* parent=nullptr);
 		virtual ~SearchSlider();
 
+		/**
+		 * @brief Returns true if it's actually moved by the user
+		 * @return
+		 */
 		bool is_busy() const;
+
+		/**
+		 * @brief Set a second value beside QSlider::setValue() which
+		 * is displayed in another color
+		 * @param progress
+		 */
 		void set_buffering(int progress);
 
 	protected:

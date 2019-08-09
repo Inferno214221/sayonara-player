@@ -346,7 +346,7 @@ void EngineImpl::set_track_almost_finished(MilliSeconds time2go)
 	}
 
 	sp_log(Log::Develop, this) << "About to finish: " <<
-		static_cast<int>(m->gapless_state) << " (" << time2go << "ms)";
+		int(m->gapless_state) << " (" << time2go << "ms)";
 
 	m->change_gapless_state(GaplessState::AboutToFinish);
 

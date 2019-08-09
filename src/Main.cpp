@@ -128,7 +128,7 @@ bool check_for_other_instance(const CommandLineData& cmd_data, QSharedMemory* me
 
 	memory->lock();
 	sp_log(Log::Debug, "Main") << "Sending to shared memory: " << data;
-	memcpy(ptr, data.data(), static_cast<size_t>(data.size()));
+	memcpy(ptr, data.data(), size_t(data.size()));
 	memory->unlock();
 
 	Util::sleep_ms(500);

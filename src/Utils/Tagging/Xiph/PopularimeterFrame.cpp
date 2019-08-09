@@ -36,13 +36,14 @@ bool Xiph::PopularimeterFrame::map_tag_to_model(Models::Popularimeter& model)
 		return false;
 	}
 
-	Rating rating = (Rating) cvt_string(str).toInt();
-	if(rating < 10){
+	auto bRating = static_cast<Byte>(cvt_string(str).toInt());
+	if(bRating <= 5){
+		Rating rating = static_cast<Rating>(bRating);
 		model.set_rating(rating);
 	}
 
 	else{
-		model.set_rating_byte(rating);
+		model.set_rating_byte(bRating);
 	}
 
 	return true;
@@ -51,6 +52,7 @@ bool Xiph::PopularimeterFrame::map_tag_to_model(Models::Popularimeter& model)
 bool Xiph::PopularimeterFrame::map_model_to_tag(const Models::Popularimeter& model)
 {
 	Rating rating = model.get_rating();
-	set_value(QString::number(rating));
+	auto iRating = static_cast<int>(rating);
+	set_value( QString::number(iRating) );
 	return true;
 }

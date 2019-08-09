@@ -56,8 +56,9 @@ void ChangeNotifier::delete_metadata(const MetaDataList& v_md_deleted)
 QPair<MetaDataList, MetaDataList> ChangeNotifier::changed_metadata() const
 {
 	QPair<MetaDataList, MetaDataList> ret;
+
 	ret.first = m->v_md_old;
-	ret.second = m->v_md_old;
+	ret.second = m->v_md_new;
 
 	return ret;
 }

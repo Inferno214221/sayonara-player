@@ -36,7 +36,9 @@ class QHideEvent;
 
 namespace Gui
 {
-
+	/**
+	 * @brief Emits signals if tab was pressed or focus was lost
+	 */
 	class MiniSearchEventFilter :
 			public QObject
 	{

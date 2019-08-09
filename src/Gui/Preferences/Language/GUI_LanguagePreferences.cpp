@@ -178,7 +178,7 @@ void GUI_LanguagePreferences::btn_check_for_update_clicked()
 
 void GUI_LanguagePreferences::update_check_finished()
 {
-	AsyncWebAccess* awa = static_cast<AsyncWebAccess*>(sender());
+	auto* awa = static_cast<AsyncWebAccess*>(sender());
 	QString data = QString::fromUtf8(awa->data());
 	bool has_error = awa->has_error();
 
@@ -247,7 +247,7 @@ void GUI_LanguagePreferences::btn_download_clicked()
 
 void GUI_LanguagePreferences::download_finished()
 {
-	AsyncWebAccess* awa = static_cast<AsyncWebAccess*>(sender());
+	auto* awa = static_cast<AsyncWebAccess*>(sender());
 	QByteArray data	= awa->data();
 	bool has_error = awa->has_error();
 

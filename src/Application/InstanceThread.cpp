@@ -102,8 +102,7 @@ void InstanceThread::parse_memory()
 
 	m->memory.lock();
 
-	const char* data = static_cast<const char*>(m->memory.constData()) + 4;
-
+	auto* data = static_cast<const char*>(m->memory.constData()) + 4;
 	if(data)
 	{
 		QByteArray array(data, m->memory.size());

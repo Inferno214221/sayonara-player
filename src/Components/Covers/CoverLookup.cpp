@@ -229,7 +229,7 @@ bool Lookup::start_extractor(const Location& cl)
 
 void Lookup::extractor_finished()
 {
-	Cover::Extractor* extractor = static_cast<Cover::Extractor*>(sender());
+	auto* extractor = static_cast<Cover::Extractor*>(sender());
 	QPixmap pm = extractor->pixmap();
 	m->source = extractor->source();
 
