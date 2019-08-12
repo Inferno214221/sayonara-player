@@ -172,7 +172,7 @@ QString Tracks::fetch_query_tracks() const
 	return "SELECT * FROM " + m->search_view + " ";
 }
 
-bool Tracks::db_fetch_tracks(Query& q, MetaDataList& result)
+bool Tracks::db_fetch_tracks(Query& q, MetaDataList& result) const
 {
 	result.clear();
 
@@ -215,7 +215,7 @@ bool Tracks::db_fetch_tracks(Query& q, MetaDataList& result)
 
 
 
-bool Tracks::getMultipleTracksByPath(const QStringList& paths, MetaDataList& v_md)
+bool Tracks::getMultipleTracksByPath(const QStringList& paths, MetaDataList& v_md) const
 {
 	db().transaction();
 
@@ -229,7 +229,7 @@ bool Tracks::getMultipleTracksByPath(const QStringList& paths, MetaDataList& v_m
 }
 
 
-MetaData Tracks::getTrackByPath(const QString& path)
+MetaData Tracks::getTrackByPath(const QString& path) const
 {
 	DB::Query q(this);
 
@@ -255,7 +255,7 @@ MetaData Tracks::getTrackByPath(const QString& path)
 }
 
 
-MetaData Tracks::getTrackById(TrackID id)
+MetaData Tracks::getTrackById(TrackID id) const
 {
 	Query q(this);
 	QString query = fetch_query_tracks() +
@@ -278,7 +278,7 @@ MetaData Tracks::getTrackById(TrackID id)
 	return v_md.first();
 }
 
-int Tracks::getNumTracks()
+int Tracks::getNumTracks() const
 {
 	DB::Query q = this->run_query(
 		"SELECT COUNT(tracks.trackid) FROM tracks WHERE libraryID=:libraryID;",
@@ -295,7 +295,7 @@ int Tracks::getNumTracks()
 }
 
 
-bool Tracks::getTracksByIds(const QList<TrackID> &ids, MetaDataList &v_md)
+bool Tracks::getTracksByIds(const QList<TrackID>& ids, MetaDataList& v_md) const
 {
 	QStringList queries;
 	for(const TrackID& id : ids)
@@ -309,7 +309,7 @@ bool Tracks::getTracksByIds(const QList<TrackID> &ids, MetaDataList &v_md)
 	Query q(this);
 	q.prepare(query);
 
-	for(const TrackID& id : ids)
+	for(TrackID id : ids)
 	{
 		q.bindValue(QString(":track_id_%1").arg(id), id);
 	}
@@ -317,7 +317,7 @@ bool Tracks::getTracksByIds(const QList<TrackID> &ids, MetaDataList &v_md)
 	return db_fetch_tracks(q, v_md);
 }
 
-bool Tracks::getAllTracks(MetaDataList& result)
+bool Tracks::getAllTracks(MetaDataList& result) const
 {
 	Query q(this);
 
@@ -329,13 +329,13 @@ bool Tracks::getAllTracks(MetaDataList& result)
 }
 
 
-bool DB::Tracks::getAllTracksByAlbum(const IdList& albumsIds, MetaDataList& result)
+bool DB::Tracks::getAllTracksByAlbum(const IdList& albumsIds, MetaDataList& result) const
 {
     return getAllTracksByAlbum(albumsIds, result, Filter(), -1);
 }
 
 
-bool Tracks::getAllTracksByAlbum(const IdList& albumIds, MetaDataList& result, const Filter& filter, int discnumber)
+bool Tracks::getAllTracksByAlbum(const IdList& albumIds, MetaDataList& result, const Filter& filter, int discnumber) const
 {
 	if(albumIds.isEmpty()) {
 		return false;
@@ -397,12 +397,12 @@ bool Tracks::getAllTracksByAlbum(const IdList& albumIds, MetaDataList& result, c
 	return true;
 }
 
-bool Tracks::getAllTracksByArtist(const IdList& artistIds, MetaDataList& result)
+bool Tracks::getAllTracksByArtist(const IdList& artistIds, MetaDataList& result) const
 {
 	return getAllTracksByArtist(artistIds, result, Filter());
 }
 
-bool Tracks::getAllTracksByArtist(const IdList& artistIds, MetaDataList& result, const Filter& filter)
+bool Tracks::getAllTracksByArtist(const IdList& artistIds, MetaDataList& result, const Filter& filter) const
 {
 	if(artistIds.empty()){
 		return false;
@@ -455,7 +455,7 @@ bool Tracks::getAllTracksByArtist(const IdList& artistIds, MetaDataList& result,
 }
 
 
-bool Tracks::getAllTracksBySearchString(const Filter& filter, MetaDataList& result)
+bool Tracks::getAllTracksBySearchString(const Filter& filter, MetaDataList& result) const
 {
 	QStringList filters = filter.filtertext(true);
 	QStringList search_filters = filter.search_mode_filtertext(true);
@@ -583,7 +583,7 @@ bool Tracks::deleteInvalidTracks(const QString& library_path, MetaDataList& doub
 	return false;
 }
 
-Util::Set<Genre> Tracks::getAllGenres()
+Util::Set<Genre> Tracks::getAllGenres() const
 {
 	Query q = run_query("SELECT genre FROM " + m->track_view + " GROUP BY genre;", "Cannot fetch genres");
 

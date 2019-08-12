@@ -31,6 +31,7 @@
 
 #include "Gui/Library/GUI_CoverView.h"
 #include "Gui/Library/CoverView.h"
+#include "Gui/Library/LibraryFileExtensionBar.h"
 #include "Gui/Library/Utils/LibrarySearchBar.h"
 #include "Gui/Library/Utils/DirChooserDialog.h"
 #include "Gui/Library/Utils/GUI_ReloadLibraryDialog.h"
@@ -55,7 +56,6 @@
 #include "Utils/Language/Language.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Library/LibraryInfo.h"
-#include "Utils/ExtensionSet.h"
 
 #include <QDir>
 #include <QTimer>
@@ -87,7 +87,6 @@ using namespace Library;
 
 struct GUI_LocalLibrary::Private
 {
-	QList<QPushButton*>		extension_buttons;
 	Manager*				manager = nullptr;
 	LocalLibrary*			library = nullptr;
 	GUI_ImportDialog*		ui_importer = nullptr;
@@ -145,7 +144,8 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 	connect(ui->tv_artists, &Library::ItemView::sig_reload_clicked, this, &GUI_LocalLibrary::reload_library_requested);
 	connect(ui->tv_tracks, &Library::ItemView::sig_reload_clicked, this, &GUI_LocalLibrary::reload_library_requested);
 
-	connect(ui->btn_close_extensions, &QPushButton::clicked, this, &GUI_LocalLibrary::close_extensions_clicked);
+	ui->extension_bar->init(m->library);
+	connect(ui->extension_bar, &Library::FileExtensionBar::sig_close_clicked, this, &GUI_LocalLibrary::close_extensions_clicked);
 	connect(ui->btn_cancel, &QPushButton::clicked, this, [=](){
 		ui->stacked_widget_reload->setCurrentIndex(0);
 	});
@@ -178,27 +178,33 @@ void GUI_LocalLibrary::language_changed()
 	ui->gb_genres->setTitle(Lang::get(Lang::Genres));
 	ui->btn_reload_library->setText(Lang::get(Lang::ReloadLibrary));
 	ui->btn_reload_library_small->setText(Lang::get(Lang::ReloadLibrary));
-	ui->lab_extension->setText(Lang::get(Lang::Filter) + ":");
 	ui->btn_cancel->setText(Lang::get(Lang::Cancel));
 
 	GUI_AbstractLibrary::language_changed();
 }
 
-void GUI_LocalLibrary::check_view_state(bool is_reloading)
+void GUI_LocalLibrary::skin_changed()
 {
-	check_reload_status(is_reloading);
+	GUI_AbstractLibrary::skin_changed();
 
-	if(!is_reloading)
+	check_view_state();
+}
+
+void GUI_LocalLibrary::check_view_state()
+{
+	check_reload_status();
+
+	if(!m->library->is_reloading())
 	{
-		check_file_extension_bar(is_reloading);
+		check_file_extension_bar();
 	}
 }
 
-void GUI_LocalLibrary::check_reload_status(bool is_reloading)
+void GUI_LocalLibrary::check_reload_status()
 {
+	bool is_reloading = m->library->is_reloading();
 	bool is_library_empty = false;
-	if(!is_reloading)
-	{
+	if(!is_reloading) {
 		is_library_empty = m->library->is_empty();
 	}
 
@@ -217,23 +223,14 @@ void GUI_LocalLibrary::check_reload_status(bool is_reloading)
 	ui->btn_reload_library_small->setVisible(!in_library_state);
 }
 
-void GUI_LocalLibrary::check_file_extension_bar(bool is_reloading)
+void GUI_LocalLibrary::check_file_extension_bar()
 {
-	bool is_library_empty = m->library->tracks().isEmpty() && m->library->filter().cleared();
+	bool is_reloading = m->library->is_reloading();
+	bool is_library_empty = m->library->is_empty();
 	if(is_reloading || is_library_empty)
 	{
 		return;
 	}
-
-	QLayout* l = ui->widget_extensions->layout();
-
-	for(QPushButton* btn : m->extension_buttons)
-	{
-		l->removeWidget(btn);
-		btn->deleteLater();
-	}
-
-	m->extension_buttons.clear();
 
 	if(!GetSetting(Set::Lib_ShowFilterExtBar))
 	{
@@ -241,36 +238,16 @@ void GUI_LocalLibrary::check_file_extension_bar(bool is_reloading)
 		return;
 	}
 
-	Gui::ExtensionSet extensions = m->library->extensions();
-	const QStringList ext_str = extensions.extensions();
-
-	bool has_multiple_extensions = (ext_str.size() > 1);
-	if(!has_multiple_extensions){
-		return;
-	}
-
-	for(const QString& ext : ext_str)
-	{
-		QPushButton* btn = new QPushButton(ui->widget_extensions);
-		btn->setText(ext);
-		btn->setCheckable(true);
-		btn->setChecked(extensions.is_enabled(ext));
-
-		connect(btn, &QPushButton::toggled, this, &GUI_LocalLibrary::extension_button_toggled);
-
-		l->addWidget(btn);
-
-		m->extension_buttons << btn;
-	}
+	ui->extension_bar->refresh();
 
 	ui->sw_status->setCurrentIndex(StatusWidgetIndex::FileExtensionsIndex);
-	ui->sw_status->setVisible(true);
+	ui->sw_status->setVisible(ui->extension_bar->has_extensions());
 }
 
 
 void GUI_LocalLibrary::tracks_loaded()
 {
-	check_view_state(false);
+	check_view_state();
 
 	ui->lab_library_name->setText(m->library->library_name());
 	ui->lab_path->setText(Util::create_link(m->library->library_path(), Style::is_dark(), true));
@@ -278,15 +255,6 @@ void GUI_LocalLibrary::tracks_loaded()
 	ui->btn_reload_library_small->setIcon(Gui::Icons::icon(Gui::Icons::Refresh));
 }
 
-
-void GUI_LocalLibrary::extension_button_toggled(bool b)
-{
-	QPushButton* btn = scast(QPushButton*, sender());
-	Gui::ExtensionSet extensions = m->library->extensions();
-	extensions.set_enabled(btn->text(), b);
-
-	m->library->set_extensions(extensions);
-}
 
 void GUI_LocalLibrary::close_extensions_clicked()
 {
@@ -336,9 +304,9 @@ Library::TrackDeletionMode GUI_LocalLibrary::show_delete_dialog(int n_tracks)
 
 void GUI_LocalLibrary::progress_changed(const QString& type, int progress)
 {
-	QFontMetrics fm(this->font());
+	check_view_state();
 
-	check_view_state(progress >= 0);
+	QFontMetrics fm(this->font());
 
 	ui->pb_progress->setMaximum((progress > 0) ? 100 : 0);
 	ui->pb_progress->setValue(progress);
@@ -392,7 +360,7 @@ void GUI_LocalLibrary::reload_finished()
 	int index = (m->library->tracks().isEmpty()) ? 1 : 0;
 	ui->stacked_widget_reload->setCurrentIndex(index);
 
-	check_view_state(false);
+	check_view_state();
 }
 
 void GUI_LocalLibrary::show_info_box()
@@ -596,6 +564,6 @@ void GUI_LocalLibrary::showEvent(QShowEvent* e)
 		ui->splitter_genre->restoreState(genre_splitter_state);
 	}
 
-	check_view_state(false);
+	check_view_state();
 }
 

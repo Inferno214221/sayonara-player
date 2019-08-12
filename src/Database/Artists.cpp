@@ -81,7 +81,7 @@ QString Artists::fetch_query_artists(bool also_empty) const
 }
 
 
-bool Artists::db_fetch_artists(Query& q, ArtistList& result)
+bool Artists::db_fetch_artists(Query& q, ArtistList& result) const
 {
 	result.clear();
 
@@ -94,9 +94,9 @@ bool Artists::db_fetch_artists(Query& q, ArtistList& result)
 	{
 		Artist artist;
 
-		artist.id =			q.value(0).toInt();
+		artist.id =			q.value(0).value<ArtistId>();
 		artist.set_name(	q.value(1).toString());
-		artist.num_songs =	q.value(2).toInt();
+		artist.num_songs =	q.value(2).value<uint16_t>();
 		artist.set_db_id(	db_id());
 
 		result << artist;
@@ -105,12 +105,12 @@ bool Artists::db_fetch_artists(Query& q, ArtistList& result)
 	return true;
 }
 
-bool Artists::getArtistByID(ArtistId id, Artist& artist)
+bool Artists::getArtistByID(ArtistId id, Artist& artist) const
 {
     return getArtistByID(id, artist, false);
 }
 
-bool Artists::getArtistByID(ArtistId id, Artist& artist, bool also_empty)
+bool Artists::getArtistByID(ArtistId id, Artist& artist, bool also_empty) const
 {
 	if(id < 0) {
 		return false;
@@ -133,7 +133,7 @@ bool Artists::getArtistByID(ArtistId id, Artist& artist, bool also_empty)
 }
 
 
-ArtistId Artists::getArtistID(const QString& artist)
+ArtistId Artists::getArtistID(const QString& artist) const
 {
 	Query q = run_query
 	(
@@ -153,7 +153,7 @@ ArtistId Artists::getArtistID(const QString& artist)
 	return -1;
 }
 
-bool Artists::getAllArtists(ArtistList& result, bool also_empty)
+bool Artists::getAllArtists(ArtistList& result, bool also_empty) const
 {
 	QString query = fetch_query_artists(also_empty);
 	query += "GROUP BY artists.artistID, artists.name; ";
@@ -164,7 +164,7 @@ bool Artists::getAllArtists(ArtistList& result, bool also_empty)
 	return db_fetch_artists(q, result);
 }
 
-bool Artists::getAllArtistsBySearchString(const Library::Filter& filter, ArtistList& result)
+bool Artists::getAllArtistsBySearchString(const Library::Filter& filter, ArtistList& result) const
 {
 	QStringList filters = filter.filtertext(true);
 	QStringList search_filters = filter.search_mode_filtertext(true);

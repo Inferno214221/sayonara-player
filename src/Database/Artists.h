@@ -40,14 +40,14 @@ namespace DB
 			Artists(const QString& connection_name, DbId db_id, LibraryId library_id);
 			~Artists() override;
 
-			virtual bool db_fetch_artists(Query& q, ArtistList& result);
+			virtual bool db_fetch_artists(Query& q, ArtistList& result) const;
 
-			virtual ArtistId getArtistID (const QString& artist);
-            virtual bool getArtistByID(ArtistId id, Artist& artist);
-			virtual bool getArtistByID(ArtistId id, Artist& artist, bool also_empty);
+			virtual ArtistId getArtistID (const QString& artist) const;
+            virtual bool getArtistByID(ArtistId id, Artist& artist) const;
+			virtual bool getArtistByID(ArtistId id, Artist& artist, bool also_empty) const;
 
-			virtual bool getAllArtists(ArtistList& result, bool also_empty);
-			virtual bool getAllArtistsBySearchString(const ::Library::Filter& filter, ArtistList& result);
+			virtual bool getAllArtists(ArtistList& result, bool also_empty) const;
+			virtual bool getAllArtistsBySearchString(const ::Library::Filter& filter, ArtistList& result) const;
 
 			virtual bool deleteArtist(ArtistId id);
 

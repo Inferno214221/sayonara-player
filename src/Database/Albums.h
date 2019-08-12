@@ -38,17 +38,17 @@ namespace DB
 			Albums(const QString& connection_name, DbId db_id, LibraryId library_id);
 			~Albums();
 
-			virtual bool db_fetch_albums(Query& q, AlbumList& result);
+			virtual bool db_fetch_albums(Query& q, AlbumList& result) const;
 
-			virtual AlbumId getAlbumID (const QString& album);
+			virtual AlbumId getAlbumID (const QString& album) const;
 
-            virtual bool getAlbumByID(AlbumId id, Album& album);
-			virtual bool getAlbumByID(AlbumId id, Album& album, bool also_empty);
+            virtual bool getAlbumByID(AlbumId id, Album& album) const;
+			virtual bool getAlbumByID(AlbumId id, Album& album, bool also_empty) const;
 
-			virtual bool getAllAlbums(AlbumList& result, bool also_empty);
-			virtual bool getAllAlbumsByArtist(const IdList& artists, AlbumList& result, const ::Library::Filter& filter);
+			virtual bool getAllAlbums(AlbumList& result, bool also_empty) const;
+			virtual bool getAllAlbumsByArtist(const IdList& artists, AlbumList& result, const ::Library::Filter& filter) const;
 
-			virtual bool getAllAlbumsBySearchString(const ::Library::Filter& filter, AlbumList& result);
+			virtual bool getAllAlbumsBySearchString(const ::Library::Filter& filter, AlbumList& result) const;
 
 			virtual AlbumId insertAlbumIntoDatabase (const QString& album);
 			virtual AlbumId insertAlbumIntoDatabase (const Album& album);

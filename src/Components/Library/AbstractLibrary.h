@@ -76,6 +76,9 @@ public:
 	void set_extensions(const Gui::ExtensionSet& extensions);
 	Gui::ExtensionSet extensions() const;
 
+	virtual bool is_reloading() const;
+	virtual bool is_empty() const;
+
 signals:
 	void sig_track_mime_data_available();
 	void sig_all_tracks_loaded();
@@ -121,11 +124,9 @@ public slots:
 	virtual void prepare_fetched_tracks_for_playlist(bool new_playlist);
 	void prepare_tracks_for_playlist(const QStringList& file_paths, bool new_playlist);
 
-
 	/* append tracks after current played track in playlist */
 	virtual void play_next_fetched_tracks();
 	virtual void play_next_current_tracks();
-
 
 	/* append tracks after last track in playlist */
 	virtual void append_fetched_tracks();
@@ -159,24 +160,23 @@ protected:
 	/* Emit 3 signals with shown artists, shown album, shown tracks */
 	virtual void 		emit_stuff();
 
-	virtual void		get_all_artists(ArtistList& artists)=0;
-	virtual void		get_all_artists_by_searchstring(Library::Filter filter, ArtistList& artists)=0;
+	virtual void		get_all_artists(ArtistList& artists) const=0;
+	virtual void		get_all_artists_by_searchstring(Library::Filter filter, ArtistList& artists) const=0;
 
-	virtual void		get_all_albums(AlbumList& albums)=0;
-	virtual void		get_all_albums_by_artist(IdList artist_ids, AlbumList& albums, Library::Filter filter)=0;
-	virtual void		get_all_albums_by_searchstring(Library::Filter filter, AlbumList& albums)=0;
+	virtual void		get_all_albums(AlbumList& albums) const=0;
+	virtual void		get_all_albums_by_artist(IdList artist_ids, AlbumList& albums, Library::Filter filter) const=0;
+	virtual void		get_all_albums_by_searchstring(Library::Filter filter, AlbumList& albums) const=0;
 
-	virtual void		get_all_tracks(MetaDataList& v_md)=0;
-	virtual void		get_all_tracks(const QStringList& paths, MetaDataList& v_md)=0;
-	virtual void		get_all_tracks_by_artist(IdList artist_ids, MetaDataList& v_md, Library::Filter filter)=0;
-	virtual	void		get_all_tracks_by_album(IdList album_ids, MetaDataList& v_md, Library::Filter filter)=0;
-	virtual void		get_all_tracks_by_searchstring(Library::Filter filter, MetaDataList& v_md)=0;
+	virtual	int			get_num_tracks() const=0;
+	virtual void		get_all_tracks(MetaDataList& v_md) const=0;
+	virtual void		get_all_tracks(const QStringList& paths, MetaDataList& v_md) const=0;
+	virtual void		get_all_tracks_by_artist(IdList artist_ids, MetaDataList& v_md, Library::Filter filter) const=0;
+	virtual	void		get_all_tracks_by_album(IdList album_ids, MetaDataList& v_md, Library::Filter filter) const=0;
+	virtual void		get_all_tracks_by_searchstring(Library::Filter filter, MetaDataList& v_md) const=0;
 
-	virtual void		get_track_by_id(TrackID track_id, MetaData& md)=0;
-	virtual void		get_album_by_id(AlbumId album_id, Album& album)=0;
-	virtual void		get_artist_by_id(ArtistId artist_id, Artist& artist)=0;
-
-	virtual bool		is_empty() const=0;
+	virtual void		get_track_by_id(TrackID track_id, MetaData& md) const=0;
+	virtual void		get_album_by_id(AlbumId album_id, Album& album) const=0;
+	virtual void		get_artist_by_id(ArtistId artist_id, Artist& artist) const=0;
 
 	void				prepare_tracks();
 	void				prepare_albums();

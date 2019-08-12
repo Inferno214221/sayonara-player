@@ -48,8 +48,17 @@ protected:
 	LocalLibrary(LibraryId id, QObject* parent=nullptr);
 
 public:
-	virtual ~LocalLibrary();
-	bool is_empty() const override;
+	~LocalLibrary() override;
+
+	bool set_library_path(const QString& library_path);
+	bool set_library_name(const QString& library_name);
+
+	QString			library_path() const;
+	LibraryId		library_id() const;
+	QString			library_name() const;
+	Library::Importer* importer();
+
+	bool is_reloading() const override;
 
 public slots:
 	void delete_tracks(const MetaDataList& v_md, Library::TrackDeletionMode answer) override;
@@ -70,35 +79,26 @@ protected slots:
 	void renamed(LibraryId id);
 
 private:
-	void get_all_artists(ArtistList& artists) override;
-	void get_all_artists_by_searchstring(Library::Filter filter, ArtistList& artists) override;
+	void get_all_artists(ArtistList& artists) const override;
+	void get_all_artists_by_searchstring(Library::Filter filter, ArtistList& artists) const override;
 
-	void get_all_albums(AlbumList& albums) override;
-	void get_all_albums_by_artist(IdList artist_ids, AlbumList& albums, Library::Filter filter) override;
-	void get_all_albums_by_searchstring(Library::Filter filter, AlbumList& albums) override;
+	void get_all_albums(AlbumList& albums) const override;
+	void get_all_albums_by_artist(IdList artist_ids, AlbumList& albums, Library::Filter filter) const override;
+	void get_all_albums_by_searchstring(Library::Filter filter, AlbumList& albums) const override;
 
-	void get_all_tracks(MetaDataList& v_md) override;
-	void get_all_tracks(const QStringList& paths, MetaDataList& v_md) override;
-	void get_all_tracks_by_artist(IdList artist_ids, MetaDataList& v_md, Library::Filter filter) override;
-	void get_all_tracks_by_album(IdList album_ids, MetaDataList& v_md, Library::Filter filter) override;
-	void get_all_tracks_by_searchstring(Library::Filter filter, MetaDataList& v_md) override;
+	int get_num_tracks() const override;
+	void get_all_tracks(MetaDataList& v_md) const override;
+	void get_all_tracks(const QStringList& paths, MetaDataList& v_md) const override;
+	void get_all_tracks_by_artist(IdList artist_ids, MetaDataList& v_md, Library::Filter filter) const override;
+	void get_all_tracks_by_album(IdList album_ids, MetaDataList& v_md, Library::Filter filter) const override;
+	void get_all_tracks_by_searchstring(Library::Filter filter, MetaDataList& v_md) const override;
 
-	void get_track_by_id(TrackID track_id, MetaData& md) override;
-	void get_album_by_id(AlbumId album_id, Album& album) override;
-	void get_artist_by_id(ArtistId artist_id, Artist& artist) override;
+	void get_track_by_id(TrackID track_id, MetaData& md) const override;
+	void get_album_by_id(AlbumId album_id, Album& album) const override;
+	void get_artist_by_id(ArtistId artist_id, Artist& artist) const override;
 
 	void apply_db_fixes();
 	void init_reload_thread();
-
-
-public:
-	bool set_library_path(const QString& library_path);
-	bool set_library_name(const QString& library_name);
-
-	QString			library_path() const;
-	LibraryId		library_id() const;
-	QString			library_name() const;
-	Library::Importer* importer();
 };
 
 #endif // LocalLibrary_H

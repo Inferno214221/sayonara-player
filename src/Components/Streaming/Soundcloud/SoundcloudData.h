@@ -47,11 +47,11 @@ namespace SC
 
 	public:
 		Database();
-		~Database();
+		~Database() override;
 
-		bool db_fetch_tracks(::DB::Query& q, MetaDataList& result) override;
-		bool db_fetch_albums(::DB::Query& q, AlbumList& result) override;
-		bool db_fetch_artists(::DB::Query& q, ArtistList& result) override;
+		bool db_fetch_tracks(::DB::Query& q, MetaDataList& result) const override;
+		bool db_fetch_albums(::DB::Query& q, AlbumList& result) const override;
+		bool db_fetch_artists(::DB::Query& q, ArtistList& result) const override;
 
 		ArtistId updateArtist(const Artist& artist) override;
 		ArtistId insertArtistIntoDatabase (const Artist& artist) override;

@@ -42,30 +42,29 @@ namespace DB
 			Tracks(const QString& connection_name, DbId db_id, LibraryId _library_id);
 			~Tracks() override;
 
-			virtual bool db_fetch_tracks(Query& q, MetaDataList& result);
+			virtual bool db_fetch_tracks(Query& q, MetaDataList& result) const;
 
-            virtual bool getAllTracksByAlbum(const IdList& albumsIds, MetaDataList& result);
+			virtual int getNumTracks() const;
+			virtual bool getAllTracks(MetaDataList& result) const;
+
+            virtual bool getAllTracksByAlbum(const IdList& albumsIds, MetaDataList& result) const;
 			virtual bool getAllTracksByAlbum(const IdList& albumIds, MetaDataList& result,
-                                             const ::Library::Filter& filter, int discnumber);
-
-			virtual bool getAllTracksByArtist(const IdList& artistIds, MetaDataList& result);
+                                             const ::Library::Filter& filter, int discnumber) const;
+			virtual bool getAllTracksByArtist(const IdList& artistIds, MetaDataList& result) const;
 			virtual bool getAllTracksByArtist(const IdList& artistIds, MetaDataList& result,
-                                              const ::Library::Filter& filter);
+                                              const ::Library::Filter& filter) const;
+			virtual bool getAllTracksBySearchString(const ::Library::Filter& filter, MetaDataList& result) const;
 
-			virtual bool getAllTracksBySearchString(const ::Library::Filter& filter, MetaDataList& result);
+
+			virtual MetaData	getTrackById(TrackID id) const;
+			virtual bool		getTracksByIds(const QList<TrackID> &ids, MetaDataList &v_md) const;
+			virtual MetaData	getTrackByPath(const QString& path) const;
+			virtual bool		getMultipleTracksByPath(const QStringList& paths, MetaDataList& v_md) const;
 
 			virtual bool insertTrackIntoDatabase(const MetaData& data, ArtistId artist_id, AlbumId album_id);
 			virtual bool insertTrackIntoDatabase(const MetaData& data, ArtistId artist_id, AlbumId album_id, ArtistId album_artist_id);
 			virtual bool updateTrack(const MetaData& data);
 			virtual bool updateTracks(const MetaDataList& lst);
-
-			virtual int getNumTracks();
-			virtual bool getAllTracks(MetaDataList& result);
-
-			virtual MetaData getTrackById(TrackID id);
-			virtual bool getTracksByIds(const QList<TrackID> &ids, MetaDataList &v_md);
-			virtual MetaData getTrackByPath(const QString& path);
-			virtual bool getMultipleTracksByPath(const QStringList& paths, MetaDataList& v_md);
 
 			virtual bool deleteTrack(TrackID id);
 			virtual bool deleteTracks(const MetaDataList&);
@@ -80,7 +79,7 @@ namespace DB
 
 			virtual QString fetch_query_tracks() const;
 
-			virtual Util::Set<Genre> getAllGenres();
+			virtual Util::Set<Genre> getAllGenres() const;
 			virtual void updateTrackCissearch();
 
 			void deleteAllTracks(bool also_views);

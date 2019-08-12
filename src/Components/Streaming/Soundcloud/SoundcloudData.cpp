@@ -217,7 +217,7 @@ bool SC::Database::getSearchInformation(SC::SearchInformationList& search_inform
 }
 
 
-bool SC::Database::db_fetch_tracks(Query& q, MetaDataList& result)
+bool SC::Database::db_fetch_tracks(Query& q, MetaDataList& result) const
 {
 	result.clear();
 
@@ -259,7 +259,7 @@ bool SC::Database::db_fetch_tracks(Query& q, MetaDataList& result)
 	return true;
 }
 
-bool SC::Database::db_fetch_albums(Query& q, AlbumList& result)
+bool SC::Database::db_fetch_albums(Query& q, AlbumList& result) const
 {
 	result.clear();
 
@@ -310,7 +310,7 @@ bool SC::Database::db_fetch_albums(Query& q, AlbumList& result)
 	return true;
 }
 
-bool SC::Database::db_fetch_artists(Query& q, ArtistList& result)
+bool SC::Database::db_fetch_artists(Query& q, ArtistList& result) const
 {
 	result.clear();
 

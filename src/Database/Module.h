@@ -41,9 +41,9 @@ namespace DB
 			DbId			db_id() const;
 			QString			connection_name() const;
 
-			DB::Query		run_query(const QString& query, const QString& error_text);
-			DB::Query		run_query(const QString& query, const QPair<QString, QVariant>& bindings, const QString& error_text);
-			DB::Query		run_query(const QString& query, const QMap<QString, QVariant>& bindings, const QString& error_text);
+			DB::Query		run_query(const QString& query, const QString& error_text) const;
+			DB::Query		run_query(const QString& query, const QPair<QString, QVariant>& bindings, const QString& error_text) const;
+			DB::Query		run_query(const QString& query, const QMap<QString, QVariant>& bindings, const QString& error_text) const;
 
 			/**
 			 * @brief update

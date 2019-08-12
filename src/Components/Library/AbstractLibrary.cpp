@@ -55,15 +55,16 @@ struct AbstractLibrary::Private
 
 	Gui::ExtensionSet	extensions;
 
-	Playlist::Handler*	playlist=nullptr;
-
 	Library::Sortings	sortorder;
 	Library::Filter		filter;
 	bool				loaded;
 
-	Private()
+	Private() :
+		sortorder(GetSetting(Set::Lib_Sorting)),
+		loaded(false)
 	{
-		loaded = false;
+		filter.set_mode(Library::Filter::Fulltext);
+		filter.set_filtertext("", GetSetting(Set::Lib_SearchMode));
 	}
 };
 
@@ -72,18 +73,12 @@ AbstractLibrary::AbstractLibrary(QObject *parent) :
 {
 	m = Pimpl::make<Private>();
 
-	m->playlist = Playlist::Handler::instance();
-	m->sortorder = GetSetting(Set::Lib_Sorting);
-
-	m->filter.set_mode(Library::Filter::Fulltext);
-	m->filter.set_filtertext("", GetSetting(Set::Lib_SearchMode));
-
-	Tagging::ChangeNotifier* mdcn = Tagging::ChangeNotifier::instance();
+	auto* mdcn = Tagging::ChangeNotifier::instance();
 	connect(mdcn, &Tagging::ChangeNotifier::sig_metadata_changed,
 			this, &AbstractLibrary::refresh_current_view);
 }
 
-AbstractLibrary::~AbstractLibrary() {}
+AbstractLibrary::~AbstractLibrary() = default;
 
 void AbstractLibrary::load()
 {
@@ -224,13 +219,19 @@ void AbstractLibrary::find_track(TrackID id)
 
 void AbstractLibrary::prepare_fetched_tracks_for_playlist(bool new_playlist)
 {
+	auto* plh = Playlist::Handler::instance();
+
 	if(!new_playlist) {
-		m->playlist->create_playlist( tracks() );
+		plh->create_playlist( tracks() );
 	}
 
-	else {
-		m->playlist->create_playlist( tracks(),
-									  m->playlist->request_new_playlist_name());
+	else
+	{
+		plh->create_playlist
+		(
+			tracks(),
+			plh->request_new_playlist_name()
+		);
 	}
 
 	set_playlist_action_after_double_click();
@@ -238,13 +239,19 @@ void AbstractLibrary::prepare_fetched_tracks_for_playlist(bool new_playlist)
 
 void AbstractLibrary::prepare_current_tracks_for_playlist(bool new_playlist)
 {
-	if(!new_playlist) {
-		m->playlist->create_playlist( current_tracks() );
+	auto* plh = Playlist::Handler::instance();
+
+	if(!new_playlist)
+	{
+		plh->create_playlist( current_tracks() );
 	}
 
 	else {
-		m->playlist->create_playlist( current_tracks(),
-									  m->playlist->request_new_playlist_name());
+		plh->create_playlist
+		(
+			current_tracks(),
+			plh->request_new_playlist_name()
+		);
 	}
 
 	set_playlist_action_after_double_click();
@@ -252,12 +259,19 @@ void AbstractLibrary::prepare_current_tracks_for_playlist(bool new_playlist)
 
 void AbstractLibrary::prepare_tracks_for_playlist(const QStringList& paths, bool new_playlist)
 {
+	auto* plh = Playlist::Handler::instance();
+
 	if(!new_playlist) {
-		m->playlist->create_playlist(paths);
+		plh->create_playlist(paths);
 	}
 
-	else {
-		m->playlist->create_playlist(paths, m->playlist->request_new_playlist_name());
+	else
+	{
+		plh->create_playlist
+		(
+			paths,
+			plh->request_new_playlist_name()
+		);
 	}
 
 	set_playlist_action_after_double_click();
@@ -265,7 +279,8 @@ void AbstractLibrary::prepare_tracks_for_playlist(const QStringList& paths, bool
 
 void AbstractLibrary::set_playlist_action_after_double_click()
 {
-	PlayManagerPtr play_manager = PlayManager::instance();
+	auto* plh = Playlist::Handler::instance();
+	auto* play_manager = PlayManager::instance();
 	Playlist::Mode plm = GetSetting(Set::PL_Mode);
 
 	bool append = (plm.append() == Playlist::Mode::State::On);
@@ -279,36 +294,39 @@ void AbstractLibrary::set_playlist_action_after_double_click()
 	{
 		if(play_manager->playstate() != PlayState::Playing)
 		{
-			m->playlist->change_track(0, m->playlist->current_index());
+			plh->change_track(0, plh->current_index());
 		}
 	}
 
 	else if(GetSetting(Set::Lib_DC_PlayImmediately) && !append)
 	{
-		m->playlist->change_track(0, m->playlist->current_index());
+		plh->change_track(0, plh->current_index());
 	}
 }
 
 
 void AbstractLibrary::play_next_fetched_tracks()
 {
-	m->playlist->play_next(tracks());
+	auto* plh = Playlist::Handler::instance();
+	plh->play_next(tracks());
 }
 
 void AbstractLibrary::play_next_current_tracks()
 {
-	m->playlist->play_next( current_tracks() );
+	auto* plh = Playlist::Handler::instance();
+	plh->play_next( current_tracks() );
 }
-
 
 void AbstractLibrary::append_fetched_tracks()
 {
-	m->playlist->append_tracks(tracks(), m->playlist->current_index());
+	auto* plh = Playlist::Handler::instance();
+	plh->append_tracks(tracks(), plh->current_index());
 }
 
 void AbstractLibrary::append_current_tracks()
 {
-	m->playlist->append_tracks(current_tracks(), m->playlist->current_index());
+	auto* plh = Playlist::Handler::instance();
+	plh->append_tracks(current_tracks(), plh->current_index());
 }
 
 void AbstractLibrary::change_artist_selection(const IndexSet& indexes)
@@ -316,7 +334,7 @@ void AbstractLibrary::change_artist_selection(const IndexSet& indexes)
 	Util::Set<ArtistId> selected_artists;
 	for(int idx : indexes)
 	{
-		const Artist& artist = m->artists[idx];
+		const Artist& artist = m->artists[ size_t(idx) ];
 		selected_artists.insert(artist.id);
 	}
 
@@ -791,6 +809,23 @@ void AbstractLibrary::prepare_artists()
 Gui::ExtensionSet AbstractLibrary::extensions() const
 {
 	return m->extensions;
+}
+
+bool AbstractLibrary::is_reloading() const
+{
+	return false;
+}
+
+bool AbstractLibrary::is_empty() const
+{
+	if(m->filter.cleared())
+	{
+		return m->tracks.isEmpty();
+	}
+
+	else {
+		return get_num_tracks();
+	}
 }
 
 void AbstractLibrary::set_extensions(const Gui::ExtensionSet& extensions)

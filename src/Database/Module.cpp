@@ -89,17 +89,17 @@ QSqlDatabase Module::db() const
 	return db;
 }
 
-DB::Query Module::run_query(const QString& query, const QString& error_text)
+DB::Query Module::run_query(const QString& query, const QString& error_text) const
 {
 	return run_query(query, QMap<QString, QVariant>(), error_text);
 }
 
-DB::Query Module::run_query(const QString& query, const QPair<QString, QVariant>& bindings, const QString& error_text)
+DB::Query Module::run_query(const QString& query, const QPair<QString, QVariant>& bindings, const QString& error_text) const
 {
 	return run_query(query, {{bindings.first, bindings.second}}, error_text);
 }
 
-DB::Query Module::run_query(const QString& query, const QMap<QString, QVariant>& bindings, const QString& error_text)
+DB::Query Module::run_query(const QString& query, const QMap<QString, QVariant>& bindings, const QString& error_text) const
 {
 	DB::Query q(this);
 	q.prepare(query);

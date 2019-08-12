@@ -84,7 +84,16 @@ namespace Library
 			 */
 			void set_filtertext(const QString& str, SearchModeMask search_mode);
 
+			/**
+			 * @brief Returns the filtermode
+			 * @return
+			 */
 			Filter::Mode mode() const;
+
+			/**
+			 * @brief Sets the Filter::Mode.
+			 * @param mode
+			 */
 			void set_mode(Filter::Mode mode);
 
 			/**
@@ -99,11 +108,34 @@ namespace Library
 			 */
 			bool cleared() const;
 
+			/**
+			 * @brief Sets a genre, which is not searched directly. This is
+			 * meant to fetch all tracks which contains no genre
+			 * @param b
+			 */
 			void set_invalid_genre(bool b);
+
+			/**
+			 * @brief Is the invalid genre mode active?
+			 * @return
+			 */
 			bool is_invalid_genre() const;
 
+			/**
+			 * @brief Invalid mode is not usable.
+			 * Invalid genre means, that this is a valid query -> Usable.
+			 * When searching for a track, the id needs to be non-negative.
+			 * When searching for different stuff, the size of the searchstrings
+			 * needs at least to be 3 characters
+			 * @return
+			 */
 			bool is_usable() const;
 
+			/**
+			 * @brief When searching for a track (Filter::Mode == Filter::Mode::Track)
+			 * this will return the track id
+			 * @return
+			 */
 			TrackID track_id() const;
 
 			/**

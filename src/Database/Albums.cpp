@@ -87,7 +87,7 @@ QString Albums::fetch_query_albums(bool also_empty) const
 
 DB::Albums::~Albums() = default;
 
-bool Albums::db_fetch_albums(Query& q, AlbumList& result)
+bool Albums::db_fetch_albums(Query& q, AlbumList& result) const
 {
 	result.clear();
 
@@ -100,7 +100,7 @@ bool Albums::db_fetch_albums(Query& q, AlbumList& result)
 	{
 		Album album;
 
-		album.id =			q.value(0).toInt();
+		album.id =			q.value(0).value<AlbumId>();
 		album.set_name(		q.value(1).toString());
 		album.rating =		q.value(2).value<Rating>();
 		album.set_artists(	q.value(3).toString().split(','));
@@ -119,7 +119,7 @@ bool Albums::db_fetch_albums(Query& q, AlbumList& result)
 			album.discnumbers << Disc(disc.toInt());
 		}
 
-		album.n_discs = album.discnumbers.size();
+		album.n_discs = Disc(album.discnumbers.size());
 		album.is_sampler = (album.artists().size() > 1);
 		album.set_db_id(db_id());
 
@@ -132,7 +132,7 @@ bool Albums::db_fetch_albums(Query& q, AlbumList& result)
 }
 
 
-AlbumId Albums::getAlbumID(const QString& album)
+AlbumId Albums::getAlbumID(const QString& album) const
 {
 	Query q(this);
 	int albumID = -1;
@@ -152,12 +152,12 @@ AlbumId Albums::getAlbumID(const QString& album)
 	return albumID;
 }
 
-bool Albums::getAlbumByID(AlbumId id, Album& album)
+bool Albums::getAlbumByID(AlbumId id, Album& album) const
 {
     return getAlbumByID(id, album, false);
 }
 
-bool Albums::getAlbumByID(AlbumId id, Album& album, bool also_empty)
+bool Albums::getAlbumByID(AlbumId id, Album& album, bool also_empty) const
 {
 	if(id == -1) {
 		return false;
@@ -181,7 +181,7 @@ bool Albums::getAlbumByID(AlbumId id, Album& album, bool also_empty)
 	return (!albums.empty());
 }
 
-bool Albums::getAllAlbums(AlbumList& result, bool also_empty)
+bool Albums::getAllAlbums(AlbumList& result, bool also_empty) const
 {
 	Query q(this);
 	QString query = fetch_query_albums(also_empty);
@@ -194,7 +194,7 @@ bool Albums::getAllAlbums(AlbumList& result, bool also_empty)
 }
 
 
-bool Albums::getAllAlbumsByArtist(const IdList &artists, AlbumList &result, const Library::Filter &filter)
+bool Albums::getAllAlbumsByArtist(const IdList &artists, AlbumList &result, const Library::Filter &filter) const
 {
 	if(artists.isEmpty()) {
 		return false;
@@ -259,7 +259,7 @@ bool Albums::getAllAlbumsByArtist(const IdList &artists, AlbumList &result, cons
 }
 
 
-bool Albums::getAllAlbumsBySearchString(const Library::Filter& filter, AlbumList& result)
+bool Albums::getAllAlbumsBySearchString(const Library::Filter& filter, AlbumList& result) const
 {
 	QStringList filters = filter.filtertext(true);
 	QStringList search_filters = filter.search_mode_filtertext(true);

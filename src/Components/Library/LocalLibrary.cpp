@@ -89,7 +89,7 @@ void LocalLibrary::apply_db_fixes() {}
 
 void LocalLibrary::reload_library(bool clear_first, Library::ReloadQuality quality)
 {
-	if(m->reload_thread && m->reload_thread->is_running()){
+	if(is_reloading()){
 		return;
 	}
 
@@ -159,10 +159,6 @@ void LocalLibrary::renamed(LibraryId id)
 	}
 }
 
-bool LocalLibrary::is_empty() const
-{
-	return (m->library_db->getNumTracks() <= 0);
-}
 
 void LocalLibrary::reload_thread_new_block()
 {
@@ -173,57 +169,62 @@ void LocalLibrary::reload_thread_new_block()
 	m->reload_thread->goon();
 }
 
-void LocalLibrary::get_all_artists(ArtistList& artists)
+void LocalLibrary::get_all_artists(ArtistList& artists) const
 {
 	m->library_db->getAllArtists(artists, false);
 }
 
-void LocalLibrary::get_all_artists_by_searchstring(Library::Filter filter, ArtistList& artists)
+void LocalLibrary::get_all_artists_by_searchstring(Library::Filter filter, ArtistList& artists) const
 {
 	m->library_db->getAllArtistsBySearchString(filter, artists);
 }
 
-void LocalLibrary::get_all_albums(AlbumList& albums)
+void LocalLibrary::get_all_albums(AlbumList& albums) const
 {
 	m->library_db->getAllAlbums(albums, false);
 }
 
-void LocalLibrary::get_all_albums_by_artist(IdList artist_ids, AlbumList& albums, Library::Filter filter)
+void LocalLibrary::get_all_albums_by_artist(IdList artist_ids, AlbumList& albums, Library::Filter filter) const
 {
 	m->library_db->getAllAlbumsByArtist(artist_ids, albums, filter);
 }
 
-void LocalLibrary::get_all_albums_by_searchstring(Library::Filter filter, AlbumList& albums)
+void LocalLibrary::get_all_albums_by_searchstring(Library::Filter filter, AlbumList& albums) const
 {
 	m->library_db->getAllAlbumsBySearchString(filter, albums);
 }
 
-void LocalLibrary::get_all_tracks(MetaDataList& v_md)
+int LocalLibrary::get_num_tracks() const
+{
+	return m->library_db->getNumTracks();
+}
+
+void LocalLibrary::get_all_tracks(MetaDataList& v_md) const
 {
 	m->library_db->getAllTracks(v_md);
 }
 
-void LocalLibrary::get_all_tracks(const QStringList& paths, MetaDataList& v_md)
+void LocalLibrary::get_all_tracks(const QStringList& paths, MetaDataList& v_md) const
 {
 	m->library_db->getMultipleTracksByPath(paths, v_md);
 }
 
-void LocalLibrary::get_all_tracks_by_artist(IdList artist_ids, MetaDataList& v_md, Library::Filter filter)
+void LocalLibrary::get_all_tracks_by_artist(IdList artist_ids, MetaDataList& v_md, Library::Filter filter) const
 {
 	m->library_db->getAllTracksByArtist(artist_ids, v_md, filter);
 }
 
-void LocalLibrary::get_all_tracks_by_album(IdList album_ids, MetaDataList& v_md, Library::Filter filter)
+void LocalLibrary::get_all_tracks_by_album(IdList album_ids, MetaDataList& v_md, Library::Filter filter) const
 {
 	m->library_db->getAllTracksByAlbum(album_ids, v_md, filter, -1);
 }
 
-void LocalLibrary::get_all_tracks_by_searchstring(Library::Filter filter, MetaDataList& v_md)
+void LocalLibrary::get_all_tracks_by_searchstring(Library::Filter filter, MetaDataList& v_md) const
 {
 	m->library_db->getAllTracksBySearchString(filter, v_md);
 }
 
-void LocalLibrary::get_track_by_id(TrackID track_id, MetaData& md)
+void LocalLibrary::get_track_by_id(TrackID track_id, MetaData& md) const
 {
 	MetaData md_tmp = m->library_db->getTrackById(track_id);
 	if(md_tmp.library_id == m->library_id) {
@@ -235,12 +236,12 @@ void LocalLibrary::get_track_by_id(TrackID track_id, MetaData& md)
 	}
 }
 
-void LocalLibrary::get_album_by_id(AlbumId album_id, Album& album)
+void LocalLibrary::get_album_by_id(AlbumId album_id, Album& album) const
 {
 	m->library_db->getAlbumByID(album_id, album);
 }
 
-void LocalLibrary::get_artist_by_id(ArtistId artist_id, Artist& artist)
+void LocalLibrary::get_artist_by_id(ArtistId artist_id, Artist& artist) const
 {
 	m->library_db->getArtistByID(artist_id, artist);
 }
@@ -330,4 +331,9 @@ Library::Importer* LocalLibrary::importer()
 	}
 
 	return m->library_importer;
+}
+
+bool LocalLibrary::is_reloading() const
+{
+	return (m->reload_thread != nullptr && m->reload_thread->is_running());
 }

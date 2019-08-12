@@ -64,15 +64,15 @@ namespace Library
 		QList<Filter::Mode> search_options() const override;
 
 		void language_changed() override;
+		void skin_changed() override;
 
 	private:
-		void check_view_state(bool is_reloading);
-		void check_reload_status(bool is_reloading);
-		void check_file_extension_bar(bool is_reloading);
+		void check_view_state();
+		void check_reload_status();
+		void check_file_extension_bar();
 
 	private slots:
 		void tracks_loaded();
-		void extension_button_toggled(bool b);
 		void close_extensions_clicked();
 		void switch_album_view();
 		void filter_changed();

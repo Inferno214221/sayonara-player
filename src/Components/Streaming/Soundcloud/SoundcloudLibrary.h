@@ -48,7 +48,7 @@ namespace SC
 
 	public:
 		explicit Library(QObject *parent=nullptr);
-		~Library();
+		~Library() override;
 
 		void	load() override;
 		void	search_artist(const QString& artist_name);
@@ -56,24 +56,24 @@ namespace SC
 		void	fetch_playlists_by_artist(int64_t artist_sc_id);
 		//void	insert_tracks(const MetaDataList& v_md) override;
 		void	insert_tracks(const MetaDataList& v_md, const ArtistList& artists, const AlbumList& albums);
-		void	get_track_by_id(TrackID track_id, MetaData& md) override;
-		void	get_album_by_id(AlbumId album_id, Album& album) override;
-		void  	get_artist_by_id(ArtistId artist_id, Artist& artist) override;
+		void	get_track_by_id(TrackID track_id, MetaData& md) const override;
+		void	get_album_by_id(AlbumId album_id, Album& album) const override;
+		void  	get_artist_by_id(ArtistId artist_id, Artist& artist) const override;
 
 	protected:
-		void	get_all_artists(ArtistList& artists) override;
-		void	get_all_artists_by_searchstring(::Library::Filter filter, ArtistList& artists) override;
+		void	get_all_artists(ArtistList& artists) const override;
+		void	get_all_artists_by_searchstring(::Library::Filter filter, ArtistList& artists) const override;
 
-		void	get_all_albums(AlbumList& albums) override;
-		void	get_all_albums_by_artist(IdList artist_ids, AlbumList& albums, ::Library::Filter filter) override;
-		void	get_all_albums_by_searchstring(::Library::Filter filter, AlbumList& albums) override;
+		void	get_all_albums(AlbumList& albums) const override;
+		void	get_all_albums_by_artist(IdList artist_ids, AlbumList& albums, ::Library::Filter filter) const override;
+		void	get_all_albums_by_searchstring(::Library::Filter filter, AlbumList& albums) const override;
 
-		bool	is_empty() const override;
-		void	get_all_tracks(const QStringList& paths, MetaDataList& v_md) override;
-		void	get_all_tracks(MetaDataList& v_md) override;
-		void	get_all_tracks_by_artist(IdList artist_ids, MetaDataList& v_md, ::Library::Filter filter) override;
-		void	get_all_tracks_by_album(IdList album_ids, MetaDataList& v_md, ::Library::Filter filter) override;
-		void	get_all_tracks_by_searchstring(::Library::Filter filter, MetaDataList& v_md) override;
+		int		get_num_tracks() const override;
+		void	get_all_tracks(const QStringList& paths, MetaDataList& v_md) const override;
+		void	get_all_tracks(MetaDataList& v_md) const override;
+		void	get_all_tracks_by_artist(IdList artist_ids, MetaDataList& v_md, ::Library::Filter filter) const override;
+		void	get_all_tracks_by_album(IdList album_ids, MetaDataList& v_md, ::Library::Filter filter) const override;
+		void	get_all_tracks_by_searchstring(::Library::Filter filter, MetaDataList& v_md) const override;
 
 		void	update_track(const MetaData& md);
 		void	update_album(const Album& album);
