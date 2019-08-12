@@ -56,6 +56,7 @@
 #include "Utils/Language/Language.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Library/LibraryInfo.h"
+#include "Utils/Logger/Logger.h"
 
 #include <QDir>
 #include <QTimer>
@@ -124,6 +125,7 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 
 	connect(ui->tv_albums, &AlbumView::sig_disc_pressed, m->library, &LocalLibrary::change_current_disc);
 	connect(ui->lv_genres, &GenreView::sig_selected_changed, this, &GUI_LocalLibrary::genre_selection_changed);
+	connect(ui->lv_genres, &GenreView::sig_invalid_genre_selected, this, &GUI_LocalLibrary::invalid_genre_selected);
 	connect(ui->lv_genres, &GenreView::sig_progress, this, &GUI_LocalLibrary::progress_changed);
 
 	connect(m->library_menu, &LocalLibraryMenu::sig_path_changed, m->library, &LocalLibrary::set_library_path);
@@ -203,10 +205,9 @@ void GUI_LocalLibrary::check_view_state()
 void GUI_LocalLibrary::check_reload_status()
 {
 	bool is_reloading = m->library->is_reloading();
-	bool is_library_empty = false;
-	if(!is_reloading) {
-		is_library_empty = m->library->is_empty();
-	}
+	bool is_library_empty = m->library->is_empty();
+
+	sp_log(Log::Debug, this) << "IS reloading? " << is_reloading << " , is empty? " << is_library_empty;
 
 	ui->sw_status->setVisible(is_reloading || is_library_empty);
 	ui->pb_progress->setVisible(is_reloading);
@@ -273,23 +274,28 @@ void GUI_LocalLibrary::clear_selections()
 	ui->lv_genres->clearSelection();
 }
 
+void GUI_LocalLibrary::invalid_genre_selected()
+{
+	ui->le_search->set_invalid_genre_mode(true);
+	ui->le_search->set_current_mode(::Library::Filter::Genre);
+	ui->le_search->setText(GenreView::invalid_genre_name());
+
+	search_return_pressed();
+
+	ui->le_search->set_invalid_genre_mode(false);
+}
+
 void GUI_LocalLibrary::genre_selection_changed(const QStringList& genres)
 {
 	if(genres.isEmpty()) {
 		return;
 	}
 
-	if(genres.contains(""))
-	{
-		ui->le_search->set_invalid_genre_mode(true);
-	}
-
+	ui->le_search->set_invalid_genre_mode(false);
 	ui->le_search->set_current_mode(::Library::Filter::Genre);
 	ui->le_search->setText(genres.join(","));
 
 	search_return_pressed();
-
-	ui->le_search->set_invalid_genre_mode(false);
 }
 
 

@@ -55,11 +55,16 @@ struct AbstractLibrary::Private
 
 	Gui::ExtensionSet	extensions;
 
+	int					num_tracks;
+
 	Library::Sortings	sortorder;
 	Library::Filter		filter;
 	bool				loaded;
 
+
+
 	Private() :
+		num_tracks(0),
 		sortorder(GetSetting(Set::Lib_Sorting)),
 		loaded(false)
 	{
@@ -75,7 +80,10 @@ AbstractLibrary::AbstractLibrary(QObject *parent) :
 
 	auto* mdcn = Tagging::ChangeNotifier::instance();
 	connect(mdcn, &Tagging::ChangeNotifier::sig_metadata_changed,
-			this, &AbstractLibrary::refresh_current_view);
+			this, &AbstractLibrary::metadata_changed);
+
+	connect(mdcn, &Tagging::ChangeNotifier::sig_metadata_deleted,
+		this, &AbstractLibrary::metadata_changed);
 }
 
 AbstractLibrary::~AbstractLibrary() = default;
@@ -85,6 +93,7 @@ void AbstractLibrary::load()
 	m->filter.clear();
 
 	refetch();
+	m->num_tracks = get_num_tracks();
 
 	m->loaded = true;
 }
@@ -180,6 +189,12 @@ void AbstractLibrary::refresh_current_view()
 	}
 }
 
+void AbstractLibrary::metadata_changed()
+{
+	m->num_tracks = get_num_tracks();
+	refresh_current_view();
+}
+
 void AbstractLibrary::find_track(TrackID id)
 {
 	m->tracks.clear();
@@ -246,7 +261,8 @@ void AbstractLibrary::prepare_current_tracks_for_playlist(bool new_playlist)
 		plh->create_playlist( current_tracks() );
 	}
 
-	else {
+	else
+	{
 		plh->create_playlist
 		(
 			current_tracks(),
@@ -818,14 +834,16 @@ bool AbstractLibrary::is_reloading() const
 
 bool AbstractLibrary::is_empty() const
 {
-	if(m->filter.cleared())
-	{
-		return m->tracks.isEmpty();
+	if(!m->tracks.isEmpty()){
+		return false;
 	}
 
-	else {
-		return get_num_tracks();
+	if(m->filter.cleared())
+	{
+		return true;
 	}
+
+	return (m->num_tracks == 0);
 }
 
 void AbstractLibrary::set_extensions(const Gui::ExtensionSet& extensions)

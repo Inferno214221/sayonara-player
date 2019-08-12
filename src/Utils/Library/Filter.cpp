@@ -59,7 +59,7 @@ Filter::~Filter() = default;
 bool Filter::operator ==(const Filter& other)
 {
 	if(!this->is_usable() && !other.is_usable()) {
-		return false;
+		return true;
 	}
 
 	bool same_filtertext = false;

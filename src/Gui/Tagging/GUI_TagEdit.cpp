@@ -29,12 +29,15 @@
 #include "Components/Tagging/Expression.h"
 #include "Components/Tagging/Editor.h"
 
+
 #include "Gui/Utils/Delegates/ComboBoxDelegate.h"
 #include "Gui/Utils/Widgets/Completer.h"
+#include "Gui/Utils/EventFilter.h"
 #include "Gui/Utils/Style.h"
 
 #include "Utils/globals.h"
 #include "Utils/Utils.h"
+#include "Utils/Set.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Message/Message.h"
 #include "Utils/Tagging/Tagging.h"
@@ -408,13 +411,14 @@ void GUI_TagEdit::init_completer()
 {
 	AlbumList albums;
 	ArtistList artists;
-	QStringList albumstr, artiststr;
+	QStringList albumstr, artiststr, genrestr;
 
 	DB::Connector* db = DB::Connector::instance();
 	DB::LibraryDatabase* lib_db = db->library_db(-1, 0);
 
 	lib_db->getAllAlbums(albums, true);
 	lib_db->getAllArtists(artists, true);
+	Util::Set<Genre> genres = lib_db->getAllGenres();
 
 	for(const Album& album : albums){
 		if(!album.name().isEmpty()){
@@ -425,6 +429,12 @@ void GUI_TagEdit::init_completer()
 	for(const Artist& artist : artists){
 		if(!artist.name().isEmpty()){
 			artiststr << artist.name();
+		}
+	}
+
+	for(const Genre& genre : genres){
+		if(!genre.name().isEmpty()){
+			genrestr << genre.name();
 		}
 	}
 
@@ -440,14 +450,21 @@ void GUI_TagEdit::init_completer()
 		ui->le_album_artist->completer()->deleteLater();
 	}
 
-	Gui::Completer* album_completer = new Gui::Completer(albumstr, ui->le_album);
+	if(ui->le_genre->completer()){
+		ui->le_genre->completer()->deleteLater();
+	}
+
+	auto* album_completer = new Gui::Completer(albumstr, ui->le_album);
 	ui->le_album->setCompleter(album_completer);
 
-	Gui::Completer* album_artist_completer = new Gui::Completer(artiststr, ui->le_album_artist);
+	auto* album_artist_completer = new Gui::Completer(artiststr, ui->le_album_artist);
 	ui->le_album_artist->setCompleter(album_artist_completer);
 
-	Gui::Completer* artist_completer = new Gui::Completer(artiststr, ui->le_artist);
+	auto* artist_completer = new Gui::Completer(artiststr, ui->le_artist);
 	ui->le_artist->setCompleter(artist_completer);
+
+	auto* genre_completer = new Gui::Completer(genrestr, ui->le_genre);
+	ui->le_genre->setCompleter(genre_completer);
 }
 
 void GUI_TagEdit::undo_clicked()

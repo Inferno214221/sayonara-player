@@ -80,6 +80,7 @@ namespace Library
 		void progress_changed(const QString& type, int progress);
 
 		void genre_selection_changed(const QStringList& genres);
+		void invalid_genre_selected();
 
 		void reload_library_deep_requested();
 		void reload_library_requested();

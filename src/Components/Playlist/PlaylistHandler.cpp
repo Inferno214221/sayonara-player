@@ -67,7 +67,7 @@ struct Handler::Private
 	{}
 };
 
-Handler::Handler(QObject * parent) :
+Handler::Handler(QObject* parent) :
 	QObject(parent)
 {
 	qRegisterMetaType<PlaylistPtr>("PlaylistPtr");
@@ -226,12 +226,11 @@ int Handler::create_playlist(const QString& dir, const QString& name, bool tempo
 
 int Handler::create_playlist(const CustomPlaylist& cpl)
 {
-	int idx;
-	int id = cpl.id();
-	auto it = Algorithm::find(m->playlists, [id](const PlaylistPtr& pl){
-		return (pl->get_id() == id);
+	auto it = Algorithm::find(m->playlists, [&cpl](const PlaylistPtr& pl){
+		return (pl->get_id() == cpl.id());
 	});
 
+	int idx;
 	if(it == m->playlists.end()){
 		idx = add_new_playlist(cpl.name(), cpl.temporary(), PlaylistType::Std);
 	}
@@ -291,13 +290,12 @@ void Handler::clear_playlist(int pl_idx)
 
 void Handler::playstate_changed(PlayState state)
 {
-	switch(state)
-	{
-		case PlayState::Playing:
-			played(); break;
-		case PlayState::Stopped:
-			stopped(); break;
-		default: return;
+	if(state == PlayState::Playing) {
+		played();
+	}
+
+	else if(state == PlayState::Stopped) {
+		stopped();
 	}
 }
 
@@ -371,11 +369,11 @@ int	Handler::active_index() const
 
 void Handler::set_active_idx(int idx)
 {
-	if(m->playlists.isEmpty()){
+	if(m->playlists.isEmpty()) {
 		m->active_playlist_idx = idx;
 	}
 
-	else if(Util::between(idx, m->playlists)){
+	else if(Util::between(idx, m->playlists)) {
 		m->active_playlist_idx = idx;
 	}
 
@@ -389,12 +387,12 @@ void Handler::set_active_idx(int idx)
 
 PlaylistPtr Handler::active_playlist()
 {
-	if(m->play_manager->playstate() == PlayState::Stopped){
+	if(m->play_manager->playstate() == PlayState::Stopped) {
 		m->active_playlist_idx = -1;
 	}
 
 	// assure we have at least one playlist
-	if(m->playlists.size() == 0){
+	if(m->playlists.size() == 0) {
 		m->active_playlist_idx = create_empty_playlist();
 	}
 
@@ -428,7 +426,7 @@ void Handler::set_current_index(int pl_idx)
 {
 	CHECK_IDX_VOID(pl_idx)
 
-	if(pl_idx == m->current_playlist_idx){
+	if(pl_idx == m->current_playlist_idx) {
 		return;
 	}
 
@@ -496,7 +494,7 @@ int Handler::close_playlist(int pl_idx)
 
 	bool was_active = (pl_idx == m->active_playlist_idx);
 
-	if(m->playlists[pl_idx]->is_temporary()){
+	if(m->playlists[pl_idx]->is_temporary()) {
 		m->playlists[pl_idx]->delete_playlist();
 	}
 
@@ -551,7 +549,7 @@ int Handler::exists(const QString& name) const
 		return m->current_playlist_idx;
 	}
 
-	return Algorithm::indexOf(m->playlists, [&name](PlaylistPtr pl){
+	return Algorithm::indexOf(m->playlists, [&name](PlaylistPtr pl) {
 		return (pl->get_name().compare(name, Qt::CaseInsensitive) == 0);
 	});
 }
@@ -647,11 +645,11 @@ void Handler::playlist_renamed(int id, const QString& old_name, const QString& n
 {
 	Q_UNUSED(old_name)
 
-	auto it=Algorithm::find(m->playlists, [&id](auto playlist){
+	auto it = Algorithm::find(m->playlists, [&id](auto playlist) {
 		return (playlist->get_id() == id);
 	});
 
-	if(it == m->playlists.end()){
+	if(it == m->playlists.end()) {
 		return;
 	}
 
@@ -677,7 +675,7 @@ void Handler::delete_playlist(int pl_idx)
 
 void Handler::playlist_deleted(int id)
 {
-	auto it=Algorithm::find(m->playlists, [&id](auto playlist){
+	auto it = Algorithm::find(m->playlists, [&id](auto playlist){
 		return (playlist->get_id() == id);
 	});
 

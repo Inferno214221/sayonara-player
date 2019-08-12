@@ -25,6 +25,7 @@
 
 #include <QObject>
 #include "Utils/Pimpl.h"
+#include "Utils/SetFwd.h"
 
 class LocalLibrary;
 class Genre;
@@ -58,6 +59,7 @@ public:
 	void add_genre_to_md(const MetaDataList& v_md, const Genre& genre);
 	void create_genre(const Genre& genre);
 	void delete_genre(const Genre& genre);
+	void delete_genres(const Util::Set<Genre>& genres);
 	void rename_genre(const Genre& old_genre, const Genre& new_genre);
 
 	void set_local_library(LocalLibrary* local_library);

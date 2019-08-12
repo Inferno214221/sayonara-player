@@ -38,10 +38,13 @@ namespace Gui
 	{
 
 	public:
-		Completer(const QStringList& lst, QObject* parent=nullptr);
+		Completer(const QStringList& strings, QObject* parent=nullptr);
 		~Completer();
 
-		void set_stringlist(const QStringList& lst);
+		void set_stringlist(QStringList strings);
+
+		QStringList splitPath(const QString& path) const override;
+		QString pathFromIndex(const QModelIndex& index) const override;
 	};
 }
 

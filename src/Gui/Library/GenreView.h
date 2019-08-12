@@ -53,6 +53,7 @@ namespace Library
 	signals:
 		void sig_progress(const QString& name, int progress);
 		void sig_selected_changed(const QStringList& genres);
+		void sig_invalid_genre_selected();
 
 	private:
 		using Parent::activated;
@@ -66,6 +67,8 @@ namespace Library
 		void init(LocalLibrary* library);
 		void reload_genres();
 
+		static QString invalid_genre_name();
+
 	private:
 		void set_genres(const Util::Set<Genre>& genres);
 		void build_genre_data_tree(const Util::Set<Genre>& genres);
@@ -74,7 +77,7 @@ namespace Library
 		QTreeWidgetItem* find_genre(const QString& genre);
 
 		void init_context_menu();
-		QString no_genre_name() const;
+
 
 	private slots:
 		void item_expanded(QTreeWidgetItem* item);
@@ -88,7 +91,7 @@ namespace Library
 		void rename_pressed();
 		void delete_pressed();
 
-		void tree_action_changed();
+		void switch_tree_list();
 
 		void selection_changed(const QItemSelection& selected, const QItemSelection& deselected);
 

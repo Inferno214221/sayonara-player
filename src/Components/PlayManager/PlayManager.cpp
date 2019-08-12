@@ -116,17 +116,15 @@ PlayManager::PlayManager(QObject* parent) :
 	bool load_playlist = (GetSetting(Set::PL_LoadSavedPlaylists) || GetSetting(Set::PL_LoadTemporaryPlaylists));
 	bool load_last_track = GetSetting(Set::PL_LoadLastTrack);
 	bool remember_last_time = GetSetting(Set::PL_RememberTime);
-	bool start_playing = GetSetting(Set::PL_StartPlaying);
 
-	if(	load_playlist &&
-		load_last_track)
+	if(load_playlist && load_last_track)
 	{
-		if(start_playing){
-			m->initial_position_ms = 0;
+		if(remember_last_time) {
+			m->initial_position_ms = GetSetting(Set::Engine_CurTrackPos_s) * 1000;
 		}
 
-		if(remember_last_time){
-			m->initial_position_ms = GetSetting(Set::Engine_CurTrackPos_s) * 1000;
+		else {
+			m->initial_position_ms = 0;
 		}
 	}
 

@@ -111,6 +111,7 @@ public slots:
 	 * the user won't recognize anything at all
 	 */
 	virtual void refresh_current_view();
+	void metadata_changed();
 
 	virtual void find_track(TrackID id);
 

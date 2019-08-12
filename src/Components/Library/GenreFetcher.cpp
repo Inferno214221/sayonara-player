@@ -122,6 +122,14 @@ void GenreFetcher::delete_genre(const Genre& genre)
 	uto->delete_genre(genre);
 }
 
+void GenreFetcher::delete_genres(const Util::Set<Genre>& genres)
+{
+	for(const Genre& genre : genres)
+	{
+		delete_genre(genre);
+	}
+}
+
 void GenreFetcher::rename_genre(const Genre& old_genre, const Genre& new_genre)
 {
 	Tagging::UserOperations* uto = init_tagging();

@@ -126,7 +126,6 @@ Editor::Editor(QObject *parent) :
 {
 	m = Pimpl::make<Editor::Private>();
 
-
 	this->setObjectName("TagEditor" + ::Util::random_string(4));
 
 	connect(this, &QThread::finished, this, &Editor::thread_finished);
@@ -151,11 +150,6 @@ void Editor::update_track(int idx, const MetaData& md)
 
 	auto it = m->v_md.begin() + idx;
 	*it = md;
-
-	MetaData new_md = m->v_md[idx];
-
-	sp_log(Log::Info, this) << new_md.artist_id;
-
 }
 
 void Editor::undo(int idx)
