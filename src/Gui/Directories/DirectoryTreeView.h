@@ -63,6 +63,8 @@ signals:
 	void sig_play_next_clicked();
 	void sig_append_clicked();
 	void sig_directory_loaded(const QModelIndex& index);
+	void sig_current_index_changed(const QModelIndex& index);
+
 	void sig_enter_pressed();
 	void sig_import_requested(LibraryId lib_id, const QStringList& v_md, const QString& target_dir);
 
@@ -71,7 +73,7 @@ signals:
 
 public:
 	explicit DirectoryTreeView(QWidget* parent=nullptr);
-	virtual ~DirectoryTreeView();
+	~DirectoryTreeView() override;
 
 	QModelIndex		search(const QString& search_term);
 	QString			directory_name(const QModelIndex& index);
@@ -96,6 +98,7 @@ private:
 	DropAction show_drop_menu(const QPoint& pos);
 
 private slots:
+	void selection_changed(const QItemSelection& selected, const QItemSelection& deselected);
 	void drag_move_timer_finished();
 	void create_dir_clicked();
 	void rename_dir_clicked();

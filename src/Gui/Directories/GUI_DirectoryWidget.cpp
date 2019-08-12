@@ -108,8 +108,8 @@ GUI_DirectoryWidget::GUI_DirectoryWidget(QWidget *parent) :
 	ui->lv_files->setDragDropMode(QAbstractItemView::DragDrop);
 	ui->lv_files->setDropIndicatorShown(true);
 
-	connect(ui->tv_dirs, &QTreeView::clicked, this, &GUI_DirectoryWidget::dir_clicked);
-	connect(ui->tv_dirs, &QTreeView::pressed, this, &GUI_DirectoryWidget::dir_pressed);
+	connect(ui->tv_dirs, &DirectoryTreeView::sig_current_index_changed, this, &GUI_DirectoryWidget::dir_clicked);
+	//connect(ui->tv_dirs, &QTreeView::pressed, this, &GUI_DirectoryWidget::dir_pressed);
 	connect(ui->tv_dirs, &DirectoryTreeView::sig_import_requested, this, &GUI_DirectoryWidget::import_requested);
 	connect(ui->tv_dirs, &DirectoryTreeView::sig_enter_pressed, this, &GUI_DirectoryWidget::dir_enter_pressed);
 	connect(ui->tv_dirs, &DirectoryTreeView::sig_append_clicked, this, &GUI_DirectoryWidget::dir_append_clicked);
@@ -257,16 +257,21 @@ void GUI_DirectoryWidget::dir_clicked(QModelIndex idx)
 	dir_opened(idx);
 }
 
+#include "Utils/Logger/Logger.h"
 void GUI_DirectoryWidget::dir_opened(QModelIndex idx)
 {
 	QModelIndexList selected_items = ui->tv_dirs->selected_indexes();
 
 	QString dir = ui->tv_dirs->directory_name_origin(idx);
+
+	sp_log(Log::Debug, this) << "Dir openend " << idx.data().toString() << " vs " << dir;
+
 	QStringList dirs;
 	for(const QModelIndex& index : selected_items){
 		dirs << ui->tv_dirs->directory_name_origin(index);
 	 }
 
+	sp_log(Log::Debug, this) << " dirs: " << dirs;
 	ui->lv_files->set_parent_directory(ui->tv_dirs->library_id(idx), dir);
 	ui->lv_files->set_search_filter(ui->le_search->text());
 

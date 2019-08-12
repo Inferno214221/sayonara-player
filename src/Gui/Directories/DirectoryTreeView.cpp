@@ -110,9 +110,11 @@ DirectoryTreeView::DirectoryTreeView(QWidget *parent) :
 	this->setRootIndex(m->model->index(root_path));
 
 	connect(m->drag_move_timer, &QTimer::timeout, this, &DirectoryTreeView::drag_move_timer_finished);
+
+	connect(selectionModel(), &QItemSelectionModel::selectionChanged, this, &DirectoryTreeView::selection_changed);
 }
 
-DirectoryTreeView::~DirectoryTreeView() {}
+DirectoryTreeView::~DirectoryTreeView() = default;
 
 LibraryId DirectoryTreeView::library_id(const QModelIndex& index) const
 {
@@ -600,6 +602,18 @@ DirectoryTreeView::DropAction DirectoryTreeView::show_drop_menu(const QPoint& po
 	menu->deleteLater();
 
 	return drop_action;
+}
+
+void DirectoryTreeView::selection_changed(const QItemSelection& selected, const QItemSelection& deselected)
+{
+	Q_UNUSED(deselected)
+
+	QModelIndex index;
+	if(!selected.indexes().isEmpty()){
+		index = selected.indexes().first();
+	}
+
+	emit sig_current_index_changed(index);
 }
 
 
