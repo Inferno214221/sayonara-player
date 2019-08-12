@@ -54,4 +54,8 @@ if (DOXYGEN_FOUND)
 		VERBATIM
 	)
 
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/docs/html DESTINATION share/doc/sayonara/doxygen)
+
 endif (DOXYGEN_FOUND)
+
+
