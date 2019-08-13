@@ -18,19 +18,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "LibraryFileExtensionBar.h"
 #include "Components/Library/AbstractLibrary.h"
 
 #include "Utils/Language/Language.h"
 #include "Utils/ExtensionSet.h"
+#include "Utils/Settings/Settings.h"
 
 #include <QList>
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QLabel>
-#include <QScrollArea>
 
 using Library::FileExtensionBar;
 
@@ -45,7 +43,7 @@ struct FileExtensionBar::Private
 	AbstractLibrary*		library=nullptr;
 };
 
-#include <QSizePolicy>
+
 FileExtensionBar::FileExtensionBar(QWidget* parent) :
 	Gui::Widget(parent)
 {
@@ -57,6 +55,10 @@ FileExtensionBar::FileExtensionBar(QWidget* parent) :
 	this->setLayout(layout);
 
 	m->lab_filter = new QLabel(this);
+
+	QFont font = m->lab_filter->font();
+	font.setBold(true);
+	m->lab_filter->setFont(font);
 	layout->addWidget(m->lab_filter);
 
 
@@ -75,7 +77,7 @@ FileExtensionBar::FileExtensionBar(QWidget* parent) :
 
 	m->btn_close = new QPushButton(this);
 	layout->addWidget(m->btn_close);
-	connect(m->btn_close, &QPushButton::clicked, this, &FileExtensionBar::sig_close_clicked);
+	connect(m->btn_close, &QPushButton::clicked, this, &FileExtensionBar::close_clicked);
 }
 
 FileExtensionBar::~FileExtensionBar()
@@ -154,8 +156,13 @@ void FileExtensionBar::button_toggled(bool b)
 	m->library->set_extensions(extensions);
 }
 
+void FileExtensionBar::close_clicked()
+{
+	SetSetting(Set::Lib_ShowFilterExtBar, false);
+}
+
 void FileExtensionBar::language_changed()
 {
 	m->btn_close->setText(Lang::get(Lang::Close));
-	m->lab_filter->setText(Lang::get(Lang::Filter));
+	m->lab_filter->setText(Lang::get(Lang::Filetype));
 }

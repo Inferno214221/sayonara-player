@@ -125,6 +125,12 @@ namespace Util
 	QStringList soundfile_extensions(bool with_asterisk=true);
 
 	/**
+	 * @brief get filter for file reader or file chooser
+	 * @return
+	 */
+	QString soundfile_filter();
+
+	/**
 	 * @brief get all supported playlist file extensions
 	 * @return
 	 */
@@ -138,6 +144,24 @@ namespace Util
 
 	QStringList image_extensions(bool with_asterisk=true);
 
+
+	enum Extension
+	{
+		Soundfile=1<<0,
+		Playlist=1<<1,
+		Podcast=1<<2,
+		Haltdeimaul=1<<3
+	};
+
+	using Extensions=uint16_t;
+
+	/**
+	 * @brief get filter for file chooser dialog based on extensions
+	 * @param extensions disjunction of Extension
+	 * @param name name that should appear in the file dialog
+	 * @return concatenated list of extensions
+	 */
+	QString get_file_filter(Extensions extensions, const QString& name);
 
 	/**
 	 * @brief get a random val between min max

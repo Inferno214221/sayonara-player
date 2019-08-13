@@ -57,8 +57,8 @@ struct LibraryContextMenu::Private
 	QAction*	reload_library_action=nullptr;
 	QAction*	clear_action=nullptr;
 	QAction*	cover_view_action=nullptr;
-	QAction*	filter_extension_action=nullptr;
-	QAction*	show_filter_extension_bar_action=nullptr;
+	QAction*	filetype_action=nullptr;
+	QAction*	show_filetype_bar_action=nullptr;
 	QAction*	preference_separator=nullptr;
 
 	bool has_preference_actions;
@@ -88,9 +88,9 @@ LibraryContextMenu::LibraryContextMenu(QWidget* parent) :
 	m->cover_view_action = new QAction(this);
 	m->cover_view_action->setCheckable(true);
 	m->filter_extension_menu = new QMenu(this);
-	m->filter_extension_action = this->addMenu(m->filter_extension_menu);
-	m->show_filter_extension_bar_action = new QAction(this);
-	m->show_filter_extension_bar_action->setCheckable(true);
+	m->filetype_action = this->addMenu(m->filter_extension_menu);
+	m->show_filetype_bar_action = new QAction(this);
+	m->show_filetype_bar_action->setCheckable(true);
 
 	ListenSetting(Set::Lib_ShowAlbumCovers, LibraryContextMenu::show_cover_view_changed);
 	ListenSetting(Set::Lib_ShowFilterExtBar, LibraryContextMenu::show_filter_ext_bar_changed);
@@ -108,7 +108,7 @@ LibraryContextMenu::LibraryContextMenu(QWidget* parent) :
 			<< m->info_action
 			<< m->lyrics_action
 			<< m->edit_action
-			<< m->filter_extension_action
+			<< m->filetype_action
 			<< addSeparator()
 
 			<< m->reload_library_action
@@ -135,7 +135,7 @@ LibraryContextMenu::LibraryContextMenu(QWidget* parent) :
 	m->entry_action_map[EntryReload] = m->reload_library_action;
 	m->entry_action_map[EntryClear] = m->clear_action;
 	m->entry_action_map[EntryCoverView] = m->cover_view_action;
-	m->entry_action_map[EntryFilterExtension] = m->filter_extension_action;
+	m->entry_action_map[EntryFilterExtension] = m->filetype_action;
 
 	for(QAction* action : Algorithm::AsConst(actions))
 	{
@@ -155,7 +155,7 @@ LibraryContextMenu::LibraryContextMenu(QWidget* parent) :
 	connect(m->reload_library_action, &QAction::triggered, this, &LibraryContextMenu::sig_reload_clicked);
 	connect(m->clear_action, &QAction::triggered, this, &LibraryContextMenu::sig_clear_clicked);
 	connect(m->cover_view_action, &QAction::triggered, this, &LibraryContextMenu::show_cover_triggered);
-	connect(m->show_filter_extension_bar_action, &QAction::triggered, this, &LibraryContextMenu::show_filter_extension_bar_triggered);
+	connect(m->show_filetype_bar_action, &QAction::triggered, this, &LibraryContextMenu::show_filter_extension_bar_triggered);
 }
 
 LibraryContextMenu::~LibraryContextMenu() = default;
@@ -175,8 +175,8 @@ void LibraryContextMenu::language_changed()
 	m->reload_library_action->setText(Lang::get(Lang::ReloadLibrary));
 	m->clear_action->setText(Lang::get(Lang::Clear));
 	m->cover_view_action->setText(tr("Cover view"));
-	m->filter_extension_action->setText(Lang::get(Lang::Filter));
-	m->show_filter_extension_bar_action->setText(Lang::get(Lang::Show) + ": " + tr("Toolbar"));
+	m->filetype_action->setText(Lang::get(Lang::Filetype));
+	m->show_filetype_bar_action->setText(Lang::get(Lang::Show) + ": " + tr("Toolbar"));
 
 	m->play_action->setShortcut(QKeySequence(Qt::Key_Enter));
 	m->delete_action->setShortcut(QKeySequence(Qt::ControlModifier | Qt::Key_Delete));
@@ -333,7 +333,7 @@ void LibraryContextMenu::set_extensions(const Gui::ExtensionSet& extensions)
 	QMenu* fem = m->filter_extension_menu;
 	if(fem->isEmpty())
 	{
-		fem->addActions({fem->addSeparator(), m->show_filter_extension_bar_action});
+		fem->addActions({fem->addSeparator(), m->show_filetype_bar_action});
 	}
 
 	while(fem->actions().count() > 2)
@@ -396,7 +396,7 @@ void LibraryContextMenu::show_cover_triggered(bool b)
 
 void LibraryContextMenu::show_filter_ext_bar_changed()
 {
-	m->show_filter_extension_bar_action->setChecked(GetSetting(Set::Lib_ShowFilterExtBar));
+	m->show_filetype_bar_action->setChecked(GetSetting(Set::Lib_ShowFilterExtBar));
 }
 
 void LibraryContextMenu::show_filter_extension_bar_triggered(bool b)
@@ -405,7 +405,11 @@ void LibraryContextMenu::show_filter_extension_bar_triggered(bool b)
 
 	if(b)
 	{
-		Message::info(tr("The toolbar is visible when there are tracks with differing file types listed in the track view"), Lang::get(Lang::Filetype));
+		Message::info
+		(
+			tr("The toolbar is visible when there are tracks with differing file types listed in the track view"),
+			Lang::get(Lang::Filetype)
+		);
 	}
 }
 

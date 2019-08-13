@@ -50,12 +50,12 @@ protected:
 public:
 	~LocalLibrary() override;
 
-	bool set_library_path(const QString& library_path);
-	bool set_library_name(const QString& library_name);
+	bool set_library_path(const QString& path);
+	bool set_library_name(const QString& name);
 
-	QString			library_path() const;
-	LibraryId		library_id() const;
-	QString			library_name() const;
+	QString			path() const;
+	LibraryId		id() const;
+	QString			name() const;
 	Library::Importer* importer();
 
 	bool is_reloading() const override;

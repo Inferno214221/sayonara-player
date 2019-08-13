@@ -250,19 +250,18 @@ void GUI_Playlist::open_file_clicked(int tgt_idx)
 {
 	Q_UNUSED(tgt_idx)
 
-	QStringList filetypes;
+	QString filter = Util::get_file_filter(
+		Util::Extensions(Util::Extension::Soundfile | Util::Extension::Playlist),
+		tr("Media files")
+	);
 
-	filetypes << Util::soundfile_extensions();
-	filetypes << Util::playlist_extensions();
-
-	QString filetypes_str = tr("Media files") + " (" + filetypes.join(" ") + ")";
-
-	QStringList list =
-			QFileDialog::getOpenFileNames(
-					this,
-					tr("Open Media files"),
-					QDir::homePath(),
-					filetypes_str);
+	QStringList list = QFileDialog::getOpenFileNames
+	(
+		this,
+		tr("Open Media files"),
+		QDir::homePath(),
+		filter
+	);
 
 	if(list.isEmpty()){
 		return;

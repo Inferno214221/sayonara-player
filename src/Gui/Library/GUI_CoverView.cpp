@@ -22,6 +22,7 @@
 #include "Gui/Library/ui_GUI_CoverView.h"
 #include "Gui/Library/Header/ActionPair.h"
 
+#include "Utils/Set.h"
 #include "Utils/Utils.h"
 #include "Utils/Algorithm.h"
 
@@ -63,6 +64,7 @@ void GUI_CoverView::init(LocalLibrary* library)
 	connect(ui->combo_zoom, combo_activated_int, this, &GUI_CoverView::combo_zoom_changed);
 	connect(ui->btn_close, &QPushButton::clicked, this, &GUI_CoverView::close_clicked);
 	connect(ui->cb_show_artist, &QCheckBox::toggled, this, &GUI_CoverView::show_artist_triggered);
+	connect(ui->tb_view, &CoverView::sig_reload_clicked, this, &GUI_CoverView::sig_reload_clicked);
 
 	ListenSettingNoCall(Set::Lib_CoverShowUtils, GUI_CoverView::show_utils_changed);
 	ListenSettingNoCall(Set::Lib_Sorting, GUI_CoverView::sortorder_changed);
@@ -82,15 +84,21 @@ bool GUI_CoverView::is_initialized() const
 	return (ui != nullptr);
 }
 
-Library::CoverView* GUI_CoverView::table_view() const
+IndexSet GUI_CoverView::selected_items() const
 {
-	if(ui) {
-		return ui->tb_view;
+	if(ui){
+		return ui->tb_view->selected_items();
 	}
 
-	return nullptr;
+	return IndexSet();
 }
 
+void GUI_CoverView::clear_selections() const
+{
+	if(ui){
+		ui->tb_view->clearSelection();
+	}
+}
 
 void GUI_CoverView::init_sorting_actions()
 {

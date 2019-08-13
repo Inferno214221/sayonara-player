@@ -25,20 +25,22 @@
 #include <QPixmap>
 #include <QByteArray>
 
-struct Util::Image::Private
+using Util::Image;
+
+struct Image::Private
 {
 	QByteArray img;
 };
 
-Util::Image::Image() :
+Image::Image() :
 	m(nullptr)
 {}
 
-Util::Image::Image(const QPixmap& pm) :
-	Util::Image(pm, QSize(-1, -1))
+Image::Image(const QPixmap& pm) :
+	Image::Image(pm, QSize(-1, -1))
 {}
 
-Util::Image::Image(const QPixmap& pm, const QSize& max_size)
+Image::Image(const QPixmap& pm, const QSize& max_size)
 {
 	m = new Private();
 
@@ -71,7 +73,7 @@ Util::Image::Image(const QPixmap& pm, const QSize& max_size)
 	}
 }
 
-Util::Image::Image(const Util::Image& other)
+Image::Image(const Image& other)
 {
 	if(!other.m){
 		m = nullptr;
@@ -83,7 +85,7 @@ Util::Image::Image(const Util::Image& other)
 }
 
 
-Util::Image::~Image()
+Image::~Image()
 {
 	if(m)
 	{
@@ -91,7 +93,7 @@ Util::Image::~Image()
 	}
 }
 
-Util::Image& Util::Image::operator=(const Util::Image& other)
+class Image& Image::operator=(const Image& other)
 {
 	if(other.m)
 	{
@@ -110,7 +112,7 @@ Util::Image& Util::Image::operator=(const Util::Image& other)
 	return *this;
 }
 
-QPixmap Util::Image::pixmap() const
+QPixmap Image::pixmap() const
 {
 	if(!m){
 		sp_log(Log::Warning, this) << "No data";

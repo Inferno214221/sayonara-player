@@ -41,7 +41,6 @@ namespace Proxy
 
 	QString env_hostname();
 	int env_port();
-};
-
+}
 
 #endif // PROXY_H

@@ -33,24 +33,24 @@ namespace Library
 	{
 		PIMPL(CoverViewPixmapCache)
 
-	public:
-		CoverViewPixmapCache();
-		~CoverViewPixmapCache();
+		public:
+			CoverViewPixmapCache();
+			~CoverViewPixmapCache();
 
-		bool has_pixmap(const Hash& hash) const;
+			bool has_pixmap(const Hash& hash) const;
 
-		QPixmap pixmap(const Hash& hash) const;
-		QPixmap invalid_pixmap() const;
-		void	add_pixmap(const Hash& hash, const QPixmap& pm);
-		int		cache_size() const;
+			QPixmap pixmap(const Hash& hash) const;
+			QPixmap invalid_pixmap() const;
+			void	add_pixmap(const Hash& hash, const QPixmap& pm);
+			int		cache_size() const;
 
-		bool is_outdated(const Hash& hash) const;
-		void set_outdated(const Hash& hash);
-		void set_all_outdated();
+			bool is_outdated(const Hash& hash) const;
+			void set_outdated(const Hash& hash);
+			void set_all_outdated();
 
-		void set_cache_size(int cache_size);
+			void set_cache_size(int cache_size);
 
-		void clear();
+			void clear();
 	};
 }
 

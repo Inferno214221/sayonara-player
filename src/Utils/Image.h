@@ -18,10 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
-#ifndef IMAGE_H
-#define IMAGE_H
+#ifndef UTIL_IMAGE_H
+#define UTIL_IMAGE_H
 
 class QPixmap;
 class QImage;
@@ -29,25 +27,30 @@ class QSize;
 
 namespace Util
 {
+	/**
+	 * @brief The Image class
+	 * @ingroup Helper
+	 */
 	class Image
 	{
+		private:
+			struct Private;
+			Private* m=nullptr;
 
-	private:
-		struct Private;
-		Private* m=nullptr;
+		public:
+			Image();
+			Image(const QPixmap& pm);
+			Image(const QPixmap& pm, const QSize& max_size);
 
-	public:
-		Image();
-		Image(const QPixmap& pm);
-		Image(const QPixmap& pm, const QSize& max_size);
+			Image(const Image& other);
+			~Image();
 
-		Image(const Image& other);
-		~Image();
+			Image& operator=(const Image& other);
 
-		Image& operator=(const Image& other);
-
-		QPixmap pixmap() const;
+			QPixmap pixmap() const;
 	};
 }
 
-#endif // IMAGE_H
+
+
+#endif // UTIL_IMAGE_H

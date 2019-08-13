@@ -78,10 +78,14 @@ Importer::Importer(LocalLibrary* library) :
 			this, &Importer::metadata_changed);
 }
 
-Importer::~Importer() {}
+Importer::~Importer() = default;
 
 void Importer::import_files(const QStringList& files, const QString& target_dir)
 {
+	if(files.isEmpty()){
+		return;
+	}
+
 	emit_status(ImportStatus::Caching);
 
 	if(!target_dir.isEmpty())
@@ -89,7 +93,7 @@ void Importer::import_files(const QStringList& files, const QString& target_dir)
 		emit sig_target_dir_changed(target_dir);
 	}
 
-	CachingThread* thread = new CachingThread(files, m->library->library_path());
+	CachingThread* thread = new CachingThread(files, m->library->path());
 	connect(thread, &CachingThread::finished, this, &Importer::caching_thread_finished);
 	connect(thread, &CachingThread::sig_progress, this, &Importer::sig_progress_no_percent);
 	connect(thread, &CachingThread::destroyed, this, [=]()
@@ -185,7 +189,7 @@ void Importer::copy_thread_finished()
 
 	// store to db
 	DB::Connector* db = DB::Connector::instance();
-	DB::LibraryDatabase* lib_db = db->library_db(m->library->library_id(), db->db_id());
+	DB::LibraryDatabase* lib_db = db->library_db(m->library->id(), db->db_id());
 
 	bool success = lib_db->store_metadata(v_md);
 	int n_files_copied = copy_thread->get_n_copied_files();

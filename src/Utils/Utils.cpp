@@ -253,6 +253,28 @@ QString Util::create_link(const QString& name, bool dark, bool underline, const 
 	return ret;
 }
 
+QString Util::get_file_filter(Util::Extensions extensions, const QString& name)
+{
+	QStringList ret;
+	if(extensions | Extension::Soundfile){
+		ret << soundfile_extensions();
+	}
+
+	if(extensions | Extension::Playlist){
+		ret << playlist_extensions();
+	}
+
+	if(extensions | Extension::Podcast){
+		ret << podcast_extensions();
+	}
+
+	if(extensions | Extension::Haltdeimaul){
+		ret << image_extensions();
+	}
+
+	return QString("%1 (%2)").arg(name).arg(ret.join(" "));
+}
+
 
 QStringList Util::soundfile_extensions(bool with_asterisk)
 {
@@ -286,6 +308,12 @@ QStringList Util::soundfile_extensions(bool with_asterisk)
 	return filters;
 }
 
+
+QString Util::soundfile_filter()
+{
+	QStringList extensions = soundfile_extensions();
+	return QString("Soundfiles (") + extensions.join(" ") + ")";
+}
 
 QStringList Util::playlist_extensions(bool with_asterisk)
 {
@@ -514,3 +542,4 @@ QPixmap Util::cvt_bytearray_to_pixmap(const QByteArray& arr)
 	pm.loadFromData(arr, "JPG");
 	return pm;
 }
+

@@ -65,7 +65,7 @@ namespace Library
 		virtual void live_search_changed();
 
 		virtual void clear_selections();
-		virtual void search_return_pressed();
+		virtual void search_triggered();
 		virtual void search_edited(const QString& searchstring);
 		virtual void key_pressed(int key);
 		virtual void query_library();

@@ -93,7 +93,7 @@ void GUI_AbstractLibrary::init_search_bar()
 	m->le_search->set_modes(this->search_options());
 	m->le_search->set_current_mode(Filter::Fulltext);
 
-	connect(m->le_search, &QLineEdit::returnPressed, this, &GUI_AbstractLibrary::search_return_pressed);
+	connect(m->le_search, &QLineEdit::returnPressed, this, &GUI_AbstractLibrary::search_triggered);
 }
 
 
@@ -126,7 +126,7 @@ void GUI_AbstractLibrary::query_library()
 	m->library->change_filter(filter);
 }
 
-void GUI_AbstractLibrary::search_return_pressed()
+void GUI_AbstractLibrary::search_triggered()
 {
 	query_library();
 }

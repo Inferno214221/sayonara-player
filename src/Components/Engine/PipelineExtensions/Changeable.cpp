@@ -22,6 +22,8 @@
 #include "Utils/Utils.h"
 #include "Utils/Logger/Logger.h"
 
+#include <memory>
+
 using PipelineExtensions::Changeable;
 
 const int SleepInterval = 50;
@@ -184,7 +186,7 @@ src_blocked_remove(GstPad* pad, GstPadProbeInfo* info, gpointer data)
 					   GstPadProbeType(GST_PAD_PROBE_TYPE_BLOCK | GST_PAD_PROBE_TYPE_EVENT_DOWNSTREAM),
 					   eos_probe_installed_remove,
 					   probe_data,
-					   NULL);
+					   nullptr);
 
 	gst_object_unref (srcpad);
 
@@ -195,7 +197,7 @@ src_blocked_remove(GstPad* pad, GstPadProbeInfo* info, gpointer data)
 	return GST_PAD_PROBE_OK;
 }
 
-#include <memory>
+
 void Changeable::remove_element(GstElement* element, GstElement* first_element, GstElement* second_element)
 {
 	if(gst_element_get_parent(element) == nullptr){

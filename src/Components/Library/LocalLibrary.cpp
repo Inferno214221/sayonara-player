@@ -102,7 +102,7 @@ void LocalLibrary::reload_library(bool clear_first, Library::ReloadQuality quali
 	}
 
 	m->reload_thread->set_quality(quality);
-	m->reload_thread->set_library(library_id(), library_path());
+	m->reload_thread->set_library(id(), path());
 	m->reload_thread->start();
 }
 
@@ -153,9 +153,9 @@ void LocalLibrary::show_album_artists_changed()
 
 void LocalLibrary::renamed(LibraryId id)
 {
-	if(id == this->library_id())
+	if(id == this->id())
 	{
-		emit sig_renamed( this->library_name() );
+		emit sig_renamed( this->name() );
 	}
 }
 
@@ -284,6 +284,10 @@ void LocalLibrary::import_files(const QStringList& files)
 
 void LocalLibrary::import_files_to(const QStringList& files, const QString& target_dir)
 {
+	if(files.isEmpty()){
+		return;
+	}
+
 	if(!m->library_importer){
 		m->library_importer = new Library::Importer(this);
 	}
@@ -302,24 +306,24 @@ bool LocalLibrary::set_library_path(const QString& library_path)
 bool LocalLibrary::set_library_name(const QString& library_name)
 {
 	Library::Manager* manager = Library::Manager::instance();
-	return manager->rename_library(this->library_id(), library_name);
+	return manager->rename_library(this->id(), library_name);
 }
 
-QString LocalLibrary::library_name() const
+QString LocalLibrary::name() const
 {
 	Library::Manager* manager = Library::Manager::instance();
-	Library::Info info = manager->library_info(this->library_id());
+	Library::Info info = manager->library_info(this->id());
 	return info.name();
 }
 
-QString LocalLibrary::library_path() const
+QString LocalLibrary::path() const
 {
 	Library::Manager* manager = Library::Manager::instance();
-	Library::Info info = manager->library_info(this->library_id());
+	Library::Info info = manager->library_info(this->id());
 	return info.path();
 }
 
-LibraryId LocalLibrary::library_id() const
+LibraryId LocalLibrary::id() const
 {
 	return m->library_id;
 }

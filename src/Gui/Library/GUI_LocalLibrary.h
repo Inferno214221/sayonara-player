@@ -46,7 +46,7 @@ namespace Library
 
 	public:
 		explicit GUI_LocalLibrary(LibraryId id, QWidget* parent=nullptr);
-		virtual ~GUI_LocalLibrary();
+		virtual ~GUI_LocalLibrary() override;
 
 		QMenu*		menu() const;
 		QFrame*		header_frame() const;
@@ -60,7 +60,7 @@ namespace Library
 		TableView* lv_album() const override;
 		TableView* lv_tracks() const override;
 
-		Library::SearchBar* le_search() const override;
+		SearchBar* le_search() const override;
 		QList<Filter::Mode> search_options() const override;
 
 		void language_changed() override;
@@ -73,7 +73,6 @@ namespace Library
 
 	private slots:
 		void tracks_loaded();
-		void close_extensions_clicked();
 		void switch_album_view();
 		void filter_changed();
 

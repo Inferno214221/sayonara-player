@@ -58,6 +58,7 @@ namespace Library
 
 	private slots:
 		void button_toggled(bool b);
+		void close_clicked();
 	};
 }
 

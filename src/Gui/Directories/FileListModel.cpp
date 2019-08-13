@@ -71,15 +71,14 @@ void FileListModel::set_parent_directory(LibraryId id, const QString& dir)
 
 	int old_rowcount = rowCount();
 
-	QDir base_dir(dir);
 	QStringList extensions;
-	extensions = Util::soundfile_extensions();
+	extensions << Util::soundfile_extensions();
 	extensions << Util::playlist_extensions();
 	extensions << "*";
 
 	DirectoryReader reader;
 	reader.set_filter(extensions);
-	reader.scan_files(base_dir, m->files);
+	reader.scan_files(QDir(dir), m->files);
 
 	if(m->files.size() > old_rowcount){
 		beginInsertRows(QModelIndex(), old_rowcount, m->files.size());

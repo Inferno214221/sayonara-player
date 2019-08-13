@@ -29,7 +29,6 @@
 #include "Components/Tagging/Expression.h"
 #include "Components/Tagging/Editor.h"
 
-
 #include "Gui/Utils/Delegates/ComboBoxDelegate.h"
 #include "Gui/Utils/Widgets/Completer.h"
 #include "Gui/Utils/EventFilter.h"

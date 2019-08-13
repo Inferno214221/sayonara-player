@@ -40,7 +40,7 @@ namespace Library
 
 	public:
 		explicit CoverView(QWidget* parent=nullptr);
-		virtual ~CoverView();
+		virtual ~CoverView() override;
 
 		void init(LocalLibrary* library);
 		AbstractLibrary* library() const override;

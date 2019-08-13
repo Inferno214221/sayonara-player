@@ -60,7 +60,7 @@ GUI_ImportDialog::GUI_ImportDialog(LocalLibrary* library, bool copy_enabled, QWi
 	connect(m->importer, &Library::Importer::sig_progress_no_percent, this, &GUI_ImportDialog::set_progress_no_percent);
 	connect(m->importer, &Library::Importer::sig_triggered, this, &GUI_ImportDialog::show);
 
-    ui->lab_target_path->setText(library->library_path());
+    ui->lab_target_path->setText(library->path());
     ui->lab_target_path->setVisible(copy_enabled);
     ui->lab_target_info->setVisible(copy_enabled);
     ui->pb_progress->setValue(0);
@@ -85,7 +85,7 @@ GUI_ImportDialog::~GUI_ImportDialog()
 void GUI_ImportDialog::set_target_dir(const QString& target_dir)
 {
 	QString subdir = target_dir;
-	subdir.remove(m->library->library_path() + "/");
+	subdir.remove(m->library->path() + "/");
 
 	ui->le_directory->setText(subdir);
 }
@@ -224,7 +224,7 @@ void GUI_ImportDialog::bb_rejected()
 
 void GUI_ImportDialog::choose_dir()
 {
-	QString library_path = m->library->library_path();
+	QString library_path = m->library->path();
 	QString dialog_title = tr("Choose target directory");
 	QString dir =
 	QFileDialog::getExistingDirectory(	this,
@@ -270,14 +270,15 @@ void GUI_ImportDialog::edit_pressed()
 
 void GUI_ImportDialog::closeEvent(QCloseEvent* e)
 {
-	Dialog::closeEvent(e);
 	m->importer->reset();
+
+	Dialog::closeEvent(e);
 }
 
 void GUI_ImportDialog::showEvent(QShowEvent* e)
 {
 	Dialog::showEvent(e);
-	ui->lab_target_path->setText( m->library->library_path() );
+	ui->lab_target_path->setText( m->library->path() );
 
 	this->set_progress(-1);
 	this->set_progress_no_percent(-1);

@@ -36,7 +36,7 @@ struct Pair
 	Hash hash;
 	QPixmap pm;
 
-	Pair() {}
+	Pair() = default;
 	Pair(Hash hash, QPixmap pm) : hash(hash), pm(pm)
 	{}
 };
@@ -93,7 +93,7 @@ QPixmap CoverViewPixmapCache::pixmap(const Hash& hash) const
 		return QPixmap();
 	}
 
-	Util::Image* img = m->pixmaps.object(hash);
+	auto* img = m->pixmaps.object(hash);
 	if(!img){
 		return QPixmap();
 	}
