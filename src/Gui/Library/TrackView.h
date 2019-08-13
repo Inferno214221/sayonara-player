@@ -28,6 +28,10 @@
 class AbstractLibrary;
 namespace Library
 {
+	/**
+	 * @brief The TrackView class
+	 * @ingroup GuiLibrary
+	 */
 	class TrackView :
 		public TableView
 	{
@@ -36,7 +40,7 @@ namespace Library
 
 	public:
 		explicit TrackView(QWidget* parent=nullptr);
-		~TrackView();
+		~TrackView() override;
 
 	private:
 		AbstractLibrary* library() const override;

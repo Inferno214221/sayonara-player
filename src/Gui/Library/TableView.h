@@ -29,6 +29,10 @@
 
 namespace Library
 {
+	/**
+	 * @brief The TableView class
+	 * @ingroup GuiLibrary
+	 */
 	class TableView :
 		public ItemView
 	{
@@ -36,7 +40,6 @@ namespace Library
 		PIMPL(TableView)
 
 	signals:
-		//void sig_columns_changed();
 		void sig_sortorder_changed(SortOrder);
 
 	private:
@@ -50,15 +53,58 @@ namespace Library
 		virtual void init(AbstractLibrary* library);
 
 	protected:
+		/**
+		 * @brief here, the model and delegate should be instantiated as well as
+		 * connections and setting listeners
+		 * @param library
+		 */
 		virtual void init_view(AbstractLibrary* library)=0;
+
+		/**
+		 * @brief returns a list of ColumnHeader objects containing name,
+		 * sortorder. Everytime when the language is changed, this method is
+		 * fetched as well when the UI is instantiated
+		 * @return
+		 */
 		virtual ColumnHeaderList column_headers() const=0;
+
+		/**
+		 * @brief This method returns the SAVED column header sizes as
+		 * they were remembered since the last time sayonara was running.
+		 * Also see save_column_header_sizes()
+		 * @return a list of widths in pixels
+		 */
 		virtual IntList column_header_sizes() const=0;
+
+		/**
+		 * @brief Here, the column headers sizes should be saved somewhere
+		 * @param a list of widths in pixels. The list should be as big as
+		 * there are columns (even if they are not visible)
+		 */
 		virtual void save_column_header_sizes(const IntList& sizes)=0;
 
+		/**
+		 * @brief A boolean vector where true indicates a visible
+		 * column and false indicates an invisible column
+		 * @return
+		 */
 		virtual BoolList visible_columns() const=0;
+
+		/**
+		 * @brief save the current state of visible columns
+		 * @param columns a bool vector where true indicates a visible
+		 * column and false indicates an invisible column
+		 */
 		virtual void save_visible_columns(const BoolList& columns)=0;
 
+		/**
+		 * @brief returns the current sortorder for the table view
+		 */
 		virtual SortOrder sortorder() const=0;
+
+		/**
+		 * @brief saves the current sortorder
+		 */
 		virtual void save_sortorder(SortOrder s)=0;
 
 		void language_changed() override;

@@ -38,6 +38,10 @@ namespace Library
 	class TableView;
 	class SearchBar;
 
+	/**
+	 * @brief The GUI_AbstractLibrary class
+	 * @ingroup GuiLibrary
+	 */
 	class GUI_AbstractLibrary :
 			public Gui::Widget
 	{
@@ -48,7 +52,7 @@ namespace Library
 		explicit GUI_AbstractLibrary(AbstractLibrary* library,
 									 QWidget *parent=nullptr);
 
-		virtual ~GUI_AbstractLibrary();
+		virtual ~GUI_AbstractLibrary() override;
 
 	private:
 		virtual void init();

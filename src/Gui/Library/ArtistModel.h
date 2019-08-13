@@ -33,6 +33,10 @@
 
 namespace Library
 {
+	/**
+	 * @brief The ArtistModel class
+	 * @ingroup GuiLibrary
+	 */
 	class ArtistModel :
 			public ItemModel
 	{
@@ -40,7 +44,7 @@ namespace Library
 
 		public:
 			ArtistModel(QObject* parent, AbstractLibrary* library);
-			virtual ~ArtistModel();
+			~ArtistModel() override;
 
 			/** AbstractSearchTableModel **/
 			Qt::ItemFlags	flags(const QModelIndex& index) const override;

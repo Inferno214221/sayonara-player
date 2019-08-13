@@ -42,6 +42,10 @@ using GenreNode=Util::Tree<QString>;
 
 namespace Library
 {
+	/**
+	 * @brief The GenreView class
+	 * @ingroup GuiLibrary
+	 */
 	class GenreView :
 			public Gui::WidgetTemplate<QTreeWidget>
 	{

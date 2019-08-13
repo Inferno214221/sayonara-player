@@ -29,6 +29,11 @@
 namespace Library
 {
 	class DiscPopupMenu;
+
+	/**
+	 * @brief The AlbumView class
+	 * @ingroup GuiLibrary
+	 */
 	class AlbumView :
 			public TableView
 	{

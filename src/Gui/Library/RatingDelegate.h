@@ -26,6 +26,10 @@
 
 namespace Library
 {
+	/**
+	 * @brief A special delegate class for tables containing a rating
+	 * @ingroup GuiLibrary
+	 */
 	class RatingDelegate :
 			public Gui::StyledItemDelegate
 	{
@@ -34,7 +38,7 @@ namespace Library
 
 	public:
 		RatingDelegate(QObject* parent, int rating_column, bool enabled);
-		~RatingDelegate();
+		~RatingDelegate() override;
 
 		void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
 		QWidget* createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const override;

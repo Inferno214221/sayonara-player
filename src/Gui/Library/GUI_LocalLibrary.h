@@ -37,6 +37,10 @@ UI_FWD(GUI_LocalLibrary)
 
 namespace Library
 {
+	/**
+	 * @brief The GUI_LocalLibrary class
+	 * @ingroup GuiLibrary
+	 */
 	class GUI_LocalLibrary :
 			public GUI_AbstractLibrary
 	{
@@ -100,7 +104,7 @@ namespace Library
 		void splitter_genre_moved(int pos, int idx);
 
 		// reimplemented from Abstract Library
-		TrackDeletionMode show_delete_dialog(int n_tracks) override;
+		TrackDeletionMode show_delete_dialog(int track_count) override;
 		void clear_selections() override;
 
 		void show_info_box();

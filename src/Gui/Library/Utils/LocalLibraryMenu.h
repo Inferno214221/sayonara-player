@@ -35,6 +35,11 @@ namespace Gui
 
 namespace Library
 {
+	/**
+	 * @brief A menu in the player's menubar containing
+	 * some library actions
+	 * @ingroup GuiLibrary
+	 */
 	class LocalLibraryMenu :
 			public Gui::WidgetTemplate<QMenu>
 	{

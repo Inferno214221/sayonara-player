@@ -40,6 +40,10 @@ namespace Library
 {
 	class CoverView;
 
+	/**
+	 * @brief The GUI_CoverView class
+	 * @ingroup GuiLibrary
+	 */
 	class GUI_CoverView :
 			public Gui::Widget
 	{

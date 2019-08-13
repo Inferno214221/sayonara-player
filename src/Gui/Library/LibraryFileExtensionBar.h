@@ -35,6 +35,10 @@ class AbstractLibrary;
 
 namespace Library
 {
+	/**
+	 * @brief The FileExtensionBar class
+	 * @ingroup GuiLibrary
+	 */
 	class FileExtensionBar : public Gui::Widget
 	{
 		Q_OBJECT
@@ -47,10 +51,27 @@ namespace Library
 		explicit FileExtensionBar(QWidget* parent=nullptr);
 		~FileExtensionBar() override;
 
+		/**
+		 * @brief This method needs to be called before any other operation
+		 * @param library
+		 */
 		void init(AbstractLibrary* library);
+
+		/**
+		 * @brief refetches all tracks with extensions, clears the layout,
+		 * adds new buttons
+		 */
 		void refresh();
+
+		/**
+		 * @brief clears all buttons and the layout
+		 */
 		void clear();
 
+		/**
+		 * @brief has_extensions
+		 * @return true, if there's more than one extension. false else
+		 */
 		bool has_extensions() const;
 
 	protected:

@@ -34,20 +34,20 @@ namespace Cover
 	class Lookup;
 }
 
-/**
- * @brief This class organizes requests for new Covers for the AlbumCoverView.
- * When looking for covers, not all requests should be fired simultaneously,
- * so there should be a buffer assuring that covers are found one by one.
- * Albums are organized by hashes, each album has a CoverLocation. A new
- * request is added to the queue by calling add_data(). A new request is
- * handled BEFORE old requests. The thread is locked until the done() function
- * is called. The thread emits the signal sig_next(). The cover location
- * and the hash which should be processed next can be fetched by current_hash()
- * and current_cover_location().
- */
-
 namespace Library
 {
+	/**
+	 * @brief This class organizes requests for new Covers for the AlbumCoverView.
+	 * When looking for covers, not all requests should be fired simultaneously,
+	 * so there should be a buffer assuring that covers are found one by one.
+	 * Albums are organized by hashes, each album has a CoverLocation. A new
+	 * request is added to the queue by calling add_data(). A new request is
+	 * handled BEFORE old requests. The thread is locked until the done() function
+	 * is called. The thread emits the signal sig_next(). The cover location
+	 * and the hash which should be processed next can be fetched by current_hash()
+	 * and current_cover_location().
+	 * @ingroup GuiLibrary
+	 */
 	class AlbumCoverFetchThread : public QThread
 	{
 		Q_OBJECT

@@ -150,6 +150,13 @@
  * @ingroup Library
  */
 
+
+/**
+ * @defgroup GuiLibrary Gui Classes
+ * @brief UI side of library view
+ * @ingroup Library
+ */
+
 /**
  * @defgroup Gui Gui
  * @brief everything that belongs to the Gui

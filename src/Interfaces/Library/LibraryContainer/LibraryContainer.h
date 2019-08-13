@@ -78,8 +78,18 @@ namespace Library
 			 */
 			virtual QWidget*			widget() const=0;
 
+			/**
+			 * @brief this is a frame at the top left of the container
+			 * where the combo box will be located
+			 * @return
+			 */
 			virtual QFrame*				header() const=0;
 
+			/**
+			 * @brief Every library should show a icon in the
+			 * combo box
+			 * @return
+			 */
 			virtual QPixmap				icon() const=0;
 
 
@@ -115,6 +125,12 @@ namespace Library
 			 */
 			bool						is_initialized() const;
 
+			/**
+			 * @brief a local library is a library which writes to the
+			 * library field of the database. This should be false for
+			 * every new plugin
+			 * @return
+			 */
 			virtual bool				is_local() const;
 
 			virtual	void				show();

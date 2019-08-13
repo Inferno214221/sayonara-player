@@ -35,6 +35,11 @@
 class QAction;
 namespace Library
 {
+
+	/**
+	 * @brief The ColumnHeader class
+	 * @ingroup GuiLibrary
+	 */
 	class ColumnHeader : public QObject
 	{
 		Q_OBJECT

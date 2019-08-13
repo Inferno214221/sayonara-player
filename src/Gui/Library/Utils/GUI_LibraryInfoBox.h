@@ -32,6 +32,10 @@ UI_FWD(GUI_LibraryInfoBox)
 
 namespace Library
 {
+	/**
+	 * @brief A info box containing library statistics
+	 * @ingroup Gui::Library
+	 */
 	class GUI_LibraryInfoBox :
 			public Gui::Dialog
 	{
@@ -41,7 +45,7 @@ namespace Library
 
 	public:
 		explicit GUI_LibraryInfoBox(LibraryId library_id, QWidget* parent=nullptr);
-		virtual ~GUI_LibraryInfoBox();
+		~GUI_LibraryInfoBox() override;
 
 	protected:
 		void language_changed() override;

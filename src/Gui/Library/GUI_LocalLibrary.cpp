@@ -270,9 +270,9 @@ void GUI_LocalLibrary::genre_selection_changed(const QStringList& genres)
 }
 
 
-TrackDeletionMode GUI_LocalLibrary::show_delete_dialog(int n_tracks)
+TrackDeletionMode GUI_LocalLibrary::show_delete_dialog(int track_count)
 {
-	GUI_DeleteDialog dialog(n_tracks, this);
+	GUI_DeleteDialog dialog(track_count, this);
 	dialog.exec();
 
 	return dialog.answer();

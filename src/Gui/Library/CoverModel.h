@@ -38,6 +38,10 @@ namespace Cover
 
 namespace Library
 {
+	/**
+	 * @brief The CoverModel class
+	 * @ingroup GuiLibrary
+	 */
 	class CoverModel :
 			public ItemModel
 	{
@@ -52,7 +56,7 @@ namespace Library
 			};
 
 			explicit CoverModel(QObject* parent, AbstractLibrary* library);
-			virtual ~CoverModel();
+			~CoverModel() override;
 
 		public:
 			int				rowCount(const QModelIndex& parent=QModelIndex()) const override;

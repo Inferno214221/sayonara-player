@@ -30,6 +30,7 @@ namespace Library
 {
 	/**
 	 * @brief A mapping between a name and a sortorder
+	 * @ingroup GuiLibrary
 	 */
 	class ActionPair
 	{

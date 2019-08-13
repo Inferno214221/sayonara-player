@@ -34,6 +34,10 @@
 
 namespace Library
 {
+	/**
+	 * @brief The AlbumModel class
+	 * @ingroup GuiLibrary
+	 */
 	class AlbumModel :
 			public ItemModel
 	{
@@ -42,7 +46,7 @@ namespace Library
 
 		public:
 			AlbumModel(QObject* parent, AbstractLibrary* library);
-			virtual ~AlbumModel();
+			~AlbumModel() override;
 
 			Qt::ItemFlags	flags(const QModelIndex &index) const override;
 			QVariant		data(const QModelIndex& index, int role) const override;

@@ -32,7 +32,9 @@ namespace Library
 	 * @brief Context Menu for the tree view.
 	 * Notification of the tree view action is done
 	 * by using a bool setting listener to Set::Lib_GenreTree
-	 * So there's not signal for it
+	 * So there's not signal for it. Everything else can be
+	 * accessed using the methods of Gui::ContextMenu
+	 * @ingroup GuiLibrary
 	 */
 	class GenreViewContextMenu :
 		public Gui::ContextMenu
@@ -42,7 +44,7 @@ namespace Library
 
 		public:
 			GenreViewContextMenu(QWidget* parent=nullptr);
-			~GenreViewContextMenu();
+			~GenreViewContextMenu() override;
 
 		private slots:
 			void toggle_tree_triggered();

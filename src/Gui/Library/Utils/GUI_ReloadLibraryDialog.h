@@ -30,6 +30,11 @@ UI_FWD(GUI_LibraryReloadDialog)
 
 namespace Library
 {
+	/**
+	 * @brief Reload dialog containing a combo box which allows you
+	 * choosing between fast and deep reloading
+	 * @ingroup GuiLibrary
+	 */
 	class GUI_LibraryReloadDialog :
 		public Gui::Dialog
 	{
@@ -42,7 +47,7 @@ namespace Library
 
 		public:
 			explicit GUI_LibraryReloadDialog(const QString& library_name, QWidget *parent=nullptr);
-			~GUI_LibraryReloadDialog();
+			~GUI_LibraryReloadDialog() override;
 
 			void set_quality(ReloadQuality quality);
 

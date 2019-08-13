@@ -29,6 +29,10 @@ namespace Library
 	class Info;
 }
 
+/**
+ * @brief The LocalLibraryContainer class
+ * @ingroup GuiLibrary
+ */
 class LocalLibraryContainer :
 	public Library::Container
 {
@@ -37,7 +41,7 @@ class LocalLibraryContainer :
 
 public:
 	explicit LocalLibraryContainer(const Library::Info& library, QObject* parent=nullptr);
-	virtual ~LocalLibraryContainer();
+	virtual ~LocalLibraryContainer() override;
 
 	// override from LibraryViewInterface
 	QString     name() const override;

@@ -28,6 +28,13 @@
 
 namespace Library
 {
+	/**
+	 * @brief The searchbar has a special context menu which allows
+	 * to select the search mode. A special search mode is the
+	 * invalid genre mode set by set_invalid_genre_mode, which actually
+	 * is an empty string. But this wouldn't make any sense
+	 * @ingroup GuiLibrary
+	 */
 	class  SearchBar : public Gui::WidgetTemplate<QLineEdit>
 	{
 		Q_OBJECT
@@ -43,15 +50,54 @@ namespace Library
 			SearchBar(QWidget* parent=nullptr);
 			~SearchBar() override;
 
+			/**
+			 * @brief this method does not set the genre
+			 * mode implicitly. You also have to use set_mode().
+			 * The invalid genre mode searchs for an empty genre.
+			 * This is used to fetch tracks which do not have
+			 * a genre.
+			 */
 			void set_invalid_genre_mode(bool b);
+
+			/**
+			 * @brief if the current state is the invalid genre
+			 * mode
+			 */
 			bool has_invalid_genre_mode() const;
 
+			/**
+			 * @brief Sets the supported modes.
+			 * See Library::Filter::Mode
+			 */
 			void set_modes(const QList<Filter::Mode>& modes);
+
+			/**
+			 * @brief returns supported modes.
+			 * See Library::Filter::Mode
+			 */
 			QList<Filter::Mode> modes() const;
 
+			/**
+			 * @brief If mode is Filter::Mode::Genre but the
+			 * genre should be empty, also use set_invalid_genre_mode()
+			 */
 			void set_current_mode(Filter::Mode mode);
+
+			/**
+			 * @brief fast toggling between modes by using
+			 * arrow up key
+			 */
 			void set_previous_mode();
+
+			/**
+			 * @brief fast toggling between modes by using
+			 * arrow down key
+			 */
 			void set_next_mode();
+
+			/**
+			 * @brief current selected mode
+			 */
 			Filter::Mode current_mode() const;
 
 		protected:

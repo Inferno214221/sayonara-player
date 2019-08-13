@@ -38,6 +38,11 @@ class AbstractLibrary;
 
 namespace Library
 {
+	/**
+	 * @brief The ItemModel is intended to abstract the various views. It supports
+	 * searching, selections and a library
+	 * @ingroup GuiLibrary
+	 */
 	class ItemModel :
 			public SearchableTableModel
 	{
@@ -48,24 +53,55 @@ namespace Library
 			ItemModel(QObject* parent, AbstractLibrary* library);
 			virtual ~ItemModel() override;
 
-			/** Overloaded from QAbstractTableModel **/
 			QVariant		headerData ( int section, Qt::Orientation orientation, int role=Qt::DisplayRole ) const override;
 			bool			set_header_data(const QStringList& names);
 
 			virtual int     columnCount(const QModelIndex& parent=QModelIndex()) const override;
 
-			/** AbstractSearchTableModel **/
 			QModelIndexList search_results(const QString& substr) override;
 
 			virtual bool			is_selected(int id) const final;
+
+			/**
+			 * @brief returns a set of the selected ids
+			 */
 			virtual const Util::Set<Id>& selections() const=0;
 			virtual IndexSet		selected_indexes() const;
 
+			/**
+			 * @brief the index of the searchable column. This is the column
+			 * where the text is searched for a certain searchstring
+			 */
 			virtual int				searchable_column() const=0;
-			virtual QString			searchable_string(int row) const=0;
-			virtual Id				id_by_index(int row) const=0;
-			virtual Cover::Location	cover(const IndexSet& indexes) const=0;
 
+			/**
+			 * @brief here, the searchable string can even be refined. Maybe
+			 * we just want to search within a substring indicated by the row
+			 * @param row
+			 * @return
+			 */
+			virtual QString			searchable_string(int row) const=0;
+
+			/**
+			 * @brief return the current id for a given row
+			 * @param row
+			 * @return
+			 */
+			virtual Id				id_by_index(int row) const=0;
+
+			/**
+			 * @brief return the cover for multiple rows. if rows.size() > 1,
+			 * an invalid, default constructed cover location is usually shown
+			 * @param rows
+			 * @return
+			 */
+			virtual Cover::Location	cover(const IndexSet& rows) const=0;
+
+			/**
+			 * @brief return the tracks which belong to the selections. If an
+			 * album is selected for example, all tracks of that album should be returned
+			 * @return
+			 */
 			virtual const MetaDataList&	mimedata_tracks() const=0;
 			Gui::CustomMimeData*		custom_mimedata() const;
 

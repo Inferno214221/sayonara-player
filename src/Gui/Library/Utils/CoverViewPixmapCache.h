@@ -29,6 +29,10 @@ class QPixmap;
 
 namespace Library
 {
+	/**
+	 * @brief A cache class. Internally handled as QCache class
+	 * @ingroup GuiLibrary
+	 */
 	class CoverViewPixmapCache
 	{
 		PIMPL(CoverViewPixmapCache)

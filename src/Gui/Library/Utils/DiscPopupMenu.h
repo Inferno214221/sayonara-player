@@ -28,6 +28,10 @@
 
 namespace Library
 {
+	/**
+	 * @brief A single action representing one or all discs
+	 * @ingroup GuiLibrary
+	 */
 	class DiscAction : public QAction
 	{
 		Q_OBJECT
@@ -40,7 +44,10 @@ namespace Library
 			~DiscAction();
 	};
 
-
+	/**
+	 * @brief A menu containing various DiscAction objects
+	 * @ingroup GuiLibrary
+	 */
 	class DiscPopupMenu : public QMenu
 	{
 		Q_OBJECT

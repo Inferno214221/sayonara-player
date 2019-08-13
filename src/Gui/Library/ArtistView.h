@@ -28,6 +28,11 @@
 namespace Library
 {
 	class MergeData;
+
+	/**
+	 * @brief The ArtistView class
+	 * @ingroup GuiLibrary
+	 */
 	class ArtistView :
 			public TableView
 	{

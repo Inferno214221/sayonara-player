@@ -45,6 +45,12 @@ namespace Library
 	class MergeData;
 	class ItemModel;
 
+	/**
+	 * @brief The main task of the ItemView is to display a context menu
+	 * for various selections. It also handles drag and drop events with
+	 * a cover. It supports merging and imports
+	 * @ingroup GuiLibrary
+	 */
 	class ItemView :
 			public SearchableTableView,
 			public InfoDialogContainer,
@@ -76,7 +82,7 @@ namespace Library
 
 	public:
 		explicit ItemView(QWidget* parent=nullptr);
-		virtual ~ItemView();
+		virtual ~ItemView() override;
 
 		void set_item_model(ItemModel* model);
 
@@ -87,11 +93,13 @@ namespace Library
 		QPixmap drag_pixmap() const override;
 
 		void set_selection_type(SelectionViewInterface::SelectionType type) override;
+		bool is_valid_drag_position(const QPoint &p) const override;
 
 		void show_clear_button(bool visible);
 		void use_clear_button(bool yesno);
 
-		bool is_valid_drag_position(const QPoint &p) const override;
+		void resize_rows_to_contents();
+		void resize_rows_to_contents(int first_row, int count);
 
 	protected:
 		// Events implemented in LibraryViewEvents.cpp
@@ -116,6 +124,12 @@ namespace Library
 		ItemModel* item_model() const;
 		virtual AbstractLibrary* library() const;
 
+		/**
+		 * @brief indicates if multiple ids can be merged into one. For example if the same
+		 * artist is written in three different ways, they can be merged to one. On the
+		 * other hand, for tracks that does not make sense
+		 * @return
+		 */
 		virtual bool is_mergeable() const=0;
 
 		MetaDataList info_dialog_data() const override;
@@ -142,10 +156,6 @@ namespace Library
 		virtual void album_artists_toggled();
 		virtual void filter_extensions_triggered(const QString& extension, bool b);
 		virtual void fill();
-
-	public:
-		void resize_rows_to_contents();
-		void resize_rows_to_contents(int first_row, int count);
 	};
 }
 

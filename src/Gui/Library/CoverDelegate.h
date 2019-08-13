@@ -25,6 +25,10 @@
 
 namespace Library
 {
+	/**
+	 * @brief The CoverDelegate class
+	 * @ingroup GuiLibrary
+	 */
 	class CoverDelegate :
 			public QItemDelegate
 	{
@@ -32,7 +36,7 @@ namespace Library
 
 	public:
 		explicit CoverDelegate(QObject* parent=nullptr);
-		~CoverDelegate();
+		~CoverDelegate() override;
 
 	public:
 		void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override;

@@ -32,6 +32,11 @@ namespace Library
 {
 	class MergeData;
 	class ActionPair;
+
+	/**
+	 * @brief The CoverView class
+	 * @ingroup GuiLibrary
+	 */
 	class CoverView :
 			public ItemView
 	{
@@ -40,7 +45,7 @@ namespace Library
 
 	public:
 		explicit CoverView(QWidget* parent=nullptr);
-		virtual ~CoverView() override;
+		~CoverView() override;
 
 		void init(LocalLibrary* library);
 		AbstractLibrary* library() const override;

@@ -34,6 +34,10 @@
 
 namespace Library
 {
+	/**
+	 * @brief The TrackModel class
+	 * @ingroup GuiLibrary
+	 */
 	class TrackModel :
 			public ItemModel
 	{
@@ -42,7 +46,7 @@ namespace Library
 
 		public:
 			TrackModel(QObject* parent, AbstractLibrary* library);
-			virtual ~TrackModel();
+			~TrackModel() override;
 
 			/** AbstractSearchTableModel **/
 			Qt::ItemFlags	flags(const QModelIndex &index) const override;

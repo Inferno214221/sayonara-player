@@ -25,6 +25,10 @@
 
 namespace Library
 {
+	/**
+	 * @brief A directory chooser with some standard paths
+	 * @ingroup GuiLibrary
+	 */
 	class DirChooserDialog : public QFileDialog
 	{
 		Q_OBJECT

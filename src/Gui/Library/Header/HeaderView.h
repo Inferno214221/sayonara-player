@@ -31,6 +31,10 @@
 
 namespace Library
 {
+	/**
+	 * @brief The HeaderView class
+	 * @ingroup GuiLibrary
+	 */
 	class HeaderView :
 			public Gui::WidgetTemplate<QHeaderView>
 	{
