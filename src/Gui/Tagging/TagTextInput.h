@@ -30,7 +30,7 @@ class QContextMenuEvent;
 
 /**
  * @brief GUI class for String fields meant to convert content to first upper case by a context menu
- * @ingroup Tagging
+ * @ingroup GuiTagging
  **/
 class TagTextInput :
     public Gui::WidgetTemplate<QLineEdit>

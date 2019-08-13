@@ -32,7 +32,7 @@ class QKeyEvent;
 
 /**
  * @brief The SayonaraSelectionView class
- * @ingroup GUIInterfaces
+ * @ingroup Searchable
  */
 class SelectionViewInterface
 {

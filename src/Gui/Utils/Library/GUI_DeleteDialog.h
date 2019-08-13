@@ -29,6 +29,11 @@
 
 UI_FWD(GUI_DeleteDialog)
 
+
+/**
+ * @brief The GUI_DeleteDialog class
+ * @ingroup Gui
+ */
 class GUI_DeleteDialog :
 	public Gui::Dialog
 {

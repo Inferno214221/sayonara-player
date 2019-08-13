@@ -33,11 +33,16 @@ class QList;
 namespace Gui
 {
 	/**
-	 * @brief The Icons class
-	 * @ingroup GUIHelper
+	 * @brief Icon Utilities
+	 * @ingroup Icons
 	 */
 	namespace Icons
 	{
+
+		/**
+		 * @brief The IconMode enum
+		 * @ingroup Icons
+		 */
 		enum IconMode
 		{
 			Automatic,
@@ -45,6 +50,10 @@ namespace Gui
 			ForceSayonaraIcon
 		};
 
+		/**
+		 * @brief The IconName enum
+		 * @ingroup Icons
+		 */
 		enum IconName
 		{
 			Append=0,		// Playlist
@@ -98,17 +107,43 @@ namespace Gui
 			VolMute
 		};
 
+		/**
+		 * @brief icon
+		 * @param name
+		 * @return
+		 */
 		QIcon icon(IconName name);
 		QIcon icon(IconName name, IconMode mode);
 
+		/**
+		 * @brief pixmap
+		 * @param name
+		 * @return
+		 */
 		QPixmap pixmap(IconName name);
 		QPixmap pixmap(IconName name, IconMode mode);
 
+		/**
+		 * @brief set_standard_theme
+		 * @param name
+		 */
 		void set_standard_theme(const QString& name);
+
+		/**
+		 * @brief standard_theme
+		 * @return
+		 */
 		QString standard_theme();
 
+		/**
+		 * @brief force_standard_icons
+		 * @param b
+		 */
 		void force_standard_icons(bool b);
 
+		/**
+		 * @brief change_theme
+		 */
 		void change_theme();
 	}
 }

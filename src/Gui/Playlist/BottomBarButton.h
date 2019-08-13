@@ -27,6 +27,10 @@
 
 class QPixmap;
 
+/**
+ * @brief The BottomBarButton class
+ * @ingroup GuiPlaylists
+ */
 class BottomBarButton : public QPushButton
 {
 	public:

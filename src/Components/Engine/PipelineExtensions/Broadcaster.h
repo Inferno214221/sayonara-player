@@ -26,6 +26,10 @@
 #include "Utils/Pimpl.h"
 #include <gst/gst.h>
 
+/**
+ * @brief The Broadcaster class
+ * @ingroup EngineInterfaces
+ */
 class Broadcaster
 {
 	PIMPL(Broadcaster)

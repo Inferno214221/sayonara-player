@@ -33,7 +33,7 @@ namespace Gui
 	/**
 	 * @brief This is the little button you often see near comboboxes\n
 	 * It opens up a menu when clicked. The actions in the menu a configurable
-	 * @ingroup GUIHelper
+	 * @ingroup Gui
 	 */
 	class MenuToolButton :
 			public MenuButton

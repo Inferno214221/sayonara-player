@@ -23,6 +23,11 @@
 
 namespace Library
 {
+	/**
+	 * @brief The SortOrder enum
+	 * @ingroup Helper
+	 * @ingroup Library
+	 */
 	enum class SortOrder : unsigned char
 	{
 		NoSorting=0,

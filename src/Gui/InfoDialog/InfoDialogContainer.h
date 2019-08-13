@@ -30,7 +30,7 @@ class GUI_InfoDialog;
  * An implementing class has to return the interpretation of a MetaDataList
  * and the MetaDataList itself. The implementing class may call the show functions
  * to open the info dialog at its specific tab.
- * @ingroup GUIInterfaces
+ * @ingroup InfoDialog
  */
 class InfoDialogContainer
 {

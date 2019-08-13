@@ -228,7 +228,7 @@ void ArtistView::album_artists_triggered(bool b)
 	SetSetting(Set::Lib_ShowAlbumArtists, m->album_artist_action->isChecked());
 }
 
-void ArtistView::run_merge_operation(const MergeData& mergedata)
+void ArtistView::run_merge_operation(const Library::MergeData& mergedata)
 {
 	Tagging::UserOperations* uto = new Tagging::UserOperations(mergedata.library_id(), this);
 

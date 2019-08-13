@@ -33,6 +33,7 @@ namespace Gui
 	 * @brief A PreferenceAction can be added to each widget supporting
 	 * QActions. When triggering this action, the PreferenceDialog is
 	 * openend with the appropriate entry chosen
+	 * @ingroup Preferences
 	 */
 	class PreferenceAction :
 			public QAction
@@ -56,6 +57,7 @@ namespace Gui
 
 	/**
 	 * @brief The LibraryPreferenceAction class
+	 * @ingroup Preferences
 	 */
 	class LibraryPreferenceAction :
 		public PreferenceAction
@@ -71,6 +73,7 @@ namespace Gui
 
 	/**
 	 * @brief The PlaylistPreferenceAction class
+	 * @ingroup Preferences
 	 */
 	class PlaylistPreferenceAction :
 		public PreferenceAction
@@ -86,6 +89,7 @@ namespace Gui
 
 	/**
 	 * @brief The SearchPreferenceAction class
+	 * @ingroup Preferences
 	 */
 	class SearchPreferenceAction :
 		public PreferenceAction
@@ -101,6 +105,7 @@ namespace Gui
 
 	/**
 	 * @brief The CoverPreferenceAction class
+	 * @ingroup Preferences
 	 */
 	class CoverPreferenceAction :
 		public PreferenceAction
@@ -116,6 +121,7 @@ namespace Gui
 
 	/**
 	 * @brief The PlayerPreferencesAction class
+	 * @ingroup Preferences
 	 */
 	class PlayerPreferencesAction :
 		public PreferenceAction
@@ -131,6 +137,7 @@ namespace Gui
 
 	/**
 	 * @brief The StreamRecorderPreferenceAction class
+	 * @ingroup Preferences
 	 */
 	class StreamRecorderPreferenceAction :
 			public PreferenceAction

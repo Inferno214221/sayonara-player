@@ -25,6 +25,11 @@
 #include "Utils/Pimpl.h"
 
 class QTableView;
+
+/**
+ * @brief The PlaylistItemDelegate class
+ * @ingroup GuiPlaylists
+ */
 class PlaylistItemDelegate :
 		public Gui::StyledItemDelegate
 {

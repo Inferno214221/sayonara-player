@@ -25,7 +25,7 @@
 
 /**
  * @brief Holds start and size of a selection
- * @ingroup Tagging
+ * @ingroup GuiTagging
  */
 struct TextSelection
 {

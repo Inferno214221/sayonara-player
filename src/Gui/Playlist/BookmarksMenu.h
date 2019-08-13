@@ -24,6 +24,10 @@
 #include <QMenu>
 #include "Utils/Pimpl.h"
 
+/**
+ * @brief The BookmarksMenu class
+ * @ingroup GuiPlaylists
+ */
 class BookmarksMenu :
 	public QMenu
 {

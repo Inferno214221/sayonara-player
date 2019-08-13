@@ -34,6 +34,7 @@ namespace Gui
 	/**
 	 * @brief The FloatingLabel class. A QLabel where the text floats
 	 * from left to right and vice versa so there's no need for word wrapping anymore.
+	 * @ingroup Widgets
 	 */
 	class FloatingLabel :
 		public Gui::WidgetTemplate<QLabel>

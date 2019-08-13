@@ -35,7 +35,6 @@ namespace Preferences
 	 * In every function that makes use of the widgets call bool is_ui_initialized() first.\n
 	 * Call setup_parent(this) in init_ui() first.\n
 	 * If you wish to reimplement void language_changed(), call PreferenceWidgetInterface::language_changed at the end.
-	 * @ingroup Interfaces
 	 * @ingroup Preferences
 	 */
 	class Base :

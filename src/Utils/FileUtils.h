@@ -31,7 +31,7 @@ namespace Util
 {
 	/**
 	 * @brief FileUtils functions
-	 * @ingroup Helper
+	 * @ingroup FileHelper
 	 */
 	namespace File
 	{
@@ -87,6 +87,11 @@ namespace Util
 		 */
 		void			split_filename(const QString& src, QString& dir, QString& filename);
 
+		/**
+		 * @brief returns all parts of a directory path
+		 * @param path
+		 * @return
+		 */
 		QStringList		split_directories(const QString& path);
 
 		/**
@@ -116,6 +121,12 @@ namespace Util
 		 */
 		bool			create_directories(const QString& path);
 
+		/**
+		 * @brief create_symlink
+		 * @param source
+		 * @param target
+		 * @return
+		 */
 		bool			create_symlink(const QString& source, const QString& target);
 
 
@@ -166,33 +177,163 @@ namespace Util
 		 */
 		bool check_file(const QString& filepath);
 
+		/**
+		 * @brief is_in_sayonara_dir
+		 * @param path
+		 * @return
+		 */
 		bool is_in_sayonara_dir(const QString& path);
 
+		/**
+		 * @brief get_common_directory
+		 * @param paths
+		 * @return
+		 */
 		QString get_common_directory(const QStringList& paths);
+
+		/**
+		 * @brief get_common_directory
+		 * @param dir1
+		 * @param dir2
+		 * @return
+		 */
 		QString get_common_directory(QString dir1, QString dir2);
 
+		/**
+		 * @brief create_dir
+		 * @param dir_name
+		 * @return
+		 */
 		bool create_dir(const QString& dir_name);
+
+		/**
+		 * @brief copy_dir
+		 * @param src_dir
+		 * @param target_dir
+		 * @return
+		 */
 		bool copy_dir(const QString& src_dir, const QString& target_dir);
+
+		/**
+		 * @brief move_dir
+		 * @param src_dir
+		 * @param target_dir
+		 * @return
+		 */
 		QString move_dir(const QString& src_dir, const QString& target_dir);
+
+		/**
+		 * @brief rename_dir
+		 * @param src_dir
+		 * @param new_name
+		 * @return
+		 */
 		bool rename_dir(const QString& src_dir, const QString& new_name);
+
+		/**
+		 * @brief can_copy_dir
+		 * @param src_dir
+		 * @param target_dir
+		 * @return
+		 */
 		bool can_copy_dir(const QString& src_dir, const QString& target_dir);
 
+		/**
+		 * @brief move_file
+		 * @param file
+		 * @param dir
+		 * @return
+		 */
 		bool move_file(const QString& file, const QString& dir);
+
+		/**
+		 * @brief copy_file
+		 * @param file
+		 * @param dir
+		 * @return
+		 */
 		bool copy_file(const QString& file, const QString& dir);
+
+		/**
+		 * @brief move_files
+		 * @param files
+		 * @param dir
+		 * @return
+		 */
 		bool move_files(const QStringList& files, const QString& dir);
+
+		/**
+		 * @brief rename_file
+		 * @param old_name
+		 * @param new_name
+		 * @return
+		 */
 		bool rename_file(const QString& old_name, const QString& new_name);
+
+		/**
+		 * @brief copy_files
+		 * @param files
+		 * @param dir
+		 * @return
+		 */
 		bool copy_files(const QStringList& files, const QString& dir);
 
 
 		// Everything clear
+		/**
+		 * @brief is_url
+		 * @param str
+		 * @return
+		 */
 		bool is_url(const QString& str);
+
+		/**
+		 * @brief is_www
+		 * @param str
+		 * @return
+		 */
 		bool is_www(const QString& str);
+
+		/**
+		 * @brief is_file
+		 * @param filename
+		 * @return
+		 */
 		bool is_file(const QString& filename);
+
+		/**
+		 * @brief is_dir
+		 * @param filename
+		 * @return
+		 */
 		bool is_dir(const QString& filename);
+
+		/**
+		 * @brief is_soundfile
+		 * @param filename
+		 * @return
+		 */
 		bool is_soundfile(const QString& filename);
+
+		/**
+		 * @brief is_playlistfile
+		 * @param filename
+		 * @return
+		 */
 		bool is_playlistfile(const QString& filename);
+
+		/**
+		 * @brief is_imagefile
+		 * @param filename
+		 * @return
+		 */
 		bool is_imagefile(const QString& filename);
 
+		/**
+		 * @brief exists
+		 * @param filename
+		 * @return
+		 */
 		bool exists(const QString& filename);
 	}
 }

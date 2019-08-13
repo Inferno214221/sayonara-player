@@ -30,6 +30,7 @@ class QAction;
 
 namespace Library
 {
+	class MergeData;
 	class ActionPair;
 	class CoverView :
 			public ItemView
@@ -86,7 +87,7 @@ namespace Library
 		void append_clicked() override;
 		void selection_changed(const IndexSet& indexes) override;
 		void refresh_clicked() override;
-		void run_merge_operation(const MergeData& mergedata) override;
+		void run_merge_operation(const Library::MergeData& mergedata) override;
 	};
 }
 

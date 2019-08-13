@@ -27,20 +27,53 @@
 #include "Utils/SetFwd.h"
 #include "Utils/typedefs.h"
 
-class MergeData
+namespace Library
 {
-	PIMPL(MergeData)
+	/**
+	 * @brief Changes all metadata containing one of the source ids and replaces
+	 * it with the target id. For example, 3 different artists are merged into one
+	 * @ingroup Library
+	 * @ingroup Helper
+	 */
+	class MergeData
+	{
+		PIMPL(MergeData)
 
-	public:
-		MergeData(const Util::Set<Id>& source_ids, Id target_id, LibraryId library_id);
-		MergeData(const MergeData& other);
-		~MergeData();
+		public:
 
-		MergeData& operator=(const MergeData& other);
-		bool			is_valid() const;
-		Util::Set<Id>	source_ids() const;
-		Id				target_id() const;
-		LibraryId		library_id() const;
-};
+			/**
+			 * @brief Merges source_ids into target_id
+			 * @param source ids
+			 * @param target ids
+			 * @param library_id, can be -1
+			 */
+			MergeData(const Util::Set<Id>& source_ids, Id target_id, LibraryId library_id);
+			MergeData(const MergeData& other);
+			~MergeData();
+
+			MergeData& operator=(const MergeData& other);
+
+			/**
+			 * @brief target_id >= 0, source_ids.size() > 1, source_ids >= 0
+			 * @return
+			 */
+			bool			is_valid() const;
+
+			/**
+			 * @brief getter for source_ids. See constructor
+			 */
+			Util::Set<Id>	source_ids() const;
+
+			/**
+			 * @brief getter for target_id. See constructor
+			 */
+			Id				target_id() const;
+
+			/**
+			 * @brief getter for library_d. See constructor
+			 */
+			LibraryId		library_id() const;
+	};
+}
 
 #endif // MERGEDATA_H

@@ -28,6 +28,10 @@
 
 class QVariant;
 
+/**
+ * @brief The FileListModel class
+ * @ingroup GuiDirectories
+ */
 class FileListModel :
 	public SearchableListModel
 {

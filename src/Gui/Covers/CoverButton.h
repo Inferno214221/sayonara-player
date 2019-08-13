@@ -39,7 +39,7 @@ namespace Gui
 {
 	/**
 	 * @brief The CoverButton class
-	 * @ingroup GUICovers
+	 * @ingroup GuiCovers
 	 */
 	class CoverButton :
 			public Gui::WidgetTemplate<QPushButton>

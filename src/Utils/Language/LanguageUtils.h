@@ -29,10 +29,15 @@ class QMap;
 
 namespace Util
 {
+	/**
+	 * @brief language namespace
+	 * @ingroup Language
+	 */
 	namespace Language
 	{
 		/**
 		 * @brief get the complete path to a language file out of the share directory
+		 * @ingroup Language
 		 * @param four_letter
 		 * @return
 		 */
@@ -40,6 +45,7 @@ namespace Util
 
 		/**
 		 * @brief get the complete path to a language file out of the ftp directory
+		 * @ingroup Language
 		 * @param four_letter
 		 * @return
 		 */
@@ -47,6 +53,7 @@ namespace Util
 
 		/**
 		 * @brief get the complete http url to a language file
+		 * @ingroup Language
 		 * @param four_letter
 		 * @return
 		 */
@@ -54,21 +61,30 @@ namespace Util
 
 		/**
 		 * @brief Returns the path where checksums can be fetched from
+		 * @ingroup Language
 		 * @return ftp url
 		 */
 		QString get_checksum_ftp_path();
 
 		/**
 		 * @brief Returns the path where checksums can be fetched from
+		 * @ingroup Language
 		 * @return http url
 		 */
 		QString get_checksum_http_path();
 
+		/**
+		 * @brief get_home_target_path
+		 * @ingroup Language
+		 * @param four_letter
+		 * @return
+		 */
 		QString get_home_target_path(const QString& four_letter);
 
 		/**
 		 * @brief Returns the correct language file either from share dir
 		 * or home dir
+		 * @ingroup Language
 		 * @param four_letter language code
 		 * @return path to qm language file
 		 */
@@ -76,6 +92,7 @@ namespace Util
 
 		/**
 		 * @brief Returns the icon path in share directory
+		 * @ingroup Language
 		 * @param four_letter language code
 		 * @return
 		 */
@@ -83,6 +100,7 @@ namespace Util
 
 		/**
 		 * @brief Extracts the language Code out of a sayonara_lang string
+		 * @ingroup Language
 		 * @param language_file filename containing sayonara_lang
 		 * @return
 		 */
@@ -91,6 +109,7 @@ namespace Util
 		/**
 		 * @brief calculates the checksum for the currently used language
 		 * file (either home or share directory)
+		 * @ingroup Language
 		 * @param four_letter language code
 		 * @return md5 checksum
 		 */
@@ -99,6 +118,7 @@ namespace Util
 		/**
 		 * @brief Get the language version out of translations/versions file
 		 * in home dir
+		 * @ingroup Language
 		 * @param four_letter language code
 		 * @return Sayonara version where the file belongs to
 		 */
@@ -107,6 +127,7 @@ namespace Util
 		/**
 		 * @brief Update language version in translations/versions file
 		 * to current Sayonara Version
+		 * @ingroup Language
 		 * @param four_letter
 		 */
 		void update_language_version(const QString& four_letter);
@@ -114,6 +135,7 @@ namespace Util
 		/**
 		 * @brief Returns if the language version in translations/versions
 		 * file is smaller than the current sayonara version
+		 * @ingroup Language
 		 * @param four_letter
 		 * @return false if Sayonara Version <= Language version, true else
 		 */
@@ -121,6 +143,7 @@ namespace Util
 
 		/**
 		 * @brief get_similar_language_4
+		 * @ingroup Language
 		 * @param four_letter language code
 		 * @return four letter code if there's a language from another region,
 		 * empty string else

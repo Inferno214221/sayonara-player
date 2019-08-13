@@ -28,6 +28,11 @@
 
 namespace PipelineExtensions
 {
+
+	/**
+	 * @brief The Pitcher class
+	 * @ingroup EngineInterfaces
+	 */
 	class Pitcher
 	{
 		PIMPL(Pitcher)

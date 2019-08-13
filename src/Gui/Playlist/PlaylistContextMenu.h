@@ -24,6 +24,11 @@
 #include "Gui/Utils/ContextMenu/LibraryContextMenu.h"
 
 class MetaData;
+
+/**
+ * @brief The PlaylistContextMenu class
+ * @ingroup GuiPlaylists
+ */
 class PlaylistContextMenu :
 		public Gui::LibraryContextMenu
 {

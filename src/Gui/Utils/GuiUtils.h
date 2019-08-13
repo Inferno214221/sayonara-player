@@ -40,12 +40,13 @@ class QList;
 namespace Gui
 {
 
-	/**
-	 * @ingroup GUI
-	 * @ingroup GUIHelper
-	 */
 	namespace Util
 	{
+
+		/**
+		 * @brief The IconTheme enum
+		 * @ingroup Gui
+		 */
 		enum IconTheme
 		{
 			MintY,
@@ -54,6 +55,7 @@ namespace Gui
 
 		/**
 		 * @brief fetch a icon from resources
+		 * @ingroup Gui
 		 * @param icon_name if icon_name ends with png the input string is not modified, else a .svg.png is appended
 		 * @return icon
 		 */
@@ -62,6 +64,7 @@ namespace Gui
 
 		/**
 		 * @brief fetch a pixmap from resources
+		 * @ingroup Gui
 		 * @param icon_name if icon_name ends with png the input string is not modified, else a .svg.png is appended
 		 * @param theme name use the MintY theme or the standard theme
 		 * @param sz target size of pixmap
@@ -71,18 +74,27 @@ namespace Gui
 		QPixmap pixmap(const QString& icon_name, IconTheme theme_name);
 		QPixmap pixmap(const QString& icon_name, IconTheme theme_name, QSize sz, bool keep_aspect=true);
 
+		/**
+		 * @brief see pixmap()
+		 * @ingroup Gui
+		 * @param icon_name
+		 * @param theme_name
+		 * @return
+		 */
 		QImage image(const QString& icon_name, IconTheme theme_name);
 		QImage image(const QString& icon_name, IconTheme theme_name, QSize sz, bool keep_aspect=true);
 
 
 		/**
 		 * @brief set the applications' main window
+		 * @ingroup Gui
 		 * @param window the new main window
 		 */
 		void set_main_window(QMainWindow* window);
 
 		/**
 		 * @brief get the applications' main window
+		 * @ingroup Gui
 		 * @return main window of application
 		 */
 		QMainWindow* main_window();

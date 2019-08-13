@@ -32,7 +32,7 @@
  * @brief The MenuButton class.\n
  * A button that sends a signal when clicked. \n
  * This Class is meant for inheritance like MenuToolButton does.
- * @ingroup GUIHelper
+ * @ingroup PlayerPlugins
  */
 class PluginCloseButton :
 		public Gui::WidgetTemplate<QPushButton>

@@ -30,6 +30,11 @@
 namespace PipelineExtensions
 {
 	class Fadeable;
+
+	/**
+	 * @brief The CrossFadeableTimer class
+	 * @ingroup EngineInterfaces
+	 */
 	class CrossFadeableTimer :
 		public QObject
 	{

@@ -32,7 +32,7 @@ namespace Gui
 {
 	/**
 	 * @brief A selection dialog that displays an image and also its size
-	 * @ingroup GUIHelper
+	 * @ingroup Gui
 	 */
 	class ImageSelectionDialog :
 			public Gui::WidgetTemplate<QFileDialog>

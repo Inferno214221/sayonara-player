@@ -27,6 +27,10 @@
 #include "Gui/Utils/Widgets/WidgetTemplate.h"
 #include "Utils/Pimpl.h"
 
+/**
+ * @brief The PlaylistActionMenu class
+ * @ingroup GuiPlaylists
+ */
 class PlaylistActionMenu :
 	public Gui::WidgetTemplate<QMenu>
 {

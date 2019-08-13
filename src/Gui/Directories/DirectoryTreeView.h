@@ -46,6 +46,11 @@ namespace Library
 }
 
 using SearchableTreeView=Gui::WidgetTemplate<SearchableView<QTreeView, DirectoryModel>>;
+
+/**
+ * @brief The DirectoryTreeView class
+ * @ingroup GuiDirectories
+ */
 class DirectoryTreeView :
 		public SearchableTreeView,
 		protected Gui::Dragable

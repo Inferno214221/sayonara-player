@@ -26,24 +26,53 @@
 #include <QMap>
 #include <QLocale>
 
+/**
+ * @brief The LanguageString class
+ * @ingroup Language
+ */
 class LanguageString : public QString
 {
 public:
 	LanguageString(const QString& str);
+
+	/**
+	 * @brief Convert first character to upper case and rest to lower case
+	 */
 	LanguageString toFirstUpper() const;
+
+	/**
+	 * @brief appends a space
+	 */
 	LanguageString space() const;
+
+	/**
+	 * @brief appends question mark
+	 */
 	LanguageString question() const;
+
+	/**
+	 * @brief Appends triple points
+	 */
 	LanguageString triplePt() const;
 
 	LanguageString& operator=(const LanguageString& other);
 };
 
+/**
+ * @brief The Lang class
+ * @ingroup Language
+ */
 class Lang :
 		public QObject
 {
 	Q_OBJECT
 
 public:
+
+	/**
+	 * @brief An enum for the most common translation files.
+	 * use with Lang::get()
+	 */
 	enum Term
 	{
 		About=0,
@@ -246,16 +275,41 @@ public:
 	Lang();
 	~Lang();
 
+	/**
+	 * @brief Fetch translation by enum
+	 * @param enum term describing the source word
+	 * @param ok optional pointer for return value
+	 * @return translated text
+	 */
 	static LanguageString get(Lang::Term term, bool* ok=nullptr);
 
-
-	/*
-	 * Eg: sayonara_lang_de.qm -> sayonara_lang_de_DE.qm
+	/**
+	 * @brief Converts two letter into four letter
+	 * @param two letter language filename
+	 * @return four letter key if available, en_US per default
 	 */
 	static QString convert_old_lang(const QString& old_lang);
+
+
+	/**
+	 * @brief Returns all languages located in user path and all
+	 * languages in sayonara path
+	 * @return map with four letter key as key and the locale as value
+	 */
 	static QMap<QString, QLocale> available_languages();
 
+	/**
+	 * @brief Returns the two letter representation of a language
+	 * @param language_name e.g. ...lang_DE_de.qm.
+	 * @return DE for the example above
+	 */
 	static QString two_letter(const QString& language_name);
+
+	/**
+	 * @brief Returns the four letter representation of a language
+	 * @param language_name e.g. ...lang_DE_de.qm.
+	 * @return DE for the example above
+	 */
 	static QString four_letter(const QString& language_name);
 };
 

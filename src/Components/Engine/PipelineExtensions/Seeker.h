@@ -29,6 +29,11 @@
 
 namespace PipelineExtensions
 {
+
+	/**
+	 * @brief The Seeker class
+	 * @ingroup EngineInterfaces
+	 */
 	class Seeker
 	{
 		PIMPL(Seeker)

@@ -28,6 +28,10 @@
 
 namespace Library
 {
+	/**
+	 * @brief The Info class
+	 * @ingroup Library
+	 */
 	class Info :
 		public SettingConvertible
 	{

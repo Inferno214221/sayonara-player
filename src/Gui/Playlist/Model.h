@@ -35,6 +35,10 @@
 
 class CustomMimeData;
 
+/**
+ * @brief The PlaylistItemModel class
+ * @ingroup GuiPlaylists
+ */
 class PlaylistItemModel :
 		public SearchableTableModel
 {

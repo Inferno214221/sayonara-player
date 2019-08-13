@@ -24,6 +24,10 @@
 #include <QItemDelegate>
 #include <QStyledItemDelegate>
 
+/**
+ * @brief The DirectoryDelegate class
+ * @ingroup GuiDirectories
+ */
 class DirectoryDelegate : public QItemDelegate
 {
 	Q_OBJECT

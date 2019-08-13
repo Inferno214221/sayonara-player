@@ -18,15 +18,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
-#include "Mergable.h"
+#include "MergeMenu.h"
 #include "Utils/Library/MergeData.h"
 #include "Utils/Set.h"
 
 #include <QMenu>
 #include <QStringList>
 #include <QMap>
+
+using Gui::MergeMenu;
 
 struct MergeMenu::Private
 {
@@ -89,14 +89,14 @@ bool MergeMenu::is_data_valid() const
 	return (m->data.size() > 1);
 }
 
-MergeData MergeMenu::mergedata() const
+Library::MergeData MergeMenu::mergedata() const
 {
 	Util::Set<Id> source_ids;
 	for(Id key : m->data.keys()){
 		source_ids << key;
 	}
 
-	return MergeData(source_ids, m->target_id, -1);
+	return Library::MergeData(source_ids, m->target_id, -1);
 }
 
 void MergeMenu::language_changed()

@@ -27,7 +27,7 @@
 
 /**
  * @brief The GUI_TagEdit class
- * @ingroup Tagging
+ * @ingroup GuiTagging
  */
 namespace Tagging
 {

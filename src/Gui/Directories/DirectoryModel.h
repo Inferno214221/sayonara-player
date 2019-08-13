@@ -29,7 +29,7 @@
 
 /**
  * @brief The SearchableFileTreeModel class
- * @ingroup GUIInterfaces
+ * @ingroup GuiDirectories
  */
 class DirectoryModel :
 	public SearchableModel<QFileSystemModel>

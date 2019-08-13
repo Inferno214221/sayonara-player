@@ -26,6 +26,10 @@
 
 namespace PipelineExtensions
 {
+	/**
+	 * @brief The Equalizer class
+	 * @ingroup EngineInterfaces
+	 */
 	class Equalizer
 	{
 		PIMPL(Equalizer)

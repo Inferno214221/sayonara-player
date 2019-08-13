@@ -24,6 +24,10 @@
 #include "Utils/Pimpl.h"
 #include "Interfaces/Library/LibraryContainer/LibraryContainer.h"
 
+/**
+ * @brief The EmptyLibraryContainer class
+ * @ingroup Library
+ */
 class EmptyLibraryContainer :
 		public Library::Container
 {

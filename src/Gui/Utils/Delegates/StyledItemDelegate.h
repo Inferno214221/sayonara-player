@@ -28,6 +28,7 @@ namespace Gui
 	/**
 	 * @brief The StyledItemDelegate class assures a certain
 	 * height of rows in a table and tree view
+	 * @ingroup Gui
 	 */
 	class StyledItemDelegate : public QStyledItemDelegate
 	{

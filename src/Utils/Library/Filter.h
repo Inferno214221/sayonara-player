@@ -34,7 +34,8 @@ namespace Library
 	class DateFilter;
 	/**
 	 * @brief The Filter class
-	 * @ingroup LibraryHelper
+	 * @ingroup Library
+	 * @ingroup Helper
 	 */
 	class Filter
 	{

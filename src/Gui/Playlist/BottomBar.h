@@ -32,6 +32,10 @@ class PlaylistMenu;
 	class GUI_Shutdown;
 #endif
 
+/**
+ * @brief The GUI_PlaylistBottomBar class
+ * @ingroup GuiPlaylists
+ */
 class GUI_PlaylistBottomBar :
 		public Gui::Widget
 {

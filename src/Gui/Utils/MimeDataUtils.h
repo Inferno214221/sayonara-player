@@ -32,24 +32,80 @@ class QString;
 namespace Gui
 {
 	class CustomMimeData;
-	/**
-	 * @brief MimeData Utils
-	 * @ingroup MimeData
-	 */
+
 	namespace MimeData
 	{
+		/**
+		 * @brief metadata
+		 * @ingroup MimeData
+		 * @param data
+		 * @return
+		 */
 		MetaDataList metadata(const QMimeData* data);
 
+		/**
+		 * @brief playlists
+		 * @ingroup MimeData
+		 * @param data
+		 * @return
+		 */
 		QStringList playlists(const QMimeData* data);
 
+		/**
+		 * @brief set_cover_url
+		 * @ingroup MimeData
+		 * @param data
+		 * @param url
+		 */
 		void set_cover_url(QMimeData* data, const QString& url);
+
+		/**
+		 * @brief cover_url
+		 * @ingroup MimeData
+		 * @param data
+		 * @return
+		 */
 		QString cover_url(const QMimeData* data);
 
+		/**
+		 * @brief custom_mimedata
+		 * @ingroup MimeData
+		 * @param data
+		 * @return
+		 */
 		CustomMimeData* custom_mimedata(QMimeData* data);
+
+		/**
+		 * @brief custom_mimedata
+		 * @ingroup MimeData
+		 * @param data
+		 * @return
+		 */
 		const CustomMimeData* custom_mimedata(const QMimeData* data);
 
+		/**
+		 * @brief is_player_drag
+		 * @ingroup MimeData
+		 * @param data
+		 * @return
+		 */
 		bool is_player_drag(const QMimeData* data);
+
+		/**
+		 * @brief is_inner_drag_drop
+		 * @ingroup MimeData
+		 * @param data
+		 * @param target_playlist_idx
+		 * @return
+		 */
 		bool is_inner_drag_drop(const QMimeData* data, int target_playlist_idx);
+
+		/**
+		 * @brief is_drag_from_playlist
+		 * @ingroup MimeData
+		 * @param data
+		 * @return
+		 */
 		bool is_drag_from_playlist(const QMimeData* data);
 	}
 }

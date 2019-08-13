@@ -33,8 +33,7 @@ namespace Gui
 {
 	/**
 	 * @brief The Dragable class
-	 * @ingroup GUI
-	 * @ingroup GUIInterfaces
+	 * @ingroup Widgets
 	 */
 	class Dragable
 	{

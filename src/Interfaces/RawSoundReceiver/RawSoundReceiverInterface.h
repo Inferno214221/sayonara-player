@@ -25,7 +25,7 @@
 
 /**
  * @brief The RawSoundReceiver interface
- * @ingroup Interfaces
+ * @ingroup Engine
  */
 class RawSoundReceiverInterface
 {

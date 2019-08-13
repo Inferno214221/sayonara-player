@@ -24,7 +24,8 @@
 #include <QtGlobal>
 
 /**
- * @ingroup LibraryHelper
+ * @ingroup Library
+ * @ingroup Helper
  */
 namespace Library
 {

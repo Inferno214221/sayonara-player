@@ -29,7 +29,8 @@ namespace Library
 {
 	/**
 	 * @brief The Sortings class
-	 * @ingroup LibraryHelper
+	 * @ingroup Library
+	 * @ingroup Helper
 	 */
 	class Sortings :
 		public SettingConvertible
@@ -46,6 +47,7 @@ namespace Library
 		Sortings& operator=(const Sortings& other);
 		bool operator==(Sortings so);
 
+		// SettingConvertible
 		QString toString() const override;
 		bool loadFromString(const QString& str) override;
 	};

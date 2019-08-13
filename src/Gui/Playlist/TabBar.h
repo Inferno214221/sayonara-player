@@ -26,6 +26,10 @@
 
 #include <QTabBar>
 
+/**
+ * @brief The PlaylistTabBar class
+ * @ingroup GuiPlaylists
+ */
 class PlaylistTabBar :
 		public QTabBar
 {

@@ -45,7 +45,7 @@
 #include "Gui/Utils/Shortcuts/ShortcutHandler.h"
 #include "Gui/Utils/Shortcuts/Shortcut.h"
 #include "Gui/Utils/CustomMimeData.h"
-#include "Gui/Utils/Library/Mergable.h"
+#include "Gui/Utils/Library/MergeMenu.h"
 
 #include <QKeySequence>
 #include <QDrag>
@@ -57,7 +57,7 @@ using Gui::LibraryContextMenu;
 
 struct Library::ItemView::Private
 {
-	MergeMenu*			merge_menu=nullptr;
+	Gui::MergeMenu*		merge_menu=nullptr;
 	ItemModel*			model=nullptr;
 	QPushButton*		btn_clear_selection=nullptr;
 
@@ -181,8 +181,8 @@ void ItemView::init_custom_context_menu(LibraryContextMenu* menu)
 
 	if(!m->merge_menu)
 	{
-		m->merge_menu = new MergeMenu(m->context_menu);
-		connect(m->merge_menu, &MergeMenu::sig_merge_triggered, this, &ItemView::merge_action_triggered);
+		m->merge_menu = new Gui::MergeMenu(m->context_menu);
+		connect(m->merge_menu, &Gui::MergeMenu::sig_merge_triggered, this, &ItemView::merge_action_triggered);
 	}
 
 	QAction* after_edit_action = m->context_menu->get_action_after(LibraryContextMenu::EntryEdit);
@@ -310,14 +310,14 @@ MetaDataList ItemView::info_dialog_data() const
 
 void ItemView::merge_action_triggered()
 {
-	MergeData mergedata = m->merge_menu->mergedata();
+	Library::MergeData mergedata = m->merge_menu->mergedata();
 
 	if(mergedata.is_valid()){
 		run_merge_operation(mergedata);
 	}
 }
 
-void ItemView::run_merge_operation(const MergeData& md) { Q_UNUSED(md) }
+void ItemView::run_merge_operation(const Library::MergeData& md) { Q_UNUSED(md) }
 
 void ItemView::play_clicked() { emit sig_play_clicked(); }
 void ItemView::play_new_tab_clicked() {	emit sig_play_new_tab_clicked(); }

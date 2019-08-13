@@ -325,7 +325,7 @@ void CoverView::refresh_clicked()
 	m->library->refresh_albums();
 }
 
-void CoverView::run_merge_operation(const MergeData& mergedata)
+void CoverView::run_merge_operation(const Library::MergeData& mergedata)
 {
 	Tagging::UserOperations* uto = new Tagging::UserOperations(mergedata.library_id(), this);
 

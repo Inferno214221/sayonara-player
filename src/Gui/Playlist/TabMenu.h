@@ -31,6 +31,10 @@ namespace Gui
 	class PreferenceAction;
 }
 
+/**
+ * @brief The PlaylistTabMenu class
+ * @ingroup GuiPlaylists
+ */
 class PlaylistTabMenu :
 		public Gui::WidgetTemplate<QMenu>
 {

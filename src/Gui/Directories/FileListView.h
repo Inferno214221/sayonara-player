@@ -29,6 +29,10 @@
 class FileListModel;
 class LibraryContextMenu;
 
+/**
+ * @brief The FileListView class
+ * @ingroup GuiDirectories
+ */
 class FileListView :
 		public SearchableListView,
 		private Gui::Dragable

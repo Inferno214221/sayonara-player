@@ -41,7 +41,7 @@ UI_FWD(InfoDialog)
 
 /**
  * @brief The GUI_InfoDialog class
- * @ingroup GUI
+ * @ingroup InfoDialog
  */
 class GUI_InfoDialog :
 		public Gui::Dialog

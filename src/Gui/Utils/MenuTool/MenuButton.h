@@ -31,7 +31,7 @@ namespace Gui
 	 * @brief The MenuButton class.\n
 	 * A button that sends a signal when clicked. \n
 	 * This Class is meant for inheritance like MenuToolButton does.
-	 * @ingroup GUIHelper
+	 * @ingroup Gui
 	 */
 	class MenuButton :
 			public Gui::WidgetTemplate<QPushButton>

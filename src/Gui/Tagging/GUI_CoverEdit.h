@@ -40,7 +40,7 @@ class GUI_TagEdit;
 
 /**
  * @brief The GUI_CoverEdit class
- * @ingroup Tagging
+ * @ingroup GuiTagging
  */
 class GUI_CoverEdit :
 	public Gui::Widget

@@ -32,6 +32,7 @@ namespace Gui
 	/**
 	 * @brief A QCompleter where you can easily change the underlying
 	 * QStringList without allocating a new object
+	 * @ingroup Widgets
 	 */
 	class Completer :
 			public QCompleter

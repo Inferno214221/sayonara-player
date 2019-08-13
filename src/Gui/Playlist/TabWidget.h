@@ -26,6 +26,10 @@
 
 #include <QTabWidget>
 
+/**
+ * @brief The PlaylistTabWidget class
+ * @ingroup GuiPlaylists
+ */
 class PlaylistTabWidget :
 		public QTabWidget
 {

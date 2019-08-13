@@ -30,8 +30,8 @@
 /**
  * @brief The EQ_Setting class. Container for Equalizer configurations
  * @ingroup Equalizer
- * @ingroup GUIHelper
  */
+
 class EqualizerSetting :
 	public SettingConvertible
 {

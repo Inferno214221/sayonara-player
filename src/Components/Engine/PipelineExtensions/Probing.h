@@ -31,26 +31,84 @@ namespace StreamRecorder
 namespace PipelineExtensions
 {
 	/**
-	 * @ingroup Engine
+	 * @ingroup EngineHelper
 	 */
 	namespace Probing
 	{
+
+		/**
+		 * @brief This is the main interface for the outside world
+		 * @ingroup EngineHelper
+		 * @param active
+		 * @param queue
+		 * @param probe_id
+		 * @param callback
+		 */
+		void handle_probe(bool* active, GstElement* queue, gulong* probe_id, GstPadProbeCallback callback);
+
+
+		/**
+		 * @brief level_probed
+		 * @ingroup EngineHelper
+		 * @param pad
+		 * @param info
+		 * @param user_data
+		 * @return
+		 */
 		GstPadProbeReturn
 		level_probed(GstPad *pad, GstPadProbeInfo *info, gpointer user_data);
 
+		/**
+		 * @brief spectrum_probed
+		 * @ingroup EngineHelper
+		 * @param pad
+		 * @param info
+		 * @param user_data
+		 * @return
+		 */
 		GstPadProbeReturn
 		spectrum_probed(GstPad *pad, GstPadProbeInfo *info, gpointer user_data);
 
+		/**
+		 * @brief lame_probed
+		 * @ingroup EngineHelper
+		 * @param pad
+		 * @param info
+		 * @param user_data
+		 * @return
+		 */
 		GstPadProbeReturn
 		lame_probed(GstPad *pad, GstPadProbeInfo *info, gpointer user_data);
 
+		/**
+		 * @brief pitch_probed
+		 * @ingroup EngineHelper
+		 * @param pad
+		 * @param info
+		 * @param user_data
+		 * @return
+		 */
 		GstPadProbeReturn
 		pitch_probed(GstPad *pad, GstPadProbeInfo *info, gpointer user_data);
 
-		void handle_probe(bool* active, GstElement* queue, gulong* probe_id, GstPadProbeCallback callback);
 
+		/**
+		 * @brief stream_recorder_probed
+		 * @ingroup EngineHelper
+		 * @param pad
+		 * @param info
+		 * @param user_data
+		 * @return
+		 */
 		GstPadProbeReturn
 		stream_recorder_probed(GstPad *pad, GstPadProbeInfo *info, gpointer user_data);
+
+		/**
+		 * @brief handle_stream_recorder_probe
+		 * @ingroup EngineHelper
+		 * @param data
+		 * @param callback
+		 */
 		void handle_stream_recorder_probe(StreamRecorder::Data* data, GstPadProbeCallback callback);
 	}
 }

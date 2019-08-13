@@ -25,11 +25,14 @@ template<typename T>
 class QList;
 class QChar;
 class QString;
+
+
 namespace Library
 {
 	/**
 	 * @brief The SearchMode enum
-	 * @ingroup LibraryHelper
+	 * @ingroup Library
+	 * @ingroup Helper
 	 */
 	enum SearchMode
 	{
@@ -42,7 +45,28 @@ namespace Library
 
 	namespace Utils
 	{
+
+		/**
+		 * @brief Converts a user entered string into a cis-representation.
+		 * For example, diacrytic chars are replaced by latin ones, spaces are removed
+		 * and so on, so the resulting string can be searched for in the database
+		 * @ingroup Library
+		 * @ingroup Helper
+		 * @param str source string
+		 * @param mode combination of SearchMode values
+		 */
 		QString convert_search_string(const QString& str, SearchModeMask mode);
+
+		/**
+		 * @brief Converts a user entered string into a cis-representation.
+		 * For example, diacrytic chars are replaced by latin ones, spaces are removed
+		 * and so on, so the resulting string can be searched for in the database
+		 * @ingroup Library
+		 * @ingroup Helper
+		 * @param str source string
+		 * @param mode combination of SearchMode values
+		 * @param ignored_chars chars that are not replaced within that method
+		 */
 		QString convert_search_string(const QString& str, SearchModeMask mode, const QList<QChar>& ignored_chars);
 	}
 }

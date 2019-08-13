@@ -25,12 +25,12 @@
 
 class MessageReceiverInterface;
 
-/**
- * @brief The GlobalMessage class
- * @ingroup GUIHelper
- */
 namespace Message
 {
+	/**
+	 * @brief The GlobalMessage class
+	 * @ingroup Helper
+	 */
 	enum class Answer : unsigned char
 	{
 		Yes=0,
@@ -40,6 +40,10 @@ namespace Message
 		Undefined
 	};
 
+	/**
+	 * @brief The GlobalMessage class
+	 * @ingroup Helper
+	 */
 	enum class QuestionType : unsigned char
 	{
 		YesNo=0,
@@ -73,6 +77,7 @@ namespace Message
 
 	/**
 	 * @brief register a receiver here, so it is called whenever a message has to be written
+	 * @ingroup Helper
 	 * @param receiver the receiver class
 	 * @return false, if there's already another receiver. True else
 	 */

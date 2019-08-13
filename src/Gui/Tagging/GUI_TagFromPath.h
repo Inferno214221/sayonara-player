@@ -36,6 +36,11 @@ namespace Tagging
 	class Editor;
 }
 class MetaData;
+
+/**
+ * @brief The GUI_TagFromPath class
+ * @ingroup GuiTagging
+ */
 class GUI_TagFromPath :
 		public Gui::Widget
 {

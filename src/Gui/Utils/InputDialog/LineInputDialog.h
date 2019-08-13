@@ -34,6 +34,7 @@ namespace Gui
 	 * @brief Dialog for entering one line. Listen for the sig_closed() signal
 	 * for the Gui::Dialog class and request the text value afterwards if LineInputDialog::ReturnValue
 	 * is set to LineInputDialog::ReturnValue::Ok
+	 * @ingroup Gui
 	 */
 	class LineInputDialog :
 		public Dialog

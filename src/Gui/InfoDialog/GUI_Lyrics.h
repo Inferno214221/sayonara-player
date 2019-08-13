@@ -24,9 +24,12 @@
 #include "Utils/Pimpl.h"
 #include "Gui/Utils/Widgets/Widget.h"
 
-
 UI_FWD(GUI_Lyrics)
 
+/**
+ * @brief The GUI_Lyrics class
+ * @ingroup InfoDialog
+ */
 class GUI_Lyrics :
 		public Gui::Widget
 {

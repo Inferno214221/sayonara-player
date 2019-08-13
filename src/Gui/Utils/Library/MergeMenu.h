@@ -31,30 +31,36 @@
 
 class QAction;
 class QStringList;
-class MergeData;
 
-
-class MergeMenu :
-	public Gui::WidgetTemplate<QMenu>
+namespace Library
 {
-	Q_OBJECT
-	PIMPL(MergeMenu)
+	class MergeData;
+}
 
-	signals:
-		void sig_merge_triggered();
+namespace Gui
+{
+	class MergeMenu :
+		public Gui::WidgetTemplate<QMenu>
+	{
+		Q_OBJECT
+		PIMPL(MergeMenu)
 
-	public:
-		MergeMenu(QMenu* parent=nullptr);
-		virtual ~MergeMenu();
+		signals:
+			void sig_merge_triggered();
 
-		void set_data(const QMap<Id, QString>& data);
+		public:
+			MergeMenu(QMenu* parent=nullptr);
+			virtual ~MergeMenu();
 
-		QAction* action() const;
-		bool is_data_valid() const;
-		MergeData mergedata() const;
+			void set_data(const QMap<Id, QString>& data);
 
-	protected:
-		void language_changed() override;
-};
+			QAction* action() const;
+			bool is_data_valid() const;
+			Library::MergeData mergedata() const;
+
+		protected:
+			void language_changed() override;
+	};
+}
 
 #endif // MERGABLE_H

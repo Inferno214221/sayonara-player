@@ -39,12 +39,13 @@ namespace Cover
 }
 
 
+UI_FWD(GUI_AlternativeCovers)
+
+
 /**
  * @brief The GUI_AlternativeCovers class
- * @ingroup GUICovers
+ * @ingroup GuiCovers
  */
-
-UI_FWD(GUI_AlternativeCovers)
 
 class GUI_AlternativeCovers :
 		public Gui::Dialog

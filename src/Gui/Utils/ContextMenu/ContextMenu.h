@@ -32,13 +32,13 @@ namespace Gui
 	class PreferenceAction;
 	/**
 	 * @brief Combination of ContextMenu::Entry values
-	 * @ingroup GUIHelper
+	 * @ingroup Gui
 	 */
 	using ContextMenuEntries=uint16_t;
 
 	/**
 	 * @brief A context menu with some standard actions
-	 * @ingroup GUIHelper
+	 * @ingroup Gui
 	 */
 	class ContextMenu :
 			public Gui::WidgetTemplate<QMenu>

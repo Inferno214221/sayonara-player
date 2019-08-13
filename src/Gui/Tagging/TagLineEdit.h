@@ -28,7 +28,7 @@ struct TextSelection;
 
 /**
  * @brief The TagLineEdit class
- * @ingroup Tagging
+ * @ingroup GuiTagging
  */
 class TagLineEdit :
 		public QLineEdit

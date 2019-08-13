@@ -40,6 +40,11 @@
 #include "Utils/Pimpl.h"
 
 class QPoint;
+
+/**
+ * @brief The PlaylistView class
+ * @ingroup GuiPlaylists
+ */
 class PlaylistView :
 		public SearchableTableView,
 		public InfoDialogContainer,

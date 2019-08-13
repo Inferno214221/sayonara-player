@@ -25,6 +25,10 @@
 
 typedef quint16 PlaylistMenuEntries;
 
+/**
+ * @brief The PlaylistMenuEntry enum
+ * @ingroup GuiPlaylists
+ */
 enum PlaylistMenuEntry {
 	None=0,
 	Delete=			(1 << 0),

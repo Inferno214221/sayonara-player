@@ -31,6 +31,10 @@ class QComboBox;
 
 UI_FWD(GUI_DirectoryWidget)
 
+/**
+ * @brief The GUI_DirectoryWidget class
+ * @ingroup GuiDirectories
+ */
 class GUI_DirectoryWidget :
 		public Gui::Widget,
 		public InfoDialogContainer

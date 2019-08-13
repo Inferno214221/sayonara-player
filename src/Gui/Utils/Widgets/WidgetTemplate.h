@@ -36,6 +36,11 @@ class QWidget;
 namespace Gui
 {
 	class WidgetTemplateParent;
+
+	/**
+	 * @brief The AbstrWidgetTemplate class
+	 * @ingroup Widgets
+	 */
 	class AbstrWidgetTemplate :
 		public QObject
 	{
@@ -54,6 +59,10 @@ namespace Gui
 	};
 
 
+	/**
+	 * @brief The WidgetTemplateParent class
+	 * @ingroup Widgets
+	 */
 	class WidgetTemplateParent
 	{
 		friend class AbstrWidgetTemplate;
@@ -71,9 +80,7 @@ namespace Gui
 	/**
 	 * @brief Template for Sayonara Widgets. This template is responsible for holding a reference to the settings
 	 * @ingroup Widgets
-	 * @ingroup Interfaces
 	 */
-
 	class WidgetTemplate :
 			public T,
 			protected WidgetTemplateParent

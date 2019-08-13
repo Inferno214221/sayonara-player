@@ -29,6 +29,12 @@ class QFrame;
 
 namespace Library
 {
+
+	/**
+	 * @brief The GUI_EmptyLibrary class
+	 * @ingroup Gui
+	 * @ingroup Library
+	 */
 	class GUI_EmptyLibrary :
 		public Gui::Widget
 	{

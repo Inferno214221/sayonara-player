@@ -26,6 +26,12 @@
 
 UI_FWD(GUI_EditLibrary)
 
+
+/**
+ * @brief The GUI_EditLibrary class
+ * @ingroup Gui
+ * @ingroup Library
+ */
 class GUI_EditLibrary :
 		public Gui::Dialog
 {

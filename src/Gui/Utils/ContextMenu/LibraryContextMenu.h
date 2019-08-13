@@ -33,7 +33,8 @@ namespace Gui
 	class PreferenceAction;
 	/**
 	 * @brief Context menu used for Library and playlist windows
-	 * @ingroup GUIHelper
+	 * @ingroup Gui
+	 * @ingroup Library
 	 */
 	class LibraryContextMenu :
 			public Gui::WidgetTemplate<QMenu>

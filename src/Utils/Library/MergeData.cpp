@@ -18,10 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "MergeData.h"
 #include "Utils/Set.h"
+
+using Library::MergeData;
 
 struct MergeData::Private
 {

@@ -24,6 +24,11 @@
 #include <QFileIconProvider>
 
 class Settings;
+
+/**
+ * @brief The IconProvider class
+ * @ingroup GuiDirectories
+ */
 class IconProvider : public QFileIconProvider
 {
 private:

@@ -23,6 +23,10 @@
 
 #include <QByteArray>
 
+/**
+ * @brief Compressor utils
+ * @ingroup Helper
+ */
 namespace Compressor
 {
 	QByteArray compress(const QByteArray& arr);

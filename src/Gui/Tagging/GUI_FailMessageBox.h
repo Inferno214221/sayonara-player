@@ -31,6 +31,10 @@
 
 UI_FWD(GUI_FailMessageBox)
 
+/**
+ * @brief The GUI_FailMessageBox class
+ * @ingroup GuiTagging
+ */
 class GUI_FailMessageBox : public Gui::Dialog
 {
 	Q_OBJECT

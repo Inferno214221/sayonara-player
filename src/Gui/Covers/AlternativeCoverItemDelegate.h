@@ -36,7 +36,7 @@
 
 /**
  * @brief The AlternativeCoverItemDelegate class
- * @ingroup GUICovers
+ * @ingroup GuiCovers
  */
 class AlternativeCoverItemDelegate :
 		public QItemDelegate

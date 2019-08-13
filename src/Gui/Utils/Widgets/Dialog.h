@@ -29,7 +29,6 @@ namespace Gui
 	/**
 	 * @brief Dialog with Settings connection. Also contains triggers for language_changed() and skin_changed(). Emits sig_closed() when closed.
 	 * @ingroup Widgets
-	 * @ingroup Interfaces
 	 */
 	class Dialog :
 			public Gui::WidgetTemplate<QDialog>

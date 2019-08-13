@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.7)
 project("Sayonara Player")
 
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}")
+option(WITH_DOC "Building with doxygen support" OFF)
 
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}")
 set(VAR_SAYONARA_VERSION "1.5.0-beta2")
 
 set(SAYONARA_VERSION "${VAR_SAYONARA_VERSION}")
@@ -38,24 +39,26 @@ set(CMAKE_INSTALL_MANIFEST "install_manifest.txt")
 message ("Looking for doxygen")
 find_package(Doxygen)
 
-if (DOXYGEN_FOUND)
-	message ("Doxygen found")
-	set(DOXYFILE_IN "${CMAKE_SOURCE_DIR}/docs/doxygen.in")
-	set(DOXYFILE_OUT "${CMAKE_BINARY_DIR}/docs/doxygen.cfg")
-	set(DOXYFILE_SRC_DIR "${CMAKE_SOURCE_DIR}")
-	set(DOXYFILE_OUTPUT_DIR "${CMAKE_BINARY_DIR}/docs")
+if (WITH_DOC)
+	if (DOXYGEN_FOUND)
+		message ("Doxygen found")
+		set(DOXYFILE_IN "${CMAKE_SOURCE_DIR}/docs/doxygen.in")
+		set(DOXYFILE_OUT "${CMAKE_BINARY_DIR}/docs/doxygen.cfg")
+		set(DOXYFILE_SRC_DIR "${CMAKE_SOURCE_DIR}")
+		set(DOXYFILE_OUTPUT_DIR "${CMAKE_BINARY_DIR}/docs")
 
-	configure_file(${DOXYFILE_IN} ${DOXYFILE_OUT} @ONLY)
+		configure_file(${DOXYFILE_IN} ${DOXYFILE_OUT} @ONLY)
 
-	add_custom_target(doc
-		COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYFILE_OUT}
-		WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/src"
-		COMMENT "Generating documentation..."
-		VERBATIM
-	)
+		add_custom_target(doc
+			COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYFILE_OUT}
+			WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/src"
+			COMMENT "Generating documentation..."
+			VERBATIM
+		)
 
-install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/docs/html DESTINATION share/doc/sayonara/doxygen)
+	install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/docs/html DESTINATION share/doc/sayonara/doxygen)
 
-endif (DOXYGEN_FOUND)
+	endif (DOXYGEN_FOUND)
+endif (WITH_DOC)
 
 

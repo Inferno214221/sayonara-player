@@ -25,6 +25,10 @@
 
 #include "Gui/Utils/ContextMenu/LibraryContextMenu.h"
 
+/**
+ * @brief The DirectoryContextMenu class
+ * @ingroup GuiDirectories
+ */
 class DirectoryContextMenu :
 		public Gui::LibraryContextMenu
 {

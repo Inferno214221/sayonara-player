@@ -38,12 +38,13 @@
 #include "Utils/SetFwd.h"
 #include "Utils/Pimpl.h"
 
-class MergeData;
 class AbstractLibrary;
 
 namespace Library
 {
+	class MergeData;
 	class ItemModel;
+
 	class ItemView :
 			public SearchableTableView,
 			public InfoDialogContainer,
@@ -122,7 +123,7 @@ namespace Library
 		virtual void selection_changed(const IndexSet& indexes);
 		virtual void import_requested(const QStringList& files);
 
-		virtual void run_merge_operation(const MergeData& md);
+		virtual void run_merge_operation(const Library::MergeData& md);
 
 		int viewport_height() const override;
 

@@ -36,6 +36,10 @@ class QItemSelectionModel;
 class ExtraTriggerMap;
 class SearchableViewInterface;
 
+/**
+ * @brief The MiniSearcherViewConnector class
+ * @ingrou Searchable
+ */
 class MiniSearcherViewConnector : public QObject
 {
 	Q_OBJECT
@@ -59,7 +63,7 @@ private slots:
 
 /**
  * @brief The SearchViewInterface class
- * @ingroup GUIInterfaces
+ * @ingroup Searchable
  */
 class SearchableViewInterface :
 		public SelectionViewInterface

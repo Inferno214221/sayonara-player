@@ -26,6 +26,10 @@
 
 namespace PipelineExtensions
 {
+	/**
+	 * @brief The DelayedPlayable class
+	 * @ingroup EngineInterfaces
+	 */
 	class DelayedPlayable
 	{
 		PIMPL(DelayedPlayable)
@@ -41,6 +45,11 @@ namespace PipelineExtensions
 			void abort_delayed_playing();
 	};
 
+
+	/**
+	 * @brief Pure private class. Only used by Delayed Pipeline
+	 * @ingroup EngineInterfaces
+	 */
 	class DelayedPlayableLogic : public QObject
 	{
 		Q_OBJECT

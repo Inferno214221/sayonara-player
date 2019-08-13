@@ -27,7 +27,7 @@
 /**
  * @brief The GlobalMessageReceiverInterface class\n
  * implement this class in order to have the possibility to show messages
- * @ingroup GUIHelper
+ * @ingroup Helper
  * @ingroup Interfaces
  */
 class MessageReceiverInterface

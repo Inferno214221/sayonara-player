@@ -28,6 +28,10 @@
 
 namespace PipelineExtensions
 {
+	/**
+	 * @brief The Visualizer class
+	 * @ingroup EngineInterfaces
+	 */
 	class Visualizer
 	{
 		PIMPL(Visualizer)

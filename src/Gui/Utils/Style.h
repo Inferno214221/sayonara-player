@@ -34,23 +34,50 @@ class QFont;
 
 /**
  * @define the Style namespace
- * @ingroup GUIHelper
+ * @ingroup Style
  */
 namespace Style
 {
 	/**
 	 * @brief fetch the stylesheet file formatted as string
+	 * @ingroup Style
 	 * @return string formatted stylesheet file
 	 */
 	QString style(bool dark);
 
+	/**
+	 * @brief stylesheet with all replace variables
+	 * @ingroup Style
+	 * @return
+	 */
 	QString current_style();
 
+	/**
+	 * @brief current_font
+	 * @ingroup Style
+	 * @return
+	 */
 	QFont current_font();
 
+	/**
+	 * @brief recommended_height
+	 * @ingroup Style
+	 * @return
+	 */
 	int recommended_height();
 
+	/**
+	 * @brief is_dark
+	 * @ingroup Style
+	 * @return
+	 */
 	bool is_dark();
+
+	/**
+	 * @brief set_dark
+	 * @ingroup Style
+	 * @param b
+	 */
 	void set_dark(bool b);
 }
 

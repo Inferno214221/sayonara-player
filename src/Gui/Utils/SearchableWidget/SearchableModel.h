@@ -31,6 +31,10 @@
 // table itself and this interface
 // in the Searchable View class
 
+/**
+ * @brief The SearchableModelInterface class
+ * @ingroup Searchable
+ */
 class SearchableModelInterface
 {
 public:

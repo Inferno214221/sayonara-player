@@ -33,7 +33,6 @@ namespace Gui
 	 * @brief Widget with Settings connection. Also contains triggers for language_changed() and skin_changed()
 	 * \nThe widget's content can be exported to a Dialog via the box_into_dialog() method.
 	 * @ingroup Widgets
-	 * @ingroup Interfaces
 	 */
 	class Widget :
 			public Gui::WidgetTemplate<QWidget>

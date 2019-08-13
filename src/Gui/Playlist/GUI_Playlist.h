@@ -43,6 +43,10 @@ class PlaylistView;
 
 UI_FWD(Playlist_Window)
 
+/**
+ * @brief The GUI_Playlist class
+ * @ingroup GuiPlaylists
+ */
 class GUI_Playlist :
 		public Gui::Widget
 {

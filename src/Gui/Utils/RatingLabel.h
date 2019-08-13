@@ -31,7 +31,7 @@ namespace Gui
 {
 	/**
 	 * @brief The RatingLabel class
-	 * @ingroup GUIHelper
+	 * @ingroup Gui
 	 */
 	class RatingLabel : public QLabel
 	{

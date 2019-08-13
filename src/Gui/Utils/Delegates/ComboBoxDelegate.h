@@ -28,7 +28,7 @@ namespace Gui
 	/**
 	 * @brief The ComboBoxDelegate class\n
 	 * Set this delegate to ComboBoxes if they should look nice
-	 * @ingroup GUIHelper
+	 * @ingroup Gui
 	 */
 	class ComboBoxDelegate : public QStyledItemDelegate
 	{

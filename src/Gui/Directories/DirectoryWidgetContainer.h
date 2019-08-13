@@ -27,7 +27,11 @@ class GUI_DirectoryWidget;
 
 namespace Library
 {
-	// for showing up in library tree
+
+	/**
+	 * @brief The DirectoryContainer class
+	 * @ingroup GuiDirectories
+	 */
 	class DirectoryContainer :
 			public Container
 	{
