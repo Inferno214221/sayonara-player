@@ -43,6 +43,7 @@
 namespace EngineUtils=::Engine::Utils;
 namespace Callbacks=::Engine::Callbacks;
 using ::Engine::Engine;
+namespace EngineNS=Engine;
 
 const char* ClassEngineCallbacks = "Engine Callbacks";
 
@@ -61,7 +62,7 @@ const char* ClassEngineCallbacks = "Engine Callbacks";
 	}
 #endif
 
-static bool parse_image(GstTagList* tags, QImage& img)
+static bool parse_image(GstTagList* tags, EngineNS::Engine* engine)
 {
 	GstSample* sample;
 	bool success = gst_tag_list_get_sample(tags, GST_TAG_IMAGE, &sample);
@@ -118,12 +119,13 @@ static bool parse_image(GstTagList* tags, QImage& img)
 		return false;
 	}
 
-	img = QImage::fromData((const uchar*) data, size, mime.toLocal8Bit().data());
+	QByteArray arr(data, size);
+	engine->update_cover(arr, mime);
 
 	delete[] data;
 	gst_sample_unref(sample);
 
-	return (!img.isNull());
+	return (size > 0);
 }
 
 
@@ -204,13 +206,9 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 				break;
 			}
 
-			QImage img;
+			parse_image(tags, engine);
 
-			bool success = parse_image(tags, img);
-			if(success){
-				engine->update_cover(img, src);
-			}
-
+			bool success;
 			MetaData md = engine->current_track();
 			bool update_metadata = false;
 			for(const QString& tag : string_tags)

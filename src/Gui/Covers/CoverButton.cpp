@@ -50,8 +50,6 @@ struct CoverButton::Private
 	QPixmap					old_cover, old_cover_scaled;
 	QByteArray				current_hash;
 
-	qint64					cache_key;
-
 	QTimer*					timer=nullptr;
 	Lookup*					cover_lookup=nullptr;
 	double					opacity;
@@ -188,7 +186,6 @@ void CoverButton::set_cover_image_pixmap(const QPixmap& pm)
 
 	m->current_cover = pm;
 	m->current_cover_scaled = m->current_cover.scaled(QSize(w,h), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-	m->cache_key = m->current_cover.cacheKey();
 
 	m->current_hash = Util::calc_hash (
 		Util::cvt_pixmap_to_bytearray(m->current_cover.scaled(50, 50, Qt::KeepAspectRatio, Qt::FastTransformation))
@@ -396,7 +393,6 @@ void CoverButton::resizeEvent(QResizeEvent* e)
 
 	m->current_cover_scaled = m->current_cover.scaled(QSize(w,h), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
-	m->cache_key = -1;
 	Gui::WidgetTemplate<QPushButton>::resizeEvent(e);
 }
 

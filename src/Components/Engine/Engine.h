@@ -26,6 +26,8 @@
 #include <QObject>
 #include <gst/gst.h>
 
+#include <QImage>
+
 class SpectrumReceiver;
 class LevelReceiver;
 
@@ -36,6 +38,26 @@ namespace StreamRecorder
 
 namespace Engine
 {
+	class Extractor : public QObject
+	{
+		Q_OBJECT
+
+		signals:
+			void sig_finished();
+
+		private:
+			QByteArray mData;
+			QString mMime;
+
+		public:
+			QImage mImage;
+			Extractor(const QByteArray& data, const QString& mime);
+			~Extractor();
+
+		public slots:
+			void start();
+	};
+
 	class Pipeline;
 	/**
 	 * @brief The PlaybackEngine class
@@ -114,7 +136,7 @@ namespace Engine
 			void jump_rel_ms(MilliSeconds pos_ms);
 			void jump_rel(double percent);
 			void update_metadata(const MetaData& md, GstElement* src);
-			void update_cover(const QImage& img, GstElement* src);
+			void update_cover(const QByteArray& data, const QString& mimedata);
 
 			bool change_track(const MetaData& md);
 
@@ -136,6 +158,8 @@ namespace Engine
 			void s_streamrecorder_active_changed();
 
 			void cur_pos_ms_changed(MilliSeconds pos_ms);
+
+			void worker_finished();
 	};
 }
 
