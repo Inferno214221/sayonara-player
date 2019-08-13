@@ -152,6 +152,7 @@ bool SettingRegistry::init()
 	register_setting<Set::Player_ControlStyle>( "player_control_style", 1 );
 	register_setting<Set::Player_FontName>( "player_font", QApplication::font().family() );
 	register_setting<Set::Player_FontSize>( "player_font_size", QApplication::font().pointSize() );
+	register_setting<Set::Player_FadingCover>( "player_fading_cover", true );
 	register_setting<Set::Player_Size>( "player_size", QSize(1200,800) );
 	register_setting<Set::Player_Pos>( "player_pos", QPoint(50,50) );
 	register_setting<Set::Player_Fullscreen>( "player_fullscreen", false );

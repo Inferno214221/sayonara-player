@@ -559,7 +559,7 @@ void GUI_ControlsBase::check_record_button_visible()
 
 void GUI_ControlsBase::set_cover_location(const MetaData& md)
 {
-	auto cl = Cover::Location::cover_location(md);
+	auto cl = Cover::Location::cover_location(md, false);
 	btn_cover()->set_cover_location(cl);
 }
 

@@ -205,6 +205,7 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 			}
 
 			QImage img;
+
 			bool success = parse_image(tags, img);
 			if(success){
 				engine->update_cover(img, src);

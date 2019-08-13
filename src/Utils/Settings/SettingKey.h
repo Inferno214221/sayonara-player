@@ -84,6 +84,7 @@ enum class SettingKey : unsigned short
 	Player_FontName,
 	Player_FontSize,
 	Player_Style,
+	Player_FadingCover,
 	Player_ControlStyle,
 	Player_Size,
 	Player_Pos,
@@ -100,23 +101,23 @@ enum class SettingKey : unsigned short
 	Player_SplitterControls,
 	Player_PrivId,
 	Player_PublicId,
-	PL_Playlist,
-	PL_LoadSavedPlaylists,
-	PL_LoadTemporaryPlaylists,
-	PL_LoadLastTrack,
-	PL_RememberTime,
-	PL_StartPlaying,
+	PL_EntryLook,
+	PL_FontSize,
 	PL_LastTrack,
 	PL_LastTrackBeforeStop,
 	PL_LastPlaylist,
+	PL_LoadLastTrack,
+	PL_LoadSavedPlaylists,
+	PL_LoadTemporaryPlaylists,
 	PL_Mode,
-	PL_ShowNumbers,
-	PL_EntryLook,
-	PL_FontSize,
-	PL_ShowClearButton,
+	PL_Playlist,
+	PL_RememberTime,
 	PL_RememberTrackAfterStop,
+	PL_ShowClearButton,
 	PL_ShowCovers,
+	PL_ShowNumbers,
 	PL_ShowRating,
+	PL_StartPlaying,
 	Notification_Show,
 	Notification_Timeout,
 	Notification_Name,
@@ -293,6 +294,7 @@ class SettingIdentifier
 	INST(int,				Player_ControlStyle)		/* Big cover or not */
 	INST(QString,			Player_FontName)			/* current font name */
 	INST(int,				Player_FontSize)			/* current font size */
+	INST(bool,				Player_FadingCover)			/* If cover buttons should fade */
 	INST(QSize,				Player_Size)				/* player size */
 	INST(QPoint,			Player_Pos)				/* player position */
 	INST(bool,				Player_Fullscreen)			/* player fullscreen */

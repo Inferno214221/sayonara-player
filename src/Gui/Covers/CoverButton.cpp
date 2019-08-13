@@ -48,6 +48,7 @@ struct CoverButton::Private
 	QPixmap					invalid_cover;
 	QPixmap					current_cover, current_cover_scaled;
 	QPixmap					old_cover, old_cover_scaled;
+	QByteArray				current_hash;
 
 	qint64					cache_key;
 
@@ -99,9 +100,7 @@ CoverButton::~CoverButton()
 QIcon CoverButton::current_icon() const
 {
 	QIcon icon;
-	QPixmap pm = QPixmap(m->current_cover)
-			.scaled(this->iconSize(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-
+	QPixmap pm = m->current_cover_scaled;
 	if(pm.isNull())
 	{
 		sp_log(Log::Warning, this) << "Pixmap not valid";
@@ -169,25 +168,36 @@ void CoverButton::set_cover_image(const QString& path)
 
 void CoverButton::set_cover_image_pixmap(const QPixmap& pm)
 {
+	QPixmap pm_scaled = pm.scaled(50, 50, Qt::KeepAspectRatio, Qt::FastTransformation);
 	{ // check if current cover is the same
-		auto h1 = Util::calc_hash(Util::cvt_pixmap_to_bytearray(pm));
-		auto h2 = Util::calc_hash(Util::cvt_pixmap_to_bytearray(m->current_cover));
-		if(h1 == h2 && !pm.isNull()){
+		auto h1 = Util::calc_hash(Util::cvt_pixmap_to_bytearray(pm_scaled));
+		if(h1 == m->current_hash && !pm.isNull()){
 			return;
 		}
 	}
 
 	// don't change the currently fading out cover
-	if(!m->timer->isActive()) {
+	if(!m->timer->isActive() && GetSetting(Set::Player_FadingCover))
+	{
 		m->old_cover = m->current_cover;
+		m->old_cover_scaled = m->current_cover_scaled;
 	}
 
+	int h = this->height() - 2;
+	int w = this->width() - 2;
+
 	m->current_cover = pm;
+	m->current_cover_scaled = m->current_cover.scaled(QSize(w,h), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+	m->cache_key = m->current_cover.cacheKey();
+
+	m->current_hash = Util::calc_hash (
+		Util::cvt_pixmap_to_bytearray(m->current_cover.scaled(50, 50, Qt::KeepAspectRatio, Qt::FastTransformation))
+	);
 
 	this->refresh();
 
 	// if timer is not active, start new timer loop
-	if(!m->timer->isActive())
+	if(!m->timer->isActive() && GetSetting(Set::Player_FadingCover))
 	{
 		m->opacity = 0;
 		m->timer->start();
@@ -198,6 +208,7 @@ void CoverButton::set_cover_image_pixmap(const QPixmap& pm)
 void CoverButton::timer_timed_out()
 {
 	m->opacity = std::min(1.0, m->opacity + 0.025);
+
 	if(m->opacity < 1.0)
 	{
 		repaint();
@@ -226,7 +237,6 @@ void CoverButton::set_cover_location(const Location& cl)
 	}
 
 	m->cover_location = cl;
-
 
 	if(cl.hash().isEmpty() || !cl.is_valid()) {
 		return;
@@ -326,41 +336,20 @@ void CoverButton::paintEvent(QPaintEvent* event)
 {
 	Q_UNUSED(event)
 
-	if(m->current_cover.isNull()){
+	if(m->current_cover_scaled.isNull()){
 		return;
 	}
 
 	QPainter painter(this);
-	painter.save();
 
 	int h = this->height() - 2;
 	int w = this->width() - 2;
 
-	QPixmap pm, pm_old;
-
-	// we have seen this cover before and so, we have a scaled version of it
-	if(m->current_cover.cacheKey() == m->cache_key)
+	QPixmap pm = m->current_cover_scaled;
+	QPixmap pm_old;
+	if(!m->old_cover_scaled.isNull() && GetSetting(Set::Player_FadingCover))
 	{
-		pm = m->current_cover_scaled;
-
-		if(!m->old_cover_scaled.isNull())
-		{
-			pm_old = m->old_cover_scaled;
-		}
-	}
-
-	else
-	{
-		pm = m->current_cover.scaled(QSize(w,h), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-		m->current_cover_scaled = pm;
-
-		if(!m->old_cover.isNull())
-		{
-			pm_old = m->old_cover.scaled(QSize(w,h), Qt::KeepAspectRatio, Qt::FastTransformation);
-			m->old_cover_scaled = pm_old;
-		}
-
-		m->cache_key = m->current_cover.cacheKey();
+		pm_old = m->old_cover_scaled;
 	}
 
 	int x = (w - pm.width()) / 2;
@@ -377,23 +366,36 @@ void CoverButton::paintEvent(QPaintEvent* event)
 			x_old, y_old, pm_old.width(), pm_old.height(),
 			pm_old
 		);
+
+		painter.setOpacity(m->opacity);
+	}
+
+	else {
+		painter.setOpacity(1.0);
 	}
 
 	if(!pm.isNull())
 	{
-		painter.setOpacity(m->opacity);
 		painter.drawPixmap
 		(
 			x, y, pm.width(), pm.height(),
 			pm
 		);
 	}
-
-	painter.restore();
 }
 
 void CoverButton::resizeEvent(QResizeEvent* e)
 {
+	int h = this->height() - 2;
+	int w = this->width() - 2;
+
+	if(!m->old_cover.isNull())
+	{
+		m->old_cover_scaled = m->old_cover.scaled(QSize(w,h), Qt::KeepAspectRatio, Qt::FastTransformation);
+	}
+
+	m->current_cover_scaled = m->current_cover.scaled(QSize(w,h), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
 	m->cache_key = -1;
 	Gui::WidgetTemplate<QPushButton>::resizeEvent(e);
 }

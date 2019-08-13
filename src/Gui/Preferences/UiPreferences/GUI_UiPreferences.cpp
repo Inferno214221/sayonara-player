@@ -54,6 +54,7 @@ bool GUI_UiPreferences::commit()
 
 	SetSetting(Set::Player_ControlStyle, ui->cb_big_cover->isChecked() ? 1 : 0);
 	SetSetting(Set::Player_Style, ui->cb_dark_mode->isChecked() ? 1 : 0);
+	SetSetting(Set::Player_FadingCover, ui->cb_fading_cover->isChecked());
 
 	return true;
 }
@@ -62,6 +63,8 @@ void GUI_UiPreferences::revert()
 {
 	m->font_config->revert();
 	m->icon_config->revert();
+
+	ui->cb_fading_cover->setChecked(GetSetting(Set::Player_FadingCover));
 
 	style_changed();
 }
