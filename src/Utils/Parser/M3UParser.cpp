@@ -43,7 +43,8 @@ void M3UParser::parse()
 
 	MetaData md;
 
-	for(QString line : list) {
+	for(QString line : list)
+	{
 		line = line.trimmed();
 		if(line.isEmpty()){
 			continue;
@@ -121,13 +122,9 @@ void M3UParser::parse_local_file(const QString& line, MetaData& md)
 	}
 }
 
-
 void M3UParser::parse_www_file(const QString& line, MetaData& md)
 {
-	if(md.artist().isEmpty()){
-		md.set_artist(line);
-	}
-
+	md.set_radio_station(line);
 	md.set_filepath(line);
 }
 

@@ -120,8 +120,8 @@ bool Info::valid() const
 bool Info::loadFromString(const QString& str)
 {
 	QStringList lst = str.split("::");
-	if(lst.size() != 3){
-		throw std::invalid_argument("Cannot convert Library::Info. Ignore");
+	if(lst.size() != 3) {
+		return false;
 	}
 
 	bool ok;

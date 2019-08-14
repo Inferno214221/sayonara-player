@@ -180,8 +180,8 @@ bool SettingConverter::from_string(const QString& str, QByteArray& arr)
 
 	for(const QString& num_str : numbers)
 	{
-		uint8_t num = num_str.toInt();
-		arr.append((char) num);
+		int num = num_str.toInt();
+		arr.append(char(num));
 	}
 
 	return (!numbers.empty());

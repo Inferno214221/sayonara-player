@@ -145,18 +145,20 @@ void SomaFM::Library::soma_station_playlists_fetched(bool success)
 
 	MetaDataList v_md  = parser->metadata();
 	SomaFM::Station station = m->station_map[m->requested_station];
-	QString cover_url;
+	QStringList cover_urls;
 	Cover::Location cl = station.cover_location();
 
-	if(cl.has_search_urls())
+	QList<Cover::Fetcher::FetchUrl> search_urls = cl.search_urls(true);
+	for(auto url : search_urls)
 	{
-		auto search_urls = cl.search_urls(false);
-		cover_url = search_urls.first().url;
+		cover_urls << url.url;
 	}
 
-	for(MetaData& md : v_md){
-		md.set_cover_download_url(cover_url);
-		md.set_radio_station("SomaFM - " + station.name());
+	for(MetaData& md : v_md)
+	{
+		md.set_cover_download_urls(cover_urls);
+		md.set_title(station.name());
+		md.set_album("SomaFM - " + station.name());
 	}
 
 	station.set_metadata(v_md);
@@ -209,15 +211,17 @@ void SomaFM::Library::soma_playlist_content_fetched(bool success)
 
 	SomaFM::Station station = m->station_map[m->requested_station];
 	Cover::Location cl = station.cover_location();
-	QString cover_url;
-	if(cl.has_search_urls())
+	QStringList cover_urls;
+	QList<Cover::Fetcher::FetchUrl> search_urls = cl.search_urls(true);
+
+	for(auto url : search_urls)
 	{
-		QList<Cover::Fetcher::FetchUrl> search_urls = cl.search_urls(false);
-		cover_url = search_urls.first().url;
+		cover_urls << url.url;
 	}
 
-	for(auto it = v_md.begin(); it != v_md.end(); it++){
-		it->set_cover_download_url(cover_url);
+	for(auto it = v_md.begin(); it != v_md.end(); it++)
+	{
+		it->set_cover_download_urls(cover_urls);
 		it->set_radio_station("SomaFM - " + station.name());
 	}
 

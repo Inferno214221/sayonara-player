@@ -143,6 +143,7 @@ namespace Playlist
 			 * @param pl_idx playlist index
 			 */
 			void append_tracks(const MetaDataList& v_md, int pl_idx);
+			void append_tracks(const QStringList& paths, int pl_idx);
 
 			/**
 			 * @brief move rows within playlist
@@ -180,6 +181,12 @@ namespace Playlist
 			int current_index() const;
 			void set_current_index(int pl_idx);
 
+			/**
+			 * @brief Returns number of playlists
+			 * @return
+			 */
+			int count() const;
+
 
 			/**
 			 * @brief get specific playlist at given index
@@ -209,10 +216,13 @@ namespace Playlist
 			void reset_playlist(int pl_idx);
 
 			/**
-			 * @brief Request a new name for the playlist (usually new %1 is returned)
+			 * @brief Request a new name for the playlist (usually New %1 is returned).
+			 * If the prefix differs, instead of New, the prefix is chosen.
+			 * E.g. "File system 2" for tracks added by the file manager
+			 * @param The prefix is a localized "New" by default.
 			 * @return playlist name
 			 */
-			QString request_new_playlist_name() const;
+			QString request_new_playlist_name(const QString& prefix=QString()) const;
 
 
 			/**

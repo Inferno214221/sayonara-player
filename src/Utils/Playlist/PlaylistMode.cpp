@@ -87,7 +87,7 @@ Mode::Mode()
 	m = Pimpl::make<Private>();
 }
 
-Mode::~Mode() {}
+Mode::~Mode() = default;
 
 Mode::Mode(const Playlist::Mode& other)
 {

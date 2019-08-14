@@ -118,7 +118,7 @@ QString CustomField::get_value() const
 struct LibraryItem::Private
 {
 	CustomFieldList		additional_data;
-	QString				cover_download_url;
+	QStringList			cover_download_urls;
 	DbId				db_id;
 
 	Private() :
@@ -127,20 +127,20 @@ struct LibraryItem::Private
 
 	Private(const Private& other) :
 		CASSIGN(additional_data),
-		CASSIGN(cover_download_url),
+		CASSIGN(cover_download_urls),
 		CASSIGN(db_id)
 	{}
 
 	Private(Private&& other) :
 		CMOVE(additional_data),
-		CMOVE(cover_download_url),
+		CMOVE(cover_download_urls),
 		CMOVE(db_id)
 	{}
 
 	Private& operator=(const Private& other)
 	{
 		ASSIGN(additional_data);
-		ASSIGN(cover_download_url);
+		ASSIGN(cover_download_urls);
 		ASSIGN(db_id);
 
 		return *this;
@@ -149,7 +149,7 @@ struct LibraryItem::Private
 	Private& operator=(Private&& other)
 	{
 		MOVE(additional_data);
-		MOVE(cover_download_url);
+		MOVE(cover_download_urls);
 		MOVE(db_id);
 
 		return *this;
@@ -239,14 +239,14 @@ QString LibraryItem::get_custom_field(int idx) const
 	return m->additional_data[idx].get_value();
 }
 
-QString LibraryItem::cover_download_url() const
+QStringList LibraryItem::cover_download_urls() const
 {
-	return m->cover_download_url;
+	return m->cover_download_urls;
 }
 
-void LibraryItem::set_cover_download_url(const QString& url)
+void LibraryItem::set_cover_download_urls(const QStringList& url)
 {
-	m->cover_download_url = url;
+	m->cover_download_urls = url;
 }
 
 DbId LibraryItem::db_id() const

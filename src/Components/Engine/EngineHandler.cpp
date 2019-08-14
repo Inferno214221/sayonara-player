@@ -28,6 +28,7 @@
 #include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/MetaData/MetaData.h"
+#include "Utils/Message/Message.h"
 
 using Engine::Handler;
 namespace Algorithm=Util::Algorithm;
@@ -35,6 +36,9 @@ namespace Algorithm=Util::Algorithm;
 struct Handler::Private
 {
 	QList<RawSoundReceiverInterface*>	raw_sound_receiver;
+	QList<LevelReceiver*>		level_receiver;
+	QList<SpectrumReceiver*>	spectrum_receiver;
+
 	Engine* engine=nullptr;
 };
 
@@ -43,11 +47,21 @@ Handler::Handler(QObject* parent) :
 {
 	m = Pimpl::make<Private>();
 
-	m->engine = new Engine(this);
-	m->engine->init();
+	try
+	{
+		m->engine = new Engine(this);
+	}
 
-	PlayManager* play_manager = PlayManager::instance();
+	catch (std::exception& e)
+	{
+		m->engine = nullptr;
 
+		sp_log(Log::Error, this) << e.what();
+		Message::error(QString(e.what()), "Engine");
+		return;
+	}
+
+	auto* play_manager = PlayManager::instance();
 	connect(play_manager, &PlayManager::sig_playstate_changed,
 			this, &Handler::playstate_changed);
 
@@ -95,14 +109,16 @@ Handler::Handler(QObject* parent) :
 
 Handler::~Handler() = default;
 
-bool Handler::init()
-{
-	return true;
-}
-
 void Handler::shutdown()
 {
-	delete m->engine;
+	if(m->engine){
+		delete m->engine; m->engine=nullptr;
+	}
+}
+
+bool Handler::is_valid() const
+{
+	return (m->engine != nullptr);
 }
 
 void Handler::playstate_changed(PlayState state)
@@ -134,37 +150,77 @@ void Handler::new_data(const uchar* data, uint64_t n_bytes)
 	}
 }
 
+void Handler::spectrum_changed()
+{
+	for(SpectrumReceiver* rcv : m->spectrum_receiver)
+	{
+		if(rcv && rcv->is_active())
+		{
+			SpectrumList vals = m->engine->spectrum();
+			rcv->set_spectrum(vals);
+		}
+	}
+}
+
+void Handler::level_changed()
+{
+	for(LevelReceiver* rcv : m->level_receiver)
+	{
+		if(rcv && rcv->is_active())
+		{
+			QPair<float, float> level = m->engine->level();
+			rcv->set_level(level.first, level.second);
+		}
+	}
+}
+
 void Handler::register_raw_sound_receiver(RawSoundReceiverInterface* receiver)
 {
+	if(!m->engine){
+		return;
+	}
+
 	if(m->raw_sound_receiver.contains(receiver)){
 		return;
 	}
 
 	m->raw_sound_receiver << receiver;
-	m->engine->set_n_sound_receiver(m->raw_sound_receiver.size());
+	m->engine->set_broadcast_enabled(!m->raw_sound_receiver.isEmpty());
 }
 
 void Handler::unregister_raw_sound_receiver(RawSoundReceiverInterface* receiver)
 {
+	if(!m->engine){
+		return;
+	}
+
 	if(!m->raw_sound_receiver.contains(receiver)){
 		return;
 	}
 
 	m->raw_sound_receiver.removeOne(receiver);
-	m->engine->set_n_sound_receiver(m->raw_sound_receiver.size());
+	m->engine->set_broadcast_enabled(!m->raw_sound_receiver.isEmpty());
 }
 
 void Handler::add_level_receiver(LevelReceiver* receiver)
 {
-	m->engine->add_level_receiver(receiver);
+	if(!m->level_receiver.contains(receiver)) {
+		m->level_receiver.push_back(receiver);
+	}
 }
 
 void Handler::add_spectrum_receiver(SpectrumReceiver* receiver)
 {
-	m->engine->add_spectrum_receiver(receiver);
+	if(!m->spectrum_receiver.contains(receiver)) {
+		m->spectrum_receiver.push_back(receiver);
+	}
 }
 
 void Handler::set_equalizer(int band, int value)
 {
+	if(!m->engine){
+		return;
+	}
+
 	m->engine->set_equalizer(band, value);
 }

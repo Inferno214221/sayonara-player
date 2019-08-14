@@ -435,6 +435,11 @@ void Handler::set_current_index(int pl_idx)
 	emit sig_current_playlist_changed(pl_idx);
 }
 
+int Handler::count() const
+{
+	return m->playlists.size();
+}
+
 
 void Handler::play_next(const MetaDataList& v_md)
 {
@@ -462,7 +467,6 @@ void Handler::insert_tracks(const MetaDataList& v_md, int row, int pl_idx)
 	}
 }
 
-
 void Handler::append_tracks(const MetaDataList& v_md, int pl_idx)
 {
 	CHECK_IDX_VOID(pl_idx)
@@ -483,9 +487,9 @@ void Handler::move_rows(const IndexSet& indexes, int tgt_idx, int pl_idx)
 }
 
 
-QString Handler::request_new_playlist_name() const
+QString Handler::request_new_playlist_name(const QString& prefix) const
 {
-	return DBInterface::request_new_db_name();
+	return DBInterface::request_new_db_name(prefix);
 }
 
 int Handler::close_playlist(int pl_idx)

@@ -42,6 +42,8 @@
 
 namespace FileUtils=::Util::File;
 
+static const int MemorySize=16384;
+
 #ifdef Q_OS_UNIX
 	#include <execinfo.h>		// backtrace
 	#include <csignal>			// kill/signal
@@ -92,7 +94,7 @@ void segfault_handler(int sig)
 bool check_for_other_instance(const CommandLineData& cmd_data, QSharedMemory* memory)
 {
 	sp_log(Log::Debug, "Main") << "Check for another instance";
-	if(memory->create(256, QSharedMemory::ReadWrite))
+	if(memory->create(MemorySize, QSharedMemory::ReadWrite))
 	{
 		sp_log(Log::Debug, "Main") << "Could create memory";
 		return false;
@@ -106,20 +108,20 @@ bool check_for_other_instance(const CommandLineData& cmd_data, QSharedMemory* me
 	}
 
 	QByteArray data("Req");
-	int size = 256;
-	char* ptr = (char*) (memory->data());
+	int size = MemorySize;
+	Byte* ptr = static_cast<Byte*>(memory->data());
 
 	if(!cmd_data.files_to_play.isEmpty())
 	{
 		data += 'D';
 		data += cmd_data.files_to_play.join('\n').toUtf8();
 
-		size = std::min(data.size(), 255);
+		size = std::min(data.size(), MemorySize - 1);
 		if(size < data.size()){
-			data.resize(256);
+			data.resize(MemorySize);
 		}
 
-		data[255] = '\0';
+		data[MemorySize-1] = '\0';
 	}
 
 	else {

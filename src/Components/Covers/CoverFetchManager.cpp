@@ -155,6 +155,9 @@ struct Manager::Private
 
 	bool is_active(QString identifier) const
 	{
+		if(identifier.compare("Direct") == 0){
+			return true;
+		}
 		identifier = identifier.toLower();
 		if(!active_map.keys().contains(identifier)){
 			return false;

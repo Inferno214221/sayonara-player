@@ -37,6 +37,7 @@
 #endif
 
 #include "Components/Playlist/PlaylistHandler.h"
+#include "Components/Playlist/ExternTracksPlaylistGenerator.h"
 #include "Components/RemoteControl/RemoteControl.h"
 #include "Components/Engine/EngineHandler.h"
 #include "Components/PlayManager/PlayManager.h"
@@ -276,6 +277,7 @@ bool Application::init(const QStringList& files_to_play)
 	init_engine();
 	init_player();
 
+
 #ifdef SAYONARA_WITH_DBUS
 	{
 		measure("DBUS")
@@ -391,7 +393,7 @@ void Application::init_libraries()
 void Application::init_engine()
 {
 	measure("Engine")
-	Engine::Handler::instance()->init();
+	Engine::Handler::instance()->is_valid();
 }
 
 void Application::init_plugins()
@@ -462,8 +464,7 @@ void Application::ignore_artist_article_changed()
 	MetaDataSorting::set_ignore_article(GetSetting(Set::Lib_SortIgnoreArtistArticle));
 }
 
-#include "Components/Playlist/Playlist.h"
-#include "Components/PlayManager/PlayManager.h"
+
 void Application::create_playlist()
 {
 	auto* instance_thread =	static_cast<InstanceThread*>(sender());
@@ -471,24 +472,11 @@ void Application::create_playlist()
 		return;
 	}
 
-	static bool playlist_created=false;
-
 	QStringList paths = instance_thread->paths();
-	QString new_name;
 
-	auto* handler = Playlist::Handler::instance();
-	int idx;
-	if(!playlist_created)
-	{
-		new_name = handler->request_new_playlist_name();
-		idx	= handler->create_playlist(paths, new_name, true);
-		playlist_created = true;
+	auto* eplg = ExternTracksPlaylistGenerator::instance();
+	eplg->add_paths(paths);
+	if(eplg->is_play_allowed()) {
+		eplg->change_track();
 	}
-
-	else
-	{
-		idx	= handler->create_playlist(paths, handler->playlist(handler->active_index())->get_name());
-	}
-
-	handler->change_track(0, idx);
 }

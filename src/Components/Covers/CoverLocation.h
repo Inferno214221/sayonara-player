@@ -305,6 +305,7 @@ namespace Cover
 		 * @return CoverLocation object
 		 */
 		static Location cover_location(const QUrl& url, const QString& target_path);
+		static Location cover_location(const QList<QUrl>& urls, const QString& target_path);
 
 
 		static QString invalid_path();

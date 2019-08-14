@@ -82,8 +82,8 @@ public:
 	QString get_custom_field(const QString& id) const;
 	QString get_custom_field(int idx) const;
 
-	QString cover_download_url() const;
-	void set_cover_download_url(const QString& url);
+	QStringList cover_download_urls() const;
+	void set_cover_download_urls(const QStringList& url);
 
 	DbId db_id() const;
 	void set_db_id(DbId id);

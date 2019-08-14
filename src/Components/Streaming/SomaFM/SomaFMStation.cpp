@@ -41,6 +41,23 @@ struct SomaFM::Station::Private
     Cover::Location	cover;
 	MetaDataList	v_md;
 	bool			loved;
+	QMap<QString, QString> image_low_high_map;
+
+	Private()
+	{
+		image_low_high_map = QMap<QString, QString>
+		{
+			{"blender120.png",		"beatblender-400"},
+			{"1023brc.jpg",			"brfm-400"},
+			{"gsclassic120.jpg",	"gsclassic400"},
+			{"illstreet.jpg",		"illstreet-400"},
+			{"indychick.jpg",		"indiepop-400"},
+			{"seventies120.jpg",	"seventies400"},
+			{"lush-x120.jpg",		"lush-400"},
+			{"sss.jpg",				"spacestation-400"},
+			{"sog120.jpg",			"suburbsofgoa-400"}
+		};
+	}
 
 	QString complete_url(const QString& url)
 	{
@@ -83,7 +100,8 @@ struct SomaFM::Station::Private
 		} while(idx > 0);
 
 		idx=-1;
-		do{
+		do
+		{
 			idx = re_aac.indexIn(content, idx+1);
 
 			if(idx > 0){
@@ -109,19 +127,52 @@ struct SomaFM::Station::Private
 
 	void parse_image()
 	{
+		QList<QUrl> urls;
 		QString pattern("<img\\s*src=\\s*\"(.*)\"");
 		QRegExp re(pattern);
 
 		re.setMinimal(true);
 
 		int idx = re.indexIn(content);
-		if(idx > 0){
-			QString url = complete_url(re.cap(1));
-			QString cover_path = Util::sayonara_path() +
-					"/covers/" +
-					station_name + "." + Util::File::get_file_extension(url);
+		if(idx > 0)
+		{
+			QString cap = re.cap(1);
+			QString filename = Util::File::get_filename_of_path(cap);
 
-            cover = Cover::Location::cover_location(QUrl(url), cover_path);
+			QString mapping;
+			if(this->image_low_high_map.contains(filename))
+			{ // the high res image has its own naming scheme
+				mapping = this->image_low_high_map[filename];
+			}
+
+			else
+			{ // the high res image follows the same naming scheme as the low res version
+				QRegExp re_pure_station_name("([a-zA-Z0-9]+)-*120\\..*");
+				re_pure_station_name.setMinimal(true);
+				idx = re_pure_station_name.indexIn(cap);
+				if(idx >= 0)
+				{
+					mapping = re_pure_station_name.cap(1) + "-400";
+				}
+			}
+
+			if(!mapping.isEmpty())
+			{
+				QString part_url1 = QString("/img3/%1.jpg").arg(mapping);
+				QString part_url2 = QString("/img3/%1.png").arg(mapping);
+
+				urls << QUrl(complete_url(part_url1));
+				urls << QUrl(complete_url(part_url2));
+			}
+
+			urls << QUrl(complete_url(cap));
+
+			QString cover_path = QString("%1/covers/%2.%3")
+				.arg(Util::sayonara_path())
+				.arg(station_name)
+				.arg(Util::File::get_file_extension(cap));
+
+            cover = Cover::Location::cover_location(urls, cover_path);
 		}
 	}
 };
@@ -140,8 +191,8 @@ SomaFM::Station::Station(const QString& content) :
 
 	m->parse_description();
 	m->parse_station_name();
-	m->parse_image();
 	m->parse_urls();
+	//m->parse_image();
 }
 
 SomaFM::Station::Station(const SomaFM::Station& other)
@@ -182,15 +233,23 @@ QString SomaFM::Station::description() const
 
 Cover::Location SomaFM::Station::cover_location() const
 {
+	if(!m->cover.is_valid())
+	{
+		m->parse_image();
+	}
+
 	return m->cover;
 }
 
 bool SomaFM::Station::is_valid() const
 {
-	return (!m->station_name.isEmpty() &&
-			!m->urls.isEmpty() &&
-			!m->description.isEmpty() &&
-			m->cover.is_valid());
+	return
+	(
+			!m->station_name.isEmpty()
+			&& (!m->urls.isEmpty())
+			&& (!m->description.isEmpty())
+//			&& m->cover.is_valid()
+	);
 }
 
 MetaDataList SomaFM::Station::metadata() const

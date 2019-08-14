@@ -236,11 +236,14 @@ Location Location::xcover_location(const Album& album)
 			cl = Location::cover_location(album.name(), "");
 		}
 
-		if(!album.cover_download_url().isEmpty())
+		QList<FetchUrl> urls;
+		const QStringList cdu = album.cover_download_urls();
+		for(const QString& url : cdu)
 		{
-			FetchUrl url(true, "Direct", album.cover_download_url());
-			cl.set_search_urls({url});
+			urls << FetchUrl(true, "Direct", url);
 		}
+
+		cl.set_search_urls(urls);
 	}
 
 	// setup local paths. No audio file source. That may last too long
@@ -262,12 +265,14 @@ Location Location::cover_location(const Artist& artist)
 {
 	Location cl = Location::cover_location(artist.name());
 
-	if(!artist.cover_download_url().trimmed().isEmpty())
+	QList<FetchUrl> urls;
+	const QStringList cdu = artist.cover_download_urls();
+	for(const QString& url : cdu)
 	{
-		FetchUrl url(true, "Direct", artist.cover_download_url());
-		cl.set_search_urls({url});
+		urls << FetchUrl(true, "Direct", url);
 	}
 
+	cl.set_search_urls(urls);
 	cl.set_search_term(artist.name());
 	cl.set_identifier("CL:By artist: " + artist.name());
 
@@ -306,14 +311,21 @@ Location Location::cover_location(const MetaData& md, bool check_for_coverart)
 {
 	Location cl;
 
-	if(!md.cover_download_url().isEmpty())
+	const QStringList cdu = md.cover_download_urls();
+	if(!cdu.isEmpty())
 	{
-		QString extension = File::get_file_extension(md.cover_download_url());
+		QString extension = File::get_file_extension(cdu.first());
 
 		QString cover_token = Cover::Utils::calc_cover_token(md.artist(), md.album());
 		QString cover_path = Cover::Utils::cover_directory(cover_token + "." + extension);
 
-		cl = cover_location(QUrl(md.cover_download_url()), cover_path);
+		QList<QUrl> urls;
+		for(const QString& url : cdu)
+		{
+			urls << QUrl(url);
+		}
+
+		cl = cover_location(urls, cover_path);
 	}
 
 	else if(md.album_id >= 0)
@@ -348,8 +360,14 @@ Location Location::cover_location(const MetaData& md, bool check_for_coverart)
 
 	if(cl.search_urls(true).isEmpty())
 	{
-		FetchUrl url(true, "Direct", md.cover_download_url());
-		cl.set_search_urls({url});
+		QList<FetchUrl> urls;
+		const QStringList cdu = md.cover_download_urls();
+		for(const QString& url : cdu)
+		{
+			urls << FetchUrl(true, "Direct", url);
+		}
+
+		cl.set_search_urls(urls);
 	}
 
 	cl.set_local_path_hints(QStringList{md.filepath()});
@@ -358,18 +376,32 @@ Location Location::cover_location(const MetaData& md, bool check_for_coverart)
 	return cl;
 }
 
-
-Location Location::cover_location(const QUrl& url, const QString& target_path)
+Location Location::cover_location(const QList<QUrl>& urls, const QString& target_path)
 {
 	Location cl;
 
+	QList<FetchUrl> fetch_urls;
+	QString merged;
+	for(QUrl url : urls)
+	{
+		merged += url.toString();
+		fetch_urls << FetchUrl(true, "Direct", url.toString());
+	}
+
+	QString token = QString("Direct_") + Cover::Utils::calc_cover_token(merged, "");
+
 	cl.set_valid(true);
 	cl.set_cover_path(target_path);
-	cl.set_search_urls({FetchUrl(true, "Direct", url.toString())});
-
-	cl.set_identifier("CL:By direct download url: " + url.toString());
+	cl.set_search_urls(fetch_urls);
+	cl.set_identifier("CL:By direct download url: " + merged);
+	cl.set_hash(token);
 
 	return cl;
+}
+
+Location Location::cover_location(const QUrl& url, const QString& target_path)
+{
+	return cover_location(QList<QUrl>{url}, target_path);
 }
 
 bool Location::is_valid() const

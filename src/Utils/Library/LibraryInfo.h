@@ -41,7 +41,7 @@ namespace Library
 			Info();
 			Info(const QString& name, const QString& path, LibraryId id);
 			Info(const Info& other);
-			~Info();
+			~Info() override;
 
 			Info& operator =(const Info& other);
 

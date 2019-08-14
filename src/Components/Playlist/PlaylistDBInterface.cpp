@@ -243,8 +243,13 @@ bool DBInterface::remove_from_db()
 	return success;
 }
 
-QString DBInterface::request_new_db_name()
+QString DBInterface::request_new_db_name(QString prefix)
 {
+	if(prefix.isEmpty())
+	{
+		prefix = Lang::get(Lang::New);
+	}
+
 	CustomPlaylistSkeletons skeletons;
 
 	auto pdw = std::make_shared<DBWrapper>();
@@ -255,7 +260,7 @@ QString DBInterface::request_new_db_name()
 	for(int idx = 1; idx < 1000; idx++)
 	{
 		bool found = false;
-		target_name = Lang::get(Lang::New) + " " + QString::number(idx);
+		target_name = prefix + " " + QString::number(idx);
 		for(const CustomPlaylistSkeleton& skeleton : Algorithm::AsConst(skeletons))
 		{
 			QString name = skeleton.name();

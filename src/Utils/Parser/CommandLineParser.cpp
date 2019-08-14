@@ -21,6 +21,7 @@
 #include "CommandLineParser.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/FileUtils.h"
+#include <QDir>
 
 CommandLineData::CommandLineData()
 {
@@ -32,6 +33,7 @@ CommandLineData::CommandLineData()
 CommandLineData CommandLineParser::parse(int argc, char** argv)
 {
 	CommandLineData data;
+	QStringList www_files;
 
 	for(int i=1; i<argc; i++)
 	{
@@ -59,8 +61,24 @@ CommandLineData CommandLineParser::parse(int argc, char** argv)
 
 		else
 		{
-			data.files_to_play << Util::File::get_absolute_filename(QString(argv[i]));
+			if(Util::File::is_www(str))
+			{
+				www_files << str;
+			}
+
+			else if(Util::File::is_soundfile(str) || Util::File::is_playlistfile(str))
+			{
+				data.files_to_play << Util::File::get_absolute_filename(str);
+			}
 		}
+	}
+
+	if(!www_files.isEmpty())
+	{
+		QString playlist_filename = QDir::temp().absoluteFilePath("playlist.m3u");
+		QByteArray raw_data = www_files.join("\n").toLocal8Bit();
+		Util::File::write_file(raw_data, playlist_filename);
+		data.files_to_play << playlist_filename;
 	}
 
 	return data;

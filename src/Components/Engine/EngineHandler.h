@@ -50,8 +50,8 @@ namespace Engine
 			void sig_cover_data(const QByteArray& data, const QString& mimetype);
 
 		public:
-			bool init();
 			void shutdown();
+			bool is_valid() const;
 
 			void register_raw_sound_receiver(RawSoundReceiverInterface* receiver);
 			void unregister_raw_sound_receiver(RawSoundReceiverInterface* receiver);
@@ -65,6 +65,8 @@ namespace Engine
 			void playstate_changed(PlayState state);
 
 			void new_data(const uchar* data, uint64_t n_bytes);
+			void spectrum_changed();
+			void level_changed();
 	};
 }
 

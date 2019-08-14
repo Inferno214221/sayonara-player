@@ -39,6 +39,7 @@ namespace StreamRecorder
 namespace Engine
 {
 	class Pipeline;
+	using PipelinePtr=std::shared_ptr<Pipeline>;
 	/**
 	 * @brief The PlaybackEngine class
 	 * @ingroup Engine
@@ -66,6 +67,8 @@ namespace Engine
 
 		signals:
 			void sig_data(const unsigned char* data, uint64_t n_bytes);
+			void sig_spectrum_changed();
+			void sig_level_changed();
 
 			void sig_metadata_changed(const MetaData& md);
 			void sig_duration_changed(const MetaData& md);
@@ -82,8 +85,6 @@ namespace Engine
 			explicit Engine(QObject* parent=nullptr);
 			~Engine();
 
-			bool init();
-
 			void update_bitrate(Bitrate br, GstElement* src);
 			void update_duration(GstElement* src);
 
@@ -95,13 +96,12 @@ namespace Engine
 			void set_streamrecorder_recording(bool b);
 
 			void set_spectrum(const SpectrumList& vals);
-			void add_spectrum_receiver(SpectrumReceiver* receiver);
+			SpectrumList spectrum() const;
 
 			void set_level(float left, float right);
-			void add_level_receiver(LevelReceiver* receiver);
+			QPair<float, float> level() const;
 
-			void set_n_sound_receiver(int num_sound_receiver);
-
+			void set_broadcast_enabled(bool b);
 			void set_equalizer(int band, int value);
 
 			MetaData current_track() const;
@@ -124,7 +124,7 @@ namespace Engine
 			void error(const QString& error);
 
 		private:
-			bool init_pipeline(Pipeline** pipeline, const QString& name);
+			PipelinePtr init_pipeline(const QString& name);
 			bool change_metadata(const MetaData& md);
 
 			bool change_track_crossfading(const MetaData& md);

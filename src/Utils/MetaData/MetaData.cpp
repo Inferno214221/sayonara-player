@@ -345,15 +345,26 @@ void MetaData::set_album_artist_id(ArtistId id)
 	m->album_artist_id = id;
 }
 
-void MetaData::set_radio_station(const QString& album)
+
+void MetaData::set_radio_station(const QString& filepath)
 {
-	set_album(album);
+	QUrl url(filepath);
+	QString radio_station = url.host();
+	if(url.port() > 0)
+	{
+		radio_station += QString(":%1").arg(url.port());
+	}
+
+	set_artist(radio_station);
+	//set_album(radio_station);
+	set_title(url.host());
+
 	album_id = -1;
 }
 
 QString MetaData::radio_station() const
 {
-	return album();
+	return artist();
 }
 
 bool MetaData::has_album_artist() const

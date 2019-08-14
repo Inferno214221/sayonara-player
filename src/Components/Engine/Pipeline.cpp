@@ -244,7 +244,7 @@ GstElement* Pipeline::create_sink(const QString& name)
 
 	if(ret == nullptr)
 	{
-		sp_log(Log::Info, this) << "Will create auto audio sink";
+		sp_log(Log::Debug, this) << "Will create auto audio sink";
 		EngineUtils::create_element(&ret, "autoaudiosink", name.toLocal8Bit().data());
 	}
 

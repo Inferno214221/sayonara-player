@@ -183,7 +183,7 @@ void StreamParser::awa_finished()
 		} break;
 
 		default:
-			sp_log(Log::Develop, this) << "Web Access finished: " << (int) status;
+			sp_log(Log::Develop, this) << "Web Access finished: " << int(status);
 	}
 
 	awa->deleteLater();
@@ -323,30 +323,23 @@ QPair<MetaDataList, PlaylistFiles> StreamParser::parse_website(const QByteArray&
 
 void StreamParser::tag_metadata(MetaData& md, const QString& stream_url, const QString& cover_url) const
 {
-	if(m->station_name.isEmpty()) {
-		md.set_radio_station(stream_url);
-		if(md.title().isEmpty()){
-			md.set_title(Lang::get(Lang::Radio));
-		}
+	md.set_radio_station(stream_url);
+
+	if(!m->station_name.trimmed().isEmpty())
+	{
+		md.set_album(m->station_name);
 	}
 
-	else {
-		md.set_radio_station(m->station_name);
-		if(md.title().isEmpty()){
-			md.set_title(m->station_name);
-		}
-	}
-
-	if(md.artist().isEmpty()) {
+	if(md.artist().trimmed().isEmpty()) {
 		md.set_artist(stream_url);
 	}
 
-	if(md.filepath().isEmpty()) {
+	if(md.filepath().trimmed().isEmpty()) {
 		md.set_filepath(stream_url);
 	}
 
 	if(!cover_url.isEmpty()) {
-		md.cover_download_url() = cover_url;
+		md.set_cover_download_urls({cover_url});
 	}
 }
 
@@ -374,7 +367,7 @@ void StreamParser::set_cover_url(const QString& url)
 	m->cover_url = url;
 
 	for(MetaData& md : m->v_md){
-		md.set_cover_download_url(url);
+		md.set_cover_download_urls({url});
 	}
 }
 

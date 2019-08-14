@@ -37,7 +37,7 @@ signals:
 
 public:
 	InstanceThread(QObject* parent=nullptr);
-	~InstanceThread();
+	~InstanceThread() override;
 
 	void stop();
 	QStringList paths() const;

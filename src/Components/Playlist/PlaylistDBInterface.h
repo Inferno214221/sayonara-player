@@ -23,6 +23,7 @@
 
 #include "Utils/Pimpl.h"
 #include "Utils/globals.h"
+#include <QString>
 
 class QString;
 class MetaDataList;
@@ -62,7 +63,7 @@ namespace Playlist
 			virtual bool was_changed() const = 0;
 			virtual bool is_storable() const =0;
 
-			static QString request_new_db_name();
+			static QString request_new_db_name(QString prefix);
 	};
 }
 

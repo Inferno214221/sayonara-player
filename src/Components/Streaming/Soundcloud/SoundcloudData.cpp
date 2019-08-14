@@ -249,7 +249,7 @@ bool SC::Database::db_fetch_tracks(Query& q, MetaDataList& result) const
 		data.filesize =  q.value(12).value<Filesize>();
 		data.discnumber = q.value(13).value<Disc>();
 		data.add_custom_field("purchase_url", tr("Purchase Url"), q.value(14).toString());
-		data.set_cover_download_url(q.value(15).toString());
+		data.set_cover_download_urls({q.value(15).toString()});
 		data.rating = q.value(16).value<Rating>();
 		data.set_db_id(module()->db_id());
 
@@ -278,7 +278,7 @@ bool SC::Database::db_fetch_albums(Query& q, AlbumList& result) const
 		album.rating =				q.value(3).value<Rating>();
 		album.add_custom_field("permalink_url", "Permalink Url", q.value(4).toString());
 		album.add_custom_field("purchase_url", "Purchase Url", q.value(5).toString());
-		album.set_cover_download_url(q.value(6).toString());
+		album.set_cover_download_urls({q.value(6).toString()});
 		album.num_songs =			q.value(7).value<uint16_t>();
 		album.year =				q.value(8).value<uint16_t>();
 
@@ -334,7 +334,7 @@ bool SC::Database::db_fetch_artists(Query& q, ArtistList& result) const
 		artist.add_custom_field("description", "Description", q.value(3).toString());
 		artist.add_custom_field("followers_following", "Followers/Following", q.value(4).toString());
 
-		artist.set_cover_download_url(q.value(5).toString());
+		artist.set_cover_download_urls({q.value(5).toString()});
 		artist.num_songs =				q.value(7).value<uint16_t>();
 		QStringList list =				q.value(8).toString().split(',');
 		artist.num_albums =				uint16_t(list.size());
@@ -366,7 +366,14 @@ ArtistId SC::Database::updateArtist(const Artist& artist)
 	q.bindValue(":permalink_url", artist.get_custom_field("permalink_url"));
 	q.bindValue(":description", artist.get_custom_field("description"));
 	q.bindValue(":followers_following", artist.get_custom_field("followers_following"));
-	q.bindValue(":cover_url", artist.cover_download_url());
+
+	if(!artist.cover_download_urls().isEmpty()) {
+		q.bindValue(":cover_url", artist.cover_download_urls().first());
+	}
+
+	else {
+		q.bindValue(":cover_url", QString());
+	}
 
 	if (!q.exec()) {
 		q.show_error(QString("Soundcloud: Cannot update artist ") + artist.name());
@@ -406,7 +413,13 @@ ArtistId SC::Database::insertArtistIntoDatabase (const Artist& artist)
 	q.bindValue(":permalink_url", artist.get_custom_field("permalink_url"));
 	q.bindValue(":description", artist.get_custom_field("description"));
 	q.bindValue(":followers_following", artist.get_custom_field("followers_following"));
-	q.bindValue(":cover_url", artist.cover_download_url());
+	if(!artist.cover_download_urls().isEmpty()) {
+		q.bindValue(":cover_url", artist.cover_download_urls().first());
+	}
+
+	else {
+		q.bindValue(":cover_url", QString());
+	}
 
 	if (!q.exec()) {
 		q.show_error(QString("Soundcloud: Cannot insert artist ") + artist.name());
@@ -436,7 +449,15 @@ AlbumId SC::Database::updateAlbum(const Album& album)
 	q.bindValue(":cissearch", album.name().toLower());
 	q.bindValue(":permalink_url", album.get_custom_field("permalink_url"));
 	q.bindValue(":purchase_url", album.get_custom_field("purchase_url"));
-	q.bindValue(":cover_url", album.cover_download_url());
+
+	if(!album.cover_download_urls().isEmpty())
+	{
+		q.bindValue(":cover_url", album.cover_download_urls().first());
+	}
+
+	else {
+		q.bindValue(":cover_url", QString());
+	}
 
 	if (!q.exec()) {
 		q.show_error(QString("Soundcloud: Cannot insert album ") + album.name());
@@ -475,7 +496,14 @@ AlbumId SC::Database::insertAlbumIntoDatabase (const Album& album)
 	q.bindValue(":cissearch", album.name().toLower());
 	q.bindValue(":permalink_url", album.get_custom_field("permalink_url"));
 	q.bindValue(":purchase_url", album.get_custom_field("purchase_url"));
-	q.bindValue(":cover_url", album.cover_download_url());
+	if(!album.cover_download_urls().isEmpty())
+	{
+		q.bindValue(":cover_url", album.cover_download_urls().first());
+	}
+
+	else {
+		q.bindValue(":cover_url", QString());
+	}
 
 	if (!q.exec()) {
 		q.show_error(QString("Soundcloud: Cannot insert album ") + album.name());
@@ -525,7 +553,14 @@ bool SC::Database::updateTrack(const MetaData& md)
 	q.bindValue(":discnumber",	md.discnumber);
 	q.bindValue(":cissearch",	md.title().toLower());
 	q.bindValue(":purchase_url", md.get_custom_field("purchase_url"));
-	q.bindValue(":cover_url",	md.cover_download_url());
+	if(!md.cover_download_urls().isEmpty())
+	{
+		q.bindValue(":cover_url", md.cover_download_urls().first());
+	}
+
+	else {
+		q.bindValue(":cover_url", QString());
+	}
 
 	if (!q.exec()) {
 		q.show_error(QString("Cannot insert track into database ") + md.filepath());
@@ -574,7 +609,15 @@ bool SC::Database::insertTrackIntoDatabase(const MetaData &md, int artist_id, in
 	q.bindValue(":discnumber",	md.discnumber);
 	q.bindValue(":cissearch",	md.title().toLower());
 	q.bindValue(":purchase_url", md.get_custom_field("purchase_url"));
-	q.bindValue(":cover_url",	md.cover_download_url());
+	if(!md.cover_download_urls().isEmpty())
+	{
+		q.bindValue(":cover_url", md.cover_download_urls().first());
+	}
+
+	else {
+		q.bindValue(":cover_url", QString());
+	}
+
 
 	if (!q.exec()) {
 		q.show_error(QString("Cannot insert track into database ") + md.filepath());

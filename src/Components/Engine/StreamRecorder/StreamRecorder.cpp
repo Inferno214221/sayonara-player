@@ -207,11 +207,11 @@ void SR::StreamRecorder::record(bool b)
 
 	sp_log(Log::Debug, this) << "Stream recorder: activate: " << b;
 
-	if(b){
+	if(b) {
 		new_session();
 	}
 
-	else{
+	else {
 		save();
 		clear();
 	}
