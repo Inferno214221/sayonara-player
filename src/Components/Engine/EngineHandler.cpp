@@ -73,7 +73,7 @@ Handler::Handler(QObject* parent) :
 		m->engine->change_track(md);
 	}
 
-	connect(m->engine, &Engine::sig_cover_changed, this, &Handler::sig_cover_changed);
+	connect(m->engine, &Engine::sig_cover_data, this, &Handler::sig_cover_data);
 	connect(m->engine, &Engine::sig_error, play_manager, &PlayManager::error);
 	connect(m->engine, &Engine::sig_current_position_changed, play_manager, &PlayManager::set_position_ms);
 	connect(m->engine, &Engine::sig_track_finished, play_manager, &PlayManager::set_track_finished);

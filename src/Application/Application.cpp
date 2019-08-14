@@ -462,6 +462,8 @@ void Application::ignore_artist_article_changed()
 	MetaDataSorting::set_ignore_article(GetSetting(Set::Lib_SortIgnoreArtistArticle));
 }
 
+#include "Components/Playlist/Playlist.h"
+#include "Components/PlayManager/PlayManager.h"
 void Application::create_playlist()
 {
 	auto* instance_thread =	static_cast<InstanceThread*>(sender());
@@ -469,8 +471,24 @@ void Application::create_playlist()
 		return;
 	}
 
-	QStringList paths = instance_thread->paths();
-	QString new_name = Playlist::Handler::instance()->request_new_playlist_name();
+	static bool playlist_created=false;
 
-	Playlist::Handler::instance()->create_playlist(paths, new_name, true);
+	QStringList paths = instance_thread->paths();
+	QString new_name;
+
+	auto* handler = Playlist::Handler::instance();
+	int idx;
+	if(!playlist_created)
+	{
+		new_name = handler->request_new_playlist_name();
+		idx	= handler->create_playlist(paths, new_name, true);
+		playlist_created = true;
+	}
+
+	else
+	{
+		idx	= handler->create_playlist(paths, handler->playlist(handler->active_index())->get_name());
+	}
+
+	handler->change_track(0, idx);
 }

@@ -43,7 +43,7 @@ namespace Gui
 
 
 	public:
-		RatingLabel(QWidget *parent, bool enabled=true);
+		RatingLabel(QWidget* parent, bool enabled=true);
 		virtual ~RatingLabel();
 
 		/**

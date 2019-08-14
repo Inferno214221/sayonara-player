@@ -47,7 +47,7 @@ namespace Engine
 		PIMPL(Handler)
 
 		signals:
-			void sig_cover_changed(const QImage& img);
+			void sig_cover_data(const QByteArray& data, const QString& mimetype);
 
 		public:
 			bool init();

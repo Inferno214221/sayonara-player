@@ -34,9 +34,28 @@ namespace Cover
 	class Location;
 }
 
-
 namespace Gui
 {
+
+	class ByteArrayConverter :
+		public QObject
+	{
+		Q_OBJECT
+		PIMPL(ByteArrayConverter)
+
+		signals:
+			void sig_finished();
+
+		public:
+			ByteArrayConverter(const QByteArray& data, const QString& mime);
+			~ByteArrayConverter();
+
+			QPixmap pixmap() const;
+
+		public slots:
+			void start();
+	};
+
 	/**
 	 * @brief The CoverButton class
 	 * @ingroup GuiCovers
@@ -63,18 +82,12 @@ namespace Gui
 			void set_cover_location(const Cover::Location& cl);
 
 			/**
-			 * @brief Force a cover in order to override a searched cover.
-			 * This is intended if the audio file contains a cover itself
-			 * @param img
+			 * @brief Sets the raw data parsed out of the audio file
+			 * @param data raw data
+			 * @param mimetype jpg, png or something similar
 			 */
-			void force_cover(const QImage& img);
+			void set_cover_data(const QByteArray& data, const QString& mimetype);
 
-			/**
-			 * @brief Force a cover in order to override a searched cover.
-			 * This is intended if the audio file contains a cover itself
-			 * @param img
-			 */
-			void force_cover(const QPixmap& img);
 
 			/**
 			 * @brief silent results that the cover is not stored
@@ -90,7 +103,7 @@ namespace Gui
 
 		private:
 			using QPushButton::setIcon;
-			QIcon current_icon() const;
+			using QPushButton::icon;
 
 
 		protected:
@@ -106,9 +119,9 @@ namespace Gui
 			void set_cover_image_pixmap(const QPixmap& pm);
 			void covers_changed();
 			void timer_timed_out();
+			void byteconverter_finished();
 
 		public slots:
-			void refresh();
 			void trigger();
 	};
 }

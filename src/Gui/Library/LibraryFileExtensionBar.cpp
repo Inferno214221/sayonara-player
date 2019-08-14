@@ -163,6 +163,6 @@ void FileExtensionBar::close_clicked()
 
 void FileExtensionBar::language_changed()
 {
-	m->btn_close->setText(Lang::get(Lang::Close));
+	m->btn_close->setText(Lang::get(Lang::Hide));
 	m->lab_filter->setText(Lang::get(Lang::Filetype));
 }

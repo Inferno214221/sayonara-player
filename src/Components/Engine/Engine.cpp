@@ -486,31 +486,13 @@ void EngineImpl::set_n_sound_receiver(int num_sound_receiver)
 	}
 }
 
-#include <QThread>
-	using Extr=::Engine::Extractor;
-void EngineImpl::update_cover(const QByteArray& data, const QString& mimedata)
+
+void EngineImpl::update_cover(GstElement* src, const QByteArray& data, const QString& mimetype)
 {	
-	QThread* thread = new QThread;
-	auto* worker = new Extr(data, mimedata);
-	worker->moveToThread(thread);
-	connect(worker, &Extr::sig_finished, this, &EngineImpl::worker_finished);
-	connect(thread, &QThread::finished, thread, &QObject::deleteLater);
-	connect(thread, &QThread::started, worker, &Extr::start);
-
-	thread->start();
-
-//	QImage cover;
-//	cover.loadFromData(data, mimedata.toLocal8Bit().data());
-
-//	emit sig_cover_changed(cover);
-}
-
-void EngineImpl::worker_finished()
-{
-	auto* worker = static_cast<Extr*>(sender());
-
-	emit sig_cover_changed(worker->mImage);
-	worker->deleteLater();
+	if(m->pipeline->has_element(src))
+	{
+		emit sig_cover_data(data, mimetype);
+	}
 }
 
 
@@ -622,18 +604,4 @@ void EngineImpl::error(const QString& error)
 	stop();
 
 	emit sig_error(msg.join("\n\n"));
-}
-
-Engine::Extractor::Extractor(const QByteArray& data, const QString& mime)
-{
-	mData = data;
-	mMime = mime;
-}
-
-Engine::Extractor::~Extractor() {}
-
-void Engine::Extractor::start()
-{
-	mImage.loadFromData(mData, mMime.toLocal8Bit().data());
-	emit sig_finished();
 }

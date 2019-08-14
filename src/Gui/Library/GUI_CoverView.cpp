@@ -213,6 +213,6 @@ void GUI_CoverView::language_changed()
 	init_sorting_actions();
 
 	ui->combo_zoom->setToolTip(tr("Use Ctrl + mouse wheel to zoom"));
-	ui->btn_close->setText(Lang::get(Lang::Close));
+	ui->btn_close->setText(Lang::get(Lang::Hide));
 	ui->cb_show_artist->setText(Lang::get(Lang::ShowAlbumArtists));
 }

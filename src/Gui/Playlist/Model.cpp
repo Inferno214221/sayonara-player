@@ -170,15 +170,17 @@ QVariant PlaylistItemModel::data(const QModelIndex& index, int role) const
 	{
 		if(col == ColumnName::Cover)
 		{
-			AlbumId album_id = m->pl->track(row).album_id;
-			if(!m->pms.contains(album_id))
+			MetaData md = m->pl->track(row);
+
+			if(!m->pms.contains(md.album_id))
 			{
 				int height = m->row_height - 6;
-				Cover::Location cl = Cover::Location::cover_location(m->pl->track(row));
-				m->pms[album_id] = QPixmap(cl.preferred_path()).scaled(QSize(height, height), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+				Cover::Location cl = Cover::Location::cover_location(md);
+				m->pms[md.album_id] = QPixmap(cl.preferred_path()).scaled(height, height, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 			}
 
-			return m->pms[album_id];
+			return m->pms[md.album_id];
 		}
 	}
 
@@ -484,8 +486,11 @@ void PlaylistItemModel::set_drag_index(int drag_index)
 
 void PlaylistItemModel::set_row_height(int row_height)
 {
-	m->pms.clear();
-	m->row_height = row_height;
+	if(m->row_height != row_height)
+	{
+		m->pms.clear();
+		m->row_height = row_height;
+	}
 }
 
 void PlaylistItemModel::refresh_data()

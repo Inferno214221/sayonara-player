@@ -141,6 +141,7 @@ public:
 		GaplessPlayback,
 		Genre,
 		Genres,
+		Hide,
 		Hours,
 		HoursShort,
 		ImportDir,

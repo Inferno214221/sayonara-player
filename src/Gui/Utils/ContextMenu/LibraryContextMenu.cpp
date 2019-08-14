@@ -42,7 +42,7 @@ struct LibraryContextMenu::Private
 {
 	QMap<LibraryContextMenu::Entry, QAction*> entry_action_map;
 
-	QMenu*		filter_extension_menu=nullptr;
+	QMenu*		filetype_menu=nullptr;
 
 	QAction*	info_action=nullptr;
 	QAction*	lyrics_action=nullptr;
@@ -87,8 +87,8 @@ LibraryContextMenu::LibraryContextMenu(QWidget* parent) :
 	m->clear_action = new QAction(this);
 	m->cover_view_action = new QAction(this);
 	m->cover_view_action->setCheckable(true);
-	m->filter_extension_menu = new QMenu(this);
-	m->filetype_action = this->addMenu(m->filter_extension_menu);
+	m->filetype_menu = new QMenu(this);
+	m->filetype_action = this->addMenu(m->filetype_menu);
 	m->show_filetype_bar_action = new QAction(this);
 	m->show_filetype_bar_action->setCheckable(true);
 
@@ -330,7 +330,7 @@ void LibraryContextMenu::set_action_shortcut(LibraryContextMenu::Entry entry, co
 
 void LibraryContextMenu::set_extensions(const Gui::ExtensionSet& extensions)
 {
-	QMenu* fem = m->filter_extension_menu;
+	QMenu* fem = m->filetype_menu;
 	if(fem->isEmpty())
 	{
 		fem->addActions({fem->addSeparator(), m->show_filetype_bar_action});

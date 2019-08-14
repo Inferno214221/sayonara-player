@@ -207,6 +207,8 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Genre");
 		case Genres:
 			return l.tr("Genres");
+		case Hide:
+			return l.tr("Hide");
 		case Hours:
 			return l.tr("Hours");
 		case HoursShort:

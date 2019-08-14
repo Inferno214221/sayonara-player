@@ -34,12 +34,47 @@
 #include <QPainter>
 #include <QMenu>
 #include <QTimer>
+#include <QThread>
 
 using Gui::CoverButton;
+using Gui::ByteArrayConverter;
 using Cover::Location;
 using Cover::Lookup;
 using Cover::ChangeNotfier;
 using CoverButtonBase=Gui::WidgetTemplate<QPushButton>;
+
+struct ByteArrayConverter::Private
+{
+	QByteArray	data;
+	QString		mime;
+
+	QPixmap		pixmap;
+
+	Private(const QByteArray& data, const QString& mime) :
+		data(data),
+		mime(mime)
+	{}
+};
+
+ByteArrayConverter::ByteArrayConverter(const QByteArray& data, const QString& mime) :
+	QObject()
+{
+	m = Pimpl::make<Private>(data, mime);
+}
+
+ByteArrayConverter::~ByteArrayConverter() = default;
+
+QPixmap ByteArrayConverter::pixmap() const
+{
+	return m->pixmap;
+}
+
+void ByteArrayConverter::start()
+{
+	m->pixmap.loadFromData(m->data, m->mime.toLocal8Bit().data());
+	emit sig_finished();
+}
+
 
 struct CoverButton::Private
 {
@@ -95,28 +130,6 @@ CoverButton::~CoverButton()
 	}
 }
 
-QIcon CoverButton::current_icon() const
-{
-	QIcon icon;
-	QPixmap pm = m->current_cover_scaled;
-	if(pm.isNull())
-	{
-		sp_log(Log::Warning, this) << "Pixmap not valid";
-		return QIcon();
-	}
-
-	for(QIcon::Mode m : { QIcon::Mode::Normal, QIcon::Mode::Disabled, QIcon::Mode::Active, QIcon::Mode::Selected })
-	{
-		for(QIcon::State s : {QIcon::State::On, QIcon::State::Off})
-		{
-			icon.addPixmap(pm, m, s);
-		}
-	}
-
-	return icon;
-}
-
-
 QPixmap CoverButton::pixmap() const
 {
 	return m->current_cover;
@@ -138,26 +151,6 @@ void CoverButton::trigger()
 	alt_cover->show();
 }
 
-
-void CoverButton::refresh()
-{
-	QIcon icon = current_icon();
-	this->setIcon(icon);
-
-	emit sig_cover_changed();
-}
-
-void CoverButton::force_cover(const QImage& img)
-{
-	force_cover(QPixmap::fromImage(img));
-}
-
-void CoverButton::force_cover(const QPixmap& pm)
-{
-	m->cover_source = Cover::Source::AudioFile;
-
-	set_cover_image_pixmap(pm);
-}
 
 void CoverButton::set_cover_image(const QString& path)
 {
@@ -187,11 +180,13 @@ void CoverButton::set_cover_image_pixmap(const QPixmap& pm)
 	m->current_cover = pm;
 	m->current_cover_scaled = m->current_cover.scaled(QSize(w,h), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
+	this->setToolTip(QString("%1x%2").arg(pm.width()).arg(pm.height()));
+
 	m->current_hash = Util::calc_hash (
 		Util::cvt_pixmap_to_bytearray(m->current_cover.scaled(50, 50, Qt::KeepAspectRatio, Qt::FastTransformation))
 	);
 
-	this->refresh();
+	emit sig_cover_changed();
 
 	// if timer is not active, start new timer loop
 	if(!m->timer->isActive() && GetSetting(Set::Player_FadingCover))
@@ -202,22 +197,28 @@ void CoverButton::set_cover_image_pixmap(const QPixmap& pm)
 }
 
 
-void CoverButton::timer_timed_out()
+void CoverButton::set_cover_data(const QByteArray& data, const QString& mimetype)
 {
-	m->opacity = std::min(1.0, m->opacity + 0.025);
+	auto* thread = new QThread();
+	auto* worker = new ByteArrayConverter(data, mimetype);
+	worker->moveToThread(thread);
 
-	if(m->opacity < 1.0)
-	{
-		repaint();
-	}
+	connect(worker, &ByteArrayConverter::sig_finished, this, &CoverButton::byteconverter_finished);
+	connect(thread, &QThread::finished, thread, &QObject::deleteLater);
+	connect(thread, &QThread::started, worker, &ByteArrayConverter::start);
 
-	else
-	{
-		m->old_cover = QPixmap();
-		m->old_cover_scaled = QPixmap();
-		m->timer->stop();
-	}
+	thread->start();
 }
+
+
+void CoverButton::byteconverter_finished()
+{
+	auto* worker = static_cast<ByteArrayConverter*>(sender());
+	this->set_cover_image_pixmap(worker->pixmap());
+
+	worker->deleteLater();
+}
+
 
 
 void CoverButton::set_cover_location(const Location& cl)
@@ -253,6 +254,7 @@ void CoverButton::set_cover_location(const Location& cl)
 
 	m->cover_lookup->start();
 }
+
 
 
 void CoverButton::cover_lookup_finished(bool success)
@@ -311,21 +313,23 @@ bool CoverButton::is_silent() const
 	return m->silent;
 }
 
-static bool check_if_within_cover(QPoint pos, QRect geometry)
-{
-	int difference = geometry.width() - geometry.height();
-	if(difference > 0)
-	{
-		int smaller_site = geometry.height();
 
-		if ((pos.x() < (difference / 2)) ||
-			(pos.x() >= (difference / 2 + smaller_site)))
-		{
-			return false;
-		}
+
+void CoverButton::timer_timed_out()
+{
+	m->opacity = std::min(1.0, m->opacity + 0.025);
+
+	if(m->opacity < 1.0)
+	{
+		repaint();
 	}
 
-	return true;
+	else
+	{
+		m->old_cover = QPixmap();
+		m->old_cover_scaled = QPixmap();
+		m->timer->stop();
+	}
 }
 
 
@@ -383,17 +387,31 @@ void CoverButton::paintEvent(QPaintEvent* event)
 
 void CoverButton::resizeEvent(QResizeEvent* e)
 {
+	Gui::WidgetTemplate<QPushButton>::resizeEvent(e);
+
 	int h = this->height() - 2;
 	int w = this->width() - 2;
 
-	if(!m->old_cover.isNull())
+	m->current_cover_scaled = m->current_cover.scaled(w, h, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+}
+
+
+
+static bool check_if_within_cover(QPoint pos, QRect geometry)
+{
+	int difference = geometry.width() - geometry.height();
+	if(difference > 0)
 	{
-		m->old_cover_scaled = m->old_cover.scaled(QSize(w,h), Qt::KeepAspectRatio, Qt::FastTransformation);
+		int smaller_site = geometry.height();
+
+		if ((pos.x() < (difference / 2)) ||
+			(pos.x() >= (difference / 2 + smaller_site)))
+		{
+			return false;
+		}
 	}
 
-	m->current_cover_scaled = m->current_cover.scaled(QSize(w,h), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-
-	Gui::WidgetTemplate<QPushButton>::resizeEvent(e);
+	return true;
 }
 
 void CoverButton::mouseMoveEvent(QMouseEvent* event)

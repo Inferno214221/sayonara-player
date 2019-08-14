@@ -129,7 +129,7 @@ private slots:
 	void refresh_current_track();
 
 	// cover changed by engine
-	void cover_changed(const QImage& img);
+	void cover_changed(const QByteArray& data, const QString& mimedata);
 	void cover_click_rejected();
 
 	void sr_active_changed();

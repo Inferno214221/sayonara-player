@@ -38,26 +38,6 @@ namespace StreamRecorder
 
 namespace Engine
 {
-	class Extractor : public QObject
-	{
-		Q_OBJECT
-
-		signals:
-			void sig_finished();
-
-		private:
-			QByteArray mData;
-			QString mMime;
-
-		public:
-			QImage mImage;
-			Extractor(const QByteArray& data, const QString& mime);
-			~Extractor();
-
-		public slots:
-			void start();
-	};
-
 	class Pipeline;
 	/**
 	 * @brief The PlaybackEngine class
@@ -90,7 +70,7 @@ namespace Engine
 			void sig_metadata_changed(const MetaData& md);
 			void sig_duration_changed(const MetaData& md);
 			void sig_bitrate_changed(const MetaData& md);
-			void sig_cover_changed(const QImage& img);
+			void sig_cover_data(const QByteArray& data, const QString& mimetype);
 
 			void sig_current_position_changed(MilliSeconds ms);
 			void sig_buffering(int progress);
@@ -136,7 +116,7 @@ namespace Engine
 			void jump_rel_ms(MilliSeconds pos_ms);
 			void jump_rel(double percent);
 			void update_metadata(const MetaData& md, GstElement* src);
-			void update_cover(const QByteArray& data, const QString& mimedata);
+			void update_cover(GstElement* src, const QByteArray& data, const QString& mimedata);
 
 			bool change_track(const MetaData& md);
 
@@ -158,8 +138,6 @@ namespace Engine
 			void s_streamrecorder_active_changed();
 
 			void cur_pos_ms_changed(MilliSeconds pos_ms);
-
-			void worker_finished();
 	};
 }
 

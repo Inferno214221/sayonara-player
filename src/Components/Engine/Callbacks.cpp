@@ -62,7 +62,7 @@ const char* ClassEngineCallbacks = "Engine Callbacks";
 	}
 #endif
 
-static bool parse_image(GstTagList* tags, EngineNS::Engine* engine)
+static bool parse_image(GstElement* src, GstTagList* tags, EngineNS::Engine* engine)
 {
 	GstSample* sample;
 	bool success = gst_tag_list_get_sample(tags, GST_TAG_IMAGE, &sample);
@@ -120,7 +120,7 @@ static bool parse_image(GstTagList* tags, EngineNS::Engine* engine)
 	}
 
 	QByteArray arr(data, size);
-	engine->update_cover(arr, mime);
+	engine->update_cover(src, arr, mime);
 
 	delete[] data;
 	gst_sample_unref(sample);
@@ -206,7 +206,7 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 				break;
 			}
 
-			parse_image(tags, engine);
+			parse_image(src, tags, engine);
 
 			bool success;
 			MetaData md = engine->current_track();

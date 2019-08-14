@@ -548,16 +548,22 @@ void PlaylistView::sl_columns_changed()
 
 void PlaylistView::refresh()
 {
-	bool show_rating = GetSetting(Set::PL_ShowRating);
-	QFontMetrics fm(this->font());
+	using CN=PlaylistItemModel::ColumnName;
 
+	QFontMetrics fm = this->fontMetrics();
 	int h = std::max(fm.height() + 4, 20);
+
+	bool show_rating = GetSetting(Set::PL_ShowRating);
 	if(show_rating){
 		h += fm.height();
 	}
 
-	for(int i=0; i<m->model->rowCount(); i++) {
-		verticalHeader()->resizeSection(i, h);
+	for(int i=0; i<m->model->rowCount(); i++)
+	{
+		if(h != rowHeight(i))
+		{
+			verticalHeader()->resizeSection(i, h);
+		}
 	}
 
 	QHeaderView* hh = this->horizontalHeader();
@@ -568,18 +574,29 @@ void PlaylistView::refresh()
 	{
 		int w_cov = h;
 		viewport_width -= w_cov;
-		hh->resizeSection(PlaylistItemModel::ColumnName::Cover, w_cov);
+
+		if(hh->sectionSize(CN::Cover != w_cov)) {
+			hh->resizeSection(CN::Cover, w_cov);
+		}
 	}
 
 	if(GetSetting(Set::PL_ShowNumbers))
 	{
 		int w_tn = fm.width(QString::number(m->model->rowCount() * 100));
 		viewport_width -= w_tn;
-		hh->resizeSection(PlaylistItemModel::ColumnName::TrackNumber, w_tn);
+
+		if(hh->sectionSize(CN::TrackNumber) != w_tn) {
+			hh->resizeSection(CN::TrackNumber, w_tn);
+		}
 	}
 
-	hh->resizeSection(PlaylistItemModel::ColumnName::Time, w_time);
-	hh->resizeSection(PlaylistItemModel::ColumnName::Description, viewport_width - (w_time));
+	if(hh->sectionSize(CN::Time) != w_time) {
+		hh->resizeSection(CN::Time, w_time);
+	}
+
+	if(hh->sectionSize(CN::Description) != viewport_width - w_time) {
+		hh->resizeSection(CN::Description, viewport_width - w_time);
+	}
 
 	m->model->set_row_height(h);
 }

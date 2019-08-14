@@ -569,9 +569,9 @@ void GUI_ControlsBase::set_standard_cover()
 	btn_cover()->set_cover_location(cl);
 }
 
-void GUI_ControlsBase::cover_changed(const QImage& img)
+void GUI_ControlsBase::cover_changed(const QByteArray& data, const QString& mimedata)
 {
-	btn_cover()->force_cover(img);
+	btn_cover()->set_cover_data(data, mimedata);
 }
 
 void GUI_ControlsBase::cover_click_rejected()
@@ -606,7 +606,7 @@ void GUI_ControlsBase::setup_connections()
 	connect(pm, &PlayManager::sig_record, this, &GUI_ControlsBase::rec_changed);
 
 	Engine::Handler* engine = Engine::Handler::instance();
-	connect(engine, &Engine::Handler::sig_cover_changed, this, &GUI_ControlsBase::cover_changed);
+	connect(engine, &Engine::Handler::sig_cover_data, this, &GUI_ControlsBase::cover_changed);
 
 	Tagging::ChangeNotifier* mdcn = Tagging::ChangeNotifier::instance();
 	connect(mdcn, &Tagging::ChangeNotifier::sig_metadata_changed, this, &GUI_ControlsBase::id3_tags_changed);

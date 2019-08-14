@@ -182,9 +182,12 @@ void GUI_TagEdit::metadata_changed(const MetaDataList& md)
 	}
 
 	ui->btn_load_entire_album->setVisible(m->tag_edit->can_load_entire_album());
+	ui->btn_load_entire_album->setEnabled(true);
+
 	ui->btn_save->setEnabled(true);
 	ui->btn_undo->setEnabled(true);
 	ui->btn_undo_all->setEnabled(true);
+
 
 	set_current_index(0);
 	refresh_current_track();

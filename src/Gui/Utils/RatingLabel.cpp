@@ -45,16 +45,23 @@ struct RatingLabel::Private
 	uint8_t     icon_size;
 	bool		enabled;
 
-	Private(QWidget* parent, bool enabled) :
-		parent(parent),
+	Private() :
+		parent(nullptr),
 		offset_x(3),
 		offset_y(0),
 		rating(Rating::Zero),
 		icon_size(14),
-		enabled(enabled)
+		enabled(true)
 	{
 		pm_active = Gui::Util::pixmap("star.png", Gui::Util::NoTheme, QSize(icon_size, icon_size), true);
 		pm_inactive = Gui::Util::pixmap("star_disabled.png", Gui::Util::NoTheme, QSize(icon_size, icon_size), true);
+	}
+
+	Private(QWidget* parent, bool enabled) :
+		Private()
+	{
+		this->parent = parent;
+		this->enabled = enabled;
 	}
 };
 
@@ -70,7 +77,7 @@ RatingLabel::RatingLabel(QWidget* parent, bool enabled) :
 	this->setStyleSheet("background: transparent;");
 }
 
-RatingLabel::~RatingLabel() {}
+RatingLabel::~RatingLabel() = default;
 
 Rating RatingLabel::calc_rating(QPoint pos) const
 {
@@ -85,7 +92,7 @@ Rating RatingLabel::calc_rating(QPoint pos) const
 
 void RatingLabel::paintEvent(QPaintEvent *e)
 {
-	QLabel::paintEvent(e);
+	Q_UNUSED(e);
 
 	QPainter painter(this);
 

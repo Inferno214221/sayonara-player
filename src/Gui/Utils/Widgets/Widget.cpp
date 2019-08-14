@@ -61,11 +61,16 @@ MainWindow::MainWindow(QWidget* parent) :
 	WidgetTemplate<QMainWindow>(parent)
 {}
 
-MainWindow::~MainWindow() {}
+MainWindow::~MainWindow() = default;
 
 void MainWindow::raise()
 {
 	QMainWindow::raise();
+
+	if(!this->isActiveWindow())
+	{
+		this->activateWindow();
+	}
 
 	if(this->isHidden())
 	{
@@ -76,8 +81,12 @@ void MainWindow::raise()
 		this->setVisible(true);
 	}
 
-	this->setWindowFlags((Qt::WindowFlags) (windowFlags() & ~Qt::WindowMinimized));
-	this->activateWindow();
+	Qt::WindowStates state = this->windowState();
+	if(state & Qt::WindowMinimized)
+	{
+		this->setWindowState(state & ~Qt::WindowMinimized);
+	}
+
 	this->showNormal();
 }
 
