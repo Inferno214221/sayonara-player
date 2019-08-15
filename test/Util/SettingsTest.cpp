@@ -15,12 +15,9 @@ class SettingsTest : public QObject
 {
 	Q_OBJECT
 
-	QString m_db_source_path;
-
 public:
 	SettingsTest(QObject* parent=nullptr) :
-		QObject(parent),
-		m_db_source_path(DB_SOURCE_DIR)
+		QObject(parent)
 	{}
 
 private slots:
@@ -40,9 +37,7 @@ void SettingsTest::test_registry()
 	QVERIFY(GetSetting(Set::Player_PublicId).isEmpty());
 	QVERIFY(GetSetting(Set::Player_PrivId).isEmpty());
 
-	qDebug() << "DB_SOURCE_DIR=" << m_db_source_path;
-
-	DB::Connector* db = DB::Connector::instance(m_db_source_path, "/tmp", "player.db");
+	DB::Connector* db = DB::Connector::instance(".", "/tmp", "player.db");
 
 	QVERIFY(db->db().isOpen());
 
@@ -62,10 +57,19 @@ void SettingsTest::test_registry()
 
 	QList<SettingKey> undeployable_keys = SettingRegistry::undeployable_keys();
 
-	int max_key = static_cast<int>(SettingKey::Num_Setting_Keys);
+	int max_key = int(SettingKey::Num_Setting_Keys);
 	int c = keys.count();
 	int uks = undeployable_keys.size();
 	qDebug() << " c, uks, maxkey " << c << " " << uks << " " << max_key;
+
+	for(int i=0; i<max_key; i++)
+	{
+		auto* ptr = Settings::instance()->setting( SettingKey(i) );
+		QVERIFY(ptr != nullptr);
+	}
+
+	// if this test fails, you should call the create_db binary first
+	// your database is not up to date
 	QVERIFY(c == (max_key - uks));
 
 	{ // undeployable keys must not be in keys

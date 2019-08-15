@@ -128,8 +128,8 @@ void FileHelperTest::system_paths_test()
 	QString lib_path = Util::lib_path();
 	QString share_path = Util::share_path();
 
-	QRegExp re_lib("/usr(/[A-Za-z]*)/lib(64|32)*/sayonara");
-	QRegExp re_share("/usr(/[A-Za-z]*)/share/sayonara");
+	QRegExp re_lib("/usr(/[A-Za-z]+)?/lib(64|32)*/sayonara");
+	QRegExp re_share("/usr(/[A-Za-z]+)?/share/sayonara");
 
 	QVERIFY(re_lib.indexIn(lib_path) == 0);
 	QVERIFY(re_share.indexIn(share_path) == 0);
