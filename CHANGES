@@ -7,7 +7,9 @@
   * Covers: Cover fetcher enhanced
   * Covers: added Amazon cover server
   * Covers: added Allmusic cover server
+  * Covers: added Yandex cover server
   * Covers: Also save covers in Library
+  * Covers: Bugfix endless cover search
   * Genres: Select all tracks without genre
   * Tagging: write covers easier into tags
   * Tagging: Removed OggVorbis critcal bug
@@ -16,7 +18,6 @@
   * Library: Find track in library
   * Library: First startup enhanced
   * Engine: Bugfix in Pitch element
-  * Cover: Bugfix endless cover search
   * Library: Empty Library usability improvement
 
 == 1.4.1-stable1 ==
