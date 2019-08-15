@@ -25,6 +25,8 @@
 #include "Components/Streaming/Streams/StreamHandlerStreams.h"
 
 #include "Utils/Language/Language.h"
+#include "Gui/Utils/Icons.h"
+
 #include <QAction>
 
 struct GUI_Stream::Private
@@ -75,6 +77,7 @@ void GUI_Stream::init_ui()
 	m->radio_action = new QAction(ui->btn_tool);
 	ui->btn_tool->register_action(m->radio_action);
 	connect(m->radio_action, &QAction::triggered, this, &GUI_Stream::search_radio_triggered);
+	connect(ui->btn_search, &QPushButton::clicked, this, &GUI_Stream::search_radio_triggered);
 
 	retranslate_ui();
 }
@@ -104,6 +107,22 @@ Gui::MenuToolButton* GUI_Stream::btn_menu()
 AbstractStreamHandler* GUI_Stream::stream_handler() const
 {
 	return new StreamHandlerStreams();
+}
+
+
+void GUI_Stream::skin_changed()
+{
+	Gui::AbstractStream::skin_changed();
+
+	if(m->radio_action)
+	{
+		m->radio_action->setIcon(Gui::Icons::icon(Gui::Icons::Search));
+	}
+
+	if(ui)
+	{
+		ui->btn_search->setIcon(Gui::Icons::icon(Gui::Icons::Search));
+	}
 }
 
 void GUI_Stream::search_radio_triggered()

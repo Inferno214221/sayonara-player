@@ -21,6 +21,7 @@
 #include "GUI_AbstractStream.h"
 #include "GUI_ConfigureStreams.h"
 
+#include "Gui/Utils/Icons.h"
 #include "Gui/Utils/Style.h"
 #include "Gui/Utils/Widgets/ProgressBar.h"
 #include "Gui/Utils/MenuTool/MenuToolButton.h"
@@ -432,6 +433,7 @@ void AbstractStream::_sl_skin_changed()
 	}
 
 	set_searching(m->searching);
+	btn_play()->setIcon(Gui::Icons::icon(Gui::Icons::Play));
 }
 
 

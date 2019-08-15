@@ -51,6 +51,8 @@ class GUI_Stream :
 		Gui::MenuToolButton* btn_menu() override;
 		AbstractStreamHandler* stream_handler() const override;
 
+		void skin_changed() override;
+
 	private slots:
 		void search_radio_triggered();
 		void stream_selected(const QString& name, const QString& url);

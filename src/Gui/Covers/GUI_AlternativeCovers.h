@@ -71,8 +71,10 @@ private slots:
 	void open_file_dialog();
 
 	void lookup_started();
+
 	void lookup_finished(bool);
 	void cover_found(const QPixmap& cover);
+	void ready_for_progressbar();
 
 	void servers_changed();
 	void autostart_toggled(bool b);

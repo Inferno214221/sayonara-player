@@ -37,7 +37,7 @@ struct Gui::ProgressBar::Private
 
 
 ProgressBar::ProgressBar(QWidget* parent) :
-	QProgressBar(parent)
+	Gui::WidgetTemplate<QProgressBar>(parent)
 {
 	m = Pimpl::make<Private>(parent);
 
@@ -48,19 +48,19 @@ ProgressBar::ProgressBar(QWidget* parent) :
 	this->setMaximumHeight(m->fixed_height);
 	this->setMinimum(0);
 	this->setMaximum(0);
+
+	skin_changed();
 }
 
-ProgressBar::~ProgressBar() {}
+ProgressBar::~ProgressBar() = default;
 
 void ProgressBar::set_position(ProgressBar::Position o)
 {
 	m->position = o;
 }
 
-void ProgressBar::showEvent(QShowEvent* e)
+void ProgressBar::refresh()
 {
-	QProgressBar::showEvent(e);
-
 	int y;
 	switch(m->position)
 	{
@@ -68,16 +68,31 @@ void ProgressBar::showEvent(QShowEvent* e)
 			 y = 2;
 			break;
 		case ProgressBar::Position::Middle:
-			y = (m->parent->height() - m->fixed_height) / 2;
+			y = (parentWidget()->height() - m->fixed_height) / 2;
 			break;
 		case ProgressBar::Position::Bottom:
 		default:
-			 y = m->parent->height() - m->fixed_height - 2;
+			 y = parentWidget()->height() - m->fixed_height - 2;
 			break;
 	}
 
-	this->setGeometry(2,
-					  y,
-					  m->parent->width() - 4,
-					  m->fixed_height);
+	this->setGeometry
+	(
+		2,
+		y,
+		parentWidget()->width() - 4,
+		m->fixed_height
+	);
+}
+
+void ProgressBar::showEvent(QShowEvent* e)
+{
+	QProgressBar::showEvent(e);
+
+	refresh();
+}
+
+void ProgressBar::skin_changed()
+{
+	m->fixed_height = std::max((fontMetrics().height()) * 10 / 30, 8);
 }

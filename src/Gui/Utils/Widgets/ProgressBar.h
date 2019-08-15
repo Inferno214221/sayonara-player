@@ -25,6 +25,7 @@
 #define SAYONARALOADINGBAR_H
 
 #include "Utils/Pimpl.h"
+#include "Gui/Utils/Widgets/WidgetTemplate.h"
 #include <QProgressBar>
 
 namespace Gui
@@ -36,7 +37,7 @@ namespace Gui
 	 * @ingroup Widgets
 	 */
 	class ProgressBar :
-			public QProgressBar
+			public Gui::WidgetTemplate<QProgressBar>
 	{
 		Q_OBJECT
 		PIMPL(ProgressBar)
@@ -54,9 +55,11 @@ namespace Gui
 			~ProgressBar();
 
 			void set_position(ProgressBar::Position o);
+			void refresh();
 
 		protected:
 			void showEvent(QShowEvent* e) override;
+			void skin_changed() override;
 	};
 }
 
