@@ -4,7 +4,7 @@ project("Sayonara Player")
 option(WITH_DOC "Building with doxygen support" OFF)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}")
-set(VAR_SAYONARA_VERSION "1.5.0-beta2")
+set(VAR_SAYONARA_VERSION "1.5.1-stable1")
 
 set(SAYONARA_VERSION "${VAR_SAYONARA_VERSION}")
 set(SAYONARA_INSTALL_PATH "${CMAKE_INSTALL_PREFIX}")

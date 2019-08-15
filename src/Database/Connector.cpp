@@ -717,10 +717,10 @@ bool Connector::apply_fixes()
 
 void Connector::clean_up()
 {
-	Query q(this);
-	QString querytext = "VACUUM;";
-	q.prepare(querytext);
-	q.exec();
+//	Query q(this);
+//	QString querytext = "VACUUM;";
+//	q.prepare(querytext);
+//	q.exec();
 }
 
 DB::LibraryDatabases Connector::library_dbs() const
