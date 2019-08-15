@@ -18,12 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef GOOGLECOVERFETCHER_H
 #define GOOGLECOVERFETCHER_H
 
-#include "CoverFetcherInterface.h"
+#include "../CoverFetcherInterface.h"
 
 namespace Cover
 {

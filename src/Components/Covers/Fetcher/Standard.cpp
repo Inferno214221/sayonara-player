@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "StandardCoverFetcher.h"
+#include "Standard.h"
 #include <QStringList>
 
 using namespace Cover::Fetcher;

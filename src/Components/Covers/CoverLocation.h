@@ -82,12 +82,6 @@ namespace Cover
 		 */
 		bool			is_valid() const;
 
-		/**
-		 * @brief returns if path is the same as the invalid location path
-		 * @param cover_path the path to be compared
-		 * @return
-		 */
-		static bool is_invalid(const QString& cover_path);
 
 		/**
 		 * @brief Returns the standard cover path in the .Sayonara

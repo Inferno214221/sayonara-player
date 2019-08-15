@@ -66,19 +66,19 @@ GUI_CoverEdit::GUI_CoverEdit(GUI_TagEdit* parent) :
 	connect(m->tag_edit, &Editor::sig_metadata_received, this, &GUI_CoverEdit::set_metadata);
 	connect(ui->cb_cover_all, &QCheckBox::toggled, this, &GUI_CoverEdit::cover_all_toggled);
 	connect(ui->btn_search, &QPushButton::clicked, ui->btn_cover_replacement, &Gui::CoverButton::trigger);
-	connect(ui->btn_replace, &QPushButton::toggled, this, &GUI_CoverEdit::replace_toggled);
+	connect(ui->cb_replace, &QPushButton::toggled, this, &GUI_CoverEdit::replace_toggled);
 	connect(ui->btn_cover_replacement, &Gui::CoverButton::sig_cover_changed, this, &GUI_CoverEdit::cover_changed);
 
 	language_changed();
+
+	reset();
 }
 
 GUI_CoverEdit::~GUI_CoverEdit() = default;
 
 void GUI_CoverEdit::reset()
 {
-	ui->btn_replace->setChecked(false);
 	ui->cb_cover_all->setChecked(false);
-	ui->btn_cover_replacement->setEnabled(true);
 	show_replacement_field(false);
 
 	ui->btn_cover_replacement->set_cover_location(Cover::Location());
@@ -94,7 +94,6 @@ static void refresh_all_checkbox_text(QCheckBox* cb, int count)
 		.arg(Lang::get(Lang::Tracks));
 
 	cb->setText(text);
-	cb->setEnabled(count > 0);
 }
 
 void GUI_CoverEdit::set_metadata(const MetaDataList& v_md)
@@ -146,8 +145,9 @@ void GUI_CoverEdit::refresh_current_track()
 
 void GUI_CoverEdit::show_replacement_field(bool b)
 {
-	ui->widget_replace->setVisible(b);
-	ui->cb_cover_all->setChecked(false);
+	ui->btn_cover_replacement->setEnabled(b);
+	ui->btn_search->setEnabled(b);
+	ui->cb_cover_all->setEnabled(b);
 }
 
 
@@ -185,10 +185,11 @@ void GUI_CoverEdit::set_cover(const MetaData& md)
 
 	Cover::Location cl = Cover::Location::cover_location(md);
 
-	ui->btn_cover_replacement->set_cover_location(cl);
-	ui->btn_cover_replacement->setEnabled(cl.is_valid() && !ui->cb_cover_all->isChecked());
+	bool is_replacement_active = cl.is_valid() && ui->cb_replace->isChecked();
 
-	ui->cb_cover_all->setEnabled(cl.is_valid());
+	ui->btn_cover_replacement->set_cover_location(cl);
+	ui->btn_cover_replacement->setEnabled(is_replacement_active && !ui->cb_cover_all->isChecked());
+	ui->cb_cover_all->setEnabled(is_replacement_active);
 }
 
 void GUI_CoverEdit::replace_toggled(bool b)
@@ -211,8 +212,7 @@ void GUI_CoverEdit::cover_all_toggled(bool b)
 
 bool GUI_CoverEdit::is_cover_replacement_active() const
 {
-	return (ui->btn_replace->isChecked() &&
-			ui->btn_cover_replacement->isVisible());
+	return (ui->cb_replace->isChecked());
 }
 
 void GUI_CoverEdit::language_changed()
@@ -220,8 +220,7 @@ void GUI_CoverEdit::language_changed()
 	refresh_all_checkbox_text(ui->cb_cover_all, m->tag_edit->count());
 	ui->lab_original->setText(tr("Original"));
 	ui->btn_search->setText(Lang::get(Lang::SearchVerb));
-	ui->lab_replacement->setText(Lang::get(Lang::Replace));
-	ui->btn_replace->setText(Lang::get(Lang::Replace));
+	ui->cb_replace->setText(Lang::get(Lang::Replace));
 }
 
 void GUI_CoverEdit::cover_changed()

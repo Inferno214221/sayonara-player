@@ -1,4 +1,4 @@
-/* LFMCoverFetcher.h */
+/* Audioscrobbler.h */
 
 /* Copyright (C) 2011-2019  Lucio Carreras
  *
@@ -18,22 +18,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef LFMCOVERFETCHER_H
 #define LFMCOVERFETCHER_H
 
-#include "CoverFetcherInterface.h"
+#include "../CoverFetcherInterface.h"
 
-namespace Cover
-{
-namespace Fetcher
+namespace Cover::Fetcher
 {
     /**
      * @brief The LFMCoverFetcher class. See CoverFetcherInterface
      * @ingroup Covers
      */
-    class LastFM :
+	class Audioscrobbler :
             public Cover::Fetcher::Base
     {
 		private:
@@ -48,5 +44,5 @@ namespace Fetcher
 			int estimated_size() const override;
     };
 }
-}
+
 #endif // LFMCOVERFETCHER_H

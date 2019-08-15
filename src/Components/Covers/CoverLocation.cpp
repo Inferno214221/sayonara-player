@@ -51,6 +51,18 @@ using FetchUrlList=QList<FetchUrl>;
 
 namespace File=::Util::File;
 
+static QList<FetchUrl> extract_download_urls(const LibraryItem* item)
+{
+	QList<FetchUrl> urls;
+	const QStringList cdu = item->cover_download_urls();
+	for(const QString& url : cdu)
+	{
+		urls << FetchUrl(true, "Direct", url);
+	}
+
+	return urls;
+}
+
 struct Location::Private
 {
 	QString			search_term;		// Term provided to search engine
@@ -171,15 +183,6 @@ Location Location::invalid_location()
 }
 
 
-bool Location::is_invalid(const QString& cover_path)
-{
-	QString path1 = File::clean_filename(cover_path);
-	QString path2 = invalid_path();
-
-	return (path1 == path2);
-}
-
-
 Location Location::cover_location(const QString& album_name, const QString& artist_name)
 {
 	using namespace Cover::Fetcher;
@@ -236,14 +239,10 @@ Location Location::xcover_location(const Album& album)
 			cl = Location::cover_location(album.name(), "");
 		}
 
-		QList<FetchUrl> urls;
-		const QStringList cdu = album.cover_download_urls();
-		for(const QString& url : cdu)
-		{
-			urls << FetchUrl(true, "Direct", url);
+		QList<FetchUrl> urls = extract_download_urls( &album );
+		if(!urls.isEmpty()) {
+			cl.set_search_urls(urls);
 		}
-
-		cl.set_search_urls(urls);
 	}
 
 	// setup local paths. No audio file source. That may last too long
@@ -265,14 +264,11 @@ Location Location::cover_location(const Artist& artist)
 {
 	Location cl = Location::cover_location(artist.name());
 
-	QList<FetchUrl> urls;
-	const QStringList cdu = artist.cover_download_urls();
-	for(const QString& url : cdu)
-	{
-		urls << FetchUrl(true, "Direct", url);
+	QList<FetchUrl> urls = extract_download_urls(&artist);
+	if(!urls.isEmpty()) {
+		cl.set_search_urls(urls);
 	}
 
-	cl.set_search_urls(urls);
 	cl.set_search_term(artist.name());
 	cl.set_identifier("CL:By artist: " + artist.name());
 
@@ -288,7 +284,8 @@ Location Location::cover_location(const QString& artist)
 
 	QString cover_token = QString("artist_") + Cover::Utils::calc_cover_token(artist, "");
 	QString cover_path = Cover::Utils::cover_directory(cover_token + ".jpg");
-	Fetcher::Manager* cfm = Fetcher::Manager::instance();
+
+	auto* cfm = Fetcher::Manager::instance();
 
 	Location ret;
 
@@ -360,13 +357,7 @@ Location Location::cover_location(const MetaData& md, bool check_for_coverart)
 
 	if(cl.search_urls(true).isEmpty())
 	{
-		QList<FetchUrl> urls;
-		const QStringList cdu = md.cover_download_urls();
-		for(const QString& url : cdu)
-		{
-			urls << FetchUrl(true, "Direct", url);
-		}
-
+		QList<FetchUrl> urls = extract_download_urls(&md);
 		cl.set_search_urls(urls);
 	}
 
@@ -378,8 +369,6 @@ Location Location::cover_location(const MetaData& md, bool check_for_coverart)
 
 Location Location::cover_location(const QList<QUrl>& urls, const QString& target_path)
 {
-	Location cl;
-
 	QList<FetchUrl> fetch_urls;
 	QString merged;
 	for(QUrl url : urls)
@@ -390,6 +379,7 @@ Location Location::cover_location(const QList<QUrl>& urls, const QString& target
 
 	QString token = QString("Direct_") + Cover::Utils::calc_cover_token(merged, "");
 
+	Location cl;
 	cl.set_valid(true);
 	cl.set_cover_path(target_path);
 	cl.set_search_urls(fetch_urls);

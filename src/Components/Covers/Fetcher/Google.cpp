@@ -20,8 +20,7 @@
 
 
 
-#include "GoogleCoverFetcher.h"
-#include "Utils/Logger/Logger.h"
+#include "Google.h"
 
 #include <QStringList>
 #include <QRegExp>
@@ -41,7 +40,6 @@ QStringList Google::parse_addresses(const QByteArray& website) const
 	QStringList addresses;
 
 	if (website.isEmpty()) {
-		sp_log(Log::Error, this) << "Website empty";
 		return addresses;
 	}
 
@@ -65,8 +63,6 @@ QStringList Google::parse_addresses(const QByteArray& website) const
 		str.remove("\"");
 		addresses << str;
 	}
-
-	sp_log(Log::Debug, this) << "Got " << addresses.size() << " Addresses";
 
 	return addresses;
 }

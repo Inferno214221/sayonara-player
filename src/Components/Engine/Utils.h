@@ -27,7 +27,6 @@
 #include <utility>
 #include <memory>
 #include <iostream>
-#include <exception>
 
 #include <gst/gst.h>
 

@@ -23,7 +23,6 @@
 
 #include "Utils/Pimpl.h"
 #include "Utils/globals.h"
-#include <QString>
 
 class QString;
 class MetaDataList;

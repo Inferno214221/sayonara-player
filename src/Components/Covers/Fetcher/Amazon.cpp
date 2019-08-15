@@ -18,21 +18,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
-#include "AmazonCoverFetcher.h"
+#include "Amazon.h"
 #include "Utils/Logger/Logger.h"
+
 #include <QString>
 #include <QUrl>
 #include <QRegExp>
 #include <QMap>
 
-bool Cover::Fetcher::Amazon::can_fetch_cover_directly() const
+using Cover::Fetcher::Amazon;
+
+bool Amazon::can_fetch_cover_directly() const
 {
 	return false;
 }
 
-QStringList Cover::Fetcher::Amazon::parse_addresses(const QByteArray& website) const
+QStringList Amazon::parse_addresses(const QByteArray& website) const
 {
 	QRegExp re("<img.*class=\"s-image\".*srcset=\"(.+[0-9]+x)\"");
 	re.setMinimal(true);
@@ -85,31 +86,30 @@ QStringList Cover::Fetcher::Amazon::parse_addresses(const QByteArray& website) c
 	return sources;
 }
 
-QString Cover::Fetcher::Amazon::priv_identifier() const
+QString Amazon::priv_identifier() const
 {
 	return "amazon";
 }
 
-QString Cover::Fetcher::Amazon::album_address(const QString& artist, const QString& album) const
+QString Amazon::album_address(const QString& artist, const QString& album) const
 {
 	QString str(artist + "+" + album);
 	str.replace(" ", "+");
 	str = QString::fromLocal8Bit(QUrl::toPercentEncoding(str));
 
-	return QString("https://www.amazon.com/s?k=%1&i=digital-music&ref=nb_sb_noss").arg(str);
-	//return QString("https://www.amazon.com/s?k=%1&i=music-intl-ship&ref=nb_sb_noss_1").arg(str);
+	return QString("https://www.amazon.de/s?k=%1&i=digital-music&ref=nb_sb_noss").arg(str);
 }
 
-QString Cover::Fetcher::Amazon::search_address(const QString& search_string) const
+QString Amazon::search_address(const QString& search_string) const
 {
 	QString str(search_string);
 	str.replace(" ", "+");
 	str = QString::fromLocal8Bit(QUrl::toPercentEncoding(search_string));
 
-	return QString("https://www.amazon.com/s?k=%1&i=digital-music&ref=nb_sb_noss").arg(str);
+	return QString("https://www.amazon.de/s?k=%1&i=digital-music&ref=nb_sb_noss").arg(str);
 }
 
-int Cover::Fetcher::Amazon::estimated_size() const
+int Amazon::estimated_size() const
 {
 	return 400;
 }

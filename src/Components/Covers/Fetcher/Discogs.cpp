@@ -18,7 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "DiscogsCoverFetcher.h"
+#include "Discogs.h"
+
 #include <QRegExp>
 #include <QStringList>
 #include <QUrl>

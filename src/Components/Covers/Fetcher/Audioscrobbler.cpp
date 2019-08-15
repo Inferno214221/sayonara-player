@@ -1,4 +1,4 @@
-/* LFMCoverFetcher.cpp */
+/* Audioscrobbler.cpp */
 
 /* Copyright (C) 2011-2019  Lucio Carreras
  *
@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "LFMCoverFetcher.h"
+#include "Audioscrobbler.h"
 #include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
 #include "Components/Streaming/LastFM/LFMGlobals.h"
@@ -31,9 +31,9 @@
 #include <QUrl>
 
 namespace Algorithm=Util::Algorithm;
-using namespace Cover::Fetcher;
+using Cover::Fetcher::Audioscrobbler;
 
-bool LastFM::can_fetch_cover_directly() const
+bool Audioscrobbler::can_fetch_cover_directly() const
 {
 	return false;
 }
@@ -59,7 +59,7 @@ QDomNode find_artist_node(const QDomNode& node, const QString& prefix)
 	}
 }
 
-QStringList LastFM::parse_addresses(const QByteArray& website) const
+QStringList Audioscrobbler::parse_addresses(const QByteArray& website) const
 {
 	QDomDocument doc("LastFM Cover");
 	doc.setContent(website);
@@ -114,7 +114,7 @@ QStringList LastFM::parse_addresses(const QByteArray& website) const
 	return ret;
 }
 
-QString LastFM::album_address(const QString& artist, const QString& album) const
+QString Audioscrobbler::album_address(const QString& artist, const QString& album) const
 {
 	QString str = QString("http://ws.audioscrobbler.com/2.0/?method=album.getinfo&artist=" +
 						  QUrl::toPercentEncoding(artist) +
@@ -126,12 +126,12 @@ QString LastFM::album_address(const QString& artist, const QString& album) const
 }
 
 
-int LastFM::estimated_size() const
+int Audioscrobbler::estimated_size() const
 {
 	return 300;
 }
 
-QString LastFM::priv_identifier() const
+QString Audioscrobbler::priv_identifier() const
 {
 	return "audioscrobbler";
 }

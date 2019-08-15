@@ -18,66 +18,80 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
-#include "AllMusicCoverFetcher.h"
+#include "Allmusic.h"
 #include "Utils/Logger/Logger.h"
 #include <QString>
 #include <QUrl>
 #include <QRegExp>
 
-bool Cover::Fetcher::AllMusic::can_fetch_cover_directly() const
+using Cover::Fetcher::Allmusic;
+
+bool Allmusic::can_fetch_cover_directly() const
 {
 	return false;
 }
 
-QStringList Cover::Fetcher::AllMusic::parse_addresses(const QByteArray& website) const
+QStringList Allmusic::parse_addresses(const QByteArray& website) const
 {
-	QRegExp re("<img.*src=\"(http.*://.*f=.)\"");
+	QStringList ret;
+
+	QRegExp re("<img.*lazy.*src=\"(https?://.+\\.[a-z]{3}(.+f=.)?)\"");
 	re.setMinimal(true);
-
 	int idx = re.indexIn(website);
-	if(idx < 0){
-		return QStringList();
-	}
 
-	QString link = re.cap(1);
-	link = link.left(link.size() - 3);
-
-	QStringList ret
+	while(idx > 0)
 	{
-		link + "f=5",
-		link + "f=4",
-		link + "f=3"
-	};
+		QString link = re.cap(1);
+
+		if(link.contains("f="))
+		{
+			link = link.left(link.size() - 3);
+
+			ret << link + "f=5";
+			ret << link + "f=4";
+		}
+
+		else {
+			ret << link;
+		}
+
+		ret.removeDuplicates();
+
+		if(ret.size() > 5)
+		{
+			break;
+		}
+
+		idx = re.indexIn(website, idx + link.size());
+	}
 
 	return ret;
 }
 
-QString Cover::Fetcher::AllMusic::priv_identifier() const
+QString Allmusic::priv_identifier() const
 {
 	return "allmusic";
 }
 
-QString Cover::Fetcher::AllMusic::artist_address(const QString& artist) const
+QString Allmusic::artist_address(const QString& artist) const
 {
 	QString str = QString::fromLocal8Bit(QUrl::toPercentEncoding(artist));
 	return QString("https://www.allmusic.com/search/artists/%1").arg(str);
 }
 
-QString Cover::Fetcher::AllMusic::album_address(const QString& artist, const QString& album) const
+QString Allmusic::album_address(const QString& artist, const QString& album) const
 {
 	QString str = QString::fromLocal8Bit(QUrl::toPercentEncoding(artist + " " + album));
 	return QString("https://www.allmusic.com/search/albums/%1").arg(str);
 }
 
-QString Cover::Fetcher::AllMusic::search_address(const QString& searchstring) const
+QString Allmusic::search_address(const QString& searchstring) const
 {
 	QString str = QString::fromLocal8Bit(QUrl::toPercentEncoding(searchstring));
 	return QString("https://www.allmusic.com/search/all/%1").arg(str);
 }
 
-int Cover::Fetcher::AllMusic::estimated_size() const
+int Allmusic::estimated_size() const
 {
 	return 500;
 }

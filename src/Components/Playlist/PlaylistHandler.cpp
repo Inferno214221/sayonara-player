@@ -467,6 +467,7 @@ void Handler::insert_tracks(const MetaDataList& v_md, int row, int pl_idx)
 	}
 }
 
+
 void Handler::append_tracks(const MetaDataList& v_md, int pl_idx)
 {
 	CHECK_IDX_VOID(pl_idx)

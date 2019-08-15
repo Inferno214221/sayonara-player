@@ -21,12 +21,13 @@
 #include "CoverFetchManager.h"
 #include "CoverFetcherInterface.h"
 
-#include "GoogleCoverFetcher.h"
-#include "LFMCoverFetcher.h"
-#include "StandardCoverFetcher.h"
-#include "DiscogsCoverFetcher.h"
-#include "AllMusicCoverFetcher.h"
-#include "AmazonCoverFetcher.h"
+#include "Fetcher/Google.h"
+#include "Fetcher/Audioscrobbler.h"
+#include "Fetcher/Standard.h"
+#include "Fetcher/Discogs.h"
+#include "Fetcher/Allmusic.h"
+#include "Fetcher/Amazon.h"
+#include "Fetcher/Yandex.h"
 
 #include "Utils/Algorithm.h"
 #include "Utils/Settings/Settings.h"
@@ -158,6 +159,7 @@ struct Manager::Private
 		if(identifier.compare("Direct") == 0){
 			return true;
 		}
+
 		identifier = identifier.toLower();
 		if(!active_map.keys().contains(identifier)){
 			return false;
@@ -173,11 +175,12 @@ Manager::Manager() :
 {
 	m = Pimpl::make<Private>();
 
-	register_coverfetcher(new Fetcher::LastFM());
+	register_coverfetcher(new Fetcher::Allmusic());
+	register_coverfetcher(new Fetcher::Amazon());
+	register_coverfetcher(new Fetcher::Audioscrobbler());
 	register_coverfetcher(new Fetcher::Discogs());
 	register_coverfetcher(new Fetcher::Google());
-	register_coverfetcher(new Fetcher::AllMusic());
-	register_coverfetcher(new Fetcher::Amazon());
+	register_coverfetcher(new Fetcher::Yandex());
 
 	register_coverfetcher(m->std_cover_fetcher);
 

@@ -43,7 +43,6 @@ InstanceThread::InstanceThread(QObject* parent) :
 	QThread(parent)
 {
 	m = Pimpl::make<Private>();
-
 }
 
 InstanceThread::~InstanceThread()

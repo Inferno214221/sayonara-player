@@ -1,4 +1,4 @@
-/* AllMusicCoverFetcher.h */
+/* AmazonCoverFetcher.h */
 
 /* Copyright (C) 2011-2019 Lucio Carreras
  *
@@ -18,20 +18,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef AMAZONCOVERFETCHER_H
+#define AMAZONCOVERFETCHER_H
 
+#include "../CoverFetcherInterface.h"
 
-#ifndef ALLMUSICCOVERFETCHER_H
-#define ALLMUSICCOVERFETCHER_H
-
-#include "CoverFetcherInterface.h"
-
-namespace Cover
+namespace Cover::Fetcher
 {
-namespace Fetcher
-{
-
-	class AllMusic :
-		public Cover::Fetcher::Base
+	class Amazon :
+            public Cover::Fetcher::Base
 	{
 		private:
 			QString priv_identifier() const override;
@@ -40,13 +35,11 @@ namespace Fetcher
 			bool can_fetch_cover_directly() const override;
 			QStringList parse_addresses(const QByteArray& website) const override;
 
-			QString artist_address(const QString& artist) const override;
 			QString album_address(const QString& artist, const QString& album) const override;
 			QString search_address(const QString& str) const override;
 
 			int estimated_size() const override;
 	};
 }
-}
 
-#endif // ALLMUSICCOVERFETCHER_H
+#endif // AMAZONCOVERFETCHER_H

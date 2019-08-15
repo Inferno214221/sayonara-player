@@ -1,6 +1,6 @@
-/* StandardCoverFetcher.h */
+/* AllMusicCoverFetcher.h */
 
-/* Copyright (C) 2011-2019  Lucio Carreras
+/* Copyright (C) 2011-2019 Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -20,25 +20,16 @@
 
 
 
-#ifndef STANDARDCOVERFETCHER_H
-#define STANDARDCOVERFETCHER_H
+#ifndef ALLMUSICCOVERFETCHER_H
+#define ALLMUSICCOVERFETCHER_H
 
-#include "CoverFetcherInterface.h"
+#include "../CoverFetcherInterface.h"
 
-namespace Cover
+namespace Cover::Fetcher
 {
-
-namespace Fetcher
-{
-
-    /**
-     * @brief The StandardCoverFetcher class. Convenience class for local cover search.
-     * See CoverFetcherInterface
-     * @ingroup Covers
-     */
-    class Standard :
-        public Cover::Fetcher::Base
-    {
+	class Allmusic :
+		public Cover::Fetcher::Base
+	{
 		private:
 			QString priv_identifier() const override;
 
@@ -46,9 +37,12 @@ namespace Fetcher
 			bool can_fetch_cover_directly() const override;
 			QStringList parse_addresses(const QByteArray& website) const override;
 
+			QString artist_address(const QString& artist) const override;
+			QString album_address(const QString& artist, const QString& album) const override;
+			QString search_address(const QString& str) const override;
+
 			int estimated_size() const override;
-    };
-}
+	};
 }
 
-#endif // STANDARDCOVERFETCHER_H
+#endif // ALLMUSICCOVERFETCHER_H
