@@ -2,7 +2,7 @@ project(gui_playlist)
 
 file(GLOB_RECURSE SOURCES . *.cpp)
 
-add_library(${PROJECT_NAME} ${SOURCES})
+add_library(${PROJECT_NAME} STATIC ${SOURCES})
 
 # InfoDialog, Plugins, Shutdown, Utils
 target_link_libraries(${PROJECT_NAME}
