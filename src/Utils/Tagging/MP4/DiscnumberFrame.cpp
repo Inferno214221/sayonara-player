@@ -18,10 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "DiscnumberFrame.h"
-#include <taglib/mp4item.h>
+#include "taglib/mp4item.h"
 
 MP4::DiscnumberFrame::DiscnumberFrame(TagLib::MP4::Tag* tag) :
     MP4::MP4Frame<Models::Discnumber>(tag, "disk")

@@ -23,10 +23,10 @@
 
 #include "Utils/Tagging/AbstractFrame.h"
 
-#include <taglib/fileref.h>
-#include <taglib/mpegfile.h>
-#include <taglib/id3v2tag.h>
-#include <taglib/id3v2frame.h>
+#include "taglib/fileref.h"
+#include "taglib/mpegfile.h"
+#include "taglib/id3v2tag.h"
+#include "taglib/id3v2frame.h"
 
 #include <QString>
 

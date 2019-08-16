@@ -19,10 +19,10 @@
  */
 
 #include "Cover.h"
-#include <taglib/flacpicture.h>
-#include <taglib/flacfile.h>
-#include <taglib/oggfile.h>
-#include <taglib/tmap.h>
+#include "taglib/flacpicture.h"
+#include "taglib/flacfile.h"
+#include "taglib/oggfile.h"
+#include "taglib/tmap.h"
 
 #include "Utils/Logger/Logger.h"
 

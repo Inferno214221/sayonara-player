@@ -24,11 +24,12 @@
 #define ABSTRACT_MP4_FRAME_H_
 
 #include "Utils/Tagging/AbstractFrame.h"
+
+#include "taglib/tag.h"
+#include "taglib/tstringlist.h"
+#include "taglib/mp4tag.h"
+
 #include <QString>
-#include <taglib/tag.h>
-#include <taglib/tstring.h>
-#include <taglib/tstringlist.h>
-#include <taglib/mp4tag.h>
 
 namespace MP4
 {

@@ -37,9 +37,9 @@
 #include <QFile>
 #include <QFileInfo>
 
-#include <taglib/fileref.h>
-#include <taglib/flacpicture.h>
-#include <taglib/tlist.h>
+#include "taglib/fileref.h"
+#include "taglib/flacpicture.h"
+#include "taglib/tlist.h"
 
 using Tagging::ParsedTag;
 

@@ -25,10 +25,11 @@
 
 #include "Utils/Tagging/AbstractFrame.h"
 #include <QString>
-#include <taglib/tag.h>
-#include <taglib/xiphcomment.h>
-#include <taglib/tstring.h>
-#include <taglib/tstringlist.h>
+
+#include "taglib/tag.h"
+#include "taglib/xiphcomment.h"
+#include "taglib/tstring.h"
+#include "taglib/tstringlist.h"
 
 namespace Xiph
 {

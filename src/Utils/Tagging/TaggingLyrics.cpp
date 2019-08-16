@@ -22,12 +22,13 @@
 
 #include "TaggingLyrics.h"
 #include "Tagging.h"
-#include <taglib/fileref.h>
 #include "Tagging/ID3v2/Lyrics.h"
 #include "Tagging/Xiph/LyricsFrame.h"
 
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/Logger/Logger.h"
+
+#include "taglib/fileref.h"
 
 #include <QString>
 

@@ -19,9 +19,8 @@
  */
 
 
-
 #include "Lyrics.h"
-#include <taglib/tstring.h>
+#include "taglib/tstring.h"
 
 ID3v2::LyricsFrame::LyricsFrame(TagLib::ID3v2::Tag* tag) :
 	ID3v2Frame<QString, TagLib::ID3v2::UnsynchronizedLyricsFrame>(tag, "USLT")

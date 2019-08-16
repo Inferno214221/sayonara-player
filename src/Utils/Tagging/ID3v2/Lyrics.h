@@ -25,7 +25,7 @@
 
 #include <QString>
 #include "ID3v2Frame.h"
-#include <taglib/unsynchronizedlyricsframe.h>
+#include "taglib/unsynchronizedlyricsframe.h"
 
 namespace ID3v2
 {

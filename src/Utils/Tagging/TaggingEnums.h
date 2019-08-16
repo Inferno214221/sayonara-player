@@ -23,11 +23,11 @@
 #ifndef TAGGINGENUMS
 #define TAGGINGENUMS
 
-#include <taglib/audioproperties.h>
-#include <taglib/id3v1tag.h>
-#include <taglib/id3v2tag.h>
-#include <taglib/mp4tag.h>
-#include <taglib/xiphcomment.h>
+#include "taglib/audioproperties.h"
+#include "taglib/id3v1tag.h"
+#include "taglib/id3v2tag.h"
+#include "taglib/mp4tag.h"
+#include "taglib/xiphcomment.h"
 
 namespace Tagging
 {

@@ -21,7 +21,8 @@
 
 
 #include "AbstractFrame.h"
-#include <taglib/tstring.h>
+#include "taglib/tstring.h"
+
 #include <QString>
 
 struct Tagging::AbstractFrameHelper::Private

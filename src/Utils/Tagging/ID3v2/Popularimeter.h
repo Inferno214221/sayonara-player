@@ -24,9 +24,9 @@
 
 #include "ID3v2Frame.h"
 #include "Utils/Tagging/Models/Popularimeter.h"
+#include "taglib/popularimeterframe.h"
 
 #include <QString>
-#include <taglib/popularimeterframe.h>
 
 namespace ID3v2
 {

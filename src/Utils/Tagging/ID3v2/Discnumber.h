@@ -24,7 +24,7 @@
 #include "ID3v2Frame.h"
 #include "Utils/Tagging/Models/Discnumber.h"
 
-#include <taglib/textidentificationframe.h>
+#include "taglib/textidentificationframe.h"
 
 namespace ID3v2
 {

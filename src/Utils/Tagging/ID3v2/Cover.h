@@ -23,10 +23,10 @@
 
 #include "ID3v2Frame.h"
 #include "Utils/Tagging/Models/Cover.h"
+#include "taglib/attachedpictureframe.h"
 
 #include <QByteArray>
 #include <QString>
-#include <taglib/attachedpictureframe.h>
 
 namespace ID3v2
 {
