@@ -8,6 +8,7 @@ add_library(${PROJECT_NAME} ${SOURCES})
 target_link_libraries(${PROJECT_NAME}
 	gui_playlist
 	gui_covers
+	gui_infodialog
 	interface_librarycontainer
 	interface_notifications
 )
