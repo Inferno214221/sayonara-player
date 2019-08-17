@@ -2,21 +2,31 @@ cmake_minimum_required(VERSION 3.7)
 project("Sayonara Player")
 
 option(WITH_DOC "Building with doxygen support" OFF)
+option(WITH_COTIRE "Building with cotire PCH and compile time optimizations" OFF)
+option(WITH_SYSTEM_TAGLIB "Use the taglib provided by the destribution, which contains critical bugs in 1.11" OFF)
 
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}")
+get_property(HAS_64_SUFFIX GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS)
+if(HAS_64_SUFFIX)
+	set(LIB_SUFFIX "64")
+else()
+	set(LIB_SUFFIX "")
+endif()
+
 set(VAR_SAYONARA_VERSION "1.5.1-stable2")
-
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR})
 set(SAYONARA_VERSION "${VAR_SAYONARA_VERSION}")
 set(SAYONARA_INSTALL_PATH "${CMAKE_INSTALL_PREFIX}")
-set(SAYONARA_INSTALL_LIB_PATH "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/sayonara/")
 set(SAYONARA_INSTALL_BIN_PATH "${CMAKE_INSTALL_PREFIX}/bin/")
+set(SAYONARA_INSTALL_LIB_PATH "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/sayonara/")
 set(SAYONARA_INSTALL_SHARE_PATH "${CMAKE_INSTALL_PREFIX}/share/sayonara/")
 
 message("Build Sayonara ${VAR_SAYONARA_VERSION}")
 message("Will install to ${CMAKE_INSTALL_PREFIX}")
 
+
 add_subdirectory(src)
 add_subdirectory(resources)
+
 
 string(TOLOWER "${CMAKE_BUILD_TYPE}" LOWER_CMAKE_BUILD_TYPE)
 message("Lower cmake build type ${LOWER_CMAKE_BUILD_TYPE}")
@@ -24,7 +34,8 @@ if("${LOWER_CMAKE_BUILD_TYPE}" MATCHES "debug")
 	SET(WITH_TESTS 1)
 endif()
 
-if( WITH_TESTS )
+
+if(WITH_TESTS)
 	message("Compiling with tests...")
 	enable_testing()
 	add_subdirectory(test)
@@ -33,9 +44,12 @@ else()
 	message(" In order to change that, use -DWITH_TESTS=1")
 endif()
 
+
 set(CMAKE_SKIP_RPATH:BOOL ON)
 set(CMAKE_INSTALL_MANIFEST "install_manifest.txt")
 
+
+# doxygen
 message ("Looking for doxygen")
 find_package(Doxygen)
 

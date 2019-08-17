@@ -131,6 +131,7 @@ void PluginHandler::init_libraries(const QList<Library::Container*>& containers)
 	}
 }
 
+
 void PluginHandler::init_dll_libraries()
 {
 	QDir plugin_dir = QDir(Util::lib_path());

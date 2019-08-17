@@ -58,7 +58,7 @@ using MilliSeconds=int64_t;
 using MicroSeconds=int64_t;
 using NanoSeconds=int64_t;
 using Bitrate=uint32_t;
-using Filesize=uint32_t;
+using Filesize=uint64_t;
 
 template<typename K, typename V>
 using PairList = QList<QPair<K,V>>;
