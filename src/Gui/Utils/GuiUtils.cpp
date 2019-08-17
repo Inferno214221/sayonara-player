@@ -31,11 +31,11 @@
 #include <QMainWindow>
 #include <QList>
 #include <QSize>
-
-using namespace Gui;
-
+#include <QRegExp>
 #include <QDir>
 #include <QDirIterator>
+
+using namespace Gui;
 
 static QString best_resolution_path(const QStringList& paths)
 {
@@ -116,7 +116,7 @@ static QStringList icon_paths(const QString& icon_name, Gui::Util::IconTheme the
 	return paths;
 }
 
-#include <QRegExp>
+
 QIcon Util::icon(const QString& icon_name, IconTheme theme_name)
 {
 	if(icon_name.isEmpty()){

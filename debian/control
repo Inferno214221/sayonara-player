@@ -17,10 +17,12 @@ Homepage: http://sayonara-player.com
 
 Package: sayonara
 Architecture: any
-Depends: gstreamer1.0-plugins-ugly,
-         gstreamer1.0-plugins-bad,
-         libgstreamer-plugins-bad1.0-0,
+Depends: gstreamer1.0-plugins-bad,
+		 gstreamer1.0-plugins-good,
+		 libgstreamer-plugins-bad1.0-0,
+		 libgstreamer-plugins-good1.0-0,
          libqt5sql5-sqlite,
+		 libqt5svg5,
          ${misc:Depends},
          ${shlibs:Depends}
 Description: Small and lightweight music player.

@@ -125,7 +125,7 @@ void GUI_LibraryInfoBox::refresh()
 	auto n_albums = v_albums.size();
 	auto n_artists = v_artists.size();
 	MilliSeconds duration_ms = 0;
-	auto filesize = MetaData().filesize;
+	Filesize filesize = 0;
 
 	for( const MetaData& md : v_md ) {
 		duration_ms += md.duration_ms;

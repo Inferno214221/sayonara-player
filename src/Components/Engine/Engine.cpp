@@ -179,6 +179,11 @@ bool EngineClass::change_track_immediatly(const MetaData& md)
 
 bool EngineClass::change_track(const MetaData& md)
 {
+	if(!m->pipeline)
+	{
+		return false;
+	}
+
 	bool crossfader_active = GetSetting(Set::Engine_CrossFaderActive);
 	if(m->gapless_state != GaplessState::Stopped && crossfader_active)
 	{

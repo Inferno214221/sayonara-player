@@ -58,7 +58,7 @@ Visualizer::Visualizer(GstElement* pipeline, GstElement* tee)
 	m = Pimpl::make<Private>(pipeline, tee);
 }
 
-Visualizer::~Visualizer() {}
+Visualizer::~Visualizer() = default;
 
 bool Visualizer::init()
 {

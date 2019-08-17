@@ -351,7 +351,7 @@ set(tag_LIB_SRCS
   tagutils.cpp
 )
 
-add_library(tag ${tag_LIB_SRCS} ${tag_HDRS})
+add_library(tag STATIC ${tag_LIB_SRCS} ${tag_HDRS})
 
 if(HAVE_ZLIB AND NOT HAVE_ZLIB_SOURCE)
   target_link_libraries(tag ${ZLIB_LIBRARIES})

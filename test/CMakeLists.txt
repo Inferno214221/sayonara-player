@@ -25,13 +25,14 @@ include_directories(${Qt5Xml_INCLUDE_DIRS})
 include_directories(${Qt5Sql_INCLUDE_DIRS})
 include_directories(${Qt5Network_INCLUDE_DIRS})
 include_directories(${Qt5Test_INCLUDE_DIRS})
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../src")
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../src)
 
 add_definitions(${Qt5Core_DEFINITIONS})
 add_definitions(${QT_DEFINITIONS})
 
 include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_BINARY_DIR}/src)
+include_directories(${CMAKE_BINARY_DIR}/src/3rdParty)
 
 include_directories(${CMAKE_SOURCE_DIR}/test)
 include_directories(${CMAKE_BINARY_DIR}/test)
