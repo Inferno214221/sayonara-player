@@ -90,9 +90,9 @@ Rating RatingLabel::calc_rating(QPoint pos) const
 	return rating;
 }
 
-void RatingLabel::paintEvent(QPaintEvent *e)
+void RatingLabel::paintEvent(QPaintEvent* e)
 {
-	Q_UNUSED(e);
+	QLabel::paintEvent(e);
 
 	QPainter painter(this);
 
@@ -103,7 +103,7 @@ void RatingLabel::paintEvent(QPaintEvent *e)
 
 	painter.translate(rect().x() + m->offset_x, rect().y() + offset_y );
 
-	for(int i=0; i<uchar(Rating::Five); i++)
+	for(uchar i=0; i<uchar(Rating::Five); i++)
 	{
 		Rating rating = Rating(i);
 		if(rating < m->rating)

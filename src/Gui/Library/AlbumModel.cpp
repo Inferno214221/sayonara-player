@@ -63,7 +63,7 @@ AlbumModel::AlbumModel(QObject* parent, AbstractLibrary* library) :
 	m = Pimpl::make<AlbumModel::Private>();
 }
 
-AlbumModel::~AlbumModel() {}
+AlbumModel::~AlbumModel() = default;
 
 Id AlbumModel::id_by_index(int index) const
 {

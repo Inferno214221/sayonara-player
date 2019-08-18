@@ -64,27 +64,20 @@ void RatingDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option
 		return;
 	}
 
-	if(index.column() != m->rating_column)
-	{
-		Gui::StyledItemDelegate::paint(painter, option, index);
+	Gui::StyledItemDelegate::paint(painter, option, index);
+
+	if(index.column() != m->rating_column) {
 		return;
 	}
 
 	QRect rect = option.rect;
-	int parent_width = option.widget->width();
-	int remainder = parent_width - (option.rect.x() + option.rect.width());
-	if(remainder < 0)
-	{
-		rect.setWidth(option.rect.width() + remainder);
-	}
-
 	Rating rating = index.data(Qt::EditRole).value<Rating>();
-	RatingLabel* label = m->rating_labels[int(rating)];
+	RatingLabel* label = m->rating_labels[uchar(rating)];
+
+	painter->save();
 
 	painter->setClipping(true);
 	painter->setClipRect(rect);
-
-	painter->save();
 	painter->translate(rect.left(), rect.top() );
 
 	label->setGeometry(rect);

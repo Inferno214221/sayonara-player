@@ -100,14 +100,22 @@ QString Util::cvt_str_to_first_upper(const QString& str)
 	}
 
 	QString ret = str.toLower();
-	QString chars=" \n\t.(+?!<\"";
+	QString chars=" \n\t. (+?!<\"";
 	for(QChar c : chars)
 	{
 		QStringList lst = ret.split(c);
 
 		for(QString& s : lst)
 		{
-			s.replace(0, 1, s[0].toUpper());
+			if(s.trimmed().isEmpty())
+			{
+				continue;
+			}
+
+			if(s[0].isLetter())
+			{
+				s.replace(0, 1, s[0].toUpper());
+			}
 		}
 
 		ret = lst.join(c);
