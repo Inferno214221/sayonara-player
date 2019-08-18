@@ -540,8 +540,6 @@ void GUI_Player::language_changed()
 
 void GUI_Player::skin_changed()
 {
-	QString stylesheet = Style::current_style();
-	this->setStyleSheet(stylesheet);
 	int style = GetSetting(Set::Player_Style);
 	if(style != m->style)
 	{

@@ -48,6 +48,7 @@
 #include "Interfaces/Notification/NotificationHandler.h"
 
 #include "Gui/Utils/GuiUtils.h"
+#include "Gui/Utils/Style.h"
 
 #include "Gui/Player/GUI_Player.h"
 #include "Gui/Library/LocalLibraryContainer.h"
@@ -308,6 +309,7 @@ bool Application::init(const QStringList& files_to_play)
 	//connect(this, &Application::commitDataRequest, this, &Application::session_end_requested);
 
 	ListenSetting(Set::Lib_SortIgnoreArtistArticle, Application::ignore_artist_article_changed);
+	ListenSetting(Set::Player_Style, Application::skin_changed);
 
 	return true;
 }
@@ -479,4 +481,10 @@ void Application::create_playlist()
 	if(eplg->is_play_allowed()) {
 		eplg->change_track();
 	}
+}
+
+
+void Application::skin_changed()
+{
+	QApplication::setStyleSheet(Style::current_style());
 }

@@ -55,6 +55,7 @@ private slots:
 	void ignore_artist_article_changed();
 	void session_end_requested(QSessionManager& manager);
 	void create_playlist();
+	void skin_changed();
 };
 
 #endif // APPLICATION_H
