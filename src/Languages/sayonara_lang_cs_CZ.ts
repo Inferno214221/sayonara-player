@@ -63,7 +63,7 @@
     <message>
         <location filename="src/Gui/Directories/GUI_DirectoryWidget.ui" line="+258"/>
         <source>No library found</source>
-        <translation type="unfinished"/>
+        <translation>Nenalezena žádná sbírka</translation>
     </message>
 </context>
 <context>
@@ -287,7 +287,7 @@
     <message>
         <location line="+9"/>
         <source>All tracks could be converted</source>
-        <translation type="unfinished"/>
+        <translation>Všechny skladby budou převedeny</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -1163,13 +1163,13 @@
     <message>
         <location filename="src/Gui/Preferences/UiPreferences/GUI_IconPreferences.ui" line="+20"/>
         <source>Also apply this icon theme to the dark style</source>
-        <translation type="unfinished"/>
+        <translation>Tento motiv ikon použít i na tmavý vzhled</translation>
     </message>
     <message>
         <location filename="src/Gui/Preferences/UiPreferences/GUI_IconPreferences.cpp" line="+97"/>
         <location line="+102"/>
         <source>System theme</source>
-        <translation type="unfinished"/>
+        <translation>Motiv systému</translation>
     </message>
     <message>
         <location line="-94"/>
@@ -1182,7 +1182,7 @@
     <message>
         <location filename="src/Gui/Preferences/UiPreferences/GUI_UiPreferences.ui" line="+57"/>
         <source>Fading cover</source>
-        <translation type="unfinished"/>
+        <translation>Blednoucí obal</translation>
     </message>
     <message>
         <location filename="src/Gui/Preferences/UiPreferences/GUI_UiPreferences.cpp" line="+47"/>
@@ -1627,7 +1627,7 @@
     <message>
         <location filename="src/Gui/Library/GUI_LocalLibrary.cpp" line="+362"/>
         <source>Audio files</source>
-        <translation type="unfinished"/>
+        <translation>Zvukové soubory</translation>
     </message>
 </context>
 <context>
@@ -1888,7 +1888,7 @@
     <message>
         <location line="+1"/>
         <source>Playlist mode</source>
-        <translation type="unfinished"/>
+        <translation>Režim seznamu skladeb</translation>
     </message>
 </context>
 <context>
@@ -1969,22 +1969,22 @@
     <message>
         <location line="+35"/>
         <source>Could not rename playlist</source>
-        <translation type="unfinished"/>
+        <translation>Nepodařilo se přejmenovat seznam skladeb</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Name is invalid</source>
-        <translation type="unfinished"/>
+        <translation>Název není platný</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>Do you really want to delete %1?</source>
-        <translation type="unfinished"/>
+        <translation>Opravdu chcete smazat %1?</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Could not delete playlist %1</source>
-        <translation type="unfinished"/>
+        <translation>Nepodařilo se smazat seznam skladeb %1</translation>
     </message>
 </context>
 <context>
@@ -2119,7 +2119,7 @@
     <message>
         <location line="+2"/>
         <source>Toolbar</source>
-        <translation>Nástrojová lišta</translation>
+        <translation>Nástrojový pruh</translation>
     </message>
     <message>
         <location line="+231"/>
@@ -2558,7 +2558,7 @@
     <message>
         <location line="+2"/>
         <source>Hide</source>
-        <translation type="unfinished"/>
+        <translation>Skrýt</translation>
     </message>
     <message>
         <location line="+2"/>

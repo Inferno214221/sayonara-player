@@ -44,13 +44,13 @@
     <message numerus="yes">
         <location filename="src/Gui/Covers/GUI_AlternativeCovers.cpp" line="+248"/>
         <source>%n cover(s) found</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Znaleziono %n okładkę</numerusform><numerusform>Znaleziono %n okładki</numerusform><numerusform>Znaleziono %n okładek</numerusform><numerusform>Znaleziono %n okładek</numerusform></translation>
     </message>
     <message>
         <location line="+127"/>
         <location line="+31"/>
         <source>Also save cover to %1</source>
-        <translation type="unfinished"/>
+        <translation>Zapisz także okładkę w %1</translation>
     </message>
     <message>
         <location line="-11"/>
@@ -63,7 +63,7 @@
     <message>
         <location filename="src/Gui/Directories/GUI_DirectoryWidget.ui" line="+258"/>
         <source>No library found</source>
-        <translation type="unfinished"/>
+        <translation>Nie znaleziono biblioteki</translation>
     </message>
 </context>
 <context>
@@ -91,7 +91,7 @@
     <message numerus="yes">
         <location filename="src/Gui/ImportDialog/GUI_ImportDialog.cpp" line="+103"/>
         <source>%n track(s) available</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n dostępna ścieżka</numerusform><numerusform>%n dostępne ścieżki</numerusform><numerusform>%n dostępnych ścieżek</numerusform><numerusform>%n dostępnych ścieżek</numerusform></translation>
     </message>
     <message>
         <location line="+20"/>
@@ -277,7 +277,7 @@
     <message numerus="yes">
         <location line="+38"/>
         <source>Failed to convert %n track(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Nie udało się przekonwertować %n ścieżki</numerusform><numerusform>Nie udało się przekonwertować %n ścieżek</numerusform><numerusform>Nie udało się przekonwertować %n ścieżek</numerusform><numerusform>Nie udało się przekonwertować %n ścieżek</numerusform></translation>
     </message>
     <message>
         <location line="+1"/>
@@ -287,7 +287,7 @@
     <message>
         <location line="+9"/>
         <source>All tracks could be converted</source>
-        <translation type="unfinished"/>
+        <translation>Wszystkie ścieżki można przekonwertować</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -334,7 +334,7 @@
     <message numerus="yes">
         <location line="+42"/>
         <source>%n listener(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n słuchacz</numerusform><numerusform>%n słuchaczy</numerusform><numerusform>%n słuchaczy</numerusform><numerusform>%n słuchaczy</numerusform></translation>
     </message>
     <message>
         <location line="+60"/>
@@ -369,7 +369,7 @@
     <message>
         <location filename="src/Gui/Plugins/Engine/GUI_Speed.cpp" line="+2"/>
         <source>%1 and %2</source>
-        <translation type="unfinished"/>
+        <translation>%1 i %2</translation>
     </message>
     <message>
         <location line="+66"/>
@@ -551,7 +551,7 @@
     <message>
         <location line="+13"/>
         <source>Active</source>
-        <translation>Aktywne</translation>
+        <translation>Włącz</translation>
     </message>
     <message>
         <location line="+60"/>
@@ -1129,7 +1129,7 @@
     <message>
         <location filename="src/Gui/Preferences/Streams/GUI_StreamPreferences.cpp" line="+57"/>
         <source>%1 and %2</source>
-        <translation type="unfinished"/>
+        <translation>%1 i %2</translation>
     </message>
 </context>
 <context>
@@ -1163,13 +1163,13 @@
     <message>
         <location filename="src/Gui/Preferences/UiPreferences/GUI_IconPreferences.ui" line="+20"/>
         <source>Also apply this icon theme to the dark style</source>
-        <translation type="unfinished"/>
+        <translation>Zastosuj także ten motyw ikon do ciemnego stylu</translation>
     </message>
     <message>
         <location filename="src/Gui/Preferences/UiPreferences/GUI_IconPreferences.cpp" line="+97"/>
         <location line="+102"/>
         <source>System theme</source>
-        <translation type="unfinished"/>
+        <translation>Motyw systemu</translation>
     </message>
     <message>
         <location line="-94"/>
@@ -1182,7 +1182,7 @@
     <message>
         <location filename="src/Gui/Preferences/UiPreferences/GUI_UiPreferences.ui" line="+57"/>
         <source>Fading cover</source>
-        <translation type="unfinished"/>
+        <translation>Zanikająca okładka</translation>
     </message>
     <message>
         <location filename="src/Gui/Preferences/UiPreferences/GUI_UiPreferences.cpp" line="+47"/>
@@ -1318,7 +1318,7 @@
     <message>
         <location line="+1"/>
         <source>Writeable</source>
-        <translation type="unfinished"/>
+        <translation>Zapisywalny</translation>
     </message>
     <message>
         <location line="+70"/>
@@ -1386,7 +1386,7 @@
     <message numerus="yes">
         <location line="+2"/>
         <source>%n track(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n ścieżka</numerusform><numerusform>%n ścieżki</numerusform><numerusform>%n ścieżek</numerusform><numerusform>%n ścieżek</numerusform></translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1509,7 +1509,7 @@
         <location line="+27"/>
         <location line="+33"/>
         <source>Computer will shutdown in %n minute(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Komputer zostanie zamknięty za %n minutę</numerusform><numerusform>Komputer zostanie zamknięty za %n minuty</numerusform><numerusform>Komputer zostanie zamknięty za %n minut</numerusform><numerusform>Komputer zostanie zamknięty za %n minut</numerusform></translation>
     </message>
 </context>
 <context>
@@ -1627,7 +1627,7 @@
     <message>
         <location filename="src/Gui/Library/GUI_LocalLibrary.cpp" line="+362"/>
         <source>Audio files</source>
-        <translation type="unfinished"/>
+        <translation>Pliki audio</translation>
     </message>
 </context>
 <context>
@@ -1782,7 +1782,7 @@
     <message>
         <location line="+3"/>
         <source>Special thanks to all the brave translators</source>
-        <translation>Specjalne podziękowania dla wszystkich dzielnych tłumaczy!</translation>
+        <translation>Specjalne podziękowania dla wszystkich dzielnych tłumaczy</translation>
     </message>
 </context>
 <context>
@@ -1870,7 +1870,7 @@
     <message>
         <location filename="src/Gui/Playlist/PlaylistActionMenu.cpp" line="+210"/>
         <source>Please set library path first</source>
-        <translation>Proszę ustawić ścieżkę biblioteki pierwsza</translation>
+        <translation>Najpierw ustaw ścieżkę do biblioteki</translation>
     </message>
 </context>
 <context>
@@ -1888,7 +1888,7 @@
     <message>
         <location line="+1"/>
         <source>Playlist mode</source>
-        <translation type="unfinished"/>
+        <translation>Tryb listy odtwarzania</translation>
     </message>
 </context>
 <context>
@@ -1902,7 +1902,7 @@
     <message>
         <location line="+2"/>
         <source>%1 and %2</source>
-        <translation type="unfinished"/>
+        <translation>%1 i %2</translation>
     </message>
 </context>
 <context>
@@ -1911,7 +1911,7 @@
         <location filename="src/Gui/Plugins/Engine/GUI_Equalizer.cpp" line="+138"/>
         <location line="+40"/>
         <source>Linked sliders</source>
-        <translation type="unfinished"/>
+        <translation>Połączone suwaki</translation>
     </message>
     <message>
         <location line="-10"/>
@@ -1921,7 +1921,7 @@
     <message>
         <location line="+248"/>
         <source>Name %1 not allowed</source>
-        <translation type="unfinished"/>
+        <translation>Nazwa %1 jest niedozwolona</translation>
     </message>
 </context>
 <context>
@@ -1969,22 +1969,22 @@
     <message>
         <location line="+35"/>
         <source>Could not rename playlist</source>
-        <translation type="unfinished"/>
+        <translation>Nie można zmienić nazwy listy odtwarzania</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Name is invalid</source>
-        <translation type="unfinished"/>
+        <translation>Nazwa jest nieprawidłowa</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>Do you really want to delete %1?</source>
-        <translation type="unfinished"/>
+        <translation>Czy na pewno chcesz usunąć %1?</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Could not delete playlist %1</source>
-        <translation type="unfinished"/>
+        <translation>Nie można usunąć listy odtwarzania %1</translation>
     </message>
 </context>
 <context>
@@ -2070,17 +2070,17 @@
     <message numerus="yes">
         <location line="+5"/>
         <source>Found %n artist(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Znaleziono %n artystę</numerusform><numerusform>Znaleziono %n artystów</numerusform><numerusform>Znaleziono %n artystów</numerusform><numerusform>Znaleziono %n artystów</numerusform></translation>
     </message>
     <message numerus="yes">
         <location line="+48"/>
         <source>%n track(s) found</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Znaleziono %n ścieżkę</numerusform><numerusform>Znaleziono %n ścieżki</numerusform><numerusform>Znaleziono %n ścieżek</numerusform><numerusform>Znaleziono %n ścieżek</numerusform></translation>
     </message>
     <message numerus="yes">
         <location line="+9"/>
         <source>%n playlist(s) found</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Znaleziono %n listę odtwarzania</numerusform><numerusform>Znaleziono %n listy odtwarzania</numerusform><numerusform>Znaleziono %n list odtwarzania</numerusform><numerusform>Znaleziono %n list odtwarzania</numerusform></translation>
     </message>
 </context>
 <context>
@@ -2155,7 +2155,7 @@
     <message numerus="yes">
         <location line="+3"/>
         <source>You are about to delete %n file(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Zamierzasz usunąć %n plik</numerusform><numerusform>Zamierzasz usunąć %n pliki</numerusform><numerusform>Zamierzasz usunąć %n plików</numerusform><numerusform>Zamierzasz usunąć %n plików</numerusform></translation>
     </message>
 </context>
 <context>
@@ -2558,7 +2558,7 @@
     <message>
         <location line="+2"/>
         <source>Hide</source>
-        <translation type="unfinished"/>
+        <translation>Ukryj</translation>
     </message>
     <message>
         <location line="+2"/>
