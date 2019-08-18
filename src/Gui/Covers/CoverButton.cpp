@@ -204,8 +204,9 @@ void CoverButton::set_cover_data(const QByteArray& data, const QString& mimetype
 	worker->moveToThread(thread);
 
 	connect(worker, &ByteArrayConverter::sig_finished, this, &CoverButton::byteconverter_finished);
-	connect(thread, &QThread::finished, thread, &QObject::deleteLater);
+	connect(worker, &ByteArrayConverter::sig_finished, thread, &QThread::quit);
 	connect(thread, &QThread::started, worker, &ByteArrayConverter::start);
+	connect(thread, &QThread::finished, thread, &QObject::deleteLater);
 
 	thread->start();
 }
