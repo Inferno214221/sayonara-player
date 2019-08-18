@@ -16,16 +16,16 @@ Please also look at https://sayonara-player.com/howto-build.php
 
 Libraries
 
-    - Qt >= 5.3: Core, Widgets, Network, Xml, Sql, Sqlite http://qt.nokia.com/products/
+    - Qt >= 5.6: Core, Widgets, Network, Xml, Sql, Sqlite http://qt.nokia.com/products/
     - Gstreamer development files, GStreamer plugins 
     - zlib
 
 1. Linux
 
 	You need 
-	* g++ >= 4.8 (important due to C++x11 standard)
-	* cmake
-	* Qt >= 5.3 + development files 
+	* g++ >= 7.1 (important due to C++x17 standard)
+	* cmake >= 3.8
+	* Qt >= 5.6 + development files 
 	* Gstreamer 1.0 + development files (libgstreamer1.0, libgstreamer-plugins-base1.0)
         * zlib development files
 
