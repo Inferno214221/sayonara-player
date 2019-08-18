@@ -532,6 +532,7 @@ bool PlaylistView::viewportEvent(QEvent* event)
 
 void PlaylistView::skin_changed()
 {
+	SearchableTableView::skin_changed();
 	refresh();
 }
 
