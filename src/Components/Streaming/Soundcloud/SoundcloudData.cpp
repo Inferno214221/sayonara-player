@@ -687,6 +687,15 @@ bool SC::Database::apply_fixes()
 		}
 	}
 
+
+	if(version < 4) {
+		bool success = check_and_insert_column("tracks", "fileCissearch", "varchar(256)", "");
+		if(success){
+			save_setting("version", "4");
+		}
+	}
+
+
 	return true;
 }
 
