@@ -36,7 +36,7 @@
      <item>
       <widget class="QPushButton" name="btn_search">
        <property name="text">
-        <string notr="true">Suche</string>
+        <string notr="true">Search</string>
        </property>
       </widget>
      </item>

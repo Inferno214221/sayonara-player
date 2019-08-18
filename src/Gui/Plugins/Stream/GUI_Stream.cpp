@@ -64,10 +64,15 @@ void GUI_Stream::retranslate_ui()
 	Gui::AbstractStream::retranslate_ui();
 	ui->retranslateUi(this);
 
+	QString action_text = tr("Search radio station");
+
 	if(m->radio_action)
 	{
-		m->radio_action->setText(tr("Search radio station"));
+		m->radio_action->setText(action_text);
 	}
+
+	ui->btn_search->setText(Lang::get(Lang::SearchVerb));
+	ui->btn_search->setToolTip(action_text);
 }
 
 void GUI_Stream::init_ui()
