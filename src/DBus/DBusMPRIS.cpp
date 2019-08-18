@@ -40,7 +40,7 @@
 
 struct DBusMPRIS::MediaPlayer2::Private
 {
-	Cover::Location cl;
+	QString			cover_path;
 
 	QStringList     supported_uri_schemes;
 	QStringList     supported_mime_types;
@@ -63,6 +63,7 @@ struct DBusMPRIS::MediaPlayer2::Private
 		volume(1.0),
 		initialized(false)
 	{
+		cover_path = Cover::Location::invalid_path();
 		play_manager = PlayManager::instance();
 		volume = GetSetting(Set::Engine_Vol) / 100.0;
 
@@ -245,9 +246,6 @@ QVariantMap DBusMPRIS::MediaPlayer2::Metadata()
 	v_object_path.setValue<QDBusObjectPath>(object_path);
 	v_length.setValue<qlonglong>(m->md.duration_ms * 1000);
 
-	m->cl = Cover::Location::cover_location(m->md);
-	QString cover_path = m->cl.preferred_path();
-
 	QString title = m->md.title();
 	if(title.isEmpty()){
 		title = Lang::get(Lang::UnknownTitle);
@@ -266,7 +264,7 @@ QVariantMap DBusMPRIS::MediaPlayer2::Metadata()
 	map["xesam:title"] = title;
 	map["xesam:album"] = album;
 	map["xesam:artist"] = QStringList({artist});
-	map["mpris:artUrl"] = QUrl::fromLocalFile(cover_path).toString();
+	map["mpris:artUrl"] = QUrl::fromLocalFile(m->cover_path).toString();
 
 	return map;
 }
@@ -455,6 +453,8 @@ void DBusMPRIS::MediaPlayer2::track_idx_changed(int idx)
 void DBusMPRIS::MediaPlayer2::track_changed(const MetaData& md)
 {
 	m->md = md;
+	m->cover_path = Cover::Location::cover_location(md).preferred_path();
+
 	if(!m->initialized){
 		init();
 	}
