@@ -105,6 +105,9 @@ Handler::Handler(QObject* parent) :
 	connect(m->engine, &Engine::sig_metadata_changed, this, [play_manager](const MetaData& md){
 		play_manager->change_track_metadata(md);
 	});
+
+	connect(m->engine, &Engine::sig_spectrum_changed, this, &Handler::spectrum_changed);
+	connect(m->engine, &Engine::sig_level_changed, this, &Handler::level_changed);
 }
 
 Handler::~Handler() = default;
