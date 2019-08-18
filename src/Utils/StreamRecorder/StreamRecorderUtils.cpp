@@ -244,9 +244,9 @@ Utils::TargetPaths Utils::full_target_path(const QString& sr_path, const QString
 						Util::File::get_parent_directory(ret.first) +
 						QDir::separator() +
 						"playlist-" +
-						date.toString("yymmdd") +
+						date.toString("yyMMdd") +
 						"-" +
-						time.toString("hhMM") +
+						time.toString("hhmm") +
 						".m3u"
 					);
 

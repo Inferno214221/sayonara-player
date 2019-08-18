@@ -421,10 +421,10 @@ bool EngineClass::is_streamrecroder_recording() const
 
 void EngineClass::set_streamrecorder_recording(bool b)
 {
+	m->pipeline->enable_streamrecorder(b);
+
 	if(b)
 	{
-		m->pipeline->enable_streamrecorder(b);
-
 		if(!m->stream_recorder) {
 			m->stream_recorder = new StreamRecorder::StreamRecorder(this);
 		}

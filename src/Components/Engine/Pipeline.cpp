@@ -309,6 +309,11 @@ bool Pipeline::prepare(const QString& uri)
 
 bool Pipeline::init_streamrecorder()
 {
+	if(!m->stream_recorder)
+	{
+		m->stream_recorder = new StreamRecorderHandler(pipeline(), m->tee);
+	}
+
 	return m->stream_recorder->init();
 }
 
@@ -395,6 +400,8 @@ void Pipeline::set_equalizer_band(int band, int val)
 
 void Pipeline::enable_streamrecorder(bool b)
 {
+	init_streamrecorder();
+
 	m->stream_recorder->set_enabled(b);
 }
 

@@ -78,7 +78,7 @@ SR::StreamRecorder::StreamRecorder(QObject *parent) :
 	connect(play_manager, &PlayManager::sig_playstate_changed, this, &StreamRecorder::playstate_changed);
 }
 
-SR::StreamRecorder::~StreamRecorder() {}
+SR::StreamRecorder::~StreamRecorder() = default;
 
 void SR::StreamRecorder::clear()
 {
@@ -167,7 +167,7 @@ bool SR::StreamRecorder::save()
 	}
 
 	QFileInfo file_info(m->sr_recording_dst);
-	if(file_info.size() < 20000) {
+	if(file_info.size() < 4000) {
 		return false;
 	}
 
