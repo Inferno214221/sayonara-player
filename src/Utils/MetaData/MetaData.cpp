@@ -346,18 +346,27 @@ void MetaData::set_album_artist_id(ArtistId id)
 }
 
 
-void MetaData::set_radio_station(const QString& filepath)
+void MetaData::set_radio_station(const QString& name)
 {
-	QUrl url(filepath);
-	QString radio_station = url.host();
-	if(url.port() > 0)
+	QString radio_station;
+	if(name.contains("://"))
 	{
-		radio_station += QString(":%1").arg(url.port());
+		QUrl url(name);
+		QString radio_station = url.host();
+		if(url.port() > 0)
+		{
+			radio_station += QString(":%1").arg(url.port());
+		}
+
+		set_artist(radio_station);
+		set_title(url.host());
 	}
 
-	set_artist(radio_station);
-	//set_album(radio_station);
-	set_title(url.host());
+	else
+	{
+		set_artist(name);
+		set_title(name);
+	}
 
 	album_id = -1;
 }

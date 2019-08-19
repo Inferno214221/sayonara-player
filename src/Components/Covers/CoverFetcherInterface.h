@@ -27,10 +27,7 @@ class QString;
 class QByteArray;
 class QStringList;
 
-namespace Cover
-{
-
-namespace Fetcher
+namespace Cover::Fetcher
 {
 	/**
 	 * @brief The CoverFetcherInterface interface
@@ -99,7 +96,6 @@ namespace Fetcher
 			virtual int estimated_size() const=0;
 	};
 
-} // Fetcher
-} // Cover
+} // Cover::Fetcher
 
 #endif // ABSTRACTCOVERFETCHER_H
