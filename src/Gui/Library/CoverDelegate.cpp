@@ -43,6 +43,10 @@ void Library::CoverDelegate::paint(QPainter* painter, const QStyleOptionViewItem
 	painter->save();
 	painter->translate(option.rect.x(), option.rect.y());
 
+//	QPalette palette = option.palette;
+//	QBrush dark_bg = palette.alternateBase();
+//	painter->fillRect(2, 0, option.rect.width() - 4, option.rect.height() - 4, dark_bg);
+
 	{
 		QPixmap pm = index.data(Qt::DecorationRole).value<QPixmap>();
 		if(pm.isNull()){
