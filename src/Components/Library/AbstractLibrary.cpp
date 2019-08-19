@@ -51,7 +51,7 @@ struct AbstractLibrary::Private
 	AlbumList			albums;
 	MetaDataList		tracks;
 	MetaDataList		current_tracks;
-	MetaDataList		filtered_tracks;
+	MetaDataList		filtered_tracks;			// a subset of tracks with the desired filename extension
 
 	Gui::ExtensionSet	extensions;
 
@@ -60,8 +60,6 @@ struct AbstractLibrary::Private
 	Library::Sortings	sortorder;
 	Library::Filter		filter;
 	bool				loaded;
-
-
 
 	Private() :
 		num_tracks(0),
@@ -197,11 +195,24 @@ void AbstractLibrary::metadata_changed()
 
 void AbstractLibrary::find_track(TrackID id)
 {
+	m->filter.clear();
+
+	if(!m->selected_artists.isEmpty()) {
+		selected_artists_changed(IndexSet());
+	}
+
+	if(!m->selected_albums.isEmpty()){
+		selected_albums_changed(IndexSet());
+	}
+
+	emit_stuff();
+
 	m->tracks.clear();
 	m->artists.clear();
 	m->albums.clear();
 
 	m->selected_tracks.clear();
+	m->filtered_tracks.clear();
 	m->selected_artists.clear();
 	m->selected_albums.clear();
 

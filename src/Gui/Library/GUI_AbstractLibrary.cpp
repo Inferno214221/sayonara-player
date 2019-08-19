@@ -144,8 +144,7 @@ void GUI_AbstractLibrary::search_edited(const QString& search)
 bool GUI_AbstractLibrary::has_selections() const
 {
 	return (m->library->selected_albums().count() > 0) ||
-	(m->library->selected_artists().count() > 0) ||
-	(m->library->selected_tracks().count() > 0);
+	(m->library->selected_artists().count() > 0);
 }
 
 
@@ -158,18 +157,38 @@ void GUI_AbstractLibrary::key_pressed(int key)
 		if(is_selected)
 		{
 			clear_selections();
+
+			if(m->le_search)
+			{
+				auto mode = m->le_search->current_mode();
+				if(mode == Library::Filter::Mode::Track)
+				{
+					m->le_search->set_current_mode(Library::Filter::Mode::Fulltext);
+					m->le_search->clear();
+					m->library->refetch();
+				}
+			}
 		}
 
 		else if(m->le_search)
 		{
-			if(m->le_search->text().size() > 0)
+			auto mode = m->le_search->current_mode();
+
+			if(!m->le_search->text().isEmpty())
 			{
 				m->le_search->clear();
+
+				if(mode == Library::Filter::Mode::Track)
+				{
+					m->le_search->set_current_mode(Library::Filter::Mode::Fulltext);
+					m->library->refetch();
+				}
 			}
 
 			else
 			{
 				m->le_search->set_current_mode(Library::Filter::Mode::Fulltext);
+				m->library->refetch();
 			}
 		}
 	}

@@ -363,6 +363,15 @@ void ItemView::fill()
 	if(new_size > old_size) {
 		resize_rows_to_contents(old_size, new_size - old_size);
 	}
+
+	if(!selections.isEmpty())
+	{
+		this->scrollTo
+		(
+			m->model->index(selections.first(), 0),
+			QAbstractItemView::EnsureVisible
+		);
+	}
 }
 
 void ItemView::selection_changed(const IndexSet& indexes)

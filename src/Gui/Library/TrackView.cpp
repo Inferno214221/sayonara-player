@@ -49,7 +49,7 @@ TrackView::TrackView(QWidget* parent) :
 	m = Pimpl::make<Private>();
 }
 
-TrackView::~TrackView() {}
+TrackView::~TrackView() = default;
 
 AbstractLibrary* TrackView::library() const
 {
