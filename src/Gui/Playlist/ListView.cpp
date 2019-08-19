@@ -204,8 +204,6 @@ void PlaylistView::handle_drop(QDropEvent* event)
 		return;
 	}
 
-	this->setFocus();
-
 	bool is_inner_drag_drop = MimeData::is_inner_drag_drop(mimedata, m->playlist->index());
 	if(is_inner_drag_drop)
 	{
@@ -230,6 +228,11 @@ void PlaylistView::handle_drop(QDropEvent* event)
 
 		m->progressbar->show();
 
+		// when the list view is disabled, the focus would automatically
+		// jump to the parent widget, which may result in the
+		// forward/backward button of the playlist
+		m->progressbar->setFocus();
+
 		QString cover_url = MimeData::cover_url(mimedata);
 
 		StreamParser* stream_parser = new StreamParser();
@@ -246,7 +249,6 @@ void PlaylistView::handle_drop(QDropEvent* event)
 
 void PlaylistView::async_drop_finished(bool success, int async_drop_index)
 {
-	this->setEnabled(true);
 	m->progressbar->hide();
 
 	StreamParser* stream_parser = dynamic_cast<StreamParser*>(sender());
@@ -255,6 +257,9 @@ void PlaylistView::async_drop_finished(bool success, int async_drop_index)
 		MetaDataList v_md = stream_parser->metadata();
 		m->model->insert_tracks(v_md, async_drop_index+1);
 	}
+
+	this->setEnabled(true);
+	this->setFocus();
 
 	stream_parser->deleteLater();
 }

@@ -62,6 +62,7 @@ PlaylistTabBar::PlaylistTabBar(QWidget *parent) :
 
 	this->setDrawBase(false);
 	this->setAcceptDrops(true);
+	this->setFocusPolicy(Qt::NoFocus);
 
 	init_shortcuts();
 
