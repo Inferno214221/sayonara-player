@@ -1,3 +1,7 @@
+== 1.5.1-stable5 ==
+ 
+ * Stream Recorder: Fixed stream recorder segfault
+
 == 1.5.1-stable4 ==
 
  * Covers: fixed thread deletion bug 
