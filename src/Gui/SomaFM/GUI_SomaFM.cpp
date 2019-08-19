@@ -84,7 +84,7 @@ GUI_SomaFM::GUI_SomaFM(QWidget *parent) :
 	bool dark = Style::is_dark();
 	QString description =
 		"Listener-supported, commercial-free, underground/alternative radio<br /><br />" +
-		Util::create_link("https://somafm.com", dark, "https://somafm.com");
+		Util::create_link("https://somafm.com", dark);
 
 	ui->lab_description->setText(description);
 	ui->lab_donate->setText(Util::create_link("https://somafm.com/support/", dark));
