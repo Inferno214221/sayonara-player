@@ -373,6 +373,8 @@ void GUI_Player::init_controlstyle()
 
 	ui->splitterControls->restoreState(splitter_state);
 	splitter_controls_moved(0, 0);
+
+	ui->controls->setFocus();
 }
 
 
