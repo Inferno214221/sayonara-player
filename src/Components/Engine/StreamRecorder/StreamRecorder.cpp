@@ -41,7 +41,6 @@ namespace FileUtils=::Util::File;
 struct SR::StreamRecorder::Private
 {
 	QString			sr_recording_dst;				// recording destination
-	QString			session_path;					// where to store the mp3 files of the session
 	QString			session_playlist_name;			// playlist name
 	MetaDataList	session_collector;				// gather all tracks of a session
 	MetaData		md;                             // current track
@@ -50,6 +49,11 @@ struct SR::StreamRecorder::Private
 
 	int				cur_idx;						// index of track (used for filename)
 	bool            recording;						// is in a session currently
+
+	Private() :
+		cur_idx(1),
+		recording(false)
+	{}
 };
 
 
@@ -83,7 +87,6 @@ SR::StreamRecorder::~StreamRecorder() = default;
 void SR::StreamRecorder::clear()
 {
 	m->md.set_title("");
-	m->session_path = "";
 	m->session_collector.clear();
 	m->sr_recording_dst = "";
 	m->session_playlist_name.clear();
@@ -93,7 +96,6 @@ void SR::StreamRecorder::clear()
 void SR::StreamRecorder::new_session()
 {
 	clear();
-	sp_log(Log::Info, this) << "New session: " << m->session_path;
 
 	m->date = QDate::currentDate();
 	m->time = QTime::currentTime();
@@ -128,8 +130,8 @@ QString SR::StreamRecorder::change_track(const MetaData& md)
 	}
 
 	m->md = md;
-	m->md.year = QDateTime::currentDateTime().date().year();
-	m->md.track_num = m->cur_idx;
+	m->md.year =		uint16_t(QDateTime::currentDateTime().date().year());
+	m->md.track_num =	uint16_t(m->cur_idx);
 
 	int i;
 	QString target_path_template = GetSetting(Set::Engine_SR_SessionPathTemplate);

@@ -480,7 +480,7 @@ gboolean Callbacks::position_changed(gpointer data)
 		return false;
 	}
 
-	GstState state = pipeline->get_state();
+	GstState state = pipeline->state();
 	if( state != GST_STATE_PLAYING &&
 		state != GST_STATE_PAUSED &&
 		state != GST_STATE_READY)

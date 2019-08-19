@@ -306,17 +306,6 @@ bool Pipeline::prepare(const QString& uri)
 	return true;
 }
 
-
-bool Pipeline::init_streamrecorder()
-{
-	if(!m->stream_recorder)
-	{
-		m->stream_recorder = new StreamRecorderHandler(pipeline(), m->tee);
-	}
-
-	return m->stream_recorder->init();
-}
-
 void Pipeline::play()
 {
 	EngineUtils::set_state(m->pipeline, GST_STATE_PLAYING);
@@ -369,12 +358,12 @@ void Pipeline::enable_broadcasting(bool b)
 	m->broadcaster->set_enabled(b);
 }
 
-GstState Pipeline::get_state() const
+GstState Pipeline::state() const
 {
 	return EngineUtils::get_state(m->pipeline);
 }
 
-MilliSeconds Pipeline::get_time_to_go() const
+MilliSeconds Pipeline::time_to_go() const
 {
 	GstElement* element = m->pipeline;
 	MilliSeconds ms = EngineUtils::get_time_to_go(element);
@@ -398,14 +387,19 @@ void Pipeline::set_equalizer_band(int band, int val)
 	m->equalizer->set_band(band, val);
 }
 
-void Pipeline::enable_streamrecorder(bool b)
+
+void Pipeline::record(bool b)
 {
-	init_streamrecorder();
+	if(!m->stream_recorder)
+	{
+		m->stream_recorder = new StreamRecorderHandler(pipeline(), m->tee);
+		m->stream_recorder->init();
+	}
 
 	m->stream_recorder->set_enabled(b);
 }
 
-void Pipeline::set_streamrecorder_path(const QString& path)
+void Pipeline::set_recording_path(const QString& path)
 {
 	m->stream_recorder->set_target_path(path);
 }

@@ -240,7 +240,8 @@ Utils::TargetPaths Utils::full_target_path(const QString& sr_path, const QString
 	}
 
 	ret.first = Util::File::clean_filename(sr_path + QDir::separator() + target_path);
-	ret.second =	Util::File::clean_filename(
+	ret.second =	Util::File::clean_filename
+					(
 						Util::File::get_parent_directory(ret.first) +
 						QDir::separator() +
 						"playlist-" +

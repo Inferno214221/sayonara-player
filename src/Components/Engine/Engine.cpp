@@ -155,7 +155,7 @@ bool EngineClass::change_track_gapless(const MetaData& md)
 	bool success = change_metadata(md);
 	if (success)
 	{
-		MilliSeconds time_to_go = m->other_pipeline->get_time_to_go();
+		MilliSeconds time_to_go = m->other_pipeline->time_to_go();
 		m->pipeline->play_in(time_to_go);
 
 		m->change_gapless_state(GaplessState::TrackFetched);
@@ -421,8 +421,6 @@ bool EngineClass::is_streamrecroder_recording() const
 
 void EngineClass::set_streamrecorder_recording(bool b)
 {
-	m->pipeline->enable_streamrecorder(b);
-
 	if(b)
 	{
 		if(!m->stream_recorder) {
@@ -433,6 +431,8 @@ void EngineClass::set_streamrecorder_recording(bool b)
 	if(!m->stream_recorder)	{
 		return;
 	}
+
+	m->pipeline->record(b);
 
 	if(m->stream_recorder->is_recording() != b){
 		m->stream_recorder->record(b);
@@ -447,7 +447,7 @@ void EngineClass::set_streamrecorder_recording(bool b)
 		}
 	}
 
-	m->pipeline->set_streamrecorder_path(dst_file);
+	m->pipeline->set_recording_path(dst_file);
 }
 
 
