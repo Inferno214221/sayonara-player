@@ -30,7 +30,9 @@
 namespace Gui
 {
 	/**
-	 * @brief The RatingLabel class
+	 * @brief A simple label, not suitable for editing.
+	 * For editing, use the RatingEditor class. RatingLabel
+	 * is intended for the paint method in delegates
 	 * @ingroup Gui
 	 */
 	class RatingLabel :
@@ -50,6 +52,11 @@ namespace Gui
 		void set_rating(Rating rating);
 		Rating rating() const;
 
+		/**
+		 * @brief Returns the rating regarding the current mouse position
+		 * @param pos
+		 * @return
+		 */
 		Rating rating_at(QPoint pos) const;
 
 		/**
@@ -58,15 +65,33 @@ namespace Gui
 		 */
 		void set_vertical_offset(int offset);
 
+		/**
+		 * @brief Called from outside.
+		 * Mostly from delegates or from the RatingEditor class
+		 * @param painter
+		 * @param rect
+		 */
 		void paint(QPainter* painter, const QRect& rect);
 
-		void restore();
-
+		/**
+		 * @brief about 20px in height and 5x20px in width
+		 * @return
+		 */
 		QSize sizeHint() const override;
+
+		/**
+		 * @brief Same as sizeHint
+		 * @return
+		 */
 		QSize minimumSizeHint() const override;
 	};
 
-
+	/**
+	 * @brief This class is used for the actual editing of a RatingLabel
+	 * While the RatingLabel class is used in paint() methods of delegates,
+	 * this class is used in normal widgets or for createEditor() methods
+	 * in delegates
+	 */
 	class RatingEditor : public QWidget
 	{
 		Q_OBJECT
@@ -74,20 +99,54 @@ namespace Gui
 
 		signals:
 			void sig_finished(bool save);
-			void sig_triggered();
 
 		public:
 			RatingEditor(QWidget* parent);
 			RatingEditor(Rating rating, QWidget* parent);
 			~RatingEditor() override;
 
+			/**
+			 * @brief Sets the actual rating
+			 * @param rating
+			 */
 			void set_rating(Rating rating);
+
+			/**
+			 * @brief Returns the actual rating. This
+			 * is not neccessarily the rating currently visible.
+			 * Consider the case where you hover over the stars
+			 * and lose focus because you are clicking into another
+			 * widget. You don't want the currently shown value
+			 * then, you want the old value back. This value is
+			 * updated when a mouseReleaseEvent is fired when
+			 * clicking on a star in the current widget
+			 * @return
+			 */
 			Rating rating() const;
 
+			/**
+			 * @brief Set an offset where to begin drawing stars
+			 * @param offset
+			 */
 			void set_vertical_offset(int offset);
+
+			/**
+			 * @brief Enable mouse move events. If disabled, there's
+			 * no live update
+			 * @param b
+			 */
 			void set_mousetrackable(bool b);
 
+			/**
+			 * @brief Same as RatingLabel::sizeHint
+			 * @return
+			 */
 			QSize sizeHint() const override;
+
+			/**
+			 * @brief Same as RatingLabel::minimumSizeHint
+			 * @return
+			 */
 			QSize minimumSizeHint() const override;
 
 		protected:

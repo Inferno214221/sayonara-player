@@ -269,7 +269,7 @@ void PlaylistItemDelegate::destroy_editor(bool save)
 
 	disconnect(editor, &Gui::RatingEditor::sig_finished, this, &PlaylistItemDelegate::destroy_editor);
 
-	if(save)
+	Q_UNUSED(save)
 	{
 		emit commitData(editor);
 	}
