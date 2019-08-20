@@ -147,8 +147,15 @@ struct Gui::RatingEditor::Private
 	RatingLabel*	label=nullptr;
 	bool			mouse_trackable;
 
+	// this rating is the rating we want to set
+	// the rating shown in RatingLabel is the visible
+	// rating. actual_rating is updated on mouse click
+	// This is the _ONLY_ way to update it
+	Rating			actual_rating;
+
 	Private(Rating rating) :
-		mouse_trackable(true)
+		mouse_trackable(true),
+		actual_rating(rating)
 	{
 		label = new RatingLabel(nullptr, true);
 		label->set_rating(rating);
@@ -173,13 +180,15 @@ Gui::RatingEditor::~RatingEditor() = default;
 
 void Gui::RatingEditor::set_rating(Rating rating)
 {
+	m->actual_rating = rating;
 	m->label->set_rating(rating);
+
 	this->setEnabled(rating != Rating::Last);
 }
 
 Rating Gui::RatingEditor::rating() const
 {
-	return m->label->rating();
+	return m->actual_rating;
 }
 
 void Gui::RatingEditor::set_vertical_offset(int offset)
@@ -224,6 +233,7 @@ void Gui::RatingEditor::focusInEvent(QFocusEvent* e)
 void Gui::RatingEditor::focusOutEvent(QFocusEvent* e)
 {
 	this->setMouseTracking(false);
+	m->label->set_rating(m->actual_rating);
 
 	emit sig_finished(false);
 
@@ -258,6 +268,8 @@ void Gui::RatingEditor::mouseReleaseEvent(QMouseEvent* e)
 	e->accept();
 
 	Rating rating = m->label->rating_at(e->pos());
+
+	m->actual_rating = rating;
 	m->label->set_rating(rating);
 
 	repaint();

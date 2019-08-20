@@ -48,7 +48,8 @@ using namespace Library;
 
 struct TrackModel::Private
 {
-	QPair<int, Rating> tmp_rating;
+	QPair<int, Rating>			tmp_rating;
+	Tagging::UserOperations*	uto=nullptr;
 
 	Private()
 	{
@@ -193,12 +194,18 @@ bool TrackModel::setData(const QModelIndex& index, const QVariant& value, int ro
 			Rating rating = value.value<Rating>();
 
 			MetaData md = library()->tracks()[row];
-			m->tmp_rating.first = row;
-			m->tmp_rating.second = rating;
+			if(md.rating != rating)
+			{
+				m->tmp_rating.first = row;
+				m->tmp_rating.second = rating;
 
-			Tagging::UserOperations* uto = new Tagging::UserOperations(-1, this);
-			connect(uto, &Tagging::UserOperations::sig_finished, this, &TrackModel::rating_operation_finished);
-			uto->set_track_rating(md, rating);
+				if(!m->uto){
+					m->uto = new Tagging::UserOperations(-1, this);
+					connect(m->uto, &Tagging::UserOperations::sig_finished, this, &TrackModel::rating_operation_finished);
+				}
+
+				m->uto->set_track_rating(md, rating);
+			}
 
 			return true;
 		}
@@ -211,10 +218,6 @@ bool TrackModel::setData(const QModelIndex& index, const QVariant& value, int ro
 void TrackModel::rating_operation_finished()
 {
 	m->tmp_rating.first = -1;
-
-	if(sender()){
-		sender()->deleteLater();
-	}
 }
 
 

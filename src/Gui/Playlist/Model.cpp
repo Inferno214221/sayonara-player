@@ -308,12 +308,19 @@ void PlaylistItemModel::change_rating(const IndexSet& indexes, Rating rating)
 	for(auto idx : indexes)
 	{
 		MetaData md = m->pl->track(idx);
-		v_md << md;
+		if(rating != md.rating)
+		{
+			v_md << md;
+			md.rating = rating;
 
-		md.rating = rating;
-		m->pl->replace_track(idx, md);
+			m->pl->replace_track(idx, md);
+		}
 
 		emit dataChanged(index(idx, 0), index(idx, int(ColumnName::Description)));
+	}
+
+	if(v_md.isEmpty()){
+		return;
 	}
 
 	if(!m->uto)

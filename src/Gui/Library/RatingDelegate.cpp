@@ -92,6 +92,8 @@ QWidget* RatingDelegate::createEditor(QWidget* parent, const QStyleOptionViewIte
 
 void RatingDelegate::destroy_editor(bool save)
 {
+	Q_UNUSED(save)
+
 	auto* editor = qobject_cast<Gui::RatingEditor*>(sender());
 	if(!editor) {
 		return;
@@ -99,12 +101,7 @@ void RatingDelegate::destroy_editor(bool save)
 
 	disconnect(editor, &Gui::RatingEditor::sig_finished, this, &RatingDelegate::destroy_editor);
 
-
-	if(save)
-	{
-		emit commitData(editor);
-	}
-
+	emit commitData(editor);
 	emit closeEditor(editor);
 }
 

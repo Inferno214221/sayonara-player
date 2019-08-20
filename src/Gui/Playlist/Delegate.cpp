@@ -262,6 +262,8 @@ QWidget* PlaylistItemDelegate::createEditor(QWidget* parent, const QStyleOptionV
 
 void PlaylistItemDelegate::destroy_editor(bool save)
 {
+	Q_UNUSED(save)
+
 	auto* editor = qobject_cast<Gui::RatingEditor*>(sender());
 	if(!editor) {
 		return;
@@ -269,11 +271,7 @@ void PlaylistItemDelegate::destroy_editor(bool save)
 
 	disconnect(editor, &Gui::RatingEditor::sig_finished, this, &PlaylistItemDelegate::destroy_editor);
 
-	if(save)
-	{
-		emit commitData(editor);
-	}
-
+	emit commitData(editor);
 	emit closeEditor(editor);
 }
 
