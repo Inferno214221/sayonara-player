@@ -200,6 +200,12 @@ Filter::Mode SearchBar::current_mode() const
 	return m->modes[m->cur_idx];
 }
 
+void SearchBar::reset()
+{
+	this->clear();
+	this->set_current_mode(Filter::Mode::Fulltext);
+}
+
 
 void SearchBar::init_context_menu()
 {

@@ -100,6 +100,11 @@ namespace Library
 			 */
 			Filter::Mode current_mode() const;
 
+			/**
+			 * @brief Clears the input and sets mode back to Fulltext search
+			 */
+			void reset();
+
 		protected:
 			void init_context_menu();
 			void keyPressEvent(QKeyEvent* e) override;

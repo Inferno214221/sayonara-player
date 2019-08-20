@@ -150,6 +150,8 @@ bool GUI_AbstractLibrary::has_selections() const
 
 void GUI_AbstractLibrary::key_pressed(int key)
 {
+	using Library::Filter;
+
 	if(key == Qt::Key_Escape)
 	{
 		bool is_selected = has_selections();
@@ -161,10 +163,9 @@ void GUI_AbstractLibrary::key_pressed(int key)
 			if(m->le_search)
 			{
 				auto mode = m->le_search->current_mode();
-				if(mode == Library::Filter::Mode::Track)
+				if(mode == Filter::Mode::Track)
 				{
-					m->le_search->set_current_mode(Library::Filter::Mode::Fulltext);
-					m->le_search->clear();
+					m->le_search->reset();
 					m->library->refetch();
 				}
 			}
@@ -178,16 +179,16 @@ void GUI_AbstractLibrary::key_pressed(int key)
 			{
 				m->le_search->clear();
 
-				if(mode == Library::Filter::Mode::Track)
+				if(mode == Filter::Mode::Track)
 				{
-					m->le_search->set_current_mode(Library::Filter::Mode::Fulltext);
+					m->le_search->set_current_mode(Filter::Mode::Fulltext);
 					m->library->refetch();
 				}
 			}
 
 			else
 			{
-				m->le_search->set_current_mode(Library::Filter::Mode::Fulltext);
+				m->le_search->set_current_mode(Filter::Mode::Fulltext);
 				m->library->refetch();
 			}
 		}

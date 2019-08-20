@@ -195,50 +195,60 @@ void AbstractLibrary::metadata_changed()
 
 void AbstractLibrary::find_track(TrackID id)
 {
-	m->filter.clear();
-
-	if(!m->selected_artists.isEmpty()) {
-		selected_artists_changed(IndexSet());
-	}
-
-	if(!m->selected_albums.isEmpty()){
-		selected_albums_changed(IndexSet());
-	}
-
-	emit_stuff();
-
-	m->tracks.clear();
-	m->artists.clear();
-	m->albums.clear();
-
-	m->selected_tracks.clear();
-	m->filtered_tracks.clear();
-	m->selected_artists.clear();
-	m->selected_albums.clear();
-
 	MetaData md;
 	get_track_by_id(id, md);
 
-	if(md.id >= 0)
+	if(md.id < 0)
 	{
-		m->tracks << md;
+		return;
+	}
 
+
+	{ // clear old selections/filters
+		m->filter.clear();
+
+		if(!m->selected_artists.isEmpty()) {
+			selected_artists_changed(IndexSet());
+		}
+
+		if(!m->selected_albums.isEmpty()){
+			selected_albums_changed(IndexSet());
+		}
+
+		// make sure, that no artist_selection_changed or album_selection_changed
+		// messes things up
+		emit_stuff();
+	}
+
+	{ // clear old fetched artists/albums/tracks
+		m->tracks.clear();
+		m->artists.clear();
+		m->albums.clear();
+
+		m->selected_tracks.clear();
+		m->filtered_tracks.clear();
+		m->selected_artists.clear();
+		m->selected_albums.clear();
+	}
+
+	m->tracks << md;
+
+	{ // artist
 		Artist artist;
 		get_artist_by_id(md.artist_id, artist);
 		m->artists << artist;
+	}
 
+	{ // album
 		Album album;
 		get_album_by_id(md.album_id, album);
 		m->albums << album;
-
-		get_all_tracks_by_album({album.id}, m->tracks, Library::Filter());
-		m->selected_tracks << md.id;
 	}
 
-	m->filter.set_mode(Library::Filter::Mode::Track);
-	m->filter.set_filtertext(QString::number(id), 0);
-	emit sig_filter_changed();
+	get_all_tracks_by_album({md.album_id}, m->tracks, Library::Filter());
+	m->selected_tracks << md.id;
 
+	emit sig_filter_changed();
 	emit_stuff();
 }
 
