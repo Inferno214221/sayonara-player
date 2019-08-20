@@ -31,7 +31,7 @@ Library::CoverDelegate::CoverDelegate(QObject* parent) :
 	QItemDelegate(parent)
 {}
 
-Library::CoverDelegate::~CoverDelegate() {}
+Library::CoverDelegate::~CoverDelegate() = default;
 
 void Library::CoverDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
