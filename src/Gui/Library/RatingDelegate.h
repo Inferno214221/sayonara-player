@@ -46,7 +46,7 @@ namespace Library
 		void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const override;
 
 	private slots:
-		void destroy_editor(bool save=false);
+		void destroy_editor(bool save);
 	};
 }
 

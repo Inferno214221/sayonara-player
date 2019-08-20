@@ -30,8 +30,10 @@
 #include <QPainter>
 #include <QFontMetrics>
 #include <QTableView>
+#include <array>
 
 const static int PLAYLIST_BOLD=70;
+using Gui::RatingEditor;
 using Gui::RatingLabel;
 
 struct PlaylistItemDelegate::Private
@@ -39,6 +41,8 @@ struct PlaylistItemDelegate::Private
 	QString		entry_look;
 	int			rating_height;
 	bool		show_rating;
+
+	std::array<Gui::RatingLabel*, 6> rating_labels;
 
 	Private() :
 		rating_height(18),
@@ -54,11 +58,20 @@ PlaylistItemDelegate::PlaylistItemDelegate(QTableView* parent) :
 {
 	m = Pimpl::make<Private>();
 
+	for(uchar i = uchar(Rating::Zero); i<uchar(Rating::Last); i++)
+	{
+		auto* rating_label = new RatingLabel(parent);
+		rating_label->set_rating(Rating(i));
+		rating_label->hide();
+
+		m->rating_labels[i] = rating_label;
+	}
+
 	ListenSettingNoCall(Set::PL_EntryLook, PlaylistItemDelegate::sl_look_changed);
 	ListenSettingNoCall(Set::PL_ShowRating, PlaylistItemDelegate::sl_show_rating_changed);
 }
 
-PlaylistItemDelegate::~PlaylistItemDelegate() {}
+PlaylistItemDelegate::~PlaylistItemDelegate() = default;
 
 void PlaylistItemDelegate::paint(QPainter *painter,	const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
@@ -89,11 +102,10 @@ void PlaylistItemDelegate::paint(QPainter *painter,	const QStyleOptionViewItem &
 		}
 	}
 
-	painter->save();
-
-	auto model = static_cast<const PlaylistItemModel*>(index.model());
+	auto* model = static_cast<const PlaylistItemModel*>(index.model());
 	const MetaData& md = model->metadata(row);
 
+	painter->save();
 	{ // give that pen some alpha value, so it appears lighter
 		if(md.is_disabled)
 		{
@@ -109,6 +121,7 @@ void PlaylistItemDelegate::paint(QPainter *painter,	const QStyleOptionViewItem &
 		}
 	}
 
+
 	painter->translate(-4, 0);
 
 	QFont font = option.font;
@@ -121,7 +134,6 @@ void PlaylistItemDelegate::paint(QPainter *painter,	const QStyleOptionViewItem &
 
 		painter->setFont(font);
 	}
-
 
 	painter->translate(4, 0);
 
@@ -154,7 +166,8 @@ void PlaylistItemDelegate::paint(QPainter *painter,	const QStyleOptionViewItem &
 			str.replace("%album%", md.album());
 
 			int flags = (Qt::AlignLeft);
-			if(m->show_rating) {
+			if(m->show_rating)
+			{
 				flags |= Qt::AlignTop;
 				rect.setY(option.rect.y() + 2);
 			}
@@ -163,7 +176,14 @@ void PlaylistItemDelegate::paint(QPainter *painter,	const QStyleOptionViewItem &
 				flags |= Qt::AlignVCenter;
 			}
 
-			painter->drawText(rect, flags, fm.elidedText(str, Qt::ElideRight, rect.width()));
+			if(md.radio_mode() != RadioMode::Station) {
+				painter->drawText(rect, flags, fm.elidedText(str, Qt::ElideRight, rect.width()));
+			}
+
+			else
+			{
+				painter->drawText(rect, (Qt::AlignVCenter | Qt::AlignLeft), fm.elidedText(str, Qt::ElideRight, rect.width()));
+			}
 
 			offset_x = fm.width(str);
 			rect.setWidth(rect.width() - offset_x);
@@ -188,6 +208,7 @@ void PlaylistItemDelegate::paint(QPainter *painter,	const QStyleOptionViewItem &
 		}
 	}
 
+
 	if(m->show_rating)
 	{
 		painter->restore();
@@ -195,20 +216,15 @@ void PlaylistItemDelegate::paint(QPainter *painter,	const QStyleOptionViewItem &
 
 		if(md.radio_mode() != RadioMode::Station)
 		{
-			RatingLabel label(nullptr, true);
-			label.set_rating(md.rating);
-			{
-				label.setGeometry(0, 0, option.rect.width(), m->rating_height);
-			}
+			painter->translate(0, 2);
 
-			painter->translate(option.rect.left(), option.rect.bottom() - m->rating_height);
-			label.render(painter);
-		}
+			auto iRating = Byte(md.rating);
+			iRating = std::max<Byte>(iRating, Byte(md.rating));
+			iRating = std::min<Byte>(iRating, Byte(m->rating_labels.size() - 1));
 
-		else
-		{
-			painter->translate(rect.left() + 4, 0);
-			painter->drawText(0, 0, option.rect.width(), m->rating_height, (Qt::AlignLeft | Qt::AlignBottom), md.album());
+			RatingLabel* rating_label = m->rating_labels[iRating];
+			rating_label->set_vertical_offset(option.rect.height() - m->rating_height);
+			rating_label->paint(painter, option.rect);
 		}
 	}
 
@@ -226,66 +242,60 @@ void PlaylistItemDelegate::sl_show_rating_changed()
 	m->show_rating = GetSetting(Set::PL_ShowRating);
 }
 
-
 QWidget* PlaylistItemDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
 	Q_UNUSED(option)
 
-	auto model = static_cast<const PlaylistItemModel*>(index.model());
-	const MetaData& md = model->metadata(index.row());
-	if(md.is_disabled || (md.radio_mode() == RadioMode::Station || !m->show_rating)){
+	Rating rating = index.data(Qt::EditRole).value<Rating>();
+	if(rating == Rating::Last) {
 		return nullptr;
 	}
 
-	RatingLabel* label = new RatingLabel(parent, true);
-	label->set_offset_y(option.rect.height() - m->rating_height);
+	auto* editor = new Gui::RatingEditor(rating, parent);
+	editor->set_vertical_offset(option.rect.height() - m->rating_height);
 
-	connect(label, &RatingLabel::sig_finished, this, &PlaylistItemDelegate::destroy_editor);
+	connect(editor, &Gui::RatingEditor::sig_finished, this, &PlaylistItemDelegate::destroy_editor);
 
-	return label;
+	return editor;
 }
 
 
 void PlaylistItemDelegate::destroy_editor(bool save)
 {
-	Q_UNUSED(save)
-
-	RatingLabel* label = qobject_cast<RatingLabel *>(sender());
-	if(!label) {
+	auto* editor = qobject_cast<Gui::RatingEditor*>(sender());
+	if(!editor) {
 		return;
 	}
 
-	disconnect(label, &RatingLabel::sig_finished, this, &PlaylistItemDelegate::destroy_editor);
+	disconnect(editor, &Gui::RatingEditor::sig_finished, this, &PlaylistItemDelegate::destroy_editor);
 
-	emit commitData(label);
-	emit closeEditor(label);
+	if(save)
+	{
+		emit commitData(editor);
+	}
+
+	emit closeEditor(editor);
 }
 
 
 void PlaylistItemDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const
 {
-	Rating rating = index.data(Qt::EditRole).value<Rating>();
-
-	RatingLabel* label = qobject_cast<RatingLabel*>(editor);
-	if(!label) {
+	auto* rating_editor = qobject_cast<Gui::RatingEditor*>(editor);
+	if(!rating_editor) {
 		return;
 	}
 
-	label->set_rating(rating);
+	Rating rating = index.data(Qt::EditRole).value<Rating>();
+	rating_editor->set_rating(rating);
 }
 
 
 void PlaylistItemDelegate::setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const
 {
-	RatingLabel* label = qobject_cast<RatingLabel *>(editor);
-	if(label)
+	auto* rating_editor = qobject_cast<Gui::RatingEditor*>(editor);
+	if(rating_editor)
 	{
-		auto variant = QVariant::fromValue(label->get_rating());
-		model->setData(index, variant);
+		Rating rating = rating_editor->rating();
+		model->setData(index, QVariant::fromValue(rating));
 	}
-}
-
-int PlaylistItemDelegate::rating_height() const
-{
-	return m->rating_height;
 }

@@ -102,7 +102,7 @@ void GUI_ControlsBase::init()
 	skin_changed();
 }
 
-Gui::RatingLabel* GUI_ControlsBase::lab_rating() const
+Gui::RatingEditor* GUI_ControlsBase::lab_rating() const
 {
 	return nullptr;
 }

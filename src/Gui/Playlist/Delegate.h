@@ -36,23 +36,21 @@ class PlaylistItemDelegate :
 	Q_OBJECT
 	PIMPL(PlaylistItemDelegate)
 
-public:
-	explicit PlaylistItemDelegate(QTableView* parent);
-	virtual ~PlaylistItemDelegate();
+	public:
+		explicit PlaylistItemDelegate(QTableView* parent);
+		~PlaylistItemDelegate() override;
 
-	void paint( QPainter *painter, const QStyleOptionViewItem &option,
-						 const QModelIndex &index) const override;
+		void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
 
-	QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
-	void setEditorData(QWidget* editor, const QModelIndex& index) const override;
-	void setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const override;
+		QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
+		void setEditorData(QWidget* editor, const QModelIndex& index) const override;
+		void setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const override;
 
-	int rating_height() const;
+	private slots:
+		void sl_look_changed();
+		void sl_show_rating_changed();
 
-private slots:
-	void sl_look_changed();
-	void sl_show_rating_changed();
-	void destroy_editor(bool save=false);
+		void destroy_editor(bool save);
 };
 
 

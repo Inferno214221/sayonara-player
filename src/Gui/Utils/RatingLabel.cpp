@@ -69,54 +69,19 @@ RatingLabel::RatingLabel(QWidget* parent, bool enabled) :
 	QLabel(parent)
 {
 	m = Pimpl::make<Private>(parent, enabled);
-
-	QSizePolicy p(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-
-	this->setSizePolicy(p);
-	this->setMouseTracking(true);
-	this->setStyleSheet("background: transparent;");
 }
 
 RatingLabel::~RatingLabel() = default;
 
-Rating RatingLabel::calc_rating(QPoint pos) const
+Rating RatingLabel::rating_at(QPoint pos) const
 {
 	double drating = ((pos.x() * 1.0) / (m->icon_size + 2.0)) + 0.5;
 	Rating rating = scast(Rating, drating);
 
-	rating=std::min(rating, Rating(5));
-	rating=std::max(rating, Rating(0));
+	rating=std::min(rating, Rating::Five);
+	rating=std::max(rating, Rating::Zero);
 
 	return rating;
-}
-
-void RatingLabel::paintEvent(QPaintEvent* e)
-{
-	QLabel::paintEvent(e);
-
-	QPainter painter(this);
-
-	int offset_y = m->offset_y;
-	if(m->offset_y == 0) {
-		offset_y = (this->height() - m->icon_size) / 2;
-	}
-
-	painter.translate(rect().x() + m->offset_x, rect().y() + offset_y );
-
-	for(uchar i=0; i<uchar(Rating::Five); i++)
-	{
-		Rating rating = Rating(i);
-		if(rating < m->rating)
-		{
-			painter.drawPixmap(0, 0, m->icon_size, m->icon_size, m->pm_active);
-		}
-
-		else {
-			painter.drawPixmap(0, 0, m->icon_size, m->icon_size, m->pm_inactive);
-		}
-
-		painter.translate(m->icon_size + 2, 0);
-	}
 }
 
 QSize RatingLabel::sizeHint() const
@@ -132,82 +97,170 @@ QSize RatingLabel::minimumSizeHint() const
 	return sizeHint();
 }
 
-
-void RatingLabel::mouseMoveEvent(QMouseEvent *e)
-{
-	if(!m->enabled) {
-		return;
-	}
-
-	if(!hasFocus()){
-		return;
-	}
-
-	Rating rating = calc_rating(e->pos());
-	this->update_rating(rating);
-}
-
-
-
-void RatingLabel::mousePressEvent(QMouseEvent *e)
-{
-	if(!m->enabled) {
-		return;
-	}
-
-	Rating rating = calc_rating(e->pos());
-	update_rating(rating);
-}
-
-
-void RatingLabel::mouseReleaseEvent(QMouseEvent *e)
-{
-	Q_UNUSED(e);
-
-	if(!m->enabled) {
-		return;
-	}
-
-	emit sig_finished(true);
-}
-
-
-void RatingLabel::focusInEvent(QFocusEvent* e)
-{
-	Q_UNUSED(e);
-}
-
-void RatingLabel::focusOutEvent(QFocusEvent* e)
-{
-	Q_UNUSED(e);
-
-	if(!m->enabled) {
-		return;
-	}
-
-	emit sig_finished(false);
-}
-
-void RatingLabel::update_rating(Rating rating)
-{
-	m->rating = rating;
-	update();
-}
-
 void RatingLabel::set_rating(Rating rating)
 {
 	m->rating = rating;
-	update();
 }
 
-Rating RatingLabel::get_rating() const
+Rating RatingLabel::rating() const
 {
 	return m->rating;
 }
 
-void RatingLabel::set_offset_y(int offset)
+void RatingLabel::set_vertical_offset(int offset)
 {
 	m->offset_y = offset;
 }
 
+void RatingLabel::paint(QPainter* painter, const QRect& rect)
+{
+	this->setGeometry(rect);
 
+	painter->save();
+	int offset_y = m->offset_y;
+	if(m->offset_y == 0) {
+		offset_y = (this->height() - m->icon_size) / 2;
+	}
+
+	painter->translate(rect.x() + m->offset_x, rect.y() + offset_y );
+
+	for(uchar i=0; i<uchar(Rating::Five); i++)
+	{
+		Rating rating = Rating(i);
+		if(rating < m->rating)
+		{
+			painter->drawPixmap(0, 0, m->icon_size, m->icon_size, m->pm_active);
+		}
+
+		else {
+			painter->drawPixmap(0, 0, m->icon_size, m->icon_size, m->pm_inactive);
+		}
+
+		painter->translate(m->icon_size + 2, 0);
+	}
+
+	painter->restore();
+}
+
+struct Gui::RatingEditor::Private
+{
+	RatingLabel*	label=nullptr;
+	bool			mouse_trackable;
+
+	Private(Rating rating) :
+		mouse_trackable(true)
+	{
+		label = new RatingLabel(nullptr, true);
+		label->set_rating(rating);
+	}
+};
+
+Gui::RatingEditor::RatingEditor(QWidget* parent) :
+	Gui::RatingEditor(Rating::Zero, parent)
+{}
+
+Gui::RatingEditor::RatingEditor(Rating rating, QWidget* parent) :
+	QWidget(parent)
+{
+	m = Pimpl::make<Private>(rating);
+
+	this->setEnabled(rating != Rating::Last);
+	this->setStyleSheet("background: transparent;");
+	this->setFocusPolicy(Qt::StrongFocus);
+}
+
+Gui::RatingEditor::~RatingEditor() = default;
+
+void Gui::RatingEditor::set_rating(Rating rating)
+{
+	m->label->set_rating(rating);
+	this->setEnabled(rating != Rating::Last);
+}
+
+Rating Gui::RatingEditor::rating() const
+{
+	return m->label->rating();
+}
+
+void Gui::RatingEditor::set_vertical_offset(int offset)
+{
+	m->label->set_vertical_offset(offset);
+}
+
+void Gui::RatingEditor::set_mousetrackable(bool b)
+{
+	m->mouse_trackable = b;
+	if(!b)
+	{
+		this->setMouseTracking(b);
+	}
+}
+
+QSize Gui::RatingEditor::sizeHint() const
+{
+	return m->label->sizeHint();
+}
+
+QSize Gui::RatingEditor::minimumSizeHint() const
+{
+	return m->label->sizeHint();
+}
+
+void Gui::RatingEditor::paintEvent(QPaintEvent* e)
+{
+	e->accept();
+
+	QPainter painter(this);
+	m->label->paint(&painter, rect());
+}
+
+void Gui::RatingEditor::focusInEvent(QFocusEvent* e)
+{
+	this->setMouseTracking(m->mouse_trackable);
+
+	QWidget::focusInEvent(e);
+}
+
+void Gui::RatingEditor::focusOutEvent(QFocusEvent* e)
+{
+	this->setMouseTracking(false);
+
+	emit sig_finished(false);
+
+	QWidget::focusOutEvent(e);
+}
+
+void Gui::RatingEditor::mousePressEvent(QMouseEvent *e)
+{
+	Rating rating = m->label->rating_at(e->pos());
+	m->label->set_rating(rating);
+
+	repaint();
+
+	QWidget::mousePressEvent(e);
+}
+
+void Gui::RatingEditor::mouseMoveEvent(QMouseEvent* e)
+{
+	Rating rating = m->label->rating_at(e->pos());
+	m->label->set_rating(rating);
+
+	repaint();
+
+	QWidget::mouseMoveEvent(e);
+}
+
+void Gui::RatingEditor::mouseReleaseEvent(QMouseEvent* e)
+{
+	/* Important: Do not call QWidget::mouseReleaseEvent here.
+	 * this causes the edit trigger QAbstractItemView::SelectedClicked
+	 * to fire again and open a new Editor */
+	e->accept();
+
+	Rating rating = m->label->rating_at(e->pos());
+	m->label->set_rating(rating);
+
+	repaint();
+
+	emit sig_finished(true);
+}

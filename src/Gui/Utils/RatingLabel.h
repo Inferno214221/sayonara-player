@@ -33,46 +33,72 @@ namespace Gui
 	 * @brief The RatingLabel class
 	 * @ingroup Gui
 	 */
-	class RatingLabel : public QLabel
+	class RatingLabel :
+		public QLabel
 	{
 		Q_OBJECT
 		PIMPL(RatingLabel)
 
-	signals:
-		void sig_finished(bool);
-
-
 	public:
 		RatingLabel(QWidget* parent, bool enabled=true);
-		virtual ~RatingLabel();
+		~RatingLabel() override;
 
 		/**
 		 * @brief Set a rating from one to 5
 		 * @param rating
 		 */
 		void set_rating(Rating rating);
-		Rating get_rating() const;
+		Rating rating() const;
+
+		Rating rating_at(QPoint pos) const;
 
 		/**
 		 * @brief The y-offset where the stars should be painted
 		 * @param offset
 		 */
-		void set_offset_y(int offset);
+		void set_vertical_offset(int offset);
 
-	protected:
-		void paintEvent(QPaintEvent *e) override;
-		void focusInEvent(QFocusEvent* e) override;
-		void focusOutEvent(QFocusEvent* e) override;
-		void mousePressEvent(QMouseEvent *ev) override;
-		void mouseReleaseEvent(QMouseEvent* ev) override;
-		void mouseMoveEvent(QMouseEvent *ev) override;
+		void paint(QPainter* painter, const QRect& rect);
+
+		void restore();
 
 		QSize sizeHint() const override;
 		QSize minimumSizeHint() const override;
+	};
 
-	private:
-		void update_rating(Rating rating);
-		Rating calc_rating(QPoint pos) const;
+
+	class RatingEditor : public QWidget
+	{
+		Q_OBJECT
+		PIMPL(RatingEditor)
+
+		signals:
+			void sig_finished(bool save);
+			void sig_triggered();
+
+		public:
+			RatingEditor(QWidget* parent);
+			RatingEditor(Rating rating, QWidget* parent);
+			~RatingEditor() override;
+
+			void set_rating(Rating rating);
+			Rating rating() const;
+
+			void set_vertical_offset(int offset);
+			void set_mousetrackable(bool b);
+
+			QSize sizeHint() const override;
+			QSize minimumSizeHint() const override;
+
+		protected:
+			void paintEvent(QPaintEvent* e) override;
+
+			void focusInEvent(QFocusEvent* e) override;
+			void focusOutEvent(QFocusEvent* e) override;
+
+			void mousePressEvent(QMouseEvent* e) override;
+			void mouseMoveEvent(QMouseEvent* e) override;
+			void mouseReleaseEvent(QMouseEvent* e) override;
 	};
 }
 

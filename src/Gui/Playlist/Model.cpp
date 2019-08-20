@@ -73,6 +73,7 @@ struct PlaylistItemModel::Private
 	int						drag_index;
 	int						row_height;
 	PlaylistPtr				pl=nullptr;
+	Tagging::UserOperations* uto=nullptr;
 
 	Private(PlaylistPtr pl) :
 		old_row_count(0),
@@ -118,7 +119,7 @@ QVariant PlaylistItemModel::data(const QModelIndex& index, int role) const
 		return QVariant();
 	}
 
-	if (role == Qt::DisplayRole	|| role==Qt::EditRole)
+	if (role == Qt::DisplayRole)
 	{
 		if(col ==  ColumnName::TrackNumber) {
 			return QString("%1.").arg(row + 1);
@@ -130,6 +131,22 @@ QVariant PlaylistItemModel::data(const QModelIndex& index, int role) const
 		}
 
 		return QVariant();
+	}
+
+	else if(role == Qt::EditRole)
+	{
+		if(col == ColumnName::Description )
+		{
+			MetaData md = m->pl->track(row);
+			Rating rating = metadata(row).rating;
+
+			if(md.radio_mode() != RadioMode::Off)
+			{
+				rating = Rating::Last;
+			}
+
+			return QVariant::fromValue(rating);
+		}
 	}
 
 	else if (role == Qt::TextAlignmentRole)
@@ -231,7 +248,7 @@ Qt::ItemFlags PlaylistItemModel::flags(const QModelIndex &index) const
 	}
 
 	Qt::ItemFlags item_flags = QAbstractTableModel::flags(index);
-	if(index.column() == ColumnName::Description)
+	if(index.column() == int(ColumnName::Description))
 	{
 		item_flags |= Qt::ItemIsEditable;
 	}
@@ -290,12 +307,21 @@ void PlaylistItemModel::change_rating(const IndexSet& indexes, Rating rating)
 
 	for(auto idx : indexes)
 	{
-		v_md << m->pl->track(idx);
+		MetaData md = m->pl->track(idx);
+		v_md << md;
+
+		md.rating = rating;
+		m->pl->replace_track(idx, md);
+
+		emit dataChanged(index(idx, 0), index(idx, int(ColumnName::Description)));
 	}
 
-	Tagging::UserOperations* uto = new Tagging::UserOperations(-1, this);
-	connect(uto, &Tagging::UserOperations::sig_finished, uto, &Tagging::UserOperations::deleteLater);
-	uto->set_track_rating(v_md, rating);
+	if(!m->uto)
+	{
+		m->uto = new Tagging::UserOperations(-1, this);
+	}
+
+	m->uto->set_track_rating(v_md, rating);
 }
 
 void PlaylistItemModel::insert_tracks(const MetaDataList& v_md, int row)

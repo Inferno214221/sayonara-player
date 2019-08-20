@@ -38,8 +38,8 @@ namespace Gui
 {
 	class CoverButton;
 	class SearchSlider;
-	class RatingLabel;
 	class ProgressBar;
+	class RatingEditor;
 }
 
 class GUI_ControlsBase :
@@ -65,7 +65,7 @@ public:
 	virtual QLabel* lab_copyright() const=0;
 	virtual QLabel* lab_current_time() const=0;
 	virtual QLabel* lab_max_time() const=0;
-	virtual Gui::RatingLabel* lab_rating() const;
+	virtual Gui::RatingEditor* lab_rating() const;
 	virtual QWidget* widget_details() const=0;
 
 	virtual Gui::SearchSlider* sli_progress() const=0;

@@ -90,7 +90,7 @@ GUI_TagEdit::GUI_TagEdit(QWidget* parent) :
 	connect(ui->cb_genre_all, &QCheckBox::toggled, ui->le_genre, &QWidget::setDisabled);
 	connect(ui->cb_year_all, &QCheckBox::toggled, ui->sb_year, &QWidget::setDisabled);
 	connect(ui->cb_discnumber_all, &QCheckBox::toggled, ui->sb_discnumber, &QWidget::setDisabled);
-	connect(ui->cb_rating_all, &QCheckBox::toggled, ui->lab_rating, &QWidget::setDisabled);
+	connect(ui->cb_rating_all, &QCheckBox::toggled, ui->widget_rating, &QWidget::setDisabled);
 	connect(ui->cb_comment_all, &QCheckBox::toggled, ui->te_comment, &QWidget::setDisabled);
 
 	connect(ui->btn_save, &QPushButton::clicked, this, &GUI_TagEdit::commit);
@@ -340,7 +340,7 @@ void GUI_TagEdit::refresh_current_track()
 	}
 
 	if(!ui->cb_rating_all->isChecked()){
-		ui->lab_rating->set_rating(md.rating);
+		ui->widget_rating->set_rating(md.rating);
 	}
 
 	if(!ui->cb_comment_all->isChecked()){
@@ -391,7 +391,7 @@ void GUI_TagEdit::reset()
 	ui->te_comment->clear();
 	ui->sb_year->setValue(0);
 	ui->sb_discnumber->setValue(0);
-	ui->lab_rating->set_rating(Rating::Zero);
+	ui->widget_rating->set_rating(Rating::Zero);
 	ui->sb_track_num->setValue(0);
 	ui->le_album->setEnabled(true);
 	ui->le_artist->setEnabled(true);
@@ -399,7 +399,7 @@ void GUI_TagEdit::reset()
 	ui->le_genre->setEnabled(true);
 	ui->sb_year->setEnabled(true);
 	ui->sb_discnumber->setEnabled(true);
-	ui->lab_rating->setEnabled(true);
+	ui->widget_rating->setEnabled(true);
 
 	ui->lab_filepath->clear();
 	ui->pb_progress->setVisible(false);
@@ -500,7 +500,7 @@ void GUI_TagEdit::write_changes(int idx)
 	md.discnumber = scast(Disc, ui->sb_discnumber->value());
 	md.year =		scast(uint16_t, ui->sb_year->value());
 	md.track_num =	scast(uint16_t, ui->sb_track_num->value());
-	md.rating =		ui->lab_rating->get_rating();
+	md.rating =		ui->widget_rating->rating();
 
 	QPixmap cover = m->ui_cover_edit->selected_cover(idx);
 
@@ -551,7 +551,7 @@ void GUI_TagEdit::commit()
 		}
 
 		if( ui->cb_rating_all->isChecked()){
-			md.rating = ui->lab_rating->get_rating();
+			md.rating = ui->widget_rating->rating();
 		}
 
 		if( ui->cb_year_all->isChecked()){
