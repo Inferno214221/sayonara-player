@@ -31,7 +31,10 @@ LanguageString::LanguageString(const QString& str) :
 
 LanguageString LanguageString::toFirstUpper() const
 {
-	return LanguageString(Util::cvt_str_to_first_upper(*this));
+	QString str(*this);
+	str.replace(0, 1, this->at(0).toUpper());
+
+	return str;
 }
 
 LanguageString LanguageString::space() const
