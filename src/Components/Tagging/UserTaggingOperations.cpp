@@ -84,7 +84,7 @@ void UserOperations::set_album_rating(const Album& album, Rating rating)
 {
 	Album new_album(album);
 	new_album.rating = rating;
-	m->library_db->updateAlbum(album);
+	m->library_db->updateAlbum(new_album);
 }
 
 void UserOperations::merge_artists(const Util::Set<Id>& artist_ids, ArtistId target_artist)
