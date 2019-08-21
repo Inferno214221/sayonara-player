@@ -54,7 +54,7 @@
 #include <QStringList>
 
 using namespace Tagging::Utils;
-
+namespace FileUtils=::Util::File;
 
 bool Tagging::Utils::is_valid_file(const TagLib::FileRef& f)
 {
@@ -235,7 +235,7 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 	if(md.title().length() == 0)
 	{
 		QString dir, filename;
-		::Util::File::split_filename(md.filepath(), dir, filename);
+		FileUtils::split_filename(md.filepath(), dir, filename);
 
 		if(filename.size() > 4){
 			filename = filename.left(filename.length() - 4);

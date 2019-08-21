@@ -255,7 +255,6 @@ void ReloadThread::store_metadata_block(const MetaDataList& v_md)
 QStringList ReloadThread::get_files_recursive(QDir base_dir)
 {
 	QStringList ret;
-
 	{
 		sp_log(Log::Crazy, this) << "Reading all files from " << base_dir.absolutePath();
 		QString parent_dir, pure_dir_name;

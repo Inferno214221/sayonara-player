@@ -435,9 +435,8 @@ QString Location::preferred_path() const
 
 QString Location::alternative_path() const
 {
-	QString path = cover_path();
 	QString dir, filename;
-	Util::File::split_filename(path, dir, filename);
+	Util::File::split_filename(cover_path(), dir, filename);
 	filename.prepend("alt_");
 
 	return dir + QDir::separator() + filename;
@@ -463,7 +462,8 @@ UrlList Location::search_urls(bool also_inactive) const
 	UrlList ret;
 	for(Url url : container)
 	{
-		bool active = Manager::instance()->is_active(url.identifier());
+		auto* manager = Manager::instance();
+		bool active = manager->is_active(url.identifier());
 		url.set_active(active);
 
 		if(active || also_inactive)
@@ -497,7 +497,7 @@ QString Location::search_term() const
 
 void Location::set_search_term(const QString& search_term)
 {
-	Fetcher::Manager* cfm = Fetcher::Manager::instance();
+	auto* cfm = Fetcher::Manager::instance();
 
 	m->search_term = search_term;
 	m->search_term_urls = cfm->search_addresses(search_term, true);
@@ -506,7 +506,7 @@ void Location::set_search_term(const QString& search_term)
 void Location::set_search_term(const QString& search_term,
 							   const QString& cover_fetcher_identifier)
 {
-	Fetcher::Manager* cfm = Fetcher::Manager::instance();
+	auto* cfm = Fetcher::Manager::instance();
 
 	m->search_term = search_term;
 	m->search_term_urls = cfm->search_addresses(search_term, cover_fetcher_identifier, true);
@@ -571,17 +571,17 @@ bool Location::set_audio_file_source(const QString& audio_filepath, const QStrin
 
 QString Location::local_path() const
 {
-	QString dir = local_path_dir();
+	const QString dir = local_path_dir();
 	if(dir.isEmpty()) {
 		return QString();
 	}
 
-	QString link_path = cover_path();
+	const QString link_path = cover_path();
 	if(link_path.isEmpty()){
 		return QString();
 	}
 
-	QFileInfo info(link_path);
+	const QFileInfo info(link_path);
 	if(info.exists())
 	{
 		if(info.isSymLink())
@@ -606,7 +606,7 @@ QString Location::local_path() const
 		}
 	}
 
-	QStringList local_paths = Cover::LocalSearcher::cover_paths_from_path_hint(dir);
+	const QStringList local_paths = Cover::LocalSearcher::cover_paths_from_path_hint(dir);
 	if(local_paths.isEmpty()) {
 		return QString();
 	}
