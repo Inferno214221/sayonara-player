@@ -87,7 +87,7 @@ struct MetaData::Private
 		CASSIGN(radio_mode)
 	{}
 
-	Private(Private&& other) :
+	Private(Private&& other) noexcept :
 		CMOVE(title),
 		CMOVE(comment),
 		CMOVE(filepath),
@@ -114,7 +114,7 @@ struct MetaData::Private
 		return *this;
 	}
 
-	Private& operator=(Private&& other)
+	Private& operator=(Private&& other) noexcept
 	{
 		MOVE(title);
 		MOVE(comment);
@@ -206,7 +206,7 @@ MetaData::MetaData(const MetaData& other) :
 }
 
 
-MetaData::MetaData(MetaData&& other) :
+MetaData::MetaData(MetaData&& other) noexcept :
 	LibraryItem(other),
 	CMOVE(duration_ms),
 	CMOVE(filesize),
@@ -447,7 +447,7 @@ MetaData& MetaData::operator=(const MetaData& other)
 	return *this;
 }
 
-MetaData& MetaData::operator=(MetaData&& other)
+MetaData& MetaData::operator=(MetaData&& other) noexcept
 {
 	LibraryItem::operator=(std::move(other));
 

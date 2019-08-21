@@ -43,10 +43,10 @@ class CustomField
 public:
 	CustomField(const QString& id, const QString& display_name, const QString& value);
 	CustomField(const CustomField& other);
-	CustomField(CustomField&& other);
+	CustomField(CustomField&& other) noexcept;
 
 	CustomField& operator=(const CustomField& other);
-	CustomField& operator=(CustomField&& other);
+	CustomField& operator=(CustomField&& other) noexcept;
 
 	~CustomField();
 
@@ -67,10 +67,10 @@ class LibraryItem
 public:
 	LibraryItem();
 	LibraryItem(const LibraryItem& other);
-	LibraryItem(LibraryItem&& other);
+	LibraryItem(LibraryItem&& other) noexcept;
 
 	LibraryItem& operator=(const LibraryItem& other);
-	LibraryItem& operator=(LibraryItem&& other);
+	LibraryItem& operator=(LibraryItem&& other) noexcept;
 
 	virtual ~LibraryItem();
 

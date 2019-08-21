@@ -42,7 +42,7 @@ struct CustomField::Private
 		CASSIGN(id)
 	{}
 
-	Private(Private&& other) :
+	Private(Private&& other) noexcept :
 		CMOVE(display_name),
 		CMOVE(value),
 		CMOVE(id)
@@ -57,7 +57,7 @@ struct CustomField::Private
 		return *this;
 	}
 
-	Private& operator=(Private&& other)
+	Private& operator=(Private&& other) noexcept
 	{
 		MOVE(display_name);
 		MOVE(value);
@@ -78,7 +78,7 @@ CustomField::CustomField(const CustomField &other)
 	m = Pimpl::make<Private>(*(other.m));
 }
 
-CustomField::CustomField(CustomField&& other)
+CustomField::CustomField(CustomField&& other) noexcept
 {
 	m = Pimpl::make<Private>(
 			std::move(*(other.m))
@@ -91,7 +91,7 @@ CustomField& CustomField::operator=(const CustomField& other)
 	return *this;
 }
 
-CustomField& CustomField::operator=(CustomField&& other)
+CustomField& CustomField::operator=(CustomField&& other) noexcept
 {
 	(*m) = std::move(*(other.m));
 	return *this;
@@ -131,7 +131,7 @@ struct LibraryItem::Private
 		CASSIGN(db_id)
 	{}
 
-	Private(Private&& other) :
+	Private(Private&& other) noexcept :
 		CMOVE(additional_data),
 		CMOVE(cover_download_urls),
 		CMOVE(db_id)
@@ -146,7 +146,7 @@ struct LibraryItem::Private
 		return *this;
 	}
 
-	Private& operator=(Private&& other)
+	Private& operator=(Private&& other) noexcept
 	{
 		MOVE(additional_data);
 		MOVE(cover_download_urls);
@@ -166,7 +166,7 @@ LibraryItem::LibraryItem(const LibraryItem& other)
 	m = Pimpl::make<Private>(*(other.m));
 }
 
-LibraryItem::LibraryItem(LibraryItem&& other)
+LibraryItem::LibraryItem(LibraryItem&& other) noexcept
 {
 	m = Pimpl::make<Private>(
 		std::move(*(other.m))
@@ -179,7 +179,7 @@ LibraryItem& LibraryItem::operator=(const LibraryItem& other)
 	return *this;
 }
 
-LibraryItem& LibraryItem::operator=(LibraryItem&& other)
+LibraryItem& LibraryItem::operator=(LibraryItem&& other) noexcept
 {
 	(*m) = std::move(*(other.m));
 	return *this;

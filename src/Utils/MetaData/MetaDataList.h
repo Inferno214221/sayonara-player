@@ -46,10 +46,10 @@ public:
 	explicit MetaDataList(const MetaData& md);
 
 	MetaDataList(const MetaDataList&);
-	MetaDataList(MetaDataList&& other);
+	MetaDataList(MetaDataList&& other) noexcept;
 
 	MetaDataList& operator=(const MetaDataList& other);
-	MetaDataList& operator=(MetaDataList&& other);
+	MetaDataList& operator=(MetaDataList&& other) noexcept;
 
 	~MetaDataList();
 

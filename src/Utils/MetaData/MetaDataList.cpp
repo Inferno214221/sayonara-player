@@ -40,7 +40,7 @@ struct MetaDataList::Private
 		CASSIGN(current_track)
 	{}
 
-	Private(Private&& other) :
+	Private(Private&& other) noexcept :
 		CMOVE(current_track)
 	{}
 
@@ -50,7 +50,7 @@ struct MetaDataList::Private
 		return (*this);
 	}
 
-	Private& operator=(Private&& other)
+	Private& operator=(Private&& other) noexcept
 	{
 		MOVE(current_track);
 		return (*this);
@@ -93,7 +93,7 @@ MetaDataList::MetaDataList(const MetaDataList& other) :
 	std::copy(other.begin(), other.end(), this->begin());
 }
 
-MetaDataList::MetaDataList(MetaDataList&& other) :
+MetaDataList::MetaDataList(MetaDataList&& other) noexcept :
 	MetaDataList::Parent()
 {
 	m = Pimpl::make<Private>(std::move(*(other.m)));
@@ -103,7 +103,7 @@ MetaDataList::MetaDataList(MetaDataList&& other) :
 	std::move(other.begin(), other.end(), this->begin());
 }
 
-MetaDataList::~MetaDataList() {}
+MetaDataList::~MetaDataList() = default;
 
 MetaDataList& MetaDataList::operator=(const MetaDataList& other)
 {
@@ -115,7 +115,7 @@ MetaDataList& MetaDataList::operator=(const MetaDataList& other)
 	return (*this);
 }
 
-MetaDataList& MetaDataList::operator=(MetaDataList&& other)
+MetaDataList& MetaDataList::operator=(MetaDataList&& other) noexcept
 {
 	(*m) = std::move(*(other.m));
 

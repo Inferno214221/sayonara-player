@@ -30,13 +30,13 @@ struct Artist::Private
 {
 	HashValue artist_idx;
 
-	Private() {}
-	~Private() {}
+	Private() = default;
+	~Private() = default;
 	Private(const Private& other) :
 		CASSIGN(artist_idx)
 	{}
 
-	Private(Private&& other) :
+	Private(Private&& other) noexcept :
 		CMOVE(artist_idx)
 	{}
 
@@ -46,7 +46,7 @@ struct Artist::Private
 		return *this;
 	}
 
-	Private& operator=(Private&& other)
+	Private& operator=(Private&& other) noexcept
 	{
 		MOVE(artist_idx);
 		return *this;
@@ -71,7 +71,7 @@ Artist::Artist(const Artist& other) :
 	m = Pimpl::make<Private>(*(other.m));
 }
 
-Artist::Artist(Artist&& other) :
+Artist::Artist(Artist&& other) noexcept :
 	LibraryItem(std::move(other)),
 	CMOVE(id),
 	CMOVE(num_albums),
@@ -93,7 +93,7 @@ Artist& Artist::operator =(const Artist& other)
 	return *this;
 }
 
-Artist& Artist::operator =(Artist&& other)
+Artist& Artist::operator =(Artist&& other) noexcept
 {
 	LibraryItem::operator =( std::move(other) );
 
