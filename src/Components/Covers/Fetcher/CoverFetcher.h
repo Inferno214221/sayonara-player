@@ -1,4 +1,4 @@
-/* CoverFetcherInterface.h */
+/* CoverFetcher.h */
 
 /* Copyright (C) 2011-2019  Lucio Carreras
  *
@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef ABSTRACTCOVERFETCHER_H
 #define ABSTRACTCOVERFETCHER_H
 
@@ -35,7 +33,6 @@ namespace Cover::Fetcher
 	 */
 	class Base
 	{
-
 		private:
 			virtual QString priv_identifier() const=0;
 

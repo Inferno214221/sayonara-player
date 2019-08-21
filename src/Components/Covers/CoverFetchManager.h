@@ -31,25 +31,8 @@ namespace Cover
 {
 namespace Fetcher
 {
-	struct FetchUrl
-	{
-		bool active;
-		QString identifier;
-		QString url;
-
-		FetchUrl()
-		{
-			active=false;
-			identifier=QString();
-			url=QString();
-		}
-
-		FetchUrl(bool active, const QString& identifier, const QString& url) :
-			active(active), identifier(identifier), url(url)
-		{}
-	};
-
 	class Base;
+	class Url;
 	/**
 	 * @brief Retrieve Download Urls for Cover Searcher.
 	 * CoverFetcherInterface can be registered, so for
@@ -80,7 +63,7 @@ namespace Fetcher
 			 * @param artist name
 			 * @return list of urls
 			 */
-			QList<FetchUrl> artist_addresses(const QString& artist, bool also_inactive) const;
+			QList<Url> artist_addresses(const QString& artist, bool also_inactive) const;
 
 			/**
 			 * @brief get urls for a album search query
@@ -88,14 +71,14 @@ namespace Fetcher
 			 * @param album album name
 			 * @return list of urls
 			 */
-			QList<FetchUrl> album_addresses(const QString& artist, const QString& album, bool also_inactive) const;
+			QList<Url> album_addresses(const QString& artist, const QString& album, bool also_inactive) const;
 
 			/**
 			 * @brief get urls for a fuzzy query
 			 * @param str query string
 			 * @return list of urls
 			 */
-			QList<FetchUrl> search_addresses(const QString& str, bool also_inactive) const;
+			QList<Url> search_addresses(const QString& str, bool also_inactive) const;
 
 
 			/**
@@ -103,7 +86,7 @@ namespace Fetcher
 			 * @param str query string
 			 * @return list of urls
 			 */
-			QList<FetchUrl> search_addresses(const QString& str,
+			QList<Url> search_addresses(const QString& str,
 										 const QString& cover_fetcher_identifier, bool also_inactive) const;
 
 			/**

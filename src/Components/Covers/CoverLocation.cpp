@@ -22,6 +22,7 @@
 #include "CoverUtils.h"
 #include "CoverFetchManager.h"
 #include "LocalCoverSearcher.h"
+#include "Fetcher/CoverFetcherUrl.h"
 
 #include "Utils/globals.h"
 #include "Utils/Set.h"
@@ -46,18 +47,18 @@ using namespace Cover::Fetcher;
 using Cover::StringMap;
 
 using FetchManager=Cover::Fetcher::Manager;
-using Cover::Fetcher::FetchUrl;
-using FetchUrlList=QList<FetchUrl>;
+using Cover::Fetcher::Url;
+using UrlList=QList<Url>;
 
 namespace File=::Util::File;
 
-static QList<FetchUrl> extract_download_urls(const LibraryItem* item)
+static QList<Url> extract_download_urls(const LibraryItem* item)
 {
-	QList<FetchUrl> urls;
+	QList<Url> urls;
 	const QStringList cdu = item->cover_download_urls();
 	for(const QString& url : cdu)
 	{
-		urls << FetchUrl(true, "Direct", url);
+		urls << Url(true, "Direct", url);
 	}
 
 	return urls;
@@ -66,8 +67,8 @@ static QList<FetchUrl> extract_download_urls(const LibraryItem* item)
 struct Location::Private
 {
 	QString			search_term;		// Term provided to search engine
-	FetchUrlList	search_urls;		// Search url where to fetch covers
-	FetchUrlList	search_term_urls;	// Search urls where to fetch cover when using freetext search
+	UrlList	search_urls;		// Search url where to fetch covers
+	UrlList	search_term_urls;	// Search urls where to fetch cover when using freetext search
 	QStringList		local_path_hints;
 	StringMap		all_search_urls;	// key = identifier of coverfetcher, value = search url
 	QString			cover_path;			// cover_path path, in .Sayonara, where cover is stored. Ignored if local_paths are not empty
@@ -173,7 +174,7 @@ Location Location::invalid_location()
 
 	cl.set_valid(false);
 	cl.set_cover_path(::Util::share_path("logo.png"));
-	cl.set_search_urls(FetchUrlList());
+	cl.set_search_urls(UrlList());
 	cl.set_search_term(QString());
 	cl.set_identifier("Invalid location");
 	cl.set_audio_file_source(QString(), QString());
@@ -239,7 +240,7 @@ Location Location::xcover_location(const Album& album)
 			cl = Location::cover_location(album.name(), "");
 		}
 
-		QList<FetchUrl> urls = extract_download_urls( &album );
+		QList<Url> urls = extract_download_urls( &album );
 		if(!urls.isEmpty()) {
 			cl.set_search_urls(urls);
 		}
@@ -264,7 +265,7 @@ Location Location::cover_location(const Artist& artist)
 {
 	Location cl = Location::cover_location(artist.name());
 
-	QList<FetchUrl> urls = extract_download_urls(&artist);
+	QList<Url> urls = extract_download_urls(&artist);
 	if(!urls.isEmpty()) {
 		cl.set_search_urls(urls);
 	}
@@ -357,7 +358,7 @@ Location Location::cover_location(const MetaData& md, bool check_for_coverart)
 
 	if(cl.search_urls(true).isEmpty())
 	{
-		QList<FetchUrl> urls = extract_download_urls(&md);
+		QList<Url> urls = extract_download_urls(&md);
 		cl.set_search_urls(urls);
 	}
 
@@ -369,12 +370,12 @@ Location Location::cover_location(const MetaData& md, bool check_for_coverart)
 
 Location Location::cover_location(const QList<QUrl>& urls, const QString& target_path)
 {
-	QList<FetchUrl> fetch_urls;
+	QList<Url> fetch_urls;
 	QString merged;
 	for(QUrl url : urls)
 	{
 		merged += url.toString();
-		fetch_urls << FetchUrl(true, "Direct", url.toString());
+		fetch_urls << Url(true, "Direct", url.toString());
 	}
 
 	QString token = QString("Direct_") + Cover::Utils::calc_cover_token(merged, "");
@@ -448,9 +449,9 @@ QString Location::identifer() const
 	return m->identifier;
 }
 
-FetchUrlList Location::search_urls(bool also_inactive) const
+UrlList Location::search_urls(bool also_inactive) const
 {
-	FetchUrlList container;
+	UrlList container;
 	if(m->freetext_search) {
 		container = m->search_term_urls;
 	}
@@ -459,11 +460,11 @@ FetchUrlList Location::search_urls(bool also_inactive) const
 		container = m->search_urls;
 	}
 
-	FetchUrlList ret;
-	for(FetchUrl url : container)
+	UrlList ret;
+	for(Url url : container)
 	{
-		bool active = Manager::instance()->is_active(url.identifier);
-		url.active = active;
+		bool active = Manager::instance()->is_active(url.identifier());
+		url.set_active(active);
 
 		if(active || also_inactive)
 		{
@@ -474,10 +475,10 @@ FetchUrlList Location::search_urls(bool also_inactive) const
 	return ret;
 }
 
-FetchUrl Location::search_url(int idx) const
+Url Location::search_url(int idx) const
 {
 	if(!Util::between(idx, m->search_urls)){
-		return FetchUrl();
+		return Url();
 	}
 
 	return m->search_urls.at(idx);
@@ -511,7 +512,7 @@ void Location::set_search_term(const QString& search_term,
 	m->search_term_urls = cfm->search_addresses(search_term, cover_fetcher_identifier, true);
 }
 
-void Location::set_search_urls(const FetchUrlList& urls)
+void Location::set_search_urls(const UrlList& urls)
 {
 	m->search_urls = urls;
 }

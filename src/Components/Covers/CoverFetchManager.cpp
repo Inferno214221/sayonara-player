@@ -19,7 +19,8 @@
  */
 
 #include "CoverFetchManager.h"
-#include "CoverFetcherInterface.h"
+#include "Fetcher/CoverFetcher.h"
+#include "Fetcher/CoverFetcherUrl.h"
 
 #include "Fetcher/Google.h"
 #include "Fetcher/Audioscrobbler.h"
@@ -42,7 +43,7 @@ namespace Algorithm=Util::Algorithm;
 using namespace Cover;
 using Cover::Fetcher::Manager;
 using Cover::Fetcher::Base;
-using Cover::Fetcher::FetchUrl;
+using Cover::Fetcher::Url;
 
 using SortMap=QMap<QString, int>;
 
@@ -277,9 +278,9 @@ void Manager::servers_changed()
 }
 
 
-QList<FetchUrl> Manager::artist_addresses(const QString& artist, bool also_inactive) const
+QList<Url> Manager::artist_addresses(const QString& artist, bool also_inactive) const
 {
-	QList<FetchUrl> urls;
+	QList<Url> urls;
 
 	for(const Fetcher::Base* cfi : Algorithm::AsConst(m->coverfetchers))
 	{
@@ -288,14 +289,14 @@ QList<FetchUrl> Manager::artist_addresses(const QString& artist, bool also_inact
 
 		if(!adress.isEmpty())
 		{
-			FetchUrl url
+			Url url
 			(
 				is_active(identifier),
 				identifier,
 				adress
 			);
 
-			if(url.active || also_inactive)
+			if(url.is_active() || also_inactive)
 			{
 				urls << url;
 			}
@@ -306,9 +307,9 @@ QList<FetchUrl> Manager::artist_addresses(const QString& artist, bool also_inact
 }
 
 
-QList<FetchUrl> Manager::album_addresses(const QString& artist, const QString& album, bool also_inactive) const
+QList<Url> Manager::album_addresses(const QString& artist, const QString& album, bool also_inactive) const
 {
-	QList<FetchUrl> urls;
+	QList<Url> urls;
 
 	for(const Fetcher::Base* cfi : Algorithm::AsConst(m->coverfetchers))
 	{
@@ -317,14 +318,14 @@ QList<FetchUrl> Manager::album_addresses(const QString& artist, const QString& a
 
 		if(!adress.isEmpty())
 		{
-			FetchUrl url
+			Url url
 			(
 				is_active(identifier),
 				identifier,
 				adress
 			);
 
-			if(url.active || also_inactive)
+			if(url.is_active() || also_inactive)
 			{
 				urls << url;
 			}
@@ -335,9 +336,9 @@ QList<FetchUrl> Manager::album_addresses(const QString& artist, const QString& a
 }
 
 
-QList<FetchUrl> Manager::search_addresses(const QString& str, bool also_inactive) const
+QList<Url> Manager::search_addresses(const QString& str, bool also_inactive) const
 {
-	QList<FetchUrl> urls;
+	QList<Url> urls;
 
 	for(const Fetcher::Base* cfi : Algorithm::AsConst(m->coverfetchers))
 	{
@@ -346,14 +347,14 @@ QList<FetchUrl> Manager::search_addresses(const QString& str, bool also_inactive
 
 		if(!adress.isEmpty())
 		{
-			FetchUrl url
+			Url url
 			(
 				is_active(identifier),
 				identifier,
 				cfi->search_address(str)
 			);
 
-			if(url.active || also_inactive)
+			if(url.is_active() || also_inactive)
 			{
 				urls << url;
 			}
@@ -363,9 +364,9 @@ QList<FetchUrl> Manager::search_addresses(const QString& str, bool also_inactive
 	return urls;
 }
 
-QList<FetchUrl> Manager::search_addresses(const QString& str, const QString& cover_fetcher_identifier, bool also_inactive) const
+QList<Url> Manager::search_addresses(const QString& str, const QString& cover_fetcher_identifier, bool also_inactive) const
 {
-	QList<FetchUrl> urls;
+	QList<Url> urls;
 
 	for(const Fetcher::Base* cfi : Algorithm::AsConst(m->coverfetchers))
 	{
@@ -376,14 +377,14 @@ QList<FetchUrl> Manager::search_addresses(const QString& str, const QString& cov
 			(is_active(cfi)) &&
 			(cover_fetcher_identifier.compare(identifier, Qt::CaseInsensitive) == 0))
 		{
-			FetchUrl url
+			Url url
 			(
 				is_active(identifier),
 				identifier,
 				cfi->search_address(str)
 			);
 
-			if(url.active || also_inactive)
+			if(url.is_active() || also_inactive)
 			{
 				urls << url;
 			}

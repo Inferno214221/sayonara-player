@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "CoverFetcherInterface.h"
+#include "CoverFetcher.h"
 #include <QString>
 
 Cover::Fetcher::Base::Base() = default;

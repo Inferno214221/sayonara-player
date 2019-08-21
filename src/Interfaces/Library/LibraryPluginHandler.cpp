@@ -162,6 +162,7 @@ void PluginHandler::init_dll_libraries()
 			else if(value.startsWith("com.sayonara-player."))
 			{
 				sp_log(Log::Info, this) << "Ignoring *outdated* plugin with iid = " << value << " at " << absolute_path;
+				sp_log(Log::Info, this) << "You can delete this file";
 			}
 
 			else

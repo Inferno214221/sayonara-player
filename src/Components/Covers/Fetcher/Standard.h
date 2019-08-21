@@ -21,7 +21,7 @@
 #ifndef STANDARDCOVERFETCHER_H
 #define STANDARDCOVERFETCHER_H
 
-#include "../CoverFetcherInterface.h"
+#include "CoverFetcher.h"
 
 namespace Cover::Fetcher
 {

@@ -21,7 +21,7 @@
 #ifndef YANDEXCOVERFETCHER_H
 #define YANDEXCOVERFETCHER_H
 
-#include "../CoverFetcherInterface.h"
+#include "CoverFetcher.h"
 
 namespace Cover::Fetcher
 {

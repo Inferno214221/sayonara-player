@@ -624,7 +624,7 @@ QTabBar::tab
 	min-height: 2.5ex;
 }
 
-PlaylistTabBar::tab:last
+QTabBar::tab:last
 {
 	min-width: 1em;
 	max-width: 1em;

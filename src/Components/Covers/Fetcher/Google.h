@@ -21,7 +21,7 @@
 #ifndef GOOGLECOVERFETCHER_H
 #define GOOGLECOVERFETCHER_H
 
-#include "../CoverFetcherInterface.h"
+#include "CoverFetcher.h"
 
 namespace Cover
 {
