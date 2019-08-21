@@ -564,7 +564,7 @@
   <customwidget>
    <class>Gui::RatingEditor</class>
    <extends>QWidget</extends>
-   <header>Gui/Utils/RatingLabel.h</header>
+   <header>Gui/Utils/Widgets/RatingLabel.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>

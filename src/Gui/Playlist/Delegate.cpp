@@ -24,7 +24,7 @@
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/Settings/Settings.h"
 
-#include "Gui/Utils/RatingLabel.h"
+#include "Gui/Utils/Widgets/RatingLabel.h"
 #include "Gui/Utils/Style.h"
 
 #include <QPainter>
@@ -36,13 +36,15 @@ const static int PLAYLIST_BOLD=70;
 using Gui::RatingEditor;
 using Gui::RatingLabel;
 
+using RatingLabelArray = std::array<Gui::RatingLabel*, 6>;
+
 struct PlaylistItemDelegate::Private
 {
 	QString		entry_look;
 	int			rating_height;
 	bool		show_rating;
 
-	std::array<Gui::RatingLabel*, 6> rating_labels;
+	RatingLabelArray rating_labels;
 
 	Private() :
 		rating_height(18),
@@ -251,10 +253,10 @@ QWidget* PlaylistItemDelegate::createEditor(QWidget* parent, const QStyleOptionV
 		return nullptr;
 	}
 
-	auto* editor = new Gui::RatingEditor(rating, parent);
+	auto* editor = new RatingEditor(rating, parent);
 	editor->set_vertical_offset(option.rect.height() - m->rating_height);
 
-	connect(editor, &Gui::RatingEditor::sig_finished, this, &PlaylistItemDelegate::destroy_editor);
+	connect(editor, &RatingEditor::sig_finished, this, &PlaylistItemDelegate::destroy_editor);
 
 	return editor;
 }
@@ -264,12 +266,12 @@ void PlaylistItemDelegate::destroy_editor(bool save)
 {
 	Q_UNUSED(save)
 
-	auto* editor = qobject_cast<Gui::RatingEditor*>(sender());
+	auto* editor = qobject_cast<RatingEditor*>(sender());
 	if(!editor) {
 		return;
 	}
 
-	disconnect(editor, &Gui::RatingEditor::sig_finished, this, &PlaylistItemDelegate::destroy_editor);
+	disconnect(editor, &RatingEditor::sig_finished, this, &PlaylistItemDelegate::destroy_editor);
 
 	emit commitData(editor);
 	emit closeEditor(editor);
@@ -278,7 +280,7 @@ void PlaylistItemDelegate::destroy_editor(bool save)
 
 void PlaylistItemDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const
 {
-	auto* rating_editor = qobject_cast<Gui::RatingEditor*>(editor);
+	auto* rating_editor = qobject_cast<RatingEditor*>(editor);
 	if(!rating_editor) {
 		return;
 	}
@@ -290,7 +292,7 @@ void PlaylistItemDelegate::setEditorData(QWidget* editor, const QModelIndex& ind
 
 void PlaylistItemDelegate::setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const
 {
-	auto* rating_editor = qobject_cast<Gui::RatingEditor*>(editor);
+	auto* rating_editor = qobject_cast<RatingEditor*>(editor);
 	if(rating_editor)
 	{
 		Rating rating = rating_editor->rating();

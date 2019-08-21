@@ -11,7 +11,7 @@
 #include "Gui/Utils/PreferenceAction.h"
 #include "Gui/Utils/ContextMenu/LibraryContextMenu.h"
 #include "Gui/Utils/Widgets/ProgressBar.h"
-#include "Gui/Utils/RatingLabel.h"
+#include "Gui/Utils/Widgets/RatingLabel.h"
 #include "Gui/Utils/Widgets/FloatingLabel.h"
 
 #include "Components/PlayManager/PlayManager.h"

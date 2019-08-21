@@ -20,10 +20,10 @@
 
 #include "PlaylistContextMenu.h"
 #include "BookmarksMenu.h"
-#include "Gui/Utils/RatingLabel.h"
-#include "Gui/Utils/Icons.h"
-#include "Gui/Playlist/PlaylistActionMenu.h"
 
+#include "Gui/Playlist/PlaylistActionMenu.h"
+#include "Gui/Utils/Icons.h"
+#include "Gui/Utils/Widgets/RatingLabel.h"
 #include "Utils/Language/Language.h"
 #include "Utils/MetaData/MetaData.h"
 

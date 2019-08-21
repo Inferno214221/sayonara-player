@@ -33,7 +33,7 @@ namespace Gui
 	 * @brief A simple label, not suitable for editing.
 	 * For editing, use the RatingEditor class. RatingLabel
 	 * is intended for the paint method in delegates
-	 * @ingroup Gui
+	 * @ingroup Widgets
 	 */
 	class RatingLabel :
 		public QLabel
@@ -91,6 +91,7 @@ namespace Gui
 	 * While the RatingLabel class is used in paint() methods of delegates,
 	 * this class is used in normal widgets or for createEditor() methods
 	 * in delegates
+	 * @ingroup Widgets
 	 */
 	class RatingEditor : public QWidget
 	{
