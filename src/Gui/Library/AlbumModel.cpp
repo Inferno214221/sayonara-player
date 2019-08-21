@@ -48,13 +48,17 @@ using namespace Library;
 
 struct AlbumModel::Private
 {
-	QImage		pm_single;
-	QImage		pm_multi;
+	QImage						pm_single;
+	QImage						pm_multi;
+	QPair<int, Rating>			tmp_rating;
+	Tagging::UserOperations*	uto=nullptr;
 
 	Private() :
 		pm_single(Gui::Util::image("cd.png", Gui::Util::NoTheme, QSize(14, 14))),
 		pm_multi(Gui::Util::image("cds.png", Gui::Util::NoTheme, QSize(16, 16)))
-	{}
+	{
+		tmp_rating.first = -1;
+	}
 };
 
 AlbumModel::AlbumModel(QObject* parent, AbstractLibrary* library) :
@@ -184,11 +188,19 @@ QVariant AlbumModel::data(const QModelIndex& index, int role) const
 				return ::Util::cvt_ms_to_string(album.length_sec * 1000, true, false);
 
 			case ColumnIndex::Album::Rating:
+			{
 				if(role == Qt::DisplayRole) {
 					return QVariant();
 				}
 
-				return QVariant::fromValue(album.rating);
+				Rating rating = album.rating;
+				if(row == m->tmp_rating.first)
+				{
+					rating = m->tmp_rating.second;
+				}
+
+				return QVariant::fromValue(rating);
+			}
 
 			default:
 				return QVariant();
@@ -202,40 +214,51 @@ QVariant AlbumModel::data(const QModelIndex& index, int role) const
 	return QVariant();
 }
 
-bool AlbumModel::setData(const QModelIndex & index, const QVariant & value, int role)
+bool AlbumModel::setData(const QModelIndex& index, const QVariant& value, int role)
 {
-	if(!index.isValid()){
+	if((index.column() != int(ColumnIndex::Album::Rating) ||
+	   (role != Qt::EditRole)))
+	{
 		return false;
 	}
 
-	if (role == Qt::EditRole || role == Qt::DisplayRole)
+	int row = index.row();
+
+	const AlbumList& albums = library()->albums();
+	if(row >= 0 && row < albums.count())
 	{
-		int row = index.row();
-		int col = index.column();
+		Album album = albums[row];
+		Rating rating = value.value<Rating>();
 
-		if(col == scast(int, ColumnIndex::Album::Rating))
+		if(album.rating != rating)
 		{
-			const AlbumList& albums = library()->albums();
-			if(row >= 0 && row < albums.count())
+			m->tmp_rating.first = row;
+			m->tmp_rating.second = rating;
+
+			if(!m->uto)
 			{
-				const Album& album = albums[row];
-
-				auto* tagging = new Tagging::UserOperations(-1, this);
-				tagging->set_album_rating(album, value.value<Rating>());
-				connect(tagging, &Tagging::UserOperations::sig_finished, tagging, &QObject::deleteLater);
-
-				emit dataChanged(index, this->index(row, columnCount() - 1));
-
-				return true;
+				m->uto = new Tagging::UserOperations(-1, this);
+				connect(m->uto, &Tagging::UserOperations::sig_finished, this, &AlbumModel::rating_operation_finished);
 			}
 
-			return false;
+			m->uto->set_album_rating(album, rating);
 
+			emit dataChanged(index, this->index(row, columnCount() - 1));
+
+			return true;
 		}
 	}
 
 	return false;
 }
+
+void AlbumModel::rating_operation_finished()
+{
+	int row = m->tmp_rating.first;
+	emit dataChanged(this->index(row, 0), this->index(row, columnCount() - 1));
+	m->tmp_rating.first = -1;
+}
+
 
 int AlbumModel::rowCount(const QModelIndex&) const
 {
