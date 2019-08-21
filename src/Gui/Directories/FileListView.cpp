@@ -101,7 +101,7 @@ void FileListView::mousePressEvent(QMouseEvent* event)
 		}
 
 		m->context_menu->show_action(
-			Gui::LibraryContextMenu::EntryLyrics,
+			Library::ContextMenu::EntryLyrics,
 			(selected_rows().size()==1)
 		);
 

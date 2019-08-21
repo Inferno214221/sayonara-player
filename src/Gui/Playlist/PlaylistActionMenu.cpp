@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "PlaylistActionMenu.h"
 #include "Components/Library/LibraryManager.h"
 
@@ -33,7 +31,9 @@
 #include <QList>
 #include <QAction>
 
-struct PlaylistActionMenu::Private
+using Playlist::ActionMenu;
+
+struct ActionMenu::Private
 {
 	Playlist::Mode		plm;
 
@@ -58,7 +58,7 @@ struct PlaylistActionMenu::Private
 };
 
 
-PlaylistActionMenu::PlaylistActionMenu(QWidget* parent) :
+ActionMenu::ActionMenu(QWidget* parent) :
 	Gui::WidgetTemplate<QMenu>(parent)
 {
 	m = Pimpl::make<Private>();
@@ -90,22 +90,21 @@ PlaylistActionMenu::PlaylistActionMenu(QWidget* parent) :
 	m->action_dynamic->setChecked(Playlist::Mode::isActive(m->plm.dynamic()));
 	m->action_shuffle->setChecked(Playlist::Mode::isActive(m->plm.shuffle()));
 
-	connect(m->action_rep1, &QAction::toggled, this, &PlaylistActionMenu::rep1_checked);
-	connect(m->action_repAll, &QAction::toggled, this, &PlaylistActionMenu::rep_all_checked);
-	connect(m->action_append, &QAction::toggled, this, &PlaylistActionMenu::playlist_mode_changed);
-	connect(m->action_shuffle, &QAction::toggled, this, &PlaylistActionMenu::shuffle_checked);
-	connect(m->action_dynamic, &QAction::toggled, this, &PlaylistActionMenu::playlist_mode_changed);
-	connect(m->action_gapless, &QAction::triggered, this, &PlaylistActionMenu::gapless_clicked);
+	connect(m->action_rep1, &QAction::toggled, this, &ActionMenu::rep1_checked);
+	connect(m->action_repAll, &QAction::toggled, this, &ActionMenu::rep_all_checked);
+	connect(m->action_append, &QAction::toggled, this, &ActionMenu::playlist_mode_changed);
+	connect(m->action_shuffle, &QAction::toggled, this, &ActionMenu::shuffle_checked);
+	connect(m->action_dynamic, &QAction::toggled, this, &ActionMenu::playlist_mode_changed);
+	connect(m->action_gapless, &QAction::triggered, this, &ActionMenu::gapless_clicked);
 
-	ListenSetting(Set::PL_Mode, PlaylistActionMenu::s_playlist_mode_changed);
+	ListenSetting(Set::PL_Mode, ActionMenu::s_playlist_mode_changed);
 
 	language_changed();
 }
 
-PlaylistActionMenu::~PlaylistActionMenu() = default;
+ActionMenu::~ActionMenu() = default;
 
-
-void PlaylistActionMenu::rep1_checked(bool checked)
+void ActionMenu::rep1_checked(bool checked)
 {
 	if(checked){
 		m->action_repAll->setChecked(false);
@@ -115,7 +114,7 @@ void PlaylistActionMenu::rep1_checked(bool checked)
 	playlist_mode_changed();
 }
 
-void PlaylistActionMenu::rep_all_checked(bool checked)
+void ActionMenu::rep_all_checked(bool checked)
 {
 	if(checked){
 		m->action_rep1->setChecked(false);
@@ -124,7 +123,7 @@ void PlaylistActionMenu::rep_all_checked(bool checked)
 	playlist_mode_changed();
 }
 
-void PlaylistActionMenu::shuffle_checked(bool checked)
+void ActionMenu::shuffle_checked(bool checked)
 {
 	if(checked){
 		m->action_rep1->setChecked(false);
@@ -135,7 +134,7 @@ void PlaylistActionMenu::shuffle_checked(bool checked)
 
 
 // internal gui slot
-void PlaylistActionMenu::playlist_mode_changed()
+void ActionMenu::playlist_mode_changed()
 {
 	Playlist::Mode plm;
 
@@ -155,13 +154,13 @@ void PlaylistActionMenu::playlist_mode_changed()
 }
 
 
-void PlaylistActionMenu::gapless_clicked()
+void ActionMenu::gapless_clicked()
 {
 	PlayerPlugin::Handler::instance()->show_plugin("Crossfader");
 }
 
 
-void PlaylistActionMenu::language_changed()
+void ActionMenu::language_changed()
 {
 	m->action_append->setText(Lang::get(Lang::Append));
 	m->action_dynamic->setText(Lang::get(Lang::DynamicPlayback));
@@ -175,7 +174,7 @@ void PlaylistActionMenu::language_changed()
 
 
 // setting slot
-void PlaylistActionMenu::s_playlist_mode_changed()
+void ActionMenu::s_playlist_mode_changed()
 {
 	Playlist::Mode plm = GetSetting(Set::PL_Mode);
 
@@ -202,7 +201,7 @@ void PlaylistActionMenu::s_playlist_mode_changed()
 }
 
 
-void PlaylistActionMenu::check_dynamic_play_button()
+void ActionMenu::check_dynamic_play_button()
 {
 	int n_libs = Library::Manager::instance()->count();
 

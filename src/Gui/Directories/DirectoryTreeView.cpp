@@ -310,7 +310,7 @@ void DirectoryTreeView::mousePressEvent(QMouseEvent* event)
 			(this->selected_indexes().size()==1)
 		);
 
-		m->context_menu->show_action(Gui::LibraryContextMenu::EntryDelete, !is_root);
+		m->context_menu->show_action(Library::ContextMenu::EntryDelete, !is_root);
 		m->context_menu->exec(pos);
 	}
 }

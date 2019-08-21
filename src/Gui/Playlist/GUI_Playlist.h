@@ -39,7 +39,10 @@
 #include "Components/PlayManager/PlayState.h"
 #include "Components/Playlist/PlaylistDBInterface.h"
 
-class PlaylistView;
+namespace Playlist
+{
+	class View;
+}
 
 UI_FWD(Playlist_Window)
 
@@ -59,8 +62,8 @@ public:
 	~GUI_Playlist();
 
 private:
-	PlaylistView* view_by_index(int idx);
-	PlaylistView* current_view();
+	Playlist::View* view_by_index(int idx);
+	Playlist::View* current_view();
 
 	void set_total_time_label();
 

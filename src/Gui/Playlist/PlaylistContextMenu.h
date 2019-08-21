@@ -25,54 +25,55 @@
 
 class MetaData;
 
-/**
- * @brief The PlaylistContextMenu class
- * @ingroup GuiPlaylists
- */
-class PlaylistContextMenu :
-		public Gui::LibraryContextMenu
+namespace Playlist
 {
-	Q_OBJECT
-	PIMPL(PlaylistContextMenu)
-
-signals:
-	void sig_rating_changed(Rating rating);
-	void sig_bookmark_pressed(Seconds timestamp);
-	void sig_jump_to_current_track();
-	void sig_find_track_triggered();
-
-public:
-	enum Entry
-	{
-		EntryRating=(LibraryContextMenu::EntryLast << 1),
-		EntryBookmarks=(EntryRating << 1),
-		EntryCurrentTrack=(EntryBookmarks << 1),
-		EntryFindInLibrary=(EntryCurrentTrack << 1)
-	};
-
-	using Entries=LibraryContextMenu::Entries;
-
-	explicit PlaylistContextMenu(QWidget* parent);
-	~PlaylistContextMenu();
-
-	PlaylistContextMenu::Entries get_entries() const override;
-	void show_actions(PlaylistContextMenu::Entries entries) override;
-
 	/**
-	 * @brief set rating for the rating entry
-	 * @param rating from 0 to 5
+	 * @brief The PlaylistContextMenu class
+	 * @ingroup GuiPlaylists
 	 */
-	void set_rating(Rating rating);
-	void set_metadata(const MetaData& md);
+	class ContextMenu :
+			public Library::ContextMenu
+	{
+		Q_OBJECT
+		PIMPL(ContextMenu)
 
-private:
-	QAction* init_rating_action(Rating rating, QObject* parent);
-	void language_changed() override;
-	void skin_changed() override;
+	signals:
+		void sig_rating_changed(Rating rating);
+		void sig_bookmark_pressed(Seconds timestamp);
+		void sig_jump_to_current_track();
+		void sig_find_track_triggered();
 
-private slots:
-	void bookmark_pressed(Seconds timestamp);
-};
+	public:
+		enum Entry
+		{
+			EntryRating=(Library::ContextMenu::EntryLast << 1),
+			EntryBookmarks=(EntryRating << 1),
+			EntryCurrentTrack=(EntryBookmarks << 1),
+			EntryFindInLibrary=(EntryCurrentTrack << 1)
+		};
+
+		explicit ContextMenu(QWidget* parent);
+		~ContextMenu() override;
+
+		ContextMenu::Entries get_entries() const override;
+		void show_actions(ContextMenu::Entries entries) override;
+
+		/**
+		 * @brief set rating for the rating entry
+		 * @param rating from 0 to 5
+		 */
+		void set_rating(Rating rating);
+		void set_metadata(const MetaData& md);
+
+	private:
+		QAction* init_rating_action(Rating rating, QObject* parent);
+		void language_changed() override;
+		void skin_changed() override;
+
+	private slots:
+		void bookmark_pressed(Seconds timestamp);
+	};
+}
 
 
 #endif // PLAYLISTCONTEXTMENU_H

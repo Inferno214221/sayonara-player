@@ -53,7 +53,7 @@ static MetaData current_track()
 
 struct GUI_ControlsBase::Private
 {
-	Gui::LibraryContextMenu* context_menu=nullptr;
+	Library::ContextMenu* context_menu=nullptr;
 };
 
 GUI_ControlsBase::GUI_ControlsBase(QWidget* parent) :
@@ -683,27 +683,27 @@ void GUI_ControlsBase::showEvent(QShowEvent* e)
 
 void GUI_ControlsBase::contextMenuEvent(QContextMenuEvent* e)
 {
-	using Gui::LibraryContextMenu;
+	using Library::ContextMenu;
 
 	if(!m->context_menu)
 	{
-		m->context_menu = new LibraryContextMenu(this);
+		m->context_menu = new ContextMenu(this);
 		m->context_menu->show_actions
 		(
-			(LibraryContextMenu::EntryInfo |
-			LibraryContextMenu::EntryLyrics |
-			LibraryContextMenu::EntryEdit)
+			(ContextMenu::EntryInfo |
+			ContextMenu::EntryLyrics |
+			ContextMenu::EntryEdit)
 		);
 
-		connect(m->context_menu, &LibraryContextMenu::sig_edit_clicked, this, [=](){
+		connect(m->context_menu, &ContextMenu::sig_edit_clicked, this, [=](){
 			show_edit();
 		});
 
-		connect(m->context_menu, &LibraryContextMenu::sig_info_clicked, this, [=](){
+		connect(m->context_menu, &ContextMenu::sig_info_clicked, this, [=](){
 			show_info();
 		});
 
-		connect(m->context_menu, &LibraryContextMenu::sig_lyrics_clicked, this, [=](){
+		connect(m->context_menu, &ContextMenu::sig_lyrics_clicked, this, [=](){
 			show_lyrics();
 		});
 

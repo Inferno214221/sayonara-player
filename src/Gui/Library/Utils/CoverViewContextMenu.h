@@ -37,7 +37,7 @@ namespace Library
 	 * @ingroup GuiLibrary
 	 */
 	class CoverViewContextMenu :
-			public Gui::LibraryContextMenu
+			public Library::ContextMenu
 	{
 		Q_OBJECT
 		PIMPL(CoverViewContextMenu)
@@ -49,13 +49,11 @@ namespace Library
 	public:
 		enum Entry
 		{
-			EntryShowUtils=(LibraryContextMenu::EntryLast << 1),
+			EntryShowUtils=(Library::ContextMenu::EntryLast << 1),
 			EntrySorting=(EntryShowUtils << 1),
 			EntryZoom=(EntrySorting << 1),
 			EntryShowArtist=(EntryZoom << 1)
 		};
-
-		using Entries=LibraryContextMenu::Entries;
 
 		explicit CoverViewContextMenu(QWidget* parent);
 		~CoverViewContextMenu() override;
@@ -68,7 +66,6 @@ namespace Library
 
 	private:
 		void language_changed() override;
-		void skin_changed() override;
 
 		void init();
 		void init_sorting_actions();

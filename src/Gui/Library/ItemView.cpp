@@ -53,15 +53,14 @@
 #include <QItemSelectionModel>
 
 using namespace Library;
-using Gui::LibraryContextMenu;
 
-struct Library::ItemView::Private
+
+struct ItemView::Private
 {
 	Gui::MergeMenu*		merge_menu=nullptr;
 	ItemModel*			model=nullptr;
 	QPushButton*		btn_clear_selection=nullptr;
-
-	LibraryContextMenu*	context_menu=nullptr;
+	ContextMenu*		context_menu=nullptr;
 
 	MD::Interpretation	type;
 	bool				cur_filling;
@@ -128,20 +127,20 @@ void ItemView::set_item_model(ItemModel* model)
 	connect(sm, &QItemSelectionModel::selectionChanged, this, &ItemView::selected_items_changed);
 }
 
-Gui::LibraryContextMenu::Entries ItemView::context_menu_entries() const
+ContextMenu::Entries ItemView::context_menu_entries() const
 {
-	Gui::LibraryContextMenu::Entries entries =
+	ContextMenu::Entries entries =
 	(
-			LibraryContextMenu::EntryPlay |
-			LibraryContextMenu::EntryPlayNewTab |
-			LibraryContextMenu::EntryInfo |
-			LibraryContextMenu::EntryEdit |
-			LibraryContextMenu::EntryDelete |
-			LibraryContextMenu::EntryPlayNext |
-			LibraryContextMenu::EntryAppend |
-			LibraryContextMenu::EntryCoverView |
-			LibraryContextMenu::EntryFilterExtension |
-			LibraryContextMenu::EntryReload
+			ContextMenu::EntryPlay |
+			ContextMenu::EntryPlayNewTab |
+			ContextMenu::EntryInfo |
+			ContextMenu::EntryEdit |
+			ContextMenu::EntryDelete |
+			ContextMenu::EntryPlayNext |
+			ContextMenu::EntryAppend |
+			ContextMenu::EntryCoverView |
+			ContextMenu::EntryFilterExtension |
+			ContextMenu::EntryReload
 	);
 
 	return entries;
@@ -165,7 +164,7 @@ void ItemView::init_context_menu()
 }
 
 // Right click stuff
-void ItemView::init_custom_context_menu(LibraryContextMenu* menu)
+void ItemView::init_custom_context_menu(ContextMenu* menu)
 {
 	if(m->context_menu){
 		return;
@@ -176,7 +175,7 @@ void ItemView::init_custom_context_menu(LibraryContextMenu* menu)
 	}
 
 	else {
-		m->context_menu = new LibraryContextMenu(this);
+		m->context_menu = new ContextMenu(this);
 	}
 
 	if(!m->merge_menu)
@@ -185,24 +184,24 @@ void ItemView::init_custom_context_menu(LibraryContextMenu* menu)
 		connect(m->merge_menu, &Gui::MergeMenu::sig_merge_triggered, this, &ItemView::merge_action_triggered);
 	}
 
-	QAction* after_edit_action = m->context_menu->get_action_after(LibraryContextMenu::EntryEdit);
+	QAction* after_edit_action = m->context_menu->get_action_after(ContextMenu::EntryEdit);
 
 	if(after_edit_action)
 	{
 		m->context_menu->insertAction(after_edit_action, m->merge_menu->action());
 	}
 
-	connect(m->context_menu, &LibraryContextMenu::sig_edit_clicked, this, [=](){ show_edit(); });
-	connect(m->context_menu, &LibraryContextMenu::sig_info_clicked, this, [=](){ show_info(); });
-	connect(m->context_menu, &LibraryContextMenu::sig_lyrics_clicked, this, [=](){ show_lyrics(); });
-	connect(m->context_menu, &LibraryContextMenu::sig_delete_clicked, this, &ItemView::delete_clicked);
-	connect(m->context_menu, &LibraryContextMenu::sig_play_clicked, this, &ItemView::play_clicked);
-	connect(m->context_menu, &LibraryContextMenu::sig_play_next_clicked, this, &ItemView::play_next_clicked);
-	connect(m->context_menu, &LibraryContextMenu::sig_play_new_tab_clicked, this, &ItemView::play_new_tab_clicked);
-	connect(m->context_menu, &LibraryContextMenu::sig_append_clicked, this, &ItemView::append_clicked);
-	connect(m->context_menu, &LibraryContextMenu::sig_refresh_clicked, this, &ItemView::refresh_clicked);
-	connect(m->context_menu, &LibraryContextMenu::sig_filter_triggered, this, &ItemView::filter_extensions_triggered);
-	connect(m->context_menu, &LibraryContextMenu::sig_reload_clicked, this, &ItemView::reload_clicked);
+	connect(m->context_menu, &ContextMenu::sig_edit_clicked, this, [=](){ show_edit(); });
+	connect(m->context_menu, &ContextMenu::sig_info_clicked, this, [=](){ show_info(); });
+	connect(m->context_menu, &ContextMenu::sig_lyrics_clicked, this, [=](){ show_lyrics(); });
+	connect(m->context_menu, &ContextMenu::sig_delete_clicked, this, &ItemView::delete_clicked);
+	connect(m->context_menu, &ContextMenu::sig_play_clicked, this, &ItemView::play_clicked);
+	connect(m->context_menu, &ContextMenu::sig_play_next_clicked, this, &ItemView::play_next_clicked);
+	connect(m->context_menu, &ContextMenu::sig_play_new_tab_clicked, this, &ItemView::play_new_tab_clicked);
+	connect(m->context_menu, &ContextMenu::sig_append_clicked, this, &ItemView::append_clicked);
+	connect(m->context_menu, &ContextMenu::sig_refresh_clicked, this, &ItemView::refresh_clicked);
+	connect(m->context_menu, &ContextMenu::sig_filter_triggered, this, &ItemView::filter_extensions_triggered);
+	connect(m->context_menu, &ContextMenu::sig_reload_clicked, this, &ItemView::reload_clicked);
 
 	this->show_context_menu_actions(context_menu_entries());
 
@@ -210,7 +209,7 @@ void ItemView::init_custom_context_menu(LibraryContextMenu* menu)
 	m->context_menu->set_extensions(library()->extensions());
 }
 
-LibraryContextMenu* ItemView::context_menu() const
+ContextMenu* ItemView::context_menu() const
 {
 	return m->context_menu;
 }
@@ -220,7 +219,7 @@ void ItemView::show_context_menu(const QPoint& p)
 	m->context_menu->exec(p);
 }
 
-void ItemView::show_context_menu_actions(Gui::LibraryContextMenu::Entries entries)
+void ItemView::show_context_menu_actions(ContextMenu::Entries entries)
 {
 	m->context_menu->show_actions(entries);
 }
@@ -463,12 +462,12 @@ void ItemView::contextMenuEvent(QContextMenuEvent* event)
 
 	if(metadata_interpretation() == MD::Interpretation::Tracks && selections.size() == 1)
 	{
-		m->context_menu->show_action(LibraryContextMenu::EntryLyrics, true);
+		m->context_menu->show_action(ContextMenu::EntryLyrics, true);
 	}
 
 	else
 	{
-		m->context_menu->show_action(LibraryContextMenu::EntryLyrics, false);
+		m->context_menu->show_action(ContextMenu::EntryLyrics, false);
 	}
 
 	if(is_mergeable())

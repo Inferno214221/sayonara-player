@@ -56,7 +56,7 @@ namespace Gui
 
 			QAction* action() const;
 			bool is_data_valid() const;
-			Library::MergeData mergedata() const;
+			::Library::MergeData mergedata() const;
 
 		protected:
 			void language_changed() override;

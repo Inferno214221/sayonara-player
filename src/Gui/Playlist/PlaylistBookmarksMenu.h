@@ -1,6 +1,6 @@
-/* BottomBarButton.h */
+/* BookmarksMenu.h */
 
-/* Copyright (C) 2011-2019 Lucio Carreras
+/* Copyright (C) 2011-2019  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -18,38 +18,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef BOOKMARKS_ACTION_H
+#define BOOKMARKS_ACTION_H
 
+#include <QMenu>
+#include "Utils/Pimpl.h"
 
-#ifndef BOTTOMBARBUTTON_H
-#define BOTTOMBARBUTTON_H
-
-#include <QPushButton>
-
-class QPixmap;
-
-/**
- * @brief The BottomBarButton class
- * @ingroup GuiPlaylists
- */
-class BottomBarButton : public QPushButton
+namespace Playlist
 {
+	/**
+	 * @brief The BookmarksMenu class
+	 * @ingroup GuiPlaylists
+	 */
+	class BookmarksMenu :
+		public QMenu
+	{
+		Q_OBJECT
+		PIMPL(BookmarksMenu)
+
+	signals:
+		void sig_bookmark_pressed(Seconds time_sec);
+
 	public:
-		BottomBarButton(const QPixmap& pm, QWidget* parent);
-		~BottomBarButton();
+		explicit BookmarksMenu(QWidget* parent);
+		virtual ~BookmarksMenu();
 
-	private:
-		QPixmap m_pixmap;
+		bool has_bookmarks() const;
+		void set_metadata(const MetaData& md);
+		MetaData metadata() const;
 
-		using QPushButton::setIcon;
+	private slots:
+		void action_pressed();
+		void bookmarks_changed();
+	};
+}
 
-	protected:
-		void paintEvent(QPaintEvent* e) override;
-
-	public:
-		void set_pixmap(const QPixmap& pm);
-
-
-
-};
-
-#endif // BOTTOMBARBUTTON_H
+#endif

@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "BookmarksMenu.h"
+#include "PlaylistBookmarksMenu.h"
 
 #include "Gui/Plugins/PlayerPluginHandler.h"
 #include "Gui/Utils/Icons.h"
@@ -29,6 +29,8 @@
 
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/Language/Language.h"
+
+using Playlist::BookmarksMenu;
 
 struct BookmarksMenu::Private
 {
@@ -106,7 +108,7 @@ void BookmarksMenu::bookmarks_changed()
 void BookmarksMenu::action_pressed()
 {
 	QAction* action = dynamic_cast<QAction*>(sender());
-	Seconds time = (Seconds) action->data().toInt();
+	Seconds time = Seconds(action->data().toInt());
 
 	emit sig_bookmark_pressed(time);
 }
