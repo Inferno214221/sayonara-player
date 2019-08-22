@@ -93,7 +93,7 @@ View::View(PlaylistPtr pl, QWidget* parent) :
 	ListenSetting(Set::PL_ShowNumbers, View::sl_columns_changed);
 	ListenSetting(Set::PL_ShowCovers, View::sl_columns_changed);
 	ListenSetting(Set::PL_ShowNumbers, View::sl_columns_changed);
-	ListenSetting(Set::PL_ShowRating, View::refresh);
+	ListenSetting(Set::PL_ShowRating, View::sl_show_rating_changed);
 
 	new QShortcut(QKeySequence(Qt::Key_Backspace), this, SLOT(clear()), nullptr, Qt::WidgetShortcut);
 	new QShortcut(QKeySequence(QKeySequence::Delete), this, SLOT(remove_selected_rows()), nullptr, Qt::WidgetShortcut);
@@ -133,8 +133,6 @@ void View::init_view()
 	setDragDropOverwriteMode(false);
 	setAcceptDrops(true);
 	setDropIndicatorShown(true);
-
-	setEditTriggers(QAbstractItemView::SelectedClicked);
 }
 
 
@@ -579,6 +577,21 @@ void View::sl_columns_changed()
 
 	horizontalHeader()->setSectionHidden(Pl::Model::ColumnName::TrackNumber, !show_numbers);
 	horizontalHeader()->setSectionHidden(Pl::Model::ColumnName::Cover, !show_covers);
+
+	refresh();
+}
+
+void View::sl_show_rating_changed()
+{
+	bool show_rating = GetSetting(Set::PL_ShowRating);
+	if(show_rating)
+	{
+		this->setEditTriggers(QAbstractItemView::SelectedClicked);
+	}
+
+	else {
+		this->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	}
 
 	refresh();
 }
