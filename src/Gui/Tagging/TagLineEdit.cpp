@@ -35,20 +35,24 @@ TagLineEdit::TagLineEdit(QWidget* parent) :
 	this->setReadOnly(true);
 }
 
-TagLineEdit::~TagLineEdit() {}
+TagLineEdit::~TagLineEdit() = default;
 
-void TagLineEdit::focusInEvent(QFocusEvent* e){
+void TagLineEdit::focusInEvent(QFocusEvent* e)
+{
 	m->text_selection.reset();
 	QLineEdit::focusInEvent(e);
 }
 
-void TagLineEdit::focusOutEvent(QFocusEvent* e){
+void TagLineEdit::focusOutEvent(QFocusEvent* e)
+{
 	QString selected_text = this->selectedText();
-	if(selected_text.isEmpty()){
+	if(selected_text.isEmpty())
+	{
 		m->text_selection.reset();
 	}
 
-	else{
+	else
+	{
 		m->text_selection.selection_start = this->selectionStart();
 		m->text_selection.selection_size = selected_text.size();
 	}
@@ -59,6 +63,18 @@ void TagLineEdit::focusOutEvent(QFocusEvent* e){
 
 TextSelection TagLineEdit::text_selection() const
 {
+	QString selected_text = this->selectedText();
+	if(selected_text.isEmpty())
+	{
+		m->text_selection.reset();
+	}
+
+	else
+	{
+		m->text_selection.selection_start = this->selectionStart();
+		m->text_selection.selection_size = selected_text.size();
+	}
+
 	return m->text_selection;
 }
 
