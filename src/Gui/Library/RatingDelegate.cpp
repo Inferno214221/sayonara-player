@@ -30,14 +30,10 @@ using Gui::RatingEditor;
 
 using namespace Library;
 
-using RatingLabelArray = std::array<Gui::RatingLabel*, 6>;
-
 struct RatingDelegate::Private
 {
 	int	rating_column;
 	bool enabled;
-
-	RatingLabelArray rating_labels;
 
 	Private(bool enabled, int rating_column) :
 		rating_column(rating_column),
@@ -49,13 +45,6 @@ RatingDelegate::RatingDelegate(QObject* parent, int rating_column, bool enabled)
 	StyledItemDelegate(parent)
 {
 	m = Pimpl::make<Private>(enabled, rating_column);
-
-	for(uchar i=uchar(Rating::Zero); i < uchar(Rating::Last); i++)
-	{
-		auto* label = new RatingLabel(nullptr, true);
-		label->set_rating(Rating(i));
-		m->rating_labels[i] = label;
-	}
 }
 
 RatingDelegate::~RatingDelegate() = default;
@@ -73,9 +62,10 @@ void RatingDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option
 	}
 
 	Rating rating = index.data(Qt::EditRole).value<Rating>();
-	RatingLabel* label = m->rating_labels[uchar(rating)];
 
-	label->paint(painter, option.rect);
+	RatingLabel label(nullptr, true);
+	label.set_rating(rating);
+	label.paint(painter, option.rect);
 }
 
 QWidget* RatingDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const

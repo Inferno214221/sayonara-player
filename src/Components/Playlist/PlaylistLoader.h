@@ -42,7 +42,7 @@ namespace Playlist
 
 		public:
 			explicit Loader(QObject* parent=nullptr);
-			virtual ~Loader();
+			~Loader() override;
 
 
 			CustomPlaylists			get_playlists() const;

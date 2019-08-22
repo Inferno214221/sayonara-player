@@ -77,7 +77,7 @@ class RemoteControl :
 
 public:
 	explicit RemoteControl(QObject *parent=nullptr);
-	virtual ~RemoteControl();
+	~RemoteControl() override;
 
 	bool is_connected() const;
 

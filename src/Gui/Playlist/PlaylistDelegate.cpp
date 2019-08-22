@@ -37,15 +37,11 @@ using Gui::RatingEditor;
 using Gui::RatingLabel;
 using Playlist::Delegate;
 
-using RatingLabelArray = std::array<Gui::RatingLabel*, 6>;
-
 struct Delegate::Private
 {
 	QString		entry_look;
 	int			rating_height;
 	bool		show_rating;
-
-	RatingLabelArray rating_labels;
 
 	Private() :
 		rating_height(18),
@@ -60,15 +56,6 @@ Delegate::Delegate(QTableView* parent) :
 	StyledItemDelegate(parent)
 {
 	m = Pimpl::make<Private>();
-
-	for(uchar i = uchar(Rating::Zero); i<uchar(Rating::Last); i++)
-	{
-		auto* rating_label = new RatingLabel(parent);
-		rating_label->set_rating(Rating(i));
-		rating_label->hide();
-
-		m->rating_labels[i] = rating_label;
-	}
 
 	ListenSettingNoCall(Set::PL_EntryLook, Delegate::sl_look_changed);
 	ListenSettingNoCall(Set::PL_ShowRating, Delegate::sl_show_rating_changed);
@@ -221,13 +208,10 @@ void Delegate::paint(QPainter *painter,	const QStyleOptionViewItem &option, cons
 		{
 			painter->translate(0, 2);
 
-			auto iRating = Byte(md.rating);
-			iRating = std::max<Byte>(iRating, Byte(md.rating));
-			iRating = std::min<Byte>(iRating, Byte(m->rating_labels.size() - 1));
-
-			RatingLabel* rating_label = m->rating_labels[iRating];
-			rating_label->set_vertical_offset(option.rect.height() - m->rating_height);
-			rating_label->paint(painter, option.rect);
+			RatingLabel rating_label(nullptr, true);
+			rating_label.set_rating(md.rating);
+			rating_label.set_vertical_offset(option.rect.height() - m->rating_height);
+			rating_label.paint(painter, option.rect);
 		}
 	}
 

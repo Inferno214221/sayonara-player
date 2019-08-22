@@ -67,7 +67,7 @@ RemoteControl::RemoteControl(QObject *parent) :
 	ListenSetting(Set::Remote_Active, RemoteControl::active_changed);
 }
 
-RemoteControl::~RemoteControl() {}
+RemoteControl::~RemoteControl() = default;
 
 void RemoteControl::active_changed()
 {
