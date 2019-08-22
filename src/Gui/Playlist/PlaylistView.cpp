@@ -42,6 +42,8 @@
 #include "Utils/Logger/Logger.h"
 #include "Utils/Set.h"
 #include "Utils/Settings/Settings.h"
+#include "Utils/FileUtils.h"
+
 #include "Components/Playlist/PlaylistHandler.h"
 #include "Components/Playlist/Playlist.h"
 
@@ -213,17 +215,7 @@ void View::handle_drop(QDropEvent* event)
 	QStringList playlists = MimeData::playlists(mimedata);
 	if(!playlists.isEmpty())
 	{
-		this->setEnabled(false);
-		if(!m->progressbar) {
-			m->progressbar = new ProgressBar(this);
-		}
-
-		m->progressbar->show();
-
-		// when the list view is disabled, the focus would automatically
-		// jump to the parent widget, which may result in the
-		// forward/backward button of the playlist
-		m->progressbar->setFocus();
+		set_busy(true);
 
 		QString cover_url = MimeData::cover_url(mimedata);
 
@@ -236,12 +228,26 @@ void View::handle_drop(QDropEvent* event)
 
 		stream_parser->parse_streams(playlists);
 	}
+
+	if(v_md.isEmpty() && mimedata->hasUrls())
+	{
+		QList<QUrl> urls = mimedata->urls();
+		QStringList paths;
+		for(const QUrl& url : urls)
+		{
+			if(url.isLocalFile()){
+				paths << url.toLocalFile();
+			}
+		}
+
+		Handler::instance()->insert_tracks(paths, row+1, m->playlist->index());
+	}
 }
 
 
 void View::async_drop_finished(bool success, int async_drop_index)
 {
-	m->progressbar->hide();
+	set_busy(false);
 
 	StreamParser* stream_parser = dynamic_cast<StreamParser*>(sender());
 
@@ -249,9 +255,6 @@ void View::async_drop_finished(bool success, int async_drop_index)
 		MetaDataList v_md = stream_parser->metadata();
 		m->model->insert_tracks(v_md, async_drop_index+1);
 	}
-
-	this->setEnabled(true);
-	this->setFocus();
 
 	stream_parser->deleteLater();
 }
@@ -503,6 +506,34 @@ void View::dragLeaveEvent(QDragLeaveEvent* event)
 void View::dropEventFromOutside(QDropEvent* event)
 {
 	dropEvent(event);
+}
+
+void View::set_busy(bool b)
+{
+	this->setDisabled(b);
+
+	if(b)
+	{
+		if(!m->progressbar) {
+			m->progressbar = new ProgressBar(this);
+		}
+
+		m->progressbar->show();
+
+		// when the list view is disabled, the focus would automatically
+		// jump to the parent widget, which may result in the
+		// forward/backward button of the playlist
+		m->progressbar->setFocus();
+	}
+
+	else
+	{
+		if(m->progressbar) {
+			m->progressbar->hide();
+		}
+
+		this->setFocus();
+	}
 }
 
 void View::dropEvent(QDropEvent* event)

@@ -59,7 +59,7 @@ class GUI_Playlist :
 
 public:
 	explicit GUI_Playlist(QWidget *parent=nullptr);
-	~GUI_Playlist();
+	~GUI_Playlist() override;
 
 private:
 	Playlist::View* view_by_index(int idx);
@@ -114,6 +114,8 @@ private slots:
 	// called by playmanager
 	void playstate_changed(PlayState state);
 	void playlist_finished();
+
+	void playlist_busy_changed(int pl_idx, bool busy);
 
 	void sl_show_clear_button_changed();
 };

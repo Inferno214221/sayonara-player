@@ -73,6 +73,7 @@ GUI_Playlist::GUI_Playlist(QWidget *parent) :
 	connect(handler, &Handler::sig_playlist_name_changed, this, &GUI_Playlist::playlist_name_changed);
 	connect(handler, &Handler::sig_new_playlist_added, this, &GUI_Playlist::playlist_added);
 	connect(handler, &Handler::sig_current_playlist_changed, this, &GUI_Playlist::playlist_idx_changed);
+	connect(handler, &Handler::sig_playlist_busy_changed, this, &GUI_Playlist::playlist_busy_changed);
 
 	auto* play_manager = PlayManager::instance();
 	connect(play_manager, &PlayManager::sig_playlist_finished,	this, &GUI_Playlist::playlist_finished);
@@ -387,6 +388,15 @@ void GUI_Playlist::playstate_changed(PlayState state)
 void GUI_Playlist::playlist_finished()
 {
 	check_tab_icon();
+}
+
+void GUI_Playlist::playlist_busy_changed(int pl_idx, bool busy)
+{
+	View* view = view_by_index(pl_idx);
+	if(view)
+	{
+		view->set_busy(busy);
+	}
 }
 
 

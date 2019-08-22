@@ -1,5 +1,5 @@
-#ifndef FILESCANNER_H
-#define FILESCANNER_H
+#ifndef PLAYLIST_FILESCANNER_H
+#define PLAYLIST_FILESCANNER_H
 
 #include <QObject>
 #include "Utils/Pimpl.h"
@@ -16,10 +16,11 @@ namespace Playlist
 			void sig_finished();
 
 		public:
-			explicit FileScanner(const QStringList& paths, int playlist_id);
+			explicit FileScanner(int playlist_id, const QStringList& paths, int target_row_index);
 			~FileScanner() override;
 
 			int playlist_id() const;
+			int target_row_index() const;
 			MetaDataList metadata() const;
 
 		public slots:

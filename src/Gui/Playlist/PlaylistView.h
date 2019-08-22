@@ -62,7 +62,7 @@ namespace Playlist
 
 	public:
 		explicit View(PlaylistPtr pl, QWidget* parent=nullptr);
-		virtual ~View();
+		~View() override;
 
 		void goto_row(int row);
 		void delete_selected_tracks();
@@ -73,6 +73,8 @@ namespace Playlist
 		 * @param event
 		 */
 		void dropEventFromOutside(QDropEvent* event);
+
+		void set_busy(bool b);
 
 
 	public slots:
