@@ -38,6 +38,34 @@ struct Genre::Private
 		QByteArray name_data = name.trimmed().toLower().toLocal8Bit();
 		return GenreID(qHash(name_data));
 	}
+
+	Private()=default;
+
+	Private(const Private& other) :
+		CASSIGN(name),
+		CASSIGN(id)
+	{}
+
+	Private(Private&& other) noexcept :
+		CMOVE(name),
+		CMOVE(id)
+	{}
+
+	Private& operator=(const Private& other)
+	{
+		ASSIGN(name);
+		ASSIGN(id);
+
+		return *this;
+	}
+
+	Private& operator=(Private&& other) noexcept
+	{
+		MOVE(name);
+		MOVE(id);
+
+		return *this;
+	}
 };
 
 Genre::Genre()
@@ -49,29 +77,38 @@ Genre::Genre()
 Genre::Genre(const QString& name)
 {
 	m = Pimpl::make<Private>();
-	m->name = name;
+	m->name = Util::cvt_str_to_first_upper(name);
 	m->id = m->calc_id(name);
 }
 
-Genre::~Genre() {}
+Genre::~Genre() = default;
+
+Genre::Genre(const Genre& other)
+{
+	m = Pimpl::make<Private>(*(other.m));
+}
+
+Genre::Genre(Genre&& other) noexcept
+{
+	m = Pimpl::make<Private>( std::move(*(other.m)) );
+}
+
+Genre& Genre::operator=(const Genre& other)
+{
+	*m = *(other.m);
+	return *this;
+}
+
+Genre& Genre::operator=(Genre&& other) noexcept
+{
+	*m = std::move(*(other.m));
+	return *this;
+}
+
 
 GenreID Genre::calc_id(const QString& name)
 {
 	return Genre::Private::calc_id(name);
-}
-
-Genre::Genre(const Genre& other)
-{
-	m = Pimpl::make<Private>();
-	m->name = other.name();
-	m->id = other.id();
-}
-
-Genre& Genre::operator =(const Genre& other)
-{
-	m->name = (other.name());
-	m->id = (other.id());
-	return *this;
 }
 
 
@@ -82,12 +119,12 @@ GenreID Genre::id() const
 
 QString Genre::name() const
 {
-	return Util::cvt_str_to_first_upper(m->name);
+	return m->name;
 }
 
 void Genre::set_name(const QString& name)
 {
-	m->name = name;
+	m->name = Util::cvt_str_to_first_upper(name);
 	m->id = Genre::Private::calc_id(name);
 }
 
