@@ -53,7 +53,7 @@ namespace Playlist
 
 		public:
 			explicit Playlist(int idx, Type type, const QString& name);
-			~Playlist();
+			~Playlist() override;
 
 			int				create_playlist(const MetaDataList& v_md);
 			int				current_track_index() const;
