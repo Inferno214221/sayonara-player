@@ -212,19 +212,16 @@ bool Expression::update_tag(const QString& line_edit_str, const QString& filepat
 
 	bool valid = (n_caps == n_tags);
 
-	if( !valid )
+	if(!valid)
 	{
-		sp_log(Log::Warning, this) << regex;
-		sp_log(Log::Warning, this) <<  n_caps << " tags found, but requested " << n_tags;
-		sp_log(Log::Warning, this) << "Caps: ";
-		sp_log(Log::Warning, this) << "";
+		sp_log(Log::Debug, this) << "Regex: " << regex << ": " << n_caps << " tags found, but requested " << n_tags;
 
 		for(const QString& s : Algorithm::AsConst(captured_texts))
 		{
-			sp_log(Log::Warning, this) << "  " << s;
+			sp_log(Log::Debug, this) << "Captured texts:  " << s;
 		}
 
-		sp_log(Log::Warning, this) << "";
+		sp_log(Log::Debug, this) << "";
 
 		return false;
 	}

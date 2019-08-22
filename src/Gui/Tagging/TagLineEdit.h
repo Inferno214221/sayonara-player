@@ -21,7 +21,6 @@
 #ifndef TAGLINEEDIT_H
 #define TAGLINEEDIT_H
 
-#include "Utils/Pimpl.h"
 #include <QLineEdit>
 
 struct TextSelection;
@@ -34,31 +33,29 @@ class TagLineEdit :
 		public QLineEdit
 {
 	Q_OBJECT
-	PIMPL(TagLineEdit)
 
-public:
-	explicit TagLineEdit(QWidget* parent=nullptr);
-	~TagLineEdit();
+	public:
+		/**
+		 * @brief Holds start and size of a selection
+		 * @ingroup GuiTagging
+		 */
+		struct TextSelection
+		{
+			int selection_start;
+			int selection_size;
 
-protected:
-	/**
-	 * @brief resets the TextSelection
-	 * @param e
-	 */
-	void focusInEvent(QFocusEvent* e) override;
+			TextSelection();
+		};
 
-	/**
-	 * @brief if selectected_text is empty, TextSelection is resetted. Else the new TextSelection is set.
-	 * @param e
-	 */
-	void focusOutEvent(QFocusEvent* e) override;
+		explicit TagLineEdit(QWidget* parent=nullptr);
+		~TagLineEdit() override;
 
-public:
-	/**
-	 * @brief Retrieve the current TextSelection
-	 * @return The current TextSelection object
-	 */
-	TextSelection text_selection() const;
+	public:
+		/**
+		 * @brief Retrieve the current TextSelection
+		 * @return The current TextSelection object
+		 */
+		TextSelection text_selection() const;
 };
 
 #endif // TAGLINEEDIT_H
