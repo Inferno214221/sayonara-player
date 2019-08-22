@@ -31,13 +31,21 @@
 
 using Gui::RatingLabel;
 
+static QPixmap* pixmap_provider(bool active)
+{
+	if(active) {
+		static QPixmap pm_active = Gui::Util::pixmap("star.png", Gui::Util::NoTheme, QSize(14, 14), true);
+		return &pm_active;
+	}
+
+	else {
+		static QPixmap pm_inactive = Gui::Util::pixmap("star_disabled.png", Gui::Util::NoTheme, QSize(14, 14), true);
+		return &pm_inactive;
+	}
+}
+
 struct RatingLabel::Private
 {
-	QWidget*	parent=nullptr;
-
-	QPixmap 	pm_active;
-	QPixmap 	pm_inactive;
-
 	int			offset_x;
 	int			offset_y;
 
@@ -45,30 +53,23 @@ struct RatingLabel::Private
 	uint8_t     icon_size;
 	bool		enabled;
 
-	Private() :
-		parent(nullptr),
+	Private(bool enabled) :
 		offset_x(3),
 		offset_y(0),
 		rating(Rating::Zero),
 		icon_size(14),
-		enabled(true)
-	{
-		pm_active = Gui::Util::pixmap("star.png", Gui::Util::NoTheme, QSize(icon_size, icon_size), true);
-		pm_inactive = Gui::Util::pixmap("star_disabled.png", Gui::Util::NoTheme, QSize(icon_size, icon_size), true);
-	}
+		enabled(enabled)
+	{}
 
-	Private(QWidget* parent, bool enabled) :
-		Private()
-	{
-		this->parent = parent;
-		this->enabled = enabled;
-	}
+	Private() :
+		Private(true)
+	{}
 };
 
 RatingLabel::RatingLabel(QWidget* parent, bool enabled) :
 	QLabel(parent)
 {
-	m = Pimpl::make<Private>(parent, enabled);
+	m = Pimpl::make<Private>(enabled);
 }
 
 RatingLabel::~RatingLabel() = default;
@@ -129,11 +130,14 @@ void RatingLabel::paint(QPainter* painter, const QRect& rect)
 		Rating rating = Rating(i);
 		if(rating < m->rating)
 		{
-			painter->drawPixmap(0, 0, m->icon_size, m->icon_size, m->pm_active);
+			QPixmap* pm = pixmap_provider(true);
+			painter->drawPixmap(0, 0, m->icon_size, m->icon_size, *pm);
 		}
 
-		else {
-			painter->drawPixmap(0, 0, m->icon_size, m->icon_size, m->pm_inactive);
+		else
+		{
+			QPixmap* pm_inactive = pixmap_provider(false);
+			painter->drawPixmap(0, 0, m->icon_size, m->icon_size, *pm_inactive);
 		}
 
 		painter->translate(m->icon_size + 2, 0);
