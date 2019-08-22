@@ -197,12 +197,15 @@ bool Engine::Utils::create_element(GstElement** elem, const QString& elem_name, 
 		*elem = gst_element_factory_make(g_elem_name, g_prefixed);
 
 		error_msg = QString("Engine: ") + prefixed + " creation failed";
+		g_free(g_prefixed);
 	}
 
 	else{
 		*elem = gst_element_factory_make(g_elem_name, g_elem_name);
 		error_msg = QString("Engine: ") + elem_name + " creation failed";
 	}
+
+	g_free(g_elem_name);
 
 	return test_and_error(*elem, error_msg);
 }
