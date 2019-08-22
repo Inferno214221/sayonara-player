@@ -80,6 +80,7 @@ GUI_TagEdit::GUI_TagEdit(QWidget* parent) :
 	ui->tab_cover->layout()->addWidget(m->ui_cover_edit);
 
 	ui->tab_widget->setCurrentIndex(0);
+	ui->widget_rating->set_mousetrackable(false);
 
 	connect(ui->btn_next, &QPushButton::clicked, this, &GUI_TagEdit::next_button_clicked);
 	connect(ui->btn_prev, &QPushButton::clicked, this, &GUI_TagEdit::prev_button_clicked);
@@ -100,7 +101,8 @@ GUI_TagEdit::GUI_TagEdit(QWidget* parent) :
 
 	connect(m->tag_edit, &Editor::sig_progress, this, &GUI_TagEdit::progress_changed);
 	connect(m->tag_edit, &Editor::sig_metadata_received, this, &GUI_TagEdit::metadata_changed);
-	connect(m->tag_edit, &Editor::finished, this, &GUI_TagEdit::commit_finished);
+	connect(m->tag_edit, &Editor::sig_started, this, &GUI_TagEdit::commit_started);
+	connect(m->tag_edit, &Editor::sig_finished, this, &GUI_TagEdit::commit_finished);
 
 	connect(ui->btn_load_entire_album, &QPushButton::clicked, this, &GUI_TagEdit::load_entire_album);
 
@@ -514,13 +516,6 @@ void GUI_TagEdit::commit()
 		return;
 	}
 
-	ui->btn_save->setEnabled(false);
-	ui->btn_undo->setEnabled(false);
-	ui->btn_undo_all->setEnabled(false);
-	ui->btn_load_entire_album->setEnabled(false);
-
-	ui->tab_widget->tabBar()->setEnabled(false);
-
 	write_changes(m->cur_idx);
 
 	for(int i=0; i<m->tag_edit->count(); i++)
@@ -571,11 +566,38 @@ void GUI_TagEdit::commit()
 	m->tag_edit->commit();
 }
 
+void GUI_TagEdit::commit_started()
+{
+	ui->btn_save->setEnabled(false);
+	ui->btn_undo->setEnabled(false);
+	ui->btn_undo_all->setEnabled(false);
+	ui->btn_load_entire_album->setEnabled(false);
 
+	ui->tab_widget->tabBar()->setEnabled(false);
+
+	ui->pb_progress->setVisible(true);
+	ui->pb_progress->setMinimum(0);
+	ui->pb_progress->setMaximum(100);
+}
+
+void GUI_TagEdit::progress_changed(int val)
+{
+	if(val >= 0) {
+		ui->pb_progress->setValue(val);
+	}
+
+	else {
+		ui->pb_progress->setMinimum(0);
+		ui->pb_progress->setMaximum(0);
+	}
+}
 
 void GUI_TagEdit::commit_finished()
 {
 	ui->btn_save->setEnabled(true);
+	ui->btn_load_entire_album->setEnabled(m->tag_edit->can_load_entire_album());
+	ui->tab_widget->tabBar()->setEnabled(true);
+	ui->pb_progress->setVisible(false);
 
 	QMap<QString, Editor::FailReason> failed_files = m->tag_edit->failed_files();
 	if(!failed_files.isEmpty())
@@ -587,21 +609,9 @@ void GUI_TagEdit::commit_finished()
 		connect(fmb, &GUI_FailMessageBox::sig_closed, fmb, &QObject::deleteLater);
 		fmb->show();
 	}
+
+	metadata_changed(m->tag_edit->metadata());
 }
-
-void GUI_TagEdit::progress_changed(int val)
-{
-	ui->pb_progress->setVisible(val >= 0);
-
-	if(val >= 0){
-		ui->pb_progress->setValue(val);
-	}
-
-	if(val < 0){
-		metadata_changed(m->tag_edit->metadata() );
-	}
-}
-
 
 void GUI_TagEdit::show_close_button(bool show)
 {

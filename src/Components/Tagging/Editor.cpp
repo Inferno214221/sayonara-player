@@ -21,6 +21,8 @@
 #include "Editor.h"
 #include "Expression.h"
 #include "ChangeNotifier.h"
+#include "FileScanner.h"
+
 #include "Components/MetaDataInfo/MetaDataInfo.h"
 #include "Components/Covers/CoverLocation.h"
 #include "Components/Covers/CoverChangeNotifier.h"
@@ -45,6 +47,7 @@
 #include "Database/Connector.h"
 
 #include <QHash>
+#include <QFileInfo>
 
 namespace Algorithm=Util::Algorithm;
 
@@ -207,15 +210,15 @@ bool Editor::apply_regex(const QString& regex, int idx)
 		}
 
 		else if(key == Tagging::TagTrackNum) {
-			md.track_num = value.toInt();
+			md.track_num = decltype(md.track_num)(value.toInt());
 		}
 
 		else if(key == Tagging::TagYear) {
-			md.year = value.toInt();
+			md.year = decltype(md.year)(value.toInt());
 		}
 
 		else if(key == Tagging::TagDisc) {
-			md.discnumber = value.toInt();
+			md.discnumber = Disc(value.toInt());
 		}
 	}
 
@@ -321,16 +324,53 @@ void Editor::load_entire_album()
 		return;
 	}
 
+
 	AlbumId id = info.album_ids().first();
+	if(id < 0)
+	{
+		if(!m->v_md.isEmpty())
+		{
+			emit sig_started();
+			emit sig_progress(-1);
 
-	MetaDataList v_md;
-	m->ldb->getAllTracksByAlbum(IdList{id}, v_md, ::Library::Filter(), -1);
-	v_md.sort(::Library::SortOrder::TrackDiscnumberAsc);
+			QString path = m->v_md[0].filepath();
 
-	set_metadata(v_md);
+			auto* t = new QThread();
+			auto* worker = new FileScanner(path);
+			worker->moveToThread(t);
+
+			connect(t, &QThread::finished, t, &QObject::deleteLater);
+			connect(t, &QThread::started, worker, &FileScanner::start);
+			connect(worker, &FileScanner::sig_finished, t, &QThread::quit);
+			connect(worker, &FileScanner::sig_finished, this, &Editor::load_entire_album_finished);
+
+			t->start();
+		}
+	}
+
+	else
+	{
+		MetaDataList v_md;
+		m->ldb->getAllTracksByAlbum(IdList{id}, v_md, ::Library::Filter(), -1);
+		v_md.sort(::Library::SortOrder::TrackDiscnumberAsc);
+		set_metadata(v_md);
+	}
 }
 
+void Editor::load_entire_album_finished()
+{
+	emit sig_finished();
 
+	auto* worker = static_cast<FileScanner*>(sender());
+
+	MetaDataList v_md = worker->metadata();
+	if(!v_md.isEmpty())
+	{
+		this->set_metadata(v_md);
+	}
+
+	worker->deleteLater();
+}
 
 void Editor::apply_artists_and_albums_to_md()
 {
@@ -384,9 +424,11 @@ void Editor::commit()
 	this->start();
 }
 
-#include <QFileInfo>
+
 void Editor::run()
 {
+	emit sig_started();
+
 	MetaDataList v_md;
 	MetaDataList v_md_orig;
 
@@ -476,7 +518,7 @@ void Editor::run()
 	m->v_md_before_change = v_md_orig;
 	m->v_md_orig = m->v_md;
 
-	emit sig_progress(-1);
+	emit sig_finished();
 }
 
 void Editor::thread_finished()
