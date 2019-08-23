@@ -217,21 +217,19 @@ void View::handle_drop(QDropEvent* event)
 	const QList<QUrl> urls = mimedata->urls();
 	if(!urls.isEmpty())
 	{
+		QStringList files;
 		bool www = Util::File::is_www(urls.first().toString());
 		if(www)
 		{
-			QStringList files;
+			m->playlist->set_busy(true);
+
 			for(const QUrl& url : urls)
 			{
 				files << url.toString();
 			}
 
-			m->playlist->set_busy(true);
-
-			QString cover_url = MimeData::cover_url(mimedata);
-
-			StreamParser* stream_parser = new StreamParser();
-			stream_parser->set_cover_url(cover_url);
+			auto* stream_parser = new StreamParser();
+			stream_parser->set_cover_url(MimeData::cover_url(mimedata));
 
 			connect(stream_parser, &StreamParser::sig_finished, this, [=](bool success){
 				async_drop_finished(success, row);
@@ -242,15 +240,14 @@ void View::handle_drop(QDropEvent* event)
 
 		else if(v_md.isEmpty())
 		{
-			QStringList paths;
 			for(const QUrl& url : urls)
 			{
 				if(url.isLocalFile()){
-					paths << url.toLocalFile();
+					files << url.toLocalFile();
 				}
 			}
 
-			Handler::instance()->insert_tracks(paths, row+1, m->playlist->index());
+			Handler::instance()->insert_tracks(files, row+1, m->playlist->index());
 		}
 	}
 }
@@ -260,9 +257,9 @@ void View::async_drop_finished(bool success, int async_drop_index)
 {
 	m->playlist->set_busy(false);
 
-	StreamParser* stream_parser = dynamic_cast<StreamParser*>(sender());
-
-	if(success){
+	auto* stream_parser = dynamic_cast<StreamParser*>(sender());
+	if(success)
+	{
 		MetaDataList v_md = stream_parser->metadata();
 		m->model->insert_tracks(v_md, async_drop_index+1);
 	}
