@@ -186,15 +186,6 @@ QModelIndexList DirectoryTreeView::selected_indexes() const
 	return selection_model->selectedRows();
 }
 
-
-MetaDataList DirectoryTreeView::selected_metadata() const
-{
-	DirectoryReader reader;
-	QStringList paths = selected_paths();
-	return reader.scan_metadata(paths);
-}
-
-
 QStringList DirectoryTreeView::selected_paths() const
 {
 	QModelIndexList selections = this->selected_indexes();
@@ -629,9 +620,6 @@ QMimeData* DirectoryTreeView::dragable_mimedata() const
 	}
 
 	auto* cmd = new Gui::CustomMimeData(this);
-	MetaDataList v_md = this->selected_metadata();
-
-	cmd->set_metadata(v_md);
 
 	QList<QUrl> urls;
 	for(const QModelIndex& index : selected_items)

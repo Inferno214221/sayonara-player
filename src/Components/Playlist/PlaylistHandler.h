@@ -127,6 +127,7 @@ namespace Playlist
 			 * @param v_md list of tracks
 			 */
 			void play_next(const MetaDataList& v_md);
+			void play_next(const QStringList& paths);
 
 			/**
 			 * @brief insert tracks into a playlist at a given index

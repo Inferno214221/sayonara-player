@@ -26,8 +26,8 @@
 #include "PlaylistLoader.h"
 #include "PlaylistDBWrapper.h"
 #include "PlaylistChangeNotifier.h"
-#include "PlaylistFileScanner.h"
 
+#include "Components/Directories/MetaDataScanner.h"
 #include "Components/PlayManager/PlayManager.h"
 #include "Database/Connector.h"
 
@@ -445,12 +445,14 @@ int Handler::count() const
 void Handler::play_next(const MetaDataList& v_md)
 {
 	PlaylistPtr pl = active_playlist();
-	if(!pl->is_busy())
-	{
-		pl->insert_tracks(v_md, pl->current_track_index() + 1);
-	}
+	insert_tracks(v_md, pl->current_track_index() + 1, pl->index());
 }
 
+void Handler::play_next(const QStringList& paths)
+{
+	PlaylistPtr pl = active_playlist();
+	insert_tracks(paths, pl->current_track_index() + 1, pl->index());
+}
 
 void Handler::insert_tracks(const MetaDataList& v_md, int row, int pl_idx)
 {
@@ -748,6 +750,11 @@ void Handler::www_track_finished(const MetaData& md)
 	}
 }
 
+struct MetaDataScannerData
+{
+	int playlist_id;
+	int target_row_index;
+};
 
 void Handler::create_filescanner(int playlist_index, const QStringList& paths, int target_row_idx)
 {
@@ -760,14 +767,19 @@ void Handler::create_filescanner(int playlist_index, const QStringList& paths, i
 
 	playlist->set_busy(true);
 
-	auto* t = new QThread();
-	auto* worker = new FileScanner(playlist->get_id(), paths, target_row_idx);
+	using Directory::MetaDataScanner;
 
-	connect(t, &QThread::started, worker, &FileScanner::start);
+	auto* t = new QThread();
+	auto* worker = new MetaDataScanner(paths, true, nullptr);
+	auto* data = new MetaDataScannerData{playlist->get_id(), target_row_idx};
+
+	worker->set_data(data);
+
+	connect(t, &QThread::started, worker, &MetaDataScanner::start);
 	connect(t, &QThread::finished, t, &QObject::deleteLater);
-	connect(worker, &FileScanner::sig_finished, this, &Handler::files_scanned);
-	connect(worker, &FileScanner::sig_progress, this, &Handler::filescanner_progress_changed);
-	connect(worker, &FileScanner::sig_finished, t, &QThread::quit);
+	connect(worker, &MetaDataScanner::sig_finished, this, &Handler::files_scanned);
+	connect(worker, &MetaDataScanner::sig_current_path, this, &Handler::filescanner_progress_changed);
+	connect(worker, &MetaDataScanner::sig_finished, t, &QThread::quit);
 
 	worker->moveToThread(t);
 	t->start();
@@ -775,18 +787,19 @@ void Handler::create_filescanner(int playlist_index, const QStringList& paths, i
 
 void Handler::files_scanned()
 {
-	auto* worker = static_cast<FileScanner*>(sender());
+	auto* worker = static_cast<Directory::MetaDataScanner*>(sender());
+	auto* data = static_cast<MetaDataScannerData*>(worker->data());
 
 	for (PlaylistPtr pl : m->playlists)
 	{
-		if(pl->get_id() != worker->playlist_id())
+		if(pl->get_id() != data->playlist_id)
 		{
 			continue;
 		}
 
 		pl->set_busy(false);
 
-		int target_row_index = worker->target_row_index();
+		int target_row_index = data->target_row_index;
 		if(target_row_index < 0)
 		{
 			pl->clear();
@@ -804,16 +817,19 @@ void Handler::files_scanned()
 		}
 	}
 
+	worker->set_data(nullptr);
 	worker->deleteLater();
+	delete data;
 }
 
 void Handler::filescanner_progress_changed(const QString& current_file)
 {
-	auto* worker = static_cast<FileScanner*>(sender());
+	auto* worker = static_cast<Directory::MetaDataScanner*>(sender());
+	auto* data = static_cast<MetaDataScannerData*>(worker->data());
 
 	for (PlaylistPtr pl : m->playlists)
 	{
-		if(pl->get_id() != worker->playlist_id())
+		if(pl->get_id() != data->playlist_id)
 		{
 			continue;
 		}

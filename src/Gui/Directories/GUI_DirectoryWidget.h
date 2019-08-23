@@ -45,12 +45,13 @@ class GUI_DirectoryWidget :
 
 	public:
 		explicit GUI_DirectoryWidget(QWidget* parent=nullptr);
-		~GUI_DirectoryWidget();
+		~GUI_DirectoryWidget() override;
 
 		QFrame* header_frame() const;
 
 	private:
 		void init_shortcuts();
+		void create_delete_filescanner(const QStringList& files);
 
 	private slots:
 		void search_button_clicked();
@@ -84,12 +85,16 @@ class GUI_DirectoryWidget :
 		void new_library_created();
 		void check_libraries();
 
-		protected:
-			MD::Interpretation metadata_interpretation() const override;
-			MetaDataList info_dialog_data() const override;
+		void scanner_delete_finished();
 
-			void language_changed() override;
-			void skin_changed() override;
+	protected:
+		MD::Interpretation metadata_interpretation() const override;
+		MetaDataList info_dialog_data() const override;
+		bool has_metadata() const override;
+		QStringList pathlist() const override;
+
+		void language_changed() override;
+		void skin_changed() override;
 };
 
 #endif // GUI_DIRECTORYWIDGET_H

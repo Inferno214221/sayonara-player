@@ -21,16 +21,17 @@
 #include "Editor.h"
 #include "Expression.h"
 #include "ChangeNotifier.h"
-#include "FileScanner.h"
 
 #include "Components/MetaDataInfo/MetaDataInfo.h"
 #include "Components/Covers/CoverLocation.h"
 #include "Components/Covers/CoverChangeNotifier.h"
+#include "Components/Directories/MetaDataScanner.h"
 #include "Database/CoverConnector.h"
 
 #include "Utils/Utils.h"
 #include "Utils/Algorithm.h"
 #include "Utils/Set.h"
+#include "Utils/FileUtils.h"
 
 #include "Utils/Tagging/Tagging.h"
 #include "Utils/Tagging/TaggingCover.h"
@@ -333,16 +334,19 @@ void Editor::load_entire_album()
 			emit sig_started();
 			emit sig_progress(-1);
 
+			QString dir, filename;
 			QString path = m->v_md[0].filepath();
+			Util::File::split_filename(path, dir, filename);
 
+			using Directory::MetaDataScanner;
 			auto* t = new QThread();
-			auto* worker = new FileScanner(path);
+			auto* worker = new MetaDataScanner({dir}, true);
 			worker->moveToThread(t);
 
 			connect(t, &QThread::finished, t, &QObject::deleteLater);
-			connect(t, &QThread::started, worker, &FileScanner::start);
-			connect(worker, &FileScanner::sig_finished, t, &QThread::quit);
-			connect(worker, &FileScanner::sig_finished, this, &Editor::load_entire_album_finished);
+			connect(t, &QThread::started, worker, &MetaDataScanner::start);
+			connect(worker, &MetaDataScanner::sig_finished, t, &QThread::quit);
+			connect(worker, &MetaDataScanner::sig_finished, this, &Editor::load_entire_album_finished);
 
 			t->start();
 		}
@@ -361,7 +365,7 @@ void Editor::load_entire_album_finished()
 {
 	emit sig_finished();
 
-	auto* worker = static_cast<FileScanner*>(sender());
+	auto* worker = static_cast<Directory::MetaDataScanner*>(sender());
 
 	MetaDataList v_md = worker->metadata();
 	if(!v_md.isEmpty())

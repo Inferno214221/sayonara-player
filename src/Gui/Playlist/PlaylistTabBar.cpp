@@ -33,6 +33,7 @@
 #include <QShortcut>
 #include <QInputDialog>
 #include <QFileDialog>
+#include <QMimeData>
 #include <QMouseEvent>
 #include <QDir>
 
