@@ -98,7 +98,7 @@ void GUI_Speed::init_ui()
 	ui->btn_pitch->installEventFilter(mlf_pitch);
 
 	connect(ui->sli_speed, &QSlider::valueChanged, this, &GUI_Speed::speed_changed);
-	connect(ui->cb_active, &QCheckBox::toggled, this, &GUI_Speed::active_changed);
+	connect(ui->cb_active, &QCheckBox::toggled, this, &GUI_Speed::active_toggled);
 	connect(ui->cb_preserve_pitch, &QCheckBox::toggled, this, &GUI_Speed::preserve_pitch_changed);
 	connect(ui->sli_pitch, &QSlider::valueChanged, this, &GUI_Speed::pitch_changed);
 	connect(ui->btn_speed, &QPushButton::clicked, this, &GUI_Speed::revert_speed_clicked);
@@ -145,7 +145,11 @@ void GUI_Speed::active_changed(bool active)
 	ui->sli_pitch->setEnabled(active);
 	ui->cb_preserve_pitch->setEnabled(active);
 	ui->btn_pitch->setEnabled(active);
+}
 
+void GUI_Speed::active_toggled(bool active)
+{
+	active_changed(active);
 	SetSetting(Set::Engine_SpeedActive, active);
 }
 

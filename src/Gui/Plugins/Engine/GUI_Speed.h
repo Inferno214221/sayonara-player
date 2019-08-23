@@ -44,6 +44,7 @@ private:
 private slots:
 	void speed_changed(int value);
 	void active_changed(bool enabled);
+	void active_toggled(bool enabled);
 	void preserve_pitch_changed(bool enabled);
 	void pitch_changed(int pitch);
 

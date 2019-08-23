@@ -23,10 +23,29 @@
 #include "Utils/Logger/Logger.h"
 
 #include <memory>
+#include <mutex>
+
+static std::mutex mtx;
 
 using PipelineExtensions::Changeable;
 
 const int SleepInterval = 50;
+
+struct StackMutex
+{
+	bool could_lock;
+	StackMutex(std::mutex& mtx) :
+		could_lock(mtx.try_lock())
+	{}
+
+	~StackMutex()
+	{
+		if(could_lock)
+		{
+			mtx.unlock();
+		}
+	}
+};
 
 struct ProbeData
 {
@@ -44,15 +63,14 @@ struct ProbeData
 	}
 };
 
-Changeable::Changeable() {}
-
-Changeable::~Changeable() {}
+Changeable::Changeable() = default;
+Changeable::~Changeable() = default;
 
 
 static GstPadProbeReturn
 src_blocked_add(GstPad* pad, GstPadProbeInfo* info, gpointer data)
 {
-	ProbeData* probe_data = (ProbeData*) data;
+	ProbeData* probe_data = static_cast<ProbeData*>(data);
 
 	gst_pad_remove_probe (pad, GST_PAD_PROBE_INFO_ID (info));
 
@@ -83,16 +101,21 @@ src_blocked_add(GstPad* pad, GstPadProbeInfo* info, gpointer data)
 }
 
 
-void Changeable::add_element(GstElement* element, GstElement* first_element, GstElement* second_element)
+bool Changeable::add_element(GstElement* element, GstElement* first_element, GstElement* second_element)
 {
-	GstElement* pipeline = GST_ELEMENT(gst_element_get_parent(first_element));
+	StackMutex sm(mtx);
+	if(!sm.could_lock){
+		return false;
+	}
+
+	GstElement* pipeline = this->pipeline();
 	gchar* element_name = gst_element_get_name(element);
 
 	sp_log(Log::Debug, this) << "Add " << element_name << " to pipeline";
 
-	if(gst_bin_get_by_name((GstBin*)pipeline, element_name) != nullptr){
+	if(gst_bin_get_by_name(GST_BIN(pipeline), element_name) != nullptr){
 		sp_log(Log::Debug, this) << "Element already in pipeline";
-		return;
+		return true;
 	}
 
 	GstPad* pad = gst_element_get_static_pad(first_element, "src");
@@ -118,10 +141,10 @@ void Changeable::add_element(GstElement* element, GstElement* first_element, Gst
 
 		sp_log(Log::Debug, this) << "Pipeline not playing, added " << element_name << " immediately";
 
-		return;
+		return true;
 	}
 
-	gulong id = gst_pad_add_probe (pad,
+	gulong id = gst_pad_add_probe(pad,
 								   GST_PAD_PROBE_TYPE_BLOCK_DOWNSTREAM,
 								   src_blocked_add,
 								   data,
@@ -129,21 +152,35 @@ void Changeable::add_element(GstElement* element, GstElement* first_element, Gst
 
 	Q_UNUSED(id)
 
+	bool success = true;
+	uint32_t MaxMs=1000;
 	while(!data->done)
 	{
 		Util::sleep_ms(SleepInterval);
+		MaxMs -= SleepInterval;
+		if(MaxMs <= 0)
+		{
+			success = false;
+			sp_log(Log::Warning, this) << "Could not add element " << element_name;
+			gst_pad_remove_probe(pad, id);
+			break;
+		}
 	}
 
-	sp_log(Log::Debug, this) << "Element " << element_name << " added.";
+	if(success)
+	{
+		sp_log(Log::Debug, this) << "Element " << element_name << " added.";
+	}
 
 	delete data; data = nullptr;
+	return success;
 }
 
 
 static GstPadProbeReturn
 eos_probe_installed_remove(GstPad* pad, GstPadProbeInfo * info, gpointer data)
 {
-	ProbeData* probe_data = (ProbeData*) data;
+	ProbeData* probe_data = static_cast<ProbeData*>(data);
 
 	if(GST_EVENT_TYPE(GST_PAD_PROBE_INFO_DATA(info)) != GST_EVENT_EOS){
 		return GST_PAD_PROBE_PASS;
@@ -198,20 +235,21 @@ src_blocked_remove(GstPad* pad, GstPadProbeInfo* info, gpointer data)
 }
 
 
-void Changeable::remove_element(GstElement* element, GstElement* first_element, GstElement* second_element)
+bool Changeable::remove_element(GstElement* element, GstElement* first_element, GstElement* second_element)
 {
-	if(gst_element_get_parent(element) == nullptr){
-		return;
+	StackMutex sm(mtx);
+	if(!sm.could_lock){
+		return false;
 	}
 
-	GstElement* pipeline = GST_ELEMENT(gst_element_get_parent(first_element));
+	GstElement* pipeline = this->pipeline();
 	char* element_name = gst_element_get_name(element);
 
 	if(!gst_bin_get_by_name(GST_BIN(pipeline), element_name))
 	{
 		sp_log(Log::Debug, this) << "Element " << element_name << " not in pipeline";
 		g_free(element_name);
-		return;
+		return true;
 	}
 
 	GstPad* pad = gst_element_get_static_pad(first_element, "src");
@@ -239,7 +277,7 @@ void Changeable::remove_element(GstElement* element, GstElement* first_element, 
 
 		sp_log(Log::Debug, this) << "Pipeline not playing, removed " << element_name << " immediately";
 		g_free(element_name);
-		return;
+		return true;
 	}
 
 	gulong id = gst_pad_add_probe (pad,
@@ -249,15 +287,30 @@ void Changeable::remove_element(GstElement* element, GstElement* first_element, 
 								   nullptr);
 	Q_UNUSED(id)
 
+	bool success = true;
+	uint32_t MaxMs=1000;
 	while(!data->done)
 	{
 		Util::sleep_ms(SleepInterval);
+		MaxMs -= SleepInterval;
+		if(MaxMs <= 0)
+		{
+			success = false;
+			sp_log(Log::Warning, this) << "Could not remove element " << element_name;
+			gst_pad_remove_probe(pad, id);
+			break;
+		}
 	}
 
-	sp_log(Log::Debug, this) << "Element " << element_name << " removed.";
+	if(success)
+	{
+		sp_log(Log::Debug, this) << "Element " << element_name << " removed.";
+	}
 
 	delete data; data = nullptr;
 	g_free(element_name);
+
+	return success;
 }
 
 
