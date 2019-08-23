@@ -28,7 +28,6 @@
 #include "PlaylistChangeNotifier.h"
 #include "PlaylistFileScanner.h"
 
-#include "Components/Directories/DirectoryReader.h"
 #include "Components/PlayManager/PlayManager.h"
 #include "Database/Connector.h"
 
@@ -200,6 +199,9 @@ int Handler::create_playlist(const MetaDataList& v_md, const QString& name, bool
 	}
 
 	PlaylistPtr pl = m->playlists[idx];
+	if(pl->is_busy()) {
+		return idx;
+	}
 
 	pl->create_playlist(v_md);
 	pl->set_temporary( pl->is_temporary() && temporary );
@@ -442,9 +444,11 @@ int Handler::count() const
 
 void Handler::play_next(const MetaDataList& v_md)
 {
-	PlaylistPtr active = active_playlist();
-
-	active->insert_tracks(v_md, active->current_track_index() + 1);
+	PlaylistPtr pl = active_playlist();
+	if(!pl->is_busy())
+	{
+		pl->insert_tracks(v_md, pl->current_track_index() + 1);
+	}
 }
 
 
@@ -453,6 +457,9 @@ void Handler::insert_tracks(const MetaDataList& v_md, int row, int pl_idx)
 	CHECK_IDX_VOID(pl_idx)
 
 	PlaylistPtr pl = m->playlists[pl_idx];
+	if(pl->is_busy()) {
+		return;
+	}
 
 	bool is_empty = (pl->count() == 0);
 	bool stopped = (m->play_manager->playstate() == PlayState::Stopped);
@@ -475,7 +482,12 @@ void Handler::insert_tracks(const QStringList& paths, int row, int pl_idx)
 void Handler::append_tracks(const MetaDataList& v_md, int pl_idx)
 {
 	CHECK_IDX_VOID(pl_idx)
-	m->playlists[pl_idx]->append_tracks(v_md);
+
+	PlaylistPtr pl = m->playlists[pl_idx];
+	if(!pl->is_busy()) 
+	{
+		pl->append_tracks(v_md);
+	}
 }
 
 void Handler::append_tracks(const QStringList& paths, int pl_idx)
@@ -583,16 +595,15 @@ void Handler::reset_playlist(int pl_idx)
 {
 	CHECK_IDX_VOID(pl_idx)
 
-	DBWrapper* db_connector = new DBWrapper();
+	PlaylistPtr pl = m->playlists[pl_idx];
+	if(!pl->is_busy())
+	{
+		DBWrapper db_connector;
+		CustomPlaylist cpl = db_connector.get_playlist_by_id(pl->get_id());
 
-	int id = m->playlists[pl_idx]->get_id();
-
-	CustomPlaylist cpl = db_connector->get_playlist_by_id(id);
-
-	clear_playlist(pl_idx);
-	create_playlist(cpl);
-
-	delete db_connector; db_connector = nullptr;
+		clear_playlist(pl_idx);
+		create_playlist(cpl);
+	}
 }
 
 Util::SaveAsAnswer Handler::save_playlist(int pl_idx)
@@ -702,6 +713,7 @@ void Handler::playlist_deleted(int id)
 	pl->set_temporary(true);
 }
 
+
 void Handler::delete_tracks(int pl_idx, const IndexSet& rows, Library::TrackDeletionMode deletion_mode)
 {
 	CHECK_IDX_VOID(pl_idx)
@@ -741,22 +753,25 @@ void Handler::create_filescanner(int playlist_index, const QStringList& paths, i
 {
 	CHECK_IDX_VOID(playlist_index)
 
-	emit sig_playlist_busy_changed(playlist_index, true);
+	PlaylistPtr playlist = m->playlists.at(playlist_index);
+	if(playlist->is_busy()){
+		return;
+	}
 
-	int id = m->playlists.at(playlist_index)->get_id();
+	playlist->set_busy(true);
 
 	auto* t = new QThread();
-	auto* worker = new FileScanner(id, paths, target_row_idx);
+	auto* worker = new FileScanner(playlist->get_id(), paths, target_row_idx);
 
 	connect(t, &QThread::started, worker, &FileScanner::start);
 	connect(t, &QThread::finished, t, &QObject::deleteLater);
 	connect(worker, &FileScanner::sig_finished, this, &Handler::files_scanned);
+	connect(worker, &FileScanner::sig_progress, this, &Handler::filescanner_progress_changed);
 	connect(worker, &FileScanner::sig_finished, t, &QThread::quit);
 
 	worker->moveToThread(t);
 	t->start();
 }
-
 
 void Handler::files_scanned()
 {
@@ -768,6 +783,8 @@ void Handler::files_scanned()
 		{
 			continue;
 		}
+
+		pl->set_busy(false);
 
 		int target_row_index = worker->target_row_index();
 		if(target_row_index < 0)
@@ -785,9 +802,22 @@ void Handler::files_scanned()
 		{
 			insert_tracks(worker->metadata(), target_row_index, pl->index());
 		}
-
-		emit sig_playlist_busy_changed(pl->index(), false);
 	}
 
 	worker->deleteLater();
+}
+
+void Handler::filescanner_progress_changed(const QString& current_file)
+{
+	auto* worker = static_cast<FileScanner*>(sender());
+
+	for (PlaylistPtr pl : m->playlists)
+	{
+		if(pl->get_id() != worker->playlist_id())
+		{
+			continue;
+		}
+
+		pl->set_current_scanned_file(current_file);
+	}
 }

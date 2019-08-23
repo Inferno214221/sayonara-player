@@ -21,12 +21,11 @@
 #include "PlaylistTabBar.h"
 #include "PlaylistTabMenu.h"
 
-#include "Gui/Utils/CustomMimeData.h"
 #include "Gui/Utils/Shortcuts/ShortcutHandler.h"
 #include "Gui/Utils/Shortcuts/Shortcut.h"
 #include "Gui/Utils/InputDialog/LineInputDialog.h"
+#include "Gui/Utils/MimeDataUtils.h"
 
-#include "Components/Directories/DirectoryReader.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Language/Language.h"
@@ -41,11 +40,11 @@ using Playlist::TabBar;
 
 struct TabBar::Private
 {
-	QString             last_dir;
+	QString		last_dir;
 	TabMenu*	menu=nullptr;
-	int					tab_before_dd;
-	int					drag_origin_tab;
-	bool				drag_from_playlist;
+	int			tab_before_dd;
+	int			drag_origin_tab;
+	bool		drag_from_playlist;
 
 	Private(QWidget* parent) :
 		menu(new TabMenu(parent)),
@@ -342,7 +341,8 @@ void TabBar::dropEvent(QDropEvent* e)
 
 	m->drag_origin_tab = m->tab_before_dd;
 
-	if(m->tab_before_dd >= 0 && currentIndex() == count() - 1){
+	if(m->tab_before_dd >= 0 && currentIndex() == count() - 1)
+	{
 		this->setCurrentIndex(m->tab_before_dd);
 	}
 
@@ -353,31 +353,24 @@ void TabBar::dropEvent(QDropEvent* e)
 		return;
 	}
 
-	auto* cmd = dynamic_cast<const Gui::CustomMimeData*>(mime_data);
-	if(!cmd)
+	MetaDataList v_md = Gui::MimeData::metadata(mime_data);
+	if(!v_md.isEmpty())
 	{
-		if(!mime_data->hasUrls()){
-			return;
-		}
+		emit sig_metadata_dropped(tab, v_md);
+	}
 
-		MetaDataList v_md;
-		DirectoryReader dir_reader;
-		QList<QUrl> urls = mime_data->urls();
-
+	else
+	{
+		const QList<QUrl> urls = mime_data->urls();
 		QStringList files;
-		for(const QUrl& url : urls){
+		for(const QUrl& url : urls)
+		{
 			files << url.toLocalFile();
 		}
 
-		v_md = dir_reader.scan_metadata(files);
-		emit sig_metadata_dropped(tab, v_md);
-
-		return;
+		if(!files.isEmpty())
+		{
+			emit sig_files_dropped(tab, files);
+		}
 	}
-
-	if(!cmd->has_metadata()){
-		return;
-	}
-
-	emit sig_metadata_dropped(tab, cmd->metadata());
 }

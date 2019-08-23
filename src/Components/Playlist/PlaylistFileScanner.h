@@ -14,6 +14,7 @@ namespace Playlist
 
 		signals:
 			void sig_finished();
+			void sig_progress(const QString& path);
 
 		public:
 			explicit FileScanner(int playlist_id, const QStringList& paths, int target_row_index);

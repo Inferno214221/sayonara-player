@@ -107,7 +107,6 @@ namespace Playlist
 
 			void sig_find_track_requested(TrackID track_id);
 
-			void sig_playlist_busy_changed(int pl_idx, bool busy);
 
 		public:
 
@@ -362,6 +361,7 @@ namespace Playlist
 			 * @brief Return of an async scanning operation when
 			 * creating new playlists from paths
 			 */
+			void filescanner_progress_changed(const QString& current_file);
 			void files_scanned();
 
 		private:

@@ -73,7 +73,6 @@ GUI_Playlist::GUI_Playlist(QWidget *parent) :
 	connect(handler, &Handler::sig_playlist_name_changed, this, &GUI_Playlist::playlist_name_changed);
 	connect(handler, &Handler::sig_new_playlist_added, this, &GUI_Playlist::playlist_added);
 	connect(handler, &Handler::sig_current_playlist_changed, this, &GUI_Playlist::playlist_idx_changed);
-	connect(handler, &Handler::sig_playlist_busy_changed, this, &GUI_Playlist::playlist_busy_changed);
 
 	auto* play_manager = PlayManager::instance();
 	connect(play_manager, &PlayManager::sig_playlist_finished,	this, &GUI_Playlist::playlist_finished);
@@ -90,6 +89,7 @@ GUI_Playlist::GUI_Playlist(QWidget *parent) :
 	connect(ui->tw_playlists, &TabWidget::sig_tab_clear, this, &GUI_Playlist::clear_button_pressed);
 	connect(ui->tw_playlists, &TabWidget::sig_tab_reset, handler, &Playlist::Handler::reset_playlist);
 	connect(ui->tw_playlists, &TabWidget::sig_metadata_dropped, this, &GUI_Playlist::tab_metadata_dropped);
+	connect(ui->tw_playlists, &TabWidget::sig_files_dropped, this, &GUI_Playlist::tab_files_dropped);
 	connect(ui->tw_playlists, &TabWidget::sig_open_file, this, &GUI_Playlist::open_file_clicked);
 	connect(ui->tw_playlists, &TabWidget::sig_open_dir, this, &GUI_Playlist::open_dir_clicked);
 
@@ -138,7 +138,6 @@ void GUI_Playlist::bookmark_selected(int idx, Seconds timestamp)
 	PlayManager::instance()->seek_abs_ms(timestamp * 1000);
 }
 
-
 void GUI_Playlist::add_playlist_button_pressed()
 {
 	Handler::instance()->create_empty_playlist();
@@ -168,13 +167,36 @@ void GUI_Playlist::tab_metadata_dropped(int pl_idx, const MetaDataList& v_md)
 
 	else if(pl_idx == ui->tw_playlists->count() - 1)
 	{
-		QString name = Handler::instance()->request_new_playlist_name();
+		QString name = handler->request_new_playlist_name();
 		handler->create_playlist(v_md, name);
 	}
 
 	else
 	{
 		handler->append_tracks(v_md, pl_idx);
+	}
+}
+
+void GUI_Playlist::tab_files_dropped(int pl_idx, const QStringList& paths)
+{
+	Handler* handler = Handler::instance();
+	if(pl_idx < 0 || pl_idx >= ui->tw_playlists->count()){
+		return;
+	}
+
+	int origin_tab = ui->tw_playlists->get_drag_origin_tab();
+	bool was_drag_from_playlist = ui->tw_playlists->was_drag_from_playlist();
+	if(origin_tab >= 0 || was_drag_from_playlist) {
+		return;
+	}
+
+	if(pl_idx == ui->tw_playlists->count() - 1) {
+		QString name = handler->request_new_playlist_name();
+		handler->create_playlist(paths, name);
+	}
+
+	else {
+		handler->append_tracks(paths, pl_idx);
 	}
 }
 
@@ -389,16 +411,6 @@ void GUI_Playlist::playlist_finished()
 {
 	check_tab_icon();
 }
-
-void GUI_Playlist::playlist_busy_changed(int pl_idx, bool busy)
-{
-	View* view = view_by_index(pl_idx);
-	if(view)
-	{
-		view->set_busy(busy);
-	}
-}
-
 
 void GUI_Playlist::tab_close_playlist_clicked(int idx)
 {

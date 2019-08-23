@@ -7,6 +7,7 @@
 
 #include <QStringList>
 #include <QThread>
+#include <QDir>
 
 namespace PlaylistNs=::Playlist;
 using PlaylistNs::FileScanner;
@@ -37,10 +38,17 @@ void PlaylistNs::FileScanner::start()
 {
 	DirectoryReader dr(Util::soundfile_extensions());
 
-	m->metadata = dr.scan_metadata(m->paths);
-	m->metadata.sort(Library::SortOrder::TrackAlbumArtistAsc);
+	for(const QString& path : m->paths)
+	{
+		QStringList files;
+		dr.scan_files_recursive(QDir(path), files);
 
-	Util::sleep_ms(10000);
+		m->metadata << dr.scan_metadata(files);
+
+		emit sig_progress(path);
+	}
+
+	m->metadata.sort(Library::SortOrder::TrackAlbumArtistAsc);
 
 	emit sig_finished();
 }

@@ -74,8 +74,6 @@ namespace Playlist
 		 */
 		void dropEventFromOutside(QDropEvent* event);
 
-		void set_busy(bool b);
-
 
 	public slots:
 		void clear();
@@ -126,6 +124,8 @@ namespace Playlist
 		void move_selected_rows_down();
 		void play_selected_track();
 		void goto_to_current_track();
+		void playlist_busy_changed(bool b);
+		void current_scanned_file_changed(const QString& current_file);
 
 	protected:
 		// SayonaraSelectionView interface

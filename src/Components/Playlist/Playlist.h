@@ -50,6 +50,8 @@ namespace Playlist
 			void sig_current_track_changed(int idx);
 			void sig_stopped();
 			void sig_find_track(TrackID track_id);
+			void sig_busy_changed(bool b);
+			void sig_current_scanned_file_changed(const QString& current_file);
 
 		public:
 			explicit Playlist(int idx, Type type, const QString& name);
@@ -73,6 +75,11 @@ namespace Playlist
 			void			bwd();
 			void			next();
 			bool			wake_up();
+
+			void			set_busy(bool b);
+			bool			is_busy() const;
+
+			void			set_current_scanned_file(const QString& file);
 
 		public:
 			MetaData track(int idx) const override;

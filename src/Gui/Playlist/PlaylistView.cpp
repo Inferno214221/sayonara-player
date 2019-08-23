@@ -53,6 +53,7 @@
 #include <QScrollBar>
 #include <QDrag>
 #include <QTimer>
+#include <QLabel>
 
 #include <algorithm>
 
@@ -67,6 +68,7 @@ struct View::Private
 	Pl::ContextMenu*		context_menu=nullptr;
 	Pl::Model*				model=nullptr;
 	ProgressBar*			progressbar=nullptr;
+	QLabel*					current_file_label=nullptr;
 
 	Private(PlaylistPtr pl, View* parent) :
 		playlist(pl),
@@ -104,6 +106,8 @@ View::View(PlaylistPtr pl, QWidget* parent) :
 
 	connect(m->model, &Pl::Model::sig_data_ready, this, &View::refresh);
 	connect(playlist_handler, &Pl::Handler::sig_current_track_changed, this, &View::current_track_changed);
+	connect(pl.get(), &Playlist::sig_busy_changed, this, &View::playlist_busy_changed);
+	connect(pl.get(), &Playlist::sig_current_scanned_file_changed, this, &View::current_scanned_file_changed);
 
 	QTimer::singleShot(100, this, [=](){
 		this->goto_to_current_track();
@@ -213,7 +217,7 @@ void View::handle_drop(QDropEvent* event)
 	QStringList playlists = MimeData::playlists(mimedata);
 	if(!playlists.isEmpty())
 	{
-		set_busy(true);
+		m->playlist->set_busy(true);
 
 		QString cover_url = MimeData::cover_url(mimedata);
 
@@ -245,7 +249,7 @@ void View::handle_drop(QDropEvent* event)
 
 void View::async_drop_finished(bool success, int async_drop_index)
 {
-	set_busy(false);
+	playlist_busy_changed(m->playlist->is_busy());
 
 	StreamParser* stream_parser = dynamic_cast<StreamParser*>(sender());
 
@@ -483,13 +487,17 @@ void View::keyPressEvent(QKeyEvent* event)
 
 void View::dragEnterEvent(QDragEnterEvent* event)
 {
-	event->accept();
+	if(this->acceptDrops()){
+		event->accept();
+	}
 }
 
 void View::dragMoveEvent(QDragMoveEvent* event)
 {
 	QTableView::dragMoveEvent(event);		// needed for autoscroll
-	event->accept();						// needed for dragMove
+	if(this->acceptDrops()){				// needed for dragMove
+		event->accept();
+	}
 
 	int row = calc_drag_drop_line(event->pos());
 	m->model->set_drag_index(row);
@@ -506,7 +514,7 @@ void View::dropEventFromOutside(QDropEvent* event)
 	dropEvent(event);
 }
 
-void View::set_busy(bool b)
+void View::playlist_busy_changed(bool b)
 {
 	this->setDisabled(b);
 
@@ -522,6 +530,9 @@ void View::set_busy(bool b)
 		// jump to the parent widget, which may result in the
 		// forward/backward button of the playlist
 		m->progressbar->setFocus();
+
+		this->setDragDropMode(QAbstractItemView::NoDragDrop);
+		this->setAcceptDrops(false);
 	}
 
 	else
@@ -530,12 +541,41 @@ void View::set_busy(bool b)
 			m->progressbar->hide();
 		}
 
+		if(m->current_file_label){
+			m->current_file_label->hide();
+		}
+
+		this->setDragDropMode(QAbstractItemView::DragDrop);
+		this->setAcceptDrops(true);
 		this->setFocus();
 	}
 }
 
+void View::current_scanned_file_changed(const QString& current_file)
+{
+	if(!m->current_file_label)
+	{
+		m->current_file_label = new QLabel(this);
+	}
+
+	int offset_bottom = 3;
+	offset_bottom += this->fontMetrics().height();
+	if(m->progressbar) {
+		offset_bottom += m->progressbar->height() + 2;
+	}
+
+	m->current_file_label->setText(current_file);
+	m->current_file_label->setGeometry(0, this->height() - offset_bottom, this->width(), this->fontMetrics().height() + 4);
+	m->current_file_label->show();
+}
+
 void View::dropEvent(QDropEvent* event)
 {
+	if(!this->acceptDrops()){
+		event->ignore();
+		return;
+	}
+
 	event->accept();
 	handle_drop(event);
 }
