@@ -20,8 +20,6 @@
 
 #include "MimeDataUtils.h"
 
-#include "Components/Directories/DirectoryReader.h"
-
 #include "Gui/Utils/CustomMimeData.h"
 
 #include "Utils/MetaData/MetaDataList.h"

@@ -21,7 +21,6 @@
 #include "GUI_IconPreferences.h"
 #include "Gui/Preferences/ui_GUI_IconPreferences.h"
 #include "Gui/Utils/Icons.h"
-#include "Components/Directories/DirectoryReader.h"
 
 #include "Utils/Algorithm.h"
 #include "Utils/Language/Language.h"

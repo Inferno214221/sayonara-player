@@ -35,7 +35,6 @@
 #include "Components/Library/LibraryManager.h"
 #include "Components/Library/LocalLibrary.h"
 #include "Components/Playlist/PlaylistHandler.h"
-#include "Components/Directories/DirectoryReader.h"
 
 #include "Database/LibraryDatabase.h"
 #include "Database/Connector.h"

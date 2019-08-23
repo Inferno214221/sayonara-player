@@ -1,3 +1,12 @@
+== 1.6.0-stable1 ==
+
+ * Playlist: Handling of large filesets in the background, no
+   blocking user interface anymore
+ * Languages: fixed some capital letter issues at word beginning
+ * Library: fixed album rating regression
+ * Playlist: fixed finding of tracks in library
+ * Soma.fm: high resolution images available
+
 == 1.5.1-stable5 ==
 
  * Stream recorder: fixed segfault when recording is started
