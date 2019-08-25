@@ -51,9 +51,12 @@ namespace LastFM
 			void login_thread_finished(bool success);
 			void similar_artists_fetched(IdList artist_ids);
 			void current_track_changed(const MetaData& md);
-			void position_ms_changed(MilliSeconds pos_ms);
+
+			void scrobble();
 			void scrobble_response_received(const QByteArray& data);
 			void scrobble_error_received(const QString& str);
+
+			void track_changed_timer_timed_out();
 
 		public:
 			Base();
@@ -65,10 +68,6 @@ namespace LastFM
 		private:
 			bool init_track_changed_thread();
 			void get_similar_artists(const QString& artist);
-
-			void reset_scrobble();
-			bool check_scrobble(MilliSeconds pos_ms);
-			void scrobble(const MetaData& md);
 			bool update_track(const MetaData& md);
 	};
 }
