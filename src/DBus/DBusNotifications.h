@@ -39,9 +39,6 @@ public:
 	void notify(const QString& title, const QString& text, const QString& image_path) override;
 
 	QString name() const override;
-
-private slots:
-	void track_changed(const MetaData& md);
 };
 
 #endif // DBUSNOTIFICATIONS_H
