@@ -316,7 +316,7 @@ QString MetaDataInfo::calc_tracknum_str( uint16_t tracknum )
 
 void MetaDataInfo::insert_playing_time(MilliSeconds ms)
 {
-	QString str = Util::cvt_ms_to_string(ms);
+	QString str = Util::cvt_ms_to_string(ms, "$De $He $M:$S");
 	_info.insert(InfoStrings::PlayingTime, str);
 }
 

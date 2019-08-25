@@ -69,12 +69,12 @@ namespace Util
 	/**
 	 * @brief Convert milliseconds to string
 	 * @param msec milliseconds
-	 * @param empty_zero if false, prepend a zero to numbers < 10
-	 * @param colon if true, set colon between minutes and seconds
-	 * @param show_days if true, days will be shown, too
+	 * @param format $D for days, $H for hours, $M for minutes
+	 * $S for secods, A little 'e' behind the number will
+	 * result in the unit displayed after the string
 	 * @return converted milliseconds
 	 */
-	QString cvt_ms_to_string(MilliSeconds msec, bool empty_zero = false, bool colon=true, bool show_days=true);
+	QString cvt_ms_to_string(MilliSeconds msec, const QString& format);
 
 	QString cvt_not_null(const QString& str);
 

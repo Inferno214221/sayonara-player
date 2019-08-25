@@ -96,7 +96,7 @@ BookmarksBase::CreationStatus BookmarksBase::create(Seconds timestamp)
 		return CreationStatus::AlreadyThere;
 	}
 
-	QString name = Util::cvt_ms_to_string(timestamp * 1000, true, true, false);
+	QString name = Util::cvt_ms_to_string(timestamp * 1000, "$M:$S");
 	bool success = m->db->insertBookmark(m->md.id, timestamp, name);
 
 	if(success)

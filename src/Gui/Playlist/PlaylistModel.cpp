@@ -129,7 +129,7 @@ QVariant Model::data(const QModelIndex& index, int role) const
 
 		else if(col == ColumnName::Time) {
 			auto l = m->pl->track(row).duration_ms;
-			return Util::cvt_ms_to_string(l, true, true, false);
+			return Util::cvt_ms_to_string(l, "$M:$S");
 		}
 
 		return QVariant();

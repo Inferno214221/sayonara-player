@@ -184,7 +184,7 @@ void GUI_Bookmarks::prev_changed(const Bookmark& bookmark)
 		return;
 	}
 
-	ui->btn_prev->setText(Util::cvt_ms_to_string(bookmark.timestamp() * 1000, true, true, false));
+	ui->btn_prev->setText(Util::cvt_ms_to_string(bookmark.timestamp() * 1000, "$M:$S"));
 }
 
 
@@ -202,7 +202,7 @@ void GUI_Bookmarks::next_changed(const Bookmark& bookmark)
 		return;
 	}
 
-	ui->btn_next->setText(Util::cvt_ms_to_string(bookmark.timestamp() * 1000, true, true, false));
+	ui->btn_next->setText(Util::cvt_ms_to_string(bookmark.timestamp() * 1000, "$M:$S"));
 }
 
 

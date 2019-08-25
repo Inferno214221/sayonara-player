@@ -185,7 +185,7 @@ QVariant AlbumModel::data(const QModelIndex& index, int role) const
 				return album.name();
 
 			case ColumnIndex::Album::Duration:
-				return ::Util::cvt_ms_to_string(album.length_sec * 1000, true, false);
+				return ::Util::cvt_ms_to_string(album.length_sec * 1000, "$He $M:$S");
 
 			case ColumnIndex::Album::Rating:
 			{

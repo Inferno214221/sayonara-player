@@ -231,41 +231,27 @@ void GUI_Playlist::dropEvent(QDropEvent* event)
 
 void GUI_Playlist::set_total_time_label()
 {
-	int n_rows = 0;
 	int current_idx = ui->tw_playlists->currentIndex();
 	PlaylistConstPtr pl = Handler::instance()->playlist(current_idx);
 
 	MilliSeconds dur_ms = 0;
-	if(pl){
+	if(pl) {
 		dur_ms = pl->running_time();
 	}
 
-	QString time_str;
-	if(dur_ms > 0){
-		time_str = Util::cvt_ms_to_string(dur_ms, true, false);
-	}
-
+	int rows = 0;
 	View* cur_view = current_view();
-	if(cur_view){
-		n_rows = cur_view->row_count();
+	if(cur_view) {
+		rows = cur_view->row_count();
 	}
 
-	QString playlist_string = QString::number(n_rows);
-
-	if(n_rows == 0){
+	QString playlist_string = tr("%n track(s)", "", rows);
+	if(rows == 0){
 		playlist_string = tr("Playlist empty");
 	}
 
-	else if(n_rows == 1)	{
-		playlist_string += " " + Lang::get(Lang::Track);
-	}
-
-	else {
-		playlist_string += " " + Lang::get(Lang::Tracks);
-	}
-
-	if( dur_ms > 0 ){
-		playlist_string += " - " + time_str;
+	if(dur_ms > 0){
+		playlist_string += " - " + Util::cvt_ms_to_string(dur_ms, "$He $M:$S");
 	}
 
 	ui->lab_totalTime->setText(playlist_string);
