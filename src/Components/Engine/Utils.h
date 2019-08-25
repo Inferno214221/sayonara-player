@@ -27,17 +27,34 @@
 #include <utility>
 #include <memory>
 #include <iostream>
-
 #include <gst/gst.h>
+
+template<typename T>
+class QList;
 
 namespace Engine
 {
+
+
 	/**
 	 * @brief Utility functions
 	 * @ingroup EngineHelper
 	 */
 	namespace Utils
 	{
+
+		using Elements=QList<GstElement*>;
+
+		template<typename T>
+		struct GObjectAutoFree
+		{
+			T* obj;
+
+			GObjectAutoFree(T* obj) : obj(obj) {}
+			~GObjectAutoFree() { g_free(obj); }
+			T* data() const { return obj; }
+		};
+
 		/**
 		 * @brief config_queue
 		 * @param queue
@@ -351,7 +368,7 @@ namespace Engine
 		 * @param prefix
 		 * @return
 		 */
-		bool create_bin(GstElement** bin, const QList<GstElement*>& elements, const QString& prefix);
+		bool create_bin(GstElement** bin, const Elements& elements, const QString& prefix);
 
 		/**
 		 * @brief create_ghost_pad
@@ -366,20 +383,24 @@ namespace Engine
 		 * @param elements
 		 * @return
 		 */
-		bool link_elements(const QList<GstElement*>& elements);
+		bool link_elements(const Elements& elements);
+
+		void unlink_elements(const Elements& elements);
 
 		/**
 		 * @brief add_elements
 		 * @param bin
 		 * @param elements
 		 */
-		void add_elements(GstBin* bin, const QList<GstElement*>& elements);
+		bool add_elements(GstBin* bin, const Elements& elements);
+
+		void remove_elements(GstBin* bin, const Elements& elements);
 
 		/**
 		 * @brief unref_elements
 		 * @param elements
 		 */
-		void unref_elements(const QList<GstElement*>& elements);
+		void unref_elements(const Elements& elements);
 	}
 }
 

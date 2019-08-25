@@ -58,6 +58,7 @@ void GUI_Speed::init_ui()
 
 	active_changed(active);
 
+	ui->cb_active->setChecked(active);
 	ui->sli_speed->setValue(speed);
 	ui->sli_speed->setMouseTracking(true);
 
@@ -138,8 +139,6 @@ void GUI_Speed::speed_changed(int val)
 
 void GUI_Speed::active_changed(bool active)
 {
-	ui->cb_active->setChecked(active);
-
 	ui->sli_speed->setEnabled( active);
 	ui->btn_speed->setEnabled(active);
 	ui->sli_pitch->setEnabled(active);

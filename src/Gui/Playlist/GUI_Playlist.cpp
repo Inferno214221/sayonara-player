@@ -372,6 +372,8 @@ void GUI_Playlist::playlist_idx_changed(int pl_idx)
 	PlaylistConstPtr pl = Handler::instance()->playlist(pl_idx);
 	ui->tw_playlists->setCurrentIndex(pl_idx);
 
+	this->setFocusProxy(ui->tw_playlists->currentWidget());
+
 	set_total_time_label();
 	check_playlist_menu(pl);
 }

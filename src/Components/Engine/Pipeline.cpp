@@ -438,13 +438,13 @@ void Pipeline::s_speed_active_changed()
 	MilliSeconds pos_ms = position_ms();
 	if(active)
 	{
-		add_element(speed, m->audio_convert, m->equalizer->element());
+		Changeable::add_element(speed, m->audio_convert, m->equalizer->element());
 		s_speed_changed();
 	}
 
 	else
 	{
-		remove_element(speed, m->audio_convert, m->equalizer->element());
+		Changeable::remove_element(speed, m->audio_convert, m->equalizer->element());
 	}
 
 	if(EngineUtils::get_state(m->pipeline) == GST_STATE_PLAYING)

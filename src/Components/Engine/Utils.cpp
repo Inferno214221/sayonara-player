@@ -369,6 +369,10 @@ bool Engine::Utils::link_elements(const QList<GstElement*>& elements)
 		GstElement* e1 = elements.at(i);
 		GstElement* e2 = elements.at(i+1);
 
+		if(!e2) {
+			break;
+		}
+
 		gchar* n1 = gst_element_get_name(e1);
 		gchar* n2 = gst_element_get_name(e2);
 
@@ -389,12 +393,69 @@ bool Engine::Utils::link_elements(const QList<GstElement*>& elements)
 	return success;
 }
 
-void Engine::Utils::add_elements(GstBin* bin, const QList<GstElement*>& elements)
+void Engine::Utils::unlink_elements(const Engine::Utils::Elements& elements)
 {
-	for(GstElement* e : elements){
-		gst_bin_add(bin, e);
+	for(int i=0; i<elements.size() - 1; i++)
+	{
+		GstElement* e1 = elements.at(i);
+		GstElement* e2 = elements.at(i+1);
+
+		if(!e2)
+		{
+			break;
+		}
+
+		gchar* n1 = gst_element_get_name(e1);
+		gchar* n2 = gst_element_get_name(e2);
+
+		sp_log(Log::Debug, "Engine::Utils") << "Try to unlink " << n1 << " with " << n2;
+
+		gst_element_unlink(e1, e2);
+		g_free(n1);
+		g_free(n2);
 	}
 }
+
+
+bool Engine::Utils::add_elements(GstBin* bin, const QList<GstElement*>& elements)
+{
+	bool b = true;
+	for(GstElement* e : elements)
+	{
+		if(!e || has_element(bin, e)){
+			continue;
+		}
+
+		b = (b && gst_bin_add(bin, e));
+		if(!b)
+		{
+			break;
+		}
+	}
+
+	return b;
+}
+
+
+void Engine::Utils::remove_elements(GstBin* bin, const Engine::Utils::Elements& elements)
+{
+	for(GstElement* e : elements)
+	{
+		if(!e || !has_element(bin, e))
+		{
+			continue;
+		}
+
+		bool success = gst_bin_remove(bin, e);
+		if(!success)
+		{
+			gchar* name = gst_element_get_name(e);
+			sp_log(Log::Warning, "Engine::Utils") << "Could not remove element " << name;
+			g_free(name);
+		}
+	}
+}
+
 
 void Engine::Utils::unref_elements(const QList<GstElement*>& elements)
 {
@@ -478,5 +539,3 @@ MilliSeconds Engine::Utils::get_update_interval()
 {
 	return 50;
 }
-
-
