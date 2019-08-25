@@ -7,6 +7,9 @@
  * Playlist: fixed finding of tracks in library
  * Soma.fm: high resolution images available
  * Speed/Pitch: dynamically adding/removing to/from pipelines fixed
+ * System Tray icon: Style update
+ * Notifications: Override notifications if the appear to often
+ * User interface: Time string updates
 
 == 1.5.1-stable5 ==
 
