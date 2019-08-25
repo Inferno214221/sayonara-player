@@ -129,7 +129,6 @@ QStringList Expression::split_tag_string( const QString& line_edit_str ) const
 		}
 	}
 
-
 	// split the string and fill splitted_tag_str with
 	// non-tags and tags
 	int cur_idx = 0;
@@ -137,8 +136,6 @@ QStringList Expression::split_tag_string( const QString& line_edit_str ) const
 	for(auto it=index_string_map.cbegin(); it != index_string_map.cend(); it++)
 	{
 		int idx = it.key();
-		TagString tag_string = it.value();
-
 		int len = idx - cur_idx;
 
 		QString str_until_tag = line_edit_escaped.mid(cur_idx, len);
@@ -147,6 +144,7 @@ QStringList Expression::split_tag_string( const QString& line_edit_str ) const
 			splitted_tag_str << str_until_tag;
 		}
 
+		TagString tag_string = it.value();
 		splitted_tag_str << tag_string;
 
 		cur_idx += (tag_string.size() + len);
