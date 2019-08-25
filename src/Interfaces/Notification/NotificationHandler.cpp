@@ -41,7 +41,7 @@ NotificationHandler::NotificationHandler(QObject* parent) :
 	m = Pimpl::make<Private>();
 }
 
-NotificationHandler::~NotificationHandler() {}
+NotificationHandler::~NotificationHandler() = default;
 
 void NotificationHandler::notify(const MetaData& md)
 {
