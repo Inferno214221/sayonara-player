@@ -1,4 +1,4 @@
-== 1.5.5-stable1 ==
+== 1.5.2-stable1 ==
 
  * Playlist: Handling of large filesets in the background, no
    blocking user interface anymore
