@@ -54,8 +54,6 @@ namespace DB
 			virtual ArtistId insertArtistIntoDatabase(const QString& artist);
 			virtual ArtistId insertArtistIntoDatabase(const Artist& artist);
 
-			virtual ArtistId updateArtist(const Artist& artist);
-
 			virtual void updateArtistCissearch();
 
 		protected:
