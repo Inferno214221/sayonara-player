@@ -34,24 +34,28 @@ class QList;
 
 namespace Engine
 {
-
-
 	/**
 	 * @brief Utility functions
 	 * @ingroup EngineHelper
 	 */
 	namespace Utils
 	{
-
 		using Elements=QList<GstElement*>;
 
 		template<typename T>
 		struct GObjectAutoFree
 		{
-			T* obj;
+			T* obj=nullptr;
 
 			GObjectAutoFree(T* obj) : obj(obj) {}
-			~GObjectAutoFree() { g_free(obj); }
+			~GObjectAutoFree()
+			{
+				if(obj) {
+					g_free(obj);
+				}
+
+				obj = nullptr;
+			}
 			T* data() const { return obj; }
 		};
 

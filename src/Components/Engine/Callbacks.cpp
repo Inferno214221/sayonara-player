@@ -81,15 +81,14 @@ static bool parse_image(GstElement* src, GstTagList* tags, EngineNS::Engine* eng
 		return false;
 	}
 
-	gchar* mimetype = gst_caps_to_string(caps);
-	if(mimetype == nullptr){
+	EngineUtils::GObjectAutoFree mimetype(gst_caps_to_string(caps));
+	if(mimetype.data() == nullptr){
 		gst_sample_unref(sample);
 		return false;
 	}
 
 	QString mime;
-	QString full_mime(mimetype);
-	g_free(mimetype); mimetype = nullptr;
+	QString full_mime(mimetype.data());
 
 	QRegExp re(".*(image/[a-z|A-Z]+).*");
 	if(re.indexIn(full_mime) >= 0){
@@ -213,7 +212,7 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 			bool update_metadata = false;
 			for(const QString& tag : string_tags)
 			{
-				gchar* value;
+				gchar* value=nullptr;
 				success = gst_tag_list_get_string(tags, tag.toLocal8Bit().constData(), &value);
 				if(!success) {
 					continue;
@@ -496,9 +495,8 @@ gboolean Callbacks::position_changed(gpointer data)
 // dynamic linking, important for decodebin
 void Callbacks::decodebin_ready(GstElement* source, GstPad* new_src_pad, gpointer data)
 {
-	gchar* element_name = gst_element_get_name(source);
-	sp_log(Log::Develop, "Callback") << "Source: " << element_name;
-	g_free(element_name);
+	EngineUtils::GObjectAutoFree element_name(gst_element_get_name(source));
+	sp_log(Log::Develop, "Callback") << "Source: " << element_name.data();
 
 	auto* element = static_cast<GstElement*>(data);
 	if(!element){
