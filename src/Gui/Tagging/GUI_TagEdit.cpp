@@ -149,7 +149,7 @@ void GUI_TagEdit::language_changed()
 	ui->btn_close->setText(Lang::get(Lang::Close));
 	ui->btn_save->setText(Lang::get(Lang::Save));
 
-	ui->tab_widget->setTabText(0, tr("Metadata Tags"));
+	ui->tab_widget->setTabText(0, tr("Metadata"));
 	ui->tab_widget->setTabText(1, tr("Tags from path"));
 	ui->tab_widget->setTabText(2, Lang::get(Lang::Covers));
 }
@@ -230,13 +230,12 @@ void GUI_TagEdit::apply_all_tag_from_path()
 	{
 		Message::Answer answer = Message::Answer::Yes;
 
-		QStringList not_valid_str;
-		not_valid_str << tr("Cannot apply tag for");
-		not_valid_str << "";
-		not_valid_str << tr("%n track(s)", "", invalid_filepaths.count()) + ".";
-		not_valid_str << tr("Ignore these tracks?");
+		QStringList err;
+		err << tr("Cannot apply expression to %n track(s)", "", invalid_filepaths.count());
+		err << "";
+		err << tr("Ignore these tracks?");
 
-		answer = Message::question_yn(not_valid_str.join("<br>"));
+		answer = Message::question_yn(err.join("<br>"));
 		if(answer != Message::Answer::Yes)
 		{
 			m->tag_edit->undo_all();
