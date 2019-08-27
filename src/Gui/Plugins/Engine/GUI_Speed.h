@@ -32,7 +32,7 @@ class GUI_Speed : public PlayerPlugin::Base
 
 public:
 	explicit GUI_Speed(QWidget *parent=nullptr);
-	virtual ~GUI_Speed();
+	~GUI_Speed() override;
 
 	QString get_name() const override;
 	QString get_display_name() const override;
@@ -53,6 +53,8 @@ private slots:
 
 	void pitch_hovered(int val);
 	void speed_hovered(int val);
+
+	void current_tab_changed(int idx);
 
 	void _sl_pitch_found_changed();
 };

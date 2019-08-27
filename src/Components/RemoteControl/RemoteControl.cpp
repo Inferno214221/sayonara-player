@@ -79,8 +79,13 @@ void RemoteControl::active_changed()
 {
 	m->server = new QTcpServer(this);
 
-	if(GetSetting(Set::Remote_Active)){
-		m->server->listen(QHostAddress::Any, GetSetting(Set::Remote_Port));
+	if(GetSetting(Set::Remote_Active))
+	{
+		auto port = quint16(GetSetting(Set::Remote_Port));
+		bool success = m->server->listen(QHostAddress("127.0.0.1"), port);
+		if(!success){
+			sp_log(Log::Warning, this) << "Cannot listen on port " << port << ": " << m->server->errorString();
+		}
 	}
 
 	connect(m->server, &QTcpServer::newConnection, this, &RemoteControl::new_connection);
@@ -228,13 +233,14 @@ void RemoteControl::_sl_active_changed()
 	}
 
 	else {
-		m->server->listen(QHostAddress::Any, GetSetting(Set::Remote_Port));
+		auto port = quint16(GetSetting(Set::Remote_Port));
+		m->server->listen(QHostAddress::Any, port);
 	}
 }
 
 void RemoteControl::_sl_port_changed()
 {
-	int port = GetSetting(Set::Remote_Port);
+	auto port = quint16(GetSetting(Set::Remote_Port));
 	bool active = GetSetting(Set::Remote_Active);
 
 	if(!active){
@@ -283,15 +289,23 @@ void RemoteControl::change_track(int idx)
 
 void RemoteControl::pos_changed_ms(MilliSeconds pos)
 {
-	Q_UNUSED(pos)
+	static MilliSeconds p = 0;
+	if(p / 1000 == pos / 1000){
+		return;
+	}
+
+	p = pos;
+
 	write_current_position();
 }
 
 void RemoteControl::json_current_position(QJsonObject& obj) const
 {
-	Seconds pos_sec = m->play_manager->current_position_ms() / 1000;
+	MilliSeconds pos_ms = m->play_manager->current_position_ms();
+	Seconds pos_sec = Seconds(pos_ms / 1000);
+
 	obj.insert("track-current-position", QJsonValue::fromVariant(
-		QVariant::fromValue<quint32>(pos_sec))
+		QVariant::fromValue<MilliSeconds>(pos_sec))
 	);
 }
 
@@ -347,12 +361,12 @@ void RemoteControl::json_current_track(QJsonObject& o)
 
 	sp_log(Log::Debug, this) << "Send cur track idx: " << cur_track_idx;
 
-	o.insert("track-current-index", cur_track_idx);
+	o.insert("playlist-current-index", cur_track_idx);
 	o.insert("track-title", md.title());
 	o.insert("track-artist", md.artist());
 	o.insert("track-album", md.album());
 	o.insert("track-total-time", QJsonValue::fromVariant(
-		QVariant::fromValue<quint32>(md.duration_ms / 1000))
+		QVariant::fromValue<Seconds>(Seconds(md.duration_ms / 1000)))
 	);
 }
 
@@ -442,7 +456,11 @@ void RemoteControl::write_playstate()
 
 void RemoteControl::playlist_changed(PlaylistConstPtr pl)
 {
-	Q_UNUSED(pl)
+	connect(pl.get(), &Playlist::Playlist::sig_items_changed, this, [=](int idx){
+		Q_UNUSED(idx)
+		write_playlist();
+	});
+
 	write_playlist();
 }
 
@@ -462,7 +480,7 @@ void RemoteControl::json_playlist(QJsonArray& arr) const
 			obj.insert("pl-track-artist", md.artist());
 			obj.insert("pl-track-album", md.album());
 			obj.insert("pl-track-total-time", QJsonValue::fromVariant(
-				QVariant::fromValue<qint32>(md.duration_ms / 1000))
+				QVariant::fromValue<Seconds>(Seconds(md.duration_ms / 1000)))
 			);
 
 			arr.append(obj);
@@ -532,6 +550,8 @@ void RemoteControl::request_state()
 	sp_log(Log::Info, this) << QString::fromLocal8Bit(doc.toJson());
 
 	write(doc.toBinaryData());
+
+	write_playlist();
 }
 
 

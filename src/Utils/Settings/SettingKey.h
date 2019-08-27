@@ -178,6 +178,7 @@ enum class SettingKey : unsigned short
 	Proxy_Hostname,
 	Proxy_Port,
 	Proxy_SavePw,
+	Speed_LastTab,
 	Logger_Level,
 	Settings_Revision,
 	Num_Setting_Keys
@@ -396,6 +397,8 @@ class SettingIdentifier
 	INST(QString,			Proxy_Hostname)			/* Proxy Hostname/IP Address */
 	INST(int,				Proxy_Port)				/* Proxy Port 3128 */
 	INST(bool,				Proxy_SavePw)			/* Should password be saved */
+
+	INST(int,				Speed_LastTab)			/* Last tab selected int he speed/pitch plugin */
 
 	INST(int,				Settings_Revision)		/* Version number of settings */
 

@@ -261,6 +261,8 @@ bool SettingRegistry::init()
 	register_setting<Set::Proxy_Password>( "proxy_password", QString());
 	register_setting<Set::Proxy_SavePw>( "proxy_save_pw", false);
 
+	register_setting<Set::Speed_LastTab>("speed_last_tab", 0);
+
 	register_setting<Set::Settings_Revision>("settings_version", 0);
 	register_setting<Set::Logger_Level>( "logger_level", 0);
 
