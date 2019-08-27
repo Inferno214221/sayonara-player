@@ -98,7 +98,6 @@ private slots:
 
 
 private:
-
 	void init();
 
 	void set_volume(int vol);
@@ -111,19 +110,31 @@ private:
 
 	int extract_parameter_int(const QByteArray& arr, int cmd_len);
 
+	void json_playstate(QJsonObject& o);
 	void write_playstate();
+
+	void json_broadcast_info(QJsonObject& o);
 	void write_broadcast_info();
-	void write_cur_track();
+
+	void json_current_track(QJsonObject& o);
+	void write_current_track();
+
+	void json_volume(QJsonObject& o) const;
 	void write_volume();
-	void write_cur_pos();
+
+	void json_current_position(QJsonObject& o) const;
+	void write_current_position();
+
+	void json_playlist(QJsonArray& o) const;
 	void write_playlist();
 
-	void write_cover();
-	void write_cover(const MetaData& md);
+	void json_cover(QJsonObject& o) const;
 
 	void write(const QByteArray& arr);
 
 	void active_changed();
 };
+
+
 
 #endif // REMOTECONTROL_H
