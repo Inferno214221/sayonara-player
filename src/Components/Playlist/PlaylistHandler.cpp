@@ -174,6 +174,8 @@ int Handler::add_new_playlist(const QString& name, bool temporary, PlaylistType 
 	if(m->playlists.isEmpty()){
 		m->active_playlist_idx = 0;
 		m->current_playlist_idx = 0;
+
+		emit sig_active_playlist_changed(m->active_playlist_idx);
 	}
 
 	m->playlists.push_back(pl);
@@ -308,6 +310,7 @@ void Handler::played()
 void Handler::stopped()
 {
 	m->active_playlist_idx = -1;
+	emit sig_active_playlist_changed(m->active_playlist_idx);
 
 	for(PlaylistPtr pl : m->playlists){
 		pl->stop();
@@ -370,6 +373,8 @@ int	Handler::active_index() const
 
 void Handler::set_active_idx(int idx)
 {
+	int old_active_index = m->active_playlist_idx;
+
 	if(m->playlists.isEmpty()) {
 		m->active_playlist_idx = idx;
 	}
@@ -383,11 +388,17 @@ void Handler::set_active_idx(int idx)
 	}
 
 	SetSetting(Set::PL_LastPlaylist, active_playlist()->get_id());
+
+	if(old_active_index != m->active_playlist_idx)
+	{
+		emit sig_active_playlist_changed(m->active_playlist_idx);
+	}
 }
 
 
 PlaylistPtr Handler::active_playlist()
 {
+	int old_active_index = m->active_playlist_idx;
 	if(m->play_manager->playstate() == PlayState::Stopped) {
 		m->active_playlist_idx = -1;
 	}
@@ -407,6 +418,11 @@ PlaylistPtr Handler::active_playlist()
 		else {
 			m->active_playlist_idx = 0;
 		}
+	}
+
+	if(old_active_index != m->active_playlist_idx)
+	{
+		emit sig_active_playlist_changed(m->active_playlist_idx);
 	}
 
 	return m->playlists[m->active_playlist_idx];
@@ -536,6 +552,7 @@ int Handler::close_playlist(int pl_idx)
 
 	else if(m->active_playlist_idx > pl_idx) {
 		m->active_playlist_idx --;
+		emit sig_active_playlist_changed(m->active_playlist_idx);
 	}
 
 	for(PlaylistPtr pl : m->playlists)

@@ -540,10 +540,14 @@ void GUI_DirectoryWidget::create_delete_filescanner(const QStringList& files)
 	auto* worker = new MetaDataScanner(files, true, nullptr);
 	auto* t = new QThread();
 
+	worker->moveToThread(t);
+
 	connect(worker, &MetaDataScanner::sig_finished, this, &GUI_DirectoryWidget::scanner_delete_finished);
 	connect(worker, &MetaDataScanner::sig_finished, t, &QThread::quit);
 	connect(t, &QThread::finished, t, &QObject::deleteLater);
 	connect(t, &QThread::started, worker, &MetaDataScanner::start);
+
+	t->start();
 }
 
 

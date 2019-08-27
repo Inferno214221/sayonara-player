@@ -97,6 +97,7 @@ namespace Playlist
 			 * @param idx playlist index
 			 */
 			void sig_current_playlist_changed(int idx);
+			void sig_active_playlist_changed(int idx);
 
 			/**
 			 * @brief emitted when a track deletion was triggered over the Ui

@@ -90,7 +90,8 @@ private slots:
 	void track_changed(const MetaData& md);
 	void volume_changed(int vol);
 	void playstate_changed(PlayState playstate);
-	void playlist_changed(PlaylistConstPtr pl);
+	void active_playlist_changed(int index);
+	void active_playlist_content_changed(int index);
 
 	void _sl_active_changed();
 	void _sl_port_changed();
