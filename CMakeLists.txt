@@ -47,6 +47,9 @@ if (WITH_DOC)
 		set(DOXYFILE_SRC_DIR "${CMAKE_SOURCE_DIR}")
 		set(DOXYFILE_OUTPUT_DIR "${CMAKE_BINARY_DIR}/docs")
 
+		include(FindPerl OPTIONAL)
+		set(DOXYFILE_PERL_EXECUTABLE "${PERL_EXECUTABLE}")
+
 		configure_file(${DOXYFILE_IN} ${DOXYFILE_OUT} @ONLY)
 
 		add_custom_target(doc
