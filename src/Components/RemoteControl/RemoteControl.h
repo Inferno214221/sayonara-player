@@ -28,6 +28,8 @@
 
 #include "Utils/Pimpl.h"
 
+class QPixmap;
+
 /**
  * @brief Remote control allows to control Sayonara from an external application via network.
  * Various commands are implemented. Sayonara also delivers information about state changes,
@@ -93,6 +95,8 @@ private slots:
 	void active_playlist_changed(int index);
 	void active_playlist_content_changed(int index);
 
+	void cover_found(const QPixmap& pm);
+
 	void _sl_active_changed();
 	void _sl_port_changed();
 	void _sl_broadcast_changed();
@@ -129,7 +133,8 @@ private:
 	void json_playlist(QJsonArray& o) const;
 	void write_playlist();
 
-	void json_cover(QJsonObject& o) const;
+	void search_cover();
+	void json_cover(QJsonObject& o, const QPixmap& pm) const;
 
 	void write(const QByteArray& arr);
 
