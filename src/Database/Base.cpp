@@ -139,18 +139,29 @@ bool Base::create_db()
 		return true;
 	}
 
-	if (!success) {
+	if(!success)
+	{
 		sp_log(Log::Info, this) << "Database " << m->connection_name << " not existent yet";
 		sp_log(Log::Info, this) << "Copy " <<  source_db_file << " to " << m->connection_name;
 
-		if (QFile::copy(source_db_file, m->connection_name)) {
+		success = QFile::copy(source_db_file, m->connection_name);
+
+		if(success)
+		{
+			QFile f(m->connection_name);
+			f.setPermissions
+			(
+				f.permissions() |
+				QFile::Permission::WriteOwner | QFile::Permission::WriteUser |
+				QFile::Permission::ReadOwner | QFile::Permission::ReadUser
+			);
+
 			sp_log(Log::Info, this) << "DB file has been copied to " <<   m->connection_name;
-			success = true;
 		}
 
-		else {
+		else
+		{
 			sp_log(Log::Error, this) << "Fatal Error: could not copy DB file to " << m->connection_name;
-			success = false;
 		}
 	}
 
