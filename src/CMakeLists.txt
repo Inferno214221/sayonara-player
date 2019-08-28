@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.8)
 project(sayonara)
 
 include(FindPkgConfig)
+include(CheckIncludeFileCXX)
 include(CMake/Compiler.cmake)
 
 option(WITH_COTIRE "Building with cotire PCH and compile time optimizations" OFF)
@@ -40,8 +41,17 @@ set(TAGLIB_FOUND 0)
 
 if(WITH_SYSTEM_TAGLIB)
 	message("Looking for system taglib")
+	include_directories(${TAGLIB_INCLUDE_DIRS})
 	# overwrites TAGLIB_FOUND, TAGLIB_LIBRARY_DIRS, TAGLIB_LIBRARIES
 	pkg_check_modules(TAGLIB taglib>=1.10 REQUIRED)
+
+	# Some distributions do not clean the taglib include path
+	# or the pkg-config .pc file for taglib after uninstalling
+	find_path(TAGLIB_INCLUDE_FOUND "audioproperties.h" PATHS ${TAGLIB_INCLUDE_DIRS})
+	if(NOT TAGLIB_INCLUDE_FOUND)
+		message(FATAL_ERROR "Taglib does not seem to be fully installed" )
+	endif()
+
 endif()
 
 if(NOT TAGLIB_FOUND)
@@ -83,6 +93,7 @@ include_directories(${GLIB_INCLUDE_DIRS})
 include_directories(${GOBJECT_INCLUDE_DIRS})
 include_directories(${GSTREAMER_INCLUDE_DIRS})
 include_directories(${GSTREAMER_BASE_INCLUDE_DIRS})
+include_directories(${GSTREAMER_BASE_APP_INCLUDE_DIRS})
 include_directories(${CMAKE_SOURCE_DIR}/src/3rdParty)
 include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_BINARY_DIR}/src)
@@ -122,7 +133,6 @@ endif()
 
 
 # Check demangle
-include(CheckIncludeFileCXX)
 check_include_file_cxx("cxxabi.h" HAVE_CXX_ABI)
 if(${HAVE_CXX_ABI})
 	# Macros.h.in
