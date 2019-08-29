@@ -33,11 +33,10 @@ class QPixmap;
 /**
  * @brief Remote control allows to control Sayonara from an external application via network.
  * Various commands are implemented. Sayonara also delivers information about state changes,
- * @ingroup Components
+ * @ingroup RemoteControl
  *
- * The current implemented commands are:\n
- *
- *
+ * The current implemented commands are:
+ * \n\n
  * <B>play</B> \t start playing \n
  * <B>pause</B> \t pause playing \n
  * <B>prev</B> \t previous song \n
@@ -52,24 +51,37 @@ class QPixmap;
  * <B>seekrel <int></B> \t seek within song in percent \n
  * <B>seekrelms <int></B> \t seek within song in relative to current position in seconds \n
  * <B>chtrk <int></B> \t change track \n
- * <B>state</B> \t request state: every answer except playlists are returned \n
+ * <B>state</B> \t request state: every answer except playlists are returned
  * \n\n
- * The current implemented answers are: (multiple parameters are separated by the tab character.
- * And answer always ends with th four bytes combination 0x00 0x01 0x00 0x01)
- * \n
- * <B>curPos:<int></B> \t current position in seconds \n
- * <B>vol:<int></B> \t current volume \n
- * <B>curIdx:<int></B> \t current track index in active playlist \n
- * <B>title:<string></B> \t current track title \n
- * <B>artist:<string></B> \t current track artist \n
- * <B>album:<string></B> \t current track album \n
- * <B>totalPos:<string></B> \t length of track in seconds \n
- * <B>playstate:[playing|paused|stopped]</B> \t current playback state \n
- * <B>playlist:<stringlist></B> \t active playlist \n
- * <B>broadcast:<int,int></B> \t broadcast settings: <active, broadcast port> \n
- * <B>coverinfo:<width,height,format></B> \t width, height, qt image format.\n
- * \tfollowed by 0x00,0x01,0x00,0x01<cover data>0x00,0x01,0x00,0x01
- * @ingroup Components
+ * Answers are sent in JSON format. Each answer is terminated with 10 bytes long ENDMESSAGE.\n
+  * The list of attributes is:
+ * \n\n
+ * <B>volume<int></B> \t current volume value between 0 and 100
+ * \n\n
+ * <B>Current track</B>\n
+ * <B>track-title<string></B> \t current track title \n
+ * <B>track-artist<string></B> \t current track artist \n
+ * <B>track-album<string></B> \t current track album \n
+ * <B>track-total-time<int></B> \t current track total time in seconds \n
+ * <B>track-current-position<int></B> \t current track position in seconds
+ * \n\n
+ * <B>Broadcasting</B>\n
+ * <B>broadcast-active<bool></B> \t is broadcast active? \n
+ * <B>broadcast-port<int></B> \t port where broadcasts can be received from
+ * \n\n
+ * <B>Cover</B> \n
+ * <B>cover-data<string></B> \t Base64 encoded JPG file\n
+ * <B>cover-width<int></B> \t width of cover pixmap\n
+ * <B>cover-height<int></B> \t height of cover pixmap\n
+ * <B>playstate<string></B> \t one of the values "playing", "paused" or "stopped"
+ * \n\n
+ * <B>Playlist</B>\n
+ * <B>playlist-current-index<int>\t current playing track index \n
+ * <B>playlist<array></B> \t array of tracks\n
+ * <B>pl-track-title<int></B> \t title of track \n
+ * <B>pl-track-album<string></B> \t album of track \n
+ * <B>pl-track-artist<string></B> \t artist of track \n
+ * <B>pl-track-total-time<int></B> \t length of track in seconds \n
  */
 class RemoteControl :
 		public QObject

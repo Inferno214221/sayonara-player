@@ -488,8 +488,6 @@ void RemoteControl::search_cover()
 
 void RemoteControl::cover_found(const QPixmap& pm)
 {
-	auto* cover_lookup = static_cast<Cover::Lookup*>(sender());
-
 	QJsonDocument doc;
 	QJsonObject obj;
 	json_cover(obj, pm);
