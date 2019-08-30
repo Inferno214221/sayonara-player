@@ -112,8 +112,6 @@ namespace Engine
 			void			set_position_element(GstElement* element);
 			GstElement*		position_element();
 
-			GstElement*		pipeline() const override;	// Changeable
-
 			void			fade_in_handler() override;		// Crossfader
 			void			fade_out_handler() override;	// Crossfader
 	};
