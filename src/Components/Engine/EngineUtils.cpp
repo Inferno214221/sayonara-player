@@ -138,6 +138,11 @@ bool Engine::Utils::has_element(GstBin* bin, GstElement* element)
 	AutoFree element_name(gst_element_get_name(element));
 	AutoFree bin_name(gst_object_get_name(GST_OBJECT(bin)));
 
+	if(element_name.data() == nullptr || bin_name.data() == nullptr)
+	{
+		return false;
+	}
+
 	if(strncmp(element_name.data(), bin_name.data(), 40) == 0){
 		return true;
 	}
@@ -207,6 +212,8 @@ bool Engine::Utils::create_element(GstElement** elem, const QString& elem_name, 
 		*elem = gst_element_factory_make(g_elem_name, g_elem_name);
 		error_msg = QString("Engine: ") + elem_name + " creation failed";
 	}
+
+	set_state(*elem, GST_STATE_NULL);
 
 	g_free(g_elem_name);
 

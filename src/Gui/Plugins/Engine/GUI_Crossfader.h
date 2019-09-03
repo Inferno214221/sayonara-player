@@ -43,6 +43,8 @@ private slots:
 	void crossfader_active_changed(bool b);
 	void gapless_active_changed(bool b);
 
+	void sl_engine_changed();
+
 	void retranslate_ui() override;
 	void init_ui() override;
 };

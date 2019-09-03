@@ -226,20 +226,35 @@ void Pipeline::remove_source()
 }
 
 
-GstElement* Pipeline::create_sink(const QString& name)
+GstElement* Pipeline::create_sink(const QString& _name)
 {
+	static int Number=1;
+
 	GstElement* ret=nullptr;
 
-	if(name == "pulse")
+	QString name = _name + QString::number(Number);
+
+	if(_name == "pulse")
 	{
 		sp_log(Log::Debug, this) << "Create pulseaudio sink";
+
 		EngineUtils::create_element(&ret, "pulsesink", name.toLocal8Bit().data());
 	}
 
-	else if(name == "alsa")
+	else if(_name == "alsa")
 	{
 		sp_log(Log::Debug, this) << "Create alsa sink";
+		QString device = GetSetting(Set::Engine_AlsaDevice);
 		EngineUtils::create_element(&ret, "alsasink", name.toLocal8Bit().data());
+
+		if(device.isEmpty())
+		{
+			device = "default";
+		}
+
+		//EngineUtils::set_value(ret, "device", device.toLocal8Bit().data());
+
+		sp_log(Log::Info, this) << "Created alsa sink with " << device << " as output";
 	}
 
 	if(ret == nullptr)
@@ -473,11 +488,13 @@ void Pipeline::s_sink_changed()
 	GstState state = EngineUtils::get_state(m->pipeline);
 
 	{ //replace elements
-		replace_sink(m->pb_sink, new_sink, m->pb_volume);
+		replace_sink(m->pb_sink, new_sink, m->pb_volume, m->pipeline, m->pb_bin);
 		if(state != GST_STATE_NULL)
 		{
 			seek_abs(GST_MSECOND * pos_ms);
 		}
+
+
 	}
 
 	m->pb_sink = new_sink;

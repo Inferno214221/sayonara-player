@@ -141,6 +141,7 @@ enum class SettingKey : unsigned short
 	Engine_Speed,
 	Engine_SpeedActive,
 	Engine_Sink,
+	Engine_AlsaDevice,
 	Engine_BufferSizeMS,
 	Engine_SR_Active,
 	Engine_SR_Warning,
@@ -356,6 +357,7 @@ class SettingIdentifier
 	INST(float,				Engine_Speed)				/* if yes, set speed */
 	INST(bool, 				Engine_PreservePitch)		/* if yes, should pitch be preserved? */
 	INST(QString,			Engine_Sink)				/* Alsa, pulseaudio */
+	INST(QString,			Engine_AlsaDevice)			/* Specific alsa device */
 	INST(int,				Engine_BufferSizeMS)		/* Buffer size for streaming */
 
 	INST(bool,				Engine_SR_Active)			/* Streamripper active */

@@ -52,7 +52,7 @@ namespace PipelineExtensions
 			bool remove_element(GstElement* element, GstElement* first_element, GstElement* second_element);
 
 
-			bool replace_sink(GstElement* sink, GstElement* new_sink, GstElement* first_element);
+			bool replace_sink(GstElement* old_sink, GstElement* new_sink, GstElement* element_before, GstElement* pipeline, GstElement* bin);
 	};
 }
 

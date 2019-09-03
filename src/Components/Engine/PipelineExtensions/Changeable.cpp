@@ -337,67 +337,79 @@ bool Changeable::remove_element(GstElement* element, GstElement* first_element, 
 	return success;
 }
 
+struct ReplaceSinkProbeData
+{
+	GstElement* old_sink=nullptr;
+	GstElement* new_sink=nullptr;
+	GstElement* element_before=nullptr;
+	GstElement* pipeline=nullptr;
+	GstElement*	bin=nullptr;
+	bool done;
+	GstState old_state;
+
+	ReplaceSinkProbeData() : done(false) {}
+};
+
 
 static GstPadProbeReturn
 src_blocked_replace(GstPad* pad, GstPadProbeInfo* info, gpointer data)
 {
-	auto* probe_data = static_cast<ProbeData*>(data);
+	auto* probe_data = static_cast<ReplaceSinkProbeData*>(data);
 
 	gst_pad_remove_probe(pad, GST_PAD_PROBE_INFO_ID(info));
-	Engine::Utils::set_state(probe_data->element_of_interest, GST_STATE_NULL);
-	Engine::Utils::set_state(probe_data->second_element, GST_STATE_NULL);
 
-	Engine::Utils::unlink_elements({probe_data->first_element, probe_data->element_of_interest});
-	Engine::Utils::remove_elements(GST_BIN(probe_data->pipeline), {probe_data->element_of_interest});
-	Engine::Utils::add_elements(GST_BIN(probe_data->pipeline), {probe_data->second_element});
-	Engine::Utils::link_elements({probe_data->first_element, probe_data->second_element});
+	Engine::Utils::set_state(probe_data->old_sink, GST_STATE_NULL);
+	Engine::Utils::remove_elements(GST_BIN(probe_data->bin), {probe_data->old_sink});
 
-	Engine::Utils::set_state(probe_data->pipeline, probe_data->old_state);
+	Engine::Utils::add_elements(GST_BIN(probe_data->bin), {probe_data->new_sink});
+	Engine::Utils::link_elements({probe_data->element_before, probe_data->new_sink});
 
-	sp_log(Log::Debug, "Changeable ReplaceCB") << "Replacement finished";
+	gst_element_sync_state_with_parent(probe_data->new_sink);
 
 	probe_data->done = true;
-	delete probe_data;
+
+	sp_log(Log::Debug, "Changeable ReplaceCB") << "Replacement finished";
 
 	return GST_PAD_PROBE_OK;
 }
 
 
-bool Changeable::replace_sink(GstElement* sink, GstElement* new_sink, GstElement* first_element)
+bool Changeable::replace_sink(GstElement* old_sink, GstElement* new_sink, GstElement* element_before, GstElement* pipeline, GstElement* bin)
 {
 	StackMutex sm(mtx);
 	if(!sm.could_lock) {
 		return false;
 	}
 
-	Engine::Utils::GObjectAutoFree name( gst_element_get_name(sink)	);
+	Engine::Utils::GObjectAutoFree name( gst_element_get_name(old_sink)	);
 	sp_log(Log::Debug, this) << "Remove " << name.data() << " from pipeline";
 
-	GstElement* parent = GST_ELEMENT(gst_element_get_parent(first_element));
-	GstPad* pad = gst_element_get_static_pad(first_element, "src");
-	GstState old_state = Engine::Utils::get_state(sink);
+	//GstElement* bin = GST_ELEMENT(gst_element_get_parent(old_sink));
+	GstPad* pad = gst_element_get_static_pad(element_before, "src");
+	GstState old_state = Engine::Utils::get_state(old_sink);
 
-	if(!Engine::Utils::has_element(GST_BIN(parent), sink))
+	if(!Engine::Utils::has_element(GST_BIN(bin), old_sink))
 	{
 		sp_log(Log::Debug, this) << "Element " << name.data() << " not in pipeline";
-		return add_element(new_sink, first_element, nullptr);
+		return add_element(new_sink, element_before, nullptr);
 	}
 
-	auto* probe_data = new ProbeData();
-		probe_data->first_element = first_element;
-		probe_data->second_element = new_sink;
-		probe_data->element_of_interest = sink;
-		probe_data->pipeline = parent;
+	auto* probe_data = new ReplaceSinkProbeData();
+		probe_data->old_sink = old_sink;
+		probe_data->new_sink = new_sink;
+		probe_data->element_before = element_before;
+		probe_data->pipeline = pipeline;
+		probe_data->bin = bin;
 		probe_data->old_state = old_state;
 
-	gst_object_ref(sink);
+	//gst_object_ref(old_sink);
 
 	if(probe_data->old_state == GST_STATE_NULL)
 	{
-		Engine::Utils::unlink_elements({first_element, sink});
-		Engine::Utils::remove_elements(GST_BIN(parent), {sink});
-		Engine::Utils::add_elements(GST_BIN(parent), {new_sink});
-		Engine::Utils::link_elements({first_element, new_sink});
+		//Engine::Utils::set_state(old_sink, GST_STATE_NULL);
+		Engine::Utils::remove_elements(GST_BIN(bin), {old_sink});
+		Engine::Utils::add_elements(GST_BIN(bin), {new_sink});
+		Engine::Utils::link_elements({element_before, new_sink});
 
 		sp_log(Log::Debug, this) << "Immediate replacement finished";
 
@@ -415,7 +427,7 @@ bool Changeable::replace_sink(GstElement* sink, GstElement* new_sink, GstElement
 	sp_log(Log::Debug, this) << "Element " << name.data() << " replaced.";
 
 	MilliSeconds maxMs = 2000;
-	while(Engine::Utils::get_state(parent) != old_state)
+	while(Engine::Utils::get_state(pipeline) != old_state)
 	{
 		Util::sleep_ms(50);
 		maxMs -= 50;

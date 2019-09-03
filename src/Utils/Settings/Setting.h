@@ -73,8 +73,8 @@ template<typename KeyClass>
 class Setting : public AbstrSetting
 {
 	private:
-		Setting();
-		Setting(const Setting&);
+		Setting()=delete;
+		Setting(const Setting&)=delete;
 
 		typename KeyClass::Data mValue;
 		typename KeyClass::Data mDefaultValue;

@@ -224,6 +224,7 @@ bool SettingRegistry::init()
 	register_setting<Set::Engine_SpeedActive>( "engine_speed_active", false);
 	register_setting<Set::Engine_Speed>( "engine_speed", 1.0f);
 	register_setting<Set::Engine_Sink>( "engine_sink", QString("auto"));
+	register_setting<Set::Engine_AlsaDevice>( "engine_alsa_device", QString(""));
 	register_setting<Set::Engine_BufferSizeMS>( "engine_buffer_size_ms", 500);
 
 	register_setting<Set::Spectrum_Style>( "spectrum_style", 0 );
