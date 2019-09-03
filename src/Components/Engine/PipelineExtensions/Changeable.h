@@ -51,12 +51,8 @@ namespace PipelineExtensions
 			 */
 			bool remove_element(GstElement* element, GstElement* first_element, GstElement* second_element);
 
-		protected:
-			/**
-			 * @brief get_pipeline get the referencing pipeline
-			 * @return
-			 */
-			virtual GstElement* pipeline() const=0;
+
+			bool replace_sink(GstElement* old_sink, GstElement* new_sink, GstElement* element_before, GstElement* pipeline, GstElement* bin);
 	};
 }
 

@@ -19,7 +19,7 @@
  */
 
 #include "Equalizer.h"
-#include "Components/Engine/Utils.h"
+#include "Components/Engine/EngineUtils.h"
 
 #include "Utils/globals.h"
 #include "Utils/Settings/Settings.h"

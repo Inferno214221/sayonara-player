@@ -23,6 +23,7 @@
 #include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistHandler.h"
 #include "Components/PlayManager/PlayManager.h"
+#include "Components/Covers/CoverLookup.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Logger/Logger.h"
@@ -80,7 +81,7 @@ void RemoteControl::active_changed()
 	if(GetSetting(Set::Remote_Active))
 	{
 		auto port = quint16(GetSetting(Set::Remote_Port));
-		bool success = m->server->listen(QHostAddress("127.0.0.1"), port);
+		bool success = m->server->listen(QHostAddress::AnyIPv4, port);
 		if(!success){
 			sp_log(Log::Warning, this) << "Cannot listen on port " << port << ": " << m->server->errorString();
 		}
@@ -386,33 +387,30 @@ void RemoteControl::write_current_track()
 
 	json_playstate(obj);
 	json_current_track(obj);
-	json_cover(obj);
 
 	doc.setObject(obj);
 
 	write(doc.toBinaryData());
+
+	search_cover();
 }
 
 
-void RemoteControl::json_cover(QJsonObject& o) const
+void RemoteControl::json_cover(QJsonObject& o, const QPixmap& pm) const
 {
-	MetaData md = PlayManager::instance()->current_track();
-	Cover::Location cl = Cover::Location::cover_location(md);
-
-	QString cover_path = cl.preferred_path();
-
-	QPixmap pm(cover_path);
 	if(pm.isNull()){
 		return;
 	}
 
-	pm = pm.scaled(300, 300, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+	QPixmap pm_scaled = pm.scaled(300, 300, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
-	o.insert("cover-width", pm.width());
-	o.insert("cover-height", pm.height());
+	o.insert("cover-width", pm_scaled.width());
+	o.insert("cover-height", pm_scaled.height());
 
-	QByteArray img_data = Util::cvt_pixmap_to_bytearray(pm);
+	QByteArray img_data = Util::cvt_pixmap_to_bytearray(pm_scaled);
 	QString data = QString::fromLocal8Bit(img_data.toBase64());
+
+	sp_log(Log::Debug, this) << "Send " << data.size() << " bytes cover info";
 	o.insert("cover-data", data);
 }
 
@@ -474,6 +472,31 @@ void RemoteControl::active_playlist_content_changed(int index)
 {
 	Q_UNUSED(index)
 	write_playlist();
+}
+
+void RemoteControl::search_cover()
+{
+	MetaData md = PlayManager::instance()->current_track();
+	Cover::Location cl = Cover::Location::cover_location(md);
+
+	auto* cover_lookup = new Cover::Lookup(cl, 1, nullptr);
+	connect(cover_lookup, &Cover::Lookup::sig_cover_found, this, &RemoteControl::cover_found);
+	connect(cover_lookup, &Cover::Lookup::sig_finished, cover_lookup, &QObject::deleteLater);
+
+	cover_lookup->start();
+}
+
+void RemoteControl::cover_found(const QPixmap& pm)
+{
+	QJsonDocument doc;
+	QJsonObject obj;
+	json_cover(obj, pm);
+
+	if(!obj.isEmpty())
+	{
+		doc.setObject(obj);
+		write(doc.toBinaryData());
+	}
 }
 
 void RemoteControl::json_playlist(QJsonArray& arr) const
@@ -570,7 +593,6 @@ void RemoteControl::request_state()
 	json_current_track(obj);
 	json_playstate(obj);
 	json_broadcast_info(obj);
-	json_cover(obj);
 
 	doc.setObject(obj);
 	sp_log(Log::Info, this) << QString::fromLocal8Bit(doc.toJson());
@@ -578,6 +600,7 @@ void RemoteControl::request_state()
 	write(doc.toBinaryData());
 
 	write_playlist();
+	search_cover();
 }
 
 

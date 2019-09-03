@@ -23,6 +23,9 @@
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/Macros.h"
+
+#include <QDir>
 
 struct DBusNotifications::Private
 {
@@ -71,7 +74,9 @@ void DBusNotifications::notify(const QString& title, const QString& text, const 
 {
 	QVariantMap map;
 	map.insert("action-icons", false);
-	map.insert("desktop-entry", "/usr/share/applications/sayonara.desktop");
+	map.insert("desktop-entry",
+		QDir(SAYONARA_INSTALL_SHARE_PATH).absoluteFilePath("applications/sayonara.desktop")
+	);
 	map.insert("resident", false);
 	map.insert("sound-file", QString());
 	map.insert("sound-name", QString());

@@ -19,7 +19,7 @@
  */
 
 #include "Callbacks.h"
-#include "Components/Engine/Utils.h"
+#include "Components/Engine/EngineUtils.h"
 #include "Components/Engine/Engine.h"
 #include "Components/Engine/Pipeline.h"
 
@@ -273,13 +273,13 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 			GstState old_state, new_state, pending_state;
 
 			gst_message_parse_state_changed(msg, &old_state, &new_state, &pending_state);
-			/*sp_log(Log::Debug, this) << GST_MESSAGE_SRC_NAME(msg) << ": "
-							   << "State changed from "
-							   << gst_element_state_get_name(old_state)
-							   << " to "
-							   << gst_element_state_get_name(new_state)
-							   << " pending: "
-							   << gst_element_state_get_name(pending_state);*/
+//			sp_log(Log::Debug, "Callback") << GST_MESSAGE_SRC_NAME(msg) << ": "
+//							   << "State changed from "
+//							   << gst_element_state_get_name(old_state)
+//							   << " to "
+//							   << gst_element_state_get_name(new_state)
+//							   << " pending: "
+//							   << gst_element_state_get_name(pending_state);
 
 			if(!msg_src_name.contains("pipeline", Qt::CaseInsensitive)){
 				break;
@@ -332,14 +332,22 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 
 		case GST_MESSAGE_ERROR:
 			{
+				static QString error_msg;
 				GError*	err;
 				gst_message_parse_error(msg, &err, nullptr);
 
-				sp_log(Log::Error, ClassEngineCallbacks) << "Engine: GST_MESSAGE_ERROR: " << err->message << ": "
-						 << GST_MESSAGE_SRC_NAME(msg);
+				QString src_name(GST_MESSAGE_SRC_NAME(msg));
 
-				QString	error_msg(err->message);
-				engine->error(error_msg);
+				sp_log(Log::Error, ClassEngineCallbacks) << "Engine: GST_MESSAGE_ERROR: " << err->message << ": "
+						 << src_name;
+
+				QString new_error_msg = QString(err->message);
+
+				if(error_msg != new_error_msg)
+				{
+					engine->error(new_error_msg, src_name);
+					error_msg = new_error_msg;
+				}
 
 				g_error_free(err);
 			}

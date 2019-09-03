@@ -208,7 +208,7 @@ void Shutdown::timeout()
 	);
 
 
-	if(QProcess::startDetached("/usr/bin/systemctl poweroff")){
+	if(QProcess::startDetached("systemctl poweroff")){
 		return;
 	}
 

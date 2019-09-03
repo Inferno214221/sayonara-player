@@ -3,6 +3,7 @@
 #include <QRegExp>
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
+#include "Utils/Macros.h"
 
 class FileHelperTest : public QObject
 {
@@ -128,8 +129,8 @@ void FileHelperTest::system_paths_test()
 	QString lib_path = Util::lib_path();
 	QString share_path = Util::share_path();
 
-	QRegExp re_lib("/usr(/[A-Za-z]+)?/lib(64|32)*/sayonara");
-	QRegExp re_share("/usr(/[A-Za-z]+)?/share/sayonara");
+	QRegExp re_lib(SAYONARA_INSTALL_PATH "(/[A-Za-z]+)?/lib(64|32)*/sayonara");
+	QRegExp re_share(SAYONARA_INSTALL_PATH "(/[A-Za-z]+)?/share/sayonara");
 
 	QVERIFY(re_lib.indexIn(lib_path) == 0);
 	QVERIFY(re_share.indexIn(share_path) == 0);

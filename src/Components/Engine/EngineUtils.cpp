@@ -1,4 +1,4 @@
-/* Engine::Utils.cpp */
+/* EngineUtils.cpp */
 
 /* Copyright (C) 2011-2019  Lucio Carreras
  *
@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Utils.h"
+#include "EngineUtils.h"
 #include "Utils/Logger/Logger.h"
 
 #include <QString>
@@ -122,42 +122,50 @@ bool Engine::Utils::tee_connect(GstElement* tee, GstElement* queue, const QStrin
 	return true;
 }
 
+
 bool Engine::Utils::has_element(GstBin* bin, GstElement* element)
 {
+	using AutoFree=GObjectAutoFree<gchar>;
+
 	if(!bin || !element){
 		return true;
 	}
 
-	if(!GST_IS_OBJECT(bin) || !GST_IS_OBJECT(element)){
+	if(!GST_OBJECT(element) || !GST_OBJECT(bin)){
 		return false;
 	}
 
-	GstObject* o = GST_OBJECT(element);
-	GstObject* parent = nullptr;
+	AutoFree element_name(gst_element_get_name(element));
+	AutoFree bin_name(gst_object_get_name(GST_OBJECT(bin)));
 
-	while(o && GST_IS_OBJECT(o))
+	if(element_name.data() == nullptr || bin_name.data() == nullptr)
 	{
-		if(o == GST_OBJECT(bin))
-		{
-			if( o != GST_OBJECT(element) )
-			{
-				gst_object_unref(o);
-			}
+		return false;
+	}
 
+	if(strncmp(element_name.data(), bin_name.data(), 40) == 0){
+		return true;
+	}
+
+	GstObject* parent = gst_object_get_parent(GST_OBJECT(element));
+
+	while(parent != nullptr)
+	{
+		AutoFree parent_name(gst_object_get_name(parent));
+
+		if(strncmp(bin_name.data(), parent_name.data(), 50) == 0)
+		{
 			return true;
 		}
 
-		parent = gst_object_get_parent(o);
-		if( o != GST_OBJECT(element) )
-		{
-			gst_object_unref(o);
-		}
-
-		o = parent;
+		auto* old_parent = parent;
+		parent = gst_object_get_parent(old_parent);
+		gst_object_unref(old_parent);
 	}
 
 	return false;
 }
+
 
 
 bool Engine::Utils::test_and_error(void* element, const QString& errorstr)
@@ -204,6 +212,8 @@ bool Engine::Utils::create_element(GstElement** elem, const QString& elem_name, 
 		*elem = gst_element_factory_make(g_elem_name, g_elem_name);
 		error_msg = QString("Engine: ") + elem_name + " creation failed";
 	}
+
+	set_state(*elem, GST_STATE_NULL);
 
 	g_free(g_elem_name);
 

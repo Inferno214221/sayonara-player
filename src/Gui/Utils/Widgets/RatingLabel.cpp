@@ -76,7 +76,8 @@ RatingLabel::~RatingLabel() = default;
 Rating RatingLabel::rating_at(QPoint pos) const
 {
 	double drating = ((pos.x() * 1.0) / (m->icon_size + 2.0)) + 0.5;
-	Rating rating = scast(Rating, drating);
+	int iRating = int(drating);
+	Rating rating = Rating(iRating);
 
 	rating=std::min(rating, Rating::Five);
 	rating=std::max(rating, Rating::Zero);

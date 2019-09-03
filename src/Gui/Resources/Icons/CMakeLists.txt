@@ -14,9 +14,8 @@ ELSE()
 	)
 ENDIF()
 
-
-INSTALL(FILES "sayonara.png" DESTINATION /usr/share/icons)
-INSTALL(FILES "sayonara.png" DESTINATION /usr/share/pixmaps)
+INSTALL(FILES "sayonara.png" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/icons")
+INSTALL(FILES "sayonara.png" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/pixmaps")
 
 INSTALL(FILES ${ICONS} DESTINATION ${ICON_TARGET_PATH})
 

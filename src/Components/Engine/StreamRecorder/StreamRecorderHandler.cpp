@@ -21,7 +21,7 @@
 #include "StreamRecorderData.h"
 #include "StreamRecorderHandler.h"
 
-#include "Components/Engine/Utils.h"
+#include "Components/Engine/EngineUtils.h"
 #include "Components/Engine/PipelineExtensions/Probing.h"
 
 #include "Utils/Utils.h"

@@ -121,7 +121,7 @@ namespace Engine
 			bool change_track(const MetaData& md);
 
 			void set_buffer_state(int progress, GstElement* src);
-			void error(const QString& error);
+			void error(const QString& error, const QString& element_name);
 
 		private:
 			PipelinePtr init_pipeline(const QString& name);

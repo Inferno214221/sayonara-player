@@ -20,7 +20,7 @@
 
 #include "Pipeline.h"
 #include "Components/Engine/Engine.h"
-#include "Components/Engine/Utils.h"
+#include "Components/Engine/EngineUtils.h"
 #include "Components/Engine/Callbacks.h"
 
 #include "PipelineExtensions/Probing.h"
@@ -226,20 +226,35 @@ void Pipeline::remove_source()
 }
 
 
-GstElement* Pipeline::create_sink(const QString& name)
+GstElement* Pipeline::create_sink(const QString& _name)
 {
+	static int Number=1;
+
 	GstElement* ret=nullptr;
 
-	if(name == "pulse")
+	QString name = _name + QString::number(Number);
+
+	if(_name == "pulse")
 	{
 		sp_log(Log::Debug, this) << "Create pulseaudio sink";
+
 		EngineUtils::create_element(&ret, "pulsesink", name.toLocal8Bit().data());
 	}
 
-	else if(name == "alsa")
+	else if(_name == "alsa")
 	{
 		sp_log(Log::Debug, this) << "Create alsa sink";
+		QString device = GetSetting(Set::Engine_AlsaDevice);
 		EngineUtils::create_element(&ret, "alsasink", name.toLocal8Bit().data());
+
+		if(device.isEmpty())
+		{
+			device = "default";
+		}
+
+		//EngineUtils::set_value(ret, "device", device.toLocal8Bit().data());
+
+		sp_log(Log::Info, this) << "Created alsa sink with " << device << " as output";
 	}
 
 	if(ret == nullptr)
@@ -259,7 +274,7 @@ bool Pipeline::add_and_link_elements()
 						 m->audio_convert, m->equalizer->element(), m->tee,
 						 nullptr);
 
-		bool success = gst_element_link_many(m->audio_convert, m->equalizer->element(), m->tee,  nullptr);
+		bool success = EngineUtils::link_elements({m->audio_convert, m->equalizer->element(), m->tee});
 		if(!EngineUtils::test_and_error_bool(success, "Engine: Cannot link audio convert with tee")){
 			return false;
 		}
@@ -267,9 +282,9 @@ bool Pipeline::add_and_link_elements()
 
 	{ // Playback Bin
 		m->pb_bin = gst_bin_new("Playback_bin");
-		gst_bin_add_many(GST_BIN(m->pb_bin), m->pb_queue, m->pb_volume, m->pb_sink, nullptr);
+		EngineUtils::add_elements(GST_BIN(m->pb_bin), {m->pb_queue, m->pb_volume, m->pb_sink});
 
-		bool success = gst_element_link_many(m->pb_queue, m->pb_volume, m->pb_sink, nullptr);
+		bool success = EngineUtils::link_elements({m->pb_queue, m->pb_volume, m->pb_sink});
 		if(!EngineUtils::test_and_error_bool(success, "Engine: Cannot link eq with audio sink")) {
 			return false;
 		}
@@ -377,11 +392,6 @@ void Pipeline::set_data(Byte* data, uint64_t size)
 	emit sig_data(data, size);
 }
 
-GstElement* Pipeline::pipeline() const
-{
-	return m->pipeline;
-}
-
 void Pipeline::set_equalizer_band(int band, int val)
 {
 	m->equalizer->set_band(band, val);
@@ -392,7 +402,7 @@ void Pipeline::record(bool b)
 {
 	if(!m->stream_recorder)
 	{
-		m->stream_recorder = new StreamRecorderHandler(pipeline(), m->tee);
+		m->stream_recorder = new StreamRecorderHandler(m->pipeline, m->tee);
 		m->stream_recorder->init();
 	}
 
@@ -474,26 +484,17 @@ void Pipeline::s_sink_changed()
 	}
 
 	MilliSeconds pos_ms = position_ms();
-	GstState old_state = EngineUtils::get_state(m->pipeline);
+
+	GstState state = EngineUtils::get_state(m->pipeline);
 
 	{ //replace elements
-		gst_element_set_state(m->pipeline, GST_STATE_NULL);
-
-		remove_element(m->pb_sink, m->pb_volume, nullptr);
-		add_element(new_sink, m->pb_volume, nullptr);
-
-		gst_element_set_state(m->pipeline, old_state);
-	}
-
-	{ //restore position
-		if(old_state != GST_STATE_NULL)
+		replace_sink(m->pb_sink, new_sink, m->pb_volume, m->pipeline, m->pb_bin);
+		if(state != GST_STATE_NULL)
 		{
-			while(old_state != EngineUtils::get_state(m->pipeline)) {
-				Util::sleep_ms(50);
-			}
-
 			seek_abs(GST_MSECOND * pos_ms);
 		}
+
+
 	}
 
 	m->pb_sink = new_sink;
