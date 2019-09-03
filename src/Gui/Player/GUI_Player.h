@@ -57,7 +57,7 @@ signals:
 
 public:
 	explicit GUI_Player(QWidget *parent=nullptr);
-	~GUI_Player();
+	~GUI_Player() override;
 
 	void register_preference_dialog(QAction* dialog_action);
 	void request_shutdown();

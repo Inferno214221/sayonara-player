@@ -135,6 +135,16 @@ QPixmap CoverButton::pixmap() const
 	return m->current_cover;
 }
 
+int CoverButton::vertical_padding() const
+{
+	int p = (this->height() - m->current_cover_scaled.size().height()) - 2;
+	if(p <= 0){
+		p = -(this->width() - m->current_cover_scaled.size().width() - 2);
+	}
+
+	return p;
+}
+
 void CoverButton::trigger()
 {
 	if(m->cover_source == Cover::Source::AudioFile && !is_silent())

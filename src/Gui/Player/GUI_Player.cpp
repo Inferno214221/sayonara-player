@@ -27,8 +27,8 @@
 #include "VersionChecker.h"
 #include "Translator.h"
 
+#include "Gui/Covers/CoverButton.h"
 #include "Gui/Player/ui_GUI_Player.h"
-
 #include "Gui/Plugins/PlayerPluginBase.h"
 #include "Gui/Plugins/PlayerPluginHandler.h"
 
@@ -98,7 +98,6 @@ GUI_Player::GUI_Player(QWidget* parent) :
 	MessageReceiverInterface("Player Main Window")
 {
 	m = Pimpl::make<Private>();
-
 
 	language_changed();
 
@@ -249,6 +248,15 @@ void GUI_Player::init_connections()
 	connect(pph, &PlayerPlugin::Handler::sig_plugin_added, this, &GUI_Player::plugin_added);
 	connect(pph, &PlayerPlugin::Handler::sig_plugin_closed, ui->plugin_widget, &QWidget::close);
 	connect(pph, &PlayerPlugin::Handler::sig_plugin_action_triggered, this, &GUI_Player::plugin_action_triggered);
+
+	auto* dbl_click_filter = new Gui::GenericFilter(QEvent::MouseButtonDblClick, ui->splitterControls);
+
+	ui->splitterControls->handle(1)->installEventFilter(dbl_click_filter);
+
+	connect(dbl_click_filter, &Gui::GenericFilter::sig_event, this, [=](QEvent::Type)
+	{
+		this->check_control_splitter(true);
+	});
 }
 
 
@@ -487,8 +495,7 @@ void GUI_Player::check_control_splitter(bool force)
 {
 	if(m->controls->is_extern_resize_allowed())
 	{
-		QSize cover_size = m->controls->button_size();
-		int difference = cover_size.height() - cover_size.width();
+		int difference = m->controls->btn_cover()->vertical_padding();
 		if(difference > 0 || force)
 		{
 			auto sizes = ui->splitterControls->sizes();
@@ -527,7 +534,6 @@ void GUI_Player::splitter_controls_moved(int pos, int idx)
 	QByteArray splitter_state = ui->splitterControls->saveState();
 	SetSetting(Set::Player_SplitterControls, splitter_state);
 }
-
 
 void GUI_Player::language_changed()
 {
