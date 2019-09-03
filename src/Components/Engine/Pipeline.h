@@ -54,7 +54,7 @@ namespace Engine
 			explicit Pipeline(const QString& name, QObject *parent=nullptr);
 			~Pipeline() override;
 
-			bool init(Engine* engine, GstState state=GST_STATE_NULL);
+			bool init(Engine* engine);
 			bool prepare(const QString& uri);
 
 			void set_data(Byte* data, uint64_t size);
@@ -100,8 +100,6 @@ namespace Engine
 
 		private:
 			bool			create_elements();
-			bool			create_source(const QString& uri);
-			void			remove_source();
 			GstElement*		create_sink(const QString& name);
 
 			bool			add_and_link_elements();

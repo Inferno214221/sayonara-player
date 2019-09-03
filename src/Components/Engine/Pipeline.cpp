@@ -102,7 +102,7 @@ Pipeline::~Pipeline()
 	}
 }
 
-bool Pipeline::init(Engine* engine, GstState state)
+bool Pipeline::init(Engine* engine)
 {
 	if(m->pipeline) {
 		return true;
@@ -129,7 +129,7 @@ bool Pipeline::init(Engine* engine, GstState state)
 	}
 
 	configure_elements();
-	EngineUtils::set_state(m->pipeline, state);
+	EngineUtils::set_state(m->pipeline, GST_STATE_NULL);
 
 #ifdef Q_OS_WIN
 	gst_bus_set_sync_handler(bus, Engine::Callbacks::bus_message_received, engine, EngineCallbacks::destroy_notify);
@@ -171,6 +171,7 @@ bool Pipeline::init(Engine* engine, GstState state)
 bool Pipeline::create_elements()
 {
 	// input
+	if(!EngineUtils::create_element(&m->source, "uridecodebin", "src")) return false;
 	if(!EngineUtils::create_element(&m->audio_convert, "audioconvert")) return false;
 	if(!EngineUtils::create_element(&m->tee, "tee")) return false;
 	if(!EngineUtils::create_element(&m->pb_queue, "queue", "playback_queue")) return false;
@@ -186,45 +187,6 @@ bool Pipeline::create_elements()
 
 	return (m->pb_sink != nullptr);
 }
-
-
-bool Pipeline::create_source(const QString& uri)
-{
-	if(EngineUtils::create_element(&m->source, "uridecodebin", "src"))
-	{
-		EngineUtils::set_values(G_OBJECT(m->source),
-								"use-buffering", Util::File::is_www(uri),
-								"uri", uri.toUtf8().data());
-
-		EngineUtils::set_uint64_value(G_OBJECT(m->source), "buffer-duration", GetSetting(Set::Engine_BufferSizeMS));
-
-		EngineUtils::add_elements(GST_BIN(m->pipeline), {m->source});
-		EngineUtils::set_state(m->source, GST_STATE_NULL);
-
-		g_signal_connect (m->source, "pad-added", G_CALLBACK (Callbacks::decodebin_ready), m->audio_convert);
-		g_signal_connect (m->source, "source-setup", G_CALLBACK (Callbacks::source_ready), nullptr);
-	}
-
-	set_position_element(m->source);
-
-	return (m->source != nullptr);
-}
-
-
-void Pipeline::remove_source()
-{
-	if(m->source && EngineUtils::has_element(GST_BIN(m->pipeline), m->source))
-	{
-		gst_element_send_event(m->pipeline, gst_event_new_eos());
-		gst_element_unlink(m->source, m->audio_convert);
-		gst_bin_remove(GST_BIN(m->pipeline), m->source);
-		m->source = nullptr;
-		m->seeker->set_source(nullptr);
-
-		set_position_element(m->pipeline);
-	}
-}
-
 
 GstElement* Pipeline::create_sink(const QString& _name)
 {
@@ -270,11 +232,16 @@ GstElement* Pipeline::create_sink(const QString& _name)
 bool Pipeline::add_and_link_elements()
 {
 	{ // before tee
-		gst_bin_add_many(GST_BIN(m->pipeline),
-						 m->audio_convert, m->equalizer->element(), m->tee,
-						 nullptr);
+		EngineUtils::add_elements
+		(
+			GST_BIN(m->pipeline),
+			{m->source, m->audio_convert, m->equalizer->element(), m->tee}
+		);
 
-		bool success = EngineUtils::link_elements({m->audio_convert, m->equalizer->element(), m->tee});
+		bool success = EngineUtils::link_elements({
+			m->audio_convert, m->equalizer->element(), m->tee
+		});
+
 		if(!EngineUtils::test_and_error_bool(success, "Engine: Cannot link audio convert with tee")){
 			return false;
 		}
@@ -289,7 +256,7 @@ bool Pipeline::add_and_link_elements()
 			return false;
 		}
 
-		gst_bin_add(GST_BIN(m->pipeline), m->pb_bin);
+		EngineUtils::add_elements(GST_BIN(m->pipeline), {m->pb_bin});
 
 		EngineUtils::create_ghost_pad(GST_BIN(m->pb_bin), m->pb_queue);
 		EngineUtils::tee_connect(m->tee, m->pb_bin, "Equalizer");
@@ -305,14 +272,23 @@ void Pipeline::configure_elements()
 				"allow-not-linked", true);
 
 	EngineUtils::config_queue(m->pb_queue);
+
+	g_signal_connect (m->source, "pad-added", G_CALLBACK (Callbacks::decodebin_ready), m->audio_convert);
+	g_signal_connect (m->source, "source-setup", G_CALLBACK (Callbacks::source_ready), nullptr);
+
+	set_position_element(m->source);
 }
 
 
 bool Pipeline::prepare(const QString& uri)
 {
 	stop();
-	create_source(uri);
+	EngineUtils::set_values(G_OBJECT(m->source),
+		"use-buffering", Util::File::is_www(uri),
+		"uri", uri.toUtf8().data()
+	);
 
+	EngineUtils::set_uint64_value(G_OBJECT(m->source), "buffer-duration", GetSetting(Set::Engine_BufferSizeMS));
 	EngineUtils::set_state(m->pipeline, GST_STATE_PAUSED);
 
 	s_volume_changed();
@@ -334,12 +310,15 @@ void Pipeline::pause()
 
 void Pipeline::stop()
 {
+	if(EngineUtils::get_state(m->pipeline) == GST_STATE_PLAYING)
+	{
+		gst_element_send_event(m->pipeline, gst_event_new_eos());
+	}
+
 	EngineUtils::set_state(m->pipeline, GST_STATE_NULL);
 
 	abort_delayed_playing();
 	abort_fader();
-
-	remove_source();
 }
 
 void Pipeline::s_volume_changed()
@@ -483,20 +462,7 @@ void Pipeline::s_sink_changed()
 		return;
 	}
 
-	MilliSeconds pos_ms = position_ms();
-
-	GstState state = EngineUtils::get_state(m->pipeline);
-
-	{ //replace elements
-		replace_sink(m->pb_sink, new_sink, m->pb_volume, m->pipeline, m->pb_bin);
-		if(state != GST_STATE_NULL)
-		{
-			seek_abs(GST_MSECOND * pos_ms);
-		}
-
-
-	}
-
+	replace_sink(m->pb_sink, new_sink, m->pb_volume, m->pipeline, m->pb_bin);
 	m->pb_sink = new_sink;
 }
 

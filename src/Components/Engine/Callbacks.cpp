@@ -507,10 +507,6 @@ void Callbacks::decodebin_ready(GstElement* source, GstPad* new_src_pad, gpointe
 	sp_log(Log::Develop, "Callback") << "Source: " << element_name.data();
 
 	auto* element = static_cast<GstElement*>(data);
-	if(!element){
-		return;
-	}
-
 	GstPad*	sink_pad = gst_element_get_static_pad(element, "sink");
 	if(!sink_pad){
 		return;

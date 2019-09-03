@@ -20,6 +20,8 @@
 
 #include "GUI_EnginePreferences.h"
 #include "Gui/Preferences/ui_GUI_EnginePreferences.h"
+
+#include "Utils/Utils.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Language/Language.h"
@@ -108,14 +110,23 @@ void GUI_EnginePreferences::init_ui()
 	revert();
 
 	radio_button_changed(ui->rb_alsa->isChecked());
+	ui->combo_alsa_devices->setVisible(false);
 
+/*
 	auto* process = new QProcess(this);
 	m->alsa_buffer.clear();
 
+	Util::set_environment("LANGUAGE", "en_US");
 	connect(process, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), this, &GUI_EnginePreferences::alsa_process_finished);
 	connect(process, &QProcess::readyReadStandardOutput, this, &GUI_EnginePreferences::alsa_stdout_written);
-	process->start("aplay", QStringList{"-l"});
 
+	QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+	env.insert("LANGUAGE", "en_US");
+	env.insert("LANG", "en_US.UTF-8");
+	env.insert("LC_ALL", "en_US.UTF-8");
+	process->setProcessEnvironment(env);
+	process->start("aplay", QStringList{"-l"});
+*/
 }
 
 void GUI_EnginePreferences::retranslate_ui()
@@ -128,7 +139,7 @@ void GUI_EnginePreferences::retranslate_ui()
 void GUI_EnginePreferences::radio_button_changed(bool b)
 {
 	Q_UNUSED(b)
-	ui->combo_alsa_devices->setVisible(ui->rb_alsa->isChecked());
+	ui->combo_alsa_devices->setVisible(false);
 }
 
 struct SubDevice
@@ -140,6 +151,7 @@ struct SubDevice
 
 void GUI_EnginePreferences::alsa_process_finished(int exit_code, QProcess::ExitStatus exit_status)
 {
+	Q_UNUSED(exit_code)
 	auto* process = static_cast<QProcess*>(sender());
 	m->alsa_buffer.append
 	(
@@ -190,7 +202,7 @@ void GUI_EnginePreferences::alsa_process_finished(int exit_code, QProcess::ExitS
 		{
 			QString device_identifier = QString("hw:%1").arg(it.key());
 			if(it.value().size() > 1){
-				device_identifier += QString(".%1").arg(subdevice.id);
+				device_identifier += QString(",%1").arg(subdevice.id);
 			}
 
 			ui->combo_alsa_devices->addItem(subdevice.name, device_identifier);
@@ -198,7 +210,10 @@ void GUI_EnginePreferences::alsa_process_finished(int exit_code, QProcess::ExitS
 	}
 }
 
-void GUI_EnginePreferences::alsa_process_error_occured(QProcess::ProcessError error) {}
+void GUI_EnginePreferences::alsa_process_error_occured(QProcess::ProcessError error)
+{
+	Q_UNUSED(error)
+}
 
 void GUI_EnginePreferences::alsa_stdout_written()
 {
