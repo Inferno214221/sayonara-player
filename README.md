@@ -1,5 +1,6 @@
 # Sayonara Player
-[](https://sayonara-player.com)
+[https://sayonara-player.com]()
+
 Sayonara is a small, clear and fast audio player for Linux written in C++, supported by the Qt framework. It uses GStreamer as audio backend. Sayonara is open source and uses the GPLv3 license. One of Sayonara's goals is intuitive and easy usablility. Currently, it is only available for Linux and BSD. 
 
 ## Getting Started
@@ -15,16 +16,18 @@ In order to compile you need the following packages
  * Gstreamer development files, GStreamer plugins
  * zlib development files
  
-### Installing packages on Debian/Ubuntu/Mint
+#### Installing packages on Debian/Ubuntu/Mint
 
 `apt-get install cmake pkg-config qtbase5-dev qttools5-dev qttools5-dev-tools zlib1g-dev libqt5sql5-sqlite libgstreamer-1.0-dev libgstreamer-plugins.bad-1.0-dev libgstreamer-plugins-base1.0-dev gstreamer-1.0-plugins-bad gstreamer-1.0-plugins-ugly vorbis-tools lame libmp3lame cmake`
 
-### Installing packages on Fedora/Suse
+#### Installing packages on Fedora/Suse
 
 `dnf install cmake gcc-c++ desktop-file-utils libappstream-glib qt5-qtbase-devel qt5-qttools-devel gstreamer1-plugins-base-devel zlib-devel hicolor-icon-theme`
 optional: gstreamer1-plugins-ugly lame (use rpmforge or rpmfusion)
- 
- 
+
+#### Installing packages on Mageia
+`urpmi gcc-c++ cmake desktop-file-utils lib64 appstream-glib lib64gstreamer1.0-devel lib64gstreamer-plugins-base1.0-devel lib64zlib-devel lib64qt5base5-devel lib64qt5core-devel lib64qt5dbus-devel lib64qt5gui-devel lib64qt5network-devel lib64qt5xml-devel lib64qt5sql-devel lib64qt5network-devel lib64qt5help-devel git`
+
 ## Building
 ### Calling CMake
 
