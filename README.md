@@ -1,6 +1,6 @@
-# Project Title
-
-One Paragraph of project description goes here
+# Sayonara Player
+[](https://sayonara-player.com)
+Sayonara is a small, clear and fast audio player for Linux written in C++, supported by the Qt framework. It uses GStreamer as audio backend. Sayonara is open source and uses the GPLv3 license. One of Sayonara's goals is intuitive and easy usablility. Currently, it is only available for Linux and BSD. 
 
 ## Getting Started
 
@@ -16,15 +16,18 @@ In order to compile you need the following packages
  * zlib development files
  
 ### Installing packages on Debian/Ubuntu/Mint
+
 `apt-get install cmake pkg-config qtbase5-dev qttools5-dev qttools5-dev-tools zlib1g-dev libqt5sql5-sqlite libgstreamer-1.0-dev libgstreamer-plugins.bad-1.0-dev libgstreamer-plugins-base1.0-dev gstreamer-1.0-plugins-bad gstreamer-1.0-plugins-ugly vorbis-tools lame libmp3lame cmake`
 
 ### Installing packages on Fedora/Suse
+
 `dnf install cmake gcc-c++ desktop-file-utils libappstream-glib qt5-qtbase-devel qt5-qttools-devel gstreamer1-plugins-base-devel zlib-devel hicolor-icon-theme`
 optional: gstreamer1-plugins-ugly lame (use rpmforge or rpmfusion)
  
  
 ## Building
 ### Calling CMake
+
 ```
 mkdir build
 cd build
@@ -38,8 +41,10 @@ Additional useful arguments:
  * Enable/Disable documentation: -DWITH_DOC=ON|OFF
  
 ### Calling make
-`make -j<number of processes>`
-e.g. `make -j8`
+```
+make -j<number of processes>
+e.g. make -j8
+```
 
 ### Installing
 `make install`
@@ -50,6 +55,7 @@ e.g. `make -j8`
 ## Versioning
 
 Version scheme is `<Major>.<Minor>.<Update>-[beta|stable]<Bugfix>`
+
 where `<Major>` marks really big changes, `<Minor>` marks changes which may affect stability, `<Update>` marks changes which do not affect stability and `<Bugfix>` marks a single bugfix
 
 ## Authors
