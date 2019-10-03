@@ -43,7 +43,7 @@ e.g. `make -j8`
 ### Installing
 `make install`
 
-## Running the tests
+### Running the tests
 `make test`
 
 ## Versioning
