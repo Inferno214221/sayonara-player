@@ -32,7 +32,7 @@ optional: gstreamer1-plugins-ugly lame (use rpmforge or rpmfusion)
 
 Additional useful arguments:
  * Build Type: -DCMAKE_BUILD_TYPE=Debug|Release|RelWithDebSymbols
- * Install prefix: -DCMAKE_INSTALL_PREFIX=<path for installing>
+ * Install prefix: -DCMAKE_INSTALL_PREFIX=`<path for installing>`
  * Enable/Disable testing: -DWITH_TESTS=ON|OFF 
  * Enable/Disable documentation: -DWITH_DOC=ON|OFF
  
@@ -48,8 +48,8 @@ e.g. `make -j8`
 
 ## Versioning
 
-Version scheme is <Major>.<Minor>.<Update>-[beta|stable]<Bugfix>
-where <Major> marks really big changes, <Minor> marks changes which may affect stability, <Update> marks changes which do not affect stability and <Bugfix> marks a single bugfix
+Version scheme is `<Major>.<Minor>.<Update>-[beta|stable]<Bugfix>`
+where `<Major>` marks really big changes, `<Minor>` marks changes which may affect stability, `<Update>` marks changes which do not affect stability and `<Bugfix>` marks a single bugfix
 
 ## Authors
 
