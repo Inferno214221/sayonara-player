@@ -25,10 +25,11 @@ optional: gstreamer1-plugins-ugly lame (use rpmforge or rpmfusion)
  
 ## Building
 ### Calling CMake
-
-`mkdir build`
-`cd build`
-`cmake ..`
+```
+mkdir build
+cd build
+cmake ..
+```
 
 Additional useful arguments:
  * Build Type: -DCMAKE_BUILD_TYPE=Debug|Release|RelWithDebSymbols
