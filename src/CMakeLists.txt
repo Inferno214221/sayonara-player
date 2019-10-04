@@ -107,6 +107,7 @@ add_definitions(${QT_DEFINITIONS})
 link_directories(${TAGLIB_LIBRARY_DIRS})
 link_directories(${GLIB_LIBRARY_DIRS})
 link_directories(${GSTREAMER_LIBRARY_DIRS})
+link_directories("/usr/lib/x86_64-linux-gnu/gstreamer-1.0")
 
 # DBus and Shutdown
 if(WIN32)
@@ -118,7 +119,6 @@ else()
 	set(SAYONARA_WITH_SHUTDOWN 1)
 	set(WIN32 0)
 endif()
-
 
 # check execinfo for FreeBSD
 if(WIN32)
@@ -158,7 +158,11 @@ add_subdirectory(Gui)
 add_subdirectory(Languages)
 add_subdirectory(Utils)
 
-add_executable(${PROJECT_NAME} Main.cpp ${QM_FILES})
+qt5_add_resources(DATABASE_RCC
+	${CMAKE_CURRENT_SOURCE_DIR}/../resources/Database.qrc
+)
+
+add_executable(${PROJECT_NAME} Main.cpp ${QM_FILES} ${DATABASE_RCC})
 
 if(WIN32)
 	set(OS_LIBRARIES
@@ -173,17 +177,15 @@ target_link_libraries(${PROJECT_NAME}
 
 	sayonara_application
 	sayonara_languages
-
 	${OS_LIBRARIES}
 )
 
-add_executable("create_db" CreateDB.cpp)
+add_executable("create_db" CreateDB.cpp ${DATABASE_RCC})
 target_link_libraries("create_db"
 	sayonara_utils
 	sayonara_database
 	Qt5::Widgets
 )
-
 
 if(WIN32)
 	install(TARGETS ${PROJECT_NAME} DESTINATION .)

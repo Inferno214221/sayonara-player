@@ -332,7 +332,7 @@ bool StreamDataSender::send_bg()
 	QByteArray html;
 
 	bool success = Util::File::read_file_into_byte_arr(
-		Util::share_path("bg-checker.png"), html
+		":/Icons/bg-checker.png", html
 	);
 
 	if(!success){
@@ -396,9 +396,7 @@ bool StreamDataSender::send_playlist(const QString& host, int port)
 bool StreamDataSender::send_favicon()
 {
 	QByteArray arr;
-	bool success = Util::File::read_file_into_byte_arr(
-		Util::share_path("favicon.ico"), arr
-	);
+	bool success = Util::File::read_file_into_byte_arr(":/Icons/favicon.ico", arr);
 
 	if(!success){
 		return false;

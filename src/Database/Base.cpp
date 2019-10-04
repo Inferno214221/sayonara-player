@@ -37,8 +37,8 @@ namespace FileUtils=::Util::File;
 struct Base::Private
 {
 	QString source_dir;
-	QString filename;		// player.db
-	QString connection_name;		// /home/user/.Sayonara/player.db
+	QString filename;			// player.db
+	QString connection_name;	// /home/user/.Sayonara/player.db
 	DbId	db_id;
 
 	bool initialized;

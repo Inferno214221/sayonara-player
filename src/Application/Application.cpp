@@ -166,6 +166,7 @@ struct Application::Private
 
 		Q_INIT_RESOURCE(Icons);
 		Q_INIT_RESOURCE(Lyrics);
+		Q_INIT_RESOURCE(Database);
 
 #ifdef Q_OS_WIN
 		Q_INIT_RESOURCE(IconsWindows);
@@ -294,7 +295,7 @@ bool Application::init(const QStringList& files_to_play)
 	{
 		NotificationHandler::instance()->notify("Sayonara Player",
 												Lang::get(Lang::Version) + " " + SAYONARA_VERSION,
-												Util::share_path("logo.png"));
+												QString(":/Icons/logo.png"));
 	}
 
 	init_libraries();

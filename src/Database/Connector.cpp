@@ -139,12 +139,17 @@ Connector::Connector(const QString& source_dir, const QString& target_dir, const
 	}
 }
 
-Connector::~Connector() {}
+Connector::~Connector() = default;
 
-DB::Connector* Connector::instance(QString source_dir, QString target_dir, QString db_filename)
+DB::Connector* Connector::instance()
+{
+	return instance_custom(QString(), QString(), QString());
+}
+
+DB::Connector* Connector::instance_custom(QString source_dir, QString target_dir, QString db_filename)
 {
 	if(source_dir.isEmpty()){
-		source_dir = Util::share_path();
+		source_dir = ":/Database";
 	}
 
 	if(target_dir.isEmpty()){
@@ -155,9 +160,10 @@ DB::Connector* Connector::instance(QString source_dir, QString target_dir, QStri
 		db_filename = "player.db";
 	}
 
-	static Connector db(source_dir, target_dir, db_filename);
-	return &db;
+	static Connector connector(source_dir, target_dir, db_filename);
+	return &connector;
 }
+
 
 bool Connector::updateAlbumCissearchFix()
 {
@@ -714,14 +720,7 @@ bool Connector::apply_fixes()
 	return true;
 }
 
-
-void Connector::clean_up()
-{
-//	Query q(this);
-//	QString querytext = "VACUUM;";
-//	q.prepare(querytext);
-//	q.exec();
-}
+void Connector::clean_up() {}
 
 DB::LibraryDatabases Connector::library_dbs() const
 {
