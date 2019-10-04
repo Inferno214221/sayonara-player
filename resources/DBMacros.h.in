@@ -1,6 +1,0 @@
-#ifndef TEST_MACROS_H
-#define TEST_MACROS_H
-
-#cmakedefine DB_SOURCE_DIR "@DB_SOURCE_DIR@"
-
-#endif
