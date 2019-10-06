@@ -65,15 +65,29 @@ QString Style::style(bool dark)
 	}
 
 	QString style;
+	QString path;
 
-	if(!dark) {
-		Util::File::read_file_into_str( Util::share_path("standard.css"), style );
+	if(!dark)
+	{
+		path = Util::sayonara_path("standard.css");
+		if(!Util::File::exists(path))
+		{
+			path = ":/Style/standard.css";
+		}
+
+		Util::File::read_file_into_str(":/Style/standard.css", style );
 	}
 
-	else{
-		Util::File::read_file_into_str( Util::share_path("dark.css"), style );
-		style.replace("<<SHARE_PATH>>", Util::share_path());
+	else
+	{
+		path = Util::sayonara_path("dark.css");
+		if(!Util::File::exists(path))
+		{
+			path = ":/Style/dark.css";
+		}
 	}
+
+	Util::File::read_file_into_str(path, style);
 
 	style.replace("<<FONT_FAMILY>>", font_family);
 	style.replace("<<FONT_SIZE>>", QString::number(font_size));

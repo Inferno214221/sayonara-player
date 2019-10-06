@@ -37,7 +37,7 @@ void SettingsTest::test_registry()
 	QVERIFY(GetSetting(Set::Player_PublicId).isEmpty());
 	QVERIFY(GetSetting(Set::Player_PrivId).isEmpty());
 
-	DB::Connector* db = DB::Connector::instance(".", "/tmp", "player.db");
+	DB::Connector* db = DB::Connector::instance_custom(".", "/tmp", "player.db");
 
 	QVERIFY(db->db().isOpen());
 
