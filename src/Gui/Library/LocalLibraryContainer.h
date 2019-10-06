@@ -21,7 +21,7 @@
 #ifndef LOCALLIBRARYCONTAINER_H
 #define LOCALLIBRARYCONTAINER_H
 
-#include "Interfaces/Library/LibraryContainer/LibraryContainer.h"
+#include "Gui/Utils/Library/LibraryContainer.h"
 #include "Utils/Pimpl.h"
 
 namespace Library

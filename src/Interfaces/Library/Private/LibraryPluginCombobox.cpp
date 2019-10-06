@@ -21,10 +21,11 @@
 #include "LibraryPluginCombobox.h"
 #include "LibraryPluginHandler.h"
 #include "LibraryPluginComboBoxDelegate.h"
-#include "LibraryContainer/LibraryContainer.h"
 
 #include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
+
+#include "Gui/Utils/Library/LibraryContainer.h"
 
 #include <QList>
 #include <QAction>

@@ -25,7 +25,7 @@
 #define SOUNDCLOUD_LIBRARY_CONTAINER
 
 #include <QtGlobal>
-#include "Interfaces/Library/LibraryContainer/LibraryContainer.h"
+#include "Gui/Utils/Library/LibraryContainer.h"
 
 namespace SC
 {

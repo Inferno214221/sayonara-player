@@ -20,17 +20,15 @@
 
 #include "Setting.h"
 #include "Utils/Logger/Logger.h"
-#include "Database/Settings.h"
 
 #include <QVariant>
 
 struct AbstrSetting::Private
 {
 	QString			db_key;
-	SettingKey	key;
+	SettingKey		key;
 	bool			db_setting;
 };
-
 
 AbstrSetting::AbstrSetting()
 {
@@ -51,7 +49,6 @@ AbstrSetting::AbstrSetting(SettingKey key, const char* db_key) :
 	m->db_setting = true;
 }
 
-
 AbstrSetting::AbstrSetting(const AbstrSetting& other) :
 	AbstrSetting()
 {
@@ -69,7 +66,7 @@ AbstrSetting& AbstrSetting::operator=(const AbstrSetting& other)
 	return *this;
 }
 
-AbstrSetting::~AbstrSetting() {}
+AbstrSetting::~AbstrSetting() = default;
 
 SettingKey AbstrSetting::get_key() const
 {

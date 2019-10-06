@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Interfaces/Library/LibraryContainer/LibraryContainer.h"
+#include "Gui/Utils/Library/LibraryContainer.h"
 
 #include <QWidget>
 #include <QAction>
@@ -41,7 +41,7 @@ Container::Container(QObject* parent) :
 	m = Pimpl::make<Private>();
 }
 
-Container::~Container() {}
+Container::~Container() = default;
 
 void Container::set_name(const QString& name) { Q_UNUSED(name); }
 

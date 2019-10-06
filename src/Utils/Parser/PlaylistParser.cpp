@@ -27,9 +27,6 @@
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/MetaDataList.h"
 
-#include "Database/Connector.h"
-#include "Database/LibraryDatabase.h"
-
 #include <QUrl>
 #include <QDir>
 #include <QFile>
@@ -84,17 +81,6 @@ MetaDataList PlaylistParser::parse_playlist(const QString& local_filename)
 		if( Util::File::check_file(md.filepath()) ){
 			result << md;
 		}
-
-		else {
-			v_md_to_delete << md;
-		}
-	}
-
-	if(!v_md_to_delete.isEmpty())
-	{
-		DB::Connector* db = DB::Connector::instance();
-		DB::LibraryDatabase* lib_db = db->library_db(-1, 0);
-		lib_db->deleteTracks(v_md_to_delete);
 	}
 
 	if(playlist_parser){
