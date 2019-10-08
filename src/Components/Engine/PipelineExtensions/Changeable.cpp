@@ -108,10 +108,7 @@ bool Changeable::add_element(GstElement* element, GstElement* first_element, Gst
 		return false;
 	}
 
-	Engine::Utils::GObjectAutoFree name
-	(
-		gst_element_get_name(element)
-	);
+	Engine::Utils::GStringAutoFree name(gst_element_get_name(element));
 
 	sp_log(Log::Debug, this) << "Add " << name.data() << " to pipeline";
 
@@ -263,10 +260,7 @@ bool Changeable::remove_element(GstElement* element, GstElement* first_element, 
 		return false;
 	}
 
-	Engine::Utils::GObjectAutoFree name
-	(
-		gst_element_get_name(element)
-	);
+	Engine::Utils::GStringAutoFree name(gst_element_get_name(element));
 
 	sp_log(Log::Debug, this) << "Remove " << name.data() << " from pipeline";
 
@@ -381,7 +375,7 @@ bool Changeable::replace_sink(GstElement* old_sink, GstElement* new_sink, GstEle
 		return false;
 	}
 
-	Engine::Utils::GObjectAutoFree name( gst_element_get_name(old_sink)	);
+	Engine::Utils::GStringAutoFree name( gst_element_get_name(old_sink)	);
 	sp_log(Log::Debug, this) << "Remove " << name.data() << " from pipeline";
 
 	//GstElement* bin = GST_ELEMENT(gst_element_get_parent(old_sink));

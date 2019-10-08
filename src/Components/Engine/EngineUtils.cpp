@@ -125,8 +125,6 @@ bool Engine::Utils::tee_connect(GstElement* tee, GstElement* queue, const QStrin
 
 bool Engine::Utils::has_element(GstBin* bin, GstElement* element)
 {
-	using AutoFree=GObjectAutoFree<gchar>;
-
 	if(!bin || !element){
 		return true;
 	}
@@ -135,8 +133,8 @@ bool Engine::Utils::has_element(GstBin* bin, GstElement* element)
 		return false;
 	}
 
-	AutoFree element_name(gst_element_get_name(element));
-	AutoFree bin_name(gst_object_get_name(GST_OBJECT(bin)));
+	Engine::Utils::GStringAutoFree element_name(gst_element_get_name(element));
+	Engine::Utils::GStringAutoFree bin_name(gst_object_get_name(GST_OBJECT(bin)));
 
 	if(element_name.data() == nullptr || bin_name.data() == nullptr)
 	{
@@ -151,7 +149,7 @@ bool Engine::Utils::has_element(GstBin* bin, GstElement* element)
 
 	while(parent != nullptr)
 	{
-		AutoFree parent_name(gst_object_get_name(parent));
+		Engine::Utils::GStringAutoFree parent_name(gst_object_get_name(parent));
 
 		if(strncmp(bin_name.data(), parent_name.data(), 50) == 0)
 		{
