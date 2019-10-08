@@ -21,7 +21,7 @@
 #ifndef DIRECTORYWIDGETCONTAINER_H
 #define DIRECTORYWIDGETCONTAINER_H
 
-#include "Interfaces/Library/LibraryContainer/LibraryContainer.h"
+#include "Gui/Utils/Library/LibraryContainer.h"
 
 class GUI_DirectoryWidget;
 

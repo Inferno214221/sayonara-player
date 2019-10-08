@@ -19,9 +19,9 @@
  */
 
 #include "LibraryPluginHandler.h"
-#include "LibraryContainer/LibraryContainer.h"
 
 #include "Private/LibraryPluginCombobox.h"
+#include "Gui/Utils/Library/LibraryContainer.h"
 #include "Gui/Utils/Library/EmptyLibraryContainer.h"
 
 #include "Utils/Utils.h"

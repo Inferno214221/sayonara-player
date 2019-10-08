@@ -25,7 +25,7 @@
 #define GUI_SOMAFMLIBRARY_CONTAINER_H
 
 #include <QtGlobal>
-#include "Interfaces/Library/LibraryContainer/LibraryContainer.h"
+#include "Gui/Utils/Library/LibraryContainer.h"
 
 namespace SomaFM
 {

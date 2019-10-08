@@ -46,9 +46,9 @@
 #include "Gui/Utils/Style.h"
 #include "Gui/Utils/Icons.h"
 #include "Gui/Utils/EventFilter.h"
+#include "Gui/Utils/Library/LibraryContainer.h"
 
 #include "Interfaces/Library/LibraryPluginHandler.h"
-#include "Interfaces/Library/LibraryContainer/LibraryContainer.h"
 
 #include <QAction>
 #include <QKeySequence>

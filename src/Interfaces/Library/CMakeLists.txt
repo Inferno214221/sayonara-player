@@ -1,7 +1,5 @@
 project(interface_library)
 
-add_subdirectory(LibraryContainer)
-
 set(SOURCES
 	Private/LibraryPluginCombobox.cpp
 	Private/LibraryPluginComboBoxDelegate.cpp	
