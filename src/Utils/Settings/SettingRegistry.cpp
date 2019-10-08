@@ -33,9 +33,8 @@
 #include <QDir>
 #include <QSize>
 #include <QPoint>
-#include <QGuiApplication>
-#include <QFont>
 #include <QThread>
+#include <QLocale>
 #include <type_traits>
 
 template<typename KeyClass>
@@ -150,8 +149,8 @@ bool SettingRegistry::init()
 	register_setting<Set::Player_Language>( "player_language", QLocale().name());
 	register_setting<Set::Player_Style>( "player_style", 1 );
 	register_setting<Set::Player_ControlStyle>( "player_control_style", 1 );
-	register_setting<Set::Player_FontName>( "player_font", QGuiApplication::font().family() );
-	register_setting<Set::Player_FontSize>( "player_font_size", QGuiApplication::font().pointSize() );
+	register_setting<Set::Player_FontName>( "player_font", "" );					// set by Style:: later
+	register_setting<Set::Player_FontSize>( "player_font_size", 0 );				// set by Style:: later
 	register_setting<Set::Player_FadingCover>( "player_fading_cover", true );
 	register_setting<Set::Player_Size>( "player_size", QSize(1200,800) );
 	register_setting<Set::Player_Pos>( "player_pos", QPoint(50,50) );
