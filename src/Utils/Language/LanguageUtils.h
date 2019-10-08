@@ -18,10 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef LANGUAGEUTILS_H
 #define LANGUAGEUTILS_H
+
+#include "Utils/Macros.h"
 
 class QString;
 template<typename A, typename B>
@@ -150,7 +150,7 @@ namespace Util
 		 */
 		QString get_similar_language_4(const QString& four_letter);
 
-		#ifdef DEBUG
+		#ifdef SAYONARA_WITH_TESTS
 			void set_test_mode();
 			void set_language_version(const QString& four_letter, const QString& version);
 		#endif
