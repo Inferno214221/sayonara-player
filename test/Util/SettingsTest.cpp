@@ -6,8 +6,6 @@
 #include "Utils/Macros.h"
 #include "Utils/FileUtils.h"
 
-#include "DBMacros.h"
-
 #include <QTest>
 #include <QObject>
 
@@ -29,6 +27,8 @@ private slots:
 
 void SettingsTest::test_registry()
 {
+	Q_INIT_RESOURCE(Database);
+
 	Settings* s = Settings::instance();
 	bool checked = s->check_settings();
 	QVERIFY(checked == true);
@@ -132,7 +132,8 @@ void SettingsTest::test_registry()
 		QVERIFY(GetSetting(Set::PL_FontSize) == -1);
 		QVERIFY(GetSetting(Set::Lib_FontBold) == true);
 		QVERIFY(GetSetting(Set::Lib_FontSize) == -1);
-		QVERIFY(GetSetting(Set::Player_FontSize) > 6);
+		QVERIFY(GetSetting(Set::Player_FontName).isEmpty());
+		QVERIFY(GetSetting(Set::Player_FontSize) == 0);
 		QVERIFY(GetSetting(Set::Logger_Level) == 0);
 	}
 }
@@ -147,6 +148,6 @@ void SettingsTest::cleanupTestCase()
 	Util::File::delete_files({"/tmp/player.db"});
 }
 
-QTEST_MAIN(SettingsTest)
+QTEST_GUILESS_MAIN(SettingsTest)
 
 #include "SettingsTest.moc"

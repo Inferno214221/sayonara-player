@@ -21,6 +21,7 @@ private:
 public:
 	AlbumTest()
 	{
+		Q_INIT_RESOURCE(Database);
 		Util::File::create_directories("/tmp/sayonara");
 		//init();
 	}
@@ -120,6 +121,6 @@ void AlbumTest::test_rename()
 	}
 }
 
-QTEST_MAIN(AlbumTest)
+QTEST_GUILESS_MAIN(AlbumTest)
 
 #include "AlbumTest.moc"

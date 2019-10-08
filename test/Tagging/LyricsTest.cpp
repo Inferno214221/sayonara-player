@@ -43,7 +43,7 @@ void LyricsTest::xiph_test()
 	AbstractTaggingTest::xiph_test();
 }
 
-QTEST_MAIN(LyricsTest)
+QTEST_GUILESS_MAIN(LyricsTest)
 
 #include "LyricsTest.moc"
 

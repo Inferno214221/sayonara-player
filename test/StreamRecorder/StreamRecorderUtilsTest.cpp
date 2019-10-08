@@ -112,6 +112,6 @@ void StreamRecorderUtilsTest::unique_tag_test()
 	QVERIFY(e4 == Utils::ErrorCode::MissingUniqueTag);
 }
 
-QTEST_MAIN(StreamRecorderUtilsTest)
+QTEST_GUILESS_MAIN(StreamRecorderUtilsTest)
 
 #include "StreamRecorderUtilsTest.moc"
