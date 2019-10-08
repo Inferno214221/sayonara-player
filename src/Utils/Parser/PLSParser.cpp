@@ -71,7 +71,7 @@ static LineEntry split_line(const QString& line)
 PLSParser::PLSParser(const QString& filename) :
 	AbstractPlaylistParser(filename) {}
 
-PLSParser::~PLSParser() {}
+PLSParser::~PLSParser() = default;
 
 void PLSParser::parse()
 {
