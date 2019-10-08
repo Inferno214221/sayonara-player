@@ -193,7 +193,6 @@ void GUI_FontPreferences::revert()
 	int cur_lib_font_size = GetSetting(Set::Lib_FontSize);
 	bool bold = GetSetting(Set::Lib_FontBold);
 
-
 	int idx = ui->combo_fonts->findText(cur_family);
 	if(idx >= 0){
 		ui->combo_fonts->setCurrentIndex(idx);

@@ -152,6 +152,8 @@ struct SubDevice
 void GUI_EnginePreferences::alsa_process_finished(int exit_code, QProcess::ExitStatus exit_status)
 {
 	Q_UNUSED(exit_code)
+	Q_UNUSED(exit_status)
+
 	auto* process = static_cast<QProcess*>(sender());
 	m->alsa_buffer.append
 	(
