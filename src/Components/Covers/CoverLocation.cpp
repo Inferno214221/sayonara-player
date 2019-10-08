@@ -173,7 +173,7 @@ Location Location::invalid_location()
 	Location cl;
 
 	cl.set_valid(false);
-	cl.set_cover_path(::Util::share_path("logo.png"));
+	cl.set_cover_path(":/Icons/logo.png");
 	cl.set_search_urls(UrlList());
 	cl.set_search_term(QString());
 	cl.set_identifier("Invalid location");

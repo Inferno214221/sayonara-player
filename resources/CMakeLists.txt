@@ -8,18 +8,7 @@ file(WRITE "${CMAKE_BINARY_DIR}/resources/sayonara" "?package(sayonara): \\
   icon=\"${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/32x32/apps/sayonara.xpm\"\n"
 )
 
-set(DB_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
-configure_file(DBMacros.h.in "${CMAKE_BINARY_DIR}/src/DBMacros.h" @ONLY)
-
-if(WIN32)
-	install(FILES "player.db" DESTINATION share)
-else()
-	install(FILES "player.db" DESTINATION share/sayonara)
-	install(FILES "soundcloud.db" DESTINATION share/sayonara)
-	install(FILES "sayonara.desktop" DESTINATION share/applications)
-	#install(FILES "${CMAKE_BINARY_DIR}/resources/sayonara" DESTINATION share/menu)
-	install(FILES "sayonara.appdata.xml" DESTINATION share/appdata)
-	install(FILES "manpage/sayonara.1.gz" DESTINATION share/man/man1)
-	install(DIRECTORY "logos/" DESTINATION share/icons/hicolor)
-endif()
-
+install(FILES "sayonara.desktop" DESTINATION share/applications)
+install(FILES "sayonara.appdata.xml" DESTINATION share/appdata)
+install(FILES "manpage/sayonara.1.gz" DESTINATION share/man/man1)
+install(DIRECTORY "logos/" DESTINATION share/icons/hicolor)

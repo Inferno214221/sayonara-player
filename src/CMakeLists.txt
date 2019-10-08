@@ -158,7 +158,11 @@ add_subdirectory(Gui)
 add_subdirectory(Languages)
 add_subdirectory(Utils)
 
-add_executable(${PROJECT_NAME} Main.cpp ${QM_FILES})
+qt5_add_resources(DATABASE_RCC
+	${CMAKE_CURRENT_SOURCE_DIR}/../resources/Database.qrc
+)
+
+add_executable(${PROJECT_NAME} Main.cpp ${QM_FILES} ${DATABASE_RCC})
 
 if(WIN32)
 	set(OS_LIBRARIES
@@ -177,7 +181,7 @@ target_link_libraries(${PROJECT_NAME}
 	${OS_LIBRARIES}
 )
 
-add_executable("create_db" CreateDB.cpp)
+add_executable("create_db" CreateDB.cpp ${DATABASE_RCC})
 target_link_libraries("create_db"
 	sayonara_utils
 	sayonara_database

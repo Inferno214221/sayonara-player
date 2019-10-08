@@ -43,6 +43,8 @@
         <file>Icons/tool_grey_small.svg</file>
         <file>Icons/tool_grey_std.svg</file>
         <file>Icons/tool_orange.svg</file>
+        <file>Icons/bg-checker.png</file>
+        <file>Icons/favicon.ico</file>
         <file>MintYIcons/application-exit-16.svg</file>
         <file>MintYIcons/application-exit-22.svg</file>
         <file>MintYIcons/applications-system-16.png</file>
@@ -162,5 +164,9 @@
         <file>MintYIcons/window-close-22.svg</file>
         <file>MintYIcons/edit-clear-32.svg</file>
         <file>MintYIcons/edit-clear-24.svg</file>
+    </qresource>
+    <qresource prefix="/Style">
+        <file>standard.css</file>
+        <file>dark.css</file>
     </qresource>
 </RCC>
