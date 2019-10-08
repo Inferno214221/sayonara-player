@@ -5,7 +5,7 @@ if(POLICY CMP0071)
 	cmake_policy(SET CMP0071 NEW)
 endif()
 
-find_package(Qt5 COMPONENTS Core Widgets Sql Network Network Xml Test REQUIRED)
+find_package(Qt5 COMPONENTS Core Gui Sql Network Network Xml Test REQUIRED)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
@@ -21,7 +21,7 @@ set(RESOURCES
 )
 
 include_directories(${Qt5Core_INCLUDE_DIRS})
-include_directories(${Qt5Widgets_INCLUDE_DIRS})
+include_directories(${Qt5Gui_INCLUDE_DIRS})
 include_directories(${Qt5Xml_INCLUDE_DIRS})
 include_directories(${Qt5Sql_INCLUDE_DIRS})
 include_directories(${Qt5Network_INCLUDE_DIRS})
@@ -43,8 +43,8 @@ qt5_add_resources(RESOURCES_RCC
 		${RESOURCES}
 )
 
-NEW_TEST(Database/PodcastTest.cpp)
-NEW_TEST(Database/AlbumTest.cpp)
+NEW_TEST(Database/PodcastTest.cpp ${RESOURCES_RCC})
+NEW_TEST(Database/AlbumTest.cpp ${RESOURCES_RCC})
 
 NEW_TEST(Util/CryptTest.cpp)
 NEW_TEST(Util/FileHelperTest.cpp)

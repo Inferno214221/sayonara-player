@@ -27,5 +27,5 @@ void LanguageKeyTest::test()
     QVERIFY(!ok);
 }
 
-QTEST_MAIN(LanguageKeyTest)
+QTEST_GUILESS_MAIN(LanguageKeyTest)
 #include "LanguageKeyTest.moc"

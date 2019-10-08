@@ -118,7 +118,7 @@ void MetaDataTest::move_test()
 }
 
 
-QTEST_MAIN(MetaDataTest)
+QTEST_GUILESS_MAIN(MetaDataTest)
 
 #include "MetaDataTest.moc"
 
