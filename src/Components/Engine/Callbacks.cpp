@@ -81,7 +81,7 @@ static bool parse_image(GstElement* src, GstTagList* tags, EngineNS::Engine* eng
 		return false;
 	}
 
-	EngineUtils::GObjectAutoFree mimetype(gst_caps_to_string(caps));
+	EngineUtils::GStringAutoFree mimetype(gst_caps_to_string(caps));
 	if(mimetype.data() == nullptr){
 		gst_sample_unref(sample);
 		return false;
@@ -503,7 +503,7 @@ gboolean Callbacks::position_changed(gpointer data)
 // dynamic linking, important for decodebin
 void Callbacks::decodebin_ready(GstElement* source, GstPad* new_src_pad, gpointer data)
 {
-	EngineUtils::GObjectAutoFree element_name(gst_element_get_name(source));
+	EngineUtils::GStringAutoFree element_name(gst_element_get_name(source));
 	sp_log(Log::Develop, "Callback") << "Source: " << element_name.data();
 
 	auto* element = static_cast<GstElement*>(data);

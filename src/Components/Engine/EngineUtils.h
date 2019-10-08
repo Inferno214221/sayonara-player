@@ -59,6 +59,7 @@ namespace Engine
 			T* data() const { return obj; }
 		};
 
+		using GStringAutoFree=GObjectAutoFree<gchar>;
 		/**
 		 * @brief config_queue
 		 * @param queue
