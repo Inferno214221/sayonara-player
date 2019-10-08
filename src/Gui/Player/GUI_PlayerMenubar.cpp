@@ -28,6 +28,7 @@
 #include "Gui/Shutdown/GUI_Shutdown.h"
 #include "Components/Playlist/PlaylistHandler.h"
 
+#include "Gui/Utils/Library/LibraryContainer.h"
 #include "Gui/Utils/Shortcuts/ShortcutHandler.h"
 #include "Gui/Utils/Shortcuts/Shortcut.h"
 #include "Gui/Utils/Icons.h"
@@ -38,8 +39,6 @@
 #include "Utils/Utils.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Message/Message.h"
-
-#include "Interfaces/Library/LibraryContainer/LibraryContainer.h"
 
 #include <QFileDialog>
 #include <QMessageBox>

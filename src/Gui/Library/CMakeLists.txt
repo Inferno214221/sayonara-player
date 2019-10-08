@@ -6,7 +6,6 @@ add_library(${PROJECT_NAME} STATIC ${SOURCES})
 target_link_libraries(${PROJECT_NAME}
 	gui_importdialog
 	gui_infodialog
-	interface_librarycontainer
 )
 
 if( WITH_COTIRE )

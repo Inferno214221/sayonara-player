@@ -22,7 +22,7 @@
 #define EMPTYLIBRARYCONTAINER_H
 
 #include "Utils/Pimpl.h"
-#include "Interfaces/Library/LibraryContainer/LibraryContainer.h"
+#include "Gui/Utils/Library/LibraryContainer.h"
 
 /**
  * @brief The EmptyLibraryContainer class
