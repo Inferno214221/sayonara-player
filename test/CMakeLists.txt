@@ -17,6 +17,7 @@ file(COPY ${CMAKE_SOURCE_DIR}/resources/player.db
 
 set(RESOURCES
 	resources/Test.qrc
+	../resources/Database.qrc
 )
 
 include_directories(${Qt5Core_INCLUDE_DIRS})
@@ -38,7 +39,7 @@ include_directories(${CMAKE_SOURCE_DIR}/test)
 include_directories(${CMAKE_BINARY_DIR}/test)
 
 include("new_test.cmake")
-QT5_ADD_RESOURCES(RESOURCES_RCC
+qt5_add_resources(RESOURCES_RCC
 		${RESOURCES}
 )
 
@@ -51,8 +52,7 @@ NEW_TEST(Util/MetaDataListTest.cpp)
 NEW_TEST(Util/LanguageKeyTest.cpp)
 NEW_TEST(Util/LanguageUtilTest.cpp)
 NEW_TEST(Util/MetaDataTest.cpp)
-NEW_TEST(Util/SettingsTest.cpp)
-#NEW_TEST(Shortcuts/ShortcutIdentifierTest.cpp)
+NEW_TEST(Util/SettingsTest.cpp ${RESOURCES_RCC})
 NEW_TEST(StreamRecorder/StreamRecorderUtilsTest.cpp)
 NEW_TEST(StreamRecorder/StreamRecorderTest.cpp)
 NEW_TEST(Tagging/LyricsTest.cpp ${RESOURCES_RCC} Tagging/AbstractTaggingTest.cpp)
@@ -60,7 +60,5 @@ NEW_TEST(Tagging/AlbumArtistTest.cpp ${RESOURCES_RCC} Tagging/AbstractTaggingTes
 NEW_TEST(Tagging/DiscnumberTest.cpp ${RESOURCES_RCC} Tagging/AbstractTaggingTest.cpp)
 NEW_TEST(Tagging/RatingTest.cpp ${RESOURCES_RCC} Tagging/AbstractTaggingTest.cpp)
 NEW_TEST(Tagging/TagFromPathTest.cpp)
-
-#NEW_TEST(StreamSearchTest.cpp)
 
 

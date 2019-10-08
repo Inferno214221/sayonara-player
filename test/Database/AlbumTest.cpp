@@ -44,7 +44,7 @@ private:
 			m_album_names << Util::random_string(Util::random_number(5, 20));
 		}
 
-		DB::Connector* db = DB::Connector::instance(".", "/tmp/sayonara", "player.db");
+		DB::Connector* db = DB::Connector::instance_custom("", "/tmp/sayonara", "player.db");
 		db->register_library_db(0);
 		m_lib_db = db->library_db(0, 0);
 

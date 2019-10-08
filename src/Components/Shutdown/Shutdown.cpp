@@ -45,6 +45,7 @@
 
 struct Shutdown::Private
 {
+	QString			logo_path;
 	DB::Settings*	db=nullptr;
 	QTimer*			timer=nullptr;
 	QTimer*			timer_countdown=nullptr;
@@ -54,6 +55,7 @@ struct Shutdown::Private
 	bool			is_running;
 
 	Private(Shutdown* parent) :
+		logo_path(":/Icons/logo.png"),
 		msecs2go(0),
 		is_running(false)
 	{
@@ -86,15 +88,17 @@ Shutdown::Shutdown(QObject* parent) :
 	connect(m->play_manager, &PlayManager::sig_playlist_finished, this, &Shutdown::playlist_finished);
 }
 
-Shutdown::~Shutdown() {}
+Shutdown::~Shutdown() = default;
 
 void Shutdown::shutdown_after_end()
 {
 	m->is_running = true;
 
-	NotificationHandler::instance()->notify(Lang::get(Lang::Shutdown),
-											   tr("Computer will shutdown after playlist has finished"),
-											   Util::share_path("logo.png"));
+	NotificationHandler::instance()->notify(
+		Lang::get(Lang::Shutdown),
+		tr("Computer will shutdown after playlist has finished"),
+		m->logo_path
+	);
 }
 
 
@@ -119,9 +123,11 @@ void Shutdown::shutdown(MilliSeconds ms)
 
 	int minutes = ms / 60000;
 
-	NotificationHandler::instance()->notify(Lang::get(Lang::Shutdown),
-											   tr("Computer will shutdown in %n minute(s)", "", minutes),
-											   Util::share_path("logo.png"));
+	NotificationHandler::instance()->notify(
+		Lang::get(Lang::Shutdown),
+		tr("Computer will shutdown in %n minute(s)", "", minutes),
+		m->logo_path
+	);
 }
 
 
@@ -152,9 +158,11 @@ void Shutdown::countdown_timeout()
 	if(m->msecs2go % 60000 == 0)
 	{
 		int minutes = m->msecs2go / 60000;
-		NotificationHandler::instance()->notify(Lang::get(Lang::Shutdown),
-												   tr("Computer will shutdown in %n minute(s)", "", minutes),
-												   Util::share_path("logo.png"));
+		NotificationHandler::instance()->notify(
+			Lang::get(Lang::Shutdown),
+			tr("Computer will shutdown in %n minute(s)", "", minutes),
+			m->logo_path
+		);
 	}
 }
 

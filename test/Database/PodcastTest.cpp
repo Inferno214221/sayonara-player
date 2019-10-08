@@ -24,7 +24,7 @@ public:
 private:
 	DB::Podcasts* pod()
 	{
-		DB::Connector* db = DB::Connector::instance(".", "/tmp", "player.db");
+		DB::Connector* db = DB::Connector::instance_custom("", "/tmp", "player.db");
 		return db->podcast_connector();
 	}
 
