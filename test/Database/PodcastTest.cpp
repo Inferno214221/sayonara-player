@@ -13,6 +13,7 @@ class PodcastTest : public QObject
 public:
 	PodcastTest() : QObject()
 	{
+		Q_INIT_RESOURCE(Database);
 		QFile::remove("/tmp/player.db");
 	}
 
@@ -142,7 +143,7 @@ void PodcastTest::test_update()
 	}
 }
 
-QTEST_MAIN(PodcastTest)
+QTEST_GUILESS_MAIN(PodcastTest)
 
 #include "PodcastTest.moc"
 

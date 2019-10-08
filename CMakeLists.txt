@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.7)
 project("Sayonara Player")
 
 option(WITH_DOC "Building with doxygen support" OFF)
+option(WITH_TESTS "Building with tests" OFF)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}")
 set(VAR_SAYONARA_VERSION "1.5.2-beta3")
@@ -15,16 +16,19 @@ set(SAYONARA_INSTALL_SHARE_PATH "${CMAKE_INSTALL_PREFIX}/share/sayonara/")
 message("Build Sayonara ${VAR_SAYONARA_VERSION}")
 message("Will install to ${CMAKE_INSTALL_PREFIX}")
 
+# used for cmakedefine in Macros.h.in
+set(SAYONARA_WITH_TESTS ${WITH_TESTS})
+string(TOLOWER "${CMAKE_BUILD_TYPE}" LOWER_CMAKE_BUILD_TYPE)
+if("${LOWER_CMAKE_BUILD_TYPE}" MATCHES "debug")
+	set(SAYONARA_WITH_TESTS 1)
+endif()
+
 add_subdirectory(src)
 add_subdirectory(resources)
 
-string(TOLOWER "${CMAKE_BUILD_TYPE}" LOWER_CMAKE_BUILD_TYPE)
 message("Lower cmake build type ${LOWER_CMAKE_BUILD_TYPE}")
-if("${LOWER_CMAKE_BUILD_TYPE}" MATCHES "debug")
-	SET(WITH_TESTS 1)
-endif()
 
-if( WITH_TESTS )
+if( SAYONARA_WITH_TESTS )
 	message("Compiling with tests...")
 	enable_testing()
 	add_subdirectory(test)

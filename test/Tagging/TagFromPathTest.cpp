@@ -40,6 +40,6 @@ void TagFromPathTest::apply_regex_test()
 	}
 }
 
-QTEST_MAIN(TagFromPathTest)
+QTEST_GUILESS_MAIN(TagFromPathTest)
 
 #include "TagFromPathTest.moc"

@@ -136,6 +136,6 @@ void FileHelperTest::system_paths_test()
 	QVERIFY(re_share.indexIn(share_path) == 0);
 }
 
-QTEST_MAIN(FileHelperTest)
+QTEST_GUILESS_MAIN(FileHelperTest)
 
 #include "FileHelperTest.moc"

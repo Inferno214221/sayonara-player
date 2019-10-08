@@ -143,7 +143,7 @@ void StreamRecorderTest::file_test()
 	}
 }
 
-QTEST_MAIN(StreamRecorderTest)
+QTEST_GUILESS_MAIN(StreamRecorderTest)
 
 #include "StreamRecorderTest.moc"
 
