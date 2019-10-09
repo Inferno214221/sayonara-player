@@ -47,7 +47,7 @@ namespace PlayerPlugin
 
 	public:
 		explicit Base(QWidget *parent=nullptr);
-		virtual ~Base();
+		virtual ~Base() override;
 
 		virtual void skin_changed() override;
 
@@ -105,7 +105,7 @@ namespace PlayerPlugin
 		 * @brief Check if ui already was initialized
 		 * @return
 		 */
-		bool is_ui_initialized() const;
+		virtual bool is_ui_initialized() const;
 		virtual void assign_ui_vars();
 
 		virtual void retranslate_ui()=0;
