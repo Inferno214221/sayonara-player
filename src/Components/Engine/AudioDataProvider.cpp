@@ -47,7 +47,7 @@ void adp_decodebin_ready(GstElement* source, GstPad* new_src_pad, gpointer data)
 
 	GstPadLinkReturn gplr = gst_pad_link(new_src_pad, sink_pad);
 	GstCaps* caps = gst_pad_get_current_caps(new_src_pad);
-	for(int i=0; i<gst_caps_get_size(caps); i++)
+	for(guint i=0; i<gst_caps_get_size(caps); i++)
 	{
 		GstStructure* s = gst_caps_get_structure(caps, i);
 		gst_structure_foreach(s, GstStructureForeachFunc(run_through_structure), data);

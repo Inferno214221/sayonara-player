@@ -46,7 +46,20 @@ Handler::Handler() :
 	ListenSetting(Set::Player_Language, Handler::language_changed);
 }
 
-Handler::~Handler() {}
+Handler::~Handler() = default;
+
+void Handler::shutdown()
+{
+	plugin_closed();
+
+	for(Base* plugin : m->plugins)
+	{
+		plugin->close();
+		plugin->deleteLater();
+	}
+
+	m->plugins.clear();
+}
 
 
 Base* Handler::find_plugin(const QString& name)
@@ -99,6 +112,7 @@ void Handler::show_plugin(const QString& name)
 	sig_plugin_action_triggered(true);
 }
 
+
 void Handler::plugin_action_triggered(bool b)
 {
 	auto* plugin = static_cast<Base*>(sender());
@@ -143,7 +157,6 @@ void Handler::language_changed()
 		p->get_action()->setText(p->get_display_name());
 	}
 }
-
 
 QList<Base*> Handler::all_plugins() const
 {

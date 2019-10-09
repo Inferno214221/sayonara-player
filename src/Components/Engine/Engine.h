@@ -66,7 +66,7 @@ namespace Engine
 		};
 
 		signals:
-			void sig_data(const unsigned char* data, uint64_t n_bytes);
+			void sig_data(const QByteArray& data);
 			void sig_spectrum_changed();
 			void sig_level_changed();
 
@@ -105,7 +105,6 @@ namespace Engine
 			void set_equalizer(int band, int value);
 
 			MetaData current_track() const;
-
 
 		public slots:
 			void play();

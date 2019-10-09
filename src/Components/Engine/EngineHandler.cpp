@@ -87,6 +87,7 @@ Handler::Handler(QObject* parent) :
 		m->engine->change_track(md);
 	}
 
+	connect(m->engine, &Engine::sig_data, this, &Handler::new_data);
 	connect(m->engine, &Engine::sig_cover_data, this, &Handler::sig_cover_data);
 	connect(m->engine, &Engine::sig_error, play_manager, &PlayManager::error);
 	connect(m->engine, &Engine::sig_current_position_changed, play_manager, &PlayManager::set_position_ms);
@@ -145,11 +146,11 @@ void Handler::playstate_changed(PlayState state)
 }
 
 
-void Handler::new_data(const uchar* data, uint64_t n_bytes)
+void Handler::new_data(const QByteArray& data)
 {
-	for(RawSoundReceiverInterface* receiver : Algorithm::AsConst(m->raw_sound_receiver))
+	for(auto* receiver : Algorithm::AsConst(m->raw_sound_receiver))
 	{
-		receiver->new_audio_data(data, n_bytes);
+		receiver->new_audio_data(data);
 	}
 }
 

@@ -55,6 +55,8 @@ namespace PlayerPlugin
 		void add_plugin(Base* plugin);
 		void show_plugin(const QString& name);
 
+		void shutdown();
+
 		Base*			find_plugin(const QString& name);
 		QList<Base*>	all_plugins() const;
 		Base*			current_plugin() const;

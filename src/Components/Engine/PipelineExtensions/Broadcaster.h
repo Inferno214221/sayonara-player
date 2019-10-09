@@ -18,13 +18,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef BROADCASTER_H
 #define BROADCASTER_H
 
 #include "Utils/Pimpl.h"
 #include <gst/gst.h>
+
+namespace PipelineExtensions
+{
+	class BroadcastDataReceiver
+	{
+		public:
+			virtual void set_raw_data(const QByteArray& data)=0;
+	};
+}
 
 /**
  * @brief The Broadcaster class
@@ -35,7 +42,7 @@ class Broadcaster
 	PIMPL(Broadcaster)
 
 	public:
-		Broadcaster(GstElement* pipeline, GstElement* tee);
+		Broadcaster(PipelineExtensions::BroadcastDataReceiver* broadcast_data_receiver, GstElement* pipeline, GstElement* tee);
 		virtual ~Broadcaster();
 
 		bool init();
