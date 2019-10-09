@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/Broadcasting">
+        <file>favicon.ico</file>
+        <file>broadcast.html</file>
+        <file>background.png</file>
+    </qresource>
+</RCC>

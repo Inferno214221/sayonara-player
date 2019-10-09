@@ -23,6 +23,8 @@
 
 #include "Utils/typedefs.h"
 
+class QByteArray;
+
 /**
  * @brief The RawSoundReceiver interface
  * @ingroup Engine
@@ -38,7 +40,7 @@ public:
 	 * @param data audio data
 	 * @param n_bytes array size
 	 */
-	virtual void new_audio_data(const Byte* data, uint64_t n_bytes)=0;
+	virtual void new_audio_data(const QByteArray& data)=0;
 };
 
 #endif // RAWSOUNDRECEIVER_H

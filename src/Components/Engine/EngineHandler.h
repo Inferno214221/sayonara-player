@@ -64,7 +64,7 @@ namespace Engine
 		private slots:
 			void playstate_changed(PlayState state);
 
-			void new_data(const uchar* data, uint64_t n_bytes);
+			void new_data(const QByteArray& data);
 			void spectrum_changed();
 			void level_changed();
 	};

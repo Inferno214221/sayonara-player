@@ -165,6 +165,7 @@ struct Application::Private
 
 		Settings::instance()->apply_fixes();
 
+		Q_INIT_RESOURCE(Broadcasting);
 		Q_INIT_RESOURCE(Icons);
 		Q_INIT_RESOURCE(Lyrics);
 		Q_INIT_RESOURCE(Database);
@@ -450,6 +451,7 @@ void Application::session_end_requested(QSessionManager& manager)
 
 void Application::shutdown()
 {
+	PlayerPlugin::Handler::instance()->shutdown();
 	Engine::Handler::instance()->shutdown();
 	Playlist::Handler::instance()->shutdown();
 	PlayManager::instance()->shutdown();

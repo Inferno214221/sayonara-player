@@ -24,6 +24,7 @@
 #include "PipelineExtensions/Changeable.h"
 #include "PipelineExtensions/Fadeable.h"
 #include "PipelineExtensions/DelayedPlayable.h"
+#include "PipelineExtensions/Broadcaster.h"
 #include "Utils/Pimpl.h"
 
 #include <QObject>
@@ -40,7 +41,8 @@ namespace Engine
 		public QObject,
 		public PipelineExtensions::Fadeable,
 		public PipelineExtensions::Changeable,
-		public PipelineExtensions::DelayedPlayable
+		public PipelineExtensions::DelayedPlayable,
+		public PipelineExtensions::BroadcastDataReceiver
 	{
 		Q_OBJECT
 		PIMPL(Pipeline)
@@ -48,7 +50,7 @@ namespace Engine
 		signals:
 			void sig_about_to_finish(MilliSeconds ms);
 			void sig_pos_changed_ms(MilliSeconds ms);
-			void sig_data(Byte* data, uint64_t size);
+			void sig_data(const QByteArray& data);
 
 		public:
 			explicit Pipeline(const QString& name, QObject *parent=nullptr);
@@ -57,7 +59,7 @@ namespace Engine
 			bool init(Engine* engine);
 			bool prepare(const QString& uri);
 
-			void set_data(Byte* data, uint64_t size);
+			void set_raw_data(const QByteArray& data) override; // BroadcastDataReceiver
 			void set_internal_volume(double volume) override; // Crossfader
 			double get_internal_volume() const override;      // Crossfader
 

@@ -41,8 +41,8 @@ public:
 	~StreamDataSender();
 
 	bool send_trash();
-	bool send_data(const Byte* data, uint64_t size);
-	bool send_icy_data(const Byte* data, uint64_t size, const QString& stream_title);
+	bool send_data(const QByteArray& data);
+	bool send_icy_data(const QByteArray& data, const QString& stream_title);
 	bool send_header(bool reject, bool icy);
 	bool send_html5(const QString& stream_title);
 	bool send_bg();

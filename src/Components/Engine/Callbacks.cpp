@@ -34,6 +34,7 @@
 #include <QImage>
 #include <QRegExp>
 #include <QVector>
+#include <QByteArray>
 
 #include <memory>
 #include <algorithm>
@@ -194,6 +195,7 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 		case GST_MESSAGE_TAG:
 		{
 			if( msg_src_name.contains("fake") ||
+			    msg_src_name.contains("lame") ||
 				!msg_src_name.contains("sink") )
 			{
 				break;
@@ -256,7 +258,8 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 
 			Bitrate bitrate;
 			success = gst_tag_list_get_uint(tags, GST_TAG_BITRATE, &bitrate);
-			if(success) {
+			if(success)
+			{
 				engine->update_bitrate((bitrate / 1000) * 1000, src);
 			}
 
@@ -559,9 +562,9 @@ void Callbacks::decodebin_ready(GstElement* source, GstPad* new_src_pad, gpointe
 #define TCP_BUFFER_SIZE 16384
 GstFlowReturn Callbacks::new_buffer(GstElement *sink, gpointer p)
 {
-	static uchar data[TCP_BUFFER_SIZE];
+	static char data[TCP_BUFFER_SIZE];
 
-	Pipeline* pipeline = static_cast<Pipeline*>(p);
+	auto* pipeline = static_cast<PipelineExtensions::BroadcastDataReceiver*>(p);
 	if(!pipeline){
 		return GST_FLOW_OK;
 	}
@@ -579,7 +582,9 @@ GstFlowReturn Callbacks::new_buffer(GstElement *sink, gpointer p)
 
 	gsize size = gst_buffer_get_size(buffer);
 	gsize size_new = gst_buffer_extract(buffer, 0, data, size);
-	pipeline->set_data(data, size_new);
+
+	QByteArray bytes(data, int(size_new));
+	pipeline->set_raw_data(bytes);
 
 	gst_sample_unref(sample);
 
