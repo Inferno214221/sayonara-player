@@ -24,7 +24,9 @@
 #include "StreamWriter.h"
 #include "Utils/Pimpl.h"
 
-class QTcpSocket;
+// also needed for AcceptError
+#include <QTcpSocket>
+
 /**
  * @brief The StreamServer class. This class is listening for new connections and holds and administrates current connections.
  * @ingroup Broadcasting
@@ -44,8 +46,8 @@ class StreamServer :
 		explicit StreamServer(QObject* parent=nullptr);
 		~StreamServer();
 
-		void active_changed();
-		void port_changed();
+		QStringList connected_clients() const;
+
 
 	public slots:
 		void dismiss(int idx);
@@ -65,8 +67,13 @@ class StreamServer :
 		void server_destroyed();
 
 		void new_client_request();
+		void new_client_request_error(QAbstractSocket::SocketError socketError);
+
 		void disconnected(StreamWriter* sw);
 		void new_connection(const QString& ip);
+
+		void active_changed();
+		void port_changed();
 };
 
 #endif

@@ -66,7 +66,7 @@ class StreamWriter :
 		 * @param md
 		 */
 		StreamWriter(QTcpSocket* socket, const QString& ip, const MetaData& md);
-		~StreamWriter();
+		~StreamWriter() override;
 
 		/**
 		 * @brief get client ip address
@@ -135,7 +135,7 @@ class StreamWriter :
 		 * @param data
 		 * @param size
 		 */
-		void new_audio_data(const Byte* data, uint64_t size) override;
+		void new_audio_data(const QByteArray& data) override;
 
 	private:
 		void reset();

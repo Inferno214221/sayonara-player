@@ -19,6 +19,7 @@
  */
 
 #include "Pipeline.h"
+
 #include "Components/Engine/Engine.h"
 #include "Components/Engine/EngineUtils.h"
 #include "Components/Engine/Callbacks.h"
@@ -82,12 +83,12 @@ struct Pipeline::Private
 	{}
 };
 
-
-Pipeline::Pipeline(const QString& name, QObject *parent) :
+Pipeline::Pipeline(const QString& name, QObject* parent) :
 	QObject(parent),
 	Fadeable(),
 	Changeable(),
-	DelayedPlayable()
+	DelayedPlayable(),
+	BroadcastDataReceiver()
 {
 	m = Pimpl::make<Private>(name);
 }
@@ -183,7 +184,7 @@ bool Pipeline::create_elements()
 	m->equalizer = new Equalizer();
 	m->pitcher = new Pitcher();
 	m->visualizer = new Visualizer(m->pipeline, m->tee);
-	m->broadcaster = new Broadcaster(m->pipeline, m->tee);
+	m->broadcaster = new Broadcaster(this, m->pipeline, m->tee);
 
 	return (m->pb_sink != nullptr);
 }
@@ -365,10 +366,9 @@ MilliSeconds Pipeline::time_to_go() const
 	return std::max<MilliSeconds>(ms - 100, 0);
 }
 
-
-void Pipeline::set_data(Byte* data, uint64_t size)
+void Pipeline::set_raw_data(const QByteArray& data)
 {
-	emit sig_data(data, size);
+	emit sig_data(data);
 }
 
 void Pipeline::set_equalizer_band(int band, int val)

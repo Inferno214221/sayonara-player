@@ -37,32 +37,33 @@ struct StreamWriter::Private
 	StreamDataSender*	sender=nullptr;
 	QTcpSocket*			socket=nullptr;
 
-	bool				dismissed; // after that, only trash will be sent
-	bool				send_data; // after that, no data at all will be sent
-
 	QString				stream_title;
 	QString				ip;
 
 	StreamWriter::Type	type;
+
+	bool				dismissed; // after that, only trash will be sent
+	bool				send_data; // after that, no data at all will be sent
+
+	Private(QTcpSocket* socket, const QString& ip) :
+		socket(socket),
+		ip(ip),
+		type(StreamWriter::Type::Undefined),
+		dismissed(false),
+		send_data(false)
+	{
+		engine = Engine::Handler::instance();
+		parser = new StreamHttpParser();
+		sender = new StreamDataSender(socket);
+	}
 };
 
 // socket is the client socket
 StreamWriter::StreamWriter(QTcpSocket* socket, const QString& ip, const MetaData& md) :
 	RawSoundReceiverInterface()
 {
-	m = Pimpl::make<Private>();
-
-	m->sender = new StreamDataSender(socket);
-	m->parser = new StreamHttpParser();
-	m->ip = ip;
-
-	m->send_data = false;
-	m->dismissed = false;
-
-	m->stream_title = md.title() + " by " + md.artist();
-	m->socket = socket;
-
-	m->type = StreamWriter::Type::Undefined;
+	m = Pimpl::make<Private>(socket, ip);
+	m->stream_title = md.artist() + " - " + md.title();
 
 	if(m->socket->bytesAvailable()){
 		data_available();
@@ -73,6 +74,8 @@ StreamWriter::StreamWriter(QTcpSocket* socket, const QString& ip, const MetaData
 	connect(Engine::Handler::instance(), &Engine::Handler::destroyed, this, [=](){
 		m->engine = nullptr;
 	});
+
+	m->engine->register_raw_sound_receiver(this);
 }
 
 StreamWriter::~StreamWriter()
@@ -90,7 +93,6 @@ StreamWriter::~StreamWriter()
 	}
 }
 
-
 QString StreamWriter::get_ip() const
 {
 	return m->ip;
@@ -107,7 +109,7 @@ StreamHttpParser::HttpAnswer StreamWriter::parse_message()
 	return status;
 }
 
-void StreamWriter::new_audio_data(const Byte* data, uint64_t size)
+void StreamWriter::new_audio_data(const QByteArray& data)
 {
 	if(!m->send_data) {
 		return;
@@ -119,11 +121,11 @@ void StreamWriter::new_audio_data(const Byte* data, uint64_t size)
 	}
 
 	if(m->parser->is_icy()){
-		m->sender->send_icy_data(data, size, m->stream_title);
+		m->sender->send_icy_data(data, m->stream_title);
 	}
 
 	else{
-		m->sender->send_data(data, size);
+		m->sender->send_data(data);
 	}
 }
 
@@ -152,13 +154,14 @@ bool StreamWriter::send_html5()
 	return m->sender->send_html5(m->stream_title);
 }
 
-bool StreamWriter::send_header(bool reject){
+bool StreamWriter::send_header(bool reject)
+{
 	return m->sender->send_header(reject, m->parser->is_icy());
 }
 
-
-void StreamWriter::change_track(const MetaData& md){
-	m->stream_title = md.title() + " by " + md.artist();
+void StreamWriter::change_track(const MetaData& md)
+{
+	m->stream_title =  md.artist() + " - " + md.title();
 }
 
 void StreamWriter::dismiss()

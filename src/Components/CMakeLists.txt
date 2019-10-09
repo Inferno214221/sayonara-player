@@ -21,10 +21,12 @@ file(GLOB_RECURSE SOURCES Shutdown *.cpp)
 file(GLOB_RECURSE SOURCES Streaming *.cpp)
 file(GLOB_RECURSE SOURCES Tagging *.cpp)
 
-qt5_add_resources(LYRIC_RESOURCE "Lyrics/Lyrics.qrc")
-message("${LYRIC_RESOURCE}")
+qt5_add_resources(COMPONENT_RESOURCES_RCC
+	${CMAKE_CURRENT_SOURCE_DIR}/Broadcasting/Broadcasting.qrc
+	${CMAKE_CURRENT_SOURCE_DIR}/Lyrics/Lyrics.qrc
+)
 
-add_library(${PROJECT_NAME} STATIC ${SOURCES} ${LYRIC_RESOURCE})
+add_library(${PROJECT_NAME} STATIC ${SOURCES} ${COMPONENT_RESOURCES_RCC})
 
 target_link_libraries(${PROJECT_NAME}
 	sayonara_database
