@@ -33,7 +33,7 @@ class GUI_Crossfader :
 
 public:
 	explicit GUI_Crossfader(QWidget *parent=nullptr);
-	virtual ~GUI_Crossfader();
+	~GUI_Crossfader() override;
 
 	QString get_name() const override;
 	QString get_display_name() const override;
@@ -45,6 +45,7 @@ private slots:
 
 	void sl_engine_changed();
 
+protected:
 	void retranslate_ui() override;
 	void init_ui() override;
 };
