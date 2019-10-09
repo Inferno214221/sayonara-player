@@ -21,7 +21,6 @@ private slots:
 	void language_version_test();
 	void four_letter_test();
 	void similar_language_test();
-
 };
 
 void LanguageUtilTest::initTestCase()
@@ -139,8 +138,8 @@ void LanguageUtilTest::four_letter_test()
 	QVERIFY(four_letter == expected);
 }
 
-//void LanguageUtilTest::similar_language_test()
-//{
+void LanguageUtilTest::similar_language_test()
+{
 //	QString similar_language, four_letter;
 //	QString expected;
 
@@ -160,8 +159,7 @@ void LanguageUtilTest::four_letter_test()
 //	four_letter = Language::extract_four_letter(similar_language);
 //	expected = QString();
 //	QVERIFY(four_letter == expected);
-//}
-
+}
 
 QTEST_GUILESS_MAIN(LanguageUtilTest)
 #include "LanguageUtilTest.moc"
