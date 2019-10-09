@@ -48,7 +48,7 @@ deploy-sayonara:
   artifacts:
     paths:
       - build/*.AppImagea
-    expire-in: 2 weeks
+    expire_in: 2 weeks
   only:
     - tags
 
