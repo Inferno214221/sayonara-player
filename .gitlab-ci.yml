@@ -10,7 +10,7 @@ build-sayonara:
   script: 
     - mkdir -p build && cd build
     - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DWITH_COTIRE=1 -DWITH_TESTS=1
-    - make -j10
+    - make -j6
     - make install DESTDIR=AppDir
   artifacts:
     untracked: true
@@ -28,9 +28,10 @@ test-sayonara:
   artifacts:
     when: on_failure
     untracked: true
+    expire_in: 2 days
   only:
     - 19-set-up-ci-environment
-    - master
+#    - master
 
 # Deploy
 deploy-sayonara:
@@ -43,8 +44,9 @@ deploy-sayonara:
     - appimagetool-x86_64.AppImage AppDir
   artifacts:
     paths:
-      - build/*.AppImage
+      - build/*.AppImagea
+    expire-in: 2 weeks
   only:
     - 19-set-up-ci-environment
-    - tags
+#    - tags
 
