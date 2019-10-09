@@ -294,8 +294,9 @@ bool Application::init(const QStringList& files_to_play)
 	if(GetSetting(Set::Notification_Show))
 	{
 		NotificationHandler::instance()->notify("Sayonara Player",
-												Lang::get(Lang::Version) + " " + SAYONARA_VERSION,
-												QString(":/Icons/logo.png"));
+			Lang::get(Lang::Version) + " " + SAYONARA_VERSION,
+			QString(":/Icons/logo.png")
+		);
 	}
 
 	init_libraries();

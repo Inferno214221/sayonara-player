@@ -26,8 +26,8 @@
 #include "Components/Covers/CoverChangeNotifier.h"
 #include "Components/Covers/CoverUtils.h"
 
-#include "Utils/FileUtils.h"
 #include "Utils/Utils.h"
+#include "Utils/FileUtils.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
 

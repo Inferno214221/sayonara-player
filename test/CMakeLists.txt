@@ -5,7 +5,7 @@ if(POLICY CMP0071)
 	cmake_policy(SET CMP0071 NEW)
 endif()
 
-find_package(Qt5 COMPONENTS Core Gui Sql Network Network Xml Test REQUIRED)
+find_package(Qt5 COMPONENTS Core Gui Sql Network Xml Test REQUIRED)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
@@ -17,7 +17,7 @@ file(COPY ${CMAKE_SOURCE_DIR}/resources/player.db
 
 set(RESOURCES
 	resources/Test.qrc
-	../resources/Database.qrc
+	${CMAKE_CURRENT_SOURCE_DIR}/../resources/Database.qrc
 )
 
 include_directories(${Qt5Core_INCLUDE_DIRS})
@@ -40,7 +40,7 @@ include_directories(${CMAKE_BINARY_DIR}/test)
 
 include("new_test.cmake")
 qt5_add_resources(RESOURCES_RCC
-		${RESOURCES}
+	${RESOURCES}
 )
 
 NEW_TEST(Database/PodcastTest.cpp ${RESOURCES_RCC})
