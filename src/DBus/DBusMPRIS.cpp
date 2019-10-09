@@ -26,6 +26,7 @@
 #include "Components/Playlist/PlaylistHandler.h"
 #include "Components/Playlist/Playlist.h"
 
+#include "Utils/Filepath.h"
 #include "Utils/RandomGenerator.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Settings/Settings.h"
@@ -63,7 +64,7 @@ struct DBusMPRIS::MediaPlayer2::Private
 		volume(1.0),
 		initialized(false)
 	{
-		cover_path = Cover::Location::invalid_path();
+		cover_path = Util::Filepath(Cover::Location::invalid_path()).filesystem_path();
 		play_manager = PlayManager::instance();
 		volume = GetSetting(Set::Engine_Vol) / 100.0;
 
@@ -87,7 +88,7 @@ DBusMPRIS::MediaPlayer2::MediaPlayer2(QMainWindow* player, QObject *parent) :
 	connect(m->play_manager, &PlayManager::sig_volume_changed,
 			this, &DBusMPRIS::MediaPlayer2::volume_changed);
 
-		track_changed(m->play_manager->current_track());
+	track_changed(m->play_manager->current_track());
 }
 
 
@@ -453,7 +454,7 @@ void DBusMPRIS::MediaPlayer2::track_idx_changed(int idx)
 void DBusMPRIS::MediaPlayer2::track_changed(const MetaData& md)
 {
 	m->md = md;
-	m->cover_path = Cover::Location::cover_location(md).preferred_path();
+	m->cover_path = Util::Filepath(Cover::Location::cover_location(md).preferred_path()).filesystem_path();
 
 	if(!m->initialized){
 		init();

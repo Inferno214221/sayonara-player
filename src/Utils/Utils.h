@@ -102,6 +102,13 @@ namespace Util
 	QString lib_path(const QString& append_path);
 
 	/**
+	 * @brief get a temporary directory. usually /tmp/sayonara
+	 * @return
+	 */
+	QString temp_path();
+	QString temp_path(const QString& append_path);
+
+	/**
 	 * @brief create a link string
 	 * @param name appearing name in link
 	 * @param target target url (if not given, name is taken)
@@ -216,7 +223,6 @@ namespace Util
 	void set_environment(const QString& key, const QString& value);
 	void unset_environment(const QString& key);
 	QString get_environment(const char* key);
-
 }
 
 #endif

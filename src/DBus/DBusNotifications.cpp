@@ -24,15 +24,17 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Macros.h"
+#include "Utils/Filepath.h"
 
 #include <QDir>
 
 struct DBusNotifications::Private
 {
 	OrgFreedesktopNotificationsInterface* interface=nullptr;
-	MetaData md;
-	uint id;
-	Cover::Location cl;
+	MetaData					md;
+	uint						id;
+	Cover::Location				cl;
+	QMap<QString, QString>		resource_file_map; // map resource file image paths to real paths
 
 	Private() : id(100) {}
 };
@@ -50,7 +52,6 @@ DBusNotifications::DBusNotifications(QObject* parent) :
 				QDBusConnection::sessionBus(),
 				parent
 	);
-
 
 	QDBusConnection bus = QDBusConnection::sessionBus();
 	QDBusConnectionInterface* dbus_interface = bus.interface();
@@ -87,7 +88,7 @@ void DBusNotifications::notify(const QString& title, const QString& text, const 
 	QDBusPendingReply<uint> reply =
 	m->interface->Notify("Sayonara Player",
 	   m->id,
-	   image_path,
+	   Util::Filepath(image_path).filesystem_path(),
 	   title,
 	   text,
 	   QStringList(),
@@ -113,7 +114,7 @@ void DBusNotifications::notify(const MetaData& md)
 	}
 
 	m->cl = Cover::Location::cover_location(md);
-	QString path = m->cl.preferred_path();
+	QString path = Util::Filepath(m->cl.preferred_path()).filesystem_path();
 
 	notify(m->md.title(), m->md.artist(), path);
 }
