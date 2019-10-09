@@ -173,11 +173,27 @@ QString Util::lib_path(const QString& append_path)
 	return Util::File::clean_filename(base_path + "/" + append_path);
 }
 
+QString Util::temp_path()
+{
+	return temp_path(QString());
+}
+
+QString Util::temp_path(const QString& append_path)
+{
+	QString simple_temp_path = QDir::temp().absoluteFilePath("sayonara");
+	QString path = simple_temp_path + "/" + append_path;
+
+	if(!QFile::exists(simple_temp_path)) {
+		Util::File::create_dir(simple_temp_path);
+	}
+
+	return path;
+}
+
 QString Util::create_link(const QString& name, bool dark, bool underline)
 {
 	return create_link(name, dark, underline, QString());
 }
-
 
 QString Util::create_link(const QString& name, bool dark, bool underline, const QString& target)
 {
