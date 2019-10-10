@@ -269,6 +269,7 @@ bool SettingRegistry::init()
 	register_setting<SetNoDB::MP3enc_found>( true );
 	register_setting<SetNoDB::Pitch_found>( true );
 	register_setting<SetNoDB::Player_Quit>( false );
+	register_setting<SetNoDB::Player_MetaStyle>(1);
 
 	SetSetting(Set::Player_Version, SAYONARA_VERSION);
 
@@ -294,6 +295,7 @@ QList<SettingKey> SettingRegistry::undeployable_keys()
 
 		SettingKey::MP3enc_found,
 		SettingKey::Pitch_found,
-		SettingKey::Player_Quit
+		SettingKey::Player_Quit,
+		SettingKey::Player_MetaStyle
 	};
 }

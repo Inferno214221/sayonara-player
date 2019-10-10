@@ -29,14 +29,7 @@ Gui::AbstrWidgetTemplate::AbstrWidgetTemplate(QObject* parent, WidgetTemplatePar
 	_wtp = wtp;
 
 	ListenSetting(Set::Player_Language, AbstrWidgetTemplate::language_changed);
-	ListenSetting(Set::Player_Style, AbstrWidgetTemplate::skin_changed);
-	ListenSettingNoCall(Set::Player_FontName, AbstrWidgetTemplate::skin_changed);
-	ListenSettingNoCall(Set::Player_FontSize, AbstrWidgetTemplate::skin_changed);
-	ListenSettingNoCall(Set::PL_FontSize, AbstrWidgetTemplate::skin_changed);
-	ListenSettingNoCall(Set::Lib_FontSize, AbstrWidgetTemplate::skin_changed);
-	ListenSettingNoCall(Set::Lib_FontBold, AbstrWidgetTemplate::skin_changed);
-	ListenSettingNoCall(Set::Icon_Theme, AbstrWidgetTemplate::skin_changed);
-	ListenSettingNoCall(Set::Icon_ForceInDarkTheme, AbstrWidgetTemplate::skin_changed);
+	ListenSetting(SetNoDB::Player_MetaStyle, AbstrWidgetTemplate::skin_changed);
 }
 
 Gui::AbstrWidgetTemplate::~AbstrWidgetTemplate() {}

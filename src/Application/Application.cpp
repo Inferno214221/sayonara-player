@@ -313,7 +313,7 @@ bool Application::init(const QStringList& files_to_play)
 	//connect(this, &Application::commitDataRequest, this, &Application::session_end_requested);
 
 	ListenSetting(Set::Lib_SortIgnoreArtistArticle, Application::ignore_artist_article_changed);
-	ListenSetting(Set::Player_Style, Application::skin_changed);
+	ListenSetting(SetNoDB::Player_MetaStyle, Application::skin_changed);
 
 	return true;
 }

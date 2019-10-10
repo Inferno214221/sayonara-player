@@ -85,7 +85,7 @@ GUI_IconPreferences::GUI_IconPreferences(QWidget* parent) :
 	m = Pimpl::make<Private>();
 }
 
-GUI_IconPreferences::~GUI_IconPreferences() {}
+GUI_IconPreferences::~GUI_IconPreferences() = default;
 
 void GUI_IconPreferences::language_changed()
 {
@@ -129,6 +129,8 @@ bool GUI_IconPreferences::commit()
 	bool force_std_icons = ui->cb_also_use_in_dark_style->isChecked();
 	Gui::Icons::force_standard_icons(force_std_icons);
 	SetSetting(Set::Icon_ForceInDarkTheme, force_std_icons);
+
+	Set::shout<SetNoDB::Player_MetaStyle>();
 
 	return true;
 }
