@@ -43,21 +43,21 @@ deploy-sayonara-appimage:
     - dist/appimage.sh deploy
   artifacts:
     paths:
-      - build/*.AppImagea
+      - build/*.AppImage
     expire_in: 2 weeks
   only:
     - tags
 
- deploy-sayonara-fedora:
-   image: "luciocarreras/sayonara-fedora:29"
-   stage: deploy
-   script:
-     - dist/fedora-rpm.sh
-   artifacts:
-     paths:
-       - *.rpm
-     expire_in: 2 weeks
-   only:
-     - tags
-     - 27-create-distribution-building-scripts
+deploy-sayonara-fedora:
+  image: "luciocarreras/sayonara-fedora:29"
+  stage: deploy
+  script:
+    - dist/fedora-rpm.sh
+  artifacts:
+    paths:
+      - rpms/*.rpm
+    expire_in: 2 weeks
+  only:
+    - tags
+    - 27-create-distribution-building-scripts
 
