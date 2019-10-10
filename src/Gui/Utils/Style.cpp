@@ -102,6 +102,7 @@ QString Style::style(bool dark)
 QFont Style::current_font()
 {
 	QFont std_font = QApplication::font();
+
 	QString font_family =	GetSetting(Set::Player_FontName);
 	int font_size =			GetSetting(Set::Player_FontSize);
 	int font_size_lib =		GetSetting(Set::Lib_FontSize);

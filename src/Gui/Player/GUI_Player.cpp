@@ -545,17 +545,15 @@ void GUI_Player::language_changed()
 	}
 }
 
-
 void GUI_Player::skin_changed()
 {
 	int style = GetSetting(Set::Player_Style);
 	if(style != m->style)
 	{
 		m->style = style;
-		Set::shout<Set::Player_Style>();
+		Set::shout<SetNoDB::Player_MetaStyle>();
 	}
 }
-
 
 void GUI_Player::minimize()
 {
