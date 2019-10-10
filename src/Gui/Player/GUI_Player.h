@@ -74,7 +74,8 @@ private:
 	void resizeEvent(QResizeEvent* e) override;
 	void moveEvent(QMoveEvent* e) override;
 	void keyPressEvent(QKeyEvent* e) override;
-	void keyReleaseEvent(QKeyEvent *e) override;
+	void keyReleaseEvent(QKeyEvent* e) override;
+	bool event(QEvent* e) override;
 
 	void language_changed() override;
 	void skin_changed() override;
@@ -104,7 +105,6 @@ private slots:
 	void splitter_controls_moved(int pos, int idx);
 
 	void current_library_changed();
-	void check_library_menu_action();
 	void splitter_painted();
 
 	void minimize();

@@ -84,6 +84,7 @@ enum class SettingKey : unsigned short
 	Player_FontName,
 	Player_FontSize,
 	Player_Style,
+	Player_MetaStyle,
 	Player_FadingCover,
 	Player_ControlStyle,
 	Player_Size,
@@ -409,5 +410,6 @@ class SettingIdentifier
 	INST_NO_DB(bool,		MP3enc_found)
 	INST_NO_DB(bool,		Pitch_found)
 	INST_NO_DB(bool,		Player_Quit)
+	INST_NO_DB(int,			Player_MetaStyle)		/* Whenever some value which is associated with style changes */
 
 #endif // SETTINGKEY_H

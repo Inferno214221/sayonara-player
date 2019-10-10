@@ -19,7 +19,7 @@
  */
 
 #include "LibraryManager.h"
-#include "LocalLibrary.h"
+#include "Components/Library/LocalLibrary.h"
 
 #include "Database/Connector.h"
 #include "Database/Library.h"
@@ -28,10 +28,8 @@
 #include "Utils/Utils.h"
 #include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
-
 #include "Utils/Library/LibraryInfo.h"
 #include "Utils/Settings/Settings.h"
-
 #include "Utils/Logger/Logger.h"
 
 #include <QDir>

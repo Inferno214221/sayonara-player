@@ -29,12 +29,12 @@
 
 #define EngineHandler_change_track_md static_cast<void (EngineHandler::*) (const MetaData& md)>(&EngineHandler::change_track)
 
-class RawSoundReceiverInterface;
-class LevelReceiver;
-class SpectrumReceiver;
-
 namespace Engine
 {
+	class RawSoundReceiverInterface;
+	class LevelReceiver;
+	class SpectrumReceiver;
+
 	/**
 	 * @brief The EngineHandler class
 	 * @ingroup Engine
@@ -64,7 +64,7 @@ namespace Engine
 		private slots:
 			void playstate_changed(PlayState state);
 
-			void new_data(const uchar* data, uint64_t n_bytes);
+			void new_data(const QByteArray& data);
 			void spectrum_changed();
 			void level_changed();
 	};

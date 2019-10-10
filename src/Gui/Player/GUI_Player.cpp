@@ -27,12 +27,14 @@
 #include "VersionChecker.h"
 #include "Translator.h"
 
+#include "Components/PlayManager/PlayManager.h"
+#include "Components/LibraryManagement/LibraryPluginHandler.h"
+#include "Interfaces/Library/LibraryContainer.h"
+
 #include "Gui/Covers/CoverButton.h"
 #include "Gui/Player/ui_GUI_Player.h"
 #include "Gui/Plugins/PlayerPluginBase.h"
 #include "Gui/Plugins/PlayerPluginHandler.h"
-
-#include "Components/PlayManager/PlayManager.h"
 
 #include "Utils/Utils.h"
 #include "Utils/globals.h"
@@ -46,9 +48,6 @@
 #include "Gui/Utils/Style.h"
 #include "Gui/Utils/Icons.h"
 #include "Gui/Utils/EventFilter.h"
-#include "Gui/Utils/Library/LibraryContainer.h"
-
-#include "Interfaces/Library/LibraryPluginHandler.h"
 
 #include <QAction>
 #include <QKeySequence>
@@ -225,14 +224,11 @@ void GUI_Player::init_font_change_fix()
 
 void GUI_Player::init_connections()
 {
-	Library::PluginHandler* lph = Library::PluginHandler::instance();
+	auto* lph = Library::PluginHandler::instance();
 	connect(lph, &Library::PluginHandler::sig_current_library_changed,
 			this, &GUI_Player::current_library_changed);
 
-	connect(lph, &Library::PluginHandler::sig_libraries_changed,
-			this, &GUI_Player::check_library_menu_action);
-
-	PlayManager* play_manager = PlayManager::instance();
+	auto* play_manager = PlayManager::instance();
 	connect(play_manager, &PlayManager::sig_track_changed, this, &GUI_Player::current_track_changed);
 	connect(play_manager, &PlayManager::sig_playstate_changed, this, &GUI_Player::playstate_changed);
 	connect(play_manager, &PlayManager::sig_error, this, &GUI_Player::play_error);
@@ -244,7 +240,7 @@ void GUI_Player::init_connections()
 	connect(m->menubar, &Menubar::sig_logger_clicked, m->logger, &GUI_Logger::show);
 	connect(m->menubar, &Menubar::sig_minimize_clicked, this, &GUI_Player::minimize);
 
-	PlayerPlugin::Handler* pph = PlayerPlugin::Handler::instance();
+	auto* pph = PlayerPlugin::Handler::instance();
 	connect(pph, &PlayerPlugin::Handler::sig_plugin_added, this, &GUI_Player::plugin_added);
 	connect(pph, &PlayerPlugin::Handler::sig_plugin_closed, ui->plugin_widget, &QWidget::close);
 	connect(pph, &PlayerPlugin::Handler::sig_plugin_action_triggered, this, &GUI_Player::plugin_action_triggered);
@@ -380,8 +376,6 @@ void GUI_Player::init_controlstyle()
 	controlstyle_changed();
 
 	ui->splitterControls->restoreState(splitter_state);
-	splitter_controls_moved(0, 0);
-
 	ui->controls->setFocus();
 }
 
@@ -422,30 +416,45 @@ void GUI_Player::controlstyle_changed()
 void GUI_Player::current_library_changed()
 {
 	show_library_changed();
-	check_library_menu_action();
 }
 
 
 void GUI_Player::show_library_changed()
 {
-	Library::PluginHandler* lph = Library::PluginHandler::instance();
-	QWidget* cur_library_widget = lph->current_library_widget();
-
-	if(cur_library_widget)
+	QLayout* layout = ui->library_widget->layout();
+	if(layout)
 	{
-		ui->library_widget->layout()->addWidget(cur_library_widget);
-		if(ui->library_widget->isVisible())
+		for(int i=0; i<layout->count(); i++)
 		{
-			cur_library_widget->setVisible(true);
+			QLayoutItem* item = layout->itemAt(i);
+			item->widget()->hide();
+			layout->removeItem(item);
 		}
 	}
 
-	show_library(GetSetting(Set::Lib_Show), ui->library_widget->isVisible());
+	auto* lph = Library::PluginHandler::instance();
+	Library::Container* current_library = lph->current_library();
+	if(current_library)
+	{
+		QWidget* cur_library_widget = current_library->widget();
+		if(cur_library_widget)
+		{
+			ui->library_widget->layout()->addWidget(cur_library_widget);
+			if(ui->library_widget->isVisible())
+			{
+				cur_library_widget->setVisible(true);
+			}
+		}
+
+		show_library(GetSetting(Set::Lib_Show), ui->library_widget->isVisible());
+	}
 }
 
 
 void GUI_Player::show_library(bool is_library_visible, bool was_library_visible)
 {
+	m->menubar->show_library_menu(is_library_visible);
+
 	if(isMaximized() || isFullScreen() || (is_library_visible == was_library_visible))
 	{
 		return;
@@ -467,8 +476,6 @@ void GUI_Player::show_library(bool is_library_visible, bool was_library_visible)
 	}
 
 	ui->library_widget->setVisible(is_library_visible);
-
-	check_library_menu_action();
 }
 
 void GUI_Player::splitter_painted()
@@ -483,13 +490,6 @@ void GUI_Player::splitter_painted()
 		SetSetting(Set::Player_Size, this->size());
 	}
 }
-
-void GUI_Player::check_library_menu_action()
-{	
-	Library::PluginHandler* lph = Library::PluginHandler::instance();
-	m->menubar->update_current_library(lph->current_library());
-}
-
 
 void GUI_Player::check_control_splitter(bool force)
 {
@@ -545,17 +545,15 @@ void GUI_Player::language_changed()
 	}
 }
 
-
 void GUI_Player::skin_changed()
 {
 	int style = GetSetting(Set::Player_Style);
 	if(style != m->style)
 	{
 		m->style = style;
-		Set::shout<Set::Player_Style>();
+		Set::shout<SetNoDB::Player_MetaStyle>();
 	}
 }
-
 
 void GUI_Player::minimize()
 {
@@ -624,6 +622,7 @@ void GUI_Player::keyReleaseEvent(QKeyEvent* e)
 	Gui::MainWindow::keyReleaseEvent(e);
 }
 
+
 void GUI_Player::resizeEvent(QResizeEvent* e)
 {
 	Gui::MainWindow::resizeEvent(e);
@@ -640,11 +639,6 @@ void GUI_Player::resizeEvent(QResizeEvent* e)
 	{
 		SetSetting(Set::Player_Size, this->size());
 	}
-
-	m->menubar->set_show_library_action_enabled
-	(
-		!(this->isMaximized() || this->isFullScreen())
-	);
 
 	if(m->controls)
 	{
@@ -684,4 +678,19 @@ void GUI_Player::closeEvent(QCloseEvent* e)
 		Gui::MainWindow::closeEvent(e);
 		emit sig_player_closed();
 	}
+}
+
+bool GUI_Player::event(QEvent* e)
+{
+	bool b = Gui::MainWindow::event(e);
+
+	if(e->type() == QEvent::WindowStateChange)
+	{
+		m->menubar->set_show_library_action_enabled
+		(
+			!(isMaximized() || isFullScreen())
+		);
+	}
+
+	return b;
 }

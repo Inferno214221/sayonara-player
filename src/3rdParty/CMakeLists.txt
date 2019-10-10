@@ -5,7 +5,7 @@ if(WITH_SYSTEM_TAGLIB)
 else()
 	message("Using Sayonara's taglib")
 
-	configure_file(Taglib/taglib_config.h.cmake ${CMAKE_CURRENT_SOURCE_DIR}/Taglib/taglib_config.h)
+	configure_file(Taglib/taglib_config.h.in ${CMAKE_CURRENT_BINARY_DIR}/taglib/taglib_config.h)
 	file(GLOB_RECURSE HEADERS .
 		*.h
 		*.tcc

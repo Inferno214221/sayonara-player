@@ -49,7 +49,7 @@ struct StreamServer::Private
 	QList<QPair<QTcpSocket*, QString>>	pending;				// pending requests queue
 	bool								asking;				// set if currently any requests are being processed
 
-	QList<StreamWriter*>				lst_sw;				// all open streams
+	QList<StreamWriter*>				clients;				// all open streams
 	QStringList							allowed_ips;			// IPs without prompt
 	QStringList							dismissed_ips;		// dismissed IPs
 
@@ -68,11 +68,9 @@ StreamServer::StreamServer(QObject* parent) :
 {
 	m = Pimpl::make<StreamServer::Private>();
 
-	PlayManagerPtr play_manager = PlayManager::instance();
-	Engine::Handler* engine = Engine::Handler::instance();
+	auto* play_manager = PlayManager::instance();
 
 	connect(play_manager, &PlayManager::sig_track_changed, this, &StreamServer::track_changed);
-	connect(engine, &Engine::Handler::destroyed, this, &StreamServer::close);
 
 	ListenSetting(Set::Broadcast_Active, StreamServer::active_changed);
 	ListenSetting(SetNoDB::MP3enc_found, StreamServer::active_changed);
@@ -93,8 +91,19 @@ StreamServer::~StreamServer()
 		sp_log(Log::Info, this) << "Server closed.";
 	}
 
-
 	Util::sleep_ms(500);
+}
+
+QStringList StreamServer::connected_clients() const
+{
+	QStringList clients;
+
+	for(const StreamWriter* client : m->clients)
+	{
+		clients << client->get_ip();
+	}
+
+	return clients;
 }
 
 bool StreamServer::listen()
@@ -117,14 +126,15 @@ bool StreamServer::listen()
 		m->server->setProxy(QNetworkProxy());
 
 		connect(m->server, &QTcpServer::newConnection, this, &StreamServer::new_client_request);
+		connect(m->server, &QTcpServer::acceptError, this, &StreamServer::new_client_request_error);
 		connect(m->server, &QTcpServer::destroyed, this, &StreamServer::server_destroyed);
 	}
 
 	bool success = m->server->isListening();
 	if(!success)
 	{
-		success = m->server->listen(QHostAddress::AnyIPv4, port);
-
+		success = m->server->listen(QHostAddress::AnyIPv4, quint16(port));
+		//success = m->server->listen(QHostAddress("127.0.0.1"), quint16(port));
 		if(!success)
 		{
 			sp_log(Log::Warning, this) << "Cannot listen on port " << port;
@@ -245,6 +255,12 @@ void StreamServer::new_client_request()
 	m->asking = false;
 }
 
+void StreamServer::new_client_request_error(QAbstractSocket::SocketError socket_error)
+{
+	auto* server = static_cast<QTcpServer*>(sender());
+	sp_log(Log::Error, this) << "Error connecting: " << server->errorString() << ": " << int(socket_error);
+}
+
 // every kind of request will land here or in reject client.
 // so one client will be accepted multiple times until he will be able
 // to listen to music
@@ -254,14 +270,13 @@ void StreamServer::accept_client(QTcpSocket* socket, const QString& ip)
 		m->allowed_ips << ip;
 	}
 
-	sp_log(Log::Info, this) << "New client request from " << ip << " (" << m->lst_sw.size() << ")";
+	sp_log(Log::Info, this) << "New client request from " << ip << " (" << m->clients.size() << ")";
 
-	StreamWriter* sw = new StreamWriter(socket, ip, m->cur_track);
-
+	auto* sw = new StreamWriter(socket, ip, m->cur_track);
 	connect(sw, &StreamWriter::sig_disconnected, this, &StreamServer::disconnected);
 	connect(sw, &StreamWriter::sig_new_connection, this, &StreamServer::new_connection);
 
-	m->lst_sw << sw;
+	m->clients << sw;
 
 	emit sig_new_connection(ip);
 }
@@ -283,7 +298,7 @@ void StreamServer::new_connection(const QString& ip)
 void StreamServer::track_changed(const MetaData& md)
 {
 	m->cur_track = md;
-	for(StreamWriter* sw : Algorithm::AsConst(m->lst_sw))
+	for(StreamWriter* sw : Algorithm::AsConst(m->clients))
 	{
 		sw->change_track(md);
 	}
@@ -292,11 +307,11 @@ void StreamServer::track_changed(const MetaData& md)
 // when user forbids further streaming
 void StreamServer::dismiss(int idx)
 {
-	if( idx >= m->lst_sw.size() ) {
+	if( idx >= m->clients.size() ) {
 		return;
 	}
 
-	StreamWriter* sw = m->lst_sw[idx];
+	StreamWriter* sw = m->clients[idx];
 	m->dismissed_ips << sw->get_ip();
 	m->allowed_ips.removeOne(sw->get_ip());
 
@@ -311,7 +326,7 @@ void StreamServer::disconnect(StreamWriterPtr sw)
 
 void StreamServer::disconnect_all()
 {
-	for(StreamWriter* sw : Algorithm::AsConst(m->lst_sw))
+	for(StreamWriter* sw : Algorithm::AsConst(m->clients))
 	{
 		QObject::disconnect(sw, &StreamWriter::sig_disconnected, this, &StreamServer::disconnected);
 		QObject::disconnect(sw, &StreamWriter::sig_new_connection, this, &StreamServer::new_connection);
@@ -320,7 +335,7 @@ void StreamServer::disconnect_all()
 		sw->deleteLater();
 	}
 
-	m->lst_sw.clear();
+	m->clients.clear();
 }
 
 // the client disconnected itself
@@ -334,11 +349,11 @@ void StreamServer::disconnected(StreamWriter* sw)
 	emit sig_connection_closed(ip);
 
 	// remove the item, garbage collector deletes that item
-	for(auto it=m->lst_sw.begin(); it != m->lst_sw.end(); it++)
+	for(auto it=m->clients.begin(); it != m->clients.end(); it++)
 	{
 		if(sw == *it)
 		{
-			m->lst_sw.erase(it);
+			m->clients.erase(it);
 			break;
 		}
 	}

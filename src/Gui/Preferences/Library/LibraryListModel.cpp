@@ -20,8 +20,7 @@
 
 #include "LibraryListModel.h"
 #include "ChangeOperations.h"
-#include "Components/Library/LibraryManager.h"
-#include "Interfaces/Library/LibraryPluginHandler.h"
+#include "Components/LibraryManagement/LibraryManager.h"
 
 #include "Utils/Algorithm.h"
 #include "Utils/Library/LibraryInfo.h"
@@ -66,7 +65,7 @@ LibraryListModel::LibraryListModel(QObject* parent) :
 	m = Pimpl::make<Private>();
 }
 
-LibraryListModel::~LibraryListModel() {}
+LibraryListModel::~LibraryListModel() = default;
 
 int LibraryListModel::rowCount(const QModelIndex& parent) const
 {

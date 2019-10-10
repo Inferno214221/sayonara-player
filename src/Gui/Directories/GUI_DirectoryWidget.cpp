@@ -32,7 +32,7 @@
 #include "Gui/Utils/EventFilter.h"
 #include "Gui/Utils/PreferenceAction.h"
 
-#include "Components/Library/LibraryManager.h"
+#include "Components/LibraryManagement/LibraryManager.h"
 #include "Components/Library/LocalLibrary.h"
 #include "Components/Playlist/PlaylistHandler.h"
 #include "Components/Directories/MetaDataScanner.h"

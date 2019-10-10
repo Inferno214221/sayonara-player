@@ -22,14 +22,11 @@
 #define GSTPLAYBACKENGINE_H_
 
 #include "Utils/Pimpl.h"
-#include "SoundOutReceiver.h"
+#include "Interfaces/Engine/AudioDataReceiverInterface.h"
 #include <QObject>
 #include <gst/gst.h>
 
 #include <QImage>
-
-class SpectrumReceiver;
-class LevelReceiver;
 
 namespace StreamRecorder
 {
@@ -38,6 +35,9 @@ namespace StreamRecorder
 
 namespace Engine
 {
+	class SpectrumReceiver;
+	class LevelReceiver;
+
 	class Pipeline;
 	using PipelinePtr=std::shared_ptr<Pipeline>;
 	/**
@@ -66,7 +66,7 @@ namespace Engine
 		};
 
 		signals:
-			void sig_data(const unsigned char* data, uint64_t n_bytes);
+			void sig_data(const QByteArray& data);
 			void sig_spectrum_changed();
 			void sig_level_changed();
 
@@ -105,7 +105,6 @@ namespace Engine
 			void set_equalizer(int band, int value);
 
 			MetaData current_track() const;
-
 
 		public slots:
 			void play();

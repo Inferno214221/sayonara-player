@@ -36,12 +36,12 @@ struct EmptyLibraryContainer::Private
 };
 
 EmptyLibraryContainer::EmptyLibraryContainer(QObject* parent) :
-	Library::Container(parent)
+	Library::ContainerImpl(parent)
 {
 	m = Pimpl::make<Private>();
 }
 
-EmptyLibraryContainer::~EmptyLibraryContainer() {}
+EmptyLibraryContainer::~EmptyLibraryContainer() = default;
 
 QString EmptyLibraryContainer::name() const
 {

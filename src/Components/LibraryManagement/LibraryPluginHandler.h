@@ -49,43 +49,28 @@ namespace Library
 		void sig_libraries_changed();
 
 	private:
-		/**
-		 * @brief Init a library. This is used at startup for the current library
-		 * or when the index has changed
-		 * @param idx
-		 */
-		void init_library(Container* container);
-
 		void init_libraries(const QList<Container*>& containers);
 		void init_dll_libraries();
-
 
 	public:
 		/**
 		 * @brief Search for plugins and add some predefined plugins
 		 * @param containers Some predefined plugins
 		 */
-		void init(const QList<Container*>& containers);
+		void init(const QList<Container*>& containers, Container* fallback_library);
 
 		/**
 		 * @brief Get a list for all found plugins. The ui is not necessarily initialized
 		 * @return list for all found library plugins
 		 */
-		QList<Container*> get_libraries(bool also_empty) const;
+		QList<Container*>	get_libraries(bool also_empty) const;
 
-		Container* current_library() const;
-		QMenu* current_library_menu() const;
-		QWidget* current_library_widget() const;
+		Container*			current_library() const;
 
 		void add_local_library(Container* container);
 		void rename_local_library(const QString& old_name, const QString& new_name);
 		void remove_local_library(const QString& name);
 		void move_local_library(int old_local_library_index, int new_local_library_index);
-
-		void language_changed();
-
-	private slots:
-		void current_library_changed(int library_idx);
 
 	public slots:
 		void set_current_library(const QString& name);

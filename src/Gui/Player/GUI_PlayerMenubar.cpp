@@ -27,8 +27,9 @@
 
 #include "Gui/Shutdown/GUI_Shutdown.h"
 #include "Components/Playlist/PlaylistHandler.h"
+#include "Components/LibraryManagement/LibraryPluginHandler.h"
+#include "Interfaces/Library/LibraryContainer.h"
 
-#include "Gui/Utils/Library/LibraryContainer.h"
 #include "Gui/Utils/Shortcuts/ShortcutHandler.h"
 #include "Gui/Utils/Shortcuts/Shortcut.h"
 #include "Gui/Utils/Icons.h"
@@ -177,7 +178,7 @@ Menubar::Menubar(QWidget* parent) :
 	style_changed();
 }
 
-Menubar::~Menubar() {}
+Menubar::~Menubar() = default;
 
 
 void Menubar::insert_player_plugin_action(QAction* action)
@@ -190,13 +191,19 @@ void Menubar::insert_preference_action(QAction* action)
 	m->menu_file->insertAction(m->sep_after_preferences, action);
 }
 
-
-QAction* Menubar::update_current_library(Library::Container* library)
+QAction* Menubar::current_library_changed(Library::Container* library)
 {
 	show_library_action(false);
 	m->current_library = library;
 
-	if(!library) {
+	if(!library)
+	{
+		if(m->current_library_menu_action)
+		{
+			m->current_library_menu_action->setVisible(false);
+			m->current_library_menu_action = nullptr;
+		}
+
 		return nullptr;
 	}
 
@@ -233,7 +240,8 @@ QAction* Menubar::update_current_library(Library::Container* library)
 
 void Menubar::show_library_action(bool visible)
 {
-	if(m->current_library_menu_action){
+	if(m->current_library_menu_action)
+	{
 		m->current_library_menu_action->setVisible(visible);
 	}
 }
@@ -241,6 +249,17 @@ void Menubar::show_library_action(bool visible)
 void Menubar::set_show_library_action_enabled(bool b)
 {
 	m->action_view_library->setEnabled(b);
+}
+
+void Menubar::show_library_menu(bool b)
+{
+	auto* lph = Library::PluginHandler::instance();
+	this->current_library_changed(lph->current_library());
+
+	if(m->current_library_menu_action)
+	{
+		m->current_library_menu_action->setVisible(b);
+	}
 }
 
 void Menubar::init_connections()
@@ -263,13 +282,19 @@ void Menubar::init_connections()
 	connect(m->action_help, &QAction::triggered, this, &Menubar::help_clicked);
 
 	// shortcuts
-	ShortcutHandler* sch = ShortcutHandler::instance();
+	auto* sch = ShortcutHandler::instance();
 	sch->shortcut(ShortcutIdentifier::Quit).connect(this, this, SLOT(close_clicked()));
 	sch->shortcut(ShortcutIdentifier::Minimize).connect(this, this, SLOT(minimize_clicked()));
 
 	shortcut_changed(ShortcutIdentifier::Invalid);
 
 	connect(sch, &ShortcutHandler::sig_shortcut_changed, this, &Menubar::shortcut_changed);
+
+	// Library
+	auto* lph = Library::PluginHandler::instance();
+	connect(lph, &Library::PluginHandler::sig_libraries_changed, this, [=](){
+		this->current_library_changed(lph->current_library());
+	});
 }
 
 void Menubar::language_changed()

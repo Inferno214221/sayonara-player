@@ -13,14 +13,18 @@ set(DBUS_SOURCES
 	DBusNotifications.cpp
 )
 
-qt5_wrap_cpp(DBUS_SOURCES
+set(DBUS_HEADERS
 	DBusAdaptor.h
 	DBusHandler.h
-	DBusMPRIS.h
-	DBusMediaKeysInterface.h
 	DBusMediaKeysInterfaceGnome.h
+	DBusMediaKeysInterface.h
 	DBusMediaKeysInterfaceMate.h
+	DBusMPRIS.h
 	DBusNotifications.h
+)
+
+qt5_wrap_cpp(DBUS_SOURCES
+	${DBUS_HEADERS}
 )
 
 qt5_add_dbus_adaptor(DBUS_SOURCES
@@ -54,7 +58,7 @@ qt5_add_dbus_interface(DBUS_SOURCES
 	gnome_settings_daemon
 )
 
-add_library(${PROJECT_NAME} STATIC ${DBUS_SOURCES})
+add_library(${PROJECT_NAME} STATIC ${DBUS_SOURCES} ${DBUS_HEADERS})
 target_link_libraries(${PROJECT_NAME}
 	sayonara_components
 	gui_utils

@@ -25,14 +25,14 @@
 #define SOUNDCLOUD_LIBRARY_CONTAINER
 
 #include <QtGlobal>
-#include "Gui/Utils/Library/LibraryContainer.h"
+#include "Gui/Utils/Library/LibraryContainerImpl.h"
 
 namespace SC
 {
 	class GUI_Library;
 
 	class LibraryContainer :
-		public ::Library::Container
+		public ::Library::ContainerImpl
 	{
 		Q_OBJECT
 
@@ -42,7 +42,7 @@ namespace SC
 	public:
 
 		explicit LibraryContainer(QObject* parent=nullptr);
-		~LibraryContainer();
+		~LibraryContainer() override;
 
 		// override from LibraryViewInterface
 		QString			name() const override;

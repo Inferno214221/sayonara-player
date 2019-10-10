@@ -4,6 +4,7 @@ project(sayonara)
 include(FindPkgConfig)
 include(CheckIncludeFileCXX)
 include(CMake/Compiler.cmake)
+include(CMake/GStreamer.cmake)
 
 option(WITH_COTIRE "Building with cotire PCH and compile time optimizations" OFF)
 option(WITH_SYSTEM_TAGLIB "Use the taglib provided by the destribution, which contains critical bugs in 1.11" OFF)
@@ -107,7 +108,6 @@ add_definitions(${QT_DEFINITIONS})
 link_directories(${TAGLIB_LIBRARY_DIRS})
 link_directories(${GLIB_LIBRARY_DIRS})
 link_directories(${GSTREAMER_LIBRARY_DIRS})
-link_directories("/usr/lib/x86_64-linux-gnu/gstreamer-1.0")
 
 # DBus and Shutdown
 if(WIN32)
@@ -177,6 +177,7 @@ target_link_libraries(${PROJECT_NAME}
 
 	sayonara_application
 	sayonara_languages
+
 	${OS_LIBRARIES}
 )
 

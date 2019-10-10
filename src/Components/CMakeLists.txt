@@ -2,33 +2,43 @@ project(sayonara_components)
 
 set(CMAKE_AUTOUIC OFF)
 
-file(GLOB_RECURSE SOURCES Bookmarks *.cpp)
-file(GLOB_RECURSE SOURCES Broadcasting *.cpp)
-file(GLOB_RECURSE SOURCES Converter *.cpp)
-file(GLOB_RECURSE SOURCES Covers *.cpp)
-file(GLOB_RECURSE SOURCES Directories *.cpp)
-file(GLOB_RECURSE SOURCES Engine *.cpp)
-file(GLOB_RECURSE SOURCES Library *.cpp)
-file(GLOB_RECURSE SOURCES Lyrics *.cpp)
-file(GLOB_RECURSE SOURCES MetaDataInfo *.cpp)
-file(GLOB_RECURSE SOURCES Playlist *.cpp)
-file(GLOB_RECURSE SOURCES PlaylistChooser *.cpp)
-file(GLOB_RECURSE SOURCES PlayManager *.cpp)
-file(GLOB_RECURSE SOURCES Preferences *.cpp)
-file(GLOB_RECURSE SOURCES RemoteControl *.cpp)
-file(GLOB_RECURSE SOURCES Session *.cpp)
-file(GLOB_RECURSE SOURCES Shutdown *.cpp)
-file(GLOB_RECURSE SOURCES Streaming *.cpp)
-file(GLOB_RECURSE SOURCES Tagging *.cpp)
+set(COMPONENTS
+	Bookmarks
+	Broadcasting
+	Converter
+	Covers
+	Directories
+	Engine
+	Library
+	LibraryManagement
+	Lyrics
+	MetaDataInfo
+	Playlist
+	PlaylistChooser
+	PlayManager
+	Preferences
+	RemoteControl
+	Session
+	Shutdown
+	Streaming
+	Tagging
+)
 
-qt5_add_resources(LYRIC_RESOURCE "Lyrics/Lyrics.qrc")
-message("${LYRIC_RESOURCE}")
+foreach(COMPONENT ${COMPONENTS})
+	file(GLOB_RECURSE SOURCES ${COMPONENT} *.cpp)
+	file(GLOB_RECURSE HEADERS ${COMPONENT} *.h)
+endforeach()
 
-add_library(${PROJECT_NAME} STATIC ${SOURCES} ${LYRIC_RESOURCE})
+qt5_add_resources(COMPONENT_RESOURCES_RCC
+	${CMAKE_CURRENT_SOURCE_DIR}/Broadcasting/Broadcasting.qrc
+	${CMAKE_CURRENT_SOURCE_DIR}/Lyrics/Lyrics.qrc
+)
+
+add_library(${PROJECT_NAME} STATIC ${HEADERS} ${SOURCES} ${COMPONENT_RESOURCES_RCC})
 
 target_link_libraries(${PROJECT_NAME}
 	sayonara_database
-	interface_rawsoundreceiver
+	interface_audiodatareceiver
 	interface_notifications
 
 	${GSTREAMER_LIBRARIES}

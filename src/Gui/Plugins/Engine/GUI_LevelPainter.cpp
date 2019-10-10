@@ -38,7 +38,7 @@
 #include <vector>
 #include <atomic>
 
-static const int Channels = 2;
+static const size_t Channels = 2;
 
 using Step=uint_fast8_t;
 
@@ -58,16 +58,16 @@ struct GUI_LevelPainter::Private
 	{
 		for(size_t c=0; c<level.size(); c++)
 		{
-			steps[c].resize((size_t) n_rects);
+			steps[c].resize(size_t(n_rects));
 			std::fill(steps[c].begin(), steps[c].end(), 0);
 		}
 	}
 
 	void init_lookup_table()
 	{
-		int n = 40;
+		size_t n = 40;
 		exp_lot = new float[n];
-		for(int i=0; i<n; i++)
+		for(size_t i=0; i<n; i++)
 		{
 			exp_lot[i] = -(i / 40.0f) + 1.0f;
 		}
@@ -75,7 +75,7 @@ struct GUI_LevelPainter::Private
 
 	float scale(float value)
 	{
-		int v = (int) (-value);
+		int v = int(-value);
 
 		// [-39, 0]
 		int idx = std::min(v, 39);
@@ -90,12 +90,12 @@ struct GUI_LevelPainter::Private
 		level[1] = scale(right);
 	}
 
-	void decrease_step(int channel, int step)
+	void decrease_step(size_t channel, size_t step)
 	{
 		steps[channel][step] = steps[channel][step] - 1;
 	}
 
-	void set_step(int channel, int step, int value)
+	void set_step(size_t channel, size_t step, Step value)
 	{
 		steps[channel][step] = value;
 	}
@@ -103,7 +103,8 @@ struct GUI_LevelPainter::Private
 
 
 GUI_LevelPainter::GUI_LevelPainter(QWidget *parent) :
-	VisualPlugin(parent)
+	VisualPlugin(parent),
+	Engine::LevelReceiver()
 {
 	m = Pimpl::make<Private>();
 	SetSetting(Set::Engine_ShowLevel, false);
@@ -203,16 +204,16 @@ void GUI_LevelPainter::paintEvent(QPaintEvent* e)
 	int w_rect =		style.rect_width;
 
 	int y = 10;
-	int num_zero = 0;
+	size_t num_zero = 0;
 	int x_init = (w_rect + border_x);
 
-	for(int c=0; c<Channels; c++)
+	for(size_t c=0; c<Channels; c++)
 	{
-		int n_colored_rects = int(n_rects * m->level[c]);
+		size_t n_colored_rects = size_t(n_rects * m->level[c]);
 
 		QRect rect(0, y, w_rect, h_rect);
 
-		for(int r=0; r<n_rects; r++)
+		for(size_t r=0; r < size_t(n_rects); r++)
 		{
 			if(r < n_colored_rects)
 			{
@@ -222,7 +223,7 @@ void GUI_LevelPainter::paintEvent(QPaintEvent* e)
 
 				painter.fillRect(rect, style.style[r].value(-1) );
 
-				m->set_step(c, r, n_fading_steps - 1);
+				m->set_step(c, r, Step(n_fading_steps - 1));
 			}
 
 			else
@@ -245,7 +246,7 @@ void GUI_LevelPainter::paintEvent(QPaintEvent* e)
 			rect.translate(x_init, 0);
 		}
 
-		if(num_zero == Channels * n_rects)
+		if(num_zero == Channels * size_t(n_rects))
 		{
 			// all rectangles where fade out
 			stop_fadeout_timer();

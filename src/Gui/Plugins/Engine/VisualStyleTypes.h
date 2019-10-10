@@ -22,21 +22,24 @@
 #define STYLETYPES_H
 
 #include <QColor>
-#include <QVector>
 #include <QString>
 #include <QHash>
 
-struct ColorList {
+#include <vector>
+
+struct ColorList
+{
     QString name;
 	QList<QColor> colors;
 };
 
-struct ColorStyle {
+struct ColorStyle
+{
     QString name;
 
     // list size is number or rectangles
     // int is the step index
-    QVector< QHash<int, QColor> > style;
+    std::vector< QHash<int, QColor> > style;
     ColorList col_list;
 
     int rect_height;
@@ -48,7 +51,8 @@ struct ColorStyle {
     int ver_spacing;
 };
 
-struct RawColorStyle{
+struct RawColorStyle
+{
     ColorList col_list;
 
     int n_bins_spectrum;
@@ -68,7 +72,7 @@ struct RawColorStyle{
     int ver_spacing_spectrum;
 
     RawColorStyle()
-{
+	{
         col_list.name = "";
 
 		n_rects_level = 0;
@@ -85,7 +89,7 @@ struct RawColorStyle{
     }
 
     QString toString() const
-{
+	{
         QString ret;
         ret += col_list.name + "";
         ret += ", n_bins_sp: " + QString::number(n_bins_spectrum);
