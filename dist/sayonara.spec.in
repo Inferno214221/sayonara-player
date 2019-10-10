@@ -1,12 +1,12 @@
 Name:           sayonara
-Version:        <VERSION>
-Release:        stable5
+Version:        @SAYONARA_VERSION_BASE@
+Release:        @SAYONARA_VERSION_RELEASE@
 Summary:        A lightweight Qt Audio player
 
 License:        GPLv3+
 URL:            https://sayonara-player.com
 
-Source0:        sayonara-player-<VERSION>-<RELEASE>.tar.gz
+Source0:        sayonara-player-@SAYONARA_VERSION_BASE@-@SAYONARA_VERSION_RELEASE@.tar.gz
 
 BuildRequires:  cmake
 BuildRequires:  desktop-file-utils
@@ -76,4 +76,5 @@ fi
 %{_datadir}/%{name}/translations/icons/*.png
 
 %changelog
-
+* @SAYONARA_DATE_TODAY@ Lucio Carreras <luciocarreras@gmail.com> - @SAYONARA_VERSION@
+- New Release @SAYONARA_VERSION@

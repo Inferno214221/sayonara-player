@@ -6,32 +6,37 @@ set -e
 
 case "$1" in
 	build-and-deploy)
-		pwd
-		mkdir rpms
+		export SPEC_DIR="/root/rpmbuild/SPECS"
+		export SOURCES_DIR="/root/rpmbuild/SOURCES"
+		export RPM_DIR="/root/rpmbuild/RPMS"
 
-		mkdir -p /root/rpmbuild/SOURCES
-		mkdir -p /root/rpmbuild/SPECS
+		rm -rf ${SOURCES_DIR} ${SPEC_DIR} ${RPM_DIR}
 
-		cd /root/rpmbuild/SOURCES
-		git clone https://gitlab.com/luciocarreras/sayonara-player.git --branch 27-create-distribution-building-scripts
+		mkdir -p ${SOURCES_DIR}
+		mkdir -p ${SPEC_DIR}
+		mkdir -p ${RPM_DIR}
+
+		cd ${SOURCES_DIR}
+		git clone https://gitlab.com/luciocarreras/sayonara-player.git --branch 27-create-distribution-building-scripts sayonara-player
 		rm -rf sayonara-player/.git*
 
-		TODAY=$(LC_TIME="en_US.UTF-8" date +"%a %b %d %Y")
+		# create cmake file
+		mkdir -p build && cd build
+		cmake ..
+		cd ..
+
 		VERSION=$(grep -oP '\d+(?:\.\d+)+-?\w+\d+' sayonara-player/CMakeLists.txt)
-		VERSION_BASE=$(echo $VERSION | grep -Po "\d(\.\d)+")
-		VERSION_RELEASE=$(echo $VERSION | grep -Po "\w+\d+")
-		tar czf sayonara-player-${VERSION} sayonara-player
+		tar czf sayonara-player-${VERSION}.tar.gz sayonara-player
 
 		# write changelog
-		cp dist/sayonara.spec.in /root/rpmbuilds/SPEC/sayonara.spec
-		cd /root/rpmbuilds/SPEC
-
-		echo "* ${TODAY} Lucio Carreras <luciocarreras@gmail.com> - ${VERSION}" >> sayonara.spec
-		echo "- Building test" >> sayonara.spec
+		cp sayonara-player/build/dist/sayonara.spec ${SPEC_DIR}/
+		cd ${SPEC_DIR}
 
 		# build
 		rpmbuild -ba sayonara.spec
-		find /root/rpmbuild/RPMS -name "*.rpm" -exec cp {} /apps/rpms
+
+		mkdir -p /app/rpms
+		find ${RPM_DIR} -name "*.rpm" -exec cp {} /app/rpms \;
 
 		;;
 	*)

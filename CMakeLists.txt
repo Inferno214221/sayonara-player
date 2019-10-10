@@ -23,6 +23,7 @@ if("${LOWER_CMAKE_BUILD_TYPE}" MATCHES "debug")
 	set(SAYONARA_WITH_TESTS 1)
 endif()
 
+add_subdirectory(dist)
 add_subdirectory(src)
 add_subdirectory(resources)
 
