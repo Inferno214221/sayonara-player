@@ -23,38 +23,7 @@
 
 #include "Utils/typedefs.h"
 
-#include <vector>
-
 class QByteArray;
-using SpectrumList=std::vector<float>;
-
-/**
- * @brief The LevelReceiver class
- * @ingroup EngineInterfaces
- */
-class LevelReceiver
-{
-	public:
-	virtual void set_level(float left, float right)=0;
-	virtual bool is_active() const=0;
-
-	LevelReceiver();
-	virtual ~LevelReceiver();
-};
-
-/**
- * @brief The SpectrumReceiver class
- * @ingroup EngineInterfaces
- */
-class SpectrumReceiver
-{
-public:
-	virtual void set_spectrum(const SpectrumList& spectrum)=0;
-	virtual bool is_active() const=0;
-
-	SpectrumReceiver();
-	virtual ~SpectrumReceiver();
-};
 
 /**
  * @brief The RawSoundReceiver interface
