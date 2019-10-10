@@ -19,14 +19,16 @@
  */
 
 #include "GUI_EmptyLibrary.h"
-#include "Gui/Utils/ui_GUI_EmptyLibrary.h"
-#include "Gui/Utils/Library/GUI_EditLibrary.h"
-#include "Components/Library/LibraryManager.h"
+
+#include "Components/LibraryManagement/LibraryManager.h"
 
 #include "Utils/Library/LibraryInfo.h"
 #include "Utils/Language/Language.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Algorithm.h"
+
+#include "Gui/Utils/ui_GUI_EmptyLibrary.h"
+#include "Gui/Utils/Library/GUI_EditLibrary.h"
 
 #include <QFileDialog>
 

@@ -19,7 +19,7 @@
  */
 
 #include "MetaDataInfo.h"
-#include "Components/Library/LibraryManager.h"
+#include "Components/LibraryManagement/LibraryManager.h"
 
 #include "Utils/Set.h"
 #include "Utils/Utils.h"

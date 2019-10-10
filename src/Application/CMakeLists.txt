@@ -19,7 +19,6 @@ set(APPLICATION_LIBRARIES
 	gui_resources
 
 	sayonara_components
-	interface_library
 )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES} ${HEADERS})

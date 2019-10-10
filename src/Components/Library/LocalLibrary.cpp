@@ -19,8 +19,6 @@
  */
 
 #include "LocalLibrary.h"
-#include "LibraryManager.h"
-
 #include "Importer/LibraryImporter.h"
 #include "Threads/ReloadThread.h"
 
@@ -29,6 +27,7 @@
 #include "Database/LibraryDatabase.h"
 
 #include "Components/Playlist/PlaylistHandler.h"
+#include "Components/LibraryManagement/LibraryManager.h"
 
 #include "Utils/MetaData/Album.h"
 #include "Utils/MetaData/Artist.h"

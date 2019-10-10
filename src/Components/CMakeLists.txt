@@ -10,6 +10,7 @@ set(COMPONENTS
 	Directories
 	Engine
 	Library
+	LibraryManagement
 	Lyrics
 	MetaDataInfo
 	Playlist
