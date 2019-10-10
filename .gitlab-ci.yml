@@ -5,18 +5,16 @@ stages:
   - deploy
 
 # Building
-build-sayonara:
+build-sayonara-appimage:
   stage: build
   script: 
-    - mkdir -p build && cd build
-    - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DWITH_COTIRE=1 -DWITH_TESTS=1
-    - make -j6
-    - make install DESTDIR=AppDir
+    - dist/appimage.sh build
   artifacts:
     untracked: true
   only:
     - master
     - tags
+
 
 # Unit tests
 test-sayonara:
@@ -24,10 +22,9 @@ test-sayonara:
   variables:
     CI_DEBUG_TRACE: "true"
   dependencies: 
-    - build-sayonara
+    - build-sayonara-appimage
   script:
-    - cd build
-    - make test
+    - dist/appimage.sh test
   artifacts:
     when: on_failure
     untracked: true
@@ -37,18 +34,29 @@ test-sayonara:
     - tags
 
 # Deploy
-deploy-sayonara:
+deploy-sayonara-appimage:
   stage: deploy
   dependencies:
-    - build-sayonara
+    - build-sayonara-appimage
   script:
-    - cd build
-    - EXTRA_QT_PLUGINS="iconengines,sqldrivers/libqsqlite.so,platforms/libqxcb.so" QMAKE="/usr/lib/x86_64-linux-gnu/qt5/bin/qmake" linuxdeploy-x86_64.AppImage --appdir=AppDir --desktop-file=./AppDir/usr/share/applications/sayonara.desktop --plugin=qt
-    - appimagetool-x86_64.AppImage AppDir
+    - dist/appimage.sh deploy
   artifacts:
     paths:
       - build/*.AppImagea
     expire_in: 2 weeks
   only:
     - tags
+
+ deploy-sayonara-fedora:
+   image: "luciocarreras/sayonara-fedora:29"
+   stage: deploy
+   script:
+     - dist/fedora-rpm.sh
+   artifacts:
+     paths:
+       - *.rpm
+     expire_in: 2 weeks
+   only:
+     - tags
+     - 27-create-distribution-building-scripts
 
