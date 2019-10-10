@@ -29,12 +29,12 @@
 
 #define EngineHandler_change_track_md static_cast<void (EngineHandler::*) (const MetaData& md)>(&EngineHandler::change_track)
 
-class RawSoundReceiverInterface;
-class LevelReceiver;
-class SpectrumReceiver;
-
 namespace Engine
 {
+	class RawSoundReceiverInterface;
+	class LevelReceiver;
+	class SpectrumReceiver;
+
 	/**
 	 * @brief The EngineHandler class
 	 * @ingroup Engine

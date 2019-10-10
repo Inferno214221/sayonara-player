@@ -60,7 +60,7 @@ struct StreamWriter::Private
 
 // socket is the client socket
 StreamWriter::StreamWriter(QTcpSocket* socket, const QString& ip, const MetaData& md) :
-	RawSoundReceiverInterface()
+	Engine::RawSoundReceiverInterface()
 {
 	m = Pimpl::make<Private>(socket, ip);
 	m->stream_title = md.artist() + " - " + md.title();
