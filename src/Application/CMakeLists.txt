@@ -6,6 +6,7 @@ include_directories(
 )
 
 file(GLOB_RECURSE SOURCES . *.cpp)
+file(GLOB_RECURSE HEADERS . *.h)
 
 set(APPLICATION_LIBRARIES
 	gui_player
@@ -21,7 +22,7 @@ set(APPLICATION_LIBRARIES
 	interface_library
 )
 
-add_library(${PROJECT_NAME} STATIC ${SOURCES})
+add_library(${PROJECT_NAME} STATIC ${SOURCES} ${HEADERS})
 target_link_libraries(${PROJECT_NAME}
 	${APPLICATION_LIBRARIES}
 	sayonara_dbus

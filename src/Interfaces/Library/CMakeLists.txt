@@ -6,7 +6,13 @@ set(SOURCES
 	LibraryPluginHandler.cpp
 )
 
-add_library(${PROJECT_NAME} STATIC ${SOURCES})
+set(HEADERS
+	Private/LibraryPluginCombobox.h
+	Private/LibraryPluginComboBoxDelegate.h
+	LibraryPluginHandler.h
+)
+
+add_library(${PROJECT_NAME} STATIC ${SOURCES} ${HEADERS})
 target_link_libraries(${PROJECT_NAME}
 	gui_utils
 )

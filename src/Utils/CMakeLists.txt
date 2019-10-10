@@ -17,8 +17,9 @@ include_directories(${ZLIB_INCLUDE_DIRS})
 link_directories(${TAGLIB_LIBRARY_DIRS})
 
 file(GLOB_RECURSE SOURCES . *.cpp)
+file(GLOB_RECURSE HEADERS . *.h)
 
-add_library(${PROJECT_NAME} STATIC ${SOURCES} ${MOC_FILES})
+add_library(${PROJECT_NAME} STATIC ${SOURCES} ${HEADERS} ${MOC_FILES})
 
 target_link_libraries(${PROJECT_NAME}
 	Qt5::Core
