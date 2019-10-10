@@ -4,7 +4,11 @@ set(SOURCES
 	RawSoundReceiverInterface.cpp
 )
 
-add_library(${PROJECT_NAME} STATIC ${SOURCES})
+set(HEADERS
+	RawSoundReceiverInterface.h
+)
+
+add_library(${PROJECT_NAME} STATIC ${SOURCES} ${HEADERS})
 target_link_libraries(${PROJECT_NAME}
     Qt5::Core
 )
