@@ -376,8 +376,6 @@ void GUI_Player::init_controlstyle()
 	controlstyle_changed();
 
 	ui->splitterControls->restoreState(splitter_state);
-	splitter_controls_moved(0, 0);
-
 	ui->controls->setFocus();
 }
 
@@ -455,6 +453,8 @@ void GUI_Player::show_library_changed()
 
 void GUI_Player::show_library(bool is_library_visible, bool was_library_visible)
 {
+	m->menubar->show_library_menu(is_library_visible);
+
 	if(isMaximized() || isFullScreen() || (is_library_visible == was_library_visible))
 	{
 		return;
@@ -476,7 +476,6 @@ void GUI_Player::show_library(bool is_library_visible, bool was_library_visible)
 	}
 
 	ui->library_widget->setVisible(is_library_visible);
-	m->menubar->show_library_menu(is_library_visible);
 }
 
 void GUI_Player::splitter_painted()
@@ -623,6 +622,7 @@ void GUI_Player::keyReleaseEvent(QKeyEvent* e)
 	Gui::MainWindow::keyReleaseEvent(e);
 }
 
+
 void GUI_Player::resizeEvent(QResizeEvent* e)
 {
 	Gui::MainWindow::resizeEvent(e);
@@ -639,11 +639,6 @@ void GUI_Player::resizeEvent(QResizeEvent* e)
 	{
 		SetSetting(Set::Player_Size, this->size());
 	}
-
-	m->menubar->set_show_library_action_enabled
-	(
-		!(this->isMaximized() || this->isFullScreen())
-	);
 
 	if(m->controls)
 	{
@@ -683,4 +678,19 @@ void GUI_Player::closeEvent(QCloseEvent* e)
 		Gui::MainWindow::closeEvent(e);
 		emit sig_player_closed();
 	}
+}
+
+bool GUI_Player::event(QEvent* e)
+{
+	bool b = Gui::MainWindow::event(e);
+
+	if(e->type() == QEvent::WindowStateChange)
+	{
+		m->menubar->set_show_library_action_enabled
+		(
+			!(isMaximized() || isFullScreen())
+		);
+	}
+
+	return b;
 }

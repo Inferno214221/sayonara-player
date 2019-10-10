@@ -240,7 +240,8 @@ QAction* Menubar::current_library_changed(Library::Container* library)
 
 void Menubar::show_library_action(bool visible)
 {
-	if(m->current_library_menu_action){
+	if(m->current_library_menu_action)
+	{
 		m->current_library_menu_action->setVisible(visible);
 	}
 }
