@@ -24,7 +24,7 @@ set(DBUS_HEADERS
 )
 
 qt5_wrap_cpp(DBUS_SOURCES
-	DBUS_HEADERS
+	${DBUS_HEADERS}
 )
 
 qt5_add_dbus_adaptor(DBUS_SOURCES
