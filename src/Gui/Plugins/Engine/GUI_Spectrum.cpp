@@ -42,6 +42,7 @@
 using Step=uint_fast8_t;
 using BinSteps=std::vector<Step>;
 using StepArray=std::vector<BinSteps>;
+using Engine::SpectrumList;
 
 struct GUI_Spectrum::Private
 {
@@ -97,7 +98,8 @@ struct GUI_Spectrum::Private
 
 
 GUI_Spectrum::GUI_Spectrum(QWidget *parent) :
-	VisualPlugin(parent)
+	VisualPlugin(parent),
+	Engine::SpectrumReceiver()
 {
 	m = Pimpl::make<Private>();
 

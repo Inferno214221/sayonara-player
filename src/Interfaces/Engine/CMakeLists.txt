@@ -1,11 +1,11 @@
-project(interface_rawsoundreceiver)
+project(interface_audiodatareceiver)
 
 set(SOURCES
-	RawSoundReceiverInterface.cpp
+	AudioDataReceiverInterface.cpp
 )
 
 set(HEADERS
-	RawSoundReceiverInterface.h
+	AudioDataReceiverInterface.h
 )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES} ${HEADERS})

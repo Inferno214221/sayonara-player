@@ -23,46 +23,45 @@
 
 #include "VisualPlugin.h"
 #include "Utils/Pimpl.h"
-#include "Components/Engine/SoundOutReceiver.h"
-
+#include "Interfaces/Engine/AudioDataReceiverInterface.h"
 
 UI_FWD(GUI_Spectrum)
 
 class GUI_Spectrum :
 		public VisualPlugin,
-		public SpectrumReceiver
+		public Engine::SpectrumReceiver
 {
 	Q_OBJECT
 	UI_CLASS(GUI_Spectrum)
 	PIMPL(GUI_Spectrum)
 
-public:
-	explicit GUI_Spectrum(QWidget *parent=nullptr);
-	virtual ~GUI_Spectrum();
+	public:
+		explicit GUI_Spectrum(QWidget *parent=nullptr);
+		~GUI_Spectrum() override;
 
-	QString get_name() const override;
-	QString get_display_name() const override;
-	bool is_active() const override;
+		QString get_name() const override;
+		QString get_display_name() const override;
+		bool is_active() const override;
 
-protected:
-	void paintEvent(QPaintEvent* e) override;
-	void showEvent(QShowEvent* e) override;
-	void closeEvent(QCloseEvent* e) override;
-	void init_ui() override;
-	void retranslate_ui() override;
+	protected:
+		void paintEvent(QPaintEvent* e) override;
+		void showEvent(QShowEvent* e) override;
+		void closeEvent(QCloseEvent* e) override;
+		void init_ui() override;
+		void retranslate_ui() override;
 
-	QWidget*	widget() override;
-	bool		has_small_buttons() const override;
-	ColorStyle	current_style() const override;
-	int			current_style_index() const override;
-	void		finalize_initialization() override;
+		QWidget*	widget() override;
+		bool		has_small_buttons() const override;
+		ColorStyle	current_style() const override;
+		int			current_style_index() const override;
+		void		finalize_initialization() override;
 
-protected slots:
-	void do_fadeout_step() override;
+	protected slots:
+		void do_fadeout_step() override;
 
-public slots:
-	void set_spectrum(const SpectrumList& spec) override;
-	void update_style(int new_index) override;
+	public slots:
+		void set_spectrum(const Engine::SpectrumList& spec) override;
+		void update_style(int new_index) override;
 };
 
 #endif // GUI_SPECTRUM_H

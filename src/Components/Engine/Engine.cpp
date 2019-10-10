@@ -543,7 +543,7 @@ void EngineClass::set_spectrum(const SpectrumList& vals)
 	emit sig_spectrum_changed();
 }
 
-SpectrumList Engine::Engine::spectrum() const
+Engine::SpectrumList Engine::Engine::spectrum() const
 {
 	return m->spectrum_vals;
 }

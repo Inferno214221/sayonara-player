@@ -22,55 +22,51 @@
 #define GUI_LEVELPAINTER_H
 
 #include "VisualPlugin.h"
-#include "Components/Engine/SoundOutReceiver.h"
+#include "Interfaces/Engine/AudioDataReceiverInterface.h"
 #include "Utils/Pimpl.h"
 
 UI_FWD(GUI_LevelPainter)
 
 class GUI_LevelPainter :
 		public VisualPlugin,
-		public LevelReceiver
+		public Engine::LevelReceiver
 {
 	Q_OBJECT
 	UI_CLASS(GUI_LevelPainter)
-	PIMPL(GUI_LevelPainter)
+		PIMPL(GUI_LevelPainter)
 
-public:
-	explicit GUI_LevelPainter(QWidget *parent=nullptr);
-	virtual ~GUI_LevelPainter();
+	public:
+		explicit GUI_LevelPainter(QWidget *parent=nullptr);
+		~GUI_LevelPainter() override;
 
-	QString get_name() const override;
-	QString get_display_name() const override;
-	bool is_active() const override;
+		QString get_name() const override;
+		QString get_display_name() const override;
+		bool is_active() const override;
 
-public slots:
-	void update_style(int new_index) override;
+	public slots:
+		void update_style(int new_index) override;
 
-protected:
-   void paintEvent(QPaintEvent* e) override;
-   void showEvent(QShowEvent*) override;
-   void closeEvent(QCloseEvent*) override;
-   void hideEvent(QHideEvent* e) override;
-   void init_ui() override;
-   void retranslate_ui() override;
-
-   QWidget*		widget() override;
-   bool			has_small_buttons() const override;
-   ColorStyle	current_style() const override;
-   int			current_style_index() const override;
-   void			finalize_initialization() override;
-
-
-protected slots:
-	void do_fadeout_step() override;
-	void set_level(float, float) override;
-
-private:
-	void reload();
-
-	// VisualPlugin interface
 	protected:
+	   void paintEvent(QPaintEvent* e) override;
+	   void showEvent(QShowEvent*) override;
+	   void closeEvent(QCloseEvent*) override;
+	   void hideEvent(QHideEvent* e) override;
+	   void init_ui() override;
+	   void retranslate_ui() override;
 
+	   QWidget*		widget() override;
+	   bool			has_small_buttons() const override;
+	   ColorStyle	current_style() const override;
+	   int			current_style_index() const override;
+	   void			finalize_initialization() override;
+
+
+	protected slots:
+		void do_fadeout_step() override;
+		void set_level(float, float) override;
+
+	private:
+		void reload();
 };
 
 #endif // GUI_LEVELPAINTER_H

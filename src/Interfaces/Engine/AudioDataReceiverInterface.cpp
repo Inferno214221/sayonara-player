@@ -1,4 +1,4 @@
-/* RawSoundReceiver.cpp */
+/* AudioDataReceiverInterface.cpp */
 
 /* Copyright (C) 2011-2019  Lucio Carreras
  *
@@ -18,8 +18,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "RawSoundReceiverInterface.h"
+#include "AudioDataReceiverInterface.h"
 
-RawSoundReceiverInterface::RawSoundReceiverInterface() = default;
+Engine::RawSoundReceiverInterface::RawSoundReceiverInterface() = default;
+Engine::RawSoundReceiverInterface::~RawSoundReceiverInterface() = default;
 
-RawSoundReceiverInterface::~RawSoundReceiverInterface() = default;
+Engine::SpectrumReceiver::SpectrumReceiver() = default;
+Engine::SpectrumReceiver::~SpectrumReceiver() = default;
+
+Engine::LevelReceiver::LevelReceiver() = default;
+Engine::LevelReceiver::~LevelReceiver() = default;

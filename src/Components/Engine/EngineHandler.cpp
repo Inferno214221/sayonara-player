@@ -22,8 +22,7 @@
 #include "Engine.h"
 
 #include "Components/PlayManager/PlayManager.h"
-#include "Components/Engine/SoundOutReceiver.h"
-#include "Interfaces/RawSoundReceiver/RawSoundReceiverInterface.h"
+#include "Interfaces/Engine/AudioDataReceiverInterface.h"
 
 #include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"

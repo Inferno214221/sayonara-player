@@ -22,7 +22,7 @@
 #define STREAM_WRITER_H
 
 #include "StreamHttpParser.h"
-#include "Interfaces/RawSoundReceiver/RawSoundReceiverInterface.h"
+#include "Interfaces/Engine/AudioDataReceiverInterface.h"
 #include "Utils/Pimpl.h"
 
 #include <QObject>
@@ -38,7 +38,7 @@ class QTcpSocket;
  */
 class StreamWriter :
 		public QObject,
-		public RawSoundReceiverInterface
+		public Engine::RawSoundReceiverInterface
 
 {
 	Q_OBJECT

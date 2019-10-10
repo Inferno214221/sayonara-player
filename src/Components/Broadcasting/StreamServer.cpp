@@ -133,9 +133,8 @@ bool StreamServer::listen()
 	bool success = m->server->isListening();
 	if(!success)
 	{
-		//success = m->server->listen(QHostAddress::AnyIPv4, quint16(port));
-		success = m->server->listen(QHostAddress("127.0.0.1"), quint16(port));
-
+		success = m->server->listen(QHostAddress::AnyIPv4, quint16(port));
+		//success = m->server->listen(QHostAddress("127.0.0.1"), quint16(port));
 		if(!success)
 		{
 			sp_log(Log::Warning, this) << "Cannot listen on port " << port;
