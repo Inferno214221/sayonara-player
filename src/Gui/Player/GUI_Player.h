@@ -104,7 +104,6 @@ private slots:
 	void splitter_controls_moved(int pos, int idx);
 
 	void current_library_changed();
-	void check_library_menu_action();
 	void splitter_painted();
 
 	void minimize();

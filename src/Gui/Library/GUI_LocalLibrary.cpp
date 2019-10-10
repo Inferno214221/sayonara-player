@@ -42,7 +42,7 @@
 #include "Gui/Utils/Style.h"
 
 #include "Components/Library/LocalLibrary.h"
-#include "Components/Library/LibraryManager.h"
+#include "Components/LibraryManagement/LibraryManager.h"
 
 #include "Utils/Utils.h"
 #include "Utils/Set.h"

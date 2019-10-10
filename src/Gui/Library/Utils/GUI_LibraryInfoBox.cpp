@@ -26,7 +26,8 @@
 #include "Gui/Library/ui_GUI_LibraryInfoBox.h"
 #include "Gui/Utils/Icons.h"
 
-#include "Components/Library/LibraryManager.h"
+#include "Components/LibraryManagement/LibraryManager.h"
+
 #include "Database/Connector.h"
 #include "Database/LibraryDatabase.h"
 

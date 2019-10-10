@@ -18,13 +18,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Application.h"
-#include "InstanceThread.h"
-#include "MetaTypeRegistry.h"
-#include "LocalLibraryWatcher.h"
+// need this here because of SAYONARA ENV variables
 #include "Utils/Macros.h"
 
-#include "Gui/Utils/Icons.h"
+#include "Application/Application.h"
+#include "Application/InstanceThread.h"
+#include "Application/MetaTypeRegistry.h"
+#include "Application/LocalLibraryWatcher.h"
 
 #ifdef SAYONARA_WITH_DBUS
 #include "DBus/DBusHandler.h"
@@ -43,18 +43,20 @@
 #include "Components/PlayManager/PlayManager.h"
 #include "Components/Streaming/LastFM/LastFM.h"
 #include "Components/Session/Session.h"
-#include "Interfaces/Library/LibraryPluginHandler.h"
+#include "Components/LibraryManagement/LibraryPluginHandler.h"
 
 #include "Interfaces/Notification/NotificationHandler.h"
 
 #include "Gui/Utils/GuiUtils.h"
 #include "Gui/Utils/Style.h"
+#include "Gui/Utils/Icons.h"
 
 #include "Gui/Player/GUI_Player.h"
 #include "Gui/Library/LocalLibraryContainer.h"
 #include "Gui/Directories/DirectoryWidgetContainer.h"
 #include "Gui/Soundcloud/SoundcloudLibraryContainer.h"
 #include "Gui/SomaFM/SomaFMLibraryContainer.h"
+#include "Gui/Utils/Library/EmptyLibraryContainer.h"
 
 #include "Gui/Plugins/PlayerPluginHandler.h"
 #include "Gui/Plugins/PlaylistChooser/GUI_PlaylistChooser.h"
@@ -91,7 +93,7 @@
 #include "Utils/Utils.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/WebAccess/Proxy.h"
-#include "Utils/Macros.h"
+
 #include "Utils/Language/Language.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/MetaData/MetaDataList.h"
@@ -393,7 +395,7 @@ void Application::init_libraries()
 	library_containers << static_cast<Library::ContainerInterface*>(somafm_container);
 #endif
 
-	library_plugin_loader->init(library_containers);
+	library_plugin_loader->init(library_containers, new EmptyLibraryContainer());
 }
 
 void Application::init_engine()

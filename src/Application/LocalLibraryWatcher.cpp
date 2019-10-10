@@ -19,8 +19,9 @@
  */
 
 #include "LocalLibraryWatcher.h"
-#include "Interfaces/Library/LibraryPluginHandler.h"
-#include "Components/Library/LibraryManager.h"
+#include "Components/LibraryManagement/LibraryPluginHandler.h"
+#include "Components/LibraryManagement/LibraryManager.h"
+
 #include "Components/Library/LocalLibrary.h"
 #include "Gui/Library/LocalLibraryContainer.h"
 

@@ -31,7 +31,7 @@
 using Library::DirectoryContainer;
 
 DirectoryContainer::DirectoryContainer(QObject* parent) :
-	Library::Container(parent) {}
+	Library::ContainerImpl(parent) {}
 
 DirectoryContainer::~DirectoryContainer() {}
 

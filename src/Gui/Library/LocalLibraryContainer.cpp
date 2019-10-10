@@ -42,7 +42,7 @@ struct LocalLibraryContainer::Private
 };
 
 LocalLibraryContainer::LocalLibraryContainer(const Library::Info& library, QObject* parent) :
-	Container(parent)
+	ContainerImpl(parent)
 {
 	m = Pimpl::make<Private>(library);
 }
@@ -100,11 +100,7 @@ QPixmap LocalLibraryContainer::icon() const
 	return Gui::Icons::pixmap(Gui::Icons::LocalLibrary);
 }
 
-void LocalLibraryContainer::set_name(const QString& name)
+void LocalLibraryContainer::rename(const QString& name)
 {
 	m->name = name;
-
-	if(menu_action()){
-		menu_action()->setText(name);
-	}
 }
