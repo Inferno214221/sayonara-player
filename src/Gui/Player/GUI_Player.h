@@ -74,7 +74,8 @@ private:
 	void resizeEvent(QResizeEvent* e) override;
 	void moveEvent(QMoveEvent* e) override;
 	void keyPressEvent(QKeyEvent* e) override;
-	void keyReleaseEvent(QKeyEvent *e) override;
+	void keyReleaseEvent(QKeyEvent* e) override;
+	bool event(QEvent* e) override;
 
 	void language_changed() override;
 	void skin_changed() override;
