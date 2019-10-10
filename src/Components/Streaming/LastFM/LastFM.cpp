@@ -105,6 +105,7 @@ bool Base::is_logged_in()
 void Base::login(const QString& username, const QString& password)
 {
 	auto* login_thread = new LoginThread(this);
+
 	connect(login_thread, &LoginThread::sig_logged_in, this, &Base::login_thread_finished);
 	connect(login_thread, &LoginThread::sig_error, this, [=](const QString& error_message){
 		sp_log(Log::Warning, this) << error_message;
