@@ -150,4 +150,5 @@ bool Style::is_dark()
 void Style::set_dark(bool dark)
 {
 	SetSetting(Set::Player_Style, dark ? 1 : 0);
+	Set::shout<SetNoDB::Player_MetaStyle>();
 }
