@@ -121,6 +121,7 @@ GUI_Player::GUI_Player(QWidget* parent) :
 	init_main_splitter();
 	init_controlstyle();
 	init_connections();
+
 	init_tray_actions();
 
 	current_track_changed(PlayManager::instance()->current_track());
@@ -374,8 +375,11 @@ void GUI_Player::init_controlstyle()
 	QByteArray splitter_state = GetSetting(Set::Player_SplitterControls);
 
 	controlstyle_changed();
-
 	ui->splitterControls->restoreState(splitter_state);
+
+	// was overwritten in controlstyle_changed
+	SetSetting(Set::Player_SplitterControls, splitter_state);
+
 	ui->controls->setFocus();
 }
 
@@ -421,61 +425,89 @@ void GUI_Player::current_library_changed()
 
 void GUI_Player::show_library_changed()
 {
-	QLayout* layout = ui->library_widget->layout();
-	if(layout)
-	{
-		for(int i=0; i<layout->count(); i++)
-		{
-			QLayoutItem* item = layout->itemAt(i);
-			item->widget()->hide();
-			layout->removeItem(item);
-		}
-	}
+	bool is_visible = GetSetting(Set::Lib_Show);
+	bool was_visible = ui->library_widget->isVisible();
 
-	auto* lph = Library::PluginHandler::instance();
-	Library::Container* current_library = lph->current_library();
-	if(current_library)
+	m->menubar->show_library_menu(is_visible);
+
+	QSize player_size = this->size();
+	QList<int> sizes = ui->splitter->sizes();
+	QByteArray splitter_controls_state = ui->splitterControls->saveState();
+
+	if(is_visible)
 	{
-		QWidget* cur_library_widget = current_library->widget();
-		if(cur_library_widget)
+		add_current_library();
+
+		if(!was_visible)
 		{
-			ui->library_widget->layout()->addWidget(cur_library_widget);
-			if(ui->library_widget->isVisible())
-			{
-				cur_library_widget->setVisible(true);
-			}
+			sizes[1] = GetSetting(Set::Lib_OldWidth);
+			player_size.setWidth(player_size.width() + GetSetting(Set::Lib_OldWidth));
 		}
 
-		show_library(GetSetting(Set::Lib_Show), ui->library_widget->isVisible());
-	}
-}
-
-
-void GUI_Player::show_library(bool is_library_visible, bool was_library_visible)
-{
-	m->menubar->show_library_menu(is_library_visible);
-
-	if(isMaximized() || isFullScreen() || (is_library_visible == was_library_visible))
-	{
-		return;
-	}
-
-	ui->splitter->installEventFilter(m->splitter_paint_event_filter);
-
-	if(is_library_visible)
-	{
-		int old_lib_width = GetSetting(Set::Lib_OldWidth);
-		m->new_size = QSize(this->width() + old_lib_width, this->height());
+		ui->library_widget->setVisible(true);
+		QWidget* w = Library::PluginHandler::instance()->current_library_widget();
+		if(w){
+			w->show();
+		}
 	}
 
 	else
 	{
-		int lib_width = ui->library_widget->width();
-		SetSetting(Set::Lib_OldWidth, lib_width);
-		m->new_size = QSize(this->width() - lib_width, this->height());
+		ui->library_widget->setVisible(false);
+
+		remove_current_library();
+
+		if(was_visible)
+		{
+			SetSetting(Set::Lib_OldWidth, ui->library_widget->width());
+
+			sizes[1] = 0;
+			player_size.setWidth(player_size.width() - ui->library_widget->width());
+		}
 	}
 
-	ui->library_widget->setVisible(is_library_visible);
+	QTimer::singleShot(100, this, [=]()
+	{
+		resize(player_size);
+		ui->splitter->setSizes(sizes);
+		ui->splitterControls->restoreState(splitter_controls_state);
+	});
+}
+
+void GUI_Player::add_current_library()
+{
+	QLayout* layout = ui->library_widget->layout();
+	if(!layout)
+	{
+		layout = new QVBoxLayout();
+		ui->library_widget->setLayout(layout);
+	}
+
+	while(layout->count() > 0)
+	{
+		QLayoutItem* item = layout->takeAt(0);
+		if(item && item->widget()){
+			item->widget()->hide();
+		}
+	}
+
+	auto* lph = Library::PluginHandler::instance();
+	QWidget* w = lph->current_library_widget();
+	if(w) {
+		layout->addWidget(w);
+	}
+}
+
+void GUI_Player::remove_current_library()
+{
+	QLayout* layout = ui->library_widget->layout();
+	while(layout->count() > 0)
+	{
+		QLayoutItem* item = layout->takeAt(0);
+		if(item && item->widget()){
+			item->widget()->hide();
+		}
+	}
 }
 
 void GUI_Player::splitter_painted()
@@ -503,6 +535,7 @@ void GUI_Player::check_control_splitter(bool force)
 				sizes[1] += difference;
 
 			ui->splitterControls->setSizes(sizes);
+			SetSetting(Set::Player_SplitterControls, ui->splitterControls->saveState());
 		}
 	}
 }
@@ -603,6 +636,7 @@ void GUI_Player::request_shutdown()
 {
 	m->shutdown_requested = true;
 }
+
 
 void GUI_Player::moveEvent(QMoveEvent* e)
 {
