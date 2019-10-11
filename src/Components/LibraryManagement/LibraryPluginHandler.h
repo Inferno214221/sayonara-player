@@ -66,6 +66,7 @@ namespace Library
 		QList<Container*>	get_libraries(bool also_empty) const;
 
 		Container*			current_library() const;
+		QWidget*			current_library_widget() const;
 
 		void add_local_library(Container* container);
 		void rename_local_library(const QString& old_name, const QString& new_name);

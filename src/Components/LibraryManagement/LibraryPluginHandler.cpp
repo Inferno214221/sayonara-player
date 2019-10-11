@@ -238,6 +238,15 @@ Container* PluginHandler::current_library() const
 	return m->current_library;
 }
 
+QWidget* PluginHandler::current_library_widget() const
+{
+	if(!m->current_library){
+		return nullptr;
+	}
+
+	return m->current_library->widget();
+}
+
 void PluginHandler::add_local_library(Library::Container* container)
 {
 	if(container == nullptr) {

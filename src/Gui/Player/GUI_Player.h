@@ -79,11 +79,13 @@ private:
 
 	void language_changed() override;
 	void skin_changed() override;
-	void show_library_changed();
-	void show_library(bool is_library_visible, bool was_library_visible=false);
 	void fullscreen_changed();
 	void init_controlstyle();
 	void controlstyle_changed();
+
+	void show_library_changed();
+	void add_current_library();
+	void remove_current_library();
 
 	void set_total_time_label(MilliSeconds length_ms);
 	void set_cur_pos_label(int val);
@@ -95,6 +97,7 @@ private:
 	Message::Answer warning_received(const QString &error, const QString &sender_name=QString()) override;
 	Message::Answer info_received(const QString &error, const QString &sender_name=QString()) override;
 	Message::Answer question_received(const QString &info, const QString &sender_name=QString(), Message::QuestionType type=Message::QuestionType::YesNo) override;
+
 
 
 private slots:
