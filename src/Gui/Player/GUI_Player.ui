@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>876</width>
-    <height>686</height>
+    <width>368</width>
+    <height>681</height>
    </rect>
   </property>
   <property name="focusPolicy">
@@ -50,6 +50,12 @@
         <bool>false</bool>
        </property>
        <widget class="QWidget" name="controls" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Ignored" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <property name="spacing">
           <number>0</number>
