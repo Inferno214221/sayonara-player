@@ -18,18 +18,21 @@ case "$1" in
 
 		cd ${SOURCES_DIR}
 		git clone https://gitlab.com/luciocarreras/sayonara-player.git --branch 27-create-distribution-building-scripts sayonara-player
-		rm -rf sayonara-player/.git*
+		cd sayonara-player
 
-		# create cmake file
+		# create spec file
 		mkdir -p build && cd build
 		cmake ..
-		cd ..
+		cd ../..
+		cp sayonara-player/build/dist/sayonara.spec ${SPEC_DIR}/
+		
+		rm -rf sayonara-player/debian
+		rm -rf sayonara-player/.git*
+		rm -rf sayonara-player/build
 
 		VERSION=$(grep -oP '\d+(?:\.\d+)+-?\w+\d+' sayonara-player/CMakeLists.txt)
 		tar czf sayonara-player-${VERSION}.tar.gz sayonara-player
 
-		# write changelog
-		cp sayonara-player/build/dist/sayonara.spec ${SPEC_DIR}/
 		cd ${SPEC_DIR}
 
 		# build
