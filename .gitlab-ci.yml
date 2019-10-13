@@ -25,6 +25,8 @@ deploy-sayonara-fedora:
     - dist/fedora-rpm.sh build-and-deploy
     - echo ${PWD}
     - ls -l /app
+    - ls -l /app/rpms/
+    - ls -l /root/rpmbuild/RPMS/x86_64/
   artifacts:
     paths:
       - /root/rpmbuild/RPMS
