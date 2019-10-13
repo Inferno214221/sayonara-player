@@ -1,10 +1,11 @@
-image: "luciocarreras/sayonara-appimage:20191005-3"
+image: "luciocarreras/sayonara-ubuntu:xenial"
 stages:
   - build
   - test
   - deploy
 
 # Building
+## AppImage
 build-sayonara-appimage:
   stage: build
   script: 
@@ -15,6 +16,20 @@ build-sayonara-appimage:
   only:
     - master
     - tags
+
+## Fedora
+deploy-sayonara-fedora:
+  image: "luciocarreras/sayonara-fedora:29"
+  stage: build
+  script:
+    - dist/fedora-rpm.sh build-and-deploy
+  artifacts:
+    paths:
+      - rpms/*.rpm
+    expire_in: 2 weeks
+  only:
+#    - tags
+    - 27-create-distribution-building-scripts
 
 
 # Unit tests
@@ -48,16 +63,4 @@ deploy-sayonara-appimage:
   only:
     - tags
 
-deploy-sayonara-fedora:
-  image: "luciocarreras/sayonara-fedora:29"
-  stage: deploy
-  script:
-    - dist/fedora-rpm.sh
-  artifacts:
-    paths:
-      - rpms/*.rpm
-    expire_in: 2 weeks
-  only:
-    - tags
-#    - 27-create-distribution-building-scripts
 
