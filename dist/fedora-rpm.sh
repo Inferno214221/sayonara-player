@@ -39,7 +39,7 @@ case "$1" in
 		rpmbuild -ba sayonara.spec
 
 		mkdir -p /app/rpms
-		find ${RPM_DIR} -name "*.rpm" -exec cp {} /app/rpms \;
+		find ${RPM_DIR} -name "*.rpm" -exec cp -v {} /app/rpms \;
 
 		;;
 	*)

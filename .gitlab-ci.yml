@@ -23,9 +23,11 @@ deploy-sayonara-fedora:
   stage: build
   script:
     - dist/fedora-rpm.sh build-and-deploy
+    - echo ${PWD}
+    - ls -l /app
   artifacts:
     paths:
-      - rpms/*.rpm
+      - /root/rpmbuild/RPMS
     expire_in: 2 weeks
   only:
 #    - tags
