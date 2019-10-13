@@ -6,6 +6,8 @@ set -e
 
 case "$1" in
 	build-and-deploy)
+		BASE_DIR=${PWD}
+
 		export SPEC_DIR="/root/rpmbuild/SPECS"
 		export SOURCES_DIR="/root/rpmbuild/SOURCES"
 		export RPM_DIR="/root/rpmbuild/RPMS"
@@ -38,8 +40,9 @@ case "$1" in
 		# build
 		rpmbuild -ba sayonara.spec
 
-		mkdir -p /app/rpms
-		find ${RPM_DIR} -name "*.rpm" -exec cp -v {} /app/rpms \;
+		mkdir -p "${BASE_DIR}/rpms"
+
+		find ${RPM_DIR} -name "*.rpm" -exec cp -v {} "${BASE_DIR}/rpms/" \;
 
 		;;
 	*)
