@@ -59,16 +59,21 @@ public:
 	explicit GUI_Player(QWidget *parent=nullptr);
 	~GUI_Player() override;
 
+	void init_geometry();
 	void register_preference_dialog(QAction* dialog_action);
 	void request_shutdown();
 
 private:
 	void init_tray_actions();
 	void init_connections();
-	void init_sizes();
+
+	void init_library();
+	void init_control_splitter();
 	void init_main_splitter();
 	void init_font_change_fix();
 	void check_control_splitter(bool force);
+
+	void save_geometry();
 
 	void closeEvent(QCloseEvent* e) override;
 	void resizeEvent(QResizeEvent* e) override;
@@ -78,9 +83,8 @@ private:
 	bool event(QEvent* e) override;
 
 	void language_changed() override;
-	void skin_changed() override;
 	void fullscreen_changed();
-	void init_controlstyle();
+	void init_controls();
 	void controlstyle_changed();
 
 	void show_library_changed();
@@ -108,7 +112,6 @@ private slots:
 	void splitter_controls_moved(int pos, int idx);
 
 	void current_library_changed();
-	void splitter_painted();
 
 	void minimize();
 	void minimize_to_tray();
