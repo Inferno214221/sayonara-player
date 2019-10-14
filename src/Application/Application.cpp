@@ -317,6 +317,9 @@ bool Application::init(const QStringList& files_to_play)
 	ListenSetting(Set::Lib_SortIgnoreArtistArticle, Application::ignore_artist_article_changed);
 	ListenSetting(SetNoDB::Player_MetaStyle, Application::skin_changed);
 
+	m->player->show();
+	m->player->init_geometry();
+
 	return true;
 }
 
