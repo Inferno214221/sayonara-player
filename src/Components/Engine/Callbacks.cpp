@@ -19,7 +19,7 @@
  */
 
 #include "Callbacks.h"
-#include "Components/Engine/Utils.h"
+#include "Components/Engine/EngineUtils.h"
 #include "Components/Engine/Engine.h"
 #include "Components/Engine/Pipeline.h"
 
@@ -34,6 +34,7 @@
 #include <QImage>
 #include <QRegExp>
 #include <QVector>
+#include <QByteArray>
 
 #include <memory>
 #include <algorithm>
@@ -81,15 +82,14 @@ static bool parse_image(GstElement* src, GstTagList* tags, EngineNS::Engine* eng
 		return false;
 	}
 
-	gchar* mimetype = gst_caps_to_string(caps);
-	if(mimetype == nullptr){
+	EngineUtils::GStringAutoFree mimetype(gst_caps_to_string(caps));
+	if(mimetype.data() == nullptr){
 		gst_sample_unref(sample);
 		return false;
 	}
 
 	QString mime;
-	QString full_mime(mimetype);
-	g_free(mimetype); mimetype = nullptr;
+	QString full_mime(mimetype.data());
 
 	QRegExp re(".*(image/[a-z|A-Z]+).*");
 	if(re.indexIn(full_mime) >= 0){
@@ -195,6 +195,7 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 		case GST_MESSAGE_TAG:
 		{
 			if( msg_src_name.contains("fake") ||
+			    msg_src_name.contains("lame") ||
 				!msg_src_name.contains("sink") )
 			{
 				break;
@@ -213,7 +214,7 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 			bool update_metadata = false;
 			for(const QString& tag : string_tags)
 			{
-				gchar* value;
+				gchar* value=nullptr;
 				success = gst_tag_list_get_string(tags, tag.toLocal8Bit().constData(), &value);
 				if(!success) {
 					continue;
@@ -257,7 +258,8 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 
 			Bitrate bitrate;
 			success = gst_tag_list_get_uint(tags, GST_TAG_BITRATE, &bitrate);
-			if(success) {
+			if(success)
+			{
 				engine->update_bitrate((bitrate / 1000) * 1000, src);
 			}
 
@@ -274,13 +276,13 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 			GstState old_state, new_state, pending_state;
 
 			gst_message_parse_state_changed(msg, &old_state, &new_state, &pending_state);
-			/*sp_log(Log::Debug, this) << GST_MESSAGE_SRC_NAME(msg) << ": "
-							   << "State changed from "
-							   << gst_element_state_get_name(old_state)
-							   << " to "
-							   << gst_element_state_get_name(new_state)
-							   << " pending: "
-							   << gst_element_state_get_name(pending_state);*/
+//			sp_log(Log::Debug, "Callback") << GST_MESSAGE_SRC_NAME(msg) << ": "
+//							   << "State changed from "
+//							   << gst_element_state_get_name(old_state)
+//							   << " to "
+//							   << gst_element_state_get_name(new_state)
+//							   << " pending: "
+//							   << gst_element_state_get_name(pending_state);
 
 			if(!msg_src_name.contains("pipeline", Qt::CaseInsensitive)){
 				break;
@@ -333,14 +335,22 @@ gboolean Callbacks::bus_state_changed(GstBus* bus, GstMessage* msg, gpointer dat
 
 		case GST_MESSAGE_ERROR:
 			{
+				static QString error_msg;
 				GError*	err;
 				gst_message_parse_error(msg, &err, nullptr);
 
-				sp_log(Log::Error, ClassEngineCallbacks) << "Engine: GST_MESSAGE_ERROR: " << err->message << ": "
-						 << GST_MESSAGE_SRC_NAME(msg);
+				QString src_name(GST_MESSAGE_SRC_NAME(msg));
 
-				QString	error_msg(err->message);
-				engine->error(error_msg);
+				sp_log(Log::Error, ClassEngineCallbacks) << "Engine: GST_MESSAGE_ERROR: " << err->message << ": "
+						 << src_name;
+
+				QString new_error_msg = QString(err->message);
+
+				if(error_msg != new_error_msg)
+				{
+					engine->error(new_error_msg, src_name);
+					error_msg = new_error_msg;
+				}
 
 				g_error_free(err);
 			}
@@ -496,15 +506,10 @@ gboolean Callbacks::position_changed(gpointer data)
 // dynamic linking, important for decodebin
 void Callbacks::decodebin_ready(GstElement* source, GstPad* new_src_pad, gpointer data)
 {
-	gchar* element_name = gst_element_get_name(source);
-	sp_log(Log::Develop, "Callback") << "Source: " << element_name;
-	g_free(element_name);
+	EngineUtils::GStringAutoFree element_name(gst_element_get_name(source));
+	sp_log(Log::Develop, "Callback") << "Source: " << element_name.data();
 
 	auto* element = static_cast<GstElement*>(data);
-	if(!element){
-		return;
-	}
-
 	GstPad*	sink_pad = gst_element_get_static_pad(element, "sink");
 	if(!sink_pad){
 		return;
@@ -557,9 +562,9 @@ void Callbacks::decodebin_ready(GstElement* source, GstPad* new_src_pad, gpointe
 #define TCP_BUFFER_SIZE 16384
 GstFlowReturn Callbacks::new_buffer(GstElement *sink, gpointer p)
 {
-	static uchar data[TCP_BUFFER_SIZE];
+	static char data[TCP_BUFFER_SIZE];
 
-	Pipeline* pipeline = static_cast<Pipeline*>(p);
+	auto* pipeline = static_cast<PipelineExtensions::BroadcastDataReceiver*>(p);
 	if(!pipeline){
 		return GST_FLOW_OK;
 	}
@@ -577,7 +582,9 @@ GstFlowReturn Callbacks::new_buffer(GstElement *sink, gpointer p)
 
 	gsize size = gst_buffer_get_size(buffer);
 	gsize size_new = gst_buffer_extract(buffer, 0, data, size);
-	pipeline->set_data(data, size_new);
+
+	QByteArray bytes(data, int(size_new));
+	pipeline->set_raw_data(bytes);
 
 	gst_sample_unref(sample);
 

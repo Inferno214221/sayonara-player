@@ -24,6 +24,8 @@
 
 #include "Utils/Algorithm.h"
 #include "Utils/Message/Message.h"
+#include "Utils/Language/Language.h"
+#include "Gui/Utils/Icons.h"
 
 #include "Database/Connector.h"
 #include "Database/VisualStyles.h"
@@ -80,11 +82,23 @@ GUI_StyleSettings::GUI_StyleSettings(QWidget *parent) :
 	init();
 }
 
-GUI_StyleSettings::~GUI_StyleSettings() {}
+GUI_StyleSettings::~GUI_StyleSettings() = default;
 
 void GUI_StyleSettings::language_changed()
 {
 	ui->retranslateUi(this);
+
+	ui->btn_ok->setText(Lang::get(Lang::OK));
+	ui->btn_apply->setText(Lang::get(Lang::Apply));
+	ui->btn_close->setText(Lang::get(Lang::Close));
+}
+
+void GUI_StyleSettings::skin_changed()
+{
+	ui->btn_save->setIcon(Gui::Icons::icon(Gui::Icons::Save));
+	ui->btn_undo->setIcon(Gui::Icons::icon(Gui::Icons::Undo));
+	ui->btn_close->setIcon(Gui::Icons::icon(Gui::Icons::Close));
+	ui->btn_delete->setIcon(Gui::Icons::icon(Gui::Icons::Delete));
 }
 
 void GUI_StyleSettings::init()

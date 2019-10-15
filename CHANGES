@@ -1,3 +1,25 @@
+== 1.5.2-stable1 ==
+
+ * Build system: Removed absolute file paths
+ * Database: Assure write permissions
+ * Directory view: fixed delete issues
+ * Engine: fixed switching between pulse and alsa
+ * Engine: fixed adding/removing pitch issues
+ * Languages: fixed some capital letter issues at word beginning
+ * Library: fixed album rating regression
+ * Notifications: Override notifications if the appear to often
+ * Playlist: Handling of large filesets in the background, no
+   blocking user interface anymore
+ * Playlist: fixed finding of tracks in library
+ * Remote control: created new protocol
+ * Soma.fm: high resolution images available
+ * Speed/Pitch: dynamically adding/removing to/from pipelines fixed
+ * System Tray icon: Style update
+ * Tagging: fixed empty selection issue when applying tags from path
+ * User interface: Time string updates
+ * User interface: Consistent time labels
+ * User interface: Blurry icons fix in searchbar
+
 == 1.5.1-stable5 ==
 
  * Stream recorder: fixed segfault when recording is started

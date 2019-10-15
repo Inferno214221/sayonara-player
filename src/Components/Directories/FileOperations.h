@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef FILEOPERATIONS_H
 #define FILEOPERATIONS_H
 
@@ -32,14 +30,14 @@ class DirectoryCopyThread : public QThread
 	Q_OBJECT
 	PIMPL(DirectoryCopyThread)
 
-public:
-	DirectoryCopyThread(QObject* parent, LibraryId target_library_id, const QStringList& source_dirs, const QString& target_dir);
-	~DirectoryCopyThread();
+	public:
+		DirectoryCopyThread(QObject* parent, LibraryId target_library_id, const QStringList& source_dirs, const QString& target_dir);
+		~DirectoryCopyThread() override;
 
-	LibraryId target_library() const;
+		LibraryId target_library() const;
 
-protected:
-	void run() override;
+	protected:
+		void run() override;
 };
 
 class FileCopyThread : public QThread
@@ -47,14 +45,14 @@ class FileCopyThread : public QThread
 	Q_OBJECT
 	PIMPL(FileCopyThread)
 
-public:
-	FileCopyThread(QObject* parent, LibraryId target_library_id, const QStringList& source_files, const QString& target_dir);
-	~FileCopyThread();
+	public:
+		FileCopyThread(QObject* parent, LibraryId target_library_id, const QStringList& source_files, const QString& target_dir);
+		~FileCopyThread() override;
 
-	LibraryId target_library() const;
+		LibraryId target_library() const;
 
-protected:
-	void run() override;
+	protected:
+		void run() override;
 };
 
 
@@ -62,27 +60,26 @@ class FileOperations : public QObject
 {
 	Q_OBJECT
 
-signals:
-	void sig_copy_finished();
-	void sig_copy_started();
+	signals:
+		void sig_copy_finished();
+		void sig_copy_started();
 
-public:
-	explicit FileOperations(QObject *parent = 0);
-	~FileOperations();
+	public:
+		explicit FileOperations(QObject *parent=nullptr);
+		~FileOperations() override;
 
-	bool move_dirs(const QStringList& source_dirs, const QString& target_dir);
-	bool copy_dirs(const QStringList& source_dirs, const QString& target_dir);
-	bool rename_dir(const QString& source_dir, const QString& target_dir);
+		bool move_dirs(const QStringList& source_dirs, const QString& target_dir);
+		bool copy_dirs(const QStringList& source_dirs, const QString& target_dir);
+		bool rename_dir(const QString& source_dir, const QString& target_dir);
 
-	bool move_files(const QStringList& files, const QString& target_dir);
-	bool copy_files(const QStringList& files, const QString& target_dir);
+		bool move_files(const QStringList& files, const QString& target_dir);
+		bool copy_files(const QStringList& files, const QString& target_dir);
 
-	bool rename_file(const QString& old_name, const QString& new_name);
+		bool rename_file(const QString& old_name, const QString& new_name);
 
-private slots:
-	void copy_dir_thread_finished();
-	void copy_file_thread_finished();
-
+	private slots:
+		void copy_dir_thread_finished();
+		void copy_file_thread_finished();
 };
 
 #endif // FILEOPERATIONS_H

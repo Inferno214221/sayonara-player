@@ -42,6 +42,8 @@
 #include "Utils/Logger/Logger.h"
 #include "Utils/Set.h"
 #include "Utils/Settings/Settings.h"
+#include "Utils/FileUtils.h"
+
 #include "Components/Playlist/PlaylistHandler.h"
 #include "Components/Playlist/Playlist.h"
 
@@ -51,6 +53,7 @@
 #include <QScrollBar>
 #include <QDrag>
 #include <QTimer>
+#include <QLabel>
 
 #include <algorithm>
 
@@ -65,6 +68,7 @@ struct View::Private
 	Pl::ContextMenu*		context_menu=nullptr;
 	Pl::Model*				model=nullptr;
 	ProgressBar*			progressbar=nullptr;
+	QLabel*					current_file_label=nullptr;
 
 	Private(PlaylistPtr pl, View* parent) :
 		playlist(pl),
@@ -91,7 +95,7 @@ View::View(PlaylistPtr pl, QWidget* parent) :
 	ListenSetting(Set::PL_ShowNumbers, View::sl_columns_changed);
 	ListenSetting(Set::PL_ShowCovers, View::sl_columns_changed);
 	ListenSetting(Set::PL_ShowNumbers, View::sl_columns_changed);
-	ListenSetting(Set::PL_ShowRating, View::refresh);
+	ListenSetting(Set::PL_ShowRating, View::sl_show_rating_changed);
 
 	new QShortcut(QKeySequence(Qt::Key_Backspace), this, SLOT(clear()), nullptr, Qt::WidgetShortcut);
 	new QShortcut(QKeySequence(QKeySequence::Delete), this, SLOT(remove_selected_rows()), nullptr, Qt::WidgetShortcut);
@@ -102,6 +106,8 @@ View::View(PlaylistPtr pl, QWidget* parent) :
 
 	connect(m->model, &Pl::Model::sig_data_ready, this, &View::refresh);
 	connect(playlist_handler, &Pl::Handler::sig_current_track_changed, this, &View::current_track_changed);
+	connect(pl.get(), &Playlist::sig_busy_changed, this, &View::playlist_busy_changed);
+	connect(pl.get(), &Playlist::sig_current_scanned_file_changed, this, &View::current_scanned_file_changed);
 
 	QTimer::singleShot(100, this, [=](){
 		this->goto_to_current_track();
@@ -131,8 +137,6 @@ void View::init_view()
 	setDragDropOverwriteMode(false);
 	setAcceptDrops(true);
 	setDropIndicatorShown(true);
-
-	setEditTriggers(QAbstractItemView::SelectedClicked);
 }
 
 
@@ -210,48 +214,55 @@ void View::handle_drop(QDropEvent* event)
 		m->model->insert_tracks(v_md, row+1);
 	}
 
-	QStringList playlists = MimeData::playlists(mimedata);
-	if(!playlists.isEmpty())
+	const QList<QUrl> urls = mimedata->urls();
+	if(!urls.isEmpty())
 	{
-		this->setEnabled(false);
-		if(!m->progressbar) {
-			m->progressbar = new ProgressBar(this);
+		QStringList files;
+		bool www = Util::File::is_www(urls.first().toString());
+		if(www)
+		{
+			m->playlist->set_busy(true);
+
+			for(const QUrl& url : urls)
+			{
+				files << url.toString();
+			}
+
+			auto* stream_parser = new StreamParser();
+			stream_parser->set_cover_url(MimeData::cover_url(mimedata));
+
+			connect(stream_parser, &StreamParser::sig_finished, this, [=](bool success){
+				async_drop_finished(success, row);
+			});
+
+			stream_parser->parse_streams(files);
 		}
 
-		m->progressbar->show();
+		else if(v_md.isEmpty())
+		{
+			for(const QUrl& url : urls)
+			{
+				if(url.isLocalFile()){
+					files << url.toLocalFile();
+				}
+			}
 
-		// when the list view is disabled, the focus would automatically
-		// jump to the parent widget, which may result in the
-		// forward/backward button of the playlist
-		m->progressbar->setFocus();
-
-		QString cover_url = MimeData::cover_url(mimedata);
-
-		StreamParser* stream_parser = new StreamParser();
-		stream_parser->set_cover_url(cover_url);
-
-		connect(stream_parser, &StreamParser::sig_finished, this, [=](bool success){
-			async_drop_finished(success, row);
-		});
-
-		stream_parser->parse_streams(playlists);
+			Handler::instance()->insert_tracks(files, row+1, m->playlist->index());
+		}
 	}
 }
 
 
 void View::async_drop_finished(bool success, int async_drop_index)
 {
-	m->progressbar->hide();
+	m->playlist->set_busy(false);
 
-	StreamParser* stream_parser = dynamic_cast<StreamParser*>(sender());
-
-	if(success){
+	auto* stream_parser = dynamic_cast<StreamParser*>(sender());
+	if(success)
+	{
 		MetaDataList v_md = stream_parser->metadata();
 		m->model->insert_tracks(v_md, async_drop_index+1);
 	}
-
-	this->setEnabled(true);
-	this->setFocus();
 
 	stream_parser->deleteLater();
 }
@@ -482,13 +493,17 @@ void View::keyPressEvent(QKeyEvent* event)
 
 void View::dragEnterEvent(QDragEnterEvent* event)
 {
-	event->accept();
+	if(this->acceptDrops()){
+		event->accept();
+	}
 }
 
 void View::dragMoveEvent(QDragMoveEvent* event)
 {
 	QTableView::dragMoveEvent(event);		// needed for autoscroll
-	event->accept();						// needed for dragMove
+	if(this->acceptDrops()){				// needed for dragMove
+		event->accept();
+	}
 
 	int row = calc_drag_drop_line(event->pos());
 	m->model->set_drag_index(row);
@@ -505,8 +520,68 @@ void View::dropEventFromOutside(QDropEvent* event)
 	dropEvent(event);
 }
 
+void View::playlist_busy_changed(bool b)
+{
+	this->setDisabled(b);
+
+	if(b)
+	{
+		if(!m->progressbar) {
+			m->progressbar = new ProgressBar(this);
+		}
+
+		m->progressbar->show();
+
+		// when the list view is disabled, the focus would automatically
+		// jump to the parent widget, which may result in the
+		// forward/backward button of the playlist
+		m->progressbar->setFocus();
+
+		this->setDragDropMode(QAbstractItemView::NoDragDrop);
+		this->setAcceptDrops(false);
+	}
+
+	else
+	{
+		if(m->progressbar) {
+			m->progressbar->hide();
+		}
+
+		if(m->current_file_label){
+			m->current_file_label->hide();
+		}
+
+		this->setDragDropMode(QAbstractItemView::DragDrop);
+		this->setAcceptDrops(true);
+		this->setFocus();
+	}
+}
+
+void View::current_scanned_file_changed(const QString& current_file)
+{
+	if(!m->current_file_label)
+	{
+		m->current_file_label = new QLabel(this);
+	}
+
+	int offset_bottom = 3;
+	offset_bottom += this->fontMetrics().height();
+	if(m->progressbar) {
+		offset_bottom += m->progressbar->height() + 2;
+	}
+
+	m->current_file_label->setText(current_file);
+	m->current_file_label->setGeometry(0, this->height() - offset_bottom, this->width(), this->fontMetrics().height() + 4);
+	m->current_file_label->show();
+}
+
 void View::dropEvent(QDropEvent* event)
 {
+	if(!this->acceptDrops()){
+		event->ignore();
+		return;
+	}
+
 	event->accept();
 	handle_drop(event);
 }
@@ -548,6 +623,21 @@ void View::sl_columns_changed()
 
 	horizontalHeader()->setSectionHidden(Pl::Model::ColumnName::TrackNumber, !show_numbers);
 	horizontalHeader()->setSectionHidden(Pl::Model::ColumnName::Cover, !show_covers);
+
+	refresh();
+}
+
+void View::sl_show_rating_changed()
+{
+	bool show_rating = GetSetting(Set::PL_ShowRating);
+	if(show_rating)
+	{
+		this->setEditTriggers(QAbstractItemView::SelectedClicked);
+	}
+
+	else {
+		this->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	}
 
 	refresh();
 }

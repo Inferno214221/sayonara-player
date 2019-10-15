@@ -296,32 +296,24 @@ bool Albums::getAllAlbumsBySearchString(const Library::Filter& filter, AlbumList
 	return true;
 }
 
-AlbumId Albums::updateAlbum(const Album& album)
-{
-	AlbumId id = album.id;
-	if(id < 0)
-	{
-		id = getAlbumID(album.name());
-		if(id < 0) {
-			return -1;
-		}
-	}
 
-	QString cissearch = Library::Utils::convert_search_string(album.name(), search_mode());
+
+AlbumId Albums::updateAlbumRating(AlbumId id, Rating rating)
+{
 	QMap<QString, QVariant> bindings
 	{
-		{"name",		Util::cvt_not_null(album.name())},
-		{"cissearch",	Util::cvt_not_null(cissearch)},
-		{"rating",		QVariant::fromValue(int(album.rating))}
+		{"rating",		QVariant::fromValue(int(rating))}
 	};
 
-	Query q = update("albums", bindings, {"albumID", id}, QString("Cannot update album %1").arg(album.name()));
+	Query q = update("albums", bindings, {"albumID", id}, QString("Cannot set album rating for id %1").arg(id));
 	if (q.has_error()) {
 		return -1;
 	}
 
 	return id;
 }
+
+
 
 void Albums::updateAlbumCissearch()
 {
@@ -351,34 +343,32 @@ void Albums::updateAlbumCissearch()
 
 AlbumId Albums::insertAlbumIntoDatabase(const QString& album_name)
 {
-	Album album;
-	album.set_name(album_name);
-
-	return insertAlbumIntoDatabase(album);
-}
-
-AlbumId Albums::insertAlbumIntoDatabase(const Album& album)
-{
-	AlbumId id = updateAlbum(album);
+	AlbumId id = getAlbumID(album_name);
 	if(id >= 0){
 		return id;
 	}
 
-	QString cissearch = Library::Utils::convert_search_string(album.name(), search_mode());
+	QString cissearch = Library::Utils::convert_search_string(album_name, search_mode());
 
 	QMap<QString, QVariant> bindings
 	{
-		{"name",		Util::cvt_not_null(album.name())},
+		{"name",		Util::cvt_not_null(album_name)},
 		{"cissearch",	Util::cvt_not_null(cissearch)},
-		{"rating",		QVariant::fromValue(int(album.rating))}
+		{"rating",		QVariant::fromValue(int(Rating::Zero))}
 	};
 
-	Query q = insert("albums", bindings, QString("2. Cannot insert album %1").arg(album.name()));
+	Query q = insert("albums", bindings, QString("2. Cannot insert album %1").arg(album_name));
 	if (q.has_error()) {
 		return -1;
 	}
 
 	return q.lastInsertId().toInt();
+
+}
+
+AlbumId Albums::insertAlbumIntoDatabase(const Album& album)
+{
+	return insertAlbumIntoDatabase(album.name());
 }
 
 

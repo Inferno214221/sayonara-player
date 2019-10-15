@@ -57,32 +57,39 @@ signals:
 
 public:
 	explicit GUI_Player(QWidget *parent=nullptr);
-	~GUI_Player();
+	~GUI_Player() override;
 
+	void init_geometry();
 	void register_preference_dialog(QAction* dialog_action);
 	void request_shutdown();
 
 private:
 	void init_tray_actions();
 	void init_connections();
-	void init_sizes();
+
+	void init_library();
+	void init_control_splitter();
 	void init_main_splitter();
 	void init_font_change_fix();
 	void check_control_splitter(bool force);
+
+	void save_geometry();
 
 	void closeEvent(QCloseEvent* e) override;
 	void resizeEvent(QResizeEvent* e) override;
 	void moveEvent(QMoveEvent* e) override;
 	void keyPressEvent(QKeyEvent* e) override;
-	void keyReleaseEvent(QKeyEvent *e) override;
+	void keyReleaseEvent(QKeyEvent* e) override;
+	bool event(QEvent* e) override;
 
 	void language_changed() override;
-	void skin_changed() override;
-	void show_library_changed();
-	void show_library(bool is_library_visible, bool was_library_visible=false);
 	void fullscreen_changed();
-	void init_controlstyle();
+	void init_controls();
 	void controlstyle_changed();
+
+	void show_library_changed();
+	void add_current_library();
+	void remove_current_library();
 
 	void set_total_time_label(MilliSeconds length_ms);
 	void set_cur_pos_label(int val);
@@ -96,6 +103,7 @@ private:
 	Message::Answer question_received(const QString &info, const QString &sender_name=QString(), Message::QuestionType type=Message::QuestionType::YesNo) override;
 
 
+
 private slots:
 	void playstate_changed(PlayState state);
 	void play_error(const QString& message);
@@ -104,8 +112,6 @@ private slots:
 	void splitter_controls_moved(int pos, int idx);
 
 	void current_library_changed();
-	void check_library_menu_action();
-	void splitter_painted();
 
 	void minimize();
 	void minimize_to_tray();

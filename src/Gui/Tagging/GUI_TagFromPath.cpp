@@ -19,7 +19,6 @@
  */
 
 #include "GUI_TagFromPath.h"
-#include "TextSelection.h"
 
 #include "Gui/TagEdit/ui_GUI_TagFromPath.h"
 #include "Utils/Tagging/Tagging.h"
@@ -145,24 +144,23 @@ void GUI_TagFromPath::add_invalid_filepath(const QString& filepath)
 
 bool GUI_TagFromPath::replace_selected_tag_text(TagName tag_name, bool b)
 {
-	TextSelection ts = ui->le_tag->text_selection();
+	TagLineEdit::TextSelection ts = ui->le_tag->text_selection();
 
 	if(ts.selection_start < 0 && b)
 	{
-		Message::info(tr("Please select text first"));
-
 		sp_log(Log::Debug, this) << "Nothing selected...";
 
+		Message::info(tr("Please select text first"));
 		return false;
 	}
 
 	QString text = ui->le_tag->text();
+	QString tag_string = Tagging::tag_name_to_string(tag_name);
 
 	// replace the string by a tag
 	if(b)
 	{
 		ReplacedString selected_text = text.mid( ts.selection_start, ts.selection_size );
-		QString tag_string = Tagging::tag_name_to_string(tag_name);
 
 		text.replace(ts.selection_start, ts.selection_size, tag_string);
 		ui->le_tag->setText(text);
@@ -173,7 +171,6 @@ bool GUI_TagFromPath::replace_selected_tag_text(TagName tag_name, bool b)
 	// replace tag by the original string
 	else
 	{
-		QString tag_string = Tagging::tag_name_to_string(tag_name);
 		text.replace(tag_string, m->tag_str_map[tag_name]);
 		ui->le_tag->setText(text);
 

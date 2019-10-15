@@ -41,7 +41,7 @@ namespace PipelineExtensions
 			 * @param first_element element, after which new element is inserted
 			 * @param second_element element, before which new element is inserted (may be null)
 			 */
-			void add_element(GstElement* element, GstElement* first_element, GstElement* second_element);
+			bool add_element(GstElement* element, GstElement* first_element, GstElement* second_element);
 
 			/**
 			 * @brief remove an element between two elements
@@ -49,14 +49,10 @@ namespace PipelineExtensions
 			 * @param first_element element, after which new element is removed
 			 * @param second_element element, before which new element is removed (may be null)
 			 */
-			void remove_element(GstElement* element, GstElement* first_element, GstElement* second_element);
+			bool remove_element(GstElement* element, GstElement* first_element, GstElement* second_element);
 
-		protected:
-			/**
-			 * @brief get_pipeline get the referencing pipeline
-			 * @return
-			 */
-			virtual GstElement* pipeline() const=0;
+
+			bool replace_sink(GstElement* old_sink, GstElement* new_sink, GstElement* element_before, GstElement* pipeline, GstElement* bin);
 	};
 }
 

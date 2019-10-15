@@ -19,14 +19,20 @@
  */
 
 #include "InfoDialogContainer.h"
+#include "Components/Directories/MetaDataScanner.h"
+
 #include "GUI_InfoDialog.h"
 #include "Gui/Utils/GuiUtils.h"
 #include "Utils/MetaData/MetaDataList.h"
+
 #include <QMainWindow>
+#include <QThread>
+
 
 struct InfoDialogContainer::Private
 {
 	GUI_InfoDialog*	info_dialog=nullptr;
+	InfoDialogContainerAsyncHandler* async_helper=nullptr;
 };
 
 InfoDialogContainer::InfoDialogContainer()
@@ -34,13 +40,18 @@ InfoDialogContainer::InfoDialogContainer()
 	m = Pimpl::make<Private>();
 }
 
-InfoDialogContainer::~InfoDialogContainer() {}
+InfoDialogContainer::~InfoDialogContainer()
+{
+	if(m->async_helper){
+		delete m->async_helper;
+	}
+}
 
 void InfoDialogContainer::info_dialog_closed() {}
 
 void InfoDialogContainer::show_info()
 {
-	if(init_dialog())
+	if(init_dialog(OpenMode::Info))
 	{
 		m->info_dialog->show(GUI_InfoDialog::Tab::Info);
 	}
@@ -48,7 +59,7 @@ void InfoDialogContainer::show_info()
 
 void InfoDialogContainer::show_lyrics()
 {
-	if(init_dialog())
+	if(init_dialog(OpenMode::Lyrics))
 	{
 		m->info_dialog->show(GUI_InfoDialog::Tab::Lyrics);
 	}
@@ -56,7 +67,7 @@ void InfoDialogContainer::show_lyrics()
 
 void InfoDialogContainer::show_edit()
 {
-	if(init_dialog())
+	if(init_dialog(OpenMode::Edit))
 	{
 		m->info_dialog->show(GUI_InfoDialog::Tab::Edit);
 	}
@@ -64,21 +75,142 @@ void InfoDialogContainer::show_edit()
 
 void InfoDialogContainer::show_cover_edit()
 {
-	if(init_dialog())
+	if(init_dialog(OpenMode::Cover))
 	{
 		m->info_dialog->show_cover_edit_tab();
 	}
 }
 
-bool InfoDialogContainer::init_dialog()
+bool InfoDialogContainer::init_dialog(OpenMode mode)
 {
 	if(!m->info_dialog)
 	{
 		m->info_dialog = new GUI_InfoDialog(this, Gui::Util::main_window());
 	}
 
-	m->info_dialog->set_metadata(info_dialog_data(), metadata_interpretation());
+	if(!has_metadata())
+	{
+		if(!m->async_helper)
+		{
+			m->async_helper = new InfoDialogContainerAsyncHandler(this, mode);
+		}
 
+		if(m->async_helper->is_running())
+		{
+			return false;
+		}
+
+		m->async_helper->start();
+		m->info_dialog->set_metadata(MetaDataList(), metadata_interpretation());
+		m->info_dialog->show(GUI_InfoDialog::Tab::Info);
+
+		return true;
+	}
+
+	m->info_dialog->set_busy(false);
+	m->info_dialog->set_metadata(info_dialog_data(), metadata_interpretation());
 	return m->info_dialog->has_metadata();
 }
 
+void InfoDialogContainer::go(OpenMode mode, const MetaDataList& v_md)
+{
+	m->info_dialog->set_busy(false);
+
+	if(v_md.isEmpty())
+	{
+		return;
+	}
+
+	m->info_dialog->set_metadata(v_md, metadata_interpretation());
+
+	switch(mode)
+	{
+		case OpenMode::Info:
+			m->info_dialog->show(GUI_InfoDialog::Tab::Info);
+			break;
+		case OpenMode::Lyrics:
+			m->info_dialog->show(GUI_InfoDialog::Tab::Lyrics);
+			break;
+
+		case OpenMode::Edit:
+			m->info_dialog->show(GUI_InfoDialog::Tab::Edit);
+			break;
+
+		case OpenMode::Cover:
+			m->info_dialog->show_cover_edit_tab();
+			break;
+
+	}
+}
+
+bool InfoDialogContainer::has_metadata() const
+{
+	return true;
+}
+
+QStringList InfoDialogContainer::pathlist() const
+{
+	return QStringList();
+}
+
+
+struct InfoDialogContainerAsyncHandler::Private
+{
+	InfoDialogContainer* container=nullptr;
+	OpenMode mode;
+	bool is_running;
+
+	Private(InfoDialogContainer* container, OpenMode mode) :
+		container(container),
+		mode(mode),
+		is_running(false)
+	{}
+};
+
+InfoDialogContainerAsyncHandler::InfoDialogContainerAsyncHandler(InfoDialogContainer* container, OpenMode mode) :
+	QObject()
+{
+	m = Pimpl::make<Private>(container, mode);
+}
+
+InfoDialogContainerAsyncHandler::~InfoDialogContainerAsyncHandler() = default;
+
+bool InfoDialogContainerAsyncHandler::start()
+{
+	using Directory::MetaDataScanner;
+
+	QStringList files = m->container->pathlist();
+	if(files.isEmpty()){
+		return false;
+	}
+
+	m->is_running = true;
+	auto* scanner = new MetaDataScanner(files, true);
+	auto* t = new QThread();
+
+	scanner->moveToThread(t);
+
+	connect(t, &QThread::started, scanner, &MetaDataScanner::start);
+	connect(t, &QThread::finished, t, &QObject::deleteLater);
+	connect(scanner, &MetaDataScanner::sig_finished, this, &InfoDialogContainerAsyncHandler::scanner_finished);
+	connect(scanner, &MetaDataScanner::sig_finished, t, &QThread::quit);
+
+	t->start();
+
+	return true;
+}
+
+bool InfoDialogContainerAsyncHandler::is_running() const
+{
+	return m->is_running;
+}
+
+void InfoDialogContainerAsyncHandler::scanner_finished()
+{
+	auto* scanner = static_cast<Directory::MetaDataScanner*>(sender());
+
+	m->is_running = false;
+	m->container->go(m->mode, scanner->metadata());
+
+	scanner->deleteLater();
+}

@@ -160,5 +160,11 @@
         <file>MintYIcons/view-refresh-22.svg</file>
         <file>MintYIcons/window-close-16.svg</file>
         <file>MintYIcons/window-close-22.svg</file>
+        <file>MintYIcons/edit-clear-32.svg</file>
+        <file>MintYIcons/edit-clear-24.svg</file>
+    </qresource>
+    <qresource prefix="/Style">
+        <file>standard.css</file>
+        <file>dark.css</file>
     </qresource>
 </RCC>

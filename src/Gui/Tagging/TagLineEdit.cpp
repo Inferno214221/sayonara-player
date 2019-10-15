@@ -19,62 +19,31 @@
  */
 
 #include "TagLineEdit.h"
-#include "TextSelection.h"
-
-#include <QFocusEvent>
-
-struct TagLineEdit::Private
-{
-	TextSelection text_selection;
-};
 
 TagLineEdit::TagLineEdit(QWidget* parent) :
 	QLineEdit(parent)
 {
-	m = Pimpl::make<Private>();
 	this->setReadOnly(true);
 }
 
 TagLineEdit::~TagLineEdit() = default;
 
-void TagLineEdit::focusInEvent(QFocusEvent* e)
+TagLineEdit::TextSelection TagLineEdit::text_selection() const
 {
-	m->text_selection.reset();
-	QLineEdit::focusInEvent(e);
-}
+	TagLineEdit::TextSelection ts;
 
-void TagLineEdit::focusOutEvent(QFocusEvent* e)
-{
 	QString selected_text = this->selectedText();
-	if(selected_text.isEmpty())
+	if(!selected_text.isEmpty())
 	{
-		m->text_selection.reset();
+		ts.selection_start = this->selectionStart();
+		ts.selection_size = selected_text.size();
 	}
 
-	else
-	{
-		m->text_selection.selection_start = this->selectionStart();
-		m->text_selection.selection_size = selected_text.size();
-	}
-
-	QLineEdit::focusOutEvent(e);
+	return ts;
 }
 
 
-TextSelection TagLineEdit::text_selection() const
-{
-	QString selected_text = this->selectedText();
-	if(selected_text.isEmpty())
-	{
-		m->text_selection.reset();
-	}
-
-	else
-	{
-		m->text_selection.selection_start = this->selectionStart();
-		m->text_selection.selection_size = selected_text.size();
-	}
-
-	return m->text_selection;
-}
-
+TagLineEdit::TextSelection::TextSelection() :
+	selection_start(-1),
+	selection_size(0)
+{}

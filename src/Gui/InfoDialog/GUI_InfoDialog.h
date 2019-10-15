@@ -51,7 +51,6 @@ class GUI_InfoDialog :
 	UI_CLASS(InfoDialog)
 
 public:
-
 	enum class Tab : uint8_t
 	{
 		Info=0,
@@ -60,13 +59,15 @@ public:
 	};
 
 	explicit GUI_InfoDialog(InfoDialogContainer* container, QWidget* parent=nullptr);
-	~GUI_InfoDialog();
+	~GUI_InfoDialog() override;
 
 	void set_metadata(const MetaDataList& vd, MD::Interpretation interpretation);
 	bool has_metadata() const;
 
 	GUI_InfoDialog::Tab show(GUI_InfoDialog::Tab tab);
 	void show_cover_edit_tab();
+
+	void set_busy(bool b);
 
 protected:
 	void skin_changed() override;

@@ -19,7 +19,7 @@
  */
 
 #include "ImportCache.h"
-#include "Components/Library/LibraryManager.h"
+#include "Components/LibraryManagement/LibraryManager.h"
 #include "Utils/Library/LibraryInfo.h"
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaDataList.h"

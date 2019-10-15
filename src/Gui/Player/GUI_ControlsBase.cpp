@@ -280,7 +280,7 @@ void GUI_ControlsBase::cur_pos_changed(MilliSeconds pos_ms)
 
 	if(!sli_progress()->is_busy())
 	{
-		QString cur_pos_string = Util::cvt_ms_to_string(pos_ms);
+		QString cur_pos_string = Util::cvt_ms_to_string(pos_ms, "$M:$S");
 		lab_current_time()->setText(cur_pos_string);
 		sli_progress()->setValue(new_val);
 	}
@@ -298,7 +298,7 @@ void GUI_ControlsBase::refresh_current_position(int val)
 	double percent = (val * 1.0) / max;
 
 	MilliSeconds cur_pos_ms = MilliSeconds(percent * duration);
-	QString cur_pos_string = Util::cvt_ms_to_string(cur_pos_ms);
+	QString cur_pos_string = Util::cvt_ms_to_string(cur_pos_ms, "$M:$S");
 
 	lab_current_time()->setText(cur_pos_string);
 }
@@ -307,7 +307,7 @@ void GUI_ControlsBase::set_total_time_label(MilliSeconds total_time)
 {
 	QString length_str;
 	if(total_time > 0){
-		length_str = Util::cvt_ms_to_string(total_time, true);
+		length_str = Util::cvt_ms_to_string(total_time, "$M:$S");
 		lab_max_time()->setText(length_str);
 	}
 
@@ -326,7 +326,7 @@ void GUI_ControlsBase::progress_hovered(int val)
 	double percent = (val * 1.0) / max;
 
 	MilliSeconds cur_pos_ms = MilliSeconds(percent * duration);
-	QString cur_pos_string = Util::cvt_ms_to_string(cur_pos_ms);
+	QString cur_pos_string = Util::cvt_ms_to_string(cur_pos_ms, "$M:$S");
 
 	QToolTip::showText( QCursor::pos(), cur_pos_string );
 }

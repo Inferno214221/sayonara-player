@@ -26,7 +26,6 @@
 #include "Utils/Logger/Logger.h"
 #include "Utils/Settings/Settings.h"
 
-#include "Components/Directories/DirectoryReader.h"
 #include "Database/Connector.h"
 #include "Database/CoverConnector.h"
 

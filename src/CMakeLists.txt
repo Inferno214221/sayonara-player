@@ -2,7 +2,9 @@ cmake_minimum_required(VERSION 3.8)
 project(sayonara)
 
 include(FindPkgConfig)
+include(CheckIncludeFileCXX)
 include(CMake/Compiler.cmake)
+include(CMake/GStreamer.cmake)
 
 option(WITH_COTIRE "Building with cotire PCH and compile time optimizations" OFF)
 option(WITH_SYSTEM_TAGLIB "Use the taglib provided by the destribution, which contains critical bugs in 1.11" OFF)
@@ -40,8 +42,17 @@ set(TAGLIB_FOUND 0)
 
 if(WITH_SYSTEM_TAGLIB)
 	message("Looking for system taglib")
+	include_directories(${TAGLIB_INCLUDE_DIRS})
 	# overwrites TAGLIB_FOUND, TAGLIB_LIBRARY_DIRS, TAGLIB_LIBRARIES
 	pkg_check_modules(TAGLIB taglib>=1.10 REQUIRED)
+
+	# Some distributions do not clean the taglib include path
+	# or the pkg-config .pc file for taglib after uninstalling
+	find_path(TAGLIB_INCLUDE_FOUND "audioproperties.h" PATHS ${TAGLIB_INCLUDE_DIRS})
+	if(NOT TAGLIB_INCLUDE_FOUND)
+		message(FATAL_ERROR "Taglib does not seem to be fully installed" )
+	endif()
+
 endif()
 
 if(NOT TAGLIB_FOUND)
@@ -83,6 +94,7 @@ include_directories(${GLIB_INCLUDE_DIRS})
 include_directories(${GOBJECT_INCLUDE_DIRS})
 include_directories(${GSTREAMER_INCLUDE_DIRS})
 include_directories(${GSTREAMER_BASE_INCLUDE_DIRS})
+include_directories(${GSTREAMER_BASE_APP_INCLUDE_DIRS})
 include_directories(${CMAKE_SOURCE_DIR}/src/3rdParty)
 include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_BINARY_DIR}/src)
@@ -108,7 +120,6 @@ else()
 	set(WIN32 0)
 endif()
 
-
 # check execinfo for FreeBSD
 if(WIN32)
 	link_directories(${GIO_LIBRARY_DIRS})
@@ -122,7 +133,6 @@ endif()
 
 
 # Check demangle
-include(CheckIncludeFileCXX)
 check_include_file_cxx("cxxabi.h" HAVE_CXX_ABI)
 if(${HAVE_CXX_ABI})
 	# Macros.h.in
@@ -148,7 +158,11 @@ add_subdirectory(Gui)
 add_subdirectory(Languages)
 add_subdirectory(Utils)
 
-add_executable(${PROJECT_NAME} Main.cpp ${QM_FILES})
+qt5_add_resources(DATABASE_RCC
+	${CMAKE_CURRENT_SOURCE_DIR}/../resources/Database.qrc
+)
+
+add_executable(${PROJECT_NAME} Main.cpp ${QM_FILES} ${DATABASE_RCC})
 
 if(WIN32)
 	set(OS_LIBRARIES
@@ -167,13 +181,12 @@ target_link_libraries(${PROJECT_NAME}
 	${OS_LIBRARIES}
 )
 
-add_executable("create_db" CreateDB.cpp)
+add_executable("create_db" CreateDB.cpp ${DATABASE_RCC})
 target_link_libraries("create_db"
 	sayonara_utils
 	sayonara_database
 	Qt5::Widgets
 )
-
 
 if(WIN32)
 	install(TARGETS ${PROJECT_NAME} DESTINATION .)

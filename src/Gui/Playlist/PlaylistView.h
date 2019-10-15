@@ -62,7 +62,7 @@ namespace Playlist
 
 	public:
 		explicit View(PlaylistPtr pl, QWidget* parent=nullptr);
-		virtual ~View();
+		~View() override;
 
 		void goto_row(int row);
 		void delete_selected_tracks();
@@ -116,6 +116,7 @@ namespace Playlist
 		void async_drop_finished(bool success, int async_drop_index);
 		void rating_changed(Rating rating);
 		void sl_columns_changed();
+		void sl_show_rating_changed();
 		void find_track_triggered();
 		void bookmark_triggered(Seconds timestamp);
 
@@ -123,6 +124,8 @@ namespace Playlist
 		void move_selected_rows_down();
 		void play_selected_track();
 		void goto_to_current_track();
+		void playlist_busy_changed(bool b);
+		void current_scanned_file_changed(const QString& current_file);
 
 	protected:
 		// SayonaraSelectionView interface

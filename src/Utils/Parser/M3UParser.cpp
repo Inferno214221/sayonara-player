@@ -26,9 +26,6 @@
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaDataList.h"
 
-#include "Database/Connector.h"
-#include "Database/LibraryDatabase.h"
-
 #include <QRegExp>
 #include <QStringList>
 
@@ -100,26 +97,13 @@ bool M3UParser::parse_first_line(const QString& line, MetaData& md)
 
 void M3UParser::parse_local_file(const QString& line, MetaData& md)
 {
-	MetaData md_db;
-	DB::Connector* db = DB::Connector::instance();
-	DB::LibraryDatabase* lib_db = db->library_db(-1, 0);
-
 	QString abs_filename = get_absolute_filename(line);
-
 	if(abs_filename.isEmpty()){
 		return;
 	}
 
-	md_db = lib_db->getTrackByPath(abs_filename);
-
-	if( md_db.id >= 0 ) {
-		md = md_db;
-	}
-
-	else {
-		md.set_filepath(abs_filename);
-		Tagging::Utils::getMetaDataOfFile(md);
-	}
+	md.set_filepath(abs_filename);
+	Tagging::Utils::getMetaDataOfFile(md);
 }
 
 void M3UParser::parse_www_file(const QString& line, MetaData& md)

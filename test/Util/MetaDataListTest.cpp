@@ -266,7 +266,7 @@ void MetaDataListTest::move_test()
 }
 
 
-QTEST_MAIN(MetaDataListTest)
+QTEST_GUILESS_MAIN(MetaDataListTest)
 
 #include "MetaDataListTest.moc"
 

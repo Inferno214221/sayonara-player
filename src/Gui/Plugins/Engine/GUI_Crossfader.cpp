@@ -61,8 +61,10 @@ void GUI_Crossfader::init_ui()
 
 	connect(ui->cb_crossfader, &QCheckBox::clicked, this, &GUI_Crossfader::crossfader_active_changed);
 	connect(ui->cb_gapless, &QCheckBox::clicked, this, &GUI_Crossfader::gapless_active_changed);
-
 	connect(ui->sli_crossfader, &QSlider::valueChanged, this, &GUI_Crossfader::slider_changed);
+
+	/** No crossfader with alsa **/
+	ListenSetting(Set::Engine_Sink, GUI_Crossfader::sl_engine_changed);
 }
 
 
@@ -103,8 +105,6 @@ void GUI_Crossfader::slider_changed(int val)
 	}
 }
 
-
-
 void GUI_Crossfader::crossfader_active_changed(bool b)
 {
 	if(b)
@@ -138,4 +138,14 @@ void GUI_Crossfader::gapless_active_changed(bool b)
 	plm.setGapless(b);
 
 	SetSetting(Set::PL_Mode, plm);
+}
+
+void GUI_Crossfader::sl_engine_changed()
+{
+	QString sink = GetSetting(Set::Engine_Sink);
+	if(ui)
+	{
+		ui->cb_crossfader->setDisabled(sink == "alsa");
+		ui->cb_gapless->setDisabled(sink == "alsa");
+	}
 }

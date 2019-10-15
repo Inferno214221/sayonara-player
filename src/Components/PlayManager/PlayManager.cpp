@@ -326,7 +326,8 @@ void PlayManager::change_track(const MetaData& md, int track_idx)
 	// show notification
 	if(GetSetting(Set::Notification_Show))
 	{
-		if(m->track_idx > -1 && !m->md.filepath().isEmpty()) {
+		if(m->track_idx > -1 && !m->md.filepath().isEmpty())
+		{
 			NotificationHandler::instance()->notify(m->md);
 		}
 	}

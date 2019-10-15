@@ -53,6 +53,7 @@ namespace Playlist
 		void sig_cur_idx_changed(int tab_idx);
 		void sig_add_tab_clicked();
 		void sig_metadata_dropped(int tab_idx, const MetaDataList& v_md);
+		void sig_files_dropped(int tab_idx, const QStringList& files);
 
 
 	public:

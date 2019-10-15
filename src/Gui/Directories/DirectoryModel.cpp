@@ -30,7 +30,7 @@
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Logger/Logger.h"
 
-#include "Components/Library/LibraryManager.h"
+#include "Components/LibraryManagement/LibraryManager.h"
 #include "Components/Library/LocalLibrary.h"
 
 #include "Database/LibraryDatabase.h"

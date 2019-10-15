@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "LameConverter.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/Genre.h"
@@ -39,7 +37,7 @@ LameConverter::LameConverter(bool cbr, int quality, QObject* parent) :
 	m = Pimpl::make<Private>(cbr);
 }
 
-LameConverter::~LameConverter() {}
+LameConverter::~LameConverter() = default;
 
 QStringList LameConverter::supported_input_formats() const
 {

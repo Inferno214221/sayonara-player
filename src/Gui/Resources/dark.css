@@ -624,7 +624,7 @@ QTabBar::tab
 	min-height: 2.5ex;
 }
 
-QTabBar::tab:last
+Playlist--TabBar::tab:last
 {
 	min-width: 1em;
 	max-width: 1em;
@@ -879,4 +879,11 @@ CoverButton:hover,
 	border: 1px solid #e8841a;
 	border-top: none;
 }
+
+QBalloonTip
+{
+	background-color: #3c3c3c;
+	color: #e8841a;
+}
+
 

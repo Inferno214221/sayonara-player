@@ -234,35 +234,11 @@ bool Artists::deleteArtist(ArtistId id)
 	return (!q.has_error());
 }
 
-ArtistId Artists::updateArtist(const Artist& artist)
-{
-	if(artist.id < 0){
-		return -1;
-	}
-
-	QString cis = Library::Utils::convert_search_string(artist.name(), search_mode());
-
-	QMap<QString, QVariant> bindings
-	{
-		{"name", Util::cvt_not_null(artist.name())},
-		{"cissearch", Util::cvt_not_null(cis)}
-	};
-
-	Query q = update("artists", bindings, {"artistID", artist.id}, QString("Cannot insert artist %1").arg(artist.name()));
-	if(q.has_error()){
-		return -1;
-	}
-
-	return artist.id;
-}
-
-
 ArtistId Artists::insertArtistIntoDatabase(const QString& artist)
 {
 	ArtistId id = getArtistID(artist);
 	if(id >= 0){
-		Artist a; a.set_name(artist);
-		return updateArtist(a);
+		return id;
 	}
 
 	QString cis = Library::Utils::convert_search_string(artist, search_mode());

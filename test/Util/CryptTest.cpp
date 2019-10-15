@@ -38,6 +38,6 @@ void CryptTest::crypttest()
 	}
 }
 
-QTEST_MAIN(CryptTest)
+QTEST_GUILESS_MAIN(CryptTest)
 
 #include "CryptTest.moc"

@@ -44,7 +44,11 @@ namespace Tagging
 		Q_OBJECT
 		PIMPL(Editor)
 
+	private:
+		using QThread::finished;
+
 	signals:
+		void sig_started();
 		void sig_finished();
 		void sig_progress(int);
 		void sig_metadata_received(const MetaDataList& v_md);
@@ -158,6 +162,7 @@ namespace Tagging
 		bool can_load_entire_album() const;
 		void load_entire_album();
 
+
 		QMap<QString, FailReason> failed_files() const;
 
 
@@ -179,6 +184,7 @@ namespace Tagging
 
 	private slots:
 		void thread_finished();
+		void load_entire_album_finished();
 	};
 }
 

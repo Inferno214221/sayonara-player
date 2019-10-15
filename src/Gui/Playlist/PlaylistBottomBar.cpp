@@ -35,7 +35,7 @@
 #endif
 
 // Think about CMake
-#include "Components/Library/LibraryManager.h"
+#include "Components/LibraryManagement/LibraryManager.h"
 
 #include <QFile>
 #include <QHBoxLayout>

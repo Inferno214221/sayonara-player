@@ -72,7 +72,7 @@ namespace Gui
 
 		public:
 			explicit CoverButton(QWidget* parent=nullptr);
-			virtual ~CoverButton();
+			~CoverButton() override;
 
 			/**
 			 * @brief Set an appropriate cover location.
@@ -100,6 +100,7 @@ namespace Gui
 			bool is_silent() const;
 
 			QPixmap pixmap() const;
+			int vertical_padding() const;
 
 		private:
 			using QPushButton::setIcon;

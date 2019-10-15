@@ -50,6 +50,7 @@ namespace Playlist
 		void sig_tab_clear(int tab_idx);
 		void sig_add_tab_clicked();
 		void sig_metadata_dropped(int tab_idx, const MetaDataList& v_md);
+		void sig_files_dropped(int tab_idx, const QStringList& files);
 
 	public:
 		explicit TabWidget(QWidget* parent=nullptr);

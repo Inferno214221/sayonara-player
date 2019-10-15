@@ -13,6 +13,7 @@ class PodcastTest : public QObject
 public:
 	PodcastTest() : QObject()
 	{
+		Q_INIT_RESOURCE(Database);
 		QFile::remove("/tmp/player.db");
 	}
 
@@ -24,7 +25,7 @@ public:
 private:
 	DB::Podcasts* pod()
 	{
-		DB::Connector* db = DB::Connector::instance(".", "/tmp", "player.db");
+		auto* db = DB::Connector::instance_custom("", "/tmp", "player.db");
 		return db->podcast_connector();
 	}
 
@@ -142,7 +143,7 @@ void PodcastTest::test_update()
 	}
 }
 
-QTEST_MAIN(PodcastTest)
+QTEST_GUILESS_MAIN(PodcastTest)
 
 #include "PodcastTest.moc"
 

@@ -1,0 +1,55 @@
+image: "luciocarreras/sayonara-appimage:20191005-3"
+stages:
+  - build
+  - test
+  - deploy
+
+# Building
+build-sayonara:
+  stage: build
+  script: 
+    - mkdir -p build && cd build
+    - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DWITH_COTIRE=1 -DWITH_TESTS=1
+    - make -j6
+    - make install DESTDIR=AppDir
+  artifacts:
+    untracked: true
+    expire_in: 1 day
+  only:
+    - master
+    - tags
+
+# Unit tests
+test-sayonara:
+  stage: test
+  variables:
+    CI_DEBUG_TRACE: "true"
+  dependencies: 
+    - build-sayonara
+  script:
+    - cd build
+    - make test
+  artifacts:
+    when: on_failure
+    untracked: true
+    expire_in: 2 days
+  only:
+    - master
+    - tags
+
+# Deploy
+deploy-sayonara:
+  stage: deploy
+  dependencies:
+    - build-sayonara
+  script:
+    - cd build
+    - EXTRA_QT_PLUGINS="iconengines,sqldrivers/libqsqlite.so,platforms/libqxcb.so" QMAKE="/usr/lib/x86_64-linux-gnu/qt5/bin/qmake" linuxdeploy-x86_64.AppImage --appdir=AppDir --desktop-file=./AppDir/usr/share/applications/sayonara.desktop --plugin=qt
+    - appimagetool-x86_64.AppImage AppDir
+  artifacts:
+    paths:
+      - build/*.AppImagea
+    expire_in: 2 weeks
+  only:
+    - tags
+

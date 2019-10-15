@@ -24,13 +24,20 @@
 #include "Utils/Pimpl.h"
 #include "Utils/Singleton.h"
 
+#include <QObject>
+
 class QStringList;
 class MetaDataList;
 
-class ExternTracksPlaylistGenerator
+class ExternTracksPlaylistGenerator :
+	public QObject
 {
+	Q_OBJECT
 	PIMPL(ExternTracksPlaylistGenerator)
 	SINGLETON(ExternTracksPlaylistGenerator)
+
+private:
+	void add_new_playlist(const QString& paths);
 
 public:
 	void add_paths(const QStringList& paths);

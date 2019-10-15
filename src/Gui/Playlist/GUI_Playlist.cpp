@@ -89,6 +89,7 @@ GUI_Playlist::GUI_Playlist(QWidget *parent) :
 	connect(ui->tw_playlists, &TabWidget::sig_tab_clear, this, &GUI_Playlist::clear_button_pressed);
 	connect(ui->tw_playlists, &TabWidget::sig_tab_reset, handler, &Playlist::Handler::reset_playlist);
 	connect(ui->tw_playlists, &TabWidget::sig_metadata_dropped, this, &GUI_Playlist::tab_metadata_dropped);
+	connect(ui->tw_playlists, &TabWidget::sig_files_dropped, this, &GUI_Playlist::tab_files_dropped);
 	connect(ui->tw_playlists, &TabWidget::sig_open_file, this, &GUI_Playlist::open_file_clicked);
 	connect(ui->tw_playlists, &TabWidget::sig_open_dir, this, &GUI_Playlist::open_dir_clicked);
 
@@ -137,7 +138,6 @@ void GUI_Playlist::bookmark_selected(int idx, Seconds timestamp)
 	PlayManager::instance()->seek_abs_ms(timestamp * 1000);
 }
 
-
 void GUI_Playlist::add_playlist_button_pressed()
 {
 	Handler::instance()->create_empty_playlist();
@@ -167,13 +167,36 @@ void GUI_Playlist::tab_metadata_dropped(int pl_idx, const MetaDataList& v_md)
 
 	else if(pl_idx == ui->tw_playlists->count() - 1)
 	{
-		QString name = Handler::instance()->request_new_playlist_name();
+		QString name = handler->request_new_playlist_name();
 		handler->create_playlist(v_md, name);
 	}
 
 	else
 	{
 		handler->append_tracks(v_md, pl_idx);
+	}
+}
+
+void GUI_Playlist::tab_files_dropped(int pl_idx, const QStringList& paths)
+{
+	Handler* handler = Handler::instance();
+	if(pl_idx < 0 || pl_idx >= ui->tw_playlists->count()){
+		return;
+	}
+
+	int origin_tab = ui->tw_playlists->get_drag_origin_tab();
+	bool was_drag_from_playlist = ui->tw_playlists->was_drag_from_playlist();
+	if(origin_tab >= 0 || was_drag_from_playlist) {
+		return;
+	}
+
+	if(pl_idx == ui->tw_playlists->count() - 1) {
+		QString name = handler->request_new_playlist_name();
+		handler->create_playlist(paths, name);
+	}
+
+	else {
+		handler->append_tracks(paths, pl_idx);
 	}
 }
 
@@ -208,41 +231,27 @@ void GUI_Playlist::dropEvent(QDropEvent* event)
 
 void GUI_Playlist::set_total_time_label()
 {
-	int n_rows = 0;
 	int current_idx = ui->tw_playlists->currentIndex();
 	PlaylistConstPtr pl = Handler::instance()->playlist(current_idx);
 
 	MilliSeconds dur_ms = 0;
-	if(pl){
+	if(pl) {
 		dur_ms = pl->running_time();
 	}
 
-	QString time_str;
-	if(dur_ms > 0){
-		time_str = Util::cvt_ms_to_string(dur_ms, true, false);
-	}
-
+	int rows = 0;
 	View* cur_view = current_view();
-	if(cur_view){
-		n_rows = cur_view->row_count();
+	if(cur_view) {
+		rows = cur_view->row_count();
 	}
 
-	QString playlist_string = QString::number(n_rows);
-
-	if(n_rows == 0){
+	QString playlist_string = tr("%n track(s)", "", rows);
+	if(rows == 0){
 		playlist_string = tr("Playlist empty");
 	}
 
-	else if(n_rows == 1)	{
-		playlist_string += " " + Lang::get(Lang::Track);
-	}
-
-	else {
-		playlist_string += " " + Lang::get(Lang::Tracks);
-	}
-
-	if( dur_ms > 0 ){
-		playlist_string += " - " + time_str;
+	if(dur_ms > 0){
+		playlist_string += " - " + Util::cvt_ms_to_string(dur_ms, "$He $M:$S");
 	}
 
 	ui->lab_totalTime->setText(playlist_string);
@@ -349,6 +358,8 @@ void GUI_Playlist::playlist_idx_changed(int pl_idx)
 	PlaylistConstPtr pl = Handler::instance()->playlist(pl_idx);
 	ui->tw_playlists->setCurrentIndex(pl_idx);
 
+	this->setFocusProxy(ui->tw_playlists->currentWidget());
+
 	set_total_time_label();
 	check_playlist_menu(pl);
 }
@@ -388,7 +399,6 @@ void GUI_Playlist::playlist_finished()
 {
 	check_tab_icon();
 }
-
 
 void GUI_Playlist::tab_close_playlist_clicked(int idx)
 {

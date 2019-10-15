@@ -85,7 +85,6 @@ public:
 	QString			directory_name_origin(const QModelIndex& index);
 
 	QModelIndexList	selected_indexes() const;
-	MetaDataList	selected_metadata() const;
 	QStringList		selected_paths() const;
 
 	QMimeData*		dragable_mimedata() const override;

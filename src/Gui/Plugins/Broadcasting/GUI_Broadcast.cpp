@@ -33,13 +33,23 @@ class BroadcastAction :
 		public Gui::PreferenceAction
 {
 	public:
-		BroadcastAction(QWidget* parent) : PreferenceAction(Lang::get(Lang::Broadcast), identifier(), parent) {}
+		BroadcastAction(QWidget* parent);
+		~BroadcastAction() override;
 
-		QString identifier() const override { return "broadcast"; }
+		QString identifier() const override;
 
 	protected:
-		QString display_name() const override { return Lang::get(Lang::Broadcast); }
+		QString display_name() const override;
 };
+
+BroadcastAction::BroadcastAction(QWidget* parent) :
+	PreferenceAction(Lang::get(Lang::Broadcast), identifier(), parent)
+{}
+
+BroadcastAction::~BroadcastAction() = default;
+QString BroadcastAction::identifier() const { return "broadcast"; }
+QString BroadcastAction::display_name() const { return Lang::get(Lang::Broadcast); }
+
 
 struct GUI_Broadcast::Private
 {
@@ -101,6 +111,12 @@ void GUI_Broadcast::init_ui()
 	}
 
 	setup_parent(this, &ui);
+
+	const QStringList clients = m->server->connected_clients();
+	for(const QString& client : clients)
+	{
+		ui->combo_clients->addItem(client);
+	}
 
 	m->action_dismiss = new QAction(ui->btn_menu);
 	m->action_dismiss_all = new QAction(ui->btn_menu);
@@ -313,7 +329,8 @@ void GUI_Broadcast::mp3_enc_found()
 		ui->lab_error->setText(Lang::get(Lang::CannotFindLame));
 	}
 
-	else{
+	else
+	{
 		ui->lab_error->hide();
 		ui->btn_retry->hide();
 	}

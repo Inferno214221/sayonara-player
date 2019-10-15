@@ -38,7 +38,7 @@
 using DB::Query;
 
 SC::Database::Database() :
-	::DB::Base(25, Util::share_path(), Util::sayonara_path(), "soundcloud.db"),
+	::DB::Base(25, ":/Database", Util::sayonara_path(), "soundcloud.db"),
 	::DB::LibraryDatabase(module()->connection_name(), 25, -1)
 {
 	this->apply_fixes();

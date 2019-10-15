@@ -32,10 +32,10 @@
 #include "Gui/Utils/EventFilter.h"
 #include "Gui/Utils/PreferenceAction.h"
 
-#include "Components/Library/LibraryManager.h"
+#include "Components/LibraryManagement/LibraryManager.h"
 #include "Components/Library/LocalLibrary.h"
 #include "Components/Playlist/PlaylistHandler.h"
-#include "Components/Directories/DirectoryReader.h"
+#include "Components/Directories/MetaDataScanner.h"
 
 #include "Database/LibraryDatabase.h"
 #include "Database/Connector.h"
@@ -48,12 +48,14 @@
 #include "Utils/globals.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Settings/Settings.h"
+#include "Utils/Logger/Logger.h"
 
 #include <QItemSelectionModel>
 #include <QApplication>
 #include <QMouseEvent>
 #include <QShortcut>
 #include <QMenu>
+#include <QThread>
 
 struct GUI_DirectoryWidget::Private
 {
@@ -209,19 +211,26 @@ MD::Interpretation GUI_DirectoryWidget::metadata_interpretation() const
 
 MetaDataList GUI_DirectoryWidget::info_dialog_data() const
 {
-	MetaDataList v_md;
+	return MetaDataList();
+}
 
+bool GUI_DirectoryWidget::has_metadata() const
+{
+	return false;
+}
+
+QStringList GUI_DirectoryWidget::pathlist() const
+{
 	switch(m->selected_widget)
 	{
 		case Private::SelectedWidget::Dirs:
-			return ui->tv_dirs->selected_metadata();
+			return ui->tv_dirs->selected_paths();
 		case Private::SelectedWidget::Files:
-			return ui->lv_files->selected_metadata();
+			return ui->lv_files->selected_paths();
 		default:
-			return v_md;
+			return QStringList();
 	}
 }
-
 
 void GUI_DirectoryWidget::dir_enter_pressed()
 {
@@ -257,7 +266,7 @@ void GUI_DirectoryWidget::dir_clicked(QModelIndex idx)
 	dir_opened(idx);
 }
 
-#include "Utils/Logger/Logger.h"
+
 void GUI_DirectoryWidget::dir_opened(QModelIndex idx)
 {
 	QModelIndexList selected_items = ui->tv_dirs->selected_indexes();
@@ -275,7 +284,7 @@ void GUI_DirectoryWidget::dir_opened(QModelIndex idx)
 	ui->lv_files->set_parent_directory(ui->tv_dirs->library_id(idx), dir);
 	ui->lv_files->set_search_filter(ui->le_search->text());
 
-	if(ui->lv_files->selected_metadata().isEmpty())
+	if(ui->lv_files->selected_paths().isEmpty())
 	{
 		m->generic_library->fetch_tracks_by_paths(dirs);
 	}
@@ -284,9 +293,8 @@ void GUI_DirectoryWidget::dir_opened(QModelIndex idx)
 
 void GUI_DirectoryWidget::dir_append_clicked()
 {
-	MetaDataList v_md = ui->tv_dirs->selected_metadata();
-	Playlist::Handler* plh = Playlist::Handler::instance();
-	plh->append_tracks(v_md, plh->current_index());
+	auto* plh = Playlist::Handler::instance();
+	plh->append_tracks(ui->tv_dirs->selected_paths(), plh->current_index());
 }
 
 void GUI_DirectoryWidget::dir_play_clicked()
@@ -297,18 +305,15 @@ void GUI_DirectoryWidget::dir_play_clicked()
 
 void GUI_DirectoryWidget::dir_play_next_clicked()
 {
-	MetaDataList v_md = ui->tv_dirs->selected_metadata();
-	Playlist::Handler* plh = Playlist::Handler::instance();
-	plh->play_next(v_md);
+	auto* plh = Playlist::Handler::instance();
+	plh->play_next(ui->tv_dirs->selected_paths());
 }
 
 void GUI_DirectoryWidget::dir_play_new_tab_clicked()
 {
-	MetaDataList v_md = ui->tv_dirs->selected_metadata();
-	Playlist::Handler* plh = Playlist::Handler::instance();
-	plh->create_playlist(v_md, plh->request_new_playlist_name());
+	auto* plh = Playlist::Handler::instance();
+	plh->create_playlist(ui->tv_dirs->selected_paths(), plh->request_new_playlist_name());
 }
-
 
 void GUI_DirectoryWidget::dir_delete_clicked()
 {
@@ -319,19 +324,14 @@ void GUI_DirectoryWidget::dir_delete_clicked()
 	}
 
 	QStringList files = ui->tv_dirs->selected_paths();
-	MetaDataList v_md = ui->tv_dirs->selected_metadata();
-
-	m->generic_library->delete_tracks(v_md, Library::TrackDeletionMode::OnlyLibrary);
-
-	Util::File::delete_files(files);
+	create_delete_filescanner(files);
 }
 
 
 void GUI_DirectoryWidget::file_append_clicked()
 {
-	MetaDataList v_md = ui->lv_files->selected_metadata();
-	Playlist::Handler* plh = Playlist::Handler::instance();
-	plh->append_tracks(v_md, plh->current_index());
+	auto* plh = Playlist::Handler::instance();
+	plh->append_tracks(ui->lv_files->selected_paths(), plh->current_index());
 }
 
 void GUI_DirectoryWidget::file_play_clicked()
@@ -343,33 +343,26 @@ void GUI_DirectoryWidget::file_play_clicked()
 
 void GUI_DirectoryWidget::file_play_next_clicked()
 {
-	MetaDataList v_md = ui->lv_files->selected_metadata();
-	Playlist::Handler* plh = Playlist::Handler::instance();
-	plh->play_next(v_md);
+	auto* plh = Playlist::Handler::instance();
+	plh->play_next(ui->lv_files->selected_paths());
 }
 
 void GUI_DirectoryWidget::file_play_new_tab_clicked()
 {
-	MetaDataList v_md = ui->lv_files->selected_metadata();
-	Playlist::Handler* plh = Playlist::Handler::instance();
-	plh->create_playlist(v_md, plh->request_new_playlist_name());
+	auto* plh = Playlist::Handler::instance();
+	plh->create_playlist(ui->lv_files->selected_paths(), plh->request_new_playlist_name());
 }
 
 
 void GUI_DirectoryWidget::file_delete_clicked()
 {
 	Message::Answer answer = Message::question_yn(Lang::get(Lang::Delete) + ": " + Lang::get(Lang::Really) + "?");
-
 	if(answer != Message::Answer::Yes){
 		return;
 	}
 
-	MetaDataList v_md = ui->lv_files->selected_metadata();
-
-	m->generic_library->delete_tracks(v_md, Library::TrackDeletionMode::OnlyLibrary);
-
 	QStringList files = ui->lv_files->selected_paths();
-	Util::File::delete_files(files);
+	create_delete_filescanner(files);
 }
 
 void GUI_DirectoryWidget::import_requested(LibraryId id, const QStringList& paths, const QString& target_dir)
@@ -540,3 +533,32 @@ void GUI_DirectoryWidget::check_libraries()
 	}
 }
 
+
+void GUI_DirectoryWidget::create_delete_filescanner(const QStringList& files)
+{
+	using Directory::MetaDataScanner;
+	auto* worker = new MetaDataScanner(files, true, nullptr);
+	auto* t = new QThread();
+
+	worker->moveToThread(t);
+
+	connect(worker, &MetaDataScanner::sig_finished, this, &GUI_DirectoryWidget::scanner_delete_finished);
+	connect(worker, &MetaDataScanner::sig_finished, t, &QThread::quit);
+	connect(t, &QThread::finished, t, &QObject::deleteLater);
+	connect(t, &QThread::started, worker, &MetaDataScanner::start);
+
+	t->start();
+}
+
+
+void GUI_DirectoryWidget::scanner_delete_finished()
+{
+	auto* worker = static_cast<Directory::MetaDataScanner*>(sender());
+	MetaDataList v_md = worker->metadata();
+	QStringList files = worker->files();
+
+	m->generic_library->delete_tracks(v_md, Library::TrackDeletionMode::OnlyLibrary);
+	Util::File::delete_files(files);
+
+	worker->deleteLater();
+}

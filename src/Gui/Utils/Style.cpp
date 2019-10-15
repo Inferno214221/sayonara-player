@@ -43,6 +43,7 @@ QString Style::style(bool dark)
 {
 	QFont std_font =		QApplication::font();
 	QString font_family =	GetSetting(Set::Player_FontName);
+
 	int font_size =			GetSetting(Set::Player_FontSize);
 	int font_size_lib =		GetSetting(Set::Lib_FontSize);
 	int font_size_pl =		GetSetting(Set::PL_FontSize);
@@ -65,15 +66,29 @@ QString Style::style(bool dark)
 	}
 
 	QString style;
+	QString path;
 
-	if(!dark) {
-		Util::File::read_file_into_str( Util::share_path("standard.css"), style );
+	if(!dark)
+	{
+		path = Util::sayonara_path("standard.css");
+		if(!Util::File::exists(path))
+		{
+			path = ":/Style/standard.css";
+		}
+
+		Util::File::read_file_into_str(":/Style/standard.css", style );
 	}
 
-	else{
-		Util::File::read_file_into_str( Util::share_path("dark.css"), style );
-		style.replace("<<SHARE_PATH>>", Util::share_path());
+	else
+	{
+		path = Util::sayonara_path("dark.css");
+		if(!Util::File::exists(path))
+		{
+			path = ":/Style/dark.css";
+		}
 	}
+
+	Util::File::read_file_into_str(path, style);
 
 	style.replace("<<FONT_FAMILY>>", font_family);
 	style.replace("<<FONT_SIZE>>", QString::number(font_size));
@@ -87,6 +102,7 @@ QString Style::style(bool dark)
 QFont Style::current_font()
 {
 	QFont std_font = QApplication::font();
+
 	QString font_family =	GetSetting(Set::Player_FontName);
 	int font_size =			GetSetting(Set::Player_FontSize);
 	int font_size_lib =		GetSetting(Set::Lib_FontSize);
@@ -134,4 +150,5 @@ bool Style::is_dark()
 void Style::set_dark(bool dark)
 {
 	SetSetting(Set::Player_Style, dark ? 1 : 0);
+	Set::shout<SetNoDB::Player_MetaStyle>();
 }

@@ -59,7 +59,7 @@ class GUI_Playlist :
 
 public:
 	explicit GUI_Playlist(QWidget *parent=nullptr);
-	~GUI_Playlist();
+	~GUI_Playlist() override;
 
 private:
 	Playlist::View* view_by_index(int idx);
@@ -96,6 +96,7 @@ private slots:
 	void tab_rename_clicked(int pl_idx, const QString& str);
 	void tab_delete_playlist_clicked(int pl_idx); // GUI_PlaylistTabs.cpp
 	void tab_metadata_dropped(int pl_idx, const MetaDataList& v_md);
+	void tab_files_dropped(int pl_idx, const QStringList& paths);
 	void open_file_clicked(int pl_idx);
 	void open_dir_clicked(int pl_idx);
 	void delete_tracks_clicked(const IndexSet& rows);

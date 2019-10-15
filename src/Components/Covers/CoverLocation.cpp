@@ -67,8 +67,8 @@ static QList<Url> extract_download_urls(const LibraryItem* item)
 struct Location::Private
 {
 	QString			search_term;		// Term provided to search engine
-	UrlList	search_urls;		// Search url where to fetch covers
-	UrlList	search_term_urls;	// Search urls where to fetch cover when using freetext search
+	UrlList			search_urls;		// Search url where to fetch covers
+	UrlList			search_term_urls;	// Search urls where to fetch cover when using freetext search
 	QStringList		local_path_hints;
 	StringMap		all_search_urls;	// key = identifier of coverfetcher, value = search url
 	QString			cover_path;			// cover_path path, in .Sayonara, where cover is stored. Ignored if local_paths are not empty
@@ -161,19 +161,17 @@ Location& Location::operator=(const Location& other)
 	return *this;
 }
 
-
 QString Location::invalid_path()
 {
-	return invalid_location().cover_path();
+	return QString(":/Icons/logo.png");
 }
-
 
 Location Location::invalid_location()
 {
 	Location cl;
 
 	cl.set_valid(false);
-	cl.set_cover_path(::Util::share_path("logo.png"));
+	cl.set_cover_path(Location::invalid_path());
 	cl.set_search_urls(UrlList());
 	cl.set_search_term(QString());
 	cl.set_identifier("Invalid location");
@@ -182,7 +180,6 @@ Location Location::invalid_location()
 
 	return cl;
 }
-
 
 Location Location::cover_location(const QString& album_name, const QString& artist_name)
 {
@@ -213,7 +210,6 @@ Location Location::cover_location(const QString& album_name, const QStringList& 
 	QString major_artist = ArtistList::get_major_artist(artists);
 	return cover_location(album_name, major_artist);
 }
-
 
 Location Location::xcover_location(const Album& album)
 {
@@ -275,7 +271,6 @@ Location Location::cover_location(const Artist& artist)
 
 	return cl;
 }
-
 
 Location Location::cover_location(const QString& artist)
 {
@@ -403,7 +398,7 @@ bool Location::is_valid() const
 QString Location::preferred_path() const
 {
 	if(!m->valid){
-		return invalid_path();
+		return Location::invalid_path();
 	}
 
 	// first search for cover in track
@@ -430,7 +425,7 @@ QString Location::preferred_path() const
 		return local_path();
 	}
 
-	return invalid_path();
+	return Location::invalid_path();
 }
 
 QString Location::alternative_path() const
@@ -673,7 +668,6 @@ void Location::set_hash(const QString& hash)
 {
 	m->hash	= hash;
 }
-
 
 QString Location::to_string() const
 {

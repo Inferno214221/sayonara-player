@@ -80,7 +80,7 @@ TrayIconContextMenu::TrayIconContextMenu(QWidget* parent) :
 	this->addAction(m->show_action);
 	this->addAction(m->close_action);
 
-	PlayManager* pm = PlayManager::instance();
+	auto* pm = PlayManager::instance();
 	connect(m->play_action, &QAction::triggered, pm, &PlayManager::play_pause);
 	connect(m->fwd_action, &QAction::triggered, pm, &PlayManager::next);
 	connect(m->bwd_action, &QAction::triggered, pm, &PlayManager::previous);
@@ -105,7 +105,7 @@ TrayIconContextMenu::TrayIconContextMenu(QWidget* parent) :
 	skin_changed();
 }
 
-TrayIconContextMenu::~TrayIconContextMenu() {}
+TrayIconContextMenu::~TrayIconContextMenu() = default;
 
 void TrayIconContextMenu::set_enable_fwd(bool b)
 {
@@ -161,7 +161,7 @@ void TrayIconContextMenu::playstate_changed(PlayState state)
 
 void TrayIconContextMenu::language_changed()
 {
-	PlayManager* pm = PlayManager::instance();
+	auto* pm = PlayManager::instance();
 
 	m->play_action->setText(Lang::get(Lang::PlayPause));
 	m->fwd_action->setText(Lang::get(Lang::NextTrack));
@@ -205,8 +205,6 @@ struct GUI_TrayIcon::Private
 {
 	TrayIconContextMenu*	context_menu=nullptr;
 	QTimer*					timer=nullptr;
-
-	Private() {}
 };
 
 GUI_TrayIcon::GUI_TrayIcon (QObject *parent) :
@@ -215,17 +213,17 @@ GUI_TrayIcon::GUI_TrayIcon (QObject *parent) :
 {
 	m = Pimpl::make<Private>();
 
-	NotificationHandler* nh = NotificationHandler::instance();
+	auto* nh = NotificationHandler::instance();
 	nh->register_notificator(this);
 
-	PlayManager* pm = PlayManager::instance();
+	auto* pm = PlayManager::instance();
 	connect(pm, &PlayManager::sig_playstate_changed, this, &GUI_TrayIcon::playstate_changed);
 
 	init_context_menu();
 	playstate_changed(pm->playstate());
 }
 
-GUI_TrayIcon::~GUI_TrayIcon() {}
+GUI_TrayIcon::~GUI_TrayIcon() = default;
 
 void GUI_TrayIcon::init_context_menu()
 {
@@ -241,18 +239,19 @@ void GUI_TrayIcon::init_context_menu()
 	setContextMenu(m->context_menu);
 }
 
-bool GUI_TrayIcon::event(QEvent * e)
+
+bool GUI_TrayIcon::event(QEvent* e)
 {
 	if (e->type() == QEvent::Wheel)
 	{
-		QWheelEvent* wheel_event = static_cast<QWheelEvent*>(e);
+		auto* wheel_event = static_cast<QWheelEvent*>(e);
 
 		if(wheel_event){
 			emit sig_wheel_changed( wheel_event->delta() );
 		}
 	}
 
-	return true;
+	return QSystemTrayIcon::event(e);
 }
 
 void GUI_TrayIcon::notify(const MetaData& md)

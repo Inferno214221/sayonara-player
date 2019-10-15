@@ -97,6 +97,7 @@ namespace Playlist
 			 * @param idx playlist index
 			 */
 			void sig_current_playlist_changed(int idx);
+			void sig_active_playlist_changed(int idx);
 
 			/**
 			 * @brief emitted when a track deletion was triggered over the Ui
@@ -127,6 +128,7 @@ namespace Playlist
 			 * @param v_md list of tracks
 			 */
 			void play_next(const MetaDataList& v_md);
+			void play_next(const QStringList& paths);
 
 			/**
 			 * @brief insert tracks into a playlist at a given index
@@ -135,6 +137,7 @@ namespace Playlist
 			 * @param pl_idx playlist index
 			 */
 			void insert_tracks(const MetaDataList& v_md, int idx, int pl_idx);
+			void insert_tracks(const QStringList& paths, int idx, int pl_idx);
 
 
 			/**
@@ -305,7 +308,6 @@ namespace Playlist
 			 * @return new playlist index
 			 */
 			int create_empty_playlist(bool override_current=false);
-
 			int create_empty_playlist(const QString& name);
 
 
@@ -356,6 +358,13 @@ namespace Playlist
 
 			void playlist_renamed(int id, const QString& old_name, const QString& new_name);
 			void playlist_deleted(int id);
+
+			/**
+			 * @brief Return of an async scanning operation when
+			 * creating new playlists from paths
+			 */
+			void filescanner_progress_changed(const QString& current_file);
+			void files_scanned();
 
 		private:
 			/**
@@ -409,10 +418,20 @@ namespace Playlist
 			void emit_cur_track_changed();
 
 			/**
-			 * @brief Set active playlist index, if pl_idx is invalid,
+			 * @brief Set active playlist index, if playlist_index is invalid,
 			 * @param pl_idx playlist index
 			 */
-			void set_active_idx(int pl_idx);
+			void set_active_idx(int playlist_index);
+
+			/**
+			 * @brief extracts metadata asynchronously
+			 * @param index the playlist index
+			 * @param paths list of paths
+			 * @param target_row_idx where the found metadata should be inserted.
+			 * If -1, the playlist is cleared before,
+			 * If greater than number of tracks, the found metadata is appended
+			 */
+			void create_filescanner(int playlist_index, const QStringList& paths, int target_row_idx);
 	};
 }
 

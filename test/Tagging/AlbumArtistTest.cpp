@@ -46,6 +46,6 @@ void AlbumArtistTest::xiph_test()
 	AbstractTaggingTest::xiph_test();
 }
 
-QTEST_MAIN(AlbumArtistTest)
+QTEST_GUILESS_MAIN(AlbumArtistTest)
 
 #include "AlbumArtistTest.moc"

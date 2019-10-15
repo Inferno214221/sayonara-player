@@ -21,7 +21,7 @@
 #ifndef DIRECTORYWIDGETCONTAINER_H
 #define DIRECTORYWIDGETCONTAINER_H
 
-#include "Interfaces/Library/LibraryContainer/LibraryContainer.h"
+#include "Gui/Utils/Library/LibraryContainerImpl.h"
 
 class GUI_DirectoryWidget;
 
@@ -33,7 +33,7 @@ namespace Library
 	 * @ingroup GuiDirectories
 	 */
 	class DirectoryContainer :
-			public Container
+			public ContainerImpl
 	{
 		Q_OBJECT
 
@@ -43,7 +43,7 @@ namespace Library
 	public:
 
 		explicit DirectoryContainer(QObject* parent=nullptr);
-		virtual ~DirectoryContainer();
+		~DirectoryContainer() override;
 
 		QString				display_name() const override;
 		QString				name() const override;

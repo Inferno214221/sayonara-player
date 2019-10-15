@@ -54,6 +54,7 @@ TabWidget::TabWidget(QWidget* parent) :
 	connect(m->tab_bar, &TabBar::sig_cur_idx_changed, this, &TabWidget::currentChanged);
 	connect(m->tab_bar, &TabBar::sig_add_tab_clicked, this, &TabWidget::sig_add_tab_clicked);
 	connect(m->tab_bar, &TabBar::sig_metadata_dropped, this, &TabWidget::sig_metadata_dropped);
+	connect(m->tab_bar, &TabBar::sig_files_dropped, this, &TabWidget::sig_files_dropped);
 }
 
 TabWidget::~TabWidget() = default;

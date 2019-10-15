@@ -26,8 +26,8 @@
 #include "Components/Covers/CoverChangeNotifier.h"
 #include "Components/Covers/CoverUtils.h"
 
-#include "Utils/FileUtils.h"
 #include "Utils/Utils.h"
+#include "Utils/FileUtils.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
 
@@ -133,6 +133,16 @@ CoverButton::~CoverButton()
 QPixmap CoverButton::pixmap() const
 {
 	return m->current_cover;
+}
+
+int CoverButton::vertical_padding() const
+{
+	int p = (this->height() - m->current_cover_scaled.size().height()) - 2;
+	if(p <= 0){
+		p = -(this->width() - m->current_cover_scaled.size().width() - 2);
+	}
+
+	return p;
 }
 
 void CoverButton::trigger()

@@ -79,7 +79,7 @@ public:
 	explicit GUI_TrayIcon(QObject *parent=nullptr);
 	virtual ~GUI_TrayIcon();
 
-	bool event ( QEvent * e ) override;
+	bool event(QEvent* e) override;
 	void set_enable_fwd(bool b);
 
 	void notify(const MetaData& md) override;

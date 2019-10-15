@@ -20,8 +20,6 @@
 
 #include "MimeDataUtils.h"
 
-#include "Components/Directories/DirectoryReader.h"
-
 #include "Gui/Utils/CustomMimeData.h"
 
 #include "Utils/MetaData/MetaDataList.h"
@@ -45,27 +43,6 @@ MetaDataList MimeData::metadata(const QMimeData* data)
 	if(cmd)
 	{
 		return cmd->metadata();
-	}
-
-	if(data->hasUrls())
-	{
-		MetaDataList v_md;
-		DirectoryReader reader;
-		reader.set_filter(::Util::soundfile_extensions());
-
-		const QList<QUrl> urls = data->urls();
-		for(const QUrl& url : urls)
-		{
-			if(url.isLocalFile())
-			{
-				QStringList file_list;
-				file_list << url.toLocalFile();
-				MetaDataList v_md_tmp = reader.scan_metadata(file_list);
-				v_md << std::move(v_md_tmp);
-			}
-		}
-
-		return v_md;
 	}
 
 	return MetaDataList();

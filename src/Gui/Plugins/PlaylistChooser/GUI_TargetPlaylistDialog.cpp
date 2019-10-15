@@ -20,7 +20,7 @@
 
 #include "GUI_TargetPlaylistDialog.h"
 #include "Utils/Language/Language.h"
-#include "Components/Library/LibraryManager.h"
+#include "Components/LibraryManagement/LibraryManager.h"
 
 #include <QFileDialog>
 

@@ -18,12 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef GUI_ENGINEPREFERENCES_H
 #define GUI_ENGINEPREFERENCES_H
 
 #include "Gui/Preferences/PreferenceWidget.h"
+#include <QProcess>
 
 UI_FWD(GUI_EnginePreferences)
 
@@ -31,6 +30,7 @@ class GUI_EnginePreferences :
 	public Preferences::Base
 {
 	Q_OBJECT
+	PIMPL(GUI_EnginePreferences)
 	UI_CLASS(GUI_EnginePreferences)
 
 public:
@@ -43,6 +43,14 @@ public:
 	void revert() override;
 	void init_ui() override;
 	void retranslate_ui() override;
+
+private slots:
+
+	void radio_button_changed(bool b);
+
+	void alsa_process_finished(int exitCode, QProcess::ExitStatus exitStatus);
+	void alsa_process_error_occured(QProcess::ProcessError error);
+	void alsa_stdout_written();
 };
 
 #endif // GUI_ENGINEPREFERENCES_H

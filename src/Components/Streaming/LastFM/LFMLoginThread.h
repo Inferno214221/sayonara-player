@@ -23,6 +23,7 @@
 
 #include <QObject>
 #include "Utils/globals.h"
+#include "Utils/Pimpl.h"
 
 namespace LastFM
 {
@@ -46,6 +47,7 @@ namespace LastFM
             public QObject
     {
         Q_OBJECT
+        PIMPL(LoginThread)
 
     signals:
         void sig_token_received(const QString& token);
@@ -63,9 +65,6 @@ namespace LastFM
     private slots:
         void wa_response(const QByteArray& data);
         void wa_error(const QString& response);
-
-    private:
-        LoginStuff _login_info;
     };
 }
 

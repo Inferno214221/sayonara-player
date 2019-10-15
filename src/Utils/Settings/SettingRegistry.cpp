@@ -33,9 +33,8 @@
 #include <QDir>
 #include <QSize>
 #include <QPoint>
-#include <QApplication>
-#include <QFont>
 #include <QThread>
+#include <QLocale>
 #include <type_traits>
 
 template<typename KeyClass>
@@ -150,8 +149,8 @@ bool SettingRegistry::init()
 	register_setting<Set::Player_Language>( "player_language", QLocale().name());
 	register_setting<Set::Player_Style>( "player_style", 1 );
 	register_setting<Set::Player_ControlStyle>( "player_control_style", 1 );
-	register_setting<Set::Player_FontName>( "player_font", QApplication::font().family() );
-	register_setting<Set::Player_FontSize>( "player_font_size", QApplication::font().pointSize() );
+	register_setting<Set::Player_FontName>( "player_font", "" );					// set by Style:: later
+	register_setting<Set::Player_FontSize>( "player_font_size", 0 );				// set by Style:: later
 	register_setting<Set::Player_FadingCover>( "player_fading_cover", true );
 	register_setting<Set::Player_Size>( "player_size", QSize(1200,800) );
 	register_setting<Set::Player_Pos>( "player_pos", QPoint(50,50) );
@@ -224,6 +223,7 @@ bool SettingRegistry::init()
 	register_setting<Set::Engine_SpeedActive>( "engine_speed_active", false);
 	register_setting<Set::Engine_Speed>( "engine_speed", 1.0f);
 	register_setting<Set::Engine_Sink>( "engine_sink", QString("auto"));
+	register_setting<Set::Engine_AlsaDevice>( "engine_alsa_device", QString(""));
 	register_setting<Set::Engine_BufferSizeMS>( "engine_buffer_size_ms", 500);
 
 	register_setting<Set::Spectrum_Style>( "spectrum_style", 0 );
@@ -261,12 +261,15 @@ bool SettingRegistry::init()
 	register_setting<Set::Proxy_Password>( "proxy_password", QString());
 	register_setting<Set::Proxy_SavePw>( "proxy_save_pw", false);
 
+	register_setting<Set::Speed_LastTab>("speed_last_tab", 0);
+
 	register_setting<Set::Settings_Revision>("settings_version", 0);
 	register_setting<Set::Logger_Level>( "logger_level", 0);
 
 	register_setting<SetNoDB::MP3enc_found>( true );
 	register_setting<SetNoDB::Pitch_found>( true );
 	register_setting<SetNoDB::Player_Quit>( false );
+	register_setting<SetNoDB::Player_MetaStyle>(1);
 
 	SetSetting(Set::Player_Version, SAYONARA_VERSION);
 
@@ -292,6 +295,7 @@ QList<SettingKey> SettingRegistry::undeployable_keys()
 
 		SettingKey::MP3enc_found,
 		SettingKey::Pitch_found,
-		SettingKey::Player_Quit
+		SettingKey::Player_Quit,
+		SettingKey::Player_MetaStyle
 	};
 }
