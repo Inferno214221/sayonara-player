@@ -17,8 +17,7 @@ In order to compile you need the following packages
  * zlib development files
 
 #### Installing packages on Debian/Ubuntu/Mint
-
-`apt-get install cmake pkg-config qtbase5-dev qttools5-dev qttools5-dev-tools zlib1g-dev libqt5sql5-sqlite libgstreamer-1.0-dev libgstreamer-plugins.bad-1.0-dev libgstreamer-plugins-base1.0-dev gstreamer-1.0-plugins-bad gstreamer-1.0-plugins-ugly vorbis-tools lame libmp3lame cmake`
+`apt-get install cmake pkg-config qtbase5-dev qttools5-dev qttools5-dev-tools zlib1g-dev libqt5sql5-sqlite libgstreamer1.0-dev libgstreamer-plugins-bad1.0-dev libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly vorbis-tools lame libmp3lame0`
 
 #### Installing packages on Fedora/Suse
 
