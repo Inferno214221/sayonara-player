@@ -18,15 +18,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "Utils/Settings/SettingRegistry.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
 #include "Database/Connector.h"
 #include "Database/Settings.h"
 #include "Utils/FileUtils.h"
-#include "DBMacros.h"
 
 #include <QApplication>
 #include <QDir>
@@ -42,12 +39,14 @@ int main(int argc, char** argv)
 		return 1;
 	}
 
-	QString source_dir(DB_SOURCE_DIR);
+	Q_INIT_RESOURCE(Database);
+
+	QString source_dir(":/Database");
 	QString target_dir(argv[1]);
 	QString db_filename("player.db");
 
 	Util::File::delete_files({db_filename});
-	DB::Connector* db = DB::Connector::instance(source_dir, target_dir, db_filename);
+	DB::Connector* db = DB::Connector::instance_custom(source_dir, target_dir, db_filename);
 	DB::Settings* setting_connector = db->settings_connector();
 
 	Settings* settings = Settings::instance();

@@ -21,7 +21,7 @@
 #ifndef LOCALLIBRARYCONTAINER_H
 #define LOCALLIBRARYCONTAINER_H
 
-#include "Interfaces/Library/LibraryContainer/LibraryContainer.h"
+#include "Gui/Utils/Library/LibraryContainerImpl.h"
 #include "Utils/Pimpl.h"
 
 namespace Library
@@ -34,7 +34,7 @@ namespace Library
  * @ingroup GuiLibrary
  */
 class LocalLibraryContainer :
-	public Library::Container
+	public Library::ContainerImpl
 {
 	Q_OBJECT
 	PIMPL(LocalLibraryContainer)
@@ -52,7 +52,7 @@ public:
 	QPixmap		icon() const override;
 	void        init_ui() override;
 	bool		is_local() const override;
-	void		set_name(const QString& name) override;
+	void		rename(const QString& new_name) override;
 };
 
 #endif // LOCALLIBRARYCONTAINER_H

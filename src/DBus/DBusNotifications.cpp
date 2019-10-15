@@ -23,12 +23,20 @@
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/Macros.h"
+#include "Utils/Filepath.h"
+
+#include <QDir>
 
 struct DBusNotifications::Private
 {
 	OrgFreedesktopNotificationsInterface* interface=nullptr;
-	MetaData md;
-	Cover::Location cl;
+	MetaData					md;
+	uint						id;
+	Cover::Location				cl;
+	QMap<QString, QString>		resource_file_map; // map resource file image paths to real paths
+
+	Private() : id(100) {}
 };
 
 DBusNotifications::DBusNotifications(QObject* parent) :
@@ -44,7 +52,6 @@ DBusNotifications::DBusNotifications(QObject* parent) :
 				QDBusConnection::sessionBus(),
 				parent
 	);
-
 
 	QDBusConnection bus = QDBusConnection::sessionBus();
 	QDBusConnectionInterface* dbus_interface = bus.interface();
@@ -68,7 +75,9 @@ void DBusNotifications::notify(const QString& title, const QString& text, const 
 {
 	QVariantMap map;
 	map.insert("action-icons", false);
-	map.insert("desktop-entry", "/usr/share/applications/sayonara.desktop");
+	map.insert("desktop-entry",
+		QDir(SAYONARA_INSTALL_SHARE_PATH).absoluteFilePath("applications/sayonara.desktop")
+	);
 	map.insert("resident", false);
 	map.insert("sound-file", QString());
 	map.insert("sound-name", QString());
@@ -76,15 +85,18 @@ void DBusNotifications::notify(const QString& title, const QString& text, const 
 	map.insert("transient", false);
 	map.insert("urgency", 1);
 
+	QDBusPendingReply<uint> reply =
 	m->interface->Notify("Sayonara Player",
-	   500,
-	   image_path,
+	   m->id,
+	   Util::Filepath(image_path).filesystem_path(),
 	   title,
 	   text,
 	   QStringList(),
 	   map,
 	   GetSetting(Set::Notification_Timeout)
 	);
+
+	m->id = reply.value();
 }
 
 QString DBusNotifications::name() const
@@ -94,12 +106,6 @@ QString DBusNotifications::name() const
 
 void DBusNotifications::notify(const MetaData& md)
 {
-	this->track_changed(md);
-}
-
-
-void DBusNotifications::track_changed(const MetaData& md)
-{
 	m->md = md;
 
 	bool active = GetSetting(Set::Notification_Show);
@@ -108,7 +114,7 @@ void DBusNotifications::track_changed(const MetaData& md)
 	}
 
 	m->cl = Cover::Location::cover_location(md);
-	QString path = m->cl.preferred_path();
+	QString path = Util::Filepath(m->cl.preferred_path()).filesystem_path();
 
-	notify(m->md.title(), " by " + m->md.artist(), path);
+	notify(m->md.title(), m->md.artist(), path);
 }

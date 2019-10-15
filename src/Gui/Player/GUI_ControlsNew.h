@@ -52,7 +52,7 @@ class GUI_ControlsNew :
 		QLabel* lab_current_time() const override;
 		QLabel* lab_max_time() const override;
 		QWidget* widget_details() const override;
-		Gui::RatingLabel* lab_rating() const override;
+		Gui::RatingEditor* lab_rating() const override;
 		Gui::SearchSlider* sli_progress() const override;
 		Gui::SearchSlider* sli_volume() const override;
 		QPushButton* btn_mute() const override;
@@ -63,7 +63,7 @@ class GUI_ControlsNew :
 		QPushButton* btn_stop() const override;
 		Gui::CoverButton* btn_cover() const override;
 
-		void rating_changed_here(bool success);
+		void rating_changed_here(bool save);
 		bool is_extern_resize_allowed() const override;
 
 	protected:

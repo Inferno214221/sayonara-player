@@ -1,12 +1,12 @@
 project(gui_library)
 
 file(GLOB_RECURSE SOURCES . *.cpp)
+file(GLOB_RECURSE HEADERS . *.h)
 
-add_library(${PROJECT_NAME} ${SOURCES})
+add_library(${PROJECT_NAME} STATIC ${SOURCES} ${HEADERS})
 target_link_libraries(${PROJECT_NAME}
 	gui_importdialog
 	gui_infodialog
-	interface_librarycontainer
 )
 
 if( WITH_COTIRE )

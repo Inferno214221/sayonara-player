@@ -21,7 +21,7 @@
 #ifndef LFMCOVERFETCHER_H
 #define LFMCOVERFETCHER_H
 
-#include "../CoverFetcherInterface.h"
+#include "CoverFetcher.h"
 
 namespace Cover::Fetcher
 {

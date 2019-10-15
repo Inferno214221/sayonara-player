@@ -36,9 +36,7 @@ namespace Library
 
 		public:
 			explicit PluginCombobox(const QString& text, QWidget* parent=nullptr);
-			~PluginCombobox();
-
-			static int get_index_offset();
+			~PluginCombobox() override;
 
 		protected:
 			void skin_changed() override;
@@ -50,6 +48,7 @@ namespace Library
 		private slots:
 			void action_triggered(bool b);
 			void current_library_changed();
+			void current_index_changed(int index);
 
 	};
 }

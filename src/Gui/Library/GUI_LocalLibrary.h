@@ -89,6 +89,7 @@ namespace Library
 		void reload_library_requested();
 		void reload_library_requested_with_quality(ReloadQuality quality);
 		void reload_library_accepted(ReloadQuality quality);
+		void reload_library(ReloadQuality quality);
 		void reload_finished();
 
 		void import_dirs_requested();

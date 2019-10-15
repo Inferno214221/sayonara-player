@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef GENREVIEWCONTEXTMENU_H
 #define GENREVIEWCONTEXTMENU_H
 

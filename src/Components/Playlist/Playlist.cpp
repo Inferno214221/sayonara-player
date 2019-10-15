@@ -44,12 +44,14 @@ struct PlaylistImpl::Private
 	int				playlist_idx;
 	PlaylistType	type;
 	bool			playlist_changed;
+	bool			busy;
 
 	Private(int playlist_idx, PlaylistMode playlist_mode, PlaylistType type) :
 		playlist_mode(playlist_mode),
 		playlist_idx(playlist_idx),
 		type(type),
-		playlist_changed(false)
+		playlist_changed(false),
+		busy(false)
 	{}
 };
 
@@ -413,6 +415,23 @@ bool PlaylistImpl::wake_up()
 	}
 
 	return false;
+}
+
+void Playlist::Playlist::set_busy(bool busy)
+{
+	m->busy = busy;
+
+	emit sig_busy_changed(busy);
+}
+
+bool Playlist::Playlist::is_busy() const
+{
+	return m->busy;
+}
+
+void Playlist::Playlist::set_current_scanned_file(const QString& current_scanned_file)
+{
+	emit sig_current_scanned_file_changed(current_scanned_file);
 }
 
 void PlaylistImpl::enable_all()

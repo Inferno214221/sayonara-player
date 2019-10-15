@@ -100,14 +100,22 @@ QString Util::cvt_str_to_first_upper(const QString& str)
 	}
 
 	QString ret = str.toLower();
-	QString chars=" \n\t.(+?!<\"";
+	QString chars=" \n\t. (+?!<\"";
 	for(QChar c : chars)
 	{
 		QStringList lst = ret.split(c);
 
 		for(QString& s : lst)
 		{
-			s.replace(0, 1, s[0].toUpper());
+			if(s.trimmed().isEmpty())
+			{
+				continue;
+			}
+
+			if(s[0].isLetter())
+			{
+				s.replace(0, 1, s[0].toUpper());
+			}
 		}
 
 		ret = lst.join(c);
@@ -129,55 +137,29 @@ QString Util::cvt_str_to_very_first_upper(const QString& str)
 }
 
 
-QString Util::cvt_ms_to_string(MilliSeconds msec, bool empty_zero, bool colon, bool show_days)
-{
-	if(msec == 0 && empty_zero){
-		return "";
-	}
-
-	bool show_hrs = false;
-
-	uint64_t sec = msec / 1000;
-	uint64_t min = sec / 60;
-
-	uint64_t secs = sec % 60;
-	uint64_t hrs = min / 60;
-	uint64_t days = hrs / 24;
-
-	QString final_str;
-
-	if(days > 0 && show_days) {
-		final_str += QString::number(days) + Lang::get(Lang::DaysShort) + " ";
-		hrs = hrs % 24;
-		show_hrs = true;
-	}
-
-	if(!show_days) {
-		hrs += (days * 24);
-	}
-
-	if(hrs > 0 || show_hrs) {
-		final_str += QString::number(hrs) + Lang::get(Lang::HoursShort) + " ";
-		min = min % 60;
-	}
-
-	if(colon){
-		final_str +=  cvtNum2String(min, 2) + ":" + cvtNum2String(secs, 2);
-	}
-
-	else{
-		final_str +=  cvtNum2String(min, 2) + Lang::get(Lang::MinutesShort) + " " + cvtNum2String(secs, 2);
-	}
-
-	return final_str;
-}
-
 QString Util::sayonara_path() { return sayonara_path(QString()); }
 QString Util::sayonara_path(const QString& append_path)
 {
-	return Util::File::clean_filename(
-			QDir::homePath() + "/.Sayonara/" + append_path
-	);
+	QString basepath = Util::File::clean_filename(get_environment("SAYONARA_HOME_DIR"));
+	if(basepath.isEmpty())
+	{
+		basepath = QDir::homePath() + "/.Sayonara/";
+	}
+
+	basepath.replace("~", QDir::homePath());
+
+	static bool checked = false;
+	if(!checked && !Util::File::exists(basepath))
+	{
+		bool b = Util::File::create_dir(basepath);
+		if(!b) {
+			return QString();
+		}
+	}
+
+	checked = true;
+
+	return Util::File::clean_filename(basepath + "/" + append_path);
 }
 
 QString Util::share_path() { return share_path(QString()); }
@@ -208,11 +190,27 @@ QString Util::lib_path(const QString& append_path)
 	return Util::File::clean_filename(base_path + "/" + append_path);
 }
 
+QString Util::temp_path()
+{
+	return temp_path(QString());
+}
+
+QString Util::temp_path(const QString& append_path)
+{
+	QString simple_temp_path = QDir::temp().absoluteFilePath("sayonara");
+	QString path = simple_temp_path + "/" + append_path;
+
+	if(!QFile::exists(simple_temp_path)) {
+		Util::File::create_dir(simple_temp_path);
+	}
+
+	return path;
+}
+
 QString Util::create_link(const QString& name, bool dark, bool underline)
 {
 	return create_link(name, dark, underline, QString());
 }
-
 
 QString Util::create_link(const QString& name, bool dark, bool underline, const QString& target)
 {
@@ -543,3 +541,53 @@ QPixmap Util::cvt_bytearray_to_pixmap(const QByteArray& arr)
 	return pm;
 }
 
+
+QString Util::cvt_ms_to_string(MilliSeconds msec, const QString& format)
+{
+	uint64_t secs = msec / 1000;
+
+	uint64_t sec = secs % 60;
+	uint64_t min = secs / 60;
+	uint64_t hours = min / 60;
+	uint64_t days = hours / 24;
+
+	QString ret(format);
+	if(format.contains("$D"))
+	{
+		hours = hours % 24;
+	}
+
+	if(format.contains("$H"))
+	{
+		min = min % 60;
+	}
+
+	if(format.contains("$M"))
+	{
+		sec = sec % 60;
+	}
+
+	if(days == 0)
+	{
+		ret.replace("$De", QString());
+		ret.replace("$D", QString());
+	}
+
+	if(hours == 0)
+	{
+		ret.replace("$He", QString());
+		ret.replace("$H", QString());
+	}
+
+	ret.replace("$Se", QString("%1%2").arg(sec).arg(Lang::get(Lang::SecondsShort)));
+	ret.replace("$Me", QString("%1%2").arg(min).arg(Lang::get(Lang::MinutesShort)));
+	ret.replace("$He", QString("%1%2").arg(hours).arg(Lang::get(Lang::HoursShort)));
+	ret.replace("$De", QString("%1%2").arg(days).arg(Lang::get(Lang::DaysShort)));
+
+	ret.replace("$S", cvtNum2String(sec, 2));
+	ret.replace("$M", cvtNum2String(min, 2));
+	ret.replace("$H", QString::number(hours));
+	ret.replace("$D", QString::number(days));
+
+	return ret.trimmed();
+}

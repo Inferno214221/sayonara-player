@@ -72,10 +72,10 @@ public:
 public:
 	MetaData();
 	explicit MetaData (const QString& path);
-	MetaData(const MetaData& );
-	MetaData( MetaData&& );
+	MetaData(const MetaData& other);
+	MetaData(MetaData&& other) noexcept;
 	MetaData& operator=(const MetaData& md);
-	MetaData& operator=(MetaData&& md);
+	MetaData& operator=(MetaData&& md) noexcept;
 
 	~MetaData();
 

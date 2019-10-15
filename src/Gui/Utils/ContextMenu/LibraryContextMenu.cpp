@@ -35,12 +35,12 @@
 #include <QMap>
 #include <QTimer>
 
-using Gui::LibraryContextMenu;
+using Library::ContextMenu;
 namespace Algorithm=Util::Algorithm;
 
-struct LibraryContextMenu::Private
+struct ContextMenu::Private
 {
-	QMap<LibraryContextMenu::Entry, QAction*> entry_action_map;
+	QMap<ContextMenu::Entry, QAction*> entry_action_map;
 
 	QMenu*		filetype_menu=nullptr;
 
@@ -68,7 +68,7 @@ struct LibraryContextMenu::Private
 	{}
 };
 
-LibraryContextMenu::LibraryContextMenu(QWidget* parent) :
+ContextMenu::ContextMenu(QWidget* parent) :
 	WidgetTemplate<QMenu>(parent)
 {
 	m = Pimpl::make<Private>();
@@ -92,11 +92,11 @@ LibraryContextMenu::LibraryContextMenu(QWidget* parent) :
 	m->show_filetype_bar_action = new QAction(this);
 	m->show_filetype_bar_action->setCheckable(true);
 
-	ListenSetting(Set::Lib_ShowAlbumCovers, LibraryContextMenu::show_cover_view_changed);
-	ListenSetting(Set::Lib_ShowFilterExtBar, LibraryContextMenu::show_filter_ext_bar_changed);
+	ListenSetting(Set::Lib_ShowAlbumCovers, ContextMenu::show_cover_view_changed);
+	ListenSetting(Set::Lib_ShowFilterExtBar, ContextMenu::show_filter_ext_bar_changed);
 
 	ShortcutHandler* sch = ShortcutHandler::instance();
-	connect(sch, &ShortcutHandler::sig_shortcut_changed, this, &LibraryContextMenu::shortcut_changed);
+	connect(sch, &ShortcutHandler::sig_shortcut_changed, this, &ContextMenu::shortcut_changed);
 
 	QList<QAction*> actions;
 	actions << m->play_action
@@ -142,25 +142,25 @@ LibraryContextMenu::LibraryContextMenu(QWidget* parent) :
 		action->setVisible(action->isSeparator());
 	}
 
-	connect(m->info_action, &QAction::triggered, this, &LibraryContextMenu::sig_info_clicked);
-	connect(m->lyrics_action, &QAction::triggered, this, &LibraryContextMenu::sig_lyrics_clicked);
-	connect(m->edit_action, &QAction::triggered, this, &LibraryContextMenu::sig_edit_clicked);
-	connect(m->remove_action, &QAction::triggered, this, &LibraryContextMenu::sig_remove_clicked);
-	connect(m->delete_action, &QAction::triggered, this, &LibraryContextMenu::sig_delete_clicked);
-	connect(m->play_action, &QAction::triggered, this, &LibraryContextMenu::sig_play_clicked);
-	connect(m->play_new_tab_action, &QAction::triggered, this, &LibraryContextMenu::sig_play_new_tab_clicked);
-	connect(m->play_next_action, &QAction::triggered, this, &LibraryContextMenu::sig_play_next_clicked);
-	connect(m->append_action, &QAction::triggered, this, &LibraryContextMenu::sig_append_clicked);
-	connect(m->refresh_action, &QAction::triggered, this, &LibraryContextMenu::sig_refresh_clicked);
-	connect(m->reload_library_action, &QAction::triggered, this, &LibraryContextMenu::sig_reload_clicked);
-	connect(m->clear_action, &QAction::triggered, this, &LibraryContextMenu::sig_clear_clicked);
-	connect(m->cover_view_action, &QAction::triggered, this, &LibraryContextMenu::show_cover_triggered);
-	connect(m->show_filetype_bar_action, &QAction::triggered, this, &LibraryContextMenu::show_filter_extension_bar_triggered);
+	connect(m->info_action, &QAction::triggered, this, &ContextMenu::sig_info_clicked);
+	connect(m->lyrics_action, &QAction::triggered, this, &ContextMenu::sig_lyrics_clicked);
+	connect(m->edit_action, &QAction::triggered, this, &ContextMenu::sig_edit_clicked);
+	connect(m->remove_action, &QAction::triggered, this, &ContextMenu::sig_remove_clicked);
+	connect(m->delete_action, &QAction::triggered, this, &ContextMenu::sig_delete_clicked);
+	connect(m->play_action, &QAction::triggered, this, &ContextMenu::sig_play_clicked);
+	connect(m->play_new_tab_action, &QAction::triggered, this, &ContextMenu::sig_play_new_tab_clicked);
+	connect(m->play_next_action, &QAction::triggered, this, &ContextMenu::sig_play_next_clicked);
+	connect(m->append_action, &QAction::triggered, this, &ContextMenu::sig_append_clicked);
+	connect(m->refresh_action, &QAction::triggered, this, &ContextMenu::sig_refresh_clicked);
+	connect(m->reload_library_action, &QAction::triggered, this, &ContextMenu::sig_reload_clicked);
+	connect(m->clear_action, &QAction::triggered, this, &ContextMenu::sig_clear_clicked);
+	connect(m->cover_view_action, &QAction::triggered, this, &ContextMenu::show_cover_triggered);
+	connect(m->show_filetype_bar_action, &QAction::triggered, this, &ContextMenu::show_filter_extension_bar_triggered);
 }
 
-LibraryContextMenu::~LibraryContextMenu() = default;
+ContextMenu::~ContextMenu() = default;
 
-void LibraryContextMenu::language_changed()
+void ContextMenu::language_changed()
 {
 	m->info_action->setText(Lang::get(Lang::Info));
 	m->lyrics_action->setText(Lang::get(Lang::Lyrics));
@@ -187,7 +187,7 @@ void LibraryContextMenu::language_changed()
 }
 
 
-void LibraryContextMenu::shortcut_changed(ShortcutIdentifier identifier)
+void ContextMenu::shortcut_changed(ShortcutIdentifier identifier)
 {
 	Q_UNUSED(identifier)
 	ShortcutHandler* sch = ShortcutHandler::instance();
@@ -199,15 +199,17 @@ void LibraryContextMenu::shortcut_changed(ShortcutIdentifier identifier)
 	m->reload_library_action->setShortcut(sch->shortcut(ShortcutIdentifier::ReloadLibrary).sequence());
 }
 
-void LibraryContextMenu::skin_changed()
+void ContextMenu::skin_changed()
 {
 	using namespace Gui;
 
-	QTimer::singleShot(100, this, &LibraryContextMenu::skin_timer_timeout);
+	QTimer::singleShot(100, this, &ContextMenu::skin_timer_timeout);
 }
 
-void LibraryContextMenu::skin_timer_timeout()
+void ContextMenu::skin_timer_timeout()
 {
+	namespace Icons=Gui::Icons;
+
 	m->info_action->setIcon(Icons::icon(Icons::Info));
 	m->lyrics_action->setIcon(Icons::icon(Icons::Lyrics));
 	m->edit_action->setIcon(Icons::icon(Icons::Edit));
@@ -222,9 +224,9 @@ void LibraryContextMenu::skin_timer_timeout()
 	m->clear_action->setIcon(Icons::icon(Icons::Clear));
 }
 
-LibraryContextMenu::Entries LibraryContextMenu::get_entries() const
+ContextMenu::Entries ContextMenu::get_entries() const
 {
-	LibraryContextMenu::Entries entries = EntryNone;
+	ContextMenu::Entries entries = EntryNone;
 
 	for(auto it=m->entry_action_map.cbegin(); it != m->entry_action_map.cend(); it++)
 	{
@@ -238,7 +240,7 @@ LibraryContextMenu::Entries LibraryContextMenu::get_entries() const
 }
 
 
-void LibraryContextMenu::show_actions(LibraryContextMenu::Entries entries)
+void ContextMenu::show_actions(ContextMenu::Entries entries)
 {
 	for(auto it=m->entry_action_map.cbegin(); it != m->entry_action_map.cend(); it++)
 	{
@@ -247,9 +249,9 @@ void LibraryContextMenu::show_actions(LibraryContextMenu::Entries entries)
 	}
 }
 
-void LibraryContextMenu::show_action(LibraryContextMenu::Entry entry, bool visible)
+void ContextMenu::show_action(ContextMenu::Entry entry, bool visible)
 {
-	LibraryContextMenu::Entries entries = this->get_entries();
+	ContextMenu::Entries entries = this->get_entries();
 	if(visible){
 		entries |= entry;
 	}
@@ -261,7 +263,7 @@ void LibraryContextMenu::show_action(LibraryContextMenu::Entry entry, bool visib
 	show_actions(entries);
 }
 
-void LibraryContextMenu::show_all()
+void ContextMenu::show_all()
 {
 	const QList<QAction*> actions = this->actions();
 	for(QAction* action : actions)
@@ -270,12 +272,12 @@ void LibraryContextMenu::show_all()
 	}
 }
 
-QAction* LibraryContextMenu::get_action(LibraryContextMenu::Entry entry) const
+QAction* ContextMenu::get_action(ContextMenu::Entry entry) const
 {
 	return m->entry_action_map[entry];
 }
 
-QAction* LibraryContextMenu::get_action_after(LibraryContextMenu::Entry entry) const
+QAction* ContextMenu::get_action_after(ContextMenu::Entry entry) const
 {
 	QAction* a = get_action(entry);
 	if(!a){
@@ -297,7 +299,7 @@ QAction* LibraryContextMenu::get_action_after(LibraryContextMenu::Entry entry) c
 	return *it;
 }
 
-QAction* LibraryContextMenu::add_preference_action(PreferenceAction* action)
+QAction* ContextMenu::add_preference_action(Gui::PreferenceAction* action)
 {
 	QList<QAction*> actions;
 
@@ -314,12 +316,12 @@ QAction* LibraryContextMenu::add_preference_action(PreferenceAction* action)
 	return action;
 }
 
-QAction* LibraryContextMenu::before_preference_action() const
+QAction* ContextMenu::before_preference_action() const
 {
 	return m->preference_separator;
 }
 
-void LibraryContextMenu::set_action_shortcut(LibraryContextMenu::Entry entry, const QString& shortcut)
+void ContextMenu::set_action_shortcut(ContextMenu::Entry entry, const QString& shortcut)
 {
 	QAction* action = get_action(entry);
 	if(action)
@@ -328,7 +330,7 @@ void LibraryContextMenu::set_action_shortcut(LibraryContextMenu::Entry entry, co
 	}
 }
 
-void LibraryContextMenu::set_extensions(const Gui::ExtensionSet& extensions)
+void ContextMenu::set_extensions(const Gui::ExtensionSet& extensions)
 {
 	QMenu* fem = m->filetype_menu;
 	if(fem->isEmpty())
@@ -360,7 +362,7 @@ void LibraryContextMenu::set_extensions(const Gui::ExtensionSet& extensions)
 	}
 }
 
-void LibraryContextMenu::set_selection_count(int num_selections)
+void ContextMenu::set_selection_count(int num_selections)
 {
 	bool has_selections = (num_selections > 0);
 	for(auto it : m->entry_action_map)
@@ -372,7 +374,7 @@ void LibraryContextMenu::set_selection_count(int num_selections)
 	m->entry_action_map[EntryReload]->setEnabled(true);
 }
 
-QKeySequence LibraryContextMenu::shortcut(LibraryContextMenu::Entry entry) const
+QKeySequence ContextMenu::shortcut(ContextMenu::Entry entry) const
 {
 	QAction* a = get_action(entry);
 	if(!a){
@@ -382,24 +384,24 @@ QKeySequence LibraryContextMenu::shortcut(LibraryContextMenu::Entry entry) const
 	return a->shortcut();
 }
 
-void LibraryContextMenu::show_cover_view_changed()
+void ContextMenu::show_cover_view_changed()
 {
 	m->cover_view_action->setChecked(GetSetting(Set::Lib_ShowAlbumCovers));
 }
 
-void LibraryContextMenu::show_cover_triggered(bool b)
+void ContextMenu::show_cover_triggered(bool b)
 {
 	Q_UNUSED(b)
 	bool show_covers = GetSetting(Set::Lib_ShowAlbumCovers);
 	SetSetting(Set::Lib_ShowAlbumCovers, !show_covers);
 }
 
-void LibraryContextMenu::show_filter_ext_bar_changed()
+void ContextMenu::show_filter_ext_bar_changed()
 {
 	m->show_filetype_bar_action->setChecked(GetSetting(Set::Lib_ShowFilterExtBar));
 }
 
-void LibraryContextMenu::show_filter_extension_bar_triggered(bool b)
+void ContextMenu::show_filter_extension_bar_triggered(bool b)
 {
 	SetSetting(Set::Lib_ShowFilterExtBar, b);
 

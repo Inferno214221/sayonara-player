@@ -41,7 +41,7 @@ NotificationHandler::NotificationHandler(QObject* parent) :
 	m = Pimpl::make<Private>();
 }
 
-NotificationHandler::~NotificationHandler() {}
+NotificationHandler::~NotificationHandler() = default;
 
 void NotificationHandler::notify(const MetaData& md)
 {
@@ -94,7 +94,8 @@ void NotificationHandler::notificator_changed(const QString& name)
 
 NotificationInterface* NotificationHandler::get() const
 {
-	if(m->cur_idx < 0){
+	if(m->cur_idx < 0)
+	{
 		static DummyNotificator dummy;
 		return &dummy;
 	}

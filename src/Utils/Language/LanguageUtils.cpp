@@ -18,13 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "LanguageUtils.h"
 
 #include "FileUtils.h"
-#include "Utils.h"
 #include "Settings/Settings.h"
+#include "Utils.h"
 
 #include <QFile>
 #include <QRegExp>
@@ -272,7 +270,7 @@ void Language::update_language_version(const QString& four_letter)
 	LanguageVersionHelper::instance()->set_language_version(four_letter, version);
 }
 
-#ifdef DEBUG
+#ifdef SAYONARA_WITH_TESTS
 	void Language::set_test_mode()
 	{
 		s_test_mode = true;

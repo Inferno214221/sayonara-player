@@ -26,7 +26,8 @@
 #include "Gui/Library/ui_GUI_LibraryInfoBox.h"
 #include "Gui/Utils/Icons.h"
 
-#include "Components/Library/LibraryManager.h"
+#include "Components/LibraryManagement/LibraryManager.h"
+
 #include "Database/Connector.h"
 #include "Database/LibraryDatabase.h"
 
@@ -125,19 +126,19 @@ void GUI_LibraryInfoBox::refresh()
 	auto n_albums = v_albums.size();
 	auto n_artists = v_artists.size();
 	MilliSeconds duration_ms = 0;
-	uint64_t filesize = MetaData().filesize;
+	Filesize filesize = 0;
 
 	for( const MetaData& md : v_md ) {
 		duration_ms += md.duration_ms;
 		filesize += md.filesize;
 	}
 
-	QString duration_string = Util::cvt_ms_to_string(duration_ms, false);
+	QString duration_string = Util::cvt_ms_to_string(duration_ms, "$De $He $M:$S");
 	QString filesize_str = Util::File::calc_filesize_str(filesize);
 
 	ui->lab_album_count->setText(QString::number(n_albums));
 	ui->lab_track_count->setText(QString::number(n_tracks));
 	ui->lab_artist_count->setText(QString::number(n_artists));
-	ui->lab_duration_value->setText(duration_string + "s");
+	ui->lab_duration_value->setText(duration_string);
 	ui->lab_filesize->setText(filesize_str);
 }

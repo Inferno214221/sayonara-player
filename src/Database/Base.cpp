@@ -37,8 +37,8 @@ namespace FileUtils=::Util::File;
 struct Base::Private
 {
 	QString source_dir;
-	QString filename;		// player.db
-	QString connection_name;		// /home/user/.Sayonara/player.db
+	QString filename;			// player.db
+	QString connection_name;	// /home/user/.Sayonara/player.db
 	DbId	db_id;
 
 	bool initialized;
@@ -106,24 +106,8 @@ bool Base::close_db()
 
 bool Base::create_db()
 {
-	bool success;
 	QDir dir = QDir::homePath();
-
-	QString sayonara_path = Util::sayonara_path();
-	if(!FileUtils::exists(sayonara_path))
-	{
-		success = dir.mkdir(".Sayonara");
-		if(!success) {
-			sp_log(Log::Error, this) << "Could not create .Sayonara dir";
-			return false;
-		}
-
-		else{
-			sp_log(Log::Info, this) << "Successfully created .Sayonara dir";
-		}
-	}
-
-	success = dir.cd(sayonara_path);
+	bool success = dir.cd(Util::sayonara_path());
 
 	//if ret is still not true we are not able to create the directory
 	if(!success) {
@@ -134,29 +118,38 @@ bool Base::create_db()
 	QString source_db_file = QDir(m->source_dir).absoluteFilePath(m->filename);
 
 	success = FileUtils::exists(m->connection_name);
-
 	if(success) {
 		return true;
 	}
 
-	if (!success) {
+	if(!success)
+	{
 		sp_log(Log::Info, this) << "Database " << m->connection_name << " not existent yet";
 		sp_log(Log::Info, this) << "Copy " <<  source_db_file << " to " << m->connection_name;
 
-		if (QFile::copy(source_db_file, m->connection_name)) {
+		success = QFile::copy(source_db_file, m->connection_name);
+
+		if(success)
+		{
+			QFile f(m->connection_name);
+			f.setPermissions
+			(
+				f.permissions() |
+				QFile::Permission::WriteOwner | QFile::Permission::WriteUser |
+				QFile::Permission::ReadOwner | QFile::Permission::ReadUser
+			);
+
 			sp_log(Log::Info, this) << "DB file has been copied to " <<   m->connection_name;
-			success = true;
 		}
 
-		else {
+		else
+		{
 			sp_log(Log::Error, this) << "Fatal Error: could not copy DB file to " << m->connection_name;
-			success = false;
 		}
 	}
 
 	return success;
 }
-
 
 void Base::transaction()
 {
@@ -172,8 +165,6 @@ void Base::rollback()
 {
 	db().rollback();
 }
-
-
 
 bool Base::check_and_drop_table(const QString& tablename)
 {

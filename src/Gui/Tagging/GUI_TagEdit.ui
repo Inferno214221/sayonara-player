@@ -318,34 +318,6 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="5">
-        <widget class="Gui::RatingLabel" name="lab_rating">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>80</width>
-           <height>22</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>22</height>
-          </size>
-         </property>
-         <property name="focusPolicy">
-          <enum>Qt::TabFocus</enum>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
        <item row="1" column="3">
         <spacer name="horizontalSpacer_5">
          <property name="orientation">
@@ -449,6 +421,9 @@
           </size>
          </property>
         </spacer>
+       </item>
+       <item row="3" column="5">
+        <widget class="Gui::RatingEditor" name="widget_rating" native="true"/>
        </item>
       </layout>
      </widget>
@@ -587,9 +562,10 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>Gui::RatingLabel</class>
-   <extends>QLabel</extends>
-   <header>Gui/Utils/RatingLabel.h</header>
+   <class>Gui::RatingEditor</class>
+   <extends>QWidget</extends>
+   <header>Gui/Utils/Widgets/RatingLabel.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>TagTextInput</class>
@@ -614,7 +590,6 @@
   <tabstop>cb_year_all</tabstop>
   <tabstop>sb_discnumber</tabstop>
   <tabstop>cb_discnumber_all</tabstop>
-  <tabstop>lab_rating</tabstop>
   <tabstop>cb_rating_all</tabstop>
   <tabstop>btn_undo_all</tabstop>
   <tabstop>btn_undo</tabstop>

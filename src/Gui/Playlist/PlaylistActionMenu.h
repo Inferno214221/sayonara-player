@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef PLAYLISTACTIONMENU_H
 #define PLAYLISTACTIONMENU_H
 
@@ -27,32 +25,35 @@
 #include "Gui/Utils/Widgets/WidgetTemplate.h"
 #include "Utils/Pimpl.h"
 
-/**
- * @brief The PlaylistActionMenu class
- * @ingroup GuiPlaylists
- */
-class PlaylistActionMenu :
-	public Gui::WidgetTemplate<QMenu>
+namespace Playlist
 {
-	Q_OBJECT
-	PIMPL(PlaylistActionMenu)
+	/**
+	 * @brief The PlaylistActionMenu class
+	 * @ingroup GuiPlaylists
+	 */
+	class ActionMenu :
+		public Gui::WidgetTemplate<QMenu>
+	{
+		Q_OBJECT
+		PIMPL(ActionMenu)
 
-public:
-	PlaylistActionMenu(QWidget* parent=nullptr);
-	~PlaylistActionMenu();
+	public:
+		ActionMenu(QWidget* parent=nullptr);
+		~ActionMenu() override;
 
-	void check_dynamic_play_button();
+		void check_dynamic_play_button();
 
-private slots:
-	void rep1_checked(bool checked);
-	void rep_all_checked(bool checked);
-	void shuffle_checked(bool checked);
-	void playlist_mode_changed();
-	void gapless_clicked();
+	private slots:
+		void rep1_checked(bool checked);
+		void rep_all_checked(bool checked);
+		void shuffle_checked(bool checked);
+		void playlist_mode_changed();
+		void gapless_clicked();
 
-	void language_changed() override;
+		void language_changed() override;
 
-	void s_playlist_mode_changed();
-};
+		void s_playlist_mode_changed();
+	};
+}
 
 #endif // PLAYLISTACTIONMENU_H

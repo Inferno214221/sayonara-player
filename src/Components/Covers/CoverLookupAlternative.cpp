@@ -22,8 +22,10 @@
 #include "CoverLookupAlternative.h"
 #include "CoverLocation.h"
 #include "CoverFetchManager.h"
-#include "CoverFetcherInterface.h"
 #include "CoverUtils.h"
+#include "Fetcher/CoverFetcherUrl.h"
+
+#include "Fetcher/CoverFetcher.h"
 
 #include "Database/Connector.h"
 #include "Database/CoverConnector.h"
@@ -40,8 +42,8 @@ using Cover::Location;
 using Cover::Lookup;
 using Cover::LookupBase;
 using Cover::Fetcher::Manager;
-using Cover::Fetcher::FetchUrl;
-using FetchUrlList=QList<FetchUrl>;
+using Cover::Fetcher::Url;
+using UrlList=QList<Url>;
 
 struct AlternativeLookup::Private
 {
@@ -156,10 +158,10 @@ QStringList AlternativeLookup::active_coverfetchers(AlternativeLookup::SearchMod
 
 		else
 		{
-			FetchUrlList search_urls = cover_location().search_urls(false);
+			UrlList search_urls = cover_location().search_urls(false);
 
-			suitable = Algorithm::contains(search_urls, [identifier](const FetchUrl& url){
-				return (url.identifier.toLower() == identifier.toLower());
+			suitable = Algorithm::contains(search_urls, [identifier](const Url& url){
+				return (url.identifier().toLower() == identifier.toLower());
 			});
 		}
 
@@ -212,15 +214,15 @@ void AlternativeLookup::start()
 void AlternativeLookup::start(const QString& identifier)
 {
 	Location cl = cover_location();
-	FetchUrlList search_urls = cover_location().search_urls(false);
+	UrlList search_urls = cover_location().search_urls(false);
 
-	auto it = Algorithm::find(search_urls, [&identifier](const FetchUrl& url){
-		return (identifier == url.identifier);
+	auto it = Algorithm::find(search_urls, [&identifier](const Url& url){
+		return (identifier == url.identifier());
 	});
 
 	if(it != search_urls.end())
 	{
-		FetchUrl url = *it;
+		Url url = *it;
 		cl.set_search_urls({url});
 	}
 

@@ -95,7 +95,7 @@ void ArtistView::init_context_menu()
 
 	ItemView::init_context_menu();
 
-	Gui::LibraryContextMenu* menu = context_menu();
+	Library::ContextMenu* menu = context_menu();
 
 	m->album_artist_action = new QAction(menu);
 	m->album_artist_action->setCheckable(true);
@@ -106,7 +106,7 @@ void ArtistView::init_context_menu()
 
 	connect(m->album_artist_action, &QAction::triggered, this, &ArtistView::album_artists_triggered);
 
-	QAction* action = menu->get_action(Gui::LibraryContextMenu::EntryCoverView);
+	QAction* action = menu->get_action(Library::ContextMenu::EntryCoverView);
 	menu->insertAction(action, m->album_artist_action);
 
 	language_changed();

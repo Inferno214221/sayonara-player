@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="icon" href="favicon.ico" type="image/x-icon" />
+<title>Sayonara Player Radio</title>
+
+<script>
+	function loadXMLDoc()
+	{
+	  var xmlhttp;
+	  if(window.XMLHttpRequest)
+	  {
+		xmlhttp=new XMLHttpRequest();
+	  }
+      else 
+      { 
+        return; 
+      }
+	  xmlhttp.onreadystatechange=function()
+	  {
+		if (xmlhttp.readyState==4 && xmlhttp.status==200)
+		{
+		  document.getElementById("metadata").innerHTML=xmlhttp.responseText;
+		}
+	  }
+	  xmlhttp.open("GET", "metadata",true);
+	  xmlhttp.send();
+	}
+</script>
+
+</head>
+<body background="bg-checker.png" style="width: 400px; margin: 0 auto; text-align: center;">
+  <h1 style="color: #f3841a; font-family: Fredoka One, lucida grande, tahoma, sans-serif; font-weight: 400;">
+  	Sayonara Player Radio
+  </h1>
+  <audio id="player" autoplay controls>
+    <source src="$AUDIOSOURCE" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+  <br>
+  <br>
+  <div id="metadata" style="color: white;">
+    $STREAMTITLE
+  </div>
+  <br>
+  <div style="color: white;">
+    <button type="button" onclick="loadXMLDoc();" style="border: 1px solid #282828; background: #505050; padding: 4px; color: white;">
+      Refresh
+    </button>
+    <br>
+    <br>
+  </div>
+  <br>
+  <br>
+  <div style="color: white;">
+    Stream by Lucio Carreras
+  </div>
+</body>
+</html>

@@ -77,6 +77,6 @@ void DiscnumberTest::xiph_test()
 	AbstractTaggingTest::xiph_test();
 }
 
-QTEST_MAIN(DiscnumberTest)
+QTEST_GUILESS_MAIN(DiscnumberTest)
 
 #include "DiscnumberTest.moc"

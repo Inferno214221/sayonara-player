@@ -23,11 +23,12 @@
  */
 
 #include "GUI_Playlist.h"
-#include "PlaylistActionMenu.h"
 #include "Gui/Playlist/ui_GUI_Playlist.h"
 
-#include "TabWidget.h"
-#include "ListView.h"
+#include "PlaylistTabWidget.h"
+#include "PlaylistView.h"
+#include "PlaylistActionMenu.h"
+
 #include "Gui/Utils/Icons.h"
 #include "Gui/Utils/Library/GUI_DeleteDialog.h"
 
@@ -49,6 +50,8 @@
 #include <QShortcut>
 
 using Playlist::Handler;
+using Playlist::View;
+using Playlist::TabWidget;
 
 struct GUI_Playlist::Private {};
 
@@ -65,29 +68,30 @@ GUI_Playlist::GUI_Playlist(QWidget *parent) :
 //	ui->btn_tool->setMenu(new PlaylistActionMenu(this));
 	ui->btn_tool->setVisible(false);
 
-	Handler* handler = Handler::instance();
+	auto* handler = Handler::instance();
 	connect(handler, &Handler::sig_playlist_created, this, &GUI_Playlist::playlist_created);
 	connect(handler, &Handler::sig_playlist_name_changed, this, &GUI_Playlist::playlist_name_changed);
 	connect(handler, &Handler::sig_new_playlist_added, this, &GUI_Playlist::playlist_added);
 	connect(handler, &Handler::sig_current_playlist_changed, this, &GUI_Playlist::playlist_idx_changed);
 
-	PlayManager* play_manager = PlayManager::instance();
+	auto* play_manager = PlayManager::instance();
 	connect(play_manager, &PlayManager::sig_playlist_finished,	this, &GUI_Playlist::playlist_finished);
 	connect(play_manager, &PlayManager::sig_playstate_changed,	this, &GUI_Playlist::playstate_changed);
 
-	connect(ui->tw_playlists, &PlaylistTabWidget::sig_add_tab_clicked, this, &GUI_Playlist::add_playlist_button_pressed);
-	connect(ui->tw_playlists, &PlaylistTabWidget::tabCloseRequested, this, &GUI_Playlist::tab_close_playlist_clicked);
-	connect(ui->tw_playlists, &PlaylistTabWidget::currentChanged, handler, &Playlist::Handler::set_current_index);
-	connect(ui->tw_playlists, &PlaylistTabWidget::sig_tab_delete, this, &GUI_Playlist::tab_delete_playlist_clicked);
-	connect(ui->tw_playlists, &PlaylistTabWidget::sig_tab_save, this, &GUI_Playlist::tab_save_playlist_clicked);
-	connect(ui->tw_playlists, &PlaylistTabWidget::sig_tab_save_as, this, &GUI_Playlist::tab_save_playlist_as_clicked);
-	connect(ui->tw_playlists, &PlaylistTabWidget::sig_tab_save_to_file, this, &GUI_Playlist::tab_save_playlist_to_file_clicked);
-	connect(ui->tw_playlists, &PlaylistTabWidget::sig_tab_rename, this, &GUI_Playlist::tab_rename_clicked);
-	connect(ui->tw_playlists, &PlaylistTabWidget::sig_tab_clear, this, &GUI_Playlist::clear_button_pressed);
-	connect(ui->tw_playlists, &PlaylistTabWidget::sig_tab_reset, handler, &Playlist::Handler::reset_playlist);
-	connect(ui->tw_playlists, &PlaylistTabWidget::sig_metadata_dropped, this, &GUI_Playlist::tab_metadata_dropped);
-	connect(ui->tw_playlists, &PlaylistTabWidget::sig_open_file, this, &GUI_Playlist::open_file_clicked);
-	connect(ui->tw_playlists, &PlaylistTabWidget::sig_open_dir, this, &GUI_Playlist::open_dir_clicked);
+	connect(ui->tw_playlists, &TabWidget::sig_add_tab_clicked, this, &GUI_Playlist::add_playlist_button_pressed);
+	connect(ui->tw_playlists, &TabWidget::tabCloseRequested, this, &GUI_Playlist::tab_close_playlist_clicked);
+	connect(ui->tw_playlists, &TabWidget::currentChanged, handler, &Playlist::Handler::set_current_index);
+	connect(ui->tw_playlists, &TabWidget::sig_tab_delete, this, &GUI_Playlist::tab_delete_playlist_clicked);
+	connect(ui->tw_playlists, &TabWidget::sig_tab_save, this, &GUI_Playlist::tab_save_playlist_clicked);
+	connect(ui->tw_playlists, &TabWidget::sig_tab_save_as, this, &GUI_Playlist::tab_save_playlist_as_clicked);
+	connect(ui->tw_playlists, &TabWidget::sig_tab_save_to_file, this, &GUI_Playlist::tab_save_playlist_to_file_clicked);
+	connect(ui->tw_playlists, &TabWidget::sig_tab_rename, this, &GUI_Playlist::tab_rename_clicked);
+	connect(ui->tw_playlists, &TabWidget::sig_tab_clear, this, &GUI_Playlist::clear_button_pressed);
+	connect(ui->tw_playlists, &TabWidget::sig_tab_reset, handler, &Playlist::Handler::reset_playlist);
+	connect(ui->tw_playlists, &TabWidget::sig_metadata_dropped, this, &GUI_Playlist::tab_metadata_dropped);
+	connect(ui->tw_playlists, &TabWidget::sig_files_dropped, this, &GUI_Playlist::tab_files_dropped);
+	connect(ui->tw_playlists, &TabWidget::sig_open_file, this, &GUI_Playlist::open_file_clicked);
+	connect(ui->tw_playlists, &TabWidget::sig_open_dir, this, &GUI_Playlist::open_dir_clicked);
 
 	connect(ui->btn_clear, &QPushButton::clicked, this, &GUI_Playlist::clear_button_pressed);
 
@@ -134,7 +138,6 @@ void GUI_Playlist::bookmark_selected(int idx, Seconds timestamp)
 	PlayManager::instance()->seek_abs_ms(timestamp * 1000);
 }
 
-
 void GUI_Playlist::add_playlist_button_pressed()
 {
 	Handler::instance()->create_empty_playlist();
@@ -151,7 +154,7 @@ void GUI_Playlist::tab_metadata_dropped(int pl_idx, const MetaDataList& v_md)
 
 	if(ui->tw_playlists->was_drag_from_playlist())
 	{
-		PlaylistView* plv = view_by_index(origin_tab);
+		View* plv = view_by_index(origin_tab);
 
 		if(plv){
 			plv->remove_selected_rows();
@@ -164,13 +167,36 @@ void GUI_Playlist::tab_metadata_dropped(int pl_idx, const MetaDataList& v_md)
 
 	else if(pl_idx == ui->tw_playlists->count() - 1)
 	{
-		QString name = Handler::instance()->request_new_playlist_name();
+		QString name = handler->request_new_playlist_name();
 		handler->create_playlist(v_md, name);
 	}
 
 	else
 	{
 		handler->append_tracks(v_md, pl_idx);
+	}
+}
+
+void GUI_Playlist::tab_files_dropped(int pl_idx, const QStringList& paths)
+{
+	Handler* handler = Handler::instance();
+	if(pl_idx < 0 || pl_idx >= ui->tw_playlists->count()){
+		return;
+	}
+
+	int origin_tab = ui->tw_playlists->get_drag_origin_tab();
+	bool was_drag_from_playlist = ui->tw_playlists->was_drag_from_playlist();
+	if(origin_tab >= 0 || was_drag_from_playlist) {
+		return;
+	}
+
+	if(pl_idx == ui->tw_playlists->count() - 1) {
+		QString name = handler->request_new_playlist_name();
+		handler->create_playlist(paths, name);
+	}
+
+	else {
+		handler->append_tracks(paths, pl_idx);
 	}
 }
 
@@ -197,7 +223,7 @@ void GUI_Playlist::dragMoveEvent(QDragMoveEvent* event)
 
 void GUI_Playlist::dropEvent(QDropEvent* event)
 {
-	PlaylistView* cur_view = current_view();
+	View* cur_view = current_view();
 	if(cur_view){
 		cur_view->dropEventFromOutside(event);
 	}
@@ -205,41 +231,27 @@ void GUI_Playlist::dropEvent(QDropEvent* event)
 
 void GUI_Playlist::set_total_time_label()
 {
-	int n_rows = 0;
 	int current_idx = ui->tw_playlists->currentIndex();
 	PlaylistConstPtr pl = Handler::instance()->playlist(current_idx);
 
 	MilliSeconds dur_ms = 0;
-	if(pl){
+	if(pl) {
 		dur_ms = pl->running_time();
 	}
 
-	QString time_str;
-	if(dur_ms > 0){
-		time_str = Util::cvt_ms_to_string(dur_ms, true, false);
+	int rows = 0;
+	View* cur_view = current_view();
+	if(cur_view) {
+		rows = cur_view->row_count();
 	}
 
-	PlaylistView* cur_view = current_view();
-	if(cur_view){
-		n_rows = cur_view->row_count();
-	}
-
-	QString playlist_string = QString::number(n_rows);
-
-	if(n_rows == 0){
+	QString playlist_string = tr("%n track(s)", "", rows);
+	if(rows == 0){
 		playlist_string = tr("Playlist empty");
 	}
 
-	else if(n_rows == 1)	{
-		playlist_string += " " + Lang::get(Lang::Track);
-	}
-
-	else {
-		playlist_string += " " + Lang::get(Lang::Tracks);
-	}
-
-	if( dur_ms > 0 ){
-		playlist_string += " - " + time_str;
+	if(dur_ms > 0){
+		playlist_string += " - " + Util::cvt_ms_to_string(dur_ms, "$He $M:$S");
 	}
 
 	ui->lab_totalTime->setText(playlist_string);
@@ -346,6 +358,8 @@ void GUI_Playlist::playlist_idx_changed(int pl_idx)
 	PlaylistConstPtr pl = Handler::instance()->playlist(pl_idx);
 	ui->tw_playlists->setCurrentIndex(pl_idx);
 
+	this->setFocusProxy(ui->tw_playlists->currentWidget());
+
 	set_total_time_label();
 	check_playlist_menu(pl);
 }
@@ -356,13 +370,13 @@ void GUI_Playlist::playlist_added(PlaylistPtr pl)
 	int idx = pl->index();
 	QString name = pl->get_name();
 
-	PlaylistView* plv = new PlaylistView(pl, ui->tw_playlists);
+	View* plv = new View(pl, ui->tw_playlists);
 
 	ui->tw_playlists->insertTab(ui->tw_playlists->count() - 1, plv, name);
 
-	connect(plv, &PlaylistView::sig_double_clicked, this, &GUI_Playlist::double_clicked);
-	connect(plv, &PlaylistView::sig_delete_tracks, this, &GUI_Playlist::delete_tracks_clicked);
-	connect(plv, &PlaylistView::sig_bookmark_pressed, this, &GUI_Playlist::bookmark_selected);
+	connect(plv, &View::sig_double_clicked, this, &GUI_Playlist::double_clicked);
+	connect(plv, &View::sig_delete_tracks, this, &GUI_Playlist::delete_tracks_clicked);
+	connect(plv, &View::sig_bookmark_pressed, this, &GUI_Playlist::bookmark_selected);
 	connect(pl.get(), &Playlist::Playlist::sig_items_changed, this, &GUI_Playlist::playlist_changed);
 
 	Handler::instance()->set_current_index(idx);
@@ -386,7 +400,6 @@ void GUI_Playlist::playlist_finished()
 	check_tab_icon();
 }
 
-
 void GUI_Playlist::tab_close_playlist_clicked(int idx)
 {
 	int count = ui->tw_playlists->count();
@@ -397,7 +410,7 @@ void GUI_Playlist::tab_close_playlist_clicked(int idx)
 	QWidget* playlist_widget = ui->tw_playlists->widget(idx);
 	ui->tw_playlists->removeTab(idx);
 
-	PlaylistView* plv = current_view();
+	View* plv = current_view();
 	if(plv){
 		plv->setFocus();
 	}
@@ -495,7 +508,7 @@ void GUI_Playlist::check_tab_icon()
 	}
 
 	int active_idx = Handler::instance()->active_index();
-	PlaylistView* plv = view_by_index(active_idx);
+	View* plv = view_by_index(active_idx);
 	if(!plv){
 		return;
 	}
@@ -517,7 +530,9 @@ void GUI_Playlist::check_tab_icon()
 
 void GUI_Playlist::check_playlist_menu(PlaylistConstPtr pl)
 {
-	PlaylistMenuEntries entries = PlaylistMenuEntry::None;
+	using Playlist::MenuEntry;
+
+	Playlist::MenuEntries entries = MenuEntry::None;
 
 	bool temporary =		pl->is_temporary();
 	bool was_changed =		pl->was_changed();
@@ -533,33 +548,33 @@ void GUI_Playlist::check_playlist_menu(PlaylistConstPtr pl)
 	bool rename_enabled =	(storable);
 	bool clear_enabled =	(!is_empty);
 
-	entries |= PlaylistMenuEntry::OpenFile;
-	entries |= PlaylistMenuEntry::OpenDir;
+	entries |= MenuEntry::OpenFile;
+	entries |= MenuEntry::OpenDir;
 
 	if(save_enabled){
-		entries |= PlaylistMenuEntry::Save;
+		entries |= MenuEntry::Save;
 	}
 	if(save_as_enabled){
-		entries |= PlaylistMenuEntry::SaveAs;
+		entries |= MenuEntry::SaveAs;
 	}
 	if(save_to_file_enabled){
-		entries |= PlaylistMenuEntry::SaveToFile;
+		entries |= MenuEntry::SaveToFile;
 	}
 	if(delete_enabled){
-		entries |= PlaylistMenuEntry::Delete;
+		entries |= MenuEntry::Delete;
 	}
 	if(reset_enabled){
-		entries |= PlaylistMenuEntry::Reset;
+		entries |= MenuEntry::Reset;
 	}
 	if(close_enabled){
-		entries |= PlaylistMenuEntry::Close;
-		entries |= PlaylistMenuEntry::CloseOthers;
+		entries |= MenuEntry::Close;
+		entries |= MenuEntry::CloseOthers;
 	}
 	if(rename_enabled){
-		entries |= PlaylistMenuEntry::Rename;
+		entries |= MenuEntry::Rename;
 	}
 	if(clear_enabled){
-		entries |= PlaylistMenuEntry::Clear;
+		entries |= MenuEntry::Clear;
 	}
 
 	ui->tw_playlists->show_menu_items(entries);
@@ -604,24 +619,24 @@ Message::Answer GUI_Playlist::show_save_message_box(Util::SaveAsAnswer answer)
 }
 
 
-PlaylistView* GUI_Playlist::view_by_index(int idx)
+View* GUI_Playlist::view_by_index(int idx)
 {
 	if(!Util::between(idx, ui->tw_playlists->count() - 1)){
 		return nullptr;
 	}
 
-	return static_cast<PlaylistView*>(ui->tw_playlists->widget(idx));
+	return static_cast<View*>(ui->tw_playlists->widget(idx));
 }
 
 
-PlaylistView* GUI_Playlist::current_view()
+View* GUI_Playlist::current_view()
 {
 	int idx = ui->tw_playlists->currentIndex();
 	if(!Util::between(idx, ui->tw_playlists->count() - 1)){
 		return nullptr;
 	}
 
-	return static_cast<PlaylistView*>(ui->tw_playlists->widget(idx));
+	return static_cast<View*>(ui->tw_playlists->widget(idx));
 }
 
 void GUI_Playlist::sl_show_clear_button_changed()

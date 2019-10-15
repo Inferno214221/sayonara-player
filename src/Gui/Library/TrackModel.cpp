@@ -48,12 +48,8 @@ using namespace Library;
 
 struct TrackModel::Private
 {
-	QPair<int, Rating> tmp_rating;
-
-	Private()
-	{
-		tmp_rating.first = -1;
-	}
+	QPair<int, Rating>			tmp_rating;
+	Tagging::UserOperations*	uto=nullptr;
 };
 
 TrackModel::TrackModel(QObject* parent, AbstractLibrary* library) :
@@ -118,7 +114,7 @@ QVariant TrackModel::data(const QModelIndex &index, int role) const
 				return QVariant( md.artist() );
 
 			case ColumnIndex::Track::Length:
-				return QVariant( ::Util::cvt_ms_to_string(md.duration_ms) );
+				return QVariant(::Util::cvt_ms_to_string(md.duration_ms, "$He $M:$S"));
 
 			case ColumnIndex::Track::Album:
 				return QVariant(md.album());
@@ -146,7 +142,7 @@ QVariant TrackModel::data(const QModelIndex &index, int role) const
 				}
 
 				Rating rating = md.rating;
-				if(m->tmp_rating.first == row)
+				if(row == m->tmp_rating.first)
 				{
 					rating = m->tmp_rating.second;
 				}
@@ -179,26 +175,34 @@ Qt::ItemFlags TrackModel::flags(const QModelIndex &index = QModelIndex()) const
 
 bool TrackModel::setData(const QModelIndex& index, const QVariant& value, int role)
 {
-	if(!index.isValid()){
+	if((index.column() != int(ColumnIndex::Track::Rating) ||
+	   (role != Qt::EditRole)))
+	{
 		return false;
 	}
 
-	if (role == Qt::DisplayRole || role == Qt::EditRole)
+	int row = index.row();
+
+	const MetaDataList& tracks = library()->tracks();
+	if(row >= 0 && row < tracks.count())
 	{
-		int row = index.row();
-		auto col = ColumnIndex::Track(index.column());
+		MetaData md = tracks[row];
+		Rating rating = value.value<Rating>();
 
-		if(col == ColumnIndex::Track::Rating)
+		if(md.rating != rating)
 		{
-			Rating rating = value.value<Rating>();
-
-			MetaData md = library()->tracks()[row];
 			m->tmp_rating.first = row;
 			m->tmp_rating.second = rating;
 
-			Tagging::UserOperations* uto = new Tagging::UserOperations(-1, this);
-			connect(uto, &Tagging::UserOperations::sig_finished, this, &TrackModel::rating_operation_finished);
-			uto->set_track_rating(md, rating);
+			if(!m->uto)
+			{
+				m->uto = new Tagging::UserOperations(-1, this);
+				connect(m->uto, &Tagging::UserOperations::sig_finished, this, &TrackModel::rating_operation_finished);
+			}
+
+			m->uto->set_track_rating(md, rating);
+
+			emit dataChanged(this->index(row, 0), this->index(row, columnCount() - 1));
 
 			return true;
 		}
@@ -210,11 +214,9 @@ bool TrackModel::setData(const QModelIndex& index, const QVariant& value, int ro
 
 void TrackModel::rating_operation_finished()
 {
+	int row = m->tmp_rating.first;
+	emit dataChanged(this->index(row, 0), this->index(row, columnCount() - 1));
 	m->tmp_rating.first = -1;
-
-	if(sender()){
-		sender()->deleteLater();
-	}
 }
 
 

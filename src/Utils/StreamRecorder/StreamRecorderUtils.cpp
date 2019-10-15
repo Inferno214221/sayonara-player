@@ -31,6 +31,7 @@
 #include <QDir>
 
 using namespace StreamRecorder;
+namespace FileUtils=::Util::File;
 
 QList<QString> Utils::supported_tags()
 {
@@ -228,7 +229,7 @@ Utils::TargetPaths Utils::full_target_path(const QString& sr_path, const QString
 	}
 
 	QString dir, filename;
-	::Util::File::split_filename(path_template, dir, filename);
+	FileUtils::split_filename(path_template, dir, filename);
 
 	dir = replace_placeholder(dir, md, date, time);
 	filename = replace_placeholder(filename, md);
@@ -240,13 +241,14 @@ Utils::TargetPaths Utils::full_target_path(const QString& sr_path, const QString
 	}
 
 	ret.first = Util::File::clean_filename(sr_path + QDir::separator() + target_path);
-	ret.second =	Util::File::clean_filename(
+	ret.second =	Util::File::clean_filename
+					(
 						Util::File::get_parent_directory(ret.first) +
 						QDir::separator() +
 						"playlist-" +
-						date.toString("yymmdd") +
+						date.toString("yyMMdd") +
 						"-" +
-						time.toString("hhMM") +
+						time.toString("hhmm") +
 						".m3u"
 					);
 

@@ -29,7 +29,8 @@
 #include "CoverFetchThread.h"
 #include "CoverLocation.h"
 #include "CoverFetchManager.h"
-#include "CoverFetcherInterface.h"
+#include "Fetcher/CoverFetcher.h"
+#include "Fetcher/CoverFetcherUrl.h"
 
 #include "Utils/Utils.h"
 #include "Utils/Logger/Logger.h"
@@ -42,8 +43,8 @@
 const int Timeout = 10000;
 
 using namespace Cover;
-using Fetcher::FetchUrl;
-using FetchUrlList=QList<FetchUrl>;
+using Fetcher::Url;
+using UrlList=QList<Url>;
 
 struct FetchThread::Private
 {
@@ -55,7 +56,7 @@ struct FetchThread::Private
 
 	QString				id;
 	QStringList			addresses;
-	FetchUrlList		search_urls;
+	UrlList				search_urls;
 	QStringList			found_urls;
 	int					n_covers;
 	bool				finished;
@@ -68,10 +69,10 @@ struct FetchThread::Private
 		finished(false),
 		may_run(true)
 	{
-		FetchUrlList urls = cl.search_urls(false);
-		for(const FetchUrl& url : urls)
+		UrlList urls = cl.search_urls(false);
+		for(const Url& url : urls)
 		{
-			if(url.active)
+			if(url.is_active())
 			{
 				search_urls << url;
 			}
@@ -107,10 +108,10 @@ bool FetchThread::start()
 		return false;
 	}
 
-	FetchUrl url = m->search_urls.takeFirst();
+	Url url = m->search_urls.takeFirst();
 
 	Fetcher::Manager* cfm = Fetcher::Manager::instance();
-	m->acf = cfm->coverfetcher(url.url);
+	m->acf = cfm->coverfetcher(url.url());
 	if(!m->acf){
 		return false;
 	}
@@ -118,7 +119,7 @@ bool FetchThread::start()
 	if( m->acf->can_fetch_cover_directly() )
 	{
 		m->addresses.clear();
-		m->addresses << url.url;
+		m->addresses << url.url();
 
 		fetch_next_cover();
 	}
@@ -131,7 +132,7 @@ bool FetchThread::start()
 		connect(awa, &AsyncWebAccess::sig_finished, this, &FetchThread::content_fetched);
 
 		m->active_connections << awa;
-		awa->run(url.url, Timeout);
+		awa->run(url.url(), Timeout);
 	}
 
 	return true;

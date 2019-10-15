@@ -26,6 +26,7 @@
 #include "Components/Playlist/PlaylistHandler.h"
 #include "Components/Playlist/Playlist.h"
 
+#include "Utils/Filepath.h"
 #include "Utils/RandomGenerator.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Settings/Settings.h"
@@ -40,7 +41,7 @@
 
 struct DBusMPRIS::MediaPlayer2::Private
 {
-	Cover::Location cl;
+	QString			cover_path;
 
 	QStringList     supported_uri_schemes;
 	QStringList     supported_mime_types;
@@ -63,6 +64,7 @@ struct DBusMPRIS::MediaPlayer2::Private
 		volume(1.0),
 		initialized(false)
 	{
+		cover_path = Util::Filepath(Cover::Location::invalid_path()).filesystem_path();
 		play_manager = PlayManager::instance();
 		volume = GetSetting(Set::Engine_Vol) / 100.0;
 
@@ -86,7 +88,7 @@ DBusMPRIS::MediaPlayer2::MediaPlayer2(QMainWindow* player, QObject *parent) :
 	connect(m->play_manager, &PlayManager::sig_volume_changed,
 			this, &DBusMPRIS::MediaPlayer2::volume_changed);
 
-		track_changed(m->play_manager->current_track());
+	track_changed(m->play_manager->current_track());
 }
 
 
@@ -245,9 +247,6 @@ QVariantMap DBusMPRIS::MediaPlayer2::Metadata()
 	v_object_path.setValue<QDBusObjectPath>(object_path);
 	v_length.setValue<qlonglong>(m->md.duration_ms * 1000);
 
-	m->cl = Cover::Location::cover_location(m->md);
-	QString cover_path = m->cl.preferred_path();
-
 	QString title = m->md.title();
 	if(title.isEmpty()){
 		title = Lang::get(Lang::UnknownTitle);
@@ -266,7 +265,7 @@ QVariantMap DBusMPRIS::MediaPlayer2::Metadata()
 	map["xesam:title"] = title;
 	map["xesam:album"] = album;
 	map["xesam:artist"] = QStringList({artist});
-	map["mpris:artUrl"] = QUrl::fromLocalFile(cover_path).toString();
+	map["mpris:artUrl"] = QUrl::fromLocalFile(m->cover_path).toString();
 
 	return map;
 }
@@ -455,6 +454,8 @@ void DBusMPRIS::MediaPlayer2::track_idx_changed(int idx)
 void DBusMPRIS::MediaPlayer2::track_changed(const MetaData& md)
 {
 	m->md = md;
+	m->cover_path = Util::Filepath(Cover::Location::cover_location(md).preferred_path()).filesystem_path();
+
 	if(!m->initialized){
 		init();
 	}

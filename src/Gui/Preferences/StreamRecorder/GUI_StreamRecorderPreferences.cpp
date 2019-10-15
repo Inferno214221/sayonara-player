@@ -35,7 +35,6 @@
 #include "Utils/StreamRecorder/StreamRecorderUtils.h"
 #include "Utils/Logger/Logger.h"
 
-
 #include <QFileDialog>
 #include <QDir>
 #include <QHBoxLayout>
@@ -82,7 +81,7 @@ void GUI_StreamRecorderPreferences::init_ui()
 	int i=0;
 	for(const QPair<QString, QString>& keyval : desc)
 	{
-		TagButton* btn = new TagButton(keyval.first, this);
+		auto* btn = new TagButton(keyval.first, this);
 		btn->setText(
 			Util::cvt_str_to_first_upper(keyval.second)
 		);
@@ -153,7 +152,11 @@ void GUI_StreamRecorderPreferences::sl_cb_activate_toggled(bool b)
 
 void GUI_StreamRecorderPreferences::sl_btn_path_clicked()
 {
-	QString path = ui->cb_create_session_path->text();
+	QString path = ui->le_path->text();
+	if(path.isEmpty()) {
+		path = QDir::homePath();
+	}
+
 	QString dir = QFileDialog::getExistingDirectory(this, tr("Choose target directory"), path, QFileDialog::ShowDirsOnly);
 	if(dir.size() > 0) {
 		ui->le_path->setText(dir);
@@ -313,7 +316,7 @@ TagButton::TagButton(const QString& tag_name, QWidget* parent) :
 	m = Pimpl::make<Private>(tag_name);
 }
 
-TagButton::~TagButton() {}
+TagButton::~TagButton() = default;
 
 void TagButton::language_changed()
 {

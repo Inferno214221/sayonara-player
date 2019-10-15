@@ -20,32 +20,32 @@
 
 #include "SoundcloudViews.h"
 
-using Gui::LibraryContextMenu;
+using Library::ContextMenu;
 
-static LibraryContextMenu::Entries entry_mask()
+static ContextMenu::Entries entry_mask()
 {
-	LibraryContextMenu::Entries entry_mask =
-			(LibraryContextMenu::EntryPlayNext |
-			 LibraryContextMenu::EntryInfo |
-			 LibraryContextMenu::EntryDelete |
-			 LibraryContextMenu::EntryAppend |
-			 LibraryContextMenu::EntryRefresh);
+	ContextMenu::Entries entry_mask =
+			(ContextMenu::EntryPlayNext |
+			 ContextMenu::EntryInfo |
+			 ContextMenu::EntryDelete |
+			 ContextMenu::EntryAppend |
+			 ContextMenu::EntryRefresh);
 
 	return entry_mask;
 }
 
 
-LibraryContextMenu::Entries SC::TrackView::context_menu_entries() const
+ContextMenu::Entries SC::TrackView::context_menu_entries() const
 {
 	return entry_mask();
 }
 
-LibraryContextMenu::Entries SC::AlbumView::context_menu_entries() const
+ContextMenu::Entries SC::AlbumView::context_menu_entries() const
 {
 	return entry_mask();
 }
 
-LibraryContextMenu::Entries SC::ArtistView::context_menu_entries() const
+ContextMenu::Entries SC::ArtistView::context_menu_entries() const
 {
 	return entry_mask();
 }

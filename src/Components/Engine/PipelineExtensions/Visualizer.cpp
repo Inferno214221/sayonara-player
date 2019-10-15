@@ -22,7 +22,7 @@
 
 #include "Visualizer.h"
 #include "Probing.h"
-#include "Components/Engine/Utils.h"
+#include "Components/Engine/EngineUtils.h"
 
 #include "Utils/Settings/Settings.h"
 
@@ -58,7 +58,7 @@ Visualizer::Visualizer(GstElement* pipeline, GstElement* tee)
 	m = Pimpl::make<Private>(pipeline, tee);
 }
 
-Visualizer::~Visualizer() {}
+Visualizer::~Visualizer() = default;
 
 bool Visualizer::init()
 {

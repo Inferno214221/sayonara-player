@@ -80,6 +80,7 @@ GUI_TagEdit::GUI_TagEdit(QWidget* parent) :
 	ui->tab_cover->layout()->addWidget(m->ui_cover_edit);
 
 	ui->tab_widget->setCurrentIndex(0);
+	ui->widget_rating->set_mousetrackable(false);
 
 	connect(ui->btn_next, &QPushButton::clicked, this, &GUI_TagEdit::next_button_clicked);
 	connect(ui->btn_prev, &QPushButton::clicked, this, &GUI_TagEdit::prev_button_clicked);
@@ -90,7 +91,7 @@ GUI_TagEdit::GUI_TagEdit(QWidget* parent) :
 	connect(ui->cb_genre_all, &QCheckBox::toggled, ui->le_genre, &QWidget::setDisabled);
 	connect(ui->cb_year_all, &QCheckBox::toggled, ui->sb_year, &QWidget::setDisabled);
 	connect(ui->cb_discnumber_all, &QCheckBox::toggled, ui->sb_discnumber, &QWidget::setDisabled);
-	connect(ui->cb_rating_all, &QCheckBox::toggled, ui->lab_rating, &QWidget::setDisabled);
+	connect(ui->cb_rating_all, &QCheckBox::toggled, ui->widget_rating, &QWidget::setDisabled);
 	connect(ui->cb_comment_all, &QCheckBox::toggled, ui->te_comment, &QWidget::setDisabled);
 
 	connect(ui->btn_save, &QPushButton::clicked, this, &GUI_TagEdit::commit);
@@ -100,7 +101,8 @@ GUI_TagEdit::GUI_TagEdit(QWidget* parent) :
 
 	connect(m->tag_edit, &Editor::sig_progress, this, &GUI_TagEdit::progress_changed);
 	connect(m->tag_edit, &Editor::sig_metadata_received, this, &GUI_TagEdit::metadata_changed);
-	connect(m->tag_edit, &Editor::finished, this, &GUI_TagEdit::commit_finished);
+	connect(m->tag_edit, &Editor::sig_started, this, &GUI_TagEdit::commit_started);
+	connect(m->tag_edit, &Editor::sig_finished, this, &GUI_TagEdit::commit_finished);
 
 	connect(ui->btn_load_entire_album, &QPushButton::clicked, this, &GUI_TagEdit::load_entire_album);
 
@@ -147,7 +149,7 @@ void GUI_TagEdit::language_changed()
 	ui->btn_close->setText(Lang::get(Lang::Close));
 	ui->btn_save->setText(Lang::get(Lang::Save));
 
-	ui->tab_widget->setTabText(0, tr("Metadata Tags"));
+	ui->tab_widget->setTabText(0, tr("Metadata"));
 	ui->tab_widget->setTabText(1, tr("Tags from path"));
 	ui->tab_widget->setTabText(2, Lang::get(Lang::Covers));
 }
@@ -228,13 +230,12 @@ void GUI_TagEdit::apply_all_tag_from_path()
 	{
 		Message::Answer answer = Message::Answer::Yes;
 
-		QStringList not_valid_str;
-		not_valid_str << tr("Cannot apply tag for");
-		not_valid_str << "";
-		not_valid_str << tr("%n track(s)", "", invalid_filepaths.count()) + ".";
-		not_valid_str << tr("Ignore these tracks?");
+		QStringList err;
+		err << tr("Cannot apply expression to %n track(s)", "", invalid_filepaths.count());
+		err << "";
+		err << tr("Ignore these tracks?");
 
-		answer = Message::question_yn(not_valid_str.join("<br>"));
+		answer = Message::question_yn(err.join("<br>"));
 		if(answer != Message::Answer::Yes)
 		{
 			m->tag_edit->undo_all();
@@ -340,7 +341,7 @@ void GUI_TagEdit::refresh_current_track()
 	}
 
 	if(!ui->cb_rating_all->isChecked()){
-		ui->lab_rating->set_rating(md.rating);
+		ui->widget_rating->set_rating(md.rating);
 	}
 
 	if(!ui->cb_comment_all->isChecked()){
@@ -391,7 +392,7 @@ void GUI_TagEdit::reset()
 	ui->te_comment->clear();
 	ui->sb_year->setValue(0);
 	ui->sb_discnumber->setValue(0);
-	ui->lab_rating->set_rating(Rating::Zero);
+	ui->widget_rating->set_rating(Rating::Zero);
 	ui->sb_track_num->setValue(0);
 	ui->le_album->setEnabled(true);
 	ui->le_artist->setEnabled(true);
@@ -399,7 +400,7 @@ void GUI_TagEdit::reset()
 	ui->le_genre->setEnabled(true);
 	ui->sb_year->setEnabled(true);
 	ui->sb_discnumber->setEnabled(true);
-	ui->lab_rating->setEnabled(true);
+	ui->widget_rating->setEnabled(true);
 
 	ui->lab_filepath->clear();
 	ui->pb_progress->setVisible(false);
@@ -500,7 +501,7 @@ void GUI_TagEdit::write_changes(int idx)
 	md.discnumber = scast(Disc, ui->sb_discnumber->value());
 	md.year =		scast(uint16_t, ui->sb_year->value());
 	md.track_num =	scast(uint16_t, ui->sb_track_num->value());
-	md.rating =		ui->lab_rating->get_rating();
+	md.rating =		ui->widget_rating->rating();
 
 	QPixmap cover = m->ui_cover_edit->selected_cover(idx);
 
@@ -513,13 +514,6 @@ void GUI_TagEdit::commit()
 	if(!ui->btn_save->isEnabled()){
 		return;
 	}
-
-	ui->btn_save->setEnabled(false);
-	ui->btn_undo->setEnabled(false);
-	ui->btn_undo_all->setEnabled(false);
-	ui->btn_load_entire_album->setEnabled(false);
-
-	ui->tab_widget->tabBar()->setEnabled(false);
 
 	write_changes(m->cur_idx);
 
@@ -551,7 +545,7 @@ void GUI_TagEdit::commit()
 		}
 
 		if( ui->cb_rating_all->isChecked()){
-			md.rating = ui->lab_rating->get_rating();
+			md.rating = ui->widget_rating->rating();
 		}
 
 		if( ui->cb_year_all->isChecked()){
@@ -571,11 +565,38 @@ void GUI_TagEdit::commit()
 	m->tag_edit->commit();
 }
 
+void GUI_TagEdit::commit_started()
+{
+	ui->btn_save->setEnabled(false);
+	ui->btn_undo->setEnabled(false);
+	ui->btn_undo_all->setEnabled(false);
+	ui->btn_load_entire_album->setEnabled(false);
 
+	ui->tab_widget->tabBar()->setEnabled(false);
+
+	ui->pb_progress->setVisible(true);
+	ui->pb_progress->setMinimum(0);
+	ui->pb_progress->setMaximum(100);
+}
+
+void GUI_TagEdit::progress_changed(int val)
+{
+	if(val >= 0) {
+		ui->pb_progress->setValue(val);
+	}
+
+	else {
+		ui->pb_progress->setMinimum(0);
+		ui->pb_progress->setMaximum(0);
+	}
+}
 
 void GUI_TagEdit::commit_finished()
 {
 	ui->btn_save->setEnabled(true);
+	ui->btn_load_entire_album->setEnabled(m->tag_edit->can_load_entire_album());
+	ui->tab_widget->tabBar()->setEnabled(true);
+	ui->pb_progress->setVisible(false);
 
 	QMap<QString, Editor::FailReason> failed_files = m->tag_edit->failed_files();
 	if(!failed_files.isEmpty())
@@ -587,21 +608,9 @@ void GUI_TagEdit::commit_finished()
 		connect(fmb, &GUI_FailMessageBox::sig_closed, fmb, &QObject::deleteLater);
 		fmb->show();
 	}
+
+	metadata_changed(m->tag_edit->metadata());
 }
-
-void GUI_TagEdit::progress_changed(int val)
-{
-	ui->pb_progress->setVisible(val >= 0);
-
-	if(val >= 0){
-		ui->pb_progress->setValue(val);
-	}
-
-	if(val < 0){
-		metadata_changed(m->tag_edit->metadata() );
-	}
-}
-
 
 void GUI_TagEdit::show_close_button(bool show)
 {

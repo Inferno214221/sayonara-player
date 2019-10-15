@@ -65,7 +65,8 @@ namespace DB
 
 			virtual void			clean_up();
 
-			static Connector*		instance(QString source_dir=QString(), QString target_dir=QString(), QString db_filename=QString());
+			static Connector*		instance();
+			static Connector*		instance_custom(QString source_dir, QString target_dir, QString db_filename);
 
 			LibraryDatabases		library_dbs() const;
 			DB::LibraryDatabase*	library_db(LibraryId library_id, DbId db_id);

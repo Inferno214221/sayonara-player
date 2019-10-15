@@ -21,7 +21,7 @@
 #include "Engine.h"
 #include "Components/Engine/Callbacks.h"
 #include "Components/Engine/Pipeline.h"
-#include "Components/Engine/Utils.h"
+#include "Components/Engine/EngineUtils.h"
 
 #include "StreamRecorder/StreamRecorder.h"
 
@@ -97,6 +97,16 @@ EngineClass::Engine(QObject* parent) :
 		throw PipelineCreationException();
 	}
 
+	QString sink = GetSetting(Set::Engine_Sink);
+	if(sink == "alsa")
+	{
+		Playlist::Mode plm = GetSetting(Set::PL_Mode);
+		plm.setGapless(false, false);
+
+		SetSetting(Set::Engine_CrossFaderActive, false);
+		SetSetting(Set::PL_Mode, plm);
+	}
+
 	ListenSetting(Set::Engine_SR_Active, Engine::s_streamrecorder_active_changed);
 	ListenSetting(Set::PL_Mode, Engine::s_gapless_changed);
 	ListenSetting(Set::Engine_CrossFaderActive, Engine::s_gapless_changed);
@@ -110,7 +120,8 @@ EngineClass::~Engine()
 		set_streamrecorder_recording(false);
 	}
 
-	if(m->stream_recorder) {
+	if(m->stream_recorder)
+	{
 		m->stream_recorder->deleteLater();
 		m->stream_recorder = nullptr;
 	}
@@ -155,7 +166,7 @@ bool EngineClass::change_track_gapless(const MetaData& md)
 	bool success = change_metadata(md);
 	if (success)
 	{
-		MilliSeconds time_to_go = m->other_pipeline->get_time_to_go();
+		MilliSeconds time_to_go = m->other_pipeline->time_to_go();
 		m->pipeline->play_in(time_to_go);
 
 		m->change_gapless_state(GaplessState::TrackFetched);
@@ -179,6 +190,11 @@ bool EngineClass::change_track_immediatly(const MetaData& md)
 
 bool EngineClass::change_track(const MetaData& md)
 {
+	if(!m->pipeline)
+	{
+		return false;
+	}
+
 	bool crossfader_active = GetSetting(Set::Engine_CrossFaderActive);
 	if(m->gapless_state != GaplessState::Stopped && crossfader_active)
 	{
@@ -255,7 +271,6 @@ void EngineClass::pause()
 
 void EngineClass::stop()
 {
-	m->change_gapless_state(GaplessState::Stopped);
 	m->pipeline->stop();
 
 	if(m->other_pipeline){
@@ -266,6 +281,7 @@ void EngineClass::stop()
 		set_streamrecorder_recording(false);
 	}
 
+	m->change_gapless_state(GaplessState::Stopped);
 	m->cur_pos_ms = 0;
 	emit sig_buffering(-1);
 }
@@ -418,8 +434,6 @@ void EngineClass::set_streamrecorder_recording(bool b)
 {
 	if(b)
 	{
-		m->pipeline->enable_streamrecorder(b);
-
 		if(!m->stream_recorder) {
 			m->stream_recorder = new StreamRecorder::StreamRecorder(this);
 		}
@@ -428,6 +442,8 @@ void EngineClass::set_streamrecorder_recording(bool b)
 	if(!m->stream_recorder)	{
 		return;
 	}
+
+	m->pipeline->record(b);
 
 	if(m->stream_recorder->is_recording() != b){
 		m->stream_recorder->record(b);
@@ -442,7 +458,7 @@ void EngineClass::set_streamrecorder_recording(bool b)
 		}
 	}
 
-	m->pipeline->set_streamrecorder_path(dst_file);
+	m->pipeline->set_recording_path(dst_file);
 }
 
 
@@ -527,7 +543,7 @@ void EngineClass::set_spectrum(const SpectrumList& vals)
 	emit sig_spectrum_changed();
 }
 
-SpectrumList Engine::Engine::spectrum() const
+Engine::SpectrumList Engine::Engine::spectrum() const
 {
 	return m->spectrum_vals;
 }
@@ -544,7 +560,7 @@ QPair<float, float> Engine::Engine::level() const
 }
 
 
-void EngineClass::error(const QString& error)
+void EngineClass::error(const QString& error, const QString& element_name)
 {
 	QStringList msg{Lang::get(Lang::Error)};
 
@@ -556,6 +572,11 @@ void EngineClass::error(const QString& error)
 
 	if(error.trimmed().length() > 0){
 		msg << error;
+	}
+
+	if(element_name.contains("alsa"))
+	{
+		msg << tr("You should restart Sayonara now") + ".";
 	}
 
 	stop();

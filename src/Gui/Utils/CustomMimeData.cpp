@@ -38,7 +38,7 @@ struct CustomMimeData::Private
 	QString			source;
 	QString			cover_url;
 	const void*		ptr;
-
+	//CustomMimeData::AsyncDropHandler* async_drop_handler=nullptr;
 
 	Private(const void* ptr) :
 		playlist_source_index(-1),
@@ -117,4 +117,14 @@ void CustomMimeData::set_cover_url(const QString& url)
 {
 	m->cover_url = url;
 }
+
+//void CustomMimeData::set_drop_handler(CustomMimeData::AsyncDropHandler* handler)
+//{
+//	m->async_drop_handler = handler;
+//}
+
+//CustomMimeData::AsyncDropHandler* CustomMimeData::drop_handler() const
+//{
+//	return m->async_drop_handler;
+//}
 

@@ -18,13 +18,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Application.h"
-#include "InstanceThread.h"
-#include "MetaTypeRegistry.h"
-#include "LocalLibraryWatcher.h"
+// need this here because of SAYONARA ENV variables
 #include "Utils/Macros.h"
 
-#include "Gui/Utils/Icons.h"
+#include "Application/Application.h"
+#include "Application/InstanceThread.h"
+#include "Application/MetaTypeRegistry.h"
+#include "Application/LocalLibraryWatcher.h"
 
 #ifdef SAYONARA_WITH_DBUS
 #include "DBus/DBusHandler.h"
@@ -43,17 +43,20 @@
 #include "Components/PlayManager/PlayManager.h"
 #include "Components/Streaming/LastFM/LastFM.h"
 #include "Components/Session/Session.h"
-#include "Interfaces/Library/LibraryPluginHandler.h"
+#include "Components/LibraryManagement/LibraryPluginHandler.h"
 
 #include "Interfaces/Notification/NotificationHandler.h"
 
 #include "Gui/Utils/GuiUtils.h"
+#include "Gui/Utils/Style.h"
+#include "Gui/Utils/Icons.h"
 
 #include "Gui/Player/GUI_Player.h"
 #include "Gui/Library/LocalLibraryContainer.h"
 #include "Gui/Directories/DirectoryWidgetContainer.h"
 #include "Gui/Soundcloud/SoundcloudLibraryContainer.h"
 #include "Gui/SomaFM/SomaFMLibraryContainer.h"
+#include "Gui/Utils/Library/EmptyLibraryContainer.h"
 
 #include "Gui/Plugins/PlayerPluginHandler.h"
 #include "Gui/Plugins/PlaylistChooser/GUI_PlaylistChooser.h"
@@ -65,6 +68,7 @@
 #include "Gui/Plugins/Engine/GUI_Equalizer.h"
 #include "Gui/Plugins/Engine/GUI_Speed.h"
 #include "Gui/Plugins/Engine/GUI_Crossfader.h"
+#include "Gui/Plugins/Engine/GUI_SpectogramPainter.h"
 #include "Gui/Plugins/Stream/GUI_Stream.h"
 #include "Gui/Plugins/Stream/GUI_Podcasts.h"
 
@@ -89,7 +93,7 @@
 #include "Utils/Utils.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/WebAccess/Proxy.h"
-#include "Utils/Macros.h"
+
 #include "Utils/Language/Language.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/MetaData/MetaDataList.h"
@@ -163,8 +167,10 @@ struct Application::Private
 
 		Settings::instance()->apply_fixes();
 
+		Q_INIT_RESOURCE(Broadcasting);
 		Q_INIT_RESOURCE(Icons);
 		Q_INIT_RESOURCE(Lyrics);
+		Q_INIT_RESOURCE(Database);
 
 #ifdef Q_OS_WIN
 		Q_INIT_RESOURCE(IconsWindows);
@@ -292,8 +298,9 @@ bool Application::init(const QStringList& files_to_play)
 	if(GetSetting(Set::Notification_Show))
 	{
 		NotificationHandler::instance()->notify("Sayonara Player",
-												Lang::get(Lang::Version) + " " + SAYONARA_VERSION,
-												Util::share_path("logo.png"));
+			Lang::get(Lang::Version) + " " + SAYONARA_VERSION,
+			QString(":/Icons/logo.png")
+		);
 	}
 
 	init_libraries();
@@ -308,6 +315,10 @@ bool Application::init(const QStringList& files_to_play)
 	//connect(this, &Application::commitDataRequest, this, &Application::session_end_requested);
 
 	ListenSetting(Set::Lib_SortIgnoreArtistArticle, Application::ignore_artist_article_changed);
+	ListenSetting(SetNoDB::Player_MetaStyle, Application::skin_changed);
+
+	m->player->show();
+	m->player->init_geometry();
 
 	return true;
 }
@@ -387,7 +398,7 @@ void Application::init_libraries()
 	library_containers << static_cast<Library::ContainerInterface*>(somafm_container);
 #endif
 
-	library_plugin_loader->init(library_containers);
+	library_plugin_loader->init(library_containers, new EmptyLibraryContainer());
 }
 
 void Application::init_engine()
@@ -413,6 +424,7 @@ void Application::init_plugins()
 	pph->add_plugin(new GUI_Speed());
 	pph->add_plugin(new GUI_Broadcast());
 	pph->add_plugin(new GUI_Crossfader());
+	pph->add_plugin(new GUI_SpectogramPainter());
 
 	sp_log(Log::Debug, this) << "Plugins finished: " << m->timer->elapsed() << "ms";
 }
@@ -444,6 +456,7 @@ void Application::session_end_requested(QSessionManager& manager)
 
 void Application::shutdown()
 {
+	PlayerPlugin::Handler::instance()->shutdown();
 	Engine::Handler::instance()->shutdown();
 	Playlist::Handler::instance()->shutdown();
 	PlayManager::instance()->shutdown();
@@ -479,4 +492,10 @@ void Application::create_playlist()
 	if(eplg->is_play_allowed()) {
 		eplg->change_track();
 	}
+}
+
+
+void Application::skin_changed()
+{
+	QApplication::setStyleSheet(Style::current_style());
 }

@@ -14,7 +14,7 @@
     <message>
         <location line="+19"/>
         <source>Text search</source>
-        <translation>Metin araması</translation>
+        <translation>Metin ara</translation>
     </message>
     <message>
         <location line="+62"/>
@@ -32,22 +32,22 @@
         <translation>Birden fazla kapağı seç ve önizle</translation>
     </message>
     <message>
-        <location line="+184"/>
+        <location line="+108"/>
         <source>Alternative Cover</source>
         <translation>Alternatif Kapak</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+16"/>
         <source>Start search automatically</source>
         <translation>Aramayı otomatik başlat</translation>
     </message>
     <message numerus="yes">
-        <location filename="src/Gui/Covers/GUI_AlternativeCovers.cpp" line="+248"/>
+        <location filename="src/Gui/Covers/GUI_AlternativeCovers.cpp" line="+280"/>
         <source>%n cover(s) found</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n kapak bulundu</numerusform><numerusform>%n kapak bulundu</numerusform></translation>
     </message>
     <message>
-        <location line="+127"/>
+        <location line="+133"/>
         <location line="+31"/>
         <source>Also save cover to %1</source>
         <translation>Ayrıca kapağı %1’e kaydet</translation>
@@ -63,7 +63,7 @@
     <message>
         <location filename="src/Gui/Directories/GUI_DirectoryWidget.ui" line="+258"/>
         <source>No library found</source>
-        <translation type="unfinished"/>
+        <translation>Kütüphane bulunamadı</translation>
     </message>
 </context>
 <context>
@@ -91,7 +91,7 @@
     <message numerus="yes">
         <location filename="src/Gui/ImportDialog/GUI_ImportDialog.cpp" line="+103"/>
         <source>%n track(s) available</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n parça mevcut</numerusform><numerusform>%n parça mevcut</numerusform></translation>
     </message>
     <message>
         <location line="+20"/>
@@ -121,7 +121,7 @@
     <message>
         <location line="+4"/>
         <source>Rollback</source>
-        <translation>Geri Al</translation>
+        <translation>Geri al</translation>
     </message>
     <message>
         <location line="+80"/>
@@ -140,6 +140,11 @@
         <location filename="src/Gui/InfoDialog/GUI_InfoDialog.ui" line="+20"/>
         <source>Info / Edit</source>
         <translation>Bilgi / Düzenle</translation>
+    </message>
+    <message>
+        <location line="+270"/>
+        <source>Loading files...</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -214,7 +219,7 @@
     <message>
         <location filename="src/Gui/Player/GUI_Player.ui" line="+17"/>
         <source>Sayonara Player</source>
-        <translation>Sayonara Oynatıcı</translation>
+        <translation>Sayonara Player</translation>
     </message>
 </context>
 <context>
@@ -262,7 +267,7 @@
         <location line="-113"/>
         <location line="+14"/>
         <source>Playlist does not contain tracks which are supported by the converter</source>
-        <translation>Çalma listesi, dönüştürücü tarafından desteklenen parçaları içermiyor</translation>
+        <translation>Oynatma listesi, dönüştürücü tarafından desteklenen parçaları içermiyor</translation>
     </message>
     <message>
         <location line="-9"/>
@@ -277,7 +282,7 @@
     <message numerus="yes">
         <location line="+38"/>
         <source>Failed to convert %n track(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n parça dönüştürülemedi</numerusform><numerusform>%n parçalar dönüştürülemedi</numerusform></translation>
     </message>
     <message>
         <location line="+1"/>
@@ -287,7 +292,7 @@
     <message>
         <location line="+9"/>
         <source>All tracks could be converted</source>
-        <translation type="unfinished"/>
+        <translation>Tüm parçalar dönüştürülebilir</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -334,7 +339,7 @@
     <message numerus="yes">
         <location line="+42"/>
         <source>%n listener(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n dinleyici</numerusform><numerusform>%n dinleyici</numerusform></translation>
     </message>
     <message>
         <location line="+60"/>
@@ -351,7 +356,7 @@
     <name>GUI_Speed</name>
     <message>
         <location filename="src/Gui/Plugins/Engine/GUI_Speed.ui" line="+48"/>
-        <location filename="src/Gui/Plugins/Engine/GUI_Speed.cpp" line="+121"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_Speed.cpp" line="+122"/>
         <source>Speed</source>
         <translation>Hız</translation>
     </message>
@@ -372,7 +377,7 @@
         <translation>%1 ve %2</translation>
     </message>
     <message>
-        <location line="+66"/>
+        <location line="+68"/>
         <location line="+1"/>
         <source>%1 not found</source>
         <translation>%1 bulunamadı</translation>
@@ -464,7 +469,7 @@
     <message>
         <location filename="src/Gui/Plugins/PlaylistChooser/GUI_TargetPlaylistDialog.ui" line="+14"/>
         <source>Choose target playlist</source>
-        <translation>Hedef çalma listesini seç</translation>
+        <translation>Hedef oynatma listesini seç</translation>
     </message>
     <message>
         <location line="+25"/>
@@ -484,7 +489,7 @@
     <message>
         <location line="+13"/>
         <source>Save playlist as...</source>
-        <translation>Çalma listesini farklı kaydet...</translation>
+        <translation>Oynatma listesini farklı kaydet...</translation>
     </message>
 </context>
 <context>
@@ -673,7 +678,7 @@
     <message>
         <location filename="src/Gui/Preferences/LastFM/GUI_LastFmPreferences.ui" line="+27"/>
         <source>Username</source>
-        <translation>Kullanıcı Adı</translation>
+        <translation>Kullanıcı adı</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -682,8 +687,8 @@
     </message>
     <message>
         <location line="+20"/>
-        <source>Scrobble after</source>
-        <translation>Sonra Scrobble</translation>
+        <source>Scrobble time</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+46"/>
@@ -693,12 +698,12 @@
     <message>
         <location filename="src/Gui/Preferences/LastFM/GUI_LastFmPreferences.cpp" line="+163"/>
         <source>Logged in</source>
-        <translation>Giriş yapılmış</translation>
+        <translation>Giriş yapıldı</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Not logged in</source>
-        <translation>Giriş yapmadınız</translation>
+        <translation>Giriş yapılmadı</translation>
     </message>
 </context>
 <context>
@@ -716,7 +721,7 @@
     <message>
         <location line="+12"/>
         <source>On double click, create playlist and</source>
-        <translation>Çift tıklayın, çalma listesi oluşturun ve</translation>
+        <translation>Çift tıklayın, oynatma listesi oluştur ve</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -732,17 +737,17 @@
     <message>
         <location line="+7"/>
         <source>start playback immediately</source>
-        <translation>hemen oynatmayı başlatın</translation>
+        <translation>hemen oynatmayı başlat</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>(this is ignored when playlist is in &apos;append mode&apos;)</source>
-        <translation>(çalma listesi &apos;ekleme kipinde&apos; olduğunda bu dikkate alınmaz)</translation>
+        <translation>(oynatma listesi &apos;ekleme kipinde&apos; olduğunda bu dikkate alınmaz)</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>When drag and drop into playlist </source>
-        <translation>Çalma listesine sürükleyip bırakıldığında </translation>
+        <translation>Oynatma listesine sürükleyip bırakıldığında </translation>
     </message>
     <message>
         <location line="+13"/>
@@ -762,7 +767,7 @@
     <message>
         <location line="+20"/>
         <source>Ignore English article &quot;The&quot; in artist name</source>
-        <translation type="unfinished"/>
+        <translation>Sanatçı adında &quot;The&quot; adlı İngilizce makaleyi yoksay</translation>
     </message>
     <message>
         <location filename="src/Gui/Preferences/Library/GUI_LibraryPreferences.cpp" line="+134"/>
@@ -826,7 +831,7 @@
     <message>
         <location line="+7"/>
         <source>Load saved playlists</source>
-        <translation>Kaydedilen çalma listelerini yükle</translation>
+        <translation>Kaydedilen oynatma listelerini yükle</translation>
     </message>
     <message>
         <location line="+17"/>
@@ -952,7 +957,7 @@
     <message>
         <location line="+14"/>
         <source>Username</source>
-        <translation>Kullanıcı Adı</translation>
+        <translation>Kullanıcı adı</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -962,7 +967,7 @@
     <message>
         <location filename="src/Gui/Preferences/Proxy/GUI_ProxyPreferences.cpp" line="+57"/>
         <source>Proxy</source>
-        <translation>Vekil Sunucu</translation>
+        <translation>Vekil sunucu</translation>
     </message>
 </context>
 <context>
@@ -1027,7 +1032,7 @@
     <message>
         <location line="+93"/>
         <source>Double shortcuts found</source>
-        <translation>Kısayol zaten kullanımda</translation>
+        <translation>Çift kısayol bulundu</translation>
     </message>
 </context>
 <context>
@@ -1038,19 +1043,19 @@
         <translation>Genel</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+9"/>
         <source>Target directory</source>
-        <translation type="unfinished"/>
+        <translation>Hedef dizin</translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+40"/>
         <source>Automatic recording</source>
         <translation>Otomatik kayıt</translation>
     </message>
     <message>
-        <location line="+51"/>
+        <location line="+45"/>
         <source>Create session directory</source>
-        <translation type="unfinished"/>
+        <translation>Oturum dizini oluştur</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -1073,14 +1078,14 @@
         <translation>Örnek</translation>
     </message>
     <message>
-        <location filename="src/Gui/Preferences/StreamRecorder/GUI_StreamRecorderPreferences.cpp" line="+157"/>
+        <location filename="src/Gui/Preferences/StreamRecorder/GUI_StreamRecorderPreferences.cpp" line="+160"/>
         <source>Choose target directory</source>
         <translation>Hedef dizini seç</translation>
     </message>
     <message>
         <location line="+65"/>
         <source>Target directory is empty</source>
-        <translation type="unfinished"/>
+        <translation>Hedef dizin boş</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -1096,7 +1101,7 @@
     <message>
         <location line="+11"/>
         <source>Template path is not valid</source>
-        <translation>Şablon yolu geçerli değil</translation>
+        <translation>Şablon yolu geçersiz</translation>
     </message>
     <message>
         <location line="+59"/>
@@ -1119,7 +1124,7 @@
     <message>
         <location line="+7"/>
         <source>Show history</source>
-        <translation>Geçmiş</translation>
+        <translation>Geçmişi göster</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -1163,13 +1168,13 @@
     <message>
         <location filename="src/Gui/Preferences/UiPreferences/GUI_IconPreferences.ui" line="+20"/>
         <source>Also apply this icon theme to the dark style</source>
-        <translation type="unfinished"/>
+        <translation>Ayrıca bu simge temasını karanlık biçime uygula</translation>
     </message>
     <message>
-        <location filename="src/Gui/Preferences/UiPreferences/GUI_IconPreferences.cpp" line="+97"/>
+        <location filename="src/Gui/Preferences/UiPreferences/GUI_IconPreferences.cpp" line="+96"/>
         <location line="+102"/>
         <source>System theme</source>
-        <translation type="unfinished"/>
+        <translation>Sistem teması</translation>
     </message>
     <message>
         <location line="-94"/>
@@ -1182,7 +1187,7 @@
     <message>
         <location filename="src/Gui/Preferences/UiPreferences/GUI_UiPreferences.ui" line="+57"/>
         <source>Fading cover</source>
-        <translation type="unfinished"/>
+        <translation>Soluk kapak</translation>
     </message>
     <message>
         <location filename="src/Gui/Preferences/UiPreferences/GUI_UiPreferences.cpp" line="+47"/>
@@ -1226,7 +1231,7 @@
     <message>
         <location line="+7"/>
         <source>Shutdown after playlist finished</source>
-        <translation>Çalma listesi bittikten sonra kapat</translation>
+        <translation>Oynatma listesi bittikten sonra kapat</translation>
     </message>
     <message>
         <location line="+54"/>
@@ -1280,21 +1285,21 @@
     <message>
         <location line="+64"/>
         <source>Search for title, interprets and albums</source>
-        <translation>Başlık, Yorumlar ve albümler için arama yapın</translation>
+        <translation>Başlık, yorum ve albüm ara</translation>
     </message>
 </context>
 <context>
     <name>GUI_CoverEdit</name>
     <message>
-        <location filename="src/Gui/Tagging/GUI_CoverEdit.ui" line="+139"/>
+        <location filename="src/Gui/Tagging/GUI_CoverEdit.ui" line="+57"/>
+        <source>Replace</source>
+        <translation>Değiştir</translation>
+    </message>
+    <message>
+        <location line="+73"/>
         <location filename="src/Gui/Tagging/GUI_CoverEdit.cpp" line="+221"/>
         <source>Original</source>
         <translation>Orjinal</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Replace</source>
-        <translation>Değiştir</translation>
     </message>
     <message>
         <location filename="src/Gui/Tagging/GUI_CoverEdit.cpp" line="-56"/>
@@ -1313,17 +1318,17 @@
     <message>
         <location filename="src/Gui/Tagging/GUI_FailMessageBox.cpp" line="+57"/>
         <source>File exists</source>
-        <translation type="unfinished"/>
+        <translation>Dosya var</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Writeable</source>
-        <translation type="unfinished"/>
+        <translation>Yazılabilir</translation>
     </message>
     <message>
         <location line="+70"/>
         <source>Some files could not be saved</source>
-        <translation type="unfinished"/>
+        <translation>Bazı dosyalar kaydedilemedi</translation>
     </message>
 </context>
 <context>
@@ -1344,57 +1349,52 @@
         <translation>Açıklama</translation>
     </message>
     <message>
-        <location line="+178"/>
+        <location line="+150"/>
         <source>all</source>
         <translation>tümü</translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="+24"/>
         <source>Tag from path</source>
         <translation>Yoldan etiket</translation>
     </message>
     <message>
         <location line="+54"/>
         <source>Undo all</source>
-        <translation>Hepsini geri al</translation>
+        <translation>Tümünü geri al</translation>
     </message>
     <message>
         <location line="+69"/>
         <source>Read only file</source>
-        <translation type="unfinished"/>
+        <translation>Sadece okunabilir dosya</translation>
     </message>
     <message>
-        <location filename="src/Gui/Tagging/GUI_TagEdit.cpp" line="+135"/>
+        <location filename="src/Gui/Tagging/GUI_TagEdit.cpp" line="+137"/>
         <source>Load complete album</source>
         <translation>Albümün tamamını yükle</translation>
     </message>
     <message>
         <location line="+15"/>
-        <source>Metadata Tags</source>
+        <source>Metadata</source>
         <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Tags from path</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+81"/>
-        <source>Cannot apply tag for</source>
-        <translation>Etiket uygulanamıyor</translation>
+        <translation>Yoldaki etiketler</translation>
     </message>
     <message numerus="yes">
-        <location line="+2"/>
-        <source>%n track(s)</source>
+        <location line="+81"/>
+        <source>Cannot apply expression to %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>Ignore these tracks?</source>
-        <translation>Bu parçaları görmezden mi geliyorsun?</translation>
+        <translation>Bu parçaları yoksay?</translation>
     </message>
     <message>
-        <location line="+386"/>
+        <location line="+394"/>
         <source>All changes will be lost</source>
         <translation>Tüm değişiklikler kaybolacak</translation>
     </message>
@@ -1417,12 +1417,12 @@
         <translation>Tümüne uygula</translation>
     </message>
     <message>
-        <location filename="src/Gui/Tagging/GUI_TagFromPath.cpp" line="+93"/>
+        <location filename="src/Gui/Tagging/GUI_TagFromPath.cpp" line="+92"/>
         <source>Tag</source>
         <translation>Etiket</translation>
     </message>
     <message>
-        <location line="+59"/>
+        <location line="+61"/>
         <source>Please select text first</source>
         <translation>Lütfen önce metni seçin</translation>
     </message>
@@ -1438,14 +1438,14 @@
 <context>
     <name>AbstractLibrary</name>
     <message>
-        <location filename="src/Components/Library/AbstractLibrary.cpp" line="+769"/>
+        <location filename="src/Components/Library/AbstractLibrary.cpp" line="+790"/>
         <source>All %1 could be removed</source>
         <translation>Tümü %1 kaldırılabilir</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>%1 of %2 %3 could not be removed</source>
-        <translation>%1 of %2 %3 kaldırılamadı</translation>
+        <translation>%1 %2 %3 kaldırılamadı</translation>
     </message>
 </context>
 <context>
@@ -1471,17 +1471,17 @@
     <message>
         <location filename="src/Components/Library/Threads/ReloadThread.cpp" line="+223"/>
         <source>Looking for covers</source>
-        <translation>Kapakları arıyorum</translation>
+        <translation>Kapaklar aranıyor</translation>
     </message>
     <message>
-        <location line="+41"/>
+        <location line="+40"/>
         <source>Reading files</source>
         <translation>Dosyalar okunuyor</translation>
     </message>
     <message>
         <location line="+109"/>
         <source>Deleting orphaned tracks</source>
-        <translation type="unfinished"/>
+        <translation>Artık parçalar siliniyor</translation>
     </message>
 </context>
 <context>
@@ -1495,7 +1495,7 @@
     <message>
         <location line="+10"/>
         <source>No lyrics found</source>
-        <translation>şarkı sözü bulunamadı</translation>
+        <translation>Şarkı sözü bulunamadı</translation>
     </message>
 </context>
 <context>
@@ -1509,7 +1509,7 @@
         <location line="+27"/>
         <location line="+33"/>
         <source>Computer will shutdown in %n minute(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Bilgisayar %n dakika içinde kapanacak</numerusform><numerusform>Bilgisayar %n dakika içinde kapanacak</numerusform></translation>
     </message>
 </context>
 <context>
@@ -1536,7 +1536,7 @@
     <message>
         <location line="-205"/>
         <source>Followers/Following</source>
-        <translation>Takipçiler/Takip et</translation>
+        <translation>Takipçiler/Takip Edilenler</translation>
     </message>
     <message>
         <location line="+84"/>
@@ -1556,7 +1556,7 @@
 <context>
     <name>DirectoryContextMenu</name>
     <message>
-        <location filename="src/Gui/Directories/DirectoryContextMenu.cpp" line="+133"/>
+        <location filename="src/Gui/Directories/DirectoryContextMenu.cpp" line="+131"/>
         <source>Create directory</source>
         <translation>Dizin oluştur</translation>
     </message>
@@ -1569,7 +1569,7 @@
 <context>
     <name>DirectoryTreeView</name>
     <message>
-        <location filename="src/Gui/Directories/DirectoryTreeView.cpp" line="+325"/>
+        <location filename="src/Gui/Directories/DirectoryTreeView.cpp" line="+316"/>
         <location line="+27"/>
         <source>Enter new name</source>
         <translation>Yeni isim gir</translation>
@@ -1598,7 +1598,7 @@
     <message>
         <location filename="src/Gui/InfoDialog/GUI_InfoDialog.cpp" line="+92"/>
         <source>Write cover to tracks</source>
-        <translation type="unfinished"/>
+        <translation>Parçalara kapak yaz</translation>
     </message>
 </context>
 <context>
@@ -1625,9 +1625,9 @@
 <context>
     <name>Library::GUI_LocalLibrary</name>
     <message>
-        <location filename="src/Gui/Library/GUI_LocalLibrary.cpp" line="+362"/>
+        <location filename="src/Gui/Library/GUI_LocalLibrary.cpp" line="+368"/>
         <source>Audio files</source>
-        <translation type="unfinished"/>
+        <translation>Ses dosyaları</translation>
     </message>
 </context>
 <context>
@@ -1641,7 +1641,7 @@
 <context>
     <name>Library::ItemView</name>
     <message>
-        <location filename="src/Gui/Library/ItemView.cpp" line="+266"/>
+        <location filename="src/Gui/Library/ItemView.cpp" line="+265"/>
         <source>Clear selection</source>
         <translation>Seçileni temizle</translation>
     </message>
@@ -1659,12 +1659,12 @@
     <message>
         <location filename="src/Gui/Library/Utils/GUI_ReloadLibraryDialog.cpp" line="+78"/>
         <source>Fast scan</source>
-        <translation>Hızlı tarama</translation>
+        <translation>Hızlı tara</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Deep scan</source>
-        <translation>Detaylı tarama</translation>
+        <translation>Ayrıntılı tara</translation>
     </message>
     <message>
         <location line="+33"/>
@@ -1674,7 +1674,7 @@
     <message>
         <location line="+4"/>
         <source>Scan all files in your library directory</source>
-        <translation>Kütüphane dizininizdeki tüm dosyaları tarayın</translation>
+        <translation>Kütüphane dizinindeki tüm dosyaları tara</translation>
     </message>
 </context>
 <context>
@@ -1695,7 +1695,7 @@
     <message>
         <location filename="src/Gui/Player/GUI_ControlsBase.cpp" line="+71"/>
         <source>Sayonara Player</source>
-        <translation>Sayonara Oynatıcı</translation>
+        <translation>Sayonara Player</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -1790,7 +1790,7 @@
     <message>
         <location filename="src/Gui/Player/GUI_TrayIcon.cpp" line="+181"/>
         <source>Current song</source>
-        <translation>Geçerli şarkı</translation>
+        <translation>Geçerli parça</translation>
     </message>
 </context>
 <context>
@@ -1802,27 +1802,19 @@
     </message>
 </context>
 <context>
-    <name>GUI_PlaylistBottomBar</name>
-    <message>
-        <location filename="src/Gui/Playlist/BottomBar.cpp" line="+238"/>
-        <source>Please set library path first</source>
-        <translation>Lütfen öncelikle kütüphane yolunu ayarlayın</translation>
-    </message>
-    <message>
-        <location line="+59"/>
-        <source>Cancel shutdown?</source>
-        <translation>Kapatma iptal edilsin mi?</translation>
-    </message>
-</context>
-<context>
     <name>GUI_Playlist</name>
+    <message numerus="yes">
+        <location filename="src/Gui/Playlist/GUI_Playlist.cpp" line="+248"/>
+        <source>%n track(s)</source>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+    </message>
     <message>
-        <location filename="src/Gui/Playlist/GUI_Playlist.cpp" line="+230"/>
+        <location line="+2"/>
         <source>Playlist empty</source>
         <translation>Oynatma listesi boş</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+17"/>
         <source>Media files</source>
         <translation>Medya dosyaları</translation>
     </message>
@@ -1832,12 +1824,12 @@
         <translation>Medya dosyalarını aç</translation>
     </message>
     <message>
-        <location line="+207"/>
+        <location line="+208"/>
         <source>Playlist name already exists</source>
         <translation>Oynatma listesi adı zaten var</translation>
     </message>
     <message>
-        <location line="+121"/>
+        <location line="+123"/>
         <source>Cannot save playlist.</source>
         <translation>Oynatma listesi kaydedilemiyor.</translation>
     </message>
@@ -1849,46 +1841,59 @@
     <message>
         <location line="+4"/>
         <source>Playlists are currently only supported for library tracks.</source>
-        <translation>Çalma listeleri şu an yalnızca kütüphane parçaları için desteklenmektedir.</translation>
+        <translation>Oynatma listeleri yalnızca kütüphane parçaları için desteklenmektedir.</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Save playlist</source>
-        <translation>Çalma listesini kaydet</translation>
+        <translation>Oynatma listesini kaydet</translation>
     </message>
 </context>
 <context>
-    <name>PlaylistItemModel</name>
+    <name>Playlist::ActionMenu</name>
     <message>
-        <location filename="src/Gui/Playlist/Model.cpp" line="+410"/>
-        <source>Goto row</source>
-        <translation>Satıra git</translation>
-    </message>
-</context>
-<context>
-    <name>PlaylistActionMenu</name>
-    <message>
-        <location filename="src/Gui/Playlist/PlaylistActionMenu.cpp" line="+210"/>
+        <location filename="src/Gui/Playlist/PlaylistActionMenu.cpp" line="+209"/>
         <source>Please set library path first</source>
         <translation>Lütfen öncelikle kütüphane yolunu ayarlayın</translation>
     </message>
 </context>
 <context>
-    <name>PlaylistContextMenu</name>
+    <name>Playlist::BottomBar</name>
     <message>
-        <location filename="src/Gui/Playlist/PlaylistContextMenu.cpp" line="+169"/>
+        <location filename="src/Gui/Playlist/PlaylistBottomBar.cpp" line="+242"/>
+        <source>Please set library path first</source>
+        <translation>Lütfen öncelikle kütüphane yolunu ayarlayın</translation>
+    </message>
+    <message>
+        <location line="+59"/>
+        <source>Cancel shutdown?</source>
+        <translation>Kapatma iptal edilsin mi?</translation>
+    </message>
+</context>
+<context>
+    <name>Playlist::ContextMenu</name>
+    <message>
+        <location filename="src/Gui/Playlist/PlaylistContextMenu.cpp" line="+172"/>
         <source>Jump to current track</source>
         <translation>Geçerli parçaya atla</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Show track in library</source>
-        <translation type="unfinished"/>
+        <translation>Parçayı kütüphanede göster</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Playlist mode</source>
-        <translation type="unfinished"/>
+        <translation>Oynatma listesi kipi</translation>
+    </message>
+</context>
+<context>
+    <name>Playlist::Model</name>
+    <message>
+        <location filename="src/Gui/Playlist/PlaylistModel.cpp" line="+445"/>
+        <source>Goto row</source>
+        <translation>Satıra git</translation>
     </message>
 </context>
 <context>
@@ -1911,7 +1916,7 @@
         <location filename="src/Gui/Plugins/Engine/GUI_Equalizer.cpp" line="+138"/>
         <location line="+40"/>
         <source>Linked sliders</source>
-        <translation type="unfinished"/>
+        <translation>Bağlantılı kaydırıcılar</translation>
     </message>
     <message>
         <location line="-10"/>
@@ -1921,7 +1926,7 @@
     <message>
         <location line="+248"/>
         <source>Name %1 not allowed</source>
-        <translation type="unfinished"/>
+        <translation>%1 adına izin verilmiyor</translation>
     </message>
 </context>
 <context>
@@ -1969,28 +1974,28 @@
     <message>
         <location line="+35"/>
         <source>Could not rename playlist</source>
-        <translation type="unfinished"/>
+        <translation>Oynatma listesi yeniden adlandırılamadı</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Name is invalid</source>
-        <translation type="unfinished"/>
+        <translation>Geçersiz isim</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>Do you really want to delete %1?</source>
-        <translation type="unfinished"/>
+        <translation>%1 gerçekten silmek istiyor musunuz?</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Could not delete playlist %1</source>
-        <translation type="unfinished"/>
+        <translation>%1 oynatma listesi silinemedi</translation>
     </message>
 </context>
 <context>
     <name>Gui::AbstractStream</name>
     <message>
-        <location filename="src/Gui/Plugins/Stream/GUI_AbstractStream.cpp" line="+229"/>
+        <location filename="src/Gui/Plugins/Stream/GUI_AbstractStream.cpp" line="+230"/>
         <source>Cannot open stream</source>
         <translation>Akış açılamıyor</translation>
     </message>
@@ -2050,7 +2055,7 @@
 <context>
     <name>SomaFM::StationModel</name>
     <message>
-        <location filename="src/Gui/SomaFM/SomaFMStationModel.cpp" line="+123"/>
+        <location filename="src/Gui/SomaFM/SomaFMStationModel.cpp" line="+126"/>
         <source>Cannot fetch stations</source>
         <translation>İstasyonlar getirilemiyor</translation>
     </message>
@@ -2070,17 +2075,17 @@
     <message numerus="yes">
         <location line="+5"/>
         <source>Found %n artist(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n sanatçı bulundu</numerusform><numerusform>%n sanatçı bulundu</numerusform></translation>
     </message>
     <message numerus="yes">
         <location line="+48"/>
         <source>%n track(s) found</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n parça bulundu</numerusform><numerusform>%n parça bulundu</numerusform></translation>
     </message>
     <message numerus="yes">
         <location line="+9"/>
         <source>%n playlist(s) found</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n oynatma listesi bulundu</numerusform><numerusform>%n oynatma listesi bulundu</numerusform></translation>
     </message>
 </context>
 <context>
@@ -2096,16 +2101,16 @@
     <message>
         <location filename="src/Gui/Tagging/TagTextInput.cpp" line="+78"/>
         <source>Very first letter to upper case</source>
-        <translation>İlk harf büyük hafle</translation>
+        <translation>İlk harfe çok büyük harf</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>First letters to upper case</source>
-        <translation>Büyük harfli ilk harfler</translation>
+        <translation>İlk harfe büyük harfler</translation>
     </message>
 </context>
 <context>
-    <name>Gui::LibraryContextMenu</name>
+    <name>Library::ContextMenu</name>
     <message>
         <location filename="src/Gui/Utils/ContextMenu/LibraryContextMenu.cpp" line="+171"/>
         <source>Play in new tab</source>
@@ -2122,7 +2127,7 @@
         <translation>Araç çubuğu</translation>
     </message>
     <message>
-        <location line="+231"/>
+        <location line="+233"/>
         <source>The toolbar is visible when there are tracks with differing file types listed in the track view</source>
         <translation>Parça görünümünde listelenen farklı dosya türlerine sahip parçalar olduğunda araç çubuğu görünür.</translation>
     </message>
@@ -2155,7 +2160,7 @@
     <message numerus="yes">
         <location line="+3"/>
         <source>You are about to delete %n file(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n dosya silmek üzeresiniz</numerusform><numerusform>%n dosya silmek üzeresiniz</numerusform></translation>
     </message>
 </context>
 <context>
@@ -2187,7 +2192,7 @@
         <location filename="src/Gui/Utils/Library/MergeMenu.cpp" line="+52"/>
         <location line="+52"/>
         <source>Merge</source>
-        <translation>Birleştirme</translation>
+        <translation>Birleştir</translation>
     </message>
 </context>
 <context>
@@ -2225,7 +2230,7 @@
 <context>
     <name>Lang</name>
     <message>
-        <location filename="src/Utils/Language/Language.cpp" line="+76"/>
+        <location filename="src/Utils/Language/Language.cpp" line="+79"/>
         <source>About</source>
         <translation>Hakkında</translation>
     </message>
@@ -2448,7 +2453,7 @@
     <message>
         <location line="+2"/>
         <source>Dynamic playback</source>
-        <translation>Dinamik oynatma</translation>
+        <translation>Dinamik oynat</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2463,12 +2468,12 @@
     <message>
         <location line="+2"/>
         <source>Enter name</source>
-        <translation>İsim girin</translation>
+        <translation>İsim gir</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Enter URL</source>
-        <translation>URL girin</translation>
+        <translation>URL gir</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2543,7 +2548,7 @@
     <message>
         <location line="+2"/>
         <source>Gapless playback</source>
-        <translation>Aralıksız oynatma</translation>
+        <translation>Aralıksız oynat</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2558,7 +2563,7 @@
     <message>
         <location line="+2"/>
         <source>Hide</source>
-        <translation type="unfinished"/>
+        <translation>Gizle</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2573,7 +2578,7 @@
     <message>
         <location line="+2"/>
         <source>Import directory</source>
-        <translation>Dizinden içeri aktar</translation>
+        <translation>Dizini içe aktar</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2749,7 +2754,7 @@
     <message>
         <location line="-136"/>
         <source>Move down</source>
-        <translation>Aşağı Taşı</translation>
+        <translation>Aşağı taşı</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2970,7 +2975,7 @@
     <message>
         <location line="+2"/>
         <source>Search previous</source>
-        <translation>Önceki arama</translation>
+        <translation>Öncekini ara</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3145,7 +3150,7 @@
     <message>
         <location line="+2"/>
         <source>Volume down</source>
-        <translation>Sesi alçalt</translation>
+        <translation>Sesi azalt</translation>
     </message>
     <message>
         <location line="+2"/>

@@ -72,6 +72,7 @@ private:
 protected:
 	void closeEvent(QCloseEvent* event) override;
 	void language_changed() override;
+	void skin_changed() override;
 
 	void connect_combo_idx_changed();
 	void disconnect_combo_idx_changed();

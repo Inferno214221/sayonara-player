@@ -32,22 +32,22 @@
         <translation>Sélectionner et prévisualiser plusieurs pochettes</translation>
     </message>
     <message>
-        <location line="+184"/>
+        <location line="+108"/>
         <source>Alternative Cover</source>
         <translation>Pochette alternative</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+16"/>
         <source>Start search automatically</source>
         <translation>Démarrer la recherche automatiquement</translation>
     </message>
     <message numerus="yes">
-        <location filename="src/Gui/Covers/GUI_AlternativeCovers.cpp" line="+248"/>
+        <location filename="src/Gui/Covers/GUI_AlternativeCovers.cpp" line="+280"/>
         <source>%n cover(s) found</source>
         <translation><numerusform>%n pochette trouvée</numerusform><numerusform>%n pochettes trouvées</numerusform></translation>
     </message>
     <message>
-        <location line="+127"/>
+        <location line="+133"/>
         <location line="+31"/>
         <source>Also save cover to %1</source>
         <translation>Enregistrer aussi la pochette dans %1</translation>
@@ -140,6 +140,11 @@
         <location filename="src/Gui/InfoDialog/GUI_InfoDialog.ui" line="+20"/>
         <source>Info / Edit</source>
         <translation>Info / Modifier</translation>
+    </message>
+    <message>
+        <location line="+270"/>
+        <source>Loading files...</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -351,7 +356,7 @@
     <name>GUI_Speed</name>
     <message>
         <location filename="src/Gui/Plugins/Engine/GUI_Speed.ui" line="+48"/>
-        <location filename="src/Gui/Plugins/Engine/GUI_Speed.cpp" line="+121"/>
+        <location filename="src/Gui/Plugins/Engine/GUI_Speed.cpp" line="+122"/>
         <source>Speed</source>
         <translation>Vitesse</translation>
     </message>
@@ -372,7 +377,7 @@
         <translation>%1 et %2</translation>
     </message>
     <message>
-        <location line="+66"/>
+        <location line="+68"/>
         <location line="+1"/>
         <source>%1 not found</source>
         <translation>%1 non trouvé(es)</translation>
@@ -682,8 +687,8 @@
     </message>
     <message>
         <location line="+20"/>
-        <source>Scrobble after</source>
-        <translation>partager avec LastFM</translation>
+        <source>Scrobble time</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+46"/>
@@ -1038,17 +1043,17 @@
         <translation>Général</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+9"/>
         <source>Target directory</source>
         <translation>Répertoire cible</translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+40"/>
         <source>Automatic recording</source>
         <translation>Enregistrement automatique</translation>
     </message>
     <message>
-        <location line="+51"/>
+        <location line="+45"/>
         <source>Create session directory</source>
         <translation>Créer le répertoire de session</translation>
     </message>
@@ -1073,7 +1078,7 @@
         <translation>Exemple</translation>
     </message>
     <message>
-        <location filename="src/Gui/Preferences/StreamRecorder/GUI_StreamRecorderPreferences.cpp" line="+157"/>
+        <location filename="src/Gui/Preferences/StreamRecorder/GUI_StreamRecorderPreferences.cpp" line="+160"/>
         <source>Choose target directory</source>
         <translation>Choisissez le dossier cible</translation>
     </message>
@@ -1166,7 +1171,7 @@
         <translation>Appliquer aussi ce thème d’icônes au style sombre</translation>
     </message>
     <message>
-        <location filename="src/Gui/Preferences/UiPreferences/GUI_IconPreferences.cpp" line="+97"/>
+        <location filename="src/Gui/Preferences/UiPreferences/GUI_IconPreferences.cpp" line="+96"/>
         <location line="+102"/>
         <source>System theme</source>
         <translation>Thème système</translation>
@@ -1286,15 +1291,15 @@
 <context>
     <name>GUI_CoverEdit</name>
     <message>
-        <location filename="src/Gui/Tagging/GUI_CoverEdit.ui" line="+139"/>
+        <location filename="src/Gui/Tagging/GUI_CoverEdit.ui" line="+57"/>
+        <source>Replace</source>
+        <translation>Remplacer par</translation>
+    </message>
+    <message>
+        <location line="+73"/>
         <location filename="src/Gui/Tagging/GUI_CoverEdit.cpp" line="+221"/>
         <source>Original</source>
         <translation>Original</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Replace</source>
-        <translation>Remplacer par</translation>
     </message>
     <message>
         <location filename="src/Gui/Tagging/GUI_CoverEdit.cpp" line="-56"/>
@@ -1344,12 +1349,12 @@
         <translation>Commentaire</translation>
     </message>
     <message>
-        <location line="+178"/>
+        <location line="+150"/>
         <source>all</source>
         <translation>Tous</translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="+24"/>
         <source>Tag from path</source>
         <translation>Tag à partir du chemin</translation>
     </message>
@@ -1364,37 +1369,32 @@
         <translation>Fichier en lecture seule</translation>
     </message>
     <message>
-        <location filename="src/Gui/Tagging/GUI_TagEdit.cpp" line="+135"/>
+        <location filename="src/Gui/Tagging/GUI_TagEdit.cpp" line="+137"/>
         <source>Load complete album</source>
         <translation>Charger l&apos;album complet</translation>
     </message>
     <message>
         <location line="+15"/>
-        <source>Metadata Tags</source>
-        <translation>Étiquettes de métadonnées</translation>
+        <source>Metadata</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Tags from path</source>
         <translation>Étiqueter par chemin d&apos;accès</translation>
     </message>
-    <message>
-        <location line="+81"/>
-        <source>Cannot apply tag for</source>
-        <translation>Le tag n&apos;a pas pu être appliqué pour</translation>
-    </message>
     <message numerus="yes">
-        <location line="+2"/>
-        <source>%n track(s)</source>
-        <translation><numerusform>%n pistes</numerusform><numerusform>%n piste</numerusform></translation>
+        <location line="+81"/>
+        <source>Cannot apply expression to %n track(s)</source>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>Ignore these tracks?</source>
         <translation>Ignorer ces pistes ?</translation>
     </message>
     <message>
-        <location line="+386"/>
+        <location line="+394"/>
         <source>All changes will be lost</source>
         <translation>Tout changement sera perdu</translation>
     </message>
@@ -1417,12 +1417,12 @@
         <translation>Appliquer à tout</translation>
     </message>
     <message>
-        <location filename="src/Gui/Tagging/GUI_TagFromPath.cpp" line="+93"/>
+        <location filename="src/Gui/Tagging/GUI_TagFromPath.cpp" line="+92"/>
         <source>Tag</source>
         <translation>Étiquette ( tag )</translation>
     </message>
     <message>
-        <location line="+59"/>
+        <location line="+61"/>
         <source>Please select text first</source>
         <translation>Veuillez d&apos;abord sélectionner le texte</translation>
     </message>
@@ -1438,7 +1438,7 @@
 <context>
     <name>AbstractLibrary</name>
     <message>
-        <location filename="src/Components/Library/AbstractLibrary.cpp" line="+769"/>
+        <location filename="src/Components/Library/AbstractLibrary.cpp" line="+790"/>
         <source>All %1 could be removed</source>
         <translation>Tous les %1 ont été effacés</translation>
     </message>
@@ -1474,7 +1474,7 @@
         <translation>Recherche de pochettes</translation>
     </message>
     <message>
-        <location line="+41"/>
+        <location line="+40"/>
         <source>Reading files</source>
         <translation>Lecture des fichiers en cours</translation>
     </message>
@@ -1556,7 +1556,7 @@
 <context>
     <name>DirectoryContextMenu</name>
     <message>
-        <location filename="src/Gui/Directories/DirectoryContextMenu.cpp" line="+133"/>
+        <location filename="src/Gui/Directories/DirectoryContextMenu.cpp" line="+131"/>
         <source>Create directory</source>
         <translation>Créer un dossier</translation>
     </message>
@@ -1569,7 +1569,7 @@
 <context>
     <name>DirectoryTreeView</name>
     <message>
-        <location filename="src/Gui/Directories/DirectoryTreeView.cpp" line="+325"/>
+        <location filename="src/Gui/Directories/DirectoryTreeView.cpp" line="+316"/>
         <location line="+27"/>
         <source>Enter new name</source>
         <translation>Nouveau nom</translation>
@@ -1625,7 +1625,7 @@
 <context>
     <name>Library::GUI_LocalLibrary</name>
     <message>
-        <location filename="src/Gui/Library/GUI_LocalLibrary.cpp" line="+362"/>
+        <location filename="src/Gui/Library/GUI_LocalLibrary.cpp" line="+368"/>
         <source>Audio files</source>
         <translation>Fichiers audio</translation>
     </message>
@@ -1641,7 +1641,7 @@
 <context>
     <name>Library::ItemView</name>
     <message>
-        <location filename="src/Gui/Library/ItemView.cpp" line="+266"/>
+        <location filename="src/Gui/Library/ItemView.cpp" line="+265"/>
         <source>Clear selection</source>
         <translation>Effacer la sélection</translation>
     </message>
@@ -1802,27 +1802,19 @@
     </message>
 </context>
 <context>
-    <name>GUI_PlaylistBottomBar</name>
-    <message>
-        <location filename="src/Gui/Playlist/BottomBar.cpp" line="+238"/>
-        <source>Please set library path first</source>
-        <translation>Veuillez d&apos;abord définir le chemin de la bibliothèque</translation>
-    </message>
-    <message>
-        <location line="+59"/>
-        <source>Cancel shutdown?</source>
-        <translation>Annuler l&apos;extinction de l&apos;ordinateur ?</translation>
-    </message>
-</context>
-<context>
     <name>GUI_Playlist</name>
+    <message numerus="yes">
+        <location filename="src/Gui/Playlist/GUI_Playlist.cpp" line="+248"/>
+        <source>%n track(s)</source>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+    </message>
     <message>
-        <location filename="src/Gui/Playlist/GUI_Playlist.cpp" line="+230"/>
+        <location line="+2"/>
         <source>Playlist empty</source>
         <translation>Liste de lecture vide</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+17"/>
         <source>Media files</source>
         <translation>Fichiers multimédia</translation>
     </message>
@@ -1832,12 +1824,12 @@
         <translation>Ouvrir des fichiers multimédia</translation>
     </message>
     <message>
-        <location line="+207"/>
+        <location line="+208"/>
         <source>Playlist name already exists</source>
         <translation>Ce nom de liste de lecture existe déjà</translation>
     </message>
     <message>
-        <location line="+121"/>
+        <location line="+123"/>
         <source>Cannot save playlist.</source>
         <translation>La liste de lecture n&apos;a pas pu être enregistrée.</translation>
     </message>
@@ -1858,25 +1850,30 @@
     </message>
 </context>
 <context>
-    <name>PlaylistItemModel</name>
+    <name>Playlist::ActionMenu</name>
     <message>
-        <location filename="src/Gui/Playlist/Model.cpp" line="+410"/>
-        <source>Goto row</source>
-        <translation>Aller à la rangée</translation>
-    </message>
-</context>
-<context>
-    <name>PlaylistActionMenu</name>
-    <message>
-        <location filename="src/Gui/Playlist/PlaylistActionMenu.cpp" line="+210"/>
+        <location filename="src/Gui/Playlist/PlaylistActionMenu.cpp" line="+209"/>
         <source>Please set library path first</source>
         <translation>Veuillez d&apos;abord définir le chemin de la bibliothèque</translation>
     </message>
 </context>
 <context>
-    <name>PlaylistContextMenu</name>
+    <name>Playlist::BottomBar</name>
     <message>
-        <location filename="src/Gui/Playlist/PlaylistContextMenu.cpp" line="+169"/>
+        <location filename="src/Gui/Playlist/PlaylistBottomBar.cpp" line="+242"/>
+        <source>Please set library path first</source>
+        <translation>Veuillez d&apos;abord définir le chemin de la bibliothèque</translation>
+    </message>
+    <message>
+        <location line="+59"/>
+        <source>Cancel shutdown?</source>
+        <translation>Annuler l&apos;extinction de l&apos;ordinateur ?</translation>
+    </message>
+</context>
+<context>
+    <name>Playlist::ContextMenu</name>
+    <message>
+        <location filename="src/Gui/Playlist/PlaylistContextMenu.cpp" line="+172"/>
         <source>Jump to current track</source>
         <translation>Aller à la piste actuelle</translation>
     </message>
@@ -1889,6 +1886,14 @@
         <location line="+1"/>
         <source>Playlist mode</source>
         <translation>Mode liste de lecture</translation>
+    </message>
+</context>
+<context>
+    <name>Playlist::Model</name>
+    <message>
+        <location filename="src/Gui/Playlist/PlaylistModel.cpp" line="+445"/>
+        <source>Goto row</source>
+        <translation>Aller à la rangée</translation>
     </message>
 </context>
 <context>
@@ -1990,7 +1995,7 @@
 <context>
     <name>Gui::AbstractStream</name>
     <message>
-        <location filename="src/Gui/Plugins/Stream/GUI_AbstractStream.cpp" line="+229"/>
+        <location filename="src/Gui/Plugins/Stream/GUI_AbstractStream.cpp" line="+230"/>
         <source>Cannot open stream</source>
         <translation>Incapable d&apos;ouvrir le flux</translation>
     </message>
@@ -2050,7 +2055,7 @@
 <context>
     <name>SomaFM::StationModel</name>
     <message>
-        <location filename="src/Gui/SomaFM/SomaFMStationModel.cpp" line="+123"/>
+        <location filename="src/Gui/SomaFM/SomaFMStationModel.cpp" line="+126"/>
         <source>Cannot fetch stations</source>
         <translation>Impossible de trouver les stations</translation>
     </message>
@@ -2105,7 +2110,7 @@
     </message>
 </context>
 <context>
-    <name>Gui::LibraryContextMenu</name>
+    <name>Library::ContextMenu</name>
     <message>
         <location filename="src/Gui/Utils/ContextMenu/LibraryContextMenu.cpp" line="+171"/>
         <source>Play in new tab</source>
@@ -2122,7 +2127,7 @@
         <translation>Barre d&apos;outils</translation>
     </message>
     <message>
-        <location line="+231"/>
+        <location line="+233"/>
         <source>The toolbar is visible when there are tracks with differing file types listed in the track view</source>
         <translation>La barre d&apos;outils s&apos;affiche lorsque des pistes aux types de fichier différents se trouvent dans l&apos;affichage des pistes.</translation>
     </message>
@@ -2225,7 +2230,7 @@
 <context>
     <name>Lang</name>
     <message>
-        <location filename="src/Utils/Language/Language.cpp" line="+76"/>
+        <location filename="src/Utils/Language/Language.cpp" line="+79"/>
         <source>About</source>
         <translation>À propos de</translation>
     </message>

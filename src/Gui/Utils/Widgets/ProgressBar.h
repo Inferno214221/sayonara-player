@@ -52,7 +52,7 @@ namespace Gui
 
 		public:
 			explicit ProgressBar(QWidget* parent);
-			~ProgressBar();
+			~ProgressBar() override;
 
 			void set_position(ProgressBar::Position o);
 			void refresh();

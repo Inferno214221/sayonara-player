@@ -26,10 +26,13 @@
 #include "Components/Streaming/SomaFM/SomaFMStation.h"
 #include "Components/Covers/CoverLocation.h"
 #include "Components/Covers/CoverFetchManager.h"
+#include "Components/Covers/Fetcher/CoverFetcherUrl.h"
+#include "Components/Streaming/SomaFM/SomaFMLibrary.h"
 
 #include "Utils/globals.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Language/Language.h"
+#include "Utils/MetaData/MetaDataList.h"
 
 #include "Gui/Utils/GuiUtils.h"
 #include "Gui/Utils/MimeDataUtils.h"
@@ -82,7 +85,7 @@ QVariant SomaFM::StationModel::data(const QModelIndex& index, int role) const
 
 	if(role == Qt::TextAlignmentRole)
 	{
-		return (int)(Qt::AlignVCenter| Qt::AlignLeft);
+		return int(Qt::AlignVCenter| Qt::AlignLeft);
 	}
 
 	if(row < 0 || row >= rowCount())
@@ -239,15 +242,16 @@ QMimeData* SomaFM::StationModel::mimeData(const QModelIndexList& indexes) const
 			continue;
 		}
 
-		QStringList str_urls = m->stations[row].urls();
+		const QStringList playlist_urls = m->stations[row].playlists();
 
-		for(const QString& str_url : str_urls)
+		for(const QString& playlist_url : playlist_urls)
 		{
-			urls << QUrl(str_url);
+			urls << QUrl(playlist_url);
+
 			Cover::Location cl = m->stations[row].cover_location();
 			if(cl.has_search_urls())
 			{
-				cover_url = cl.search_url(0).url;
+				cover_url = cl.search_url(0).url();
 			}
 		}
 	}

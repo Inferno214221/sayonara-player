@@ -31,16 +31,20 @@ namespace Gui
 {
 	class ExtensionSet;
 	class PreferenceAction;
+}
+
+namespace Library
+{
 	/**
 	 * @brief Context menu used for Library and playlist windows
 	 * @ingroup Gui
 	 * @ingroup Library
 	 */
-	class LibraryContextMenu :
+	class ContextMenu :
 			public Gui::WidgetTemplate<QMenu>
 	{
 		Q_OBJECT
-		PIMPL(LibraryContextMenu)
+		PIMPL(ContextMenu)
 
 	public:
 		/**
@@ -69,46 +73,46 @@ namespace Gui
 		using Entries=uint64_t;
 
 	public:
-		explicit LibraryContextMenu(QWidget *parent=nullptr);
-		virtual ~LibraryContextMenu();
+		explicit ContextMenu(QWidget *parent=nullptr);
+		virtual ~ContextMenu() override;
 
 
 		/**
 		 * @brief get all visible entries
 		 * @return all visible entries
 		 */
-		virtual LibraryContextMenu::Entries get_entries() const;
+		virtual ContextMenu::Entries get_entries() const;
 
 		/**
 		 * @brief show a specific amount of Entries
 		 * @param entries bitwise combination of Entry
 		 */
-		virtual void show_actions(LibraryContextMenu::Entries entries);
+		virtual void show_actions(ContextMenu::Entries entries);
 
 		/**
 		 * @brief show/hide a specific Entry
 		 * @param The entry of interest
 		 * @param visible
 		 */
-		virtual void show_action(LibraryContextMenu::Entry entry, bool visible);
+		virtual void show_action(ContextMenu::Entry entry, bool visible);
 
 		/**
 		 * @brief show all possible entries
 		 */
 		virtual void show_all();
 
-		QAction* get_action(LibraryContextMenu::Entry entry) const;
-		QAction* get_action_after(LibraryContextMenu::Entry entry) const;
+		QAction* get_action(ContextMenu::Entry entry) const;
+		QAction* get_action_after(ContextMenu::Entry entry) const;
 
-		QAction* add_preference_action(PreferenceAction* action);
+		QAction* add_preference_action(Gui::PreferenceAction* action);
 		QAction* before_preference_action() const;
 
-		void set_action_shortcut(LibraryContextMenu::Entry entry, const QString& shortcut);
+		void set_action_shortcut(ContextMenu::Entry entry, const QString& shortcut);
 
-		void set_extensions(const ExtensionSet& extensions);
+		void set_extensions(const Gui::ExtensionSet& extensions);
 		void set_selection_count(int num_selections);
 
-		QKeySequence shortcut(LibraryContextMenu::Entry entry) const;
+		QKeySequence shortcut(ContextMenu::Entry entry) const;
 
 
 	signals:

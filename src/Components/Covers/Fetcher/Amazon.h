@@ -21,7 +21,7 @@
 #ifndef AMAZONCOVERFETCHER_H
 #define AMAZONCOVERFETCHER_H
 
-#include "../CoverFetcherInterface.h"
+#include "CoverFetcher.h"
 
 namespace Cover::Fetcher
 {

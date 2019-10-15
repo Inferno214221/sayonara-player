@@ -42,6 +42,10 @@ namespace Gui
 		const void* ptr() const;
 
 	public:
+
+//		class AsyncDropHandler
+//		{};
+
 		/**
 		 * @brief Constructor
 		 */
@@ -77,6 +81,10 @@ namespace Gui
 
 		QString cover_url() const;
 		void set_cover_url(const QString& url);
+
+
+//		void set_drop_handler(AsyncDropHandler* handler);
+//		AsyncDropHandler* drop_handler() const;
 
 		template<typename T>
 		bool has_source(const T* class_instance) const

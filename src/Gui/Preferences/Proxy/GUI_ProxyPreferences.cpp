@@ -77,6 +77,8 @@ bool GUI_ProxyPreferences::commit()
 		SetSetting(Set::Proxy_Password, QString());
 	}
 
+	Proxy::set_proxy();
+
 	return true;
 }
 

@@ -53,7 +53,7 @@ namespace DB
 			virtual AlbumId insertAlbumIntoDatabase (const QString& album);
 			virtual AlbumId insertAlbumIntoDatabase (const Album& album);
 
-			virtual AlbumId updateAlbum(const Album& album);
+			virtual AlbumId updateAlbumRating(AlbumId id, Rating rating);
 
 			virtual void updateAlbumCissearch();
 

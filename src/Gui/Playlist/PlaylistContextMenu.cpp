@@ -19,15 +19,19 @@
  */
 
 #include "PlaylistContextMenu.h"
-#include "BookmarksMenu.h"
-#include "Gui/Utils/RatingLabel.h"
-#include "Gui/Utils/Icons.h"
-#include "Gui/Playlist/PlaylistActionMenu.h"
+#include "PlaylistBookmarksMenu.h"
 
+#include "Gui/Playlist/PlaylistActionMenu.h"
+#include "Gui/Utils/Icons.h"
+#include "Gui/Utils/Widgets/RatingLabel.h"
 #include "Utils/Language/Language.h"
 #include "Utils/MetaData/MetaData.h"
 
-struct PlaylistContextMenu::Private
+using Playlist::ContextMenu;
+using Playlist::BookmarksMenu;
+using Playlist::ActionMenu;
+
+struct ContextMenu::Private
 {
 	QAction*		current_track_action=nullptr;
 	BookmarksMenu*	bookmarks_menu=nullptr;
@@ -39,7 +43,7 @@ struct PlaylistContextMenu::Private
 	QAction*		playlist_mode_action=nullptr;
 	QMenu*			playlist_mode_menu=nullptr;
 
-	Private(PlaylistContextMenu* parent)
+	Private(ContextMenu* parent)
 	{
 		current_track_action = new QAction(parent);
 		find_track_action = new QAction(parent);
@@ -52,19 +56,17 @@ struct PlaylistContextMenu::Private
 		bookmarks_menu = new BookmarksMenu(parent);
 		bookmarks_action = parent->addMenu(bookmarks_menu);
 
-		playlist_mode_menu = new PlaylistActionMenu(parent);
+		playlist_mode_menu = new ActionMenu(parent);
 		playlist_mode_action = parent->addMenu(playlist_mode_menu);
 	}
 };
 
-PlaylistContextMenu::PlaylistContextMenu(QWidget *parent) :
-	Gui::LibraryContextMenu(parent)
+ContextMenu::ContextMenu(QWidget *parent) :
+	Library::ContextMenu(parent)
 {
 	m = Pimpl::make<Private>(this);
 
-
 	QList<QAction*> rating_actions;
-
 	for(int i=int(Rating::Zero); i != int(Rating::Last); i++)
 	{
 		rating_actions << init_rating_action(Rating(i), m->rating_menu);
@@ -72,48 +74,48 @@ PlaylistContextMenu::PlaylistContextMenu(QWidget *parent) :
 
 	m->rating_menu->addActions(rating_actions);
 
-	connect(m->bookmarks_menu, &BookmarksMenu::sig_bookmark_pressed, this, &PlaylistContextMenu::bookmark_pressed);
-	connect(m->current_track_action, &QAction::triggered, this, &PlaylistContextMenu::sig_jump_to_current_track);
-	connect(m->find_track_action, &QAction::triggered, this, &PlaylistContextMenu::sig_find_track_triggered);
+	connect(m->bookmarks_menu, &BookmarksMenu::sig_bookmark_pressed, this, &ContextMenu::bookmark_pressed);
+	connect(m->current_track_action, &QAction::triggered, this, &ContextMenu::sig_jump_to_current_track);
+	connect(m->find_track_action, &QAction::triggered, this, &ContextMenu::sig_find_track_triggered);
 
 	skin_changed();
 }
 
-PlaylistContextMenu::~PlaylistContextMenu() {}
+ContextMenu::~ContextMenu() = default;
 
-PlaylistContextMenu::Entries PlaylistContextMenu::get_entries() const
+ContextMenu::Entries ContextMenu::get_entries() const
 {
-	PlaylistContextMenu::Entries entries = LibraryContextMenu::get_entries();
+	ContextMenu::Entries entries = Library::ContextMenu::get_entries();
 	if(m->bookmarks_action->isVisible()){
-		entries |= PlaylistContextMenu::EntryBookmarks;
+		entries |= ContextMenu::EntryBookmarks;
 	}
 
 	if(m->rating_action->isVisible()){
-		entries |= PlaylistContextMenu::EntryRating;
+		entries |= ContextMenu::EntryRating;
 	}
 
 	if(m->current_track_action->isVisible()){
-		entries |= PlaylistContextMenu::EntryCurrentTrack;
+		entries |= ContextMenu::EntryCurrentTrack;
 	}
 
 	if(m->find_track_action->isVisible()){
-		entries |= PlaylistContextMenu::EntryFindInLibrary;
+		entries |= ContextMenu::EntryFindInLibrary;
 	}
 
 	return entries;
 }
 
-void PlaylistContextMenu::show_actions(PlaylistContextMenu::Entries entries)
+void ContextMenu::show_actions(ContextMenu::Entries entries)
 {
-	LibraryContextMenu::show_actions(entries);
+	Library::ContextMenu::show_actions(entries);
 
-	m->rating_action->setVisible(entries & PlaylistContextMenu::EntryRating);
-	m->bookmarks_action->setVisible((entries & PlaylistContextMenu::EntryBookmarks) && m->bookmarks_menu->has_bookmarks());
-	m->current_track_action->setVisible(entries & PlaylistContextMenu::EntryCurrentTrack);
-	m->find_track_action->setVisible(entries & PlaylistContextMenu::EntryFindInLibrary);
+	m->rating_action->setVisible(entries & ContextMenu::EntryRating);
+	m->bookmarks_action->setVisible((entries & ContextMenu::EntryBookmarks) && m->bookmarks_menu->has_bookmarks());
+	m->current_track_action->setVisible(entries & ContextMenu::EntryCurrentTrack);
+	m->find_track_action->setVisible(entries & ContextMenu::EntryFindInLibrary);
 }
 
-void PlaylistContextMenu::set_rating(Rating rating)
+void ContextMenu::set_rating(Rating rating)
 {
 	QList<QAction*> actions = m->rating_menu->actions();
 	for(QAction* action : actions)
@@ -132,19 +134,19 @@ void PlaylistContextMenu::set_rating(Rating rating)
 		m->rating_action->setText(text);
 	}
 
-	else{
+	else {
 		m->rating_action->setText(rating_text);
 	}
 }
 
-void PlaylistContextMenu::set_metadata(const MetaData& md)
+void ContextMenu::set_metadata(const MetaData& md)
 {
 	m->bookmarks_menu->set_metadata(md);
 }
 
-QAction* PlaylistContextMenu::init_rating_action(Rating rating, QObject* parent)
+QAction* ContextMenu::init_rating_action(Rating rating, QObject* parent)
 {
-	QAction* action = new QAction
+	auto* action = new QAction
 	(
 		QString::number(int(rating)),
 		parent
@@ -162,25 +164,26 @@ QAction* PlaylistContextMenu::init_rating_action(Rating rating, QObject* parent)
 	return action;
 }
 
-void PlaylistContextMenu::language_changed()
+void ContextMenu::language_changed()
 {
-	LibraryContextMenu::language_changed();
+	Library::ContextMenu::language_changed();
+
 	m->rating_action->setText(Lang::get(Lang::Rating));
 	m->current_track_action->setText(tr("Jump to current track"));
 	m->find_track_action->setText(tr("Show track in library"));
 	m->playlist_mode_action->setText(tr("Playlist mode"));
 }
 
-void PlaylistContextMenu::skin_changed()
+void ContextMenu::skin_changed()
 {
-	LibraryContextMenu::skin_changed();
+	Library::ContextMenu::skin_changed();
 
 	using namespace Gui;
 	m->rating_action->setIcon(Icons::icon(Icons::Star));
 	m->find_track_action->setIcon(Icons::icon(Icons::Search));
 }
 
-void PlaylistContextMenu::bookmark_pressed(Seconds timestamp)
+void ContextMenu::bookmark_pressed(Seconds timestamp)
 {
    emit sig_bookmark_pressed(timestamp);
 }

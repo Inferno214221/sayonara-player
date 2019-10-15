@@ -52,6 +52,6 @@ void RatingTest::xiph_test()
 	AbstractTaggingTest::xiph_test();
 }
 
-QTEST_MAIN(RatingTest)
+QTEST_GUILESS_MAIN(RatingTest)
 
 #include "RatingTest.moc"

@@ -36,6 +36,7 @@ public:
 	Genre();
 	explicit Genre(const QString& name);
 	Genre(const Genre& other);
+	Genre(Genre&& other) noexcept;
 
 	~Genre();
 
@@ -50,6 +51,7 @@ public:
 	bool operator <(const Genre& other) const;
 	bool operator >(const Genre& other) const;
 	Genre& operator =(const Genre& other);
+	Genre& operator =(Genre&& other) noexcept;
 };
 
 

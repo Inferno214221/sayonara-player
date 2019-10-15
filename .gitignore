@@ -1,8 +1,12 @@
 build/
 build_*/
+build-*/
 debian/sayonara.*
 resources/sayonara
 debian/files
 debian/sayonara/
 CMakeLists.txt.*
 doxygen/html*
+*.swp
+*.orig
+

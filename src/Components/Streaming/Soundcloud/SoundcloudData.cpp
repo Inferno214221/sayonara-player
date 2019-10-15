@@ -38,7 +38,7 @@
 using DB::Query;
 
 SC::Database::Database() :
-	::DB::Base(25, Util::share_path(), Util::sayonara_path(), "soundcloud.db"),
+	::DB::Base(25, ":/Database", Util::sayonara_path(), "soundcloud.db"),
 	::DB::LibraryDatabase(module()->connection_name(), 25, -1)
 {
 	this->apply_fixes();
@@ -686,6 +686,15 @@ bool SC::Database::apply_fixes()
 			save_setting("version", "3");
 		}
 	}
+
+
+	if(version < 4) {
+		bool success = check_and_insert_column("tracks", "fileCissearch", "varchar(256)", "");
+		if(success){
+			save_setting("version", "4");
+		}
+	}
+
 
 	return true;
 }

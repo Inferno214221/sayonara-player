@@ -21,7 +21,7 @@
 #ifndef DISCOGSCOVERFETCHER_H
 #define DISCOGSCOVERFETCHER_H
 
-#include "../CoverFetcherInterface.h"
+#include "CoverFetcher.h"
 
 namespace Cover
 {

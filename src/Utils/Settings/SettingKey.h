@@ -84,6 +84,7 @@ enum class SettingKey : unsigned short
 	Player_FontName,
 	Player_FontSize,
 	Player_Style,
+	Player_MetaStyle,
 	Player_FadingCover,
 	Player_ControlStyle,
 	Player_Size,
@@ -141,6 +142,7 @@ enum class SettingKey : unsigned short
 	Engine_Speed,
 	Engine_SpeedActive,
 	Engine_Sink,
+	Engine_AlsaDevice,
 	Engine_BufferSizeMS,
 	Engine_SR_Active,
 	Engine_SR_Warning,
@@ -178,6 +180,7 @@ enum class SettingKey : unsigned short
 	Proxy_Hostname,
 	Proxy_Port,
 	Proxy_SavePw,
+	Speed_LastTab,
 	Logger_Level,
 	Settings_Revision,
 	Num_Setting_Keys
@@ -355,6 +358,7 @@ class SettingIdentifier
 	INST(float,				Engine_Speed)				/* if yes, set speed */
 	INST(bool, 				Engine_PreservePitch)		/* if yes, should pitch be preserved? */
 	INST(QString,			Engine_Sink)				/* Alsa, pulseaudio */
+	INST(QString,			Engine_AlsaDevice)			/* Specific alsa device */
 	INST(int,				Engine_BufferSizeMS)		/* Buffer size for streaming */
 
 	INST(bool,				Engine_SR_Active)			/* Streamripper active */
@@ -397,6 +401,8 @@ class SettingIdentifier
 	INST(int,				Proxy_Port)				/* Proxy Port 3128 */
 	INST(bool,				Proxy_SavePw)			/* Should password be saved */
 
+	INST(int,				Speed_LastTab)			/* Last tab selected int he speed/pitch plugin */
+
 	INST(int,				Settings_Revision)		/* Version number of settings */
 
 	INST(int,				Logger_Level)			/* Also log development: */
@@ -404,5 +410,6 @@ class SettingIdentifier
 	INST_NO_DB(bool,		MP3enc_found)
 	INST_NO_DB(bool,		Pitch_found)
 	INST_NO_DB(bool,		Player_Quit)
+	INST_NO_DB(int,			Player_MetaStyle)		/* Whenever some value which is associated with style changes */
 
 #endif // SETTINGKEY_H

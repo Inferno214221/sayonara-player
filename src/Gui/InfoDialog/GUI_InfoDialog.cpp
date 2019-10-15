@@ -205,6 +205,8 @@ void GUI_InfoDialog::set_metadata(const MetaDataList& v_md, MD::Interpretation m
 {
 	m->md_interpretation = md_interpretation;
 	m->v_md = v_md;
+
+	this->set_busy(m->v_md.isEmpty());
 }
 
 
@@ -221,7 +223,10 @@ GUI_InfoDialog::Tab GUI_InfoDialog::show(GUI_InfoDialog::Tab tab)
 		init();
 	}
 
+	this->set_busy(m->v_md.isEmpty());
+
 	if(m->v_md.isEmpty()){
+		Dialog::show();
 		return Tab::Info;
 	}
 
@@ -279,6 +284,7 @@ void GUI_InfoDialog::init()
 	connect(ui->btn_image, &Gui::CoverButton::sig_rejected, this, &GUI_InfoDialog::write_cover_to_tracks_clicked);
 	connect(ui->btn_image, &Gui::CoverButton::sig_cover_changed, this, &GUI_InfoDialog::cover_changed);
 
+	ui->stackedWidget->setCurrentIndex(0);
 	ui->btn_image->setStyleSheet("QPushButton:hover {background-color: transparent;}");
 
 	this->setModal(false);
@@ -423,6 +429,13 @@ void GUI_InfoDialog::show_cover_edit_tab()
 	if(tab == GUI_InfoDialog::Tab::Edit)
 	{
 		m->ui_tag_edit->show_cover_tab();
+	}
+}
+
+void GUI_InfoDialog::set_busy(bool b)
+{
+	if(ui){
+		ui->stackedWidget->setCurrentIndex(b ? 1 : 0);
 	}
 }
 

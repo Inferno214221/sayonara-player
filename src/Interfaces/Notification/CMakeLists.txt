@@ -5,7 +5,12 @@ set(SOURCES
 	NotificationHandler.cpp
 )
 
-add_library(${PROJECT_NAME} STATIC ${SOURCES})
+set(HEADERS
+	NotificationInterface.h
+	NotificationHandler.h
+)
+
+add_library(${PROJECT_NAME} STATIC ${SOURCES} ${HEADERS})
 target_link_libraries(${PROJECT_NAME}
 	sayonara_utils
 )

@@ -11,9 +11,15 @@ qt5_wrap_cpp(MOC_FILES
 	Settings/SettingNotifier.h
 )
 
-file(GLOB_RECURSE SOURCES . *.cpp)
+pkg_check_modules(ZLIB REQUIRED zlib)
+include_directories(${ZLIB_INCLUDE_DIRS})
+link_directories(${TAGLIB_LIBRARY_DIRS})
 
-add_library(${PROJECT_NAME} STATIC ${SOURCES} ${MOC_FILES})
+file(GLOB_RECURSE SOURCES . *.cpp)
+file(GLOB_RECURSE HEADERS . *.h)
+
+add_library(${PROJECT_NAME} STATIC ${SOURCES} ${HEADERS} ${MOC_FILES})
+
 target_link_libraries(${PROJECT_NAME}
 	Qt5::Core
 	Qt5::Network

@@ -42,7 +42,7 @@ struct Album::Private
 		CASSIGN(album_idx)
 	{}
 
-	Private(Private&& other) :
+	Private(Private&& other) noexcept :
 		CMOVE(artist_idxs),
 		CMOVE(album_artist_idxs),
 		CMOVE(path_hint),
@@ -59,7 +59,7 @@ struct Album::Private
 		return *this;
 	}
 
-	Private& operator=(Private&& other)
+	Private& operator=(Private&& other) noexcept
 	{
 		MOVE(artist_idxs);
 		MOVE(album_artist_idxs);
@@ -97,7 +97,7 @@ Album::Album(const Album& other) :
 	m = Pimpl::make<Private>(*(other.m));
 }
 
-Album::Album(Album&& other) :
+Album::Album(Album&& other) noexcept  :
 	LibraryItem(std::move(other)),
 	CMOVE(discnumbers),
 	CMOVE(id),
@@ -129,7 +129,7 @@ Album& Album::operator=(const Album& other)
 	return *this;
 }
 
-Album& Album::operator=(Album&& other)
+Album& Album::operator=(Album&& other) noexcept
 {
 	LibraryItem::operator = (std::move(other));
 

@@ -19,9 +19,10 @@
  */
 
 #include "LibraryPluginCombobox.h"
-#include "LibraryPluginHandler.h"
 #include "LibraryPluginComboBoxDelegate.h"
-#include "LibraryContainer/LibraryContainer.h"
+
+#include "Interfaces/Library/LibraryContainer.h"
+#include "Components/LibraryManagement/LibraryPluginHandler.h"
 
 #include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
@@ -57,20 +58,17 @@ PluginCombobox::PluginCombobox(const QString& text, QWidget* parent) :
 
 	this->setItemDelegate(new PluginComboBoxDelegate(this));
 
-	PluginHandler* lph = PluginHandler::instance();
+	auto* lph = PluginHandler::instance();
 	connect(lph, &PluginHandler::sig_libraries_changed, this, &PluginCombobox::setup_actions);
 	connect(lph, &PluginHandler::sig_current_library_changed, this, &PluginCombobox::current_library_changed);
+
+	connect(this, combo_activated_int, this, &PluginCombobox::current_index_changed);
 
 	setup_actions();
 	setCurrentText(text);
 }
 
-PluginCombobox::~PluginCombobox() {}
-
-int PluginCombobox::get_index_offset()
-{
-	return 2;
-}
+PluginCombobox::~PluginCombobox() = default;
 
 void PluginCombobox::setup_actions()
 {
@@ -78,9 +76,7 @@ void PluginCombobox::setup_actions()
 
 	this->clear();
 
-	PluginHandler* lph = PluginHandler::instance();
-	const QList<Container*> libraries = lph->get_libraries(true);
-
+	const QList<Container*> libraries = PluginHandler::instance()->get_libraries(true);
 	for(const Container* container : libraries)
 	{
 		QPixmap pm = container->icon().scaled(
@@ -131,10 +127,19 @@ void PluginCombobox::current_library_changed()
 	{
 		if(this->itemData(i).toString().compare(name) == 0)
 		{
-			this->setCurrentIndex(i);
+			if(i != this->currentIndex())
+			{
+				this->setCurrentIndex(i);
+			}
+
 			break;
 		}
 	}
+}
+
+void PluginCombobox::current_index_changed(int index)
+{
+	PluginHandler::instance()->set_current_library(index - 2);
 }
 
 void PluginCombobox::language_changed()
@@ -152,8 +157,7 @@ void PluginCombobox::skin_changed()
 		return;
 	}
 
-	PluginHandler* lph = PluginHandler::instance();
-	const QList<Container*> libraries = lph->get_libraries(true);
+	const QList<Container*> libraries = PluginHandler::instance()->get_libraries(true);
 	int i=0;
 
 	for(const Container* container : libraries)

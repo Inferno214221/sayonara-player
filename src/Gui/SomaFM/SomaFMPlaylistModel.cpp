@@ -47,11 +47,11 @@ SomaFM::PlaylistModel::PlaylistModel(QObject* parent) :
 	m = Pimpl::make<Private>();
 }
 
-SomaFM::PlaylistModel::~PlaylistModel() {}
+SomaFM::PlaylistModel::~PlaylistModel() = default;
 
 void SomaFM::PlaylistModel::set_station(const SomaFM::Station& station)
 {
-	QStringList urls = station.urls();
+	QStringList urls = station.playlists();
 	QStringList entries;
 
 	for(QString& url : urls)
@@ -81,47 +81,16 @@ QMimeData* SomaFM::PlaylistModel::mimeData(const QModelIndexList& indexes) const
 
 	int row = indexes.first().row();
 
-	QStringList urls = m->station.urls();
+	QStringList urls = m->station.playlists();
 	if(!Util::between(row, urls)){
 		return nullptr;
 	}
 
-	QUrl url( urls[row] );
+	QString playlist_url = urls[row];
 
-	CustomMimeData* mime_data = new CustomMimeData(this);
-	Cover::Location location = m->station.cover_location();
-
-	MetaDataList v_md;
-
-	for(const QString& url : urls)
-	{
-		MetaData md;
-			md.set_radio_station(url);
-			md.set_title(m->station.name());
-			md.set_filepath(url);
-
-		QStringList cover_urls;
-		auto fetcher_urls = location.search_urls(false);
-		for(auto fetcher_url : fetcher_urls)
-		{
-			cover_urls << fetcher_url.url;
-		}
-
-		md.set_cover_download_urls(cover_urls);
-
-		v_md << md;
-	}
-
-	mime_data->set_metadata(v_md);
-	mime_data->setUrls({url});
-	if(location.has_search_urls())
-	{
-		auto search_urls = location.search_urls(false);
-		if(!search_urls.isEmpty())
-		{
-			mime_data->set_cover_url(search_urls.first().url);
-		}
-	}
+	auto* mime_data = new CustomMimeData(this);
+	mime_data->set_cover_url(":/soma_icons/soma.png");
+	mime_data->setUrls({QUrl(playlist_url)});
 
 	return mime_data;
 }

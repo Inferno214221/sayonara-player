@@ -26,9 +26,10 @@
 #include "Database/CoverConnector.h"
 
 #include "Components/Covers/CoverFetchManager.h"
-#include "Components/Covers/CoverFetcherInterface.h"
 #include "Components/Covers/CoverChangeNotifier.h"
 #include "Components/Covers/CoverUtils.h"
+
+#include "Components/Covers/Fetcher/CoverFetcher.h"
 
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language/Language.h"

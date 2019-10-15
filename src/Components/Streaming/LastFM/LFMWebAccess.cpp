@@ -124,7 +124,7 @@ QString WebAccess::parse_error_message(const QString& response)
 
 	if(response.leftRef(100).contains(QStringLiteral("failed")))
 	{
-		return Util::easy_tag_finder(QStringLiteral("lfm.error"), response).trimmed();
+		return response;
 	}
 
 	return "";

@@ -22,14 +22,11 @@
 #define GSTPLAYBACKENGINE_H_
 
 #include "Utils/Pimpl.h"
-#include "SoundOutReceiver.h"
+#include "Interfaces/Engine/AudioDataReceiverInterface.h"
 #include <QObject>
 #include <gst/gst.h>
 
 #include <QImage>
-
-class SpectrumReceiver;
-class LevelReceiver;
 
 namespace StreamRecorder
 {
@@ -38,6 +35,9 @@ namespace StreamRecorder
 
 namespace Engine
 {
+	class SpectrumReceiver;
+	class LevelReceiver;
+
 	class Pipeline;
 	using PipelinePtr=std::shared_ptr<Pipeline>;
 	/**
@@ -66,7 +66,7 @@ namespace Engine
 		};
 
 		signals:
-			void sig_data(const unsigned char* data, uint64_t n_bytes);
+			void sig_data(const QByteArray& data);
 			void sig_spectrum_changed();
 			void sig_level_changed();
 
@@ -106,7 +106,6 @@ namespace Engine
 
 			MetaData current_track() const;
 
-
 		public slots:
 			void play();
 			void stop();
@@ -121,7 +120,7 @@ namespace Engine
 			bool change_track(const MetaData& md);
 
 			void set_buffer_state(int progress, GstElement* src);
-			void error(const QString& error);
+			void error(const QString& error, const QString& element_name);
 
 		private:
 			PipelinePtr init_pipeline(const QString& name);

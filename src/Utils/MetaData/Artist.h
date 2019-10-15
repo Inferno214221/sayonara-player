@@ -45,10 +45,10 @@ public:
 
 	Artist();
 	Artist(const Artist& other);
-	Artist(Artist&& other);
+	Artist(Artist&& other) noexcept;
 
 	Artist& operator=(const Artist& other);
-	Artist& operator=(Artist&& other);
+	Artist& operator=(Artist&& other) noexcept;
 
 	~Artist();
 

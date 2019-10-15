@@ -27,7 +27,7 @@
 
 namespace Algorithm=Util::Algorithm;
 
-QList<float> borders_4, borders_3, borders_2;
+static QList<float> borders_4, borders_3, borders_2;
 
 VisualColorStyleChooser::VisualColorStyleChooser(int widget_width, int widget_height)
 {
@@ -40,45 +40,48 @@ VisualColorStyleChooser::VisualColorStyleChooser(int widget_width, int widget_he
 
 
 void VisualColorStyleChooser::
-create_colorstyle(ColorStyle &style, const ColorList &clist_active, int n_rects, int n_fading_steps) {
+create_colorstyle(ColorStyle &style, const ColorList &clist_active, int n_rects, int n_fading_steps)
+{
 	style.style.clear();
 
-		QHash<int, QColor> map_col_active;
+	QHash<int, QColor> map_col_active;
 
-		// compute color of each rect
-		for(int i=0; i<n_rects; i++) {
-			insertColorOfRect(i, n_rects, clist_active, map_col_active);
+	// compute color of each rect
+	for(int i=0; i<n_rects; i++) {
+		insertColorOfRect(i, n_rects, clist_active, map_col_active);
+	}
+
+	// compute active to inactive color
+	QList<float> borders;
+	borders << 0.0 << 1.0;
+
+	// run through rect
+	for(int idx_rect=0; idx_rect < n_rects; idx_rect++)
+	{
+		QColor col_active = map_col_active.value(idx_rect);
+
+		// fadeout
+		QHash<int, QColor> fading_map;
+
+		ColorList col_list;
+		col_list.colors << QColor(0,0,0,50) << col_active.darker();
+
+		// run through step
+		for(int idx_step=0; idx_step<=n_fading_steps; idx_step++){
+			insertColorOfRect(idx_step, n_fading_steps + 1, col_list, fading_map);
 		}
 
-		// compute active to inactive color
-		QList<float> borders;
-		borders << 0.0 << 1.0;
+		fading_map[-1] = col_active;
 
-		// run through rect
-		for(int idx_rect=0; idx_rect < n_rects; idx_rect++) {
-			QColor col_active = map_col_active.value(idx_rect);
+		style.style.push_back(fading_map);
+	}
 
-			// fadeout
-			QHash<int, QColor> fading_map;
-
-			ColorList col_list;
-			col_list.colors << QColor(0,0,0,50) << col_active.darker();
-
-			// run through step
-			for(int idx_step=0; idx_step<=n_fading_steps; idx_step++){
-				insertColorOfRect(idx_step, n_fading_steps + 1, col_list, fading_map);
-			}
-
-			fading_map[-1] = col_active;
-
-			style.style << fading_map;
-		}
-
-		style.name = clist_active.name;
+	style.name = clist_active.name;
 }
 
 
-void VisualColorStyleChooser::insertColorOfRect(int bin, int n_bins, const ColorList& colorlist, QHash<int, QColor>& map) {
+void VisualColorStyleChooser::insertColorOfRect(int bin, int n_bins, const ColorList& colorlist, QHash<int, QColor>& map)
+{
 	QColor col;
 	QList<float> borders;
 
@@ -110,16 +113,16 @@ void VisualColorStyleChooser::insertColorOfRect(int bin, int n_bins, const Color
 	float dx = (borders[i] - borders[i-1]);
 
 	float dy = colorlist.colors[i].red() - colorlist.colors[i-1].red();
-	r = (int) (( dy * (x-borders[i-1]) ) / dx + colorlist.colors[i-1].red());
+	r = int(( dy * (x-borders[i-1]) ) / dx + colorlist.colors[i-1].red());
 
 	dy = colorlist.colors[i].green() - colorlist.colors[i-1].green();
-	g = (int) (( dy * (x-borders[i-1])) / dx + colorlist.colors[i-1].green());
+	g = int(( dy * (x-borders[i-1])) / dx + colorlist.colors[i-1].green());
 
 	dy = colorlist.colors[i].blue() - colorlist.colors[i-1].blue();
-	b = (int) ((dy * (x-borders[i-1])) / dx + colorlist.colors[i-1].blue());
+	b = int((dy * (x-borders[i-1])) / dx + colorlist.colors[i-1].blue());
 
 	dy = colorlist.colors[i].alpha() - colorlist.colors[i-1].alpha();
-	a = (int) ((dy * (x-borders[i-1])) / dx + colorlist.colors[i-1].alpha());
+	a = int((dy * (x-borders[i-1])) / dx + colorlist.colors[i-1].alpha());
 
 	col.setRed(r);
 	col.setGreen(g);
@@ -132,20 +135,21 @@ void VisualColorStyleChooser::insertColorOfRect(int bin, int n_bins, const Color
 
 // scheme_fading_rect_color[r]: get access to the rect j in fading scheme i
 // scheme_fading_rect_color[r][c]: get access to the c-th color of rect j in fading scheme i
-ColorStyle VisualColorStyleChooser::get_color_scheme_spectrum(int i) {
+ColorStyle VisualColorStyleChooser::get_color_scheme_spectrum(int i)
+{
 	i = std::max(i, 0);
 	i = std::min(_styles_spectrum.size() -1, i);
 
 	return _styles_spectrum[i];
 }
 
-ColorStyle VisualColorStyleChooser::get_color_scheme_level(int i) {
+ColorStyle VisualColorStyleChooser::get_color_scheme_level(int i)
+{
 	i = std::max(i, 0);
 	i = std::min(_styles_level.size() -1, i);
 
 	return _styles_level[i];
 }
-
 
 int VisualColorStyleChooser::get_num_color_schemes()
 {
@@ -181,7 +185,6 @@ void VisualColorStyleChooser::reload(int widget_width, int widget_height)
 		fallback1.rect_width_level = 5;
 		fallback1.rect_height_level = 6;
 
-
 		fallback2.col_list.colors << QColor(27, 32, 47)  << QColor(134, 134, 134) << QColor(216, 216, 216) << QColor(255, 255, 255);
 		fallback2.col_list.name = "B/W";
 		fallback2.hor_spacing_level = 2;
@@ -216,7 +219,6 @@ void VisualColorStyleChooser::reload(int widget_width, int widget_height)
 		style_level.rect_height = rcs.rect_height_level;
 		style_level.n_rects = widget_width / (style_level.rect_width + style_level.hor_spacing);
 
-
 		style_spectrum.name = rcs.col_list.name;
 		style_spectrum.n_fading_steps = rcs.n_fading_steps_spectrum;
 		style_spectrum.hor_spacing = rcs.hor_spacing_spectrum;
@@ -224,7 +226,6 @@ void VisualColorStyleChooser::reload(int widget_width, int widget_height)
 		style_spectrum.col_list = rcs.col_list;
 		style_spectrum.rect_height = rcs.rect_height_spectrum;
 		style_spectrum.n_rects = widget_height / (style_spectrum.rect_height + style_spectrum.ver_spacing);
-
 
 		create_colorstyle(style_spectrum, rcs.col_list, style_spectrum.n_rects, rcs.n_fading_steps_spectrum);
 		create_colorstyle(style_level, rcs.col_list, style_level.n_rects, rcs.n_fading_steps_level);

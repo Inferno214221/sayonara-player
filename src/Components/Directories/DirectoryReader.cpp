@@ -74,8 +74,8 @@ void DirectoryReader::scan_files_recursive(const QDir& base_dir_orig, QStringLis
 {
 	QDir base_dir(base_dir_orig);
 
-	const QStringList tmp_files = base_dir.entryList(m->name_filters, (QDir::Filters)(QDir::Files | QDir::NoDotAndDotDot));
-	const QStringList dirs = base_dir.entryList((QDir::Filters)(QDir::Dirs | QDir::NoDotAndDotDot));
+	const QStringList tmp_files = base_dir.entryList(m->name_filters, QDir::Filters(QDir::Files | QDir::NoDotAndDotDot));
+	const QStringList dirs = base_dir.entryList(QDir::Filters(QDir::Dirs | QDir::NoDotAndDotDot));
 
 	for(const QString& dir : dirs)
 	{
@@ -91,10 +91,14 @@ void DirectoryReader::scan_files_recursive(const QDir& base_dir_orig, QStringLis
 
 void DirectoryReader::scan_files(const QDir& base_dir, QStringList& files) const
 {
-	const QStringList tmp_files = base_dir.entryList(m->name_filters,
-											   (QDir::Filters)(QDir::Files | QDir::NoDotAndDotDot));
+	const QStringList tmp_files = base_dir.entryList
+	(
+		m->name_filters,
+		QDir::Filters(QDir::Files | QDir::NoDotAndDotDot)
+	);
 
-	for(const QString& filename : tmp_files){
+	for(const QString& filename : tmp_files)
+	{
 		files << base_dir.absoluteFilePath(filename);
 	}
 }

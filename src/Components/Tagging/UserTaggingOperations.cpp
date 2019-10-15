@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "UserTaggingOperations.h"
 #include "Editor.h"
 
@@ -82,9 +80,7 @@ void UserOperations::set_track_rating(const MetaDataList& v_md, Rating rating)
 
 void UserOperations::set_album_rating(const Album& album, Rating rating)
 {
-	Album new_album(album);
-	new_album.rating = rating;
-	m->library_db->updateAlbum(album);
+	m->library_db->updateAlbumRating(album.id, rating);
 }
 
 void UserOperations::merge_artists(const Util::Set<Id>& artist_ids, ArtistId target_artist)

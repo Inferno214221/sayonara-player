@@ -165,6 +165,11 @@ private slots:
 	void language_changed() override;
 
 	/**
+	 * @brief private slots for notifying when to disable everything
+	 */
+	void commit_started();
+
+	/**
 	 * @brief private slot for notifying the MetaDataChangeNotifier
 	 */
 	void commit_finished();

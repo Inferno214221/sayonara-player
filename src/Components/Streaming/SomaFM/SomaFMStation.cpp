@@ -22,9 +22,9 @@
 
 #include "SomaFMStation.h"
 
-#include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
+#include "Utils/MetaData/MetaDataList.h"
 
 #include "Components/Covers/CoverLocation.h"
 
@@ -57,6 +57,31 @@ struct SomaFM::Station::Private
 			{"sss.jpg",				"spacestation-400"},
 			{"sog120.jpg",			"suburbsofgoa-400"}
 		};
+	}
+
+	Private(const Private& other) :
+		CASSIGN(content),
+		CASSIGN(station_name),
+		CASSIGN(urls),
+		CASSIGN(description),
+		CASSIGN(cover),
+		CASSIGN(v_md),
+		CASSIGN(loved),
+		CASSIGN(image_low_high_map)
+	{}
+
+	Private& operator=(const Private& other)
+	{
+		ASSIGN(content);
+		ASSIGN(station_name);
+		ASSIGN(urls);
+		ASSIGN(description);
+		ASSIGN(cover);
+		ASSIGN(v_md);
+		ASSIGN(loved);
+		ASSIGN(image_low_high_map);
+
+		return *this;
 	}
 
 	QString complete_url(const QString& url)
@@ -209,14 +234,14 @@ SomaFM::Station& SomaFM::Station::operator=(const SomaFM::Station& other)
 	return *this;
 }
 
-SomaFM::Station::~Station() {}
+SomaFM::Station::~Station() = default;
 
 QString SomaFM::Station::name() const
 {
 	return m->station_name;
 }
 
-QStringList SomaFM::Station::urls() const
+QStringList SomaFM::Station::playlists() const
 {
 	return m->urls.keys();
 }
@@ -251,6 +276,7 @@ bool SomaFM::Station::is_valid() const
 //			&& m->cover.is_valid()
 	);
 }
+
 
 MetaDataList SomaFM::Station::metadata() const
 {

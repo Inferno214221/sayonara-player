@@ -26,8 +26,8 @@
 #include "Components/Covers/CoverChangeNotifier.h"
 #include "Components/Covers/CoverUtils.h"
 
-#include "Utils/FileUtils.h"
 #include "Utils/Utils.h"
+#include "Utils/FileUtils.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
 
@@ -135,6 +135,16 @@ QPixmap CoverButton::pixmap() const
 	return m->current_cover;
 }
 
+int CoverButton::vertical_padding() const
+{
+	int p = (this->height() - m->current_cover_scaled.size().height()) - 2;
+	if(p <= 0){
+		p = -(this->width() - m->current_cover_scaled.size().width() - 2);
+	}
+
+	return p;
+}
+
 void CoverButton::trigger()
 {
 	if(m->cover_source == Cover::Source::AudioFile && !is_silent())
@@ -204,8 +214,9 @@ void CoverButton::set_cover_data(const QByteArray& data, const QString& mimetype
 	worker->moveToThread(thread);
 
 	connect(worker, &ByteArrayConverter::sig_finished, this, &CoverButton::byteconverter_finished);
-	connect(thread, &QThread::finished, thread, &QObject::deleteLater);
+	connect(worker, &ByteArrayConverter::sig_finished, thread, &QThread::quit);
 	connect(thread, &QThread::started, worker, &ByteArrayConverter::start);
+	connect(thread, &QThread::finished, thread, &QObject::deleteLater);
 
 	thread->start();
 }

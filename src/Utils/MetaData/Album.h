@@ -57,10 +57,10 @@ public:
 public:
 	Album();
 	Album(const Album& other);
-	Album(Album&& other);
+	Album(Album&& other) noexcept ;
 
 	Album& operator=(const Album& other);
-	Album& operator=(Album&& other);
+	Album& operator=(Album&& other) noexcept;
 
 	~Album();
 
@@ -100,7 +100,7 @@ public:
 	const Album& operator[](int idx) const;
 
 	AlbumList& append_unique(const AlbumList& other);
-	AlbumList& append_unique(AlbumList&& other);
+	AlbumList& append_unique(AlbumList&& other) noexcept;
 
 	void sort(::Library::SortOrder so);
 };

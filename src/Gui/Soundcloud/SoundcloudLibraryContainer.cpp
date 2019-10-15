@@ -33,7 +33,7 @@ static void sc_init_icons()
 }
 
 SC::LibraryContainer::LibraryContainer(QObject *parent) :
-	::Library::Container(parent)
+	::Library::ContainerImpl(parent)
 {
 	sc_init_icons();
 }

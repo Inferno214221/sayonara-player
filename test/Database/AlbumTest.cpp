@@ -21,6 +21,7 @@ private:
 public:
 	AlbumTest()
 	{
+		Q_INIT_RESOURCE(Database);
 		Util::File::create_directories("/tmp/sayonara");
 		//init();
 	}
@@ -44,7 +45,7 @@ private:
 			m_album_names << Util::random_string(Util::random_number(5, 20));
 		}
 
-		DB::Connector* db = DB::Connector::instance(".", "/tmp/sayonara", "player.db");
+		auto* db = DB::Connector::instance_custom("", "/tmp/sayonara", "player.db");
 		db->register_library_db(0);
 		m_lib_db = db->library_db(0, 0);
 
@@ -111,21 +112,6 @@ void AlbumTest::test_rename()
 		QVERIFY(album.name() == m_album_names[1]);
 	}
 
-	{ // rename album with new name
-		QString new_name = Util::random_string(32);
-		album.set_name(new_name);
-		AlbumId id = db->updateAlbum(album);
-		QVERIFY(id == album.id);
-	}
-
-	{ // rename album with already existing name
-		QString new_name = m_album_names[2];
-		album.set_name(new_name);
-		AlbumId new_id = db->getAlbumID(new_name);
-		AlbumId id = db->updateAlbum(album);
-		QVERIFY(id == new_id);
-	}
-
 	{ // check albums
 		AlbumList albums;
 		bool success = db->getAllAlbums(albums, true);
@@ -135,6 +121,6 @@ void AlbumTest::test_rename()
 	}
 }
 
-QTEST_MAIN(AlbumTest)
+QTEST_GUILESS_MAIN(AlbumTest)
 
 #include "AlbumTest.moc"

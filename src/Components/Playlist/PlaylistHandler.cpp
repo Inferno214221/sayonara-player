@@ -27,7 +27,7 @@
 #include "PlaylistDBWrapper.h"
 #include "PlaylistChangeNotifier.h"
 
-#include "Components/Directories/DirectoryReader.h"
+#include "Components/Directories/MetaDataScanner.h"
 #include "Components/PlayManager/PlayManager.h"
 #include "Database/Connector.h"
 
@@ -37,6 +37,8 @@
 #include "Utils/Playlist/CustomPlaylist.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
+
+#include <QThread>
 
 namespace Algorithm=Util::Algorithm;
 
@@ -172,6 +174,8 @@ int Handler::add_new_playlist(const QString& name, bool temporary, PlaylistType 
 	if(m->playlists.isEmpty()){
 		m->active_playlist_idx = 0;
 		m->current_playlist_idx = 0;
+
+		emit sig_active_playlist_changed(m->active_playlist_idx);
 	}
 
 	m->playlists.push_back(pl);
@@ -197,6 +201,9 @@ int Handler::create_playlist(const MetaDataList& v_md, const QString& name, bool
 	}
 
 	PlaylistPtr pl = m->playlists[idx];
+	if(pl->is_busy()) {
+		return idx;
+	}
 
 	pl->create_playlist(v_md);
 	pl->set_temporary( pl->is_temporary() && temporary );
@@ -208,21 +215,17 @@ int Handler::create_playlist(const MetaDataList& v_md, const QString& name, bool
 
 // create a new playlist, where only filepaths are given
 // Load Folder, Load File...
-int Handler::create_playlist(const QStringList& pathlist, const QString& name, bool temporary, PlaylistType type)
+int Handler::create_playlist(const QStringList& paths, const QString& name, bool temporary, PlaylistType type)
 {
-	DirectoryReader reader;
-
-	MetaDataList v_md = reader.scan_metadata(pathlist);
-	v_md.sort(Library::SortOrder::TrackAlbumArtistAsc);
-
-	return create_playlist(v_md, name, temporary, type);
+	int index = create_playlist(MetaDataList(), name, temporary, type);
+	create_filescanner(index, paths, -1);
+	return index;
 }
 
 int Handler::create_playlist(const QString& dir, const QString& name, bool temporary, PlaylistType type)
 {
 	return create_playlist(QStringList{dir}, name, temporary, type);
 }
-
 
 int Handler::create_playlist(const CustomPlaylist& cpl)
 {
@@ -307,6 +310,7 @@ void Handler::played()
 void Handler::stopped()
 {
 	m->active_playlist_idx = -1;
+	emit sig_active_playlist_changed(m->active_playlist_idx);
 
 	for(PlaylistPtr pl : m->playlists){
 		pl->stop();
@@ -369,6 +373,8 @@ int	Handler::active_index() const
 
 void Handler::set_active_idx(int idx)
 {
+	int old_active_index = m->active_playlist_idx;
+
 	if(m->playlists.isEmpty()) {
 		m->active_playlist_idx = idx;
 	}
@@ -382,11 +388,17 @@ void Handler::set_active_idx(int idx)
 	}
 
 	SetSetting(Set::PL_LastPlaylist, active_playlist()->get_id());
+
+	if(old_active_index != m->active_playlist_idx)
+	{
+		emit sig_active_playlist_changed(m->active_playlist_idx);
+	}
 }
 
 
 PlaylistPtr Handler::active_playlist()
 {
+	int old_active_index = m->active_playlist_idx;
 	if(m->play_manager->playstate() == PlayState::Stopped) {
 		m->active_playlist_idx = -1;
 	}
@@ -406,6 +418,11 @@ PlaylistPtr Handler::active_playlist()
 		else {
 			m->active_playlist_idx = 0;
 		}
+	}
+
+	if(old_active_index != m->active_playlist_idx)
+	{
+		emit sig_active_playlist_changed(m->active_playlist_idx);
 	}
 
 	return m->playlists[m->active_playlist_idx];
@@ -443,17 +460,24 @@ int Handler::count() const
 
 void Handler::play_next(const MetaDataList& v_md)
 {
-	PlaylistPtr active = active_playlist();
-
-	active->insert_tracks(v_md, active->current_track_index() + 1);
+	PlaylistPtr pl = active_playlist();
+	insert_tracks(v_md, pl->current_track_index() + 1, pl->index());
 }
 
+void Handler::play_next(const QStringList& paths)
+{
+	PlaylistPtr pl = active_playlist();
+	insert_tracks(paths, pl->current_track_index() + 1, pl->index());
+}
 
 void Handler::insert_tracks(const MetaDataList& v_md, int row, int pl_idx)
 {
 	CHECK_IDX_VOID(pl_idx)
 
 	PlaylistPtr pl = m->playlists[pl_idx];
+	if(pl->is_busy()) {
+		return;
+	}
 
 	bool is_empty = (pl->count() == 0);
 	bool stopped = (m->play_manager->playstate() == PlayState::Stopped);
@@ -467,11 +491,27 @@ void Handler::insert_tracks(const MetaDataList& v_md, int row, int pl_idx)
 	}
 }
 
+void Handler::insert_tracks(const QStringList& paths, int row, int pl_idx)
+{
+	create_filescanner(pl_idx, paths, row);
+}
+
 
 void Handler::append_tracks(const MetaDataList& v_md, int pl_idx)
 {
 	CHECK_IDX_VOID(pl_idx)
-	m->playlists[pl_idx]->append_tracks(v_md);
+
+	PlaylistPtr pl = m->playlists[pl_idx];
+	if(!pl->is_busy()) 
+	{
+		pl->append_tracks(v_md);
+	}
+}
+
+void Handler::append_tracks(const QStringList& paths, int pl_idx)
+{
+	CHECK_IDX_VOID(pl_idx)
+	create_filescanner(pl_idx, paths, m->playlists.at(pl_idx)->count());
 }
 
 void Handler::remove_rows(const IndexSet& indexes, int pl_idx)
@@ -512,6 +552,7 @@ int Handler::close_playlist(int pl_idx)
 
 	else if(m->active_playlist_idx > pl_idx) {
 		m->active_playlist_idx --;
+		emit sig_active_playlist_changed(m->active_playlist_idx);
 	}
 
 	for(PlaylistPtr pl : m->playlists)
@@ -573,16 +614,15 @@ void Handler::reset_playlist(int pl_idx)
 {
 	CHECK_IDX_VOID(pl_idx)
 
-	DBWrapper* db_connector = new DBWrapper();
+	PlaylistPtr pl = m->playlists[pl_idx];
+	if(!pl->is_busy())
+	{
+		DBWrapper db_connector;
+		CustomPlaylist cpl = db_connector.get_playlist_by_id(pl->get_id());
 
-	int id = m->playlists[pl_idx]->get_id();
-
-	CustomPlaylist cpl = db_connector->get_playlist_by_id(id);
-
-	clear_playlist(pl_idx);
-	create_playlist(cpl);
-
-	delete db_connector; db_connector = nullptr;
+		clear_playlist(pl_idx);
+		create_playlist(cpl);
+	}
 }
 
 Util::SaveAsAnswer Handler::save_playlist(int pl_idx)
@@ -692,6 +732,7 @@ void Handler::playlist_deleted(int id)
 	pl->set_temporary(true);
 }
 
+
 void Handler::delete_tracks(int pl_idx, const IndexSet& rows, Library::TrackDeletionMode deletion_mode)
 {
 	CHECK_IDX_VOID(pl_idx)
@@ -726,3 +767,90 @@ void Handler::www_track_finished(const MetaData& md)
 	}
 }
 
+struct MetaDataScannerData
+{
+	int playlist_id;
+	int target_row_index;
+};
+
+void Handler::create_filescanner(int playlist_index, const QStringList& paths, int target_row_idx)
+{
+	CHECK_IDX_VOID(playlist_index)
+
+	PlaylistPtr playlist = m->playlists.at(playlist_index);
+	if(playlist->is_busy()){
+		return;
+	}
+
+	playlist->set_busy(true);
+
+	using Directory::MetaDataScanner;
+
+	auto* t = new QThread();
+	auto* worker = new MetaDataScanner(paths, true, nullptr);
+	auto* data = new MetaDataScannerData{playlist->get_id(), target_row_idx};
+
+	worker->set_data(data);
+
+	connect(t, &QThread::started, worker, &MetaDataScanner::start);
+	connect(t, &QThread::finished, t, &QObject::deleteLater);
+	connect(worker, &MetaDataScanner::sig_finished, this, &Handler::files_scanned);
+	connect(worker, &MetaDataScanner::sig_current_path, this, &Handler::filescanner_progress_changed);
+	connect(worker, &MetaDataScanner::sig_finished, t, &QThread::quit);
+
+	worker->moveToThread(t);
+	t->start();
+}
+
+void Handler::files_scanned()
+{
+	auto* worker = static_cast<Directory::MetaDataScanner*>(sender());
+	auto* data = static_cast<MetaDataScannerData*>(worker->data());
+
+	for (PlaylistPtr pl : m->playlists)
+	{
+		if(pl->get_id() != data->playlist_id)
+		{
+			continue;
+		}
+
+		pl->set_busy(false);
+
+		int target_row_index = data->target_row_index;
+		if(target_row_index < 0)
+		{
+			pl->clear();
+			append_tracks(worker->metadata(), pl->index());
+		}
+
+		else if(target_row_index >= pl->count())
+		{
+			append_tracks(worker->metadata(), pl->index());
+		}
+
+		else
+		{
+			insert_tracks(worker->metadata(), target_row_index, pl->index());
+		}
+	}
+
+	worker->set_data(nullptr);
+	worker->deleteLater();
+	delete data;
+}
+
+void Handler::filescanner_progress_changed(const QString& current_file)
+{
+	auto* worker = static_cast<Directory::MetaDataScanner*>(sender());
+	auto* data = static_cast<MetaDataScannerData*>(worker->data());
+
+	for (PlaylistPtr pl : m->playlists)
+	{
+		if(pl->get_id() != data->playlist_id)
+		{
+			continue;
+		}
+
+		pl->set_current_scanned_file(current_file);
+	}
+}

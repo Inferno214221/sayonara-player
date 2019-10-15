@@ -23,17 +23,24 @@
 #include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistHandler.h"
 #include "Components/PlayManager/PlayManager.h"
+#include "Components/Covers/CoverLookup.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/Utils.h"
 
 #include <QBuffer>
 #include <QFile>
 #include <QImage>
+#include <QPixmap>
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QMap>
 #include <QByteArray>
+
+#include <QJsonDocument>
+#include <QJsonArray>
+#include <QJsonObject>
 
 #include <functional>
 #include <algorithm>
@@ -51,8 +58,6 @@ struct RemoteControl::Private
 
 	QTcpServer*			server=nullptr;
 	QTcpSocket*			socket=nullptr;
-	PlayManagerPtr		play_manager=nullptr;
-	Playlist::Handler*	plh=nullptr;
 
 	Private() :
 		initialized(false)
@@ -67,14 +72,19 @@ RemoteControl::RemoteControl(QObject *parent) :
 	ListenSetting(Set::Remote_Active, RemoteControl::active_changed);
 }
 
-RemoteControl::~RemoteControl() {}
+RemoteControl::~RemoteControl() = default;
 
 void RemoteControl::active_changed()
 {
 	m->server = new QTcpServer(this);
 
-	if(GetSetting(Set::Remote_Active)){
-		m->server->listen(QHostAddress::Any, GetSetting(Set::Remote_Port));
+	if(GetSetting(Set::Remote_Active))
+	{
+		auto port = quint16(GetSetting(Set::Remote_Port));
+		bool success = m->server->listen(QHostAddress::AnyIPv4, port);
+		if(!success){
+			sp_log(Log::Warning, this) << "Cannot listen on port " << port << ": " << m->server->errorString();
+		}
 	}
 
 	connect(m->server, &QTcpServer::newConnection, this, &RemoteControl::new_connection);
@@ -86,22 +96,19 @@ void RemoteControl::init()
 		return;
 	}
 
-	m->play_manager = PlayManager::instance();
-	m->plh = Playlist::Handler::instance();
+	auto* pm = PlayManager::instance();
 
-	PlayManagerPtr mgr = m->play_manager;
-
-	m->fn_call_map["play"] =	[mgr]() {mgr->play();};
-	m->fn_call_map["pause"] =	[mgr]() {mgr->pause();};
-	m->fn_call_map["prev"] =	[mgr]() {mgr->previous();};
-	m->fn_call_map["next"] =	[mgr]() {mgr->next();};
-	m->fn_call_map["playpause"]=[mgr]() {mgr->play_pause();};
-	m->fn_call_map["stop"] =	[mgr]() {mgr->stop();};
-	m->fn_call_map["volup"] =   [mgr]() {mgr->volume_up();};
-	m->fn_call_map["voldown"] =	[mgr]() {mgr->volume_down();};
-	m->fn_call_map["state"] =   std::bind(&RemoteControl::request_state, this);
-	m->fn_call_map["pl"] =      std::bind(&RemoteControl::write_playlist, this);
-	m->fn_call_map["curSong"] =	std::bind(&RemoteControl::write_cur_track, this);
+	m->fn_call_map["play"] =		std::bind(&PlayManager::play, pm);
+	m->fn_call_map["pause"] =		std::bind(&PlayManager::pause, pm);
+	m->fn_call_map["prev"] =		std::bind(&PlayManager::previous, pm);
+	m->fn_call_map["next"] =		std::bind(&PlayManager::next, pm);
+	m->fn_call_map["playpause"] =	std::bind(&PlayManager::play_pause, pm);
+	m->fn_call_map["stop"] =		std::bind(&PlayManager::stop, pm);
+	m->fn_call_map["volup"] =		std::bind(&PlayManager::volume_up, pm);
+	m->fn_call_map["voldown"] =		std::bind(&PlayManager::volume_down, pm);
+	m->fn_call_map["state"] =		std::bind(&RemoteControl::request_state, this);
+	m->fn_call_map["pl"] =			std::bind(&RemoteControl::write_playlist, this);
+	m->fn_call_map["curSong"] =		std::bind(&RemoteControl::write_current_track, this);
 	m->fn_call_map["help"] =		std::bind(&RemoteControl::show_api, this);
 
 	m->fn_int_call_map["setvol"] =  std::bind(&RemoteControl::set_volume, this, std::placeholders::_1);
@@ -153,42 +160,28 @@ void RemoteControl::new_connection()
 	connect(m->socket, &QTcpSocket::readyRead, this, &RemoteControl::new_request);
 	connect(m->socket, &QTcpSocket::disconnected, this, &RemoteControl::socket_disconnected);
 
-	PlayManagerPtr mgr = m->play_manager;
+	auto* pm = PlayManager::instance();
+	auto* plh = Playlist::Handler::instance();
 
-	connect(mgr, &PlayManager::sig_position_changed_ms, this, &RemoteControl::pos_changed_ms);
-	connect(mgr, &PlayManager::sig_track_changed, this, &RemoteControl::track_changed);
-	connect(mgr, &PlayManager::sig_volume_changed, this, &RemoteControl::volume_changed);
-	connect(mgr, &PlayManager::sig_playstate_changed, this, &RemoteControl::playstate_changed);
-	connect(m->plh, &Playlist::Handler::sig_playlist_created, this, &RemoteControl::playlist_changed);
+	connect(pm, &PlayManager::sig_position_changed_ms, this, &RemoteControl::pos_changed_ms);
+	connect(pm, &PlayManager::sig_track_changed, this, &RemoteControl::track_changed);
+	connect(pm, &PlayManager::sig_volume_changed, this, &RemoteControl::volume_changed);
+	connect(pm, &PlayManager::sig_playstate_changed, this, &RemoteControl::playstate_changed);
+	connect(plh, &Playlist::Handler::sig_active_playlist_changed, this, &RemoteControl::active_playlist_changed);
+
+	active_playlist_changed(plh->active_index());
 }
 
 void RemoteControl::socket_disconnected()
 {
-	PlayManagerPtr mgr = m->play_manager;
+	auto* pm = PlayManager::instance();
+	auto* plh = Playlist::Handler::instance();
 
-	disconnect(mgr, &PlayManager::sig_position_changed_ms, this, &RemoteControl::pos_changed_ms);
-	disconnect(mgr, &PlayManager::sig_track_changed, this, &RemoteControl::track_changed);
-	disconnect(mgr, &PlayManager::sig_volume_changed, this, &RemoteControl::volume_changed);
-	disconnect(mgr, &PlayManager::sig_playstate_changed, this, &RemoteControl::playstate_changed);
-	disconnect(m->plh, &Playlist::Handler::sig_playlist_created, this, &RemoteControl::playlist_changed);
-}
-
-void RemoteControl::pos_changed_ms(MilliSeconds pos)
-{
-	Q_UNUSED(pos)
-	write_cur_pos();
-}
-
-void RemoteControl::track_changed(const MetaData& md)
-{
-	Q_UNUSED(md)
-	write_cur_track();
-}
-
-void RemoteControl::volume_changed(int vol)
-{
-	Q_UNUSED(vol)
-	write_volume();
+	disconnect(pm, &PlayManager::sig_position_changed_ms, this, &RemoteControl::pos_changed_ms);
+	disconnect(pm, &PlayManager::sig_track_changed, this, &RemoteControl::track_changed);
+	disconnect(pm, &PlayManager::sig_volume_changed, this, &RemoteControl::volume_changed);
+	disconnect(pm, &PlayManager::sig_playstate_changed, this, &RemoteControl::playstate_changed);
+	disconnect(plh, &Playlist::Handler::sig_active_playlist_changed, this, &RemoteControl::active_playlist_changed);
 }
 
 
@@ -201,8 +194,6 @@ void RemoteControl::new_request()
 	{
 		auto fn = m->fn_call_map[arr];
 		fn();
-		write_volume();
-		write_cur_track();
 		return;
 	}
 
@@ -217,7 +208,6 @@ void RemoteControl::new_request()
 		int val = extract_parameter_int(arr, cmd.size());
 		RemoteFunctionInt fn = m->fn_int_call_map[cmd];
 		fn(val);
-		return;
 	}
 }
 
@@ -227,18 +217,6 @@ int RemoteControl::extract_parameter_int(const QByteArray& data, int cmd_len)
 	return data.right(data.size() - cmd_len - 1).toInt();
 }
 
-
-void RemoteControl::playstate_changed(PlayState playstate)
-{
-	Q_UNUSED(playstate)
-	write_playstate();
-}
-
-void RemoteControl::playlist_changed(PlaylistConstPtr pl)
-{
-	Q_UNUSED(pl)
-	write_playlist();
-}
 
 void RemoteControl::_sl_active_changed()
 {
@@ -254,13 +232,14 @@ void RemoteControl::_sl_active_changed()
 	}
 
 	else {
-		m->server->listen(QHostAddress::Any, GetSetting(Set::Remote_Port));
+		auto port = quint16(GetSetting(Set::Remote_Port));
+		m->server->listen(QHostAddress::Any, port);
 	}
 }
 
 void RemoteControl::_sl_port_changed()
 {
-	int port = GetSetting(Set::Remote_Port);
+	auto port = quint16(GetSetting(Set::Remote_Port));
 	bool active = GetSetting(Set::Remote_Active);
 
 	if(!active){
@@ -286,154 +265,307 @@ void RemoteControl::_sl_broadcast_changed()
 
 void RemoteControl::set_volume(int vol)
 {
-	m->play_manager->set_volume(vol);
+	PlayManager::instance()->set_volume(vol);
 }
 
 void RemoteControl::seek_rel(int percent)
 {
 	percent = std::min(percent, 100);
 	percent = std::max(percent, 0);
-	m->play_manager->seek_rel( percent / 100.0 );
+	PlayManager::instance()->seek_rel( percent / 100.0 );
 }
 
 void RemoteControl::seek_rel_ms(int pos_ms)
 {
-	m->play_manager->seek_rel_ms( pos_ms );
+	PlayManager::instance()->seek_rel_ms( pos_ms );
 }
-
 
 void RemoteControl::change_track(int idx)
 {
-	m->plh->change_track(idx - 1, m->plh->active_index());
+	auto* plh = Playlist::Handler::instance();
+	plh->change_track(idx - 1, plh->active_index());
 }
 
 
-void RemoteControl::write_cur_pos()
+void RemoteControl::pos_changed_ms(MilliSeconds pos)
 {
-	Seconds pos_sec = m->play_manager->current_position_ms() / 1000;
-	write("curPos:" + QByteArray::number(pos_sec));
+	static MilliSeconds p = 0;
+	if(p / 1000 == pos / 1000){
+		return;
+	}
+
+	p = pos;
+
+	write_current_position();
+}
+
+void RemoteControl::insert_json_current_position(QJsonObject& obj) const
+{
+	MilliSeconds pos_ms = PlayManager::instance()->current_position_ms();
+	Seconds pos_sec = Seconds(pos_ms / 1000);
+
+	obj.insert("track-current-position", QJsonValue::fromVariant(
+		QVariant::fromValue<Seconds>(pos_sec))
+	);
+}
+
+void RemoteControl::write_current_position()
+{
+	QJsonDocument doc;
+
+	QJsonObject obj;
+	insert_json_current_position(obj);
+
+	doc.setObject(obj);
+	write(doc.toBinaryData());
+}
+
+
+void RemoteControl::volume_changed(int vol)
+{
+	Q_UNUSED(vol)
+	write_volume();
+}
+
+void RemoteControl::insert_json_volume(QJsonObject& obj) const
+{
+	obj.insert("volume", PlayManager::instance()->volume());
 }
 
 void RemoteControl::write_volume()
 {
-	int vol = m->play_manager->volume();
-	write("vol:" + QByteArray::number(vol));
+	QJsonDocument doc;
+	QJsonObject obj;
+	insert_json_volume(obj);
+	doc.setObject(obj);
+	write(doc.toBinaryData());
 }
 
-void RemoteControl::write_cur_track()
+
+void RemoteControl::track_changed(const MetaData& md)
 {
-	PlayState playstate = m->play_manager->playstate();
+	Q_UNUSED(md)
+	write_current_track();
+}
 
-	playstate_changed(playstate);
+void RemoteControl::insert_json_current_track(QJsonObject& o)
+{
+	auto* plh = Playlist::Handler::instance();
 
-	if(playstate == PlayState::Stopped){
+	MetaData md = PlayManager::instance()->current_track();
+
+	PlaylistConstPtr pl = plh->playlist(plh->active_index());
+	if(!pl){
 		return;
 	}
 
-	const MetaData& md = m->play_manager->current_track();
-
-	PlaylistConstPtr pl = m->plh->playlist(m->plh->active_index());
 	int cur_track_idx = pl->current_track_index();
-
 
 	sp_log(Log::Debug, this) << "Send cur track idx: " << cur_track_idx;
 
-	write("curIdx:" + QString::number(cur_track_idx).toUtf8());
-	write("title:" + md.title().toUtf8());
-	write("artist:" + md.artist().toUtf8());
-	write("album:" + md.album().toUtf8());
-	write("totalPos:" + QString::number(md.duration_ms / 1000).toUtf8());
-
-	write_cover(md);
-}
-
-
-void RemoteControl::write_cover()
-{
-	write_cover(
-		m->play_manager->current_track()
+	o.insert("playlist-current-index", cur_track_idx);
+	o.insert("track-title", md.title());
+	o.insert("track-artist", md.artist());
+	o.insert("track-album", md.album());
+	o.insert("track-total-time", QJsonValue::fromVariant(
+		QVariant::fromValue<Seconds>(Seconds(md.duration_ms / 1000)))
 	);
 }
 
-
-void RemoteControl::write_cover(const MetaData& md)
+void RemoteControl::write_current_track()
 {
-	Cover::Location cl = Cover::Location::cover_location(md);
-	QByteArray img_data;
-	QString cover_path = cl.preferred_path();
-	QImage img(cover_path);
-
-	if(!img.isNull())
+	PlayState playstate = PlayManager::instance()->playstate();
+	if(playstate == PlayState::Stopped)
 	{
-		QImage img_copy = img.scaled(300, 300, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-		img_data = QByteArray((char*) img_copy.bits(), img_copy.byteCount());
-		QByteArray data = QByteArray("coverinfo:") +
-				QByteArray::number(img_copy.width()) + ':' +
-				QByteArray::number(img_copy.height()) + ':' +
-				QByteArray::number(img_copy.format());
+		write_playstate();
+		return;
+	}
 
-		write(data);
-		write(img_data);
+	QJsonDocument doc;
+	QJsonObject obj;
+
+	insert_json_playstate(obj);
+	insert_json_current_track(obj);
+
+	doc.setObject(obj);
+
+	write(doc.toBinaryData());
+
+	search_cover();
+}
+
+
+void RemoteControl::json_cover(QJsonObject& o, const QPixmap& pm) const
+{
+	if(pm.isNull()){
+		return;
+	}
+
+	QPixmap pm_scaled = pm.scaled(300, 300, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+	o.insert("cover-width", pm_scaled.width());
+	o.insert("cover-height", pm_scaled.height());
+
+	QByteArray img_data = Util::cvt_pixmap_to_bytearray(pm_scaled);
+	QString data = QString::fromLocal8Bit(img_data.toBase64());
+
+	sp_log(Log::Debug, this) << "Send " << data.size() << " bytes cover info";
+	o.insert("cover-data", data);
+}
+
+
+void RemoteControl::playstate_changed(PlayState playstate)
+{
+	if(playstate == PlayState::Playing) {
+		request_state();
+	}
+
+	else
+	{
+		write_playstate();
 	}
 }
 
+void RemoteControl::insert_json_playstate(QJsonObject& o)
+{
+	PlayState playstate = PlayManager::instance()->playstate();
+
+	if(playstate == PlayState::Playing){
+		o.insert("playstate", "playing");
+	}
+
+	else if(playstate == PlayState::Paused){
+		o.insert("playstate", "paused");
+	}
+
+	else if(playstate == PlayState::Stopped){
+		o.insert("playstate", "stopped");
+	}
+}
 
 void RemoteControl::write_playstate()
 {
-	PlayState playstate = m->play_manager->playstate();
-	QByteArray playstate_str = "playstate:";
-
-	switch(playstate){
-		case PlayState::Playing:
-			playstate_str += "playing";
-			break;
-		case PlayState::Paused:
-			playstate_str += "paused";
-			break;
-		case PlayState::Stopped:
-		default:
-			playstate_str += "stopped";
-			break;
-	}
-
-	write(playstate_str);
+	QJsonDocument doc;
+	QJsonObject o;
+	insert_json_playstate(o);
+	doc.setObject(o);
+	write(doc.toBinaryData());
 }
 
+void RemoteControl::active_playlist_changed(int index)
+{
+	auto* plh = Playlist::Handler::instance();
+	if(index >= 0 && index < plh->count())
+	{
+		PlaylistConstPtr pl = plh->playlist(index);
+		if(pl)
+		{
+			connect(pl.get(), &Playlist::Playlist::sig_items_changed, this, &RemoteControl::active_playlist_content_changed);
+		}
+	}
 
-void RemoteControl::write_playlist()
+	write_playlist();
+}
+
+void RemoteControl::active_playlist_content_changed(int index)
+{
+	Q_UNUSED(index)
+	write_playlist();
+}
+
+void RemoteControl::search_cover()
+{
+	MetaData md = PlayManager::instance()->current_track();
+	Cover::Location cl = Cover::Location::cover_location(md);
+
+	auto* cover_lookup = new Cover::Lookup(cl, 1, nullptr);
+	connect(cover_lookup, &Cover::Lookup::sig_cover_found, this, &RemoteControl::cover_found);
+	connect(cover_lookup, &Cover::Lookup::sig_finished, cover_lookup, &QObject::deleteLater);
+
+	cover_lookup->start();
+}
+
+void RemoteControl::cover_found(const QPixmap& pm)
+{
+	QJsonDocument doc;
+	QJsonObject obj;
+	json_cover(obj, pm);
+
+	if(!obj.isEmpty())
+	{
+		doc.setObject(obj);
+		write(doc.toBinaryData());
+	}
+}
+
+void RemoteControl::insert_json_playlist(QJsonArray& arr) const
 {
 	QByteArray data;
-	PlaylistConstPtr pl = m->plh->playlist(m->plh->active_index());
 
+	auto* plh = Playlist::Handler::instance();
+	PlaylistConstPtr pl = plh->playlist(plh->active_index());
 	if(pl)
 	{
 		int i=1;
 		for(const MetaData& md : pl->tracks())
 		{
-			data += QByteArray::number(i) + '\t' +
-					md.title().toUtf8() + '\t' +
-					md.artist().toUtf8() + '\t' +
-					md.album().toUtf8() + '\t' +
-					QByteArray::number((qulonglong) (md.duration_ms / 1000)) + '\t' +
-					'\n';
+			QJsonObject obj;
+
+			obj.insert("pl-track-title", md.title());
+			obj.insert("pl-track-artist", md.artist());
+			obj.insert("pl-track-album", md.album());
+			obj.insert("pl-track-total-time", QJsonValue::fromVariant(
+				QVariant::fromValue<Seconds>(Seconds(md.duration_ms / 1000)))
+			);
+
+			arr.append(obj);
+
 			i++;
 		}
-
-		write("playlist:" + data);
 	}
 }
 
+void RemoteControl::write_playlist()
+{
+	QJsonDocument doc;
+	QJsonObject obj;
+
+	auto* plh = Playlist::Handler::instance();
+	MetaData md = PlayManager::instance()->current_track();
+	PlaylistConstPtr pl = plh->playlist(plh->active_index());
+	if(pl)
+	{
+		int cur_track_idx = pl->current_track_index();
+		obj.insert("playlist-current-index", cur_track_idx);
+	}
+
+	QJsonArray arr;
+	insert_json_playlist(arr);
+	if(arr.isEmpty()){
+		return;
+	}
+
+	obj.insert("playlist", arr);
+	doc.setObject(obj);
+
+	write(doc.toBinaryData());
+}
+
+
+void RemoteControl::insert_json_broadcast_info(QJsonObject& obj)
+{
+	obj.insert("broadcast-active", GetSetting(Set::Broadcast_Active));
+	obj.insert("broadcast-port", GetSetting(Set::Broadcast_Port));
+}
 
 void RemoteControl::write_broadcast_info()
 {
-	QByteArray data;
-	data = "broadcast:" +
-			QByteArray::number(GetSetting(Set::Broadcast_Active)) + '\t' +
-			QByteArray::number(GetSetting(Set::Broadcast_Port));
+	QJsonDocument doc;
+	QJsonObject obj;
+	insert_json_broadcast_info(obj);
 
-	sp_log(Log::Debug, this) << "Write broadcast " << data;
-
-	write(data);
+	doc.setObject(obj);
+	write(doc.toBinaryData());
 }
 
 
@@ -443,24 +575,31 @@ void RemoteControl::write(const QByteArray& data)
 		return;
 	}
 
-	QByteArray margins;
-	margins.push_back((char) 0);
-	margins.push_back((char) 1);
-	margins.push_back((char) 0);
-	margins.push_back((char) 1);
-
-	m->socket->write(data + margins);
+	m->socket->write(data + "ENDMESSAGE");
 	m->socket->flush();
 }
 
 
 void RemoteControl::request_state()
 {
-	write_cur_pos();
-	write_cur_track();
-	write_volume();
-	write_playstate();
-	write_broadcast_info();
+	sp_log(Log::Debug, this) << "Current state requested";
+
+	QJsonDocument doc;
+	QJsonObject obj;
+
+	insert_json_volume(obj);
+	insert_json_current_position(obj);
+	insert_json_current_track(obj);
+	insert_json_playstate(obj);
+	insert_json_broadcast_info(obj);
+
+	doc.setObject(obj);
+	sp_log(Log::Info, this) << QString::fromLocal8Bit(doc.toJson());
+
+	write(doc.toBinaryData());
+
+	write_playlist();
+	search_cover();
 }
 
 

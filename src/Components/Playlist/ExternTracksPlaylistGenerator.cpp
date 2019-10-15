@@ -19,9 +19,9 @@
  */
 
 #include "ExternTracksPlaylistGenerator.h"
-#include "Playlist.h"
 #include "PlaylistHandler.h"
-#include "Components/Directories/DirectoryReader.h"
+#include "Playlist.h"
+
 #include "Utils/Algorithm.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Language/Language.h"
@@ -100,20 +100,17 @@ void ExternTracksPlaylistGenerator::add_paths(const QStringList& paths)
 		{
 			pl = plh->playlist(index);
 
-			DirectoryReader reader;
-			MetaDataList v_md = reader.scan_metadata(paths);
-
 			Playlist::Mode mode = pl->mode();
 			if(Playlist::Mode::isActiveAndEnabled(mode.append()))
 			{ // append new tracks
-				plh->append_tracks(v_md, index);
+				plh->append_tracks(paths, index);
 				m->is_play_allowed = false;
 			}
 
 			else
 			{ // clear everything and overwrite
 				plh->reset_playlist(index);
-				plh->append_tracks(v_md, index);
+				plh->append_tracks(paths, index);
 			}
 		}
 	}

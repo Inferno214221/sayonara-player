@@ -61,8 +61,11 @@ namespace Library
 
 			const Util::Set<Id>& selections() const override;
 
-		public:
+		protected:
 			const MetaDataList& mimedata_tracks() const override;
+
+		private slots:
+			void rating_operation_finished();
 	};
 }
 

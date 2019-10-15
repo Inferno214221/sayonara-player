@@ -25,14 +25,14 @@
 #define GUI_SOMAFMLIBRARY_CONTAINER_H
 
 #include <QtGlobal>
-#include "Interfaces/Library/LibraryContainer/LibraryContainer.h"
+#include "Gui/Utils/Library/LibraryContainerImpl.h"
 
 namespace SomaFM
 {
 	class GUI_SomaFM;
 
 	class LibraryContainer :
-		public ::Library::Container
+		public ::Library::ContainerImpl
 	{
 		Q_OBJECT
 
@@ -40,9 +40,8 @@ namespace SomaFM
 		GUI_SomaFM*	ui=nullptr;
 
 	public:
-
 		explicit LibraryContainer(QObject* parent=nullptr);
-		~LibraryContainer();
+		~LibraryContainer() override;
 
 		// override from LibraryViewInterface
 		QString			name() const override;

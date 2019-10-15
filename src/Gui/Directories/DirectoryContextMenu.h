@@ -30,7 +30,7 @@
  * @ingroup GuiDirectories
  */
 class DirectoryContextMenu :
-		public Gui::LibraryContextMenu
+		public Library::ContextMenu
 {
 	Q_OBJECT
 	PIMPL(DirectoryContextMenu)
@@ -48,7 +48,7 @@ public:
 	};
 
 	DirectoryContextMenu(Mode mode, QWidget* parent);
-	~DirectoryContextMenu();
+	~DirectoryContextMenu() override;
 
 	void set_create_dir_visible(bool b);
 	void set_rename_visible(bool b);

@@ -55,7 +55,7 @@ struct CoverViewContextMenu::Private
 };
 
 CoverViewContextMenu::CoverViewContextMenu(QWidget* parent) :
-	Gui::LibraryContextMenu(parent)
+	Library::ContextMenu(parent)
 {
 	m = Pimpl::make<Private>();
 
@@ -153,7 +153,7 @@ void CoverViewContextMenu::action_sorting_triggered(bool b)
 
 CoverViewContextMenu::Entries CoverViewContextMenu::get_entries() const
 {
-	CoverViewContextMenu::Entries entries = LibraryContextMenu::get_entries();
+	CoverViewContextMenu::Entries entries = Library::ContextMenu::get_entries();
 	entries |= CoverViewContextMenu::EntryShowUtils;
 	entries |= CoverViewContextMenu::EntrySorting;
 	entries |= CoverViewContextMenu::EntryZoom;
@@ -164,7 +164,7 @@ CoverViewContextMenu::Entries CoverViewContextMenu::get_entries() const
 
 void CoverViewContextMenu::show_actions(CoverViewContextMenu::Entries entries)
 {
-	LibraryContextMenu::show_actions(entries);
+	Library::ContextMenu::show_actions(entries);
 
 	m->action_show_utils->setVisible(entries & CoverViewContextMenu::EntryShowUtils);
 	m->action_sorting->setVisible(entries & CoverViewContextMenu::EntrySorting);
@@ -198,7 +198,7 @@ void CoverViewContextMenu::set_sorting(Library::SortOrder so)
 
 void CoverViewContextMenu::showEvent(QShowEvent* e)
 {
-	LibraryContextMenu::showEvent(e);
+	Library::ContextMenu::showEvent(e);
 
 	set_sorting(GetSetting(Set::Lib_Sorting).so_albums);
 	set_zoom(GetSetting(Set::Lib_CoverZoom));
@@ -209,7 +209,7 @@ void CoverViewContextMenu::showEvent(QShowEvent* e)
 
 void CoverViewContextMenu::language_changed()
 {
-	LibraryContextMenu::language_changed();
+	Library::ContextMenu::language_changed();
 
 	init_sorting_actions();
 
@@ -219,9 +219,4 @@ void CoverViewContextMenu::language_changed()
 
 	m->menu_sorting->clear();
 	init_sorting_actions();
-}
-
-void CoverViewContextMenu::skin_changed()
-{
-	LibraryContextMenu::skin_changed();
 }

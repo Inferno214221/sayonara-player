@@ -22,7 +22,7 @@
 
 #include "Broadcaster.h"
 #include "Probing.h"
-#include "Components/Engine/Utils.h"
+#include "Components/Engine/EngineUtils.h"
 #include "Components/Engine/Callbacks.h"
 
 #include <QString>
@@ -32,6 +32,7 @@ using namespace PipelineExtensions;
 
 struct Broadcaster::Private
 {
+	BroadcastDataReceiver* data_receiver=nullptr;
 	GstElement* pipeline=nullptr;
 	GstElement* tee=nullptr;
 
@@ -46,7 +47,8 @@ struct Broadcaster::Private
 
 	bool				is_running;
 
-	Private(GstElement* pipeline, GstElement* tee) :
+	Private(BroadcastDataReceiver* data_receiver, GstElement* pipeline, GstElement* tee) :
+		data_receiver(data_receiver),
 		pipeline(pipeline),
 		tee(tee),
 		bc_probe(0),
@@ -54,12 +56,12 @@ struct Broadcaster::Private
 	{}
 };
 
-Broadcaster::Broadcaster(GstElement* pipeline, GstElement* tee)
+Broadcaster::Broadcaster(BroadcastDataReceiver* data_receiver, GstElement* pipeline, GstElement* tee)
 {
-	m = Pimpl::make<Private>(pipeline, tee);
+	m = Pimpl::make<Private>(data_receiver, pipeline, tee);
 }
 
-Broadcaster::~Broadcaster() {}
+Broadcaster::~Broadcaster() = default;
 
 bool Broadcaster::init()
 {
@@ -85,7 +87,8 @@ bool Broadcaster::init()
 
 		gst_bin_add(GST_BIN(m->pipeline), m->bc_bin);
 		success = Engine::Utils::tee_connect(m->tee, m->bc_bin, "BroadcastQueue");
-		if(!success){
+		if(!success)
+		{
 			Engine::Utils::set_state(m->bc_bin, GST_STATE_NULL);
 			gst_object_unref(m->bc_bin);
 			return false;
@@ -100,7 +103,7 @@ bool Broadcaster::init()
 		Engine::Utils::config_sink(m->bc_app_sink);
 		Engine::Utils::set_values(G_OBJECT(m->bc_app_sink), "emit-signals", true);
 
-		g_signal_connect (m->bc_app_sink, "new-sample", G_CALLBACK(Engine::Callbacks::new_buffer), this);
+		g_signal_connect (m->bc_app_sink, "new-sample", G_CALLBACK(Engine::Callbacks::new_buffer), m->data_receiver);
 	}
 
 	return true;

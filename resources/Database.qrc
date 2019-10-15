@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/Database">
+        <file>soundcloud.db</file>
+        <file>player.db</file>
+    </qresource>
+</RCC>

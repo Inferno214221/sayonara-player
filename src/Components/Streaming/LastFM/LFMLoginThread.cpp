@@ -27,20 +27,28 @@
 
 using namespace LastFM;
 
-LoginThread::LoginThread(QObject *parent) :
-	QObject(parent) {}
+struct LoginThread::Private
+{
+	LoginStuff login_info;
+};
 
-LoginThread::~LoginThread() {}
+LoginThread::LoginThread(QObject *parent) :
+	QObject(parent)
+{
+	m = Pimpl::make<Private>();
+}
+
+LoginThread::~LoginThread() = default;
 
 void LoginThread::login(const QString& username, const QString& password)
 {
-	WebAccess* lfm_wa = new WebAccess();
+	auto* lfm_wa = new WebAccess();
 	connect(lfm_wa, &WebAccess::sig_response, this, &LoginThread::wa_response);
 	connect(lfm_wa, &WebAccess::sig_error, this, &LoginThread::wa_error);
 
-	_login_info.logged_in = false;
-	_login_info.session_key = "";
-	_login_info.subscriber = false;
+	m->login_info.logged_in = false;
+	m->login_info.session_key = "";
+	m->login_info.subscriber = false;
 
 	UrlParams signature_data;
 		signature_data["api_key"] = LFM_API_KEY;
@@ -61,12 +69,12 @@ void LoginThread::wa_response(const QByteArray& data)
 {
 	QString str = QString::fromUtf8(data);
 
-	_login_info.logged_in = true;
-	_login_info.session_key = Util::easy_tag_finder("lfm.session.key", str);
-	_login_info.subscriber = (Util::easy_tag_finder("lfm.session.subscriber", str).toInt() == 1);
-	_login_info.error = str;
+	m->login_info.logged_in = true;
+	m->login_info.session_key = Util::easy_tag_finder("lfm.session.key", str);
+	m->login_info.subscriber = (Util::easy_tag_finder("lfm.session.subscriber", str).toInt() == 1);
+	m->login_info.error = str;
 
-	if(_login_info.session_key.size() >= 32){
+	if(m->login_info.session_key.size() >= 32){
 		emit sig_logged_in(true);
 	}
 
@@ -95,6 +103,6 @@ void LoginThread::wa_error(const QString& error)
 
 LoginStuff LoginThread::getLoginStuff()
 {
-	return _login_info;
+	return m->login_info;
 }
 

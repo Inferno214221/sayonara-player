@@ -11,7 +11,7 @@
 #include "Gui/Utils/PreferenceAction.h"
 #include "Gui/Utils/ContextMenu/LibraryContextMenu.h"
 #include "Gui/Utils/Widgets/ProgressBar.h"
-#include "Gui/Utils/RatingLabel.h"
+#include "Gui/Utils/Widgets/RatingLabel.h"
 #include "Gui/Utils/Widgets/FloatingLabel.h"
 
 #include "Components/PlayManager/PlayManager.h"
@@ -53,7 +53,7 @@ static MetaData current_track()
 
 struct GUI_ControlsBase::Private
 {
-	Gui::LibraryContextMenu* context_menu=nullptr;
+	Library::ContextMenu* context_menu=nullptr;
 };
 
 GUI_ControlsBase::GUI_ControlsBase(QWidget* parent) :
@@ -102,7 +102,7 @@ void GUI_ControlsBase::init()
 	skin_changed();
 }
 
-Gui::RatingLabel* GUI_ControlsBase::lab_rating() const
+Gui::RatingEditor* GUI_ControlsBase::lab_rating() const
 {
 	return nullptr;
 }
@@ -280,7 +280,7 @@ void GUI_ControlsBase::cur_pos_changed(MilliSeconds pos_ms)
 
 	if(!sli_progress()->is_busy())
 	{
-		QString cur_pos_string = Util::cvt_ms_to_string(pos_ms);
+		QString cur_pos_string = Util::cvt_ms_to_string(pos_ms, "$M:$S");
 		lab_current_time()->setText(cur_pos_string);
 		sli_progress()->setValue(new_val);
 	}
@@ -298,7 +298,7 @@ void GUI_ControlsBase::refresh_current_position(int val)
 	double percent = (val * 1.0) / max;
 
 	MilliSeconds cur_pos_ms = MilliSeconds(percent * duration);
-	QString cur_pos_string = Util::cvt_ms_to_string(cur_pos_ms);
+	QString cur_pos_string = Util::cvt_ms_to_string(cur_pos_ms, "$M:$S");
 
 	lab_current_time()->setText(cur_pos_string);
 }
@@ -307,7 +307,7 @@ void GUI_ControlsBase::set_total_time_label(MilliSeconds total_time)
 {
 	QString length_str;
 	if(total_time > 0){
-		length_str = Util::cvt_ms_to_string(total_time, true);
+		length_str = Util::cvt_ms_to_string(total_time, "$M:$S");
 		lab_max_time()->setText(length_str);
 	}
 
@@ -326,7 +326,7 @@ void GUI_ControlsBase::progress_hovered(int val)
 	double percent = (val * 1.0) / max;
 
 	MilliSeconds cur_pos_ms = MilliSeconds(percent * duration);
-	QString cur_pos_string = Util::cvt_ms_to_string(cur_pos_ms);
+	QString cur_pos_string = Util::cvt_ms_to_string(cur_pos_ms, "$M:$S");
 
 	QToolTip::showText( QCursor::pos(), cur_pos_string );
 }
@@ -683,27 +683,27 @@ void GUI_ControlsBase::showEvent(QShowEvent* e)
 
 void GUI_ControlsBase::contextMenuEvent(QContextMenuEvent* e)
 {
-	using Gui::LibraryContextMenu;
+	using Library::ContextMenu;
 
 	if(!m->context_menu)
 	{
-		m->context_menu = new LibraryContextMenu(this);
+		m->context_menu = new ContextMenu(this);
 		m->context_menu->show_actions
 		(
-			(LibraryContextMenu::EntryInfo |
-			LibraryContextMenu::EntryLyrics |
-			LibraryContextMenu::EntryEdit)
+			(ContextMenu::EntryInfo |
+			ContextMenu::EntryLyrics |
+			ContextMenu::EntryEdit)
 		);
 
-		connect(m->context_menu, &LibraryContextMenu::sig_edit_clicked, this, [=](){
+		connect(m->context_menu, &ContextMenu::sig_edit_clicked, this, [=](){
 			show_edit();
 		});
 
-		connect(m->context_menu, &LibraryContextMenu::sig_info_clicked, this, [=](){
+		connect(m->context_menu, &ContextMenu::sig_info_clicked, this, [=](){
 			show_info();
 		});
 
-		connect(m->context_menu, &LibraryContextMenu::sig_lyrics_clicked, this, [=](){
+		connect(m->context_menu, &ContextMenu::sig_lyrics_clicked, this, [=](){
 			show_lyrics();
 		});
 

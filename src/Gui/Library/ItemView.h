@@ -76,7 +76,7 @@ namespace Library
 		ItemView(const ItemView& other)=delete;
 		ItemView& operator =(const ItemView& other)=delete;
 
-		void show_context_menu_actions(Gui::LibraryContextMenu::Entries entries);
+		void show_context_menu_actions(Library::ContextMenu::Entries entries);
 
 		using SearchableTableView::set_model;
 
@@ -86,7 +86,7 @@ namespace Library
 
 		void set_item_model(ItemModel* model);
 
-		virtual Gui::LibraryContextMenu::Entries context_menu_entries() const;
+		virtual Library::ContextMenu::Entries context_menu_entries() const;
 
 		/** Dragable **/
 		QMimeData* dragable_mimedata() const override;
@@ -117,9 +117,9 @@ namespace Library
 		virtual void selected_items_changed (const QItemSelection& selected, const QItemSelection& deselected );
 
 		virtual void init_context_menu();
-		virtual void init_custom_context_menu(Gui::LibraryContextMenu* menu);
+		virtual void init_custom_context_menu(Library::ContextMenu* menu);
 
-		Gui::LibraryContextMenu* context_menu() const;
+		Library::ContextMenu* context_menu() const;
 
 		ItemModel* item_model() const;
 		virtual AbstractLibrary* library() const;

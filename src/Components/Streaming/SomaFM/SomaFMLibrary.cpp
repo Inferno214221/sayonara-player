@@ -34,6 +34,7 @@
 #include "Components/Playlist/PlaylistHandler.h"
 #include "Components/Covers/CoverLocation.h"
 #include "Components/Covers/CoverFetchManager.h"
+#include "Components/Covers/Fetcher/CoverFetcherUrl.h"
 
 #include <QMap>
 #include <QSettings>
@@ -128,50 +129,36 @@ void SomaFM::Library::create_playlist_from_station(int row)
 	emit sig_loading_started();
 
 	SomaFM::Station station = m->station_map[m->requested_station];
-	StreamParser* parser = new StreamParser(station.name(), this);
+
+	auto* parser = new StreamParser(station.name(), this);
 	connect(parser, &StreamParser::sig_finished, this, &SomaFM::Library::soma_station_playlists_fetched);
-	parser->parse_streams(station.urls());
+	parser->parse_streams(station.playlists());
 }
 
 void SomaFM::Library::soma_station_playlists_fetched(bool success)
 {
-	StreamParser* parser = dynamic_cast<StreamParser*>(sender());
+	auto* parser = dynamic_cast<StreamParser*>(sender());
 
-	if(!success){
-		parser->deleteLater();
-		emit sig_loading_finished();
-		return;
-	}
-
-	MetaDataList v_md  = parser->metadata();
-	SomaFM::Station station = m->station_map[m->requested_station];
-	QStringList cover_urls;
-	Cover::Location cl = station.cover_location();
-
-	QList<Cover::Fetcher::FetchUrl> search_urls = cl.search_urls(true);
-	for(auto url : search_urls)
+	if(success)
 	{
-		cover_urls << url.url;
+		MetaDataList v_md  = parser->metadata();
+
+		SomaFM::Station station = m->station_map[m->requested_station];
+
+		prepare_metadata_for_playlist(v_md, station);
+
+		station.set_metadata(v_md);
+
+		m->station_map[m->requested_station] = station;
+
+		auto* plh = Playlist::Handler::instance();
+		plh->create_playlist(v_md,
+							 station.name(),
+							 true,
+							 Playlist::Type::Stream);
 	}
 
-	for(MetaData& md : v_md)
-	{
-		md.set_cover_download_urls(cover_urls);
-		md.set_title(station.name());
-		md.set_album("SomaFM - " + station.name());
-	}
-
-	station.set_metadata(v_md);
-
-	m->station_map[m->requested_station] = station;
-
-	Playlist::Handler* plh = Playlist::Handler::instance();
-	plh->create_playlist(v_md,
-						 station.name(),
-						 true,
-						 Playlist::Type::Stream);
-
-	parser->deleteLater();
+	sender()->deleteLater();
 	emit sig_loading_finished();
 }
 
@@ -179,7 +166,7 @@ void SomaFM::Library::soma_station_playlists_fetched(bool success)
 bool SomaFM::Library::create_playlist_from_playlist(int idx)
 {
 	SomaFM::Station station = m->station_map[m->requested_station];
-	QStringList urls = station.urls();
+	QStringList urls = station.playlists();
 
 	if( !Util::between(idx, urls)) {
 		return false;
@@ -188,7 +175,7 @@ bool SomaFM::Library::create_playlist_from_playlist(int idx)
 	emit sig_loading_started();
 
 	QString url = urls[idx];
-	StreamParser* stream_parser = new StreamParser(station.name(), this);
+	auto* stream_parser = new StreamParser(station.name(), this);
 	connect(stream_parser, &StreamParser::sig_finished, this, &SomaFM::Library::soma_playlist_content_fetched);
 
 	stream_parser->parse_stream(url);
@@ -196,47 +183,29 @@ bool SomaFM::Library::create_playlist_from_playlist(int idx)
 	return true;
 }
 
-
 void SomaFM::Library::soma_playlist_content_fetched(bool success)
 {
 	auto* parser = static_cast<StreamParser*>(sender());
 
-	if(!success){
-		parser->deleteLater();
-		emit sig_loading_finished();
-		return;
-	}
-
-	MetaDataList v_md = parser->metadata();
-
-	SomaFM::Station station = m->station_map[m->requested_station];
-	Cover::Location cl = station.cover_location();
-	QStringList cover_urls;
-	QList<Cover::Fetcher::FetchUrl> search_urls = cl.search_urls(true);
-
-	for(auto url : search_urls)
+	if(success) 
 	{
-		cover_urls << url.url;
+		MetaDataList v_md = parser->metadata();
+		SomaFM::Station station = m->station_map[m->requested_station];
+
+		prepare_metadata_for_playlist(v_md, station);
+	
+		station.set_metadata(v_md);
+
+		m->station_map[m->requested_station] = station;
+
+		auto* plh = Playlist::Handler::instance();
+		plh->create_playlist(v_md,
+							 station.name(),
+							 true,
+							 Playlist::Type::Stream);
 	}
 
-	for(auto it = v_md.begin(); it != v_md.end(); it++)
-	{
-		it->set_cover_download_urls(cover_urls);
-		it->set_radio_station("SomaFM - " + station.name());
-	}
-
-	station.set_metadata(v_md);
-
-	m->station_map[m->requested_station] = station;
-
-	Playlist::Handler* plh = Playlist::Handler::instance();
-	plh->create_playlist(v_md,
-						 station.name(),
-						 true,
-						 Playlist::Type::Stream);
-
-	parser->deleteLater();
-
+	sender()->deleteLater();
 	emit sig_loading_finished();
 }
 
@@ -277,4 +246,34 @@ void SomaFM::Library::sort_stations(QList<SomaFM::Station>& stations)
 	};
 
 	Algorithm::sort(stations, lambda);
+}
+
+void SomaFM::Library::prepare_metadata_for_playlist(MetaDataList& v_md, const SomaFM::Station& station)
+{
+	Cover::Location cl = station.cover_location();
+	QList<Cover::Fetcher::Url> search_urls = cl.search_urls(true);
+
+	QStringList cover_urls;
+	for(auto url : search_urls)
+	{
+		cover_urls << url.url();
+	}
+
+	for(MetaData& md : v_md)
+	{
+		md.set_cover_download_urls(cover_urls);
+
+		QString filepath = md.filepath();
+		md.set_radio_station(filepath);
+
+		if(filepath.toLower().contains("mp3")){
+			md.set_title(station.name() + " (mp3)");
+		}
+
+		else if(filepath.toLower().contains("aac")){
+			md.set_title(station.name() + " (aac)");
+		}
+	}
+
+	v_md.sort(::Library::SortOrder::TrackTitleAsc);
 }

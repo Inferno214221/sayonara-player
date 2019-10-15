@@ -30,7 +30,7 @@ namespace Cover
 {
 	namespace Fetcher
 	{
-		struct FetchUrl;
+		class Url;
 	}
 
 	using StringMap=QMap<QString, QString>;
@@ -101,7 +101,7 @@ namespace Cover
 		 * @brief Retrieve the urls where a new cover can be searched
 		 * @return
 		 */
-		QList<Fetcher::FetchUrl> search_urls(bool also_inactive) const;
+		QList<Fetcher::Url> search_urls(bool also_inactive) const;
 
 		/**
 		 * @brief Search urls contains urls from
@@ -111,7 +111,7 @@ namespace Cover
 		 * @param idx
 		 * @return
 		 */
-		Fetcher::FetchUrl search_url(int idx) const;
+		Fetcher::Url search_url(int idx) const;
 
 
 		/**
@@ -149,7 +149,7 @@ namespace Cover
 		 * @brief Set urls where to look for Covers in the internet
 		 * @param urls
 		 */
-		void			set_search_urls(const QList<Fetcher::FetchUrl>& urls);
+		void			set_search_urls(const QList<Fetcher::Url>& urls);
 
 		/**
 		 * @brief When enabling freetext search you specify the

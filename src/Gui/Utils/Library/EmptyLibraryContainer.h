@@ -22,14 +22,14 @@
 #define EMPTYLIBRARYCONTAINER_H
 
 #include "Utils/Pimpl.h"
-#include "Interfaces/Library/LibraryContainer/LibraryContainer.h"
+#include "Gui/Utils/Library/LibraryContainerImpl.h"
 
 /**
  * @brief The EmptyLibraryContainer class
  * @ingroup Library
  */
 class EmptyLibraryContainer :
-		public Library::Container
+		public Library::ContainerImpl
 {
 	Q_OBJECT
 	PIMPL(EmptyLibraryContainer)
@@ -38,7 +38,7 @@ class EmptyLibraryContainer :
 public:
 
 	EmptyLibraryContainer(QObject* parent=nullptr);
-	~EmptyLibraryContainer();
+	~EmptyLibraryContainer() override;
 
 	QString		name() const override;
 	QString		display_name() const override;

@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.7)
 project("Sayonara Player")
 
 option(WITH_DOC "Building with doxygen support" OFF)
+option(WITH_TESTS "Building with tests" OFF)
 option(WITH_COTIRE "Building with cotire PCH and compile time optimizations" OFF)
 option(WITH_SYSTEM_TAGLIB "Use the taglib provided by the destribution, which contains critical bugs in 1.11" OFF)
 
@@ -12,10 +13,11 @@ else()
 	set(LIB_SUFFIX "")
 endif()
 
-set(VAR_SAYONARA_VERSION "1.5.1-stable2")
-set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR})
-set(SAYONARA_VERSION "${VAR_SAYONARA_VERSION}")
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}")
+
+set(SAYONARA_VERSION "1.5.2-beta3")
 set(SAYONARA_INSTALL_PATH "${CMAKE_INSTALL_PREFIX}")
+set(SAYONARA_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 set(SAYONARA_INSTALL_BIN_PATH "${CMAKE_INSTALL_PREFIX}/bin/")
 set(SAYONARA_INSTALL_LIB_PATH "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/sayonara/")
 set(SAYONARA_INSTALL_SHARE_PATH "${CMAKE_INSTALL_PREFIX}/share/sayonara/")
@@ -23,19 +25,19 @@ set(SAYONARA_INSTALL_SHARE_PATH "${CMAKE_INSTALL_PREFIX}/share/sayonara/")
 message("Build Sayonara ${VAR_SAYONARA_VERSION}")
 message("Will install to ${CMAKE_INSTALL_PREFIX}")
 
+# used for cmakedefine in Macros.h.in
+set(SAYONARA_WITH_TESTS ${WITH_TESTS})
+string(TOLOWER "${CMAKE_BUILD_TYPE}" LOWER_CMAKE_BUILD_TYPE)
+if("${LOWER_CMAKE_BUILD_TYPE}" MATCHES "debug")
+	set(SAYONARA_WITH_TESTS 1)
+endif()
 
 add_subdirectory(src)
 add_subdirectory(resources)
 
-
-string(TOLOWER "${CMAKE_BUILD_TYPE}" LOWER_CMAKE_BUILD_TYPE)
 message("Lower cmake build type ${LOWER_CMAKE_BUILD_TYPE}")
-if("${LOWER_CMAKE_BUILD_TYPE}" MATCHES "debug")
-	SET(WITH_TESTS 1)
-endif()
 
-
-if(WITH_TESTS)
+if(SAYONARA_WITH_TESTS)
 	message("Compiling with tests...")
 	enable_testing()
 	add_subdirectory(test)
@@ -43,7 +45,6 @@ else()
 	message("Compiling without tests...")
 	message(" In order to change that, use -DWITH_TESTS=1")
 endif()
-
 
 set(CMAKE_SKIP_RPATH:BOOL ON)
 set(CMAKE_INSTALL_MANIFEST "install_manifest.txt")
@@ -60,6 +61,9 @@ if (WITH_DOC)
 		set(DOXYFILE_OUT "${CMAKE_BINARY_DIR}/docs/doxygen.cfg")
 		set(DOXYFILE_SRC_DIR "${CMAKE_SOURCE_DIR}")
 		set(DOXYFILE_OUTPUT_DIR "${CMAKE_BINARY_DIR}/docs")
+
+		include(FindPerl OPTIONAL)
+		set(DOXYFILE_PERL_EXECUTABLE "${PERL_EXECUTABLE}")
 
 		configure_file(${DOXYFILE_IN} ${DOXYFILE_OUT} @ONLY)
 

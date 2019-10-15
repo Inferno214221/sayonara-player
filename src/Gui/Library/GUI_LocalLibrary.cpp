@@ -42,7 +42,7 @@
 #include "Gui/Utils/Style.h"
 
 #include "Components/Library/LocalLibrary.h"
-#include "Components/Library/LibraryManager.h"
+#include "Components/LibraryManagement/LibraryManager.h"
 
 #include "Utils/Utils.h"
 #include "Utils/Set.h"
@@ -313,7 +313,7 @@ void GUI_LocalLibrary::reload_library_requested_with_quality(ReloadQuality quali
 
 	else
 	{
-		reload_library_accepted(quality);
+		reload_library(quality);
 	}
 }
 
@@ -323,6 +323,12 @@ void GUI_LocalLibrary::reload_library_accepted(ReloadQuality quality)
 		sender()->deleteLater();
 	}
 
+	reload_library(quality);
+}
+
+
+void GUI_LocalLibrary::reload_library(ReloadQuality quality)
+{
 	m->library_menu->set_library_busy(true);
 	m->library->reload_library(false, quality);
 }

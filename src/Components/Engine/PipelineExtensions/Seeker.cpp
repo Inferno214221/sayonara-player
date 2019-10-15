@@ -75,7 +75,7 @@ Seeker::Seeker(GstElement* source)
 {
 	m = Pimpl::make<Private>(source);
 }
-Seeker::~Seeker() {}
+Seeker::~Seeker() = default;
 
 NanoSeconds Seeker::seek_rel(double percent, NanoSeconds ref_ns)
 {

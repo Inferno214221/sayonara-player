@@ -164,6 +164,7 @@ QString Converter::target_file(const MetaData& md) const
 {
 	QString filename, dirname;
 	Util::File::split_filename(md.filepath(), dirname, filename);
+
 	QString target = Util::File::clean_filename(m->target_dir + "/" + filename);
 	target = target.left(target.lastIndexOf(".")) + "." + extension();
 

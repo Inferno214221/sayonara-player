@@ -18,12 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef ALLMUSICCOVERFETCHER_H
 #define ALLMUSICCOVERFETCHER_H
 
-#include "../CoverFetcherInterface.h"
+#include "CoverFetcher.h"
 
 namespace Cover::Fetcher
 {

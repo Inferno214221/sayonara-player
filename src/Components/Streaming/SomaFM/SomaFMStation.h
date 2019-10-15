@@ -41,39 +41,39 @@ namespace SomaFM
 	{
 		PIMPL(Station)
 
-	public:
+		public:
+			enum class UrlType : unsigned char
+			{
+				AAC=0,
+				MP3,
+				Undefined
+			};
 
-		enum class UrlType : unsigned char
-		{
-			AAC=0,
-			MP3,
-			Undefined
-		};
+			Station();
+			explicit Station(const QString& content);
+			Station(const Station& other);
+			Station& operator=(const Station& other);
+			~Station();
 
-		Station();
-		explicit Station(const QString& content);
-		Station(const Station& other);
-		Station& operator=(const Station& other);
-		~Station();
+			QString name() const;
+			QStringList playlists() const;
+			QString description() const;
+			UrlType url_type(const QString& url) const;
+			Cover::Location cover_location() const;
+			bool is_valid() const;
+			MetaDataList metadata() const;
+			void set_metadata(const MetaDataList& v_md);
 
-		QString name() const;
-		QStringList urls() const;
-		QString description() const;
-		UrlType url_type(const QString& url) const;
-        Cover::Location cover_location() const;
-		bool is_valid() const;
-		MetaDataList metadata() const;
-		void set_metadata(const MetaDataList& v_md);
+			void set_loved(bool loved);
+			bool is_loved() const;
 
-		void set_loved(bool loved);
-		bool is_loved() const;
-
-	private:
-		void parse_station_name();
-		void parse_urls();
-		void parse_description();
-		void parse_image();
+		private:
+			void parse_station_name();
+			void parse_urls();
+			void parse_description();
+			void parse_image();
 	};
 }
 
 #endif
+

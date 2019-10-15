@@ -2,43 +2,6 @@
 <ui version="4.0">
  <class>Playlist_Window</class>
  <widget class="QWidget" name="Playlist_Window">
-  <property name="windowModality">
-   <enum>Qt::NonModal</enum>
-  </property>
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>392</width>
-    <height>459</height>
-   </rect>
-  </property>
-  <property name="sizePolicy">
-   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-    <horstretch>0</horstretch>
-    <verstretch>0</verstretch>
-   </sizepolicy>
-  </property>
-  <property name="minimumSize">
-   <size>
-    <width>0</width>
-    <height>0</height>
-   </size>
-  </property>
-  <property name="maximumSize">
-   <size>
-    <width>16516</width>
-    <height>16777215</height>
-   </size>
-  </property>
-  <property name="font">
-   <font>
-    <pointsize>8</pointsize>
-   </font>
-  </property>
-  <property name="toolTip">
-   <string/>
-  </property>
   <layout class="QGridLayout" name="gridLayout">
    <property name="sizeConstraint">
     <enum>QLayout::SetDefaultConstraint</enum>
@@ -62,7 +25,7 @@
     <number>4</number>
    </property>
    <item row="4" column="0">
-    <widget class="GUI_PlaylistBottomBar" name="bottom_bar" native="true">
+    <widget class="Playlist::BottomBar" name="bottom_bar" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Maximum">
        <horstretch>0</horstretch>
@@ -104,7 +67,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../Resources/Icons.qrc">
+        <iconset>
          <normaloff>:/Icons/broom.png</normaloff>:/Icons/broom.png</iconset>
        </property>
        <property name="flat">
@@ -125,7 +88,7 @@
     </layout>
    </item>
    <item row="1" column="0" colspan="2">
-    <widget class="PlaylistTabWidget" name="tw_playlists">
+    <widget class="Playlist::TabWidget" name="tw_playlists">
      <property name="focusPolicy">
       <enum>Qt::NoFocus</enum>
      </property>
@@ -151,15 +114,15 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>PlaylistTabWidget</class>
+   <class>Playlist::TabWidget</class>
    <extends>QTabWidget</extends>
-   <header>Gui/Playlist/TabWidget.h</header>
+   <header>Gui/Playlist/PlaylistTabWidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>GUI_PlaylistBottomBar</class>
+   <class>Playlist::BottomBar</class>
    <extends>QWidget</extends>
-   <header>Gui/Playlist/BottomBar.h</header>
+   <header>Gui/Playlist/PlaylistBottomBar.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

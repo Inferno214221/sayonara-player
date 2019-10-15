@@ -570,12 +570,18 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="1" colspan="2">
-         <widget class="QLabel" name="lab_filesize">
-          <property name="text">
-           <string/>
+        <item row="0" column="6">
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
           </property>
-         </widget>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
         </item>
         <item row="0" column="0">
          <spacer name="horizontalSpacer_4">
@@ -590,27 +596,11 @@
           </property>
          </spacer>
         </item>
-        <item row="0" column="6">
-         <spacer name="horizontalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
         <item row="0" column="3">
-         <widget class="Gui::RatingLabel" name="lab_rating">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
+         <widget class="Gui::RatingEditor" name="widget_rating" native="true"/>
+        </item>
+        <item row="0" column="1" colspan="2">
+         <widget class="QLabel" name="lab_filesize">
           <property name="text">
            <string/>
           </property>
@@ -683,11 +673,6 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>Gui::RatingLabel</class>
-   <extends>QLabel</extends>
-   <header>Gui/Utils/RatingLabel.h</header>
-  </customwidget>
-  <customwidget>
    <class>Gui::CoverButton</class>
    <extends>QPushButton</extends>
    <header>Gui/Covers/CoverButton.h</header>
@@ -701,6 +686,12 @@
    <class>Gui::FloatingLabel</class>
    <extends>QLabel</extends>
    <header>Gui/Utils/Widgets/FloatingLabel.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Gui::RatingEditor</class>
+   <extends>QWidget</extends>
+   <header>Gui/Utils/Widgets/RatingLabel.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>

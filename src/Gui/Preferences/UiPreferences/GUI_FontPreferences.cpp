@@ -75,8 +75,6 @@ void GUI_FontPreferences::init_ui()
 	revert();
 }
 
-
-
 QString GUI_FontPreferences::action_name() const
 {
 	return Lang::get(Lang::Fonts);
@@ -175,6 +173,8 @@ bool GUI_FontPreferences::commit()
 	SetSetting(Set::PL_FontSize, font_size);
 	SetSetting(Set::Lib_FontBold, ui->cb_lib_bold->isChecked());
 
+	Set::shout<SetNoDB::Player_MetaStyle>();
+
 	m->cur_font_size = font_size;
 
 	return true;
@@ -192,7 +192,6 @@ void GUI_FontPreferences::revert()
 	int cur_pl_font_size = GetSetting(Set::PL_FontSize);
 	int cur_lib_font_size = GetSetting(Set::Lib_FontSize);
 	bool bold = GetSetting(Set::Lib_FontBold);
-
 
 	int idx = ui->combo_fonts->findText(cur_family);
 	if(idx >= 0){

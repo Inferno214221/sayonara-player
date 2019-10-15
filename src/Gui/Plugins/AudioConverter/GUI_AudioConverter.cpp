@@ -34,6 +34,7 @@
 #include "Components/Playlist/PlaylistHandler.h"
 #include "Components/Converter/OggConverter.h"
 #include "Components/Converter/LameConverter.h"
+#include "Components/Converter/OpusConverter.h"
 
 #include <QFileDialog>
 #include <QStringList>
@@ -41,6 +42,8 @@
 enum StackedWidgetPage
 {
 	Ogg=0,
+	OpusCBR,
+	OpusVBR,
 	LameCBR,
 	LameVBR
 };
@@ -290,6 +293,12 @@ Converter* GUI_AudioConverter::create_converter()
 			break;
 		case StackedWidgetPage::LameVBR:
 			converter = new LameConverter(false, ui->sb_lame_vbr->value(), this );
+			break;
+		case StackedWidgetPage::OpusCBR:
+			converter = new OpusConverter(false, ui->combo_opus_cbr->currentText().toInt(), this );
+			break;
+		case StackedWidgetPage::OpusVBR:
+			converter = new OpusConverter(false, ui->combo_opus_vbr->currentText().toInt(), this );
 			break;
 	}
 

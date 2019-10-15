@@ -22,8 +22,34 @@
 #define INFO_DIALOG_CONTAINER_H_
 
 #include "Utils/Pimpl.h"
+#include <QObject>
+
+enum class OpenMode : uint8_t
+{
+	Info, Edit, Lyrics, Cover
+};
 
 class GUI_InfoDialog;
+
+class InfoDialogContainer;
+class InfoDialogContainerAsyncHandler : public QObject
+{
+	Q_OBJECT
+	PIMPL(InfoDialogContainerAsyncHandler)
+
+	friend class InfoDialogContainer;
+
+	private:
+		InfoDialogContainerAsyncHandler(InfoDialogContainer* container, OpenMode mode);
+		~InfoDialogContainerAsyncHandler();
+
+		bool start();
+		bool is_running() const;
+
+	private slots:
+		void scanner_finished();
+};
+
 
 /**
  * @brief An interface used to abstract the usage of the info dialog.
@@ -34,6 +60,8 @@ class GUI_InfoDialog;
  */
 class InfoDialogContainer
 {
+	friend class InfoDialogContainerAsyncHandler;
+
 	PIMPL(InfoDialogContainer)
 
 	friend class GUI_InfoDialog;
@@ -50,7 +78,9 @@ class InfoDialogContainer
 
 	private:
 		void check_info_dialog();
-		bool init_dialog();
+		bool init_dialog(OpenMode open_mode);
+
+		void go(OpenMode open_mode, const MetaDataList& v_md);
 
 	protected:
 		enum EditTab
@@ -74,6 +104,20 @@ class InfoDialogContainer
 		 * @return MetaDataList
 		 */
 		virtual MetaDataList info_dialog_data() const=0;
+
+		/**
+		 * @brief returns, if the widget can provide metadata instantly
+		 * If false, the info dialog will the pathlist
+		 * @return true in the basic implementation
+		 */
+		virtual bool has_metadata() const;
+
+		/**
+		 * @brief Returns a list of paths. This is only used
+		 * if has_metadata() returns false
+		 * @return
+		 */
+		virtual QStringList pathlist() const;
 
 
 		/**

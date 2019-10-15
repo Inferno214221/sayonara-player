@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "DirectoryContextMenu.h"
 
 #include "Gui/Utils/Icons.h"
@@ -46,25 +44,25 @@ struct DirectoryContextMenu::Private
 };
 
 DirectoryContextMenu::DirectoryContextMenu(DirectoryContextMenu::Mode mode, QWidget* parent) :
-	Gui::LibraryContextMenu(parent)
+	Library::ContextMenu(parent)
 {
 	m = Pimpl::make<Private>(mode, this);
 
 	this->show_actions
 	(
-		(LibraryContextMenu::EntryPlay |
-		LibraryContextMenu::EntryPlayNewTab |
-		LibraryContextMenu::EntryDelete |
-		LibraryContextMenu::EntryInfo |
-		LibraryContextMenu::EntryEdit |
-		LibraryContextMenu::EntryLyrics |
-		LibraryContextMenu::EntryAppend |
-		LibraryContextMenu::EntryPlayNext)
+		(Library::ContextMenu::EntryPlay |
+		Library::ContextMenu::EntryPlayNewTab |
+		Library::ContextMenu::EntryDelete |
+		Library::ContextMenu::EntryInfo |
+		Library::ContextMenu::EntryEdit |
+		Library::ContextMenu::EntryLyrics |
+		Library::ContextMenu::EntryAppend |
+		Library::ContextMenu::EntryPlayNext)
 	);
 
 	QAction* separator = this->addSeparator();
 
-	QAction* action	= this->get_action(LibraryContextMenu::EntryDelete);
+	QAction* action	= this->get_action(Library::ContextMenu::EntryDelete);
 	if(action){
 		this->insertActions(
 			action,
@@ -87,7 +85,7 @@ DirectoryContextMenu::DirectoryContextMenu(DirectoryContextMenu::Mode mode, QWid
 	switch(mode)
 	{
 		case DirectoryContextMenu::Mode::Dir:
-			this->show_action(LibraryContextMenu::EntryLyrics, false);
+			this->show_action(Library::ContextMenu::EntryLyrics, false);
 			break;
 		case DirectoryContextMenu::Mode::File:
 			m->action_create_dir->setVisible(false);
@@ -126,7 +124,7 @@ void DirectoryContextMenu::set_collapse_all_visibled(bool b)
 
 void DirectoryContextMenu::language_changed()
 {
-	LibraryContextMenu::language_changed();
+	Library::ContextMenu::language_changed();
 
 	if(m && m->action_rename){
 		m->action_rename->setText(Lang::get(Lang::Rename));
@@ -137,7 +135,7 @@ void DirectoryContextMenu::language_changed()
 
 void DirectoryContextMenu::skin_changed()
 {
-	LibraryContextMenu::skin_changed();
+	Library::ContextMenu::skin_changed();
 
 	using namespace Gui;
 	if(m && m->action_rename){
