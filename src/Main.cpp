@@ -186,6 +186,13 @@ int main(int argc, char *argv[])
 		}
 	}
 
+	QString sayonara_path = Util::sayonara_path();
+	if(!QFile::exists(sayonara_path))
+	{
+		sp_log(Log::Error, "Sayonara") << "Cannot find and create Sayonara path '" << Util::sayonara_path() << "'. Leaving now.";
+		return 1;
+	}
+
 	DB::Connector::instance();
 
 #ifdef Q_OS_WIN

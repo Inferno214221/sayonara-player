@@ -106,24 +106,8 @@ bool Base::close_db()
 
 bool Base::create_db()
 {
-	bool success;
 	QDir dir = QDir::homePath();
-
-	QString sayonara_path = Util::sayonara_path();
-	if(!FileUtils::exists(sayonara_path))
-	{
-		success = dir.mkdir(".Sayonara");
-		if(!success) {
-			sp_log(Log::Error, this) << "Could not create .Sayonara dir";
-			return false;
-		}
-
-		else{
-			sp_log(Log::Info, this) << "Successfully created .Sayonara dir";
-		}
-	}
-
-	success = dir.cd(sayonara_path);
+	bool success = dir.cd(Util::sayonara_path());
 
 	//if ret is still not true we are not able to create the directory
 	if(!success) {
@@ -134,7 +118,6 @@ bool Base::create_db()
 	QString source_db_file = QDir(m->source_dir).absoluteFilePath(m->filename);
 
 	success = FileUtils::exists(m->connection_name);
-
 	if(success) {
 		return true;
 	}
@@ -168,7 +151,6 @@ bool Base::create_db()
 	return success;
 }
 
-
 void Base::transaction()
 {
 	db().transaction();
@@ -183,8 +165,6 @@ void Base::rollback()
 {
 	db().rollback();
 }
-
-
 
 bool Base::check_and_drop_table(const QString& tablename)
 {

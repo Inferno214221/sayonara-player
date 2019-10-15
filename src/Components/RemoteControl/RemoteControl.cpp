@@ -98,17 +98,17 @@ void RemoteControl::init()
 
 	auto* pm = PlayManager::instance();
 
-	m->fn_call_map["play"] =	[pm]() {pm->play();};
-	m->fn_call_map["pause"] =	[pm]() {pm->pause();};
-	m->fn_call_map["prev"] =	[pm]() {pm->previous();};
-	m->fn_call_map["next"] =	[pm]() {pm->next();};
-	m->fn_call_map["playpause"]=[pm]() {pm->play_pause();};
-	m->fn_call_map["stop"] =	[pm]() {pm->stop();};
-	m->fn_call_map["volup"] =   [pm]() {pm->volume_up();};
-	m->fn_call_map["voldown"] =	[pm]() {pm->volume_down();};
-	m->fn_call_map["state"] =   std::bind(&RemoteControl::request_state, this);
-	m->fn_call_map["pl"] =      std::bind(&RemoteControl::write_playlist, this);
-	m->fn_call_map["curSong"] =	std::bind(&RemoteControl::write_current_track, this);
+	m->fn_call_map["play"] =		std::bind(&PlayManager::play, pm);
+	m->fn_call_map["pause"] =		std::bind(&PlayManager::pause, pm);
+	m->fn_call_map["prev"] =		std::bind(&PlayManager::previous, pm);
+	m->fn_call_map["next"] =		std::bind(&PlayManager::next, pm);
+	m->fn_call_map["playpause"] =	std::bind(&PlayManager::play_pause, pm);
+	m->fn_call_map["stop"] =		std::bind(&PlayManager::stop, pm);
+	m->fn_call_map["volup"] =		std::bind(&PlayManager::volume_up, pm);
+	m->fn_call_map["voldown"] =		std::bind(&PlayManager::volume_down, pm);
+	m->fn_call_map["state"] =		std::bind(&RemoteControl::request_state, this);
+	m->fn_call_map["pl"] =			std::bind(&RemoteControl::write_playlist, this);
+	m->fn_call_map["curSong"] =		std::bind(&RemoteControl::write_current_track, this);
 	m->fn_call_map["help"] =		std::bind(&RemoteControl::show_api, this);
 
 	m->fn_int_call_map["setvol"] =  std::bind(&RemoteControl::set_volume, this, std::placeholders::_1);
@@ -208,7 +208,6 @@ void RemoteControl::new_request()
 		int val = extract_parameter_int(arr, cmd.size());
 		RemoteFunctionInt fn = m->fn_int_call_map[cmd];
 		fn(val);
-		return;
 	}
 }
 
@@ -300,7 +299,7 @@ void RemoteControl::pos_changed_ms(MilliSeconds pos)
 	write_current_position();
 }
 
-void RemoteControl::json_current_position(QJsonObject& obj) const
+void RemoteControl::insert_json_current_position(QJsonObject& obj) const
 {
 	MilliSeconds pos_ms = PlayManager::instance()->current_position_ms();
 	Seconds pos_sec = Seconds(pos_ms / 1000);
@@ -315,7 +314,7 @@ void RemoteControl::write_current_position()
 	QJsonDocument doc;
 
 	QJsonObject obj;
-	json_current_position(obj);
+	insert_json_current_position(obj);
 
 	doc.setObject(obj);
 	write(doc.toBinaryData());
@@ -328,7 +327,7 @@ void RemoteControl::volume_changed(int vol)
 	write_volume();
 }
 
-void RemoteControl::json_volume(QJsonObject& obj) const
+void RemoteControl::insert_json_volume(QJsonObject& obj) const
 {
 	obj.insert("volume", PlayManager::instance()->volume());
 }
@@ -337,7 +336,7 @@ void RemoteControl::write_volume()
 {
 	QJsonDocument doc;
 	QJsonObject obj;
-	json_volume(obj);
+	insert_json_volume(obj);
 	doc.setObject(obj);
 	write(doc.toBinaryData());
 }
@@ -349,7 +348,7 @@ void RemoteControl::track_changed(const MetaData& md)
 	write_current_track();
 }
 
-void RemoteControl::json_current_track(QJsonObject& o)
+void RemoteControl::insert_json_current_track(QJsonObject& o)
 {
 	auto* plh = Playlist::Handler::instance();
 
@@ -385,8 +384,8 @@ void RemoteControl::write_current_track()
 	QJsonDocument doc;
 	QJsonObject obj;
 
-	json_playstate(obj);
-	json_current_track(obj);
+	insert_json_playstate(obj);
+	insert_json_current_track(obj);
 
 	doc.setObject(obj);
 
@@ -427,7 +426,7 @@ void RemoteControl::playstate_changed(PlayState playstate)
 	}
 }
 
-void RemoteControl::json_playstate(QJsonObject& o)
+void RemoteControl::insert_json_playstate(QJsonObject& o)
 {
 	PlayState playstate = PlayManager::instance()->playstate();
 
@@ -448,7 +447,7 @@ void RemoteControl::write_playstate()
 {
 	QJsonDocument doc;
 	QJsonObject o;
-	json_playstate(o);
+	insert_json_playstate(o);
 	doc.setObject(o);
 	write(doc.toBinaryData());
 }
@@ -499,7 +498,7 @@ void RemoteControl::cover_found(const QPixmap& pm)
 	}
 }
 
-void RemoteControl::json_playlist(QJsonArray& arr) const
+void RemoteControl::insert_json_playlist(QJsonArray& arr) const
 {
 	QByteArray data;
 
@@ -541,7 +540,7 @@ void RemoteControl::write_playlist()
 	}
 
 	QJsonArray arr;
-	json_playlist(arr);
+	insert_json_playlist(arr);
 	if(arr.isEmpty()){
 		return;
 	}
@@ -553,7 +552,7 @@ void RemoteControl::write_playlist()
 }
 
 
-void RemoteControl::json_broadcast_info(QJsonObject& obj)
+void RemoteControl::insert_json_broadcast_info(QJsonObject& obj)
 {
 	obj.insert("broadcast-active", GetSetting(Set::Broadcast_Active));
 	obj.insert("broadcast-port", GetSetting(Set::Broadcast_Port));
@@ -563,7 +562,7 @@ void RemoteControl::write_broadcast_info()
 {
 	QJsonDocument doc;
 	QJsonObject obj;
-	json_broadcast_info(obj);
+	insert_json_broadcast_info(obj);
 
 	doc.setObject(obj);
 	write(doc.toBinaryData());
@@ -588,11 +587,11 @@ void RemoteControl::request_state()
 	QJsonDocument doc;
 	QJsonObject obj;
 
-	json_volume(obj);
-	json_current_position(obj);
-	json_current_track(obj);
-	json_playstate(obj);
-	json_broadcast_info(obj);
+	insert_json_volume(obj);
+	insert_json_current_position(obj);
+	insert_json_current_track(obj);
+	insert_json_playstate(obj);
+	insert_json_broadcast_info(obj);
 
 	doc.setObject(obj);
 	sp_log(Log::Info, this) << QString::fromLocal8Bit(doc.toJson());
