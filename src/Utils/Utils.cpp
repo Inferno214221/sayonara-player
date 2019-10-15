@@ -140,9 +140,26 @@ QString Util::cvt_str_to_very_first_upper(const QString& str)
 QString Util::sayonara_path() { return sayonara_path(QString()); }
 QString Util::sayonara_path(const QString& append_path)
 {
-	return Util::File::clean_filename(
-			QDir::homePath() + "/.Sayonara/" + append_path
-	);
+	QString basepath = Util::File::clean_filename(get_environment("SAYONARA_HOME_DIR"));
+	if(basepath.isEmpty())
+	{
+		basepath = QDir::homePath() + "/.Sayonara/";
+	}
+
+	basepath.replace("~", QDir::homePath());
+
+	static bool checked = false;
+	if(!checked && !Util::File::exists(basepath))
+	{
+		bool b = Util::File::create_dir(basepath);
+		if(!b) {
+			return QString();
+		}
+	}
+
+	checked = true;
+
+	return Util::File::clean_filename(basepath + "/" + append_path);
 }
 
 QString Util::share_path() { return share_path(QString()); }
