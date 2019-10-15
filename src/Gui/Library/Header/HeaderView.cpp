@@ -154,6 +154,8 @@ void HeaderView::action_triggered(bool b)
 	Q_UNUSED(b)
 
 	refresh_active_columns();
+	action_resize_triggered();
+
 	emit sig_columns_changed();
 }
 
