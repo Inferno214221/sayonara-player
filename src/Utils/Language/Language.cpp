@@ -375,6 +375,8 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Save as");
 		case SaveToFile:
 			return l.tr("Save to file");
+		case ScanForFiles:
+			return l.tr("Scan for audio files");
 		case SearchNoun:
 			return l.tr("Search");			// the noun of search
 		case SearchVerb:

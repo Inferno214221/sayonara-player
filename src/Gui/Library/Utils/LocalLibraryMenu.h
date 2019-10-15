@@ -57,13 +57,15 @@ namespace Library
 
 	public:
 		explicit LocalLibraryMenu(const QString& name, const QString& path, QWidget* parent=nullptr);
-		virtual ~LocalLibraryMenu();
+		~LocalLibraryMenu() override;
 
 		void refresh_name(const QString& name);
 		void refresh_path(const QString& path);
 
 		void set_show_album_covers_checked(bool checked);
 		void set_library_busy(bool b);
+		void set_library_empty(bool b);
+
 		void add_preference_action(Gui::PreferenceAction* action);
 
 	private:

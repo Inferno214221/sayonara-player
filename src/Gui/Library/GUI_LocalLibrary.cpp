@@ -125,7 +125,6 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 	connect(m->library_menu, &LocalLibraryMenu::sig_reload_library, this, &GUI_LocalLibrary::reload_library_requested);
 
 	connect(ui->btn_reload_library, &QPushButton::clicked, this, &GUI_LocalLibrary::reload_library_deep_requested);
-	connect(ui->btn_reload_library_small, &QPushButton::clicked, this, &GUI_LocalLibrary::reload_library_deep_requested);
 
 	connect(ui->splitter_artist_album, &QSplitter::splitterMoved, this, &GUI_LocalLibrary::splitter_artist_moved);
 	connect(ui->splitter_tracks, &QSplitter::splitterMoved, this, &GUI_LocalLibrary::splitter_tracks_moved);
@@ -134,10 +133,6 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 	connect(ui->tv_albums, &ItemView::sig_reload_clicked, this, &GUI_LocalLibrary::reload_library_requested);
 	connect(ui->tv_artists, &ItemView::sig_reload_clicked, this, &GUI_LocalLibrary::reload_library_requested);
 	connect(ui->tv_tracks, &ItemView::sig_reload_clicked, this, &GUI_LocalLibrary::reload_library_requested);
-
-	connect(ui->btn_cancel_reload_widget, &QPushButton::clicked, this, [=](){
-		ui->stacked_widget_reload->setCurrentIndex( int(ReloadWidgetIndex::StandardView) );
-	});
 
 	ui->extension_bar->init(m->library);
 	ui->lv_genres->init(m->library);
@@ -157,9 +152,7 @@ void GUI_LocalLibrary::language_changed()
 {
 	ui->retranslateUi(this);
 	ui->gb_genres->setTitle(Lang::get(Lang::Genres));
-	ui->btn_reload_library->setText(Lang::get(Lang::ReloadLibrary));
-	ui->btn_reload_library_small->setText(Lang::get(Lang::ReloadLibrary));
-	ui->btn_cancel_reload_widget->setText(Lang::get(Lang::Cancel));
+	ui->btn_reload_library->setText(Lang::get(Lang::ScanForFiles));
 
 	GUI_AbstractLibrary::language_changed();
 }
@@ -188,38 +181,30 @@ void GUI_LocalLibrary::check_reload_status()
 {
 	bool is_reloading = m->library->is_reloading();
 	bool is_library_empty = m->library->is_empty();
-	bool in_library_state = (is_reloading || !is_library_empty);
 
-	ReloadWidgetIndex index = (in_library_state == true) ? ReloadWidgetIndex::StandardView : ReloadWidgetIndex::ReloadView;
+	ReloadWidgetIndex index = (is_library_empty == false) ? ReloadWidgetIndex::StandardView : ReloadWidgetIndex::ReloadView;
+	bool in_library_state = (index == ReloadWidgetIndex::StandardView);
+
 	ui->stacked_widget_reload->setCurrentIndex( int(index) );
 
 	ui->pb_progress->setVisible(is_reloading);
 	ui->lab_progress->setVisible(is_reloading);
-
-	ui->sw_bottom_bar->setVisible(is_reloading || is_library_empty);
-	ui->sw_bottom_bar->setCurrentIndex(StatusWidgetIndex::ReloadLibraryIndex);
+	ui->widget_reload->setVisible(is_reloading || is_library_empty);
 
 	ui->le_search->setVisible(in_library_state);
 	ui->btn_reload_library->setVisible(!in_library_state);
-	ui->btn_reload_library_small->setVisible(!in_library_state);
+
+	m->library_menu->set_library_empty(is_library_empty);
 }
 
 void GUI_LocalLibrary::check_file_extension_bar()
 {
-	if(m->library->is_reloading() || m->library->is_empty()) {
-		return;
-	}
-
-	if(!GetSetting(Set::Lib_ShowFilterExtBar))
-	{
-		ui->sw_bottom_bar->setVisible(false);
-		return;
-	}
-
 	ui->extension_bar->refresh();
-
-	ui->sw_bottom_bar->setCurrentIndex(StatusWidgetIndex::FileExtensionsIndex);
-	ui->sw_bottom_bar->setVisible(ui->extension_bar->has_extensions());
+	ui->extension_bar->setVisible
+	(
+		GetSetting(Set::Lib_ShowFilterExtBar) &&
+		ui->extension_bar->has_extensions()
+	);
 }
 
 
@@ -231,7 +216,6 @@ void GUI_LocalLibrary::tracks_loaded()
 	ui->lab_path->setText(Util::create_link(m->library->path(), Style::is_dark()));
 
 	ui->btn_reload_library->setIcon(Gui::Icons::icon(Gui::Icons::Refresh));
-	ui->btn_reload_library_small->setIcon(Gui::Icons::icon(Gui::Icons::Refresh));
 }
 
 void GUI_LocalLibrary::clear_selections()
@@ -287,7 +271,10 @@ void GUI_LocalLibrary::progress_changed(const QString& type, int progress)
 
 	ui->pb_progress->setMaximum((progress > 0) ? 100 : 0);
 	ui->pb_progress->setValue(progress);
-	ui->lab_progress->setText(fm.elidedText(type, Qt::ElideRight, ui->sw_bottom_bar->width() / 2));
+	ui->lab_progress->setText
+	(
+		fm.elidedText(type, Qt::ElideRight, ui->widget_reload->width() / 2)
+	);
 }
 
 void GUI_LocalLibrary::reload_library_requested()
