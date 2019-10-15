@@ -1,0 +1,17 @@
+.TH sayonara 1 "@SAYONARA_MANPAGE_DATE@" "@SAYONARA_VERSION@" "Sayonara Player"
+.SH NAME
+sayonara \- advanced but lightweight audio player and library manager
+.SH SYNOPSIS
+sayonara [filelist] [--multi-instances]
+.SH DESCRIPTION
+Sayonara is a small, clear and fast audio player for Linux written in C++, supported by the Qt framework. It uses Gstreamer as audio backend. 
+.SH OPTIONS
+.IP --multi-instances
+Allow to start more than one instance of sayonara
+.SH ENVIRONMENT
+.IP SAYONARA_HOME_DIR
+Specify a different Sayonara home directory. Default is ~/.Sayonara
+.SH BUGS
+Please file in new bug reports at https://gitlab.com/luciocarreras/sayonara-player
+.SH AUTHOR
+Lucio Carreras (luciocarreras@gmail.com)

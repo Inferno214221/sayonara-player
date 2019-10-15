@@ -1,0 +1,7 @@
+?package(sayonara):
+  needs="X11"
+  section="Applications/Sound"
+  title="Sayonara"
+  command="@SAYONARA_INSTALL_PREFIX@/bin/sayonara"
+  icon="@SAYONARA_INSTALL_PREFIX@/share/icons/hicolor/32x32/apps/sayonara.xpm"
+
