@@ -64,7 +64,7 @@ DirectoryModel::DirectoryModel(QObject* parent) :
 	m = Pimpl::make<Private>();
 }
 
-DirectoryModel::~DirectoryModel() {}
+DirectoryModel::~DirectoryModel() = default;
 
 void DirectoryModel::search_only_dirs(bool b)
 {
@@ -207,7 +207,6 @@ QModelIndexList DirectoryModel::search_results(const QString& substr)
 		if(canFetchMore(found_idx)){
 			fetchMore(found_idx);
 		}
-
 	}
 
 	return ret;

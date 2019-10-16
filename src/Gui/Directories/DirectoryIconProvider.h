@@ -31,15 +31,12 @@ class Settings;
  */
 class IconProvider : public QFileIconProvider
 {
-private:
-	QIcon		_folder_icon;
-
 public:
 	IconProvider();
-	virtual ~IconProvider();
+	~IconProvider() override;
 
-	virtual QIcon icon(IconType type) const;
-	virtual QIcon icon(const QFileInfo &info) const;
+	QIcon icon(IconType type) const override;
+	QIcon icon(const QFileInfo &info) const override;
 };
 
 #endif // ICONPROVIDER_H
