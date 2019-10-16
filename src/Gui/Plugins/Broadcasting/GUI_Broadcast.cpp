@@ -112,10 +112,13 @@ void GUI_Broadcast::init_ui()
 
 	setup_parent(this, &ui);
 
-	const QStringList clients = m->server->connected_clients();
-	for(const QString& client : clients)
+	if(m->server)
 	{
-		ui->combo_clients->addItem(client);
+		const QStringList clients = m->server->connected_clients();
+		for(const QString& client : clients)
+		{
+			ui->combo_clients->addItem(client);
+		}
 	}
 
 	m->action_dismiss = new QAction(ui->btn_menu);
