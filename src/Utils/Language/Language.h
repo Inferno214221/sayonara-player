@@ -220,6 +220,7 @@ public:
 		Save,
 		SaveAs,
 		SaveToFile,
+		ScanForFiles,
 		SearchNoun,
 		SearchVerb,
 		SearchNext,
