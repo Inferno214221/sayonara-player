@@ -24,8 +24,7 @@ public:
 	void set_spectrum(const QList<float>& spectrum, NanoSeconds clock_time);
 	GstElement* get_audioconvert() const;
 
-	void set_filename(const QString& name);
-	void start();
+	void start(const QString& filename);
 	void stop();
 
 	uint get_number_bins() const;
@@ -41,6 +40,12 @@ public:
 	uint get_samplerate() const;
 
 	float get_frequency(int bin);
+
+	bool is_running() const;
+	void set_running(bool b);
+
+	bool is_finished(const QString& filename) const;
+	void set_finished(bool b);
 };
 
 #endif // AUDIODATAPROVIDER_H

@@ -13,6 +13,7 @@
 #include <QLabel>
 
 #include <cmath>
+#include <algorithm>
 
 using Dot=float; // brightness
 using Line=QList<Dot>;
@@ -87,11 +88,8 @@ void GUI_SpectogramPainter::spectrum_changed(const QList<float>& spectrum, Milli
 
 	if(m->current_promille == int(promille))
 	{
-		int bins = m->adp->get_number_bins();
-		for(int i=0; i<bins; i++)
-		{
-			m->current_line[i] += spectrum[i];
-		}
+		std::transform(	m->current_line.begin(), m->current_line.end(),
+						spectrum.begin(), m->current_line.begin(), std::plus<float>());
 
 		m->promille_values++;
 	}
@@ -121,21 +119,23 @@ void GUI_SpectogramPainter::draw_buffer(int percent_step)
 	static const double brightest = (256 + 256 + 512);
 
 	int cur_offset = m->pm.height();
-	for(const Dot& dot : m->current_line)
+	for(Dot dot : m->current_line)
 	{
 		if(dot >= 0) {
 			continue;
 		}
 
+		dot = std::max(-74.99f, dot);
+
 		float delta = (dot / (Threshold * 1.0f));	// [0; 1]
 		float l = 1.0f - delta;
 
 		int color_value = int(std::min<float>(brightest, (brightest * l)));
-		int r = std::min(color_value, 255);
-		int g = std::max(0, std::min(color_value - 256, 255));
-		int b = std::max(0, std::min((color_value - 512), 255));
+		int r = std::min(color_value, 255);						// if color_value > 0 paint some red
+		int g = std::max(0, std::min(color_value - 256, 255));  // if color_value > 255 paint some green. Because r is full -> yellowish
+		int b = std::max(0, std::min((color_value - 512), 255)); // if color_value > 512 paint some blue, too. Because r and g is full -> whitish
 		int a = 255;
-		if(color_value < 255){
+		if(color_value < 128){
 			a = color_value;
 		}
 
@@ -186,10 +186,10 @@ void GUI_SpectogramPainter::playstate_changed(PlayState state)
 
 void GUI_SpectogramPainter::track_changed(const MetaData& md)
 {
-	sp_log(Log::Info, this) << "Track changed: " << md.filepath();
-
-	m->adp->set_filename(md.filepath());
-	m->adp->start();
+	if(this->isVisible())
+	{
+		start_adp(md);
+	}
 }
 
 void GUI_SpectogramPainter::reset()
@@ -233,6 +233,38 @@ void GUI_SpectogramPainter::position_clicked(QPoint position)
 	PlayManager::instance()->seek_rel(percent);
 }
 
+void GUI_SpectogramPainter::start_adp(const MetaData& md)
+{
+	if(m->adp->is_finished(md.filepath())){
+		return;
+	}
+
+	stop_adp();
+
+	m->filename = md.filepath();
+	m->adp->start(md.filepath());
+}
+
+void GUI_SpectogramPainter::stop_adp()
+{
+	m->adp->stop();
+}
+
+void GUI_SpectogramPainter::showEvent(QShowEvent* e)
+{
+	PlayerPlugin::Base::showEvent(e);
+
+	if(PlayManager::instance()->playstate() != PlayState::Stopped)
+	{
+		start_adp(PlayManager::instance()->current_track());
+	}
+}
+
+void GUI_SpectogramPainter::closeEvent(QCloseEvent* e)
+{
+	stop_adp();
+	PlayerPlugin::Base::closeEvent(e);
+}
 
 void GUI_SpectogramPainter::paintEvent(QPaintEvent* e)
 {

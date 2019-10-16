@@ -37,12 +37,18 @@ protected:
 	void mousePressEvent(QMouseEvent* e) override;
 	void mouseMoveEvent(QMouseEvent* e) override;
 
+	void showEvent(QShowEvent* e) override;
+	void closeEvent(QCloseEvent* e) override;
+
 private:
 	void draw_buffer(int percent_step);
 	QString calc_tooltip(float yPercent);
 
 	void show_fullsize();
 	void position_clicked(QPoint position);
+
+	void start_adp(const MetaData& md);
+	void stop_adp();
 
 	QSize minimumSizeHint() const override;
 

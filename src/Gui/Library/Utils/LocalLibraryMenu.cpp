@@ -29,16 +29,13 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language/Language.h"
 
-#include "Database/Connector.h"
-#include "Database/LibraryDatabase.h"
-
 using namespace Library;
 
 struct LocalLibraryMenu::Private
 {
 	QString name;
 	QString path;
-	bool	initialized;
+
 
 	QAction* reload_library_action=nullptr;
 	QAction* import_file_action=nullptr;
@@ -50,12 +47,15 @@ struct LocalLibraryMenu::Private
 	QAction* show_album_cover_view=nullptr;
 
 	bool has_preference_action;
+	bool is_initialized;
+	bool is_library_empty;
 
 	Private(const QString& name, const QString& path) :
 		name(name),
 		path(path),
-		initialized(false),
-		has_preference_action(false)
+		has_preference_action(false),
+		is_initialized(false),
+		is_library_empty(false)
 	{}
 };
 
@@ -67,7 +67,7 @@ LocalLibraryMenu::LocalLibraryMenu(const QString& name, const QString& path, QWi
 	init_menu();
 }
 
-LocalLibraryMenu::~LocalLibraryMenu() {}
+LocalLibraryMenu::~LocalLibraryMenu() = default;
 
 void LocalLibraryMenu::refresh_name(const QString& name)
 {
@@ -81,7 +81,7 @@ void LocalLibraryMenu::refresh_path(const QString& path)
 
 void LocalLibraryMenu::set_show_album_covers_checked(bool checked)
 {
-	if(!m->initialized){
+	if(!m->is_initialized){
 		return;
 	}
 
@@ -90,7 +90,7 @@ void LocalLibraryMenu::set_show_album_covers_checked(bool checked)
 
 void LocalLibraryMenu::set_library_busy(bool b)
 {
-	if(!m->initialized){
+	if(!m->is_initialized){
 		return;
 	}
 
@@ -98,6 +98,12 @@ void LocalLibraryMenu::set_library_busy(bool b)
 	m->edit_action->setEnabled(!b);
 	m->import_file_action->setEnabled(!b);
 	m->import_folder_action->setEnabled(!b);
+}
+
+void LocalLibraryMenu::set_library_empty(bool b)
+{
+	m->is_library_empty = b;
+	language_changed();
 }
 
 void LocalLibraryMenu::add_preference_action(Gui::PreferenceAction* action)
@@ -117,7 +123,7 @@ void LocalLibraryMenu::add_preference_action(Gui::PreferenceAction* action)
 
 void LocalLibraryMenu::init_menu()
 {
-	if(m->initialized)
+	if(m->is_initialized)
 	{
 		return;
 	}
@@ -165,7 +171,7 @@ void LocalLibraryMenu::init_menu()
 	this->addActions(actions);
 	this->add_preference_action(new Gui::LibraryPreferenceAction(this));
 
-	m->initialized = true;
+	m->is_initialized = true;
 
 	ListenSetting(Set::Lib_ShowAlbumCovers, LocalLibraryMenu::show_album_covers_changed);
 	ListenSetting(Set::Lib_ShowAlbumArtists, LocalLibraryMenu::show_album_artists_changed);
@@ -178,7 +184,7 @@ void LocalLibraryMenu::init_menu()
 
 void LocalLibraryMenu::language_changed()
 {
-	if(!m->initialized){
+	if(!m->is_initialized){
 		return;
 	}
 
@@ -187,16 +193,23 @@ void LocalLibraryMenu::language_changed()
 
 	m->import_file_action->setText(Lang::get(Lang::ImportFiles));
 	m->import_folder_action->setText(Lang::get(Lang::ImportDir));
-	m->reload_library_action->setText(Lang::get(Lang::ReloadLibrary));
 
 	m->livesearch_action->setText(Lang::get(Lang::LiveSearch));
 	m->show_album_artists_action->setText(Lang::get(Lang::ShowAlbumArtists));
 	m->show_album_cover_view->setText(Lang::get(Lang::ShowCovers));
+
+	if(m->is_library_empty) {
+		m->reload_library_action->setText(Lang::get(Lang::ScanForFiles));
+	}
+
+	else {
+		m->reload_library_action->setText(Lang::get(Lang::ReloadLibrary));
+	}
 }
 
 void LocalLibraryMenu::skin_changed()
 {
-	if(!m->initialized){
+	if(!m->is_initialized){
 		return;
 	}
 
@@ -212,7 +225,7 @@ void LocalLibraryMenu::shortcut_changed(ShortcutIdentifier identifier)
 {
 	Q_UNUSED(identifier)
 
-	if(!m->initialized){
+	if(!m->is_initialized){
 		return;
 	}
 
@@ -234,7 +247,7 @@ void LocalLibraryMenu::realtime_search_triggered(bool b)
 
 void LocalLibraryMenu::realtime_search_changed()
 {
-	if(!m->initialized){
+	if(!m->is_initialized){
 		return;
 	}
 
@@ -243,7 +256,7 @@ void LocalLibraryMenu::realtime_search_changed()
 
 void LocalLibraryMenu::edit_clicked()
 {
-	if(!m->initialized){
+	if(!m->is_initialized){
 		return;
 	}
 

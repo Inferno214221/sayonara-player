@@ -414,6 +414,10 @@ void GUI_Player::show_library_changed()
 {
 	bool is_visible = GetSetting(Set::Lib_Show);
 
+	// we have to do this here because init_library will show/hide ui->library_widget
+	bool was_visible = ui->library_widget->isVisible();
+	int old_lib_width = ui->library_widget->width();
+
 	init_library();
 
 	QSize player_size = this->size();
@@ -422,8 +426,13 @@ void GUI_Player::show_library_changed()
 
 	if(is_visible)
 	{
-		sizes[1] = GetSetting(Set::Lib_OldWidth);
-		player_size.setWidth(player_size.width() + GetSetting(Set::Lib_OldWidth));
+		if(!was_visible)
+		{
+			// only change sizes if library wasn't visible until now,
+			// otherwise player becomes wider
+			sizes[1] = GetSetting(Set::Lib_OldWidth);
+			player_size.setWidth(player_size.width() + GetSetting(Set::Lib_OldWidth));
+		}
 	}
 
 	else
@@ -431,10 +440,13 @@ void GUI_Player::show_library_changed()
 		sizes[1] = 0;
 		player_size.setWidth(player_size.width() - ui->library_widget->width());
 
-		SetSetting(Set::Lib_OldWidth, ui->library_widget->width());
+		if(was_visible)
+		{
+			SetSetting(Set::Lib_OldWidth, old_lib_width);
+		}
 	}
 
-	if(m->geometry_initialized)
+	if(m->geometry_initialized && (player_size != this->size()))
 	{
 		QTimer::singleShot(100, this, [=]()
 		{
