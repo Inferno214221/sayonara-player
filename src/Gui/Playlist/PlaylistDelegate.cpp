@@ -115,11 +115,16 @@ void Delegate::paint(QPainter *painter,	const QStyleOptionViewItem &option, cons
 
 	QFont font = option.font;
 	{ // set the font
-		int sz = GetSetting(Set::PL_FontSize);
-		if(sz <= 0){
-			sz = GetSetting(Set::Player_FontSize);
+		if(GetSetting(Set::PL_FontSize) > 0)
+		{
+			font.setPointSize(GetSetting(Set::PL_FontSize));
 		}
-		font.setPointSize(sz);
+
+		else if(GetSetting(Set::Player_FontSize) > 0)
+		{
+			font.setPointSize(GetSetting(Set::Player_FontSize));
+		}
+
 		font.setWeight(QFont::Normal);
 		painter->setFont(font);
 		if(font.bold()){
