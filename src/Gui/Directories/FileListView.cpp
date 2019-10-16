@@ -86,13 +86,18 @@ FileListView::FileListView(QWidget* parent) :
 	new QShortcut(QKeySequence(Qt::Key_Enter), this, SIGNAL(sig_enter_pressed()), nullptr, Qt::WidgetShortcut);
 }
 
-FileListView::~FileListView() {}
+FileListView::~FileListView() = default;
 
 void FileListView::mousePressEvent(QMouseEvent* event)
 {
 	SearchableListView::mousePressEvent(event);
 
-	if(event->button() & Qt::RightButton)
+	if(event->button() & Qt::LeftButton)
+	{
+		this->drag_pressed(event->pos());
+	}
+
+	else if(event->button() & Qt::RightButton)
 	{
 		QPoint pos = QWidget::mapToGlobal(event->pos());
 
@@ -112,9 +117,6 @@ void FileListView::mousePressEvent(QMouseEvent* event)
 		m->context_menu->exec(pos);
 	}
 
-	if(event->button() & Qt::LeftButton){
-		this->drag_pressed(event->pos());
-	}
 }
 
 void FileListView::mouseMoveEvent(QMouseEvent* event)
