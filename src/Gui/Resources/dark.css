@@ -162,19 +162,22 @@ QTreeView::branch:selected
 	border-bottom: 1px solid #202030;
 }
 
+QTreeView::branch
+{
+	border: none;
+	border-image: none;
+}
+
+
 QTreeView::branch:has-children:!has-siblings:closed,
 QTreeView::branch:closed:has-children:has-siblings
 {
-	border-image: none;
-	padding: 1ex;
 	image: url(:/Icons/arrow_filled_right.svg);
 }
 
 QTreeView::branch:open:has-children:!has-siblings,
 QTreeView::branch:open:has-children:has-siblings 
 {
-	border-image: none;
-	padding: 1ex;
 	image: url(:/Icons/arrow_filled_down.svg);
 }
 

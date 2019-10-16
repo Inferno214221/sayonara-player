@@ -30,7 +30,7 @@ IconProvider::IconProvider() :
 	QFileIconProvider()
 {}
 
-IconProvider::~IconProvider() {}
+IconProvider::~IconProvider() = default;
 
 QIcon IconProvider::icon(IconType type) const
 {
@@ -50,7 +50,7 @@ QIcon IconProvider::icon(IconType type) const
 	return QFileIconProvider::icon(type);
 }
 
-QIcon IconProvider::icon(const QFileInfo &info) const
+QIcon IconProvider::icon(const QFileInfo& info) const
 {
 	if(!Style::is_dark())
 	{
