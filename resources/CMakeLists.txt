@@ -26,8 +26,8 @@ else()
     )
 
     ## create zipped manpage
-    execute_process(COMMAND gzip ${CMAKE_CURRENT_BINARY_DIR}/sayonara.1 -k)
-    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/sayonara.1.gz" DESTINATION man/man1)
+    execute_process(COMMAND gzip -kf ${CMAKE_CURRENT_BINARY_DIR}/sayonara.1)
+    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/sayonara.1.gz" DESTINATION share/man/man1)
 endif()
 
 install(FILES "sayonara.desktop" DESTINATION share/applications)
