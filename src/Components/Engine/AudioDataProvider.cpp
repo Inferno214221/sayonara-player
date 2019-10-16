@@ -120,6 +120,12 @@ gboolean adp_bus_state_changed(GstBus* bus, GstMessage* msg, gpointer data)
 			}
 			break;
 
+		case GST_MESSAGE_STATE_CHANGED:
+			GstState old_state, new_state, pending_state;
+			gst_message_parse_state_changed(msg, &old_state, &new_state, &pending_state);
+			adp->set_running(new_state == GST_STATE_PLAYING);
+			break;
+
 		case GST_MESSAGE_ERROR:
 			GError* error;
 			gchar* debug;
@@ -128,7 +134,9 @@ gboolean adp_bus_state_changed(GstBus* bus, GstMessage* msg, gpointer data)
 			sp_log(Log::Error, "AudioDataProvider") << error->message;
 			adp->stop();
 			break;
+
 		case GST_MESSAGE_EOS:
+			adp->set_finished(true);
 			adp->stop();
 			break;
 
@@ -147,16 +155,21 @@ struct AudioDataProvider::Private
 	GstElement* spectrum=nullptr;
 	GstElement* fakesink=nullptr;
 
+	QString	filename;
 	MilliSeconds interval_ms;
 	uint num_bins;
 	int threshold;
 	uint samplerate;
+	bool is_running;
+	bool is_finished;
 
 	Private(AudioDataProvider* parent) :
 		interval_ms(50),
 		num_bins(100),
 		threshold(-75),
-		samplerate(44100)
+		samplerate(44100),
+		is_running(false),
+		is_finished(false)
 	{
 		pipeline = gst_pipeline_new("adp_pipeline");
 
@@ -210,15 +223,15 @@ GstElement* AudioDataProvider::get_audioconvert() const
 
 AudioDataProvider::~AudioDataProvider() = default;
 
-void AudioDataProvider::set_filename(const QString& name)
+void AudioDataProvider::start(const QString& filename)
 {
-	QString local_file = "file://" + name;
+	m->is_running = false;
+	m->is_finished = false;
+	m->filename = filename;
 
+	QString local_file = "file://" + filename;
 	EngineUtils::set_value(m->source, "uri", local_file.toLocal8Bit().data());
-}
 
-void AudioDataProvider::start()
-{
 	emit sig_started();
 	EngineUtils::set_state(m->pipeline, GST_STATE_PLAYING);
 }
@@ -276,3 +289,24 @@ float AudioDataProvider::get_frequency(int bin)
 {
 	return ((m->samplerate / 2.0f) * bin + m->samplerate / 4.0f) / m->num_bins;
 }
+
+void AudioDataProvider::set_running(bool b)
+{
+	m->is_running = b;
+}
+
+bool AudioDataProvider::is_running() const
+{
+	return m->is_running;
+}
+
+void AudioDataProvider::set_finished(bool b)
+{
+	m->is_finished = b;
+}
+
+bool AudioDataProvider::is_finished(const QString& filename) const
+{
+	return ((m->filename == filename) && m->is_finished);
+}
+
