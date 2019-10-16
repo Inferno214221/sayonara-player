@@ -289,7 +289,7 @@ bool Pipeline::prepare(const QString& uri)
 		"uri", uri.toUtf8().data()
 	);
 
-	EngineUtils::set_uint64_value(G_OBJECT(m->source), "buffer-duration", GetSetting(Set::Engine_BufferSizeMS));
+	EngineUtils::set_int64_value(G_OBJECT(m->source), "buffer-duration", GetSetting(Set::Engine_BufferSizeMS));
 	EngineUtils::set_state(m->pipeline, GST_STATE_PAUSED);
 
 	s_volume_changed();
