@@ -280,12 +280,11 @@ void DirectoryTreeView::mousePressEvent(QMouseEvent* event)
 
 	if(event->buttons() & Qt::LeftButton)
 	{
-		Dragable::drag_pressed( event->pos() );
+		Dragable::drag_pressed(event->pos());
 	}
 
-	if(event->button() & Qt::RightButton){
-		QPoint pos = QWidget::mapToGlobal( event->pos() );
-
+	else if(event->button() & Qt::RightButton)
+	{
 		if(!m->context_menu){
 			init_context_menu();
 		}
@@ -302,6 +301,8 @@ void DirectoryTreeView::mousePressEvent(QMouseEvent* event)
 		);
 
 		m->context_menu->show_action(Library::ContextMenu::EntryDelete, !is_root);
+
+		QPoint pos = QWidget::mapToGlobal(event->pos());
 		m->context_menu->exec(pos);
 	}
 }
