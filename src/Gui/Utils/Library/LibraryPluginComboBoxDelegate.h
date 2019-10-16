@@ -18,29 +18,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef LIBRARYPLUGINCOMBOBOXDELEGATE_H
 #define LIBRARYPLUGINCOMBOBOXDELEGATE_H
 
 #include "Gui/Utils/Delegates/ComboBoxDelegate.h"
 
-class LibraryPluginComboBoxDelegate :
-	public Gui::ComboBoxDelegate
+namespace Library
 {
-	Q_OBJECT
+	class PluginComboBoxDelegate :
+		public Gui::ComboBoxDelegate
+	{
+		Q_OBJECT
 
-	private:
-		QWidget* mParent=nullptr;
+		private:
+			QWidget* mParent=nullptr;
 
-	public:
-		explicit LibraryPluginComboBoxDelegate(QWidget* parent);
-		~LibraryPluginComboBoxDelegate();
+		public:
+			explicit PluginComboBoxDelegate(QWidget* parent);
+			~PluginComboBoxDelegate();
 
-	public:
-		void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
-		QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const override;
-};
+		public:
+			void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
+			QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const override;
+	};
+}
 
 
 #endif // LIBRARYPLUGINCOMBOBOXDELEGATE_H

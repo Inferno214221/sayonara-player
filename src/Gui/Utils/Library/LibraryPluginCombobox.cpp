@@ -35,6 +35,7 @@
 using Library::Container;
 using Library::PluginHandler;
 using Library::PluginCombobox;
+using Library::PluginComboBoxDelegate;
 
 namespace Algorithm=Util::Algorithm;
 
@@ -55,7 +56,7 @@ PluginCombobox::PluginCombobox(const QString& text, QWidget* parent) :
 	this->setIconSize(QSize(16, 16));
 	this->setFocusPolicy(Qt::ClickFocus);
 
-	this->setItemDelegate(new LibraryPluginComboBoxDelegate(this));
+	this->setItemDelegate(new PluginComboBoxDelegate(this));
 
 	auto* lph = PluginHandler::instance();
 	connect(lph, &PluginHandler::sig_libraries_changed, this, &PluginCombobox::setup_actions);
@@ -116,7 +117,7 @@ void PluginCombobox::action_triggered(bool b)
 
 void PluginCombobox::current_library_changed()
 {
-	Library::Container* current_library = PluginHandler::instance()->current_library();
+	Container* current_library = PluginHandler::instance()->current_library();
 	if(!current_library) {
 		return;
 	}
@@ -156,7 +157,7 @@ void PluginCombobox::skin_changed()
 		return;
 	}
 
-	QList<Container*> libraries = PluginHandler::instance()->get_libraries(true);
+	const QList<Container*> libraries = PluginHandler::instance()->get_libraries(true);
 	int i=0;
 
 	for(const Container* container : libraries)

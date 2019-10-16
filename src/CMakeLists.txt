@@ -6,9 +6,6 @@ include(CheckIncludeFileCXX)
 include(CMake/Compiler.cmake)
 include(CMake/GStreamer.cmake)
 
-option(WITH_COTIRE "Building with cotire PCH and compile time optimizations" OFF)
-option(WITH_SYSTEM_TAGLIB "Use the taglib provided by the destribution, which contains critical bugs in 1.11" OFF)
-
 # absolute linker paths are no longer supoorted in -l parameter
 # use -L for path and -l for library itself
 if(POLICY CMP0003)
@@ -25,7 +22,7 @@ if(POLICY CMP0071)
 	cmake_policy(SET CMP0071 NEW)
 endif()
 
-if( WITH_COTIRE )
+if(WITH_COTIRE)
 	include(CMake/Cotire.cmake)
 	message("Compiling with Cotire")
 	add_definitions(-D__STRICT_ANSI__)
@@ -42,7 +39,6 @@ set(TAGLIB_FOUND 0)
 
 if(WITH_SYSTEM_TAGLIB)
 	message("Looking for system taglib")
-	include_directories(${TAGLIB_INCLUDE_DIRS})
 	# overwrites TAGLIB_FOUND, TAGLIB_LIBRARY_DIRS, TAGLIB_LIBRARIES
 	pkg_check_modules(TAGLIB taglib>=1.10 REQUIRED)
 
@@ -52,12 +48,22 @@ if(WITH_SYSTEM_TAGLIB)
 	if(NOT TAGLIB_INCLUDE_FOUND)
 		message(FATAL_ERROR "Taglib does not seem to be fully installed" )
 	endif()
-
 endif()
 
 if(NOT TAGLIB_FOUND)
 	set(WITH_SYSTEM_TAGLIB 0)
-	set(TAGLIB_LIBARARY_DIRS ${CMAKE_CURRENT_BINARY_DIR}/3rdParty/taglib/taglib)
+
+	set(TAGLIB_INCLUDE_DIRS
+		${CMAKE_SOURCE_DIR}/src/3rdParty
+		${CMAKE_CURRENT_BINARY_DIR}/3rdParty
+		${CMAKE_CURRENT_BINARY_DIR}/3rdParty/taglib
+	)
+
+	set(TAGLIB_LIBARARY_DIRS
+		${CMAKE_CURRENT_BINARY_DIR}/3rdParty/taglib
+	)
+
+	set(TAGLIB_LIBRARY_DIRS ${CMAKE_CURRENT_BINARY_DIR}/3rdParty/taglib/taglib)
 	set(TAGLIB_LIBRARIES tag)
 	
 	# Macros.h.in
@@ -72,6 +78,7 @@ pkg_check_modules(GOBJECT gobject-2.0 REQUIRED)
 pkg_check_modules(GSTREAMER gstreamer-1.0 REQUIRED)
 pkg_check_modules(GSTREAMER_BASE gstreamer-base-1.0 REQUIRED)
 pkg_check_modules(GSTREAMER_BASE_APP gstreamer-app-1.0 REQUIRED)
+pkg_check_modules(ZLIB REQUIRED zlib REQUIRED)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -95,12 +102,10 @@ include_directories(${GOBJECT_INCLUDE_DIRS})
 include_directories(${GSTREAMER_INCLUDE_DIRS})
 include_directories(${GSTREAMER_BASE_INCLUDE_DIRS})
 include_directories(${GSTREAMER_BASE_APP_INCLUDE_DIRS})
-include_directories(${CMAKE_SOURCE_DIR}/src/3rdParty)
-include_directories(${CMAKE_SOURCE_DIR}/src)
-include_directories(${CMAKE_BINARY_DIR}/src)
+include_directories(${TAGLIB_INCLUDE_DIRS})
+include_directories(${ZLIB_INCLUDE_DIRS})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
-include_directories(${CMAKE_CURRENT_BINARY_DIR}/3rdParty)
-include_directories(${CMAKE_CURRENT_BINARY_DIR}/3rdParty/taglib)
 
 add_definitions(${Qt5Core_DEFINITIONS})
 add_definitions(${QT_DEFINITIONS})

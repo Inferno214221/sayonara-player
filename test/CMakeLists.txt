@@ -34,6 +34,7 @@ add_definitions(${QT_DEFINITIONS})
 include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_BINARY_DIR}/src)
 include_directories(${CMAKE_BINARY_DIR}/src/3rdParty)
+include_directories(${CMAKE_BINARY_DIR}/src/3rdParty/taglib)
 
 include_directories(${CMAKE_SOURCE_DIR}/test)
 include_directories(${CMAKE_BINARY_DIR}/test)

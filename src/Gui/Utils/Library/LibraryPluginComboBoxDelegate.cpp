@@ -18,26 +18,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "LibraryPluginComboBoxDelegate.h"
 #include <QPainter>
 #include <QPalette>
 #include <QColor>
+#include <QFrame>
 
-LibraryPluginComboBoxDelegate::LibraryPluginComboBoxDelegate(QWidget* parent) :
+using Library::PluginComboBoxDelegate;
+
+PluginComboBoxDelegate::PluginComboBoxDelegate(QWidget* parent) :
 	Gui::ComboBoxDelegate(parent),
 	mParent(parent)
 {}
 
-LibraryPluginComboBoxDelegate::~LibraryPluginComboBoxDelegate() {}
+PluginComboBoxDelegate::~PluginComboBoxDelegate() = default;
 
-#include <QFrame>
-void LibraryPluginComboBoxDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
+
+void PluginComboBoxDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
 	if(index.data(Qt::AccessibleDescriptionRole).toString() == QLatin1String("separator") && index.row() == 1)
 	{
-
 		QColor color = painter->brush().color().dark();
 		color.setAlpha(80);
 		QPen pen(color);
@@ -49,12 +49,13 @@ void LibraryPluginComboBoxDelegate::paint(QPainter* painter, const QStyleOptionV
 						  option.rect.center().y());
 	}
 
-	else {
+	else
+	{
 		Gui::ComboBoxDelegate::paint(painter, option, index);
 	}
 }
 
-QSize LibraryPluginComboBoxDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
+QSize PluginComboBoxDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
 	QString type = index.data(Qt::AccessibleDescriptionRole).toString();
 
