@@ -473,7 +473,9 @@ void GUI_ControlsBase::refresh_labels(const MetaData& md)
 		QString sBitrate;
 		if(md.bitrate / 1000 > 0)
 		{
-			sBitrate = QString::number(std::nearbyint(md.bitrate / 1000.0)) + " kBit/s";
+			sBitrate = QString("%1 kBit/s")
+				.arg(std::nearbyint(md.bitrate / 1000.0));
+
 			lab_bitrate()->setText(sBitrate);
 		}
 
