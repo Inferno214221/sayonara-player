@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>225</width>
-    <height>144</height>
+    <width>494</width>
+    <height>260</height>
    </rect>
   </property>
   <layout class="QGridLayout" name="gridLayout">
@@ -166,27 +166,27 @@
         <widget class="Gui::ComboBox" name="combo_opus_cbr">
          <item>
           <property name="text">
-           <string>96</string>
+           <string notr="true">96</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>128</string>
+           <string notr="true">128</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>160</string>
+           <string notr="true">160</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>196</string>
+           <string notr="true">196</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>256</string>
+           <string notr="true">256</string>
           </property>
          </item>
         </widget>
@@ -218,27 +218,27 @@
         <widget class="QComboBox" name="combo_opus_vbr">
          <item>
           <property name="text">
-           <string>96</string>
+           <string notr="true">96</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>128</string>
+           <string notr="true">128</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>160</string>
+           <string notr="true">160</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>192</string>
+           <string notr="true">192</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>256</string>
+           <string notr="true">256</string>
           </property>
          </item>
         </widget>
@@ -355,12 +355,12 @@
      </item>
      <item>
       <property name="text">
-       <string>Opus (CBR)</string>
+       <string notr="true">Opus (CBR)</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>Opus (VBR)</string>
+       <string notr="true">Opus (VBR)</string>
       </property>
      </item>
      <item>

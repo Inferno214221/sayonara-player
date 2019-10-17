@@ -37,6 +37,21 @@ test-sayonara:
     - master
     - tags
 
+# Upload to transifex
+update-language:
+  stage: deploy
+  script:
+    - apt-get update -qq -y && apt-get install -qq -y --no-install-recommends transifex-client
+    - mkdir -p tx
+    - lupdate -no-lupdate -no-sort -no-obsolete -locations relative -source-language en_US -target-language en_US ./src -ts tx/sayonara_lang_en_US.ts
+    - cd tx
+    - tx init --token=${TX_API_KEY} --force --no-interactive
+    - tx config mapping -r sayonara-player.sayonara_lang_en_US -l en_US -t QT -s en_US -f sayonara_lang_en_US.ts --execute "sayonara_lang_<lang>.ts"
+    - tx push -s
+  only:
+    - master
+    - 43-integrate-transifex-into-ci-scripts
+
 # Deploy
 deploy-sayonara:
   stage: deploy
