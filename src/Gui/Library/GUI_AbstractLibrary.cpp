@@ -152,45 +152,27 @@ void GUI_AbstractLibrary::key_pressed(int key)
 {
 	using Library::Filter;
 
-	if(key == Qt::Key_Escape)
+	if(key != Qt::Key_Escape)
 	{
-		bool is_selected = has_selections();
+		return;
+	}
 
-		if(is_selected)
+	if(has_selections())
+	{
+		clear_selections();
+	}
+
+	else if(m->le_search)
+	{
+		if(!m->le_search->text().isEmpty())
 		{
-			clear_selections();
-
-			if(m->le_search)
-			{
-				auto mode = m->le_search->current_mode();
-				if(mode == Filter::Mode::Track)
-				{
-					m->le_search->reset();
-					m->library->refetch();
-				}
-			}
+			m->le_search->clear();
 		}
 
-		else if(m->le_search)
+		else
 		{
-			auto mode = m->le_search->current_mode();
-
-			if(!m->le_search->text().isEmpty())
-			{
-				m->le_search->clear();
-
-				if(mode == Filter::Mode::Track)
-				{
-					m->le_search->set_current_mode(Filter::Mode::Fulltext);
-					m->library->refetch();
-				}
-			}
-
-			else
-			{
-				m->le_search->set_current_mode(Filter::Mode::Fulltext);
-				m->library->refetch();
-			}
+			m->le_search->set_current_mode(Filter::Mode::Fulltext);
+			m->library->refetch();
 		}
 	}
 }
