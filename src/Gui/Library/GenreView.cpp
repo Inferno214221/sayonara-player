@@ -529,6 +529,12 @@ QString GenreView::invalid_genre_name()
 	return "<" + Lang::get(Lang::UnknownGenre) + ">";
 }
 
+void GenreView::skin_changed()
+{
+	QFontMetrics fm = this->fontMetrics();
+	this->setIconSize(QSize(fm.height(), fm.height()));
+	this->setIndentation(fm.height());
+}
 
 void GenreView::language_changed()
 {
