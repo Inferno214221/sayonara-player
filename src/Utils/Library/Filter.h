@@ -48,7 +48,6 @@ namespace Library
 				Fulltext=0,
 				Filename,
 				Genre,
-				Track,
 				Invalid
 			};
 
@@ -131,13 +130,6 @@ namespace Library
 			 * @return
 			 */
 			bool is_usable() const;
-
-			/**
-			 * @brief When searching for a track (Filter::Mode == Filter::Mode::Track)
-			 * this will return the track id
-			 * @return
-			 */
-			TrackID track_id() const;
 
 			/**
 			 * @brief Get an human readable string for the mode

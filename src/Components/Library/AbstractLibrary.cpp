@@ -203,10 +203,7 @@ void AbstractLibrary::find_track(TrackID id)
 		return;
 	}
 
-
 	{ // clear old selections/filters
-		m->filter.clear();
-
 		if(!m->selected_artists.isEmpty()) {
 			selected_artists_changed(IndexSet());
 		}
@@ -248,7 +245,6 @@ void AbstractLibrary::find_track(TrackID id)
 	get_all_tracks_by_album({md.album_id}, m->tracks, Library::Filter());
 	m->selected_tracks << md.id;
 
-	emit sig_filter_changed();
 	emit_stuff();
 }
 
@@ -484,7 +480,7 @@ void AbstractLibrary::change_filter(Library::Filter filter, bool force)
 
 	if(!filter.is_invalid_genre())
 	{
-		if(filtertext.join("").size() < 3 && filter.track_id() < 0){
+		if(filtertext.join("").size() < 3){
 			filter.clear();
 		}
 
@@ -493,10 +489,6 @@ void AbstractLibrary::change_filter(Library::Filter filter, bool force)
 			Library::SearchModeMask mask = GetSetting(Set::Lib_SearchMode);
 			filter.set_filtertext(filtertext.join(","), mask);
 		}
-	}
-
-	else {
-		// get everything which has no genre attached to it
 	}
 
 	if(filter == m->filter){
@@ -640,11 +632,6 @@ void AbstractLibrary::fetch_by_filter(Library::Filter filter, bool force)
 		get_all_artists(m->artists);
 		get_all_albums(m->albums);
 		get_all_tracks(m->tracks);
-	}
-
-	else if(m->filter.mode() == Library::Filter::Mode::Track)
-	{
-		find_track(m->filter.track_id());
 	}
 
 	else

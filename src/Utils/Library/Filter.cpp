@@ -64,7 +64,7 @@ bool Filter::operator ==(const Filter& other)
 
 	bool same_filtertext = false;
 
-	if(m->filtertext.size() < 3 && other.m->filtertext.size() < 3 && m->mode != Filter::Mode::Track)
+	if(m->filtertext.size() < 3 && other.m->filtertext.size() < 3)
 	{
 		same_filtertext = true;
 	}
@@ -78,8 +78,7 @@ bool Filter::operator ==(const Filter& other)
 	(
 		same_filtertext &&
 		(m->mode == other.mode()) &&
-		(m->invalid_genre == other.is_invalid_genre() &&
-		(this->track_id() == other.track_id()))
+		(m->invalid_genre == other.is_invalid_genre())
 	);
 }
 
@@ -157,11 +156,6 @@ void Filter::set_mode(Filter::Mode mode)
 
 bool Filter::cleared() const
 {
-	if(m->mode == Filter::Mode::Track && track_id() == -1)
-	{
-		return true;
-	}
-
 	return (m->filtertext.isEmpty() && !m->invalid_genre);
 }
 
@@ -186,12 +180,6 @@ bool Filter::is_usable() const
 		return true;
 	}
 
-	if(m->mode == Filter::Mode::Track)
-	{
-		TrackID id = track_id();
-		return (id >= 0);
-	}
-
 	QStringList filters = filtertext(false);
 	if(filters.join("").size() < 3)
 	{
@@ -201,21 +189,6 @@ bool Filter::is_usable() const
 	return true;
 }
 
-TrackID Filter::track_id() const
-{
-	if(m->filtertext.isEmpty()){
-		return -1;
-	}
-
-	bool ok;
-	TrackID id = m->filtertext.toInt(&ok);
-
-	if(!ok){
-		return -1;
-	}
-
-	return id;
-}
 
 QString Filter::get_text(Filter::Mode mode)
 {
@@ -231,9 +204,6 @@ QString Filter::get_text(Filter::Mode mode)
 
 		case Filter::Mode::Genre:
 			return Lang::get(Lang::Genre);
-
-		case Filter::Mode::Track:
-			return Lang::get(Lang::Tracks) + " ID";
 
 		default:
 			return QString();

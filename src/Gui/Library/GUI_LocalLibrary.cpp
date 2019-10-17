@@ -106,7 +106,6 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 	connect(m->library, &LocalLibrary::sig_reloading_library_finished, ui->lv_genres, &GenreView::reload_genres);
 	connect(m->library, &LocalLibrary::sig_all_tracks_loaded, this, &GUI_LocalLibrary::tracks_loaded);
 	connect(m->library, &LocalLibrary::sig_import_dialog_requested, this, &GUI_LocalLibrary::import_dialog_requested);
-	connect(m->library, &LocalLibrary::sig_filter_changed, this, &GUI_LocalLibrary::filter_changed);
 
 	auto* manager = Manager::instance();
 	connect(manager, &Manager::sig_path_changed, this, &GUI_LocalLibrary::path_changed);
@@ -457,13 +456,6 @@ void GUI_LocalLibrary::switch_album_view()
 	}
 }
 
-void GUI_LocalLibrary::filter_changed()
-{
-	Filter filter = m->library->filter();
-	ui->le_search->set_current_mode(filter.mode());
-	ui->le_search->setText(filter.filtertext(false).join(","));
-}
-
 bool GUI_LocalLibrary::has_selections() const
 {
 	return GUI_AbstractLibrary::has_selections() ||
@@ -473,7 +465,7 @@ bool GUI_LocalLibrary::has_selections() const
 
 QList<Filter::Mode> GUI_LocalLibrary::search_options() const
 {
-	return { Filter::Fulltext, Filter::Filename, Filter::Genre, Filter::Track };
+	return { Filter::Fulltext, Filter::Filename, Filter::Genre };
 }
 
 void GUI_LocalLibrary::showEvent(QShowEvent* e)
