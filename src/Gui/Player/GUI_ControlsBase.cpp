@@ -443,30 +443,21 @@ void GUI_ControlsBase::refresh_labels(const MetaData& md)
 	set_floating_text(lab_artist(), md.artist());
 
 	{ //album
-		QString str_year = QString::number(md.year);
-		QString album_name;
+		QString sYear = QString::number(md.year);
+		QString album_name = md.album();
 
 		lab_album()->setToolTip("");
-		if(md.year > 1000 && !album_name.contains(str_year)) {
-			album_name = md.album() + " (" + str_year + ")";
+		if(md.year > 1000 && (!album_name.contains(sYear)))
+		{
+			album_name += QString(" (%1)").arg(md.year);
 		}
 
-		else if(md.radio_mode() == RadioMode::Station) {
-			album_name = md.album();
+		else if(md.radio_mode() == RadioMode::Station)
+		{
 			lab_album()->setToolTip(md.filepath());
 		}
 
 		set_floating_text(lab_album(), album_name);
-	}
-
-	{ // pitch/speed
-
-		if( (GetSetting(Set::Engine_Pitch) != 440) &&
-			GetSetting(Set::Engine_SpeedActive))
-		{
-			QString pitch_text = QString::number(GetSetting(Set::Engine_Pitch)) + "Hz";
-			Q_UNUSED(pitch_text)
-		}
 	}
 
 	{ // bitrate
