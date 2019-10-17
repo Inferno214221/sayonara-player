@@ -41,7 +41,7 @@ test-sayonara:
 update-language:
   stage: deploy
   script:
-    - apt-get update -qq -y && apt-get install -qq -y --no-install-recommends transifex-client
+    - apt-get update -qq -y && apt-get install -qq -y --no-install-recommends transifex-client qt5-default
     - mkdir -p tx
     - lupdate -no-lupdate -no-sort -no-obsolete -locations relative -source-language en_US -target-language en_US ./src -ts tx/sayonara_lang_en_US.ts
     - cd tx
