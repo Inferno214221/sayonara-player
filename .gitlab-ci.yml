@@ -51,6 +51,9 @@ update-language:
     - tx init --token="$TX_API_KEY" --force --no-interactive
     - tx config mapping -r sayonara-player.sayonara_lang_en_US -l en_US -t QT -s en_US -f sayonara_lang_en_US.ts --execute "sayonara_lang_<lang>.ts"
     - tx push -s
+  artifacts:
+    paths:
+      - tx/sayonara_lang_en_US.ts
   only:
     - master
     - 43-integrate-transifex-into-ci-scripts
