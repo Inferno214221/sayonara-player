@@ -40,12 +40,9 @@ enum class SettingKey : unsigned short
 	Eq_Gauss,
 	Lib_Show,
 	Lib_Path,
-	Lib_ColsTitle,
-	Lib_ColsArtist,
-	Lib_ColsAlbum,
-	Lib_ColSizeTitle,
-	Lib_ColSizeArtist,
-	Lib_ColSizeAlbum,
+	Lib_ColStateAlbums,
+	Lib_ColStateArtists,
+	Lib_ColStateTracks,
 	Lib_LiveSearch,
 	Lib_Sorting,
 	Lib_CurPlugin,
@@ -249,12 +246,9 @@ class SettingIdentifier
 
 	INST(bool,				Lib_Show)				/* show library */
 	INST(QString,			Lib_Path)					// deprecated
-	INST(BoolList,			Lib_ColsTitle)			/* shown columns tracks */
-	INST(BoolList,			Lib_ColsArtist)			/* shown columns artist */
-	INST(BoolList,			Lib_ColsAlbum)				/* shown columns albums */
-	INST(IntList,			Lib_ColSizeArtist)		/* Column Sizes for Artist */
-	INST(IntList,			Lib_ColSizeAlbum)		/* Column Sizes for Albums */
-	INST(IntList,			Lib_ColSizeTitle)		/* Column Sizes for Tracks */
+	INST(QByteArray,		Lib_ColStateAlbums)
+	INST(QByteArray,		Lib_ColStateArtists)
+	INST(QByteArray,		Lib_ColStateTracks)
 	INST(bool,				Lib_LiveSearch)			/* library live search */
 	INST(::Library::Sortings,		Lib_Sorting)		/* how to sort in lib */
 	INST(QString,			Lib_CurPlugin)				/* Current shown library plugin */

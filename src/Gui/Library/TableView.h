@@ -74,28 +74,14 @@ namespace Library
 		 * Also see save_column_header_sizes()
 		 * @return a list of widths in pixels
 		 */
-		virtual IntList column_header_sizes() const=0;
+		virtual QByteArray column_header_state() const=0;
 
 		/**
 		 * @brief Here, the column headers sizes should be saved somewhere
 		 * @param a list of widths in pixels. The list should be as big as
 		 * there are columns (even if they are not visible)
 		 */
-		virtual void save_column_header_sizes(const IntList& sizes)=0;
-
-		/**
-		 * @brief A boolean vector where true indicates a visible
-		 * column and false indicates an invisible column
-		 * @return
-		 */
-		virtual BoolList visible_columns() const=0;
-
-		/**
-		 * @brief save the current state of visible columns
-		 * @param columns a bool vector where true indicates a visible
-		 * column and false indicates an invisible column
-		 */
-		virtual void save_visible_columns(const BoolList& columns)=0;
+		virtual void save_column_header_state(const QByteArray& state)=0;
 
 		/**
 		 * @brief returns the current sortorder for the table view
@@ -105,7 +91,7 @@ namespace Library
 		/**
 		 * @brief saves the current sortorder
 		 */
-		virtual void save_sortorder(SortOrder s)=0;
+		virtual void apply_sortorder(SortOrder s)=0;
 
 		void language_changed() override;
 
@@ -116,7 +102,8 @@ namespace Library
 	protected slots:
 		void header_actions_triggered();
 		void sort_by_column(int column_idx);
-		void sizes_changed();
+		void section_resized();
+		void section_moved(int logical_index, int old_visual_index, int new_visual_index);
 	};
 }
 

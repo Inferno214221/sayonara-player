@@ -86,6 +86,7 @@ QVariant TrackModel::data(const QModelIndex &index, int role) const
 			idx_col == ColumnIndex::Track::Length ||
 			idx_col == ColumnIndex::Track::Year ||
 			idx_col == ColumnIndex::Track::Filesize ||
+			idx_col == ColumnIndex::Track::Filetype ||
 			idx_col == ColumnIndex::Track::Discnumber)
 		{
 			alignment |= Qt::AlignRight;
@@ -134,6 +135,9 @@ QVariant TrackModel::data(const QModelIndex &index, int role) const
 
 			case ColumnIndex::Track::Filesize:
 				return ::Util::File::calc_filesize_str(md.filesize);
+
+			case ColumnIndex::Track::Filetype:
+				return ::Util::File::get_file_extension(md.filepath());
 
 			case ColumnIndex::Track::Rating:
 			{

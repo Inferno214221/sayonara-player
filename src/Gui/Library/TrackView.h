@@ -46,15 +46,13 @@ namespace Library
 		AbstractLibrary* library() const override;
 		//from Library::TableView
 		void init_view(AbstractLibrary* library) override;
+
 		ColumnHeaderList column_headers() const override;
-		IntList column_header_sizes() const override;
-		void save_column_header_sizes(const IntList& sizes) override;
+		QByteArray column_header_state() const override;
+		void save_column_header_state(const QByteArray& state) override;
 
 		SortOrder sortorder() const override;
-		void save_sortorder(SortOrder s) override;
-
-		BoolList visible_columns() const override;
-		void save_visible_columns(const BoolList& lst) override;
+		void apply_sortorder(SortOrder s) override;
 
 		ContextMenu::Entries context_menu_entries() const override;
 

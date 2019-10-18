@@ -93,25 +93,14 @@ ColumnHeaderList AlbumView::column_headers() const
 	return columns;
 }
 
-IntList AlbumView::column_header_sizes() const
+QByteArray AlbumView::column_header_state() const
 {
-	return GetSetting(Set::Lib_ColSizeAlbum);
+	return GetSetting(Set::Lib_ColStateAlbums);
 }
 
-
-void Library::AlbumView::save_column_header_sizes(const IntList& sizes)
+void AlbumView::save_column_header_state(const QByteArray& state)
 {
-	SetSetting(Set::Lib_ColSizeAlbum, sizes);
-}
-
-BoolList AlbumView::visible_columns() const
-{
-	return GetSetting(Set::Lib_ColsAlbum);
-}
-
-void AlbumView::save_visible_columns(const BoolList& lst)
-{
-	SetSetting(Set::Lib_ColsAlbum, lst);
+	SetSetting(Set::Lib_ColStateAlbums, state);
 }
 
 SortOrder AlbumView::sortorder() const
@@ -120,7 +109,7 @@ SortOrder AlbumView::sortorder() const
 	return so.so_albums;
 }
 
-void AlbumView::save_sortorder(SortOrder s)
+void AlbumView::apply_sortorder(SortOrder s)
 {
 	m->library->change_album_sortorder(s);
 }

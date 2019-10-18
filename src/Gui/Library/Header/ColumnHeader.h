@@ -59,6 +59,7 @@ namespace Library
 				Year,
 				Rating,
 				Bitrate,
+				Filetype,
 				Filesize
 			};
 

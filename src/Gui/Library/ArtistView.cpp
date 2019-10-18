@@ -124,26 +124,14 @@ ColumnHeaderList ArtistView::column_headers() const
 	return check_vector_size(columns);
 }
 
-IntList ArtistView::column_header_sizes() const
+QByteArray ArtistView::column_header_state() const
 {
-	return check_vector_size(GetSetting(Set::Lib_ColSizeArtist));
+	return GetSetting(Set::Lib_ColStateArtists);
 }
 
-void ArtistView::save_column_header_sizes(const IntList& sizes)
+void ArtistView::save_column_header_state(const QByteArray& state)
 {
-	SetSetting(Set::Lib_ColSizeArtist, check_vector_size(sizes));
-}
-
-BoolList ArtistView::visible_columns() const
-{
-	BoolList columns = GetSetting(Set::Lib_ColsArtist);
-
-	return check_vector_size(columns);
-}
-
-void ArtistView::save_visible_columns(const BoolList& columns)
-{
-	SetSetting(Set::Lib_ColsArtist, check_vector_size(columns));
+	SetSetting(Set::Lib_ColStateArtists, state);
 }
 
 SortOrder ArtistView::sortorder() const
@@ -152,7 +140,7 @@ SortOrder ArtistView::sortorder() const
 	return so.so_artists;
 }
 
-void ArtistView::save_sortorder(SortOrder s)
+void ArtistView::apply_sortorder(SortOrder s)
 {
 	m->library->change_artist_sortorder(s);
 }
