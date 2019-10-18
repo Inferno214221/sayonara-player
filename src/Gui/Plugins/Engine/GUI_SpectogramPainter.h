@@ -1,5 +1,5 @@
-#ifndef GUI_SPECTOGRAMPAINTER_H
-#define GUI_SPECTOGRAMPAINTER_H
+#ifndef GUI_SpectrogramPAINTER_H
+#define GUI_SpectrogramPAINTER_H
 
 #include "Components/PlayManager/PlayState.h"
 #include "Gui/Plugins/PlayerPluginBase.h"
@@ -7,15 +7,15 @@
 #include <QList>
 #include <QWidget>
 
-class GUI_SpectogramPainter :
+class GUI_SpectrogramPainter :
 	public PlayerPlugin::Base
 {
 	Q_OBJECT
-	PIMPL(GUI_SpectogramPainter)
+	PIMPL(GUI_SpectrogramPainter)
 
 public:
-	explicit GUI_SpectogramPainter(QWidget* parent = nullptr);
-	~GUI_SpectogramPainter() override;
+	explicit GUI_SpectrogramPainter(QWidget* parent = nullptr);
+	~GUI_SpectrogramPainter() override;
 
 	QString get_name() const override;
 	QString get_display_name() const override;
@@ -54,4 +54,4 @@ private:
 
 };
 
-#endif // GUI_SPECTOGRAMPAINTER_H
+#endif // GUI_SpectrogramPAINTER_H

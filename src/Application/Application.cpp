@@ -68,7 +68,7 @@
 #include "Gui/Plugins/Engine/GUI_Equalizer.h"
 #include "Gui/Plugins/Engine/GUI_Speed.h"
 #include "Gui/Plugins/Engine/GUI_Crossfader.h"
-#include "Gui/Plugins/Engine/GUI_SpectogramPainter.h"
+#include "Gui/Plugins/Engine/GUI_SpectrogramPainter.h"
 #include "Gui/Plugins/Stream/GUI_Stream.h"
 #include "Gui/Plugins/Stream/GUI_Podcasts.h"
 
@@ -424,7 +424,7 @@ void Application::init_plugins()
 	pph->add_plugin(new GUI_Speed());
 	pph->add_plugin(new GUI_Broadcast());
 	pph->add_plugin(new GUI_Crossfader());
-	pph->add_plugin(new GUI_SpectogramPainter());
+	pph->add_plugin(new GUI_SpectrogramPainter());
 
 	sp_log(Log::Debug, this) << "Plugins finished: " << m->timer->elapsed() << "ms";
 }
