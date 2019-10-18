@@ -1,5 +1,5 @@
-#ifndef GUI_SpectrogramPAINTER_H
-#define GUI_SpectrogramPAINTER_H
+#ifndef GUI_SPECTROGRAMPAINTER_H
+#define GUI_SPECTROGRAMPAINTER_H
 
 #include "Components/PlayManager/PlayState.h"
 #include "Gui/Plugins/PlayerPluginBase.h"
@@ -54,4 +54,4 @@ private:
 
 };
 
-#endif // GUI_SpectrogramPAINTER_H
+#endif // GUI_SPECTROGRAMPAINTER_H
