@@ -65,6 +65,10 @@ namespace MetaDataSorting
 	bool TracksByFilesizeAsc(const MetaData& md1, const MetaData& md2);
 	bool TracksByFilesizeDesc(const MetaData& md1, const MetaData& md2);
 
+	bool TracksByFiletypeAsc(const MetaData& md1, const MetaData& md2);
+	bool TracksByFiletypeDesc(const MetaData& md1, const MetaData& md2);
+
+
 
 	bool TracksByRatingAsc(const MetaData& md1, const MetaData& md2);
 	bool TracksByRatingDesc(const MetaData& md1, const MetaData& md2);

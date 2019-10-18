@@ -191,7 +191,6 @@ QModelIndexList ItemModel::search_results(const QString& substr)
 	return ret;
 }
 
-
 AbstractLibrary* ItemModel::library()
 {
 	return m->library;

@@ -51,19 +51,16 @@ namespace Library
 		virtual ~AlbumView() override;
 
 	protected:
-		IntList column_header_sizes() const override;
-		void save_column_header_sizes(const IntList& sizes) override;
+		ColumnHeaderList column_headers() const override;
+		QByteArray column_header_state() const override;
+		void save_column_header_state(const QByteArray& state) override;
 
 	private:
 		// Library::TableView
 		void init_view(AbstractLibrary* library) override;
-		ColumnHeaderList column_headers() const override;
-
-		BoolList visible_columns() const override;
-		void save_visible_columns(const BoolList& lst) override;
 
 		SortOrder sortorder() const override;
-		void save_sortorder(SortOrder s) override;
+		void apply_sortorder(SortOrder s) override;
 
 		// Library::ItemView
 		void play_clicked() override;
