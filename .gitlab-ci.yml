@@ -54,6 +54,7 @@ update-language:
       - tx/sayonara_lang_en_US.ts
   only:
     - master
+    - 43-integrate-transifex-into-ci-scripts
 
 # Deploy
 deploy-sayonara:
