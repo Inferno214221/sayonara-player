@@ -39,7 +39,7 @@ namespace Library
 		PIMPL(ArtistView)
 		public:
 			explicit ArtistView(QWidget* parent=nullptr);
-			~ArtistView();
+			~ArtistView() override;
 
 		// ItemView interface
 		protected:
@@ -51,20 +51,16 @@ namespace Library
 			void play_clicked() override;
 			void play_new_tab_clicked() override;
 			void run_merge_operation(const Library::MergeData& mergedata) override;
-			IntList column_header_sizes() const override;
-			void save_column_header_sizes(const IntList& sizes) override;
 
-		protected:
 			void init_view(AbstractLibrary* library) override;
-			ColumnHeaderList column_headers() const override;
-
 			void init_context_menu() override;
 
-			BoolList visible_columns() const override;
-			void save_visible_columns(const BoolList& columns) override;
+			ColumnHeaderList column_headers() const override;
+			QByteArray column_header_state() const override;
+			void save_column_header_state(const QByteArray& state) override;
 
 			SortOrder sortorder() const override;
-			void save_sortorder(SortOrder s) override;
+			void apply_sortorder(SortOrder s) override;
 
 			// ItemView
 			bool is_mergeable() const override;

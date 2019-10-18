@@ -44,29 +44,31 @@ HeaderView::HeaderView(Qt::Orientation orientation, QWidget* parent) :
 	connect(m->action_resize, &QAction::triggered, this, &HeaderView::action_resize_triggered);
 
 	this->setSectionsClickable(true);
+	this->setSectionsMovable(true);
 	this->setHighlightSections(false);
 	this->setContextMenuPolicy(Qt::ActionsContextMenu);
+	this->setTextElideMode(Qt::TextElideMode::ElideRight);
+	this->setSectionResizeMode(QHeaderView::ResizeMode::Interactive);
 }
 
 HeaderView::~HeaderView() = default;
-
-void HeaderView::init_header_action(ColumnHeaderPtr header, bool is_shown)
-{
-	QAction* action = header->action();
-	action->setChecked(is_shown);
-	connect(action, &QAction::toggled, this, &HeaderView::action_triggered);
-
-	this->insertAction(this->actions().last(), action);
-}
 
 QString HeaderView::resize_text() const
 {
 	return tr("Resize columns");
 }
 
-void HeaderView::set_columns(const ColumnHeaderList& columns, const BoolList& shown_actions, Library::SortOrder sorting)
+void HeaderView::init(const ColumnHeaderList& columns, const QByteArray& state, Library::SortOrder sorting)
 {
 	m->columns = columns;
+
+	if(!state.isEmpty()) {
+		this->restoreState(state);
+	}
+
+	else {
+		this->action_resize_triggered();
+	}
 
 	for(int i=0; i<m->columns.size(); i++)
 	{
@@ -82,58 +84,40 @@ void HeaderView::set_columns(const ColumnHeaderList& columns, const BoolList& sh
 			}
 		}
 
-		bool is_visible = true;
-		{ // resize mode
-			if(Util::between(i, shown_actions)) {
-				is_visible = shown_actions[i];
-			}
+		QAction* action = section->action();
+		action->setChecked( !isSectionHidden(i) );
+		connect(action, &QAction::toggled, this, &HeaderView::action_triggered);
+		insertAction(this->actions().last(), action);
+	}
+}
 
-			if(is_visible && !section->stretchable())
-			{
-				this->resizeSection(i, section->preferred_size());
-			}
+Library::SortOrder HeaderView::switch_sortorder(int column_index)
+{
+	if(Util::between(column_index, m->columns))
+	{
+		Qt::SortOrder asc_desc = this->sortIndicatorOrder();
+
+		ColumnHeaderPtr section = m->columns[column_index];
+		if(asc_desc == Qt::AscendingOrder) {
+			return section->sortorder_asc();
 		}
 
-		init_header_action(section, is_visible);
+		else {
+			return section->sortorder_desc();
+		}
 	}
 
-	refresh_active_columns();
+	return Library::SortOrder::NoSorting;
 }
 
-BoolList HeaderView::refresh_active_columns()
+
+ColumnHeaderPtr HeaderView::column(int column_index)
 {
-	BoolList lst;
-
-	for(int i=0; i<m->columns.count(); i++)
-	{
-		ColumnHeaderPtr section = m->columns[i];
-
-		bool is_visible = section->is_action_checked();
-		this->setSectionHidden(i, !is_visible);
-		lst.push_back(is_visible);
-	}
-
-	return lst;
-}
-
-BoolList HeaderView::shown_columns() const
-{
-	BoolList ret;
-	for(int i=0; i<m->columns.count(); i++)
-	{
-		ret << (this->isSectionHidden(i) == false);
-	}
-
-	return ret;
-}
-
-ColumnHeaderPtr HeaderView::column(int idx)
-{
-	if(!Util::between(idx, m->columns)){
+	if(!Util::between(column_index, m->columns)){
 		return nullptr;
 	}
 
-	return m->columns[idx];
+	return m->columns[column_index];
 }
 
 
@@ -153,7 +137,14 @@ void HeaderView::action_triggered(bool b)
 {
 	Q_UNUSED(b)
 
-	refresh_active_columns();
+	for(int i=0; i<m->columns.count(); i++)
+	{
+		ColumnHeaderPtr section = m->columns[i];
+
+		bool is_visible = section->is_action_checked();
+		this->setSectionHidden(i, !is_visible);
+	}
+
 	action_resize_triggered();
 
 	emit sig_columns_changed();
@@ -192,17 +183,15 @@ void HeaderView::action_resize_triggered()
 	{ // resize stretchable sections
 		for(int i=0; i<m->columns.count(); i++)
 		{
-			auto ch = m->columns[i];
-
-			if(ch->stretchable() && !this->isSectionHidden(i))
+			auto header = m->columns[i];
+			if(header->stretchable() && !this->isSectionHidden(i))
 			{
-				int sz = int(ch->default_size() * scale_factor);
+				int sz = int(header->default_size() * scale_factor);
 				this->resizeSection(i, sz);
 			}
 		}
 	}
 }
-
 
 int HeaderView::calc_header_width() const
 {

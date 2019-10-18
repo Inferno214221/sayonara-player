@@ -25,6 +25,7 @@
 #include "Album.h"
 
 #include "Utils/Algorithm.h"
+#include "Utils/FileUtils.h"
 
 namespace Algorithm=Util::Algorithm;
 
@@ -49,7 +50,6 @@ static Relation compare_string(const QString& s1, const QString& s2)
 
 	return Greater;
 }
-
 
 bool MetaDataSorting::TracksByTitleAsc(const MetaData& md1, const MetaData& md2)
 {
@@ -331,6 +331,34 @@ bool MetaDataSorting::TracksByFilesizeDesc(const MetaData& md1, const MetaData& 
 	}
 
 	return false;
+}
+
+bool MetaDataSorting::TracksByFiletypeAsc(const MetaData& md1, const MetaData& md2)
+{
+	switch(compare_string(Util::File::get_file_extension(md1.filepath()), Util::File::get_file_extension(md2.filepath()) ))
+	{
+		case Equal:
+			return TracksByArtistAsc(md1, md2);
+		case Greater:
+			return false;
+		case Lesser:
+		default:
+			return true;
+	}
+}
+
+bool MetaDataSorting::TracksByFiletypeDesc(const MetaData& md1, const MetaData& md2)
+{
+	switch(compare_string(Util::File::get_file_extension(md2.filepath()), Util::File::get_file_extension(md1.filepath())))
+	{
+		case Equal:
+			return TracksByArtistDesc(md1, md2);
+		case Greater:
+			return false;
+		case Lesser:
+		default:
+			return true;
+	}
 }
 
 bool MetaDataSorting::TracksByRatingAsc(const MetaData& md1, const MetaData& md2)
@@ -668,6 +696,12 @@ void MetaDataSorting::sort_metadata(MetaDataList& v_md, Library::SortOrder so)
 			break;
 		case So::TrackDiscnumberDesc:
 			Algorithm::sort(v_md, TracksByDiscnumberDesc);
+			break;
+		case So::TrackFiletypeAsc:
+			Algorithm::sort(v_md, TracksByFiletypeAsc);
+			break;
+		case So::TrackFiletypeDesc:
+			Algorithm::sort(v_md, TracksByFiletypeDesc);
 			break;
 		case So::TrackRatingAsc:
 			Algorithm::sort(v_md, TracksByRatingAsc);

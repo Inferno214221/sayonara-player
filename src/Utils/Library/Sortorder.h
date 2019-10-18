@@ -66,7 +66,9 @@ namespace Library
 		TrackDiscnumberAsc,
 		TrackDiscnumberDesc,
 		TrackRatingAsc,
-		TrackRatingDesc
+		TrackRatingDesc,
+		TrackFiletypeAsc,
+		TrackFiletypeDesc
 	};
 }
 
