@@ -195,7 +195,7 @@ struct AudioDataProvider::Private
 
 		Engine::Utils::set_int_value(spectrum, "threshold", threshold);
 		EngineUtils::set_uint_value(spectrum, "bands", num_bins);
-		Engine::Utils::set_uint64_value(spectrum, "interval", interval_ms * GST_MSECOND);
+		Engine::Utils::set_uint64_value(spectrum, "interval", guint64(interval_ms * GST_MSECOND));
 
 		g_signal_connect (source, "pad-added", G_CALLBACK(adp_decodebin_ready), parent);
 	}

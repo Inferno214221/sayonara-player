@@ -101,6 +101,7 @@ namespace Library
 
 
 	protected:
+		void skin_changed() override;
 		void language_changed() override;
 		void dragEnterEvent(QDragEnterEvent* e) override;
 		void dragMoveEvent(QDragMoveEvent* e) override;

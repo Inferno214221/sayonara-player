@@ -78,7 +78,6 @@ namespace Library
 	private slots:
 		void tracks_loaded();
 		void switch_album_view();
-		void filter_changed();
 
 		void progress_changed(const QString& type, int progress);
 

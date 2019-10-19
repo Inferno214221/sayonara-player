@@ -389,7 +389,6 @@ bool Engine::Utils::link_elements(const QList<GstElement*>& elements)
 		bool b = gst_element_link(e1, e2);
 		if(!b)
 		{
-
 			test_and_error_bool(b, QString("Cannot link element %1 with %2").arg(n1, n2));
 			g_free(n1);
 			g_free(n2);
@@ -472,13 +471,13 @@ void Engine::Utils::unref_elements(const QList<GstElement*>& elements)
 	}
 }
 
-void Engine::Utils::config_queue(GstElement* queue, gulong max_time_ms)
+void Engine::Utils::config_queue(GstElement* queue, guint64 max_time_ms)
 {
 	set_values(queue,
 		"flush-on-eos", true,
 		"silent", true);
 
-	set_uint64_value(queue,  "max-size-time", max_time_ms * GST_MSECOND);
+	set_uint64_value(queue,  "max-size-time", guint64(max_time_ms * GST_MSECOND));
 }
 
 void Engine::Utils::config_sink(GstElement* sink)
@@ -522,8 +521,8 @@ GValue Engine::Utils::get_int64(gint64 value)
 GValue Engine::Utils::get_uint64(guint64 value)
 {
 	GValue ret = G_VALUE_INIT;
-	g_value_init(&ret, G_TYPE_INT64);
-	g_value_set_int64(&ret, value);
+	g_value_init(&ret, G_TYPE_UINT64);
+	g_value_set_uint64(&ret, value);
 	return ret;
 }
 

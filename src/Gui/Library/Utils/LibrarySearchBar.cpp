@@ -64,7 +64,6 @@ SearchBar::SearchBar(QWidget* parent) :
 	this->setFocusPolicy(Qt::ClickFocus);
 	this->setContextMenuPolicy(Qt::CustomContextMenu);
 	this->setClearButtonEnabled(true);
-
 	this->setShortcutEnabled(QKeySequence::Find, true);
 
 	new QShortcut(QKeySequence::Find, this, SLOT(search_shortcut_pressed()), nullptr, Qt::WindowShortcut);
@@ -114,12 +113,6 @@ void SearchBar::text_changed(const QString& text)
 	{
 		this->clear();
 		this->set_current_mode(Filter::Filename);
-	}
-
-	else if(text.startsWith("t:", Qt::CaseInsensitive))
-	{
-		this->clear();
-		this->set_current_mode(Filter::Track);
 	}
 }
 
@@ -180,11 +173,11 @@ void SearchBar::set_next_mode()
 		return;
 	}
 
-	if(m->cur_idx < 0){
+	if(m->cur_idx < 0) {
 		m->cur_idx = 0;
 	}
 
-	else{
+	else {
 		m->cur_idx = (m->cur_idx + 1) % m->modes.size();
 	}
 

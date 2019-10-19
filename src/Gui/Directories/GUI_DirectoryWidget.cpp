@@ -110,8 +110,8 @@ GUI_DirectoryWidget::GUI_DirectoryWidget(QWidget *parent) :
 	ui->lv_files->setDragDropMode(QAbstractItemView::DragDrop);
 	ui->lv_files->setDropIndicatorShown(true);
 
+	connect(ui->tv_dirs, &QTreeView::pressed, this, &GUI_DirectoryWidget::dir_pressed);
 	connect(ui->tv_dirs, &DirectoryTreeView::sig_current_index_changed, this, &GUI_DirectoryWidget::dir_clicked);
-	//connect(ui->tv_dirs, &QTreeView::pressed, this, &GUI_DirectoryWidget::dir_pressed);
 	connect(ui->tv_dirs, &DirectoryTreeView::sig_import_requested, this, &GUI_DirectoryWidget::import_requested);
 	connect(ui->tv_dirs, &DirectoryTreeView::sig_enter_pressed, this, &GUI_DirectoryWidget::dir_enter_pressed);
 	connect(ui->tv_dirs, &DirectoryTreeView::sig_append_clicked, this, &GUI_DirectoryWidget::dir_append_clicked);
@@ -247,9 +247,9 @@ void GUI_DirectoryWidget::dir_pressed(QModelIndex idx)
 
 	Qt::MouseButtons buttons = QApplication::mouseButtons();
 
-	QStringList paths = ui->tv_dirs->selected_paths();
 	if(buttons & Qt::MiddleButton)
 	{
+		QStringList paths = ui->tv_dirs->selected_paths();
 		if(!paths.isEmpty())
 		{
 			m->generic_library->prepare_tracks_for_playlist(paths, true);

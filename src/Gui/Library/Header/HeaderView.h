@@ -45,9 +45,7 @@ namespace Library
 			void sig_columns_changed();
 
 		private:
-			void init_header_action(ColumnHeaderPtr header, bool is_shown);
 			QString resize_text() const;
-
 			int calc_header_width() const;
 
 		private slots:
@@ -55,7 +53,6 @@ namespace Library
 			void action_resize_triggered();
 
 		protected:
-			BoolList refresh_active_columns();
 			void language_changed() override;
 			void resizeEvent(QResizeEvent* e) override;
 
@@ -63,12 +60,12 @@ namespace Library
 			HeaderView(Qt::Orientation orientation, QWidget* parent=nullptr);
 			virtual ~HeaderView() override;
 
-			QSize sizeHint() const override;
+			void init(const ColumnHeaderList& column_headers, const QByteArray& state, Library::SortOrder sorting);
 
-			void				set_columns(const ColumnHeaderList& column_headers, const BoolList& shown_columns, Library::SortOrder sorting );
-
-			BoolList			shown_columns() const;
+			Library::SortOrder	switch_sortorder(int column_index);
 			ColumnHeaderPtr		column(int idx);
+
+			QSize sizeHint() const override;
 	};
 }
 

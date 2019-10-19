@@ -75,38 +75,30 @@ ColumnHeaderList TrackView::column_headers() const
 	ColumnHeaderList columns;
 
 	QFontMetrics fm(this->font());
+
 	columns << std::make_shared<ColumnHeader>(ColumnHeader::Sharp, true, SortOrder::TrackNumAsc, SortOrder::TrackNumDesc, fm.width("8888"));
 	columns << std::make_shared<ColumnHeader>(ColumnHeader::Title, false, SortOrder::TrackTitleAsc, SortOrder::TrackTitleDesc, 200, true);
 	columns << std::make_shared<ColumnHeader>(ColumnHeader::Artist, true, SortOrder::TrackArtistAsc, SortOrder::TrackArtistDesc, 200, true);
 	columns << std::make_shared<ColumnHeader>(ColumnHeader::Album, true, SortOrder::TrackAlbumAsc, SortOrder::TrackAlbumDesc, 200, true);
 	columns << std::make_shared<ColumnHeader>(ColumnHeader::Discnumber, true, SortOrder::TrackDiscnumberAsc, SortOrder::TrackDiscnumberDesc, fm.width(Lang::get(Lang::Disc) + " 8888") );
 	columns << std::make_shared<ColumnHeader>(ColumnHeader::Year, true, SortOrder::TrackYearAsc, SortOrder::TrackYearDesc, fm.width("88888"));
-	columns << std::make_shared<ColumnHeader>(ColumnHeader::DurationShort, true, SortOrder::TrackLenghtAsc, SortOrder::TrackLengthDesc, fm.width("8888:88"));
-	columns << std::make_shared<ColumnHeader>(ColumnHeader::Bitrate, true, SortOrder::TrackBitrateAsc, SortOrder::TrackBitrateDesc, fm.width("88881 kBit/s"));
-	columns << std::make_shared<ColumnHeader>(ColumnHeader::Filesize, true, SortOrder::TrackSizeAsc, SortOrder::TrackSizeDesc, fm.width("1888.88MB"));
+	columns << std::make_shared<ColumnHeader>(ColumnHeader::DurationShort, true, SortOrder::TrackLenghtAsc, SortOrder::TrackLengthDesc, fm.width("M888:88"));
+	columns << std::make_shared<ColumnHeader>(ColumnHeader::Bitrate, true, SortOrder::TrackBitrateAsc, SortOrder::TrackBitrateDesc, fm.width("M8888 kBit/s"));
+	columns << std::make_shared<ColumnHeader>(ColumnHeader::Filesize, true, SortOrder::TrackSizeAsc, SortOrder::TrackSizeDesc, fm.width("M888.88MB"));
+	columns << std::make_shared<ColumnHeader>(ColumnHeader::Filetype, true, SortOrder::TrackFiletypeAsc, SortOrder::TrackFiletypeDesc, fm.width("MFLAC"));
 	columns << std::make_shared<ColumnHeader>(ColumnHeader::Rating, true, SortOrder::TrackRatingAsc, SortOrder::TrackRatingDesc, 85);
 
 	return columns;
 }
 
-IntList TrackView::column_header_sizes() const
+QByteArray TrackView::column_header_state() const
 {
-	return GetSetting(Set::Lib_ColSizeTitle);
+	return GetSetting(Set::Lib_ColStateTracks);
 }
 
-void TrackView::save_column_header_sizes(const IntList& sizes)
+void TrackView::save_column_header_state(const QByteArray& state)
 {
-	SetSetting(Set::Lib_ColSizeTitle, sizes);
-}
-
-BoolList TrackView::visible_columns() const
-{
-	return GetSetting(Set::Lib_ColsTitle);
-}
-
-void TrackView::save_visible_columns(const BoolList& lst)
-{
-	SetSetting(Set::Lib_ColsTitle, lst);
+	SetSetting(Set::Lib_ColStateTracks, state);
 }
 
 Library::ContextMenu::Entries TrackView::context_menu_entries() const
@@ -122,7 +114,7 @@ SortOrder TrackView::sortorder() const
 	return so.so_tracks;
 }
 
-void TrackView::save_sortorder(SortOrder s)
+void TrackView::apply_sortorder(SortOrder s)
 {
 	m->library->change_track_sortorder(s);
 }

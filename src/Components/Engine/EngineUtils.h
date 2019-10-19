@@ -66,7 +66,7 @@ namespace Engine
 		 * @param queue
 		 * @param max_time_ms
 		 */
-		void config_queue(GstElement* queue, gulong max_time_ms=100);
+		void config_queue(GstElement* queue, guint64 max_time_ms=100);
 
 		/**
 		 * @brief config_sink

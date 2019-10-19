@@ -19,7 +19,6 @@
  */
 
 #include "DirectoryTreeView.h"
-#include "DirectoryDelegate.h"
 #include "DirectoryIconProvider.h"
 #include "DirectoryModel.h"
 #include "DirectoryContextMenu.h"
@@ -27,6 +26,7 @@
 #include "Components/Directories/DirectoryReader.h"
 #include "Components/Directories/FileOperations.h"
 
+#include "Gui/Utils/Delegates/StyledItemDelegate.h"
 #include "Gui/Utils/PreferenceAction.h"
 #include "Gui/Utils/CustomMimeData.h"
 #include "Gui/Utils/MimeDataUtils.h"
@@ -54,7 +54,7 @@ struct DirectoryTreeView::Private
 	QString				last_search_term;
 	FileOperations*		file_operations=nullptr;
 
-	DirectoryContextMenu*		context_menu=nullptr;
+	DirectoryContextMenu*	context_menu=nullptr;
 	DirectoryModel*		model = nullptr;
 	IconProvider*		icon_provider = nullptr;
 	QModelIndex			drag_move_index;
@@ -95,7 +95,7 @@ DirectoryTreeView::DirectoryTreeView(QWidget *parent) :
 	connect(m->file_operations, &FileOperations::sig_copy_started, this, &DirectoryTreeView::copy_started);
 
 	this->set_model(m->model);
-	this->setItemDelegate(new DirectoryDelegate(this));
+	this->setItemDelegate(new Gui::StyledItemDelegate(this));
 
 	QAction* action = new QAction(this);
 	connect(action, &QAction::triggered, this, &DirectoryTreeView::rename_dir_clicked);
@@ -128,6 +128,10 @@ void DirectoryTreeView::skin_changed()
 	if(m && m->model){
 		m->model->setIconProvider(m->icon_provider);
 	}
+
+	QFontMetrics fm = this->fontMetrics();
+	this->setIconSize(QSize(fm.height(), fm.height()));
+	this->setIndentation(fm.height());
 }
 
 void DirectoryTreeView::keyPressEvent(QKeyEvent* event)
@@ -280,12 +284,11 @@ void DirectoryTreeView::mousePressEvent(QMouseEvent* event)
 
 	if(event->buttons() & Qt::LeftButton)
 	{
-		Dragable::drag_pressed( event->pos() );
+		Dragable::drag_pressed(event->pos());
 	}
 
-	if(event->button() & Qt::RightButton){
-		QPoint pos = QWidget::mapToGlobal( event->pos() );
-
+	else if(event->button() & Qt::RightButton)
+	{
 		if(!m->context_menu){
 			init_context_menu();
 		}
@@ -302,6 +305,8 @@ void DirectoryTreeView::mousePressEvent(QMouseEvent* event)
 		);
 
 		m->context_menu->show_action(Library::ContextMenu::EntryDelete, !is_root);
+
+		QPoint pos = QWidget::mapToGlobal(event->pos());
 		m->context_menu->exec(pos);
 	}
 }

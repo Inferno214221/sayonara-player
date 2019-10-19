@@ -91,8 +91,6 @@ signals:
 	void sig_delete_answer(QString);
 	void sig_import_dialog_requested();
 
-	void sig_filter_changed();
-
 
 public slots:
 

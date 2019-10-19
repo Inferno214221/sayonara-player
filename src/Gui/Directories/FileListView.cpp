@@ -21,7 +21,6 @@
 #include "FileListView.h"
 #include "FileListModel.h"
 #include "DirectoryIconProvider.h"
-#include "DirectoryDelegate.h"
 #include "DirectoryContextMenu.h"
 
 #include "Components/Directories/DirectoryReader.h"
@@ -35,6 +34,7 @@
 #include "Utils/Language/Language.h"
 #include "Utils/Logger/Logger.h"
 
+#include "Gui/Utils/Delegates/StyledItemDelegate.h"
 #include "Gui/Utils/InputDialog/LineInputDialog.h"
 #include "Gui/Utils/PreferenceAction.h"
 #include "Gui/Utils/CustomMimeData.h"
@@ -49,7 +49,6 @@
 #include <QMimeData>
 #include <QApplication>
 #include <QShortcut>
-
 
 struct FileListView::Private
 {
@@ -71,7 +70,7 @@ FileListView::FileListView(QWidget* parent) :
 	m = Pimpl::make<Private>(this);
 
 	this->set_model(m->model);
-	this->setItemDelegate(new DirectoryDelegate(this));
+	this->setItemDelegate(new Gui::StyledItemDelegate(this));
 	this->setSelectionMode(QAbstractItemView::ExtendedSelection);
 	this->setDragEnabled(true);
 	this->setIconSize(QSize(16, 16));
@@ -86,13 +85,18 @@ FileListView::FileListView(QWidget* parent) :
 	new QShortcut(QKeySequence(Qt::Key_Enter), this, SIGNAL(sig_enter_pressed()), nullptr, Qt::WidgetShortcut);
 }
 
-FileListView::~FileListView() {}
+FileListView::~FileListView() = default;
 
 void FileListView::mousePressEvent(QMouseEvent* event)
 {
 	SearchableListView::mousePressEvent(event);
 
-	if(event->button() & Qt::RightButton)
+	if(event->button() & Qt::LeftButton)
+	{
+		this->drag_pressed(event->pos());
+	}
+
+	else if(event->button() & Qt::RightButton)
 	{
 		QPoint pos = QWidget::mapToGlobal(event->pos());
 
@@ -112,9 +116,6 @@ void FileListView::mousePressEvent(QMouseEvent* event)
 		m->context_menu->exec(pos);
 	}
 
-	if(event->button() & Qt::LeftButton){
-		this->drag_pressed(event->pos());
-	}
 }
 
 void FileListView::mouseMoveEvent(QMouseEvent* event)
@@ -188,7 +189,11 @@ void FileListView::dropEvent(QDropEvent *event)
 }
 
 void FileListView::language_changed() {}
-void FileListView::skin_changed() {}
+void FileListView::skin_changed()
+{
+	QFontMetrics fm = this->fontMetrics();
+	this->setIconSize(QSize(fm.height(), fm.height()));
+}
 
 void FileListView::init_context_menu()
 {

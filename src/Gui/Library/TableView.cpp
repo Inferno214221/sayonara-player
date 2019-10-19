@@ -23,30 +23,15 @@
 
 #include "Gui/Library/Header/ColumnHeader.h"
 #include "Gui/Library/Header/HeaderView.h"
-#include "Utils/Logger/Logger.h"
-#include "Utils/Set.h"
 
+#include "Utils/Set.h"
 #include <algorithm>
 
 using namespace Library;
 
-template <typename T>
-void switch_sorters(T& srcdst, T src1, T src2)
-{
-	if(srcdst == src1) {
-		srcdst = src2;
-	}
-
-	else {
-		srcdst = src1;
-	}
-}
-
 struct TableView::Private
 {
-	BoolList			shown_columns;
 	HeaderView*			header=nullptr;
-	Library::SortOrder  sortorder;
 };
 
 TableView::TableView(QWidget* parent) :
@@ -56,12 +41,6 @@ TableView::TableView(QWidget* parent) :
 
 	m->header = new HeaderView(Qt::Horizontal, this);
 	setHorizontalHeader(m->header);
-
-	connect(this, &ItemView::doubleClicked, this, &TableView::play_clicked);
-
-	connect(m->header, &HeaderView::sig_columns_changed, this, &TableView::header_actions_triggered);
-	connect(m->header, &QHeaderView::sectionClicked, this, &TableView::sort_by_column);
-	connect(m->header, &QHeaderView::sectionResized, this, &TableView::sizes_changed);
 }
 
 TableView::~TableView() = default;
@@ -70,86 +49,74 @@ void TableView::init(AbstractLibrary* library)
 {
 	init_view(library);
 
-	ColumnHeaderList headers = column_headers();
-	IntList sizes = column_header_sizes();
+	const ColumnHeaderList headers = column_headers();
 
-	if(headers.size() == sizes.size())
-	{
-		for(int i=0; i<sizes.size(); i++)
+	{ // register names at model
+		QStringList header_names;
+		for(ColumnHeaderPtr header : headers)
 		{
-			headers.at(i)->set_preferred_size(sizes.at(i));
+			header_names << header->title();
 		}
+
+		ItemModel* model = item_model();
+		model->set_header_data(header_names);
 	}
 
-	m->shown_columns = visible_columns();
-	m->sortorder = sortorder();
-
-	QStringList header_names;
-	for(ColumnHeaderPtr header : headers)
-	{
-		header->preferred_size();
-		header_names << header->title();
-	}
-
-	ItemModel* model = item_model();
-	model->set_header_data(header_names);
-
-	m->header->set_columns(headers, m->shown_columns, m->sortorder);
+	// do this initialization here after the model knows about
+	// the number of columns. Otherwise the resize column method
+	// won't work
+	m->header->init(headers, column_header_state(), sortorder());
 
 	language_changed();
-}
 
+	connect(this, &ItemView::doubleClicked, this, &TableView::play_clicked);
+
+	connect(m->header, &HeaderView::sig_columns_changed, this, &TableView::header_actions_triggered);
+	connect(m->header, &QHeaderView::sectionClicked, this, &TableView::sort_by_column);
+	connect(m->header, &QHeaderView::sectionResized, this, &TableView::section_resized);
+	connect(m->header, &QHeaderView::sectionMoved, this, &TableView::section_moved);
+}
 
 void TableView::header_actions_triggered()
 {
-	IndexSet sel_indexes = selected_items();
+	const IndexSet sel_indexes = selected_items();
 
 	std::for_each(sel_indexes.begin(), sel_indexes.end(), [this](int row){
 		this->selectRow(row);
 	});
 
-	m->shown_columns = m->header->shown_columns();
-
-	save_visible_columns(m->shown_columns);
+	save_column_header_state(m->header->saveState());
 }
-
 
 void TableView::sort_by_column(int column_idx)
 {
-	Library::SortOrder asc_sortorder, desc_sortorder;
+	Library::SortOrder sortorder = m->header->switch_sortorder(column_idx);
 
-	int idx_col = m->header->visualIndex(column_idx);
-	ColumnHeaderPtr h = m->header->column(idx_col);
-	if(!h){
-		return;
-	}
-
-	asc_sortorder = h->sortorder_asc();
-	desc_sortorder = h->sortorder_desc();
-
-	switch_sorters( m->sortorder, asc_sortorder, desc_sortorder );
-
-	save_sortorder(m->sortorder);
+	apply_sortorder(sortorder);
 }
 
-void TableView::sizes_changed()
+void TableView::section_resized()
 {
 	if(!this->isVisible()){
 		return;
 	}
 
-	IntList sizes;
-	for(int i=0; i<this->column_count(); i++)
-	{
-		sizes << this->horizontalHeader()->sectionSize(i);
-	}
+	save_column_header_state(m->header->saveState());
+}
 
-	save_column_header_sizes(sizes);
+void TableView::section_moved(int logical_index, int old_visual_index, int new_visual_index)
+{
+	Q_UNUSED(logical_index)
+	Q_UNUSED(old_visual_index)
+	Q_UNUSED(new_visual_index)
+
+	save_column_header_state(m->header->saveState());
 }
 
 void TableView::language_changed()
 {
 	ItemModel* model = item_model();
+
 	QStringList header_names;
 	for(int i=0; i<model->columnCount(); i++)
 	{
@@ -159,9 +126,9 @@ void TableView::language_changed()
 		}
 	}
 
+
 	model->set_header_data(header_names);
 }
-
 
 int TableView::index_by_model_index(const QModelIndex& idx) const
 {
