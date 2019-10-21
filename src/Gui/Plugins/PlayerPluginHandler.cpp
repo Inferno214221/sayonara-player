@@ -36,6 +36,12 @@ struct Handler::Private
 {
 	QList<Base*>	plugins;
 	Base*			current_plugin=nullptr;
+
+	bool			is_shutdown;
+
+	Private() :
+		is_shutdown(false)
+	{}
 };
 
 Handler::Handler() :
@@ -50,7 +56,16 @@ Handler::~Handler() = default;
 
 void Handler::shutdown()
 {
-	plugin_closed();
+	m->is_shutdown = true;
+
+	if(m->current_plugin)
+	{
+		SetSetting(Set::Player_ShownPlugin, m->current_plugin->get_name());
+	}
+
+	else {
+		SetSetting(Set::Player_ShownPlugin, QString());
+	}
 
 	for(Base* plugin : m->plugins)
 	{
@@ -64,8 +79,6 @@ void Handler::shutdown()
 
 Base* Handler::find_plugin(const QString& name)
 {
-	sp_log(Log::Debug, this) << "Search for plugin " << name;
-
 	for(Base* p : Algorithm::AsConst(m->plugins))
 	{
 		if(p->get_name().compare(name) == 0)
@@ -78,75 +91,57 @@ Base* Handler::find_plugin(const QString& name)
 }
 
 
-void Handler::add_plugin(Base* p)
+void Handler::add_plugin(Base* plugin)
 {
-	if(!p){
+	if(!plugin){
 		return;
 	}
 
-	m->plugins.push_back(p);
+	m->plugins.push_back(plugin);
 
-	connect(p, SIGNAL(sig_closed()), this, SLOT(plugin_closed()));
-	connect(p, SIGNAL(sig_opened()), this, SLOT(plugin_opened()));
-	connect(p, SIGNAL(sig_action_triggered(bool)), this, SLOT(plugin_action_triggered(bool)));
+	connect(plugin, &Base::sig_action_triggered, this, &Handler::plugin_action_triggered);
 
 	QString last_plugin = GetSetting(Set::Player_ShownPlugin);
-	if(p->get_name() == last_plugin)
+	if(plugin->get_name() == last_plugin)
 	{
-		m->current_plugin = p;
-		p->get_action()->setChecked(true);
+		m->current_plugin = plugin;
+		plugin->get_action()->setChecked(true);
 	}
 
-	emit sig_plugin_added(p);
+	emit sig_plugin_added(plugin);
 }
 
 void Handler::show_plugin(const QString& name)
 {
 	Base* plugin = find_plugin(name);
-	if(!plugin){
+	if(!plugin)
+	{
 		return;
 	}
 
-	sig_plugin_action_triggered(false);
 	m->current_plugin = plugin;
-	sig_plugin_action_triggered(true);
+	plugin->get_action()->setChecked(true);
 }
-
 
 void Handler::plugin_action_triggered(bool b)
 {
-	auto* plugin = static_cast<Base*>(sender());
+	if(m->is_shutdown)
+	{
+		return;
+	}
 
-	if(b){
+	Base* plugin = static_cast<Base*>(sender());
+	if(b && plugin)
+	{
 		m->current_plugin = plugin;
 	}
 
-	else {
+	else if(m->current_plugin == plugin)
+	{
 		m->current_plugin = nullptr;
 	}
 
 	emit sig_plugin_action_triggered(b);
-}
-
-void Handler::plugin_opened(Base* p)
-{
-	if(p){
-		SetSetting(Set::Player_ShownPlugin, p->get_name());
-	}
-}
-
-void Handler::plugin_opened()
-{
-	auto* p = static_cast<Base*>(sender());
-	plugin_opened(p);
-}
-
-void Handler::plugin_closed()
-{
-	m->current_plugin = nullptr;
-	SetSetting(Set::Player_ShownPlugin, QString());
-
-	emit sig_plugin_closed();
 }
 
 void Handler::language_changed()

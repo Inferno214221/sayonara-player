@@ -58,8 +58,7 @@ Base::Base(QWidget *parent) :
 	hide();
 }
 
-
-Base::~Base() {}
+Base::~Base() = default;
 
 void Base::skin_changed()
 {
@@ -75,7 +74,6 @@ bool Base::has_loading_bar() const
 {
 	return false;
 }
-
 
 QAction* Base::get_action() const
 {
@@ -116,18 +114,15 @@ void Base::language_changed()
 	}
 }
 
-
 bool Base::is_ui_initialized() const
 {
 	return m->is_initialized;
 }
 
-
 void Base::set_ui_initialized()
 {
 	m->is_initialized = true;
 }
-
 
 void Base::showEvent(QShowEvent* e)
 {
@@ -142,16 +137,13 @@ void Base::showEvent(QShowEvent* e)
 	emit sig_opened();
 }
 
-
 void Base::closeEvent(QCloseEvent* e)
 {
 	Widget::closeEvent(e);
-
-	m->pp_action->setChecked(false);
+	action_triggered(false);
 
 	emit sig_closed();
 }
-
 
 void Base::action_triggered(bool b)
 {
@@ -161,5 +153,3 @@ void Base::action_triggered(bool b)
 
 	skin_changed();
 }
-
-

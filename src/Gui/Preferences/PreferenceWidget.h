@@ -109,7 +109,7 @@ namespace Preferences
 		 * @param e
 		 */
 		void showEvent(QShowEvent* e) override;
-
+		void closeEvent(QCloseEvent* e) override;
 
 	public:
 

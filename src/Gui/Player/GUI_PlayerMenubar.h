@@ -32,6 +32,11 @@ namespace Library
 	class Container;
 }
 
+namespace PlayerPlugin
+{
+	class Base;
+}
+
 class Menubar :
 	public Gui::WidgetTemplate<QMenuBar>
 {
@@ -47,7 +52,6 @@ public:
 	explicit Menubar(QWidget* parent=nullptr);
 	~Menubar() override;
 
-	void insert_player_plugin_action(QAction* action);
 	void insert_preference_action(QAction* action);
 
 	void show_library_action(bool visible);
@@ -57,6 +61,8 @@ public:
 private:
 	void init_connections();
 	void style_changed();
+
+	QAction* current_library_changed(Library::Container* library);
 
 protected:
 	void language_changed() override;
@@ -75,7 +81,7 @@ private slots:
 	void help_clicked();
 	void about_clicked();
 	void shortcut_changed(ShortcutIdentifier identifier);
-	QAction* current_library_changed(Library::Container* library);
+	void plugin_added(PlayerPlugin::Base* plugin);
 };
 
 

@@ -200,12 +200,11 @@ void DBusMPRIS::MediaPlayer2::Raise()
 {
 	sp_log(Log::Debug, this) << "Raise";
 
-	QSize sz = GetSetting(Set::Player_Size);
-	QPoint p = GetSetting(Set::Player_Pos);
-
-	m->player->showNormal();
-	QTimer::singleShot(200, [=](){
-		m->player->setGeometry(p.x(), p.y(), sz.width(), sz.height());
+	QByteArray geometry = GetSetting(Set::Player_Geometry);
+	QTimer::singleShot(200, [=]()
+	{
+		m->player->restoreGeometry(geometry);
+		m->player->showNormal();
 	});
 }
 
@@ -404,7 +403,7 @@ void DBusMPRIS::MediaPlayer2::SetShuffle(bool shuffle)
 
 void DBusMPRIS::MediaPlayer2::SetVolume(double volume)
 {
-	m->play_manager->set_volume((int) (volume * 100));
+	m->play_manager->set_volume(int(volume * 100));
 	m->volume = volume;
 }
 

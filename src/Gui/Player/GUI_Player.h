@@ -59,27 +59,23 @@ public:
 	explicit GUI_Player(QWidget *parent=nullptr);
 	~GUI_Player() override;
 
-	void init_geometry();
+
 	void register_preference_dialog(QAction* dialog_action);
 	void request_shutdown();
 
 private:
 	void init_tray_actions();
 	void init_connections();
-
 	void init_library();
 	void init_control_splitter();
 	void init_main_splitter();
 	void init_font_change_fix();
-	void check_control_splitter(bool force);
+	void init_geometry();
 
-	void save_geometry();
+	void check_control_splitter(bool force);
 
 	void closeEvent(QCloseEvent* e) override;
 	void resizeEvent(QResizeEvent* e) override;
-	void moveEvent(QMoveEvent* e) override;
-	void keyPressEvent(QKeyEvent* e) override;
-	void keyReleaseEvent(QKeyEvent* e) override;
 	bool event(QEvent* e) override;
 
 	void language_changed() override;
@@ -103,7 +99,6 @@ private:
 	Message::Answer question_received(const QString &info, const QString &sender_name=QString(), Message::QuestionType type=Message::QuestionType::YesNo) override;
 
 
-
 private slots:
 	void playstate_changed(PlayState state);
 	void play_error(const QString& message);
@@ -114,7 +109,6 @@ private slots:
 	void current_library_changed();
 
 	void minimize();
-	void minimize_to_tray();
 	void really_close();
 
 	void tray_icon_activated(QSystemTrayIcon::ActivationReason reason);
