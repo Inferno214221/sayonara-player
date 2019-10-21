@@ -19,7 +19,7 @@
  */
 
 #include "CoverViewContextMenu.h"
-#include "CoverView.h"
+#include "Gui/Library/CoverView.h"
 #include "Gui/Utils/PreferenceAction.h"
 
 #include "Utils/Library/Sorting.h"
