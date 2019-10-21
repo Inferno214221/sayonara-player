@@ -223,6 +223,11 @@ void LocalLibrary::get_all_tracks_by_searchstring(Library::Filter filter, MetaDa
 	m->library_db->getAllTracksBySearchString(filter, v_md);
 }
 
+void LocalLibrary::get_all_tracks_by_path(const QStringList& paths, MetaDataList& v_md) const
+{
+	m->library_db->getAllTracksByPaths(paths, v_md);
+}
+
 void LocalLibrary::get_track_by_id(TrackID track_id, MetaData& md) const
 {
 	MetaData md_tmp = m->library_db->getTrackById(track_id);

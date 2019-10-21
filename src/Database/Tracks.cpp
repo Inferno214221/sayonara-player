@@ -486,6 +486,26 @@ bool Tracks::getAllTracksBySearchString(const Filter& filter, MetaDataList& resu
 	return true;
 }
 
+bool Tracks::getAllTracksByPaths(const QStringList& paths, MetaDataList& v_md) const
+{
+	QStringList queries;
+	for(int i=0; i<paths.size(); i++)
+	{
+		queries << fetch_query_tracks() + " WHERE filename LIKE :" + QString("path%1").arg(i);
+	}
+
+	QString query = queries.join(" UNION ") + ";";
+	Query q(this);
+	q.prepare(query);
+	for(int i=0; i<paths.size(); i++)
+	{
+		q.bindValue( QString(":path%1").arg(i), paths[i] + "%");
+	}
+
+	bool success = db_fetch_tracks(q, v_md);
+	return success;
+}
+
 
 bool Tracks::deleteTrack(TrackID id)
 {

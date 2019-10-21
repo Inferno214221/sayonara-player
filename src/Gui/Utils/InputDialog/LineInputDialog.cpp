@@ -121,6 +121,8 @@ void LineInputDialog::showEvent(QShowEvent* e)
 
 	ui->btn_ok->setText(Lang::get(Lang::OK));
 	ui->btn_cancel->setText(Lang::get(Lang::Cancel));
+	ui->le_input->setFocus();
+	ui->btn_ok->setDefault(true);
 
 	m->return_value = LineInputDialog::Cancelled;
 }
