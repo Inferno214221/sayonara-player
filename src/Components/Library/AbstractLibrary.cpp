@@ -646,18 +646,8 @@ void AbstractLibrary::fetch_tracks_by_paths(const QStringList& paths)
 {
 	m->tracks.clear();
 
-	MetaDataList tracks;
-	get_all_tracks(tracks);
-
-	for(const MetaData& md : tracks)
-	{
-		for(const QString& path : paths)
-		{
-			if(md.filepath().startsWith(path))
-			{
-				m->tracks << md;
-			}
-		}
+	if(!paths.isEmpty()){
+		get_all_tracks_by_path(paths, m->tracks);
 	}
 
 	emit_stuff();

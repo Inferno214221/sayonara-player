@@ -92,6 +92,7 @@ private:
 	void get_all_tracks_by_artist(IdList artist_ids, MetaDataList& v_md, Library::Filter filter) const override;
 	void get_all_tracks_by_album(IdList album_ids, MetaDataList& v_md, Library::Filter filter) const override;
 	void get_all_tracks_by_searchstring(Library::Filter filter, MetaDataList& v_md) const override;
+	void get_all_tracks_by_path(const QStringList& paths, MetaDataList& v_md) const override;
 
 	void get_track_by_id(TrackID track_id, MetaData& md) const override;
 	void get_album_by_id(AlbumId album_id, Album& album) const override;
