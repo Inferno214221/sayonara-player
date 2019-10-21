@@ -9,16 +9,7 @@ file(GLOB_RECURSE SOURCES . *.cpp)
 file(GLOB_RECURSE HEADERS . *.h)
 
 set(APPLICATION_LIBRARIES
-	gui_player
-	gui_library
-	gui_directories
-	gui_plugins
-	gui_preferences
-	gui_somafm
-	gui_soundcloud
-	gui_resources
-
-	sayonara_components
+	sayonara_gui
 )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES} ${HEADERS})

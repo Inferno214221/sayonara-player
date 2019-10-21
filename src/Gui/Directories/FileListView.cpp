@@ -95,27 +95,6 @@ void FileListView::mousePressEvent(QMouseEvent* event)
 	{
 		this->drag_pressed(event->pos());
 	}
-
-	else if(event->button() & Qt::RightButton)
-	{
-		QPoint pos = QWidget::mapToGlobal(event->pos());
-
-		if(!m->context_menu){
-			init_context_menu();
-		}
-
-		m->context_menu->show_action(
-			Library::ContextMenu::EntryLyrics,
-			(selected_rows().size()==1)
-		);
-
-		m->context_menu->set_rename_visible(
-			(selected_rows().size()==1)
-		);
-
-		m->context_menu->exec(pos);
-	}
-
 }
 
 void FileListView::mouseMoveEvent(QMouseEvent* event)
@@ -127,6 +106,38 @@ void FileListView::mouseMoveEvent(QMouseEvent* event)
 		{
 			this->drag_released(Dragable::ReleaseReason::Destroyed);
 		});
+	}
+}
+
+void FileListView::contextMenuEvent(QContextMenuEvent* event)
+{
+	QPoint pos = QWidget::mapToGlobal(event->pos());
+
+	if(!m->context_menu){
+		init_context_menu();
+	}
+
+	const QModelIndexList indexes = selected_rows();
+	int num_audio_files = std::count_if(indexes.begin(), indexes.end(), [](const QModelIndex& index)
+	{
+		QString filename = index.data(Qt::UserRole).toString();
+		return Util::File::is_soundfile(filename);
+	});
+
+	m->context_menu->show_action
+	(
+		Library::ContextMenu::EntryLyrics,
+		(num_audio_files==1)
+	);
+
+	m->context_menu->set_rename_visible
+	(
+		(num_audio_files==1)
+	);
+
+	if(num_audio_files > 0)
+	{
+		m->context_menu->exec(pos);
 	}
 }
 
@@ -213,8 +224,6 @@ void FileListView::init_context_menu()
 	connect(m->context_menu, &DirectoryContextMenu::sig_append_clicked, this, &FileListView::sig_append_clicked);
 	connect(m->context_menu, &DirectoryContextMenu::sig_rename_clicked, this, &FileListView::rename_file_clicked);
 }
-
-
 
 QModelIndexList FileListView::selected_rows() const
 {

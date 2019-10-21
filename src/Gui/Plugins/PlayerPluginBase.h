@@ -51,7 +51,6 @@ namespace PlayerPlugin
 
 		virtual void skin_changed() override;
 
-
 	signals:
 		/**
 		 * @brief signal is emitted when the plugin action is triggered\n

@@ -344,6 +344,12 @@ void SC::Library::get_all_tracks_by_searchstring(::Library::Filter filter, MetaD
 	v_md.sort(sortorder().so_tracks);
 }
 
+void SC::Library::get_all_tracks_by_path(const QStringList& paths, MetaDataList& v_md) const
+{
+	Q_UNUSED(paths)
+	Q_UNUSED(v_md)
+}
+
 void SC::Library::update_track(const MetaData& md)
 {
 	m->scd->updateTrack(md);

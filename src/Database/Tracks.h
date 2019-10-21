@@ -54,6 +54,7 @@ namespace DB
 			virtual bool getAllTracksByArtist(const IdList& artistIds, MetaDataList& result,
                                               const ::Library::Filter& filter) const;
 			virtual bool getAllTracksBySearchString(const ::Library::Filter& filter, MetaDataList& result) const;
+			virtual bool getAllTracksByPaths(const QStringList& paths, MetaDataList& v_md) const;
 
 
 			virtual MetaData	getTrackById(TrackID id) const;

@@ -219,6 +219,9 @@ QVariant FileListModel::data(const QModelIndex &index, int role) const
 
 			return QIcon();
 
+		case Qt::UserRole:
+			return filename;
+
 		default:
 			return QVariant();
 	}
@@ -248,10 +251,7 @@ QMimeData* FileListModel::mimeData(const QModelIndexList& indexes) const
 			continue;
 		}
 
-		QString filename = m->files[row];
-		if(Util::File::is_soundfile(filename) || Util::File::is_playlistfile(filename)){
-			urls << QUrl::fromLocalFile(filename);
-		}
+		urls << QUrl::fromLocalFile(m->files[row]);
 	}
 
 	if(urls.isEmpty()){
@@ -267,11 +267,11 @@ QMimeData* FileListModel::mimeData(const QModelIndexList& indexes) const
 
 Qt::ItemFlags FileListModel::flags(const QModelIndex& index) const
 {
-	QString file = m->files[index.row()];
-	if(Util::File::is_soundfile(file) || Util::File::is_playlistfile(file))
+	if(index.isValid())
 	{
-		return (Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsEnabled);
+		return  Qt::ItemFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled);
 	}
 
 	return Qt::NoItemFlags;
+
 }

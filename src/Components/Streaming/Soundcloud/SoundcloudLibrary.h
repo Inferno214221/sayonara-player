@@ -74,6 +74,7 @@ namespace SC
 		void	get_all_tracks_by_artist(IdList artist_ids, MetaDataList& v_md, ::Library::Filter filter) const override;
 		void	get_all_tracks_by_album(IdList album_ids, MetaDataList& v_md, ::Library::Filter filter) const override;
 		void	get_all_tracks_by_searchstring(::Library::Filter filter, MetaDataList& v_md) const override;
+		void	get_all_tracks_by_path(const QStringList& paths, MetaDataList& v_md) const override;
 
 		void	update_track(const MetaData& md);
 		void	update_album(const Album& album);
