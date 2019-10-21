@@ -39,16 +39,12 @@ namespace PlayerPlugin
 
 	signals:
 		void sig_plugin_added(PlayerPlugin::Base* plugin);
-		void sig_plugin_closed();
 		void sig_plugin_action_triggered(bool b);
-
-	private:
-		void plugin_opened(Base* p);
 
 	private slots:
 		void plugin_action_triggered(bool b);
-		void plugin_opened();
-		void plugin_closed();
+
+	protected:
 		void language_changed();
 
 	public:

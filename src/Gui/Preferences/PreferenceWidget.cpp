@@ -43,7 +43,7 @@ Base::Base(const QString& identifier) :
 	m = Pimpl::make<Private>(identifier);
 }
 
-Base::~Base() {}
+Base::~Base() = default;
 
 QString Base::identifier() const
 {
@@ -88,12 +88,18 @@ void Base::showEvent(QShowEvent *e)
 	}
 }
 
+void Base::closeEvent(QCloseEvent* e)
+{
+	m->geometry = this->saveGeometry();
+	Gui::Widget::closeEvent(e);
+}
+
 bool Base::is_ui_initialized() const
 {
 	return m->is_initialized;
 }
 
-QAction *Base::action()
+QAction* Base::action()
 {
 	// action has to be initialized here, because pure
 	// virtual get_action_name should not be called from ctor

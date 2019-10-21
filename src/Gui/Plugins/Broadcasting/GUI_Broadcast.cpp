@@ -69,7 +69,10 @@ GUI_Broadcast::GUI_Broadcast(QWidget *parent) :
 
 GUI_Broadcast::~GUI_Broadcast()
 {
-	m->server->deleteLater();
+	if(m->server)
+	{
+		m->server->deleteLater();
+	}
 
 	if(ui)
 	{

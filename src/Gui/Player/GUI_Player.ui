@@ -32,7 +32,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
-     <widget class="QSplitter" name="splitter">
+     <widget class="Gui::Splitter" name="splitter">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
@@ -42,7 +42,7 @@
       <property name="childrenCollapsible">
        <bool>false</bool>
       </property>
-      <widget class="QSplitter" name="splitterControls">
+      <widget class="Gui::Splitter" name="splitterControls">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
@@ -146,6 +146,12 @@
    <class>GUI_PlayerPlugin</class>
    <extends>QWidget</extends>
    <header>Gui/Plugins/Generic/GUI_PlayerPlugin.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Gui::Splitter</class>
+   <extends>QSplitter</extends>
+   <header>Gui/Utils/Widgets/Splitter.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

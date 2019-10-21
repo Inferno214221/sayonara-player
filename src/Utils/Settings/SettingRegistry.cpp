@@ -147,8 +147,7 @@ bool SettingRegistry::init()
 	register_setting<Set::Player_FontName>( "player_font", "" );					// set by Style:: later
 	register_setting<Set::Player_FontSize>( "player_font_size", 0 );				// set by Style:: later
 	register_setting<Set::Player_FadingCover>( "player_fading_cover", true );
-	register_setting<Set::Player_Size>( "player_size", QSize(1200,800) );
-	register_setting<Set::Player_Pos>( "player_pos", QPoint(50,50) );
+	register_setting<Set::Player_Geometry>( "player_geometry", QByteArray() );
 	register_setting<Set::Player_Fullscreen>( "player_fullscreen", false );
 	register_setting<Set::Player_Maximized>( "player_maximized", false );
 	register_setting<Set::Player_ShownPlugin>( "shown_plugin", QString() );

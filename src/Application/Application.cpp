@@ -318,7 +318,6 @@ bool Application::init(const QStringList& files_to_play)
 	ListenSetting(SetNoDB::Player_MetaStyle, Application::skin_changed);
 
 	m->player->show();
-	m->player->init_geometry();
 
 	return true;
 }

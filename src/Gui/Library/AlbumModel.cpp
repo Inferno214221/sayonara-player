@@ -242,8 +242,9 @@ bool AlbumModel::setData(const QModelIndex& index, const QVariant& value, int ro
 			}
 
 			m->uto->set_album_rating(album, rating);
+			library()->refresh_current_view();
 
-			emit dataChanged(index, this->index(row, columnCount() - 1));
+			//emit dataChanged(this->index(row, 0), this->index(row, columnCount() - 1));
 
 			return true;
 		}

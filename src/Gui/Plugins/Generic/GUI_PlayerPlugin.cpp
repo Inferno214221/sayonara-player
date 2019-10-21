@@ -42,12 +42,10 @@ GUI_PlayerPlugin::GUI_PlayerPlugin(QWidget *parent) :
 	connect(ui->btn_close, &QPushButton::clicked, this, &GUI_PlayerPlugin::close);
 }
 
-
 GUI_PlayerPlugin::~GUI_PlayerPlugin()
 {
 	delete ui; ui=nullptr;
 }
-
 
 void GUI_PlayerPlugin::show(PlayerPlugin::Base* player_plugin)
 {
@@ -72,13 +70,11 @@ void GUI_PlayerPlugin::show(PlayerPlugin::Base* player_plugin)
 	Widget::show();
 }
 
-
 void GUI_PlayerPlugin::show_current_plugin()
 {
 	PlayerPlugin::Handler* pph = PlayerPlugin::Handler::instance();
 	show(pph->current_plugin());
 }
-
 
 void GUI_PlayerPlugin::close_current_plugin()
 {
@@ -88,9 +84,6 @@ void GUI_PlayerPlugin::close_current_plugin()
 
 	m->current_plugin = nullptr;
 }
-
-
-
 
 void GUI_PlayerPlugin::language_changed()
 {

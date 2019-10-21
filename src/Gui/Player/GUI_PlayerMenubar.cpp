@@ -36,6 +36,9 @@
 #include "Gui/Utils/GuiUtils.h"
 #include "Gui/Utils/Style.h"
 
+#include "Gui/Plugins/PlayerPluginBase.h"
+#include "Gui/Plugins/PlayerPluginHandler.h"
+
 #include "Utils/Settings/Settings.h"
 #include "Utils/Utils.h"
 #include "Utils/Language/Language.h"
@@ -180,12 +183,6 @@ Menubar::Menubar(QWidget* parent) :
 
 Menubar::~Menubar() = default;
 
-
-void Menubar::insert_player_plugin_action(QAction* action)
-{
-	m->menu_view->insertAction(m->sep_after_plugins, action);
-}
-
 void Menubar::insert_preference_action(QAction* action)
 {
 	m->menu_file->insertAction(m->sep_after_preferences, action);
@@ -262,6 +259,19 @@ void Menubar::show_library_menu(bool b)
 	}
 }
 
+void Menubar::plugin_added(PlayerPlugin::Base* plugin)
+{
+	auto* pph = PlayerPlugin::Handler::instance();
+	QList<PlayerPlugin::Base*> lst = pph->all_plugins();
+
+	QAction* action = plugin->get_action();
+	QKeySequence ks("Shift+F" + QString::number(lst.size()));
+	action->setShortcut(ks);
+	action->setData(plugin->get_name());
+
+	m->menu_view->insertAction(m->sep_after_plugins, action);
+}
+
 void Menubar::init_connections()
 {
 	// file
@@ -295,6 +305,9 @@ void Menubar::init_connections()
 	connect(lph, &Library::PluginHandler::sig_libraries_changed, this, [=](){
 		this->current_library_changed(lph->current_library());
 	});
+
+	auto* pph = PlayerPlugin::Handler::instance();
+	connect(pph, &PlayerPlugin::Handler::sig_plugin_added, this, &Menubar::plugin_added);
 }
 
 void Menubar::language_changed()

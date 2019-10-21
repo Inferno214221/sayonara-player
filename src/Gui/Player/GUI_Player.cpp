@@ -37,7 +37,6 @@
 #include "Gui/Plugins/PlayerPluginHandler.h"
 
 #include "Utils/Utils.h"
-#include "Utils/globals.h"
 #include "Utils/Message/Message.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Language/Language.h"
@@ -45,7 +44,6 @@
 #include "Utils/MetaData/MetaData.h"
 
 #include "Gui/Utils/GuiUtils.h"
-#include "Gui/Utils/Icons.h"
 #include "Gui/Utils/EventFilter.h"
 
 #include <QAction>
@@ -55,25 +53,16 @@
 struct GUI_Player::Private
 {
 	Menubar*					menubar=nullptr;
-	GUI_Logger*					logger=nullptr;
+	std::shared_ptr<GUI_Logger>	logger=nullptr;
 	GUI_TrayIcon*				tray_icon=nullptr;
 	GUI_ControlsBase*			controls=nullptr;
-
-	bool						geometry_initialized;
 	bool						shutdown_requested;
-	bool						ctrl_pressed;
 
-	Private() :
-		geometry_initialized(false),
-		shutdown_requested(false),
-		ctrl_pressed(false)
+	Private(GUI_Player* parent) :
+		shutdown_requested(false)
 	{
-		logger = new GUI_Logger();
-	}
-
-	~Private()
-	{
-		delete logger; logger = nullptr;
+		logger = std::make_shared<GUI_Logger>();
+		menubar = new Menubar(parent);
 	}
 };
 
@@ -82,7 +71,7 @@ GUI_Player::GUI_Player(QWidget* parent) :
 	Gui::MainWindow(parent),
 	MessageReceiverInterface("Player Main Window")
 {
-	m = Pimpl::make<Private>();
+	m = Pimpl::make<Private>(this);
 
 	language_changed();
 
@@ -94,15 +83,14 @@ GUI_Player::GUI_Player(QWidget* parent) :
 
 	Message::register_receiver(this);
 
-	m->menubar = new Menubar(this);
-	setMenuBar(m->menubar);
-
-	setWindowIcon(Gui::Util::icon("logo.png", Gui::Util::NoTheme));
-	setAttribute(Qt::WA_DeleteOnClose, false);
+	this->setMenuBar(m->menubar);
+	this->setWindowIcon(Gui::Util::icon("logo.png", Gui::Util::NoTheme));
+	this->setAttribute(Qt::WA_DeleteOnClose, false);
 
 	init_controls();
 	init_library();
 	init_font_change_fix();
+	init_geometry();		// init geometry before init_connections
 	init_connections();
 	init_tray_actions();
 
@@ -123,13 +111,20 @@ GUI_Player::GUI_Player(QWidget* parent) :
 GUI_Player::~GUI_Player()
 {
 	sp_log(Log::Debug, this) << "Player closed.";
-
 	delete ui; ui=nullptr;
 }
 
-
 void GUI_Player::init_geometry()
 {
+	QByteArray geometry = GetSetting(Set::Player_Geometry);
+	if(!geometry.isEmpty()) {
+		this->restoreGeometry(geometry);
+	}
+
+	else {
+		this->setGeometry(50, 50, 1200, 800);
+	}
+
 	if(GetSetting(Set::Player_StartInTray)) {
 		this->setHidden(true);
 	}
@@ -142,19 +137,12 @@ void GUI_Player::init_geometry()
 		this->showMaximized();
 	}
 
-	else
-	{
-		QPoint pos = GetSetting(Set::Player_Pos);
-		QSize sz = GetSetting(Set::Player_Size);
-
-		this->setGeometry(pos.x(), pos.y(), sz.width(), sz.height());
-		this->showNormal();
-
-		init_main_splitter();
-		init_control_splitter();
+	else {
+		this->showNormal();	
 	}
 
-	m->geometry_initialized = true;
+	this->init_main_splitter();
+	this->init_control_splitter();
 }
 
 
@@ -163,43 +151,51 @@ void GUI_Player::init_main_splitter()
 	ui->library_widget->setVisible(GetSetting(Set::Lib_Show));
 
 	QByteArray splitter_state = GetSetting(Set::Player_SplitterState);
-	if(splitter_state.size() <= 1)
+	if(!splitter_state.isEmpty())
 	{
-		int w1 = width() / 3;
-		int w2 = width() - w1;
-		ui->splitter->setSizes({w1, w2});
-
-		SetSetting(Set::Player_SplitterState, ui->splitter->saveState());
+		ui->splitter->restoreState(splitter_state);
 	}
 
 	else
 	{
-		ui->splitter->restoreState(splitter_state);
+		int w1 = width() / 3;
+		int w2 = width() - w1;
+		ui->splitter->setSizes({w1, w2});
 	}
 }
 
 void GUI_Player::init_control_splitter()
 {
 	QByteArray splitter_state = GetSetting(Set::Player_SplitterControls);
-	ui->splitterControls->restoreState(splitter_state);
+	if(!splitter_state.isEmpty())
+	{
+		ui->splitterControls->restoreState(splitter_state);
+	}
+
+	else
+	{
+		this->check_control_splitter(true);
+	}
 }
 
 void GUI_Player::init_font_change_fix()
 {
-	auto* filter = new Gui::GenericFilter(
+	auto* filter = new Gui::GenericFilter
+	(
 		QList<QEvent::Type>{QEvent::Paint},
 		this
 	);
 
-	installEventFilter(filter);
-
-	connect(filter, &Gui::GenericFilter::sig_event, this, [=](QEvent::Type t){
+	connect(filter, &Gui::GenericFilter::sig_event, this, [=](QEvent::Type t)
+	{
 		Q_UNUSED(t)
 
 		this->removeEventFilter(filter);
 		this->skin_changed();
 		this->update();
 	});
+
+	installEventFilter(filter);
 }
 
 void GUI_Player::init_connections()
@@ -217,12 +213,11 @@ void GUI_Player::init_connections()
 	connect(ui->splitterControls, &QSplitter::splitterMoved, this, &GUI_Player::splitter_controls_moved);
 
 	connect(m->menubar, &Menubar::sig_close_clicked, this, &GUI_Player::really_close);
-	connect(m->menubar, &Menubar::sig_logger_clicked, m->logger, &GUI_Logger::show);
+	connect(m->menubar, &Menubar::sig_logger_clicked, m->logger.get(), &GUI_Logger::show);
 	connect(m->menubar, &Menubar::sig_minimize_clicked, this, &GUI_Player::minimize);
 
 	auto* pph = PlayerPlugin::Handler::instance();
 	connect(pph, &PlayerPlugin::Handler::sig_plugin_added, this, &GUI_Player::plugin_added);
-	connect(pph, &PlayerPlugin::Handler::sig_plugin_closed, ui->plugin_widget, &QWidget::close);
 	connect(pph, &PlayerPlugin::Handler::sig_plugin_action_triggered, this, &GUI_Player::plugin_action_triggered);
 
 	auto* dbl_click_filter = new Gui::GenericFilter(QEvent::MouseButtonDblClick, ui->splitterControls);
@@ -248,7 +243,7 @@ void GUI_Player::init_tray_actions()
 	connect(tray_icon, &GUI_TrayIcon::sig_wheel_changed, m->controls, &GUI_ControlsBase::change_volume_by_tick);
 	connect(tray_icon, &GUI_TrayIcon::activated, this, &GUI_Player::tray_icon_activated);
 
-	if(GetSetting(Set::Player_ShowTrayIcon)){
+	if(GetSetting(Set::Player_ShowTrayIcon)) {
 		tray_icon->show();
 	}
 
@@ -256,37 +251,27 @@ void GUI_Player::init_tray_actions()
 }
 
 void GUI_Player::tray_icon_activated(QSystemTrayIcon::ActivationReason reason)
-{
-	bool min_to_tray = GetSetting(Set::Player_Min2Tray);
-	if(reason != QSystemTrayIcon::Trigger){
+{	
+	if(reason != QSystemTrayIcon::Trigger) {
 		return;
 	}
 
-	bool invisible = (this->isMinimized() || !isVisible() || !isActiveWindow());
-
-	if(invisible) {
+	if(this->isMinimized() || !isVisible() || !isActiveWindow()) {
 		raise();
 	}
 
-	else if(min_to_tray) {
-		minimize_to_tray();
-	}
-
 	else {
-		showMinimized();
+		minimize();
 	}
 }
 
 void GUI_Player::current_track_changed(const MetaData& md)
 {
-	bool title_empty = md.title().trimmed().isEmpty();
-	bool artist_empty = md.artist().trimmed().isEmpty();
-
-	if(title_empty) {
+	if(md.title().trimmed().isEmpty()) {
 		this->setWindowTitle("Sayonara " + GetSetting(Set::Player_Version));
 	}
 
-	else if(artist_empty) {
+	else if(md.artist().trimmed().isEmpty()) {
 		this->setWindowTitle(md.title());
 	}
 
@@ -306,23 +291,16 @@ void GUI_Player::playstate_changed(PlayState state)
 void GUI_Player::play_error(const QString& message)
 {
 	MetaData md = PlayManager::instance()->current_track();
-	QString err = message + "\n\n" + md.filepath();
-	Message::warning(err, Lang::get(Lang::Play));
+	Message::warning
+	(
+		message + "\n\n" + md.filepath(),
+		Lang::get(Lang::Play)
+	);
 }
-
 
 void GUI_Player::plugin_added(PlayerPlugin::Base* plugin)
 {
 	auto* pph = PlayerPlugin::Handler::instance();
-	QList<PlayerPlugin::Base*> lst = pph->all_plugins();
-
-	QAction* action = plugin->get_action();
-	QKeySequence ks("Shift+F" + QString::number(lst.size()));
-	action->setShortcut(ks);
-	action->setData(plugin->get_name());
-
-	m->menubar->insert_player_plugin_action(action);
-
 	if(plugin == pph->current_plugin())
 	{
 		ui->plugin_widget->show_current_plugin();
@@ -343,41 +321,34 @@ void GUI_Player::plugin_action_triggered(bool b)
 
 void GUI_Player::init_controls()
 {
-	controlstyle_changed();
-}
-
-void GUI_Player::controlstyle_changed()
-{
-	if(m->controls)
-	{
-		ui->controls->layout()->removeWidget(m->controls);
-		m->controls->deleteLater();
-	}
-
-	int h = 0;
-	if(GetSetting(Set::Player_ControlStyle) == 0)
-	{
+	if(GetSetting(Set::Player_ControlStyle) == 0) {
 		m->controls = new GUI_Controls();
 	}
 
-	else
-	{
+	else {
 		m->controls = new GUI_ControlsNew();
-		h = 350;
 	}
 
 	m->controls->init();
-
 	ui->controls->layout()->addWidget(m->controls);
+	ui->splitterControls->set_handle_enabled(m->controls->is_extern_resize_allowed());
+}
 
-	if(m->geometry_initialized)
-	{
-		ui->splitterControls->setSizes({h, this->height() - h});
-		save_geometry();
+
+void GUI_Player::controlstyle_changed()
+{
+	ui->controls->layout()->removeWidget(m->controls);
+	m->controls->deleteLater();
+
+	init_controls();
+
+	if(!m->controls->is_extern_resize_allowed()) {
+		ui->splitterControls->setSizes({0, this->height()});
 	}
 
-	splitter_main_moved(0, 0);
-	splitter_controls_moved(0, 0);
+	else {
+		ui->splitterControls->setSizes({350, this->height() - 350});
+	}
 }
 
 
@@ -412,8 +383,6 @@ void GUI_Player::init_library()
 
 void GUI_Player::show_library_changed()
 {
-	bool is_visible = GetSetting(Set::Lib_Show);
-
 	// we have to do this here because init_library will show/hide ui->library_widget
 	bool was_visible = ui->library_widget->isVisible();
 	int old_lib_width = ui->library_widget->width();
@@ -424,7 +393,7 @@ void GUI_Player::show_library_changed()
 	QList<int> sizes = ui->splitter->sizes();
 	QByteArray splitter_controls_state = ui->splitterControls->saveState();
 
-	if(is_visible)
+	if(GetSetting(Set::Lib_Show))
 	{
 		if(!was_visible)
 		{
@@ -446,7 +415,7 @@ void GUI_Player::show_library_changed()
 		}
 	}
 
-	if(m->geometry_initialized && (player_size != this->size()))
+	if((player_size != this->size()))
 	{
 		QTimer::singleShot(100, this, [=]()
 		{
@@ -487,46 +456,21 @@ void GUI_Player::remove_current_library()
 	}
 }
 
-void GUI_Player::save_geometry()
+void GUI_Player::splitter_main_moved(int /*pos*/, int /*idx*/)
 {
-	if(m->geometry_initialized)
-	{
-		SetSetting(Set::Player_Pos, this->pos());
-		SetSetting(Set::Player_Size, this->size());
-		SetSetting(Set::Player_SplitterState, ui->splitter->saveState());
-		SetSetting(Set::Player_SplitterControls, ui->splitterControls->saveState());
-	}
+	check_control_splitter((QApplication::keyboardModifiers() & Qt::ControlModifier));
 }
 
-void GUI_Player::splitter_main_moved(int pos, int idx)
+void GUI_Player::splitter_controls_moved(int /*pos*/, int /*idx*/)
 {
-	Q_UNUSED(pos); Q_UNUSED(idx);
-
-	check_control_splitter(m->ctrl_pressed);
-	save_geometry();
-}
-
-void GUI_Player::splitter_controls_moved(int pos, int idx)
-{
-	Q_UNUSED(pos); Q_UNUSED(idx);
-
-	if(m->controls->is_extern_resize_allowed() == false)
-	{
-		QByteArray state = GetSetting(Set::Player_SplitterControls);
-		ui->splitterControls->restoreState(state);
-	}
-
-	else
-	{
-		check_control_splitter(false);
-		save_geometry();
-	}
+	check_control_splitter(false);
 }
 
 void GUI_Player::check_control_splitter(bool force)
 {
-	if(m->controls->is_extern_resize_allowed() && m->geometry_initialized)
+	if(m->controls && m->controls->is_extern_resize_allowed())
 	{
+		// remove empty space on top/bottom of cover
 		int difference = m->controls->btn_cover()->vertical_padding();
 		if(difference > 0 || force)
 		{
@@ -535,11 +479,9 @@ void GUI_Player::check_control_splitter(bool force)
 				sizes[1] += difference;
 
 			ui->splitterControls->setSizes(sizes);
-			save_geometry();
 		}
 	}
 }
-
 
 void GUI_Player::language_changed()
 {
@@ -553,19 +495,14 @@ void GUI_Player::language_changed()
 
 void GUI_Player::minimize()
 {
-	tray_icon_activated(QSystemTrayIcon::Trigger);
-}
-
-void GUI_Player::minimize_to_tray()
-{
-	if(this->isHidden()){
-		return;
+	if(GetSetting(Set::Player_Min2Tray)) {
+		hide();
 	}
 
-	save_geometry();
-	this->hide();
+	else {
+		showMinimized();
+	}
 }
-
 
 void GUI_Player::fullscreen_changed()
 {
@@ -592,71 +529,31 @@ void GUI_Player::request_shutdown()
 	m->shutdown_requested = true;
 }
 
-
-void GUI_Player::keyPressEvent(QKeyEvent* e)
-{
-	m->ctrl_pressed = ((e->modifiers() & Qt::ControlModifier) != 0);
-	Gui::MainWindow::keyPressEvent(e);
-}
-
-void GUI_Player::keyReleaseEvent(QKeyEvent* e)
-{
-	m->ctrl_pressed = ((e->modifiers() & Qt::ControlModifier) != 0);
-	Gui::MainWindow::keyReleaseEvent(e);
-}
-
-void GUI_Player::moveEvent(QMoveEvent* e)
-{
-	Gui::MainWindow::moveEvent(e);
-	save_geometry();
-}
-
 void GUI_Player::resizeEvent(QResizeEvent* e)
 {
 	Gui::MainWindow::resizeEvent(e);
-
-	bool is_maximized = GetSetting(Set::Player_Maximized);
-	bool is_fullscreen = GetSetting(Set::Player_Fullscreen);
-
-	if(is_maximized) {
-		SetSetting(Set::Player_Fullscreen, false);
-	}
-
-	if( !is_maximized && !this->isMaximized() &&
-		!is_fullscreen && !this->isFullScreen())
-	{
-		save_geometry();
-	}
-
-	if(m->controls)
-	{
-		bool b = m->ctrl_pressed;
-		m->ctrl_pressed = true;
-		this->splitter_main_moved(0, 0);
-		m->ctrl_pressed = b;
-	}
+	check_control_splitter(true);
 }
-
 
 void GUI_Player::closeEvent(QCloseEvent* e)
 {
 	bool min_to_tray = GetSetting(Set::Player_Min2Tray);
 
+	SetSetting(Set::Player_Geometry, this->saveGeometry());
 	SetSetting(Set::Player_Maximized, this->isMaximized());
 	SetSetting(Set::Player_Fullscreen, this->isFullScreen());
-	SetSetting(Set::Player_Pos, this->pos());
+	SetSetting(Set::Player_SplitterState, ui->splitter->saveState());
+	SetSetting(Set::Player_SplitterControls, ui->splitterControls->saveState());
 
 	if(!m->shutdown_requested && min_to_tray && !GetSetting(SetNoDB::Player_Quit))
 	{
-		if(GetSetting(Set::Player_514Fix))
-		{
+		if(GetSetting(Set::Player_514Fix)) {
 			e->ignore();
-			QTimer::singleShot(10, this, &GUI_Player::minimize_to_tray);
+			QTimer::singleShot(10, this, &GUI_Player::hide);
 		}
 
-		else
-		{
-			minimize_to_tray();
+		else {
+			hide();
 		}
 	}
 

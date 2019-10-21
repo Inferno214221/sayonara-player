@@ -84,8 +84,7 @@ enum class SettingKey : unsigned short
 	Player_MetaStyle,
 	Player_FadingCover,
 	Player_ControlStyle,
-	Player_Size,
-	Player_Pos,
+	Player_Geometry,
 	Player_Fullscreen,
 	Player_Maximized,
 	Player_ShownPlugin,
@@ -292,10 +291,9 @@ class SettingIdentifier
 	INST(QString,			Player_FontName)			/* current font name */
 	INST(int,				Player_FontSize)			/* current font size */
 	INST(bool,				Player_FadingCover)			/* If cover buttons should fade */
-	INST(QSize,				Player_Size)				/* player size */
-	INST(QPoint,			Player_Pos)				/* player position */
 	INST(bool,				Player_Fullscreen)			/* player fullscreen */
 	INST(bool,				Player_Maximized)			/* player maximized */
+	INST(QByteArray,		Player_Geometry)			/* player geometry */
 	INST(QString,			Player_ShownPlugin)			/* current shown plugin in player, empty if none */
 	INST(bool,				Player_OneInstance)			/* only one Sayonara instance is allowed */
 	INST(bool,				Player_Min2Tray)			/* minimize Sayonara to tray */
