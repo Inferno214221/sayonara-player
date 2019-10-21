@@ -38,8 +38,7 @@ add_library(${PROJECT_NAME} STATIC ${HEADERS} ${SOURCES} ${COMPONENT_RESOURCES_R
 
 target_link_libraries(${PROJECT_NAME}
 	sayonara_database
-	interface_audiodatareceiver
-	interface_notifications
+	sayonara_interfaces
 
 	${GSTREAMER_LIBRARIES}
 	${GSTREAMER_BASE_LIBRARIES}

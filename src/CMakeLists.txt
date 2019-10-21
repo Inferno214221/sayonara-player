@@ -178,8 +178,6 @@ if(WIN32)
 endif()
 
 target_link_libraries(${PROJECT_NAME}
-	gui_resources
-
 	sayonara_application
 	sayonara_languages
 
@@ -198,5 +196,3 @@ if(WIN32)
 else()
 	install(TARGETS ${PROJECT_NAME} DESTINATION bin)
 endif()
-
-

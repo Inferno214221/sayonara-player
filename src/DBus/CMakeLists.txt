@@ -60,9 +60,8 @@ qt5_add_dbus_interface(DBUS_SOURCES
 
 add_library(${PROJECT_NAME} STATIC ${DBUS_SOURCES} ${DBUS_HEADERS})
 target_link_libraries(${PROJECT_NAME}
-	sayonara_components
-	gui_utils
-	interface_notifications
+	sayonara_gui
+	sayonara_interfaces
 
 	Qt5::Core
 	Qt5::DBus
