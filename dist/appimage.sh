@@ -15,6 +15,11 @@ case "$1" in
 		cd build
 		export EXTRA_QT_PLUGINS="iconengines,sqldrivers/libqsqlite.so,platforms/libqxcb.so" 
 		export QMAKE="/opt/qt512/bin/qmake"
+		export QT_BASE_DIR=/opt/qt512
+		export QTDIR=$QT_BASE_DIR
+		export PATH=$QT_BASE_DIR/bin:$PATH
+		export LD_LIBRARY_PATH=$QT_BASE_DIR/lib/x86_64-linux-gnu:$QT_BASE_DIR/lib:$LD_LIBRARY_PATH
+		export PKG_CONFIG_PATH=$QT_BASE_DIR/lib/pkgconfig:$PKG_CONFIG_PATH
 		linuxdeploy-x86_64.AppImage --appdir=AppDir --desktop-file=./AppDir/usr/share/applications/sayonara.desktop --plugin=qt
 		appimagetool-x86_64.AppImage AppDir
 		;;
