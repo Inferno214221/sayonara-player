@@ -14,7 +14,6 @@ case "$1" in
 	deploy)
 		cd build
 		export EXTRA_QT_PLUGINS="iconengines,sqldrivers/libqsqlite.so,platforms/libqxcb.so" 
-		export QMAKE="/usr/lib/x86_64-linux-gnu/qt5/bin/qmake" 
 		linuxdeploy-x86_64.AppImage --appdir=AppDir --desktop-file=./AppDir/usr/share/applications/sayonara.desktop --plugin=qt
 		appimagetool-x86_64.AppImage AppDir
 		;;
