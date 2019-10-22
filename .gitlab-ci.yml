@@ -14,6 +14,8 @@ build-sayonara:
   artifacts:
     untracked: true
     expire_in: 1 day
+  only:
+    - master
 
 
 # Unit tests
@@ -28,6 +30,8 @@ test-sayonara:
     when: on_failure
     untracked: true
     expire_in: 2 days
+  only:
+    - master
 
 
 # Packages
