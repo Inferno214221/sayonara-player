@@ -9,7 +9,7 @@ build-sayonara:
   stage: build
   script: 
     - mkdir build && cd build
-    - cmake .. -DWITH_COTIRE=1
+    - cmake .. -DWITH_COTIRE=1 -DWITH_TESTS=1
     - make -j8
   artifacts:
     untracked: true

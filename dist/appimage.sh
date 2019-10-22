@@ -7,13 +7,9 @@ set -e
 case "$1" in
 	build)
 		mkdir -p build && cd build
-		cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DWITH_COTIRE=1 -DWITH_TESTS=1 -DCMAKE_PREFIX_PATH=/opt/qt512
+		cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DWITH_COTIRE=1 -DCMAKE_PREFIX_PATH=/opt/qt512
 		make -j8
 		make install DESTDIR=AppDir
-		;;
-	test)
-		cd build 
-		make test
 		;;
 	deploy)
 		cd build
@@ -23,7 +19,7 @@ case "$1" in
 		appimagetool-x86_64.AppImage AppDir
 		;;
 	*)
-		echo "Usage $0 build|test|deploy"
+		echo "Usage $0 build|deploy"
 		exit 1
 		;;
 esac
