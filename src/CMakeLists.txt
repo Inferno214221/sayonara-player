@@ -184,7 +184,6 @@ target_link_libraries(${PROJECT_NAME}
 	sayonara_languages
 
 	${OS_LIBRARIES}
-	${GSTREAMER_PLUGIN_LIBRARIES}
 )
 
 add_executable("create_db" CreateDB.cpp ${DATABASE_RCC})
@@ -198,4 +197,9 @@ if(WIN32)
 	install(TARGETS ${PROJECT_NAME} DESTINATION .)
 else()
 	install(TARGETS ${PROJECT_NAME} DESTINATION bin)
+endif()
+
+if(GSTREAMER_PLUGIN_LIBRARIES)
+	message("Will install gstreamer plugins")
+	install(FILES ${GSTREAMER_PLUGIN_LIBRARIES} DESTINATION lib/gstreamer-1.0)
 endif()

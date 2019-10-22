@@ -1,3 +1,4 @@
+message("Use gstreamer libraries")
 set(GSTREAMER_PLUGIN_LIBRARY_NAMES
 	gstaiff
 	gstalsa
@@ -51,5 +52,4 @@ foreach(GST_LIB ${GSTREAMER_PLUGIN_LIBRARY_NAMES})
 		)
 	endif()
 endforeach()
-
 
