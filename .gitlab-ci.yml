@@ -4,70 +4,48 @@ stages:
   - test
   - deploy
 
-# Building
-## AppImage
-build-sayonara-appimage:
+# Build
+build-sayonara:
   stage: build
   script: 
-    - dist/appimage.sh build
+    - mkdir build && cd build
+    - cmake ..
+    - make -j8
   artifacts:
     untracked: true
     expire_in: 1 day
-  only:
-    - master
-    - tags
-
-## Fedora
-deploy-sayonara-fedora:
-  image: "luciocarreras/sayonara-fedora:29"
-  stage: build
-  script:
-    - dist/fedora-rpm.sh build-and-deploy
-  artifacts:
-    paths:
-      - rpms/*.rpm
-    expire_in: 2 weeks
-  only:
-#    - tags
-    - 27-create-distribution-building-scripts
 
 
 # Unit tests
 test-sayonara:
   stage: test
-  variables:
-    CI_DEBUG_TRACE: "true"
   dependencies: 
-    - build-sayonara-appimage
+    - build-sayonara
   script:
     - dist/appimage.sh test
   artifacts:
     when: on_failure
     untracked: true
     expire_in: 2 days
-  only:
-    - master
-    - tags
 
-# Upload to transifex
-update-language:
-  stage: deploy
-  script:
-    - apt-get update -qq -y && apt-get install -qq -y --no-install-recommends transifex-client qt5-default
-    - mkdir -p tx
-    - lupdate -no-sort -no-obsolete -locations relative -source-language en_US -target-language en_US ./src -ts tx/sayonara_lang_en_US.ts
-    - cd tx
-    - export TX_TOKEN="$TX_API_KEY"
-    - tx init --token="$TX_API_KEY" --force --no-interactive
-    - tx config mapping -r sayonara-player.sayonara_lang_en_US -l en_US -t QT -s en_US -f sayonara_lang_en_US.ts --execute "sayonara_lang_<lang>.ts"
-    - tx push -s
+
+# Packages
+## Build AppImage
+build-sayonara-appimage:
+  stage: build
+  dependencies:
+    - test-sayonara
+  script: 
+    - dist/appimage.sh build
   artifacts:
-    paths:
-      - tx/sayonara_lang_en_US.ts
+    untracked: true
+    expire_in: 1 day
   only:
-    - master
+#    - tags
+    - 27-create-distribution-building-scripts
 
-# Deploy
+      
+## Deploy AppImage
 deploy-sayonara-appimage:
   stage: deploy
   dependencies:
@@ -79,6 +57,56 @@ deploy-sayonara-appimage:
       - build/*.AppImage
     expire_in: 2 weeks
   only:
-    - tags
+#    - tags
+    - 27-create-distribution-building-scripts
 
+
+## Fedora
+deploy-sayonara-fedora:
+  image: "luciocarreras/sayonara-fedora:29"
+  stage: build
+  dependencies:
+    - test-sayonara
+  script:
+    - dist/fedora-rpm.sh build-and-deploy
+  artifacts:
+    paths:
+      - rpms/*.rpm
+    expire_in: 2 weeks
+  only:
+#    - tags
+    - 27-create-distribution-building-scripts
+
+
+# Languages
+## Create ts file
+build-language:
+  stage: build
+  script:
+    - mkdir -p tx
+    - lupdate -no-sort -no-obsolete -locations relative -source-language en_US -target-language en_US ./src -ts tx/sayonara_lang_en_US.ts
+  artifacts:
+    paths:
+      - tx/sayonara_lang_en_US.ts
+    expire_in: 2 days
+ 
+
+## Upload ts to transifex
+deploy-language:
+  stage: deploy
+  dependencies:
+    - build-language
+  script:
+    - cd tx
+    - export TX_TOKEN="$TX_API_KEY"
+    - tx init --token="$TX_API_KEY" --force --no-interactive
+    - tx config mapping -r sayonara-player.sayonara_lang_en_US -l en_US -t QT -s en_US -f sayonara_lang_en_US.ts --execute "sayonara_lang_<lang>.ts"
+    - tx push -s
+  artifacts:
+    paths:
+      - tx/sayonara_lang_en_US.ts
+    expire_in: 2 days
+  only:
+    - master
+    - tags
 
