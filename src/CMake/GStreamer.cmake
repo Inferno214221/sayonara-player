@@ -2,6 +2,7 @@ message("Use gstreamer libraries")
 set(GSTREAMER_PLUGIN_LIBRARY_NAMES
 	gstaiff
 	gstalsa
+	gst
 	gstapetag
 	gstapp
 	gstasf
@@ -11,6 +12,7 @@ set(GSTREAMER_PLUGIN_LIBRARY_NAMES
 	gstautoconvert
 	gstautodetect
 	gstcoreelements
+	gstdashdemux
 	gstequalizer
 	gstfaad
 	gstflac
@@ -18,9 +20,11 @@ set(GSTREAMER_PLUGIN_LIBRARY_NAMES
 	gsticydemux
 	gstid3demux
 	gstid3tag
+	gstisomp4
 	gstlame
 	gstlevel
 	gstlibav
+	gstmatroska
 	gstmpg123
 	gstogg
 	gstopus
@@ -28,11 +32,13 @@ set(GSTREAMER_PLUGIN_LIBRARY_NAMES
 	gstplayback
 	gstpulse
 	gstrawparse
+	gstsmoothstreaming
 	gstsoundtouch
 	gstspectrum
 	gsttaglib
 	gsttypefindfunctions
 	gstvolume
+	gstvorbis
 	gstwavpack
 	gstwavparse
 	gstxingmux

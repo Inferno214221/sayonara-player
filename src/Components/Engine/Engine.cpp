@@ -25,6 +25,7 @@
 
 #include "StreamRecorder/StreamRecorder.h"
 
+#include "Utils/Macros.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Playlist/PlaylistMode.h"
@@ -91,6 +92,18 @@ EngineClass::Engine(QObject* parent) :
 	m = Pimpl::make<Private>();
 
 	gst_init(nullptr, nullptr);
+
+	GstRegistry* registry = gst_registry_get();
+	QString gstreamer_lib_dir = Util::File::clean_filename
+	(
+		QString(SAYONARA_INSTALL_BIN_PATH) + "/../lib/gstreamer-1.0"
+	);
+
+	if(Util::File::exists(gstreamer_lib_dir))
+	{
+		sp_log(Log::Info, this) << "Scanning for plugins in " << gstreamer_lib_dir;
+		gst_registry_scan_path(registry, gstreamer_lib_dir.toLocal8Bit().data());
+	}
 
 	m->pipeline = init_pipeline("FirstPipeline");
 	if(!m->pipeline) {
