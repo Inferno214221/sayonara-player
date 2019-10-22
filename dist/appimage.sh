@@ -7,7 +7,7 @@ set -e
 case "$1" in
 	build)
 		mkdir -p build && cd build
-		cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DWITH_COTIRE=1 -DCMAKE_PREFIX_PATH=/opt/qt512
+			cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DWITH_COTIRE=1 -DLINK_GSTREAMER_PLUGINS=1 -DCMAKE_PREFIX_PATH=/opt/qt512
 		make -j8
 		make install DESTDIR=AppDir
 		;;

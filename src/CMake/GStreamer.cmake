@@ -3,30 +3,38 @@ set(GSTREAMER_PLUGIN_LIBRARY_NAMES
 	gstalsa
 	gstapetag
 	gstapp
+	gstasf
 	gstaudioconvert
-	gstaudioconvert
+	gstaudioparsers
 	gstaudioresample
+	gstautoconvert
+	gstautodetect
 	gstcoreelements
 	gstequalizer
 	gstfaad
 	gstflac
 	gstgio
+	gsticydemux
 	gstid3demux
 	gstid3tag
 	gstlame
 	gstlevel
+	gstlibav
 	gstmpg123
 	gstogg
 	gstopus
 	gstopusparse
 	gstplayback
-	gstproxy
-	gstpulseaudio
+	gstpulse
 	gstrawparse
 	gstsoundtouch
 	gstspectrum
 	gsttaglib
+	gsttypefindfunctions
 	gstvolume
+	gstwavpack
+	gstwavparse
+	gstxingmux
 )
 
 set(GSTREAMER_PLUGIN_LIBRARIES "")

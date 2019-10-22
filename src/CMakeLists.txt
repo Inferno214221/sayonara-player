@@ -4,7 +4,9 @@ project(sayonara)
 include(FindPkgConfig)
 include(CheckIncludeFileCXX)
 include(CMake/Compiler.cmake)
-include(CMake/GStreamer.cmake)
+if(LINK_GSTREAMER_PLUGINS)
+	include(CMake/GStreamer.cmake)
+endif()
 
 # absolute linker paths are no longer supoorted in -l parameter
 # use -L for path and -l for library itself
@@ -182,6 +184,7 @@ target_link_libraries(${PROJECT_NAME}
 	sayonara_languages
 
 	${OS_LIBRARIES}
+	${GSTREAMER_PLUGIN_LIBRARIES}
 )
 
 add_executable("create_db" CreateDB.cpp ${DATABASE_RCC})
