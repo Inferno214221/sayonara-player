@@ -33,8 +33,6 @@ test-sayonara:
 ## Build AppImage
 build-sayonara-appimage:
   stage: build
-  dependencies:
-    - test-sayonara
   script: 
     - dist/appimage.sh build
   artifacts:
@@ -65,8 +63,6 @@ deploy-sayonara-appimage:
 deploy-sayonara-fedora:
   image: "luciocarreras/sayonara-fedora:29"
   stage: build
-  dependencies:
-    - test-sayonara
   script:
     - dist/fedora-rpm.sh build-and-deploy
   artifacts:
