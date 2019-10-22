@@ -9,7 +9,7 @@ build-sayonara:
   stage: build
   script: 
     - mkdir build && cd build
-    - cmake ..
+    - cmake .. -DWITH_COTIRE=1
     - make -j8
   artifacts:
     untracked: true
@@ -22,7 +22,8 @@ test-sayonara:
   dependencies: 
     - build-sayonara
   script:
-    - dist/appimage.sh test
+    - cd build
+    - make test
   artifacts:
     when: on_failure
     untracked: true
@@ -70,8 +71,8 @@ deploy-sayonara-fedora:
       - rpms/*.rpm
     expire_in: 2 weeks
   only:
-#    - tags
-    - 27-create-distribution-building-scripts
+    - tags
+#    - 27-create-distribution-building-scripts
 
 
 # Languages
