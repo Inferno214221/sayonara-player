@@ -20,7 +20,12 @@ case "$1" in
 		export PATH=$QT_BASE_DIR/bin:$PATH
 		export LD_LIBRARY_PATH=$QT_BASE_DIR/lib/x86_64-linux-gnu:$QT_BASE_DIR/lib:$LD_LIBRARY_PATH
 		export PKG_CONFIG_PATH=$QT_BASE_DIR/lib/pkgconfig:$PKG_CONFIG_PATH
-		linuxdeploy-x86_64.AppImage --appdir=AppDir --desktop-file=./AppDir/usr/share/applications/sayonara.desktop --plugin=qt
+		linuxdeploy-x86_64.AppImage --appdir=AppDir --desktop-file=./AppDir/usr/share/applications/sayonara.desktop --plugin=qt --custom-apprun=../AppImage/AppRun
+
+		# Workaround for https://github.com/linuxdeploy/linuxdeploy/issues/100
+		cp ../AppImage/AppRun AppDir/
+		chmod a+x AppDir/AppRun
+
 		appimagetool-x86_64.AppImage AppDir
 		;;
 	*)

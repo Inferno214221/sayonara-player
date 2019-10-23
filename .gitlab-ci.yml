@@ -39,7 +39,7 @@ test-sayonara:
 build-sayonara-appimage:
   stage: build
   script: 
-    - dist/appimage.sh build
+    - AppImage/appimage.sh build
   artifacts:
     untracked: true
     expire_in: 1 day
@@ -54,7 +54,7 @@ deploy-sayonara-appimage:
   dependencies:
     - build-sayonara-appimage
   script:
-    - dist/appimage.sh deploy
+    - AppImage/appimage.sh deploy
   artifacts:
     paths:
       - build/*.AppImage
