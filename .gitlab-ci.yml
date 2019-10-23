@@ -8,7 +8,7 @@ stages:
 build-sayonara:
   stage: build
   script: 
-    - mkdir build && cd build
+    - mkdir -p build && cd build
     - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DWITH_TESTS=1 -DWITH_COTIRE=1 -DLINK_GSTREAMER_PLUGINS=1 -DCMAKE_PREFIX_PATH=/opt/qt512
     - make -j8
     - make install DESTDIR=AppDir
@@ -28,9 +28,6 @@ test-sayonara:
     when: on_failure
     untracked: true
     expire_in: 2 days
-  only:
-    - master
-
       
 ## Deploy AppImage
 deploy-sayonara-appimage:
@@ -42,11 +39,11 @@ deploy-sayonara-appimage:
   artifacts:
     paths:
       - build/*.AppImage
-    expire_in: 2 weeks
+    expire_in: 1 week
   only:
-#    - tags
+    - master
+    - tags
     - 27-create-distribution-building-scripts
-
 
 ## Fedora
 deploy-sayonara-fedora:
@@ -57,10 +54,11 @@ deploy-sayonara-fedora:
   artifacts:
     paths:
       - rpms/*.rpm
-    expire_in: 2 weeks
+    expire_in: 1 week
   only:
+    - master
     - tags
-
+    - 27-create-distribution-building-scripts
 
 # Languages
 ## Create ts file
@@ -73,7 +71,6 @@ build-language:
     paths:
       - tx/sayonara_lang_en_US.ts
     expire_in: 2 days
- 
 
 ## Upload ts to transifex
 deploy-language:

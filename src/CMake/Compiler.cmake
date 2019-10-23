@@ -15,6 +15,7 @@ if(WITH_CCACHE)
 			message("Found CCache")
 	endif(CCACHE_FOUND)
 endif(WITH_CCACHE)
+
 set(COMMON_FLAGS_TEST
 		"-Woverloaded-virtual"
 		"-Wall"
