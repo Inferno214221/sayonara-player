@@ -11,6 +11,7 @@ build-sayonara:
     - mkdir build && cd build
     - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DWITH_TESTS=1 -DWITH_COTIRE=1 -DLINK_GSTREAMER_PLUGINS=1 -DCMAKE_PREFIX_PATH=/opt/qt512
     - make -j8
+    - make install DEST=AppDir
   artifacts:
     untracked: true
     expire_in: 1 day
