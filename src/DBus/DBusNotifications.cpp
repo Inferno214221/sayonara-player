@@ -24,6 +24,8 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Macros.h"
+#include "Utils/Utils.h"
+#include "Utils/FileUtils.h"
 #include "Utils/Filepath.h"
 
 #include <QDir>
@@ -73,11 +75,11 @@ DBusNotifications::~DBusNotifications() = default;
 
 void DBusNotifications::notify(const QString& title, const QString& text, const QString& image_path)
 {
+	Util::Filepath desktop_file(":/Desktop/sayonara.desktop");
+
 	QVariantMap map;
 	map.insert("action-icons", false);
-	map.insert("desktop-entry",
-		QDir(SAYONARA_INSTALL_SHARE_PATH).absoluteFilePath("applications/sayonara.desktop")
-	);
+	map.insert("desktop-entry", desktop_file.filesystem_path());
 	map.insert("resident", false);
 	map.insert("sound-file", QString());
 	map.insert("sound-name", QString());

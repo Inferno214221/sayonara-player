@@ -167,14 +167,8 @@ struct Application::Private
 
 		Settings::instance()->apply_fixes();
 
-		Q_INIT_RESOURCE(Broadcasting);
-		Q_INIT_RESOURCE(Icons);
-		Q_INIT_RESOURCE(Lyrics);
-		Q_INIT_RESOURCE(Database);
+		init_resources();
 
-#ifdef Q_OS_WIN
-		Q_INIT_RESOURCE(IconsWindows);
-#endif
 		timer = new QTime();
 		plh = Playlist::Handler::instance();
 		was_shut_down = false;
@@ -223,6 +217,19 @@ struct Application::Private
 		{
 			delete metatype_registry; metatype_registry = nullptr;
 		}
+	}
+
+	void init_resources()
+	{
+		Q_INIT_RESOURCE(Broadcasting);
+		Q_INIT_RESOURCE(Database);
+		Q_INIT_RESOURCE(Icons);
+		Q_INIT_RESOURCE(Lyrics);
+		Q_INIT_RESOURCE(Resources);
+
+#ifdef Q_OS_WIN
+		Q_INIT_RESOURCE(IconsWindows);
+#endif
 	}
 };
 
@@ -343,7 +350,6 @@ void Application::init_playlist(const QStringList& files_to_play)
 		m->plh->create_playlist(files_to_play, playlist_name);
 	}
 }
-
 
 void Application::init_preferences()
 {
