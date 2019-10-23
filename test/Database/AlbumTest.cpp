@@ -22,30 +22,25 @@ public:
 	AlbumTest()
 	{
 		Q_INIT_RESOURCE(Database);
-		Util::File::create_directories("/tmp/sayonara");
-		//init();
-	}
-	~AlbumTest()
-	{
-		//QFile::remove("/tmp/sayonara/player.db");
 	}
 
 private:
 	DB::LibraryDatabase* init()
 	{
+		QFile::remove(Util::temp_path("player.db"));
+
 		if(m_lib_db){
 			return m_lib_db;
 		}
 
 		m_album_names.clear();
 
-		QFile::remove("/tmp/sayonara/player.db");
 		for(int i=0; i<100; i++)
 		{
 			m_album_names << Util::random_string(Util::random_number(5, 20));
 		}
 
-		auto* db = DB::Connector::instance_custom("", "/tmp/sayonara", "player.db");
+		auto* db = DB::Connector::instance_custom("", Util::temp_path(), "player.db");
 		db->register_library_db(0);
 		m_lib_db = db->library_db(0, 0);
 

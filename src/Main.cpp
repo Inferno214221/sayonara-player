@@ -193,6 +193,10 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
+	sp_log(Log::Debug, "Sayonara") << "Sayonara home path: " << Util::sayonara_path();
+	sp_log(Log::Debug, "Sayonara") << "Sayonara share path: " << Util::share_path();
+	sp_log(Log::Debug, "Sayonara") << "Sayonara lib path: " << Util::lib_path();
+
 	DB::Connector::instance();
 
 #ifdef Q_OS_WIN

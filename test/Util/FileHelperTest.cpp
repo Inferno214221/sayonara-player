@@ -3,18 +3,25 @@
 #include <QRegExp>
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
+#include "Utils/Filepath.h"
 #include "Utils/Macros.h"
 
 class FileHelperTest : public QObject
 {
 	Q_OBJECT
 
+public:
+	FileHelperTest()
+	{
+		Q_INIT_RESOURCE(Resources);
+	}
+
 private slots:
 	void test();
 	void create_and_delete();
 	void common_path_test();
-
 	void system_paths_test();
+	void resource_path_test();
 };
 
 
@@ -134,6 +141,38 @@ void FileHelperTest::system_paths_test()
 
 	QVERIFY(re_lib.indexIn(lib_path) == 0);
 	QVERIFY(re_share.indexIn(share_path) == 0);
+	QVERIFY(re_lib.cap(1) == re_share.cap(1));
+}
+
+void FileHelperTest::resource_path_test()
+{
+	Util::Filepath fp(":/Desktop/sayonara.desktop");
+
+	qint64 filesize=0;
+
+	{ // check if exists
+		QFile f(fp.path());
+
+		bool is_open = f.open(QFile::ReadOnly);
+		QVERIFY(is_open == true);
+		filesize = f.size();
+
+		QVERIFY(filesize > 10);
+		f.close();
+	}
+
+	{
+		QString fs_path = fp.filesystem_path();
+		QVERIFY(fs_path.startsWith(Util::temp_path()));
+		QVERIFY(Util::File::exists(fs_path));
+		QVERIFY(fs_path != fp.path());
+
+		QFile f(fs_path);
+		bool is_open = f.open(QFile::ReadOnly);
+		QVERIFY(is_open == true);
+		QVERIFY(filesize == f.size());
+		f.close();
+	}
 }
 
 QTEST_GUILESS_MAIN(FileHelperTest)
