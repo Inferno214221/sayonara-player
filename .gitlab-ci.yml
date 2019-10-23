@@ -9,7 +9,7 @@ build-sayonara:
   stage: build
   script: 
     - mkdir build && cd build
-    - cmake .. -DWITH_COTIRE=1 -DWITH_TESTS=1
+    - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DWITH_TESTS=1 -DWITH_COTIRE=1 -DLINK_GSTREAMER_PLUGINS=1 -DCMAKE_PREFIX_PATH=/opt/qt512
     - make -j8
   artifacts:
     untracked: true
@@ -33,26 +33,12 @@ test-sayonara:
   only:
     - master
 
-
-# Packages
-## Build AppImage
-build-sayonara-appimage:
-  stage: build
-  script: 
-    - AppImage/appimage.sh build
-  artifacts:
-    untracked: true
-    expire_in: 1 day
-  only:
-#    - tags
-    - 27-create-distribution-building-scripts
-
       
 ## Deploy AppImage
 deploy-sayonara-appimage:
   stage: deploy
   dependencies:
-    - build-sayonara-appimage
+    - build-sayonara
   script:
     - AppImage/appimage.sh deploy
   artifacts:
@@ -76,7 +62,6 @@ deploy-sayonara-fedora:
     expire_in: 2 weeks
   only:
     - tags
-#    - 27-create-distribution-building-scripts
 
 
 # Languages

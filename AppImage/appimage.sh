@@ -14,8 +14,13 @@ case "$1" in
 	deploy)
 		cd build
 		export EXTRA_QT_PLUGINS="iconengines,sqldrivers/libqsqlite.so,platforms/libqxcb.so" 
-		export QMAKE="/opt/qt512/bin/qmake"
-		export QT_BASE_DIR=/opt/qt512
+		if [ "x${DOCKER_QT_BASE_DIR}" != "x" ] ; then
+			export QT_BASE_DIR=${DOCKER_QT_BASE_DIR}
+		else
+			export QT_BASE_DIR=/opt/qt512
+		fi
+
+		export QMAKE="$QT_BASE_DIR/bin/qmake"
 		export QTDIR=$QT_BASE_DIR
 		export PATH=$QT_BASE_DIR/bin:$PATH
 		export LD_LIBRARY_PATH=$QT_BASE_DIR/lib/x86_64-linux-gnu:$QT_BASE_DIR/lib:$LD_LIBRARY_PATH
