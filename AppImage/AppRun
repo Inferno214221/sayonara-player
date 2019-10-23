@@ -7,7 +7,7 @@ HERE=$(readlink -f $(dirname "$0"))
 
 export LD_LIBRARY_PATH=$(readlink -f "$HERE/usr/lib"):$LD_LIBRARY_PATH
 export GST_PLUGIN_SYSTEM_PATH=$(readlink -f "$HERE/usr/lib/gstreamer-1.0")
-export GST_PLUGIN_SCANNER=$GST_PLUGIN_SYSTEM_PATH
+export GST_PLUGIN_SCANNER=$(readlink -f "$HERE/usr/lib/gstreamer-1.0")
 export SAYONARA_SHARE_DIR=$(readlink -f "$HERE/usr/share/sayonara")
 
 case "${XDG_CURRENT_DESKTOP}" in
