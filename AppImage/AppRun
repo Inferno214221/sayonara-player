@@ -3,12 +3,12 @@
 # make sure errors in sourced scripts will cause this script to stop
 set -e
 
-HERE=$(readlink -f $(dirname "$0"))
+RUNTIME=$(readlink -f $(dirname "$0"))
 
-export LD_LIBRARY_PATH=$(readlink -f "$HERE/usr/lib"):$LD_LIBRARY_PATH
-export GST_PLUGIN_SYSTEM_PATH=$(readlink -f "$HERE/usr/lib/gstreamer-1.0")
-export GST_PLUGIN_SCANNER=$(readlink -f "$HERE/usr/lib/gstreamer-1.0")
-export SAYONARA_SHARE_DIR=$(readlink -f "$HERE/usr/share/sayonara")
+export LD_LIBRARY_PATH=$(readlink -f "$RUNTIME/usr/lib"):$LD_LIBRARY_PATH
+export GST_PLUGIN_SYSTEM_PATH=$(readlink -f "$RUNTIME/usr/lib/gstreamer-1.0")
+export GST_PLUGIN_SCANNER=$(readlink -f "$RUNTIME/usr/lib/gstreamer1.0/gstreamer-1.0/gst-plugin-scanner")
+export SAYONARA_SHARE_DIR=$(readlink -f "$RUNTIME/usr/share/sayonara")
 
 case "${XDG_CURRENT_DESKTOP}" in
     *GNOME*|*gnome*|*XFCE*)
@@ -16,5 +16,5 @@ case "${XDG_CURRENT_DESKTOP}" in
         ;;
 esac
 
-exec "$HERE"/usr/bin/sayonara "$@"
+exec "$RUNTIME"/usr/bin/sayonara "$@"
 
