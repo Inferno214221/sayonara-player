@@ -25,7 +25,6 @@
 
 #include "StreamRecorder/StreamRecorder.h"
 
-#include "Utils/Macros.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Playlist/PlaylistMode.h"
