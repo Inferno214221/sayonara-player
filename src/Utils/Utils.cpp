@@ -31,6 +31,7 @@
 #include <QBuffer>
 #include <QByteArray>
 #include <QColor>
+#include <QCoreApplication>
 #include <QCryptographicHash>
 #include <QDateTime>
 #include <QDir>
@@ -82,7 +83,7 @@ uint64_t Util::date_to_int(const QDateTime& date_time)
 
 QDateTime Util::int_to_date(uint64_t date)
 {
-	QString str = QString::number((qulonglong) date);
+	QString str = QString::number(qulonglong(date));
 	return QDateTime::fromString(str, "yyMMddHHmmss");
 }
 
@@ -165,29 +166,32 @@ QString Util::sayonara_path(const QString& append_path)
 QString Util::share_path() { return share_path(QString()); }
 QString Util::share_path(const QString& append_path)
 {
-	QString base_path;
-
 #ifdef Q_OS_WIN
-	base_path = "./share/";
+	return QCoreApplication::applicationDirPath() + "/share/";
 #else
-	base_path = SAYONARA_INSTALL_SHARE_PATH;
-#endif
+	QString base_path(Util::File::clean_filename(get_environment("SAYONARA_SHARE_DIR")));
+	if(!Util::File::exists(base_path)){
+		base_path = SAYONARA_INSTALL_SHARE_PATH;
+	}
 
 	return Util::File::clean_filename(base_path + "/" + append_path);
+#endif
 }
 
 QString Util::lib_path() { return lib_path(QString()); }
 QString Util::lib_path(const QString& append_path)
 {
-	QString base_path;
-
 #ifdef Q_OS_WIN
-	base_path = "./lib/";
+	return QCoreApplication::applicationDirPath() + "/lib/";
 #else
-	base_path = SAYONARA_INSTALL_LIB_PATH;
-#endif
+
+	QString base_path(Util::File::clean_filename(get_environment("SAYONARA_LIB_DIR")));
+	if(!Util::File::exists(base_path)){
+		base_path = SAYONARA_INSTALL_LIB_PATH;
+	}
 
 	return Util::File::clean_filename(base_path + "/" + append_path);
+#endif
 }
 
 QString Util::temp_path()
@@ -544,7 +548,7 @@ QPixmap Util::cvt_bytearray_to_pixmap(const QByteArray& arr)
 
 QString Util::cvt_ms_to_string(MilliSeconds msec, const QString& format)
 {
-	uint64_t secs = msec / 1000;
+	uint64_t secs = uint64_t(msec / 1000);
 
 	uint64_t sec = secs % 60;
 	uint64_t min = secs / 60;

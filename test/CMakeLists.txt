@@ -18,6 +18,7 @@ file(COPY ${CMAKE_SOURCE_DIR}/resources/player.db
 set(RESOURCES
 	resources/Test.qrc
 	${CMAKE_CURRENT_SOURCE_DIR}/../resources/Database.qrc
+	${CMAKE_CURRENT_SOURCE_DIR}/../resources/Resources.qrc
 )
 
 include_directories(${Qt5Core_INCLUDE_DIRS})
@@ -48,7 +49,7 @@ NEW_TEST(Database/PodcastTest.cpp ${RESOURCES_RCC})
 NEW_TEST(Database/AlbumTest.cpp ${RESOURCES_RCC})
 
 NEW_TEST(Util/CryptTest.cpp)
-NEW_TEST(Util/FileHelperTest.cpp)
+NEW_TEST(Util/FileHelperTest.cpp ${RESOURCES_RCC})
 NEW_TEST(Util/MetaDataListTest.cpp)
 NEW_TEST(Util/LanguageKeyTest.cpp)
 NEW_TEST(Util/LanguageUtilTest.cpp)

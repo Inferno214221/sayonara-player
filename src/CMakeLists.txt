@@ -167,6 +167,7 @@ add_subdirectory(Utils)
 
 qt5_add_resources(DATABASE_RCC
 	${CMAKE_CURRENT_SOURCE_DIR}/../resources/Database.qrc
+	${CMAKE_CURRENT_SOURCE_DIR}/../resources/Resources.qrc
 )
 
 add_executable(${PROJECT_NAME} Main.cpp ${QM_FILES} ${DATABASE_RCC})

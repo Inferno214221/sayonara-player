@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/Desktop">
+        <file>sayonara.desktop</file>
+    </qresource>
+</RCC>
