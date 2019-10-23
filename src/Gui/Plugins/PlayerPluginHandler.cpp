@@ -120,7 +120,7 @@ void Handler::show_plugin(const QString& name)
 	}
 
 	m->current_plugin = plugin;
-	plugin->get_action()->setChecked(true);
+	m->current_plugin->get_action()->trigger();
 }
 
 void Handler::plugin_action_triggered(bool b)
@@ -131,14 +131,21 @@ void Handler::plugin_action_triggered(bool b)
 	}
 
 	Base* plugin = static_cast<Base*>(sender());
-	if(b && plugin)
+
+	if(b)
 	{
-		m->current_plugin = plugin;
+		if(plugin)
+		{
+			m->current_plugin = plugin;
+		}
 	}
 
-	else if(m->current_plugin == plugin)
+	else
 	{
-		m->current_plugin = nullptr;
+		if(m->current_plugin == plugin)
+		{
+			m->current_plugin = nullptr;
+		}
 	}
 
 	emit sig_plugin_action_triggered(b);
