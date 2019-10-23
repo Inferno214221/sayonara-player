@@ -12,7 +12,6 @@ case "$1" in
 		make install DESTDIR=AppDir
 		;;
 	deploy)
-		cd build
 		export EXTRA_QT_PLUGINS="iconengines,sqldrivers/libqsqlite.so,platforms/libqxcb.so" 
 		if [ "x${DOCKER_QT_BASE_DIR}" != "x" ] ; then
 			export QT_BASE_DIR=${DOCKER_QT_BASE_DIR}
