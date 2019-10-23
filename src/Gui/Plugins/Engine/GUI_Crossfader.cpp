@@ -142,10 +142,27 @@ void GUI_Crossfader::gapless_active_changed(bool b)
 
 void GUI_Crossfader::sl_engine_changed()
 {
-	QString sink = GetSetting(Set::Engine_Sink);
-	if(ui)
+	if(!ui)
 	{
-		ui->cb_crossfader->setDisabled(sink == "alsa");
-		ui->cb_gapless->setDisabled(sink == "alsa");
+		return;
+	}
+
+	QString sink = GetSetting(Set::Engine_Sink);
+	ui->cb_crossfader->setDisabled(sink == "alsa");
+	ui->cb_gapless->setDisabled(sink == "alsa");
+
+	if(sink == "alsa")
+	{
+		QString cfdnwwa = tr("Crossfader does not work with Alsa");
+		ui->cb_crossfader->setToolTip(cfdnwwa);
+		ui->sli_crossfader->setToolTip(cfdnwwa);
+		ui->cb_gapless->setToolTip(tr("Gapless playback does not work with Alsa"));
+	}
+
+	else
+	{
+		ui->cb_crossfader->setToolTip(QString());
+		ui->sli_crossfader->setToolTip(QString());
+		ui->cb_gapless->setToolTip(QString());
 	}
 }
