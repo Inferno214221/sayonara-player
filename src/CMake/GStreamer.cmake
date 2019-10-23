@@ -1,4 +1,5 @@
-message("Use gstreamer libraries")
+include(FindPkgConfig)
+message("GStreamer.cmake: Use gstreamer libraries")
 set(GSTREAMER_PLUGIN_LIBRARY_NAMES
 	gstaiff
 	gstalsa
@@ -44,11 +45,25 @@ set(GSTREAMER_PLUGIN_LIBRARY_NAMES
 	gstxingmux
 )
 
-set(GSTREAMER_PLUGIN_LIBRARIES "gst-plugin-scanner")
+pkg_get_variable(GSTREAMER_PLUGIN_DIR gstreamer-1.0 pluginsdir)
+pkg_get_variable(GSTREAMER_LIB_DIR gstreamer-1.0 libdir)
+
+find_path(GST_SCANNER_PATH gst-plugin-scanner 
+	HINTS ${GSTREAMER_LIB_DIR}/gstreamer1.0/gstreamer-1.0
+)
+
+set(GSTREAMER_PLUGIN_LIBRARIES "")
+if(GST_SCANNER_PATH)
+	message("GStreamer.cmake: Found scanner in ${GST_SCANNER_PATH}")
+	set(GSTREAMER_PLUGIN_LIBRARIES ${GST_SCANNER_PATH}/gst-plugin-scanner)
+else()
+	message("GStreamer.cmake: Could not find scanner path")
+endif()
+
 foreach(GST_LIB ${GSTREAMER_PLUGIN_LIBRARY_NAMES})
 	set(GST_LIB_VAR "LIB_${GST_LIB}")
 
-	find_library(${GST_LIB_VAR} ${GST_LIB} PATH_SUFFIXES /gstreamer-1.0)
+	find_library(${GST_LIB_VAR} ${GST_LIB} HINTS ${GSTREAMER_PLUGIN_DIR})
 	set(FULLPATH ${${GST_LIB_VAR}})
 
 	if(FULLPATH)
@@ -59,3 +74,4 @@ foreach(GST_LIB ${GSTREAMER_PLUGIN_LIBRARY_NAMES})
 	endif()
 endforeach()
 
+message("GStreamer.cmake: Found ${GSTREAMER_PLUGIN_LIBRARIES}")
