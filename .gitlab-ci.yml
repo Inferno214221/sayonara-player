@@ -1,29 +1,24 @@
-image: "luciocarreras/sayonara-appimage:20191005-3"
+image: "luciocarreras/sayonara-ubuntu:xenial"
 stages:
   - build
   - test
   - deploy
 
-# Building
+# Build
 build-sayonara:
   stage: build
   script: 
     - mkdir -p build && cd build
-    - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DWITH_COTIRE=1 -DWITH_TESTS=1
-    - make -j6
+    - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DWITH_TESTS=1 -DWITH_COTIRE=1 -DLINK_GSTREAMER_PLUGINS=1 -DCMAKE_PREFIX_PATH=/opt/qt512
+    - make -j8
     - make install DESTDIR=AppDir
   artifacts:
     untracked: true
     expire_in: 1 day
-  only:
-    - master
-    - tags
 
 # Unit tests
 test-sayonara:
   stage: test
-  variables:
-    CI_DEBUG_TRACE: "true"
   dependencies: 
     - build-sayonara
   script:
@@ -33,17 +28,54 @@ test-sayonara:
     when: on_failure
     untracked: true
     expire_in: 2 days
+      
+## Deploy AppImage
+deploy-sayonara-appimage:
+  stage: deploy
+  dependencies:
+    - build-sayonara
+  script:
+    - AppImage/appimage.sh deploy
+  artifacts:
+    paths:
+      - build/*.AppImage
+    expire_in: 1 week
   only:
     - master
     - tags
 
-# Upload to transifex
-update-language:
-  stage: deploy
+## Fedora
+deploy-sayonara-fedora:
+  image: "luciocarreras/sayonara-fedora:29"
+  stage: build
   script:
-    - apt-get update -qq -y && apt-get install -qq -y --no-install-recommends transifex-client qt5-default
+    - dist/fedora-rpm.sh build-and-deploy
+  artifacts:
+    paths:
+      - rpms/*.rpm
+    expire_in: 1 week
+  only:
+    - master
+    - tags
+
+# Languages
+## Create ts file
+build-language:
+  stage: build
+  script:
     - mkdir -p tx
     - lupdate -no-sort -no-obsolete -locations relative -source-language en_US -target-language en_US ./src -ts tx/sayonara_lang_en_US.ts
+  artifacts:
+    paths:
+      - tx/sayonara_lang_en_US.ts
+    expire_in: 2 days
+
+## Upload ts to transifex
+deploy-language:
+  stage: deploy
+  dependencies:
+    - build-language
+  script:
     - cd tx
     - export TX_TOKEN="$TX_API_KEY"
     - tx init --token="$TX_API_KEY" --force --no-interactive
@@ -52,22 +84,8 @@ update-language:
   artifacts:
     paths:
       - tx/sayonara_lang_en_US.ts
+    expire_in: 2 days
   only:
     - master
-
-# Deploy
-deploy-sayonara:
-  stage: deploy
-  dependencies:
-    - build-sayonara
-  script:
-    - cd build
-    - EXTRA_QT_PLUGINS="iconengines,sqldrivers/libqsqlite.so,platforms/libqxcb.so" QMAKE="/usr/lib/x86_64-linux-gnu/qt5/bin/qmake" linuxdeploy-x86_64.AppImage --appdir=AppDir --desktop-file=./AppDir/usr/share/applications/sayonara.desktop --plugin=qt
-    - appimagetool-x86_64.AppImage AppDir
-  artifacts:
-    paths:
-      - build/*.AppImagea
-    expire_in: 2 weeks
-  only:
     - tags
 
