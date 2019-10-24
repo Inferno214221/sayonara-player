@@ -43,7 +43,6 @@ deploy-sayonara-appimage:
   only:
     - master
     - tags
-    - 27-create-distribution-building-scripts
 
 ## Fedora
 deploy-sayonara-fedora:
@@ -58,7 +57,6 @@ deploy-sayonara-fedora:
   only:
     - master
     - tags
-    - 27-create-distribution-building-scripts
 
 # Languages
 ## Create ts file
