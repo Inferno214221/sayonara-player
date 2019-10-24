@@ -98,6 +98,20 @@ namespace Gui
 		 * @return main window of application
 		 */
 		QMainWindow* main_window();
+
+		/**
+		 * @brief return the screen with biggest screen
+		 * @return nullptr on error
+		 */
+		QScreen* get_biggest_screen();
+
+		/**
+		 * @brief Place the widget in the center of the biggest screen
+		 * @param widget
+		 * @param rel_size_x a percentage value between 0 and 1 regarding width of screen
+		 * @param rel_size_y a percentage value between 0 and 1 regarding height of screen
+		 */
+		void place_in_screen_center(QWidget* widget, float rel_size_x, float rel_size_y);
 	}
 }
 
