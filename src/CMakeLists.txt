@@ -4,7 +4,9 @@ project(sayonara)
 include(FindPkgConfig)
 include(CheckIncludeFileCXX)
 include(CMake/Compiler.cmake)
-include(CMake/GStreamer.cmake)
+if(LINK_GSTREAMER_PLUGINS)
+	include(CMake/GStreamer.cmake)
+endif()
 
 # absolute linker paths are no longer supoorted in -l parameter
 # use -L for path and -l for library itself
@@ -196,4 +198,10 @@ if(WIN32)
 	install(TARGETS ${PROJECT_NAME} DESTINATION .)
 else()
 	install(TARGETS ${PROJECT_NAME} DESTINATION bin)
+endif()
+
+if(GSTREAMER_PLUGIN_LIBRARIES)
+	message("Will install gstreamer plugins")
+	install(FILES ${GSTREAMER_PLUGIN_LIBRARIES} DESTINATION lib/gstreamer-1.0)
+	install(FILES ${GSTREAMER_PLUGIN_SCANNER} DESTINATION lib/gstreamer1.0/gstreamer-1.0)
 endif()
