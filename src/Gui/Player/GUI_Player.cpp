@@ -47,6 +47,7 @@
 #include "Gui/Utils/EventFilter.h"
 
 #include <QAction>
+#include <QDataStream>
 #include <QKeySequence>
 #include <QTimer>
 
@@ -114,15 +115,38 @@ GUI_Player::~GUI_Player()
 	delete ui; ui=nullptr;
 }
 
+static int16_t get_geometry_version(const QByteArray& geometry)
+{
+	QDataStream str(geometry);
+	int32_t magic;
+	int16_t ret;
+
+	str >> magic >> ret;
+	return ret;
+}
+
 void GUI_Player::init_geometry()
 {
 	QByteArray geometry = GetSetting(Set::Player_Geometry);
-	if(!geometry.isEmpty()) {
-		this->restoreGeometry(geometry);
+	if(!geometry.isEmpty())
+	{
+		// newer version of qt store more values than older versions
+		// older version have trouble using the new representation,
+		// so we have to trim it
+		int16_t our_geometry_version = get_geometry_version(this->saveGeometry());
+		int16_t db_geometry_version = get_geometry_version(geometry);
+
+		if(our_geometry_version < db_geometry_version) {
+			Gui::Util::place_in_screen_center(this, 0.8f, 0.8f);
+		}
+
+		else {
+			this->restoreGeometry(geometry);
+		}
 	}
 
 	else {
-		this->setGeometry(50, 50, 1200, 800);
+		Gui::Util::place_in_screen_center(this, 0.8f, 0.8f);
 	}
 
 	if(GetSetting(Set::Player_StartInTray)) {
