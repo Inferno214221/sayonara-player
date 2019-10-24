@@ -24,6 +24,8 @@
 #include "GuiUtils.h"
 #include "Utils/Logger/Logger.h"
 
+#include <QApplication>
+#include <QDesktopWidget>
 #include <QFontMetrics>
 #include <QIcon>
 #include <QString>
@@ -31,6 +33,7 @@
 #include <QMainWindow>
 #include <QList>
 #include <QSize>
+#include <QScreen>
 #include <QRegExp>
 #include <QDir>
 #include <QDirIterator>
@@ -234,4 +237,58 @@ QMainWindow* Util::main_window()
 void Util::set_main_window(QMainWindow* window)
 {
 	::main_window = window;
+}
+
+QScreen* Util::get_biggest_screen()
+{
+	QList<QScreen*> screens = QApplication::screens();
+	auto it = std::max_element(screens.begin(), screens.end(), [](QScreen* s1, QScreen* s2)
+	{
+		return (s1->size().height() < s2->size().height());
+	});
+
+	if(it != screens.end()) {
+		return *it;
+	}
+
+	if(screens.size() > 0) {
+		return screens[0];
+	}
+
+	return nullptr;
+}
+
+void Util::place_in_screen_center(QWidget* widget, float rel_size_x, float rel_size_y)
+{
+	QScreen* screen = get_biggest_screen();
+	if(!screen){
+		return;
+	}
+
+	int w = screen->size().width();
+	int h = screen->size().height();
+
+	if(rel_size_x < 0.1f || rel_size_y < 0.1f)
+	{
+		rel_size_x = 0.7f;
+		rel_size_y = 0.7f;
+	}
+
+	float x_remainder = (1.0f - rel_size_x) / 2.0f;
+	float y_remainder = (1.0f - rel_size_y) / 2.0f;
+
+	int x_abs = std::max(0, int(w * x_remainder)) + screen->geometry().x();
+	int y_abs = std::max(0, int(h * y_remainder)) + screen->geometry().y();
+	int w_abs = std::max(0, int(w * rel_size_x));
+	int h_abs = std::max(0, int(h * rel_size_y));
+
+	if(w_abs == 0){
+		w_abs = 1200;
+	}
+
+	if(h_abs == 0){
+		h_abs = 800;
+	}
+
+	widget->setGeometry(x_abs, y_abs, w_abs, h_abs);
 }
