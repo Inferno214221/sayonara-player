@@ -1,11 +1,11 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: Sayonara Player
-Upstream-Contact: luciocarreras@gmail.com
+Upstream-Contact: luciocarreras@posteo.de
 Source: http://sayonara-player.com/
 License: GPL-3+
 
 Files: *
-Copyright: 2011-2019 Lucio Carreras <luciocarreras@gmail.com>
+Copyright: 2011-2019 Lucio Carreras <luciocarreras@posteo.de>
 License: GPL-3+
 
 Files: src/3rdParty/taglib
