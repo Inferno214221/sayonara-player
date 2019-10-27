@@ -65,6 +65,8 @@ AlbumModel::AlbumModel(QObject* parent, AbstractLibrary* library) :
 	ItemModel(parent, library)
 {
 	m = Pimpl::make<AlbumModel::Private>();
+
+	connect(library, &AbstractLibrary::sig_album_rating_changed, this, &AlbumModel::rating_changed);
 }
 
 AlbumModel::~AlbumModel() = default;
@@ -214,6 +216,7 @@ QVariant AlbumModel::data(const QModelIndex& index, int role) const
 	return QVariant();
 }
 
+
 bool AlbumModel::setData(const QModelIndex& index, const QVariant& value, int role)
 {
 	if((index.column() != int(ColumnIndex::Album::Rating) ||
@@ -238,26 +241,19 @@ bool AlbumModel::setData(const QModelIndex& index, const QVariant& value, int ro
 			if(!m->uto)
 			{
 				m->uto = new Tagging::UserOperations(-1, this);
-				connect(m->uto, &Tagging::UserOperations::sig_finished, this, &AlbumModel::rating_operation_finished);
 			}
 
 			m->uto->set_album_rating(album, rating);
-			library()->refresh_current_view();
-
-			//emit dataChanged(this->index(row, 0), this->index(row, columnCount() - 1));
-
-			return true;
 		}
 	}
 
 	return false;
 }
 
-void AlbumModel::rating_operation_finished()
+
+void AlbumModel::rating_changed(int row)
 {
-	int row = m->tmp_rating.first;
-	emit dataChanged(this->index(row, 0), this->index(row, columnCount() - 1));
-	m->tmp_rating.first = -1;
+	emit dataChanged(this->index(row, int(ColumnIndex::Album::Rating)), this->index(row, int(ColumnIndex::Album::Rating)));
 }
 
 

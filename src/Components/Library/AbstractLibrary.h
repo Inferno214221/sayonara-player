@@ -46,7 +46,7 @@ class AbstractLibrary :
 
 public:
 
-	explicit AbstractLibrary(QObject *parent=nullptr);
+	explicit AbstractLibrary(QObject* parent=nullptr);
 	virtual ~AbstractLibrary();
 
 	Library::Sortings   sortorder() const;
@@ -91,6 +91,8 @@ signals:
 	void sig_delete_answer(QString);
 	void sig_import_dialog_requested();
 
+	void sig_album_rating_changed(int row);
+
 
 public slots:
 
@@ -110,6 +112,7 @@ public slots:
 	 */
 	virtual void refresh_current_view();
 	void metadata_changed();
+	void albums_changed();
 
 	virtual void find_track(TrackID id);
 

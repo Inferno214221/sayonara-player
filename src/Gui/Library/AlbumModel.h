@@ -65,7 +65,7 @@ namespace Library
 			const MetaDataList& mimedata_tracks() const override;
 
 		private slots:
-			void rating_operation_finished();
+			void rating_changed(int row);
 	};
 }
 

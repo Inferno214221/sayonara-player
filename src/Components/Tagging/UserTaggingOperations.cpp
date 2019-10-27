@@ -20,6 +20,7 @@
 
 #include "UserTaggingOperations.h"
 #include "Editor.h"
+#include "ChangeNotifier.h"
 
 #include "Database/Connector.h"
 #include "Database/LibraryDatabase.h"
@@ -81,6 +82,14 @@ void UserOperations::set_track_rating(const MetaDataList& v_md, Rating rating)
 void UserOperations::set_album_rating(const Album& album, Rating rating)
 {
 	m->library_db->updateAlbumRating(album.id, rating);
+
+	Album album_new(album);
+	album_new.rating = rating;
+
+	AlbumList albums_old; albums_old << album;
+	AlbumList albums_new; albums_new << album_new;
+
+	Tagging::ChangeNotifier::instance()->update_albums(albums_old, albums_new);
 }
 
 void UserOperations::merge_artists(const Util::Set<Id>& artist_ids, ArtistId target_artist)

@@ -20,6 +20,7 @@
 
 #include "ChangeNotifier.h"
 #include "Utils/MetaData/MetaDataList.h"
+#include "Utils/MetaData/Album.h"
 
 using namespace Tagging;
 
@@ -28,6 +29,9 @@ struct ChangeNotifier::Private
 	MetaDataList v_md_old;
 	MetaDataList v_md_new;
 	MetaDataList v_md_deleted;
+
+	AlbumList albums_old;
+	AlbumList albums_new;
 };
 
 ChangeNotifier::ChangeNotifier(QObject *parent) :
@@ -53,12 +57,21 @@ void ChangeNotifier::delete_metadata(const MetaDataList& v_md_deleted)
 	emit sig_metadata_deleted();
 }
 
+void ChangeNotifier::update_albums(const AlbumList& albums_old, const AlbumList& albums_new)
+{
+	m->albums_old = albums_old;
+	m->albums_new = albums_new;
+
+	emit sig_albums_changed();
+}
+
 QPair<MetaDataList, MetaDataList> ChangeNotifier::changed_metadata() const
 {
-	QPair<MetaDataList, MetaDataList> ret;
-
-	ret.first = m->v_md_old;
-	ret.second = m->v_md_new;
+	QPair<MetaDataList, MetaDataList> ret
+	{
+		m->v_md_old,
+		m->v_md_new
+	};
 
 	return ret;
 }
@@ -66,4 +79,15 @@ QPair<MetaDataList, MetaDataList> ChangeNotifier::changed_metadata() const
 MetaDataList ChangeNotifier::deleted_metadata() const
 {
 	return m->v_md_deleted;
+}
+
+QPair<AlbumList, AlbumList> ChangeNotifier::changed_albums() const
+{
+	QPair<AlbumList, AlbumList> ret
+	{
+		m->albums_old,
+		m->albums_new
+	};
+
+	return ret;
 }

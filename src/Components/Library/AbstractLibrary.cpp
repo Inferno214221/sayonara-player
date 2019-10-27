@@ -34,6 +34,7 @@
 #include "Utils/Language/Language.h"
 #include "Utils/Library/SearchMode.h"
 #include "Utils/Playlist/PlaylistMode.h"
+#include "Utils/Algorithm.h"
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 #include "Utils/ExtensionSet.h"
@@ -82,6 +83,9 @@ AbstractLibrary::AbstractLibrary(QObject *parent) :
 
 	connect(mdcn, &Tagging::ChangeNotifier::sig_metadata_deleted,
 		this, &AbstractLibrary::metadata_changed);
+
+	connect(mdcn, &Tagging::ChangeNotifier::sig_albums_changed,
+		this, &AbstractLibrary::albums_changed);
 }
 
 AbstractLibrary::~AbstractLibrary() = default;
@@ -191,6 +195,32 @@ void AbstractLibrary::metadata_changed()
 {
 	m->num_tracks = get_num_tracks();
 	refresh_current_view();
+}
+
+
+void AbstractLibrary::albums_changed()
+{
+	auto* mdcn = static_cast<Tagging::ChangeNotifier*>(sender());
+	QPair<AlbumList, AlbumList> changed_albums = mdcn->changed_albums();
+
+	AlbumList old_albums = changed_albums.first;
+	AlbumList new_albums = changed_albums.second;
+
+	for(auto it=m->albums.begin(); it != m->albums.end(); it++)
+	{
+		int id = it->id;
+		int idx = Util::Algorithm::indexOf(old_albums, [id](const Album& album){
+			return (album.id == id);
+		});
+
+		if(idx >= 0)
+		{
+			sp_log(Log::Debug, this) << "Album " << it->to_string() << " changed to " << new_albums[idx].to_string();
+
+			*it = new_albums[idx];
+			emit sig_album_rating_changed(idx);
+		}
+	}
 }
 
 void AbstractLibrary::find_track(TrackID id)
