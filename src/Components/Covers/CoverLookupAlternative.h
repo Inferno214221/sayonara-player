@@ -60,6 +60,13 @@ namespace Cover
 
 		bool save(const QPixmap& pm, bool save_to_library);
 		bool is_running() const;
+
+		/**
+		 * @brief silent results that the cover is not stored
+		 * productively. The AlternativeCoverFetcher will
+		 * save the cover to a temporary path which can be re-
+		 * trieved by Cover::Location::alternative_path()
+		 */
 		bool is_silent() const;
 
 		enum SearchMode

@@ -84,6 +84,7 @@ struct CoverButton::Private
 	QPixmap					current_cover, current_cover_scaled;
 	QPixmap					old_cover, old_cover_scaled;
 	QByteArray				current_hash;
+	QRect					pixmap_rect;
 
 	QTimer*					timer=nullptr;
 	Lookup*					cover_lookup=nullptr;
@@ -324,8 +325,6 @@ bool CoverButton::is_silent() const
 	return m->silent;
 }
 
-
-
 void CoverButton::timer_timed_out()
 {
 	m->opacity = std::min(1.0, m->opacity + 0.025);
@@ -379,6 +378,8 @@ void CoverButton::paintEvent(QPaintEvent* event)
 			pm_old
 		);
 
+		m->pixmap_rect = QRect(x_old, y_old, pm_old.width(), pm_old.height());
+
 		painter.setOpacity(m->opacity);
 	}
 
@@ -393,6 +394,8 @@ void CoverButton::paintEvent(QPaintEvent* event)
 			x, y, pm.width(), pm.height(),
 			pm
 		);
+
+		m->pixmap_rect = QRect(x, y, pm.width(), pm.height());
 	}
 }
 
@@ -407,27 +410,9 @@ void CoverButton::resizeEvent(QResizeEvent* e)
 }
 
 
-
-static bool check_if_within_cover(QPoint pos, QRect geometry)
-{
-	int difference = geometry.width() - geometry.height();
-	if(difference > 0)
-	{
-		int smaller_site = geometry.height();
-
-		if ((pos.x() < (difference / 2)) ||
-			(pos.x() >= (difference / 2 + smaller_site)))
-		{
-			return false;
-		}
-	}
-
-	return true;
-}
-
 void CoverButton::mouseMoveEvent(QMouseEvent* event)
 {
-	bool within = check_if_within_cover(event->pos() - this->geometry().topLeft(), this->geometry());
+	bool within = m->pixmap_rect.contains(event->pos());
 	QCursor c;
 
 	if(within)
@@ -450,7 +435,7 @@ void CoverButton::mouseReleaseEvent(QMouseEvent* event)
 {
 	if(event->button() | Qt::LeftButton)
 	{
-		bool within = check_if_within_cover(event->pos() - this->geometry().topLeft(), this->geometry());
+		bool within = m->pixmap_rect.contains(event->pos());
 		if(!within)
 		{
 			QPushButton::mouseReleaseEvent(event);
