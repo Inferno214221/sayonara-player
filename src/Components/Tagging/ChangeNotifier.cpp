@@ -40,7 +40,7 @@ ChangeNotifier::ChangeNotifier(QObject *parent) :
 	m = Pimpl::make<Private>();
 }
 
-ChangeNotifier::~ChangeNotifier() {}
+ChangeNotifier::~ChangeNotifier() = default;
 
 void ChangeNotifier::change_metadata(const MetaDataList& v_md_old, const MetaDataList& v_md_new)
 {

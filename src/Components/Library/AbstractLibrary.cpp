@@ -191,10 +191,36 @@ void AbstractLibrary::refresh_current_view()
 	}
 }
 
+
 void AbstractLibrary::metadata_changed()
 {
-	m->num_tracks = get_num_tracks();
-	refresh_current_view();
+	auto* mdcn = static_cast<Tagging::ChangeNotifier*>(sender());
+	QPair<MetaDataList, MetaDataList> changed_tracks = mdcn->changed_metadata();
+
+	auto& old_tracks = changed_tracks.first;
+	auto& new_tracks = changed_tracks.second;
+
+	QHash<TrackID, int> id_row_map;
+	{ // build lookup tree
+		int i=0;
+		for(auto it=m->tracks.begin(); it != m->tracks.end(); it++)
+		{
+			id_row_map[it->id] = i;	i++;
+		}
+	}
+
+	int changed_idx=0;
+	for(auto it=old_tracks.begin(); it!=old_tracks.end(); it++)
+	{
+		if(id_row_map.contains(it->id))
+		{
+			int row = id_row_map[it->id];
+			std::swap(m->tracks[row], new_tracks[changed_idx]);
+			emit sig_track_changed(row);
+		}
+
+		changed_idx++;
+	}
 }
 
 
@@ -203,23 +229,29 @@ void AbstractLibrary::albums_changed()
 	auto* mdcn = static_cast<Tagging::ChangeNotifier*>(sender());
 	QPair<AlbumList, AlbumList> changed_albums = mdcn->changed_albums();
 
-	AlbumList old_albums = changed_albums.first;
-	AlbumList new_albums = changed_albums.second;
+	auto& old_albums = changed_albums.first;
+	auto& new_albums = changed_albums.second;
 
-	for(auto it=m->albums.begin(); it != m->albums.end(); it++)
-	{
-		int id = it->id;
-		int idx = Util::Algorithm::indexOf(old_albums, [id](const Album& album){
-			return (album.id == id);
-		});
-
-		if(idx >= 0)
+	QHash<AlbumId, int> id_row_map;
+	{ // build lookup tree
+		int i=0;
+		for(auto it=m->albums.begin(); it != m->albums.end(); it++)
 		{
-			sp_log(Log::Debug, this) << "Album " << it->to_string() << " changed to " << new_albums[idx].to_string();
-
-			*it = new_albums[idx];
-			emit sig_album_rating_changed(idx);
+			id_row_map[it->id] = i; i++;
 		}
+	}
+
+	int changed_idx=0;
+	for(auto it=old_albums.begin(); it != old_albums.end(); it++)
+	{
+		if(!id_row_map.contains(it->id))
+		{
+			int row = id_row_map[it->id];
+			std::swap(m->albums[row], new_albums[changed_idx]);
+			emit sig_album_changed(row);
+		}
+
+		changed_idx++;
 	}
 }
 

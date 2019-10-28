@@ -66,7 +66,7 @@ AlbumModel::AlbumModel(QObject* parent, AbstractLibrary* library) :
 {
 	m = Pimpl::make<AlbumModel::Private>();
 
-	connect(library, &AbstractLibrary::sig_album_rating_changed, this, &AlbumModel::rating_changed);
+	connect(library, &AbstractLibrary::sig_album_changed, this, &AlbumModel::album_changed);
 }
 
 AlbumModel::~AlbumModel() = default;
@@ -110,9 +110,7 @@ Cover::Location AlbumModel::cover(const IndexSet& indexes) const
 		return Cover::Location();
 	}
 
-	const Album& album = albums[idx];
-
-	return Cover::Location::xcover_location(album);
+	return Cover::Location::xcover_location(albums[idx]);
 }
 
 
@@ -251,9 +249,15 @@ bool AlbumModel::setData(const QModelIndex& index, const QVariant& value, int ro
 }
 
 
-void AlbumModel::rating_changed(int row)
+void AlbumModel::album_changed(int row)
 {
-	emit dataChanged(this->index(row, int(ColumnIndex::Album::Rating)), this->index(row, int(ColumnIndex::Album::Rating)));
+	m->tmp_rating.first = -1;
+
+	emit dataChanged
+	(
+		this->index(row, 0),
+		this->index(row, columnCount())
+	);
 }
 
 

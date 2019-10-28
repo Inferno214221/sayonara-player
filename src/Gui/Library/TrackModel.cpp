@@ -56,6 +56,8 @@ TrackModel::TrackModel(QObject* parent, AbstractLibrary* library) :
 	ItemModel(parent, library)
 {
 	m = Pimpl::make<Private>();
+
+	connect(library, &AbstractLibrary::sig_track_changed, this, &TrackModel::track_changed);
 }
 
 TrackModel::~TrackModel() = default;
@@ -201,12 +203,15 @@ bool TrackModel::setData(const QModelIndex& index, const QVariant& value, int ro
 			if(!m->uto)
 			{
 				m->uto = new Tagging::UserOperations(-1, this);
-				connect(m->uto, &Tagging::UserOperations::sig_finished, this, &TrackModel::rating_operation_finished);
 			}
 
-			m->uto->set_track_rating(md, rating);
+			emit dataChanged
+			(
+				this->index(row, int(ColumnIndex::Track::Rating)),
+				this->index(row, int(ColumnIndex::Track::Rating))
+			);
 
-			emit dataChanged(this->index(row, 0), this->index(row, columnCount() - 1));
+			m->uto->set_track_rating(md, rating);
 
 			return true;
 		}
@@ -215,14 +220,15 @@ bool TrackModel::setData(const QModelIndex& index, const QVariant& value, int ro
 	return false;
 }
 
-
-void TrackModel::rating_operation_finished()
+void TrackModel::track_changed(int row)
 {
-	int row = m->tmp_rating.first;
-	emit dataChanged(this->index(row, 0), this->index(row, columnCount() - 1));
 	m->tmp_rating.first = -1;
-}
 
+	emit dataChanged
+	(
+		this->index(row, 0), this->index(row, columnCount())
+	);
+}
 
 int TrackModel::rowCount(const QModelIndex&) const
 {
@@ -291,12 +297,10 @@ int TrackModel::searchable_column() const
 	return int(ColumnIndex::Track::Title);
 }
 
-
 const Util::Set<Id>& TrackModel::selections() const
 {
 	return library()->selected_tracks();
 }
-
 
 const MetaDataList& Library::TrackModel::mimedata_tracks() const
 {

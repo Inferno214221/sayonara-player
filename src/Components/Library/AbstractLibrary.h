@@ -91,7 +91,8 @@ signals:
 	void sig_delete_answer(QString);
 	void sig_import_dialog_requested();
 
-	void sig_album_rating_changed(int row);
+	void sig_album_changed(int row);
+	void sig_track_changed(int row);
 
 
 public slots:
