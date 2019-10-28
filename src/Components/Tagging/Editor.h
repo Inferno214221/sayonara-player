@@ -37,15 +37,11 @@ namespace Tagging
  * database. When finished the finished() signal is emitted.
  * @ingroup Tagging
  */
-
 	class Editor :
-			public QThread
+			public QObject
 	{
 		Q_OBJECT
 		PIMPL(Editor)
-
-	private:
-		using QThread::finished;
 
 	signals:
 		void sig_started();
@@ -53,11 +49,10 @@ namespace Tagging
 		void sig_progress(int);
 		void sig_metadata_received(const MetaDataList& v_md);
 
-
 	public:
 		explicit Editor(QObject* parent=nullptr);
 		explicit Editor(const MetaDataList& v_md, QObject* parent=nullptr);
-		~Editor();
+		~Editor() override;
 
 		enum FailReason
 		{
@@ -84,18 +79,17 @@ namespace Tagging
 		 * @param idx track index
 		 * @return MetaData object
 		 */
-		const MetaData& metadata(int idx) const;
+		MetaData metadata(int idx) const;
 
 
 		/**
 		 * @brief get all (changed) metadata
 		 * @return MetaDataList object
 		 */
-		const MetaDataList& metadata() const;
+		MetaDataList metadata() const;
 
 
 		bool apply_regex(const QString& regex, int idx);
-
 
 		/**
 		 * @brief Add a genre to all (changed) metdata
@@ -107,8 +101,6 @@ namespace Tagging
 		void delete_genre(int idx, const Genre& genre);
 
 		void rename_genre(int idx, const Genre& genre, const Genre& new_genre);
-
-
 
 		/**
 		 * @brief gets the number of tracks
@@ -162,9 +154,7 @@ namespace Tagging
 		bool can_load_entire_album() const;
 		void load_entire_album();
 
-
 		QMap<QString, FailReason> failed_files() const;
-
 
 	public slots:
 
@@ -180,10 +170,7 @@ namespace Tagging
 		 */
 		void apply_artists_and_albums_to_md();
 
-		void run() override;
-
 	private slots:
-		void thread_finished();
 		void load_entire_album_finished();
 	};
 }

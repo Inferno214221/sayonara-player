@@ -58,7 +58,7 @@ using namespace Tagging;
 
 struct GUI_TagEdit::Private
 {
-	Editor*				tag_edit=nullptr;
+	Tagging::Editor*	tag_edit=nullptr;
 	GUI_TagFromPath*	ui_tag_from_path=nullptr;
 	GUI_CoverEdit*		ui_cover_edit=nullptr;
 
@@ -72,7 +72,7 @@ GUI_TagEdit::GUI_TagEdit(QWidget* parent) :
 	ui->setupUi(this);
 
 	m = Pimpl::make<Private>();
-	m->tag_edit = new Tagging::Editor(this);
+	m->tag_edit = create_editor();
 	m->ui_tag_from_path = new GUI_TagFromPath(ui->tab_from_path);
 	m->ui_cover_edit = new GUI_CoverEdit(this);
 
@@ -99,11 +99,6 @@ GUI_TagEdit::GUI_TagEdit(QWidget* parent) :
 	connect(ui->btn_undo_all, &QPushButton::clicked, this, &GUI_TagEdit::undo_all_clicked);
 	connect(ui->btn_close, &QPushButton::clicked, this, &GUI_TagEdit::sig_cancelled);
 
-	connect(m->tag_edit, &Editor::sig_progress, this, &GUI_TagEdit::progress_changed);
-	connect(m->tag_edit, &Editor::sig_metadata_received, this, &GUI_TagEdit::metadata_changed);
-	connect(m->tag_edit, &Editor::sig_started, this, &GUI_TagEdit::commit_started);
-	connect(m->tag_edit, &Editor::sig_finished, this, &GUI_TagEdit::commit_finished);
-
 	connect(ui->btn_load_entire_album, &QPushButton::clicked, this, &GUI_TagEdit::load_entire_album);
 
 	connect(m->ui_tag_from_path, &GUI_TagFromPath::sig_apply, this, &GUI_TagEdit::apply_tag_from_path);
@@ -113,6 +108,34 @@ GUI_TagEdit::GUI_TagEdit(QWidget* parent) :
 }
 
 GUI_TagEdit::~GUI_TagEdit() = default;
+
+Editor* GUI_TagEdit::create_editor()
+{
+	auto* editor = new Tagging::Editor();
+
+	connect(editor, &Editor::sig_progress, this, &GUI_TagEdit::progress_changed);
+	connect(editor, &Editor::sig_metadata_received, this, &GUI_TagEdit::metadata_changed);
+	connect(editor, &Editor::sig_started, this, &GUI_TagEdit::commit_started);
+	connect(editor, &Editor::sig_finished, this, &GUI_TagEdit::commit_finished);
+
+	return editor;
+}
+
+void GUI_TagEdit::run_editor(Editor* editor)
+{
+	auto* t = new QThread();
+	editor->moveToThread(t);
+
+	connect(editor, &Tagging::Editor::sig_finished, t, &QThread::quit);
+	connect(editor, &Tagging::Editor::sig_finished, editor, [=](){
+		editor->moveToThread(QApplication::instance()->thread());
+	});
+
+	connect(t, &QThread::started, editor, &Editor::commit);
+	connect(t, &QThread::finished, t, &QObject::deleteLater);
+
+	t->start();
+}
 
 static void set_all_text(QCheckBox* label, int n)
 {
@@ -562,7 +585,7 @@ void GUI_TagEdit::commit()
 		m->tag_edit->update_cover(i, cover);
 	}
 
-	m->tag_edit->commit();
+	run_editor(m->tag_edit);
 }
 
 void GUI_TagEdit::commit_started()

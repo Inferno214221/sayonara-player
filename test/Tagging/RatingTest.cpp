@@ -4,7 +4,6 @@
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaData.h"
 
-
 class RatingTest : public AbstractTaggingTest
 {
 	Q_OBJECT

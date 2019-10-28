@@ -197,6 +197,9 @@ void AbstractLibrary::metadata_changed()
 	auto* mdcn = static_cast<Tagging::ChangeNotifier*>(sender());
 	QPair<MetaDataList, MetaDataList> changed_tracks = mdcn->changed_metadata();
 
+	bool artists_changed = false;
+	bool albums_changed = false;
+
 	auto& old_tracks = changed_tracks.first;
 	auto& new_tracks = changed_tracks.second;
 
@@ -212,14 +215,31 @@ void AbstractLibrary::metadata_changed()
 	int changed_idx=0;
 	for(auto it=old_tracks.begin(); it!=old_tracks.end(); it++)
 	{
+		MetaData& new_track = new_tracks[changed_idx];
+		if(it->artist() != new_track.artist()){
+			artists_changed = true;
+		}
+
+		if(it->album_artist() != new_track.album_artist()){
+			artists_changed = true;
+		}
+
+		if(it->album() != new_track.album()){
+			albums_changed = true;
+		}
+
 		if(id_row_map.contains(it->id))
 		{
 			int row = id_row_map[it->id];
-			std::swap(m->tracks[row], new_tracks[changed_idx]);
+			std::swap(m->tracks[row], new_track);
 			emit sig_track_changed(row);
 		}
 
 		changed_idx++;
+	}
+
+	if(artists_changed || albums_changed){
+		refresh_current_view();
 	}
 }
 

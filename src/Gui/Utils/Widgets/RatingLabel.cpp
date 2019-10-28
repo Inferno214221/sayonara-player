@@ -189,6 +189,7 @@ void Gui::RatingEditor::set_rating(Rating rating)
 	m->label->set_rating(rating);
 
 	this->setEnabled(rating != Rating::Last);
+	this->repaint();
 }
 
 Rating Gui::RatingEditor::rating() const
@@ -231,7 +232,6 @@ void Gui::RatingEditor::paintEvent(QPaintEvent* e)
 void Gui::RatingEditor::focusInEvent(QFocusEvent* e)
 {
 	this->setMouseTracking(m->mouse_trackable);
-
 	QWidget::focusInEvent(e);
 }
 
