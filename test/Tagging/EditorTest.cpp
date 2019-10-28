@@ -272,20 +272,23 @@ void EditorTest::test_edit()
 
 void EditorTest::test_commit()
 {
-	MetaDataList tracks = create_metadata(1, 1, 10);
+	MetaDataList tracks;
+	m_lib_db->getAllTracks(tracks);
+	QVERIFY(tracks.size() == 2*2*10);
+
 	Editor* editor = new Editor();
 	editor->set_metadata(tracks);
 
 	auto* mdcn = Tagging::ChangeNotifier::instance();
 	QSignalSpy spy(mdcn, &Tagging::ChangeNotifier::sig_metadata_changed);
 
-	QVERIFY(editor->count() == 10);
+	QVERIFY(editor->count() == tracks.count());
 	QVERIFY(editor->has_changes() == false);
-	QVERIFY(editor->can_load_entire_album() == true);
+	QVERIFY(editor->can_load_entire_album() == false);
 
 	for(int i=0; i<int(tracks.size()); i++)
 	{
-		if(i % 3 == 0) // 0, 3, 6, 9
+		if(i % 10 == 0) // 0, 10, 20, 30
 		{
 			MetaData md = tracks[i];
 			md.set_title( QString("other %1").arg(i) );
@@ -315,7 +318,7 @@ void EditorTest::test_commit()
 	int cur_idx = 0;
 	for(int i=0; i<int(tracks.size()); i++)
 	{
-		if(i % 3 == 0) // 0, 3, 6, 9
+		if(i % 10 == 0) // 0, 10, 20, 30
 		{
 			QVERIFY(old_md[cur_idx].is_equal_deep(tracks[i]));
 			QVERIFY(new_md[cur_idx].filepath() == tracks[i].filepath());

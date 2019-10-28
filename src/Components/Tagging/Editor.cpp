@@ -135,7 +135,7 @@ bool Editor::apply_regex(const QString& regex, int idx)
 
 	MetaData& md = m->change_info[idx].current_metadata();
 	Expression e(regex, md.filepath());
-	if(!e.is_valid()){
+	if(!e.is_valid()) {
 		return false;
 	}
 
@@ -279,8 +279,6 @@ void Editor::load_entire_album()
 
 void Editor::load_entire_album_finished()
 {
-	emit sig_finished();
-
 	auto* worker = static_cast<Directory::MetaDataScanner*>(sender());
 
 	MetaDataList v_md = worker->metadata();
@@ -290,6 +288,8 @@ void Editor::load_entire_album_finished()
 	}
 
 	worker->deleteLater();
+
+	emit sig_finished();
 }
 
 void Editor::apply_artists_and_albums_to_md()
@@ -386,19 +386,19 @@ void Editor::apply_artists_and_albums_to_md()
 
 	for(auto it=m->change_info.begin(); it != m->change_info.end(); it++)
 	{
-		MetaData& md = it->current_metadata();
+		MetaData md = it->current_metadata();
 
 		md.album_id = album_map[md.album()];
 		md.artist_id = artist_map[md.artist()];
 		md.set_album_artist_id(artist_map[md.album_artist()]);
 
-		it->set_changed(true); // not neccessary
+		it->update(md);
 	}
 }
 
 void Editor::update_cover(int idx, const QPixmap& cover)
 {
-	if(cover.isNull() || !Util::between(idx, m->change_info)){
+	if(cover.isNull() || !Util::between(idx, m->change_info)) {
 		return;
 	}
 
@@ -440,9 +440,8 @@ void Editor::commit()
 		return;
 	}
 
-	sp_log(Log::Debug, this) << "Have to change " << changed_tracks	<< " tracks and " << changed_covers << " covers";
+	sp_log(Log::Debug, this) << "Changing " << changed_tracks << " tracks and " << changed_covers << " covers";
 
-	sp_log(Log::Debug, this) << "Apply albums and artists";
 	apply_artists_and_albums_to_md();
 
 	db->transaction();
@@ -458,16 +457,18 @@ void Editor::commit()
 			bool success;
 			{ // write Metadata to file
 				success = Tagging::Utils::setMetaDataOfFile(it->current_metadata());
-				if( !success )
+				if(!success)
 				{
 					QString filepath = it->original_metadata().filepath();
 					QFileInfo fi(filepath);
-					if(!fi.exists()){
+					if(!fi.exists())
+					{
 						m->failed_files.insert(filepath, FailReason::FileNotFound);
 						sp_log(Log::Warning, this) << "Failed to write tags to file: File not found";
 					}
 
-					else if(!fi.isWritable()){
+					else if(!fi.isWritable())
+					{
 						m->failed_files.insert(filepath, FailReason::FileNotWriteable);
 						sp_log(Log::Warning, this) << "Failed to write tags to file: File not writeable";
 					}
@@ -480,13 +481,14 @@ void Editor::commit()
 
 			if(success)
 			{ // write changed to db
-				const MetaData& md = it->current_metadata();
-				if( !md.is_extern && md.id >= 0 )
+				const MetaData& org_md = it->original_metadata();
+				const MetaData& cur_md = it->current_metadata();
+				if( !cur_md.is_extern && cur_md.id >= 0 )
 				{
-					if( ldb->updateTrack(md) )
+					if(ldb->updateTrack(cur_md))
 					{
-						m->v_md_before_change << it->original_metadata();
-						m->v_md_after_change << it->current_metadata();
+						m->v_md_before_change << org_md;
+						m->v_md_after_change << cur_md;
 
 						// update track
 						it->apply();

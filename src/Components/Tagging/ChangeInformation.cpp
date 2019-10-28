@@ -61,10 +61,11 @@ Tagging::ChangeInformation& ChangeInformation::operator=(const Tagging::ChangeIn
 
 void ChangeInformation::update(const MetaData& md)
 {
-	m->has_changes = !(md.is_equal_deep( m->md_orig ));
-	if(m->has_changes)
+	bool is_equal = md.is_equal_deep( m->md_orig );
+	if(!is_equal)
 	{
 		m->md_changed = md;
+		m->has_changes = true;
 	}
 }
 
