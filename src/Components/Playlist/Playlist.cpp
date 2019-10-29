@@ -20,6 +20,7 @@
 
 #include "Playlist.h"
 
+#include "Utils/Utils.h"
 #include "Utils/Algorithm.h"
 #include "Utils/Set.h"
 #include "Utils/FileUtils.h"
@@ -63,11 +64,11 @@ PlaylistImpl::Playlist(int idx, PlaylistType type, const QString& name) :
 {
 	m = Pimpl::make<::Playlist::Playlist::Private>(idx,  GetSetting(Set::PL_Mode), type);
 
-	Tagging::ChangeNotifier* md_change_notifier = Tagging::ChangeNotifier::instance();
+	auto* md_change_notifier = Tagging::ChangeNotifier::instance();
 	connect(md_change_notifier, &Tagging::ChangeNotifier::sig_metadata_changed, this, &Playlist::metadata_changed);
 	connect(md_change_notifier, &Tagging::ChangeNotifier::sig_metadata_deleted, this, &Playlist::metadata_deleted);
 
-	PlayManager* play_manager = PlayManager::instance();
+	auto* play_manager = PlayManager::instance();
 	connect(play_manager, &PlayManager::sig_track_metadata_changed, this, &Playlist::metadata_changed_single);
 	connect(play_manager, &PlayManager::sig_duration_changed, this, &Playlist::duration_changed);
 
@@ -99,6 +100,8 @@ IndexSet PlaylistImpl::move_tracks(const IndexSet& indexes, int tgt_row)
 	}
 
 	set_changed(true);
+
+	sp_log(Log::Info, this) << "Current index: " << current_track_index();
 
 	return new_track_positions;
 }
@@ -132,6 +135,8 @@ void PlaylistImpl::remove_tracks(const IndexSet& indexes)
 	m->v_md.remove_tracks(indexes);
 
 	set_changed(true);
+
+	sp_log(Log::Info, this) << "Current index: " << current_track_index();
 }
 
 
@@ -139,6 +144,8 @@ void PlaylistImpl::insert_tracks(const MetaDataList& lst, int tgt)
 {
 	m->v_md.insert_tracks(lst, tgt);
 	set_changed(true);
+
+	sp_log(Log::Info, this) << "Current index: " << current_track_index();
 }
 
 void PlaylistImpl::append_tracks(const MetaDataList& lst)
@@ -158,7 +165,7 @@ void PlaylistImpl::append_tracks(const MetaDataList& lst)
 bool PlaylistImpl::change_track(int idx)
 {
 	set_track_idx_before_stop(-1);
-	m->v_md.set_current_track(idx);
+	set_current_track(idx);
 
 	if( !Util::between(idx, m->v_md) )
 	{
@@ -166,8 +173,6 @@ bool PlaylistImpl::change_track(int idx)
 		set_track_idx_before_stop(-1);
 		return false;
 	}
-
-	emit sig_current_track_changed(idx);
 
 	m->shuffle_history << m->v_md[idx].unique_id();
 	sp_log(Log::Info, this) << m->shuffle_history;
@@ -245,7 +250,7 @@ void PlaylistImpl::duration_changed()
 
 	MetaDataList& v_md = m->v_md;
 
-	int cur_track = v_md.current_track();
+	int cur_track = current_track_index();
 	if(!Util::between(cur_track, v_md.count())){
 		return;
 	}
@@ -268,22 +273,17 @@ void PlaylistImpl::replace_track(int idx, const MetaData& md)
 		return;
 	}
 
-	bool is_playing = m->v_md[idx].pl_playing;
-//	if(m->playing_id == m->v_md[idx].unique_id())
-//	{
-//		m->playing_id = md.unique_id();
-//	}
-
 	m->v_md[idx] = md;
 	m->v_md[idx].is_disabled = !(File::check_file(md.filepath()));
-	m->v_md[idx].pl_playing = is_playing;
+
+	set_current_track(idx);
 
 	emit sig_items_changed( index() );
 }
 
 void PlaylistImpl::play()
 {
-	if(m->v_md.current_track() < 0){
+	if(current_track_index() < 0){
 		change_track(0);
 	}
 }
@@ -295,7 +295,7 @@ void PlaylistImpl::stop()
 	if(current_track_index() >= 0)
 	{
 		set_track_idx_before_stop(current_track_index());
-		m->v_md.set_current_track(-1);
+		set_current_track(-1);
 	}
 
 	emit sig_stopped();
@@ -351,7 +351,7 @@ void PlaylistImpl::next()
 	}
 
 	// stopped
-	int cur_track = m->v_md.current_track();
+	int cur_track = current_track_index();
 	int track_num = -1;
 
 	if(cur_track == -1){
@@ -390,7 +390,7 @@ void PlaylistImpl::next()
 	change_track(track_num);
 }
 
-#include "Utils/Utils.h"
+
 int PlaylistImpl::calc_shuffle_track()
 {
 	if(m->v_md.size() <= 1){
@@ -522,18 +522,46 @@ MilliSeconds PlaylistImpl::running_time() const
 
 int PlaylistImpl::current_track_index() const
 {
-	return m->v_md.current_track();
+	if(m->playing_id == 0){
+		return -1;
+	}
+
+	int i=0;
+	for(auto it=m->v_md.begin(); it != m->v_md.end(); it++, i++)
+	{
+		if(it->unique_id() == m->playing_id)
+		{
+			return i;
+		}
+	}
+
+	return -1;
 }
 
 bool PlaylistImpl::current_track(MetaData& md) const
 {
-	int cur_play_idx = m->v_md.current_track();
-	if(cur_play_idx < 0){
+	int idx = current_track_index();
+	if(!Util::between(idx, m->v_md)) {
 		return false;
 	}
 
-	md = m->v_md[cur_play_idx];
+	md = m->v_md[idx];
 	return true;
+}
+
+void Playlist::Playlist::set_current_track(int idx)
+{
+	if(!Util::between(idx, m->v_md)) {
+		m->playing_id = 0;
+	}
+
+	else {
+		m->playing_id = m->v_md[idx].unique_id();
+	}
+
+	sp_log(Log::Info, this) << "Set current track " << idx;
+
+	emit sig_current_track_changed(idx);
 }
 
 int PlaylistImpl::count() const

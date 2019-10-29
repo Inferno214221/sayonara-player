@@ -336,7 +336,6 @@ MetaData::MetaData() :
 	LibraryItem(),
 	id(-1),
 	library_id(-1),
-	pl_playing(false),
 	is_disabled(false)
 {
 	m = Pimpl::make<Private>();
@@ -349,7 +348,6 @@ MetaData::MetaData(const MetaData& other) :
 	LibraryItem(other),
 	CASSIGN(id),
 	CASSIGN(library_id),
-	CASSIGN(pl_playing),
 	CASSIGN(is_disabled)
 {
 	m = Pimpl::make<Private>(*(other.m));
@@ -363,7 +361,6 @@ MetaData::MetaData(MetaData&& other) noexcept :
 	LibraryItem(other),
 	CMOVE(id),
 	CMOVE(library_id),
-	CMOVE(pl_playing),
 	CMOVE(is_disabled)
 {
 	m = Pimpl::make<Private>(
@@ -590,7 +587,6 @@ MetaData& MetaData::operator=(const MetaData& other)
 
 	ASSIGN(id);
 	ASSIGN(library_id);
-	ASSIGN(pl_playing);
 	ASSIGN(is_disabled);
 
 	return *this;
@@ -604,7 +600,6 @@ MetaData& MetaData::operator=(MetaData&& other) noexcept
 
 	MOVE(id);
 	MOVE(library_id);
-	MOVE(pl_playing);
 	MOVE(is_disabled);
 
 	return *this;
@@ -643,7 +638,6 @@ bool MetaData::is_equal_deep(const MetaData& other) const
 	return
 	(
 		CMP(id) &&
-		CMP(pl_playing) &&
 		CMP(is_disabled) &&
 		CMP(library_id) &&
 		m->is_equal(*(other.m))

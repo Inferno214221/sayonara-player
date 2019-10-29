@@ -51,7 +51,6 @@ public:
 	TrackID id;
 	LibraryId library_id;
 
-	bool pl_playing;
 	bool is_disabled;
 
 public:

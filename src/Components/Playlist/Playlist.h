@@ -113,6 +113,7 @@ namespace Playlist
 		private:
 			int calc_shuffle_track();
 			void set_changed(bool b) override;
+			void set_current_track(int idx);
 	};
 }
 #endif // PLAYLIST_H

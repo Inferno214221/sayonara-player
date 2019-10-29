@@ -36,7 +36,6 @@ static MetaData create_md()
 	md.set_track_number(17);
 	md.set_year(2014);
 	md.set_extern(true);
-	md.pl_playing = true;
 	md.is_disabled = true;
 	md.set_rating(Rating::Four);
 	md.set_discnumber(2);
@@ -67,7 +66,6 @@ void MetaDataTest::copy_test()
 	md.set_track_number(17);
 	md.set_year(2014);
 	md.set_extern(true);
-	md.pl_playing = true;
 	md.is_disabled = true;
 	md.set_rating(Rating::Four);
 	md.set_discnumber(2);

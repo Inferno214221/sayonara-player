@@ -22,7 +22,6 @@
 #define METADATALIST_H
 
 #include "MetaData.h"
-#include "Utils/Pimpl.h"
 #include "Utils/Library/Sortorder.h"
 
 #include <deque>
@@ -39,8 +38,6 @@ class MetaDataList :
 {
 	using Parent=std::deque<MetaData>;
 
-	PIMPL(MetaDataList)
-
 public:
 	MetaDataList();
 	explicit MetaDataList(const MetaData& md);
@@ -52,9 +49,6 @@ public:
 	MetaDataList& operator=(MetaDataList&& other) noexcept;
 
 	~MetaDataList();
-
-	void set_current_track(int idx);
-	int current_track() const;
 
 	bool contains(const MetaData& md) const;
 	MetaDataList& remove_track(int idx);
