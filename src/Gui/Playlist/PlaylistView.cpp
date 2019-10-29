@@ -415,7 +415,7 @@ void View::contextMenuEvent(QContextMenuEvent* e)
 		if(selections.size() == 1)
 		{
 			MetaData md = m->model->metadata(selections.first());
-			m->context_menu->set_rating( md.rating );
+			m->context_menu->set_rating( md.rating() );
 		}
 	}
 

@@ -36,6 +36,8 @@
 
 #include <limits>
 #include <QStringList>
+#include <QDateTime>
+#include <QLocale>
 
 namespace Algorithm=Util::Algorithm;
 
@@ -71,6 +73,11 @@ MetaDataInfo::MetaDataInfo(const MetaDataList& v_md) :
 	Bitrate bitrate_min = std::numeric_limits<Bitrate>::max();
 	Bitrate bitrate_max = 0;
 	uint16_t tracknum = 0;
+	uint64_t createdate_min = std::numeric_limits<uint64_t>::max();
+	uint64_t createdate_max = 0;
+	uint64_t modifydate_min = createdate_min;
+	uint64_t modifydate_max = 0;
+
 
 	bool calc_track_num = (v_md.size() == 1);
 
@@ -78,33 +85,44 @@ MetaDataInfo::MetaDataInfo(const MetaDataList& v_md) :
 	Util::Set<Genre> genres;
 	Util::Set<QString> comments;
 
+
 	for(const MetaData& md : v_md )
 	{
 		m->artists.insert(md.artist());
 		m->albums.insert(md.album());
 		m->album_artists.insert(md.album_artist());
 
-		m->album_ids.insert(md.album_id);
-		m->artist_ids.insert(md.artist_id);
+		m->album_ids.insert(md.album_id());
+		m->artist_ids.insert(md.artist_id());
 		m->album_artist_ids.insert(md.album_artist_id());
 
-		length += md.duration_ms;
-		filesize += md.filesize;
+		length += md.duration_ms();
+		filesize += md.filesize();
 
 		if(calc_track_num){
-			tracknum = md.track_num;
+			tracknum = md.track_number();
 		}
 
 		// bitrate
-		if(md.bitrate != 0){
-			bitrate_min = std::min(md.bitrate, bitrate_min);
-			bitrate_max = std::max(md.bitrate, bitrate_max);
+		if(md.bitrate() != 0){
+			bitrate_min = std::min(md.bitrate(), bitrate_min);
+			bitrate_max = std::max(md.bitrate(), bitrate_max);
 		}
 
 		// year
-		if(md.year != 0) {
-			year_min = std::min(year_min, md.year);
-			year_max = std::max(year_max, md.year);
+		if(md.year() != 0) {
+			year_min = std::min(year_min, md.year());
+			year_max = std::max(year_max, md.year());
+		}
+
+		if(md.createdate() != 0){
+			createdate_min = std::min(createdate_min, md.createdate());
+			createdate_max = std::max(createdate_max, md.createdate());
+		}
+
+		if(md.modifydate() != 0){
+			modifydate_min = std::min(modifydate_min, md.modifydate());
+			modifydate_max = std::max(modifydate_max, md.modifydate());
 		}
 
 		if(!md.comment().isEmpty()){
@@ -156,6 +174,8 @@ MetaDataInfo::MetaDataInfo(const MetaDataList& v_md) :
 	insert_playing_time(length);
 	insert_genre(genres);
 	insert_comment(comments);
+	insert_createdates(createdate_min, createdate_max);
+	insert_modifydates(modifydate_min, modifydate_max);
 
 	calc_header(v_md);
 	calc_subheader(tracknum);
@@ -357,6 +377,30 @@ void MetaDataInfo::insert_comment(const Util::Set<QString>& comments)
 	_info.insert(InfoStrings::Comment, comments_str);
 }
 
+static QString get_date_text(uint64_t min_date, uint64_t max_date)
+{
+	QDateTime dd_min_date = Util::int_to_date(min_date);
+	QDateTime dd_max_date = Util::int_to_date(max_date);
+
+	QString text = dd_min_date.toString(QLocale::system().dateTimeFormat(QLocale::ShortFormat));
+	if(min_date != max_date)
+	{
+		text += " -\n" + dd_max_date.toString(QLocale::system().dateTimeFormat(QLocale::ShortFormat));
+	}
+
+	return text;
+}
+
+void MetaDataInfo::insert_createdates(uint64_t min_date, uint64_t max_date)
+{
+	_info.insert(InfoStrings::CreateDate, get_date_text(min_date, max_date));
+}
+
+void MetaDataInfo::insert_modifydates(uint64_t min_date, uint64_t max_date)
+{
+	_info.insert(InfoStrings::ModifyDate, get_date_text(min_date, max_date));
+}
+
 void MetaDataInfo::insert_filetype(const Util::Set<QString>& filetypes)
 {
 	QStringList filetypes_str(filetypes.toList());
@@ -400,6 +444,10 @@ QString MetaDataInfo::get_info_string(InfoStrings idx) const
 			return Lang::get(Lang::Filetype);
 		case InfoStrings::Comment:
 			return Lang::get(Lang::Comment);
+		case InfoStrings::CreateDate:
+			return Lang::get(Lang::Created);
+		case InfoStrings::ModifyDate:
+			return Lang::get(Lang::Modified);
 
 		default: break;
 	}

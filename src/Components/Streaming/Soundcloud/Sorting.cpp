@@ -91,7 +91,7 @@ namespace Compare
 	}
 
 	bool trackNumAsc(const MetaData& md1, const MetaData& md2){
-		return (md1.track_num < md2.track_num);
+		return (md1.track_number() < md2.track_number());
 	}
 
 	bool trackNumDesc(const MetaData& md1, const MetaData& md2){
@@ -123,11 +123,11 @@ namespace Compare
 	}
 
 	bool trackYearAsc(const MetaData& md1, const MetaData& md2){
-		if(md1.year == md2.year){
+		if(md1.year() == md2.year()){
 			return trackArtistAsc(md1, md2);
 		}
 
-		return (md1.year < md2.year);
+		return (md1.year() < md2.year());
 	}
 
 	bool trackYearDesc(const MetaData& md1, const MetaData& md2){
@@ -135,7 +135,7 @@ namespace Compare
 	}
 
 	bool trackLengthAsc(const MetaData& md1, const MetaData& md2){
-		return (md1.duration_ms < md2.duration_ms);
+		return (md1.duration_ms() < md2.duration_ms());
 	}
 
 	bool trackLengthDesc(const MetaData& md1, const MetaData& md2){
@@ -143,11 +143,11 @@ namespace Compare
 	}
 
 	bool trackBitrateAsc(const MetaData& md1, const MetaData& md2){
-		if(md1.bitrate == md2.bitrate){
+		if(md1.bitrate() == md2.bitrate()){
 			return trackArtistAsc(md1, md2);
 		}
 
-		return (md1.bitrate < md2.bitrate);
+		return (md1.bitrate() < md2.bitrate());
 	}
 
 	bool trackBitrateDesc(const MetaData& md1, const MetaData& md2){

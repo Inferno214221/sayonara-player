@@ -97,7 +97,7 @@ void TrackChangedThread::update_now_playing(const QString& session_key, const Me
 	UrlParams sig_data;
 	sig_data["api_key"] =	LFM_API_KEY;
 	sig_data["artist"] =	artist.toLocal8Bit();
-	sig_data["duration"] =	QString::number(md.duration_ms / 1000).toLocal8Bit();
+	sig_data["duration"] =	QString::number(md.duration_ms() / 1000).toLocal8Bit();
 	sig_data["method"] =	QString("track.updatenowplaying").toLocal8Bit();
 	sig_data["sk"] =		session_key.toLocal8Bit();
 	sig_data["track"] =		md.title().toLocal8Bit();

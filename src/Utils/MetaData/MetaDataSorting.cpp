@@ -71,11 +71,11 @@ bool MetaDataSorting::TracksByTitleDesc(const MetaData& md1, const MetaData& md2
 
 bool MetaDataSorting::TracksByTrackNumAsc(const MetaData& md1, const MetaData& md2)
 {
-	if(md1.track_num < md2.track_num){
+	if(md1.track_number() < md2.track_number()){
 		return true;
 	}
 
-	if(md1.track_num == md2.track_num){
+	if(md1.track_number() == md2.track_number()){
 		return TracksByTitleAsc(md1, md2);
 	}
 
@@ -84,11 +84,11 @@ bool MetaDataSorting::TracksByTrackNumAsc(const MetaData& md1, const MetaData& m
 
 bool MetaDataSorting::TracksByTrackNumDesc(const MetaData& md1, const MetaData& md2)
 {
-	if(md2.track_num < md1.track_num){
+	if(md2.track_number() < md1.track_number()){
 		return true;
 	}
 
-	if(md1.track_num == md2.track_num){
+	if(md1.track_number() == md2.track_number()){
 		return TracksByTitleDesc(md1, md2);
 	}
 
@@ -98,11 +98,11 @@ bool MetaDataSorting::TracksByTrackNumDesc(const MetaData& md1, const MetaData& 
 
 bool MetaDataSorting::TracksByDiscnumberAsc(const MetaData& md1, const MetaData& md2)
 {
-	if(md1.discnumber < md2.discnumber){
+	if(md1.discnumber() < md2.discnumber()){
 		return true;
 	}
 
-	if(md1.discnumber == md2.discnumber){
+	if(md1.discnumber() == md2.discnumber()){
 		return TracksByTrackNumAsc(md1, md2);
 	}
 
@@ -111,11 +111,11 @@ bool MetaDataSorting::TracksByDiscnumberAsc(const MetaData& md1, const MetaData&
 
 bool MetaDataSorting::TracksByDiscnumberDesc(const MetaData& md1, const MetaData& md2)
 {
-	if(md2.discnumber < md1.discnumber){
+	if(md2.discnumber() < md1.discnumber()){
 		return true;
 	}
 
-	if(md1.discnumber == md2.discnumber){
+	if(md1.discnumber() == md2.discnumber()){
 		return TracksByTrackNumDesc(md1, md2);
 	}
 
@@ -231,11 +231,11 @@ bool MetaDataSorting::TracksByAlbumArtistDesc(const MetaData& md1, const MetaDat
 
 bool MetaDataSorting::TracksByYearAsc(const MetaData& md1, const MetaData& md2)
 {
-	if(md1.year < md2.year){
+	if(md1.year() < md2.year()){
 		return true;
 	}
 
-	if(md1.year == md2.year){
+	if(md1.year() == md2.year()){
 		return TracksByArtistAsc(md1, md2);
 	}
 
@@ -244,11 +244,11 @@ bool MetaDataSorting::TracksByYearAsc(const MetaData& md1, const MetaData& md2)
 
 bool MetaDataSorting::TracksByYearDesc(const MetaData& md1, const MetaData& md2)
 {
-	if(md2.year < md1.year){
+	if(md2.year() < md1.year()){
 		return true;
 	}
 
-	if(md1.year == md2.year){
+	if(md1.year() == md2.year()){
 		return TracksByArtistAsc(md1, md2);
 	}
 
@@ -257,11 +257,11 @@ bool MetaDataSorting::TracksByYearDesc(const MetaData& md1, const MetaData& md2)
 
 bool MetaDataSorting::TracksByLengthAsc(const MetaData& md1, const MetaData& md2)
 {
-	if(md1.duration_ms < md2.duration_ms){
+	if(md1.duration_ms() < md2.duration_ms()){
 		return true;
 	}
 
-	if(md1.duration_ms == md2.duration_ms){
+	if(md1.duration_ms() == md2.duration_ms()){
 		return TracksByArtistAsc(md1, md2);
 	}
 
@@ -270,11 +270,11 @@ bool MetaDataSorting::TracksByLengthAsc(const MetaData& md1, const MetaData& md2
 
 bool MetaDataSorting::TracksByLengthDesc(const MetaData& md1, const MetaData& md2)
 {
-	if(md2.duration_ms < md1.duration_ms){
+	if(md2.duration_ms() < md1.duration_ms()){
 		return true;
 	}
 
-	if(md1.duration_ms == md2.duration_ms){
+	if(md1.duration_ms() == md2.duration_ms()){
 		return TracksByArtistAsc(md1, md2);
 	}
 
@@ -283,11 +283,11 @@ bool MetaDataSorting::TracksByLengthDesc(const MetaData& md1, const MetaData& md
 
 bool MetaDataSorting::TracksByBitrateAsc(const MetaData& md1, const MetaData& md2)
 {
-	if(md1.bitrate < md2.bitrate){
+	if(md1.bitrate() < md2.bitrate()){
 		return true;
 	}
 
-	if(md1.bitrate == md2.bitrate){
+	if(md1.bitrate() == md2.bitrate()){
 		return TracksByArtistAsc(md1, md2);
 	}
 
@@ -296,11 +296,11 @@ bool MetaDataSorting::TracksByBitrateAsc(const MetaData& md1, const MetaData& md
 
 bool MetaDataSorting::TracksByBitrateDesc(const MetaData& md1, const MetaData& md2)
 {
-	if(md2.bitrate < md1.bitrate){
+	if(md2.bitrate() < md1.bitrate()){
 		return true;
 	}
 
-	if(md1.bitrate == md2.bitrate){
+	if(md1.bitrate() == md2.bitrate()){
 		return TracksByArtistAsc(md1, md2);
 	}
 
@@ -309,11 +309,11 @@ bool MetaDataSorting::TracksByBitrateDesc(const MetaData& md1, const MetaData& m
 
 bool MetaDataSorting::TracksByFilesizeAsc(const MetaData& md1, const MetaData& md2)
 {
-	if(md1.filesize < md2.filesize){
+	if(md1.filesize() < md2.filesize()){
 		return true;
 	}
 
-	if(md1.filesize == md2.filesize){
+	if(md1.filesize() == md2.filesize()){
 		return TracksByArtistAsc(md1, md2);
 	}
 
@@ -322,11 +322,11 @@ bool MetaDataSorting::TracksByFilesizeAsc(const MetaData& md1, const MetaData& m
 
 bool MetaDataSorting::TracksByFilesizeDesc(const MetaData& md1, const MetaData& md2)
 {
-	if(md2.filesize < md1.filesize){
+	if(md2.filesize() < md1.filesize()){
 		return true;
 	}
 
-	if(md1.filesize == md2.filesize){
+	if(md1.filesize() == md2.filesize()){
 		return TracksByArtistAsc(md1, md2);
 	}
 
@@ -363,11 +363,11 @@ bool MetaDataSorting::TracksByFiletypeDesc(const MetaData& md1, const MetaData& 
 
 bool MetaDataSorting::TracksByRatingAsc(const MetaData& md1, const MetaData& md2)
 {
-	if(md1.rating < md2.rating){
+	if(md1.rating() < md2.rating()){
 		return true;
 	}
 
-	if(md1.rating == md2.rating){
+	if(md1.rating() == md2.rating()){
 		return TracksByArtistAsc(md1, md2);
 	}
 
@@ -376,11 +376,11 @@ bool MetaDataSorting::TracksByRatingAsc(const MetaData& md1, const MetaData& md2
 
 bool MetaDataSorting::TracksByRatingDesc(const MetaData& md1, const MetaData& md2)
 {
-	if(md2.rating < md1.rating){
+	if(md2.rating() < md1.rating()){
 		return true;
 	}
 
-	if(md1.rating == md2.rating){
+	if(md1.rating() == md2.rating()){
 		return TracksByArtistAsc(md1, md2);
 	}
 

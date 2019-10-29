@@ -108,7 +108,7 @@ QVariant TrackModel::data(const QModelIndex &index, int role) const
 		switch(idx_col)
 		{
 			case ColumnIndex::Track::TrackNumber:
-				return QVariant( md.track_num );
+				return QVariant( md.track_number() );
 
 			case ColumnIndex::Track::Title:
 				return QVariant( md.title() );
@@ -117,26 +117,26 @@ QVariant TrackModel::data(const QModelIndex &index, int role) const
 				return QVariant( md.artist() );
 
 			case ColumnIndex::Track::Length:
-				return QVariant(::Util::cvt_ms_to_string(md.duration_ms, "$He $M:$S"));
+				return QVariant(::Util::cvt_ms_to_string(md.duration_ms(), "$He $M:$S"));
 
 			case ColumnIndex::Track::Album:
 				return QVariant(md.album());
 
 			case ColumnIndex::Track::Discnumber:
-				return QVariant(Lang::get(Lang::Disc) + " " + QString::number(md.discnumber));
+				return QVariant(QString::number(md.discnumber()));
 
 			case ColumnIndex::Track::Year:
-				if(md.year == 0){
+				if(md.year() == 0){
 					return Lang::get(Lang::UnknownYear);
 				}
 
-				return md.year;
+				return md.year();
 
 			case ColumnIndex::Track::Bitrate:
-				return QString::number(md.bitrate / 1000) + " kBit/s";
+				return QString::number(md.bitrate() / 1000) + " kBit/s";
 
 			case ColumnIndex::Track::Filesize:
-				return ::Util::File::calc_filesize_str(md.filesize);
+				return ::Util::File::calc_filesize_str(md.filesize());
 
 			case ColumnIndex::Track::Filetype:
 				return ::Util::File::get_file_extension(md.filepath());
@@ -147,7 +147,7 @@ QVariant TrackModel::data(const QModelIndex &index, int role) const
 					return QVariant();
 				}
 
-				Rating rating = md.rating;
+				Rating rating = md.rating();
 				if(row == m->tmp_rating.first)
 				{
 					rating = m->tmp_rating.second;
@@ -195,7 +195,7 @@ bool TrackModel::setData(const QModelIndex& index, const QVariant& value, int ro
 		MetaData md = tracks[row];
 		Rating rating = value.value<Rating>();
 
-		if(md.rating != rating)
+		if(md.rating() != rating)
 		{
 			m->tmp_rating.first = row;
 			m->tmp_rating.second = rating;
@@ -282,7 +282,7 @@ Cover::Location TrackModel::cover(const IndexSet& indexes) const
 			continue;
 		}
 
-		album_ids.insert( tracks[idx].album_id );
+		album_ids.insert( tracks[idx].album_id() );
 		if(album_ids.size() > 1) {
 			return Cover::Location();
 		}

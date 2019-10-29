@@ -262,18 +262,17 @@ void AbstractLibrary::albums_changed()
 	}
 
 	int changed_idx=0;
-	for(auto it=old_albums.begin(); it != old_albums.end(); it++)
+	for(auto it=old_albums.begin(); it != old_albums.end(); it++, changed_idx++)
 	{
-		if(!id_row_map.contains(it->id))
+		if(id_row_map.contains(it->id))
 		{
 			int row = id_row_map[it->id];
-			std::swap(m->albums[row], new_albums[changed_idx]);
+			m->albums[row] = new_albums[changed_idx];
 			emit sig_album_changed(row);
 		}
-
-		changed_idx++;
 	}
 }
+
 
 void AbstractLibrary::find_track(TrackID id)
 {
@@ -314,17 +313,17 @@ void AbstractLibrary::find_track(TrackID id)
 
 	{ // artist
 		Artist artist;
-		get_artist_by_id(md.artist_id, artist);
+		get_artist_by_id(md.artist_id(), artist);
 		m->artists << artist;
 	}
 
 	{ // album
 		Album album;
-		get_album_by_id(md.album_id, album);
+		get_album_by_id(md.album_id(), album);
 		m->albums << album;
 	}
 
-	get_all_tracks_by_album({md.album_id}, m->tracks, Library::Filter());
+	get_all_tracks_by_album({md.album_id()}, m->tracks, Library::Filter());
 	m->selected_tracks << md.id;
 
 	emit_stuff();
@@ -527,7 +526,7 @@ void AbstractLibrary::change_current_disc(Disc disc)
 	{
 		m->tracks.remove_tracks([disc](const MetaData& md)
 		{
-			return (md.discnumber != disc);
+			return (md.discnumber() != disc);
 		});
 	}
 
@@ -627,7 +626,7 @@ void AbstractLibrary::change_album_selection(const IndexSet& indexes, bool ignor
 				}
 
 				else{
-					artist_id = md.artist_id;
+					artist_id = md.artist_id();
 				}
 
 				if(m->selected_artists.contains(artist_id)){

@@ -219,7 +219,7 @@ bool Editor::can_load_entire_album() const
 
 	for(const ChangeInformation& info : m->change_info)
 	{
-		album_ids << info.original_metadata().album_id;
+		album_ids << info.original_metadata().album_id();
 		if(album_ids.size() > 1)
 		{
 			return false;
@@ -234,7 +234,7 @@ void Editor::load_entire_album()
 	Util::Set<AlbumId> album_ids;
 	for(const ChangeInformation& info : m->change_info)
 	{
-		album_ids << info.original_metadata().album_id;
+		album_ids << info.original_metadata().album_id();
 	}
 
 	if(album_ids.size() != 1){
@@ -307,7 +307,6 @@ void Editor::apply_artists_and_albums_to_md()
 		{
 			if(album_map.contains(it->name()))
 			{
-				Album album = *it;
 				sp_log(Log::Warning, this) << "Album " << it->name() << " already exists";
 				continue;
 			}
@@ -368,6 +367,7 @@ void Editor::apply_artists_and_albums_to_md()
 	}
 
 	{ // insert unknown albums
+
 		if(!insert_albums.isEmpty())
 		{
 			for(const QString& album : insert_albums)
@@ -388,9 +388,9 @@ void Editor::apply_artists_and_albums_to_md()
 	{
 		MetaData md = it->current_metadata();
 
-		md.album_id = album_map[md.album()];
-		md.artist_id = artist_map[md.artist()];
-		md.set_album_artist_id(artist_map[md.album_artist()]);
+		md.set_album_id( album_map[md.album()] );
+		md.set_artist_id( artist_map[md.artist()] );
+		md.set_album_artist_id( artist_map[md.album_artist()] );
 
 		it->update(md);
 	}
@@ -422,6 +422,7 @@ void Editor::commit()
 	auto* db = db_connector();
 	auto* db_covers = db->cover_connector();
 	auto* ldb = db->library_db(-1, 0);
+
 
 	m->v_md_before_change.clear();
 	m->v_md_after_change.clear();
@@ -483,7 +484,7 @@ void Editor::commit()
 			{ // write changed to db
 				const MetaData& org_md = it->original_metadata();
 				const MetaData& cur_md = it->current_metadata();
-				if( !cur_md.is_extern && cur_md.id >= 0 )
+				if( !cur_md.is_extern() && cur_md.id >= 0 )
 				{
 					if(ldb->updateTrack(cur_md))
 					{

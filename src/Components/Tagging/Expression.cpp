@@ -97,21 +97,21 @@ bool Expression::apply(MetaData& md) const
 		}
 
 		else if(key == Tagging::TagTrackNum) {
-			auto t = decltype(md.track_num)(value.toInt());
-			b |= (t != md.track_num);
-			md.track_num = t;
+			TrackNum t = TrackNum(value.toInt());
+			b |= (t != md.track_number());
+			md.set_track_number(t);
 		}
 
 		else if(key == Tagging::TagYear) {
-			auto y = decltype(md.year)(value.toInt());
-			b |= (y != md.year);
-			md.year = y;
+			Year y = Year(value.toInt());
+			b |= (y != md.year());
+			md.set_year(y);
 		}
 
 		else if(key == Tagging::TagDisc) {
 			auto d = Disc(value.toInt());
-			b |= (d != md.discnumber);
-			md.discnumber = d;
+			b |= (d != md.discnumber());
+			md.set_discnumber(d);
 		}
 	}
 

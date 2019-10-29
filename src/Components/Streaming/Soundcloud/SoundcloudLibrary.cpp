@@ -268,8 +268,8 @@ void SC::Library::get_all_tracks(MetaDataList& v_md) const
 
 			m->md_id_idx_map[md.id] = i;
 			m->md_name_idx_map[md.title()].insert(i);
-			m->md_album_id_idx_map[md.album_id].insert(i);
-			m->md_artist_id_idx_map[md.artist_id].insert(i);
+			m->md_album_id_idx_map[md.album_id()].insert(i);
+			m->md_artist_id_idx_map[md.artist_id()].insert(i);
 		}
 	}
 
@@ -501,7 +501,7 @@ void SC::Library::tracks_fetched(const MetaDataList& v_md)
 {
 	for(const MetaData& md : v_md){
 		if(md.id > 0){
-			m->scd->insertTrackIntoDatabase(md, md.artist_id, md.album_id);
+			m->scd->insertTrackIntoDatabase(md, md.artist_id(), md.album_id());
 		}
 	}
 

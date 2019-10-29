@@ -84,7 +84,7 @@ bool GUI_SpectrogramPainter::is_ui_initialized() const
 
 void GUI_SpectrogramPainter::spectrum_changed(const QList<float>& spectrum, MilliSeconds ms)
 {
-	double promille = (ms * 1000.0) / PlayManager::instance()->current_track().duration_ms;
+	double promille = (ms * 1000.0) / PlayManager::instance()->current_track().duration_ms();
 
 	if(m->current_promille == int(promille))
 	{

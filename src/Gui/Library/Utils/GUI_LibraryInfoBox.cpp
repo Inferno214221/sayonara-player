@@ -129,8 +129,8 @@ void GUI_LibraryInfoBox::refresh()
 	Filesize filesize = 0;
 
 	for( const MetaData& md : v_md ) {
-		duration_ms += md.duration_ms;
-		filesize += md.filesize;
+		duration_ms += md.duration_ms();
+		filesize += md.filesize();
 	}
 
 	QString duration_string = Util::cvt_ms_to_string(duration_ms, "$De $He $M:$S");

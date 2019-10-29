@@ -113,10 +113,10 @@ bool compare_md(const MetaData& md1, const MetaData& md2)
 	return (md1.title() == md2.title() &&
 			md1.album() == md2.album() &&
 			md1.artist() == md2.artist() &&
-			md1.year == md2.year &&
-			md1.rating == md2.rating &&
-			md1.discnumber == md2.discnumber &&
-			md1.track_num == md2.track_num &&
+			md1.year() == md2.year() &&
+			md1.rating() == md2.rating() &&
+			md1.discnumber() == md2.discnumber() &&
+			md1.track_number() == md2.track_number() &&
 			md1.album_artist() == md2.album_artist() &&
 			md1.album_artist_id() == md2.album_artist_id()
 	);
@@ -172,7 +172,7 @@ bool ReloadThread::get_and_save_all_files(const QHash<QString, MetaData>& md_map
 			}
 
 			// file is already in library
-			if( md_lib.duration_ms > 1000 && md_lib.duration_ms < 3600000 && compare_md(md, md_lib)){
+			if( md_lib.duration_ms() > 1000 && md_lib.duration_ms() < 3600000 && compare_md(md, md_lib)){
 				continue;
 			}
 		}

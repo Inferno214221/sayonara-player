@@ -358,15 +358,15 @@ void GUI_TagEdit::refresh_current_track()
 	}
 
 	if(!ui->cb_year_all->isChecked()){
-		ui->sb_year->setValue(md.year);
+		ui->sb_year->setValue(md.year());
 	}
 
 	if(!ui->cb_discnumber_all->isChecked()){
-		ui->sb_discnumber->setValue(md.discnumber);
+		ui->sb_discnumber->setValue(md.discnumber());
 	}
 
 	if(!ui->cb_rating_all->isChecked()){
-		ui->widget_rating->set_rating(md.rating);
+		ui->widget_rating->set_rating(md.rating());
 	}
 
 	if(!ui->cb_comment_all->isChecked()){
@@ -381,7 +381,7 @@ void GUI_TagEdit::refresh_current_track()
 
 	m->ui_cover_edit->refresh_current_track();
 
-	ui->sb_track_num->setValue(md.track_num);
+	ui->sb_track_num->setValue(md.track_number());
 	ui->lab_track_index->setText(
 		Lang::get(Lang::Track).toFirstUpper().space() +
 		QString::number(m->cur_idx+1 ) + "/" + QString::number( n_tracks )
@@ -523,10 +523,10 @@ void GUI_TagEdit::write_changes(int idx)
 	md.set_genres(ui->le_genre->text().split(", "));
 	md.set_comment(ui->te_comment->toPlainText());
 
-	md.discnumber = scast(Disc, ui->sb_discnumber->value());
-	md.year =		scast(uint16_t, ui->sb_year->value());
-	md.track_num =	scast(uint16_t, ui->sb_track_num->value());
-	md.rating =		ui->widget_rating->rating();
+	md.set_discnumber(Disc(ui->sb_discnumber->value()));
+	md.set_year(Year(ui->sb_year->value()));
+	md.set_track_number(TrackNum(ui->sb_track_num->value()));
+	md.set_rating(ui->widget_rating->rating());
 
 	QPixmap cover = m->ui_cover_edit->selected_cover(idx);
 
@@ -566,15 +566,15 @@ void GUI_TagEdit::commit()
 		}
 
 		if( ui->cb_discnumber_all->isChecked() ){
-			md.discnumber = scast(Disc, ui->sb_discnumber->value());
+			md.set_discnumber(Disc(ui->sb_discnumber->value()));
 		}
 
 		if( ui->cb_rating_all->isChecked()){
-			md.rating = ui->widget_rating->rating();
+			md.set_rating(ui->widget_rating->rating());
 		}
 
 		if( ui->cb_year_all->isChecked()){
-			md.year = scast(uint16_t, ui->sb_year->value());
+			md.set_year(Year(ui->sb_year->value()));
 		}
 
 		if( ui->cb_comment_all->isChecked() ){

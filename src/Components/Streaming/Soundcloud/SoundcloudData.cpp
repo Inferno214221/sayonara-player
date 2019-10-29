@@ -236,21 +236,21 @@ bool SC::Database::db_fetch_tracks(Query& q, MetaDataList& result) const
 
 		data.id = 		 q.value(0).toInt();
 		data.set_title(q.value(1).toString());
-		data.duration_ms = q.value(2).toInt();
-		data.year = 	 q.value(3).value<uint16_t>();
-		data.bitrate = 	 q.value(4).value<Bitrate>();
+		data.set_duration_ms(q.value(2).toInt());
+		data.set_year(q.value(3).value<Year>());
+		data.set_bitrate(q.value(4).value<Bitrate>());
 		data.set_filepath(q.value(5).toString());
-		data.track_num = q.value(6).value<uint16_t>();
-		data.album_id =  q.value(7).toInt();
-		data.artist_id = q.value(8).toInt();
+		data.set_track_number(q.value(6).value<TrackNum>());
+		data.set_album_id(q.value(7).toInt());
+		data.set_artist_id(q.value(8).toInt());
 		data.set_album(q.value(9).toString().trimmed());
 		data.set_artist(q.value(10).toString().trimmed());
 		data.set_genres(q.value(11).toString().split(","));
-		data.filesize =  q.value(12).value<Filesize>();
-		data.discnumber = q.value(13).value<Disc>();
+		data.set_filesize(q.value(12).value<Filesize>());
+		data.set_discnumber(q.value(13).value<Disc>());
 		data.add_custom_field("purchase_url", tr("Purchase Url"), q.value(14).toString());
 		data.set_cover_download_urls({q.value(15).toString()});
-		data.rating = q.value(16).value<Rating>();
+		data.set_rating(q.value(16).value<Rating>());
 		data.set_db_id(module()->db_id());
 
 		result << data;
@@ -541,16 +541,16 @@ bool SC::Database::updateTrack(const MetaData& md)
 
 	q.bindValue(":sc_id",		md.id);
 	q.bindValue(":filename",	md.filepath());
-	q.bindValue(":albumID",		md.album_id);
-	q.bindValue(":artistID",	md.artist_id);
-	q.bindValue(":length",		QVariant::fromValue(md.duration_ms));
-	q.bindValue(":year",		md.year);
+	q.bindValue(":albumID",		md.album_id());
+	q.bindValue(":artistID",	md.artist_id());
+	q.bindValue(":length",		QVariant::fromValue(md.duration_ms()));
+	q.bindValue(":year",		md.year());
 	q.bindValue(":title",		md.title());
-	q.bindValue(":track",		md.track_num);
-	q.bindValue(":bitrate",		md.bitrate);
+	q.bindValue(":track",		md.track_number());
+	q.bindValue(":bitrate",		md.bitrate());
 	q.bindValue(":genre",		md.genres_to_list().join(","));
-	q.bindValue(":filesize",	QVariant::fromValue(md.filesize));
-	q.bindValue(":discnumber",	md.discnumber);
+	q.bindValue(":filesize",	QVariant::fromValue(md.filesize()));
+	q.bindValue(":discnumber",	md.discnumber());
 	q.bindValue(":cissearch",	md.title().toLower());
 	q.bindValue(":purchase_url", md.get_custom_field("purchase_url"));
 	if(!md.cover_download_urls().isEmpty())
@@ -599,14 +599,14 @@ bool SC::Database::insertTrackIntoDatabase(const MetaData &md, int artist_id, in
 	q.bindValue(":filename",	md.filepath());
 	q.bindValue(":albumID",		album_id);
 	q.bindValue(":artistID",	artist_id);
-	q.bindValue(":length",		QVariant::fromValue(md.duration_ms));
-	q.bindValue(":year",		md.year);
+	q.bindValue(":length",		QVariant::fromValue(md.duration_ms()));
+	q.bindValue(":year",		md.year());
 	q.bindValue(":title",		md.title());
-	q.bindValue(":track",		md.track_num);
-	q.bindValue(":bitrate",		md.bitrate);
+	q.bindValue(":track",		md.track_number());
+	q.bindValue(":bitrate",		md.bitrate());
 	q.bindValue(":genre",		md.genres_to_list().join(","));
-	q.bindValue(":filesize",	QVariant::fromValue(md.filesize));
-	q.bindValue(":discnumber",	md.discnumber);
+	q.bindValue(":filesize",	QVariant::fromValue(md.filesize()));
+	q.bindValue(":discnumber",	md.discnumber());
 	q.bindValue(":cissearch",	md.title().toLower());
 	q.bindValue(":purchase_url", md.get_custom_field("purchase_url"));
 	if(!md.cover_download_urls().isEmpty())
@@ -637,12 +637,12 @@ bool SC::Database::store_metadata(const MetaDataList& v_md)
 
 	for(const MetaData& md : v_md) {
 		sp_log(Log::Debug, this) << "Looking for " << md.artist() << " and " << md.album();
-		if(md.album_id == -1 || md.artist_id == -1){
-			sp_log(Log::Warning, this) << "AlbumID = " << md.album_id << " - ArtistID = " << md.artist_id;
+		if(md.album_id() == -1 || md.artist_id() == -1){
+			sp_log(Log::Warning, this) << "AlbumID = " << md.album_id() << " - ArtistID = " << md.artist_id();
 			continue;
 		}
 
-		insertTrackIntoDatabase (md, md.artist_id, md.album_id);
+		insertTrackIntoDatabase (md, md.artist_id(), md.album_id());
 	}
 
 	return module()->db().commit();

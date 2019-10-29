@@ -40,6 +40,8 @@ using PlaylistImpl=::Playlist::Playlist;
 struct PlaylistImpl::Private
 {
 	MetaDataList    v_md;
+	QList<uint64_t>	shuffle_history;
+	UniqueId		playing_id;
 	PlaylistMode	playlist_mode;
 	int				playlist_idx;
 	PlaylistType	type;
@@ -167,7 +169,9 @@ bool PlaylistImpl::change_track(int idx)
 
 	emit sig_current_track_changed(idx);
 
-	m->v_md[idx].played = true;
+	m->shuffle_history << m->v_md[idx].unique_id();
+	sp_log(Log::Info, this) << m->shuffle_history;
+
 	if( !Util::File::check_file(m->v_md[idx].filepath()) )
 	{
 		sp_log(Log::Warning, this) << QString("Track %1 not available on file system: ").arg(m->v_md[idx].filepath());
@@ -251,7 +255,7 @@ void PlaylistImpl::duration_changed()
 	for(int i : idx_list)
 	{
 		MetaData changed_md(v_md[i]);
-		changed_md.duration_ms = std::max<MilliSeconds>(0, duration);
+		changed_md.set_duration_ms(std::max<MilliSeconds>(0, duration));
 
 		replace_track(i, changed_md);
 	}
@@ -265,6 +269,10 @@ void PlaylistImpl::replace_track(int idx, const MetaData& md)
 	}
 
 	bool is_playing = m->v_md[idx].pl_playing;
+//	if(m->playing_id == m->v_md[idx].unique_id())
+//	{
+//		m->playing_id = md.unique_id();
+//	}
 
 	m->v_md[idx] = md;
 	m->v_md[idx].is_disabled = !(File::check_file(md.filepath()));
@@ -282,10 +290,7 @@ void PlaylistImpl::play()
 
 void PlaylistImpl::stop()
 {
-	for(MetaData& md : m->v_md)
-	{
-		md.played = false;
-	}
+	m->shuffle_history.clear();
 
 	if(current_track_index() >= 0)
 	{
@@ -311,6 +316,27 @@ void PlaylistImpl::fwd()
 
 void PlaylistImpl::bwd()
 {
+	if(PlaylistMode::isActiveAndEnabled(m->playlist_mode.shuffle()))
+	{
+		for(int history_index = m->shuffle_history.size() - 2; history_index >= 0; history_index--)
+		{
+			UniqueId id = m->shuffle_history[history_index];
+
+			int idx = Util::Algorithm::indexOf(m->v_md, [id](const MetaData& md){
+				return (id == md.unique_id());
+			});
+
+			if(Util::between(idx, m->v_md))
+			{
+				m->shuffle_history.erase(m->shuffle_history.begin() + history_index, m->shuffle_history.end());
+
+				change_track(idx);
+				return;
+			}
+		}
+	}
+
+	m->shuffle_history.clear();
 	change_track( current_track_index() - 1 );
 }
 
@@ -364,6 +390,7 @@ void PlaylistImpl::next()
 	change_track(track_num);
 }
 
+#include "Utils/Utils.h"
 int PlaylistImpl::calc_shuffle_track()
 {
 	if(m->v_md.size() <= 1){
@@ -375,7 +402,8 @@ int PlaylistImpl::calc_shuffle_track()
 	QList<int> unplayed_tracks;
 	for(MetaData& md : m->v_md)
 	{
-		if(!md.played){
+		UniqueId unique_id = md.unique_id();
+		if(!m->shuffle_history.contains(unique_id)) {
 			unplayed_tracks << i;
 		}
 
@@ -390,18 +418,17 @@ int PlaylistImpl::calc_shuffle_track()
 			return -1;
 		}
 
-		i=0;
-		for(MetaData& md : m->v_md)
-		{
-			md.played = false;
-			unplayed_tracks << i++;
-		}
+		m->shuffle_history.clear();
+		return Util::random_number(0, int(m->v_md.size() - 1));
 	}
 
-	RandomGenerator rnd;
-	int left_tracks_idx = rnd.get_number(0, unplayed_tracks.size() - 1);
+	else
+	{
+		RandomGenerator rnd;
+		int left_tracks_idx = rnd.get_number(0, unplayed_tracks.size() - 1);
 
-	return unplayed_tracks[left_tracks_idx];
+		return unplayed_tracks[left_tracks_idx];
+	}
 }
 
 
@@ -446,8 +473,10 @@ void PlaylistImpl::enable_all()
 
 int PlaylistImpl::create_playlist(const MetaDataList& v_md)
 {
-	if(PlaylistMode::isActiveAndEnabled(m->playlist_mode.append()) == false){
+	if(PlaylistMode::isActiveAndEnabled(m->playlist_mode.append()) == false)
+	{
 		m->v_md.clear();
+		m->shuffle_history.clear();
 	}
 
 	m->v_md << v_md;
@@ -469,10 +498,9 @@ void PlaylistImpl::set_index(int idx)
 
 void PlaylistImpl::set_mode(const PlaylistMode& mode)
 {
-	if( m->playlist_mode.shuffle() != mode.shuffle()){
-		for(MetaData& md : m->v_md){
-			md.played = false;
-		}
+	if( m->playlist_mode.shuffle() != mode.shuffle())
+	{
+		m->shuffle_history.clear();
 	}
 
 	m->playlist_mode = mode;
@@ -486,7 +514,7 @@ PlaylistMode PlaylistImpl::mode() const
 MilliSeconds PlaylistImpl::running_time() const
 {
 	MilliSeconds dur_ms  = std::accumulate(m->v_md.begin(), m->v_md.end(), 0, [](MilliSeconds time, const MetaData& md){
-		return time + md.duration_ms;
+		return time + md.duration_ms();
 	});
 
 	return dur_ms;

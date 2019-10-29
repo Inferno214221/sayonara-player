@@ -95,7 +95,7 @@ void UserOperations::set_track_rating(const MetaDataList& v_md, Rating rating)
 	for(int i=0; i<v_md.count(); i++)
 	{
 		MetaData md(v_md[i]);
-		md.rating = rating;
+		md.set_rating(rating);
 		editor->update_track(i, md);
 	}
 
@@ -151,7 +151,7 @@ void UserOperations::merge_artists(const Util::Set<Id>& artist_ids, ArtistId tar
 		}
 
 		else {
-			md.artist_id = artist.id;
+			md.set_artist_id(artist.id);
 			md.set_artist(artist.name());
 		}
 
@@ -199,7 +199,7 @@ void UserOperations::merge_albums(const Util::Set<Id>& album_ids, AlbumId target
 	for(int idx=0; idx<v_md.count(); idx++)
 	{
 		MetaData md(v_md[idx]);
-		md.album_id = album.id;
+		md.set_album_id(album.id);
 		md.set_album(album.name());
 
 		editor->update_track(idx, md);

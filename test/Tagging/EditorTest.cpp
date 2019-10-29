@@ -25,7 +25,7 @@ class EditorTest :
 
 public:
 	EditorTest(QObject* parent=nullptr);
-	~EditorTest();
+	~EditorTest() override;
 	MetaDataList create_metadata(int artists, int albums, int tracks);
 
 	DB::Connector* get_connector() const override;
@@ -90,24 +90,24 @@ MetaDataList EditorTest::create_metadata(int artists, int albums, int tracks)
 				md.id = TrackID(track_id++);
 				md.set_title(QString("title %1").arg(t));
 				md.set_album(album);
-				md.album_id = album_id;
+				md.set_album_id(album_id);
 				md.set_artist(artist);
-				md.artist_id = ArtistId(ar);
+				md.set_artist_id(ArtistId(ar));
 				md.set_genres(genres[al]);
-				md.track_num = uint16_t(t);
-				md.rating = Rating::One;
-				md.year = uint16_t(year);
+				md.set_track_number(TrackNum(t));
+				md.set_rating(Rating::One);
+				md.set_year(Year(year));
 				md.library_id = 0;
 				QString dir = QString("%1/%2/%3 by %4")
 						.arg(m_tmp_path)
-						.arg(md.year)
+						.arg(md.year())
 						.arg(md.album())
 						.arg(md.artist());
 
 				QString path =
 					QString("%1/%2. %3.mp3")
 						.arg(dir)
-						.arg(md.track_num)
+						.arg(md.track_number())
 						.arg(md.title());
 
 				md.set_filepath(path);
@@ -183,12 +183,12 @@ void EditorTest::test_rating()
 	QVERIFY(editor->has_changes() == false);
 	QVERIFY(editor->can_load_entire_album() == true);
 
-	tracks[0].rating = Rating::Zero;
-	tracks[1].rating = Rating::One;
-	tracks[2].rating = Rating::Two;
-	tracks[3].rating = Rating::Three;
-	tracks[4].rating = Rating::Four;
-	tracks[5].rating = Rating::Five;
+	tracks[0].set_rating(Rating::Zero);
+	tracks[1].set_rating(Rating::One);
+	tracks[2].set_rating(Rating::Two);
+	tracks[3].set_rating(Rating::Three);
+	tracks[4].set_rating(Rating::Four);
+	tracks[5].set_rating(Rating::Five);
 
 	for(int i=0; i<6; i++)
 	{
@@ -201,7 +201,7 @@ void EditorTest::test_rating()
 	for(int r=0; r<6; r++)
 	{
 		MetaData md = editor->metadata(r);
-		QVERIFY(md.rating == Rating(r));
+		QVERIFY(md.rating() == Rating(r));
 	}
 }
 

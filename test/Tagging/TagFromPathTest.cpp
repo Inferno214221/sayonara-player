@@ -45,7 +45,7 @@ void TagFromPathTest::apply_regex_test()
 
 		Tagging::Expression e1(tag_strings[0], path);
 		e1.apply(md);
-		QVERIFY(md.track_num == 2);
+		QVERIFY(md.track_number() == 2);
 		QVERIFY(md.title() == "The Watcher (feat. Eminem & Knoc-Turn'al)");
 	}
 
@@ -55,7 +55,7 @@ void TagFromPathTest::apply_regex_test()
 
 		Tagging::Expression e1(tag_strings[1], path);
 		e1.apply(md);
-		QVERIFY(md.track_num == 4);
+		QVERIFY(md.track_number() == 4);
 		QVERIFY(md.title() == "Still D.R.E. (feat. Snoop Dogg)");
 		QVERIFY(md.artist() == "Dr. Dre");
 	}
@@ -66,10 +66,10 @@ void TagFromPathTest::apply_regex_test()
 
 		Tagging::Expression e1(tag_strings[2], path);
 		e1.apply(md);
-		QVERIFY(md.track_num == 6);
+		QVERIFY(md.track_number() == 6);
 		QVERIFY(md.title() == "Xxplosive (feat. Hittman, Kurupt, Nate Dogg & Six-Two)");
 		QVERIFY(md.artist() == "Dr. Dre");
-		QVERIFY(md.year == 1999);
+		QVERIFY(md.year() == 1999);
 	}
 
 	{
@@ -78,10 +78,10 @@ void TagFromPathTest::apply_regex_test()
 
 		Tagging::Expression e1(tag_strings[3], path);
 		e1.apply(md);
-		QVERIFY(md.track_num == 7);
+		QVERIFY(md.track_number() == 7);
 		QVERIFY(md.title() == "What's The Difference (feat. Eminem & Xzibit)");
 		QVERIFY(md.artist() == "Dr. Dre");
-		QVERIFY(md.year == 1999);
+		QVERIFY(md.year() == 1999);
 		QVERIFY(md.album() == "2001");
 	}
 }

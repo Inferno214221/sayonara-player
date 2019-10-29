@@ -244,7 +244,7 @@ QVariantMap DBusMPRIS::MediaPlayer2::Metadata()
 	QDBusObjectPath object_path(QString("/org/sayonara/track") + QString::number(id));
 
 	v_object_path.setValue<QDBusObjectPath>(object_path);
-	v_length.setValue<qlonglong>(m->md.duration_ms * 1000);
+	v_length.setValue<qlonglong>(m->md.duration_ms() * 1000);
 
 	QString title = m->md.title();
 	if(title.isEmpty()){

@@ -187,19 +187,20 @@ bool Tracks::db_fetch_tracks(Query& q, MetaDataList& result) const
 
 		data.id = 		 	q.value(0).toInt();
 		data.set_title(		q.value(1).toString());
-		data.duration_ms = 	q.value(2).toInt();
-		data.year = 	 	q.value(3).value<uint16_t>();
-		data.bitrate = 	 	q.value(4).value<Bitrate>();
+		data.set_duration_ms(q.value(2).toInt());
+		data.set_year(		q.value(3).value<Year>());
+		data.set_bitrate(	q.value(4).value<Bitrate>());
 		data.set_filepath(	q.value(5).toString());
-		data.filesize =  	q.value(6).value<Filesize>();
-		data.track_num = 	q.value(7).value<uint16_t>();
+		data.set_filesize(  q.value(6).value<Filesize>());
+		data.set_track_number( q.value(7).value<TrackNum>());
 		data.set_genres(	q.value(8).toString().split(","));
-		data.discnumber = 	q.value(9).value<Disc>();
-		data.rating = 		q.value(10).value<Rating>();
-		data.album_id =  	q.value(11).toInt();
-		data.artist_id = 	q.value(12).toInt();
+		data.set_discnumber(q.value(9).value<Disc>());
+		data.set_rating(    q.value(10).value<Rating>());
+		data.set_album_id(  q.value(11).toInt());
+		data.set_artist_id( q.value(12).toInt());
 		data.set_comment(	q.value(14).toString());
-
+		data.set_createdate(q.value(15).value<uint64_t>());
+		data.set_modifydate(q.value(16).value<uint64_t>());
 		data.library_id = 	q.value(17).value<LibraryId>();
 		data.set_album(		q.value(18).toString().trimmed());
 		data.set_artist(	q.value(20).toString().trimmed());
@@ -247,7 +248,7 @@ MetaData Tracks::getTrackByPath(const QString& path) const
 
 	if(v_md.empty())
 	{
-		md.is_extern = true;
+		md.set_extern(true);
 		return md;
 	}
 
@@ -271,7 +272,7 @@ MetaData Tracks::getTrackById(TrackID id) const
 
 	if(v_md.isEmpty()) {
 		MetaData md;
-		md.is_extern = true;
+		md.set_extern(true);
 		return md;
 	}
 
@@ -384,7 +385,7 @@ bool Tracks::getAllTracksByAlbum(const IdList& albumIds, MetaDataList& result, c
 			{
 				for(int i=tmp_list.count() - 1; i>=0; i--)
 				{
-					if(tmp_list[i].discnumber != discnumber){
+					if(tmp_list[i].discnumber() != discnumber){
 						tmp_list.remove_track(i);
 					}
 				}
@@ -681,11 +682,11 @@ void Tracks::deleteAllTracks(bool also_views)
 
 bool Tracks::updateTrack(const MetaData& md)
 {
-	if(md.id < 0 || md.album_id < 0 || md.artist_id < 0 || md.library_id < 0)
+	if(md.id < 0 || md.album_id() < 0 || md.artist_id() < 0 || md.library_id < 0)
 	{
 		sp_log(Log::Warning, this) << "Cannot update track (value negative): "
-								   << " ArtistID: " << md.artist_id
-								   << " AlbumID: " << md.album_id
+								   << " ArtistID: " << md.artist_id()
+								   << " AlbumID: " << md.album_id()
 								   << " TrackID: " << md.id
 								   << " LibraryID: " << md.library_id;
 		return false;
@@ -698,22 +699,22 @@ bool Tracks::updateTrack(const MetaData& md)
 	QMap<QString, QVariant> bindings
 	{
 		{"albumArtistID",	md.album_artist_id()},
-		{"albumID",			md.album_id},
-		{"artistID",		md.artist_id},
-		{"bitrate",			md.bitrate},
+		{"albumID",			md.album_id()},
+		{"artistID",		md.artist_id()},
+		{"bitrate",			md.bitrate()},
 		{"cissearch",		Util::cvt_not_null(cissearch)},
-		{"discnumber",		md.discnumber},
+		{"discnumber",		md.discnumber()},
 		{"filecissearch",	Util::cvt_not_null(file_cissearch)},
 		{"filename",		Util::cvt_not_null(md.filepath())},
-		{"filesize",		QVariant::fromValue(md.filesize)},
+		{"filesize",		QVariant::fromValue(md.filesize())},
 		{"genre",			Util::cvt_not_null(md.genres_to_string())},
-		{"length",			QVariant::fromValue(md.duration_ms)},
+		{"length",			QVariant::fromValue(md.duration_ms())},
 		{"libraryID",		md.library_id},
 		{"modifydate",		QVariant::fromValue(Util::current_date_to_int())},
-		{"rating",			QVariant(int(md.rating))},
+		{"rating",			QVariant(int(md.rating()))},
 		{"title",			Util::cvt_not_null(md.title())},
-		{"track",			md.track_num},
-		{"year",			md.year},
+		{"track",			md.track_number()},
+		{"year",			md.year()},
 		{"comment",			Util::cvt_not_null(md.comment())}
 	};
 
@@ -760,14 +761,14 @@ bool Tracks::insertTrackIntoDatabase(const MetaData& md, ArtistId artist_id, Alb
 		{"artistID",		artist_id},
 		{"albumArtistID",	album_artist_id},
 		{"title",			Util::cvt_not_null(md.title())},
-		{"year",			md.year},
-		{"length",			QVariant::fromValue(md.duration_ms)},
-		{"track",			md.track_num},
-		{"bitrate",			md.bitrate},
+		{"year",			md.year()},
+		{"length",			QVariant::fromValue(md.duration_ms())},
+		{"track",			md.track_number()},
+		{"bitrate",			md.bitrate()},
 		{"genre",			Util::cvt_not_null(md.genres_to_string())},
-		{"filesize",		QVariant::fromValue(md.filesize)},
-		{"discnumber",		md.discnumber},
-		{"rating",			QVariant(int(md.rating))},
+		{"filesize",		QVariant::fromValue(md.filesize())},
+		{"discnumber",		md.discnumber()},
+		{"rating",			QVariant(int(md.rating()))},
 		{"comment",			Util::cvt_not_null(md.comment())},
 		{"cissearch",		Util::cvt_not_null(cissearch)},
 		{"filecissearch",	Util::cvt_not_null(file_cissearch)},

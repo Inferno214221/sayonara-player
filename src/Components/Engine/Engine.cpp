@@ -300,7 +300,7 @@ void EngineClass::jump_rel_ms(MilliSeconds ms)
 
 void EngineClass::jump_rel(double percent)
 {
-	m->pipeline->seek_rel(percent, m->md.duration_ms * GST_MSECOND);
+	m->pipeline->seek_rel(percent, m->md.duration_ms() * GST_MSECOND);
 }
 
 
@@ -499,12 +499,12 @@ void EngineClass::update_duration(GstElement* src)
 	}
 
 	MilliSeconds duration_ms = m->pipeline->duration_ms();
-	MilliSeconds difference = std::abs(duration_ms - m->md.duration_ms);
+	MilliSeconds difference = std::abs(duration_ms - m->md.duration_ms());
 	if(duration_ms < 1000 || difference < 1999 || duration_ms > 1500000000){
 		return;
 	}
 
-	m->md.duration_ms = duration_ms;
+	m->md.set_duration_ms(duration_ms);
 	update_metadata(m->md, src);
 
 	emit sig_duration_changed(m->md);
@@ -519,12 +519,12 @@ void EngineClass::update_bitrate(Bitrate bitrate, GstElement* src)
 {
 	if( (!m->pipeline->has_element(src)) ||
 		(bitrate == 0) ||
-		(br_diff(bitrate, m->md.bitrate) < 1000) )
+		(br_diff(bitrate, m->md.bitrate()) < 1000) )
 	{
 		return;
 	}
 
-	m->md.bitrate = bitrate;
+	m->md.set_bitrate(bitrate);
 
 	emit sig_bitrate_changed(m->md);
 }

@@ -139,7 +139,8 @@ void MetaDataList::set_current_track(int idx)
 	}
 
 	int tmp_idx=0;
-	for(auto it=this->begin(); it != this->end(); it++ ){
+	for(auto it=this->begin(); it != this->end(); it++ )
+	{
 		it->pl_playing = (idx == tmp_idx);
 		tmp_idx++;
 	}

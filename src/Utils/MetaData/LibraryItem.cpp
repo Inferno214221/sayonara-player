@@ -19,6 +19,7 @@
  */
 
 #include "Utils/MetaData/LibraryItem.h"
+#include "Utils/Utils.h"
 
 #include <QString>
 
@@ -80,9 +81,10 @@ CustomField::CustomField(const CustomField &other)
 
 CustomField::CustomField(CustomField&& other) noexcept
 {
-	m = Pimpl::make<Private>(
-			std::move(*(other.m))
-							  );
+	m = Pimpl::make<Private>
+	(
+		std::move(*(other.m))
+	);
 }
 
 CustomField& CustomField::operator=(const CustomField& other)
@@ -114,16 +116,20 @@ QString CustomField::get_value() const
 	return m->value;
 }
 
+static UniqueId static_unique_id=1;
 
 struct LibraryItem::Private
 {
 	CustomFieldList		additional_data;
 	QStringList			cover_download_urls;
+	UniqueId			unique_id;
 	DbId				db_id;
 
 	Private() :
 		db_id(0)
-	{}
+	{
+		unique_id = (++static_unique_id);
+	}
 
 	Private(const Private& other) :
 		CASSIGN(additional_data),
@@ -259,9 +265,12 @@ void LibraryItem::set_db_id(DbId id)
 	m->db_id = id;
 }
 
-
 void LibraryItem::print() const {}
 
+UniqueId LibraryItem::unique_id() const
+{
+	return m->unique_id;
+}
 
 QHash<HashValue, QString> &LibraryItem::album_pool()
 {

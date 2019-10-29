@@ -156,12 +156,12 @@ MilliSeconds PlayManager::initial_position_ms() const
 
 MilliSeconds PlayManager::duration_ms() const
 {
-	return m->md.duration_ms;
+	return m->md.duration_ms();
 }
 
 Bitrate PlayManager::bitrate() const
 {
-	return m->md.bitrate;
+	return m->md.bitrate();
 }
 
 const MetaData& PlayManager::current_track() const
@@ -356,7 +356,7 @@ void PlayManager::change_track_metadata(const MetaData& md)
 
 			QDateTime date = QDateTime::currentDateTime();
 			QTime time = date.time();
-			md_old.duration_ms = (time.hour() * 60 + time.minute()) * 1000;
+			md_old.set_duration_ms((time.hour() * 60 + time.minute()) * 1000);
 
 			emit sig_www_track_finished(md_old);
 		}
@@ -439,13 +439,13 @@ void PlayManager::error(const QString& message)
 
 void PlayManager::change_duration(MilliSeconds ms)
 {
-	m->md.duration_ms = ms;
+	m->md.set_duration_ms(ms);
 	emit sig_duration_changed();
 }
 
 void PlayManager::change_bitrate(Bitrate br)
 {
-	m->md.bitrate = br;
+	m->md.set_bitrate(br);
 	emit sig_bitrate_changed();
 }
 

@@ -206,7 +206,7 @@ void Base::scrobble()
 	UrlParams sig_data;
 	sig_data["api_key"] =		LFM_API_KEY;
 	sig_data["artist"] =		md.artist().toLocal8Bit();
-	sig_data["duration"] =		QString::number(md.duration_ms / 1000).toLocal8Bit();
+	sig_data["duration"] =		QString::number(md.duration_ms() / 1000).toLocal8Bit();
 	sig_data["method"] =		"track.scrobble";
 	sig_data["sk"] =			m->session_key.toLocal8Bit();
 	sig_data["timestamp"] =		QString::number(started).toLocal8Bit();
@@ -275,7 +275,7 @@ void Base::similar_artists_fetched(IdList artist_ids)
 		// try all songs of artist
 		for(int rounds=0; rounds < artist_tracks.count(); rounds++)
 		{
-			int rnd_track = RandomGenerator::get_random_number(0, artist_tracks.size()- 1);
+			int rnd_track = RandomGenerator::get_random_number(0, int(artist_tracks.size())- 1);
 
 			MetaData md = artist_tracks.take_at(rnd_track);
 

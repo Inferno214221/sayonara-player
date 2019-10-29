@@ -71,7 +71,7 @@ void GUI_ControlsNew::rating_changed_here(bool save)
 
 	if(!save)
 	{
-		ui->widget_rating->set_rating(md.rating);
+		ui->widget_rating->set_rating(md.rating());
 		return;
 	}
 

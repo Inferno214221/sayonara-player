@@ -74,8 +74,8 @@ QString Artists::fetch_query_artists(bool also_empty) const
 		join = " LEFT OUTER JOIN ";
 	}
 
-	query += join + " %1 ON %1.%2 = artists.artistID ";
-	query += join + " albums ON %1.albumID = albums.albumID ";
+	query += join + " %1 ON %1.%2 = artists.artistID ";			// join with tracks
+	query += join + " albums ON %1.albumID = albums.albumID ";	// join with albums
 
 	return query.arg(m->track_view).arg(artistid_field());
 }

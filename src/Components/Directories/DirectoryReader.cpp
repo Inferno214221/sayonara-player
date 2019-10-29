@@ -158,7 +158,7 @@ MetaDataList DirectoryReader::scan_metadata(const QStringList& lst)
 				continue;
 		}
 
-		it->is_extern = true;
+		it->set_extern(true);
 		if(!Tagging::Utils::getMetaDataOfFile(*it))
 		{
 			it->set_title(it->filepath());
