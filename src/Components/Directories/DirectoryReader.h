@@ -22,6 +22,7 @@
 #define DIRECTORY_READER
 
 #include "Utils/Pimpl.h"
+#include "Database/ConnectorProvider.h"
 
 class QDir;
 
@@ -29,7 +30,8 @@ class QDir;
  * @brief Directory reader functions
  * @ingroup Helper
  */
-class DirectoryReader final
+class DirectoryReader :
+	public DB::ConnectorConsumer
 {
 	PIMPL(DirectoryReader)
 

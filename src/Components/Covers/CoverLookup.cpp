@@ -78,7 +78,8 @@ struct Lookup::Private
 };
 
 Lookup::Lookup(const Location& cl, int n_covers, QObject* parent) :
-	LookupBase(cl, parent)
+	LookupBase(cl, parent),
+	DB::ConnectorConsumer()
 {
 	m = Pimpl::make<Private>(n_covers);
 }
@@ -162,7 +163,7 @@ bool Lookup::fetch_from_database()
 	Cover::Location cl = cover_location();
 	QString hash = cl.hash();
 
-	DB::Covers* dbc = DB::Connector::instance()->cover_connector();
+	DB::Covers* dbc = db_connector()->cover_connector();
 
 	QPixmap pm;
 	bool success = dbc->get_cover(hash, pm);

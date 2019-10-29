@@ -22,6 +22,7 @@
 #define FILEOPERATIONS_H
 
 #include "Utils/Pimpl.h"
+#include "Database/ConnectorProvider.h"
 
 #include <QThread>
 
@@ -40,7 +41,8 @@ class DirectoryCopyThread : public QThread
 		void run() override;
 };
 
-class FileCopyThread : public QThread
+class FileCopyThread :
+	public QThread
 {
 	Q_OBJECT
 	PIMPL(FileCopyThread)
@@ -56,7 +58,9 @@ class FileCopyThread : public QThread
 };
 
 
-class FileOperations : public QObject
+class FileOperations :
+	public QObject,
+	public DB::ConnectorConsumer
 {
 	Q_OBJECT
 

@@ -15,16 +15,20 @@
 
 using namespace Tagging;
 
-class EditorTest : public QObject
+class EditorTest :
+	public QObject,
+	public DB::ConnectorProvider
 {
 	Q_OBJECT
 
-	DB::LibraryDatabase* m_lib_db;
+	QString m_tmp_path;
 
 public:
-	EditorTest();
+	EditorTest(QObject* parent=nullptr);
 	~EditorTest();
 	MetaDataList create_metadata(int artists, int albums, int tracks);
+
+	DB::Connector* get_connector() const override;
 
 private slots:
 	void test_init();
@@ -35,20 +39,27 @@ private slots:
 	void test_commit();
 };
 
-EditorTest::EditorTest()
+EditorTest::EditorTest(QObject* parent) : QObject(parent)
 {
-	Util::File::delete_files( {::Util::temp_path()} );
+	this->setObjectName("EditorTest");
 
-	auto* db = DB::Connector::instance_custom("", ::Util::temp_path(), "player.db");
+	m_tmp_path = ::Util::temp_path("EditorTest");
+
+	Util::File::delete_files( {m_tmp_path} );
+	Util::File::create_directories(m_tmp_path);
+
+	auto* db = get_connector();
 	db->register_library_db(0);
 
-	m_lib_db = db->library_db(0, DbId(0));
-	m_lib_db->store_metadata(create_metadata(2, 2, 10));
+	auto* lib_db = db->library_db(0, DbId(0));
+	lib_db->store_metadata(create_metadata(2, 2, 10));
+
+	db->close_db();
 }
 
 EditorTest::~EditorTest()
 {
-	Util::File::delete_files( {::Util::temp_path()} );
+	Util::File::delete_files( {m_tmp_path} );
 }
 
 MetaDataList EditorTest::create_metadata(int artists, int albums, int tracks)
@@ -88,7 +99,7 @@ MetaDataList EditorTest::create_metadata(int artists, int albums, int tracks)
 				md.year = uint16_t(year);
 				md.library_id = 0;
 				QString dir = QString("%1/%2/%3 by %4")
-						.arg(Util::temp_path())
+						.arg(m_tmp_path)
 						.arg(md.year)
 						.arg(md.album())
 						.arg(md.artist());
@@ -131,6 +142,10 @@ MetaDataList EditorTest::create_metadata(int artists, int albums, int tracks)
 	return v_md;
 }
 
+DB::Connector* EditorTest::get_connector() const
+{
+	 return DB::Connector::instance_custom("", m_tmp_path, "player.db");
+}
 
 void EditorTest::test_init()
 {
@@ -273,11 +288,16 @@ void EditorTest::test_edit()
 void EditorTest::test_commit()
 {
 	MetaDataList tracks;
-	m_lib_db->getAllTracks(tracks);
+
+	auto* db = get_connector();
+	db->library_db(0,0)->getAllTracks(tracks);
+	db->close_db();
+
 	QVERIFY(tracks.size() == 2*2*10);
 
 	Editor* editor = new Editor();
 	editor->set_metadata(tracks);
+	editor->register_db_connector_provider(this);
 
 	auto* mdcn = Tagging::ChangeNotifier::instance();
 	QSignalSpy spy(mdcn, &Tagging::ChangeNotifier::sig_metadata_changed);
@@ -297,6 +317,7 @@ void EditorTest::test_commit()
 	}
 
 	auto* t = new QThread();
+	t->setObjectName("EditorWorkingThreadForTest");
 	editor->moveToThread(t);
 
 	connect(t, &QThread::started, editor, &Editor::commit);

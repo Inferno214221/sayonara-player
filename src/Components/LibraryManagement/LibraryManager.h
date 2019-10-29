@@ -18,13 +18,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef LIBRARYMANAGER_H
 #define LIBRARYMANAGER_H
 
 #include "Utils/Singleton.h"
 #include "Utils/Pimpl.h"
+
+#include "Database/ConnectorProvider.h"
 
 #include <QObject>
 
@@ -34,7 +34,8 @@ namespace Library
 {
 	class Info;
 	class Manager :
-			public QObject
+			public QObject,
+			public DB::ConnectorConsumer
 	{
 		Q_OBJECT
 		PIMPL(Manager)

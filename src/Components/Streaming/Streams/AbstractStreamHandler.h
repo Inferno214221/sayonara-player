@@ -24,6 +24,7 @@
 #include <QObject>
 
 #include "Utils/Pimpl.h"
+#include "Database/ConnectorProvider.h"
 
 using StreamMap=QMap<QString, QString>;
 
@@ -34,7 +35,9 @@ using StreamMap=QMap<QString, QString>;
  * accessed via the get_tracks() method.
  * @ingroup Streams
  */
-class AbstractStreamHandler : public QObject
+class AbstractStreamHandler :
+	public QObject,
+	protected DB::ConnectorConsumer
 {
 	Q_OBJECT
 	PIMPL(AbstractStreamHandler)

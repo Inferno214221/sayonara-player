@@ -67,11 +67,10 @@ struct Editor::Private
 };
 
 Editor::Editor(QObject *parent) :
-	QObject(parent)
+	QObject(parent),
+	DB::ConnectorConsumer()
 {
 	m = Pimpl::make<Editor::Private>();
-
-	this->setObjectName("TagEditor" + ::Util::random_string(4));
 }
 
 Editor::Editor(const MetaDataList& v_md, QObject* parent) :
@@ -268,7 +267,8 @@ void Editor::load_entire_album()
 	else
 	{
 		MetaDataList v_md;
-		auto* db = DB::Connector::instance();
+
+		auto* db = db_connector();
 		auto* ldb = db->library_db(-1, 0);
 
 		ldb->getAllTracksByAlbum(IdList{id}, v_md, ::Library::Filter(), -1);
@@ -297,7 +297,7 @@ void Editor::apply_artists_and_albums_to_md()
 	QHash<QString, ArtistId> artist_map;
 	QHash<QString, AlbumId>	album_map;
 
-	auto* db = DB::Connector::instance();
+	auto* db = db_connector();
 	auto* ldb = db->library_db(-1, 0);
 
 	{ // load_all_albums
@@ -419,7 +419,7 @@ void Editor::commit()
 {
 	emit sig_started();
 
-	auto* db = DB::Connector::instance();
+	auto* db = db_connector();
 	auto* db_covers = db->cover_connector();
 	auto* ldb = db->library_db(-1, 0);
 

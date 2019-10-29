@@ -32,6 +32,7 @@
 #include "AbstractCoverLookup.h"
 #include "Utils/Pimpl.h"
 #include "CoverUtils.h"
+#include "Database/ConnectorProvider.h"
 
 #include <QPixmap>
 #include <QList>
@@ -45,7 +46,8 @@ namespace Cover
 	 * @ingroup Covers
 	 */
 	class Lookup :
-			public LookupBase
+			public LookupBase,
+			public DB::ConnectorConsumer
 	{
 		Q_OBJECT
 		PIMPL(Lookup)
@@ -54,7 +56,6 @@ namespace Cover
 
 		Lookup(const Location& cl, int n_covers, QObject* parent);
 		~Lookup() override;
-
 
 		/**
 		 * @brief Stop the Cover::FetchThread if running and

@@ -38,24 +38,11 @@ struct GenreFetcher::Private
 	Util::Set<Genre>				genres;
 	Util::Set<Genre>				additional_genres; // empty genres that are inserted
 	Tagging::UserOperations*		uto=nullptr;
-
-	DB::LibraryDatabase* get_local_library_db()
-	{
-		if(!local_library){
-			return nullptr;
-		}
-
-		LibraryId library_id = local_library->id();
-
-		DB::Connector* db = DB::Connector::instance();
-		DB::LibraryDatabase* lib_db = db->library_db(library_id, 0);
-
-		return lib_db;
-	}
 };
 
 GenreFetcher::GenreFetcher(QObject* parent) :
-	QObject(parent)
+	QObject(parent),
+	DB::ConnectorConsumer()
 {
 	m = Pimpl::make<Private>();
 
@@ -64,7 +51,6 @@ GenreFetcher::GenreFetcher(QObject* parent) :
 	connect(mcn, &Tagging::ChangeNotifier::sig_metadata_changed, this, &GenreFetcher::reload_genres);
 	connect(mcn, &Tagging::ChangeNotifier::sig_metadata_deleted, this, &GenreFetcher::reload_genres);
 }
-
 
 Tagging::UserOperations* GenreFetcher::init_tagging()
 {
@@ -78,16 +64,18 @@ Tagging::UserOperations* GenreFetcher::init_tagging()
 	return m->uto;
 }
 
-GenreFetcher::~GenreFetcher() {}
+GenreFetcher::~GenreFetcher() = default;
 
 void GenreFetcher::reload_genres()
 {
-	DB::LibraryDatabase* db = m->get_local_library_db();
-	if(!db){
+	if(!m->local_library){
 		return;
 	}
 
-	m->genres = db->getAllGenres();
+	LibraryId library_id = m->local_library->id();
+
+	DB::LibraryDatabase* lib_db = db_connector()->library_db(library_id, 0);
+	m->genres = lib_db->getAllGenres();
 
 	emit sig_genres_fetched();
 }

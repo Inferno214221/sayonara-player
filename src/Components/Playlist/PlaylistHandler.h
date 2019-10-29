@@ -32,6 +32,7 @@
 #include "PlaylistDBInterface.h"
 
 #include "Components/PlayManager/PlayState.h"
+#include "Database/ConnectorProvider.h"
 
 #include "Utils/Pimpl.h"
 #include "Utils/Singleton.h"
@@ -49,7 +50,8 @@ namespace Playlist
 	 * @ingroup Playlists
 	 */
 	class Handler :
-			public QObject
+			public QObject,
+			public DB::ConnectorConsumer
 	{
 		Q_OBJECT
 		PIMPL(Handler)

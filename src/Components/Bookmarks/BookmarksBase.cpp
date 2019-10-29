@@ -35,17 +35,19 @@ struct BookmarksBase::Private
 	QList<Bookmark> bookmarks;
 	DB::Bookmarks*	db=nullptr;
 	MetaData		md;
-
-	Private()
-	{
-		db = DB::Connector::instance()->bookmark_connector();
-	}
 };
 
 BookmarksBase::BookmarksBase(QObject* parent) :
-	QObject(parent)
+	QObject(parent),
+	DB::ConnectorConsumer()
 {
 	m = Pimpl::make<Private>();
+	m->db = db_connector()->bookmark_connector();
+}
+
+void BookmarksBase::setup_databases()
+{
+	m->db = db_connector()->bookmark_connector();
 }
 
 BookmarksBase::~BookmarksBase() = default;

@@ -70,6 +70,7 @@ Editor* UserOperations::create_editor()
 void UserOperations::run_editor(Editor* editor)
 {
 	auto* t = new QThread();
+	t->setObjectName(QString("EditorWorkerUserOperations%1").arg(Util::random_string(10)));
 	editor->moveToThread(t);
 
 	connect(editor, &Tagging::Editor::sig_finished, t, &QThread::quit);

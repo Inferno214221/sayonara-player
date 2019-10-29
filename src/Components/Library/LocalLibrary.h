@@ -21,6 +21,7 @@
 #ifndef LocalLibrary_H
 #define LocalLibrary_H
 
+#include "Database/ConnectorProvider.h"
 #include "AbstractLibrary.h"
 #include "Utils/Pimpl.h"
 
@@ -33,7 +34,8 @@ namespace Library
 }
 
 class LocalLibrary :
-		public AbstractLibrary
+		public AbstractLibrary,
+		public DB::ConnectorConsumer
 {
 	friend class Library::Manager;
 

@@ -38,21 +38,23 @@ using Playlist::DBWrapper;
 struct DBWrapper::Private
 {
 	DB::Playlist* db=nullptr;
-
-	Private()
-	{
-		db = DB::Connector::instance()->playlist_connector();
-	}
 };
 
-DBWrapper::DBWrapper()
+DBWrapper::DBWrapper() :
+	DB::ConnectorConsumer()
 {
 	m = Pimpl::make<Private>();
+
+	setup_databases();
 }
 
+DBWrapper::~DBWrapper() = default;
 
-DBWrapper::~DBWrapper() {}
-
+// DB::ConnectorConsumer. Do not delete
+void Playlist::DBWrapper::setup_databases()
+{
+	m->db = db_connector()->playlist_connector();
+}
 
 void DBWrapper::apply_tags(MetaDataList& v_md)
 {
@@ -68,7 +70,8 @@ void DBWrapper::apply_tags(MetaDataList& v_md)
 }
 
 
-bool DBWrapper::get_skeletons(CustomPlaylistSkeletons& skeletons, Playlist::StoreType type, Playlist::SortOrder so){
+bool DBWrapper::get_skeletons(CustomPlaylistSkeletons& skeletons, Playlist::StoreType type, Playlist::SortOrder so)
+{
 	return m->db->getAllPlaylistSkeletons(skeletons, type, so);
 }
 
@@ -201,7 +204,7 @@ bool DBWrapper::rename_playlist(int id, const QString& new_name)
 
 bool DBWrapper::save_playlist_as(const MetaDataList& v_md, const QString& name)
 {
-	DB::Connector* db = DB::Connector::instance();
+	DB::Connector* db = db_connector();
 
 	db->transaction();
 	bool success = m->db->storePlaylist(v_md, name, false);
@@ -212,7 +215,7 @@ bool DBWrapper::save_playlist_as(const MetaDataList& v_md, const QString& name)
 
 bool DBWrapper::save_playlist_temporary(const MetaDataList& v_md, const QString& name)
 {
-	DB::Connector* db = DB::Connector::instance();
+	DB::Connector* db = db_connector();
 
 	db->transaction();
 
@@ -226,7 +229,7 @@ bool DBWrapper::save_playlist_temporary(const MetaDataList& v_md, const QString&
 
 bool DBWrapper::save_playlist(const CustomPlaylist& pl)
 {
-	DB::Connector* db = DB::Connector::instance();
+	DB::Connector* db = db_connector();
 
 	db->transaction();
 	// TODO! we dont need the two other parameters
@@ -239,7 +242,7 @@ bool DBWrapper::save_playlist(const CustomPlaylist& pl)
 
 bool DBWrapper::save_playlist(const MetaDataList& v_md, int id, bool is_temporary)
 {
-	DB::Connector* db = DB::Connector::instance();
+	DB::Connector* db = db_connector();
 
 	db->transaction();
 	// TODO: see above
@@ -268,3 +271,4 @@ bool DBWrapper::exists(const QString& name)
 	int id = m->db->getPlaylistIdByName(name);
 	return (id >= 0);
 }
+

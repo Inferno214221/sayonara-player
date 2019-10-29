@@ -22,6 +22,7 @@
 #define LIBRARYIMPORTER_H
 
 #include "Utils/Pimpl.h"
+#include "Database/ConnectorProvider.h"
 
 #include <QObject>
 
@@ -34,7 +35,8 @@ namespace Library
 	 * @ingroup Library
 	 */
 	class Importer :
-			public QObject
+			public QObject,
+			public DB::ConnectorConsumer
 	{
 		Q_OBJECT
 		PIMPL(Importer)
