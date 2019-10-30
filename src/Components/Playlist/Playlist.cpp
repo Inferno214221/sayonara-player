@@ -40,6 +40,7 @@ using PlaylistImpl=::Playlist::Playlist;
 
 struct PlaylistImpl::Private
 {
+	MetaData		dummy_md;
 	MetaDataList    v_md;
 	QList<UniqueId>	shuffle_history;
 	UniqueId		playing_id;
@@ -95,7 +96,7 @@ IndexSet PlaylistImpl::move_tracks(const IndexSet& indexes, int tgt_row)
 	});
 
 	IndexSet new_track_positions;
-	for(int i=tgt_row; i<tgt_row + indexes.count(); i++) {
+	for(int i = tgt_row; i < tgt_row + indexes.count(); i++) {
 		new_track_positions.insert(i - n_lines_before_tgt);
 	}
 
@@ -123,7 +124,8 @@ IndexSet PlaylistImpl::copy_tracks(const IndexSet& indexes, int tgt)
 
 void Playlist::Playlist::find_track(int idx)
 {
-	if(Util::between(idx, m->v_md)){
+	if(Util::between(idx, m->v_md))
+	{
 		emit sig_find_track(m->v_md[idx].id());
 	}
 }
@@ -131,7 +133,6 @@ void Playlist::Playlist::find_track(int idx)
 void PlaylistImpl::remove_tracks(const IndexSet& indexes)
 {
 	m->v_md.remove_tracks(indexes);
-
 	set_changed(true);
 }
 
@@ -146,7 +147,7 @@ void PlaylistImpl::append_tracks(const MetaDataList& lst)
 {
 	int old_size = m->v_md.count();
 
-	m->v_md << lst;
+	m->v_md.append(lst);
 
 	for(auto it=m->v_md.begin() + old_size; it != m->v_md.end(); it++)
 	{
@@ -172,7 +173,6 @@ bool PlaylistImpl::change_track(int idx)
 	}
 
 	m->shuffle_history << m->v_md[idx].unique_id();
-	sp_log(Log::Develop, this) << m->shuffle_history;
 
 	if( !Util::File::check_file(m->v_md[idx].filepath()) )
 	{
@@ -191,21 +191,14 @@ void PlaylistImpl::metadata_deleted()
 	auto* mdcn = Tagging::ChangeNotifier::instance();
 	MetaDataList v_md_deleted = mdcn->deleted_metadata();
 
-	int i=0;
-	for(const MetaData& md : m->v_md)
+	auto it = std::remove_if(m->v_md.begin(), m->v_md.end(), [v_md_deleted](const MetaData& md)
 	{
-		bool contains = Algorithm::contains(v_md_deleted, [&md](const MetaData& md_tmp){
+		return Algorithm::contains(v_md_deleted, [&md](const MetaData& md_tmp){
 			return (md.is_equal(md_tmp));
 		});
+	});
 
-		if(contains){
-			indexes.insert(i);
-		}
-
-		i++;
-	}
-
-	m->v_md.remove_tracks(indexes);
+	m->v_md.erase(it, m->v_md.end());
 	emit sig_items_changed( index() );
 }
 
@@ -294,6 +287,7 @@ void PlaylistImpl::fwd()
 	PlaylistMode cur_mode = m->playlist_mode;
 	PlaylistMode mode_bak = m->playlist_mode;
 
+	// temp. disable rep1 as we want a new track
 	cur_mode.setRep1(false);
 	set_mode(cur_mode);
 
@@ -308,13 +302,13 @@ void PlaylistImpl::bwd()
 	{
 		for(int history_index = m->shuffle_history.size() - 2; history_index >= 0; history_index--)
 		{
-			UniqueId id = m->shuffle_history[history_index];
+			UniqueId uid = m->shuffle_history[history_index];
 
-			int idx = Util::Algorithm::indexOf(m->v_md, [id](const MetaData& md){
-				return (id == md.unique_id());
+			int idx = Util::Algorithm::indexOf(m->v_md, [uid](const MetaData& md){
+				return (uid == md.unique_id());
 			});
 
-			if(Util::between(idx, m->v_md))
+			if(idx >= 0)
 			{
 				m->shuffle_history.erase(m->shuffle_history.begin() + history_index, m->shuffle_history.end());
 
@@ -347,13 +341,12 @@ void PlaylistImpl::next()
 	}
 
 	// play it again
-	else if(PlaylistMode::isActiveAndEnabled(m->playlist_mode.rep1())){
+	else if(PlaylistMode::isActiveAndEnabled(m->playlist_mode.rep1())) {
 		track_num = cur_track;
 	}
 
 	// shuffle mode
-	else if(PlaylistMode::isActiveAndEnabled(m->playlist_mode.shuffle()))
-	{
+	else if(PlaylistMode::isActiveAndEnabled(m->playlist_mode.shuffle())) {
 		track_num = calc_shuffle_track();
 	}
 
@@ -365,7 +358,7 @@ void PlaylistImpl::next()
 		{
 			track_num = -1;
 
-			if(PlaylistMode::isActiveAndEnabled(m->playlist_mode.repAll())){
+			if(PlaylistMode::isActiveAndEnabled(m->playlist_mode.repAll())) {
 				track_num = 0;
 			}
 		}
@@ -418,7 +411,6 @@ int PlaylistImpl::calc_shuffle_track()
 		return unplayed_tracks[left_tracks_idx];
 	}
 }
-
 
 bool PlaylistImpl::wake_up()
 {
@@ -579,17 +571,17 @@ void PlaylistImpl::setting_playlist_mode_changed()
 	set_mode( GetSetting(Set::PL_Mode) );
 }
 
-MetaDataList PlaylistImpl::tracks() const
+const MetaDataList& PlaylistImpl::tracks() const
 {
 	return m->v_md;
 }
 
-MetaData PlaylistImpl::track(int idx) const
+const MetaData& PlaylistImpl::track(int idx) const
 {
 	if(idx >= 0 && idx < m->v_md.count())
 	{
 		return m->v_md[idx];
 	}
 
-	return MetaData();
+	return m->dummy_md;
 }

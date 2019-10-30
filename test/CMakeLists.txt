@@ -47,7 +47,7 @@ qt5_add_resources(RESOURCES_RCC
 
 NEW_TEST(Database/PodcastTest.cpp ${RESOURCES_RCC})
 NEW_TEST(Database/AlbumTest.cpp ${RESOURCES_RCC})
-
+NEW_TEST(Playlist/PlaylistTest.cpp)
 NEW_TEST(Util/CryptTest.cpp)
 NEW_TEST(Util/FileHelperTest.cpp ${RESOURCES_RCC})
 NEW_TEST(Util/MetaDataListTest.cpp)

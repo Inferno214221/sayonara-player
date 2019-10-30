@@ -82,8 +82,8 @@ namespace Playlist
 			void			set_current_scanned_file(const QString& file);
 
 		public:
-			MetaData track(int idx) const override;
-			MetaDataList tracks() const override;
+			const MetaData& track(int idx) const override;
+			const MetaDataList& tracks() const override;
 
 			void insert_tracks(const MetaDataList& lst, int tgt);
 			void append_tracks(const MetaDataList& lst);
