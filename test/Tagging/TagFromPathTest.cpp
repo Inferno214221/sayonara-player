@@ -1,11 +1,18 @@
-#include <QTest>
-#include <QObject>
+#include "SayonaraTest.h"
+
 #include "Components/Tagging/Expression.h"
 #include "Utils/MetaData/MetaDataList.h"
 
-class TagFromPathTest : public QObject
+class TagFromPathTest : public SayonaraTest
 {
 	Q_OBJECT
+
+public:
+	TagFromPathTest() :
+		SayonaraTest("TagFromPathTest")
+	{}
+
+	~TagFromPathTest() override = default;
 
 	private slots:
 		void apply_regex_test();

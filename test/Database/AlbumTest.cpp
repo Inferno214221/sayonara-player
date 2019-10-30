@@ -1,6 +1,4 @@
-#include <QTest>
-#include <QObject>
-#include <QMap>
+#include "SayonaraTest.h"
 
 #include "Database/Connector.h"
 #include "Database/Albums.h"
@@ -10,7 +8,10 @@
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 
-class AlbumTest : public QObject
+#include <QMap>
+
+class AlbumTest :
+	public SayonaraTest
 {
 	Q_OBJECT
 
@@ -19,8 +20,11 @@ private:
 	DB::LibraryDatabase* m_lib_db=nullptr;
 
 public:
-	AlbumTest(QObject* parent=nullptr);
-	~AlbumTest();
+	AlbumTest() :
+		SayonaraTest("AlbumTest")
+	{}
+
+	~AlbumTest() override = default;
 
 private:
 	DB::LibraryDatabase* init();
@@ -30,18 +34,6 @@ private slots:
 	void test_insert_known();
 	void test_rename();
 };
-
-
-AlbumTest::AlbumTest(QObject* parent) : QObject(parent)
-{
-	Q_INIT_RESOURCE(Database);
-	DB::Connector::instance_custom("", Util::temp_path("AlbumTest"), "player.db");
-}
-
-AlbumTest::~AlbumTest()
-{
-	Util::File::delete_files({Util::temp_path("AlbumTest")});
-}
 
 DB::LibraryDatabase* AlbumTest::init()
 {

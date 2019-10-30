@@ -4,10 +4,14 @@
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaData.h"
 
-
 class DiscnumberTest : public AbstractTaggingTest
 {
 	Q_OBJECT
+
+public:
+	DiscnumberTest() :
+		AbstractTaggingTest("DiscnumberTest")
+	{}
 
 private:
 	void run_test(const QString& filename) override;

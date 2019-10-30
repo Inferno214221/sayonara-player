@@ -1,15 +1,22 @@
-#include <QTest>
+#include "SayonaraTest.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Components/Playlist/Playlist.h"
+#include "Database/Connector.h"
 
 #include "Utils/Set.h"
+#include "Utils/Utils.h"
 
 using PL=Playlist::Playlist;
 
 class PlaylistTest :
-	public QObject
+	public SayonaraTest
 {
 	Q_OBJECT
+
+public:
+	PlaylistTest() :
+		SayonaraTest("PlaylistTest")
+	{}
 
 private slots:
 	void test();

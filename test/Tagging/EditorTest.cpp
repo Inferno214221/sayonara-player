@@ -1,4 +1,5 @@
-#include <QTest>
+#include "SayonaraTest.h"
+
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Components/Tagging/Editor.h"
@@ -16,15 +17,14 @@
 using namespace Tagging;
 
 class EditorTest :
-	public QObject
+	public SayonaraTest
 {
 	Q_OBJECT
 
-	QString mTmpPath;
-
 public:
-	EditorTest(QObject* parent=nullptr);
-	~EditorTest() override;
+	EditorTest();
+	~EditorTest()=default;
+
 	MetaDataList create_metadata(int artists, int albums, int tracks);
 
 private slots:
@@ -36,23 +36,16 @@ private slots:
 	void test_commit();
 };
 
-EditorTest::EditorTest(QObject* parent) : QObject(parent)
+EditorTest::EditorTest() :
+	SayonaraTest("EditorTest")
 {
-	this->setObjectName("EditorTest");
-
-	mTmpPath = Util::temp_path("EditorTest");
-	auto db = DB::Connector::instance_custom("", mTmpPath, "player.db");
+	auto* db = DB::Connector::instance();
 	db->register_library_db(0);
 
 	auto* lib_db = db->library_db(0, DbId(0));
 	lib_db->store_metadata(create_metadata(2, 2, 10));
 
 	db->close_db();
-}
-
-EditorTest::~EditorTest()
-{
-	Util::File::delete_files({mTmpPath});
 }
 
 MetaDataList EditorTest::create_metadata(int artists, int albums, int tracks)
@@ -92,7 +85,7 @@ MetaDataList EditorTest::create_metadata(int artists, int albums, int tracks)
 				md.set_year(Year(year));
 				md.set_library_id(0);
 				QString dir = QString("%1/%2/%3 by %4")
-						.arg(mTmpPath)
+						.arg(temp_path())
 						.arg(md.year())
 						.arg(md.album())
 						.arg(md.artist());

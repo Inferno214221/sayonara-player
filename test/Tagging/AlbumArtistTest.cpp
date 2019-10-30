@@ -8,6 +8,11 @@ class AlbumArtistTest : public AbstractTaggingTest
 {
 	Q_OBJECT
 
+public:
+	AlbumArtistTest() :
+		AbstractTaggingTest("AlbumArtistTest")
+	{}
+
 private:
 	void run_test(const QString& filename) override;
 

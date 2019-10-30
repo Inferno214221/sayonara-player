@@ -1,3 +1,5 @@
+#include "SayonaraTest.h"
+
 #include "Database/Connector.h"
 #include "Database/Settings.h"
 
@@ -7,38 +9,20 @@
 #include "Utils/FileUtils.h"
 #include "Utils/Utils.h"
 
-#include <QTest>
-#include <QObject>
-
-class SettingsTest : public QObject
+class SettingsTest : public SayonaraTest
 {
 	Q_OBJECT
 
-	QString mTmpPath;
-
 public:
-	SettingsTest(QObject* parent=nullptr);
-	~SettingsTest();
+	SettingsTest() :
+		SayonaraTest("SettingsTest")
+	{}
+
+	~SettingsTest() override = default;
 
 private slots:
-	void initTestCase();
-	void cleanupTestCase();
 	void test_registry();
 };
-
-SettingsTest::SettingsTest(QObject* parent) :
-	QObject(parent)
-{
-	Q_INIT_RESOURCE(Database);
-
-	mTmpPath = Util::temp_path("SettingsTest");
-	DB::Connector::instance_custom("", mTmpPath, "player.db");
-}
-
-SettingsTest::~SettingsTest()
-{
-	Util::File::delete_files({mTmpPath});
-}
 
 void SettingsTest::test_registry()
 {
@@ -151,16 +135,6 @@ void SettingsTest::test_registry()
 	}
 }
 
-void SettingsTest::initTestCase()
-{
-	Util::File::delete_files({mTmpPath});
-	Util::File::create_directories(mTmpPath);
-}
-
-void SettingsTest::cleanupTestCase()
-{
-	Util::File::delete_files({mTmpPath});
-}
 
 QTEST_GUILESS_MAIN(SettingsTest)
 

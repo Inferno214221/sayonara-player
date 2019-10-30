@@ -1,7 +1,4 @@
-#include <QObject>
-#include <QTest>
-#include <QDebug>
-#include <QString>
+#include "SayonaraTest.h"
 
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/Genre.h"
@@ -9,9 +6,16 @@
 
 #include <algorithm>
 
-class MetaDataTest : public QObject
+class MetaDataTest : public SayonaraTest
 {
 	Q_OBJECT
+
+public:
+	MetaDataTest() :
+		SayonaraTest("MetaDataTest")
+	{}
+
+	~MetaDataTest() override = default;
 
 private slots:
 	void copy_test();

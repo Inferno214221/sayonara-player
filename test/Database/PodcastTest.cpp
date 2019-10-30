@@ -1,19 +1,23 @@
-#include <QTest>
-#include <QObject>
-#include <QMap>
-
+#include "SayonaraTest.h"
 #include "Database/Connector.h"
 #include "Database/Podcasts.h"
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 
-class PodcastTest : public QObject
+#include <QMap>
+
+class PodcastTest :
+	public SayonaraTest
 {
 	Q_OBJECT
 
 public:
-	PodcastTest();
-	~PodcastTest();
+	PodcastTest() :
+		SayonaraTest("PodcastTest")
+	{}
+
+	~PodcastTest() override = default;
+
 
 private:
 	DB::Podcasts* pod()
@@ -43,18 +47,6 @@ private slots:
 	void test_insert_and_delete();
 	void test_update();
 };
-
-
-PodcastTest::PodcastTest() : QObject()
-{
-	Q_INIT_RESOURCE(Database);
-	DB::Connector::instance_custom("", Util::temp_path("PodcastTest"), "player.db");
-}
-
-PodcastTest::~PodcastTest()
-{
-	Util::File::delete_files({Util::temp_path("PodcastTest")});
-}
 
 void PodcastTest::test_insert_and_delete()
 {

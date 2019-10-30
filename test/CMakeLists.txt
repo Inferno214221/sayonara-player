@@ -1,4 +1,5 @@
 project(say_tests)
+include("NewTest.cmake")
 include(${CMAKE_SOURCE_DIR}/src/CMake/Compiler.cmake)
 
 if(POLICY CMP0071)
@@ -13,12 +14,6 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 file(COPY ${CMAKE_SOURCE_DIR}/resources/player.db
 	DESTINATION	${CMAKE_CURRENT_BINARY_DIR}
-)
-
-set(RESOURCES
-	resources/Test.qrc
-	${CMAKE_CURRENT_SOURCE_DIR}/../resources/Database.qrc
-	${CMAKE_CURRENT_SOURCE_DIR}/../resources/Resources.qrc
 )
 
 include_directories(${Qt5Core_INCLUDE_DIRS})
@@ -40,28 +35,35 @@ include_directories(${CMAKE_BINARY_DIR}/src/3rdParty/taglib)
 include_directories(${CMAKE_SOURCE_DIR}/test)
 include_directories(${CMAKE_BINARY_DIR}/test)
 
-include("new_test.cmake")
+set(RESOURCES
+	resources/Test.qrc
+	${CMAKE_CURRENT_SOURCE_DIR}/../resources/Database.qrc
+	${CMAKE_CURRENT_SOURCE_DIR}/../resources/Resources.qrc
+)
+
 qt5_add_resources(RESOURCES_RCC
 	${RESOURCES}
 )
 
-NEW_TEST(Database/PodcastTest.cpp ${RESOURCES_RCC})
-NEW_TEST(Database/AlbumTest.cpp ${RESOURCES_RCC})
-NEW_TEST(Playlist/PlaylistTest.cpp)
-NEW_TEST(Util/CryptTest.cpp)
-NEW_TEST(Util/FileHelperTest.cpp ${RESOURCES_RCC})
-NEW_TEST(Util/MetaDataListTest.cpp)
-NEW_TEST(Util/LanguageKeyTest.cpp)
-NEW_TEST(Util/LanguageUtilTest.cpp)
-NEW_TEST(Util/MetaDataTest.cpp)
-NEW_TEST(Util/SettingsTest.cpp ${RESOURCES_RCC})
-NEW_TEST(StreamRecorder/StreamRecorderUtilsTest.cpp)
-NEW_TEST(StreamRecorder/StreamRecorderTest.cpp)
-NEW_TEST(Tagging/LyricsTest.cpp ${RESOURCES_RCC} Tagging/AbstractTaggingTest.cpp)
-NEW_TEST(Tagging/AlbumArtistTest.cpp ${RESOURCES_RCC} Tagging/AbstractTaggingTest.cpp)
-NEW_TEST(Tagging/DiscnumberTest.cpp ${RESOURCES_RCC} Tagging/AbstractTaggingTest.cpp)
-NEW_TEST(Tagging/RatingTest.cpp ${RESOURCES_RCC} Tagging/AbstractTaggingTest.cpp)
-NEW_TEST(Tagging/TagFromPathTest.cpp)
-NEW_TEST(Tagging/EditorTest.cpp ${RESOURCES_RCC})
+new_test_rcc(Database/PodcastTest.cpp)
+new_test_rcc(Database/AlbumTest.cpp)
 
+new_test_rcc(Playlist/PlaylistTest.cpp)
 
+new_test(Util/CryptTest.cpp)
+new_test_rcc(Util/FileHelperTest.cpp)
+new_test_rcc(Util/SettingsTest.cpp)
+new_test(Util/MetaDataTest.cpp)
+new_test(Util/MetaDataListTest.cpp)
+new_test(Util/LanguageKeyTest.cpp)
+new_test(Util/LanguageUtilTest.cpp)
+
+new_test(StreamRecorder/StreamRecorderUtilsTest.cpp)
+new_test(StreamRecorder/StreamRecorderTest.cpp)
+
+new_test_rcc(Tagging/LyricsTest.cpp Tagging/AbstractTaggingTest.cpp)
+new_test_rcc(Tagging/AlbumArtistTest.cpp Tagging/AbstractTaggingTest.cpp)
+new_test_rcc(Tagging/DiscnumberTest.cpp Tagging/AbstractTaggingTest.cpp)
+new_test_rcc(Tagging/RatingTest.cpp Tagging/AbstractTaggingTest.cpp)
+new_test(Tagging/TagFromPathTest.cpp)
+new_test(Tagging/EditorTest.cpp)

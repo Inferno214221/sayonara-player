@@ -1,4 +1,5 @@
-#include <QTest>
+#include "SayonaraTest.h"
+
 #include "Utils/Tagging/Tagging.h"
 #include "Utils/Tagging/TaggingLyrics.h"
 #include "Utils/FileUtils.h"
@@ -8,6 +9,13 @@
 class LyricsTest : public AbstractTaggingTest
 {
 	Q_OBJECT
+
+public:
+	LyricsTest() :
+		AbstractTaggingTest("LyricsTest")
+	{}
+
+	~LyricsTest() override = default;
 
 private:
 	void run_test(const QString& filename) override;

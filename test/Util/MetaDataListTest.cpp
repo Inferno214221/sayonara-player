@@ -1,6 +1,4 @@
-#include <QObject>
-#include <QTest>
-#include <QDebug>
+#include "SayonaraTest.h"
 
 #include "Utils/FileUtils.h"
 #include "Utils/RandomGenerator.h"
@@ -9,9 +7,16 @@
 
 #include <algorithm>
 
-class MetaDataListTest : public QObject
+class MetaDataListTest : public SayonaraTest
 {
 	Q_OBJECT
+
+public:
+	MetaDataListTest() :
+		SayonaraTest("MetaDataListTest")
+	{}
+
+	~MetaDataListTest() override = default;
 
 private slots:
 	void insert_test();

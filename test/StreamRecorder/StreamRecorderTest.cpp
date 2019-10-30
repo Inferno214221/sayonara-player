@@ -1,3 +1,5 @@
+#include "SayonaraTest.h"
+
 #include "Components/Engine/StreamRecorder/StreamRecorder.h"
 
 #include "Utils/Settings/Settings.h"
@@ -7,14 +9,13 @@
 #include "Utils/FileUtils.h"
 #include "Utils/Utils.h"
 
-#include <QTest>
 #include <QDateTime>
 #include <QFile>
 
 namespace SR=StreamRecorder;
 
 class StreamRecorderTest :
-		public QObject
+		public SayonaraTest
 {
 	Q_OBJECT
 
@@ -23,8 +24,6 @@ class StreamRecorderTest :
 public:
 	StreamRecorderTest();
 
-private:
-	QString sr_path() const;
 
 private slots:
 	void target_path_template_test();
@@ -33,15 +32,13 @@ private slots:
 
 };
 
-StreamRecorderTest::StreamRecorderTest()
+StreamRecorderTest::StreamRecorderTest() :
+	SayonaraTest("StreamRecorderTest")
 {
 	Settings* s = Settings::instance();
 	s->check_settings();
 
-	Util::File::remove_files_in_directory(sr_path());
-	Util::File::delete_files({sr_path()});
-
-	SetSetting(Set::Engine_SR_Path, sr_path());
+	SetSetting(Set::Engine_SR_Path, temp_path());
 	SetSetting(SetNoDB::MP3enc_found, true);
 	SetSetting(Set::Engine_SR_Active, true);
 	SetSetting(Set::Engine_SR_SessionPath, true);
@@ -50,10 +47,6 @@ StreamRecorderTest::StreamRecorderTest()
 	sr = new SR::StreamRecorder(this);
 }
 
-QString StreamRecorderTest::sr_path() const
-{
-	return Util::temp_path("sayonara_sr");
-}
 
 void StreamRecorderTest::target_path_template_test()
 {
@@ -86,7 +79,7 @@ void StreamRecorderTest::www_test()
 		QString filename = sr->change_track(md);
 
 		QString should_filename =
-				sr_path() + "/" +
+				temp_path() + "/" +
 				QString("%1%2%3")
 					.arg(d.year())
 					.arg(d.month(), 2, 10, QChar('0'))
@@ -116,8 +109,7 @@ void StreamRecorderTest::www_test()
 		QVERIFY(sr->is_recording());
 	}
 
-	Util::File::remove_files_in_directory(sr_path());
-	Util::File::delete_files({sr_path()});
+	Util::File::delete_files({temp_path()});
 }
 
 
@@ -127,7 +119,8 @@ void StreamRecorderTest::file_test()
 
 	for(int i=1; i<100; i++)
 	{
-		QString filepath = Util::temp_path(
+		QString filepath = temp_path
+		(
 			QString("path%1.mp3").arg(i)
 		);
 

@@ -8,6 +8,13 @@ class RatingTest : public AbstractTaggingTest
 {
 	Q_OBJECT
 
+public:
+	RatingTest() :
+		AbstractTaggingTest("RatingTest")
+	{}
+
+	~RatingTest() override = default;
+
 private:
 	void run_test(const QString& filename) override;
 
