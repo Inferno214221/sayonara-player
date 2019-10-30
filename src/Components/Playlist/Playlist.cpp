@@ -69,7 +69,7 @@ PlaylistImpl::Playlist(int idx, PlaylistType type, const QString& name) :
 	connect(md_change_notifier, &Tagging::ChangeNotifier::sig_metadata_deleted, this, &Playlist::metadata_deleted);
 
 	auto* play_manager = PlayManager::instance();
-	connect(play_manager, &PlayManager::sig_track_metadata_changed, this, &Playlist::metadata_changed_single);
+	connect(play_manager, &PlayManager::sig_track_metadata_changed, this, &Playlist::current_metadata_changed);
 	connect(play_manager, &PlayManager::sig_duration_changed, this, &Playlist::duration_changed);
 
 	ListenSetting(Set::PL_Mode, Playlist::setting_playlist_mode_changed);
@@ -233,7 +233,7 @@ void PlaylistImpl::metadata_changed()
 	emit sig_items_changed( index() );
 }
 
-void PlaylistImpl::metadata_changed_single()
+void PlaylistImpl::current_metadata_changed()
 {
 	MetaData md = PlayManager::instance()->current_track();
 	IdxList idx_list = m->v_md.findTracks(md.filepath());
@@ -245,24 +245,14 @@ void PlaylistImpl::metadata_changed_single()
 
 void PlaylistImpl::duration_changed()
 {
-	PlayManager* pm = PlayManager::instance();
-	MilliSeconds duration = pm->duration_ms();
-
-	MetaDataList& v_md = m->v_md;
-
-	int cur_track = current_track_index();
-	if(!Util::between(cur_track, v_md.count())){
-		return;
-	}
-
-	IdxList idx_list = m->v_md.findTracks(v_md[cur_track].filepath());
+	MetaData current_track = PlayManager::instance()->current_track();
+	IdxList idx_list = m->v_md.findTracks(current_track.filepath());
 
 	for(int i : idx_list)
 	{
-		MetaData changed_md(v_md[i]);
-		changed_md.set_duration_ms(std::max<MilliSeconds>(0, duration));
-
-		replace_track(i, changed_md);
+		MetaData md(m->v_md[i]);
+		md.set_duration_ms(std::max<MilliSeconds>(0, current_track.duration_ms()));
+		replace_track(i, md);
 	}
 }
 
@@ -276,9 +266,7 @@ void PlaylistImpl::replace_track(int idx, const MetaData& md)
 	m->v_md[idx] = md;
 	m->v_md[idx].is_disabled = !(File::check_file(md.filepath()));
 
-	set_current_track(idx);
-
-	emit sig_items_changed( index() );
+	emit sig_items_changed(index());
 }
 
 void PlaylistImpl::play()

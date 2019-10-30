@@ -104,7 +104,7 @@ namespace Playlist
 		public slots:
 			void metadata_deleted();
 			void metadata_changed();
-			void metadata_changed_single();
+			void current_metadata_changed();
 			void duration_changed();
 
 		private slots:
