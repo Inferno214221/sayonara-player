@@ -281,7 +281,7 @@ void Base::similar_artists_fetched(IdList artist_ids)
 
 			// two times the same track is not allowed
 			bool track_exists = Algorithm::contains(v_md, [md](const MetaData& it_md){
-				return (md.id == it_md.id);
+				return (md.id() == it_md.id());
 			});
 
 			if(!track_exists){

@@ -48,12 +48,6 @@ class MetaData :
 	PIMPL(MetaData)
 
 public:
-	TrackID id;
-	LibraryId library_id;
-
-	bool is_disabled;
-
-public:
 	MetaData();
 	explicit MetaData (const QString& path);
 	MetaData(const MetaData& other);
@@ -150,6 +144,15 @@ public:
 
 	bool is_extern() const;
 	void set_extern(bool value);
+
+	bool is_disabled() const;
+	void set_disabled(bool value);
+
+	LibraryId library_id() const;
+	void set_library_id(const LibraryId& value);
+
+	TrackID id() const;
+	void set_id(const TrackID& value);
 
 private:
 	QHash<GenreID, Genre>& genre_pool() const;

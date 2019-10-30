@@ -87,7 +87,7 @@ MetaDataList EditorTest::create_metadata(int artists, int albums, int tracks)
 			for(int t=0; t<tracks; t++)
 			{
 				MetaData md;
-				md.id = TrackID(track_id++);
+				md.set_id(TrackID(track_id++));
 				md.set_title(QString("title %1").arg(t));
 				md.set_album(album);
 				md.set_album_id(album_id);
@@ -97,7 +97,7 @@ MetaDataList EditorTest::create_metadata(int artists, int albums, int tracks)
 				md.set_track_number(TrackNum(t));
 				md.set_rating(Rating::One);
 				md.set_year(Year(year));
-				md.library_id = 0;
+				md.set_library_id(0);
 				QString dir = QString("%1/%2/%3 by %4")
 						.arg(m_tmp_path)
 						.arg(md.year())

@@ -55,9 +55,9 @@ BookmarksBase::~BookmarksBase() = default;
 bool BookmarksBase::load()
 {
 	QMap<Seconds, QString> bookmarks;
-	if(m->md.id >= 0)
+	if(m->md.id() >= 0)
 	{
-		m->db->searchBookmarks(m->md.id, bookmarks);
+		m->db->searchBookmarks(m->md.id(), bookmarks);
 	}
 
 	this->clear();
@@ -81,7 +81,7 @@ void BookmarksBase::sort()
 
 BookmarksBase::CreationStatus BookmarksBase::create(Seconds timestamp)
 {
-	if(m->md.id < 0 || m->md.db_id() != 0)
+	if(m->md.id() < 0 || m->md.db_id() != 0)
 	{
 		return CreationStatus::NoDBTrack;
 	}
@@ -99,7 +99,7 @@ BookmarksBase::CreationStatus BookmarksBase::create(Seconds timestamp)
 	}
 
 	QString name = Util::cvt_ms_to_string(timestamp * 1000, "$M:$S");
-	bool success = m->db->insertBookmark(m->md.id, timestamp, name);
+	bool success = m->db->insertBookmark(m->md.id(), timestamp, name);
 
 	if(success)
 	{
@@ -142,10 +142,10 @@ void BookmarksBase::set_metadata(const MetaData& md)
 		} while( !entry.isEmpty() );
 	}
 
-	else if(md.id >= 0)
+	else if(md.id() >= 0)
 	{
 		QMap<Seconds, QString> bookmarks;
-		m->db->searchBookmarks(md.id, bookmarks);
+		m->db->searchBookmarks(md.id(), bookmarks);
 
 		this->clear();
 
@@ -199,7 +199,7 @@ bool BookmarksBase::remove(int idx)
 		return false;
 	}
 
-	bool success = m->db->removeBookmark(m->md.id, m->bookmarks[idx].timestamp());
+	bool success = m->db->removeBookmark(m->md.id(), m->bookmarks[idx].timestamp());
 
 	if(success){
 		load();

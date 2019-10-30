@@ -121,20 +121,21 @@ void GUI_Bookmarks::bookmarks_changed()
 	disconnect(ui->cb_bookmarks, combo_current_index_changed_int, this, &GUI_Bookmarks::combo_changed);
 
 	ui->cb_bookmarks->clear();
-	for(const Bookmark& bookmark : bookmarks){
-		ui->cb_bookmarks->addItem(bookmark.name(), (int) bookmark.timestamp());
+	for(const Bookmark& bookmark : bookmarks)
+	{
+		ui->cb_bookmarks->addItem(bookmark.name(), int(bookmark.timestamp()));
 	}
 
-	if(bookmarks.isEmpty()){
+	if(bookmarks.isEmpty()) {
 		ui->cb_bookmarks->addItem(tr("No bookmarks found"), -1);
 	}
 
 	MetaData md = m->bookmarks->metadata();
 
-	ui->btn_tool->show_action(ContextMenu::EntryNew, (md.id >= 0) );
+	ui->btn_tool->show_action(ContextMenu::EntryNew, (md.id() >= 0) );
 	ui->btn_tool->show_action(ContextMenu::EntryDelete, !bookmarks.isEmpty() );
 
-	if(md.id >= 0 && bookmarks.size() > 0){
+	if(md.id() >= 0 && bookmarks.size() > 0){
 		ui->controls->show();
 	}
 

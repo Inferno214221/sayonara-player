@@ -244,7 +244,7 @@ Qt::ItemFlags Model::flags(const QModelIndex &index) const
 	if(Util::between(row, m->pl->count()))
 	{
 		const MetaData& md = metadata(row);
-		if(md.is_disabled){
+		if(md.is_disabled()){
 			return Qt::NoItemFlags;
 		}
 	}

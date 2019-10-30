@@ -120,8 +120,6 @@ MetaDataList& MetaDataList::copy_tracks(const IndexSet& indexes, int tgt_idx)
 
 MetaDataList& MetaDataList::move_tracks(const IndexSet& indexes, int tgt_idx)
 {
-	sp_log(Log::Develop, this) << "Move " << indexes << " to " << tgt_idx;
-
 	MetaDataList v_md_to_move; 		v_md_to_move.reserve(indexes.size());
 	MetaDataList v_md_before_tgt; 	v_md_before_tgt.reserve(size());
 	MetaDataList v_md_after_tgt; 	v_md_after_tgt.reserve(size());
@@ -135,19 +133,16 @@ MetaDataList& MetaDataList::move_tracks(const IndexSet& indexes, int tgt_idx)
 		if(indexes.contains(i))
 		{
 			v_md_to_move << std::move( md );
-			sp_log(Log::Crazy, this) << "Track to move: " << md.title();
 		}
 
 		else if(i<tgt_idx)
 		{
 			v_md_before_tgt << std::move( md );
-			sp_log(Log::Crazy, this) << "Track before: " << md.title();
 		}
 
 		else
 		{
 			v_md_after_tgt << std::move( md );
-			sp_log(Log::Crazy, this) << "Track after: " << md.title();
 		}
 	}
 
@@ -228,7 +223,7 @@ QList<int> MetaDataList::findTracks(Id id) const
 	int idx=0;
 	for(auto it=this->begin(); it != this->end(); it++)
 	{
-		if(it->id == id){
+		if(it->id() == id){
 			ret << idx;
 		}
 
@@ -271,8 +266,8 @@ QStringList MetaDataList::toStringList() const
 	QStringList lst;
 
 	auto lambda = [&lst](const MetaData& md){
-		if(md.id >= 0){
-			lst << QString::number(md.id);
+		if(md.id() >= 0){
+			lst << QString::number(md.id());
 		}
 		else{
 			lst << md.filepath();
@@ -320,7 +315,7 @@ MetaDataList& MetaDataList::append(const MetaData& md)
 bool MetaDataList::contains(TrackID id) const
 {
 	auto it = std::find_if(this->begin(), this->end(), [&id](const MetaData& md){
-		return (id == md.id);
+		return (id == md.id());
 	});
 
 	return (it != this->end());
@@ -375,7 +370,7 @@ MetaDataList& MetaDataList::append_unique(const MetaDataList& other)
 
 	for(auto it = other.begin(); it != other.end(); it++)
 	{
-		if(!this->contains(it->id)){
+		if(!this->contains(it->id())){
 			this->push_back(*it);
 		}
 	}

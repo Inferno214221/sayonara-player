@@ -152,14 +152,14 @@ bool ReloadThread::get_and_save_all_files(const QHash<QString, MetaData>& md_map
 
 		bool file_was_read = false;
 		MetaData md(filepath);
-		md.library_id = m->library_id;
+		md.set_library_id(m->library_id);
 
 		const MetaData& md_lib = md_map_lib[filepath];
 
 		int progress = (cur_idx_files++ * 100) / n_files;
 		emit sig_reloading_library(Lang::get(Lang::ReloadLibrary).triplePt(), progress);
 
-		if(md_lib.id >= 0) // found in library
+		if(md_lib.id() >= 0) // found in library
 		{
 			if(m->quality == Library::ReloadQuality::Fast){
 				continue;

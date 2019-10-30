@@ -248,7 +248,7 @@ Id TrackModel::id_by_index(int row) const
 	}
 
 	else {
-		return tracks[row].id;
+		return tracks[row].id();
 	}
 }
 

@@ -326,7 +326,7 @@ void Editor::apply_artists_and_albums_to_md()
 				continue;
 			}
 
-			artist_map[it->name()] = it->id;
+			artist_map[it->name()] = it->id();
 		}
 	}
 
@@ -484,7 +484,7 @@ void Editor::commit()
 			{ // write changed to db
 				const MetaData& org_md = it->original_metadata();
 				const MetaData& cur_md = it->current_metadata();
-				if( !cur_md.is_extern() && cur_md.id >= 0 )
+				if( !cur_md.is_extern() && cur_md.id() >= 0 )
 				{
 					if(ldb->updateTrack(cur_md))
 					{

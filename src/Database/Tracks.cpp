@@ -185,7 +185,7 @@ bool Tracks::db_fetch_tracks(Query& q, MetaDataList& result) const
 	{
 		MetaData data;
 
-		data.id = 		 	q.value(0).toInt();
+		data.set_id(	 	q.value(0).toInt());
 		data.set_title(		q.value(1).toString());
 		data.set_duration_ms(q.value(2).toInt());
 		data.set_year(		q.value(3).value<Year>());
@@ -201,7 +201,7 @@ bool Tracks::db_fetch_tracks(Query& q, MetaDataList& result) const
 		data.set_comment(	q.value(14).toString());
 		data.set_createdate(q.value(15).value<uint64_t>());
 		data.set_modifydate(q.value(16).value<uint64_t>());
-		data.library_id = 	q.value(17).value<LibraryId>();
+		data.set_library_id(q.value(17).value<LibraryId>());
 		data.set_album(		q.value(18).toString().trimmed());
 		data.set_artist(	q.value(20).toString().trimmed());
 		data.set_album_artist(q.value(21).toString(), q.value(13).toInt());
@@ -546,7 +546,7 @@ bool Tracks::deleteTracks(const MetaDataList& v_md)
 
 	auto deleted_tracks = Util::Algorithm::count_if(v_md, [=](const MetaData& md)
 	{
-		return this->deleteTrack(md.id);
+		return this->deleteTrack(md.id());
 	});
 
 	db().commit();
@@ -576,7 +576,7 @@ bool Tracks::deleteInvalidTracks(const QString& library_path, MetaDataList& doub
 		{
 			sp_log(Log::Warning, this) << "found double path: " << md.filepath();
 			int old_idx = map[md.filepath()];
-			to_delete << md.id;
+			to_delete << md.id();
 			double_metadata << v_md[old_idx];
 		}
 
@@ -587,7 +587,7 @@ bool Tracks::deleteInvalidTracks(const QString& library_path, MetaDataList& doub
 		if( (!library_path.isEmpty()) &&
 			(!md.filepath().contains(library_path)) )
 		{
-			to_delete << md.id;
+			to_delete << md.id();
 		}
 
 		idx++;
@@ -650,7 +650,7 @@ void Tracks::updateTrackCissearch()
 			{"cissearch", Util::cvt_not_null(cis)},
 			{"filecissearch", Util::cvt_not_null(cis_file)}
 		},
-		{"trackId", md.id},
+		{"trackId", md.id()},
 		"Cannot update album cissearch"
 		);
 	}
@@ -682,13 +682,13 @@ void Tracks::deleteAllTracks(bool also_views)
 
 bool Tracks::updateTrack(const MetaData& md)
 {
-	if(md.id < 0 || md.album_id() < 0 || md.artist_id() < 0 || md.library_id < 0)
+	if(md.id() < 0 || md.album_id() < 0 || md.artist_id() < 0 || md.library_id() < 0)
 	{
 		sp_log(Log::Warning, this) << "Cannot update track (value negative): "
 								   << " ArtistID: " << md.artist_id()
 								   << " AlbumID: " << md.album_id()
-								   << " TrackID: " << md.id
-								   << " LibraryID: " << md.library_id;
+								   << " TrackID: " << md.id()
+								   << " LibraryID: " << md.library_id();
 		return false;
 	}
 
@@ -709,7 +709,7 @@ bool Tracks::updateTrack(const MetaData& md)
 		{"filesize",		QVariant::fromValue(md.filesize())},
 		{"genre",			Util::cvt_not_null(md.genres_to_string())},
 		{"length",			QVariant::fromValue(md.duration_ms())},
-		{"libraryID",		md.library_id},
+		{"libraryID",		md.library_id()},
 		{"modifydate",		QVariant::fromValue(Util::current_date_to_int())},
 		{"rating",			QVariant(int(md.rating()))},
 		{"title",			Util::cvt_not_null(md.title())},
@@ -718,7 +718,7 @@ bool Tracks::updateTrack(const MetaData& md)
 		{"comment",			Util::cvt_not_null(md.comment())}
 	};
 
-	Query q = update("tracks", bindings, {"trackId", md.id}, QString("Cannot update track %1").arg(md.filepath()));
+	Query q = update("tracks", bindings, {"trackId", md.id()}, QString("Cannot update track %1").arg(md.filepath()));
 
 	return (!q.has_error());
 }
@@ -774,7 +774,7 @@ bool Tracks::insertTrackIntoDatabase(const MetaData& md, ArtistId artist_id, Alb
 		{"filecissearch",	Util::cvt_not_null(file_cissearch)},
 		{"createdate",		QVariant::fromValue(current_time)},
 		{"modifydate",		QVariant::fromValue(current_time)},
-		{"libraryID",		md.library_id}
+		{"libraryID",		md.library_id()}
 	};
 
 	Query q = insert("tracks", bindings, QString("Cannot insert track %1").arg(md.filepath()));

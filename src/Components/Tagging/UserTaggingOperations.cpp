@@ -147,11 +147,11 @@ void UserOperations::merge_artists(const Util::Set<Id>& artist_ids, ArtistId tar
 	{
 		MetaData md(v_md[idx]);
 		if(show_album_artists){
-			md.set_album_artist(artist.name(), artist.id);
+			md.set_album_artist(artist.name(), artist.id());
 		}
 
 		else {
-			md.set_artist_id(artist.id);
+			md.set_artist_id(artist.id());
 			md.set_artist(artist.name());
 		}
 
@@ -215,7 +215,7 @@ void UserOperations::add_genre(Util::Set<Id> ids, const Genre& genre)
 	m->library_db->getAllTracks(v_md);
 
 	v_md.remove_tracks([&ids](const MetaData& md) {
-		return (!ids.contains(md.id));
+		return (!ids.contains(md.id()));
 	});
 
 	auto* editor = create_editor();

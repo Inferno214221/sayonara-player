@@ -44,7 +44,7 @@ int Playlist::StopBehavior::restore_track_before_stop()
 {
 	const MetaDataList& v_md = tracks();
 	auto it = Algorithm::find(v_md, [=](const MetaData& md){
-		return (md.id == m->id_before_stop);
+		return (md.id() == m->id_before_stop);
 	});
 
 	if(it == v_md.end()) {
@@ -70,7 +70,7 @@ void Playlist::StopBehavior::set_track_idx_before_stop(int idx)
 	if(valid)
 	{
 		m->idx_before_stop = idx;
-		m->id_before_stop = tracks().at(idx).id;
+		m->id_before_stop = tracks().at(idx).id();
 	}
 
 	else {

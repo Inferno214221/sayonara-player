@@ -81,7 +81,7 @@ bool DB::Session::add_track(const QString& session_id, uint64_t current_date_tim
 		{"sessionId", session_id},
 		{"date", QVariant::fromValue<uint64_t>(current_date_time)},
 		{"artistName", md.artist()},
-		{"trackId", md.id}
+		{"trackId", md.id()}
 	};
 
 	DB::Query q = insert("Session", bindings, "Cannot add track to session");

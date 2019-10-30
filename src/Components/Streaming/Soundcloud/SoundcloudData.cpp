@@ -234,23 +234,23 @@ bool SC::Database::db_fetch_tracks(Query& q, MetaDataList& result) const
 	{
 		MetaData data;
 
-		data.id = 		 q.value(0).toInt();
-		data.set_title(q.value(1).toString());
-		data.set_duration_ms(q.value(2).toInt());
-		data.set_year(q.value(3).value<Year>());
-		data.set_bitrate(q.value(4).value<Bitrate>());
-		data.set_filepath(q.value(5).toString());
-		data.set_track_number(q.value(6).value<TrackNum>());
-		data.set_album_id(q.value(7).toInt());
-		data.set_artist_id(q.value(8).toInt());
-		data.set_album(q.value(9).toString().trimmed());
-		data.set_artist(q.value(10).toString().trimmed());
-		data.set_genres(q.value(11).toString().split(","));
-		data.set_filesize(q.value(12).value<Filesize>());
-		data.set_discnumber(q.value(13).value<Disc>());
+		data.set_id(			q.value(0).toInt());
+		data.set_title(			q.value(1).toString());
+		data.set_duration_ms(	q.value(2).toInt());
+		data.set_year(			q.value(3).value<Year>());
+		data.set_bitrate(		q.value(4).value<Bitrate>());
+		data.set_filepath(		q.value(5).toString());
+		data.set_track_number(	q.value(6).value<TrackNum>());
+		data.set_album_id(		q.value(7).toInt());
+		data.set_artist_id(		q.value(8).toInt());
+		data.set_album(			q.value(9).toString().trimmed());
+		data.set_artist(		q.value(10).toString().trimmed());
+		data.set_genres(		q.value(11).toString().split(","));
+		data.set_filesize(		q.value(12).value<Filesize>());
+		data.set_discnumber(	q.value(13).value<Disc>());
 		data.add_custom_field("purchase_url", tr("Purchase Url"), q.value(14).toString());
 		data.set_cover_download_urls({q.value(15).toString()});
-		data.set_rating(q.value(16).value<Rating>());
+		data.set_rating(		q.value(16).value<Rating>());
 		data.set_db_id(module()->db_id());
 
 		result << data;
@@ -327,17 +327,17 @@ bool SC::Database::db_fetch_artists(Query& q, ArtistList& result) const
 	{
 		Artist artist;
 
-		artist.id =						q.value(0).toInt();
-		artist.set_name(q.value(1).toString().trimmed());
+		artist.set_id(			q.value(0).toInt());
+		artist.set_name(		q.value(1).toString().trimmed());
 
 		artist.add_custom_field("permalink_url", "Permalink Url", q.value(2).toString());
 		artist.add_custom_field("description", "Description", q.value(3).toString());
 		artist.add_custom_field("followers_following", "Followers/Following", q.value(4).toString());
 
 		artist.set_cover_download_urls({q.value(5).toString()});
-		artist.num_songs =				q.value(7).value<uint16_t>();
+		artist.set_songcount(			q.value(7).value<uint16_t>());
 		QStringList list =				q.value(8).toString().split(',');
-		artist.num_albums =				uint16_t(list.size());
+		artist.set_albumcount(			uint16_t(list.size()));
 		artist.set_db_id(module()->db_id());
 
 		result << artist;
@@ -360,7 +360,7 @@ ArtistId SC::Database::updateArtist(const Artist& artist)
 			"WHERE artistid = :sc_id;";
 
 	q.prepare(query_text);
-	q.bindValue(":sc_id", artist.id);
+	q.bindValue(":sc_id", artist.id());
 	q.bindValue(":name", artist.name());
 	q.bindValue(":cissearch", artist.name().toLower());
 	q.bindValue(":permalink_url", artist.get_custom_field("permalink_url"));
@@ -394,8 +394,8 @@ ArtistId SC::Database::insertArtistIntoDatabase (const Artist& artist)
 	Query q(module());
 
 	Artist tmp_artist;
-	if(getArtistByID(artist.id, tmp_artist)){
-		if(tmp_artist.id > 0){
+	if(getArtistByID(artist.id(), tmp_artist)){
+		if(tmp_artist.id() > 0){
 			return updateArtist(artist);
 		}
 	}
@@ -407,7 +407,7 @@ ArtistId SC::Database::insertArtistIntoDatabase (const Artist& artist)
 			"(:sc_id, :name, :cissearch, :permalink_url, :description, :followers_following, :cover_url); ";
 
 	q.prepare(query_text);
-	q.bindValue(":sc_id", artist.id);
+	q.bindValue(":sc_id", artist.id());
 	q.bindValue(":name", artist.name());
 	q.bindValue(":cissearch", artist.name().toLower());
 	q.bindValue(":permalink_url", artist.get_custom_field("permalink_url"));
@@ -539,7 +539,7 @@ bool SC::Database::updateTrack(const MetaData& md)
 
 	q.prepare(querytext);
 
-	q.bindValue(":sc_id",		md.id);
+	q.bindValue(":sc_id",		md.id());
 	q.bindValue(":filename",	md.filepath());
 	q.bindValue(":albumID",		md.album_id());
 	q.bindValue(":artistID",	md.artist_id());
@@ -576,11 +576,11 @@ bool SC::Database::insertTrackIntoDatabase(const MetaData& md, int artist_id, in
 	return insertTrackIntoDatabase(md, artist_id, album_id);
 }
 
-bool SC::Database::insertTrackIntoDatabase(const MetaData &md, int artist_id, int album_id)
+bool SC::Database::insertTrackIntoDatabase(const MetaData& md, int artist_id, int album_id)
 {
 	Query q(module());
 
-	int new_id = getTrackById(md.id).id;
+	int new_id = getTrackById(md.id()).id();
 	if(new_id > 0){
 		return updateTrack(md);
 	}
@@ -595,7 +595,7 @@ bool SC::Database::insertTrackIntoDatabase(const MetaData &md, int artist_id, in
 
 	q.prepare(querytext);
 
-	q.bindValue(":sc_id",		md.id);
+	q.bindValue(":sc_id",		md.id());
 	q.bindValue(":filename",	md.filepath());
 	q.bindValue(":albumID",		album_id);
 	q.bindValue(":artistID",	artist_id);

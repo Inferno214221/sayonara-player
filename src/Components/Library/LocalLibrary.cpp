@@ -242,7 +242,7 @@ void LocalLibrary::get_track_by_id(TrackID track_id, MetaData& md) const
 {
 	auto* lib_db = db_connector()->library_db(m->library_id, 0);
 	MetaData md_tmp = lib_db->getTrackById(track_id);
-	if(md_tmp.library_id == m->library_id) {
+	if(md_tmp.library_id() == m->library_id) {
 		md = md_tmp;
 	}
 
