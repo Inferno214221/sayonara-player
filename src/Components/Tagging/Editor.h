@@ -25,7 +25,6 @@
 #include <QPixmap>
 
 #include "Utils/Pimpl.h"
-#include "Database/ConnectorProvider.h"
 
 class Genre;
 
@@ -40,8 +39,7 @@ namespace Tagging
 	 * @ingroup Tagging
 	 */
 	class Editor :
-			public QObject,
-			public DB::ConnectorConsumer
+			public QObject
 	{
 		Q_OBJECT
 		PIMPL(Editor)

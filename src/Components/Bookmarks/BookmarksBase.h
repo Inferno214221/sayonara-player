@@ -23,14 +23,12 @@
 
 #include "Utils/Pimpl.h"
 #include "Bookmark.h"
-#include "Database/ConnectorProvider.h"
 
 #include <QObject>
 
 class MetaData;
 class BookmarksBase :
-		public QObject,
-		public DB::ConnectorConsumer
+		public QObject
 {
 	Q_OBJECT
 	PIMPL(BookmarksBase)
@@ -47,8 +45,6 @@ public:
 
 	explicit BookmarksBase(QObject* parent);
 	virtual ~BookmarksBase();
-
-	void setup_databases() override;
 
 	/**
 	 * @brief create a new bookmark for current track and current position

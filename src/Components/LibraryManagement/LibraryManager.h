@@ -24,8 +24,6 @@
 #include "Utils/Singleton.h"
 #include "Utils/Pimpl.h"
 
-#include "Database/ConnectorProvider.h"
-
 #include <QObject>
 
 class LocalLibrary;
@@ -34,8 +32,7 @@ namespace Library
 {
 	class Info;
 	class Manager :
-			public QObject,
-			public DB::ConnectorConsumer
+			public QObject
 	{
 		Q_OBJECT
 		PIMPL(Manager)

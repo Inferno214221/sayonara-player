@@ -26,7 +26,6 @@
 #include <QObject>
 #include "Utils/Pimpl.h"
 #include "Utils/SetFwd.h"
-#include "Database/ConnectorProvider.h"
 
 class LocalLibrary;
 class Genre;
@@ -38,8 +37,7 @@ namespace Tagging
 }
 
 class GenreFetcher :
-		public QObject,
-		public DB::ConnectorConsumer
+		public QObject
 {
 	Q_OBJECT
 	PIMPL(GenreFetcher)

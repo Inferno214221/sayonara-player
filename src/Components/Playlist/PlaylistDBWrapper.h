@@ -24,7 +24,6 @@
 #include "Utils/Pimpl.h"
 #include "Utils/Playlist/CustomPlaylistFwd.h"
 #include "Database/Playlist.h"
-#include "Database/ConnectorProvider.h"
 
 namespace Playlist
 {
@@ -34,8 +33,7 @@ namespace Playlist
 	 * Most of the functions are wrappers for the DatabasePlaylist class
 	 * @ingroup Playlists
 	 */
-	class DBWrapper :
-		private DB::ConnectorConsumer
+	class DBWrapper
 	{
 		PIMPL(DBWrapper)
 
@@ -83,11 +81,6 @@ namespace Playlist
 			bool get_playlists(CustomPlaylists& playlists,
 							   PlaylistStoreType type,
 							   PlaylistSortOrder sortorder);
-
-
-			// ConnectorConsumer interface
-		public:
-			void setup_databases() override;
 	};
 
 	using DBWrapperPtr=std::shared_ptr<DBWrapper>;

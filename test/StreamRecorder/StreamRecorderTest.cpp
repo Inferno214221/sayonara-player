@@ -5,6 +5,7 @@
 #include "Utils/StreamRecorder/StreamRecorderUtils.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/FileUtils.h"
+#include "Utils/Utils.h"
 
 #include <QTest>
 #include <QDateTime>
@@ -51,7 +52,7 @@ StreamRecorderTest::StreamRecorderTest()
 
 QString StreamRecorderTest::sr_path() const
 {
-	return "/tmp/sayonara_sr";
+	return Util::temp_path("sayonara_sr");
 }
 
 void StreamRecorderTest::target_path_template_test()
@@ -126,8 +127,9 @@ void StreamRecorderTest::file_test()
 
 	for(int i=1; i<100; i++)
 	{
-		QString filepath = QString("/tmp/path%1.mp3")
-				.arg(i);
+		QString filepath = Util::temp_path(
+			QString("path%1.mp3").arg(i)
+		);
 
 		QVERIFY(Util::File::is_www(filepath) == false);
 

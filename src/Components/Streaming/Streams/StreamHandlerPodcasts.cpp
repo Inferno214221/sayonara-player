@@ -29,31 +29,31 @@ StreamHandlerPodcasts::~StreamHandlerPodcasts() = default;
 
 bool StreamHandlerPodcasts::get_all_streams(StreamMap& streams)
 {
-	DB::Podcasts* db = db_connector()->podcast_connector();
+	DB::Podcasts* db = DB::Connector::instance()->podcast_connector();
 	return db->getAllPodcasts(streams);
 }
 
 bool StreamHandlerPodcasts::add_stream(const QString& station_name, const QString& url)
 {
-	DB::Podcasts* db = db_connector()->podcast_connector();
+	DB::Podcasts* db = DB::Connector::instance()->podcast_connector();
 	return db->addPodcast(station_name, url);
 }
 
 bool StreamHandlerPodcasts::delete_stream(const QString& station_name)
 {
-	DB::Podcasts* db = db_connector()->podcast_connector();
+	DB::Podcasts* db = DB::Connector::instance()->podcast_connector();
 	return db->deletePodcast(station_name);
 }
 
 bool StreamHandlerPodcasts::update_url(const QString& station_name, const QString& url)
 {
-	DB::Podcasts* db = db_connector()->podcast_connector();
+	DB::Podcasts* db = DB::Connector::instance()->podcast_connector();
 	return db->updatePodcastUrl(station_name, url);
 }
 
 bool StreamHandlerPodcasts::rename(const QString& old_name, const QString& new_name)
 {
-	DB::Podcasts* db = db_connector()->podcast_connector();
+	DB::Podcasts* db = DB::Connector::instance()->podcast_connector();
 	return db->renamePodcast(old_name, new_name);
 }
 

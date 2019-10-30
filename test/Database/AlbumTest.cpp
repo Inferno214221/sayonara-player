@@ -19,38 +19,11 @@ private:
 	DB::LibraryDatabase* m_lib_db=nullptr;
 
 public:
-	AlbumTest()
-	{
-		Q_INIT_RESOURCE(Database);
-	}
+	AlbumTest(QObject* parent=nullptr);
+	~AlbumTest();
 
 private:
-	DB::LibraryDatabase* init()
-	{
-		QFile::remove(Util::temp_path("player.db"));
-
-		if(m_lib_db){
-			return m_lib_db;
-		}
-
-		m_album_names.clear();
-
-		for(int i=0; i<100; i++)
-		{
-			m_album_names << Util::random_string(Util::random_number(5, 20));
-		}
-
-		auto* db = DB::Connector::instance_custom("", Util::temp_path(), "player.db");
-		db->register_library_db(0);
-		m_lib_db = db->library_db(0, 0);
-
-		for(const QString& album_name : m_album_names)
-		{
-			m_lib_db->insertAlbumIntoDatabase(album_name);
-		}
-
-		return m_lib_db;
-	}
+	DB::LibraryDatabase* init();
 
 private slots:
 	void test_insert();
@@ -58,6 +31,42 @@ private slots:
 	void test_rename();
 };
 
+
+AlbumTest::AlbumTest(QObject* parent) : QObject(parent)
+{
+	Q_INIT_RESOURCE(Database);
+	DB::Connector::instance_custom("", Util::temp_path("AlbumTest"), "player.db");
+}
+
+AlbumTest::~AlbumTest()
+{
+	Util::File::delete_files({Util::temp_path("AlbumTest")});
+}
+
+DB::LibraryDatabase* AlbumTest::init()
+{
+	if(m_lib_db){
+		return m_lib_db;
+	}
+
+	m_album_names.clear();
+
+	for(int i=0; i<100; i++)
+	{
+		m_album_names << Util::random_string(Util::random_number(5, 20));
+	}
+
+	auto* db = DB::Connector::instance();
+	db->register_library_db(0);
+	m_lib_db = db->library_db(0, 0);
+
+	for(const QString& album_name : m_album_names)
+	{
+		m_lib_db->insertAlbumIntoDatabase(album_name);
+	}
+
+	return m_lib_db;
+}
 
 void AlbumTest::test_insert()
 {

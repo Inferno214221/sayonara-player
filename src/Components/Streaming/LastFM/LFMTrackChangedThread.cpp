@@ -66,7 +66,7 @@ TrackChangedThread::TrackChangedThread(QObject* parent) :
 	m = Pimpl::make<TrackChangedThread::Private>();
 
 	ArtistList artists;
-	DB::Connector* db = DB::Connector::instance();
+	auto* db = DB::Connector::instance();
 	DB::LibraryDatabase* lib_db = db->library_db(-1, 0);
 
 	lib_db->getAllArtists(artists, false);
@@ -242,7 +242,7 @@ QMap<QString, int> TrackChangedThread::filter_available_artists(const ArtistMatc
 	QMap<ArtistMatch::ArtistDesc, double> bin = artist_match.get(quality);
 	QMap<QString, int> possible_artists;
 
-	DB::Connector* db = DB::Connector::instance();
+	auto* db = DB::Connector::instance();
 	DB::LibraryDatabase* lib_db = db->library_db(-1, 0);
 
 	for(auto it = bin.cbegin(); it != bin.cend(); it++)

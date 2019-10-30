@@ -111,7 +111,7 @@ void GUI_LibraryInfoBox::showEvent(QShowEvent *e)
 
 void GUI_LibraryInfoBox::refresh()
 {
-	DB::Connector* db = DB::Connector::instance();
+	auto* db = DB::Connector::instance();
 	DB::LibraryDatabase* lib_db = db->library_db(m->library_id, 0);
 
 	MetaDataList v_md;

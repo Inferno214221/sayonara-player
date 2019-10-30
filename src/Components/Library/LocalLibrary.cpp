@@ -57,8 +57,7 @@ struct LocalLibrary::Private
 };
 
 LocalLibrary::LocalLibrary(LibraryId library_id, QObject *parent) :
-	AbstractLibrary(parent),
-	DB::ConnectorConsumer()
+	AbstractLibrary(parent)
 {
 	m = Pimpl::make<Private>(library_id);
 
@@ -114,7 +113,7 @@ void LocalLibrary::search_mode_changed()
 {
 	sp_log(Log::Debug, this) << "Updating cissearch... " << GetSetting(Set::Lib_SearchMode);
 
-	auto* lib_db = db_connector()->library_db(m->library_id, 0);
+	auto* lib_db = DB::Connector::instance()->library_db(m->library_id, 0);
 
 	lib_db->updateArtistCissearch();
 	lib_db->updateAlbumCissearch();
@@ -128,7 +127,7 @@ void LocalLibrary::show_album_artists_changed()
 {
 	bool show_album_artists = GetSetting(Set::Lib_ShowAlbumArtists);
 
-	DB::LibraryDatabases dbs = db_connector()->library_dbs();
+	DB::LibraryDatabases dbs = DB::Connector::instance()->library_dbs();
 	for(DB::LibraryDatabase* lib_db : dbs)
 	{
 		if(lib_db->db_id() == 0)
@@ -168,79 +167,79 @@ void LocalLibrary::reload_thread_new_block()
 
 void LocalLibrary::get_all_artists(ArtistList& artists) const
 {
-	auto* lib_db = db_connector()->library_db(m->library_id, 0);
+	auto* lib_db = DB::Connector::instance()->library_db(m->library_id, 0);
 	lib_db->getAllArtists(artists, false);
 }
 
 void LocalLibrary::get_all_artists_by_searchstring(Library::Filter filter, ArtistList& artists) const
 {
-	auto* lib_db = db_connector()->library_db(m->library_id, 0);
+	auto* lib_db = DB::Connector::instance()->library_db(m->library_id, 0);
 	lib_db->getAllArtistsBySearchString(filter, artists);
 }
 
 void LocalLibrary::get_all_albums(AlbumList& albums) const
 {
-	auto* lib_db = db_connector()->library_db(m->library_id, 0);
+	auto* lib_db = DB::Connector::instance()->library_db(m->library_id, 0);
 	lib_db->getAllAlbums(albums, false);
 }
 
 void LocalLibrary::get_all_albums_by_artist(IdList artist_ids, AlbumList& albums, Library::Filter filter) const
 {
-	auto* lib_db = db_connector()->library_db(m->library_id, 0);
+	auto* lib_db = DB::Connector::instance()->library_db(m->library_id, 0);
 	lib_db->getAllAlbumsByArtist(artist_ids, albums, filter);
 }
 
 void LocalLibrary::get_all_albums_by_searchstring(Library::Filter filter, AlbumList& albums) const
 {
-	auto* lib_db = db_connector()->library_db(m->library_id, 0);
+	auto* lib_db = DB::Connector::instance()->library_db(m->library_id, 0);
 	lib_db->getAllAlbumsBySearchString(filter, albums);
 }
 
 int LocalLibrary::get_num_tracks() const
 {
-	auto* lib_db = db_connector()->library_db(m->library_id, 0);
+	auto* lib_db = DB::Connector::instance()->library_db(m->library_id, 0);
 	return lib_db->getNumTracks();
 }
 
 void LocalLibrary::get_all_tracks(MetaDataList& v_md) const
 {
-	auto* lib_db = db_connector()->library_db(m->library_id, 0);
+	auto* lib_db = DB::Connector::instance()->library_db(m->library_id, 0);
 	lib_db->getAllTracks(v_md);
 }
 
 void LocalLibrary::get_all_tracks(const QStringList& paths, MetaDataList& v_md) const
 {
-	auto* lib_db = db_connector()->library_db(m->library_id, 0);
+	auto* lib_db = DB::Connector::instance()->library_db(m->library_id, 0);
 	lib_db->getMultipleTracksByPath(paths, v_md);
 }
 
 void LocalLibrary::get_all_tracks_by_artist(IdList artist_ids, MetaDataList& v_md, Library::Filter filter) const
 {
-	auto* lib_db = db_connector()->library_db(m->library_id, 0);
+	auto* lib_db = DB::Connector::instance()->library_db(m->library_id, 0);
 	lib_db->getAllTracksByArtist(artist_ids, v_md, filter);
 }
 
 void LocalLibrary::get_all_tracks_by_album(IdList album_ids, MetaDataList& v_md, Library::Filter filter) const
 {
-	auto* lib_db = db_connector()->library_db(m->library_id, 0);
+	auto* lib_db = DB::Connector::instance()->library_db(m->library_id, 0);
 	lib_db->getAllTracksByAlbum(album_ids, v_md, filter, -1);
 }
 
 void LocalLibrary::get_all_tracks_by_searchstring(Library::Filter filter, MetaDataList& v_md) const
 {
-	auto* lib_db = db_connector()->library_db(m->library_id, 0);
+	auto* lib_db = DB::Connector::instance()->library_db(m->library_id, 0);
 	lib_db->getAllTracksBySearchString(filter, v_md);
 }
 
 void LocalLibrary::get_all_tracks_by_path(const QStringList& paths, MetaDataList& v_md) const
 {
-	auto* lib_db = db_connector()->library_db(m->library_id, 0);
+	auto* lib_db = DB::Connector::instance()->library_db(m->library_id, 0);
 	lib_db->getAllTracksByPaths(paths, v_md);
 }
 
 void LocalLibrary::get_track_by_id(TrackID track_id, MetaData& md) const
 {
-	auto* lib_db = db_connector()->library_db(m->library_id, 0);
+	auto* lib_db = DB::Connector::instance()->library_db(m->library_id, 0);
 	MetaData md_tmp = lib_db->getTrackById(track_id);
 	if(md_tmp.library_id() == m->library_id) {
 		md = md_tmp;
@@ -253,13 +252,13 @@ void LocalLibrary::get_track_by_id(TrackID track_id, MetaData& md) const
 
 void LocalLibrary::get_album_by_id(AlbumId album_id, Album& album) const
 {
-	auto* lib_db = db_connector()->library_db(m->library_id, 0);
+	auto* lib_db = DB::Connector::instance()->library_db(m->library_id, 0);
 	lib_db->getAlbumByID(album_id, album);
 }
 
 void LocalLibrary::get_artist_by_id(ArtistId artist_id, Artist& artist) const
 {
-	auto* lib_db = db_connector()->library_db(m->library_id, 0);
+	auto* lib_db = DB::Connector::instance()->library_db(m->library_id, 0);
 	lib_db->getArtistByID(artist_id, artist);
 }
 
@@ -283,7 +282,7 @@ void LocalLibrary::init_reload_thread()
 
 void LocalLibrary::delete_tracks(const MetaDataList &v_md, Library::TrackDeletionMode mode)
 {
-	auto* lib_db = db_connector()->library_db(m->library_id, 0);
+	auto* lib_db = DB::Connector::instance()->library_db(m->library_id, 0);
 	lib_db->deleteTracks(v_md);
 
 	AbstractLibrary::delete_tracks(v_md, mode);

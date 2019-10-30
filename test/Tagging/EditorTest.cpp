@@ -16,19 +16,16 @@
 using namespace Tagging;
 
 class EditorTest :
-	public QObject,
-	public DB::ConnectorProvider
+	public QObject
 {
 	Q_OBJECT
 
-	QString m_tmp_path;
+	QString mTmpPath;
 
 public:
 	EditorTest(QObject* parent=nullptr);
 	~EditorTest() override;
 	MetaDataList create_metadata(int artists, int albums, int tracks);
-
-	DB::Connector* get_connector() const override;
 
 private slots:
 	void test_init();
@@ -43,12 +40,8 @@ EditorTest::EditorTest(QObject* parent) : QObject(parent)
 {
 	this->setObjectName("EditorTest");
 
-	m_tmp_path = ::Util::temp_path("EditorTest");
-
-	Util::File::delete_files( {m_tmp_path} );
-	Util::File::create_directories(m_tmp_path);
-
-	auto* db = get_connector();
+	mTmpPath = Util::temp_path("EditorTest");
+	auto db = DB::Connector::instance_custom("", mTmpPath, "player.db");
 	db->register_library_db(0);
 
 	auto* lib_db = db->library_db(0, DbId(0));
@@ -59,7 +52,7 @@ EditorTest::EditorTest(QObject* parent) : QObject(parent)
 
 EditorTest::~EditorTest()
 {
-	Util::File::delete_files( {m_tmp_path} );
+	Util::File::delete_files({mTmpPath});
 }
 
 MetaDataList EditorTest::create_metadata(int artists, int albums, int tracks)
@@ -99,7 +92,7 @@ MetaDataList EditorTest::create_metadata(int artists, int albums, int tracks)
 				md.set_year(Year(year));
 				md.set_library_id(0);
 				QString dir = QString("%1/%2/%3 by %4")
-						.arg(m_tmp_path)
+						.arg(mTmpPath)
 						.arg(md.year())
 						.arg(md.album())
 						.arg(md.artist());
@@ -140,11 +133,6 @@ MetaDataList EditorTest::create_metadata(int artists, int albums, int tracks)
 	}
 
 	return v_md;
-}
-
-DB::Connector* EditorTest::get_connector() const
-{
-	 return DB::Connector::instance_custom("", m_tmp_path, "player.db");
 }
 
 void EditorTest::test_init()
@@ -289,7 +277,7 @@ void EditorTest::test_commit()
 {
 	MetaDataList tracks;
 
-	auto* db = get_connector();
+	auto* db = DB::Connector::instance();
 	db->library_db(0,0)->getAllTracks(tracks);
 	db->close_db();
 
@@ -297,7 +285,6 @@ void EditorTest::test_commit()
 
 	Editor* editor = new Editor();
 	editor->set_metadata(tracks);
-	editor->register_db_connector_provider(this);
 
 	auto* mdcn = Tagging::ChangeNotifier::instance();
 	QSignalSpy spy(mdcn, &Tagging::ChangeNotifier::sig_metadata_changed);

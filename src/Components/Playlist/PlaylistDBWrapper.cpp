@@ -40,21 +40,13 @@ struct DBWrapper::Private
 	DB::Playlist* db=nullptr;
 };
 
-DBWrapper::DBWrapper() :
-	DB::ConnectorConsumer()
+DBWrapper::DBWrapper()
 {
 	m = Pimpl::make<Private>();
-
-	setup_databases();
+	m->db = DB::Connector::instance()->playlist_connector();
 }
 
 DBWrapper::~DBWrapper() = default;
-
-// DB::ConnectorConsumer. Do not delete
-void Playlist::DBWrapper::setup_databases()
-{
-	m->db = db_connector()->playlist_connector();
-}
 
 void DBWrapper::apply_tags(MetaDataList& v_md)
 {
@@ -204,7 +196,7 @@ bool DBWrapper::rename_playlist(int id, const QString& new_name)
 
 bool DBWrapper::save_playlist_as(const MetaDataList& v_md, const QString& name)
 {
-	DB::Connector* db = db_connector();
+	auto* db = DB::Connector::instance();
 
 	db->transaction();
 	bool success = m->db->storePlaylist(v_md, name, false);
@@ -215,7 +207,7 @@ bool DBWrapper::save_playlist_as(const MetaDataList& v_md, const QString& name)
 
 bool DBWrapper::save_playlist_temporary(const MetaDataList& v_md, const QString& name)
 {
-	DB::Connector* db = db_connector();
+	auto* db = DB::Connector::instance();
 
 	db->transaction();
 
@@ -229,7 +221,7 @@ bool DBWrapper::save_playlist_temporary(const MetaDataList& v_md, const QString&
 
 bool DBWrapper::save_playlist(const CustomPlaylist& pl)
 {
-	DB::Connector* db = db_connector();
+	auto* db = DB::Connector::instance();
 
 	db->transaction();
 	// TODO! we dont need the two other parameters
@@ -242,7 +234,7 @@ bool DBWrapper::save_playlist(const CustomPlaylist& pl)
 
 bool DBWrapper::save_playlist(const MetaDataList& v_md, int id, bool is_temporary)
 {
-	DB::Connector* db = db_connector();
+	auto* db = DB::Connector::instance();
 
 	db->transaction();
 	// TODO: see above

@@ -66,8 +66,7 @@ struct Importer::Private
 };
 
 Importer::Importer(LocalLibrary* library) :
-	QObject(library),
-	DB::ConnectorConsumer()
+	QObject(library)
 {
 	m = Pimpl::make<Private>(library);
 
@@ -186,7 +185,7 @@ void Importer::copy_thread_finished()
 	}
 
 	// store to db
-	DB::Connector* db = db_connector();
+	auto* db = DB::Connector::instance();
 	DB::LibraryDatabase* lib_db = db->library_db(m->library->id(), db->db_id());
 
 	bool success = lib_db->store_metadata(v_md);

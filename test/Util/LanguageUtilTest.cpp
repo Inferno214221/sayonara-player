@@ -14,6 +14,12 @@ class LanguageUtilTest : public QObject
 {
     Q_OBJECT
 
+private:
+	QString mTmpPath;
+
+public:
+	LanguageUtilTest();
+
 private slots:
 	void initTestCase();
 	void cleanupTestCase();
@@ -23,14 +29,20 @@ private slots:
 	void similar_language_test();
 };
 
+LanguageUtilTest::LanguageUtilTest()
+{
+	mTmpPath = Util::temp_path("LanguageUtilTest");
+}
+
 void LanguageUtilTest::initTestCase()
 {
-	Util::File::delete_files({"/tmp/versions"});
+	Util::File::delete_files({mTmpPath});
+	Util::File::create_directories(mTmpPath);
 }
 
 void LanguageUtilTest::cleanupTestCase()
 {
-	Util::File::delete_files({"/tmp/versions"});
+	Util::File::delete_files({mTmpPath});
 }
 
 void LanguageUtilTest::basic_path_tests()

@@ -5,27 +5,20 @@
 #include "Database/Connector.h"
 #include "Database/Podcasts.h"
 #include "Utils/Utils.h"
+#include "Utils/FileUtils.h"
 
 class PodcastTest : public QObject
 {
 	Q_OBJECT
 
 public:
-	PodcastTest() : QObject()
-	{
-		Q_INIT_RESOURCE(Database);
-		QFile::remove("/tmp/player.db");
-	}
-
-	~PodcastTest()
-	{
-		QFile::remove("/tmp/player.db");
-	}
+	PodcastTest();
+	~PodcastTest();
 
 private:
 	DB::Podcasts* pod()
 	{
-		auto* db = DB::Connector::instance_custom("", "/tmp", "player.db");
+		auto* db = DB::Connector::instance();
 		return db->podcast_connector();
 	}
 
@@ -51,6 +44,17 @@ private slots:
 	void test_update();
 };
 
+
+PodcastTest::PodcastTest() : QObject()
+{
+	Q_INIT_RESOURCE(Database);
+	DB::Connector::instance_custom("", Util::temp_path("PodcastTest"), "player.db");
+}
+
+PodcastTest::~PodcastTest()
+{
+	Util::File::delete_files({Util::temp_path("PodcastTest")});
+}
 
 void PodcastTest::test_insert_and_delete()
 {

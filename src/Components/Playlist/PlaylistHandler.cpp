@@ -68,8 +68,7 @@ struct Handler::Private
 };
 
 Handler::Handler(QObject* parent) :
-	QObject(parent),
-	DB::ConnectorConsumer()
+	QObject(parent)
 {
 	qRegisterMetaType<PlaylistPtr>("PlaylistPtr");
 	qRegisterMetaType<PlaylistConstPtr>("PlaylistConstPtr");
@@ -266,7 +265,7 @@ void Handler::shutdown()
 {
 	if(GetSetting(Set::PL_LoadTemporaryPlaylists))
 	{
-		db_connector()->transaction();
+		DB::Connector::instance()->transaction();
 
 		for(const PlaylistPtr& pl : Algorithm::AsConst(m->playlists))
 		{
@@ -276,7 +275,7 @@ void Handler::shutdown()
 			}
 		}
 
-		db_connector()->commit();
+		DB::Connector::instance()->commit();
 	}
 
 	m->playlists.clear();
@@ -629,9 +628,9 @@ Util::SaveAsAnswer Handler::save_playlist(int pl_idx)
 
 	PlaylistPtr pl = m->playlists[pl_idx];
 
-	db_connector()->transaction();
+	DB::Connector::instance()->transaction();
 	Util::SaveAsAnswer ret = pl->save();
-	db_connector()->commit();
+	DB::Connector::instance()->commit();
 
 	if(ret == Util::SaveAsAnswer::Success)
 	{

@@ -48,8 +48,7 @@ struct AbstractStreamHandler::Private
 
 
 AbstractStreamHandler::AbstractStreamHandler(QObject *parent) :
-	QObject(parent),
-	DB::ConnectorConsumer()
+	QObject(parent)
 {
 	m = Pimpl::make<AbstractStreamHandler::Private>();
 }

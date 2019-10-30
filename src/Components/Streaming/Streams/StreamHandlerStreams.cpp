@@ -29,31 +29,31 @@ StreamHandlerStreams::~StreamHandlerStreams() = default;
 
 bool StreamHandlerStreams::get_all_streams(StreamMap& streams)
 {
-	DB::Streams* db = db_connector()->stream_connector();
+	DB::Streams* db = DB::Connector::instance()->stream_connector();
 	return db->getAllStreams(streams);
 }
 
 bool StreamHandlerStreams::add_stream(const QString& station_name, const QString& url)
 {
-	DB::Streams* db = db_connector()->stream_connector();
+	DB::Streams* db = DB::Connector::instance()->stream_connector();
 	return db->addStream(station_name, url);
 }
 
 bool StreamHandlerStreams::delete_stream(const QString& station_name)
 {
-	DB::Streams* db = db_connector()->stream_connector();
+	DB::Streams* db = DB::Connector::instance()->stream_connector();
 	return db->deleteStream(station_name);
 }
 
 bool StreamHandlerStreams::update_url(const QString& station_name, const QString& url)
 {
-	DB::Streams* db = db_connector()->stream_connector();
+	DB::Streams* db = DB::Connector::instance()->stream_connector();
 	return db->updateStreamUrl(station_name, url);
 }
 
 bool StreamHandlerStreams::rename(const QString& old_name, const QString& new_name)
 {
-	DB::Streams* db = db_connector()->stream_connector();
+	DB::Streams* db = DB::Connector::instance()->stream_connector();
 	return db->renameStream(old_name, new_name);
 }
 

@@ -22,7 +22,6 @@
 #define FILEOPERATIONS_H
 
 #include "Utils/Pimpl.h"
-#include "Database/ConnectorProvider.h"
 
 #include <QThread>
 
@@ -59,8 +58,7 @@ class FileCopyThread :
 
 
 class FileOperations :
-	public QObject,
-	public DB::ConnectorConsumer
+	public QObject
 {
 	Q_OBJECT
 

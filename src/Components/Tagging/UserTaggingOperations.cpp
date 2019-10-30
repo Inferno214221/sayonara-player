@@ -42,7 +42,7 @@ struct UserOperations::Private
 
 	Private(LibraryId library_id)
 	{
-		DB::Connector* db = DB::Connector::instance();
+		auto* db = DB::Connector::instance();
 		library_db = db->library_db(library_id, db->db_id());
 	}
 };

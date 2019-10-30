@@ -5,6 +5,7 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/Macros.h"
 #include "Utils/FileUtils.h"
+#include "Utils/Utils.h"
 
 #include <QTest>
 #include <QObject>
@@ -13,10 +14,11 @@ class SettingsTest : public QObject
 {
 	Q_OBJECT
 
+	QString mTmpPath;
+
 public:
-	SettingsTest(QObject* parent=nullptr) :
-		QObject(parent)
-	{}
+	SettingsTest(QObject* parent=nullptr);
+	~SettingsTest();
 
 private slots:
 	void initTestCase();
@@ -24,11 +26,22 @@ private slots:
 	void test_registry();
 };
 
-
-void SettingsTest::test_registry()
+SettingsTest::SettingsTest(QObject* parent) :
+	QObject(parent)
 {
 	Q_INIT_RESOURCE(Database);
 
+	mTmpPath = Util::temp_path("SettingsTest");
+	DB::Connector::instance_custom("", mTmpPath, "player.db");
+}
+
+SettingsTest::~SettingsTest()
+{
+	Util::File::delete_files({mTmpPath});
+}
+
+void SettingsTest::test_registry()
+{
 	Settings* s = Settings::instance();
 	bool checked = s->check_settings();
 	QVERIFY(checked == true);
@@ -37,7 +50,7 @@ void SettingsTest::test_registry()
 	QVERIFY(GetSetting(Set::Player_PublicId).isEmpty());
 	QVERIFY(GetSetting(Set::Player_PrivId).isEmpty());
 
-	auto* db = DB::Connector::instance_custom("", "/tmp", "player.db");
+	auto* db = DB::Connector::instance();
 
 	QVERIFY(db->db().isOpen());
 
@@ -140,12 +153,13 @@ void SettingsTest::test_registry()
 
 void SettingsTest::initTestCase()
 {
-	Util::File::delete_files({"/tmp/player.db"});
+	Util::File::delete_files({mTmpPath});
+	Util::File::create_directories(mTmpPath);
 }
 
 void SettingsTest::cleanupTestCase()
 {
-	Util::File::delete_files({"/tmp/player.db"});
+	Util::File::delete_files({mTmpPath});
 }
 
 QTEST_GUILESS_MAIN(SettingsTest)

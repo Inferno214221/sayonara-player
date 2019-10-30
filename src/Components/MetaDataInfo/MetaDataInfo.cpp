@@ -57,8 +57,7 @@ struct MetaDataInfo::Private
 };
 
 MetaDataInfo::MetaDataInfo(const MetaDataList& v_md) :
-	QObject(nullptr),
-	DB::ConnectorConsumer()
+	QObject(nullptr)
 {
 	m = Pimpl::make<Private>();
 

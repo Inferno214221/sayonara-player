@@ -55,6 +55,9 @@ namespace Algorithm=Util::Algorithm;
 struct Connector::Private
 {
 	QString					connection_name;
+	QString					default_source_dir;
+	QString					default_target_dir;
+	QString					default_db_filename;
 
 	DB::Bookmarks*			bookmark_connector=nullptr;
 	DB::Playlist*			playlist_connector=nullptr;
@@ -148,15 +151,15 @@ DB::Connector* Connector::instance()
 
 DB::Connector* Connector::instance_custom(QString source_dir, QString target_dir, QString db_filename)
 {
-	if(source_dir.isEmpty()){
+	if(source_dir.isEmpty()) {
 		source_dir = ":/Database";
 	}
 
-	if(target_dir.isEmpty()){
+	if(target_dir.isEmpty()) {
 		target_dir = Util::sayonara_path();
 	}
 
-	if(db_filename.isEmpty()){
+	if(db_filename.isEmpty()) {
 		db_filename = "player.db";
 	}
 

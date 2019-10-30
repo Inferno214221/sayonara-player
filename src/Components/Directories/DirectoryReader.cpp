@@ -47,8 +47,7 @@ struct DirectoryReader::Private
 	{}
 };
 
-DirectoryReader::DirectoryReader(const QStringList& filter) :
-	DB::ConnectorConsumer()
+DirectoryReader::DirectoryReader(const QStringList& filter)
 {
 	m = Pimpl::make<Private>(filter);
 }
@@ -146,7 +145,7 @@ MetaDataList DirectoryReader::scan_metadata(const QStringList& lst)
 		}
 	}
 
-	DB::Connector* db = db_connector();
+	auto* db = DB::Connector::instance();
 	DB::LibraryDatabase* lib_db = db->library_db(-1, 0);
 
 	lib_db->getMultipleTracksByPath(sound_files, v_md);

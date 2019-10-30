@@ -67,7 +67,7 @@ ArtistInfo::ArtistInfo(const MetaDataList& v_md) :
 
 		ArtistId artist_id = artist_ids().first();
 
-		DB::LibraryDatabase* lib_db = db_connector()->library_db(-1, m->db_id);
+		DB::LibraryDatabase* lib_db = DB::Connector::instance()->library_db(-1, m->db_id);
 
 		success = lib_db->getArtistByID(artist_id, artist);
 

@@ -31,7 +31,6 @@
 
 #include "Utils/Library/LibraryNamespaces.h"
 #include "Utils/Pimpl.h"
-#include "Database/ConnectorProvider.h"
 
 #include <QThread>
 #include <QDir>
@@ -39,8 +38,7 @@
 namespace Library
 {
 	class ReloadThread :
-			public QThread,
-			public DB::ConnectorConsumer
+			public QThread
 	{
 		Q_OBJECT
 		PIMPL(ReloadThread)

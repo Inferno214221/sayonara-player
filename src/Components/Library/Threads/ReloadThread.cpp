@@ -74,8 +74,7 @@ struct ReloadThread::Private
 };
 
 ReloadThread::ReloadThread(QObject *parent) :
-	QThread(parent),
-	DB::ConnectorConsumer()
+	QThread(parent)
 {
 	m = Pimpl::make<Private>();
 	m->library_path = GetSetting(Set::Lib_Path);
@@ -130,7 +129,7 @@ bool ReloadThread::get_and_save_all_files(const QHash<QString, MetaData>& md_map
 		return false;
 	}
 
-	DB::Connector* db = db_connector();
+	auto* db = DB::Connector::instance();
 	DB::Library* db_library = db->library_connector();
 
 	QDir dir(library_path);
@@ -210,7 +209,7 @@ void ReloadThread::store_metadata_block(const MetaDataList& v_md)
 {
 	using StringSet=::Util::Set<QString>;
 
-	DB::Connector* db = db_connector();
+	auto* db = DB::Connector::instance();
 	DB::Covers* db_covers = db->cover_connector();
 	DB::LibraryDatabase* lib_db = db->library_db(m->library_id, db->db_id());
 
@@ -360,7 +359,7 @@ void ReloadThread::run()
 		return;
 	}
 
-	DB::Connector* db = db_connector();
+	auto* db = DB::Connector::instance();
 	DB::LibraryDatabase* lib_db = db->library_db(m->library_id, 0);
 
 	m->may_run = true;

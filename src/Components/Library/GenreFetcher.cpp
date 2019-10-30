@@ -41,8 +41,7 @@ struct GenreFetcher::Private
 };
 
 GenreFetcher::GenreFetcher(QObject* parent) :
-	QObject(parent),
-	DB::ConnectorConsumer()
+	QObject(parent)
 {
 	m = Pimpl::make<Private>();
 
@@ -74,7 +73,7 @@ void GenreFetcher::reload_genres()
 
 	LibraryId library_id = m->local_library->id();
 
-	DB::LibraryDatabase* lib_db = db_connector()->library_db(library_id, 0);
+	DB::LibraryDatabase* lib_db = DB::Connector::instance()->library_db(library_id, 0);
 	m->genres = lib_db->getAllGenres();
 
 	emit sig_genres_fetched();

@@ -23,7 +23,6 @@
 
 #include "Utils/Pimpl.h"
 #include "Components/Covers/CoverLocation.h"
-#include "Database/ConnectorProvider.h"
 
 #include <QObject>
 #include <QMap>
@@ -59,8 +58,7 @@ enum class InfoStrings : uint8_t
  * @ingroup MetaDataHelper
  */
 class MetaDataInfo :
-	public QObject,
-	public DB::ConnectorConsumer
+	public QObject
 {
 	PIMPL(MetaDataInfo)
 
