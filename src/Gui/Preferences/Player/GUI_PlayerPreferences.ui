@@ -11,10 +11,17 @@
    </rect>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="4" column="0">
-    <widget class="QCheckBox" name="cb_update_notifications">
+   <item row="7" column="0">
+    <widget class="Line" name="line">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QCheckBox" name="cb_start_in_tray">
      <property name="text">
-      <string>Update notifications</string>
+      <string>Start hidden</string>
      </property>
     </widget>
    </item>
@@ -25,14 +32,37 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="0">
-    <widget class="QCheckBox" name="cb_close_to_tray">
+   <item row="6" column="0">
+    <widget class="QLabel" name="lab_warning">
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
      <property name="text">
-      <string>Close to system tray</string>
+      <string notr="true"/>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
-   <item row="6" column="0">
+   <item row="4" column="0">
+    <widget class="QCheckBox" name="cb_update_notifications">
+     <property name="text">
+      <string>Update notifications</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QCheckBox" name="cb_close_to_tray">
+     <property name="text">
+      <string>Hide instead of closing</string>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QLabel" name="lab_logger">
@@ -47,16 +77,9 @@
     </layout>
    </item>
    <item row="5" column="0">
-    <widget class="Line" name="line">
+    <widget class="Line" name="line_2">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QCheckBox" name="cb_start_in_tray">
-     <property name="text">
-      <string>Start in system tray</string>
      </property>
     </widget>
    </item>

@@ -72,8 +72,7 @@ void MainWindow::raise()
 		this->activateWindow();
 	}
 
-	if(this->isHidden())
-	{
+	if(this->isHidden()) {
 		this->setHidden(false);
 	}
 

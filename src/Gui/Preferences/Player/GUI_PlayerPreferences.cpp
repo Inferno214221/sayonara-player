@@ -48,6 +48,7 @@ void GUI_PlayerPreferences::init_ui()
 	revert();
 
 	connect(ui->cb_show_tray_icon, &QCheckBox::toggled, this, &GUI_PlayerPreferences::show_tray_icon_toggled);
+	connect(ui->cb_start_in_tray, &QCheckBox::toggled, this, &GUI_PlayerPreferences::show_tray_icon_toggled);
 }
 
 
@@ -59,10 +60,8 @@ QString GUI_PlayerPreferences::action_name() const
 
 bool GUI_PlayerPreferences::commit()
 {
-	bool show_tray_icon = GetSetting(Set::Player_ShowTrayIcon);
-
-	SetSetting(Set::Player_Min2Tray, ui->cb_close_to_tray->isChecked() && show_tray_icon);
-	SetSetting(Set::Player_StartInTray, ui->cb_start_in_tray->isChecked() && show_tray_icon);
+	SetSetting(Set::Player_Min2Tray, ui->cb_close_to_tray->isChecked());
+	SetSetting(Set::Player_StartInTray, ui->cb_start_in_tray->isChecked());
 
 	SetSetting(Set::Player_ShowTrayIcon, ui->cb_show_tray_icon->isChecked());
 	SetSetting(Set::Player_NotifyNewVersion, ui->cb_update_notifications->isChecked());
@@ -86,12 +85,10 @@ void GUI_PlayerPreferences::revert()
 
 void GUI_PlayerPreferences::show_tray_icon_toggled(bool b)
 {
-	ui->cb_start_in_tray->setEnabled(b);
-	ui->cb_close_to_tray->setEnabled(b);
+	Q_UNUSED(b)
 
-	if(!b){
-		SetSetting(Set::Player_Min2Tray, false);
-	}
+	bool show_warning = (ui->cb_start_in_tray->isChecked() && !ui->cb_show_tray_icon->isChecked());
+	ui->lab_warning->setVisible(show_warning);
 }
 
 void GUI_PlayerPreferences::retranslate_ui()
@@ -100,4 +97,12 @@ void GUI_PlayerPreferences::retranslate_ui()
 
 	ui->lab_logger->setText(Lang::get(Lang::Logger));
 	ui->cb_logger->setItemText(0, Lang::get(Lang::Default));
+
+	QStringList text
+	{
+		Lang::get(Lang::Warning) + ": " + tr("This might cause Sayonara not to show up again."),
+		tr("In this case use the --show option at the next start.")
+	};
+
+	ui->lab_warning->setText(text.join("\n"));
 }
