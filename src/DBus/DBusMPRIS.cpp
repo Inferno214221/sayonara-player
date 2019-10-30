@@ -237,7 +237,7 @@ QVariantMap DBusMPRIS::MediaPlayer2::Metadata()
 	QVariantMap map;
 	QVariant v_object_path, v_length;
 
-	TrackID id = m->md.id;
+	TrackID id = m->md.id();
 	if(id == -1){
 		id = RandomGenerator::get_random_number(5000, 10000);
 	}

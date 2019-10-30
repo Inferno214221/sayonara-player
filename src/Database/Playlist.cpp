@@ -209,7 +209,7 @@ bool DB::Playlist::getPlaylistById(CustomPlaylist& pl)
 		{
 			MetaData data;
 
-			data.id = 		 q.value(0).toInt();
+			data.set_id(q.value(0).toInt());
 			data.set_title(q.value(1).toString());
 			data.set_duration_ms(q.value(2).toInt());
 			data.set_year(q.value(3).value<Year>());
@@ -225,7 +225,7 @@ bool DB::Playlist::getPlaylistById(CustomPlaylist& pl)
 			data.set_filesize(q.value(12).value<Filesize>());
 			data.set_discnumber(q.value(13).value<Disc>());
 			data.set_rating(q.value(14).value<Rating>());
-			data.library_id = q.value(17).value<LibraryId>();
+			data.set_library_id(q.value(17).value<LibraryId>());
 			data.set_createdate(q.value(18).value<uint64_t>());
 			data.set_modifydate(q.value(19).value<uint64_t>());
 			data.set_extern(false);
@@ -263,7 +263,7 @@ bool DB::Playlist::getPlaylistById(CustomPlaylist& pl)
 
 		QString filepath = q2.value(0).toString();
 		MetaData data(filepath);
-		data.id = -1;
+		data.set_id(-1);
 		data.set_extern(true);
 		data.set_title(filepath);
 		data.set_artist(filepath);
@@ -312,13 +312,13 @@ int DB::Playlist::getPlaylistIdByName(const QString& name)
 
 bool DB::Playlist::insertTrackIntoPlaylist(const MetaData& md, int playlist_id, int pos)
 {
-	if(md.is_disabled) {
+	if(md.is_disabled()) {
 		return false;
 	}
 
 	Query q = insert("playlisttotracks",
 	{
-		{"trackid", md.id},
+		{"trackid", md.id()},
 		{"playlistid", playlist_id},
 		{"position", pos},
 		{"filepath", Util::cvt_not_null(md.filepath())},

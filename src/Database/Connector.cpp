@@ -205,7 +205,7 @@ bool Connector::updateArtistCissearchFix()
 		Query q(this);
 		q.prepare(str);
 		q.bindValue(":cissearch",	Util::cvt_not_null(artist.name().toLower()));
-		q.bindValue(":id",			artist.id);
+		q.bindValue(":id",			artist.id());
 
 		if(!q.exec()){
 			q.show_error("Cannot update artist cissearch");

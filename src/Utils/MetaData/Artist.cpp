@@ -29,53 +29,97 @@
 struct Artist::Private
 {
 	HashValue artist_idx;
+	ArtistId id;
+	uint16_t albumcount;
+	uint16_t songcount;
 
-	Private() = default;
+	Private() :
+		id(-1),
+		albumcount(0),
+		songcount(0)
+	{}
+
 	~Private() = default;
+
 	Private(const Private& other) :
-		CASSIGN(artist_idx)
+		CASSIGN(artist_idx),
+		CASSIGN(id),
+		CASSIGN(albumcount),
+		CASSIGN(songcount)
 	{}
 
 	Private(Private&& other) noexcept :
-		CMOVE(artist_idx)
+		CMOVE(artist_idx),
+		CMOVE(id),
+		CMOVE(albumcount),
+		CMOVE(songcount)
 	{}
 
 	Private& operator=(const Private& other)
 	{
 		ASSIGN(artist_idx);
+		ASSIGN(id);
+		ASSIGN(albumcount);
+		ASSIGN(songcount);
+
 		return *this;
 	}
 
 	Private& operator=(Private&& other) noexcept
 	{
 		MOVE(artist_idx);
+		MOVE(id);
+		MOVE(albumcount);
+		MOVE(songcount);
+
 		return *this;
 	}
 };
 
+uint16_t Artist::albumcount() const
+{
+	return m->albumcount;
+}
+
+void Artist::set_albumcount(const uint16_t& value)
+{
+	m->albumcount = value;
+}
+
+uint16_t Artist::songcount() const
+{
+	return m->songcount;
+}
+
+void Artist::set_songcount(const uint16_t& value)
+{
+	m->songcount = value;
+}
+
+ArtistId Artist::id() const
+{
+	return m->id;
+}
+
+void Artist::set_id(const ArtistId& value)
+{
+	m->id = value;
+}
+
 Artist::Artist() :
-	LibraryItem(),
-	id(-1),
-	num_albums(0),
-	num_songs(0)
+	LibraryItem()
 {
 	m = Pimpl::make<Private>();
 }
 
 Artist::Artist(const Artist& other) :
-	LibraryItem(other),
-	CASSIGN(id),
-	CASSIGN(num_albums),
-	CASSIGN(num_songs)
+	LibraryItem(other)
 {
 	m = Pimpl::make<Private>(*(other.m));
 }
 
 Artist::Artist(Artist&& other) noexcept :
-	LibraryItem(std::move(other)),
-	CMOVE(id),
-	CMOVE(num_albums),
-	CMOVE(num_songs)
+	LibraryItem(std::move(other))
 {
 	m = Pimpl::make<Private>(std::move(*(other.m)));
 }
@@ -83,10 +127,6 @@ Artist::Artist(Artist&& other) noexcept :
 Artist& Artist::operator =(const Artist& other)
 {
 	LibraryItem::operator =(other);
-
-	ASSIGN(id);
-	ASSIGN(num_albums);
-	ASSIGN(num_songs);
 
 	*m = *(other.m);
 
@@ -97,17 +137,13 @@ Artist& Artist::operator =(Artist&& other) noexcept
 {
 	LibraryItem::operator =( std::move(other) );
 
-	MOVE(id);
-	MOVE(num_albums);
-	MOVE(num_songs);
-
 	*m = std::move(*(other.m));
 
 	return *this;
 }
 
 
-Artist::~Artist() {}
+Artist::~Artist() = default;
 
 QString Artist::name() const
 {
@@ -141,7 +177,7 @@ bool Artist::fromVariant(const QVariant& v, Artist& artist) {
 
 void Artist::print() const
 {
-	sp_log(Log::Info, this) << id << ": " << name() << ": " << num_songs << " Songs, " << num_albums << " Albums";
+	sp_log(Log::Info, this) << id() << ": " << name() << ": " << songcount() << " Songs, " << albumcount() << " Albums";
 }
 
 
@@ -205,7 +241,7 @@ QString ArtistList::get_major_artist() const
 bool ArtistList::contains(ArtistId artist_id) const
 {
 	for(auto it=this->begin(); it!=this->end(); it++){
-		if(it->id == artist_id){
+		if(it->id() == artist_id){
 			return true;
 		}
 	}
@@ -237,7 +273,7 @@ ArtistList& ArtistList::append_unique(const ArtistList& other)
 {
 	for(auto it = other.begin(); it != other.end(); it++)
 	{
-		if(!this->contains(it->id))
+		if(!this->contains(it->id()))
 		{
 			this->push_back(*it);
 		}
@@ -251,6 +287,3 @@ void ArtistList::sort(Library::SortOrder so)
 {
 	MetaDataSorting::sort_artists(*this, so);
 }
-
-
-

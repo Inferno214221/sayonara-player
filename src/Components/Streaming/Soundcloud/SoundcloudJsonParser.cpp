@@ -105,7 +105,11 @@ bool SC::JsonParser::parse_artist_list(ArtistList& artists, QJsonArray arr)
 bool SC::JsonParser::parse_artist(Artist& artist, QJsonObject object)
 {
 	QString cover_download_url;
-	get_int("id", object, artist.id);
+
+	ArtistId artist_id;
+	if(get_int("id", object, artist_id)) {
+		artist.set_id(artist_id);
+	}
 
 	QString artist_name;
 	get_string("username", object, artist_name);
@@ -136,7 +140,7 @@ bool SC::JsonParser::parse_artist(Artist& artist, QJsonObject object)
 		artist.add_custom_field("followers_following", tr("Followers/Following"), QString::number(followers) + "/" + QString::number(following));
 	}
 
-	return (artist.id > 0);
+	return (artist.id() > 0);
 }
 
 
@@ -166,7 +170,8 @@ bool SC::JsonParser::parse_track_list(ArtistList& artists, MetaDataList &v_md, Q
 
 				v_md << md;
 
-				if(!artists.contains(artist.id)){
+				if(!artists.contains(artist.id()))
+				{
 					artists << artist;
 				}
 
@@ -184,7 +189,12 @@ bool SC::JsonParser::parse_track_list(ArtistList& artists, MetaDataList &v_md, Q
 bool SC::JsonParser::parse_track(Artist& artist, MetaData& md, QJsonObject object)
 {
 	QString cover_download_url;
-	get_int("id", object, md.id);
+
+	TrackID id;
+	if(get_int("id", object, id)){
+		md.set_id(id);
+	}
+
 	get_string("artwork_url", object, cover_download_url);
 	md.set_cover_download_urls({cover_download_url});
 
@@ -229,7 +239,7 @@ bool SC::JsonParser::parse_track(Artist& artist, MetaData& md, QJsonObject objec
 		if( parse_artist(artist, artist_object) )
 		{
 			md.set_artist(artist.name());
-			md.set_artist_id(artist.id);
+			md.set_artist_id(artist.id());
 
 			if(md.album_id() < 0)
 			{
@@ -239,7 +249,7 @@ bool SC::JsonParser::parse_track(Artist& artist, MetaData& md, QJsonObject objec
 		}
 	}
 
-	return (md.filepath().size() > 0 && md.id > 0);
+	return (md.filepath().size() > 0 && md.id() > 0);
 }
 
 
@@ -276,7 +286,7 @@ bool SC::JsonParser::parse_playlist_list(ArtistList& artists, AlbumList& albums,
 				v_md << v_md_tmp;
 
 				for(const Artist& artist_tmp : artists_tmp){
-					if(!artists.contains(artist_tmp.id) && artist_tmp.id > 0){
+					if(!artists.contains(artist_tmp.id()) && artist_tmp.id() > 0){
 						artists << artist_tmp;
 					}
 				}
@@ -320,7 +330,7 @@ bool SC::JsonParser::parse_playlist(ArtistList& artists, Album& album, MetaDataL
 	if(get_object("user", object, artist_object))
 	{
 		parse_artist(pl_artist, artist_object);
-		if(!artists.contains(pl_artist.id) && pl_artist.id > 0){
+		if(!artists.contains(pl_artist.id()) && pl_artist.id() > 0){
 			artists << pl_artist;
 		}
 	}
@@ -333,14 +343,14 @@ bool SC::JsonParser::parse_playlist(ArtistList& artists, Album& album, MetaDataL
 		parse_track_list(tmp_artists, v_md_tmp, track_array);
 		for(const Artist& tmp_artist : tmp_artists)
 		{
-			if(!artists.contains(tmp_artist.id)){
+			if(!artists.contains(tmp_artist.id())){
 				artists << tmp_artist;
 			}
 		}
 
 		for(const MetaData& md : v_md_tmp)
 		{
-			if(!v_md.contains(md.id)){
+			if(!v_md.contains(md.id())){
 				v_md << md;
 			}
 		}
@@ -364,7 +374,7 @@ bool SC::JsonParser::parse_playlist(ArtistList& artists, Album& album, MetaDataL
 		md.set_album(album.name());
 		md.set_album_id(album.id);
 
-		if(md.artist_id() != pl_artist.id && pl_artist.id > 0 && md.artist_id() > 0)
+		if(md.artist_id() != pl_artist.id() && pl_artist.id() > 0 && md.artist_id() > 0)
 		{
 			md.set_album( md.album() + " (by " + pl_artist.name() + ")");
 			album_name = album.name() + " (by " + pl_artist.name() + ")";

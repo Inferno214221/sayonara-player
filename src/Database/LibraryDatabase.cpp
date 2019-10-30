@@ -167,7 +167,7 @@ bool DB::LibraryDatabase::store_metadata(const MetaDataList& v_md)
 
 	for(MetaData md : v_md)
 	{
-		md.library_id = m->library_id;
+		md.set_library_id(m->library_id);
 
 		{ // check album id
 			Album album = album_map[md.album()];
@@ -182,29 +182,29 @@ bool DB::LibraryDatabase::store_metadata(const MetaDataList& v_md)
 
 		{ // check artist id
 			Artist artist = artist_map[md.artist()];
-			if (artist.id < 0)
+			if (artist.id() < 0)
 			{
-				artist.id = DB::Artists::insertArtistIntoDatabase(md.artist());
+				artist.set_id(DB::Artists::insertArtistIntoDatabase(md.artist()));
 				artist_map[md.artist()] = artist;
 			}
 
-			md.set_artist_id(artist.id);
+			md.set_artist_id(artist.id());
 		}
 
 		{ // check album artist ...
 			Artist album_artist = artist_map[md.album_artist()];
-			if(album_artist.id < 0)
+			if(album_artist.id() < 0)
 			{
-				album_artist.id  = DB::Artists::insertArtistIntoDatabase(md.album_artist());
+				album_artist.set_id(DB::Artists::insertArtistIntoDatabase(md.album_artist()));
 				artist_map[md.album_artist()] = album_artist;
 			}
 
-			md.set_album_artist_id(album_artist.id);
+			md.set_album_artist_id(album_artist.id());
 		}
 
 		// because all artists and albums should be in the db right now,
 		// we should never reach the inner block
-		if(md.album_id() < 0 || md.artist_id() < 0 || md.library_id < 0)
+		if(md.album_id() < 0 || md.artist_id() < 0 || md.library_id() < 0)
 		{
 			sp_log(Log::Warning, this) << "Cannot insert artist or album of " << md.filepath();
 			continue;
@@ -213,14 +213,14 @@ bool DB::LibraryDatabase::store_metadata(const MetaDataList& v_md)
 		// check, if the track was known before
 		{
 			const MetaData& found_md = md_map[md.filepath()];
-			if(found_md.id < 0)
+			if(found_md.id() < 0)
 			{
 				DB::Tracks::insertTrackIntoDatabase(md, md.artist_id(), md.album_id(), md.album_artist_id());
 			}
 
 			else
 			{
-				md.id = found_md.id;
+				md.set_id(found_md.id());
 				DB::Tracks::updateTrack(md);
 			}
 		}

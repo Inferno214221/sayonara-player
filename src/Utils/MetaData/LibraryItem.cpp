@@ -135,19 +135,27 @@ struct LibraryItem::Private
 		CASSIGN(additional_data),
 		CASSIGN(cover_download_urls),
 		CASSIGN(db_id)
-	{}
+	{
+		unique_id = (++static_unique_id);
+
+	}
 
 	Private(Private&& other) noexcept :
 		CMOVE(additional_data),
 		CMOVE(cover_download_urls),
+		CMOVE(unique_id),
 		CMOVE(db_id)
-	{}
+	{
+		(void) unique_id;
+	}
 
 	Private& operator=(const Private& other)
 	{
 		ASSIGN(additional_data);
 		ASSIGN(cover_download_urls);
 		ASSIGN(db_id);
+
+		unique_id = (++static_unique_id);
 
 		return *this;
 	}
@@ -156,6 +164,7 @@ struct LibraryItem::Private
 	{
 		MOVE(additional_data);
 		MOVE(cover_download_urls);
+		MOVE(unique_id);
 		MOVE(db_id);
 
 		return *this;
@@ -238,7 +247,7 @@ QString LibraryItem::get_custom_field(const QString& id) const
 
 QString LibraryItem::get_custom_field(int idx) const
 {
-	if(idx < 0 || idx >= (int) m->additional_data.size()){
+	if(idx < 0 || idx >= int(m->additional_data.size())){
 		return "";
 	}
 
@@ -283,5 +292,3 @@ QHash<HashValue, QString> &LibraryItem::artist_pool()
 	static QHash<HashValue, QString> pool;
 	return pool;
 }
-
-

@@ -43,7 +43,7 @@ namespace Compare
 	}
 
 	bool artistTrackcountAsc(const Artist& artist1, const Artist& artist2) {
-		return (artist1.num_songs < artist2.num_songs);
+		return (artist1.songcount() < artist2.songcount());
 	}
 
 	bool artistTrackcountDesc(const Artist& artist1, const Artist& artist2) {

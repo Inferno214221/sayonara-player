@@ -94,9 +94,9 @@ bool Artists::db_fetch_artists(Query& q, ArtistList& result) const
 	{
 		Artist artist;
 
-		artist.id =			q.value(0).value<ArtistId>();
+		artist.set_id(		q.value(0).value<ArtistId>());
 		artist.set_name(	q.value(1).toString());
-		artist.num_songs =	q.value(2).value<uint16_t>();
+		artist.set_songcount(q.value(2).value<uint16_t>());
 		artist.set_db_id(	db_id());
 
 		result << artist;
@@ -280,7 +280,7 @@ void Artists::updateArtistCissearch()
 		(
 			"artists",
 			{{"cissearch", Util::cvt_not_null(cis)}},
-			{"artistID", artist.id},
+			{"artistID", artist.id()},
 			"Cannot update artist cissearch"
 		);
 	}

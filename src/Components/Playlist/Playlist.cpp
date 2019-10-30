@@ -41,7 +41,7 @@ using PlaylistImpl=::Playlist::Playlist;
 struct PlaylistImpl::Private
 {
 	MetaDataList    v_md;
-	QList<uint64_t>	shuffle_history;
+	QList<UniqueId>	shuffle_history;
 	UniqueId		playing_id;
 	PlaylistMode	playlist_mode;
 	int				playlist_idx;
@@ -101,8 +101,6 @@ IndexSet PlaylistImpl::move_tracks(const IndexSet& indexes, int tgt_row)
 
 	set_changed(true);
 
-	sp_log(Log::Info, this) << "Current index: " << current_track_index();
-
 	return new_track_positions;
 }
 
@@ -126,7 +124,7 @@ IndexSet PlaylistImpl::copy_tracks(const IndexSet& indexes, int tgt)
 void Playlist::Playlist::find_track(int idx)
 {
 	if(Util::between(idx, m->v_md)){
-		emit sig_find_track(m->v_md[idx].id);
+		emit sig_find_track(m->v_md[idx].id());
 	}
 }
 
@@ -135,8 +133,6 @@ void PlaylistImpl::remove_tracks(const IndexSet& indexes)
 	m->v_md.remove_tracks(indexes);
 
 	set_changed(true);
-
-	sp_log(Log::Info, this) << "Current index: " << current_track_index();
 }
 
 
@@ -144,8 +140,6 @@ void PlaylistImpl::insert_tracks(const MetaDataList& lst, int tgt)
 {
 	m->v_md.insert_tracks(lst, tgt);
 	set_changed(true);
-
-	sp_log(Log::Info, this) << "Current index: " << current_track_index();
 }
 
 void PlaylistImpl::append_tracks(const MetaDataList& lst)
@@ -156,7 +150,10 @@ void PlaylistImpl::append_tracks(const MetaDataList& lst)
 
 	for(auto it=m->v_md.begin() + old_size; it != m->v_md.end(); it++)
 	{
-		it->is_disabled = !(File::check_file(it->filepath()));
+		it->set_disabled
+		(
+			!(File::check_file(it->filepath()))
+		);
 	}
 
 	set_changed(true);
@@ -175,12 +172,12 @@ bool PlaylistImpl::change_track(int idx)
 	}
 
 	m->shuffle_history << m->v_md[idx].unique_id();
-	sp_log(Log::Info, this) << m->shuffle_history;
+	sp_log(Log::Develop, this) << m->shuffle_history;
 
 	if( !Util::File::check_file(m->v_md[idx].filepath()) )
 	{
 		sp_log(Log::Warning, this) << QString("Track %1 not available on file system: ").arg(m->v_md[idx].filepath());
-		m->v_md[idx].is_disabled = true;
+		m->v_md[idx].set_disabled(true);
 
 		return change_track(idx + 1);
 	}
@@ -264,7 +261,10 @@ void PlaylistImpl::replace_track(int idx, const MetaData& md)
 	}
 
 	m->v_md[idx] = md;
-	m->v_md[idx].is_disabled = !(File::check_file(md.filepath()));
+	m->v_md[idx].set_disabled
+	(
+		!(File::check_file(md.filepath()))
+	);
 
 	emit sig_items_changed(index());
 }
@@ -453,7 +453,7 @@ void PlaylistImpl::enable_all()
 {
 	for(MetaData& md : m->v_md)
 	{
-		md.is_disabled = false;
+		md.set_disabled(false);
 	}
 
 	set_changed(true);
@@ -546,8 +546,6 @@ void Playlist::Playlist::set_current_track(int idx)
 	else {
 		m->playing_id = m->v_md[idx].unique_id();
 	}
-
-	sp_log(Log::Info, this) << "Set current track " << idx;
 
 	emit sig_current_track_changed(idx);
 }

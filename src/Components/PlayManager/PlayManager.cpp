@@ -40,8 +40,8 @@ template<typename T, int N_ITEMS>
 class RingBuffer
 {
 private:
-	int _cur_idx;
-	int _n_items;
+	size_t _cur_idx;
+	size_t _n_items;
 	std::array<T, N_ITEMS> _data;
 
 public:
@@ -60,7 +60,7 @@ public:
 	{
 		_data[_cur_idx] = item;
 		_cur_idx = (_cur_idx + 1) % N_ITEMS;
-		_n_items = std::min(N_ITEMS, _n_items + 1);
+		_n_items = std::min<size_t>(N_ITEMS, _n_items + 1);
 	}
 
 	bool has_item(const T& item) const
@@ -71,7 +71,7 @@ public:
 
 	int count() const
 	{
-		return _n_items;
+		return int(_n_items);
 	}
 
 	bool is_empty() const
@@ -351,7 +351,7 @@ void PlayManager::change_track_metadata(const MetaData& md)
 		if( m->ring_buffer.count() > 0 )
 		{
 			md_old.set_album("");
-			md_old.is_disabled = true;
+			md_old.set_disabled(true);
 			md_old.set_filepath("");
 
 			QDateTime date = QDateTime::currentDateTime();

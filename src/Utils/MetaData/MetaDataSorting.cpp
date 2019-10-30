@@ -406,7 +406,7 @@ bool MetaDataSorting::ArtistByNameAsc(const Artist& artist1, const Artist& artis
 
 	switch(compare_string(n1, n2)){
 		case Equal:
-			return (artist1.id < artist2.id);
+			return (artist1.id() < artist2.id());
 		case Greater:
 			return false;
 		case Lesser:
@@ -433,7 +433,7 @@ bool MetaDataSorting::ArtistByNameDesc(const Artist& artist1, const Artist& arti
 
 	switch(compare_string(n2, n1)){
 		case Equal:
-			return (artist1.id < artist2.id);
+			return (artist1.id() < artist2.id());
 		case Greater:
 			return false;
 		case Lesser:
@@ -444,11 +444,11 @@ bool MetaDataSorting::ArtistByNameDesc(const Artist& artist1, const Artist& arti
 
 bool MetaDataSorting::ArtistByTrackCountAsc(const Artist& artist1, const Artist& artist2)
 {
-	if(artist1.num_songs < artist2.num_songs){
+	if(artist1.songcount() < artist2.songcount()){
 		return true;
 	}
 
-	if(artist1.num_songs == artist2.num_songs){
+	if(artist1.songcount() == artist2.songcount()){
 		return ArtistByNameAsc(artist1, artist2);
 	}
 
@@ -457,11 +457,11 @@ bool MetaDataSorting::ArtistByTrackCountAsc(const Artist& artist1, const Artist&
 
 bool MetaDataSorting::ArtistByTrackCountDesc(const Artist& artist1, const Artist& artist2)
 {
-	if(artist2.num_songs < artist1.num_songs){
+	if(artist2.songcount() < artist1.songcount()){
 		return true;
 	}
 
-	if(artist1.num_songs == artist2.num_songs){
+	if(artist1.songcount() == artist2.songcount()){
 		return ArtistByNameAsc(artist1, artist2);
 	}
 

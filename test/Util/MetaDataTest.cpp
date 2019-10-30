@@ -29,18 +29,19 @@ static MetaData create_md()
 	md.set_album("Album");
 	md.set_duration_ms(100000);
 	md.set_filesize(1234567);
-	md.id = 5;
+	md.set_id(5);
 	md.set_artist_id(6);
 	md.set_album_id(7);
 	md.set_bitrate(320000);
 	md.set_track_number(17);
 	md.set_year(2014);
 	md.set_extern(true);
-	md.is_disabled = true;
+	md.set_disabled(true);
 	md.set_rating(Rating::Four);
 	md.set_discnumber(2);
 	md.set_disc_count(5);
-	md.library_id = 2;
+	md.set_library_id(2);
+	md.set_disabled(true);
 
 	md.add_genre(Genre("Metal"));
 	md.add_genre(Genre("Rock"));
@@ -51,26 +52,25 @@ static MetaData create_md()
 
 void MetaDataTest::copy_test()
 {
-	qDebug() << "Copy Test";
-
 	MetaData md("/path/to/my/file.mp3");
 	md.set_title("Title");
 	md.set_artist("Artist");
 	md.set_album("Album");
 	md.set_duration_ms(100000);
 	md.set_filesize(1234567);
-	md.id = 5;
+	md.set_id(5);
 	md.set_artist_id(6);
 	md.set_album_id(7);
 	md.set_bitrate(320000);
 	md.set_track_number(17);
 	md.set_year(2014);
 	md.set_extern(true);
-	md.is_disabled = true;
+	md.set_disabled(true);
 	md.set_rating(Rating::Four);
 	md.set_discnumber(2);
 	md.set_disc_count(5);
-	md.library_id = 2;
+	md.set_library_id(2);
+	md.set_disabled(true);
 
 	md.add_genre(Genre("Metal"));
 	md.add_genre(Genre("Rock"));
@@ -79,6 +79,43 @@ void MetaDataTest::copy_test()
 
 	QVERIFY(md.is_equal(create_md()));
 	QVERIFY(md.is_equal_deep(create_md()));
+
+	MetaData md2 = md;
+	{
+		QVERIFY(md2.is_equal(create_md()));
+		QVERIFY(md2.is_equal_deep(create_md()));
+		QVERIFY(md2.unique_id() != md.unique_id());
+	}
+
+	MetaData md3(md2);
+	{
+		QVERIFY(md3.is_equal(create_md()));
+		QVERIFY(md3.is_equal_deep(create_md()));
+		QVERIFY(md3.unique_id() != md2.unique_id());
+	}
+
+	MetaData md4 = std::move(md3);
+	{
+		UniqueId uid = md3.unique_id();
+		QVERIFY(md4.is_equal(create_md()));
+		QVERIFY(md4.is_equal_deep(create_md()));
+		QVERIFY(md4.unique_id() == uid);
+	}
+
+	MetaData md5(std::move(md4));
+	{
+		UniqueId uid = md4.unique_id();
+		QVERIFY(md5.is_equal(create_md()));
+		QVERIFY(md5.is_equal_deep(create_md()));
+		QVERIFY(md5.unique_id() == uid);
+	}
+
+	MetaData md6(std::move(md5));
+	{
+		md6.set_disabled( !md6.is_disabled() );
+		QVERIFY(md6.is_equal(create_md()));
+		QVERIFY(md6.is_equal_deep(create_md()) == false);
+	}
 }
 
 void MetaDataTest::genre_test()

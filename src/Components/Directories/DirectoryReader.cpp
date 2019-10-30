@@ -153,7 +153,7 @@ MetaDataList DirectoryReader::scan_metadata(const QStringList& lst)
 
 	for(auto it=v_md.begin(); it != v_md.end(); it++)
 	{
-		if( it->id >= 0 )
+		if( it->id() >= 0 )
 		{
 				continue;
 		}

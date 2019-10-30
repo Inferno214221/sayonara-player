@@ -151,7 +151,7 @@ void AbstractLibrary::refresh_current_view()
 	int i=0;
 	for(const Artist& artist : m->artists)
 	{
-		if(sel_artists.contains(artist.id))
+		if(sel_artists.contains(artist.id()))
 		{
 			sel_artists_idx.insert(i);
 		}
@@ -176,7 +176,7 @@ void AbstractLibrary::refresh_current_view()
 	const MetaDataList& v_md = this->tracks();
 	for(int i=0; i<v_md.count(); i++)
 	{
-		if(sel_tracks.contains(v_md[i].id)) {
+		if(sel_tracks.contains(v_md[i].id())) {
 			sel_tracks_idx.insert(i);
 		}
 	}
@@ -206,9 +206,9 @@ void AbstractLibrary::metadata_changed()
 	QHash<TrackID, int> id_row_map;
 	{ // build lookup tree
 		int i=0;
-		for(auto it=m->tracks.begin(); it != m->tracks.end(); it++)
+		for(auto it=m->tracks.begin(); it != m->tracks.end(); it++, i++)
 		{
-			id_row_map[it->id] = i;	i++;
+			id_row_map[it->id()] = i;
 		}
 	}
 
@@ -228,9 +228,9 @@ void AbstractLibrary::metadata_changed()
 			albums_changed = true;
 		}
 
-		if(id_row_map.contains(it->id))
+		if(id_row_map.contains(it->id()))
 		{
-			int row = id_row_map[it->id];
+			int row = id_row_map[it->id()];
 			std::swap(m->tracks[row], new_track);
 			emit sig_track_changed(row);
 		}
@@ -279,7 +279,7 @@ void AbstractLibrary::find_track(TrackID id)
 	MetaData md;
 	get_track_by_id(id, md);
 
-	if(md.id < 0)
+	if(md.id() < 0)
 	{
 		return;
 	}
@@ -324,7 +324,7 @@ void AbstractLibrary::find_track(TrackID id)
 	}
 
 	get_all_tracks_by_album({md.album_id()}, m->tracks, Library::Filter());
-	m->selected_tracks << md.id;
+	m->selected_tracks << md.id();
 
 	emit_stuff();
 }
@@ -449,7 +449,7 @@ void AbstractLibrary::change_artist_selection(const IndexSet& indexes)
 	for(int idx : indexes)
 	{
 		const Artist& artist = m->artists[ size_t(idx) ];
-		selected_artists.insert(artist.id);
+		selected_artists.insert(artist.id());
 	}
 
 	if(selected_artists == m->selected_artists)
@@ -679,7 +679,7 @@ void AbstractLibrary::change_track_selection(const IndexSet& indexes)
 		const MetaData& md = tracks()[idx];
 
 		m->current_tracks << md;
-		m->selected_tracks.insert(md.id);
+		m->selected_tracks.insert(md.id());
 	}
 }
 
