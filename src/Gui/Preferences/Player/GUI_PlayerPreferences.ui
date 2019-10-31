@@ -7,32 +7,24 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>202</height>
+    <height>211</height>
    </rect>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="4" column="0">
-    <widget class="QCheckBox" name="cb_update_notifications">
+   <item row="7" column="0">
+    <widget class="QLabel" name="lab_warning">
+     <property name="styleSheet">
+      <string notr="true">color: red;</string>
+     </property>
      <property name="text">
-      <string>Update notifications</string>
+      <string notr="true"/>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
-   <item row="0" column="0">
-    <widget class="QCheckBox" name="cb_show_tray_icon">
-     <property name="text">
-      <string>Show system tray icon</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="0">
-    <widget class="QCheckBox" name="cb_close_to_tray">
-     <property name="text">
-      <string>Close to system tray</string>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="0">
+   <item row="9" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QLabel" name="lab_logger">
@@ -46,7 +38,21 @@
      </item>
     </layout>
    </item>
-   <item row="5" column="0">
+   <item row="0" column="0">
+    <widget class="QCheckBox" name="cb_show_tray_icon">
+     <property name="text">
+      <string>Show system tray icon</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QCheckBox" name="cb_close_to_tray">
+     <property name="text">
+      <string>Hide instead of close</string>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="0">
     <widget class="Line" name="line">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -56,7 +62,28 @@
    <item row="1" column="0">
     <widget class="QCheckBox" name="cb_start_in_tray">
      <property name="text">
-      <string>Start in system tray</string>
+      <string>Start hidden</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QCheckBox" name="cb_update_notifications">
+     <property name="text">
+      <string>Update notifications</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0">
+    <widget class="Line" name="line_2">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="0">
+    <widget class="QLabel" name="lab_warning_header">
+     <property name="text">
+      <string notr="true"/>
      </property>
     </widget>
    </item>

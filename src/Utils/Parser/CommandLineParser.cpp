@@ -27,6 +27,7 @@ CommandLineData::CommandLineData()
 {
 	multiple_instances = false;
 	abort = false;
+	force_show = false;
 }
 
 
@@ -50,6 +51,12 @@ CommandLineData CommandLineParser::parse(int argc, char** argv)
 		if(str.compare("--multi-instances") == 0)
 		{
 			data.multiple_instances = true;
+			continue;
+		}
+
+		if(str.compare("--show") == 0)
+		{
+			data.force_show = true;
 			continue;
 		}
 

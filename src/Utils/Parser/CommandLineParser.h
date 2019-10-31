@@ -30,6 +30,7 @@ struct CommandLineData
 
     bool multiple_instances;
     bool abort;
+	bool force_show;
 
     CommandLineData();
 };

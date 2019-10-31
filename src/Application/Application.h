@@ -37,7 +37,7 @@ public:
 	Application(int& argc, char** argv);
 	~Application();
 
-	bool init(const QStringList& files_to_play);
+	bool init(const QStringList& files_to_play, bool force_show);
 
 private:
 	void init_single_instance_thread();
@@ -45,7 +45,7 @@ private:
 	void init_libraries();
 	void init_engine();
 	void init_plugins();
-	void init_player();
+	void init_player(bool force_show);
 	void init_playlist(const QStringList& files_to_play);
 
 	void shutdown();
