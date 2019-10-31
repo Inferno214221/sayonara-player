@@ -7,13 +7,13 @@
 
 #include <QRegExp>
 
-class FileHelperTest : public SayonaraTest
+class FileHelperTest : public Test::Base
 {
 	Q_OBJECT	
 
 public:
 	FileHelperTest() :
-		SayonaraTest("FileHelperTest")
+		Test::Base("FileHelperTest")
 	{}
 
 	~FileHelperTest() override = default;

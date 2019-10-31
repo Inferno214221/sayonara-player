@@ -7,13 +7,13 @@
 #include <QMap>
 
 class PodcastTest :
-	public SayonaraTest
+	public Test::Base
 {
 	Q_OBJECT
 
 public:
 	PodcastTest() :
-		SayonaraTest("PodcastTest")
+		Test::Base("PodcastTest")
 	{}
 
 	~PodcastTest() override = default;

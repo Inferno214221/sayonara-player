@@ -10,13 +10,13 @@
 
 using namespace Util;
 
-class LanguageUtilTest : public SayonaraTest
+class LanguageUtilTest : public Test::Base
 {
     Q_OBJECT
 
 public:
 	LanguageUtilTest() :
-		SayonaraTest("LanguageUtilTest")
+		Test::Base("LanguageUtilTest")
 	{}
 
 	~LanguageUtilTest() override = default;

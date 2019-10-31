@@ -45,25 +45,26 @@ qt5_add_resources(RESOURCES_RCC
 	${RESOURCES}
 )
 
-new_test_rcc(Database/PodcastTest.cpp)
-new_test_rcc(Database/AlbumTest.cpp)
+# With resources
+new_test(Database/PodcastTest.cpp)
+new_test(Database/AlbumTest.cpp)
 
-new_test_rcc(Playlist/PlaylistTest.cpp)
+new_test(Playlist/PlaylistTest.cpp)
+
+new_test(StreamRecorder/StreamRecorderTest.cpp)
+new_test(StreamRecorder/StreamRecorderUtilsTest.cpp)
+
+new_test(Tagging/AlbumArtistTest.cpp Tagging/AbstractTaggingTest.cpp)
+new_test(Tagging/DiscnumberTest.cpp Tagging/AbstractTaggingTest.cpp)
+new_test(Tagging/EditorTest.cpp)
+new_test(Tagging/LyricsTest.cpp Tagging/AbstractTaggingTest.cpp)
+new_test(Tagging/RatingTest.cpp Tagging/AbstractTaggingTest.cpp)
+new_test(Tagging/TagFromPathTest.cpp)
 
 new_test(Util/CryptTest.cpp)
-new_test_rcc(Util/FileHelperTest.cpp)
-new_test_rcc(Util/SettingsTest.cpp)
-new_test(Util/MetaDataTest.cpp)
-new_test(Util/MetaDataListTest.cpp)
+new_test(Util/FileHelperTest.cpp)
 new_test(Util/LanguageKeyTest.cpp)
 new_test(Util/LanguageUtilTest.cpp)
-
-new_test(StreamRecorder/StreamRecorderUtilsTest.cpp)
-new_test(StreamRecorder/StreamRecorderTest.cpp)
-
-new_test_rcc(Tagging/LyricsTest.cpp Tagging/AbstractTaggingTest.cpp)
-new_test_rcc(Tagging/AlbumArtistTest.cpp Tagging/AbstractTaggingTest.cpp)
-new_test_rcc(Tagging/DiscnumberTest.cpp Tagging/AbstractTaggingTest.cpp)
-new_test_rcc(Tagging/RatingTest.cpp Tagging/AbstractTaggingTest.cpp)
-new_test(Tagging/TagFromPathTest.cpp)
-new_test(Tagging/EditorTest.cpp)
+new_test(Util/MetaDataTest.cpp)
+new_test(Util/MetaDataListTest.cpp)
+new_test(Util/SettingsTest.cpp)

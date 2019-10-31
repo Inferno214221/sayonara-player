@@ -7,13 +7,13 @@
 
 #include <algorithm>
 
-class MetaDataListTest : public SayonaraTest
+class MetaDataListTest : public Test::Base
 {
 	Q_OBJECT
 
 public:
 	MetaDataListTest() :
-		SayonaraTest("MetaDataListTest")
+		Test::Base("MetaDataListTest")
 	{}
 
 	~MetaDataListTest() override = default;

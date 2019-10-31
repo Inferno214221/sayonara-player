@@ -4,7 +4,7 @@
 #include "SayonaraTest.h"
 
 class AbstractTaggingTest :
-		public SayonaraTest
+		public Test::Base
 {
 	Q_OBJECT
 
