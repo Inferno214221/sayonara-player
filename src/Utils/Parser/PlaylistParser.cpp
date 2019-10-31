@@ -124,7 +124,7 @@ void PlaylistParser::save_m3u_playlist(const QString& filename, const MetaDataLi
 			str = md.filepath();
 		}
 
-		QString ext_data = "#EXTINF: " + QString::number(md.duration_ms / 1000)  + ", " + md.artist() + " - " + md.title() + "\n";
+		QString ext_data = "#EXTINF: " + QString::number(md.duration_ms() / 1000)  + ", " + md.artist() + " - " + md.title() + "\n";
 		lines += file.write(ext_data.toLocal8Bit());
 		lines += file.write(str.toLocal8Bit());
 		lines += file.write( QByteArray("\n") );

@@ -103,7 +103,7 @@ void PLSParser::parse()
 		}
 
 
-		md.track_num = line_entry.track_idx;
+		md.set_track_number(TrackNum(line_entry.track_idx));
 
 		if(line_entry.key.startsWith("file", Qt::CaseInsensitive))
 		{
@@ -122,7 +122,7 @@ void PLSParser::parse()
 			int len = line_entry.value.toInt();
 
 			len = std::max(0, len);
-			md.duration_ms = len * 1000;
+			md.set_duration_ms(len * 1000);
 		}
 	}
 

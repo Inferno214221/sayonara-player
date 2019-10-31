@@ -1,5 +1,5 @@
-#include <QTest>
-#include <QObject>
+#include "SayonaraTest.h"
+
 #include "Utils/Macros.h"
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
@@ -10,28 +10,23 @@
 
 using namespace Util;
 
-class LanguageUtilTest : public QObject
+class LanguageUtilTest : public Test::Base
 {
     Q_OBJECT
 
+public:
+	LanguageUtilTest() :
+		Test::Base("LanguageUtilTest")
+	{}
+
+	~LanguageUtilTest() override = default;
+
 private slots:
-	void initTestCase();
-	void cleanupTestCase();
 	void basic_path_tests();
 	void language_version_test();
 	void four_letter_test();
 	void similar_language_test();
 };
-
-void LanguageUtilTest::initTestCase()
-{
-	Util::File::delete_files({"/tmp/versions"});
-}
-
-void LanguageUtilTest::cleanupTestCase()
-{
-	Util::File::delete_files({"/tmp/versions"});
-}
 
 void LanguageUtilTest::basic_path_tests()
 {

@@ -20,6 +20,7 @@
 
 #include "UserTaggingOperations.h"
 #include "Editor.h"
+#include "ChangeNotifier.h"
 
 #include "Database/Connector.h"
 #include "Database/LibraryDatabase.h"
@@ -33,17 +34,15 @@
 #include "Utils/Logger/Logger.h"
 
 using Tagging::UserOperations;
+using Tagging::Editor;
 
 struct UserOperations::Private
 {
-	Tagging::Editor*		editor=nullptr;
 	DB::LibraryDatabase*	library_db=nullptr;
 
-	Private(LibraryId library_id, UserOperations* parent)
+	Private(LibraryId library_id)
 	{
-		DB::Connector* db = DB::Connector::instance();
-
-		editor = new Tagging::Editor(parent);
+		auto* db = DB::Connector::instance();
 		library_db = db->library_db(library_id, db->db_id());
 	}
 };
@@ -51,13 +50,37 @@ struct UserOperations::Private
 UserOperations::UserOperations(LibraryId library_id, QObject* parent) :
 	QObject(parent)
 {
-	m = Pimpl::make<Private>(library_id, this);
-
-	connect(m->editor, &Tagging::Editor::sig_finished, this, &UserOperations::sig_finished);
-	connect(m->editor, &Tagging::Editor::sig_progress, this, &UserOperations::sig_progress);
+	m = Pimpl::make<Private>(library_id);
 }
 
 UserOperations::~UserOperations() = default;
+
+Editor* UserOperations::create_editor()
+{
+	auto* editor = new Tagging::Editor();
+
+	connect(editor, &Tagging::Editor::sig_finished, this, &UserOperations::sig_finished);
+	connect(editor, &Tagging::Editor::sig_progress, this, &UserOperations::sig_progress);
+	connect(editor, &Tagging::Editor::sig_progress, this, &UserOperations::sig_progress);
+	connect(editor, &Tagging::Editor::sig_progress, this, &UserOperations::sig_progress);
+
+	return editor;
+}
+
+void UserOperations::run_editor(Editor* editor)
+{
+	auto* t = new QThread();
+	t->setObjectName(QString("EditorWorkerUserOperations%1").arg(Util::random_string(10)));
+	editor->moveToThread(t);
+
+	connect(editor, &Tagging::Editor::sig_finished, t, &QThread::quit);
+	connect(editor, &Tagging::Editor::sig_finished, editor, &QThread::deleteLater);
+
+	connect(t, &QThread::started, editor, &Editor::commit);
+	connect(t, &QThread::finished, t, &QObject::deleteLater);
+
+	t->start();
+}
 
 void UserOperations::set_track_rating(const MetaData& md, Rating rating)
 {
@@ -66,21 +89,30 @@ void UserOperations::set_track_rating(const MetaData& md, Rating rating)
 
 void UserOperations::set_track_rating(const MetaDataList& v_md, Rating rating)
 {
-	m->editor->set_metadata(v_md);
+	auto* editor = create_editor();
+	editor->set_metadata(v_md);
 
 	for(int i=0; i<v_md.count(); i++)
 	{
 		MetaData md(v_md[i]);
-		md.rating = rating;
-		m->editor->update_track(i, md);
+		md.set_rating(rating);
+		editor->update_track(i, md);
 	}
 
-	m->editor->commit();
+	run_editor(editor);
 }
 
 void UserOperations::set_album_rating(const Album& album, Rating rating)
 {
 	m->library_db->updateAlbumRating(album.id, rating);
+
+	Album album_new(album);
+	album_new.rating = rating;
+
+	AlbumList albums_old; albums_old << album;
+	AlbumList albums_new; albums_new << album_new;
+
+	Tagging::ChangeNotifier::instance()->update_albums(albums_old, albums_new);
 }
 
 void UserOperations::merge_artists(const Util::Set<Id>& artist_ids, ArtistId target_artist)
@@ -102,26 +134,31 @@ void UserOperations::merge_artists(const Util::Set<Id>& artist_ids, ArtistId tar
 		return;
 	}
 
+	Util::Set<ArtistId> wrong_ids = artist_ids;
+	wrong_ids.remove(target_artist);
+
 	MetaDataList v_md;
-	m->library_db->getAllTracksByArtist(artist_ids.toList(), v_md);
-	m->editor->set_metadata(v_md);
+	m->library_db->getAllTracksByArtist(wrong_ids.toList(), v_md);
+
+	auto* editor = create_editor();
+	editor->set_metadata(v_md);
 
 	for(int idx=0; idx<v_md.count(); idx++)
 	{
 		MetaData md(v_md[idx]);
 		if(show_album_artists){
-			md.set_album_artist(artist.name(), artist.id);
+			md.set_album_artist(artist.name(), artist.id());
 		}
 
 		else {
-			md.artist_id = artist.id;
+			md.set_artist_id(artist.id());
 			md.set_artist(artist.name());
 		}
 
-		m->editor->update_track(idx, md);
+		editor->update_track(idx, md);
 	}
 
-	m->editor->commit();
+	run_editor(editor);
 
 	for(auto it = artist_ids.begin(); it != artist_ids.end(); it++)
 	{
@@ -150,21 +187,25 @@ void UserOperations::merge_albums(const Util::Set<Id>& album_ids, AlbumId target
 		return;
 	}
 
-	MetaDataList v_md;
+	Util::Set<AlbumId> wrong_ids = album_ids;
+	wrong_ids.remove(target_album);
 
-	m->library_db->getAllTracksByAlbum(album_ids.toList(), v_md);
-	m->editor->set_metadata(v_md);
+	MetaDataList v_md;
+	m->library_db->getAllTracksByAlbum(wrong_ids.toList(), v_md);
+
+	auto* editor = create_editor();
+	editor->set_metadata(v_md);
 
 	for(int idx=0; idx<v_md.count(); idx++)
 	{
 		MetaData md(v_md[idx]);
-		md.album_id = album.id;
+		md.set_album_id(album.id);
 		md.set_album(album.name());
 
-		m->editor->update_track(idx, md);
+		editor->update_track(idx, md);
 	}
 
-	m->editor->commit();
+	run_editor(editor);
 }
 
 
@@ -174,17 +215,18 @@ void UserOperations::add_genre(Util::Set<Id> ids, const Genre& genre)
 	m->library_db->getAllTracks(v_md);
 
 	v_md.remove_tracks([&ids](const MetaData& md) {
-		return (!ids.contains(md.id));
+		return (!ids.contains(md.id()));
 	});
 
-	m->editor->set_metadata(v_md);
+	auto* editor = create_editor();
+	editor->set_metadata(v_md);
 
 	for(int i=0; i<v_md.count(); i++)
 	{
-		m->editor->add_genre(i, genre);
+		editor->add_genre(i, genre);
 	}
 
-	m->editor->commit();
+	run_editor(editor);
 }
 
 
@@ -197,14 +239,15 @@ void UserOperations::delete_genre(const Genre& genre)
 		return (!md.has_genre(genre));
 	});
 
-	m->editor->set_metadata(v_md);
+	auto* editor = create_editor();
+	editor->set_metadata(v_md);
 
 	for(int i=0; i<v_md.count(); i++)
 	{
-		m->editor->delete_genre(i, genre);
+		editor->delete_genre(i, genre);
 	}
 
-	m->editor->commit();
+	run_editor(editor);
 }
 
 void UserOperations::rename_genre(const Genre& genre, const Genre& new_genre)
@@ -216,25 +259,27 @@ void UserOperations::rename_genre(const Genre& genre, const Genre& new_genre)
 		return (!md.has_genre(genre));
 	});
 
-	m->editor->set_metadata(v_md);
+	auto* editor = create_editor();
+	editor->set_metadata(v_md);
 
 	for(int i=0; i<v_md.count(); i++)
 	{
-		m->editor->delete_genre(i, genre);
-		m->editor->add_genre(i, new_genre);
+		editor->delete_genre(i, genre);
+		editor->add_genre(i, new_genre);
 	}
 
-	m->editor->commit();
+	run_editor(editor);
 }
 
 void UserOperations::add_genre_to_md(const MetaDataList& v_md, const Genre& genre)
 {
-	m->editor->set_metadata(v_md);
+	auto* editor = create_editor();
+	editor->set_metadata(v_md);
 
 	for(int i=0; i<v_md.count(); i++)
 	{
-		m->editor->add_genre(i, genre);
+		editor->add_genre(i, genre);
 	}
 
-	m->editor->commit();
+	run_editor(editor);
 }

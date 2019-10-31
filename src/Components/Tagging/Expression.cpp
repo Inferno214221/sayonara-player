@@ -23,6 +23,7 @@
 #include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/MetaData/MetaData.h"
 
 #include <QString>
 #include <QStringList>
@@ -39,9 +40,9 @@ struct Expression::Private
 
 	bool							valid;
 
-	Private()
+	Private() :
+		valid(false)
 	{
-		valid = false;
 		tag_regex_map.insert(TagTitle, QString("(.+)"));
 		tag_regex_map.insert(TagAlbum, QString ("(.+)"));
 		tag_regex_map.insert(TagArtist, QString("(.+)"));
@@ -60,7 +61,6 @@ Expression::Expression(const QString& tag_str, const QString& filepath)
 
 Expression::~Expression() = default;
 
-
 QMap<TagName, QString> Expression::captured_tags() const
 {
 	return m->captured_tags;
@@ -71,6 +71,52 @@ bool Expression::is_valid() const
 	return m->valid;
 }
 
+bool Expression::apply(MetaData& md) const
+{
+	bool b = false;
+
+	const QMap<Tagging::TagName, QString> captured_tags = this->captured_tags();
+	for(auto it=captured_tags.begin(); it != captured_tags.end(); it++)
+	{
+		Tagging::TagName key = it.key();
+		QString value = it.value();
+
+		if(key == Tagging::TagTitle) {
+			b |= (value != md.title());
+			md.set_title(value);
+		}
+
+		else if(key == Tagging::TagAlbum) {
+			b |= (value != md.album());
+			md.set_album(value);
+		}
+
+		else if(key == Tagging::TagArtist) {
+			b |= (value != md.artist());
+			md.set_artist(value);
+		}
+
+		else if(key == Tagging::TagTrackNum) {
+			TrackNum t = TrackNum(value.toInt());
+			b |= (t != md.track_number());
+			md.set_track_number(t);
+		}
+
+		else if(key == Tagging::TagYear) {
+			Year y = Year(value.toInt());
+			b |= (y != md.year());
+			md.set_year(y);
+		}
+
+		else if(key == Tagging::TagDisc) {
+			auto d = Disc(value.toInt());
+			b |= (d != md.discnumber());
+			md.set_discnumber(d);
+		}
+	}
+
+	return b;
+}
 
 QString Expression::escape_special_chars(const QString& str) const
 {

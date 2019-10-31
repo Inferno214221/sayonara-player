@@ -415,7 +415,7 @@ void View::contextMenuEvent(QContextMenuEvent* e)
 		if(selections.size() == 1)
 		{
 			MetaData md = m->model->metadata(selections.first());
-			m->context_menu->set_rating( md.rating );
+			m->context_menu->set_rating( md.rating() );
 		}
 	}
 
@@ -424,7 +424,7 @@ void View::contextMenuEvent(QContextMenuEvent* e)
 		MetaData md = m->model->metadata(idx.row());
 		m->context_menu->set_metadata(md);
 
-		if(md.id >= 0)
+		if(md.id() >= 0)
 		{
 			entry_mask |= Pl::ContextMenu::EntryBookmarks;
 			entry_mask |= Pl::ContextMenu::EntryFindInLibrary;

@@ -28,6 +28,7 @@ class Genre;
 
 namespace Tagging
 {
+	class Editor;
 	class UserOperations :
 			public QObject
 	{
@@ -54,6 +55,10 @@ namespace Tagging
 		void delete_genre(const Genre& genre);
 		void rename_genre(const Genre& genre, const Genre& new_genre);
 		void add_genre_to_md(const MetaDataList& v_md, const Genre& genre);
+
+	private:
+		Editor* create_editor();
+		void run_editor(Editor* editor);
 	};
 }
 

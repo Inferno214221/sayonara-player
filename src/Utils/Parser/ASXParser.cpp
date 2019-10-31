@@ -52,8 +52,7 @@ void ASXParser::parse()
 	do
 	{
 		MetaData md;
-
-		md.duration_ms = 0;
+		md.set_duration_ms(0);
 		md.set_album("");
 
 		for(int i=0; i<entry.childNodes().size(); i++)

@@ -145,14 +145,16 @@ void SC::DataFetcher::tracks_fetched()
 	ArtistList artists;
 	parser.parse_tracks(artists, v_md);
 
-	for(const MetaData& md : v_md){
-		if(!m->playlist_tracks.contains(md.id)){
+	for(const MetaData& md : v_md)
+	{
+		if(!m->playlist_tracks.contains(md.id())){
 			m->playlist_tracks << md;
 		}
 	}
 
-	for(const Artist& artist : artists){
-		if(!m->artists.contains(artist.id)){
+	for(const Artist& artist : artists)
+	{
+		if(!m->artists.contains(artist.id())){
 			m->artists << artist;
 		}
 	}

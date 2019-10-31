@@ -1,3 +1,5 @@
+#include "SayonaraTest.h"
+
 #include "Database/Connector.h"
 #include "Database/Settings.h"
 
@@ -5,46 +7,39 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/Macros.h"
 #include "Utils/FileUtils.h"
+#include "Utils/Utils.h"
 
-#include <QTest>
-#include <QObject>
-
-class SettingsTest : public QObject
+class SettingsTest : public Test::Base
 {
 	Q_OBJECT
 
 public:
-	SettingsTest(QObject* parent=nullptr) :
-		QObject(parent)
+	SettingsTest() :
+		Test::Base("SettingsTest")
 	{}
 
+	~SettingsTest() override = default;
+
 private slots:
-	void initTestCase();
-	void cleanupTestCase();
 	void test_registry();
 };
 
-
 void SettingsTest::test_registry()
 {
-	Q_INIT_RESOURCE(Database);
+	auto* db = DB::Connector::instance();
+	QVERIFY(db->db().isOpen());
 
 	Settings* s = Settings::instance();
-	bool checked = s->check_settings();
-	QVERIFY(checked == true);
+	QVERIFY(s->check_settings());
 
 	//QVERIFY(GetSetting(Set::Player_Language) == QLocale().name());
 	QVERIFY(GetSetting(Set::Player_PublicId).isEmpty());
 	QVERIFY(GetSetting(Set::Player_PrivId).isEmpty());
 
-	auto* db = DB::Connector::instance_custom("", "/tmp", "player.db");
-
-	QVERIFY(db->db().isOpen());
-
-	QList<SettingKey> keys;
-
 	QString db_version;
 	db->settings_connector()->load_setting("version", db_version);
+
+	QList<SettingKey> keys;
 	db->settings_connector()->load_settings(keys);
 
 	{
@@ -136,16 +131,6 @@ void SettingsTest::test_registry()
 		QVERIFY(GetSetting(Set::Player_FontSize) == 0);
 		QVERIFY(GetSetting(Set::Logger_Level) == 0);
 	}
-}
-
-void SettingsTest::initTestCase()
-{
-	Util::File::delete_files({"/tmp/player.db"});
-}
-
-void SettingsTest::cleanupTestCase()
-{
-	Util::File::delete_files({"/tmp/player.db"});
 }
 
 QTEST_GUILESS_MAIN(SettingsTest)

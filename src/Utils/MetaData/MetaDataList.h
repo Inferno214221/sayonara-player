@@ -22,7 +22,6 @@
 #define METADATALIST_H
 
 #include "MetaData.h"
-#include "Utils/Pimpl.h"
 #include "Utils/Library/Sortorder.h"
 
 #include <deque>
@@ -39,8 +38,6 @@ class MetaDataList :
 {
 	using Parent=std::deque<MetaData>;
 
-	PIMPL(MetaDataList)
-
 public:
 	MetaDataList();
 	explicit MetaDataList(const MetaData& md);
@@ -53,16 +50,13 @@ public:
 
 	~MetaDataList();
 
-	void set_current_track(int idx);
-	int current_track() const;
-
 	bool contains(const MetaData& md) const;
 	MetaDataList& remove_track(int idx);
 	MetaDataList& remove_tracks(const IndexSet& rows);
 	MetaDataList& remove_tracks(int first, int last);
 	MetaDataList& remove_tracks(std::function<bool (const MetaData&)> attr);
 
-	MetaDataList& move_tracks(const IndexSet& indexes, int tgt_idx);
+	MetaDataList& move_tracks(const IndexSet& indexes, int tgt_idx) noexcept;
 	MetaDataList& copy_tracks(const IndexSet& indexes, int tgt_idx);
 	MetaDataList& insert_track(const MetaData& md, int tgt_idx);
 	MetaDataList& insert_tracks(const MetaDataList& v_md, int tgt_idx);
@@ -74,11 +68,18 @@ public:
 
 	MetaDataList& operator <<(const MetaDataList& v_md);
 	MetaDataList& operator <<(const MetaData& md);
+	MetaDataList& operator <<(MetaDataList&& v_md) noexcept;
+	MetaDataList& operator <<(MetaData&& md) noexcept;
+
 	const MetaData& operator[](int i) const;
 	MetaData& operator[](int i);
 
 	MetaDataList& append(const MetaDataList& v_md);
+	MetaDataList& append(MetaDataList&& v_md) noexcept;
 	MetaDataList& append(const MetaData& md);
+	MetaDataList& append(MetaData&& md) noexcept;
+
+	QList<UniqueId> unique_ids() const;
 
 	bool contains(TrackID id) const;
 	void remove_duplicates();

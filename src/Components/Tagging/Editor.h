@@ -27,164 +27,152 @@
 #include "Utils/Pimpl.h"
 
 class Genre;
+
 namespace Tagging
 {
-/**
- * @brief The TagEdit class
- * Metadata has to be added using the set_metadata(const MetaDataList&) method.
- * Use update_track(int idx, const MetaData& md) to stage the changes you made
- * to the track. commit() starts the thread and writes changes to HDD and the
- * database. When finished the finished() signal is emitted.
- * @ingroup Tagging
- */
-
+	/**
+	 * @brief The TagEdit class
+	 * Metadata has to be added using the set_metadata(const MetaDataList&) method.
+	 * Use update_track(int idx, const MetaData& md) to stage the changes you made
+	 * to the track. commit() starts the thread and writes changes to HDD and the
+	 * database. When finished the finished() signal is emitted.
+	 * @ingroup Tagging
+	 */
 	class Editor :
-			public QThread
+			public QObject
 	{
 		Q_OBJECT
 		PIMPL(Editor)
 
-	private:
-		using QThread::finished;
+		signals:
+			void sig_started();
+			void sig_finished();
+			void sig_progress(int);
+			void sig_metadata_received(const MetaDataList& v_md);
 
-	signals:
-		void sig_started();
-		void sig_finished();
-		void sig_progress(int);
-		void sig_metadata_received(const MetaDataList& v_md);
+		public:
+			explicit Editor(QObject* parent=nullptr);
+			explicit Editor(const MetaDataList& v_md, QObject* parent=nullptr);
+			~Editor() override;
 
-
-	public:
-		explicit Editor(QObject* parent=nullptr);
-		explicit Editor(const MetaDataList& v_md, QObject* parent=nullptr);
-		~Editor();
-
-		enum FailReason
-		{
-			FileNotWriteable=1,
-			FileNotFound,
-			TagLibError
-		};
+			enum FailReason
+			{
+				FileNotWriteable=1,
+				FileNotFound,
+				TagLibError
+			};
 
 
-		/**
-		 * @brief undo changes for a specific track
-		 * @param idx track index
-		 */
-		void undo(int idx);
+			/**
+			 * @brief undo changes for a specific track
+			 * @param idx track index
+			 */
+			void undo(int idx);
 
-		/**
-		 * @brief undo changes for all tracks
-		 */
-		void undo_all();
-
-
-		/**
-		 * @brief get the (changed) metadata for a specific index
-		 * @param idx track index
-		 * @return MetaData object
-		 */
-		const MetaData& metadata(int idx) const;
+			/**
+			 * @brief undo changes for all tracks
+			 */
+			void undo_all();
 
 
-		/**
-		 * @brief get all (changed) metadata
-		 * @return MetaDataList object
-		 */
-		const MetaDataList& metadata() const;
+			/**
+			 * @brief get the (changed) metadata for a specific index
+			 * @param idx track index
+			 * @return MetaData object
+			 */
+			MetaData metadata(int idx) const;
 
 
-		bool apply_regex(const QString& regex, int idx);
+			/**
+			 * @brief get all (changed) metadata
+			 * @return MetaDataList object
+			 */
+			MetaDataList metadata() const;
 
 
-		/**
-		 * @brief Add a genre to all (changed) metdata
-		 * @param genre the genre name
-		 */
-		void add_genre(int idx, const Genre& genre);
+			bool apply_regex(const QString& regex, int idx);
+
+			/**
+			 * @brief Add a genre to all (changed) metdata
+			 * @param genre the genre name
+			 */
+			void add_genre(int idx, const Genre& genre);
 
 
-		void delete_genre(int idx, const Genre& genre);
+			void delete_genre(int idx, const Genre& genre);
 
-		void rename_genre(int idx, const Genre& genre, const Genre& new_genre);
+			void rename_genre(int idx, const Genre& genre, const Genre& new_genre);
 
-
-
-		/**
-		 * @brief gets the number of tracks
-		 * @return number of tracks
-		 */
-		int count() const;
+			/**
+			 * @brief gets the number of tracks
+			 * @return number of tracks
+			 */
+			int count() const;
 
 
-		/**
-		 * @brief indicates if there are pending changes
-		 */
-		bool has_changes() const;
+			/**
+			 * @brief indicates if there are pending changes
+			 */
+			bool has_changes() const;
 
 
-		/**
-		 * @brief writes changes to (changed) metadata for a specific track
-		 * @param idx track index
-		 * @param md new MetaData replacing the old track
-		 */
-		void update_track(int idx, const MetaData& md);
+			/**
+			 * @brief writes changes to (changed) metadata for a specific track
+			 * @param idx track index
+			 * @param md new MetaData replacing the old track
+			 */
+			void update_track(int idx, const MetaData& md);
 
-		/**
-		 * @brief update the cover for a specific track.
-		 * @param idx track index
-		 * @param cover new cover image
-		 */
-		void update_cover(int idx, const QPixmap& cover);
+			/**
+			 * @brief update the cover for a specific track.
+			 * @param idx track index
+			 * @param cover new cover image
+			 */
+			void update_cover(int idx, const QPixmap& cover);
 
-		/**
-		 * @brief remove_cover for a specific track
-		 * @param idx track index
-		 */
-	//	void remove_cover(int idx);
+			/**
+			 * @brief remove_cover for a specific track
+			 * @param idx track index
+			 */
+		//	void remove_cover(int idx);
 
-		/**
-		 * @brief does the user want to replace/add a cover
-		 * @param idx track index
-		 * @return false, if no new alternative cover is desired
-		 */
-		bool has_cover_replacement(int idx) const;
-
-
-		/**
-		 * @brief initializes the TagEdit object with a MetaDataList
-		 * @param v_md new MetaDataList
-		 */
-		void set_metadata(const MetaDataList& v_md);
-
-		bool is_cover_supported(int idx) const;
-
-		bool can_load_entire_album() const;
-		void load_entire_album();
+			/**
+			 * @brief does the user want to replace/add a cover
+			 * @param idx track index
+			 * @return false, if no new alternative cover is desired
+			 */
+			bool has_cover_replacement(int idx) const;
 
 
-		QMap<QString, FailReason> failed_files() const;
+			/**
+			 * @brief initializes the TagEdit object with a MetaDataList
+			 * @param v_md new MetaDataList
+			 */
+			void set_metadata(const MetaDataList& v_md);
+
+			bool is_cover_supported(int idx) const;
+
+			bool can_load_entire_album() const;
+			void load_entire_album();
+
+			QMap<QString, FailReason> failed_files() const;
+
+		public slots:
+
+			/**
+			 * @brief Commits changes to db
+			 */
+			void commit();
 
 
-	public slots:
+		private:
+			/**
+			 * @brief applies the new artists and albums to the original metadata
+			 */
+			void apply_artists_and_albums_to_md();
 
-		/**
-		 * @brief Commits changes to db
-		 */
-		void commit();
-
-
-	private:
-		/**
-		 * @brief applies the new artists and albums to the original metadata
-		 */
-		void apply_artists_and_albums_to_md();
-
-		void run() override;
-
-	private slots:
-		void thread_finished();
-		void load_entire_album_finished();
+		private slots:
+			void load_entire_album_finished();
 	};
 }
 

@@ -25,7 +25,7 @@
 StreamHandlerStreams::StreamHandlerStreams(QObject* parent) :
 	AbstractStreamHandler(parent) {}
 
-StreamHandlerStreams::~StreamHandlerStreams() {}
+StreamHandlerStreams::~StreamHandlerStreams() = default;
 
 bool StreamHandlerStreams::get_all_streams(StreamMap& streams)
 {

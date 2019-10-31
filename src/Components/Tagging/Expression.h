@@ -23,6 +23,8 @@
 
 #include "Utils/Pimpl.h"
 
+class MetaData;
+
 namespace Tagging
 {
 	using TagString=QString;
@@ -88,11 +90,13 @@ namespace Tagging
 
 	public:
 		Expression()=delete;
-		Expression(const QString& tag_str, const QString& filename);
+		Expression(const QString& tag_str, const QString& filepath);
 		virtual ~Expression();
 
 		QMap<Tagging::TagName, QString> captured_tags() const;
 		bool is_valid() const;
+
+		bool apply(MetaData& md) const;
 	};
 }
 

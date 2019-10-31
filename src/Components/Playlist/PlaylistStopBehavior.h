@@ -38,8 +38,8 @@ namespace Playlist
 			StopBehavior();
 			virtual ~StopBehavior();
 
-			virtual MetaDataList tracks() const=0;
-			virtual MetaData track(int index) const=0;
+			virtual const MetaDataList& tracks() const=0;
+			virtual const MetaData& track(int index) const=0;
 			virtual int count() const=0;
 
 			int restore_track_before_stop();

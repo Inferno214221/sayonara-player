@@ -82,8 +82,8 @@ namespace Playlist
 			void			set_current_scanned_file(const QString& file);
 
 		public:
-			MetaData track(int idx) const override;
-			MetaDataList tracks() const override;
+			const MetaData& track(int idx) const override;
+			const MetaDataList& tracks() const override;
 
 			void insert_tracks(const MetaDataList& lst, int tgt);
 			void append_tracks(const MetaDataList& lst);
@@ -104,7 +104,7 @@ namespace Playlist
 		public slots:
 			void metadata_deleted();
 			void metadata_changed();
-			void metadata_changed_single();
+			void current_metadata_changed();
 			void duration_changed();
 
 		private slots:
@@ -113,6 +113,7 @@ namespace Playlist
 		private:
 			int calc_shuffle_track();
 			void set_changed(bool b) override;
+			void set_current_track(int idx);
 	};
 }
 #endif // PLAYLIST_H

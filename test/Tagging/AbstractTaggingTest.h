@@ -1,17 +1,19 @@
 #ifndef ABSTRACTTAGGINGTEST_H
 #define ABSTRACTTAGGINGTEST_H
 
-#include <QObject>
-
+#include "SayonaraTest.h"
 
 class AbstractTaggingTest :
-		public QObject
+		public Test::Base
 {
 	Q_OBJECT
 
+public:
+	AbstractTaggingTest(const QString& testname);
+
 private:
-	QString _resource_filename;
-	QString _filename;
+	QString mResourceFilename;
+	QString mFilename;
 
 private:
 	void init();

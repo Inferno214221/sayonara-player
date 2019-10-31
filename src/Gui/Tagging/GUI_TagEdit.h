@@ -48,7 +48,7 @@ class GUI_TagEdit :
 
 public:
 	explicit GUI_TagEdit(QWidget* parent=nullptr);
-	~GUI_TagEdit();
+	~GUI_TagEdit() override;
 
 	/**
 	 * @brief Commits changes to db/file
@@ -116,6 +116,8 @@ private:
 	 */
 	bool check_idx(int idx) const;
 
+	Tagging::Editor* create_editor();
+	void run_editor(Tagging::Editor* editor);
 
 private slots:
 	/**

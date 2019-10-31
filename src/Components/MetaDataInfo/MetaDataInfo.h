@@ -40,6 +40,8 @@ enum class InfoStrings : uint8_t
 	nTracks=0,		// set by MetaDataInfo
 	nAlbums,		// set by ArtistInfo, AlbumInfo
 	nArtists,		// set by ArtistInfo, AlbumInfo
+	CreateDate,		// set by MetaDataInfo
+	ModifyDate,		// set by MetaDataInfo
 	Filesize,		// set by MetaDataInfo
 	PlayingTime,	// set by MetaDataInfo
 	Year,			// set by MetaDataInfo
@@ -80,6 +82,8 @@ class MetaDataInfo :
 		void insert_filesize(uint64_t filesize);
 		void insert_filetype(const Util::Set<QString>& filetypes);
 		void insert_comment(const Util::Set<QString>& comments);
+		void insert_createdates(uint64_t min_date, uint64_t max_date);
+		void insert_modifydates(uint64_t min_date, uint64_t max_date);
 
 		void insert_interval_info_field(InfoStrings key, int min, int max);
 		void insert_numeric_info_field(InfoStrings key, int number);

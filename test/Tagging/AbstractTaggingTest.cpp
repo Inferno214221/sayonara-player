@@ -7,18 +7,22 @@
 #include <QDir>
 #include <QTest>
 
+AbstractTaggingTest::AbstractTaggingTest(const QString& testname) :
+	Test::Base(testname)
+{}
+
 void AbstractTaggingTest::id3_test()
 {
-	_filename = QDir::tempPath() + "/sayonara-test.mp3";
-	_resource_filename = ":/test/mp3test.mp3";
+	mFilename = temp_path("sayonara-test.mp3");
+	mResourceFilename = ":/test/mp3test.mp3";
 
 	run();
 }
 
 void AbstractTaggingTest::xiph_test()
 {
-	_filename = QDir::tempPath() + "/sayonara-test.ogg";
-	_resource_filename = ":/test/oggtest.ogg";
+	mFilename = temp_path("sayonara-test.ogg");
+	mResourceFilename = ":/test/oggtest.ogg";
 
 	run();
 }
@@ -26,19 +30,19 @@ void AbstractTaggingTest::xiph_test()
 void AbstractTaggingTest::init()
 {
 	QByteArray content;
-    Util::File::read_file_into_byte_arr(_resource_filename, content);
-    Util::File::write_file(content, _filename);
+	Util::File::read_file_into_byte_arr(mResourceFilename, content);
+	Util::File::write_file(content, mFilename);
 }
 
 void AbstractTaggingTest::cleanup()
 {
-    Util::File::delete_files({_filename});
+	Util::File::delete_files({mFilename});
 }
 
 void AbstractTaggingTest::run()
 {
 	init();
-	run_test(_filename);
+	run_test(mFilename);
 	cleanup();
 }
 

@@ -24,38 +24,11 @@
 #include "Utils/Algorithm.h"
 #include "Utils/Set.h"
 #include "Utils/globals.h"
+#include "Utils/Logger/Logger.h"
 
 #include <QStringList>
 
 #include <assert.h>
-
-struct MetaDataList::Private
-{
-	int current_track;
-	Private() :
-		current_track(-1)
-	{}
-
-	Private(const Private& other) :
-		CASSIGN(current_track)
-	{}
-
-	Private(Private&& other) noexcept :
-		CMOVE(current_track)
-	{}
-
-	Private& operator=(const Private& other)
-	{
-		ASSIGN(current_track);
-		return (*this);
-	}
-
-	Private& operator=(Private&& other) noexcept
-	{
-		MOVE(current_track);
-		return (*this);
-	}
-};
 
 const MetaData& MetaDataList::operator[](int i) const
 {
@@ -69,26 +42,17 @@ MetaData& MetaDataList::operator[](int i)
 
 MetaDataList::MetaDataList() :
 	MetaDataList::Parent()
-{
-	m = Pimpl::make<Private>();
-	assert(m != nullptr);
-}
+{}
 
 MetaDataList::MetaDataList(const MetaData& md) :
 	MetaDataList::Parent()
 {
-	m = Pimpl::make<Private>();
-	assert(m != nullptr);
-
 	append(md);
 }
 
 MetaDataList::MetaDataList(const MetaDataList& other) :
 	MetaDataList::Parent()
 {
-	m = Pimpl::make<Private>(*(other.m));
-	assert(m != nullptr);
-
 	this->resize(other.size());
 	std::copy(other.begin(), other.end(), this->begin());
 }
@@ -96,9 +60,6 @@ MetaDataList::MetaDataList(const MetaDataList& other) :
 MetaDataList::MetaDataList(MetaDataList&& other) noexcept :
 	MetaDataList::Parent()
 {
-	m = Pimpl::make<Private>(std::move(*(other.m)));
-	assert(m != nullptr);
-
 	this->resize(other.size());
 	std::move(other.begin(), other.end(), this->begin());
 }
@@ -107,8 +68,6 @@ MetaDataList::~MetaDataList() = default;
 
 MetaDataList& MetaDataList::operator=(const MetaDataList& other)
 {
-	(*m) = *(other.m);
-
 	this->resize(other.size());
 	std::copy(other.begin(), other.end(), this->begin());
 
@@ -117,35 +76,12 @@ MetaDataList& MetaDataList::operator=(const MetaDataList& other)
 
 MetaDataList& MetaDataList::operator=(MetaDataList&& other) noexcept
 {
-	(*m) = std::move(*(other.m));
-
 	this->resize(other.size());
 	std::move(other.begin(), other.end(), this->begin());
 
 	return (*this);
 }
 
-int MetaDataList::current_track() const
-{
-	return m->current_track;
-}
-
-void MetaDataList::set_current_track(int idx)
-{
-	m->current_track = -1;
-
-	if( !Util::between(idx, this)) {
-		return;
-	}
-
-	int tmp_idx=0;
-	for(auto it=this->begin(); it != this->end(); it++ ){
-		it->pl_playing = (idx == tmp_idx);
-		tmp_idx++;
-	}
-
-	m->current_track = idx;
-}
 
 MetaDataList& MetaDataList::insert_track(const MetaData& md, int tgt_idx)
 {
@@ -155,20 +91,7 @@ MetaDataList& MetaDataList::insert_track(const MetaData& md, int tgt_idx)
 
 MetaDataList& MetaDataList::insert_tracks(const MetaDataList& v_md, int tgt_idx)
 {
-	if(v_md.isEmpty()) {
-		return *this;
-	}
-
-	auto it = this->begin() + tgt_idx;
-	for(const MetaData& md : v_md)
-	{
-		it = this->insert(it, md);
-		it++;
-	}
-
-	if(current_track() >= tgt_idx){
-		set_current_track(current_track() + v_md.count());
-	}
+	std::copy(v_md.begin(), v_md.end(), std::inserter(*this, this->begin() + tgt_idx));
 
 	return *this;
 }
@@ -177,60 +100,40 @@ MetaDataList& MetaDataList::copy_tracks(const IndexSet& indexes, int tgt_idx)
 {
 	MetaDataList v_md; v_md.reserve(indexes.size());
 
-	for(int idx : indexes){
-		v_md << this->at(idx);
+	for(int idx : indexes)
+	{
+		v_md << this->at( size_t(idx) );
 	}
 
 	return insert_tracks(v_md, tgt_idx);
 }
 
-#include "Utils/Logger/Logger.h"
-MetaDataList& MetaDataList::move_tracks(const IndexSet& indexes, int tgt_idx)
-{
-	sp_log(Log::Develop, this) << "Move " << indexes << " to " << tgt_idx;
 
+MetaDataList& MetaDataList::move_tracks(const IndexSet& indexes, int tgt_idx) noexcept
+{
 	MetaDataList v_md_to_move; 		v_md_to_move.reserve(indexes.size());
-	MetaDataList v_md_before_tgt; 	v_md_before_tgt.reserve(count());
-	MetaDataList v_md_after_tgt; 	v_md_after_tgt.reserve(count());
+	MetaDataList v_md_before_tgt; 	v_md_before_tgt.reserve(size());
+	MetaDataList v_md_after_tgt; 	v_md_after_tgt.reserve(size());
 
 	int i=0;
-	int n_tracks_after_cur_idx = 0;
-	int n_tracks_before_cur_idx = 0;
-
-	bool contains_cur_track = false;
 
 	for(auto it=this->begin(); it!=this->end(); it++, i++)
 	{
-		const MetaData& md = *it;
-
-		it->pl_playing = (i == m->current_track);
+		MetaData& md = *it;
 
 		if(indexes.contains(i))
 		{
-			contains_cur_track |= (i == m->current_track);
-
-			if(i < m->current_track){
-				n_tracks_before_cur_idx++;
-			}
-
-			else if(i > m->current_track){
-				n_tracks_after_cur_idx++;
-			}
-
 			v_md_to_move << std::move( md );
-			sp_log(Log::Crazy, this) << "Track to move: " << md.title();
 		}
 
 		else if(i<tgt_idx)
 		{
 			v_md_before_tgt << std::move( md );
-			sp_log(Log::Crazy, this) << "Track before: " << md.title();
 		}
 
 		else
 		{
 			v_md_after_tgt << std::move( md );
-			sp_log(Log::Crazy, this) << "Track after: " << md.title();
 		}
 	}
 
@@ -243,21 +146,6 @@ MetaDataList& MetaDataList::move_tracks(const IndexSet& indexes, int tgt_idx)
 
 	std::move(v_md_after_tgt.begin(), v_md_after_tgt.end(), it);
 
-	if(contains_cur_track) {
-		m->current_track = (n_tracks_before_cur_idx) + v_md_before_tgt.count();
-	}
-
-	if(!contains_cur_track)
-	{
-		if(tgt_idx <= m->current_track) {
-			m->current_track += n_tracks_after_cur_idx;
-		}
-
-		else {
-			m->current_track -= n_tracks_before_cur_idx;
-		}
-	}
-
 	return *this;
 }
 
@@ -268,23 +156,13 @@ MetaDataList& MetaDataList::remove_track(int idx)
 
 MetaDataList& MetaDataList::remove_tracks(int first, int last)
 {
-
 	if( !Util::between(first, this) ||
 		!Util::between(last, this))
 	{
 		return *this;
 	}
 
-	int n_elems = last - first + 1;
 	this->erase(this->begin() + first, this->begin() + last + 1);
-
-	if(m->current_track >= first && m->current_track <= last){
-		set_current_track(-1);
-	}
-
-	if(m->current_track > last){
-		set_current_track( m->current_track - n_elems );
-	}
 
 	return *this;
 }
@@ -297,32 +175,9 @@ MetaDataList& MetaDataList::remove_tracks(std::function<bool (const MetaData&)> 
 
 MetaDataList& MetaDataList::remove_tracks(const IndexSet& indexes)
 {
-	int deleted_elements = 0;
-	for(int i : indexes)
+	for(auto it=indexes.rbegin(); it != indexes.rend(); it++)
 	{
-		std::move(
-				this->begin() + (i - deleted_elements + 1),
-				this->end(),
-				this->begin() + (i - deleted_elements)
-		);
-
-		deleted_elements++;
-	}
-
-	this->resize(this->count() - deleted_elements);
-
-	if(indexes.contains(m->current_track))
-	{
-		m->current_track = -1;
-	}
-
-	else
-	{
-		int n_tracks_before_cur_track = Util::Algorithm::count_if(indexes, [=](int idx){
-			return (idx < m->current_track);
-		});
-
-		m->current_track -= n_tracks_before_cur_track;
+		this->erase(this->begin() + *it);
 	}
 
 	return *this;
@@ -347,13 +202,11 @@ QList<int> MetaDataList::findTracks(Id id) const
 	}
 
 	int idx=0;
-	for(auto it=this->begin(); it != this->end(); it++)
+	for(auto it=this->begin(); it != this->end(); it++, idx++)
 	{
-		if(it->id == id){
+		if(it->id() == id){
 			ret << idx;
 		}
-
-		idx++;
 	}
 
 	return ret;
@@ -374,13 +227,11 @@ QList<int> MetaDataList::findTracks(const QString& path) const
 #endif
 
 	int idx=0;
-	for(auto it=this->begin(); it != this->end(); it++)
+	for(auto it=this->begin(); it != this->end(); it++, idx++)
 	{
 		if(it->filepath().compare(path, sensitivity) == 0){
 			ret << idx;
 		}
-
-		idx++;
 	}
 
 	return ret;
@@ -391,9 +242,10 @@ QStringList MetaDataList::toStringList() const
 {
 	QStringList lst;
 
-	auto lambda = [&lst](const MetaData& md){
-		if(md.id >= 0){
-			lst << QString::number(md.id);
+	auto lambda = [&lst](const MetaData& md)
+	{
+		if(md.id() >= 0){
+			lst << QString::number(md.id());
 		}
 		else{
 			lst << md.filepath();
@@ -411,22 +263,42 @@ MetaDataList& MetaDataList::operator <<(const MetaDataList& v_md)
 	return append(v_md);
 }
 
-
 MetaDataList& MetaDataList::operator <<(const MetaData& md)
 {
 	return append(md);
 }
 
+MetaDataList& MetaDataList::operator <<(MetaDataList&& v_md) noexcept
+{
+	return append(std::move(v_md));
+}
+
+MetaDataList& MetaDataList::operator <<(MetaData&& md) noexcept
+{
+	return append(std::move(md));
+}
+
 MetaDataList& MetaDataList::append(const MetaDataList& v_md)
 {
-	int old_size = this->count();
-	resize(old_size + v_md.count());
+	auto old_size = this->size();
+	resize(old_size + v_md.size());
 
-	std::copy(v_md.begin(),
-			  v_md.end(),
-			  this->begin() + old_size
+	std::copy
+	(
+		v_md.begin(),
+		v_md.end(),
+		this->begin() + old_size
 	);
 
+	return *this;
+}
+
+MetaDataList& MetaDataList::append(MetaDataList&& v_md) noexcept
+{
+	auto old_size = this->size();
+	resize(old_size + v_md.size());
+
+	std::move(v_md.begin(), v_md.end(), this->begin() + old_size);
 	return *this;
 }
 
@@ -436,10 +308,29 @@ MetaDataList& MetaDataList::append(const MetaData& md)
 	return *this;
 }
 
+MetaDataList& MetaDataList::append(MetaData&& md) noexcept
+{
+	resize(this->size() + 1);
+	auto it=this->begin() + this->size() - 1;
+	*it = std::move(md);
+
+	return *this;
+}
+
+QList<UniqueId> MetaDataList::unique_ids() const
+{
+	QList<UniqueId> ret;
+	for(auto it=this->begin(); it != this->end(); it++){
+		ret << it->unique_id();
+	}
+
+	return ret;
+}
+
 bool MetaDataList::contains(TrackID id) const
 {
 	auto it = std::find_if(this->begin(), this->end(), [&id](const MetaData& md){
-		return (id == md.id);
+		return (id == md.id());
 	});
 
 	return (it != this->end());
@@ -447,35 +338,14 @@ bool MetaDataList::contains(TrackID id) const
 
 void MetaDataList::remove_duplicates()
 {
-	for(auto it=this->begin(); it!=this->end(); it++)
+	for(auto it=this->begin(); it != this->end(); it++)
 	{
-		auto it_next = it + 1;
+		auto rit = std::remove_if(std::next(it), this->end(), [it](const MetaData& md)
+		{
+			return (it->filepath().compare(md.filepath()) == 0);
+		});
 
-		if(it_next == this->end()){
-			break;
-		}
-
-		auto last_it2 = it;
-		for(auto it2=it_next; it2 != this->end(); it2++) {
-
-			if(it->filepath().compare(it2->filepath()) == 0){
-				auto it2_next = it2 + 1;
-				if(it2_next != this->end()){
-					std::move(it2_next, this->end(), it2);
-				}
-
-				this->resize(this->count() - 1);
-
-				it2 = last_it2 + 1;
-				if(it2 == this->end()){
-					break;
-				}
-			}
-
-			else {
-				last_it2 = it2;
-			}
-		}
+		this->erase(rit, this->end());
 	}
 }
 
@@ -486,42 +356,38 @@ bool MetaDataList::isEmpty() const
 
 MetaDataList& MetaDataList::append_unique(const MetaDataList& other)
 {
-	long long diff_cap = other.size() - (this->capacity() - this->size());
-	if(diff_cap > 0)
+	std::copy_if(other.begin(), other.end(), std::back_inserter(*this), [=](const MetaData& md)
 	{
-		this->reserve(this->capacity() + diff_cap);
-	}
-
-	for(auto it = other.begin(); it != other.end(); it++)
-	{
-		if(!this->contains(it->id)){
-			this->push_back(*it);
-		}
-	}
+		return std::none_of(this->begin(), this->end(), [&md](const MetaData& md2)
+		{
+			return (md.filepath().compare(md2.filepath()) == 0);
+		});
+	});
 
 	return *this;
 }
 
 const MetaData& MetaDataList::first() const
 {
-	return at(0);
+	return *(this->begin());
 }
 
 const MetaData& MetaDataList::last() const
 {
-	return at(this->count() - 1);
+	return *(std::prev(this->end()));
 }
 
 int MetaDataList::count() const
 {
-	return (int) MetaDataList::Parent::size();
+	return int(MetaDataList::Parent::size());
 }
 
 
 MetaData MetaDataList::take_at(int idx)
 {
-	MetaData md = this->at(idx);
-	this->remove_track(idx);
+	MetaData md(std::move(this->at( size_t(idx) )));
+	this->erase(this->begin() + idx);
+
 	return md;
 }
 
