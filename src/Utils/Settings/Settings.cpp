@@ -59,7 +59,7 @@ Settings::~Settings ()
 
 AbstrSetting* Settings::setting(SettingKey key) const
 {
-	return m->settings[(int) key];
+	return m->settings[size_t(key)];
 }
 
 const SettingArray& Settings::settings()

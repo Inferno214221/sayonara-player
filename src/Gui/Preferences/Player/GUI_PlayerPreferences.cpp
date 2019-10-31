@@ -35,7 +35,6 @@ GUI_PlayerPreferences::~GUI_PlayerPreferences()
 	}
 }
 
-
 void GUI_PlayerPreferences::init_ui()
 {
 	setup_parent(this, &ui);
@@ -49,6 +48,7 @@ void GUI_PlayerPreferences::init_ui()
 
 	connect(ui->cb_show_tray_icon, &QCheckBox::toggled, this, &GUI_PlayerPreferences::show_tray_icon_toggled);
 	connect(ui->cb_start_in_tray, &QCheckBox::toggled, this, &GUI_PlayerPreferences::show_tray_icon_toggled);
+	connect(ui->cb_close_to_tray, &QCheckBox::toggled, this, &GUI_PlayerPreferences::show_tray_icon_toggled);
 }
 
 
@@ -87,7 +87,13 @@ void GUI_PlayerPreferences::show_tray_icon_toggled(bool b)
 {
 	Q_UNUSED(b)
 
-	bool show_warning = (ui->cb_start_in_tray->isChecked() && !ui->cb_show_tray_icon->isChecked());
+	bool show_warning =
+	(
+		(!ui->cb_show_tray_icon->isChecked()) &&
+		(ui->cb_start_in_tray->isChecked() || ui->cb_close_to_tray->isChecked())
+	);
+
+	ui->lab_warning_header->setVisible(show_warning);
 	ui->lab_warning->setVisible(show_warning);
 }
 
@@ -98,11 +104,10 @@ void GUI_PlayerPreferences::retranslate_ui()
 	ui->lab_logger->setText(Lang::get(Lang::Logger));
 	ui->cb_logger->setItemText(0, Lang::get(Lang::Default));
 
-	QStringList text
-	{
-		Lang::get(Lang::Warning) + ": " + tr("This might cause Sayonara not to show up again."),
-		tr("In this case use the --show option at the next start.")
-	};
+	QString text =
+		tr("This might cause Sayonara not to show up again.") + " " +
+		tr("In this case use the '--show' option at the next startup.");
 
-	ui->lab_warning->setText(text.join("\n"));
+	ui->lab_warning_header->setText(Lang::get(Lang::Warning));
+	ui->lab_warning->setText(text);
 }
