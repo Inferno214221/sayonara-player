@@ -86,5 +86,6 @@ deploy-language:
       - tx/sayonara_lang_en_US.ts
     expire_in: 2 days
   only:
+    - master
     - tags
 
