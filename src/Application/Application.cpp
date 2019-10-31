@@ -268,7 +268,7 @@ Application::~Application()
 	}
 }
 
-bool Application::init(const QStringList& files_to_play)
+bool Application::init(const QStringList& files_to_play, bool force_show)
 {
 	{
 		measure("Settings")
@@ -288,7 +288,7 @@ bool Application::init(const QStringList& files_to_play)
 	}
 
 	init_engine();
-	init_player();
+	init_player(force_show);
 
 
 #ifdef SAYONARA_WITH_DBUS
@@ -324,14 +324,25 @@ bool Application::init(const QStringList& files_to_play)
 	ListenSetting(Set::Lib_SortIgnoreArtistArticle, Application::ignore_artist_article_changed);
 	ListenSetting(SetNoDB::Player_MetaStyle, Application::skin_changed);
 
-	m->player->show();
+	if(!GetSetting(Set::Player_StartInTray)) {
+		m->player->show();
+	}
+
+	else {
+		m->player->hide();
+	}
 
 	return true;
 }
 
-void Application::init_player()
+void Application::init_player(bool force_show)
 {
 	measure("Player")
+
+	if(force_show)
+	{
+		SetSetting(Set::Player_StartInTray, false);
+	}
 
 	m->player = new GUI_Player();
 	Gui::Util::set_main_window(m->player);

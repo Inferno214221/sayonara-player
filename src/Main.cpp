@@ -211,7 +211,7 @@ int main(int argc, char *argv[])
 		QDir().mkdir( Util::sayonara_path() );
 	}
 
-	if(!app.init(cmd_data.files_to_play)) {
+	if(!app.init(cmd_data.files_to_play, cmd_data.force_show)) {
 		return 1;
 	}
 
