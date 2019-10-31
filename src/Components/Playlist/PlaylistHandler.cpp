@@ -53,7 +53,6 @@ using Playlist::Loader;
 
 struct Handler::Private
 {
-	DB::Connector*			db=nullptr;
 	PlayManagerPtr			play_manager=nullptr;
 	PlaylistChangeNotifier*	pcn=nullptr;
 	PlaylistCollection		playlists;
@@ -61,7 +60,6 @@ struct Handler::Private
 	int						current_playlist_idx;
 
 	Private() :
-		db(DB::Connector::instance()),
 		play_manager(PlayManager::instance()),
 		pcn(PlaylistChangeNotifier::instance()),
 		active_playlist_idx(-1),
@@ -88,7 +86,6 @@ Handler::Handler(QObject* parent) :
 }
 
 Handler::~Handler()	= default;
-
 
 void Handler::current_track_changed(int track_index)
 {
@@ -268,7 +265,7 @@ void Handler::shutdown()
 {
 	if(GetSetting(Set::PL_LoadTemporaryPlaylists))
 	{
-		m->db->transaction();
+		DB::Connector::instance()->transaction();
 
 		for(const PlaylistPtr& pl : Algorithm::AsConst(m->playlists))
 		{
@@ -278,7 +275,7 @@ void Handler::shutdown()
 			}
 		}
 
-		m->db->commit();
+		DB::Connector::instance()->commit();
 	}
 
 	m->playlists.clear();
@@ -631,9 +628,9 @@ Util::SaveAsAnswer Handler::save_playlist(int pl_idx)
 
 	PlaylistPtr pl = m->playlists[pl_idx];
 
-	m->db->transaction();
+	DB::Connector::instance()->transaction();
 	Util::SaveAsAnswer ret = pl->save();
-	m->db->commit();
+	DB::Connector::instance()->commit();
 
 	if(ret == Util::SaveAsAnswer::Success)
 	{

@@ -37,6 +37,7 @@ namespace FileUtils=::Util::File;
 struct Base::Private
 {
 	QString source_dir;
+	QString target_dir;
 	QString filename;			// player.db
 	QString connection_name;	// /home/user/.Sayonara/player.db
 	DbId	db_id;
@@ -45,10 +46,16 @@ struct Base::Private
 
 	Private(DbId db_id, const QString& source_dir, const QString& target_dir, const QString& filename) :
 		source_dir(source_dir),
+		target_dir(target_dir),
 		filename(filename),
 		db_id(db_id)
 	{
-		connection_name = target_dir + "/" +filename;
+		connection_name = target_dir + "/" + filename;
+
+		if(!Util::File::exists(target_dir))
+		{
+			Util::File::create_directories(target_dir);
+		}
 	}
 };
 

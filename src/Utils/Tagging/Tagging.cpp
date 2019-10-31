@@ -74,7 +74,7 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 	bool success;
 
 	QFileInfo fi(md.filepath());
-	md.filesize = static_cast<unsigned int>(fi.size());
+	md.set_filesize(Filesize(fi.size()));
 	if(fi.size() <= 0){
 		return false;
 	}
@@ -135,14 +135,14 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 		ID3v2::PopularimeterFrame popularimeter_frame(id3v2);
 		success = popularimeter_frame.read(popularimeter);
 		if(success){
-			md.rating = popularimeter.get_rating();
+			md.set_rating(popularimeter.get_rating());
 		}
 
 		ID3v2::DiscnumberFrame discnumber_frame(id3v2);
 		success = discnumber_frame.read(discnumber);
 		if(success){
-			md.discnumber = discnumber.disc;
-			md.n_discs = discnumber.n_discs;
+			md.set_discnumber(discnumber.disc);
+			md.set_disc_count(discnumber.n_discs);
 		}
 	}
 
@@ -159,14 +159,14 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 		Xiph::PopularimeterFrame popularimeter_frame(xiph);
 		success = popularimeter_frame.read(popularimeter);
 		if(success){
-			md.rating = popularimeter.get_rating();
+			md.set_rating(popularimeter.get_rating());
 		}
 
 		Xiph::DiscnumberFrame discnumber_frame(xiph);
 		success = discnumber_frame.read(discnumber);
 		if(success){
-			md.discnumber = discnumber.disc;
-			md.n_discs = discnumber.n_discs;
+			md.set_discnumber(discnumber.disc);
+			md.set_disc_count(discnumber.n_discs);
 		}
 	}
 
@@ -183,15 +183,15 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 		MP4::DiscnumberFrame discnumber_frame(mp4);
 		success = discnumber_frame.read(discnumber);
 		if(success){
-			md.discnumber = discnumber.disc;
-			md.n_discs = discnumber.n_discs;
+			md.set_discnumber(discnumber.disc);
+			md.set_disc_count(discnumber.n_discs);
 		}
 
 		MP4::PopularimeterFrame popularimeter_frame(mp4);
 
 		success = popularimeter_frame.read(popularimeter);
 		if(success){
-			md.rating = popularimeter.get_rating();
+			md.set_rating(popularimeter.get_rating());
 		}
 
 		//sp_log(Log::Debug, this) << "Read rating " << (int) md.rating << ": " << success;
@@ -221,14 +221,14 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 	md.set_album(album);
 	md.set_artist(artist);
 	md.set_title(title);
-	md.duration_ms = length;
-	md.year = static_cast<unsigned short>(year);
-	md.track_num = static_cast<unsigned short>(track);
-	md.bitrate = static_cast<unsigned int>(bitrate);
+	md.set_duration_ms(length);
+	md.set_year(Year(year));
+	md.set_track_number(TrackNum(track));
+	md.set_bitrate(Bitrate(bitrate));
 	md.set_genres(genres);
-	md.discnumber = discnumber.disc;
-	md.n_discs = discnumber.n_discs;
-	md.rating = popularimeter.get_rating();
+	md.set_discnumber(discnumber.disc);
+	md.set_disc_count(discnumber.n_discs);
+	md.set_rating(popularimeter.get_rating());
 	md.set_comment(comment);
 	md.add_custom_field("has_album_art", "", QString::number(Tagging::Covers::has_cover(parsed_tag)));
 
@@ -276,13 +276,13 @@ bool Tagging::Utils::setMetaDataOfFile(const MetaData& md)
 	tag->setArtist(artist);
 	tag->setTitle(title);
 	tag->setGenre(genre);
-	tag->setYear(md.year);
-	tag->setTrack(md.track_num);
+	tag->setYear(md.year());
+	tag->setTrack(md.track_number());
 	tag->setComment(comment);
 
 	Models::Popularimeter popularimeter("sayonara player", Rating::Zero, 0);
-	popularimeter.set_rating(md.rating);
-	Models::Discnumber discnumber(md.discnumber, md.n_discs);
+	popularimeter.set_rating(md.rating());
+	Models::Discnumber discnumber(md.discnumber(), md.disc_count());
 
 	if(parsed_tag.type == TagType::ID3v2)
 	{

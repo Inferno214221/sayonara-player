@@ -37,6 +37,7 @@
 #include <QMetaType>
 #include <QString>
 
+class QDateTime;
 /**
  * @brief The MetaData class
  * @ingroup MetaDataHelper
@@ -45,29 +46,6 @@ class MetaData :
 	public LibraryItem
 {
 	PIMPL(MetaData)
-
-public:
-	MilliSeconds duration_ms;
-	Filesize filesize;
-
-	TrackID id;
-	ArtistId artist_id;
-	AlbumId album_id;
-
-	Bitrate bitrate;
-	uint16_t track_num;
-	uint16_t year;
-
-	Disc discnumber;
-	Disc n_discs;
-
-	LibraryId library_id;
-	Rating rating;
-
-	bool played;
-	bool is_extern;
-	bool pl_playing;
-	bool is_disabled;
 
 public:
 	MetaData();
@@ -84,9 +62,13 @@ public:
 
 	QString artist() const;
 	void set_artist(const QString& artist);
+	ArtistId artist_id() const;
+	void set_artist_id(ArtistId id);
 
 	QString album() const;
 	void set_album(const QString& album);
+	AlbumId album_id() const;
+	void set_album_id(AlbumId id);
 
 	const QString& comment() const;
 	void set_comment(const QString& comment);
@@ -120,6 +102,14 @@ public:
 	void set_genres(const Util::Set<Genre>& genres);
 	void set_genres(const QStringList& genres);
 
+	void set_createdate(uint64_t t);
+	uint64_t createdate() const;
+	QDateTime createdate_datetime() const;
+
+	void set_modifydate(uint64_t t);
+	uint64_t modifydate() const;
+	QDateTime modifydate_datetime() const;
+
 	QString genres_to_string() const;
 	QStringList genres_to_list() const;
 
@@ -128,12 +118,48 @@ public:
 	static QVariant toVariant(const MetaData& md);
 	static bool fromVariant(const QVariant& v, MetaData& md);
 
+	Disc discnumber() const;
+	void set_discnumber(const Disc& value);
+
+	Disc disc_count() const;
+	void set_disc_count(const Disc& value);
+
+	Bitrate bitrate() const;
+	void set_bitrate(const Bitrate& value);
+
+	TrackNum track_number() const;
+	void set_track_number(const uint16_t& value);
+
+	Year year() const;
+	void set_year(const uint16_t& value);
+
+	Filesize filesize() const;
+	void set_filesize(const Filesize& value);
+
+	Rating rating() const;
+	void set_rating(const Rating& value);
+
+	MilliSeconds duration_ms() const;
+	void set_duration_ms(const MilliSeconds& value);
+
+	bool is_extern() const;
+	void set_extern(bool value);
+
+	bool is_disabled() const;
+	void set_disabled(bool value);
+
+	LibraryId library_id() const;
+	void set_library_id(const LibraryId& value);
+
+	TrackID id() const;
+	void set_id(const TrackID& value);
+
 private:
 	QHash<GenreID, Genre>& genre_pool() const;
 };
 
 #ifndef MetaDataDeclared
-	Q_DECLARE_METATYPE(MetaData)
+Q_DECLARE_METATYPE(MetaData)
 	#define MetaDataDeclared
 #endif
 

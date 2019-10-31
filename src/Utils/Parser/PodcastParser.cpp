@@ -29,11 +29,12 @@
 #include <QDomDocument>
 #include <QStringList>
 
-int find_year(QString str) {
+static Year find_year(QString str)
+{
 	int idx = str.indexOf(QRegExp("[0-9]{4,4}"));
 
 	if(idx >= 0) {
-		return str.midRef(idx, 4).toInt();
+		return Year(str.midRef(idx, 4).toInt());
 	}
 
 	return 0;
@@ -198,12 +199,13 @@ MetaDataList PodcastParser::parse_podcast_xml_file_content(const QString& conten
 						}
 					}
 
-					md.duration_ms = len * 1000;
+					md.set_duration_ms(len * 1000);
 				} // curation
 
 				else if(!item_nodename.compare("pubDate", Qt::CaseInsensitive) ||
-						!item_nodename.compare("dc:date", Qt::CaseInsensitive)) {
-					md.year = find_year(item_element_text);
+						!item_nodename.compare("dc:date", Qt::CaseInsensitive))
+				{
+					md.set_year(find_year(item_element_text));
 				}
 
 				else if(!item_nodename.compare("psc:chapters", Qt::CaseInsensitive)){

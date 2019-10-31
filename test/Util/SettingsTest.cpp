@@ -1,3 +1,5 @@
+#include "SayonaraTest.h"
+
 #include "Database/Connector.h"
 #include "Database/Settings.h"
 
@@ -5,30 +7,25 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/Macros.h"
 #include "Utils/FileUtils.h"
+#include "Utils/Utils.h"
 
-#include <QTest>
-#include <QObject>
-
-class SettingsTest : public QObject
+class SettingsTest : public SayonaraTest
 {
 	Q_OBJECT
 
 public:
-	SettingsTest(QObject* parent=nullptr) :
-		QObject(parent)
+	SettingsTest() :
+		SayonaraTest("SettingsTest")
 	{}
 
+	~SettingsTest() override = default;
+
 private slots:
-	void initTestCase();
-	void cleanupTestCase();
 	void test_registry();
 };
 
-
 void SettingsTest::test_registry()
 {
-	Q_INIT_RESOURCE(Database);
-
 	Settings* s = Settings::instance();
 	bool checked = s->check_settings();
 	QVERIFY(checked == true);
@@ -37,7 +34,7 @@ void SettingsTest::test_registry()
 	QVERIFY(GetSetting(Set::Player_PublicId).isEmpty());
 	QVERIFY(GetSetting(Set::Player_PrivId).isEmpty());
 
-	auto* db = DB::Connector::instance_custom("", "/tmp", "player.db");
+	auto* db = DB::Connector::instance();
 
 	QVERIFY(db->db().isOpen());
 
@@ -138,15 +135,6 @@ void SettingsTest::test_registry()
 	}
 }
 
-void SettingsTest::initTestCase()
-{
-	Util::File::delete_files({"/tmp/player.db"});
-}
-
-void SettingsTest::cleanupTestCase()
-{
-	Util::File::delete_files({"/tmp/player.db"});
-}
 
 QTEST_GUILESS_MAIN(SettingsTest)
 

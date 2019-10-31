@@ -1,6 +1,4 @@
-#include <QObject>
-#include <QTest>
-#include <QDebug>
+#include "SayonaraTest.h"
 
 #include "Utils/FileUtils.h"
 #include "Utils/RandomGenerator.h"
@@ -9,19 +7,24 @@
 
 #include <algorithm>
 
-class MetaDataListTest : public QObject
+class MetaDataListTest : public SayonaraTest
 {
 	Q_OBJECT
 
+public:
+	MetaDataListTest() :
+		SayonaraTest("MetaDataListTest")
+	{}
+
+	~MetaDataListTest() override = default;
+
 private slots:
-	void cur_idx_test();
 	void insert_test();
 	void remove_test();
 	void move_test();
-	void write_move_stuff();
+	void remove_duplicate_test();
+	void append_unique_test();
 };
-
-
 
 static MetaDataList create_v_md(int min, int max)
 {
@@ -29,10 +32,7 @@ static MetaDataList create_v_md(int min, int max)
 	for(int i=min; i<max; i++)
 	{
 		MetaData md;
-		md.id = i;
-		md.set_title(QString("title %1").arg(i));
-		md.set_artist(QString("artist %1").arg(i));
-		md.set_album(QString("album %1").arg(i));
+		md.set_id(i);
 
 		v_md << md;
 	}
@@ -40,233 +40,237 @@ static MetaDataList create_v_md(int min, int max)
 	return v_md;
 }
 
-
-void MetaDataListTest::cur_idx_test()
-{
-	int cur_track = 10;
-	MetaDataList v_md = create_v_md(0, 53);
-
-	QVERIFY(v_md.current_track() == -1);
-
-	v_md.set_current_track(cur_track);
-	QVERIFY(v_md.current_track() == cur_track);
-
-	int i=0;
-	for(const MetaData& md : v_md)
-	{
-		bool is_cur_track = (i == cur_track);
-		QVERIFY(md.pl_playing == is_cur_track);
-		i++;
-	}
-}
-
 void MetaDataListTest::insert_test()
 {
-	MetaDataList v_md = create_v_md(0, 53);
+	MetaDataList v_md_orig = create_v_md(0, 53);
 	MetaDataList inserted_md = create_v_md(100, 105);
+	MetaDataList v_md = v_md_orig;
+
+	QVERIFY(v_md.size() == v_md_orig.size());
 
 	int insert_idx = 8;
-	int old_size = v_md.size();
-	int cur_track = 10;
 
-	v_md.set_current_track(cur_track);
+	QList<UniqueId> unique_ids = inserted_md.unique_ids();
+	QList<UniqueId> unique_ids2;
 
 	v_md.insert_tracks(inserted_md, insert_idx);
-	QVERIFY(v_md.size() == old_size + inserted_md.size());
+	QVERIFY(v_md.size() == v_md_orig.size() + inserted_md.size());
 
-	cur_track += inserted_md.size();
-	QVERIFY(v_md.current_track() == cur_track);
+	QList<int> expected_ids;
+	for(int i=0; i<insert_idx; i++) {
+		expected_ids << v_md[i].id();
+	}
 
-	int i=0;
-	for(const MetaData& md : v_md)
+	for(int i=0; i<inserted_md.count(); i++) {
+		expected_ids << inserted_md[i].id();
+		unique_ids2 << v_md[i + insert_idx].unique_id();
+	}
+
+	QVERIFY(unique_ids != unique_ids2);
+
+	for(int i=insert_idx; i<v_md_orig.count(); i++)
 	{
-		bool is_cur_track = (i == cur_track);
-		QVERIFY(md.pl_playing == is_cur_track);
-		i++;
+		expected_ids << v_md_orig[i].id();
+	}
+
+	QVERIFY(v_md.count() == expected_ids.size());
+
+	for(int i=0; i<v_md.count(); i++)
+	{
+		QVERIFY(v_md[i].id() == expected_ids[i]);
 	}
 }
 
-
-static Util::Set<int> create_idx_set(int n, int max_val, int ignore_val=-1)
-{
-	Util::Set<int> indexes;
-	for(int i=0; i<n; i++){
-		int idx = (i*7) % max_val;
-		if(idx == ignore_val){
-			continue;
-		}
-
-		indexes.insert(idx);
-	}
-
-	return indexes;
-}
 
 void MetaDataListTest::remove_test()
 {
-	MetaDataList v_md = create_v_md(0, 53);
-	int old_size = v_md.size();
-	int cur_track = 10;
+	MetaDataList v_md = create_v_md(0, 100);
+	auto old_size = v_md.size();
 
-	Util::Set<int> remove_indexes = create_idx_set(15, v_md.size(), cur_track);
+	int remove_start = 15;
+	int remove_end = 30;
 
-	v_md.set_current_track(cur_track);
-
-	int n_tracks_before_cur_track = std::count_if(remove_indexes.begin(), remove_indexes.end(), [&cur_track](int idx){
-		return (idx <= cur_track);
-	});
+	IndexSet remove_indexes;
+	for(int i=remove_start; i<remove_end; i++){
+		remove_indexes << i;
+	}
 
 	v_md.remove_tracks(remove_indexes);
-	cur_track -= n_tracks_before_cur_track;
 
-	QVERIFY(v_md.count() == (int) (old_size - remove_indexes.size()));
-	QVERIFY(v_md.current_track() == cur_track);
+	QVERIFY(v_md.size() == (old_size - remove_indexes.size()));
 
-	int i=0;
-	for(const MetaData& md : v_md)
+	for(int i=0; i<v_md.count(); i++)
 	{
-		bool is_cur_track = (i == cur_track);
-		QVERIFY(md.pl_playing == is_cur_track);
-		i++;
-	}
-
-	v_md.remove_track(cur_track);
-	cur_track = -1;
-
-	QVERIFY(v_md.current_track() == cur_track);
-
-	i=0;
-	for(const MetaData& md : v_md)
-	{
-		bool is_cur_track = (i == cur_track);
-		QVERIFY(md.pl_playing == is_cur_track);
-		i++;
-	}
-}
-
-
-
-void MetaDataListTest::write_move_stuff()
-{
-	QString data;
-	for(int x=0; x<1000; x++){
-
-		int sz = RandomGenerator::get_random_number(50, 100);
-		int target_idx = RandomGenerator::get_random_number(0, sz - 1);
-		int cur_play_idx = RandomGenerator::get_random_number(0, sz - 1);
-		int n_idxs = RandomGenerator::get_random_number(5, sz - 10);
-
-		Util::Set<int> idxs;
-		for(int i=0; i<n_idxs; i++){
-			idxs.insert(RandomGenerator::get_random_number(0, sz));
-		}
-
-		MetaDataList v_md = create_v_md(0, sz);
-		v_md.set_current_track(cur_play_idx);
-
-
-		int n_tracks_before_cur_track =
-				std::count_if(idxs.begin(), idxs.end(), [&cur_play_idx](int idx){
-					return idx < cur_play_idx;
-				});
-
-		int n_tracks_after_cur_track =
-				std::count_if(idxs.begin(), idxs.end(), [&cur_play_idx](int idx){
-					return idx > cur_play_idx;
-				});
-
-		bool has_cur_idx = idxs.contains(cur_play_idx);
-
-		QList<int> lst;
-		lst << target_idx;
-		lst << cur_play_idx;
-		lst << n_tracks_before_cur_track;
-		lst << n_tracks_after_cur_track;
-
-		if(has_cur_idx){
-			lst << 1;
-		}
-
-		else{
-			lst << 0;
-		}
-
-		v_md.move_tracks(idxs, target_idx);
-
-		lst << v_md.current_track();
-
-		QStringList str_lst;
-		for(int i : lst)
+		if(i<remove_start)
 		{
-			str_lst << QString::number(i);
+			QVERIFY(v_md[i].id() == i);
 		}
 
-		data += str_lst.join("\t");
-		data += "\n";
+		else {
+			QVERIFY(v_md[i].id() == (i + remove_indexes.count()));
+		}
 	}
-
-	Util::File::write_file(data.toLocal8Bit(), "/home/luke/md.validate");
 }
-
 
 void MetaDataListTest::move_test()
 {
-	/*for(int rounds = 0; rounds < 10; rounds++)
-	{
-		MetaDataList v_md = create_v_md(0, 53);
-		Util::Set<int> move_indexes = create_idx_set(15, v_md.size());
-		QList<int> idxs = move_indexes.toList();
-		int target_idx = 8;
+	MetaDataList v_md_orig = create_v_md(0, 10);
+	MetaDataList v_md = v_md_orig;
+	QList<UniqueId> unique_ids = v_md.unique_ids();
+	QList<UniqueId> unique_ids2;
 
+	IndexSet move_indexes;
+
+	{ // move some items
+
+		// O, O, O, X, X, X, O, O, O, O
+		// O, X, X, X, O, O, O, O, O, O
+		{
+			move_indexes << 3;
+			move_indexes << 4;
+			move_indexes << 5;
+		};
+
+		v_md.move_tracks(move_indexes, 1);
+		unique_ids2 = v_md.unique_ids();
+		QVERIFY(unique_ids != unique_ids2);
+
+		std::sort(unique_ids.begin(), unique_ids.end());
+		std::sort(unique_ids2.begin(), unique_ids2.end());
+
+		QVERIFY(unique_ids == unique_ids2);
+
+		QList<int> expected_ids
+		{
+			0, 3, 4, 5, 1, 2, 6, 7, 8, 9
+		};
+
+		QVERIFY(expected_ids.count() == v_md.count());
+		for(int i=0; i<expected_ids.count(); i++)
+		{
+			QVERIFY(expected_ids[i] == v_md[i].id());
+		}
+	}
+
+	{ // and back again
+		// O, X, X, X, O, O, O, O, O, O
+		// O, O, O, X, X, X, O, O, O, O
 		move_indexes.clear();
-		for(int i: idxs){
-			move_indexes.insert( (i + rounds) % v_md.size() );
+		{
+			move_indexes << 1;
+			move_indexes << 2;
+			move_indexes << 3;
+		};
+
+		v_md.move_tracks(move_indexes, 6);
+
+		unique_ids2 = v_md.unique_ids();
+		QVERIFY(unique_ids == unique_ids2);
+
+		for(int i=0; i<v_md.count(); i++)
+		{
+			QVERIFY(i == v_md[i].id());
 		}
-
-		int cur_track = 5;
-		v_md.set_current_track(cur_track);
-
-		int old_size = v_md.size();
-
-		MetaDataList moved_md;
-		for(int i : move_indexes){
-			moved_md << v_md[i];
-		}
-
-		int n_tracks_before_cur_track = std::count_if(move_indexes.begin(), move_indexes.end(), [&cur_track](int idx){
-			return (idx < cur_track);
-		});
-
-		int n_tracks_before_target_idx = std::count_if(move_indexes.begin(), move_indexes.end(), [&target_idx](int idx){
-			return (idx < target_idx);
-		});
-
-		v_md.move_tracks(move_indexes, target_idx);
-		QVERIFY(v_md.size() == old_size);
-
-		for(size_t i=0; i<move_indexes.size(); i++){
-			int idx = i + target_idx - n_tracks_before_target_idx;
-			QVERIFY(v_md[idx].id == moved_md[i].id);
-		}
-
-		if(n_tracks_before_cur_track == 0){
-			QVERIFY(v_md.current_track() == cur_track);
-		}
-
-		else if(target_idx <= cur_track){
-			int new_cur_track = cur_track - n_tracks_before_cur_track + move_indexes.size();
-			QVERIFY(v_md.current_track() == new_cur_track);
-		}
-
-		else if(target_idx > cur_track){
-			int new_cur_track = cur_track - n_tracks_before_cur_track;
-			QVERIFY(v_md.current_track() == new_cur_track);
-		}
-	}*/
+	}
 }
 
+void MetaDataListTest::remove_duplicate_test()
+{
+	MetaDataList v_md_orig = create_v_md(0, 100);
+
+	{ // % 10
+		MetaDataList v_md = v_md_orig;
+		for(int i=0; i<v_md.count(); i++)
+		{
+			QString p = QString("/some/path/%1.mp3").arg(i % 10);
+			v_md[i].set_filepath(p);
+		}
+
+		v_md.remove_duplicates();
+		QVERIFY(v_md.size() == 10);
+
+		for(int i=0; i<v_md.count(); i++)
+		{
+			int id = v_md[i].id();
+			QVERIFY(id == i);
+		}
+	}
+	{ // / 3
+		MetaDataList v_md = v_md_orig;
+		for(int i=0; i<v_md.count(); i++)
+		{
+			QString p = QString("/some/path/%1.mp3").arg(i / 3);
+			v_md[i].set_filepath(p);
+		}
+
+		v_md.remove_duplicates();
+		QVERIFY(v_md.size() == (v_md_orig.size() + 2) / 3);
+
+		for(int i=0; i<v_md.count(); i++)
+		{
+			int id = v_md[i].id();
+			QVERIFY(id == i * 3);
+		}
+	}
+
+	{ // % 99
+		MetaDataList v_md = v_md_orig;
+		for(int i=0; i<v_md.count(); i++)
+		{
+			QString p = QString("/some/path/%1.mp3").arg(i % 99);
+			v_md[i].set_filepath(p);
+		}
+
+		v_md.remove_duplicates();
+		QVERIFY(v_md.size() == 99);
+
+		for(int i=0; i<v_md.count(); i++)
+		{
+			int id = v_md[i].id();
+			QVERIFY(id == i);
+		}
+	}
+
+
+	{ // all the same
+		MetaDataList v_md = v_md_orig;
+		for(int i=0; i<v_md.count(); i++)
+		{
+			QString p = QString("/some/path/hallo.mp3");
+			v_md[i].set_filepath(p);
+		}
+
+		v_md.remove_duplicates();
+		QVERIFY(v_md.size() == 1);
+	}
+}
+
+void MetaDataListTest::append_unique_test()
+{
+	MetaDataList v_md_orig = create_v_md(0, 100);
+	MetaDataList v_md = v_md_orig;
+	MetaDataList v_md2 = create_v_md(70, 170);
+	for(MetaData& md : v_md)
+	{
+		QString p = QString("/some/path/%1.mp3").arg(md.id());
+		md.set_filepath(p);
+	}
+
+	for(MetaData& md : v_md2)
+	{
+		QString p = QString("/some/path/%1.mp3").arg(md.id());
+		md.set_filepath(p);
+	}
+
+	v_md.append_unique(v_md2);
+
+	QVERIFY(v_md.size() == v_md_orig.size() + 70);
+	for(int i=0; i<v_md.count(); i++)
+	{
+		QVERIFY(v_md[i].id() == i);
+	}
+}
 
 QTEST_GUILESS_MAIN(MetaDataListTest)
 
 #include "MetaDataListTest.moc"
-

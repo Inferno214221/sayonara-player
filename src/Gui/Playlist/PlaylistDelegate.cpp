@@ -97,7 +97,7 @@ void Delegate::paint(QPainter *painter,	const QStyleOptionViewItem &option, cons
 
 	painter->save();
 	{ // give that pen some alpha value, so it appears lighter
-		if(md.is_disabled)
+		if(md.is_disabled())
 		{
 			QColor col_text = palette.color(QPalette::Disabled, QPalette::Foreground);
 			if(Style::is_dark())
@@ -160,7 +160,7 @@ void Delegate::paint(QPainter *painter,	const QStyleOptionViewItem &option, cons
 			painter->translate(offset_x, 0);
 
 			str.replace("%title%", md.title());
-			str.replace("%nr%", QString::number(md.track_num));
+			str.replace("%nr%", QString::number(md.track_number()));
 			str.replace("%artist%", md.artist());
 			str.replace("%album%", md.album());
 
@@ -218,7 +218,7 @@ void Delegate::paint(QPainter *painter,	const QStyleOptionViewItem &option, cons
 			painter->translate(0, 2);
 
 			RatingLabel rating_label(nullptr, true);
-			rating_label.set_rating(md.rating);
+			rating_label.set_rating(md.rating());
 			rating_label.set_vertical_offset(option.rect.height() - m->rating_height);
 			rating_label.paint(painter, option.rect);
 		}

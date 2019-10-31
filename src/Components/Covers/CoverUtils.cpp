@@ -102,10 +102,14 @@ void Cover::Utils::write_cover_to_sayonara_dir(const Cover::Location& cl, const 
 
 void Cover::Utils::write_cover_to_db(const Cover::Location& cl, const QPixmap& pm)
 {
-	DB::Covers* dbc = DB::Connector::instance()->cover_connector();
-	dbc->set_cover(cl.hash(), pm);
+	write_cover_to_db(cl, pm, DB::Connector::instance());
 }
 
+void Cover::Utils::write_cover_to_db(const Cover::Location& cl, const QPixmap& pm, DB::Connector* db)
+{
+	DB::Covers* dbc = db->cover_connector();
+	dbc->set_cover(cl.hash(), pm);
+}
 
 void Cover::Utils::write_cover_to_library(const Cover::Location& cl, const QPixmap& pm)
 {

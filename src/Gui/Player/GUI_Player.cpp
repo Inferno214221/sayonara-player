@@ -482,6 +482,10 @@ void GUI_Player::remove_current_library()
 
 void GUI_Player::splitter_main_moved(int /*pos*/, int /*idx*/)
 {
+	{// little hack to make the cover greater again (see avoid flickering)
+		ui->splitterControls->widget(1)->setMinimumHeight(200);
+	}
+
 	check_control_splitter((QApplication::keyboardModifiers() & Qt::ControlModifier));
 }
 
@@ -498,9 +502,14 @@ void GUI_Player::check_control_splitter(bool force)
 		int difference = m->controls->btn_cover()->vertical_padding();
 		if(difference > 0 || force)
 		{
+
 			auto sizes = ui->splitterControls->sizes();
 				sizes[0] -= difference;
 				sizes[1] += difference;
+
+			{ // avoid flickering
+				ui->splitterControls->widget(1)->setMinimumHeight(sizes[1]);
+			}
 
 			ui->splitterControls->setSizes(sizes);
 		}

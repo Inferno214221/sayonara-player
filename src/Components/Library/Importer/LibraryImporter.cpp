@@ -52,13 +52,10 @@ struct Importer::Private
 	CopyThread*					copy_thread=nullptr;
 	ImportCachePtr				import_cache=nullptr;
 
-	DB::Connector*				db=nullptr;
-
 	Importer::ImportStatus		status;
 
 	Private(LocalLibrary* library) :
 		library(library),
-		db(DB::Connector::instance()),
 		status(Importer::ImportStatus::NoTracks)
 	{}
 
@@ -188,7 +185,7 @@ void Importer::copy_thread_finished()
 	}
 
 	// store to db
-	DB::Connector* db = DB::Connector::instance();
+	auto* db = DB::Connector::instance();
 	DB::LibraryDatabase* lib_db = db->library_db(m->library->id(), db->db_id());
 
 	bool success = lib_db->store_metadata(v_md);
@@ -205,7 +202,7 @@ void Importer::copy_thread_finished()
 		return;
 	}
 
-	m->db->clean_up();
+	db->clean_up();
 
 	QString str = "";
 	if(n_files_to_copy == n_files_copied) {

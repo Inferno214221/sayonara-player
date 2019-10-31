@@ -34,6 +34,7 @@
 #include "Utils/Language/Language.h"
 #include "Utils/Library/SearchMode.h"
 #include "Utils/Playlist/PlaylistMode.h"
+#include "Utils/Algorithm.h"
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 #include "Utils/ExtensionSet.h"
@@ -82,6 +83,9 @@ AbstractLibrary::AbstractLibrary(QObject *parent) :
 
 	connect(mdcn, &Tagging::ChangeNotifier::sig_metadata_deleted,
 		this, &AbstractLibrary::metadata_changed);
+
+	connect(mdcn, &Tagging::ChangeNotifier::sig_albums_changed,
+		this, &AbstractLibrary::albums_changed);
 }
 
 AbstractLibrary::~AbstractLibrary() = default;
@@ -147,7 +151,7 @@ void AbstractLibrary::refresh_current_view()
 	int i=0;
 	for(const Artist& artist : m->artists)
 	{
-		if(sel_artists.contains(artist.id))
+		if(sel_artists.contains(artist.id()))
 		{
 			sel_artists_idx.insert(i);
 		}
@@ -172,7 +176,7 @@ void AbstractLibrary::refresh_current_view()
 	const MetaDataList& v_md = this->tracks();
 	for(int i=0; i<v_md.count(); i++)
 	{
-		if(sel_tracks.contains(v_md[i].id)) {
+		if(sel_tracks.contains(v_md[i].id())) {
 			sel_tracks_idx.insert(i);
 		}
 	}
@@ -187,18 +191,95 @@ void AbstractLibrary::refresh_current_view()
 	}
 }
 
+
 void AbstractLibrary::metadata_changed()
 {
-	m->num_tracks = get_num_tracks();
-	refresh_current_view();
+	auto* mdcn = static_cast<Tagging::ChangeNotifier*>(sender());
+	QPair<MetaDataList, MetaDataList> changed_tracks = mdcn->changed_metadata();
+
+	bool artists_changed = false;
+	bool albums_changed = false;
+
+	auto& old_tracks = changed_tracks.first;
+	auto& new_tracks = changed_tracks.second;
+
+	QHash<TrackID, int> id_row_map;
+	{ // build lookup tree
+		int i=0;
+		for(auto it=m->tracks.begin(); it != m->tracks.end(); it++, i++)
+		{
+			id_row_map[it->id()] = i;
+		}
+	}
+
+	int changed_idx=0;
+	for(auto it=old_tracks.begin(); it!=old_tracks.end(); it++)
+	{
+		MetaData& new_track = new_tracks[changed_idx];
+		if(it->artist() != new_track.artist()){
+			artists_changed = true;
+		}
+
+		if(it->album_artist() != new_track.album_artist()){
+			artists_changed = true;
+		}
+
+		if(it->album() != new_track.album()){
+			albums_changed = true;
+		}
+
+		if(id_row_map.contains(it->id()))
+		{
+			int row = id_row_map[it->id()];
+			std::swap(m->tracks[row], new_track);
+			emit sig_track_changed(row);
+		}
+
+		changed_idx++;
+	}
+
+	if(artists_changed || albums_changed){
+		refresh_current_view();
+	}
 }
+
+
+void AbstractLibrary::albums_changed()
+{
+	auto* mdcn = static_cast<Tagging::ChangeNotifier*>(sender());
+	QPair<AlbumList, AlbumList> changed_albums = mdcn->changed_albums();
+
+	auto& old_albums = changed_albums.first;
+	auto& new_albums = changed_albums.second;
+
+	QHash<AlbumId, int> id_row_map;
+	{ // build lookup tree
+		int i=0;
+		for(auto it=m->albums.begin(); it != m->albums.end(); it++)
+		{
+			id_row_map[it->id] = i; i++;
+		}
+	}
+
+	int changed_idx=0;
+	for(auto it=old_albums.begin(); it != old_albums.end(); it++, changed_idx++)
+	{
+		if(id_row_map.contains(it->id))
+		{
+			int row = id_row_map[it->id];
+			m->albums[row] = new_albums[changed_idx];
+			emit sig_album_changed(row);
+		}
+	}
+}
+
 
 void AbstractLibrary::find_track(TrackID id)
 {
 	MetaData md;
 	get_track_by_id(id, md);
 
-	if(md.id < 0)
+	if(md.id() < 0)
 	{
 		return;
 	}
@@ -232,18 +313,18 @@ void AbstractLibrary::find_track(TrackID id)
 
 	{ // artist
 		Artist artist;
-		get_artist_by_id(md.artist_id, artist);
+		get_artist_by_id(md.artist_id(), artist);
 		m->artists << artist;
 	}
 
 	{ // album
 		Album album;
-		get_album_by_id(md.album_id, album);
+		get_album_by_id(md.album_id(), album);
 		m->albums << album;
 	}
 
-	get_all_tracks_by_album({md.album_id}, m->tracks, Library::Filter());
-	m->selected_tracks << md.id;
+	get_all_tracks_by_album({md.album_id()}, m->tracks, Library::Filter());
+	m->selected_tracks << md.id();
 
 	emit_stuff();
 }
@@ -368,7 +449,7 @@ void AbstractLibrary::change_artist_selection(const IndexSet& indexes)
 	for(int idx : indexes)
 	{
 		const Artist& artist = m->artists[ size_t(idx) ];
-		selected_artists.insert(artist.id);
+		selected_artists.insert(artist.id());
 	}
 
 	if(selected_artists == m->selected_artists)
@@ -445,7 +526,7 @@ void AbstractLibrary::change_current_disc(Disc disc)
 	{
 		m->tracks.remove_tracks([disc](const MetaData& md)
 		{
-			return (md.discnumber != disc);
+			return (md.discnumber() != disc);
 		});
 	}
 
@@ -545,7 +626,7 @@ void AbstractLibrary::change_album_selection(const IndexSet& indexes, bool ignor
 				}
 
 				else{
-					artist_id = md.artist_id;
+					artist_id = md.artist_id();
 				}
 
 				if(m->selected_artists.contains(artist_id)){
@@ -598,7 +679,7 @@ void AbstractLibrary::change_track_selection(const IndexSet& indexes)
 		const MetaData& md = tracks()[idx];
 
 		m->current_tracks << md;
-		m->selected_tracks.insert(md.id);
+		m->selected_tracks.insert(md.id());
 	}
 }
 

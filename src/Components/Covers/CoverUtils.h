@@ -21,6 +21,11 @@
 #ifndef COVERHELPER_H
 #define COVERHELPER_H
 
+namespace DB
+{
+	class Connector;
+}
+
 class QString;
 class QPixmap;
 /**
@@ -59,6 +64,7 @@ namespace Cover
 
 		void write_cover_to_sayonara_dir(const Cover::Location& cl, const QPixmap& pm);
 		void write_cover_to_db(const Cover::Location& cl, const QPixmap& pm);
+		void write_cover_to_db(const Cover::Location& cl, const QPixmap& pm, DB::Connector* db);
 		void write_cover_to_library(const Cover::Location& cl, const QPixmap& pm);
 
 	}

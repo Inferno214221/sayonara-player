@@ -56,7 +56,7 @@ Id ArtistModel::id_by_index(int row) const
 	}
 
 	else {
-		return artists[row].id;
+		return artists[size_t(row)].id();
 	}
 }
 
@@ -89,7 +89,7 @@ QVariant ArtistModel::data(const QModelIndex & index, int role) const
 	int col = index.column();
 
 	ColumnIndex::Artist idx_col = ColumnIndex::Artist(col);
-	const Artist& artist = artists[row];
+	const Artist& artist = artists[size_t(row)];
 
 	if(role == Qt::TextAlignmentRole)
 	{
@@ -113,7 +113,7 @@ QVariant ArtistModel::data(const QModelIndex & index, int role) const
 				return artist.name();
 
 			case ColumnIndex::Artist::Tracks:
-				return QString::number(artist.num_songs);
+				return QString::number(artist.songcount());
 
 			default:
 				return QVariant();

@@ -20,3 +20,8 @@
  * web radio and podcasts
  */
 
+/**
+ * @defgroup Database Database
+ * @brief Database classes and their relations
+ */
+

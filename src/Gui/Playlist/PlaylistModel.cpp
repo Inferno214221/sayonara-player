@@ -128,7 +128,7 @@ QVariant Model::data(const QModelIndex& index, int role) const
 		}
 
 		else if(col == ColumnName::Time) {
-			auto l = m->pl->track(row).duration_ms;
+			auto l = m->pl->track(row).duration_ms();
 			return Util::cvt_ms_to_string(l, "$M:$S");
 		}
 
@@ -140,7 +140,7 @@ QVariant Model::data(const QModelIndex& index, int role) const
 		if(col == ColumnName::Description )
 		{
 			MetaData md = m->pl->track(row);
-			Rating rating = metadata(row).rating;
+			Rating rating = metadata(row).rating();
 
 			if(md.radio_mode() != RadioMode::Off)
 			{
@@ -191,15 +191,15 @@ QVariant Model::data(const QModelIndex& index, int role) const
 		{
 			MetaData md = m->pl->track(row);
 
-			if(!m->pms.contains(md.album_id))
+			if(!m->pms.contains(md.album_id()))
 			{
 				int height = m->row_height - 6;
 
 				Cover::Location cl = Cover::Location::cover_location(md);
-				m->pms[md.album_id] = QPixmap(cl.preferred_path()).scaled(height, height, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+				m->pms[md.album_id()] = QPixmap(cl.preferred_path()).scaled(height, height, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 			}
 
-			return m->pms[md.album_id];
+			return m->pms[md.album_id()];
 		}
 	}
 
@@ -244,7 +244,7 @@ Qt::ItemFlags Model::flags(const QModelIndex &index) const
 	if(Util::between(row, m->pl->count()))
 	{
 		const MetaData& md = metadata(row);
-		if(md.is_disabled){
+		if(md.is_disabled()){
 			return Qt::NoItemFlags;
 		}
 	}
@@ -294,7 +294,7 @@ IndexSet Model::move_rows_down(const IndexSet& indexes)
 		return IndexSet();
 	}
 
-	return move_rows(indexes, min_row + indexes.size() + 1);
+	return move_rows(indexes, min_row + int(indexes.size()) + 1);
 }
 
 IndexSet Model::copy_rows(const IndexSet& indexes, int target_index)
@@ -310,10 +310,10 @@ void Model::change_rating(const IndexSet& indexes, Rating rating)
 	for(auto idx : indexes)
 	{
 		MetaData md = m->pl->track(idx);
-		if(rating != md.rating)
+		if(rating != md.rating())
 		{
 			v_md << md;
-			md.rating = rating;
+			md.set_rating(rating);
 
 			m->pl->replace_track(idx, md);
 		}
@@ -468,7 +468,7 @@ QMimeData* Model::mimeData(const QModelIndexList& indexes) const
 	});
 
 	MetaDataList v_md;
-	v_md.reserve(rows.size());
+	v_md.reserve( size_t(rows.size()) );
 
 	for(int row : Algorithm::AsConst(rows))
 	{

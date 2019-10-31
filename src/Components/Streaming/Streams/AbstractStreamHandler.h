@@ -34,7 +34,8 @@ using StreamMap=QMap<QString, QString>;
  * accessed via the get_tracks() method.
  * @ingroup Streams
  */
-class AbstractStreamHandler : public QObject
+class AbstractStreamHandler :
+	public QObject
 {
 	Q_OBJECT
 	PIMPL(AbstractStreamHandler)

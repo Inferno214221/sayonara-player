@@ -85,7 +85,7 @@ void DirectoryModel::create_file_list(const QString& substr)
 	filter.set_filtertext(substr, search_mode());
 	filter.set_mode(Library::Filter::Mode::Filename);
 
-	DB::Connector* db = DB::Connector::instance();
+	auto* db = DB::Connector::instance();
 	DB::LibraryDatabases library_dbs = db->library_dbs();
 
 	for(DB::LibraryDatabase* lib_db : library_dbs)

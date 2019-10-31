@@ -40,8 +40,8 @@ template<typename T, int N_ITEMS>
 class RingBuffer
 {
 private:
-	int _cur_idx;
-	int _n_items;
+	size_t _cur_idx;
+	size_t _n_items;
 	std::array<T, N_ITEMS> _data;
 
 public:
@@ -60,7 +60,7 @@ public:
 	{
 		_data[_cur_idx] = item;
 		_cur_idx = (_cur_idx + 1) % N_ITEMS;
-		_n_items = std::min(N_ITEMS, _n_items + 1);
+		_n_items = std::min<size_t>(N_ITEMS, _n_items + 1);
 	}
 
 	bool has_item(const T& item) const
@@ -71,7 +71,7 @@ public:
 
 	int count() const
 	{
-		return _n_items;
+		return int(_n_items);
 	}
 
 	bool is_empty() const
@@ -156,12 +156,12 @@ MilliSeconds PlayManager::initial_position_ms() const
 
 MilliSeconds PlayManager::duration_ms() const
 {
-	return m->md.duration_ms;
+	return m->md.duration_ms();
 }
 
 Bitrate PlayManager::bitrate() const
 {
-	return m->md.bitrate;
+	return m->md.bitrate();
 }
 
 const MetaData& PlayManager::current_track() const
@@ -351,12 +351,12 @@ void PlayManager::change_track_metadata(const MetaData& md)
 		if( m->ring_buffer.count() > 0 )
 		{
 			md_old.set_album("");
-			md_old.is_disabled = true;
+			md_old.set_disabled(true);
 			md_old.set_filepath("");
 
 			QDateTime date = QDateTime::currentDateTime();
 			QTime time = date.time();
-			md_old.duration_ms = (time.hour() * 60 + time.minute()) * 1000;
+			md_old.set_duration_ms((time.hour() * 60 + time.minute()) * 1000);
 
 			emit sig_www_track_finished(md_old);
 		}
@@ -439,13 +439,13 @@ void PlayManager::error(const QString& message)
 
 void PlayManager::change_duration(MilliSeconds ms)
 {
-	m->md.duration_ms = ms;
+	m->md.set_duration_ms(ms);
 	emit sig_duration_changed();
 }
 
 void PlayManager::change_bitrate(Bitrate br)
 {
-	m->md.bitrate = br;
+	m->md.set_bitrate(br);
 	emit sig_bitrate_changed();
 }
 

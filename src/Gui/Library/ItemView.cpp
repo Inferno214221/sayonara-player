@@ -46,6 +46,7 @@
 #include "Gui/Utils/Shortcuts/Shortcut.h"
 #include "Gui/Utils/CustomMimeData.h"
 #include "Gui/Utils/Library/MergeMenu.h"
+#include "Gui/Utils/Icons.h"
 
 #include <QKeySequence>
 #include <QDrag>
@@ -251,7 +252,6 @@ void ItemView::set_selection_type(SelectionViewInterface::SelectionType type)
 	}
 }
 
-
 void ItemView::show_clear_button(bool visible)
 {
 	if(!m->use_clear_button)
@@ -262,13 +262,15 @@ void ItemView::show_clear_button(bool visible)
 	if(!m->btn_clear_selection)
 	{
 		m->btn_clear_selection = new QPushButton(this);
-		m->btn_clear_selection->setText(tr("Clear selection"));
 
 		connect(m->btn_clear_selection, &QPushButton::clicked, this, [=](){
 			this->clearSelection();
 			m->btn_clear_selection->hide();
 		});
 	}
+
+	m->btn_clear_selection->setText(tr("Clear selection"));
+	m->btn_clear_selection->setIcon(Gui::Icons::icon(Gui::Icons::Delete));
 
 	{ // little hack to use vieport_height() and ..width() method
 		m->btn_clear_selection->setVisible(false);

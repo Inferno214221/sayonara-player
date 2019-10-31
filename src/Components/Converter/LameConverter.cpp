@@ -58,9 +58,9 @@ QStringList LameConverter::process_entry(const MetaData& md) const
 		QString("--tt"), QString("%1").arg(md.title()).toUtf8().data(),
 		QString("--ta"), QString("%1").arg(md.artist().toUtf8().data()),
 		QString("--tl"), QString("%1").arg(md.album()).toUtf8().data(),
-		QString("--ty"), QString("%1").arg(md.year).toUtf8().data(),
+		QString("--ty"), QString("%1").arg(md.year()).toUtf8().data(),
 		QString("--tc"), QString("%1").arg(md.comment()).toUtf8().data(),
-		QString("--tn"), QString("%1").arg(md.track_num).toUtf8().data(),
+		QString("--tn"), QString("%1").arg(md.track_number()).toUtf8().data(),
 		QString("--tg"), QString("%1").arg(md.genres_to_list().join(",")).toUtf8().data(),
 	};
 

@@ -180,7 +180,7 @@ void GUI_StreamRecorderPreferences::sl_line_edit_changed(const QString& new_text
 	md.set_title("Happy Song");
 	md.set_artist("Al White");
 	md.set_album("Rock Radio");
-	md.track_num = 1;
+	md.set_track_number(1);
 
 	int err_idx;
 	SR::Utils::ErrorCode err = SR::Utils::validate_template(template_text, &err_idx);

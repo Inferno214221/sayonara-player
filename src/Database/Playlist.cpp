@@ -154,35 +154,42 @@ bool DB::Playlist::getPlaylistSkeletonById(CustomPlaylistSkeleton& skeleton)
 
 bool DB::Playlist::getPlaylistById(CustomPlaylist& pl)
 {
-	if(!getPlaylistSkeletonById(pl)){
+	if(!getPlaylistSkeletonById(pl))
+	{
 		sp_log(Log::Warning, this) << "Get playlist by id: cannot fetch skeleton id " << pl.id();
 		return false;
 	}
 
 	pl.clear();
 
+	QStringList fields
+	{
+		"tracks.trackID			AS trackID",		// 0
+		"tracks.title			AS title",			// 1
+		"tracks.length			AS length",			// 2
+		"tracks.year			AS year",			// 3
+		"tracks.bitrate			AS bitrate",		// 4
+		"tracks.filename		AS filename",		// 5
+		"tracks.track			AS trackNum",		// 6
+		"albums.albumID			AS albumID",		// 7
+		"artists.artistID		AS artistID",		// 8
+		"albums.name			AS albumName",		// 9
+		"artists.name			AS artistName",		// 10
+		"tracks.genre			AS genrename",		// 11
+		"tracks.filesize		AS filesize",		// 12
+		"tracks.discnumber		AS discnumber",		// 13
+		"tracks.rating			AS rating",			// 14
+		"playlistToTracks.filepath AS filepath",	// 15
+		"playlistToTracks.db_id AS db_id",			// 16
+		"tracks.libraryID		AS library_id",		// 17
+		"tracks.createdate		AS createdate",		// 18
+		"tracks.modifydate		AS modifydate"		// 19
+	};
+
 	Query q = run_query
 	(
 		"SELECT "
-		"tracks.trackID AS trackID, "				// 0
-		"tracks.title AS title, "					// 1
-		"tracks.length AS length, "					// 2
-		"tracks.year AS year, "						// 3
-		"tracks.bitrate AS bitrate, "				// 4
-		"tracks.filename AS filename, "				// 5
-		"tracks.track AS trackNum, "				// 6
-		"albums.albumID AS albumID, "				// 7
-		"artists.artistID AS artistID, "			// 8
-		"albums.name AS albumName, "				// 9
-		"artists.name AS artistName, "				// 10
-		"tracks.genre AS genrename, "				// 11
-		"tracks.filesize AS filesize, "				// 12
-		"tracks.discnumber AS discnumber, "			// 13
-		"tracks.rating AS rating, "					// 14
-		"playlistToTracks.filepath AS filepath, "	// 15
-		"playlistToTracks.db_id AS db_id, "			// 16
-		"tracks.libraryID AS library_id "			// 17
-
+		+ fields.join(", ") + " " +
 		"FROM tracks, albums, artists, playlists, playlisttotracks "
 		"WHERE playlists.playlistID = :playlist_id "
 		"AND playlists.playlistID = playlistToTracks.playlistID "
@@ -202,25 +209,26 @@ bool DB::Playlist::getPlaylistById(CustomPlaylist& pl)
 		{
 			MetaData data;
 
-			data.id = 		 q.value(0).toInt();
+			data.set_id(q.value(0).toInt());
 			data.set_title(q.value(1).toString());
-			data.duration_ms = q.value(2).toInt();
-			data.year = 	 q.value(3).value<uint16_t>();
-			data.bitrate = 	 q.value(4).value<Bitrate>();
+			data.set_duration_ms(q.value(2).toInt());
+			data.set_year(q.value(3).value<Year>());
+			data.set_bitrate(q.value(4).value<Bitrate>());
 			data.set_filepath(q.value(5).toString());
-			data.track_num = q.value(6).value<uint16_t>();
-			data.album_id =  q.value(7).toInt();
-			data.artist_id = q.value(8).toInt();
+			data.set_track_number(q.value(6).value<TrackNum>());
+			data.set_album_id(q.value(7).toInt());
+			data.set_artist_id(q.value(8).toInt());
 			data.set_album(q.value(9).toString().trimmed());
 			data.set_artist(q.value(10).toString().trimmed());
 			QStringList genres = q.value(11).toString().split(",");
 			data.set_genres(genres);
-			data.filesize =  q.value(12).value<Filesize>();
-			data.discnumber = q.value(13).value<Disc>();
-			data.rating = q.value(14).value<Rating>();
-			data.library_id = q.value(17).value<LibraryId>();
-
-			data.is_extern = false;
+			data.set_filesize(q.value(12).value<Filesize>());
+			data.set_discnumber(q.value(13).value<Disc>());
+			data.set_rating(q.value(14).value<Rating>());
+			data.set_library_id(q.value(17).value<LibraryId>());
+			data.set_createdate(q.value(18).value<uint64_t>());
+			data.set_modifydate(q.value(19).value<uint64_t>());
+			data.set_extern(false);
 			data.set_db_id(db_id());
 
 			if(q.value(16).toInt() == 0 || q.value(16).isNull()){
@@ -255,8 +263,8 @@ bool DB::Playlist::getPlaylistById(CustomPlaylist& pl)
 
 		QString filepath = q2.value(0).toString();
 		MetaData data(filepath);
-		data.id = -1;
-		data.is_extern = true;
+		data.set_id(-1);
+		data.set_extern(true);
 		data.set_title(filepath);
 		data.set_artist(filepath);
 		data.set_db_id(db_id());
@@ -304,13 +312,13 @@ int DB::Playlist::getPlaylistIdByName(const QString& name)
 
 bool DB::Playlist::insertTrackIntoPlaylist(const MetaData& md, int playlist_id, int pos)
 {
-	if(md.is_disabled) {
+	if(md.is_disabled()) {
 		return false;
 	}
 
 	Query q = insert("playlisttotracks",
 	{
-		{"trackid", md.id},
+		{"trackid", md.id()},
 		{"playlistid", playlist_id},
 		{"position", pos},
 		{"filepath", Util::cvt_not_null(md.filepath())},

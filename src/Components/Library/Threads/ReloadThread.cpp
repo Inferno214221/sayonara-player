@@ -112,10 +112,10 @@ bool compare_md(const MetaData& md1, const MetaData& md2)
 	return (md1.title() == md2.title() &&
 			md1.album() == md2.album() &&
 			md1.artist() == md2.artist() &&
-			md1.year == md2.year &&
-			md1.rating == md2.rating &&
-			md1.discnumber == md2.discnumber &&
-			md1.track_num == md2.track_num &&
+			md1.year() == md2.year() &&
+			md1.rating() == md2.rating() &&
+			md1.discnumber() == md2.discnumber() &&
+			md1.track_number() == md2.track_number() &&
 			md1.album_artist() == md2.album_artist() &&
 			md1.album_artist_id() == md2.album_artist_id()
 	);
@@ -129,7 +129,7 @@ bool ReloadThread::get_and_save_all_files(const QHash<QString, MetaData>& md_map
 		return false;
 	}
 
-	DB::Connector* db = DB::Connector::instance();
+	auto* db = DB::Connector::instance();
 	DB::Library* db_library = db->library_connector();
 
 	QDir dir(library_path);
@@ -151,14 +151,14 @@ bool ReloadThread::get_and_save_all_files(const QHash<QString, MetaData>& md_map
 
 		bool file_was_read = false;
 		MetaData md(filepath);
-		md.library_id = m->library_id;
+		md.set_library_id(m->library_id);
 
 		const MetaData& md_lib = md_map_lib[filepath];
 
 		int progress = (cur_idx_files++ * 100) / n_files;
 		emit sig_reloading_library(Lang::get(Lang::ReloadLibrary).triplePt(), progress);
 
-		if(md_lib.id >= 0) // found in library
+		if(md_lib.id() >= 0) // found in library
 		{
 			if(m->quality == Library::ReloadQuality::Fast){
 				continue;
@@ -171,7 +171,7 @@ bool ReloadThread::get_and_save_all_files(const QHash<QString, MetaData>& md_map
 			}
 
 			// file is already in library
-			if( md_lib.duration_ms > 1000 && md_lib.duration_ms < 3600000 && compare_md(md, md_lib)){
+			if( md_lib.duration_ms() > 1000 && md_lib.duration_ms() < 3600000 && compare_md(md, md_lib)){
 				continue;
 			}
 		}
@@ -209,7 +209,7 @@ void ReloadThread::store_metadata_block(const MetaDataList& v_md)
 {
 	using StringSet=::Util::Set<QString>;
 
-	DB::Connector* db = DB::Connector::instance();
+	auto* db = DB::Connector::instance();
 	DB::Covers* db_covers = db->cover_connector();
 	DB::LibraryDatabase* lib_db = db->library_db(m->library_id, db->db_id());
 
@@ -359,7 +359,7 @@ void ReloadThread::run()
 		return;
 	}
 
-	DB::Connector* db = DB::Connector::instance();
+	auto* db = DB::Connector::instance();
 	DB::LibraryDatabase* lib_db = db->library_db(m->library_id, 0);
 
 	m->may_run = true;

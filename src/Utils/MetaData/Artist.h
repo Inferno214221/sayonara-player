@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _ARTIST_H_
-#define _ARTIST_H_
+#ifndef SAYONARA_ARTIST_H_
+#define SAYONARA_ARTIST_H_
 
 #include "Utils/MetaData/LibraryItem.h"
 #include "Utils/Library/Sortorder.h"
@@ -39,10 +39,6 @@ class Artist :
 	PIMPL(Artist)
 
 public:
-	ArtistId id;
-	uint16_t num_albums;
-	uint16_t num_songs;
-
 	Artist();
 	Artist(const Artist& other);
 	Artist(Artist&& other) noexcept;
@@ -58,6 +54,15 @@ public:
 	static bool fromVariant(const QVariant& v, Artist& a);
 	static QVariant toVariant(const Artist& a);
 	void print() const ;
+
+	uint16_t albumcount() const;
+	void set_albumcount(const uint16_t& value);
+
+	uint16_t songcount() const;
+	void set_songcount(const uint16_t& value);
+
+	ArtistId id() const;
+	void set_id(const ArtistId& value);
 };
 
 

@@ -194,8 +194,7 @@ Manager::Manager() :
 	m->init_symlinks();
 }
 
-Manager::~Manager() {}
-
+Manager::~Manager() = default;
 
 void Manager::reset()
 {
@@ -266,11 +265,11 @@ LibraryId Manager::add_library(const QString& name, const QString& path)
 
 	m->all_libs << info;
 
-	DB::Connector* connector = DB::Connector::instance();
-	DB::LibraryDatabase* lib_db = connector->register_library_db(id);
+	auto* db = DB::Connector::instance();
+	DB::LibraryDatabase* lib_db = db->register_library_db(id);
 	lib_db->deleteAllTracks(false); // maybe some corpses from earlier days
 
-	DB::Library* ldb = connector->library_connector();
+	DB::Library* ldb = db->library_connector();
 	bool success = ldb->insert_library(id, name, path, 0);
 	if(!success){
 		return -1;
@@ -306,8 +305,8 @@ bool Manager::rename_library(LibraryId id, const QString& new_name)
 	Info new_info = Info(new_name, old_info.path(), old_info.id());
 	*it = new_info;
 
-	DB::Connector* connector = DB::Connector::instance();
-	DB::Library* ldb = connector->library_connector();
+	auto* db = DB::Connector::instance();
+	DB::Library* ldb = db->library_connector();
 	bool success = ldb->edit_library(old_info.id(), new_name, old_info.path());
 
 	if(success)
@@ -340,10 +339,10 @@ bool Manager::remove_library(LibraryId id)
 		QFile::remove(info.symlink_path());
 	}
 
-	DB::Connector* connector = DB::Connector::instance();
-	connector->delete_library_db(id);
+	auto* db = DB::Connector::instance();
+	db->delete_library_db(id);
 
-	DB::Library* ldb = connector->library_connector();
+	DB::Library* ldb = db->library_connector();
 	bool success = ldb->remove_library(id);
 
 	OrderMap order_map = m->order_map();
@@ -400,8 +399,8 @@ bool Manager::change_library_path(LibraryId id, const QString& new_path)
 	QFile::remove(old_info.symlink_path());
 	File::create_symlink(new_info.path(), new_info.symlink_path());
 
-	DB::Connector* connector = DB::Connector::instance();
-	DB::LibraryDatabase* lib_db = connector->library_db(id, connector->db_id());
+	auto* db = DB::Connector::instance();
+	DB::LibraryDatabase* lib_db = db->library_db(id, db->db_id());
 	if(lib_db->library_id() >= 0)
 	{
 		lib_db->deleteAllTracks(false);
@@ -415,7 +414,7 @@ bool Manager::change_library_path(LibraryId id, const QString& new_path)
 		}
 	}
 
-	DB::Library* ldb = connector->library_connector();
+	DB::Library* ldb = db->library_connector();
 	bool success = ldb->edit_library(old_info.id(), old_info.name(), new_path);
 
 	if(success){

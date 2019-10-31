@@ -77,20 +77,34 @@ QString cvtNum2String(T num, int digits) {
 
 uint64_t Util::date_to_int(const QDateTime& date_time)
 {
-	QString str = date_time.toUTC().toString("yyMMddHHmmss");
+	QString str = date_time.toUTC().toString("yyyyMMddHHmmss");
 	return str.toULongLong();
 }
 
 QDateTime Util::int_to_date(uint64_t date)
 {
 	QString str = QString::number(qulonglong(date));
-	return QDateTime::fromString(str, "yyMMddHHmmss");
+	QDateTime dt;
+	if(str.size() == 12)
+	{
+		dt = QDateTime::fromString(str, "yyMMddHHmmss");
+		QDate date = dt.date();
+		date.setDate(date.year() + 100, date.month(), date.day());
+		dt.setDate(date);
+	}
+
+	else
+	{
+		dt = QDateTime::fromString(str, "yyyyMMddHHmmss");
+	}
+
+	return dt;
 }
 
 
 uint64_t Util::current_date_to_int()
 {
-	QString str = QDateTime::currentDateTimeUtc().toString("yyMMddHHmmss");
+	QString str = QDateTime::currentDateTimeUtc().toString("yyyyMMddHHmmss");
 	return str.toULongLong();
 }
 

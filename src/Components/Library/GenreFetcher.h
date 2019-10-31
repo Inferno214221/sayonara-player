@@ -52,7 +52,7 @@ private:
 
 public:
 	explicit GenreFetcher(QObject* parent=nullptr);
-	~GenreFetcher();
+	~GenreFetcher() override;
 
 	Util::Set<Genre> genres() const;
 
@@ -67,7 +67,5 @@ public:
 public slots:
 	void reload_genres();
 };
-
-
 
 #endif // GENREFETCHER_H
