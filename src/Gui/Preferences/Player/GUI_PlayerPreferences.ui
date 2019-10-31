@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>202</height>
+    <height>211</height>
    </rect>
   </property>
   <layout class="QGridLayout" name="gridLayout">
@@ -48,7 +48,7 @@
    <item row="3" column="0">
     <widget class="QCheckBox" name="cb_close_to_tray">
      <property name="text">
-      <string>Hide instead of closing</string>
+      <string>Hide instead of close</string>
      </property>
     </widget>
    </item>
