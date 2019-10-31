@@ -15,7 +15,7 @@
 namespace SR=StreamRecorder;
 
 class StreamRecorderTest :
-		public SayonaraTest
+		public Test::Base
 {
 	Q_OBJECT
 
@@ -23,7 +23,7 @@ class StreamRecorderTest :
 
 public:
 	StreamRecorderTest();
-
+	~StreamRecorderTest()=default;
 
 private slots:
 	void target_path_template_test();
@@ -33,11 +33,8 @@ private slots:
 };
 
 StreamRecorderTest::StreamRecorderTest() :
-	SayonaraTest("StreamRecorderTest")
+	Test::Base("StreamRecorderTest")
 {
-	Settings* s = Settings::instance();
-	s->check_settings();
-
 	SetSetting(Set::Engine_SR_Path, temp_path());
 	SetSetting(SetNoDB::MP3enc_found, true);
 	SetSetting(Set::Engine_SR_Active, true);
@@ -46,7 +43,6 @@ StreamRecorderTest::StreamRecorderTest() :
 
 	sr = new SR::StreamRecorder(this);
 }
-
 
 void StreamRecorderTest::target_path_template_test()
 {

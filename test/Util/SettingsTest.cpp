@@ -9,13 +9,13 @@
 #include "Utils/FileUtils.h"
 #include "Utils/Utils.h"
 
-class SettingsTest : public SayonaraTest
+class SettingsTest : public Test::Base
 {
 	Q_OBJECT
 
 public:
 	SettingsTest() :
-		SayonaraTest("SettingsTest")
+		Test::Base("SettingsTest")
 	{}
 
 	~SettingsTest() override = default;
@@ -26,22 +26,20 @@ private slots:
 
 void SettingsTest::test_registry()
 {
+	auto* db = DB::Connector::instance();
+	QVERIFY(db->db().isOpen());
+
 	Settings* s = Settings::instance();
-	bool checked = s->check_settings();
-	QVERIFY(checked == true);
+	QVERIFY(s->check_settings());
 
 	//QVERIFY(GetSetting(Set::Player_Language) == QLocale().name());
 	QVERIFY(GetSetting(Set::Player_PublicId).isEmpty());
 	QVERIFY(GetSetting(Set::Player_PrivId).isEmpty());
 
-	auto* db = DB::Connector::instance();
-
-	QVERIFY(db->db().isOpen());
-
-	QList<SettingKey> keys;
-
 	QString db_version;
 	db->settings_connector()->load_setting("version", db_version);
+
+	QList<SettingKey> keys;
 	db->settings_connector()->load_settings(keys);
 
 	{
@@ -134,7 +132,6 @@ void SettingsTest::test_registry()
 		QVERIFY(GetSetting(Set::Logger_Level) == 0);
 	}
 }
-
 
 QTEST_GUILESS_MAIN(SettingsTest)
 

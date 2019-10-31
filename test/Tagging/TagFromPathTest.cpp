@@ -3,13 +3,13 @@
 #include "Components/Tagging/Expression.h"
 #include "Utils/MetaData/MetaDataList.h"
 
-class TagFromPathTest : public SayonaraTest
+class TagFromPathTest : public Test::Base
 {
 	Q_OBJECT
 
 public:
 	TagFromPathTest() :
-		SayonaraTest("TagFromPathTest")
+		Test::Base("TagFromPathTest")
 	{}
 
 	~TagFromPathTest() override = default;

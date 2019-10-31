@@ -1,23 +1,26 @@
-#ifndef SAYONARATEST_H
-#define SAYONARATEST_H
+#ifndef SAYONARA_TEST_H
+#define SAYONARA_TEST_H
 
 #include <QTest>
 #include <QDebug>
 #include <QObject>
 
-class SayonaraTest : public QObject
+namespace Test
 {
-	Q_OBJECT
+	class Base : public QObject
+	{
+		Q_OBJECT
 
-private:
-	QString mTmpPath;
+	private:
+		QString mTmpPath;
 
-public:
-	SayonaraTest(const QString& test_name);
-	virtual ~SayonaraTest() override;
+	public:
+		Base(const QString& test_name);
+		virtual ~Base() override;
 
-	QString temp_path() const;
-	QString temp_path(const QString& append) const;
-};
+		QString temp_path() const;
+		QString temp_path(const QString& append) const;
+	};
+}
 
-#endif // SAYONARATEST_H
+#endif // SAYONARA_TEST_H

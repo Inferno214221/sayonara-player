@@ -2,13 +2,13 @@
 #include "Gui/Utils/Shortcuts/ShortcutHandler.h"
 
 class ShortcutIdentifierTest :
-	public SayonaraTest
+	public Test::Base
 {
 	Q_OBJECT
 
 public:
 	ShortcutIdentifierTest() :
-		SayonaraTest("ShortcutIdentifierTest")
+		Test::Base("ShortcutIdentifierTest")
 	{}
 
 private slots:

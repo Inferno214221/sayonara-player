@@ -9,13 +9,13 @@
 using PL=Playlist::Playlist;
 
 class PlaylistTest :
-	public SayonaraTest
+	public Test::Base
 {
 	Q_OBJECT
 
 public:
 	PlaylistTest() :
-		SayonaraTest("PlaylistTest")
+		Test::Base("PlaylistTest")
 	{}
 
 private slots:

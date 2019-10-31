@@ -11,7 +11,7 @@
 #include <QMap>
 
 class AlbumTest :
-	public SayonaraTest
+	public Test::Base
 {
 	Q_OBJECT
 
@@ -21,7 +21,7 @@ private:
 
 public:
 	AlbumTest() :
-		SayonaraTest("AlbumTest")
+		Test::Base("AlbumTest")
 	{}
 
 	~AlbumTest() override = default;

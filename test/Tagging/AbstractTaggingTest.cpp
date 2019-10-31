@@ -8,7 +8,7 @@
 #include <QTest>
 
 AbstractTaggingTest::AbstractTaggingTest(const QString& testname) :
-	SayonaraTest(testname)
+	Test::Base(testname)
 {}
 
 void AbstractTaggingTest::id3_test()

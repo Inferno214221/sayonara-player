@@ -17,7 +17,7 @@
 using namespace Tagging;
 
 class EditorTest :
-	public SayonaraTest
+	public Test::Base
 {
 	Q_OBJECT
 
@@ -37,7 +37,7 @@ private slots:
 };
 
 EditorTest::EditorTest() :
-	SayonaraTest("EditorTest")
+	Test::Base("EditorTest")
 {
 	auto* db = DB::Connector::instance();
 	db->register_library_db(0);
