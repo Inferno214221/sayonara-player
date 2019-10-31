@@ -60,7 +60,7 @@ void Session::track_changed(const MetaData& md)
 {
 	uint64_t cur_date = Util::current_date_to_int();
 
-	DB::Connector* db = DB::Connector::instance();
+	auto* db = DB::Connector::instance();
 	DB::Session* session_connector = db->session_connector();
 
 	session_connector->add_track(m->session_id, cur_date, md);
@@ -68,7 +68,7 @@ void Session::track_changed(const MetaData& md)
 
 QMap<QDateTime, MetaDataList> Session::get_history(QDateTime beginning)
 {
-	DB::Connector* db = DB::Connector::instance();
+	auto* db = DB::Connector::instance();
 	DB::Session* session_connector = db->session_connector();
 	DB::LibraryDatabase* track_connector = db->library_db(-1, db->db_id());
 

@@ -18,13 +18,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _LIBRARY_ITEM_H_
-#define _LIBRARY_ITEM_H_
+#ifndef SAYONARA_LIBRARY_ITEM_H_
+#define SAYONARA_LIBRARY_ITEM_H_
 
 #include "Utils/Pimpl.h"
 #include <QHash>
 
 using HashValue=uint32_t;
+using UniqueId=uint64_t;
 
 class CustomField;
 using CustomFieldList=QList<CustomField>;
@@ -90,12 +91,12 @@ public:
 
 	virtual void print() const;
 
+	UniqueId unique_id() const;
+
 protected:
 	static QHash<HashValue, QString>& album_pool();
 	static QHash<HashValue, QString>& artist_pool();
 };
-
-
 
 #endif
 

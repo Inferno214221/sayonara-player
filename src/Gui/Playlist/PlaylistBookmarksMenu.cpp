@@ -91,7 +91,7 @@ void BookmarksMenu::bookmarks_changed()
 	}
 
 	this->addSeparator();
-	QAction* edit_action = new QAction(Gui::Icons::icon(Gui::Icons::Edit), Lang::get(Lang::Edit), this);
+	auto* edit_action = new QAction(Gui::Icons::icon(Gui::Icons::Edit), Lang::get(Lang::Edit), this);
 	this->addAction(edit_action);
 
 	connect(edit_action, &QAction::triggered, [](){
@@ -99,15 +99,16 @@ void BookmarksMenu::bookmarks_changed()
 		pph->show_plugin("Bookmarks");
 	});
 
-	PlayManager* pm = PlayManager::instance();
-	edit_action->setEnabled(
-		metadata().id == pm->current_track().id
+	auto* pm = PlayManager::instance();
+	edit_action->setEnabled
+	(
+		(metadata().id() == pm->current_track().id())
 	);
 }
 
 void BookmarksMenu::action_pressed()
 {
-	QAction* action = dynamic_cast<QAction*>(sender());
+	auto* action = dynamic_cast<QAction*>(sender());
 	Seconds time = Seconds(action->data().toInt());
 
 	emit sig_bookmark_pressed(time);

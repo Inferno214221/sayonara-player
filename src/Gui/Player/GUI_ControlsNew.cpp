@@ -71,14 +71,13 @@ void GUI_ControlsNew::rating_changed_here(bool save)
 
 	if(!save)
 	{
-		ui->widget_rating->set_rating(md.rating);
+		ui->widget_rating->set_rating(md.rating());
 		return;
 	}
 
 	Rating rating = ui->widget_rating->rating();
 
-
-	Tagging::UserOperations* uto = new Tagging::UserOperations(md.library_id, this);
+	auto* uto = new Tagging::UserOperations(md.library_id(), this);
 	connect(uto, &Tagging::UserOperations::sig_finished, uto, &QObject::deleteLater);
 	uto->set_track_rating(md, rating);
 }

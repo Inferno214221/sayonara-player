@@ -29,7 +29,7 @@ class QDir;
  * @brief Directory reader functions
  * @ingroup Helper
  */
-class DirectoryReader final
+class DirectoryReader
 {
 	PIMPL(DirectoryReader)
 

@@ -1,20 +1,22 @@
-#include <QTest>
-#include <QObject>
-#include <QRegExp>
+#include "SayonaraTest.h"
+
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Filepath.h"
 #include "Utils/Macros.h"
 
-class FileHelperTest : public QObject
+#include <QRegExp>
+
+class FileHelperTest : public Test::Base
 {
-	Q_OBJECT
+	Q_OBJECT	
 
 public:
-	FileHelperTest()
-	{
-		Q_INIT_RESOURCE(Resources);
-	}
+	FileHelperTest() :
+		Test::Base("FileHelperTest")
+	{}
+
+	~FileHelperTest() override = default;
 
 private slots:
 	void test();
@@ -52,9 +54,9 @@ void FileHelperTest::create_and_delete()
 	QStringList to_be_deleted;
 
 	/** Absolute **/
-	new_dir = "/tmp/sayonara/some/absolute/filepath";
+	new_dir = temp_path("some/absolute/filepath");
 	new_file = new_dir + "/file.out";
-	to_be_deleted << "/tmp/sayonara";
+	to_be_deleted << temp_path("some");
 
 	QVERIFY(is_absolute(new_file));
 
@@ -65,13 +67,13 @@ void FileHelperTest::create_and_delete()
 	write_file("Some data", new_file);
 	QVERIFY(check_file(new_file));
 	delete_files(to_be_deleted);
-	QVERIFY( !check_file("/tmp/sayonara") );
+	QVERIFY( !check_file(temp_path("some")) );
 
 	/** Relative **/
 	to_be_deleted.clear();
-	new_dir = "./tmp/sayonara/some/relative/filepath";
+	new_dir = "." + temp_path("some/relative/filepath");
 	new_file = new_dir + "/file.out";
-	to_be_deleted << "./tmp";
+	to_be_deleted << "." + temp_path("some");
 
 	QVERIFY(!is_absolute(new_file));
 
@@ -82,7 +84,7 @@ void FileHelperTest::create_and_delete()
 	write_file("Some data", new_file);
 	QVERIFY(check_file(new_file));
 	delete_files(to_be_deleted);
-	QVERIFY( !check_file("./tmp") );
+	QVERIFY( !check_file("." +  temp_path("some")) );
 }
 
 void FileHelperTest::common_path_test()
@@ -90,16 +92,16 @@ void FileHelperTest::common_path_test()
 	QString ret;
 	QStringList files;
 
-	files << "/tmp/path/to/some/directory/bla.txt";
-	files << "/tmp/path/to/some/directory/bla2.txt";
+	files << temp_path("path/to/some/directory/bla.txt");
+	files << temp_path("path/to/some/directory/bla2.txt");
 
-	Util::File::create_directories("/tmp/path/to/some/directory");
-	Util::File::create_directories("/tmp/other/path/to/somewhere");
-	Util::File::create_directories("/tmp/path/to/some/really/long/directory");
+	Util::File::create_directories(temp_path("path/to/some/directory"));
+	Util::File::create_directories(temp_path("other/path/to/somewhere"));
+	Util::File::create_directories(temp_path("path/to/some/really/long/directory"));
 
-	QFile f1("/tmp/path/to/some/directory/bla.txt");
-	QFile f2("/tmp/path/to/some/directory/bla2.txt");
-	QFile f3("/tmp/path/to/some/file.txt");
+	QFile f1(temp_path("path/to/some/directory/bla.txt"));
+	QFile f2(temp_path("path/to/some/directory/bla2.txt"));
+	QFile f3(temp_path("path/to/some/file.txt"));
 
 	f1.open(QFile::WriteOnly);
 	f1.write("bla");
@@ -114,21 +116,21 @@ void FileHelperTest::common_path_test()
 	f3.close();
 
 	ret = Util::File::get_common_directory(files);
-	QVERIFY(ret.compare("/tmp/path/to/some/directory") == 0);
+	QVERIFY(ret.compare(temp_path("path/to/some/directory")) == 0);
 
-	files << "/tmp/path/to/some/file.txt";
+	files << temp_path("path/to/some/file.txt");
 	ret = Util::File::get_common_directory(files);
-	QVERIFY(ret.compare("/tmp/path/to/some") == 0);
+	QVERIFY(ret.compare(temp_path("path/to/some")) == 0);
 
-	files << "/tmp/path/to/some/really/long/directory";
+	files << temp_path("path/to/some/really/long/directory");
 	ret = Util::File::get_common_directory(files);
-	QVERIFY(ret.compare("/tmp/path/to/some") == 0);
+	QVERIFY(ret.compare(temp_path("path/to/some")) == 0);
 
-	files << "/tmp/other/path/to/somewhere";
+	files << temp_path("other/path/to/somewhere");
 	ret = Util::File::get_common_directory(files);
-	QVERIFY(ret.compare("/tmp") == 0);
+	QVERIFY(ret.compare(temp_path()) == 0);
 
-	Util::File::delete_files({"/tmp/path", "/tmp/other"});
+	Util::File::delete_files({temp_path()});
 }
 
 void FileHelperTest::system_paths_test()
@@ -172,6 +174,8 @@ void FileHelperTest::resource_path_test()
 		QVERIFY(is_open == true);
 		QVERIFY(filesize == f.size());
 		f.close();
+
+		Util::File::delete_files({fp.filesystem_path()});
 	}
 }
 

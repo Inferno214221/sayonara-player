@@ -55,6 +55,9 @@ namespace Algorithm=Util::Algorithm;
 struct Connector::Private
 {
 	QString					connection_name;
+	QString					default_source_dir;
+	QString					default_target_dir;
+	QString					default_db_filename;
 
 	DB::Bookmarks*			bookmark_connector=nullptr;
 	DB::Playlist*			playlist_connector=nullptr;
@@ -148,15 +151,15 @@ DB::Connector* Connector::instance()
 
 DB::Connector* Connector::instance_custom(QString source_dir, QString target_dir, QString db_filename)
 {
-	if(source_dir.isEmpty()){
+	if(source_dir.isEmpty()) {
 		source_dir = ":/Database";
 	}
 
-	if(target_dir.isEmpty()){
+	if(target_dir.isEmpty()) {
 		target_dir = Util::sayonara_path();
 	}
 
-	if(db_filename.isEmpty()){
+	if(db_filename.isEmpty()) {
 		db_filename = "player.db";
 	}
 
@@ -205,7 +208,7 @@ bool Connector::updateArtistCissearchFix()
 		Query q(this);
 		q.prepare(str);
 		q.bindValue(":cissearch",	Util::cvt_not_null(artist.name().toLower()));
-		q.bindValue(":id",			artist.id);
+		q.bindValue(":id",			artist.id());
 
 		if(!q.exec()){
 			q.show_error("Cannot update artist cissearch");
@@ -674,8 +677,8 @@ bool Connector::apply_fixes()
 
 		for(auto it=tracks.begin(); it != tracks.end(); it++)
 		{
-			albums[it->album()] = it->album_id;
-			artists[it->artist()] = it->artist_id;
+			albums[it->album()] = it->album_id();
+			artists[it->artist()] = it->artist_id();
 			artists[it->album_artist()] = it->album_artist_id();
 		}
 
@@ -685,14 +688,14 @@ bool Connector::apply_fixes()
 			ArtistId correct_artist_id = artists[it->artist()];
 			ArtistId correct_album_artist_id = artists[it->album_artist()];
 			this->transaction();
-			if(	(it->album_id != correct_album_id) ||
-				(it->artist_id != correct_artist_id) ||
+			if(	(it->album_id() != correct_album_id) ||
+				(it->artist_id() != correct_artist_id) ||
 				(it->album_artist_id() != correct_album_artist_id))
 			{
-				sp_log(Log::Info, this) << "Move track " << it->filepath() << "from album " << it->album_id << " to " << correct_album_id;
+				sp_log(Log::Info, this) << "Move track " << it->filepath() << "from album " << it->album_id() << " to " << correct_album_id;
 
-				it->album_id = correct_album_id;
-				it->artist_id = correct_artist_id;
+				it->set_album_id(correct_album_id);
+				it->set_artist_id(correct_artist_id);
 				it->set_album_artist_id(correct_album_artist_id);
 
 				lib_db->updateTrack(*it);
@@ -736,8 +739,8 @@ DB::LibraryDatabase* Connector::library_db(LibraryId library_id, DbId db_id)
 	if(it == m->library_dbs.end())
 	{
 		sp_log(Log::Warning, this) << "Could not find Library:"
-								" DB ID = " << (int) db_id
-							 << " LibraryID = " << (int) library_id;
+								" DB ID = " << int(db_id)
+							 << " LibraryID = " << int(library_id);
 
 		return m->generic_library_database;
 	}

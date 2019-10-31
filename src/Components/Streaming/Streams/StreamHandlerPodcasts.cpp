@@ -25,7 +25,7 @@
 StreamHandlerPodcasts::StreamHandlerPodcasts(QObject* parent) :
 	AbstractStreamHandler(parent) {}
 
-StreamHandlerPodcasts::~StreamHandlerPodcasts() {}
+StreamHandlerPodcasts::~StreamHandlerPodcasts() = default;
 
 bool StreamHandlerPodcasts::get_all_streams(StreamMap& streams)
 {
@@ -50,7 +50,6 @@ bool StreamHandlerPodcasts::update_url(const QString& station_name, const QStrin
 	DB::Podcasts* db = DB::Connector::instance()->podcast_connector();
 	return db->updatePodcastUrl(station_name, url);
 }
-
 
 bool StreamHandlerPodcasts::rename(const QString& old_name, const QString& new_name)
 {

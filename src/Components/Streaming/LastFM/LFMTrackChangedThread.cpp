@@ -66,7 +66,7 @@ TrackChangedThread::TrackChangedThread(QObject* parent) :
 	m = Pimpl::make<TrackChangedThread::Private>();
 
 	ArtistList artists;
-	DB::Connector* db = DB::Connector::instance();
+	auto* db = DB::Connector::instance();
 	DB::LibraryDatabase* lib_db = db->library_db(-1, 0);
 
 	lib_db->getAllArtists(artists, false);
@@ -97,7 +97,7 @@ void TrackChangedThread::update_now_playing(const QString& session_key, const Me
 	UrlParams sig_data;
 	sig_data["api_key"] =	LFM_API_KEY;
 	sig_data["artist"] =	artist.toLocal8Bit();
-	sig_data["duration"] =	QString::number(md.duration_ms / 1000).toLocal8Bit();
+	sig_data["duration"] =	QString::number(md.duration_ms() / 1000).toLocal8Bit();
 	sig_data["method"] =	QString("track.updatenowplaying").toLocal8Bit();
 	sig_data["sk"] =		session_key.toLocal8Bit();
 	sig_data["track"] =		md.title().toLocal8Bit();
@@ -242,7 +242,7 @@ QMap<QString, int> TrackChangedThread::filter_available_artists(const ArtistMatc
 	QMap<ArtistMatch::ArtistDesc, double> bin = artist_match.get(quality);
 	QMap<QString, int> possible_artists;
 
-	DB::Connector* db = DB::Connector::instance();
+	auto* db = DB::Connector::instance();
 	DB::LibraryDatabase* lib_db = db->library_db(-1, 0);
 
 	for(auto it = bin.cbegin(); it != bin.cend(); it++)

@@ -1,12 +1,15 @@
-#include <QTest>
-#include <QObject>
-#include <QString>
+#include "SayonaraTest.h"
+#include "Gui/Utils/Shortcuts/ShortcutHandler.h"
 
-#include "GUI/Utils/Shortcuts/ShortcutHandler.h"
-
-class ShortcutIdentifierTest : public QObject
+class ShortcutIdentifierTest :
+	public Test::Base
 {
 	Q_OBJECT
+
+public:
+	ShortcutIdentifierTest() :
+		Test::Base("ShortcutIdentifierTest")
+	{}
 
 private slots:
 	void shortcut_identifier_test();

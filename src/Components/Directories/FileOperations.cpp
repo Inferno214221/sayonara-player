@@ -115,8 +115,7 @@ FileOperations::FileOperations(QObject *parent) :
 	QObject(parent)
 {}
 
-FileOperations::~FileOperations() {}
-
+FileOperations::~FileOperations() = default;
 
 bool FileOperations::copy_dirs(const QStringList& source_dirs, const QString& target_dir)
 {
@@ -161,7 +160,7 @@ bool FileOperations::move_dirs(const QStringList& source_dirs, const QString& ta
 	sp_log(Log::Debug, this) << "Move files " << source_dirs << " to " << cleaned_target_dir;
 
 	MetaDataList v_md, v_md_to_update;
-	DB::Connector* db = DB::Connector::instance();
+	auto* db = DB::Connector::instance();
 	DB::LibraryDatabase* library_db = db->library_db(-1, db->db_id());
 	if(library_db)
 	{
@@ -203,7 +202,7 @@ bool FileOperations::rename_dir(const QString& source_dir, const QString& target
 
 	bool success = Util::File::rename_dir(source_dir, cleaned_target_dir);
 
-	DB::Connector* db = DB::Connector::instance();
+	auto* db = DB::Connector::instance();
 	DB::LibraryDatabase* library_db = db->library_db(-1, db->db_id());
 	if(library_db)
 	{
@@ -230,7 +229,7 @@ bool FileOperations::rename_dir(const QString& source_dir, const QString& target
 bool FileOperations::move_files(const QStringList& files, const QString& target_dir)
 {
 	MetaDataList v_md_to_update;
-	DB::Connector* db = DB::Connector::instance();
+	auto* db = DB::Connector::instance();
 	DB::LibraryDatabase* library_db = db->library_db(-1, db->db_id());
 
 	for(const QString& file : files)
@@ -242,7 +241,8 @@ bool FileOperations::move_files(const QStringList& files, const QString& target_
 		}
 
 		MetaData md = library_db->getTrackByPath(cleaned_filename);
-		if(md.id >= 0){
+		if(md.id() >= 0)
+		{
 			QDir d(target_dir);
 			QString pure_filename = Util::File::get_filename_of_path(cleaned_filename);
 
@@ -277,11 +277,12 @@ bool FileOperations::rename_file(const QString& old_name, const QString& new_nam
 		return false;
 	}
 
-	DB::Connector* db = DB::Connector::instance();
+	auto* db = DB::Connector::instance();
 	DB::LibraryDatabase* library_db = db->library_db(-1, db->db_id());
 
 	MetaData md = library_db->getTrackByPath(Util::File::clean_filename(old_name));
-	if(md.id < 0){
+	if(md.id() < 0)
+	{
 		Util::File::rename_file(new_name, old_name);
 		return false;
 	}

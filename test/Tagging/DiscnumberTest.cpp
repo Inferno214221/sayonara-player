@@ -4,10 +4,14 @@
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaData.h"
 
-
 class DiscnumberTest : public AbstractTaggingTest
 {
 	Q_OBJECT
+
+public:
+	DiscnumberTest() :
+		AbstractTaggingTest("DiscnumberTest")
+	{}
 
 private:
 	void run_test(const QString& filename) override;
@@ -25,46 +29,46 @@ void DiscnumberTest::run_test(const QString& filename)
 	MetaData md2(filename);
 
 	Tagging::Utils::getMetaDataOfFile(md);
-	QVERIFY(md.discnumber == 5);
+	QVERIFY(md.discnumber() == 5);
 
-	md.discnumber = 1;
-	md.n_discs = 2;
+	md.set_discnumber(1);
+	md.set_disc_count(2);
 	Tagging::Utils::setMetaDataOfFile(md);
-	QVERIFY(md.discnumber == 1);
-	QVERIFY(md.n_discs == 2);
+	QVERIFY(md.discnumber() == 1);
+	QVERIFY(md.disc_count() == 2);
 
 	Tagging::Utils::getMetaDataOfFile(md2);
-	qDebug() << "Expect 1, get " << md2.discnumber;
-	QVERIFY(md2.discnumber == 1);
+	qDebug() << "Expect 1, get " << md2.discnumber();
+	QVERIFY(md2.discnumber() == 1);
 
-	qDebug() << "Expect 2, get " << md2.n_discs;
-	QVERIFY(md2.n_discs == 2);
+	qDebug() << "Expect 2, get " << md2.disc_count();
+	QVERIFY(md2.disc_count() == 2);
 
 
-	md.discnumber = 8;
-	md.n_discs = 9;
+	md.set_discnumber(8);
+	md.set_disc_count(9);
 	Tagging::Utils::setMetaDataOfFile(md);
-	QVERIFY(md.discnumber == 8);
-	QVERIFY(md.n_discs == 9);
+	QVERIFY(md.discnumber() == 8);
+	QVERIFY(md.disc_count() == 9);
 
 	Tagging::Utils::getMetaDataOfFile(md2);
-	qDebug() << "Expect 8, get " << md2.discnumber;
-	QVERIFY(md2.discnumber == 8);
+	qDebug() << "Expect 8, get " << md2.discnumber();
+	QVERIFY(md2.discnumber() == 8);
 
-	qDebug() << "Expect 9, get " << md2.n_discs;
-	QVERIFY(md2.n_discs == 9);
+	qDebug() << "Expect 9, get " << md2.disc_count();
+	QVERIFY(md2.disc_count() == 9);
 
-	md.discnumber = 10;
-	md.n_discs = 12;
+	md.set_discnumber(10);
+	md.set_disc_count(12);
 	Tagging::Utils::setMetaDataOfFile(md);
 
 	Tagging::Utils::getMetaDataOfFile(md2);
 
-	qDebug() << "Expect 10, get " << md2.discnumber;
-	QVERIFY(md2.discnumber == 10);
+	qDebug() << "Expect 10, get " << md2.discnumber();
+	QVERIFY(md2.discnumber() == 10);
 
-	qDebug() << "Expect 12, get " << md2.n_discs;
-	QVERIFY(md2.n_discs == 12);
+	qDebug() << "Expect 12, get " << md2.disc_count();
+	QVERIFY(md2.disc_count() == 12);
 }
 
 void DiscnumberTest::id3_test()

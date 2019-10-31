@@ -132,7 +132,7 @@ void GUI_ControlsBase::track_changed(const MetaData& md)
 	set_cover_location(md);
 	set_radio_mode( md.radio_mode() );
 
-	sli_progress()->setEnabled( (md.duration_ms / 1000) > 0 );
+	sli_progress()->setEnabled( (md.duration_ms() / 1000) > 0 );
 }
 
 
@@ -242,7 +242,7 @@ void GUI_ControlsBase::buffering(int progress)
 	else
 	{
 		sli_progress()->set_buffering(-1);
-		lab_max_time()->setVisible(current_track().duration_ms > 0);
+		lab_max_time()->setVisible(current_track().duration_ms() > 0);
 	}
 }
 
@@ -443,13 +443,13 @@ void GUI_ControlsBase::refresh_labels(const MetaData& md)
 	set_floating_text(lab_artist(), md.artist());
 
 	{ //album
-		QString sYear = QString::number(md.year);
+		QString sYear = QString::number(md.year());
 		QString album_name = md.album();
 
 		lab_album()->setToolTip("");
-		if(md.year > 1000 && (!album_name.contains(sYear)))
+		if(md.year() > 1000 && (!album_name.contains(sYear)))
 		{
-			album_name += QString(" (%1)").arg(md.year);
+			album_name += QString(" (%1)").arg(md.year());
 		}
 
 		else if(md.radio_mode() == RadioMode::Station)
@@ -462,10 +462,10 @@ void GUI_ControlsBase::refresh_labels(const MetaData& md)
 
 	{ // bitrate
 		QString sBitrate;
-		if(md.bitrate / 1000 > 0)
+		if(md.bitrate() / 1000 > 0)
 		{
 			sBitrate = QString("%1 kBit/s")
-				.arg(std::nearbyint(md.bitrate / 1000.0));
+				.arg(std::nearbyint(md.bitrate() / 1000.0));
 
 			lab_bitrate()->setText(sBitrate);
 		}
@@ -475,9 +475,9 @@ void GUI_ControlsBase::refresh_labels(const MetaData& md)
 
 	{ // filesize
 		QString sFilesize;
-		if(md.filesize > 0)
+		if(md.filesize() > 0)
 		{
-			sFilesize = QString::number( static_cast<double>(md.filesize / 1024) / 1024.0, 'f', 2) + " MB";
+			sFilesize = QString::number( static_cast<double>(md.filesize() / 1024) / 1024.0, 'f', 2) + " MB";
 			lab_filesize()->setText(sFilesize);
 		}
 
@@ -488,11 +488,11 @@ void GUI_ControlsBase::refresh_labels(const MetaData& md)
 		if(lab_rating())
 		{
 			lab_rating()->setVisible(md.radio_mode() == RadioMode::Off);
-			lab_rating()->set_rating(md.rating);
+			lab_rating()->set_rating(md.rating());
 		}
 	}
 
-	set_total_time_label(md.duration_ms);
+	set_total_time_label(md.duration_ms());
 }
 
 

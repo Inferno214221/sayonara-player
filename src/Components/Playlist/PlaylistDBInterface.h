@@ -57,7 +57,7 @@ namespace Playlist
 			bool delete_playlist();
 			bool remove_from_db();
 
-			virtual MetaDataList tracks() const = 0;
+			virtual const MetaDataList& tracks() const = 0;
 			virtual void set_changed(bool b) = 0;
 			virtual bool was_changed() const = 0;
 			virtual bool is_storable() const =0;

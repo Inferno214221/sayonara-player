@@ -552,7 +552,7 @@ void Callbacks::decodebin_ready(GstElement* source, GstPad* new_src_pad, gpointe
 	}
 
 	else {
-		sp_log(Log::Debug, "Callbacks") << "Successfully linked " << gst_element_get_name(source) << " with " << gst_element_get_name(element);
+		sp_log(Log::Develop, "Callbacks") << "Successfully linked " << gst_element_get_name(source) << " with " << gst_element_get_name(element);
 	}
 
 	gst_object_unref(sink_pad);

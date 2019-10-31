@@ -115,7 +115,7 @@ void SC::Library::get_all_artists(ArtistList& artists) const
 		for(int i=0; i<m->artists.count(); i++)
 		{
 			const Artist& artist = artists[ size_t(i) ];
-			m->artist_id_idx_map[artist.id] = i;
+			m->artist_id_idx_map[artist.id()] = i;
 			m->artist_name_idx_map[artist.name()].insert(i);
 		}
 	}
@@ -147,8 +147,10 @@ void SC::Library::get_all_artists_by_searchstring(::Library::Filter filter, Arti
 			int idx = m->artist_id_idx_map[artist_id];
 
 			Artist artist = m->artists[ size_t(idx) ];
-			artist.num_songs = uint16_t(m->md_artist_id_idx_map[artist_id].count());
-			if(!artists.contains(artist.id)){
+
+			auto n_songs = uint16_t(m->md_artist_id_idx_map[artist_id].count());
+			artist.set_songcount(n_songs);
+			if(!artists.contains(artist.id())){
 				artists << artist;
 			}
 		}
@@ -266,10 +268,10 @@ void SC::Library::get_all_tracks(MetaDataList& v_md) const
 		{
 			const MetaData& md = v_md[i];
 
-			m->md_id_idx_map[md.id] = i;
+			m->md_id_idx_map[md.id()] = i;
 			m->md_name_idx_map[md.title()].insert(i);
-			m->md_album_id_idx_map[md.album_id].insert(i);
-			m->md_artist_id_idx_map[md.artist_id].insert(i);
+			m->md_album_id_idx_map[md.album_id()].insert(i);
+			m->md_artist_id_idx_map[md.artist_id()].insert(i);
 		}
 	}
 
@@ -334,7 +336,7 @@ void SC::Library::get_all_tracks_by_searchstring(::Library::Filter filter, MetaD
 		for(int track_id : track_ids)
 		{
 			int idx = m->md_id_idx_map[track_id];
-			if(!v_md.contains(m->v_md[idx].id))
+			if(!v_md.contains(m->v_md[idx].id()))
 			{
 				v_md << m->v_md[idx];
 			}
@@ -434,7 +436,7 @@ void SC::Library::insert_tracks(const MetaDataList& v_md, const ArtistList& arti
 
 	for(const Artist& artist : artists)
 	{
-		if(!m->scd->getArtistByID(artist.id, artist_tmp) || artist.id != artist_tmp.id) {
+		if(!m->scd->getArtistByID(artist.id(), artist_tmp) || artist.id() != artist_tmp.id()) {
 			m->scd->insertArtistIntoDatabase(artist);
 		}
 	}
@@ -476,7 +478,7 @@ void SC::Library::artists_fetched(const ArtistList& artists)
 
 		SC::DataFetcher* fetcher;
 
-		if(artist.id <= 0) {
+		if(artist.id() <= 0) {
 			continue;
 		}
 
@@ -490,7 +492,7 @@ void SC::Library::artists_fetched(const ArtistList& artists)
 		connect(fetcher, &SC::DataFetcher::sig_tracks_fetched,
 				this, &SC::Library::tracks_fetched);
 
-		fetcher->get_tracks_by_artist(artist.id);
+		fetcher->get_tracks_by_artist(artist.id());
 	}
 
 	sender()->deleteLater();
@@ -500,8 +502,8 @@ void SC::Library::artists_fetched(const ArtistList& artists)
 void SC::Library::tracks_fetched(const MetaDataList& v_md)
 {
 	for(const MetaData& md : v_md){
-		if(md.id > 0){
-			m->scd->insertTrackIntoDatabase(md, md.artist_id, md.album_id);
+		if(md.id() > 0){
+			m->scd->insertTrackIntoDatabase(md, md.artist_id(), md.album_id());
 		}
 	}
 

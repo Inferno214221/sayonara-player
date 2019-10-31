@@ -95,11 +95,11 @@ Handler::Handler(QObject* parent) :
 	connect(m->engine, &Engine::sig_buffering, play_manager, &PlayManager::buffering);
 
 	connect(m->engine, &Engine::sig_duration_changed, this, [play_manager](const MetaData& md){
-		play_manager->change_duration(md.duration_ms);
+		play_manager->change_duration(md.duration_ms());
 	});
 
 	connect(m->engine, &Engine::sig_bitrate_changed, this, [play_manager](const MetaData& md){
-		play_manager->change_bitrate(md.bitrate);
+		play_manager->change_bitrate(md.bitrate());
 	});
 
 	connect(m->engine, &Engine::sig_metadata_changed, this, [play_manager](const MetaData& md){

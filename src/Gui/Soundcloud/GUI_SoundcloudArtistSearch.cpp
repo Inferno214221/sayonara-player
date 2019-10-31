@@ -134,7 +134,7 @@ void SC::GUI_ArtistSearch::artist_selected(int idx)
 		return;
 	}
 
-	m->cur_artist_sc_id = m->searched_artists[idx].id;
+	m->cur_artist_sc_id = m->searched_artists[idx].id();
 
 	m->chosen_artists.clear();
 

@@ -195,7 +195,7 @@ static QString replace_placeholder(const QString& str, const MetaData& md, QDate
 	target_path.replace("<ms>",		QDate::shortMonthName(date.month()));
 	target_path.replace("<ml>",		QDate::longMonthName(date.month()));
 	target_path.replace("<y>",		QString("%1").arg(date.year()));
-	target_path.replace("<tn>",		QString("%1").arg(md.track_num, 4, 10, QChar('0')));
+	target_path.replace("<tn>",		QString("%1").arg(md.track_number(), 4, 10, QChar('0')));
 
 	QString title = md.title().trimmed();
 	QString artist = md.artist().trimmed();

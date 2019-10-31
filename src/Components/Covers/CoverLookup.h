@@ -55,7 +55,6 @@ namespace Cover
 		Lookup(const Location& cl, int n_covers, QObject* parent);
 		~Lookup() override;
 
-
 		/**
 		 * @brief Stop the Cover::FetchThread if running and
 		 * retrieve the sig_finished signal

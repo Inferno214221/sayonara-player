@@ -22,7 +22,6 @@
 #define LIBRARYIMPORTER_H
 
 #include "Utils/Pimpl.h"
-
 #include <QObject>
 
 class LocalLibrary;

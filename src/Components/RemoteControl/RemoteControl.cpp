@@ -368,7 +368,7 @@ void RemoteControl::insert_json_current_track(QJsonObject& o)
 	o.insert("track-artist", md.artist());
 	o.insert("track-album", md.album());
 	o.insert("track-total-time", QJsonValue::fromVariant(
-		QVariant::fromValue<Seconds>(Seconds(md.duration_ms / 1000)))
+		QVariant::fromValue<Seconds>(Seconds(md.duration_ms() / 1000)))
 	);
 }
 
@@ -515,7 +515,7 @@ void RemoteControl::insert_json_playlist(QJsonArray& arr) const
 			obj.insert("pl-track-artist", md.artist());
 			obj.insert("pl-track-album", md.album());
 			obj.insert("pl-track-total-time", QJsonValue::fromVariant(
-				QVariant::fromValue<Seconds>(Seconds(md.duration_ms / 1000)))
+				QVariant::fromValue<Seconds>(Seconds(md.duration_ms() / 1000)))
 			);
 
 			arr.append(obj);

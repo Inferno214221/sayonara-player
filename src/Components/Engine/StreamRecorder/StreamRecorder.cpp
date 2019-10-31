@@ -130,8 +130,8 @@ QString SR::StreamRecorder::change_track(const MetaData& md)
 	}
 
 	m->md = md;
-	m->md.year =		uint16_t(QDateTime::currentDateTime().date().year());
-	m->md.track_num =	uint16_t(m->cur_idx);
+	m->md.set_year(Year(QDateTime::currentDateTime().date().year()));
+	m->md.set_track_number(TrackNum(m->cur_idx));
 
 	int i;
 	QString target_path_template = GetSetting(Set::Engine_SR_SessionPathTemplate);

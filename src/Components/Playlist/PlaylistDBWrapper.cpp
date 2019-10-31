@@ -38,27 +38,21 @@ using Playlist::DBWrapper;
 struct DBWrapper::Private
 {
 	DB::Playlist* db=nullptr;
-
-	Private()
-	{
-		db = DB::Connector::instance()->playlist_connector();
-	}
 };
 
 DBWrapper::DBWrapper()
 {
 	m = Pimpl::make<Private>();
+	m->db = DB::Connector::instance()->playlist_connector();
 }
 
-
-DBWrapper::~DBWrapper() {}
-
+DBWrapper::~DBWrapper() = default;
 
 void DBWrapper::apply_tags(MetaDataList& v_md)
 {
 	for(MetaData& md : v_md)
 	{
-		if(md.is_extern)
+		if(md.is_extern())
 		{
 			if(Util::File::is_file(md.filepath())){
 				Tagging::Utils::getMetaDataOfFile(md);
@@ -68,7 +62,8 @@ void DBWrapper::apply_tags(MetaDataList& v_md)
 }
 
 
-bool DBWrapper::get_skeletons(CustomPlaylistSkeletons& skeletons, Playlist::StoreType type, Playlist::SortOrder so){
+bool DBWrapper::get_skeletons(CustomPlaylistSkeletons& skeletons, Playlist::StoreType type, Playlist::SortOrder so)
+{
 	return m->db->getAllPlaylistSkeletons(skeletons, type, so);
 }
 
@@ -201,7 +196,7 @@ bool DBWrapper::rename_playlist(int id, const QString& new_name)
 
 bool DBWrapper::save_playlist_as(const MetaDataList& v_md, const QString& name)
 {
-	DB::Connector* db = DB::Connector::instance();
+	auto* db = DB::Connector::instance();
 
 	db->transaction();
 	bool success = m->db->storePlaylist(v_md, name, false);
@@ -212,7 +207,7 @@ bool DBWrapper::save_playlist_as(const MetaDataList& v_md, const QString& name)
 
 bool DBWrapper::save_playlist_temporary(const MetaDataList& v_md, const QString& name)
 {
-	DB::Connector* db = DB::Connector::instance();
+	auto* db = DB::Connector::instance();
 
 	db->transaction();
 
@@ -226,7 +221,7 @@ bool DBWrapper::save_playlist_temporary(const MetaDataList& v_md, const QString&
 
 bool DBWrapper::save_playlist(const CustomPlaylist& pl)
 {
-	DB::Connector* db = DB::Connector::instance();
+	auto* db = DB::Connector::instance();
 
 	db->transaction();
 	// TODO! we dont need the two other parameters
@@ -239,7 +234,7 @@ bool DBWrapper::save_playlist(const CustomPlaylist& pl)
 
 bool DBWrapper::save_playlist(const MetaDataList& v_md, int id, bool is_temporary)
 {
-	DB::Connector* db = DB::Connector::instance();
+	auto* db = DB::Connector::instance();
 
 	db->transaction();
 	// TODO: see above
@@ -268,3 +263,4 @@ bool DBWrapper::exists(const QString& name)
 	int id = m->db->getPlaylistIdByName(name);
 	return (id >= 0);
 }
+

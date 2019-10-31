@@ -321,10 +321,10 @@ Location Location::cover_location(const MetaData& md, bool check_for_coverart)
 		cl = cover_location(urls, cover_path);
 	}
 
-	else if(md.album_id >= 0)
+	else if(md.album_id() >= 0)
 	{
 		Album album;
-		album.id = md.album_id;
+		album.id = md.album_id();
 		album.set_name(md.album());
 		album.set_artists({md.artist()});
 		album.set_album_artists({md.album_artist()});
