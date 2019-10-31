@@ -85,12 +85,16 @@ MetaDataList& MetaDataList::operator=(MetaDataList&& other) noexcept
 
 MetaDataList& MetaDataList::insert_track(const MetaData& md, int tgt_idx)
 {
+	tgt_idx = std::max<int>(0, std::min<int>(tgt_idx, this->size() - 1));
+
 	MetaDataList v_md{md};
 	return insert_tracks(v_md, tgt_idx);
 }
 
 MetaDataList& MetaDataList::insert_tracks(const MetaDataList& v_md, int tgt_idx)
 {
+	tgt_idx = std::max<int>(0, std::min<int>(tgt_idx, this->size() - 1));
+
 	std::copy(v_md.begin(), v_md.end(), std::inserter(*this, this->begin() + tgt_idx));
 
 	return *this;
@@ -98,6 +102,8 @@ MetaDataList& MetaDataList::insert_tracks(const MetaDataList& v_md, int tgt_idx)
 
 MetaDataList& MetaDataList::copy_tracks(const IndexSet& indexes, int tgt_idx)
 {
+	tgt_idx = std::max<int>(0, std::min<int>(tgt_idx, this->size() - 1));
+
 	MetaDataList v_md; v_md.reserve(indexes.size());
 
 	for(int idx : indexes)
@@ -111,6 +117,8 @@ MetaDataList& MetaDataList::copy_tracks(const IndexSet& indexes, int tgt_idx)
 
 MetaDataList& MetaDataList::move_tracks(const IndexSet& indexes, int tgt_idx) noexcept
 {
+	tgt_idx = std::max<int>(0, std::min<int>(tgt_idx, this->size()));
+
 	MetaDataList v_md_to_move; 		v_md_to_move.reserve(indexes.size());
 	MetaDataList v_md_before_tgt; 	v_md_before_tgt.reserve(size());
 	MetaDataList v_md_after_tgt; 	v_md_after_tgt.reserve(size());
@@ -126,7 +134,7 @@ MetaDataList& MetaDataList::move_tracks(const IndexSet& indexes, int tgt_idx) no
 			v_md_to_move << std::move( md );
 		}
 
-		else if(i<tgt_idx)
+		else if(i < tgt_idx)
 		{
 			v_md_before_tgt << std::move( md );
 		}
@@ -177,7 +185,10 @@ MetaDataList& MetaDataList::remove_tracks(const IndexSet& indexes)
 {
 	for(auto it=indexes.rbegin(); it != indexes.rend(); it++)
 	{
-		this->erase(this->begin() + *it);
+		if(Util::between(*it, *this))
+		{
+			this->erase(this->begin() + *it);
+		}
 	}
 
 	return *this;

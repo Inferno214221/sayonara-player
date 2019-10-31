@@ -62,7 +62,6 @@ bool GUI_PlayerPreferences::commit()
 {
 	SetSetting(Set::Player_Min2Tray, ui->cb_close_to_tray->isChecked());
 	SetSetting(Set::Player_StartInTray, ui->cb_start_in_tray->isChecked());
-
 	SetSetting(Set::Player_ShowTrayIcon, ui->cb_show_tray_icon->isChecked());
 	SetSetting(Set::Player_NotifyNewVersion, ui->cb_update_notifications->isChecked());
 	SetSetting(Set::Logger_Level, ui->cb_logger->currentIndex());
