@@ -1,4 +1,5 @@
 #include "SayonaraTest.h"
+#include "Playlist/PlaylistTestUtils.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Components/Playlist/Playlist.h"
 #include "Database/Connector.h"
@@ -19,35 +20,17 @@ public:
 	{}
 
 private slots:
-	void test();
+	void jump_test();
 	void shuffleTest();
 	void modifyTest();
 };
 
-static MetaDataList create_v_md(int min, int max)
-{
-	MetaDataList v_md;
-	for(int i=min; i<max; i++)
-	{
-		MetaData md;
-		md.set_id(i);
 
-		QString p = QString("https://www.bla.com/path/to/%1.mp3").arg(i);
-		md.set_filepath(p);
-
-		md.set_duration_ms(i * 10000);
-
-		v_md << md;
-	}
-
-	return v_md;
-}
-
-void PlaylistTest::test()
+void PlaylistTest::jump_test()
 {
 	bool success;
 	MetaData md;
-	MetaDataList v_md = create_v_md(0, 100);
+	MetaDataList v_md = Test::Playlist::create_v_md(0, 100);
 
 	PL* pl = new PL(1, PlaylistType::Std, "Hallo");
 	success = pl->current_track(md);
@@ -86,7 +69,7 @@ void PlaylistTest::test()
 void PlaylistTest::shuffleTest()
 {
 	MetaData md;
-	MetaDataList v_md = create_v_md(0, 100);
+	MetaDataList v_md = Test::Playlist::create_v_md(0, 100);
 
 	QList<int> indexes;
 	PL* pl = new PL(1, PlaylistType::Std, "Hallo");
@@ -126,10 +109,10 @@ void PlaylistTest::shuffleTest()
 
 void PlaylistTest::modifyTest()
 {
-	MetaDataList v_md = create_v_md(0, 100);
+	MetaDataList v_md = Test::Playlist::create_v_md(0, 100);
 	int cur_idx;
 
-	PL* pl = new PL(1, PlaylistType::Std, "Hallo");
+	auto pl = std::make_shared<PL>(1, PlaylistType::Std, "Hallo");
 	pl->create_playlist(v_md);
 	const MetaDataList& pl_tracks = pl->tracks();
 

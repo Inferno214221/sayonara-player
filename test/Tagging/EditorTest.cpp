@@ -307,7 +307,8 @@ void EditorTest::test_commit()
 
 	t->start();
 
-	QTest::qWait(3000);
+	spy.wait();
+
 	QCOMPARE(spy.count(), 1);
 
 	MetaDataList old_md = mdcn->changed_metadata().first;

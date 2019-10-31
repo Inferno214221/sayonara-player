@@ -28,6 +28,7 @@
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/FileUtils.h"
 
 #include <QDateTime>
 #include <QTime>
@@ -348,7 +349,8 @@ void PlayManager::change_track_metadata(const MetaData& md)
 			NotificationHandler::instance()->notify(m->md);
 		}
 
-		if( m->ring_buffer.count() > 0 )
+		// only insert www tracks into the buffer
+		if( m->ring_buffer.count() > 0 && Util::File::is_www(md.filepath()))
 		{
 			md_old.set_album("");
 			md_old.set_disabled(true);
@@ -360,8 +362,6 @@ void PlayManager::change_track_metadata(const MetaData& md)
 
 			emit sig_www_track_finished(md_old);
 		}
-
-		m->ring_buffer.insert(str);
 	}
 
 	emit sig_track_metadata_changed();
