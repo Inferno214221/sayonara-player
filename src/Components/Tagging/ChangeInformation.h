@@ -21,7 +21,15 @@ namespace Tagging
 			void update(const MetaData& md);
 			void update_cover(const QPixmap& pm);
 
+			/**
+			 * @brief Overwrite original track with the modified one.
+			 * This cannot be undone
+			 */
 			void apply();
+
+			/**
+			 * @brief Overwrite modified track with the original one.
+			 */
 			void undo();
 
 			bool has_changes() const;
