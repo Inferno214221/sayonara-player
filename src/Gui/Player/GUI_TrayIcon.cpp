@@ -221,6 +221,8 @@ GUI_TrayIcon::GUI_TrayIcon (QObject *parent) :
 
 	init_context_menu();
 	playstate_changed(pm->playstate());
+
+	ListenSetting(Set::Player_ShowTrayIcon, GUI_TrayIcon::s_show_tray_icon_changed);
 }
 
 GUI_TrayIcon::~GUI_TrayIcon() = default;
