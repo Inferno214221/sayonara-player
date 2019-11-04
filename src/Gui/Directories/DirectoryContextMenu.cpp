@@ -31,6 +31,7 @@ struct DirectoryContextMenu::Private
 {
 	QAction*	action_create_dir=nullptr;
 	QAction*	action_rename=nullptr;
+	QAction*	action_rename_by_tag=nullptr;
 	QAction*	action_collapse_all=nullptr;
 	DirectoryContextMenu::Mode mode;
 
@@ -39,6 +40,7 @@ struct DirectoryContextMenu::Private
 	{
 		action_create_dir = new QAction(parent);
 		action_rename = new QAction(parent);
+		action_rename_by_tag = new QAction(parent);
 		action_collapse_all = new QAction(parent);
 	}
 };
@@ -66,12 +68,13 @@ DirectoryContextMenu::DirectoryContextMenu(DirectoryContextMenu::Mode mode, QWid
 	if(action){
 		this->insertActions(
 			action,
-			{separator, m->action_create_dir, m->action_rename}
+			{separator, m->action_create_dir, m->action_rename, m->action_rename_by_tag}
 		);
 	}
 
 	connect(m->action_create_dir, &QAction::triggered, this, &DirectoryContextMenu::sig_create_dir_clicked);
 	connect(m->action_rename, &QAction::triggered, this, &DirectoryContextMenu::sig_rename_clicked);
+	connect(m->action_rename_by_tag, &QAction::triggered, this, &DirectoryContextMenu::sig_rename_by_tag_clicked);
 	connect(m->action_collapse_all, &QAction::triggered, this, &DirectoryContextMenu::sig_collapse_all_clicked);
 
 	action = this->add_preference_action(new Gui::LibraryPreferenceAction(this));
@@ -99,7 +102,7 @@ DirectoryContextMenu::DirectoryContextMenu(DirectoryContextMenu::Mode mode, QWid
 	language_changed();
 }
 
-DirectoryContextMenu::~DirectoryContextMenu() {}
+DirectoryContextMenu::~DirectoryContextMenu() = default;
 
 void DirectoryContextMenu::set_create_dir_visible(bool b)
 {
@@ -115,6 +118,13 @@ void DirectoryContextMenu::set_rename_visible(bool b)
 	}
 }
 
+void DirectoryContextMenu::set_rename_by_tag_visible(bool b)
+{
+	if(m && m->action_rename_by_tag){
+		m->action_rename_by_tag->setVisible(b);
+	}
+}
+
 void DirectoryContextMenu::set_collapse_all_visibled(bool b)
 {
 	if(m && m->action_collapse_all){
@@ -126,8 +136,10 @@ void DirectoryContextMenu::language_changed()
 {
 	Library::ContextMenu::language_changed();
 
-	if(m && m->action_rename){
+	if(m && m->action_rename)
+	{
 		m->action_rename->setText(Lang::get(Lang::Rename));
+		m->action_rename_by_tag->setText(tr("Rename by metadata"));
 		m->action_create_dir->setText(tr("Create directory"));
 		m->action_collapse_all->setText(tr("Collapse all"));
 	}
@@ -138,8 +150,10 @@ void DirectoryContextMenu::skin_changed()
 	Library::ContextMenu::skin_changed();
 
 	using namespace Gui;
-	if(m && m->action_rename){
+	if(m && m->action_rename)
+	{
 		m->action_rename->setIcon(Icons::icon(Icons::Rename));
+		m->action_rename_by_tag->setIcon(Icons::icon(Icons::Rename));
 		m->action_create_dir->setIcon(Icons::icon(Icons::New));
 	}
 }

@@ -78,6 +78,7 @@ class FileOperations :
 		bool copy_files(const QStringList& files, const QString& target_dir);
 
 		bool rename_file(const QString& old_name, const QString& new_name);
+		bool rename_file_by_tag(const QString& old_name, const QString& expression);
 
 	private slots:
 		void copy_dir_thread_finished();

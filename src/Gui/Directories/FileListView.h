@@ -88,10 +88,11 @@ protected:
 
 private:
 	void init_context_menu();
+	void rename_file(const QString& old_name, const QString& new_name);
 
 private slots:
 	void rename_file_clicked();
-
+	void rename_file_by_tag_clicked();
 };
 
 #endif // FILELISTVIEW_H

@@ -60,16 +60,15 @@ FileListModel::FileListModel(QObject* parent) :
 	m = Pimpl::make<Private>();
 }
 
-FileListModel::~FileListModel() {}
-
+FileListModel::~FileListModel() = default;
 
 void FileListModel::set_parent_directory(LibraryId id, const QString& dir)
 {
+	int old_rowcount = rowCount();
+
 	m->files.clear();
 	m->library_id = id;
 	m->parent_directory = dir;
-
-	int old_rowcount = rowCount();
 
 	QStringList extensions;
 	extensions << Util::soundfile_extensions();
@@ -80,7 +79,8 @@ void FileListModel::set_parent_directory(LibraryId id, const QString& dir)
 	reader.set_filter(extensions);
 	reader.scan_files(QDir(dir), m->files);
 
-	if(m->files.size() > old_rowcount){
+	if(m->files.size() > old_rowcount)
+	{
 		beginInsertRows(QModelIndex(), old_rowcount, m->files.size());
 		endInsertRows();
 	}

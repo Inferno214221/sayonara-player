@@ -76,6 +76,7 @@ enum class SettingKey : unsigned short
 	Dir_ShowTracks,
 	Dir_SplitterDirFile,
 	Dir_SplitterTracks,
+	Dir_TagToFilenameExpression,
 	Player_Version,
 	Player_Language,
 	Player_FontName,
@@ -282,7 +283,7 @@ class SettingIdentifier
 	INST(bool,				Dir_ShowTracks)			/* show tracks panel in directory view */
 	INST(QByteArray,		Dir_SplitterDirFile)		/* Splitter state between dirs and files */
 	INST(QByteArray,		Dir_SplitterTracks)		/* Splitter between upper and track view */
-
+	INST(QString,			Dir_TagToFilenameExpression) /* Last used expression when converting tags to filename */
 
 	INST(QString,			Player_Version)			/* Version string of player */
 	INST(QString,			Player_Language)			/* language of player */

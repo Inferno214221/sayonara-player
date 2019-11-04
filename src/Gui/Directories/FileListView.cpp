@@ -22,6 +22,7 @@
 #include "FileListModel.h"
 #include "DirectoryIconProvider.h"
 #include "DirectoryContextMenu.h"
+#include "GUI_FileExpressionDialog.h"
 
 #include "Components/Directories/DirectoryReader.h"
 #include "Components/Directories/FileOperations.h"
@@ -75,11 +76,13 @@ FileListView::FileListView(QWidget* parent) :
 	this->setDragEnabled(true);
 	this->setIconSize(QSize(16, 16));
 
-	QAction* action = new QAction(this);
-	connect(action, &QAction::triggered, this, &FileListView::rename_file_clicked);
-	action->setShortcut(QKeySequence("F2"));
-	action->setShortcutContext(Qt::WidgetShortcut);
-	this->addAction(action);
+	{ // rename by pressing F2
+		QAction* action = new QAction(this);
+		connect(action, &QAction::triggered, this, &FileListView::rename_file_clicked);
+		action->setShortcut(QKeySequence("F2"));
+		action->setShortcutContext(Qt::WidgetShortcut);
+		this->addAction(action);
+	}
 
 	new QShortcut(QKeySequence(Qt::Key_Return), this, SIGNAL(sig_enter_pressed()), nullptr, Qt::WidgetShortcut);
 	new QShortcut(QKeySequence(Qt::Key_Enter), this, SIGNAL(sig_enter_pressed()), nullptr, Qt::WidgetShortcut);
@@ -118,7 +121,7 @@ void FileListView::contextMenuEvent(QContextMenuEvent* event)
 	}
 
 	const QModelIndexList indexes = selected_rows();
-	int num_audio_files = std::count_if(indexes.begin(), indexes.end(), [](const QModelIndex& index)
+	auto num_audio_files = std::count_if(indexes.begin(), indexes.end(), [](const QModelIndex& index)
 	{
 		QString filename = index.data(Qt::UserRole).toString();
 		return Util::File::is_soundfile(filename);
@@ -223,7 +226,9 @@ void FileListView::init_context_menu()
 	connect(m->context_menu, &DirectoryContextMenu::sig_play_next_clicked, this, &FileListView::sig_play_next_clicked);
 	connect(m->context_menu, &DirectoryContextMenu::sig_append_clicked, this, &FileListView::sig_append_clicked);
 	connect(m->context_menu, &DirectoryContextMenu::sig_rename_clicked, this, &FileListView::rename_file_clicked);
+	connect(m->context_menu, &DirectoryContextMenu::sig_rename_by_tag_clicked, this, &FileListView::rename_file_by_tag_clicked);
 }
+
 
 QModelIndexList FileListView::selected_rows() const
 {
@@ -330,6 +335,30 @@ void FileListView::keyPressEvent(QKeyEvent *event)
 }
 
 
+void FileListView::rename_file(const QString& old_name, const QString& new_name)
+{
+	QDir d(old_name);
+	d.cdUp();
+
+	QString new_full_name = new_name;
+	QString ext = Util::File::get_file_extension(old_name);
+	if(!new_full_name.toLower().endsWith("." + ext.toLower()))
+	{
+		new_full_name = d.filePath(new_name) + "." + ext;
+	}
+
+	sp_log(Log::Debug, this) << "Will rename " << old_name << " to " << new_full_name;
+
+	m->file_operations->rename_file(old_name, new_full_name);
+	m->model->set_parent_directory(m->model->library_id(), m->model->parent_directory());
+
+	QStringList files = m->model->files();
+	int new_file_index = files.indexOf(new_full_name);
+	if(Util::between(new_file_index, files)){
+		this->select_row(new_file_index);
+	}
+}
+
 void FileListView::rename_file_clicked()
 {
 	QModelIndexList indexes = this->selected_rows();
@@ -346,32 +375,56 @@ void FileListView::rename_file_clicked()
 	}
 
 	QString file = Util::File::get_filename_of_path(files[row]);
-	QString ext = Util::File::calc_file_extension(file);
 
 	int last_dot = file.lastIndexOf(".");
 	file = file.left(last_dot);
 
-	Gui::LineInputDialog dialog(Lang::get(Lang::Rename), tr("Enter new name"), file, this);
-	dialog.exec();
-
-	QString file_renamed = dialog.text();
-
-	if(!file_renamed.isEmpty() && (dialog.return_value() == Gui::LineInputDialog::Ok))
+	QString new_name;
 	{
-
-		QDir d(files[row]);
-		d.cdUp();
-		QString new_filename = d.filePath(file_renamed) + "." + ext;
-
-		sp_log(Log::Debug, this) << "Will rename " << files[row] << " to " << new_filename;
-
-		m->file_operations->rename_file(files[row], new_filename);
-		m->model->set_parent_directory(m->model->library_id(), m->model->parent_directory());
-
-		files = m->model->files();
-		int new_file_index = files.indexOf(new_filename);
-		if(Util::between(new_file_index, files)){
-			this->select_row(new_file_index);
+		Gui::LineInputDialog dialog(Lang::get(Lang::Rename), tr("Enter new name"), file, this);
+		dialog.exec();
+		new_name = dialog.text();
+		if(dialog.return_value() != Gui::LineInputDialog::Ok || new_name.isEmpty())
+		{
+			return;
 		}
 	}
+
+	this->rename_file(files[row], new_name);
 }
+
+
+void FileListView::rename_file_by_tag_clicked()
+{
+	const QModelIndexList indexes = this->selected_rows();
+	if(indexes.isEmpty()){
+		return;
+	}
+
+	const QStringList files = m->model->files();
+
+	auto* dialog = new GUI_FileExpressionDialog(this);
+	QDialog::DialogCode ret = QDialog::DialogCode(dialog->exec());
+	if(ret == QDialog::Rejected)
+	{
+		return;
+	}
+
+	QString expression = dialog->expression();
+	if(expression.isEmpty()){
+		return;
+	}
+
+	for(const QModelIndex& index : indexes)
+	{
+		int row = index.row();
+		if(!Util::between(row, files)){
+			return;
+		}
+
+		m->file_operations->rename_file_by_tag(files[row], expression);
+	}
+
+	m->model->set_parent_directory(m->model->library_id(), m->model->parent_directory());
+}
+
