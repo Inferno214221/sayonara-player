@@ -49,7 +49,8 @@ class QPixmap;
  * <B>pl</B> \t fetch the active playlist \n
  * <B>curSong</B> \t fetch the current song index \n
  * <B>seekrel <int></B> \t seek within song in percent \n
- * <B>seekrelms <int></B> \t seek within song in relative to current position in seconds \n
+ * <B>seekrelms <int></B> \t seek within song in relative to current position in milliseconds \n
+ * <B>seekabsms <int></B> \t seek within song in relative to current position in milliseconds \n
  * <B>chtrk <int></B> \t change track \n
  * <B>state</B> \t request state: every answer except playlists are returned
  * \n\n
@@ -120,6 +121,7 @@ private:
 	void set_volume(int vol);
 	void seek_rel(int pos_percent);
 	void seek_rel_ms(int pos_ms);
+	void seek_abs_ms(int pos_ms);
 	void change_track(int idx);
 
 	void show_api();
