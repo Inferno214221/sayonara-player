@@ -22,6 +22,8 @@
 #define TAGTEXTINPUT_H
 
 #include <QLineEdit>
+
+#include "Utils/Pimpl.h"
 #include "Gui/Utils/Widgets/WidgetTemplate.h"
 
 class QAction;
@@ -36,24 +38,19 @@ class TagTextInput :
     public Gui::WidgetTemplate<QLineEdit>
 {
 	Q_OBJECT
+	PIMPL(TagTextInput)
 
 public:
 	TagTextInput(QWidget* parent=nullptr);
-	~TagTextInput();
+	~TagTextInput() override;
 
 private slots:
 	void cvt_to_first_upper();
 	void cvt_to_very_first_upper();
 
 protected:
-
-	QMenu*			_context_menu=nullptr;
-	QAction*		_action_cvt_to_first_upper=nullptr;
-	QAction*		_action_cvt_to_very_first_upper=nullptr;
-
-protected:
-
 	void contextMenuEvent(QContextMenuEvent* event) override;
+	void keyPressEvent(QKeyEvent* event) override;
 	void init_context_menu();
     void language_changed() override;
 };

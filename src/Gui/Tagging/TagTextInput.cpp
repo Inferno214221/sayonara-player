@@ -26,29 +26,36 @@
 #include <QContextMenuEvent>
 #include <QCursor>
 
+struct TagTextInput::Private
+{
+	QMenu*			context_menu=nullptr;
+	QAction*		action_cvt_to_first_upper=nullptr;
+	QAction*		action_cvt_to_very_first_upper=nullptr;
+};
+
 TagTextInput::TagTextInput(QWidget* parent) :
     WidgetTemplate<QLineEdit>(parent)
 {
+	m = Pimpl::make<Private>();
 	init_context_menu();
 }
 
-TagTextInput::~TagTextInput() {}
-
+TagTextInput::~TagTextInput() = default;
 
 void TagTextInput::init_context_menu() 
 {
-    _context_menu = createStandardContextMenu();
+    m->context_menu = createStandardContextMenu();
 
 //	_context_menu = new QMenu(this);
-	_action_cvt_to_very_first_upper = new QAction("Convert to very first upper", _context_menu);
-	_action_cvt_to_first_upper = new QAction("Convert to first upper", _context_menu);
+	m->action_cvt_to_very_first_upper = new QAction("Convert to very first upper", m->context_menu);
+	m->action_cvt_to_first_upper = new QAction("Convert to first upper", m->context_menu);
 
-	_context_menu->addSeparator();
-	_context_menu->addAction(_action_cvt_to_very_first_upper);
-	_context_menu->addAction(_action_cvt_to_first_upper);
+	m->context_menu->addSeparator();
+	m->context_menu->addAction(m->action_cvt_to_very_first_upper);
+	m->context_menu->addAction(m->action_cvt_to_first_upper);
 
-	connect(_action_cvt_to_first_upper, &QAction::triggered, this, &TagTextInput::cvt_to_first_upper);
-	connect(_action_cvt_to_very_first_upper, &QAction::triggered, this, &TagTextInput::cvt_to_very_first_upper);
+	connect(m->action_cvt_to_first_upper, &QAction::triggered, this, &TagTextInput::cvt_to_first_upper);
+	connect(m->action_cvt_to_very_first_upper, &QAction::triggered, this, &TagTextInput::cvt_to_very_first_upper);
 }
 
 void TagTextInput::contextMenuEvent(QContextMenuEvent* event){
@@ -56,7 +63,48 @@ void TagTextInput::contextMenuEvent(QContextMenuEvent* event){
 
 	pos.setX(QCursor::pos().x());	
 	pos.setY(QCursor::pos().y());	
-	_context_menu->exec(pos);
+	m->context_menu->exec(pos);
+}
+
+void TagTextInput::keyPressEvent(QKeyEvent* event)
+{
+	WidgetTemplate<QLineEdit>::keyPressEvent(event);
+
+	if(event->key() == Qt::Key_Up)
+	{
+		if(this->text() == Util::cvt_str_to_first_upper(this->text()))
+		{
+			this->setText(text().toUpper());
+		}
+
+		else if(this->text() == Util::cvt_str_to_very_first_upper(this->text()))
+		{
+			cvt_to_first_upper();
+		}
+
+		else
+		{
+			cvt_to_very_first_upper();
+		}
+	}
+
+	else if(event->key() == Qt::Key_Down)
+	{
+		if(this->text() == Util::cvt_str_to_very_first_upper(this->text()))
+		{
+			this->setText(this->text().toLower());
+		}
+
+		else if(this->text() == Util::cvt_str_to_first_upper(this->text()))
+		{
+			cvt_to_very_first_upper();
+		}
+
+		else
+		{
+			cvt_to_first_upper();
+		}
+	}
 }
 
 void TagTextInput::cvt_to_first_upper()
@@ -75,6 +123,6 @@ void TagTextInput::cvt_to_very_first_upper()
 
 void TagTextInput::language_changed()
 {
-	_action_cvt_to_very_first_upper->setText(tr("Very first letter to upper case"));
-	_action_cvt_to_first_upper->setText(tr("First letters to upper case"));
+	m->action_cvt_to_very_first_upper->setText(tr("Very first letter to upper case"));
+	m->action_cvt_to_first_upper->setText(tr("First letters to upper case"));
 }
