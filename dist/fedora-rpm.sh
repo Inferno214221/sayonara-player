@@ -19,7 +19,7 @@ case "$1" in
 		mkdir -p ${RPM_DIR}
 
 		cd ${SOURCES_DIR}
-		git clone https://gitlab.com/luciocarreras/sayonara-player.git --branch 27-create-distribution-building-scripts sayonara-player
+		git clone https://gitlab.com/luciocarreras/sayonara-player.git sayonara-player
 		cd sayonara-player
 
 		# create spec file
