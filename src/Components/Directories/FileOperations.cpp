@@ -32,6 +32,7 @@
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Library/LibraryInfo.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/Tagging/Tagging.h"
 
 #include <QDir>
 #include <QFile>
@@ -281,19 +282,96 @@ bool FileOperations::rename_file(const QString& old_name, const QString& new_nam
 	DB::LibraryDatabase* library_db = db->library_db(-1, db->db_id());
 
 	MetaData md = library_db->getTrackByPath(Util::File::clean_filename(old_name));
-	if(md.id() < 0)
+	if(md.id() < 0) {
+		return Util::File::rename_file(new_name, old_name);
+	}
+
+	else
 	{
-		Util::File::rename_file(new_name, old_name);
+		bool success = Util::File::rename_file(old_name, new_name);
+		if(success)
+		{
+			md.set_filepath(new_name);
+			success = library_db->updateTrack(md);
+			if(!success){
+				Util::File::rename_file(new_name, old_name);
+			}
+		}
+
+		return success;
+	}
+}
+
+bool FileOperations::rename_file_by_tag(const QString& old_name, const QString& tag)
+{
+	auto* db = DB::Connector::instance();
+	DB::LibraryDatabase* library_db = db->library_db(-1, db->db_id());
+	MetaData md = library_db->getTrackByPath(Util::File::clean_filename(old_name));
+	if(md.id() < 0) {
+		Tagging::Utils::getMetaDataOfFile(md);
+	}
+
+	QString dir = Util::File::get_parent_directory(md.filepath());
+	QString ext = Util::File::get_file_extension(md.filepath());
+
+	QString pure_new_name = tag;
+	pure_new_name.replace("<title>", md.title());
+	pure_new_name.replace("<album>", md.album());
+	pure_new_name.replace("<artist>", md.artist());
+	pure_new_name.replace("<year>", QString::number(md.year()));
+	pure_new_name.replace("<bitrate>", QString::number(md.bitrate() / 1000));
+
+	QString s_track_nr = QString::number(md.track_number());
+	if(md.track_number() < 10)
+	{
+		s_track_nr.prepend("0");
+	}
+
+	pure_new_name.replace("<tracknum>", s_track_nr);
+
+	if(pure_new_name.isEmpty()) {
+		sp_log(Log::Error, this) << "Target filename is empty";
 		return false;
 	}
 
-	md.set_filepath(new_name);
-	success = library_db->updateTrack(md);
-	if(!success){
-		Util::File::rename_file(new_name, old_name);
+	if(pure_new_name.contains("<") || pure_new_name.contains(">")){
+		sp_log(Log::Error, this) << "<, > are not allowed. Maybe an invalid tag was specified?";
+		return false;
 	}
 
-	return false;
+	QString full_new_name = dir + "/" + pure_new_name + "." + ext;
+	if(Util::File::exists(full_new_name))
+	{
+		for(int i=1; i<1000; i++)
+		{
+			QString pure_new_name_nr = pure_new_name + "-" + QString::number(i);
+			QString full_new_name_nr = dir + "/" + pure_new_name_nr + "." + ext;
+			if(!Util::File::exists(full_new_name_nr))
+			{
+				full_new_name = full_new_name_nr;
+				break;
+			}
+		}
+	}
+
+	if(md.id() < 0) {
+		return Util::File::rename_file(full_new_name, old_name);
+	}
+
+	else
+	{
+		bool success = Util::File::rename_file(old_name, full_new_name);
+		if(success)
+		{
+			md.set_filepath(full_new_name);
+			success = library_db->updateTrack(md);
+			if(!success){
+				Util::File::rename_file(full_new_name, old_name);
+			}
+		}
+
+		return success;
+	}
 }
 
 void FileOperations::copy_file_thread_finished()

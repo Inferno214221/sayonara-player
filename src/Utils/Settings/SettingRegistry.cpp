@@ -72,7 +72,7 @@ bool SettingRegistry::init()
 	register_setting<Set::LFM_ScrobbleTimeSec>("lfm_scrobble_time", 10);
 	register_setting<Set::LFM_Active>( "LastFM_active", false );
 	register_setting<Set::LFM_Corrections>( "lfm_corrections", false );
-	register_setting<Set::LFM_ShowErrors>( "lfm_q.show_errors", false );
+	register_setting<Set::LFM_ShowErrors>( "lfm_show_errors", false );
 	register_setting<Set::LFM_SessionKey>( "lfm_session_key", QString() );
 
 	register_setting<Set::Eq_Last>( "eq_last", 0);
@@ -139,6 +139,7 @@ bool SettingRegistry::init()
 	register_setting<Set::Dir_ShowTracks>( "dir_show_tracks", true);
 	register_setting<Set::Dir_SplitterDirFile>( "dir_splitter_dir_file", QByteArray());
 	register_setting<Set::Dir_SplitterTracks>( "dir_splitter_tracks", QByteArray());
+	register_setting<Set::Dir_TagToFilenameExpression>( "dir_tag_to_filename_expression", QString());
 
 	register_setting<Set::Player_Version>( "player_version", QString(SAYONARA_VERSION));
 	register_setting<Set::Player_Language>( "player_language", QLocale().name());
@@ -170,9 +171,9 @@ bool SettingRegistry::init()
 
 	register_setting<Set::PL_Playlist>( "playlist", QStringList() );
 	register_setting<Set::PL_LoadSavedPlaylists>( "load_saved_playlists", false );
-	register_setting<Set::PL_LoadTemporaryPlaylists>( "load_temporary_playlists", false );
-	register_setting<Set::PL_LoadLastTrack>( "load_last_track", false );
-	register_setting<Set::PL_RememberTime>( "remember_time", false );
+	register_setting<Set::PL_LoadTemporaryPlaylists>( "load_temporary_playlists", true );
+	register_setting<Set::PL_LoadLastTrack>( "load_last_track", true );
+	register_setting<Set::PL_RememberTime>( "remember_time", true );
 	register_setting<Set::PL_StartPlaying>( "start_playing", false );
 	register_setting<Set::PL_LastTrack>( "last_track", -1 );
 	register_setting<Set::PL_LastTrackBeforeStop>( "last_track_before_stop", -1);

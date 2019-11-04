@@ -38,6 +38,7 @@ class DirectoryContextMenu :
 signals:
 	void sig_create_dir_clicked();
 	void sig_rename_clicked();
+	void sig_rename_by_tag_clicked();
 	void sig_collapse_all_clicked();
 
 public:
@@ -52,6 +53,7 @@ public:
 
 	void set_create_dir_visible(bool b);
 	void set_rename_visible(bool b);
+	void set_rename_by_tag_visible(bool b);
 	void set_collapse_all_visibled(bool b);
 
 protected:

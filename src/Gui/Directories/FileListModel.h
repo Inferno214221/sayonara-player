@@ -43,7 +43,7 @@ class FileListModel :
 
 	public:
 		explicit FileListModel(QObject* parent=nullptr);
-		virtual ~FileListModel();
+		~FileListModel() override;
 
 		void set_parent_directory(LibraryId, const QString& dir);
 

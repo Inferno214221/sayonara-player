@@ -161,6 +161,8 @@ void DirectoryTreeView::init_context_menu()
 
 	m->context_menu = new DirectoryContextMenu(DirectoryContextMenu::Mode::Dir, this);
 
+	m->context_menu->set_rename_by_tag_visible(false);
+
 	connect(m->context_menu, &DirectoryContextMenu::sig_info_clicked, this, &DirectoryTreeView::sig_info_clicked);
 	connect(m->context_menu, &DirectoryContextMenu::sig_lyrics_clicked, this, &DirectoryTreeView::sig_info_clicked);
 	connect(m->context_menu, &DirectoryContextMenu::sig_edit_clicked, this, &DirectoryTreeView::sig_info_clicked);
