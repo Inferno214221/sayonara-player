@@ -494,6 +494,12 @@ void Editor::commit()
 						it->apply();
 					}
 				}
+
+				else
+				{
+					m->v_md_before_change << org_md;
+					m->v_md_after_change << cur_md;
+				}
 			}
 
 			progress++;
