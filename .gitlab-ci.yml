@@ -15,6 +15,9 @@ build-sayonara:
   artifacts:
     untracked: true
     expire_in: 1 day
+  only:
+    - branches
+    - tags
 
 # Unit tests
 test-sayonara:
@@ -28,6 +31,9 @@ test-sayonara:
     when: on_failure
     untracked: true
     expire_in: 2 days
+  only:
+    - branches
+    - tags
       
 ## Deploy AppImage
 deploy-sayonara-appimage:
@@ -69,6 +75,9 @@ build-language:
     paths:
       - tx/sayonara_lang_en_US.ts
     expire_in: 2 days
+  only:
+    - branches
+    - tags
 
 ## Upload ts to transifex
 deploy-language:

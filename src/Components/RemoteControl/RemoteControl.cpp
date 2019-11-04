@@ -113,7 +113,8 @@ void RemoteControl::init()
 
 	m->fn_int_call_map["setvol"] =  std::bind(&RemoteControl::set_volume, this, std::placeholders::_1);
 	m->fn_int_call_map["seekrel"] = std::bind(&RemoteControl::seek_rel, this, std::placeholders::_1);
-	m->fn_int_call_map["seekrels"] =std::bind(&RemoteControl::seek_rel_ms, this, std::placeholders::_1);
+	m->fn_int_call_map["seekrelms"] =std::bind(&RemoteControl::seek_rel_ms, this, std::placeholders::_1);
+	m->fn_int_call_map["seekabsms"] =std::bind(&RemoteControl::seek_abs_ms, this, std::placeholders::_1);
 	m->fn_int_call_map["chtrk"] =   std::bind(&RemoteControl::change_track, this, std::placeholders::_1);
 
 	ListenSettingNoCall(Set::Remote_Active, RemoteControl::_sl_active_changed);
@@ -278,6 +279,11 @@ void RemoteControl::seek_rel(int percent)
 void RemoteControl::seek_rel_ms(int pos_ms)
 {
 	PlayManager::instance()->seek_rel_ms( pos_ms );
+}
+
+void RemoteControl::seek_abs_ms(int pos_ms)
+{
+	PlayManager::instance()->seek_abs_ms( pos_ms );
 }
 
 void RemoteControl::change_track(int idx)
