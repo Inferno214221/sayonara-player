@@ -200,12 +200,12 @@ bool Lookup::fetch_from_www()
 
 void Lookup::thread_finished(bool success)
 {
+	m->cft = nullptr;
+	sender()->deleteLater();
+
 	if(!success){
 		emit_finished(false);
 	}
-
-	m->cft = nullptr;
-	sender()->deleteLater();
 }
 
 
