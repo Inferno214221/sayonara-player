@@ -1,7 +1,7 @@
 Source: sayonara
 Section: sound
 Priority: optional
-Maintainer: Lucio Carreras <luciocarreras@posteo.de>
+Maintainer: Lucio Carreras <sayonara-player@posteo.org>
 Build-Depends: cmake (>= 3.8),
                debhelper (>= 9),
                libgstreamer-plugins-bad1.0-dev,
