@@ -57,7 +57,9 @@ class Shortcut
 
 	friend class ShortcutHandler;
 	ShortcutHandlerPrivate:
-		void add_qt_shortcuts(const QList<QShortcut*>& shortcuts);
+		void set_qt_shortcuts(const QList<QShortcut*>& qshortcuts);
+		void remove_qt_shortcut(QShortcut* qshortcut);
+		QList<QShortcut*> qt_shortcuts() const;
 
 
 	public:
@@ -129,7 +131,7 @@ class Shortcut
 		 * @return
 		 */
 		ShortcutIdentifier		identifier() const;
-		QString					identifier_string() const;
+		QString					db_key() const;
 
 		/**
 		 * @brief Check if the shortcut is valid or if it was retrieved via getInvalid()
