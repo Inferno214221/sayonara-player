@@ -31,17 +31,22 @@
 using DB::LibraryDatabase;
 using DB::Query;
 
+using SMM=::Library::SearchModeMask;
+
 struct LibraryDatabase::Private
 {
 	QString artistid_field;
 	QString artistname_field;
 	QString connection_name;
+
+	SMM		search_mode;
 	DbId	db_id;
 
 	LibraryId library_id;
 
-	Private(const QString& connection_name, DbId db_id, LibraryId library_id) :
+	Private(const QString& connection_name, DbId db_id, LibraryId library_id, SMM search_mode) :
 		connection_name(connection_name),
+		search_mode(search_mode),
 		db_id(db_id),
 		library_id(library_id)
 	{
@@ -52,40 +57,45 @@ struct LibraryDatabase::Private
 
 
 LibraryDatabase::LibraryDatabase(const QString& connection_name, DbId db_id, LibraryId library_id) :
-	DB::Albums(connection_name, db_id, library_id),
-	DB::Artists(connection_name, db_id, library_id),
-	DB::Tracks(connection_name, db_id, library_id)
+	DB::Albums(),
+	DB::Artists(),
+	DB::Tracks(),
+	DB::SearchableModule(connection_name, db_id)
 {
-	m = Pimpl::make<Private>(connection_name, db_id, library_id);
+	m = Pimpl::make<Private>(connection_name, db_id, library_id, init_search_mode());
 
-	bool show_album_artists = false;
+	DB::Tracks::init_views();
 
-	AbstrSetting* s = Settings::instance()->setting(SettingKey::Lib_ShowAlbumArtists);
-	QString db_key = s->db_key();
+	{ // set artistId field
+		AbstrSetting* s = Settings::instance()->setting(SettingKey::Lib_ShowAlbumArtists);
+		QString db_key = s->db_key();
 
-	Query q(connection_name, db_id);
-	QString querytext = "SELECT value FROM settings WHERE key = '" + db_key + "';";
+		Query q(connection_name, db_id);
+		QString querytext = "SELECT value FROM settings WHERE key = '" + db_key + "';";
 
-	q.prepare(querytext);
-	if(q.exec())
-	{
-		if(q.next())
+		bool show_album_artists = false;
+
+		q.prepare(querytext);
+		if(q.exec())
 		{
-			QVariant var = q.value("value");
-			show_album_artists = var.toBool();
+			if(q.next())
+			{
+				QVariant var = q.value("value");
+				show_album_artists = var.toBool();
+			}
 		}
-	}
 
-	if(show_album_artists){
-		change_artistid_field(LibraryDatabase::ArtistIDField::AlbumArtistID);
-	}
+		if(show_album_artists) {
+			change_artistid_field(LibraryDatabase::ArtistIDField::AlbumArtistID);
+		}
 
-	else{
-		change_artistid_field(LibraryDatabase::ArtistIDField::ArtistID);
+		else {
+			change_artistid_field(LibraryDatabase::ArtistIDField::ArtistID);
+		}
 	}
 }
 
-LibraryDatabase::~LibraryDatabase() {}
+LibraryDatabase::~LibraryDatabase() = default;
 
 void LibraryDatabase::change_artistid_field(LibraryDatabase::ArtistIDField field)
 {
@@ -110,6 +120,57 @@ QString LibraryDatabase::artistid_field() const
 QString LibraryDatabase::artistname_field() const
 {
 	return m->artistname_field;
+}
+
+QString LibraryDatabase::track_view() const
+{
+	if(m->library_id < 0) {
+		return "tracks";
+	}
+
+	else {
+		return QString("track_view_%1").arg(m->library_id);
+	}
+}
+
+QString LibraryDatabase::track_search_view() const
+{
+	if(m->library_id < 0) {
+		return "track_search_view";
+	}
+
+	else {
+		return QString("track_search_view_%1").arg(m->library_id);
+	}
+}
+
+Library::SearchModeMask LibraryDatabase::search_mode() const
+{
+	return DB::SearchableModule::search_mode();
+}
+
+void LibraryDatabase::update_search_mode(::Library::SearchModeMask smm)
+{
+	auto old_smm = DB::SearchableModule::search_mode();
+	if(old_smm == smm) {
+		return;
+	}
+
+	DB::SearchableModule::update_search_mode(smm);
+
+	DB::Albums::updateAlbumCissearch();
+	DB::Artists::updateArtistCissearch();
+	DB::Tracks::updateTrackCissearch();
+}
+
+DB::Module* LibraryDatabase::module()
+{
+	return this;
+}
+
+const DB::Module* LibraryDatabase::module() const
+{
+	return this;
 }
 
 void LibraryDatabase::clear()
@@ -229,15 +290,4 @@ bool DB::LibraryDatabase::store_metadata(const MetaDataList& v_md)
 	sp_log(Log::Develop, this) << "Commit " << v_md.size() << " tracks to database";
 
 	return db().commit();
-}
-
-QSqlDatabase LibraryDatabase::db() const
-{
-	DB::Module module(m->connection_name, m->db_id);
-	return module.db();
-}
-
-DbId LibraryDatabase::db_id() const
-{
-	return m->db_id;
 }

@@ -77,6 +77,12 @@ Importer::Importer(LocalLibrary* library) :
 
 Importer::~Importer() = default;
 
+bool Importer::is_running() const
+{
+	return (m->copy_thread && m->copy_thread->isRunning()) ||
+		(m->cache_thread && m->cache_thread->isRunning());
+}
+
 void Importer::import_files(const QStringList& files, const QString& target_dir)
 {
 	if(files.isEmpty()){
@@ -90,7 +96,7 @@ void Importer::import_files(const QStringList& files, const QString& target_dir)
 		emit sig_target_dir_changed(target_dir);
 	}
 
-	CachingThread* thread = new CachingThread(files, m->library->path());
+	auto* thread = new CachingThread(files, m->library->path());
 	connect(thread, &CachingThread::finished, this, &Importer::caching_thread_finished);
 	connect(thread, &CachingThread::sig_progress, this, &Importer::sig_progress_no_percent);
 	connect(thread, &CachingThread::destroyed, this, [=]()
@@ -144,7 +150,7 @@ void  Importer::accept_import(const QString& target_dir)
 {
 	emit_status(ImportStatus::Importing);
 
-	CopyThread* copy_thread = new CopyThread(target_dir, m->import_cache, this);
+	auto* copy_thread = new CopyThread(target_dir, m->import_cache, this);
 	connect(copy_thread, &CopyThread::sig_progress, this, &Importer::sig_progress);
 	connect(copy_thread, &CopyThread::finished, this, &Importer::copy_thread_finished);
 	connect(copy_thread, &CachingThread::destroyed, this, [=]()
@@ -161,64 +167,73 @@ void Importer::copy_thread_finished()
 {
 	auto* copy_thread = static_cast<CopyThread*>(sender());
 
-	MetaDataList v_md = copy_thread->get_copied_metadata();
+	reset();
 
-	emit_status(ImportStatus::WaitForUser);
-	m->delete_temporary_files();
-
-	// no tracks were copied or rollback was finished
-	if(v_md.isEmpty()) {
-		emit_status(ImportStatus::NoTracks);
-		copy_thread->deleteLater();
-		return;
-	}
-
-	// copy was cancelled
-	sp_log(Log::Debug, this) << "Copy folder thread finished " << m->copy_thread->was_cancelled();
-	if(copy_thread->was_cancelled())
-	{
-		copy_thread->set_mode(CopyThread::Mode::Rollback);
-		copy_thread->start();
-
-		emit_status(ImportStatus::Rollback);
-		return;
-	}
-
-	// store to db
 	auto* db = DB::Connector::instance();
 	DB::LibraryDatabase* lib_db = db->library_db(m->library->id(), db->db_id());
 
-	bool success = lib_db->store_metadata(v_md);
-	int n_files_copied = copy_thread->get_n_copied_files();
-	int n_files_to_copy = m->import_cache->files().size();
+	MetaDataList v_md = copy_thread->get_copied_metadata();
+
+	emit_status(ImportStatus::WaitForUser);
+
+	{ // no tracks were copied or rollback was finished
+		if(v_md.isEmpty())
+		{
+			emit_status(ImportStatus::NoTracks);
+			copy_thread->deleteLater();
+
+			return;
+		}
+	}
+
+	{ // copy was cancelled
+		sp_log(Log::Debug, this) << "Copy folder thread finished " << m->copy_thread->was_cancelled();
+		if(copy_thread->was_cancelled())
+		{
+			emit_status(ImportStatus::Rollback);
+
+			copy_thread->set_mode(CopyThread::Mode::Rollback);
+			copy_thread->start();
+
+			return;
+		}
+	}
 
 	copy_thread->deleteLater();
 
-	// error and success messages
-	if(!success)
-	{
-		QString warning = tr("Cannot import tracks");
-		Message::warning(warning);
-		return;
+	bool success = lib_db->store_metadata(v_md);
+
+	{ // post a message
+		// error and success messages
+		if(!success)
+		{
+			QString warning = tr("Cannot import tracks");
+			Message::warning(warning);
+		}
+
+		else
+		{
+			QString message;
+
+			int n_files_copied = copy_thread->get_n_copied_files();
+			int n_files_to_copy = m->import_cache->files().size();
+			if(n_files_to_copy == n_files_copied)
+			{
+				message =  tr("All files could be imported");
+			}
+
+			else
+			{
+				message = tr("%1 of %2 files could be imported")
+						.arg(n_files_copied)
+						.arg(n_files_to_copy);
+			}
+
+			Message::info(message);
+		}
 	}
-
-	db->clean_up();
-
-	QString str = "";
-	if(n_files_to_copy == n_files_copied) {
-		str =  tr("All files could be imported");
-	}
-
-	else {
-		str = tr("%1 of %2 files could be imported")
-				.arg(n_files_copied)
-				.arg(n_files_to_copy);
-	}
-
-	Message::info(str);
 
 	emit_status(ImportStatus::Imported);
-
 	Tagging::ChangeNotifier::instance()->change_metadata(MetaDataList(), MetaDataList());
 }
 

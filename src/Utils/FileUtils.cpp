@@ -528,23 +528,30 @@ QStringList Util::File::split_directories(const QString& path)
 	QString current_dir;
 	QFileInfo fi(path);
 
-	if(fi.isDir()) {
+	if(fi.isFile()) {
+		QString filename;
+		split_filename(path, current_dir, filename);
+		ret << filename;
+	}
+
+	else {
 		current_dir = path;
 	}
 
-	else if(fi.isFile()){
-		QString filename;
-		split_filename(path, current_dir, filename);
-	}
-
-	while(!QDir(current_dir).isRoot())
+	while(!current_dir.isEmpty())
 	{
-		QString last_dir;
-		QString parent_dir;
+		QString parent_dir, last_dir;
 		split_filename(current_dir, parent_dir, last_dir);
 
-		ret << last_dir;
+		if(!last_dir.isEmpty()) {
+			ret.push_front(last_dir);
+		}
+
 		current_dir = parent_dir;
+
+		if(QDir(current_dir).isRoot()){
+			break;
+		}
 	}
 
 	return ret;

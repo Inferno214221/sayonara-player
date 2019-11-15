@@ -63,8 +63,6 @@ namespace DB
 			Connector(const QString& source_dir, const QString& target_dir, const QString& db_filename);
 			~Connector() override;
 
-			virtual void			clean_up();
-
 			static Connector*		instance();
 			static Connector*		instance_custom(QString source_dir, QString target_dir, QString db_filename);
 

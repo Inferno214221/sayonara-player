@@ -23,6 +23,7 @@
 #include "Utils/Library/LibraryInfo.h"
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Tagging/Tagging.h"
 
 #include <QHash>
 #include <QString>
@@ -72,7 +73,7 @@ ImportCache::ImportCache(const ImportCache& other)
 	m = Pimpl::make<Private>(*(other.m));
 }
 
-ImportCache::~ImportCache() {}
+ImportCache::~ImportCache() = default;
 
 ImportCache& ImportCache::operator=(const ImportCache& other)
 {
@@ -88,42 +89,58 @@ void ImportCache::clear()
 	m->src_dst_map.clear();
 }
 
-void ImportCache::add_soundfile(const MetaData& md)
+void ImportCache::add_soundfile(const QString& filename)
 {
-	if(md.filepath().isEmpty()){
-		return;
-	}
-
-	m->v_md << md;
-	m->src_md_map[md.filepath()] = md;
-}
-
-void ImportCache::add_standard_file(const QString& filename)
-{
-	add_standard_file(filename, QString());
-}
-
-void ImportCache::add_standard_file(const QString& filename, const QString& parent_dir)
-{
-	if(filename.isEmpty()){
-		return;
-	}
-
-	m->files << filename;
-
-	QString pure_src_filename = Util::File::get_filename_of_path(filename);
-	QString target_subdir;
-
-	if(!parent_dir.isEmpty())
+	MetaData md(filename);
+	bool success = Tagging::Utils::getMetaDataOfFile(md);
+	if(success)
 	{
-		QString file_dir = Util::File::get_parent_directory(filename);
-		QString sub_dir = file_dir.remove(Util::File::get_absolute_filename(parent_dir));
-		QString pure_srcdir = Util::File::get_filename_of_path(parent_dir);
+		m->v_md << md;
+		m->src_md_map[md.filepath()] = md;
+	}
+}
 
-		target_subdir = pure_srcdir + "/" + sub_dir + "/";
+void ImportCache::add_file(const QString& filename)
+{
+	add_file(filename, QString());
+}
+
+void ImportCache::add_file(const QString& filename, const QString& parent_dir)
+{
+	const QString abs_filename = Util::File::clean_filename(filename);
+	if(abs_filename.isEmpty()) {
+		return;
 	}
 
-	m->src_dst_map[filename] = target_subdir + pure_src_filename;
+	const QString abs_parent_dir = Util::File::clean_filename(parent_dir);
+	if(abs_parent_dir.isEmpty()){
+		return;
+	}
+
+	if(!abs_filename.startsWith(abs_parent_dir) || (abs_filename == abs_parent_dir)) {
+		return;
+	}
+
+	m->files << abs_filename;
+	if(Util::File::is_soundfile(abs_filename)) {
+		add_soundfile(abs_filename);
+	}
+
+	const QStringList splitted_parent_dir = Util::File::split_directories(abs_parent_dir);
+	const QStringList splitted_filename = Util::File::split_directories(abs_filename);
+
+	QStringList remainder_parts;
+	for(int i=splitted_parent_dir.size(); i<splitted_filename.size(); i++)
+	{
+		remainder_parts << splitted_filename[i];
+	}
+
+	if(remainder_parts.isEmpty())
+	{
+		return;
+	}
+
+	m->src_dst_map[filename] = remainder_parts.join("/");
 }
 
 QStringList ImportCache::files() const
@@ -136,20 +153,26 @@ MetaDataList ImportCache::soundfiles() const
 	return m->v_md;
 }
 
-QString ImportCache::target_filename(const QString &src_filename, const QString& target_directory) const
+QString ImportCache::target_filename(const QString& src_filename, const QString& target_directory) const
 {
 	if(m->library_path.isEmpty()){
 		return QString();
 	}
 
-	return m->library_path + "/" + target_directory + "/" + m->src_dst_map[src_filename];
+	QString original_path = Util::File::clean_filename(src_filename);
+
+	QString path = QString("%1/%2/%3")
+				.arg(m->library_path)
+				.arg(target_directory)
+				.arg(m->src_dst_map[original_path]);
+
+	return Util::File::clean_filename(path);
 }
 
 MetaData ImportCache::metadata(const QString& filename) const
 {
 	return m->src_md_map[filename];
 }
-
 
 void ImportCache::change_metadata(const MetaDataList& v_md_old, const MetaDataList& v_md_new)
 {

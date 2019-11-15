@@ -100,7 +100,7 @@ bool Base::close_db()
 		return false;
 	}
 
-	sp_log(Log::Info, this) << "close database " << m->filename << "...";
+	sp_log(Log::Info, this) << "close database " << m->filename << " (" << this->thread_connection_name() << ")...";
 
 	QSqlDatabase database = db();
 	if(database.isOpen()){

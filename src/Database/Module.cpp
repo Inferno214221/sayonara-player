@@ -31,6 +31,7 @@ using DB::Module;
 struct Module::Private
 {
 	QString connection_name;
+	QString thread_connection_name;
 	DbId	db_id;
 
 	Private(const QString& connection_name, DbId db_id) :
@@ -58,24 +59,29 @@ QString Module::connection_name() const
 	return m->connection_name;
 }
 
+QString Module::thread_connection_name() const
+{
+	return m->thread_connection_name;
+}
+
 QSqlDatabase Module::db() const
 {
 	if(!QSqlDatabase::isDriverAvailable("QSQLITE")){
 		return QSqlDatabase();
 	}
 
-	QString new_connection_name = m->connection_name + QThread::currentThread()->objectName();
+	m->thread_connection_name = m->connection_name + QThread::currentThread()->objectName();
 
 	QStringList connection_names = QSqlDatabase::connectionNames();
-	if(connection_names.contains(new_connection_name))
+	if(connection_names.contains(m->thread_connection_name))
 	{
-		return QSqlDatabase::database(new_connection_name);
+		return QSqlDatabase::database(m->thread_connection_name);
 	}
 
 	sp_log(Log::Info, this) << "Create new connection to " << m->connection_name
-							<< "(" << new_connection_name << ")";
+							<< "(" << m->thread_connection_name << ")";
 
-	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", new_connection_name);
+	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", m->thread_connection_name);
 	db.setDatabaseName(m->connection_name);
 
 	if(!db.open())
@@ -112,6 +118,7 @@ DB::Query Module::run_query(const QString& query, const QMap<QString, QVariant>&
 
 	if(!q.exec())
 	{
+		sp_log(Log::Error, this) << "Query error fo connection " << m->thread_connection_name;
 		q.show_error(error_text);
 	}
 
@@ -138,6 +145,7 @@ DB::Query Module::insert(const QString& tablename, const QMap<QString, QVariant>
 
 	if(!q.exec())
 	{
+		sp_log(Log::Error, this) << "Query error fo connection " << m->thread_connection_name;
 		q.show_error(error_message);
 	}
 
@@ -173,6 +181,7 @@ DB::Query Module::update(const QString& tablename, const QMap<QString, QVariant>
 
 	if(!q.exec() || q.numRowsAffected() == 0)
 	{
+		sp_log(Log::Error, this) << "Query error fo connection " << m->thread_connection_name;
 		q.set_error(true);
 		q.show_error(error_message);
 	}

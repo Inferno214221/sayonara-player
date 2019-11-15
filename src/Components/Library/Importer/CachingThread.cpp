@@ -26,7 +26,6 @@
 #include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaDataList.h"
-#include "Utils/Tagging/Tagging.h"
 #include "Utils/Logger/Logger.h"
 
 #include <QDir>
@@ -55,25 +54,6 @@ struct CachingThread::Private
 	{
 		cache = std::shared_ptr<ImportCache>(new ImportCache(library_path));
 	}
-
-	void extract_soundfiles()
-	{
-		sp_log(Log::Develop, this) << "Extract soundfiles";
-		const QStringList files = cache->files();
-
-		for(const QString& filename : files)
-		{
-			if(Util::File::is_soundfile(filename))
-			{
-				MetaData md(filename);
-
-				bool success = Tagging::Utils::getMetaDataOfFile(md);
-				if(success){
-					cache->add_soundfile(md);
-				}
-			}
-		}
-	}
 };
 
 CachingThread::CachingThread(const QStringList& file_list, const QString& library_path, QObject *parent) :
@@ -84,7 +64,7 @@ CachingThread::CachingThread(const QStringList& file_list, const QString& librar
 	this->setObjectName("CachingThread" + Util::random_string(4));
 }
 
-CachingThread::~CachingThread() {}
+CachingThread::~CachingThread() = default;
 
 bool CachingThread::scan_archive(const QString& temp_dir, const QString& binary, const QStringList& args, const QList<int>& success_codes)
 {
@@ -193,7 +173,7 @@ void CachingThread::scan_dir(const QString& dir)
 
 void CachingThread::add_file(const QString& file, const QString& relative_dir)
 {
-	m->cache->add_standard_file(file, relative_dir);
+	m->cache->add_file(file, relative_dir);
 	update_progress();
 }
 
@@ -223,7 +203,7 @@ void CachingThread::run()
 			if(ext.compare("rar", Qt::CaseInsensitive) == 0)
 			{
 				bool success = scan_rar(filename);
-				if(!success){
+				if(!success) {
 					sp_log(Log::Warning, this) << "Cannot scan rar";
 				}
 			}
@@ -231,7 +211,7 @@ void CachingThread::run()
 			else if(ext.compare("zip", Qt::CaseInsensitive) == 0)
 			{
 				bool success = scan_zip(filename);
-				if(!success){
+				if(!success) {
 					sp_log(Log::Warning, this) << "Cannot scan zip";
 				}
 			}
@@ -239,18 +219,17 @@ void CachingThread::run()
 			else if((ext.compare("tar.gz", Qt::CaseInsensitive) == 0) || (ext.compare("tgz", Qt::CaseInsensitive) == 0))
 			{
 				bool success = scan_tgz(filename);
-				if(!success){
+				if(!success) {
 					sp_log(Log::Warning, this) << "Cannot scan zip";
 				}
 			}
 
-			else {
+			else
+			{
 				add_file(filename);
 			}
 		}
 	}
-
-	m->extract_soundfiles();
 
 	emit sig_progress(-1);
 }

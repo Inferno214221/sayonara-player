@@ -219,6 +219,8 @@ void GUI_ImportDialog::bb_rejected()
 	{
 		close();
 	}
+
+	m->importer->reset();
 }
 
 
@@ -270,8 +272,6 @@ void GUI_ImportDialog::edit_pressed()
 
 void GUI_ImportDialog::closeEvent(QCloseEvent* e)
 {
-	m->importer->reset();
-
 	Dialog::closeEvent(e);
 }
 
@@ -284,5 +284,3 @@ void GUI_ImportDialog::showEvent(QShowEvent* e)
 	this->set_progress_no_percent(-1);
 	this->set_status(m->importer->status());
 }
-
-

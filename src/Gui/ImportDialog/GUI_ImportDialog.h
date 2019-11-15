@@ -42,7 +42,7 @@ signals:
 
 public:
 	GUI_ImportDialog(LocalLibrary* library, bool copy_enabled, QWidget* parent);
-	virtual ~GUI_ImportDialog();
+	~GUI_ImportDialog() override;
 
 	void set_target_dir(const QString& target_dir);
 
