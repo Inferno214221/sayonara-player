@@ -21,8 +21,9 @@
 #ifndef RAWSHORTCUTMAP_H
 #define RAWSHORTCUTMAP_H
 
+class QString;
+class QStringList;
 
-#include <QStringList>
 #include <QMap>
 
 //this class has to be inline because we need this in the settings registry
@@ -35,40 +36,8 @@
 struct RawShortcutMap :
 		public QMap<QString, QStringList>
 {
-	QString toString() const
-	{
-		QStringList entries;
-		const QList<QString> l_keys = this->keys();
-
-		for(const QString& key : l_keys)
-		{
-			QString shortcut_name = key;
-			QStringList shortcuts = this->value(key);
-
-			entries << shortcut_name + ":" + shortcuts.join(", ");
-		}
-
-		return entries.join(";-;");
-	}
-
-	static RawShortcutMap fromString(const QString& setting)
-	{
-		RawShortcutMap rsc;
-
-		QStringList entries = setting.split(";-;");
-		for(const QString& entry : entries){
-			QStringList sc_pair = entry.split(":");
-			QString key = sc_pair[0];
-			QString shortcut;
-			if(sc_pair.size() > 1){
-				shortcut = sc_pair[1];
-			}
-
-			rsc.insert(key, shortcut.split(", "));
-		}
-
-		return rsc;
-	}
+	QString toString() const;
+	static RawShortcutMap fromString(const QString& setting);
 };
 
 #endif // RAWSHORTCUTMAP_H

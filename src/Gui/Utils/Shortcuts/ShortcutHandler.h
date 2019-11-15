@@ -46,10 +46,10 @@ class ShortcutHandler :
 
 	friend class Shortcut;
 ShortcutPrivate:
-	void qt_shortcuts_added(ShortcutIdentifier identifier, const QList<QShortcut*>& shortcuts);
+	void qt_shortcuts_added(ShortcutIdentifier db_key, const QList<QShortcut*>& qt_shortcuts);
 
 signals:
-	void sig_shortcut_changed(ShortcutIdentifier identifier);
+	void sig_shortcut_changed(ShortcutIdentifier db_key);
 
 public:
 	/**
@@ -57,23 +57,26 @@ public:
 	 * @param identifier the identifier which is used in database
 	 * @return a shortcut instance
 	 */
-	Shortcut shortcut(ShortcutIdentifier identifier) const;
+	Shortcut shortcut(ShortcutIdentifier db_key) const;
 
 	/**
 	 * @brief set the shortcut by its unique identifier
 	 * @param identifier  the identifier which is used in database
 	 * @param shortcut a shortcut instance
 	 */
-	void set_shortcut(ShortcutIdentifier identifier, const QStringList& shortcut);
+	void set_shortcut(ShortcutIdentifier db_key, const QStringList& shortcut);
 
 	/**
 	 * @brief get all shortcuts
 	 * @return
 	 */
-	QList<ShortcutIdentifier> shortcuts_ids() const;
+	QList<ShortcutIdentifier> all_identifiers() const;
 
-	QString identifier(ShortcutIdentifier id) const;
+	QString db_key(ShortcutIdentifier id) const;
 	QString shortcut_text(ShortcutIdentifier id) const;
+
+private slots:
+	void qt_shortcut_destroyed();
 };
 
 #endif // SHORTCUTHANDLER_H

@@ -70,7 +70,7 @@ void GUI_ShortcutPreferences::init_ui()
 
 	ui->cb_test->setVisible(false);
 
-	const QList<ShortcutIdentifier> shortcuts = m->sch->shortcuts_ids();
+	const QList<ShortcutIdentifier> shortcuts = m->sch->all_identifiers();
 	for(ShortcutIdentifier shortcut : shortcuts)
 	{
 		GUI_ShortcutEntry* entry = new GUI_ShortcutEntry(shortcut);
