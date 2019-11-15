@@ -64,6 +64,7 @@ namespace Library
 
 
 	public:
+		bool is_running() const;
 		void import_files(const QStringList& files, const QString& target_dir);
 		void accept_import(const QString& target_dir);
 		void cancel_import();

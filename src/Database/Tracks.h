@@ -33,14 +33,13 @@ class Genre;
 
 namespace DB
 {
-	class Tracks :
-			private SearchableModule
+	class Tracks
 	{
-		PIMPL(Tracks)
-
 		public:
-			Tracks(const QString& connection_name, DbId db_id, LibraryId _library_id);
-			~Tracks() override;
+			Tracks();
+			virtual ~Tracks();
+
+			void init_views();
 
 			virtual bool db_fetch_tracks(Query& q, MetaDataList& result) const;
 
@@ -55,7 +54,6 @@ namespace DB
                                               const ::Library::Filter& filter) const;
 			virtual bool getAllTracksBySearchString(const ::Library::Filter& filter, MetaDataList& result) const;
 			virtual bool getAllTracksByPaths(const QStringList& paths, MetaDataList& v_md) const;
-
 
 			virtual MetaData	getTrackById(TrackID id) const;
 			virtual bool		getTracksByIds(const QList<TrackID> &ids, MetaDataList &v_md) const;
@@ -81,19 +79,21 @@ namespace DB
 			virtual QString fetch_query_tracks() const;
 
 			virtual Util::Set<Genre> getAllGenres() const;
-			virtual void updateTrackCissearch();
 
 			void deleteAllTracks(bool also_views);
-			void drop_track_view();
-			void drop_search_view();
 
 		protected:
 			virtual QString artistid_field() const=0;
 			virtual QString artistname_field() const=0;
+			virtual QString track_view() const=0;
+			virtual QString track_search_view() const=0;
+			virtual ::Library::SearchModeMask search_mode() const=0;
+			virtual LibraryId library_id() const=0;
 
-		private:
-			void create_track_view(const QString& select_statement);
-			void create_track_search_view(const QString& select_statement);
+			virtual Module* module()=0;
+			virtual const Module* module() const=0;
+
+			virtual void updateTrackCissearch();
 		};
 }
 

@@ -25,6 +25,8 @@
 #include "Utils/Library/SearchMode.h"
 #include "Database/Module.h"
 
+#include <QObject>
+
 class QSqlDatabase;
 
 namespace DB
@@ -39,13 +41,14 @@ namespace DB
 
 		protected:
 			SearchableModule(const QString& connection_name, DbId db_id);
+			::Library::SearchModeMask init_search_mode();
 
 		public:
 			virtual ~SearchableModule();
 
-			::Library::SearchModeMask search_mode();
-			void update_search_mode();
-		};
+			virtual void update_search_mode(::Library::SearchModeMask search_mode);
+			virtual ::Library::SearchModeMask search_mode() const;
+	};
 }
 
 #endif // DATABASESEARCHMODE_H

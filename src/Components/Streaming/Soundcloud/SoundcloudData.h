@@ -78,9 +78,6 @@ namespace SC
 		QString fetch_query_albums(bool also_empty=false) const override;
 		QString fetch_query_artists(bool also_empty=false) const override;
 		QString fetch_query_tracks() const override;
-
-		private:
-			const DB::Module* module() const;
 	};
 }
 

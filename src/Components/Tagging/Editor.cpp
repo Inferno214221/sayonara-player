@@ -422,7 +422,6 @@ void Editor::commit()
 	auto* db_covers = db->cover_connector();
 	auto* ldb = db->library_db(-1, 0);
 
-
 	m->v_md_before_change.clear();
 	m->v_md_after_change.clear();
 
@@ -459,22 +458,24 @@ void Editor::commit()
 				success = Tagging::Utils::setMetaDataOfFile(it->current_metadata());
 				if(!success)
 				{
-					QString filepath = it->original_metadata().filepath();
+					QString filepath = it->current_metadata().filepath();
 					QFileInfo fi(filepath);
 					if(!fi.exists())
 					{
 						m->failed_files.insert(filepath, FailReason::FileNotFound);
-						sp_log(Log::Warning, this) << "Failed to write tags to file: File not found";
+						sp_log(Log::Warning, this) << "Failed to write tags to file: File not found: " << filepath;
 					}
 
 					else if(!fi.isWritable())
 					{
 						m->failed_files.insert(filepath, FailReason::FileNotWriteable);
-						sp_log(Log::Warning, this) << "Failed to write tags to file: File not writeable";
+						sp_log(Log::Warning, this) << "Failed to write tags to file: File not writeable: " << filepath;
 					}
 
-					else {
+					else
+					{
 						m->failed_files.insert(filepath, FailReason::TagLibError);
+						sp_log(Log::Warning, this) << "Failed to write tags to file: Other error: " << filepath;
 					}
 				}
 			}

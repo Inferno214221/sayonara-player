@@ -30,15 +30,11 @@ class ArtistList;
 
 namespace DB
 {
-	class Artists :
-			private SearchableModule
+	class Artists
 	{
-		PIMPL(Artists)
-
 		public:
-
-			Artists(const QString& connection_name, DbId db_id, LibraryId library_id);
-			~Artists() override;
+			Artists();
+			virtual ~Artists();
 
 			virtual bool db_fetch_artists(Query& q, ArtistList& result) const;
 
@@ -54,11 +50,17 @@ namespace DB
 			virtual ArtistId insertArtistIntoDatabase(const QString& artist);
 			virtual ArtistId insertArtistIntoDatabase(const Artist& artist);
 
-			virtual void updateArtistCissearch();
-
 		protected:
 			virtual QString artistid_field() const=0;
 			virtual QString artistname_field() const=0;
+			virtual QString track_view() const=0;
+			virtual QString track_search_view() const=0;
+			virtual ::Library::SearchModeMask search_mode() const=0;
+
+			virtual Module* module()=0;
+			virtual const Module* module() const=0;
+
+			virtual void updateArtistCissearch();
 
 		private:
 			virtual QString fetch_query_artists(bool also_empty) const;

@@ -31,27 +31,28 @@ namespace Library
 	 */
 	class ImportCache
 	{
-	private:
-		PIMPL(ImportCache)
+		private:
+			PIMPL(ImportCache)
 
-	public:
-		explicit ImportCache(const QString& library_path);
-		virtual ~ImportCache();
+			void			add_soundfile(const QString& filename);
 
-		ImportCache(const ImportCache& other);
-		ImportCache& operator=(const ImportCache& other);
+		public:
+			explicit ImportCache(const QString& library_path);
+			virtual ~ImportCache();
 
-		void			clear();
+			ImportCache(const ImportCache& other);
+			ImportCache& operator=(const ImportCache& other);
 
-		void			add_soundfile(const MetaData& md);
-		void			add_standard_file(const QString& filename);
-		void			add_standard_file(const QString& filename, const QString& parent_dir);
+			void			clear();
 
-		QStringList		files() const;
-		MetaDataList	soundfiles() const;
-		QString			target_filename(const QString& src_filename, const QString& target_directory) const;
-		MetaData		metadata(const QString& filename) const;
-		void			change_metadata(const MetaDataList& v_md_old, const MetaDataList& v_md_new);
+			void			add_file(const QString& filename);
+			void			add_file(const QString& filename, const QString& parent_dir);
+
+			QStringList		files() const;
+			MetaDataList	soundfiles() const;
+			QString			target_filename(const QString& src_filename, const QString& target_directory) const;
+			MetaData		metadata(const QString& filename) const;
+			void			change_metadata(const MetaDataList& v_md_old, const MetaDataList& v_md_new);
 	};
 
 	using ImportCachePtr=std::shared_ptr<ImportCache>;

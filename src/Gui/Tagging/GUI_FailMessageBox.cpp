@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "GUI_FailMessageBox.h"
 #include "Gui/TagEdit/ui_GUI_FailMessageBox.h"
 #include "Gui/Utils/Delegates/StyledItemDelegate.h"

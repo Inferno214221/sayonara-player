@@ -45,7 +45,6 @@ SearchableModule::SearchableModule(const QString& connection_name, DbId db_id) :
 
 SearchableModule::~SearchableModule() = default;
 
-
 void SearchableModule::init()
 {
 	if(m->initialized){
@@ -61,7 +60,7 @@ void SearchableModule::init()
 	q_select.bindValue(":key", Util::cvt_not_null(db_key));
 	if(q_select.exec())
 	{
-		if(q_select.next()){
+		if(q_select.next()) {
 			m->search_mode = q_select.value(0).toInt();
 			m->initialized = true;
 		}
@@ -76,29 +75,38 @@ void SearchableModule::init()
 	}
 }
 
-Library::SearchModeMask SearchableModule::search_mode()
+Library::SearchModeMask SearchableModule::init_search_mode()
 {
 	init();
 
 	return m->search_mode;
 }
 
-void SearchableModule::update_search_mode()
+void SearchableModule::update_search_mode(::Library::SearchModeMask search_mode)
 {
-	Settings* settings = Settings::instance();
-	AbstrSetting* s = settings->setting(SettingKey::Lib_SearchMode);
-	QString db_key = s->db_key();
+	if(m->search_mode != search_mode)
+	{
+		Settings* settings = Settings::instance();
+		AbstrSetting* s = settings->setting(SettingKey::Lib_SearchMode);
+		QString db_key = s->db_key();
 
-	Library::SearchModeMask search_mode = settings->get<Set::Lib_SearchMode>();
+		Library::SearchModeMask search_mode = settings->get<Set::Lib_SearchMode>();
 
-	Query q_update(this);
-	q_update.prepare("UPDATE settings SET value=:search_mode WHERE key = :key;");
-	q_update.bindValue(":search_mode",	search_mode);
-	q_update.bindValue(":key",			Util::cvt_not_null(db_key));
-	if(!q_update.exec()){
-		q_update.show_error("Cannot update search mode");
+		Query q_update(this);
+		q_update.prepare("UPDATE settings SET value=:search_mode WHERE key = :key;");
+		q_update.bindValue(":search_mode",	search_mode);
+		q_update.bindValue(":key",			Util::cvt_not_null(db_key));
+		if(!q_update.exec()) {
+			q_update.show_error("Cannot update search mode");
+		}
+
+		m->search_mode = search_mode;
 	}
 
-	m->search_mode = search_mode;
 	m->initialized = true;
+}
+
+::Library::SearchModeMask SearchableModule::search_mode() const
+{
+	return m->search_mode;
 }

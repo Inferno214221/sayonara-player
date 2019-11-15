@@ -114,14 +114,10 @@ void LocalLibrary::search_mode_changed()
 	sp_log(Log::Debug, this) << "Updating cissearch... " << GetSetting(Set::Lib_SearchMode);
 
 	auto* lib_db = DB::Connector::instance()->library_db(m->library_id, 0);
-
-	lib_db->updateArtistCissearch();
-	lib_db->updateAlbumCissearch();
-	lib_db->updateTrackCissearch();
+	lib_db->update_search_mode(GetSetting(Set::Lib_SearchMode));
 
 	sp_log(Log::Debug, this) << "Updating cissearch finished" << GetSetting(Set::Lib_SearchMode);
 }
-
 
 void LocalLibrary::show_album_artists_changed()
 {

@@ -33,35 +33,37 @@ namespace DB
 	class LibraryDatabase :
 			public DB::Albums,
 			public DB::Artists,
-			public DB::Tracks
+			public DB::Tracks,
+			public DB::SearchableModule
 	{
 		PIMPL(LibraryDatabase)
 
-	public:
+		public:
+			enum class ArtistIDField : uint8_t
+			{
+				AlbumArtistID,
+				ArtistID
+			};
 
-		enum class ArtistIDField : uint8_t
-		{
-			AlbumArtistID,
-			ArtistID
-		};
+			LibraryDatabase(const QString& connection_name, DbId db_id, LibraryId library_id);
+			virtual ~LibraryDatabase() override;
 
-		LibraryDatabase(const QString& connection_name, DbId db_id, LibraryId library_id);
-		virtual ~LibraryDatabase();
+			void change_artistid_field(ArtistIDField field);
 
+			void clear();
+			virtual bool store_metadata(const MetaDataList& v_md);
 
-		void clear();
+			LibraryId library_id() const override;
+			QString artistid_field() const override;
+			QString artistname_field() const override;
+			QString track_view() const override;
+			QString track_search_view() const override;
 
-		LibraryId library_id() const;
+			::Library::SearchModeMask search_mode() const override;
+			void update_search_mode(::Library::SearchModeMask smm) override;
 
-		virtual bool store_metadata(const MetaDataList& v_md);
-
-		void change_artistid_field(ArtistIDField field);
-
-		QString artistid_field() const override;
-		QString artistname_field() const override;
-
-		QSqlDatabase db() const;
-		DbId db_id() const;
+			Module* module() override;
+			const Module* module() const override;
 	};
 }
 
