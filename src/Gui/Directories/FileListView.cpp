@@ -114,8 +114,6 @@ void FileListView::mouseMoveEvent(QMouseEvent* event)
 
 void FileListView::contextMenuEvent(QContextMenuEvent* event)
 {
-	QPoint pos = QWidget::mapToGlobal(event->pos());
-
 	if(!m->context_menu){
 		init_context_menu();
 	}
@@ -140,6 +138,7 @@ void FileListView::contextMenuEvent(QContextMenuEvent* event)
 
 	if(num_audio_files > 0)
 	{
+		QPoint pos = QWidget::mapToGlobal(event->pos());
 		m->context_menu->exec(pos);
 	}
 }
@@ -187,8 +186,9 @@ void FileListView::dropEvent(QDropEvent *event)
 		return;
 	}
 
-	QStringList files;
 	const QList<QUrl> urls = mime_data->urls();
+
+	QStringList files; files.reserve(urls.size());
 	for(const QUrl& url : urls)
 	{
 		QString local_file = url.toLocalFile();
@@ -232,11 +232,9 @@ void FileListView::init_context_menu()
 
 QModelIndexList FileListView::selected_rows() const
 {
-	QItemSelectionModel* selection_model;
+	QItemSelectionModel* selection_model = this->selectionModel();
 
-	selection_model = this->selectionModel();
-
-	if(selection_model){
+	if(selection_model) {
 		return selection_model->selectedIndexes();
 	}
 
@@ -245,18 +243,18 @@ QModelIndexList FileListView::selected_rows() const
 
 MetaDataList FileListView::selected_metadata() const
 {
-	QStringList paths = selected_paths();
-	DirectoryReader reader;
+	const QStringList paths = selected_paths();
 
+	DirectoryReader reader;
 	return reader.scan_metadata(paths);
 }
 
 QStringList FileListView::selected_paths() const
 {
-	QStringList paths = m->model->files();
-	QStringList ret;
-	QModelIndexList selections = this->selected_rows();
+	const QStringList paths = m->model->files();
+	const QModelIndexList selections = this->selected_rows();
 
+	QStringList ret;
 	for(const QModelIndex& idx : selections)
 	{
 		int row = idx.row();
@@ -287,11 +285,10 @@ void FileListView::set_search_filter(const QString& search_string)
 		return;
 	}
 
-	Library::SearchModeMask smm = GetSetting(Set::Lib_SearchMode);
-	QString search_text = Library::Utils::convert_search_string(search_string, smm);
+	const Library::SearchModeMask smm = GetSetting(Set::Lib_SearchMode);
+	const QString search_text = Library::Utils::convert_search_string(search_string, smm);
 
-	int n_rows = m->model->rowCount();
-	for(int i=0; i<n_rows; i++)
+	for(int i=0; i<m->model->rowCount(); i++)
 	{
 		QModelIndex idx = m->model->index(i, 0);
 		QString data = m->model->data(idx).toString();
@@ -310,10 +307,25 @@ void FileListView::set_search_filter(const QString& search_string)
 	}
 }
 
+
 QMimeData* FileListView::dragable_mimedata() const
 {
 	auto* mimedata = new Gui::CustomMimeData(this);
 	mimedata->set_metadata(selected_metadata());
+
+	QStringList paths = selected_paths();
+	std::remove_if(paths.begin(), paths.end(), [](const QString& path){
+		return (Util::File::is_soundfile(path));
+	});
+
+	QList<QUrl> urls; urls.reserve(paths.size());
+	std::transform(paths.begin(), paths.end(), std::back_inserter(urls), [](const QString& path)
+	{
+		return QUrl::fromLocalFile(path);
+	});
+
+	mimedata->setUrls(urls);
+
 	return mimedata;
 }
 
@@ -352,21 +364,22 @@ void FileListView::rename_file(const QString& old_name, const QString& new_name)
 	m->file_operations->rename_file(old_name, new_full_name);
 	m->model->set_parent_directory(m->model->library_id(), m->model->parent_directory());
 
-	QStringList files = m->model->files();
+	const QStringList files = m->model->files();
 	int new_file_index = files.indexOf(new_full_name);
-	if(Util::between(new_file_index, files)){
+	if(Util::between(new_file_index, files))
+	{
 		this->select_row(new_file_index);
 	}
 }
 
 void FileListView::rename_file_clicked()
 {
-	QModelIndexList indexes = this->selected_rows();
+	const QModelIndexList indexes = this->selected_rows();
 	if(indexes.size() != 1){
 		return;
 	}
 
-	QModelIndex index = indexes.first();
+	const QModelIndex index = indexes.first();
 	int row = index.row();
 
 	QStringList files = m->model->files();
@@ -397,11 +410,11 @@ void FileListView::rename_file_clicked()
 void FileListView::rename_file_by_tag_clicked()
 {
 	const QModelIndexList indexes = this->selected_rows();
-	if(indexes.isEmpty()){
+	const QStringList files = m->model->files();
+
+	if(indexes.isEmpty() || files.isEmpty()) {
 		return;
 	}
-
-	const QStringList files = m->model->files();
 
 	auto* dialog = new GUI_FileExpressionDialog(this);
 	QDialog::DialogCode ret = QDialog::DialogCode(dialog->exec());
@@ -410,7 +423,7 @@ void FileListView::rename_file_by_tag_clicked()
 		return;
 	}
 
-	QString expression = dialog->expression();
+	const QString expression = dialog->expression();
 	if(expression.isEmpty()){
 		return;
 	}
@@ -422,7 +435,7 @@ void FileListView::rename_file_by_tag_clicked()
 			return;
 		}
 
-		m->file_operations->rename_file_by_tag(files[row], expression);
+		m->file_operations->rename_file_by_expression(files[row], expression);
 	}
 
 	m->model->set_parent_directory(m->model->library_id(), m->model->parent_directory());

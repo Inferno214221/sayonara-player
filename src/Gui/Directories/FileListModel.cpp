@@ -240,18 +240,14 @@ bool FileListModel::check_row_for_searchstring(int row, const QString& substr) c
 
 QMimeData* FileListModel::mimeData(const QModelIndexList& indexes) const
 {
-	Q_UNUSED(indexes)
-
 	QList<QUrl> urls;
 
 	for(const QModelIndex& idx : indexes)
 	{
 		int row = idx.row();
-		if(!Util::between(row, m->files)){
-			continue;
+		if(Util::between(row, m->files)) {
+			urls << QUrl::fromLocalFile(m->files[row]);
 		}
-
-		urls << QUrl::fromLocalFile(m->files[row]);
 	}
 
 	if(urls.isEmpty()){
