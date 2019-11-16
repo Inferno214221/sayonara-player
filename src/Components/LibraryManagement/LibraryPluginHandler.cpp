@@ -228,7 +228,7 @@ void PluginHandler::set_current_library(Container* cur_library)
 		m->current_library->init();
 	}
 
-	SetSetting(Set::Lib_CurPlugin, cur_library->name() );
+	SetSetting(Set::Lib_CurPlugin, cur_library->name());
 
 	emit sig_current_library_changed();
 }
