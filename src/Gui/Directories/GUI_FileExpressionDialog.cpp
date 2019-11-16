@@ -1,6 +1,9 @@
 #include "GUI_FileExpressionDialog.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Settings/Settings.h"
+#include "Utils/Logger/Logger.h"
+
+#include "Components/Directories/FileOperations.h"
 
 #include <QLineEdit>
 #include <QPushButton>
@@ -11,28 +14,48 @@
 
 struct GUI_FileExpressionDialog::Private
 {
+	QMap<QString, Lang::Term> tag_lang_mapping;
 	QLineEdit* le_expression=nullptr;
-	QPushButton* btn_artist=nullptr;
-	QPushButton* btn_album=nullptr;
-	QPushButton* btn_tracknum=nullptr;
-	QPushButton* btn_title=nullptr;
-	QPushButton* btn_year=nullptr;
-	QPushButton* btn_bitrate=nullptr;
 
+	QList<QPushButton*> buttons;
 	QPushButton* btn_cancel=nullptr;
 	QPushButton* btn_ok=nullptr;
+
+	Private()
+	{
+		tag_lang_mapping = QMap<QString, Lang::Term>
+		{
+			{"<title>", Lang::Title},
+			{"<album>", Lang::Album},
+			{"<artist>", Lang::Artist},
+			{"<year>", Lang::Year},
+			{"<bitrate>", Lang::Bitrate},
+			{"<tracknum>", Lang::TrackNo},
+			{"<disc>", Lang::Disc}
+		};
+	}
+
+	QPushButton* init_button(const QString& value, QWidget* parent)
+	{
+		auto* btn = new QPushButton(parent);
+
+		if(!tag_lang_mapping.contains(value))
+		{
+			sp_log(Log::Warning, this) << value << " is not allowed";
+			return nullptr;
+		}
+
+		Lang::Term term = tag_lang_mapping[value];
+		btn->setText(Lang::get(term));
+		btn->setProperty("value", value);
+		btn->setProperty("langterm", int(term));
+
+		buttons << btn;
+
+		return btn;
+	}
+
 };
-
-static QPushButton* init_button(const QString& value, Lang::Term term, QWidget* parent)
-{
-	auto* btn = new QPushButton(parent);
-
-	btn->setText(Lang::get(term));
-	btn->setProperty("value", value);
-	btn->setProperty("langterm", int(term));
-
-	return btn;
-}
 
 static bool is_valid(const QString& expression)
 {
@@ -55,12 +78,11 @@ static bool is_valid(const QString& expression)
 	}
 
 	QString replaced(expression);
-	replaced.replace("<title>", "Hallo");
-	replaced.replace("<artist>", "Hallo");
-	replaced.replace("<album>", "Hallo");
-	replaced.replace("<tracknum>", "Hallo");
-	replaced.replace("<bitrate>", "Hallo");
-	replaced.replace("<year>", "Hallo");
+	const QStringList allowed_tags = FileOperations::supported_tag_replacements();
+	for(const QString& tag : allowed_tags)
+	{
+		replaced.replace(tag, "Hallo");
+	}
 
 	if(replaced == expression) {
 		return false;
@@ -72,6 +94,7 @@ static bool is_valid(const QString& expression)
 
 	return true;
 }
+
 
 GUI_FileExpressionDialog::GUI_FileExpressionDialog(QWidget* parent) :
 	Gui::Dialog(parent)
@@ -92,21 +115,15 @@ GUI_FileExpressionDialog::GUI_FileExpressionDialog(QWidget* parent) :
 	}
 
 	{ // init buttons
-		auto* hbox_layout_buttons = new QHBoxLayout(this);
-		m->btn_artist = init_button("<artist>", Lang::Artist, this);
-		m->btn_album = init_button("<album>", Lang::Album, this);
-		m->btn_tracknum = init_button("<tracknum>", Lang::TrackNo, this);
-		m->btn_title = init_button("<title>", Lang::Title, this);
-		m->btn_year = init_button("<year>", Lang::Year, this);
-		m->btn_bitrate = init_button("<bitrate>", Lang::Bitrate, this);
+		auto* hbox_layout_buttons = new QHBoxLayout();
 
-		QList<QPushButton*> buttons
+		const QStringList allowed_tags = FileOperations::supported_tag_replacements();
+		for(const QString& tag : allowed_tags)
 		{
-			m->btn_tracknum, m->btn_artist, m->btn_album,
-			m->btn_title, m->btn_year, m->btn_bitrate
-		};
+			m->init_button(tag, this);
+		}
 
-		for(auto* btn : buttons)
+		for(auto* btn : m->buttons)
 		{
 			hbox_layout_buttons->addWidget(btn);
 			connect(btn, &QPushButton::clicked, this, &GUI_FileExpressionDialog::btn_clicked);
@@ -116,7 +133,7 @@ GUI_FileExpressionDialog::GUI_FileExpressionDialog(QWidget* parent) :
 	}
 
 	{ // ok cancel
-		auto* hbox_layout_okcancel = new QHBoxLayout(this);
+		auto* hbox_layout_okcancel = new QHBoxLayout();
 		m->btn_ok = new QPushButton(Lang::get(Lang::OK), this);
 		m->btn_cancel = new QPushButton(Lang::get(Lang::Cancel), this);
 
@@ -141,6 +158,19 @@ GUI_FileExpressionDialog::GUI_FileExpressionDialog(QWidget* parent) :
 
 		connect(m->btn_cancel, &QPushButton::clicked, this, &Gui::Dialog::reject);
 	}
+
+	{ // taborder
+		this->setTabOrder(m->le_expression, m->buttons.first());
+		for(int i=0; i<m->buttons.size() - 1; i++)
+		{
+			this->setTabOrder(m->buttons[i], m->buttons[i+1]);
+		}
+		this->setTabOrder(m->buttons.last(), m->btn_cancel);
+		this->setTabOrder(m->btn_cancel, m->btn_ok);
+		this->setTabOrder(m->btn_ok, m->le_expression);
+	}
+
+	m->btn_ok->setDefault(true);
 }
 
 GUI_FileExpressionDialog::~GUI_FileExpressionDialog() = default;
@@ -158,24 +188,14 @@ void GUI_FileExpressionDialog::showEvent(QShowEvent* event)
 
 	if(m->le_expression->text().isEmpty())
 	{
-		QString text = QString("%1. %2")
-			.arg(m->btn_tracknum->property("value").toString())
-			.arg(m->btn_title->property("value").toString())
-		;
-
+		QString text = QString("<tracknum>. <title>");
 		m->le_expression->setText(text);
 	}
 }
 
 void GUI_FileExpressionDialog::language_changed()
 {
-	QList<QPushButton*> buttons
-	{
-		m->btn_tracknum, m->btn_artist, m->btn_album,
-		m->btn_title, m->btn_year, m->btn_bitrate
-	};
-
-	for(auto* btn : buttons)
+	for(auto* btn : m->buttons)
 	{
 		Lang::Term term = Lang::Term(btn->property("langterm").toInt());
 		btn->setText(Lang::get(term));
