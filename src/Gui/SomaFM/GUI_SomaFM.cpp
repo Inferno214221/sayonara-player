@@ -66,6 +66,7 @@ GUI_SomaFM::GUI_SomaFM(QWidget *parent) :
 
 	SomaFM::StationModel* model_stations = new SomaFM::StationModel(this);
 
+	this->setFocusProxy(ui->tv_stations);
 	ui->tv_stations->set_model(model_stations);
 	ui->tv_stations->setItemDelegate(new QItemDelegate(ui->tv_stations));
 	ui->tv_stations->setEditTriggers(QAbstractItemView::NoEditTriggers);

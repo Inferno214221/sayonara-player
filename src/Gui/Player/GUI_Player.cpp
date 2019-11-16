@@ -392,8 +392,10 @@ void GUI_Player::init_library()
 	{
 		add_current_library();
 		QWidget* w = Library::PluginHandler::instance()->current_library_widget();
-		if(w) {
+		if(w)
+		{
 			w->show();
+			w->setFocus();
 		}
 	}
 

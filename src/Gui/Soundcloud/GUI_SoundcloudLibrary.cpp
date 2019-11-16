@@ -46,6 +46,8 @@ GUI_Library::GUI_Library(Library* library, QWidget *parent) :
 	setup_parent(this, &ui);
 	setAcceptDrops(false);
 
+	this->setFocusProxy(ui->le_search);
+
 	m = Pimpl::make<GUI_Library::Private>();
 
 	m->artist_search = new GUI_ArtistSearch(library, this);
