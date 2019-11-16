@@ -723,8 +723,6 @@ bool Connector::apply_fixes()
 	return true;
 }
 
-void Connector::clean_up() {}
-
 DB::LibraryDatabases Connector::library_dbs() const
 {
 	return m->library_dbs;

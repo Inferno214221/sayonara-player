@@ -30,45 +30,23 @@ using ::Library::Filter;
 
 static QString get_filter_clause(const Filter& filter, QString cis_placeholder, QString searchterm_placeholder);
 
-struct Albums::Private
-{
-	QString search_view;
-	QString track_view;
-
-	explicit Private(LibraryId library_id)
-	{
-		if(library_id < 0) {
-			track_view = "tracks";
-			search_view = QString("track_search_view");
-		}
-
-		else {
-			track_view = QString("track_view_%1").arg(library_id);
-			search_view = QString("track_search_view_%1").arg(library_id);
-		}
-	}
-};
-
-Albums::Albums(const QString& connection_name, DbId db_id, LibraryId library_id) :
-	DB::SearchableModule(connection_name, db_id)
-{
-	m = Pimpl::make<Private>(library_id);
-}
+Albums::Albums() = default;
+Albums::~Albums() = default;
 
 QString Albums::fetch_query_albums(bool also_empty) const
 {
 	QStringList fields
 	{
-	    "albums.albumID		AS albumID",		               // 0
-		"albums.name		AS albumName",                     // 1
-		"albums.rating		AS albumRating",                   // 2
-		"GROUP_CONCAT(DISTINCT artists.name)      AS artistNames",	    // 3
-		"GROUP_CONCAT(DISTINCT albumArtists.name) AS albumArtistNames", // 4
-		"SUM(%1.length) / 1000				AS albumLength",   // 5
-		"COUNT(DISTINCT %1.trackID)			AS trackCount",    // 6
-		"MAX(%1.year)						AS albumYear",     // 7
-		"GROUP_CONCAT(DISTINCT %1.discnumber) AS discnumbers", // 8
-		"GROUP_CONCAT(%1.filename, '#') AS filenames"      // 9
+	    "albums.albumID								AS albumID",			// 0
+		"albums.name								AS albumName",			// 1
+		"albums.rating								AS albumRating",		// 2
+		"GROUP_CONCAT(DISTINCT artists.name)		AS artistNames",		// 3
+		"GROUP_CONCAT(DISTINCT albumArtists.name)	AS albumArtistNames",	// 4
+		"SUM(%1.length) / 1000						AS albumLength",		// 5
+		"COUNT(DISTINCT %1.trackID)					AS trackCount",			// 6
+		"MAX(%1.year)								AS albumYear",			// 7
+		"GROUP_CONCAT(DISTINCT %1.discnumber)		AS discnumbers",		// 8
+		"GROUP_CONCAT(%1.filename, '#')				AS filenames"			// 9
 	};
 
 	QString query = "SELECT " + fields.join(", ") + " FROM albums ";
@@ -82,10 +60,8 @@ QString Albums::fetch_query_albums(bool also_empty) const
 	query += join + QString(" artists ON %1.artistID = artists.artistID ");
 	query += join + QString(" artists albumArtists ON %1.albumArtistID = albumArtists.artistID ");
 
-	return query.arg(m->track_view);
+	return query.arg(track_view());
 }
-
-DB::Albums::~Albums() = default;
 
 bool Albums::db_fetch_albums(Query& q, AlbumList& result) const
 {
@@ -121,7 +97,7 @@ bool Albums::db_fetch_albums(Query& q, AlbumList& result) const
 
 		album.n_discs = Disc(album.discnumbers.size());
 		album.is_sampler = (album.artists().size() > 1);
-		album.set_db_id(db_id());
+		album.set_db_id(module()->db_id());
 
 		album.set_path_hint(q.value(9).toString().split("#"));
 
@@ -134,7 +110,7 @@ bool Albums::db_fetch_albums(Query& q, AlbumList& result) const
 
 AlbumId Albums::getAlbumID(const QString& album) const
 {
-	Query q(this);
+	Query q(module());
 	int albumID = -1;
 
 	q.prepare("SELECT albumID FROM albums WHERE name = ?;");
@@ -163,7 +139,7 @@ bool Albums::getAlbumByID(AlbumId id, Album& album, bool also_empty) const
 		return false;
 	}
 
-	Query q(this);
+	Query q(module());
 	QString query =	fetch_query_albums(also_empty) +
 						" WHERE albums.albumID = :id "
 						" GROUP BY albums.albumID, albums.name, albums.rating ";
@@ -183,7 +159,7 @@ bool Albums::getAlbumByID(AlbumId id, Album& album, bool also_empty) const
 
 bool Albums::getAllAlbums(AlbumList& result, bool also_empty) const
 {
-	Query q(this);
+	Query q(module());
 	QString query = fetch_query_albums(also_empty);
 
 	query += " GROUP BY albums.albumID, albums.name, albums.rating; ";
@@ -218,7 +194,8 @@ bool Albums::getAllAlbumsByArtist(const IdList &artists, AlbumList &result, cons
 			 "GROUP_CONCAT(DISTINCT filename)"
 		};
 
-		QString query = "SELECT " + fields.join(", ") + " FROM " + m->search_view + " WHERE ";
+		const QString search_view = track_search_view();
+		QString query = "SELECT " + fields.join(", ") + " FROM " + search_view + " WHERE ";
 
 		if( !filter.cleared() )
 		{
@@ -226,7 +203,7 @@ bool Albums::getAllAlbumsByArtist(const IdList &artists, AlbumList &result, cons
 		}
 
 		{ // artist conditions
-			QString aidf = m->search_view + "." + artistid_field();
+			QString aidf = search_view + "." + artistid_field();
 
 			QStringList or_clauses;
 			for(int a=0; a<artists.size(); a++) {
@@ -239,7 +216,7 @@ bool Albums::getAllAlbumsByArtist(const IdList &artists, AlbumList &result, cons
 		query += " GROUP BY albumID, albumName; ";
 
 		{ // prepare and run
-			Query q(this);
+			Query q(module());
 			q.prepare(query);
 
 			q.bindValue(":searchterm",	filters[i]);
@@ -279,11 +256,11 @@ bool Albums::getAllAlbumsBySearchString(const Library::Filter& filter, AlbumList
 			 "GROUP_CONCAT(DISTINCT filename)"
 		};
 
-		QString query = "SELECT " + fields.join(", ") + " FROM " + m->search_view + " WHERE ";
+		QString query = "SELECT " + fields.join(", ") + " FROM " + track_search_view() + " WHERE ";
 		query += get_filter_clause(filter, "cissearch", "searchterm");
 		query += " GROUP BY albumID, albumName;";
 
-		Query q(this);
+		Query q(module());
 		q.prepare(query);
 		q.bindValue(":searchterm",	filters[i]);
 		q.bindValue(":cissearch",	search_filters[i]);
@@ -296,8 +273,6 @@ bool Albums::getAllAlbumsBySearchString(const Library::Filter& filter, AlbumList
 	return true;
 }
 
-
-
 AlbumId Albums::updateAlbumRating(AlbumId id, Rating rating)
 {
 	QMap<QString, QVariant> bindings
@@ -305,7 +280,7 @@ AlbumId Albums::updateAlbumRating(AlbumId id, Rating rating)
 		{"rating",		QVariant::fromValue(int(rating))}
 	};
 
-	Query q = update("albums", bindings, {"albumID", id}, QString("Cannot set album rating for id %1").arg(id));
+	Query q = module()->update("albums", bindings, {"albumID", id}, QString("Cannot set album rating for id %1").arg(id));
 	if (q.has_error()) {
 		return -1;
 	}
@@ -313,23 +288,20 @@ AlbumId Albums::updateAlbumRating(AlbumId id, Rating rating)
 	return id;
 }
 
-
-
 void Albums::updateAlbumCissearch()
 {
-	SearchableModule::update_search_mode();
 	Library::SearchModeMask sm = search_mode();
 
 	AlbumList albums;
 	getAllAlbums(albums, true);
 
-	db().transaction();
+	module()->db().transaction();
 
 	for(const Album& album : albums)
 	{
 		QString cis = Library::Utils::convert_search_string(album.name(), sm);
 
-		this->update
+		module()->update
 		(
 			"albums",
 			{{"cissearch", Util::cvt_not_null(cis)}},
@@ -338,7 +310,7 @@ void Albums::updateAlbumCissearch()
 		);
 	}
 
-	db().commit();
+	module()->db().commit();
 }
 
 AlbumId Albums::insertAlbumIntoDatabase(const QString& album_name)
@@ -357,7 +329,7 @@ AlbumId Albums::insertAlbumIntoDatabase(const QString& album_name)
 		{"rating",		QVariant::fromValue(int(Rating::Zero))}
 	};
 
-	Query q = insert("albums", bindings, QString("2. Cannot insert album %1").arg(album_name));
+	Query q = module()->insert("albums", bindings, QString("2. Cannot insert album %1").arg(album_name));
 	if (q.has_error()) {
 		return -1;
 	}

@@ -29,14 +29,11 @@ class AlbumList;
 
 namespace DB
 {
-	class Albums :
-			private SearchableModule
+	class Albums
 	{
-		PIMPL(Albums)
-
 		public:
-			Albums(const QString& connection_name, DbId db_id, LibraryId library_id);
-			~Albums();
+			Albums();
+			virtual ~Albums();
 
 			virtual bool db_fetch_albums(Query& q, AlbumList& result) const;
 
@@ -55,10 +52,16 @@ namespace DB
 
 			virtual AlbumId updateAlbumRating(AlbumId id, Rating rating);
 
-			virtual void updateAlbumCissearch();
-
 		protected:
 			virtual QString artistid_field() const=0;
+			virtual QString track_view() const=0;
+			virtual QString track_search_view() const=0;
+			virtual ::Library::SearchModeMask search_mode() const=0;
+
+			virtual Module* module()=0;
+			virtual const Module* module() const=0;
+
+			virtual void updateAlbumCissearch();
 
 		private:
 			virtual QString fetch_query_albums(bool also_empty) const;

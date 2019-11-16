@@ -29,42 +29,16 @@
 using DB::Artists;
 using DB::Query;
 
-struct Artists::Private
-{
-	QString search_view;
-	QString track_view;
-
-	explicit Private(LibraryId library_id)
-	{
-		if(library_id < 0) {
-			search_view = QString("track_search_view");
-			track_view = QString("tracks");
-		}
-
-		else {
-			search_view = QString("track_search_view_%1").arg(library_id);
-			track_view = QString("track_view_%1").arg(library_id);
-		}
-	}
-};
-
-
-Artists::Artists(const QString& connection_name, DbId db_id, LibraryId library_id) :
-	DB::SearchableModule(connection_name, db_id)
-{
-	m = Pimpl::make<Private>(library_id);
-}
-
-DB::Artists::~Artists() = default;
-
+Artists::Artists() = default;
+Artists::~Artists() = default;
 
 QString Artists::fetch_query_artists(bool also_empty) const
 {
 	QStringList fields
 	{
-			"artists.artistID           AS artistID",
-			"artists.name               AS artistName",
-			"COUNT(DISTINCT %1.trackID) AS trackCount"
+		"artists.artistID           AS artistID",
+		"artists.name               AS artistName",
+		"COUNT(DISTINCT %1.trackID) AS trackCount"
 	};
 
 	QString query = "SELECT " + fields.join(", ") + " FROM artists ";
@@ -77,7 +51,7 @@ QString Artists::fetch_query_artists(bool also_empty) const
 	query += join + " %1 ON %1.%2 = artists.artistID ";			// join with tracks
 	query += join + " albums ON %1.albumID = albums.albumID ";	// join with albums
 
-	return query.arg(m->track_view).arg(artistid_field());
+	return query.arg(track_view()).arg(artistid_field());
 }
 
 
@@ -97,7 +71,7 @@ bool Artists::db_fetch_artists(Query& q, ArtistList& result) const
 		artist.set_id(		q.value(0).value<ArtistId>());
 		artist.set_name(	q.value(1).toString());
 		artist.set_songcount(q.value(2).value<uint16_t>());
-		artist.set_db_id(	db_id());
+		artist.set_db_id(	module()->db_id());
 
 		result << artist;
 	}
@@ -118,7 +92,7 @@ bool Artists::getArtistByID(ArtistId id, Artist& artist, bool also_empty) const
 
 	QString query = fetch_query_artists(also_empty) + " WHERE artists.artistID = ?;";
 
-	Query q(this);
+	Query q(module());
 	q.prepare(query);
 	q.addBindValue(id);
 
@@ -135,7 +109,7 @@ bool Artists::getArtistByID(ArtistId id, Artist& artist, bool also_empty) const
 
 ArtistId Artists::getArtistID(const QString& artist) const
 {
-	Query q = run_query
+	Query q = module()->run_query
 	(
 		"SELECT artistID FROM artists WHERE name = :name;",
 		{":name", Util::cvt_not_null(artist)},
@@ -158,7 +132,7 @@ bool Artists::getAllArtists(ArtistList& result, bool also_empty) const
 	QString query = fetch_query_artists(also_empty);
 	query += "GROUP BY artists.artistID, artists.name; ";
 
-	Query q(this);
+	Query q(module());
 	q.prepare(query);
 
 	return db_fetch_artists(q, result);
@@ -170,13 +144,13 @@ bool Artists::getAllArtistsBySearchString(const Library::Filter& filter, ArtistL
 	QStringList search_filters = filter.search_mode_filtertext(true);
 	for(int i=0; i<filters.size(); i++)
 	{
-		Query q(this);
+		Query q(module());
 
 		QString query = "SELECT " +
 						 artistid_field() + ", " +
 						 artistname_field() + ", " +
 						 "COUNT(DISTINCT trackID) AS trackCount "
-						 "FROM " + m->search_view + " ";
+						 "FROM " + track_search_view() + " ";
 
 		query += " WHERE ";
 
@@ -224,7 +198,7 @@ bool Artists::deleteArtist(ArtistId id)
 		{"id", id}
 	};
 
-	Query q = run_query
+	Query q = module()->run_query
 	(
 		"delete from artists where artistId=:artistId;",
 		{":artistId", id},
@@ -249,7 +223,7 @@ ArtistId Artists::insertArtistIntoDatabase(const QString& artist)
 		{"cissearch", Util::cvt_not_null(cis)}
 	};
 
-	Query q = insert("artists", bindings, QString("Cannot insert artist %1").arg(artist));
+	Query q = module()->insert("artists", bindings, QString("Cannot insert artist %1").arg(artist));
 	if(q.has_error()){
 		return -1;
 	}
@@ -264,19 +238,18 @@ ArtistId Artists::insertArtistIntoDatabase(const Artist& artist)
 
 void Artists::updateArtistCissearch()
 {
-	SearchableModule::update_search_mode();
 	Library::SearchModeMask sm = search_mode();
 
 	ArtistList artists;
 	getAllArtists(artists, true);
 
-	db().transaction();
+	module()->db().transaction();
 
 	for(const Artist& artist : artists)
 	{
 		QString cis = Library::Utils::convert_search_string(artist.name(), sm);
 
-		this->update
+		module()->update
 		(
 			"artists",
 			{{"cissearch", Util::cvt_not_null(cis)}},
@@ -285,6 +258,6 @@ void Artists::updateArtistCissearch()
 		);
 	}
 
-	db().commit();
+	module()->db().commit();
 }
 

@@ -40,7 +40,7 @@
 #include <QImage>
 #include <QStringList>
 
-const int Timeout = 10000;
+static const int Timeout = 5000;
 
 using namespace Cover;
 using Fetcher::Url;

@@ -24,6 +24,7 @@ private slots:
 	void common_path_test();
 	void system_paths_test();
 	void resource_path_test();
+	void split_directories_test();
 };
 
 
@@ -177,6 +178,51 @@ void FileHelperTest::resource_path_test()
 
 		Util::File::delete_files({fp.filesystem_path()});
 	}
+}
+
+void FileHelperTest::split_directories_test()
+{
+	QStringList ret;
+	QStringList expected;
+
+	ret = Util::File::split_directories("/path/to/somewhere");
+	expected.clear();
+	expected << "path" << "to" << "somewhere";
+	QVERIFY(ret == expected);
+
+	ret = Util::File::split_directories("/path/to/a/file.mp3");
+	expected.clear();
+	expected << "path" << "to" << "a" << "file.mp3";
+	QVERIFY(ret == expected);
+
+	ret = Util::File::split_directories("///a//very/strange///path");
+	expected.clear();
+	expected << "a" << "very" << "strange" << "path";
+	QVERIFY(ret == expected);
+
+	ret = Util::File::split_directories("///a//very/strange///path//\\//");
+	expected.clear();
+	expected << "a" << "very" << "strange" << "path";
+	QVERIFY(ret == expected);
+
+	ret = Util::File::split_directories("///a//very/strange///path\\to/some\\file.mp3");
+	expected.clear();
+	expected << "a" << "very" << "strange" << "path" << "to" << "some" << "file.mp3";
+	QVERIFY(ret == expected);
+
+	ret = Util::File::split_directories("/root");
+	expected.clear();
+	expected << "root";
+	QVERIFY(ret == expected);
+
+	ret = Util::File::split_directories("/\\/");
+	QVERIFY(ret.isEmpty());
+
+	ret = Util::File::split_directories("/");
+	QVERIFY(ret.isEmpty());
+
+	ret = Util::File::split_directories("");
+	QVERIFY(ret.isEmpty());
 }
 
 QTEST_GUILESS_MAIN(FileHelperTest)

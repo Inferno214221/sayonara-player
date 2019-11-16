@@ -49,6 +49,8 @@ qt5_add_resources(RESOURCES_RCC
 new_test(Database/PodcastTest.cpp)
 new_test(Database/AlbumTest.cpp)
 
+new_test(Library/ImportCacheTest.cpp)
+
 new_test(Playlist/PlaylistTest.cpp Playlist/PlaylistTestUtils.cpp)
 new_test(Playlist/PlaylistTrackModifyTest.cpp Playlist/PlaylistTestUtils.cpp)
 

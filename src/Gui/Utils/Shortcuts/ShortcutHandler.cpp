@@ -35,13 +35,13 @@
 
 namespace Algorithm=Util::Algorithm;
 
-struct ShortcutMapEntry
+struct ShortcutEntry
 {
-	ShortcutIdentifier identifier;
-	QString db_key;
-	QString default_shortcut;
+	ShortcutIdentifier	identifier;
+	QString				db_key;
+	QString				default_shortcut;
 
-	ShortcutMapEntry(ShortcutIdentifier identifier, const QString& db_key, const QString& default_shortcut) :
+	ShortcutEntry(ShortcutIdentifier identifier, const QString& db_key, const QString& default_shortcut) :
 		identifier(identifier),
 		db_key(db_key),
 		default_shortcut(default_shortcut)
@@ -50,38 +50,39 @@ struct ShortcutMapEntry
 
 struct ShortcutHandler::Private
 {
-	Shortcut invalid_shortcut;
-	QList<ShortcutMapEntry> shortcut_map;
-	QList<Shortcut> shortcuts;
+	Shortcut					invalid_shortcut;
+	QList<ShortcutEntry>		shortcut_entries;
+	QList<Shortcut>				shortcuts;
 
 	Private()
 	{
 		invalid_shortcut = Shortcut::getInvalid();
 
-		shortcut_map << ShortcutMapEntry(ShortcutIdentifier::PlayPause, "play_pause", QString("Space"));
-		shortcut_map << ShortcutMapEntry(ShortcutIdentifier::Stop, "stop", QString("Ctrl+Space"));
-		shortcut_map << ShortcutMapEntry(ShortcutIdentifier::Next, "next", QString("Ctrl+Right"));
-		shortcut_map << ShortcutMapEntry(ShortcutIdentifier::Prev, "prev", QString("Ctrl+Left"));
-		shortcut_map << ShortcutMapEntry(ShortcutIdentifier::VolDown, "vol_down", QString("Ctrl+-"));
-		shortcut_map << ShortcutMapEntry(ShortcutIdentifier::VolUp, "vol_up", QString("Ctrl++"));
-		shortcut_map << ShortcutMapEntry(ShortcutIdentifier::SeekFwd, "seek_fwd", QString("Alt+Right"));
-		shortcut_map << ShortcutMapEntry(ShortcutIdentifier::SeekBwd, "seek_bwd", QString("Alt+Left"));
-		shortcut_map << ShortcutMapEntry(ShortcutIdentifier::SeekFwdFast, "seek_fwd_fast", QString("Shift+Alt+Right"));
-		shortcut_map << ShortcutMapEntry(ShortcutIdentifier::SeekBwdFast, "seek_bwd_fast", QString("Shift+Alt+Left"));
-		shortcut_map << ShortcutMapEntry(ShortcutIdentifier::PlayNewTab, "play_new_tab", QString("Ctrl+Enter"));
-		shortcut_map << ShortcutMapEntry(ShortcutIdentifier::PlayNext, "play_next", QString("Alt+Enter"));
-		shortcut_map << ShortcutMapEntry(ShortcutIdentifier::Append, "append", QString("Shift+Enter"));
-		shortcut_map << ShortcutMapEntry(ShortcutIdentifier::CoverView, "cover_view", QString("Ctrl+Shift+C"));
-		shortcut_map << ShortcutMapEntry(ShortcutIdentifier::AlbumArtists, "album_artists", QString("Ctrl+Shift+A"));
-		shortcut_map << ShortcutMapEntry(ShortcutIdentifier::ViewLibrary, "view_library", QString("Ctrl+L"));
-		shortcut_map << ShortcutMapEntry(ShortcutIdentifier::AddTab, "add_tab", QString("Ctrl+T"));
-		shortcut_map << ShortcutMapEntry(ShortcutIdentifier::CloseTab, "close_tab", QString("Ctrl+W"));
-		shortcut_map << ShortcutMapEntry(ShortcutIdentifier::ClosePlugin, "close_plugin", QString("Ctrl+Esc"));
-		shortcut_map << ShortcutMapEntry(ShortcutIdentifier::Minimize, "minimize", QString("Ctrl+M"));
-		shortcut_map << ShortcutMapEntry(ShortcutIdentifier::Quit, "quit", QString("Ctrl+Q"));
-		shortcut_map << ShortcutMapEntry(ShortcutIdentifier::ReloadLibrary, "reload_library", QString("Ctrl+F5"));
+		shortcut_entries << ShortcutEntry(ShortcutIdentifier::PlayPause, "play_pause", QString("Space"));
+		shortcut_entries << ShortcutEntry(ShortcutIdentifier::Stop, "stop", QString("Ctrl+Space"));
+		shortcut_entries << ShortcutEntry(ShortcutIdentifier::Next, "next", QString("Ctrl+Right"));
+		shortcut_entries << ShortcutEntry(ShortcutIdentifier::Prev, "prev", QString("Ctrl+Left"));
+		shortcut_entries << ShortcutEntry(ShortcutIdentifier::VolDown, "vol_down", QString("Ctrl+-"));
+		shortcut_entries << ShortcutEntry(ShortcutIdentifier::VolUp, "vol_up", QString("Ctrl++"));
+		shortcut_entries << ShortcutEntry(ShortcutIdentifier::SeekFwd, "seek_fwd", QString("Alt+Right"));
+		shortcut_entries << ShortcutEntry(ShortcutIdentifier::SeekBwd, "seek_bwd", QString("Alt+Left"));
+		shortcut_entries << ShortcutEntry(ShortcutIdentifier::SeekFwdFast, "seek_fwd_fast", QString("Shift+Alt+Right"));
+		shortcut_entries << ShortcutEntry(ShortcutIdentifier::SeekBwdFast, "seek_bwd_fast", QString("Shift+Alt+Left"));
+		shortcut_entries << ShortcutEntry(ShortcutIdentifier::PlayNewTab, "play_new_tab", QString("Ctrl+Enter"));
+		shortcut_entries << ShortcutEntry(ShortcutIdentifier::PlayNext, "play_next", QString("Alt+Enter"));
+		shortcut_entries << ShortcutEntry(ShortcutIdentifier::Append, "append", QString("Shift+Enter"));
+		shortcut_entries << ShortcutEntry(ShortcutIdentifier::CoverView, "cover_view", QString("Ctrl+Shift+C"));
+		shortcut_entries << ShortcutEntry(ShortcutIdentifier::AlbumArtists, "album_artists", QString("Ctrl+Shift+A"));
+		shortcut_entries << ShortcutEntry(ShortcutIdentifier::ViewLibrary, "view_library", QString("Ctrl+L"));
+		shortcut_entries << ShortcutEntry(ShortcutIdentifier::AddTab, "add_tab", QString("Ctrl+T"));
+		shortcut_entries << ShortcutEntry(ShortcutIdentifier::CloseTab, "close_tab", QString("Ctrl+W"));
+		shortcut_entries << ShortcutEntry(ShortcutIdentifier::ClosePlugin, "close_plugin", QString("Ctrl+Esc"));
+		shortcut_entries << ShortcutEntry(ShortcutIdentifier::Minimize, "minimize", QString("Ctrl+M"));
+		shortcut_entries << ShortcutEntry(ShortcutIdentifier::Quit, "quit", QString("Ctrl+Q"));
+		shortcut_entries << ShortcutEntry(ShortcutIdentifier::ReloadLibrary, "reload_library", QString("Ctrl+F5"));
 	}
 };
+
 
 ShortcutHandler::ShortcutHandler() :
 	QObject()
@@ -91,16 +92,16 @@ ShortcutHandler::ShortcutHandler() :
 	DB::Shortcuts* db = DB::Connector::instance()->shortcut_connector();
 	RawShortcutMap rsm = db->getAllShortcuts();
 
-	for(const ShortcutMapEntry& sme : Algorithm::AsConst(m->shortcut_map))
+	for(const ShortcutEntry& se : Algorithm::AsConst(m->shortcut_entries))
 	{
-		QStringList shortcuts = rsm[sme.db_key];
+		QStringList shortcuts = rsm[se.db_key];
 		if(shortcuts.isEmpty())
 		{
-			 m->shortcuts << Shortcut(sme.identifier, sme.default_shortcut);
+			 m->shortcuts << Shortcut(se.identifier, se.default_shortcut);
 		}
 
 		else {
-			m->shortcuts << Shortcut(sme.identifier, shortcuts);
+			m->shortcuts << Shortcut(se.identifier, shortcuts);
 		}
 	}
 }
@@ -130,50 +131,70 @@ void ShortcutHandler::set_shortcut(ShortcutIdentifier identifier, const QStringL
 			emit sig_shortcut_changed(identifier);
 		}
 
-		rsm[it->identifier_string()] = it->shortcuts();
+		rsm[it->db_key()] = it->shortcuts();
 	}
 
 	DB::Shortcuts* db = DB::Connector::instance()->shortcut_connector();
-	db->setShortcuts(this->identifier(identifier), shortcuts);
+	db->setShortcuts(this->db_key(identifier), shortcuts);
 }
 
 
-void ShortcutHandler::qt_shortcuts_added(ShortcutIdentifier identifier, const QList<QShortcut*>& shortcuts)
+void ShortcutHandler::qt_shortcuts_added(ShortcutIdentifier identifier, const QList<QShortcut*>& qt_shortcuts)
 {
 	for(auto it=m->shortcuts.begin(); it != m->shortcuts.end(); it++)
 	{
 		if(it->identifier() == identifier)
 		{
-			it->add_qt_shortcuts(shortcuts);
+			it->set_qt_shortcuts(qt_shortcuts);
 		}
 	}
+
+	for(auto qit=qt_shortcuts.begin(); qit != qt_shortcuts.end(); qit++)
+	{
+		QShortcut* qsc = *qit;
+		connect(qsc, &QObject::destroyed, this, &ShortcutHandler::qt_shortcut_destroyed);
+	}
 }
 
 
-QList<ShortcutIdentifier> ShortcutHandler::shortcuts_ids() const
+void ShortcutHandler::qt_shortcut_destroyed()
 {
-	QList<ShortcutIdentifier> ids;
+	auto* sc = static_cast<QShortcut*>(sender());
 
-	for(const ShortcutMapEntry& sme : Algorithm::AsConst(m->shortcut_map))
+	for(auto it=m->shortcuts.begin(); it != m->shortcuts.end(); it++)
 	{
-		ids << sme.identifier;
+		it->remove_qt_shortcut(sc);
+	}
+}
+
+
+QList<ShortcutIdentifier> ShortcutHandler::all_identifiers() const
+{
+	QList<ShortcutIdentifier> identifiers;
+
+	for(const ShortcutEntry& sme : Algorithm::AsConst(m->shortcut_entries))
+	{
+		identifiers << sme.identifier;
 	}
 
-	return ids;
+	return identifiers;
 }
 
-QString ShortcutHandler::identifier(ShortcutIdentifier id) const
+
+QString ShortcutHandler::db_key(ShortcutIdentifier identifier) const
 {
-	auto it = Algorithm::find(m->shortcut_map, [id](const ShortcutMapEntry& entry){
-		return (entry.identifier == id);
+	auto it = Algorithm::find(m->shortcut_entries, [identifier](const ShortcutEntry& entry)
+	{
+		return (entry.identifier == identifier);
 	});
 
-	if(it == m->shortcut_map.end()){
+	if(it == m->shortcut_entries.end()){
 		return QString();
 	}
 
 	return it->db_key;
 }
+
 
 QString ShortcutHandler::shortcut_text(ShortcutIdentifier identifier) const
 {

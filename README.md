@@ -73,7 +73,7 @@ Version scheme is `<Major>.<Minor>.<Update>-[beta|stable]<Bugfix>`
 where `<Major>` marks really big changes, `<Minor>` marks changes which may affect stability, `<Update>` marks changes which do not affect stability and `<Bugfix>` marks a single bugfix
 
 ## Authors
-**Lucio Carreras** - *Project owner* luciocarreras@posteo.de
+**Lucio Carreras** - *Project owner* sayonara-player@posteo.org
 
 ## License
 This project is licensed under the GPL Version 3 License - see the [LICENSE](LICENSE) file for details

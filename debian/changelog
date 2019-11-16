@@ -7,7 +7,7 @@ sayonara (1.0.0-0ppa6-bionic1) bionic; urgency=low
   * French language update
   * DBus fixed
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Mon, 15 Jan 2018 01:43:16 +0100
+ -- Lucio Carreras <sayonara-player@posteo.org>  Mon, 15 Jan 2018 01:43:16 +0100
 
 sayonara (1.0.0-0ppa5-bionic1) bionic; urgency=low
 
@@ -15,28 +15,28 @@ sayonara (1.0.0-0ppa5-bionic1) bionic; urgency=low
   * Unity menu fixes
   * Shortcuts for minimize and quit
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Fri, 12 Jan 2018 22:31:06 +0100
+ -- Lucio Carreras <sayonara-player@posteo.org>  Fri, 12 Jan 2018 22:31:06 +0100
 
 sayonara (1.0.0-0ppa4-bionic1) bionic; urgency=low
 
   * Turkish language support
   * Ape support
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Sat, 06 Jan 2018 12:36:15 +0100
+ -- Lucio Carreras <sayonara-player@posteo.org>  Sat, 06 Jan 2018 12:36:15 +0100
 
 sayonara (1.0.0-0ppa3-bionic1) bionic; urgency=low
 
   * Czech, russian and ukrainian language updates
   * compilation fixes
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Fri, 05 Jan 2018 20:20:37 +0100
+ -- Lucio Carreras <sayonara-player@posteo.org>  Fri, 05 Jan 2018 20:20:37 +0100
 
 sayonara (1.0.0-0ppa2-bionic1) bionic; urgency=low
 
   * library view fixes
   * cover view crash removed
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Sun, 31 Dec 2017 14:04:07 +0100
+ -- Lucio Carreras <sayonara-player@posteo.org>  Sun, 31 Dec 2017 14:04:07 +0100
 
 sayonara (1.0.0-0ppa1-bionic1) bionic; urgency=low
 
@@ -59,20 +59,20 @@ sayonara (1.0.0-0ppa1-bionic1) bionic; urgency=low
   * Stream recorder: Custom paths
   * Streams/Podcast: Added preferences
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Sat, 30 Dec 2017 12:09:50 +0100
+ -- Lucio Carreras <sayonara-player@posteo.org>  Sat, 30 Dec 2017 12:09:50 +0100
 
 sayonara (0.9.3-0ppa5-bionic1) bionic; urgency=low
 
   * Ubuntu bionic package
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Sun, 05 Nov 2017 13:37:48 +0100
+ -- Lucio Carreras <sayonara-player@posteo.org>  Sun, 05 Nov 2017 13:37:48 +0100
 
 sayonara (0.9.3-0ppa4-bionic1) bionic; urgency=low
 
   * Language Update
   * Faster library cover view
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Tue, 09 May 2017 18:55:26 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Tue, 09 May 2017 18:55:26 +0200
 
 sayonara (0.9.3-0ppa3-bionic1) bionic; urgency=low
 
@@ -80,13 +80,13 @@ sayonara (0.9.3-0ppa3-bionic1) bionic; urgency=low
   * Genre tree view fix
   * Language update
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Tue, 02 May 2017 12:03:32 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Tue, 02 May 2017 12:03:32 +0200
 
 sayonara (0.9.3-0ppa2-bionic1) bionic; urgency=low
 
   * git version update 
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Mon, 01 May 2017 23:02:37 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Mon, 01 May 2017 23:02:37 +0200
 
 sayonara (0.9.3-0ppa1-bionic1) bionic; urgency=low
 
@@ -107,44 +107,44 @@ sayonara (0.9.3-0ppa1-bionic1) bionic; urgency=low
   * Tagging: Supporting covers, album artist and rating in FLAC and ogg files
   * Player: Logging window 
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Mon, 01 May 2017 22:29:47 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Mon, 01 May 2017 22:29:47 +0200
 
 sayonara (0.9.2-0ppa13-bionic1) bionic; urgency=low
 
   * Zesty release 
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Mon, 17 Apr 2017 16:04:52 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Mon, 17 Apr 2017 16:04:52 +0200
 
 sayonara (0.9.2-0ppa12-bionic1) bionic; urgency=low
 
   * track creation/modify dates of tracks
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Sun, 30 Oct 2016 12:17:57 +0100
+ -- Lucio Carreras <sayonara-player@posteo.org>  Sun, 30 Oct 2016 12:17:57 +0100
 
 sayonara (0.9.2-0ppa11-bionic1) bionic; urgency=low
 
   * Double free error fixed when closing player 
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Tue, 25 Oct 2016 22:32:08 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Tue, 25 Oct 2016 22:32:08 +0200
 
 sayonara (0.9.2-0ppa10-bionic1) bionic; urgency=low
 
   * Release for Yakkety 
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Tue, 18 Oct 2016 18:50:50 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Tue, 18 Oct 2016 18:50:50 +0200
 
 sayonara (0.9.2-0ppa8-bionic1) bionic; urgency=low
 
   * Playlist: Bug fixed. Saved playlists aren't deleted anymore
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Thu, 13 Oct 2016 17:39:52 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Thu, 13 Oct 2016 17:39:52 +0200
 
 sayonara (0.9.2-0ppa7-bionic1) bionic; urgency=low
 
   * LastFM: Scrobbling fixes
   * Library: Genre search fixes
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Mon, 10 Oct 2016 23:01:04 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Mon, 10 Oct 2016 23:01:04 +0200
 
 sayonara (0.9.2-0ppa6-bionic1) bionic; urgency=low
 
@@ -156,7 +156,7 @@ sayonara (0.9.2-0ppa6-bionic1) bionic; urgency=low
   * Library/Playlist: prefix/postfix search
   * Tagging: Ignore period character in genre view* 
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Sun, 09 Oct 2016 20:43:09 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Sun, 09 Oct 2016 20:43:09 +0200
 
 sayonara (0.9.2-0ppa5-bionic1) bionic; urgency=low
 
@@ -164,25 +164,25 @@ sayonara (0.9.2-0ppa5-bionic1) bionic; urgency=low
   * Fixed segfault in crossfader
   * Debian packaging
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Tue, 20 Sep 2016 17:41:58 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Tue, 20 Sep 2016 17:41:58 +0200
 
 sayonara (0.9.2-0ppa4-bionic1) bionic; urgency=low
 
   * Added gstreamer bad dependency again 
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Tue, 20 Sep 2016 08:39:45 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Tue, 20 Sep 2016 08:39:45 +0200
 
 sayonara (0.9.2-0ppa3-bionic1) bionic; urgency=low
 
   * Added gstreamer bad dependency 
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Tue, 20 Sep 2016 07:46:14 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Tue, 20 Sep 2016 07:46:14 +0200
 
 sayonara (0.9.2-0ppa2-bionic1) bionic; urgency=low
 
   * Version number update 
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Mon, 19 Sep 2016 23:21:11 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Mon, 19 Sep 2016 23:21:11 +0200
 
 sayonara (0.9.2-0ppa1-bionic1) bionic; urgency=low
 
@@ -192,13 +192,13 @@ sayonara (0.9.2-0ppa1-bionic1) bionic; urgency=low
   * Added System tray icon on/off support
   * Fixed lyrics bug
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Mon, 19 Sep 2016 22:59:09 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Mon, 19 Sep 2016 22:59:09 +0200
 
 sayonara (0.9.1-0ppa4-bionic1) bionic; urgency=low
 
   * CMake dependency update 
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Tue, 13 Sep 2016 22:26:21 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Tue, 13 Sep 2016 22:26:21 +0200
 
 sayonara (0.9.1-0ppa3-bionic1) bionic; urgency=low
 
@@ -206,13 +206,13 @@ sayonara (0.9.1-0ppa3-bionic1) bionic; urgency=low
   * Fixed bug in Alternative cover searcher
   * No disabled tracks are allowed to be stored in DB
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Tue, 13 Sep 2016 21:44:22 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Tue, 13 Sep 2016 21:44:22 +0200
 
 sayonara (0.9.1-0ppa2-bionic1) bionic; urgency=low
 
   * old ubuntu package fixes 
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Tue, 13 Sep 2016 00:25:03 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Tue, 13 Sep 2016 00:25:03 +0200
 
 sayonara (0.9.1-0ppa1-bionic1) bionic; urgency=low
 
@@ -233,25 +233,25 @@ sayonara (0.9.1-0ppa1-bionic1) bionic; urgency=low
   * Language update (especially spanish)
   * Lots of Bug fixes
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Tue, 13 Sep 2016 00:09:21 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Tue, 13 Sep 2016 00:09:21 +0200
 
 sayonara (0.9.0-0ppa4-bionic1) bionic; urgency=low
 
   * broken layout fix for manjaro and maybe other distributions 
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Tue, 07 Jun 2016 23:32:44 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Tue, 07 Jun 2016 23:32:44 +0200
 
 sayonara (0.9.0-0ppa3-bionic1) bionic; urgency=low
 
   * Czech and polish language update 
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Mon, 06 Jun 2016 23:05:00 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Mon, 06 Jun 2016 23:05:00 +0200
 
 sayonara (0.9.0-0ppa2-bionic1) bionic; urgency=low
 
   * Language update, including new polish translations 
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Mon, 16 May 2016 12:34:29 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Mon, 16 May 2016 12:34:29 +0200
 
 sayonara (0.9.0-0ppa1-bionic1) bionic; urgency=low
 
@@ -260,20 +260,20 @@ sayonara (0.9.0-0ppa1-bionic1) bionic; urgency=low
   * Fixed Library import paths
   * Fixed Stream recorder non-writable path issues
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Sat, 14 May 2016 23:07:30 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Sat, 14 May 2016 23:07:30 +0200
 
 sayonara (0.8.3-0ppa5-bionic1) bionic; urgency=low
 
   * fix fatal playback bug
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Tue, 10 May 2016 01:56:12 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Tue, 10 May 2016 01:56:12 +0200
 
 sayonara (0.8.3-0ppa4-bionic1) bionic; urgency=low
 
   * Soundcloud artist search fixed (again)
   * Language updates
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Mon, 09 May 2016 21:39:59 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Mon, 09 May 2016 21:39:59 +0200
 
 sayonara (0.8.3-0ppa2-bionic1) bionic; urgency=low
 
@@ -282,7 +282,7 @@ sayonara (0.8.3-0ppa2-bionic1) bionic; urgency=low
   * Compile errors fixed
   * KDE closing issue fixed
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Sun, 01 May 2016 20:48:43 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Sun, 01 May 2016 20:48:43 +0200
 
 sayonara (0.8.3-0ppa1-bionic1) bionic; urgency=low
 
@@ -295,31 +295,31 @@ sayonara (0.8.3-0ppa1-bionic1) bionic; urgency=low
   * Playlist look options
   * Context menu in directory view
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Sun, 24 Apr 2016 20:49:51 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Sun, 24 Apr 2016 20:49:51 +0200
 
 sayonara (0.8.2-0ppa10-bionic1) bionic; urgency=low
 
   * Xenial release 
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Thu, 21 Apr 2016 16:59:52 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Thu, 21 Apr 2016 16:59:52 +0200
 
 sayonara (0.8.2-0ppa9-bionic1) bionic; urgency=low
 
   * Czech language update 
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Fri, 26 Feb 2016 22:33:18 +0100
+ -- Lucio Carreras <sayonara-player@posteo.org>  Fri, 26 Feb 2016 22:33:18 +0100
 
 sayonara (0.8.2-0ppa8-bionic1) bionic; urgency=low
 
   * Language update
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Fri, 19 Feb 2016 22:45:42 +0100
+ -- Lucio Carreras <sayonara-player@posteo.org>  Fri, 19 Feb 2016 22:45:42 +0100
 
 sayonara (0.8.2-0ppa5-bionic1) bionic; urgency=low
 
   * Language update
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Thu, 18 Feb 2016 17:25:48 +0100
+ -- Lucio Carreras <sayonara-player@posteo.org>  Thu, 18 Feb 2016 17:25:48 +0100
 
 sayonara (0.8.2-0ppa4-bionic1) bionic; urgency=low
 
@@ -334,7 +334,7 @@ sayonara (0.8.2-0ppa4-bionic1) bionic; urgency=low
   * Bugfix: Local files with special characters can be dropped to playlist again
   * Bugfix: Various stream recorder bugfixes
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Sun, 14 Feb 2016 21:08:49 +0100
+ -- Lucio Carreras <sayonara-player@posteo.org>  Sun, 14 Feb 2016 21:08:49 +0100
 
 sayonara (0.8.1-0ppa1~bionic1) bionic; urgency=low
 
@@ -349,26 +349,26 @@ sayonara (0.8.1-0ppa1~bionic1) bionic; urgency=low
   * Bugfix: Report progress when copying files to MTP device
   * Bugfix: Copy tracks from directory view to MTP device possible now
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Sun, 10 Jan 2016 17:01:43 +0100
+ -- Lucio Carreras <sayonara-player@posteo.org>  Sun, 10 Jan 2016 17:01:43 +0100
 
 sayonara (0.8.0-0ppa4-bionic1) bionic; urgency=low
 
   * debian, debian 
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Fri, 18 Dec 2015 09:30:46 +0100
+ -- Lucio Carreras <sayonara-player@posteo.org>  Fri, 18 Dec 2015 09:30:46 +0100
 
 sayonara (0.8.0-0ppa3-bionic1) bionic; urgency=low
 
   * further debian bugfixes 
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Fri, 18 Dec 2015 08:32:54 +0100
+ -- Lucio Carreras <sayonara-player@posteo.org>  Fri, 18 Dec 2015 08:32:54 +0100
 
 sayonara (0.8.0-0ppa2-bionic1) bionic; urgency=low
 
   * Debian package bugfixes
   * Taglib bugfix when extracting tags from path 
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Fri, 18 Dec 2015 07:32:32 +0100
+ -- Lucio Carreras <sayonara-player@posteo.org>  Fri, 18 Dec 2015 07:32:32 +0100
 
 sayonara (0.8.0-0ppa1~bionic1) bionic; urgency=low
 
@@ -393,13 +393,13 @@ sayonara (0.8.0-0ppa1~bionic1) bionic; urgency=low
   * Bugfix: Several bugfixes in broadcasting
   * Bugfix: A lot of more 
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Wed, 16 Dec 2015 12:39:50 +0100
+ -- Lucio Carreras <sayonara-player@posteo.org>  Wed, 16 Dec 2015 12:39:50 +0100
 
 sayonara (0.7.1-0ppa5-bionic1) bionic; urgency=low
 
   * fixed sqlite dependency 
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Fri, 16 Oct 2015 23:28:08 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Fri, 16 Oct 2015 23:28:08 +0200
 
 sayonara (0.7.1-0ppa4-bionic1) bionic; urgency=low
 
@@ -408,19 +408,19 @@ sayonara (0.7.1-0ppa4-bionic1) bionic; urgency=low
   * Fixed play/pause/seek problem
   * Style update
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Mon, 05 Oct 2015 18:24:49 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Mon, 05 Oct 2015 18:24:49 +0200
 
 sayonara (0.7.1-0ppa3-bionic1) bionic; urgency=low
 
   * Playlist initializer issues fixed (automatic playback etc) 
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Sun, 04 Oct 2015 09:42:07 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Sun, 04 Oct 2015 09:42:07 +0200
 
 sayonara (0.7.1-0ppa2-bionic1) bionic; urgency=low
 
   * Apply new build rules to fix soundcloud bug 
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Sun, 04 Oct 2015 00:04:45 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Sun, 04 Oct 2015 00:04:45 +0200
 
 sayonara (0.7.1-0ppa1~bionic1) bionic; urgency=low
 
@@ -429,13 +429,13 @@ sayonara (0.7.1-0ppa1~bionic1) bionic; urgency=low
   * Tagging: Rating supported
   * Tagging: Old tags stay as they are
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Sat, 03 Oct 2015 20:01:39 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Sat, 03 Oct 2015 20:01:39 +0200
 
 sayonara (0.7.0-0ppa5-bionic1) bionic; urgency=low
 
   * reintegrated show action in tray menu because of unity 
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Sun, 13 Sep 2015 19:33:16 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Sun, 13 Sep 2015 19:33:16 +0200
 
 sayonara (0.7.0-0ppa4-bionic1) bionic; urgency=low
 
@@ -444,19 +444,19 @@ sayonara (0.7.0-0ppa4-bionic1) bionic; urgency=low
   * fixed show/hide window bug 
   * removed show action in tray icon
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Sun, 13 Sep 2015 17:25:23 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Sun, 13 Sep 2015 17:25:23 +0200
 
 sayonara (0.7.0-0ppa3-bionic1) bionic; urgency=low
 
   * fixed soundcloud db bug 
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Tue, 25 Aug 2015 19:36:41 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Tue, 25 Aug 2015 19:36:41 +0200
 
 sayonara (0.7.0-0ppa2-bionic1) bionic; urgency=low
 
   * added new debian dependencies 
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Mon, 24 Aug 2015 23:42:36 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Mon, 24 Aug 2015 23:42:36 +0200
 
 sayonara (0.7.0-0ppa1~bionic1) bionic; urgency=low
 
@@ -471,38 +471,38 @@ sayonara (0.7.0-0ppa1~bionic1) bionic; urgency=low
   * fixed lib64 issue on some distributions
   * fixed lame bug in Engine
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Sun, 16 Aug 2015 15:22:16 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Sun, 16 Aug 2015 15:22:16 +0200
 
 sayonara (0.6.6-0ppa6-bionic1) bionic; urgency=low
 
   * update dbus include directories 
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Tue, 14 Jul 2015 22:18:29 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Tue, 14 Jul 2015 22:18:29 +0200
 
 sayonara (0.6.6-0ppa5-bionic1) bionic; urgency=low
 
   * added cmake build type none 
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Tue, 14 Jul 2015 21:46:11 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Tue, 14 Jul 2015 21:46:11 +0200
 
 sayonara (0.6.6-0ppa4-bionic1) bionic; urgency=low
 
   * added debian compat level 
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Tue, 14 Jul 2015 21:38:30 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Tue, 14 Jul 2015 21:38:30 +0200
 
 sayonara (0.6.6-0ppa3-bionic1) bionic; urgency=low
 
   * bug removed: second song starts at position where first song ended
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Tue, 14 Jul 2015 21:29:00 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Tue, 14 Jul 2015 21:29:00 +0200
 
 sayonara (0.6.6-0ppa2-bionic1) bionic; urgency=low
 
   * shutdown option in playlist
   * release build update 
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Thu, 14 May 2015 14:31:42 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Thu, 14 May 2015 14:31:42 +0200
 
 sayonara (0.6.6-0ppa1~bionic1) bionic; urgency=low
 
@@ -511,66 +511,66 @@ sayonara (0.6.6-0ppa1~bionic1) bionic; urgency=low
   * gui update
   * correct detection of install path 
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Thu, 14 May 2015 14:08:51 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Thu, 14 May 2015 14:08:51 +0200
 
 sayonara (0.6.5-0ppa6-bionic1) bionic; urgency=low
 
   * DBus Integrity
   * Various bug fixes 
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Fri, 03 Apr 2015 14:40:22 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Fri, 03 Apr 2015 14:40:22 +0200
 
 sayonara (0.6.5-0ppa5-bionic1) bionic; urgency=low
 
   * added qt sqlite mandatory dependency
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Tue, 17 Mar 2015 23:04:46 +0100
+ -- Lucio Carreras <sayonara-player@posteo.org>  Tue, 17 Mar 2015 23:04:46 +0100
 
 sayonara (0.6.5-0ppa4-bionic1) bionic; urgency=low
 
   * PPA 4
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Sat, 14 Mar 2015 19:21:09 +0100
+ -- Lucio Carreras <sayonara-player@posteo.org>  Sat, 14 Mar 2015 19:21:09 +0100
 
 sayonara (0.6.5-0ppa3-bionic1) bionic; urgency=low
 
   * playlist recovery on startup fixes
   * optional mp3 encoder 
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Sat, 14 Mar 2015 17:25:25 +0100
+ -- Lucio Carreras <sayonara-player@posteo.org>  Sat, 14 Mar 2015 17:25:25 +0100
 
 sayonara (0.6.5-0ppa2-bionic1) bionic; urgency=low
 
   * playlist recovery on startup fixes
   * optional mp3 encoder 
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Sat, 14 Mar 2015 16:47:48 +0100
+ -- Lucio Carreras <sayonara-player@posteo.org>  Sat, 14 Mar 2015 16:47:48 +0100
 
 sayonara (0.6.5-0ppa1~bionic1) bionic; urgency=low
 
   * New Version 
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Sat, 07 Mar 2015 19:40:53 +0100
+ -- Lucio Carreras <sayonara-player@posteo.org>  Sat, 07 Mar 2015 19:40:53 +0100
 
 sayonara (0.6.4-0ppa4~bionic1) bionic; urgency=low
 
   * fixed tag edit
   * fixed start playing bug 
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Sat, 07 Mar 2015 16:11:24 +0100
+ -- Lucio Carreras <sayonara-player@posteo.org>  Sat, 07 Mar 2015 16:11:24 +0100
 
 sayonara (0.6.4-0ppa3~bionic1) bionic; urgency=low
 
   * fixed tag edit
   * fixed start playing bug 
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Sat, 07 Mar 2015 15:54:59 +0100
+ -- Lucio Carreras <sayonara-player@posteo.org>  Sat, 07 Mar 2015 15:54:59 +0100
 
 sayonara (0.6.4-0ppa2~bionic1) bionic; urgency=low
 
   * Version number
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Thu, 05 Mar 2015 00:05:06 +0100
+ -- Lucio Carreras <sayonara-player@posteo.org>  Thu, 05 Mar 2015 00:05:06 +0100
 
 sayonara (0.6.4-0ppa1~bionic1) bionic; urgency=low
 
@@ -578,45 +578,45 @@ sayonara (0.6.4-0ppa1~bionic1) bionic; urgency=low
   * updated translations
   * improved audio tagging
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Wed, 04 Mar 2015 23:23:05 +0100
+ -- Lucio Carreras <sayonara-player@posteo.org>  Wed, 04 Mar 2015 23:23:05 +0100
 
 
 sayonara (0.6.3-0ppa2~bionic1) bionic; urgency=low
 
   * a comment
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Wed, 04 Mar 2015 22:45:35 +0100
+ -- Lucio Carreras <sayonara-player@posteo.org>  Wed, 04 Mar 2015 22:45:35 +0100
 
 sayonara (0.6.3-0ppa1~bionic1) bionic; urgency=low
 
   * No changes
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Wed, 04 Mar 2015 21:44:31 +0100
+ -- Lucio Carreras <sayonara-player@posteo.org>  Wed, 04 Mar 2015 21:44:31 +0100
 
 sayonara (0.6.2-0sp1~ubuntu14.10.1~ppa1) bionic; urgency=low
 
   * czech translation update
   * sql dependencies
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Sat, 28 Feb 2015 18:21:12 +0100
+ -- Lucio Carreras <sayonara-player@posteo.org>  Sat, 28 Feb 2015 18:21:12 +0100
 
 sayonara (0.6.1-0ubuntu4) bionic; urgency=low
 
   * more debug and new dependencies
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Sun, 08 Feb 2015 21:31:38 +0100
+ -- Lucio Carreras <sayonara-player@posteo.org>  Sun, 08 Feb 2015 21:31:38 +0100
 
 sayonara (0.6.1-0ubuntu3) bionic; urgency=low
 
   * see ubuntu4 
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Sun, 08 Feb 2015 21:25:45 +0100
+ -- Lucio Carreras <sayonara-player@posteo.org>  Sun, 08 Feb 2015 21:25:45 +0100
 
 sayonara (0.6.1-0ubuntu2) bionic; urgency=low
 
   * bionic release
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Sun, 08 Feb 2015 13:45:35 +0100
+ -- Lucio Carreras <sayonara-player@posteo.org>  Sun, 08 Feb 2015 13:45:35 +0100
 
 sayonara (0.6.1-0ubuntu1) bionic; urgency=low
 
@@ -627,7 +627,7 @@ sayonara (0.6.1-0ubuntu1) bionic; urgency=low
   * finally a repeat one button
   * No changes compared to last version 
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Sun, 08 Feb 2015 01:20:52 +0100
+ -- Lucio Carreras <sayonara-player@posteo.org>  Sun, 08 Feb 2015 01:20:52 +0100
 
 sayonara (0.6.0-0ubuntu1) bionic; urgency=low
 
@@ -637,14 +637,14 @@ sayonara (0.6.0-0ubuntu1) bionic; urgency=low
   * tabbed playlists
   * finally a repeat one button
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Sun, 08 Feb 2015 00:31:33 +0100
+ -- Lucio Carreras <sayonara-player@posteo.org>  Sun, 08 Feb 2015 00:31:33 +0100
 
 sayonara (0.5.9-0ubuntu1) bionic; urgency=low
 
   * improved cover search
   * speed plugin 
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Tue, 02 Sep 2014 17:25:24 +0200
+ -- Lucio Carreras <sayonara-player@posteo.org>  Tue, 02 Sep 2014 17:25:24 +0200
 
 sayonara (0.4.1) bionic; urgency=low
 
@@ -660,7 +660,7 @@ sayonara (0.4.1) bionic; urgency=low
   * Search in playlist
   
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Fri, 07 Jul 2013 02:28:00 +0100
+ -- Lucio Carreras <sayonara-player@posteo.org>  Fri, 07 Jul 2013 02:28:00 +0100
 
 sayonara (0.4) bionic; urgency=low
   
@@ -682,7 +682,7 @@ sayonara (0.4) bionic; urgency=low
   * Library replaced by other window, if no libpath 
   * Dark skin
 
- -- Lucio Carreras <luciocarreras@posteo.de>  Fri, 10 Apr 2013 10:17:00 +0100
+ -- Lucio Carreras <sayonara-player@posteo.org>  Fri, 10 Apr 2013 10:17:00 +0100
 
 sayonara (0.3.2) bionic-proposed; urgency=low
   
@@ -710,4 +710,4 @@ sayonara (0.3.2) bionic-proposed; urgency=low
   * Menu icons
   * Better font for non-latin characters
   * Better Unicode support
- -- Lucio Carreras <luciocarreras@posteo.de>  Mon, 25 Mar 2013 23:00:00 +0100
+ -- Lucio Carreras <sayonara-player@posteo.org>  Mon, 25 Mar 2013 23:00:00 +0100

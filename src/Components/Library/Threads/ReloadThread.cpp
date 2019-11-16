@@ -199,7 +199,6 @@ bool ReloadThread::get_and_save_all_files(const QHash<QString, MetaData>& md_map
 	db_library->create_indexes();
 
 	sp_log(Log::Develop, this) << "Clean up... ";
-	db->clean_up();
 
 	return true;
 }

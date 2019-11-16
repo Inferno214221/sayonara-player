@@ -59,7 +59,7 @@ CopyThread::CopyThread(const QString& target_dir, ImportCachePtr cache, QObject*
 	clear();
 }
 
-CopyThread::~CopyThread() {}
+CopyThread::~CopyThread() = default;
 
 void CopyThread::clear()
 {
@@ -105,17 +105,24 @@ void CopyThread::copy()
 		}
 
 		sp_log(Log::Debug, this) << "copy " << filename << " to \n\t" << target_filename;
+		if(Util::File::exists(target_filename))
+		{
+			sp_log(Log::Info, this) << "Overwrite " << target_filename;
+			Util::File::delete_files({target_filename});
+		}
 
 		QFile f(filename);
 		success = f.copy(target_filename);
 
-		if(!success){
+		if(!success) {
+			sp_log(Log::Warning, this) << "Copy error";
 			continue;
 		}
 
 		MetaData md(m->cache->metadata(filename));
 
-		if(!md.filepath().isEmpty()){
+		if(!md.filepath().isEmpty())
+		{
 			sp_log(Log::Debug, this) << "Set new filename: " << target_filename;
 			md.set_filepath(target_filename);
 			m->v_md << md;

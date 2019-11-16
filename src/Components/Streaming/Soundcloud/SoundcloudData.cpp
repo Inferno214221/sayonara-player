@@ -698,9 +698,3 @@ bool SC::Database::apply_fixes()
 
 	return true;
 }
-
-
-const DB::Module* SC::Database::module() const
-{
-	return static_cast<const DB::Base*>(this);
-}
