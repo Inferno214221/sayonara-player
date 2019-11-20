@@ -34,7 +34,7 @@ namespace ID3v2
 	{
 		public:
 			explicit AlbumArtistFrame(TagLib::ID3v2::Tag* tag);
-			~AlbumArtistFrame();
+			~AlbumArtistFrame() override;
 
 		protected:
 			TagLib::ID3v2::Frame* create_id3v2_frame() override;

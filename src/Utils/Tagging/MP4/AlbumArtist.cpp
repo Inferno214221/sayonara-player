@@ -44,7 +44,7 @@ bool MP4::AlbumArtistFrame::map_tag_to_model(QString& model)
 
 	TagLib::StringList items = item.toStringList();
 	if(items.size() > 0){
-		model = cvt_string( *items.begin() );
+		model = convert_string( *items.begin() );
 		return true;
 	}
 
@@ -57,7 +57,7 @@ bool MP4::AlbumArtistFrame::map_model_to_tag(const QString& model)
 
 	TagLib::String key_str = tag_key();
 	TagLib::MP4::ItemListMap& ilm = tag->itemListMap();
-	TagLib::String str = cvt_string(model);
+	TagLib::String str = convert_string(model);
 	TagLib::StringList strings;
 
 	strings.append(str);

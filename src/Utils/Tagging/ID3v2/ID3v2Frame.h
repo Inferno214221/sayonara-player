@@ -47,7 +47,7 @@ namespace ID3v2
 			protected Tagging::AbstractFrame<TagLib::ID3v2::Tag>
 	{
 		protected:
-			FrameType_t*			_frame=nullptr;
+			FrameType_t*			mFrame=nullptr;
 
 		protected:
 
@@ -77,8 +77,9 @@ namespace ID3v2
 				TagLib::ByteVector vec(four, 4);
 				TagLib::ID3v2::FrameListMap map = tag->frameListMap();
 				TagLib::ID3v2::FrameList frame_list = map[vec];
-				if(!frame_list.isEmpty()) {
-					_frame = dynamic_cast<FrameType_t*> (frame_list.front());
+				if(!frame_list.isEmpty())
+				{
+					mFrame = dynamic_cast<FrameType_t*>(frame_list.front());
 				}
 			}
 
@@ -94,11 +95,11 @@ namespace ID3v2
 			 */
 			virtual bool read(ModelType_t& data)
 			{
-				if(!_frame){
+				if(!mFrame){
 					return false;
 				}
 
-				map_frame_to_model(_frame, data);
+				map_frame_to_model(mFrame, data);
 
 				return true;
 			}
@@ -112,27 +113,28 @@ namespace ID3v2
 			 */
 			virtual bool write(const ModelType_t& data_model)
 			{
-				bool created = false;
-
 				TagLib::ID3v2::Tag* tag = this->tag();
 				if(!tag){
 					return false;
 				}
 
-				if(!_frame){
-					_frame = dynamic_cast<FrameType_t*>(create_id3v2_frame());
-
-					if(!_frame){
+				bool created = false;
+				if(!mFrame)
+				{
+					mFrame = dynamic_cast<FrameType_t*>(create_id3v2_frame());
+					if(!mFrame){
 						return false;
 					}
+
 					created = true;
 				}
 
-				map_model_to_frame(data_model, _frame);
+				map_model_to_frame(data_model, mFrame);
 
-				if(created){
-					// after that, no need to delete _frame
-					tag->addFrame(_frame);
+				if(created)
+				{
+					// after that, no need to delete mFrame
+					tag->addFrame(mFrame);
 				}
 
 				return true;
@@ -145,7 +147,12 @@ namespace ID3v2
 			 */
 			bool is_frame_found() const 
 			{
-				return (_frame != nullptr);
+				return (mFrame != nullptr);
+			}
+
+			FrameType_t* frame()
+			{
+				return mFrame;
 			}
 	};
 }

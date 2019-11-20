@@ -31,7 +31,7 @@ bool Xiph::AlbumArtistFrame::map_tag_to_model(QString& model)
 	TagLib::String str;
 	bool success = value(str);
 	if(success){
-		model = cvt_string(str);
+		model = convert_string(str);
 	}
 
 	return success;

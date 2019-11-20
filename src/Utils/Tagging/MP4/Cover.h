@@ -34,7 +34,7 @@ namespace MP4
 	{
 	public:
 		explicit CoverFrame(TagLib::MP4::Tag* tag);
-		~CoverFrame();
+		~CoverFrame() override;
 
 
 		// AbstractFrame interface

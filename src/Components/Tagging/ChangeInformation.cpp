@@ -1,5 +1,6 @@
 #include "ChangeInformation.h"
 #include "Utils/MetaData/MetaData.h"
+#include "Utils/Logger/Logger.h"
 #include <QPixmap>
 
 using Tagging::ChangeInformation;
@@ -71,6 +72,11 @@ void ChangeInformation::update(const MetaData& md)
 
 void ChangeInformation::update_cover(const QPixmap& pm)
 {
+	if(pm.isNull()){
+		sp_log(Log::Warning, this) << "Bad cover: Will not update";
+		return;
+	}
+
 	m->new_cover = pm;
 	m->has_new_cover = true;
 }

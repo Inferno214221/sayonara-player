@@ -35,10 +35,10 @@ namespace Models
 	struct Discnumber
 	{
 		Disc		disc;
-		Disc		n_discs;
+		Disc		disccount;
 
 		Discnumber();
-		Discnumber(Disc disc, Disc n_discs=1);
+		Discnumber(Disc disc, Disc disccount=1);
 		QString to_string() const;
 	};
 }

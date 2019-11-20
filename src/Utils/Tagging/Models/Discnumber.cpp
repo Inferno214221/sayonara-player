@@ -23,16 +23,16 @@
 
 Models::Discnumber::Discnumber() :
 	disc(1),
-	n_discs(1)
+	disccount(1)
 {}
 
 Models::Discnumber::Discnumber(Disc disc, Disc n_discs) :
 	disc(disc),
-	n_discs(n_discs)
+	disccount(n_discs)
 {}
 
 
 QString Models::Discnumber::to_string() const
 {
-	return QString::number(disc) + "/" + QString::number(n_discs);
+	return QString::number(disc) + "/" + QString::number(disccount);
 }

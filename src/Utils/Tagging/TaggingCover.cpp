@@ -99,9 +99,11 @@ bool Tagging::Covers::write_cover(const QString& filepath, const QString& cover_
 
 	if(tag_type == Tagging::TagType::ID3v2)
 	{
-		auto id3v2 = parsed_tag.id3_tag();
+		auto* id3v2 = parsed_tag.id3_tag();
+
 		ID3v2::CoverFrame cover_frame(id3v2);
-		if(!cover_frame.write(cover)) {
+		if(!cover_frame.write(cover))
+		{
 			sp_log(Log::Warning, "Tagging") << "ID3v2 Cannot write cover";
 			return false;
 		}
@@ -109,9 +111,11 @@ bool Tagging::Covers::write_cover(const QString& filepath, const QString& cover_
 
 	else if(tag_type == Tagging::TagType::MP4)
 	{
-		auto mp4 = parsed_tag.mp4_tag();
+		auto* mp4 = parsed_tag.mp4_tag();
+
 		MP4::CoverFrame cover_frame(mp4);
-		if(!cover_frame.write(cover)){
+		if(!cover_frame.write(cover))
+		{
 			sp_log(Log::Warning, "Tagging") << "MP4 Cannot write cover";
 			return false;
 		}
@@ -128,9 +132,10 @@ bool Tagging::Covers::write_cover(const QString& filepath, const QString& cover_
 		}
 #endif
 
-		auto xiph = parsed_tag.xiph_tag();
+		auto* xiph = parsed_tag.xiph_tag();
 		Xiph::CoverFrame cover_frame(xiph);
-		if(!cover_frame.write(cover)){
+		if(!cover_frame.write(cover))
+		{
 			sp_log(Log::Warning, "Tagging") << "Xiph Cannot write cover";
 			return false;
 		}
@@ -161,40 +166,40 @@ bool Tagging::Covers::extract_cover(const ParsedTag& parsed_tag, QByteArray& cov
 	switch(tag_type)
 	{
 		case Tagging::TagType::ID3v2:
-			{
-				auto id3v2 = parsed_tag.id3_tag();
-				ID3v2::CoverFrame cover_frame(id3v2);
+		{
+			auto* id3v2 = parsed_tag.id3_tag();
+			ID3v2::CoverFrame cover_frame(id3v2);
 
-				if(!cover_frame.is_frame_found()){
-					return false;
-				}
-
-				cover_frame.read(cover);
+			if(!cover_frame.is_frame_found()){
+				return false;
 			}
 
-			break;
+			cover_frame.read(cover);
+		}
+
+		break;
 
 		case Tagging::TagType::Xiph:
-			{
-				auto xiph = parsed_tag.xiph_tag();
-				Xiph::CoverFrame cover_frame(xiph);
-				if(!cover_frame.read(cover)){
-					return false;
-				}
+		{
+			auto* xiph = parsed_tag.xiph_tag();
+			Xiph::CoverFrame cover_frame(xiph);
+			if(!cover_frame.read(cover)){
+				return false;
 			}
+		}
 
-			break;
+		break;
 
 		case Tagging::TagType::MP4:
-			{
-				auto mp4 = parsed_tag.mp4_tag();
-				MP4::CoverFrame cover_frame(mp4);
-				if(!cover_frame.read(cover)){
-					return false;
-				}
+		{
+			auto* mp4 = parsed_tag.mp4_tag();
+			MP4::CoverFrame cover_frame(mp4);
+			if(!cover_frame.read(cover)){
+				return false;
 			}
+		}
 
-			break;
+		break;
 
 		default:
 			return false;
@@ -210,7 +215,8 @@ bool Tagging::Covers::extract_cover(const ParsedTag& parsed_tag, QByteArray& cov
 bool Tagging::Covers::extract_cover(const QString& filepath, QByteArray& cover_data, QString& mime_type)
 {
 	TagLib::FileRef fileref(TagLib::FileName(filepath.toUtf8()));
-	if(!Tagging::Utils::is_valid_file(fileref)){
+	if(!Tagging::Utils::is_valid_file(fileref))
+	{
 		sp_log(Log::Warning, "Tagging") << "Cannot extract cover for " << filepath;
 		return false;
 	}
@@ -228,25 +234,25 @@ bool Tagging::Covers::has_cover(const ParsedTag& parsed_tag)
 	switch(tag_type)
 	{
 		case Tagging::TagType::ID3v2:
-			{
-				auto id3v2 = parsed_tag.id3_tag();
-				ID3v2::CoverFrame cover_frame(id3v2);
-				return cover_frame.is_frame_found();
-			}
+		{
+			auto id3v2 = parsed_tag.id3_tag();
+			ID3v2::CoverFrame cover_frame(id3v2);
+			return cover_frame.is_frame_found();
+		}
 
 		case Tagging::TagType::MP4:
-			{
-				auto mp4 = parsed_tag.mp4_tag();
-				MP4::CoverFrame cover_frame(mp4);
-				return cover_frame.is_frame_found();
-			}
+		{
+			auto mp4 = parsed_tag.mp4_tag();
+			MP4::CoverFrame cover_frame(mp4);
+			return cover_frame.is_frame_found();
+		}
 
 		case Tagging::TagType::Xiph:
-			{
-				auto xiph = parsed_tag.xiph_tag();
-				Xiph::CoverFrame cover_frame(xiph);
-				return cover_frame.is_frame_found();
-			}
+		{
+			auto xiph = parsed_tag.xiph_tag();
+			Xiph::CoverFrame cover_frame(xiph);
+			return cover_frame.is_frame_found();
+		}
 
 		default:
 			return false;

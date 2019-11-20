@@ -42,8 +42,8 @@ namespace Tagging
 			virtual ~AbstractFrameHelper();
 
 		protected:
-			QString cvt_string(const TagLib::String& str) const;
-			TagLib::String cvt_string(const QString& str) const;
+			QString convert_string(const TagLib::String& str) const;
+			TagLib::String convert_string(const QString& str) const;
 			QString key() const;
 			TagLib::String tag_key() const;
 
@@ -56,23 +56,25 @@ namespace Tagging
 			public AbstractFrameHelper
 	{
 		private:
-				TagImpl*	_tag=nullptr;
+			TagImpl*	mTag=nullptr;
 
 		protected:
 			AbstractFrame(TagImpl* tag, const QString& key=QString()) :
 				AbstractFrameHelper(key)
 			{
-				_tag = tag;
+				mTag = tag;
 			}
+
+			virtual ~AbstractFrame() = default;
 
 			TagImpl* tag() const
 			{
-				return _tag;
+				return mTag;
 			}
 
 			void set_tag(TagImpl* tag)
 			{
-				_tag  = tag;
+				mTag  = tag;
 			}
 	};
 }

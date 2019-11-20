@@ -34,7 +34,7 @@ namespace ID3v2
 	{
 		public:
 			explicit ComposerFrame(TagLib::ID3v2::Tag* tag);
-			~ComposerFrame();
+			~ComposerFrame() override;
 
 		protected:
 			TagLib::ID3v2::Frame* create_id3v2_frame() override;

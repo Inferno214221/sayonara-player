@@ -40,11 +40,11 @@ namespace MP4
 	{
 	public:
 		DiscnumberFrame(TagLib::MP4::Tag* tag);
-		~DiscnumberFrame();
+		~DiscnumberFrame() override;
 
 	protected:
-		bool map_tag_to_model(Models::Discnumber& model);
-		bool map_model_to_tag(const Models::Discnumber& model);
+		bool map_tag_to_model(Models::Discnumber& model) override;
+		bool map_model_to_tag(const Models::Discnumber& model) override;
 	};
 }
 

@@ -65,7 +65,7 @@ namespace Xiph
 
 			void set_value(const QString& value)
 			{
-				TagLib::String str = this->cvt_string(value);
+				TagLib::String str = this->convert_string(value);
 				set_value(str);
 			}
 

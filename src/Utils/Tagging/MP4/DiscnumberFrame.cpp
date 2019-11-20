@@ -37,7 +37,7 @@ bool MP4::DiscnumberFrame::map_tag_to_model(Models::Discnumber& model)
 	if(item.isValid()){
 		TagLib::MP4::Item::IntPair p = item.toIntPair();
 		model.disc = p.first;
-		model.n_discs = p.second;
+		model.disccount = p.second;
 		return true;
 	}
 
@@ -47,7 +47,7 @@ bool MP4::DiscnumberFrame::map_tag_to_model(Models::Discnumber& model)
 bool MP4::DiscnumberFrame::map_model_to_tag(const Models::Discnumber& model)
 {
 	TagLib::MP4::ItemListMap& ilm = this->tag()->itemListMap();
-	TagLib::MP4::Item item(model.disc, model.n_discs);
+	TagLib::MP4::Item item(model.disc, model.disccount);
 	TagLib::String key_str = tag_key();
 
 	auto it = ilm.find(key_str);

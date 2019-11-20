@@ -33,7 +33,7 @@ namespace MP4
 	{
 	public:
 		PopularimeterFrame(TagLib::MP4::Tag* tag);
-		~PopularimeterFrame();
+		~PopularimeterFrame() override;
 
 		// AbstractFrame interface
 	protected:
