@@ -36,7 +36,7 @@ bool Xiph::PopularimeterFrame::map_tag_to_model(Models::Popularimeter& model)
 		return false;
 	}
 
-	auto bRating = static_cast<Byte>(cvt_string(str).toInt());
+	auto bRating = static_cast<Byte>(convert_string(str).toInt());
 	if(bRating <= 5){
 		Rating rating = static_cast<Rating>(bRating);
 		model.set_rating(rating);

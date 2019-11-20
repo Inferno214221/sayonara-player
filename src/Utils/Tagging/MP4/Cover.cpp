@@ -77,7 +77,7 @@ bool MP4::CoverFrame::map_model_to_tag(const Models::Cover& model)
 	TagLib::MP4::CoverArtList arts;
 	arts.append(art);
 	TagLib::MP4::Item item(arts);
-	TagLib::String tag_str = cvt_string(key());
+	TagLib::String tag_str = convert_string(key());
 
 	tag->itemListMap().insert(tag_str, item);
 

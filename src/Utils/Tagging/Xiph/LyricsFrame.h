@@ -32,7 +32,7 @@ namespace Xiph
     {
         public:
 			explicit LyricsFrame(TagLib::Ogg::XiphComment* tag);
-			virtual ~LyricsFrame();
+			~LyricsFrame() override;
 
 			bool map_tag_to_model(QString& model) override;
 			bool map_model_to_tag(const QString& model) override;

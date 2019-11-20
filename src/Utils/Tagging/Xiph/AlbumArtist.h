@@ -40,7 +40,7 @@ namespace Xiph
     {
 	public:
 		AlbumArtistFrame(TagLib::Ogg::XiphComment* tag);
-		~AlbumArtistFrame();
+		~AlbumArtistFrame() override;
 
 	protected:
 		bool map_tag_to_model(QString& model) override;

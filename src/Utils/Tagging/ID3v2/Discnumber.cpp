@@ -45,7 +45,7 @@ void ID3v2::DiscnumberFrame::map_frame_to_model(const TagLib::ID3v2::TextIdentif
 
 	if(lst.size() > 1)
 	{
-		model.n_discs = lst[1].toInt();
+		model.disccount = lst[1].toInt();
 	}
 }
 

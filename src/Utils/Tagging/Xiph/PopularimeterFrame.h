@@ -40,7 +40,7 @@ namespace Xiph
 	{
 	public:
 		PopularimeterFrame(TagLib::Ogg::XiphComment* tag);
-		~PopularimeterFrame();
+		~PopularimeterFrame() override;
 
 	protected:
 		bool map_tag_to_model(Models::Popularimeter& model) override;

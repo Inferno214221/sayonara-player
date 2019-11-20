@@ -33,7 +33,7 @@ namespace MP4
 	{
 	public:
 		AlbumArtistFrame(TagLib::MP4::Tag* tag);
-		~AlbumArtistFrame();
+		~AlbumArtistFrame() override;
 
 		// AbstractFrame interface
 	protected:

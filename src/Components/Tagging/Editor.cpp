@@ -213,14 +213,13 @@ bool Editor::is_cover_supported(int idx) const
 }
 
 bool Editor::can_load_entire_album() const
-{
+{	
 	Util::Set<AlbumId> album_ids;
 
 	for(const ChangeInformation& info : m->change_info)
 	{
 		album_ids << info.original_metadata().album_id();
-		if(album_ids.size() > 1)
-		{
+		if(album_ids.size() > 1) {
 			return false;
 		}
 	}
@@ -397,16 +396,10 @@ void Editor::apply_artists_and_albums_to_md()
 
 void Editor::update_cover(int idx, const QPixmap& cover)
 {
-	if(cover.isNull() || !Util::between(idx, m->change_info)) {
-		return;
+	if(is_cover_supported(idx))
+	{
+		m->change_info[idx].update_cover(cover);
 	}
-
-	bool cover_supported = is_cover_supported(idx);
-	if(!cover_supported) {
-		return;
-	}
-
-	m->change_info[idx].update_cover(cover);
 }
 
 bool Editor::has_cover_replacement(int idx) const

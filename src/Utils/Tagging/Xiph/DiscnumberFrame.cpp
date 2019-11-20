@@ -37,14 +37,14 @@ bool Xiph::DiscnumberFrame::map_tag_to_model(Models::Discnumber& model)
 		return false;
 	}
 
-	QString sval = cvt_string(str);
+	QString sval = convert_string(str);
     QStringList lst = sval.split("/");
     if(lst.size() > 0){
 		model.disc = lst[0].toInt();
     }
 
     if(lst.size() > 1){
-		model.n_discs= lst[1].toInt();
+		model.disccount= lst[1].toInt();
     }
 
     return (lst.size() > 0);
@@ -55,7 +55,7 @@ bool Xiph::DiscnumberFrame::map_model_to_tag(const Models::Discnumber& model)
     QString str;
     str += QString::number(model.disc);
     str += "/";
-    str += QString::number(model.n_discs);
+    str += QString::number(model.disccount);
 
 	this->set_value(str);
 

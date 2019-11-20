@@ -96,7 +96,7 @@ bool Xiph::CoverFrame::map_tag_to_model(Models::Cover& model)
 	{
 		TL::ByteVector data = pic_of_interest->data();
 		model.image_data = QByteArray(data.data(), static_cast<int>(data.size()));
-		model.mime_type = cvt_string(pic_of_interest->mimeType());
+		model.mime_type = convert_string(pic_of_interest->mimeType());
 	}
 
 	return true;
@@ -120,7 +120,7 @@ bool Xiph::CoverFrame::map_model_to_tag(const Models::Cover& model)
 	TL::Ogg::XiphComment* tag = this->tag();
 	TL::FLAC::Picture* pic = new TL::FLAC::Picture();
 	pic->setType(TL::FLAC::Picture::FrontCover);
-	pic->setMimeType(cvt_string(model.mime_type));
+	pic->setMimeType(convert_string(model.mime_type));
 	pic->setDescription(TL::String("Front Cover By Sayonara"));
 	pic->setData(TL::ByteVector(model.image_data.data(), length) );
 	tag->addPicture(pic); // do not delete the picture, because tag will take ownership

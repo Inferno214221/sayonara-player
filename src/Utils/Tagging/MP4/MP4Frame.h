@@ -42,7 +42,7 @@ protected:
 	{
 		for(TagLib::MP4::ItemListMap::ConstIterator it=ilm.begin(); it!=ilm.end(); it++){
 			QString key = this->key();
-			if( this->cvt_string(it->first).compare(key, Qt::CaseInsensitive) == 0){
+			if( this->convert_string(it->first).compare(key, Qt::CaseInsensitive) == 0){
 				return it;
 			}
 		}
@@ -92,7 +92,7 @@ public:
 		for(auto it=ilm.begin(); it!=ilm.end(); it++)
 		{
 			QString key = this->key();
-			if( this->cvt_string(it->first).compare(key, Qt::CaseInsensitive) == 0)
+			if( this->convert_string(it->first).compare(key, Qt::CaseInsensitive) == 0)
 			{
 				ilm.erase(it);
 				it = itcopy;

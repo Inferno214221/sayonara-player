@@ -142,7 +142,7 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 		success = discnumber_frame.read(discnumber);
 		if(success){
 			md.set_discnumber(discnumber.disc);
-			md.set_disc_count(discnumber.n_discs);
+			md.set_disc_count(discnumber.disccount);
 		}
 	}
 
@@ -166,7 +166,7 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 		success = discnumber_frame.read(discnumber);
 		if(success){
 			md.set_discnumber(discnumber.disc);
-			md.set_disc_count(discnumber.n_discs);
+			md.set_disc_count(discnumber.disccount);
 		}
 	}
 
@@ -184,7 +184,7 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 		success = discnumber_frame.read(discnumber);
 		if(success){
 			md.set_discnumber(discnumber.disc);
-			md.set_disc_count(discnumber.n_discs);
+			md.set_disc_count(discnumber.disccount);
 		}
 
 		MP4::PopularimeterFrame popularimeter_frame(mp4);
@@ -227,7 +227,7 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 	md.set_bitrate(Bitrate(bitrate));
 	md.set_genres(genres);
 	md.set_discnumber(discnumber.disc);
-	md.set_disc_count(discnumber.n_discs);
+	md.set_disc_count(discnumber.disccount);
 	md.set_rating(popularimeter.get_rating());
 	md.set_comment(comment);
 	md.add_custom_field("has_album_art", "", QString::number(Tagging::Covers::has_cover(parsed_tag)));

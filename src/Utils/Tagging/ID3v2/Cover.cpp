@@ -22,22 +22,19 @@
 ID3v2::CoverFrame::CoverFrame(TagLib::ID3v2::Tag* tag) :
 	ID3v2Frame<Models::Cover, TagLib::ID3v2::AttachedPictureFrame>(tag, "APIC") {}
 
-ID3v2::CoverFrame::~CoverFrame() {}
+ID3v2::CoverFrame::~CoverFrame() = default;
 
 void  ID3v2::CoverFrame::map_model_to_frame(const Models::Cover& model, TagLib::ID3v2::AttachedPictureFrame* frame)
 {
-	TagLib::String description = TagLib::String("Cover by Sayonara Player");
+	TagLib::String description("Cover by Sayonara Player");
 	TagLib::String::Type encoding = TagLib::String::Latin1;
-	TagLib::String mime_type = TagLib::String(model.mime_type.toLatin1().constData());
+	TagLib::String mime_type(model.mime_type.toLatin1().constData());
 	TagLib::ID3v2::AttachedPictureFrame::Type type = TagLib::ID3v2::AttachedPictureFrame::FrontCover;
 
-	TagLib::ByteVector taglib_image_data;
 	const QByteArray& image_data = model.image_data;
 
-	taglib_image_data.setData(image_data.data(), image_data.size());
-
-	TagLib::ByteVector vec, vec_header;
-	vec_header = TagLib::ByteVector("APIC", 4);
+	TagLib::ByteVector taglib_image_data;
+	taglib_image_data.setData(image_data.data(), quint32(image_data.size()));
 
 	frame->setDescription(description);
 	frame->setTextEncoding(encoding);
@@ -45,8 +42,9 @@ void  ID3v2::CoverFrame::map_model_to_frame(const Models::Cover& model, TagLib::
 	frame->setType(type);
 	frame->setPicture(taglib_image_data);
 
-	vec = frame->render();
+	const TagLib::ByteVector vec_header = TagLib::ByteVector("APIC", 4);
 
+	TagLib::ByteVector vec = frame->render();
 	if( !vec.startsWith(vec_header) ){
 		vec = vec_header + vec;
 	}
@@ -59,8 +57,8 @@ void ID3v2::CoverFrame::map_frame_to_model(const TagLib::ID3v2::AttachedPictureF
 	TagLib::ByteVector taglib_image_data = frame->picture();
 	TagLib::String mime_type = frame->mimeType();
 
-	model.image_data = QByteArray(taglib_image_data.data(), taglib_image_data.size());
-	model.mime_type = QString::fromLatin1(mime_type.toCString(), mime_type.length());
+	model.image_data = QByteArray(taglib_image_data.data(), qint32(taglib_image_data.size()));
+	model.mime_type = QString::fromLatin1(mime_type.toCString(), qint32(mime_type.length()));
 }
 
 TagLib::ID3v2::Frame* ID3v2::CoverFrame::create_id3v2_frame()
