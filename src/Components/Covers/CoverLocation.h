@@ -23,16 +23,12 @@
 
 #include <QMetaType>
 #include "Utils/Pimpl.h"
+#include "Components/Covers/Fetcher/CoverFetcherUrl.h"
 
 class QUrl;
 
 namespace Cover
 {
-	namespace Fetcher
-	{
-		class Url;
-	}
-
 	using StringMap=QMap<QString, QString>;
 
 	/**
@@ -101,17 +97,7 @@ namespace Cover
 		 * @brief Retrieve the urls where a new cover can be searched
 		 * @return
 		 */
-		QList<Fetcher::Url> search_urls(bool also_inactive) const;
-
-		/**
-		 * @brief Search urls contains urls from
-		 * Google, Discogs or Audioscrobbler. They are
-		 * ordered as configured in the Cover preferences
-		 * Dialog
-		 * @param idx
-		 * @return
-		 */
-		Fetcher::Url search_url(int idx) const;
+		QList<Fetcher::Url> search_urls() const;
 
 
 		/**
@@ -268,6 +254,7 @@ namespace Cover
 		 * @return CoverLocation object
 		 */
 		static Location cover_location(const QString& artist);
+		static Location cover_location_radio(const QString& radio_station);
 
 
 		/**

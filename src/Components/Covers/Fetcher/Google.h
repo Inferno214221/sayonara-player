@@ -23,11 +23,8 @@
 
 #include "CoverFetcher.h"
 
-namespace Cover
+namespace Cover::Fetcher
 {
-namespace Fetcher
-{
-
     /**
      * @brief The GoogleCoverFetcher class. See CoverFetcherInterface
      * @ingroup Covers
@@ -48,8 +45,6 @@ namespace Fetcher
 
 			int estimated_size() const override;
     };
-
-} // fetcher
 } // cover
 
 #endif // GOOGLECOVERFETCHER_H

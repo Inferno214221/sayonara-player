@@ -308,12 +308,14 @@ void Lookup::cover_found(int idx)
 
 void Lookup::stop()
 {
-	m->stopped = true;
 	if(m->cft)
 	{
 		m->cft->stop();
-		emit_finished(true);
+		m->cft = nullptr;
 	}
+
+	m->stopped = true;
+	emit_finished(true);
 }
 
 void Lookup::emit_finished(bool success)

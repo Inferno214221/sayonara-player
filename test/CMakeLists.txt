@@ -46,6 +46,8 @@ qt5_add_resources(RESOURCES_RCC
 )
 
 # With resources
+new_test(Covers/CoverLocationTest.cpp)
+
 new_test(Database/PodcastTest.cpp)
 new_test(Database/AlbumTest.cpp)
 

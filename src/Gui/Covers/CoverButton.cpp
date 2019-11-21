@@ -116,7 +116,7 @@ CoverButton::CoverButton(QWidget* parent) :
 	this->setFlat(true);
 	this->setToolTip(tr("Search an alternative cover"));
 
-	Cover::ChangeNotfier* cn = Cover::ChangeNotfier::instance();
+	auto* cn = Cover::ChangeNotfier::instance();
 	connect(cn, &Cover::ChangeNotfier::sig_covers_changed, this, &CoverButton::covers_changed);
 
 	connect(m->timer, &QTimer::timeout, this, &CoverButton::timer_timed_out);
@@ -230,8 +230,6 @@ void CoverButton::byteconverter_finished()
 
 	worker->deleteLater();
 }
-
-
 
 void CoverButton::set_cover_location(const Location& cl)
 {
@@ -408,7 +406,6 @@ void CoverButton::resizeEvent(QResizeEvent* e)
 
 	m->current_cover_scaled = m->current_cover.scaled(w, h, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 }
-
 
 void CoverButton::mouseMoveEvent(QMouseEvent* event)
 {

@@ -50,9 +50,7 @@ Cover::Extractor::Extractor(const Location& cl, QObject* parent) :
 	QObject(parent)
 {
 	m = Pimpl::make<Private>(cl);
-
 }
-
 
 Cover::Extractor::~Extractor() = default;
 
@@ -60,7 +58,6 @@ QPixmap Cover::Extractor::pixmap() const
 {
 	return m->pixmap;
 }
-
 
 Cover::Source Cover::Extractor::source() const
 {

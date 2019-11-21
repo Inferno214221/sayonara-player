@@ -188,6 +188,14 @@ void Util::File::split_filename(const QString& src, QString& path, QString& file
 	filename = Util::File::get_filename_of_path(src);
 }
 
+std::pair<QString, QString> Util::File::split_filename(const QString& src)
+{
+	std::pair<QString, QString> ret;
+	split_filename(src, ret.first, ret.second);
+
+	return ret;
+}
+
 
 QStringList Util::File::get_parent_directories(const QStringList& files)
 {

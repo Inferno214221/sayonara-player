@@ -22,6 +22,7 @@
 #define FileUtils_H
 
 #include <cstdint>
+#include <utility>
 
 class QStringList;
 class QString;
@@ -86,6 +87,7 @@ namespace Util
 		 * @param filename
 		 */
 		void			split_filename(const QString& src, QString& dir, QString& filename);
+		std::pair<QString, QString> split_filename(const QString& src);
 
 		/**
 		 * @brief returns all parts of a directory path

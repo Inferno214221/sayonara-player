@@ -45,6 +45,7 @@ namespace DB
 
 			bool update_cover(const QString& hash, const QPixmap& data);
 			bool insert_cover(const QString& hash, const QPixmap& data);
+			bool remove_cover(const QString& hash);
 
 			Util::Set<QString> get_all_hashes();
 

@@ -33,6 +33,7 @@ namespace Fetcher
 {
 	class Base;
 	class Url;
+
 	/**
 	 * @brief Retrieve Download Urls for Cover Searcher.
 	 * CoverFetcherInterface can be registered, so for
@@ -63,7 +64,7 @@ namespace Fetcher
 			 * @param artist name
 			 * @return list of urls
 			 */
-			QList<Url> artist_addresses(const QString& artist, bool also_inactive) const;
+			QList<Url> artist_addresses(const QString& artist) const;
 
 			/**
 			 * @brief get urls for a album search query
@@ -71,14 +72,14 @@ namespace Fetcher
 			 * @param album album name
 			 * @return list of urls
 			 */
-			QList<Url> album_addresses(const QString& artist, const QString& album, bool also_inactive) const;
+			QList<Url> album_addresses(const QString& artist, const QString& album) const;
 
 			/**
 			 * @brief get urls for a fuzzy query
 			 * @param str query string
 			 * @return list of urls
 			 */
-			QList<Url> search_addresses(const QString& str, bool also_inactive) const;
+			QList<Url> search_addresses(const QString& str) const;
 
 
 			/**
@@ -87,14 +88,15 @@ namespace Fetcher
 			 * @return list of urls
 			 */
 			QList<Url> search_addresses(const QString& str,
-										 const QString& cover_fetcher_identifier, bool also_inactive) const;
+										 const QString& cover_fetcher_identifier) const;
 
 			/**
 			 * @brief get a CoverFetcherInterface by a specific url
-			 * @param url cover search url
+			 * @param url the url retrieved from artist_addresses(), album_addresses(),
+			 * search_addresses() or direct_fetch_url()
 			 * @return null, if there's no suitable CoverFetcherInterface registered
 			 */
-			Cover::Fetcher::Base* coverfetcher(const QString& url) const;
+			Cover::Fetcher::Base* coverfetcher(const Url& url) const;
 
 			/**
 			 * @brief fetches all available cover fetcher
@@ -108,7 +110,16 @@ namespace Fetcher
 			bool is_active(const Cover::Fetcher::Base* cfi) const;
 			bool is_active(const QString& identifier) const;
 
-			QString identifier_by_url(const QString& url) const;
+
+			/**
+			 * @brief If the LibraryItem has a reference to
+			 * a cover download url an appropriate Url object
+			 * can be retrieved here. The corresponding
+			 * Cover::Fetcher is Cover::Fetcher::DirectFetcher
+			 * @param url the direct download url
+			 * @return
+			 */
+			Url direct_fetch_url(const QString& url);
 
 
 		private slots:

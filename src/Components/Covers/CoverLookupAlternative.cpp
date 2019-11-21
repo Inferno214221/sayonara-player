@@ -134,39 +134,36 @@ bool AlternativeLookup::is_silent() const
 
 QStringList AlternativeLookup::active_coverfetchers(AlternativeLookup::SearchMode mode) const
 {
+	using CoverFetcher=Cover::Fetcher::Base;
+
+	auto* cfm = Cover::Fetcher::Manager::instance();
+	const QList<CoverFetcher*> cover_fetchers = cfm->coverfetchers();
+
 	QStringList ret;
-	Cover::Fetcher::Manager* cfm = Cover::Fetcher::Manager::instance();
-	QList<Cover::Fetcher::Base*> cover_fetchers = cfm->coverfetchers();
-	for(const Cover::Fetcher::Base* cover_fetcher : cover_fetchers)
+	for(const CoverFetcher* cover_fetcher : cover_fetchers)
 	{
-		QString identifier = cover_fetcher->identifier();
-		if(identifier.isEmpty()){
+		const QString identifier = cover_fetcher->identifier();
+		if(!cfm->is_active(identifier)) {
 			continue;
 		}
 
-		if(!cfm->is_active(identifier))
-		{
-			continue;
-		}
-
-		bool suitable = false;
+		bool valid_identifier = false;
 		if(mode == AlternativeLookup::SearchMode::Fulltext)
 		{
-			QString address = cover_fetcher->search_address("search_string");
-			suitable = (!address.isEmpty());
+			const QString address = cover_fetcher->search_address("some dummy text");
+			valid_identifier = (!address.isEmpty());
 		}
 
 		else
 		{
-			UrlList search_urls = cover_location().search_urls(false);
+			const UrlList search_urls = cover_location().search_urls();
 
-			suitable = Algorithm::contains(search_urls, [identifier](const Url& url){
-				return (url.identifier().toLower() == identifier.toLower());
+			valid_identifier = Algorithm::contains(search_urls, [identifier](const Url& url) {
+				return (url.identifier().compare(identifier, Qt::CaseInsensitive) == 0);
 			});
 		}
 
-		if(suitable && cfm->is_active(identifier))
-		{
+		if(valid_identifier) {
 			ret << identifier;
 		}
 	}
@@ -214,9 +211,9 @@ void AlternativeLookup::start()
 void AlternativeLookup::start(const QString& identifier)
 {
 	Location cl = cover_location();
-	UrlList search_urls = cover_location().search_urls(false);
+	const UrlList search_urls = cover_location().search_urls();
 
-	auto it = Algorithm::find(search_urls, [&identifier](const Url& url){
+	auto it = Algorithm::find(search_urls, [&identifier](const Url& url) {
 		return (identifier == url.identifier());
 	});
 
