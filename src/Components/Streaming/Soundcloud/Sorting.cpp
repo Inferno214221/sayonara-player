@@ -59,7 +59,7 @@ namespace Compare
 	}
 
 	bool albumYearAsc(const Album& album1, const Album& album2) {
-		return (album1.year < album2.year);
+		return (album1.year() < album2.year());
 	}
 
 	bool albumYearDesc(const Album& album1, const Album& album2) {
@@ -67,7 +67,7 @@ namespace Compare
 	}
 
 	bool albumRatingAsc(const Album& album1, const Album& album2) {
-		return (album1.rating < album2.rating);
+		return (album1.rating() < album2.rating());
 	}
 
 	bool albumRatingDesc(const Album& album1, const Album& album2) {
@@ -75,7 +75,7 @@ namespace Compare
 	}
 
 	bool albumDurationAsc(const Album& album1, const Album& album2) {
-		return (album1.length_sec < album2.length_sec);
+		return (album1.duration_sec() < album2.duration_sec());
 	}
 
 	bool albumDurationDesc(const Album& album1, const Album& album2) {

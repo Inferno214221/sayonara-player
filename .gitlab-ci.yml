@@ -24,6 +24,8 @@ test-sayonara:
   stage: test
   dependencies: 
     - build-sayonara
+  variables:
+    QT_QPA_PLATFORM: "offscreen"
   script:
     - cd build
     - make test

@@ -80,7 +80,7 @@ Id AlbumModel::id_by_index(int index) const
 	}
 
 	else {
-		return albums[index].id;
+		return albums[index].id();
 	}
 }
 
@@ -157,7 +157,7 @@ QVariant AlbumModel::data(const QModelIndex& index, int role) const
 	{
 		if(col == ColumnIndex::Album::MultiDisc)
 		{
-			if(album.discnumbers.size() > 1){
+			if(album.discnumbers().size() > 1){
 				return m->pm_multi;
 			}
 
@@ -170,13 +170,13 @@ QVariant AlbumModel::data(const QModelIndex& index, int role) const
 		switch(col)
 		{
 			case ColumnIndex::Album::NumSongs:
-				return QString::number(album.num_songs);
+				return QString::number(album.songcount());
 
 			case ColumnIndex::Album::Year:
-				if(album.year == 0){
+				if(album.year() == 0){
 					return Lang::get(Lang::UnknownYear);
 				}
-				return album.year;
+				return album.year();
 
 			case ColumnIndex::Album::Name:
 				if(album.name().trimmed().isEmpty()){
@@ -185,7 +185,7 @@ QVariant AlbumModel::data(const QModelIndex& index, int role) const
 				return album.name();
 
 			case ColumnIndex::Album::Duration:
-				return ::Util::cvt_ms_to_string(album.length_sec * 1000, "$He $M:$S");
+				return ::Util::cvt_ms_to_string(album.duration_sec() * 1000, "$He $M:$S");
 
 			case ColumnIndex::Album::Rating:
 			{
@@ -193,7 +193,7 @@ QVariant AlbumModel::data(const QModelIndex& index, int role) const
 					return QVariant();
 				}
 
-				Rating rating = album.rating;
+				Rating rating = album.rating();
 				if(row == m->tmp_rating.first)
 				{
 					rating = m->tmp_rating.second;
@@ -231,7 +231,7 @@ bool AlbumModel::setData(const QModelIndex& index, const QVariant& value, int ro
 		Album album = albums[row];
 		Rating rating = value.value<Rating>();
 
-		if(album.rating != rating)
+		if(album.rating() != rating)
 		{
 			m->tmp_rating.first = row;
 			m->tmp_rating.second = rating;

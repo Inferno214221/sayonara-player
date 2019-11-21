@@ -506,7 +506,7 @@ bool MetaDataSorting::AlbumByNameAsc(const Album& album1, const Album& album2)
 {
 	switch(compare_string(album1.name(), album2.name())){
 		case Equal:
-			return (album1.id < album2.id);
+			return (album1.id() < album2.id());
 		case Greater:
 			return false;
 		case Lesser:
@@ -519,7 +519,7 @@ bool MetaDataSorting::AlbumByNameDesc(const Album& album1, const Album& album2)
 {
 	switch(compare_string(album2.name(), album1.name())){
 		case Equal:
-			return (album1.id < album2.id);
+			return (album1.id() < album2.id());
 		case Greater:
 			return false;
 		case Lesser:
@@ -530,11 +530,11 @@ bool MetaDataSorting::AlbumByNameDesc(const Album& album1, const Album& album2)
 
 bool MetaDataSorting::AlbumByYearAsc(const Album& album1, const Album& album2)
 {
-	if(album1.year < album2.year){
+	if(album1.year() < album2.year()){
 		return true;
 	}
 
-	if(album1.year == album2.year){
+	if(album1.year() == album2.year()){
 		return AlbumByNameAsc(album1, album2);
 	}
 
@@ -543,11 +543,11 @@ bool MetaDataSorting::AlbumByYearAsc(const Album& album1, const Album& album2)
 
 bool MetaDataSorting::AlbumByYearDesc(const Album& album1, const Album& album2)
 {
-	if(album2.year < album1.year){
+	if(album2.year() < album1.year()){
 		return true;
 	}
 
-	if(album1.year == album2.year){
+	if(album1.year() == album2.year()){
 		return AlbumByNameAsc(album1, album2);
 	}
 
@@ -556,11 +556,11 @@ bool MetaDataSorting::AlbumByYearDesc(const Album& album1, const Album& album2)
 
 bool MetaDataSorting::AlbumByDurationAsc(const Album& album1, const Album& album2)
 {
-	if(album1.length_sec < album2.length_sec){
+	if(album1.duration_sec() < album2.duration_sec()){
 		return true;
 	}
 
-	if(album1.length_sec == album2.length_sec){
+	if(album1.duration_sec() == album2.duration_sec()){
 		return AlbumByNameAsc(album1, album2);
 	}
 
@@ -569,11 +569,11 @@ bool MetaDataSorting::AlbumByDurationAsc(const Album& album1, const Album& album
 
 bool MetaDataSorting::AlbumByDurationDesc(const Album& album1, const Album& album2)
 {
-	if(album2.length_sec < album1.length_sec){
+	if(album2.duration_sec() < album1.duration_sec()){
 		return true;
 	}
 
-	if(album1.length_sec == album2.length_sec){
+	if(album1.duration_sec() == album2.duration_sec()){
 		return AlbumByNameAsc(album1, album2);
 	}
 
@@ -582,11 +582,11 @@ bool MetaDataSorting::AlbumByDurationDesc(const Album& album1, const Album& albu
 
 bool MetaDataSorting::AlbumByTracksAsc(const Album& album1, const Album& album2)
 {
-	if(album1.num_songs < album2.num_songs){
+	if(album1.songcount() < album2.songcount()){
 		return true;
 	}
 
-	if(album1.num_songs == album2.num_songs){
+	if(album1.songcount() == album2.songcount()){
 		return AlbumByNameAsc(album1, album2);
 	}
 
@@ -595,11 +595,11 @@ bool MetaDataSorting::AlbumByTracksAsc(const Album& album1, const Album& album2)
 
 bool MetaDataSorting::AlbumByTracksDesc(const Album& album1, const Album& album2)
 {
-	if(album2.num_songs < album1.num_songs){
+	if(album2.songcount() < album1.songcount()){
 		return true;
 	}
 
-	if(album1.num_songs == album2.num_songs){
+	if(album1.songcount() == album2.songcount()){
 		return AlbumByNameAsc(album1, album2);
 	}
 
@@ -608,11 +608,11 @@ bool MetaDataSorting::AlbumByTracksDesc(const Album& album1, const Album& album2
 
 bool MetaDataSorting::AlbumByRatingAsc(const Album& album1, const Album& album2)
 {
-	if(album1.rating < album2.rating){
+	if(album1.rating() < album2.rating()){
 		return true;
 	}
 
-	if(album1.rating == album2.rating){
+	if(album1.rating() == album2.rating()){
 		return AlbumByNameAsc(album1, album2);
 	}
 
@@ -621,11 +621,11 @@ bool MetaDataSorting::AlbumByRatingAsc(const Album& album1, const Album& album2)
 
 bool MetaDataSorting::AlbumByRatingDesc(const Album& album1, const Album& album2)
 {
-	if(album2.rating < album1.rating){
+	if(album2.rating() < album1.rating()){
 		return true;
 	}
 
-	if(album1.rating == album2.rating){
+	if(album1.rating() == album2.rating()){
 		return AlbumByNameAsc(album1, album2);
 	}
 

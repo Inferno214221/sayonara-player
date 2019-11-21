@@ -142,8 +142,9 @@ void AlbumInfo::calc_cover_location()
 
 		Album album;
 		bool success = lib_db->getAlbumByID(album_ids().first(), album, true);
-		if(!success) {
-			album.id = album_ids().first();
+		if(!success)
+		{
+			album.set_id(album_ids().first());
 			album.set_name(albums().first());
 			album.set_artists(artists().toList());
 			album.set_album_artists(album_artists().toList());

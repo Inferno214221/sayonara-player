@@ -104,10 +104,10 @@ void UserOperations::set_track_rating(const MetaDataList& v_md, Rating rating)
 
 void UserOperations::set_album_rating(const Album& album, Rating rating)
 {
-	m->library_db->updateAlbumRating(album.id, rating);
+	m->library_db->updateAlbumRating(album.id(), rating);
 
 	Album album_new(album);
-	album_new.rating = rating;
+	album_new.set_rating(rating);
 
 	AlbumList albums_old; albums_old << album;
 	AlbumList albums_new; albums_new << album_new;
@@ -199,7 +199,7 @@ void UserOperations::merge_albums(const Util::Set<Id>& album_ids, AlbumId target
 	for(int idx=0; idx<v_md.count(); idx++)
 	{
 		MetaData md(v_md[idx]);
-		md.set_album_id(album.id);
+		md.set_album_id(album.id());
 		md.set_album(album.name());
 
 		editor->update_track(idx, md);

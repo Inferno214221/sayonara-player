@@ -76,29 +76,28 @@ bool Albums::db_fetch_albums(Query& q, AlbumList& result) const
 	{
 		Album album;
 
-		album.id =			q.value(0).value<AlbumId>();
+		album.set_id(		q.value(0).value<AlbumId>());
 		album.set_name(		q.value(1).toString());
-		album.rating =		q.value(2).value<Rating>();
+		album.set_rating(	q.value(2).value<Rating>());
 		album.set_artists(	q.value(3).toString().split(','));
 		album.set_album_artists(q.value(4).toString().split(','));
-		album.length_sec =	q.value(5).value<Seconds>();
-		album.num_songs =	q.value(6).value<uint16_t>();
-		album.year =		q.value(7).value<uint16_t>();
+		album.set_duration_sec(q.value(5).value<Seconds>());
+		album.set_songcount(q.value(6).value<TrackNum>());
+		album.set_year(		q.value(7).value<Year>());
 
 		QStringList discs =	q.value(8).toString().split(',');
+		auto discnumbers = album.discnumbers();
 		if(discs.isEmpty()){
-			album.discnumbers << 1;
+			discnumbers << 1;
 		}
 
 		discs.removeDuplicates();
 		for(const QString& disc : discs) {
-			album.discnumbers << Disc(disc.toInt());
+			discnumbers << Disc(disc.toInt());
 		}
 
-		album.n_discs = Disc(album.discnumbers.size());
-		album.is_sampler = (album.artists().size() > 1);
+		album.set_discnumbers(discnumbers);
 		album.set_db_id(module()->db_id());
-
 		album.set_path_hint(q.value(9).toString().split("#"));
 
 		result.push_back(std::move(album));
@@ -305,7 +304,7 @@ void Albums::updateAlbumCissearch()
 		(
 			"albums",
 			{{"cissearch", Util::cvt_not_null(cis)}},
-			{"albumID", album.id},
+			{"albumID", album.id()},
 			"Cannot update album cissearch"
 		);
 	}

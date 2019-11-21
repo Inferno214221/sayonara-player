@@ -104,7 +104,7 @@ void AlbumTest::test_rename()
 		QVERIFY(id >= 0);
 		bool success = db->getAlbumByID(id, album, true);
 		QVERIFY(success == true);
-		QVERIFY(album.id == id);
+		QVERIFY(album.id() == id);
 		QVERIFY(album.name() == m_album_names[1]);
 	}
 

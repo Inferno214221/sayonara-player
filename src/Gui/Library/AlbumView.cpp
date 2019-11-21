@@ -173,13 +173,13 @@ void AlbumView::init_discmenu(QModelIndex idx)
 	}
 
 	const Album& album = m->library->albums().at(size_t(row));
-	if(album.discnumbers.size() < 2) {
+	if(album.discnumbers().size() < 2) {
 		return;
 	}
 
 	calc_discmenu_point(idx);
 
-	m->discmenu = new DiscPopupMenu(this, album.discnumbers);
+	m->discmenu = new DiscPopupMenu(this, album.discnumbers());
 
 	connect(m->discmenu, &DiscPopupMenu::sig_disc_pressed, this, &AlbumView::sig_disc_pressed);
 }
