@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "StreamRecorderUtils.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/FileUtils.h"
@@ -29,6 +27,7 @@
 #include <QDateTime>
 #include <QRegExp>
 #include <QDir>
+#include <QLocale>
 
 using namespace StreamRecorder;
 namespace FileUtils=::Util::File;
@@ -150,26 +149,46 @@ QString Utils::target_path_template_default(bool use_session_path)
 	return "<tn> - <ar> - <t>";
 }
 
-
 QList<QPair<QString, QString> > Utils::descriptions()
 {
-	QList<QPair<QString, QString>> ret;
+	using StringPair=QPair<QString, QString>;
+	QList<StringPair> ret;
 
-	QDate d = QDateTime::currentDateTime().date();
+	const QDate d = QDateTime::currentDateTime().date();
+	const QLocale loc = QLocale::system();
 
-	ret << QPair<QString, QString>("tn", Lang::get(Lang::TrackNo).append("*"));
-	ret << QPair<QString, QString>("t", Lang::get(Lang::Title).append("*"));
-	ret << QPair<QString, QString>("min", Lang::get(Lang::Minutes));
-	ret << QPair<QString, QString>("h", Lang::get(Lang::Hours));
-	ret << QPair<QString, QString>("d", Lang::get(Lang::Days) + " (" + QString::number(d.day()) + ")");
-	ret << QPair<QString, QString>("ds", Lang::get(Lang::Days) + " (" + QDate::shortDayName(d.dayOfWeek()) + ")");
-	ret << QPair<QString, QString>("dl", Lang::get(Lang::Days) + " (" + QDate::longDayName(d.dayOfWeek()) + ")");
-	ret << QPair<QString, QString>("m", Lang::get(Lang::Months) + " (" + QString::number(d.month()) + ")");
-	ret << QPair<QString, QString>("ms", Lang::get(Lang::Months) + " (" + QDate::shortMonthName(d.month()) + ")");
-	ret << QPair<QString, QString>("ml", Lang::get(Lang::Months) + " (" + QDate::longMonthName(d.month()) + ")");
-	ret << QPair<QString, QString>("y", Lang::get(Lang::Year));
-	ret << QPair<QString, QString>("ar", Lang::get(Lang::Artist));
-	ret << QPair<QString, QString>("rs", Lang::get(Lang::RadioStation));
+	ret << StringPair("tn",	 Lang::get(Lang::TrackNo) + "*");
+	ret << StringPair("t",	 Lang::get(Lang::Title)	+ "*");
+	ret << StringPair("min", Lang::get(Lang::Minutes));
+	ret << StringPair("h",   Lang::get(Lang::Hours));
+
+	ret << StringPair("d",	 QString("%1 (%2)")
+								.arg(Lang::get(Lang::Days))
+								.arg(d.day()));
+
+	ret << StringPair("ds",	 QString("%1 (%2)")
+								.arg(Lang::get(Lang::Days))
+								.arg(loc.dayName(d.dayOfWeek(), QLocale::ShortFormat)));
+
+	ret << StringPair("dl",	 QString("%1 (%2)")
+								.arg(Lang::get(Lang::Days))
+								.arg(loc.dayName(d.dayOfWeek(), QLocale::LongFormat)));
+
+	ret << StringPair("m",	 QString("%1 (%2)")
+								.arg(Lang::get(Lang::Months))
+								.arg(d.month()));
+
+	ret << StringPair("ms",	 QString("%1 (%2)")
+								.arg(Lang::get(Lang::Months))
+								.arg(loc.monthName(d.month(), QLocale::ShortFormat)));
+
+	ret << StringPair("ml",	 QString("%1 (%2)")
+								.arg(Lang::get(Lang::Months))
+								.arg(loc.monthName(d.month(), QLocale::LongFormat)));
+
+	ret << StringPair("y",   Lang::get(Lang::Year));
+	ret << StringPair("ar",	 Lang::get(Lang::Artist));
+	ret << StringPair("rs",	 Lang::get(Lang::RadioStation));
 
 	return ret;
 }
@@ -184,16 +203,17 @@ static QString replace_placeholder(const QString& str, const MetaData& md, QDate
 		time = QTime::currentTime();
 	}
 
-	QString target_path(str);
+	const QLocale loc = QLocale::system();
 
+	QString target_path(str);
 	target_path.replace("<h>",		QString("%1").arg(time.hour(), 2, 10, QChar('0')));
 	target_path.replace("<min>",	QString("%1").arg(time.minute(), 2, 10, QChar('0')));
 	target_path.replace("<d>",		QString("%1").arg(date.day(), 2, 10, QChar('0')));
-	target_path.replace("<ds>",		QDate::shortDayName(date.dayOfWeek()));
-	target_path.replace("<dl>",		QDate::longDayName(date.dayOfWeek()));
+	target_path.replace("<ds>",		loc.dayName(date.dayOfWeek(), QLocale::ShortFormat));
+	target_path.replace("<dl>",		loc.dayName(date.dayOfWeek(), QLocale::LongFormat));
 	target_path.replace("<m>",		QString("%1").arg(date.month(), 2, 10, QChar('0')));
-	target_path.replace("<ms>",		QDate::shortMonthName(date.month()));
-	target_path.replace("<ml>",		QDate::longMonthName(date.month()));
+	target_path.replace("<ms>",		loc.dayName(date.month(), QLocale::ShortFormat));
+	target_path.replace("<ml>",		loc.dayName(date.month(), QLocale::LongFormat));
 	target_path.replace("<y>",		QString("%1").arg(date.year()));
 	target_path.replace("<tn>",		QString("%1").arg(md.track_number(), 4, 10, QChar('0')));
 
