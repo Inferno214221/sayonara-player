@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "GUI_CoverEdit.h"
 #include "GUI_TagEdit.h"
 #include "Gui/TagEdit/ui_GUI_CoverEdit.h"

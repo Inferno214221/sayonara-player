@@ -383,7 +383,8 @@ QStringList Util::image_extensions(bool with_asterisk)
 			<< "png"
 			<< "bmp"
 			<< "tiff"
-			<< "tif";
+			<< "tif"
+			<< "svg";
 
 	QStringList upper_filters;
 	for(QString& filter : filters) {

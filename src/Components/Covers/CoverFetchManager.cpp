@@ -24,16 +24,18 @@
 
 #include "Fetcher/Google.h"
 #include "Fetcher/Audioscrobbler.h"
-#include "Fetcher/Standard.h"
 #include "Fetcher/Discogs.h"
 #include "Fetcher/Allmusic.h"
 #include "Fetcher/Amazon.h"
 #include "Fetcher/Yandex.h"
+#include "Fetcher/Website.h"
+#include "Fetcher/DirectFetcher.h"
 
 #include "Utils/Algorithm.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Settings/SettingNotifier.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/FileUtils.h"
 
 #include <QStringList>
 #include <QList>
@@ -51,8 +53,9 @@ static void sort_coverfetchers(QList<Fetcher::Base*>& lst, const SortMap& cf_ord
 {
 	Algorithm::sort(lst, [&cf_order](Fetcher::Base* t1, Fetcher::Base* t2)
 	{
-		int order1 = cf_order[t1->identifier()];
-		int order2 = cf_order[t2->identifier()];
+		const int order1 = cf_order[t1->identifier()];
+		const int order2 = cf_order[t2->identifier()];
+
 		if(order1 != order2) {
 			if(order1 == -1){
 				return false; // order1 is worse
@@ -65,8 +68,8 @@ static void sort_coverfetchers(QList<Fetcher::Base*>& lst, const SortMap& cf_ord
 			return (order1 < order2);
 		}
 
-		int rating1 = t1->estimated_size();
-		int rating2 = t2->estimated_size();
+		const int rating1 = t1->estimated_size();
+		const int rating2 = t2->estimated_size();
 
 		return (rating1 > rating2);
 	});
@@ -78,7 +81,7 @@ static SortMap create_sortmap(const QStringList& lst)
 
 	for(int i=0; i<lst.size(); i++)
 	{
-		QString str = lst[i];
+		const QString str = lst[i];
 		ret[str] = i;
 	}
 
@@ -94,29 +97,11 @@ static Fetcher::Base* coverfetcher_by_identifier(const QString& identifier, cons
 
 	for(Fetcher::Base* cfi : container)
 	{
-		QString cfi_identifier = cfi->identifier();
+		const QString cfi_identifier = cfi->identifier();
 		if(!cfi_identifier.isEmpty())
 		{
-			if(cfi_identifier.compare(identifier, Qt::CaseInsensitive) == 0){
-				return cfi;
-			}
-		}
-	}
-
-	return nullptr;
-}
-
-static Fetcher::Base* coverfetcher_by_url(const QString& url, const QList<Fetcher::Base*>& container)
-{
-	if(url.isEmpty()){
-		return nullptr;
-	}
-
-	for(Fetcher::Base* cfi : container)
-	{
-		QString identifier = cfi->identifier();
-		if(!identifier.isEmpty()){
-			if(url.contains(identifier, Qt::CaseInsensitive)){
+			if(cfi_identifier.compare(identifier, Qt::CaseInsensitive) == 0)
+			{
 				return cfi;
 			}
 		}
@@ -130,17 +115,13 @@ struct Manager::Private
 	QMap<QString, int>		cf_order;
 	QMap<QString, bool>		active_map;
 	QList<Fetcher::Base*>	coverfetchers;
-	Fetcher::Standard*		std_cover_fetcher = nullptr;
+	Fetcher::Website*		website_coverfetcher=nullptr;
+	Fetcher::DirectFetcher* direct_coverfetcher=nullptr;
 
-	Private()
-	{
-		std_cover_fetcher = new Standard();
-	}
+	Private() = default;
 
 	~Private()
 	{
-		std_cover_fetcher = nullptr;
-
 		for(auto it=coverfetchers.begin(); it != coverfetchers.end(); it++)
 		{
 			Fetcher::Base* b = *it;
@@ -157,11 +138,16 @@ struct Manager::Private
 
 	bool is_active(QString identifier) const
 	{
-		if(identifier.compare("Direct") == 0){
+		identifier = identifier.toLower();
+
+		if(identifier == direct_coverfetcher->identifier()){
 			return true;
 		}
 
-		identifier = identifier.toLower();
+		else if(identifier == website_coverfetcher->identifier()){
+			return true;
+		}
+
 		if(!active_map.keys().contains(identifier)){
 			return false;
 		}
@@ -183,7 +169,10 @@ Manager::Manager() :
 	register_coverfetcher(new Fetcher::Google());
 	register_coverfetcher(new Fetcher::Yandex());
 
-	register_coverfetcher(m->std_cover_fetcher);
+	m->website_coverfetcher = new Fetcher::Website();
+	m->direct_coverfetcher = new Fetcher::DirectFetcher();
+	register_coverfetcher(m->direct_coverfetcher);
+	register_coverfetcher(m->website_coverfetcher);
 
 	ListenSetting(Set::Cover_Server, Manager::servers_changed);
 }
@@ -202,14 +191,36 @@ void Manager::register_coverfetcher(Base* t)
 }
 
 
-Fetcher::Base* Manager::coverfetcher(const QString& url) const
+Fetcher::Base* Manager::coverfetcher(const Url& url) const
 {
-	Fetcher::Base* cfi = coverfetcher_by_url(url, m->coverfetchers);
-	if(!cfi || !is_active(cfi)){
-		return m->std_cover_fetcher;
+	const QString& identifier = url.identifier();
+	Fetcher::Base* cfi = coverfetcher_by_identifier(identifier, m->coverfetchers);
+
+	if(identifier == m->website_coverfetcher->identifier())
+	{
+		auto* website_fetcher = dynamic_cast<Website*>(cfi);
+		if(website_fetcher)
+		{
+			website_fetcher->set_website(url.url());
+		}
+	}
+
+	else if(identifier == m->direct_coverfetcher->identifier())
+	{
+		auto* direct_fetcher = dynamic_cast<DirectFetcher*>(cfi);
+		if(direct_fetcher)
+		{
+			direct_fetcher->set_direct_url(url.url());
+		}
 	}
 
 	return cfi;
+}
+
+Fetcher::Url Manager::direct_fetch_url(const QString& url)
+{
+	static Cover::Fetcher::DirectFetcher df;
+	return Cover::Fetcher::Url(df.identifier(), url);
 }
 
 
@@ -223,6 +234,13 @@ QList<Fetcher::Base*> Manager::active_coverfetchers() const
 	QList<Fetcher::Base*> ret;
 	for(Fetcher::Base* cfi : m->coverfetchers)
 	{
+		const QString identifier = cfi->identifier();
+		if( (identifier == m->direct_coverfetcher->identifier()) ||
+			(identifier == m->website_coverfetcher->identifier()) )
+		{
+			continue;
+		}
+
 		if(is_active(cfi)){
 			ret << cfi;
 		}
@@ -236,6 +254,13 @@ QList<Fetcher::Base*> Manager::inactive_coverfetchers() const
 	QList<Fetcher::Base*> ret;
 	for(Fetcher::Base* cfi : m->coverfetchers)
 	{
+		const QString identifier = cfi->identifier();
+		if( (identifier == m->direct_coverfetcher->identifier()) ||
+			(identifier == m->website_coverfetcher->identifier()) )
+		{
+			continue;
+		}
+
 		if(!is_active(cfi)){
 			ret << cfi;
 		}
@@ -254,16 +279,6 @@ bool Manager::is_active(const QString& identifier) const
 	return m->is_active(identifier);
 }
 
-QString Manager::identifier_by_url(const QString& url) const
-{
-	Fetcher::Base* cfi = coverfetcher(url);
-	if(cfi && is_active(cfi)){
-		return cfi->identifier();
-	}
-
-	return QString();
-}
-
 
 void Manager::servers_changed()
 {
@@ -278,28 +293,18 @@ void Manager::servers_changed()
 }
 
 
-QList<Url> Manager::artist_addresses(const QString& artist, bool also_inactive) const
+QList<Url> Manager::artist_addresses(const QString& artist) const
 {
 	QList<Url> urls;
 
 	for(const Fetcher::Base* cfi : Algorithm::AsConst(m->coverfetchers))
 	{
-		QString identifier = cfi->identifier();
-		QString adress = cfi->artist_address(artist);
+		const QString identifier = cfi->identifier();
+		const QString address = cfi->artist_address(artist);
 
-		if(!adress.isEmpty())
+		if(!address.isEmpty())
 		{
-			Url url
-			(
-				is_active(identifier),
-				identifier,
-				adress
-			);
-
-			if(url.is_active() || also_inactive)
-			{
-				urls << url;
-			}
+			urls << Url(identifier, address);
 		}
 	}
 
@@ -307,92 +312,94 @@ QList<Url> Manager::artist_addresses(const QString& artist, bool also_inactive) 
 }
 
 
-QList<Url> Manager::album_addresses(const QString& artist, const QString& album, bool also_inactive) const
+QList<Url> Manager::album_addresses(const QString& artist, const QString& album) const
 {
 	QList<Url> urls;
 
 	for(const Fetcher::Base* cfi : Algorithm::AsConst(m->coverfetchers))
 	{
-		QString identifier = cfi->identifier();
-		QString adress = cfi->album_address(artist, album);
+		const QString identifier = cfi->identifier();
+		const QString address = cfi->album_address(artist, album);
 
-		if(!adress.isEmpty())
+		if(!address.isEmpty())
 		{
-			Url url
-			(
-				is_active(identifier),
-				identifier,
-				adress
-			);
-
-			if(url.is_active() || also_inactive)
-			{
-				urls << url;
-			}
+			urls << Url(identifier, address);
 		}
 	}
 
 	return urls;
 }
 
-
-QList<Url> Manager::search_addresses(const QString& str, bool also_inactive) const
+static bool is_searchstring_website(const QString& searchstring)
 {
+	if(Util::File::is_www(searchstring)){
+		return true;
+	}
+
+	// this.is.my.searchstring -> false
+	// this.is.my.searchstring.urli -> true
+	// this.is.my.searchstring.url -> true
+	// this.is.my.searchstring.ur -> true
+	// this.is.my.searchstring.u -> false
+	int last_dot = searchstring.lastIndexOf(".");
+	if((last_dot < 0) || (last_dot < searchstring.size() - 4) || (last_dot > searchstring.size() - 2))
+	{
+		return false;
+	}
+
+	return true;
+}
+
+QList<Url> Manager::search_addresses(const QString& searchstring) const
+{
+	if(is_searchstring_website(searchstring))
+	{
+		m->website_coverfetcher->set_website(searchstring);
+		const QString identifier = m->website_coverfetcher->identifier();
+		return { Url(identifier, m->website_coverfetcher->search_address("")) };
+	}
+
 	QList<Url> urls;
 
 	for(const Fetcher::Base* cfi : Algorithm::AsConst(m->coverfetchers))
 	{
-		QString identifier = cfi->identifier();
-		QString adress = cfi->search_address(str);
+		const QString identifier = cfi->identifier();
+		const QString address = cfi->search_address(searchstring);
 
-		if(!adress.isEmpty())
+		if(!address.isEmpty())
 		{
-			Url url
-			(
-				is_active(identifier),
-				identifier,
-				cfi->search_address(str)
-			);
-
-			if(url.is_active() || also_inactive)
-			{
-				urls << url;
-			}
+			urls << Url(identifier, cfi->search_address(searchstring));
 		}
 	}
 
 	return urls;
 }
 
-QList<Url> Manager::search_addresses(const QString& str, const QString& cover_fetcher_identifier, bool also_inactive) const
+QList<Url> Manager::search_addresses(const QString& searchstring, const QString& cover_fetcher_identifier) const
 {
-	QList<Url> urls;
+	if(is_searchstring_website(searchstring))
+	{
+		m->website_coverfetcher->set_website(searchstring);
+		const QString identifier = m->website_coverfetcher->identifier();
+		return {Url(identifier, m->website_coverfetcher->search_address(""))};
+	}
 
+	QList<Url> urls;
 	for(const Fetcher::Base* cfi : Algorithm::AsConst(m->coverfetchers))
 	{
-		QString address = cfi->search_address(str);
-		QString identifier = cfi->identifier();
+		const QString address = cfi->search_address(searchstring);
+		const QString identifier = cfi->identifier();
 
 		if( (!address.isEmpty()) &&
 			(is_active(cfi)) &&
 			(cover_fetcher_identifier.compare(identifier, Qt::CaseInsensitive) == 0))
 		{
-			Url url
-			(
-				is_active(identifier),
-				identifier,
-				cfi->search_address(str)
-			);
-
-			if(url.is_active() || also_inactive)
-			{
-				urls << url;
-			}
+			urls << Url(identifier, cfi->search_address(searchstring));;
 		}
 	}
 
 	if(urls.isEmpty()){
-		return search_addresses(str, also_inactive);
+		return search_addresses(searchstring);
 	}
 
 	return urls;

@@ -51,7 +51,6 @@ struct FetchThread::Private
 	QList<AsyncWebAccess*>	active_connections;
 	QList<QPixmap>			pixmaps;
 
-	Cover::Location		cl;
 	Fetcher::Base*		acf=nullptr;
 
 	QString				id;
@@ -63,16 +62,17 @@ struct FetchThread::Private
 	bool				may_run;
 
 	Private(const Location& cl, int n_covers) :
-		cl(cl),
-		id(Util::random_string(8)),
+		id(cl.identifer() + Util::random_string(8)),
 		n_covers(n_covers),
 		finished(false),
 		may_run(true)
 	{
-		UrlList urls = cl.search_urls(false);
+		auto* cfm = Cover::Fetcher::Manager::instance();
+
+		const UrlList urls = cl.search_urls();
 		for(const Url& url : urls)
 		{
-			if(url.is_active())
+			if(cfm->is_active(url.identifier()))
 			{
 				search_urls << url;
 			}
@@ -108,13 +108,15 @@ bool FetchThread::start()
 		return false;
 	}
 
-	Url url = m->search_urls.takeFirst();
+	const Url url = m->search_urls.takeFirst();
 
-	Fetcher::Manager* cfm = Fetcher::Manager::instance();
-	m->acf = cfm->coverfetcher(url.url());
-	if(!m->acf){
+	auto* cfm = Fetcher::Manager::instance();
+	m->acf = cfm->coverfetcher(url);
+	if(!m->acf) {
 		return false;
 	}
+
+	sp_log(Log::Debug, this) << "Taking Cover::Fetcher " << m->acf->identifier() << " for " << url.url();
 
 	if( m->acf->can_fetch_cover_directly() )
 	{
@@ -126,7 +128,7 @@ bool FetchThread::start()
 
 	else
 	{
-		AsyncWebAccess* awa = new AsyncWebAccess(this);
+		auto* awa = new AsyncWebAccess(this);
 		awa->setObjectName(m->acf->identifier());
 		awa->set_behavior(AsyncWebAccess::Behavior::AsSayonara);
 		connect(awa, &AsyncWebAccess::sig_finished, this, &FetchThread::content_fetched);
@@ -153,7 +155,7 @@ void FetchThread::content_fetched()
 	{
 		if(awa->status() == AsyncWebAccess::Status::GotData)
 		{
-			QByteArray website = awa->data();
+			const QByteArray website = awa->data();
 			m->addresses = m->acf->parse_addresses(website);
 		}
 	}
@@ -191,8 +193,8 @@ bool FetchThread::fetch_next_cover()
 		return success;
 	}
 
-	QString address = m->addresses.takeFirst();
-	AsyncWebAccess* awa = new AsyncWebAccess(this);
+	const QString address = m->addresses.takeFirst();
+	auto* awa = new AsyncWebAccess(this);
 	awa->set_behavior(AsyncWebAccess::Behavior::AsBrowser);
 
 	if(m->n_covers == 1) {
@@ -214,33 +216,7 @@ bool FetchThread::fetch_next_cover()
 void FetchThread::stop()
 {
 	m->may_run = false;
-
 	emit_finished(false);
-}
-
-QString FetchThread::url(int idx) const
-{
-	if(idx >= 0 && idx < m->found_urls.size())
-	{
-		return m->found_urls[idx];
-	}
-
-	return QString();
-}
-
-QPixmap FetchThread::pixmap(int idx) const
-{
-	if(idx >= 0 && idx < m->pixmaps.size())
-	{
-		return m->pixmaps[idx];
-	}
-
-	return QPixmap();
-}
-
-int FetchThread::found_images() const
-{
-	return m->pixmaps.size();
 }
 
 
@@ -248,16 +224,16 @@ void FetchThread::emit_finished(bool success)
 {
 	if(!m->finished)
 	{
-		emit sig_finished(success);
 		m->finished = true;
+		emit sig_finished(success);
 	}
 }
 
 void FetchThread::single_image_fetched()
 {
 	auto* awa = static_cast<AsyncWebAccess*>(sender());
-	AsyncWebAccess::Status status = awa->status();
-	QImage image = awa->image();
+	const AsyncWebAccess::Status status = awa->status();
+	const QImage image = awa->image();
 
 	m->active_connections.removeAll(awa);
 	awa->deleteLater();
@@ -268,11 +244,11 @@ void FetchThread::single_image_fetched()
 
 	if(status == AsyncWebAccess::Status::GotData)
 	{
-		QPixmap pm = QPixmap::fromImage(image);
+		const QPixmap pm = QPixmap::fromImage(image);
 
 		if(!pm.isNull())
 		{
-			sp_log(Log::Debug, this) << "Found cover in " << m->acf->identifier() << " for " << m->cl.identifer();
+			sp_log(Log::Debug, this) << "Found cover in " << m->acf->identifier() << " for " << m->id;
 
 			m->pixmaps << pm;
 			m->found_urls << awa->url();
@@ -303,7 +279,7 @@ void FetchThread::multi_image_fetched()
 
 	if(awa->status() == AsyncWebAccess::Status::GotData)
 	{
-		QPixmap pm = QPixmap::fromImage(awa->image());
+		const QPixmap pm = QPixmap::fromImage(awa->image());
 		if(!pm.isNull())
 		{
 			m->pixmaps << pm;
@@ -321,3 +297,31 @@ void FetchThread::multi_image_fetched()
 
 	fetch_next_cover();
 }
+
+
+
+QString FetchThread::url(int idx) const
+{
+	if(idx >= 0 && idx < m->found_urls.size())
+	{
+		return m->found_urls[idx];
+	}
+
+	return QString();
+}
+
+QPixmap FetchThread::pixmap(int idx) const
+{
+	if(idx >= 0 && idx < m->pixmaps.size())
+	{
+		return m->pixmaps[idx];
+	}
+
+	return QPixmap();
+}
+
+int FetchThread::found_images() const
+{
+	return m->pixmaps.size();
+}
+

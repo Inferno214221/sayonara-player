@@ -118,6 +118,18 @@ bool DB::Covers::insert_cover(const QString& hash, const QPixmap& pm)
 	return (!q.has_error());
 }
 
+bool DB::Covers::remove_cover(const QString& hash)
+{
+	DB::Query q = run_query
+	(
+		"DELETE from covers WHERE hash=:hash;",
+		{{":hash", hash}},
+		"Cannot delete cover " + hash
+	);
+
+	return (!q.has_error());
+}
+
 Util::Set<QString> DB::Covers::get_all_hashes()
 {
 	Query q = run_query("SELECT hash FROM covers;", "Cannot fetch all hashes");

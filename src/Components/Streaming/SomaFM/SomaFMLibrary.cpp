@@ -250,8 +250,8 @@ void SomaFM::Library::sort_stations(QList<SomaFM::Station>& stations)
 
 void SomaFM::Library::prepare_metadata_for_playlist(MetaDataList& v_md, const SomaFM::Station& station)
 {
-	Cover::Location cl = station.cover_location();
-	QList<Cover::Fetcher::Url> search_urls = cl.search_urls(true);
+	const Cover::Location cl = station.cover_location();
+	const QList<Cover::Fetcher::Url> search_urls = cl.search_urls();
 
 	QStringList cover_urls;
 	for(auto url : search_urls)
@@ -263,7 +263,7 @@ void SomaFM::Library::prepare_metadata_for_playlist(MetaDataList& v_md, const So
 	{
 		md.set_cover_download_urls(cover_urls);
 
-		QString filepath = md.filepath();
+		const QString filepath = md.filepath();
 		md.set_radio_station(filepath);
 
 		if(filepath.toLower().contains("mp3")){
