@@ -485,6 +485,10 @@ void GUI_Player::remove_current_library()
 void GUI_Player::splitter_main_moved(int /*pos*/, int /*idx*/)
 {
 	check_control_splitter((QApplication::keyboardModifiers() & Qt::ControlModifier));
+
+	// we have to reset the minimum size otherwise the old minimum size stays active
+	// and we cannot enlarge that cover after the cover geometry has changed
+	ui->splitterControls->widget(1)->setMinimumHeight(200);
 }
 
 void GUI_Player::splitter_controls_moved(int /*pos*/, int /*idx*/)
@@ -511,6 +515,7 @@ void GUI_Player::check_control_splitter(bool force)
 				}
 
 				ui->splitterControls->setSizes(sizes);
+
 			}
 		}
 	}
