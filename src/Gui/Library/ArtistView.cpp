@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "ArtistView.h"
 #include "ItemModel.h"
 
@@ -30,6 +28,7 @@
 #include "Gui/Library/Header/ColumnIndex.h"
 #include "Gui/Library/Header/ColumnHeader.h"
 
+#include "Gui/Utils/GuiUtils.h"
 #include "Gui/Utils/Delegates/StyledItemDelegate.h"
 #include "Gui/Utils/ContextMenu/LibraryContextMenu.h"
 #include "Gui/Utils/Shortcuts/ShortcutHandler.h"
@@ -112,14 +111,16 @@ void ArtistView::init_context_menu()
 	language_changed();
 }
 
-
 ColumnHeaderList ArtistView::column_headers() const
 {
-	ColumnHeaderList columns;
+	const QFontMetrics fm(this->font());
 
-	columns << std::make_shared<ColumnHeader>(ColumnHeader::Sharp, true, SortOrder::NoSorting, SortOrder::NoSorting, 20);
-	columns << std::make_shared<ColumnHeader>(ColumnHeader::Artist, false, SortOrder::ArtistNameAsc, SortOrder::ArtistNameDesc, 160, true);
-	columns << std::make_shared<ColumnHeader>(ColumnHeader::NumTracks, true, SortOrder::ArtistTrackcountAsc, SortOrder::ArtistTrackcountDesc, 80);
+	ColumnHeaderList columns
+	{
+		std::make_shared<ColumnHeader>(ColumnHeader::Sharp, true, SortOrder::NoSorting, SortOrder::NoSorting, 2),
+		std::make_shared<ColumnHeader>(ColumnHeader::Artist, false, SortOrder::ArtistNameAsc, SortOrder::ArtistNameDesc, 160, true),
+		std::make_shared<ColumnHeader>(ColumnHeader::NumTracks, true, SortOrder::ArtistTrackcountAsc, SortOrder::ArtistTrackcountDesc, Gui::Util::text_width(fm, "M 8888"))
+	};
 
 	return check_vector_size(columns);
 }

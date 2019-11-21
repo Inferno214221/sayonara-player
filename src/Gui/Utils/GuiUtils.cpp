@@ -292,3 +292,12 @@ void Util::place_in_screen_center(QWidget* widget, float rel_size_x, float rel_s
 
 	widget->setGeometry(x_abs, y_abs, w_abs, h_abs);
 }
+
+int Util::text_width(const QFontMetrics& fm, const QString& text)
+{
+#if QT_VERSION_MAJOR >= 5 && QT_VERSION_MINOR >= 11
+	return fm.horizontalAdvance(text);
+#else
+	return fm.width(text);
+#endif
+}

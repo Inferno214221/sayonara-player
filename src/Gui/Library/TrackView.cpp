@@ -24,6 +24,7 @@
 #include "Gui/Library/RatingDelegate.h"
 #include "Gui/Library/Header/ColumnHeader.h"
 #include "Gui/Library/Header/ColumnIndex.h"
+#include "Gui/Utils/GuiUtils.h"
 
 #include "Components/Library/AbstractLibrary.h"
 
@@ -69,26 +70,24 @@ void TrackView::init_view(AbstractLibrary* library)
 	connect(library, &AbstractLibrary::sig_all_tracks_loaded, this, &TrackView::fill);
 }
 
-
 ColumnHeaderList TrackView::column_headers() const
 {
-	ColumnHeaderList columns;
+	const QFontMetrics fm(this->font());
 
-	QFontMetrics fm(this->font());
-
-	columns << std::make_shared<ColumnHeader>(ColumnHeader::Sharp, true, SortOrder::TrackNumAsc, SortOrder::TrackNumDesc, fm.width("8888"));
-	columns << std::make_shared<ColumnHeader>(ColumnHeader::Title, false, SortOrder::TrackTitleAsc, SortOrder::TrackTitleDesc, 200, true);
-	columns << std::make_shared<ColumnHeader>(ColumnHeader::Artist, true, SortOrder::TrackArtistAsc, SortOrder::TrackArtistDesc, 200, true);
-	columns << std::make_shared<ColumnHeader>(ColumnHeader::Album, true, SortOrder::TrackAlbumAsc, SortOrder::TrackAlbumDesc, 200, true);
-	columns << std::make_shared<ColumnHeader>(ColumnHeader::Discnumber, true, SortOrder::TrackDiscnumberAsc, SortOrder::TrackDiscnumberDesc, fm.width(Lang::get(Lang::Disc) + " 8888") );
-	columns << std::make_shared<ColumnHeader>(ColumnHeader::Year, true, SortOrder::TrackYearAsc, SortOrder::TrackYearDesc, fm.width("88888"));
-	columns << std::make_shared<ColumnHeader>(ColumnHeader::DurationShort, true, SortOrder::TrackLenghtAsc, SortOrder::TrackLengthDesc, fm.width("M888:88"));
-	columns << std::make_shared<ColumnHeader>(ColumnHeader::Bitrate, true, SortOrder::TrackBitrateAsc, SortOrder::TrackBitrateDesc, fm.width("M8888 kBit/s"));
-	columns << std::make_shared<ColumnHeader>(ColumnHeader::Filesize, true, SortOrder::TrackSizeAsc, SortOrder::TrackSizeDesc, fm.width("M888.88MB"));
-	columns << std::make_shared<ColumnHeader>(ColumnHeader::Filetype, true, SortOrder::TrackFiletypeAsc, SortOrder::TrackFiletypeDesc, fm.width("MFLAC"));
-	columns << std::make_shared<ColumnHeader>(ColumnHeader::Rating, true, SortOrder::TrackRatingAsc, SortOrder::TrackRatingDesc, 85);
-
-	return columns;
+	return ColumnHeaderList
+	{
+		std::make_shared<ColumnHeader>(ColumnHeader::Sharp, true, SortOrder::TrackNumAsc, SortOrder::TrackNumDesc, Gui::Util::text_width(fm, "M888")),
+		std::make_shared<ColumnHeader>(ColumnHeader::Title, false, SortOrder::TrackTitleAsc, SortOrder::TrackTitleDesc, 200, true),
+		std::make_shared<ColumnHeader>(ColumnHeader::Artist, true, SortOrder::TrackArtistAsc, SortOrder::TrackArtistDesc, 200, true),
+		std::make_shared<ColumnHeader>(ColumnHeader::Album, true, SortOrder::TrackAlbumAsc, SortOrder::TrackAlbumDesc, 200, true),
+		std::make_shared<ColumnHeader>(ColumnHeader::Discnumber, true, SortOrder::TrackDiscnumberAsc, SortOrder::TrackDiscnumberDesc, Gui::Util::text_width(fm, Lang::get(Lang::Disc) + " M888") ),
+		std::make_shared<ColumnHeader>(ColumnHeader::Year, true, SortOrder::TrackYearAsc, SortOrder::TrackYearDesc, Gui::Util::text_width(fm, "M8888")),
+		std::make_shared<ColumnHeader>(ColumnHeader::DurationShort, true, SortOrder::TrackLenghtAsc, SortOrder::TrackLengthDesc, Gui::Util::text_width(fm, "8d 88h 88s")),
+		std::make_shared<ColumnHeader>(ColumnHeader::Bitrate, true, SortOrder::TrackBitrateAsc, SortOrder::TrackBitrateDesc, Gui::Util::text_width(fm, "M8888 kBit/s")),
+		std::make_shared<ColumnHeader>(ColumnHeader::Filesize, true, SortOrder::TrackSizeAsc, SortOrder::TrackSizeDesc, Gui::Util::text_width(fm, "M888.88 MB")),
+		std::make_shared<ColumnHeader>(ColumnHeader::Filetype, true, SortOrder::TrackFiletypeAsc, SortOrder::TrackFiletypeDesc, Gui::Util::text_width(fm, "MFLAC")),
+		std::make_shared<ColumnHeader>(ColumnHeader::Rating, true, SortOrder::TrackRatingAsc, SortOrder::TrackRatingDesc, 85)
+	};
 }
 
 QByteArray TrackView::column_header_state() const

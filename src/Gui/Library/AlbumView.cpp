@@ -26,6 +26,7 @@
 #include "Gui/Library/Utils/DiscPopupMenu.h"
 #include "Gui/Library/Header/ColumnIndex.h"
 #include "Gui/Library/Header/ColumnHeader.h"
+#include "Gui/Utils/GuiUtils.h"
 #include "Gui/Utils/ContextMenu/LibraryContextMenu.h"
 
 #include "Components/Tagging/UserTaggingOperations.h"
@@ -79,18 +80,20 @@ AbstractLibrary* AlbumView::library() const
 	return m->library;
 }
 
+
 ColumnHeaderList AlbumView::column_headers() const
 {
-	ColumnHeaderList columns;
+	const QFontMetrics fm(this->font());
 
-	columns << std::make_shared<ColumnHeader>(ColumnHeader::Sharp, true, SortOrder::NoSorting, SortOrder::NoSorting, 20);
-	columns << std::make_shared<ColumnHeader>(ColumnHeader::Album, false, SortOrder::AlbumNameAsc, SortOrder::AlbumNameDesc, 160, true);
-	columns << std::make_shared<ColumnHeader>(ColumnHeader::Duration, true, SortOrder::AlbumDurationAsc, SortOrder::AlbumDurationDesc, 90);
-	columns << std::make_shared<ColumnHeader>(ColumnHeader::NumTracks, true, SortOrder::AlbumTracksAsc, SortOrder::AlbumTracksDesc, 80);
-	columns << std::make_shared<ColumnHeader>(ColumnHeader::Year, true, SortOrder::AlbumYearAsc, SortOrder::AlbumYearDesc, 50);
-	columns << std::make_shared<ColumnHeader>(ColumnHeader::Rating, true, SortOrder::AlbumRatingAsc, SortOrder::AlbumRatingDesc, 85);
-
-	return columns;
+	return ColumnHeaderList
+	{
+		std::make_shared<ColumnHeader>(ColumnHeader::Sharp, true, SortOrder::NoSorting, SortOrder::NoSorting, Gui::Util::text_width(fm, "MM")),
+		std::make_shared<ColumnHeader>(ColumnHeader::Album, false, SortOrder::AlbumNameAsc, SortOrder::AlbumNameDesc, 160, true),
+		std::make_shared<ColumnHeader>(ColumnHeader::Duration, true, SortOrder::AlbumDurationAsc, SortOrder::AlbumDurationDesc, Gui::Util::text_width(fm, "Duration")),
+		std::make_shared<ColumnHeader>(ColumnHeader::NumTracks, true, SortOrder::AlbumTracksAsc, SortOrder::AlbumTracksDesc, Gui::Util::text_width(fm, "num tracks")),
+		std::make_shared<ColumnHeader>(ColumnHeader::Year, true, SortOrder::AlbumYearAsc, SortOrder::AlbumYearDesc, Gui::Util::text_width(fm, "M 8888")),
+		std::make_shared<ColumnHeader>(ColumnHeader::Rating, true, SortOrder::AlbumRatingAsc, SortOrder::AlbumRatingDesc, 85)
+	};
 }
 
 QByteArray AlbumView::column_header_state() const

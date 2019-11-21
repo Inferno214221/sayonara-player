@@ -145,7 +145,7 @@ QVariant AlbumModel::data(const QModelIndex& index, int role) const
 		return alignment;
 	}
 
-	else if(role == Qt::TextColorRole)
+	else if(role == Qt::ForegroundRole)
 	{
 		if(col == ColumnIndex::Album::MultiDisc)
 		{

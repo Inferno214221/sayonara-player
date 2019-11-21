@@ -35,7 +35,6 @@
 class QAction;
 namespace Library
 {
-
 	/**
 	 * @brief The ColumnHeader class
 	 * @ingroup GuiLibrary
@@ -64,7 +63,7 @@ namespace Library
 			};
 
 		public:
-			ColumnHeader(HeaderType type, bool switchable, SortOrder sort_asc, SortOrder sort_desc, int preferred_size, bool stretchable=false);
+			ColumnHeader(HeaderType type, bool switchable, SortOrder sort_asc, SortOrder sort_desc, int preferred_width, bool stretchable=false);
 			virtual ~ColumnHeader();
 
 			bool stretchable() const;

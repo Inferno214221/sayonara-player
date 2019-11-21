@@ -26,6 +26,7 @@
 
 class QWidget;
 class QPixmap;
+class QFontMetrics;
 class QImage;
 class QString;
 class QIcon;
@@ -112,6 +113,8 @@ namespace Gui
 		 * @param rel_size_y a percentage value between 0 and 1 regarding height of screen
 		 */
 		void place_in_screen_center(QWidget* widget, float rel_size_x, float rel_size_y);
+
+		int text_width(const QFontMetrics& fm, const QString& text);
 	}
 }
 
