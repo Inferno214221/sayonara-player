@@ -277,7 +277,7 @@ void AlbumCoverFetchThread::done(const AlbumCoverFetchThread::Hash& hash)
 
 AlbumCoverFetchThread::Hash AlbumCoverFetchThread::get_hash(const Album& album)
 {
-	return album.name() + "-" + QString::number(album.id);
+	return album.name() + "-" + QString::number(album.id());
 }
 
 void AlbumCoverFetchThread::pause()

@@ -27,86 +27,140 @@
 
 struct Album::Private
 {
+	AlbumId id;
+	Seconds duration_sec;
+	TrackNum songcount;
+	Year year;
+	Rating rating;
+	bool is_sampler;
+	QList<Disc> discnumbers;
+
 	std::list<HashValue> artist_idxs;
 	std::list<HashValue> album_artist_idxs;
 	QStringList			 path_hint;
 	HashValue album_idx;
 
-	Private() {}
-	~Private() {}
+	Private() :
+		id(-1),
+		duration_sec(0),
+		songcount(0),
+		year(0),
+		rating(Rating::Zero),
+		is_sampler(false)
+    {}
 
-	Private(const Private& other) :
-		CASSIGN(artist_idxs),
-		CASSIGN(album_artist_idxs),
-		CASSIGN(path_hint),
-		CASSIGN(album_idx)
-	{}
+	~Private() = default;
 
-	Private(Private&& other) noexcept :
-		CMOVE(artist_idxs),
-		CMOVE(album_artist_idxs),
-		CMOVE(path_hint),
-		CMOVE(album_idx)
-	{}
+	Private(const Private& other) = default;
+	Private(Private&& other) noexcept = default;
+	Private& operator=(const Private& other) = default;
+	Private& operator=(Private&& other) = default;
 
-	Private& operator=(const Private& other)
+	bool operator==(const Private& other) const
 	{
-		ASSIGN(artist_idxs);
-		ASSIGN(album_artist_idxs);
-		ASSIGN(path_hint);
-		ASSIGN(album_idx);
-
-		return *this;
-	}
-
-	Private& operator=(Private&& other) noexcept
-	{
-		MOVE(artist_idxs);
-		MOVE(album_artist_idxs);
-		MOVE(path_hint);
-		MOVE(album_idx);
-
-		return *this;
+		return
+		(
+			CMP(id) &&
+			CMP(duration_sec) &&
+			CMP(songcount) &&
+			CMP(year) &&
+			CMP(rating) &&
+			CMP(is_sampler) &&
+			CMP(discnumbers) &&
+			CMP(artist_idxs) &&
+			CMP(album_artist_idxs) &&
+			CMP(path_hint) &&
+			CMP(album_idx)
+		);
 	}
 };
 
+AlbumId Album::id() const
+{
+    return m->id;
+}
+
+void Album::set_id(const AlbumId& id)
+{
+    m->id = id;
+}
+
+Seconds Album::duration_sec() const
+{
+    return m->duration_sec;
+}
+
+void Album::set_duration_sec(const Seconds& sec)
+{
+    m->duration_sec = sec;
+}
+
+TrackNum Album::songcount() const
+{
+    return m->songcount;
+}
+
+void Album::set_songcount(const TrackNum& songcount)
+{
+    m->songcount = songcount;
+}
+
+Year Album::year() const
+{
+    return m->year;
+}
+
+void Album::set_year(const Year& year)
+{
+    m->year = year;
+}
+
+Disc Album::disccount() const
+{
+	QList<Disc> discs = m->discnumbers;
+	discs.erase(std::unique(discs.begin(), discs.end()));
+	return Disc(discs.count());
+}
+
+Rating Album::rating() const
+{
+    return m->rating;
+}
+
+void Album::set_rating(const Rating& rating)
+{
+    m->rating = rating;
+}
+
+bool Album::is_sampler() const
+{
+    return (m->artist_idxs.size() > 1);
+}
+
+QList<Disc> Album::discnumbers() const
+{
+    return m->discnumbers;
+}
+
+void Album::set_discnumbers(const QList<Disc>& discnumbers)
+{
+    m->discnumbers = discnumbers;
+}
+
 Album::Album() :
-	LibraryItem(),
-	id(-1),
-	length_sec(0),
-	num_songs(0),
-	year(0),
-	n_discs(1),
-	rating(Rating::Zero),
-	is_sampler(false)
+    LibraryItem()
 {
 	m = Pimpl::make<Private>();
 }
 
 Album::Album(const Album& other) :
-	LibraryItem(other),
-	CASSIGN(discnumbers),
-	CASSIGN(id),
-	CASSIGN(length_sec),
-	CASSIGN(num_songs),
-	CASSIGN(year),
-	CASSIGN(n_discs),
-	CASSIGN(rating),
-	CASSIGN(is_sampler)
+	LibraryItem(other)
 {
 	m = Pimpl::make<Private>(*(other.m));
 }
 
 Album::Album(Album&& other) noexcept  :
-	LibraryItem(std::move(other)),
-	CMOVE(discnumbers),
-	CMOVE(id),
-	CMOVE(length_sec),
-	CMOVE(num_songs),
-	CMOVE(year),
-	CMOVE(n_discs),
-	CMOVE(rating),
-	CMOVE(is_sampler)
+	LibraryItem(std::move(other))
 {
 	m = Pimpl::make<Private>(std::move(*(other.m)));
 }
@@ -114,16 +168,6 @@ Album::Album(Album&& other) noexcept  :
 Album& Album::operator=(const Album& other)
 {
 	LibraryItem::operator =(other);
-
-	ASSIGN(discnumbers);
-	ASSIGN(id);
-	ASSIGN(length_sec);
-	ASSIGN(num_songs);
-	ASSIGN(year);
-	ASSIGN(n_discs);
-	ASSIGN(rating);
-	ASSIGN(is_sampler);
-
 	*m = *(other.m);
 
 	return *this;
@@ -132,24 +176,17 @@ Album& Album::operator=(const Album& other)
 Album& Album::operator=(Album&& other) noexcept
 {
 	LibraryItem::operator = (std::move(other));
-
-	MOVE(discnumbers);
-	MOVE(id);
-	MOVE(length_sec);
-	MOVE(num_songs);
-	MOVE(year);
-	MOVE(n_discs);
-	MOVE(rating);
-	MOVE(is_sampler);
-
 	*m = std::move(*(other.m));
 
 	return *this;
 }
 
+bool Album::operator==(const Album& other) const
+{
+	return (*m == *(other.m));
+}
 
-Album::~Album() {}
-
+Album::~Album() = default;
 
 QString Album::name() const
 {
@@ -255,7 +292,7 @@ QString Album::to_string() const
 {
 	QString str("Album: ");
 	str += name() + " by " + artists().join(",");
-	str += QString::number(num_songs) + " Songs, " + QString::number(length_sec) + "sec";
+	str += QString::number(m->songcount) + " Songs, " + QString::number(m->duration_sec) + "sec";
 
 	return str;
 }
@@ -264,7 +301,7 @@ QString Album::to_string() const
 bool AlbumList::contains(AlbumId album_id) const
 {
 	for(auto it=this->begin(); it!=this->end(); it++){
-		if(it->id == album_id){
+		if(it->id() == album_id){
 			return true;
 		}
 	}
@@ -306,7 +343,7 @@ AlbumList& AlbumList::append_unique(const AlbumList& other)
 {
 	for(auto it = other.begin(); it != other.end(); it++)
 	{
-		if(!this->contains(it->id)){
+		if(!this->contains(it->id())){
 			this->push_back(*it);
 		}
 	}

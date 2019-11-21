@@ -185,7 +185,7 @@ bool Connector::updateAlbumCissearchFix()
 		Query q(this);
 		q.prepare(str);
 		q.bindValue(":cissearch",	Util::cvt_not_null(album.name().toLower()));
-		q.bindValue(":id",			album.id);
+		q.bindValue(":id",			album.id());
 
 		if(!q.exec()){
 			q.show_error("Cannot update album cissearch");

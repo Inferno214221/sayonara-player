@@ -232,7 +232,7 @@ void MetaDataInfo::calc_cover_location(const MetaDataList& lst)
 	{
 		Album album;
 
-		album.id = album_ids().first();
+		album.set_id(album_ids().first());
 		album.set_name(m->albums.first());
 		album.set_artists(m->artists.toList());
 		album.set_album_artists(m->album_artists.toList());

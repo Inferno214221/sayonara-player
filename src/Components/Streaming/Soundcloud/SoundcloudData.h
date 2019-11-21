@@ -22,7 +22,7 @@
 #define SOUNDCLOUDDATA_H
 
 #include "Database/Base.h"
-#include "Database/LibraryDatabase.h"
+
 #include <QObject>
 
 /* this is the database interface
@@ -34,50 +34,21 @@ class MetaDataList;
 class Artist;
 class AlbumList;
 
-
 namespace SC
 {
-	class SearchInformationList;
-
 	class Database :
-			public DB::Base,
-			public DB::LibraryDatabase
+			public DB::Base
 	{
-		Q_OBJECT
+		public:
+			Database();
+			~Database() override;
 
-	public:
-		Database();
-		~Database() override;
+			// todo: assure to be called
+			bool apply_fixes() override;
 
-		bool db_fetch_tracks(::DB::Query& q, MetaDataList& result) const override;
-		bool db_fetch_albums(::DB::Query& q, AlbumList& result) const override;
-		bool db_fetch_artists(::DB::Query& q, ArtistList& result) const override;
-
-		ArtistId updateArtist(const Artist& artist);
-		ArtistId insertArtistIntoDatabase (const Artist& artist) override;
-		ArtistId insertArtistIntoDatabase (const QString& artist) override;
-
-		AlbumId updateAlbum(const Album& album);
-		AlbumId insertAlbumIntoDatabase (const Album& album) override;
-		AlbumId insertAlbumIntoDatabase (const QString& album) override;
-
-		bool updateTrack(const MetaData& md) override;
-		bool store_metadata(const MetaDataList& v_md) override;
-		bool insertTrackIntoDatabase(const MetaData& md, int artist_id, int album_id, int album_artist_id) override;
-		bool insertTrackIntoDatabase(const MetaData& md, int artist_id, int album_id) override;
-
-		// todo: assure to be called
-		bool apply_fixes() override;
-
-		QString load_setting(const QString& key);
-		bool save_setting(const QString& key, const QString& value);
-		bool insert_setting(const QString& key, const QString& value);
-
-		bool getSearchInformation(SC::SearchInformationList& list);
-
-		QString fetch_query_albums(bool also_empty=false) const override;
-		QString fetch_query_artists(bool also_empty=false) const override;
-		QString fetch_query_tracks() const override;
+			QString load_setting(const QString& key);
+			bool save_setting(const QString& key, const QString& value);
+			bool insert_setting(const QString& key, const QString& value);
 	};
 }
 

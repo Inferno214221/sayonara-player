@@ -369,7 +369,7 @@ int CoverModel::id_by_index(int idx) const
 		return -1;
 	}
 
-	return albums[idx].id;
+	return albums[idx].id();
 }
 
 Location CoverModel::cover(const IndexSet& indexes) const

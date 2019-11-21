@@ -164,7 +164,7 @@ void AbstractLibrary::refresh_current_view()
 
 	for(int i=0; i<m->albums.count(); i++)
 	{
-		if(sel_albums.contains(m->albums[i].id)) {
+		if(sel_albums.contains(m->albums[i].id())) {
 			sel_albums_idx.insert(i);
 		}
 	}
@@ -257,16 +257,16 @@ void AbstractLibrary::albums_changed()
 		int i=0;
 		for(auto it=m->albums.begin(); it != m->albums.end(); it++)
 		{
-			id_row_map[it->id] = i; i++;
+			id_row_map[it->id()] = i; i++;
 		}
 	}
 
 	int changed_idx=0;
 	for(auto it=old_albums.begin(); it != old_albums.end(); it++, changed_idx++)
 	{
-		if(id_row_map.contains(it->id))
+		if(id_row_map.contains(it->id()))
 		{
-			int row = id_row_map[it->id];
+			int row = id_row_map[it->id()];
 			m->albums[row] = new_albums[changed_idx];
 			emit sig_album_changed(row);
 		}
@@ -602,7 +602,7 @@ void AbstractLibrary::change_album_selection(const IndexSet& indexes, bool ignor
 		}
 
 		const Album& album = m->albums[idx];
-		selected_albums.insert(album.id);
+		selected_albums.insert(album.id());
 	}
 
 	m->tracks.clear();

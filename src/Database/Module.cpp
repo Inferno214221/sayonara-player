@@ -118,7 +118,7 @@ DB::Query Module::run_query(const QString& query, const QMap<QString, QVariant>&
 
 	if(!q.exec())
 	{
-		sp_log(Log::Error, this) << "Query error fo connection " << m->thread_connection_name;
+		sp_log(Log::Error, this) << "Query error to connection " << m->thread_connection_name;
 		q.show_error(error_text);
 	}
 
@@ -145,7 +145,7 @@ DB::Query Module::insert(const QString& tablename, const QMap<QString, QVariant>
 
 	if(!q.exec())
 	{
-		sp_log(Log::Error, this) << "Query error fo connection " << m->thread_connection_name;
+		sp_log(Log::Error, this) << "Query error to connection " << m->thread_connection_name;
 		q.show_error(error_message);
 	}
 
@@ -181,7 +181,7 @@ DB::Query Module::update(const QString& tablename, const QMap<QString, QVariant>
 
 	if(!q.exec() || q.numRowsAffected() == 0)
 	{
-		sp_log(Log::Error, this) << "Query error fo connection " << m->thread_connection_name;
+		sp_log(Log::Error, this) << "Query error to connection " << m->thread_connection_name;
 		q.set_error(true);
 		q.show_error(error_message);
 	}

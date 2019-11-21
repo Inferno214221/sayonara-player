@@ -42,27 +42,18 @@ class Album :
 	PIMPL(Album)
 
 public:
-	QList<Disc>	discnumbers;
-
-	AlbumId		id;
-	Seconds		length_sec;
-	uint16_t	num_songs;
-	uint16_t	year;
-
-	Disc		n_discs;
-	Rating		rating;
-	bool		is_sampler;
-
-
-public:
 	Album();
 	Album(const Album& other);
 	Album(Album&& other) noexcept ;
 
 	Album& operator=(const Album& other);
 	Album& operator=(Album&& other) noexcept;
+	bool operator==(const Album& other) const;
 
 	~Album();
+
+	AlbumId id() const;
+	void set_id(const AlbumId& id);
 
 	QString name() const;
 	void set_name(const QString& name);
@@ -75,6 +66,25 @@ public:
 
 	QStringList path_hint() const;
 	void set_path_hint(const QStringList& paths);
+
+	Seconds duration_sec() const;
+	void set_duration_sec(const Seconds& sec);
+
+	TrackNum songcount() const;
+	void set_songcount(const TrackNum& songs);
+
+	Year year() const;
+	void set_year(const Year& year);
+
+	Disc disccount() const;
+
+	Rating rating() const;
+	void set_rating(const Rating& rating);
+
+	bool is_sampler() const;
+
+	QList<Disc> discnumbers() const;
+	void set_discnumbers(const QList<Disc>& discnumbers);
 
 	static QVariant toVariant(const Album& album);
 	static bool fromVariant(const QVariant& v, Album& album);

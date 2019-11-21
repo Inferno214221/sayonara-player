@@ -232,13 +232,13 @@ bool DB::LibraryDatabase::store_metadata(const MetaDataList& v_md)
 
 		{ // check album id
 			Album album = album_map[md.album()];
-			if(album.id < 0)
+			if(album.id() < 0)
 			{
-				album.id = DB::Albums::insertAlbumIntoDatabase(md.album());
+				album.set_id(DB::Albums::insertAlbumIntoDatabase(md.album()));
 				album_map[md.album()] = album;
 			}
 
-			md.set_album_id(album.id);
+			md.set_album_id(album.id());
 		}
 
 		{ // check artist id

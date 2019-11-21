@@ -204,6 +204,7 @@ public:
 		Preferences,
 		PreviousPage,
 		PreviousTrack,
+		PurchaseUrl,
 		Quit,
 		Radio,
 		RadioStation,

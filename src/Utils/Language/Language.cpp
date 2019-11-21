@@ -339,6 +339,8 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Previous page");
 		case PreviousTrack:
 			return l.tr("Previous track");
+		case PurchaseUrl:
+			return l.tr("Purchase Url");
 		case Quit:
 			return l.tr("Quit");
 		case Radio:

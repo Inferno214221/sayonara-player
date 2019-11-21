@@ -33,6 +33,7 @@ private slots:
 	void test_one_album();
 	void test_changed_metadata();
 	void test_edit();
+	void test_cover();
 	void test_commit();
 };
 
@@ -141,12 +142,14 @@ void EditorTest::test_init()
 
 	for(int i=0; i<int(tracks.size()); i++)
 	{
+		const MetaData& md = tracks[i];
+		QVERIFY(QFile::exists(md.filepath()));
+
 		QVERIFY(editor->has_cover_replacement(i) == false);
 
 		if(i < 10)
 		{
-			// file does not exist
-			QVERIFY(editor->is_cover_supported(i) == false);
+			QVERIFY(editor->is_cover_supported(i) == true);
 		}
 	}
 
@@ -265,6 +268,45 @@ void EditorTest::test_edit()
 	editor->deleteLater();
 }
 
+void EditorTest::test_cover()
+{
+	MetaDataList tracks;
+
+	auto* db = DB::Connector::instance();
+	db->library_db(0,0)->getAllTracks(tracks);
+	db->close_db();
+
+	QVERIFY(tracks.size() == 2*2*10);
+
+	Editor* editor = new Editor();
+	editor->set_metadata(tracks);
+	QVERIFY(editor->count() == tracks.count());
+	QVERIFY(editor->has_changes() == false);
+
+	QString name(":/test/logo.png");
+	QPixmap cover(name);
+	QVERIFY(cover.isNull() == false);
+
+	for(int i=0; i<tracks.count(); i++)
+	{
+		QVERIFY(editor->has_cover_replacement(i) == false);
+	}
+
+	for(int i=0; i<10; i++)
+	{
+		editor->update_cover(i, cover);
+	}
+
+	QVERIFY(editor->has_changes() == false);
+
+	for(int i=0; i<tracks.count(); i++)
+	{
+		QVERIFY(editor->has_cover_replacement(i) == (i < 10));
+	}
+
+	editor->deleteLater();
+}
+
 
 void EditorTest::test_commit()
 {
@@ -331,6 +373,6 @@ void EditorTest::test_commit()
 	}
 }
 
-QTEST_GUILESS_MAIN(EditorTest)
+QTEST_MAIN(EditorTest)
 
 #include "EditorTest.moc"

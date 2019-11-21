@@ -108,9 +108,6 @@ QStringList StreamServer::connected_clients() const
 
 bool StreamServer::listen()
 {
-	int port = GetSetting(Set::Broadcast_Port);
-	bool already_there = (m->server != nullptr);
-
 	bool mp3_available = GetSetting(SetNoDB::MP3enc_found);
 	bool active = GetSetting(Set::Broadcast_Active);
 
@@ -120,6 +117,7 @@ bool StreamServer::listen()
 		return false;
 	}
 
+	bool already_there = (m->server != nullptr);
 	if(!already_there)
 	{
 		m->server = new QTcpServer();
@@ -130,11 +128,15 @@ bool StreamServer::listen()
 		connect(m->server, &QTcpServer::destroyed, this, &StreamServer::server_destroyed);
 	}
 
+	int port = GetSetting(Set::Broadcast_Port);
 	bool success = m->server->isListening();
 	if(!success)
 	{
 		success = m->server->listen(QHostAddress::AnyIPv4, quint16(port));
-		//success = m->server->listen(QHostAddress("127.0.0.1"), quint16(port));
+		if(!success) {
+			success = m->server->listen(QHostAddress::LocalHost, quint16(port));
+		}
+
 		if(!success)
 		{
 			sp_log(Log::Warning, this) << "Cannot listen on port " << port;

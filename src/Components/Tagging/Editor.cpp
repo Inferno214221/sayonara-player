@@ -203,7 +203,7 @@ void Editor::set_metadata(const MetaDataList& v_md)
 
 bool Editor::is_cover_supported(int idx) const
 {
-	if(!Util::between(idx, m->change_info))
+	if(Util::between(idx, m->change_info))
 	{
 		const MetaData& md = m->change_info[idx].original_metadata();
 		return Tagging::Covers::is_cover_supported(md.filepath());
@@ -309,7 +309,7 @@ void Editor::apply_artists_and_albums_to_md()
 				continue;
 			}
 
-			album_map[it->name()] = it->id;
+			album_map[it->name()] = it->id();
 		}
 	}
 
@@ -441,6 +441,8 @@ void Editor::commit()
 	int progress = 0;
 	for(auto it=m->change_info.begin(); it != m->change_info.end(); it++)
 	{
+		bool has_new_cover = it->has_new_cover();
+
 		emit sig_progress( ((progress + 1) * 100) / (changed_tracks + changed_covers));
 
 		/* Normal tags changed */
@@ -500,7 +502,7 @@ void Editor::commit()
 		}
 
 		/* Covers changed */
-		if(it->has_new_cover())
+		if(has_new_cover)
 		{
 			QPixmap pm = it->cover();
 			if(pm.size().width() > 1000 || pm.size().height() > 1000)
