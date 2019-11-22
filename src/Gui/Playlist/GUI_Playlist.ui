@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>Playlist_Window</class>
  <widget class="QWidget" name="Playlist_Window">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>478</width>
+    <height>554</height>
+   </rect>
+  </property>
   <layout class="QGridLayout" name="gridLayout">
    <property name="sizeConstraint">
     <enum>QLayout::SetDefaultConstraint</enum>

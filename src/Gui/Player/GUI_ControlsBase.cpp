@@ -34,13 +34,13 @@
 
 static void set_icon(QPushButton* btn, QIcon icon)
 {
-	int w = (btn->fontMetrics().width("m") * 280) / 100;
+	int width = Gui::Util::text_width(btn->fontMetrics(), "MMn");
 
-	QSize sz(w, w);
+	QSize sz(width, width);
 	btn->setFixedSize(sz);
 
-	sz.setWidth((w * 800) / 1000);
-	sz.setHeight((w * 800) / 1000);
+	sz.setWidth((width * 800) / 1000);
+	sz.setHeight((width * 800) / 1000);
 
 	btn->setIconSize(sz);
 	btn->setIcon(icon);
@@ -93,6 +93,7 @@ void GUI_ControlsBase::init()
 		}
 	}
 
+	btn_cover()->set_alternative_search_enabled(false);
 	connect(btn_cover(), &Gui::CoverButton::sig_rejected, this, &GUI_ControlsBase::cover_click_rejected);
 
 	ListenSetting(Set::Engine_SR_Active, GUI_ControlsBase::sr_active_changed);
@@ -569,7 +570,8 @@ void GUI_ControlsBase::cover_changed(const QByteArray& data, const QString& mime
 
 void GUI_ControlsBase::cover_click_rejected()
 {
-	show_cover_edit();
+	show_info();
+	//show_cover_edit();
 }
 
 void GUI_ControlsBase::setup_connections()

@@ -468,10 +468,9 @@ QComboBox
 	padding-right: 2em;
 }
 
-
 QComboBox::drop-down
 {
-	width: 4.5ex; /* 4.5ex */
+	width: 4.5ex; 
 	max-width: 50px;
 	border-left: 1px solid #242424;
 	border-top-right-radius: 3px;

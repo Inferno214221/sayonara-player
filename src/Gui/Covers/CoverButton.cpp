@@ -91,12 +91,14 @@ struct CoverButton::Private
 	double					opacity;
 	Cover::Source			cover_source;
 	bool					silent;
+	bool					alternative_search_enabled;
 
 	Private() :
 		cover_location(Location::invalid_location()),
 		current_cover(Location::invalid_path()),
 		opacity(1.0),
-		silent(false)
+		silent(false),
+		alternative_search_enabled(true)
 	{
 		invalid_cover = QPixmap(Cover::Location::invalid_path());
 	}
@@ -146,6 +148,16 @@ int CoverButton::vertical_padding() const
 	return p;
 }
 
+void CoverButton::set_alternative_search_enabled(bool b)
+{
+	m->alternative_search_enabled = b;
+}
+
+bool CoverButton::is_alternative_search_enabled() const
+{
+	return m->alternative_search_enabled;
+}
+
 void CoverButton::trigger()
 {
 	if(m->cover_source == Cover::Source::AudioFile && !is_silent())
@@ -154,12 +166,20 @@ void CoverButton::trigger()
 		return;
 	}
 
-	GUI_AlternativeCovers* alt_cover = new GUI_AlternativeCovers(m->cover_location, m->silent, this->parentWidget());
+	if(m->alternative_search_enabled)
+	{
+		auto* alt_cover = new GUI_AlternativeCovers(m->cover_location, m->silent, this->parentWidget());
 
-	connect(alt_cover, &GUI_AlternativeCovers::sig_cover_changed, this, &CoverButton::alternative_cover_fetched);
-	connect(alt_cover, &GUI_AlternativeCovers::sig_closed, alt_cover, &GUI_AlternativeCovers::deleteLater);
+		connect(alt_cover, &GUI_AlternativeCovers::sig_cover_changed, this, &CoverButton::alternative_cover_fetched);
+		connect(alt_cover, &GUI_AlternativeCovers::sig_closed, alt_cover, &GUI_AlternativeCovers::deleteLater);
 
-	alt_cover->show();
+		alt_cover->show();
+	}
+
+	else
+	{
+		emit sig_rejected();
+	}
 }
 
 

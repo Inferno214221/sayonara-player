@@ -79,6 +79,18 @@
          <property name="spacing">
           <number>3</number>
          </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
          <item>
           <widget class="GUI_PlayerPlugin" name="plugin_widget" native="true">
            <property name="sizePolicy">
@@ -89,9 +101,6 @@
            </property>
            <property name="focusPolicy">
             <enum>Qt::ClickFocus</enum>
-           </property>
-           <property name="styleSheet">
-            <string notr="true"/>
            </property>
           </widget>
          </item>

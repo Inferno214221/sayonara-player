@@ -102,6 +102,9 @@ namespace Gui
 			QPixmap pixmap() const;
 			int vertical_padding() const;
 
+			void set_alternative_search_enabled(bool b);
+			bool is_alternative_search_enabled() const;
+
 		private:
 			using QPushButton::setIcon;
 			using QPushButton::icon;
