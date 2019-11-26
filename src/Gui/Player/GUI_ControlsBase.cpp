@@ -499,6 +499,13 @@ void GUI_ControlsBase::refresh_labels(const MetaData& md)
 
 void GUI_ControlsBase::skin_changed()
 {
+	btn_play()->setObjectName("ControlPlayButton");
+	btn_rec()->setObjectName("ControlRecButton");
+	btn_fwd()->setObjectName("ControlFwdButton");
+	btn_bwd()->setObjectName("ControlBwdButton");
+	btn_stop()->setObjectName("ControlStopButton");
+	btn_mute()->setObjectName("ControlMuteButton");
+
 	Gui::Widget::skin_changed();
 
 	using namespace Gui;

@@ -24,8 +24,10 @@
 
 #include "GUI_StreamRecorderPreferences.h"
 #include "Gui/Preferences/ui_GUI_StreamRecorderPreferences.h"
+#include "Gui/Utils/Icons.h"
 
 #include "Database/Connector.h"
+
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Message/Message.h"
@@ -128,6 +130,16 @@ void GUI_StreamRecorderPreferences::retranslate_ui()
 	ui->lab_active->setText(Lang::get(Lang::Active));
 	ui->btn_undo->setText(Lang::get(Lang::Undo));
 	ui->btn_default->setText(Lang::get(Lang::Default));
+}
+
+void GUI_StreamRecorderPreferences::skin_changed()
+{
+	if(!ui){
+		return;
+	}
+
+	ui->btn_undo->setIcon(Gui::Icons::icon(Gui::Icons::Undo));
+	ui->btn_default->setIcon(Gui::Icons::icon(Gui::Icons::Undo));
 }
 
 QString GUI_StreamRecorderPreferences::error_string() const

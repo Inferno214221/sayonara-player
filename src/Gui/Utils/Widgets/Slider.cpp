@@ -20,6 +20,7 @@
 
 #include "Slider.h"
 #include "Gui/Utils/Style.h"
+#include "Gui/Utils/GuiUtils.h"
 
 #include <QPainter>
 #include <QMouseEvent>
@@ -152,8 +153,8 @@ int Slider::get_val_from_pos(const QPoint& pos) const
 static QRect calc_rect(QSlider* slider, int value, bool is_horizontal)
 {
 	int long_side = slider->width();
-	int short_side = slider->height();
-	int rect_thickness = slider->fontMetrics().width("m") / 4;
+	int short_side = slider->height();	
+	int rect_thickness = Gui::Util::text_width(slider->fontMetrics(), "m") / 4;
 
 	if(!is_horizontal){
 		long_side = slider->height();

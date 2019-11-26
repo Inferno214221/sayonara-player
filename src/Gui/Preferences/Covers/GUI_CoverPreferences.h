@@ -33,7 +33,7 @@ class GUI_CoverPreferences :
 
 public:
 	explicit GUI_CoverPreferences(const QString& identifier);
-	virtual ~GUI_CoverPreferences();
+	~GUI_CoverPreferences() override;
 
 	bool commit() override;
 	void revert() override;
@@ -43,6 +43,7 @@ public:
 protected:
 	void init_ui() override;
 	void retranslate_ui() override;
+	void skin_changed() override;
 
 private slots:
 	void up_clicked();

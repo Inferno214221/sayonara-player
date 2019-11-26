@@ -19,7 +19,6 @@
  */
 
 #include "Gui/Preferences/ui_GUI_CoverPreferences.h"
-
 #include "GUI_CoverPreferences.h"
 
 #include "Database/Connector.h"
@@ -28,7 +27,6 @@
 #include "Components/Covers/CoverFetchManager.h"
 #include "Components/Covers/CoverChangeNotifier.h"
 #include "Components/Covers/CoverUtils.h"
-
 #include "Components/Covers/Fetcher/CoverFetcher.h"
 
 #include "Utils/Settings/Settings.h"
@@ -37,6 +35,7 @@
 #include "Utils/Utils.h"
 #include "Utils/Logger/Logger.h"
 
+#include "Gui/Utils/Icons.h"
 #include "Gui/Utils/Delegates/StyledItemDelegate.h"
 
 #include <QListWidgetItem>
@@ -209,6 +208,16 @@ void GUI_CoverPreferences::retranslate_ui()
 
 	ui->btn_up->setText(Lang::get(Lang::MoveUp));
 	ui->btn_down->setText(Lang::get(Lang::MoveDown));
+}
+
+void GUI_CoverPreferences::skin_changed()
+{
+	if(!ui){
+		return;
+	}
+
+	ui->btn_delete_files->setIcon(Gui::Icons::icon(Gui::Icons::Delete));
+	ui->btn_delete_album_covers->setIcon(Gui::Icons::icon(Gui::Icons::Clear));
 }
 
 void GUI_CoverPreferences::up_clicked()

@@ -228,7 +228,7 @@ void SearchBar::init_context_menu()
 	QList<QAction*> actions;
 	for(const Filter::Mode mode : m->modes)
 	{
-		QVariant data = QVariant((int) (mode));
+		QVariant data = QVariant(int(mode));
 		QAction* action = new QAction(Filter::get_text(mode), this);
 
 		action->setCheckable(false);
@@ -280,7 +280,6 @@ void SearchBar::keyPressEvent(QKeyEvent* e)
 
 	Parent::keyPressEvent(e);
 }
-
 
 void SearchBar::language_changed()
 {

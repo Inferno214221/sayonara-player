@@ -36,7 +36,7 @@ class GUI_PlaylistPreferences :
 
 public:
 	explicit GUI_PlaylistPreferences(const QString& identifier);
-	~GUI_PlaylistPreferences();
+	~GUI_PlaylistPreferences() override;
 
 	bool commit() override;
 	void revert() override;
@@ -46,6 +46,8 @@ public:
 protected:
 	void init_ui() override;
 	void retranslate_ui() override;
+	void skin_changed() override;
+
 	QString error_string() const override;
 
 private slots:

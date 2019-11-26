@@ -49,7 +49,7 @@ namespace Preferences
 		 * @param parent
 		 */
 		explicit Base(const QString& identifier);
-		virtual ~Base();
+		virtual ~Base() override;
 
 		/**
 		 * @brief return the unique identifier
@@ -76,6 +76,8 @@ namespace Preferences
 			set_initialized();
 
 			widget->language_changed();
+
+			skin_changed();
 		}
 
 		/**

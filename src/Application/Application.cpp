@@ -510,8 +510,7 @@ void Application::create_playlist()
 	}
 }
 
-
 void Application::skin_changed()
 {
-	QApplication::setStyleSheet(Style::current_style());
+	Style::apply_current_style(this);
 }

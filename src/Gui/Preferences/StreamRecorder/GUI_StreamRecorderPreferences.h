@@ -41,7 +41,7 @@ class TagButton : public
 
 public:
 	TagButton(const QString& tag_name, QWidget* parent);
-	~TagButton();
+	~TagButton() override;
 
 protected:
 	void language_changed() override;
@@ -57,7 +57,7 @@ class GUI_StreamRecorderPreferences :
 
 	public:
 		explicit GUI_StreamRecorderPreferences(const QString& identifier);
-		~GUI_StreamRecorderPreferences();
+		~GUI_StreamRecorderPreferences() override;
 
 		bool commit() override;
 		void revert() override;
@@ -67,6 +67,8 @@ class GUI_StreamRecorderPreferences :
 	protected:
 		void init_ui() override;
 		void retranslate_ui() override;
+		void skin_changed() override;
+
 		QString error_string() const override;
 
 	private slots:

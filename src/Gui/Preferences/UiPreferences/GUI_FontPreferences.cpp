@@ -19,6 +19,7 @@
 
 #include "GUI_FontPreferences.h"
 #include "Gui/Preferences/ui_GUI_FontPreferences.h"
+#include "Gui/Utils/Icons.h"
 
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language/Language.h"
@@ -43,7 +44,6 @@ GUI_FontPreferences::GUI_FontPreferences(QWidget* parent) :
 	Gui::Widget(parent)
 {
 	m = Pimpl::make<Private>();
-
 }
 
 GUI_FontPreferences::~GUI_FontPreferences()
@@ -255,6 +255,15 @@ void GUI_FontPreferences::language_changed()
 	ui->lab_library->setText(Lang::get(Lang::Library));
 	ui->lab_playlist->setText(Lang::get(Lang::Playlist));
 	ui->btn_default->setText(Lang::get(Lang::Default));
+}
+
+void GUI_FontPreferences::skin_changed()
+{
+	if(!ui){
+		return;
+	}
+
+	ui->btn_default->setIcon(Gui::Icons::icon(Gui::Icons::Undo));
 }
 
 void GUI_FontPreferences::showEvent(QShowEvent* e)

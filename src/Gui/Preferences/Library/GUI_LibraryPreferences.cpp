@@ -22,6 +22,7 @@
 #include "Gui/Preferences/ui_GUI_LibraryPreferences.h"
 #include "LibraryListModel.h"
 
+#include "Gui/Utils/Icons.h"
 #include "Gui/Utils/Delegates/StyledItemDelegate.h"
 #include "Gui/Utils/Library/GUI_EditLibrary.h"
 
@@ -120,6 +121,17 @@ void GUI_LibraryPreferences::retranslate_ui()
 	ui->btn_delete->setText(Lang::get(Lang::Remove));
 	ui->btn_down->setText(Lang::get(Lang::MoveDown));
 	ui->btn_up->setText(Lang::get(Lang::MoveUp));
+}
+
+void GUI_LibraryPreferences::skin_changed()
+{
+	if(!ui){
+		return;
+	}
+
+	ui->btn_new->setIcon(Gui::Icons::icon(Gui::Icons::New));
+	ui->btn_edit->setIcon(Gui::Icons::icon(Gui::Icons::Edit));
+	ui->btn_delete->setIcon(Gui::Icons::icon(Gui::Icons::Remove));
 }
 
 void GUI_LibraryPreferences::showEvent(QShowEvent* e)

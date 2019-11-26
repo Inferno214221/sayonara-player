@@ -33,7 +33,7 @@ class GUI_BroadcastPreferences :
 
 public:
 	explicit GUI_BroadcastPreferences(const QString& identifier);
-	virtual ~GUI_BroadcastPreferences();
+	~GUI_BroadcastPreferences() override;
 
 	bool commit() override;
 	void revert() override;

@@ -33,9 +33,12 @@
 #include "Utils/FileUtils.h"
 
 #include <QApplication>
+#include <QColor>
 #include <QFont>
 #include <QFontMetrics>
+#include <QPalette>
 #include <QStyle>
+#include <QToolTip>
 
 #define NEWLINE "\n";
 
@@ -149,4 +152,20 @@ void Style::set_dark(bool dark)
 {
 	SetSetting(Set::Player_Style, dark ? 1 : 0);
 	Set::shout<SetNoDB::Player_MetaStyle>();
+}
+
+void Style::apply_current_style(QApplication* app)
+{
+	app->setStyleSheet(current_style());
+
+	QPalette palette;
+
+	if(Style::is_dark())
+	{
+		palette = QToolTip::palette();
+		palette.setBrush(QPalette::ColorGroup::Inactive, QPalette::ColorRole::ToolTipBase, QColor(66, 78, 114));
+		palette.setColor(QPalette::ColorGroup::Inactive, QPalette::ColorRole::ToolTipText, QColor(0, 0, 0));
+	}
+
+	QToolTip::setPalette(palette);
 }

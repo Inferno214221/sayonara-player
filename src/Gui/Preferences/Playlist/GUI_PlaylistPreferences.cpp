@@ -23,6 +23,7 @@
 
 #include "GUI_PlaylistPreferences.h"
 #include "Gui/Preferences/ui_GUI_PlaylistPreferences.h"
+#include "Gui/Utils/Icons.h"
 
 #include "Utils/Algorithm.h"
 #include "Utils/Settings/Settings.h"
@@ -194,11 +195,20 @@ QString GUI_PlaylistPreferences::action_name() const
 void GUI_PlaylistPreferences::retranslate_ui()
 {
 	ui->retranslateUi(this);
+
 	ui->lab_album->setText(Lang::get(Lang::Album));
 	ui->lab_artist->setText(Lang::get(Lang::Artist));
 	ui->lab_title->setText(Lang::get(Lang::Title));
 	ui->lab_trackno->setText(Lang::get(Lang::TrackNo));
 	ui->btn_default->setText(Lang::get(Lang::Default));
+}
+
+void GUI_PlaylistPreferences::skin_changed()
+{
+	if(ui)
+	{
+		ui->btn_default->setIcon(Gui::Icons::icon(Gui::Icons::Undo));
+	}
 }
 
 QString GUI_PlaylistPreferences::error_string() const

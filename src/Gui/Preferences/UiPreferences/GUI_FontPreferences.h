@@ -37,7 +37,7 @@ class GUI_FontPreferences :
 
 public:
 	explicit GUI_FontPreferences(QWidget* parent=nullptr);
-	virtual ~GUI_FontPreferences();
+	~GUI_FontPreferences() override;
 
 	bool commit();
 	void revert();
@@ -46,6 +46,7 @@ public:
 
 protected:
 	void language_changed() override;
+	void skin_changed() override;
 	void showEvent(QShowEvent* e) override;
 
 protected slots:

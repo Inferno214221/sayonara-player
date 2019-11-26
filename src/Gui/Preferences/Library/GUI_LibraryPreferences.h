@@ -35,7 +35,7 @@ class GUI_LibraryPreferences :
 
 public:
 	explicit GUI_LibraryPreferences(const QString& identifier);
-	virtual ~GUI_LibraryPreferences();
+	~GUI_LibraryPreferences() override;
 
 	bool commit() override;
 	void revert() override;
@@ -45,6 +45,8 @@ public:
 protected:
 	void init_ui() override;
 	void retranslate_ui() override;
+	void skin_changed() override;
+
 	void showEvent(QShowEvent* e) override;
 	QString error_string() const override;
 

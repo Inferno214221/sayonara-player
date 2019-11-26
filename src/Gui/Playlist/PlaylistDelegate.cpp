@@ -26,6 +26,7 @@
 
 #include "Gui/Utils/Widgets/RatingLabel.h"
 #include "Gui/Utils/Style.h"
+#include "Gui/Utils/GuiUtils.h"
 
 #include <QPainter>
 #include <QFontMetrics>
@@ -99,7 +100,7 @@ void Delegate::paint(QPainter *painter,	const QStyleOptionViewItem &option, cons
 	{ // give that pen some alpha value, so it appears lighter
 		if(md.is_disabled())
 		{
-			QColor col_text = palette.color(QPalette::Disabled, QPalette::Foreground);
+			QColor col_text = palette.color(QPalette::Disabled, QPalette::WindowText);
 			if(Style::is_dark())
 			{
 				col_text.setAlpha(196);
@@ -184,7 +185,7 @@ void Delegate::paint(QPainter *painter,	const QStyleOptionViewItem &option, cons
 				painter->drawText(rect, (Qt::AlignVCenter | Qt::AlignLeft), fm.elidedText(str, Qt::ElideRight, rect.width()));
 			}
 
-			offset_x = fm.width(str);
+			offset_x = Gui::Util::text_width(fm, str);
 			rect.setWidth(rect.width() - offset_x);
 			str = "";
 		}
