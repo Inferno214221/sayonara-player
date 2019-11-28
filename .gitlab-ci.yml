@@ -50,6 +50,21 @@ deploy-sayonara-appimage:
     - master
     - tags
 
+## Deploy Snap Package
+deploy-sayonara-snap:
+  stage: deploy
+  dependencies:
+    - build-sayonara
+  script:
+    - snap/local/install_prerequisites.sh
+    - snap/local/build_snap.sh
+  artifacts:
+    paths:
+      - /*.snap
+    expire_in: 1 week
+  only:
+    - 20-integrate-snap-building-into-gitlab-ci-file
+
 ## Fedora
 deploy-sayonara-fedora:
   image: "luciocarreras/sayonara-fedora:29"
@@ -97,4 +112,3 @@ deploy-language:
   only:
     - master
     - tags
-
