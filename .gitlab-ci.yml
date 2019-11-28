@@ -56,7 +56,6 @@ deploy-sayonara-snap:
   dependencies:
     - build-sayonara
   script:
-    - snap/local/install_prerequisites.sh
     - snap/local/build_snap.sh
   artifacts:
     paths:
