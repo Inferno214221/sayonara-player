@@ -25,4 +25,4 @@ sed -i "s/^version:.*$/version: ${version}-${commitid}/" snap/snapcraft.yaml
 # running snapcraft
 cd snap
 snapcraft clean
-snapcraft
+snapcraft --debug
