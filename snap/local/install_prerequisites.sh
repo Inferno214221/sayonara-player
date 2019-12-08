@@ -6,5 +6,9 @@ This is a script for installing the prerequisites to build the snap package of t
 
 Comments
 
-sudo snap install snapcraft --classic
-sudo snap install multipass --edge --classic
+apt-get update
+apt-get install snapd -y
+
+
+snap install snapcraft --classic
+snap install multipass --beta --classic
