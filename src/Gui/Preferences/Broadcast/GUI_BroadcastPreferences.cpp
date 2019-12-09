@@ -99,6 +99,7 @@ void GUI_BroadcastPreferences::skin_changed()
 void GUI_BroadcastPreferences::retranslate_ui()
 {
 	ui->retranslateUi(this);
+
 	ui->lab_activate->setText(Lang::get(Lang::Active));
 	ui->lab_url_title->setText(Lang::get(Lang::StreamUrl));
 }
@@ -128,7 +129,8 @@ QString GUI_BroadcastPreferences::get_url_string() const
 	QStringList ips = Util::ip_addresses();
 
 	QStringList ret;
-	for(const QString& ip : ips){
+	for(const QString& ip : ips)
+	{
 		QString str = QString("http://") + ip + ":" + QString::number(port) + "/playlist.m3u";
 		ret << str;
 	}
@@ -145,4 +147,16 @@ void GUI_BroadcastPreferences::refresh_url()
 	ui->le_url->setText(get_url_string());
 }
 
+bool GUI_BroadcastPreferences::has_error() const
+{
+	int port = ui->sb_port->value();
 
+	return
+		(port == GetSetting(Set::Remote_Port)) ||
+		(port == GetSetting(Set::Remote_DiscoverPort));
+}
+
+QString GUI_BroadcastPreferences::error_string() const
+{
+	return tr("Port %1 already in use").arg(ui->sb_port->value());
+}

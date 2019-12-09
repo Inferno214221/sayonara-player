@@ -104,6 +104,7 @@ private slots:
 	void pos_changed_ms(MilliSeconds pos);
 	void track_changed(const MetaData& md);
 	void volume_changed(int vol);
+	void volume_timer_timeout();
 	void playstate_changed(PlayState playstate);
 	void active_playlist_changed(int index);
 	void active_playlist_content_changed(int index);

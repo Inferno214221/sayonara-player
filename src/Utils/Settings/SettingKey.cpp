@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "SettingKey.h"
 
 template<typename T, SettingKey k>

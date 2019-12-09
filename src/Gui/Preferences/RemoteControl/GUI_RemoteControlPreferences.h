@@ -44,6 +44,9 @@ public:
 
 	QString action_name() const override;
 
+	bool has_error() const override;
+	QString error_string() const override;
+
 protected:
 	void init_ui() override;
 	void retranslate_ui() override;
@@ -51,10 +54,11 @@ protected:
 private slots:
 	void active_toggled(bool b);
 	void port_changed(int port);
+	void discover_port_changed(int port);
 
 private:
 	QString get_url_string();
 	void refresh_url();
 };
 
-#endif /* GUISOCKETSETUP_H_ */
+#endif /* GUI_REMOTECONTROL_PREFERENCES_H */

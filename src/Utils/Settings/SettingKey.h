@@ -157,6 +157,8 @@ enum class SettingKey : unsigned short
 	Player_Quit,
 	Remote_Active,
 	Remote_Port,
+	Remote_Discoverable,
+	Remote_DiscoverPort,
 	Stream_NewTab,
 	Stream_ShowHistory,
 	Stream_SearchWindowSize,
@@ -369,6 +371,8 @@ class SettingIdentifier
 
 	INST(bool,				Remote_Active)			/* Remote control activated */
 	INST(int,				Remote_Port)			/* Remote control port */
+	INST(bool,				Remote_Discoverable)	/* broadcast is discoverable via UDP */
+	INST(int,				Remote_DiscoverPort)	/* UDP port for remote discovering */
 
 	INST(bool,				Stream_NewTab)			/* Open Streams in new tab */
 	INST(bool,				Stream_ShowHistory)		/* Show history when playing streams */

@@ -228,8 +228,10 @@ bool SettingRegistry::init()
 	register_setting<Set::Broadcast_Prompt>( "broadcast_prompt", false );
 	register_setting<Set::Broadcast_Port>( "broadcast_port", 54054 );
 
-	register_setting<Set::Remote_Active>( "remote_control_active", false);
-	register_setting<Set::Remote_Port>( "remote_control_port", 54055);
+	register_setting<Set::Remote_Active>( "remote_control_active", false );
+	register_setting<Set::Remote_Port>( "remote_control_port", 54055 );
+	register_setting<Set::Remote_Discoverable>( "remote_discoverable", false );
+	register_setting<Set::Remote_DiscoverPort>( "remote_discoverport", 54056 );
 
 	register_setting<Set::Stream_NewTab>( "stream_new_tab", true);
 	register_setting<Set::Stream_ShowHistory>( "stream_show_history", true);
