@@ -40,6 +40,9 @@ public:
 
 	QString action_name() const override;
 
+	bool has_error() const override;
+	QString error_string() const override;
+
 protected:
 	void init_ui() override;
 	void skin_changed() override;

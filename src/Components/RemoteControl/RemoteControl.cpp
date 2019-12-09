@@ -19,11 +19,14 @@
  */
 
 #include "RemoteControl.h"
+#include "RemoteControl/UDPSocket.h"
+
 #include "Components/Covers/CoverLocation.h"
 #include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistHandler.h"
 #include "Components/PlayManager/PlayManager.h"
 #include "Components/Covers/CoverLookup.h"
+
 #include "Utils/Settings/Settings.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Logger/Logger.h"
@@ -41,13 +44,14 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QJsonObject>
+#include <QTimer>
 
 #include <functional>
 #include <algorithm>
+#include <mutex>
 
 using RemoteFunction=std::function<void()>;
 using RemoteFunctionInt=std::function<void(int)>;
-
 
 struct RemoteControl::Private
 {
@@ -56,18 +60,30 @@ struct RemoteControl::Private
 	QMap<QByteArray, RemoteFunction>    fn_call_map;
 	QMap<QByteArray, RemoteFunctionInt> fn_int_call_map;
 
+	QTimer*				volume_timer=nullptr;
+
 	QTcpServer*			server=nullptr;
 	QTcpSocket*			socket=nullptr;
 
+	RemoteUDPSocket*	udp=nullptr;
+
 	Private() :
 		initialized(false)
-	{}
+	{
+		volume_timer = new QTimer();
+		volume_timer->setInterval(100);
+		volume_timer->setSingleShot(true);
+	}
 };
 
 RemoteControl::RemoteControl(QObject *parent) :
 	QObject(parent)
 {
 	m = Pimpl::make<Private>();
+
+	m->udp = new RemoteUDPSocket(this);
+
+	connect(m->volume_timer, &QTimer::timeout, this, &RemoteControl::volume_timer_timeout);
 
 	ListenSetting(Set::Remote_Active, RemoteControl::active_changed);
 }
@@ -330,6 +346,12 @@ void RemoteControl::write_current_position()
 void RemoteControl::volume_changed(int vol)
 {
 	Q_UNUSED(vol)
+	m->volume_timer->start(100);
+}
+
+void RemoteControl::volume_timer_timeout()
+{
+	sp_log(Log::Debug, this) << "Volume timer timeout";
 	write_volume();
 }
 
@@ -574,15 +596,17 @@ void RemoteControl::write_broadcast_info()
 	write(doc.toBinaryData());
 }
 
+static std::mutex mtx;
+
 
 void RemoteControl::write(const QByteArray& data)
 {
-	if(!m->socket){
-		return;
+	if(m->socket && m->socket->isOpen())
+	{
+		std::lock_guard<std::mutex> lock(mtx); Q_UNUSED(lock);
+		m->socket->write(data + "ENDMESSAGE");
+		m->socket->flush();
 	}
-
-	m->socket->write(data + "ENDMESSAGE");
-	m->socket->flush();
 }
 
 

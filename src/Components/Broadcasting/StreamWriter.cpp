@@ -24,6 +24,7 @@
 #include "StreamWriter.h"
 #include "StreamDataSender.h"
 #include "StreamHttpParser.h"
+#include "Components/PlayManager/PlayManager.h"
 #include "Components/Engine/EngineHandler.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/Logger/Logger.h"
@@ -73,6 +74,22 @@ StreamWriter::StreamWriter(QTcpSocket* socket, const QString& ip, const MetaData
 	connect(socket, &QTcpSocket::readyRead, this, &StreamWriter::data_available);
 	connect(Engine::Handler::instance(), &Engine::Handler::destroyed, this, [=](){
 		m->engine = nullptr;
+	});
+
+	connect(PlayManager::instance(), &PlayManager::sig_track_changed, this, [=](const MetaData&){
+		this->clear_socket();
+	});
+
+	connect(PlayManager::instance(), &PlayManager::sig_seeked_rel, this, [=](double){
+		this->clear_socket();
+	});
+
+	connect(PlayManager::instance(), &PlayManager::sig_seeked_abs_ms, this, [=](MilliSeconds){
+		this->clear_socket();
+	});
+
+	connect(PlayManager::instance(), &PlayManager::sig_seeked_rel_ms, this, [=](MilliSeconds){
+		this->clear_socket();
 	});
 
 	m->engine->register_raw_sound_receiver(this);
@@ -257,5 +274,15 @@ void StreamWriter::data_available()
 	if(close_connection){
 		m->socket->close();
 	}
+}
+
+void StreamWriter::clear_socket()
+{
+	auto bytes = m->socket->bytesToWrite();
+	sp_log(Log::Debug, this) << "There are still " << bytes << " bytes";
+	m->socket->flush();
+
+//	m->socket->skip(1000000L);
+	//m->socket->reset();
 }
 

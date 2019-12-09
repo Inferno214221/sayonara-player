@@ -123,6 +123,11 @@ struct StreamDataSender::Private
 
 		return socket->write(data);
 	}
+
+	void flush()
+	{
+		socket->reset();
+	}
 };
 
 StreamDataSender::StreamDataSender(QTcpSocket* socket)
@@ -151,9 +156,9 @@ bool StreamDataSender::send_data(const QByteArray& data)
 {
 	m->bytes_written = 0;
 
-	int64_t n_bytes = m->socket->write(data);
+	auto bytes = m->socket->write(data);
 
-	return (n_bytes > 0);
+	return (bytes > 0);
 }
 
 // [.............................................................] = buffer
@@ -350,4 +355,9 @@ bool StreamDataSender::send_favicon()
 	}
 
 	return (m->send_answer("image/x-icon", arr, "close") > 0);
+}
+
+void StreamDataSender::flush()
+{
+	return m->flush();
 }

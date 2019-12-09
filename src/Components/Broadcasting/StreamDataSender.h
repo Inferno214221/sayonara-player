@@ -49,6 +49,9 @@ public:
 	bool send_metadata(const QString& stream_title);
 	bool send_playlist(const QString& host, int port);
 	bool send_favicon();
+
+	void flush();
+
 };
 
 #endif // STREAMDATASENDER_H

@@ -28,6 +28,8 @@
 #include <QString>
 #include <QList>
 
+#include <gst/app/gstappsink.h>
+
 using namespace PipelineExtensions;
 
 struct Broadcaster::Private
@@ -70,11 +72,11 @@ bool Broadcaster::init()
 	}
 
 	// create
-	if( !Engine::Utils::create_element(&m->bc_queue, "queue", "lame_queue") ||
-		!Engine::Utils::create_element(&m->bc_converter, "audioconvert", "lame_converter") ||
-		!Engine::Utils::create_element(&m->bc_resampler, "audioresample", "lame_resampler") ||
-		!Engine::Utils::create_element(&m->bc_lame, "lamemp3enc") ||
-		!Engine::Utils::create_element(&m->bc_app_sink, "appsink", "lame_appsink"))
+	if( !Engine::Utils::create_element(&m->bc_queue, "queue", "bc_lame_queue") ||
+		!Engine::Utils::create_element(&m->bc_converter, "audioconvert", "bc_lame_converter") ||
+		!Engine::Utils::create_element(&m->bc_resampler, "audioresample", "bc_lame_resampler") ||
+		!Engine::Utils::create_element(&m->bc_lame, "lamemp3enc", "bc_lamemp3enc") ||
+		!Engine::Utils::create_element(&m->bc_app_sink, "appsink", "bc_lame_appsink"))
 	{
 		return false;
 	}

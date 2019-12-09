@@ -143,6 +143,7 @@ class StreamWriter :
 	private slots:
 		void socket_disconnected();
 		void data_available();
+		void clear_socket();
 };
 
 using StreamWriterPtr=std::shared_ptr<StreamWriter>;
