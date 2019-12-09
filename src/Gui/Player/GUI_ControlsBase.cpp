@@ -578,7 +578,6 @@ void GUI_ControlsBase::cover_changed(const QByteArray& data, const QString& mime
 void GUI_ControlsBase::cover_click_rejected()
 {
 	show_info();
-	//show_cover_edit();
 }
 
 void GUI_ControlsBase::setup_connections()

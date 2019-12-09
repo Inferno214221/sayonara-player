@@ -284,12 +284,7 @@ void DirectoryTreeView::mousePressEvent(QMouseEvent* event)
 {
 	QTreeView::mousePressEvent(event);
 
-	if(event->buttons() & Qt::LeftButton)
-	{
-		Dragable::drag_pressed(event->pos());
-	}
-
-	else if(event->button() & Qt::RightButton)
+	if(event->button() & Qt::RightButton)
 	{
 		if(!m->context_menu){
 			init_context_menu();
@@ -373,20 +368,6 @@ void DirectoryTreeView::copy_finished()
 {
 	this->setDragDropMode(DragDropMode::DragDrop);
 	emit sig_copy_finished();
-}
-
-
-
-void DirectoryTreeView::mouseMoveEvent(QMouseEvent* e)
-{
-	QDrag* drag = Dragable::drag_moving(e->pos());
-	if(drag)
-	{
-		connect(drag, &QDrag::destroyed, this, [=]()
-		{
-			this->drag_released(Dragable::ReleaseReason::Destroyed);
-		});
-	}
 }
 
 void DirectoryTreeView::dragEnterEvent(QDragEnterEvent* event)

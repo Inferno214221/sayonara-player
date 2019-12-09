@@ -52,15 +52,16 @@ void StreamRecorderUtilsTest::filename_test()
 
 	Utils::TargetPaths path = Utils::full_target_path(sr_path, templ, md, d, t);
 
+	QLocale loc;
 	QString other_path = sr_path + "/" + QString("%1 %2_%3-/%4+df3-%5_%6-%7-/%8df%9.mp3")
 			.arg("Bli")
 			.arg(d.month(), 2, 10, QChar('0'))
 			.arg(d.year(), 4, 10, QChar('0'))
-			.arg(QDate::shortDayName(d.dayOfWeek()))
+			.arg(loc.dayName(d.dayOfWeek(), QLocale::ShortFormat))
 			.arg(t.minute(), 2, 10, QChar('0'))
 			.arg("Bli")
 			.arg(d.day(), 2, 10, QChar('0'))
-			.arg(QDate::longDayName(d.dayOfWeek()))
+			.arg(loc.dayName(d.dayOfWeek(), QLocale::LongFormat))
 			.arg("bla");
 
 	qDebug() << "Path1: " << path.first;
@@ -74,8 +75,6 @@ void StreamRecorderUtilsTest::invalid_tag_test()
 	QString templ = "<t> <m>_<y>-/<fs>+df3-<min>_<t>-<d>-/<dl>df<a>";
 	Utils::ErrorCode e = Utils::validate_template(templ, &invalid_idx);
 
-	qDebug() << __FUNCTION__ << (int) e;
-
 	QVERIFY(e == Utils::ErrorCode::UnknownTag);
 }
 
@@ -84,8 +83,6 @@ void StreamRecorderUtilsTest::invalid_chars_test()
 	int invalid_idx;
 	QString templ = "<m>_<y>-/<ds>:df3-<min>_<tn><t>-<d>-/<dl>df<ar>";
 	Utils::ErrorCode e = Utils::validate_template(templ, &invalid_idx);
-
-	qDebug() << __FUNCTION__ << (int) e;
 
 	QVERIFY(e == Utils::ErrorCode::InvalidChars);
 }

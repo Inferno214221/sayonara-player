@@ -58,6 +58,8 @@
 #include "Gui/SomaFM/SomaFMLibraryContainer.h"
 #include "Gui/Utils/Library/EmptyLibraryContainer.h"
 
+#include "Gui/History/HistoryContainer.h"
+
 #include "Gui/Plugins/PlayerPluginHandler.h"
 #include "Gui/Plugins/PlaylistChooser/GUI_PlaylistChooser.h"
 #include "Gui/Plugins/AudioConverter/GUI_AudioConverter.h"
@@ -137,16 +139,17 @@ struct Application::Private
 	GUI_Player*			player=nullptr;
 
 	RemoteControl*		remote_control=nullptr;
-	Playlist::Handler*	plh=nullptr;
 	DB::Connector*		db=nullptr;
 	InstanceThread*		instance_thread=nullptr;
 	MetaTypeRegistry*	metatype_registry=nullptr;
-	Session*			session=nullptr;
+	Session::Manager*	session=nullptr;
 
 	bool				was_shut_down;
 
 	Private(Application* app)
 	{
+		Q_UNUSED(app)
+
 		metatype_registry = new MetaTypeRegistry();
 		qRegisterMetaType<uint64_t>("uint64_t");
 
@@ -154,7 +157,7 @@ struct Application::Private
 		db = DB::Connector::instance();
 		db->settings_connector()->load_settings();
 
-		session = new Session(app);
+		session = Session::Manager::instance();
 
 		Gui::Icons::set_standard_theme(QIcon::themeName());
 		Gui::Icons::force_standard_icons(GetSetting(Set::Icon_ForceInDarkTheme));
@@ -170,7 +173,6 @@ struct Application::Private
 		init_resources();
 
 		timer = new QTime();
-		plh = Playlist::Handler::instance();
 		was_shut_down = false;
 	}
 
@@ -189,8 +191,6 @@ struct Application::Private
 
 			instance_thread = nullptr;
 		}
-
-		plh = nullptr;
 
 		if(player){
 			delete player;
@@ -353,12 +353,13 @@ void Application::init_player(bool force_show)
 
 void Application::init_playlist(const QStringList& files_to_play)
 {
-	m->plh->load_old_playlists();
+	auto* plh = Playlist::Handler::instance();
+	plh->load_old_playlists();
 
 	if(!files_to_play.isEmpty())
 	{
-		QString playlist_name = m->plh->request_new_playlist_name();
-		m->plh->create_playlist(files_to_play, playlist_name);
+		QString playlist_name = plh->request_new_playlist_name();
+		plh->create_playlist(files_to_play, playlist_name);
 	}
 }
 
@@ -402,17 +403,12 @@ void Application::init_libraries()
 	auto* directory_container = new Library::DirectoryContainer(this);
 	auto* soundcloud_container = new SC::LibraryContainer(this);
 	auto* somafm_container = new SomaFM::LibraryContainer(this);
+	auto* history_container = new HistoryContainer(this);
 
 	library_containers << static_cast<Library::Container*>(directory_container);
 	library_containers << static_cast<Library::Container*>(somafm_container);
 	library_containers << static_cast<Library::Container*>(soundcloud_container);
-
-#ifdef Q_OS_WIN
-	SC::LibraryContainer* soundcloud_container = new SC::LibraryContainer(this);
-	SomaFM::LibraryContainer* somafm_container = new SomaFM::LibraryContainer(this);
-	library_containers << static_cast<Library::ContainerInterface*>(soundcloud_container);
-	library_containers << static_cast<Library::ContainerInterface*>(somafm_container);
-#endif
+	library_containers << static_cast<Library::Container*>(history_container);
 
 	library_plugin_loader->init(library_containers, new EmptyLibraryContainer());
 }

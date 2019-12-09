@@ -85,7 +85,6 @@ ItemView::ItemView(QWidget* parent) :
 	this->setAcceptDrops(true);
 	this->setSelectionBehavior(QAbstractItemView::SelectRows);
 	this->setAlternatingRowColors(true);
-	this->setDragEnabled(true);
 
 	QHeaderView* vertical_header = this->verticalHeader();
 	if(vertical_header) {
@@ -425,10 +424,6 @@ void ItemView::mousePressEvent(QMouseEvent* event)
 		return;
 	}
 
-	if(event->button() == Qt::LeftButton){
-		this->drag_pressed(event->pos());
-	}
-
 	SearchableTableView::mousePressEvent(event);
 
 	if(event->button() == Qt::MidButton)
@@ -438,19 +433,6 @@ void ItemView::mousePressEvent(QMouseEvent* event)
 		}
 	}
 }
-
-
-void ItemView::mouseMoveEvent(QMouseEvent* event)
-{
-	QDrag* drag = this->drag_moving(event->pos());
-	if(drag)
-	{
-		connect(drag, &QDrag::destroyed, this, [=]() {
-			this->drag_released(Dragable::ReleaseReason::Destroyed);
-		});
-	}
-}
-
 
 void ItemView::contextMenuEvent(QContextMenuEvent* event)
 {

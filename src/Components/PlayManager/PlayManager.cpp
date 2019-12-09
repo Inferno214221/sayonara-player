@@ -89,6 +89,7 @@ struct PlayManager::Private
 	int						track_idx;
 	MilliSeconds			position_ms;
 	MilliSeconds			initial_position_ms;
+	MilliSeconds			track_playtime_ms;
 	PlayState				playstate;
 
 	Private()
@@ -103,6 +104,7 @@ struct PlayManager::Private
 		ring_buffer.clear();
 		track_idx = -1;
 		position_ms = 0;
+		track_playtime_ms = 0;
 		initial_position_ms = InvalidTimeStamp;
 		playstate = PlayState::Stopped;
 	}
@@ -148,6 +150,11 @@ PlayState PlayManager::playstate() const
 MilliSeconds PlayManager::current_position_ms() const
 {
 	return m->position_ms;
+}
+
+MilliSeconds PlayManager::current_track_playtime_ms() const
+{
+	return m->track_playtime_ms;
 }
 
 MilliSeconds PlayManager::initial_position_ms() const
@@ -261,6 +268,11 @@ void PlayManager::seek_abs_ms(MilliSeconds ms)
 
 void PlayManager::set_position_ms(MilliSeconds ms)
 {
+	MilliSeconds difference = (ms - m->position_ms);
+	if(difference > 0 && difference < 1000) {
+		m->track_playtime_ms += difference;
+	}
+
 	m->position_ms = ms;
 
 	SetSetting(Set::Engine_CurTrackPos_s, int(m->position_ms / 1000));
@@ -275,6 +287,7 @@ void PlayManager::change_track(const MetaData& md, int track_idx)
 
 	m->md = md;
 	m->position_ms = 0;
+	m->track_playtime_ms = 0;
 	m->track_idx = track_idx;
 	m->ring_buffer.clear();
 

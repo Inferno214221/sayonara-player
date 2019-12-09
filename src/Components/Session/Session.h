@@ -18,32 +18,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef SESSION_H
 #define SESSION_H
 
 #include "Utils/Pimpl.h"
+#include "Utils/Singleton.h"
+#include "Utils/Session/SessionUtils.h"
 
 #include <QObject>
 #include <QDateTime>
 
 class QDateTime;
 
-class Session :
-		public QObject
+namespace Session
 {
-	Q_OBJECT
-	PIMPL(Session)
+	class Manager :
+			public QObject
+	{
+		Q_OBJECT
+		PIMPL(Manager)
+		SINGLETON(Manager)
 
-public:
-	explicit Session(QObject* parent=nullptr);
-	~Session();
+		signals:
+			void sig_changed(Session::Id id);
 
-	static QMap<QDateTime, MetaDataList> get_history(QDateTime beginning=QDateTime());
+		public:
+			EntryListMap history(const QDateTime& dt_begin, const QDateTime& dt_end);
+			EntryListMap history_for_day(const QDateTime& dt);
+			EntryListMap history_entries(int day_index, int count);
 
-private slots:
-	void track_changed(const MetaData& md);
-};
+		private slots:
+			void position_changed(MilliSeconds ms);
+	};
+}
 
 #endif // SESSION_H

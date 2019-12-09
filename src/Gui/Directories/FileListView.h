@@ -54,7 +54,7 @@ signals:
 
 public:
 	explicit FileListView(QWidget* parent=nullptr);
-	virtual ~FileListView();
+	~FileListView() override;
 
 	QModelIndexList selected_rows() const;
 	MetaDataList selected_metadata() const;
@@ -71,8 +71,6 @@ public:
 
 protected:
 	void keyPressEvent(QKeyEvent* event) override;
-	void mousePressEvent(QMouseEvent* event) override;
-	void mouseMoveEvent(QMouseEvent* event) override;
 	void contextMenuEvent(QContextMenuEvent* event) override;
 
 	void dragEnterEvent(QDragEnterEvent* event) override;
