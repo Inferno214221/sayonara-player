@@ -49,13 +49,6 @@ namespace Library
 			 */
 			virtual void				init_ui()=0;
 
-			/**
-			 * @brief this is a frame at the top left of the container
-			 * where the combo box will be located
-			 * @return
-			 */
-			virtual QFrame*				header() const=0;
-
 		public:
 			explicit ContainerImpl(QObject* parent=nullptr);
 			virtual ~ContainerImpl() override;

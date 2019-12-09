@@ -515,7 +515,6 @@ void GUI_Player::check_control_splitter(bool force)
 				}
 
 				ui->splitterControls->setSizes(sizes);
-
 			}
 		}
 	}

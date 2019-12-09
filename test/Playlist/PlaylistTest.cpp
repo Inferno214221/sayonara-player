@@ -23,6 +23,7 @@ private slots:
 	void jump_test();
 	void shuffleTest();
 	void modifyTest();
+	void insertTest();
 };
 
 
@@ -198,6 +199,77 @@ void PlaylistTest::modifyTest()
 	pl->remove_tracks(indexes);
 	cur_idx = pl->current_track_index();
 	QVERIFY(cur_idx == -1);
+}
+
+void PlaylistTest::insertTest()
+{
+	auto pl = std::make_shared<PL>(1, PlaylistType::Std, "Hallo");
+	pl->create_playlist(MetaDataList());
+
+	{
+		MetaDataList tracks = Test::Playlist::create_v_md(0, 3);
+		pl->insert_tracks(tracks, 20);
+
+		MetaDataList tracks_pl = pl->tracks();
+		QVERIFY(pl->count() == 3);
+		QVERIFY(pl->count() == tracks_pl.count());
+
+		for(int i=0; i<tracks_pl.count(); i++)
+		{
+			QVERIFY(tracks_pl[i].id() == i);
+		}
+
+		pl->clear();
+		QVERIFY(pl->count() == 0);
+	}
+
+
+	{
+		MetaDataList tracks = Test::Playlist::create_v_md(0, 3);
+		pl->insert_tracks(tracks, -1);
+
+		MetaDataList tracks_pl = pl->tracks();
+		QVERIFY(pl->count() == 3);
+		QVERIFY(pl->count() == tracks_pl.count());
+
+		for(int i=0; i<tracks_pl.count(); i++)
+		{
+			QVERIFY(tracks_pl[i].id() == i);
+		}
+	}
+
+	{
+		MetaDataList tracks = Test::Playlist::create_v_md(3, 4);
+		pl->insert_tracks(tracks, -1);
+
+		MetaDataList tracks_pl = pl->tracks();
+		QVERIFY(pl->count() == 4);
+		QVERIFY(pl->count() == tracks_pl.count());
+
+		QVERIFY(tracks_pl.first().id() == 3);
+	}
+
+	{
+		MetaDataList tracks = Test::Playlist::create_v_md(4, 5);
+		pl->insert_tracks(tracks, 3);
+
+		MetaDataList tracks_pl = pl->tracks();
+		QVERIFY(pl->count() == 5);
+		QVERIFY(pl->count() == tracks_pl.count());
+
+		QVERIFY(tracks_pl[3].id() == 4);
+	}
+
+	{
+		MetaDataList tracks = Test::Playlist::create_v_md(5, 6);
+		pl->insert_tracks(tracks, pl->count());
+
+		MetaDataList tracks_pl = pl->tracks();
+		QVERIFY(pl->count() == 6);
+		QVERIFY(pl->count() == tracks_pl.count());
+
+		QVERIFY(tracks_pl.last().id() == 5);
+	}
 }
 
 QTEST_GUILESS_MAIN(PlaylistTest)

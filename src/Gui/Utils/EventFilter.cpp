@@ -75,12 +75,29 @@ bool MouseMoveFilter::eventFilter(QObject *o, QEvent *e)
 	{
 		e->accept();
 
-		auto* me = static_cast<QMouseEvent*>(e);
-		emit sig_mouse_moved(me->pos());
+		emit sig_mouse_moved(static_cast<QMouseEvent*>(e));
+		return true;
 	}
 
 	return QObject::eventFilter(o, e);
 }
+
+
+MousePressedFilter::MousePressedFilter(QObject* parent) :
+	QObject(parent)
+{}
+
+bool MousePressedFilter::eventFilter(QObject* o, QEvent* e)
+{
+	if(e->type() == QEvent::MouseButtonPress)
+	{
+		e->accept();
+		emit sig_mouse_pressed(static_cast<QMouseEvent*>(e));
+	}
+
+	return QObject::eventFilter(o, e);
+}
+
 
 MouseEnterFilter::MouseEnterFilter(QObject *parent) :
 	QObject(parent)

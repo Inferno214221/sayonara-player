@@ -104,7 +104,6 @@ namespace Library
 	protected:
 		// Events implemented in LibraryViewEvents.cpp
 		virtual void mousePressEvent(QMouseEvent* event) override;
-		virtual void mouseMoveEvent(QMouseEvent* event) override;
 		virtual void contextMenuEvent(QContextMenuEvent* event) override;
 
 		virtual void dragEnterEvent(QDragEnterEvent *event) override;

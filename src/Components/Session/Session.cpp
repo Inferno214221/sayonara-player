@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "Session.h"
 
 #include "Components/PlayManager/PlayManager.h"
@@ -31,70 +29,117 @@
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Utils.h"
+#include "Utils/Set.h"
+#include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
 
+#include <limits>
 
-struct Session::Private
+using Session::Manager;
+
+struct Manager::Private
 {
-	QString session_id;
+	Session::Id session_id;
+	QList<Session::Id> session_ids;
+	QList<Session::Timecode> session_days;
+	bool playtime_resetted;
 
-	Private()
+	Private() :
+		playtime_resetted(true)
 	{
-		session_id = Util::random_string(32);
+		auto* db = DB::Connector::instance();
+		DB::Session* session_connector = db->session_connector();
+
+		session_id = session_connector->create_new_session();
+
+		session_ids = session_connector->get_session_keys();
+		session_ids.prepend(session_id);
+
+		Util::Set<Session::Timecode> days;
+		for(Session::Timecode timecode : session_ids)
+		{
+			Session::Timecode timecode_begin = Session::day_begin(timecode);
+			days.insert(timecode_begin);
+		}
+
+		session_days = days.toList();
+
+		Util::Algorithm::sort(session_ids, [](auto key1, auto key2){
+			return (key1 > key2);
+		});
+
+		Util::Algorithm::sort(session_days, [](auto key1, auto key2){
+			return (key1 > key2);
+		});
+
 	}
 };
 
-Session::Session(QObject* parent) :
-	QObject(parent)
+Manager::Manager()
 {
 	m = Pimpl::make<Private>();
 
-	PlayManager* pm = PlayManager::instance();
-
-	connect(pm, &PlayManager::sig_track_changed, this, &Session::track_changed);
+	connect(PlayManager::instance(), &PlayManager::sig_position_changed_ms, this, &Manager::position_changed);
 }
 
-Session::~Session() {}
+Manager::~Manager() = default;
 
-void Session::track_changed(const MetaData& md)
+void Manager::position_changed(MilliSeconds ms)
 {
-	uint64_t cur_date = Util::current_date_to_int();
+	Q_UNUSED(ms)
+	const static MilliSeconds MinTime=5000;
+
+	auto* pm = PlayManager::instance();
+	MilliSeconds playtime = pm->current_track_playtime_ms();
+
+	if(playtime > MinTime && m->playtime_resetted)
+	{
+		sp_log(Log::Debug, this) << "Adding track to Session " << m->session_id;
+		auto* db = DB::Connector::instance();
+		DB::Session* session_connector = db->session_connector();
+
+		session_connector->add_track(m->session_id, pm->current_track());
+
+		emit sig_changed(m->session_id);
+	}
+
+	m->playtime_resetted = (playtime <= MinTime);
+}
+
+Session::EntryListMap Manager::history(const QDateTime& dt_begin, const QDateTime& dt_end)
+{
+	auto* db = DB::Connector::instance();
+	DB::Session* session_connector = db->session_connector();
+
+	return session_connector->get_sessions(dt_begin, dt_end);
+}
+
+Session::EntryListMap Manager::history_for_day(const QDateTime& dt)
+{
+	QDateTime dt_min(dt.toUTC());
+	dt_min.setTime(QTime(0, 0));
+
+	QDateTime dt_max(dt.toUTC());
+	dt_max.setTime(QTime(23, 59, 59));
+
+	return history(dt_min, dt_max);
+}
+
+
+Session::EntryListMap Manager::history_entries(int day_index, int count)
+{
+	if(day_index >= m->session_days.count() - 1)
+	{
+		return Session::EntryListMap();
+	}
+
+	int max_index = std::min(day_index + count + 1, m->session_days.count() - 1);
+
+	Session::Timecode min_key = m->session_days[max_index];
+	Session::Timecode max_key = m->session_days[day_index];
 
 	auto* db = DB::Connector::instance();
 	DB::Session* session_connector = db->session_connector();
 
-	session_connector->add_track(m->session_id, cur_date, md);
-}
-
-QMap<QDateTime, MetaDataList> Session::get_history(QDateTime beginning)
-{
-	auto* db = DB::Connector::instance();
-	DB::Session* session_connector = db->session_connector();
-	DB::LibraryDatabase* track_connector = db->library_db(-1, db->db_id());
-
-	QMap<QDateTime, MetaDataList> ret;
-
-	uint64_t start = Util::date_to_int(beginning);
-	if(!beginning.isValid()){
-		start = 0;
-	}
-
-	PairList<uint64_t, TrackID> history = session_connector->get_sessions(start);
-
-	QList<TrackID> track_ids;
-	for(auto it=history.begin(); it != history.end(); it++)
-	{
-		track_ids << it->second;
-	}
-
-	MetaDataList v_md;
-    track_connector->getTracksByIds(track_ids, v_md);
-
-	for(auto it=v_md.begin(); it != v_md.end(); it++)
-	{
-		sp_log(Log::Debug, "Session") << "History Filepath: " << it->filepath();
-	}
-
-
-	return ret;
+	return session_connector->get_sessions(Util::int_to_date(min_key), Util::int_to_date(max_key));
 }

@@ -50,6 +50,7 @@ new_test(Covers/CoverLocationTest.cpp)
 
 new_test(Database/PodcastTest.cpp)
 new_test(Database/AlbumTest.cpp)
+new_test(Database/LibraryDatabaseTest.cpp)
 
 new_test(Library/ImportCacheTest.cpp)
 

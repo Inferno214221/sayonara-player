@@ -31,6 +31,7 @@
 #include "PlaylistDelegate.h"
 #include "PlaylistContextMenu.h"
 
+#include "Gui/Utils/GuiUtils.h"
 #include "Gui/Utils/PreferenceAction.h"
 #include "Gui/Utils/ContextMenu/LibraryContextMenu.h"
 #include "Gui/Utils/Widgets/ProgressBar.h"
@@ -60,6 +61,7 @@
 using namespace Gui;
 
 namespace Pl=::Playlist;
+namespace FileUtils=::Util::File;
 using Pl::View;
 
 struct View::Private
@@ -177,14 +179,14 @@ void View::goto_row(int row)
 
 int View::calc_drag_drop_line(QPoint pos)
 {
-	if(pos.y() < 0) {
+	int offset = (m->model->rowCount() > 0) ? this->rowHeight(0) / 2 : 10;
+	if(pos.y() < offset) {
 		return -1;
 	}
 
 	int row = this->indexAt(pos).row();
-
 	if(row < 0) {
-		row = row_count() - 1;
+		row = m->model->rowCount() - 1;
 	}
 
 	return row;
@@ -193,6 +195,7 @@ int View::calc_drag_drop_line(QPoint pos)
 void View::handle_drop(QDropEvent* event)
 {
 	int row = calc_drag_drop_line(event->pos());
+
 	m->model->set_drag_index(-1);
 
 	const QMimeData* mimedata = event->mimeData();
@@ -208,17 +211,17 @@ void View::handle_drop(QDropEvent* event)
 		return;
 	}
 
-	MetaDataList v_md = MimeData::metadata(mimedata);
+	const MetaDataList v_md = MimeData::metadata(mimedata);
 	if(!v_md.isEmpty())
 	{
-		m->model->insert_tracks(v_md, row+1);
+		m->model->insert_tracks(v_md, row + 1);
 	}
 
 	const QList<QUrl> urls = mimedata->urls();
 	if(!urls.isEmpty())
 	{
 		QStringList files;
-		bool www = Util::File::is_www(urls.first().toString());
+		bool www = FileUtils::is_www(urls.first().toString());
 		if(www)
 		{
 			m->playlist->set_busy(true);
@@ -247,7 +250,7 @@ void View::handle_drop(QDropEvent* event)
 				}
 			}
 
-			Handler::instance()->insert_tracks(files, row+1, m->playlist->index());
+			Handler::instance()->insert_tracks(files, row + 1, m->playlist->index());
 		}
 	}
 }
@@ -445,24 +448,9 @@ void View::mousePressEvent(QMouseEvent* event)
 {
 	SearchableTableView::mousePressEvent(event);
 
-	if(event->buttons() & Qt::LeftButton){
-		drag_pressed(event->pos());
-	}
-
-	else if(event->button() & Qt::MiddleButton)
+	if(event->button() & Qt::MiddleButton)
 	{
 		find_track_triggered();
-	}
-}
-
-void View::mouseMoveEvent(QMouseEvent* event)
-{
-	QDrag* drag = drag_moving(event->pos());
-	if(drag)
-	{
-		connect(drag, &QDrag::destroyed, this, [=](){
-			drag_released(Dragable::ReleaseReason::Destroyed);
-		});
 	}
 }
 
@@ -664,7 +652,7 @@ void View::refresh()
 
 	QHeaderView* hh = this->horizontalHeader();
 	int viewport_width = viewport()->width();
-	int w_time = fm.width("1888:88");
+	int w_time = Gui::Util::text_width(fm, "1888:88");
 
 	if(GetSetting(Set::PL_ShowCovers))
 	{
@@ -678,7 +666,7 @@ void View::refresh()
 
 	if(GetSetting(Set::PL_ShowNumbers))
 	{
-		int w_tn = fm.width(QString::number(m->model->rowCount() * 100));
+		int w_tn = Gui::Util::text_width(fm, QString::number(m->model->rowCount() * 100));
 		viewport_width -= w_tn;
 
 		if(hh->sectionSize(CN::TrackNumber) != w_tn) {

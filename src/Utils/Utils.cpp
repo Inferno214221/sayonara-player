@@ -85,6 +85,7 @@ QDateTime Util::int_to_date(uint64_t date)
 {
 	QString str = QString::number(qulonglong(date));
 	QDateTime dt;
+
 	if(str.size() == 12)
 	{
 		dt = QDateTime::fromString(str, "yyMMddHHmmss");
@@ -97,6 +98,8 @@ QDateTime Util::int_to_date(uint64_t date)
 	{
 		dt = QDateTime::fromString(str, "yyyyMMddHHmmss");
 	}
+
+	dt.setOffsetFromUtc(0);
 
 	return dt;
 }

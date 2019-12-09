@@ -22,23 +22,47 @@
 #define DRAGGABLE_H
 
 #include "Utils/Pimpl.h"
+#include <QObject>
 
 class QPoint;
 class QPixmap;
 class QMimeData;
 class QWidget;
 class QDrag;
+class QMouseEvent;
+class QAbstractItemView;
 
 namespace Gui
 {
+	class Dragable;
+	class DragableConnector : public QObject
+	{
+		friend class Dragable;
+
+		Q_OBJECT
+		PIMPL(DragableConnector)
+
+		private:
+			DragableConnector(QAbstractItemView* widget, Dragable* dragable);
+			~DragableConnector();
+
+		private slots:
+			void mouse_pressed(QMouseEvent* e);
+			void mouse_moved(QMouseEvent* e);
+
+			void drag_destroyed();
+	};
+
 	/**
 	 * @brief The Dragable class
 	 * @ingroup Widgets
 	 */
 	class Dragable
 	{
+		friend class DragableConnector;
+
 		public:
-			explicit Dragable(QWidget* parent);
+			explicit Dragable(QAbstractItemView* parent);
 			virtual ~Dragable();
 
 			enum class ReleaseReason : char
@@ -50,11 +74,11 @@ namespace Gui
 		private:
 			PIMPL(Dragable)
 
-		protected:
-			virtual void	drag_pressed(const QPoint& p) final;
-			virtual QDrag*	drag_moving(const QPoint& p) final;
-			virtual void	drag_released(ReleaseReason reason);
+			void	start_drag(const QPoint& p);
+			QDrag*	move_drag(const QPoint& p);
+			void	release_drag(ReleaseReason reason);
 
+		protected:
 			virtual QMimeData*	dragable_mimedata() const=0;
 			virtual bool		is_valid_drag_position(const QPoint& p) const;
 			virtual QPixmap		drag_pixmap() const;

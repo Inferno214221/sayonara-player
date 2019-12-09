@@ -37,6 +37,13 @@ namespace Library
 			virtual QWidget*			widget() const=0;
 
 			/**
+			 * @brief this is a frame at the top left of the container
+			 * where the combo box will be located
+			 * @return
+			 */
+			virtual QFrame*				header() const=0;
+
+			/**
 			 * @brief return actions menu (may be nullptr). The title does not have to be set
 			 * @return the translated menu relevant for the corresponding library
 			 */

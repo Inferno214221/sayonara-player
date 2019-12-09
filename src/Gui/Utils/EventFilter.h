@@ -26,6 +26,7 @@
 #include <QList>
 
 class QAction;
+class QMouseEvent;
 
 namespace Gui
 {
@@ -104,7 +105,26 @@ namespace Gui
 			explicit MouseMoveFilter(QObject* parent=nullptr);
 
 		signals:
-			void sig_mouse_moved(const QPoint& p);
+			void sig_mouse_moved(QMouseEvent* e);
+
+		protected:
+			bool eventFilter(QObject* o , QEvent* e);
+	};
+
+	/**
+	 * @brief The MouseMoveFilter class
+	 * @ingroup EventFilter
+	 */
+	class MousePressedFilter :
+			public QObject
+	{
+		Q_OBJECT
+
+		public:
+			explicit MousePressedFilter(QObject* parent=nullptr);
+
+		signals:
+			void sig_mouse_pressed(QMouseEvent* e);
 
 		protected:
 			bool eventFilter(QObject* o , QEvent* e);

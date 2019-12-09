@@ -18,32 +18,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef DB_SESSION_H
 #define DB_SESSION_H
 
 #include "Database/Module.h"
-#include <QStringList>
-#include <QDateTime>
+#include "Utils/Session/SessionUtils.h"
 
 class MetaData;
 class MetaDataList;
+class QDateTime;
 
 namespace DB
 {
 	class Session :
 			private DB::Module
 	{
-
 		public:
 			Session(const QString& connection_name, DbId db_id);
 			~Session();
 
-			PairList<uint64_t, TrackID> get_sessions(uint64_t beginning);
+			::Session::EntryListMap get_sessions(const QDateTime& dt_begin, const QDateTime& dt_end);
+			::Session::EntryList get_session(::Session::Id session_id);
+			QList<::Session::Id> get_session_keys();
 
-			bool add_track(const QString& session_id, uint64_t current_date_time, const MetaData& md);
-			void clear();
+			::Session::Id create_new_session() const;
+			bool add_track(::Session::Id session_id, const MetaData& md);
+
+			bool clear();
+			bool clear_before(const QDateTime& datetime);
 	};
 }
 

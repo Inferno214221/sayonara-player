@@ -305,6 +305,8 @@ public:
 	 */
 	MilliSeconds		current_position_ms() const;
 
+	MilliSeconds		current_track_playtime_ms() const;
+
 	/**
 	 * @brief get position in milliseconds where track will start
 	 * @return position in milliseconds where track will start

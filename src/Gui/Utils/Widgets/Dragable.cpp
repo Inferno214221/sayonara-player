@@ -20,37 +20,39 @@
 
 #include "Dragable.h"
 #include "Gui/Utils/GuiUtils.h"
+#include "Gui/Utils/EventFilter.h"
 
 #include "Utils/FileUtils.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Algorithm.h"
 
-#include <QPoint>
-#include <QMimeData>
-#include <QPixmap>
-#include <QDrag>
-#include <QPainter>
+#include <QAbstractItemView>
 #include <QApplication>
-#include <QWidget>
-#include <QUrl>
+#include <QDrag>
 #include <QFontMetrics>
+#include <QMimeData>
+#include <QMouseEvent>
+#include <QPainter>
+#include <QPixmap>
+#include <QPoint>
+#include <QUrl>
 
 namespace Algorithm=Util::Algorithm;
-namespace UtilFile=Util::File;
+namespace FileUtils=Util::File;
 
 using Gui::Dragable;
 
 struct Dragable::Private
 {
 	QPoint		start_drag_pos;
-	QWidget*	parent=nullptr;
+	QWidget*	widget=nullptr;
 	QDrag*		drag=nullptr;
 	bool		valid;
 
 	bool		dragging=false;
 
-	Private(QWidget* parent) :
-		parent(parent),
+	Private(QWidget* widget) :
+		widget(widget),
 		valid(false),
 		dragging(false)
 	{}
@@ -66,15 +68,15 @@ struct Dragable::Private
 		for(const QUrl& url : urls)
 		{
 			QString filename = url.toLocalFile();
-			if(UtilFile::is_playlistfile(filename)){
+			if(FileUtils::is_playlistfile(filename)){
 				playlists++;
 			}
 
-			else if(UtilFile::is_soundfile(filename)){
+			else if(FileUtils::is_soundfile(filename)){
 				tracks++;
 			}
 
-			else if(UtilFile::is_dir(filename)){
+			else if(FileUtils::is_dir(filename)){
 				dirs++;
 			}
 		}
@@ -100,14 +102,17 @@ struct Dragable::Private
 };
 
 
-Dragable::Dragable(QWidget* parent)
+Dragable::Dragable(QAbstractItemView* widget)
 {
-	m = Pimpl::make<Dragable::Private>(parent);
+	m = Pimpl::make<Dragable::Private>(widget);
+
+	widget->setDragEnabled(true);
+	new DragableConnector(widget, this);
 }
 
-Dragable::~Dragable() {}
+Dragable::~Dragable() = default;
 
-void Dragable::drag_pressed(const QPoint& p)
+void Dragable::start_drag(const QPoint& p)
 {
 	m->valid = is_valid_drag_position(p);
 	m->dragging = false;
@@ -115,7 +120,7 @@ void Dragable::drag_pressed(const QPoint& p)
 }
 
 
-QDrag* Dragable::drag_moving(const QPoint& p)
+QDrag* Dragable::move_drag(const QPoint& p)
 {
 	if(!m->valid){
 		return nullptr;
@@ -128,50 +133,48 @@ QDrag* Dragable::drag_moving(const QPoint& p)
 		return m->drag;
 	}
 
-	if(m->dragging)
-	{
+	if(m->dragging) {
 		return m->drag;
 	}
 
-	if(m->drag){
+	if(m->drag) {
 		delete m->drag;
 	}
 
 	m->dragging = true;
 	m->start_drag_pos = QPoint();
-	m->drag = new QDrag(m->parent);
+	m->drag = new QDrag(m->widget);
 
 	QMimeData* data = dragable_mimedata();
-	if(data == nullptr)
-	{
+	if(data == nullptr) {
 		return m->drag;
 	}
 
 	QStringList strings;
-	if(!has_drag_label()){
+	if(!has_drag_label()) {
 		strings = m->get_strings(data);
 	}
 
-	else{
+	else {
 		strings.clear();
 		strings << drag_label();
 	}
 
-	QFontMetrics fm(QApplication::font());
-	const int logo_height = 24;
-	const int logo_width = logo_height;
+	QFontMetrics fm = m->widget->fontMetrics();
+	const int	logo_height = 24;
+	const int	logo_width = logo_height;
 	const QSize logo_size(logo_width, logo_height);
-	const int left_offset = 4;
-	const int font_height = fm.ascent();
-	const int text_height = strings.size() * (font_height + 2);
-	const int pm_height = std::max(30, 30 + (strings.size() - 1) * font_height + 4);
-	const int font_padding = (pm_height - text_height) / 2 + 1;
+	const int	left_offset = 4;
+	const int	font_height = fm.ascent();
+	const int	text_height = strings.size() * (font_height + 2);
+	const int	pm_height = std::max(30, 30 + (strings.size() - 1) * font_height + 4);
+	const int	font_padding = (pm_height - text_height) / 2 + 1;
 
 	int pm_width = logo_height + 4;
 
 	for(const QString& str : Algorithm::AsConst(strings))
 	{
-		pm_width = std::max( pm_width, fm.width(str) );
+		pm_width = std::max( pm_width, Gui::Util::text_width(fm, str) );
 	}
 
 	pm_width += logo_width + 22;
@@ -206,7 +209,7 @@ QDrag* Dragable::drag_moving(const QPoint& p)
 }
 
 
-void Dragable::drag_released(Dragable::ReleaseReason reason)
+void Dragable::release_drag(Dragable::ReleaseReason reason)
 {
 	if(!m){
 		return;
@@ -245,4 +248,57 @@ bool Dragable::has_drag_label() const
 QString Dragable::drag_label() const
 {
 	return QString();
+}
+
+using Gui::DragableConnector;
+
+struct DragableConnector::Private
+{
+	QAbstractItemView* widget=nullptr;
+	Dragable* dragable=nullptr;
+
+	Private(QAbstractItemView* w, Dragable* d) :
+		widget(w),
+		dragable(d)
+	{}
+};
+
+
+Gui::DragableConnector::DragableConnector(QAbstractItemView* widget, Gui::Dragable* dragable) :
+	QObject(widget)
+{
+	m = Pimpl::make<Private>(widget, dragable);
+
+	auto* mpef = new Gui::MousePressedFilter(widget->viewport());
+	auto* mmef = new Gui::MouseMoveFilter(widget->viewport());
+
+	connect(mpef, &Gui::MousePressedFilter::sig_mouse_pressed, this, &DragableConnector::mouse_pressed);
+	connect(mmef, &Gui::MouseMoveFilter::sig_mouse_moved, this, &DragableConnector::mouse_moved);
+
+	widget->viewport()->installEventFilter(mpef);
+	widget->viewport()->installEventFilter(mmef);
+}
+
+Gui::DragableConnector::~DragableConnector() = default;
+
+void Gui::DragableConnector::mouse_pressed(QMouseEvent* e)
+{
+	if(e->buttons() & Qt::LeftButton)
+	{
+		m->dragable->start_drag(e->pos());
+	}
+}
+
+void DragableConnector::mouse_moved(QMouseEvent* e)
+{
+	QDrag* drag = m->dragable->move_drag(e->pos());
+	if(drag)
+	{
+		connect(drag, &QDrag::destroyed, this, &DragableConnector::drag_destroyed);
+	}
+}
+
+void DragableConnector::drag_destroyed()
+{
+	m->dragable->release_drag(Dragable::ReleaseReason::Destroyed);
 }

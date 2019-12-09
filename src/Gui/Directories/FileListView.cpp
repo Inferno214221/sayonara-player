@@ -73,7 +73,6 @@ FileListView::FileListView(QWidget* parent) :
 	this->set_model(m->model);
 	this->setItemDelegate(new Gui::StyledItemDelegate(this));
 	this->setSelectionMode(QAbstractItemView::ExtendedSelection);
-	this->setDragEnabled(true);
 	this->setIconSize(QSize(16, 16));
 
 	{ // rename by pressing F2
@@ -89,28 +88,6 @@ FileListView::FileListView(QWidget* parent) :
 }
 
 FileListView::~FileListView() = default;
-
-void FileListView::mousePressEvent(QMouseEvent* event)
-{
-	SearchableListView::mousePressEvent(event);
-
-	if(event->button() & Qt::LeftButton)
-	{
-		this->drag_pressed(event->pos());
-	}
-}
-
-void FileListView::mouseMoveEvent(QMouseEvent* event)
-{
-	QDrag* drag = Dragable::drag_moving(event->pos());
-	if(drag)
-	{
-		connect(drag, &QObject::destroyed, this, [=]()
-		{
-			this->drag_released(Dragable::ReleaseReason::Destroyed);
-		});
-	}
-}
 
 void FileListView::contextMenuEvent(QContextMenuEvent* event)
 {

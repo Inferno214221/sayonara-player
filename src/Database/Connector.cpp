@@ -305,7 +305,7 @@ int Connector::old_db_version() const
 
 int Connector::get_max_db_version()
 {
-	return 22;
+	return 24;
 }
 
 bool Connector::apply_fixes()
@@ -718,6 +718,73 @@ bool Connector::apply_fixes()
 		}
 
 		settings_connector()->store_setting("version", 22);
+	}
+
+	if(version < 23)
+	{
+		{
+			check_and_create_table(
+				"Sessions",
+				"CREATE TABLE IF NOT EXISTS Sessions "
+				"("
+				"    sessionID INTEGER, "
+				"    date INTEGER, "
+				"    trackID INTEGER DEFAULT -1 REFERENCES Tracks(trackID) ON DELETE SET DEFAULT, "
+				"    title VARCHAR(128), "
+				"    artist VARCHAR(128), "
+				"    album VARCHAR(128)"
+				");"
+			);
+		}
+
+		{
+			const QString query
+			(
+				"INSERT INTO Sessions "
+				"SELECT session.date, session.date, session.trackID, tracks.title, artists.name, albums.name "
+				"FROM Session session, Tracks tracks, Artists artists, Albums albums "
+				"WHERE tracks.artistID = artists.artistID AND tracks.albumID = albums.albumID AND Session.trackID = tracks.trackID "
+				";"
+			);
+
+			Query q(this);
+			q.prepare(query);
+			q.exec();
+		}
+
+		{
+			check_and_drop_table("Session");
+		}
+
+		settings_connector()->store_setting("version", 23);
+	}
+
+	if(version < 24)
+	{
+
+		{
+			const QString query
+			(
+				"UPDATE Sessions SET sessionID = (sessionID + 20000000000000) WHERE sessionID < 1000000000000;"
+			);
+
+			Query q(this);
+			q.prepare(query);
+			q.exec();
+
+		}
+		{
+			const QString query
+			(
+				"UPDATE Sessions SET date = (date + 20000000000000) WHERE date < 1000000000000;"
+			);
+
+			Query q(this);
+			q.prepare(query);
+			q.exec();
+		}
+
+		settings_connector()->store_setting("version", 24);
 	}
 
 	return true;

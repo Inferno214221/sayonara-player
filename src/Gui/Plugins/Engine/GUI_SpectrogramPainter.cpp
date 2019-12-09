@@ -221,7 +221,9 @@ void GUI_SpectrogramPainter::show_fullsize()
 		label->deleteLater();
 	});
 
-	connect(mmf, &Gui::MouseMoveFilter::sig_mouse_moved, this, [=](const QPoint& p){
+	connect(mmf, &Gui::MouseMoveFilter::sig_mouse_moved, this, [=](const QMouseEvent* e)
+	{
+		QPoint p = e->pos();
 		float yPercent = (1.0f - (p.y() * 1.0f) / label->height());
 		label->setToolTip( calc_tooltip(yPercent) );
 	});
