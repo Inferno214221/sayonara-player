@@ -89,7 +89,7 @@ namespace Language=Util::Language;
 
 static bool check_four_letter(const QString& four_letter)
 {
-	QRegExp re("^[a-z][a-z]_[A-Z][A-Z]$");
+	QRegExp re("^[a-z]{2}_[A-Z]{2}(\\.[A-Z0-9\\-]+[0-9])?$");
 	int idx = re.indexIn(four_letter);
 
 	return (idx == 0);
@@ -172,7 +172,7 @@ QString Language::get_similar_language_4(const QString& four_letter)
 
 		QDir dir(translation_path);
 		QStringList entries = dir.entryList(QDir::Files);
-		QRegExp re("sayonara_lang_([a-z][a-z])_.+qm");
+		QRegExp re("sayonara_lang_([a-z]{2})_.+qm");
 
 		for(const QString& entry : entries)
 		{
@@ -218,7 +218,10 @@ QString Language::get_used_language_file(const QString& four_letter)
 
 QString Language::extract_four_letter(const QString& language_file)
 {
-	QRegExp re(".*sayonara_lang_([a-z][a-z]_[A-Z][A-Z]+)\\.(ts|qm)");
+	QRegExp re(".*sayonara_lang_"
+		"([a-z]{2}_[A-Z]{2}(\\.[A-Z0-9\\-]+[0-9])?)\\.(ts|qm)$"
+	);
+
 	int idx = re.indexIn(language_file);
 	if(idx < 0){
 		return QString();

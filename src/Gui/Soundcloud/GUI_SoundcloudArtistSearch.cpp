@@ -27,6 +27,7 @@
 #include "Utils/MetaData/Album.h"
 #include "Utils/MetaData/Artist.h"
 #include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Language/Language.h"
 
 struct SC::GUI_ArtistSearch::Private
 {
@@ -199,14 +200,13 @@ void SC::GUI_ArtistSearch::tracks_fetched(const MetaDataList& v_md)
 
 	ui->btn_add->setEnabled(v_md.size() > 0);
 
-	set_tracks_label(v_md.size());
+	set_tracks_label(v_md.count());
 }
-
 
 void SC::GUI_ArtistSearch::set_tracks_label(int n_tracks)
 {
-	if(n_tracks >= 0){
-		ui->lab_n_tracks->setText( tr("%n track(s) found", "", n_tracks) );
+	if(n_tracks >= 0) {
+		ui->lab_n_tracks->setText(Lang::get_with_number(Lang::NrTracks, n_tracks));
 	}
 
 	ui->lab_n_tracks->setVisible(n_tracks >= 0);

@@ -491,6 +491,40 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 	}
 }
 
+
+LanguageString Lang::get_with_number(TermNr term, int param, bool* ok)
+{
+	if(ok){
+		*ok = true;
+	}
+
+	Lang l;
+
+	switch(term)
+	{
+		case NrTracks:
+			if(param == 0) {
+				return l.tr("No tracks");
+			}
+
+			return l.tr("%n track(s)", "", param);
+
+		case NrTracksFound:
+			if(param == 0) {
+				return l.tr("No tracks found");
+			}
+
+			return l.tr("%n track(s) found", "", param);
+
+		default:
+			if(ok) {
+				*ok = false;
+			}
+
+			return QString();
+	}
+}
+
 QString Lang::convert_old_lang(const QString& old_lang)
 {
 	QString tl = two_letter(old_lang);
@@ -543,7 +577,7 @@ QMap<QString, QLocale> Lang::available_languages()
 
 QString Lang::two_letter(const QString& language_name)
 {
-	QRegExp re(".*lang_(.+)(_.*)*.qm");
+	QRegExp re(".*lang_(.+)(_.*)?.qm");
 	int idx = re.indexIn(language_name);
 	if(idx < 0)
 	{

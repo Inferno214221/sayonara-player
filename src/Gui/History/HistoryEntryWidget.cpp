@@ -2,6 +2,7 @@
 #include "HistoryTableView.h"
 #include "Components/Session/Session.h"
 #include "Utils/Utils.h"
+#include "Utils/Language/Language.h"
 
 #include <QVBoxLayout>
 #include <QLabel>
@@ -44,7 +45,7 @@ HistoryEntryWidget::HistoryEntryWidget(Session::Timecode timecode, QWidget* pare
 			QFont font = m->track_label->font();
 			font.setBold(true);
 			m->track_label->setFont(font);
-			m->track_label->setText(tr("%n track(s)", "", m->tableview->rows()));
+			m->track_label->setText(Lang::get_with_number(Lang::NrTracks, m->tableview->rows()));
 		}
 
 		label_layout->addWidget(m->date_label);

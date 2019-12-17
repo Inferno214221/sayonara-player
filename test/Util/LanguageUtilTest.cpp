@@ -120,6 +120,18 @@ void LanguageUtilTest::four_letter_test()
 	expected = "de_DE";
 	QVERIFY(four_letter == expected);
 
+	four_letter = Language::extract_four_letter("sayonara_lang_zh_CN.GB2312.ts");
+	expected = "zh_CN.GB2312";
+	QVERIFY(four_letter == expected);
+
+	four_letter = Language::extract_four_letter("sayonara_lang_de_DE.ISO-8859-15.ts");
+	expected = "de_DE.ISO-8859-15";
+	QVERIFY(four_letter == expected);
+
+	four_letter = Language::extract_four_letter("sayonara_lang_zh_CN.GB2312.ts.qm");
+	expected = "";
+	QVERIFY(four_letter == expected);
+
 	four_letter = Language::extract_four_letter("asd;flkjasdsayonara_lang_de_DE.xz");
 	expected = QString();
 	QVERIFY(four_letter == expected);

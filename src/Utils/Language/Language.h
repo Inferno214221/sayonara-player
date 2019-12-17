@@ -276,6 +276,14 @@ public:
 		NUMBER_OF_LANGUAGE_KEYS
 	};
 
+	enum TermNr
+	{
+		NrTracks=0,
+		NrTracksFound,
+		NUMBER_OF_LANGUAGE_PARAM_KEYS
+	};
+
+
 public:
 	Lang();
 	~Lang();
@@ -287,6 +295,8 @@ public:
 	 * @return translated text
 	 */
 	static LanguageString get(Lang::Term term, bool* ok=nullptr);
+
+	static LanguageString get_with_number(Lang::TermNr term, int param, bool* ok=nullptr);
 
 	/**
 	 * @brief Converts two letter into four letter

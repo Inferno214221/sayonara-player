@@ -99,8 +99,12 @@ void GUI_ImportDialog::language_changed()
 
 void GUI_ImportDialog::set_metadata(const MetaDataList& v_md)
 {
-	if(!v_md.isEmpty()){
-		ui->lab_status->setText(tr("%n track(s) available", "", v_md.count()));
+	if(!v_md.isEmpty())
+	{
+		ui->lab_status->setText
+		(
+			Lang::get_with_number(Lang::NrTracksFound, v_md.count())
+		);
 	}
 
 	m->tag_edit->set_metadata(v_md);

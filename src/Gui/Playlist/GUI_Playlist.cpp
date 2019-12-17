@@ -245,8 +245,8 @@ void GUI_Playlist::set_total_time_label()
 		rows = cur_view->row_count();
 	}
 
-	QString playlist_string = tr("%n track(s)", "", rows);
-	if(rows == 0){
+	QString playlist_string = Lang::get_with_number(Lang::NrTracks, rows);
+	if(rows == 0) {
 		playlist_string = tr("Playlist empty");
 	}
 
