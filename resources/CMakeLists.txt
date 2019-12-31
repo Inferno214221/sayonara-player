@@ -7,6 +7,8 @@ project(say_resources)
 #	@ONLY
 # )
 
+configure_file(version.in ${CMAKE_BINARY_DIR}/version @ONLY)
+
 # manpage
 find_program(GZIP_BINARY
 	NAMES gzip	
