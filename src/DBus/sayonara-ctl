@@ -1,0 +1,77 @@
+#!/usr/bin/env python3
+# install python3-pydbus
+
+import sys
+
+from pydbus import SessionBus
+
+def sgn(num):
+    if num > 0:
+        return "+" + str(num)
+    else: 
+        return str(num)
+
+def seek( pos ):
+    iPos = int(pos)
+    print("Pos: " + sgn(iPos) + "us = " + sgn(iPos / 1000000) + "s")
+    gSayonaraInstance.Seek(iPos)
+
+
+def setVolume( vol ):
+    fVol = float(vol)
+    if fVol > 1.0: 
+        fVol = fVol / 100.0
+
+    print("Vol: " + fVol)
+    gSayonaraInstance.SetVolume(fVol)
+
+def setShuffle( enabled ):
+    bEnabled = int(enabled)
+    gSayonaraInstance.SetShuffle(bEnabled)
+
+def main():
+    bus = SessionBus()
+    try:
+        global gSayonaraInstance
+        gSayonaraInstance = bus.get(
+            "org.mpris.MediaPlayer2.sayonara",  # Bus name
+            "/org/mpris/MediaPlayer2"           # Object path
+        )
+    except:
+        print("Sayonara not running")
+        sys.exit(1)
+
+    functionMap = {
+        "play":       gSayonaraInstance.Play,
+        "play-pause": gSayonaraInstance.PlayPause,
+        "pause":      gSayonaraInstance.Pause,
+        "stop":       gSayonaraInstance.Stop,
+        "seek-us":    seek,
+        "set-shuffle": setShuffle,
+        "next":       gSayonaraInstance.Next,
+        "previous":   gSayonaraInstance.Previous,
+        "set-volume": setVolume,
+        "inc-volume": gSayonaraInstance.IncreaseVolume,
+        "dec-volume": gSayonaraInstance.DecreaseVolume,
+        "raise":      gSayonaraInstance.Raise,
+        "quit":       gSayonaraInstance.Quit
+    }
+
+    argn = len(sys.argv)
+    if argn < 2:
+        print("Call: " + sys.argv[0] + " <command> [parameter]")
+        for k in functionMap:
+            print("\t" + k)
+        sys.exit(1)
+
+    fnName = sys.argv[1]
+    params = sys.argv[2:]
+
+    if argn == 2:
+        functionMap[fnName]()
+    elif argn == 3:
+        functionMap[fnName](params[0])
+    else:
+        print("Cannot handle functions with more than one parameter")
+
+if __name__ == "__main__": main()

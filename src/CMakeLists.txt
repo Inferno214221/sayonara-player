@@ -90,7 +90,7 @@ if( NOT DEFINED CMAKE_BUILD_TYPE OR NOT CMAKE_BUILD_TYPE )
 	set(CMAKE_BUILD_TYPE "Release")
 endif()
 
-find_package(Qt5 COMPONENTS Core Widgets Sql Network DBus Xml REQUIRED)
+find_package(Qt5 5.8 COMPONENTS Core Widgets Sql Network DBus Xml REQUIRED)
 find_package(Qt5LinguistTools REQUIRED)
 
 include_directories(${Qt5Core_INCLUDE_DIRS})

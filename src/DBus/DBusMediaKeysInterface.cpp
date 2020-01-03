@@ -31,7 +31,6 @@
 struct DBusMediaKeysInterface::Private
 {
 	QObject*		parent=nullptr;
-	PlayManagerPtr	play_manager=nullptr;
 	bool            initialized;
 	bool			is_registered;
 
@@ -39,11 +38,8 @@ struct DBusMediaKeysInterface::Private
 		parent(parent),
 		initialized(false),
 		is_registered(false)
-	{
-		play_manager = PlayManager::instance();
-	}
+	{}
 };
-
 
 DBusMediaKeysInterface::DBusMediaKeysInterface(QObject *parent) :
 	QObject(parent)
@@ -83,30 +79,31 @@ void DBusMediaKeysInterface::sl_media_key_pressed(const QString& program_name, c
 	Q_UNUSED(program_name)
 
 	QKeyEvent *event = nullptr;
+	auto* pm = PlayManager::instance();
 
 	if(key.compare("play", Qt::CaseInsensitive) == 0){
 		event = new QKeyEvent ( QEvent::KeyPress, Qt::Key_MediaPlay, Qt::NoModifier);
-		m->play_manager->play_pause();
+		pm->play_pause();
 	}
 
 	else if(key.compare("pause", Qt::CaseInsensitive) == 0){
 		event = new QKeyEvent ( QEvent::KeyPress, Qt::Key_MediaPause, Qt::NoModifier);
-		m->play_manager->pause();
+		pm->pause();
 	}
 
 	else if(key.compare("next", Qt::CaseInsensitive) == 0){
 		event = new QKeyEvent ( QEvent::KeyPress, Qt::Key_MediaNext, Qt::NoModifier);
-		m->play_manager->next();
+		pm->next();
 	}
 
 	else if(key.compare("previous", Qt::CaseInsensitive) == 0){
 		event = new QKeyEvent ( QEvent::KeyPress, Qt::Key_MediaPrevious, Qt::NoModifier);
-		m->play_manager->previous();
+		pm->previous();
 	}
 
 	else if(key.contains("stop", Qt::CaseInsensitive) == 0){
 		event = new QKeyEvent (QEvent::KeyPress, Qt::Key_MediaStop, Qt::NoModifier);
-		m->play_manager->stop();
+		pm->stop();
 	}
 
 	if(event && m->parent){

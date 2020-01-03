@@ -114,7 +114,7 @@ void TrayIconContextMenu::set_enable_fwd(bool b)
 
 void TrayIconContextMenu::mute_clicked()
 {
-	PlayManagerPtr pm = PlayManager::instance();
+	auto* pm = PlayManager::instance();
 	bool mute = pm->is_muted();
 
 	pm->set_muted(!mute);

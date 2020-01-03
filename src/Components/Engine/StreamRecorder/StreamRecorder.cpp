@@ -78,7 +78,7 @@ SR::StreamRecorder::StreamRecorder(QObject *parent) :
 		sp_log(Log::Info, this) << "Remove " << path;
 	}
 
-	PlayManagerPtr play_manager = PlayManager::instance();
+	auto* play_manager = PlayManager::instance();
 	connect(play_manager, &PlayManager::sig_playstate_changed, this, &StreamRecorder::playstate_changed);
 }
 

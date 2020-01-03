@@ -12,24 +12,41 @@
 		<method name='Seek'>
 			<arg direction='in' name='Offset' type='x'/>
 		</method>
+
 		<method name='SetPosition'>
 			<arg direction='in' name='TrackId' type='o'/>
 			<arg direction='in' name='Position' type='x'/>
 		</method>
+
 		<method name='OpenUri'>
 			<arg direction='in' name='Uri' type='s'/>
 		</method>
+
 		<signal name='Seeked'>
 			<arg name='Position' type='x'/>
 		</signal>
+
 		<property name='PlaybackStatus' type='s' access='read'/>
 		<property name='LoopStatus' type='s' access='readwrite'/>
 		<property name='Rate' type='d' access='readwrite'/>
+		<property name='Rating' type='i' access='read'/>
+
 		<property name='Shuffle' type='b' access='readwrite'/>
+		<method name='SetShuffle'>
+			<arg direction='in' name='enabled' type='b'/>
+		</method>
+
 		<property name='Metadata' type='a{sv}' access='read'>
 			<annotation name="org.qtproject.QtDBus.QtTypeName" value="QVariantMap"/>
 		</property>
+
 		<property name='Volume' type='d' access='readwrite'/>
+		<method name="IncreaseVolume"/>
+		<method name="DecreaseVolume"/>
+		<method name="SetVolume">
+			<arg direction='in' name='volume' type='d'/>
+		</method>
+
 		<property name='Position' type='x' access='read'/>
 		<property name='MinimumRate' type='d' access='read'/>
 		<property name='MaximumRate' type='d' access='read'/>
