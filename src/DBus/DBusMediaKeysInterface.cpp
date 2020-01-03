@@ -78,7 +78,7 @@ void DBusMediaKeysInterface::sl_media_key_pressed(const QString& program_name, c
 {
 	Q_UNUSED(program_name)
 
-	QKeyEvent *event = nullptr;
+	QKeyEvent* event = nullptr;
 	auto* pm = PlayManager::instance();
 
 	if(key.compare("play", Qt::CaseInsensitive) == 0){

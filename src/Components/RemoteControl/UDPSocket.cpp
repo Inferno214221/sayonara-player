@@ -6,6 +6,7 @@
 
 #include <QUdpSocket>
 #include <QNetworkDatagram>
+#include <QHostInfo>
 
 struct RemoteUDPSocket::Private
 {
@@ -77,7 +78,13 @@ void RemoteUDPSocket::data_received()
 			});
 
 			QString ip_string = ips.join(",") + QString("@%1").arg(GetSetting(Set::Remote_Port)) ;
-			QString str = answer_string("ips", GetSetting(Set::Player_PublicId), ip_string);
+			QString public_id = GetSetting(Set::Player_PublicId);
+
+			QString str = QString("sayrc01%1/%2/%3/%4")
+				.arg("ips")
+				.arg(public_id)
+				.arg(QHostInfo::localHostName())
+				.arg(ip_string);
 
 			socket->writeDatagram
 			(
