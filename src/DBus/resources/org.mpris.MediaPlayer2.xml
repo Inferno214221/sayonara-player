@@ -14,5 +14,8 @@
 		<property name='SupportedMimeTypes' type='as' access='read'/>
 		<property name='Fullscreen' type='b' access='readwrite'/>
 		<property name='CanSetFullscreen' type='b' access='read'/>
+		<method name='SetFullscreen'>
+			<arg direction='in' name='enable' type='b'/>
+		</method>
 	</interface>
 </node>

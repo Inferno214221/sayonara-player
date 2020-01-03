@@ -101,6 +101,9 @@ class MediaPlayer2 :
 		double					Rate();
 		void					SetRate(double rate);
 
+		Q_PROPERTY(int			Rating				READ	Rating)
+		int						Rating();
+
 
 		Q_PROPERTY(bool			Shuffle				READ	Shuffle		WRITE	SetShuffle)
 		bool					Shuffle();
@@ -114,11 +117,13 @@ class MediaPlayer2 :
 		Q_PROPERTY(double		Volume				READ	Volume		WRITE	SetVolume)
 		double					Volume();
 		void					SetVolume(double volume);
+		void					IncreaseVolume();
+		void					DecreaseVolume();
 
 
 		Q_PROPERTY(qlonglong	Position			READ	Position)
 		qlonglong				Position();
-		void				SetPosition(const QDBusObjectPath& track_id, qlonglong position);
+		void					SetPosition(const QDBusObjectPath& track_id, qlonglong position);
 
 
 		Q_PROPERTY(double		MinimumRate			READ	MinimumRate)
@@ -175,6 +180,10 @@ class MediaPlayer2 :
 	signals:
 		void					Seeked(qlonglong position);
 		void					sig_raise();
+
+	private slots:
+		void					track_metadata_changed();
+
 };
 } // end namespace DBusMPRIS
 

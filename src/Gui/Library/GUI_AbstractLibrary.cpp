@@ -135,7 +135,7 @@ void GUI_AbstractLibrary::search_edited(const QString& search)
 {
 	Q_UNUSED(search)
 
-	if(GetSetting(Set::Lib_LiveSearch))
+	if(GetSetting(Set::Lib_LiveSearch) || search.isEmpty())
 	{
 		query_library();
 	}

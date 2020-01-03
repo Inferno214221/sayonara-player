@@ -1,0 +1,139 @@
+#!/usr/bin/env python3
+
+import sys
+import argparse
+from pydbus import SessionBus
+
+attributes = {
+    'album':         'xesam:album',
+    'albumArtist':   'xesam:albumArtist',
+    'artist':        'xesam:artist',
+    'discNumber':    'xesam:discNumber',
+    'genre':         'xesam:genre',
+    'rating':        'xesam:userRating',
+    'title':         'xesam:title',
+    'trackNumber':   'xesam:trackNumber',
+
+    'artUrl':        'mpris:artUrl',
+    'length':        'mpris:length',
+
+    'bitrate':       'sayonara:bitrate',
+    'filesize':      'sayonara:filesize',
+    'year':          'sayonara:year',
+
+    'length-sec':    'length-sec',
+    'length-string': 'length-string',
+    'pos':           'pos',
+    'pos-sec':       'pos-sec',
+    'pos-string':    'pos-string',
+    'progress':      'progress',
+    'rating-stars':  'rating-stars',
+    'status':        'status',
+    'volume':        'volume'
+}
+
+
+def print_help_and_exit():
+    parser.print_help()
+    sys.exit(1)
+
+
+def apply_to_format_string( resultList, formatString ):
+    result = (', ').join(resultList)
+    if not formatString is None:
+        if len(formatString) > 0:
+            result = formatString
+            for r in resultList:
+                result = result.replace('%', r, 1)
+
+    return result
+
+def convert_sec_to_string(sec):
+
+    hours = 0
+    minutes = 0
+    if sec >= 3600:
+        hours = int(sec / 3600)
+        sec = sec % 3600
+    if sec >= 60:
+        minutes = int(sec / 60)
+        sec = sec % 60
+
+    ret = ''
+    if hours > 0:
+        ret = str(hours) + ':'
+
+    ret = ret + str(minutes).rjust(2, '0') + ':' + str(sec).rjust(2, '0')
+
+    return ret
+
+
+def main():
+    bus = SessionBus()
+
+    try:
+        sayonara = bus.get(
+            'org.mpris.MediaPlayer2.sayonara',  # Bus name
+            '/org/mpris/MediaPlayer2'           # Object path
+        )
+    except:
+        print('Sayonara not running')
+        sys.exit(1)
+
+    global parser
+    parser = argparse.ArgumentParser()
+    parser.add_argument('attributes', 
+            help='a comma separated list of attributes. Valid attributes: ' + 
+            (', ').join(attributes.keys())
+    )
+
+    parser.add_argument('--format', type=str, required=False, 
+            help='a format string. Every %% is replaced by the value of an attribute'
+    )
+
+    parsedArgs = parser.parse_args()
+    requestedAttributes = parsedArgs.attributes.split(',')
+
+    resultList = []
+
+    for attribute in requestedAttributes:
+        if not attribute in attributes:
+            print('Invalid attribute: ' + attribute)
+            print_help_and_exit()
+            
+        metadata =  sayonara.Get('org.mpris.MediaPlayer2.Player', 'Metadata')
+        position =  sayonara.Get('org.mpris.MediaPlayer2.Player', 'Position')
+        status =    sayonara.Get('org.mpris.MediaPlayer2.Player', 'PlaybackStatus')
+        volume =    sayonara.Get('org.mpris.MediaPlayer2.Player', 'Volume')
+        length =    metadata[attributes['length']]
+        
+        metadata['pos'] =           position
+        metadata['pos-sec'] =       int(position / 1000000.0)
+        metadata['pos-string'] =    convert_sec_to_string(metadata['pos-sec'])
+        metadata['length-sec'] =    int(length / 1000000.0)
+        metadata['length-string'] = convert_sec_to_string(metadata['length-sec'])
+
+        try:
+            metadata['progress'] =  position / length
+        except:
+            metadata['progress'] =  0;
+
+        metadata['volume'] =        volume
+
+        rating = int(metadata['xesam:userRating'] * 5)
+        metadata['xesam:userRating'] = rating
+        
+        metadata['rating-stars'] = "*" * rating
+                
+        specifier = attributes[attribute]
+
+        resultList.append(str(metadata[specifier]))
+
+    formatString = parsedArgs.format
+    result = apply_to_format_string(resultList, formatString)
+
+    print(result)
+   
+
+if __name__ == '__main__': main()
+

@@ -352,8 +352,6 @@ private slots:
 	void		tracks_deleted();
 };
 
-using PlayManagerPtr=PlayManager*;
-
 #endif
 
 

@@ -51,7 +51,7 @@ struct DBusMPRIS::MediaPlayer2::Private
 	MicroSeconds	pos;
 
 	QMainWindow*	player=nullptr;
-	PlayManagerPtr  play_manager=nullptr;
+	PlayManager*	play_manager=nullptr;
 
 	double			volume;
 
@@ -87,6 +87,8 @@ DBusMPRIS::MediaPlayer2::MediaPlayer2(QMainWindow* player, QObject *parent) :
 			this, &DBusMPRIS::MediaPlayer2::position_changed);
 	connect(m->play_manager, &PlayManager::sig_volume_changed,
 			this, &DBusMPRIS::MediaPlayer2::volume_changed);
+	connect(m->play_manager, &PlayManager::sig_track_metadata_changed,
+			this, &DBusMPRIS::MediaPlayer2::track_metadata_changed);
 
 	track_changed(m->play_manager->current_track());
 }
@@ -201,13 +203,23 @@ void DBusMPRIS::MediaPlayer2::Raise()
 	sp_log(Log::Debug, this) << "Raise";
 
 	QByteArray geometry = GetSetting(Set::Player_Geometry);
-	QTimer::singleShot(200, [=]()
-	{
-		m->player->restoreGeometry(geometry);
-		m->player->showNormal();
-	});
-}
 
+	if(m->player->isMinimized()){
+
+		QTimer::singleShot(200, [=]()
+		{
+			m->player->showNormal();
+		});
+	}
+	else
+	{
+		QTimer::singleShot(200, [=]()
+		{
+			m->player->restoreGeometry(geometry);
+			m->player->showNormal();
+		});
+	}
+}
 
 /*** mpris.mediaplayer2.player ***/
 
@@ -231,6 +243,7 @@ bool DBusMPRIS::MediaPlayer2::Shuffle()
 	return false;
 }
 
+#include "Utils/Set.h"
 
 QVariantMap DBusMPRIS::MediaPlayer2::Metadata()
 {
@@ -258,13 +271,40 @@ QVariantMap DBusMPRIS::MediaPlayer2::Metadata()
 	if(artist.isEmpty()){
 		artist = Lang::get(Lang::UnknownArtist);
 	}
+	QString album_artist = m->md.album_artist();
+	if(album_artist.isEmpty()){
+		album_artist = Lang::get(Lang::UnknownArtist);
+	}
 
-	map["mpris:trackid"] = v_object_path;
-	map["mpris:length"] = v_length;
-	map["xesam:title"] = title;
-	map["xesam:album"] = album;
-	map["xesam:artist"] = QStringList({artist});
 	map["mpris:artUrl"] = QUrl::fromLocalFile(m->cover_path).toString();
+	map["mpris:length"] = v_length;
+	map["mpris:trackid"] = v_object_path;
+
+	map["xesam:album"] = album;
+	map["xesam:albumArtist"] = album_artist;
+	map["xesam:artist"] = QStringList({artist});
+
+	if(!m->md.comment().isEmpty()) {
+		map["xesam:comment"] = m->md.comment();
+	}
+
+	if(m->md.createdate_datetime().isValid()) {
+		map["contentCreated"] = m->md.createdate_datetime().toString(Qt::ISODate);
+	}
+
+	map["xesam:discNumber"] = int(m->md.discnumber());
+
+	if(!m->md.genres().isEmpty()) {
+		map["xesam:genre"] = m->md.genres_to_list().join(", ");
+	}
+
+	map["xesam:trackNumber"] = int(m->md.track_number());
+	map["xesam:title"] = title;
+	map["xesam:userRating"] = (int(m->md.rating()) / 5.0);
+
+	map["sayonara:year"] = int(m->md.year());
+	map["sayonara:bitrate"] = int(m->md.bitrate());
+	map["sayonara:filesize"] = QVariant::fromValue<int>(int(m->md.filesize()));
 
 	return map;
 }
@@ -328,7 +368,7 @@ bool DBusMPRIS::MediaPlayer2::CanPause()
 
 bool DBusMPRIS::MediaPlayer2::CanSeek()
 {
-	return true;
+	return (m->play_manager->current_track().duration_ms() > 0);
 }
 
 bool DBusMPRIS::MediaPlayer2::CanControl()
@@ -396,9 +436,16 @@ void DBusMPRIS::MediaPlayer2::SetRate(double rate)
 	Q_UNUSED(rate)
 }
 
+int DBusMPRIS::MediaPlayer2::Rating()
+{
+	return int(m->md.rating());
+}
+
 void DBusMPRIS::MediaPlayer2::SetShuffle(bool shuffle)
 {
-	Q_UNUSED(shuffle)
+	Playlist::Mode plm = GetSetting(Set::PL_Mode);
+	plm.setShuffle(shuffle);
+	SetSetting(Set::PL_Mode, plm);
 }
 
 void DBusMPRIS::MediaPlayer2::SetVolume(double volume)
@@ -407,6 +454,15 @@ void DBusMPRIS::MediaPlayer2::SetVolume(double volume)
 	m->volume = volume;
 }
 
+void DBusMPRIS::MediaPlayer2::IncreaseVolume()
+{
+	m->play_manager->volume_up();
+}
+
+void DBusMPRIS::MediaPlayer2::DecreaseVolume()
+{
+	m->play_manager->volume_down();
+}
 
 void DBusMPRIS::MediaPlayer2::volume_changed(int volume)
 {
@@ -462,6 +518,13 @@ void DBusMPRIS::MediaPlayer2::track_changed(const MetaData& md)
 	QVariantMap map = Metadata();
 	create_message("Metadata", map);
 }
+
+
+void DBusMPRIS::MediaPlayer2::track_metadata_changed()
+{
+	track_changed(m->play_manager->current_track());
+}
+
 
 void DBusMPRIS::MediaPlayer2::playstate_changed(PlayState state)
 {

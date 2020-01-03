@@ -375,6 +375,8 @@ void PlayManager::change_track_metadata(const MetaData& md)
 
 			emit sig_www_track_finished(md_old);
 		}
+
+		m->track_playtime_ms = 0;
 	}
 
 	emit sig_track_metadata_changed();
@@ -412,7 +414,6 @@ void PlayManager::buffering(int progress)
 {
 	emit sig_buffer(progress);
 }
-
 
 void PlayManager::volume_up()
 {

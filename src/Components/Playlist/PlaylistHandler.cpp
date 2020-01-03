@@ -53,7 +53,7 @@ using Playlist::Loader;
 
 struct Handler::Private
 {
-	PlayManagerPtr			play_manager=nullptr;
+	PlayManager*			play_manager=nullptr;
 	PlaylistChangeNotifier*	pcn=nullptr;
 	PlaylistCollection		playlists;
 	int						active_playlist_idx;

@@ -49,7 +49,7 @@ struct Shutdown::Private
 	DB::Settings*	db=nullptr;
 	QTimer*			timer=nullptr;
 	QTimer*			timer_countdown=nullptr;
-	PlayManagerPtr	play_manager=nullptr;
+	PlayManager*	play_manager=nullptr;
 
 	MilliSeconds	msecs2go;
 	bool			is_running;
