@@ -48,9 +48,7 @@ deploy-sayonara-appimage:
     paths:
       - build/*.AppImage
     expire_in: 1 week
-  only:
-    - master
-    - tags
+  when: manual
 
 ## Fedora
 deploy-sayonara-fedora:
@@ -62,9 +60,7 @@ deploy-sayonara-fedora:
     paths:
       - rpms/*.rpm
     expire_in: 1 week
-  only:
-    - master
-    - tags
+  when: manual
 
 # Languages
 ## Create ts file
