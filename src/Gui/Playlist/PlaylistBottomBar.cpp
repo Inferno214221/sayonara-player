@@ -26,10 +26,10 @@
 #include "Gui/Utils/GuiUtils.h"
 
 #include "Utils/Macros.h"
+#include "Utils/Message/Message.h"
 #include "Utils/Playlist/PlaylistMode.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language/Language.h"
-#include "Utils/Message/Message.h"
 
 #ifdef SAYONARA_WITH_SHUTDOWN
 	#include "Gui/Shutdown/GUI_Shutdown.h"
@@ -267,7 +267,7 @@ void BottomBar::skin_changed()
 	Gui::Widget::skin_changed();
 
 	QFontMetrics fm = this->fontMetrics();
-	int w = (fm.horizontalAdvance("m") * 250) / 100;
+	int w = (Gui::Util::text_width(fm, "m") * 250) / 100;
 	w = std::max(29, w);
 
 	const QList<BottomBarButton*> buttons = m->buttons();

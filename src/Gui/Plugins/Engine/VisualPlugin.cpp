@@ -22,6 +22,7 @@
 #include "VisualColorStyleChooser.h"
 #include "Components/Engine/EngineHandler.h"
 #include "Components/PlayManager/PlayManager.h"
+#include "Gui/Utils/GuiUtils.h"
 
 struct VisualPlugin::Private
 {
@@ -83,7 +84,7 @@ void VisualPlugin::set_button_sizes()
 	QFont font = m->btn_config->font();
 
 	QFontMetrics fm = this->fontMetrics();
-	int char_width = fm.horizontalAdvance("W");
+	int char_width = Gui::Util::text_width(fm, "W");
 
 	int x = 10;
 	int y = 5;

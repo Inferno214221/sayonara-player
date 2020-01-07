@@ -19,6 +19,8 @@
  */
 
 #include "FloatingLabel.h"
+#include "Gui/Utils/GuiUtils.h"
+
 #include <QPaintEvent>
 #include <QPainter>
 #include <QTimer>
@@ -77,7 +79,7 @@ void FloatingLabel::paintEvent(QPaintEvent* event)
 
 	painter.drawText
 	(
-		QRectF(int(m->offset), 0, fm.horizontalAdvance(m->text), fm.height()),
+		QRectF(int(m->offset), 0, Gui::Util::text_width(fm, m->text), fm.height()),
 		m->text
 	);
 }
@@ -87,7 +89,7 @@ void FloatingLabel::resizeEvent(QResizeEvent* event)
 	QLabel::resizeEvent(event);
 
 	QFontMetrics fm = this->fontMetrics();
-	int difference = fm.horizontalAdvance(m->text) - this->width();
+	int difference = Gui::Util::text_width(fm, m->text) - this->width();
 
 	if(difference <= 0)
 	{
@@ -130,7 +132,7 @@ void FloatingLabel::updateOffset()
 	static const int tolerance = 10;
 
 	QFontMetrics fm = this->fontMetrics();
-	int difference = fm.horizontalAdvance(m->text) - this->width();
+	int difference = Gui::Util::text_width(fm, m->text) - this->width();
 
 	if(difference <= 0)
 	{
@@ -141,10 +143,10 @@ void FloatingLabel::updateOffset()
 
 	m->floating = true;
 
-	int minOffset = -(fm.horizontalAdvance(m->text) - this->width() + tolerance);
+	int minOffset = -(Gui::Util::text_width(fm, m->text) - this->width() + tolerance);
 	int maxOffset = tolerance;
 
-	int charWidth = fm.horizontalAdvance("O");
+	int charWidth = Gui::Util::text_width(fm, "O");
 	int charsWidth = m->chars_per_second * charWidth;
 
 	if(difference < charsWidth)
