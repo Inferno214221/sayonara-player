@@ -1,6 +1,6 @@
 /* GUI_Simpleplayer.h */
 
-/* Copyright (C) 2011-2019 Lucio Carreras
+/* Copyright (C) 2011-2020 Lucio Carreras
  *
  * This file is part of sayonara player
  *

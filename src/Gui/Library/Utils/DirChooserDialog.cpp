@@ -1,6 +1,6 @@
 /* DirChooserDialog.cpp */
 
-/* Copyright (C) 2011-2019  Lucio Carreras
+/* Copyright (C) 2011-2020  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -37,8 +37,8 @@ DirChooserDialog::DirChooserDialog(QWidget* parent) :
 {
 	this->setDirectory(QDir::homePath());
 	this->setWindowTitle(Lang::get(Lang::ImportDir));
-	this->setFileMode(QFileDialog::DirectoryOnly);
 	this->setOption(QFileDialog::DontUseNativeDialog, true);
+	this->setOption(QFileDialog::ShowDirsOnly, true);
 
 	QList<QUrl> sidebar_urls = this->sidebarUrls();
 
@@ -77,4 +77,4 @@ DirChooserDialog::DirChooserDialog(QWidget* parent) :
 	}
 }
 
-DirChooserDialog::~DirChooserDialog() {}
+DirChooserDialog::~DirChooserDialog() = default;

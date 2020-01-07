@@ -12,7 +12,7 @@ These instructions will get you a copy of the project up and running on your loc
 In order to compile you need the following packages
  * cmake >= 3.8
  * g++ >= 7.1 or clang++ >= 6.0
- * Qt >= 5.6: Core, Widgets, Network, Xml, Sql, Sqlite
+ * Qt >= 5.8: Core, Widgets, Network, Xml, Sql, Sqlite, DBus
  * Gstreamer development files, GStreamer plugins
  * zlib development files
 
@@ -63,6 +63,8 @@ make install
  * Enable/Disable testing: `-DWITH_TESTS=ON|OFF`
  * Enable/Disable documentation: `-DWITH_DOC=ON|OFF`
 
+ * Choose another compiler: `-DCMAKE_CXX_COMPILER=<compiler-name>`
+ * Use a different Qt installation: `-DCMAKE_PREFIX_PATH=<path to qt> -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=ON`
 
 ### Running tests
 `make test`

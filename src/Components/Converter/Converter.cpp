@@ -1,6 +1,6 @@
 /* Converter.cpp */
 
-/* Copyright (C) 2011-2019  Lucio Carreras
+/* Copyright (C) 2011-2020  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -184,19 +184,14 @@ bool Converter::start_process(const QString& command, const QStringList& argumen
 
 	int id = Util::random_number(100, 1000000);
 
-	QProcess* process = new QProcess(this);
+	auto* process = new QProcess(this);
 	process->setStandardOutputFile(log_file);
 	process->setStandardErrorFile(log_file);
 	process->setProperty("id", id);
 	m->running_processes.insert(id, process);
 
-	connect(process, static_cast<void (QProcess::*)(int)>(&QProcess::finished), this, &Converter::process_finished);
-
-#if QT_VERSION < 0x050600
-	connect(process, static_cast<void (QProcess::*)(QProcess::ProcessError)>(&QProcess::error), this, &Converter::error_occured);
-#else
+	connect(process, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), this, &Converter::process_finished);
 	connect(process, &QProcess::errorOccurred, this, &Converter::error_occured);
-#endif
 
 	sp_log(Log::Debug, this) << "Starting: " << command << " " << arguments.join(" ");
 	process->start(command, arguments);
@@ -204,8 +199,10 @@ bool Converter::start_process(const QString& command, const QStringList& argumen
 	return true;
 }
 
-void Converter::process_finished(int ret)
+void Converter::process_finished(int ret, QProcess::ExitStatus exit_status)
 {
+	Q_UNUSED(exit_status)
+
 	auto* process = static_cast<QProcess*>(sender());
 
 	sp_log(Log::Debug, this) << "process finished";
@@ -241,5 +238,5 @@ void Converter::error_occured(QProcess::ProcessError err)
 	sp_log(Log::Warning, this) << p->program() << ": " << p->arguments().join(", ");
 	sp_log(Log::Warning, this) << "Error: QProcess:ProcessError " << p->errorString();
 
-	process_finished(10000 + err);
+	process_finished(10000 + err, QProcess::ExitStatus::NormalExit);
 }
