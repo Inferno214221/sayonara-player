@@ -1,6 +1,6 @@
 /* LibraryPluginComboBoxDelegate.cpp */
 
-/* Copyright (C) 2011-2019 Lucio Carreras
+/* Copyright (C) 2011-2020 Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -38,7 +38,7 @@ void PluginComboBoxDelegate::paint(QPainter* painter, const QStyleOptionViewItem
 {
 	if(index.data(Qt::AccessibleDescriptionRole).toString() == QLatin1String("separator") && index.row() == 1)
 	{
-		QColor color = painter->brush().color().dark();
+		QColor color = painter->brush().color().darker();
 		color.setAlpha(80);
 		QPen pen(color);
 		painter->setPen(pen);

@@ -3,6 +3,7 @@
 #include "Utils/Utils.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/Algorithm.h"
 
 #include <QUdpSocket>
 #include <QNetworkDatagram>
@@ -23,17 +24,6 @@ RemoteUDPSocket::RemoteUDPSocket(QObject* parent) :
 }
 
 RemoteUDPSocket::~RemoteUDPSocket() = default;
-
-#include "Utils/Algorithm.h"
-
-static QString answer_string(const QString& answer_id, const QString& sayonara_id, const QString& text)
-{
-	return QString("sayrc01%1/%2/%3/%4")
-		.arg(answer_id)
-		.arg(sayonara_id)
-		.arg(text.size())
-		.arg(text);
-}
 
 void RemoteUDPSocket::data_received()
 {
@@ -77,10 +67,10 @@ void RemoteUDPSocket::data_received()
 				return (diff1 < diff2);
 			});
 
-			QString ip_string = ips.join(",") + QString("@%1").arg(GetSetting(Set::Remote_Port)) ;
-			QString public_id = GetSetting(Set::Player_PublicId);
+			const QString ip_string = ips.join(",") + QString("@%1").arg(GetSetting(Set::Remote_Port)) ;
+			const QString public_id = GetSetting(Set::Player_PublicId);
 
-			QString str = QString("sayrc01%1/%2/%3/%4")
+			const QString str = QString("sayrc01%1/%2/%3/%4")
 				.arg("ips")
 				.arg(public_id)
 				.arg(QHostInfo::localHostName())
@@ -90,7 +80,7 @@ void RemoteUDPSocket::data_received()
 			(
 				str.toLocal8Bit(),
 				address,
-				port
+				quint16(port)
 			);
 		}
 

@@ -1,6 +1,6 @@
 /* Converter.h */
 
-/* Copyright (C) 2011-2019  Lucio Carreras
+/* Copyright (C) 2011-2020  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -66,7 +66,7 @@ public slots:
 	void stop();
 
 private slots:
-	void process_finished(int ret);
+	void process_finished(int ret, QProcess::ExitStatus status);
 	void error_occured(QProcess::ProcessError err);
 };
 

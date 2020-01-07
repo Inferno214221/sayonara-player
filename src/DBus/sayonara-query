@@ -2,7 +2,12 @@
 
 import sys
 import argparse
-from pydbus import SessionBus
+
+try:
+    from pydbus import SessionBus
+except ImportError as e:
+    print("Cannot find pydbus module. Please install first")
+    sys.exit(1)
 
 attributes = {
     'album':         'xesam:album',

@@ -413,7 +413,7 @@
         </size>
        </property>
        <property name="text">
-        <string>Copyright 2011-2019</string>
+        <string>Copyright 2011-2020</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>

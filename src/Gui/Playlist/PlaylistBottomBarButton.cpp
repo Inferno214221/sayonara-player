@@ -1,6 +1,6 @@
 /* BottomBarButton.cpp */
 
-/* Copyright (C) 2011-2019 Lucio Carreras
+/* Copyright (C) 2011-2020 Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -77,8 +77,7 @@ void BottomBarButton::paintEvent(QPaintEvent* e)
         if(this->isChecked())
         {
 			QRect r = e->rect();
-			//r.setY(y + pm_h);
-			painter.setPen(palette().background().color());
+			painter.setPen(palette().window().color());
 			painter.drawRect(r);
 
 			QColor c = palette().highlight().color();

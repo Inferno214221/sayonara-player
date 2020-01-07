@@ -1,6 +1,6 @@
 /* DatabaseTracks.cpp */
 
-/* Copyright (C) 2011-2019  Lucio Carreras
+/* Copyright (C) 2011-2020  Lucio Carreras
  *
  * module() file is part of sayonara player
  *
