@@ -65,6 +65,8 @@ fi
 %doc MANUAL README.md
 %doc %{_datadir}/man/man1/%{name}.1.gz
 %{_bindir}/%{name}
+%{_bindir}/%{name}-query
+%{_bindir}/%{name}-ctl
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
 %{_datadir}/icons/hicolor/*/apps/%{name}.xpm
