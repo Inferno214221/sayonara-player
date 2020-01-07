@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2011-2019  Lucio Carreras
+/* Copyright (C) 2011-2020  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -23,6 +23,7 @@
 
 #include "Gui/Plugins/PlayerPluginHandler.h"
 #include "Gui/Utils/Icons.h"
+#include "Gui/Utils/GuiUtils.h"
 
 #include "Utils/Macros.h"
 #include "Utils/Playlist/PlaylistMode.h"
@@ -34,7 +35,6 @@
 	#include "Gui/Shutdown/GUI_Shutdown.h"
 #endif
 
-// Think about CMake
 #include "Components/LibraryManagement/LibraryManager.h"
 
 #include <QFile>
@@ -267,7 +267,7 @@ void BottomBar::skin_changed()
 	Gui::Widget::skin_changed();
 
 	QFontMetrics fm = this->fontMetrics();
-	int w = (this->fontMetrics().width("m") * 250) / 100;
+	int w = (fm.horizontalAdvance("m") * 250) / 100;
 	w = std::max(29, w);
 
 	const QList<BottomBarButton*> buttons = m->buttons();

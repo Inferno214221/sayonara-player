@@ -1,6 +1,6 @@
 /* AlbumCoverDelegate.cpp */
 
-/* Copyright (C) 2011-2019  Lucio Carreras
+/* Copyright (C) 2011-2020  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -57,7 +57,7 @@ void Library::CoverDelegate::paint(QPainter* painter, const QStyleOptionViewItem
 		painter->translate(0, zoom / 20);
 
 		int x_zoom = (option.rect.width() - zoom) / 2;
-		painter->fillRect(x_zoom - 2, -2, zoom + 3, zoom + 3, option.palette.color(QPalette::Active, QPalette::Background).darker());
+		painter->fillRect(x_zoom - 2, -2, zoom + 3, zoom + 3, option.palette.color(QPalette::Active, QPalette::Window).darker());
 
 		QPen pen = painter->pen();
 		QColor old_color = pen.color();
@@ -82,7 +82,7 @@ void Library::CoverDelegate::paint(QPainter* painter, const QStyleOptionViewItem
 	{
 		QString album = index.data(CoverModel::AlbumRole).toString();
 		album = fm.elidedText(album, Qt::ElideRight, option.rect.width() - 2*text_offset);
-		painter->drawText(text_offset, 0, option.rect.width() - 2*text_offset, fm.height(), option.displayAlignment, album);
+		painter->drawText(text_offset, 0, option.rect.width() - 2*text_offset, fm.height(), int(option.displayAlignment), album);
 		painter->translate(0, fm.height());
 	}
 

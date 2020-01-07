@@ -49,9 +49,7 @@ else()
 	message(" In order to change that, use -DWITH_TESTS=1")
 endif()
 
-set(CMAKE_SKIP_RPATH:BOOL ON)
 set(CMAKE_INSTALL_MANIFEST "install_manifest.txt")
-
 
 # doxygen
 message ("Looking for doxygen")
@@ -81,5 +79,4 @@ if (WITH_DOC)
 
 	endif (DOXYGEN_FOUND)
 endif (WITH_DOC)
-
 

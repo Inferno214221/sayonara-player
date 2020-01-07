@@ -1,6 +1,6 @@
 /* FloatingLabel.cpp */
 
-/* Copyright (C) 2011-2019 Lucio Carreras
+/* Copyright (C) 2011-2020 Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -66,7 +66,7 @@ void FloatingLabel::paintEvent(QPaintEvent* event)
 		painter.drawText
 		(
 			QRectF(0, 0, this->width(), this->height()),
-			this->alignment(),
+			int(this->alignment()),
 			m->text
 		);
 
@@ -75,9 +75,9 @@ void FloatingLabel::paintEvent(QPaintEvent* event)
 
 	QFontMetrics fm = this->fontMetrics();
 
-
-	painter.drawText(
-		QRectF(int(m->offset), 0, fm.width(m->text), fm.height()),
+	painter.drawText
+	(
+		QRectF(int(m->offset), 0, fm.horizontalAdvance(m->text), fm.height()),
 		m->text
 	);
 }
@@ -87,7 +87,7 @@ void FloatingLabel::resizeEvent(QResizeEvent* event)
 	QLabel::resizeEvent(event);
 
 	QFontMetrics fm = this->fontMetrics();
-	int difference = fm.width(m->text) - this->width();
+	int difference = fm.horizontalAdvance(m->text) - this->width();
 
 	if(difference <= 0)
 	{
@@ -130,7 +130,7 @@ void FloatingLabel::updateOffset()
 	static const int tolerance = 10;
 
 	QFontMetrics fm = this->fontMetrics();
-	int difference = fm.width(m->text) - this->width();
+	int difference = fm.horizontalAdvance(m->text) - this->width();
 
 	if(difference <= 0)
 	{
@@ -141,10 +141,10 @@ void FloatingLabel::updateOffset()
 
 	m->floating = true;
 
-	int minOffset = -(fm.width(m->text) - this->width() + tolerance);
+	int minOffset = -(fm.horizontalAdvance(m->text) - this->width() + tolerance);
 	int maxOffset = tolerance;
 
-	int charWidth = fm.width("O");
+	int charWidth = fm.horizontalAdvance("O");
 	int charsWidth = m->chars_per_second * charWidth;
 
 	if(difference < charsWidth)

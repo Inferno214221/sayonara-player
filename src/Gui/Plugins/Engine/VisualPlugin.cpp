@@ -1,6 +1,6 @@
 /* VisualPlugin.cpp */
 
-/* Copyright (C) 2011-2019  Lucio Carreras
+/* Copyright (C) 2011-2020  Lucio Carreras
  *
  * This file is part of sayonara player
  *
@@ -81,19 +81,21 @@ void VisualPlugin::set_button_sizes()
 	init_buttons();
 
 	QFont font = m->btn_config->font();
-	QFontMetrics fm(font);
+
+	QFontMetrics fm = this->fontMetrics();
+	int char_width = fm.horizontalAdvance("W");
 
 	int x = 10;
 	int y = 5;
 	int height = fm.height() + 2;
-	int width = fm.width("W") + 4;
+	int width =  char_width + 4;
 	int font_size = 6;
 
 	if(!has_small_buttons())
 	{
 		y = 5;
 		height = fm.height() * 2;
-		width = fm.width("W") * 2;
+		width = char_width * 2;
 		font_size = 8;
 	}
 
