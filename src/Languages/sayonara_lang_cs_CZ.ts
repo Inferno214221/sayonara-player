@@ -106,13 +106,8 @@
         <source>OK</source>
         <translation>OK</translation>
     </message>
-    <message numerus="yes">
-        <location filename="../src/Gui/ImportDialog/GUI_ImportDialog.cpp" line="+103"/>
-        <source>%n track(s) available</source>
-        <translation><numerusform>Dostupná %1 skladba</numerusform><numerusform>Dostupné %1 skladby</numerusform><numerusform>Dostupných %1 skladeb</numerusform><numerusform>Dostupných %1 skladeb</numerusform></translation>
-    </message>
     <message>
-        <location line="+20"/>
+        <location filename="../src/Gui/ImportDialog/GUI_ImportDialog.cpp" line="+127"/>
         <source>Loading tracks</source>
         <translation>Nahrávají se skladby</translation>
     </message>
@@ -223,8 +218,8 @@
     <name>GUI_ControlsNew</name>
     <message>
         <location filename="../src/Gui/Player/GUI_ControlsNew.ui" line="+416"/>
-        <source>Copyright 2011-2019</source>
-        <translation>Kopírovací právo 2011-2019</translation>
+        <source>Copyright 2011-2020</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+50"/>
@@ -1655,8 +1650,7 @@
 <context>
     <name>HistoryEntryWidget</name>
     <message numerus="yes">
-        <location filename="../src/Gui/History/HistoryEntryWidget.cpp" line="+47"/>
-        <location line="+25"/>
+        <location filename="../src/Gui/History/HistoryEntryWidget.cpp" line="+73"/>
         <location line="+5"/>
         <source>%n track(s)</source>
         <translation><numerusform>%n skladba</numerusform><numerusform>%n skladby</numerusform><numerusform>%n skladeb</numerusform><numerusform>%n skladeb</numerusform></translation>
@@ -1872,13 +1866,8 @@
 </context>
 <context>
     <name>GUI_Playlist</name>
-    <message numerus="yes">
-        <location filename="../src/Gui/Playlist/GUI_Playlist.cpp" line="+248"/>
-        <source>%n track(s)</source>
-        <translation><numerusform>%n skladba</numerusform><numerusform>%n skladby</numerusform><numerusform>%n skladeb</numerusform><numerusform>%n skladeb</numerusform></translation>
-    </message>
     <message>
-        <location line="+2"/>
+        <location filename="../src/Gui/Playlist/GUI_Playlist.cpp" line="+250"/>
         <source>Playlist empty</source>
         <translation>Seznam skladeb je prázdný</translation>
     </message>
@@ -2150,7 +2139,7 @@
 <context>
     <name>SC::GUI_ArtistSearch</name>
     <message>
-        <location filename="../src/Gui/Soundcloud/GUI_SoundcloudArtistSearch.cpp" line="+78"/>
+        <location filename="../src/Gui/Soundcloud/GUI_SoundcloudArtistSearch.cpp" line="+79"/>
         <source>Query too short</source>
         <translation>Dotaz příliš krátký</translation>
     </message>
@@ -2165,12 +2154,7 @@
         <translation><numerusform>Nalezen %1 umělec</numerusform><numerusform>Nalezeni %1 umělci</numerusform><numerusform>Nalezeno %1 umělců</numerusform><numerusform>Nalezeno %1 umělců</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location line="+48"/>
-        <source>%n track(s) found</source>
-        <translation><numerusform>Nalezena %1 skladba</numerusform><numerusform>Nalezeny %1 skladby</numerusform><numerusform>Nalezeno %1 skladeb</numerusform><numerusform>Nalezeno %1 skladeb</numerusform></translation>
-    </message>
-    <message numerus="yes">
-        <location line="+9"/>
+        <location line="+56"/>
         <source>%n playlist(s) found</source>
         <translation><numerusform>Nalezen %1 seznam skladeb</numerusform><numerusform>Nalezeny %1 seznamy skladeb</numerusform><numerusform>Nalezeno %1 seznamů skladeb</numerusform><numerusform>Nalezeno %1 seznamů skladeb</numerusform></translation>
     </message>
@@ -3293,6 +3277,26 @@
         <location line="+2"/>
         <source>Zoom</source>
         <translation>Přiblížení</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>No tracks</source>
+        <translation>Žádné skladby</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+3"/>
+        <source>%n track(s)</source>
+        <translation><numerusform>%n skladba</numerusform><numerusform>%n skladby</numerusform><numerusform>%n skladeb</numerusform><numerusform>%n skladeb</numerusform></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>No tracks found</source>
+        <translation>Nenalezeny žádné skladby</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+3"/>
+        <source>%n track(s) found</source>
+        <translation><numerusform>Nalezena %1 skladba</numerusform><numerusform>Nalezeny %1 skladby</numerusform><numerusform>Nalezeno %1 skladeb</numerusform><numerusform>Nalezeno %1 skladeb</numerusform></translation>
     </message>
 </context>
 </TS>

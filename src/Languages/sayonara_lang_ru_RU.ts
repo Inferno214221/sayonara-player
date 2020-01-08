@@ -106,13 +106,8 @@
         <source>OK</source>
         <translation>ОК</translation>
     </message>
-    <message numerus="yes">
-        <location filename="../src/Gui/ImportDialog/GUI_ImportDialog.cpp" line="+103"/>
-        <source>%n track(s) available</source>
-        <translation><numerusform>%n трек доступен</numerusform><numerusform>%n треков доступны</numerusform><numerusform>%n треков доступны</numerusform><numerusform>%n треков доступны</numerusform></translation>
-    </message>
     <message>
-        <location line="+20"/>
+        <location filename="../src/Gui/ImportDialog/GUI_ImportDialog.cpp" line="+127"/>
         <source>Loading tracks</source>
         <translation>Загрузка треков</translation>
     </message>
@@ -223,8 +218,8 @@
     <name>GUI_ControlsNew</name>
     <message>
         <location filename="../src/Gui/Player/GUI_ControlsNew.ui" line="+416"/>
-        <source>Copyright 2011-2019</source>
-        <translation>Copyright 2011-2019</translation>
+        <source>Copyright 2011-2020</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+50"/>
@@ -1655,8 +1650,7 @@
 <context>
     <name>HistoryEntryWidget</name>
     <message numerus="yes">
-        <location filename="../src/Gui/History/HistoryEntryWidget.cpp" line="+47"/>
-        <location line="+25"/>
+        <location filename="../src/Gui/History/HistoryEntryWidget.cpp" line="+73"/>
         <location line="+5"/>
         <source>%n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
@@ -1872,13 +1866,8 @@
 </context>
 <context>
     <name>GUI_Playlist</name>
-    <message numerus="yes">
-        <location filename="../src/Gui/Playlist/GUI_Playlist.cpp" line="+248"/>
-        <source>%n track(s)</source>
-        <translation><numerusform>%n трек</numerusform><numerusform>%n треков</numerusform><numerusform>%n треков</numerusform><numerusform>%n треков</numerusform></translation>
-    </message>
     <message>
-        <location line="+2"/>
+        <location filename="../src/Gui/Playlist/GUI_Playlist.cpp" line="+250"/>
         <source>Playlist empty</source>
         <translation>Плейлист пустой</translation>
     </message>
@@ -2150,7 +2139,7 @@
 <context>
     <name>SC::GUI_ArtistSearch</name>
     <message>
-        <location filename="../src/Gui/Soundcloud/GUI_SoundcloudArtistSearch.cpp" line="+78"/>
+        <location filename="../src/Gui/Soundcloud/GUI_SoundcloudArtistSearch.cpp" line="+79"/>
         <source>Query too short</source>
         <translation>Слишком короткий запрос</translation>
     </message>
@@ -2165,12 +2154,7 @@
         <translation><numerusform>Найдено %n исполнителя</numerusform><numerusform>Найдено %n исполнителей</numerusform><numerusform>Найдено %n исполнителей</numerusform><numerusform>Найдено %n исполнителей</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location line="+48"/>
-        <source>%n track(s) found</source>
-        <translation><numerusform>%n трек найден</numerusform><numerusform>%n треков найдено</numerusform><numerusform>%n треков найдено</numerusform><numerusform>%n треков найдено</numerusform></translation>
-    </message>
-    <message numerus="yes">
-        <location line="+9"/>
+        <location line="+56"/>
         <source>%n playlist(s) found</source>
         <translation><numerusform>%n плейлист найден</numerusform><numerusform>%n плейлистов найдено</numerusform><numerusform>%n плейлистов найдено</numerusform><numerusform>%n плейлистов найдено</numerusform></translation>
     </message>
@@ -3293,6 +3277,26 @@
         <location line="+2"/>
         <source>Zoom</source>
         <translation>Масштаб</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>No tracks</source>
+        <translation>Нет треков</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+3"/>
+        <source>%n track(s)</source>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>No tracks found</source>
+        <translation type="unfinished"/>
+    </message>
+    <message numerus="yes">
+        <location line="+3"/>
+        <source>%n track(s) found</source>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
 </context>
 </TS>

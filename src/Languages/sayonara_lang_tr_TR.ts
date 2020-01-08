@@ -106,13 +106,8 @@
         <source>OK</source>
         <translation>Tamam</translation>
     </message>
-    <message numerus="yes">
-        <location filename="../src/Gui/ImportDialog/GUI_ImportDialog.cpp" line="+103"/>
-        <source>%n track(s) available</source>
-        <translation><numerusform>%n parça mevcut</numerusform><numerusform>%n parça mevcut</numerusform></translation>
-    </message>
     <message>
-        <location line="+20"/>
+        <location filename="../src/Gui/ImportDialog/GUI_ImportDialog.cpp" line="+127"/>
         <source>Loading tracks</source>
         <translation>Parçalar yükleniyor</translation>
     </message>
@@ -223,8 +218,8 @@
     <name>GUI_ControlsNew</name>
     <message>
         <location filename="../src/Gui/Player/GUI_ControlsNew.ui" line="+416"/>
-        <source>Copyright 2011-2019</source>
-        <translation>Telif Hakkı 2011-2019</translation>
+        <source>Copyright 2011-2020</source>
+        <translation>Telif Hakkı 2011-2020</translation>
     </message>
     <message>
         <location line="+50"/>
@@ -567,7 +562,7 @@
     <message>
         <location filename="../src/Gui/Preferences/Broadcast/GUI_BroadcastPreferences.cpp" line="+161"/>
         <source>Port %1 already in use</source>
-        <translation type="unfinished"/>
+        <translation>Bağlantı noktası %1 zaten kullanımda</translation>
     </message>
 </context>
 <context>
@@ -1009,7 +1004,7 @@
     <message>
         <location filename="../src/Gui/Preferences/RemoteControl/GUI_RemoteControlPreferences.ui" line="+36"/>
         <source>Detectable via UDP</source>
-        <translation type="unfinished"/>
+        <translation>UDP ile algılanabilir</translation>
     </message>
     <message>
         <location line="+31"/>
@@ -1024,12 +1019,12 @@
     <message>
         <location line="+17"/>
         <source>UDP port</source>
-        <translation type="unfinished"/>
+        <translation>UDP bağlantı noktası</translation>
     </message>
     <message>
         <location filename="../src/Gui/Preferences/RemoteControl/GUI_RemoteControlPreferences.cpp" line="+59"/>
         <source>If activated, Sayonara will answer an UDP request that it is remote controlable</source>
-        <translation type="unfinished"/>
+        <translation>Etkinleştirilirse, Sayonara uzaktan kumanda edilebilir bir UDP isteğine yanıt verecektir</translation>
     </message>
     <message>
         <location line="+36"/>
@@ -1039,7 +1034,7 @@
     <message>
         <location line="+69"/>
         <source>Port %1 already in use</source>
-        <translation type="unfinished"/>
+        <translation>Bağlantı noktası %1 zaten kullanımda</translation>
     </message>
 </context>
 <context>
@@ -1655,8 +1650,7 @@
 <context>
     <name>HistoryEntryWidget</name>
     <message numerus="yes">
-        <location filename="../src/Gui/History/HistoryEntryWidget.cpp" line="+47"/>
-        <location line="+25"/>
+        <location filename="../src/Gui/History/HistoryEntryWidget.cpp" line="+73"/>
         <location line="+5"/>
         <source>%n track(s)</source>
         <translation><numerusform>%n parça</numerusform><numerusform>%n parça</numerusform></translation>
@@ -1872,13 +1866,8 @@
 </context>
 <context>
     <name>GUI_Playlist</name>
-    <message numerus="yes">
-        <location filename="../src/Gui/Playlist/GUI_Playlist.cpp" line="+248"/>
-        <source>%n track(s)</source>
-        <translation><numerusform>%n parça</numerusform><numerusform>%n parça</numerusform></translation>
-    </message>
     <message>
-        <location line="+2"/>
+        <location filename="../src/Gui/Playlist/GUI_Playlist.cpp" line="+250"/>
         <source>Playlist empty</source>
         <translation>Oynatma listesi boş</translation>
     </message>
@@ -2150,7 +2139,7 @@
 <context>
     <name>SC::GUI_ArtistSearch</name>
     <message>
-        <location filename="../src/Gui/Soundcloud/GUI_SoundcloudArtistSearch.cpp" line="+78"/>
+        <location filename="../src/Gui/Soundcloud/GUI_SoundcloudArtistSearch.cpp" line="+79"/>
         <source>Query too short</source>
         <translation>Sorgu çok kısa</translation>
     </message>
@@ -2165,12 +2154,7 @@
         <translation><numerusform>%n sanatçı bulundu</numerusform><numerusform>%n sanatçı bulundu</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location line="+48"/>
-        <source>%n track(s) found</source>
-        <translation><numerusform>%n parça bulundu</numerusform><numerusform>%n parça bulundu</numerusform></translation>
-    </message>
-    <message numerus="yes">
-        <location line="+9"/>
+        <location line="+56"/>
         <source>%n playlist(s) found</source>
         <translation><numerusform>%n oynatma listesi bulundu</numerusform><numerusform>%n oynatma listesi bulundu</numerusform></translation>
     </message>
@@ -2188,12 +2172,12 @@
     <message>
         <location filename="../src/Gui/Tagging/TagTextInput.cpp" line="+126"/>
         <source>Very first letter to upper case</source>
-        <translation>İlk harfe çok büyük harf</translation>
+        <translation>İlk harfler çok büyük</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>First letters to upper case</source>
-        <translation>İlk harfe büyük harfler</translation>
+        <translation>İlk harfler büyük</translation>
     </message>
 </context>
 <context>
@@ -3293,6 +3277,26 @@
         <location line="+2"/>
         <source>Zoom</source>
         <translation>Yakınlaştır</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>No tracks</source>
+        <translation>Parça yok</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+3"/>
+        <source>%n track(s)</source>
+        <translation><numerusform>%n parça</numerusform><numerusform>%n parça</numerusform></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>No tracks found</source>
+        <translation>Parça bulunamadı</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+3"/>
+        <source>%n track(s) found</source>
+        <translation><numerusform>%n parça bulundu</numerusform><numerusform>%n parça bulundu</numerusform></translation>
     </message>
 </context>
 </TS>
