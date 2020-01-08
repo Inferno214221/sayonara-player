@@ -21,13 +21,14 @@
 #include "LocalCoverSearcher.h"
 
 #include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Logger/Logger.h"
 
 #include <QFile>
 #include <QDir>
 #include <QFileInfo>
-#include <QImage>
+#include <QPixmap>
 #include <QMap>
 
 #include <cmath>
@@ -35,27 +36,82 @@
 using namespace Cover;
 static const char* ClassName="LocalSearcher";
 
+static double calc_name_factor(const QString& name)
+{
+	if( name.contains(QStringLiteral("cover"), Qt::CaseInsensitive) ||
+		name.contains(QStringLiteral("albumart"), Qt::CaseInsensitive) ||
+		name.contains(QStringLiteral("front"), Qt::CaseInsensitive) ||
+		name.contains(QStringLiteral("folder"), Qt::CaseInsensitive))
+	{
+		if(name.contains(QStringLiteral("large"), Qt::CaseInsensitive)){
+			return 2.0;
+		}
+
+		else if(!name.contains(QStringLiteral("small"), Qt::CaseInsensitive)){
+			return 3.0;
+		}
+
+		else {
+			return 4.0;
+		}
+	}
+
+	return 5.0;
+}
+
+static double calc_square_factor(int width, int height)
+{
+
+	double d_width = double(width);
+	double d_height = double(height);
+
+	double pixels = d_width * d_height;
+
+	// calc how 'square' the cover is
+	double r = (std::abs(d_height - d_width) / d_width) + 1.0;
+	return (r * r * std::max(d_height, d_width)) / pixels;
+}
+
+static double calc_rating(const QPixmap& pixmap, const QString& name)
+{
+	if(pixmap.width() == 0){
+		return -1.0;
+	}
+
+	double square_factor = calc_square_factor(pixmap.width(), pixmap.height());
+	double name_factor = calc_name_factor(name);
+
+	sp_log(Log::Develop, ClassName) << "  Coverfile " << name << " has square factor " << QString::number(square_factor, 'g', 2);
+	sp_log(Log::Develop, ClassName) << "  Coverfile " << name << " has name factor " << QString::number(name_factor, 'g', 2);
+
+	return square_factor * name_factor;
+}
+
 QStringList LocalSearcher::cover_paths_from_path_hint(const QString& filepath_hint)
 {
 	sp_log(Log::Develop, ClassName) << "Search for covers. Hint: " << filepath_hint;
 
 	QString filepath = filepath_hint;
 	QFileInfo info(filepath);
-	if(info.isFile())
+	if(!info.isDir())
 	{
 		filepath = Util::File::get_parent_directory(filepath_hint);
-		sp_log(Log::Develop, ClassName) << filepath_hint << " is not a directory. Using " << filepath << " instead";
+		sp_log(Log::Develop, ClassName) << filepath_hint << " is not a directory. Try using " << filepath << " instead";
+
+		info = QFileInfo(filepath);
+		if(!info.isDir() || !info.exists())	{
+			return QStringList();
+		}
 	}
 
 	QStringList filters = Util::image_extensions();
+	std::transform(filters.begin(), filters.end(), std::back_inserter(filters), [](const QString& str)
+	{
+		return str.toUpper();
+	});
 
-	int c = filters.size();
-	for(int i=0; i<c; i++){
-		filters << filters[i].toUpper();
-	}
-
-	QDir dir(filepath);
-	QStringList entries = dir.entryList(filters, (QDir::Files | QDir::NoDotAndDotDot));
+	const QDir dir(filepath);
+	const QStringList entries = dir.entryList(filters, (QDir::Files | QDir::NoDotAndDotDot));
 	if(entries.isEmpty()){
 		return QStringList();
 	}
@@ -64,55 +120,19 @@ QStringList LocalSearcher::cover_paths_from_path_hint(const QString& filepath_hi
 	QMap<QString, double> size_map;
 	for(const QString& entry : entries)
 	{
-		QImage i(filepath + "/" + entry);
-		if(i.isNull()){
-			continue;
-		}
-
-		int width = i.width();
-		int height = i.height();
-		if(width == 0){
-			continue;
-		}
-
-		double d = std::abs(height - width) / (width * 1.0) + 1.0;
-		double pixels = double(width * height);
-
-		d = (d * d * std::max(width, height)) / pixels;
-
-		sp_log(Log::Develop, ClassName) << "  Coverfile " << filepath + "/" + entry << " has first rating " << QString::number(d, 'g', 2);
-
-		if( entry.contains(QStringLiteral("cover"), Qt::CaseInsensitive) ||
-			entry.contains(QStringLiteral("albumart"), Qt::CaseInsensitive) ||
-			entry.contains(QStringLiteral("front"), Qt::CaseInsensitive) ||
-			entry.contains(QStringLiteral("folder"), Qt::CaseInsensitive))
-		{
-			if(entry.contains(QStringLiteral("large"), Qt::CaseInsensitive)){
-				d = d * 2;
-			}
-
-			else if(!entry.contains(QStringLiteral("small"), Qt::CaseInsensitive)){
-				d = d * 3;
-			}
-
-			else {
-				d = d * 4;
-			}
-		}
-
-		else
-		{
-			d = d * 5;
-		}
-
-		sp_log(Log::Develop, ClassName) << "  Coverfile " << filepath + "/" + entry << " has final rating " << QString::number(d, 'g', 2)  << " (Lower is better)";
-
 		QString f = filepath + "/" + entry;
-		size_map[f] = d;
+
+		QPixmap pm(f + "/" + entry);
+		double rating = calc_rating(pm, entry);
+
+		sp_log(Log::Develop, ClassName) << "  Coverfile " << f << " has final rating " << QString::number(rating, 'g', 2)  << " (Lower is better)";
+
+		size_map[f] = rating;
 		ret << f;
 	}
 
-	std::sort(ret.begin(), ret.end(), [=](const QString& f1, const QString& f2){
+	Util::Algorithm::sort(ret, [=](const QString& f1, const QString& f2)
+	{
 		return (size_map[f1] < size_map[f2]);
 	});
 
