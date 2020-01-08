@@ -22,6 +22,8 @@
 #define RANDOMGENERATOR_H
 
 #include "Utils/Pimpl.h"
+#include <algorithm>
+#include <random>
 
 /**
  * @brief The RandomGenerator class
@@ -29,30 +31,42 @@
  */
 class RandomGenerator
 {
-private:
-	PIMPL(RandomGenerator)
+	private:
+		PIMPL(RandomGenerator)
 
-	RandomGenerator(const RandomGenerator& other);
+		RandomGenerator(const RandomGenerator& other);
 
-public:
-	RandomGenerator();
-	~RandomGenerator();
+	public:
+		RandomGenerator();
+		~RandomGenerator();
 
-	/**
-	 * @brief create new seed
-	 */
-	void update_seed();
+		/**
+		 * @brief create new seed
+		 */
+		void update_seed();
 
-	/**
-	 * @brief get a random number
-	 * @param min minimum
-	 * @param max maximum
-	 * @return number between [minimum, maximum]
-	 */
-	int get_number(int min, int max);
+		/**
+		 * @brief get a random number
+		 * @param min minimum
+		 * @param max maximum
+		 * @return number between [minimum, maximum]
+		 */
+		int get_number(int min, int max);
 
-	static int get_random_number(int min, int max);
+		static int get_random_number(int min, int max);
 };
+
+namespace Util
+{
+	namespace Algorithm
+	{
+		template<class Container>
+		void shuffle(Container& container)
+		{
+			std::shuffle(container.begin(), container.end(), std::default_random_engine());
+		}
+	}
+}
 
 #endif // RANDOMGENERATOR_H
 

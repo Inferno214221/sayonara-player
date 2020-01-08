@@ -263,28 +263,30 @@ void Base::similar_artists_fetched(IdList artist_ids)
 
 	const MetaDataList& v_md = active_playlist->tracks();
 
-	std::random_shuffle(artist_ids.begin(), artist_ids.end());
+	Util::Algorithm::shuffle(artist_ids);
 
 	for( auto it=artist_ids.begin(); it != artist_ids.end(); it++ )
 	{
 		MetaDataList artist_tracks;
-		lib_db->getAllTracksByArtist(IdList{*it}, artist_tracks);
-
-		std::random_shuffle(artist_tracks.begin(), artist_tracks.end());
+		{
+			lib_db->getAllTracksByArtist(IdList{*it}, artist_tracks);
+			Util::Algorithm::shuffle(artist_tracks);
+		}
 
 		// try all songs of artist
 		for(int rounds=0; rounds < artist_tracks.count(); rounds++)
 		{
-			int rnd_track = RandomGenerator::get_random_number(0, int(artist_tracks.size())- 1);
+			int index = RandomGenerator::get_random_number(0, int(artist_tracks.size()) - 1);
 
-			MetaData md = artist_tracks.take_at(rnd_track);
+			MetaData md = artist_tracks.take_at(index);
 
 			// two times the same track is not allowed
-			bool track_exists = Algorithm::contains(v_md, [md](const MetaData& it_md){
+			bool track_exists = Algorithm::contains(v_md, [md](const MetaData& it_md) {
 				return (md.id() == it_md.id());
 			});
 
-			if(!track_exists){
+			if(!track_exists)
+			{
 				MetaDataList v_md; v_md << md;
 
 				plh->append_tracks(v_md, active_idx);
