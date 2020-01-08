@@ -79,34 +79,6 @@ QString Info::path() const
 	return m->path;
 }
 
-QString Info::symlink_path() const
-{
-	QString dir = Util::sayonara_path("Libraries");
-
-	QString lib_path = this->path();
-	if(lib_path.endsWith("/") || lib_path.endsWith("\\")){
-		lib_path.remove(lib_path.size() - 1, 1);
-	}
-
-	QString pure_lib_name = Util::File::get_filename_of_path(lib_path);
-	QString lib_name = this->name() + " - " + pure_lib_name;
-
-	lib_name.remove("/");
-	lib_name.remove("\\");
-	lib_name.remove("#");
-	lib_name.remove("#");
-	lib_name.remove("*");
-	lib_name.remove("{");
-	lib_name.remove("}");
-	lib_name.remove("?");
-	lib_name.remove("\"");
-	lib_name.remove("'");
-
-	QString target = dir + "/" + lib_name;
-
-	return target;
-}
-
 LibraryId Info::id() const
 {
 	return m->id;

@@ -45,11 +45,10 @@ class FileListModel :
 		explicit FileListModel(QObject* parent=nullptr);
 		~FileListModel() override;
 
-		void set_parent_directory(LibraryId, const QString& dir);
+		QString parent_directory() const;
+		void set_parent_directory(LibraryId library_id, const QString& dir);
 
 		LibraryId library_id() const;
-		QString parent_directory() const;
-
 		QStringList files() const;
 
 		QModelIndexList search_results(const QString& substr) override;

@@ -47,7 +47,7 @@ namespace Library
 
 			QString name() const;
 			QString path() const;
-			QString symlink_path() const;
+
 			LibraryId id() const;
 			bool valid() const;
 
@@ -57,5 +57,7 @@ namespace Library
 			bool operator==(const Info& other) const;
 	};
 }
+
+Q_DECLARE_METATYPE(Library::Info)
 
 #endif // LIBRARYINFO_H

@@ -82,13 +82,13 @@ public:
 
 	QModelIndex		search(const QString& search_term);
 	QString			directory_name(const QModelIndex& index);
-	QString			directory_name_origin(const QModelIndex& index);
 
 	QModelIndexList	selected_indexes() const;
 	QStringList		selected_paths() const;
 
 	QMimeData*		dragable_mimedata() const override;
-	LibraryId		library_id(const QModelIndex& index) const;
+
+	void			set_library(const Library::Info& info);
 
 private:
 	enum class DropAction
@@ -103,11 +103,11 @@ private:
 
 private slots:
 	void selection_changed(const QItemSelection& selected, const QItemSelection& deselected);
-	void drag_move_timer_finished();
 	void create_dir_clicked();
 	void rename_dir_clicked();
 	void copy_started();
 	void copy_finished();
+	void drag_timer_timeout();
 
 protected:
 	void keyPressEvent(QKeyEvent* event) override;
@@ -132,8 +132,6 @@ protected:
 	void language_changed() override;
 
 	void handle_sayonara_drop(const Gui::CustomMimeData* mimedata, const QString& target_dir);
-
-
 };
 
 #endif // DIRECTORYTREEVIEW_H

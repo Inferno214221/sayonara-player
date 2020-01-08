@@ -376,9 +376,14 @@ void GUI_InfoDialog::show_lyrics_tab()
 {
 	init_lyrics();
 
-	m->ui_lyrics->set_metadata(m->v_md.first());
+	MetaData md;
+	if(m->v_md.count() > 0){
+		md = m->v_md.first();
+	}
+
 	ui->tab_widget->setCurrentWidget(m->ui_lyrics);
-	m->ui_lyrics->set_metadata(m->v_md.first());
+
+	m->ui_lyrics->set_metadata(md);
 	m->ui_lyrics->show();
 }
 

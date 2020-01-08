@@ -76,7 +76,7 @@ FileListView::FileListView(QWidget* parent) :
 	this->setIconSize(QSize(16, 16));
 
 	{ // rename by pressing F2
-		QAction* action = new QAction(this);
+		auto* action = new QAction(this);
 		connect(action, &QAction::triggered, this, &FileListView::rename_file_clicked);
 		action->setShortcut(QKeySequence("F2"));
 		action->setShortcutContext(Qt::WidgetShortcut);
@@ -142,10 +142,6 @@ void FileListView::dropEvent(QDropEvent *event)
 {
 	event->accept();
 
-	if(m->model->library_id() < 0){
-		return;
-	}
-
 	const QMimeData* mime_data = event->mimeData();
 	if(!mime_data){
 		sp_log(Log::Debug, this) << "Drop: No Mimedata";
@@ -165,16 +161,15 @@ void FileListView::dropEvent(QDropEvent *event)
 
 	const QList<QUrl> urls = mime_data->urls();
 
-	QStringList files; files.reserve(urls.size());
+	QStringList files;
 	for(const QUrl& url : urls)
 	{
 		QString local_file = url.toLocalFile();
-		if(!local_file.isEmpty()){
+		if(!local_file.isEmpty())
+		{
 			files << local_file;
 		}
 	}
-
-	sp_log(Log::Debug, this) << "Drop: " << files.size() << " files into library " << m->model->library_id();
 
 	emit sig_import_requested(m->model->library_id(), files, m->model->parent_directory());
 }
@@ -220,10 +215,8 @@ QModelIndexList FileListView::selected_rows() const
 
 MetaDataList FileListView::selected_metadata() const
 {
-	const QStringList paths = selected_paths();
-
 	DirectoryReader reader;
-	return reader.scan_metadata(paths);
+	return reader.scan_metadata(selected_paths());
 }
 
 QStringList FileListView::selected_paths() const
@@ -242,7 +235,6 @@ QStringList FileListView::selected_paths() const
 
 	return ret;
 }
-
 
 void FileListView::set_parent_directory(LibraryId library_id, const QString& dir)
 {

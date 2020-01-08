@@ -132,7 +132,6 @@ bool FileOperations::copy_dirs(const QStringList& source_dirs, const QString& ta
 	return true;
 }
 
-
 void FileOperations::copy_dir_thread_finished()
 {
 	auto* t = static_cast<DirectoryCopyThread*>(sender());

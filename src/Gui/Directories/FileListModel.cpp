@@ -44,9 +44,8 @@ namespace Algorithm=Util::Algorithm;
 struct FileListModel::Private
 {
 	QString		parent_directory;
-
-	LibraryId	library_id;
 	QStringList files;
+	LibraryId	library_id;
 
 	Private() :
 		library_id(-1)
@@ -62,13 +61,13 @@ FileListModel::FileListModel(QObject* parent) :
 
 FileListModel::~FileListModel() = default;
 
-void FileListModel::set_parent_directory(LibraryId id, const QString& dir)
+void FileListModel::set_parent_directory(LibraryId library_id, const QString& dir)
 {
 	int old_rowcount = rowCount();
 
 	m->files.clear();
-	m->library_id = id;
 	m->parent_directory = dir;
+	m->library_id = library_id;
 
 	QStringList extensions;
 	extensions << Util::soundfile_extensions();
@@ -148,11 +147,15 @@ void FileListModel::set_parent_directory(LibraryId id, const QString& dir)
 	);
 }
 
+LibraryId FileListModel::library_id() const
+{
+	return m->library_id;
+}
+
 QString FileListModel::parent_directory() const
 {
 	return m->parent_directory;
 }
-
 
 QStringList FileListModel::files() const
 {
@@ -172,12 +175,6 @@ QModelIndexList FileListModel::search_results(const QString& substr)
 	}
 
 	return ret;
-}
-
-
-LibraryId FileListModel::library_id() const
-{
-	return m->library_id;
 }
 
 int FileListModel::rowCount(const QModelIndex &parent) const

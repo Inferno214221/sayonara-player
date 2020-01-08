@@ -29,6 +29,11 @@ class QPoint;
 class QFrame;
 class QComboBox;
 
+namespace Library
+{
+	class Info;
+}
+
 UI_FWD(GUI_DirectoryWidget)
 
 /**
@@ -51,7 +56,7 @@ class GUI_DirectoryWidget :
 
 	private:
 		void init_shortcuts();
-		void create_delete_filescanner(const QStringList& files);
+		void init_library_combobox();
 
 	private slots:
 		void search_button_clicked();
@@ -81,11 +86,10 @@ class GUI_DirectoryWidget :
 
 		void splitter_moved(int pos, int index);
 
-		void set_lib_path_clicked();
-		void new_library_created();
+		void set_library_path_clicked();
 		void check_libraries();
 
-		void scanner_delete_finished();
+		void current_library_changed(int index);
 
 	protected:
 		MD::Interpretation metadata_interpretation() const override;
