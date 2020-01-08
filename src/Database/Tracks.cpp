@@ -194,13 +194,9 @@ bool Tracks::db_fetch_tracks(Query& q, MetaDataList& result) const
 
 bool Tracks::getMultipleTracksByPath(const QStringList& paths, MetaDataList& v_md) const
 {
-	module()->db().transaction();
-
 	for(const QString& path : paths) {
 		v_md << getTrackByPath(path);
 	}
-
-	module()->db().commit();
 
 	return (v_md.count() == paths.size());
 }

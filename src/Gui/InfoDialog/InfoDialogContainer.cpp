@@ -192,7 +192,6 @@ bool InfoDialogContainerAsyncHandler::start()
 	m->is_running = true;
 	auto* scanner = new MetaDataScanner(files, true);
 	auto* t = new QThread();
-	t->setObjectName(QString("InfoDialogContainer%1").arg(Util::random_string(8)));
 
 	scanner->moveToThread(t);
 

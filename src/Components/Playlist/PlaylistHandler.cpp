@@ -817,7 +817,7 @@ void Handler::files_scanned()
 		if(target_row_index < 0)
 		{
 			pl->clear();
-			append_tracks(worker->metadata(), pl->index());
+			insert_tracks(worker->metadata(), 0, pl->index());
 		}
 
 		else if(target_row_index >= pl->count())

@@ -101,9 +101,7 @@ void DirectorySelectionHandler::append_tracks(const QStringList& paths)
 
 void DirectorySelectionHandler::prepare_tracks_for_playlist(const QStringList& paths, bool create_new_playlist)
 {
-	if(contains_audio(paths)){
-		this->library_instance()->prepare_tracks_for_playlist(paths, create_new_playlist);
-	}
+	this->library_instance()->prepare_tracks_for_playlist(paths, create_new_playlist);
 }
 
 void DirectorySelectionHandler::import_requested(LibraryId lib_id, const QStringList& paths, const QString& target_dir)
@@ -130,7 +128,6 @@ void DirectorySelectionHandler::create_delete_filescanner(const QStringList& fil
 	using Directory::MetaDataScanner;
 	auto* worker = new MetaDataScanner(files, true, nullptr);
 	auto* t = new QThread();
-	t->setObjectName(QString("DirectorySelectionHandler%1").arg(Util::random_string(32)));
 
 	worker->moveToThread(t);
 

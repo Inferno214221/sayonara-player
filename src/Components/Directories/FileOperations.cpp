@@ -94,8 +94,6 @@ FileCopyThread::FileCopyThread(QObject* parent, LibraryId target_library_id, con
 	QThread(parent)
 {
 	m = Pimpl::make<Private>(target_library_id, source_files, target_dir);
-
-	this->setObjectName("FileCopyThread" + Util::random_string(4));
 }
 
 FileCopyThread::~FileCopyThread() = default;

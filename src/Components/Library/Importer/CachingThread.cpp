@@ -60,8 +60,6 @@ CachingThread::CachingThread(const QStringList& file_list, const QString& librar
 	QThread(parent)
 {
 	m = Pimpl::make<CachingThread::Private>(file_list, library_path);
-
-	this->setObjectName("CachingThread" + Util::random_string(4));
 }
 
 CachingThread::~CachingThread() = default;

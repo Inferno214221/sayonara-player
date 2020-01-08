@@ -57,7 +57,7 @@ struct DirectoryTreeView::Private
 	FileOperations*		file_operations=nullptr;
 
 	DirectoryContextMenu*	context_menu=nullptr;
-	DirectoryModel*		model;
+	DirectoryModel*		model=nullptr;
 	IconProvider*		icon_provider = nullptr;
 	int					last_found_index;
 
@@ -163,6 +163,7 @@ void DirectoryTreeView::init_context_menu()
 	connect(m->context_menu, &DirectoryContextMenu::sig_play_clicked, this, &DirectoryTreeView::sig_play_clicked);
 	connect(m->context_menu, &DirectoryContextMenu::sig_play_new_tab_clicked, this, &DirectoryTreeView::sig_play_new_tab_clicked);
 	connect(m->context_menu, &DirectoryContextMenu::sig_play_next_clicked, this, &DirectoryTreeView::sig_play_next_clicked);
+	connect(m->context_menu, &DirectoryContextMenu::sig_append_clicked, this, &DirectoryTreeView::sig_append_clicked);
 	connect(m->context_menu, &DirectoryContextMenu::sig_create_dir_clicked, this, &DirectoryTreeView::create_dir_clicked);
 	connect(m->context_menu, &DirectoryContextMenu::sig_rename_clicked, this, &DirectoryTreeView::rename_dir_clicked);
 	connect(m->context_menu, &DirectoryContextMenu::sig_collapse_all_clicked, this, &DirectoryTreeView::collapseAll);
@@ -358,7 +359,6 @@ void DirectoryTreeView::drag_timer_timeout()
 {
 	if(m->drag_target_index.isValid())
 	{
-		sp_log(Log::Info, this) << "Expand";
 		this->expand(m->drag_target_index);
 	}
 
@@ -388,50 +388,35 @@ void DirectoryTreeView::dragMoveEvent(QDragMoveEvent* event)
 {
 	event->ignore();
 
+	const QMimeData* mime_data = event->mimeData();
+	if(!mime_data){
+		return;
+	}
+
 	const QModelIndex index = this->indexAt(event->pos());
 	if(index != m->drag_target_index)
 	{
 		m->drag_target_index = index;
-		m->drag_timer->stop();
-
-		sp_log(Log::Info, this) << "Drag move: " << index.row() << "," << index.column();
 
 		if(index.isValid()) {
 			m->drag_timer->start();
 		}
 	}
 
-	const QMimeData* mime_data = event->mimeData();
-	if(!mime_data){
-		return;
-	}
-
 	const auto* cmd = Gui::MimeData::custom_mimedata(mime_data);
-	if(cmd)
+
+	if(mime_data->hasUrls()) {
+		event->accept();
+	}
+
+	else if(cmd && cmd->has_source(this)) {
+		event->accept();
+	}
+
+	if(event->isAccepted() && !selectionModel()->isSelected(index))
 	{
-		if(cmd->has_source(this)){
-			event->acceptProposedAction();
-		}
-
-		if(cmd->hasUrls())
-		{
-			event->acceptProposedAction();
-		}
+		selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
 	}
-
-	else {
-		if(mime_data->hasUrls()) {
-			event->acceptProposedAction();
-		}
-	}
-
-	if(!event->isAccepted()){
-		return;
-	}
-
-	selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
-
-	QTreeView::dragMoveEvent(event);
 }
 
 void DirectoryTreeView::dropEvent(QDropEvent* event)

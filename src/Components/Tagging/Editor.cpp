@@ -528,9 +528,8 @@ void Editor::commit()
 	}
 
 	db->commit();
-	db->close_db();
-
 	db->library_connector()->create_indexes();
+	db->close_db();
 
 	Cover::ChangeNotfier::instance()->shout();
 	ChangeNotifier::instance()->change_metadata(m->v_md_before_change, m->v_md_after_change);

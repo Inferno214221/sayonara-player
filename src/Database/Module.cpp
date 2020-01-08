@@ -22,6 +22,7 @@
 #include "Database/Module.h"
 #include "Utils/Logger/Logger.h"
 
+#include <QApplication>
 #include <QThread>
 #include <QSqlError>
 #include <QSqlDatabase>
@@ -31,15 +32,12 @@ using DB::Module;
 struct Module::Private
 {
 	QString connection_name;
-	QString thread_connection_name;
 	DbId	db_id;
 
 	Private(const QString& connection_name, DbId db_id) :
 		connection_name(connection_name),
 		db_id(db_id)
 	{}
-
-	~Private(){}
 };
 
 Module::Module(const QString& connection_name, DbId db_id)
@@ -47,7 +45,7 @@ Module::Module(const QString& connection_name, DbId db_id)
 	m = Pimpl::make<Private>(connection_name, db_id);
 }
 
-Module::~Module() {}
+Module::~Module() = default;
 
 DbId Module::db_id() const
 {
@@ -59,35 +57,40 @@ QString Module::connection_name() const
 	return m->connection_name;
 }
 
-QString Module::thread_connection_name() const
-{
-	return m->thread_connection_name;
-}
-
 QSqlDatabase Module::db() const
 {
 	if(!QSqlDatabase::isDriverAvailable("QSQLITE")){
 		return QSqlDatabase();
 	}
 
-	m->thread_connection_name = m->connection_name + QThread::currentThread()->objectName();
+	QThread* t = QThread::currentThread();
 
-	QStringList connection_names = QSqlDatabase::connectionNames();
-	if(connection_names.contains(m->thread_connection_name))
-	{
-		return QSqlDatabase::database(m->thread_connection_name);
+	quint64 id = quint64(t);
+	if(t == QApplication::instance()->thread()) {
+		id = 0;
 	}
 
-	sp_log(Log::Info, this) << "Create new connection to " << m->connection_name
-							<< "(" << m->thread_connection_name << ")";
+	QString thread_connection_name = QString("%1-%2")
+									.arg(m->connection_name)
+									.arg(id);
 
-	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", m->thread_connection_name);
+	const QStringList connections = QSqlDatabase::connectionNames();
+	if(connections.contains(thread_connection_name))
+	{
+		return QSqlDatabase::database(thread_connection_name);
+	}
+
+	sp_log(Log::Info, this) << "Create new connection to " << connection_name()
+							<< " (" << thread_connection_name << ")";
+
+	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", thread_connection_name);
 	db.setDatabaseName(m->connection_name);
 
 	if(!db.open())
 	{
-		sp_log(Log::Error, this) << "Database cannot be opened! " << m->connection_name;
 		QSqlError er = db.lastError();
+
+		sp_log(Log::Error, this) << "Database cannot be opened! " << m->connection_name;
 		sp_log(Log::Error, this) << er.driverText();
 		sp_log(Log::Error, this) << er.databaseText();
 	}
@@ -118,7 +121,7 @@ DB::Query Module::run_query(const QString& query, const QMap<QString, QVariant>&
 
 	if(!q.exec())
 	{
-		sp_log(Log::Error, this) << "Query error to connection " << m->thread_connection_name;
+		sp_log(Log::Error, this) << "Query error to connection " << db().connectionName();
 		q.show_error(error_text);
 	}
 
@@ -145,7 +148,7 @@ DB::Query Module::insert(const QString& tablename, const QMap<QString, QVariant>
 
 	if(!q.exec())
 	{
-		sp_log(Log::Error, this) << "Query error to connection " << m->thread_connection_name;
+		sp_log(Log::Error, this) << "Query error to connection " << db().connectionName();
 		q.show_error(error_message);
 	}
 
@@ -181,14 +184,10 @@ DB::Query Module::update(const QString& tablename, const QMap<QString, QVariant>
 
 	if(!q.exec() || q.numRowsAffected() == 0)
 	{
-		sp_log(Log::Error, this) << "Query error to connection " << m->thread_connection_name;
+		sp_log(Log::Error, this) << "Query error to connection " << db().connectionName();
 		q.set_error(true);
 		q.show_error(error_message);
 	}
 
 	return q;
 }
-
-
-
-

@@ -80,9 +80,7 @@ Base::Base(DbId db_id, const QString& source_dir, const QString& target_dir, con
 	}
 }
 
-
 DB::Base::~Base() = default;
-
 
 bool Base::is_initialized()
 {
@@ -95,17 +93,23 @@ bool Base::close_db()
 		return false;
 	}
 
-	QStringList connection_names = QSqlDatabase::connectionNames();
-	if(!connection_names.contains(m->connection_name)){
-		return false;
+	QString connection_name;
+	{
+		QSqlDatabase database = db();
+		connection_name = database.connectionName();
+		QStringList connection_names = QSqlDatabase::connectionNames();
+		if(!connection_names.contains(connection_name)){
+			return false;
+		}
+
+		sp_log(Log::Info, this) << "close database " << m->filename << " (" << connection_name << ")...";
+
+		if(database.isOpen()){
+			database.close();
+		}
 	}
 
-	sp_log(Log::Info, this) << "close database " << m->filename << " (" << this->thread_connection_name() << ")...";
-
-	QSqlDatabase database = db();
-	if(database.isOpen()){
-		database.close();
-	}
+	QSqlDatabase::removeDatabase(connection_name);
 
 	return true;
 }

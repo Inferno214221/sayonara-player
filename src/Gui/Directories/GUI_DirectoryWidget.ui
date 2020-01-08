@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>904</width>
-    <height>677</height>
+    <height>684</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -168,9 +168,6 @@
            </property>
            <property name="selectionMode">
             <enum>QAbstractItemView::ExtendedSelection</enum>
-           </property>
-           <property name="autoExpandDelay">
-            <number>750</number>
            </property>
            <property name="headerHidden">
             <bool>true</bool>
