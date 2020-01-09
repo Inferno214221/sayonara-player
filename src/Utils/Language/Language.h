@@ -278,7 +278,10 @@ public:
 
 	enum TermNr
 	{
-		NrTracks=0,
+		NrDirectories=0,
+		NrFiles,
+		NrPlaylists,
+		NrTracks,
 		NrTracksFound,
 		NUMBER_OF_LANGUAGE_PARAM_KEYS
 	};

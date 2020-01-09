@@ -370,26 +370,20 @@ void DirectoryTreeView::dragEnterEvent(QDragEnterEvent* event)
 	m->reset_drag();
 
 	const QMimeData* mime_data = event->mimeData();
-	if(!mime_data->hasUrls()){
-		sp_log(Log::Warning, this) << "DragMove: No Mimedata";
+	if(!mime_data || !mime_data->hasUrls())
+	{
+		event->ignore();
 		return;
 	}
 
 	event->accept();
 }
 
-void DirectoryTreeView::dragLeaveEvent(QDragLeaveEvent* event)
-{
-	m->reset_drag();
-	event->accept();
-}
-
 void DirectoryTreeView::dragMoveEvent(QDragMoveEvent* event)
 {
-	event->ignore();
-
 	const QMimeData* mime_data = event->mimeData();
 	if(!mime_data){
+		event->ignore();
 		return;
 	}
 
@@ -413,10 +407,24 @@ void DirectoryTreeView::dragMoveEvent(QDragMoveEvent* event)
 		event->accept();
 	}
 
+	else {
+		event->ignore();
+	}
+
 	if(event->isAccepted() && !selectionModel()->isSelected(index))
 	{
 		selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
 	}
+
+	SearchableTreeView::dragMoveEvent(event);
+}
+
+void DirectoryTreeView::dragLeaveEvent(QDragLeaveEvent* event)
+{
+	m->reset_drag();
+	event->accept();
+
+	SearchableTreeView::dragLeaveEvent(event);
 }
 
 void DirectoryTreeView::dropEvent(QDropEvent* event)

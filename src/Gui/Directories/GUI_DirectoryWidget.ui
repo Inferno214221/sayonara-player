@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>904</width>
-    <height>684</height>
+    <height>677</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -151,11 +151,17 @@
              <bold>true</bold>
             </font>
            </property>
+           <property name="acceptDrops">
+            <bool>true</bool>
+           </property>
            <property name="autoScroll">
             <bool>true</bool>
            </property>
            <property name="autoScrollMargin">
-            <number>100</number>
+            <number>50</number>
+           </property>
+           <property name="showDropIndicator" stdset="0">
+            <bool>true</bool>
            </property>
            <property name="dragEnabled">
             <bool>true</bool>
@@ -169,7 +175,16 @@
            <property name="selectionMode">
             <enum>QAbstractItemView::ExtendedSelection</enum>
            </property>
+           <property name="verticalScrollMode">
+            <enum>QAbstractItemView::ScrollPerPixel</enum>
+           </property>
+           <property name="autoExpandDelay">
+            <number>750</number>
+           </property>
            <property name="headerHidden">
+            <bool>true</bool>
+           </property>
+           <property name="expandsOnDoubleClick">
             <bool>true</bool>
            </property>
           </widget>
@@ -180,11 +195,17 @@
              <bold>true</bold>
             </font>
            </property>
+           <property name="acceptDrops">
+            <bool>true</bool>
+           </property>
+           <property name="showDropIndicator" stdset="0">
+            <bool>true</bool>
+           </property>
            <property name="dragEnabled">
             <bool>true</bool>
            </property>
            <property name="dragDropMode">
-            <enum>QAbstractItemView::DragOnly</enum>
+            <enum>QAbstractItemView::DragDrop</enum>
            </property>
            <property name="alternatingRowColors">
             <bool>true</bool>

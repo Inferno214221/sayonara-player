@@ -517,7 +517,6 @@ void Handler::remove_rows(const IndexSet& indexes, int pl_idx)
 	m->playlists[pl_idx]->remove_tracks(indexes);
 }
 
-
 void Handler::move_rows(const IndexSet& indexes, int tgt_idx, int pl_idx)
 {
 	CHECK_IDX_VOID(pl_idx)
@@ -806,12 +805,14 @@ void Handler::files_scanned()
 
 	for (PlaylistPtr pl : m->playlists)
 	{
-		if(pl->get_id() != data->playlist_id)
-		{
+		if(pl->get_id() != data->playlist_id) {
 			continue;
 		}
 
 		pl->set_busy(false);
+		if(worker->metadata().isEmpty()){
+			continue;
+		}
 
 		int target_row_index = data->target_row_index;
 		if(target_row_index < 0)

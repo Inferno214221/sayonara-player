@@ -60,8 +60,8 @@ struct Dragable::Private
 	QStringList get_strings(const QMimeData* data)
 	{
 		QStringList ret;
-		int playlists, dirs, tracks;
-		playlists = dirs = tracks = 0;
+		int playlists, dirs, tracks, other_files;
+		playlists = dirs = tracks = other_files = 0;
 
 		QList<QUrl> urls = data->urls();
 
@@ -79,22 +79,26 @@ struct Dragable::Private
 			else if(FileUtils::is_dir(filename)){
 				dirs++;
 			}
+
+			else if(FileUtils::is_file(filename)){
+				other_files++;
+			}
 		}
 
 		if(tracks > 0){
-			ret << QString::number(tracks) + " " + Lang::get(Lang::Tracks).toLower();
+			ret << Lang::get_with_number(Lang::NrTracks, tracks);
 		}
 
 		if(playlists > 0){
-			ret << QString::number(playlists) + " " + Lang::get(Lang::Playlists).toLower();
+			ret << Lang::get_with_number(Lang::NrPlaylists, playlists);
 		}
 
-		if(dirs == 1){
-			ret << QString::number(dirs) + " " + Lang::get(Lang::Directory).toLower();
+		if(dirs > 0){
+			ret << Lang::get_with_number(Lang::NrDirectories, dirs);
 		}
 
-		else if(dirs > 0){
-			ret << QString::number(dirs) + " " + Lang::get(Lang::Directories).toLower();
+		if(other_files > 0){
+			ret << Lang::get_with_number(Lang::NrFiles, other_files);
 		}
 
 		return ret;
