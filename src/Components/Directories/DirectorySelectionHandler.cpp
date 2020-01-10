@@ -1,5 +1,6 @@
 #include "DirectorySelectionHandler.h"
 #include "MetaDataScanner.h"
+#include "FileOperations.h"
 
 #include "Components/Library/LocalLibrary.h"
 #include "Components/LibraryManagement/LibraryManager.h"
@@ -13,6 +14,8 @@
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Library/Filter.h"
+
+
 
 #include <QThread>
 #include <QList>
@@ -67,13 +70,6 @@ DirectorySelectionHandler::DirectorySelectionHandler(QObject* parent) :
 
 DirectorySelectionHandler::~DirectorySelectionHandler() = default;
 
-static bool contains_audio(const QStringList& paths)
-{
-	return Util::Algorithm::contains(paths, [](const QString& path){
-		return Util::File::is_soundfile(path);
-	});
-}
-
 void DirectorySelectionHandler::create_playlist(const QStringList& paths, bool create_new_playlist)
 {
 	auto* plh = Playlist::Handler::instance();
@@ -118,37 +114,40 @@ void DirectorySelectionHandler::import_requested(LibraryId lib_id, const QString
 	library->import_files_to(paths, target_dir);
 }
 
+FileOperations* DirectorySelectionHandler::create_file_operation()
+{
+	auto* fo = new FileOperations(this);
+
+	connect(fo, &FileOperations::sig_started, this, &DirectorySelectionHandler::sig_file_operation_started);
+	connect(fo, &FileOperations::sig_finished, this, &DirectorySelectionHandler::sig_file_operation_finished);
+	connect(fo, &FileOperations::sig_finished, fo, &QObject::deleteLater);
+
+	return fo;
+}
+
+void DirectorySelectionHandler::copy_paths(const QStringList& paths, const QString& target_dir)
+{
+	create_file_operation()->copy_paths(paths, target_dir);
+}
+
+void DirectorySelectionHandler::move_paths(const QStringList& paths, const QString& target_dir)
+{
+	create_file_operation()->move_paths(paths, target_dir);
+}
+
+void DirectorySelectionHandler::rename_path(const QString& path, const QString& new_name)
+{
+	create_file_operation()->rename_path(path, new_name);
+}
+
+void DirectorySelectionHandler::rename_by_expression(const QString& path, const QString& expression)
+{
+	create_file_operation()->rename_by_expression(path, expression);
+}
+
 void DirectorySelectionHandler::delete_paths(const QStringList& paths)
 {
-	create_delete_filescanner(paths);
-}
-
-void DirectorySelectionHandler::create_delete_filescanner(const QStringList& files)
-{
-	using Directory::MetaDataScanner;
-	auto* worker = new MetaDataScanner(files, true, nullptr);
-	auto* t = new QThread();
-
-	worker->moveToThread(t);
-
-	connect(worker, &MetaDataScanner::sig_finished, this, &DirectorySelectionHandler::scanner_delete_finished);
-	connect(worker, &MetaDataScanner::sig_finished, t, &QThread::quit);
-	connect(t, &QThread::finished, t, &QObject::deleteLater);
-	connect(t, &QThread::started, worker, &MetaDataScanner::start);
-
-	t->start();
-}
-
-void DirectorySelectionHandler::scanner_delete_finished()
-{
-	auto* worker = static_cast<Directory::MetaDataScanner*>(sender());
-	const MetaDataList v_md = worker->metadata();
-	const QStringList files = worker->files();
-
-	library_instance()->delete_tracks(v_md, Library::TrackDeletionMode::OnlyLibrary);
-	Util::File::delete_files(files);
-
-	worker->deleteLater();
+	create_file_operation()->delete_paths(paths);
 }
 
 void DirectorySelectionHandler::libraries_changed()

@@ -23,9 +23,6 @@
 #include "DirectoryModel.h"
 #include "DirectoryContextMenu.h"
 
-#include "Components/Directories/DirectoryReader.h"
-#include "Components/Directories/FileOperations.h"
-
 #include "Gui/Utils/Delegates/StyledItemDelegate.h"
 #include "Gui/Utils/PreferenceAction.h"
 #include "Gui/Utils/CustomMimeData.h"
@@ -46,7 +43,6 @@
 #include <QDrag>
 #include <QTimer>
 #include <QAction>
-#include <QMap>
 
 #include <algorithm>
 #include <utility> // std::pair
@@ -54,20 +50,19 @@
 struct DirectoryTreeView::Private
 {
 	QString				last_search_term;
-	FileOperations*		file_operations=nullptr;
 
 	DirectoryContextMenu*	context_menu=nullptr;
 	DirectoryModel*		model=nullptr;
-	IconProvider*		icon_provider = nullptr;
+	IconProvider*		icon_provider=nullptr;
+	Gui::ProgressBar*	progress_bar=nullptr;
 	int					last_found_index;
 
-	QModelIndex			drag_target_index;
 	QTimer*				drag_timer=nullptr;
+	QModelIndex			drag_target_index;
 
 	Private(QObject* parent) :
 		last_found_index(-1)
 	{
-		file_operations = new FileOperations(parent);
 		icon_provider = new IconProvider();
 
 		drag_timer = new QTimer(parent);
@@ -88,7 +83,7 @@ struct DirectoryTreeView::Private
 };
 
 
-DirectoryTreeView::DirectoryTreeView(QWidget *parent) :
+DirectoryTreeView::DirectoryTreeView(QWidget* parent) :
 	SearchableTreeView(parent),
 	Gui::Dragable(this)
 {
@@ -99,10 +94,7 @@ DirectoryTreeView::DirectoryTreeView(QWidget *parent) :
 	m->model->setIconProvider(m->icon_provider);
 	this->set_model(m->model);
 
-	connect(m->file_operations, &FileOperations::sig_copy_finished, this, &DirectoryTreeView::copy_finished);
-	connect(m->file_operations, &FileOperations::sig_copy_started, this, &DirectoryTreeView::copy_started);
 	connect(m->drag_timer, &QTimer::timeout, this, &DirectoryTreeView::drag_timer_timeout);
-
 	this->setItemDelegate(new Gui::StyledItemDelegate(this));
 
 	auto* action = new QAction(this);
@@ -238,16 +230,10 @@ void DirectoryTreeView::select_match(const QString& str, SearchDirection directi
 		return;
 	}
 
-	expand(idx);
-	scrollTo(idx, QAbstractItemView::PositionAtCenter);
-	this->clearSelection();
-	selectionModel()->clearSelection();
 	selectionModel()->select(idx, QItemSelectionModel::ClearAndSelect);
 	setCurrentIndex(idx);
-
-	if(m->model->canFetchMore(idx)){
-		m->model->fetchMore(idx);
-	}
+	expand(idx);
+	scrollTo(idx, QAbstractItemView::PositionAtCenter);
 }
 
 bool DirectoryTreeView::has_drag_label() const
@@ -317,7 +303,6 @@ void DirectoryTreeView::create_dir_clicked()
 	}
 }
 
-
 void DirectoryTreeView::rename_dir_clicked()
 {
 	const QModelIndexList indexes = this->selected_indexes();
@@ -334,25 +319,32 @@ void DirectoryTreeView::rename_dir_clicked()
 	if(!new_name.isEmpty() && (ret == Gui::LineInputDialog::Ok))
 	{
 		d.cdUp();
-		m->file_operations->rename_dir(dir, d.filePath(new_name));
+		emit sig_rename_requested(dir, d.filePath(new_name));
 	}
 }
 
-void DirectoryTreeView::copy_started()
+void DirectoryTreeView::set_busy(bool b)
 {
-	this->setDragDropMode(DragDropMode::DragOnly);
-	auto* pb = new Gui::ProgressBar(this);
+	if(b)
+	{
+		this->setDragDropMode(DragDropMode::NoDragDrop);
 
-	pb->show();
-	connect(m->file_operations, &FileOperations::sig_copy_finished, pb, &Gui::ProgressBar::deleteLater);
+		if(!m->progress_bar)
+		{
+			m->progress_bar = new Gui::ProgressBar(this);
+			m->progress_bar->show();
+		}
+	}
 
-	emit sig_copy_started();
-}
+	else
+	{
+		this->setDragDropMode(DragDropMode::DragDrop);
 
-void DirectoryTreeView::copy_finished()
-{
-	this->setDragDropMode(DragDropMode::DragDrop);
-	emit sig_copy_finished();
+		if(m->progress_bar)
+		{
+			m->progress_bar->hide();
+		}
+	}
 }
 
 void DirectoryTreeView::drag_timer_timeout()
@@ -499,14 +491,15 @@ void DirectoryTreeView::handle_sayonara_drop(const Gui::CustomMimeData* cmd, con
 
 	DirectoryTreeView::DropAction drop_action = show_drop_menu(QCursor::pos());
 
-	if(!source_dirs.isEmpty()){
+	if(!source_dirs.isEmpty())
+	{
 		switch(drop_action)
 		{
 			case DirectoryTreeView::DropAction::Copy:
-				m->file_operations->copy_dirs(source_dirs, target_dir);
+				emit sig_copy_requested(source_dirs, target_dir);
 				break;
 			case DirectoryTreeView::DropAction::Move:
-				m->file_operations->move_dirs(source_dirs, target_dir);
+				emit sig_move_requested(source_dirs, target_dir);
 				break;
 			default:
 				break;
@@ -518,10 +511,10 @@ void DirectoryTreeView::handle_sayonara_drop(const Gui::CustomMimeData* cmd, con
 		switch(drop_action)
 		{
 			case DirectoryTreeView::DropAction::Copy:
-				m->file_operations->copy_files(source_files, target_dir);
+				emit sig_copy_requested(source_files, target_dir);
 				break;
 			case DirectoryTreeView::DropAction::Move:
-				m->file_operations->move_files(source_files, target_dir);
+				emit sig_move_requested(source_files, target_dir);
 				break;
 			default:
 				break;

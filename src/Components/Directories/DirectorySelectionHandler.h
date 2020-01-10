@@ -9,6 +9,7 @@ namespace Library
 	class Info;
 }
 
+class FileOperations;
 class LocalLibrary;
 class QStringList;
 
@@ -21,6 +22,11 @@ class DirectorySelectionHandler :
 signals:
 	void sig_libraries_changed();
 	void sig_import_dialog_requested(const QString& target_path);
+	void sig_file_operation_started();
+	void sig_file_operation_finished();
+
+private:
+	FileOperations* create_file_operation();
 
 public:
 	DirectorySelectionHandler(QObject* parent=nullptr);
@@ -32,7 +38,6 @@ public:
 	void prepare_tracks_for_playlist(const QStringList& paths, bool create_new_playlist);
 
 	void import_requested(LibraryId lib_id, const QStringList& paths, const QString& target_dir);
-	void delete_paths(const QStringList& paths);
 
 	void set_library_id(LibraryId lib_id);
 	LibraryId library_id() const;
@@ -44,12 +49,14 @@ public:
 
 	void set_search_text(const QString& text);
 
-private slots:
-	void scanner_delete_finished();
-	void libraries_changed();
+	void copy_paths(const QStringList& paths, const QString& target);
+	void move_paths(const QStringList& paths, const QString& target);
+	void rename_path(const QString& path, const QString& new_name);
+	void rename_by_expression(const QString& path, const QString& expression);
+	void delete_paths(const QStringList& paths);
 
-private:
-	void create_delete_filescanner(const QStringList& files);
+private slots:
+	void libraries_changed();
 };
 
 

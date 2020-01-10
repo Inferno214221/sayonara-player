@@ -73,8 +73,10 @@ signals:
 	void sig_enter_pressed();
 	void sig_import_requested(LibraryId lib_id, const QStringList& v_md, const QString& target_dir);
 
-	void sig_copy_started();
-	void sig_copy_finished();
+	void sig_copy_requested(const QStringList& paths, const QString& target);
+	void sig_move_requested(const QStringList& paths, const QString& target);
+	void sig_rename_requested(const QString& path, const QString& target);
+
 
 public:
 	explicit DirectoryTreeView(QWidget* parent=nullptr);
@@ -89,6 +91,7 @@ public:
 	QMimeData*		dragable_mimedata() const override;
 
 	void			set_library(const Library::Info& info);
+	void			set_busy(bool b);
 
 private:
 	enum class DropAction
@@ -105,8 +108,6 @@ private slots:
 	void selection_changed(const QItemSelection& selected, const QItemSelection& deselected);
 	void create_dir_clicked();
 	void rename_dir_clicked();
-	void copy_started();
-	void copy_finished();
 	void drag_timer_timeout();
 
 protected:

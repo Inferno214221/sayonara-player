@@ -507,7 +507,6 @@ bool Tracks::deleteTracks(const IdList& ids)
 	return (success && (n_files == ids.size()));
 }
 
-
 bool Tracks::deleteTracks(const MetaDataList& v_md)
 {
 	if(v_md.isEmpty()){
@@ -706,6 +705,40 @@ bool Tracks::updateTracks(const MetaDataList& v_md)
 	bool success = module()->db().commit();
 
 	return success && (n_files == v_md.count());
+}
+
+bool Tracks::renameFilepaths(const QMap<QString, QString>& paths, LibraryId target_library)
+{
+	module()->db().transaction();
+	for(auto it=paths.begin(); it != paths.end(); it++)
+	{
+		renameFilepath(it.key(), it.value(), target_library);
+	}
+	return module()->db().commit();
+}
+
+bool Tracks::renameFilepath(const QString& old_path, const QString& new_path, LibraryId target_library)
+{
+	QString query
+	(
+		"UPDATE Tracks "
+		"SET "
+		"filename = REPLACE(filename, :oldName, :newName), "
+		"libraryID = :libraryID;"
+	);
+
+	Query q(module());
+	q.prepare(query);
+	q.bindValue(":oldName", old_path);
+	q.bindValue(":newName", new_path);
+	q.bindValue(":libraryID", QVariant::fromValue<LibraryId>(target_library));
+	if(!q.exec())
+	{
+		sp_log(Log::Warning, this) << "Could not replace filepath string";
+		return false;
+	}
+
+	return true;
 }
 
 

@@ -51,14 +51,14 @@ signals:
 	void sig_append_clicked();
 	void sig_enter_pressed();
 	void sig_import_requested(LibraryId lib_id, const QStringList& files, const QString& target_dir);
+	void sig_rename_requested(const QString& old_name, const QString& new_name);
+	void sig_rename_by_expression_requested(const QString& old_name, const QString& expression);
 
 public:
 	explicit FileListView(QWidget* parent=nullptr);
 	~FileListView() override;
 
 	QModelIndexList selected_rows() const;
-	MetaDataList selected_metadata() const;
-
 	QStringList selected_paths() const;
 
 	void set_parent_directory(LibraryId id, const QString& dir);
@@ -86,7 +86,6 @@ protected:
 
 private:
 	void init_context_menu();
-	void rename_file(const QString& old_name, const QString& new_name);
 
 private slots:
 	void rename_file_clicked();

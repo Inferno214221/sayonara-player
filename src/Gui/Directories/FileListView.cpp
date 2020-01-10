@@ -24,9 +24,6 @@
 #include "DirectoryContextMenu.h"
 #include "GUI_FileExpressionDialog.h"
 
-#include "Components/Directories/DirectoryReader.h"
-#include "Components/Directories/FileOperations.h"
-
 #include "Utils/globals.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Settings/Settings.h"
@@ -56,12 +53,10 @@ struct FileListView::Private
 {
 	DirectoryContextMenu*	context_menu=nullptr;
 	FileListModel*			model=nullptr;
-	FileOperations*			file_operations=nullptr;
 
 	Private(FileListView* parent)
 	{
 		model = new FileListModel(parent);
-		file_operations = new FileOperations(parent);
 	}
 };
 
@@ -217,12 +212,6 @@ QModelIndexList FileListView::selected_rows() const
 	return QModelIndexList();
 }
 
-MetaDataList FileListView::selected_metadata() const
-{
-	DirectoryReader reader;
-	return reader.scan_metadata(selected_paths());
-}
-
 QStringList FileListView::selected_paths() const
 {
 	const QStringList paths = m->model->files();
@@ -288,7 +277,8 @@ void FileListView::set_search_filter(const QString& search_string)
 QMimeData* FileListView::dragable_mimedata() const
 {
 	auto* mimedata = new Gui::CustomMimeData(this);
-	mimedata->set_metadata(selected_metadata());
+	m->model->mimeData(this->selectedIndexes());
+	//mimedata->set_metadata(selected_metadata());
 
 	QList<QUrl> urls;
 
@@ -320,32 +310,6 @@ void FileListView::keyPressEvent(QKeyEvent *event)
 	SearchableTableView::keyPressEvent(event);
 }
 
-
-void FileListView::rename_file(const QString& old_name, const QString& new_name)
-{
-	QDir d(old_name);
-	d.cdUp();
-
-	QString new_full_name = new_name;
-	QString ext = Util::File::get_file_extension(old_name);
-	if(!new_full_name.toLower().endsWith("." + ext.toLower()))
-	{
-		new_full_name = d.filePath(new_name) + "." + ext;
-	}
-
-	sp_log(Log::Debug, this) << "Will rename " << old_name << " to " << new_full_name;
-
-	m->file_operations->rename_file(old_name, new_full_name);
-	m->model->set_parent_directory(m->model->library_id(), m->model->parent_directory());
-
-	const QStringList files = m->model->files();
-	int new_file_index = files.indexOf(new_full_name);
-	if(Util::between(new_file_index, files))
-	{
-		this->select_row(new_file_index);
-	}
-}
-
 void FileListView::rename_file_clicked()
 {
 	const QModelIndexList indexes = this->selected_rows();
@@ -361,7 +325,9 @@ void FileListView::rename_file_clicked()
 		return;
 	}
 
-	QString file = Util::File::get_filename_of_path(files[row]);
+	auto [dir, file] = Util::File::split_filename(files[row]);
+	QString ext = Util::File::get_file_extension(files[row]);
+
 
 	int last_dot = file.lastIndexOf(".");
 	file = file.left(last_dot);
@@ -370,14 +336,18 @@ void FileListView::rename_file_clicked()
 	{
 		Gui::LineInputDialog dialog(Lang::get(Lang::Rename), tr("Enter new name"), file, this);
 		dialog.exec();
-		new_name = dialog.text();
-		if(dialog.return_value() != Gui::LineInputDialog::Ok || new_name.isEmpty())
-		{
+
+		if(dialog.return_value() != Gui::LineInputDialog::Ok || dialog.text().isEmpty()) {
 			return;
+		}
+
+		new_name = QDir(dir).filePath(dialog.text());
+		if(!new_name.endsWith("." + ext)){
+			new_name += "." + ext;
 		}
 	}
 
-	this->rename_file(files[row], new_name);
+	emit sig_rename_requested(files[row], new_name);
 }
 
 
@@ -392,8 +362,7 @@ void FileListView::rename_file_by_tag_clicked()
 
 	auto* dialog = new GUI_FileExpressionDialog(this);
 	QDialog::DialogCode ret = QDialog::DialogCode(dialog->exec());
-	if(ret == QDialog::Rejected)
-	{
+	if(ret == QDialog::Rejected) {
 		return;
 	}
 
@@ -409,9 +378,7 @@ void FileListView::rename_file_by_tag_clicked()
 			return;
 		}
 
-		m->file_operations->rename_file_by_expression(files[row], expression);
+		emit sig_rename_by_expression_requested(files[row], expression);
 	}
-
-	m->model->set_parent_directory(m->model->library_id(), m->model->parent_directory());
 }
 

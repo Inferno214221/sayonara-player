@@ -576,8 +576,10 @@ bool Util::File::create_dir(const QString& dir_name)
 }
 
 
-bool Util::File::copy_dir(const QString& source_dir, const QString& target_dir)
+bool Util::File::copy_dir(const QString& source_dir, const QString& target_dir, QString& new_filename)
 {
+	new_filename.clear();
+
 	if(!can_copy_dir(source_dir, target_dir)){
 		return false;
 	}
@@ -588,7 +590,7 @@ bool Util::File::copy_dir(const QString& source_dir, const QString& target_dir)
 		return false;
 	}
 
-	QDir src(source_dir);
+	const QDir src(source_dir);
 	QString copy_to = target_dir + "/" + src.dirName();
 
 	sp_log(Log::Debug, "File") << "Create dir: " << copy_to;
@@ -601,7 +603,8 @@ bool Util::File::copy_dir(const QString& source_dir, const QString& target_dir)
 	{
 		if(info.isDir())
 		{
-			bool success = copy_dir(info.filePath(), copy_to);
+			QString nf;
+			bool success = copy_dir(info.filePath(), copy_to, nf);
 			if(!success){
 				return false;
 			}
@@ -610,7 +613,7 @@ bool Util::File::copy_dir(const QString& source_dir, const QString& target_dir)
 		else
 		{
 			QString old_filename = info.filePath();
-			QString new_filename(old_filename);
+			new_filename = old_filename;
 
 			new_filename.remove(source_dir);
 			new_filename.prepend(copy_to);
@@ -621,21 +624,25 @@ bool Util::File::copy_dir(const QString& source_dir, const QString& target_dir)
 		}
 	}
 
+	new_filename = QDir(target_dir).filePath(src.dirName());
+
 	return true;
 }
 
-QString Util::File::move_dir(const QString& source_dir, const QString& target_dir)
+bool Util::File::move_dir(const QString& source_dir, const QString& target_dir, QString& new_filename)
 {
+	new_filename = QString();
+
 	QDir s(source_dir);
 	QDir t(target_dir);
 
 	bool success = rename_dir(source_dir, t.filePath(s.dirName()));
 
 	if(success) {
-		return t.filePath(s.dirName());
+		new_filename = t.filePath(s.dirName());
 	}
 
-	return QString();
+	return success;
 }
 
 bool Util::File::can_copy_dir(const QString& src_dir, const QString& target_dir)
@@ -678,14 +685,18 @@ QByteArray Util::File::calc_md5_sum(const QString& filename)
 	return QByteArray();
 }
 
-bool Util::File::move_files(const QStringList& files, const QString& dir)
+bool Util::File::move_files(const QStringList& files, const QString& dir, QStringList& new_names)
 {
 	bool success = true;
-	for(const QString& file : files){
-		success = move_file(file, dir);
+	for(const QString& file : files)
+	{
+		QString new_name;
+		success = move_file(file, dir, new_name);
 		if(!success){
-			break;
+			continue;
 		}
+
+		new_names << new_name;
 	}
 
 	return success;
@@ -702,32 +713,39 @@ bool Util::File::rename_file(const QString& old_name, const QString& new_name)
 	return f.rename(new_name);
 }
 
-bool Util::File::copy_files(const QStringList& files, const QString& dir)
+bool Util::File::copy_files(const QStringList& files, const QString& dir, QStringList& new_names)
 {
 	bool success = true;
-	for(const QString& file : files){
-		success = copy_file(file, dir);
+	for(const QString& file : files)
+	{
+		QString new_name;
+		success = copy_file(file, dir, new_name);
 		if(!success){
-			break;
+			continue;;
 		}
+
+		new_names << new_name;
 	}
 
 	return success;
 }
 
-bool Util::File::move_file(const QString& file, const QString& dir)
+bool Util::File::move_file(const QString& file, const QString& dir, QString& new_name)
 {
-	bool success = copy_file(file, dir);
-	if(success){
+	bool success = copy_file(file, dir, new_name);
+	if(success)
+	{
 		QFile f(file);
 		return f.remove();
 	}
 
-	return success;
+	return false;
 }
 
-bool Util::File::copy_file(const QString& file, const QString& dir)
+bool Util::File::copy_file(const QString& file, const QString& dir, QString& new_name)
 {
+	new_name.clear();
+
 	QFileInfo di(dir);
 	if(!di.isDir()){
 		return false;
@@ -741,11 +759,10 @@ bool Util::File::copy_file(const QString& file, const QString& dir)
 	QDir d(dir);
 	QFile f(file);
 
-
 	QString pure_filename = get_filename_of_path(file);
-	QString target_filename = d.absoluteFilePath(pure_filename);
+	new_name = d.absoluteFilePath(pure_filename);
 
-	bool success = f.copy(target_filename);
+	bool success = f.copy(new_name);
 	return success;
 }
 

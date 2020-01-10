@@ -91,6 +91,8 @@ GUI_DirectoryWidget::GUI_DirectoryWidget(QWidget *parent) :
 
 	connect(m->dsh, &DirectorySelectionHandler::sig_libraries_changed, this, &GUI_DirectoryWidget::check_libraries);
 	connect(m->dsh, &DirectorySelectionHandler::sig_import_dialog_requested, this, &GUI_DirectoryWidget::import_dialog_requested);
+	connect(m->dsh, &DirectorySelectionHandler::sig_file_operation_started, this, &GUI_DirectoryWidget::file_operation_started);
+	connect(m->dsh, &DirectorySelectionHandler::sig_file_operation_finished, this, &GUI_DirectoryWidget::file_operation_finished);
 
 	m->selected_widget = Private::SelectedWidget::None;
 
@@ -113,6 +115,9 @@ GUI_DirectoryWidget::GUI_DirectoryWidget(QWidget *parent) :
 	connect(ui->tv_dirs, &DirectoryTreeView::sig_play_new_tab_clicked, this, &GUI_DirectoryWidget::dir_play_new_tab_clicked);
 	connect(ui->tv_dirs, &DirectoryTreeView::sig_delete_clicked, this, &GUI_DirectoryWidget::dir_delete_clicked);
 	connect(ui->tv_dirs, &DirectoryTreeView::sig_directory_loaded, this, &GUI_DirectoryWidget::dir_opened);
+	connect(ui->tv_dirs, &DirectoryTreeView::sig_copy_requested, this, &GUI_DirectoryWidget::dir_copy_requested);
+	connect(ui->tv_dirs, &DirectoryTreeView::sig_move_requested, this, &GUI_DirectoryWidget::dir_move_requested);
+	connect(ui->tv_dirs, &DirectoryTreeView::sig_rename_requested, this, &GUI_DirectoryWidget::dir_rename_requested);
 
 	connect(ui->tv_dirs, &DirectoryTreeView::sig_info_clicked, this, [=]()
 	{
@@ -141,6 +146,8 @@ GUI_DirectoryWidget::GUI_DirectoryWidget(QWidget *parent) :
 	connect(ui->lv_files, &FileListView::sig_play_next_clicked, this, &GUI_DirectoryWidget::file_play_next_clicked);
 	connect(ui->lv_files, &FileListView::sig_play_new_tab_clicked, this, &GUI_DirectoryWidget::file_play_new_tab_clicked);
 	connect(ui->lv_files, &FileListView::sig_delete_clicked, this, &GUI_DirectoryWidget::file_delete_clicked);
+	connect(ui->lv_files, &FileListView::sig_rename_requested, this, &GUI_DirectoryWidget::file_rename_requested);
+	connect(ui->lv_files, &FileListView::sig_rename_by_expression_requested, this, &GUI_DirectoryWidget::file_rename_by_expression_requested);
 	connect(ui->lv_files, &FileListView::sig_info_clicked, this, [=]()
 	{
 		m->selected_widget = Private::SelectedWidget::Files;
@@ -321,6 +328,21 @@ void GUI_DirectoryWidget::dir_delete_clicked()
 	}
 }
 
+void GUI_DirectoryWidget::dir_copy_requested(const QStringList& files, const QString& target)
+{
+	m->dsh->copy_paths(files, target);
+}
+
+void GUI_DirectoryWidget::dir_move_requested(const QStringList& files, const QString& target)
+{
+	m->dsh->move_paths(files, target);
+}
+
+void GUI_DirectoryWidget::dir_rename_requested(const QString& old_name, const QString& new_name)
+{
+	m->dsh->rename_path(old_name, new_name);
+}
+
 void GUI_DirectoryWidget::file_append_clicked()
 {
 	m->dsh->append_tracks(ui->lv_files->selected_paths());
@@ -347,6 +369,28 @@ void GUI_DirectoryWidget::file_delete_clicked()
 	if(answer == Message::Answer::Yes){
 		m->dsh->delete_paths(ui->lv_files->selected_paths());
 	}
+}
+
+void GUI_DirectoryWidget::file_rename_requested(const QString& old_name, const QString& new_name)
+{
+	m->dsh->rename_path(old_name, new_name);
+}
+
+void GUI_DirectoryWidget::file_rename_by_expression_requested(const QString& old_name, const QString& expression)
+{
+	m->dsh->rename_by_expression(old_name, expression);
+	file_operation_finished();
+}
+
+void GUI_DirectoryWidget::file_operation_started()
+{
+	ui->tv_dirs->set_busy(true);
+}
+
+void GUI_DirectoryWidget::file_operation_finished()
+{
+	ui->tv_dirs->set_busy(false);
+	ui->lv_files->set_parent_directory(m->dsh->library_id(), ui->lv_files->parent_directory());
 }
 
 void GUI_DirectoryWidget::import_requested(LibraryId id, const QStringList& paths, const QString& target_dir)
