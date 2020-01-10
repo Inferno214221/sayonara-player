@@ -337,6 +337,14 @@ namespace Util
 		 * @return
 		 */
 		bool exists(const QString& filename);
+
+		/**
+		 * @brief Compares two filepaths by cleaning them
+		 * @param filename1
+         * @param filename2
+		 * @return
+		 */
+		bool is_same_path(const QString& filename1, const QString& filename2);
 	}
 }
 

@@ -50,6 +50,7 @@
 #include <QMimeData>
 #include <QApplication>
 #include <QShortcut>
+#include <QHeaderView>
 
 struct FileListView::Private
 {
@@ -65,7 +66,7 @@ struct FileListView::Private
 };
 
 FileListView::FileListView(QWidget* parent) :
-	SearchableListView(parent),
+	SearchableTableView(parent),
 	Gui::Dragable(this)
 {
 	m = Pimpl::make<Private>(this);
@@ -74,6 +75,10 @@ FileListView::FileListView(QWidget* parent) :
 	this->setItemDelegate(new Gui::StyledItemDelegate(this));
 	this->setSelectionMode(QAbstractItemView::ExtendedSelection);
 	this->setIconSize(QSize(16, 16));
+
+	this->horizontalHeader()->resizeSection(0, this->fontMetrics().height());
+	this->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
+	this->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
 
 	{ // rename by pressing F2
 		auto* action = new QAction(this);
@@ -201,7 +206,6 @@ void FileListView::init_context_menu()
 	connect(m->context_menu, &DirectoryContextMenu::sig_rename_by_tag_clicked, this, &FileListView::rename_file_by_tag_clicked);
 }
 
-
 QModelIndexList FileListView::selected_rows() const
 {
 	QItemSelectionModel* selection_model = this->selectionModel();
@@ -227,6 +231,10 @@ QStringList FileListView::selected_paths() const
 	QStringList ret;
 	for(const QModelIndex& idx : selections)
 	{
+		if(idx.column() != 0){
+			continue;
+		}
+
 		int row = idx.row();
 		if(Util::between(row, paths)){
 			ret << paths[row];
@@ -239,8 +247,9 @@ QStringList FileListView::selected_paths() const
 void FileListView::set_parent_directory(LibraryId library_id, const QString& dir)
 {
 	this->selectionModel()->clear();
-
 	m->model->set_parent_directory(library_id, dir);
+
+	this->resizeRowsToContents();
 }
 
 QString FileListView::parent_directory() const
@@ -276,18 +285,14 @@ void FileListView::set_search_filter(const QString& search_string)
 	}
 }
 
-
 QMimeData* FileListView::dragable_mimedata() const
 {
 	auto* mimedata = new Gui::CustomMimeData(this);
 	mimedata->set_metadata(selected_metadata());
 
-	QStringList paths = selected_paths();
-	std::remove_if(paths.begin(), paths.end(), [](const QString& path){
-		return (Util::File::is_soundfile(path));
-	});
+	QList<QUrl> urls;
 
-	QList<QUrl> urls; urls.reserve(paths.size());
+	const QStringList paths = selected_paths();
 	std::transform(paths.begin(), paths.end(), std::back_inserter(urls), [](const QString& path)
 	{
 		return QUrl::fromLocalFile(path);
@@ -306,13 +311,13 @@ int FileListView::index_by_model_index(const QModelIndex& idx) const
 
 ModelIndexRange FileListView::model_indexrange_by_index(int idx) const
 {
-	return ModelIndexRange(m->model->index(idx), m->model->index(idx));
+	return ModelIndexRange(m->model->index(idx, 0), m->model->index(idx, this->column_count()));
 }
 
 void FileListView::keyPressEvent(QKeyEvent *event)
 {
 	event->setAccepted(false);
-	SearchableListView::keyPressEvent(event);
+	SearchableTableView::keyPressEvent(event);
 }
 
 

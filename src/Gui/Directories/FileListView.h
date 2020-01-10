@@ -34,7 +34,7 @@ class LibraryContextMenu;
  * @ingroup GuiDirectories
  */
 class FileListView :
-		public SearchableListView,
+		public SearchableTableView,
 		private Gui::Dragable
 {
 	Q_OBJECT

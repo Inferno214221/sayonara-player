@@ -53,6 +53,7 @@
 #include <QMouseEvent>
 #include <QShortcut>
 #include <QMenu>
+#include <QHeaderView>
 
 struct GUI_DirectoryWidget::Private
 {
@@ -75,6 +76,7 @@ struct GUI_DirectoryWidget::Private
 	}
 };
 
+
 GUI_DirectoryWidget::GUI_DirectoryWidget(QWidget *parent) :
 	Widget(parent),
 	InfoDialogContainer()
@@ -82,7 +84,7 @@ GUI_DirectoryWidget::GUI_DirectoryWidget(QWidget *parent) :
 	ui = new Ui::GUI_DirectoryWidget();
 	ui->setupUi(this);
 
-	ui->splitter_dir_files->restoreState(GetSetting(Set::Dir_SplitterDirFile));
+	ui->splitter_dirs->restoreState(GetSetting(Set::Dir_SplitterDirFile));
 	ui->splitter_tracks->restoreState(GetSetting(Set::Dir_SplitterTracks));
 
 	m = Pimpl::make<GUI_DirectoryWidget::Private>();
@@ -157,7 +159,7 @@ GUI_DirectoryWidget::GUI_DirectoryWidget(QWidget *parent) :
 		show_lyrics();
 	});
 
-	connect(ui->splitter_dir_files, &QSplitter::splitterMoved, this, &GUI_DirectoryWidget::splitter_moved);
+	connect(ui->splitter_dirs, &QSplitter::splitterMoved, this, &GUI_DirectoryWidget::splitter_moved);
 	connect(ui->splitter_tracks, &QSplitter::splitterMoved, this, &GUI_DirectoryWidget::splitter_moved);
 	connect(ui->btn_set_library_path, &QPushButton::clicked, this, &GUI_DirectoryWidget::set_library_path_clicked);
 
@@ -442,7 +444,7 @@ void GUI_DirectoryWidget::splitter_moved(int pos, int index)
 	Q_UNUSED(pos)
 	Q_UNUSED(index)
 
-	SetSetting(Set::Dir_SplitterDirFile, ui->splitter_dir_files->saveState());
+	SetSetting(Set::Dir_SplitterDirFile, ui->splitter_dirs->saveState());
 	SetSetting(Set::Dir_SplitterTracks, ui->splitter_tracks->saveState());
 }
 

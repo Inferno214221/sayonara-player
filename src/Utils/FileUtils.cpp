@@ -777,3 +777,8 @@ bool Util::File::is_in_sayonara_dir(const QString& path)
 
 	return false;
 }
+
+bool Util::File::is_same_path(const QString& filename1, const QString& filename2)
+{
+	return (clean_filename(filename1) == clean_filename(filename2));
+}

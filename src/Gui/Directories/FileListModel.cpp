@@ -19,14 +19,20 @@
  */
 
 #include "FileListModel.h"
+
 #include "Components/Directories/DirectoryReader.h"
 #include "Components/LibraryManagement/LibraryManager.h"
 
+#include "Database/Connector.h"
+#include "Database/LibraryDatabase.h"
+
 #include "Utils/Utils.h"
 #include "Utils/Algorithm.h"
+#include "Utils/Language/Language.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Library/LibraryInfo.h"
+#include "Utils/MetaData/MetaDataList.h"
 
 #include "Gui/Utils/CustomMimeData.h"
 #include "Gui/Utils/MimeDataUtils.h"
@@ -38,6 +44,15 @@
 #include <QUrl>
 #include <QIcon>
 #include <QDir>
+#include <QMap>
+
+enum ColumnName
+{
+	ColumnDecoration=0,
+	ColumnName,
+	ColumnInLibrary,
+	ColumnCount
+};
 
 namespace Algorithm=Util::Algorithm;
 
@@ -45,6 +60,7 @@ struct FileListModel::Private
 {
 	QString		parent_directory;
 	QStringList files;
+	QMap<QString, bool> files_in_library;
 	LibraryId	library_id;
 
 	Private() :
@@ -54,7 +70,7 @@ struct FileListModel::Private
 
 
 FileListModel::FileListModel(QObject* parent) :
-	SearchableListModel(parent)
+	SearchableTableModel(parent)
 {
 	m = Pimpl::make<Private>();
 }
@@ -64,6 +80,12 @@ FileListModel::~FileListModel() = default;
 void FileListModel::set_parent_directory(LibraryId library_id, const QString& dir)
 {
 	int old_rowcount = rowCount();
+
+	auto* db = DB::Connector::instance();
+	DB::LibraryDatabase* lib_db = db->library_db(library_id, 0);
+
+	MetaDataList tracks;
+	lib_db->getAllTracksByPaths({dir}, tracks);
 
 	m->files.clear();
 	m->parent_directory = dir;
@@ -77,6 +99,13 @@ void FileListModel::set_parent_directory(LibraryId library_id, const QString& di
 	DirectoryReader reader;
 	reader.set_filter(extensions);
 	reader.scan_files(QDir(dir), m->files);
+
+	for(const QString& file : m->files)
+	{
+		m->files_in_library[file] = Util::Algorithm::contains(tracks, [&file](const MetaData& md){
+			return Util::File::is_same_path(file, md.filepath());
+		});
+	}
 
 	if(m->files.size() > old_rowcount)
 	{
@@ -141,9 +170,10 @@ void FileListModel::set_parent_directory(LibraryId library_id, const QString& di
 
 	});
 
-	emit dataChanged(
-			index(0,0),
-			index(m->files.size() - 1, 0)
+	emit dataChanged
+	(
+		index(0,0),
+		index(m->files.size() - 1, this->columnCount(QModelIndex()))
 	);
 }
 
@@ -168,7 +198,6 @@ QModelIndexList FileListModel::search_results(const QString& substr)
 
 	for(int i=0; i<m->files.size(); i++)
 	{
-
 		if(check_row_for_searchstring(i, substr)){
 			ret << index(i, 0);
 		}
@@ -177,44 +206,71 @@ QModelIndexList FileListModel::search_results(const QString& substr)
 	return ret;
 }
 
-int FileListModel::rowCount(const QModelIndex &parent) const
+int FileListModel::rowCount(const QModelIndex& parent) const
 {
 	Q_UNUSED(parent)
 
 	return m->files.size();
 }
 
+int FileListModel::columnCount(const QModelIndex& parent) const
+{
+	Q_UNUSED(parent)
+	return ColumnCount;
+}
+
 QVariant FileListModel::data(const QModelIndex &index, int role) const
 {
 	int row = index.row();
+	int col = index.column();
+
 	if(!Util::between(row, m->files)) {
 		return QVariant();
 	}
 
 	QString filename = m->files[row];
+	bool in_library = m->files_in_library.contains(filename) && (m->files_in_library[filename] == true);
 
 	using namespace Util;
 
 	switch(role)
 	{
 		case Qt::DisplayRole:
-			return File::get_filename_of_path(filename);
+			switch(col)
+			{
+				case ColumnName:
+					return File::get_filename_of_path(filename);
+				case ColumnInLibrary:
+					return (in_library == true) ? Lang::get(Lang::Yes) : Lang::get(Lang::No);
+				default: return QVariant();
+			}
+
 		case Qt::DecorationRole:
-			if(File::is_soundfile(filename))
+			if(col == ColumnDecoration)
 			{
-				return Gui::Icons::icon(Gui::Icons::AudioFile);
-			}
+				if(File::is_soundfile(filename))
+				{
+					return Gui::Icons::icon(Gui::Icons::AudioFile);
+				}
 
-			if(File::is_playlistfile(filename)){
-				return Gui::Icons::icon(Gui::Icons::PlaylistFile);
-			}
+				if(File::is_playlistfile(filename)){
+					return Gui::Icons::icon(Gui::Icons::PlaylistFile);
+				}
 
-			if(File::is_imagefile(filename))
-			{
-				return Gui::Icons::icon(Gui::Icons::ImageFile);
+				if(File::is_imagefile(filename))
+				{
+					return Gui::Icons::icon(Gui::Icons::ImageFile);
+				}
 			}
 
 			return QIcon();
+
+		case Qt::TextAlignmentRole:
+			if(col == ColumnInLibrary){
+				return int(Qt::AlignCenter | Qt::AlignVCenter);
+			}
+
+			return QVariant();
 
 		case Qt::UserRole:
 			return filename;
@@ -224,12 +280,30 @@ QVariant FileListModel::data(const QModelIndex &index, int role) const
 	}
 }
 
+QVariant FileListModel::headerData(int column, Qt::Orientation orientation, int role) const
+{
+	if((role == Qt::DisplayRole) && (orientation == Qt::Orientation::Horizontal))
+	{
+		if(column == ColumnDecoration) {
+			return QString();
+		}
+
+		else if(column == ColumnName){
+			return Lang::get(Lang::Filename);
+		}
+
+		else if(column == ColumnInLibrary){
+			return Lang::get(Lang::Library);
+		}
+	}
+
+	return SearchableTableModel::headerData(column, orientation, role);
+}
+
 bool FileListModel::check_row_for_searchstring(int row, const QString& substr) const
 {
 	QString converted_string = Library::Utils::convert_search_string(substr, search_mode());
-
-	QString dirname, filename;
-	Util::File::split_filename(m->files[row], dirname, filename);
+	QString filename = Util::File::get_filename_of_path(m->files[row]);
 
 	QString converted_filepath = Library::Utils::convert_search_string(filename, search_mode());
 	return converted_filepath.contains(converted_string);
@@ -242,6 +316,10 @@ QMimeData* FileListModel::mimeData(const QModelIndexList& indexes) const
 	for(const QModelIndex& idx : indexes)
 	{
 		int row = idx.row();
+		if(idx.column() != ColumnName){
+			continue;
+		}
+
 		if(Util::between(row, m->files)) {
 			urls << QUrl::fromLocalFile(m->files[row]);
 		}
@@ -262,9 +340,8 @@ Qt::ItemFlags FileListModel::flags(const QModelIndex& index) const
 {
 	if(index.isValid())
 	{
-		return  Qt::ItemFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled);
+		return Qt::ItemFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled);
 	}
 
 	return Qt::NoItemFlags;
-
 }
