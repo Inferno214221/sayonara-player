@@ -731,7 +731,7 @@ bool Tracks::renameFilepath(const QString& old_path, const QString& new_path, Li
 	q.prepare(query);
 	q.bindValue(":oldName", old_path);
 	q.bindValue(":newName", new_path);
-	q.bindValue(":libraryID", QVariant::fromValue<LibraryId>(target_library));
+	q.bindValue(":libraryID", target_library);
 	if(!q.exec())
 	{
 		sp_log(Log::Warning, this) << "Could not replace filepath string";
