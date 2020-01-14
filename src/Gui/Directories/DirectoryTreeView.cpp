@@ -145,7 +145,6 @@ void DirectoryTreeView::init_context_menu()
 	}
 
 	m->context_menu = new DirectoryContextMenu(DirectoryContextMenu::Mode::Dir, this);
-
 	m->context_menu->set_rename_by_tag_visible(false);
 
 	connect(m->context_menu, &DirectoryContextMenu::sig_info_clicked, this, &DirectoryTreeView::sig_info_clicked);
@@ -159,6 +158,8 @@ void DirectoryTreeView::init_context_menu()
 	connect(m->context_menu, &DirectoryContextMenu::sig_create_dir_clicked, this, &DirectoryTreeView::create_dir_clicked);
 	connect(m->context_menu, &DirectoryContextMenu::sig_rename_clicked, this, &DirectoryTreeView::rename_dir_clicked);
 	connect(m->context_menu, &DirectoryContextMenu::sig_collapse_all_clicked, this, &DirectoryTreeView::collapseAll);
+	connect(m->context_menu, &DirectoryContextMenu::sig_copy_to_lib, this, &DirectoryTreeView::sig_copy_to_library_requested);
+	connect(m->context_menu, &DirectoryContextMenu::sig_move_to_lib, this, &DirectoryTreeView::sig_move_to_library_requested);
 }
 
 QString DirectoryTreeView::directory_name(const QModelIndex& index)
@@ -169,10 +170,8 @@ QString DirectoryTreeView::directory_name(const QModelIndex& index)
 QModelIndexList DirectoryTreeView::selected_indexes() const
 {
 	QItemSelectionModel* selection_model = this->selectionModel();
-
 	return selection_model->selectedRows();
 }
-
 
 QStringList DirectoryTreeView::selected_paths() const
 {
@@ -186,7 +185,6 @@ QStringList DirectoryTreeView::selected_paths() const
 
 	return paths;
 }
-
 
 QModelIndex DirectoryTreeView::search(const QString& search_term)
 {

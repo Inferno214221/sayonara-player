@@ -77,6 +77,8 @@ signals:
 	void sig_move_requested(const QStringList& paths, const QString& target);
 	void sig_rename_requested(const QString& path, const QString& target);
 
+	void sig_copy_to_library_requested(LibraryId library_id);
+	void sig_move_to_library_requested(LibraryId library_id);
 
 public:
 	explicit DirectoryTreeView(QWidget* parent=nullptr);
@@ -104,11 +106,13 @@ private:
 	void init_context_menu();
 	DropAction show_drop_menu(const QPoint& pos);
 
+
 private slots:
 	void selection_changed(const QItemSelection& selected, const QItemSelection& deselected);
 	void create_dir_clicked();
 	void rename_dir_clicked();
 	void drag_timer_timeout();
+
 
 protected:
 	void keyPressEvent(QKeyEvent* event) override;

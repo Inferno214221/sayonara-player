@@ -345,6 +345,14 @@ namespace Util
 		 * @return
 		 */
 		bool is_same_path(const QString& filename1, const QString& filename2);
+
+		/**
+		 * @brief Checks if dir is a subdir of parent_dir
+		 * @param dir the dir of interest
+		 * @param other_dir the maybe-parentdir
+		 * @return
+		 */
+		bool is_subdir(const QString& dir, const QString& parent_dir);
 	}
 }
 

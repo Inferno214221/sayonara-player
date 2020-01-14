@@ -54,6 +54,7 @@
 #include <QShortcut>
 #include <QMenu>
 #include <QHeaderView>
+#include <QFileDialog>
 
 struct GUI_DirectoryWidget::Private
 {
@@ -118,6 +119,8 @@ GUI_DirectoryWidget::GUI_DirectoryWidget(QWidget *parent) :
 	connect(ui->tv_dirs, &DirectoryTreeView::sig_copy_requested, this, &GUI_DirectoryWidget::dir_copy_requested);
 	connect(ui->tv_dirs, &DirectoryTreeView::sig_move_requested, this, &GUI_DirectoryWidget::dir_move_requested);
 	connect(ui->tv_dirs, &DirectoryTreeView::sig_rename_requested, this, &GUI_DirectoryWidget::dir_rename_requested);
+	connect(ui->tv_dirs, &DirectoryTreeView::sig_copy_to_library_requested, this, &GUI_DirectoryWidget::dir_copy_to_lib_requested);
+	connect(ui->tv_dirs, &DirectoryTreeView::sig_move_to_library_requested, this, &GUI_DirectoryWidget::dir_move_to_lib_requested);
 
 	connect(ui->tv_dirs, &DirectoryTreeView::sig_info_clicked, this, [=]()
 	{
@@ -148,6 +151,9 @@ GUI_DirectoryWidget::GUI_DirectoryWidget(QWidget *parent) :
 	connect(ui->lv_files, &FileListView::sig_delete_clicked, this, &GUI_DirectoryWidget::file_delete_clicked);
 	connect(ui->lv_files, &FileListView::sig_rename_requested, this, &GUI_DirectoryWidget::file_rename_requested);
 	connect(ui->lv_files, &FileListView::sig_rename_by_expression_requested, this, &GUI_DirectoryWidget::file_rename_by_expression_requested);
+	connect(ui->lv_files, &FileListView::sig_copy_to_library_requested, this, &GUI_DirectoryWidget::file_copy_to_lib_requested);
+	connect(ui->lv_files, &FileListView::sig_move_to_library_requested, this, &GUI_DirectoryWidget::file_move_to_lib_requested);
+
 	connect(ui->lv_files, &FileListView::sig_info_clicked, this, [=]()
 	{
 		m->selected_widget = Private::SelectedWidget::Files;
@@ -343,6 +349,46 @@ void GUI_DirectoryWidget::dir_rename_requested(const QString& old_name, const QS
 	m->dsh->rename_path(old_name, new_name);
 }
 
+static QString copy_or_move_to_library_requested(const QStringList& paths, LibraryId id, QWidget* parent)
+{
+	if(paths.isEmpty()) {
+		return QString();
+	}
+
+	Library::Info info = Library::Manager::instance()->library_info(id);
+
+	const QString dir = QFileDialog::getExistingDirectory(parent, parent->tr("Choose target directory"), info.path());
+	if(dir.isEmpty()) {
+		return QString();
+	}
+
+	if(!Util::File::is_subdir(dir, info.path()))
+	{
+		Message::error(parent->tr("%1 is not a subdirectory of %2").arg(dir).arg(info.path()));
+		return QString();
+	}
+
+	return dir;
+}
+
+void GUI_DirectoryWidget::dir_copy_to_lib_requested(LibraryId library_id)
+{
+	QString target_dir = copy_or_move_to_library_requested(ui->tv_dirs->selected_paths(), library_id, this);
+	if(!target_dir.isEmpty())
+	{
+		m->dsh->copy_paths(ui->tv_dirs->selected_paths(), target_dir);
+	}
+}
+
+void GUI_DirectoryWidget::dir_move_to_lib_requested(LibraryId library_id)
+{
+	QString target_dir = copy_or_move_to_library_requested(ui->tv_dirs->selected_paths(), library_id, this);
+	if(!target_dir.isEmpty())
+	{
+		m->dsh->move_paths(ui->tv_dirs->selected_paths(), target_dir);
+	}
+}
+
 void GUI_DirectoryWidget::file_append_clicked()
 {
 	m->dsh->append_tracks(ui->lv_files->selected_paths());
@@ -380,6 +426,24 @@ void GUI_DirectoryWidget::file_rename_by_expression_requested(const QString& old
 {
 	m->dsh->rename_by_expression(old_name, expression);
 	file_operation_finished();
+}
+
+void GUI_DirectoryWidget::file_copy_to_lib_requested(LibraryId library_id)
+{
+	QString target_dir = copy_or_move_to_library_requested(ui->lv_files->selected_paths(), library_id, this);
+	if(!target_dir.isEmpty())
+	{
+		m->dsh->copy_paths(ui->lv_files->selected_paths(), target_dir);
+	}
+}
+
+void GUI_DirectoryWidget::file_move_to_lib_requested(LibraryId library_id)
+{
+	QString target_dir = copy_or_move_to_library_requested(ui->lv_files->selected_paths(), library_id, this);
+	if(!target_dir.isEmpty())
+	{
+		m->dsh->move_paths(ui->lv_files->selected_paths(), target_dir);
+	}
 }
 
 void GUI_DirectoryWidget::file_operation_started()

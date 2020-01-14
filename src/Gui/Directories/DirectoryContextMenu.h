@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef DIRECTORYCONTEXTMENU_H
 #define DIRECTORYCONTEXTMENU_H
 
@@ -40,6 +38,8 @@ signals:
 	void sig_rename_clicked();
 	void sig_rename_by_tag_clicked();
 	void sig_collapse_all_clicked();
+	void sig_move_to_lib(LibraryId id);
+	void sig_copy_to_lib(LibraryId id);
 
 public:
 	enum Mode
@@ -54,7 +54,13 @@ public:
 	void set_create_dir_visible(bool b);
 	void set_rename_visible(bool b);
 	void set_rename_by_tag_visible(bool b);
-	void set_collapse_all_visibled(bool b);
+	void set_collapse_all_visible(bool b);
+	void set_move_to_lib_visible(bool b);
+	void set_copy_to_lib_visible(bool b);
+
+private slots:
+	void library_move_action_triggered();
+	void library_copy_action_triggered();
 
 protected:
 	void language_changed() override;

@@ -799,3 +799,23 @@ bool Util::File::is_same_path(const QString& filename1, const QString& filename2
 {
 	return (clean_filename(filename1) == clean_filename(filename2));
 }
+
+bool Util::File::is_subdir(const QString& dir, const QString& parent_dir)
+{
+	QDir d1(dir);
+	const QDir d2(parent_dir);
+
+	if(d1 == d2){
+		return false;
+	}
+
+	while(!d1.isRoot())
+	{
+		d1.cdUp();
+		if(d1 == d2) {
+			return true;
+		}
+	}
+
+	return false;
+}

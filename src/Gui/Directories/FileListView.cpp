@@ -199,6 +199,8 @@ void FileListView::init_context_menu()
 	connect(m->context_menu, &DirectoryContextMenu::sig_append_clicked, this, &FileListView::sig_append_clicked);
 	connect(m->context_menu, &DirectoryContextMenu::sig_rename_clicked, this, &FileListView::rename_file_clicked);
 	connect(m->context_menu, &DirectoryContextMenu::sig_rename_by_tag_clicked, this, &FileListView::rename_file_by_tag_clicked);
+	connect(m->context_menu, &DirectoryContextMenu::sig_copy_to_lib, this, &FileListView::sig_copy_to_library_requested);
+	connect(m->context_menu, &DirectoryContextMenu::sig_move_to_lib, this, &FileListView::sig_move_to_library_requested);
 }
 
 QModelIndexList FileListView::selected_rows() const

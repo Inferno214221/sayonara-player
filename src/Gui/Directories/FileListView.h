@@ -51,8 +51,12 @@ signals:
 	void sig_append_clicked();
 	void sig_enter_pressed();
 	void sig_import_requested(LibraryId lib_id, const QStringList& files, const QString& target_dir);
+
 	void sig_rename_requested(const QString& old_name, const QString& new_name);
 	void sig_rename_by_expression_requested(const QString& old_name, const QString& expression);
+
+	void sig_copy_to_library_requested(LibraryId library_id);
+	void sig_move_to_library_requested(LibraryId library_id);
 
 public:
 	explicit FileListView(QWidget* parent=nullptr);

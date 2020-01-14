@@ -74,6 +74,8 @@ class GUI_DirectoryWidget :
 		void dir_copy_requested(const QStringList& files, const QString& target);
 		void dir_move_requested(const QStringList& files, const QString& target);
 		void dir_rename_requested(const QString& old_name, const QString& new_name);
+		void dir_copy_to_lib_requested(LibraryId library_id);
+		void dir_move_to_lib_requested(LibraryId library_id);
 
 		void file_dbl_clicked(QModelIndex idx);
 		void file_enter_pressed();
@@ -85,6 +87,8 @@ class GUI_DirectoryWidget :
 		void file_delete_clicked();
 		void file_rename_requested(const QString& old_name, const QString& new_name);
 		void file_rename_by_expression_requested(const QString& old_name, const QString& expression);
+		void file_copy_to_lib_requested(LibraryId library_id);
+		void file_move_to_lib_requested(LibraryId library_id);
 
 		void file_operation_started();
 		void file_operation_finished();
