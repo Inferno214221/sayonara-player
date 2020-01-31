@@ -200,6 +200,55 @@ void DirectoryContextMenu::set_copy_to_lib_visible(bool b)
 	}
 }
 
+void DirectoryContextMenu::set_num_audio_files(int count)
+{
+	if(count == 0)
+	{
+		this->show_actions(Library::ContextMenu::EntryDelete);
+
+		m->action_create_dir->setVisible(false);
+		m->action_collapse_all->setVisible(false);
+		m->action_move_to_lib->setVisible(false);
+		m->action_copy_to_lib->setVisible(false);
+		m->action_rename_by_tag->setVisible(false);
+	}
+
+	else
+	{
+		this->show_actions
+		(
+			(Library::ContextMenu::EntryPlay |
+			Library::ContextMenu::EntryPlayNewTab |
+			Library::ContextMenu::EntryDelete |
+			Library::ContextMenu::EntryInfo |
+			Library::ContextMenu::EntryEdit |
+			Library::ContextMenu::EntryLyrics |
+			Library::ContextMenu::EntryAppend |
+			Library::ContextMenu::EntryPlayNext)
+		);
+
+		switch(m->mode)
+		{
+			case DirectoryContextMenu::Mode::Dir:
+				this->show_action(Library::ContextMenu::EntryLyrics, false);
+				m->action_rename_by_tag->setVisible(false);
+				break;
+			case DirectoryContextMenu::Mode::File:
+				m->action_create_dir->setVisible(false);
+				m->action_collapse_all->setVisible(false);
+				m->action_rename_by_tag->setVisible(true);
+				m->action_rename->setVisible(count == 1);
+				this->show_action(Library::ContextMenu::EntryLyrics, (count == 1));
+				break;
+			default:
+				break;
+		}
+
+		m->action_move_to_lib->setVisible(true);
+		m->action_copy_to_lib->setVisible(true);
+	}
+}
+
 void DirectoryContextMenu::library_move_action_triggered()
 {
 	auto* action = static_cast<QAction*>(sender());
@@ -207,7 +256,6 @@ void DirectoryContextMenu::library_move_action_triggered()
 	LibraryId id = action->data().value<LibraryId>();
 	emit sig_move_to_lib(id);
 }
-
 
 void DirectoryContextMenu::library_copy_action_triggered()
 {

@@ -20,7 +20,6 @@
 
 #include "FileListView.h"
 #include "FileListModel.h"
-#include "DirectoryIconProvider.h"
 #include "DirectoryContextMenu.h"
 #include "GUI_FileExpressionDialog.h"
 
@@ -97,28 +96,16 @@ void FileListView::contextMenuEvent(QContextMenuEvent* event)
 	}
 
 	const QModelIndexList indexes = selected_rows();
-	auto num_audio_files = std::count_if(indexes.begin(), indexes.end(), [](const QModelIndex& index)
+	auto num_audio_files = Util::Algorithm::count(indexes, [](const QModelIndex& index)
 	{
 		QString filename = index.data(Qt::UserRole).toString();
 		return Util::File::is_soundfile(filename);
 	});
 
-	m->context_menu->show_action
-	(
-		Library::ContextMenu::EntryLyrics,
-		(num_audio_files==1)
-	);
+	m->context_menu->set_num_audio_files(num_audio_files);
 
-	m->context_menu->set_rename_visible
-	(
-		(num_audio_files==1)
-	);
-
-	if(num_audio_files > 0)
-	{
-		QPoint pos = QWidget::mapToGlobal(event->pos());
-		m->context_menu->exec(pos);
-	}
+	QPoint pos = QWidget::mapToGlobal(event->pos());
+	m->context_menu->exec(pos);
 }
 
 void FileListView::dragEnterEvent(QDragEnterEvent *event)

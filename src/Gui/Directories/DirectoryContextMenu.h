@@ -58,6 +58,8 @@ public:
 	void set_move_to_lib_visible(bool b);
 	void set_copy_to_lib_visible(bool b);
 
+	void set_num_audio_files(int count);
+
 private slots:
 	void library_move_action_triggered();
 	void library_copy_action_triggered();

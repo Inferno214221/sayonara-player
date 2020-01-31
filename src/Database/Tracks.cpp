@@ -515,7 +515,7 @@ bool Tracks::deleteTracks(const MetaDataList& v_md)
 
 	module()->db().transaction();
 
-	auto deleted_tracks = Util::Algorithm::count_if(v_md, [=](const MetaData& md)
+	auto deleted_tracks = Util::Algorithm::count(v_md, [=](const MetaData& md)
 	{
 		return deleteTrack(md.id());
 	});
@@ -698,7 +698,7 @@ bool Tracks::updateTracks(const MetaDataList& v_md)
 {
 	module()->db().transaction();
 
-	int n_files = Util::Algorithm::count_if(v_md, [=](const MetaData& md){
+	int n_files = Util::Algorithm::count(v_md, [=](const MetaData& md){
 		return updateTrack(md);
 	});
 

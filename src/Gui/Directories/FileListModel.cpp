@@ -45,6 +45,7 @@
 #include <QIcon>
 #include <QDir>
 #include <QMap>
+#include <QPixmap>
 
 enum ColumnName
 {
@@ -61,9 +62,12 @@ struct FileListModel::Private
 	QString		parent_directory;
 	QStringList files;
 	QMap<QString, bool> files_in_library;
+
+	int			icon_size;
 	LibraryId	library_id;
 
 	Private() :
+		icon_size(24),
 		library_id(-1)
 	{}
 };
@@ -167,7 +171,6 @@ void FileListModel::set_parent_directory(LibraryId library_id, const QString& di
 		}
 
 		return (f1.toLower() < f2.toLower());
-
 	});
 
 	emit dataChanged
@@ -259,7 +262,9 @@ QVariant FileListModel::data(const QModelIndex &index, int role) const
 
 				if(File::is_imagefile(filename))
 				{
-					return Gui::Icons::icon(Gui::Icons::ImageFile);
+					QIcon icon;
+					icon.addPixmap(QPixmap(filename));
+					return icon;
 				}
 			}
 

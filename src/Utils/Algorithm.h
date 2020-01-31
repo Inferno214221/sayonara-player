@@ -69,7 +69,7 @@ namespace Util
 		}
 
 		template<class Container, typename FN>
-		int count_if(const Container& container, FN fn)
+		int count(const Container& container, FN fn)
 		{
 			return std::count_if(container.begin(), container.end(), fn);
 		}

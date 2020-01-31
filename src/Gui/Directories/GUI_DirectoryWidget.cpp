@@ -495,9 +495,47 @@ void GUI_DirectoryWidget::file_dbl_clicked(QModelIndex idx)
 	file_enter_pressed();
 }
 
+#include <QLabel>
+
+static void show_image_label(const QString& filename)
+{
+	auto [d, f] = Util::File::split_filename(filename);
+	QPixmap pm = QPixmap(filename);
+
+	auto* label = new QLabel(nullptr);
+
+	label->setPixmap(pm);
+	label->setScaledContents(true);
+	label->setAttribute(Qt::WA_DeleteOnClose);
+	label->resize((600 * pm.width()) / pm.height(), 600);
+	label->setToolTip(QString("%1x%2").arg(pm.width()).arg(pm.height()));
+	label->setWindowTitle(QString("%1: %2x%3")
+		.arg(f)
+		.arg(pm.width())
+		.arg(pm.height())
+	);
+
+	label->show();
+}
+
+
 void GUI_DirectoryWidget::file_enter_pressed()
 {
-	m->dsh->prepare_tracks_for_playlist(ui->lv_files->selected_paths(), false);
+	QStringList paths = ui->lv_files->selected_paths();
+	if(paths.size() == 1 && Util::File::is_imagefile(paths[0]))
+	{
+		show_image_label(paths[0]);
+		return;
+	}
+
+	bool has_soundfiles = Util::Algorithm::contains(paths, [](auto path){
+		return (Util::File::is_soundfile(path) || Util::File::is_playlistfile(path));
+	});
+
+	if(has_soundfiles)
+	{
+		m->dsh->prepare_tracks_for_playlist(paths, false);
+	}
 }
 
 void GUI_DirectoryWidget::search_button_clicked()
