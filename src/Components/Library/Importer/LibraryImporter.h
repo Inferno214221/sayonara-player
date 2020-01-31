@@ -78,7 +78,6 @@ namespace Library
 		void copy_thread_finished();
 		void emit_status(Importer::ImportStatus status);
 		void metadata_changed();
-
 	};
 }
 

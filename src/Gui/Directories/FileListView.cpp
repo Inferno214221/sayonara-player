@@ -31,6 +31,7 @@
 #include "Utils/FileUtils.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/Algorithm.h"
 
 #include "Gui/Utils/Delegates/StyledItemDelegate.h"
 #include "Gui/Utils/InputDialog/LineInputDialog.h"
@@ -283,9 +284,7 @@ QMimeData* FileListView::dragable_mimedata() const
 	//mimedata->set_metadata(selected_metadata());
 
 	QList<QUrl> urls;
-
-	const QStringList paths = selected_paths();
-	std::transform(paths.begin(), paths.end(), std::back_inserter(urls), [](const QString& path)
+	Util::Algorithm::transform(selected_paths(), urls, [](const QString& path)
 	{
 		return QUrl::fromLocalFile(path);
 	});

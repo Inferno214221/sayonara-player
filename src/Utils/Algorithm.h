@@ -86,6 +86,18 @@ namespace Util
 				);
 			}
 		}
+
+		template<class ContainerIn, class ContainerOut, typename FN>
+		void transform(const ContainerIn& in, ContainerOut& out, FN fn)
+		{
+			std::transform(in.begin(), in.end(), std::back_inserter(out), fn);
+		}
+
+		template<class ContainerInOut, typename FN>
+		void transform(ContainerInOut& inout, FN fn)
+		{
+			std::transform(inout.cbegin(), inout.cend(), inout.begin(), fn);
+		}
 	}
 }
 

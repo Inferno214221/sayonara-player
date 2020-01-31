@@ -99,8 +99,7 @@ void Importer::import_files(const QStringList& files, const QString& target_dir)
 	auto* thread = new CachingThread(files, m->library->path());
 	connect(thread, &CachingThread::finished, this, &Importer::caching_thread_finished);
 	connect(thread, &CachingThread::sig_progress, this, &Importer::sig_progress_no_percent);
-	connect(thread, &CachingThread::destroyed, this, [=]()
-	{
+	connect(thread, &CachingThread::destroyed, this, [=]() {
 		m->cache_thread = nullptr;
 	});
 
@@ -240,10 +239,10 @@ void Importer::copy_thread_finished()
 
 void Importer::metadata_changed()
 {
-	auto changed_metadata = Tagging::ChangeNotifier::instance()->changed_metadata();
-
-	if(m->cache_thread){
-		m->cache_thread->change_metadata(changed_metadata.first, changed_metadata.second);
+	auto* change_notifier = Tagging::ChangeNotifier::instance();
+	if(m->import_cache)
+	{
+		m->import_cache->change_metadata(change_notifier->changed_metadata().second);
 	}
 }
 

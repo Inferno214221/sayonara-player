@@ -50,9 +50,11 @@ namespace Library
 
 			QStringList		files() const;
 			MetaDataList	soundfiles() const;
+			int				count() const;
+
 			QString			target_filename(const QString& src_filename, const QString& target_directory) const;
 			MetaData		metadata(const QString& filename) const;
-			void			change_metadata(const MetaDataList& v_md_old, const MetaDataList& v_md_new);
+			void			change_metadata(const MetaDataList& updated_tracks);
 	};
 
 	using ImportCachePtr=std::shared_ptr<ImportCache>;

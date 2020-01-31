@@ -51,13 +51,12 @@ struct FileOperationThread::Private
 	FileOperationThread::Mode mode;
 	LibraryId target_library_id;
 
-	Private(LibraryId target_library_id, const QStringList& source_paths, const QString& target, FileOperationThread::Mode mode) :
-		source_paths(source_paths),
+	Private(LibraryId target_library_id, const QStringList& source_paths_in, const QString& target, FileOperationThread::Mode mode) :
 		target(target),
 		mode(mode),
 		target_library_id(target_library_id)
 	{
-		std::transform(this->source_paths.begin(), this->source_paths.end(), this->source_paths.begin(), [](const QString& path)
+		Algorithm::transform(source_paths_in, this->source_paths, [](const QString& path)
 		{
 			return Util::File::clean_filename(path);
 		});
