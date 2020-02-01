@@ -25,6 +25,7 @@
 #include "Utils/FileUtils.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Algorithm.h"
+#include "Utils/Logger/Logger.h"
 
 #include <QAbstractItemView>
 #include <QApplication>
@@ -123,7 +124,6 @@ void Dragable::start_drag(const QPoint& p)
 	m->start_drag_pos = p;
 }
 
-
 QDrag* Dragable::move_drag(const QPoint& p)
 {
 	if(!m->valid){
@@ -132,7 +132,7 @@ QDrag* Dragable::move_drag(const QPoint& p)
 
 	int distance = (p - m->start_drag_pos).manhattanLength();
 
-	if( distance < QApplication::startDragDistance())
+	if(distance < QApplication::startDragDistance())
 	{
 		return m->drag;
 	}
@@ -191,12 +191,12 @@ QDrag* Dragable::move_drag(const QPoint& p)
 
 	QPixmap pm(pm_width, pm_height);
 	QPainter painter(&pm);
+	painter.save();
 
-	painter.fillRect(pm.rect(), QColor(64, 64, 64));
-	painter.setPen(QColor(243,132,26));
-	painter.drawRect(0, 0, pm_width - 1, pm_height - 1);
+	painter.fillRect(pm.rect(), m->widget->palette().highlight().color());
+	painter.setPen(m->widget->palette().highlightedText().color());
+	//painter.drawRect(0, 0, pm_width - 1, pm_height - 1);
 	painter.drawPixmap(left_offset, (pm_height - logo_height) / 2, logo_height, logo_height, cover);
-	painter.setPen(QColor(255, 255, 255));
 	painter.translate(logo_width + 15, font_padding + font_height - 2);
 
 	for(const QString& str : Algorithm::AsConst(strings))
@@ -205,9 +205,11 @@ QDrag* Dragable::move_drag(const QPoint& p)
 		painter.translate(0, font_height + 2);
 	}
 
+	painter.restore();
+
 	m->drag->setMimeData(data);
 	m->drag->setPixmap(pm);
-	m->drag->exec(Qt::CopyAction);
+	m->drag->exec(Qt::IgnoreAction);
 
 	return m->drag;
 }

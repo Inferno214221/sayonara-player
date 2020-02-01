@@ -233,22 +233,7 @@ void DirectoryTreeView::select_match(const QString& str, SearchDirection directi
 	scrollTo(idx, QAbstractItemView::PositionAtCenter);
 }
 
-bool DirectoryTreeView::has_drag_label() const
-{
-	return (!this->selected_paths().isEmpty());
-}
 
-QString DirectoryTreeView::drag_label() const
-{
-	QStringList paths = selected_paths();
-	for(QString& path : paths)
-	{
-		QString d, f;
-		Util::File::split_filename(path, d, f);
-		path = f;
-	}
-	return paths.join(", ");
-}
 
 void DirectoryTreeView::mousePressEvent(QMouseEvent* event)
 {
@@ -354,6 +339,23 @@ void DirectoryTreeView::drag_timer_timeout()
 	m->reset_drag();
 }
 
+bool DirectoryTreeView::has_drag_label() const
+{
+	return (!this->selected_paths().isEmpty());
+}
+
+QString DirectoryTreeView::drag_label() const
+{
+	QStringList paths = selected_paths();
+	for(QString& path : paths)
+	{
+		QString d, f;
+		Util::File::split_filename(path, d, f);
+		path = f;
+	}
+	return paths.join(", ");
+}
+
 void DirectoryTreeView::dragEnterEvent(QDragEnterEvent* event)
 {
 	m->reset_drag();
@@ -389,11 +391,11 @@ void DirectoryTreeView::dragMoveEvent(QDragMoveEvent* event)
 	const auto* cmd = Gui::MimeData::custom_mimedata(mime_data);
 
 	if(mime_data->hasUrls()) {
-		event->accept();
+		event->acceptProposedAction();
 	}
 
 	else if(cmd && cmd->has_source(this)) {
-		event->accept();
+		event->acceptProposedAction();
 	}
 
 	else {
@@ -425,13 +427,11 @@ void DirectoryTreeView::dropEvent(QDropEvent* event)
 
 	QModelIndex index = this->indexAt(event->pos());
 	if(!index.isValid()){
-		sp_log(Log::Warning, this) << "Drop: Invalid index";
 		return;
 	}
 
 	const QMimeData* mimedata = event->mimeData();
 	if(!mimedata){
-		sp_log(Log::Warning, this) << "Drop: No Mimedata";
 		return;
 	}
 

@@ -55,6 +55,7 @@
 #include <QMenu>
 #include <QHeaderView>
 #include <QFileDialog>
+#include <QLabel>
 
 struct GUI_DirectoryWidget::Private
 {
@@ -495,11 +496,10 @@ void GUI_DirectoryWidget::file_dbl_clicked(QModelIndex idx)
 	file_enter_pressed();
 }
 
-#include <QLabel>
 
 static void show_image_label(const QString& filename)
 {
-	auto [d, f] = Util::File::split_filename(filename);
+	QString f = Util::File::get_filename_of_path(filename);
 	QPixmap pm = QPixmap(filename);
 
 	auto* label = new QLabel(nullptr);

@@ -215,7 +215,7 @@ void Importer::copy_thread_finished()
 			QString message;
 
 			int n_files_copied = copy_thread->get_n_copied_files();
-			int n_files_to_copy = m->import_cache->files().size();
+			int n_files_to_copy = m->import_cache->count();
 			if(n_files_to_copy == n_files_copied)
 			{
 				message =  tr("All files could be imported");

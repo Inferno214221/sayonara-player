@@ -106,7 +106,7 @@ void DirectoryModel::create_file_list(const QString& substr)
 
 	for(const MetaData& md : v_md)
 	{
-		auto [d, f] = Util::File::split_filename(md.filepath());
+		QString d = Util::File::get_parent_directory(md.filepath());
 		m->all_files << md.filepath();
 		m->all_dirs << d;
 	}
@@ -148,7 +148,7 @@ QModelIndexList DirectoryModel::search_results(const QString& substr)
 
 			if(file_cvt.contains(cvt_search_string))
 			{
-				auto [d, f] = Util::File::split_filename(file);
+				QString d = Util::File::get_parent_directory(file);
 				m->found_strings << d;
 			}
 		}
