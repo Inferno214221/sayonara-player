@@ -76,12 +76,12 @@
     <message>
         <location line="+35"/>
         <source>Newer</source>
-        <translation type="unfinished"/>
+        <translation>Новий</translation>
     </message>
     <message>
         <location line="+20"/>
         <source>Older</source>
-        <translation type="unfinished"/>
+        <translation>Старий</translation>
     </message>
 </context>
 <context>
@@ -219,7 +219,7 @@
     <message>
         <location filename="src/Gui/Player/GUI_ControlsNew.ui" line="+416"/>
         <source>Copyright 2011-2020</source>
-        <translation type="unfinished"/>
+        <translation>Copyright 2011-2020</translation>
     </message>
     <message>
         <location line="+50"/>
@@ -562,7 +562,7 @@
     <message>
         <location filename="src/Gui/Preferences/Broadcast/GUI_BroadcastPreferences.cpp" line="+161"/>
         <source>Port %1 already in use</source>
-        <translation type="unfinished"/>
+        <translation>Порт %1 вже використовується</translation>
     </message>
 </context>
 <context>
@@ -817,12 +817,12 @@
     <message>
         <location line="+7"/>
         <source>Hide instead of close</source>
-        <translation type="unfinished"/>
+        <translation>Сховати замість закрити</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Start hidden</source>
-        <translation type="unfinished"/>
+        <translation>Розпочати в скритому режимі</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -832,12 +832,12 @@
     <message>
         <location filename="src/Gui/Preferences/Player/GUI_PlayerPreferences.cpp" line="+107"/>
         <source>This might cause Sayonara not to show up again.</source>
-        <translation type="unfinished"/>
+        <translation>Це може привести до того, що Sayonara більше не з&apos;явиться.</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>In this case use the &apos;--show&apos; option at the next startup.</source>
-        <translation type="unfinished"/>
+        <translation>У цьому випадку використовуйте параметр &apos;--how&apos; при наступному запуску.</translation>
     </message>
 </context>
 <context>
@@ -1004,7 +1004,7 @@
     <message>
         <location filename="src/Gui/Preferences/RemoteControl/GUI_RemoteControlPreferences.ui" line="+36"/>
         <source>Detectable via UDP</source>
-        <translation type="unfinished"/>
+        <translation>Виявленно через UDP</translation>
     </message>
     <message>
         <location line="+31"/>
@@ -1019,12 +1019,12 @@
     <message>
         <location line="+17"/>
         <source>UDP port</source>
-        <translation type="unfinished"/>
+        <translation>UDP порт</translation>
     </message>
     <message>
         <location filename="src/Gui/Preferences/RemoteControl/GUI_RemoteControlPreferences.cpp" line="+59"/>
         <source>If activated, Sayonara will answer an UDP request that it is remote controlable</source>
-        <translation type="unfinished"/>
+        <translation>Якщо активовано, Sayonara відповість на запит UDP про те, що він може управлятися дистанційно</translation>
     </message>
     <message>
         <location line="+36"/>
@@ -1034,7 +1034,7 @@
     <message>
         <location line="+69"/>
         <source>Port %1 already in use</source>
-        <translation type="unfinished"/>
+        <translation>Порт %1 вже використовується</translation>
     </message>
 </context>
 <context>
@@ -1599,7 +1599,7 @@
     <message>
         <location filename="src/Gui/Directories/DirectoryContextMenu.cpp" line="+142"/>
         <source>Rename by metadata</source>
-        <translation type="unfinished"/>
+        <translation>Перейменувати за метаданними</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1638,7 +1638,7 @@
     <message>
         <location filename="src/Gui/History/HistoryContainer.cpp" line="+25"/>
         <source>History</source>
-        <translation type="unfinished"/>
+        <translation>Історія</translation>
     </message>
 </context>
 <context>
@@ -1647,7 +1647,7 @@
         <location filename="src/Gui/History/HistoryEntryWidget.cpp" line="+73"/>
         <location line="+5"/>
         <source>%n track(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n трек</numerusform><numerusform>%n трек(ів)</numerusform><numerusform>%n трек(ів)</numerusform><numerusform>%n трек(ів)</numerusform></translation>
     </message>
 </context>
 <context>
@@ -1964,12 +1964,12 @@
     <message>
         <location line="+67"/>
         <source>Crossfader does not work with Alsa</source>
-        <translation type="unfinished"/>
+        <translation>Кросфейдер не працює з Alsa</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Gapless playback does not work with Alsa</source>
-        <translation type="unfinished"/>
+        <translation>Безперервне відтворення не працює з Alsa</translation>
     </message>
 </context>
 <context>
@@ -2452,7 +2452,7 @@
     <message>
         <location line="+2"/>
         <source>Created</source>
-        <translation type="unfinished"/>
+        <translation>Створено</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2773,7 +2773,7 @@
     <message>
         <location line="+2"/>
         <source>Modified</source>
-        <translation type="unfinished"/>
+        <translation>Змінено</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3275,32 +3275,32 @@
     <message>
         <location line="+22"/>
         <source>No directories</source>
-        <translation type="unfinished"/>
+        <translation>Немає каталогів</translation>
     </message>
     <message numerus="yes">
         <location line="+3"/>
         <source>%n directory(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n каталог</numerusform><numerusform>%n каталог(ів)</numerusform><numerusform>%n каталог(ів)</numerusform><numerusform>%n каталог(ів)</numerusform></translation>
     </message>
     <message>
         <location line="+4"/>
         <source>No files</source>
-        <translation type="unfinished"/>
+        <translation>Немає файлів</translation>
     </message>
     <message numerus="yes">
         <location line="+3"/>
         <source>%n file(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n файл</numerusform><numerusform>%n файл(ів)</numerusform><numerusform>%n файл(ів)</numerusform><numerusform>%n файл(ів)</numerusform></translation>
     </message>
     <message>
         <location line="+4"/>
         <source>No playlists</source>
-        <translation type="unfinished"/>
+        <translation>Немає плейлистів</translation>
     </message>
     <message numerus="yes">
         <location line="+3"/>
         <source>%n playlist(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n плейлист</numerusform><numerusform>%n плейлист(ів)</numerusform><numerusform>%n плейлист(ів)</numerusform><numerusform>%n плейлист(ів)</numerusform></translation>
     </message>
     <message>
         <location line="+4"/>
@@ -3310,17 +3310,17 @@
     <message numerus="yes">
         <location line="+3"/>
         <source>%n track(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n трек</numerusform><numerusform>%n трек(ів)</numerusform><numerusform>%n трек(ів)</numerusform><numerusform>%n трек(ів)</numerusform></translation>
     </message>
     <message>
         <location line="+4"/>
         <source>No tracks found</source>
-        <translation type="unfinished"/>
+        <translation>Треки не знайдено</translation>
     </message>
     <message numerus="yes">
         <location line="+3"/>
         <source>%n track(s) found</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n трек знайдено</numerusform><numerusform>%n трек(ів) знайдено</numerusform><numerusform>%n трек(ів) знайдено</numerusform><numerusform>%n трек(ів) знайдено</numerusform></translation>
     </message>
 </context>
 </TS>

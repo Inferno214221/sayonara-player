@@ -26,6 +26,7 @@ private slots:
 	void language_version_test();
 	void four_letter_test();
 	void similar_language_test();
+	void available_language_test();
 };
 
 void LanguageUtilTest::basic_path_tests()
@@ -62,10 +63,10 @@ void LanguageUtilTest::basic_path_tests()
 	path = Language::get_share_path("");
 	QVERIFY(path.isEmpty());
 
-	path = Language::get_share_path("en_USS");
+	path = Language::get_share_path("en_GBS");
 	QVERIFY(path.isEmpty());
 
-	path = Language::get_share_path("EN_us");
+	path = Language::get_share_path("EN_gb");
 	QVERIFY(path.isEmpty());
 }
 
@@ -150,9 +151,9 @@ void LanguageUtilTest::similar_language_test()
 //	QString similar_language, four_letter;
 //	QString expected;
 
-//	similar_language = Language::get_similar_language_4("de_DE");
+//	similar_language = Language::get_similar_language_4("en_US");
 //	four_letter = Language::extract_four_letter(similar_language);
-//	expected = "de_DE";
+//	expected = "en_GB";
 //	QVERIFY(four_letter == expected);
 //	QVERIFY(File::exists(similar_language));
 
@@ -161,11 +162,12 @@ void LanguageUtilTest::similar_language_test()
 //	expected = "fr_FR";
 //	QVERIFY(four_letter == expected);
 //	QVERIFY(File::exists(similar_language));
+}
 
-//	similar_language = Language::get_similar_language_4("fradsf");
-//	four_letter = Language::extract_four_letter(similar_language);
-//	expected = QString();
-//	QVERIFY(four_letter == expected);
+void LanguageUtilTest::available_language_test()
+{
+	QMap<QString, QLocale> loc = Lang::available_languages();
+	QVERIFY(loc.isEmpty() == false);
 }
 
 QTEST_GUILESS_MAIN(LanguageUtilTest)

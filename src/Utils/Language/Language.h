@@ -304,7 +304,7 @@ public:
 	/**
 	 * @brief Converts two letter into four letter
 	 * @param two letter language filename
-	 * @return four letter key if available, en_US per default
+	 * @return four letter key if available, en_GB per default
 	 */
 	static QString convert_old_lang(const QString& old_lang);
 

@@ -13,7 +13,7 @@ private slots:
 
 void LanguageKeyTest::test()
 {
-    int max_key = (int) (Lang::NUMBER_OF_LANGUAGE_KEYS);
+    int max_key = int(Lang::NUMBER_OF_LANGUAGE_KEYS);
     for(int key=0; key<max_key; key++)
     {
 		bool ok;

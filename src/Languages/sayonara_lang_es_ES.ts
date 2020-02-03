@@ -71,17 +71,17 @@
     <message>
         <location filename="src/Gui/History/GUI_History.ui" line="+14"/>
         <source>Dialog</source>
-        <translation type="unfinished"/>
+        <translation>Diálogo</translation>
     </message>
     <message>
         <location line="+35"/>
         <source>Newer</source>
-        <translation type="unfinished"/>
+        <translation>más nuevo</translation>
     </message>
     <message>
         <location line="+20"/>
         <source>Older</source>
-        <translation type="unfinished"/>
+        <translation>más antiguo </translation>
     </message>
 </context>
 <context>
@@ -817,12 +817,12 @@
     <message>
         <location line="+7"/>
         <source>Hide instead of close</source>
-        <translation type="unfinished"/>
+        <translation>Ocultar en lugar de cerrar</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Start hidden</source>
-        <translation type="unfinished"/>
+        <translation>Inicio oculto</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -832,12 +832,12 @@
     <message>
         <location filename="src/Gui/Preferences/Player/GUI_PlayerPreferences.cpp" line="+107"/>
         <source>This might cause Sayonara not to show up again.</source>
-        <translation type="unfinished"/>
+        <translation>Esto puede causar que Sayonara no vuelva a mostrarse de nuevo.</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>In this case use the &apos;--show&apos; option at the next startup.</source>
-        <translation type="unfinished"/>
+        <translation>En dicho caso use la opción &quot;--mostrar&quot; en el siguiente reinicio.</translation>
     </message>
 </context>
 <context>
@@ -1638,7 +1638,7 @@
     <message>
         <location filename="src/Gui/History/HistoryContainer.cpp" line="+25"/>
         <source>History</source>
-        <translation type="unfinished"/>
+        <translation>Historial</translation>
     </message>
 </context>
 <context>
@@ -2004,7 +2004,7 @@
     <message>
         <location filename="src/Gui/Plugins/Engine/GUI_SpectrogramPainter.cpp" line="+77"/>
         <source>Spectrogram</source>
-        <translation type="unfinished"/>
+        <translation>Spectograma </translation>
     </message>
 </context>
 <context>
@@ -2452,7 +2452,7 @@
     <message>
         <location line="+2"/>
         <source>Created</source>
-        <translation type="unfinished"/>
+        <translation>Creado</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2773,7 +2773,7 @@
     <message>
         <location line="+2"/>
         <source>Modified</source>
-        <translation type="unfinished"/>
+        <translation>Modificado</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3044,7 +3044,7 @@
     <message>
         <location line="+2"/>
         <source>Scan for audio files</source>
-        <translation type="unfinished"/>
+        <translation>Buscar archivos de audio</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3275,7 +3275,7 @@
     <message>
         <location line="+22"/>
         <source>No directories</source>
-        <translation type="unfinished"/>
+        <translation>Sin directorios</translation>
     </message>
     <message numerus="yes">
         <location line="+3"/>
@@ -3285,7 +3285,7 @@
     <message>
         <location line="+4"/>
         <source>No files</source>
-        <translation type="unfinished"/>
+        <translation>Sin archivos</translation>
     </message>
     <message numerus="yes">
         <location line="+3"/>
@@ -3295,7 +3295,7 @@
     <message>
         <location line="+4"/>
         <source>No playlists</source>
-        <translation type="unfinished"/>
+        <translation>Sin listas de reproducción</translation>
     </message>
     <message numerus="yes">
         <location line="+3"/>
@@ -3315,7 +3315,7 @@
     <message>
         <location line="+4"/>
         <source>No tracks found</source>
-        <translation type="unfinished"/>
+        <translation>No se encontraron pistas</translation>
     </message>
     <message numerus="yes">
         <location line="+3"/>

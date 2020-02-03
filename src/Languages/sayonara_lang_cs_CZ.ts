@@ -1155,7 +1155,7 @@
     <message>
         <location line="+59"/>
         <source>Stream recorder</source>
-        <translation>Nahrávání proudu</translation>
+        <translation>Nahrávání vysílání</translation>
     </message>
 </context>
 <context>
@@ -1178,7 +1178,7 @@
     <message>
         <location line="+7"/>
         <source>Open Streams in new tab</source>
-        <translation>Otevřít proudy v nové kartě</translation>
+        <translation>Otevřít vysílání v nové kartě</translation>
     </message>
     <message>
         <location filename="src/Gui/Preferences/Streams/GUI_StreamPreferences.cpp" line="+57"/>
@@ -1298,7 +1298,7 @@
     <message>
         <location line="+102"/>
         <source>Streams</source>
-        <translation>Proudy</translation>
+        <translation>Vysílání</translation>
     </message>
 </context>
 <context>
@@ -2067,7 +2067,7 @@
     <message>
         <location filename="src/Gui/Plugins/Stream/GUI_AbstractStream.cpp" line="+230"/>
         <source>Cannot open stream</source>
-        <translation>Nelze otevřít proud</translation>
+        <translation>Nelze otevřít vysílání (datový proud)</translation>
     </message>
     <message>
         <location line="+83"/>
@@ -2266,7 +2266,7 @@
         <location filename="src/Gui/Utils/PreferenceAction.cpp" line="+163"/>
         <location line="+7"/>
         <source>Stream Recorder</source>
-        <translation>Nahrávání proudu</translation>
+        <translation>Nahrávání vysílání</translation>
     </message>
 </context>
 <context>
@@ -3125,12 +3125,12 @@
     <message>
         <location line="+2"/>
         <source>Streams</source>
-        <translation>Proudy</translation>
+        <translation>Vysílání</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Stream URL</source>
-        <translation>Adresa (URL) proudu</translation>
+        <translation>Adresa (URL) vysílání (datového proudu)</translation>
     </message>
     <message>
         <location line="+2"/>

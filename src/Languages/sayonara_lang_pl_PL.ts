@@ -219,7 +219,7 @@
     <message>
         <location filename="src/Gui/Player/GUI_ControlsNew.ui" line="+416"/>
         <source>Copyright 2011-2020</source>
-        <translation type="unfinished"/>
+        <translation>Prawa autorskie © 2011-2020</translation>
     </message>
     <message>
         <location line="+50"/>
@@ -562,7 +562,7 @@
     <message>
         <location filename="src/Gui/Preferences/Broadcast/GUI_BroadcastPreferences.cpp" line="+161"/>
         <source>Port %1 already in use</source>
-        <translation type="unfinished"/>
+        <translation>Port %1 jest już w użyciu</translation>
     </message>
 </context>
 <context>
@@ -1019,7 +1019,7 @@
     <message>
         <location line="+17"/>
         <source>UDP port</source>
-        <translation type="unfinished"/>
+        <translation>Port UDP</translation>
     </message>
     <message>
         <location filename="src/Gui/Preferences/RemoteControl/GUI_RemoteControlPreferences.cpp" line="+59"/>
@@ -1034,7 +1034,7 @@
     <message>
         <location line="+69"/>
         <source>Port %1 already in use</source>
-        <translation type="unfinished"/>
+        <translation>Port %1 jest już w użyciu</translation>
     </message>
 </context>
 <context>
@@ -3275,7 +3275,7 @@
     <message>
         <location line="+22"/>
         <source>No directories</source>
-        <translation type="unfinished"/>
+        <translation>Brak katalogów</translation>
     </message>
     <message numerus="yes">
         <location line="+3"/>
@@ -3285,22 +3285,22 @@
     <message>
         <location line="+4"/>
         <source>No files</source>
-        <translation type="unfinished"/>
+        <translation>Brak plików</translation>
     </message>
     <message numerus="yes">
         <location line="+3"/>
         <source>%n file(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n plik</numerusform><numerusform>%n pliki</numerusform><numerusform>%n plików</numerusform><numerusform>%n plików</numerusform></translation>
     </message>
     <message>
         <location line="+4"/>
         <source>No playlists</source>
-        <translation type="unfinished"/>
+        <translation>Brak list odtwarzania</translation>
     </message>
     <message numerus="yes">
         <location line="+3"/>
         <source>%n playlist(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n lista odtwarzania</numerusform><numerusform>%n listy odtwarzania</numerusform><numerusform>%n list odtwarzania</numerusform><numerusform>%n list odtwarzania</numerusform></translation>
     </message>
     <message>
         <location line="+4"/>
@@ -3315,12 +3315,12 @@
     <message>
         <location line="+4"/>
         <source>No tracks found</source>
-        <translation type="unfinished"/>
+        <translation>Nie znaleziono utworów</translation>
     </message>
     <message numerus="yes">
         <location line="+3"/>
         <source>%n track(s) found</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Znaleziono %n utwór</numerusform><numerusform>Znaleziono %n utwory</numerusform><numerusform>Znaleziono %n utworów</numerusform><numerusform>Znaleziono %n utworów</numerusform></translation>
     </message>
 </context>
 </TS>
