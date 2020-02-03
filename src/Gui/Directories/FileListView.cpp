@@ -102,7 +102,7 @@ void FileListView::contextMenuEvent(QContextMenuEvent* event)
 		return Util::File::is_soundfile(filename);
 	});
 
-	m->context_menu->set_num_audio_files(num_audio_files);
+	m->context_menu->refresh(num_audio_files);
 
 	QPoint pos = QWidget::mapToGlobal(event->pos());
 	m->context_menu->exec(pos);

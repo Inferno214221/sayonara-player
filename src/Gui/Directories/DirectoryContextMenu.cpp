@@ -37,6 +37,8 @@ struct DirectoryContextMenu::Private
 	QAction*	action_rename_by_tag=nullptr;
 	QAction*	action_collapse_all=nullptr;
 
+	QMap<DirectoryContextMenu::Entry, QAction*> entry_action_map;
+
 	QMenu*		menu_move_to_lib=nullptr;
 	QAction*	action_move_to_lib=nullptr;
 
@@ -77,6 +79,16 @@ struct DirectoryContextMenu::Private
 			action_copy_to_lib = parent->addMenu(menu_copy_to_lib);
 			action_move_to_lib = parent->addMenu(menu_move_to_lib);
 		}
+
+		entry_action_map =
+		{
+			{EntryCreateDir, action_create_dir},
+			{EntryRename, action_create_dir},
+			{EntryRenameByTag, action_create_dir},
+			{EntryCollapseAll, action_create_dir},
+			{EntryMoveToLib, action_create_dir},
+			{EntryCopyToLib, action_create_dir}
+		};
 	}
 };
 
@@ -158,51 +170,9 @@ DirectoryContextMenu::DirectoryContextMenu(DirectoryContextMenu::Mode mode, QWid
 
 DirectoryContextMenu::~DirectoryContextMenu() = default;
 
-void DirectoryContextMenu::set_create_dir_visible(bool b)
+void DirectoryContextMenu::refresh(int count)
 {
-	if(m && m->action_create_dir){
-		m->action_create_dir->setVisible(b);
-	}
-}
-
-void DirectoryContextMenu::set_rename_visible(bool b)
-{
-	if(m && m->action_rename){
-		m->action_rename->setVisible(b);
-	}
-}
-
-void DirectoryContextMenu::set_rename_by_tag_visible(bool b)
-{
-	if(m && m->action_rename_by_tag){
-		m->action_rename_by_tag->setVisible(b);
-	}
-}
-
-void DirectoryContextMenu::set_collapse_all_visible(bool b)
-{
-	if(m && m->action_collapse_all){
-		m->action_collapse_all->setVisible(b);
-	}
-}
-
-void DirectoryContextMenu::set_move_to_lib_visible(bool b)
-{
-	if(m && m->action_move_to_lib){
-		m->action_move_to_lib->setVisible(b);
-	}
-}
-
-void DirectoryContextMenu::set_copy_to_lib_visible(bool b)
-{
-	if(m && m->action_copy_to_lib){
-		m->action_copy_to_lib->setVisible(b);
-	}
-}
-
-void DirectoryContextMenu::set_num_audio_files(int count)
-{
-	if(count == 0)
+	if((count == 0) && (m->mode == DirectoryContextMenu::Mode::File))
 	{
 		this->show_actions(Library::ContextMenu::EntryDelete);
 
@@ -211,6 +181,7 @@ void DirectoryContextMenu::set_num_audio_files(int count)
 		m->action_move_to_lib->setVisible(false);
 		m->action_copy_to_lib->setVisible(false);
 		m->action_rename_by_tag->setVisible(false);
+		m->action_rename->setVisible(false);
 	}
 
 	else
@@ -247,6 +218,44 @@ void DirectoryContextMenu::set_num_audio_files(int count)
 		m->action_move_to_lib->setVisible(true);
 		m->action_copy_to_lib->setVisible(true);
 	}
+}
+
+Library::ContextMenu::Entries DirectoryContextMenu::get_entries() const
+{
+	auto entries = Library::ContextMenu::get_entries();
+	for(auto it=m->entry_action_map.begin(); it != m->entry_action_map.end(); it++)
+	{
+		if(it.value()->isVisible()){
+			entries |= it.key();
+		}
+	}
+
+	return entries;
+}
+
+void DirectoryContextMenu::show_actions(Library::ContextMenu::Entries entries)
+{
+	Library::ContextMenu::show_actions(entries);
+	for(auto it=m->entry_action_map.begin(); it != m->entry_action_map.end(); it++)
+	{
+		it.value()->setVisible(entries & it.key());
+	}
+}
+
+void DirectoryContextMenu::show_directory_action(DirectoryContextMenu::Entry entry, bool b)
+{
+	Library::ContextMenu::Entries entries = get_entries();
+	if(b)
+	{
+		entries |= entry;
+	}
+
+	else
+	{
+		entries &= ~entry;
+	}
+
+	show_actions(entries);
 }
 
 void DirectoryContextMenu::library_move_action_triggered()

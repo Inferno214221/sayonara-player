@@ -245,14 +245,10 @@ void DirectoryTreeView::mousePressEvent(QMouseEvent* event)
 			init_context_menu();
 		}
 
-		m->context_menu->set_rename_visible(
-			(this->selected_indexes().size() == 1)
-		);
+		int selection_size = this->selected_indexes().size();
 
-		m->context_menu->set_create_dir_visible(
-			(this->selected_indexes().size()==1)
-		);
-
+		m->context_menu->show_directory_action(DirectoryContextMenu::EntryRename, (selection_size == 1));
+		m->context_menu->show_directory_action(DirectoryContextMenu::EntryCreateDir, (selection_size == 1));
 		m->context_menu->show_action(Library::ContextMenu::EntryDelete, true);
 
 		QPoint pos = QWidget::mapToGlobal(event->pos());

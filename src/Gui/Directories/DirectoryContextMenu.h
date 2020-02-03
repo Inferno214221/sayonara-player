@@ -48,17 +48,24 @@ public:
 		File
 	};
 
+	enum Entry
+	{
+		EntryCreateDir = Library::ContextMenu::EntryLast,
+		EntryRename = Library::ContextMenu::EntryLast << 1,
+		EntryRenameByTag = Library::ContextMenu::EntryLast << 2,
+		EntryCollapseAll = Library::ContextMenu::EntryLast << 3,
+		EntryMoveToLib = Library::ContextMenu::EntryLast << 4,
+		EntryCopyToLib = Library::ContextMenu::EntryLast << 5
+	};
+
 	DirectoryContextMenu(Mode mode, QWidget* parent);
 	~DirectoryContextMenu() override;
 
-	void set_create_dir_visible(bool b);
-	void set_rename_visible(bool b);
-	void set_rename_by_tag_visible(bool b);
-	void set_collapse_all_visible(bool b);
-	void set_move_to_lib_visible(bool b);
-	void set_copy_to_lib_visible(bool b);
+	void refresh(int count=0);
 
-	void set_num_audio_files(int count);
+	ContextMenu::Entries get_entries() const override;
+	void show_actions(ContextMenu::Entries entries) override;
+	void show_directory_action(DirectoryContextMenu::Entry entry, bool b);
 
 private slots:
 	void library_move_action_triggered();
