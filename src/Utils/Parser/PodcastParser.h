@@ -24,7 +24,8 @@ class QString;
  * @brief Podcast Parser class
  * @ingroup PlaylistParser
  */
-namespace PodcastParser{
+namespace PodcastParser
+{
 	MetaDataList parse_podcast_xml_file_content(const QString& content);
 }
 

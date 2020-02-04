@@ -163,6 +163,7 @@ void View::init_context_menu()
 	connect(m->context_menu, &ContextMenu::sig_jump_to_current_track, this, &View::goto_to_current_track);
 	connect(m->context_menu, &ContextMenu::sig_bookmark_pressed, this, &View::bookmark_triggered);
 	connect(m->context_menu, &ContextMenu::sig_find_track_triggered, this, &View::find_track_triggered);
+	connect(m->context_menu, &ContextMenu::sig_reverse_triggered, this, &View::reverse_triggered);
 
 	m->context_menu->add_preference_action(new PlaylistPreferenceAction(m->context_menu));
 }
@@ -337,6 +338,11 @@ void View::find_track_triggered()
 	}
 }
 
+void View::reverse_triggered()
+{
+	m->playlist->reverse();
+}
+
 void View::bookmark_triggered(Seconds timestamp)
 {
 	int row = this->currentIndex().row();
@@ -394,7 +400,7 @@ void View::contextMenuEvent(QContextMenuEvent* e)
 
 	Pl::ContextMenu::Entries entry_mask = 0;
 	if(row_count() > 0)	{
-		entry_mask = (Pl::ContextMenu::EntryClear | Pl::ContextMenu::EntryRefresh);
+		entry_mask = (Pl::ContextMenu::EntryClear | Pl::ContextMenu::EntryRefresh | Pl::ContextMenu::EntryReverse);
 	}
 
 	IndexSet selections = selected_items();
