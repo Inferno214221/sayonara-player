@@ -72,7 +72,7 @@ namespace Library
 			 */
 			void copy();
 			void rollback();
-			void emit_percent(int i, int n);
+			void emit_percent();
 
 
 		signals:

@@ -313,7 +313,7 @@ void Pipeline::stop()
 {
 	if(EngineUtils::get_state(m->pipeline) == GST_STATE_PLAYING)
 	{
-		gst_element_send_event(m->pipeline, gst_event_new_eos());
+		//gst_element_send_event(m->pipeline, gst_event_new_eos());
 	}
 
 	EngineUtils::set_state(m->pipeline, GST_STATE_NULL);

@@ -124,7 +124,6 @@ Editor* GUI_TagEdit::create_editor()
 void GUI_TagEdit::run_editor(Editor* editor)
 {
 	auto* t = new QThread();
-	t->setObjectName(QString("EditorWorkerGuiTagEdit%1").arg(Util::random_string(10)));
 
 	editor->moveToThread(t);
 

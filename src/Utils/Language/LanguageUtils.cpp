@@ -200,13 +200,15 @@ QString Language::get_used_language_file(const QString& four_letter)
 	{ // check if home path or share path version is better or exists
 		if(is_outdated(four_letter)) // not available or older than in share path
 		{
-			if(Util::File::exists(get_share_path(four_letter)))
+			const QString language_in_share_path = get_share_path(four_letter);
+			if(Util::File::exists(language_in_share_path))
 			{
-				return get_share_path(four_letter);
+				return language_in_share_path;
 			}
 		}
 
-		if(Util::File::exists(get_home_target_path(four_letter))){
+		if(Util::File::exists(get_home_target_path(four_letter)))
+		{
 			return get_home_target_path(four_letter);
 		}
 	}

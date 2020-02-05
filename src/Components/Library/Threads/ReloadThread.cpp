@@ -78,8 +78,6 @@ ReloadThread::ReloadThread(QObject *parent) :
 {
 	m = Pimpl::make<Private>();
 	m->library_path = GetSetting(Set::Lib_Path);
-
-	this->setObjectName("ReloadThread" + ::Util::random_string(4));
 }
 
 ReloadThread::~ReloadThread()

@@ -323,7 +323,9 @@ QPair<MetaDataList, PlaylistFiles> StreamParser::parse_website(const QByteArray&
 
 void StreamParser::tag_metadata(MetaData& md, const QString& stream_url, const QString& cover_url) const
 {
-	md.set_radio_station(stream_url);
+	if(md.title().isEmpty()) {
+		md.set_radio_station(stream_url);
+	}
 
 	if(!m->station_name.trimmed().isEmpty())
 	{

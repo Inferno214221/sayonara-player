@@ -278,7 +278,10 @@ public:
 
 	enum TermNr
 	{
-		NrTracks=0,
+		NrDirectories=0,
+		NrFiles,
+		NrPlaylists,
+		NrTracks,
 		NrTracksFound,
 		NUMBER_OF_LANGUAGE_PARAM_KEYS
 	};
@@ -301,7 +304,7 @@ public:
 	/**
 	 * @brief Converts two letter into four letter
 	 * @param two letter language filename
-	 * @return four letter key if available, en_US per default
+	 * @return four letter key if available, en_GB per default
 	 */
 	static QString convert_old_lang(const QString& old_lang);
 

@@ -375,7 +375,8 @@ void AbstractLibrary::prepare_tracks_for_playlist(const QStringList& paths, bool
 {
 	auto* plh = Playlist::Handler::instance();
 
-	if(!new_playlist) {
+	if(!new_playlist)
+	{
 		plh->create_playlist(paths);
 	}
 

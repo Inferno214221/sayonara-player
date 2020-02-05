@@ -25,32 +25,39 @@
 
 #include <QThread>
 
-class DirectoryCopyThread : public QThread
+class FileOperationThread : public QThread
 {
 	Q_OBJECT
-	PIMPL(DirectoryCopyThread)
+	PIMPL(FileOperationThread)
 
 	public:
-		DirectoryCopyThread(QObject* parent, LibraryId target_library_id, const QStringList& source_dirs, const QString& target_dir);
-		~DirectoryCopyThread() override;
+		enum Mode
+		{
+			Copy=0,
+			Move,
+			Rename
+		};
+
+		FileOperationThread(QObject* parent, LibraryId target_library_id, const QStringList& source_paths, const QString& target_dir, Mode mode);
+		~FileOperationThread() override;
 
 		LibraryId target_library() const;
+		QList<StringPair> successful_paths() const;
 
 	protected:
 		void run() override;
 };
 
-class FileCopyThread :
-	public QThread
+class FileDeleteThread : public QThread
 {
 	Q_OBJECT
-	PIMPL(FileCopyThread)
+	PIMPL(FileDeleteThread)
 
 	public:
-		FileCopyThread(QObject* parent, LibraryId target_library_id, const QStringList& source_files, const QString& target_dir);
-		~FileCopyThread() override;
+		FileDeleteThread(QObject* parent, const QStringList& source_paths);
+		~FileDeleteThread() override;
 
-		LibraryId target_library() const;
+		QStringList paths() const;
 
 	protected:
 		void run() override;
@@ -63,28 +70,24 @@ class FileOperations :
 	Q_OBJECT
 
 	signals:
-		void sig_copy_finished();
-		void sig_copy_started();
+		void sig_finished();
+		void sig_started();
 
 	public:
 		explicit FileOperations(QObject *parent=nullptr);
 		~FileOperations() override;
 
-		bool move_dirs(const QStringList& source_dirs, const QString& target_dir);
-		bool copy_dirs(const QStringList& source_dirs, const QString& target_dir);
-		bool rename_dir(const QString& source_dir, const QString& target_dir);
-
-		bool move_files(const QStringList& files, const QString& target_dir);
-		bool copy_files(const QStringList& files, const QString& target_dir);
-
-		bool rename_file(const QString& old_name, const QString& new_name);
-		bool rename_file_by_expression(const QString& old_name, const QString& expression);
-
+		bool rename_path(const QString& path, const QString& new_name);
+		bool rename_by_expression(const QString& old_name, const QString& expression);
+		bool move_paths(const QStringList& paths, const QString& target_dir);
+		bool copy_paths(const QStringList& paths, const QString& target_dir);
+		bool delete_paths(const QStringList& paths);
 		static QStringList supported_tag_replacements();
 
 	private slots:
-		void copy_dir_thread_finished();
-		void copy_file_thread_finished();
+		void copy_thread_finished();
+		void move_thread_finished();
+		void delete_thread_finished();
 };
 
 #endif // FILEOPERATIONS_H

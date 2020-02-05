@@ -126,7 +126,6 @@ void TableView::language_changed()
 		}
 	}
 
-
 	model->set_header_data(header_names);
 }
 

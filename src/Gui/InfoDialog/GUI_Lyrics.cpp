@@ -209,6 +209,10 @@ void GUI_Lyrics::lyrics_fetched()
 
 void GUI_Lyrics::set_metadata(const MetaData& md)
 {
+	if(md.filepath().isEmpty()){
+		return;
+	}
+
 	m->lyrics->set_metadata(md);
 
 	if(!ui){

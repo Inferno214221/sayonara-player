@@ -350,6 +350,14 @@ void PlayManager::change_track(const MetaData& md, int track_idx)
 
 void PlayManager::change_track_metadata(const MetaData& md)
 {
+	if(m->md.radio_mode() == RadioMode::Podcast)
+	{
+		if(!m->md.title().isEmpty() && !m->md.artist().isEmpty() && !m->md.album().isEmpty())
+		{
+			return;
+		}
+	}
+
 	MetaData md_old = m->md;
 	m->md = md;
 

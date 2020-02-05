@@ -80,6 +80,7 @@ namespace Playlist
 			bool			is_busy() const;
 
 			void			set_current_scanned_file(const QString& file);
+			void			reverse();
 
 		public:
 			const MetaData& track(int idx) const override;

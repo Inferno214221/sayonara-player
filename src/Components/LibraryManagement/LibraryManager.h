@@ -61,7 +61,6 @@ namespace Library
 
 		Info library_info(LibraryId id) const;
 		Info library_info_by_path(const QString& path) const;
-		Info library_info_by_sympath(const QString& path) const;
 
 		int count() const;
 

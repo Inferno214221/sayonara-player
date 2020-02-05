@@ -1,8 +1,11 @@
 #include "MetaDataScanner.h"
 
 #include "Components/Directories/DirectoryReader.h"
+
 #include "Utils/Utils.h"
 #include "Utils/MetaData/MetaDataList.h"
+#include "Database/Connector.h"
+
 #include <QStringList>
 #include <QDir>
 
@@ -28,7 +31,10 @@ struct MetaDataScanner::Private
 	{}
 };
 
-MetaDataScanner::~MetaDataScanner() = default;
+MetaDataScanner::~MetaDataScanner()
+{
+	DB::Connector::instance()->close_db();
+}
 
 MetaDataScanner::MetaDataScanner(const QStringList& files, bool recursive, QObject* parent) :
 	QObject(parent)

@@ -105,10 +105,13 @@ QStringList LocalSearcher::cover_paths_from_path_hint(const QString& filepath_hi
 	}
 
 	QStringList filters = Util::image_extensions();
-	std::transform(filters.begin(), filters.end(), std::back_inserter(filters), [](const QString& str)
-	{
-		return str.toUpper();
+	QStringList upper_filters;
+
+	Util::Algorithm::transform(filters, upper_filters, [](const QString& filter){
+		return filter.toUpper();
 	});
+
+	filters << upper_filters;
 
 	const QDir dir(filepath);
 	const QStringList entries = dir.entryList(filters, (QDir::Files | QDir::NoDotAndDotDot));

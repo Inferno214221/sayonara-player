@@ -214,7 +214,7 @@ namespace Util
 		 * @param target_dir
 		 * @return
 		 */
-		bool copy_dir(const QString& src_dir, const QString& target_dir);
+		bool copy_dir(const QString& src_dir, const QString& target_dir, QString& new_filename);
 
 		/**
 		 * @brief move_dir
@@ -222,7 +222,7 @@ namespace Util
 		 * @param target_dir
 		 * @return
 		 */
-		QString move_dir(const QString& src_dir, const QString& target_dir);
+		bool move_dir(const QString& src_dir, const QString& target_dir, QString& new_filename);
 
 		/**
 		 * @brief rename_dir
@@ -246,7 +246,7 @@ namespace Util
 		 * @param dir
 		 * @return
 		 */
-		bool move_file(const QString& file, const QString& dir);
+		bool move_file(const QString& file, const QString& dir, QString& new_name);
 
 		/**
 		 * @brief copy_file
@@ -254,7 +254,7 @@ namespace Util
 		 * @param dir
 		 * @return
 		 */
-		bool copy_file(const QString& file, const QString& dir);
+		bool copy_file(const QString& file, const QString& dir, QString& new_name);
 
 		/**
 		 * @brief move_files
@@ -262,7 +262,7 @@ namespace Util
 		 * @param dir
 		 * @return
 		 */
-		bool move_files(const QStringList& files, const QString& dir);
+		bool move_files(const QStringList& files, const QString& dir, QStringList& new_names);
 
 		/**
 		 * @brief rename_file
@@ -278,7 +278,7 @@ namespace Util
 		 * @param dir
 		 * @return
 		 */
-		bool copy_files(const QStringList& files, const QString& dir);
+		bool copy_files(const QStringList& files, const QString& dir, QStringList& new_files);
 
 
 		// Everything clear
@@ -337,6 +337,22 @@ namespace Util
 		 * @return
 		 */
 		bool exists(const QString& filename);
+
+		/**
+		 * @brief Compares two filepaths by cleaning them
+		 * @param filename1
+         * @param filename2
+		 * @return
+		 */
+		bool is_same_path(const QString& filename1, const QString& filename2);
+
+		/**
+		 * @brief Checks if dir is a subdir of parent_dir
+		 * @param dir the dir of interest
+		 * @param other_dir the maybe-parentdir
+		 * @return
+		 */
+		bool is_subdir(const QString& dir, const QString& parent_dir);
 	}
 }
 

@@ -60,7 +60,9 @@ QString Filepath::filesystem_path() const
 		Util::File::split_filename(m->path, dir, filename);
 
 		QString local_path = Util::temp_path(filename);
-		Util::File::copy_file(m->path, Util::temp_path());
+
+		QString new_name;
+		Util::File::copy_file(m->path, Util::temp_path(), new_name);
 
 		return local_path;
 	}

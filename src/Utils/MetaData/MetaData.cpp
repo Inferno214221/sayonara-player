@@ -375,7 +375,7 @@ QString MetaData::title() const
 
 void MetaData::set_title(const QString &title)
 {
-	m->title = title;
+	m->title = title.trimmed();
 }
 
 QString MetaData::artist() const
@@ -649,7 +649,7 @@ QString MetaData::filepath() const
 	return m->filepath;
 }
 
-QString MetaData::set_filepath(QString filepath)
+QString MetaData::set_filepath(QString filepath, RadioMode mode)
 {
 	bool is_local_path = false;
 
@@ -663,21 +663,38 @@ QString MetaData::set_filepath(QString filepath)
 	}
 #endif
 
-	if(is_local_path){
+	if(is_local_path)
+	{
 		QDir dir(filepath);
 		m->filepath = dir.absolutePath();
-		m->radio_mode = RadioMode::Off;
+
+		if(mode == RadioMode::Undefined)
+		{
+			mode = RadioMode::Off;
+		}
 	}
 
-	else if(filepath.contains("soundcloud.com")){
+	else if(filepath.contains("soundcloud.com"))
+	{
 		m->filepath = filepath;
-		m->radio_mode = RadioMode::Soundcloud;
+
+		if(mode == RadioMode::Undefined)
+		{
+			mode = RadioMode::Soundcloud;
+		}
 	}
 
-	else{
+	else
+	{
 		m->filepath = filepath;
-		m->radio_mode = RadioMode::Station;
+
+		if(mode == RadioMode::Undefined)
+		{
+			mode = RadioMode::Station;
+		}
 	}
+
+	m->radio_mode = mode;
 
 	return m->filepath;
 }
@@ -685,6 +702,11 @@ QString MetaData::set_filepath(QString filepath)
 RadioMode MetaData::radio_mode() const
 {
 	return m->radio_mode;
+}
+
+void MetaData::change_radio_mode(RadioMode mode)
+{
+	m->radio_mode = mode;
 }
 
 bool MetaData::is_valid() const
