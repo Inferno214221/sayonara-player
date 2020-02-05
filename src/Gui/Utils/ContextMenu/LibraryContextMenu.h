@@ -76,7 +76,6 @@ namespace Library
 		explicit ContextMenu(QWidget *parent=nullptr);
 		virtual ~ContextMenu() override;
 
-
 		/**
 		 * @brief get all visible entries
 		 * @return all visible entries

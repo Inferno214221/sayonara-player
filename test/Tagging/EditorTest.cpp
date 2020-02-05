@@ -339,7 +339,6 @@ void EditorTest::test_commit()
 	}
 
 	auto* t = new QThread();
-	t->setObjectName("EditorWorkingThreadForTest");
 	editor->moveToThread(t);
 
 	connect(t, &QThread::started, editor, &Editor::commit);

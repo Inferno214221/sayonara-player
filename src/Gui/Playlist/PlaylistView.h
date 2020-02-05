@@ -117,6 +117,7 @@ namespace Playlist
 		void sl_columns_changed();
 		void sl_show_rating_changed();
 		void find_track_triggered();
+		void reverse_triggered();
 		void bookmark_triggered(Seconds timestamp);
 
 		void move_selected_rows_up();

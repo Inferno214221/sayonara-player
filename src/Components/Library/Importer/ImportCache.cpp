@@ -20,10 +20,13 @@
 
 #include "ImportCache.h"
 #include "Components/LibraryManagement/LibraryManager.h"
+
 #include "Utils/Library/LibraryInfo.h"
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Tagging/Tagging.h"
+#include "Utils/Algorithm.h"
+#include "Utils/Logger/Logger.h"
 
 #include <QHash>
 #include <QString>
@@ -35,7 +38,7 @@ struct ImportCache::Private
 {
 	QString					library_path;
 	MetaDataList			v_md;
-	QHash<QString, MetaData> src_md_map;
+	QHash<QString, int>		src_md_map;
 	QHash<QString, QString>	src_dst_map;
 	QStringList				files;
 
@@ -96,7 +99,7 @@ void ImportCache::add_soundfile(const QString& filename)
 	if(success)
 	{
 		m->v_md << md;
-		m->src_md_map[md.filepath()] = md;
+		m->src_md_map[md.filepath()] = m->v_md.count() - 1;
 	}
 }
 
@@ -107,18 +110,24 @@ void ImportCache::add_file(const QString& filename)
 
 void ImportCache::add_file(const QString& filename, const QString& parent_dir)
 {
+	// filename: /path/to/dir/and/further/to/file.mp4
+	// parent_dir: /path/to/dir
+	// remainder: and/further/to/file.mp4
+
 	const QString abs_filename = Util::File::clean_filename(filename);
-	if(abs_filename.isEmpty()) {
-		return;
-	}
-
 	const QString abs_parent_dir = Util::File::clean_filename(parent_dir);
-	if(abs_parent_dir.isEmpty()){
+
+	if(	abs_filename.isEmpty() ||
+		abs_parent_dir.isEmpty() ||
+		(abs_filename == abs_parent_dir) ||
+		!(abs_filename.startsWith(abs_parent_dir)))
+	{
 		return;
 	}
 
-	if(!abs_filename.startsWith(abs_parent_dir) || (abs_filename == abs_parent_dir)) {
-		return;
+	QString remainder = filename.right(filename.size() - abs_parent_dir.size());
+	if(remainder.startsWith('/') || remainder.startsWith('\\')) {
+		remainder.remove(0, 1);
 	}
 
 	m->files << abs_filename;
@@ -126,21 +135,7 @@ void ImportCache::add_file(const QString& filename, const QString& parent_dir)
 		add_soundfile(abs_filename);
 	}
 
-	const QStringList splitted_parent_dir = Util::File::split_directories(abs_parent_dir);
-	const QStringList splitted_filename = Util::File::split_directories(abs_filename);
-
-	QStringList remainder_parts;
-	for(int i=splitted_parent_dir.size(); i<splitted_filename.size(); i++)
-	{
-		remainder_parts << splitted_filename[i];
-	}
-
-	if(remainder_parts.isEmpty())
-	{
-		return;
-	}
-
-	m->src_dst_map[filename] = remainder_parts.join("/");
+	m->src_dst_map[filename] = remainder;
 }
 
 QStringList ImportCache::files() const
@@ -151,6 +146,11 @@ QStringList ImportCache::files() const
 MetaDataList ImportCache::soundfiles() const
 {
 	return m->v_md;
+}
+
+int ImportCache::count() const
+{
+	return m->files.count();
 }
 
 QString ImportCache::target_filename(const QString& src_filename, const QString& target_directory) const
@@ -171,17 +171,28 @@ QString ImportCache::target_filename(const QString& src_filename, const QString&
 
 MetaData ImportCache::metadata(const QString& filename) const
 {
-	return m->src_md_map[filename];
+	if(!m->src_md_map.contains(filename))
+	{
+		sp_log(Log::Warning, this) << filename  << " is no valid audio file";
+		return MetaData();
+	}
+
+	int index = m->src_md_map[filename];
+	return m->v_md[index];
 }
 
-void ImportCache::change_metadata(const MetaDataList& v_md_old, const MetaDataList& v_md_new)
+void ImportCache::change_metadata(const MetaDataList& updated_tracks)
 {
-	Q_UNUSED(v_md_old)
-
-	m->v_md = v_md_new;
-
-	for(const MetaData& md : v_md_new)
+	for(const MetaData& md : updated_tracks)
 	{
-		m->src_md_map[md.filepath()] = md;
+		int index = Util::Algorithm::indexOf(m->v_md, [&md](const MetaData& saved_md) {
+			return Util::File::is_same_path(md.filepath(), saved_md.filepath());
+		});
+
+		if(index >= 0) {
+			m->v_md[index] = md;
+		}
 	}
+
+	sp_log(Log::Develop, this) << "Import cache updated";
 }

@@ -203,7 +203,7 @@ void GUI_ImportDialog::set_progress_no_percent(int val)
 
 void GUI_ImportDialog::bb_accepted()
 {
-	m->tag_edit->commit();
+//	m->tag_edit->commit();
 
 	QString target_dir = ui->le_directory->text();
 

@@ -194,13 +194,9 @@ bool Tracks::db_fetch_tracks(Query& q, MetaDataList& result) const
 
 bool Tracks::getMultipleTracksByPath(const QStringList& paths, MetaDataList& v_md) const
 {
-	module()->db().transaction();
-
 	for(const QString& path : paths) {
 		v_md << getTrackByPath(path);
 	}
-
-	module()->db().commit();
 
 	return (v_md.count() == paths.size());
 }
@@ -511,7 +507,6 @@ bool Tracks::deleteTracks(const IdList& ids)
 	return (success && (n_files == ids.size()));
 }
 
-
 bool Tracks::deleteTracks(const MetaDataList& v_md)
 {
 	if(v_md.isEmpty()){
@@ -520,7 +515,7 @@ bool Tracks::deleteTracks(const MetaDataList& v_md)
 
 	module()->db().transaction();
 
-	auto deleted_tracks = Util::Algorithm::count_if(v_md, [=](const MetaData& md)
+	auto deleted_tracks = Util::Algorithm::count(v_md, [=](const MetaData& md)
 	{
 		return deleteTrack(md.id());
 	});
@@ -703,13 +698,47 @@ bool Tracks::updateTracks(const MetaDataList& v_md)
 {
 	module()->db().transaction();
 
-	int n_files = Util::Algorithm::count_if(v_md, [=](const MetaData& md){
+	int n_files = Util::Algorithm::count(v_md, [=](const MetaData& md){
 		return updateTrack(md);
 	});
 
 	bool success = module()->db().commit();
 
 	return success && (n_files == v_md.count());
+}
+
+bool Tracks::renameFilepaths(const QMap<QString, QString>& paths, LibraryId target_library)
+{
+	module()->db().transaction();
+	for(auto it=paths.begin(); it != paths.end(); it++)
+	{
+		renameFilepath(it.key(), it.value(), target_library);
+	}
+	return module()->db().commit();
+}
+
+bool Tracks::renameFilepath(const QString& old_path, const QString& new_path, LibraryId target_library)
+{
+	QString query
+	(
+		"UPDATE Tracks "
+		"SET "
+		"filename = REPLACE(filename, :oldName, :newName), "
+		"libraryID = :libraryID;"
+	);
+
+	Query q(module());
+	q.prepare(query);
+	q.bindValue(":oldName", old_path);
+	q.bindValue(":newName", new_path);
+	q.bindValue(":libraryID", target_library);
+	if(!q.exec())
+	{
+		sp_log(Log::Warning, this) << "Could not replace filepath string";
+		return false;
+	}
+
+	return true;
 }
 
 

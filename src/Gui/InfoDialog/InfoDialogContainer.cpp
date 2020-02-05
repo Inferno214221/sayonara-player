@@ -23,7 +23,9 @@
 
 #include "GUI_InfoDialog.h"
 #include "Gui/Utils/GuiUtils.h"
+
 #include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Utils.h"
 
 #include <QMainWindow>
 #include <QThread>
@@ -100,11 +102,15 @@ bool InfoDialogContainer::init_dialog(OpenMode mode)
 			return false;
 		}
 
-		m->async_helper->start();
 		m->info_dialog->set_metadata(MetaDataList(), metadata_interpretation());
-		m->info_dialog->show(GUI_InfoDialog::Tab::Info);
 
-		return true;
+		bool started = m->async_helper->start();
+		if(started)
+		{
+			m->info_dialog->show(GUI_InfoDialog::Tab::Info);
+		}
+
+		return started;
 	}
 
 	m->info_dialog->set_busy(false);
@@ -116,8 +122,8 @@ void InfoDialogContainer::go(OpenMode mode, const MetaDataList& v_md)
 {
 	m->info_dialog->set_busy(false);
 
-	if(v_md.isEmpty())
-	{
+	if(v_md.isEmpty()) {
+		m->info_dialog->close();
 		return;
 	}
 
@@ -139,7 +145,6 @@ void InfoDialogContainer::go(OpenMode mode, const MetaDataList& v_md)
 		case OpenMode::Cover:
 			m->info_dialog->show_cover_edit_tab();
 			break;
-
 	}
 }
 

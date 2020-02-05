@@ -74,7 +74,7 @@ public:
 	void set_comment(const QString& comment);
 
 	QString filepath() const;
-	QString set_filepath(QString filepath);
+	QString set_filepath(QString filepath, RadioMode mode=RadioMode::Undefined);
 
 	ArtistId album_artist_id() const;
 	QString album_artist() const;
@@ -87,6 +87,8 @@ public:
 	QString radio_station() const;
 
 	RadioMode radio_mode() const;
+	void change_radio_mode(RadioMode mode);
+
 	bool is_valid() const;
 
 	bool operator==(const MetaData& md) const;

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>904</width>
-    <height>650</height>
+    <height>677</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -53,10 +53,76 @@
      </item>
     </layout>
    </item>
-   <item row="1" column="0" colspan="2">
+   <item row="2" column="0" colspan="2">
+    <widget class="Gui::ComboBox" name="combo_library"/>
+   </item>
+   <item row="0" column="1">
+    <widget class="QWidget" name="widget_search" native="true">
+     <property name="minimumSize">
+      <size>
+       <width>50</width>
+       <height>0</height>
+      </size>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QLineEdit" name="le_search">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::ClickFocus</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btn_search">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="text">
+         <string notr="true">Search</string>
+        </property>
+        <property name="icon">
+         <iconset>
+          <normaloff>:/Icons/lupe.svg.png</normaloff>:/Icons/lupe.svg.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="2">
     <widget class="QStackedWidget" name="stackedWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="page">
       <layout class="QGridLayout" name="gridLayout_2">
@@ -64,7 +130,7 @@
         <number>0</number>
        </property>
        <property name="topMargin">
-        <number>0</number>
+        <number>5</number>
        </property>
        <property name="rightMargin">
         <number>0</number>
@@ -77,7 +143,7 @@
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
-         <widget class="QSplitter" name="splitter_dir_files">
+         <widget class="QSplitter" name="splitter_dirs">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -88,47 +154,59 @@
              <bold>true</bold>
             </font>
            </property>
+           <property name="acceptDrops">
+            <bool>true</bool>
+           </property>
            <property name="autoScroll">
             <bool>true</bool>
            </property>
            <property name="autoScrollMargin">
-            <number>100</number>
+            <number>50</number>
+           </property>
+           <property name="showDropIndicator" stdset="0">
+            <bool>true</bool>
            </property>
            <property name="dragEnabled">
             <bool>true</bool>
            </property>
            <property name="dragDropMode">
-            <enum>QAbstractItemView::DragOnly</enum>
+            <enum>QAbstractItemView::DragDrop</enum>
            </property>
            <property name="alternatingRowColors">
             <bool>true</bool>
            </property>
            <property name="selectionMode">
             <enum>QAbstractItemView::ExtendedSelection</enum>
+           </property>
+           <property name="verticalScrollMode">
+            <enum>QAbstractItemView::ScrollPerPixel</enum>
+           </property>
+           <property name="autoExpandDelay">
+            <number>750</number>
            </property>
            <property name="headerHidden">
             <bool>true</bool>
            </property>
-          </widget>
-          <widget class="FileListView" name="lv_files">
-           <property name="font">
-            <font>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="dragEnabled">
+           <property name="expandsOnDoubleClick">
             <bool>true</bool>
            </property>
-           <property name="dragDropMode">
-            <enum>QAbstractItemView::DragOnly</enum>
-           </property>
+          </widget>
+          <widget class="FileListView" name="lv_files">
            <property name="alternatingRowColors">
             <bool>true</bool>
            </property>
-           <property name="selectionMode">
-            <enum>QAbstractItemView::ExtendedSelection</enum>
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectRows</enum>
            </property>
+           <property name="showGrid">
+            <bool>false</bool>
+           </property>
+           <attribute name="horizontalHeaderVisible">
+            <bool>true</bool>
+           </attribute>
+           <attribute name="verticalHeaderVisible">
+            <bool>false</bool>
+           </attribute>
           </widget>
          </widget>
          <widget class="Library::TrackView" name="tb_title">
@@ -266,67 +344,11 @@
      </widget>
     </widget>
    </item>
-   <item row="0" column="1">
-    <widget class="QWidget" name="widget_search" native="true">
-     <property name="minimumSize">
-      <size>
-       <width>50</width>
-       <height>0</height>
-      </size>
+   <item row="1" column="0" colspan="2">
+    <widget class="Line" name="line">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
      </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_3">
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <item>
-       <widget class="QLineEdit" name="le_search">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="focusPolicy">
-         <enum>Qt::ClickFocus</enum>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="btn_search">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="focusPolicy">
-         <enum>Qt::NoFocus</enum>
-        </property>
-        <property name="text">
-         <string notr="true">Search</string>
-        </property>
-        <property name="icon">
-         <iconset>
-          <normaloff>:/Icons/lupe.svg.png</normaloff>:/Icons/lupe.svg.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-     </layout>
     </widget>
    </item>
   </layout>
@@ -343,14 +365,18 @@
    <header>Gui/Directories/DirectoryTreeView.h</header>
   </customwidget>
   <customwidget>
+   <class>Gui::ComboBox</class>
+   <extends>QComboBox</extends>
+   <header>Gui/Utils/Widgets/ComboBox.h</header>
+  </customwidget>
+  <customwidget>
    <class>FileListView</class>
-   <extends>QListView</extends>
+   <extends>QTableView</extends>
    <header>Gui/Directories/FileListView.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>
   <tabstop>tv_dirs</tabstop>
-  <tabstop>lv_files</tabstop>
  </tabstops>
  <resources>
   <include location="../Resources/Icons.qrc"/>

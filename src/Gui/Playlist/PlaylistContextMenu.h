@@ -42,14 +42,16 @@ namespace Playlist
 		void sig_bookmark_pressed(Seconds timestamp);
 		void sig_jump_to_current_track();
 		void sig_find_track_triggered();
+		void sig_reverse_triggered();
 
 	public:
 		enum Entry
 		{
-			EntryRating=(Library::ContextMenu::EntryLast << 1),
-			EntryBookmarks=(EntryRating << 1),
-			EntryCurrentTrack=(EntryBookmarks << 1),
-			EntryFindInLibrary=(EntryCurrentTrack << 1)
+			EntryRating			= (Library::ContextMenu::EntryLast << 1),
+			EntryBookmarks		= (Library::ContextMenu::EntryLast << 2),
+			EntryCurrentTrack	= (Library::ContextMenu::EntryLast << 3),
+			EntryFindInLibrary	= (Library::ContextMenu::EntryLast << 4),
+			EntryReverse		= (Library::ContextMenu::EntryLast << 5)
 		};
 
 		explicit ContextMenu(QWidget* parent);

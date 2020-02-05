@@ -70,6 +70,8 @@ SearchBar::SearchBar(QWidget* parent) :
 	new QShortcut(QKeySequence("F3"), this, SLOT(search_shortcut_pressed()), nullptr, Qt::WindowShortcut);
 
 	connect(this, &QLineEdit::textChanged, this, &SearchBar::text_changed);
+
+	skin_changed();
 }
 
 SearchBar::~SearchBar() = default;

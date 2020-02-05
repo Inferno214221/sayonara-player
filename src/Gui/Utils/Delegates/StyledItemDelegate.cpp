@@ -21,7 +21,7 @@
 #include "StyledItemDelegate.h"
 #include <QSize>
 
-QSize Gui::StyledItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
+QSize Gui::StyledItemDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
 	Q_UNUSED(index)
 

@@ -33,11 +33,9 @@ using Playlist::ActionMenu;
 
 struct ContextMenu::Private
 {
-	QAction*		current_track_action=nullptr;
+	QMap<ContextMenu::Entry, QAction*> entry_map;
+
 	BookmarksMenu*	bookmarks_menu=nullptr;
-	QAction*		bookmarks_action=nullptr;
-	QAction*		rating_action=nullptr;
-	QAction*		find_track_action=nullptr;
 	QMenu*			rating_menu=nullptr;
 
 	QAction*		playlist_mode_action=nullptr;
@@ -45,19 +43,25 @@ struct ContextMenu::Private
 
 	Private(ContextMenu* parent)
 	{
-		current_track_action = new QAction(parent);
-		find_track_action = new QAction(parent);
-
-		parent->addActions({current_track_action, find_track_action});
-
 		rating_menu = new QMenu(parent);
-		rating_action = parent->addMenu(rating_menu);
 
 		bookmarks_menu = new BookmarksMenu(parent);
-		bookmarks_action = parent->addMenu(bookmarks_menu);
 
 		playlist_mode_menu = new ActionMenu(parent);
 		playlist_mode_action = parent->addMenu(playlist_mode_menu);
+
+		entry_map[EntryRating] = parent->addMenu(rating_menu);
+		entry_map[EntryBookmarks] = parent->addMenu(bookmarks_menu);
+		entry_map[EntryCurrentTrack] = new QAction(parent);
+		entry_map[EntryFindInLibrary] = new QAction(parent);
+		entry_map[EntryReverse] = new QAction(parent);
+
+		parent->addActions
+		({
+			entry_map[EntryReverse],
+			entry_map[EntryCurrentTrack],
+			entry_map[EntryFindInLibrary],
+		});
 	}
 };
 
@@ -74,9 +78,11 @@ ContextMenu::ContextMenu(QWidget *parent) :
 
 	m->rating_menu->addActions(rating_actions);
 
+	connect(m->entry_map[EntryCurrentTrack],	&QAction::triggered, this, &ContextMenu::sig_jump_to_current_track);
+	connect(m->entry_map[EntryFindInLibrary],	&QAction::triggered, this, &ContextMenu::sig_find_track_triggered);
+	connect(m->entry_map[EntryReverse],			&QAction::triggered, this, &ContextMenu::sig_reverse_triggered);
+
 	connect(m->bookmarks_menu, &BookmarksMenu::sig_bookmark_pressed, this, &ContextMenu::bookmark_pressed);
-	connect(m->current_track_action, &QAction::triggered, this, &ContextMenu::sig_jump_to_current_track);
-	connect(m->find_track_action, &QAction::triggered, this, &ContextMenu::sig_find_track_triggered);
 
 	skin_changed();
 }
@@ -86,20 +92,12 @@ ContextMenu::~ContextMenu() = default;
 ContextMenu::Entries ContextMenu::get_entries() const
 {
 	ContextMenu::Entries entries = Library::ContextMenu::get_entries();
-	if(m->bookmarks_action->isVisible()){
-		entries |= ContextMenu::EntryBookmarks;
-	}
 
-	if(m->rating_action->isVisible()){
-		entries |= ContextMenu::EntryRating;
-	}
-
-	if(m->current_track_action->isVisible()){
-		entries |= ContextMenu::EntryCurrentTrack;
-	}
-
-	if(m->find_track_action->isVisible()){
-		entries |= ContextMenu::EntryFindInLibrary;
+	for(auto it=m->entry_map.begin(); it != m->entry_map.end(); it++)
+	{
+		if(it.value()->isVisible()) {
+			entries |= it.key();
+		}
 	}
 
 	return entries;
@@ -109,10 +107,10 @@ void ContextMenu::show_actions(ContextMenu::Entries entries)
 {
 	Library::ContextMenu::show_actions(entries);
 
-	m->rating_action->setVisible(entries & ContextMenu::EntryRating);
-	m->bookmarks_action->setVisible((entries & ContextMenu::EntryBookmarks) && m->bookmarks_menu->has_bookmarks());
-	m->current_track_action->setVisible(entries & ContextMenu::EntryCurrentTrack);
-	m->find_track_action->setVisible(entries & ContextMenu::EntryFindInLibrary);
+	for(auto it=m->entry_map.begin(); it != m->entry_map.end(); it++)
+	{
+		it.value()->setVisible(entries & it.key());
+	}
 }
 
 void ContextMenu::set_rating(Rating rating)
@@ -131,11 +129,11 @@ void ContextMenu::set_rating(Rating rating)
 							.arg(rating_text)
 							.arg(int(rating));
 
-		m->rating_action->setText(text);
+		m->entry_map[EntryRating]->setText(text);
 	}
 
 	else {
-		m->rating_action->setText(rating_text);
+		m->entry_map[EntryRating]->setText(rating_text);
 	}
 }
 
@@ -168,9 +166,12 @@ void ContextMenu::language_changed()
 {
 	Library::ContextMenu::language_changed();
 
-	m->rating_action->setText(Lang::get(Lang::Rating));
-	m->current_track_action->setText(tr("Jump to current track"));
-	m->find_track_action->setText(tr("Show track in library"));
+	m->entry_map[EntryRating]-> setText(Lang::get(Lang::Rating));
+	m->entry_map[EntryBookmarks]-> setText(Lang::get(Lang::Bookmarks));
+	m->entry_map[EntryCurrentTrack]->setText(tr("Jump to current track"));
+	m->entry_map[EntryFindInLibrary]->setText(tr("Show track in library"));
+	m->entry_map[EntryReverse]->setText(tr("Reverse"));
+
 	m->playlist_mode_action->setText(tr("Playlist mode"));
 }
 
@@ -179,12 +180,11 @@ void ContextMenu::skin_changed()
 	Library::ContextMenu::skin_changed();
 
 	using namespace Gui;
-	m->rating_action->setIcon(Icons::icon(Icons::Star));
-	m->find_track_action->setIcon(Icons::icon(Icons::Search));
+	m->entry_map[EntryRating]->setIcon(Icons::icon(Icons::Star));
+	m->entry_map[EntryFindInLibrary]->setIcon(Icons::icon(Icons::Search));
 }
 
 void ContextMenu::bookmark_pressed(Seconds timestamp)
 {
    emit sig_bookmark_pressed(timestamp);
 }
-

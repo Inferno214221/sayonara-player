@@ -502,6 +502,27 @@ LanguageString Lang::get_with_number(TermNr term, int param, bool* ok)
 
 	switch(term)
 	{
+		case NrDirectories:
+			if(param == 0){
+				return l.tr("No directories");
+			}
+
+			return l.tr("%n directory(s)", "", param);
+
+		case NrFiles:
+			if(param == 0){
+				return l.tr("No files");
+			}
+
+			return l.tr("%n file(s)", "", param);
+
+		case NrPlaylists:
+			if(param == 0){
+				return l.tr("No playlists");
+			}
+
+			return l.tr("%n playlist(s)", "", param);
+
 		case NrTracks:
 			if(param == 0) {
 				return l.tr("No tracks");
@@ -539,7 +560,7 @@ QString Lang::convert_old_lang(const QString& old_lang)
 		}
 	}
 
-	return "en_US";
+	return "en_GB";
 }
 
 
@@ -560,8 +581,7 @@ QMap<QString, QLocale> Lang::available_languages()
 			continue;
 		}
 
-		const QStringList entries = d.entryList(QStringList{"*.qm"}, QDir::Files);
-
+		QStringList entries = d.entryList(QStringList{"*.qm"}, QDir::Files);
 		for(const QString& entry : entries)
 		{
 			QString fl = four_letter(entry);
@@ -570,6 +590,8 @@ QMap<QString, QLocale> Lang::available_languages()
 			}
 		}
 	}
+
+	ret.remove("en_US");
 
 	return ret;
 }

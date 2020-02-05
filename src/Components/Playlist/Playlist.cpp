@@ -91,7 +91,7 @@ IndexSet PlaylistImpl::move_tracks(const IndexSet& indexes, int tgt_row)
 {
 	m->v_md.move_tracks(indexes, tgt_row);
 
-	int n_lines_before_tgt = Algorithm::count_if(indexes, [&tgt_row](int sel){
+	int n_lines_before_tgt = Algorithm::count(indexes, [&tgt_row](int sel){
 		return (sel < tgt_row);
 	});
 
@@ -207,17 +207,21 @@ void PlaylistImpl::metadata_changed()
 	auto* mdcn = Tagging::ChangeNotifier::instance();
 	auto changed_metadata = mdcn->changed_metadata();
 
-	const MetaDataList& v_md_new = changed_metadata.second;
+	const MetaDataList& changed_tracks = changed_metadata.second;
 
-	for(auto it=m->v_md.begin(); it !=m->v_md.end(); it++)
+	int i=0;
+	for(auto it=m->v_md.begin(); it != m->v_md.end(); it++, i++)
 	{
-		auto tmp_it = Algorithm::find(v_md_new, [it](const MetaData& md){
+		auto it_changed = Algorithm::find(changed_tracks, [it](const MetaData& md)
+		{
 			return it->is_equal(md);
 		});
 
-		if(tmp_it != v_md_new.end()) {
-			*it = *tmp_it;
+		if(it_changed == changed_tracks.end()) {
+			continue;
 		}
+
+		replace_track(i, *it_changed);
 	}
 
 	emit sig_items_changed( index() );
@@ -225,10 +229,11 @@ void PlaylistImpl::metadata_changed()
 
 void PlaylistImpl::current_metadata_changed()
 {
-	MetaData md = PlayManager::instance()->current_track();
-	IdxList idx_list = m->v_md.findTracks(md.filepath());
+	const MetaData md = PlayManager::instance()->current_track();
+	const IdxList idx_list = m->v_md.findTracks(md.filepath());
 
-	for(int i : idx_list) {
+	for(int i : idx_list)
+	{
 		replace_track(i, md);
 	}
 }
@@ -253,11 +258,16 @@ void PlaylistImpl::replace_track(int idx, const MetaData& md)
 		return;
 	}
 
+	bool is_current = (m->v_md[idx].unique_id() == m->playing_id);
 	m->v_md[idx] = md;
 	m->v_md[idx].set_disabled
 	(
 		!(File::check_file(md.filepath()))
 	);
+
+	if(is_current){
+		m->playing_id = m->v_md[idx].unique_id();
+	}
 
 	emit sig_items_changed(index());
 }
@@ -325,7 +335,7 @@ void PlaylistImpl::bwd()
 void PlaylistImpl::next()
 {
 	// no track
-	if(m->v_md.isEmpty() )
+	if(m->v_md.isEmpty())
 	{
 		stop();
 		set_track_idx_before_stop(-1);
@@ -441,6 +451,12 @@ void Playlist::Playlist::set_current_scanned_file(const QString& current_scanned
 	emit sig_current_scanned_file_changed(current_scanned_file);
 }
 
+void Playlist::Playlist::reverse()
+{
+	std::reverse(m->v_md.begin(), m->v_md.end());
+	set_changed(true);
+}
+
 void PlaylistImpl::enable_all()
 {
 	for(MetaData& md : m->v_md)
@@ -506,16 +522,10 @@ int PlaylistImpl::current_track_index() const
 		return -1;
 	}
 
-	int i=0;
-	for(auto it=m->v_md.begin(); it != m->v_md.end(); it++, i++)
+	return Util::Algorithm::indexOf(m->v_md, [this](const MetaData& md)
 	{
-		if(it->unique_id() == m->playing_id)
-		{
-			return i;
-		}
-	}
-
-	return -1;
+		return (md.unique_id() == m->playing_id);
+	});
 }
 
 bool PlaylistImpl::current_track(MetaData& md) const

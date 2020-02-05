@@ -115,7 +115,7 @@ void GUI_LanguagePreferences::renew_combo()
 
 		QLocale loc = it.value();
 		QString language_name = Util::cvt_str_to_first_upper(loc.nativeLanguageName());
-		if(four_letter.startsWith("en_")){
+		if(four_letter.startsWith("en")){
 			language_name = "English";
 		}
 
@@ -157,10 +157,6 @@ void GUI_LanguagePreferences::combo_index_changed(int idx)
 	ui->btn_download->setVisible(false);
 	ui->btn_check_for_update->setEnabled(true);
 	ui->lab_update_info->setText(QString());
-
-	if(four_letter.compare("en_us", Qt::CaseInsensitive) == 0){
-		ui->btn_check_for_update->setEnabled(false);
-	}
 }
 
 

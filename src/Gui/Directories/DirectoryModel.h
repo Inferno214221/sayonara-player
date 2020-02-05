@@ -26,6 +26,10 @@
 #include <QTreeView>
 #include <QFileSystemModel>
 
+namespace Library
+{
+	class Info;
+}
 
 /**
  * @brief The SearchableFileTreeModel class
@@ -39,20 +43,18 @@ class DirectoryModel :
 
 public:
 	explicit DirectoryModel(QObject* parent=nullptr);
-	virtual ~DirectoryModel();
+	~DirectoryModel() override;
 
 	void search_only_dirs(bool b);
+	void set_library(const Library::Info& info);
+	Library::Info library_info() const;
 
 public:
 	QModelIndexList search_results(const QString& substr) override;
 	Qt::ItemFlags	flags(const QModelIndex &index) const override;
 
-	LibraryId library_id(const QModelIndex& index) const;
-	QString filepath_origin(const QModelIndex& index) const;
-
-	bool is_root(const QModelIndex& index) const;
-
 private:
+	using QFileSystemModel::setRootPath;
 	void create_file_list(const QString& substr);
 
 };

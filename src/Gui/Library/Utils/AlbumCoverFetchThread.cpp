@@ -118,8 +118,6 @@ AlbumCoverFetchThread::AlbumCoverFetchThread(QObject* parent) :
 	QThread(parent)
 {
 	m = Pimpl::make<Private>();
-
-	this->setObjectName("AlbumCoverFetchThread" + ::Util::random_string(4));
 }
 
 AlbumCoverFetchThread::~AlbumCoverFetchThread() {}

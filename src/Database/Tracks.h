@@ -24,6 +24,8 @@
 #include "Database/SearchableModule.h"
 #include "Utils/Pimpl.h"
 
+#include <QMap>
+
 namespace Library
 {
 	class Filter;
@@ -64,6 +66,9 @@ namespace DB
 			virtual bool insertTrackIntoDatabase(const MetaData& data, ArtistId artist_id, AlbumId album_id, ArtistId album_artist_id);
 			virtual bool updateTrack(const MetaData& data);
 			virtual bool updateTracks(const MetaDataList& lst);
+
+			virtual bool renameFilepaths(const QMap<QString, QString>& paths, LibraryId library_id);
+			virtual bool renameFilepath(const QString& old_path, const QString& new_path, LibraryId library_id);
 
 			virtual bool deleteTrack(TrackID id);
 			virtual bool deleteTracks(const MetaDataList&);

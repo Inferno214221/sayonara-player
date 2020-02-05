@@ -21,6 +21,7 @@
 #include "CachingThread.h"
 
 #include "Components/Directories/DirectoryReader.h"
+#include "Components/Tagging/ChangeNotifier.h"
 
 #include "Utils/Utils.h"
 #include "Utils/Algorithm.h"
@@ -37,18 +38,16 @@ namespace Algorithm=Util::Algorithm;
 
 struct CachingThread::Private
 {
-	QString			library_path;
 	QStringList		archive_dirs;
-	QStringList		file_list;
+	QStringList		source_files;
 
 	ImportCachePtr	cache=nullptr;
 
 	int				progress;
 	bool			cancelled;
 
-	Private(const QStringList& file_list, const QString& library_path) :
-		library_path(library_path),
-		file_list(file_list),
+	Private(const QStringList& source_files, const QString& library_path) :
+		source_files(source_files),
 		progress(0),
 		cancelled(false)
 	{
@@ -56,12 +55,11 @@ struct CachingThread::Private
 	}
 };
 
-CachingThread::CachingThread(const QStringList& file_list, const QString& library_path, QObject *parent) :
+CachingThread::CachingThread(const QStringList& source_files, const QString& library_path, QObject *parent) :
 	QThread(parent)
 {
-	m = Pimpl::make<CachingThread::Private>(file_list, library_path);
-
-	this->setObjectName("CachingThread" + Util::random_string(4));
+	m = Pimpl::make<CachingThread::Private>(source_files, library_path);
+	connect(Tagging::ChangeNotifier::instance(), &Tagging::ChangeNotifier::sig_metadata_changed, this, &CachingThread::metadata_changed);
 }
 
 CachingThread::~CachingThread() = default;
@@ -185,7 +183,7 @@ void CachingThread::run()
 
 	sp_log(Log::Develop, this) << "Read files";
 
-	for(const QString& filename : Algorithm::AsConst(m->file_list))
+	for(const QString& filename : Algorithm::AsConst(m->source_files))
 	{
 		if(m->cancelled) {
 			m->cache->clear();
@@ -240,15 +238,12 @@ void CachingThread::update_progress()
 	emit sig_progress(m->progress);
 }
 
-
-void CachingThread::change_metadata(const MetaDataList& v_md_old, const MetaDataList& v_md_new)
+void CachingThread::metadata_changed()
 {
-	if(m->cache) {
-		m->cache->change_metadata(v_md_old, v_md_new);
-	}
-
-	else{
-		sp_log(Log::Debug, this) << "Could not change metadata because cache was not created yet";
+	if(m->cache)
+	{
+		auto* change_notifier = Tagging::ChangeNotifier::instance();
+		m->cache->change_metadata(change_notifier->changed_metadata().second);
 	}
 }
 
@@ -271,4 +266,3 @@ bool CachingThread::is_cancelled() const
 {
 	return m->cancelled;
 }
-

@@ -44,13 +44,11 @@ namespace Library
 
 		public:
 			explicit CachingThread(const QStringList& file_list, const QString& library_path, QObject *parent=nullptr);
-			virtual ~CachingThread();
+			~CachingThread() override;
 
 			Library::ImportCachePtr	cache() const;
 			void			cancel();
 			bool			is_cancelled() const;
-			void			change_metadata(const MetaDataList& v_md_old, const MetaDataList& v_md_new);
-
 			QStringList		temporary_files() const;
 
 		private:
@@ -72,6 +70,9 @@ namespace Library
 				const QStringList& args,
 				const QList<int>& success_codes=QList<int>{0}
 			);
+
+		private slots:
+			void metadata_changed();
 	};
 }
 

@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef DIRECTORYCONTEXTMENU_H
 #define DIRECTORYCONTEXTMENU_H
 
@@ -40,6 +38,8 @@ signals:
 	void sig_rename_clicked();
 	void sig_rename_by_tag_clicked();
 	void sig_collapse_all_clicked();
+	void sig_move_to_lib(LibraryId id);
+	void sig_copy_to_lib(LibraryId id);
 
 public:
 	enum Mode
@@ -48,13 +48,28 @@ public:
 		File
 	};
 
+	enum Entry
+	{
+		EntryCreateDir = Library::ContextMenu::EntryLast,
+		EntryRename = Library::ContextMenu::EntryLast << 1,
+		EntryRenameByTag = Library::ContextMenu::EntryLast << 2,
+		EntryCollapseAll = Library::ContextMenu::EntryLast << 3,
+		EntryMoveToLib = Library::ContextMenu::EntryLast << 4,
+		EntryCopyToLib = Library::ContextMenu::EntryLast << 5
+	};
+
 	DirectoryContextMenu(Mode mode, QWidget* parent);
 	~DirectoryContextMenu() override;
 
-	void set_create_dir_visible(bool b);
-	void set_rename_visible(bool b);
-	void set_rename_by_tag_visible(bool b);
-	void set_collapse_all_visibled(bool b);
+	void refresh(int count=0);
+
+	ContextMenu::Entries get_entries() const override;
+	void show_actions(ContextMenu::Entries entries) override;
+	void show_directory_action(DirectoryContextMenu::Entry entry, bool b);
+
+private slots:
+	void library_move_action_triggered();
+	void library_copy_action_triggered();
 
 protected:
 	void language_changed() override;
