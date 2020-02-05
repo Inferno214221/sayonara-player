@@ -19,10 +19,11 @@
  */
 
 #include "GUI_Stream.h"
+#include "ConfigureStreamDialog.h"
+#include "GUI_StationSearcher.h"
 #include "Gui/Plugins/ui_GUI_Stream.h"
-#include "Gui/Plugins/Stream/GUI_StationSearcher.h"
 
-#include "Components/Streaming/Streams/StreamHandlerStreams.h"
+#include "Components/Streaming/Streams/StreamHandler.h"
 
 #include "Utils/Language/Language.h"
 #include "Gui/Utils/Icons.h"
@@ -36,7 +37,7 @@ struct GUI_Stream::Private
 };
 
 GUI_Stream::GUI_Stream(QWidget *parent) :
-	Gui::AbstractStream(parent)
+	Gui::AbstractStationPlugin(parent)
 {
 	m = Pimpl::make<Private>();
 }
@@ -61,7 +62,7 @@ QString GUI_Stream::get_display_name() const
 
 void GUI_Stream::retranslate_ui()
 {
-	Gui::AbstractStream::retranslate_ui();
+	Gui::AbstractStationPlugin::retranslate_ui();
 	ui->retranslateUi(this);
 
 	QString action_text = tr("Search radio station");
@@ -87,12 +88,10 @@ void GUI_Stream::init_ui()
 	retranslate_ui();
 }
 
-
 QString GUI_Stream::get_title_fallback_name() const
 {
 	return Lang::get(Lang::Radio);
 }
-
 
 QComboBox* GUI_Stream::combo_stream()
 {
@@ -109,15 +108,14 @@ Gui::MenuToolButton* GUI_Stream::btn_menu()
 	return ui->btn_tool;
 }
 
-AbstractStreamHandler* GUI_Stream::stream_handler() const
+AbstractStationHandler* GUI_Stream::stream_handler() const
 {
-	return new StreamHandlerStreams();
+	return new StreamHandler();
 }
-
 
 void GUI_Stream::skin_changed()
 {
-	Gui::AbstractStream::skin_changed();
+	Gui::AbstractStationPlugin::skin_changed();
 
 	if(m->radio_action)
 	{
@@ -144,4 +142,10 @@ void GUI_Stream::search_radio_triggered()
 void GUI_Stream::stream_selected(const QString& name, const QString& url)
 {
 	add_stream(name, url);
+}
+
+
+GUI_ConfigureStation* GUI_Stream::create_config_dialog()
+{
+	return new ConfigureStreamDialog(this);
 }

@@ -18,42 +18,77 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "StreamHandlerStreams.h"
+#include "StreamHandler.h"
 #include "Database/Connector.h"
 #include "Database/Streams.h"
 
-StreamHandlerStreams::StreamHandlerStreams(QObject* parent) :
-	AbstractStreamHandler(parent) {}
+#include "Utils/Algorithm.h"
+#include "Utils/Streams/Stream.h"
 
-StreamHandlerStreams::~StreamHandlerStreams() = default;
+StreamHandler::StreamHandler(QObject* parent) :
+	AbstractStationHandler(parent) {}
 
-bool StreamHandlerStreams::get_all_streams(StreamMap& streams)
+StreamHandler::~StreamHandler() = default;
+
+bool StreamHandler::get_all_streams(QList<StationPtr>& stations)
 {
 	DB::Streams* db = DB::Connector::instance()->stream_connector();
-	return db->getAllStreams(streams);
+
+	QList<Stream> streams;
+	bool b = db->getAllStreams(streams);
+
+	QList<StationPtr> ret;
+	Util::Algorithm::transform(streams, stations, [this](const Stream& p)
+	{
+		return this->create_stream(p.name(), p.url());
+	});
+
+	return b;
 }
 
-bool StreamHandlerStreams::add_stream(const QString& station_name, const QString& url)
+bool StreamHandler::add_stream(StationPtr station)
 {
 	DB::Streams* db = DB::Connector::instance()->stream_connector();
-	return db->addStream(station_name, url);
+
+	auto* s = dynamic_cast<Stream*>(station.get());
+	if(s){
+		return db->addStream(*s);
+	}
+
+	return false;
 }
 
-bool StreamHandlerStreams::delete_stream(const QString& station_name)
+bool StreamHandler::delete_stream(const QString& station_name)
 {
 	DB::Streams* db = DB::Connector::instance()->stream_connector();
 	return db->deleteStream(station_name);
 }
 
-bool StreamHandlerStreams::update_url(const QString& station_name, const QString& url)
+bool StreamHandler::update_url(const QString& station_name, const QString& url)
 {
 	DB::Streams* db = DB::Connector::instance()->stream_connector();
 	return db->updateStreamUrl(station_name, url);
 }
 
-bool StreamHandlerStreams::rename(const QString& old_name, const QString& new_name)
+bool StreamHandler::rename(const QString& old_name, const QString& new_name)
 {
 	DB::Streams* db = DB::Connector::instance()->stream_connector();
 	return db->renameStream(old_name, new_name);
 }
 
+StationPtr StreamHandler::create_stream(const QString& name, const QString& url) const
+{
+	return std::make_shared<Stream>(name, url);
+}
+
+StationPtr StreamHandler::station(const QString& name)
+{
+	DB::Streams* db = DB::Connector::instance()->stream_connector();
+
+	Stream stream = db->getStream(name);
+	if(stream.name().isEmpty()){
+		return nullptr;
+	}
+
+	return std::make_shared<Stream>(stream);
+}

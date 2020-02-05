@@ -1,4 +1,4 @@
-/* GUI_ConfigureStreams.cpp */
+/* GUI_ConfigureStation.cpp */
 
 /* Copyright (C) 2011-2020  Lucio Carreras
  *
@@ -18,56 +18,64 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "GUI_ConfigureStreams.h"
-#include "Gui/Plugins/ui_GUI_ConfigureStreams.h"
+#include "GUI_ConfigureStation.h"
+#include "Gui/Plugins/ui_GUI_ConfigureStation.h"
 #include "Utils/Language/Language.h"
 
-GUI_ConfigureStreams::GUI_ConfigureStreams(const QString& type, GUI_ConfigureStreams::Mode mode, QWidget* parent) :
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QLabel>
+
+struct GUI_ConfigureStation::Private
+{
+	QList<QLabel*> labels;
+};
+
+GUI_ConfigureStation::GUI_ConfigureStation(QWidget* parent) :
 	Gui::Dialog(parent)
 {
-	ui = new Ui::GUI_ConfigureStreams();
+	m = Pimpl::make<Private>();
+
+	ui = new Ui::GUI_ConfigureStation();
 	ui->setupUi(this);
 	ui->lab_error->setVisible(false);
 	ui->btn_ok->setFocus();
 
 	connect(ui->btn_ok, &QPushButton::clicked, this, &Gui::Dialog::accept);
 	connect(ui->btn_cancel, &QPushButton::clicked, this, &Gui::Dialog::reject);
-
-	set_mode(type, mode);
 }
 
-GUI_ConfigureStreams::~GUI_ConfigureStreams() {}
+GUI_ConfigureStation::~GUI_ConfigureStation() = default;
 
-QString GUI_ConfigureStreams::url() const
+void GUI_ConfigureStation::init_ui(StationPtr station)
 {
-	return ui->le_url->text();
+	const QList<QWidget*> config_widgets = configuration_widgets(station);
+
+	auto* layout = dynamic_cast<QGridLayout*>(ui->config_widget->layout());
+
+	int row = 0;
+	for(QWidget* config_widget : config_widgets)
+	{
+		auto* label = new QLabel();
+		label->setText(label_text(row));
+		m->labels << label;
+
+		layout->addWidget(label, row, 0, 1, 1);
+		layout->addWidget(config_widget, row, 1, 1, 1);
+		row++;
+	}
 }
 
-QString GUI_ConfigureStreams::name() const
-{
-	return ui->le_name->text();
-}
-
-void GUI_ConfigureStreams::set_url(const QString& url)
-{
-	ui->le_url->setText(url);
-}
-
-void GUI_ConfigureStreams::set_name(const QString& name)
-{
-	ui->le_name->setText(name);
-}
-
-void GUI_ConfigureStreams::set_error_message(const QString& message)
+void GUI_ConfigureStation::set_error_message(const QString& message)
 {
 	ui->lab_error->setText(message);
 	ui->lab_error->setVisible(true);
 }
 
-void GUI_ConfigureStreams::set_mode(const QString& type, GUI_ConfigureStreams::Mode mode)
+void GUI_ConfigureStation::set_mode(const QString& type, GUI_ConfigureStation::Mode mode)
 {
 	QString mode_str;
-	if(mode == GUI_ConfigureStreams::Edit){
+	if(mode == GUI_ConfigureStation::Edit){
 		mode_str = Lang::get(Lang::Edit);
 	}
 
@@ -81,7 +89,7 @@ void GUI_ConfigureStreams::set_mode(const QString& type, GUI_ConfigureStreams::M
 	this->setWindowTitle(text);
 }
 
-bool GUI_ConfigureStreams::was_accepted() const
+bool GUI_ConfigureStation::was_accepted() const
 {
 	return (this->result() == QDialog::Accepted);
 }

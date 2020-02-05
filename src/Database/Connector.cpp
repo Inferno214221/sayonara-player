@@ -305,7 +305,7 @@ int Connector::old_db_version() const
 
 int Connector::get_max_db_version()
 {
-	return 24;
+	return 25;
 }
 
 bool Connector::apply_fixes()
@@ -785,6 +785,12 @@ bool Connector::apply_fixes()
 		}
 
 		settings_connector()->store_setting("version", 24);
+	}
+
+	if(version < 25)
+	{
+		check_and_insert_column("savedpodcasts", "reversed", "INTEGER", "0");
+		settings_connector()->store_setting("version", 25);
 	}
 
 	return true;

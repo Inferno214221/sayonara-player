@@ -1,4 +1,4 @@
-/* GUI_ConfigureStreams.h */
+/* GUI_ConfigureStation.h */
 
 /* Copyright (C) 2011-2020  Lucio Carreras
  *
@@ -18,40 +18,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef GUI_ConfigureStation_H
+#define GUI_ConfigureStation_H
 
-
-#ifndef GUI_CONFIGURESTREAMS_H
-#define GUI_CONFIGURESTREAMS_H
-
-#include <QObject>
 #include "Gui/Utils/Widgets/Dialog.h"
+
 #include "Utils/Pimpl.h"
+#include "Utils/Streams/Station.h"
 
-UI_FWD(GUI_ConfigureStreams)
+UI_FWD(GUI_ConfigureStation)
 
-class GUI_ConfigureStreams :
+class GUI_ConfigureStation :
 	public Gui::Dialog
 {
 	Q_OBJECT
-	UI_CLASS(GUI_ConfigureStreams)
+	PIMPL(GUI_ConfigureStation)
+	UI_CLASS(GUI_ConfigureStation)
 
 public:
-
 	enum Mode
-	{New, Edit};
+	{
+		New,
+		Edit
+	};
 
-	GUI_ConfigureStreams(const QString& type, Mode mode, QWidget* parent=nullptr);
-	~GUI_ConfigureStreams();
+	GUI_ConfigureStation(QWidget* parent=nullptr);
+	virtual ~GUI_ConfigureStation();
 
-	QString url() const;
-	QString name() const;
+	virtual StationPtr configured_station() = 0;
+	virtual QList<QWidget*> configuration_widgets(StationPtr station) = 0;
+	virtual QString label_text(int row) const=0;
 
-	void set_url(const QString& url);
-	void set_name(const QString& name);
+	virtual void init_ui(StationPtr station);
+
 	void set_error_message(const QString& message);
 
-	void set_mode(const QString& trype, Mode mode);
+	void set_mode(const QString& type, Mode mode);
 	bool was_accepted() const;
 };
 
-#endif // GUI_CONFIGURESTREAMS_H
+#endif // GUI_ConfigureStation_H

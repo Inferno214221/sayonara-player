@@ -21,20 +21,24 @@
 #ifndef STREAMHANDLERPODCASTS_H
 #define STREAMHANDLERPODCASTS_H
 
-#include "AbstractStreamHandler.h"
+#include "AbstractStationHandler.h"
 
-class StreamHandlerPodcasts : public AbstractStreamHandler
+class PodcastHandler :
+	public AbstractStationHandler
 {
 	Q_OBJECT
 public:
-	explicit StreamHandlerPodcasts(QObject* parent=nullptr);
-	~StreamHandlerPodcasts();
+	explicit PodcastHandler(QObject* parent=nullptr);
+	~PodcastHandler() override;
 
-	bool get_all_streams(StreamMap& streams) override;
-	bool add_stream(const QString& station_name, const QString& url) override;
+	bool get_all_streams(QList<StationPtr>& stations) override;
+	bool add_stream(StationPtr station) override;
 	bool delete_stream(const QString& station_name) override;
 	bool update_url(const QString& station_name, const QString& url) override;
 	bool rename(const QString& old_name, const QString& new_name) override;
+
+	StationPtr create_stream(const QString& name, const QString& url) const override;
+	StationPtr station(const QString& name) override;
 };
 
 #endif // STREAMHANDLERPODCASTS_H

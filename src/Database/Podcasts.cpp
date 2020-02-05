@@ -21,6 +21,7 @@
 #include "Database/Query.h"
 #include "Database/Podcasts.h"
 
+#include "Utils/Streams/Podcast.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Utils.h"
 
@@ -30,13 +31,13 @@ using DB::Query;
 Podcasts::Podcasts(const QString& connection_name, DbId db_id) :
 	DB::Module(connection_name, db_id) {}
 
-Podcasts::~Podcasts() {}
+Podcasts::~Podcasts() = default;
 
-bool Podcasts::getAllPodcasts(QMap<QString, QString> & podcasts)
+bool Podcasts::getAllPodcasts(QList<Podcast>& podcasts)
 {
 	podcasts.clear();
 
-	Query q = run_query("SELECT name, url FROM savedpodcasts;", "Cannot fetch podcasts");
+	Query q = run_query("SELECT name, url, reversed FROM savedpodcasts;", "Cannot fetch podcasts");
 
 	if(q.has_error()){
 		return false;
@@ -46,8 +47,9 @@ bool Podcasts::getAllPodcasts(QMap<QString, QString> & podcasts)
 	{
 		QString name = q.value(0).toString();
 		QString url = q.value(1).toString();
+		bool reversed = q.value(2).toBool();
 
-		podcasts[name] = url;
+		podcasts << Podcast(name, url, reversed);
 	}
 
 	return true;
@@ -69,13 +71,14 @@ bool Podcasts::deletePodcast(const QString& name)
 }
 
 
-bool Podcasts::addPodcast(const QString& name, const QString& url)
+bool Podcasts::addPodcast(const Podcast& podcast)
 {
 	Query q = insert("savedpodcasts",
 	{
-		{"name", Util::cvt_not_null(name)},
-		{"url", Util::cvt_not_null(url)}
-	}, QString("Could not add podcast: %1, %2").arg(name, url));
+		{"name", Util::cvt_not_null(podcast.name())},
+		{"url", Util::cvt_not_null(podcast.url())},
+		{"reversed", podcast.reversed()}
+	}, QString("Could not add podcast: %1, %2").arg(podcast.name(), podcast.url()));
 
 	return (!q.has_error());
 }
@@ -103,6 +106,27 @@ bool Podcasts::renamePodcast(const QString& old_name, const QString& new_name)
 	q.show_query();
 	sp_log(Log::Debug, this) << "Affected rows = " << q.numRowsAffected();
 	return (!q.has_error());
+}
+
+Podcast Podcasts::getPodcast(const QString& name)
+{
+	Query q = run_query
+	(
+		"SELECT name, url, reversed FROM savedpodcasts WHERE name = :name;",
+		{":name", name},
+		QString("Cannot fetch podcast %1").arg(name)
+	);
+
+	if(!q.has_error() && q.next())
+	{
+		Podcast podcast;
+		podcast.set_name(q.value(0).toString());
+		podcast.set_url(q.value(1).toString());
+		podcast.set_reversed(q.value(2).toBool());
+		return podcast;
+	}
+
+	return Podcast();
 }
 
 

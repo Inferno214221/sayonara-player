@@ -294,9 +294,9 @@ void GUI_StationSearcher::listen_clicked()
 	RadioStation station = m->stations.at(cur_station_index);
 
 	int cur_stream_index = ui->tw_streams->currentRow();
-	Stream stream = station.streams.at(cur_stream_index);
+	RadioUrl radio_url = station.streams.at(cur_stream_index);
 
-	emit sig_stream_selected(station.name, stream.url);
+	emit sig_stream_selected(station.name, radio_url.url);
 
 	this->close();
 }
@@ -343,11 +343,11 @@ void GUI_StationSearcher::station_changed()
 	ui->tw_streams->setHorizontalHeaderItem(2, new QTableWidgetItem(tr("Url")));
 
 	int row = 0;
-	for(const Stream& stream : station.streams)
+	for(const RadioUrl& radio_url : station.streams)
 	{
-		QTableWidgetItem* item_type = new QTableWidgetItem(stream.type);
-		QTableWidgetItem* item_bitrate = new QTableWidgetItem(stream.bitrate);
-		QTableWidgetItem* item_url = new QTableWidgetItem(stream.url);
+		QTableWidgetItem* item_type = new QTableWidgetItem(radio_url.type);
+		QTableWidgetItem* item_bitrate = new QTableWidgetItem(radio_url.bitrate);
+		QTableWidgetItem* item_url = new QTableWidgetItem(radio_url.url);
 
 		ui->tw_streams->setItem(row, 0, item_type);
 		ui->tw_streams->setItem(row, 1, item_bitrate);

@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "AbstractStreamHandler.h"
+#include "AbstractStationHandler.h"
 
 #include "Database/Connector.h"
 #include "Components/Playlist/PlaylistHandler.h"
@@ -31,7 +31,7 @@
 #include "Utils/Message/Message.h"
 #include "Utils/Settings/Settings.h"
 
-struct AbstractStreamHandler::Private
+struct AbstractStationHandler::Private
 {
 	StreamParser*					stream_parser=nullptr;
 	Playlist::Handler*				playlist=nullptr;
@@ -46,28 +46,27 @@ struct AbstractStreamHandler::Private
 	}
 };
 
-
-AbstractStreamHandler::AbstractStreamHandler(QObject *parent) :
+AbstractStationHandler::AbstractStationHandler(QObject *parent) :
 	QObject(parent)
 {
-	m = Pimpl::make<AbstractStreamHandler::Private>();
+	m = Pimpl::make<AbstractStationHandler::Private>();
 }
 
-AbstractStreamHandler::~AbstractStreamHandler() {}
+AbstractStationHandler::~AbstractStationHandler() = default;
 
-void AbstractStreamHandler::clear()
+void AbstractStationHandler::clear()
 {
 	m->station_contents.clear();
 }
 
-void AbstractStreamHandler::stop()
+void AbstractStationHandler::stop()
 {
 	if(m->stream_parser && m->blocked) {
 		m->stream_parser->stop();
 	}
 }
 
-void AbstractStreamHandler::stopped()
+void AbstractStationHandler::stopped()
 {
 	m->blocked = false;
 	emit sig_stopped();
@@ -77,7 +76,7 @@ void AbstractStreamHandler::stopped()
 }
 
 
-bool AbstractStreamHandler::parse_station(const QString& url, const QString& station_name)
+bool AbstractStationHandler::parse_station(const QString& url, const QString& station_name)
 {
 	if(m->blocked) {
 		return false;
@@ -87,9 +86,9 @@ bool AbstractStreamHandler::parse_station(const QString& url, const QString& sta
 	m->station_name = station_name;
 
 	m->stream_parser = new StreamParser(station_name, this);
-	connect(m->stream_parser, &StreamParser::sig_finished, this, &AbstractStreamHandler::stream_parser_finished);
-	connect(m->stream_parser, &StreamParser::sig_too_many_urls_found, this, &AbstractStreamHandler::sig_too_many_urls_found);
-	connect(m->stream_parser, &StreamParser::sig_stopped, this, &AbstractStreamHandler::stopped);
+	connect(m->stream_parser, &StreamParser::sig_finished, this, &AbstractStationHandler::stream_parser_finished);
+	connect(m->stream_parser, &StreamParser::sig_too_many_urls_found, this, &AbstractStationHandler::sig_too_many_urls_found);
+	connect(m->stream_parser, &StreamParser::sig_stopped, this, &AbstractStationHandler::stopped);
 
 	m->stream_parser->parse_stream(url);
 
@@ -97,7 +96,7 @@ bool AbstractStreamHandler::parse_station(const QString& url, const QString& sta
 }
 
 
-void AbstractStreamHandler::stream_parser_finished(bool success)
+void AbstractStationHandler::stream_parser_finished(bool success)
 {
 	auto* stream_parser = static_cast<StreamParser*>(sender());
 
@@ -133,9 +132,8 @@ void AbstractStreamHandler::stream_parser_finished(bool success)
 	stream_parser->deleteLater(); m->stream_parser = nullptr;
 }
 
-
-bool AbstractStreamHandler::save(const QString& station_name, const QString& url)
+bool AbstractStationHandler::save(StationPtr station)
 {
-	return add_stream(station_name, url);
+	return add_stream(station);
 }
 

@@ -21,36 +21,36 @@
 #ifndef GUI_PODCASTS_H
 #define GUI_PODCASTS_H
 
-#include "GUI_AbstractStream.h"
+#include "AbstractStationPlugin.h"
 
 UI_FWD(GUI_Podcasts)
 
 class GUI_Podcasts :
-		public Gui::AbstractStream
+		public Gui::AbstractStationPlugin
 {
 	Q_OBJECT
 	UI_CLASS(GUI_Podcasts)
 
 	public:
 		explicit GUI_Podcasts(QWidget *parent=nullptr);
-		virtual ~GUI_Podcasts();
+		virtual ~GUI_Podcasts() override;
 
 		QString get_name() const override;
 		QString get_display_name() const override;
-
 
 	private:
 		void init_ui() override;
 		void retranslate_ui() override;
 		QString get_title_fallback_name() const override;
 
-	// GUI_AbstractStream interface
+	// AbstractStationPlugin interface
 	protected:
 		QComboBox* combo_stream() override;
 		QPushButton* btn_play() override;
 		Gui::MenuToolButton* btn_menu() override;
 
-		AbstractStreamHandler* stream_handler() const override;
+		AbstractStationHandler* stream_handler() const override;
+		GUI_ConfigureStation* create_config_dialog() override;
 };
 
 #endif // GUI_PODCASTS_H

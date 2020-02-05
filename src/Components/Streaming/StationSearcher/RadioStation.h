@@ -18,15 +18,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef RADIOSTATION_H
 #define RADIOSTATION_H
 
 #include <QString>
 #include <QList>
 
-struct Stream
+struct RadioUrl
 {
 	int index;
 	QString url;
@@ -46,7 +44,8 @@ struct RadioStation
 	QString image;
 	QString home_url;
 
-	QList<Stream> streams;
+	QList<RadioUrl> streams;
 };
+
 
 #endif // RADIOSTATION_H

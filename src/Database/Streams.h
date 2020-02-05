@@ -22,7 +22,9 @@
 #define DATABASESTREAMS_H
 
 #include "Database/Module.h"
-#include <QMap>
+#include <QList>
+
+class Stream;
 
 namespace DB
 {
@@ -32,11 +34,12 @@ namespace DB
 			Streams(const QString& connection_name, DbId db_id);
 			~Streams();
 
-			bool getAllStreams(QMap<QString, QString>& result);
+			bool getAllStreams(QList<Stream>& result);
 			bool deleteStream(const QString& name);
-			bool addStream(const QString& name, const QString& url);
+			bool addStream(const Stream& stream);
 			bool updateStreamUrl(const QString& name, const QString& url);
 			bool renameStream(const QString& old_name, const QString& new_name);
+			Stream getStream(const QString& name);
 	};
 }
 

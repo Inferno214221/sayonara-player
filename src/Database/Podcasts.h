@@ -22,7 +22,7 @@
 #define DATABASEPODCASTS_H
 
 #include "Database/Module.h"
-#include <QMap>
+#include "Utils/Streams/Station.h"
 
 namespace DB
 {
@@ -33,11 +33,13 @@ namespace DB
 			Podcasts(const QString& connection_name, DbId db_id);
 			~Podcasts();
 
-			bool getAllPodcasts(QMap<QString, QString>& result);
+			bool getAllPodcasts(QList<Podcast>& result);
 			bool deletePodcast(const QString& name);
-			bool addPodcast(const QString& name, const QString& url);
+			bool addPodcast(const Podcast& podcast);
 			bool updatePodcastUrl(const QString& name, const QString& url);
 			bool renamePodcast(const QString& old_name, const QString& new_name);
+
+			Podcast getPodcast(const QString& name);
 	};
 }
 

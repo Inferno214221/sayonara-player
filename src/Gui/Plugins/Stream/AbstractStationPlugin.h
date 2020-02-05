@@ -24,12 +24,14 @@
 #include "Gui/Plugins/PlayerPluginBase.h"
 #include "Gui/Utils/PreferenceAction.h"
 #include "Utils/Pimpl.h"
+#include "Utils/Streams/Station.h"
 
 class QComboBox;
 class QPushButton;
 class QLineEdit;
 class QLabel;
-class AbstractStreamHandler;
+class AbstractStationHandler;
+class GUI_ConfigureStation;
 
 namespace Gui
 {
@@ -45,7 +47,7 @@ namespace Gui
 
 		public:
 			StreamPreferenceAction(QWidget* parent);
-			~StreamPreferenceAction();
+			virtual ~StreamPreferenceAction() override;
 
 			QString identifier() const override;
 
@@ -53,20 +55,19 @@ namespace Gui
 			QString display_name() const override;
 	};
 
-	class AbstractStream :
+	class AbstractStationPlugin :
 			public PlayerPlugin::Base
 	{
 		Q_OBJECT
+		PIMPL(AbstractStationPlugin)
 
 		public:
-			explicit AbstractStream(QWidget* parent=nullptr);
-			virtual ~AbstractStream();
+			explicit AbstractStationPlugin(QWidget* parent=nullptr);
+			virtual ~AbstractStationPlugin() override;
 
 		protected:
 			virtual void		retranslate_ui() override;
 			virtual void		play(QString url, QString station_name);
-
-			virtual QString		get_title_fallback_name() const=0;
 
 			bool				has_loading_bar() const override;
 
@@ -74,7 +75,7 @@ namespace Gui
 			void setup_parent(T* subclass, UiType** uiptr)
 			{
 				PlayerPlugin::Base::setup_parent(subclass, uiptr);
-				AbstractStream::init_ui();
+				AbstractStationPlugin::init_ui();
 			}
 
 		private slots:
@@ -83,7 +84,7 @@ namespace Gui
 
 		protected slots:
 			void listen_clicked();
-			void combo_idx_changed(int idx);
+			void current_index_changed(int idx);
 
 			void new_clicked();
 			void save_clicked();
@@ -102,14 +103,16 @@ namespace Gui
 			virtual QComboBox* combo_stream()=0;
 			virtual QPushButton* btn_play()=0;
 			virtual MenuToolButton* btn_menu()=0;
-			virtual AbstractStreamHandler* stream_handler() const=0;
-			virtual QString url() const;
-			QString current_station() const;
+			virtual AbstractStationHandler* stream_handler() const=0;
+			virtual QString	get_title_fallback_name() const=0;
+			virtual GUI_ConfigureStation* create_config_dialog()=0;
+
+			virtual QString current_name() const;
+			virtual QString current_url() const;
+
 			void add_stream(const QString& name, const QString& url);
 
 		private:
-			PIMPL(AbstractStream)
-
 			void assign_ui_vars() override;
 
 			void init_connections();

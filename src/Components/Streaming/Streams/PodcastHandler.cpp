@@ -18,42 +18,75 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "StreamHandlerPodcasts.h"
+#include "PodcastHandler.h"
 #include "Database/Connector.h"
 #include "Database/Podcasts.h"
+#include "Utils/Algorithm.h"
+#include "Utils/Streams/Station.h"
 
-StreamHandlerPodcasts::StreamHandlerPodcasts(QObject* parent) :
-	AbstractStreamHandler(parent) {}
+PodcastHandler::PodcastHandler(QObject* parent) :
+	AbstractStationHandler(parent) {}
 
-StreamHandlerPodcasts::~StreamHandlerPodcasts() = default;
+PodcastHandler::~PodcastHandler() = default;
 
-bool StreamHandlerPodcasts::get_all_streams(StreamMap& streams)
+bool PodcastHandler::get_all_streams(QList<StationPtr>& stations)
 {
 	DB::Podcasts* db = DB::Connector::instance()->podcast_connector();
-	return db->getAllPodcasts(streams);
+	QList<Podcast> podcasts;
+	bool b = db->getAllPodcasts(podcasts);
+
+	QList<StationPtr> ret;
+	Util::Algorithm::transform(podcasts, stations, [](const Podcast& p)
+	{
+		return std::make_shared<Podcast>(p);
+	});
+
+	return b;
 }
 
-bool StreamHandlerPodcasts::add_stream(const QString& station_name, const QString& url)
+bool PodcastHandler::add_stream(StationPtr station)
 {
 	DB::Podcasts* db = DB::Connector::instance()->podcast_connector();
-	return db->addPodcast(station_name, url);
+
+	Podcast* p = dynamic_cast<Podcast*>(station.get());
+	if(p) {
+		return db->addPodcast(*p);
+	}
+
+	return false;
 }
 
-bool StreamHandlerPodcasts::delete_stream(const QString& station_name)
+bool PodcastHandler::delete_stream(const QString& station_name)
 {
 	DB::Podcasts* db = DB::Connector::instance()->podcast_connector();
 	return db->deletePodcast(station_name);
 }
 
-bool StreamHandlerPodcasts::update_url(const QString& station_name, const QString& url)
+bool PodcastHandler::update_url(const QString& station_name, const QString& url)
 {
 	DB::Podcasts* db = DB::Connector::instance()->podcast_connector();
 	return db->updatePodcastUrl(station_name, url);
 }
 
-bool StreamHandlerPodcasts::rename(const QString& old_name, const QString& new_name)
+bool PodcastHandler::rename(const QString& old_name, const QString& new_name)
 {
 	DB::Podcasts* db = DB::Connector::instance()->podcast_connector();
 	return db->renamePodcast(old_name, new_name);
 }
 
+StationPtr PodcastHandler::create_stream(const QString& name, const QString& url) const
+{
+	return std::make_shared<Podcast>(name, url);
+}
+
+StationPtr PodcastHandler::station(const QString& name)
+{
+	DB::Podcasts* db = DB::Connector::instance()->podcast_connector();
+
+	Podcast podcast = db->getPodcast(name);
+	if(podcast.name().isEmpty()){
+		return nullptr;
+	}
+
+	return std::make_shared<Podcast>(podcast);
+}

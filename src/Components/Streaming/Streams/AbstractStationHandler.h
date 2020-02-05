@@ -21,11 +21,11 @@
 #ifndef AbstractStreamHandler_H
 #define AbstractStreamHandler_H
 
-#include <QObject>
-
 #include "Utils/Pimpl.h"
+#include "Utils/Streams/Station.h"
 
-using StreamMap=QMap<QString, QString>;
+#include <QObject>
+#include <QList>
 
 /**
  * @brief Used to interprete website data as streams. Some methods have to be overridden,
@@ -34,15 +34,15 @@ using StreamMap=QMap<QString, QString>;
  * accessed via the get_tracks() method.
  * @ingroup Streams
  */
-class AbstractStreamHandler :
+class AbstractStationHandler :
 	public QObject
 {
 	Q_OBJECT
-	PIMPL(AbstractStreamHandler)
+	PIMPL(AbstractStationHandler)
 
 	public:
-		explicit AbstractStreamHandler(QObject *parent=nullptr);
-		virtual ~AbstractStreamHandler();
+		explicit AbstractStationHandler(QObject* parent=nullptr);
+		virtual ~AbstractStationHandler();
 
 	signals:
 		void sig_stopped();
@@ -64,14 +64,14 @@ class AbstractStreamHandler :
 		 * @param station_name The station name.
 		 * @param url the station url.
 		 */
-		bool save(const QString& station_name, const QString& url);
+		bool save(StationPtr station);
 
 		/**
 		 * @brief This method should return all stations in database
 		 * @param streams target StreamMap
 		 * @return true if successful, false else
 		 */
-		virtual bool get_all_streams(StreamMap& streams)=0;
+		virtual bool get_all_streams(QList<StationPtr>& streams)=0;
 
 		/**
 		 * @brief This method should add a new station to database. If the station
@@ -80,7 +80,9 @@ class AbstractStreamHandler :
 		 * @param url url
 		 * @return true if successful, false else
 		 */
-		virtual bool add_stream(const QString& station_name, const QString& url)=0;
+		virtual bool add_stream(StationPtr station)=0;
+
+		virtual StationPtr create_stream(const QString& name, const QString& url) const=0;
 
 		/**
 		 * @brief Delete a station from the database.
@@ -105,12 +107,15 @@ class AbstractStreamHandler :
 		 */
 		virtual bool rename(const QString& old_name, const QString& new_name)=0;
 
+		virtual StationPtr station(const QString& name)=0;
+
 		/**
 		 * @brief Clears all station content
 		 */
 		void clear();
-
 		void stop();
+
+
 
 	private slots:
 		void stream_parser_finished(bool success);

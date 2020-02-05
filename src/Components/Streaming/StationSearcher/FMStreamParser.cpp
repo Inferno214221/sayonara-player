@@ -96,9 +96,9 @@ static RadioStation parse_stnblock(const QString& data)
 	return station;
 }
 
-static QList<Stream> extract_streams(const QString& data)
+static QList<RadioUrl> extract_streams(const QString& data)
 {
-	QList<Stream> streams;
+	QList<RadioUrl> streams;
 	QRegExp re("\\[(\\'.+)\\]");
 	re.setMinimal(true);
 
@@ -125,7 +125,7 @@ static QList<Stream> extract_streams(const QString& data)
 			}
 		}
 
-		Stream stream;
+		RadioUrl stream;
 		stream.url = items[0].trimmed();
 		stream.url.replace("\\/", "/");
 		stream.type = items[1].trimmed();
@@ -223,7 +223,7 @@ FMStreamParser::FMStreamParser(const QByteArray& data, FMStreamParser::EncodingT
 
 	QList<RadioStation> stations;
 
-	const QList<Stream> streams = extract_streams(text);
+	const QList<RadioUrl> streams = extract_streams(text);
 
 	int offset = 0;
 
@@ -242,7 +242,7 @@ FMStreamParser::FMStreamParser(const QByteArray& data, FMStreamParser::EncodingT
 		return (s1.name < s2.name);
 	});
 
-	for(const Stream& stream : streams)
+	for(const RadioUrl& stream : streams)
 	{
 		for(RadioStation& station : stations)
 		{

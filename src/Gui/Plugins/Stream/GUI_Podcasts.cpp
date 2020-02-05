@@ -19,13 +19,15 @@
  */
 
 #include "GUI_Podcasts.h"
+#include "ConfigurePodcastDialog.h"
 #include "Gui/Plugins/ui_GUI_Podcasts.h"
-#include "Components/Streaming/Streams/StreamHandlerPodcasts.h"
+
+#include "Components/Streaming/Streams/PodcastHandler.h"
 
 #include "Utils/Language/Language.h"
 
 GUI_Podcasts::GUI_Podcasts(QWidget *parent) :
-	Gui::AbstractStream(parent)
+	Gui::AbstractStationPlugin(parent)
 {}
 
 GUI_Podcasts::~GUI_Podcasts()
@@ -53,7 +55,7 @@ void GUI_Podcasts::init_ui()
 
 void GUI_Podcasts::retranslate_ui()
 {
-	Gui::AbstractStream::retranslate_ui();
+	Gui::AbstractStationPlugin::retranslate_ui();
 	ui->retranslateUi(this);
 }
 
@@ -77,7 +79,12 @@ Gui::MenuToolButton* GUI_Podcasts::btn_menu()
 	return ui->btn_tool;
 }
 
-AbstractStreamHandler* GUI_Podcasts::stream_handler() const
+AbstractStationHandler* GUI_Podcasts::stream_handler() const
 {
-	return new StreamHandlerPodcasts();
+	return new PodcastHandler();
+}
+
+GUI_ConfigureStation* GUI_Podcasts::create_config_dialog()
+{
+	return new ConfigurePodcastDialog(this);
 }

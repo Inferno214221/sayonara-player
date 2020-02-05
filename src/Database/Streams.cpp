@@ -22,6 +22,7 @@
 #include "Database/Query.h"
 
 #include "Utils/Utils.h"
+#include "Utils/Streams/Stream.h"
 
 using DB::Streams;
 using DB::Query;
@@ -29,9 +30,9 @@ using DB::Query;
 Streams::Streams(const QString& connection_name, DbId db_id) :
 	Module(connection_name, db_id) {}
 
-Streams::~Streams() {}
+Streams::~Streams() = default;
 
-bool Streams::getAllStreams(QMap<QString, QString>& streams)
+bool Streams::getAllStreams(QList<Stream>& streams)
 {
 	streams.clear();
 
@@ -46,12 +47,11 @@ bool Streams::getAllStreams(QMap<QString, QString>& streams)
 		QString name = q.value(0).toString();
 		QString url = q.value(1).toString();
 
-		streams[name] = url;
+		streams << Stream(name, url);
 	}
 
 	return true;
 }
-
 
 bool Streams::deleteStream(const QString& name)
 {
@@ -67,14 +67,13 @@ bool Streams::deleteStream(const QString& name)
 	return (!q.has_error());
 }
 
-
-bool Streams::addStream(const QString& name, const QString& url)
+bool Streams::addStream(const Stream& stream)
 {
 	Query q = insert("savedstreams",
 	{
-		{"name", Util::cvt_not_null(name)},
-		{"url", Util::cvt_not_null(url)}
-	}, QString("Could not add stream: %1, %2").arg(name, url));
+		{"name", Util::cvt_not_null(stream.name())},
+		{"url", Util::cvt_not_null(stream.url())}
+	}, QString("Could not add stream: %1, %2").arg(stream.name(), stream.url()));
 
 	return (!q.has_error());
 }
@@ -101,4 +100,25 @@ bool DB::Streams::renameStream(const QString& old_name, const QString& new_name)
 	);
 
 	return (!q.has_error());
+}
+
+Stream Streams::getStream(const QString& name)
+{
+	QString query = "SELECT name, url FROM savedstreams WHERE name = :name;";
+	Query q = run_query
+	(
+		query,
+		{":name", name},
+		QString("Cannot fetch stream %1").arg(name)
+	);
+
+	if(!q.has_error() && q.next())
+	{
+		Stream stream;
+		stream.set_name(q.value(0).toString());
+		stream.set_url(q.value(1).toString());
+		return stream;
+	}
+
+	return Stream();
 }

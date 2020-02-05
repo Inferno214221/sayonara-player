@@ -21,19 +21,22 @@
 #ifndef STREAMHANDLERSTREAMS_H
 #define STREAMHANDLERSTREAMS_H
 
-#include "AbstractStreamHandler.h"
+#include "AbstractStationHandler.h"
 
-class StreamHandlerStreams : public AbstractStreamHandler
+class StreamHandler :
+	public AbstractStationHandler
 {
 public:
-	explicit StreamHandlerStreams(QObject* parent=nullptr);
-	~StreamHandlerStreams();
+	explicit StreamHandler(QObject* parent=nullptr);
+	~StreamHandler() override;
 
-	bool get_all_streams(StreamMap& streams) override;
-	bool add_stream(const QString& station_name, const QString& url) override;
+	bool get_all_streams(QList<StationPtr>& stations) override;
+	bool add_stream(StationPtr station) override;
 	bool delete_stream(const QString& station_name) override;
 	bool update_url(const QString& station_name, const QString& url) override;
 	bool rename(const QString& old_name, const QString& new_name) override;
+	StationPtr create_stream(const QString& name, const QString& url) const override;
+	StationPtr station(const QString &name) override;
 };
 
 

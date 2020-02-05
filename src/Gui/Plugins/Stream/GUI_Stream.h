@@ -21,12 +21,12 @@
 #ifndef GUI_STREAM_H_
 #define GUI_STREAM_H_
 
-#include "GUI_AbstractStream.h"
+#include "AbstractStationPlugin.h"
 
 UI_FWD(GUI_Stream)
 
 class GUI_Stream :
-	public Gui::AbstractStream
+	public Gui::AbstractStationPlugin
 {
 	Q_OBJECT
 	UI_CLASS(GUI_Stream)
@@ -49,7 +49,8 @@ class GUI_Stream :
 		QComboBox* combo_stream() override;
 		QPushButton* btn_play() override;
 		Gui::MenuToolButton* btn_menu() override;
-		AbstractStreamHandler* stream_handler() const override;
+		AbstractStationHandler* stream_handler() const override;
+		GUI_ConfigureStation* create_config_dialog() override;
 
 		void skin_changed() override;
 
