@@ -207,25 +207,21 @@ void PlaylistImpl::metadata_changed()
 	auto* mdcn = Tagging::ChangeNotifier::instance();
 	auto changed_metadata = mdcn->changed_metadata();
 
-	const MetaDataList& v_md_new = changed_metadata.second;
+	const MetaDataList& changed_tracks = changed_metadata.second;
 
-	for(auto it=m->v_md.begin(); it !=m->v_md.end(); it++)
+	int i=0;
+	for(auto it=m->v_md.begin(); it != m->v_md.end(); it++, i++)
 	{
-		auto tmp_it = Algorithm::find(v_md_new, [it](const MetaData& md) {
+		auto it_changed = Algorithm::find(changed_tracks, [it](const MetaData& md)
+		{
 			return it->is_equal(md);
 		});
 
-		if(tmp_it == v_md_new.end()) {
+		if(it_changed == changed_tracks.end()) {
 			continue;
 		}
 
-		bool is_current = (m->playing_id == it->unique_id());
-
-//		*it = std::move(*tmp_it);
-
-//		if(is_current) {
-//			m->playing_id = it->unique_id();
-//		}
+		replace_track(i, *it_changed);
 	}
 
 	emit sig_items_changed( index() );
@@ -233,10 +229,11 @@ void PlaylistImpl::metadata_changed()
 
 void PlaylistImpl::current_metadata_changed()
 {
-	MetaData md = PlayManager::instance()->current_track();
-	IdxList idx_list = m->v_md.findTracks(md.filepath());
+	const MetaData md = PlayManager::instance()->current_track();
+	const IdxList idx_list = m->v_md.findTracks(md.filepath());
 
-	for(int i : idx_list) {
+	for(int i : idx_list)
+	{
 		replace_track(i, md);
 	}
 }

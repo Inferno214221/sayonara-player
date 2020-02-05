@@ -43,7 +43,7 @@ static Year find_year(QString str)
 	return 0;
 }
 
-int parse_length_s(const QString& str)
+static int parse_length_s(const QString& str)
 {
 	QStringList lst = str.split(":");
 	int h=0;
@@ -79,15 +79,35 @@ static MetaData parse_item(QXmlStreamReader& reader)
 
 	while(reader.readNextStartElement())
 	{
-		if(reader.name() == "title")
+		if(reader.prefix() == "itunes")
 		{
-			md.set_title(reader.readElementText());
+			if(reader.name() == "author")
+			{
+				md.set_artist(reader.readElementText().trimmed());
+			}
+
+			else if(reader.name() == "duration")
+			{
+				int len = parse_length_s(reader.readElementText().trimmed());
+				md.set_duration_ms(len * 1000);
+			}
+
+			else
+			{
+				reader.skipCurrentElement();
+			}
+
+		}
+
+		else if(reader.name() == "title")
+		{
+			md.set_title(reader.readElementText().trimmed());
 			md.add_custom_field("1title", "Title", md.title());
 		}
 
 		else if(reader.name() == "description")
 		{
-			md.add_custom_field("2desciption", "Description", reader.readElementText());
+			md.add_custom_field("2desciption", "Description", reader.readElementText().trimmed());
 		}
 
 		else if(reader.name() == "enclosure")
@@ -106,45 +126,25 @@ static MetaData parse_item(QXmlStreamReader& reader)
 
 		else if(reader.name() == "link" && md.filepath().isEmpty())
 		{
-			md.set_filepath(reader.readElementText());
+			md.set_filepath(reader.readElementText().trimmed());
 		}
 
 		else if( (reader.name() == "author") && md.artist().isEmpty() )
 		{
-			md.set_artist(reader.readElementText());
+			md.set_artist(reader.readElementText().trimmed());
 		}
 
-		else if(reader.name() == "itunes:author")
+		else if((reader.name() == "pubDate"))
 		{
-			md.set_artist(reader.readElementText());
+			md.set_year(find_year(reader.readElementText().trimmed()));
 		}
 
-		else if(reader.name() == "itunes:duration")
+		else if((reader.prefix() == "dc") && (reader.name() == "date"))
 		{
-			QStringList lst = reader.readElementText().split(":");
-
-			int len = 0;
-			for(int j=lst.size() -1; j>=0; j--)
-			{
-				if(j == lst.size() -1)
-					len += lst[j].toInt();
-				else if(j == lst.size() -2) {
-					len += lst[j].toInt() * 60;
-				}
-				else if(j == lst.size() -3) {
-					len += lst[j].toInt() * 3600;
-				}
-			}
-
-			md.set_duration_ms(len * 1000);
-		} // curation
-
-		else if((reader.name() == "pubDate") || (reader.name() == "dc:date"))
-		{
-			md.set_year(find_year(reader.readElementText()));
+			md.set_year(find_year(reader.readElementText().trimmed()));
 		}
 
-		else if(reader.name() == "psc:chapters")
+		else if(reader.prefix() == "psc" && reader.name() == "chapters")
 		{
 			while(reader.readNextStartElement())
 			{
@@ -185,7 +185,35 @@ static MetaData parse_item(QXmlStreamReader& reader)
 		}
 	}
 
+	md.change_radio_mode(RadioMode::Podcast);
 	return md;
+}
+
+static QStringList parse_category(QXmlStreamReader& reader)
+{
+	QStringList ret;
+	const QXmlStreamAttributes attributes = reader.attributes();
+	for(const QXmlStreamAttribute& attr : attributes)
+	{
+		if(attr.name() == "text") {
+			ret << attr.value().toString();
+		}
+	}
+
+	while(reader.readNextStartElement())
+	{
+		if(reader.name() == "category")
+		{
+			ret << parse_category(reader);
+		}
+
+		else
+		{
+			reader.skipCurrentElement();
+		}
+	}
+
+	return ret;
 }
 
 static MetaDataList parse_channel(QXmlStreamReader& reader)
@@ -204,19 +232,12 @@ static MetaDataList parse_channel(QXmlStreamReader& reader)
 		{
 			if(reader.name() == "author")
 			{
-				author = reader.readElementText();
+				author = reader.readElementText().trimmed();
 			}
 
 			else if(reader.name() == "category")
 			{
-				QString text = reader.readElementText();
-				QStringList genres = text.split(QRegExp(",|/|;|\\."));
-				for(int i=0; i<genres.size(); i++)
-				{
-					genres[i] = genres[i].trimmed();
-				}
-
-				categories.append(genres);
+				categories = parse_category(reader);
 			}
 
 			else if(reader.name() == "image")
@@ -229,13 +250,18 @@ static MetaDataList parse_channel(QXmlStreamReader& reader)
 					}
 				}
 
-				reader.readElementText();
+				reader.skipCurrentElement();
+			}
+
+			else
+			{
+				reader.skipCurrentElement();
 			}
 		}
 
 		else if(reader.name() == "title")
 		{
-			album = reader.readElementText();
+			album = reader.readElementText().trimmed();
 		}
 
 		else if(reader.name() == "image" && cover_url.isEmpty())
@@ -244,7 +270,7 @@ static MetaDataList parse_channel(QXmlStreamReader& reader)
 			{
 				if(reader.name() == "url")
 				{
-					cover_url = reader.readElementText();
+					cover_url = reader.readElementText().trimmed();
 				}
 
 				else
@@ -270,10 +296,21 @@ static MetaDataList parse_channel(QXmlStreamReader& reader)
 		}
 	}
 
-sp_log(Log::Info, "Podcast parser") << "Set cover url " << cover_url;
+	sp_log(Log::Info, "Podcast parser") << "Set cover url " << cover_url;
 	for(auto it=result.begin(); it != result.end(); it++)
 	{
 		it->set_cover_download_urls({cover_url});
+		if(it->artist().isEmpty())
+		{
+			it->set_artist(author);
+		}
+
+		if(it->album().isEmpty())
+		{
+			it->set_album(album);
+		}
+
+		it->set_genres(categories);
 	}
 
 	return result;
