@@ -74,7 +74,7 @@ public:
 	void set_comment(const QString& comment);
 
 	QString filepath() const;
-	QString set_filepath(QString filepath, RadioMode mode=RadioMode::Off);
+	QString set_filepath(QString filepath, RadioMode mode=RadioMode::Undefined);
 
 	ArtistId album_artist_id() const;
 	QString album_artist() const;
