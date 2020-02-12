@@ -29,16 +29,16 @@ private:
 		return db->podcast_connector();
 	}
 
-	QList<Podcast> all_podcasts()
+	QList<Podcast> allPodcasts()
 	{
 		QList<Podcast> podcasts;
 		pod()->getAllPodcasts(podcasts);
 		return podcasts;
 	}
 
-	QList<QString> all_podcast_names()
+	QList<QString> allPodcastNames()
 	{
-		QList<Podcast> podcasts = all_podcasts();
+		QList<Podcast> podcasts = allPodcasts();
 
 		QList<QString> ret;
 		Util::Algorithm::transform(podcasts, ret, [](const Podcast& p){
@@ -53,93 +53,108 @@ private:
 	}
 
 private slots:
-	void test_insert_and_delete();
-	void test_update();
+	void testInsertAndDelete();
+	void testUpdate();
 };
 
-void PodcastTest::test_insert_and_delete()
+void PodcastTest::testInsertAndDelete()
 {
-	QList<Podcast> podcasts = all_podcasts();
+	QList<Podcast> podcasts = allPodcasts();
 	QVERIFY(podcasts.size() == 0);
 
 	for(int i=0; i<15; i++)
 	{
-		QString name = QString("PodcastName%1").arg(i);
-		QString url = QString("http://podcast_url/%1").arg(i);
+		const QString name = QString("PodcastName%1").arg(i);
+		const QString url = QString("http://podcast_url/%1").arg(i);
+		bool reversed = ((i % 2) == 0);
 
-		pod()->addPodcast(Podcast(name, url, false));
+		bool success = pod()->addPodcast(Podcast(name, url, reversed));
+		QVERIFY(success == true);
 	}
 
-	podcasts = all_podcasts();
+	podcasts = allPodcasts();
 	QVERIFY(podcasts.count() == 15);
 
 	bool success = pod()->addPodcast(Podcast("PodcastName0", QString("http://newinvalid.url"), false));
-	podcasts = all_podcasts();
-	QVERIFY(podcasts.count() == 15);
-
 	QVERIFY(success == false);
+
+	podcasts = allPodcasts();
+	QVERIFY(podcasts.count() == 15);
 
 	for(int i=0; i<podcasts.size(); i++)
 	{
 		QString name = podcasts[i].name();
 		QString url = podcasts[i].url();
+		bool reversed = podcasts[i].reversed();
 
-		QString exp_name = QString("PodcastName%1").arg(i);
-		QString exp_url = QString("http://podcast_url/%1").arg(i);
-		QVERIFY(name == exp_name);
-		QVERIFY(url == exp_url);
+		QString expectedName = QString("PodcastName%1").arg(i);
+		QString expectedUrl = QString("http://podcast_url/%1").arg(i);
+		bool expectedReversed = ((i % 2) == 0);
+
+		QVERIFY(name == expectedName);
+		QVERIFY(url == expectedUrl);
+		QVERIFY(reversed == expectedReversed);
 	}
 
 	int count = podcasts.count();
 	for(auto it=podcasts.begin(); it != podcasts.end(); it++)
 	{
-		pod()->deletePodcast(it->name());
+		bool success = pod()->deletePodcast(it->name());
+		QVERIFY(success == true);
 
 		count --;
 
-		podcasts = all_podcasts();
-		QVERIFY(podcasts.count() == count);
+		const QList<Podcast> podcastsTmp = allPodcasts();
+		QVERIFY(podcastsTmp.count() == count);
 	}
 }
 
-void PodcastTest::test_update()
+void PodcastTest::testUpdate()
 {
-	QList<Podcast> podcasts = all_podcasts();
+	QList<Podcast> podcasts = allPodcasts();
 	QVERIFY(podcasts.size() == 0);
 
 	for(int i=0; i<15; i++)
 	{
-		QString name = QString("PodcastName%1").arg(i);
-		QString url = QString("http://podcast_url/%1").arg(i);
+		const QString name = QString("PodcastName%1").arg(i);
+		const QString url = QString("http://podcast_url/%1").arg(i);
+		bool reversed = ((i % 2) == 1);
 
-		pod()->addPodcast(Podcast(name, url, false));
+		bool success = pod()->addPodcast(Podcast(name, url, reversed));
+		QVERIFY(success == true);
 	}
 
-	podcasts = all_podcasts();
+	podcasts = allPodcasts();
 	QVERIFY(podcasts.count() == 15);
 
-	QList<QString> names = all_podcast_names();
+	QList<QString> names = allPodcastNames();
 	for(int i=0; i<names.size(); i++)
 	{
-		QString name = names[i];
+		const QString name = names[i];
 		pod()->updatePodcastUrl(name, QString("NeueUrl%1").arg(i));
 	}
 
 	bool success = pod()->updatePodcastUrl("asdfkjweroinwe", QString("http://newinvalid.url"));
 	QVERIFY(success == false);
 
-	podcasts = all_podcasts();
-	names = all_podcast_names();
+	podcasts = allPodcasts();
+	names = allPodcastNames();
 	for(int i=0; i<podcasts.size(); i++)
 	{
-		QString url = podcasts[i].url();
+		const QString name = podcasts[i].name();
+		const QString url = podcasts[i].url();
+		bool reversed = podcasts[i].reversed();
 
-		QString exp_name = QString("PodcastName%1").arg(i);
-		QString exp_url = QString("NeueUrl%1").arg(i);
-		//QVERIFY(name == exp_name);
-		QVERIFY(url == exp_url);
+		const QString expectedName = QString("PodcastName%1").arg(i);
+		const QString expectedUrl = QString("NeueUrl%1").arg(i);
+		bool expectedReversed = ((i % 2) == 1);
 
-		//pod()->deletePodcast(name);
+		QVERIFY(name == expectedName);
+		QVERIFY(url == expectedUrl);
+		QVERIFY(reversed == expectedReversed);
+
+		bool success = pod()->deletePodcast(name);
+		QVERIFY(success == true);
 	}
 }
 
