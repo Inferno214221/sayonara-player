@@ -71,7 +71,7 @@ build-language:
     - lupdate -no-sort -locations relative -source-language en -target-language en ./src -ts tx/sayonara_lang_en.ts
   artifacts:
     paths:
-      - tx/sayonara_lang_en_US.ts
+      - tx/sayonara_lang_en.ts
     expire_in: 2 days
   only:
     - branches
@@ -86,7 +86,7 @@ deploy-language:
     - cd tx
     - export TX_TOKEN="$TX_API_KEY"
     - tx init --token="$TX_API_KEY" --force --no-interactive
-    - tx config mapping -r sayonara-player.sayonara_lang_en_US -l en_US -t QT -s en_US -f sayonara_lang_en_US.ts --execute "sayonara_lang_<lang>.ts"
+    - tx config mapping -r sayonara-player.sayonara_lang_en -l en -t QT -s en -f sayonara_lang_en.ts --execute "sayonara_lang_<lang>.ts"
     - tx push -s
   artifacts:
     paths:
