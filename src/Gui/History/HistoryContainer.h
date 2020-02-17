@@ -17,14 +17,14 @@ public:
 	// Container interface
 public:
 	QString name() const override;
-	QString display_name() const override;
+	QString displayName() const override;
 	QWidget* widget() const override;
 	QFrame* header() const override;
 	QPixmap icon() const override;
 
 	// ContainerImpl interface
 protected:
-	void init_ui() override;
+	void initUi() override;
 };
 
 #endif // HISTORYCONTAINER_H

@@ -1,6 +1,6 @@
 /* CustomPlaylistSkeleton.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -33,16 +33,16 @@ class CustomPlaylistSkeleton
 
 	public:
 		int id() const;
-		void set_id(int id);
+		void setId(int id);
 
 		QString name() const;
-		void set_name(const QString& name);
+		void setName(const QString& name);
 
 		bool temporary() const;
-		void set_temporary(bool temporary);
+		void setTemporary(bool temporary);
 
-		virtual int num_tracks() const;
-		virtual void set_num_tracks(int num_tracks);
+		virtual int trackCount() const;
+		virtual void setTrackCount(int trackCount);
 
 		CustomPlaylistSkeleton();
 		CustomPlaylistSkeleton(const CustomPlaylistSkeleton& other);

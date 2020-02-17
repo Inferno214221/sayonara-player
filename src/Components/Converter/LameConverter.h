@@ -1,6 +1,6 @@
 /* LameConverter.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -35,12 +35,12 @@ class LameConverter :
 		LameConverter(bool cbr, int quality, QObject* parent);
 		~LameConverter() override;
 
-		QStringList supported_input_formats() const override;
+		QStringList supportedInputFormats() const override;
 
 		// Converter interface
 	protected:
 		QString binary() const override;
-		QStringList process_entry(const MetaData& md) const override;
+		QStringList processEntry(const MetaData& md) const override;
 		QString extension() const override;
 };
 

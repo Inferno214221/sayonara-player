@@ -1,6 +1,6 @@
 /* Playlist.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -46,75 +46,75 @@ namespace Playlist
 		friend class Handler;
 
 		signals:
-			void sig_items_changed(int idx);
-			void sig_current_track_changed(int idx);
-			void sig_stopped();
-			void sig_find_track(TrackID track_id);
-			void sig_busy_changed(bool b);
-			void sig_current_scanned_file_changed(const QString& current_file);
+			void sigItemsChanged(int idx);
+			void sigCurrentTrackChanged(int idx);
+			void sigStopped();
+			void sigFindTrack(TrackID trackId);
+			void sigBusyChanged(bool b);
+			void sigCurrentScannedFileChanged(const QString& currentFile);
 
 		public:
 			explicit Playlist(int idx, Type type, const QString& name);
 			~Playlist() override;
 
-			int				create_playlist(const MetaDataList& v_md);
-			int				current_track_index() const;
-			bool			current_track(MetaData& metadata) const;
+			int				createPlaylist(const MetaDataList& tracks);
+			int				currentTrackIndex() const;
+			bool			currentTrack(MetaData& metadata) const;
 			int				index() const;
-			void			set_index(int idx);
+			void			setIndex(int idx);
 			Mode			mode() const;
-			void			set_mode(const Mode& mode);
-			MilliSeconds	running_time() const;
+			void			setMode(const Mode& mode);
+			MilliSeconds	runningTime() const;
 			int				count() const override;
 
-			void			enable_all();
+			void			enableAll();
 
 			void			play();
 			void			stop();
 			void			fwd();
 			void			bwd();
 			void			next();
-			bool			wake_up();
+			bool			wakeUp();
 
-			void			set_busy(bool b);
-			bool			is_busy() const;
+			void			setBusy(bool b);
+			bool			isBusy() const;
 
-			void			set_current_scanned_file(const QString& file);
+			void			setCurrentScannedFile(const QString& file);
 			void			reverse();
 
 		public:
 			const MetaData& track(int idx) const override;
 			const MetaDataList& tracks() const override;
 
-			void insert_tracks(const MetaDataList& lst, int tgt);
-			void append_tracks(const MetaDataList& lst);
-			void remove_tracks(const IndexSet& indexes);
-			void replace_track(int idx, const MetaData& metadata);
+			void insertTracks(const MetaDataList& lst, int tgt);
+			void appendTracks(const MetaDataList& lst);
+			void removeTracks(const IndexSet& indexes);
+			void replaceTrack(int idx, const MetaData& track);
 			void clear();
 
-			IndexSet move_tracks(const IndexSet& indexes, int tgt);
-			IndexSet copy_tracks(const IndexSet& indexes, int tgt);
+			IndexSet moveTracks(const IndexSet& indexes, int tgt);
+			IndexSet copyTracks(const IndexSet& indexes, int tgt);
 
-			void find_track(int idx);
+			void findTrack(int idx);
 
-			bool change_track(int idx);
+			bool changeTrack(int idx);
 
-			bool was_changed() const override;
-			bool is_storable() const override;
+			bool wasChanged() const override;
+			bool isStoreable() const override;
 
 		public slots:
-			void metadata_deleted();
-			void metadata_changed();
-			void current_metadata_changed();
-			void duration_changed();
+			void metadataDeleted();
+			void metadataChanged();
+			void currentMetadataChanged();
+			void durationChanged();
 
 		private slots:
-			void setting_playlist_mode_changed();
+			void settingPlaylistModeChanged();
 
 		private:
-			int calc_shuffle_track();
-			void set_changed(bool b) override;
-			void set_current_track(int idx);
+			int calcShuffleTrack();
+			void setCurrentTrack(int idx);
+			void setChanged(bool b) override;
 	};
 }
 #endif // PLAYLIST_H

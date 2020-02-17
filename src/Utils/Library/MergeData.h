@@ -1,6 +1,6 @@
 /* MergeData.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -45,9 +45,9 @@ namespace Library
 			 * @brief Merges source_ids into target_id
 			 * @param source ids
 			 * @param target ids
-			 * @param library_id, can be -1
+			 * @param libraryId, can be -1
 			 */
-			MergeData(const Util::Set<Id>& source_ids, Id target_id, LibraryId library_id);
+			MergeData(const Util::Set<Id>& sourceIds, Id targetId, LibraryId libraryId);
 			MergeData(const MergeData& other);
 			~MergeData();
 
@@ -57,22 +57,22 @@ namespace Library
 			 * @brief target_id >= 0, source_ids.size() > 1, source_ids >= 0
 			 * @return
 			 */
-			bool			is_valid() const;
+			bool			isValid() const;
 
 			/**
 			 * @brief getter for source_ids. See constructor
 			 */
-			Util::Set<Id>	source_ids() const;
+			Util::Set<Id>	sourceIds() const;
 
 			/**
 			 * @brief getter for target_id. See constructor
 			 */
-			Id				target_id() const;
+			Id				targetId() const;
 
 			/**
 			 * @brief getter for library_d. See constructor
 			 */
-			LibraryId		library_id() const;
+			LibraryId		libraryId() const;
 	};
 }
 

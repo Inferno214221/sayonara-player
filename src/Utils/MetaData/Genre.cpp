@@ -1,6 +1,6 @@
 /* Genre.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -77,7 +77,7 @@ Genre::Genre()
 Genre::Genre(const QString& name)
 {
 	m = Pimpl::make<Private>();
-	m->name = Util::cvt_str_to_first_upper(name);
+	m->name = Util::stringToFirstUpper(name);
 	m->id = m->calc_id(name);
 }
 
@@ -122,20 +122,20 @@ QString Genre::name() const
 	return m->name;
 }
 
-void Genre::set_name(const QString& name)
+void Genre::setName(const QString& name)
 {
-	m->name = Util::cvt_str_to_first_upper(name);
+	m->name = Util::stringToFirstUpper(name);
 	m->id = Genre::Private::calc_id(name);
 }
 
-bool Genre::is_equal(const Genre& other) const
+bool Genre::isEqual(const Genre& other) const
 {
 	return (m->id == other.id());
 }
 
 bool Genre::operator ==(const Genre& other) const
 {
-	return is_equal(other);
+	return isEqual(other);
 }
 
 bool Genre::operator <(const Genre& other) const

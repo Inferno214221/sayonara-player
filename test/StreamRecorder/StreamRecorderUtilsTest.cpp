@@ -26,7 +26,7 @@ void StreamRecorderUtilsTest::tag_mismatch_test()
 {
 	int invalid_idx;
 	QString templ  = "<ar> - <t> - <<m>/bla.mp3";
-	Utils::ErrorCode e = Utils::validate_template(templ, &invalid_idx);
+	Utils::ErrorCode e = Utils::validateTemplate(templ, &invalid_idx);
 
 	qDebug() << __FUNCTION__ << (int) e;
 
@@ -36,8 +36,8 @@ void StreamRecorderUtilsTest::tag_mismatch_test()
 void StreamRecorderUtilsTest::filename_test()
 {
 	MetaData md;
-	md.set_title("Bli");
-	md.set_artist("bla");
+	md.setTitle("Bli");
+	md.setArtist("bla");
 
 	QString sr_path("/path/to/nowhere");
 
@@ -47,10 +47,10 @@ void StreamRecorderUtilsTest::filename_test()
 	QTime t = QTime::currentTime();
 
 	int idx;
-	Utils::ErrorCode err = Utils::validate_template(templ, &idx);
+	Utils::ErrorCode err = Utils::validateTemplate(templ, &idx);
 	QVERIFY(err == Utils::ErrorCode::OK);
 
-	Utils::TargetPaths path = Utils::full_target_path(sr_path, templ, md, d, t);
+	Utils::TargetPaths path = Utils::fullTargetPath(sr_path, templ, md, d, t);
 
 	QLocale loc;
 	QString other_path = sr_path + "/" + QString("%1 %2_%3-/%4+df3-%5_%6-%7-/%8df%9.mp3")
@@ -73,7 +73,7 @@ void StreamRecorderUtilsTest::invalid_tag_test()
 {
 	int invalid_idx;
 	QString templ = "<t> <m>_<y>-/<fs>+df3-<min>_<t>-<d>-/<dl>df<a>";
-	Utils::ErrorCode e = Utils::validate_template(templ, &invalid_idx);
+	Utils::ErrorCode e = Utils::validateTemplate(templ, &invalid_idx);
 
 	QVERIFY(e == Utils::ErrorCode::UnknownTag);
 }
@@ -82,7 +82,7 @@ void StreamRecorderUtilsTest::invalid_chars_test()
 {
 	int invalid_idx;
 	QString templ = "<m>_<y>-/<ds>:df3-<min>_<tn><t>-<d>-/<dl>df<ar>";
-	Utils::ErrorCode e = Utils::validate_template(templ, &invalid_idx);
+	Utils::ErrorCode e = Utils::validateTemplate(templ, &invalid_idx);
 
 	QVERIFY(e == Utils::ErrorCode::InvalidChars);
 }
@@ -98,10 +98,10 @@ void StreamRecorderUtilsTest::unique_tag_test()
 
 	Utils::ErrorCode e1, e2, e3, e4;
 
-	e1 = Utils::validate_template(templ1, &idx);
-	e2 = Utils::validate_template(templ2, &idx);
-	e3 = Utils::validate_template(templ3, &idx);
-	e4 = Utils::validate_template(templ4, &idx);
+	e1 = Utils::validateTemplate(templ1, &idx);
+	e2 = Utils::validateTemplate(templ2, &idx);
+	e3 = Utils::validateTemplate(templ3, &idx);
+	e4 = Utils::validateTemplate(templ4, &idx);
 
 	QVERIFY(e1 == Utils::ErrorCode::OK);
 	QVERIFY(e2 == Utils::ErrorCode::OK);

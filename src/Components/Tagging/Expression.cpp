@@ -1,6 +1,6 @@
 /* TagExpression.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -83,35 +83,35 @@ bool Expression::apply(MetaData& md) const
 
 		if(key == Tagging::TagTitle) {
 			b |= (value != md.title());
-			md.set_title(value);
+			md.setTitle(value);
 		}
 
 		else if(key == Tagging::TagAlbum) {
 			b |= (value != md.album());
-			md.set_album(value);
+			md.setAlbum(value);
 		}
 
 		else if(key == Tagging::TagArtist) {
 			b |= (value != md.artist());
-			md.set_artist(value);
+			md.setArtist(value);
 		}
 
 		else if(key == Tagging::TagTrackNum) {
 			TrackNum t = TrackNum(value.toInt());
-			b |= (t != md.track_number());
-			md.set_track_number(t);
+			b |= (t != md.trackNumber());
+			md.setTrackNumber(t);
 		}
 
 		else if(key == Tagging::TagYear) {
 			Year y = Year(value.toInt());
 			b |= (y != md.year());
-			md.set_year(y);
+			md.setYear(y);
 		}
 
 		else if(key == Tagging::TagDisc) {
 			auto d = Disc(value.toInt());
 			b |= (d != md.discnumber());
-			md.set_discnumber(d);
+			md.setDiscnumber(d);
 		}
 	}
 
@@ -258,14 +258,14 @@ bool Expression::update_tag(const QString& line_edit_str, const QString& filepat
 
 	if(!valid)
 	{
-		sp_log(Log::Debug, this) << "Regex: " << regex << ": " << n_caps << " tags found, but requested " << n_tags;
+		spLog(Log::Debug, this) << "Regex: " << regex << ": " << n_caps << " tags found, but requested " << n_tags;
 
 		for(const QString& s : Algorithm::AsConst(captured_texts))
 		{
-			sp_log(Log::Debug, this) << "Captured texts:  " << s;
+			spLog(Log::Debug, this) << "Captured texts:  " << s;
 		}
 
-		sp_log(Log::Debug, this) << "";
+		spLog(Log::Debug, this) << "";
 
 		return false;
 	}
@@ -278,7 +278,7 @@ bool Expression::update_tag(const QString& line_edit_str, const QString& filepat
 		if(i==0)
 		{
 			QString dir, filename;
-			Util::File::split_filename(captured, dir, filename);
+			Util::File::splitFilename(captured, dir, filename);
 			captured = filename;
 		}
 

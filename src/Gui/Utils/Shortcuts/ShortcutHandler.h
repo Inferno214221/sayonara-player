@@ -1,6 +1,6 @@
 /* ShortcutHandler.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -45,11 +45,12 @@ class ShortcutHandler :
 	PIMPL(ShortcutHandler)
 
 	friend class Shortcut;
+
 ShortcutPrivate:
-	void qt_shortcuts_added(ShortcutIdentifier db_key, const QList<QShortcut*>& qt_shortcuts);
+	void qtShortcutsAdded(ShortcutIdentifier databaseKey, const QList<QShortcut*>& qtShortcuts);
 
 signals:
-	void sig_shortcut_changed(ShortcutIdentifier db_key);
+	void sigShortcutChanged(ShortcutIdentifier databaseKey);
 
 public:
 	/**
@@ -57,26 +58,26 @@ public:
 	 * @param identifier the identifier which is used in database
 	 * @return a shortcut instance
 	 */
-	Shortcut shortcut(ShortcutIdentifier db_key) const;
+	Shortcut shortcut(ShortcutIdentifier databaseKey) const;
 
 	/**
 	 * @brief set the shortcut by its unique identifier
 	 * @param identifier  the identifier which is used in database
 	 * @param shortcut a shortcut instance
 	 */
-	void set_shortcut(ShortcutIdentifier db_key, const QStringList& shortcut);
+	void setShortcut(ShortcutIdentifier databaseKey, const QStringList& shortcut);
 
 	/**
 	 * @brief get all shortcuts
 	 * @return
 	 */
-	QList<ShortcutIdentifier> all_identifiers() const;
+	QList<ShortcutIdentifier> allIdentifiers() const;
 
-	QString db_key(ShortcutIdentifier id) const;
+	QString databaseKey(ShortcutIdentifier id) const;
 	QString shortcut_text(ShortcutIdentifier id) const;
 
 private slots:
-	void qt_shortcut_destroyed();
+	void qtShortcutDestroyed();
 };
 
 #endif // SHORTCUTHANDLER_H

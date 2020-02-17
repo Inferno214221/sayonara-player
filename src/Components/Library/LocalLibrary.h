@@ -1,6 +1,6 @@
 /* LocalLibrary.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -22,13 +22,13 @@
 #define LocalLibrary_H
 
 #include "AbstractLibrary.h"
+#include "Importer/LibraryImporter.h"
 #include "Utils/Pimpl.h"
 
 class ReloadThread;
 
 namespace Library
 {
-	class Importer;
 	class Manager;
 }
 
@@ -40,66 +40,68 @@ class LocalLibrary :
 	Q_OBJECT
 	PIMPL(LocalLibrary)
 
-signals:
-	void sig_import_dialog_requested(const QString& target_dir);
-	void sig_renamed(const QString& new_name);
+	signals:
+		void sigImportDialogRequested(const QString& targetDirectory);
+		void sigRenamed(const QString& newName);
 
-protected:
-	LocalLibrary(LibraryId id, QObject* parent=nullptr);
+	protected:
+		LocalLibrary(LibraryId id, QObject* parent=nullptr);
 
-public:
-	~LocalLibrary() override;
+	public:
+		~LocalLibrary() override;
 
-	bool set_library_path(const QString& path);
-	bool set_library_name(const QString& name);
+		QString	path() const;
+		bool setLibraryPath(const QString& path);
 
-	QString			path() const;
-	LibraryId		id() const;
-	QString			name() const;
-	Library::Importer* importer();
+		QString	name() const;
+		bool setLibraryName(const QString& name);
 
-	bool is_reloading() const override;
+		LibraryId id() const;
+		Library::Importer* importer();
 
-public slots:
-	void delete_tracks(const MetaDataList& v_md, Library::TrackDeletionMode answer) override;
-	void reload_library(bool clear_first, Library::ReloadQuality quality) override;
+		bool isReloading() const override;
 
-	void refresh_artist() override;
-	void refresh_albums() override;
-	void refresh_tracks() override;
+	public slots:
+		void deleteTracks(const MetaDataList& v_md, Library::TrackDeletionMode answer) override;
+		void reloadLibrary(bool clear_first, Library::ReloadQuality quality) override;
 
-	void import_files(const QStringList& files) override;
-	void import_files_to(const QStringList& files, const QString& target_dir);
+		void refreshArtists() override;
+		void refreshAlbums() override;
+		void refreshTracks() override;
 
-protected slots:
-	void reload_thread_new_block();
-	void reload_thread_finished();
-	void search_mode_changed();
-	void show_album_artists_changed();
-	void renamed(LibraryId id);
+		void importFiles(const QStringList& files) override;
+		void importFilesTo(const QStringList& files, const QString& targetDirectory);
 
-private:
-	void get_all_artists(ArtistList& artists) const override;
-	void get_all_artists_by_searchstring(Library::Filter filter, ArtistList& artists) const override;
+	private:
+		void applyDatabaseFixes();
+		void initReloadThread();
 
-	void get_all_albums(AlbumList& albums) const override;
-	void get_all_albums_by_artist(IdList artist_ids, AlbumList& albums, Library::Filter filter) const override;
-	void get_all_albums_by_searchstring(Library::Filter filter, AlbumList& albums) const override;
+		void getAllArtists(ArtistList& artists) const override;
+		void getAllArtistsBySearchstring(Library::Filter filter, ArtistList& artists) const override;
 
-	int get_num_tracks() const override;
-	void get_all_tracks(MetaDataList& v_md) const override;
-	void get_all_tracks(const QStringList& paths, MetaDataList& v_md) const override;
-	void get_all_tracks_by_artist(IdList artist_ids, MetaDataList& v_md, Library::Filter filter) const override;
-	void get_all_tracks_by_album(IdList album_ids, MetaDataList& v_md, Library::Filter filter) const override;
-	void get_all_tracks_by_searchstring(Library::Filter filter, MetaDataList& v_md) const override;
-	void get_all_tracks_by_path(const QStringList& paths, MetaDataList& v_md) const override;
+		void getAllAlbums(AlbumList& albums) const override;
+		void getAllAlbumsByArtist(IdList artistIds, AlbumList& albums, Library::Filter filter) const override;
+		void getAllAlbumsBySearchstring(Library::Filter filter, AlbumList& albums) const override;
 
-	void get_track_by_id(TrackID track_id, MetaData& md) const override;
-	void get_album_by_id(AlbumId album_id, Album& album) const override;
-	void get_artist_by_id(ArtistId artist_id, Artist& artist) const override;
+		int getTrackCount() const override;
+		void getAllTracks(MetaDataList& v_md) const override;
+		void getAllTracks(const QStringList& paths, MetaDataList& v_md) const override;
+		void getAllTracksByArtist(IdList artistIds, MetaDataList& v_md, Library::Filter filter) const override;
+		void getAllTracksByAlbum(IdList albumIds, MetaDataList& v_md, Library::Filter filter) const override;
+		void getAllTracksBySearchstring(Library::Filter filter, MetaDataList& v_md) const override;
+		void getAllTracksByPath(const QStringList& paths, MetaDataList& v_md) const override;
 
-	void apply_db_fixes();
-	void init_reload_thread();
+		void getTrackById(TrackID trackId, MetaData& md) const override;
+		void getAlbumById(AlbumId albumId, Album& album) const override;
+		void getArtistById(ArtistId artistId, Artist& artist) const override;
+
+	private slots:
+		void reloadThreadNewBlock();
+		void reloadThreadFinished();
+		void searchModeChanged();
+		void showAlbumArtistsChanged();
+		void renamed(LibraryId id);
+		void importStatusChanged(Library::Importer::ImportStatus status);
 };
 
 #endif // LocalLibrary_H

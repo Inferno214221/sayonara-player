@@ -1,6 +1,6 @@
 /* MetaDataSorting.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -91,11 +91,11 @@ namespace MetaDataSorting
 	bool AlbumByRatingAsc(const Album& album1, const Album& album2);
 	bool AlbumByRatingDesc(const Album& album1, const Album& album2);
 
-	void sort_metadata(MetaDataList& v_md, Library::SortOrder);
-	void sort_albums(AlbumList& v_md, Library::SortOrder);
-	void sort_artists(ArtistList& v_md, Library::SortOrder);
+	void sortMetadata(MetaDataList& v_md, Library::SortOrder);
+	void sortAlbums(AlbumList& v_md, Library::SortOrder);
+	void sortArtists(ArtistList& v_md, Library::SortOrder);
 
-	void set_ignore_article(bool b);
+	void setIgnoreArticle(bool b);
 }
 
 

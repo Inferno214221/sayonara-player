@@ -1,6 +1,6 @@
 /* SomaFMStationView.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -26,12 +26,12 @@ SomaFMStationView::SomaFMStationView(QWidget* parent) :
 
 SomaFMStationView::~SomaFMStationView() {}
 
-int SomaFMStationView::index_by_model_index(const QModelIndex& idx) const
+int SomaFMStationView::mapModelIndexToIndex(const QModelIndex& idx) const
 {
 	return idx.row();
 }
 
-ModelIndexRange SomaFMStationView::model_indexrange_by_index(int idx) const
+ModelIndexRange SomaFMStationView::mapIndexToModelIndexes(int idx) const
 {
 	QModelIndex midx = model()->index(idx, 0);
 	return ModelIndexRange(midx, midx);
@@ -44,7 +44,7 @@ void SomaFMStationView::keyPressEvent(QKeyEvent *e)
 	SearchableTableView::keyPressEvent(e);
 }
 
-int SomaFMStationView::viewport_height() const
+int SomaFMStationView::viewportHeight() const
 {
 	return this->height();
 }

@@ -1,6 +1,6 @@
 /* ExternTracksPlaylistGenerator.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -30,26 +30,26 @@
 
 struct ExternTracksPlaylistGenerator::Private
 {
-	int playlist_id;
-	int playlist_index;
-	bool is_play_allowed;
+	int playlistId;
+	int playlistIndex;
+	bool isPlayAllowed;
 
 	Private() :
-		playlist_id(-1),
-		playlist_index(-1),
-		is_play_allowed(true)
+		playlistId(-1),
+		playlistIndex(-1),
+		isPlayAllowed(true)
 	{}
 
-	PlaylistConstPtr add_new_playlist(const QStringList& paths)
+	PlaylistConstPtr addNewPlaylist(const QStringList& paths)
 	{
 		auto* plh = Playlist::Handler::instance();
 
-		QString name = plh->request_new_playlist_name();
+		QString name = plh->requestNewPlaylistName();
 
-		this->playlist_index = plh->create_playlist(paths, name, true);
-		this->playlist_id = plh->playlist(this->playlist_index)->get_id();
+		this->playlistIndex = plh->createPlaylist(paths, name, true);
+		this->playlistId = plh->playlist(this->playlistIndex)->id();
 
-		return plh->playlist(this->playlist_index);
+		return plh->playlist(this->playlistIndex);
 	}
 };
 
@@ -60,10 +60,10 @@ ExternTracksPlaylistGenerator::ExternTracksPlaylistGenerator()
 
 ExternTracksPlaylistGenerator::~ExternTracksPlaylistGenerator() = default;
 
-void ExternTracksPlaylistGenerator::add_paths(const QStringList& paths)
+void ExternTracksPlaylistGenerator::addPaths(const QStringList& paths)
 {
 	if(paths.isEmpty()){
-		m->is_play_allowed = false;
+		m->isPlayAllowed = false;
 		return;
 	}
 
@@ -72,11 +72,11 @@ void ExternTracksPlaylistGenerator::add_paths(const QStringList& paths)
 	PlaylistConstPtr pl;
 
 	int index = -1;
-	m->is_play_allowed = true;
+	m->isPlayAllowed = true;
 
-	if(m->playlist_id < 0)
+	if(m->playlistId < 0)
 	{
-		pl = m->add_new_playlist(paths);
+		pl = m->addNewPlaylist(paths);
 	}
 
 	else
@@ -84,7 +84,7 @@ void ExternTracksPlaylistGenerator::add_paths(const QStringList& paths)
 		for(int i=0; i<plh->count(); i++)
 		{
 			auto tmp_pl = plh->playlist(i);
-			if(tmp_pl->get_id() == m->playlist_id)
+			if(tmp_pl->id() == m->playlistId)
 			{
 				index = i;
 				break;
@@ -93,7 +93,7 @@ void ExternTracksPlaylistGenerator::add_paths(const QStringList& paths)
 
 		if(index < 0)
 		{ // the playlist was closed/deleted in the meanwhile
-			pl = m->add_new_playlist(paths);
+			pl = m->addNewPlaylist(paths);
 		}
 
 		else
@@ -103,31 +103,31 @@ void ExternTracksPlaylistGenerator::add_paths(const QStringList& paths)
 			Playlist::Mode mode = pl->mode();
 			if(Playlist::Mode::isActiveAndEnabled(mode.append()))
 			{ // append new tracks
-				plh->append_tracks(paths, index);
-				m->is_play_allowed = false;
+				plh->appendTracks(paths, index);
+				m->isPlayAllowed = false;
 			}
 
 			else
 			{ // clear everything and overwrite
-				plh->reset_playlist(index);
-				plh->append_tracks(paths, index);
+				plh->resetPlaylist(index);
+				plh->appendTracks(paths, index);
 			}
 		}
 	}
 }
 
-void ExternTracksPlaylistGenerator::change_track()
+void ExternTracksPlaylistGenerator::changeTrack()
 {
 	auto* plh = Playlist::Handler::instance();
-	PlaylistConstPtr pl = plh->playlist(m->playlist_index);
+	PlaylistConstPtr pl = plh->playlist(m->playlistIndex);
 
 	if(pl && pl->count() > 0)
 	{
-		plh->change_track(0, m->playlist_index);
+		plh->changeTrack(0, m->playlistIndex);
 	}
 }
 
-bool ExternTracksPlaylistGenerator::is_play_allowed() const
+bool ExternTracksPlaylistGenerator::isPlayAllowed() const
 {
-	return m->is_play_allowed;
+	return m->isPlayAllowed;
 }

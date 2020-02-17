@@ -1,6 +1,6 @@
 /* DBusAdaptor.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -34,16 +34,16 @@ class DBusAdaptor :
 	Q_OBJECT
 	PIMPL(DBusAdaptor)
 
-protected:
-	DBusAdaptor(QStrRef object_path, QStrRef service_name, QStrRef dbus_service, QStrRef dbus_interface, QObject *parent=nullptr);
-	virtual ~DBusAdaptor();
+	protected:
+		DBusAdaptor(QStrRef objectPath, QStrRef serviceName, QStrRef dbusService, QStrRef dbusInterface, QObject* parent=nullptr);
+		virtual ~DBusAdaptor();
 
-	void create_message(QString name, QVariant val);
+		void createMessage(QString name, QVariant val);
 
-	QString object_path() const;
-	QString service_name() const;
-	QString dbus_service() const;
-	QString dbus_interface() const;
+		QString objectPath() const;
+		QString serviceName() const;
+		QString dbusService() const;
+		QString dbusInterface() const;
 };
 
 

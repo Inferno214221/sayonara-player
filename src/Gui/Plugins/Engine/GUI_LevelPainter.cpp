@@ -1,6 +1,6 @@
 /* GUI_LevelPainter.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -50,11 +50,11 @@ struct GUI_LevelPainter::Private
 {
 	ChannelArray	level;
 	StepArray		steps;
-	float*			exp_lot=nullptr;
+	float*			expFunctionLookupTable=nullptr;
 
 	std::atomic_flag lock = ATOMIC_FLAG_INIT;
 
-	void resize_steps(int n_rects)
+	void resizeSteps(int n_rects)
 	{
 		for(size_t c=0; c<level.size(); c++)
 		{
@@ -63,13 +63,13 @@ struct GUI_LevelPainter::Private
 		}
 	}
 
-	void init_lookup_table()
+	void initLookupTable()
 	{
 		size_t n = 40;
-		exp_lot = new float[n];
+		expFunctionLookupTable = new float[n];
 		for(size_t i=0; i<n; i++)
 		{
-			exp_lot[i] = -(i / 40.0f) + 1.0f;
+			expFunctionLookupTable[i] = -(i / 40.0f) + 1.0f;
 		}
 	}
 
@@ -81,28 +81,28 @@ struct GUI_LevelPainter::Private
 		int idx = std::min(v, 39);
 		idx = std::max(0, idx);
 
-		return exp_lot[idx];
+		return expFunctionLookupTable[idx];
 	}
 
-	void set_level(float left, float right)
+	void setLevel(float left, float right)
 	{
 		level[0] = scale(left);
 		level[1] = scale(right);
 	}
 
-	void decrease_step(size_t channel, size_t step)
+	void decreaseStep(size_t channel, size_t step)
 	{
 		steps[channel][step] = steps[channel][step] - 1;
 	}
 
-	void set_step(size_t channel, size_t step, Step value)
+	void setStep(size_t channel, size_t step, Step value)
 	{
 		steps[channel][step] = value;
 	}
 };
 
 
-GUI_LevelPainter::GUI_LevelPainter(QWidget *parent) :
+GUI_LevelPainter::GUI_LevelPainter(QWidget* parent) :
 	VisualPlugin(parent),
 	Engine::LevelReceiver()
 {
@@ -120,58 +120,58 @@ GUI_LevelPainter::~GUI_LevelPainter()
 }
 
 
-void GUI_LevelPainter::init_ui()
+void GUI_LevelPainter::initUi()
 {
-	if(is_ui_initialized()){
+	if(isUiInitialized()){
 		return;
 	}
 
-	m->init_lookup_table();
+	m->initLookupTable();
 
-	setup_parent(this, &ui);
+	setupParent(this, &ui);
 }
 
 
-void GUI_LevelPainter::finalize_initialization()
+void GUI_LevelPainter::finalizeInitialization()
 {
-	VisualPlugin::init_ui();
+	VisualPlugin::initUi();
 
-	m->resize_steps(current_style().n_rects);
-	m->set_level(0, 0);
+	m->resizeSteps(currentStyle().n_rects);
+	m->setLevel(0, 0);
 
-	PlayerPlugin::Base::finalize_initialization();
-	Engine::Handler::instance()->add_level_receiver(this);
+	PlayerPlugin::Base::finalizeInitialization();
+	Engine::Handler::instance()->addLevelReceiver(this);
 
 	reload();
 }
 
 
-QString GUI_LevelPainter::get_name() const
+QString GUI_LevelPainter::name() const
 {
 	return "Level";
 }
 
 
-QString GUI_LevelPainter::get_display_name() const
+QString GUI_LevelPainter::displayName() const
 {
 	return tr("Level");
 }
 
-bool GUI_LevelPainter::is_active() const
+bool GUI_LevelPainter::isActive() const
 {
 	return this->isVisible();
 }
 
 
-void GUI_LevelPainter::retranslate_ui()
+void GUI_LevelPainter::retranslate()
 {
 	ui->retranslateUi(this);
 }
 
 
-void GUI_LevelPainter::set_level(float left, float right)
+void GUI_LevelPainter::setLevel(float left, float right)
 {
-	if(!is_ui_initialized() || !isVisible())
+	if(!isUiInitialized() || !isVisible())
 	{
 		return;
 	}
@@ -180,7 +180,7 @@ void GUI_LevelPainter::set_level(float left, float right)
 		return;
 	}
 
-	m->set_level(left, right);
+	m->setLevel(left, right);
 
 	stop_fadeout_timer();
 	update();
@@ -195,7 +195,7 @@ void GUI_LevelPainter::paintEvent(QPaintEvent* e)
 
 	QPainter painter(this);
 
-	ColorStyle style = current_style();
+	ColorStyle style = currentStyle();
 	int n_rects =		style.n_rects;
 	int border_x =		style.hor_spacing;
 	int border_y =		style.ver_spacing;
@@ -218,24 +218,24 @@ void GUI_LevelPainter::paintEvent(QPaintEvent* e)
 			if(r < n_colored_rects)
 			{
 				if(!style.style[r].contains(-1)){
-					sp_log(Log::Debug, this) << "Style does not contain -1";
+					spLog(Log::Debug, this) << "Style does not contain -1";
 				}
 
 				painter.fillRect(rect, style.style[r].value(-1) );
 
-				m->set_step(c, r, Step(n_fading_steps - 1));
+				m->setStep(c, r, Step(n_fading_steps - 1));
 			}
 
 			else
 			{
 				if(!style.style[r].contains(m->steps[c][r])){
-					sp_log(Log::Debug, this) << "2 Style does not contain " << m->steps[c][r] << ", " << c << ", " << r;
+					spLog(Log::Debug, this) << "2 Style does not contain " << m->steps[c][r] << ", " << c << ", " << r;
 				}
 
 				painter.fillRect(rect, style.style[r].value(m->steps[c][r]) );
 
 				if(m->steps[c][r] > 0) {
-					m->decrease_step(c, r);
+					m->decreaseStep(c, r);
 				}
 
 				if(m->steps[c][r] == 0) {
@@ -257,7 +257,7 @@ void GUI_LevelPainter::paintEvent(QPaintEvent* e)
 }
 
 
-void GUI_LevelPainter::do_fadeout_step()
+void GUI_LevelPainter::doFadeoutStep()
 {
 	for(float& l : m->level)
 	{
@@ -272,7 +272,7 @@ void GUI_LevelPainter::update_style(int new_index)
 	SetSetting(Set::Level_Style, new_index);
 	m_ecsc->reload(width(), height());
 
-	m->resize_steps(current_style().n_rects);
+	m->resizeSteps(currentStyle().n_rects);
 
 	update();
 }
@@ -280,7 +280,7 @@ void GUI_LevelPainter::update_style(int new_index)
 
 void GUI_LevelPainter::reload()
 {
-	ColorStyle style = current_style();
+	ColorStyle style = currentStyle();
 	int new_height = style.rect_height * 2 + style.ver_spacing + 12;
 
 	setMinimumHeight(0);
@@ -290,7 +290,7 @@ void GUI_LevelPainter::reload()
 	setMaximumHeight(new_height);
 
 	if(isVisible()){
-		emit sig_reload(this);
+		emit sigReload(this);
 	}
 }
 
@@ -318,17 +318,17 @@ QWidget *GUI_LevelPainter::widget()
 	return this;
 }
 
-bool GUI_LevelPainter::has_small_buttons() const
+bool GUI_LevelPainter::hasSmallButtons() const
 {
 	return true;
 }
 
-ColorStyle GUI_LevelPainter::current_style() const
+ColorStyle GUI_LevelPainter::currentStyle() const
 {
-	return m_ecsc->get_color_scheme_level(current_style_index());
+	return m_ecsc->get_color_scheme_level(currentStyleIndex());
 }
 
-int GUI_LevelPainter::current_style_index() const
+int GUI_LevelPainter::currentStyleIndex() const
 {
 	return GetSetting(Set::Level_Style);
 }

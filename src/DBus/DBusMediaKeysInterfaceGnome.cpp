@@ -1,6 +1,6 @@
 /* DBusMediaKeysInterfaceGnome.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -24,11 +24,11 @@
 
 struct DBusMediaKeysInterfaceGnome::Private
 {
-	OrgGnomeSettingsDaemonMediaKeysInterface* media_key_interface=0;
+	OrgGnomeSettingsDaemonMediaKeysInterface* mediaKeyInterface=0;
 
 	Private(DBusMediaKeysInterface* parent)
 	{
-		media_key_interface = new OrgGnomeSettingsDaemonMediaKeysInterface(
+		mediaKeyInterface = new OrgGnomeSettingsDaemonMediaKeysInterface(
 				"org.gnome.SettingsDaemon",
 				"/org/gnome/SettingsDaemon/MediaKeys",
 				QDBusConnection::sessionBus(),
@@ -36,7 +36,7 @@ struct DBusMediaKeysInterfaceGnome::Private
 	}
 };
 
-DBusMediaKeysInterfaceGnome::DBusMediaKeysInterfaceGnome(QObject *parent) :
+DBusMediaKeysInterfaceGnome::DBusMediaKeysInterfaceGnome(QObject* parent) :
 	DBusMediaKeysInterface(parent)
 {
 	m = Pimpl::make<Private>(this);
@@ -46,22 +46,22 @@ DBusMediaKeysInterfaceGnome::DBusMediaKeysInterfaceGnome(QObject *parent) :
 
 DBusMediaKeysInterfaceGnome::~DBusMediaKeysInterfaceGnome() {}
 
-QString DBusMediaKeysInterfaceGnome::service_name() const
+QString DBusMediaKeysInterfaceGnome::serviceName() const
 {
 	return QString("org.gnome.SettingsDaemon");
 }
 
-QDBusPendingReply<> DBusMediaKeysInterfaceGnome::grab_media_key_reply()
+QDBusPendingReply<> DBusMediaKeysInterfaceGnome::grabMediaKeyReply()
 {
-	return m->media_key_interface->GrabMediaPlayerKeys("sayonara", 0);
+	return m->mediaKeyInterface->GrabMediaPlayerKeys("sayonara", 0);
 }
 
-void DBusMediaKeysInterfaceGnome::connect_media_keys()
+void DBusMediaKeysInterfaceGnome::connectMediaKeys()
 {
-	connect( m->media_key_interface,
+	connect( m->mediaKeyInterface,
 			 &OrgGnomeSettingsDaemonMediaKeysInterface::MediaPlayerKeyPressed,
 			 this,
-			 &DBusMediaKeysInterfaceGnome::sl_media_key_pressed
+			 &DBusMediaKeysInterfaceGnome::mediaKeyPressed
 	);
 }
 

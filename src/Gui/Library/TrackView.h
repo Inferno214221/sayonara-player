@@ -1,6 +1,6 @@
 /* TrackView.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -38,34 +38,34 @@ namespace Library
 		Q_OBJECT
 		PIMPL(TrackView)
 
-	public:
-		explicit TrackView(QWidget* parent=nullptr);
-		~TrackView() override;
+		public:
+			explicit TrackView(QWidget* parent=nullptr);
+			~TrackView() override;
 
-	private:
-		AbstractLibrary* library() const override;
-		//from Library::TableView
-		void init_view(AbstractLibrary* library) override;
+		private:
+			AbstractLibrary* library() const override;
+			//from Library::TableView
+			void initView(AbstractLibrary* library) override;
 
-		ColumnHeaderList column_headers() const override;
-		QByteArray column_header_state() const override;
-		void save_column_header_state(const QByteArray& state) override;
+			ColumnHeaderList columnHeaders() const override;
+			QByteArray columnHeaderState() const override;
+			void saveColumnHeaderState(const QByteArray& state) override;
 
-		SortOrder sortorder() const override;
-		void apply_sortorder(SortOrder s) override;
+			SortOrder sortorder() const override;
+			void applySortorder(SortOrder s) override;
 
-		ContextMenu::Entries context_menu_entries() const override;
+			ContextMenu::Entries contextMenuEntries() const override;
 
-		// from Library::ItemView
-		void play_clicked() override;
-		void play_new_tab_clicked() override;
-		void play_next_clicked() override;
-		void append_clicked() override;
-		void selection_changed(const IndexSet& lst) override;
-		void refresh_clicked() override;
+			// from Library::ItemView
+			void playClicked() override;
+			void playNewTabClicked() override;
+			void playNextClicked() override;
+			void appendClicked() override;
+			void selectedItemsChanged(const IndexSet& lst) override;
+			void refreshClicked() override;
 
-		bool is_mergeable() const override;
-		MD::Interpretation metadata_interpretation() const override;
+			bool isMergeable() const override;
+			MD::Interpretation metadataInterpretation() const override;
 	};
 }
 

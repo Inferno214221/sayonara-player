@@ -1,6 +1,6 @@
 /* RandomGenerator.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -31,7 +31,7 @@ struct RandomGenerator::Private
 RandomGenerator::RandomGenerator()
 {
 	m = Pimpl::make<RandomGenerator::Private>();
-	update_seed();
+	updateSeed();
 }
 
 RandomGenerator::~RandomGenerator() {}
@@ -42,20 +42,20 @@ RandomGenerator::RandomGenerator(const RandomGenerator& other)
 }
 
 
-void RandomGenerator::update_seed()
+void RandomGenerator::updateSeed()
 {
 	m->seed = std::chrono::system_clock::now().time_since_epoch().count();
 	m->generator = std::mt19937(m->seed);
 }
 
-int RandomGenerator::get_number(int min, int max)
+int RandomGenerator::getNumber(int min, int max)
 {
 	std::uniform_int_distribution<int> d(min, max);
 	return d(m->generator);
 }
 
-int RandomGenerator::get_random_number(int min, int max)
+int RandomGenerator::getRandomNumber(int min, int max)
 {
 	RandomGenerator generator;
-	return generator.get_number(min, max);
+	return generator.getNumber(min, max);
 }

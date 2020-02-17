@@ -1,6 +1,6 @@
 /* BookmarksMenu.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -36,20 +36,20 @@ namespace Playlist
 		Q_OBJECT
 		PIMPL(BookmarksMenu)
 
-	signals:
-		void sig_bookmark_pressed(Seconds time_sec);
+		signals:
+			void sigBookmarkPressed(Seconds time_sec);
 
-	public:
-		explicit BookmarksMenu(QWidget* parent);
-		virtual ~BookmarksMenu();
+		public:
+			explicit BookmarksMenu(QWidget* parent);
+			virtual ~BookmarksMenu();
 
-		bool has_bookmarks() const;
-		void set_metadata(const MetaData& md);
-		MetaData metadata() const;
+			bool hasBookmarks() const;
+			void setMetadata(const MetaData& md);
+			MetaData metadata() const;
 
-	private slots:
-		void action_pressed();
-		void bookmarks_changed();
+		private slots:
+			void actionPressed();
+			void bookmarksChanged();
 	};
 }
 

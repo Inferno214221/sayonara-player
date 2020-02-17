@@ -15,19 +15,21 @@ class GUI_History :
 	PIMPL(GUI_History)
 	UI_CLASS(GUI_History)
 
-private:
-	QWidget* add_new_page();
-	bool change_page(int index);
-
 public:
 	explicit GUI_History(QWidget* parent=nullptr);
 	~GUI_History();
 
 	QFrame* header() const;
 
+
+private:
+	QWidget* addNewPage();
+	bool changePage(int index);
+
+
 private slots:
-	void older_clicked();
-	void newer_clicked();
+	void olderClicked();
+	void newerClicked();
 };
 
 #endif // GUI_HISTORY_H

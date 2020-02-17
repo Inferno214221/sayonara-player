@@ -1,6 +1,6 @@
 /* GUI_SoundCloudLibrary.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -34,27 +34,27 @@ using SC::GUI_ArtistSearch;
 
 struct SC::GUI_Library::Private
 {
-	GUI_ArtistSearch*	artist_search=nullptr;
-	QMenu*              library_menu=nullptr;
+	GUI_ArtistSearch*	artistSearch=nullptr;
+	QMenu*              libraryMenu=nullptr;
 };
 
 using SC::GUI_Library;
 
-GUI_Library::GUI_Library(Library* library, QWidget *parent) :
+GUI_Library::GUI_Library(Library* library, QWidget* parent) :
 	GUI_AbstractLibrary(library, parent)
 {
-	setup_parent(this, &ui);
+	setupParent(this, &ui);
 	setAcceptDrops(false);
 
 	this->setFocusProxy(ui->le_search);
 
 	m = Pimpl::make<GUI_Library::Private>();
 
-	m->artist_search = new GUI_ArtistSearch(library, this);
-	m->library_menu = new QMenu(this);
+	m->artistSearch = new GUI_ArtistSearch(library, this);
+	m->libraryMenu = new QMenu(this);
 
-	QAction* action_add_artist = m->library_menu->addAction(tr("Add artist"));
-	connect(action_add_artist, &QAction::triggered, this, &GUI_Library::btn_add_clicked);
+	QAction* action_add_artist = m->libraryMenu->addAction(tr("Add artist"));
+	connect(action_add_artist, &QAction::triggered, this, &GUI_Library::btnAddClicked);
 
 	library->load();
 }
@@ -68,48 +68,48 @@ GUI_Library::~GUI_Library()
 }
 
 
-QMenu* GUI_Library::get_menu() const
+QMenu* GUI_Library::getMenu() const
 {
-	return m->library_menu;
+	return m->libraryMenu;
 }
 
-QFrame* GUI_Library::header_frame() const
+QFrame* GUI_Library::headerFrame() const
 {
 	return ui->header_frame;
 }
 
-QList<::Library::Filter::Mode> GUI_Library::search_options() const
+QList<::Library::Filter::Mode> GUI_Library::searchOptions() const
 {
 	return {::Library::Filter::Fulltext};
 }
 
-Library::TrackDeletionMode GUI_Library::show_delete_dialog(int n_tracks)
+Library::TrackDeletionMode GUI_Library::showDeleteDialog(int n_tracks)
 {
 	Q_UNUSED(n_tracks)
 	return ::Library::TrackDeletionMode::OnlyLibrary;
 }
 
-void GUI_Library::btn_add_clicked()
+void GUI_Library::btnAddClicked()
 {
-	m->artist_search->show();
+	m->artistSearch->show();
 }
 
-Library::TableView* GUI_Library::lv_artist() const
+Library::TableView* GUI_Library::lvArtist() const
 {
 	return ui->tv_artists;
 }
 
-Library::TableView* GUI_Library::lv_album() const
+Library::TableView* GUI_Library::lvAlbum() const
 {
 	return ui->tv_albums;
 }
 
-Library::TableView* GUI_Library::lv_tracks() const
+Library::TableView* GUI_Library::lvTracks() const
 {
 	return ui->tv_tracks;
 }
 
-Library::SearchBar* GUI_Library::le_search() const
+Library::SearchBar* GUI_Library::leSearch() const
 {
 	return ui->le_search;
 }
@@ -119,9 +119,9 @@ void GUI_Library::showEvent(QShowEvent *e)
 {
 	GUI_AbstractLibrary::showEvent(e);
 
-	this->lv_album()->resizeRowsToContents();
-	this->lv_artist()->resizeRowsToContents();
-	this->lv_tracks()->resizeRowsToContents();
+	this->lvAlbum()->resizeRowsToContents();
+	this->lvArtist()->resizeRowsToContents();
+	this->lvTracks()->resizeRowsToContents();
 
 	ui->splitter_artists->restoreState(GetSetting(Set::Lib_SplitterStateArtist));
 	ui->splitter_tracks->restoreState(GetSetting(Set::Lib_SplitterStateTrack));

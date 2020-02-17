@@ -1,6 +1,6 @@
 /* Shortcut.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -52,14 +52,14 @@ class Shortcut
 		 * @param parent the widget the shortcut is mapped to
 		 * @return a list of shortcuts in the Qt format
 		 */
-		QList<QShortcut*> init_qt_shortcut(QWidget* parent, Qt::ShortcutContext context);
+		QList<QShortcut*> initQtShortcut(QWidget* parent, Qt::ShortcutContext context);
 
 
 	friend class ShortcutHandler;
 	ShortcutHandlerPrivate:
-		void set_qt_shortcuts(const QList<QShortcut*>& qshortcuts);
-		void remove_qt_shortcut(QShortcut* qshortcut);
-		QList<QShortcut*> qt_shortcuts() const;
+		void setQtShortcuts(const QList<QShortcut*>& qshortcuts);
+		void removeQtShortcut(QShortcut* qshortcut);
+		QList<QShortcut*> qtShortcuts() const;
 
 
 	public:
@@ -67,17 +67,17 @@ class Shortcut
 		 * @brief Shortcut
 		 * @param identifier an unique identifier used to write the shortcut into the database
 		 * @param name the name displayed in the Shortcut configuration dialog
-		 * @param default_shortcut one default shortcut
+		 * @param defaultShortcut one default shortcut
 		 */
-		Shortcut(ShortcutIdentifier identifier, const QString& default_shortcut);
+		Shortcut(ShortcutIdentifier identifier, const QString& defaultShortcut);
 
 		/**
 		 * @brief Shortcut
 		 * @param identifier an unique identifier used to write the shortcut into the database
 		 * @param name the name displayed in the Shortcut configuration dialog
-		 * @param default_shortcuts a list of default shortcuts
+		 * @param defaultShortcuts a list of default shortcuts
 		 */
-		Shortcut(ShortcutIdentifier identifier, const QStringList& default_shortcuts);
+		Shortcut(ShortcutIdentifier identifier, const QStringList& defaultShortcuts);
 
 		/**
 		 * @brief Copy constructor
@@ -99,7 +99,7 @@ class Shortcut
 		 * @brief
 		 * @param shortcuts map new user-readable key sequences to this shortcut
 		 */
-		void					change_shortcut(const QStringList& shortcuts);
+		void					changeShortcut(const QStringList& shortcuts);
 
 		/**
 		 * @brief get the human-readable name of the shortcut
@@ -111,7 +111,7 @@ class Shortcut
 		 * @brief get a human-readable list of mapped default shortcuts
 		 * @return
 		 */
-		QStringList				default_shorcut() const;
+		QStringList				defaultShortcut() const;
 
 		/**
 		 * @brief get a list key squences mapped to this shortcut
@@ -131,13 +131,13 @@ class Shortcut
 		 * @return
 		 */
 		ShortcutIdentifier		identifier() const;
-		QString					db_key() const;
+		QString					databaseKey() const;
 
 		/**
 		 * @brief Check if the shortcut is valid or if it was retrieved via getInvalid()
 		 * @return
 		 */
-		bool					is_valid() const;
+		bool					isValid() const;
 
 		template<typename T>
 		/**
@@ -147,7 +147,7 @@ class Shortcut
 		 */
 		void connect(QWidget* parent, T func, Qt::ShortcutContext context=Qt::WindowShortcut)
 		{
-			QList<QShortcut*> shortcuts = init_qt_shortcut(parent, context);
+			QList<QShortcut*> shortcuts = initQtShortcut(parent, context);
 			for(QShortcut* sc : shortcuts)
 			{
 				parent->connect(sc, &QShortcut::activated, func);

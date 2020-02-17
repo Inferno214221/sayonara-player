@@ -20,25 +20,26 @@ public:
 
 private slots:
 	void test();
-	void create_and_delete();
-	void common_path_test();
-	void system_paths_test();
-	void resource_path_test();
-	void split_directories_test();
+	void createAndDelete();
+	void commonPathTest();
+	void systemPathsTest();
+	void resourcePathTest();
+	void splitDirectoriesTest();
+	void subDirAndSameFilenameTest();
 };
 
 
 using namespace Util::File;
 void FileHelperTest::test()
 {
-	QString some_path = "/path/./to//my/home/folder/bla.txt";
-	QString cleaned = clean_filename(some_path);
-	QString extension = calc_file_extension(some_path);
-	QString parent = get_parent_directory(some_path);
-	QString filename = get_filename_of_path(some_path);
+	QString somePath = "/path/./to//my/home/folder/bla.txt";
+	QString cleaned = cleanFilename(somePath);
+	QString extension = getFileExtension(somePath);
+	QString parent = getParentDirectory(somePath);
+	QString filename = getFilenameOfPath(somePath);
 
 	QString d, f;
-	split_filename(some_path, d, f);
+	splitFilename(somePath, d, f);
 
 	QVERIFY( cleaned == "/path/to/my/home/folder/bla.txt" );
 	QVERIFY( extension == "txt" );
@@ -48,47 +49,47 @@ void FileHelperTest::test()
 	QVERIFY(f == filename);
 }
 
-void FileHelperTest::create_and_delete()
+void FileHelperTest::createAndDelete()
 {
 	bool success;
-	QString new_dir, new_file;
+	QString newDir, newFile;
 	QStringList to_be_deleted;
 
 	/** Absolute **/
-	new_dir = temp_path("some/absolute/filepath");
-	new_file = new_dir + "/file.out";
+	newDir = temp_path("some/absolute/filepath");
+	newFile = newDir + "/file.out";
 	to_be_deleted << temp_path("some");
 
-	QVERIFY(is_absolute(new_file));
+	QVERIFY(isAbsolute(newFile));
 
-	success = create_directories(new_dir);
+	success = createDirectories(newDir);
 	QVERIFY(success);
-	QVERIFY(check_file(new_dir));
+	QVERIFY(checkFile(newDir));
 
-	write_file("Some data", new_file);
-	QVERIFY(check_file(new_file));
-	delete_files(to_be_deleted);
-	QVERIFY( !check_file(temp_path("some")) );
+	writeFile("Some data", newFile);
+	QVERIFY(checkFile(newFile));
+	deleteFiles(to_be_deleted);
+	QVERIFY( !checkFile(temp_path("some")) );
 
 	/** Relative **/
 	to_be_deleted.clear();
-	new_dir = "." + temp_path("some/relative/filepath");
-	new_file = new_dir + "/file.out";
+	newDir = "." + temp_path("some/relative/filepath");
+	newFile = newDir + "/file.out";
 	to_be_deleted << "." + temp_path("some");
 
-	QVERIFY(!is_absolute(new_file));
+	QVERIFY(!isAbsolute(newFile));
 
-	success = create_directories(new_dir);
+	success = createDirectories(newDir);
 	QVERIFY(success);
-	QVERIFY(check_file(new_dir));
+	QVERIFY(checkFile(newDir));
 
-	write_file("Some data", new_file);
-	QVERIFY(check_file(new_file));
-	delete_files(to_be_deleted);
-	QVERIFY( !check_file("." +  temp_path("some")) );
+	writeFile("Some data", newFile);
+	QVERIFY(checkFile(newFile));
+	deleteFiles(to_be_deleted);
+	QVERIFY( !checkFile("." +  temp_path("some")) );
 }
 
-void FileHelperTest::common_path_test()
+void FileHelperTest::commonPathTest()
 {
 	QString ret;
 	QStringList files;
@@ -96,9 +97,9 @@ void FileHelperTest::common_path_test()
 	files << temp_path("path/to/some/directory/bla.txt");
 	files << temp_path("path/to/some/directory/bla2.txt");
 
-	Util::File::create_directories(temp_path("path/to/some/directory"));
-	Util::File::create_directories(temp_path("other/path/to/somewhere"));
-	Util::File::create_directories(temp_path("path/to/some/really/long/directory"));
+	Util::File::createDirectories(temp_path("path/to/some/directory"));
+	Util::File::createDirectories(temp_path("other/path/to/somewhere"));
+	Util::File::createDirectories(temp_path("path/to/some/really/long/directory"));
 
 	QFile f1(temp_path("path/to/some/directory/bla.txt"));
 	QFile f2(temp_path("path/to/some/directory/bla2.txt"));
@@ -116,28 +117,28 @@ void FileHelperTest::common_path_test()
 	f3.write("bla");
 	f3.close();
 
-	ret = Util::File::get_common_directory(files);
+	ret = Util::File::getCommonDirectory(files);
 	QVERIFY(ret.compare(temp_path("path/to/some/directory")) == 0);
 
 	files << temp_path("path/to/some/file.txt");
-	ret = Util::File::get_common_directory(files);
+	ret = Util::File::getCommonDirectory(files);
 	QVERIFY(ret.compare(temp_path("path/to/some")) == 0);
 
 	files << temp_path("path/to/some/really/long/directory");
-	ret = Util::File::get_common_directory(files);
+	ret = Util::File::getCommonDirectory(files);
 	QVERIFY(ret.compare(temp_path("path/to/some")) == 0);
 
 	files << temp_path("other/path/to/somewhere");
-	ret = Util::File::get_common_directory(files);
+	ret = Util::File::getCommonDirectory(files);
 	QVERIFY(ret.compare(temp_path()) == 0);
 
-	Util::File::delete_files({temp_path()});
+	Util::File::deleteFiles({temp_path()});
 }
 
-void FileHelperTest::system_paths_test()
+void FileHelperTest::systemPathsTest()
 {
-	QString lib_path = Util::lib_path();
-	QString share_path = Util::share_path();
+	QString lib_path = Util::libPath();
+	QString share_path = Util::sharePath();
 
 	QRegExp re_lib(SAYONARA_INSTALL_PATH "(/[A-Za-z]+)?/lib(64|32)*/sayonara");
 	QRegExp re_share(SAYONARA_INSTALL_PATH "(/[A-Za-z]+)?/share/sayonara");
@@ -147,7 +148,7 @@ void FileHelperTest::system_paths_test()
 	QVERIFY(re_lib.cap(1) == re_share.cap(1));
 }
 
-void FileHelperTest::resource_path_test()
+void FileHelperTest::resourcePathTest()
 {
 	Util::Filepath fp(":/Desktop/sayonara.desktop");
 
@@ -165,8 +166,8 @@ void FileHelperTest::resource_path_test()
 	}
 
 	{
-		QString fs_path = fp.filesystem_path();
-		QVERIFY(fs_path.startsWith(Util::temp_path()));
+		QString fs_path = fp.fileystemPath();
+		QVERIFY(fs_path.startsWith(Util::tempPath()));
 		QVERIFY(Util::File::exists(fs_path));
 		QVERIFY(fs_path != fp.path());
 
@@ -176,53 +177,110 @@ void FileHelperTest::resource_path_test()
 		QVERIFY(filesize == f.size());
 		f.close();
 
-		Util::File::delete_files({fp.filesystem_path()});
+		Util::File::deleteFiles({fp.fileystemPath()});
 	}
 }
 
-void FileHelperTest::split_directories_test()
+void FileHelperTest::splitDirectoriesTest()
 {
 	QStringList ret;
 	QStringList expected;
 
-	ret = Util::File::split_directories("/path/to/somewhere");
+	ret = Util::File::splitDirectories("/path/to/somewhere");
 	expected.clear();
 	expected << "path" << "to" << "somewhere";
 	QVERIFY(ret == expected);
 
-	ret = Util::File::split_directories("/path/to/a/file.mp3");
+	ret = Util::File::splitDirectories("/path/to/a/file.mp3");
 	expected.clear();
 	expected << "path" << "to" << "a" << "file.mp3";
 	QVERIFY(ret == expected);
 
-	ret = Util::File::split_directories("///a//very/strange///path");
+	ret = Util::File::splitDirectories("///a//very/strange///path");
 	expected.clear();
 	expected << "a" << "very" << "strange" << "path";
 	QVERIFY(ret == expected);
 
-	ret = Util::File::split_directories("///a//very/strange///path//\\//");
+	ret = Util::File::splitDirectories("///a//very/strange///path//\\//");
 	expected.clear();
 	expected << "a" << "very" << "strange" << "path";
 	QVERIFY(ret == expected);
 
-	ret = Util::File::split_directories("///a//very/strange///path\\to/some\\file.mp3");
+	ret = Util::File::splitDirectories("///a//very/strange///path\\to/some\\file.mp3");
 	expected.clear();
 	expected << "a" << "very" << "strange" << "path" << "to" << "some" << "file.mp3";
 	QVERIFY(ret == expected);
 
-	ret = Util::File::split_directories("/root");
+	ret = Util::File::splitDirectories("/root");
 	expected.clear();
 	expected << "root";
 	QVERIFY(ret == expected);
 
-	ret = Util::File::split_directories("/\\/");
+	ret = Util::File::splitDirectories("/\\/");
 	QVERIFY(ret.isEmpty());
 
-	ret = Util::File::split_directories("/");
+	ret = Util::File::splitDirectories("/");
 	QVERIFY(ret.isEmpty());
 
-	ret = Util::File::split_directories("");
+	ret = Util::File::splitDirectories("");
 	QVERIFY(ret.isEmpty());
+}
+
+void FileHelperTest::subDirAndSameFilenameTest()
+{
+	QString f1 = "/path/to/some/non/existing/dir/file.ogg";
+	QString f2 = "/path/to/some/non/existing/dir2/file.mp3";
+
+	QString d1 = "/path/to/some/non/existing/dir";
+	QString d2 = "/path/to/some/non/existing/dir/";
+	QString d3 = "/path/to/some/non\\existing/dir/";
+	QString d4 = "/path/to/./some/non\\existing/dir";
+
+	bool b;
+	b = Util::File::isSamePath(d1, d2);
+	QVERIFY(b == true);
+
+	b = Util::File::isSamePath(d2, d3);
+	QVERIFY(b == true);
+
+	b = Util::File::isSamePath(d3, d4);
+	QVERIFY(b == true);
+
+	b = Util::File::isSamePath(d1, d4);
+	QVERIFY(b == true);
+
+	b = Util::File::isSubdir(d1, d2);
+	QVERIFY(b == false);
+
+	b = Util::File::isSubdir(d1, d4);
+	QVERIFY(b == false);
+
+	b = Util::File::isSubdir(f1, d1);
+	QVERIFY(b == true);
+
+	b = Util::File::isSubdir(f1, d2);
+	QVERIFY(b == true);
+
+	b = Util::File::isSubdir(f1, d3);
+	QVERIFY(b == true);
+
+	b = Util::File::isSubdir(f2, d4);
+	QVERIFY(b == false);
+
+	b = Util::File::isSubdir(f2, d2);
+	QVERIFY(b == false);
+
+	b = Util::File::isSubdir(f1, QDir::root().absolutePath());
+	QVERIFY(b == true);
+
+	b = Util::File::isSubdir(d1, QDir::root().absolutePath());
+	QVERIFY(b == true);
+
+	b = Util::File::isSubdir(f1, "");
+	QVERIFY(b == false);
+
+	b = Util::File::isSubdir(d1, "");
+	QVERIFY(b == false);
 }
 
 QTEST_GUILESS_MAIN(FileHelperTest)

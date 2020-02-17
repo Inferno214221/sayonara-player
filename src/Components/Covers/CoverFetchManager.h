@@ -1,6 +1,6 @@
 /* CoverFetchManager.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -56,7 +56,7 @@ namespace Fetcher
 			 * there is one for Discogs, last.fm and Google
 			 * @param t an instance of a CoverFetcherInterface
 			 */
-			void register_coverfetcher(Cover::Fetcher::Base* t);
+			void registerCoverFetcher(Cover::Fetcher::Base* t);
 
 
 			/**
@@ -64,7 +64,7 @@ namespace Fetcher
 			 * @param artist name
 			 * @return list of urls
 			 */
-			QList<Url> artist_addresses(const QString& artist) const;
+			QList<Url> artistAddresses(const QString& artist) const;
 
 			/**
 			 * @brief get urls for a album search query
@@ -72,14 +72,14 @@ namespace Fetcher
 			 * @param album album name
 			 * @return list of urls
 			 */
-			QList<Url> album_addresses(const QString& artist, const QString& album) const;
+			QList<Url> albumAddresses(const QString& artist, const QString& album) const;
 
 			/**
 			 * @brief get urls for a fuzzy query
 			 * @param str query string
 			 * @return list of urls
 			 */
-			QList<Url> search_addresses(const QString& str) const;
+			QList<Url> searchAddresses(const QString& str) const;
 
 
 			/**
@@ -87,7 +87,7 @@ namespace Fetcher
 			 * @param str query string
 			 * @return list of urls
 			 */
-			QList<Url> search_addresses(const QString& str,
+			QList<Url> searchAddresses(const QString& str,
 										 const QString& cover_fetcher_identifier) const;
 
 			/**
@@ -104,11 +104,11 @@ namespace Fetcher
 			 */
 			QList<Cover::Fetcher::Base*> coverfetchers() const;
 
-			QList<Cover::Fetcher::Base*> active_coverfetchers() const;
-			QList<Cover::Fetcher::Base*> inactive_coverfetchers() const;
+			QList<Cover::Fetcher::Base*> activeCoverfetchers() const;
+			QList<Cover::Fetcher::Base*> inactiveCoverfetchers() const;
 
-			bool is_active(const Cover::Fetcher::Base* cfi) const;
-			bool is_active(const QString& identifier) const;
+			bool isActive(const Cover::Fetcher::Base* cfi) const;
+			bool isActive(const QString& identifier) const;
 
 
 			/**
@@ -119,11 +119,11 @@ namespace Fetcher
 			 * @param url the direct download url
 			 * @return
 			 */
-			Url direct_fetch_url(const QString& url);
+			Url directFetcherUrl(const QString& url);
 
 
 		private slots:
-			void servers_changed();
+			void serversChanged();
 	};
 
 }

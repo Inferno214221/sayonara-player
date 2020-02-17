@@ -14,16 +14,16 @@
 
 struct GUI_FileExpressionDialog::Private
 {
-	QMap<QString, Lang::Term> tag_lang_mapping;
-	QLineEdit* le_expression=nullptr;
+	QMap<QString, Lang::Term> tagLanguageMapping;
+	QLineEdit* leExpression=nullptr;
 
 	QList<QPushButton*> buttons;
-	QPushButton* btn_cancel=nullptr;
-	QPushButton* btn_ok=nullptr;
+	QPushButton* btnCancel=nullptr;
+	QPushButton* btnOk=nullptr;
 
 	Private()
 	{
-		tag_lang_mapping = QMap<QString, Lang::Term>
+		tagLanguageMapping = QMap<QString, Lang::Term>
 		{
 			{"<title>", Lang::Title},
 			{"<album>", Lang::Album},
@@ -39,13 +39,13 @@ struct GUI_FileExpressionDialog::Private
 	{
 		auto* btn = new QPushButton(parent);
 
-		if(!tag_lang_mapping.contains(value))
+		if(!tagLanguageMapping.contains(value))
 		{
-			sp_log(Log::Warning, this) << value << " is not allowed";
+			spLog(Log::Warning, this) << value << " is not allowed";
 			return nullptr;
 		}
 
-		Lang::Term term = tag_lang_mapping[value];
+		Lang::Term term = tagLanguageMapping[value];
 		btn->setText(Lang::get(term));
 		btn->setProperty("value", value);
 		btn->setProperty("langterm", int(term));
@@ -54,7 +54,6 @@ struct GUI_FileExpressionDialog::Private
 
 		return btn;
 	}
-
 };
 
 static bool is_valid(const QString& expression)
@@ -78,7 +77,7 @@ static bool is_valid(const QString& expression)
 	}
 
 	QString replaced(expression);
-	const QStringList allowed_tags = FileOperations::supported_tag_replacements();
+	const QStringList allowed_tags = FileOperations::supportedReplacementTags();
 	for(const QString& tag : allowed_tags)
 	{
 		replaced.replace(tag, "Hallo");
@@ -109,15 +108,15 @@ GUI_FileExpressionDialog::GUI_FileExpressionDialog(QWidget* parent) :
 	this->setLayout(vbox_layout);
 
 	{ // line edit
-		m->le_expression = new QLineEdit(this);
-		vbox_layout->addWidget(m->le_expression);
-		connect(m->le_expression, &QLineEdit::textChanged, this, &GUI_FileExpressionDialog::text_changed);
+		m->leExpression = new QLineEdit(this);
+		vbox_layout->addWidget(m->leExpression);
+		connect(m->leExpression, &QLineEdit::textChanged, this, &GUI_FileExpressionDialog::textChanged);
 	}
 
 	{ // init buttons
 		auto* hbox_layout_buttons = new QHBoxLayout();
 
-		const QStringList allowed_tags = FileOperations::supported_tag_replacements();
+		const QStringList allowed_tags = FileOperations::supportedReplacementTags();
 		for(const QString& tag : allowed_tags)
 		{
 			m->init_button(tag, this);
@@ -126,7 +125,7 @@ GUI_FileExpressionDialog::GUI_FileExpressionDialog(QWidget* parent) :
 		for(auto* btn : m->buttons)
 		{
 			hbox_layout_buttons->addWidget(btn);
-			connect(btn, &QPushButton::clicked, this, &GUI_FileExpressionDialog::btn_clicked);
+			connect(btn, &QPushButton::clicked, this, &GUI_FileExpressionDialog::buttonClicked);
 		}
 
 		vbox_layout->addLayout(hbox_layout_buttons);
@@ -134,15 +133,15 @@ GUI_FileExpressionDialog::GUI_FileExpressionDialog(QWidget* parent) :
 
 	{ // ok cancel
 		auto* hbox_layout_okcancel = new QHBoxLayout();
-		m->btn_ok = new QPushButton(Lang::get(Lang::OK), this);
-		m->btn_cancel = new QPushButton(Lang::get(Lang::Cancel), this);
+		m->btnOk = new QPushButton(Lang::get(Lang::OK), this);
+		m->btnCancel = new QPushButton(Lang::get(Lang::Cancel), this);
 
 		hbox_layout_okcancel->addSpacerItem(
 			new QSpacerItem(100, 1, QSizePolicy::MinimumExpanding, QSizePolicy::Maximum)
 		);
 
-		hbox_layout_okcancel->addWidget(m->btn_cancel);
-		hbox_layout_okcancel->addWidget(m->btn_ok);
+		hbox_layout_okcancel->addWidget(m->btnCancel);
+		hbox_layout_okcancel->addWidget(m->btnOk);
 
 		auto* line = new QFrame(this);
 		line->setFrameShape(QFrame::Shape::HLine);
@@ -150,50 +149,50 @@ GUI_FileExpressionDialog::GUI_FileExpressionDialog(QWidget* parent) :
 		vbox_layout->addWidget(line);
 		vbox_layout->addLayout(hbox_layout_okcancel);
 
-		connect(m->btn_ok, &QPushButton::clicked, this, [=]()
+		connect(m->btnOk, &QPushButton::clicked, this, [=]()
 		{
-			SetSetting(Set::Dir_TagToFilenameExpression, m->le_expression->text());
+			SetSetting(Set::Dir_TagToFilenameExpression, m->leExpression->text());
 			this->accept();
 		});
 
-		connect(m->btn_cancel, &QPushButton::clicked, this, &Gui::Dialog::reject);
+		connect(m->btnCancel, &QPushButton::clicked, this, &Gui::Dialog::reject);
 	}
 
 	{ // taborder
-		this->setTabOrder(m->le_expression, m->buttons.first());
+		this->setTabOrder(m->leExpression, m->buttons.first());
 		for(int i=0; i<m->buttons.size() - 1; i++)
 		{
 			this->setTabOrder(m->buttons[i], m->buttons[i+1]);
 		}
-		this->setTabOrder(m->buttons.last(), m->btn_cancel);
-		this->setTabOrder(m->btn_cancel, m->btn_ok);
-		this->setTabOrder(m->btn_ok, m->le_expression);
+		this->setTabOrder(m->buttons.last(), m->btnCancel);
+		this->setTabOrder(m->btnCancel, m->btnOk);
+		this->setTabOrder(m->btnOk, m->leExpression);
 	}
 
-	m->btn_ok->setDefault(true);
+	m->btnOk->setDefault(true);
 }
 
 GUI_FileExpressionDialog::~GUI_FileExpressionDialog() = default;
 
 QString GUI_FileExpressionDialog::expression() const
 {
-	return m->le_expression->text();
+	return m->leExpression->text();
 }
 
 void GUI_FileExpressionDialog::showEvent(QShowEvent* event)
 {
 	Gui::Dialog::showEvent(event);
 
-	m->le_expression->setText(GetSetting(Set::Dir_TagToFilenameExpression));
+	m->leExpression->setText(GetSetting(Set::Dir_TagToFilenameExpression));
 
-	if(m->le_expression->text().isEmpty())
+	if(m->leExpression->text().isEmpty())
 	{
 		QString text = QString("<tracknum>. <title>");
-		m->le_expression->setText(text);
+		m->leExpression->setText(text);
 	}
 }
 
-void GUI_FileExpressionDialog::language_changed()
+void GUI_FileExpressionDialog::languageChanged()
 {
 	for(auto* btn : m->buttons)
 	{
@@ -202,13 +201,13 @@ void GUI_FileExpressionDialog::language_changed()
 	}
 }
 
-void GUI_FileExpressionDialog::btn_clicked()
+void GUI_FileExpressionDialog::buttonClicked()
 {
 	auto* button = static_cast<QPushButton*>(sender());
 
-	QString text = m->le_expression->text();
+	QString text = m->leExpression->text();
 	QString button_text = button->property("value").toString();
-	int cursor = m->le_expression->cursorPosition();
+	int cursor = m->leExpression->cursorPosition();
 	if(cursor < text.size() - 1 && cursor >= 0)
 	{
 		text.insert(cursor, button_text);
@@ -221,20 +220,20 @@ void GUI_FileExpressionDialog::btn_clicked()
 		cursor = text.size();
 	}
 
-	m->le_expression->setText(text);
-	m->le_expression->setCursorPosition(cursor);
-	m->le_expression->setFocus();
+	m->leExpression->setText(text);
+	m->leExpression->setCursorPosition(cursor);
+	m->leExpression->setFocus();
 }
 
-void GUI_FileExpressionDialog::text_changed(const QString& text)
+void GUI_FileExpressionDialog::textChanged(const QString& text)
 {
 	bool valid = is_valid(text);
 
 	if(!valid) {
-		m->le_expression->setStyleSheet("color: red;");
+		m->leExpression->setStyleSheet("color: red;");
 	} else {
-		m->le_expression->setStyleSheet("");
+		m->leExpression->setStyleSheet("");
 	}
 
-	m->btn_ok->setEnabled(valid);
+	m->btnOk->setEnabled(valid);
 }

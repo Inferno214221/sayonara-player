@@ -1,6 +1,6 @@
 /* Cover.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -44,7 +44,7 @@ bool Xiph::CoverFrame::is_frame_found() const
 //	}
 
 	bool has_entries = (this->tag()->pictureList().isEmpty() == false);
-	sp_log(Log::Develop, this) << "Picture list has " << this->tag()->pictureList().size() << " entries";
+	spLog(Log::Develop, this) << "Picture list has " << this->tag()->pictureList().size() << " entries";
 
 	return has_entries;
 }

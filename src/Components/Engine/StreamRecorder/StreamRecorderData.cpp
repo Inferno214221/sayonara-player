@@ -1,6 +1,6 @@
 /* StreamRecorderData.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -24,10 +24,10 @@ using StreamRecorder::Data;
 
 Data::Data()
 {
-	probe_id=0;
+	probeId=0;
 	busy = false;
 	active = false;
-	has_empty_filename = true;
+	isFilenameEmpty = true;
 }
 
 Data::~Data()

@@ -1,6 +1,6 @@
 /* Album.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -28,25 +28,25 @@
 struct Album::Private
 {
 	AlbumId id;
-	Seconds duration_sec;
+	Seconds durationSec;
 	TrackNum songcount;
 	Year year;
 	Rating rating;
-	bool is_sampler;
+	bool isSampler;
 	QList<Disc> discnumbers;
 
-	std::list<HashValue> artist_idxs;
-	std::list<HashValue> album_artist_idxs;
-	QStringList			 path_hint;
-	HashValue album_idx;
+	std::list<HashValue> artistIndexes;
+	std::list<HashValue> albumArtistIndexes;
+	QStringList			 pathHint;
+	HashValue albumIdx;
 
 	Private() :
 		id(-1),
-		duration_sec(0),
+		durationSec(0),
 		songcount(0),
 		year(0),
 		rating(Rating::Zero),
-		is_sampler(false)
+		isSampler(false)
     {}
 
 	~Private() = default;
@@ -61,16 +61,16 @@ struct Album::Private
 		return
 		(
 			CMP(id) &&
-			CMP(duration_sec) &&
+			CMP(durationSec) &&
 			CMP(songcount) &&
 			CMP(year) &&
 			CMP(rating) &&
-			CMP(is_sampler) &&
+			CMP(isSampler) &&
 			CMP(discnumbers) &&
-			CMP(artist_idxs) &&
-			CMP(album_artist_idxs) &&
-			CMP(path_hint) &&
-			CMP(album_idx)
+			CMP(artistIndexes) &&
+			CMP(albumArtistIndexes) &&
+			CMP(pathHint) &&
+			CMP(albumIdx)
 		);
 	}
 };
@@ -80,19 +80,19 @@ AlbumId Album::id() const
     return m->id;
 }
 
-void Album::set_id(const AlbumId& id)
+void Album::setId(const AlbumId& id)
 {
     m->id = id;
 }
 
-Seconds Album::duration_sec() const
+Seconds Album::durationSec() const
 {
-    return m->duration_sec;
+    return m->durationSec;
 }
 
-void Album::set_duration_sec(const Seconds& sec)
+void Album::setDurationSec(const Seconds& sec)
 {
-    m->duration_sec = sec;
+    m->durationSec = sec;
 }
 
 TrackNum Album::songcount() const
@@ -100,7 +100,7 @@ TrackNum Album::songcount() const
     return m->songcount;
 }
 
-void Album::set_songcount(const TrackNum& songcount)
+void Album::setSongcount(const TrackNum& songcount)
 {
     m->songcount = songcount;
 }
@@ -110,7 +110,7 @@ Year Album::year() const
     return m->year;
 }
 
-void Album::set_year(const Year& year)
+void Album::setYear(const Year& year)
 {
     m->year = year;
 }
@@ -127,14 +127,14 @@ Rating Album::rating() const
     return m->rating;
 }
 
-void Album::set_rating(const Rating& rating)
+void Album::setRating(const Rating& rating)
 {
     m->rating = rating;
 }
 
-bool Album::is_sampler() const
+bool Album::isSampler() const
 {
-    return (m->artist_idxs.size() > 1);
+    return (m->artistIndexes.size() > 1);
 }
 
 QList<Disc> Album::discnumbers() const
@@ -142,7 +142,7 @@ QList<Disc> Album::discnumbers() const
     return m->discnumbers;
 }
 
-void Album::set_discnumbers(const QList<Disc>& discnumbers)
+void Album::setDiscnumbers(const QList<Disc>& discnumbers)
 {
     m->discnumbers = discnumbers;
 }
@@ -190,88 +190,88 @@ Album::~Album() = default;
 
 QString Album::name() const
 {
-	return album_pool().value(m->album_idx);
+	return albumPool().value(m->albumIdx);
 }
 
-void Album::set_name(const QString& name)
+void Album::setName(const QString& name)
 {
 	HashValue hashed = qHash(name);
 
-	if(!album_pool().contains(hashed))
+	if(!albumPool().contains(hashed))
 	{
-		album_pool().insert(hashed, name);
+		albumPool().insert(hashed, name);
 	}
 
-	m->album_idx = hashed;
+	m->albumIdx = hashed;
 }
 
 QStringList Album::artists() const
 {
 	QStringList lst;
 
-	for(const HashValue& v : m->artist_idxs)
+	for(const HashValue& v : m->artistIndexes)
 	{
-		lst << artist_pool().value(v);
+		lst << artistPool().value(v);
 	}
 
 	return lst;
 }
 
-void Album::set_artists(const QStringList& artists)
+void Album::setArtists(const QStringList& artists)
 {
-	m->artist_idxs.clear();
+	m->artistIndexes.clear();
 
 	for(const QString& artist : artists)
 	{
 		HashValue hashed = qHash(artist);
 
-		if(!artist_pool().contains(hashed))
+		if(!artistPool().contains(hashed))
 		{
-			artist_pool().insert(hashed, artist);
+			artistPool().insert(hashed, artist);
 		}
 
-		m->artist_idxs.push_back(hashed);
+		m->artistIndexes.push_back(hashed);
 	}
 }
 
-QStringList Album::album_artists() const
+QStringList Album::albumArtists() const
 {
 	QStringList lst;
 
-	for(const HashValue& v : m->album_artist_idxs)
+	for(const HashValue& v : m->albumArtistIndexes)
 	{
-		lst << artist_pool().value(v);
+		lst << artistPool().value(v);
 	}
 
 	return lst;
 }
 
-void Album::set_album_artists(const QStringList &album_artists)
+void Album::setAlbumArtists(const QStringList &album_artists)
 {
-	m->album_artist_idxs.clear();
+	m->albumArtistIndexes.clear();
 
 	for(const QString& artist : album_artists)
 	{
 		HashValue hashed = qHash(artist);
 
-		if(!artist_pool().contains(hashed))
+		if(!artistPool().contains(hashed))
 		{
-			artist_pool().insert(hashed, artist);
+			artistPool().insert(hashed, artist);
 		}
 
-		m->album_artist_idxs.push_back(hashed);
+		m->albumArtistIndexes.push_back(hashed);
 	}
 }
 
-QStringList Album::path_hint() const
+QStringList Album::pathHint() const
 {
-	return m->path_hint;
+	return m->pathHint;
 }
 
-void Album::set_path_hint(const QStringList& paths)
+void Album::setPathHint(const QStringList& paths)
 {
-	m->path_hint = paths;
-	m->path_hint.removeDuplicates();
+	m->pathHint = paths;
+	m->pathHint.removeDuplicates();
 }
 
 QVariant Album::toVariant(const Album& album)
@@ -288,20 +288,20 @@ bool Album::fromVariant(const QVariant& v, Album& album) {
 	return true;
 }
 
-QString Album::to_string() const
+QString Album::toString() const
 {
 	QString str("Album: ");
 	str += name() + " by " + artists().join(",");
-	str += QString::number(m->songcount) + " Songs, " + QString::number(m->duration_sec) + "sec";
+	str += QString::number(m->songcount) + " Songs, " + QString::number(m->durationSec) + "sec";
 
 	return str;
 }
 
 
-bool AlbumList::contains(AlbumId album_id) const
+bool AlbumList::contains(AlbumId albumId) const
 {
 	for(auto it=this->begin(); it!=this->end(); it++){
-		if(it->id() == album_id){
+		if(it->id() == albumId){
 			return true;
 		}
 	}
@@ -339,7 +339,7 @@ const Album& AlbumList::operator[](int idx) const
 	return *(this->begin() + idx);
 }
 
-AlbumList& AlbumList::append_unique(const AlbumList& other)
+AlbumList& AlbumList::appendUnique(const AlbumList& other)
 {
 	for(auto it = other.begin(); it != other.end(); it++)
 	{
@@ -353,5 +353,5 @@ AlbumList& AlbumList::append_unique(const AlbumList& other)
 
 void AlbumList::sort(::Library::SortOrder so)
 {
-	MetaDataSorting::sort_albums(*this, so);
+	MetaDataSorting::sortAlbums(*this, so);
 }

@@ -1,6 +1,6 @@
 /* FloatingLabel.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -32,8 +32,8 @@ const static int timerInterval=20;
 struct FloatingLabel::Private
 {
 	double		offset;
-	double		offset_direction;
-	int			chars_per_second;
+	double		offsetDirection;
+	int			charsPerSecond;
 	QTimer*		timer=nullptr;
 	QString		text;
 
@@ -41,8 +41,8 @@ struct FloatingLabel::Private
 
 	Private() :
 		offset(0),
-		offset_direction(-1.0),
-		chars_per_second(3),
+		offsetDirection(-1.0),
+		charsPerSecond(3),
 		floating(false)
 	{}
 };
@@ -79,7 +79,7 @@ void FloatingLabel::paintEvent(QPaintEvent* event)
 
 	painter.drawText
 	(
-		QRectF(int(m->offset), 0, Gui::Util::text_width(fm, m->text), fm.height()),
+		QRectF(int(m->offset), 0, Gui::Util::textWidget(fm, m->text), fm.height()),
 		m->text
 	);
 }
@@ -89,14 +89,14 @@ void FloatingLabel::resizeEvent(QResizeEvent* event)
 	QLabel::resizeEvent(event);
 
 	QFontMetrics fm = this->fontMetrics();
-	int difference = Gui::Util::text_width(fm, m->text) - this->width();
+	int difference = Gui::Util::textWidget(fm, m->text) - this->width();
 
 	if(difference <= 0)
 	{
 		m->timer->stop();
 
 		m->offset = 0;
-		m->offset_direction = -1.0;
+		m->offsetDirection = -1.0;
 		m->floating = false;
 
 		this->update();
@@ -115,7 +115,7 @@ void FloatingLabel::setFloatingText(const QString& text)
 
 	m->text = text;
 	m->offset = 0;
-	m->offset_direction = -1.0;
+	m->offsetDirection = -1.0;
 	m->floating = false;
 
 	updateOffset();
@@ -124,7 +124,7 @@ void FloatingLabel::setFloatingText(const QString& text)
 
 void FloatingLabel::setCharsPerSecond(int chars_per_second)
 {
-	m->chars_per_second = chars_per_second;
+	m->charsPerSecond = chars_per_second;
 }
 
 void FloatingLabel::updateOffset()
@@ -132,7 +132,7 @@ void FloatingLabel::updateOffset()
 	static const int tolerance = 10;
 
 	QFontMetrics fm = this->fontMetrics();
-	int difference = Gui::Util::text_width(fm, m->text) - this->width();
+	int difference = Gui::Util::textWidget(fm, m->text) - this->width();
 
 	if(difference <= 0)
 	{
@@ -143,11 +143,11 @@ void FloatingLabel::updateOffset()
 
 	m->floating = true;
 
-	int minOffset = -(Gui::Util::text_width(fm, m->text) - this->width() + tolerance);
+	int minOffset = -(Gui::Util::textWidget(fm, m->text) - this->width() + tolerance);
 	int maxOffset = tolerance;
 
-	int charWidth = Gui::Util::text_width(fm, "O");
-	int charsWidth = m->chars_per_second * charWidth;
+	int charWidth = Gui::Util::textWidget(fm, "O");
+	int charsWidth = m->charsPerSecond * charWidth;
 
 	if(difference < charsWidth)
 	{
@@ -157,10 +157,10 @@ void FloatingLabel::updateOffset()
 	double pixelsPerMSecond = (charsWidth) / 1000.0;
 	double pixelsPerIntervalStep = pixelsPerMSecond * timerInterval;
 
-	m->offset += ( m->offset_direction * pixelsPerIntervalStep );
+	m->offset += ( m->offsetDirection * pixelsPerIntervalStep );
 	if(m->offset < minOffset || m->offset > maxOffset)
 	{
-		m->offset_direction = -m->offset_direction;
+		m->offsetDirection = -m->offsetDirection;
 
 		if(m->offset < minOffset)
 		{

@@ -1,6 +1,6 @@
 /* ReloadThread.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -23,7 +23,7 @@
  * ReloadThread.cpp
  *
  *  Created on: Jun 19, 2011
- *      Author: Lucio Carreras
+ *      Author: Michael Lugmair (Lucio Carreras)
  */
 
 #define N_FILES_TO_STORE 500
@@ -55,50 +55,50 @@ namespace FileUtils=::Util::File;
 
 struct ReloadThread::Private
 {
-	QString					library_path;
-	MetaDataList			v_md;
+	QString					libraryPath;
+	MetaDataList			tracks;
 	Library::ReloadQuality	quality;
-	LibraryId				library_id;
+	LibraryId				libraryId;
 
 	bool					paused;
 	bool					running;
-	bool					may_run;
+	bool					mayRun;
 
 	Private() :
 		quality(Library::ReloadQuality::Fast),
-		library_id(-1),
+		libraryId(-1),
 		paused(false),
 		running(false),
-		may_run(true)
+		mayRun(true)
 	{}
 };
 
-ReloadThread::ReloadThread(QObject *parent) :
+ReloadThread::ReloadThread(QObject* parent) :
 	QThread(parent)
 {
 	m = Pimpl::make<Private>();
-	m->library_path = GetSetting(Set::Lib_Path);
+	m->libraryPath = GetSetting(Set::Lib_Path);
 }
 
 ReloadThread::~ReloadThread()
 {
 	this->stop();
 	while(this->isRunning()){
-		::Util::sleep_ms(50);
+		::Util::sleepMs(50);
 	}
 }
 
 static
 bool compare_md(const MetaData& md1, const MetaData& md2)
 {
-	if(md1.genre_ids().count() != md2.genre_ids().count()){
+	if(md1.genreIds().count() != md2.genreIds().count()){
 		return false;
 	}
 
-	auto it1 = md1.genre_ids().begin();
-	auto it2 = md2.genre_ids().begin();
+	auto it1 = md1.genreIds().begin();
+	auto it2 = md2.genreIds().begin();
 
-	int count = md1.genre_ids().count();
+	int count = md1.genreIds().count();
 
 	for(int i=count - 1; i>=0; i--, it1++, it2++)
 	{
@@ -113,48 +113,47 @@ bool compare_md(const MetaData& md1, const MetaData& md2)
 			md1.year() == md2.year() &&
 			md1.rating() == md2.rating() &&
 			md1.discnumber() == md2.discnumber() &&
-			md1.track_number() == md2.track_number() &&
-			md1.album_artist() == md2.album_artist() &&
-			md1.album_artist_id() == md2.album_artist_id()
+			md1.trackNumber() == md2.trackNumber() &&
+			md1.albumArtist() == md2.albumArtist() &&
+			md1.albumArtistId() == md2.albumArtistId()
 	);
 }
 
-bool ReloadThread::get_and_save_all_files(const QHash<QString, MetaData>& md_map_lib)
+bool ReloadThread::getAndSaveAllFiles(const QHash<QString, MetaData>& pathMetadataMap)
 {
-	QString library_path = m->library_path;
-
-	if(library_path.isEmpty() || !FileUtils::exists(library_path)) {
+	const QString libraryPath = m->libraryPath;
+	if(libraryPath.isEmpty() || !FileUtils::exists(libraryPath)) {
 		return false;
 	}
 
 	auto* db = DB::Connector::instance();
-	DB::Library* db_library = db->library_connector();
+	DB::Library* libraryDatabase = db->libraryConnector();
 
-	QDir dir(library_path);
+	QDir dir(libraryPath);
 
-	MetaDataList v_md_to_store;
+	MetaDataList tracksToStore;
 
-	sp_log(Log::Develop, this) << "Scanning Library path: " << dir.absolutePath() << "...";
-	QStringList files = get_files_recursive(dir);
-	sp_log(Log::Develop, this) << "  Found " << files.size() << " files (Not all of them are soundfiles)";
+	spLog(Log::Develop, this) << "Scanning Library path: " << dir.absolutePath() << "...";
+	QStringList files = getFilesRecursive(dir);
+	spLog(Log::Develop, this) << "  Found " << files.size() << " files (Not all of them are soundfiles)";
 
-	int n_files = files.size();
-	int cur_idx_files=0;
+	int fileCount = files.size();
+	int currentFileIndex=0;
 
 	for(const QString& filepath : files)
 	{
-		if(!m->may_run){
+		if(!m->mayRun){
 			return false;
 		}
 
-		bool file_was_read = false;
+		bool fileWasRead = false;
 		MetaData md(filepath);
-		md.set_library_id(m->library_id);
+		md.setLibraryid(m->libraryId);
 
-		const MetaData& md_lib = md_map_lib[filepath];
+		const MetaData& md_lib = pathMetadataMap[filepath];
 
-		int progress = (cur_idx_files++ * 100) / n_files;
-		emit sig_reloading_library(Lang::get(Lang::ReloadLibrary).triplePt(), progress);
+		int progress = (currentFileIndex++ * 100) / fileCount;
+		emit sigReloadingLibrary(Lang::get(Lang::ReloadLibrary).triplePt(), progress);
 
 		if(md_lib.id() >= 0) // found in library
 		{
@@ -163,64 +162,64 @@ bool ReloadThread::get_and_save_all_files(const QHash<QString, MetaData>& md_map
 			}
 
 			// fetch some metadata and check if we have the same data already in library in the next step
-			file_was_read = Tagging::Utils::getMetaDataOfFile(md, Tagging::Quality::Dirty);
-			if(!file_was_read) {
+			fileWasRead = Tagging::Utils::getMetaDataOfFile(md, Tagging::Quality::Dirty);
+			if(!fileWasRead) {
 				continue;
 			}
 
 			// file is already in library
-			if( md_lib.duration_ms() > 1000 && md_lib.duration_ms() < 3600000 && compare_md(md, md_lib)){
+			if( md_lib.durationMs() > 1000 && md_lib.durationMs() < 3600000 && compare_md(md, md_lib)){
 				continue;
 			}
 		}
 
-		file_was_read = Tagging::Utils::getMetaDataOfFile(md, Tagging::Quality::Quality);
-		if(file_was_read)
+		fileWasRead = Tagging::Utils::getMetaDataOfFile(md, Tagging::Quality::Quality);
+		if(fileWasRead)
 		{
-			v_md_to_store << md;
+			tracksToStore << md;
 
-			if(v_md_to_store.size() >= N_FILES_TO_STORE)
+			if(tracksToStore.size() >= N_FILES_TO_STORE)
 			{
-				store_metadata_block(v_md_to_store);
-				v_md_to_store.clear();
+				storeMetadataBlock(tracksToStore);
+				tracksToStore.clear();
 			}
 		}
 	}
 
-	store_metadata_block(v_md_to_store);
-	v_md_to_store.clear();
+	storeMetadataBlock(tracksToStore);
+	tracksToStore.clear();
 
-	sp_log(Log::Develop, this) << "Updating album artists... ";
-	db_library->add_album_artists();
+	spLog(Log::Develop, this) << "Updating album artists... ";
+	libraryDatabase->addAlbumArtists();
 
-	sp_log(Log::Develop, this) << "Create indexes... ";
-	db_library->create_indexes();
+	spLog(Log::Develop, this) << "Create indexes... ";
+	libraryDatabase->createIndexes();
 
-	sp_log(Log::Develop, this) << "Clean up... ";
+	spLog(Log::Develop, this) << "Clean up... ";
 
 	return true;
 }
 
 
-void ReloadThread::store_metadata_block(const MetaDataList& v_md)
+void ReloadThread::storeMetadataBlock(const MetaDataList& v_md)
 {
 	using StringSet=::Util::Set<QString>;
 
 	auto* db = DB::Connector::instance();
-	DB::Covers* db_covers = db->cover_connector();
-	DB::LibraryDatabase* lib_db = db->library_db(m->library_id, db->db_id());
+	DB::Covers* coverDatabase = db->coverConnector();
+	DB::LibraryDatabase* libraryDatabase = db->libraryDatabase(m->libraryId, db->databaseId());
 
 	{
-		sp_log(Log::Develop, this) << N_FILES_TO_STORE << " tracks reached. Commit chunk to DB";
-		bool success = lib_db->store_metadata(v_md);
-		sp_log(Log::Develop, this) << "  Success? " << success;
+		spLog(Log::Develop, this) << N_FILES_TO_STORE << " tracks reached. Commit chunk to DB";
+		bool success = libraryDatabase->storeMetadata(v_md);
+		spLog(Log::Develop, this) << "  Success? " << success;
 	}
 
 	{
 		QString status = tr("Looking for covers");
-		sp_log(Log::Develop, this) << "Adding Covers...";
+		spLog(Log::Develop, this) << "Adding Covers...";
 
-		StringSet all_hashes = db_covers->get_all_hashes();
+		StringSet all_hashes = coverDatabase->getAllHashes();
 
 		db->transaction();
 
@@ -228,18 +227,18 @@ void ReloadThread::store_metadata_block(const MetaDataList& v_md)
 		for(const MetaData& md : v_md)
 		{
 			int progress = ((idx++) * 100) / v_md.count();
-			emit sig_reloading_library(status, progress);
+			emit sigReloadingLibrary(status, progress);
 
-			Cover::Location cl = Cover::Location::cover_location(md, false);
-			if(!cl.is_valid()){
+			Cover::Location cl = Cover::Location::coverLocation(md, false);
+			if(!cl.isValid()){
 				continue;
 			}
 
 			QString hash = cl.hash();
 			if(!all_hashes.contains(hash))
 			{
-				QPixmap cover(cl.preferred_path());
-				db_covers->insert_cover(hash, cover);
+				QPixmap cover(cl.preferredPath());
+				coverDatabase->insertCover(hash, cover);
 				all_hashes.insert(hash);
 			}
 		}
@@ -249,70 +248,70 @@ void ReloadThread::store_metadata_block(const MetaDataList& v_md)
 }
 
 
-QStringList ReloadThread::get_files_recursive(QDir base_dir)
+QStringList ReloadThread::getFilesRecursive(QDir baseDirectory)
 {
 	QStringList ret;
 	{
-		sp_log(Log::Crazy, this) << "Reading all files from " << base_dir.absolutePath();
+		spLog(Log::Crazy, this) << "Reading all files from " << baseDirectory.absolutePath();
 		QString parent_dir, pure_dir_name;
-		FileUtils::split_filename(base_dir.absolutePath(), parent_dir, pure_dir_name);
+		FileUtils::splitFilename(baseDirectory.absolutePath(), parent_dir, pure_dir_name);
 
 		QString message = tr("Reading files") + ": " + pure_dir_name;
-		emit sig_reloading_library(message, 0);
+		emit sigReloadingLibrary(message, 0);
 	}
 
-	QStringList soundfile_exts = ::Util::soundfile_extensions();
-	QStringList sub_dirs = base_dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
-	sp_log(Log::Crazy, this) << "  Found " << sub_dirs.size() << " subdirectories";
+	QStringList soundfileExtensions = ::Util::soundfileExtensions();
+	QStringList subDirectories = baseDirectory.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+	spLog(Log::Crazy, this) << "  Found " << subDirectories.size() << " subdirectories";
 
-	for(const QString& dir : sub_dirs)
+	for(const QString& dir : subDirectories)
 	{
-		bool success = base_dir.cd(dir);
+		bool success = baseDirectory.cd(dir);
 
 		if(!success){
 			continue;
 		}
 
-		sp_log(Log::Crazy, this) << "  Jump into subdir " << base_dir.absolutePath();
-		ret << get_files_recursive(base_dir);
+		spLog(Log::Crazy, this) << "  Jump into subdir " << baseDirectory.absolutePath();
+		ret << getFilesRecursive(baseDirectory);
 
-		base_dir.cdUp();
+		baseDirectory.cdUp();
 	}
 
-	QStringList sub_files = base_dir.entryList(soundfile_exts, QDir::Files);
-	sp_log(Log::Crazy, this) << "  Found " << sub_files.size() << " audio files in " << base_dir.absolutePath();
-	if(sub_files.isEmpty()) {
+	QStringList subFiles = baseDirectory.entryList(soundfileExtensions, QDir::Files);
+	spLog(Log::Crazy, this) << "  Found " << subFiles.size() << " audio files in " << baseDirectory.absolutePath();
+	if(subFiles.isEmpty()) {
 		return ret;
 	}
 
-	QStringList valid_sub_files = process_sub_files(base_dir, sub_files);
-	sp_log(Log::Crazy, this) << "  " << valid_sub_files.size() << " of them are valid.";
+	QStringList validSubFiles = filterValidFiles(baseDirectory, subFiles);
+	spLog(Log::Crazy, this) << "  " << validSubFiles.size() << " of them are valid.";
 
-	ret << valid_sub_files;
+	ret << validSubFiles;
 
 	return ret;
 }
 
 
-QStringList ReloadThread::process_sub_files(const QDir& base_dir, const QStringList& sub_files)
+QStringList ReloadThread::filterValidFiles(const QDir& baseDir, const QStringList& sub_files)
 {
 	QStringList lst;
 	for(const QString& filename : sub_files)
 	{
-		QString abs_path = base_dir.absoluteFilePath(filename);
-		QFileInfo info(abs_path);
+		QString absolutePath = baseDir.absoluteFilePath(filename);
+		QFileInfo info(absolutePath);
 
 		if(!info.exists()){
-			sp_log(Log::Warning, this) << "File " << abs_path << " does not exist. Skipping...";
+			spLog(Log::Warning, this) << "File " << absolutePath << " does not exist. Skipping...";
 			continue;
 		}
 
 		if(!info.isFile()){
-			sp_log(Log::Warning, this) << "Error: File " << abs_path << " is not a file. Skipping...";
+			spLog(Log::Warning, this) << "Error: File " << absolutePath << " is not a file. Skipping...";
 			continue;
 		}
 
-		lst << abs_path;
+		lst << absolutePath;
 	}
 
 	return lst;
@@ -331,24 +330,24 @@ void ReloadThread::goon()
 
 void ReloadThread::stop()
 {
-	m->may_run = false;
+	m->mayRun = false;
 }
 
-bool ReloadThread::is_running() const
+bool ReloadThread::isRunning() const
 {
 	return m->running;
 }
 
-void ReloadThread::set_quality(Library::ReloadQuality quality)
+void ReloadThread::setQuality(Library::ReloadQuality quality)
 {
 	m->quality = quality;
 }
 
 void ReloadThread::run()
 {
-	if(m->library_path.isEmpty())
+	if(m->libraryPath.isEmpty())
 	{
-		sp_log(Log::Warning, this) << "No Library path given";
+		spLog(Log::Warning, this) << "No Library path given";
 		return;
 	}
 
@@ -357,64 +356,64 @@ void ReloadThread::run()
 	}
 
 	auto* db = DB::Connector::instance();
-	DB::LibraryDatabase* lib_db = db->library_db(m->library_id, 0);
+	DB::LibraryDatabase* libraryDatabase = db->libraryDatabase(m->libraryId, 0);
 
-	m->may_run = true;
+	m->mayRun = true;
 	m->running = true;
 	m->paused = false;
 
-	MetaDataList v_md, v_to_delete, v_md_needs_update;
+	MetaDataList tracks, tracksToDelete, tracksToUpdate;
 	QHash<QString, MetaData> v_md_map;
 
-	emit sig_reloading_library(tr("Deleting orphaned tracks") + "...", 0);
+	emit sigReloadingLibrary(tr("Deleting orphaned tracks") + "...", 0);
 
-	lib_db->deleteInvalidTracks(m->library_path, v_md_needs_update);
-	if(!m->may_run){
+	libraryDatabase->deleteInvalidTracks(m->libraryPath, tracksToUpdate);
+	if(!m->mayRun){
 		return;
 	}
 
-	lib_db->store_metadata(v_md_needs_update);
-	if(!m->may_run){
+	libraryDatabase->storeMetadata(tracksToUpdate);
+	if(!m->mayRun){
 		return;
 	}
 
-	lib_db->getAllTracks(v_md);
+	libraryDatabase->getAllTracks(tracks);
 
-	sp_log(Log::Debug, this) << "Have " << v_md.size() << " tracks already in library";
+	spLog(Log::Debug, this) << "Have " << tracks.size() << " tracks already in library";
 
 	// find orphaned tracks in library && delete them
-	for(const MetaData& md : v_md)
+	for(const MetaData& md : tracks)
 	{
-		if(!FileUtils::check_file(md.filepath()))
+		if(!FileUtils::checkFile(md.filepath()))
 		{
-			v_to_delete << std::move(md);
+			tracksToDelete << std::move(md);
 		}
 
 		else{
 			v_md_map[md.filepath()] = md;
 		}
 
-		if(!m->may_run){
+		if(!m->mayRun){
 			return;
 		}
 	}
 
-	sp_log(Log::Debug, this) << "  " << v_to_delete.size() << " of them are not on disk anymore";
-	lib_db->deleteTracks(v_to_delete);
+	spLog(Log::Debug, this) << "  " << tracksToDelete.size() << " of them are not on disk anymore";
+	libraryDatabase->deleteTracks(tracksToDelete);
 
-	if(!m->may_run){
+	if(!m->mayRun){
 		return;
 	}
 
-	get_and_save_all_files(v_md_map);
+	getAndSaveAllFiles(v_md_map);
 
 	m->paused = false;
 	m->running = false;
 }
 
-void ReloadThread::set_library(LibraryId library_id, const QString& library_path)
+void ReloadThread::setLibrary(LibraryId libraryId, const QString& libraryPath)
 {
-	m->library_path = library_path;
-	m->library_id = library_id;
+	m->libraryPath = libraryPath;
+	m->libraryId = libraryId;
 }
 

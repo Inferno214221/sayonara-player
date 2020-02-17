@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>376</width>
-    <height>119</height>
+    <height>121</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,7 @@
     <number>10</number>
    </property>
    <item row="0" column="1">
-    <widget class="QLabel" name="lab_warning">
+    <widget class="QLabel" name="labWarning">
      <property name="font">
       <font>
        <weight>75</weight>
@@ -31,14 +31,14 @@
     </widget>
    </item>
    <item row="1" column="1">
-    <widget class="QLabel" name="lab_info">
+    <widget class="QLabel" name="labInfo">
      <property name="text">
       <string notr="true">TextLabel</string>
      </property>
     </widget>
    </item>
    <item row="0" column="0" rowspan="2">
-    <widget class="QLabel" name="lab_icon">
+    <widget class="QLabel" name="labIcon">
      <property name="styleSheet">
       <string notr="true">min-width: 10ex; min-height: 10ex; max-height: 10ex; max-width: 10ex;</string>
      </property>
@@ -69,21 +69,21 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_only_from_library">
+      <widget class="QPushButton" name="btnOnlyFromLibrary">
        <property name="text">
         <string notr="true">Only from library</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_yes">
+      <widget class="QPushButton" name="btnYes">
        <property name="text">
         <string notr="true">Yes</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_no">
+      <widget class="QPushButton" name="btnNo">
        <property name="text">
         <string notr="true">No</string>
        </property>

@@ -1,6 +1,6 @@
 /* EmptyLibraryContainer.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -41,13 +41,13 @@ public:
 	~EmptyLibraryContainer() override;
 
 	QString		name() const override;
-	QString		display_name() const override;
+	QString		displayName() const override;
 	QWidget*	widget() const override;
 	QMenu*		menu() override;
 	QFrame*		header() const override;
 	QPixmap		icon() const override;
 
-	void		init_ui() override;
+	void		initUi() override;
 };
 
 #endif // EMPTYLIBRARYCONTAINER_H

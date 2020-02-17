@@ -12,14 +12,14 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="4" column="0" colspan="2">
-    <widget class="QLabel" name="lab_error">
+    <widget class="QLabel" name="labError">
      <property name="text">
       <string notr="true">Error</string>
      </property>
     </widget>
    </item>
    <item row="0" column="0">
-    <widget class="QLabel" name="lab_header">
+    <widget class="QLabel" name="labHeader">
      <property name="font">
       <font>
        <weight>75</weight>
@@ -61,14 +61,14 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_cancel">
+      <widget class="QPushButton" name="btnCancel">
        <property name="text">
         <string notr="true">Cancel</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_ok">
+      <widget class="QPushButton" name="btnOk">
        <property name="text">
         <string notr="true">OK</string>
        </property>
@@ -77,15 +77,15 @@
     </layout>
    </item>
    <item row="2" column="0" colspan="2">
-    <widget class="QWidget" name="config_widget" native="true">
+    <widget class="QWidget" name="configWidget" native="true">
      <layout class="QGridLayout" name="gridLayout_2"/>
     </widget>
    </item>
   </layout>
  </widget>
  <tabstops>
-  <tabstop>btn_cancel</tabstop>
-  <tabstop>btn_ok</tabstop>
+  <tabstop>btnCancel</tabstop>
+  <tabstop>btnOk</tabstop>
  </tabstops>
  <resources/>
  <connections/>

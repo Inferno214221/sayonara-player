@@ -1,6 +1,6 @@
 /* GUI_AudioConverter.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -36,30 +36,30 @@ class GUI_AudioConverter :
 	PIMPL(GUI_AudioConverter)
 
 	public:
-		explicit GUI_AudioConverter(QWidget *parent=nullptr);
+		explicit GUI_AudioConverter(QWidget* parent=nullptr);
 		virtual ~GUI_AudioConverter() override;
 
-		QString	get_name() const override;
-		QString	get_display_name() const override;
+		QString	name() const override;
+		QString	displayName() const override;
 
 	private slots:
-		void btn_start_clicked();
-		void convert_finished();
-		void combo_codecs_changed(int idx);
-		void reset_buttons();
+		void btnStartClicked();
+		void convertFinished();
+		void comboCodecsIndexChanged(int idx);
+		void resetButtons();
 
-		void ogg_quality_changed(int value);
-		void combo_cbr_lame_changed(int idx);
-		void lame_vbr_changed(int idx);
+		void oggQualityChanged(int value);
+		void comboLameCbrIndexChanged(int idx);
+		void comboLameVbrIndexChanged(int idx);
 
-		void num_threads_changed(int value);
+		void threadCountChanged(int value);
 
 	private:
-		void check_start_button();
-		Converter* create_converter();
+		void checkStartButton();
+		Converter* createConverter();
 
-		void retranslate_ui() override;
-		void init_ui() override;
+		void retranslate() override;
+		void initUi() override;
 };
 
 

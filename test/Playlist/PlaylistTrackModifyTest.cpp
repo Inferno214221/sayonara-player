@@ -29,37 +29,37 @@ private slots:
 
 void PlaylistTrackModifyTest::trackModifiedTest()
 {
-	MetaDataList v_md = Test::Playlist::create_v_md(0, 100);
+	MetaDataList tracks = Test::Playlist::create_v_md(0, 100);
 
 	int i=0;
-	for(auto it=v_md.begin(); it != v_md.end(); it++, i++)
+	for(auto it=tracks.begin(); it != tracks.end(); it++, i++)
 	{
-		it->set_artist("artist0");
+		it->setArtist("artist0");
 	}
 
 	auto pl = std::make_shared<PL>(1, PlaylistType::Std, "Hallo");
-	pl->create_playlist(v_md);
+	pl->createPlaylist(tracks);
 
-	MetaDataList v_md_old, v_md_new;
-	std::copy_n(v_md.begin(), 10, std::back_inserter(v_md_old));
-	v_md_new = v_md_old;
+	MetaDataList oldTracks, newTracks;
+	std::copy_n(tracks.begin(), 10, std::back_inserter(oldTracks));
+	newTracks = oldTracks;
 
 	i = 0;
-	for(auto it=v_md_new.begin(); it != v_md_new.end(); it++, i++)
+	for(auto it=newTracks.begin(); it != newTracks.end(); it++, i++)
 	{
-		it->set_artist( QString("artist%1").arg(i) );
+		it->setArtist( QString("artist%1").arg(i) );
 	}
 
 	auto* mdcn = Tagging::ChangeNotifier::instance();
-	QSignalSpy spy(mdcn, &Tagging::ChangeNotifier::sig_metadata_changed);
+	QSignalSpy spy(mdcn, &Tagging::ChangeNotifier::sigMetadataChanged);
 
-	mdcn->change_metadata(v_md_old, v_md_new);
+	mdcn->changeMetadata(oldTracks, newTracks);
 
 	QCOMPARE(spy.count(), 1);
 
-	v_md = pl->tracks();
+	tracks = pl->tracks();
 	i = 0;
-	for(auto it=v_md.begin(); it != v_md.end(); it++, i++)
+	for(auto it=tracks.begin(); it != tracks.end(); it++, i++)
 	{
 		if(i < 10){
 			QString artist = it->artist();
@@ -74,32 +74,32 @@ void PlaylistTrackModifyTest::trackModifiedTest()
 
 void PlaylistTrackModifyTest::trackDeletedTest()
 {
-	MetaDataList v_md = Test::Playlist::create_v_md(0, 100);
+	MetaDataList tracks = Test::Playlist::create_v_md(0, 100);
 
 	int i=0;
-	for(auto it=v_md.begin(); it != v_md.end(); it++, i++)
+	for(auto it=tracks.begin(); it != tracks.end(); it++, i++)
 	{
-		it->set_artist("artist0");
+		it->setArtist("artist0");
 	}
 
 	auto pl = std::make_shared<PL>(1, PlaylistType::Std, "Hallo");
-	pl->create_playlist(v_md);
+	pl->createPlaylist(tracks);
 
-	MetaDataList v_md_to_delete;
-	std::copy_if(v_md.begin(), v_md.end(), std::back_inserter(v_md_to_delete), [](const MetaData& md){
+	MetaDataList tracksToDelete;
+	std::copy_if(tracks.begin(), tracks.end(), std::back_inserter(tracksToDelete), [](const MetaData& md){
 		return (md.id() % 5 == 0);
 	});
 
 	auto* mdcn = Tagging::ChangeNotifier::instance();
-	QSignalSpy spy(mdcn, &Tagging::ChangeNotifier::sig_metadata_deleted);
+	QSignalSpy spy(mdcn, &Tagging::ChangeNotifier::sigMetadataDeleted);
 
-	mdcn->delete_metadata(v_md_to_delete);
+	mdcn->deleteMetadata(tracksToDelete);
 
 	QCOMPARE(spy.count(), 1);
 
-	v_md = pl->tracks();
+	tracks = pl->tracks();
 	i = 0;
-	for(auto it=v_md.begin(); it != v_md.end(); it++, i++)
+	for(auto it=tracks.begin(); it != tracks.end(); it++, i++)
 	{
 		QVERIFY((it->id() % 5) != 0);
 	}

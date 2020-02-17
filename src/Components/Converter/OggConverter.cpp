@@ -1,6 +1,6 @@
 /* OggConverter.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -27,9 +27,9 @@ OggConverter::OggConverter(int quality, QObject* parent) :
 	Converter(quality, parent)
 {}
 
-OggConverter::~OggConverter() {}
+OggConverter::~OggConverter() = default;
 
-QStringList OggConverter::supported_input_formats() const
+QStringList OggConverter::supportedInputFormats() const
 {
 	return {"flac", "wav"};
 }
@@ -39,12 +39,12 @@ QString OggConverter::binary() const
 	return "oggenc";
 }
 
-QStringList OggConverter::process_entry(const MetaData& md) const
+QStringList OggConverter::processEntry(const MetaData& md) const
 {
 	QStringList ret
 	{
 		QString("-q"), QString("%1").arg(quality()),
-		QString("-o"), QString("%1").arg(target_file(md)),
+		QString("-o"), QString("%1").arg(targetFile(md)),
 		QString("%1").arg(md.filepath())
 	};
 

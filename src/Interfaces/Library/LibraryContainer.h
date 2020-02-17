@@ -28,7 +28,7 @@ namespace Library
 			 * @brief Should return the translated name displayed in the library view combobox
 			 * @return display name
 			 */
-			virtual QString				display_name() const=0;
+			virtual QString				displayName() const=0;
 
 			/**
 			 * @brief Should return the UI for the library view
@@ -65,7 +65,7 @@ namespace Library
 			 * every new plugin
 			 * @return
 			 */
-			virtual bool				is_local() const=0;
+			virtual bool				isLocal() const=0;
 	};
 }
 

@@ -1,6 +1,6 @@
 /* AlbumCoverDelegate.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -28,13 +28,15 @@
 #include <QFontMetrics>
 
 Library::CoverDelegate::CoverDelegate(QObject* parent) :
-	QItemDelegate(parent)
+	QStyledItemDelegate(parent)
 {}
 
 Library::CoverDelegate::~CoverDelegate() = default;
 
 void Library::CoverDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
+	QStyledItemDelegate::paint(painter, option, index);
+
 	const int text_offset = 3;
 
 	QFontMetrics fm = option.fontMetrics;
@@ -44,11 +46,11 @@ void Library::CoverDelegate::paint(QPainter* painter, const QStyleOptionViewItem
 	painter->translate(option.rect.x(), option.rect.y());
 
 //	QPalette palette = option.palette;
-//	QBrush dark_bg = palette.alternateBase();
-//	painter->fillRect(2, 0, option.rect.width() - 4, option.rect.height() - 4, dark_bg);
+//	QBrush darkBackground = palette.alternateBase();
+//	painter->fillRect(2, 0, option.rect.width() - 4, option.rect.height() - 4, darkBackground);
 
 	{
-		QPixmap pm = index.data(Qt::DecorationRole).value<QPixmap>();
+		QPixmap pm = index.data(CoverModel::CoverRole).value<QPixmap>();
 		if(pm.isNull()){
 			painter->restore();
 			return;
@@ -56,23 +58,22 @@ void Library::CoverDelegate::paint(QPainter* painter, const QStyleOptionViewItem
 
 		painter->translate(0, zoom / 20);
 
-		int x_zoom = (option.rect.width() - zoom) / 2;
-		painter->fillRect(x_zoom - 2, -2, zoom + 3, zoom + 3, option.palette.color(QPalette::Active, QPalette::Window).darker());
+		int xZoom = (option.rect.width() - zoom) / 2;
 
 		QPen pen = painter->pen();
-		QColor old_color = pen.color();
+		QColor oldColor = pen.color();
 
 		QColor color = option.palette.color(QPalette::Active, QPalette::Highlight);
 		pen.setColor(color);
 		painter->setPen(pen);
 
-		painter->drawRect(x_zoom - 2, -2, zoom + 3, zoom + 3);
+		painter->drawRect(xZoom - 2, -2, zoom + 3, zoom + 3);
 
-		pen.setColor(old_color);
+		pen.setColor(oldColor);
 		painter->setPen(pen);
 
 		painter->setRenderHint(QPainter::SmoothPixmapTransform, true);
-		QRectF target(x_zoom, 0, zoom, zoom);
+		QRectF target(xZoom, 0, zoom, zoom);
 		QRectF source(0, 0, pm.width(), pm.height());
 		painter->drawPixmap(target, pm, source);
 

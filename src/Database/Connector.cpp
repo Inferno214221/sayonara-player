@@ -1,6 +1,6 @@
 /* DatabaseConnector.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -55,9 +55,9 @@ namespace Algorithm=Util::Algorithm;
 struct Connector::Private
 {
 	QString					connection_name;
-	QString					default_source_dir;
-	QString					default_target_dir;
-	QString					default_db_filename;
+	QString					default_sourceDirectory;
+	QString					default_targetDirectory;
+	QString					default_databseFilename;
 
 	DB::Bookmarks*			bookmark_connector=nullptr;
 	DB::Playlist*			playlist_connector=nullptr;
@@ -124,21 +124,21 @@ public:
 };
 
 
-Connector::Connector(const QString& source_dir, const QString& target_dir, const QString& db_filename) :
-	DB::Base(0, source_dir, target_dir, db_filename, nullptr)
+Connector::Connector(const QString& sourceDirectory, const QString& targetDirectory, const QString& databseFilename) :
+	DB::Base(0, sourceDirectory, targetDirectory, databseFilename, nullptr)
 {
 	m = Pimpl::make<Private>();
 
-	if(!this->is_initialized()){
+	if(!this->isInitialized()){
 		throw DatabaseNotCreatedException();
 	}
 
 	else
 	{
-		m->generic_library_database = new LibraryDatabase(connection_name(), db_id(), -1);
+		m->generic_library_database = new LibraryDatabase(connectionName(), databaseId(), -1);
 		m->library_dbs << m->generic_library_database;
 
-		apply_fixes();
+		applyFixes();
 	}
 }
 
@@ -149,21 +149,21 @@ DB::Connector* Connector::instance()
 	return instance_custom(QString(), QString(), QString());
 }
 
-DB::Connector* Connector::instance_custom(QString source_dir, QString target_dir, QString db_filename)
+DB::Connector* Connector::instance_custom(QString sourceDirectory, QString targetDirectory, QString databseFilename)
 {
-	if(source_dir.isEmpty()) {
-		source_dir = ":/Database";
+	if(sourceDirectory.isEmpty()) {
+		sourceDirectory = ":/Database";
 	}
 
-	if(target_dir.isEmpty()) {
-		target_dir = Util::sayonara_path();
+	if(targetDirectory.isEmpty()) {
+		targetDirectory = Util::sayonaraPath();
 	}
 
-	if(db_filename.isEmpty()) {
-		db_filename = "player.db";
+	if(databseFilename.isEmpty()) {
+		databseFilename = "player.db";
 	}
 
-	static Connector connector(source_dir, target_dir, db_filename);
+	static Connector connector(sourceDirectory, targetDirectory, databseFilename);
 	return &connector;
 }
 
@@ -176,7 +176,7 @@ bool Connector::updateAlbumCissearchFix()
 
 	AlbumList albums;
 
-	LibraryDatabase* lib_db = library_db(-1, 0);
+	LibraryDatabase* lib_db = libraryDatabase(-1, 0);
 	lib_db->getAllAlbums(albums, true);
 
 	for(const Album& album : albums)
@@ -184,11 +184,11 @@ bool Connector::updateAlbumCissearchFix()
 		QString str = "UPDATE albums SET cissearch=:cissearch WHERE albumID=:id;";
 		Query q(this);
 		q.prepare(str);
-		q.bindValue(":cissearch",	Util::cvt_not_null(album.name().toLower()));
+		q.bindValue(":cissearch",	Util::convertNotNull(album.name().toLower()));
 		q.bindValue(":id",			album.id());
 
 		if(!q.exec()){
-			q.show_error("Cannot update album cissearch");
+			q.showError("Cannot update album cissearch");
 		}
 	}
 
@@ -198,7 +198,7 @@ bool Connector::updateAlbumCissearchFix()
 bool Connector::updateArtistCissearchFix()
 {
 	ArtistList artists;
-	LibraryDatabase* lib_db = library_db(-1, 0);
+	LibraryDatabase* lib_db = libraryDatabase(-1, 0);
 	lib_db->getAllArtists(artists, true);
 	for(const Artist& artist : artists)
 	{
@@ -207,11 +207,11 @@ bool Connector::updateArtistCissearchFix()
 
 		Query q(this);
 		q.prepare(str);
-		q.bindValue(":cissearch",	Util::cvt_not_null(artist.name().toLower()));
+		q.bindValue(":cissearch",	Util::convertNotNull(artist.name().toLower()));
 		q.bindValue(":id",			artist.id());
 
 		if(!q.exec()){
-			q.show_error("Cannot update artist cissearch");
+			q.showError("Cannot update artist cissearch");
 		}
 	}
 
@@ -221,7 +221,7 @@ bool Connector::updateArtistCissearchFix()
 bool Connector::updateTrackCissearchFix()
 {
 	MetaDataList v_md;
-	LibraryDatabase* lib_db = library_db(-1, 0);
+	LibraryDatabase* lib_db = libraryDatabase(-1, 0);
 	lib_db->getAllTracks(v_md);
 	for(const MetaData& md : v_md) {
 		lib_db->updateTrack(md);
@@ -232,9 +232,9 @@ bool Connector::updateTrackCissearchFix()
 
 bool Connector::updateLostArtists()
 {
-	LibraryDatabase* lib_db = library_db(-1, 0);
+	LibraryDatabase* lib_db = libraryDatabase(-1, 0);
 	if(!lib_db){
-		sp_log(Log::Error, this) << "Cannot find Library";
+		spLog(Log::Error, this) << "Cannot find Library";
 		return false;
 	}
 
@@ -267,9 +267,9 @@ bool Connector::updateLostArtists()
 
 bool Connector::updateLostAlbums()
 {
-	LibraryDatabase* lib_db = library_db(-1, 0);
+	LibraryDatabase* lib_db = libraryDatabase(-1, 0);
 	if(!lib_db){
-		sp_log(Log::Error, this) << "Cannot find Library";
+		spLog(Log::Error, this) << "Cannot find Library";
 		return false;
 	}
 
@@ -298,47 +298,47 @@ bool Connector::updateLostAlbums()
 	return true;
 }
 
-int Connector::old_db_version() const
+int Connector::oldDatabaseVersion() const
 {
 	return m->old_db_version;
 }
 
-int Connector::get_max_db_version()
+int Connector::highestDatabaseVersion()
 {
 	return 25;
 }
 
-bool Connector::apply_fixes()
+bool Connector::applyFixes()
 {
 	QString str_version;
 	int version;
 	bool success;
-	const int LatestVersion = get_max_db_version();
+	const int LatestVersion = highestDatabaseVersion();
 
-	success = settings_connector()->load_setting("version", str_version);
+	success = settingsConnector()->loadSetting("version", str_version);
 	version = str_version.toInt(&success);
 	m->old_db_version = version;
 
-	sp_log(Log::Info, this)
+	spLog(Log::Info, this)
 			<< "Database Version:  " << version << ". "
 			<< "Latest Version: " << LatestVersion;
 
 	if(version == LatestVersion) {
-		sp_log(Log::Info, this) << "No need to update db";
+		spLog(Log::Info, this) << "No need to update db";
 		return true;
 	}
 
 	else if(!success){
-		 sp_log(Log::Warning, this) << "Cannot get database version";
+		 spLog(Log::Warning, this) << "Cannot get database version";
 	}
 
-	sp_log(Log::Info, this) << "Apply fixes";
+	spLog(Log::Info, this) << "Apply fixes";
 
 	if(version < 1)
 	{
-		check_and_insert_column("playlisttotracks", "position", "INTEGER");
-		check_and_insert_column("playlisttotracks", "filepath", "VARCHAR(512)");
-		check_and_insert_column("tracks", "genre", "VARCHAR(1024)");
+		checkAndInsertColumn("playlisttotracks", "position", "INTEGER");
+		checkAndInsertColumn("playlisttotracks", "filepath", "VARCHAR(512)");
+		checkAndInsertColumn("tracks", "genre", "VARCHAR(1024)");
 
 		QString create_savedstreams = QString("CREATE TABLE savedstreams ") +
 				"( " +
@@ -346,7 +346,7 @@ bool Connector::apply_fixes()
 				"	url VARCHAR(255) " +
 				");";
 
-		check_and_create_table("savedstreams", create_savedstreams);
+		checkAndCreateTable("savedstreams", create_savedstreams);
 
 
 		QString create_savedpodcasts = QString("CREATE TABLE savedpodcasts ") +
@@ -355,7 +355,7 @@ bool Connector::apply_fixes()
 				"	url VARCHAR(255) " +
 				");";
 
-		check_and_create_table("savedpodcasts", create_savedpodcasts);
+		checkAndCreateTable("savedpodcasts", create_savedpodcasts);
 	}
 
 	if(version < 3)
@@ -363,9 +363,9 @@ bool Connector::apply_fixes()
 		db().transaction();
 
 		bool success = true;
-		success &= check_and_insert_column("tracks", "cissearch", "VARCHAR(512)");
-		success &= check_and_insert_column("albums", "cissearch", "VARCHAR(512)");
-		success &= check_and_insert_column("artists", "cissearch", "VARCHAR(512)");
+		success &= checkAndInsertColumn("tracks", "cissearch", "VARCHAR(512)");
+		success &= checkAndInsertColumn("albums", "cissearch", "VARCHAR(512)");
+		success &= checkAndInsertColumn("artists", "cissearch", "VARCHAR(512)");
 
 		Q_UNUSED(success)
 
@@ -378,7 +378,7 @@ bool Connector::apply_fixes()
 
 
 	if(version == 3) {
-		check_and_drop_table("VisualStyles");
+		checkAndDropTable("VisualStyles");
 	}
 
 	if(version < 4) {
@@ -401,13 +401,13 @@ bool Connector::apply_fixes()
 				"  fadingStepsLevel INTEGER "
 				");";
 
-		bool success = check_and_create_table("VisualStyles", create_vis_styles);
-		if(success) settings_connector()->store_setting("version", 4);
+		bool success = checkAndCreateTable("VisualStyles", create_vis_styles);
+		if(success) settingsConnector()->storeSetting("version", 4);
 	}
 
 	if(version < 5) {
-		bool success = check_and_insert_column("tracks", "rating", "integer");
-		if(success) settings_connector()->store_setting("version", 5);
+		bool success = checkAndInsertColumn("tracks", "rating", "integer");
+		if(success) settingsConnector()->storeSetting("version", 5);
 	}
 
 	if(version < 6) {
@@ -420,30 +420,30 @@ bool Connector::apply_fixes()
 				"   FOREIGN KEY (trackid) REFERENCES tracks(trackid) " +
 				");";
 
-		bool success = check_and_create_table("savedbookmarks", create_savedbookmarks);
-		if(success) settings_connector()->store_setting("version", 6);
+		bool success = checkAndCreateTable("savedbookmarks", create_savedbookmarks);
+		if(success) settingsConnector()->storeSetting("version", 6);
 	}
 
 	if(version < 7) {
-		bool success = check_and_insert_column("albums", "rating", "integer");
-		if(success) settings_connector()->store_setting("version", 7);
+		bool success = checkAndInsertColumn("albums", "rating", "integer");
+		if(success) settingsConnector()->storeSetting("version", 7);
 	}
 
 	if(version < 9) {
-		bool success = check_and_insert_column("playlists", "temporary", "integer");
+		bool success = checkAndInsertColumn("playlists", "temporary", "integer");
 
 		if(success) {
 			Query q(this);
 			QString querytext = "UPDATE playlists SET temporary=0;";
 			q.prepare(querytext);
 			if(q.exec()){
-				settings_connector()->store_setting("version", 9);
+				settingsConnector()->storeSetting("version", 9);
 			};
 		}
 	}
 
 	if(version < 10){
-		bool success = check_and_insert_column("playlisttotracks", "db_id", "integer");
+		bool success = checkAndInsertColumn("playlisttotracks", "db_id", "integer");
 		if(success) {
 			Query q(this);
 			Query q_index(this);
@@ -456,7 +456,7 @@ bool Connector::apply_fixes()
 			q_index.prepare(index_query);
 
 			if(q.exec()){
-				settings_connector()->store_setting("version", 10);
+				settingsConnector()->storeSetting("version", 10);
 			};
 
 			q_index.exec();
@@ -492,30 +492,30 @@ bool Connector::apply_fixes()
 		q.prepare(querytext);
 
 		if(q.exec()){
-			settings_connector()->store_setting("version", 12);
+			settingsConnector()->storeSetting("version", 12);
 		}
 	}
 
 	if(version < 13){
-		bool success = check_and_insert_column("tracks", "albumArtistID", "integer", "-1");
+		bool success = checkAndInsertColumn("tracks", "albumArtistID", "integer", "-1");
 
 		Query q(this);
 		q.prepare("UPDATE tracks SET albumArtistID=artistID;");
 		success = success && q.exec();
 
 		if(success){
-			settings_connector()->store_setting("version", 13);
+			settingsConnector()->storeSetting("version", 13);
 		}
 	}
 
 	if(version < 14){
-		bool success=check_and_insert_column("tracks", "libraryID", "integer", "0");
+		bool success=checkAndInsertColumn("tracks", "libraryID", "integer", "0");
 		Query q(this);
 		q.prepare("UPDATE tracks SET libraryID=0;");
 		success = success && q.exec();
 
 		if(success){
-			settings_connector()->store_setting("version", 14);
+			settingsConnector()->storeSetting("version", 14);
 		}
 	}
 
@@ -531,23 +531,23 @@ bool Connector::apply_fixes()
 			"  PRIMARY KEY (libraryID, libraryPath) "
 			"); ";
 
-		bool success=check_and_create_table("Libraries", create_string);
+		bool success=checkAndCreateTable("Libraries", create_string);
 		if(success)
 		{
-			settings_connector()->store_setting("version", 15);
+			settingsConnector()->storeSetting("version", 15);
 		}
 	}
 
 	if(version < 16)
 	{
-		bool success = check_and_insert_column("tracks", "fileCissearch", "VARCHAR(256)");
+		bool success = checkAndInsertColumn("tracks", "fileCissearch", "VARCHAR(256)");
 
 		if(success)
 		{
-			settings_connector()->store_setting("version", 16);
+			settingsConnector()->storeSetting("version", 16);
 
 			MetaDataList v_md;
-			LibraryDatabase* lib_db = new DB::LibraryDatabase(connection_name(), db_id(), -1);
+			LibraryDatabase* lib_db = new DB::LibraryDatabase(connectionName(), databaseId(), -1);
 			lib_db->getAllTracks(v_md);
 			this->transaction();
 			for(const MetaData& md : v_md) {
@@ -561,11 +561,11 @@ bool Connector::apply_fixes()
 
 	if(version < 17)
 	{
-		bool success = check_and_insert_column("tracks", "comment", "VARCHAR(1024)");
+		bool success = checkAndInsertColumn("tracks", "comment", "VARCHAR(1024)");
 
 		if(success)
 		{
-			settings_connector()->store_setting("version", 17);
+			settingsConnector()->storeSetting("version", 17);
 		}
 	}
 
@@ -573,7 +573,7 @@ bool Connector::apply_fixes()
 	{
 		if(updateLostArtists() && updateLostAlbums())
 		{
-			settings_connector()->store_setting("version", 18);
+			settingsConnector()->storeSetting("version", 18);
 		}
 	}
 
@@ -587,26 +587,26 @@ bool Connector::apply_fixes()
 			"  shortcut VARCHAR(32) NOT NULL "
 			"); ";
 
-		bool success = check_and_create_table("Shortcuts", create_string);
+		bool success = checkAndCreateTable("Shortcuts", create_string);
 		if(success)
 		{
 			QString raw;
-			settings_connector()->load_setting("shortcuts", raw);
+			settingsConnector()->loadSetting("shortcuts", raw);
 
 			RawShortcutMap rsm = RawShortcutMap::fromString(raw);
 			for(const QString& key : rsm.keys())
 			{
-				this->shortcut_connector()->setShortcuts(key, rsm.value(key));
+				this->shortcutConnector()->setShortcuts(key, rsm.value(key));
 			}
 
-			settings_connector()->store_setting("shortcuts", "<deprecated>");
-			settings_connector()->store_setting("version", 19);
+			settingsConnector()->storeSetting("shortcuts", "<deprecated>");
+			settingsConnector()->storeSetting("version", 19);
 		}
 	}
 
 	if(version < 20)
 	{
-		check_and_drop_table("Covers");
+		checkAndDropTable("Covers");
 
 		bool success;
 		{
@@ -619,7 +619,7 @@ bool Connector::apply_fixes()
 				"  data BLOB "
 				");";
 
-			success = check_and_create_table("Covers", create_string);
+			success = checkAndCreateTable("Covers", create_string);
 		}
 
 		{
@@ -633,7 +633,7 @@ bool Connector::apply_fixes()
 				"  FOREIGN KEY(coverId) REFERENCES Covers(coverId) ON DELETE CASCADE"
 				");";
 
-			success &= check_and_create_table("TrackCoverMap", create_string);
+			success &= checkAndCreateTable("TrackCoverMap", create_string);
 		}
 
 		{
@@ -647,27 +647,27 @@ bool Connector::apply_fixes()
 				"  FOREIGN KEY(coverId) REFERENCES Covers(coverId) ON DELETE CASCADE"
 				");";
 
-			success &= check_and_create_table("AlbumCoverMap", create_string);
+			success &= checkAndCreateTable("AlbumCoverMap", create_string);
 		}
 
 		if(success)
 		{
-			settings_connector()->store_setting("version", 20);
+			settingsConnector()->storeSetting("version", 20);
 		}
 	}
 
 	if(version < 21)
 	{
-		check_and_drop_table("Statistics");
-		check_and_drop_table("Lyrics");
-		check_and_drop_table("Genres");
+		checkAndDropTable("Statistics");
+		checkAndDropTable("Lyrics");
+		checkAndDropTable("Genres");
 
-		settings_connector()->store_setting("version", 21);
+		settingsConnector()->storeSetting("version", 21);
 	}
 
 	if(version < 22)
 	{
-		LibraryDatabase* lib_db = library_db(-1, 0);
+		LibraryDatabase* lib_db = libraryDatabase(-1, 0);
 
 		QMap<QString, AlbumId> albums;
 		QMap<QString, ArtistId> artists;
@@ -677,26 +677,26 @@ bool Connector::apply_fixes()
 
 		for(auto it=tracks.begin(); it != tracks.end(); it++)
 		{
-			albums[it->album()] = it->album_id();
-			artists[it->artist()] = it->artist_id();
-			artists[it->album_artist()] = it->album_artist_id();
+			albums[it->album()] = it->albumId();
+			artists[it->artist()] = it->artistId();
+			artists[it->albumArtist()] = it->albumArtistId();
 		}
 
 		for(auto it=tracks.begin(); it != tracks.end(); it++)
 		{
-			AlbumId correct_album_id = albums[it->album()];
-			ArtistId correct_artist_id = artists[it->artist()];
-			ArtistId correct_album_artist_id = artists[it->album_artist()];
+			AlbumId correct_albumId = albums[it->album()];
+			ArtistId correct_artistId = artists[it->artist()];
+			ArtistId correct_album_artistId = artists[it->albumArtist()];
 			this->transaction();
-			if(	(it->album_id() != correct_album_id) ||
-				(it->artist_id() != correct_artist_id) ||
-				(it->album_artist_id() != correct_album_artist_id))
+			if(	(it->albumId() != correct_albumId) ||
+				(it->artistId() != correct_artistId) ||
+				(it->albumArtistId() != correct_album_artistId))
 			{
-				sp_log(Log::Info, this) << "Move track " << it->filepath() << "from album " << it->album_id() << " to " << correct_album_id;
+				spLog(Log::Info, this) << "Move track " << it->filepath() << "from album " << it->albumId() << " to " << correct_albumId;
 
-				it->set_album_id(correct_album_id);
-				it->set_artist_id(correct_artist_id);
-				it->set_album_artist_id(correct_album_artist_id);
+				it->setAlbumId(correct_albumId);
+				it->setArtistId(correct_artistId);
+				it->setAlbumArtistId(correct_album_artistId);
 
 				lib_db->updateTrack(*it);
 			}
@@ -717,13 +717,13 @@ bool Connector::apply_fixes()
 			q.exec();
 		}
 
-		settings_connector()->store_setting("version", 22);
+		settingsConnector()->storeSetting("version", 22);
 	}
 
 	if(version < 23)
 	{
 		{
-			check_and_create_table(
+			checkAndCreateTable(
 				"Sessions",
 				"CREATE TABLE IF NOT EXISTS Sessions "
 				"("
@@ -753,10 +753,10 @@ bool Connector::apply_fixes()
 		}
 
 		{
-			check_and_drop_table("Session");
+			checkAndDropTable("Session");
 		}
 
-		settings_connector()->store_setting("version", 23);
+		settingsConnector()->storeSetting("version", 23);
 	}
 
 	if(version < 24)
@@ -784,34 +784,34 @@ bool Connector::apply_fixes()
 			q.exec();
 		}
 
-		settings_connector()->store_setting("version", 24);
+		settingsConnector()->storeSetting("version", 24);
 	}
 
 	if(version < 25)
 	{
-		check_and_insert_column("savedpodcasts", "reversed", "INTEGER", "0");
-		settings_connector()->store_setting("version", 25);
+		checkAndInsertColumn("savedpodcasts", "reversed", "INTEGER", "0");
+		settingsConnector()->storeSetting("version", 25);
 	}
 
 	return true;
 }
 
-DB::LibraryDatabases Connector::library_dbs() const
+DB::LibraryDatabases Connector::libraryDatabases() const
 {
 	return m->library_dbs;
 }
 
-DB::LibraryDatabase* Connector::library_db(LibraryId library_id, DbId db_id)
+DB::LibraryDatabase* Connector::libraryDatabase(LibraryId libraryId, DbId databaseId)
 {
 	LibDbIterator it = Algorithm::find(m->library_dbs, [=](DB::LibraryDatabase* db){
-		return (db->library_id() == library_id && db->db_id() == db_id);
+		return (db->libraryId() == libraryId && db->databaseId() == databaseId);
 	});
 
 	if(it == m->library_dbs.end())
 	{
-		sp_log(Log::Warning, this) << "Could not find Library:"
-								" DB ID = " << int(db_id)
-							 << " LibraryID = " << int(library_id);
+		spLog(Log::Warning, this) << "Could not find Library:"
+								" DB ID = " << int(databaseId)
+							 << " LibraryID = " << int(libraryId);
 
 		return m->generic_library_database;
 	}
@@ -820,16 +820,16 @@ DB::LibraryDatabase* Connector::library_db(LibraryId library_id, DbId db_id)
 }
 
 
-DB::LibraryDatabase* Connector::register_library_db(LibraryId library_id)
+DB::LibraryDatabase* Connector::registerLibraryDatabase(LibraryId libraryId)
 {
 	DB::LibraryDatabase* lib_db = nullptr;
 	LibDbIterator it = Algorithm::find(m->library_dbs, [=](DB::LibraryDatabase* db){
-		return (db->library_id() == library_id);
+		return (db->libraryId() == libraryId);
 	});
 
 	if(it == m->library_dbs.end())
 	{
-		lib_db = new DB::LibraryDatabase(this->connection_name(), this->db_id(), library_id);
+		lib_db = new DB::LibraryDatabase(this->connectionName(), this->databaseId(), libraryId);
 		m->library_dbs << lib_db;
 	}
 
@@ -841,10 +841,10 @@ DB::LibraryDatabase* Connector::register_library_db(LibraryId library_id)
 	return lib_db;
 }
 
-void Connector::delete_library_db(LibraryId library_id)
+void Connector::deleteLibraryDatabase(LibraryId libraryId)
 {
 	LibDbIterator it = Algorithm::find(m->library_dbs, [=](DB::LibraryDatabase* db){
-		return (db->library_id() == library_id);
+		return (db->libraryId() == libraryId);
 	});
 
 	if(it != m->library_dbs.end())
@@ -858,93 +858,93 @@ void Connector::delete_library_db(LibraryId library_id)
 }
 
 
-DB::Playlist* Connector::playlist_connector()
+DB::Playlist* Connector::playlistConnector()
 {
 	if(!m->playlist_connector){
-		m->playlist_connector = new DB::Playlist(this->connection_name(), this->db_id());
+		m->playlist_connector = new DB::Playlist(this->connectionName(), this->databaseId());
 	}
 
 	return m->playlist_connector;
 }
 
 
-DB::Bookmarks* Connector::bookmark_connector()
+DB::Bookmarks* Connector::bookmarkConnector()
 {
 	if(!m->bookmark_connector){
-		m->bookmark_connector = new DB::Bookmarks(this->connection_name(), this->db_id());
+		m->bookmark_connector = new DB::Bookmarks(this->connectionName(), this->databaseId());
 	}
 
 	return m->bookmark_connector;
 }
 
-DB::Streams* Connector::stream_connector()
+DB::Streams* Connector::streamConnector()
 {
 	if(!m->stream_connector){
-		m->stream_connector = new DB::Streams(this->connection_name(), this->db_id());
+		m->stream_connector = new DB::Streams(this->connectionName(), this->databaseId());
 	}
 
 	return m->stream_connector;
 }
 
-DB::Podcasts* Connector::podcast_connector()
+DB::Podcasts* Connector::podcastConnector()
 {
 	if(!m->podcast_connector){
-		m->podcast_connector = new DB::Podcasts(this->connection_name(), this->db_id());
+		m->podcast_connector = new DB::Podcasts(this->connectionName(), this->databaseId());
 	}
 
 	return m->podcast_connector;
 }
 
-DB::VisualStyles* Connector::visual_style_connector()
+DB::VisualStyles* Connector::visualStyleConnector()
 {
 	if(!m->visual_style_connector){
-		m->visual_style_connector = new DB::VisualStyles(this->connection_name(), this->db_id());
+		m->visual_style_connector = new DB::VisualStyles(this->connectionName(), this->databaseId());
 	}
 
 	return m->visual_style_connector;
 }
 
-DB::Settings* Connector::settings_connector()
+DB::Settings* Connector::settingsConnector()
 {
 	if(!m->settings_connector){
-		m->settings_connector = new DB::Settings(this->connection_name(), this->db_id());
+		m->settings_connector = new DB::Settings(this->connectionName(), this->databaseId());
 	}
 
 	return m->settings_connector;
 }
 
-DB::Shortcuts*Connector::shortcut_connector()
+DB::Shortcuts*Connector::shortcutConnector()
 {
 	if(!m->shortcut_connector){
-		m->shortcut_connector = new DB::Shortcuts(this->connection_name(), this->db_id());
+		m->shortcut_connector = new DB::Shortcuts(this->connectionName(), this->databaseId());
 	}
 
 	return m->shortcut_connector;
 }
 
-DB::Library* Connector::library_connector()
+DB::Library* Connector::libraryConnector()
 {
 	if(!m->library_connector){
-		m->library_connector = new DB::Library(this->connection_name(), this->db_id());
+		m->library_connector = new DB::Library(this->connectionName(), this->databaseId());
 	}
 
 	return m->library_connector;
 }
 
-DB::Covers* Connector::cover_connector()
+DB::Covers* Connector::coverConnector()
 {
 	if(!m->cover_connector){
-		m->cover_connector = new DB::Covers(this->connection_name(), this->db_id());
+		m->cover_connector = new DB::Covers(this->connectionName(), this->databaseId());
 	}
 
 	return m->cover_connector;
 }
 
 
-DB::Session* DB::Connector::session_connector()
+DB::Session* DB::Connector::sessionConnector()
 {
 	if(!m->session_connector){
-		m->session_connector = new DB::Session(this->connection_name(), this->db_id());
+		m->session_connector = new DB::Session(this->connectionName(), this->databaseId());
 	}
 
 	return m->session_connector;

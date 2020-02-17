@@ -1,6 +1,6 @@
 /* EngineUtils.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -66,19 +66,19 @@ namespace Engine
 		 * @param queue
 		 * @param max_time_ms
 		 */
-		void config_queue(GstElement* queue, guint64 max_time_ms=100);
+		void configureQueue(GstElement* queue, guint64 max_time_ms=100);
 
 		/**
 		 * @brief config_sink
 		 * @param sink
 		 */
-		void config_sink(GstElement* sink);
+		void configureSink(GstElement* sink);
 
 		/**
 		 * @brief config_lame
 		 * @param lame
 		 */
-		void config_lame(GstElement* lame);
+		void configureLame(GstElement* lame);
 
 		/**
 		 * @brief tee_connect
@@ -87,7 +87,7 @@ namespace Engine
 		 * @param queue_name
 		 * @return
 		 */
-		bool tee_connect(GstElement* tee, GstElement* queue, const QString& queue_name);
+		bool connectTee(GstElement* tee, GstElement* queue, const QString& queue_name);
 
 		/**
 		 * @brief has_element
@@ -95,7 +95,7 @@ namespace Engine
 		 * @param element
 		 * @return
 		 */
-		bool has_element(GstBin* bin, GstElement* element);
+		bool hasElement(GstBin* bin, GstElement* element);
 
 		/**
 		 * @brief test_and_error
@@ -103,7 +103,7 @@ namespace Engine
 		 * @param errorstr
 		 * @return
 		 */
-		bool test_and_error(void* element, const QString& errorstr);
+		bool testAndError(void* element, const QString& errorstr);
 
 		/**
 		 * @brief test_and_error_bool
@@ -111,7 +111,7 @@ namespace Engine
 		 * @param errorstr
 		 * @return
 		 */
-		bool test_and_error_bool(bool b, const QString& errorstr);
+		bool testAndErrorBool(bool b, const QString& errorstr);
 
 		/**
 		 * @brief create_element
@@ -119,7 +119,7 @@ namespace Engine
 		 * @param elem_name
 		 * @return
 		 */
-		bool create_element(GstElement** elem, const QString& elem_name);
+		bool createElement(GstElement** elem, const QString& elem_name);
 
 		/**
 		 * @brief create_element
@@ -128,48 +128,48 @@ namespace Engine
 		 * @param name
 		 * @return
 		 */
-		bool create_element(GstElement** elem, const QString& elem_name, const QString& name);
+		bool createElement(GstElement** elem, const QString& elem_name, const QString& name);
 
 		/**
 		 * @brief set_passthrough
 		 * @param e
 		 * @param b
 		 */
-		void set_passthrough(GstElement* e, bool b);
+		void setPassthrough(GstElement* e, bool b);
 
 		/**
 		 * @brief get_int64
 		 * @param value
 		 * @return
 		 */
-		GValue get_int64(gint64 value);
+		GValue getInt64(gint64 value);
 
 		/**
 		 * @brief get_uint64
 		 * @param value
 		 * @return
 		 */
-		GValue get_uint64(guint64 value);
+		GValue getUint64(guint64 value);
 
 		/**
 		 * @brief get_uint
 		 * @param value
 		 * @return
 		 */
-		GValue get_uint(guint value);
+		GValue getUint(guint value);
 
 		/**
 		 * @brief get_int
 		 * @param value
 		 * @return
 		 */
-		GValue get_int(gint value);
+		GValue getInt(gint value);
 
 		/**
 		 * @brief get_update_interval
 		 * @return
 		 */
-		MilliSeconds get_update_interval();
+		MilliSeconds getUpdateInterval();
 
 		template<typename T>
 
@@ -192,7 +192,7 @@ namespace Engine
 		 * @param key
 		 * @param value
 		 */
-		void set_value(GlibObject* object, const gchar* key, T value, std::true_type)
+		void setValue(GlibObject* object, const gchar* key, T value, std::true_type)
 		{
 			(void) object;
 			(void) key;
@@ -208,7 +208,7 @@ namespace Engine
 		 * @param key
 		 * @param value
 		 */
-		void set_value(GlibObject* object, const gchar* key, T value, std::false_type)
+		void setValue(GlibObject* object, const gchar* key, T value, std::false_type)
 		{
 			g_object_set(G_OBJECT(object), key, value, nullptr);
 		}
@@ -221,10 +221,10 @@ namespace Engine
 		 * @param key
 		 * @param value
 		 */
-		void set_value(GlibObject* object, const gchar* key, T value)
+		void setValue(GlibObject* object, const gchar* key, T value)
 		{
 			constexpr bool b = (std::is_integral<T>::value) && (sizeof(T) > sizeof(bool));
-			set_value(object, key, value, std::integral_constant<bool, b>());
+			setValue(object, key, value, std::integral_constant<bool, b>());
 		}
 
 
@@ -235,9 +235,9 @@ namespace Engine
 		 * @param key
 		 * @param value
 		 */
-		void set_values(GlibObject* object, const gchar* key, First value)
+		void setValues(GlibObject* object, const gchar* key, First value)
 		{
-			set_value(object, key, value);
+			setValue(object, key, value);
 		}
 
 
@@ -249,10 +249,10 @@ namespace Engine
 		 * @param value
 		 * @param args
 		 */
-		void set_values(GlibObject* object, const gchar* key, First value, Args... args)
+		void setValues(GlibObject* object, const gchar* key, First value, Args... args)
 		{
-			set_value(object, key, value);
-			set_values(object, std::forward<Args>(args)...);
+			setValue(object, key, value);
+			setValues(object, std::forward<Args>(args)...);
 		}
 
 
@@ -263,9 +263,9 @@ namespace Engine
 		 * @param key
 		 * @param value
 		 */
-		void set_int64_value(GlibObject* object, const gchar* key, gint64 value)
+		void setInt64Value(GlibObject* object, const gchar* key, gint64 value)
 		{
-			GValue val = get_int64(value);
+			GValue val = getInt64(value);
 			g_object_set_property(G_OBJECT(object), key, &val);
 		}
 
@@ -277,9 +277,9 @@ namespace Engine
 		 * @param key
 		 * @param value
 		 */
-		void set_int_value(GlibObject* object,const  gchar* key, gint value)
+		void setIntValue(GlibObject* object,const  gchar* key, gint value)
 		{
-			GValue val = get_int(value);
+			GValue val = getInt(value);
 			g_object_set_property(G_OBJECT(object), key, &val);
 		}
 
@@ -292,9 +292,9 @@ namespace Engine
 		 * @param key
 		 * @param value
 		 */
-		void set_uint64_value(GlibObject* object, const gchar* key, guint64 value)
+		void setUint64Value(GlibObject* object, const gchar* key, guint64 value)
 		{
-			GValue val = get_uint64(value);
+			GValue val = getUint64(value);
 			g_object_set_property(G_OBJECT(object), key, &val);
 		}
 
@@ -306,39 +306,39 @@ namespace Engine
 		 * @param key
 		 * @param value
 		 */
-		void set_uint_value(GlibObject* object, const gchar* key, guint value)
+		void setUintValue(GlibObject* object, const gchar* key, guint value)
 		{
-			GValue val = get_uint(value);
+			GValue val = getUint(value);
 			g_object_set_property(G_OBJECT(object), key, &val);
 		}
 
 		/**
-		 * @brief get_duration_ms
+		 * @brief get_durationMs
 		 * @param element
 		 * @return
 		 */
-		MilliSeconds get_duration_ms(GstElement* element);
+		MilliSeconds getDurationMs(GstElement* element);
 
 		/**
 		 * @brief get_position_ms
 		 * @param element
 		 * @return
 		 */
-		MilliSeconds get_position_ms(GstElement* element);
+		MilliSeconds getPositionMs(GstElement* element);
 
 		/**
 		 * @brief get_time_to_go
 		 * @param element
 		 * @return
 		 */
-		MilliSeconds get_time_to_go(GstElement* element);
+		MilliSeconds getTimeToGo(GstElement* element);
 
 		/**
 		 * @brief get_state
 		 * @param element
 		 * @return
 		 */
-		GstState get_state(GstElement* element);
+		GstState getState(GstElement* element);
 
 		/**
 		 * @brief set_state
@@ -346,26 +346,26 @@ namespace Engine
 		 * @param state
 		 * @return
 		 */
-		bool set_state(GstElement* element, GstState state);
+		bool setState(GstElement* element, GstState state);
 
 		/**
 		 * @brief check_plugin_available
 		 * @param str
 		 * @return
 		 */
-		bool check_plugin_available(const gchar* str);
+		bool isPluginAvailable(const gchar* str);
 
 		/**
 		 * @brief check_lame_available
 		 * @return
 		 */
-		bool check_lame_available();
+		bool isLameAvailable();
 
 		/**
 		 * @brief check_pitch_available
 		 * @return
 		 */
-		bool check_pitch_available();
+		bool isPitchAvailable();
 
 		/**
 		 * @brief create_bin
@@ -374,7 +374,7 @@ namespace Engine
 		 * @param prefix
 		 * @return
 		 */
-		bool create_bin(GstElement** bin, const Elements& elements, const QString& prefix);
+		bool createBin(GstElement** bin, const Elements& elements, const QString& prefix);
 
 		/**
 		 * @brief create_ghost_pad
@@ -382,31 +382,31 @@ namespace Engine
 		 * @param e
 		 * @return
 		 */
-		bool create_ghost_pad(GstBin* bin, GstElement* e);
+		bool createGhostPad(GstBin* bin, GstElement* e);
 
 		/**
 		 * @brief link_elements
 		 * @param elements
 		 * @return
 		 */
-		bool link_elements(const Elements& elements);
+		bool linkElements(const Elements& elements);
 
-		void unlink_elements(const Elements& elements);
+		void unlinkElements(const Elements& elements);
 
 		/**
 		 * @brief add_elements
 		 * @param bin
 		 * @param elements
 		 */
-		bool add_elements(GstBin* bin, const Elements& elements);
+		bool addElements(GstBin* bin, const Elements& elements);
 
-		void remove_elements(GstBin* bin, const Elements& elements);
+		void removeElements(GstBin* bin, const Elements& elements);
 
 		/**
 		 * @brief unref_elements
 		 * @param elements
 		 */
-		void unref_elements(const Elements& elements);
+		void unrefElements(const Elements& elements);
 	}
 }
 

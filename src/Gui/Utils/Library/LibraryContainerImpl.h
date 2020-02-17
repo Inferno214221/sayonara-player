@@ -1,6 +1,6 @@
 /* LibraryContainerImpl.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -47,19 +47,18 @@ namespace Library
 			/**
 			 * @brief Should initialize the ui. The ui constructor should be called within this function
 			 */
-			virtual void				init_ui()=0;
+			virtual void				initUi()=0;
 
 		public:
 			explicit ContainerImpl(QObject* parent=nullptr);
 			virtual ~ContainerImpl() override;
 
+			void init() override;
+
 			virtual void rename(const QString& new_name) override;
-
-			virtual QString				display_name() const override;
-
-			virtual QMenu*				menu() override;
-			void						init() override;
-			virtual bool				is_local() const override;
+			virtual QString	displayName() const override;
+			virtual QMenu* menu() override;
+			virtual bool isLocal() const override;
 	};
 }
 

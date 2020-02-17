@@ -1,6 +1,6 @@
 /* TaggingEnums.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -57,17 +57,17 @@ namespace Tagging
 			TagLib::Tag* tag;
 			TagType type;
 
-			TagLib::MP4::Tag* mp4_tag() const
+			TagLib::MP4::Tag* mp4Tag() const
 			{
 				return dynamic_cast<TagLib::MP4::Tag*>(this->tag);
 			}
 
-			TagLib::ID3v2::Tag* id3_tag() const
+			TagLib::ID3v2::Tag* id3Tag() const
 			{
 				return dynamic_cast<TagLib::ID3v2::Tag*>(this->tag);
 			}
 
-			TagLib::Ogg::XiphComment* xiph_tag() const
+			TagLib::Ogg::XiphComment* xiphTag() const
 			{
 				return dynamic_cast<TagLib::Ogg::XiphComment*>(this->tag);
 			}

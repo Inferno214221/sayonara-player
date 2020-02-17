@@ -1,6 +1,6 @@
 /* LibraryDatabase.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -40,15 +40,15 @@ struct LibraryDatabase::Private
 	QString connection_name;
 
 	SMM		search_mode;
-	DbId	db_id;
+	DbId	databaseId;
 
-	LibraryId library_id;
+	LibraryId libraryId;
 
-	Private(const QString& connection_name, DbId db_id, LibraryId library_id, SMM search_mode) :
+	Private(const QString& connection_name, DbId databaseId, LibraryId libraryId, SMM search_mode) :
 		connection_name(connection_name),
 		search_mode(search_mode),
-		db_id(db_id),
-		library_id(library_id)
+		databaseId(databaseId),
+		libraryId(libraryId)
 	{
 		artistid_field = "artistID";
 		artistname_field = "artistName";
@@ -56,21 +56,21 @@ struct LibraryDatabase::Private
 };
 
 
-LibraryDatabase::LibraryDatabase(const QString& connection_name, DbId db_id, LibraryId library_id) :
+LibraryDatabase::LibraryDatabase(const QString& connection_name, DbId databaseId, LibraryId libraryId) :
 	DB::Albums(),
 	DB::Artists(),
 	DB::Tracks(),
-	DB::SearchableModule(connection_name, db_id)
+	DB::SearchableModule(connection_name, databaseId)
 {
-	m = Pimpl::make<Private>(connection_name, db_id, library_id, init_search_mode());
+	m = Pimpl::make<Private>(connection_name, databaseId, libraryId, init_search_mode());
 
-	DB::Tracks::init_views();
+	DB::Tracks::initViews();
 
 	{ // set artistId field
 		AbstrSetting* s = Settings::instance()->setting(SettingKey::Lib_ShowAlbumArtists);
-		QString db_key = s->db_key();
+		QString db_key = s->dbKey();
 
-		Query q(connection_name, db_id);
+		Query q(connection_name, databaseId);
 		QString querytext = "SELECT value FROM settings WHERE key = '" + db_key + "';";
 
 		bool show_album_artists = false;
@@ -86,18 +86,18 @@ LibraryDatabase::LibraryDatabase(const QString& connection_name, DbId db_id, Lib
 		}
 
 		if(show_album_artists) {
-			change_artistid_field(LibraryDatabase::ArtistIDField::AlbumArtistID);
+			changeArtistIdField(LibraryDatabase::ArtistIDField::AlbumArtistID);
 		}
 
 		else {
-			change_artistid_field(LibraryDatabase::ArtistIDField::ArtistID);
+			changeArtistIdField(LibraryDatabase::ArtistIDField::ArtistID);
 		}
 	}
 }
 
 LibraryDatabase::~LibraryDatabase() = default;
 
-void LibraryDatabase::change_artistid_field(LibraryDatabase::ArtistIDField field)
+void LibraryDatabase::changeArtistIdField(LibraryDatabase::ArtistIDField field)
 {
 	if(field == LibraryDatabase::ArtistIDField::AlbumArtistID)
 	{
@@ -112,51 +112,51 @@ void LibraryDatabase::change_artistid_field(LibraryDatabase::ArtistIDField field
 	}
 }
 
-QString LibraryDatabase::artistid_field() const
+QString LibraryDatabase::artistIdField() const
 {
 	return m->artistid_field;
 }
 
-QString LibraryDatabase::artistname_field() const
+QString LibraryDatabase::artistNameField() const
 {
 	return m->artistname_field;
 }
 
-QString LibraryDatabase::track_view() const
+QString LibraryDatabase::trackView() const
 {
-	if(m->library_id < 0) {
+	if(m->libraryId < 0) {
 		return "tracks";
 	}
 
 	else {
-		return QString("track_view_%1").arg(m->library_id);
+		return QString("track_view_%1").arg(m->libraryId);
 	}
 }
 
-QString LibraryDatabase::track_search_view() const
+QString LibraryDatabase::trackSearchView() const
 {
-	if(m->library_id < 0) {
+	if(m->libraryId < 0) {
 		return "track_search_view";
 	}
 
 	else {
-		return QString("track_search_view_%1").arg(m->library_id);
+		return QString("track_search_view_%1").arg(m->libraryId);
 	}
 }
 
-Library::SearchModeMask LibraryDatabase::search_mode() const
+Library::SearchModeMask LibraryDatabase::searchMode() const
 {
-	return DB::SearchableModule::search_mode();
+	return DB::SearchableModule::searchMode();
 }
 
-void LibraryDatabase::update_search_mode(::Library::SearchModeMask smm)
+void LibraryDatabase::updateSearchMode(::Library::SearchModeMask smm)
 {
-	auto old_smm = DB::SearchableModule::search_mode();
+	auto old_smm = DB::SearchableModule::searchMode();
 	if(old_smm == smm) {
 		return;
 	}
 
-	DB::SearchableModule::update_search_mode(smm);
+	DB::SearchableModule::updateSearchMode(smm);
 
 	DB::Albums::updateAlbumCissearch();
 	DB::Artists::updateArtistCissearch();
@@ -178,19 +178,19 @@ void LibraryDatabase::clear()
 	DB::Tracks::deleteAllTracks(true);
 }
 
-LibraryId LibraryDatabase::library_id() const
+LibraryId LibraryDatabase::libraryId() const
 {
-	return m->library_id;
+	return m->libraryId;
 }
 
 
-bool DB::LibraryDatabase::store_metadata(const MetaDataList& v_md)
+bool DB::LibraryDatabase::storeMetadata(const MetaDataList& v_md)
 {
 	if(v_md.isEmpty()) {
 		return true;
 	}
 
-	sp_log(Log::Develop, this) << " Search for already known albums and artists.";
+	spLog(Log::Develop, this) << " Search for already known albums and artists.";
 
 	// gather all albums in a map
 	QHash<QString, Album> album_map;
@@ -228,46 +228,46 @@ bool DB::LibraryDatabase::store_metadata(const MetaDataList& v_md)
 
 	for(MetaData md : v_md)
 	{
-		md.set_library_id(m->library_id);
+		md.setLibraryid(m->libraryId);
 
 		{ // check album id
 			Album album = album_map[md.album()];
 			if(album.id() < 0)
 			{
-				album.set_id(DB::Albums::insertAlbumIntoDatabase(md.album()));
+				album.setId(DB::Albums::insertAlbumIntoDatabase(md.album()));
 				album_map[md.album()] = album;
 			}
 
-			md.set_album_id(album.id());
+			md.setAlbumId(album.id());
 		}
 
 		{ // check artist id
 			Artist artist = artist_map[md.artist()];
 			if (artist.id() < 0)
 			{
-				artist.set_id(DB::Artists::insertArtistIntoDatabase(md.artist()));
+				artist.setId(DB::Artists::insertArtistIntoDatabase(md.artist()));
 				artist_map[md.artist()] = artist;
 			}
 
-			md.set_artist_id(artist.id());
+			md.setArtistId(artist.id());
 		}
 
 		{ // check album artist ...
-			Artist album_artist = artist_map[md.album_artist()];
+			Artist album_artist = artist_map[md.albumArtist()];
 			if(album_artist.id() < 0)
 			{
-				album_artist.set_id(DB::Artists::insertArtistIntoDatabase(md.album_artist()));
-				artist_map[md.album_artist()] = album_artist;
+				album_artist.setId(DB::Artists::insertArtistIntoDatabase(md.albumArtist()));
+				artist_map[md.albumArtist()] = album_artist;
 			}
 
-			md.set_album_artist_id(album_artist.id());
+			md.setAlbumArtistId(album_artist.id());
 		}
 
 		// because all artists and albums should be in the db right now,
 		// we should never reach the inner block
-		if(md.album_id() < 0 || md.artist_id() < 0 || md.library_id() < 0)
+		if(md.albumId() < 0 || md.artistId() < 0 || md.libraryId() < 0)
 		{
-			sp_log(Log::Warning, this) << "Cannot insert artist or album of " << md.filepath();
+			spLog(Log::Warning, this) << "Cannot insert artist or album of " << md.filepath();
 			continue;
 		}
 
@@ -276,18 +276,18 @@ bool DB::LibraryDatabase::store_metadata(const MetaDataList& v_md)
 			const MetaData& found_md = md_map[md.filepath()];
 			if(found_md.id() < 0)
 			{
-				DB::Tracks::insertTrackIntoDatabase(md, md.artist_id(), md.album_id(), md.album_artist_id());
+				DB::Tracks::insertTrackIntoDatabase(md, md.artistId(), md.albumId(), md.albumArtistId());
 			}
 
 			else
 			{
-				md.set_id(found_md.id());
+				md.setId(found_md.id());
 				DB::Tracks::updateTrack(md);
 			}
 		}
 	}
 
-	sp_log(Log::Develop, this) << "Commit " << v_md.size() << " tracks to database";
+	spLog(Log::Develop, this) << "Commit " << v_md.size() << " tracks to database";
 
 	return db().commit();
 }

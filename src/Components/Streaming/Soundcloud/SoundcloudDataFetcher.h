@@ -1,6 +1,6 @@
 /* SoundcloudDataFetcher.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -36,25 +36,25 @@ namespace SC
 		PIMPL(DataFetcher)
 
 	signals:
-		void sig_ext_artists_fetched(const ArtistList& artists);
-		void sig_artists_fetched(const ArtistList& artists);
-		void sig_playlists_fetched(const AlbumList& albums);
-		void sig_tracks_fetched(const MetaDataList& v_md);
+		void sigExtArtistsFetched(const ArtistList& artists);
+		void sigArtistsFetched(const ArtistList& artists);
+		void sigPlaylistsFetched(const AlbumList& albums);
+		void sigTracksFetched(const MetaDataList& tracks);
 
 	public:
 		explicit DataFetcher(QObject* parent=nullptr);
 		~DataFetcher();
 
-		void search_artists(const QString& artist_name);
-		void get_artist(int artist_id);
-		void get_tracks_by_artist(int artist_id);
+		void searchArtists(const QString& artist_name);
+		void getArtist(int artistId);
+		void getTracksByArtist(int artistId);
 
 		void clear();
 
 	private slots:
-		void artists_fetched();
-		void playlist_tracks_fetched();
-		void tracks_fetched();
+		void artistsFetched();
+		void playlistTracksFetched();
+		void tracksFetched();
 	};
 }
 

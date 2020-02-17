@@ -1,6 +1,6 @@
 /* LibraryDatabase.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -45,22 +45,22 @@ namespace DB
 				ArtistID
 			};
 
-			LibraryDatabase(const QString& connection_name, DbId db_id, LibraryId library_id);
+			LibraryDatabase(const QString& connectionName, DbId databaseId, LibraryId libraryId);
 			virtual ~LibraryDatabase() override;
 
-			void change_artistid_field(ArtistIDField field);
+			void changeArtistIdField(ArtistIDField field);
 
 			void clear();
-			virtual bool store_metadata(const MetaDataList& v_md);
+			virtual bool storeMetadata(const MetaDataList& tracks);
 
-			LibraryId library_id() const override;
-			QString artistid_field() const override;
-			QString artistname_field() const override;
-			QString track_view() const override;
-			QString track_search_view() const override;
+			LibraryId libraryId() const override;
+			QString artistIdField() const override;
+			QString artistNameField() const override;
+			QString trackView() const override;
+			QString trackSearchView() const override;
 
-			::Library::SearchModeMask search_mode() const override;
-			void update_search_mode(::Library::SearchModeMask smm) override;
+			::Library::SearchModeMask searchMode() const override;
+			void updateSearchMode(::Library::SearchModeMask smm) override;
 
 			Module* module() override;
 			const Module* module() const override;

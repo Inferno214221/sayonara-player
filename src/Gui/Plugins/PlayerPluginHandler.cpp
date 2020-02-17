@@ -1,6 +1,6 @@
 /* PlayerPluginHandler.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -35,12 +35,12 @@ namespace Algorithm=Util::Algorithm;
 struct Handler::Private
 {
 	QList<Base*>	plugins;
-	Base*			current_plugin=nullptr;
+	Base*			currentPlugin=nullptr;
 
-	bool			is_shutdown;
+	bool			isShutdown;
 
 	Private() :
-		is_shutdown(false)
+		isShutdown(false)
 	{}
 };
 
@@ -49,18 +49,18 @@ Handler::Handler() :
 {
 	m = Pimpl::make<Private>();
 
-	ListenSetting(Set::Player_Language, Handler::language_changed);
+	ListenSetting(Set::Player_Language, Handler::languageChanged);
 }
 
 Handler::~Handler() = default;
 
 void Handler::shutdown()
 {
-	m->is_shutdown = true;
+	m->isShutdown = true;
 
-	if(m->current_plugin)
+	if(m->currentPlugin)
 	{
-		SetSetting(Set::Player_ShownPlugin, m->current_plugin->get_name());
+		SetSetting(Set::Player_ShownPlugin, m->currentPlugin->name());
 	}
 
 	else {
@@ -77,11 +77,11 @@ void Handler::shutdown()
 }
 
 
-Base* Handler::find_plugin(const QString& name)
+Base* Handler::findPlugin(const QString& name)
 {
 	for(Base* p : Algorithm::AsConst(m->plugins))
 	{
-		if(p->get_name().compare(name) == 0)
+		if(p->name().compare(name) == 0)
 		{
 			return p;
 		}
@@ -91,7 +91,7 @@ Base* Handler::find_plugin(const QString& name)
 }
 
 
-void Handler::add_plugin(Base* plugin)
+void Handler::addPlugin(Base* plugin)
 {
 	if(!plugin){
 		return;
@@ -99,33 +99,33 @@ void Handler::add_plugin(Base* plugin)
 
 	m->plugins.push_back(plugin);
 
-	connect(plugin, &Base::sig_action_triggered, this, &Handler::plugin_action_triggered);
+	connect(plugin, &Base::sigActionTriggered, this, &Handler::pluginActionTriggered);
 
 	QString last_plugin = GetSetting(Set::Player_ShownPlugin);
-	if(plugin->get_name() == last_plugin)
+	if(plugin->name() == last_plugin)
 	{
-		m->current_plugin = plugin;
-		plugin->get_action()->setChecked(true);
+		m->currentPlugin = plugin;
+		plugin->pluginAction()->setChecked(true);
 	}
 
-	emit sig_plugin_added(plugin);
+	emit sigPluginAdded(plugin);
 }
 
-void Handler::show_plugin(const QString& name)
+void Handler::showPlugin(const QString& name)
 {
-	Base* plugin = find_plugin(name);
+	Base* plugin = findPlugin(name);
 	if(!plugin)
 	{
 		return;
 	}
 
-	m->current_plugin = plugin;
-	m->current_plugin->get_action()->trigger();
+	m->currentPlugin = plugin;
+	m->currentPlugin->pluginAction()->trigger();
 }
 
-void Handler::plugin_action_triggered(bool b)
+void Handler::pluginActionTriggered(bool b)
 {
-	if(m->is_shutdown)
+	if(m->isShutdown)
 	{
 		return;
 	}
@@ -136,36 +136,36 @@ void Handler::plugin_action_triggered(bool b)
 	{
 		if(plugin)
 		{
-			m->current_plugin = plugin;
+			m->currentPlugin = plugin;
 		}
 	}
 
 	else
 	{
-		if(m->current_plugin == plugin)
+		if(m->currentPlugin == plugin)
 		{
-			m->current_plugin = nullptr;
+			m->currentPlugin = nullptr;
 		}
 	}
 
-	emit sig_plugin_action_triggered(b);
+	emit sigPluginActionTriggered(b);
 }
 
-void Handler::language_changed()
+void Handler::languageChanged()
 {
 	for(Base* p : Algorithm::AsConst(m->plugins))
 	{
-		p->language_changed();
-		p->get_action()->setText(p->get_display_name());
+		p->languageChanged();
+		p->pluginAction()->setText(p->displayName());
 	}
 }
 
-QList<Base*> Handler::all_plugins() const
+QList<Base*> Handler::allPlugins() const
 {
 	return m->plugins;
 }
 
-Base* Handler::current_plugin() const
+Base* Handler::currentPlugin() const
 {
-	return m->current_plugin;
+	return m->currentPlugin;
 }

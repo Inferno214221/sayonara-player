@@ -1,6 +1,6 @@
 /* SeekHandler.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -42,13 +42,13 @@ namespace PipelineExtensions
 			Seeker(GstElement* source);
 			virtual ~Seeker();
 
-			NanoSeconds seek_rel(double percent, NanoSeconds ref_ns);
-			NanoSeconds seek_abs(NanoSeconds ns);
-			NanoSeconds seek_nearest(NanoSeconds ns);
+			NanoSeconds seekRelative(double percent, NanoSeconds ns);
+			NanoSeconds seekAbsolute(NanoSeconds ns);
+			NanoSeconds seekNearest(NanoSeconds ns);
 
-			NanoSeconds seek_rel_ms(double percent, MilliSeconds ref_ns);
-			NanoSeconds seek_abs_ms(MilliSeconds ns);
-			NanoSeconds seek_nearest_ms(MilliSeconds ns);
+			NanoSeconds seekRelativeMs(double percent, MilliSeconds ms);
+			NanoSeconds seekAbsoluteMs(MilliSeconds ms);
+			NanoSeconds seekNearestMs(MilliSeconds ms);
 
 			void set_source(GstElement* source);
 	};

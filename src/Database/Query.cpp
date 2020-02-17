@@ -1,6 +1,6 @@
 /* Query.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -40,8 +40,8 @@ struct Query::Private
 	{}
 };
 
-Query::Query(const QString& connection_name, DbId db_id) :
-	QSqlQuery(Module(connection_name, db_id).db())
+Query::Query(const QString& connection_name, DbId databaseId) :
+	QSqlQuery(Module(connection_name, databaseId).db())
 {
 	m = Pimpl::make<Private>();
 }
@@ -145,17 +145,17 @@ bool Query::exec()
 	return m->success;
 }
 
-void Query::set_error(bool b)
+void Query::setError(bool b)
 {
 	m->success = (!b);
 }
 
-bool Query::has_error() const
+bool Query::hasError() const
 {
 	return (m->success == false);
 }
 
-QString Query::get_query_string() const
+QString Query::getQueryString() const
 {
 	QString str = m->query_string;
 	str.prepend("\n");
@@ -207,37 +207,37 @@ QString Query::get_query_string() const
 	return str;
 }
 
-void Query::show_query() const
+void Query::showQuery() const
 {
-	sp_log(Log::Debug, this) << get_query_string();
+	spLog(Log::Debug, this) << getQueryString();
 }
 
-void Query::show_error(const QString& err_msg) const
+void Query::showError(const QString& err_msg) const
 {
-	sp_log(Log::Error, this) << "SQL ERROR: " << err_msg << ": " << int(this->lastError().type());
+	spLog(Log::Error, this) << "SQL ERROR: " << err_msg << ": " << int(this->lastError().type());
 
 	QSqlError e = this->lastError();
 
 	if(!e.text().isEmpty()){
-		sp_log(Log::Error, this) << e.text();
+		spLog(Log::Error, this) << e.text();
 	}
 
 	if(!e.driverText().isEmpty()) {
-		sp_log(Log::Error, this) << e.driverText();
+		spLog(Log::Error, this) << e.driverText();
 	}
 
 	if(!e.databaseText().isEmpty()){
-		sp_log(Log::Error, this) << e.databaseText();
+		spLog(Log::Error, this) << e.databaseText();
 	}
 
 #ifdef DEBUG
-	sp_log(Log::Error, this) << m->query_string;
+	spLog(Log::Error, this) << m->query_string;
 #endif
 
-	sp_log(Log::Error, this) << this->get_query_string();
+	spLog(Log::Error, this) << this->getQueryString();
 }
 
-size_t Query::fetched_rows()
+size_t Query::fetchedRows()
 {
 	int last_pos = this->at();
 

@@ -1,6 +1,6 @@
 /* WidgetTemplate.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -26,20 +26,20 @@
 Gui::AbstrWidgetTemplate::AbstrWidgetTemplate(QObject* parent, WidgetTemplateParent* wtp) :
 	QObject(parent)
 {
-	_wtp = wtp;
+	mWtp = wtp;
 
-	ListenSetting(Set::Player_Language, AbstrWidgetTemplate::language_changed);
-	ListenSetting(SetNoDB::Player_MetaStyle, AbstrWidgetTemplate::skin_changed);
+	ListenSetting(Set::Player_Language, AbstrWidgetTemplate::languageChanged);
+	ListenSetting(SetNoDB::Player_MetaStyle, AbstrWidgetTemplate::skinChanged);
 }
 
 Gui::AbstrWidgetTemplate::~AbstrWidgetTemplate() {}
 
-void Gui::AbstrWidgetTemplate::language_changed() { _wtp->language_changed(); }
+void Gui::AbstrWidgetTemplate::languageChanged() { mWtp->languageChanged(); }
 
-void Gui::AbstrWidgetTemplate::skin_changed() { _wtp->skin_changed(); }
+void Gui::AbstrWidgetTemplate::skinChanged() { mWtp->skinChanged(); }
 
 
 Gui::WidgetTemplateParent::WidgetTemplateParent() {}
 Gui::WidgetTemplateParent::~WidgetTemplateParent() {}
-void Gui::WidgetTemplateParent::language_changed() {}
-void Gui::WidgetTemplateParent::skin_changed() {}
+void Gui::WidgetTemplateParent::languageChanged() {}
+void Gui::WidgetTemplateParent::skinChanged() {}

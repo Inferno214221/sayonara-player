@@ -1,6 +1,6 @@
 /* LibraryListModel.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -33,8 +33,8 @@ namespace Algorithm=Util::Algorithm;
 
 struct LibraryListModel::Private
 {
-	QList<Info> library_info;
-	QList<Info> shown_library_info;
+	QList<Info> libraryInfo;
+	QList<Info> shownLibraryInfo;
 	QList<ChangeOperation*> operations;
 
 	Private()
@@ -44,8 +44,8 @@ struct LibraryListModel::Private
 
 	void reload()
 	{
-		library_info = Library::Manager::instance()->all_libraries();
-		shown_library_info = library_info;
+		libraryInfo = Library::Manager::instance()->allLibraries();
+		shownLibraryInfo = libraryInfo;
 	}
 
 	void clear_operations()
@@ -70,7 +70,7 @@ LibraryListModel::~LibraryListModel() = default;
 int LibraryListModel::rowCount(const QModelIndex& parent) const
 {
 	Q_UNUSED(parent)
-	return m->shown_library_info.size();
+	return m->shownLibraryInfo.size();
 }
 
 QVariant LibraryListModel::data(const QModelIndex& index, int role) const
@@ -82,86 +82,86 @@ QVariant LibraryListModel::data(const QModelIndex& index, int role) const
 	}
 
 	if(role == Qt::DisplayRole)	{
-		return m->shown_library_info[row].name();
+		return m->shownLibraryInfo[row].name();
 	}
 
 	else if(role == Qt::ToolTipRole) {
-		return m->shown_library_info[row].path();
+		return m->shownLibraryInfo[row].path();
 	}
 
 	return QVariant();
 }
 
-void LibraryListModel::append_row(const LibName& name, const LibPath& path)
+void LibraryListModel::appendRow(const LibName& name, const LibPath& path)
 {
 	m->operations << new AddOperation(name, path);
-	m->shown_library_info << Info(name, path, -1);
+	m->shownLibraryInfo << Info(name, path, -1);
 
 	emit dataChanged(index(0), index(rowCount()));
 
 }
 
-void LibraryListModel::rename_row(int row, const LibName& new_name)
+void LibraryListModel::renameRow(int row, const LibName& new_name)
 {
-	if(!Util::between(row, m->shown_library_info)) {
+	if(!Util::between(row, m->shownLibraryInfo)) {
 		return;
 	}
 
-	Info info = m->shown_library_info[row];
+	Info info = m->shownLibraryInfo[row];
 
 	m->operations << new RenameOperation(info.id(), new_name);
-	m->shown_library_info[row] =
+	m->shownLibraryInfo[row] =
 			Info(new_name, info.path(), info.id());
 }
 
-void LibraryListModel::change_path(int row, const LibPath& path)
+void LibraryListModel::changePath(int row, const LibPath& path)
 {
-	if(!Util::between(row, m->shown_library_info)) {
+	if(!Util::between(row, m->shownLibraryInfo)) {
 		return;
 	}
 
-	Info info = m->shown_library_info[row];
+	Info info = m->shownLibraryInfo[row];
 
 	m->operations << new ChangePathOperation(info.id(), path);
-	m->shown_library_info[row] =
+	m->shownLibraryInfo[row] =
 			Info(info.name(), path, info.id());
 }
 
-void LibraryListModel::move_row(int from, int to)
+void LibraryListModel::moveRow(int from, int to)
 {
-	if(!Util::between(from, m->shown_library_info)) {
+	if(!Util::between(from, m->shownLibraryInfo)) {
 		return;
 	}
 
-	if(!Util::between(to, m->shown_library_info)) {
+	if(!Util::between(to, m->shownLibraryInfo)) {
 		return;
 	}
 
 	m->operations << new MoveOperation(from, to);
-	m->shown_library_info.move(from, to);
+	m->shownLibraryInfo.move(from, to);
 
 	emit dataChanged(index(0), index(rowCount()));
 }
 
-void LibraryListModel::remove_row(int row)
+void LibraryListModel::removeRow(int row)
 {
-	if(!Util::between(row, m->shown_library_info)) {
+	if(!Util::between(row, m->shownLibraryInfo)) {
 		return;
 	}
 
-	Info info = m->shown_library_info[row];
+	Info info = m->shownLibraryInfo[row];
 
 	m->operations << new RemoveOperation(info.id());
-	m->shown_library_info.removeAt(row);
+	m->shownLibraryInfo.removeAt(row);
 
 	emit dataChanged(index(0), index(rowCount()));
 }
 
-QStringList LibraryListModel::all_names() const
+QStringList LibraryListModel::allNames() const
 {
 	QStringList ret;
 
-	for(const Info& info : Algorithm::AsConst(m->shown_library_info))
+	for(const Info& info : Algorithm::AsConst(m->shownLibraryInfo))
 	{
 		ret << info.name();
 	}
@@ -169,11 +169,11 @@ QStringList LibraryListModel::all_names() const
 	return ret;
 }
 
-QStringList LibraryListModel::all_paths() const
+QStringList LibraryListModel::allPaths() const
 {
 	QStringList ret;
 
-	for(const Info& info : Algorithm::AsConst(m->shown_library_info))
+	for(const Info& info : Algorithm::AsConst(m->shownLibraryInfo))
 	{
 		ret << info.path();
 	}
@@ -183,9 +183,9 @@ QStringList LibraryListModel::all_paths() const
 
 QString LibraryListModel::name(int idx) const
 {
-	if(Util::between(idx, m->shown_library_info))
+	if(Util::between(idx, m->shownLibraryInfo))
 	{
-		return m->shown_library_info.at(idx).name();
+		return m->shownLibraryInfo.at(idx).name();
 	}
 
 	return QString();
@@ -193,9 +193,9 @@ QString LibraryListModel::name(int idx) const
 
 QString LibraryListModel::path(int idx) const
 {
-	if(Util::between(idx, m->shown_library_info))
+	if(Util::between(idx, m->shownLibraryInfo))
 	{
-		return m->shown_library_info.at(idx).path();
+		return m->shownLibraryInfo.at(idx).path();
 	}
 
 	return QString();

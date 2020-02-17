@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -45,18 +45,17 @@ public:
 	explicit DirectoryModel(QObject* parent=nullptr);
 	~DirectoryModel() override;
 
-	void search_only_dirs(bool b);
-	void set_library(const Library::Info& info);
-	Library::Info library_info() const;
-
-public:
-	QModelIndexList search_results(const QString& substr) override;
-	Qt::ItemFlags	flags(const QModelIndex &index) const override;
+	void setSearchOnlyDirectories(bool b);
+	void setLibraryInfo(const Library::Info& info);
+	Library::Info libraryInfo() const;
 
 private:
 	using QFileSystemModel::setRootPath;
-	void create_file_list(const QString& substr);
+	void createFileList(const QString& substr);
 
+public:
+	QModelIndexList searchResults(const QString& substr) override;
+	Qt::ItemFlags	flags(const QModelIndex& index) const override;
 };
 
 #endif // SEARCHABLEFileTreeView_H

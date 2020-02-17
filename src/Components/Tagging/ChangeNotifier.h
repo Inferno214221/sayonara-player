@@ -1,6 +1,6 @@
 /* MetaDataChangeNotifier.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -42,6 +42,15 @@ namespace Tagging
 
         SINGLETON_QOBJECT(ChangeNotifier)
         PIMPL(ChangeNotifier)
+    signals:
+        /**
+         * @brief sig_metadata_changed Signal emitted when change_metadata was called
+         * @param v_md_oldThe original Metadata used for comparison
+         * @param v_md_new The actualized Metadata
+         */
+        void sigMetadataChanged();
+        void sigMetadataDeleted();
+		void sigAlbumsChanged();
 
     public:
 		/**
@@ -49,23 +58,14 @@ namespace Tagging
 		 * @param v_md_old The original Metadata used for comparison
 		 * @param v_md_new The actualized Metadata
 		 */
-		void change_metadata(const MetaDataList& v_md_old, const MetaDataList& v_md_new);
-        void delete_metadata(const MetaDataList& v_md_deleted);
-		void update_albums(const AlbumList& albums_old, const AlbumList& albums_new);
+		void changeMetadata(const MetaDataList& oldTracks, const MetaDataList& newTracks);
+        void deleteMetadata(const MetaDataList& deletedTracks);
+		void updateAlbums(const AlbumList& oldAlbums, const AlbumList& newAlbums);
 
-        QPair<MetaDataList, MetaDataList> changed_metadata() const;
-        MetaDataList deleted_metadata() const;
-		QPair<AlbumList, AlbumList> changed_albums() const;
+        QPair<MetaDataList, MetaDataList> changedMetadata() const;
+        MetaDataList deletedMetadata() const;
+		QPair<AlbumList, AlbumList> changedAlbums() const;
 
-    signals:
-        /**
-         * @brief sig_metadata_changed Signal emitted when change_metadata was called
-         * @param v_md_oldThe original Metadata used for comparison
-         * @param v_md_new The actualized Metadata
-         */
-        void sig_metadata_changed();
-        void sig_metadata_deleted();
-		void sig_albums_changed();
     };
 }
 

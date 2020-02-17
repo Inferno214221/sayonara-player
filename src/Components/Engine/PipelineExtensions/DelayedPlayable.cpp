@@ -1,6 +1,6 @@
 /* DelayedPlayHandler.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -43,7 +43,7 @@ struct DelayedPlayableLogic::Private
 		while(timer->isActive())
 		{
 			timer->stop();
-			::Util::sleep_ms(100);
+			::Util::sleepMs(100);
 		}
 
 		delete timer; timer = nullptr;
@@ -61,12 +61,12 @@ DelayedPlayableLogic::DelayedPlayableLogic(DelayedPlayable* dph)
 
 DelayedPlayableLogic::~DelayedPlayableLogic() = default;
 
-void DelayedPlayableLogic::start_timer(MilliSeconds ms)
+void DelayedPlayableLogic::startTimer(MilliSeconds ms)
 {
 	m->timer->start(ms);
 }
 
-void DelayedPlayableLogic::stop_timer()
+void DelayedPlayableLogic::stopTimer()
 {
 	m->timer->stop();
 }
@@ -93,21 +93,21 @@ DelayedPlayable::DelayedPlayable()
 
 DelayedPlayable::~DelayedPlayable() = default;
 
-void DelayedPlayable::play_in(MilliSeconds ms)
+void DelayedPlayable::playIn(MilliSeconds ms)
 {
-	abort_delayed_playing();
+	abortDelayedPlaying();
 
 	if(ms <= 0){
 		play();
 	}
 
 	else {
-		m->logic->start_timer(ms);
+		m->logic->startTimer(ms);
 	}
 }
 
-void DelayedPlayable::abort_delayed_playing()
+void DelayedPlayable::abortDelayedPlaying()
 {
-	m->logic->stop_timer();
+	m->logic->stopTimer();
 }
 

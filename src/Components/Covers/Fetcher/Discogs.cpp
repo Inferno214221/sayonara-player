@@ -1,6 +1,6 @@
 /* DiscogsCoverFetcher.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -38,12 +38,12 @@ static QString basic_url(const QString& str)
 			QUrl::toPercentEncoding(str2);
 }
 
-bool Discogs::can_fetch_cover_directly() const
+bool Discogs::canFetchCoverDirectly() const
 {
 	return false;
 }
 
-QStringList Discogs::parse_addresses(const QByteArray& website) const
+QStringList Discogs::parseAddresses(const QByteArray& website) const
 {
 	QStringList ret;
 
@@ -60,28 +60,28 @@ QStringList Discogs::parse_addresses(const QByteArray& website) const
 	return ret;
 }
 
-QString Discogs::artist_address(const QString& artist) const
+QString Discogs::artistAddress(const QString& artist) const
 {
 
     return basic_url(artist) + "&type=artist";
 }
 
-QString Discogs::album_address(const QString& artist, const QString& album) const
+QString Discogs::albumAddress(const QString& artist, const QString& album) const
 {
     return basic_url(artist + "+" + album) + "&type=all";
 }
 
-QString Discogs::search_address(const QString& str) const
+QString Discogs::fulltextSearchAddress(const QString& str) const
 {
     return basic_url(str) + "&type=all";
 }
 
-int Discogs::estimated_size() const
+int Discogs::estimatedSize() const
 {
 	return 350;
 }
 
-QString Discogs::priv_identifier() const
+QString Discogs::privateIdentifier() const
 {
 	return "discogs";
 }

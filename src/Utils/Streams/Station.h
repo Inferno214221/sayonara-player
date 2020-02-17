@@ -32,10 +32,10 @@ public:
 	Stream& operator=(const Stream& stream);
 
 	QString name() const override;
-	void set_name(const QString& name);
+	void setName(const QString& name);
 
 	QString url() const override;
-	void set_url(const QString& url);
+	void setUrl(const QString& url);
 };
 
 class Podcast :
@@ -51,13 +51,13 @@ public:
 	~Podcast() override;
 
 	QString name() const override;
-	void set_name(const QString& name);
+	void setName(const QString& name);
 
 	QString url() const override;
-	void set_url(const QString& url);
+	void setUrl(const QString& url);
 
 	bool reversed() const;
-	void set_reversed(bool b);
+	void setReversed(bool b);
 
 	Podcast& operator=(const Podcast& podcast);
 };

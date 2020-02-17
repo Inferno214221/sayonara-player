@@ -1,6 +1,6 @@
 /* RemoteControl.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -57,10 +57,10 @@ struct RemoteControl::Private
 {
 	bool initialized;
 
-	QMap<QByteArray, RemoteFunction>    fn_call_map;
-	QMap<QByteArray, RemoteFunctionInt> fn_int_call_map;
+	QMap<QByteArray, RemoteFunction>    functionCallMap;
+	QMap<QByteArray, RemoteFunctionInt> functionIntCallMap;
 
-	QTimer*				volume_timer=nullptr;
+	QTimer*				volumeTimer=nullptr;
 
 	QTcpServer*			server=nullptr;
 	QTcpSocket*			socket=nullptr;
@@ -70,27 +70,27 @@ struct RemoteControl::Private
 	Private() :
 		initialized(false)
 	{
-		volume_timer = new QTimer();
-		volume_timer->setInterval(100);
-		volume_timer->setSingleShot(true);
+		volumeTimer = new QTimer();
+		volumeTimer->setInterval(100);
+		volumeTimer->setSingleShot(true);
 	}
 };
 
-RemoteControl::RemoteControl(QObject *parent) :
+RemoteControl::RemoteControl(QObject* parent) :
 	QObject(parent)
 {
 	m = Pimpl::make<Private>();
 
 	m->udp = new RemoteUDPSocket(this);
 
-	connect(m->volume_timer, &QTimer::timeout, this, &RemoteControl::volume_timer_timeout);
+	connect(m->volumeTimer, &QTimer::timeout, this, &RemoteControl::volumeTimerTimeout);
 
-	ListenSetting(Set::Remote_Active, RemoteControl::active_changed);
+	ListenSetting(Set::Remote_Active, RemoteControl::activeChanged);
 }
 
 RemoteControl::~RemoteControl() = default;
 
-void RemoteControl::active_changed()
+void RemoteControl::activeChanged()
 {
 	m->server = new QTcpServer(this);
 
@@ -99,11 +99,11 @@ void RemoteControl::active_changed()
 		auto port = quint16(GetSetting(Set::Remote_Port));
 		bool success = m->server->listen(QHostAddress::AnyIPv4, port);
 		if(!success){
-			sp_log(Log::Warning, this) << "Cannot listen on port " << port << ": " << m->server->errorString();
+			spLog(Log::Warning, this) << "Cannot listen on port " << port << ": " << m->server->errorString();
 		}
 	}
 
-	connect(m->server, &QTcpServer::newConnection, this, &RemoteControl::new_connection);
+	connect(m->server, &QTcpServer::newConnection, this, &RemoteControl::newConnection);
 }
 
 void RemoteControl::init()
@@ -114,34 +114,34 @@ void RemoteControl::init()
 
 	auto* pm = PlayManager::instance();
 
-	m->fn_call_map["play"] =		std::bind(&PlayManager::play, pm);
-	m->fn_call_map["pause"] =		std::bind(&PlayManager::pause, pm);
-	m->fn_call_map["prev"] =		std::bind(&PlayManager::previous, pm);
-	m->fn_call_map["next"] =		std::bind(&PlayManager::next, pm);
-	m->fn_call_map["playpause"] =	std::bind(&PlayManager::play_pause, pm);
-	m->fn_call_map["stop"] =		std::bind(&PlayManager::stop, pm);
-	m->fn_call_map["volup"] =		std::bind(&PlayManager::volume_up, pm);
-	m->fn_call_map["voldown"] =		std::bind(&PlayManager::volume_down, pm);
-	m->fn_call_map["state"] =		std::bind(&RemoteControl::request_state, this);
-	m->fn_call_map["pl"] =			std::bind(&RemoteControl::write_playlist, this);
-	m->fn_call_map["curSong"] =		std::bind(&RemoteControl::write_current_track, this);
-	m->fn_call_map["help"] =		std::bind(&RemoteControl::show_api, this);
+	m->functionCallMap["play"] =		std::bind(&PlayManager::play, pm);
+	m->functionCallMap["pause"] =		std::bind(&PlayManager::pause, pm);
+	m->functionCallMap["prev"] =		std::bind(&PlayManager::previous, pm);
+	m->functionCallMap["next"] =		std::bind(&PlayManager::next, pm);
+	m->functionCallMap["playpause"] =	std::bind(&PlayManager::playPause, pm);
+	m->functionCallMap["stop"] =		std::bind(&PlayManager::stop, pm);
+	m->functionCallMap["volup"] =		std::bind(&PlayManager::volumeUp, pm);
+	m->functionCallMap["voldown"] =		std::bind(&PlayManager::volumeDown, pm);
+	m->functionCallMap["state"] =		std::bind(&RemoteControl::requestState, this);
+	m->functionCallMap["pl"] =			std::bind(&RemoteControl::writePlaylist, this);
+	m->functionCallMap["curSong"] =		std::bind(&RemoteControl::writeCurrentTrack, this);
+	m->functionCallMap["help"] =		std::bind(&RemoteControl::showApi, this);
 
-	m->fn_int_call_map["setvol"] =  std::bind(&RemoteControl::set_volume, this, std::placeholders::_1);
-	m->fn_int_call_map["seekrel"] = std::bind(&RemoteControl::seek_rel, this, std::placeholders::_1);
-	m->fn_int_call_map["seekrelms"] =std::bind(&RemoteControl::seek_rel_ms, this, std::placeholders::_1);
-	m->fn_int_call_map["seekabsms"] =std::bind(&RemoteControl::seek_abs_ms, this, std::placeholders::_1);
-	m->fn_int_call_map["chtrk"] =   std::bind(&RemoteControl::change_track, this, std::placeholders::_1);
+	m->functionIntCallMap["setvol"] =  std::bind(&RemoteControl::setVolume, this, std::placeholders::_1);
+	m->functionIntCallMap["seekrel"] = std::bind(&RemoteControl::seekRelative, this, std::placeholders::_1);
+	m->functionIntCallMap["seekrelms"] =std::bind(&RemoteControl::seekRelativeMs, this, std::placeholders::_1);
+	m->functionIntCallMap["seekabsms"] =std::bind(&RemoteControl::seekAbsoluteMs, this, std::placeholders::_1);
+	m->functionIntCallMap["chtrk"] =   std::bind(&RemoteControl::changeTrack, this, std::placeholders::_1);
 
-	ListenSettingNoCall(Set::Remote_Active, RemoteControl::_sl_active_changed);
-	ListenSettingNoCall(Set::Remote_Port, RemoteControl::_sl_port_changed);
-	ListenSettingNoCall(Set::Broadcast_Port, RemoteControl::_sl_broadcast_changed);
-	ListenSettingNoCall(Set::Broadcast_Active, RemoteControl::_sl_broadcast_changed);
+	ListenSettingNoCall(Set::Remote_Active, RemoteControl::remoteActiveChanged);
+	ListenSettingNoCall(Set::Remote_Port, RemoteControl::remotePortChanged);
+	ListenSettingNoCall(Set::Broadcast_Port, RemoteControl::broadcastChanged);
+	ListenSettingNoCall(Set::Broadcast_Active, RemoteControl::broadcastChanged);
 
 	m->initialized = true;
 }
 
-bool RemoteControl::is_connected() const
+bool RemoteControl::isConnected() const
 {
 	if(!GetSetting(Set::Remote_Active)){
 		return false;
@@ -161,7 +161,7 @@ bool RemoteControl::is_connected() const
 	return true;
 }
 
-void RemoteControl::new_connection()
+void RemoteControl::newConnection()
 {
 	if(!m->initialized){
 		init();
@@ -172,44 +172,44 @@ void RemoteControl::new_connection()
 		return;
 	}
 
-	sp_log(Log::Debug, this) << "Got new connection";
+	spLog(Log::Debug, this) << "Got new connection";
 
-	connect(m->socket, &QTcpSocket::readyRead, this, &RemoteControl::new_request);
-	connect(m->socket, &QTcpSocket::disconnected, this, &RemoteControl::socket_disconnected);
+	connect(m->socket, &QTcpSocket::readyRead, this, &RemoteControl::newRequest);
+	connect(m->socket, &QTcpSocket::disconnected, this, &RemoteControl::socketDisconnected);
 
 	auto* pm = PlayManager::instance();
 	auto* plh = Playlist::Handler::instance();
 
-	connect(pm, &PlayManager::sig_position_changed_ms, this, &RemoteControl::pos_changed_ms);
-	connect(pm, &PlayManager::sig_track_changed, this, &RemoteControl::track_changed);
-	connect(pm, &PlayManager::sig_volume_changed, this, &RemoteControl::volume_changed);
-	connect(pm, &PlayManager::sig_playstate_changed, this, &RemoteControl::playstate_changed);
-	connect(plh, &Playlist::Handler::sig_active_playlist_changed, this, &RemoteControl::active_playlist_changed);
+	connect(pm, &PlayManager::sigPositionChangedMs, this, &RemoteControl::currentPositionChangedMs);
+	connect(pm, &PlayManager::sigCurrentTrackChanged, this, &RemoteControl::currentTrackChanged);
+	connect(pm, &PlayManager::sigVolumeChanged, this, &RemoteControl::volumeChanged);
+	connect(pm, &PlayManager::sigPlaystateChanged, this, &RemoteControl::playstateChanged);
+	connect(plh, &Playlist::Handler::sigActivePlaylistChanged, this, &RemoteControl::activePlaylistChanged);
 
-	active_playlist_changed(plh->active_index());
+	activePlaylistChanged(plh->activeIndex());
 }
 
-void RemoteControl::socket_disconnected()
+void RemoteControl::socketDisconnected()
 {
 	auto* pm = PlayManager::instance();
 	auto* plh = Playlist::Handler::instance();
 
-	disconnect(pm, &PlayManager::sig_position_changed_ms, this, &RemoteControl::pos_changed_ms);
-	disconnect(pm, &PlayManager::sig_track_changed, this, &RemoteControl::track_changed);
-	disconnect(pm, &PlayManager::sig_volume_changed, this, &RemoteControl::volume_changed);
-	disconnect(pm, &PlayManager::sig_playstate_changed, this, &RemoteControl::playstate_changed);
-	disconnect(plh, &Playlist::Handler::sig_active_playlist_changed, this, &RemoteControl::active_playlist_changed);
+	disconnect(pm, &PlayManager::sigPositionChangedMs, this, &RemoteControl::currentPositionChangedMs);
+	disconnect(pm, &PlayManager::sigCurrentTrackChanged, this, &RemoteControl::currentTrackChanged);
+	disconnect(pm, &PlayManager::sigVolumeChanged, this, &RemoteControl::volumeChanged);
+	disconnect(pm, &PlayManager::sigPlaystateChanged, this, &RemoteControl::playstateChanged);
+	disconnect(plh, &Playlist::Handler::sigActivePlaylistChanged, this, &RemoteControl::activePlaylistChanged);
 }
 
 
-void RemoteControl::new_request()
+void RemoteControl::newRequest()
 {
 	QByteArray arr = m->socket->readAll();
 	arr = arr.left(arr.size() - 1);
 
-	if(m->fn_call_map.contains(arr))
+	if(m->functionCallMap.contains(arr))
 	{
-		auto fn = m->fn_call_map[arr];
+		auto fn = m->functionCallMap[arr];
 		fn();
 		return;
 	}
@@ -220,22 +220,22 @@ void RemoteControl::new_request()
 	}
 
 	QByteArray cmd = arr.left(idx);
-	if(m->fn_int_call_map.contains(cmd))
+	if(m->functionIntCallMap.contains(cmd))
 	{
-		int val = extract_parameter_int(arr, cmd.size());
-		RemoteFunctionInt fn = m->fn_int_call_map[cmd];
+		int val = extractParameterInt(arr, cmd.size());
+		RemoteFunctionInt fn = m->functionIntCallMap[cmd];
 		fn(val);
 	}
 }
 
 
-int RemoteControl::extract_parameter_int(const QByteArray& data, int cmd_len)
+int RemoteControl::extractParameterInt(const QByteArray& data, int cmd_len)
 {
 	return data.right(data.size() - cmd_len - 1).toInt();
 }
 
 
-void RemoteControl::_sl_active_changed()
+void RemoteControl::remoteActiveChanged()
 {
 	bool active = GetSetting(Set::Remote_Active);
 
@@ -254,7 +254,7 @@ void RemoteControl::_sl_active_changed()
 	}
 }
 
-void RemoteControl::_sl_port_changed()
+void RemoteControl::remotePortChanged()
 {
 	auto port = quint16(GetSetting(Set::Remote_Port));
 	bool active = GetSetting(Set::Remote_Active);
@@ -271,45 +271,45 @@ void RemoteControl::_sl_port_changed()
 	}
 }
 
-void RemoteControl::_sl_broadcast_changed()
+void RemoteControl::broadcastChanged()
 {
-	if(!is_connected()){
+	if(!isConnected()){
 		return;
 	}
 
-	write_broadcast_info();
+	writeBroadcastInfo();
 }
 
-void RemoteControl::set_volume(int vol)
+void RemoteControl::setVolume(int vol)
 {
-	PlayManager::instance()->set_volume(vol);
+	PlayManager::instance()->setVolume(vol);
 }
 
-void RemoteControl::seek_rel(int percent)
+void RemoteControl::seekRelative(int percent)
 {
 	percent = std::min(percent, 100);
 	percent = std::max(percent, 0);
-	PlayManager::instance()->seek_rel( percent / 100.0 );
+	PlayManager::instance()->seekRelative( percent / 100.0 );
 }
 
-void RemoteControl::seek_rel_ms(int pos_ms)
+void RemoteControl::seekRelativeMs(int pos_ms)
 {
-	PlayManager::instance()->seek_rel_ms( pos_ms );
+	PlayManager::instance()->seekRelativeMs( pos_ms );
 }
 
-void RemoteControl::seek_abs_ms(int pos_ms)
+void RemoteControl::seekAbsoluteMs(int pos_ms)
 {
-	PlayManager::instance()->seek_abs_ms( pos_ms );
+	PlayManager::instance()->seekAbsoluteMs( pos_ms );
 }
 
-void RemoteControl::change_track(int idx)
+void RemoteControl::changeTrack(int idx)
 {
 	auto* plh = Playlist::Handler::instance();
-	plh->change_track(idx - 1, plh->active_index());
+	plh->changeTrack(idx - 1, plh->activeIndex());
 }
 
 
-void RemoteControl::pos_changed_ms(MilliSeconds pos)
+void RemoteControl::currentPositionChangedMs(MilliSeconds pos)
 {
 	static MilliSeconds p = 0;
 	if(p / 1000 == pos / 1000){
@@ -318,12 +318,12 @@ void RemoteControl::pos_changed_ms(MilliSeconds pos)
 
 	p = pos;
 
-	write_current_position();
+	writeCurrentPosition();
 }
 
-void RemoteControl::insert_json_current_position(QJsonObject& obj) const
+void RemoteControl::insertJsonCurrentPosition(QJsonObject& obj) const
 {
-	MilliSeconds pos_ms = PlayManager::instance()->current_position_ms();
+	MilliSeconds pos_ms = PlayManager::instance()->currentPositionMs();
 	Seconds pos_sec = Seconds(pos_ms / 1000);
 
 	obj.insert("track-current-position", QJsonValue::fromVariant(
@@ -331,99 +331,99 @@ void RemoteControl::insert_json_current_position(QJsonObject& obj) const
 	);
 }
 
-void RemoteControl::write_current_position()
+void RemoteControl::writeCurrentPosition()
 {
 	QJsonDocument doc;
 
 	QJsonObject obj;
-	insert_json_current_position(obj);
+	insertJsonCurrentPosition(obj);
 
 	doc.setObject(obj);
 	write(doc.toBinaryData());
 }
 
 
-void RemoteControl::volume_changed(int vol)
+void RemoteControl::volumeChanged(int vol)
 {
 	Q_UNUSED(vol)
-	m->volume_timer->start(100);
+	m->volumeTimer->start(100);
 }
 
-void RemoteControl::volume_timer_timeout()
+void RemoteControl::volumeTimerTimeout()
 {
-	sp_log(Log::Debug, this) << "Volume timer timeout";
-	write_volume();
+	spLog(Log::Debug, this) << "Volume timer timeout";
+	writeVolume();
 }
 
-void RemoteControl::insert_json_volume(QJsonObject& obj) const
+void RemoteControl::insertJsonVolume(QJsonObject& obj) const
 {
 	obj.insert("volume", PlayManager::instance()->volume());
 }
 
-void RemoteControl::write_volume()
+void RemoteControl::writeVolume()
 {
 	QJsonDocument doc;
 	QJsonObject obj;
-	insert_json_volume(obj);
+	insertJsonVolume(obj);
 	doc.setObject(obj);
 	write(doc.toBinaryData());
 }
 
 
-void RemoteControl::track_changed(const MetaData& md)
+void RemoteControl::currentTrackChanged(const MetaData& md)
 {
 	Q_UNUSED(md)
-	write_current_track();
+	writeCurrentTrack();
 }
 
-void RemoteControl::insert_json_current_track(QJsonObject& o)
+void RemoteControl::insertJsonCurrentTrack(QJsonObject& o)
 {
 	auto* plh = Playlist::Handler::instance();
 
-	MetaData md = PlayManager::instance()->current_track();
+	MetaData md = PlayManager::instance()->currentTrack();
 
-	PlaylistConstPtr pl = plh->playlist(plh->active_index());
+	PlaylistConstPtr pl = plh->playlist(plh->activeIndex());
 	if(!pl){
 		return;
 	}
 
-	int cur_track_idx = pl->current_track_index();
+	int cur_trackIdx = pl->currentTrackIndex();
 
-	sp_log(Log::Debug, this) << "Send cur track idx: " << cur_track_idx;
+	spLog(Log::Debug, this) << "Send cur track idx: " << cur_trackIdx;
 
-	o.insert("playlist-current-index", cur_track_idx);
+	o.insert("playlist-current-index", cur_trackIdx);
 	o.insert("track-title", md.title());
 	o.insert("track-artist", md.artist());
 	o.insert("track-album", md.album());
 	o.insert("track-total-time", QJsonValue::fromVariant(
-		QVariant::fromValue<Seconds>(Seconds(md.duration_ms() / 1000)))
+		QVariant::fromValue<Seconds>(Seconds(md.durationMs() / 1000)))
 	);
 }
 
-void RemoteControl::write_current_track()
+void RemoteControl::writeCurrentTrack()
 {
 	PlayState playstate = PlayManager::instance()->playstate();
 	if(playstate == PlayState::Stopped)
 	{
-		write_playstate();
+		writePlaystate();
 		return;
 	}
 
 	QJsonDocument doc;
 	QJsonObject obj;
 
-	insert_json_playstate(obj);
-	insert_json_current_track(obj);
+	insertJsonPlaystate(obj);
+	insertJsonCurrentTrack(obj);
 
 	doc.setObject(obj);
 
 	write(doc.toBinaryData());
 
-	search_cover();
+	searchCover();
 }
 
 
-void RemoteControl::json_cover(QJsonObject& o, const QPixmap& pm) const
+void RemoteControl::jsonCover(QJsonObject& o, const QPixmap& pm) const
 {
 	if(pm.isNull()){
 		return;
@@ -434,27 +434,27 @@ void RemoteControl::json_cover(QJsonObject& o, const QPixmap& pm) const
 	o.insert("cover-width", pm_scaled.width());
 	o.insert("cover-height", pm_scaled.height());
 
-	QByteArray img_data = Util::cvt_pixmap_to_bytearray(pm_scaled);
+	QByteArray img_data = Util::convertPixmapToByteArray(pm_scaled);
 	QString data = QString::fromLocal8Bit(img_data.toBase64());
 
-	sp_log(Log::Debug, this) << "Send " << data.size() << " bytes cover info";
+	spLog(Log::Debug, this) << "Send " << data.size() << " bytes cover info";
 	o.insert("cover-data", data);
 }
 
 
-void RemoteControl::playstate_changed(PlayState playstate)
+void RemoteControl::playstateChanged(PlayState playstate)
 {
 	if(playstate == PlayState::Playing) {
-		request_state();
+		requestState();
 	}
 
 	else
 	{
-		write_playstate();
+		writePlaystate();
 	}
 }
 
-void RemoteControl::insert_json_playstate(QJsonObject& o)
+void RemoteControl::insertJsonPlaystate(QJsonObject& o)
 {
 	PlayState playstate = PlayManager::instance()->playstate();
 
@@ -471,16 +471,16 @@ void RemoteControl::insert_json_playstate(QJsonObject& o)
 	}
 }
 
-void RemoteControl::write_playstate()
+void RemoteControl::writePlaystate()
 {
 	QJsonDocument doc;
 	QJsonObject o;
-	insert_json_playstate(o);
+	insertJsonPlaystate(o);
 	doc.setObject(o);
 	write(doc.toBinaryData());
 }
 
-void RemoteControl::active_playlist_changed(int index)
+void RemoteControl::activePlaylistChanged(int index)
 {
 	auto* plh = Playlist::Handler::instance();
 	if(index >= 0 && index < plh->count())
@@ -488,36 +488,36 @@ void RemoteControl::active_playlist_changed(int index)
 		PlaylistConstPtr pl = plh->playlist(index);
 		if(pl)
 		{
-			connect(pl.get(), &Playlist::Playlist::sig_items_changed, this, &RemoteControl::active_playlist_content_changed);
+			connect(pl.get(), &Playlist::Playlist::sigItemsChanged, this, &RemoteControl::activePlaylistContentChanged);
 		}
 	}
 
-	write_playlist();
+	writePlaylist();
 }
 
-void RemoteControl::active_playlist_content_changed(int index)
+void RemoteControl::activePlaylistContentChanged(int index)
 {
 	Q_UNUSED(index)
-	write_playlist();
+	writePlaylist();
 }
 
-void RemoteControl::search_cover()
+void RemoteControl::searchCover()
 {
-	MetaData md = PlayManager::instance()->current_track();
-	Cover::Location cl = Cover::Location::cover_location(md);
+	MetaData md = PlayManager::instance()->currentTrack();
+	Cover::Location cl = Cover::Location::coverLocation(md);
 
 	auto* cover_lookup = new Cover::Lookup(cl, 1, nullptr);
-	connect(cover_lookup, &Cover::Lookup::sig_cover_found, this, &RemoteControl::cover_found);
-	connect(cover_lookup, &Cover::Lookup::sig_finished, cover_lookup, &QObject::deleteLater);
+	connect(cover_lookup, &Cover::Lookup::sigCoverFound, this, &RemoteControl::coverFound);
+	connect(cover_lookup, &Cover::Lookup::sigFinished, cover_lookup, &QObject::deleteLater);
 
 	cover_lookup->start();
 }
 
-void RemoteControl::cover_found(const QPixmap& pm)
+void RemoteControl::coverFound(const QPixmap& pm)
 {
 	QJsonDocument doc;
 	QJsonObject obj;
-	json_cover(obj, pm);
+	jsonCover(obj, pm);
 
 	if(!obj.isEmpty())
 	{
@@ -526,12 +526,12 @@ void RemoteControl::cover_found(const QPixmap& pm)
 	}
 }
 
-void RemoteControl::insert_json_playlist(QJsonArray& arr) const
+void RemoteControl::insertJsonPlaylist(QJsonArray& arr) const
 {
 	QByteArray data;
 
 	auto* plh = Playlist::Handler::instance();
-	PlaylistConstPtr pl = plh->playlist(plh->active_index());
+	PlaylistConstPtr pl = plh->playlist(plh->activeIndex());
 	if(pl)
 	{
 		int i=1;
@@ -543,7 +543,7 @@ void RemoteControl::insert_json_playlist(QJsonArray& arr) const
 			obj.insert("pl-track-artist", md.artist());
 			obj.insert("pl-track-album", md.album());
 			obj.insert("pl-track-total-time", QJsonValue::fromVariant(
-				QVariant::fromValue<Seconds>(Seconds(md.duration_ms() / 1000)))
+				QVariant::fromValue<Seconds>(Seconds(md.durationMs() / 1000)))
 			);
 
 			arr.append(obj);
@@ -553,22 +553,22 @@ void RemoteControl::insert_json_playlist(QJsonArray& arr) const
 	}
 }
 
-void RemoteControl::write_playlist()
+void RemoteControl::writePlaylist()
 {
 	QJsonDocument doc;
 	QJsonObject obj;
 
 	auto* plh = Playlist::Handler::instance();
-	MetaData md = PlayManager::instance()->current_track();
-	PlaylistConstPtr pl = plh->playlist(plh->active_index());
+	MetaData md = PlayManager::instance()->currentTrack();
+	PlaylistConstPtr pl = plh->playlist(plh->activeIndex());
 	if(pl)
 	{
-		int cur_track_idx = pl->current_track_index();
-		obj.insert("playlist-current-index", cur_track_idx);
+		int cur_trackIdx = pl->currentTrackIndex();
+		obj.insert("playlist-current-index", cur_trackIdx);
 	}
 
 	QJsonArray arr;
-	insert_json_playlist(arr);
+	insertJsonPlaylist(arr);
 	if(arr.isEmpty()){
 		return;
 	}
@@ -580,17 +580,17 @@ void RemoteControl::write_playlist()
 }
 
 
-void RemoteControl::insert_json_broadcast_info(QJsonObject& obj)
+void RemoteControl::insertJsonBroadcastInfo(QJsonObject& obj)
 {
 	obj.insert("broadcast-active", GetSetting(Set::Broadcast_Active));
 	obj.insert("broadcast-port", GetSetting(Set::Broadcast_Port));
 }
 
-void RemoteControl::write_broadcast_info()
+void RemoteControl::writeBroadcastInfo()
 {
 	QJsonDocument doc;
 	QJsonObject obj;
-	insert_json_broadcast_info(obj);
+	insertJsonBroadcastInfo(obj);
 
 	doc.setObject(obj);
 	write(doc.toBinaryData());
@@ -610,30 +610,30 @@ void RemoteControl::write(const QByteArray& data)
 }
 
 
-void RemoteControl::request_state()
+void RemoteControl::requestState()
 {
-	sp_log(Log::Debug, this) << "Current state requested";
+	spLog(Log::Debug, this) << "Current state requested";
 
 	QJsonDocument doc;
 	QJsonObject obj;
 
-	insert_json_volume(obj);
-	insert_json_current_position(obj);
-	insert_json_current_track(obj);
-	insert_json_playstate(obj);
-	insert_json_broadcast_info(obj);
+	insertJsonVolume(obj);
+	insertJsonCurrentPosition(obj);
+	insertJsonCurrentTrack(obj);
+	insertJsonPlaystate(obj);
+	insertJsonBroadcastInfo(obj);
 
 	doc.setObject(obj);
-	sp_log(Log::Info, this) << QString::fromLocal8Bit(doc.toJson());
+	spLog(Log::Info, this) << QString::fromLocal8Bit(doc.toJson());
 
 	write(doc.toBinaryData());
 
-	write_playlist();
-	search_cover();
+	writePlaylist();
+	searchCover();
 }
 
 
-void RemoteControl::show_api()
+void RemoteControl::showApi()
 {
 	if(!m->socket || !m->socket->isOpen()){
 		return;
@@ -641,14 +641,14 @@ void RemoteControl::show_api()
 
 	m->socket->write("\n");
 
-	for(auto it=m->fn_call_map.cbegin(); it!=m->fn_call_map.cend(); it++)
+	for(auto it=m->functionCallMap.cbegin(); it!=m->functionCallMap.cend(); it++)
 	{
 		m->socket->write(it.key() + "\n");
 	}
 
 	m->socket->write("\n");
 
-	for(auto it=m->fn_call_map.cbegin(); it!=m->fn_call_map.cend(); it++)
+	for(auto it=m->functionCallMap.cbegin(); it!=m->functionCallMap.cend(); it++)
 	{
 		m->socket->write(it.key() + "( value )\n");
 	}

@@ -1,6 +1,6 @@
 /* SomaFMStationModel.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -39,8 +39,8 @@ namespace SomaFM
 		PIMPL(StationModel)
 
 	public:
-		explicit StationModel(QObject *parent = nullptr);
-		~StationModel();
+		explicit StationModel(QObject* parent = nullptr);
+		~StationModel() override;
 
 	private:
 		enum class Status : char
@@ -56,17 +56,16 @@ namespace SomaFM
 		int columnCount(const QModelIndex& parent=QModelIndex()) const override;
 		QVariant data(const QModelIndex& index, int role=Qt::DisplayRole) const override;
 		QMimeData* mimeData(const QModelIndexList &indexes) const override;
-		Qt::ItemFlags flags(const QModelIndex &index) const override;
+		Qt::ItemFlags flags(const QModelIndex& index) const override;
 
 	public:
 		// AbstractSearchModelInterface interface
-		bool		has_items() const override;
-		QModelIndexList search_results(const QString& substr) override;
+		QModelIndexList searchResults(const QString& substr) override;
 
-		void set_stations(const QList<SomaFM::Station>& stations);
-		void replace_station(const SomaFM::Station& station);
-		bool has_stations() const;
-		void set_waiting();
+		void setStations(const QList<SomaFM::Station>& stations);
+		void replaceStation(const SomaFM::Station& station);
+		bool hasStations() const;
+		void setWaiting();
 	};
 }
 

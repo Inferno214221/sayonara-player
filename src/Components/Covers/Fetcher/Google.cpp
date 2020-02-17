@@ -1,6 +1,6 @@
 /* GoogleCoverFetcher.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -29,12 +29,12 @@
 
 using namespace Cover::Fetcher;
 
-bool Google::can_fetch_cover_directly() const
+bool Google::canFetchCoverDirectly() const
 {
 	return false;
 }
 
-QStringList Google::parse_addresses(const QByteArray& website) const
+QStringList Google::parseAddresses(const QByteArray& website) const
 {
 	QString regex = "(https://encrypted-tbn.+)\"";
 	QStringList addresses;
@@ -68,12 +68,12 @@ QStringList Google::parse_addresses(const QByteArray& website) const
 }
 
 
-QString Google::artist_address(const QString& artist) const
+QString Google::artistAddress(const QString& artist) const
 {
-	return search_address(QUrl::toPercentEncoding(artist));
+	return fulltextSearchAddress(QUrl::toPercentEncoding(artist));
 }
 
-QString Google::album_address(const QString& artist, const QString& album) const
+QString Google::albumAddress(const QString& artist, const QString& album) const
 {
 	QString new_album, searchstring;
 	QRegExp regex;
@@ -100,10 +100,10 @@ QString Google::album_address(const QString& artist, const QString& album) const
 
 	searchstring += new_album;
 
-	return search_address(searchstring);
+	return fulltextSearchAddress(searchstring);
 }
 
-QString Google::search_address(const QString& str) const
+QString Google::fulltextSearchAddress(const QString& str) const
 {
 	QString searchstring = str;
 	searchstring.replace(" ", "%20");
@@ -119,13 +119,13 @@ QString Google::search_address(const QString& str) const
 	return url;
 }
 
-int Google::estimated_size() const
+int Google::estimatedSize() const
 {
 	return 150;
 }
 
 
-QString Google::priv_identifier() const
+QString Google::privateIdentifier() const
 {
 	// DO NOT EDIT THAT! It's also used in CoverFetchManager
 	return "google";

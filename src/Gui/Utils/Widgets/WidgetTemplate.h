@@ -1,6 +1,6 @@
 /* WidgetTemplate.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -47,15 +47,15 @@ namespace Gui
 		Q_OBJECT
 
 		private:
-			WidgetTemplateParent* _wtp;
+			WidgetTemplateParent* mWtp=nullptr;
 
 		public:
 			AbstrWidgetTemplate(QObject* parent, WidgetTemplateParent* wtp);
-			virtual ~AbstrWidgetTemplate();
+			virtual ~AbstrWidgetTemplate() override;
 
 		protected:
-			virtual void language_changed();
-			virtual void skin_changed();
+			virtual void languageChanged();
+			virtual void skinChanged();
 	};
 
 
@@ -72,8 +72,8 @@ namespace Gui
 			virtual ~WidgetTemplateParent();
 
 		protected:
-			virtual void language_changed();
-			virtual void skin_changed();
+			virtual void languageChanged();
+			virtual void skinChanged();
 	};
 
 	template<typename T>
@@ -88,7 +88,7 @@ namespace Gui
 		friend class AbstrWidgetTemplate;
 
 		private:
-			AbstrWidgetTemplate* _awt;
+			AbstrWidgetTemplate* mAwt=nullptr;
 
 		public:
 			template<typename... Args>
@@ -96,15 +96,15 @@ namespace Gui
 				T(std::forward<Args>(args)...),
 				WidgetTemplateParent()
 			{
-				_awt = new AbstrWidgetTemplate(this, this);
+				mAwt = new AbstrWidgetTemplate(this, this);
 			}
 
 			virtual ~WidgetTemplate() = default;
 
 			virtual void showEvent(QShowEvent* e) override
 			{
-				language_changed();
-				skin_changed();
+				languageChanged();
+				skinChanged();
 
 				T::showEvent(e);
 			}

@@ -1,6 +1,6 @@
 /* GUI_Controls.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -35,37 +35,37 @@ class GUI_Controls :
 	UI_CLASS(GUI_Controls)
 
 public:
-	explicit GUI_Controls(QWidget *parent=nullptr);
-	~GUI_Controls();
+	explicit GUI_Controls(QWidget* parent=nullptr);
+	~GUI_Controls() override;
 
 	// GUI_ControlsBase interface
 public:
-	QLabel* lab_sayonara() const override;
-	QLabel* lab_title() const override;
-	QLabel* lab_version() const override;
-	QLabel* lab_album() const override;
-	QLabel* lab_artist() const override;
-	QLabel* lab_writtenby() const override;
-	QLabel* lab_bitrate() const override;
-	QLabel* lab_filesize() const override;
-	QLabel* lab_copyright() const override;
-	QLabel* lab_current_time() const override;
-	QLabel* lab_max_time() const override;
-	QWidget* widget_details() const override;
-	Gui::SearchSlider* sli_progress() const override;
-	Gui::SearchSlider* sli_volume() const override;
-	QPushButton* btn_mute() const override;
-	QPushButton* btn_play() const override;
-	QPushButton* btn_rec() const override;
-	QPushButton* btn_bwd() const override;
-	QPushButton* btn_fwd() const override;
-	QPushButton* btn_stop() const override;
-	Gui::CoverButton* btn_cover() const override;
+	QLabel* labSayonara() const override;
+	QLabel* labTitle() const override;
+	QLabel* labVersion() const override;
+	QLabel* labAlbum() const override;
+	QLabel* labArtist() const override;
+	QLabel* labWrittenBy() const override;
+	QLabel* labBitrate() const override;
+	QLabel* labFilesize() const override;
+	QLabel* labCopyright() const override;
+	QLabel* labCurrentTime() const override;
+	QLabel* labMaxTime() const override;
+	QWidget* widgetDetails() const override;
+	Gui::SearchSlider* sliProgress() const override;
+	Gui::SearchSlider* sliVolume() const override;
+	QPushButton* btnMute() const override;
+	QPushButton* btnPlay() const override;
+	QPushButton* btnRecord() const override;
+	QPushButton* btnPrevious() const override;
+	QPushButton* btnNext() const override;
+	QPushButton* btnStop() const override;
+	Gui::CoverButton* btnCover() const override;
 
-	bool is_extern_resize_allowed() const override;
+	bool isExternResizeAllowed() const override;
 
 protected:
-	void language_changed() override;
+	void languageChanged() override;
 };
 
 

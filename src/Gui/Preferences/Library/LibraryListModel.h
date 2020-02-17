@@ -1,6 +1,6 @@
 /* LibraryListModel.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -17,8 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-
 
 #ifndef LIBRARYLISTMODEL_H
 #define LIBRARYLISTMODEL_H
@@ -43,14 +41,14 @@ public:
 	int rowCount(const QModelIndex& parent=QModelIndex()) const override;
 	QVariant data(const QModelIndex& index, int role) const override;
 
-	void append_row(const LibName& name, const LibPath& path);
-	void rename_row(int row, const LibName& new_name);
-	void change_path(int row, const LibPath& path);
-	void move_row(int from, int to);
-	void remove_row(int row);
+	void appendRow(const LibName& name, const LibPath& path);
+	void renameRow(int row, const LibName& newName);
+	void changePath(int row, const LibPath& path);
+	void moveRow(int from, int to);
+	void removeRow(int row);
 
-	QStringList all_names() const;
-	QStringList all_paths() const;
+	QStringList allNames() const;
+	QStringList allPaths() const;
 	QString name(int idx) const;
 	QString path(int idx) const;
 

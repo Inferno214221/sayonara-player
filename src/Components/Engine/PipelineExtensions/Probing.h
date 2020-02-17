@@ -1,6 +1,6 @@
 /* PipelineProbes.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -44,7 +44,7 @@ namespace PipelineExtensions
 		 * @param probe_id
 		 * @param callback
 		 */
-		void handle_probe(bool* active, GstElement* queue, gulong* probe_id, GstPadProbeCallback callback);
+		void handleProbe(bool* active, GstElement* queue, gulong* probe_id, GstPadProbeCallback callback);
 
 
 		/**
@@ -56,7 +56,7 @@ namespace PipelineExtensions
 		 * @return
 		 */
 		GstPadProbeReturn
-		level_probed(GstPad *pad, GstPadProbeInfo *info, gpointer user_data);
+		levelProbed(GstPad* pad, GstPadProbeInfo* info, gpointer user_data);
 
 		/**
 		 * @brief spectrum_probed
@@ -67,7 +67,7 @@ namespace PipelineExtensions
 		 * @return
 		 */
 		GstPadProbeReturn
-		spectrum_probed(GstPad *pad, GstPadProbeInfo *info, gpointer user_data);
+		spectrumProbed(GstPad* pad, GstPadProbeInfo* info, gpointer user_data);
 
 		/**
 		 * @brief lame_probed
@@ -78,7 +78,7 @@ namespace PipelineExtensions
 		 * @return
 		 */
 		GstPadProbeReturn
-		lame_probed(GstPad *pad, GstPadProbeInfo *info, gpointer user_data);
+		lameProbed(GstPad* pad, GstPadProbeInfo* info, gpointer user_data);
 
 		/**
 		 * @brief pitch_probed
@@ -89,7 +89,7 @@ namespace PipelineExtensions
 		 * @return
 		 */
 		GstPadProbeReturn
-		pitch_probed(GstPad *pad, GstPadProbeInfo *info, gpointer user_data);
+		pitchProbed(GstPad* pad, GstPadProbeInfo* info, gpointer user_data);
 
 
 		/**
@@ -101,7 +101,7 @@ namespace PipelineExtensions
 		 * @return
 		 */
 		GstPadProbeReturn
-		stream_recorder_probed(GstPad *pad, GstPadProbeInfo *info, gpointer user_data);
+		streamRecorderProbed(GstPad* pad, GstPadProbeInfo* info, gpointer user_data);
 
 		/**
 		 * @brief handle_stream_recorder_probe
@@ -109,7 +109,7 @@ namespace PipelineExtensions
 		 * @param data
 		 * @param callback
 		 */
-		void handle_stream_recorder_probe(StreamRecorder::Data* data, GstPadProbeCallback callback);
+		void handleStreamRecorderProbe(StreamRecorder::Data* data, GstPadProbeCallback callback);
 	}
 }
 

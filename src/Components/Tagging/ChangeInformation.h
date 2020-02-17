@@ -19,7 +19,7 @@ namespace Tagging
 			ChangeInformation& operator=(const ChangeInformation& other);
 
 			void update(const MetaData& md);
-			void update_cover(const QPixmap& pm);
+			void updateCover(const QPixmap& pm);
 
 			/**
 			 * @brief Overwrite original track with the modified one.
@@ -32,17 +32,17 @@ namespace Tagging
 			 */
 			void undo();
 
-			bool has_changes() const;
-			void set_changed(bool b);
+			bool hasChanges() const;
+			void setChanged(bool b);
 
-			bool has_new_cover() const;
+			bool hasNewCover() const;
 			QPixmap cover() const;
 
-			const MetaData& current_metadata() const;
-			const MetaData& original_metadata() const;
+			const MetaData& currentMetadata() const;
+			const MetaData& originalMetadata() const;
 
-			MetaData& current_metadata();
-			MetaData& original_metadata();
+			MetaData& currentMetadata();
+			MetaData& originalMetadata();
 	};
 }
 

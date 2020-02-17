@@ -1,6 +1,6 @@
 /* InfoDialogContainer.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -33,8 +33,8 @@
 
 struct InfoDialogContainer::Private
 {
-	GUI_InfoDialog*	info_dialog=nullptr;
-	InfoDialogContainerAsyncHandler* async_helper=nullptr;
+	GUI_InfoDialog*	infoDialog=nullptr;
+	InfoDialogContainerAsyncHandler* asyncHelper=nullptr;
 };
 
 InfoDialogContainer::InfoDialogContainer()
@@ -44,111 +44,111 @@ InfoDialogContainer::InfoDialogContainer()
 
 InfoDialogContainer::~InfoDialogContainer()
 {
-	if(m->async_helper){
-		delete m->async_helper;
+	if(m->asyncHelper){
+		delete m->asyncHelper;
 	}
 }
 
-void InfoDialogContainer::info_dialog_closed() {}
+void InfoDialogContainer::infoDialogClosed() {}
 
-void InfoDialogContainer::show_info()
+void InfoDialogContainer::showInfo()
 {
-	if(init_dialog(OpenMode::Info))
+	if(initDialog(OpenMode::Info))
 	{
-		m->info_dialog->show(GUI_InfoDialog::Tab::Info);
+		m->infoDialog->show(GUI_InfoDialog::Tab::Info);
 	}
 }
 
-void InfoDialogContainer::show_lyrics()
+void InfoDialogContainer::showLyrics()
 {
-	if(init_dialog(OpenMode::Lyrics))
+	if(initDialog(OpenMode::Lyrics))
 	{
-		m->info_dialog->show(GUI_InfoDialog::Tab::Lyrics);
+		m->infoDialog->show(GUI_InfoDialog::Tab::Lyrics);
 	}
 }
 
-void InfoDialogContainer::show_edit()
+void InfoDialogContainer::showEdit()
 {
-	if(init_dialog(OpenMode::Edit))
+	if(initDialog(OpenMode::Edit))
 	{
-		m->info_dialog->show(GUI_InfoDialog::Tab::Edit);
+		m->infoDialog->show(GUI_InfoDialog::Tab::Edit);
 	}
 }
 
-void InfoDialogContainer::show_cover_edit()
+void InfoDialogContainer::showCoverEdit()
 {
-	if(init_dialog(OpenMode::Cover))
+	if(initDialog(OpenMode::Cover))
 	{
-		m->info_dialog->show_cover_edit_tab();
+		m->infoDialog->showCoverEditTab();
 	}
 }
 
-bool InfoDialogContainer::init_dialog(OpenMode mode)
+bool InfoDialogContainer::initDialog(OpenMode mode)
 {
-	if(!m->info_dialog)
+	if(!m->infoDialog)
 	{
-		m->info_dialog = new GUI_InfoDialog(this, Gui::Util::main_window());
+		m->infoDialog = new GUI_InfoDialog(this, Gui::Util::mainWindow());
 	}
 
-	if(!has_metadata())
+	if(!hasMetadata())
 	{
-		if(!m->async_helper)
+		if(!m->asyncHelper)
 		{
-			m->async_helper = new InfoDialogContainerAsyncHandler(this, mode);
+			m->asyncHelper = new InfoDialogContainerAsyncHandler(this, mode);
 		}
 
-		if(m->async_helper->is_running())
+		if(m->asyncHelper->isRunning())
 		{
 			return false;
 		}
 
-		m->info_dialog->set_metadata(MetaDataList(), metadata_interpretation());
+		m->infoDialog->setMetadata(MetaDataList(), metadataInterpretation());
 
-		bool started = m->async_helper->start();
+		bool started = m->asyncHelper->start();
 		if(started)
 		{
-			m->info_dialog->show(GUI_InfoDialog::Tab::Info);
+			m->infoDialog->show(GUI_InfoDialog::Tab::Info);
 		}
 
 		return started;
 	}
 
-	m->info_dialog->set_busy(false);
-	m->info_dialog->set_metadata(info_dialog_data(), metadata_interpretation());
-	return m->info_dialog->has_metadata();
+	m->infoDialog->setBusy(false);
+	m->infoDialog->setMetadata(infoDialogData(), metadataInterpretation());
+	return m->infoDialog->hasMetadata();
 }
 
 void InfoDialogContainer::go(OpenMode mode, const MetaDataList& v_md)
 {
-	m->info_dialog->set_busy(false);
+	m->infoDialog->setBusy(false);
 
 	if(v_md.isEmpty()) {
-		m->info_dialog->close();
+		m->infoDialog->close();
 		return;
 	}
 
-	m->info_dialog->set_metadata(v_md, metadata_interpretation());
+	m->infoDialog->setMetadata(v_md, metadataInterpretation());
 
 	switch(mode)
 	{
 		case OpenMode::Info:
-			m->info_dialog->show(GUI_InfoDialog::Tab::Info);
+			m->infoDialog->show(GUI_InfoDialog::Tab::Info);
 			break;
 		case OpenMode::Lyrics:
-			m->info_dialog->show(GUI_InfoDialog::Tab::Lyrics);
+			m->infoDialog->show(GUI_InfoDialog::Tab::Lyrics);
 			break;
 
 		case OpenMode::Edit:
-			m->info_dialog->show(GUI_InfoDialog::Tab::Edit);
+			m->infoDialog->show(GUI_InfoDialog::Tab::Edit);
 			break;
 
 		case OpenMode::Cover:
-			m->info_dialog->show_cover_edit_tab();
+			m->infoDialog->showCoverEditTab();
 			break;
 	}
 }
 
-bool InfoDialogContainer::has_metadata() const
+bool InfoDialogContainer::hasMetadata() const
 {
 	return true;
 }
@@ -197,20 +197,20 @@ bool InfoDialogContainerAsyncHandler::start()
 
 	connect(t, &QThread::started, scanner, &MetaDataScanner::start);
 	connect(t, &QThread::finished, t, &QObject::deleteLater);
-	connect(scanner, &MetaDataScanner::sig_finished, this, &InfoDialogContainerAsyncHandler::scanner_finished);
-	connect(scanner, &MetaDataScanner::sig_finished, t, &QThread::quit);
+	connect(scanner, &MetaDataScanner::sigFinished, this, &InfoDialogContainerAsyncHandler::scannerFinished);
+	connect(scanner, &MetaDataScanner::sigFinished, t, &QThread::quit);
 
 	t->start();
 
 	return true;
 }
 
-bool InfoDialogContainerAsyncHandler::is_running() const
+bool InfoDialogContainerAsyncHandler::isRunning() const
 {
 	return m->is_running;
 }
 
-void InfoDialogContainerAsyncHandler::scanner_finished()
+void InfoDialogContainerAsyncHandler::scannerFinished()
 {
 	auto* scanner = static_cast<Directory::MetaDataScanner*>(sender());
 

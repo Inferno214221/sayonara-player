@@ -1,6 +1,6 @@
 /* CustomMimeData.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -33,15 +33,15 @@ using namespace Gui;
 
 struct CustomMimeData::Private
 {
-	MetaDataList	v_md;
-	int				playlist_source_index;
+	MetaDataList	tracks;
+	int				playlistSourceIndex;
 	QString			source;
-	QString			cover_url;
+	QString			coverUrl;
 	const void*		ptr;
 	//CustomMimeData::AsyncDropHandler* async_drop_handler=nullptr;
 
 	Private(const void* ptr) :
-		playlist_source_index(-1),
+		playlistSourceIndex(-1),
 		ptr(ptr)
 	{}
 };
@@ -59,15 +59,15 @@ const void* CustomMimeData::ptr() const
 
 CustomMimeData::~CustomMimeData() = default;
 
-void CustomMimeData::set_metadata(const MetaDataList& v_md)
+void CustomMimeData::setMetadata(const MetaDataList& tracks)
 {
-	m->v_md = v_md;
+	m->tracks = tracks;
 
 	QList<QUrl> urls;
-	for(const MetaData& md : v_md)
+	for(const MetaData& md : tracks)
 	{
 		QString filepath = md.filepath();
-		if(Util::File::is_url(filepath))
+		if(Util::File::isUrl(filepath))
 		{
 			urls << QUrl(filepath);
 		}
@@ -79,7 +79,7 @@ void CustomMimeData::set_metadata(const MetaDataList& v_md)
 
 	this->setUrls(urls);
 
-	if(v_md.isEmpty()){
+	if(tracks.isEmpty()){
 		this->setText("No tracks");
 	}
 
@@ -90,41 +90,30 @@ void CustomMimeData::set_metadata(const MetaDataList& v_md)
 
 const MetaDataList& CustomMimeData::metadata() const
 {
-	return m->v_md;
+	return m->tracks;
 }
 
-bool CustomMimeData::has_metadata() const
+bool CustomMimeData::hasMetadata() const
 {
-	return (m->v_md.size() > 0);
+	return (m->tracks.size() > 0);
 }
 
-void CustomMimeData::set_playlist_source_index(int idx)
+void CustomMimeData::setPlaylistSourceIndex(int idx)
 {
-	m->playlist_source_index = idx;
+	m->playlistSourceIndex = idx;
 }
 
-int CustomMimeData::playlist_source_index() const
+int CustomMimeData::playlistSourceIndex() const
 {
-	return m->playlist_source_index;
+	return m->playlistSourceIndex;
 }
 
-QString CustomMimeData::cover_url() const
+QString CustomMimeData::coverUrl() const
 {
-	return m->cover_url;
+	return m->coverUrl;
 }
 
-void CustomMimeData::set_cover_url(const QString& url)
+void CustomMimeData::setCoverUrl(const QString& url)
 {
-	m->cover_url = url;
+	m->coverUrl = url;
 }
-
-//void CustomMimeData::set_drop_handler(CustomMimeData::AsyncDropHandler* handler)
-//{
-//	m->async_drop_handler = handler;
-//}
-
-//CustomMimeData::AsyncDropHandler* CustomMimeData::drop_handler() const
-//{
-//	return m->async_drop_handler;
-//}
-

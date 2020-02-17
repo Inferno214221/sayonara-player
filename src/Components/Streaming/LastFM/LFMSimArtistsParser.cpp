@@ -1,6 +1,6 @@
 /* LFMSimArtistsParser.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -34,25 +34,25 @@ using namespace LastFM;
 
 struct SimArtistsParser::Private
 {
-	ArtistMatch artist_match;
-	QString     artist_name;
+	ArtistMatch artistMatch;
+	QString     artistName;
 	QByteArray  data;
 
-	Private(const QString& artist_name, const QByteArray& data) :
-		artist_name(artist_name),
+	Private(const QString& artistName, const QByteArray& data) :
+		artistName(artistName),
 		data(data)
 	{}
 };
 
 
-SimArtistsParser::SimArtistsParser(const QString& artist_name, const QByteArray& data)
+SimArtistsParser::SimArtistsParser(const QString& artistName, const QByteArray& data)
 {
-	m = Pimpl::make<Private>(artist_name, data);
+	m = Pimpl::make<Private>(artistName, data);
 
-	parse_document();
+	parseDocument();
 }
 
-SimArtistsParser::SimArtistsParser(const QString& artist_name, const QString& filename)
+SimArtistsParser::SimArtistsParser(const QString& artistName, const QString& filename)
 {
 	QByteArray data;
 
@@ -62,14 +62,14 @@ SimArtistsParser::SimArtistsParser(const QString& artist_name, const QString& fi
 		f.close();
 	}
 
-	m = Pimpl::make<Private>(artist_name, data);
+	m = Pimpl::make<Private>(artistName, data);
 
-	parse_document();
+	parseDocument();
 }
 
 SimArtistsParser::~SimArtistsParser() {}
 
-void SimArtistsParser::parse_document()
+void SimArtistsParser::parseDocument()
 {
 	bool success;
 	QDomDocument doc("similar_artists");
@@ -77,12 +77,12 @@ void SimArtistsParser::parse_document()
 
 	if(!success)
 	{
-		m->artist_match = ArtistMatch();
-		sp_log(Log::Warning, this) << "Cannot parse similar artists document";
+		m->artistMatch = ArtistMatch();
+		spLog(Log::Warning, this) << "Cannot parse similar artists document";
 		return;
 	}
 
-	m->artist_match = ArtistMatch(m->artist_name);
+	m->artistMatch = ArtistMatch(m->artistName);
 
 	QDomElement docElement = doc.documentElement();
 	QDomNode similar_artists = docElement.firstChild();			// similarartists
@@ -91,7 +91,7 @@ void SimArtistsParser::parse_document()
 		return;
 	}
 
-	QString artist_name, mbid;
+	QString artistName, mbid;
 	double match = -1.0;
 
 	QDomNodeList child_nodes = similar_artists.childNodes();
@@ -118,7 +118,7 @@ void SimArtistsParser::parse_document()
 			if(node_name.compare("name") == 0)
 			{
 				if(!e.isNull()) {
-					artist_name = e.text();
+					artistName = e.text();
 				}
 			}
 
@@ -136,11 +136,11 @@ void SimArtistsParser::parse_document()
 				}
 			}
 
-			if(!artist_name.isEmpty() && match > 0 && !mbid.isEmpty())
+			if(!artistName.isEmpty() && match > 0 && !mbid.isEmpty())
 			{
-				ArtistMatch::ArtistDesc artist_desc(artist_name, mbid);
-				m->artist_match.add(artist_desc, match);
-				artist_name = "";
+				ArtistMatch::ArtistDesc artist_desc(artistName, mbid);
+				m->artistMatch.add(artist_desc, match);
+				artistName = "";
 				match = -1.0;
 				mbid = "";
 				break;
@@ -150,7 +150,7 @@ void SimArtistsParser::parse_document()
 }
 
 
-LastFM::ArtistMatch SimArtistsParser::artist_match() const
+LastFM::ArtistMatch SimArtistsParser::artistMatch() const
 {
-	return m->artist_match;
+	return m->artistMatch;
 }

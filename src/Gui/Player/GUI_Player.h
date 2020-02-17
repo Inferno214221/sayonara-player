@@ -1,6 +1,6 @@
 /* GUI_Simpleplayer.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -56,67 +56,63 @@ signals:
 	void sig_player_closed();
 
 public:
-	explicit GUI_Player(QWidget *parent=nullptr);
+	explicit GUI_Player(QWidget* parent=nullptr);
 	~GUI_Player() override;
 
-
-	void register_preference_dialog(QAction* dialog_action);
-	void request_shutdown();
+	void registerPreferenceDialog(QAction* dialog_action);
+	void requestShutdown();
 
 private:
-	void init_tray_actions();
-	void init_connections();
-	void init_library();
-	void init_control_splitter();
-	void init_main_splitter();
-	void init_font_change_fix();
-	void init_geometry();
+	void initTrayActions();
+	void initConnections();
+	void initLibrary();
+	void initControlSplitter();
+	void initMainSplitter();
+	void initFontChangeFix();
+	void initGeometry();
 
-	void check_control_splitter(bool force);
+	void checkControlSplitter(bool force);
 
+	void fullscreenChanged();
+	void initControls();
+	void controlstyleChanged();
+
+	void showLibraryChanged();
+	void addCurrentLibrary();
+	void removeCurrentLibrary();
+
+
+private slots:
+	void playstateChanged(PlayState state);
+	void playError(const QString& message);
+
+	void splitterMainMoved(int pos, int idx);
+	void splitterControlsMoved(int pos, int idx);
+
+	void currentLibraryChanged();
+
+	void minimize();
+	void reallyClose();
+
+	void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
+	void currentTrackChanged(const MetaData& md);
+
+	/* Plugins */
+	void pluginAdded(PlayerPlugin::Base* plugin);
+	void pluginActionTriggered(bool b);
+
+protected:
 	void closeEvent(QCloseEvent* e) override;
 	void resizeEvent(QResizeEvent* e) override;
 	bool event(QEvent* e) override;
 
-	void language_changed() override;
-	void fullscreen_changed();
-	void init_controls();
-	void controlstyle_changed();
-
-	void show_library_changed();
-	void add_current_library();
-	void remove_current_library();
-
-	void set_total_time_label(MilliSeconds length_ms);
-	void set_cur_pos_label(int val);
-	void set_cover_location(const MetaData& md);
-	void set_standard_cover();
-
 	// Methods for other mudules to display info/warning/error
-	Message::Answer error_received(const QString &error, const QString &sender_name=QString()) override;
-	Message::Answer warning_received(const QString &error, const QString &sender_name=QString()) override;
-	Message::Answer info_received(const QString &error, const QString &sender_name=QString()) override;
-	Message::Answer question_received(const QString &info, const QString &sender_name=QString(), Message::QuestionType type=Message::QuestionType::YesNo) override;
+	Message::Answer errorReceived(const QString& error, const QString& senderName=QString()) override;
+	Message::Answer warningReceived(const QString& error, const QString& senderName=QString()) override;
+	Message::Answer infoReceived(const QString& error, const QString& senderName=QString()) override;
+	Message::Answer questionReceived(const QString& info, const QString& senderName=QString(), Message::QuestionType type=Message::QuestionType::YesNo) override;
 
-
-private slots:
-	void playstate_changed(PlayState state);
-	void play_error(const QString& message);
-
-	void splitter_main_moved(int pos, int idx);
-	void splitter_controls_moved(int pos, int idx);
-
-	void current_library_changed();
-
-	void minimize();
-	void really_close();
-
-	void tray_icon_activated(QSystemTrayIcon::ActivationReason reason);
-	void current_track_changed(const MetaData& md);
-
-	/* Plugins */
-	void plugin_added(PlayerPlugin::Base* plugin);
-	void plugin_action_triggered(bool b);
+	void languageChanged() override;
 };
 
 #endif // GUI_SIMPLEPLAYER_H

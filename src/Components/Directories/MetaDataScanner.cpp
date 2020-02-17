@@ -20,20 +20,20 @@ struct MetaDataScanner::Private
 	void*			data=nullptr;
 
 	bool			recursive;
-	bool			scan_audio_files;
-	bool			scan_playlist_files;
+	bool			scanAudioFiles;
+	bool			scanPlaylistFiles;
 
 	Private(const QStringList& files, bool recursive) :
 		files(files),
 		recursive(recursive),
-		scan_audio_files(true),
-		scan_playlist_files(false)
+		scanAudioFiles(true),
+		scanPlaylistFiles(false)
 	{}
 };
 
 MetaDataScanner::~MetaDataScanner()
 {
-	DB::Connector::instance()->close_db();
+	DB::Connector::instance()->closeDatabase();
 }
 
 MetaDataScanner::MetaDataScanner(const QStringList& files, bool recursive, QObject* parent) :
@@ -46,45 +46,45 @@ void MetaDataScanner::start()
 {
 	DirectoryReader reader;
 	QStringList extensions;
-	if(m->scan_audio_files)
+	if(m->scanAudioFiles)
 	{
-		extensions << Util::soundfile_extensions();
+		extensions << Util::soundfileExtensions();
 	}
 
-	if(m->scan_playlist_files)
+	if(m->scanPlaylistFiles)
 	{
-		extensions << Util::playlist_extensions();
+		extensions << Util::playlistExtensions();
 	}
 
 	if(extensions.isEmpty())
 	{
-		emit sig_finished();
+		emit sigFinished();
 		return;
 	}
 
-	reader.set_filter(extensions);
+	reader.setFilter(extensions);
 
 	if(!m->recursive)
 	{
 		m->tracks.clear();
 		for(const QString& path : m->files)
 		{
-			emit sig_current_path(path);
+			emit sigCurrentProcessedPathChanged(path);
 
 			QStringList files;
-			reader.scan_files(QDir(path), files);
-			m->tracks << reader.scan_metadata(files);
+			reader.scanFiles(QDir(path), files);
+			m->tracks << reader.scanMetadata(files);
 		}
 	}
 
 	else
 	{
-		m->tracks = reader.scan_metadata(m->files);
+		m->tracks = reader.scanMetadata(m->files);
 	}
 
 	m->tracks.sort(Library::SortOrder::TrackAlbumArtistAsc);
 
-	emit sig_finished();
+	emit sigFinished();
 }
 
 MetaDataList MetaDataScanner::metadata() const
@@ -97,17 +97,17 @@ QStringList MetaDataScanner::files() const
 	return m->files;
 }
 
-void MetaDataScanner::set_scan_audio_files(bool b)
+void MetaDataScanner::setScanAudioFilesEnabled(bool b)
 {
-	m->scan_audio_files = b;
+	m->scanAudioFiles = b;
 }
 
-void MetaDataScanner::set_scan_playlist_files(bool b)
+void MetaDataScanner::setScanPlaylistFilesEnabled(bool b)
 {
-	m->scan_playlist_files = b;
+	m->scanPlaylistFiles = b;
 }
 
-void MetaDataScanner::set_data(void* data_object)
+void MetaDataScanner::setData(void* data_object)
 {
 	m->data = data_object;
 }

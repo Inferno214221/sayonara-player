@@ -1,6 +1,6 @@
 /* BookmarksBase.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -66,10 +66,10 @@ public:
 	 * @return
 	 */
 	MetaData metadata() const;
-	void set_metadata(const MetaData& md);
+	void setMetadata(const MetaData& md);
 
 	const QList<Bookmark> bookmarks() const;
-	void set_bookmarks(const QList<Bookmark> bookmarks);
+	void setBookmarks(const QList<Bookmark> bookmarks);
 
 	int count();
 	void add(const Bookmark& bookmark);

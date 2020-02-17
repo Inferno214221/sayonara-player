@@ -1,6 +1,6 @@
 /* PlaylistDBWrapper.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -41,44 +41,44 @@ namespace Playlist
 			DBWrapper();
 			~DBWrapper();
 
-			bool get_skeletons(CustomPlaylistSkeletons& skeletons,
+			bool getSkeletons(CustomPlaylistSkeletons& skeletons,
 								   PlaylistStoreType type,
 								   PlaylistSortOrder so=PlaylistSortOrder::IDAsc);
 
-			bool get_all_skeletons(CustomPlaylistSkeletons& skeletons,
+			bool getAllSkeletons(CustomPlaylistSkeletons& skeletons,
 								   PlaylistSortOrder so=PlaylistSortOrder::IDAsc);
 
-			bool get_non_temporary_skeletons(CustomPlaylistSkeletons& skeletons,
+			bool getNonTemporarySkeletons(CustomPlaylistSkeletons& skeletons,
 								   PlaylistSortOrder so=PlaylistSortOrder::IDAsc);
 
-			bool get_temporary_skeletons(CustomPlaylistSkeletons& skeletons,
+			bool getTemporarySkeletons(CustomPlaylistSkeletons& skeletons,
 										 PlaylistSortOrder so);
 
-			bool get_all_playlists(CustomPlaylists& playlists,
+			bool getAllPlaylists(CustomPlaylists& playlists,
 								   PlaylistSortOrder so=PlaylistSortOrder::IDAsc);
 
-			bool get_temporary_playlists(CustomPlaylists& playlists,
+			bool getTemporaryPlaylists(CustomPlaylists& playlists,
 										 PlaylistSortOrder so=PlaylistSortOrder::IDAsc);
 
-			bool get_non_temporary_playlists(CustomPlaylists& playlists,
+			bool getNonTemporaryPlaylists(CustomPlaylists& playlists,
 											 PlaylistSortOrder so=PlaylistSortOrder::IDAsc);
 
-			CustomPlaylist get_playlist_by_id(int id);
-			CustomPlaylist get_playlist_by_name(const QString& name);
+			CustomPlaylist getPlaylistById(int id);
+			CustomPlaylist getPlaylistByName(const QString& name);
 
-			bool rename_playlist(int id, const QString& new_name);
-			bool save_playlist_as(const MetaDataList& v_md, const QString& name);
-			bool save_playlist_temporary(const MetaDataList& v_md, const QString& name);
-			bool save_playlist(const CustomPlaylist& pl);
-			bool save_playlist(const MetaDataList& v_md, int id, bool is_temporary);
+			bool renamePlaylist(int id, const QString& new_name);
+			bool savePlaylistAs(const MetaDataList& v_md, const QString& name);
+			bool savePlaylistTemporary(const MetaDataList& v_md, const QString& name);
+			bool savePlaylist(const CustomPlaylist& pl);
+			bool savePlaylist(const MetaDataList& v_md, int id, bool is_temporary);
 
-			bool delete_playlist(int id);
-			bool delete_playlist(const QString& name);
+			bool deletePlaylist(int id);
+			bool deletePlaylist(const QString& name);
 			bool exists(const QString& name);
 
 		private:
-			void apply_tags(MetaDataList& v_md);
-			bool get_playlists(CustomPlaylists& playlists,
+			void applyTags(MetaDataList& v_md);
+			bool getPlaylists(CustomPlaylists& playlists,
 							   PlaylistStoreType type,
 							   PlaylistSortOrder sortorder);
 	};

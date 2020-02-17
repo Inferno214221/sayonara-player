@@ -1,6 +1,6 @@
 /* Shortcuts.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -27,8 +27,8 @@
 using DB::Shortcuts;
 using DB::Query;
 
-DB::Shortcuts::Shortcuts(const QString& connection_name, DbId db_id) :
-	Module(connection_name, db_id)
+DB::Shortcuts::Shortcuts(const QString& connection_name, DbId databaseId) :
+	Module(connection_name, databaseId)
 {}
 
 DB::Shortcuts::~Shortcuts() {}
@@ -37,12 +37,12 @@ RawShortcutMap DB::Shortcuts::getAllShortcuts()
 {
 	RawShortcutMap rsm;
 
-	Query q = run_query(
+	Query q = runQuery(
 		"SELECT identifier, shortcut from Shortcuts;",
 		"Cannot fetch all shortcuts"
 	);
 
-	if(q.has_error())
+	if(q.hasError())
 	{
 		return rsm;
 	}
@@ -75,7 +75,7 @@ bool DB::Shortcuts::setShortcuts(const QString& identifier, const QStringList& s
 			{"shortcut", shortcut}
 		}, "Cannot insert shortcut " + identifier);
 
-		if(q.has_error())
+		if(q.hasError())
 		{
 			db().rollback();
 			return false;
@@ -87,12 +87,12 @@ bool DB::Shortcuts::setShortcuts(const QString& identifier, const QStringList& s
 
 bool DB::Shortcuts::clearShortcuts(const QString& identifier)
 {
-	Query q = run_query
+	Query q = runQuery
 	(
 		"DELETE FROM Shortcuts WHERE identifier=:identifier;",
 		{":identifier", identifier},
 		"Cannot clear Shortcuts"
 	);
 
-	return (!q.has_error());
+	return (!q.hasError());
 }

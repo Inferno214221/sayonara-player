@@ -1,6 +1,6 @@
 /* GUI_LibraryPreferences.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -40,29 +40,29 @@ public:
 	bool commit() override;
 	void revert() override;
 
-	QString action_name() const override;
+	QString actionName() const override;
 
 protected:
-	void init_ui() override;
-	void retranslate_ui() override;
-	void skin_changed() override;
+	void initUi() override;
+	void retranslate() override;
+	void skinChanged() override;
 
 	void showEvent(QShowEvent* e) override;
-	QString error_string() const override;
+	QString errorString() const override;
 
 private slots:
-	void new_clicked();
-	void edit_clicked();
-	void delete_clicked();
+	void newClicked();
+	void editClicked();
+	void deleteClicked();
 
-	void up_clicked();
-	void down_clicked();
+	void upClicked();
+	void downClicked();
 
-	void edit_dialog_accepted();
-	void current_index_changed(const QModelIndex& idx);
+	void editDialogAccepted();
+	void selectedIndexChanged(const QModelIndex& idx);
 
 private:
-	int current_row() const;
+	int currentRow() const;
 };
 
 

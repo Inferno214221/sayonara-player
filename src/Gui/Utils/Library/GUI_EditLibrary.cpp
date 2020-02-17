@@ -1,6 +1,6 @@
 /* GUI_EditLibrary.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -29,50 +29,49 @@
 
 struct GUI_EditLibrary::Private
 {
-	QString old_name;
-	QString old_path;
+	QString oldName;
+	QString oldPath;
 
-	EditMode edit_mode;
-	bool name_edited;
+	EditMode editMode;
+	bool nameEdited;
 
 	Private() :
-		edit_mode(EditMode::New),
-		name_edited(false)
+		editMode(EditMode::New),
+		nameEdited(false)
 	{}
 };
 
-GUI_EditLibrary::GUI_EditLibrary(QWidget *parent) :
+GUI_EditLibrary::GUI_EditLibrary(QWidget* parent) :
 	Dialog (parent),
 	ui(new Ui::GUI_EditLibrary)
 {
 	ui->setupUi(this);
 
 	m = Pimpl::make<Private>();
-	m->edit_mode = EditMode::New;
 
-	ui->btn_choose_dir->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-	ui->le_path->setFocus();
+	ui->btnChooseDir->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+	ui->lePath->setFocus();
 
-	connect(ui->btn_ok, &QPushButton::clicked, this, &GUI_EditLibrary::ok_clicked);
-	connect(ui->btn_cancel, &QPushButton::clicked, this, &GUI_EditLibrary::cancel_clicked);
-	connect(ui->btn_choose_dir, &QPushButton::clicked, this, &GUI_EditLibrary::choose_dir_clicked);
-	connect(ui->le_name, &QLineEdit::textEdited, this, &GUI_EditLibrary::name_edited);
+	connect(ui->btnOk, &QPushButton::clicked, this, &GUI_EditLibrary::okClicked);
+	connect(ui->btnCancel, &QPushButton::clicked, this, &GUI_EditLibrary::cancelClicked);
+	connect(ui->btnChooseDir, &QPushButton::clicked, this, &GUI_EditLibrary::chooseDirClicked);
+	connect(ui->leName, &QLineEdit::textEdited, this, &GUI_EditLibrary::nameEdited);
 }
 
 GUI_EditLibrary::GUI_EditLibrary(const QString& name, const QString& path, QWidget* parent) :
 	GUI_EditLibrary(parent)
 {
-	m->edit_mode = EditMode::Edit;
-	m->name_edited = true;
+	m->editMode = EditMode::Edit;
+	m->nameEdited = true;
 
-	m->old_name = name;
-	m->old_path = path;
+	m->oldName = name;
+	m->oldPath = path;
 
-	ui->le_name->setText(name);
-	ui->le_path->setText(path);
-	ui->lab_title->setText(Lang::get(Lang::Edit));
+	ui->leName->setText(name);
+	ui->lePath->setText(path);
+	ui->labTitle->setText(Lang::get(Lang::Edit));
 
-	this->setWindowTitle(ui->lab_title->text());
+	this->setWindowTitle(ui->labTitle->text());
 	this->setAttribute(Qt::WA_DeleteOnClose);
 }
 
@@ -82,110 +81,112 @@ GUI_EditLibrary::~GUI_EditLibrary()
 	delete ui; ui = nullptr;
 }
 
-void GUI_EditLibrary::ok_clicked()
+void GUI_EditLibrary::okClicked()
 {
 	close();
-	emit sig_accepted();
+	emit sigAccepted();
 }
 
-void GUI_EditLibrary::cancel_clicked()
+void GUI_EditLibrary::cancelClicked()
 {
-	ui->le_path->clear();
-	ui->le_name->clear();
+	ui->lePath->clear();
+	ui->leName->clear();
 	close();
 
-	emit sig_recected();
+	emit sigRejected();
 }
 
-void GUI_EditLibrary::choose_dir_clicked()
+void GUI_EditLibrary::chooseDirClicked()
 {
-	QString old_dir = m->old_path;
-	if(old_dir.isEmpty()){
-		old_dir = QDir::homePath();
+	QString oldDir = m->oldPath;
+	if(oldDir.isEmpty()){
+		oldDir = QDir::homePath();
 	}
 
-	QString new_dir = QFileDialog::getExistingDirectory(this,
-														Lang::get(Lang::Directory),
-														old_dir,
-														QFileDialog::ShowDirsOnly);
+	QString newDir =
+		QFileDialog::getExistingDirectory(this,
+			Lang::get(Lang::Directory),
+			oldDir,
+			QFileDialog::ShowDirsOnly
+		);
 
-	if(new_dir.isEmpty()) {
-		new_dir = m->old_path;
+	if(newDir.isEmpty()) {
+		newDir = m->oldPath;
 	}
 
-	if(m->edit_mode == EditMode::New)
+	if(m->editMode == EditMode::New)
 	{
-		QString str = Util::File::get_filename_of_path(new_dir);
+		QString str = Util::File::getFilenameOfPath(newDir);
 
-		if(!m->name_edited)
+		if(!m->nameEdited)
 		{
-			ui->le_name->setText(str);
+			ui->leName->setText(str);
 		}
 	}
 
-	ui->le_path->setText(new_dir);
+	ui->lePath->setText(newDir);
 }
 
-void GUI_EditLibrary::name_edited(const QString& text)
+void GUI_EditLibrary::nameEdited(const QString& text)
 {
-	m->name_edited = (text.size() > 0);
+	m->nameEdited = (text.size() > 0);
 }
 
 QString GUI_EditLibrary::name() const
 {
-	return ui->le_name->text();
+	return ui->leName->text();
 }
 
 QString GUI_EditLibrary::path() const
 {
-	return ui->le_path->text();
+	return ui->lePath->text();
 }
 
-bool GUI_EditLibrary::has_name_changed() const
+bool GUI_EditLibrary::hasNameChanged() const
 {
-	return (name() != m->old_name);
+	return (name() != m->oldName);
 }
 
-bool GUI_EditLibrary::has_path_changed() const
+bool GUI_EditLibrary::hasPathChanged() const
 {
-	return (path() != m->old_path);
+	return (path() != m->oldPath);
 }
 
-GUI_EditLibrary::EditMode GUI_EditLibrary::edit_mode() const
+GUI_EditLibrary::EditMode GUI_EditLibrary::editMode() const
 {
-	return m->edit_mode;
+	return m->editMode;
 }
 
 void GUI_EditLibrary::reset()
 {
-	ui->le_name->setText(QString());
-	ui->le_path->setText(QString());
+	ui->leName->setText(QString());
+	ui->lePath->setText(QString());
 
-	m->old_name = QString();
-	m->old_path = QString();
-	m->edit_mode = EditMode::New;
-	m->name_edited = false;
+	m->oldName = QString();
+	m->oldPath = QString();
+	m->editMode = EditMode::New;
+	m->nameEdited = false;
 }
 
-void GUI_EditLibrary::language_changed()
+void GUI_EditLibrary::languageChanged()
 {
-	Dialog::language_changed();
+	Dialog::languageChanged();
 
-	ui->btn_ok->setText(Lang::get(Lang::OK));
-	ui->btn_cancel->setText(Lang::get(Lang::Cancel));
-	ui->lab_path->setText(Lang::get(Lang::Directory));
-	ui->lab_name->setText(Lang::get(Lang::Name));
+	ui->btnOk->setText(Lang::get(Lang::OK));
+	ui->btnCancel->setText(Lang::get(Lang::Cancel));
+	ui->labPath->setText(Lang::get(Lang::Directory));
+	ui->labName->setText(Lang::get(Lang::Name));
 
-	if(m->edit_mode == EditMode::New) {
-		ui->lab_title->setText(Lang::get(Lang::New));
+	if(m->editMode == EditMode::New) {
+		ui->labTitle->setText(Lang::get(Lang::New));
 	} else {
-		ui->lab_title->setText(Lang::get(Lang::Edit));
+		ui->labTitle->setText(Lang::get(Lang::Edit));
 	}
 
-	this->setWindowTitle(ui->lab_title->text());
+	this->setWindowTitle(ui->labTitle->text());
 }
 
-void GUI_EditLibrary::skin_changed()
+void GUI_EditLibrary::skinChanged()
 {
-	Dialog::skin_changed();
+	Dialog::skinChanged();
 }

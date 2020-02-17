@@ -1,6 +1,6 @@
 /* SomaFMPlaylistModel.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -49,14 +49,14 @@ SomaFM::PlaylistModel::PlaylistModel(QObject* parent) :
 
 SomaFM::PlaylistModel::~PlaylistModel() = default;
 
-void SomaFM::PlaylistModel::set_station(const SomaFM::Station& station)
+void SomaFM::PlaylistModel::setStation(const SomaFM::Station& station)
 {
-	QStringList urls = station.playlists();
-	QStringList entries;
+	const QStringList urls = station.playlists();
 
-	for(QString& url : urls)
+	QStringList entries;
+	for(const QString& url : urls)
 	{
-		SomaFM::Station::UrlType type = station.url_type(url);
+		SomaFM::Station::UrlType type = station.urlType(url);
 		if(type == SomaFM::Station::UrlType::MP3){
 			entries << station.name() + " (mp3)";
 		}
@@ -89,7 +89,7 @@ QMimeData* SomaFM::PlaylistModel::mimeData(const QModelIndexList& indexes) const
 	QString playlist_url = urls[row];
 
 	auto* mime_data = new CustomMimeData(this);
-	mime_data->set_cover_url(":/soma_icons/soma.png");
+	mime_data->setCoverUrl(":/soma_icons/soma.png");
 	mime_data->setUrls({QUrl(playlist_url)});
 
 	return mime_data;

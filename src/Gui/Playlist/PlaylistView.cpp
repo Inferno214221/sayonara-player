@@ -1,6 +1,6 @@
 /* PlaylistView.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -23,7 +23,7 @@
  * PlaylistView.cpp
  *
  *  Created on: Jun 26, 2011
- *      Author: Lucio Carreras
+ *      Author: Michael Lugmair (Lucio Carreras)
  */
 
 #include "PlaylistView.h"
@@ -66,16 +66,29 @@ using Pl::View;
 
 struct View::Private
 {
+	View*					view=nullptr;
 	PlaylistPtr				playlist;
-	Pl::ContextMenu*		context_menu=nullptr;
+	Pl::ContextMenu*		contextMenu=nullptr;
 	Pl::Model*				model=nullptr;
 	ProgressBar*			progressbar=nullptr;
-	QLabel*					current_file_label=nullptr;
+	QLabel*					currentFileLabel=nullptr;
 
 	Private(PlaylistPtr pl, View* parent) :
+		view(parent),
 		playlist(pl),
 		model(new Pl::Model(pl, parent))
 	{}
+
+	int minimumSelectedItem()
+	{
+		const IndexSet selected = view->selectedItems();
+		auto it = std::min_element(selected.begin(), selected.end());
+		if(it == selected.end()){
+			return -1;
+		}
+
+		return *it;
+	}
 };
 
 View::View(PlaylistPtr pl, QWidget* parent) :
@@ -88,37 +101,37 @@ View::View(PlaylistPtr pl, QWidget* parent) :
 	auto* playlist_handler = Pl::Handler::instance();
 
 	this->setObjectName("playlist_view" + QString::number(pl->index()));
-	this->set_model(m->model);
+	this->setSearchableModel(m->model);
 	this->setItemDelegate(new Pl::Delegate(this));
 	this->horizontalHeader()->setMinimumSectionSize(10);
 
-	init_view();
+	initView();
 
-	ListenSetting(Set::PL_ShowNumbers, View::sl_columns_changed);
-	ListenSetting(Set::PL_ShowCovers, View::sl_columns_changed);
-	ListenSetting(Set::PL_ShowNumbers, View::sl_columns_changed);
-	ListenSetting(Set::PL_ShowRating, View::sl_show_rating_changed);
+	ListenSetting(Set::PL_ShowNumbers, View::columnsChanged);
+	ListenSetting(Set::PL_ShowCovers, View::columnsChanged);
+	ListenSetting(Set::PL_ShowNumbers, View::columnsChanged);
+	ListenSetting(Set::PL_ShowRating, View::showRatingChanged);
 
 	new QShortcut(QKeySequence(Qt::Key_Backspace), this, SLOT(clear()), nullptr, Qt::WidgetShortcut);
-	new QShortcut(QKeySequence(QKeySequence::Delete), this, SLOT(remove_selected_rows()), nullptr, Qt::WidgetShortcut);
-	new QShortcut(QKeySequence(Qt::ControlModifier + Qt::Key_Up), this, SLOT(move_selected_rows_up()), nullptr, Qt::WidgetShortcut);
-	new QShortcut(QKeySequence(Qt::ControlModifier + Qt::Key_Down), this, SLOT(move_selected_rows_down()), nullptr, Qt::WidgetShortcut);
-	new QShortcut(QKeySequence(Qt::Key_Return), this, SLOT(play_selected_track()), nullptr, Qt::WidgetShortcut);
-	new QShortcut(QKeySequence(Qt::Key_Enter), this, SLOT(play_selected_track()), nullptr, Qt::WidgetShortcut);
+	new QShortcut(QKeySequence(QKeySequence::Delete), this, SLOT(removeSelectedRows()), nullptr, Qt::WidgetShortcut);
+	new QShortcut(QKeySequence(Qt::ControlModifier + Qt::Key_Up), this, SLOT(moveSelectedRowsUp()), nullptr, Qt::WidgetShortcut);
+	new QShortcut(QKeySequence(Qt::ControlModifier + Qt::Key_Down), this, SLOT(moveSelectedRowsDown()), nullptr, Qt::WidgetShortcut);
+	new QShortcut(QKeySequence(Qt::Key_Return), this, SLOT(playSelectedTrack()), nullptr, Qt::WidgetShortcut);
+	new QShortcut(QKeySequence(Qt::Key_Enter), this, SLOT(playSelectedTrack()), nullptr, Qt::WidgetShortcut);
 
-	connect(m->model, &Pl::Model::sig_data_ready, this, &View::refresh);
-	connect(playlist_handler, &Pl::Handler::sig_current_track_changed, this, &View::current_track_changed);
-	connect(pl.get(), &Playlist::sig_busy_changed, this, &View::playlist_busy_changed);
-	connect(pl.get(), &Playlist::sig_current_scanned_file_changed, this, &View::current_scanned_file_changed);
+	connect(m->model, &Pl::Model::sigDataReady, this, &View::refresh);
+	connect(playlist_handler, &Pl::Handler::sigCurrentTrackChanged, this, &View::currentTrackChanged);
+	connect(pl.get(), &Playlist::sigBusyChanged, this, &View::playlistBusyChanged);
+	connect(pl.get(), &Playlist::sigCurrentScannedFileChanged, this, &View::currentScannedFileChanged);
 
 	QTimer::singleShot(100, this, [=](){
-		this->goto_to_current_track();
+		this->gotoToCurrentTrack();
 	});
 }
 
 View::~View() = default;
 
-void View::init_view()
+void View::initView()
 {
 	setSelectionMode(QAbstractItemView::ExtendedSelection);
 	setAlternatingRowColors(true);
@@ -142,104 +155,104 @@ void View::init_view()
 }
 
 
-void View::init_context_menu()
+void View::initContextMenu()
 {
 	using Pl::ContextMenu;
 
-	if(m->context_menu){
+	if(m->contextMenu){
 		return;
 	}
 
-	m->context_menu = new ContextMenu(this);
+	m->contextMenu = new ContextMenu(this);
 
-	connect(m->context_menu, &ContextMenu::sig_refresh_clicked, m->model, &Pl::Model::refresh_data);
-	connect(m->context_menu, &ContextMenu::sig_edit_clicked, this, [=](){ show_edit(); });
-	connect(m->context_menu, &ContextMenu::sig_info_clicked, this, [=](){ show_info(); });
-	connect(m->context_menu, &ContextMenu::sig_lyrics_clicked, this, [=](){ show_lyrics(); });
-	connect(m->context_menu, &ContextMenu::sig_delete_clicked, this, &View::delete_selected_tracks);
-	connect(m->context_menu, &ContextMenu::sig_remove_clicked, this, &View::remove_selected_rows);
-	connect(m->context_menu, &ContextMenu::sig_clear_clicked, this, &View::clear);
-	connect(m->context_menu, &ContextMenu::sig_rating_changed, this, &View::rating_changed);
-	connect(m->context_menu, &ContextMenu::sig_jump_to_current_track, this, &View::goto_to_current_track);
-	connect(m->context_menu, &ContextMenu::sig_bookmark_pressed, this, &View::bookmark_triggered);
-	connect(m->context_menu, &ContextMenu::sig_find_track_triggered, this, &View::find_track_triggered);
-	connect(m->context_menu, &ContextMenu::sig_reverse_triggered, this, &View::reverse_triggered);
+	connect(m->contextMenu, &ContextMenu::sigRefreshClicked, m->model, &Pl::Model::refreshData);
+	connect(m->contextMenu, &ContextMenu::sigEditClicked, this, [=](){ showEdit(); });
+	connect(m->contextMenu, &ContextMenu::sigInfoClicked, this, [=](){ showInfo(); });
+	connect(m->contextMenu, &ContextMenu::sigLyricsClicked, this, [=](){ showLyrics(); });
+	connect(m->contextMenu, &ContextMenu::sigDeleteClicked, this, &View::deleteSelectedTracks);
+	connect(m->contextMenu, &ContextMenu::sigRemoveClicked, this, &View::removeSelectedRows);
+	connect(m->contextMenu, &ContextMenu::sigClearClicked, this, &View::clear);
+	connect(m->contextMenu, &ContextMenu::sigRatingChanged, this, &View::ratingChanged);
+	connect(m->contextMenu, &ContextMenu::sigJumpToCurrentTrack, this, &View::gotoToCurrentTrack);
+	connect(m->contextMenu, &ContextMenu::sigBookmarkPressed, this, &View::bookmarkTriggered);
+	connect(m->contextMenu, &ContextMenu::sigFindTrackTriggered, this, &View::findTrackTriggered);
+	connect(m->contextMenu, &ContextMenu::sigReverseTriggered, this, &View::reverseTriggered);
 
-	m->context_menu->add_preference_action(new PlaylistPreferenceAction(m->context_menu));
+	m->contextMenu->addPreferenceAction(new PlaylistPreferenceAction(m->contextMenu));
 }
 
 
-void View::goto_row(int row)
+void View::gotoRow(int row)
 {
-	row = std::min(row, m->model->rowCount() - 1);
+	row = std::min(row, rowCount() - 1);
 	row = std::max(row, 0);
 
-	ModelIndexRange range = model_indexrange_by_index(row);
+	ModelIndexRange range = mapIndexToModelIndexes(row);
 	this->scrollTo(range.first);
 }
 
-int View::calc_drag_drop_line(QPoint pos)
+int View::calcDragDropLine(QPoint pos)
 {
-	int offset = (m->model->rowCount() > 0) ? this->rowHeight(0) / 2 : 10;
+	int offset = (rowCount() > 0) ? this->rowHeight(0) / 2 : 10;
 	if(pos.y() < offset) {
 		return -1;
 	}
 
 	int row = this->indexAt(pos).row();
 	if(row < 0) {
-		row = m->model->rowCount() - 1;
+		row = rowCount() - 1;
 	}
 
 	return row;
 }
 
-void View::handle_drop(QDropEvent* event)
+void View::handleDrop(QDropEvent* event)
 {
-	int row = calc_drag_drop_line(event->pos());
+	int row = calcDragDropLine(event->pos());
 
-	m->model->set_drag_index(-1);
+	m->model->setDragIndex(-1);
 
 	const QMimeData* mimedata = event->mimeData();
 	if(!mimedata) {
 		return;
 	}
 
-	bool is_inner_drag_drop = MimeData::is_inner_drag_drop(mimedata, m->playlist->index());
+	bool is_inner_drag_drop = MimeData::isInnerDragDrop(mimedata, m->playlist->index());
 	if(is_inner_drag_drop)
 	{
 		bool copy = (event->keyboardModifiers() & Qt::ControlModifier);
-		handle_inner_drag_drop(row, copy);
+		handleInnerDragDrop(row, copy);
 		return;
 	}
 
 	const MetaDataList v_md = MimeData::metadata(mimedata);
 	if(!v_md.isEmpty())
 	{
-		m->model->insert_tracks(v_md, row + 1);
+		m->model->insertTracks(v_md, row + 1);
 	}
 
 	const QList<QUrl> urls = mimedata->urls();
 	if(!urls.isEmpty())
 	{
 		QStringList files;
-		bool www = FileUtils::is_www(urls.first().toString());
+		bool www = FileUtils::isWWW(urls.first().toString());
 		if(www)
 		{
-			m->playlist->set_busy(true);
+			m->playlist->setBusy(true);
 
 			for(const QUrl& url : urls)
 			{
 				files << url.toString();
 			}
 
-			auto* stream_parser = new StreamParser();
-			stream_parser->set_cover_url(MimeData::cover_url(mimedata));
+			auto* streamParser = new StreamParser();
+			streamParser->setCoverUrl(MimeData::coverUrl(mimedata));
 
-			connect(stream_parser, &StreamParser::sig_finished, this, [=](bool success){
-				async_drop_finished(success, row);
+			connect(streamParser, &StreamParser::sigFinished, this, [=](bool success){
+				asyncDropFinished(success, row);
 			});
 
-			stream_parser->parse_streams(files);
+			streamParser->parse(files);
 		}
 
 		else if(v_md.isEmpty())
@@ -251,159 +264,165 @@ void View::handle_drop(QDropEvent* event)
 				}
 			}
 
-			Handler::instance()->insert_tracks(files, row + 1, m->playlist->index());
+			Handler::instance()->insertTracks(files, row + 1, m->playlist->index());
 		}
 	}
 }
 
 
-void View::async_drop_finished(bool success, int async_drop_index)
+void View::asyncDropFinished(bool success, int async_drop_index)
 {
-	m->playlist->set_busy(false);
+	m->playlist->setBusy(false);
 
 	auto* stream_parser = dynamic_cast<StreamParser*>(sender());
 	if(success)
 	{
-		MetaDataList v_md = stream_parser->metadata();
-		m->model->insert_tracks(v_md, async_drop_index+1);
+		MetaDataList v_md = stream_parser->tracks();
+		m->model->insertTracks(v_md, async_drop_index+1);
 	}
 
 	stream_parser->deleteLater();
 }
 
 
-void View::handle_inner_drag_drop(int row, bool copy)
+void View::handleInnerDragDrop(int row, bool copy)
 {
-	IndexSet new_selected_rows;
-	IndexSet cur_selected_rows = selected_items();
-	if( cur_selected_rows.contains(row) ) {
+	IndexSet newSelectedRows;
+	IndexSet curSelectedRows = selectedItems();
+	if( curSelectedRows.contains(row) ) {
 		return;
 	}
 
 	if(copy)
 	{
-		new_selected_rows = m->model->copy_rows(cur_selected_rows, row + 1);
+		newSelectedRows = m->model->copyTracks(curSelectedRows, row + 1);
 	}
 
 	else
 	{
-		new_selected_rows = m->model->move_rows(cur_selected_rows, row + 1);
+		newSelectedRows = m->model->moveTracks(curSelectedRows, row + 1);
 	}
 
-	this->select_rows(new_selected_rows, 0);
+	this->selectRows(newSelectedRows, 0);
 }
 
 
-void View::rating_changed(Rating rating)
+void View::ratingChanged(Rating rating)
 {
-	IndexSet selections = selected_items();
+	IndexSet selections = selectedItems();
 	if(selections.isEmpty()){
 		return;
 	}
 
-	m->model->change_rating(selected_items(), rating);
+	m->model->changeRating(selectedItems(), rating);
 }
 
 
-void View::move_selected_rows_up()
+void View::moveSelectedRowsUp()
 {
-	IndexSet selections = selected_items();
-	IndexSet new_selections = m->model->move_rows_up(selections);
-	select_rows(new_selections);
+	IndexSet selections = selectedItems();
+	IndexSet newSelectionss = m->model->moveTracksUp(selections);
+	selectRows(newSelectionss);
 }
 
-void View::move_selected_rows_down()
+void View::moveSelectedRowsDown()
 {
-	IndexSet selections = selected_items();
-	IndexSet new_selections = m->model->move_rows_down(selections);
-	select_rows(new_selections);
+	IndexSet selections = selectedItems();
+	IndexSet newSelectionss = m->model->moveTracksDown(selections);
+	selectRows(newSelectionss);
 }
 
-void View::play_selected_track()
+void View::playSelectedTrack()
 {
-	int min_row = min_selected_item();
-	emit sig_double_clicked(min_row);
+	int minRow = -1;
+
+	const IndexSet selected = selectedItems();
+	if(!selected.isEmpty()){
+		minRow = *std::min_element(selected.begin(), selected.end());
+	}
+
+	emit sigDoubleClicked(minRow);
 }
 
-void View::goto_to_current_track()
+void View::gotoToCurrentTrack()
 {
-	goto_row(m->model->current_track());
+	gotoRow(m->model->currentTrack());
 }
 
-void View::find_track_triggered()
+void View::findTrackTriggered()
 {
 	int row = this->currentIndex().row();
 	if(row >= 0){
-		m->playlist->find_track(row);
+		m->playlist->findTrack(row);
 	}
 }
 
-void View::reverse_triggered()
+void View::reverseTriggered()
 {
 	m->playlist->reverse();
 }
 
-void View::bookmark_triggered(Seconds timestamp)
+void View::bookmarkTriggered(Seconds timestamp)
 {
 	int row = this->currentIndex().row();
 	if(row >= 0){
-		emit sig_bookmark_pressed(row, timestamp);
+		emit sigBookmarkPressed(row, timestamp);
 	}
 }
 
-void View::remove_selected_rows()
+void View::removeSelectedRows()
 {
-	int min_row = min_selected_item();
+	int minRow = m->minimumSelectedItem();
 
-	m->model->remove_rows(selected_items());
-	clear_selection();
+	m->model->removeTracks(selectedItems());
+	clearSelection();
 
-	if(row_count() > 0)
+	if(rowCount() > 0)
 	{
-		min_row = std::min(min_row, row_count() - 1);
-		select_row(min_row);
+		minRow = std::min(minRow, rowCount() - 1);
+		selectRow(minRow);
 	}
 }
 
-void View::delete_selected_tracks()
+void View::deleteSelectedTracks()
 {
-	IndexSet selections = selected_items();
-	emit sig_delete_tracks(selections);
+	IndexSet selections = selectedItems();
+	emit sigDeleteTracks(selections);
 }
 
 
 void View::clear()
 {
-	clear_selection();
+	clearSelection();
 	m->model->clear();
 }
 
 
-MD::Interpretation View::metadata_interpretation() const
+MD::Interpretation View::metadataInterpretation() const
 {
 	return MD::Interpretation::Tracks;
 }
 
-MetaDataList View::info_dialog_data() const
+MetaDataList View::infoDialogData() const
 {
-	return m->model->metadata(selected_items());
+	return m->model->metadata(selectedItems());
 }
 
 void View::contextMenuEvent(QContextMenuEvent* e)
 {
-	if(!m->context_menu){
-		init_context_menu();
+	if(!m->contextMenu){
+		initContextMenu();
 	}
 
 	QPoint pos = e->globalPos();
 	QModelIndex idx = indexAt(e->pos());
 
 	Pl::ContextMenu::Entries entry_mask = 0;
-	if(row_count() > 0)	{
+	if(rowCount() > 0)	{
 		entry_mask = (Pl::ContextMenu::EntryClear | Pl::ContextMenu::EntryRefresh | Pl::ContextMenu::EntryReverse);
 	}
 
-	IndexSet selections = selected_items();
+	IndexSet selections = selectedItems();
 	if(selections.size() > 0)
 	{
 		entry_mask |= Pl::ContextMenu::EntryInfo;
@@ -415,7 +434,7 @@ void View::contextMenuEvent(QContextMenuEvent* e)
 		entry_mask |= (Pl::ContextMenu::EntryLyrics);
 	}
 
-	if(m->model->has_local_media(selections) )
+	if(m->model->hasLocalMedia(selections) )
 	{
 		entry_mask |= Pl::ContextMenu::EntryEdit;
 		entry_mask |= Pl::ContextMenu::EntryRating;
@@ -424,14 +443,14 @@ void View::contextMenuEvent(QContextMenuEvent* e)
 		if(selections.size() == 1)
 		{
 			MetaData md = m->model->metadata(selections.first());
-			m->context_menu->set_rating( md.rating() );
+			m->contextMenu->setRating( md.rating() );
 		}
 	}
 
 	if(idx.row() >= 0)
 	{
 		MetaData md = m->model->metadata(idx.row());
-		m->context_menu->set_metadata(md);
+		m->contextMenu->setMetadata(md);
 
 		if(md.id() >= 0)
 		{
@@ -440,12 +459,12 @@ void View::contextMenuEvent(QContextMenuEvent* e)
 		}
 	}
 
-	if(m->model->current_track() >= 0){
+	if(m->model->currentTrack() >= 0){
 		entry_mask |= Pl::ContextMenu::EntryCurrentTrack;
 	}
 
-	m->context_menu->show_actions(entry_mask);
-	m->context_menu->exec(pos);
+	m->contextMenu->showActions(entry_mask);
+	m->contextMenu->exec(pos);
 
 	SearchableTableView::contextMenuEvent(e);
 }
@@ -456,11 +475,11 @@ void View::mousePressEvent(QMouseEvent* event)
 
 	if(event->button() & Qt::MiddleButton)
 	{
-		find_track_triggered();
+		findTrackTriggered();
 	}
 }
 
-QMimeData* View::dragable_mimedata() const
+QMimeData* View::dragableMimedata() const
 {
 	QModelIndexList indexes = selectedIndexes();
 	return m->model->mimeData(indexes);
@@ -475,7 +494,7 @@ void View::mouseDoubleClickEvent(QMouseEvent* event)
 	if( (idx.flags() & Qt::ItemIsEnabled) &&
 		(idx.flags() & Qt::ItemIsSelectable))
 	{
-		emit sig_double_clicked(idx.row());
+		emit sigDoubleClicked(idx.row());
 	}
 }
 
@@ -499,14 +518,14 @@ void View::dragMoveEvent(QDragMoveEvent* event)
 		event->accept();
 	}
 
-	int row = calc_drag_drop_line(event->pos());
-	m->model->set_drag_index(row);
+	int row = calcDragDropLine(event->pos());
+	m->model->setDragIndex(row);
 }
 
 void View::dragLeaveEvent(QDragLeaveEvent* event)
 {
 	event->accept();
-	m->model->set_drag_index(-1);
+	m->model->setDragIndex(-1);
 }
 
 void View::dropEventFromOutside(QDropEvent* event)
@@ -514,7 +533,7 @@ void View::dropEventFromOutside(QDropEvent* event)
 	dropEvent(event);
 }
 
-void View::playlist_busy_changed(bool b)
+void View::playlistBusyChanged(bool b)
 {
 	this->setDisabled(b);
 
@@ -541,8 +560,8 @@ void View::playlist_busy_changed(bool b)
 			m->progressbar->hide();
 		}
 
-		if(m->current_file_label){
-			m->current_file_label->hide();
+		if(m->currentFileLabel){
+			m->currentFileLabel->hide();
 		}
 
 		this->setDragDropMode(QAbstractItemView::DragDrop);
@@ -551,11 +570,11 @@ void View::playlist_busy_changed(bool b)
 	}
 }
 
-void View::current_scanned_file_changed(const QString& current_file)
+void View::currentScannedFileChanged(const QString& current_file)
 {
-	if(!m->current_file_label)
+	if(!m->currentFileLabel)
 	{
-		m->current_file_label = new QLabel(this);
+		m->currentFileLabel = new QLabel(this);
 	}
 
 	int offset_bottom = 3;
@@ -564,9 +583,9 @@ void View::current_scanned_file_changed(const QString& current_file)
 		offset_bottom += m->progressbar->height() + 2;
 	}
 
-	m->current_file_label->setText(current_file);
-	m->current_file_label->setGeometry(0, this->height() - offset_bottom, this->width(), this->fontMetrics().height() + 4);
-	m->current_file_label->show();
+	m->currentFileLabel->setText(current_file);
+	m->currentFileLabel->setGeometry(0, this->height() - offset_bottom, this->width(), this->fontMetrics().height() + 4);
+	m->currentFileLabel->show();
 }
 
 void View::dropEvent(QDropEvent* event)
@@ -577,19 +596,22 @@ void View::dropEvent(QDropEvent* event)
 	}
 
 	event->accept();
-	handle_drop(event);
+	handleDrop(event);
 }
 
 
-int View::index_by_model_index(const QModelIndex& idx) const
+int View::mapModelIndexToIndex(const QModelIndex& idx) const
 {
 	return idx.row();
 }
 
-ModelIndexRange View::model_indexrange_by_index(int idx) const
+ModelIndexRange View::mapIndexToModelIndexes(int idx) const
 {
-	return ModelIndexRange(m->model->index(idx, 0),
-						   m->model->index(idx, m->model->columnCount() - 1));
+	return ModelIndexRange
+	(
+		m->model->index(idx, 0),
+		m->model->index(idx, m->model->columnCount() - 1)
+	);
 }
 
 bool View::viewportEvent(QEvent* event)
@@ -604,13 +626,13 @@ bool View::viewportEvent(QEvent* event)
 }
 
 
-void View::skin_changed()
+void View::skinChanged()
 {
-	SearchableTableView::skin_changed();
+	SearchableTableView::skinChanged();
 	refresh();
 }
 
-void View::sl_columns_changed()
+void View::columnsChanged()
 {
 	bool show_numbers = GetSetting(Set::PL_ShowNumbers);
 	bool show_covers = GetSetting(Set::PL_ShowCovers);
@@ -621,7 +643,7 @@ void View::sl_columns_changed()
 	refresh();
 }
 
-void View::sl_show_rating_changed()
+void View::showRatingChanged()
 {
 	bool show_rating = GetSetting(Set::PL_ShowRating);
 	if(show_rating)
@@ -648,7 +670,7 @@ void View::refresh()
 		h += fm.height();
 	}
 
-	for(int i=0; i<m->model->rowCount(); i++)
+	for(int i=0; i<rowCount(); i++)
 	{
 		if(h != rowHeight(i))
 		{
@@ -658,7 +680,7 @@ void View::refresh()
 
 	QHeaderView* hh = this->horizontalHeader();
 	int viewport_width = viewport()->width();
-	int w_time = Gui::Util::text_width(fm, "1888:88");
+	int w_time = Gui::Util::textWidget(fm, "1888:88");
 
 	if(GetSetting(Set::PL_ShowCovers))
 	{
@@ -672,7 +694,7 @@ void View::refresh()
 
 	if(GetSetting(Set::PL_ShowNumbers))
 	{
-		int w_tn = Gui::Util::text_width(fm, QString::number(m->model->rowCount() * 100));
+		int w_tn = Gui::Util::textWidget(fm, QString::number(rowCount() * 100));
 		viewport_width -= w_tn;
 
 		if(hh->sectionSize(CN::TrackNumber) != w_tn) {
@@ -688,12 +710,12 @@ void View::refresh()
 		hh->resizeSection(CN::Description, viewport_width - w_time);
 	}
 
-	m->model->set_row_height(h);
+	m->model->setRowHeight(h);
 }
 
-void View::current_track_changed(int track_index, int playlist_index)
+void View::currentTrackChanged(int track_index, int playlist_index)
 {
 	if(m->playlist->index() == playlist_index){
-		goto_row(track_index);
+		gotoRow(track_index);
 	}
 }

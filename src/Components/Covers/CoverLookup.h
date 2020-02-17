@@ -1,6 +1,6 @@
 /* CoverLookup.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -23,7 +23,7 @@
  * CoverLookup.h
  *
  *  Created on: Apr 4, 2011
- *      Author: Lucio Carreras
+ *      Author: Michael Lugmair (Lucio Carreras)
  */
 
 #ifndef COVERLOOKUP_H_
@@ -57,7 +57,7 @@ namespace Cover
 
 		/**
 		 * @brief Stop the Cover::FetchThread if running and
-		 * retrieve the sig_finished signal
+		 * retrieve the sigFinished signal
 		 * If no Cover::FetchThread is running, nothing will happen
 		 */
 		void stop() override;
@@ -66,19 +66,19 @@ namespace Cover
 		 * @brief indicates if the Cover::FetchThread is running
 		 * @return
 		 */
-		bool is_thread_running() const;
+		bool isThreadRunning() const;
 
 		/**
 		 * @brief Set some custom data you can retrieve later
 		 * @param data
 		 */
-		void set_user_data(void* data);
+		void setUserData(void* data);
 
 		/**
 		 * @brief Fetch your custom data again
 		 * @return
 		 */
-		void* user_data();
+		void* userData();
 
 		/**
 		 * @brief Get a copy of all pixmaps that where fetched
@@ -90,21 +90,21 @@ namespace Cover
 
 	private:
 
-		bool fetch_from_database();
-		bool fetch_from_extractor();
-		bool fetch_from_www();
+		bool fetchFromDatabase();
+		bool fetchFromExtractor();
+		bool fetchFromWWW();
 
 
-		bool start_extractor(const Location& cl);
+		bool startExtractor(const Location& cl);
 		/**
 		 * @brief Starts a new CoverFetchThread
 		 * @param cl CoverLocation object
 		 */
-		bool start_new_thread(const Location& cl);
+		bool startNewThread(const Location& cl);
 
-		bool add_new_cover(const QPixmap& pm, bool save);
+		bool addNewCover(const QPixmap& pm, bool save);
 
-		void emit_finished(bool success);
+		void emitFinished(bool success);
 
 	public slots:
 		void start();
@@ -114,14 +114,14 @@ namespace Cover
 		 * @brief called when CoverFetchThread has found cover
 		 * @param cl
 		 */
-		void cover_found(int idx);
+		void coverFound(int idx);
 
 		/**
 		 * @brief called when CoverFetchThread has finished
 		 */
-		void thread_finished(bool);
+		void threadFinished(bool);
 
-		void extractor_finished();
+		void extractorFinished();
 	};
 
 

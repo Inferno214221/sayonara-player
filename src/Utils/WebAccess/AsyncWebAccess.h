@@ -1,6 +1,6 @@
 /* AsyncWebAccess.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -63,7 +63,7 @@ public:
 	};
 
 signals:
-	void sig_finished();
+	void sigFinished();
 
 public:
 
@@ -75,7 +75,7 @@ public:
 	AsyncWebAccess(QObject* parent=nullptr, const QByteArray& header=QByteArray(),
 				   AsyncWebAccess::Behavior behavior=AsyncWebAccess::Behavior::AsBrowser);
 
-	virtual ~AsyncWebAccess();
+	virtual ~AsyncWebAccess() override;
 
 	/**
 	 * @brief get fetched data
@@ -87,7 +87,7 @@ public:
 	 * @brief indicates, if data is avaialbe
 	 * @return
 	 */
-	bool has_data() const;
+	bool hasData() const;
 
 	/**
 	 * @brief get fetched data formatted as image
@@ -108,7 +108,7 @@ public:
 	 * the user-agent string in the http header
 	 * @param behavior
 	 */
-	void set_behavior(AsyncWebAccess::Behavior behavior);
+	void setBehavior(AsyncWebAccess::Behavior behavior);
 
 
 	/**
@@ -124,13 +124,13 @@ public:
 	 * @param post_data QByteArray formatted postdata containing ?, = and & characters
 	 * @param timeout timeout until request is aborted and error is emitted
 	 */
-	void run_post(const QString& url, const QByteArray& post_data, int timeout=4000);
+	void runPost(const QString& url, const QByteArray& postData, int timeout=4000);
 
 	/**
 	 * @brief modify header.
 	 * @param header new header field. e.g. "Content-Type" "text/css"
 	 */
-	void set_raw_header(const QMap<QByteArray, QByteArray>& header);
+	void setRawHeader(const QMap<QByteArray, QByteArray>& header);
 
 	/**
 	 * @brief Request Status
@@ -142,7 +142,7 @@ public:
 	 * @brief Indicates if error
 	 * @return
 	 */
-	bool has_error() const;
+	bool hasError() const;
 
 public slots:
 	void stop() override;
@@ -150,10 +150,10 @@ public slots:
 
 private slots:
 
-	void data_available();
+	void dataAvailable();
 
 	/**
-	 * @brief Called when request has finished. Emits sig_finished(bool success)
+	 * @brief Called when request has finished. Emits sigFinished(bool success)
 	 * @param reply information about redirection, success or errors
 	 */
 	void finished();
@@ -161,14 +161,14 @@ private slots:
 	void redirected(const QUrl& url);
 
 	/**
-	 * @brief Request has timed out. Emits sig_finished(false);\n
+	 * @brief Request has timed out. Emits sigFinished(false);\n
 	 * finished(QNetworkReply *reply) is not called anymore
 	 */
 	void timeout();
 
 private:
 	PIMPL(AsyncWebAccess)
-	void redirect_request(QString redirect_url);
+	void redirectRequest(QString redirecUurl);
 };
 
 #endif

@@ -1,6 +1,6 @@
 /* AbstractDatabase.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -36,25 +36,24 @@ namespace DB
 		PIMPL(Base)
 
 		public:
-			Base(DbId db_id, const QString& source_dir, const QString& target_dir, const QString& filename, QObject *parent=nullptr);
-
+			Base(DbId databaseId, const QString& sourceDirectory, const QString& targetDirectory, const QString& filename, QObject* parent=nullptr);
 			virtual ~Base();
 
-			virtual bool close_db();
-			virtual bool is_initialized();
+			virtual bool closeDatabase();
+			virtual bool isInitialized();
 
 			virtual void transaction();
 			virtual void commit();
 			virtual void rollback();
 
 		protected:
-			virtual bool create_db();
-			virtual bool apply_fixes()=0;
+			virtual bool createDatabase();
+			virtual bool applyFixes()=0;
 
-            virtual bool check_and_insert_column(const QString& tablename, const QString& column, const QString& sqltype, const QString& default_value);
-			virtual bool check_and_insert_column(const QString& tablename, const QString& column, const QString& sqltype);
-			virtual bool check_and_create_table(const QString& tablename, const QString& sql_create_str);
-			virtual bool check_and_drop_table(const QString& tablename);
+            virtual bool checkAndInsertColumn(const QString& tablename, const QString& column, const QString& sqltype, const QString& default_value);
+			virtual bool checkAndInsertColumn(const QString& tablename, const QString& column, const QString& sqltype);
+			virtual bool checkAndCreateTable(const QString& tablename, const QString& sql_create_str);
+			virtual bool checkAndDropTable(const QString& tablename);
 	};
 }
 

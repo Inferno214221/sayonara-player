@@ -1,6 +1,6 @@
 /* Dialog.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -32,11 +32,17 @@ Dialog::Dialog(QWidget* parent) :
 	setSizeGripEnabled(true);
 }
 
-Dialog::~Dialog() {}
+Dialog::~Dialog() = default;
 
-void Dialog::closeEvent(QCloseEvent *e){
-	Q_UNUSED(e);
-	emit sig_closed();
+bool Dialog::isAccepted() const
+{
+	return (result() == QDialog::Accepted);
+}
+
+void Dialog::closeEvent(QCloseEvent* e)
+{
+	QDialog::closeEvent(e);
+	emit sigClosed();
 }
 
 

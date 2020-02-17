@@ -1,6 +1,6 @@
 /* RatingLabel.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -41,49 +41,49 @@ namespace Gui
 		Q_OBJECT
 		PIMPL(RatingLabel)
 
-	public:
-		RatingLabel(QWidget* parent, bool enabled=true);
-		~RatingLabel() override;
+		public:
+			RatingLabel(QWidget* parent, bool enabled=true);
+			~RatingLabel() override;
 
-		/**
-		 * @brief Set a rating from one to 5
-		 * @param rating
-		 */
-		void set_rating(Rating rating);
-		Rating rating() const;
+			/**
+			 * @brief Set a rating from one to 5
+			 * @param rating
+			 */
+			void setRating(Rating rating);
+			Rating rating() const;
 
-		/**
-		 * @brief Returns the rating regarding the current mouse position
-		 * @param pos
-		 * @return
-		 */
-		Rating rating_at(QPoint pos) const;
+			/**
+			 * @brief Returns the rating regarding the current mouse position
+			 * @param pos
+			 * @return
+			 */
+			Rating ratingAt(QPoint pos) const;
 
-		/**
-		 * @brief The y-offset where the stars should be painted
-		 * @param offset
-		 */
-		void set_vertical_offset(int offset);
+			/**
+			 * @brief The y-offset where the stars should be painted
+			 * @param offset
+			 */
+			void setVerticalOffset(int offset);
 
-		/**
-		 * @brief Called from outside.
-		 * Mostly from delegates or from the RatingEditor class
-		 * @param painter
-		 * @param rect
-		 */
-		void paint(QPainter* painter, const QRect& rect);
+			/**
+			 * @brief Called from outside.
+			 * Mostly from delegates or from the RatingEditor class
+			 * @param painter
+			 * @param rect
+			 */
+			void paint(QPainter* painter, const QRect& rect);
 
-		/**
-		 * @brief about 20px in height and 5x20px in width
-		 * @return
-		 */
-		QSize sizeHint() const override;
+			/**
+			 * @brief about 20px in height and 5x20px in width
+			 * @return
+			 */
+			QSize sizeHint() const override;
 
-		/**
-		 * @brief Same as sizeHint
-		 * @return
-		 */
-		QSize minimumSizeHint() const override;
+			/**
+			 * @brief Same as sizeHint
+			 * @return
+			 */
+			QSize minimumSizeHint() const override;
 	};
 
 	/**
@@ -99,7 +99,7 @@ namespace Gui
 		PIMPL(RatingEditor)
 
 		signals:
-			void sig_finished(bool save);
+			void sigFinished(bool save);
 
 		public:
 			RatingEditor(QWidget* parent);
@@ -110,7 +110,7 @@ namespace Gui
 			 * @brief Sets the actual rating
 			 * @param rating
 			 */
-			void set_rating(Rating rating);
+			void setRating(Rating rating);
 
 			/**
 			 * @brief Returns the actual rating. This
@@ -129,14 +129,14 @@ namespace Gui
 			 * @brief Set an offset where to begin drawing stars
 			 * @param offset
 			 */
-			void set_vertical_offset(int offset);
+			void setVerticalOffset(int offset);
 
 			/**
 			 * @brief Enable mouse move events. If disabled, there's
 			 * no live update
 			 * @param b
 			 */
-			void set_mousetrackable(bool b);
+			void setMouseTrackable(bool b);
 
 			/**
 			 * @brief Same as RatingLabel::sizeHint

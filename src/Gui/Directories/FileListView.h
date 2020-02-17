@@ -1,6 +1,6 @@
 /* FileListView.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -41,37 +41,43 @@ class FileListView :
 	PIMPL(FileListView)
 
 signals:
-	void sig_info_clicked();
-	void sig_edit_clicked();
-	void sig_lyrics_clicked();
-	void sig_delete_clicked();
-	void sig_play_clicked();
-	void sig_play_new_tab_clicked();
-	void sig_play_next_clicked();
-	void sig_append_clicked();
-	void sig_enter_pressed();
-	void sig_import_requested(LibraryId lib_id, const QStringList& files, const QString& target_dir);
+	void sigInfoClicked();
+	void sigEditClicked();
+	void sigLyricsClicked();
+	void sigDeleteClicked();
+	void sigPlayClicked();
+	void sigPlayNewTabClicked();
+	void sigPlayNextClicked();
+	void sigAppendClicked();
+	void sigEnterPressed();
+	void sigImportRequested(LibraryId lib_id, const QStringList& files, const QString& targetDirectory);
 
-	void sig_rename_requested(const QString& old_name, const QString& new_name);
-	void sig_rename_by_expression_requested(const QString& old_name, const QString& expression);
+	void sigRenameRequested(const QString& old_name, const QString& newName);
+	void sigRenameByExpressionRequested(const QString& oldName, const QString& expression);
 
-	void sig_copy_to_library_requested(LibraryId library_id);
-	void sig_move_to_library_requested(LibraryId library_id);
+	void sigCopyToLibraryRequested(LibraryId libraryId);
+	void sigMoveToLibraryRequested(LibraryId libraryId);
 
 public:
 	explicit FileListView(QWidget* parent=nullptr);
 	~FileListView() override;
 
-	QModelIndexList selected_rows() const;
-	QStringList selected_paths() const;
+	QModelIndexList selectedRows() const;
+	QStringList selectedPaths() const;
 
-	void set_parent_directory(LibraryId id, const QString& dir);
-	QString parent_directory() const;
+	void setParentDirectory(LibraryId id, const QString& dir);
+	QString parentDirectory() const;
 
-	void set_search_filter(const QString& search_string);
+	void setSearchFilter(const QString& search_string);
 
-	QMimeData* dragable_mimedata() const override;
+	QMimeData* dragableMimedata() const override;
 
+private:
+	void initContextMenu();
+
+private slots:
+	void renameFileClicked();
+	void renameFileByTagClicked();
 
 protected:
 	void keyPressEvent(QKeyEvent* event) override;
@@ -81,19 +87,12 @@ protected:
 	void dragMoveEvent(QDragMoveEvent* event) override;
 	void dropEvent(QDropEvent* event) override;
 
-	void language_changed() override;
-	void skin_changed() override;
+	void languageChanged() override;
+	void skinChanged() override;
 
 	// SayonaraSelectionView
-	int index_by_model_index(const QModelIndex& idx) const override;
-	ModelIndexRange model_indexrange_by_index(int idx) const override;
-
-private:
-	void init_context_menu();
-
-private slots:
-	void rename_file_clicked();
-	void rename_file_by_tag_clicked();
+	int mapModelIndexToIndex(const QModelIndex& idx) const override;
+	ModelIndexRange mapIndexToModelIndexes(int idx) const override;
 };
 
 #endif // FILELISTVIEW_H

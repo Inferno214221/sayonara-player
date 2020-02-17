@@ -1,6 +1,6 @@
 /* PlaylistParser.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -30,8 +30,8 @@ class MetaDataList;
  */
 namespace PlaylistParser 
 {
-	MetaDataList parse_playlist(const QString& playlist_file);
-    void save_m3u_playlist(const QString& filename, const MetaDataList& md, bool relative);
+	MetaDataList parsePlaylist(const QString& playlistFile);
+    void saveM3UPlaylist(const QString& filename, const MetaDataList& md, bool relative);
 }
 
 #endif /* PLAYLISTPARSER_H_ */

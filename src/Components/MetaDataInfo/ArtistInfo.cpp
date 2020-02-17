@@ -1,6 +1,6 @@
 /* ArtistInfo.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -37,86 +37,85 @@ namespace Algorithm=Util::Algorithm;
 
 struct ArtistInfo::Private
 {
-	Cover::Location cover_location;
+	Cover::Location coverLocation;
+	DbId databaseId;
 
-	DbId db_id;
-
-	Private(DbId db_id) :
-		db_id(db_id)
+	Private(DbId databaseId) :
+		databaseId(databaseId)
 	{}
 };
 
-ArtistInfo::ArtistInfo(const MetaDataList& v_md) :
-	MetaDataInfo(v_md)
+ArtistInfo::ArtistInfo(const MetaDataList& tracks) :
+	MetaDataInfo(tracks)
 {
-	DbId db_id = (DbId) -1;
-	if(v_md.size() > 0){
-		db_id = v_md.first().db_id();
+	DbId databaseId = DbId(-1);
+	if(tracks.size() > 0){
+		databaseId = tracks.first().databaseId();
 	}
 
-	m = Pimpl::make<Private>(db_id);
+	m = Pimpl::make<Private>(databaseId);
 
-	insert_numeric_info_field(InfoStrings::nAlbums, albums().count());
+	insertNumericInfoField(InfoStrings::nAlbums, albums().count());
 
-	_additional_info.clear();
+	mAdditionalInfo.clear();
 
-	if(artist_ids().size() == 1)
+	if(artistIds().size() == 1)
 	{
 		Artist artist;
 		bool success;
 
-		ArtistId artist_id = artist_ids().first();
+		ArtistId artistId = artistIds().first();
 
-		DB::LibraryDatabase* lib_db = DB::Connector::instance()->library_db(-1, m->db_id);
+		DB::LibraryDatabase* lib_db = DB::Connector::instance()->libraryDatabase(-1, m->databaseId);
 
-		success = lib_db->getArtistByID(artist_id, artist);
+		success = lib_db->getArtistByID(artistId, artist);
 
 		if(success)
 		{
-			_additional_info.clear();
-			calc_similar_artists(artist);
+			mAdditionalInfo.clear();
+			calcSimilarArtists(artist);
 			// custom fields
-			const CustomFieldList custom_fields = artist.get_custom_fields();
+			const CustomFieldList custom_fields = artist.customFields();
 			if(!custom_fields.empty()){
-				_additional_info << StringPair(Lang::get(Lang::SimilarArtists), QString());
+				mAdditionalInfo << StringPair(Lang::get(Lang::SimilarArtists), QString());
 			}
 
 			for(const CustomField& field : custom_fields)
 			{
-				QString name = field.get_display_name();
-				QString value = field.get_value();
+				QString name = field.displayName();
+				QString value = field.value();
 				if(value.isEmpty()){
 					continue;
 				}
 
-				_additional_info << StringPair(name, field.get_value());
+				mAdditionalInfo << StringPair(name, field.value());
 			}
 		}
 	}
 
 	else if(artists().size() > 1){
-		insert_numeric_info_field(InfoStrings::nArtists, artists().count());
+		insertNumericInfoField(InfoStrings::nArtists, artists().count());
 	}
 
-	calc_header();
-	calc_subheader();
-	calc_cover_location();
+	calcHeader();
+	calcSubheader();
+	calcCoverLocation();
 }
 
 ArtistInfo::~ArtistInfo() {}
 
-void ArtistInfo::calc_header()
+void ArtistInfo::calcHeader()
 {
-	_header = calc_artist_str();
+	mHeader = calcArtistString();
 }
 
 
-void ArtistInfo::calc_similar_artists(Artist& artist)
+void ArtistInfo::calcSimilarArtists(Artist& artist)
 {
 	using SimPair=QPair<double, QString>;
 
 	QList<SimPair> sim_list;
-	QMap<QString, double> sim_artists = SimilarArtists::get_similar_artists(artist.name());
+	QMap<QString, double> sim_artists = SimilarArtists::getSimilarArtists(artist.name());
 
 	for(auto it=sim_artists.cbegin(); it != sim_artists.cend(); it++)
 	{
@@ -129,44 +128,44 @@ void ArtistInfo::calc_similar_artists(Artist& artist)
 
 	for(const SimPair& p : sim_list)
 	{
-		artist.add_custom_field(p.second, p.second, QString("%1%").arg((int) (p.first * 100)));
+		artist.addCustomField(p.second, p.second, QString("%1%").arg((int) (p.first * 100)));
 	}
 }
 
 
-void ArtistInfo::calc_subheader()
+void ArtistInfo::calcSubheader()
 {
-	_subheader = "";
+	mSubheader = "";
 }
 
 
-void ArtistInfo::calc_cover_location()
+void ArtistInfo::calcCoverLocation()
 {
 	if( artists().size() == 1)
 	{
 		QString artist = artists().first();
-		m->cover_location = Cover::Location::cover_location(artist);
+		m->coverLocation = Cover::Location::coverLocation(artist);
 	}
 
-	else if(album_artists().size() == 1)
+	else if(albumArtists().size() == 1)
 	{
-		QString artist = album_artists().first();
-		m->cover_location = Cover::Location::cover_location(artist);
+		QString artist = albumArtists().first();
+		m->coverLocation = Cover::Location::coverLocation(artist);
 	}
 
 	else
 	{
-		m->cover_location = Cover::Location::invalid_location();
+		m->coverLocation = Cover::Location::invalidLocation();
 	}
 }
 
 // todo: delete me
-QString ArtistInfo::additional_infostring() const
+QString ArtistInfo::additionalInfostring() const
 {
 	return QString();
 }
 
-Cover::Location ArtistInfo::cover_location() const
+Cover::Location ArtistInfo::coverLocation() const
 {
-	return m->cover_location;
+	return m->coverLocation;
 }

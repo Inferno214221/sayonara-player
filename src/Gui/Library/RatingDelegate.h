@@ -1,6 +1,6 @@
 /* RatingDelegate.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -36,17 +36,17 @@ namespace Library
 		Q_OBJECT
 		PIMPL(RatingDelegate)
 
-	public:
-		RatingDelegate(QObject* parent, int rating_column, bool enabled);
-		~RatingDelegate() override;
+		public:
+			RatingDelegate(QObject* parent, int rating_column, bool enabled);
+			~RatingDelegate() override;
 
-		void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
-		QWidget* createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
-		void setEditorData(QWidget *editor, const QModelIndex &index) const override;
-		void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const override;
+			void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
+			QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem &option, const QModelIndex& index) const override;
+			void setEditorData(QWidget* editor, const QModelIndex& index) const override;
+			void setModelData(QWidget* editor, QAbstractItemModel *model, const QModelIndex& index) const override;
 
-	private slots:
-		void destroy_editor(bool save);
+		private slots:
+			void deleteEditor(bool save);
 	};
 }
 

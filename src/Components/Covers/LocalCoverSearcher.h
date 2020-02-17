@@ -1,6 +1,6 @@
 /* LocalCoverSearcher.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -33,13 +33,11 @@ namespace Cover
     namespace LocalSearcher
     {
         /**
-         * @brief Extracts dirname and calls get_local_cover_paths_source_dirname
+         * @brief Extracts dirname and calls get_local_cover_paths_sourceDirectoryname
          * @param filename filename of a file within the same directory. E.g. a mp3 file
          * @return Paths for all covers in that directory
          */
-        QStringList cover_paths_from_path_hint(const QString& filename);
-
-
+        QStringList coverPathsFromPathHint(const QString& filename);
     }
 }
 

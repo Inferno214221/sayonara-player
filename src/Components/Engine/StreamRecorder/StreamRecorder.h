@@ -1,6 +1,6 @@
 /* StreamRecorder.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -46,29 +46,29 @@ namespace StreamRecorder
         void clear();
 
         // saves session collector into playlist, creates new session,
-        void new_session();
+		void newSession();
 
         // check and create session path
-        QString check_target_path(const QString& target_path);
+		QString checkTargetPath(const QString& targetPath);
 
 
     public:
-        explicit StreamRecorder(QObject *parent=nullptr);
+        explicit StreamRecorder(QObject* parent=nullptr);
         ~StreamRecorder();
 
         // change recording destination, create session path
         // returns destination file
-        QString change_track(const MetaData& md);
+		QString changeTrack(const MetaData& md);
 
         // start or end a session
         void record(bool b);
 
         // is in a session currently
-        bool is_recording() const;
+		bool isRecording() const;
 
 
     private slots:
-        void playstate_changed(PlayState state);
+		void playstateChanged(PlayState state);
     };
 }
 

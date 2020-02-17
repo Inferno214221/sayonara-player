@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>144</height>
+    <height>145</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,7 +15,7 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="2" column="0" colspan="2">
-    <widget class="QLineEdit" name="le_path">
+    <widget class="QLineEdit" name="lePath">
      <property name="minimumSize">
       <size>
        <width>0</width>
@@ -34,14 +34,14 @@
     </widget>
    </item>
    <item row="4" column="0">
-    <widget class="QCheckBox" name="cb_relative">
+    <widget class="QCheckBox" name="cbRelative">
      <property name="text">
       <string>relative filepaths</string>
      </property>
     </widget>
    </item>
    <item row="2" column="2">
-    <widget class="QPushButton" name="btn_choose">
+    <widget class="QPushButton" name="btnChoose">
      <property name="minimumSize">
       <size>
        <width>30</width>
@@ -62,7 +62,7 @@
    <item row="6" column="1" colspan="2">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QPushButton" name="btn_cancel">
+      <widget class="QPushButton" name="btnCancel">
        <property name="minimumSize">
         <size>
          <width>0</width>
@@ -75,7 +75,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_ok">
+      <widget class="QPushButton" name="btnOk">
        <property name="minimumSize">
         <size>
          <width>0</width>
@@ -86,7 +86,7 @@
         <string>Save</string>
        </property>
        <property name="icon">
-        <iconset resource="../../Resources/Icons.qrc">
+        <iconset>
          <normaloff>:/Icons/save.svg.png</normaloff>:/Icons/save.svg.png</iconset>
        </property>
       </widget>
@@ -94,7 +94,7 @@
     </layout>
    </item>
    <item row="0" column="0" colspan="3">
-    <widget class="QLabel" name="lab_title">
+    <widget class="QLabel" name="labTitle">
      <property name="text">
       <string>Save playlist as...</string>
      </property>
@@ -114,7 +114,7 @@
  </resources>
  <connections>
   <connection>
-   <sender>btn_cancel</sender>
+   <sender>btnCancel</sender>
    <signal>clicked()</signal>
    <receiver>GUI_TargetPlaylistDialog</receiver>
    <slot>close()</slot>

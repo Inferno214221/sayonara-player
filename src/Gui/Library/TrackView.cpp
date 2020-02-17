@@ -1,6 +1,6 @@
 /* TrackView.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -57,52 +57,52 @@ AbstractLibrary* TrackView::library() const
 	return m->library;
 }
 
-void TrackView::init_view(AbstractLibrary* library)
+void TrackView::initView(AbstractLibrary* library)
 {
 	m->library = library;
 
 	TrackModel* track_model = new TrackModel(this, library);
 	RatingDelegate* track_delegate = new RatingDelegate(this, int(ColumnIndex::Track::Rating), true);
 
-	this->set_item_model(track_model);
+	this->setItemModel(track_model);
 	this->setItemDelegate(track_delegate);
 
-	connect(library, &AbstractLibrary::sig_all_tracks_loaded, this, &TrackView::fill);
+	connect(library, &AbstractLibrary::sigAllTracksLoaded, this, &TrackView::fill);
 }
 
-ColumnHeaderList TrackView::column_headers() const
+ColumnHeaderList TrackView::columnHeaders() const
 {
 	const QFontMetrics fm(this->font());
 
 	return ColumnHeaderList
 	{
-		std::make_shared<ColumnHeader>(ColumnHeader::Sharp, true, SortOrder::TrackNumAsc, SortOrder::TrackNumDesc, Gui::Util::text_width(fm, "M888")),
+		std::make_shared<ColumnHeader>(ColumnHeader::Sharp, true, SortOrder::TrackNumAsc, SortOrder::TrackNumDesc, Gui::Util::textWidget(fm, "M888")),
 		std::make_shared<ColumnHeader>(ColumnHeader::Title, false, SortOrder::TrackTitleAsc, SortOrder::TrackTitleDesc, 200, true),
 		std::make_shared<ColumnHeader>(ColumnHeader::Artist, true, SortOrder::TrackArtistAsc, SortOrder::TrackArtistDesc, 200, true),
 		std::make_shared<ColumnHeader>(ColumnHeader::Album, true, SortOrder::TrackAlbumAsc, SortOrder::TrackAlbumDesc, 200, true),
-		std::make_shared<ColumnHeader>(ColumnHeader::Discnumber, true, SortOrder::TrackDiscnumberAsc, SortOrder::TrackDiscnumberDesc, Gui::Util::text_width(fm, Lang::get(Lang::Disc) + " M888") ),
-		std::make_shared<ColumnHeader>(ColumnHeader::Year, true, SortOrder::TrackYearAsc, SortOrder::TrackYearDesc, Gui::Util::text_width(fm, "M8888")),
-		std::make_shared<ColumnHeader>(ColumnHeader::DurationShort, true, SortOrder::TrackLenghtAsc, SortOrder::TrackLengthDesc, Gui::Util::text_width(fm, "8d 88h 88s")),
-		std::make_shared<ColumnHeader>(ColumnHeader::Bitrate, true, SortOrder::TrackBitrateAsc, SortOrder::TrackBitrateDesc, Gui::Util::text_width(fm, "M8888 kBit/s")),
-		std::make_shared<ColumnHeader>(ColumnHeader::Filesize, true, SortOrder::TrackSizeAsc, SortOrder::TrackSizeDesc, Gui::Util::text_width(fm, "M888.88 MB")),
-		std::make_shared<ColumnHeader>(ColumnHeader::Filetype, true, SortOrder::TrackFiletypeAsc, SortOrder::TrackFiletypeDesc, Gui::Util::text_width(fm, "MFLAC")),
+		std::make_shared<ColumnHeader>(ColumnHeader::Discnumber, true, SortOrder::TrackDiscnumberAsc, SortOrder::TrackDiscnumberDesc, Gui::Util::textWidget(fm, Lang::get(Lang::Disc) + " M888") ),
+		std::make_shared<ColumnHeader>(ColumnHeader::Year, true, SortOrder::TrackYearAsc, SortOrder::TrackYearDesc, Gui::Util::textWidget(fm, "M8888")),
+		std::make_shared<ColumnHeader>(ColumnHeader::DurationShort, true, SortOrder::TrackLenghtAsc, SortOrder::TrackLengthDesc, Gui::Util::textWidget(fm, "8d 88h 88s")),
+		std::make_shared<ColumnHeader>(ColumnHeader::Bitrate, true, SortOrder::TrackBitrateAsc, SortOrder::TrackBitrateDesc, Gui::Util::textWidget(fm, "M8888 kBit/s")),
+		std::make_shared<ColumnHeader>(ColumnHeader::Filesize, true, SortOrder::TrackSizeAsc, SortOrder::TrackSizeDesc, Gui::Util::textWidget(fm, "M888.88 MB")),
+		std::make_shared<ColumnHeader>(ColumnHeader::Filetype, true, SortOrder::TrackFiletypeAsc, SortOrder::TrackFiletypeDesc, Gui::Util::textWidget(fm, "MFLAC")),
 		std::make_shared<ColumnHeader>(ColumnHeader::Rating, true, SortOrder::TrackRatingAsc, SortOrder::TrackRatingDesc, 85)
 	};
 }
 
-QByteArray TrackView::column_header_state() const
+QByteArray TrackView::columnHeaderState() const
 {
 	return GetSetting(Set::Lib_ColStateTracks);
 }
 
-void TrackView::save_column_header_state(const QByteArray& state)
+void TrackView::saveColumnHeaderState(const QByteArray& state)
 {
 	SetSetting(Set::Lib_ColStateTracks, state);
 }
 
-Library::ContextMenu::Entries TrackView::context_menu_entries() const
+Library::ContextMenu::Entries TrackView::contextMenuEntries() const
 {
-	return (ItemView::context_menu_entries() |
+	return (ItemView::contextMenuEntries() |
 			Library::ContextMenu::EntryLyrics |
 			Library::ContextMenu::EntryFilterExtension);
 }
@@ -113,54 +113,54 @@ SortOrder TrackView::sortorder() const
 	return so.so_tracks;
 }
 
-void TrackView::apply_sortorder(SortOrder s)
+void TrackView::applySortorder(SortOrder s)
 {
-	m->library->change_track_sortorder(s);
+	m->library->changeTrackSortorder(s);
 }
 
-void TrackView::selection_changed(const IndexSet& lst)
+void TrackView::selectedItemsChanged(const IndexSet& lst)
 {
-	TableView::selection_changed(lst);
-	m->library->selected_tracks_changed(lst);
-}
-
-
-void TrackView::play_clicked()
-{
-	m->library->prepare_current_tracks_for_playlist(false);
-}
-
-void TrackView::play_new_tab_clicked()
-{
-	TableView::play_new_tab_clicked();
-	m->library->prepare_current_tracks_for_playlist(true);
+	TableView::selectedItemsChanged(lst);
+	m->library->selectedTracksChanged(lst);
 }
 
 
-void TrackView::play_next_clicked()
+void TrackView::playClicked()
 {
-	TableView::play_next_clicked();
-	m->library->play_next_current_tracks();
+	m->library->prepareCurrentTracksForPlaylist(false);
 }
 
-void TrackView::append_clicked()
+void TrackView::playNewTabClicked()
 {
-	TableView::append_clicked();
-	m->library->append_current_tracks();
+	TableView::playNewTabClicked();
+	m->library->prepareCurrentTracksForPlaylist(true);
 }
 
-void TrackView::refresh_clicked()
+
+void TrackView::playNextClicked()
 {
-	TableView::refresh_clicked();
-	m->library->refresh_tracks();
+	TableView::playNextClicked();
+	m->library->playNextCurrentTracks();
 }
 
-bool TrackView::is_mergeable() const
+void TrackView::appendClicked()
+{
+	TableView::appendClicked();
+	m->library->appendCurrentTracks();
+}
+
+void TrackView::refreshClicked()
+{
+	TableView::refreshClicked();
+	m->library->refreshTracks();
+}
+
+bool TrackView::isMergeable() const
 {
 	return false;
 }
 
-MD::Interpretation TrackView::metadata_interpretation() const
+MD::Interpretation TrackView::metadataInterpretation() const
 {
 	return MD::Interpretation::Tracks;
 }

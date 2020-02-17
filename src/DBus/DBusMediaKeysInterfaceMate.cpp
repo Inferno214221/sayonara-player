@@ -1,6 +1,6 @@
 /* DBusMediaKeysInterfaceMate.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -24,11 +24,11 @@
 
 struct DBusMediaKeysInterfaceMate::Private
 {
-	OrgMateSettingsDaemonMediaKeysInterface* media_key_interface=nullptr;
+	OrgMateSettingsDaemonMediaKeysInterface* mediaKeyInterface=nullptr;
 
 	Private(DBusMediaKeysInterface* parent)
 	{
-		media_key_interface = new OrgMateSettingsDaemonMediaKeysInterface(
+		mediaKeyInterface = new OrgMateSettingsDaemonMediaKeysInterface(
 				"org.mate.SettingsDaemon",
 				"/org/mate/SettingsDaemon/MediaKeys",
 				QDBusConnection::sessionBus(),
@@ -36,7 +36,7 @@ struct DBusMediaKeysInterfaceMate::Private
 	}
 };
 
-DBusMediaKeysInterfaceMate::DBusMediaKeysInterfaceMate(QObject *parent) :
+DBusMediaKeysInterfaceMate::DBusMediaKeysInterfaceMate(QObject* parent) :
 	DBusMediaKeysInterface(parent)
 {
 	m = Pimpl::make<Private>(this);
@@ -46,22 +46,22 @@ DBusMediaKeysInterfaceMate::DBusMediaKeysInterfaceMate(QObject *parent) :
 
 DBusMediaKeysInterfaceMate::~DBusMediaKeysInterfaceMate() {}
 
-QString DBusMediaKeysInterfaceMate::service_name() const
+QString DBusMediaKeysInterfaceMate::serviceName() const
 {
 	return QString("org.mate.SettingsDaemon");
 }
 
-QDBusPendingReply<> DBusMediaKeysInterfaceMate::grab_media_key_reply()
+QDBusPendingReply<> DBusMediaKeysInterfaceMate::grabMediaKeyReply()
 {
-	return m->media_key_interface->GrabMediaPlayerKeys("sayonara", 0);
+	return m->mediaKeyInterface->GrabMediaPlayerKeys("sayonara", 0);
 }
 
-void DBusMediaKeysInterfaceMate::connect_media_keys()
+void DBusMediaKeysInterfaceMate::connectMediaKeys()
 {
-	connect( m->media_key_interface,
+	connect( m->mediaKeyInterface,
 			 &OrgMateSettingsDaemonMediaKeysInterface::MediaPlayerKeyPressed,
 			 this,
-			 &DBusMediaKeysInterfaceMate::sl_media_key_pressed
+			 &DBusMediaKeysInterfaceMate::mediaKeyPressed
 	);
 }
 

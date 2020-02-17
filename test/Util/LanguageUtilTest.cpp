@@ -31,76 +31,76 @@ private slots:
 
 void LanguageUtilTest::basic_path_tests()
 {
-	QString sp = Util::share_path("translations");
-	QString hp = Util::sayonara_path("translations");
+	QString sp = Util::sharePath("translations");
+	QString hp = Util::sayonaraPath("translations");
 
 	QString path;
 	QString expected;
 
-	path = Language::get_share_path("ab_CD");
-	expected = File::clean_filename(sp + "/sayonara_lang_ab_CD.qm");
+	path = Language::getSharePath("ab_CD");
+	expected = File::cleanFilename(sp + "/sayonara_lang_ab_CD.qm");
 	QVERIFY(path == expected);
 
-	path = Language::get_ftp_path("ab_CD");
+	path = Language::getFtpPath("ab_CD");
 	expected = QString("ftp://sayonara-player.com/translation/sayonara_lang_ab_CD.qm");
 	QVERIFY(path == expected);
 
-	path = Language::get_http_path("ab_CD");
+	path = Language::getHttpPath("ab_CD");
 	expected = QString("https://sayonara-player.com/sw/translation/sayonara_lang_ab_CD.qm");
 	QVERIFY(path == expected);
 
-	path = Language::get_home_target_path("ab_CD");
-	expected = File::clean_filename(hp + "/sayonara_lang_ab_CD.qm");
+	path = Language::getHomeTargetPath("ab_CD");
+	expected = File::cleanFilename(hp + "/sayonara_lang_ab_CD.qm");
 	QVERIFY(path == expected);
 
-	path = Language::get_icon_path("ab_CD");
-	expected = File::clean_filename(sp + "/icons/ab_CD.png");
+	path = Language::getIconPath("ab_CD");
+	expected = File::cleanFilename(sp + "/icons/ab_CD.png");
 	QVERIFY(path == expected);
 
-	path = Language::get_share_path("hallo");
+	path = Language::getSharePath("hallo");
 	QVERIFY(path.isEmpty());
 
-	path = Language::get_share_path("");
+	path = Language::getSharePath("");
 	QVERIFY(path.isEmpty());
 
-	path = Language::get_share_path("en_GBS");
+	path = Language::getSharePath("en_GBS");
 	QVERIFY(path.isEmpty());
 
-	path = Language::get_share_path("EN_gb");
+	path = Language::getSharePath("EN_gb");
 	QVERIFY(path.isEmpty());
 }
 
 void LanguageUtilTest::language_version_test()
 {
 	Settings* s = Settings::instance();
-	s->check_settings();
+	s->checkSettings();
 
 	QString current_version = SAYONARA_VERSION;
 	current_version.replace("2", "3");
 	current_version.replace("1", "2");
 	current_version.replace("0", "1");
 
-	Language::set_test_mode();
+	Language::setTestMode();
 
-	Language::set_language_version("fr_FR", "1.2.0");
-	Language::set_language_version("de_DE", current_version);
-	Language::set_language_version("pt_PT", "");
-	Language::set_language_version("ab_CD", SAYONARA_VERSION);
+	Language::setLanguageVersion("fr_FR", "1.2.0");
+	Language::setLanguageVersion("de_DE", current_version);
+	Language::setLanguageVersion("pt_PT", "");
+	Language::setLanguageVersion("ab_CD", SAYONARA_VERSION);
 
 	bool outdated;
-	outdated = Language::is_outdated("fr_FR");
+	outdated = Language::isOutdated("fr_FR");
 	QVERIFY(outdated == true);
 
-	outdated = Language::is_outdated("de_DE");
+	outdated = Language::isOutdated("de_DE");
 	QVERIFY(outdated == false);
 
-	outdated = Language::is_outdated("pt_PT");
+	outdated = Language::isOutdated("pt_PT");
 	QVERIFY(outdated == true);
 
-	outdated = Language::is_outdated("ab_CD");
+	outdated = Language::isOutdated("ab_CD");
 	QVERIFY(outdated == false);
 
-	outdated = Language::is_outdated("");
+	outdated = Language::isOutdated("");
 	QVERIFY(outdated == true);
 }
 
@@ -109,39 +109,39 @@ void LanguageUtilTest::four_letter_test()
 	QString expected;
 	QString four_letter;
 
-	four_letter = Language::extract_four_letter("blupp.ts");
+	four_letter = Language::extractFourLetter("blupp.ts");
 	expected = QString();
 	QVERIFY(four_letter == expected);
 
-	four_letter = Language::extract_four_letter("sayonara_lang_de_DE.ts");
+	four_letter = Language::extractFourLetter("sayonara_lang_de_DE.ts");
 	expected = "de_DE";
 	QVERIFY(four_letter == expected);
 
-	four_letter = Language::extract_four_letter("asd;flkjasdsayonara_lang_de_DE.qm");
+	four_letter = Language::extractFourLetter("asd;flkjasdsayonara_lang_de_DE.qm");
 	expected = "de_DE";
 	QVERIFY(four_letter == expected);
 
-	four_letter = Language::extract_four_letter("sayonara_lang_zh_CN.GB2312.ts");
+	four_letter = Language::extractFourLetter("sayonara_lang_zh_CN.GB2312.ts");
 	expected = "zh_CN.GB2312";
 	QVERIFY(four_letter == expected);
 
-	four_letter = Language::extract_four_letter("sayonara_lang_de_DE.ISO-8859-15.ts");
+	four_letter = Language::extractFourLetter("sayonara_lang_de_DE.ISO-8859-15.ts");
 	expected = "de_DE.ISO-8859-15";
 	QVERIFY(four_letter == expected);
 
-	four_letter = Language::extract_four_letter("sayonara_lang_zh_CN.GB2312.ts.qm");
+	four_letter = Language::extractFourLetter("sayonara_lang_zh_CN.GB2312.ts.qm");
 	expected = "";
 	QVERIFY(four_letter == expected);
 
-	four_letter = Language::extract_four_letter("asd;flkjasdsayonara_lang_de_DE.xz");
+	four_letter = Language::extractFourLetter("asd;flkjasdsayonara_lang_de_DE.xz");
 	expected = QString();
 	QVERIFY(four_letter == expected);
 
-	four_letter = Language::extract_four_letter("asd;flkjasdsayonara_lang_DE_DE.qm");
+	four_letter = Language::extractFourLetter("asd;flkjasdsayonara_lang_DE_DE.qm");
 	expected = QString();
 	QVERIFY(four_letter == expected);
 
-	four_letter = Language::extract_four_letter("blupp.ts");
+	four_letter = Language::extractFourLetter("blupp.ts");
 	expected = QString();
 	QVERIFY(four_letter == expected);
 }

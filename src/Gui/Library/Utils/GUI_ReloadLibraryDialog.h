@@ -1,6 +1,6 @@
 /* GUI_ReloadLibraryDialog.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -43,21 +43,21 @@ namespace Library
 		UI_CLASS(GUI_LibraryReloadDialog)
 
 		signals:
-			void sig_accepted(ReloadQuality quality);
+			void sigAccepted(ReloadQuality quality);
 
 		public:
-			explicit GUI_LibraryReloadDialog(const QString& library_name, QWidget *parent=nullptr);
+			explicit GUI_LibraryReloadDialog(const QString& library_name, QWidget* parent=nullptr);
 			~GUI_LibraryReloadDialog() override;
 
-			void set_quality(ReloadQuality quality);
+			void setQuality(ReloadQuality quality);
 
 		private slots:
-			void ok_clicked();
-			void cancel_clicked();
-			void combo_changed(int);
+			void okClicked();
+			void cancelClicked();
+			void comboChanged(int);
 
 		protected:
-			void language_changed() override;
+			void languageChanged() override;
 	};
 }
 

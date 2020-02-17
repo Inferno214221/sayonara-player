@@ -19,7 +19,7 @@
     </widget>
    </item>
    <item row="0" column="0" colspan="2">
-    <widget class="QCheckBox" name="cb_activate">
+    <widget class="QCheckBox" name="cbActivate">
      <property name="focusPolicy">
       <enum>Qt::StrongFocus</enum>
      </property>
@@ -29,14 +29,14 @@
     </widget>
    </item>
    <item row="1" column="0" colspan="2">
-    <widget class="Gui::ComboBox" name="combo_notification">
+    <widget class="Gui::ComboBox" name="comboNotifications">
      <property name="focusPolicy">
       <enum>Qt::StrongFocus</enum>
      </property>
     </widget>
    </item>
    <item row="2" column="1">
-    <widget class="QSpinBox" name="sb_timeout">
+    <widget class="QSpinBox" name="sbTimeout">
      <property name="focusPolicy">
       <enum>Qt::WheelFocus</enum>
      </property>

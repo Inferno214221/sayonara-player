@@ -1,6 +1,6 @@
 /* UserTaggingOperations.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -36,29 +36,29 @@ namespace Tagging
 		PIMPL(UserOperations)
 
 	signals:
-		void sig_finished();
-		void sig_progress(int);
+		void sigFinished();
+		void sigProgress(int);
 
 	public:
-		UserOperations(LibraryId library_id, QObject* parent=nullptr);
-		~UserOperations();
+		UserOperations(LibraryId libraryId, QObject* parent=nullptr);
+		~UserOperations() override;
 
-		void set_track_rating(const MetaData& md, Rating rating);
-		void set_track_rating(const MetaDataList& v_md, Rating rating);
+		void setTrackRating(const MetaData& md, Rating rating);
+		void setTrackRating(const MetaDataList& tracks, Rating rating);
 
-		void set_album_rating(const Album& album, Rating rating);
+		void setAlbumRating(const Album& album, Rating rating);
 
-		void merge_artists(const Util::Set<Id>& artist_ids, ArtistId target_artist_id);
-		void merge_albums(const Util::Set<Id>& albums_ids, AlbumId target_album_id);
+		void mergeArtists(const Util::Set<Id>& artisIids, ArtistId targetArtistId);
+		void mergeAlbums(const Util::Set<Id>& albumsIds, AlbumId targetAlbumId);
 
-		void add_genre(const IdSet ids, const Genre& genre);
-		void delete_genre(const Genre& genre);
-		void rename_genre(const Genre& genre, const Genre& new_genre);
-		void add_genre_to_md(const MetaDataList& v_md, const Genre& genre);
+		void addGenre(const IdSet ids, const Genre& genre);
+		void deleteGenre(const Genre& genre);
+		void renameGenre(const Genre& genre, const Genre& newGenre);
+		void applyGenreToMetadata(const MetaDataList& tracks, const Genre& genre);
 
 	private:
-		Editor* create_editor();
-		void run_editor(Editor* editor);
+		Editor* createEditor();
+		void runEditor(Editor* editor);
 	};
 }
 

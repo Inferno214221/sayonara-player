@@ -32,7 +32,7 @@ static MetaDataList create_v_md(int min, int max)
 	for(int i=min; i<max; i++)
 	{
 		MetaData md;
-		md.set_id(i);
+		md.setId(i);
 
 		v_md << md;
 	}
@@ -53,7 +53,7 @@ void MetaDataListTest::insert_test()
 	QList<UniqueId> unique_ids = inserted_md.unique_ids();
 	QList<UniqueId> unique_ids2;
 
-	v_md.insert_tracks(inserted_md, insert_idx);
+	v_md.insertTracks(inserted_md, insert_idx);
 	QVERIFY(v_md.size() == v_md_orig.size() + inserted_md.size());
 
 	QList<int> expected_ids;
@@ -63,7 +63,7 @@ void MetaDataListTest::insert_test()
 
 	for(int i=0; i<inserted_md.count(); i++) {
 		expected_ids << inserted_md[i].id();
-		unique_ids2 << v_md[i + insert_idx].unique_id();
+		unique_ids2 << v_md[i + insert_idx].uniqueId();
 	}
 
 	QVERIFY(unique_ids != unique_ids2);
@@ -83,11 +83,11 @@ void MetaDataListTest::insert_test()
 	{ // some invalid index tests
 		MetaDataList v_md_invalid;
 		MetaData md;
-		v_md_invalid.insert_track(md, 4);
+		v_md_invalid.insertTrack(md, 4);
 		QVERIFY(v_md_invalid.size() == 1);
 
 		v_md_invalid.clear();
-		v_md_invalid.insert_track(md, -1);
+		v_md_invalid.insertTrack(md, -1);
 		QVERIFY(v_md_invalid.size() == 1);
 	}
 }
@@ -106,7 +106,7 @@ void MetaDataListTest::remove_test()
 		remove_indexes << i;
 	}
 
-	v_md.remove_tracks(remove_indexes);
+	v_md.removeTracks(remove_indexes);
 
 	QVERIFY(v_md.size() == (old_size - remove_indexes.size()));
 
@@ -124,7 +124,7 @@ void MetaDataListTest::remove_test()
 
 	{ // some invalid index tests
 		MetaDataList v_md_invalid;
-		v_md_invalid.remove_track(3);
+		v_md_invalid.removeTrack(3);
 		QVERIFY(v_md_invalid.size() == 0);
 
 		// insert two tracks
@@ -134,15 +134,15 @@ void MetaDataListTest::remove_test()
 
 		// remove tracks with invalid indexes
 		QVERIFY(v_md_invalid.size() == 2);
-		v_md_invalid.remove_track(-1);
-		v_md_invalid.remove_track(2);
+		v_md_invalid.removeTrack(-1);
+		v_md_invalid.removeTrack(2);
 
 		// remove track with real index
 		QVERIFY(v_md_invalid.size() == 2);
-		v_md_invalid.remove_track(0);
+		v_md_invalid.removeTrack(0);
 		QVERIFY(v_md_invalid.size() == 1);
 
-		MetaData md; md.set_filepath("Somestuff.mp3");
+		MetaData md; md.setFilepath("Somestuff.mp3");
 		v_md_invalid << md;
 		QVERIFY(v_md_invalid.size() == 2);
 
@@ -151,7 +151,7 @@ void MetaDataListTest::remove_test()
 			idxs << 2 << -1 << 4;
 		}
 
-		v_md_invalid.remove_tracks(idxs);
+		v_md_invalid.removeTracks(idxs);
 		QVERIFY(v_md_invalid.size() == 2);
 
 		idxs.clear();
@@ -159,7 +159,7 @@ void MetaDataListTest::remove_test()
 			idxs << 0 << -1 << 4;
 		}
 
-		v_md_invalid.remove_tracks(idxs);
+		v_md_invalid.removeTracks(idxs);
 		QVERIFY(v_md_invalid.size() == 1);
 	}
 }
@@ -181,7 +181,7 @@ void MetaDataListTest::move_test()
 			move_indexes << 3 << 4 << 5;
 		};
 
-		v_md.move_tracks(move_indexes, 1);
+		v_md.moveTracks(move_indexes, 1);
 		unique_ids2 = v_md.unique_ids();
 		QVERIFY(unique_ids != unique_ids2);
 
@@ -210,7 +210,7 @@ void MetaDataListTest::move_test()
 			move_indexes << 1 << 2 << 3;
 		};
 
-		v_md.move_tracks(move_indexes, 6);
+		v_md.moveTracks(move_indexes, 6);
 
 		unique_ids2 = v_md.unique_ids();
 		QVERIFY(unique_ids == unique_ids2);
@@ -230,7 +230,7 @@ void MetaDataListTest::move_test()
 			move_indexes << 1 << 2 << 3;
 		};
 
-		v_md.move_tracks(move_indexes, 11);
+		v_md.moveTracks(move_indexes, 11);
 
 		unique_ids2 = v_md.unique_ids();
 
@@ -256,7 +256,7 @@ void MetaDataListTest::move_test()
 			move_indexes << 4 << 7 << 8;
 		};
 
-		v_md.move_tracks(move_indexes, -4);
+		v_md.moveTracks(move_indexes, -4);
 		QList<int> expected_ids
 		{
 			4, 7, 8, 0, 1, 2, 3, 5, 6, 9
@@ -278,10 +278,10 @@ void MetaDataListTest::remove_duplicate_test()
 		for(int i=0; i<v_md.count(); i++)
 		{
 			QString p = QString("/some/path/%1.mp3").arg(i % 10);
-			v_md[i].set_filepath(p);
+			v_md[i].setFilepath(p);
 		}
 
-		v_md.remove_duplicates();
+		v_md.removeDuplicates();
 		QVERIFY(v_md.size() == 10);
 
 		for(int i=0; i<v_md.count(); i++)
@@ -295,10 +295,10 @@ void MetaDataListTest::remove_duplicate_test()
 		for(int i=0; i<v_md.count(); i++)
 		{
 			QString p = QString("/some/path/%1.mp3").arg(i / 3);
-			v_md[i].set_filepath(p);
+			v_md[i].setFilepath(p);
 		}
 
-		v_md.remove_duplicates();
+		v_md.removeDuplicates();
 		QVERIFY(v_md.size() == (v_md_orig.size() + 2) / 3);
 
 		for(int i=0; i<v_md.count(); i++)
@@ -313,10 +313,10 @@ void MetaDataListTest::remove_duplicate_test()
 		for(int i=0; i<v_md.count(); i++)
 		{
 			QString p = QString("/some/path/%1.mp3").arg(i % 99);
-			v_md[i].set_filepath(p);
+			v_md[i].setFilepath(p);
 		}
 
-		v_md.remove_duplicates();
+		v_md.removeDuplicates();
 		QVERIFY(v_md.size() == 99);
 
 		for(int i=0; i<v_md.count(); i++)
@@ -332,10 +332,10 @@ void MetaDataListTest::remove_duplicate_test()
 		for(int i=0; i<v_md.count(); i++)
 		{
 			QString p = QString("/some/path/hallo.mp3");
-			v_md[i].set_filepath(p);
+			v_md[i].setFilepath(p);
 		}
 
-		v_md.remove_duplicates();
+		v_md.removeDuplicates();
 		QVERIFY(v_md.size() == 1);
 	}
 
@@ -344,10 +344,10 @@ void MetaDataListTest::remove_duplicate_test()
 		for(int i=0; i<v_md.count(); i++)
 		{
 			QString p = QString("/some/path/%1.mp3").arg(i);
-			v_md[i].set_filepath(p);
+			v_md[i].setFilepath(p);
 		}
 
-		v_md.remove_duplicates();
+		v_md.removeDuplicates();
 		QVERIFY(v_md.size() == v_md_orig.size());
 	}
 }
@@ -360,16 +360,16 @@ void MetaDataListTest::append_unique_test()
 	for(MetaData& md : v_md)
 	{
 		QString p = QString("/some/path/%1.mp3").arg(md.id());
-		md.set_filepath(p);
+		md.setFilepath(p);
 	}
 
 	for(MetaData& md : v_md2)
 	{
 		QString p = QString("/some/path/%1.mp3").arg(md.id());
-		md.set_filepath(p);
+		md.setFilepath(p);
 	}
 
-	v_md.append_unique(v_md2);
+	v_md.appendUnique(v_md2);
 
 	QVERIFY(v_md.size() == v_md_orig.size() + 70);
 	for(int i=0; i<v_md.count(); i++)

@@ -1,6 +1,6 @@
 /* Logger.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -69,7 +69,7 @@ public:
 
 	~Logger();
 
-	static void register_log_listener(LogListener* log_listener);
+	static void registerLogListener(LogListener* logListener);
 
 	Logger& operator << (const QString& msg);
 	Logger& operator << (const QChar& c);
@@ -110,14 +110,14 @@ public:
 	}
 };
 
-Logger sp_log(const Log& type, const std::string& data);
-Logger sp_log(const Log& type, const char* data);
+Logger spLog(const Log& type, const std::string& data);
+Logger spLog(const Log& type, const char* data);
 
 template<typename T>
 typename std::enable_if< std::is_class<T>::value, Logger>::type
-sp_log(const Log& type, const T*)
+spLog(const Log& type, const T*)
 {
-	return sp_log(type, typeid(T).name());
+	return spLog(type, typeid(T).name());
 }
 
 Q_DECLARE_METATYPE(Log)

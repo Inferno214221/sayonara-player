@@ -1,6 +1,6 @@
 /* StreamRecorderUtils.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -47,12 +47,12 @@ namespace StreamRecorder
         // filename, playlistname
         using TargetPaths=QPair<QString, QString>;
 
-        QList<QString> supported_tags();
+        QList<QString> supportedTags();
         QList<QPair<QString, QString>> descriptions();
 
-        ErrorCode validate_template(const QString& target_path_template, int* invalid_idx);
+        ErrorCode validateTemplate(const QString& target_path_template, int* invalid_idx);
 
-        QString target_path_template_default(bool use_session_path);
+        QString targetPathTemplateDefault(bool useSessionPath);
 
 		/**
 		 * @brief Get the target path and playlist path of a single recorded audio file
@@ -63,9 +63,9 @@ namespace StreamRecorder
 		 * @param t session time
 		 * @return tuple of audio filepath and playlist filepath
 		 */
-        TargetPaths full_target_path(const QString& sr_path, const QString& path_template, const MetaData& md, const QDate& d, const QTime& t);
+        TargetPaths fullTargetPath(const QString& srPath, const QString& path_template, const MetaData& md, const QDate& d, const QTime& t);
 
-        QString parse_error_code(ErrorCode err);
+        QString parseErrorCode(ErrorCode err);
     }
 }
 

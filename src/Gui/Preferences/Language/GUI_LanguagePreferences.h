@@ -1,6 +1,6 @@
 /* GUI_LanguagePreferences.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -40,25 +40,25 @@ public:
 	bool commit() override;
 	void revert() override;
 
-	QString action_name() const override;
+	QString actionName() const override;
 
 protected:
-	void init_ui() override;
-	void retranslate_ui() override;
-	void skin_changed() override;
+	void initUi() override;
+	void retranslate() override;
+	void skinChanged() override;
 
 	void showEvent(QShowEvent*) override;
 
 private:
-	void renew_combo();
+	void refreshCombobox();
 
 private slots:
-	void combo_index_changed(int index);
-	void btn_check_for_update_clicked();
-	void update_check_finished();
+	void currentIndexChanged(int index);
+	void checkForUpdateClicked();
+	void updateCheckFinished();
 
-	void btn_download_clicked();
-	void download_finished();
+	void downloadClicked();
+	void downloadFinished();
 };
 
 #endif // GUI_LanguagePreferences_H

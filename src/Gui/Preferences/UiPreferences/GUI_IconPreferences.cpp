@@ -1,6 +1,6 @@
 /* GUI_IconPreferences.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -51,11 +51,11 @@ public:
 
 
 static
-IconRadioButton* add_radio_button(const QString& text, const QString& theme_name, QWidget* widget, bool ignore_errors)
+IconRadioButton* addRadioButton(const QString& text, const QString& themeName, QWidget* widget, bool ignoreErrors)
 {
-	if(!ignore_errors)
+	if(!ignoreErrors)
 	{
-		QIcon::setThemeName(theme_name);
+		QIcon::setThemeName(themeName);
 		QIcon icon = QIcon::fromTheme("media-playback-start");
 		if(icon.isNull()){
 			return nullptr;
@@ -63,19 +63,19 @@ IconRadioButton* add_radio_button(const QString& text, const QString& theme_name
 	}
 
 	IconRadioButton* rb = new IconRadioButton(text, widget);
-	rb->set_data(theme_name);
+	rb->set_data(themeName);
 
 	return rb;
 }
 
 struct GUI_IconPreferences::Private
 {
-	QHash<QString, IconRadioButton*> rb_map;
-	QString original_theme;
+	QHash<QString, IconRadioButton*> radioButtonMap;
+	QString originalTheme;
 
 	Private()
 	{
-		original_theme = QIcon::themeName();
+		originalTheme = QIcon::themeName();
 	}
 };
 
@@ -87,19 +87,19 @@ GUI_IconPreferences::GUI_IconPreferences(QWidget* parent) :
 
 GUI_IconPreferences::~GUI_IconPreferences() = default;
 
-void GUI_IconPreferences::language_changed()
+void GUI_IconPreferences::languageChanged()
 {
-	QString standard_theme(Gui::Icons::standard_theme());
-	IconRadioButton* rb = m->rb_map[standard_theme];
+	QString standardTheme(Gui::Icons::standardTheme());
+	IconRadioButton* rb = m->radioButtonMap[standardTheme];
 	if(rb){
 		rb->setText(
-			tr("System theme") + " (" + standard_theme + ")"
+			tr("System theme") + " (" + standardTheme + ")"
 		);
 	}
 }
 
 
-QString GUI_IconPreferences::action_name() const
+QString GUI_IconPreferences::actionName() const
 {
 	return tr("Icons");
 }
@@ -110,7 +110,7 @@ bool GUI_IconPreferences::commit()
 		return true;
 	}
 
-	for(auto it=m->rb_map.begin(); it != m->rb_map.end(); it++)
+	for(auto it=m->radioButtonMap.begin(); it != m->radioButtonMap.end(); it++)
 	{
 		const QString& key = it.key();
 		IconRadioButton* rb = it.value();
@@ -120,14 +120,14 @@ bool GUI_IconPreferences::commit()
 		{
 			SetSetting(Set::Icon_Theme, key);
 			rb->setStyleSheet("font-weight: bold;");
-			m->original_theme = rb->data();
+			m->originalTheme = rb->data();
 
-			Gui::Icons::change_theme();
+			Gui::Icons::changeTheme();
 		}
 	}
 
-	bool force_std_icons = ui->cb_also_use_in_dark_style->isChecked();
-	Gui::Icons::force_standard_icons(force_std_icons);
+	bool force_std_icons = ui->cb_alsoUseInDarkStyle->isChecked();
+	Gui::Icons::forceStandardIcons(force_std_icons);
 	SetSetting(Set::Icon_ForceInDarkTheme, force_std_icons);
 
 	Set::shout<SetNoDB::Player_MetaStyle>();
@@ -141,45 +141,45 @@ void GUI_IconPreferences::revert()
 		return;
 	}
 
-	for(auto it=m->rb_map.cbegin(); it != m->rb_map.cend(); it++)
+	for(auto it=m->radioButtonMap.cbegin(); it != m->radioButtonMap.cend(); it++)
 	{
 		const QString& key = it.key();
 		IconRadioButton* rb = it.value();
 
-		rb->setChecked(key.compare(m->original_theme) == 0);
+		rb->setChecked(key.compare(m->originalTheme) == 0);
 	}
 
 	bool b = GetSetting(Set::Icon_ForceInDarkTheme);
-	ui->cb_also_use_in_dark_style->setChecked(b);
+	ui->cb_alsoUseInDarkStyle->setChecked(b);
 
-	QIcon::setThemeName(m->original_theme);
+	QIcon::setThemeName(m->originalTheme);
 }
 
-static void apply_icon(const QString& n, const QString& theme_name, QLabel* label)
+static void applyIcon(const QString& n, const QString& theme_name, QLabel* label)
 {
 	QIcon::setThemeName(theme_name);
 	QIcon icon = QIcon::fromTheme(n);
 	label->setPixmap(icon.pixmap(32, 32).scaled(32, 32, Qt::KeepAspectRatio, Qt::SmoothTransformation));
 }
 
-void GUI_IconPreferences::theme_changed(const QString& theme)
+void GUI_IconPreferences::themeChanged(const QString& theme)
 {
-	apply_icon("media-playback-start", theme, ui->lab_play);
-	apply_icon("media-skip-backward", theme, ui->lab_bwd);
-	apply_icon("media-skip-forward", theme, ui->lab_fwd);
-	apply_icon("media-playback-stop", theme, ui->lab_stop);
+	applyIcon("media-playback-start", theme, ui->lab_play);
+	applyIcon("media-skip-backward", theme, ui->lab_bwd);
+	applyIcon("media-skip-forward", theme, ui->lab_fwd);
+	applyIcon("media-playback-stop", theme, ui->lab_stop);
 }
 
-void GUI_IconPreferences::radio_button_toggled(bool b)
+void GUI_IconPreferences::radioButtonToggled(bool b)
 {
 	auto rb = static_cast<IconRadioButton*>(sender());
 	if(b && rb)
 	{
-		this->theme_changed(rb->data());
+		this->themeChanged(rb->data());
 	}
 }
 
-void GUI_IconPreferences::init_ui()
+void GUI_IconPreferences::initUi()
 {
 	if(ui){
 		return;
@@ -188,33 +188,33 @@ void GUI_IconPreferences::init_ui()
 	ui = new Ui::GUI_IconPreferences();
 	ui->setupUi(this);
 
-	QString system_theme(Gui::Icons::standard_theme());
+	const QString systemTheme(Gui::Icons::standardTheme());
 
-	QWidget* widget = ui->scroll_area_widget;
+	QWidget* widget = ui->scroll_areaWidget;
 	widget->setObjectName("IconThemeScrollWidget");
 
 	QLayout* layout = widget->layout();
 
-	IconRadioButton* rb_system_theme = add_radio_button
+	IconRadioButton* rbSystemTheme = addRadioButton
 	(
-		tr("System theme") + " (" + system_theme + ")",
-		system_theme,
+		tr("System theme") + " (" + systemTheme + ")",
+		systemTheme,
 		 widget,
 		true
 	);
 
-	rb_system_theme->setStyleSheet("font-weight: bold;");
-	connect(rb_system_theme, &QRadioButton::toggled, this, &GUI_IconPreferences::radio_button_toggled);
-	layout->addWidget(rb_system_theme);
-	m->rb_map[system_theme] = rb_system_theme;
+	rbSystemTheme->setStyleSheet("font-weight: bold;");
+	connect(rbSystemTheme, &QRadioButton::toggled, this, &GUI_IconPreferences::radioButtonToggled);
+	layout->addWidget(rbSystemTheme);
+	m->radioButtonMap[systemTheme] = rbSystemTheme;
 
-	QStringList icon_paths = QIcon::themeSearchPaths();
-	Algorithm::sort(icon_paths, [](const QString& s1, const QString& s2){
+	QStringList iconPaths = QIcon::themeSearchPaths();
+	Algorithm::sort(iconPaths, [](const QString& s1, const QString& s2){
 		return (s1.size() < s2.size() || s1 < s2);
 	});
-	QIcon::setThemeSearchPaths(icon_paths);
+	QIcon::setThemeSearchPaths(iconPaths);
 
-	for(const QString& icon_path : Algorithm::AsConst(icon_paths))
+	for(const QString& icon_path : Algorithm::AsConst(iconPaths))
 	{
 		QDir d(icon_path);
 		QStringList subdirs = d.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
@@ -226,20 +226,20 @@ void GUI_IconPreferences::init_ui()
 		QList<IconRadioButton*> buttons;
 		for(const QString& subdir : subdirs)
 		{
-			if(subdir.isEmpty() || (subdir == system_theme)) {
+			if(subdir.isEmpty() || (subdir == systemTheme)) {
 				continue;
 			}
 
-			IconRadioButton* rb = add_radio_button(subdir, subdir, widget, false);
+			IconRadioButton* rb = addRadioButton(subdir, subdir, widget, false);
 			if(!rb){
 				continue;
 			}
 
-			connect(rb, &QRadioButton::toggled, this, &GUI_IconPreferences::radio_button_toggled);
+			connect(rb, &QRadioButton::toggled, this, &GUI_IconPreferences::radioButtonToggled);
 
-			m->rb_map[subdir] = rb;
+			m->radioButtonMap[subdir] = rb;
 
-			if(m->original_theme.compare(QIcon::themeName()) == 0){
+			if(m->originalTheme.compare(QIcon::themeName()) == 0){
 				rb->setStyleSheet("font-weight: bold;");
 			}
 
@@ -259,7 +259,7 @@ void GUI_IconPreferences::showEvent(QShowEvent* e)
 {
 	if(!ui)
 	{
-		init_ui();
+		initUi();
 	}
 
 	Gui::Widget::showEvent(e);

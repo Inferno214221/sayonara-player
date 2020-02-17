@@ -1,6 +1,6 @@
 /* PlaylistDBInterface.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -41,28 +41,28 @@ namespace Playlist
 			explicit DBInterface(const QString& name);
 			virtual ~DBInterface();
 
-			int get_id() const;
-			void set_id(int db_id);
+			int id() const;
+			void setId(int databaseId);
 
-			QString get_name() const;
-			void set_name(const QString& name);
+			QString name() const;
+			void setName(const QString& name);
 
-			bool is_temporary() const;
-			void set_temporary(bool b);
+			bool isTemporary() const;
+			void setTemporary(bool b);
 
-			bool insert_temporary_into_db();
+			bool insertTemporaryIntoDatabase();
 			Util::SaveAsAnswer save();
-			Util::SaveAsAnswer save_as(const QString& str, bool force_override);
+			Util::SaveAsAnswer saveAs(const QString& str, bool force_override);
 			Util::SaveAsAnswer rename(const QString& str);
-			bool delete_playlist();
-			bool remove_from_db();
+			bool deletePlaylist();
+			bool removeFromDatabase();
 
 			virtual const MetaDataList& tracks() const = 0;
-			virtual void set_changed(bool b) = 0;
-			virtual bool was_changed() const = 0;
-			virtual bool is_storable() const =0;
+			virtual void setChanged(bool b) = 0;
+			virtual bool wasChanged() const = 0;
+			virtual bool isStoreable() const =0;
 
-			static QString request_new_db_name(QString prefix);
+			static QString requestNewDatabaseName(QString prefix);
 	};
 }
 

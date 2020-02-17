@@ -1,6 +1,6 @@
 /* DatabaseModule.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -32,27 +32,27 @@ using DB::Module;
 struct Module::Private
 {
 	QString connection_name;
-	DbId	db_id;
+	DbId	databaseId;
 
-	Private(const QString& connection_name, DbId db_id) :
+	Private(const QString& connection_name, DbId databaseId) :
 		connection_name(connection_name),
-		db_id(db_id)
+		databaseId(databaseId)
 	{}
 };
 
-Module::Module(const QString& connection_name, DbId db_id)
+Module::Module(const QString& connection_name, DbId databaseId)
 {
-	m = Pimpl::make<Private>(connection_name, db_id);
+	m = Pimpl::make<Private>(connection_name, databaseId);
 }
 
 Module::~Module() = default;
 
-DbId Module::db_id() const
+DbId Module::databaseId() const
 {
-	return m->db_id;
+	return m->databaseId;
 }
 
-QString Module::connection_name() const
+QString Module::connectionName() const
 {
 	return m->connection_name;
 }
@@ -66,7 +66,7 @@ QSqlDatabase Module::db() const
 	QThread* t = QThread::currentThread();
 
 	quint64 id = quint64(t);
-	if(t == QApplication::instance()->thread()) {
+	if(QApplication::instance() && (t == QApplication::instance()->thread())) {
 		id = 0;
 	}
 
@@ -80,7 +80,7 @@ QSqlDatabase Module::db() const
 		return QSqlDatabase::database(thread_connection_name);
 	}
 
-	sp_log(Log::Info, this) << "Create new connection to " << connection_name()
+	spLog(Log::Info, this) << "Create new connection to " << connectionName()
 							<< " (" << thread_connection_name << ")";
 
 	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", thread_connection_name);
@@ -90,25 +90,25 @@ QSqlDatabase Module::db() const
 	{
 		QSqlError er = db.lastError();
 
-		sp_log(Log::Error, this) << "Database cannot be opened! " << m->connection_name;
-		sp_log(Log::Error, this) << er.driverText();
-		sp_log(Log::Error, this) << er.databaseText();
+		spLog(Log::Error, this) << "Database cannot be opened! " << m->connection_name;
+		spLog(Log::Error, this) << er.driverText();
+		spLog(Log::Error, this) << er.databaseText();
 	}
 
 	return db;
 }
 
-DB::Query Module::run_query(const QString& query, const QString& error_text) const
+DB::Query Module::runQuery(const QString& query, const QString& error_text) const
 {
-	return run_query(query, QMap<QString, QVariant>(), error_text);
+	return runQuery(query, QMap<QString, QVariant>(), error_text);
 }
 
-DB::Query Module::run_query(const QString& query, const QPair<QString, QVariant>& bindings, const QString& error_text) const
+DB::Query Module::runQuery(const QString& query, const QPair<QString, QVariant>& bindings, const QString& error_text) const
 {
-	return run_query(query, {{bindings.first, bindings.second}}, error_text);
+	return runQuery(query, {{bindings.first, bindings.second}}, error_text);
 }
 
-DB::Query Module::run_query(const QString& query, const QMap<QString, QVariant>& bindings, const QString& error_text) const
+DB::Query Module::runQuery(const QString& query, const QMap<QString, QVariant>& bindings, const QString& error_text) const
 {
 	DB::Query q(this);
 	q.prepare(query);
@@ -121,8 +121,8 @@ DB::Query Module::run_query(const QString& query, const QMap<QString, QVariant>&
 
 	if(!q.exec())
 	{
-		sp_log(Log::Error, this) << "Query error to connection " << db().connectionName();
-		q.show_error(error_text);
+		spLog(Log::Error, this) << "Query error to connection " << db().connectionName();
+		q.showError(error_text);
 	}
 
 	return q;
@@ -148,8 +148,8 @@ DB::Query Module::insert(const QString& tablename, const QMap<QString, QVariant>
 
 	if(!q.exec())
 	{
-		sp_log(Log::Error, this) << "Query error to connection " << db().connectionName();
-		q.show_error(error_message);
+		spLog(Log::Error, this) << "Query error to connection " << db().connectionName();
+		q.showError(error_message);
 	}
 
 	return q;
@@ -184,9 +184,9 @@ DB::Query Module::update(const QString& tablename, const QMap<QString, QVariant>
 
 	if(!q.exec() || q.numRowsAffected() == 0)
 	{
-		sp_log(Log::Error, this) << "Query error to connection " << db().connectionName();
-		q.set_error(true);
-		q.show_error(error_message);
+		spLog(Log::Error, this) << "Query error to connection " << db().connectionName();
+		q.setError(true);
+		q.showError(error_message);
 	}
 
 	return q;

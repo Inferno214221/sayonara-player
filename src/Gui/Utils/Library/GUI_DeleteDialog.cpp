@@ -1,6 +1,6 @@
 /* LibraryDeleteDialog.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -26,30 +26,30 @@
 
 struct GUI_DeleteDialog::Private
 {
-	int	n_tracks;
+	int	trackCount;
 	Library::TrackDeletionMode answer;
 
-	Private(int n_tracks) :
-		n_tracks(n_tracks),
+	Private(int trackCount) :
+		trackCount(trackCount),
 		answer(Library::TrackDeletionMode::None)
 	{}
 };
 
 
-GUI_DeleteDialog::GUI_DeleteDialog(int n_tracks, QWidget* parent) :
+GUI_DeleteDialog::GUI_DeleteDialog(int trackCount, QWidget* parent) :
 	Gui::Dialog(parent)
 {
-	m = Pimpl::make<Private>(n_tracks);
+	m = Pimpl::make<Private>(trackCount);
 
 	ui = new Ui::GUI_DeleteDialog();
 	ui->setupUi(this);
 
-	connect(ui->btn_yes, &QPushButton::clicked, this, &GUI_DeleteDialog::yes_clicked);
-	connect(ui->btn_no, &QPushButton::clicked, this, &GUI_DeleteDialog::no_clicked);
-	connect(ui->btn_only_from_library, &QPushButton::clicked, this, &GUI_DeleteDialog::only_from_library_clicked);
+	connect(ui->btnYes, &QPushButton::clicked, this, &GUI_DeleteDialog::yesClicked);
+	connect(ui->btnNo, &QPushButton::clicked, this, &GUI_DeleteDialog::noClicked);
+	connect(ui->btnOnlyFromLibrary, &QPushButton::clicked, this, &GUI_DeleteDialog::onlyFromLibraryclicked);
 }
 
-GUI_DeleteDialog::~GUI_DeleteDialog() {}
+GUI_DeleteDialog::~GUI_DeleteDialog() = default;
 
 
 Library::TrackDeletionMode GUI_DeleteDialog::answer() const
@@ -57,19 +57,19 @@ Library::TrackDeletionMode GUI_DeleteDialog::answer() const
 	return m->answer;
 }
 
-void GUI_DeleteDialog::yes_clicked()
+void GUI_DeleteDialog::yesClicked()
 {
 	m->answer = Library::TrackDeletionMode::AlsoFiles;
 	close();
 }
 
-void GUI_DeleteDialog::only_from_library_clicked()
+void GUI_DeleteDialog::onlyFromLibraryclicked()
 {
 	m->answer = Library::TrackDeletionMode::OnlyLibrary;
 	close();
 }
 
-void GUI_DeleteDialog::no_clicked()
+void GUI_DeleteDialog::noClicked()
 {
 	m->answer = Library::TrackDeletionMode::None;
 	close();
@@ -81,19 +81,19 @@ void GUI_DeleteDialog::showEvent(QShowEvent* e)
 
 	this->setFocus();
 
-	ui->lab_icon->setPixmap(Gui::Icons::pixmap(Gui::Icons::Info));
-	ui->btn_yes->setText(Lang::get(Lang::OK));
-	ui->btn_no->setText(Lang::get(Lang::Cancel));
-	ui->btn_only_from_library->setText(tr("Only from library"));
-	ui->lab_warning->setText(Lang::get(Lang::Warning) + "!");
-	ui->lab_info->setText(
-			tr("You are about to delete %n file(s)", "", m->n_tracks) +
+	ui->labIcon->setPixmap(Gui::Icons::pixmap(Gui::Icons::Info));
+	ui->btnYes->setText(Lang::get(Lang::OK));
+	ui->btnNo->setText(Lang::get(Lang::Cancel));
+	ui->btnOnlyFromLibrary->setText(tr("Only from library"));
+	ui->labWarning->setText(Lang::get(Lang::Warning) + "!");
+	ui->labInfo->setText(
+			tr("You are about to delete %n file(s)", "", m->trackCount) +
 				"\n" +
 				Lang::get(Lang::Continue).question());
 }
 
-void GUI_DeleteDialog::set_num_tracks(int n_tracks)
+void GUI_DeleteDialog::setTrackCount(int trackCount)
 {
-	m->n_tracks = n_tracks;
+	m->trackCount = trackCount;
 }
 

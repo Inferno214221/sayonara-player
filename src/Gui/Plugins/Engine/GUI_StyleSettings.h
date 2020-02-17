@@ -1,6 +1,6 @@
 /* GUI_StyleSettings.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -36,8 +36,8 @@ class GUI_StyleSettings :
 	UI_CLASS(GUI_Style)
 
 public:
-	explicit GUI_StyleSettings(QWidget *parent=nullptr);
-	virtual ~GUI_StyleSettings();
+	explicit GUI_StyleSettings(QWidget* parent=nullptr);
+	~GUI_StyleSettings() override;
 
 signals:
 	void sig_style_update();
@@ -71,8 +71,8 @@ private:
 
 protected:
 	void closeEvent(QCloseEvent* event) override;
-	void language_changed() override;
-	void skin_changed() override;
+	void languageChanged() override;
+	void skinChanged() override;
 
 	void connect_combo_idx_changed();
 	void disconnect_combo_idx_changed();

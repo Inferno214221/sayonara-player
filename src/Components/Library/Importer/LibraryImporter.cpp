@@ -1,6 +1,6 @@
 /* LibraryImporter.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -44,13 +44,13 @@ using Library::ImportCachePtr;
 
 struct Importer::Private
 {
-	QString						src_dir;
-	QStringList					temporary_files;
+	QString						sourceDirectory;
+	QStringList					temporaryFiles;
 
 	LocalLibrary*				library=nullptr;
-	CachingThread*				cache_thread=nullptr;
-	CopyThread*					copy_thread=nullptr;
-	ImportCachePtr				import_cache=nullptr;
+	CachingThread*				cachingThread=nullptr;
+	CopyThread*					copyThread=nullptr;
+	ImportCachePtr				importCache=nullptr;
 
 	Importer::ImportStatus		status;
 
@@ -59,9 +59,9 @@ struct Importer::Private
 		status(Importer::ImportStatus::NoTracks)
 	{}
 
-	void delete_temporary_files()
+	void deleteTemporaryFiles()
 	{
-		Util::File::delete_files(temporary_files);
+		Util::File::deleteFiles(temporaryFiles);
 	}
 };
 
@@ -71,206 +71,227 @@ Importer::Importer(LocalLibrary* library) :
 	m = Pimpl::make<Private>(library);
 
 	Tagging::ChangeNotifier* md_change_notifier = Tagging::ChangeNotifier::instance();
-	connect(md_change_notifier, &Tagging::ChangeNotifier::sig_metadata_changed,
-			this, &Importer::metadata_changed);
+	connect(md_change_notifier, &Tagging::ChangeNotifier::sigMetadataChanged,
+			this, &Importer::metadataChanged);
 }
 
 Importer::~Importer() = default;
 
-bool Importer::is_running() const
+bool Importer::isRunning() const
 {
-	return (m->copy_thread && m->copy_thread->isRunning()) ||
-		(m->cache_thread && m->cache_thread->isRunning());
+	return (m->copyThread && m->copyThread->isRunning()) ||
+		(m->cachingThread && m->cachingThread->isRunning());
 }
 
-void Importer::import_files(const QStringList& files, const QString& target_dir)
+void Importer::importFiles(const QStringList& files, const QString& targetDir)
 {
-	if(files.isEmpty()){
+	QStringList filesToBeImported;
+
+	for(const QString& file : files)
+	{
+		if(Util::File::isSubdir(file, m->library->path()) ||
+			Util::File::isSamePath(file, m->library->path()))
+		{
+			continue;
+		}
+
+		filesToBeImported << files;
+	}
+
+	if(filesToBeImported.isEmpty())
+	{
+		emitStatus(ImportStatus::NoValidTracks);
 		return;
 	}
 
-	emit_status(ImportStatus::Caching);
+	emitStatus(ImportStatus::Caching);
 
-	if(!target_dir.isEmpty())
+	if(!targetDir.isEmpty())
 	{
-		emit sig_target_dir_changed(target_dir);
+		emit sigTargetDirectoryChanged(targetDir);
 	}
 
-	auto* thread = new CachingThread(files, m->library->path());
-	connect(thread, &CachingThread::finished, this, &Importer::caching_thread_finished);
-	connect(thread, &CachingThread::sig_progress, this, &Importer::sig_progress_no_percent);
+	auto* thread = new CachingThread(filesToBeImported, m->library->path());
+	connect(thread, &CachingThread::finished, this, &Importer::cachingThreadFinished);
+	connect(thread, &CachingThread::sigCachedFilesChanged, this, &Importer::sigCachedFilesChanged);
 	connect(thread, &CachingThread::destroyed, this, [=]() {
-		m->cache_thread = nullptr;
+		m->cachingThread = nullptr;
 	});
 
-	m->cache_thread = thread;
+	m->cachingThread = thread;
 	thread->start();
 }
 
 
 // preload thread has cached everything, but ok button has not been clicked yet
-void Importer::caching_thread_finished()
+void Importer::cachingThreadFinished()
 {
-	MetaDataList v_md;
+	MetaDataList tracks;
 	auto* thread = static_cast<CachingThread*>(sender());
 
-	m->temporary_files << thread->temporary_files();
-	m->import_cache = thread->cache();
+	m->temporaryFiles << thread->temporaryFiles();
+	m->importCache = thread->cache();
 
-	if(!m->import_cache)
+	if(!m->importCache)
 	{
-		emit_status(ImportStatus::NoTracks);
+		emitStatus(ImportStatus::NoTracks);
 	}
 
 	else
 	{
-		v_md = m->import_cache->soundfiles();
+		tracks = m->importCache->soundfiles();
 	}
 
-	if(v_md.isEmpty() || thread->is_cancelled())
+	if(tracks.isEmpty() || thread->isCancelled())
 	{
-		emit_status(ImportStatus::NoTracks);
+		emitStatus(ImportStatus::NoTracks);
 	}
 
 	else
 	{
-		emit_status(ImportStatus::WaitForUser);
+		emitStatus(ImportStatus::CachingFinished);
 	}
 
-	emit sig_progress_no_percent(-1);
-	emit sig_got_metadata(v_md);
+	emit sigMetadataCached(tracks);
 
 	thread->deleteLater();
 }
 
+int Importer::cachedFileCount() const
+{
+	if(!m->importCache){
+		return 0;
+	}
+
+	return m->importCache->soundfiles().count();
+}
 
 // fired if ok was clicked in dialog
-void  Importer::accept_import(const QString& target_dir)
+void  Importer::acceptImport(const QString& targetDir)
 {
-	emit_status(ImportStatus::Importing);
+	emitStatus(ImportStatus::Importing);
 
-	auto* copy_thread = new CopyThread(target_dir, m->import_cache, this);
-	connect(copy_thread, &CopyThread::sig_progress, this, &Importer::sig_progress);
-	connect(copy_thread, &CopyThread::finished, this, &Importer::copy_thread_finished);
+	auto* copy_thread = new CopyThread(targetDir, m->importCache, this);
+	connect(copy_thread, &CopyThread::sigProgress, this, &Importer::sigProgress);
+	connect(copy_thread, &CopyThread::finished, this, &Importer::copyThreadFinished);
 	connect(copy_thread, &CachingThread::destroyed, this, [=]()
 	{
-		m->copy_thread = nullptr;
+		m->copyThread = nullptr;
 	});
 
-	m->copy_thread = copy_thread;
+	m->copyThread = copy_thread;
 	copy_thread->start();
 }
 
 
-void Importer::copy_thread_finished()
+void Importer::copyThreadFinished()
 {
-	auto* copy_thread = static_cast<CopyThread*>(sender());
+	auto* copyThread = static_cast<CopyThread*>(sender());
 
 	reset();
 
 	auto* db = DB::Connector::instance();
-	DB::LibraryDatabase* lib_db = db->library_db(m->library->id(), db->db_id());
+	DB::LibraryDatabase* libraryDatabase = db->libraryDatabase(m->library->id(), db->databaseId());
 
-	MetaDataList v_md = copy_thread->get_copied_metadata();
-
-	emit_status(ImportStatus::WaitForUser);
-
+	MetaDataList tracks = copyThread->copiedMetadata();
 	{ // no tracks were copied or rollback was finished
-		if(v_md.isEmpty())
+		if(tracks.isEmpty())
 		{
-			emit_status(ImportStatus::NoTracks);
-			copy_thread->deleteLater();
+			emitStatus(ImportStatus::NoTracks);
+			copyThread->deleteLater();
 
 			return;
 		}
 	}
 
 	{ // copy was cancelled
-		sp_log(Log::Debug, this) << "Copy folder thread finished " << m->copy_thread->was_cancelled();
-		if(copy_thread->was_cancelled())
+		spLog(Log::Debug, this) << "Copy folder thread finished " << m->copyThread->wasCancelled();
+		if(copyThread->wasCancelled())
 		{
-			emit_status(ImportStatus::Rollback);
+			emitStatus(ImportStatus::Rollback);
 
-			copy_thread->set_mode(CopyThread::Mode::Rollback);
-			copy_thread->start();
+			copyThread->setMode(CopyThread::Mode::Rollback);
+			copyThread->start();
 
 			return;
 		}
 	}
 
-	copy_thread->deleteLater();
+	copyThread->deleteLater();
 
-	bool success = lib_db->store_metadata(v_md);
+	bool success = libraryDatabase->storeMetadata(tracks);
+	// error and success messages
+	if(!success)
+	{
+		emitStatus(ImportStatus::Cancelled);
 
-	{ // post a message
-		// error and success messages
-		if(!success)
-		{
-			QString warning = tr("Cannot import tracks");
-			Message::warning(warning);
-		}
-
-		else
-		{
-			QString message;
-
-			int n_files_copied = copy_thread->get_n_copied_files();
-			int n_files_to_copy = m->import_cache->count();
-			if(n_files_to_copy == n_files_copied)
-			{
-				message =  tr("All files could be imported");
-			}
-
-			else
-			{
-				message = tr("%1 of %2 files could be imported")
-						.arg(n_files_copied)
-						.arg(n_files_to_copy);
-			}
-
-			Message::info(message);
-		}
+		QString warning = tr("Cannot import tracks");
+		Message::warning(warning);
+		return;
 	}
 
-	emit_status(ImportStatus::Imported);
-	Tagging::ChangeNotifier::instance()->change_metadata(MetaDataList(), MetaDataList());
+
+	int copiedFilecount = copyThread->copiedFileCount();
+	int cacheFilecount = m->importCache->count();
+
+	QString message;
+	if(cacheFilecount == copiedFilecount)
+	{
+		message =  tr("All files could be imported");
+	}
+
+	else
+	{
+		message = tr("%1 of %2 files could be imported")
+				.arg(copiedFilecount)
+				.arg(cacheFilecount);
+	}
+
+	emitStatus(ImportStatus::Imported);
+	Message::info(message);
+
+	Tagging::ChangeNotifier::instance()->changeMetadata(MetaDataList(), MetaDataList());
 }
 
 
-void Importer::metadata_changed()
+void Importer::metadataChanged()
 {
-	auto* change_notifier = Tagging::ChangeNotifier::instance();
-	if(m->import_cache)
+	auto* cn = Tagging::ChangeNotifier::instance();
+	if(m->importCache)
 	{
-		m->import_cache->change_metadata(change_notifier->changed_metadata().second);
+		m->importCache->changeMetadata(cn->changedMetadata().second);
 	}
 }
 
 
 // fired if cancel button was clicked in dialog
-void Importer::cancel_import()
+bool Importer::cancelImport()
 {
-	emit_status(ImportStatus::Cancelled);
-
-	if(m->cache_thread && m->cache_thread->isRunning()){
-		m->cache_thread->cancel();
+	if(m->cachingThread && m->cachingThread->isRunning())
+	{
+		m->cachingThread->cancel();
+		emitStatus(ImportStatus::Rollback);
 	}
 
-	else if(m->copy_thread && m->copy_thread->isRunning()){
-		m->copy_thread->cancel();
+	else if(m->copyThread && m->copyThread->isRunning())
+	{
+		m->copyThread->cancel();
+		emitStatus(ImportStatus::Rollback);
 	}
+
+	return true;
 }
 
 void Importer::reset()
 {
-	cancel_import();
-	m->delete_temporary_files();
+	cancelImport();
+	m->deleteTemporaryFiles();
 }
 
-void Importer::emit_status(Importer::ImportStatus status)
+void Importer::emitStatus(Importer::ImportStatus status)
 {
 	m->status = status;
-	emit sig_status_changed(m->status);
+	emit sigStatusChanged(m->status);
 }
 
 Importer::ImportStatus Importer::status() const

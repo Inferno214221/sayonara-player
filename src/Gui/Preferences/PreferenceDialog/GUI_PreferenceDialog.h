@@ -1,6 +1,6 @@
 /* GUI_PreferenceDialog.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -46,30 +46,30 @@ class GUI_PreferenceDialog :
 	PIMPL(GUI_PreferenceDialog)
 
 	signals:
-		void sig_error(const QString& error_message);
+		void sigError(const QString& error_message);
 
 	public:
 		explicit GUI_PreferenceDialog(QWidget* parent=nullptr);
 		~GUI_PreferenceDialog();
 
-		QString action_name() const;
+		QString actionName() const;
 		QAction* action();
 
 		QList<QAction*> actions(QWidget* parent);
 
-		void register_preference_dialog(Preferences::Base* dialog);
-		void show_preference(const QString& identifier) override;
+		void registerPreferenceDialog(Preferences::Base* dialog);
+		void showPreference(const QString& identifier) override;
 
 	protected slots:
-		void commit_and_close();
-		void row_changed(int row);
+		void commitAndClose();
+		void rowChanged(int row);
 
 	protected:
-		void init_ui();
-		void language_changed() override;
+		void initUi();
+		void languageChanged() override;
 		void showEvent(QShowEvent *e) override;
 
-		void hide_all();
+		void hideAll();
 
 	private:
 		bool commit();

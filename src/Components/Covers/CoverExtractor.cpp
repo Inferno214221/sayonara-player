@@ -1,6 +1,6 @@
 /* CoverExtractor.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -70,10 +70,10 @@ void Cover::Extractor::start()
 
 	{ // check for audio file target
 		LOCK_GUARD(mutex_io)
-		QString audio_file_target = m->cl.audio_file_target();
+		QString audio_file_target = m->cl.audioFileTarget();
 		if(FileUtils::exists(audio_file_target))
 		{
-			m->pixmap = QPixmap(m->cl.audio_file_target());
+			m->pixmap = QPixmap(m->cl.audioFileTarget());
 			m->source = Cover::Source::AudioFile;
 		}
 	}
@@ -82,7 +82,7 @@ void Cover::Extractor::start()
 	if(m->pixmap.isNull())
 	{
 		LOCK_GUARD(mutex_io)
-		QString cover_path = m->cl.cover_path();
+		QString cover_path = m->cl.coverPath();
 		if(FileUtils::exists(cover_path))
 		{
 			m->pixmap = QPixmap(cover_path);
@@ -94,10 +94,10 @@ void Cover::Extractor::start()
 	if(m->pixmap.isNull())
 	{
 		LOCK_GUARD(mutex_io)
-		QString audio_file_source = m->cl.audio_file_source();
+		QString audio_file_source = m->cl.audioFileSource();
 		if(FileUtils::exists(audio_file_source))
 		{
-			m->pixmap = Tagging::Covers::extract_cover(audio_file_source);
+			m->pixmap = Tagging::Covers::extractCover(audio_file_source);
 			m->source = Cover::Source::AudioFile;
 		}
 	}
@@ -106,7 +106,7 @@ void Cover::Extractor::start()
 	if(m->pixmap.isNull())
 	{
 		LOCK_GUARD(mutex_io)
-		QString local_path = m->cl.local_path();
+		QString local_path = m->cl.localPath();
 		if(FileUtils::exists(local_path))
 		{
 			m->pixmap = QPixmap(local_path);
@@ -114,5 +114,5 @@ void Cover::Extractor::start()
 		}
 	}
 
-	emit sig_finished();
+	emit sigFinished();
 }

@@ -1,6 +1,6 @@
 /* PLSParser.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -32,7 +32,7 @@ class PLSParser final: public AbstractPlaylistParser
 {
 public:
 	explicit PLSParser(const QString& filename);
-	~PLSParser();
+	~PLSParser() override;
 
 private:
 	void parse() override;

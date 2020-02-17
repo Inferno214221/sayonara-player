@@ -1,6 +1,6 @@
 /* LibraryItemModelArtists.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -22,7 +22,7 @@
  * LibraryItemModelArtists.cpp
  *
  *  Created on: Apr 26, 2011
- *      Author: Lucio Carreras
+ *      Author: Michael Lugmair (Lucio Carreras)
  */
 
 #include "ArtistModel.h"
@@ -47,7 +47,7 @@ ArtistModel::ArtistModel(QObject* parent, AbstractLibrary* library) :
 
 ArtistModel::~ArtistModel() = default;
 
-Id ArtistModel::id_by_index(int row) const
+Id ArtistModel::mapIndexToId(int row) const
 {
 	const ArtistList& artists = library()->artists();
 
@@ -60,7 +60,7 @@ Id ArtistModel::id_by_index(int row) const
 	}
 }
 
-QString ArtistModel::searchable_string(int row) const
+QString ArtistModel::searchableString(int row) const
 {
 	const ArtistList& artists = library()->artists();
 
@@ -74,7 +74,7 @@ QString ArtistModel::searchable_string(int row) const
 }
 
 
-QVariant ArtistModel::data(const QModelIndex & index, int role) const
+QVariant ArtistModel::data(const QModelIndex&  index, int role) const
 {
 	if (!index.isValid()) {
 		return QVariant();
@@ -153,23 +153,15 @@ Cover::Location ArtistModel::cover(const IndexSet& indexes) const
 	}
 
 	const Artist& artist = artists[idx];
-	return Cover::Location::cover_location(artist);
+	return Cover::Location::coverLocation(artist);
 }
 
-
-int ArtistModel::searchable_column() const
+int ArtistModel::searchableColumn() const
 {
 	return (int) ColumnIndex::Artist::Name;
 }
 
-
-const Util::Set<Id>& ArtistModel::selections() const
-{
-	return library()->selected_artists();
-}
-
-
-const MetaDataList &Library::ArtistModel::mimedata_tracks() const
+const MetaDataList &Library::ArtistModel::selectedMetadata() const
 {
 	return library()->tracks();
 }

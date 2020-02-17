@@ -1,6 +1,6 @@
 /* Style.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -23,7 +23,7 @@
  * Style.h
  *
  *  Created on: Oct 27, 2011
- *      Author: Lucio Carreras
+ *      Author: Michael Lugmair (Lucio Carreras)
  */
 
 #ifndef STYLE_H_
@@ -51,37 +51,37 @@ namespace Style
 	 * @ingroup Style
 	 * @return
 	 */
-	QString current_style();
+	QString currentStyle();
 
 	/**
 	 * @brief current_font
 	 * @ingroup Style
 	 * @return
 	 */
-	QFont current_font();
+	QFont currentFont();
 
 	/**
 	 * @brief recommended_height
 	 * @ingroup Style
 	 * @return
 	 */
-	int recommended_height();
+	int recommendedHeight();
 
 	/**
 	 * @brief is_dark
 	 * @ingroup Style
 	 * @return
 	 */
-	bool is_dark();
+	bool isDark();
 
 	/**
 	 * @brief set_dark
 	 * @ingroup Style
 	 * @param b
 	 */
-	void set_dark(bool b);
+	void setDark(bool b);
 
-	void apply_current_style(QApplication* app);
+	void applyCurrentStyle(QApplication* app);
 }
 
 #endif /* STYLE_H_ */

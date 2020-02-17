@@ -1,6 +1,6 @@
 /* TagTextInput.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -28,34 +28,34 @@
 
 struct TagTextInput::Private
 {
-	QMenu*			context_menu=nullptr;
-	QAction*		action_cvt_to_first_upper=nullptr;
-	QAction*		action_cvt_to_very_first_upper=nullptr;
+	QMenu*			contextMenu=nullptr;
+	QAction*		actionConvertToFirstUpper=nullptr;
+	QAction*		actionConvertToVeryFirstUpper=nullptr;
 };
 
 TagTextInput::TagTextInput(QWidget* parent) :
     WidgetTemplate<QLineEdit>(parent)
 {
 	m = Pimpl::make<Private>();
-	init_context_menu();
+	initContextMenu();
 }
 
 TagTextInput::~TagTextInput() = default;
 
-void TagTextInput::init_context_menu() 
+void TagTextInput::initContextMenu() 
 {
-    m->context_menu = createStandardContextMenu();
+    m->contextMenu = createStandardContextMenu();
 
 //	_context_menu = new QMenu(this);
-	m->action_cvt_to_very_first_upper = new QAction("Convert to very first upper", m->context_menu);
-	m->action_cvt_to_first_upper = new QAction("Convert to first upper", m->context_menu);
+	m->actionConvertToVeryFirstUpper = new QAction("Convert to very first upper", m->contextMenu);
+	m->actionConvertToFirstUpper = new QAction("Convert to first upper", m->contextMenu);
 
-	m->context_menu->addSeparator();
-	m->context_menu->addAction(m->action_cvt_to_very_first_upper);
-	m->context_menu->addAction(m->action_cvt_to_first_upper);
+	m->contextMenu->addSeparator();
+	m->contextMenu->addAction(m->actionConvertToVeryFirstUpper);
+	m->contextMenu->addAction(m->actionConvertToFirstUpper);
 
-	connect(m->action_cvt_to_first_upper, &QAction::triggered, this, &TagTextInput::cvt_to_first_upper);
-	connect(m->action_cvt_to_very_first_upper, &QAction::triggered, this, &TagTextInput::cvt_to_very_first_upper);
+	connect(m->actionConvertToFirstUpper, &QAction::triggered, this, &TagTextInput::convertToFirstUpper);
+	connect(m->actionConvertToVeryFirstUpper, &QAction::triggered, this, &TagTextInput::convertToVeryFirstUpper);
 }
 
 void TagTextInput::contextMenuEvent(QContextMenuEvent* event){
@@ -63,7 +63,7 @@ void TagTextInput::contextMenuEvent(QContextMenuEvent* event){
 
 	pos.setX(QCursor::pos().x());	
 	pos.setY(QCursor::pos().y());	
-	m->context_menu->exec(pos);
+	m->contextMenu->exec(pos);
 }
 
 void TagTextInput::keyPressEvent(QKeyEvent* event)
@@ -72,57 +72,57 @@ void TagTextInput::keyPressEvent(QKeyEvent* event)
 
 	if(event->key() == Qt::Key_Up)
 	{
-		if(this->text() == Util::cvt_str_to_first_upper(this->text()))
+		if(this->text() == Util::stringToFirstUpper(this->text()))
 		{
 			this->setText(text().toUpper());
 		}
 
-		else if(this->text() == Util::cvt_str_to_very_first_upper(this->text()))
+		else if(this->text() == Util::stringToVeryFirstUpper(this->text()))
 		{
-			cvt_to_first_upper();
+			convertToFirstUpper();
 		}
 
 		else
 		{
-			cvt_to_very_first_upper();
+			convertToVeryFirstUpper();
 		}
 	}
 
 	else if(event->key() == Qt::Key_Down)
 	{
-		if(this->text() == Util::cvt_str_to_very_first_upper(this->text()))
+		if(this->text() == Util::stringToVeryFirstUpper(this->text()))
 		{
 			this->setText(this->text().toLower());
 		}
 
-		else if(this->text() == Util::cvt_str_to_first_upper(this->text()))
+		else if(this->text() == Util::stringToFirstUpper(this->text()))
 		{
-			cvt_to_very_first_upper();
+			convertToVeryFirstUpper();
 		}
 
 		else
 		{
-			cvt_to_first_upper();
+			convertToFirstUpper();
 		}
 	}
 }
 
-void TagTextInput::cvt_to_first_upper()
+void TagTextInput::convertToFirstUpper()
 {
 	QString text = this->text();
-	text = Util::cvt_str_to_first_upper(text);
+	text = Util::stringToFirstUpper(text);
 	this->setText(text);
 }
 
-void TagTextInput::cvt_to_very_first_upper()
+void TagTextInput::convertToVeryFirstUpper()
 {
 	QString text = this->text();
-	text = Util::cvt_str_to_very_first_upper(text);
+	text = Util::stringToVeryFirstUpper(text);
 	this->setText(text);
 }
 
-void TagTextInput::language_changed()
+void TagTextInput::languageChanged()
 {
-	m->action_cvt_to_very_first_upper->setText(tr("Very first letter to upper case"));
-	m->action_cvt_to_first_upper->setText(tr("First letters to upper case"));
+	m->actionConvertToVeryFirstUpper->setText(tr("Very first letter to upper case"));
+	m->actionConvertToFirstUpper->setText(tr("First letters to upper case"));
 }

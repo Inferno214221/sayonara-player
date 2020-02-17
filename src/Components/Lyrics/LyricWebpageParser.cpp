@@ -1,6 +1,6 @@
 /* LyricWebpageParser.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -29,14 +29,14 @@
 
 using namespace Lyrics;
 
-static QString convert_tag_to_regex(const QString& tag, const QMap<QString, QString>& regex_conversions)
+static QString convertTagToRegex(const QString& tag, const QMap<QString, QString>& regexConversions)
 {
 	QString ret(tag);
 
-	const QList<QString> keys = regex_conversions.keys();
+	const QList<QString> keys = regexConversions.keys();
 	for(const QString& key : keys)
 	{
-		ret.replace(key, regex_conversions.value(key));
+		ret.replace(key, regexConversions.value(key));
 	}
 
 	ret.replace(" ", "\\s+");
@@ -45,24 +45,24 @@ static QString convert_tag_to_regex(const QString& tag, const QMap<QString, QStr
 }
 
 
-QString WebpageParser::parse_webpage(const QByteArray& raw, const QMap<QString, QString>& regex_conversions, Server* server)
+QString WebpageParser::parseWebpage(const QByteArray& raw, const QMap<QString, QString>& regexConversions, Server* server)
 {
 	QString dst(raw);
 
-	Server::StartEndTags tags = server->start_end_tag();
+	Server::StartEndTags tags = server->startEndTag();
 	for(const Server::StartEndTag& tag : tags)
 	{
-		QString start_tag = convert_tag_to_regex(tag.first, regex_conversions);
-		if(start_tag.startsWith("<") && !start_tag.endsWith(">")){
-			start_tag.append(".*>");
+		QString startTag = convertTagToRegex(tag.first, regexConversions);
+		if(startTag.startsWith("<") && !startTag.endsWith(">")){
+			startTag.append(".*>");
 		}
 
-		QString end_tag = convert_tag_to_regex(tag.second, regex_conversions);
+		QString endTag = convertTagToRegex(tag.second, regexConversions);
 
 		QString content;
 		QRegExp regex;
 		regex.setMinimal(true);
-		regex.setPattern(start_tag + "(.+)" + end_tag);
+		regex.setPattern(startTag + "(.+)" + endTag);
 		if(regex.indexIn(dst) != -1){
 			content  = regex.cap(1);
 		}
@@ -71,15 +71,15 @@ QString WebpageParser::parse_webpage(const QByteArray& raw, const QMap<QString, 
 			continue;
 		}
 
-		QRegExp re_script;
-		re_script.setPattern("<script.+</script>");
-		re_script.setMinimal(true);
-		while(re_script.indexIn(content) != -1){
-			content.replace(re_script, "");
+		QRegExp reScript;
+		reScript.setPattern("<script.+</script>");
+		reScript.setMinimal(true);
+		while(reScript.indexIn(content) != -1){
+			content.replace(reScript, "");
 		}
 
 		QString word;
-		if(server->is_numeric())
+		if(server->isNumeric())
 		{
 			QRegExp rx("&#(\\d+);|<br />|</span>|</p>");
 

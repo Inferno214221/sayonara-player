@@ -1,6 +1,6 @@
 /* CustomPlaylist.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -30,7 +30,7 @@ CustomPlaylist::CustomPlaylist(const CustomPlaylistSkeleton& skeleton) :
 
 CustomPlaylist::~CustomPlaylist() {}
 
-void CustomPlaylist::set_num_tracks(int num_tracks)
+void CustomPlaylist::setTrackCount(int num_tracks)
 {
 	Q_UNUSED(num_tracks)
 }
@@ -40,7 +40,7 @@ bool CustomPlaylist::valid() const
 	return (this->size() > 0);
 }
 
-int CustomPlaylist::num_tracks() const
+int CustomPlaylist::trackCount() const
 {
 	return this->size();
 }

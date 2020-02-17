@@ -41,13 +41,13 @@ static MetaDataList create_tracks()
 	{
 		MetaData md;
 
-		md.set_filepath( QString("/path/to/file%1.mp3").arg(i) );
-		md.set_artist( QString("Artist%1").arg(i / 20) );
-		md.set_album( QString("Album%1").arg(i / 10) );
-		md.set_title( QString("Title%1").arg(i) );
-		md.set_track_number(i % 10);
-		md.set_year( 2000 + i / 20 );
-		md.set_bitrate(Util::random_number(0, 320000));
+		md.setFilepath( QString("/path/to/file%1.mp3").arg(i) );
+		md.setArtist( QString("Artist%1").arg(i / 20) );
+		md.setAlbum( QString("Album%1").arg(i / 10) );
+		md.setTitle( QString("Title%1").arg(i) );
+		md.setTrackNumber(i % 10);
+		md.setYear( 2000 + i / 20 );
+		md.setBitrate(Util::randomNumber(0, 320000));
 
 		tracks << md;
 	}
@@ -62,7 +62,7 @@ void LibraryDatabaseTest::test_store()
 	QVERIFY(tracks.count() == 100);
 
 	auto* lib_db = init_db();
-	bool success = lib_db->store_metadata(tracks);
+	bool success = lib_db->storeMetadata(tracks);
 
 	QVERIFY(success == true);
 
@@ -90,18 +90,18 @@ void LibraryDatabaseTest::test_store()
 	QVERIFY(artists.count() == 5);
 
 	MetaData md1 = tracks.first();
-	md1.set_artist("Some new Artist");
+	md1.setArtist("Some new Artist");
 
 	MetaData md2 = tracks.first();
-	md2.set_artist("");
-	md2.set_album("");
-	md2.set_filepath("/a/completely/different/path.mp3");
+	md2.setArtist("");
+	md2.setAlbum("");
+	md2.setFilepath("/a/completely/different/path.mp3");
 
 	tracks_tmp.clear();
 	tracks_tmp << md1 << md2;
 
 	QVERIFY(tracks_tmp.count() == 2);
-	success = lib_db->store_metadata(tracks_tmp);
+	success = lib_db->storeMetadata(tracks_tmp);
 	QVERIFY(success == true);
 
 	trackcount = lib_db->getNumTracks();
@@ -120,7 +120,7 @@ void LibraryDatabaseTest::test_store()
 	QVERIFY(success);
 	QVERIFY(tracks_tmp.count() == trackcount);
 
-	lib_db->store_metadata(tracks);
+	lib_db->storeMetadata(tracks);
 	trackcount = lib_db->getNumTracks();
 	QVERIFY(trackcount == tracks.count() + 1);
 
@@ -149,8 +149,8 @@ DB::LibraryDatabase* LibraryDatabaseTest::init_db()
 	}
 
 	auto* db = DB::Connector::instance();
-	db->register_library_db(0);
-	m_lib_db = db->library_db(0, 0);
+	db->registerLibraryDatabase(0);
+	m_lib_db = db->libraryDatabase(0, 0);
 
 	return m_lib_db;
 }

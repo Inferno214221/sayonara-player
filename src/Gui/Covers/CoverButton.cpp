@@ -1,6 +1,6 @@
 /* CoverButton.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -72,14 +72,14 @@ QPixmap ByteArrayConverter::pixmap() const
 void ByteArrayConverter::start()
 {
 	m->pixmap.loadFromData(m->data, m->mime.toLocal8Bit().data());
-	emit sig_finished();
+	emit sigFinished();
 }
 
 
 struct CoverButton::Private
 {
 	QString					hash;
-	Location				cover_location;
+	Location				coverLocation;
 	QPixmap					invalid_cover;
 	QPixmap					current_cover, current_cover_scaled;
 	QPixmap					old_cover, old_cover_scaled;
@@ -94,13 +94,13 @@ struct CoverButton::Private
 	bool					alternative_search_enabled;
 
 	Private() :
-		cover_location(Location::invalid_location()),
-		current_cover(Location::invalid_path()),
+		coverLocation(Location::invalidLocation()),
+		current_cover(Location::invalidPath()),
 		opacity(1.0),
 		silent(false),
 		alternative_search_enabled(true)
 	{
-		invalid_cover = QPixmap(Cover::Location::invalid_path());
+		invalid_cover = QPixmap(Cover::Location::invalidPath());
 	}
 };
 
@@ -119,9 +119,9 @@ CoverButton::CoverButton(QWidget* parent) :
 	this->setToolTip(tr("Search an alternative cover"));
 
 	auto* cn = Cover::ChangeNotfier::instance();
-	connect(cn, &Cover::ChangeNotfier::sig_covers_changed, this, &CoverButton::covers_changed);
+	connect(cn, &Cover::ChangeNotfier::sigCoversChanged, this, &CoverButton::coversChanged);
 
-	connect(m->timer, &QTimer::timeout, this, &CoverButton::timer_timed_out);
+	connect(m->timer, &QTimer::timeout, this, &CoverButton::timerTimedOut);
 }
 
 CoverButton::~CoverButton()
@@ -138,7 +138,7 @@ QPixmap CoverButton::pixmap() const
 	return m->current_cover;
 }
 
-int CoverButton::vertical_padding() const
+int CoverButton::verticalPadding() const
 {
 	int p = (this->height() - m->current_cover_scaled.size().height()) - 2;
 	if(p <= 0){
@@ -148,51 +148,51 @@ int CoverButton::vertical_padding() const
 	return p;
 }
 
-void CoverButton::set_alternative_search_enabled(bool b)
+void CoverButton::setAlternativeSearchEnabled(bool b)
 {
 	m->alternative_search_enabled = b;
 }
 
-bool CoverButton::is_alternative_search_enabled() const
+bool CoverButton::isAlternativeSearchEnabled() const
 {
 	return m->alternative_search_enabled;
 }
 
 void CoverButton::trigger()
 {
-	if(m->cover_source == Cover::Source::AudioFile && !is_silent())
+	if(m->cover_source == Cover::Source::AudioFile && !isSilent())
 	{
-		emit sig_rejected();
+		emit sigRejected();
 		return;
 	}
 
 	if(m->alternative_search_enabled)
 	{
-		auto* alt_cover = new GUI_AlternativeCovers(m->cover_location, m->silent, this->parentWidget());
+		auto* alt_cover = new GUI_AlternativeCovers(m->coverLocation, m->silent, this->parentWidget());
 
-		connect(alt_cover, &GUI_AlternativeCovers::sig_cover_changed, this, &CoverButton::alternative_cover_fetched);
-		connect(alt_cover, &GUI_AlternativeCovers::sig_closed, alt_cover, &GUI_AlternativeCovers::deleteLater);
+		connect(alt_cover, &GUI_AlternativeCovers::sigCoverChanged, this, &CoverButton::alternativeCoverFetched);
+		connect(alt_cover, &GUI_AlternativeCovers::sigClosed, alt_cover, &GUI_AlternativeCovers::deleteLater);
 
 		alt_cover->show();
 	}
 
 	else
 	{
-		emit sig_rejected();
+		emit sigRejected();
 	}
 }
 
 
-void CoverButton::set_cover_image(const QString& path)
+void CoverButton::setCoverImage(const QString& path)
 {
-	set_cover_image_pixmap(QPixmap(path));
+	setCoverImagePixmap(QPixmap(path));
 }
 
-void CoverButton::set_cover_image_pixmap(const QPixmap& pm)
+void CoverButton::setCoverImagePixmap(const QPixmap& pm)
 {
 	QPixmap pm_scaled = pm.scaled(50, 50, Qt::KeepAspectRatio, Qt::FastTransformation);
 	{ // check if current cover is the same
-		auto h1 = Util::calc_hash(Util::cvt_pixmap_to_bytearray(pm_scaled));
+		auto h1 = Util::calcHash(Util::convertPixmapToByteArray(pm_scaled));
 		if(h1 == m->current_hash && !pm.isNull()){
 			return;
 		}
@@ -213,11 +213,11 @@ void CoverButton::set_cover_image_pixmap(const QPixmap& pm)
 
 	this->setToolTip(QString("%1x%2").arg(pm.width()).arg(pm.height()));
 
-	m->current_hash = Util::calc_hash (
-		Util::cvt_pixmap_to_bytearray(m->current_cover.scaled(50, 50, Qt::KeepAspectRatio, Qt::FastTransformation))
+	m->current_hash = Util::calcHash (
+		Util::convertPixmapToByteArray(m->current_cover.scaled(50, 50, Qt::KeepAspectRatio, Qt::FastTransformation))
 	);
 
-	emit sig_cover_changed();
+	emit sigCoverChanged();
 
 	// if timer is not active, start new timer loop
 	if(!m->timer->isActive() && GetSetting(Set::Player_FadingCover))
@@ -228,14 +228,14 @@ void CoverButton::set_cover_image_pixmap(const QPixmap& pm)
 }
 
 
-void CoverButton::set_cover_data(const QByteArray& data, const QString& mimetype)
+void CoverButton::setCoverData(const QByteArray& data, const QString& mimetype)
 {
 	auto* thread = new QThread();
 	auto* worker = new ByteArrayConverter(data, mimetype);
 	worker->moveToThread(thread);
 
-	connect(worker, &ByteArrayConverter::sig_finished, this, &CoverButton::byteconverter_finished);
-	connect(worker, &ByteArrayConverter::sig_finished, thread, &QThread::quit);
+	connect(worker, &ByteArrayConverter::sigFinished, this, &CoverButton::byteconverterFinished);
+	connect(worker, &ByteArrayConverter::sigFinished, thread, &QThread::quit);
 	connect(thread, &QThread::started, worker, &ByteArrayConverter::start);
 	connect(thread, &QThread::finished, thread, &QObject::deleteLater);
 
@@ -243,15 +243,15 @@ void CoverButton::set_cover_data(const QByteArray& data, const QString& mimetype
 }
 
 
-void CoverButton::byteconverter_finished()
+void CoverButton::byteconverterFinished()
 {
 	auto* worker = static_cast<ByteArrayConverter*>(sender());
-	this->set_cover_image_pixmap(worker->pixmap());
+	this->setCoverImagePixmap(worker->pixmap());
 
 	worker->deleteLater();
 }
 
-void CoverButton::set_cover_location(const Location& cl)
+void CoverButton::setCoverLocation(const Location& cl)
 {
 	if(m->hash.size() > 0 && cl.hash() == m->hash){
 		return;
@@ -259,14 +259,14 @@ void CoverButton::set_cover_location(const Location& cl)
 
 	m->hash = cl.hash();
 
-	if(!cl.is_valid())
+	if(!cl.isValid())
 	{
-		set_cover_image_pixmap(m->invalid_cover);
+		setCoverImagePixmap(m->invalid_cover);
 	}
 
-	m->cover_location = cl;
+	m->coverLocation = cl;
 
-	if(cl.hash().isEmpty() || !cl.is_valid()) {
+	if(cl.hash().isEmpty() || !cl.isValid()) {
 		return;
 	}
 
@@ -274,12 +274,12 @@ void CoverButton::set_cover_location(const Location& cl)
 	{
 		m->cover_lookup = new Lookup(cl, 1, this);
 
-		connect(m->cover_lookup, &Lookup::sig_cover_found, this, &CoverButton::set_cover_image_pixmap);
-		connect(m->cover_lookup, &Lookup::sig_finished, this, &CoverButton::cover_lookup_finished);
+		connect(m->cover_lookup, &Lookup::sigCoverFound, this, &CoverButton::setCoverImagePixmap);
+		connect(m->cover_lookup, &Lookup::sigFinished, this, &CoverButton::coverLookupFinished);
 	}
 
 	else {
-		m->cover_lookup->set_cover_location(cl);
+		m->cover_lookup->setCoverLocation(cl);
 	}
 
 	m->cover_lookup->start();
@@ -287,12 +287,12 @@ void CoverButton::set_cover_location(const Location& cl)
 
 
 
-void CoverButton::cover_lookup_finished(bool success)
+void CoverButton::coverLookupFinished(bool success)
 {
 	if(!success)
 	{
-		sp_log(Log::Warning, this) << "Cover lookup finished: false";
-		set_cover_image(Location::invalid_path());
+		spLog(Log::Warning, this) << "Cover lookup finished: false";
+		setCoverImage(Location::invalidPath());
 	}
 
 	auto* lookup = static_cast<Cover::Lookup*>(sender());
@@ -300,50 +300,50 @@ void CoverButton::cover_lookup_finished(bool success)
 }
 
 
-void CoverButton::covers_changed()
+void CoverButton::coversChanged()
 {
-	if(!is_silent())
+	if(!isSilent())
 	{
 		m->hash = QString();
-		set_cover_location(m->cover_location);
+		setCoverLocation(m->coverLocation);
 	}
 }
 
 
-void CoverButton::alternative_cover_fetched(const Location& cl)
+void CoverButton::alternativeCoverFetched(const Location& cl)
 {
 	m->hash = QString();
 	m->cover_source = Cover::Source::Unknown;
 
-	if(!is_silent())
+	if(!isSilent())
 	{
-		if(cl.is_valid())
+		if(cl.isValid())
 		{
 			ChangeNotfier::instance()->shout();
 		}
 
-		set_cover_image(cl.cover_path());
+		setCoverImage(cl.coverPath());
 	}
 
 	else
 	{
-		set_cover_image(cl.alternative_path());
+		setCoverImage(cl.alternativePath());
 	}
 }
 
 
 
-void CoverButton::set_silent(bool silent)
+void CoverButton::setSilent(bool silent)
 {
 	m->silent = silent;
 }
 
-bool CoverButton::is_silent() const
+bool CoverButton::isSilent() const
 {
 	return m->silent;
 }
 
-void CoverButton::timer_timed_out()
+void CoverButton::timerTimedOut()
 {
 	m->opacity = std::min(1.0, m->opacity + 0.025);
 

@@ -1,6 +1,6 @@
 /* RatingLabel.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -74,7 +74,7 @@ RatingLabel::RatingLabel(QWidget* parent, bool enabled) :
 
 RatingLabel::~RatingLabel() = default;
 
-Rating RatingLabel::rating_at(QPoint pos) const
+Rating RatingLabel::ratingAt(QPoint pos) const
 {
 	double drating = ((pos.x() * 1.0) / (m->icon_size + 2.0)) + 0.5;
 	int iRating = int(drating);
@@ -99,7 +99,7 @@ QSize RatingLabel::minimumSizeHint() const
 	return sizeHint();
 }
 
-void RatingLabel::set_rating(Rating rating)
+void RatingLabel::setRating(Rating rating)
 {
 	m->rating = rating;
 }
@@ -109,7 +109,7 @@ Rating RatingLabel::rating() const
 	return m->rating;
 }
 
-void RatingLabel::set_vertical_offset(int offset)
+void RatingLabel::setVerticalOffset(int offset)
 {
 	m->offset_y = offset;
 }
@@ -150,20 +150,20 @@ void RatingLabel::paint(QPainter* painter, const QRect& rect)
 struct Gui::RatingEditor::Private
 {
 	RatingLabel*	label=nullptr;
-	bool			mouse_trackable;
+	bool			mouseTrackable;
 
 	// this rating is the rating we want to set
 	// the rating shown in RatingLabel is the visible
 	// rating. actual_rating is updated on mouse click
 	// This is the _ONLY_ way to update it
-	Rating			actual_rating;
+	Rating			actualRating;
 
 	Private(Rating rating) :
-		mouse_trackable(true),
-		actual_rating(rating)
+		mouseTrackable(true),
+		actualRating(rating)
 	{
 		label = new RatingLabel(nullptr, true);
-		label->set_rating(rating);
+		label->setRating(rating);
 	}
 };
 
@@ -183,10 +183,10 @@ Gui::RatingEditor::RatingEditor(Rating rating, QWidget* parent) :
 
 Gui::RatingEditor::~RatingEditor() = default;
 
-void Gui::RatingEditor::set_rating(Rating rating)
+void Gui::RatingEditor::setRating(Rating rating)
 {
-	m->actual_rating = rating;
-	m->label->set_rating(rating);
+	m->actualRating = rating;
+	m->label->setRating(rating);
 
 	this->setEnabled(rating != Rating::Last);
 	this->repaint();
@@ -194,17 +194,17 @@ void Gui::RatingEditor::set_rating(Rating rating)
 
 Rating Gui::RatingEditor::rating() const
 {
-	return m->actual_rating;
+	return m->actualRating;
 }
 
-void Gui::RatingEditor::set_vertical_offset(int offset)
+void Gui::RatingEditor::setVerticalOffset(int offset)
 {
-	m->label->set_vertical_offset(offset);
+	m->label->setVerticalOffset(offset);
 }
 
-void Gui::RatingEditor::set_mousetrackable(bool b)
+void Gui::RatingEditor::setMouseTrackable(bool b)
 {
-	m->mouse_trackable = b;
+	m->mouseTrackable = b;
 	if(!b)
 	{
 		this->setMouseTracking(b);
@@ -231,24 +231,24 @@ void Gui::RatingEditor::paintEvent(QPaintEvent* e)
 
 void Gui::RatingEditor::focusInEvent(QFocusEvent* e)
 {
-	this->setMouseTracking(m->mouse_trackable);
+	this->setMouseTracking(m->mouseTrackable);
 	QWidget::focusInEvent(e);
 }
 
 void Gui::RatingEditor::focusOutEvent(QFocusEvent* e)
 {
 	this->setMouseTracking(false);
-	m->label->set_rating(m->actual_rating);
+	m->label->setRating(m->actualRating);
 
-	emit sig_finished(false);
+	emit sigFinished(false);
 
 	QWidget::focusOutEvent(e);
 }
 
 void Gui::RatingEditor::mousePressEvent(QMouseEvent *e)
 {
-	Rating rating = m->label->rating_at(e->pos());
-	m->label->set_rating(rating);
+	Rating rating = m->label->ratingAt(e->pos());
+	m->label->setRating(rating);
 
 	repaint();
 
@@ -257,8 +257,8 @@ void Gui::RatingEditor::mousePressEvent(QMouseEvent *e)
 
 void Gui::RatingEditor::mouseMoveEvent(QMouseEvent* e)
 {
-	Rating rating = m->label->rating_at(e->pos());
-	m->label->set_rating(rating);
+	Rating rating = m->label->ratingAt(e->pos());
+	m->label->setRating(rating);
 
 	repaint();
 
@@ -272,12 +272,12 @@ void Gui::RatingEditor::mouseReleaseEvent(QMouseEvent* e)
 	 * to fire again and open a new Editor */
 	e->accept();
 
-	Rating rating = m->label->rating_at(e->pos());
+	Rating rating = m->label->ratingAt(e->pos());
 
-	m->actual_rating = rating;
-	m->label->set_rating(rating);
+	m->actualRating = rating;
+	m->label->setRating(rating);
 
 	repaint();
 
-	emit sig_finished(true);
+	emit sigFinished(true);
 }

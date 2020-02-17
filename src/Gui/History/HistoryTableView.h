@@ -17,7 +17,7 @@ class HistoryTableView :
 	PIMPL(HistoryTableView)
 
 	signals:
-		void sig_rowcount_changed();
+		void sigRowcountChanged();
 
 	public:
 		HistoryTableView(Session::Timecode timecode, QWidget* parent=nullptr);
@@ -25,18 +25,17 @@ class HistoryTableView :
 
 		int rows() const;
 
-	protected:
-		void language_changed() override;
-		void skin_changed() override;
-
-		void resizeEvent(QResizeEvent* e) override;
 
 	private slots:
 		void rowcount_changed();
 
-		// Dragable interface
-protected:
-	QMimeData* dragable_mimedata() const override;
+
+	protected:
+		QMimeData* dragableMimedata() const override;
+		void languageChanged() override;
+		void skinChanged() override;
+
+		void resizeEvent(QResizeEvent* e) override;
 };
 
 #endif // HISTORYTABLEVIEW_H

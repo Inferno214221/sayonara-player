@@ -1,6 +1,6 @@
 /* GUI_NotificationPreferences.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -36,31 +36,31 @@ GUI_NotificationPreferences::~GUI_NotificationPreferences()
 	}
 }
 
-void GUI_NotificationPreferences::retranslate_ui()
+void GUI_NotificationPreferences::retranslate()
 {
 	ui->retranslateUi(this);
-	ui->cb_activate->setText(Lang::get(Lang::Active));
+	ui->cbActivate->setText(Lang::get(Lang::Active));
 
-	notifications_changed();
+	notificationsChanged();
 }
 
-void GUI_NotificationPreferences::notifications_changed()
+void GUI_NotificationPreferences::notificationsChanged()
 {
-	if(!is_ui_initialized()){
+	if(!isUiInitialized()){
 		return;
 	}
 
 	NotificationHandler* nh = NotificationHandler::instance();
 	NotificatonList notifications = nh->notificators();
 
-	ui->combo_notification->clear();
+	ui->comboNotifications->clear();
 
 	for(const NotificationInterface* notification : notifications)
 	{
-		ui->combo_notification->addItem(notification->display_name(), notification->name());
+		ui->comboNotifications->addItem(notification->displayName(), notification->name());
 	}
 
-	ui->combo_notification->setCurrentIndex(nh->current_index());
+	ui->comboNotifications->setCurrentIndex(nh->currentIndex());
 }
 
 
@@ -68,15 +68,15 @@ bool GUI_NotificationPreferences::commit()
 {
 	NotificationHandler* nh = NotificationHandler::instance();
 
-	bool active =       ui->cb_activate->isChecked();
-	int timeout =       ui->sb_timeout->value();
-	QString cur_data =  ui->combo_notification->currentData().toString();
+	bool active =       ui->cbActivate->isChecked();
+	int timeout =       ui->sbTimeout->value();
+	QString cur_data =  ui->comboNotifications->currentData().toString();
 
 	SetSetting(Set::Notification_Name, cur_data);
 	SetSetting(Set::Notification_Timeout, timeout);
 	SetSetting(Set::Notification_Show, active);
 
-	nh->notificator_changed(cur_data);
+	nh->notificatorChanged(cur_data);
 
 	return true;
 }
@@ -86,26 +86,26 @@ void GUI_NotificationPreferences::revert()
 	int timeout = GetSetting(Set::Notification_Timeout);
 	int active = GetSetting(Set::Notification_Show);
 
-	ui->sb_timeout->setValue(timeout);
-	ui->cb_activate->setChecked(active);
+	ui->sbTimeout->setValue(timeout);
+	ui->cbActivate->setChecked(active);
 
-	notifications_changed();
+	notificationsChanged();
 }
 
 
-QString GUI_NotificationPreferences::action_name() const
+QString GUI_NotificationPreferences::actionName() const
 {
 	return tr("Notifications");
 }
 
-void GUI_NotificationPreferences::init_ui()
+void GUI_NotificationPreferences::initUi()
 {
-	setup_parent(this, &ui);
+	setupParent(this, &ui);
 
 	NotificationHandler* nh = NotificationHandler::instance();
 
 	revert();
 
-	connect(nh,	&NotificationHandler::sig_notifications_changed,
-			this, &GUI_NotificationPreferences::notifications_changed);
+	connect(nh,	&NotificationHandler::sigNotificationsChanged,
+			this, &GUI_NotificationPreferences::notificationsChanged);
 }

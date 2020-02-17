@@ -1,6 +1,6 @@
 /* GUI_Equalizer.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -23,7 +23,7 @@
  * GUI_Equalizer.h
  *
  *  Created on: May 18, 2011
- *      Author: Lucio Carreras
+ *      Author: Michael Lugmair (Lucio Carreras)
  */
 
 #ifndef GUI_EQUALIZER_H_
@@ -47,34 +47,34 @@ class GUI_Equalizer :
 
 public:
 	explicit GUI_Equalizer(QWidget* parent=nullptr);
-	virtual ~GUI_Equalizer();
+	~GUI_Equalizer() override;
 
-	QString get_name() const override;
-	QString get_display_name() const override;
+	QString name() const override;
+	QString displayName() const override;
 
 public slots:
-	void fill_eq_presets();
+	void fillEqualizerPresets();
 
 private:
-	void init_ui() override;
-	void retranslate_ui() override;
-	void save_current_preset(const QString& name);
+	void initUi() override;
+	void retranslate() override;
+	void saveCurrentPreset(const QString& name);
 
 private slots:
-	void sli_changed(int idx, int value);
-	void sli_pressed();
-	void sli_released();
+	void sliderValueChanged(int idx, int value);
+	void sliderPressed();
+	void sliderReleased();
 
-	void preset_changed(int);
-	void cb_gauss_toggled(bool);
+	void presetChanged(int);
+	void checkboxGaussToggled(bool);
 
-	void btn_default_clicked();
-	void btn_save_clicked();
-	void btn_save_as_clicked();
-	void btn_delete_clicked();
-	void btn_undo_clicked();
+	void btnDefaultClicked();
+	void btnSaveClicked();
+	void btnSaveAsClicked();
+	void btnDeleteClicked();
+	void btnUndoClicked();
 
-	void save_as_ok_clicked();
+	void saveAsOkClicked();
 };
 
 #endif /* GUI_EQUALIZER_H_ */

@@ -1,6 +1,6 @@
 /* PlaylistMode.h */
 
-/* Copyright (C) 2011  Lucio Carreras
+/* Copyright (C) 2011 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -33,8 +33,6 @@ using PlaylistMode=::Playlist::Mode;
 
 namespace Playlist
 {
-
-
 	/**
 	 * @brief The Mode class
 	 * @ingroup PlaylistHelper
@@ -54,7 +52,7 @@ namespace Playlist
 
 		public:
 			Mode();
-			~Mode();
+			~Mode() override;
 			Mode(const Mode& other);
 			Mode& operator=(const Mode& other);
 

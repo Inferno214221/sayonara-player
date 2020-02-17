@@ -1,6 +1,6 @@
 /* LibraryItemModelAlbums.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -23,7 +23,7 @@
  * LibraryItemModelAlbums.cpp
  *
  *  Created on: Apr 26, 2011
- *      Author: Lucio Carreras
+ *      Author: Michael Lugmair (Lucio Carreras)
  */
 
 #include "AlbumModel.h"
@@ -48,16 +48,16 @@ using namespace Library;
 
 struct AlbumModel::Private
 {
-	QImage						pm_single;
-	QImage						pm_multi;
-	QPair<int, Rating>			tmp_rating;
+	QImage						pixmapSingle;
+	QImage						pixmapMulti;
+	QPair<int, Rating>			tempRating;
 	Tagging::UserOperations*	uto=nullptr;
 
 	Private() :
-		pm_single(Gui::Util::image("cd.png", Gui::Util::NoTheme, QSize(14, 14))),
-		pm_multi(Gui::Util::image("cds.png", Gui::Util::NoTheme, QSize(16, 16)))
+		pixmapSingle(Gui::Util::image("cd.png", Gui::Util::NoTheme, QSize(14, 14))),
+		pixmapMulti(Gui::Util::image("cds.png", Gui::Util::NoTheme, QSize(16, 16)))
 	{
-		tmp_rating.first = -1;
+		tempRating.first = -1;
 	}
 };
 
@@ -66,12 +66,12 @@ AlbumModel::AlbumModel(QObject* parent, AbstractLibrary* library) :
 {
 	m = Pimpl::make<AlbumModel::Private>();
 
-	connect(library, &AbstractLibrary::sig_album_changed, this, &AlbumModel::album_changed);
+	connect(library, &AbstractLibrary::sigCurrentAlbumChanged, this, &AlbumModel::albumChanged);
 }
 
 AlbumModel::~AlbumModel() = default;
 
-Id AlbumModel::id_by_index(int index) const
+Id AlbumModel::mapIndexToId(int index) const
 {
 	const AlbumList& albums = library()->albums();
 
@@ -84,7 +84,7 @@ Id AlbumModel::id_by_index(int index) const
 	}
 }
 
-QString AlbumModel::searchable_string(int row) const
+QString AlbumModel::searchableString(int row) const
 {
 	const AlbumList& albums = library()->albums();
 
@@ -96,7 +96,6 @@ QString AlbumModel::searchable_string(int row) const
 		return albums[row].name();
 	}
 }
-
 
 Cover::Location AlbumModel::cover(const IndexSet& indexes) const
 {
@@ -110,9 +109,8 @@ Cover::Location AlbumModel::cover(const IndexSet& indexes) const
 		return Cover::Location();
 	}
 
-	return Cover::Location::xcover_location(albums[idx]);
+	return Cover::Location::xcoverLocation(albums[idx]);
 }
-
 
 QVariant AlbumModel::data(const QModelIndex& index, int role) const
 {
@@ -158,10 +156,10 @@ QVariant AlbumModel::data(const QModelIndex& index, int role) const
 		if(col == ColumnIndex::Album::MultiDisc)
 		{
 			if(album.discnumbers().size() > 1){
-				return m->pm_multi;
+				return m->pixmapMulti;
 			}
 
-			return m->pm_single;
+			return m->pixmapSingle;
 		}
 	}
 
@@ -185,7 +183,7 @@ QVariant AlbumModel::data(const QModelIndex& index, int role) const
 				return album.name();
 
 			case ColumnIndex::Album::Duration:
-				return ::Util::cvt_ms_to_string(album.duration_sec() * 1000, "$He $M:$S");
+				return ::Util::msToString(album.durationSec() * 1000, "$He $M:$S");
 
 			case ColumnIndex::Album::Rating:
 			{
@@ -194,9 +192,9 @@ QVariant AlbumModel::data(const QModelIndex& index, int role) const
 				}
 
 				Rating rating = album.rating();
-				if(row == m->tmp_rating.first)
+				if(row == m->tempRating.first)
 				{
-					rating = m->tmp_rating.second;
+					rating = m->tempRating.second;
 				}
 
 				return QVariant::fromValue(rating);
@@ -213,7 +211,6 @@ QVariant AlbumModel::data(const QModelIndex& index, int role) const
 
 	return QVariant();
 }
-
 
 bool AlbumModel::setData(const QModelIndex& index, const QVariant& value, int role)
 {
@@ -233,25 +230,24 @@ bool AlbumModel::setData(const QModelIndex& index, const QVariant& value, int ro
 
 		if(album.rating() != rating)
 		{
-			m->tmp_rating.first = row;
-			m->tmp_rating.second = rating;
+			m->tempRating.first = row;
+			m->tempRating.second = rating;
 
 			if(!m->uto)
 			{
 				m->uto = new Tagging::UserOperations(-1, this);
 			}
 
-			m->uto->set_album_rating(album, rating);
+			m->uto->setAlbumRating(album, rating);
 		}
 	}
 
 	return false;
 }
 
-
-void AlbumModel::album_changed(int row)
+void AlbumModel::albumChanged(int row)
 {
-	m->tmp_rating.first = -1;
+	m->tempRating.first = -1;
 
 	emit dataChanged
 	(
@@ -260,12 +256,10 @@ void AlbumModel::album_changed(int row)
 	);
 }
 
-
 int AlbumModel::rowCount(const QModelIndex&) const
 {
 	return library()->albums().count();
 }
-
 
 Qt::ItemFlags AlbumModel::flags(const QModelIndex& index) const
 {
@@ -282,20 +276,12 @@ Qt::ItemFlags AlbumModel::flags(const QModelIndex& index) const
 	return ItemModel::flags(index);
 }
 
-
-int AlbumModel::searchable_column() const
+int AlbumModel::searchableColumn() const
 {
 	return scast(int, ColumnIndex::Album::Name);
 }
 
-
-const Util::Set<Id>& AlbumModel::selections() const
-{
-	return library()->selected_albums();
-}
-
-
-const MetaDataList& Library::AlbumModel::mimedata_tracks() const
+const MetaDataList& Library::AlbumModel::selectedMetadata() const
 {
 	return library()->tracks();
 }

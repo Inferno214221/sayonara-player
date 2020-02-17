@@ -1,6 +1,6 @@
 /* FMStreamParser.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -62,13 +62,13 @@ static QString extract_regexp(const QString& data, const QString& re_str)
 
 static void parse_stn1_block(const QString& data, RadioStation& station)
 {
-	station.name =				Util::cvt_str_to_first_upper(extract_regexp(data, "<h3>(.*)</h3>"));
+	station.name =				Util::stringToFirstUpper(extract_regexp(data, "<h3>(.*)</h3>"));
 	station.image =				extract_regexp(data, "<img.+src=\"(.*)\"");
-	station.location =			Util::cvt_str_to_first_upper(extract_regexp(data, "class=\"loc\".*>(.*)<.{0,1}span"));
+	station.location =			Util::stringToFirstUpper(extract_regexp(data, "class=\"loc\".*>(.*)<.{0,1}span"));
 	station.style =				extract_regexp(data, "class=\"sty\".*>(.*)<.{0,1}span");
 	station.frequency =			extract_regexp(data, "class=\"frq\".*>(.*)<.{0,1}span");
-	station.description =		Util::cvt_str_to_first_upper(extract_regexp(data, "class=\"desc\".*>(.*)<.{0,1}span"));
-	station.short_description = Util::cvt_str_to_first_upper(extract_regexp(data, "class=\"bra\".*>(.*)<.{0,1}span"));
+	station.description =		Util::stringToFirstUpper(extract_regexp(data, "class=\"desc\".*>(.*)<.{0,1}span"));
+	station.short_description = Util::stringToFirstUpper(extract_regexp(data, "class=\"bra\".*>(.*)<.{0,1}span"));
 	station.home_url =			extract_regexp(data, "href=\"(.+)\"");
 
 	if(station.description.isEmpty()){

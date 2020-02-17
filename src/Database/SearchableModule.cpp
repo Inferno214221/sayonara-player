@@ -1,6 +1,6 @@
 /* DatabaseSearchMode.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -37,8 +37,8 @@ struct SearchableModule::Private
 	{}
 };
 
-SearchableModule::SearchableModule(const QString& connection_name, DbId db_id) :
-	DB::Module(connection_name, db_id)
+SearchableModule::SearchableModule(const QString& connection_name, DbId databaseId) :
+	DB::Module(connection_name, databaseId)
 {
 	m = Pimpl::make<Private>();
 }
@@ -53,11 +53,11 @@ void SearchableModule::init()
 
 	Settings* settings = Settings::instance();
 	AbstrSetting* s = settings->setting(SettingKey::Lib_SearchMode);
-	QString db_key = s->db_key();
+	QString db_key = s->dbKey();
 
 	Query q_select(this);
 	q_select.prepare("SELECT value FROM settings WHERE key = :key;");
-	q_select.bindValue(":key", Util::cvt_not_null(db_key));
+	q_select.bindValue(":key", Util::convertNotNull(db_key));
 	if(q_select.exec())
 	{
 		if(q_select.next()) {
@@ -66,12 +66,12 @@ void SearchableModule::init()
 		}
 
 		else {
-			sp_log(Log::Warning, this) << "Cannot find library search mode";
+			spLog(Log::Warning, this) << "Cannot find library search mode";
 		}
 	}
 
 	else {
-		q_select.show_error("Cannot fetch library search mode");
+		q_select.showError("Cannot fetch library search mode");
 	}
 }
 
@@ -82,22 +82,22 @@ Library::SearchModeMask SearchableModule::init_search_mode()
 	return m->search_mode;
 }
 
-void SearchableModule::update_search_mode(::Library::SearchModeMask search_mode)
+void SearchableModule::updateSearchMode(::Library::SearchModeMask search_mode)
 {
 	if(m->search_mode != search_mode)
 	{
 		Settings* settings = Settings::instance();
 		AbstrSetting* s = settings->setting(SettingKey::Lib_SearchMode);
-		QString db_key = s->db_key();
+		QString db_key = s->dbKey();
 
 		Library::SearchModeMask search_mode = settings->get<Set::Lib_SearchMode>();
 
 		Query q_update(this);
 		q_update.prepare("UPDATE settings SET value=:search_mode WHERE key = :key;");
 		q_update.bindValue(":search_mode",	search_mode);
-		q_update.bindValue(":key",			Util::cvt_not_null(db_key));
+		q_update.bindValue(":key",			Util::convertNotNull(db_key));
 		if(!q_update.exec()) {
-			q_update.show_error("Cannot update search mode");
+			q_update.showError("Cannot update search mode");
 		}
 
 		m->search_mode = search_mode;
@@ -106,7 +106,7 @@ void SearchableModule::update_search_mode(::Library::SearchModeMask search_mode)
 	m->initialized = true;
 }
 
-::Library::SearchModeMask SearchableModule::search_mode() const
+::Library::SearchModeMask SearchableModule::searchMode() const
 {
 	return m->search_mode;
 }

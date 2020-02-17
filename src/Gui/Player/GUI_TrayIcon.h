@@ -1,6 +1,6 @@
 /* GUI_TrayIcon.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras  gleugner
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)  gleugner
  *
  * This file is part of sayonara player
  *
@@ -42,26 +42,26 @@ class TrayIconContextMenu :
 	PIMPL(TrayIconContextMenu)
 
 	signals:
-		void sig_show_clicked();
-		void sig_close_clicked();
+		void sigShowClicked();
+		void sigCloseClicked();
 
 	private:
 		// all here called by GUI_TrayIcon
 		explicit TrayIconContextMenu(QWidget* parent=nullptr);
-		~TrayIconContextMenu();
+		~TrayIconContextMenu() override;
 
-		void set_enable_fwd(bool b);
-
-	protected:
-		void language_changed() override;
-		void skin_changed() override;
+		void setForwardEnabled(bool b);
 
 	private slots:
-		void playstate_changed(PlayState state);
-		void mute_changed(bool muted);
+		void playstateChanged(PlayState state);
+		void muteChanged(bool muted);
 
-		void mute_clicked();
-		void current_song_clicked();
+		void muteClicked();
+		void currentSongClicked();
+
+	protected:
+		void languageChanged() override;
+		void skinChanged() override;
 };
 
 
@@ -75,40 +75,38 @@ class GUI_TrayIcon :
 	Q_OBJECT
 	PIMPL(GUI_TrayIcon)
 
-public:
-	explicit GUI_TrayIcon(QObject *parent=nullptr);
-	virtual ~GUI_TrayIcon();
+	signals:
+		/**
+		  * this event is fired, if we have a mouse wheel event
+		  * @param delta bigger then 0 when mouse wheel has moved forward smaller when moved backwards
+		  */
+		void sigWheelChanged(int delta);
+		void sigHideClicked();
+		void sigCloseClicked();
+		void sigShowClicked();
 
-	bool event(QEvent* e) override;
-	void set_enable_fwd(bool b);
+	public:
+		explicit GUI_TrayIcon(QObject* parent=nullptr);
+		~GUI_TrayIcon() override;
 
-	void notify(const MetaData& md) override;
-	void notify(const QString &title, const QString &message, const QString &image_path) override;
+		bool event(QEvent* e) override;
+		void setForwardEnabled(bool b);
 
-	QString name() const override;
-	QString display_name() const override;
+		void notify(const MetaData& md) override;
+		void notify(const QString& title, const QString& message, const QString& image_path) override;
 
-signals:
+		QString name() const override;
+		QString displayName() const override;
 
-	/**
-	  * this event is fired, if we have a mouse wheel event
-	  * @param delta bigger then 0 when mouse wheel has moved forward smaller when moved backwards
-	  */
-	void sig_wheel_changed(int delta);
-	void sig_hide_clicked();
-	void sig_close_clicked();
-	void sig_show_clicked();
+	private:
+		void initContextMenu();
 
-protected:
-	void language_changed();
+	private slots:
+		void playstateChanged(PlayState state);
+		void showTrayIconChanged();
 
-private slots:
-	void playstate_changed(PlayState state);
-
-	void s_show_tray_icon_changed();
-
-private:
-	void init_context_menu();
+	protected:
+		void languageChanged();
 };
 
 #endif

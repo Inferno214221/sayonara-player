@@ -1,6 +1,6 @@
 /* Translator.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -38,7 +38,7 @@ class Translator
 	PIMPL(Translator)
 
 	private:
-		bool switch_translator(QObject* parent, const QString& four_letter, const QString& dir);
+		bool switchTranslator(QObject* parent, const QString& fourLetter, const QString& dir);
 
 	public:
 		/**
@@ -47,7 +47,7 @@ class Translator
 		 * @param parent
 		 * @param language
 		 */
-		void change_language(QObject* parent, const QString& language);
+		void changeLanguage(QObject* parent, const QString& language);
 
 };
 

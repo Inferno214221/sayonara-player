@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -44,30 +44,30 @@ namespace Playlist
 		PIMPL(TabMenu)
 
 		signals:
-			void sig_delete_clicked();
-			void sig_save_clicked();
-			void sig_save_as_clicked();
-			void sig_close_clicked();
-			void sig_close_others_clicked();
-			void sig_reset_clicked();
-			void sig_rename_clicked();
-			void sig_clear_clicked();
-			void sig_open_file_clicked();
-			void sig_open_dir_clicked();
-			void sig_save_to_file_clicked();
-
-		protected:
-			void language_changed() override;
-			void skin_changed() override;
+			void sigDeleteClicked();
+			void sigSaveClicked();
+			void sigSaveAsClicked();
+			void sigCloseClicked();
+			void sigCloseOthersClicked();
+			void sigResetClicked();
+			void sigRenameClicked();
+			void sigClearClicked();
+			void sigOpenFileClicked();
+			void sigOpenDirClicked();
+			void sigSaveToFileClicked();
 
 		public:
 			explicit TabMenu(QWidget* parent=nullptr);
 			~TabMenu() override;
 
-			void show_menu_items(MenuEntries entries);
-			void show_close(bool b);
+			void showMenuItems(MenuEntries entries);
+			void showClose(bool b);
 
-			void add_preference_action(Gui::PreferenceAction* action);
+			void addPreferenceAction(Gui::PreferenceAction* action);
+
+		protected:
+			void languageChanged() override;
+			void skinChanged() override;
 	};
 }
 

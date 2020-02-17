@@ -1,6 +1,6 @@
 /* ProgressBar.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -19,18 +19,18 @@
  */
 
 #include "ProgressBar.h"
+#include "Gui/Utils/EventFilter.h"
+#include <QAbstractScrollArea>
 
 using Gui::ProgressBar;
 
 struct Gui::ProgressBar::Private
 {
-	QWidget*	parent=nullptr;
-	int			fixed_height;
+	int			fixedHeight;
 	Position	position;
 
-	Private(QWidget* parent) :
-		parent(parent),
-		fixed_height(5),
+	Private() :
+		fixedHeight(5),
 		position(ProgressBar::Position::Bottom)
 	{}
 };
@@ -39,28 +39,40 @@ struct Gui::ProgressBar::Private
 ProgressBar::ProgressBar(QWidget* parent) :
 	Gui::WidgetTemplate<QProgressBar>(parent)
 {
-	m = Pimpl::make<Private>(parent);
+	m = Pimpl::make<Private>();
 
 	this->setEnabled(false);
 	this->setObjectName("loading_bar");
 
 	this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-	this->setMaximumHeight(m->fixed_height);
+	this->setMaximumHeight(m->fixedHeight);
 	this->setMinimum(0);
 	this->setMaximum(0);
 
-	skin_changed();
+	auto* filter = new ResizeFilter(parent);
+	parent->installEventFilter(filter);
+	connect(filter, &Gui::ResizeFilter::sigResized, this, &ProgressBar::parentResized);
+
+	skinChanged();
 }
 
 ProgressBar::~ProgressBar() = default;
 
-void ProgressBar::set_position(ProgressBar::Position o)
+void ProgressBar::setPosition(ProgressBar::Position o)
 {
 	m->position = o;
 }
 
 void ProgressBar::refresh()
 {
+	QWidget* woi = parentWidget();
+
+	auto* scrollArea = dynamic_cast<QAbstractScrollArea*>(parentWidget());
+	if(scrollArea)
+	{
+		woi = scrollArea->viewport();
+	}
+
 	int y;
 	switch(m->position)
 	{
@@ -68,11 +80,11 @@ void ProgressBar::refresh()
 			 y = 2;
 			break;
 		case ProgressBar::Position::Middle:
-			y = (parentWidget()->height() - m->fixed_height) / 2;
+			y = (woi->height() - m->fixedHeight) / 2;
 			break;
 		case ProgressBar::Position::Bottom:
 		default:
-			 y = parentWidget()->height() - m->fixed_height - 2;
+			y = woi->height() - m->fixedHeight - 2;
 			break;
 	}
 
@@ -80,9 +92,14 @@ void ProgressBar::refresh()
 	(
 		2,
 		y,
-		parentWidget()->width() - 4,
-		m->fixed_height
+		woi->width() - 4,
+		m->fixedHeight
 	);
+}
+
+void ProgressBar::parentResized(const QSize&)
+{
+	refresh();
 }
 
 void ProgressBar::showEvent(QShowEvent* e)
@@ -92,7 +109,8 @@ void ProgressBar::showEvent(QShowEvent* e)
 	refresh();
 }
 
-void ProgressBar::skin_changed()
+void ProgressBar::skinChanged()
 {
-	m->fixed_height = std::max((fontMetrics().height()) * 10 / 30, 8);
+	m->fixedHeight = std::max((fontMetrics().height()) * 10 / 30, 8);
+	refresh();
 }

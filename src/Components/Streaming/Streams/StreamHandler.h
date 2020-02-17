@@ -1,6 +1,6 @@
 /* StreamHandlerStreams.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -30,14 +30,13 @@ public:
 	explicit StreamHandler(QObject* parent=nullptr);
 	~StreamHandler() override;
 
-	bool get_all_streams(QList<StationPtr>& stations) override;
-	bool add_stream(StationPtr station) override;
-	bool delete_stream(const QString& station_name) override;
-	bool update_url(const QString& station_name, const QString& url) override;
-	bool rename(const QString& old_name, const QString& new_name) override;
-	StationPtr create_stream(const QString& name, const QString& url) const override;
-	StationPtr station(const QString &name) override;
-};
+	bool getAllStreams(QList<StationPtr>& stations) override;
+	bool addNewStream(StationPtr station) override;
+	bool deleteStream(const QString& station_name) override;
+	bool update(const QString& station_name, StationPtr station) override;
 
+	StationPtr createStreamInstance(const QString& name, const QString& url) const override;
+	StationPtr station(const QString& name) override;
+};
 
 #endif // STREAMHANDLERSTREAMS_H

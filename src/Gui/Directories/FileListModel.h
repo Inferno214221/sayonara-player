@@ -1,6 +1,6 @@
 /* FileListModel.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -38,20 +38,18 @@ class FileListModel :
 	Q_OBJECT
 	PIMPL(FileListModel)
 
-	private:
-		bool check_row_for_searchstring(int row, const QString& substr) const;
 
 	public:
 		explicit FileListModel(QObject* parent=nullptr);
 		~FileListModel() override;
 
-		QString parent_directory() const;
-		void set_parent_directory(LibraryId library_id, const QString& dir);
+		QString parentDirectory() const;
+		void setParentDirectory(LibraryId libraryId, const QString& dir);
 
-		LibraryId library_id() const;
+		LibraryId libraryId() const;
 		QStringList files() const;
 
-		QModelIndexList search_results(const QString& substr) override;
+		QModelIndexList searchResults(const QString& substr) override;
 
 		QVariant data(const QModelIndex& index, int role=Qt::DisplayRole) const override;
 		QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
@@ -61,6 +59,10 @@ class FileListModel :
 
 		QMimeData* mimeData(const QModelIndexList &indexes) const override;
 		Qt::ItemFlags flags(const QModelIndex& index) const override;
+
+
+	private:
+		bool checkRowForSearchstring(int row, const QString& substr) const;
 };
 
 #endif

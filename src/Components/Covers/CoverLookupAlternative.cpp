@@ -1,6 +1,6 @@
 /* CoverLookupAlternative.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -71,9 +71,9 @@ AlternativeLookup::AlternativeLookup(const Cover::Location& cl, int n_covers, bo
 {
 	m = Pimpl::make<Private>(cl, n_covers, silent, this);
 
-	connect(m->lookup, &Lookup::sig_started, this, &AlternativeLookup::started);
-	connect(m->lookup, &Lookup::sig_cover_found, this, &AlternativeLookup::cover_found);
-	connect(m->lookup, &Lookup::sig_finished, this, &AlternativeLookup::finished);
+	connect(m->lookup, &Lookup::sigStarted, this, &AlternativeLookup::started);
+	connect(m->lookup, &Lookup::sigCoverFound, this, &AlternativeLookup::cover_found);
+	connect(m->lookup, &Lookup::sigFinished, this, &AlternativeLookup::finished);
 
 	ListenSettingNoCall(Set::Cover_Server, AlternativeLookup::coverfetchers_changed);
 }
@@ -89,32 +89,32 @@ void AlternativeLookup::stop()
 void AlternativeLookup::reset()
 {
 	stop();
-	Cover::Utils::delete_temp_covers();
+	Cover::Utils::deleteTemporaryCovers();
 }
 
 
 bool AlternativeLookup::save(const QPixmap& cover, bool save_to_library)
 {
 	if(cover.isNull()){
-		sp_log(Log::Warning, this) << "Cannot save invalid cover";
+		spLog(Log::Warning, this) << "Cannot save invalid cover";
 		return false;
 	}
 
-	Cover::Location cl = cover_location();
+	Cover::Location cl = coverLocation();
 
 	if(!m->silent)
 	{
-		Cover::Utils::write_cover_to_db(cl, cover);
-		Cover::Utils::write_cover_to_sayonara_dir(cl, cover);
+		Cover::Utils::writeCoverIntoDatabase(cl, cover);
+		Cover::Utils::writeCoverToSayonaraDirectory(cl, cover);
 
 		if(save_to_library) {
-			Cover::Utils::write_cover_to_library(cl, cover);
+			Cover::Utils::writeCoverToLibrary(cl, cover);
 		}
 	}
 
 	else
 	{
-		cover.save(cl.alternative_path());
+		cover.save(cl.alternativePath());
 	}
 
 	emit sig_cover_changed(cl);
@@ -143,20 +143,20 @@ QStringList AlternativeLookup::active_coverfetchers(AlternativeLookup::SearchMod
 	for(const CoverFetcher* cover_fetcher : cover_fetchers)
 	{
 		const QString identifier = cover_fetcher->identifier();
-		if(!cfm->is_active(identifier)) {
+		if(!cfm->isActive(identifier)) {
 			continue;
 		}
 
 		bool valid_identifier = false;
 		if(mode == AlternativeLookup::SearchMode::Fulltext)
 		{
-			const QString address = cover_fetcher->search_address("some dummy text");
+			const QString address = cover_fetcher->fulltextSearchAddress("some dummy text");
 			valid_identifier = (!address.isEmpty());
 		}
 
 		else
 		{
-			const UrlList search_urls = cover_location().search_urls();
+			const UrlList search_urls = coverLocation().searchUrls();
 
 			valid_identifier = Algorithm::contains(search_urls, [identifier](const Url& url) {
 				return (url.identifier().compare(identifier, Qt::CaseInsensitive) == 0);
@@ -174,18 +174,18 @@ QStringList AlternativeLookup::active_coverfetchers(AlternativeLookup::SearchMod
 void AlternativeLookup::started()
 {
 	m->running = true;
-	emit sig_started();
+	emit sigStarted();
 }
 
 void AlternativeLookup::finished(bool success)
 {
 	m->running = false;
-	emit sig_finished(success);
+	emit sigFinished(success);
 }
 
 void AlternativeLookup::cover_found(const QPixmap& pm)
 {
-	emit sig_cover_found(pm);
+	emit sigCoverFound(pm);
 }
 
 void AlternativeLookup::coverfetchers_changed()
@@ -195,23 +195,23 @@ void AlternativeLookup::coverfetchers_changed()
 
 void AlternativeLookup::go(const Cover::Location& cl)
 {
-	m->lookup->set_cover_location(cl);
+	m->lookup->setCoverLocation(cl);
 	m->lookup->start();
 
-	emit sig_started();
+	emit sigStarted();
 }
 
 
 void AlternativeLookup::start()
 {
-	go(cover_location());
+	go(coverLocation());
 }
 
 
 void AlternativeLookup::start(const QString& identifier)
 {
-	Location cl = cover_location();
-	const UrlList search_urls = cover_location().search_urls();
+	Location cl = coverLocation();
+	const UrlList search_urls = coverLocation().searchUrls();
 
 	auto it = Algorithm::find(search_urls, [&identifier](const Url& url) {
 		return (identifier == url.identifier());
@@ -220,7 +220,7 @@ void AlternativeLookup::start(const QString& identifier)
 	if(it != search_urls.end())
 	{
 		Url url = *it;
-		cl.set_search_urls({url});
+		cl.setSearchUrls({url});
 	}
 
 	go(cl);
@@ -228,17 +228,17 @@ void AlternativeLookup::start(const QString& identifier)
 
 void AlternativeLookup::start_text_search(const QString& search_term)
 {
-	Location cl = cover_location();
-	cl.set_search_term(search_term);
-	cl.enable_freetext_search(true);
+	Location cl = coverLocation();
+	cl.setSearchTerm(search_term);
+	cl.enableFreetextSearch(true);
 	go(cl);
 }
 
 void AlternativeLookup::start_text_search(const QString& search_term, const QString& cover_fetcher_identifier)
 {
-	Location cl = cover_location();
-	cl.set_search_term(search_term, cover_fetcher_identifier);
-	cl.enable_freetext_search(true);
+	Location cl = coverLocation();
+	cl.setSearchTerm(search_term, cover_fetcher_identifier);
+	cl.enableFreetextSearch(true);
 	go(cl);
 }
 

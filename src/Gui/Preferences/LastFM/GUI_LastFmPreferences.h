@@ -1,6 +1,6 @@
 /* GUI_LastFmPreferences.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -23,7 +23,7 @@
  * GUI_LastFmPreferences.h
  *
  *  Created on: Apr 21, 2011
- *      Author: Lucio Carreras
+ *      Author: Michael Lugmair (Lucio Carreras)
  */
 
 #ifndef GUI_LASTFM_PREFERENCES_H
@@ -53,16 +53,16 @@ public:
 	bool commit() override;
 	void revert() override;
 
-	QString action_name() const override;
+	QString actionName() const override;
 
 protected:
-	void init_ui() override;
-	void retranslate_ui() override;
+	void initUi() override;
+	void retranslate() override;
 
 private slots:
-	void btn_login_clicked();
-	void active_changed(bool active);
-	void logged_in(bool success);
+	void loginClicked();
+	void activeChanged(bool active);
+	void loginFinished(bool success);
 };
 
 #endif /* GUI_LastFmPreferences_H_ */

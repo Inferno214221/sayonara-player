@@ -1,6 +1,6 @@
 /* PreferenceWidgetInterface.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -50,35 +50,35 @@ QString Base::identifier() const
 	return m->identifier;
 }
 
-void Base::set_initialized()
+void Base::setInitialized()
 {
 	m->is_initialized = true;
 }
 
-void Base::language_changed()
+void Base::languageChanged()
 {
-	translate_action();
+	translationAction();
 
-	if(!is_ui_initialized()){
+	if(!isUiInitialized()){
 		return;
 	}
 
-	QString new_name = action_name();
+	QString new_name = actionName();
 	this->setWindowTitle(new_name);
 
-	retranslate_ui();
+	retranslate();
 }
 
-void Base::translate_action()
+void Base::translationAction()
 {
-	QString new_name = this->action_name();
+	QString new_name = this->actionName();
 	action()->setText(new_name + "...");
 }
 
 void Base::showEvent(QShowEvent *e)
 {
-	if(!is_ui_initialized()){
-		init_ui();
+	if(!isUiInitialized()){
+		initUi();
 	}
 
 	Gui::Widget::showEvent(e);
@@ -94,7 +94,7 @@ void Base::closeEvent(QCloseEvent* e)
 	Gui::Widget::closeEvent(e);
 }
 
-bool Base::is_ui_initialized() const
+bool Base::isUiInitialized() const
 {
 	return m->is_initialized;
 }
@@ -103,7 +103,7 @@ QAction* Base::action()
 {
 	// action has to be initialized here, because pure
 	// virtual get_action_name should not be called from ctor
-	QString name = action_name();
+	QString name = actionName();
 	if(!m->action){
 		m->action = new Action(name, this);
 	}
@@ -112,12 +112,12 @@ QAction* Base::action()
 	return m->action;
 }
 
-bool Base::has_error() const
+bool Base::hasError() const
 {
 	return false;
 }
 
-QString Base::error_string() const
+QString Base::errorString() const
 {
 	return QString();
 }

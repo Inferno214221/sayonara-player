@@ -1,8 +1,8 @@
 /* Converter.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
- * This file is part of sayonara player
+ * This file is part of sayonara Indexyer
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,39 +35,39 @@ class Converter :
 	PIMPL(Converter)
 
 signals:
-	void sig_finished();
-	void sig_progress(int percent);
+	void sigFinished();
+	void sigProgress(int percent);
 
 public:
 	Converter(int quality, QObject* parent=nullptr);
 	virtual ~Converter();
 
-	virtual QStringList supported_input_formats() const=0;
+	virtual QStringList supportedInputFormats() const=0;
 	virtual QString binary() const=0;
 
-	QString		log_directory() const;
-	QString		target_directory() const;
-	QString		target_file(const MetaData& md) const;
-	void 		add_metadata(const MetaDataList& v_md);
-	int 		num_errors() const;
+	QString		logginDirectory() const;
+	QString		targetDirectory() const;
+	QString		targetFile(const MetaData& md) const;
+	void 		addMetadata(const MetaDataList& tracks);
+	int 		errorCount() const;
 	int 		quality() const;
-	int			num_files() const;
-	bool		is_available() const;
+	int			fileCount() const;
+	bool		isAvailable() const;
 
 private:
-	bool start_process(const QString& process_name, const QStringList& arguments);
+	bool startProcess(const QString& processName, const QStringList& arguments);
 
 protected:
-	virtual QStringList process_entry(const MetaData& md) const=0;
+	virtual QStringList processEntry(const MetaData& md) const=0;
 	virtual QString extension() const=0;
 
 public slots:
-	void start(int num_threads, const QString& target_dir);
+	void start(int num_threads, const QString& targetDir);
 	void stop();
 
 private slots:
-	void process_finished(int ret, QProcess::ExitStatus status);
-	void error_occured(QProcess::ProcessError err);
+	void processFinished(int ret, QProcess::ExitStatus status);
+	void errorOccured(QProcess::ProcessError err);
 };
 
 #endif // OGGCONVERTER_H

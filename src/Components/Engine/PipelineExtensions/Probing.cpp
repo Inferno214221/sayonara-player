@@ -1,6 +1,6 @@
 /* PipelineProbes.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -29,7 +29,7 @@
 using namespace PipelineExtensions;
 
 GstPadProbeReturn
-Probing::level_probed(GstPad *pad, GstPadProbeInfo *info, gpointer user_data){
+Probing::levelProbed(GstPad *pad, GstPadProbeInfo *info, gpointer user_data){
 	Q_UNUSED(pad)
 	Q_UNUSED(info)
 
@@ -45,7 +45,7 @@ Probing::level_probed(GstPad *pad, GstPadProbeInfo *info, gpointer user_data){
 
 
 GstPadProbeReturn
-Probing::spectrum_probed(GstPad *pad, GstPadProbeInfo *info, gpointer user_data){
+Probing::spectrumProbed(GstPad *pad, GstPadProbeInfo *info, gpointer user_data){
 	Q_UNUSED(pad)
 	Q_UNUSED(info)
 
@@ -61,7 +61,7 @@ Probing::spectrum_probed(GstPad *pad, GstPadProbeInfo *info, gpointer user_data)
 
 
 GstPadProbeReturn
-Probing::lame_probed(GstPad *pad, GstPadProbeInfo *info, gpointer user_data){
+Probing::lameProbed(GstPad *pad, GstPadProbeInfo *info, gpointer user_data){
 	Q_UNUSED(pad)
 	Q_UNUSED(info)
 
@@ -76,7 +76,8 @@ Probing::lame_probed(GstPad *pad, GstPadProbeInfo *info, gpointer user_data){
 }
 
 GstPadProbeReturn
-Probing::pitch_probed(GstPad *pad, GstPadProbeInfo *info, gpointer user_data){
+Probing::pitchProbed(GstPad *pad, GstPadProbeInfo *info, gpointer user_data)
+{
 	Q_UNUSED(pad)
 	Q_UNUSED(info)
 
@@ -91,7 +92,8 @@ Probing::pitch_probed(GstPad *pad, GstPadProbeInfo *info, gpointer user_data){
 }
 
 
-void Probing::handle_probe(bool* active, GstElement* queue, gulong* probe_id, GstPadProbeCallback callback){
+void Probing::handleProbe(bool* active, GstElement* queue, gulong* probe_id, GstPadProbeCallback callback)
+{
 	GstPad* pad =  gst_element_get_static_pad(queue, "src");
 
 	if(*active == true){
@@ -117,14 +119,14 @@ void Probing::handle_probe(bool* active, GstElement* queue, gulong* probe_id, Gs
 }
 
 
-void Probing::handle_stream_recorder_probe(StreamRecorder::Data* data, GstPadProbeCallback callback)
+void Probing::handleStreamRecorderProbe(StreamRecorder::Data* data, GstPadProbeCallback callback)
 {
 	GstPad* pad =  gst_element_get_static_pad(data->queue, "src");
 
-	if(data->probe_id == 0)
+	if(data->probeId == 0)
 	{
 		data->busy = true;
-		data->probe_id = gst_pad_add_probe(
+		data->probeId = gst_pad_add_probe(
 					pad,
 					(GstPadProbeType)(GST_PAD_PROBE_TYPE_BUFFER),
 					callback,
@@ -142,7 +144,7 @@ void Probing::handle_stream_recorder_probe(StreamRecorder::Data* data, GstPadPro
 
 
 GstPadProbeReturn
-Probing::stream_recorder_probed(GstPad *pad, GstPadProbeInfo *info, gpointer user_data)
+Probing::streamRecorderProbed(GstPad *pad, GstPadProbeInfo *info, gpointer user_data)
 {
 	Q_UNUSED(pad)
 	Q_UNUSED(info)
@@ -155,33 +157,34 @@ Probing::stream_recorder_probed(GstPad *pad, GstPadProbeInfo *info, gpointer use
 
 	if(data->active)
 	{
-		sp_log(Log::Develop, "PipelineProbes") << "set new filename streamrecorder: " << data->filename;
+		spLog(Log::Develop, "PipelineProbes") << "set new filename streamrecorder: " << data->filename;
 
-		Engine::Utils::set_state(data->sink, GST_STATE_NULL);
-		Engine::Utils::set_value(data->sink, "location", data->filename);
+		Engine::Utils::setState(data->sink, GST_STATE_NULL);
+		Engine::Utils::setValue(data->sink, "location", data->filename);
 
-		data->has_empty_filename = false;
+		data->isFilenameEmpty = false;
 
-		if(data->probe_id > 0){
+		if(data->probeId > 0){
 			//gst_pad_remove_probe(pad, data->probe_id);
-			data->probe_id = 0;
+			data->probeId = 0;
 		}
 
-		Engine::Utils::set_state(data->sink, GST_STATE_PLAYING);
+		Engine::Utils::setState(data->sink, GST_STATE_PLAYING);
 
 		data->busy = false;
 		return GST_PAD_PROBE_REMOVE;
 	}
 
-	else{
-		if(!data->has_empty_filename)
+	else
+	{
+		if(!data->isFilenameEmpty)
 		{
-			Engine::Utils::set_state(data->sink, GST_STATE_NULL);
-			Engine::Utils::set_value(data->sink,
+			Engine::Utils::setState(data->sink, GST_STATE_NULL);
+			Engine::Utils::setValue(data->sink,
 									 "location",
-									 (Util::sayonara_path() + "bla.mp3").toLocal8Bit().data());
+									 (Util::sayonaraPath() + "bla.mp3").toLocal8Bit().data());
 
-			data->has_empty_filename = true;
+			data->isFilenameEmpty = true;
 		}
 
 		data->busy = false;

@@ -1,6 +1,6 @@
 /* ChangeOperations.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -98,8 +98,5 @@ public:
 
 	bool exec() override;
 };
-
-
-
 
 #endif // CHANGEOPERATIONS_H

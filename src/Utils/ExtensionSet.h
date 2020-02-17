@@ -1,6 +1,6 @@
 /* ExtensionSet.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -39,23 +39,23 @@ namespace Gui
 			ExtensionSet(const ExtensionSet& other);
 			ExtensionSet& operator=(const ExtensionSet& other);
 
-			void add_extension(const QString& ext, bool enabled=true);
-			void remove_extension(const QString& ext);
+			void addExtension(const QString& ext, bool enabled=true);
+			void removeExtension(const QString& ext);
 			void clear();
-			bool contains_extension(const QString& ext);
+			bool containsExtension(const QString& ext);
 			ExtensionSet& operator<<(const QString& ext);
 
-			void set_enabled(const QString& ext, bool b);
+			void setEnabled(const QString& ext, bool b);
 			void enable(const QString& ext);
 			void disable(const QString& ext);
 
-			bool has_enabled_extensions() const;
-			bool has_disabled_extensions() const;
+			bool hasEnabledExtensions() const;
+			bool hasDisabledExtensions() const;
 
-			bool is_enabled(const QString& ext) const;
+			bool isEnabled(const QString& ext) const;
 
-			QStringList enabled_extensions() const;
-			QStringList disabled_extensions() const;
+			QStringList enabledExtensions() const;
+			QStringList disabledExtensions() const;
 			QStringList extensions() const;
 	};
 }

@@ -1,6 +1,6 @@
 /* DatabaseSettings.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -32,16 +32,16 @@ namespace DB
 			private Module
 	{
 	public:
-		Settings(const QString& connection_name, DbId db_id);
+		Settings(const QString& connectionName, DbId databaseId);
 		~Settings();
 
-		bool load_setting(QString key, QString& val);
-		bool store_setting(QString key, const QVariant& val);
-		bool drop_setting(const QString& key);
+		bool loadSetting(QString key, QString& val);
+		bool storeSetting(QString key, const QVariant& val);
+		bool dropSetting(const QString& key);
 
-		bool load_settings();
-		bool load_settings(QList<SettingKey>& found_keys);
-		bool store_settings();
+		bool loadSettings();
+		bool loadSettings(QList<SettingKey>& found_keys);
+		bool storeSettings();
 	};
 }
 

@@ -31,7 +31,7 @@ void RatingTest::run_test(const QString& filename)
 
 	Tagging::Utils::getMetaDataOfFile(md);
 
-	md.set_rating(Rating::Three);
+	md.setRating(Rating::Three);
 	Tagging::Utils::setMetaDataOfFile(md);
 	QVERIFY(md.rating() == Rating::Three);
 
@@ -39,7 +39,7 @@ void RatingTest::run_test(const QString& filename)
 	qDebug() << "Expect 3, get " << static_cast<int>(md2.rating());
 	QVERIFY(md2.rating() == Rating::Three);
 
-	md.set_rating(Rating::Zero);
+	md.setRating(Rating::Zero);
 	Tagging::Utils::setMetaDataOfFile(md);
 	QVERIFY(md.rating() == Rating::Zero);
 

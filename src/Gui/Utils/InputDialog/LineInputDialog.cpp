@@ -1,6 +1,6 @@
 /* LineInputDialog.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -25,6 +25,7 @@
 #include "Gui/Utils/ui_LineInputDialog.h"
 
 #include "Utils/Language/Language.h"
+#include "Utils/FileUtils.h"
 
 using Gui::LineInputDialog;
 using Gui::Completer;
@@ -32,12 +33,14 @@ using Gui::Completer;
 struct LineInputDialog::Private
 {
 	Gui::Completer* completer=nullptr;
-	LineInputDialog::ReturnValue return_value;
+	QString infoPrefix;
+	QList<QChar> invalidChars;
+	LineInputDialog::ReturnValue returnValue;
 
-	Private() : return_value(LineInputDialog::Ok) {}
+	Private() : returnValue(LineInputDialog::Ok) {}
 };
 
-LineInputDialog::LineInputDialog(const QString& window_title, const QString& info_text, QWidget* parent) :
+LineInputDialog::LineInputDialog(const QString& windowTitle, const QString& infoText, QWidget* parent) :
 	Gui::Dialog(parent)
 {
 	m = Pimpl::make<Private>();
@@ -45,21 +48,22 @@ LineInputDialog::LineInputDialog(const QString& window_title, const QString& inf
 	ui = new Ui::LineInputDialog();
 	ui->setupUi(this);
 
-	this->setWindowTitle(window_title);
-	this->set_header_text(window_title);
-	this->set_info_text(info_text);
+	this->setWindowTitle(windowTitle);
+	this->setHeaderText(infoText);
+	//this->setInfoText(infoText);
 
-	m->completer = new Completer(QStringList(), ui->le_input);
-	ui->le_input->setCompleter(m->completer);
+	m->completer = new Completer(QStringList(), ui->leInput);
+	ui->leInput->setCompleter(m->completer);
 
-	connect(ui->btn_ok, &QPushButton::clicked, this, &LineInputDialog::ok_clicked);
-	connect(ui->btn_cancel, &QPushButton::clicked, this, &LineInputDialog::cancel_clicked);
+	connect(ui->btnOk, &QPushButton::clicked, this, &LineInputDialog::okClicked);
+	connect(ui->btnCancel, &QPushButton::clicked, this, &LineInputDialog::cancelClicked);
+	connect(ui->leInput, &QLineEdit::textEdited, this, &LineInputDialog::textEdited);
 }
 
 LineInputDialog::LineInputDialog(const QString& window_title, const QString& info_text, const QString& preset, QWidget* parent) :
 	LineInputDialog(window_title, info_text, parent)
 {
-	ui->le_input->setText(preset);
+	ui->leInput->setText(preset);
 }
 
 LineInputDialog::~LineInputDialog()
@@ -67,64 +71,124 @@ LineInputDialog::~LineInputDialog()
 	delete ui; ui=nullptr;
 }
 
-void Gui::LineInputDialog::set_header_text(const QString& text)
+QString LineInputDialog::getRenameFilename(QWidget* parent, const QString& oldName)
 {
-	ui->lab_header->setText(text);
+	LineInputDialog dialog(Lang::get(Lang::Rename), tr("Please enter new name"), oldName, parent);
+	dialog.setInvalidChars(Util::File::invalidFilenameChars());
+	dialog.exec();
+
+	return dialog.text();
 }
 
-void Gui::LineInputDialog::set_info_text(const QString& text)
+QString LineInputDialog::getNewFilename(QWidget* parent, const QString& info, const QString& parentPath)
 {
-	ui->lab_info->setText(text);
+	LineInputDialog dialog(info, tr("Please enter new name"), parent);
+	dialog.setInvalidChars(Util::File::invalidFilenameChars());
+	dialog.showInfo(!parentPath.isEmpty(), parentPath + "/");
+	dialog.exec();
+
+	return dialog.text();
 }
 
-void LineInputDialog::set_completer_text(const QStringList& lst)
+void Gui::LineInputDialog::setHeaderText(const QString& text)
 {
-	m->completer->set_stringlist(lst);
+	ui->labHeader->setText(text);
 }
 
-Gui::LineInputDialog::ReturnValue Gui::LineInputDialog::return_value() const
+void Gui::LineInputDialog::setInfoText(const QString& text)
 {
-	return m->return_value;
+	ui->labHeader->setText(text);
+}
+
+void LineInputDialog::setCompleterText(const QStringList& lst)
+{
+	m->completer->setStringList(lst);
+}
+
+Gui::LineInputDialog::ReturnValue Gui::LineInputDialog::returnValue() const
+{
+	return m->returnValue;
 }
 
 QString LineInputDialog::text() const
 {
-	return ui->le_input->text();
+	return ui->leInput->text().trimmed();
 }
 
-void LineInputDialog::set_text(const QString& text)
+void LineInputDialog::setText(const QString& text)
 {
-	ui->le_input->setText(text);
+	ui->leInput->setText(text);
 }
 
-bool LineInputDialog::was_accepted() const
+void LineInputDialog::setPlaceholderText(const QString& text)
 {
-	return (m->return_value == LineInputDialog::Ok);
+	ui->leInput->setPlaceholderText(text);
 }
 
-void LineInputDialog::ok_clicked()
+void LineInputDialog::showInfo(bool b, const QString& infoPrefix)
 {
-	m->return_value = LineInputDialog::Ok;
+	m->infoPrefix = infoPrefix;
+
+	ui->labInfo->setVisible(b);
+	ui->labInfo->setText(infoPrefix);
+}
+
+bool LineInputDialog::wasAccepted() const
+{
+	return (m->returnValue == LineInputDialog::Ok);
+}
+
+void LineInputDialog::setInvalidChars(const QList<QChar>& chars)
+{
+	m->invalidChars = chars;
+}
+
+void LineInputDialog::okClicked()
+{
+	m->returnValue = LineInputDialog::Ok;
 	close();
 	emit accepted();
 }
 
-void LineInputDialog::cancel_clicked()
+void LineInputDialog::cancelClicked()
 {
+	ui->leInput->clear();
 	close();
 	emit rejected();
+}
+
+void LineInputDialog::textEdited(const QString& text)
+{
+	QString newText(text);
+	for(QChar c : m->invalidChars)
+	{
+		if(!c.isPrint()) {
+			continue;
+		}
+
+		while(newText.contains(c)){
+			newText.remove(c);
+		}
+	}
+
+	if(newText != text)
+	{
+		ui->leInput->setText(newText);
+	}
+
+	ui->labInfo->setText(m->infoPrefix + newText);
 }
 
 void LineInputDialog::showEvent(QShowEvent* e)
 {
 	Gui::Dialog::showEvent(e);
 
-	ui->btn_ok->setText(Lang::get(Lang::OK));
-	ui->btn_cancel->setText(Lang::get(Lang::Cancel));
-	ui->le_input->setFocus();
-	ui->btn_ok->setDefault(true);
+	ui->btnOk->setText(Lang::get(Lang::OK));
+	ui->btnCancel->setText(Lang::get(Lang::Cancel));
+	ui->leInput->setFocus();
+	ui->btnOk->setDefault(true);
 
-	m->return_value = LineInputDialog::Cancelled;
+	m->returnValue = LineInputDialog::Cancelled;
 }
 
 void LineInputDialog::closeEvent(QCloseEvent* e)

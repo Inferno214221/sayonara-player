@@ -1,6 +1,6 @@
 /* SayonaraSelectionView.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -27,6 +27,8 @@
 using ModelIndexRange=QPair<QModelIndex, QModelIndex>; // top left, bottom right
 using ModelIndexRanges=QList<ModelIndexRange>;
 
+class QAbstractItemView;
+class QItemSelection;
 class QItemSelectionModel;
 class QKeyEvent;
 
@@ -46,44 +48,27 @@ public:
 		Items
 	};
 
-	virtual IndexSet selected_items() const;
+	virtual IndexSet selectedItems() const;
 
 protected:
-	SelectionViewInterface();
+	SelectionViewInterface(QAbstractItemView* view);
 	virtual ~SelectionViewInterface();
 
-	virtual QItemSelectionModel* selection_model() const=0;
-	virtual QModelIndex	model_index(int row, int col, const QModelIndex& parent=QModelIndex()) const=0;
-	virtual int	row_count(const QModelIndex& parent=QModelIndex()) const=0;
-	virtual int column_count(const QModelIndex& parent=QModelIndex()) const=0;
-	virtual void set_current_index(int idx)=0;
+	void selectRows(const IndexSet& rows, int minimumColumn=-1, int maximumColumn=-1);
+	void selectColumns(const IndexSet& columns, int minimumRow=-1, int maximumRow=-1);
+	void selectItems(const IndexSet& indexes);
+	void selectAll();
 
-	void select_rows(const IndexSet& indexes, int min_col=-1, int max_col=-1);
-	void select_row(int row);
+	virtual SelectionViewInterface::SelectionType selectionType() const;
 
-	void select_columns(const IndexSet& indexes, int min_row=-1, int max_row=-1);
-	void select_column(int col);
+	virtual int mapModelIndexToIndex(const QModelIndex& idx) const=0;
+	virtual ModelIndexRange mapIndexToModelIndexes(int idx) const=0;
 
-	void select_items(const IndexSet& indexes);
-	void select_item(int item);
-
-	void select_all();
-
-	virtual void clear_selection();
-	int min_selected_item() const;
-
-	virtual void set_selection_type(SelectionViewInterface::SelectionType type);
-	SelectionViewInterface::SelectionType selection_type() const;
+	IndexSet mapModelIndexesToIndexes(const QModelIndexList& indexes) const;
+	ModelIndexRanges mapIndexesToModelIndexRanges(const IndexSet& indexes) const;
 
 protected:
-	virtual int index_by_model_index(const QModelIndex& idx) const=0;
-	virtual ModelIndexRange model_indexrange_by_index(int idx) const=0;
-
-	virtual IndexSet indexes_by_model_indexes(const QModelIndexList& indexes) const;
-	virtual ModelIndexRanges model_indexranges_by_indexes(const IndexSet& indexes) const;
-
-protected:
-	virtual void handle_key_press(QKeyEvent* e);
+	virtual void handleKeyPress(QKeyEvent* e);
 };
 
 #endif // SAYONARASELECTIONVIEW_H

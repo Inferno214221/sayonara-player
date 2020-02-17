@@ -1,6 +1,6 @@
 /* GUIImportFolder.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -37,29 +37,30 @@ class GUI_ImportDialog :
 	UI_CLASS(GUI_ImportDialog)
 	PIMPL(GUI_ImportDialog)
 
-signals:
-	void sig_progress(int);
+	signals:
+		void sigProgress(int);
 
-public:
-	GUI_ImportDialog(LocalLibrary* library, bool copy_enabled, QWidget* parent);
-	~GUI_ImportDialog() override;
+	public:
+		GUI_ImportDialog(LocalLibrary* library, bool copy_enabled, QWidget* parent);
+		~GUI_ImportDialog() override;
 
-	void set_target_dir(const QString& target_dir);
+		void setTargetDirectory(const QString& targetDirectory);
 
-private slots:
-	void bb_accepted();
-	void bb_rejected();
-	void choose_dir();
-	void edit_pressed();
-	void set_metadata(const MetaDataList& v_md);
-	void set_status(Library::Importer::ImportStatus status);
-	void set_progress(int percent);
-	void set_progress_no_percent(int progress);
+	private slots:
+		void accept() override;
+		void reject() override;
 
-protected:
-	void closeEvent(QCloseEvent* e) override;
-	void showEvent(QShowEvent* e) override;
-	void language_changed() override;
+		void chooseDirectory();
+		void editPressed();
+		void setMetadata(const MetaDataList& tracks);
+		void setStatus(Library::Importer::ImportStatus status);
+		void setProgress(int percent);
+		void cachedFilesChanged();
+
+	protected:
+		void closeEvent(QCloseEvent* e) override;
+		void showEvent(QShowEvent* e) override;
+		void languageChanged() override;
 };
 
 #endif /* GUIIMPORTFOLDER_H_ */

@@ -1,6 +1,6 @@
 /* GUI_PlayerMessages.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -22,9 +22,10 @@
 #include "Utils/Language/Language.h"
 #include <QMessageBox>
 
-Message::Answer convert_answer(QMessageBox::StandardButton answer)
+static Message::Answer convertAnswer(int answer)
 {
-	switch(answer){
+	auto button = QMessageBox::StandardButton(answer);
+	switch(button){
 		case QMessageBox::Ok:
 			return Message::Answer::Ok;
 
@@ -43,7 +44,7 @@ Message::Answer convert_answer(QMessageBox::StandardButton answer)
 	}
 }
 
-Message::Answer GUI_Player::error_received(const QString &error, const QString &sender_name)
+Message::Answer GUI_Player::errorReceived(const QString& error, const QString& sender_name)
 {
 	QString title = sender_name.isEmpty()
 			? Lang::get(Lang::Error) + ":"
@@ -56,10 +57,10 @@ Message::Answer GUI_Player::error_received(const QString &error, const QString &
 	msgBox.setStandardButtons(QMessageBox::Ok);
 	msgBox.setButtonText(QMessageBox::Ok, Lang::get(Lang::OK));
 
-	return convert_answer((QMessageBox::StandardButton) msgBox.exec());
+	return convertAnswer(msgBox.exec());
 }
 
-Message::Answer GUI_Player::warning_received(const QString &warning, const QString &sender_name)
+Message::Answer GUI_Player::warningReceived(const QString& warning, const QString& sender_name)
 {
 	QString title = sender_name.isEmpty()
 			? Lang::get(Lang::Warning)
@@ -72,10 +73,10 @@ Message::Answer GUI_Player::warning_received(const QString &warning, const QStri
 	msgBox.setStandardButtons(QMessageBox::Ok);
 	msgBox.setButtonText(QMessageBox::Ok, Lang::get(Lang::OK));
 
-	return convert_answer((QMessageBox::StandardButton) msgBox.exec());
+	return convertAnswer(msgBox.exec());
 }
 
-Message::Answer GUI_Player::info_received(const QString &info, const QString &sender_name)
+Message::Answer GUI_Player::infoReceived(const QString& info, const QString& sender_name)
 {
 	QString title = sender_name.isEmpty()
 			? Lang::get(Lang::Info)
@@ -88,11 +89,10 @@ Message::Answer GUI_Player::info_received(const QString &info, const QString &se
 	msgBox.setStandardButtons(QMessageBox::Ok);
 	msgBox.setButtonText(QMessageBox::Ok, Lang::get(Lang::OK));
 
-	return convert_answer((QMessageBox::StandardButton) msgBox.exec());
+	return convertAnswer(msgBox.exec());
 }
 
-
-Message::Answer GUI_Player::question_received(const QString &question, const QString &sender_name, Message::QuestionType type)
+Message::Answer GUI_Player::questionReceived(const QString& question, const QString& sender_name, Message::QuestionType type)
 {
 	QString title = sender_name.isEmpty()
 			? Lang::get(Lang::Info)
@@ -117,6 +117,5 @@ Message::Answer GUI_Player::question_received(const QString &question, const QSt
 		msgBox.setButtonText(QMessageBox::Cancel, Lang::get(Lang::Cancel));
 	}
 
-	return convert_answer((QMessageBox::StandardButton) msgBox.exec());
-
+	return convertAnswer(msgBox.exec());
 }

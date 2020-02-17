@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -44,19 +44,18 @@ using StringPair=QPair<QString, QString>;
 
 struct DirectoryModel::Private
 {
-	Library::Info	library_info;
-	QStringList		found_strings;
-	int				cur_idx;
-	bool			search_only_dirs;
+	Library::Info	libraryInfo;
+	QStringList		foundStrings;
+	int				currentIndex;
+	bool			searchOnlyDirectories;
 
-	Util::Set<QString> all_dirs;
-	Util::Set<QString> all_files;
+	Util::Set<QString> allDirectories;
+	Util::Set<QString> allFiles;
 
-	Private()
-	{
-		search_only_dirs = false;
-		cur_idx = -1;
-	}
+	Private() :
+		currentIndex(-1),
+		searchOnlyDirectories(false)
+	{}
 };
 
 DirectoryModel::DirectoryModel(QObject* parent) :
@@ -67,101 +66,101 @@ DirectoryModel::DirectoryModel(QObject* parent) :
 
 DirectoryModel::~DirectoryModel() = default;
 
-void DirectoryModel::search_only_dirs(bool b)
+void DirectoryModel::setSearchOnlyDirectories(bool b)
 {
-	if(b != m->search_only_dirs){
-		m->cur_idx = 0;
+	if(b != m->searchOnlyDirectories){
+		m->currentIndex = 0;
 	}
 
-	m->search_only_dirs = b;
+	m->searchOnlyDirectories = b;
 }
 
-void DirectoryModel::set_library(const Library::Info& info)
+void DirectoryModel::setLibraryInfo(const Library::Info& info)
 {
-	m->library_info = info;
+	m->libraryInfo = info;
 	setRootPath(info.path());
 }
 
-Library::Info DirectoryModel::library_info() const
+Library::Info DirectoryModel::libraryInfo() const
 {
-	return m->library_info;
+	return m->libraryInfo;
 }
 
-void DirectoryModel::create_file_list(const QString& substr)
+void DirectoryModel::createFileList(const QString& substr)
 {
-	m->all_files.clear();
-	m->all_dirs.clear();
+	m->allFiles.clear();
+	m->allDirectories.clear();
 
 	Library::Filter filter;
-	filter.set_filtertext(substr, search_mode());
-	filter.set_mode(Library::Filter::Mode::Filename);
+	filter.setFiltertext(substr, searchMode());
+	filter.setMode(Library::Filter::Mode::Filename);
 
-	LibraryId lib_id = m->library_info.id();
+	LibraryId lib_id = m->libraryInfo.id();
 
 	auto* db = DB::Connector::instance();
-	DB::LibraryDatabase* library_db = db->library_db(lib_id, 0);
+	DB::LibraryDatabase* library_db = db->libraryDatabase(lib_id, 0);
 
 	MetaDataList v_md;
 	library_db->getAllTracksBySearchString(filter, v_md);
 
 	for(const MetaData& md : v_md)
 	{
-		QString d = Util::File::get_parent_directory(md.filepath());
-		m->all_files << md.filepath();
-		m->all_dirs << d;
+		QString d = Util::File::getParentDirectory(md.filepath());
+		m->allFiles << md.filepath();
+		m->allDirectories << d;
 	}
 }
 
-QModelIndexList DirectoryModel::search_results(const QString& substr)
+QModelIndexList DirectoryModel::searchResults(const QString& substr)
 {
 	QModelIndexList ret;
 
-	m->found_strings.clear();
-	m->cur_idx = -1;
+	m->foundStrings.clear();
+	m->currentIndex = -1;
 
-	create_file_list(substr);
-	if(m->all_files.isEmpty()){
+	createFileList(substr);
+	if(m->allFiles.isEmpty()){
 		return QModelIndexList();
 	}
 
-	QString cvt_search_string = Library::Utils::convert_search_string(substr, search_mode());
+	QString cvt_search_string = Library::Utils::convertSearchstring(substr, searchMode());
 
-	for(const QString& dir : m->all_dirs)
+	for(const QString& dir : m->allDirectories)
 	{
 		QString dir_cvt(dir);
-		dir_cvt.remove(m->library_info.path());
-		dir_cvt = Library::Utils::convert_search_string(dir_cvt, search_mode());
+		dir_cvt.remove(m->libraryInfo.path());
+		dir_cvt = Library::Utils::convertSearchstring(dir_cvt, searchMode());
 
 		if(dir_cvt.contains(cvt_search_string))
 		{
-			m->found_strings << dir;
+			m->foundStrings << dir;
 		}
 	}
 
-	if(!m->search_only_dirs)
+	if(!m->searchOnlyDirectories)
 	{
-		for(const QString& file : m->all_files)
+		for(const QString& file : m->allFiles)
 		{
 			QString file_cvt(file);
-			file_cvt.remove(m->library_info.path());
-			file_cvt = Library::Utils::convert_search_string(file_cvt, search_mode());
+			file_cvt.remove(m->libraryInfo.path());
+			file_cvt = Library::Utils::convertSearchstring(file_cvt, searchMode());
 
 			if(file_cvt.contains(cvt_search_string))
 			{
-				QString d = Util::File::get_parent_directory(file);
-				m->found_strings << d;
+				QString d = Util::File::getParentDirectory(file);
+				m->foundStrings << d;
 			}
 		}
 	}
 
 	QString str;
-	if(m->found_strings.size() > 0)
+	if(m->foundStrings.size() > 0)
 	{
-		str = m->found_strings.first();
-		m->cur_idx = 0;
+		str = m->foundStrings.first();
+		m->currentIndex = 0;
 	}
 
-	for(const QString& found_str : m->found_strings)
+	for(const QString& found_str : m->foundStrings)
 	{
 		QModelIndex found_idx = index(found_str);
 		ret << found_idx;

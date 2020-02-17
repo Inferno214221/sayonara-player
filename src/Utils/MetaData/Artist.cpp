@@ -1,6 +1,6 @@
 /* Artist.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -28,7 +28,7 @@
 
 struct Artist::Private
 {
-	HashValue artist_idx;
+	HashValue artistIndex;
 	ArtistId id;
 	uint16_t albumcount;
 	uint16_t songcount;
@@ -42,14 +42,14 @@ struct Artist::Private
 	~Private() = default;
 
 	Private(const Private& other) :
-		CASSIGN(artist_idx),
+		CASSIGN(artistIndex),
 		CASSIGN(id),
 		CASSIGN(albumcount),
 		CASSIGN(songcount)
 	{}
 
 	Private(Private&& other) noexcept :
-		CMOVE(artist_idx),
+		CMOVE(artistIndex),
 		CMOVE(id),
 		CMOVE(albumcount),
 		CMOVE(songcount)
@@ -57,7 +57,7 @@ struct Artist::Private
 
 	Private& operator=(const Private& other)
 	{
-		ASSIGN(artist_idx);
+		ASSIGN(artistIndex);
 		ASSIGN(id);
 		ASSIGN(albumcount);
 		ASSIGN(songcount);
@@ -67,7 +67,7 @@ struct Artist::Private
 
 	Private& operator=(Private&& other) noexcept
 	{
-		MOVE(artist_idx);
+		MOVE(artistIndex);
 		MOVE(id);
 		MOVE(albumcount);
 		MOVE(songcount);
@@ -81,7 +81,7 @@ uint16_t Artist::albumcount() const
 	return m->albumcount;
 }
 
-void Artist::set_albumcount(const uint16_t& value)
+void Artist::setAlbumcount(const uint16_t& value)
 {
 	m->albumcount = value;
 }
@@ -91,7 +91,7 @@ uint16_t Artist::songcount() const
 	return m->songcount;
 }
 
-void Artist::set_songcount(const uint16_t& value)
+void Artist::setSongcount(const uint16_t& value)
 {
 	m->songcount = value;
 }
@@ -101,7 +101,7 @@ ArtistId Artist::id() const
 	return m->id;
 }
 
-void Artist::set_id(const ArtistId& value)
+void Artist::setId(const ArtistId& value)
 {
 	m->id = value;
 }
@@ -147,18 +147,18 @@ Artist::~Artist() = default;
 
 QString Artist::name() const
 {
-	return artist_pool().value(m->artist_idx);
+	return artistPool().value(m->artistIndex);
 }
 
-void Artist::set_name(const QString& artist)
+void Artist::setName(const QString& artist)
 {
 	HashValue hashed = qHash(artist);
-	if(!artist_pool().contains(hashed))
+	if(!artistPool().contains(hashed))
 	{
-		artist_pool().insert(hashed, artist);
+		artistPool().insert(hashed, artist);
 	}
 
-	m->artist_idx = hashed;
+	m->artistIndex = hashed;
 }
 
 QVariant Artist::toVariant(const Artist& artist) {
@@ -177,7 +177,7 @@ bool Artist::fromVariant(const QVariant& v, Artist& artist) {
 
 void Artist::print() const
 {
-	sp_log(Log::Info, this) << id() << ": " << name() << ": " << songcount() << " Songs, " << albumcount() << " Albums";
+	spLog(Log::Info, this) << id() << ": " << name() << ": " << songcount() << " Songs, " << albumcount() << " Albums";
 }
 
 
@@ -238,10 +238,10 @@ QString ArtistList::get_major_artist() const
 	return get_major_artist(lst);
 }
 
-bool ArtistList::contains(ArtistId artist_id) const
+bool ArtistList::contains(ArtistId artistId) const
 {
 	for(auto it=this->begin(); it!=this->end(); it++){
-		if(it->id() == artist_id){
+		if(it->id() == artistId){
 			return true;
 		}
 	}
@@ -285,5 +285,5 @@ ArtistList& ArtistList::append_unique(const ArtistList& other)
 
 void ArtistList::sort(Library::SortOrder so)
 {
-	MetaDataSorting::sort_artists(*this, so);
+	MetaDataSorting::sortArtists(*this, so);
 }

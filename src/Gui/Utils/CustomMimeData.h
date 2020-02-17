@@ -1,6 +1,6 @@
 /* CustomMimeData.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -42,10 +42,6 @@ namespace Gui
 		const void* ptr() const;
 
 	public:
-
-//		class AsyncDropHandler
-//		{};
-
 		/**
 		 * @brief Constructor
 		 */
@@ -55,13 +51,13 @@ namespace Gui
 			CustomMimeData(static_cast<const void*>(class_instance))
 		{}
 
-		virtual ~CustomMimeData();
+		virtual ~CustomMimeData() override;
 
 		/**
 		 * @brief Set metadata you want to drag and drop
 		 * @param v_md metadata that should be sent
 		 */
-		void set_metadata(const MetaDataList& v_md);
+		void setMetadata(const MetaDataList& v_md);
 
 		/**
 		 * @brief get metadata from drag and drop
@@ -74,28 +70,24 @@ namespace Gui
 		 * @brief check, if the custom mimedata has metadata
 		 * @return true if yes, false else
 		 */
-		bool has_metadata() const;
+		bool hasMetadata() const;
 
-		void set_playlist_source_index(int playlist_idx);
-		int playlist_source_index() const;
+		void setPlaylistSourceIndex(int playlistIndex);
+		int playlistSourceIndex() const;
 
-		QString cover_url() const;
-		void set_cover_url(const QString& url);
-
-
-//		void set_drop_handler(AsyncDropHandler* handler);
-//		AsyncDropHandler* drop_handler() const;
+		QString coverUrl() const;
+		void setCoverUrl(const QString& url);
 
 		template<typename T>
-		bool has_source(const T* class_instance) const
+		bool hasSource(const T* classInstance) const
 		{
-			const void* void_ptr = ptr();
-			const T* p = static_cast<const T*>(void_ptr);
+			const void* voidPtr = ptr();
+			const T* p = static_cast<const T*>(voidPtr);
 			if(!p){
 				return false;
 			}
 
-			return (p == class_instance);
+			return (p == classInstance);
 		}
 	};
 }

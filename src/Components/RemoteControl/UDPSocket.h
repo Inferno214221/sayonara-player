@@ -13,12 +13,12 @@ public:
 	explicit RemoteUDPSocket(QObject* parent=nullptr);
 	~RemoteUDPSocket() override;
 
-private slots:
-	void data_received();
-	void remote_settings_changed();
-
 public slots:
-	void set_active(bool b);
+	void setActive(bool b);
+
+private slots:
+	void dataReceived();
+	void remoteSettingsChanged();
 };
 
 #endif // UDPSOCKET_H

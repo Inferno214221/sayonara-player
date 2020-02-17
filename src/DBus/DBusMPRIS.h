@@ -1,6 +1,6 @@
 /* DBusMPRIS.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -45,7 +45,7 @@ class MediaPlayer2 :
 	PIMPL(MediaPlayer2)
 
 	public:
-		explicit MediaPlayer2(QMainWindow* player, QObject *parent=nullptr);
+		explicit MediaPlayer2(QMainWindow* player, QObject* parent=nullptr);
 		~MediaPlayer2();
 
 		Q_PROPERTY(bool			CanQuit				READ CanQuit		CONSTANT)
@@ -123,7 +123,7 @@ class MediaPlayer2 :
 
 		Q_PROPERTY(qlonglong	Position			READ	Position)
 		qlonglong				Position();
-		void					SetPosition(const QDBusObjectPath& track_id, qlonglong position);
+		void					SetPosition(const QDBusObjectPath& trackId, qlonglong position);
 
 
 		Q_PROPERTY(double		MinimumRate			READ	MinimumRate)
@@ -157,7 +157,6 @@ class MediaPlayer2 :
 		Q_PROPERTY(bool			CanControl			READ	CanControl)
 		bool					CanControl();
 
-
 		void					Next();
 		void					Previous();
 		void					Pause();
@@ -165,24 +164,21 @@ class MediaPlayer2 :
 		void					Stop();
 		void					Play();
 		void					Seek(qlonglong offset);
-
 		void					OpenUri(const QString& uri);
 
-
 	public slots:
-
-		void					position_changed(MilliSeconds pos_ms);
-		void					volume_changed(int volume);
-		void					track_idx_changed(int idx);
-		void					track_changed(const MetaData& md);
-		void					playstate_changed(PlayState state);
+		void					positionChanged(MilliSeconds pos_ms);
+		void					volumeChanged(int volume);
+		void					trackIndexChanged(int idx);
+		void					trackChanged(const MetaData& md);
+		void					playstateChanged(PlayState state);
 
 	signals:
 		void					Seeked(qlonglong position);
-		void					sig_raise();
+		void					sigRaise();
 
 	private slots:
-		void					track_metadata_changed();
+		void					trackMetadataChanged();
 
 };
 } // end namespace DBusMPRIS

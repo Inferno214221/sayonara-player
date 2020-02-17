@@ -1,6 +1,6 @@
 /* DatabasePlaylist.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -46,7 +46,7 @@ namespace DB
 			private Module
 	{
 		public:
-			Playlist(const QString& connection_name, DbId db_id);
+			Playlist(const QString& connectionName, DbId databaseId);
 			~Playlist();
 
 			bool getAllPlaylistSkeletons(CustomPlaylistSkeletons& skeletons, ::Playlist::StoreType type, ::Playlist::SortOrder sortorder=::Playlist::SortOrder::NameAsc);

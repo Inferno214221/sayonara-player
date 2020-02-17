@@ -1,6 +1,6 @@
 /* PreferenceWidgetInterface.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -58,7 +58,7 @@ namespace Preferences
 		QString	identifier() const;
 
 	private:
-		void set_initialized();
+		void setInitialized();
 
 	protected:
 
@@ -68,16 +68,16 @@ namespace Preferences
 		 * This method should be the first to be called when calling init_ui()
 		 * @param widget should always be "this"
 		 */
-		void setup_parent(W* widget, UiClass** ui)
+		void setupParent(W* widget, UiClass** ui)
 		{
 			*ui = new UiClass();
 			(*ui)->setupUi(widget);
 
-			set_initialized();
+			setInitialized();
 
-			widget->language_changed();
+			widget->languageChanged();
 
-			skin_changed();
+			skinChanged();
 		}
 
 		/**
@@ -95,13 +95,13 @@ namespace Preferences
 		 *		PreferenceWidgetInterface::language_changed();\n
 		 *  }\n
 		 */
-		virtual void language_changed() override final;
+		virtual void languageChanged() override final;
 
 
 		/**
 		 * @brief Sets the new translated action name
 		 */
-		void translate_action();
+		void translationAction();
 
 
 	protected:
@@ -119,7 +119,7 @@ namespace Preferences
 		 * @brief checks if ui has already been initialized.
 		 * @return false, if the widget has never been activated before, true else
 		 */
-		virtual bool is_ui_initialized() const final;
+		virtual bool isUiInitialized() const final;
 
 
 		/**
@@ -134,7 +134,7 @@ namespace Preferences
 		 * @brief has to be implemented and should return the translated action text
 		 * @return translated action name
 		 */
-		virtual QString action_name() const=0;
+		virtual QString actionName() const=0;
 
 
 		/**
@@ -155,26 +155,26 @@ namespace Preferences
 		 * initialize compoenents and connections here.\n
 		 * After calling setup_parent(this), the preference Dialog is ready to use, language_changed() is called automatically
 		 */
-		virtual void init_ui()=0;
+		virtual void initUi()=0;
 
 
 		/**
 		 * @brief call the Qt retranslateUi method here
 		 */
-		virtual void retranslate_ui()=0;
+		virtual void retranslate()=0;
 
 		/**
 		 * @brief indicates if there was an error on the settings page like
 		 * an invalid expression or combination of settings
 		 * @return
 		 */
-		virtual bool has_error() const;
+		virtual bool hasError() const;
 
 		/**
 		 * @brief A closer description of the error
 		 * @return
 		 */
-		virtual QString error_string() const;
+		virtual QString errorString() const;
 
 	};
 }

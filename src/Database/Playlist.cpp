@@ -1,6 +1,6 @@
 /* DatabasePlaylist.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -29,8 +29,8 @@
 
 using DB::Query;
 
-DB::Playlist::Playlist(const QString& connection_name, DbId db_id) :
-	Module(connection_name, db_id) {}
+DB::Playlist::Playlist(const QString& connection_name, DbId databaseId) :
+	Module(connection_name, databaseId) {}
 
 DB::Playlist::~Playlist() {}
 
@@ -69,7 +69,7 @@ bool DB::Playlist::getAllPlaylistSkeletons(CustomPlaylistSkeletons& skeletons, :
 			break;
 	}
 
-	Query q = run_query
+	Query q = runQuery
 	(
 		"SELECT "
 		"playlists.playlistID, "
@@ -85,7 +85,7 @@ bool DB::Playlist::getAllPlaylistSkeletons(CustomPlaylistSkeletons& skeletons, :
 		"Cannot fetch all playlists"
 	);
 
-	if(q.has_error()){
+	if(q.hasError()){
 		return false;
 	}
 
@@ -96,12 +96,12 @@ bool DB::Playlist::getAllPlaylistSkeletons(CustomPlaylistSkeletons& skeletons, :
 			continue;
 		}
 
-		skeleton.set_id(q.value(0).toInt());
-		skeleton.set_name(q.value(1).toString());
+		skeleton.setId(q.value(0).toInt());
+		skeleton.setName(q.value(1).toString());
 
 		bool temporary = (q.value(2) == 1);
-		skeleton.set_temporary(temporary);
-		skeleton.set_num_tracks(q.value(3).toInt());
+		skeleton.setTemporary(temporary);
+		skeleton.setTrackCount(q.value(3).toInt());
 
 		skeletons << skeleton;
 	}
@@ -112,11 +112,11 @@ bool DB::Playlist::getAllPlaylistSkeletons(CustomPlaylistSkeletons& skeletons, :
 bool DB::Playlist::getPlaylistSkeletonById(CustomPlaylistSkeleton& skeleton)
 {
 	if(skeleton.id() < 0){
-		sp_log(Log::Warning, this) << "Cannot fetch playlist -1";
+		spLog(Log::Warning, this) << "Cannot fetch playlist -1";
 		return false;
 	}
 
-	Query q = run_query
+	Query q = runQuery
 	(
 		"SELECT "
 		"playlists.playlistID, "
@@ -132,19 +132,19 @@ bool DB::Playlist::getPlaylistSkeletonById(CustomPlaylistSkeleton& skeleton)
 		"Cannot fetch all playlists"
 	);
 
-	if(q.has_error())
+	if(q.hasError())
 	{
 		return false;
 	}
 
 	if(q.next())
 	{
-		skeleton.set_id(q.value(0).toInt());
-		skeleton.set_name(q.value(1).toString());
+		skeleton.setId(q.value(0).toInt());
+		skeleton.setName(q.value(1).toString());
 
 		bool temporary = (q.value(2) == 1);
-		skeleton.set_temporary(temporary);
-		skeleton.set_num_tracks(q.value(3).toInt());
+		skeleton.setTemporary(temporary);
+		skeleton.setTrackCount(q.value(3).toInt());
 
 		return true;
 	}
@@ -156,7 +156,7 @@ bool DB::Playlist::getPlaylistById(CustomPlaylist& pl)
 {
 	if(!getPlaylistSkeletonById(pl))
 	{
-		sp_log(Log::Warning, this) << "Get playlist by id: cannot fetch skeleton id " << pl.id();
+		spLog(Log::Warning, this) << "Get playlist by id: cannot fetch skeleton id " << pl.id();
 		return false;
 	}
 
@@ -180,13 +180,13 @@ bool DB::Playlist::getPlaylistById(CustomPlaylist& pl)
 		"tracks.discnumber		AS discnumber",		// 13
 		"tracks.rating			AS rating",			// 14
 		"playlistToTracks.filepath AS filepath",	// 15
-		"playlistToTracks.db_id AS db_id",			// 16
-		"tracks.libraryID		AS library_id",		// 17
+		"playlistToTracks.db_id AS databaseId",			// 16
+		"tracks.libraryID		AS libraryId",		// 17
 		"tracks.createdate		AS createdate",		// 18
 		"tracks.modifydate		AS modifydate"		// 19
 	};
 
-	Query q = run_query
+	Query q = runQuery
 	(
 		"SELECT "
 		+ fields.join(", ") + " " +
@@ -203,33 +203,33 @@ bool DB::Playlist::getPlaylistById(CustomPlaylist& pl)
 	);
 
 
-	if(!q.has_error())
+	if(!q.hasError())
 	{
 		while (q.next())
 		{
 			MetaData data;
 
-			data.set_id(q.value(0).toInt());
-			data.set_title(q.value(1).toString());
-			data.set_duration_ms(q.value(2).toInt());
-			data.set_year(q.value(3).value<Year>());
-			data.set_bitrate(q.value(4).value<Bitrate>());
-			data.set_filepath(q.value(5).toString());
-			data.set_track_number(q.value(6).value<TrackNum>());
-			data.set_album_id(q.value(7).toInt());
-			data.set_artist_id(q.value(8).toInt());
-			data.set_album(q.value(9).toString().trimmed());
-			data.set_artist(q.value(10).toString().trimmed());
+			data.setId(q.value(0).toInt());
+			data.setTitle(q.value(1).toString());
+			data.setDurationMs(q.value(2).toInt());
+			data.setYear(q.value(3).value<Year>());
+			data.setBitrate(q.value(4).value<Bitrate>());
+			data.setFilepath(q.value(5).toString());
+			data.setTrackNumber(q.value(6).value<TrackNum>());
+			data.setAlbumId(q.value(7).toInt());
+			data.setArtistId(q.value(8).toInt());
+			data.setAlbum(q.value(9).toString().trimmed());
+			data.setArtist(q.value(10).toString().trimmed());
 			QStringList genres = q.value(11).toString().split(",");
-			data.set_genres(genres);
-			data.set_filesize(q.value(12).value<Filesize>());
-			data.set_discnumber(q.value(13).value<Disc>());
-			data.set_rating(q.value(14).value<Rating>());
-			data.set_library_id(q.value(17).value<LibraryId>());
-			data.set_createdate(q.value(18).value<uint64_t>());
-			data.set_modifydate(q.value(19).value<uint64_t>());
-			data.set_extern(false);
-			data.set_db_id(db_id());
+			data.setGenres(genres);
+			data.setFilesize(q.value(12).value<Filesize>());
+			data.setDiscnumber(q.value(13).value<Disc>());
+			data.setRating(q.value(14).value<Rating>());
+			data.setLibraryid(q.value(17).value<LibraryId>());
+			data.setCreatedDate(q.value(18).value<uint64_t>());
+			data.setModifiedDate(q.value(19).value<uint64_t>());
+			data.setExtern(false);
+			data.setDatabaseId(databaseId());
 
 			if(q.value(16).toInt() == 0 || q.value(16).isNull()){
 				pl.push_back(data);
@@ -238,7 +238,7 @@ bool DB::Playlist::getPlaylistById(CustomPlaylist& pl)
 	}
 
 	// non database playlists
-	Query q2 = run_query
+	Query q2 = runQuery
 	(
 		"SELECT "
 		"playlisttotracks.filepath AS filepath, "
@@ -253,7 +253,7 @@ bool DB::Playlist::getPlaylistById(CustomPlaylist& pl)
 		QString("Playlist by id: Cannot fetch playlist %1").arg(pl.id())
 	);
 
-	if(q2.has_error()) {
+	if(q2.hasError()) {
 		return false;
 	}
 
@@ -263,17 +263,17 @@ bool DB::Playlist::getPlaylistById(CustomPlaylist& pl)
 
 		QString filepath = q2.value(0).toString();
 		MetaData data(filepath);
-		data.set_id(-1);
-		data.set_extern(true);
-		data.set_title(filepath);
-		data.set_artist(filepath);
-		data.set_db_id(db_id());
+		data.setId(-1);
+		data.setExtern(true);
+		data.setTitle(filepath);
+		data.setArtist(filepath);
+		data.setDatabaseId(databaseId());
 
 		for(int row=0; row<=pl.count(); row++)
 		{
 			if( row >= position)
 			{
-				pl.insert_track(data, row);
+				pl.insertTrack(data, row);
 				break;
 			}
 		}
@@ -286,16 +286,16 @@ bool DB::Playlist::getPlaylistById(CustomPlaylist& pl)
 // nonnegative else
 int DB::Playlist::getPlaylistIdByName(const QString& name)
 {
-	Query q = run_query
+	Query q = runQuery
 	(
 		"SELECT playlistid FROM playlists WHERE playlist = :playlist_name;",
 		{
-			{":playlist_name", Util::cvt_not_null(name)}
+			{":playlist_name", Util::convertNotNull(name)}
 		},
 		QString("Playlist by name: Cannot fetch playlist %1").arg(name)
 	);
 
-	if(q.has_error()) {
+	if(q.hasError()) {
 		return -1;
 	}
 
@@ -312,7 +312,7 @@ int DB::Playlist::getPlaylistIdByName(const QString& name)
 
 bool DB::Playlist::insertTrackIntoPlaylist(const MetaData& md, int playlist_id, int pos)
 {
-	if(md.is_disabled()) {
+	if(md.isDisabled()) {
 		return false;
 	}
 
@@ -321,11 +321,11 @@ bool DB::Playlist::insertTrackIntoPlaylist(const MetaData& md, int playlist_id, 
 		{"trackid", md.id()},
 		{"playlistid", playlist_id},
 		{"position", pos},
-		{"filepath", Util::cvt_not_null(md.filepath())},
-		{"db_id", md.db_id()}
+		{"filepath", Util::convertNotNull(md.filepath())},
+		{"db_id", md.databaseId()}
 	}, "Cannot insert track into playlist");
 
-	return (!q.has_error());
+	return (!q.hasError());
 }
 
 
@@ -335,11 +335,11 @@ int DB::Playlist::createPlaylist(QString playlist_name, bool temporary)
 {
 	Query q	= insert("playlists",
 	{
-		{"playlist", Util::cvt_not_null(playlist_name)},
+		{"playlist", Util::convertNotNull(playlist_name)},
 		{"temporary", (temporary == true) ? 1 : 0}
 	}, "Cannot create playlist");
 
-	if(q.has_error()){
+	if(q.hasError()){
 		return false;
 	}
 
@@ -350,11 +350,11 @@ int DB::Playlist::createPlaylist(QString playlist_name, bool temporary)
 bool DB::Playlist::renamePlaylist(int id, const QString& new_name)
 {
 	Query q = update("playlists",
-		{{"playlist", Util::cvt_not_null(new_name)}},
+		{{"playlist", Util::convertNotNull(new_name)}},
 		{"playlistId", id}
 	, "Cannot rename playlist");
 
-	return (!q.has_error());
+	return (!q.hasError());
 }
 
 
@@ -367,7 +367,7 @@ bool DB::Playlist::storePlaylist(const MetaDataList& vec_md, QString playlist_na
 	}
 
 	if(playlist_name.isEmpty()){
-		sp_log(Log::Warning, this) << "Try to save empty playlist";
+		spLog(Log::Warning, this) << "Try to save empty playlist";
 		return false;
 	}
 
@@ -400,11 +400,11 @@ bool DB::Playlist::storePlaylist(const MetaDataList& vec_md, QString playlist_na
 bool DB::Playlist::storePlaylist(const MetaDataList& vec_md, int playlist_id, bool temporary)
 {
 	CustomPlaylist pl;
-	pl.set_id(playlist_id);
+	pl.setId(playlist_id);
 
 	bool success = getPlaylistById(pl);
 	if(!success){
-		sp_log(Log::Warning, this) << "Store: Cannot fetch playlist: " << pl.id();
+		spLog(Log::Warning, this) << "Store: Cannot fetch playlist: " << pl.id();
 		return false;
 	}
 
@@ -441,7 +441,7 @@ bool DB::Playlist::emptyPlaylist(int playlist_id)
 	q.bindValue(":playlist_id", playlist_id);
 
 	if(!q.exec()) {
-		q.show_error("DB: Playlist cannot be cleared");
+		q.showError("DB: Playlist cannot be cleared");
 		return false;
 	}
 
@@ -459,7 +459,7 @@ bool DB::Playlist::deletePlaylist(int playlist_id)
 	q.bindValue(":playlist_id", playlist_id);
 
 	if(!q.exec()){
-		q.show_error(QString("Cannot delete playlist ") + QString::number(playlist_id));
+		q.showError(QString("Cannot delete playlist ") + QString::number(playlist_id));
 		return false;
 	}
 

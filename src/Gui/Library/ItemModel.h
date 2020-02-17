@@ -1,6 +1,6 @@
 /* ItemModel.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -53,26 +53,18 @@ namespace Library
 			ItemModel(QObject* parent, AbstractLibrary* library);
 			virtual ~ItemModel() override;
 
-			QVariant		headerData ( int section, Qt::Orientation orientation, int role=Qt::DisplayRole ) const override;
-			bool			set_header_data(const QStringList& names);
+			QVariant		headerData(int section, Qt::Orientation orientation, int role=Qt::DisplayRole) const override;
+			bool			setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role = Qt::EditRole) override;
 
 			virtual int     columnCount(const QModelIndex& parent=QModelIndex()) const override;
 
-			QModelIndexList search_results(const QString& substr) override;
-
-			virtual bool			is_selected(int id) const final;
-
-			/**
-			 * @brief returns a set of the selected ids
-			 */
-			virtual const Util::Set<Id>& selections() const=0;
-			virtual IndexSet		selected_indexes() const;
+			QModelIndexList	searchResults(const QString& substr) override;
 
 			/**
 			 * @brief the index of the searchable column. This is the column
 			 * where the text is searched for a certain searchstring
 			 */
-			virtual int				searchable_column() const=0;
+			virtual int searchableColumn() const=0;
 
 			/**
 			 * @brief here, the searchable string can even be refined. Maybe
@@ -80,14 +72,14 @@ namespace Library
 			 * @param row
 			 * @return
 			 */
-			virtual QString			searchable_string(int row) const=0;
+			virtual QString	searchableString(int row) const=0;
 
 			/**
 			 * @brief return the current id for a given row
 			 * @param row
 			 * @return
 			 */
-			virtual Id				id_by_index(int row) const=0;
+			virtual Id mapIndexToId(int row) const=0;
 
 			/**
 			 * @brief return the cover for multiple rows. if rows.size() > 1,
@@ -102,10 +94,10 @@ namespace Library
 			 * album is selected for example, all tracks of that album should be returned
 			 * @return
 			 */
-			virtual const MetaDataList&	mimedata_tracks() const=0;
-			Gui::CustomMimeData*		custom_mimedata() const;
+			virtual const MetaDataList&	selectedMetadata() const=0;
+			Gui::CustomMimeData* customMimedata() const;
 
-			void refresh_data(int* n_rows_before=nullptr, int* n_rows_after=nullptr); //returns the size difference
+			void refreshData(int* rowCountBefore=nullptr, int* rowCountAfter=nullptr); //returns the size difference
 
 		protected:
 			AbstractLibrary*		library();
@@ -113,7 +105,7 @@ namespace Library
 
 		private:
 			bool removeRows(int position, int rows, const QModelIndex& index=QModelIndex()) override;
-			bool insertRows(int row, int count, const QModelIndex &parent=QModelIndex()) override;
+			bool insertRows(int row, int count, const QModelIndex& parent=QModelIndex()) override;
 	};
 }
 

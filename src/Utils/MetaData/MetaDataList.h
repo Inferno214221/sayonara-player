@@ -1,6 +1,6 @@
 	/* MetaDataList.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -51,15 +51,15 @@ public:
 	~MetaDataList();
 
 	bool contains(const MetaData& md) const;
-	MetaDataList& remove_track(int idx);
-	MetaDataList& remove_tracks(const IndexSet& rows);
-	MetaDataList& remove_tracks(int first, int last);
-	MetaDataList& remove_tracks(std::function<bool (const MetaData&)> attr);
+	MetaDataList& removeTrack(int idx);
+	MetaDataList& removeTracks(const IndexSet& rows);
+	MetaDataList& removeTracks(int first, int last);
+	MetaDataList& removeTracks(std::function<bool (const MetaData&)> attr);
 
-	MetaDataList& move_tracks(const IndexSet& indexes, int tgt_idx) noexcept;
-	MetaDataList& copy_tracks(const IndexSet& indexes, int tgt_idx);
-	MetaDataList& insert_track(const MetaData& md, int tgt_idx);
-	MetaDataList& insert_tracks(const MetaDataList& v_md, int tgt_idx);
+	MetaDataList& moveTracks(const IndexSet& indexes, int tgt_idx) noexcept;
+	MetaDataList& copyTracks(const IndexSet& indexes, int tgt_idx);
+	MetaDataList& insertTrack(const MetaData& md, int tgt_idx);
+	MetaDataList& insertTracks(const MetaDataList& v_md, int tgt_idx);
 
 	IdxList findTracks(Id id) const;
 	IdxList findTracks(const QString& filepath) const;
@@ -82,10 +82,10 @@ public:
 	QList<UniqueId> unique_ids() const;
 
 	bool contains(TrackID id) const;
-	void remove_duplicates();
-	MetaData take_at(int idx);
+	void removeDuplicates();
+	MetaData takeAt(int idx);
 	bool isEmpty() const;
-	MetaDataList& append_unique(const MetaDataList& other);
+	MetaDataList& appendUnique(const MetaDataList& other);
 
 	const MetaData& first() const;
 	const MetaData& last() const;

@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -33,10 +33,10 @@ class DBusNotifications :
 
 public:
 	explicit DBusNotifications(QObject* parent=nullptr);
-	virtual ~DBusNotifications();
+	virtual ~DBusNotifications() override;
 
 	void notify(const MetaData& md) override;
-	void notify(const QString& title, const QString& text, const QString& image_path) override;
+	void notify(const QString& title, const QString& text, const QString& imagePath) override;
 
 	QString name() const override;
 };

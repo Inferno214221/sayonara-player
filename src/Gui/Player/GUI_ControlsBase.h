@@ -1,6 +1,6 @@
 /* GUI_ControlsBase.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -51,35 +51,35 @@ class GUI_ControlsBase :
 
 public:
 	GUI_ControlsBase(QWidget* parent=nullptr);
-	virtual ~GUI_ControlsBase();
+	virtual ~GUI_ControlsBase() override;
 	virtual void init();
 
-	virtual QLabel* lab_sayonara() const=0;
-	virtual QLabel* lab_title() const=0;
-	virtual QLabel* lab_version() const=0;
-	virtual QLabel* lab_album() const=0;
-	virtual QLabel* lab_artist() const=0;
-	virtual QLabel* lab_writtenby() const=0;
-	virtual QLabel* lab_bitrate() const=0;
-	virtual QLabel* lab_filesize() const=0;
-	virtual QLabel* lab_copyright() const=0;
-	virtual QLabel* lab_current_time() const=0;
-	virtual QLabel* lab_max_time() const=0;
-	virtual Gui::RatingEditor* lab_rating() const;
-	virtual QWidget* widget_details() const=0;
+	virtual QLabel* labSayonara() const=0;
+	virtual QLabel* labTitle() const=0;
+	virtual QLabel* labVersion() const=0;
+	virtual QLabel* labAlbum() const=0;
+	virtual QLabel* labArtist() const=0;
+	virtual QLabel* labWrittenBy() const=0;
+	virtual QLabel* labBitrate() const=0;
+	virtual QLabel* labFilesize() const=0;
+	virtual QLabel* labCopyright() const=0;
+	virtual QLabel* labCurrentTime() const=0;
+	virtual QLabel* labMaxTime() const=0;
+	virtual Gui::RatingEditor* labRating() const;
+	virtual QWidget* widgetDetails() const=0;
 
-	virtual Gui::SearchSlider* sli_progress() const=0;
-	virtual Gui::SearchSlider* sli_volume() const=0;
-	virtual QPushButton* btn_mute() const=0;
-	virtual QPushButton* btn_play() const=0;
-	virtual QPushButton* btn_rec() const=0;
-	virtual QPushButton* btn_bwd() const=0;
-	virtual QPushButton* btn_fwd() const=0;
-	virtual QPushButton* btn_stop() const=0;
-	virtual Gui::CoverButton* btn_cover() const=0;
+	virtual Gui::SearchSlider* sliProgress() const=0;
+	virtual Gui::SearchSlider* sliVolume() const=0;
+	virtual QPushButton* btnMute() const=0;
+	virtual QPushButton* btnPlay() const=0;
+	virtual QPushButton* btnRecord() const=0;
+	virtual QPushButton* btnPrevious() const=0;
+	virtual QPushButton* btnNext() const=0;
+	virtual QPushButton* btnStop() const=0;
+	virtual Gui::CoverButton* btnCover() const=0;
 
-	virtual QSize button_size() const final;
-	virtual bool is_extern_resize_allowed() const=0;
+	virtual QSize buttonSize() const final;
+	virtual bool isExternResizeAllowed() const=0;
 
 private:
 	QIcon icon(Gui::Icons::IconName name);
@@ -88,61 +88,61 @@ private:
 	void paused();
 	void stopped();
 
-	void set_cover_location(const MetaData& md);
-	void set_standard_cover();
+	void setCoverLocation(const MetaData& md);
+	void setStandardCover();
 
-	void set_radio_mode(RadioMode radio);
-	void check_record_button_visible();
+	void setRadioMode(RadioMode radio);
+	void checkRecordButtonVisible();
 
-	void setup_volume_button(int percent);
-	void increase_volume();
-	void decrease_volume();
+	void setupVolumeButton(int percent);
+	void increaseVolume();
+	void decreaseVolume();
 
-	void refresh_current_position(int val);
-	void set_total_time_label(MilliSeconds total_time);
+	void refreshCurrentPosition(int val);
+	void setTotalTimeLabel(MilliSeconds total_time);
 
-	void setup_shortcuts();
-	void setup_connections();
+	void setupShortcuts();
+	void setupConnections();
 
 
 public slots:
-	void change_volume_by_tick(int val);
+	void changeVolumeByDelta(int val);
 
 private slots:
-	void playstate_changed(PlayState state);
+	void playstateChanged(PlayState state);
 
-	void rec_changed(bool b);
+	void recordChanged(bool b);
 
 	void buffering(int progress);
 
-	void cur_pos_changed(MilliSeconds pos_ms);
-	void progress_moved(int val);
-	void progress_hovered(int val);
-	void volume_changed(int val);
+	void currentPositionChanged(MilliSeconds pos_ms);
+	void progressMoved(int val);
+	void progressHovered(int val);
 
-	void mute_changed(bool muted);
+	void volumeChanged(int val);
+	void muteChanged(bool muted);
 
-	void track_changed(const MetaData& md);
-	void id3_tags_changed();
+	void currentTrackChanged(const MetaData& md);
+	void metadataChanged();
 
-	void refresh_labels(const MetaData& md);
-	void refresh_current_track();
+	void refreshLabels(const MetaData& md);
+	void refreshCurrentTrack();
 
 	// cover changed by engine
-	void cover_changed(const QByteArray& data, const QString& mimedata);
-	void cover_click_rejected();
+	void coverChanged(const QByteArray& data, const QString& mimedata);
+	void coverClickRejected();
 
-	void sr_active_changed();
+	void streamRecorderActiveChanged();
 
 protected:
 
-	MD::Interpretation metadata_interpretation() const override;
-	MetaDataList info_dialog_data() const override;
+	MD::Interpretation metadataInterpretation() const override;
+	MetaDataList infoDialogData() const override;
 
 	void resizeEvent(QResizeEvent* e) override;
 	void showEvent(QShowEvent* e) override;
 	void contextMenuEvent(QContextMenuEvent* e) override;
-	void skin_changed() override;
+	void skinChanged() override;
 };
 
 #endif // GUI_CONTROLSBASE_H

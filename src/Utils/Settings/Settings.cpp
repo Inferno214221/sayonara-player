@@ -1,6 +1,6 @@
 /* Settings.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -67,15 +67,15 @@ const SettingArray& Settings::settings()
 	return m->settings;
 }
 
-void Settings::register_setting(AbstrSetting* s)
+void Settings::registerSetting(AbstrSetting* s)
 {
-	SettingKey key  = s->get_key();
+	SettingKey key  = s->getKey();
 	uint i = static_cast<uint>(key);
 	m->settings[i] = s;
 }
 
 
-bool Settings::check_settings()
+bool Settings::checkSettings()
 {
 	if(m->initialized){
 		return true;
@@ -91,16 +91,16 @@ bool Settings::check_settings()
 }
 
 
-void Settings::apply_fixes()
+void Settings::applyFixes()
 {
 	int settings_revision = this->get<Set::Settings_Revision>();
 	if(settings_revision < 1)
 	{
 		// Create Crypt keys
-		QByteArray priv_key = ::Util::random_string(32).toLocal8Bit();
+		QByteArray priv_key = ::Util::randomString(32).toLocal8Bit();
 		this->set<Set::Player_PrivId>(priv_key);
 
-		QByteArray pub_key = ::Util::random_string(32).toLocal8Bit();
+		QByteArray pub_key = ::Util::randomString(32).toLocal8Bit();
 		this->set<Set::Player_PublicId>(pub_key);
 
 		// Crypt Last FM password
@@ -119,8 +119,8 @@ void Settings::apply_fixes()
 	if(settings_revision < 2)
 	{
 		QString language = this->get<Set::Player_Language>();
-		QString four_letter = Lang::convert_old_lang(language);
-		this->set<Set::Player_Language>(four_letter);
+		QString fourLetter = Lang::convertOldLanguage(language);
+		this->set<Set::Player_Language>(fourLetter);
 
 		this->set<Set::Settings_Revision>(2);
 	}
@@ -128,13 +128,13 @@ void Settings::apply_fixes()
 
 	if(get<Set::Player_PrivId>().isEmpty())
 	{
-		QByteArray id = ::Util::random_string(32).toLocal8Bit();
+		QByteArray id = ::Util::randomString(32).toLocal8Bit();
 		this->set<Set::Player_PrivId>(id);
 	}
 
 	if(get<Set::Player_PublicId>().isEmpty())
 	{
-		QByteArray id = ::Util::random_string(32).toLocal8Bit();
+		QByteArray id = ::Util::randomString(32).toLocal8Bit();
 		this->set<Set::Player_PublicId>(id);
 	}
 }

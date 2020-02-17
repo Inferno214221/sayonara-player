@@ -1,6 +1,6 @@
 /* ShortcutLineEdit.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -37,7 +37,7 @@ ShortcutLineEdit::ShortcutLineEdit(QWidget*parent) :
 
 ShortcutLineEdit::~ShortcutLineEdit() {}
 
-QList<QKeySequence> ShortcutLineEdit::get_sequences() const
+QList<QKeySequence> ShortcutLineEdit::sequences() const
 {
 	QStringList lst = this->text().split(",");
 	QList<QKeySequence> sequences;
@@ -92,5 +92,5 @@ void ShortcutLineEdit::keyPressEvent(QKeyEvent* e)
 	QKeySequence ks(key);
 	this->setText(ks.toString(QKeySequence::NativeText));
 
-	emit sig_sequence_entered();
+	emit sigSequenceEntered();
 }

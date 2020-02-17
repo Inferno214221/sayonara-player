@@ -1,6 +1,6 @@
 /* ExtensionSet.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -50,7 +50,7 @@ ExtensionSet& ExtensionSet::operator=(const ExtensionSet& other)
 	return *this;
 }
 
-void ExtensionSet::add_extension(const QString& ext, bool enabled)
+void ExtensionSet::addExtension(const QString& ext, bool enabled)
 {
 	if(enabled){
 		m->enabled_extensions.insert(ext.toLower());
@@ -61,7 +61,7 @@ void ExtensionSet::add_extension(const QString& ext, bool enabled)
 	}
 }
 
-void ExtensionSet::remove_extension(const QString& ext)
+void ExtensionSet::removeExtension(const QString& ext)
 {
 	m->enabled_extensions.remove(ext.toLower());
 	m->disabled_extensions.remove(ext.toLower());
@@ -73,7 +73,7 @@ void ExtensionSet::clear()
 	m->disabled_extensions.clear();
 }
 
-bool ExtensionSet::contains_extension(const QString& ext)
+bool ExtensionSet::containsExtension(const QString& ext)
 {
 	return (m->enabled_extensions.contains(ext.toLower())) ||
 			(m->disabled_extensions.contains(ext.toLower()));
@@ -81,11 +81,11 @@ bool ExtensionSet::contains_extension(const QString& ext)
 
 ExtensionSet& ExtensionSet::operator<<(const QString& ext)
 {
-	add_extension(ext, true);
+	addExtension(ext, true);
 	return *this;
 }
 
-void ExtensionSet::set_enabled(const QString& ext, bool b)
+void ExtensionSet::setEnabled(const QString& ext, bool b)
 {
 	if(b){
 		enable(ext);
@@ -108,29 +108,29 @@ void ExtensionSet::enable(const QString& ext)
 	m->enabled_extensions.insert(ext.toLower());
 }
 
-bool ExtensionSet::has_enabled_extensions() const
+bool ExtensionSet::hasEnabledExtensions() const
 {
 	return (m->enabled_extensions.count() > 0);
 }
 
-bool ExtensionSet::has_disabled_extensions() const
+bool ExtensionSet::hasDisabledExtensions() const
 {
 	return (m->disabled_extensions.count() > 0);
 }
 
-bool ExtensionSet::is_enabled(const QString& ext) const
+bool ExtensionSet::isEnabled(const QString& ext) const
 {
 	return (m->enabled_extensions.contains(ext.toLower()));
 }
 
-QStringList ExtensionSet::enabled_extensions() const
+QStringList ExtensionSet::enabledExtensions() const
 {
 	QStringList lst(m->enabled_extensions.toList());
 	std::sort(lst.begin(), lst.end());
 	return lst;
 }
 
-QStringList ExtensionSet::disabled_extensions() const
+QStringList ExtensionSet::disabledExtensions() const
 {
 	QStringList lst(m->disabled_extensions.toList());
 	std::sort(lst.begin(), lst.end());
@@ -141,8 +141,8 @@ QStringList ExtensionSet::extensions() const
 {
 	QStringList lst;
 
-	lst << enabled_extensions();
-	lst << disabled_extensions();
+	lst << enabledExtensions();
+	lst << disabledExtensions();
 
 	std::sort(lst.begin(), lst.end());
 	return lst;

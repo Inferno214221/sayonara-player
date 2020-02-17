@@ -1,6 +1,6 @@
 /* Lyrics.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -36,30 +36,30 @@ namespace Lyrics
 		PIMPL(Lyrics)
 
 	signals:
-		void sig_lyrics_fetched();
+		void sigLyricsFetched();
 
 	public:
 		explicit Lyrics(QObject* parent=nullptr);
 		~Lyrics();
 
 		QStringList servers() const;
-		void set_metadata(const MetaData& md);
-		bool fetch_lyrics(const QString& artist, const QString& title, int server_index);
-		bool save_lyrics(const QString& plain_text);
+		void setMetadata(const MetaData& md);
+		bool fetchLyrics(const QString& artist, const QString& title, int server_index);
+		bool saveLyrics(const QString& plainText);
 
 		QString artist() const;
 		QString title() const;
-		QString lyric_header() const;
-		QString local_lyric_header() const;
+		QString lyricHeader() const;
+		QString localLyricHeader() const;
 		QString lyrics() const;
-		QString local_lyrics() const;
+		QString localLyrics() const;
 
-		bool is_lyric_valid() const;
-		bool is_lyric_tag_available() const;
-		bool is_lyric_tag_supported() const;
+		bool isLyricValid() const;
+		bool isLyricTagAvailable() const;
+		bool isLyricTagSupported() const;
 
 	private slots:
-		void lyrics_fetched();
+		void lyricsFetched();
 	};
 }
 

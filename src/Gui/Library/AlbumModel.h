@@ -1,6 +1,6 @@
 /* AlbumModel.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -23,7 +23,7 @@
  * AlbumModel.h
  *
  *  Created on: Apr 26, 2011
- *      Author: Lucio Carreras
+ *      Author: Michael Lugmair (Lucio Carreras)
  */
 
 #ifndef LIBRARYITEMMODELALBUMS_H_
@@ -48,24 +48,21 @@ namespace Library
 			AlbumModel(QObject* parent, AbstractLibrary* library);
 			~AlbumModel() override;
 
-			Qt::ItemFlags	flags(const QModelIndex &index) const override;
+			Qt::ItemFlags	flags(const QModelIndex& index) const override;
 			QVariant		data(const QModelIndex& index, int role) const override;
 			bool			setData(const QModelIndex& index, const QVariant& value, int role=Qt::DisplayRole) override;
-			int				rowCount(const QModelIndex &parent) const override;
+			int				rowCount(const QModelIndex& parent) const override;
 
 			Cover::Location	cover(const IndexSet& indexes) const override;
-			int				searchable_column() const override;
-			Id				id_by_index(int index) const override;
-			QString			searchable_string(int row) const override;
-
-
-			const Util::Set<Id>& selections() const override;
+			int				searchableColumn() const override;
+			Id				mapIndexToId(int index) const override;
+			QString			searchableString(int row) const override;
 
 		protected:
-			const MetaDataList& mimedata_tracks() const override;
+			const MetaDataList& selectedMetadata() const override;
 
 		private slots:
-			void album_changed(int index);
+			void albumChanged(int index);
 	};
 }
 

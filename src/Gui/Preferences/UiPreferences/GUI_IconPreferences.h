@@ -1,6 +1,6 @@
 /* GUI_IconPreferences.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -42,21 +42,21 @@ public:
 	virtual ~GUI_IconPreferences();
 
 protected:
-	void language_changed() override;
+	void languageChanged() override;
 	void showEvent(QShowEvent* e) override;
 
 public:
-	QString action_name() const;
+	QString actionName() const;
 
 	bool commit();
 	void revert();
 
 private:
-	void init_ui();
+	void initUi();
 
 private slots:
-	void theme_changed(const QString& theme);
-	void radio_button_toggled(bool b);
+	void themeChanged(const QString& theme);
+	void radioButtonToggled(bool b);
 };
 
 #endif // GUI_ICONPREFERENCES_H

@@ -1,6 +1,6 @@
 /* DBusHandler.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -33,43 +33,43 @@
 
 struct DBusHandler::Private
 {
-	DBusMPRIS::MediaPlayer2*		dbus_mpris=nullptr;
-	DBusMediaKeysInterfaceMate*		dbus_mate=nullptr;
-	DBusMediaKeysInterfaceGnome*	dbus_gnome=nullptr;
-	DBusNotifications*				dbus_notifications=nullptr;
+	DBusMPRIS::MediaPlayer2*		dbusMpris=nullptr;
+	DBusMediaKeysInterfaceMate*		dbusMate=nullptr;
+	DBusMediaKeysInterfaceGnome*	dbusGnome=nullptr;
+	DBusNotifications*				dbusNotifications=nullptr;
 
-	Private(QMainWindow* main_window, DBusHandler* parent)
+	Private(QMainWindow* mainWindow, DBusHandler* parent)
 	{
-		dbus_mpris	= new DBusMPRIS::MediaPlayer2(main_window, parent);
-		dbus_mate = new DBusMediaKeysInterfaceMate(parent);
-		dbus_gnome = new DBusMediaKeysInterfaceGnome(parent);
-		dbus_notifications = new DBusNotifications(parent);
+		dbusMpris	= new DBusMPRIS::MediaPlayer2(mainWindow, parent);
+		dbusMate = new DBusMediaKeysInterfaceMate(parent);
+		dbusGnome = new DBusMediaKeysInterfaceGnome(parent);
+		dbusNotifications = new DBusNotifications(parent);
 	}
 };
 
-DBusHandler::DBusHandler(QMainWindow* main_window, QObject* parent) :
+DBusHandler::DBusHandler(QMainWindow* mainWindow, QObject* parent) :
 	QObject(parent)
 {
-	m = Pimpl::make<Private>(main_window, this);
+	m = Pimpl::make<Private>(mainWindow, this);
 
 	QDBusConnectionInterface* dbus_interface = QDBusConnection::sessionBus().interface();
 	if(dbus_interface)
 	{
 		connect(dbus_interface, &QDBusConnectionInterface::serviceRegistered,
-				this, &DBusHandler::service_registered);
+				this, &DBusHandler::serviceRegistered);
 		connect(dbus_interface, &QDBusConnectionInterface::serviceUnregistered,
-				this, &DBusHandler::service_unregistered);
+				this, &DBusHandler::serviceUnregistered);
 	}
 }
 
-DBusHandler::~DBusHandler() {}
+DBusHandler::~DBusHandler() = default;
 
-void DBusHandler::service_registered(const QString& service_name)
+void DBusHandler::serviceRegistered(const QString& service_name)
 {
-	sp_log(Log::Info, this) << "Service " << service_name << " registered";
+	spLog(Log::Info, this) << "Service " << service_name << " registered";
 }
 
-void DBusHandler::service_unregistered(const QString& service_name)
+void DBusHandler::serviceUnregistered(const QString& service_name)
 {
-	sp_log(Log::Warning, this) << "Service " << service_name << " unregistered";
+	spLog(Log::Warning, this) << "Service " << service_name << " unregistered";
 }

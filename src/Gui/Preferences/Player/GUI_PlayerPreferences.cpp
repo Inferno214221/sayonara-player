@@ -1,6 +1,6 @@
 /* GUI_PlayerPreferences.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -35,24 +35,24 @@ GUI_PlayerPreferences::~GUI_PlayerPreferences()
 	}
 }
 
-void GUI_PlayerPreferences::init_ui()
+void GUI_PlayerPreferences::initUi()
 {
-	setup_parent(this, &ui);
+	setupParent(this, &ui);
 
-	ui->cb_logger->addItem(Lang::get(Lang::Default));
-	ui->cb_logger->addItem("Debug");
-	ui->cb_logger->addItem("Develop");
-	ui->cb_logger->addItem("Crazy");
+	ui->cbLogger->addItem(Lang::get(Lang::Default));
+	ui->cbLogger->addItem("Debug");
+	ui->cbLogger->addItem("Develop");
+	ui->cbLogger->addItem("Crazy");
 
 	revert();
 
-	connect(ui->cb_show_tray_icon, &QCheckBox::toggled, this, &GUI_PlayerPreferences::show_tray_icon_toggled);
-	connect(ui->cb_start_in_tray, &QCheckBox::toggled, this, &GUI_PlayerPreferences::show_tray_icon_toggled);
-	connect(ui->cb_close_to_tray, &QCheckBox::toggled, this, &GUI_PlayerPreferences::show_tray_icon_toggled);
+	connect(ui->cbShowTrayIcon, &QCheckBox::toggled, this, &GUI_PlayerPreferences::showTrayIconToggled);
+	connect(ui->cbStartInTray, &QCheckBox::toggled, this, &GUI_PlayerPreferences::showTrayIconToggled);
+	connect(ui->cbCloseToTray, &QCheckBox::toggled, this, &GUI_PlayerPreferences::showTrayIconToggled);
 }
 
 
-QString GUI_PlayerPreferences::action_name() const
+QString GUI_PlayerPreferences::actionName() const
 {
 	return Lang::get(Lang::Application);
 }
@@ -60,11 +60,11 @@ QString GUI_PlayerPreferences::action_name() const
 
 bool GUI_PlayerPreferences::commit()
 {
-	SetSetting(Set::Player_Min2Tray, ui->cb_close_to_tray->isChecked());
-	SetSetting(Set::Player_StartInTray, ui->cb_start_in_tray->isChecked());
-	SetSetting(Set::Player_ShowTrayIcon, ui->cb_show_tray_icon->isChecked());
-	SetSetting(Set::Player_NotifyNewVersion, ui->cb_update_notifications->isChecked());
-	SetSetting(Set::Logger_Level, ui->cb_logger->currentIndex());
+	SetSetting(Set::Player_Min2Tray, ui->cbCloseToTray->isChecked());
+	SetSetting(Set::Player_StartInTray, ui->cbStartInTray->isChecked());
+	SetSetting(Set::Player_ShowTrayIcon, ui->cbShowTrayIcon->isChecked());
+	SetSetting(Set::Player_NotifyNewVersion, ui->cbUpdateNotifications->isChecked());
+	SetSetting(Set::Logger_Level, ui->cbLogger->currentIndex());
 
 	return true;
 }
@@ -73,40 +73,40 @@ void GUI_PlayerPreferences::revert()
 {
 	bool show_tray_icon = GetSetting(Set::Player_ShowTrayIcon);
 
-	ui->cb_start_in_tray->setChecked(GetSetting(Set::Player_StartInTray));
-	ui->cb_close_to_tray->setChecked(GetSetting(Set::Player_Min2Tray));
-	ui->cb_update_notifications->setChecked(GetSetting(Set::Player_NotifyNewVersion));
-	ui->cb_show_tray_icon->setChecked(GetSetting(Set::Player_ShowTrayIcon));
-	ui->cb_logger->setCurrentIndex(GetSetting(Set::Logger_Level));
+	ui->cbStartInTray->setChecked(GetSetting(Set::Player_StartInTray));
+	ui->cbCloseToTray->setChecked(GetSetting(Set::Player_Min2Tray));
+	ui->cbUpdateNotifications->setChecked(GetSetting(Set::Player_NotifyNewVersion));
+	ui->cbShowTrayIcon->setChecked(GetSetting(Set::Player_ShowTrayIcon));
+	ui->cbLogger->setCurrentIndex(GetSetting(Set::Logger_Level));
 
-	show_tray_icon_toggled(show_tray_icon);
+	showTrayIconToggled(show_tray_icon);
 }
 
-void GUI_PlayerPreferences::show_tray_icon_toggled(bool b)
+void GUI_PlayerPreferences::showTrayIconToggled(bool b)
 {
 	Q_UNUSED(b)
 
 	bool show_warning =
 	(
-		(!ui->cb_show_tray_icon->isChecked()) &&
-		(ui->cb_start_in_tray->isChecked() || ui->cb_close_to_tray->isChecked())
+		(!ui->cbShowTrayIcon->isChecked()) &&
+		(ui->cbStartInTray->isChecked() || ui->cbCloseToTray->isChecked())
 	);
 
-	ui->lab_warning_header->setVisible(show_warning);
-	ui->lab_warning->setVisible(show_warning);
+	ui->labWarningHeader->setVisible(show_warning);
+	ui->labWarning->setVisible(show_warning);
 }
 
-void GUI_PlayerPreferences::retranslate_ui()
+void GUI_PlayerPreferences::retranslate()
 {
 	ui->retranslateUi(this);
 
-	ui->lab_logger->setText(Lang::get(Lang::Logger));
-	ui->cb_logger->setItemText(0, Lang::get(Lang::Default));
+	ui->labLogger->setText(Lang::get(Lang::Logger));
+	ui->cbLogger->setItemText(0, Lang::get(Lang::Default));
 
 	QString text =
 		tr("This might cause Sayonara not to show up again.") + " " +
 		tr("In this case use the '--show' option at the next startup.");
 
-	ui->lab_warning_header->setText(Lang::get(Lang::Warning));
-	ui->lab_warning->setText(text);
+	ui->labWarningHeader->setText(Lang::get(Lang::Warning));
+	ui->labWarning->setText(text);
 }

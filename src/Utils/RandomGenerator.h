@@ -1,6 +1,6 @@
 /* RandomGenerator.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -43,7 +43,7 @@ class RandomGenerator
 		/**
 		 * @brief create new seed
 		 */
-		void update_seed();
+		void updateSeed();
 
 		/**
 		 * @brief get a random number
@@ -51,9 +51,9 @@ class RandomGenerator
 		 * @param max maximum
 		 * @return number between [minimum, maximum]
 		 */
-		int get_number(int min, int max);
+		int getNumber(int min, int max);
 
-		static int get_random_number(int min, int max);
+		static int getRandomNumber(int min, int max);
 };
 
 namespace Util

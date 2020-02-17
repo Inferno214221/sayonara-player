@@ -1,6 +1,6 @@
 /* SimilarArtists.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -29,8 +29,8 @@ class QMap;
 
 namespace SimilarArtists
 {
-    QMap<QString, double> get_similar_artists(const QString& artist);
-    QStringList get_similar_artist_names(const QString& artist);
+    QMap<QString, double> getSimilarArtists(const QString& artist);
+    QStringList getSimilarArtistNames(const QString& artist);
 }
 
 #endif

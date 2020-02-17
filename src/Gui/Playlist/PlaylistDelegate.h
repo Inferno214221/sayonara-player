@@ -1,6 +1,6 @@
 /* PlaylistItemDelegate.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -49,10 +49,8 @@ namespace Playlist
 			void setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const override;
 
 		private slots:
-			void sl_look_changed();
-			void sl_show_rating_changed();
-
-			void destroy_editor(bool save);
+			void playlistShowRatingChanged();
+			void deleteEditor(bool save);
 	};
 }
 

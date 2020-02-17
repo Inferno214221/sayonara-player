@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -63,21 +63,21 @@ void InstanceThread::run()
 
 		if(memcmp(ptr, "Req", 3) == 0)
 		{
-			sp_log(Log::Info, this) << "Second instance saying hello";
+			spLog(Log::Info, this) << "Second instance saying hello";
 
 			if(*(ptr + 3) == 'D'){
-				parse_memory();
+				parseMemory();
 			}
 
 			m->memory.lock();
 			memcpy(m->memory.data(), "Ack", 3);
 			m->memory.unlock();
 
-			emit sig_player_raise();
+			emit sigPlayerRise();
 		}
 
 		if(m->may_run){
-			Util::sleep_ms(100);
+			Util::sleepMs(100);
 		}
 	}
 }
@@ -87,16 +87,16 @@ void InstanceThread::stop()
 	m->may_run = false;
 }
 
-void InstanceThread::parse_memory()
+void InstanceThread::parseMemory()
 {
-	sp_log(Log::Debug, this) << "parse memory for new file...";
+	spLog(Log::Debug, this) << "parse memory for new file...";
 
 	if(m->memory.isAttached()){
-		sp_log(Log::Debug, this) << "memory already attached";
+		spLog(Log::Debug, this) << "memory already attached";
 	}
 
 	else if(!m->memory.attach()){
-		sp_log(Log::Debug, this) << "Cannot attach shared memory " << m->memory.errorString();
+		spLog(Log::Debug, this) << "Cannot attach shared memory " << m->memory.errorString();
 		return;
 	}
 
@@ -114,15 +114,15 @@ void InstanceThread::parse_memory()
 			QString filename = QString::fromUtf8(arr);
 
 			if(!filename.isEmpty() &&
-			   (Util::File::is_playlistfile(filename) || Util::File::is_soundfile(filename)))
+			   (Util::File::isPlaylistFile(filename) || Util::File::isSoundFile(filename)))
 			{
-				sp_log(Log::Debug, this) << "Add file " << filename;
+				spLog(Log::Debug, this) << "Add file " << filename;
 				file_list << filename;
 			}
 		}
 
 		m->paths = file_list;
-		emit sig_create_playlist();
+		emit sigCreatePlaylist();
 	}
 
 	m->memory.unlock();

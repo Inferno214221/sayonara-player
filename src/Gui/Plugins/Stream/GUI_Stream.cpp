@@ -1,6 +1,6 @@
 /* GUI_Stream.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -32,11 +32,11 @@
 
 struct GUI_Stream::Private
 {
-	GUI_StationSearcher* searcher = nullptr;
-	QAction* radio_action=nullptr;
+	GUI_StationSearcher*	searcher = nullptr;
+	QAction*				actionSearchRadioStation=nullptr;
 };
 
-GUI_Stream::GUI_Stream(QWidget *parent) :
+GUI_Stream::GUI_Stream(QWidget* parent) :
 	Gui::AbstractStationPlugin(parent)
 {
 	m = Pimpl::make<Private>();
@@ -50,102 +50,104 @@ GUI_Stream::~GUI_Stream()
 	}
 }
 
-QString GUI_Stream::get_name() const
+QString GUI_Stream::name() const
 {
 	return "Webstreams";
 }
 
-QString GUI_Stream::get_display_name() const
+QString GUI_Stream::displayName() const
 {
 	return Lang::get(Lang::Streams);
 }
 
-void GUI_Stream::retranslate_ui()
+void GUI_Stream::retranslate()
 {
-	Gui::AbstractStationPlugin::retranslate_ui();
+	Gui::AbstractStationPlugin::retranslate();
 	ui->retranslateUi(this);
 
 	QString action_text = tr("Search radio station");
 
-	if(m->radio_action)
+	if(m->actionSearchRadioStation)
 	{
-		m->radio_action->setText(action_text);
+		m->actionSearchRadioStation->setText(action_text);
 	}
 
-	ui->btn_search->setText(Lang::get(Lang::SearchVerb));
-	ui->btn_search->setToolTip(action_text);
+	ui->btnSearch->setText(Lang::get(Lang::SearchVerb));
+	ui->btnSearch->setToolTip(action_text);
 }
 
-void GUI_Stream::init_ui()
+void GUI_Stream::initUi()
 {
-	setup_parent(this, &ui);
+	setupParent(this, &ui);
+	Gui::AbstractStationPlugin::initUi();
 
-	m->radio_action = new QAction(ui->btn_tool);
-	ui->btn_tool->register_action(m->radio_action);
-	connect(m->radio_action, &QAction::triggered, this, &GUI_Stream::search_radio_triggered);
-	connect(ui->btn_search, &QPushButton::clicked, this, &GUI_Stream::search_radio_triggered);
+	m->actionSearchRadioStation = new QAction(ui->btnTool);
+	ui->btnTool->registerAction(m->actionSearchRadioStation);
 
-	retranslate_ui();
+	connect(m->actionSearchRadioStation, &QAction::triggered, this, &GUI_Stream::searchRadioTriggered);
+	connect(ui->btnSearch, &QPushButton::clicked, this, &GUI_Stream::searchRadioTriggered);
+
+	retranslate();
 }
 
-QString GUI_Stream::get_title_fallback_name() const
+QString GUI_Stream::titleFallbackName() const
 {
 	return Lang::get(Lang::Radio);
 }
 
-QComboBox* GUI_Stream::combo_stream()
+QComboBox* GUI_Stream::comboStream()
 {
-	return ui->combo_stream;
+	return ui->comboStream;
 }
 
-QPushButton* GUI_Stream::btn_play()
+QPushButton* GUI_Stream::btnPlay()
 {
-	return ui->btn_listen;
+	return ui->btnListen;
 }
 
-Gui::MenuToolButton* GUI_Stream::btn_menu()
+Gui::MenuToolButton* GUI_Stream::btnMenu()
 {
-	return ui->btn_tool;
+	return ui->btnTool;
 }
 
-AbstractStationHandler* GUI_Stream::stream_handler() const
+AbstractStationHandler* GUI_Stream::streamHandler() const
 {
 	return new StreamHandler();
 }
 
-void GUI_Stream::skin_changed()
+void GUI_Stream::skinChanged()
 {
-	Gui::AbstractStationPlugin::skin_changed();
+	Gui::AbstractStationPlugin::skinChanged();
 
-	if(m->radio_action)
+	if(m->actionSearchRadioStation)
 	{
-		m->radio_action->setIcon(Gui::Icons::icon(Gui::Icons::Search));
+		m->actionSearchRadioStation->setIcon(Gui::Icons::icon(Gui::Icons::Search));
 	}
 
 	if(ui)
 	{
-		ui->btn_search->setIcon(Gui::Icons::icon(Gui::Icons::Search));
+		ui->btnSearch->setIcon(Gui::Icons::icon(Gui::Icons::Search));
 	}
 }
 
-void GUI_Stream::search_radio_triggered()
+void GUI_Stream::searchRadioTriggered()
 {
 	if(!m->searcher)
 	{
 		m->searcher = new GUI_StationSearcher(this);
-		connect(m->searcher, &GUI_StationSearcher::sig_stream_selected, this, &GUI_Stream::stream_selected);
+		connect(m->searcher, &GUI_StationSearcher::sig_stream_selected, this, &GUI_Stream::streamSelected);
 	}
 
 	m->searcher->show();
 }
 
-void GUI_Stream::stream_selected(const QString& name, const QString& url)
+void GUI_Stream::streamSelected(const QString& name, const QString& url)
 {
-	add_stream(name, url);
+	addStream(name, url);
 }
 
 
-GUI_ConfigureStation* GUI_Stream::create_config_dialog()
+GUI_ConfigureStation* GUI_Stream::createConfigDialog()
 {
 	return new ConfigureStreamDialog(this);
 }

@@ -1,6 +1,6 @@
 /* DelayedPlayHandler.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -41,8 +41,8 @@ namespace PipelineExtensions
 		public:
 			virtual void play()=0;
 
-			void play_in(MilliSeconds ms);
-			void abort_delayed_playing();
+			void playIn(MilliSeconds ms);
+			void abortDelayedPlaying();
 	};
 
 
@@ -61,8 +61,8 @@ namespace PipelineExtensions
 			DelayedPlayableLogic(DelayedPlayable* dph);
 			~DelayedPlayableLogic();
 
-			void start_timer(MilliSeconds ms);
-			void stop_timer();
+			void startTimer(MilliSeconds ms);
+			void stopTimer();
 	};
 }
 

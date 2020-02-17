@@ -1,6 +1,6 @@
 /* ComboBox.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -35,13 +35,12 @@ namespace Gui
 	{
 		Q_OBJECT
 
-	public:
-		explicit ComboBox(QWidget* parent=nullptr);
-		virtual ~ComboBox();
+		public:
+			explicit ComboBox(QWidget* parent=nullptr);
+			virtual ~ComboBox() override;
 
-	protected:
-		void changeEvent(QEvent* e) override;
-
+		protected:
+			void changeEvent(QEvent* e) override;
 	};
 }
 

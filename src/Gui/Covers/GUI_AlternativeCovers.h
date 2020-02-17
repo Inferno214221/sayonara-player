@@ -1,6 +1,6 @@
 /* GUI_AlternativeCovers.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -23,7 +23,7 @@
  * GUI_AlternativeCovers.h
  *
  *  Created on: Jul 1, 2011
- *      Author: Lucio Carreras
+ *      Author: Michael Lugmair (Lucio Carreras)
  */
 
 #ifndef GUI_ALTERNATE_COVERS_H_
@@ -54,49 +54,51 @@ class GUI_AlternativeCovers :
 	PIMPL(GUI_AlternativeCovers)
 	UI_CLASS(GUI_AlternativeCovers)
 
+signals:
+	void sigCoverChanged(const Cover::Location& cl);
+
 public:
 	explicit GUI_AlternativeCovers(const Cover::Location& cl, bool silent, QWidget* parent);
-	virtual ~GUI_AlternativeCovers();
+	~GUI_AlternativeCovers() override;
 
-	void set_cover_location(const Cover::Location& cl);
-
-signals:
-	void sig_cover_changed(const Cover::Location& cl);
-
-private slots:
-	void ok_clicked();
-	void apply_clicked();
-	void search_clicked();
-	void cover_pressed(const QModelIndex& idx);
-	void open_file_dialog();
-
-	void lookup_started();
-
-	void lookup_finished(bool);
-	void cover_found(const QPixmap& cover);
-	void ready_for_progressbar();
-
-	void servers_changed();
-	void autostart_toggled(bool b);
-	void rb_autosearch_toggled(bool b);
-	void rb_textsearch_toggled(bool b);
-	void www_active_changed();
+	void setCoverLocation(const Cover::Location& cl);
 
 
 public slots:
 	void start();
 	void stop();
 
+
 private:
-	void init_ui();
+	void initUi();
 	void reset();
-	void reload_combobox();
-	void init_save_to_library();
+	void reloadCombobox();
+	void initSaveToLibrary();
+
+	private slots:
+	void okClicked();
+	void applyClicked();
+	void searchClicked();
+	void openFileDialog();
+
+	void coverPressed(const QModelIndex& idx);
+	void coverLookupStarted();
+	void coverLookupFinished(bool);
+	void coverFound(const QPixmap& cover);
+
+	void readyForProgressbar();
+
+	void coverServersChanged();
+	void autostartToggled(bool b);
+	void rbAutosearchToggled(bool b);
+	void rbTextsearchToggled(bool b);
+	void wwwActiveChanged();
+
 
 protected:
 	void showEvent(QShowEvent* e) override;
 	void resizeEvent(QResizeEvent* e) override;
-	void language_changed() override;
+	void languageChanged() override;
 };
 
 #endif /* GUI_ALTERNATE_COVERS_H_ */

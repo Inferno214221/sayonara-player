@@ -1,6 +1,6 @@
 /* EqualizerSlider.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -39,18 +39,18 @@ namespace Gui
 		PIMPL(EqualizerSlider)
 
 		signals:
-			void sig_value_changed(int idx, int val);
+			void sigValueChanged(int idx, int val);
 
 		public:
 			explicit EqualizerSlider(QWidget* parent);
-			virtual ~EqualizerSlider();
+			~EqualizerSlider() override;
 
 			/**
 			 * @brief sets everything the slider has to be aware about
 			 * @param idx the index of the slider
 			 * @param label the value label of the slider
 			 */
-			void set_label(int idx, QLabel* label);
+			void setLabel(int idx, QLabel* label);
 
 			/**
 			 * @brief get the value label
@@ -68,12 +68,12 @@ namespace Gui
 			 * @brief get the gstreamer compatible value
 			 * @return
 			 */
-			double eq_value() const;
+			double equalizerValue() const;
 
 			QSize minimumSizeHint() const override;
 
 		private slots:
-			void set_zero();
+			void setZero();
 
 
 		protected:

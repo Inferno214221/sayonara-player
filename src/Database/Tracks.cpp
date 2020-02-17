@@ -1,6 +1,6 @@
 /* DatabaseTracks.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * module() file is part of sayonara player
  *
@@ -45,47 +45,44 @@ using SMM=::Library::SearchModeMask;
 namespace LibraryUtils=::Library::Utils;
 using ::Library::Filter;
 
-static QString get_filter_clause(const Filter& filter, QString cis_placeholder, QString searchterm_placeholder);
+static QString getFilterClause(const Filter& filter, QString cisPlaceholder, QString searchtermPlaceholder);
 
-
-static void drop_track_view(DB::Module* module, LibraryId library_id, const QString& track_view)
+static void dropTrackView(DB::Module* module, LibraryId libraryId, const QString& trackView)
 {
-	if(library_id < 0){
+	if(libraryId < 0){
 		return;
 	}
 
-	module->run_query("DROP VIEW IF EXISTS " + track_view + ";", "Cannot drop " + track_view);
+	module->runQuery("DROP VIEW IF EXISTS " + trackView + ";", "Cannot drop " + trackView);
 }
 
-static void drop_search_view(DB::Module* module, const QString& track_search_view)
+static void dropSearchView(DB::Module* module, const QString& trackSearchView)
 {
-	module->run_query("DROP VIEW IF EXISTS " + track_search_view + "; ", "Cannot drop " + track_search_view);
+	module->runQuery("DROP VIEW IF EXISTS " + trackSearchView + "; ", "Cannot drop " + trackSearchView);
 }
 
-static void create_track_view(DB::Module* module, LibraryId library_id, const QString& track_view, const QString& select_statement)
+static void createTrackView(DB::Module* module, LibraryId libraryId, const QString& trackView, const QString& selectStatement)
 {
-	if(library_id < 0){
+	if(libraryId < 0){
 		return;
 	}
 
 	QString query =	"CREATE VIEW "
-					+ track_view + " "
-					"AS " + select_statement + " "
+					+ trackView + " "
+					"AS " + selectStatement + " "
 					"FROM tracks "
-					"WHERE tracks.libraryID = " + QString::number(library_id);
+					"WHERE tracks.libraryID = " + QString::number(libraryId);
 
-	module->run_query(query, "Cannot create track view");
+	module->runQuery(query, "Cannot create track view");
 }
 
-
-
-static void create_track_search_view(DB::Module* module, LibraryId library_id, const QString& track_search_view, const QString& select_statement)
+static void createTrackSearchView(DB::Module* module, LibraryId libraryId, const QString& trackSearchView, const QString& selectStatement)
 {
 	QString query =
 			"CREATE VIEW "
-			+ track_search_view + " "
+			+ trackSearchView + " "
 			"AS "
-			+ select_statement + ", "
+			+ selectStatement + ", "
 			"albums.name			AS albumName, "					// 18
 			"albums.rating			AS albumRating, "				// 19
 			"artists.name			AS artistName, "				// 20
@@ -98,20 +95,19 @@ static void create_track_search_view(DB::Module* module, LibraryId library_id, c
 			"LEFT OUTER JOIN artists albumArtists ON tracks.albumArtistID = albumArtists.artistID "
 	;
 
-	if(library_id >= 0) {
-		query += "WHERE libraryID=" + QString::number(library_id);
+	if(libraryId >= 0) {
+		query += "WHERE libraryID=" + QString::number(libraryId);
 	}
 
 	query += ";";
 
-	module->run_query(query, "Cannot create track search view");
+	module->runQuery(query, "Cannot create track search view");
 }
 
 Tracks::Tracks() = default;
 Tracks::~Tracks() = default;
 
-
-void Tracks::init_views()
+void Tracks::initViews()
 {
 	const QStringList fields
 	{
@@ -137,24 +133,24 @@ void Tracks::init_views()
 
 	QString select = "SELECT " + fields.join(", ") + " ";
 
-	drop_track_view(module(), library_id(), track_view());
-	create_track_view(module(), library_id(), track_view(), select);
+	dropTrackView(module(), libraryId(), trackView());
+	createTrackView(module(), libraryId(), trackView(), select);
 
-	drop_search_view(module(), track_search_view());
-	create_track_search_view(module(), library_id(), track_search_view(), select);
+	dropSearchView(module(), trackSearchView());
+	createTrackSearchView(module(), libraryId(), trackSearchView(), select);
 }
 
-QString Tracks::fetch_query_tracks() const
+QString Tracks::fetchQueryTracks() const
 {
-	return "SELECT * FROM " + track_search_view() + " ";
+	return "SELECT * FROM " + trackSearchView() + " ";
 }
 
-bool Tracks::db_fetch_tracks(Query& q, MetaDataList& result) const
+bool Tracks::dbFetchTracks(Query& q, MetaDataList& result) const
 {
 	result.clear();
 
 	if (!q.exec()) {
-		q.show_error("Cannot fetch tracks from database");
+		q.showError("Cannot fetch tracks from database");
 		return false;
 	}
 
@@ -162,28 +158,28 @@ bool Tracks::db_fetch_tracks(Query& q, MetaDataList& result) const
 	{
 		MetaData data;
 
-		data.set_id(	 	q.value(0).toInt());
-		data.set_title(		q.value(1).toString());
-		data.set_duration_ms(q.value(2).toInt());
-		data.set_year(		q.value(3).value<Year>());
-		data.set_bitrate(	q.value(4).value<Bitrate>());
-		data.set_filepath(	q.value(5).toString());
-		data.set_filesize(  q.value(6).value<Filesize>());
-		data.set_track_number( q.value(7).value<TrackNum>());
-		data.set_genres(	q.value(8).toString().split(","));
-		data.set_discnumber(q.value(9).value<Disc>());
-		data.set_rating(    q.value(10).value<Rating>());
-		data.set_album_id(  q.value(11).toInt());
-		data.set_artist_id( q.value(12).toInt());
-		data.set_comment(	q.value(14).toString());
-		data.set_createdate(q.value(15).value<uint64_t>());
-		data.set_modifydate(q.value(16).value<uint64_t>());
-		data.set_library_id(q.value(17).value<LibraryId>());
-		data.set_album(		q.value(18).toString().trimmed());
-		data.set_artist(	q.value(20).toString().trimmed());
-		data.set_album_artist(q.value(21).toString(), q.value(13).toInt());
+		data.setId(	 	q.value(0).toInt());
+		data.setTitle(		q.value(1).toString());
+		data.setDurationMs(q.value(2).toInt());
+		data.setYear(		q.value(3).value<Year>());
+		data.setBitrate(	q.value(4).value<Bitrate>());
+		data.setFilepath(	q.value(5).toString());
+		data.setFilesize(  q.value(6).value<Filesize>());
+		data.setTrackNumber( q.value(7).value<TrackNum>());
+		data.setGenres(	q.value(8).toString().split(","));
+		data.setDiscnumber(q.value(9).value<Disc>());
+		data.setRating(    q.value(10).value<Rating>());
+		data.setAlbumId(  q.value(11).toInt());
+		data.setArtistId( q.value(12).toInt());
+		data.setComment(	q.value(14).toString());
+		data.setCreatedDate(q.value(15).value<uint64_t>());
+		data.setModifiedDate(q.value(16).value<uint64_t>());
+		data.setLibraryid(q.value(17).value<LibraryId>());
+		data.setAlbum(		q.value(18).toString().trimmed());
+		data.setArtist(	q.value(20).toString().trimmed());
+		data.setAlbumArtist(q.value(21).toString(), q.value(13).toInt());
 
-		data.set_db_id(module()->db_id());
+		data.setDatabaseId(module()->databaseId());
 
 		result.push_back(std::move(data));
 	}
@@ -192,13 +188,13 @@ bool Tracks::db_fetch_tracks(Query& q, MetaDataList& result) const
 }
 
 
-bool Tracks::getMultipleTracksByPath(const QStringList& paths, MetaDataList& v_md) const
+bool Tracks::getMultipleTracksByPath(const QStringList& paths, MetaDataList& tracks) const
 {
 	for(const QString& path : paths) {
-		v_md << getTrackByPath(path);
+		tracks << getTrackByPath(path);
 	}
 
-	return (v_md.count() == paths.size());
+	return (tracks.count() == paths.size());
 }
 
 
@@ -206,60 +202,60 @@ MetaData Tracks::getTrackByPath(const QString& path) const
 {
 	DB::Query q(module());
 
-	QString query = fetch_query_tracks() + "WHERE filename = :filename;";
+	QString query = fetchQueryTracks() + "WHERE filename = :filename;";
 	q.prepare(query);
-	q.bindValue(":filename", Util::cvt_not_null(path));
+	q.bindValue(":filename", Util::convertNotNull(path));
 
 	MetaData md(path);
-	md.set_db_id(module()->db_id());
+	md.setDatabaseId(module()->databaseId());
 
-	MetaDataList v_md;
-	if(!db_fetch_tracks(q, v_md)) {
+	MetaDataList tracks;
+	if(!dbFetchTracks(q, tracks)) {
 		return md;
 	}
 
-	if(v_md.empty())
+	if(tracks.empty())
 	{
-		md.set_extern(true);
+		md.setExtern(true);
 		return md;
 	}
 
-	return v_md.first();
+	return tracks.first();
 }
 
 
 MetaData Tracks::getTrackById(TrackID id) const
 {
 	Query q(module());
-	QString query = fetch_query_tracks() +
-		" WHERE trackID = :track_id; ";
+	QString query = fetchQueryTracks() +
+		" WHERE trackID = :trackId; ";
 
 	q.prepare(query);
-	q.bindValue(":track_id", id);
+	q.bindValue(":trackId", id);
 
-	MetaDataList v_md;
-	if(!db_fetch_tracks(q, v_md)) {
+	MetaDataList tracks;
+	if(!dbFetchTracks(q, tracks)) {
 		return MetaData();
 	}
 
-	if(v_md.isEmpty()) {
+	if(tracks.isEmpty()) {
 		MetaData md;
-		md.set_extern(true);
+		md.setExtern(true);
 		return md;
 	}
 
-	return v_md.first();
+	return tracks.first();
 }
 
 int Tracks::getNumTracks() const
 {
-	DB::Query q = module()->run_query(
+	DB::Query q = module()->runQuery(
 		"SELECT COUNT(tracks.trackid) FROM tracks WHERE libraryID=:libraryID;",
-		{":libraryID", library_id()},
+		{":libraryID", libraryId()},
 		"Cannot count tracks"
 	);
 
-	if(q.has_error() || !q.next()){
+	if(q.hasError() || !q.next()){
 		return -1;
 	}
 
@@ -268,12 +264,12 @@ int Tracks::getNumTracks() const
 }
 
 
-bool Tracks::getTracksByIds(const QList<TrackID>& ids, MetaDataList& v_md) const
+bool Tracks::getTracksByIds(const QList<TrackID>& ids, MetaDataList& tracks) const
 {
 	QStringList queries;
 	for(const TrackID& id : ids)
 	{
-		queries << fetch_query_tracks() + QString(" WHERE trackID = :track_id_%1").arg(id);
+		queries << fetchQueryTracks() + QString(" WHERE trackID = :trackId_%1").arg(id);
 	}
 
 	QString query = queries.join(" UNION ");
@@ -284,21 +280,21 @@ bool Tracks::getTracksByIds(const QList<TrackID>& ids, MetaDataList& v_md) const
 
 	for(TrackID id : ids)
 	{
-		q.bindValue(QString(":track_id_%1").arg(id), id);
+		q.bindValue(QString(":trackId_%1").arg(id), id);
 	}
 
-	return db_fetch_tracks(q, v_md);
+	return dbFetchTracks(q, tracks);
 }
 
 bool Tracks::getAllTracks(MetaDataList& result) const
 {
 	Query q(module());
 
-	QString query = fetch_query_tracks() + ";";
+	QString query = fetchQueryTracks() + ";";
 
 	q.prepare(query);
 
-	return db_fetch_tracks(q, result);
+	return dbFetchTracks(q, result);
 }
 
 
@@ -315,24 +311,24 @@ bool Tracks::getAllTracksByAlbum(const IdList& albumIds, MetaDataList& result, c
 	}
 
 	QStringList filters = filter.filtertext(true);
-	QStringList search_filters = filter.search_mode_filtertext(true);
+	QStringList search_filters = filter.searchModeFiltertext(true);
 
 	for(int i=0; i<filters.size(); i++)
 	{
 		Query q(module());
 
-		QString query = fetch_query_tracks();
+		QString query = fetchQueryTracks();
 		query += " WHERE ";
 		if( !filter.cleared() )
 		{
-			query += get_filter_clause(filter, "cissearch", "searchterm") + " AND ";
+			query += getFilterClause(filter, "cissearch", "searchterm") + " AND ";
 		}
 
 		{ // album id clauses
-			QString aidf = track_search_view() + ".albumID ";
+			QString aidf = trackSearchView() + ".albumID ";
 			QStringList or_clauses;
 			for(int a=0; a<albumIds.size(); a++){
-				or_clauses << QString("%1 = :album_id_%2").arg(aidf).arg(a);
+				or_clauses << QString("%1 = :albumId_%2").arg(aidf).arg(a);
 			}
 
 			query += " (" + or_clauses.join(" OR ") + ") ";
@@ -344,26 +340,26 @@ bool Tracks::getAllTracksByAlbum(const IdList& albumIds, MetaDataList& result, c
 			q.prepare(query);
 
 			for(int a=0; a<albumIds.size(); a++) {
-				q.bindValue(QString(":album_id_%1").arg(a), albumIds[a]);
+				q.bindValue(QString(":albumId_%1").arg(a), albumIds[a]);
 			}
 
 			q.bindValue(":searchterm", filters[i]);
 			q.bindValue(":cissearch", search_filters[i]);
 
 			MetaDataList tmp_list;
-			db_fetch_tracks(q, tmp_list);
+			dbFetchTracks(q, tmp_list);
 
 			if(discnumber >= 0)
 			{
 				for(int i=tmp_list.count() - 1; i>=0; i--)
 				{
 					if(tmp_list[i].discnumber() != discnumber){
-						tmp_list.remove_track(i);
+						tmp_list.removeTrack(i);
 					}
 				}
 			}
 
-			result.append_unique(tmp_list);
+			result.appendUnique(tmp_list);
 		}
 	}
 
@@ -382,25 +378,25 @@ bool Tracks::getAllTracksByArtist(const IdList& artistIds, MetaDataList& result,
 	}
 
 	QStringList filters = filter.filtertext(true);
-	QStringList search_filters = filter.search_mode_filtertext(true);
+	QStringList search_filters = filter.searchModeFiltertext(true);
 
 	for(int i=0; i<filters.size(); i++)
 	{
 		Query q(module());
 
-		QString query = fetch_query_tracks();
+		QString query = fetchQueryTracks();
 		query += " WHERE ";
 		if( !filter.cleared() )
 		{
-			query += get_filter_clause(filter, "cissearch", "searchterm") + " AND ";
+			query += getFilterClause(filter, "cissearch", "searchterm") + " AND ";
 		}
 
 		{ // artist conditions
-			QString aidf = track_search_view() + "." + artistid_field();
+			QString aidf = trackSearchView() + "." + artistIdField();
 
 			QStringList or_clauses;
 			for(int a=0; a<artistIds.size(); a++) {
-				or_clauses << QString("%1 = :artist_id_%2").arg(aidf).arg(a);
+				or_clauses << QString("%1 = :artistId_%2").arg(aidf).arg(a);
 			}
 
 			query += " (" + or_clauses.join(" OR ") + ") ";
@@ -412,15 +408,15 @@ bool Tracks::getAllTracksByArtist(const IdList& artistIds, MetaDataList& result,
 			q.prepare(query);
 
 			for(int a=0; a<artistIds.size(); a++) {
-				q.bindValue(QString(":artist_id_%1").arg(a), artistIds[a]);
+				q.bindValue(QString(":artistId_%1").arg(a), artistIds[a]);
 			}
 
 			q.bindValue(":searchterm", filters[i]);
 			q.bindValue(":cissearch", search_filters[i]);
 
 			MetaDataList tmp_list;
-			db_fetch_tracks(q, tmp_list);
-			result.append_unique(tmp_list);
+			dbFetchTracks(q, tmp_list);
+			result.appendUnique(tmp_list);
 		}
 	}
 
@@ -431,13 +427,13 @@ bool Tracks::getAllTracksByArtist(const IdList& artistIds, MetaDataList& result,
 bool Tracks::getAllTracksBySearchString(const Filter& filter, MetaDataList& result) const
 {
 	QStringList filters = filter.filtertext(true);
-	QStringList search_filters = filter.search_mode_filtertext(true);
+	QStringList search_filters = filter.searchModeFiltertext(true);
 	for(int i=0; i<filters.size(); i++)
 	{
 		Query q(module());
 
-		QString query = fetch_query_tracks();
-		query += " WHERE " + get_filter_clause(filter, "cissearch", "searchterm");
+		QString query = fetchQueryTracks();
+		query += " WHERE " + getFilterClause(filter, "cissearch", "searchterm");
 		query += ";";
 
 		q.prepare(query);
@@ -448,23 +444,23 @@ bool Tracks::getAllTracksBySearchString(const Filter& filter, MetaDataList& resu
         {
             MetaDataList tracks;
 
-            db_fetch_tracks(q, tracks);
+            dbFetchTracks(q, tracks);
             if(tracks.empty()) {
-                q.show_query();
+                q.showQuery();
             }
-            result.append_unique(tracks);
+            result.appendUnique(tracks);
         }
 	}
 
 	return true;
 }
 
-bool Tracks::getAllTracksByPaths(const QStringList& paths, MetaDataList& v_md) const
+bool Tracks::getAllTracksByPaths(const QStringList& paths, MetaDataList& tracks) const
 {
 	QStringList queries;
 	for(int i=0; i<paths.size(); i++)
 	{
-		queries << fetch_query_tracks() + " WHERE filename LIKE :" + QString("path%1").arg(i);
+		queries << fetchQueryTracks() + " WHERE filename LIKE :" + QString("path%1").arg(i);
 	}
 
 	QString query = queries.join(" UNION ") + ";";
@@ -475,112 +471,107 @@ bool Tracks::getAllTracksByPaths(const QStringList& paths, MetaDataList& v_md) c
 		q.bindValue( QString(":path%1").arg(i), paths[i] + "%");
 	}
 
-	bool success = db_fetch_tracks(q, v_md);
+	bool success = dbFetchTracks(q, tracks);
 	return success;
 }
 
 
 bool Tracks::deleteTrack(TrackID id)
 {
-	Query q = module()->run_query("DELETE FROM tracks WHERE trackID = :trackID", {":trackID", id}, QString("Cannot delete track %1").arg(id));
+	Query q = module()->runQuery("DELETE FROM tracks WHERE trackID = :trackID", {":trackID", id}, QString("Cannot delete track %1").arg(id));
 
-	return (!q.has_error());
+	return (!q.hasError());
 }
 
 
 bool Tracks::deleteTracks(const IdList& ids)
 {
-	int n_files = 0;
-
 	module()->db().transaction();
 
-	for(const int& id : ids)
+	int fileCount = Util::Algorithm::count(ids, [this](Id id)
 	{
-		if( deleteTrack(id) )
-		{
-			n_files++;
-		}
-	}
+		return deleteTrack(id);
+	});
 
 	bool success = module()->db().commit();
 
-	return (success && (n_files == ids.size()));
+	return (success && (fileCount == ids.size()));
 }
 
-bool Tracks::deleteTracks(const MetaDataList& v_md)
+bool Tracks::deleteTracks(const MetaDataList& tracks)
 {
-	if(v_md.isEmpty()){
+	if(tracks.isEmpty()){
 		return true;
 	}
 
 	module()->db().transaction();
 
-	auto deleted_tracks = Util::Algorithm::count(v_md, [=](const MetaData& md)
+	auto deletedTracks = Util::Algorithm::count(tracks, [this](const MetaData& md)
 	{
 		return deleteTrack(md.id());
 	});
 
 	module()->db().commit();
 
-	sp_log(Log::Info, this) << "Deleted " << deleted_tracks << " of " << v_md.size() << " tracks";
+	spLog(Log::Info, this) << "Deleted " << deletedTracks << " of " << tracks.size() << " tracks";
 
-	return (deleted_tracks == v_md.count());
+	return (deletedTracks == tracks.count());
 }
 
-bool Tracks::deleteInvalidTracks(const QString& library_path, MetaDataList& double_metadata)
+bool Tracks::deleteInvalidTracks(const QString& libraryPath, MetaDataList& doubleMetadata)
 {
-	double_metadata.clear();
+	doubleMetadata.clear();
 
-	MetaDataList v_md;
-	if(!getAllTracks(v_md))
+	MetaDataList tracks;
+	if(!getAllTracks(tracks))
 	{
-		sp_log(Log::Error, this) << "Cannot get tracks from db";
+		spLog(Log::Error, this) << "Cannot get tracks from db";
 		return false;
 	}
 
 	QMap<QString, int> map;
-	IdList to_delete;
+	IdList toDelete;
 	int idx = 0;
 
-	for(const MetaData& md : v_md)
+	for(const MetaData& md : tracks)
 	{
 		if(map.contains(md.filepath()))
 		{
-			sp_log(Log::Warning, this) << "found double path: " << md.filepath();
+			spLog(Log::Warning, this) << "found double path: " << md.filepath();
 			int old_idx = map[md.filepath()];
-			to_delete << md.id();
-			double_metadata << v_md[old_idx];
+			toDelete << md.id();
+			doubleMetadata << tracks[old_idx];
 		}
 
 		else {
 			map.insert(md.filepath(), idx);
 		}
 
-		if( (!library_path.isEmpty()) &&
-			(!md.filepath().contains(library_path)) )
+		if( (!libraryPath.isEmpty()) &&
+			(!md.filepath().contains(libraryPath)) )
 		{
-			to_delete << md.id();
+			toDelete << md.id();
 		}
 
 		idx++;
 	}
 
 	bool success;
-	sp_log(Log::Debug, this) << "Will delete " << to_delete.size() << " double-tracks";
-	success = deleteTracks(to_delete);
-	sp_log(Log::Debug, this) << "delete tracks: " << success;
+	spLog(Log::Debug, this) << "Will delete " << toDelete.size() << " double-tracks";
+	success = deleteTracks(toDelete);
+	spLog(Log::Debug, this) << "delete tracks: " << success;
 
-	success = deleteTracks(double_metadata);
-	sp_log(Log::Debug, this) << "delete other tracks: " << success;
+	success = deleteTracks(doubleMetadata);
+	spLog(Log::Debug, this) << "delete other tracks: " << success;
 
 	return false;
 }
 
 Util::Set<Genre> Tracks::getAllGenres() const
 {
-	Query q = module()->run_query("SELECT genre FROM " + track_view() + " GROUP BY genre;", "Cannot fetch genres");
+	Query q = module()->runQuery("SELECT genre FROM " + trackView() + " GROUP BY genre;", "Cannot fetch genres");
 
-	if(q.has_error()){
+	if(q.hasError()){
 		return Util::Set<Genre>();
 	}
 
@@ -595,31 +586,31 @@ Util::Set<Genre> Tracks::getAllGenres() const
 		}
 	}
 
-	sp_log(Log::Debug, this) << "Load all genres finished";
+	spLog(Log::Debug, this) << "Load all genres finished";
 	return genres;
 }
 
 
 void Tracks::updateTrackCissearch()
 {
-	SMM sm = search_mode();
+	SMM sm = searchMode();
 
-	sp_log(Log::Debug, this) << "UPdate track cissearch " << sm;
+	spLog(Log::Debug, this) << "UPdate track cissearch " << sm;
 
-	MetaDataList v_md;
-	getAllTracks(v_md);
+	MetaDataList tracks;
+	getAllTracks(tracks);
 
 	module()->db().transaction();
 
-	for(const MetaData& md : v_md)
+	for(const MetaData& md : tracks)
 	{
-		QString cis = LibraryUtils::convert_search_string(md.title(), sm);
-		QString cis_file = LibraryUtils::convert_search_string(md.filepath(), sm);
+		QString cis = LibraryUtils::convertSearchstring(md.title(), sm);
+		QString cis_file = LibraryUtils::convertSearchstring(md.filepath(), sm);
 
 		module()->update("tracks",
 		{
-			{"cissearch", Util::cvt_not_null(cis)},
-			{"filecissearch", Util::cvt_not_null(cis_file)}
+			{"cissearch", Util::convertNotNull(cis)},
+			{"filecissearch", Util::convertNotNull(cis_file)}
 		},
 		{"trackId", md.id()},
 		"Cannot update album cissearch"
@@ -632,18 +623,18 @@ void Tracks::updateTrackCissearch()
 
 void Tracks::deleteAllTracks(bool also_views)
 {
-	if(library_id() >= 0)
+	if(libraryId() >= 0)
 	{
 		if(also_views)
 		{
-			drop_track_view(module(), library_id(), track_view());
-			drop_search_view(module(), track_search_view());
+			dropTrackView(module(), libraryId(), trackView());
+			dropSearchView(module(), trackSearchView());
 		}
 
-		module()->run_query
+		module()->runQuery
 		(
-			"DELETE FROM tracks WHERE libraryId=:library_id;",
-			{":library_id", library_id()},
+			"DELETE FROM tracks WHERE libraryId=:libraryId;",
+			{":libraryId", libraryId()},
 			"Cannot delete library tracks"
 		);
 
@@ -653,162 +644,171 @@ void Tracks::deleteAllTracks(bool also_views)
 
 bool Tracks::updateTrack(const MetaData& md)
 {
-	if(md.id() < 0 || md.album_id() < 0 || md.artist_id() < 0 || md.library_id() < 0)
+	if(md.id() < 0 || md.albumId() < 0 || md.artistId() < 0 || md.libraryId() < 0)
 	{
-		sp_log(Log::Warning, this) << "Cannot update track (value negative): "
-								   << " ArtistID: " << md.artist_id()
-								   << " AlbumID: " << md.album_id()
+		spLog(Log::Warning, this) << "Cannot update track (value negative): "
+								   << " ArtistID: " << md.artistId()
+								   << " AlbumID: " << md.albumId()
 								   << " TrackID: " << md.id()
-								   << " LibraryID: " << md.library_id();
+								   << " LibraryID: " << md.libraryId();
 		return false;
 	}
 
-	SMM sm = search_mode();
-	QString cissearch = LibraryUtils::convert_search_string(md.title(), sm);
-	QString file_cissearch = LibraryUtils::convert_search_string(md.filepath(), sm);
+	SMM sm = searchMode();
+	QString cissearch = LibraryUtils::convertSearchstring(md.title(), sm);
+	QString fileCissearch = LibraryUtils::convertSearchstring(md.filepath(), sm);
 
 	QMap<QString, QVariant> bindings
 	{
-		{"albumArtistID",	md.album_artist_id()},
-		{"albumID",			md.album_id()},
-		{"artistID",		md.artist_id()},
+		{"albumArtistID",	md.albumArtistId()},
+		{"albumID",			md.albumId()},
+		{"artistID",		md.artistId()},
 		{"bitrate",			md.bitrate()},
-		{"cissearch",		Util::cvt_not_null(cissearch)},
+		{"cissearch",		Util::convertNotNull(cissearch)},
 		{"discnumber",		md.discnumber()},
-		{"filecissearch",	Util::cvt_not_null(file_cissearch)},
-		{"filename",		Util::cvt_not_null(md.filepath())},
+		{"filecissearch",	Util::convertNotNull(fileCissearch)},
+		{"filename",		Util::convertNotNull(md.filepath())},
 		{"filesize",		QVariant::fromValue(md.filesize())},
-		{"genre",			Util::cvt_not_null(md.genres_to_string())},
-		{"length",			QVariant::fromValue(md.duration_ms())},
-		{"libraryID",		md.library_id()},
-		{"modifydate",		QVariant::fromValue(Util::current_date_to_int())},
+		{"genre",			Util::convertNotNull(md.genresToString())},
+		{"length",			QVariant::fromValue(md.durationMs())},
+		{"libraryID",		md.libraryId()},
+		{"modifydate",		QVariant::fromValue(Util::currentDateToInt())},
 		{"rating",			QVariant(int(md.rating()))},
-		{"title",			Util::cvt_not_null(md.title())},
-		{"track",			md.track_number()},
+		{"title",			Util::convertNotNull(md.title())},
+		{"track",			md.trackNumber()},
 		{"year",			md.year()},
-		{"comment",			Util::cvt_not_null(md.comment())}
+		{"comment",			Util::convertNotNull(md.comment())}
 	};
 
 	Query q = module()->update("tracks", bindings, {"trackId", md.id()}, QString("Cannot update track %1").arg(md.filepath()));
 
-	return (!q.has_error());
+	return (!q.hasError());
 }
 
-bool Tracks::updateTracks(const MetaDataList& v_md)
+bool Tracks::updateTracks(const MetaDataList& tracks)
 {
 	module()->db().transaction();
 
-	int n_files = Util::Algorithm::count(v_md, [=](const MetaData& md){
+	int fileCount = Util::Algorithm::count(tracks, [=](const MetaData& md){
 		return updateTrack(md);
 	});
 
 	bool success = module()->db().commit();
 
-	return success && (n_files == v_md.count());
+	return success && (fileCount == tracks.count());
 }
 
-bool Tracks::renameFilepaths(const QMap<QString, QString>& paths, LibraryId target_library)
+
+bool Tracks::renameFilepaths(const QMap<QString, QString>& paths, LibraryId targetLibrary)
 {
 	module()->db().transaction();
-	for(auto it=paths.begin(); it != paths.end(); it++)
+
+	const QStringList originalPaths(paths.keys());
+	for(const QString& originalPath : originalPaths)
 	{
-		renameFilepath(it.key(), it.value(), target_library);
+		QString newPath = paths[originalPath];
+
+		MetaDataList tracks;
+		getAllTracksByPaths({originalPath}, tracks);
+
+		for(const MetaData& md : tracks)
+		{
+			QString oldFilepath = md.filepath();
+			QString newFilepath(oldFilepath);
+
+			newFilepath.replace(originalPath, newPath);
+			renameFilepath(oldFilepath, newFilepath, targetLibrary);
+		}
 	}
+
 	return module()->db().commit();
 }
 
-bool Tracks::renameFilepath(const QString& old_path, const QString& new_path, LibraryId target_library)
+bool Tracks::renameFilepath(const QString& oldPath, const QString& newPath, LibraryId targetLibrary)
 {
-	QString query
+	Query q = module()->update
 	(
-		"UPDATE Tracks "
-		"SET "
-		"filename = REPLACE(filename, :oldName, :newName), "
-		"libraryID = :libraryID;"
+		"Tracks",
+		{
+			{"filename", newPath},
+			{"libraryID", targetLibrary}
+		},
+
+		{"filename", oldPath},
+		"Could not rename Filepath"
 	);
 
-	Query q(module());
-	q.prepare(query);
-	q.bindValue(":oldName", old_path);
-	q.bindValue(":newName", new_path);
-	q.bindValue(":libraryID", target_library);
-	if(!q.exec())
-	{
-		sp_log(Log::Warning, this) << "Could not replace filepath string";
-		return false;
-	}
-
-	return true;
+	return (!q.hasError());
 }
 
 
-bool Tracks::insertTrackIntoDatabase(const MetaData& md, ArtistId artist_id, AlbumId album_id)
+bool Tracks::insertTrackIntoDatabase(const MetaData& md, ArtistId artistId, AlbumId albumId)
 {
-	return insertTrackIntoDatabase(md, artist_id, album_id, artist_id);
+	return insertTrackIntoDatabase(md, artistId, albumId, artistId);
 }
 
-bool Tracks::insertTrackIntoDatabase(const MetaData& md, ArtistId artist_id, AlbumId album_id, ArtistId album_artist_id)
+bool Tracks::insertTrackIntoDatabase(const MetaData& md, ArtistId artistId, AlbumId albumId, ArtistId albumArtistId)
 {
-	if(album_artist_id == -1)
+	if(albumArtistId == -1)
 	{
-		album_artist_id = artist_id;
+		albumArtistId = artistId;
 	}
 
-	auto current_time = Util::current_date_to_int();
+	auto current_time = Util::currentDateToInt();
 
-	QString cissearch = ::Library::Utils::convert_search_string(md.title(), search_mode());
-	QString file_cissearch = ::Library::Utils::convert_search_string(md.filepath(), search_mode());
+	QString cissearch = ::Library::Utils::convertSearchstring(md.title(), searchMode());
+	QString fileCissearch = ::Library::Utils::convertSearchstring(md.filepath(), searchMode());
 
 	QMap<QString, QVariant> bindings =
 	{
-		{"filename",		Util::cvt_not_null(md.filepath())},
-		{"albumID",			album_id},
-		{"artistID",		artist_id},
-		{"albumArtistID",	album_artist_id},
-		{"title",			Util::cvt_not_null(md.title())},
+		{"filename",		Util::convertNotNull(md.filepath())},
+		{"albumID",			albumId},
+		{"artistID",		artistId},
+		{"albumArtistID",	albumArtistId},
+		{"title",			Util::convertNotNull(md.title())},
 		{"year",			md.year()},
-		{"length",			QVariant::fromValue(md.duration_ms())},
-		{"track",			md.track_number()},
+		{"length",			QVariant::fromValue(md.durationMs())},
+		{"track",			md.trackNumber()},
 		{"bitrate",			md.bitrate()},
-		{"genre",			Util::cvt_not_null(md.genres_to_string())},
+		{"genre",			Util::convertNotNull(md.genresToString())},
 		{"filesize",		QVariant::fromValue(md.filesize())},
 		{"discnumber",		md.discnumber()},
 		{"rating",			QVariant(int(md.rating()))},
-		{"comment",			Util::cvt_not_null(md.comment())},
-		{"cissearch",		Util::cvt_not_null(cissearch)},
-		{"filecissearch",	Util::cvt_not_null(file_cissearch)},
+		{"comment",			Util::convertNotNull(md.comment())},
+		{"cissearch",		Util::convertNotNull(cissearch)},
+		{"filecissearch",	Util::convertNotNull(fileCissearch)},
 		{"createdate",		QVariant::fromValue(current_time)},
 		{"modifydate",		QVariant::fromValue(current_time)},
-		{"libraryID",		md.library_id()}
+		{"libraryID",		md.libraryId()}
 	};
 
 	Query q = module()->insert("tracks", bindings, QString("Cannot insert track %1").arg(md.filepath()));
 
-	return (!q.has_error());
+	return (!q.hasError());
 }
 
 
-static QString get_filter_clause(const Filter& filter, QString cis_placeholder, QString searchterm_placeholder)
+static QString getFilterClause(const Filter& filter, QString cisPlaceholder, QString searchtermPlaceholder)
 {
-	cis_placeholder.remove(":");
-	searchterm_placeholder.remove(":");
+	cisPlaceholder.remove(":");
+	searchtermPlaceholder.remove(":");
 
 	switch( filter.mode() )
 	{
 		case Filter::Genre:
-			if(filter.is_invalid_genre())
+			if(filter.isInvalidGenre())
 			{
 				return "genre = ''";
 			}
 
-			return "genre LIKE :" + searchterm_placeholder;
+			return "genre LIKE :" + searchtermPlaceholder;
 
 		case Filter::Filename:
-			return "filecissearch LIKE :" + cis_placeholder;
+			return "filecissearch LIKE :" + cisPlaceholder;
 
 		case Filter::Fulltext:
 		case Filter::Invalid:
 		default:
-			return "allCissearch LIKE :" + cis_placeholder;
+			return "allCissearch LIKE :" + cisPlaceholder;
 	}
 }

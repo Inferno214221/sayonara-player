@@ -1,6 +1,6 @@
 /* LibraryFileExtensionBar.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -17,8 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-
 
 #ifndef LIBRARYFILEEXTENSIONBAR_H
 #define LIBRARYFILEEXTENSIONBAR_H
@@ -44,42 +42,42 @@ namespace Library
 		Q_OBJECT
 		PIMPL(FileExtensionBar)
 
-	signals:
-		void sig_close_clicked();
+		signals:
+			void sigCloseClicked();
 
-	public:
-		explicit FileExtensionBar(QWidget* parent=nullptr);
-		~FileExtensionBar() override;
+		public:
+			explicit FileExtensionBar(QWidget* parent=nullptr);
+			~FileExtensionBar() override;
 
-		/**
-		 * @brief This method needs to be called before any other operation
-		 * @param library
-		 */
-		void init(AbstractLibrary* library);
+			/**
+			 * @brief This method needs to be called before any other operation
+			 * @param library
+			 */
+			void init(AbstractLibrary* library);
 
-		/**
-		 * @brief refetches all tracks with extensions, clears the layout,
-		 * adds new buttons
-		 */
-		void refresh();
+			/**
+			 * @brief refetches all tracks with extensions, clears the layout,
+			 * adds new buttons
+			 */
+			void refresh();
 
-		/**
-		 * @brief clears all buttons and the layout
-		 */
-		void clear();
+			/**
+			 * @brief clears all buttons and the layout
+			 */
+			void clear();
 
-		/**
-		 * @brief has_extensions
-		 * @return true, if there's more than one extension. false else
-		 */
-		bool has_extensions() const;
+			/**
+			 * @brief has_extensions
+			 * @return true, if there's more than one extension. false else
+			 */
+			bool hasExtensions() const;
 
-	protected:
-		void language_changed() override;
+		protected:
+			void languageChanged() override;
 
-	private slots:
-		void button_toggled(bool b);
-		void close_clicked();
+		private slots:
+			void buttonToggled(bool b);
+			void closeClicked();
 	};
 }
 

@@ -1,6 +1,6 @@
 /* GUI_StreamRecorderPreferences.h
 
- * Copyright (C) 2011-2020 Lucio Carreras
+ * Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara-player
  *
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * created by Lucio Carreras,
+ * created by Michael Lugmair (Lucio Carreras),
  * May 13, 2012
  *
  */
@@ -44,7 +44,7 @@ public:
 	~TagButton() override;
 
 protected:
-	void language_changed() override;
+	void languageChanged() override;
 };
 
 
@@ -62,20 +62,20 @@ class GUI_StreamRecorderPreferences :
 		bool commit() override;
 		void revert() override;
 
-		QString action_name() const override;
+		QString actionName() const override;
 
 	protected:
-		void init_ui() override;
-		void retranslate_ui() override;
-		void skin_changed() override;
+		void initUi() override;
+		void retranslate() override;
+		void skinChanged() override;
 
-		QString error_string() const override;
+		QString errorString() const override;
 
 	private slots:
-		void sl_cb_activate_toggled(bool);
-		void sl_btn_path_clicked();
-		void sl_btn_default_clicked();
-		void sl_line_edit_changed(const QString& new_text);
+		void activeToggled(bool);
+		void pathButtonClicked();
+		void defaultButtonClicked();
+		void lineEditChanged(const QString& text);
 };
 
 #endif /* GUI_StreamRecorderPreferences_H_ */

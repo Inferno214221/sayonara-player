@@ -1,6 +1,6 @@
 /* M3UParser.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -32,14 +32,14 @@ class M3UParser :
 {
 public:
 	explicit M3UParser(const QString& filename);
-	~M3UParser();
+	~M3UParser() override;
 
 private:
 	void parse() override;
 
-    bool parse_first_line(const QString& line, MetaData& md);
-    void parse_local_file(const QString& line, MetaData& md);
-    void parse_www_file(const QString& line, MetaData& md);
+    bool parseFirstLine(const QString& line, MetaData& md);
+    void parseLocalFile(const QString& line, MetaData& md);
+    void parseWWWFile(const QString& line, MetaData& md);
 };
 
 #endif // M3UPARSER_H

@@ -1,6 +1,6 @@
 /* DatabaseStreams.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -31,14 +31,13 @@ namespace DB
 	class Streams : private Module
 	{
 		public:
-			Streams(const QString& connection_name, DbId db_id);
+			Streams(const QString& connectionName, DbId databaseId);
 			~Streams();
 
 			bool getAllStreams(QList<Stream>& result);
 			bool deleteStream(const QString& name);
 			bool addStream(const Stream& stream);
-			bool updateStreamUrl(const QString& name, const QString& url);
-			bool renameStream(const QString& old_name, const QString& new_name);
+			bool updateStream(const QString& name, const Stream& url);
 			Stream getStream(const QString& name);
 	};
 }

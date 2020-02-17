@@ -1,6 +1,6 @@
 /* CrossFader.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -36,16 +36,16 @@ struct Fadeable::Private
 {
 	CrossFadeableTimer*		timer = nullptr;
 
-	double					fading_step;
-	double					start_volume;
-	double					target_volume;
+	double					fadingStep;
+	double					startVolume;
+	double					targetVolume;
 
 	Fadeable::FadeMode		mode;
 
 	Private(Fadeable* parent) :
-		fading_step(0),
-		start_volume(0),
-		target_volume(0),
+		fadingStep(0),
+		startVolume(0),
+		targetVolume(0),
 		mode(Fadeable::FadeMode::NoFading)
 	{
 		timer = new CrossFadeableTimer(parent);
@@ -64,14 +64,13 @@ Fadeable::Fadeable()
 
 Fadeable::~Fadeable() = default;
 
-bool Fadeable::init_fader(Fadeable::FadeMode mode)
+bool Fadeable::initFader(Fadeable::FadeMode mode)
 {
 	m->mode = mode;
 	m->timer->stop();
 
-	double current_volume = GetSetting(Set::Engine_Vol) / 100.0;
-
-	int fading_time = GetSetting(Set::Engine_CrossFaderTime);
+	double currentVolume = GetSetting(Set::Engine_Vol) / 100.0;
+	int fadingTime = GetSetting(Set::Engine_CrossFaderTime);
 
 	if(mode == Fadeable::FadeMode::NoFading){
 		return false;
@@ -79,23 +78,23 @@ bool Fadeable::init_fader(Fadeable::FadeMode mode)
 
 	else if(mode == Fadeable::FadeMode::FadeOut)
 	{
-		m->start_volume = current_volume;
-		m->target_volume = 0;
+		m->startVolume = currentVolume;
+		m->targetVolume = 0;
 	}
 
 	else if(mode == Fadeable::FadeMode::FadeIn)
 	{
-		m->start_volume = 0;
-		m->target_volume = current_volume;
+		m->startVolume = 0;
+		m->targetVolume = currentVolume;
 	}
 
-	this->set_internal_volume(m->start_volume);
+	this->setInternalVolume(m->startVolume);
 
-	m->fading_step = FadingStepTime * (m->target_volume - m->start_volume) / (fading_time * 1.0);
+	m->fadingStep = FadingStepTime * (m->targetVolume - m->startVolume) / (fadingTime * 1.0);
 
-	sp_log(Log::Develop, this) << "Fading step: " << m->fading_step << " every " << FadingStepTime << "ms from Volume " << m->start_volume << " to " << m->target_volume;
+	spLog(Log::Develop, this) << "Fading step: " << m->fadingStep << " every " << FadingStepTime << "ms from Volume " << m->startVolume << " to " << m->targetVolume;
 
-	bool b = std::fabs(m->fading_step) > 0.00001;
+	bool b = std::fabs(m->fadingStep) > 0.00001;
 	if(b) {
 		m->timer->start(FadingStepTime);
 	}
@@ -103,42 +102,42 @@ bool Fadeable::init_fader(Fadeable::FadeMode mode)
 	return b;
 }
 
-void Fadeable::fade_in()
+void Fadeable::fadeIn()
 {
-	bool b = init_fader(Fadeable::FadeMode::FadeIn);
+	bool b = initFader(Fadeable::FadeMode::FadeIn);
 	if(!b){
 		return;
 	}
 
 	play();
-	fade_in_handler();
+	getFadeInHandler();
 }
 
-void Fadeable::fade_out()
+void Fadeable::fadeOut()
 {
-	bool b = init_fader(Fadeable::FadeMode::FadeOut);
+	bool b = initFader(Fadeable::FadeMode::FadeOut);
 	if(!b){
 		return;
 	}
 
-	fade_out_handler();
+	getFadeOutHandler();
 }
 
-void Fadeable::timed_out()
+void Fadeable::timedOut()
 {
-	double current_volume = get_internal_volume();
-	double new_volume = current_volume + m->fading_step;
+	double currentVolume = internalVolume();
+	double new_volume = currentVolume + m->fadingStep;
 
 	bool fade_allowed = (new_volume <= 1.0) && (new_volume >= 0);
 
 	if(m->mode == Fadeable::FadeMode::FadeIn)
 	{
-		fade_allowed &= (new_volume < m->target_volume);
+		fade_allowed &= (new_volume < m->targetVolume);
 	}
 
 	else if(m->mode == Fadeable::FadeMode::FadeOut)
 	{
-		fade_allowed &= (new_volume > m->target_volume);
+		fade_allowed &= (new_volume > m->targetVolume);
 		if(!fade_allowed){
 			this->stop();
 		}
@@ -148,10 +147,10 @@ void Fadeable::timed_out()
 	{
 		if(m->mode == Fadeable::FadeMode::FadeIn)
 		{
-			sp_log(Log::Crazy, this) << "Set volume from " << current_volume << " to " << new_volume;
+			spLog(Log::Crazy, this) << "Set volume from " << currentVolume << " to " << new_volume;
 		}
 
-		set_internal_volume(new_volume);
+		setInternalVolume(new_volume);
 	}
 
 	else {
@@ -160,7 +159,7 @@ void Fadeable::timed_out()
 }
 
 
-MilliSeconds Fadeable::get_fading_time_ms() const
+MilliSeconds Fadeable::fadingTimeMs() const
 {
 	if(GetSetting(Set::Engine_CrossFaderActive))
 	{
@@ -171,7 +170,7 @@ MilliSeconds Fadeable::get_fading_time_ms() const
 	return 0;
 }
 
-void Fadeable::abort_fader()
+void Fadeable::abortFader()
 {
 	m->timer->stop();
 }
@@ -201,7 +200,7 @@ CrossFadeableTimer::CrossFadeableTimer(Fadeable* parent) :
 {
 	m = Pimpl::make<Private>(parent);
 
-	connect(m->timer, &QTimer::timeout, this, &CrossFadeableTimer::timed_out);
+	connect(m->timer, &QTimer::timeout, this, &CrossFadeableTimer::timedOut);
 }
 
 CrossFadeableTimer::~CrossFadeableTimer() = default;
@@ -216,7 +215,7 @@ void CrossFadeableTimer::stop()
 	m->timer->stop();
 }
 
-void CrossFadeableTimer::timed_out()
+void CrossFadeableTimer::timedOut()
 {
-	m->fadeable->timed_out();
+	m->fadeable->timedOut();
 }

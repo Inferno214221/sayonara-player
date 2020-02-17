@@ -1,6 +1,6 @@
 /* TaggingCover.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -31,17 +31,17 @@ namespace Tagging
 
 	namespace Covers
 	{
-		bool write_cover(const QString& filepath, const QPixmap& image);
-		bool write_cover(const QString& filepath, const QString& image_path);
+		bool writeCover(const QString& filepath, const QPixmap& image);
+		bool writeCover(const QString& filepath, const QString& imagePath);
 
-		bool extract_cover(const ParsedTag& parsed_tag, QByteArray& cover_data, QString& mime_type);
-		bool extract_cover(const QString& filepath, QByteArray& cover_data, QString& mime_type);
-		QPixmap extract_cover(const QString& filepath);
+		bool extractCover(const ParsedTag& parsedTag, QByteArray& coverData, QString& mimeType);
+		bool extractCover(const QString& filepath, QByteArray& coverData, QString& mimeType);
+		QPixmap extractCover(const QString& filepath);
 
-		bool has_cover(const ParsedTag& parsed_tag);
-		bool has_cover(const QString& filepath);
+		bool hasCover(const ParsedTag& parsedTag);
+		bool hasCover(const QString& filepath);
 
-		bool is_cover_supported(const QString& filepath);
+		bool isCoverSupported(const QString& filepath);
 	}
 }
 

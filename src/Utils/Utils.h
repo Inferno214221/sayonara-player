@@ -1,6 +1,6 @@
 /* Helper.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -22,7 +22,7 @@
  * Helper.cpp
  *
  *  Created on: Apr 4, 2011
- *      Author: Lucio Carreras
+ *      Author: Michael Lugmair (Lucio Carreras)
  */
 
 #ifndef UTIL_HELPER_H
@@ -48,23 +48,23 @@ class QPixmap;
  */
 namespace Util
 {
-	uint64_t current_date_to_int();
-	uint64_t date_to_int(const QDateTime& date);
-	QDateTime int_to_date(uint64_t date);
+	uint64_t currentDateToInt();
+	uint64_t dateToInt(const QDateTime& date);
+	QDateTime intToDate(uint64_t date);
 
 	/**
 	 * @brief Transform all letters after a space to upper case
 	 * @param str input string
 	 * @return result string
 	 */
-	QString cvt_str_to_first_upper(const QString& str);
+	QString stringToFirstUpper(const QString& str);
 
 	/**
 	 * @brief Transform only first letter to upper case
 	 * @param str input string
 	 * @return result string
 	 */
-	QString cvt_str_to_very_first_upper(const QString& str);
+	QString stringToVeryFirstUpper(const QString& str);
 
 	/**
 	 * @brief Convert milliseconds to string
@@ -74,39 +74,39 @@ namespace Util
 	 * result in the unit displayed after the string
 	 * @return converted milliseconds
 	 */
-	QString cvt_ms_to_string(MilliSeconds msec, const QString& format);
+	QString msToString(MilliSeconds msec, const QString& format);
 
-	QString cvt_not_null(const QString& str);
+	QString convertNotNull(const QString& str);
 
 
 	/**
 	 * @brief get sayonara path in home directory
 	 * @return
 	 */
-	QString sayonara_path();
-	QString sayonara_path(const QString& append_path);
+	QString sayonaraPath();
+	QString sayonaraPath(const QString& append_path);
 
 
 	/**
 	 * @brief get share path of sayonara
 	 * @return ./share on windows, share path of unix system
 	 */
-	QString share_path();
-	QString share_path(const QString& append_path);
+	QString sharePath();
+	QString sharePath(const QString& append_path);
 
 	/**
 	 * @brief get library path of sayonara
 	 * @return ./lib on windows, lib path of unix system
 	 */
-	QString lib_path();
-	QString lib_path(const QString& append_path);
+	QString libPath();
+	QString libPath(const QString& append_path);
 
 	/**
 	 * @brief get a temporary directory. usually /tmp/sayonara
 	 * @return
 	 */
-	QString temp_path();
-	QString temp_path(const QString& append_path);
+	QString tempPath();
+	QString tempPath(const QString& append_path);
 
 	/**
 	 * @brief create a link string
@@ -115,11 +115,11 @@ namespace Util
 	 * @param underline if link should be underlined
 	 * @return link string
 	 */
-	QString create_link(const QString& name,
+	QString createLink(const QString& name,
 						bool dark=true,
 						bool underline=true);
 
-	QString create_link(const QString& name,
+	QString createLink(const QString& name,
 						bool dark,
 						bool underline,
 						const QString& target);
@@ -129,27 +129,27 @@ namespace Util
 	 * @brief get all supported sound file extensions
 	 * @return
 	 */
-	QStringList soundfile_extensions(bool with_asterisk=true);
+	QStringList soundfileExtensions(bool with_asterisk=true);
 
 	/**
 	 * @brief get filter for file reader or file chooser
 	 * @return
 	 */
-	QString soundfile_filter();
+	QString soundfileFilter();
 
 	/**
 	 * @brief get all supported playlist file extensions
 	 * @return
 	 */
-	QStringList playlist_extensions(bool with_asterisk=true);
+	QStringList playlistExtensions(bool with_asterisk=true);
 
 	/**
 	 * @brief get all supported podcast file extensions
 	 * @return
 	 */
-	QStringList podcast_extensions(bool with_asterisk=true);
+	QStringList podcastExtensions(bool with_asterisk=true);
 
-	QStringList image_extensions(bool with_asterisk=true);
+	QStringList imageExtensions(bool with_asterisk=true);
 
 
 	enum Extension
@@ -168,7 +168,7 @@ namespace Util
 	 * @param name name that should appear in the file dialog
 	 * @return concatenated list of extensions
 	 */
-	QString get_file_filter(Extensions extensions, const QString& name);
+	QString getFileFilter(Extensions extensions, const QString& name);
 
 	/**
 	 * @brief get a random val between min max
@@ -176,10 +176,10 @@ namespace Util
 	 * @param max maximum included value
 	 * @return random number
 	 */
-	int random_number(int min, int max);
+	int randomNumber(int min, int max);
 
 
-	QString random_string(int max_chars);
+	QString randomString(int max_chars);
 
 
 	/**
@@ -188,41 +188,41 @@ namespace Util
 	 * @param xml_doc content of the xml document
 	 * @return extracted string
 	 */
-	QString easy_tag_finder(const QString&  tag, const QString& xml_doc);
+	QString easyTagFinder(const QString&  tag, const QString& xml_doc);
 
 	/**
 	 * @brief calculate a md5 hashsum
 	 * @param data input data
 	 * @return hashsum
 	 */
-	QByteArray calc_hash(const QByteArray&  data);
+	QByteArray calcHash(const QByteArray&  data);
 
 
 	/**
 	 * @brief sleep
 	 * @param ms milliseconds to sleep
 	 */
-	void sleep_ms(uint64_t ms);
+	void sleepMs(uint64_t ms);
 
 
 	/**
 	 * @brief get all ip addresses of the host
 	 * @return list of ip addresses
 	 */
-	QStringList ip_addresses();
+	QStringList ipAddresses();
 
 
-	QByteArray cvt_pixmap_to_bytearray(const QPixmap& pm);
-	QPixmap cvt_bytearray_to_pixmap(const QByteArray& arr);
+	QByteArray convertPixmapToByteArray(const QPixmap& pm);
+	QPixmap convertByteArrayToPixmap(const QByteArray& arr);
 
 	/**
 	 * @brief set an environment variable. This function is platform independent
 	 * @param key variable name
 	 * @param value variable value
 	 */
-	void set_environment(const QString& key, const QString& value);
-	void unset_environment(const QString& key);
-	QString get_environment(const char* key);
+	void setEnvironment(const QString& key, const QString& value);
+	void unsetEnvironment(const QString& key);
+	QString getEnvironment(const char* key);
 }
 
 #endif

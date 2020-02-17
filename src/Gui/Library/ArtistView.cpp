@@ -1,6 +1,6 @@
 /* ArtistView.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -74,44 +74,44 @@ AbstractLibrary* ArtistView::library() const
 	return m->library;
 }
 
-void ArtistView::init_view(AbstractLibrary* library)
+void ArtistView::initView(AbstractLibrary* library)
 {
 	m->library = library;
 
 	ArtistModel* artist_model = new ArtistModel(this, m->library);
 
-	this->set_item_model(artist_model);
+	this->setItemModel(artist_model);
 	this->setItemDelegate(new Gui::StyledItemDelegate(this));
 
-	connect(m->library, &AbstractLibrary::sig_all_artists_loaded, this, &ArtistView::fill);
+	connect(m->library, &AbstractLibrary::sigAllArtistsLoaded, this, &ArtistView::fill);
 
-	ListenSetting(Set::Lib_UseViewClearButton, ArtistView::use_clear_button_changed);
+	ListenSetting(Set::Lib_UseViewClearButton, ArtistView::useClearButtonChanged);
 }
 
-void ArtistView::init_context_menu()
+void ArtistView::initContextMenu()
 {
 	ShortcutHandler* sch = ShortcutHandler::instance();
 
-	ItemView::init_context_menu();
+	ItemView::initContextMenu();
 
-	Library::ContextMenu* menu = context_menu();
+	Library::ContextMenu* menu = contextMenu();
 
 	m->album_artist_action = new QAction(menu);
 	m->album_artist_action->setCheckable(true);
 	m->album_artist_action->setChecked(GetSetting(Set::Lib_ShowAlbumArtists));
 	m->album_artist_action->setShortcut(sch->shortcut(ShortcutIdentifier::AlbumArtists).sequence());
 
-	ListenSetting(Set::Lib_ShowAlbumCovers, ArtistView::album_artists_changed);
+	ListenSetting(Set::Lib_ShowAlbumCovers, ArtistView::showAlbumArtistsChanged);
 
-	connect(m->album_artist_action, &QAction::triggered, this, &ArtistView::album_artists_triggered);
+	connect(m->album_artist_action, &QAction::triggered, this, &ArtistView::albumArtistsTriggered);
 
-	QAction* action = menu->get_action(Library::ContextMenu::EntryCoverView);
+	QAction* action = menu->action(Library::ContextMenu::EntryCoverView);
 	menu->insertAction(action, m->album_artist_action);
 
-	language_changed();
+	languageChanged();
 }
 
-ColumnHeaderList ArtistView::column_headers() const
+ColumnHeaderList ArtistView::columnHeaders() const
 {
 	const QFontMetrics fm(this->font());
 
@@ -119,18 +119,18 @@ ColumnHeaderList ArtistView::column_headers() const
 	{
 		std::make_shared<ColumnHeader>(ColumnHeader::Sharp, true, SortOrder::NoSorting, SortOrder::NoSorting, 2),
 		std::make_shared<ColumnHeader>(ColumnHeader::Artist, false, SortOrder::ArtistNameAsc, SortOrder::ArtistNameDesc, 160, true),
-		std::make_shared<ColumnHeader>(ColumnHeader::NumTracks, true, SortOrder::ArtistTrackcountAsc, SortOrder::ArtistTrackcountDesc, Gui::Util::text_width(fm, "M 8888"))
+		std::make_shared<ColumnHeader>(ColumnHeader::NumTracks, true, SortOrder::ArtistTrackcountAsc, SortOrder::ArtistTrackcountDesc, Gui::Util::textWidget(fm, "M 8888"))
 	};
 
 	return check_vector_size(columns);
 }
 
-QByteArray ArtistView::column_header_state() const
+QByteArray ArtistView::columnHeaderState() const
 {
 	return GetSetting(Set::Lib_ColStateArtists);
 }
 
-void ArtistView::save_column_header_state(const QByteArray& state)
+void ArtistView::saveColumnHeaderState(const QByteArray& state)
 {
 	SetSetting(Set::Lib_ColStateArtists, state);
 }
@@ -141,14 +141,14 @@ SortOrder ArtistView::sortorder() const
 	return so.so_artists;
 }
 
-void ArtistView::apply_sortorder(SortOrder s)
+void ArtistView::applySortorder(SortOrder s)
 {
-	m->library->change_artist_sortorder(s);
+	m->library->changeArtistSortorder(s);
 }
 
-void ArtistView::language_changed()
+void ArtistView::languageChanged()
 {
-	TableView::language_changed();
+	TableView::languageChanged();
 
 	if(m->album_artist_action)
 	{
@@ -158,76 +158,76 @@ void ArtistView::language_changed()
 	}
 }
 
-bool ArtistView::is_mergeable() const
+bool ArtistView::isMergeable() const
 {
 	return true;
 }
 
-MD::Interpretation ArtistView::metadata_interpretation() const
+MD::Interpretation ArtistView::metadataInterpretation() const
 {
 	return MD::Interpretation::Artists;
 }
 
-void ArtistView::selection_changed(const IndexSet& indexes)
+void ArtistView::selectedItemsChanged(const IndexSet& indexes)
 {
-	TableView::selection_changed(indexes);
-	m->library->selected_artists_changed(indexes);
+	TableView::selectedItemsChanged(indexes);
+	m->library->selectedArtistsChanged(indexes);
 }
 
 
-void ArtistView::play_clicked()
+void ArtistView::playClicked()
 {
-	TableView::play_clicked();
-	m->library->prepare_fetched_tracks_for_playlist(false);
+	TableView::playClicked();
+	m->library->prepareFetchedTracksForPlaylist(false);
 }
 
-void ArtistView::play_new_tab_clicked()
+void ArtistView::playNewTabClicked()
 {
-	TableView::play_new_tab_clicked();
-	m->library->prepare_fetched_tracks_for_playlist(true);
+	TableView::playNewTabClicked();
+	m->library->prepareFetchedTracksForPlaylist(true);
 }
 
-void ArtistView::play_next_clicked()
+void ArtistView::playNextClicked()
 {
-	TableView::play_next_clicked();
-	m->library->play_next_fetched_tracks();
+	TableView::playNextClicked();
+	m->library->playNextFetchedTracks();
 }
 
-void ArtistView::append_clicked()
+void ArtistView::appendClicked()
 {
-	TableView::append_clicked();
-	m->library->append_fetched_tracks();
+	TableView::appendClicked();
+	m->library->appendFetchedTracks();
 }
 
-void ArtistView::refresh_clicked()
+void ArtistView::refreshClicked()
 {
-	TableView::refresh_clicked();
-	m->library->refresh_artist();
+	TableView::refreshClicked();
+	m->library->refreshArtists();
 }
 
-void ArtistView::use_clear_button_changed()
+void ArtistView::useClearButtonChanged()
 {
 	bool b = GetSetting(Set::Lib_UseViewClearButton);
-	use_clear_button(b);
+	useClearButton(b);
 }
 
-void ArtistView::album_artists_triggered(bool b)
+void ArtistView::albumArtistsTriggered(bool b)
 {
 	Q_UNUSED(b)
 	SetSetting(Set::Lib_ShowAlbumArtists, m->album_artist_action->isChecked());
 }
 
-void ArtistView::run_merge_operation(const Library::MergeData& mergedata)
+void ArtistView::runMergeOperation(const Library::MergeData& mergedata)
 {
-	Tagging::UserOperations* uto = new Tagging::UserOperations(mergedata.library_id(), this);
+	Tagging::UserOperations* uto = new Tagging::UserOperations(mergedata.libraryId(), this);
 
-	connect(uto, &Tagging::UserOperations::sig_finished, uto, &Tagging::UserOperations::deleteLater);
+	connect(uto, &Tagging::UserOperations::sigFinished, uto, &Tagging::UserOperations::deleteLater);
 
-	uto->merge_artists(mergedata.source_ids(), mergedata.target_id());
+	uto->mergeArtists(mergedata.sourceIds(), mergedata.targetId());
 }
 
 
-void ArtistView::album_artists_changed()
+void ArtistView::showAlbumArtistsChanged()
 {
 	m->album_artist_action->setChecked(GetSetting(Set::Lib_ShowAlbumArtists));
 }

@@ -1,6 +1,6 @@
 /* LibraryContainer.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -50,7 +50,7 @@ void ContainerImpl::rename(const QString& new_name)
 
 ContainerImpl::~ContainerImpl() = default;
 
-QString ContainerImpl::display_name() const
+QString ContainerImpl::displayName() const
 {
 	return name();
 }
@@ -60,7 +60,7 @@ QMenu* ContainerImpl::menu()
 	return nullptr;
 }
 
-bool ContainerImpl::is_local() const
+bool ContainerImpl::isLocal() const
 {
 	return false;
 }
@@ -71,7 +71,7 @@ void ContainerImpl::init()
 		return;
 	}
 
-	this->init_ui();
+	this->initUi();
 
 	QWidget* ui = this->widget();
 	QLayout* layout = ui->layout();
@@ -85,7 +85,7 @@ void ContainerImpl::init()
 		auto* layout = new QVBoxLayout(header_frame);
 		layout->setContentsMargins(0, 0, 0, 0);
 
-		auto* combo_box = new Library::PluginCombobox(this->display_name(), header_frame);
+		auto* combo_box = new Library::PluginCombobox(this->displayName(), header_frame);
 		layout->addWidget(combo_box);
 
 		header_frame->setFrameShape(QFrame::NoFrame);

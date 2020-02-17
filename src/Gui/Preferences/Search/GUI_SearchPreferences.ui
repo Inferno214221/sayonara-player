@@ -25,7 +25,7 @@
     </widget>
    </item>
    <item row="1" column="0">
-    <widget class="QCheckBox" name="cb_case_insensitive">
+    <widget class="QCheckBox" name="cbCaseInsensitive">
      <property name="text">
       <string>Case insensitive</string>
      </property>
@@ -45,7 +45,7 @@
     </widget>
    </item>
    <item row="3" column="0">
-    <widget class="QCheckBox" name="cb_no_accents">
+    <widget class="QCheckBox" name="cbNoAccents">
      <property name="toolTip">
       <string notr="true">Š Œ Ž š œ ž Ÿ¥ µ À Á Â Ã Ä Å Æ Ç È É Ê Ë Ì Í Î Ï Ð Ñ Ò Ó Ô Õ Ö Ø Ù Ú Û Ü Ý ß à á â ã ä å æ ç è é ê ë ì í î ï ð ñ ò ó ô õ ö ø ù ú û ü ý ÿ</string>
      </property>
@@ -72,7 +72,7 @@
     </widget>
    </item>
    <item row="2" column="0">
-    <widget class="QCheckBox" name="cb_no_special_chars">
+    <widget class="QCheckBox" name="cbNoSpecialChars">
      <property name="toolTip">
       <string notr="true">. ' &quot; &amp; ! $ + * / ( ) = - _ ; : , ? &lt; &gt;[ ] { } @ € white-spaces</string>
      </property>
@@ -107,9 +107,9 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>cb_case_insensitive</tabstop>
-  <tabstop>cb_no_special_chars</tabstop>
-  <tabstop>cb_no_accents</tabstop>
+  <tabstop>cbCaseInsensitive</tabstop>
+  <tabstop>cbNoSpecialChars</tabstop>
+  <tabstop>cbNoAccents</tabstop>
  </tabstops>
  <resources/>
  <connections/>

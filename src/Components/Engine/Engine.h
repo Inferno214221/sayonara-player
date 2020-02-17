@@ -1,6 +1,6 @@
 /* PlaybackEngine.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -66,77 +66,76 @@ namespace Engine
 		};
 
 		signals:
-			void sig_data(const QByteArray& data);
-			void sig_spectrum_changed();
-			void sig_level_changed();
+			void sigDataAvailable(const QByteArray& data);
+			void sigSpectrumChanged();
+			void sigLevelChanged();
 
-			void sig_metadata_changed(const MetaData& md);
-			void sig_duration_changed(const MetaData& md);
-			void sig_bitrate_changed(const MetaData& md);
-			void sig_cover_data(const QByteArray& data, const QString& mimetype);
+			void sigMetadataChanged(const MetaData& md);
+			void sigDurationChanged(const MetaData& md);
+			void sigBitrateChanged(const MetaData& md);
+			void sigCoverDataAvailable(const QByteArray& data, const QString& mimetype);
 
-			void sig_current_position_changed(MilliSeconds ms);
-			void sig_buffering(int progress);
-			void sig_track_finished();
-			void sig_track_ready();
-			void sig_error(const QString& error_message);
+			void sigCurrentPositionChanged(MilliSeconds ms);
+			void sigBuffering(int progress);
+			void sigTrackFinished();
+			void sigTrackReady();
+			void sigError(const QString& error_message);
 
 		public:
 			explicit Engine(QObject* parent=nullptr);
 			~Engine();
 
-			void update_bitrate(Bitrate br, GstElement* src);
-			void update_duration(GstElement* src);
+			void updateBitrate(Bitrate br, GstElement* src);
+			void updateDuration(GstElement* src);
 
-			void set_track_ready(GstElement* src);
-			void set_track_almost_finished(MilliSeconds time2go);
-			void set_track_finished(GstElement* src);
+			void setTrackReady(GstElement* src);
+			void setTrackAlmostFinished(MilliSeconds time2go);
+			void setTrackFinished(GstElement* src);
 
-			bool is_streamrecroder_recording() const;
-			void set_streamrecorder_recording(bool b);
+			bool isStreamRecorderRecording() const;
+			void setStreamRecorderRecording(bool b);
 
-			void set_spectrum(const SpectrumList& vals);
+			void setSpectrum(const SpectrumList& vals);
 			SpectrumList spectrum() const;
 
-			void set_level(float left, float right);
+			void setLevel(float left, float right);
 			QPair<float, float> level() const;
 
-			void set_broadcast_enabled(bool b);
-			void set_equalizer(int band, int value);
+			void setBroadcastEnabled(bool b);
+			void setEqualizer(int band, int value);
 
-			MetaData current_track() const;
+			MetaData currentTrack() const;
 
 		public slots:
 			void play();
 			void stop();
 			void pause();
 
-			void jump_abs_ms(MilliSeconds pos_ms);
-			void jump_rel_ms(MilliSeconds pos_ms);
-			void jump_rel(double percent);
-			void update_metadata(const MetaData& md, GstElement* src);
-			void update_cover(GstElement* src, const QByteArray& data, const QString& mimedata);
+			void jumpAbsMs(MilliSeconds pos_ms);
+			void jumpRelMs(MilliSeconds pos_ms);
+			void jumpRel(double percent);
+			void updateMetadata(const MetaData& md, GstElement* src);
+			void updateCover(GstElement* src, const QByteArray& data, const QString& mimedata);
 
-			bool change_track(const MetaData& md);
+			bool changeTrack(const MetaData& md);
 
-			void set_buffer_state(int progress, GstElement* src);
-			void error(const QString& error, const QString& element_name);
+			void setBufferState(int progress, GstElement* src);
+			void error(const QString& error, const QString& elementName);
 
 		private:
-			PipelinePtr init_pipeline(const QString& name);
-			bool change_metadata(const MetaData& md);
+			PipelinePtr initPipeline(const QString& name);
+			bool changeMetadata(const MetaData& md);
 
-			bool change_track_crossfading(const MetaData& md);
-			bool change_track_gapless(const MetaData& md);
-			bool change_track_immediatly(const MetaData& md);
+			bool changeTrackCrossfading(const MetaData& md);
+			bool changeTrackGapless(const MetaData& md);
+			bool changeTrackImmediatly(const MetaData& md);
 
-			void set_current_position_ms(MilliSeconds pos_ms);
+			void setCurrentPositionMs(MilliSeconds pos_ms);
 
 		private slots:
-			void s_gapless_changed();
-			void s_streamrecorder_active_changed();
-
-			void cur_pos_ms_changed(MilliSeconds pos_ms);
+			void gaplessChanged();
+			void streamrecorderActiveChanged();
+			void currentPositionChanged(MilliSeconds pos_ms);
 	};
 }
 

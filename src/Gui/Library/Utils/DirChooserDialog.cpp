@@ -1,6 +1,6 @@
 /* DirChooserDialog.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -37,10 +37,11 @@ DirChooserDialog::DirChooserDialog(QWidget* parent) :
 {
 	this->setDirectory(QDir::homePath());
 	this->setWindowTitle(Lang::get(Lang::ImportDir));
-	this->setOption(QFileDialog::DontUseNativeDialog, true);
+	//this->setOption(QFileDialog::DontUseNativeDialog, true);
 	this->setOption(QFileDialog::ShowDirsOnly, true);
-
-	QList<QUrl> sidebar_urls = this->sidebarUrls();
+	this->setFilter(QDir::Filter::Dirs);
+	this->setAcceptMode(QFileDialog::AcceptOpen);
+	this->setFileMode(QFileDialog::Directory);
 
 	const QList<QStandardPaths::StandardLocation> locations {
 		QStandardPaths::HomeLocation,
@@ -50,26 +51,28 @@ DirChooserDialog::DirChooserDialog(QWidget* parent) :
 		QStandardPaths::TempLocation
 	};
 
+	QList<QUrl> sidebarUrls = this->sidebarUrls();
 	for(const QStandardPaths::StandardLocation& location : locations)
 	{
-		QStringList std_locations = QStandardPaths::standardLocations(location);
-		for(const QString& std_location : std_locations)
+		const QStringList standardLocations = QStandardPaths::standardLocations(location);
+		for(const QString& standardLocation : standardLocations)
 		{
-			QUrl url = QUrl::fromLocalFile(std_location);
-			if(sidebar_urls.contains(url)){
+			const QUrl url = QUrl::fromLocalFile(standardLocation);
+			if(sidebarUrls.contains(url)){
 				continue;
 			}
 
-			sidebar_urls << url;
+			sidebarUrls << url;
 		}
 	}
 
-	this->setSidebarUrls(sidebar_urls);
+	this->setSidebarUrls(sidebarUrls);
 
-	QListView* list_view = this->findChild<QListView*>("listView");
-	if(list_view != nullptr)
+	QListView* listView = this->findChild<QListView*>("listView");
+	if(listView != nullptr)
 	{
-		list_view->setSelectionMode(QAbstractItemView::MultiSelection);
+		listView->setSelectionMode(QAbstractItemView::MultiSelection);
+
 		QTreeView* tree_view = this->findChild<QTreeView*>();
 		if(tree_view){
 			tree_view->setSelectionMode(QAbstractItemView::MultiSelection);

@@ -1,6 +1,6 @@
 /* GUI_EditLibrary.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -39,43 +39,43 @@ class GUI_EditLibrary :
 	PIMPL(GUI_EditLibrary)
 	UI_CLASS(GUI_EditLibrary)
 
-signals:
-	void sig_accepted();
-	void sig_recected();
+	signals:
+		void sigAccepted();
+		void sigRejected();
 
-public:
-	explicit GUI_EditLibrary(const QString& name, const QString& path, QWidget *parent = 0);
-	explicit GUI_EditLibrary(QWidget* parent=nullptr);
-	~GUI_EditLibrary();
+	public:
+		explicit GUI_EditLibrary(const QString& name, const QString& path, QWidget* parent=nullptr);
+		explicit GUI_EditLibrary(QWidget* parent=nullptr);
+		~GUI_EditLibrary() override;
 
-	/**
-	 * @brief Same as GUI_EditLibrary(QWidget* parent=nullptr)
-	 */
-	void reset();
+		/**
+		 * @brief Same as GUI_EditLibrary(QWidget* parent=nullptr)
+		 */
+		void reset();
 
-	enum class EditMode
-	{
-		New=0,
-		Edit=1
-	};
+		enum class EditMode
+		{
+			New=0,
+			Edit=1
+		};
 
-	QString name() const;
-	QString path() const;
+		QString name() const;
+		QString path() const;
 
-	bool has_name_changed() const;
-	bool has_path_changed() const;
+		bool hasNameChanged() const;
+		bool hasPathChanged() const;
 
-	EditMode edit_mode() const;
+		EditMode editMode() const;
 
-protected:
-	void language_changed() override;
-	void skin_changed() override;
+	private slots:
+		void okClicked();
+		void cancelClicked();
+		void chooseDirClicked();
+		void nameEdited(const QString& text);
 
-private slots:
-	void ok_clicked();
-	void cancel_clicked();
-	void choose_dir_clicked();
-	void name_edited(const QString& text);
+	protected:
+		void languageChanged() override;
+		void skinChanged() override;
 };
 
 #endif // GUI_EDITLIBRARY_H

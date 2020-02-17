@@ -1,6 +1,6 @@
 /* EqualizerHandler.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -38,7 +38,7 @@ namespace PipelineExtensions
 			Equalizer();
 			virtual ~Equalizer();
 
-			void set_band(int idx, int val);
+			void setBand(int idx, int val);
 
 			GstElement* element() const;
 	};

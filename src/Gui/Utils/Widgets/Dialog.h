@@ -1,6 +1,6 @@
 /* Dialog.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -39,11 +39,13 @@ namespace Gui
 		/**
 		 * @brief emitted when closed
 		 */
-		void sig_closed();
+		void sigClosed();
 
 	public:
 		explicit Dialog(QWidget* parent=nullptr);
-		virtual ~Dialog();
+		virtual ~Dialog() override;
+
+		bool isAccepted() const;
 
 	protected:
 		virtual void closeEvent(QCloseEvent* e) override;

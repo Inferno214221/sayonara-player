@@ -1,6 +1,6 @@
 /* GUI_PlaylistPreferences.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -41,17 +41,17 @@ public:
 	bool commit() override;
 	void revert() override;
 
-	QString action_name() const override;
+	QString actionName() const override;
 
 protected:
-	void init_ui() override;
-	void retranslate_ui() override;
-	void skin_changed() override;
+	void initUi() override;
+	void retranslate() override;
+	void skinChanged() override;
 
-	QString error_string() const override;
+	QString errorString() const override;
 
 private slots:
-	void cb_toggled(bool b);
+	void checkboxToggled(bool b);
 };
 
 #endif // GUI_PLAYLISTPREFERENCES_H

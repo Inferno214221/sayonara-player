@@ -1,6 +1,6 @@
 /* SoundcloudDataFetcher.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -31,15 +31,12 @@
 
 struct SC::DataFetcher::Private
 {
-	MetaDataList	playlist_tracks;
+	MetaDataList	playlistTracks;
 	AlbumList		playlists;
 	ArtistList		artists;
-	int				artist_id;
+	int				artistId;
 
-	Private()
-	{
-		artist_id = -1;
-	}
+	Private() : artistId(-1) {}
 };
 
 
@@ -51,46 +48,45 @@ SC::DataFetcher::DataFetcher(QObject* parent) :
 	clear();
 }
 
-SC::DataFetcher::~DataFetcher() {}
+SC::DataFetcher::~DataFetcher() = default;
 
-
-void SC::DataFetcher::search_artists(const QString& artist_name)
+void SC::DataFetcher::searchArtists(const QString& artist_name)
 {
 	clear();
 
-	AsyncWebAccess* awa = new AsyncWebAccess(this);
-	connect(awa, &AsyncWebAccess::sig_finished,
-			this, &SC::DataFetcher::artists_fetched);
-	awa->run( SC::WebAccess::create_dl_get_artist(artist_name));
+	auto* awa = new AsyncWebAccess(this);
+	connect(awa, &AsyncWebAccess::sigFinished,
+			this, &SC::DataFetcher::artistsFetched);
+	awa->run( SC::WebAccess::createLinkGetArtist(artist_name));
 }
 
-void SC::DataFetcher::get_artist(int artist_id)
+void SC::DataFetcher::getArtist(int artistId)
 {
 	clear();
 
-	AsyncWebAccess* awa = new AsyncWebAccess(this);
-	connect(awa, &AsyncWebAccess::sig_finished,
-			this, &SC::DataFetcher::artists_fetched);
+	auto* awa = new AsyncWebAccess(this);
+	connect(awa, &AsyncWebAccess::sigFinished,
+			this, &SC::DataFetcher::artistsFetched);
 
-	awa->run( SC::WebAccess::create_dl_get_artist(artist_id) );
+	awa->run( SC::WebAccess::createLinkGetArtist(artistId) );
 }
 
 
-void SC::DataFetcher::get_tracks_by_artist(int artist_id)
+void SC::DataFetcher::getTracksByArtist(int artistId)
 {
 	clear();
 
-	m->artist_id = artist_id;
+	m->artistId = artistId;
 
-	AsyncWebAccess* awa = new AsyncWebAccess(this);
-	connect(awa, &AsyncWebAccess::sig_finished,
-			this, &SC::DataFetcher::playlist_tracks_fetched);
+	auto* awa = new AsyncWebAccess(this);
+	connect(awa, &AsyncWebAccess::sigFinished,
+			this, &SC::DataFetcher::playlistTracksFetched);
 
-	awa->run( SC::WebAccess::create_dl_get_playlists(artist_id) );
+	awa->run( SC::WebAccess::createLinkGetPlaylists(artistId) );
 }
 
 
-void SC::DataFetcher::artists_fetched()
+void SC::DataFetcher::artistsFetched()
 {
 	auto* awa = static_cast<AsyncWebAccess*>(sender());
 	if(awa->status() != AsyncWebAccess::Status::GotData) {
@@ -102,14 +98,14 @@ void SC::DataFetcher::artists_fetched()
 	SC::JsonParser parser(data);
 
 	ArtistList artists;
-	parser.parse_artists(artists);
+	parser.parseArtists(artists);
 
-	emit sig_artists_fetched(artists);
+	emit sigArtistsFetched(artists);
 	awa->deleteLater();
 }
 
 
-void SC::DataFetcher::playlist_tracks_fetched()
+void SC::DataFetcher::playlistTracksFetched()
 {
 	auto* awa = static_cast<AsyncWebAccess*>(sender());
 	if(awa->status() != AsyncWebAccess::Status::GotData) {
@@ -119,18 +115,18 @@ void SC::DataFetcher::playlist_tracks_fetched()
 
 	QByteArray data = awa->data();
 	SC::JsonParser parser(data);
-	parser.parse_playlists(m->artists, m->playlists, m->playlist_tracks);
+	parser.parsePlaylists(m->artists, m->playlists, m->playlistTracks);
 
 	AsyncWebAccess* awa_new = new AsyncWebAccess(this);
-	connect(awa_new, &AsyncWebAccess::sig_finished,
-			this, &SC::DataFetcher::tracks_fetched);
+	connect(awa_new, &AsyncWebAccess::sigFinished,
+			this, &SC::DataFetcher::tracksFetched);
 
-	awa_new->run( SC::WebAccess::create_dl_get_tracks(m->artist_id) );
+	awa_new->run( SC::WebAccess::createLinkGetTracks(m->artistId) );
 
 	awa->deleteLater();
 }
 
-void SC::DataFetcher::tracks_fetched()
+void SC::DataFetcher::tracksFetched()
 {
 	auto* awa = static_cast<AsyncWebAccess*>(sender());
 	if(awa->status() != AsyncWebAccess::Status::GotData) {
@@ -143,12 +139,12 @@ void SC::DataFetcher::tracks_fetched()
 
 	MetaDataList v_md;
 	ArtistList artists;
-	parser.parse_tracks(artists, v_md);
+	parser.parseTracks(artists, v_md);
 
 	for(const MetaData& md : v_md)
 	{
-		if(!m->playlist_tracks.contains(md.id())){
-			m->playlist_tracks << md;
+		if(!m->playlistTracks.contains(md.id())){
+			m->playlistTracks << md;
 		}
 	}
 
@@ -159,18 +155,18 @@ void SC::DataFetcher::tracks_fetched()
 		}
 	}
 
-	emit sig_playlists_fetched(m->playlists);
-	emit sig_tracks_fetched(m->playlist_tracks);
-	emit sig_ext_artists_fetched(m->artists);
+	emit sigPlaylistsFetched(m->playlists);
+	emit sigTracksFetched(m->playlistTracks);
+	emit sigExtArtistsFetched(m->artists);
 
 	awa->deleteLater();
 }
 
 void SC::DataFetcher::clear()
 {
-	m->playlist_tracks.clear();
+	m->playlistTracks.clear();
 	m->playlists.clear();
 	m->artists.clear();
-	m->artist_id = -1;
+	m->artistId = -1;
 }
 

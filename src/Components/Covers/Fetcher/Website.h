@@ -21,16 +21,16 @@ namespace Cover::Fetcher
 		PIMPL(Website)
 
 		private:
-			QString priv_identifier() const override;
+			QString privateIdentifier() const override;
 
 		public:
 			Website();
 			~Website() override;
 
-			bool can_fetch_cover_directly() const override;
-			QStringList parse_addresses(const QByteArray& website) const override;
+			bool canFetchCoverDirectly() const override;
+			QStringList parseAddresses(const QByteArray& website) const override;
 
-			int estimated_size() const override;
+			int estimatedSize() const override;
 
 			/**
 			 * @brief will always return the website which has been set by
@@ -38,9 +38,9 @@ namespace Cover::Fetcher
 			 * @param address ignored
 			 * @return
 			 */
-			QString search_address(const QString& address) const override;
+			QString fulltextSearchAddress(const QString& address) const override;
 
-			void set_website(const QString& website);
+			void setWebsite(const QString& website);
     };
 }
 

@@ -1,6 +1,6 @@
 /* LibraryImporter.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -48,36 +48,35 @@ namespace Library
 			Rollback,
 			Caching,
 			NoTracks,
-			WaitForUser,
+			NoValidTracks,
+			CachingFinished,
 			Importing,
 			Imported
 		};
 
 	signals:
-		void sig_got_metadata(const MetaDataList&);
-		void sig_status_changed(Importer::ImportStatus);
-		void sig_got_library_dirs(const QStringList& library_dirs);
-		void sig_progress(int percent);
-		void sig_progress_no_percent(int progress);
-		void sig_triggered();
-		void sig_target_dir_changed(const QString& target_dir);
-
+		void sigMetadataCached(const MetaDataList& tracks);
+		void sigStatusChanged(Importer::ImportStatus);
+		void sigProgress(int percent);
+		void sigCachedFilesChanged();
+		void sigTargetDirectoryChanged(const QString& targetDir);
+		void sigTriggered();
 
 	public:
-		bool is_running() const;
-		void import_files(const QStringList& files, const QString& target_dir);
-		void accept_import(const QString& target_dir);
-		void cancel_import();
+		bool isRunning() const;
+		void importFiles(const QStringList& files, const QString& targetDir);
+		void acceptImport(const QString& targetDir);
+		bool cancelImport();
 		void reset();
+		int cachedFileCount() const;
 
 		Importer::ImportStatus status() const;
 
-
 	private slots:
-		void caching_thread_finished();
-		void copy_thread_finished();
-		void emit_status(Importer::ImportStatus status);
-		void metadata_changed();
+		void cachingThreadFinished();
+		void copyThreadFinished();
+		void emitStatus(Importer::ImportStatus status);
+		void metadataChanged();
 	};
 }
 

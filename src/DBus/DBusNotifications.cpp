@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -59,16 +59,15 @@ DBusNotifications::DBusNotifications(QObject* parent) :
 	QDBusConnectionInterface* dbus_interface = bus.interface();
 	dbus_interface->startService(service_name);
 
-	if (!dbus_interface->isServiceRegistered(service_name))
-	{
-		sp_log(Log::Warning, this) << service_name << " not registered";
+	if (!dbus_interface->isServiceRegistered(service_name)) {
+		spLog(Log::Warning, this) << service_name << " not registered";
 	}
 
-	else{
-		sp_log(Log::Info, this) << " registered";
+	else {
+		spLog(Log::Info, this) << " registered";
 	}
 
-	NotificationHandler::instance()->register_notificator(this);
+	NotificationHandler::instance()->registerNotificator(this);
 }
 
 DBusNotifications::~DBusNotifications() = default;
@@ -79,7 +78,7 @@ void DBusNotifications::notify(const QString& title, const QString& text, const 
 
 	QVariantMap map;
 	map.insert("action-icons", false);
-	map.insert("desktop-entry", desktop_file.filesystem_path());
+	map.insert("desktop-entry", desktop_file.fileystemPath());
 	map.insert("resident", false);
 	map.insert("sound-file", QString());
 	map.insert("sound-name", QString());
@@ -90,7 +89,7 @@ void DBusNotifications::notify(const QString& title, const QString& text, const 
 	QDBusPendingReply<uint> reply =
 	m->interface->Notify("Sayonara Player",
 	   m->id,
-	   Util::Filepath(image_path).filesystem_path(),
+	   Util::Filepath(image_path).fileystemPath(),
 	   title,
 	   text,
 	   QStringList(),
@@ -115,8 +114,8 @@ void DBusNotifications::notify(const MetaData& md)
 		return;
 	}
 
-	m->cl = Cover::Location::cover_location(md);
-	QString path = Util::Filepath(m->cl.preferred_path()).filesystem_path();
+	m->cl = Cover::Location::coverLocation(md);
+	QString path = Util::Filepath(m->cl.preferredPath()).fileystemPath();
 
 	notify(m->md.title(), m->md.artist(), path);
 }

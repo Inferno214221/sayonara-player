@@ -1,6 +1,6 @@
 /* Session.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -40,12 +40,12 @@ namespace Session
 		SINGLETON(Manager)
 
 		signals:
-			void sig_changed(Session::Id id);
+			void sigSessionChanged(Session::Id id);
 
 		public:
 			EntryListMap history(const QDateTime& dt_begin, const QDateTime& dt_end);
-			EntryListMap history_for_day(const QDateTime& dt);
-			EntryListMap history_entries(int day_index, int count);
+			EntryListMap historyForDay(const QDateTime& dt);
+			EntryListMap historyEntries(int day_index, int count);
 
 		private slots:
 			void position_changed(MilliSeconds ms);

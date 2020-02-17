@@ -1,6 +1,6 @@
 /* TaggingLyrics.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -33,25 +33,25 @@
 #include <QString>
 
 
-bool Tagging::Lyrics::write_lyrics(const MetaData& md, const QString& lyrics_data)
+bool Tagging::Lyrics::writeLyrics(const MetaData& md, const QString& lyrics_data)
 {
 	QString filepath = md.filepath();
 	TagLib::FileRef f(TagLib::FileName(filepath.toUtf8()));
-	if(!Tagging::Utils::is_valid_file(f)){
-		sp_log(Log::Warning, "Tagging") << "Cannot open tags for " << md.filepath();
+	if(!Tagging::Utils::isValidFile(f)){
+		spLog(Log::Warning, "Tagging") << "Cannot open tags for " << md.filepath();
 		return false;
 	}
 
 	bool success = false;
 
-	Tagging::ParsedTag parsed_tag = Tagging::Utils::tag_type_from_fileref(f);
+	Tagging::ParsedTag parsed_tag = Tagging::Utils::getTagTypeFromFileref(f);
 	Tagging::TagType tag_type = parsed_tag.type;
 
 	switch(tag_type)
 	{
 		case Tagging::TagType::ID3v2:
 			{
-				auto id3v2 = parsed_tag.id3_tag();
+				auto id3v2 = parsed_tag.id3Tag();
 				ID3v2::LyricsFrame lyrics_frame(id3v2);
 				success = lyrics_frame.write(lyrics_data);
 			}
@@ -60,7 +60,7 @@ bool Tagging::Lyrics::write_lyrics(const MetaData& md, const QString& lyrics_dat
 
 		case Tagging::TagType::Xiph:
 			{
-				auto xiph = parsed_tag.xiph_tag();
+				auto xiph = parsed_tag.xiphTag();
 				Xiph::LyricsFrame lyrics_frame(xiph);
 				success = lyrics_frame.write(lyrics_data);
 			}
@@ -76,26 +76,26 @@ bool Tagging::Lyrics::write_lyrics(const MetaData& md, const QString& lyrics_dat
 }
 
 
-bool Tagging::Lyrics::extract_lyrics(const MetaData& md, QString& lyrics_data)
+bool Tagging::Lyrics::extractLyrics(const MetaData& md, QString& lyrics_data)
 {
 	lyrics_data.clear();
 
 	QString filepath = md.filepath();
 	TagLib::FileRef f(TagLib::FileName(filepath.toUtf8()));
 
-	if(!Tagging::Utils::is_valid_file(f)){
-		sp_log(Log::Warning, "Tagging") << "Cannot open tags for " << md.filepath();
+	if(!Tagging::Utils::isValidFile(f)){
+		spLog(Log::Warning, "Tagging") << "Cannot open tags for " << md.filepath();
 		return false;
 	}
 
-	Tagging::ParsedTag parsed_tag = Tagging::Utils::tag_type_from_fileref(f);
+	Tagging::ParsedTag parsed_tag = Tagging::Utils::getTagTypeFromFileref(f);
 	Tagging::TagType tag_type = parsed_tag.type;
 
 	switch(tag_type)
 	{
 		case Tagging::TagType::ID3v2:
 			{
-				auto id3v2 = parsed_tag.id3_tag();
+				auto id3v2 = parsed_tag.id3Tag();
 				ID3v2::LyricsFrame lyrics_frame(id3v2);
 
 				if(!lyrics_frame.is_frame_found()){
@@ -109,7 +109,7 @@ bool Tagging::Lyrics::extract_lyrics(const MetaData& md, QString& lyrics_data)
 
 		case Tagging::TagType::Xiph:
 			{
-				auto xiph = parsed_tag.xiph_tag();
+				auto xiph = parsed_tag.xiphTag();
 				Xiph::LyricsFrame lyrics_frame(xiph);
 				lyrics_frame.read(lyrics_data);
 			}
@@ -124,15 +124,15 @@ bool Tagging::Lyrics::extract_lyrics(const MetaData& md, QString& lyrics_data)
 }
 
 
-bool Tagging::Lyrics::is_lyrics_supported(const QString& filepath)
+bool Tagging::Lyrics::isLyricsSupported(const QString& filepath)
 {
 	TagLib::FileRef f(TagLib::FileName(filepath.toUtf8()));
 
-	if(!Tagging::Utils::is_valid_file(f)){
+	if(!Tagging::Utils::isValidFile(f)){
 		return false;
 	}
 
-	Tagging::ParsedTag parsed_tag = Tagging::Utils::tag_type_from_fileref(f);
+	Tagging::ParsedTag parsed_tag = Tagging::Utils::getTagTypeFromFileref(f);
 	Tagging::TagType tag_type = parsed_tag.type;
 
 	return ((tag_type == Tagging::TagType::ID3v2) ||

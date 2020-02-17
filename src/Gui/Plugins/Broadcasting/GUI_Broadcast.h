@@ -1,6 +1,6 @@
 /* GUI_Broadcast.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -34,35 +34,35 @@ class GUI_Broadcast :
 	UI_CLASS(GUI_Broadcast)
 
 public:
-	explicit GUI_Broadcast(QWidget *parent=nullptr);
-	virtual ~GUI_Broadcast();
+	explicit GUI_Broadcast(QWidget* parent=nullptr);
+	~GUI_Broadcast() override;
 
-	QString get_name() const override;
-	QString get_display_name() const override;
+	QString name() const override;
+	QString displayName() const override;
 
 private slots:
-	void connection_established(const QString& ip);
-	void connection_closed(const QString& ip);
-	void can_listen_changed(bool b);
+	void connectionEstablished(const QString& ip);
+	void connectionClosed(const QString& ip);
+	void canListenChanged(bool b);
 
-	void dismiss_clicked();
-	void dismiss_all_clicked();
-	void combo_changed(int idx);
+	void dismissClicked();
+	void dismissAllClicked();
+	void currentIndexChanged(int idx);
 	void retry();
-	void mp3_enc_found();
+	void mp3EncoderFound();
 
 private:
-	void dismiss_at(int idx);
-	void set_status_label();
+	void dismissAt(int idx);
+	void setStatusLabel();
 
-	void retranslate_ui() override;
-	void init_ui() override;
+	void retranslate() override;
+	void initUi() override;
 
-	bool check_dismiss_visible() const;
-	bool check_dismiss_all_visible() const;
-	void update_dismiss_buttons();
+	bool checkDismissVisible() const;
+	bool checkDismissAllVisible() const;
+	void updateDismissButtons();
 
-	void start_server();
+	void startServer();
 };
 
 #endif // GUI_BROADCAST_H

@@ -1,6 +1,6 @@
 /* AbstractSearchModel.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -22,15 +22,14 @@
 #include "Utils/Settings/Settings.h"
 
 SearchableModelInterface::SearchableModelInterface() {}
-SearchableModelInterface::~SearchableModelInterface() {}
-
+SearchableModelInterface::~SearchableModelInterface() = default;
 
 SearchableModelInterface::ExtraTriggerMap SearchableModelInterface::getExtraTriggers()
 {
 	return SearchableModelInterface::ExtraTriggerMap();
 }
 
-Library::SearchModeMask SearchableModelInterface::search_mode() const
+Library::SearchModeMask SearchableModelInterface::searchMode() const
 {
 	return GetSetting(Set::Lib_SearchMode);
 }

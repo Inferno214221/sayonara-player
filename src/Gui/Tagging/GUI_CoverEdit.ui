@@ -30,7 +30,7 @@
     <number>5</number>
    </property>
    <item row="2" column="4">
-    <widget class="Gui::CoverButton" name="btn_cover_replacement">
+    <widget class="Gui::CoverButton" name="btn_coverReplacement">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
        <horstretch>0</horstretch>
@@ -72,7 +72,7 @@
     </spacer>
    </item>
    <item row="2" column="5">
-    <widget class="QCheckBox" name="cb_cover_all">
+    <widget class="QCheckBox" name="cb_coverAll">
      <property name="text">
       <string notr="true">all</string>
      </property>
@@ -132,7 +132,7 @@
     </widget>
    </item>
    <item row="2" column="1" colspan="2">
-    <widget class="QLabel" name="lab_cover_original">
+    <widget class="QLabel" name="lab_coverOriginal">
      <property name="text">
       <string notr="true"/>
      </property>

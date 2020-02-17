@@ -1,6 +1,6 @@
 /* GUI_DirectoryWidget.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -52,67 +52,68 @@ class GUI_DirectoryWidget :
 		explicit GUI_DirectoryWidget(QWidget* parent=nullptr);
 		~GUI_DirectoryWidget() override;
 
-		QFrame* header_frame() const;
+		QFrame* headerFrame() const;
 
 	private:
-		void init_shortcuts();
-		void init_library_combobox();
+		void initShortcuts();
+		void initLibraryCombobox();
+		void initMenuButton();
 
 	private slots:
-		void search_button_clicked();
-		void search_text_edited(const QString& text);
+		void searchButtonClicked();
+		void searchTextEdited(const QString& text);
 
-		void dir_enter_pressed();
-		void dir_opened(QModelIndex idx);
-		void dir_pressed(QModelIndex idx);
-		void dir_clicked(QModelIndex idx);
-		void dir_append_clicked();
-		void dir_play_clicked();
-		void dir_play_next_clicked();
-		void dir_play_new_tab_clicked();
-		void dir_delete_clicked();
-		void dir_copy_requested(const QStringList& files, const QString& target);
-		void dir_move_requested(const QStringList& files, const QString& target);
-		void dir_rename_requested(const QString& old_name, const QString& new_name);
-		void dir_copy_to_lib_requested(LibraryId library_id);
-		void dir_move_to_lib_requested(LibraryId library_id);
+		void dirEnterPressed();
+		void dirOpened(QModelIndex idx);
+		void dirPressed(QModelIndex idx);
+		void dirClicked(QModelIndex idx);
+		void dirAppendClicked();
+		void dirPlayClicked();
+		void dirPlayNextClicked();
+		void dirPlayInNewTabClicked();
+		void dirDeleteClicked();
+		void dirCopyRequested(const QStringList& files, const QString& target);
+		void dirMoveRequested(const QStringList& files, const QString& target);
+		void dirRenameRequested(const QString& oldName, const QString& new_name);
+		void dirCopyToLibRequested(LibraryId libraryId);
+		void dirMoveToLibRequested(LibraryId libraryId);
 
-		void file_dbl_clicked(QModelIndex idx);
-		void file_enter_pressed();
-		void file_pressed(QModelIndex idx);
-		void file_append_clicked();
-		void file_play_clicked();
-		void file_play_next_clicked();
-		void file_play_new_tab_clicked();
-		void file_delete_clicked();
-		void file_rename_requested(const QString& old_name, const QString& new_name);
-		void file_rename_by_expression_requested(const QString& old_name, const QString& expression);
-		void file_copy_to_lib_requested(LibraryId library_id);
-		void file_move_to_lib_requested(LibraryId library_id);
+		void fileDoubleClicked(QModelIndex idx);
+		void fileEnterPressed();
+		void filePressed(QModelIndex idx);
+		void fileAppendClicked();
+		void filePlayClicked();
+		void filePlayNextClicked();
+		void filePlayNewTabClicked();
+		void fileDeleteClicked();
+		void fileRenameRequested(const QString& oldName, const QString& new_name);
+		void fileRenameByExpressionRequested(const QString& oldName, const QString& expression);
+		void fileCopyToLibraryRequested(LibraryId libraryId);
+		void fileMoveToLibraryRequested(LibraryId libraryId);
 
-		void file_operation_started();
-		void file_operation_finished();
+		void fileOperationStarted();
+		void fileOperationFinished();
 
-		void import_requested(LibraryId library_id, const QStringList& paths, const QString& target_dir);
-		void import_dialog_requested(const QString& target_dir);
+		void newDirectoryClicked();
+		void viewInFileManagerClicked();
 
-		void splitter_moved(int pos, int index);
+		void importRequested(LibraryId libraryId, const QStringList& paths, const QString& targetDirectory);
+		void importDialogRequested(const QString& targetDirectory);
 
-		void set_library_path_clicked();
-		void check_libraries();
+		void currentLibraryChanged(int index);
+		void setLibraryPathClicked();
+		void checkLibraries();
 
-		void current_library_changed(int index);
-
-
+		void splitterMoved(int pos, int index);
 
 	protected:
-		MD::Interpretation metadata_interpretation() const override;
-		MetaDataList info_dialog_data() const override;
-		bool has_metadata() const override;
+		MD::Interpretation metadataInterpretation() const override;
+		MetaDataList infoDialogData() const override;
+		bool hasMetadata() const override;
 		QStringList pathlist() const override;
 
-		void language_changed() override;
-		void skin_changed() override;
+		void languageChanged() override;
+		void skinChanged() override;
 };
 
 #endif // GUI_DIRECTORYWIDGET_H

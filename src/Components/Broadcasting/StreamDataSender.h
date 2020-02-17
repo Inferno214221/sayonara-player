@@ -1,6 +1,6 @@
 /* StreamDataSender.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -34,21 +34,21 @@ class StreamDataSender
 	PIMPL(StreamDataSender)
 
 private:
-	bool send_icy_metadata(const QString& stream_title);
+	bool sendIcyMetadata(const QString& streamTitle);
 
 public:
 	explicit StreamDataSender(QTcpSocket* socket);
 	~StreamDataSender();
 
-	bool send_trash();
-	bool send_data(const QByteArray& data);
-	bool send_icy_data(const QByteArray& data, const QString& stream_title);
-	bool send_header(bool reject, bool icy);
-	bool send_html5(const QString& stream_title);
-	bool send_bg();
-	bool send_metadata(const QString& stream_title);
-	bool send_playlist(const QString& host, int port);
-	bool send_favicon();
+	bool sendTrash();
+	bool sendData(const QByteArray& data);
+	bool sendIcyData(const QByteArray& data, const QString& streamTitle);
+	bool sendHeader(bool reject, bool icy);
+	bool sendHtml5(const QString& streamTitle);
+	bool sendBackground();
+	bool sendMetadata(const QString& streamTitle);
+	bool sendPlaylist(const QString& host, int port);
+	bool sendFavicon();
 
 	void flush();
 

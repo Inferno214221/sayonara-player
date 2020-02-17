@@ -1,6 +1,6 @@
 /* CoverDelegate.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -22,6 +22,7 @@
 #define ALBUMCOVERDELEGATE_H
 
 #include <QItemDelegate>
+#include <QStyledItemDelegate>
 
 namespace Library
 {
@@ -30,7 +31,7 @@ namespace Library
 	 * @ingroup GuiLibrary
 	 */
 	class CoverDelegate :
-			public QItemDelegate
+			public QStyledItemDelegate
 	{
 		Q_OBJECT
 

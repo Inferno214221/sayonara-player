@@ -1,6 +1,6 @@
 /* CopyFolderThread.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -35,9 +35,9 @@ using Library::CopyThread;
 
 struct CopyThread::Private
 {
-	MetaDataList	v_md;
-	QString			target_dir;
-	QStringList		copied_files;
+	MetaDataList	tracks;
+	QString			targetDir;
+	QStringList		copiedFiles;
 	bool			cancelled;
 
 	ImportCachePtr		cache=nullptr;
@@ -47,11 +47,11 @@ struct CopyThread::Private
 };
 
 
-CopyThread::CopyThread(const QString& target_dir, ImportCachePtr cache, QObject* parent) :
+CopyThread::CopyThread(const QString& targetDir, ImportCachePtr cache, QObject* parent) :
 	QThread(parent)
 {
 	m = Pimpl::make<CopyThread::Private>(cache);
-	m->target_dir = target_dir;
+	m->targetDir = targetDir;
 
 	clear();
 }
@@ -60,16 +60,16 @@ CopyThread::~CopyThread() = default;
 
 void CopyThread::clear()
 {
-	m->v_md.clear();
+	m->tracks.clear();
 	m->mode = Mode::Copy;
-	m->copied_files.clear();
+	m->copiedFiles.clear();
 	m->cancelled = false;
 }
 
-void CopyThread::emit_percent()
+void CopyThread::emitPercent()
 {
-	int percent = (m->copied_files.size() * 100000) / m->cache->count();
-	emit sig_progress(percent / 1000);
+	int percent = (m->copiedFiles.size() * 100000) / m->cache->count();
+	emit sigProgress(percent / 1000);
 }
 
 void CopyThread::copy()
@@ -84,56 +84,56 @@ void CopyThread::copy()
 			return;
 		}
 
-		const QString target_filename = m->cache->target_filename(filename, m->target_dir);
-		if(target_filename.isEmpty()){
+		const QString targetFilename = m->cache->targetFilename(filename, m->targetDir);
+		if(targetFilename.isEmpty()){
 			continue;
 		}
 
-		const QString target_dir = Util::File::get_parent_directory(target_filename);
-		bool success = Util::File::create_directories(target_dir);
+		const QString targetDir = Util::File::getParentDirectory(targetFilename);
+		bool success = Util::File::createDirectories(targetDir);
 		if(!success){
 			continue;
 		}
 
-		sp_log(Log::Debug, this) << "copy " << filename << " to \n\t" << target_filename;
-		if(Util::File::exists(target_filename))
+		spLog(Log::Debug, this) << "copy " << filename << " to \n\t" << targetFilename;
+		if(Util::File::exists(targetFilename))
 		{
-			sp_log(Log::Info, this) << "Overwrite " << target_filename;
-			Util::File::delete_files({target_filename});
+			spLog(Log::Info, this) << "Overwrite " << targetFilename;
+			Util::File::deleteFiles({targetFilename});
 		}
 
-		success = QFile::copy(filename, target_filename);
+		success = QFile::copy(filename, targetFilename);
 		if(!success) {
-			sp_log(Log::Warning, this) << "Copy error";
+			spLog(Log::Warning, this) << "Copy error";
 			continue;
 		}
 
-		m->copied_files << target_filename;
+		m->copiedFiles << targetFilename;
 
 		MetaData md(m->cache->metadata(filename));
 		if(!md.filepath().isEmpty())
 		{
-			sp_log(Log::Debug, this) << "Set new filename: " << target_filename;
-			md.set_filepath(target_filename);
-			m->v_md << md;
+			spLog(Log::Debug, this) << "Set new filename: " << targetFilename;
+			md.setFilepath(targetFilename);
+			m->tracks << md;
 		}
 
-		emit_percent();
+		emitPercent();
 	}
 }
 
 void CopyThread::rollback()
 {
-	int n_operations = m->copied_files.count();
-	while(m->copied_files.size() > 0)
+	int n_operations = m->copiedFiles.count();
+	while(m->copiedFiles.size() > 0)
 	{
-		QString filename = m->copied_files.takeLast();
+		QString filename = m->copiedFiles.takeLast();
 		QFile file(filename);
 		file.remove();
 
-		int percent = (m->copied_files.size() * 100000) / n_operations;
+		int percent = (m->copiedFiles.size() * 100000) / n_operations;
 
-		emit sig_progress(percent / 1000);
+		emit sigProgress(percent / 1000);
 	}
 }
 
@@ -154,22 +154,22 @@ void CopyThread::cancel()
 	m->cancelled = true;
 }
 
-MetaDataList CopyThread::get_copied_metadata() const
+MetaDataList CopyThread::copiedMetadata() const
 {
-	return m->v_md;
+	return m->tracks;
 }
 
-bool CopyThread::was_cancelled() const
+bool CopyThread::wasCancelled() const
 {
 	return m->cancelled;
 }
 
-int CopyThread::get_n_copied_files() const
+int CopyThread::copiedFileCount() const
 {
-	return m->copied_files.count();
+	return m->copiedFiles.count();
 }
 
-void CopyThread::set_mode(CopyThread::Mode mode)
+void CopyThread::setMode(CopyThread::Mode mode)
 {
 	m->mode = mode;
 }

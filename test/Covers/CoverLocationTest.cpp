@@ -24,33 +24,33 @@ private slots:
 
 void CoverLocationTest::test_copy()
 {
-	Location cl1 = Location::cover_location("AnAlbum", "AnArtist");
-	cl1.set_search_term("some search term");
-	QVERIFY(cl1.is_valid());
+	Location cl1 = Location::coverLocation("AnAlbum", "AnArtist");
+	cl1.setSearchTerm("some search term");
+	QVERIFY(cl1.isValid());
 	QVERIFY(!cl1.hash().isEmpty());
 	QVERIFY(!cl1.identifer().isEmpty());
-	QVERIFY(!cl1.cover_path().isEmpty());
-	QVERIFY(!cl1.to_string().isEmpty());
-	QVERIFY(!cl1.search_term().isEmpty());
-	QVERIFY(!cl1.search_urls().isEmpty());
+	QVERIFY(!cl1.coverPath().isEmpty());
+	QVERIFY(!cl1.toString().isEmpty());
+	QVERIFY(!cl1.searchTerm().isEmpty());
+	QVERIFY(!cl1.searchUrls().isEmpty());
 
 	Location cl2 = cl1;
-	QVERIFY(cl2.is_valid() == cl1.is_valid());
+	QVERIFY(cl2.isValid() == cl1.isValid());
 	QVERIFY(cl2.hash() == cl1.hash());
 	QVERIFY(cl2.identifer() == cl1.identifer());
-	QVERIFY(cl2.cover_path() == cl1.cover_path());
-	QVERIFY(cl2.to_string() == cl1.to_string());
-	QVERIFY(cl2.local_path() == cl1.local_path());
-	QVERIFY(cl2.search_term() == cl1.search_term());
+	QVERIFY(cl2.coverPath() == cl1.coverPath());
+	QVERIFY(cl2.toString() == cl1.toString());
+	QVERIFY(cl2.localPath() == cl1.localPath());
+	QVERIFY(cl2.searchTerm() == cl1.searchTerm());
 
 	Location cl3(cl1);
-	QVERIFY(cl3.is_valid() == cl1.is_valid());
+	QVERIFY(cl3.isValid() == cl1.isValid());
 	QVERIFY(cl3.hash() == cl1.hash());
 	QVERIFY(cl3.identifer() == cl1.identifer());
-	QVERIFY(cl3.cover_path() == cl1.cover_path());
-	QVERIFY(cl3.to_string() == cl1.to_string());
-	QVERIFY(cl3.local_path() == cl1.local_path());
-	QVERIFY(cl3.search_term() == cl1.search_term());
+	QVERIFY(cl3.coverPath() == cl1.coverPath());
+	QVERIFY(cl3.toString() == cl1.toString());
+	QVERIFY(cl3.localPath() == cl1.localPath());
+	QVERIFY(cl3.searchTerm() == cl1.searchTerm());
 }
 
 

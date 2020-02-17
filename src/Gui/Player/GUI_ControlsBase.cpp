@@ -32,9 +32,9 @@
 #include <algorithm>
 #include <cmath>
 
-static void set_icon(QPushButton* btn, QIcon icon)
+static void setIcon(QPushButton* btn, QIcon icon)
 {
-	int width = Gui::Util::text_width(btn->fontMetrics(), "MMn");
+	int width = Gui::Util::textWidget(btn->fontMetrics(), "MMn");
 
 	QSize sz(width, width);
 	btn->setFixedSize(sz);
@@ -46,14 +46,14 @@ static void set_icon(QPushButton* btn, QIcon icon)
 	btn->setIcon(icon);
 }
 
-static MetaData current_track()
+static MetaData currentTrack()
 {
-	return PlayManager::instance()->current_track();
+	return PlayManager::instance()->currentTrack();
 }
 
 struct GUI_ControlsBase::Private
 {
-	Library::ContextMenu* context_menu=nullptr;
+	Library::ContextMenu* contextMenu=nullptr;
 };
 
 GUI_ControlsBase::GUI_ControlsBase(QWidget* parent) :
@@ -68,76 +68,76 @@ void GUI_ControlsBase::init()
 {
 	QString version = GetSetting(Set::Player_Version);
 
-	lab_sayonara()->setText(tr("Sayonara Player"));
-	lab_version()->setText( version );
-	lab_writtenby()->setText(tr("Written by") + " Lucio Carreras");
-	lab_copyright()->setText(tr("Copyright") + " 2011 - " + QString::number(QDateTime::currentDateTime().date().year()));
-	btn_rec()->setVisible(false);
+	labSayonara()->setText(tr("Sayonara Player"));
+	labVersion()->setText(version);
+	labWrittenBy()->setText(tr("Written by %1").arg(" Michael Lugmair (Lucio Carreras)"));
+	labCopyright()->setText(tr("Copyright") + " 2011 - " + QString::number(QDateTime::currentDateTime().date().year()));
+	btnRecord()->setVisible(false);
 
 	PlayManager* pm = PlayManager::instance();
 
-	volume_changed(pm->volume());
-	mute_changed(pm->is_muted());
+	volumeChanged(pm->volume());
+	muteChanged(pm->isMuted());
 
-	setup_connections();
-	setup_shortcuts();
+	setupConnections();
+	setupShortcuts();
 
 	if(pm->playstate() != PlayState::FirstStartup)
 	{
-		playstate_changed(pm->playstate());
+		playstateChanged(pm->playstate());
 
 		if(pm->playstate() != PlayState::Stopped)
 		{
-			track_changed(pm->current_track());
-			cur_pos_changed(pm->initial_position_ms());
+			currentTrackChanged(pm->currentTrack());
+			currentPositionChanged(pm->initialPositionMs());
 		}
 	}
 
-	btn_cover()->set_alternative_search_enabled(false);
-	connect(btn_cover(), &Gui::CoverButton::sig_rejected, this, &GUI_ControlsBase::cover_click_rejected);
+	btnCover()->setAlternativeSearchEnabled(false);
+	connect(btnCover(), &Gui::CoverButton::sigRejected, this, &GUI_ControlsBase::coverClickRejected);
 
-	ListenSetting(Set::Engine_SR_Active, GUI_ControlsBase::sr_active_changed);
-	ListenSetting(Set::Engine_Pitch, GUI_ControlsBase::refresh_current_track);
-	ListenSettingNoCall(Set::Engine_SpeedActive, GUI_ControlsBase::refresh_current_track);
+	ListenSetting(Set::Engine_SR_Active, GUI_ControlsBase::streamRecorderActiveChanged);
+	ListenSetting(Set::Engine_Pitch, GUI_ControlsBase::refreshCurrentTrack);
+	ListenSettingNoCall(Set::Engine_SpeedActive, GUI_ControlsBase::refreshCurrentTrack);
 
-	skin_changed();
+	skinChanged();
 }
 
-Gui::RatingEditor* GUI_ControlsBase::lab_rating() const
+Gui::RatingEditor* GUI_ControlsBase::labRating() const
 {
 	return nullptr;
 }
 
-QSize GUI_ControlsBase::button_size() const
+QSize GUI_ControlsBase::buttonSize() const
 {
-	return btn_cover()->size();
+	return btnCover()->size();
 }
 
 
 // new track
-void GUI_ControlsBase::track_changed(const MetaData& md)
+void GUI_ControlsBase::currentTrackChanged(const MetaData& md)
 {
-	lab_sayonara()->hide();
-	lab_version()->hide();
-	lab_writtenby()->hide();
-	lab_copyright()->hide();
+	labSayonara()->hide();
+	labVersion()->hide();
+	labWrittenBy()->hide();
+	labCopyright()->hide();
 
-	lab_title()->show();
-	lab_artist()->show();
-	lab_album()->show();
-	widget_details()->show();
+	labTitle()->show();
+	labArtist()->show();
+	labAlbum()->show();
+	widgetDetails()->show();
 
-	refresh_current_position(0);
-	refresh_labels(md);
+	refreshCurrentPosition(0);
+	refreshLabels(md);
 
-	set_cover_location(md);
-	set_radio_mode( md.radio_mode() );
+	setCoverLocation(md);
+	setRadioMode( md.radioMode() );
 
-	sli_progress()->setEnabled( (md.duration_ms() / 1000) > 0 );
+	sliProgress()->setEnabled( (md.durationMs() / 1000) > 0 );
 }
 
 
-void GUI_ControlsBase::playstate_changed(PlayState state)
+void GUI_ControlsBase::playstateChanged(PlayState state)
 {
 	switch(state)
 	{
@@ -154,7 +154,7 @@ void GUI_ControlsBase::playstate_changed(PlayState state)
 			break;
 	}
 
-	check_record_button_visible();	
+	checkRecordButtonVisible();	
 }
 
 
@@ -162,10 +162,10 @@ QIcon GUI_ControlsBase::icon(Gui::Icons::IconName name)
 {
 	using namespace Gui;
 
-	Icons::change_theme();
+	Icons::changeTheme();
 	Icons::IconMode mode = Icons::Automatic;
 
-	if(Style::is_dark()){
+	if(Style::isDark()){
 		mode = Icons::ForceSayonaraIcon;
 	}
 
@@ -174,51 +174,51 @@ QIcon GUI_ControlsBase::icon(Gui::Icons::IconName name)
 
 void GUI_ControlsBase::played()
 {
-	lab_current_time()->setVisible(true);
-	btn_play()->setIcon(icon(Gui::Icons::Pause));
+	labCurrentTime()->setVisible(true);
+	btnPlay()->setIcon(icon(Gui::Icons::Pause));
 }
 
 void GUI_ControlsBase::paused()
 {
-	lab_current_time()->setVisible(true);
-	btn_play()->setIcon(icon(Gui::Icons::Play));
+	labCurrentTime()->setVisible(true);
+	btnPlay()->setIcon(icon(Gui::Icons::Play));
 }
 
 void GUI_ControlsBase::stopped()
 {
 	setWindowTitle("Sayonara");
 
-	btn_play()->setIcon(icon(Gui::Icons::Play));
-	sli_progress()->set_buffering(-1);
+	btnPlay()->setIcon(icon(Gui::Icons::Play));
+	sliProgress()->set_buffering(-1);
 
-	lab_title()->hide();
-	lab_artist()->hide();
-	lab_album()->hide();
-	widget_details()->hide();
+	labTitle()->hide();
+	labArtist()->hide();
+	labAlbum()->hide();
+	widgetDetails()->hide();
 
-	lab_current_time()->setText("00:00");
-	lab_current_time()->hide();
-	lab_max_time()->clear();
-	lab_max_time()->setVisible(false);
+	labCurrentTime()->setText("00:00");
+	labCurrentTime()->hide();
+	labMaxTime()->clear();
+	labMaxTime()->setVisible(false);
 
-	lab_sayonara()->show();
-	lab_writtenby()->show();
-	lab_version()->show();
-	lab_copyright()->show();
+	labSayonara()->show();
+	labWrittenBy()->show();
+	labVersion()->show();
+	labCopyright()->show();
 
-	sli_progress()->setValue(0);
-	sli_progress()->setEnabled(false);
+	sliProgress()->setValue(0);
+	sliProgress()->setEnabled(false);
 
-	set_standard_cover();
+	setStandardCover();
 
-	if(lab_rating()){
-		lab_rating()->hide();
+	if(labRating()){
+		labRating()->hide();
 	}
 }
 
-void GUI_ControlsBase::rec_changed(bool b)
+void GUI_ControlsBase::recordChanged(bool b)
 {
-	btn_rec()->setChecked(b);
+	btnRecord()->setChecked(b);
 }
 
 void GUI_ControlsBase::buffering(int progress)
@@ -226,44 +226,44 @@ void GUI_ControlsBase::buffering(int progress)
 	// buffering
 	if(progress > 0 && progress < 100)
 	{
-		sli_progress()->set_buffering(progress);
+		sliProgress()->set_buffering(progress);
 
-		lab_current_time()->setText(QString("%1%").arg(progress));
-		lab_max_time()->setVisible(false);
+		labCurrentTime()->setText(QString("%1%").arg(progress));
+		labMaxTime()->setVisible(false);
 	}
 
 	//buffering stopped
 	else if(progress == 0)
 	{
-		sli_progress()->set_buffering(-1);
-		lab_max_time()->setVisible(false);
+		sliProgress()->set_buffering(-1);
+		labMaxTime()->setVisible(false);
 	}
 
 	// no buffering
 	else
 	{
-		sli_progress()->set_buffering(-1);
-		lab_max_time()->setVisible(current_track().duration_ms() > 0);
+		sliProgress()->set_buffering(-1);
+		labMaxTime()->setVisible(currentTrack().durationMs() > 0);
 	}
 }
 
-void GUI_ControlsBase::progress_moved(int val)
+void GUI_ControlsBase::progressMoved(int val)
 {
 	val = std::max(val, 0);
 
-	refresh_current_position(val);
+	refreshCurrentPosition(val);
 
-	double percent = (val * 1.0) / sli_progress()->maximum();
-	PlayManager::instance()->seek_rel(percent);
+	double percent = (val * 1.0) / sliProgress()->maximum();
+	PlayManager::instance()->seekRelative(percent);
 }
 
 
-void GUI_ControlsBase::cur_pos_changed(MilliSeconds pos_ms)
+void GUI_ControlsBase::currentPositionChanged(MilliSeconds pos_ms)
 {
-	sp_log(Log::Crazy, this) << "Current position: " << pos_ms;
+	spLog(Log::Crazy, this) << "Current position: " << pos_ms;
 
-	MilliSeconds duration = PlayManager::instance()->duration_ms();
-	int max = sli_progress()->maximum();
+	MilliSeconds duration = PlayManager::instance()->durationMs();
+	int max = sliProgress()->maximum();
 	int new_val=0;
 	double percent = (pos_ms * 1.0) / duration;
 
@@ -279,19 +279,19 @@ void GUI_ControlsBase::cur_pos_changed(MilliSeconds pos_ms)
 		return;
 	}
 
-	if(!sli_progress()->is_busy())
+	if(!sliProgress()->is_busy())
 	{
-		QString cur_pos_string = Util::cvt_ms_to_string(pos_ms, "$M:$S");
-		lab_current_time()->setText(cur_pos_string);
-		sli_progress()->setValue(new_val);
+		QString cur_pos_string = Util::msToString(pos_ms, "$M:$S");
+		labCurrentTime()->setText(cur_pos_string);
+		sliProgress()->setValue(new_val);
 	}
 }
 
 
-void GUI_ControlsBase::refresh_current_position(int val)
+void GUI_ControlsBase::refreshCurrentPosition(int val)
 {
-	MilliSeconds duration = PlayManager::instance()->duration_ms();
-	int max = sli_progress()->maximum();
+	MilliSeconds duration = PlayManager::instance()->durationMs();
+	int max = sliProgress()->maximum();
 
 	val = std::max(val, 0);
 	val = std::min(max, val);
@@ -299,27 +299,27 @@ void GUI_ControlsBase::refresh_current_position(int val)
 	double percent = (val * 1.0) / max;
 
 	MilliSeconds cur_pos_ms = MilliSeconds(percent * duration);
-	QString cur_pos_string = Util::cvt_ms_to_string(cur_pos_ms, "$M:$S");
+	QString cur_pos_string = Util::msToString(cur_pos_ms, "$M:$S");
 
-	lab_current_time()->setText(cur_pos_string);
+	labCurrentTime()->setText(cur_pos_string);
 }
 
-void GUI_ControlsBase::set_total_time_label(MilliSeconds total_time)
+void GUI_ControlsBase::setTotalTimeLabel(MilliSeconds total_time)
 {
 	QString length_str;
 	if(total_time > 0){
-		length_str = Util::cvt_ms_to_string(total_time, "$M:$S");
-		lab_max_time()->setText(length_str);
+		length_str = Util::msToString(total_time, "$M:$S");
+		labMaxTime()->setText(length_str);
 	}
 
-	lab_max_time()->setVisible(total_time > 0);
-	sli_progress()->setEnabled(total_time > 0);
+	labMaxTime()->setVisible(total_time > 0);
+	sliProgress()->setEnabled(total_time > 0);
 }
 
-void GUI_ControlsBase::progress_hovered(int val)
+void GUI_ControlsBase::progressHovered(int val)
 {
-	MilliSeconds duration = PlayManager::instance()->duration_ms();
-	int max = sli_progress()->maximum();
+	MilliSeconds duration = PlayManager::instance()->durationMs();
+	int max = sliProgress()->maximum();
 
 	val = std::max(val, 0);
 	val = std::min(max, val);
@@ -327,25 +327,25 @@ void GUI_ControlsBase::progress_hovered(int val)
 	double percent = (val * 1.0) / max;
 
 	MilliSeconds cur_pos_ms = MilliSeconds(percent * duration);
-	QString cur_pos_string = Util::cvt_ms_to_string(cur_pos_ms, "$M:$S");
+	QString cur_pos_string = Util::msToString(cur_pos_ms, "$M:$S");
 
 	QToolTip::showText( QCursor::pos(), cur_pos_string );
 }
 
 
-void GUI_ControlsBase::volume_changed(int val)
+void GUI_ControlsBase::volumeChanged(int val)
 {
-	setup_volume_button(val);
-	sli_volume()->setValue(val);
+	setupVolumeButton(val);
+	sliVolume()->setValue(val);
 }
 
-void GUI_ControlsBase::setup_volume_button(int percent)
+void GUI_ControlsBase::setupVolumeButton(int percent)
 {
 	using namespace Gui;
 
 	QIcon icon;
 
-	if (percent <= 1 || PlayManager::instance()->is_muted()) {
+	if (percent <= 1 || PlayManager::instance()->isMuted()) {
 		icon = Icons::icon(Icons::VolMute);
 	}
 
@@ -361,68 +361,68 @@ void GUI_ControlsBase::setup_volume_button(int percent)
 		icon = Icons::icon(Icons::Vol3);
 	}
 
-	set_icon(btn_mute(), icon);
+	setIcon(btnMute(), icon);
 }
 
-void GUI_ControlsBase::increase_volume()
+void GUI_ControlsBase::increaseVolume()
 {
-	PlayManager::instance()->volume_up();
+	PlayManager::instance()->volumeUp();
 }
 
-void GUI_ControlsBase::decrease_volume()
+void GUI_ControlsBase::decreaseVolume()
 {
-	PlayManager::instance()->volume_down();
+	PlayManager::instance()->volumeDown();
 }
 
-void GUI_ControlsBase::change_volume_by_tick(int val)
+void GUI_ControlsBase::changeVolumeByDelta(int val)
 {
 	if(val > 0) {
-		increase_volume();
+		increaseVolume();
 	}
 
 	else {
-		decrease_volume();
+		decreaseVolume();
 	}
 }
 
-void GUI_ControlsBase::mute_changed(bool muted)
+void GUI_ControlsBase::muteChanged(bool muted)
 {
 	int val = PlayManager::instance()->volume();
 	if(muted) {
 		val = 0;
 	}
 
-	sli_volume()->setValue(val);
-	setup_volume_button(val);
+	sliVolume()->setValue(val);
+	setupVolumeButton(val);
 
-	sli_volume()->setDisabled(muted);
+	sliVolume()->setDisabled(muted);
 }
 
 
 // public slot:
 // id3 tags have changed
-void GUI_ControlsBase::id3_tags_changed()
+void GUI_ControlsBase::metadataChanged()
 {
-	auto changed_metadata = Tagging::ChangeNotifier::instance()->changed_metadata();
+	auto changed_metadata = Tagging::ChangeNotifier::instance()->changedMetadata();
 
-	IdxList idxs = changed_metadata.first.findTracks(current_track().filepath());
+	IdxList idxs = changed_metadata.first.findTracks(currentTrack().filepath());
 	if(idxs.empty()) {
 		return;
 	}
 
 	MetaData md = changed_metadata.second[idxs.first()];
 
-	refresh_labels(md);
-	set_cover_location(md);
+	refreshLabels(md);
+	setCoverLocation(md);
 
 	setWindowTitle(
 		QString("Sayonara - %1").arg(md.title())
 	);
 }
 
-void GUI_ControlsBase::refresh_current_track()
+void GUI_ControlsBase::refreshCurrentTrack()
 {
-	refresh_labels( current_track() );
+	refreshLabels( currentTrack() );
 }
 
 static void set_floating_text(QLabel* label, const QString& text)
@@ -437,28 +437,28 @@ static void set_floating_text(QLabel* label, const QString& text)
 	}
 }
 
-void GUI_ControlsBase::refresh_labels(const MetaData& md)
+void GUI_ControlsBase::refreshLabels(const MetaData& md)
 {
 	// title, artist
-	set_floating_text(lab_title(), md.title());
-	set_floating_text(lab_artist(), md.artist());
+	set_floating_text(labTitle(), md.title());
+	set_floating_text(labArtist(), md.artist());
 
 	{ //album
 		QString sYear = QString::number(md.year());
 		QString album_name = md.album();
 
-		lab_album()->setToolTip("");
+		labAlbum()->setToolTip("");
 		if(md.year() > 1000 && (!album_name.contains(sYear)))
 		{
 			album_name += QString(" (%1)").arg(md.year());
 		}
 
-		else if(md.radio_mode() == RadioMode::Station)
+		else if(md.radioMode() == RadioMode::Station)
 		{
-			lab_album()->setToolTip(md.filepath());
+			labAlbum()->setToolTip(md.filepath());
 		}
 
-		set_floating_text(lab_album(), album_name);
+		set_floating_text(labAlbum(), album_name);
 	}
 
 	{ // bitrate
@@ -468,10 +468,10 @@ void GUI_ControlsBase::refresh_labels(const MetaData& md)
 			sBitrate = QString("%1 kBit/s")
 				.arg(std::nearbyint(md.bitrate() / 1000.0));
 
-			lab_bitrate()->setText(sBitrate);
+			labBitrate()->setText(sBitrate);
 		}
 
-		lab_bitrate()->setVisible(!sBitrate.isEmpty());
+		labBitrate()->setVisible(!sBitrate.isEmpty());
 	}
 
 	{ // filesize
@@ -479,65 +479,65 @@ void GUI_ControlsBase::refresh_labels(const MetaData& md)
 		if(md.filesize() > 0)
 		{
 			sFilesize = QString::number( static_cast<double>(md.filesize() / 1024) / 1024.0, 'f', 2) + " MB";
-			lab_filesize()->setText(sFilesize);
+			labFilesize()->setText(sFilesize);
 		}
 
-		lab_filesize()->setVisible(!sFilesize.isEmpty());
+		labFilesize()->setVisible(!sFilesize.isEmpty());
 	}
 
 	{ // rating
-		if(lab_rating())
+		if(labRating())
 		{
-			lab_rating()->setVisible(md.radio_mode() == RadioMode::Off);
-			lab_rating()->set_rating(md.rating());
+			labRating()->setVisible(md.radioMode() == RadioMode::Off);
+			labRating()->setRating(md.rating());
 		}
 	}
 
-	set_total_time_label(md.duration_ms());
+	setTotalTimeLabel(md.durationMs());
 }
 
 
-void GUI_ControlsBase::skin_changed()
+void GUI_ControlsBase::skinChanged()
 {
-	btn_play()->setObjectName("ControlPlayButton");
-	btn_rec()->setObjectName("ControlRecButton");
-	btn_fwd()->setObjectName("ControlFwdButton");
-	btn_bwd()->setObjectName("ControlBwdButton");
-	btn_stop()->setObjectName("ControlStopButton");
-	btn_mute()->setObjectName("ControlMuteButton");
+	btnPlay()->setObjectName("ControlPlayButton");
+	btnRecord()->setObjectName("ControlRecButton");
+	btnNext()->setObjectName("ControlFwdButton");
+	btnPrevious()->setObjectName("ControlBwdButton");
+	btnStop()->setObjectName("ControlStopButton");
+	btnMute()->setObjectName("ControlMuteButton");
 
-	Gui::Widget::skin_changed();
+	Gui::Widget::skinChanged();
 
 	using namespace Gui;
 
-	set_icon(btn_fwd(), icon(Icons::Forward));
-	set_icon(btn_bwd(), icon(Icons::Backward));
+	setIcon(btnNext(), icon(Icons::Forward));
+	setIcon(btnPrevious(), icon(Icons::Backward));
 
 	if(PlayManager::instance()->playstate() == PlayState::Playing)
 	{
-		set_icon(btn_play(), icon(Icons::Pause));
+		setIcon(btnPlay(), icon(Icons::Pause));
 	}
 
 	else
 	{
-		set_icon(btn_play(), icon(Icons::Play));
+		setIcon(btnPlay(), icon(Icons::Play));
 	}
 
-	set_icon(btn_stop(), icon(Icons::Stop));
-	set_icon(btn_rec(), icon(Icons::Record));
+	setIcon(btnStop(), icon(Icons::Stop));
+	setIcon(btnRecord(), icon(Icons::Record));
 
-	setup_volume_button(sli_volume()->value());
+	setupVolumeButton(sliVolume()->value());
 }
 
 
-void GUI_ControlsBase::sr_active_changed()
+void GUI_ControlsBase::streamRecorderActiveChanged()
 {
-	check_record_button_visible();
-	btn_rec()->setChecked(false);
+	checkRecordButtonVisible();
+	btnRecord()->setChecked(false);
 }
 
 
-void GUI_ControlsBase::check_record_button_visible()
+void GUI_ControlsBase::checkRecordButtonVisible()
 {
 	PlayManager* pm = PlayManager::instance();
 
@@ -545,109 +545,109 @@ void GUI_ControlsBase::check_record_button_visible()
 	(
 		GetSetting(SetNoDB::MP3enc_found) &&	// Lame Available
 		GetSetting(Set::Engine_SR_Active) &&	// Streamrecorder active
-		(current_track().radio_mode() != RadioMode::Off) &&		// Radio on
+		(currentTrack().radioMode() != RadioMode::Off) &&		// Radio on
 		(pm->playstate() == PlayState::Playing)	// Is Playing
 	);
 
-	btn_play()->setVisible(!recording_enabled);
-	btn_rec()->setVisible(recording_enabled);
+	btnPlay()->setVisible(!recording_enabled);
+	btnRecord()->setVisible(recording_enabled);
 
 	if(!recording_enabled) {
-		btn_rec()->setChecked(false);
+		btnRecord()->setChecked(false);
 	}
 }
 
 
-void GUI_ControlsBase::set_cover_location(const MetaData& md)
+void GUI_ControlsBase::setCoverLocation(const MetaData& md)
 {
-	auto cl = Cover::Location::cover_location(md, false);
-	btn_cover()->set_cover_location(cl);
+	auto cl = Cover::Location::coverLocation(md, false);
+	btnCover()->setCoverLocation(cl);
 }
 
-void GUI_ControlsBase::set_standard_cover()
+void GUI_ControlsBase::setStandardCover()
 {
-	auto cl = Cover::Location::invalid_location();
-	btn_cover()->set_cover_location(cl);
+	auto cl = Cover::Location::invalidLocation();
+	btnCover()->setCoverLocation(cl);
 }
 
-void GUI_ControlsBase::cover_changed(const QByteArray& data, const QString& mimedata)
+void GUI_ControlsBase::coverChanged(const QByteArray& data, const QString& mimedata)
 {
-	btn_cover()->set_cover_data(data, mimedata);
+	btnCover()->setCoverData(data, mimedata);
 }
 
-void GUI_ControlsBase::cover_click_rejected()
+void GUI_ControlsBase::coverClickRejected()
 {
-	show_info();
+	showInfo();
 }
 
-void GUI_ControlsBase::setup_connections()
+void GUI_ControlsBase::setupConnections()
 {
 	PlayManager* pm = PlayManager::instance();
 
-	connect(btn_play(), &QPushButton::clicked, pm, &PlayManager::play_pause);
-	connect(btn_fwd(),	&QPushButton::clicked, pm, &PlayManager::next);
-	connect(btn_bwd(),	&QPushButton::clicked, pm, &PlayManager::previous);
-	connect(btn_stop(), &QPushButton::clicked, pm, &PlayManager::stop);
-	connect(btn_mute(), &QPushButton::clicked, pm, &PlayManager::toggle_mute);
-	connect(btn_rec(), &QPushButton::clicked, pm, &PlayManager::record);
+	connect(btnPlay(), &QPushButton::clicked, pm, &PlayManager::playPause);
+	connect(btnNext(),	&QPushButton::clicked, pm, &PlayManager::next);
+	connect(btnPrevious(),	&QPushButton::clicked, pm, &PlayManager::previous);
+	connect(btnStop(), &QPushButton::clicked, pm, &PlayManager::stop);
+	connect(btnMute(), &QPushButton::clicked, pm, &PlayManager::toggleMute);
+	connect(btnRecord(), &QPushButton::clicked, pm, &PlayManager::record);
 
-	connect(sli_volume(), &Gui::SearchSlider::sig_slider_moved, pm, &PlayManager::set_volume);
-	connect(sli_progress(), &Gui::SearchSlider::sig_slider_moved, this, &GUI_ControlsBase::progress_moved);
-	connect(sli_progress(), &Gui::SearchSlider::sig_slider_hovered, this, &GUI_ControlsBase::progress_hovered);
+	connect(sliVolume(), &Gui::SearchSlider::sig_slider_moved, pm, &PlayManager::setVolume);
+	connect(sliProgress(), &Gui::SearchSlider::sig_slider_moved, this, &GUI_ControlsBase::progressMoved);
+	connect(sliProgress(), &Gui::SearchSlider::sigSliderHovered, this, &GUI_ControlsBase::progressHovered);
 
-	connect(pm, &PlayManager::sig_playstate_changed, this, &GUI_ControlsBase::playstate_changed);
-	connect(pm, &PlayManager::sig_track_changed, this, &GUI_ControlsBase::track_changed);
-	connect(pm, &PlayManager::sig_track_metadata_changed, this, &GUI_ControlsBase::refresh_current_track);
-	connect(pm, &PlayManager::sig_duration_changed, this, &GUI_ControlsBase::refresh_current_track);
-	connect(pm, &PlayManager::sig_bitrate_changed,	this, &GUI_ControlsBase::refresh_current_track);
-	connect(pm, &PlayManager::sig_position_changed_ms, this,	&GUI_ControlsBase::cur_pos_changed);
-	connect(pm, &PlayManager::sig_buffer, this, &GUI_ControlsBase::buffering);
-	connect(pm, &PlayManager::sig_volume_changed, this, &GUI_ControlsBase::volume_changed);
-	connect(pm, &PlayManager::sig_mute_changed, this, &GUI_ControlsBase::mute_changed);
-	connect(pm, &PlayManager::sig_record, this, &GUI_ControlsBase::rec_changed);
+	connect(pm, &PlayManager::sigPlaystateChanged, this, &GUI_ControlsBase::playstateChanged);
+	connect(pm, &PlayManager::sigCurrentTrackChanged, this, &GUI_ControlsBase::currentTrackChanged);
+	connect(pm, &PlayManager::sigCurrentMetadataChanged, this, &GUI_ControlsBase::refreshCurrentTrack);
+	connect(pm, &PlayManager::sigDurationChangedMs, this, &GUI_ControlsBase::refreshCurrentTrack);
+	connect(pm, &PlayManager::sigBitrateChanged,	this, &GUI_ControlsBase::refreshCurrentTrack);
+	connect(pm, &PlayManager::sigPositionChangedMs, this,	&GUI_ControlsBase::currentPositionChanged);
+	connect(pm, &PlayManager::sigBuffering, this, &GUI_ControlsBase::buffering);
+	connect(pm, &PlayManager::sigVolumeChanged, this, &GUI_ControlsBase::volumeChanged);
+	connect(pm, &PlayManager::sigMuteChanged, this, &GUI_ControlsBase::muteChanged);
+	connect(pm, &PlayManager::sigRecording, this, &GUI_ControlsBase::recordChanged);
 
 	Engine::Handler* engine = Engine::Handler::instance();
-	connect(engine, &Engine::Handler::sig_cover_data, this, &GUI_ControlsBase::cover_changed);
+	connect(engine, &Engine::Handler::sigCoverDataAvailable, this, &GUI_ControlsBase::coverChanged);
 
 	Tagging::ChangeNotifier* mdcn = Tagging::ChangeNotifier::instance();
-	connect(mdcn, &Tagging::ChangeNotifier::sig_metadata_changed, this, &GUI_ControlsBase::id3_tags_changed);
+	connect(mdcn, &Tagging::ChangeNotifier::sigMetadataChanged, this, &GUI_ControlsBase::metadataChanged);
 }
 
 
-void GUI_ControlsBase::setup_shortcuts()
+void GUI_ControlsBase::setupShortcuts()
 {
 	ShortcutHandler* sch = ShortcutHandler::instance();
-	PlayManager* play_manager = PlayManager::instance();
+	PlayManager* playManager = PlayManager::instance();
 
-	sch->shortcut(ShortcutIdentifier::PlayPause).connect(this, play_manager, SLOT(play_pause()));
-	sch->shortcut(ShortcutIdentifier::Stop).connect(this, play_manager, SLOT(stop()));
-	sch->shortcut(ShortcutIdentifier::Next).connect(this, play_manager, SLOT(next()));
-	sch->shortcut(ShortcutIdentifier::Prev).connect(this, play_manager, SLOT(previous()));
-	sch->shortcut(ShortcutIdentifier::VolDown).connect(this, play_manager, SLOT(volume_down()));
-	sch->shortcut(ShortcutIdentifier::VolUp).connect(this, play_manager, SLOT(volume_up()));
+	sch->shortcut(ShortcutIdentifier::PlayPause).connect(this, playManager, SLOT(playPause()));
+	sch->shortcut(ShortcutIdentifier::Stop).connect(this, playManager, SLOT(stop()));
+	sch->shortcut(ShortcutIdentifier::Next).connect(this, playManager, SLOT(next()));
+	sch->shortcut(ShortcutIdentifier::Prev).connect(this, playManager, SLOT(previous()));
+	sch->shortcut(ShortcutIdentifier::VolDown).connect(this, playManager, SLOT(volumeDown()));
+	sch->shortcut(ShortcutIdentifier::VolUp).connect(this, playManager, SLOT(volumeUp()));
 	sch->shortcut(ShortcutIdentifier::SeekFwd).connect(this, [=]() {
-		play_manager->seek_rel_ms(2000);
+		playManager->seekRelativeMs(2000);
 	});
 
 	sch->shortcut(ShortcutIdentifier::SeekBwd).connect(this, [=](){
-		play_manager->seek_rel_ms(-2000);
+		playManager->seekRelativeMs(-2000);
 	});
 
 	sch->shortcut(ShortcutIdentifier::SeekFwdFast).connect(this, [=]() {
-		MilliSeconds ms = play_manager->duration_ms() / 20;
-		play_manager->seek_rel_ms(ms);
+		MilliSeconds ms = playManager->durationMs() / 20;
+		playManager->seekRelativeMs(ms);
 	});
 
 	sch->shortcut(ShortcutIdentifier::SeekBwdFast).connect(this, [=]() {
-		MilliSeconds ms = play_manager->duration_ms() / 20;
-		play_manager->seek_rel_ms(-ms);
+		MilliSeconds ms = playManager->durationMs() / 20;
+		playManager->seekRelativeMs(-ms);
 	});
 }
 
 
-void GUI_ControlsBase::set_radio_mode(RadioMode radio)
+void GUI_ControlsBase::setRadioMode(RadioMode radio)
 {
-	check_record_button_visible();
+	checkRecordButtonVisible();
 
 	if(radio != RadioMode::Off){
 		buffering(0);
@@ -655,62 +655,62 @@ void GUI_ControlsBase::set_radio_mode(RadioMode radio)
 }
 
 
-MD::Interpretation GUI_ControlsBase::metadata_interpretation() const
+MD::Interpretation GUI_ControlsBase::metadataInterpretation() const
 {
 	return MD::Interpretation::Tracks;
 }
 
-MetaDataList GUI_ControlsBase::info_dialog_data() const
+MetaDataList GUI_ControlsBase::infoDialogData() const
 {
 	PlayState ps = PlayManager::instance()->playstate();
 	if(ps == PlayState::Stopped){
 		return MetaDataList();
 	}
 
-	return MetaDataList(current_track());
+	return MetaDataList(currentTrack());
 }
 
 void GUI_ControlsBase::resizeEvent(QResizeEvent* e)
 {
 	Widget::resizeEvent(e);
-	refresh_current_track();
+	refreshCurrentTrack();
 }
 
 void GUI_ControlsBase::showEvent(QShowEvent* e)
 {
 	Widget::showEvent(e);
-	refresh_current_track();
+	refreshCurrentTrack();
 }
 
 void GUI_ControlsBase::contextMenuEvent(QContextMenuEvent* e)
 {
 	using Library::ContextMenu;
 
-	if(!m->context_menu)
+	if(!m->contextMenu)
 	{
-		m->context_menu = new ContextMenu(this);
-		m->context_menu->show_actions
+		m->contextMenu = new ContextMenu(this);
+		m->contextMenu->showActions
 		(
 			(ContextMenu::EntryInfo |
 			ContextMenu::EntryLyrics |
 			ContextMenu::EntryEdit)
 		);
 
-		connect(m->context_menu, &ContextMenu::sig_edit_clicked, this, [=](){
-			show_edit();
+		connect(m->contextMenu, &ContextMenu::sigEditClicked, this, [=](){
+			showEdit();
 		});
 
-		connect(m->context_menu, &ContextMenu::sig_info_clicked, this, [=](){
-			show_info();
+		connect(m->contextMenu, &ContextMenu::sigInfoClicked, this, [=](){
+			showInfo();
 		});
 
-		connect(m->context_menu, &ContextMenu::sig_lyrics_clicked, this, [=](){
-			show_lyrics();
+		connect(m->contextMenu, &ContextMenu::sigLyricsClicked, this, [=](){
+			showLyrics();
 		});
 
-		m->context_menu->add_preference_action(new Gui::PlayerPreferencesAction(m->context_menu));
-		m->context_menu->add_preference_action(new Gui::CoverPreferenceAction(m->context_menu));
+		m->contextMenu->addPreferenceAction(new Gui::PlayerPreferencesAction(m->contextMenu));
+		m->contextMenu->addPreferenceAction(new Gui::CoverPreferenceAction(m->contextMenu));
 	}
 
-	m->context_menu->exec(e->globalPos());
+	m->contextMenu->exec(e->globalPos());
 }

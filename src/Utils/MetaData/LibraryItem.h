@@ -1,6 +1,6 @@
 /* LibraryItem.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -42,7 +42,7 @@ class CustomField
 	PIMPL(CustomField)
 
 public:
-	CustomField(const QString& id, const QString& display_name, const QString& value);
+	CustomField(const QString& id, const QString& displayName, const QString& value);
 	CustomField(const CustomField& other);
 	CustomField(CustomField&& other) noexcept;
 
@@ -51,9 +51,9 @@ public:
 
 	~CustomField();
 
-	QString get_id() const;
-	QString get_display_name() const;
-	QString get_value() const;
+	QString id() const;
+	QString displayName() const;
+	QString value() const;
 };
 
 
@@ -75,27 +75,27 @@ public:
 
 	virtual ~LibraryItem();
 
-	void add_custom_field(const CustomField& field);
-	void add_custom_field(const QString& id, const QString& display_name, const QString& value);
-	void replace_custom_field(const QString& id, const QString& display_name, const QString& value);
+	void addCustomField(const CustomField& field);
+	void addCustomField(const QString& id, const QString& displayName, const QString& value);
+	void replaceCustomField(const QString& id, const QString& displayName, const QString& value);
 
-	const CustomFieldList& get_custom_fields() const;
-	QString get_custom_field(const QString& id) const;
-	QString get_custom_field(int idx) const;
+	const CustomFieldList& customFields() const;
+	QString customField(const QString& id) const;
+	QString customField(int idx) const;
 
-	QStringList cover_download_urls() const;
-	void set_cover_download_urls(const QStringList& url);
+	QStringList coverDownloadUrls() const;
+	void setCoverDownloadUrls(const QStringList& url);
 
-	DbId db_id() const;
-	void set_db_id(DbId id);
+	DbId databaseId() const;
+	void setDatabaseId(DbId id);
 
 	virtual void print() const;
 
-	UniqueId unique_id() const;
+	UniqueId uniqueId() const;
 
 protected:
-	static QHash<HashValue, QString>& album_pool();
-	static QHash<HashValue, QString>& artist_pool();
+	static QHash<HashValue, QString>& albumPool();
+	static QHash<HashValue, QString>& artistPool();
 };
 
 #endif

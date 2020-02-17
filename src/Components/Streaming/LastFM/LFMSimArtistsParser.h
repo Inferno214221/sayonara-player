@@ -1,6 +1,6 @@
 /* LFMSimArtistsParser.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -30,15 +30,15 @@ namespace LastFM
 	{
 		PIMPL(SimArtistsParser)
 
-	private:
-		void parse_document();
-
 	public:
 		SimArtistsParser(const QString& artist_name, const QByteArray& arr);
 		SimArtistsParser(const QString& artist_name, const QString& filename);
 		~SimArtistsParser();
 
-		LastFM::ArtistMatch artist_match() const;
+		LastFM::ArtistMatch artistMatch() const;
+
+	private:
+		void parseDocument();
 	};
 }
 

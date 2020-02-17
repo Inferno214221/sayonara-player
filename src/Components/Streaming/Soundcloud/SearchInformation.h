@@ -1,6 +1,6 @@
 /* SearchInformation.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -32,13 +32,13 @@ namespace SC
 		PIMPL(SearchInformation)
 
 		public:
-			SearchInformation(int artist_id, int album_id, int track_id, const QString& search_string);
+			SearchInformation(int artistId, int albumId, int trackId, const QString& searchstring);
 			~SearchInformation();
 
-			QString search_string() const;
-			int artist_id() const;
-			int album_id() const;
-			int track_id() const;
+			QString searchstring() const;
+			int artistId() const;
+			int albumId() const;
+			int trackId() const;
 	};
 
 	class SearchInformationList
@@ -49,12 +49,12 @@ namespace SC
 			SearchInformationList();
 			~SearchInformationList();
 
-			IntSet artist_ids(const QString& search_string) const;
-			IntSet album_ids(const QString& search_string) const;
-			IntSet track_ids(const QString& search_string) const;
+			IntSet artistIds(const QString& search_string) const;
+			IntSet albumIds(const QString& search_string) const;
+			IntSet trackIds(const QString& search_string) const;
 
 			SearchInformationList& operator<<(const SearchInformation& search_information);
-			bool is_empty() const;
+			bool isEmpty() const;
 			void clear();
 	};
 }

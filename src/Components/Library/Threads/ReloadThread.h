@@ -1,6 +1,6 @@
 /* ReloadThread.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -23,7 +23,7 @@
  * ReloadThread.h
  *
  *  Created on: Jun 19, 2011
- *      Author: Lucio Carreras
+ *      Author: Michael Lugmair (Lucio Carreras)
  */
 
 #ifndef RELOADTHREAD_H_
@@ -44,28 +44,28 @@ namespace Library
 		PIMPL(ReloadThread)
 
 	signals:
-		void sig_reloading_library(const QString& message, int progress);
-		void sig_new_block_saved();
+		void sigReloadingLibrary(const QString& message, int progress);
+		void sigNewBlockSaved();
 
 	public:
 		explicit ReloadThread(QObject* parent);
-		~ReloadThread();
+		~ReloadThread() override;
 
 		void pause();
 		void goon();
 		void stop();
-		bool is_running() const;
-		void set_quality(ReloadQuality quality);
-		void set_library(LibraryId lib_id, const QString& library_path);
+		bool isRunning() const;
+		void setQuality(ReloadQuality quality);
+		void setLibrary(LibraryId id, const QString& libraryPath);
 
 	protected:
 		virtual void run() override;
 
 	private:
-		bool			get_and_save_all_files(const QHash<QString, MetaData>& v_md_map);
-		QStringList		get_files_recursive(QDir base_dir);
-		QStringList		process_sub_files(const QDir& dir, const QStringList& sub_files);
-		void			store_metadata_block(const MetaDataList& v_md);
+		bool			getAndSaveAllFiles(const QHash<QString, MetaData>& pathMetadataMap);
+		QStringList		getFilesRecursive(QDir base_dir);
+		QStringList		filterValidFiles(const QDir& dir, const QStringList& filesInDir);
+		void			storeMetadataBlock(const MetaDataList& v_md);
 	};
 }
 

@@ -1,6 +1,6 @@
 /* BookmarksMenu.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -50,18 +50,18 @@ BookmarksMenu::BookmarksMenu(QWidget* parent) :
 	this->setTitle( Lang::get(Lang::Bookmarks));
 }
 
-BookmarksMenu::~BookmarksMenu() {}
+BookmarksMenu::~BookmarksMenu() = default;
 
-bool BookmarksMenu::has_bookmarks() const
+bool BookmarksMenu::hasBookmarks() const
 {
 	return (this->actions().size() > 0);
 }
 
-void BookmarksMenu::set_metadata(const MetaData& md)
+void BookmarksMenu::setMetadata(const MetaData& md)
 {
-	m->bookmarks->set_metadata(md);
+	m->bookmarks->setMetadata(md);
 
-	bookmarks_changed();
+	bookmarksChanged();
 }
 
 MetaData BookmarksMenu::metadata() const
@@ -69,7 +69,7 @@ MetaData BookmarksMenu::metadata() const
 	return m->bookmarks->metadata();
 }
 
-void BookmarksMenu::bookmarks_changed()
+void BookmarksMenu::bookmarksChanged()
 {
 	for(QAction* a : this->actions()){
 		a->deleteLater();
@@ -87,7 +87,7 @@ void BookmarksMenu::bookmarks_changed()
 
 		QAction* action = this->addAction(name);
 		action->setData(bookmark.timestamp());
-		connect(action, &QAction::triggered, this, &BookmarksMenu::action_pressed);
+		connect(action, &QAction::triggered, this, &BookmarksMenu::actionPressed);
 	}
 
 	this->addSeparator();
@@ -96,22 +96,22 @@ void BookmarksMenu::bookmarks_changed()
 
 	connect(edit_action, &QAction::triggered, [](){
 		PlayerPlugin::Handler* pph = PlayerPlugin::Handler::instance();
-		pph->show_plugin("Bookmarks");
+		pph->showPlugin("Bookmarks");
 	});
 
 	auto* pm = PlayManager::instance();
 	edit_action->setEnabled
 	(
-		(metadata().id() == pm->current_track().id())
+		(metadata().id() == pm->currentTrack().id())
 	);
 }
 
-void BookmarksMenu::action_pressed()
+void BookmarksMenu::actionPressed()
 {
 	auto* action = dynamic_cast<QAction*>(sender());
 	Seconds time = Seconds(action->data().toInt());
 
-	emit sig_bookmark_pressed(time);
+	emit sigBookmarkPressed(time);
 }
 
 

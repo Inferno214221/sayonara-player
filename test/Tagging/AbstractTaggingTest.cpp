@@ -30,13 +30,13 @@ void AbstractTaggingTest::xiph_test()
 void AbstractTaggingTest::init()
 {
 	QByteArray content;
-	Util::File::read_file_into_byte_arr(mResourceFilename, content);
-	Util::File::write_file(content, mFilename);
+	Util::File::readFileIntoByteArray(mResourceFilename, content);
+	Util::File::writeFile(content, mFilename);
 }
 
 void AbstractTaggingTest::cleanup()
 {
-	Util::File::delete_files({mFilename});
+	Util::File::deleteFiles({mFilename});
 }
 
 void AbstractTaggingTest::run()

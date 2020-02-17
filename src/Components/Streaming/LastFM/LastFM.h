@@ -1,6 +1,6 @@
 /* LastFM.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -23,7 +23,7 @@
  * LastFM.h
  *
  *  Created on: Apr 19, 2011
- *      Author: Lucio Carreras
+ *      Author: Michael Lugmair (Lucio Carreras)
  */
 
 #ifndef LASTFM_H_
@@ -44,31 +44,31 @@ namespace LastFM
 		PIMPL(Base)
 
 		signals:
-			void sig_logged_in(bool);
-
-		private slots:
-			void lfm_active_changed();
-			void login_thread_finished(bool success);
-			void similar_artists_fetched(IdList artist_ids);
-			void current_track_changed(const MetaData& md);
-
-			void scrobble();
-			void scrobble_response_received(const QByteArray& data);
-			void scrobble_error_received(const QString& str);
-
-			void track_changed_timer_timed_out();
+			void sigLoggedIn(bool);
 
 		public:
 			Base();
 			virtual ~Base();
 
 			void login(const QString& username, const QString& password);
-			bool is_logged_in();
+			bool isLoggedIn();
 
 		private:
-			bool init_track_changed_thread();
-			void get_similar_artists(const QString& artist);
-			bool update_track(const MetaData& md);
+			bool initTrackChangeThread();
+			void getSimilarArtists(const QString& artist);
+			bool updateTrack(const MetaData& md);
+
+		private slots:
+			void activeChanged();
+			void loginThreadFinished(bool success);
+			void similarArtistsFetched(IdList artistIds);
+			void currentTrackChanged(const MetaData& md);
+
+			void scrobble();
+			void scrobbleResponseReceived(const QByteArray& data);
+			void scrobbleErrorReceived(const QString& str);
+
+			void trackChangedTimerTimedOut();
 	};
 }
 

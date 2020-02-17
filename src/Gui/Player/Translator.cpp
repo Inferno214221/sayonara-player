@@ -1,6 +1,6 @@
 /* Translator.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -40,9 +40,9 @@ Translator::Translator()
 
 Translator::~Translator() = default;
 
-bool Translator::switch_translator(QObject* parent, const QString& four_letter, const QString& dir)
+bool Translator::switchTranslator(QObject* parent, const QString& fourLetter, const QString& dir)
 {
-	QString filename = Util::Language::get_used_language_file(four_letter);
+	QString filename = Util::Language::getUsedLanguageFile(fourLetter);
 
 	if(m->translator)
 	{
@@ -62,7 +62,7 @@ bool Translator::switch_translator(QObject* parent, const QString& four_letter, 
 		m->translator->deleteLater();
 		m->translator = nullptr;
 
-		sp_log(Log::Warning, this) << "Translator " << dir << "/" << filename << " could not be loaded";
+		spLog(Log::Warning, this) << "Translator " << dir << "/" << filename << " could not be loaded";
 		return false;
 	}
 
@@ -71,7 +71,7 @@ bool Translator::switch_translator(QObject* parent, const QString& four_letter, 
 		m->translator->deleteLater();
 		m->translator = nullptr;
 
-		sp_log(Log::Warning, this) << "Translator is empty";
+		spLog(Log::Warning, this) << "Translator is empty";
 		return false;
 	}
 
@@ -81,16 +81,16 @@ bool Translator::switch_translator(QObject* parent, const QString& four_letter, 
 		m->translator->deleteLater();
 		m->translator = nullptr;
 
-		sp_log(Log::Warning, this) << "Translator " << dir << "/" << filename << " could not be installed";
+		spLog(Log::Warning, this) << "Translator " << dir << "/" << filename << " could not be installed";
 		return false;
 	}
 
 	return true;
 }
 
-void Translator::change_language(QObject* parent, const QString& language)
+void Translator::changeLanguage(QObject* parent, const QString& language)
 {
 	m->current_language = language;
 
-	switch_translator(parent, m->current_language, Util::share_path("translations/"));
+	switchTranslator(parent, m->current_language, Util::sharePath("translations/"));
 }

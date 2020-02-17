@@ -18,11 +18,11 @@ public:
 
 protected:
 	void showEvent(QShowEvent* event) override;
-	void language_changed() override;
+	void languageChanged() override;
 
 private slots:
-	void btn_clicked();
-	void text_changed(const QString& text);
+	void buttonClicked();
+	void textChanged(const QString& text);
 };
 
 #endif // GUI_FILEEXPRESSIONDIALOG_H

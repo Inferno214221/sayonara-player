@@ -1,6 +1,6 @@
 /* CoverViewPixmapCache.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -44,13 +44,13 @@ struct Pair
 struct CoverViewPixmapCache::Private
 {
 	QCache<Hash, Util::Image>	pixmaps;
-	Util::Set<Hash>				valid_hashes;
-	QPixmap						invalid_cover;
+	Util::Set<Hash>				validHashes;
+	QPixmap						invalidCover;
 
 	Private()
 	{
 		pixmaps.setMaxCost(1000);
-		invalid_cover = QPixmap(Cover::Location::invalid_path());
+		invalidCover = QPixmap(Cover::Location::invalidPath());
 	}
 };
 
@@ -61,27 +61,27 @@ CoverViewPixmapCache::CoverViewPixmapCache()
 
 CoverViewPixmapCache::~CoverViewPixmapCache() = default;
 
-bool CoverViewPixmapCache::has_pixmap(const Hash& hash) const
+bool CoverViewPixmapCache::hasPixmap(const Hash& hash) const
 {
 	return m->pixmaps.contains(hash) && (m->pixmaps.object(hash) != nullptr);
 }
 
-QPixmap CoverViewPixmapCache::invalid_pixmap() const
+QPixmap CoverViewPixmapCache::invalidPixmap() const
 {
-	return m->invalid_cover;
+	return m->invalidCover;
 }
 
-void CoverViewPixmapCache::add_pixmap(const Hash& hash, const QPixmap& pm)
+void CoverViewPixmapCache::addPixmap(const Hash& hash, const QPixmap& pm)
 {
 	if(pm.isNull()){
 		return;
 	}
 
-	m->valid_hashes.insert(hash);
+	m->validHashes.insert(hash);
 	m->pixmaps.insert(hash, new Util::Image(pm, QSize(200, 200)));
 }
 
-int CoverViewPixmapCache::cache_size() const
+int CoverViewPixmapCache::cacheSize() const
 {
 	return m->pixmaps.keys().size();
 }
@@ -102,22 +102,22 @@ QPixmap CoverViewPixmapCache::pixmap(const Hash& hash) const
 }
 
 
-bool CoverViewPixmapCache::is_outdated(const Hash& hash) const
+bool CoverViewPixmapCache::isOutdated(const Hash& hash) const
 {
-	return (!m->valid_hashes.contains(hash));
+	return (!m->validHashes.contains(hash));
 }
 
-void CoverViewPixmapCache::set_outdated(const Hash& hash)
+void CoverViewPixmapCache::setOutdated(const Hash& hash)
 {
-	m->valid_hashes.remove(hash);
+	m->validHashes.remove(hash);
 }
 
-void CoverViewPixmapCache::set_all_outdated()
+void CoverViewPixmapCache::setAllOutdated()
 {
-	m->valid_hashes.clear();
+	m->validHashes.clear();
 }
 
-void CoverViewPixmapCache::set_cache_size(int cache_size)
+void CoverViewPixmapCache::setCacheSize(int cache_size)
 {
 	if(m->pixmaps.maxCost() > cache_size){
 		return;

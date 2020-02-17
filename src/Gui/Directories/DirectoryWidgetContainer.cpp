@@ -1,6 +1,6 @@
 /* DirectoryWidgetContainer.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -40,7 +40,7 @@ QString DirectoryContainer::name() const
 	return "directories";
 }
 
-QString DirectoryContainer::display_name() const
+QString DirectoryContainer::displayName() const
 {
 	return Lang::get(Lang::Directories);
 }
@@ -50,7 +50,7 @@ QWidget* DirectoryContainer::widget() const
 	return static_cast<QWidget*>(ui);
 }
 
-void DirectoryContainer::init_ui()
+void DirectoryContainer::initUi()
 {
 	ui = new GUI_DirectoryWidget(nullptr);
 }
@@ -58,7 +58,7 @@ void DirectoryContainer::init_ui()
 
 QFrame* DirectoryContainer::header() const
 {
-	return ui->header_frame();
+	return ui->headerFrame();
 }
 
 QPixmap DirectoryContainer::icon() const

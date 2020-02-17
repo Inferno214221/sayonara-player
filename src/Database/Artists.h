@@ -1,6 +1,6 @@
 /* DatabaseArtists.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -51,11 +51,11 @@ namespace DB
 			virtual ArtistId insertArtistIntoDatabase(const Artist& artist);
 
 		protected:
-			virtual QString artistid_field() const=0;
-			virtual QString artistname_field() const=0;
-			virtual QString track_view() const=0;
-			virtual QString track_search_view() const=0;
-			virtual ::Library::SearchModeMask search_mode() const=0;
+			virtual QString artistIdField() const=0;
+			virtual QString artistNameField() const=0;
+			virtual QString trackView() const=0;
+			virtual QString trackSearchView() const=0;
+			virtual ::Library::SearchModeMask searchMode() const=0;
 
 			virtual Module* module()=0;
 			virtual const Module* module() const=0;
@@ -63,7 +63,7 @@ namespace DB
 			virtual void updateArtistCissearch();
 
 		private:
-			virtual QString fetch_query_artists(bool also_empty) const;
+			virtual QString fetchQueryArtists(bool also_empty) const;
 	};
 }
 

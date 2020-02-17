@@ -1,6 +1,6 @@
 /* SoundcloudLibrary.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -42,60 +42,59 @@ namespace SC
 
 	signals:
 		// called, when webservice returns artists/albums/tracks
-		void sig_artists_found(const ArtistList& artists);
-		void sig_albums_found(const AlbumList& albums);
-		void sig_tracks_found(const MetaDataList& v_md);
+		void sigArtistsFound(const ArtistList& artists);
+		void sigAlbumsFound(const AlbumList& albums);
+		void sigTracksFound(const MetaDataList& v_md);
 
 	public:
-		explicit Library(QObject *parent=nullptr);
+		explicit Library(QObject* parent=nullptr);
 		~Library() override;
 
 		void	load() override;
-		void	search_artist(const QString& artist_name);
-		void	fetch_tracks_by_artist(int64_t artist_sc_id);
-		void	fetch_playlists_by_artist(int64_t artist_sc_id);
+		void	searchArtist(const QString& artist_name);
+		void	fetchTracksByArtist(int64_t artist_sc_id);
+		void	fetchPlaylistsByArtist(int64_t artist_sc_id);
 		//void	insert_tracks(const MetaDataList& v_md) override;
-		void	insert_tracks(const MetaDataList& v_md, const ArtistList& artists, const AlbumList& albums);
-		void	get_track_by_id(TrackID track_id, MetaData& md) const override;
-		void	get_album_by_id(AlbumId album_id, Album& album) const override;
-		void  	get_artist_by_id(ArtistId artist_id, Artist& artist) const override;
+		void	insertTracks(const MetaDataList& v_md, const ArtistList& artists, const AlbumList& albums);
+		void	getTrackById(TrackID trackId, MetaData& md) const override;
+		void	getAlbumById(AlbumId albumId, Album& album) const override;
+		void  	getArtistById(ArtistId artistId, Artist& artist) const override;
 
 	protected:
-		void	get_all_artists(ArtistList& artists) const override;
-		void	get_all_artists_by_searchstring(::Library::Filter filter, ArtistList& artists) const override;
+		void	getAllArtists(ArtistList& artists) const override;
+		void	getAllArtistsBySearchstring(::Library::Filter filter, ArtistList& artists) const override;
 
-		void	get_all_albums(AlbumList& albums) const override;
-		void	get_all_albums_by_artist(IdList artist_ids, AlbumList& albums, ::Library::Filter filter) const override;
-		void	get_all_albums_by_searchstring(::Library::Filter filter, AlbumList& albums) const override;
+		void	getAllAlbums(AlbumList& albums) const override;
+		void	getAllAlbumsByArtist(IdList artistIds, AlbumList& albums, ::Library::Filter filter) const override;
+		void	getAllAlbumsBySearchstring(::Library::Filter filter, AlbumList& albums) const override;
 
-		int		get_num_tracks() const override;
-		void	get_all_tracks(const QStringList& paths, MetaDataList& v_md) const override;
-		void	get_all_tracks(MetaDataList& v_md) const override;
-		void	get_all_tracks_by_artist(IdList artist_ids, MetaDataList& v_md, ::Library::Filter filter) const override;
-		void	get_all_tracks_by_album(IdList album_ids, MetaDataList& v_md, ::Library::Filter filter) const override;
-		void	get_all_tracks_by_searchstring(::Library::Filter filter, MetaDataList& v_md) const override;
-		void	get_all_tracks_by_path(const QStringList& paths, MetaDataList& v_md) const override;
+		int		getTrackCount() const override;
+		void	getAllTracks(const QStringList& paths, MetaDataList& v_md) const override;
+		void	getAllTracks(MetaDataList& v_md) const override;
+		void	getAllTracksByArtist(IdList artistIds, MetaDataList& v_md, ::Library::Filter filter) const override;
+		void	getAllTracksByAlbum(IdList albumIds, MetaDataList& v_md, ::Library::Filter filter) const override;
+		void	getAllTracksBySearchstring(::Library::Filter filter, MetaDataList& v_md) const override;
+		void	getAllTracksByPath(const QStringList& paths, MetaDataList& v_md) const override;
 
-		void	update_track(const MetaData& md);
-		void	update_album(const Album& album);
-		void	delete_tracks(const MetaDataList& v_md, ::Library::TrackDeletionMode mode) override;
+		void	updateTrack(const MetaData& md);
+		void	updateAlbum(const Album& album);
+		void	deleteTracks(const MetaDataList& v_md, ::Library::TrackDeletionMode mode) override;
 
 		void    refetch() override;
 
-		void	apply_artist_and_album_to_md();
-
+		void	applyArtistAndAlbumToMetadata();
 
 	private slots:
-		void	artists_fetched(const ArtistList& artists);
-		void	tracks_fetched(const MetaDataList& v_md);
-		void	albums_fetched(const AlbumList& albums);
-		void	cover_found(const Cover::Location& cl);
+		void	artistsFetched(const ArtistList& artists);
+		void	tracksFetched(const MetaDataList& v_md);
+		void	albumsFetched(const AlbumList& albums);
+		void	coverFound(const Cover::Location& cl);
 
 	public slots:
-		void	reload_library(bool clear_first, ::Library::ReloadQuality quality) override;
-		void	refresh_artist() override;
-		void	refresh_albums() override;
-		void	refresh_tracks() override;
+		void	reloadLibrary(bool clear_first, ::Library::ReloadQuality quality) override;
+		void	refreshArtists() override;
+		void	refreshAlbums() override;
+		void	refreshTracks() override;
 	};
 }
 

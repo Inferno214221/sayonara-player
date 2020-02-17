@@ -30,27 +30,27 @@ void SettingsTest::test_registry()
 	QVERIFY(db->db().isOpen());
 
 	Settings* s = Settings::instance();
-	QVERIFY(s->check_settings());
+	QVERIFY(s->checkSettings());
 
 	//QVERIFY(GetSetting(Set::Player_Language) == QLocale().name());
 	QVERIFY(GetSetting(Set::Player_PublicId).isEmpty());
 	QVERIFY(GetSetting(Set::Player_PrivId).isEmpty());
 
 	QString db_version;
-	db->settings_connector()->load_setting("version", db_version);
+	db->settingsConnector()->loadSetting("version", db_version);
 
 	QList<SettingKey> keys;
-	db->settings_connector()->load_settings(keys);
+	db->settingsConnector()->loadSettings(keys);
 
 	{
-		int old_db_version = db->old_db_version();
-		int max_db_version = DB::Connector::get_max_db_version();
+		int old_db_version = db->oldDatabaseVersion();
+		int max_db_version = DB::Connector::highestDatabaseVersion();
 
 		QVERIFY(old_db_version == max_db_version);
 		QVERIFY(db_version.toInt() == max_db_version);
 	}
 
-	QList<SettingKey> undeployable_keys = SettingRegistry::undeployable_keys();
+	QList<SettingKey> undeployable_keys = SettingRegistry::undeployableKeys();
 
 	int max_key = int(SettingKey::Num_Setting_Keys);
 	int c = keys.count();
@@ -85,15 +85,15 @@ void SettingsTest::test_registry()
 		SettingArray abstr_settings = s->settings();
 		for(AbstrSetting* abstr_setting : abstr_settings)
 		{
-			if(undeployable_keys.contains(abstr_setting->get_key())){
+			if(undeployable_keys.contains(abstr_setting->getKey())){
 				continue;
 			}
 
-			QString str = abstr_setting->value_to_string();
-			abstr_setting->assign_default_value();
-			QString new_val = abstr_setting->value_to_string();
+			QString str = abstr_setting->valueToString();
+			abstr_setting->assignDefaultValue();
+			QString new_val = abstr_setting->valueToString();
 			if(str != new_val){
-				qDebug() << "Error with " << abstr_setting->db_key();
+				qDebug() << "Error with " << abstr_setting->dbKey();
 				qDebug() << "Current value: " << str;
 				qDebug() << "Default value: " << new_val;
 			}

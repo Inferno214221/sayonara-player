@@ -1,6 +1,6 @@
 /* CoverHelper.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -37,21 +37,21 @@
 namespace Algorithm=Util::Algorithm;
 namespace FileUtils=Util::File;
 
-QString Cover::Utils::calc_cover_token(const QString& artist, const QString& album)
+QString Cover::Utils::calcCoverToken(const QString& artist, const QString& album)
 {
 	QByteArray str = QString(artist.trimmed() + album.trimmed()).toLower().toUtf8();
 
-	return Util::calc_hash(str);
+	return Util::calcHash(str);
 }
 
-QString Cover::Utils::cover_directory()
+QString Cover::Utils::coverDirectory()
 {
-	return cover_directory(QString());
+	return coverDirectory(QString());
 }
 
-QString Cover::Utils::cover_directory(const QString& append_filename)
+QString Cover::Utils::coverDirectory(const QString& append_filename)
 {
-	QString cover_dir = Util::sayonara_path("covers");
+	QString cover_dir = Util::sayonaraPath("covers");
 	if(!FileUtils::exists(cover_dir))
 	{
 		QDir().mkdir(cover_dir);
@@ -61,37 +61,37 @@ QString Cover::Utils::cover_directory(const QString& append_filename)
 		cover_dir += "/" + append_filename;
 	}
 
-	return FileUtils::clean_filename(cover_dir);
+	return FileUtils::cleanFilename(cover_dir);
 }
 
-QString Cover::Utils::cover_temp_directory()
+QString Cover::Utils::coverTempDirectory()
 {
-	return cover_directory("tmp");
+	return coverDirectory("tmp");
 }
 
 
-void Cover::Utils::delete_temp_covers()
+void Cover::Utils::deleteTemporaryCovers()
 {
-	QString dir = cover_temp_directory();
+	QString dir = coverTempDirectory();
 
 	if(QFile::exists(dir))
 	{
-		FileUtils::remove_files_in_directory(dir);
+		FileUtils::removeFilesInDirectory(dir);
 	}
 }
 
 
-bool Cover::Utils::add_temp_cover(const QPixmap& pm, const QString& hash)
+bool Cover::Utils::addTemporaryCover(const QPixmap& pm, const QString& hash)
 {
-	QDir cover_temp_dir = QDir(cover_temp_directory());
+	QDir cover_temp_dir = QDir(coverTempDirectory());
 	QString path = cover_temp_dir.filePath("tmp_" + hash + ".jpg");
 	return pm.save(path);
 }
 
 
-void Cover::Utils::write_cover_to_sayonara_dir(const Cover::Location& cl, const QPixmap& pm)
+void Cover::Utils::writeCoverToSayonaraDirectory(const Cover::Location& cl, const QPixmap& pm)
 {
-	QString path = cl.cover_path();
+	QString path = cl.coverPath();
 	QFileInfo fi(path);
 	if(fi.isSymLink()){
 		QFile::remove(path);
@@ -100,20 +100,20 @@ void Cover::Utils::write_cover_to_sayonara_dir(const Cover::Location& cl, const 
 	pm.save(path);
 }
 
-void Cover::Utils::write_cover_to_db(const Cover::Location& cl, const QPixmap& pm)
+void Cover::Utils::writeCoverIntoDatabase(const Cover::Location& cl, const QPixmap& pm)
 {
-	write_cover_to_db(cl, pm, DB::Connector::instance());
+	writeCoverIntoDatabase(cl, pm, DB::Connector::instance());
 }
 
-void Cover::Utils::write_cover_to_db(const Cover::Location& cl, const QPixmap& pm, DB::Connector* db)
+void Cover::Utils::writeCoverIntoDatabase(const Cover::Location& cl, const QPixmap& pm, DB::Connector* db)
 {
-	DB::Covers* dbc = db->cover_connector();
-	dbc->set_cover(cl.hash(), pm);
+	DB::Covers* dbc = db->coverConnector();
+	dbc->setCover(cl.hash(), pm);
 }
 
-void Cover::Utils::write_cover_to_library(const Cover::Location& cl, const QPixmap& pm)
+void Cover::Utils::writeCoverToLibrary(const Cover::Location& cl, const QPixmap& pm)
 {
-	QString local_dir = cl.local_path_dir();
+	QString local_dir = cl.localPathDir();
 	if(local_dir.isEmpty()){
 		return;
 	}

@@ -1,6 +1,6 @@
 /* PlaylistStopBehavior.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -42,10 +42,10 @@ namespace Playlist
 			virtual const MetaData& track(int index) const=0;
 			virtual int count() const=0;
 
-			int restore_track_before_stop();
+			int restoreTrackBeforeStop();
 
-			int track_idx_before_stop() const;
-			void set_track_idx_before_stop(int idx);
+			int trackIndexBeforeStop() const;
+			void setTrackIndexBeforeStop(int idx);
 	};
 }
 

@@ -1,6 +1,6 @@
 /* GUI_Lyrics.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -38,35 +38,34 @@ class GUI_Lyrics :
 	PIMPL(GUI_Lyrics)
 
 public:
-	explicit GUI_Lyrics(QWidget *parent = nullptr);
-	~GUI_Lyrics();
+	explicit GUI_Lyrics(QWidget* parent = nullptr);
+	~GUI_Lyrics() override;
 
-	void set_metadata(const MetaData& md);
+	void setTrack(const MetaData& md);
 
 private:
 	void init();
 
 	void zoom(qreal font_size);
-	void setup_sources();
-	void choose_source();
-	void show_lyrics(const QString& lyrics, const QString& header, bool rich);
-	void show_local_lyrics();
-	void set_save_button_text();
+	void setupSources();
+	void chooseSource();
+	void showLyrics(const QString& lyrics, const QString& header, bool rich);
+	void showLocalLyrics();
+	void setSaveButtonText();
 
 private slots:
-	void zoom_in();
-	void zoom_out();
+	void zoomIn();
+	void zoomOut();
 
-	void lyrics_fetched();
-	void lyric_server_changed(int idx);
+	void lyricsFetched();
+	void lyricServerChanged(int idx);
 
-	void switch_pressed();
-	void prepare_lyrics();
-	void save_lyrics_clicked();
+	void switchPressed();
+	void prepareLyrics();
+	void saveLyricsClicked();
 
 protected:
-	void language_changed() override;
-
+	void languageChanged() override;
 	void showEvent(QShowEvent* e) override;
 	void wheelEvent(QWheelEvent* e) override;
 };

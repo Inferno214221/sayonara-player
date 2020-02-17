@@ -1,6 +1,6 @@
 /* LibraryPluginLoader.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -44,13 +44,13 @@ namespace Library
 		SINGLETON(PluginHandler)
 
 	signals:
-		void sig_new_library_requested(const QString& name, const QString& path);
-		void sig_current_library_changed();
-		void sig_libraries_changed();
+		void sigNewLibraryRequested(const QString& name, const QString& path);
+		void sigCurrentLibraryChanged();
+		void sigLibrariesChanged();
 
 	private:
-		void init_libraries(const QList<Container*>& containers);
-		void init_dll_libraries();
+		void initLibraries(const QList<Container*>& containers);
+		void initDllLibraries();
 
 	public:
 		/**
@@ -63,20 +63,20 @@ namespace Library
 		 * @brief Get a list for all found plugins. The ui is not necessarily initialized
 		 * @return list for all found library plugins
 		 */
-		QList<Container*>	get_libraries(bool also_empty) const;
+		QList<Container*>	libraries(bool also_empty) const;
 
-		Container*			current_library() const;
-		QWidget*			current_library_widget() const;
+		Container*			currentLibrary() const;
+		QWidget*			currentLibraryWidget() const;
 
-		void add_local_library(Container* container);
-		void rename_local_library(const QString& old_name, const QString& new_name);
-		void remove_local_library(const QString& name);
-		void move_local_library(int old_local_library_index, int new_local_library_index);
+		void addLocalLibrary(Container* container);
+		void renameLocalLibrary(const QString& old_name, const QString& new_name);
+		void removeLocalLibrary(const QString& name);
+		void moveLocalLibrary(int old_local_library_index, int new_local_library_index);
 
 	public slots:
-		void set_current_library(const QString& name);
-		void set_current_library(int index);
-		void set_current_library(Container* container);
+		void setCurrentLibrary(const QString& name);
+		void setCurrentLibrary(int index);
+		void setCurrentLibrary(Container* container);
 	};
 }
 

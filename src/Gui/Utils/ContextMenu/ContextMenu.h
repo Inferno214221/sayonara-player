@@ -1,6 +1,6 @@
 /* ContextMenu.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -66,15 +66,15 @@ namespace Gui
 			};
 
 		signals:
-			void sig_new();
-			void sig_edit();
-			void sig_undo();
-			void sig_save();
-			void sig_save_as();
-			void sig_rename();
-			void sig_delete();
-			void sig_open();
-			void sig_default();
+			void sigNew();
+			void sigEdit();
+			void sigUndo();
+			void sigSave();
+			void sigSaveAs();
+			void sigRename();
+			void sigDelete();
+			void sigOpen();
+			void sigDefault();
 
 
 		private:
@@ -83,36 +83,36 @@ namespace Gui
 			 * @param b
 			 * @param action
 			 */
-			void show_action(bool b, QAction* action);
+			void showAction(bool b, QAction* action);
 
 
 		public:
-			explicit ContextMenu(QWidget *parent=nullptr);
-			virtual ~ContextMenu();
+			explicit ContextMenu(QWidget* parent=nullptr);
+			virtual ~ContextMenu() override;
 
 			/**
 			 * @brief register a custom action
 			 * @param action the action. You have to set up the connection manually
 			 */
-			void register_action(QAction* action);
+			void registerAction(QAction* action);
 
 			/**
 			 * @brief query, if there are visible actions
 			 * @return true, if at least one action is visible. false else
 			 */
-			bool has_actions();
+			bool hasActions();
 
 			/**
 			 * @brief get all visible entries
 			 * @return ContextMenuEntry mask
 			 */
-			ContextMenuEntries get_entries() const;
+			ContextMenuEntries entries() const;
 
 
 		protected:
 			void showEvent(QShowEvent* e) override;
-			void language_changed() override;
-			void skin_changed() override;
+			void languageChanged() override;
+			void skinChanged() override;
 
 
 		public slots:
@@ -120,28 +120,28 @@ namespace Gui
 			 * @brief show actions defined by ContextMenuEntry mask. Hide other actions
 			 * @param mask of ContextMenu::Entry
 			 */
-			void show_actions(ContextMenuEntries entries);
+			void showActions(ContextMenuEntries entries);
 
 			/**
 			 * @brief show/hide specific action
 			 * @param entry the entry of interes
 			 * @param visible show/hide
 			 */
-			void show_action(ContextMenu::Entry entry, bool visible);
+			void showAction(ContextMenu::Entry entry, bool visible);
 
 			/**
 			 * @brief show all actions
 			 */
-			void show_all();
+			void showAll();
 
-			void add_preference_action(PreferenceAction* action);
+			void addPreferenceAction(PreferenceAction* action);
 
 
 		private slots:
 			/**
 			 * @brief enable actions
 			 */
-			void timed_out();
+			void timedOut();
 
 	};
 }

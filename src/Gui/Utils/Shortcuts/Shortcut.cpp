@@ -1,6 +1,6 @@
 /* Shortcut.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -30,8 +30,8 @@
 
 struct Shortcut::Private
 {
-	QList<QShortcut*>	qt_shortcuts;
-	QStringList			default_shortcuts;
+	QList<QShortcut*>	qtShortcuts;
+	QStringList			defaultShortcuts;
 	QStringList			shortcuts;
 	ShortcutIdentifier	identifier;
 
@@ -45,39 +45,39 @@ Shortcut::Shortcut()
 	m = Pimpl::make<Private>(ShortcutIdentifier::Invalid);
 }
 
-Shortcut::Shortcut(ShortcutIdentifier identifier, const QStringList& default_shortcuts)
+Shortcut::Shortcut(ShortcutIdentifier identifier, const QStringList& shortcutStrings)
 {
 	m = Pimpl::make<Private>(identifier);
 
-	m->default_shortcuts = default_shortcuts;
-	for(QString& str : m->default_shortcuts){
+	m->defaultShortcuts = shortcutStrings;
+	for(QString& str : m->defaultShortcuts){
 		str.replace(" +", "+");
 		str.replace("+ ", "+");
 	}
 
-	m->shortcuts = m->default_shortcuts;
+	m->shortcuts = m->defaultShortcuts;
 }
 
-Shortcut::Shortcut(ShortcutIdentifier identifier, const QString& default_shortcut) :
-	Shortcut(identifier, QStringList(default_shortcut)) {}
+Shortcut::Shortcut(ShortcutIdentifier identifier, const QString& defaultShortcut) :
+	Shortcut(identifier, QStringList(defaultShortcut)) {}
 
 Shortcut::Shortcut(const Shortcut& other) :
 	Shortcut()
 {
 	m->identifier =			other.m->identifier;
-	m->default_shortcuts =	other.m->default_shortcuts;
+	m->defaultShortcuts =	other.m->defaultShortcuts;
 	m->shortcuts =			other.m->shortcuts;
-	m->qt_shortcuts =		other.m->qt_shortcuts;
+	m->qtShortcuts =		other.m->qtShortcuts;
 }
 
-Shortcut::~Shortcut() {}
+Shortcut::~Shortcut() = default;
 
 Shortcut& Shortcut::operator =(const Shortcut& other)
 {
 	m->identifier =			other.m->identifier;
-	m->default_shortcuts =	other.m->default_shortcuts;
+	m->defaultShortcuts =	other.m->defaultShortcuts;
 	m->shortcuts =			other.m->shortcuts;
-	m->qt_shortcuts =		other.m->qt_shortcuts;
+	m->qtShortcuts =		other.m->qtShortcuts;
 
 	return (*this);
 }
@@ -87,16 +87,16 @@ QString Shortcut::name() const
 	return ShortcutHandler::instance()->shortcut_text(m->identifier);
 }
 
-QStringList Shortcut::default_shorcut() const
+QStringList Shortcut::defaultShortcut() const
 {
-	return m->default_shortcuts;
+	return m->defaultShortcuts;
 }
 
 QList<QKeySequence> Shortcut::sequences() const
 {
 	QList<QKeySequence> sequences;
-	const QStringList& shortcuts = this->shortcuts();
 
+	const auto& shortcuts = this->shortcuts();
 	for(const QString& str : shortcuts)
 	{
 		sequences << QKeySequence::fromString(str, QKeySequence::NativeText);
@@ -129,9 +129,9 @@ ShortcutIdentifier Shortcut::identifier() const
 	return m->identifier;
 }
 
-QString Shortcut::db_key() const
+QString Shortcut::databaseKey() const
 {
-	return ShortcutHandler::instance()->db_key(m->identifier);
+	return ShortcutHandler::instance()->databaseKey(m->identifier);
 }
 
 Shortcut Shortcut::getInvalid()
@@ -139,14 +139,14 @@ Shortcut Shortcut::getInvalid()
 	return Shortcut();
 }
 
-bool Shortcut::is_valid() const
+bool Shortcut::isValid() const
 {
 	return (m->identifier != ShortcutIdentifier::Invalid);
 }
 
 void Shortcut::connect(QWidget* parent, QObject* receiver, const char* slot, Qt::ShortcutContext context)
 {
-	QList<QShortcut*> shortcuts = init_qt_shortcut(parent, context);
+	QList<QShortcut*> shortcuts = initQtShortcut(parent, context);
 	for(QShortcut* sc : shortcuts)
 	{
 		parent->connect(sc, SIGNAL(activated()), receiver, slot);
@@ -154,7 +154,7 @@ void Shortcut::connect(QWidget* parent, QObject* receiver, const char* slot, Qt:
 }
 
 
-QList<QShortcut*> Shortcut::init_qt_shortcut(QWidget* parent, Qt::ShortcutContext context)
+QList<QShortcut*> Shortcut::initQtShortcut(QWidget* parent, Qt::ShortcutContext context)
 {
 	QList<QShortcut*> qshortcuts;
 
@@ -169,50 +169,67 @@ QList<QShortcut*> Shortcut::init_qt_shortcut(QWidget* parent, Qt::ShortcutContex
 		qshortcuts << shortcut;
 	}
 
-	ShortcutHandler::instance()->qt_shortcuts_added(this->identifier(), qshortcuts);
+	ShortcutHandler::instance()->qtShortcutsAdded(this->identifier(), qshortcuts);
 
 	return qshortcuts;
 }
 
-void Shortcut::set_qt_shortcuts(const QList<QShortcut*>& qt_shortcuts)
+void Shortcut::setQtShortcuts(const QList<QShortcut*>& qtShortcuts)
 {
-	m->qt_shortcuts = qt_shortcuts;
+	m->qtShortcuts = qtShortcuts;
 }
 
-void Shortcut::remove_qt_shortcut(QShortcut* shortcut)
+void Shortcut::removeQtShortcut(QShortcut* shortcut)
 {
-	auto it = std::remove_if(m->qt_shortcuts.begin(), m->qt_shortcuts.end(), [shortcut](QShortcut* sc){
+	auto it = std::remove_if(m->qtShortcuts.begin(), m->qtShortcuts.end(), [shortcut](QShortcut* sc){
 		return (sc == shortcut);
 	});
 
-	m->qt_shortcuts.erase(it, m->qt_shortcuts.end());
+	m->qtShortcuts.erase(it, m->qtShortcuts.end());
 }
 
-QList<QShortcut*> Shortcut::qt_shortcuts() const
+QList<QShortcut*> Shortcut::qtShortcuts() const
 {
-	return m->qt_shortcuts;
+	return m->qtShortcuts;
 }
 
 
-void Shortcut::change_shortcut(const QStringList& shortcuts)
+void Shortcut::changeShortcut(const QStringList& shortcuts)
 {
 	m->shortcuts.clear();
-	for(QString str : shortcuts)
+	for(QString shortcut : shortcuts)
 	{
-		str.replace(" +", "+");
-		str.replace("+ ", "+");
+		shortcut.replace(" +", "+");
+		shortcut.replace("+ ", "+");
+		shortcut.replace("enter", "Enter");
+		shortcut.replace("return", "Return");
 
-		m->shortcuts << str;
-		m->shortcuts.removeDuplicates();
+		if(shortcut.contains("Enter"))
+		{
+			QString scCopy(shortcut);
+			scCopy.replace("Enter", "Return");
+			m->shortcuts << scCopy;
+		}
+
+		else if(shortcut.contains("Return"))
+		{
+			QString scCopy(shortcut);
+			scCopy.replace("Return", "Enter");
+			m->shortcuts << scCopy;
+		}
+
+		m->shortcuts << shortcut;
 	}
 
-	const QList<QKeySequence> new_ks = this->sequences();//merge_key_sequences(this->sequences());
-	for(auto it=m->qt_shortcuts.begin(); it != m->qt_shortcuts.end(); it++)
+	m->shortcuts.removeDuplicates();
+
+	const QList<QKeySequence> newKeySequences = this->sequences();
+	if(newKeySequences.size() > 0)
 	{
-		if(new_ks.size() > 0)
+		const auto& qtShortcuts = m->qtShortcuts;
+		for(QShortcut* sc : qtShortcuts)
 		{
-			QShortcut* sc = *it;
-			sc->setKey(new_ks.first());
+			sc->setKey(newKeySequences.first());
 		}
 	}
 }

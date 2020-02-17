@@ -1,6 +1,6 @@
 /* GUI_Spectrum.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -49,22 +49,22 @@ struct GUI_Spectrum::Private
 	std::atomic_flag	locked = ATOMIC_FLAG_INIT;
 	SpectrumList		spec;
 	StepArray			steps;
-	float*				log_lu=nullptr;
+	float*				logarithmLookupTable=nullptr;
 
-	void init_lookup_table(int bins)
+	void initLookupTable(int bins)
 	{
-		log_lu = new float[bins];
+		logarithmLookupTable = new float[bins];
 
 		// make bass value smaller than high frequencies
 		// log_lu[0] = 0.0.01666667
 		// log_lu[50] = 0.37930765
 		for(int i=0; i<bins; i++)
 		{
-			log_lu[i] = (std::pow(10.0f, (i / 140.0f) + 1.0f) / 8.0f) / 75.0f;
+			logarithmLookupTable[i] = (std::pow(10.0f, (i / 140.0f) + 1.0f) / 8.0f) / 75.0f;
 		}
 	}
 
-	void set_spectrum(const SpectrumList& s)
+	void setSpectrum(const SpectrumList& s)
 	{
 		// s: [-75, 0]
 		// s[i] + 75: [0, 75]
@@ -75,29 +75,29 @@ struct GUI_Spectrum::Private
 
 		for(size_t i=0; i<s.size(); i++)
 		{
-			float f = (s[i] + 75.0) * log_lu[i];
+			float f = (s[i] + 75.0) * logarithmLookupTable[i];
 			spec.push_back(f);
 		}
 	}
 
-	void resize_steps(int n_bins, int rects)
+	void resizeSteps(int binCount, int rects)
 	{
-		n_bins = std::max(50, n_bins);
+		binCount = std::max(50, binCount);
 
-		if(n_bins != (int) steps.size()){
-			steps.resize(n_bins);
+		if(binCount != (int) steps.size()){
+			steps.resize(binCount);
 		}
 
-		for(BinSteps& bin_steps : steps)
+		for(BinSteps& step : steps)
 		{
-			bin_steps.resize(rects);
-			std::fill(bin_steps.begin(), bin_steps.end(), 0);
+			step.resize(rects);
+			std::fill(step.begin(), step.end(), 0);
 		}
 	}
 };
 
 
-GUI_Spectrum::GUI_Spectrum(QWidget *parent) :
+GUI_Spectrum::GUI_Spectrum(QWidget* parent) :
 	VisualPlugin(parent),
 	Engine::SpectrumReceiver()
 {
@@ -116,61 +116,61 @@ GUI_Spectrum::~GUI_Spectrum()
 }
 
 
-void GUI_Spectrum::init_ui()
+void GUI_Spectrum::initUi()
 {
-	if(is_ui_initialized()){
+	if(isUiInitialized()){
 		return;
 	}
 
-	setup_parent(this, &ui);
+	setupParent(this, &ui);
 }
 
-void GUI_Spectrum::finalize_initialization()
+void GUI_Spectrum::finalizeInitialization()
 {
-	VisualPlugin::init_ui();
+	VisualPlugin::initUi();
 
 	int bins = GetSetting(Set::Engine_SpectrumBins);
 
-	m->init_lookup_table(bins);
-	m->resize_steps(bins, current_style().n_rects);
+	m->initLookupTable(bins);
+	m->resizeSteps(bins, currentStyle().n_rects);
 	m->spec.resize((size_t) bins, -100.0f);
 
-	Engine::Handler::instance()->add_spectrum_receiver(this);
-	PlayerPlugin::Base::finalize_initialization();
+	Engine::Handler::instance()->addSpectrumReceiver(this);
+	PlayerPlugin::Base::finalizeInitialization();
 
 	update();
 }
 
-QString GUI_Spectrum::get_name() const
+QString GUI_Spectrum::name() const
 {
 	return "Spectrum";
 }
 
-QString GUI_Spectrum::get_display_name() const
+QString GUI_Spectrum::displayName() const
 {
 	return tr("Spectrum");
 }
 
-bool GUI_Spectrum::is_active() const
+bool GUI_Spectrum::isActive() const
 {
 	return this->isVisible();
 }
 
-void GUI_Spectrum::retranslate_ui() {}
+void GUI_Spectrum::retranslate() {}
 
-void GUI_Spectrum::set_spectrum(const SpectrumList& spec)
+void GUI_Spectrum::setSpectrum(const SpectrumList& spec)
 {
-	if(!is_ui_initialized() || !isVisible()){
+	if(!isUiInitialized() || !isVisible()){
 		return;
 	}
 
-	m->set_spectrum(spec);
+	m->setSpectrum(spec);
 
 	stop_fadeout_timer();
 	update();
 }
 
-void GUI_Spectrum::do_fadeout_step()
+void GUI_Spectrum::doFadeoutStep()
 {
 	for(auto it=m->spec.begin(); it!= m->spec.end(); it++)
 	{
@@ -182,12 +182,12 @@ void GUI_Spectrum::do_fadeout_step()
 
 void GUI_Spectrum::update_style(int new_index)
 {
-	if(!is_ui_initialized()){
+	if(!isUiInitialized()){
 		return;
 	}
 
 	if(m->locked.test_and_set()) {
-		sp_log(Log::Debug, this) << "Cannot update stylde";
+		spLog(Log::Debug, this) << "Cannot update stylde";
 		return;
 	}
 
@@ -195,7 +195,7 @@ void GUI_Spectrum::update_style(int new_index)
 	SetSetting(Set::Spectrum_Style, new_index);
 
 	int bins = GetSetting(Set::Engine_SpectrumBins);
-	m->resize_steps(bins, current_style().n_rects);
+	m->resizeSteps(bins, currentStyle().n_rects);
 
 	update();
 
@@ -224,7 +224,7 @@ void GUI_Spectrum::paintEvent(QPaintEvent* e)
 
 	float widget_height = height() * 1.0f;
 
-	ColorStyle style = current_style();
+	ColorStyle style = currentStyle();
 	int n_rects = style.n_rects;
 	int n_fading_steps = style.n_fading_steps;
 	int h_rect = int((widget_height / n_rects) - style.ver_spacing);
@@ -261,14 +261,14 @@ void GUI_Spectrum::paintEvent(QPaintEvent* e)
 			// 100%
 			if( r < colored_rects)
 			{
-				col = current_style().style[r].value(-1);
+				col = currentStyle().style[r].value(-1);
 				m->steps[i][r] = n_fading_steps;
 			}
 
 			// fading out
 			else
 			{
-				col = current_style().style[r].value(m->steps[i][r]);
+				col = currentStyle().style[r].value(m->steps[i][r]);
 
 				if(m->steps[i][r] > 0) {
 					m->steps[i][r]--;
@@ -299,17 +299,17 @@ QWidget* GUI_Spectrum::widget()
 	return ui->lab;
 }
 
-bool GUI_Spectrum::has_small_buttons() const
+bool GUI_Spectrum::hasSmallButtons() const
 {
 	return false;
 }
 
-ColorStyle GUI_Spectrum::current_style() const
+ColorStyle GUI_Spectrum::currentStyle() const
 {
-	return m_ecsc->get_color_scheme_spectrum(current_style_index());
+	return m_ecsc->get_color_scheme_spectrum(currentStyleIndex());
 }
 
-int GUI_Spectrum::current_style_index() const
+int GUI_Spectrum::currentStyleIndex() const
 {
 	return GetSetting(Set::Spectrum_Style);
 }

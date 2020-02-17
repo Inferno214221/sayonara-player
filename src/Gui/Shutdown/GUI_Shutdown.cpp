@@ -1,6 +1,6 @@
 /* GUI_Shutdown.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -34,10 +34,10 @@ GUI_Shutdown::GUI_Shutdown(QWidget* parent):
 	ui = new Ui::GUI_Shutdown();
 	ui->setupUi(this);
 
-	connect(ui->btn_ok, &QPushButton::clicked, this, &GUI_Shutdown::ok_clicked);
-	connect(ui->btn_cancel, &QPushButton::clicked, this, &GUI_Shutdown::cancel_clicked);
-	connect(ui->rb_after_finished, &QRadioButton::clicked, this, &GUI_Shutdown::rb_after_finished_clicked);
-	connect(ui->rb_after_minutes, &QRadioButton::clicked, this, &GUI_Shutdown::rb_after_minutes_clicked);
+	connect(ui->btn_ok, &QPushButton::clicked, this, &GUI_Shutdown::okClicked);
+	connect(ui->btn_cancel, &QPushButton::clicked, this, &GUI_Shutdown::cancelClicked);
+	connect(ui->rb_after_finished, &QRadioButton::clicked, this, &GUI_Shutdown::afterPlaylistFinishedClicked);
+	connect(ui->rb_after_minutes, &QRadioButton::clicked, this, &GUI_Shutdown::afterTimespanClicked);
 }
 
 GUI_Shutdown::~GUI_Shutdown()
@@ -45,13 +45,13 @@ GUI_Shutdown::~GUI_Shutdown()
 	delete ui; ui=nullptr;
 }
 
-void GUI_Shutdown::skin_changed()
+void GUI_Shutdown::skinChanged()
 {
 	ui->lab_icon->setPixmap(Gui::Icons::pixmap(Gui::Icons::Shutdown));
 }
 
 
-void GUI_Shutdown::ok_clicked()
+void GUI_Shutdown::okClicked()
 {
 	if(ui->sb_minutes->isEnabled())
 	{
@@ -60,26 +60,26 @@ void GUI_Shutdown::ok_clicked()
 	}
 
 	else {
-		Shutdown::instance()->shutdown_after_end();
+		Shutdown::instance()->shutdownAfterSessionEnd();
 	}
 
 	close();
 }
 
-void GUI_Shutdown::cancel_clicked()
+void GUI_Shutdown::cancelClicked()
 {
 	close();
-	emit sig_closed();
+	emit sigClosed();
 }
 
-void GUI_Shutdown::rb_after_finished_clicked(bool b)
+void GUI_Shutdown::afterPlaylistFinishedClicked(bool b)
 {
 	Q_UNUSED(b)
 	ui->rb_after_minutes->setChecked(false);
 	ui->sb_minutes->setEnabled(false);
 }
 
-void GUI_Shutdown::rb_after_minutes_clicked(bool b)
+void GUI_Shutdown::afterTimespanClicked(bool b)
 {
 	Q_UNUSED(b)
 	ui->rb_after_minutes->setChecked(false);

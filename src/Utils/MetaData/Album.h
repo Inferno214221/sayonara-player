@@ -1,6 +1,6 @@
 /* Album.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -53,42 +53,42 @@ public:
 	~Album();
 
 	AlbumId id() const;
-	void set_id(const AlbumId& id);
+	void setId(const AlbumId& id);
 
 	QString name() const;
-	void set_name(const QString& name);
+	void setName(const QString& name);
 
 	QStringList artists() const;
-	void set_artists(const QStringList& artists);
+	void setArtists(const QStringList& artists);
 
-	QStringList album_artists() const;
-	void set_album_artists(const QStringList& album_artists);
+	QStringList albumArtists() const;
+	void setAlbumArtists(const QStringList& albumArtists);
 
-	QStringList path_hint() const;
-	void set_path_hint(const QStringList& paths);
+	QStringList pathHint() const;
+	void setPathHint(const QStringList& paths);
 
-	Seconds duration_sec() const;
-	void set_duration_sec(const Seconds& sec);
+	Seconds durationSec() const;
+	void setDurationSec(const Seconds& sec);
 
 	TrackNum songcount() const;
-	void set_songcount(const TrackNum& songs);
+	void setSongcount(const TrackNum& songs);
 
 	Year year() const;
-	void set_year(const Year& year);
+	void setYear(const Year& year);
 
 	Disc disccount() const;
 
 	Rating rating() const;
-	void set_rating(const Rating& rating);
+	void setRating(const Rating& rating);
 
-	bool is_sampler() const;
+	bool isSampler() const;
 
 	QList<Disc> discnumbers() const;
-	void set_discnumbers(const QList<Disc>& discnumbers);
+	void setDiscnumbers(const QList<Disc>& discnumbers);
 
 	static QVariant toVariant(const Album& album);
 	static bool fromVariant(const QVariant& v, Album& album);
-	QString to_string() const;
+	QString toString() const;
 };
 
 
@@ -101,7 +101,7 @@ class AlbumList : public std::deque<Album>
 	using Parent=std::deque<Album>;
 
 public:
-	bool contains(AlbumId album_id) const;
+	bool contains(AlbumId albumId) const;
 
 	int count() const;
 	AlbumList& operator <<(const Album& album);
@@ -109,8 +109,8 @@ public:
 	Album& operator[](int idx);
 	const Album& operator[](int idx) const;
 
-	AlbumList& append_unique(const AlbumList& other);
-	AlbumList& append_unique(AlbumList&& other) noexcept;
+	AlbumList& appendUnique(const AlbumList& other);
+	AlbumList& appendUnique(AlbumList&& other) noexcept;
 
 	void sort(::Library::SortOrder so);
 };

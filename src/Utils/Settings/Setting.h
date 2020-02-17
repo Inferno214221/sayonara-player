@@ -1,6 +1,6 @@
 /* Setting.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -45,22 +45,22 @@ class AbstrSetting
 
 	protected:
 		AbstrSetting(SettingKey key);
-		AbstrSetting(SettingKey key, const char* db_key);
+		AbstrSetting(SettingKey key, const char* dbKey);
 
 
 	public:
 		virtual ~AbstrSetting();
 
-		SettingKey get_key() const;
-		QString db_key() const;
-		bool is_db_setting() const;
+		SettingKey getKey() const;
+		QString dbKey() const;
+		bool isDatabaseSetting() const;
 
-		void assign_value(const QString& value);
+		void assignValue(const QString& value);
 
 		/* Pure virtual function for DB load/save */
-		virtual bool load_value_from_string(const QString& str)=0;
-		virtual QString value_to_string() const=0;
-		virtual void assign_default_value()=0;
+		virtual bool loadValueFromString(const QString& str)=0;
+		virtual QString valueToString() const=0;
+		virtual void assignDefaultValue()=0;
 };
 
 
@@ -99,19 +99,19 @@ class Setting : public AbstrSetting
 		/* Destructor */
 		~Setting() = default;
 
-		void assign_default_value() override
+		void assignDefaultValue() override
 		{
 			mValue = mDefaultValue;
 		}
 
-		QString value_to_string() const override
+		QString valueToString() const override
 		{
-			 return SettingConverter::to_string(mValue);
+			 return SettingConverter::toString(mValue);
 		}
 
-		bool load_value_from_string(const QString& str) override
+		bool loadValueFromString(const QString& str) override
 		{
-			return SettingConverter::from_string(str, mValue);
+			return SettingConverter::fromString(str, mValue);
 		}
 
 		/* ... */
@@ -127,7 +127,7 @@ class Setting : public AbstrSetting
 		}
 
 		/* ... */
-		bool assign_value(const typename KeyClass::Data& val)
+		bool assignValue(const typename KeyClass::Data& val)
 		{
 			if( mValue == val ){
 				return false;

@@ -1,6 +1,6 @@
 /* ProgressBar.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -50,16 +50,18 @@ namespace Gui
 				Bottom
 			};
 
-		public:
 			explicit ProgressBar(QWidget* parent);
 			~ProgressBar() override;
 
-			void set_position(ProgressBar::Position o);
+			void setPosition(ProgressBar::Position o);
 			void refresh();
+
+		private slots:
+			void parentResized(const QSize& size);
 
 		protected:
 			void showEvent(QShowEvent* e) override;
-			void skin_changed() override;
+			void skinChanged() override;
 	};
 }
 

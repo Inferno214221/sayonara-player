@@ -1,6 +1,6 @@
 /* CoverFetcher.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -34,7 +34,7 @@ namespace Cover::Fetcher
 	class Base
 	{
 		private:
-			virtual QString priv_identifier() const=0;
+			virtual QString privateIdentifier() const=0;
 
 		public:
 			Base();
@@ -44,7 +44,7 @@ namespace Cover::Fetcher
 			 * @brief Can the cover be fetched from the adress without starting a two-stage query?
 			 * @return
 			 */
-			virtual bool can_fetch_cover_directly() const=0;
+			virtual bool canFetchCoverDirectly() const=0;
 
 			/**
 			 * @brief  Get addresses from the downloaded website.
@@ -52,7 +52,7 @@ namespace Cover::Fetcher
 			 * @param website website data
 			 * @return
 			 */
-			virtual QStringList parse_addresses(const QByteArray& website) const=0;
+			virtual QStringList parseAddresses(const QByteArray& website) const=0;
 
 			/**
 			 * @brief get name of CoverFetcherInterface like e.g. Discogs
@@ -67,7 +67,7 @@ namespace Cover::Fetcher
 			 * @param artist artist name
 			 * @return
 			 */
-			virtual QString artist_address(const QString& artist) const;
+			virtual QString artistAddress(const QString& artist) const;
 
 			/**
 			 * @brief Get the album search url.
@@ -76,7 +76,7 @@ namespace Cover::Fetcher
 			 * @param album album name
 			 * @return
 			 */
-			virtual QString album_address(const QString& artist, const QString& album) const;
+			virtual QString albumAddress(const QString& artist, const QString& album) const;
 
 			/**
 			 * @brief Get a custom search address
@@ -84,13 +84,13 @@ namespace Cover::Fetcher
 			 * @param str search string
 			 * @return
 			 */
-			virtual QString search_address(const QString& str) const;
+			virtual QString fulltextSearchAddress(const QString& str) const;
 
 			/**
 			 * @brief get_estimated_size. Rough image size of the CoverFetchInterface
 			 * @return e.g. 300px
 			 */
-			virtual int estimated_size() const=0;
+			virtual int estimatedSize() const=0;
 	};
 
 } // Cover::Fetcher

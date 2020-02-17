@@ -1,6 +1,6 @@
 /* DatabaseSearchMode.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -40,14 +40,14 @@ namespace DB
 			void init();
 
 		protected:
-			SearchableModule(const QString& connection_name, DbId db_id);
+			SearchableModule(const QString& connectionName, DbId databaseId);
 			::Library::SearchModeMask init_search_mode();
 
 		public:
 			virtual ~SearchableModule();
 
-			virtual void update_search_mode(::Library::SearchModeMask search_mode);
-			virtual ::Library::SearchModeMask search_mode() const;
+			virtual void updateSearchMode(::Library::SearchModeMask searchMode);
+			virtual ::Library::SearchModeMask searchMode() const;
 	};
 }
 

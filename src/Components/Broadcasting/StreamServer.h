@@ -1,6 +1,6 @@
 /* StreamServer.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -38,42 +38,42 @@ class StreamServer :
 	PIMPL(StreamServer)
 
 	signals:
-		void sig_new_connection(const QString& ip);
-		void sig_connection_closed(const QString& ip);
-		void sig_listening(bool);
+		void sigNewConnection(const QString& ip);
+		void sigConnectionClosed(const QString& ip);
+		void sigListening(bool);
 
 	public:
 		explicit StreamServer(QObject* parent=nullptr);
 		~StreamServer();
 
-		QStringList connected_clients() const;
+		QStringList connectedClients() const;
 
 
 	public slots:
 		void dismiss(int idx);
 
 		void disconnect(StreamWriterPtr sw);
-		void disconnect_all();
+		void disconnectAll();
 
 		bool listen();
 		void close();
 		void restart();
 
 	private slots:
-		void accept_client(QTcpSocket* socket, const QString& ip);
-		void reject_client(QTcpSocket* socket, const QString& ip);
+		void acceptClient(QTcpSocket* socket, const QString& ip);
+		void rejectClient(QTcpSocket* socket, const QString& ip);
 
-		void track_changed(const MetaData&);
-		void server_destroyed();
+		void trackChanged(const MetaData&);
+		void serverDestroyed();
 
-		void new_client_request();
-		void new_client_request_error(QAbstractSocket::SocketError socketError);
+		void newClientRequest();
+		void newClientRequestError(QAbstractSocket::SocketError socketError);
 
 		void disconnected(StreamWriter* sw);
-		void new_connection(const QString& ip);
+		void newConnection(const QString& ip);
 
-		void active_changed();
-		void port_changed();
+		void activeChanged();
+		void portChanged();
 };
 
 #endif

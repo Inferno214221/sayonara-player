@@ -1,6 +1,6 @@
 /* SoundcloudData.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -44,11 +44,11 @@ namespace SC
 			~Database() override;
 
 			// todo: assure to be called
-			bool apply_fixes() override;
+			bool applyFixes() override;
 
-			QString load_setting(const QString& key);
-			bool save_setting(const QString& key, const QString& value);
-			bool insert_setting(const QString& key, const QString& value);
+			QString loadSetting(const QString& key);
+			bool saveSetting(const QString& key, const QString& value);
+			bool insertSetting(const QString& key, const QString& value);
 	};
 }
 

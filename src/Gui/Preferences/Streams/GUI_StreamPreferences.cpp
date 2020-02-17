@@ -1,6 +1,6 @@
 /* GUI_StreamPreferences.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -35,21 +35,21 @@ GUI_StreamPreferences::~GUI_StreamPreferences() {}
 
 bool GUI_StreamPreferences::commit()
 {
-	SetSetting(Set::Stream_NewTab, ui->cb_new_tab->isChecked());
-	SetSetting(Set::Stream_ShowHistory, ui->cb_show_history->isChecked());
-	SetSetting(Set::Engine_BufferSizeMS, ui->sb_buffer_size->value());
+	SetSetting(Set::Stream_NewTab, ui->cbNewTab->isChecked());
+	SetSetting(Set::Stream_ShowHistory, ui->cbShowHistory->isChecked());
+	SetSetting(Set::Engine_BufferSizeMS, ui->sbBufferSize->value());
 
 	return true;
 }
 
 void GUI_StreamPreferences::revert()
 {
-	ui->cb_show_history->setChecked(GetSetting(Set::Stream_ShowHistory));
-	ui->cb_new_tab->setChecked(GetSetting(Set::Stream_NewTab));
-	ui->sb_buffer_size->setValue(GetSetting(Set::Engine_BufferSizeMS));
+	ui->cbShowHistory->setChecked(GetSetting(Set::Stream_ShowHistory));
+	ui->cbNewTab->setChecked(GetSetting(Set::Stream_NewTab));
+	ui->sbBufferSize->setValue(GetSetting(Set::Engine_BufferSizeMS));
 }
 
-QString GUI_StreamPreferences::action_name() const
+QString GUI_StreamPreferences::actionName() const
 {
 	QString s = Lang::get(Lang::Streams);
 	QString p = Lang::get(Lang::Podcasts);
@@ -57,18 +57,18 @@ QString GUI_StreamPreferences::action_name() const
 	return tr("%1 and %2").arg(s).arg(p);
 }
 
-void GUI_StreamPreferences::init_ui()
+void GUI_StreamPreferences::initUi()
 {
-	if(is_ui_initialized()){
+	if(isUiInitialized()){
 		return;
 	}
 
-	setup_parent(this, &ui);
+	setupParent(this, &ui);
 
 	revert();
 }
 
-void GUI_StreamPreferences::retranslate_ui()
+void GUI_StreamPreferences::retranslate()
 {
 	ui->retranslateUi(this);
 }

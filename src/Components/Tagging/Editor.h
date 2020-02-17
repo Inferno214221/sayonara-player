@@ -1,6 +1,6 @@
 /* TagEdit.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -45,14 +45,14 @@ namespace Tagging
 		PIMPL(Editor)
 
 		signals:
-			void sig_started();
-			void sig_finished();
-			void sig_progress(int);
-			void sig_metadata_received(const MetaDataList& v_md);
+			void sigStarted();
+			void sigFinished();
+			void sigProgress(int);
+			void sigMetadataReceived(const MetaDataList& tracks);
 
 		public:
 			explicit Editor(QObject* parent=nullptr);
-			explicit Editor(const MetaDataList& v_md, QObject* parent=nullptr);
+			explicit Editor(const MetaDataList& tracks, QObject* parent=nullptr);
 			~Editor() override;
 
 			enum FailReason
@@ -72,7 +72,7 @@ namespace Tagging
 			/**
 			 * @brief undo changes for all tracks
 			 */
-			void undo_all();
+			void undoAll();
 
 
 			/**
@@ -90,18 +90,18 @@ namespace Tagging
 			MetaDataList metadata() const;
 
 
-			bool apply_regex(const QString& regex, int idx);
+			bool applyRegularExpression(const QString& regex, int idx);
 
 			/**
 			 * @brief Add a genre to all (changed) metdata
 			 * @param genre the genre name
 			 */
-			void add_genre(int idx, const Genre& genre);
+			void addGenre(int idx, const Genre& genre);
 
 
-			void delete_genre(int idx, const Genre& genre);
+			void deleteGenre(int idx, const Genre& genre);
 
-			void rename_genre(int idx, const Genre& genre, const Genre& new_genre);
+			void renameGenre(int idx, const Genre& genre, const Genre& new_genre);
 
 			/**
 			 * @brief gets the number of tracks
@@ -113,7 +113,7 @@ namespace Tagging
 			/**
 			 * @brief indicates if there are pending changes
 			 */
-			bool has_changes() const;
+			bool hasChanges() const;
 
 
 			/**
@@ -121,14 +121,14 @@ namespace Tagging
 			 * @param idx track index
 			 * @param md new MetaData replacing the old track
 			 */
-			void update_track(int idx, const MetaData& md);
+			void updateTrack(int idx, const MetaData& md);
 
 			/**
 			 * @brief update the cover for a specific track.
 			 * @param idx track index
 			 * @param cover new cover image
 			 */
-			void update_cover(int idx, const QPixmap& cover);
+			void updateCover(int idx, const QPixmap& cover);
 
 			/**
 			 * @brief remove_cover for a specific track
@@ -141,21 +141,21 @@ namespace Tagging
 			 * @param idx track index
 			 * @return false, if no new alternative cover is desired
 			 */
-			bool has_cover_replacement(int idx) const;
+			bool hasCoverReplacement(int idx) const;
 
 
 			/**
 			 * @brief initializes the TagEdit object with a MetaDataList
-			 * @param v_md new MetaDataList
+			 * @param tracks new MetaDataList
 			 */
-			void set_metadata(const MetaDataList& v_md);
+			void setMetadata(const MetaDataList& tracks);
 
-			bool is_cover_supported(int idx) const;
+			bool isCoverSupported(int idx) const;
 
-			bool can_load_entire_album() const;
-			void load_entire_album();
+			bool canLoadEntireAlbum() const;
+			void loadEntireAlbum();
 
-			QMap<QString, FailReason> failed_files() const;
+			QMap<QString, FailReason> failedFiles() const;
 
 		public slots:
 
@@ -169,10 +169,10 @@ namespace Tagging
 			/**
 			 * @brief applies the new artists and albums to the original metadata
 			 */
-			void apply_artists_and_albums_to_md();
+			void applyArtistsAndAlbumToMetadata();
 
 		private slots:
-			void load_entire_album_finished();
+			void loadEntireAlbumFinished();
 	};
 }
 

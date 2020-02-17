@@ -18,11 +18,11 @@ class HistoryEntryWidget :
 
 		Session::Id id() const;
 
-	protected:
-		void language_changed() override;
-
 	private slots:
 		void rowcount_changed();
+
+	protected:
+		void languageChanged() override;
 };
 
 #endif // HISTORYENTRYWIDGET_H

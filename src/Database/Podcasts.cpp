@@ -1,6 +1,6 @@
 /* DatabasePodcasts.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -28,8 +28,8 @@
 using DB::Podcasts;
 using DB::Query;
 
-Podcasts::Podcasts(const QString& connection_name, DbId db_id) :
-	DB::Module(connection_name, db_id) {}
+Podcasts::Podcasts(const QString& connection_name, DbId databaseId) :
+	DB::Module(connection_name, databaseId) {}
 
 Podcasts::~Podcasts() = default;
 
@@ -37,9 +37,9 @@ bool Podcasts::getAllPodcasts(QList<Podcast>& podcasts)
 {
 	podcasts.clear();
 
-	Query q = run_query("SELECT name, url, reversed FROM savedpodcasts;", "Cannot fetch podcasts");
+	Query q = runQuery("SELECT name, url, reversed FROM savedpodcasts;", "Cannot fetch podcasts");
 
-	if(q.has_error()){
+	if(q.hasError()){
 		return false;
 	}
 
@@ -58,16 +58,16 @@ bool Podcasts::getAllPodcasts(QList<Podcast>& podcasts)
 
 bool Podcasts::deletePodcast(const QString& name)
 {
-	Query q = run_query
+	Query q = runQuery
 	(
 		"DELETE FROM savedpodcasts WHERE name = :name;",
 		{
-			{":name", Util::cvt_not_null(name)},
+			{":name", Util::convertNotNull(name)},
 		},
 		QString("Could not delete podcast %1").arg(name)
 	);
 
-	return (!q.has_error());
+	return (!q.hasError());
 }
 
 
@@ -75,54 +75,44 @@ bool Podcasts::addPodcast(const Podcast& podcast)
 {
 	Query q = insert("savedpodcasts",
 	{
-		{"name", Util::cvt_not_null(podcast.name())},
-		{"url", Util::cvt_not_null(podcast.url())},
+		{"name", Util::convertNotNull(podcast.name())},
+		{"url", Util::convertNotNull(podcast.url())},
 		{"reversed", podcast.reversed()}
 	}, QString("Could not add podcast: %1, %2").arg(podcast.name(), podcast.url()));
 
-	return (!q.has_error());
+	return (!q.hasError());
 }
 
-
-bool Podcasts::updatePodcastUrl(const QString& name, const QString& url)
+bool Podcasts::updatePodcast(const QString& name, const Podcast& podcast)
 {
 	Query q = update("savedpodcasts",
-		{{"url", Util::cvt_not_null(url)}},
-		{"name", Util::cvt_not_null(name)},
+		{
+			{"name", Util::convertNotNull(podcast.name())},
+			{"url", Util::convertNotNull(podcast.url())},
+			{"reversed", podcast.reversed()}
+		},
+		{"name", Util::convertNotNull(name)},
 		QString("Could not update podcast url %1").arg(name)
 	);
 
-	return (!q.has_error());
-}
-
-bool Podcasts::renamePodcast(const QString& old_name, const QString& new_name)
-{
-	Query q = update("savedpodcasts",
-		{{"name", Util::cvt_not_null(new_name)}},
-		{"name", Util::cvt_not_null(old_name)},
-		QString("Could not update podcast name %1").arg(old_name)
-	);
-
-	q.show_query();
-	sp_log(Log::Debug, this) << "Affected rows = " << q.numRowsAffected();
-	return (!q.has_error());
+	return (!q.hasError());
 }
 
 Podcast Podcasts::getPodcast(const QString& name)
 {
-	Query q = run_query
+	Query q = runQuery
 	(
 		"SELECT name, url, reversed FROM savedpodcasts WHERE name = :name;",
 		{":name", name},
 		QString("Cannot fetch podcast %1").arg(name)
 	);
 
-	if(!q.has_error() && q.next())
+	if(!q.hasError() && q.next())
 	{
 		Podcast podcast;
-		podcast.set_name(q.value(0).toString());
-		podcast.set_url(q.value(1).toString());
-		podcast.set_reversed(q.value(2).toBool());
+		podcast.setName(q.value(0).toString());
+		podcast.setUrl(q.value(1).toString());
+		podcast.setReversed(q.value(2).toBool());
 		return podcast;
 	}
 

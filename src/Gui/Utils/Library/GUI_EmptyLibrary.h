@@ -1,6 +1,6 @@
 /* GUI_EmptyLibrary.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -44,25 +44,24 @@ namespace Library
 		public:
 			explicit GUI_EmptyLibrary(QWidget* parent=nullptr);
 			GUI_EmptyLibrary(const GUI_EmptyLibrary& other)  = delete;
-			~GUI_EmptyLibrary();
+			~GUI_EmptyLibrary() override;
 
-			QFrame* header_frame() const;
+			QFrame* headerFrame() const;
 
 		private:
-			bool check_name();
-			bool check_path();
+			bool checkName();
+			bool checkPath();
 
 		private slots:
-			void ok_clicked();
-			void choose_dir_clicked();
+			void okClicked();
+			void chooseDirClicked();
 
-			void path_changed(const QString& str);
-			void name_changed(const QString& str);
+			void pathChanged(const QString& str);
+			void nameChanged(const QString& str);
 
 		protected:
-			void language_changed() override;
+			void languageChanged() override;
 	};
-
 }
 
 #endif // GUI_EMPTYLIBRARY_H

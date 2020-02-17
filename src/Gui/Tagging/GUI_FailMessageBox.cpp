@@ -1,6 +1,6 @@
 /* GUI_FailMessageBox.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -32,10 +32,10 @@ GUI_FailMessageBox::GUI_FailMessageBox(QWidget* parent) :
 	ui->tv_files->setVisible(false);
 	ui->tv_files->setItemDelegate(new Gui::StyledItemDelegate());
 
-	connect(ui->cb_details, &QCheckBox::toggled, this, &GUI_FailMessageBox::details_toggled);
+	connect(ui->cb_details, &QCheckBox::toggled, this, &GUI_FailMessageBox::detailsToggled);
 	connect(ui->btn_ok, &QPushButton::clicked, this, &GUI_FailMessageBox::close);
 
-	language_changed();
+	languageChanged();
 }
 
 GUI_FailMessageBox::~GUI_FailMessageBox()
@@ -43,7 +43,7 @@ GUI_FailMessageBox::~GUI_FailMessageBox()
 	delete ui; ui=nullptr;
 }
 
-void GUI_FailMessageBox::set_failed_files(const QMap<QString, Tagging::Editor::FailReason>& files)
+void GUI_FailMessageBox::setFailedFiles(const QMap<QString, Tagging::Editor::FailReason>& files)
 {
 	ui->tv_files->clear();
 
@@ -105,7 +105,7 @@ void GUI_FailMessageBox::set_failed_files(const QMap<QString, Tagging::Editor::F
 	}
 }
 
-void GUI_FailMessageBox::details_toggled(bool b)
+void GUI_FailMessageBox::detailsToggled(bool b)
 {
 	ui->tv_files->setVisible(b);
 
@@ -121,7 +121,7 @@ void GUI_FailMessageBox::details_toggled(bool b)
 	}
 }
 
-void GUI_FailMessageBox::language_changed()
+void GUI_FailMessageBox::languageChanged()
 {
 	ui->lab_warning->setText(tr("Some files could not be saved"));
 	ui->lab_header->setText(Lang::get(Lang::Warning));

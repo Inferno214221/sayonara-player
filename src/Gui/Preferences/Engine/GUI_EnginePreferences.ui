@@ -15,7 +15,7 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
-    <widget class="QRadioButton" name="rb_auto">
+    <widget class="QRadioButton" name="rbAuto">
      <property name="text">
       <string notr="true">Automatic</string>
      </property>
@@ -25,7 +25,7 @@
     </widget>
    </item>
    <item row="2" column="0">
-    <widget class="QRadioButton" name="rb_alsa">
+    <widget class="QRadioButton" name="rbAlsa">
      <property name="text">
       <string notr="true">Alsa</string>
      </property>
@@ -35,10 +35,10 @@
     </widget>
    </item>
    <item row="3" column="0">
-    <widget class="QComboBox" name="combo_alsa_devices"/>
+    <widget class="QComboBox" name="comboAlsaDevices"/>
    </item>
    <item row="1" column="0">
-    <widget class="QRadioButton" name="rb_pulse">
+    <widget class="QRadioButton" name="rbPulse">
      <property name="text">
       <string notr="true">Pulseaudio</string>
      </property>

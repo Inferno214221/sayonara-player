@@ -1,6 +1,6 @@
 /* GUI_Podcasts.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -26,7 +26,7 @@
 
 #include "Utils/Language/Language.h"
 
-GUI_Podcasts::GUI_Podcasts(QWidget *parent) :
+GUI_Podcasts::GUI_Podcasts(QWidget* parent) :
 	Gui::AbstractStationPlugin(parent)
 {}
 
@@ -38,53 +38,54 @@ GUI_Podcasts::~GUI_Podcasts()
 	}
 }
 
-QString GUI_Podcasts::get_name() const
+QString GUI_Podcasts::name() const
 {
 	return "Podcasts";
 }
 
-QString GUI_Podcasts::get_display_name() const
+QString GUI_Podcasts::displayName() const
 {
 	return Lang::get(Lang::Podcasts);
 }
 
-void GUI_Podcasts::init_ui()
+void GUI_Podcasts::initUi()
 {
-	setup_parent(this, &ui);
+	setupParent(this, &ui);
+	Gui::AbstractStationPlugin::initUi();
 }
 
-void GUI_Podcasts::retranslate_ui()
+void GUI_Podcasts::retranslate()
 {
-	Gui::AbstractStationPlugin::retranslate_ui();
+	Gui::AbstractStationPlugin::retranslate();
 	ui->retranslateUi(this);
 }
 
-QString GUI_Podcasts::get_title_fallback_name() const
+QString GUI_Podcasts::titleFallbackName() const
 {
 	return tr("Podcast");
 }
 
-QComboBox* GUI_Podcasts::combo_stream()
+QComboBox* GUI_Podcasts::comboStream()
 {
-	return ui->combo_stream;
+	return ui->comboStream;
 }
 
-QPushButton* GUI_Podcasts::btn_play()
+QPushButton* GUI_Podcasts::btnPlay()
 {
-	return ui->btn_listen;
+	return ui->btnListen;
 }
 
-Gui::MenuToolButton* GUI_Podcasts::btn_menu()
+Gui::MenuToolButton* GUI_Podcasts::btnMenu()
 {
-	return ui->btn_tool;
+	return ui->btnTool;
 }
 
-AbstractStationHandler* GUI_Podcasts::stream_handler() const
+AbstractStationHandler* GUI_Podcasts::streamHandler() const
 {
 	return new PodcastHandler();
 }
 
-GUI_ConfigureStation* GUI_Podcasts::create_config_dialog()
+GUI_ConfigureStation* GUI_Podcasts::createConfigDialog()
 {
 	return new ConfigurePodcastDialog(this);
 }

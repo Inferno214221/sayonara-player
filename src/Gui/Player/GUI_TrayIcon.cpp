@@ -1,6 +1,6 @@
 /* GUI_TrayIcon.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras  gleugner
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)  gleugner
  *
  * This file is part of sayonara player
  *
@@ -40,25 +40,25 @@ using namespace Gui;
 
 struct TrayIconContextMenu::Private
 {
-	QAction*	show_action=nullptr;
-	QAction*	close_action=nullptr;
-	QAction*	play_action=nullptr;
-	QAction*	stop_action=nullptr;
-	QAction*	mute_action=nullptr;
-	QAction*	fwd_action=nullptr;
-	QAction*	bwd_action=nullptr;
-	QAction*	cur_song_action=nullptr;
+	QAction*	showAction=nullptr;
+	QAction*	closeAction=nullptr;
+	QAction*	playAction=nullptr;
+	QAction*	stopAction=nullptr;
+	QAction*	muteAction=nullptr;
+	QAction*	fwdAction=nullptr;
+	QAction*	bwdAction=nullptr;
+	QAction*	currentSongAction=nullptr;
 
 	Private(TrayIconContextMenu* parent)
 	{
-		play_action = new QAction(parent);
-		stop_action = new QAction(parent);
-		bwd_action = new QAction(parent);
-		fwd_action = new QAction(parent);
-		mute_action = new QAction(parent);
-		show_action = new QAction(parent);
-		cur_song_action = new QAction(parent);
-		close_action = new QAction(parent);
+		playAction = new QAction(parent);
+		stopAction = new QAction(parent);
+		bwdAction = new QAction(parent);
+		fwdAction = new QAction(parent);
+		muteAction = new QAction(parent);
+		showAction = new QAction(parent);
+		currentSongAction = new QAction(parent);
+		closeAction = new QAction(parent);
 	}
 };
 
@@ -67,178 +67,171 @@ TrayIconContextMenu::TrayIconContextMenu(QWidget* parent) :
 {
 	m = Pimpl::make<Private>(this);
 
-	this->addAction(m->play_action);
-	this->addAction(m->stop_action);
+	this->addAction(m->playAction);
+	this->addAction(m->stopAction);
 	this->addSeparator();
-	this->addAction(m->fwd_action);
-	this->addAction(m->bwd_action);
+	this->addAction(m->fwdAction);
+	this->addAction(m->bwdAction);
 	this->addSeparator();
-	this->addAction(m->mute_action);
+	this->addAction(m->muteAction);
 	this->addSeparator();
-	this->addAction(m->cur_song_action);
+	this->addAction(m->currentSongAction);
 	this->addSeparator();
-	this->addAction(m->show_action);
-	this->addAction(m->close_action);
+	this->addAction(m->showAction);
+	this->addAction(m->closeAction);
 
 	auto* pm = PlayManager::instance();
-	connect(m->play_action, &QAction::triggered, pm, &PlayManager::play_pause);
-	connect(m->fwd_action, &QAction::triggered, pm, &PlayManager::next);
-	connect(m->bwd_action, &QAction::triggered, pm, &PlayManager::previous);
-	connect(m->stop_action, &QAction::triggered, pm, &PlayManager::stop);
+	connect(m->playAction, &QAction::triggered, pm, &PlayManager::playPause);
+	connect(m->fwdAction, &QAction::triggered, pm, &PlayManager::next);
+	connect(m->bwdAction, &QAction::triggered, pm, &PlayManager::previous);
+	connect(m->stopAction, &QAction::triggered, pm, &PlayManager::stop);
 
-	connect(m->mute_action, &QAction::triggered, this, &TrayIconContextMenu::mute_clicked);
-	connect(m->cur_song_action, &QAction::triggered, this, &TrayIconContextMenu::current_song_clicked);
+	connect(m->muteAction, &QAction::triggered, this, &TrayIconContextMenu::muteClicked);
+	connect(m->currentSongAction, &QAction::triggered, this, &TrayIconContextMenu::currentSongClicked);
 
-	connect(m->show_action, &QAction::triggered, this, &TrayIconContextMenu::sig_show_clicked);
-	connect(m->close_action, &QAction::triggered, this, &TrayIconContextMenu::sig_close_clicked);
+	connect(m->showAction, &QAction::triggered, this, &TrayIconContextMenu::sigShowClicked);
+	connect(m->closeAction, &QAction::triggered, this, &TrayIconContextMenu::sigCloseClicked);
 
-	connect(pm, &PlayManager::sig_mute_changed, this, &TrayIconContextMenu::mute_changed);
-	connect(pm, &PlayManager::sig_playstate_changed, this, &TrayIconContextMenu::playstate_changed);
+	connect(pm, &PlayManager::sigMuteChanged, this, &TrayIconContextMenu::muteChanged);
+	connect(pm, &PlayManager::sigPlaystateChanged, this, &TrayIconContextMenu::playstateChanged);
 
-	language_changed();
-	skin_changed();
+	languageChanged();
+	skinChanged();
 
-	mute_changed(pm->is_muted());
-	playstate_changed(pm->playstate());
+	muteChanged(pm->isMuted());
+	playstateChanged(pm->playstate());
 
-	language_changed();
-	skin_changed();
+	languageChanged();
+	skinChanged();
 }
 
 TrayIconContextMenu::~TrayIconContextMenu() = default;
 
-void TrayIconContextMenu::set_enable_fwd(bool b)
+void TrayIconContextMenu::setForwardEnabled(bool b)
 {
-	m->fwd_action->setEnabled(b);
+	m->fwdAction->setEnabled(b);
 }
 
-void TrayIconContextMenu::mute_clicked()
+void TrayIconContextMenu::muteClicked()
 {
-	auto* pm = PlayManager::instance();
-	bool mute = pm->is_muted();
-
-	pm->set_muted(!mute);
+	PlayManager::instance()->toggleMute();
 }
 
-void TrayIconContextMenu::current_song_clicked()
+void TrayIconContextMenu::currentSongClicked()
 {
-	PlayManager* pm = PlayManager::instance();
 	NotificationHandler* nh = NotificationHandler::instance();
 
-	nh->notify(pm->current_track());
+	nh->notify(PlayManager::instance()->currentTrack());
 }
 
-void TrayIconContextMenu::mute_changed(bool muted)
+void TrayIconContextMenu::muteChanged(bool muted)
 {
 	using namespace Gui;
 	if(!muted) {
-		m->mute_action->setIcon(Icons::icon(Icons::VolMute));
-		m->mute_action->setText(Lang::get(Lang::MuteOn));
+		m->muteAction->setIcon(Icons::icon(Icons::VolMute));
+		m->muteAction->setText(Lang::get(Lang::MuteOn));
 	}
 
 	else {
-		m->mute_action->setIcon(Icons::icon(Icons::Vol3));
-		m->mute_action->setText(Lang::get(Lang::MuteOff));
+		m->muteAction->setIcon(Icons::icon(Icons::Vol3));
+		m->muteAction->setText(Lang::get(Lang::MuteOff));
 	}
 }
 
-void TrayIconContextMenu::playstate_changed(PlayState state)
+void TrayIconContextMenu::playstateChanged(PlayState state)
 {
 	using namespace Gui;
 	if(state == PlayState::Playing)
 	{
-		m->play_action->setIcon(Icons::icon(Icons::Pause));
-		m->play_action->setText(Lang::get(Lang::Pause));
+		m->playAction->setIcon(Icons::icon(Icons::Pause));
+		m->playAction->setText(Lang::get(Lang::Pause));
 	}
 
 	else
 	{
-		m->play_action->setIcon(Icons::icon(Icons::Play));
-		m->play_action->setText(Lang::get(Lang::Play));
+		m->playAction->setIcon(Icons::icon(Icons::Play));
+		m->playAction->setText(Lang::get(Lang::Play));
 	}
 }
 
-
-void TrayIconContextMenu::language_changed()
+void TrayIconContextMenu::languageChanged()
 {
 	auto* pm = PlayManager::instance();
 
-	m->play_action->setText(Lang::get(Lang::PlayPause));
-	m->fwd_action->setText(Lang::get(Lang::NextTrack));
-	m->bwd_action->setText(Lang::get(Lang::PreviousTrack));
-	m->stop_action->setText(Lang::get(Lang::Stop));
+	m->playAction->setText(Lang::get(Lang::PlayPause));
+	m->fwdAction->setText(Lang::get(Lang::NextTrack));
+	m->bwdAction->setText(Lang::get(Lang::PreviousTrack));
+	m->stopAction->setText(Lang::get(Lang::Stop));
 
-	if(pm->is_muted()){
-		m->mute_action->setText(Lang::get(Lang::MuteOff));
+	if(pm->isMuted()){
+		m->muteAction->setText(Lang::get(Lang::MuteOff));
 	}
 
 	else {
-		m->mute_action->setText(Lang::get(Lang::MuteOn));
+		m->muteAction->setText(Lang::get(Lang::MuteOn));
 	}
 
-	m->close_action->setText(Lang::get(Lang::Quit));
-	m->show_action->setText(Lang::get(Lang::Show));
-	m->cur_song_action->setText(tr("Current song"));
+	m->closeAction->setText(Lang::get(Lang::Quit));
+	m->showAction->setText(Lang::get(Lang::Show));
+	m->currentSongAction->setText(tr("Current song"));
 }
 
-
-void TrayIconContextMenu::skin_changed()
+void TrayIconContextMenu::skinChanged()
 {
-	QString stylesheet = Style::current_style();
+	QString stylesheet = Style::currentStyle();
 	this->setStyleSheet(stylesheet);
 
 	using namespace Gui;
 
-	m->stop_action->setIcon(Icons::icon(Icons::Stop));
-	m->bwd_action->setIcon(Icons::icon(Icons::Previous));
-	m->fwd_action->setIcon(Icons::icon(Icons::Next));
-	m->cur_song_action->setIcon(Icons::icon(Icons::Info));
-	m->close_action->setIcon(Icons::icon(Icons::Exit));
+	m->stopAction->setIcon(Icons::icon(Icons::Stop));
+	m->bwdAction->setIcon(Icons::icon(Icons::Previous));
+	m->fwdAction->setIcon(Icons::icon(Icons::Next));
+	m->currentSongAction->setIcon(Icons::icon(Icons::Info));
+	m->closeAction->setIcon(Icons::icon(Icons::Exit));
 
 	PlayManager* pm = PlayManager::instance();
-	mute_changed(pm->is_muted());
-	playstate_changed(pm->playstate());
+	muteChanged(pm->isMuted());
+	playstateChanged(pm->playstate());
 }
-
 
 struct GUI_TrayIcon::Private
 {
-	TrayIconContextMenu*	context_menu=nullptr;
+	TrayIconContextMenu*	contextMenu=nullptr;
 	QTimer*					timer=nullptr;
 };
 
-GUI_TrayIcon::GUI_TrayIcon (QObject *parent) :
+GUI_TrayIcon::GUI_TrayIcon (QObject* parent) :
 	QSystemTrayIcon(parent),
 	NotificationInterface()
 {
 	m = Pimpl::make<Private>();
 
 	auto* nh = NotificationHandler::instance();
-	nh->register_notificator(this);
+	nh->registerNotificator(this);
 
 	auto* pm = PlayManager::instance();
-	connect(pm, &PlayManager::sig_playstate_changed, this, &GUI_TrayIcon::playstate_changed);
+	connect(pm, &PlayManager::sigPlaystateChanged, this, &GUI_TrayIcon::playstateChanged);
 
-	init_context_menu();
-	playstate_changed(pm->playstate());
+	initContextMenu();
+	playstateChanged(pm->playstate());
 
-	ListenSetting(Set::Player_ShowTrayIcon, GUI_TrayIcon::s_show_tray_icon_changed);
+	ListenSetting(Set::Player_ShowTrayIcon, GUI_TrayIcon::showTrayIconChanged);
 }
 
 GUI_TrayIcon::~GUI_TrayIcon() = default;
 
-void GUI_TrayIcon::init_context_menu()
+void GUI_TrayIcon::initContextMenu()
 {
-	if(m->context_menu){
+	if(m->contextMenu){
 		return;
 	}
 
-	m->context_menu = new TrayIconContextMenu();
+	m->contextMenu = new TrayIconContextMenu();
 
-	connect(m->context_menu, &TrayIconContextMenu::sig_close_clicked, this, &GUI_TrayIcon::sig_close_clicked);
-	connect(m->context_menu, &TrayIconContextMenu::sig_show_clicked, this, &GUI_TrayIcon::sig_show_clicked);
+	connect(m->contextMenu, &TrayIconContextMenu::sigCloseClicked, this, &GUI_TrayIcon::sigCloseClicked);
+	connect(m->contextMenu, &TrayIconContextMenu::sigShowClicked, this, &GUI_TrayIcon::sigShowClicked);
 
-	setContextMenu(m->context_menu);
+	setContextMenu(m->contextMenu);
 }
 
 
@@ -249,7 +242,7 @@ bool GUI_TrayIcon::event(QEvent* e)
 		auto* wheel_event = static_cast<QWheelEvent*>(e);
 
 		if(wheel_event){
-			emit sig_wheel_changed( wheel_event->delta() );
+			emit sigWheelChanged( wheel_event->delta() );
 		}
 	}
 
@@ -270,7 +263,7 @@ void GUI_TrayIcon::notify(const MetaData& md)
 }
 
 
-void GUI_TrayIcon::notify(const QString &title, const QString &message, const QString &image_path)
+void GUI_TrayIcon::notify(const QString& title, const QString& message, const QString& image_path)
 {
 	Q_UNUSED(image_path)
 
@@ -290,12 +283,12 @@ QString GUI_TrayIcon::name() const
 	return "Standard";
 }
 
-QString GUI_TrayIcon::display_name() const
+QString GUI_TrayIcon::displayName() const
 {
 	return Lang::get(Lang::Default);
 }
 
-void GUI_TrayIcon::playstate_changed(PlayState state)
+void GUI_TrayIcon::playstateChanged(PlayState state)
 {
 	using namespace Gui;
 
@@ -308,14 +301,14 @@ void GUI_TrayIcon::playstate_changed(PlayState state)
 	}
 }
 
-void GUI_TrayIcon::set_enable_fwd(bool b)
+void GUI_TrayIcon::setForwardEnabled(bool b)
 {
-	if(m->context_menu){
-		m->context_menu->set_enable_fwd(b);
+	if(m->contextMenu){
+		m->contextMenu->setForwardEnabled(b);
 	}
 }
 
-void GUI_TrayIcon::s_show_tray_icon_changed()
+void GUI_TrayIcon::showTrayIconChanged()
 {
 	bool show_tray_icon = GetSetting(Set::Player_ShowTrayIcon);
 	this->setVisible(show_tray_icon);

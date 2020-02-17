@@ -1,6 +1,6 @@
 /* GUI_Logger.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -17,8 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-
 
 #ifndef GUI_LOGGER_H
 #define GUI_LOGGER_H
@@ -41,13 +39,13 @@ class LogObject :
 		Q_OBJECT
 
 	signals:
-		void sig_new_log(const QDateTime& t, Log log_type, const QString& class_name, const QString& str);
+		void sigNewLog(const QDateTime& t, Log logType, const QString& className, const QString& str);
 
 	public:
 		explicit LogObject(QObject* parent=nullptr);
-		~LogObject();
+		~LogObject() override;
 
-		void add_log_line(const LogEntry& le) override;
+		void addLogLine(const LogEntry& le) override;
 };
 
 struct LogLine;
@@ -59,22 +57,22 @@ class GUI_Logger :
 	PIMPL(GUI_Logger)
 
 	public:
-		explicit GUI_Logger(QWidget *parent = 0);
-		~GUI_Logger();
+		explicit GUI_Logger(QWidget* parent=nullptr);
+		~GUI_Logger() override;
 
-		LogListener* get_log_listener();
+		LogListener* logListener();
 
 	protected:
 		void showEvent(QShowEvent* e) override;
-		void language_changed() override;
+		void languageChanged() override;
 
-		void init_ui();
-		QString calc_log_line(const LogLine& log_line);
+		void initUi();
+		QString calcLogLine(const LogLine& log_line);
 
 	private slots:
-		void current_module_changed(const QString& module);
-		void log_ready(const QDateTime& t, Log log_type, const QString& class_name, const QString& str);
-		void save_clicked();
+		void currentModuleChanged(const QString& module);
+		void logReady(const QDateTime& t, Log log_type, const QString& class_name, const QString& str);
+		void saveClicked();
 };
 
 #endif // GUI_LOGGER_H

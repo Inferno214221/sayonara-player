@@ -1,6 +1,6 @@
 /* GUI_EmptyLibrary.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -40,125 +40,141 @@ GUI_EmptyLibrary::GUI_EmptyLibrary(QWidget* parent) :
 	ui = new Ui::GUI_EmptyLibrary();
 	ui->setupUi(this);
 
-	bool ok = check_name() && check_path();
+	bool ok = checkName() && checkPath();
 
-	ui->btn_ok->setEnabled(ok);
-	ui->lab_error->setVisible(ok);
+	ui->btnOk->setEnabled(ok);
+	ui->labError->setVisible(ok);
 
-	connect(ui->le_name, &QLineEdit::textChanged, this, &GUI_EmptyLibrary::name_changed);
-	connect(ui->le_path, &QLineEdit::textChanged, this, &GUI_EmptyLibrary::path_changed);
-	connect(ui->btn_choose_dir, &QPushButton::clicked, this, &GUI_EmptyLibrary::choose_dir_clicked);
-	connect(ui->btn_ok, &QPushButton::clicked, this, &GUI_EmptyLibrary::ok_clicked);
+	connect(ui->leName, &QLineEdit::textChanged, this, &GUI_EmptyLibrary::nameChanged);
+	connect(ui->lePath, &QLineEdit::textChanged, this, &GUI_EmptyLibrary::pathChanged);
+	connect(ui->btnChooseDir, &QPushButton::clicked, this, &GUI_EmptyLibrary::chooseDirClicked);
+	connect(ui->btnOk, &QPushButton::clicked, this, &GUI_EmptyLibrary::okClicked);
 }
 
-GUI_EmptyLibrary::~GUI_EmptyLibrary() {}
+GUI_EmptyLibrary::~GUI_EmptyLibrary() = default;
 
-QFrame* GUI_EmptyLibrary::header_frame() const
+QFrame* GUI_EmptyLibrary::headerFrame() const
 {
-	return ui->header_frame;
+	return ui->headerFrame;
 }
 
-void GUI_EmptyLibrary::ok_clicked()
+void GUI_EmptyLibrary::okClicked()
 {
-	QString name = ui->le_name->text();
-	QString path = ui->le_path->text();
+	QString name = ui->leName->text();
+	QString path = ui->lePath->text();
 
-	Manager::instance()->add_library(name, path);
+	Manager::instance()->addLibrary(name, path);
 }
 
 
-void GUI_EmptyLibrary::choose_dir_clicked()
+void GUI_EmptyLibrary::chooseDirClicked()
 {
-	static QString old_dir = QDir::homePath();
+	static QString oldDir = QDir::homePath();
 
-	QString new_dir = QFileDialog::getExistingDirectory(this,
+	QString newDir = QFileDialog::getExistingDirectory(this,
 						Lang::get(Lang::Directory),
-						old_dir,
+						oldDir,
 						QFileDialog::ShowDirsOnly);
 
-	if(new_dir.isEmpty()){
+	if(newDir.isEmpty()){
 		return;
 	}
 
-	old_dir = new_dir;
-	ui->le_path->setText(new_dir);
+	oldDir = newDir;
+	ui->lePath->setText(newDir);
 }
 
-bool GUI_EmptyLibrary::check_name()
+bool GUI_EmptyLibrary::checkName()
 {
 	Manager* manager = Manager::instance();
-	QString name = ui->le_name->text();
+	QString name = ui->leName->text();
 
-	if(name.isEmpty()) {
-		ui->lab_error->setText(tr("Please choose a name for your library"));
+	if(name.isEmpty())
+	{
+		ui->labError->setText(tr("Please choose a name for your library"));
 		return false;
 	}
 
-	QList<Library::Info> infos = manager->all_libraries();
+	const QList<Library::Info> infos = manager->allLibraries();
 	bool contains = Util::Algorithm::contains(infos, [&name](const Library::Info& info){
 		return (name.toLower() == info.name().toLower());
 	});
 
 	if(contains)
 	{
-		ui->lab_error->setText(tr("Please choose another name for your library"));
+		ui->labError->setText(tr("Please choose another name for your library"));
 		return false;
 	}
 
 	return true;
 }
 
-void GUI_EmptyLibrary::name_changed(const QString& str)
+void GUI_EmptyLibrary::nameChanged(const QString& str)
 {
 	Q_UNUSED(str)
 
-	bool ok = check_path() && check_name();
+	bool ok = checkPath() && checkName();
 
-	ui->btn_ok->setEnabled(ok);
-	ui->lab_error->setVisible(!ok);
+	ui->btnOk->setEnabled(ok);
+	ui->labError->setVisible(!ok);
 }
 
-bool GUI_EmptyLibrary::check_path()
+bool GUI_EmptyLibrary::checkPath()
 {
 	Manager* manager = Manager::instance();
-	QString path = ui->le_path->text();
+	QString path = ui->lePath->text();
 
 	if(!Util::File::exists(path))
 	{
-		ui->lab_error->setText(tr("The file path is invalid"));
+		ui->labError->setText(tr("The file path is invalid"));
 		return false;
 	}
 
-	if(manager->library_info_by_path(path).valid())
+	Library::Info info = manager->libraryInfoByPath(path);
+	if(Util::File::isSamePath(info.path(), path))
 	{
-		ui->lab_error->setText(tr("A library with the same file path already exists"));
+		ui->labError->setText(tr("A library with the same file path already exists"));
+	}
+
+	else if(Util::File::isSubdir(path, info.path()))
+	{
+		ui->labError->setText
+		(
+			tr("A library which contains this file path already exists") + ":<br>" +
+			"<b>" + info.name() + "</b> (" + info.path() + ")"
+		);
+	}
+
+	if(manager->libraryInfoByPath(path).valid())
+	{
+
 		return false;
 	}
 
 	return true;
 }
 
-void GUI_EmptyLibrary::path_changed(const QString& str)
+void GUI_EmptyLibrary::pathChanged(const QString& str)
 {
 	Q_UNUSED(str)
 
 	Manager* manager = Manager::instance();
-	QString path = ui->le_path->text();
-	QString name = manager->request_library_name(path);
-	ui->le_name->setText(name);
+	QString path = ui->lePath->text();
+	QString name = manager->requestLibraryName(path);
+	ui->leName->setText(name);
 
-	bool ok = check_path() && check_name();
+	bool ok = checkPath() && checkName();
 
-	ui->btn_ok->setEnabled(ok);
-	ui->lab_error->setVisible(!ok);
+	ui->btnOk->setEnabled(ok);
+	ui->labError->setVisible(!ok);
 }
 
 
-void Library::GUI_EmptyLibrary::language_changed()
+void Library::GUI_EmptyLibrary::languageChanged()
 {
 	ui->retranslateUi(this);
-	ui->lab_path->setText(Lang::get(Lang::Directory));
-	ui->lab_name->setText(Lang::get(Lang::Name));
-	ui->btn_ok->setText(Lang::get(Lang::OK) + "!");
-	ui->lab_title->setText(Lang::get(Lang::CreateNewLibrary));
+	ui->labPath->setText(Lang::get(Lang::Directory));
+	ui->labName->setText(Lang::get(Lang::Name));
+	ui->btnOk->setText(Lang::get(Lang::OK) + "!");
+	ui->labTitle->setText(Lang::get(Lang::CreateNewLibrary));
 }

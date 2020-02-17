@@ -1,6 +1,6 @@
 /* DiscPopupMenu.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -37,7 +37,7 @@ namespace Library
 		Q_OBJECT
 
 		signals:
-			void sig_disc_pressed(int);
+			void sigDiscPressed(int);
 
 		public:
 			DiscAction(QWidget* parent, Disc d);
@@ -53,7 +53,7 @@ namespace Library
 		Q_OBJECT
 
 		signals:
-			void sig_disc_pressed(Disc disc);
+			void sigDiscPressed(Disc disc);
 
 		public:
 			DiscPopupMenu(QWidget* parent, QList<Disc> discs);

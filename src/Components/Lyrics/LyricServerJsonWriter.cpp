@@ -1,6 +1,6 @@
 /* LyricServerJsonWriter.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -32,18 +32,18 @@
 
 using Lyrics::Server;
 
-QJsonObject Lyrics::ServerJsonWriter::to_json(Lyrics::Server* server)
+QJsonObject Lyrics::ServerJsonWriter::toJson(Lyrics::Server* server)
 {
 	QJsonObject object;
 
 	object.insert("name", QJsonValue(server->name()));
 	object.insert("address", QJsonValue(server->address()));
-	object.insert("direct_url_template", QJsonValue(server->direct_url_template()));
-	object.insert("is_start_tag_included", QJsonValue(server->is_start_tag_included()));
-	object.insert("is_end_tag_included", QJsonValue(server->is_end_tag_included()));
-	object.insert("is_numeric", QJsonValue(server->is_numeric()));
-	object.insert("is_lowercase", QJsonValue(server->is_lowercase()));
-	object.insert("error_string", QJsonValue(server->error_string()));
+	object.insert("direct_url_template", QJsonValue(server->directUrlTemplate()));
+	object.insert("is_start_tag_included", QJsonValue(server->isStartTagIncluded()));
+	object.insert("is_end_tag_included", QJsonValue(server->isEndTagIncluded()));
+	object.insert("is_numeric", QJsonValue(server->isNumeric()));
+	object.insert("is_lowercase", QJsonValue(server->isLowercase()));
+	object.insert("error_string", QJsonValue(server->errorString()));
 
 	QJsonArray arr_replacements;
 	auto replacements = server->replacements();
@@ -59,7 +59,7 @@ QJsonObject Lyrics::ServerJsonWriter::to_json(Lyrics::Server* server)
 	object.insert("replacements", QJsonValue(arr_replacements));
 
 	QJsonArray arr_start_end_tags;
-	auto start_end_tags = server->start_end_tag();
+	auto start_end_tags = server->startEndTag();
 	for(const Server::StartEndTag& start_end_tag : start_end_tags)
 	{
 		QJsonObject start_end_tag_object;
@@ -71,15 +71,15 @@ QJsonObject Lyrics::ServerJsonWriter::to_json(Lyrics::Server* server)
 
 	object.insert("start_end_tags", QJsonValue(arr_start_end_tags));
 
-	object.insert("search_result_regex", QJsonValue(server->search_result_regex()));
-	object.insert("search_result_url_template", QJsonValue(server->search_result_url_template()));
-	object.insert("search_url_template", QJsonValue(server->search_url_template()));
+	object.insert("search_result_regex", QJsonValue(server->searchResultRegex()));
+	object.insert("search_result_url_template", QJsonValue(server->searchResultUrlTemplate()));
+	object.insert("search_url_template", QJsonValue(server->searchUrlTemplate()));
 
 	return object;
 }
 
 
-Lyrics::Server* Lyrics::ServerJsonReader::from_json(const QJsonObject& json)
+Lyrics::Server* Lyrics::ServerJsonReader::fromJson(const QJsonObject& json)
 {
 	Server* server = new Server();
 
@@ -90,12 +90,12 @@ Lyrics::Server* Lyrics::ServerJsonReader::from_json(const QJsonObject& json)
 
 		if(key == "name")
 		{
-			server->set_name(val.toString());
+			server->setName(val.toString());
 		}
 
 		else if(key == "address")
 		{
-			server->set_address(val.toString());
+			server->setAddress(val.toString());
 		}
 
 		else if(key == "replacements")
@@ -126,12 +126,12 @@ Lyrics::Server* Lyrics::ServerJsonReader::from_json(const QJsonObject& json)
 				}
 			}
 
-			server->set_replacements(replacements);
+			server->setReplacements(replacements);
 		}
 
 		else if(key == "direct_url_template")
 		{
-			server->set_direct_url_template(val.toString());
+			server->setDirectUrlTemplate(val.toString());
 		}
 
 		else if(key == "start_end_tags")
@@ -161,47 +161,47 @@ Lyrics::Server* Lyrics::ServerJsonReader::from_json(const QJsonObject& json)
 				}
 			}
 
-			server->set_start_end_tag(start_end_tags);
+			server->setStartEndTag(start_end_tags);
 		}
 
 		else if(key == "is_start_tag_included")
 		{
-			server->set_is_start_tag_included(val.toBool());
+			server->setIsStartTagIncluded(val.toBool());
 		}
 
 		else if(key == "is_end_tag_included")
 		{
-			server->set_is_end_tag_included(val.toBool());
+			server->setIsEndTagIncluded(val.toBool());
 		}
 
 		else if(key == "is_numeric")
 		{
-			server->set_is_numeric(val.toBool());
+			server->setIsNumeric(val.toBool());
 		}
 
 		else if(key == "is_lowercase")
 		{
-			server->set_is_lowercase(val.toBool());
+			server->setIsLowercase(val.toBool());
 		}
 
 		else if(key == "error_string")
 		{
-			server->set_error_string(val.toString());
+			server->setErrorString(val.toString());
 		}
 
 		else if(key == "search_result_regex")
 		{
-			server->set_search_result_regex(val.toString());
+			server->setSearchResultRegex(val.toString());
 		}
 
 		else if(key == "search_result_url_template")
 		{
-			server->set_search_result_url_template(val.toString());
+			server->setSearchResultUrlTemplate(val.toString());
 		}
 
 		else if(key == "search_url_template")
 		{
-			server->set_search_url_template(val.toString());
+			server->setSearchUrlTemplate(val.toString());
 		}
 	}
 
@@ -215,7 +215,7 @@ Lyrics::Server* Lyrics::ServerJsonReader::from_json(const QJsonObject& json)
 }
 
 
-QList<Lyrics::Server*> Lyrics::ServerJsonReader::parse_json_file(const QString& filename)
+QList<Lyrics::Server*> Lyrics::ServerJsonReader::parseJsonFile(const QString& filename)
 {
 	QList<Server*> ret;
 
@@ -230,7 +230,7 @@ QList<Lyrics::Server*> Lyrics::ServerJsonReader::parse_json_file(const QString& 
 		QJsonArray arr = doc.array();
 		for(auto it=arr.begin(); it != arr.end(); it++)
 		{
-			Server* server = from_json( (*it).toObject() );
+			Server* server = fromJson( (*it).toObject() );
 			if(server){
 				ret << server;
 			}
@@ -239,7 +239,7 @@ QList<Lyrics::Server*> Lyrics::ServerJsonReader::parse_json_file(const QString& 
 
 	else if(doc.isObject())
 	{
-		Server* server = from_json( doc.object() );
+		Server* server = fromJson( doc.object() );
 		if(server){
 			ret << server;
 		}

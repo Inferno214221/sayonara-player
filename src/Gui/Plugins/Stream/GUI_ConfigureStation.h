@@ -1,6 +1,6 @@
 /* GUI_ConfigureStation.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -45,16 +45,19 @@ public:
 	GUI_ConfigureStation(QWidget* parent=nullptr);
 	virtual ~GUI_ConfigureStation();
 
-	virtual StationPtr configured_station() = 0;
-	virtual QList<QWidget*> configuration_widgets(StationPtr station) = 0;
-	virtual QString label_text(int row) const=0;
+	virtual void init_ui();
 
-	virtual void init_ui(StationPtr station);
+	void setError(const QString& message);
+	void setMode(const QString& stream_name, Mode mode);
+	Mode mode() const;
 
-	void set_error_message(const QString& message);
+	virtual StationPtr configuredStation() = 0;
+	virtual QList<QWidget*> configurationWidgets() = 0;
+	virtual void configureWidgets(StationPtr station) = 0;
+	virtual QString labelText(int row) const = 0;
 
-	void set_mode(const QString& type, Mode mode);
-	bool was_accepted() const;
+protected:
+	void languageChanged();
 };
 
 #endif // GUI_ConfigureStation_H

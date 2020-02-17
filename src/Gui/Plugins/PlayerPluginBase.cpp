@@ -1,6 +1,6 @@
 /* PlayerPlugin.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -31,65 +31,57 @@ using PlayerPlugin::Base;
 
 struct Base::Private
 {
-	QAction*	pp_action=nullptr;
-	bool		is_initialized;
+	QAction*	pluginAction=nullptr;
+	bool		isInitialized;
 
 	Private() :
-		pp_action(new QAction(nullptr)),
-		is_initialized(false)
+		pluginAction(new QAction(nullptr)),
+		isInitialized(false)
 	{
-		pp_action->setCheckable(true);
+		pluginAction->setCheckable(true);
 	}
 
 	~Private()
 	{
-		delete pp_action; pp_action = nullptr;
+		delete pluginAction; pluginAction = nullptr;
 	}
 };
 
-Base::Base(QWidget *parent) :
+Base::Base(QWidget* parent) :
 	Widget(parent)
 {
 	m = Pimpl::make<Private>();
 
 	setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
-	connect(m->pp_action, &QAction::triggered, this, &Base::action_triggered);
+	connect(m->pluginAction, &QAction::triggered, this, &Base::actionTriggered);
 
 	hide();
 }
 
 Base::~Base() = default;
 
-void Base::skin_changed()
-{
-	Widget::skin_changed();
-}
-
-bool Base::is_title_shown() const
+bool Base::hasTitle() const
 {
 	return true;
 }
 
-bool Base::has_loading_bar() const
+bool Base::hasLoadingBar() const
 {
 	return false;
 }
 
-QAction* Base::get_action() const
+QAction* Base::pluginAction() const
 {
-	m->pp_action->setText( this->get_display_name() );
-	return m->pp_action;
+	m->pluginAction->setText( this->displayName() );
+	return m->pluginAction;
 }
 
-void Base::finalize_initialization()
+void Base::finalizeInitialization()
 {
 	QLayout* widget_layout = layout();
-	if(widget_layout){
-		int bottom = 3;
-		if(has_loading_bar()){
-			bottom = 10;
-		}
-
+	if(widget_layout)
+	{
+		int bottom = hasLoadingBar() ? 10 : 3;
 		widget_layout->setContentsMargins(3, 3, 3, bottom);
 	}
 
@@ -99,57 +91,62 @@ void Base::finalize_initialization()
 		sch->shortcut(ShortcutIdentifier::ClosePlugin).connect(this, parentWidget(), SLOT(close()), Qt::WidgetWithChildrenShortcut);
 	}
 
-	ListenSetting(Set::Player_Style, Base::skin_changed);
+	ListenSetting(Set::Player_Style, Base::skinChanged);
 
-	set_ui_initialized();
-	retranslate_ui();
+	setUiInitialized();
+	retranslate();
 }
 
-void Base::assign_ui_vars() {}
+void Base::assignUiVariables() {}
 
-void Base::language_changed()
+void Base::skinChanged()
 {
-	if(is_ui_initialized()){
-		retranslate_ui();
+	Gui::Widget::skinChanged();
+}
+
+void Base::languageChanged()
+{
+	if(isUiInitialized()){
+		retranslate();
 	}
 }
 
-bool Base::is_ui_initialized() const
+bool Base::isUiInitialized() const
 {
-	return m->is_initialized;
+	return m->isInitialized;
 }
 
-void Base::set_ui_initialized()
+void Base::setUiInitialized()
 {
-	m->is_initialized = true;
+	m->isInitialized = true;
 }
 
 void Base::showEvent(QShowEvent* e)
 {
-	if(!is_ui_initialized()){
-		init_ui();
+	if(!isUiInitialized()){
+		initUi();
 	}
 
 	Widget::showEvent(e);
 
-	m->pp_action->setChecked(true);
+	m->pluginAction->setChecked(true);
 
-	emit sig_opened();
+	emit sigOpened();
 }
 
 void Base::closeEvent(QCloseEvent* e)
 {
 	Widget::closeEvent(e);
-	action_triggered(false);
+	actionTriggered(false);
 
-	emit sig_closed();
+	emit sigClosed();
 }
 
-void Base::action_triggered(bool b)
+void Base::actionTriggered(bool b)
 {
-	m->pp_action->setChecked(b);
+	m->pluginAction->setChecked(b);
 
-	emit sig_action_triggered(b);
+	emit sigActionTriggered(b);
 
-	skin_changed();
+	skinChanged();
 }

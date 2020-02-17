@@ -1,6 +1,6 @@
 /* DatabaseLibrary.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -41,8 +41,8 @@ namespace Algorithm=Util::Algorithm;
 
 struct DB::Library::Private {};
 
-DB::Library::Library(const QString& connection_name, DbId db_id) :
-	Module(connection_name, db_id)
+DB::Library::Library(const QString& connection_name, DbId databaseId) :
+	Module(connection_name, databaseId)
 {}
 
 DB::Library::~Library() = default;
@@ -57,7 +57,7 @@ struct Order
 
 using InfoOrder=Order<::Library::Info>;
 
-QList<::Library::Info> DB::Library::get_all_libraries()
+QList<::Library::Info> DB::Library::getAllLibraries()
 {
 	QString query = "SELECT libraryID, libraryName, libraryPath, libraryIndex FROM Libraries;";
 
@@ -71,7 +71,7 @@ QList<::Library::Info> DB::Library::get_all_libraries()
 
 	if(!success)
 	{
-		q.show_error("Cannot fetch all libraries");
+		q.showError("Cannot fetch all libraries");
 	}
 
 	while(q.next())
@@ -110,32 +110,32 @@ QList<::Library::Info> DB::Library::get_all_libraries()
 	return infos;
 }
 
-bool DB::Library::insert_library(LibraryId id, const QString& library_name, const QString& library_path, int index)
+bool DB::Library::insertLibrary(LibraryId id, const QString& library_name, const QString& library_path, int index)
 {
 	if(library_name.isEmpty() || library_path.isEmpty())
 	{
-		sp_log(Log::Warning, this) << "Cannot insert library: Invalid parameters";
+		spLog(Log::Warning, this) << "Cannot insert library: Invalid parameters";
 		return false;
 	}
 
 	QString query = "INSERT INTO Libraries "
 					"(libraryID, libraryName, libraryPath, libraryIndex) "
 					"VALUES "
-					"(:library_id, :library_name, :library_path, :library_index);";
+					"(:libraryId, :library_name, :library_path, :library_index);";
 
 	Query q(this);
 
 	q.prepare(query);
-	q.bindValue(":library_id",		id);
-	q.bindValue(":library_name",	Util::cvt_not_null(library_name));
-	q.bindValue(":library_path",	Util::cvt_not_null(library_path));
+	q.bindValue(":libraryId",		id);
+	q.bindValue(":library_name",	Util::convertNotNull(library_name));
+	q.bindValue(":library_path",	Util::convertNotNull(library_path));
 	q.bindValue(":library_index",	index);
 
 	bool success = q.exec();
 
 	if(!success)
 	{
-		q.show_error
+		q.showError
 		(
 			QString("Cannot insert library (name: %1, path: %2)")
 					.arg(library_name, library_path)
@@ -145,11 +145,11 @@ bool DB::Library::insert_library(LibraryId id, const QString& library_name, cons
 	return success;
 }
 
-bool DB::Library::edit_library(LibraryId library_id, const QString& new_name, const QString& new_path)
+bool DB::Library::editLibrary(LibraryId libraryId, const QString& new_name, const QString& new_path)
 {
 	if(new_name.isEmpty() || new_path.isEmpty())
 	{
-		sp_log(Log::Warning, this) << "Cannot update library: Invalid parameters";
+		spLog(Log::Warning, this) << "Cannot update library: Invalid parameters";
 		return false;
 	}
 
@@ -158,20 +158,20 @@ bool DB::Library::edit_library(LibraryId library_id, const QString& new_name, co
 					"libraryName=:library_name, "
 					"libraryPath=:library_path "
 					"WHERE "
-					"libraryID=:library_id;";
+					"libraryID=:libraryId;";
 
 	Query q(this);
 
 	q.prepare(query);
-	q.bindValue(":library_name",	Util::cvt_not_null(new_name));
-	q.bindValue(":library_path",	Util::cvt_not_null(new_path));
-	q.bindValue(":library_id",		library_id);
+	q.bindValue(":library_name",	Util::convertNotNull(new_name));
+	q.bindValue(":library_path",	Util::convertNotNull(new_path));
+	q.bindValue(":libraryId",		libraryId);
 
 	bool success = q.exec();
 
 	if(!success)
 	{
-		q.show_error(
+		q.showError(
 			QString("Cannot update library (name: %1, path: %2)")
 					.arg(new_name, new_path)
 		);
@@ -180,32 +180,32 @@ bool DB::Library::edit_library(LibraryId library_id, const QString& new_name, co
 	return success;
 }
 
-bool DB::Library::remove_library(LibraryId library_id)
+bool DB::Library::removeLibrary(LibraryId libraryId)
 {
-	QString query = "DELETE FROM Libraries WHERE libraryID=:library_id;";
+	QString query = "DELETE FROM Libraries WHERE libraryID=:libraryId;";
 
 	Query q(this);
 
 	q.prepare(query);
-	q.bindValue(":library_id", library_id);
+	q.bindValue(":libraryId", libraryId);
 
 	bool success = q.exec();
 
 	if(!success)
 	{
-		q.show_error(
-			QString("Cannot remove library %1").arg(library_id)
+		q.showError(
+			QString("Cannot remove library %1").arg(libraryId)
 		);
 	}
 
 	return success;
 }
 
-bool DB::Library::reorder_libraries(const QMap<LibraryId, int>& order)
+bool DB::Library::reorderLibraries(const QMap<LibraryId, int>& order)
 {
 	if(order.isEmpty())
 	{
-		sp_log(Log::Warning, this) << "Cannot reorder library: Invalid parameters";
+		spLog(Log::Warning, this) << "Cannot reorder library: Invalid parameters";
 		return false;
 	}
 
@@ -216,18 +216,18 @@ bool DB::Library::reorder_libraries(const QMap<LibraryId, int>& order)
 						"SET "
 						"libraryIndex=:index "
 						"WHERE "
-						"libraryID=:library_id;";
+						"libraryID=:libraryId;";
 
 		Query q(this);
 		q.prepare(query);
 		q.bindValue(":index",		it.value());
-		q.bindValue(":library_id",	it.key());
+		q.bindValue(":libraryId",	it.key());
 
 		success = (success && q.exec());
 
 		if(!success)
 		{
-			q.show_error("Cannot reorder libraries");
+			q.showError("Cannot reorder libraries");
 
 		}
 	}
@@ -235,17 +235,17 @@ bool DB::Library::reorder_libraries(const QMap<LibraryId, int>& order)
 	return success;
 }
 
-void DB::Library::add_album_artists()
+void DB::Library::addAlbumArtists()
 {
 	Query q(this);
 	QString	querytext = "UPDATE tracks SET albumArtistID = artistID WHERE albumArtistID = -1;";
 	q.prepare(querytext);
 	if(!q.exec()){
-		q.show_error("Cannot add album artists");
+		q.showError("Cannot add album artists");
 	}
 }
 
-void DB::Library::drop_indexes()
+void DB::Library::dropIndexes()
 {
 	QStringList indexes;
 	indexes << "album_search";
@@ -259,15 +259,15 @@ void DB::Library::drop_indexes()
 		QString text = "DROP INDEX IF EXISTS " + idx + ";";
 		q.prepare(text);
 		if(!q.exec()){
-			q.show_error("Cannot drop index " + idx);
+			q.showError("Cannot drop index " + idx);
 		}
 	}
 }
 
 using IndexDescription=std::tuple<QString, QString, QString>;
-void DB::Library::create_indexes()
+void DB::Library::createIndexes()
 {
-	drop_indexes();
+	dropIndexes();
 
 	QList<IndexDescription> indexes;
 
@@ -285,7 +285,7 @@ void DB::Library::create_indexes()
 		QString text = "CREATE INDEX " + name + " ON " + table + " (cissearch, " + column + ");";
 		q.prepare(text);
 		if(!q.exec()){
-			q.show_error("Cannot create index " + name);
+			q.showError("Cannot create index " + name);
 		}
 	}
 }

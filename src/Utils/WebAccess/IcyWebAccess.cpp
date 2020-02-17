@@ -1,6 +1,6 @@
 /* IcyWebAccess.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -64,7 +64,7 @@ struct IcyWebAccess::Private
 		}
 };
 
-IcyWebAccess::IcyWebAccess(QObject *parent) :
+IcyWebAccess::IcyWebAccess(QObject* parent) :
 	QObject(parent)
 {
 	m = Pimpl::make<Private>();
@@ -84,9 +84,9 @@ void IcyWebAccess::check(const QUrl& url)
 
 	connect(m->tcp, &QTcpSocket::connected, this, &IcyWebAccess::connected);
 	connect(m->tcp, &QTcpSocket::disconnected, this, &IcyWebAccess::disconnected);
-	connect(m->tcp, &QTcpSocket::readyRead, this, &IcyWebAccess::data_available);
+	connect(m->tcp, &QTcpSocket::readyRead, this, &IcyWebAccess::dataAvailable);
 
-	connect(m->tcp, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(error_received(QAbstractSocket::SocketError)));
+	connect(m->tcp, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(errorReceived(QAbstractSocket::SocketError)));
 
 	m->tcp->connectToHost(m->hostname,
 						   m->port,
@@ -94,7 +94,7 @@ void IcyWebAccess::check(const QUrl& url)
 						   QAbstractSocket::AnyIPProtocol
 	);
 
-	sp_log(Log::Develop, this) << "Start ICY Request";
+	spLog(Log::Develop, this) << "Start ICY Request";
 }
 
 void IcyWebAccess::stop()
@@ -125,24 +125,24 @@ void IcyWebAccess::connected()
 				QString::number(m->port).toLocal8Bit() + "\r\n\r\n"
 	);
 
-	sp_log(Log::Develop, this) << data;
+	spLog(Log::Develop, this) << data;
 
 	int64_t bytes_written = m->tcp->write(data.data(), data.size());
 	if(bytes_written != data.size())
 	{
-		sp_log(Log::Warning, this) << "Could only write " << bytes_written << " bytes";
+		spLog(Log::Warning, this) << "Could only write " << bytes_written << " bytes";
 		m->status = IcyWebAccess::Status::WriteError;
-		emit sig_finished();
+		emit sigFinished();
 		m->close_tcp();
 	}
 }
 
 void IcyWebAccess::disconnected()
 {
-	sp_log(Log::Develop, this) << "Disconnected";
+	spLog(Log::Develop, this) << "Disconnected";
 	if(m->status == IcyWebAccess::Status::NotExecuted) {
 		m->status = IcyWebAccess::Status::OtherError;
-		emit sig_finished();
+		emit sigFinished();
 	}
 
 	m->close_tcp();
@@ -150,19 +150,19 @@ void IcyWebAccess::disconnected()
 	sender()->deleteLater();
 }
 
-void IcyWebAccess::error_received(QAbstractSocket::SocketError socket_state)
+void IcyWebAccess::errorReceived(QAbstractSocket::SocketError socket_state)
 {
 	Q_UNUSED(socket_state)
 
-	sp_log(Log::Warning, this) << "Icy Webaccess Error: " << m->tcp->errorString();
+	spLog(Log::Warning, this) << "Icy Webaccess Error: " << m->tcp->errorString();
 
 	m->status = IcyWebAccess::Status::OtherError;
 	m->close_tcp();
 
-	emit sig_finished();
+	emit sigFinished();
 }
 
-void IcyWebAccess::data_available()
+void IcyWebAccess::dataAvailable()
 {
 	QByteArray arr = m->tcp->read(20);
 	if(arr.contains("ICY 200 OK")){
@@ -170,11 +170,11 @@ void IcyWebAccess::data_available()
 	}
 
 	else {
-		sp_log(Log::Warning, this) << "Icy Answer Error: " << arr;
+		spLog(Log::Warning, this) << "Icy Answer Error: " << arr;
 		m->status = IcyWebAccess::Status::WrongAnswer;
 	}
 
 	m->close_tcp();
 
-	emit sig_finished();
+	emit sigFinished();
 }

@@ -1,6 +1,6 @@
 /* PlaylistParser.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -31,9 +31,9 @@
 #include <QDir>
 #include <QFile>
 
-MetaDataList PlaylistParser::parse_playlist(const QString& local_filename)
+MetaDataList PlaylistParser::parsePlaylist(const QString& local_filename)
 {
-	if(Util::File::is_www(local_filename)){
+	if(Util::File::isWWW(local_filename)){
 		return MetaDataList();
 	}
 
@@ -78,7 +78,7 @@ MetaDataList PlaylistParser::parse_playlist(const QString& local_filename)
 
 	for(const MetaData& md : v_md_tmp)
 	{
-		if( Util::File::check_file(md.filepath()) ){
+		if( Util::File::checkFile(md.filepath()) ){
 			result << md;
 		}
 	}
@@ -87,13 +87,13 @@ MetaDataList PlaylistParser::parse_playlist(const QString& local_filename)
 		delete playlist_parser; playlist_parser = nullptr;
 	}
 
-	result.remove_duplicates();
+	result.removeDuplicates();
 
 	return result;
 }
 
 
-void PlaylistParser::save_m3u_playlist(const QString& filename, const MetaDataList& v_md, bool relative)
+void PlaylistParser::saveM3UPlaylist(const QString& filename, const MetaDataList& v_md, bool relative)
 {
 	QString f = filename;
 	if(!f.endsWith("m3u", Qt::CaseInsensitive)) {
@@ -124,7 +124,7 @@ void PlaylistParser::save_m3u_playlist(const QString& filename, const MetaDataLi
 			str = md.filepath();
 		}
 
-		QString ext_data = "#EXTINF: " + QString::number(md.duration_ms() / 1000)  + ", " + md.artist() + " - " + md.title() + "\n";
+		QString ext_data = "#EXTINF: " + QString::number(md.durationMs() / 1000)  + ", " + md.artist() + " - " + md.title() + "\n";
 		lines += file.write(ext_data.toLocal8Bit());
 		lines += file.write(str.toLocal8Bit());
 		lines += file.write( QByteArray("\n") );

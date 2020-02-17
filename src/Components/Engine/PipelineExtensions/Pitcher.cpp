@@ -1,6 +1,6 @@
 /* SpeedHandler.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -30,7 +30,7 @@ struct Pitcher::Private
 
 	Private()
 	{
-		Engine::Utils::create_element(&pitch, "pitch");
+		Engine::Utils::createElement(&pitch, "pitch");
 	}
 };
 
@@ -41,7 +41,7 @@ Pitcher::Pitcher()
 
 Pitcher::~Pitcher() {}
 
-void Pitcher::set_speed(float speed, double pitch, bool preserve_pitch)
+void Pitcher::setSpeed(float speed, double pitch, bool preservePitch)
 {
 	if(!GetSetting(Set::Engine_SpeedActive)) {
 		return;
@@ -51,9 +51,9 @@ void Pitcher::set_speed(float speed, double pitch, bool preserve_pitch)
 		return;
 	}
 
-	if(preserve_pitch)
+	if(preservePitch)
 	{
-		Engine::Utils::set_values(m->pitch,
+		Engine::Utils::setValues(m->pitch,
 					 "tempo", speed,
 					 "rate", 1.0,
 					 "pitch", pitch);
@@ -61,7 +61,7 @@ void Pitcher::set_speed(float speed, double pitch, bool preserve_pitch)
 
 	else
 	{
-		Engine::Utils::set_values(m->pitch,
+		Engine::Utils::setValues(m->pitch,
 					 "tempo", 1.0,
 					 "rate", speed,
 					 "pitch", pitch);

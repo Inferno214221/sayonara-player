@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -82,7 +82,7 @@ namespace Util
 		 * @param node the parent node
 		 * @return pointer to inserted node
 		 */
-		Tree* add_child(Tree* node)
+		Tree* addChild(Tree* node)
 		{
 			node->parent = this;
 
@@ -92,10 +92,10 @@ namespace Util
 			return node;
 		}
 
-		Tree* add_child(const T& data)
+		Tree* addChild(const T& data)
 		{
 			Tree* node = new Tree(data);
-			return add_child(node);
+			return addChild(node);
 		}
 
 
@@ -104,7 +104,7 @@ namespace Util
 		 * @param deleted_node node to remove
 		 * @return pointer to deleted_node
 		 */
-		Tree* remove_child(Tree* deleted_node)
+		Tree* removeChild(Tree* deleted_node)
 		{
 			deleted_node->parent = nullptr;
 
@@ -127,8 +127,8 @@ namespace Util
 		 */
 		void move(Tree* new_parent)
 		{
-			parent->remove_child(data);
-			new_parent->add_child(this);
+			parent->removeChild(data);
+			new_parent->addChild(this);
 		}
 
 		/**

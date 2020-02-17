@@ -1,6 +1,6 @@
 /* Proxy.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -29,10 +29,10 @@
 
 void Proxy::init()
 {
-	Proxy::set_proxy();
+	Proxy::setProxy();
 }
 
-void Proxy::set_proxy()
+void Proxy::setProxy()
 {
 	QNetworkProxy proxy;
 
@@ -42,23 +42,23 @@ void Proxy::set_proxy()
 		proxy.setHostName(Proxy::hostname());
 		proxy.setPort(Proxy::port());
 
-		if(has_username()){
+		if(hasUsername()){
 			proxy.setUser(username());
 			proxy.setPassword(password());
 		}
 
-		QString url = full_url();
+		QString url = fullUrl();
 
-		Util::set_environment("http_proxy", url.toLocal8Bit().data());
-		Util::set_environment("https_proxy", url.toLocal8Bit().data());
-		Util::set_environment("HTTP_PROXY", url.toLocal8Bit().data());
-		Util::set_environment("HTTPS_PROXY", url.toLocal8Bit().data());
+		Util::setEnvironment("http_proxy", url.toLocal8Bit().data());
+		Util::setEnvironment("https_proxy", url.toLocal8Bit().data());
+		Util::setEnvironment("HTTP_PROXY", url.toLocal8Bit().data());
+		Util::setEnvironment("HTTPS_PROXY", url.toLocal8Bit().data());
 	}
 
 	QNetworkProxy::setApplicationProxy(proxy);
 }
 
-void Proxy::unset_proxy()
+void Proxy::unsetProxy()
 {
 	QNetworkProxy proxy;
 	proxy.setType(QNetworkProxy::NoProxy);
@@ -91,12 +91,12 @@ bool Proxy::active()
 	return GetSetting(Set::Proxy_Active);
 }
 
-bool Proxy::has_username()
+bool Proxy::hasUsername()
 {
 	return ((username() + password()).size() > 0);
 }
 
-QString Proxy::full_url()
+QString Proxy::fullUrl()
 {
 	if(!active()){
 		return QString();
@@ -110,7 +110,7 @@ QString Proxy::full_url()
 	return host_name + ":" + QString::number(port());
 }
 
-QString Proxy::env_hostname()
+QString Proxy::envHostname()
 {
 	QList<QNetworkProxy> proxies = QNetworkProxyFactory::systemProxyForQuery();
 	for(const QNetworkProxy& proxy : proxies)
@@ -125,7 +125,7 @@ QString Proxy::env_hostname()
 }
 
 
-int Proxy::env_port()
+int Proxy::envPort()
 {
 	QList<QNetworkProxy> proxies = QNetworkProxyFactory::systemProxyForQuery();
 	for(const QNetworkProxy& proxy : proxies)

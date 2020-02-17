@@ -1,6 +1,6 @@
 /* LoginThread.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -29,15 +29,15 @@ namespace LastFM
 {
     struct LoginStuff
     {
-        QString token;
-        QString session_key;
-        bool logged_in;
-        bool subscriber;
-        QString error;
+        QString		token;
+        QString		sessionKey;
+        bool		loggedIn;
+        bool		subscriber;
+        QString		error;
 
         LoginStuff()
         {
-            logged_in = false;
+            loggedIn = false;
             subscriber = false;
         }
     };
@@ -50,12 +50,12 @@ namespace LastFM
         PIMPL(LoginThread)
 
     signals:
-        void sig_token_received(const QString& token);
-        void sig_error(const QString& error);
-        void sig_logged_in(bool success);
+        void sigTokenReceived(const QString& token);
+        void sigError(const QString& error);
+        void sigLoggedIn(bool success);
 
     public:
-        explicit LoginThread(QObject *parent=nullptr);
+        explicit LoginThread(QObject* parent=nullptr);
         ~LoginThread();
 
         void login(const QString& username, const QString& password);
@@ -63,8 +63,8 @@ namespace LastFM
         LoginStuff getLoginStuff();
 
     private slots:
-        void wa_response(const QByteArray& data);
-        void wa_error(const QString& response);
+        void webaccessResponseReceived(const QByteArray& data);
+        void webaccessErrorReceived(const QString& response);
     };
 }
 

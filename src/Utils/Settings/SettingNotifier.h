@@ -1,6 +1,6 @@
 /* SettingNotifier.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -31,13 +31,13 @@ class AbstrSettingNotifier : public QObject
 	Q_OBJECT
 
 signals:
-	void sig_value_changed();
+	void sigValueChanged();
 
 public:
 	template<typename T>
-	void add_listener(T* c, void (T::*fn)())
+	void addListener(T* c, void (T::*fn)())
 	{
-		connect(this, &AbstrSettingNotifier::sig_value_changed, c, fn);
+		connect(this, &AbstrSettingNotifier::sigValueChanged, c, fn);
 	}
 
 	void emit_value_changed();
@@ -64,15 +64,15 @@ public:
 		return &inst;
 	}
 
-	void val_changed()
+	void valueChanged()
 	{
 		m->emit_value_changed();
 	}
 
 	template<typename T>
-	void add_listener(T* c, void (T::*fn)())
+	void addListener(T* c, void (T::*fn)())
 	{
-		m->add_listener(c, fn);
+		m->addListener(c, fn);
 	}
 };
 
@@ -84,7 +84,7 @@ namespace Set
 	void
 	listen(T* t, void (T::*fn)(), bool run=true)
 	{
-		SettingNotifier<KeyClassInstance>::instance()->add_listener(t, fn);
+		SettingNotifier<KeyClassInstance>::instance()->addListener(t, fn);
 
 		if(run)
 		{
@@ -96,7 +96,7 @@ namespace Set
 	template<typename KeyClassInstance>
 	void shout()
 	{
-		SettingNotifier<KeyClassInstance>::instance()->val_changed();
+		SettingNotifier<KeyClassInstance>::instance()->valueChanged();
 	}
 }
 

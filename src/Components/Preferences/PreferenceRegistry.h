@@ -1,6 +1,6 @@
 /* PreferenceRegistry.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -29,7 +29,8 @@
 class PreferenceUi
 {
 	public:
-		virtual void show_preference(const QString& name)=0;
+		virtual ~PreferenceUi() = default;
+		virtual void showPreference(const QString& name)=0;
 };
 
 class PreferenceRegistry
@@ -38,9 +39,9 @@ class PreferenceRegistry
 	SINGLETON(PreferenceRegistry)
 
 	public:
-		void register_preference(const QString& name);
-		void set_user_interface(PreferenceUi* ui);
-		void show_preference(const QString& name);
+		void registerPreference(const QString& name);
+		void setUserInterface(PreferenceUi* ui);
+		void showPreference(const QString& name);
 };
 
 #endif // PREFERENCEREGISTRY_H

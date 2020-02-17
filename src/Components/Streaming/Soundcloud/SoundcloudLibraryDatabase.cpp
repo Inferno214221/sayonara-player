@@ -13,13 +13,13 @@
 
 using ::DB::Query;
 
-SC::LibraryDatabase::LibraryDatabase(const QString& connection_name, DbId db_id, LibraryId library_id) :
-	::DB::LibraryDatabase(connection_name, db_id, library_id)
+SC::LibraryDatabase::LibraryDatabase(const QString& connection_name, DbId databaseId, LibraryId libraryId) :
+	::DB::LibraryDatabase(connection_name, databaseId, libraryId)
 {}
 
 SC::LibraryDatabase::~LibraryDatabase() = default;
 
-QString SC::LibraryDatabase::fetch_query_artists(bool also_empty) const
+QString SC::LibraryDatabase::fetchQueryArtists(bool also_empty) const
 {
 	QString sql =
 			"SELECT "
@@ -45,7 +45,7 @@ QString SC::LibraryDatabase::fetch_query_artists(bool also_empty) const
 	return sql;
 }
 
-QString SC::LibraryDatabase::fetch_query_albums(bool also_empty) const
+QString SC::LibraryDatabase::fetchQueryAlbums(bool also_empty) const
 {
 	QString sql =
 			"SELECT "
@@ -73,7 +73,7 @@ QString SC::LibraryDatabase::fetch_query_albums(bool also_empty) const
 	return sql;
 }
 
-QString SC::LibraryDatabase::fetch_query_tracks() const
+QString SC::LibraryDatabase::fetchQueryTracks() const
 {
 	return	"SELECT "
 			"tracks.trackID AS trackID, "
@@ -98,12 +98,12 @@ QString SC::LibraryDatabase::fetch_query_tracks() const
 			"INNER JOIN artists ON tracks.artistID = artists.artistID ";
 }
 
-bool SC::LibraryDatabase::db_fetch_tracks(Query& q, MetaDataList& result) const
+bool SC::LibraryDatabase::dbFetchTracks(Query& q, MetaDataList& result) const
 {
 	result.clear();
 
 	if (!q.exec()) {
-		q.show_error("Cannot fetch tracks from database");
+		q.showError("Cannot fetch tracks from database");
 		return false;
 	}
 
@@ -115,24 +115,24 @@ bool SC::LibraryDatabase::db_fetch_tracks(Query& q, MetaDataList& result) const
 	{
 		MetaData data;
 
-		data.set_id(			q.value(0).toInt());
-		data.set_title(			q.value(1).toString());
-		data.set_duration_ms(	q.value(2).toInt());
-		data.set_year(			q.value(3).value<Year>());
-		data.set_bitrate(		q.value(4).value<Bitrate>());
-		data.set_filepath(		q.value(5).toString());
-		data.set_track_number(	q.value(6).value<TrackNum>());
-		data.set_album_id(		q.value(7).toInt());
-		data.set_artist_id(		q.value(8).toInt());
-		data.set_album(			q.value(9).toString().trimmed());
-		data.set_artist(		q.value(10).toString().trimmed());
-		data.set_genres(		q.value(11).toString().split(","));
-		data.set_filesize(		q.value(12).value<Filesize>());
-		data.set_discnumber(	q.value(13).value<Disc>());
-		data.add_custom_field("purchase_url", Lang::get(Lang::PurchaseUrl), q.value(14).toString());
-		data.set_cover_download_urls({q.value(15).toString()});
-		data.set_rating(		q.value(16).value<Rating>());
-		data.set_db_id(module()->db_id());
+		data.setId(			q.value(0).toInt());
+		data.setTitle(			q.value(1).toString());
+		data.setDurationMs(	q.value(2).toInt());
+		data.setYear(			q.value(3).value<Year>());
+		data.setBitrate(		q.value(4).value<Bitrate>());
+		data.setFilepath(		q.value(5).toString());
+		data.setTrackNumber(	q.value(6).value<TrackNum>());
+		data.setAlbumId(		q.value(7).toInt());
+		data.setArtistId(		q.value(8).toInt());
+		data.setAlbum(			q.value(9).toString().trimmed());
+		data.setArtist(		q.value(10).toString().trimmed());
+		data.setGenres(		q.value(11).toString().split(","));
+		data.setFilesize(		q.value(12).value<Filesize>());
+		data.setDiscnumber(	q.value(13).value<Disc>());
+		data.addCustomField("purchase_url", Lang::get(Lang::PurchaseUrl), q.value(14).toString());
+		data.setCoverDownloadUrls({q.value(15).toString()});
+		data.setRating(		q.value(16).value<Rating>());
+		data.setDatabaseId(module()->databaseId());
 
 		result << data;
 	}
@@ -140,12 +140,12 @@ bool SC::LibraryDatabase::db_fetch_tracks(Query& q, MetaDataList& result) const
 	return true;
 }
 
-bool SC::LibraryDatabase::db_fetch_albums(Query& q, AlbumList& result) const
+bool SC::LibraryDatabase::dbFetchAlbums(Query& q, AlbumList& result) const
 {
 	result.clear();
 
 	if (!q.exec()) {
-		q.show_error("Could not get all albums from database");
+		q.showError("Could not get all albums from database");
 		return false;
 	}
 
@@ -153,18 +153,18 @@ bool SC::LibraryDatabase::db_fetch_albums(Query& q, AlbumList& result) const
 	{
 		Album album;
 
-		album.set_id(q.value(0).toInt());
-		album.set_name(q.value(1).toString().trimmed());
-		album.set_duration_sec(q.value(2).value<Seconds>());
-		album.set_rating(q.value(3).value<Rating>());
-		album.add_custom_field("permalink_url", "Permalink Url", q.value(4).toString());
-		album.add_custom_field("purchase_url", "Purchase Url", q.value(5).toString());
-		album.set_cover_download_urls({q.value(6).toString()});
-		album.set_songcount(q.value(7).value<TrackNum>());
-		album.set_year(q.value(8).value<Year>());
+		album.setId(q.value(0).toInt());
+		album.setName(q.value(1).toString().trimmed());
+		album.setDurationSec(q.value(2).value<Seconds>());
+		album.setRating(q.value(3).value<Rating>());
+		album.addCustomField("permalink_url", "Permalink Url", q.value(4).toString());
+		album.addCustomField("purchase_url", "Purchase Url", q.value(5).toString());
+		album.setCoverDownloadUrls({q.value(6).toString()});
+		album.setSongcount(q.value(7).value<TrackNum>());
+		album.setYear(q.value(8).value<Year>());
 
 		QStringList lst_artists =	q.value(9).toString().split(',');
-		album.set_artists(lst_artists);
+		album.setArtists(lst_artists);
 
 		QStringList lst_discnumbers = q.value(10).toString().split(',');
 		auto discnumbers = album.discnumbers();
@@ -184,8 +184,8 @@ bool SC::LibraryDatabase::db_fetch_albums(Query& q, AlbumList& result) const
 			discnumbers << 1;
 		}
 
-		album.set_discnumbers(discnumbers);
-		album.set_db_id(module()->db_id());
+		album.setDiscnumbers(discnumbers);
+		album.setDatabaseId(module()->databaseId());
 
 		result << album;
 	};
@@ -198,7 +198,7 @@ bool SC::LibraryDatabase::db_fetch_artists(Query& q, ArtistList& result) const
 	result.clear();
 
 	if (!q.exec()) {
-		q.show_error("Could not get all artists from database");
+		q.showError("Could not get all artists from database");
 		return false;
 	}
 
@@ -210,18 +210,18 @@ bool SC::LibraryDatabase::db_fetch_artists(Query& q, ArtistList& result) const
 	{
 		Artist artist;
 
-		artist.set_id(			q.value(0).toInt());
-		artist.set_name(		q.value(1).toString().trimmed());
+		artist.setId(			q.value(0).toInt());
+		artist.setName(		q.value(1).toString().trimmed());
 
-		artist.add_custom_field("permalink_url", "Permalink Url", q.value(2).toString());
-		artist.add_custom_field("description", "Description", q.value(3).toString());
-		artist.add_custom_field("followers_following", "Followers/Following", q.value(4).toString());
+		artist.addCustomField("permalink_url", "Permalink Url", q.value(2).toString());
+		artist.addCustomField("description", "Description", q.value(3).toString());
+		artist.addCustomField("followers_following", "Followers/Following", q.value(4).toString());
 
-		artist.set_cover_download_urls({q.value(5).toString()});
-		artist.set_songcount(			q.value(7).value<uint16_t>());
+		artist.setCoverDownloadUrls({q.value(5).toString()});
+		artist.setSongcount(			q.value(7).value<uint16_t>());
 		QStringList list =				q.value(8).toString().split(',');
-		artist.set_albumcount(			uint16_t(list.size()));
-		artist.set_db_id(module()->db_id());
+		artist.setAlbumcount(			uint16_t(list.size()));
+		artist.setDatabaseId(module()->databaseId());
 
 		result << artist;
 	}
@@ -232,8 +232,8 @@ bool SC::LibraryDatabase::db_fetch_artists(Query& q, ArtistList& result) const
 ArtistId SC::LibraryDatabase::updateArtist(const Artist& artist)
 {
 	QString cover_url;
-	if(!artist.cover_download_urls().isEmpty()) {
-		cover_url = artist.cover_download_urls().first();
+	if(!artist.coverDownloadUrls().isEmpty()) {
+		cover_url = artist.coverDownloadUrls().first();
 	}
 
 	Query q = this->update
@@ -242,16 +242,16 @@ ArtistId SC::LibraryDatabase::updateArtist(const Artist& artist)
 		{
 			{"name",				artist.name()},
 			{"cissearch",			artist.name().toLower()},
-			{"permalink_url",		artist.get_custom_field("permalink_url")},
-			{"description",			artist.get_custom_field("description")},
-			{"followers_following", artist.get_custom_field("followers_following")},
+			{"permalink_url",		artist.customField("permalink_url")},
+			{"description",			artist.customField("description")},
+			{"followers_following", artist.customField("followers_following")},
 			{"cover_url",			cover_url}
 		},
 		{"sc_id", artist.id()},
 		QString("Soundcloud: Cannot update artist %1").arg(artist.name())
 	);
 
-	if(q.has_error()) {
+	if(q.hasError()) {
 		return -1;
 	}
 
@@ -275,8 +275,8 @@ ArtistId SC::LibraryDatabase::insertArtistIntoDatabase (const Artist& artist)
 	}
 
 	QString cover_url;
-	if(!artist.cover_download_urls().isEmpty()) {
-		cover_url = artist.cover_download_urls().first();
+	if(!artist.coverDownloadUrls().isEmpty()) {
+		cover_url = artist.coverDownloadUrls().first();
 	}
 
 	Query q = this->insert
@@ -286,15 +286,15 @@ ArtistId SC::LibraryDatabase::insertArtistIntoDatabase (const Artist& artist)
 			{"artistID",			artist.id()},
 			{"name",				artist.name()},
 			{"cissearch",			artist.name().toLower()},
-			{"permalink_url",		artist.get_custom_field("permalink_url")},
-			{"description",			artist.get_custom_field("description")},
-			{"followers_following", artist.get_custom_field("followers_following")},
+			{"permalink_url",		artist.customField("permalink_url")},
+			{"description",			artist.customField("description")},
+			{"followers_following", artist.customField("followers_following")},
 			{"cover_url",			cover_url}
 		},
 		QString("Soundcloud: Cannot insert artist %1").arg(artist.name())
 	);
 
-	if (q.has_error()) {
+	if (q.hasError()) {
 		return -1;
 	}
 
@@ -305,8 +305,8 @@ ArtistId SC::LibraryDatabase::insertArtistIntoDatabase (const Artist& artist)
 AlbumId SC::LibraryDatabase::updateAlbum(const Album& album)
 {
 	QString cover_url;
-	if(!album.cover_download_urls().isEmpty()) {
-		cover_url = album.cover_download_urls().first();
+	if(!album.coverDownloadUrls().isEmpty()) {
+		cover_url = album.coverDownloadUrls().first();
 	}
 
 	Query q = this->update
@@ -315,15 +315,15 @@ AlbumId SC::LibraryDatabase::updateAlbum(const Album& album)
 		{
 			{"name",			album.name()},
 			{"cissearch",		album.name().toLower()},
-			{"permalink_url",	album.get_custom_field("permalink_url")},
-			{"purchase_url",	album.get_custom_field("purchase_url")},
+			{"permalink_url",	album.customField("permalink_url")},
+			{"purchase_url",	album.customField("purchase_url")},
 			{"cover_url",		cover_url}
 		},
 		{"sc_id", album.id()},
 		QString("Soundcloud: Cannot update album %1").arg(album.name())
 	);
 
-	if(q.has_error()) {
+	if(q.hasError()) {
 		return -1;
 	}
 
@@ -340,8 +340,8 @@ AlbumId SC::LibraryDatabase::insertAlbumIntoDatabase (const QString& album)
 AlbumId SC::LibraryDatabase::insertAlbumIntoDatabase (const Album& album)
 {
 	QString cover_url;
-	if(!album.cover_download_urls().isEmpty()) {
-		cover_url = album.cover_download_urls().first();
+	if(!album.coverDownloadUrls().isEmpty()) {
+		cover_url = album.coverDownloadUrls().first();
 	}
 
 	Query q = this->insert
@@ -351,14 +351,14 @@ AlbumId SC::LibraryDatabase::insertAlbumIntoDatabase (const Album& album)
 			{"albumID",			album.id()},
 			{"name",			album.name()},
 			{"cissearch",		album.name().toLower()},
-			{"permalink_url",	album.get_custom_field("permalink_url")},
-			{"purchase_url",	album.get_custom_field("purchase_url")},
+			{"permalink_url",	album.customField("permalink_url")},
+			{"purchase_url",	album.customField("purchase_url")},
 			{"cover_url",		cover_url}
 		},
 		QString("Soundcloud: Cannot insert album %1").arg(album.name())
 	);
 
-	if(q.has_error()) {
+	if(q.hasError()) {
 		return -1;
 	}
 
@@ -368,8 +368,8 @@ AlbumId SC::LibraryDatabase::insertAlbumIntoDatabase (const Album& album)
 bool SC::LibraryDatabase::updateTrack(const MetaData& md)
 {
 	QString cover_url;
-	if(!md.cover_download_urls().isEmpty()) {
-		cover_url = md.cover_download_urls().first();
+	if(!md.coverDownloadUrls().isEmpty()) {
+		cover_url = md.coverDownloadUrls().first();
 	}
 
 	Query q = this->update
@@ -378,33 +378,33 @@ bool SC::LibraryDatabase::updateTrack(const MetaData& md)
 		{
 			{"title",			md.title()},
 			{"filename",		md.filepath()},
-			{"albumID",			md.album_id()},
-			{"artistID",		md.artist_id()},
-			{"length",			QVariant::fromValue(md.duration_ms())},
+			{"albumID",			md.albumId()},
+			{"artistID",		md.artistId()},
+			{"length",			QVariant::fromValue(md.durationMs())},
 			{"year",			md.year()},
-			{"track",			md.track_number()},
+			{"track",			md.trackNumber()},
 			{"bitrate",			md.bitrate()},
-			{"genre",			md.genres_to_list().join(",")},
+			{"genre",			md.genresToList().join(",")},
 			{"filesize",		QVariant::fromValue(md.filesize())},
 			{"discnumber",		md.discnumber()},
 			{"cissearch",		md.title().toLower()},
-			{"purchase_url",	md.get_custom_field("purchase_url")},
+			{"purchase_url",	md.customField("purchase_url")},
 			{"cover_url",		cover_url},
 		},
 		{"trackID", md.id()},
 		QString("Soundcloud: Cannot update track %1").arg(md.filepath())
 	);
 
-	return (q.has_error() == false);
+	return (q.hasError() == false);
 }
 
-bool SC::LibraryDatabase::insertTrackIntoDatabase(const MetaData& md, int artist_id, int album_id, int album_artist_id)
+bool SC::LibraryDatabase::insertTrackIntoDatabase(const MetaData& md, int artistId, int albumId, int album_artistId)
 {
-	Q_UNUSED(album_artist_id)
-	return insertTrackIntoDatabase(md, artist_id, album_id);
+	Q_UNUSED(album_artistId)
+	return insertTrackIntoDatabase(md, artistId, albumId);
 }
 
-bool SC::LibraryDatabase::insertTrackIntoDatabase(const MetaData& md, int artist_id, int album_id)
+bool SC::LibraryDatabase::insertTrackIntoDatabase(const MetaData& md, int artistId, int albumId)
 {
 	int new_id = getTrackById(md.id()).id();
 	if(new_id > 0) {
@@ -412,8 +412,8 @@ bool SC::LibraryDatabase::insertTrackIntoDatabase(const MetaData& md, int artist
 	}
 
 	QString cover_url;
-	if(!md.cover_download_urls().isEmpty()) {
-		cover_url = md.cover_download_urls().first();
+	if(!md.coverDownloadUrls().isEmpty()) {
+		cover_url = md.coverDownloadUrls().first();
 	}
 
 	Query q = this->insert
@@ -423,26 +423,26 @@ bool SC::LibraryDatabase::insertTrackIntoDatabase(const MetaData& md, int artist
 			{"trackID",			md.id()},
 			{"title",			md.title()},
 			{"filename",		md.filepath()},
-			{"albumID",			album_id},
-			{"artistID",		artist_id},
-			{"length",			QVariant::fromValue(md.duration_ms())},
+			{"albumID",			albumId},
+			{"artistID",		artistId},
+			{"length",			QVariant::fromValue(md.durationMs())},
 			{"year",			md.year()},
-			{"track",			md.track_number()},
+			{"track",			md.trackNumber()},
 			{"bitrate",			md.bitrate()},
-			{"genre",			md.genres_to_list().join(",")},
+			{"genre",			md.genresToList().join(",")},
 			{"filesize",		QVariant::fromValue(md.filesize())},
 			{"discnumber",		md.discnumber()},
 			{"cissearch",		md.title().toLower()},
-			{"purchase_url",	md.get_custom_field("purchase_url")},
+			{"purchase_url",	md.customField("purchase_url")},
 			{"cover_url",		cover_url},
 		},
 		QString("Soundcloud: Cannot insert track %1").arg(md.filepath())
 	);
 
-	return (q.has_error() == false);
+	return (q.hasError() == false);
 }
 
-bool SC::LibraryDatabase::store_metadata(const MetaDataList& v_md)
+bool SC::LibraryDatabase::storeMetadata(const MetaDataList& v_md)
 {
 	if(v_md.isEmpty()) {
 		return true;
@@ -452,28 +452,28 @@ bool SC::LibraryDatabase::store_metadata(const MetaDataList& v_md)
 
 	for(const MetaData& md : v_md)
 	{
-		sp_log(Log::Debug, this) << "Looking for " << md.artist() << " and " << md.album();
-		if(md.album_id() == -1 || md.artist_id() == -1)
+		spLog(Log::Debug, this) << "Looking for " << md.artist() << " and " << md.album();
+		if(md.albumId() == -1 || md.artistId() == -1)
 		{
-			sp_log(Log::Warning, this) << "AlbumID = " << md.album_id() << " - ArtistID = " << md.artist_id();
+			spLog(Log::Warning, this) << "AlbumID = " << md.albumId() << " - ArtistID = " << md.artistId();
 			continue;
 		}
 
-		insertTrackIntoDatabase (md, md.artist_id(), md.album_id());
+		insertTrackIntoDatabase (md, md.artistId(), md.albumId());
 	}
 
 	return module()->db().commit();
 }
 
-bool SC::LibraryDatabase::search_information(SC::SearchInformationList& search_information)
+bool SC::LibraryDatabase::searchInformation(SC::SearchInformationList& search_information)
 {
-	Query q = this->run_query
+	Query q = this->runQuery
 	(
 		"SELECT artistId, albumId, trackId, allCissearch FROM track_search_view;",
 		"Soundcloud: Cannot get search Information"
 	);
 
-	if(q.has_error()) {
+	if(q.hasError()) {
 		return false;
 	}
 

@@ -1,6 +1,6 @@
 /* StreamDataSender.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -39,18 +39,18 @@ using HttpHeaderPair=QPair<QString, QString>;
 struct StreamDataSender::Private
 {
 	QTcpSocket*		socket=nullptr;
-	qint64			bytes_written;
+	qint64			bytesWritten;
 
 	QByteArray		header;
-	QByteArray		icy_header;
-	QByteArray		reject_header;
+	QByteArray		icyHeader;
+	QByteArray		rejectHeader;
 
-	QString			track_path;
+	QString			trackPath;
 
-	Private(QTcpSocket* out_socket)
+	Private(QTcpSocket* outSocket)
 	{
-		bytes_written = 0;
-		socket = out_socket;
+		bytesWritten = 0;
+		socket = outSocket;
 
 		header = QByteArray
 		(
@@ -67,7 +67,7 @@ struct StreamDataSender::Private
 			"connection:keep-alive\r\n"
 		);
 
-		icy_header = QByteArray
+		icyHeader = QByteArray
 		(
 			"ICY 200 Ok\r\n"
 			"icy-notice1:Bliblablupp\r\n"
@@ -83,16 +83,16 @@ struct StreamDataSender::Private
 			"connection:keep-alive\r\n"
 		);
 
-		reject_header = QByteArray("HTTP/1.1 501 Not Implemented\r\nConnection: close\r\n");
+		rejectHeader = QByteArray("HTTP/1.1 501 Not Implemented\r\nConnection: close\r\n");
 
 		header.append("\r\n");
-		icy_header.append("\r\n");
-		reject_header.append("\r\n");
+		icyHeader.append("\r\n");
+		rejectHeader.append("\r\n");
 
-		track_path = Util::random_string(16) + ".mp3";
+		trackPath = Util::randomString(16) + ".mp3";
 	}
 
-	QByteArray create_http_header(const QList<HttpHeaderPair>& lst)
+	QByteArray createHttpHeader(const QList<HttpHeaderPair>& lst)
 	{
 		QByteArray arr;
 		arr.push_back("HTTP/1.1 200 OK\r\n");
@@ -110,7 +110,7 @@ struct StreamDataSender::Private
 		return arr;
 	}
 
-	qint64 send_answer(const QString& content_type, const QByteArray& content, const QString& connection_state)
+	qint64 sendAnswer(const QString& content_type, const QByteArray& content, const QString& connection_state)
 	{
 		QList<HttpHeaderPair> header_info
 		{
@@ -119,7 +119,7 @@ struct StreamDataSender::Private
 			HttpHeaderPair("Connection", connection_state)
 		};
 
-		QByteArray data = create_http_header(header_info) + content;
+		QByteArray data = createHttpHeader(header_info) + content;
 
 		return socket->write(data);
 	}
@@ -139,7 +139,7 @@ StreamDataSender::StreamDataSender(QTcpSocket* socket)
 
 StreamDataSender::~StreamDataSender() = default;
 
-bool StreamDataSender::send_trash()
+bool StreamDataSender::sendTrash()
 {
 	char single_byte = 0x00;
 	int64_t n_bytes;
@@ -152,9 +152,9 @@ bool StreamDataSender::send_trash()
 	return (n_bytes > 0);
 }
 
-bool StreamDataSender::send_data(const QByteArray& data)
+bool StreamDataSender::sendData(const QByteArray& data)
 {
-	m->bytes_written = 0;
+	m->bytesWritten = 0;
 
 	auto bytes = m->socket->write(data);
 
@@ -164,7 +164,7 @@ bool StreamDataSender::send_data(const QByteArray& data)
 // [.............................................................] = buffer
 // [  bytes_before        | icy_data | bytes_to_write ][remainder]
 
-bool StreamDataSender::send_icy_data(const QByteArray& data, const QString& stream_title)
+bool StreamDataSender::sendIcyData(const QByteArray& data, const QString& stream_title)
 {
 	qint64 bytes_written = 0;
 	const int IcySize = 8192;
@@ -174,22 +174,22 @@ bool StreamDataSender::send_icy_data(const QByteArray& data, const QString& stre
 		return true;
 	}
 
-	if(data.size() < (IcySize - m->bytes_written))
+	if(data.size() < (IcySize - m->bytesWritten))
 	{
 		bytes_written = m->socket->write(data);
 		if(bytes_written < 0)
 		{
-			sp_log(Log::Debug, this) << "Something is wrong";
+			spLog(Log::Debug, this) << "Something is wrong";
 			return false;
 		}
 
-		m->bytes_written += bytes_written;
+		m->bytesWritten += bytes_written;
 		return true;
 	}
 
 	else
 	{
-		qint64 bytes_before = IcySize - m->bytes_written;
+		qint64 bytes_before = IcySize - m->bytesWritten;
 
 		QByteArray data_before = data.left(int(bytes_before));
 		QByteArray data_after = data.mid(int(bytes_before));
@@ -199,15 +199,15 @@ bool StreamDataSender::send_icy_data(const QByteArray& data, const QString& stre
 			bytes_written = m->socket->write(data_before);
 		}
 
-		send_icy_metadata(stream_title);
+		sendIcyMetadata(stream_title);
 
 		// this happens if size > 8192
 		if(data_after.size() > IcySize)
 		{
 			bytes_written = m->socket->write(data_after, IcySize);
-			m->bytes_written = 0;
+			m->bytesWritten = 0;
 
-			return send_icy_data(data_after.mid(IcySize), stream_title);
+			return sendIcyData(data_after.mid(IcySize), stream_title);
 		}
 
 		// there's a some data
@@ -222,14 +222,14 @@ bool StreamDataSender::send_icy_data(const QByteArray& data, const QString& stre
 			bytes_written = 0;
 		}
 
-		m->bytes_written = std::max<qint64>(0, bytes_written) % IcySize;
+		m->bytesWritten = std::max<qint64>(0, bytes_written) % IcySize;
 
 		return (bytes_written >= 0);
 	}
 }
 
 
-bool StreamDataSender::send_icy_metadata(const QString& stream_title)
+bool StreamDataSender::sendIcyMetadata(const QString& stream_title)
 {
 	int64_t n_bytes=0;
 	QByteArray metadata;
@@ -254,17 +254,17 @@ bool StreamDataSender::send_icy_metadata(const QString& stream_title)
 }
 
 
-bool StreamDataSender::send_header(bool reject, bool icy)
+bool StreamDataSender::sendHeader(bool reject, bool icy)
 {
 	int64_t n_bytes=0;
 
 	if(reject){
-		n_bytes = m->socket->write( m->reject_header );
+		n_bytes = m->socket->write( m->rejectHeader );
 	}
 
 	else if(icy)
 	{
-		n_bytes = m->socket->write( m->icy_header );
+		n_bytes = m->socket->write( m->icyHeader );
 	}
 
 	else
@@ -284,77 +284,77 @@ bool StreamDataSender::send_header(bool reject, bool icy)
 }
 
 
-bool StreamDataSender::send_html5(const QString& stream_title)
+bool StreamDataSender::sendHtml5(const QString& stream_title)
 {
 	QString html_string;
 	bool success = false;
 
-	if(Util::File::exists(Util::sayonara_path("broadcast.html"))) {
-		success = Util::File::read_file_into_str(Util::sayonara_path("broadcast.html"), html_string);
+	if(Util::File::exists(Util::sayonaraPath("broadcast.html"))) {
+		success = Util::File::readFileIntoString(Util::sayonaraPath("broadcast.html"), html_string);
 	}
 
 	if(!success) {
-		success = Util::File::read_file_into_str(":/Broadcasting/broadcast.html", html_string);
+		success = Util::File::readFileIntoString(":/Broadcasting/broadcast.html", html_string);
 	}
 
 	if(!success) {
 		return false;
 	}
 
-	html_string.replace("$AUDIOSOURCE", m->track_path.toLocal8Bit());
+	html_string.replace("$AUDIOSOURCE", m->trackPath.toLocal8Bit());
 	html_string.replace("$STREAMTITLE", stream_title.toLocal8Bit());
 
-	return (m->send_answer("text", html_string.toLocal8Bit(), "keep-alive") > 0);
+	return (m->sendAnswer("text", html_string.toLocal8Bit(), "keep-alive") > 0);
 }
 
 
-bool StreamDataSender::send_bg()
+bool StreamDataSender::sendBackground()
 {
 	QByteArray html;
 
-	bool success = Util::File::read_file_into_byte_arr(":/Broadcasting/background.png", html);
+	bool success = Util::File::readFileIntoByteArray(":/Broadcasting/background.png", html);
 	if(!success) {
 		return false;
 	}
 
-	return (m->send_answer("image/png", html, "close") > 0);
+	return (m->sendAnswer("image/png", html, "close") > 0);
 }
 
 
-bool StreamDataSender::send_metadata(const QString& stream_title)
+bool StreamDataSender::sendMetadata(const QString& stream_title)
 {
 	QByteArray html = stream_title.toLocal8Bit();
 
-	return (m->send_answer("text/plain", html, "close") > 0);
+	return (m->sendAnswer("text/plain", html, "close") > 0);
 }
 
 
-bool StreamDataSender::send_playlist(const QString& host, int port)
+bool StreamDataSender::sendPlaylist(const QString& host, int port)
 {
 	QByteArray playlist =
 		"#EXTM3U\n\n"
-		"#EXTINF:-1, Lucio Carreras - Sayonara Player Radio\n" +
+		"#EXTINF:-1, Michael Lugmair (Lucio Carreras) - Sayonara Player Radio\n" +
 		QString("http://%1:%2/%3\n\n")
 			.arg(host)
 			.arg(port)
-			.arg(m->track_path)
+			.arg(m->trackPath)
 			.toLocal8Bit();
 
-	auto n_bytes = m->send_answer("audio/x-mpegurl", playlist, "close");
+	auto n_bytes = m->sendAnswer("audio/x-mpegurl", playlist, "close");
 	return (n_bytes > 0);
 }
 
 
-bool StreamDataSender::send_favicon()
+bool StreamDataSender::sendFavicon()
 {
 	QByteArray arr;
 
-	bool success = Util::File::read_file_into_byte_arr(":/Broadcasting/favicon.ico", arr);
+	bool success = Util::File::readFileIntoByteArray(":/Broadcasting/favicon.ico", arr);
 	if(!success) {
 		return false;
 	}
 
-	return (m->send_answer("image/x-icon", arr, "close") > 0);
+	return (m->sendAnswer("image/x-icon", arr, "close") > 0);
 }
 
 void StreamDataSender::flush()

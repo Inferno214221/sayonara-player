@@ -31,9 +31,9 @@ HistoryTableView::HistoryTableView(Session::Timecode timecode, QWidget* parent) 
 	this->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
 	this->setSelectionBehavior(QAbstractItemView::SelectionBehavior::SelectRows);
 
-	skin_changed();
+	skinChanged();
 
-	connect(m->model, &HistoryEntryModel::sig_rows_added, this, &HistoryTableView::rowcount_changed);
+	connect(m->model, &HistoryEntryModel::sigRowsAdded, this, &HistoryTableView::rowcount_changed);
 }
 
 int HistoryTableView::rows() const
@@ -57,14 +57,14 @@ void HistoryTableView::resizeEvent(QResizeEvent* e)
 
 void HistoryTableView::rowcount_changed()
 {
-	skin_changed();
+	skinChanged();
 
-	emit sig_rowcount_changed();
+	emit sigRowcountChanged();
 }
 
-void HistoryTableView::language_changed() {}
+void HistoryTableView::languageChanged() {}
 
-void HistoryTableView::skin_changed()
+void HistoryTableView::skinChanged()
 {
 	int all_height = (m->model->rowCount() * (this->fontMetrics().height() + 2)) +
 		horizontalHeader()->height() * 2 +
@@ -73,7 +73,7 @@ void HistoryTableView::skin_changed()
 	this->setMinimumHeight(std::min(all_height, 400));
 }
 
-QMimeData* HistoryTableView::dragable_mimedata() const
+QMimeData* HistoryTableView::dragableMimedata() const
 {
 	return m->model->mimeData(this->selectionModel()->selectedIndexes());
 }

@@ -9,23 +9,23 @@ namespace Util
 	{
 		PIMPL(Filepath)
 
-	public:
-		Filepath(const QString& path);
-		Filepath(const Filepath& other);		
-		~Filepath();
+		public:
+			Filepath(const QString& path);
+			Filepath(const Filepath& other);
+			~Filepath();
 
-		Filepath& operator=(const QString& path);
-		Filepath& operator=(const Filepath& path);
+			Filepath& operator=(const QString& path);
+			Filepath& operator=(const Filepath& path);
 
-		bool operator==(const QString& path) const;
-		bool operator==(const Filepath& path) const;
+			bool operator==(const QString& path) const;
+			bool operator==(const Filepath& path) const;
 
-		QString path() const;
-		QString filesystem_path() const;
+			QString path() const;
+			QString fileystemPath() const;
 
-		bool is_resource() const;
-		bool is_filesystem_path() const;
-		bool is_url() const;
+			bool isResource() const;
+			bool isFilesystemPath() const;
+			bool isUrl() const;
 	};
 }
 

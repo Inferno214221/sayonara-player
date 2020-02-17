@@ -1,6 +1,6 @@
 /* PlayManager.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -44,84 +44,84 @@ signals:
 	 * @brief emitted when a streamed track has finished
 	 * @param old_md the last played track
 	 */
-	void sig_www_track_finished(const MetaData& old_md);
+	void sigStreamFinished(const MetaData& old_md);
 
 	/**
 	 * @brief emitted, when PlayState was changed
 	 */
-	void sig_playstate_changed(PlayState);
+	void sigPlaystateChanged(PlayState);
 
 	/**
 	 * @brief next track was triggered
 	 */
-	void sig_next();
+	void sigNext();
 
 	/**
 	 * @brief This signal is sent when the playstate changed
 	 * from stopped to play
 	 */
-	void sig_wake_up();
+	void sigWakeup();
 
 	/**
 	 * @brief previous track was triggered
 	 */
-	void sig_previous();
+	void sigPrevious();
 
 	/**
 	 * @brief stop was triggered
 	 */
-	void sig_stopped();
+	void sigStopped();
 
 	/**
 	 * @brief relative seeking was triggered
 	 * @param percent relative position in track
 	 */
-	void sig_seeked_rel(double percent);
+	void sigSeekedRelative(double percent);
 
 	/**
 	 * @brief relative seeking was triggered
 	 * @param ms relative position to current position in milliseconds
 	 */
-	void sig_seeked_rel_ms(MilliSeconds ms);
+	void sigSeekedRelativeMs(MilliSeconds ms);
 
 	/**
 	 * @brief absolute seeking was triggered
 	 * @param ms absolute position in milliseconds
 	 */
-	void sig_seeked_abs_ms(MilliSeconds ms);
+	void sigSeekedAbsoluteMs(MilliSeconds ms);
 
 	/**
 	 * @brief position in track has changed
 	 * @param ms absolute position in milliseconds
 	 */
-	void sig_position_changed_ms(MilliSeconds ms);
+	void sigPositionChangedMs(MilliSeconds ms);
 
 	/**
 	 * @brief track has changed
 	 * @param md new MetaData
 	 */
-	void sig_track_changed(const MetaData& md);
+	void sigCurrentTrackChanged(const MetaData& md);
 
-	void sig_track_metadata_changed();
+	void sigCurrentMetadataChanged();
 
 	/**
 	 * @brief track has changed
 	 * @param idx index in playlist
 	 */
-	void sig_track_idx_changed(int idx);
+	void sigTrackIndexChanged(int idx);
 
 	/**
 	 * @brief duration of track has changed
 	 * @param ms duration of track in milliseconds
 	 */
-	void sig_duration_changed();
+	void sigDurationChangedMs();
 
-	void sig_bitrate_changed();
+	void sigBitrateChanged();
 
 	/**
 	 * @brief playlist has finished
 	 */
-	void sig_playlist_finished();
+	void sigPlaylistFinished();
 
 	/**
 	 * @brief recording is requested
@@ -129,28 +129,28 @@ signals:
 	 *  true, when a new recording session should begin,
 	 *  false if a recording session should stop
 	 */
-	void sig_record(bool b);
+	void sigRecording(bool b);
 
 	/**
 	 * @brief emitted when currently in buffering state
 	 * @param b true if buffering, false else
 	 */
-	void sig_buffer(int b);
+	void sigBuffering(int b);
 
 	/**
 	 * @brief emitted when volume has changed
 	 * @param vol value between 0 and 100
 	 */
-	void sig_volume_changed(int vol);
+	void sigVolumeChanged(int vol);
 
 
 	/**
 	 * @brief emitted when mute state has changed
 	 * @param b true if muted, false else
 	 */
-	void sig_mute_changed(bool b);
+	void sigMuteChanged(bool b);
 
-	void sig_error(const QString& message);
+	void sigError(const QString& message);
 
 
 public slots:
@@ -162,12 +162,12 @@ public slots:
 	/**
 	 * @brief Emit wake up signal after stopping state
 	 */
-	void wake_up();
+	void wakeUp();
 
 	/**
 	 * @brief toggle play/pause
 	 */
-	void play_pause();
+	void playPause();
 
 	/**
 	 * @brief pause track, if currently playing
@@ -201,19 +201,19 @@ public slots:
 	 * @brief seek relative
 	 * @param percent relative position within track
 	 */
-	void seek_rel(double percent);
+	void seekRelative(double percent);
 
 	/**
 	 * @brief seek absolute
 	 * @param ms absolute position in milliseconds
 	 */
-	void seek_abs_ms(MilliSeconds ms);
+	void seekAbsoluteMs(MilliSeconds ms);
 
 	/**
-	 * @brief seek_rel_ms
+	 * @brief seekRelativeMs
 	 * @param ms relative position to current position in milliseconds
 	 */
-	void seek_rel_ms(MilliSeconds ms);
+	void seekRelativeMs(MilliSeconds ms);
 
 	/**
 	 * @brief set current position of track
@@ -221,26 +221,26 @@ public slots:
 	 * Just tells the playmanager where the current position is
 	 * @param ms position in milliseconds.
 	 */
-	void set_position_ms(MilliSeconds ms);
+	void setCurrentPositionMs(MilliSeconds ms);
 
 	/**
 	 * @brief change current track
 	 * @param md new MetaData object
 	 */
-	void change_track(const MetaData& md, int track_idx);
+	void changeCurrentTrack(const MetaData& md, int trackIdx);
 
 	/**
 	 * @brief change_track
 	 * @param md
 	 */
-	void change_track_metadata(const MetaData& md);
+	void changeCurrentMetadata(const MetaData& md);
 
 
 	/**
 	 * @brief notify, that track is ready for playback
 	 */
-	void set_track_ready();
-	void set_track_finished();
+	void setTrackReady();
+	void setTrackFinished();
 
 	/**
 	 * @brief notifiy, that track is in buffering state currently
@@ -251,29 +251,29 @@ public slots:
 	/**
 	 * @brief increase volume by 5
 	 */
-	void volume_up();
+	void volumeUp();
 
 	/**
 	 * @brief decrease volume by 5
 	 */
-	void volume_down();
+	void volumeDown();
 
 	/**
 	 * @brief set volume
 	 * @param vol value between [0,100], will be cropped if not within boundaries
 	 */
-	void set_volume(int vol);
+	void setVolume(int vol);
 
 	/**
 	 * @brief mute/unmute
 	 * @param b
 	 */
-	void set_muted(bool b);
+	void setMute(bool b);
 
 	/**
 	 * @brief If already muted, then unmute. If unmuted, then mute it
 	 */
-	void toggle_mute();
+	void toggleMute();
 
 
 	/**
@@ -282,9 +282,9 @@ public slots:
 	 * not use this
 	 * @param ms
 	 */
-	void change_duration(MilliSeconds ms);
+	void changeDuration(MilliSeconds ms);
 
-	void change_bitrate(Bitrate br);
+	void changeBitrate(Bitrate br);
 
 	/**
 	 * @brief Some playback error occured
@@ -303,21 +303,21 @@ public:
 	 * @brief get current position in milliseconds
 	 * @return current position in milliseconds
 	 */
-	MilliSeconds		current_position_ms() const;
+	MilliSeconds		currentPositionMs() const;
 
-	MilliSeconds		current_track_playtime_ms() const;
+	MilliSeconds		currentTrackPlaytimeMs() const;
 
 	/**
 	 * @brief get position in milliseconds where track will start
 	 * @return position in milliseconds where track will start
 	 */
-	MilliSeconds		initial_position_ms() const;
+	MilliSeconds		initialPositionMs() const;
 
 	/**
 	 * @brief get duration of track
 	 * @return duration in milliseconds
 	 */
-	MilliSeconds		duration_ms() const;
+	MilliSeconds		durationMs() const;
 
 
 	Bitrate				bitrate() const;
@@ -326,7 +326,7 @@ public:
 	 * @brief get current track
 	 * @return MetaData object of current track
 	 */
-	const MetaData& current_track() const;
+	const MetaData& currentTrack() const;
 
 	/**
 	 * @brief get current volume
@@ -339,7 +339,7 @@ public:
 	 * @brief query mute status
 	 * @return true if muted, false else
 	 */
-	bool		is_muted() const;
+	bool		isMuted() const;
 
 
 	/**
@@ -348,8 +348,8 @@ public:
 	void		shutdown();
 
 private slots:
-	void		track_metadata_changed();
-	void		tracks_deleted();
+	void		trackMetadataChanged();
+	void		tracksDeleted();
 };
 
 #endif

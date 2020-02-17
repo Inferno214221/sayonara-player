@@ -1,6 +1,6 @@
 /* GUI_PreferenceDialog.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -53,7 +53,7 @@ GUI_PreferenceDialog::GUI_PreferenceDialog(QWidget* parent) :
 {
 	m = Pimpl::make<Private>();
 
-	PreferenceRegistry::instance()->set_user_interface(this);
+	PreferenceRegistry::instance()->setUserInterface(this);
 }
 
 GUI_PreferenceDialog::~GUI_PreferenceDialog()
@@ -64,15 +64,15 @@ GUI_PreferenceDialog::~GUI_PreferenceDialog()
 	}
 }
 
-void GUI_PreferenceDialog::register_preference_dialog(Base* pref_widget)
+void GUI_PreferenceDialog::registerPreferenceDialog(Base* pref_widget)
 {
 	m->pref_widgets << pref_widget;
-	PreferenceRegistry::instance()->register_preference(pref_widget->identifier());
+	PreferenceRegistry::instance()->registerPreference(pref_widget->identifier());
 }
 
-void GUI_PreferenceDialog::show_preference(const QString& identifier)
+void GUI_PreferenceDialog::showPreference(const QString& identifier)
 {
-	init_ui();
+	initUi();
 
 	int i=0;
 	for(Preferences::Base* pwi : Algorithm::AsConst(m->pref_widgets))
@@ -80,8 +80,8 @@ void GUI_PreferenceDialog::show_preference(const QString& identifier)
 		QString dialog_id = pwi->identifier();
 		if(identifier.compare(dialog_id) == 0)
 		{
-			ui->list_preferences->setCurrentRow(i);
-			row_changed(i);
+			ui->listPreferences->setCurrentRow(i);
+			rowChanged(i);
 
 			this->setModal(true);
 			this->show();
@@ -92,39 +92,42 @@ void GUI_PreferenceDialog::show_preference(const QString& identifier)
 		i++;
 	}
 
-	sp_log(Log::Warning, this) << "Cannot find preference widget " << identifier;
+	spLog(Log::Warning, this) << "Cannot find preference widget " << identifier;
 }
 
 
-void GUI_PreferenceDialog::language_changed()
+void GUI_PreferenceDialog::languageChanged()
 {
 	ui->retranslateUi(this);
 
-	bool is_empty = (ui->list_preferences->count() == 0);
+	bool is_empty = (ui->listPreferences->count() == 0);
 
 	int i=0;
 	for(Base* dialog : Algorithm::AsConst(m->pref_widgets))
 	{
 		QListWidgetItem* item;
-		if(is_empty){
-			item = new QListWidgetItem(dialog->action_name());
-			ui->list_preferences->addItem(item);
+		if(is_empty)
+		{
+			item = new QListWidgetItem(dialog->actionName());
+			ui->listPreferences->addItem(item);
 		}
-		else{
-			item = ui->list_preferences->item(i);
-			item->setText(dialog->action_name());
+
+		else
+		{
+			item = ui->listPreferences->item(i);
+			item->setText(dialog->actionName());
 		}
 
 		i++;
 	}
 
 	if(m->action){
-		m->action->setText(action_name() + "...");
+		m->action->setText(actionName() + "...");
 	}
 }
 
 
-QString GUI_PreferenceDialog::action_name() const
+QString GUI_PreferenceDialog::actionName() const
 {
 	return Lang::get(Lang::Preferences);
 }
@@ -133,12 +136,12 @@ QAction* GUI_PreferenceDialog::action()
 {
 	// action has to be initialized here, because pure
 	// virtual get_action_name should not be called from ctor
-	QString name = action_name();
+	QString name = actionName();
 	if(!m->action){
 		m->action = new Action(name, this);
 	}
 
-	m->action->setText(action_name() + "...");
+	m->action->setText(actionName() + "...");
 	m->action->setIcon(Gui::Icons::icon(Gui::Icons::Preferences));
 
 	return m->action;
@@ -149,14 +152,14 @@ QList<QAction*> GUI_PreferenceDialog::actions(QWidget* parent)
 	QList<QAction*> ret;
 	for(Preferences::Base* dialog : Algorithm::AsConst(m->pref_widgets))
 	{
-		QString action_name = dialog->action_name();
+		QString action_name = dialog->actionName();
 		QString identifier = dialog->identifier();
 		QAction* action = new QAction(parent);
 		action->setText(action_name);
 		ret << action;
 
 		connect(action, &QAction::triggered, this, [=](){
-			show_preference(identifier);
+			showPreference(identifier);
 		});
 	}
 
@@ -164,7 +167,7 @@ QList<QAction*> GUI_PreferenceDialog::actions(QWidget* parent)
 }
 
 
-void GUI_PreferenceDialog::commit_and_close()
+void GUI_PreferenceDialog::commitAndClose()
 {
 	if(commit()){
 		close();
@@ -177,14 +180,14 @@ bool GUI_PreferenceDialog::commit()
 	bool success = true;
 	for(Base* iface : Algorithm::AsConst(m->pref_widgets))
 	{
-		if(iface->is_ui_initialized())
+		if(iface->isUiInitialized())
 		{
 			if(!iface->commit())
 			{
-				QString error_string = iface->error_string();
+				QString error_string = iface->errorString();
 				if(!error_string.isEmpty())
 				{
-					Message::warning(iface->action_name() + "\n\n" + error_string, iface->action_name());
+					Message::warning(iface->actionName() + "\n\n" + error_string, iface->actionName());
 					success = false;
 				}
 			}
@@ -199,7 +202,7 @@ void GUI_PreferenceDialog::revert()
 {
 	for(Base* iface : Algorithm::AsConst(m->pref_widgets))
 	{
-		if(iface->is_ui_initialized()){
+		if(iface->isUiInitialized()){
 			iface->revert();
 		}
 	}
@@ -208,33 +211,33 @@ void GUI_PreferenceDialog::revert()
 }
 
 
-void GUI_PreferenceDialog::row_changed(int row)
+void GUI_PreferenceDialog::rowChanged(int row)
 {
 	if(!Util::between(row, m->pref_widgets)){
 		return;
 	}
 
-	hide_all();
+	hideAll();
 
 	Base* widget = m->pref_widgets[row];
 
-	QLayout* layout = ui->widget_preferences->layout();
+	QLayout* layout = ui->widgetPreferences->layout();
 	layout->setContentsMargins(0,0,0,0);
 
 	if(layout)
 	{
 		layout->addWidget(widget);
 		layout->setAlignment(Qt::AlignTop);
-		ui->widget_preferences->setFocusProxy(widget);
+		ui->widgetPreferences->setFocusProxy(widget);
 	}
 
-	ui->lab_pref_title->setText(widget->action_name());
+	ui->labPreferenceTitle->setText(widget->actionName());
 
 	widget->show();
 }
 
 
-void GUI_PreferenceDialog::hide_all()
+void GUI_PreferenceDialog::hideAll()
 {
 	for(Base* iface : Algorithm::AsConst(m->pref_widgets))
 	{
@@ -245,14 +248,14 @@ void GUI_PreferenceDialog::hide_all()
 
 void GUI_PreferenceDialog::showEvent(QShowEvent* e)
 {
-	init_ui();
+	initUi();
 	Gui::Dialog::showEvent(e);
 
-	ui->list_preferences->setFocus();
+	ui->listPreferences->setFocus();
 }
 
 
-void GUI_PreferenceDialog::init_ui()
+void GUI_PreferenceDialog::initUi()
 {
 	if(ui){
 		return;
@@ -263,16 +266,16 @@ void GUI_PreferenceDialog::init_ui()
 
 	for(Base* widget : Algorithm::AsConst(m->pref_widgets))
 	{
-		ui->list_preferences->addItem(widget->action_name());
+		ui->listPreferences->addItem(widget->actionName());
 	}
 
-	ui->list_preferences->setMouseTracking(false);
-	ui->list_preferences->setItemDelegate(
-		new Gui::StyledItemDelegate(ui->list_preferences)
+	ui->listPreferences->setMouseTracking(false);
+	ui->listPreferences->setItemDelegate(
+		new Gui::StyledItemDelegate(ui->listPreferences)
 	);
 
-	connect(ui->list_preferences, &QListWidget::currentRowChanged, this, &GUI_PreferenceDialog::row_changed);
-	connect(ui->btn_apply, &QPushButton::clicked, this, &GUI_PreferenceDialog::commit);
-	connect(ui->btn_ok, &QPushButton::clicked, this, &GUI_PreferenceDialog::commit_and_close);
-	connect(ui->btn_cancel, &QPushButton::clicked, this, &GUI_PreferenceDialog::revert);
+	connect(ui->listPreferences, &QListWidget::currentRowChanged, this, &GUI_PreferenceDialog::rowChanged);
+	connect(ui->btnApply, &QPushButton::clicked, this, &GUI_PreferenceDialog::commit);
+	connect(ui->btnOk, &QPushButton::clicked, this, &GUI_PreferenceDialog::commitAndClose);
+	connect(ui->btnCancel, &QPushButton::clicked, this, &GUI_PreferenceDialog::revert);
 }

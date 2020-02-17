@@ -1,6 +1,6 @@
 /* Artist.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -49,20 +49,20 @@ public:
 	~Artist();
 
 	QString name() const;
-	void set_name(const QString& name);
+	void setName(const QString& name);
 
 	static bool fromVariant(const QVariant& v, Artist& a);
 	static QVariant toVariant(const Artist& a);
 	void print() const ;
 
 	uint16_t albumcount() const;
-	void set_albumcount(const uint16_t& value);
+	void setAlbumcount(const uint16_t& value);
 
 	uint16_t songcount() const;
-	void set_songcount(const uint16_t& value);
+	void setSongcount(const uint16_t& value);
 
 	ArtistId id() const;
-	void set_id(const ArtistId& value);
+	void setId(const ArtistId& value);
 };
 
 
@@ -96,7 +96,7 @@ public:
 	QString get_major_artist() const;
 
 
-	bool contains(ArtistId artist_id) const;
+	bool contains(ArtistId artistId) const;
 
 	int count() const;
 	ArtistList& operator <<(const Artist& artist);

@@ -1,6 +1,6 @@
 /* SayonaraCompleter.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -36,19 +36,19 @@ Completer::Completer(const QStringList& strings, QObject* parent) :
 {
 	auto* model = new QStringListModel(this);
 	this->setModel(model);
-	this->set_stringlist(strings);
+	this->setStringList(strings);
 
 	setCaseSensitivity(Qt::CaseInsensitive);
 	setCompletionMode(QCompleter::UnfilteredPopupCompletion);
 
 	popup()->setItemDelegate(new ComboBoxDelegate(this));
-	popup()->setStyleSheet(Style::current_style());
+	popup()->setStyleSheet(Style::currentStyle());
 	popup()->setObjectName("CompleterPopup");
 }
 
 Completer::~Completer() = default;
 
-void Completer::set_stringlist(QStringList strings)
+void Completer::setStringList(QStringList strings)
 {
 	auto* model = static_cast<QStringListModel*>(this->model());
 	if(model)

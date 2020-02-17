@@ -1,6 +1,6 @@
 /* PodcastParser.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -83,13 +83,13 @@ static MetaData parse_item(QXmlStreamReader& reader)
 		{
 			if(reader.name() == "author")
 			{
-				md.set_artist(reader.readElementText().trimmed());
+				md.setArtist(reader.readElementText().trimmed());
 			}
 
 			else if(reader.name() == "duration")
 			{
 				int len = parse_length_s(reader.readElementText().trimmed());
-				md.set_duration_ms(len * 1000);
+				md.setDurationMs(len * 1000);
 			}
 
 			else
@@ -101,13 +101,13 @@ static MetaData parse_item(QXmlStreamReader& reader)
 
 		else if(reader.name() == "title")
 		{
-			md.set_title(reader.readElementText().trimmed());
-			md.add_custom_field("1title", "Title", md.title());
+			md.setTitle(reader.readElementText().trimmed());
+			md.addCustomField("1title", "Title", md.title());
 		}
 
 		else if(reader.name() == "description")
 		{
-			md.add_custom_field("2desciption", "Description", reader.readElementText().trimmed());
+			md.addCustomField("2desciption", "Description", reader.readElementText().trimmed());
 		}
 
 		else if(reader.name() == "enclosure")
@@ -117,7 +117,7 @@ static MetaData parse_item(QXmlStreamReader& reader)
 			{
 				if(attr.name() == "url")
 				{
-					md.set_filepath(attr.value().toString());
+					md.setFilepath(attr.value().toString());
 				}
 			}
 
@@ -126,22 +126,22 @@ static MetaData parse_item(QXmlStreamReader& reader)
 
 		else if(reader.name() == "link" && md.filepath().isEmpty())
 		{
-			md.set_filepath(reader.readElementText().trimmed());
+			md.setFilepath(reader.readElementText().trimmed());
 		}
 
 		else if( (reader.name() == "author") && md.artist().isEmpty() )
 		{
-			md.set_artist(reader.readElementText().trimmed());
+			md.setArtist(reader.readElementText().trimmed());
 		}
 
 		else if((reader.name() == "pubDate"))
 		{
-			md.set_year(find_year(reader.readElementText().trimmed()));
+			md.setYear(find_year(reader.readElementText().trimmed()));
 		}
 
 		else if((reader.prefix() == "dc") && (reader.name() == "date"))
 		{
-			md.set_year(find_year(reader.readElementText().trimmed()));
+			md.setYear(find_year(reader.readElementText().trimmed()));
 		}
 
 		else if(reader.prefix() == "psc" && reader.name() == "chapters")
@@ -175,7 +175,7 @@ static MetaData parse_item(QXmlStreamReader& reader)
 				QString chapter_info = length_str + ":" + title;
 				QString chapter_key = QString("Chapter %1").arg(n_chapters);
 
-				md.add_custom_field(chapter_key, chapter_key, chapter_info);
+				md.addCustomField(chapter_key, chapter_key, chapter_info);
 			} // chapter
 		} // while chapters.hasElement
 
@@ -185,7 +185,7 @@ static MetaData parse_item(QXmlStreamReader& reader)
 		}
 	}
 
-	md.change_radio_mode(RadioMode::Podcast);
+	md.changeRadioMode(RadioMode::Podcast);
 	return md;
 }
 
@@ -284,7 +284,7 @@ static MetaDataList parse_channel(QXmlStreamReader& reader)
 		else if(reader.name() == "item")
 		{
 			MetaData md = parse_item(reader);
-			if( !md.filepath().isEmpty() && Util::File::is_soundfile(md.filepath()) )
+			if( !md.filepath().isEmpty() && Util::File::isSoundFile(md.filepath()) )
 			{
 				result << std::move(md);
 			}
@@ -296,27 +296,27 @@ static MetaDataList parse_channel(QXmlStreamReader& reader)
 		}
 	}
 
-	sp_log(Log::Info, "Podcast parser") << "Set cover url " << cover_url;
+	spLog(Log::Info, "Podcast parser") << "Set cover url " << cover_url;
 	for(auto it=result.begin(); it != result.end(); it++)
 	{
-		it->set_cover_download_urls({cover_url});
+		it->setCoverDownloadUrls({cover_url});
 		if(it->artist().isEmpty())
 		{
-			it->set_artist(author);
+			it->setArtist(author);
 		}
 
 		if(it->album().isEmpty())
 		{
-			it->set_album(album);
+			it->setAlbum(album);
 		}
 
-		it->set_genres(categories);
+		it->setGenres(categories);
 	}
 
 	return result;
 }
 
-MetaDataList PodcastParser::parse_podcast_xml_file_content(const QString& content)
+MetaDataList PodcastParser::parsePodcastXmlFile(const QString& content)
 {
 	MetaDataList result;
 

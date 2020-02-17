@@ -1,6 +1,6 @@
 /* DBusMediaKeysInterfaceMate.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -28,14 +28,14 @@ class DBusMediaKeysInterfaceMate : public DBusMediaKeysInterface
 	Q_OBJECT
 	PIMPL(DBusMediaKeysInterfaceMate)
 
-public:
-	explicit DBusMediaKeysInterfaceMate(QObject *parent=nullptr);
-	~DBusMediaKeysInterfaceMate();
+	public:
+		explicit DBusMediaKeysInterfaceMate(QObject* parent=nullptr);
+		~DBusMediaKeysInterfaceMate() override;
 
-protected:
-	QString service_name() const override;
-	QDBusPendingReply<> grab_media_key_reply() override;
-	void connect_media_keys() override;
+	protected:
+		QString serviceName() const override;
+		QDBusPendingReply<> grabMediaKeyReply() override;
+		void connectMediaKeys() override;
 };
 
 

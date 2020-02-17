@@ -1,6 +1,6 @@
 /* ASXParser.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -52,8 +52,8 @@ void ASXParser::parse()
 	do
 	{
 		MetaData md;
-		md.set_duration_ms(0);
-		md.set_album("");
+		md.setDurationMs(0);
+		md.setAlbum("");
 
 		for(int i=0; i<entry.childNodes().size(); i++)
 		{
@@ -66,25 +66,25 @@ void ASXParser::parse()
 			}
 
 			if(node_name.compare("ref") == 0) {
-				QString file_path = parse_ref_node(node);
-				md.set_artist(file_path);
-				md.set_filepath(file_path);
+				QString file_path = parseRefNode(node);
+				md.setArtist(file_path);
+				md.setFilepath(file_path);
 			}
 
 			else if(!node_name.compare("title")) {
-				md.set_title(e.text());
+				md.setTitle(e.text());
 			}
 
 			else if(!node_name.compare("album")) {
-				md.set_album(e.text());
+				md.setAlbum(e.text());
 			}
 
 			else if(!node_name.compare("author")) {
-				md.set_artist(e.text());
+				md.setArtist(e.text());
 			}
 		}
 
-		add_track(md);
+		addTrack(md);
 
 		entry = entry.nextSibling();
 
@@ -92,7 +92,7 @@ void ASXParser::parse()
 }
 
 
-QString ASXParser::parse_ref_node(const QDomNode& node)
+QString ASXParser::parseRefNode(const QDomNode& node)
 {
 	QDomElement e = node.toElement();
 	QDomNamedNodeMap map = e.attributes();
@@ -102,7 +102,7 @@ QString ASXParser::parse_ref_node(const QDomNode& node)
 		QString nodename = item_node.nodeName();
 		if(nodename.compare("href", Qt::CaseInsensitive) == 0){
 			QString path = e.attribute(nodename);
-			return  get_absolute_filename(path);
+			return  getAbsoluteFilename(path);
 		}
 	}
 

@@ -1,6 +1,6 @@
 /* DatabaseStreams.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -27,8 +27,8 @@
 using DB::Streams;
 using DB::Query;
 
-Streams::Streams(const QString& connection_name, DbId db_id) :
-	Module(connection_name, db_id) {}
+Streams::Streams(const QString& connection_name, DbId databaseId) :
+	Module(connection_name, databaseId) {}
 
 Streams::~Streams() = default;
 
@@ -36,9 +36,9 @@ bool Streams::getAllStreams(QList<Stream>& streams)
 {
 	streams.clear();
 
-	Query q = run_query("SELECT name, url FROM savedstreams;", "Cannot fetch streams");
+	Query q = runQuery("SELECT name, url FROM savedstreams;", "Cannot fetch streams");
 
-	if(q.has_error()){
+	if(q.hasError()){
 		return false;
 	}
 
@@ -55,68 +55,58 @@ bool Streams::getAllStreams(QList<Stream>& streams)
 
 bool Streams::deleteStream(const QString& name)
 {
-	Query q = run_query
+	Query q = runQuery
 	(
 		"DELETE FROM savedstreams WHERE name = :name;",
 		{
-			{":name", Util::cvt_not_null(name)},
+			{":name", Util::convertNotNull(name)},
 		},
 		QString("Could not delete stream %1").arg(name)
 	);
 
-	return (!q.has_error());
+	return (!q.hasError());
 }
 
 bool Streams::addStream(const Stream& stream)
 {
 	Query q = insert("savedstreams",
 	{
-		{"name", Util::cvt_not_null(stream.name())},
-		{"url", Util::cvt_not_null(stream.url())}
+		{"name", Util::convertNotNull(stream.name())},
+		{"url", Util::convertNotNull(stream.url())}
 	}, QString("Could not add stream: %1, %2").arg(stream.name(), stream.url()));
 
-	return (!q.has_error());
+	return (!q.hasError());
 }
 
-
-bool Streams::updateStreamUrl(const QString& name, const QString& url)
+bool DB::Streams::updateStream(const QString& old_name, const Stream& stream)
 {
 	Query q = update("savedstreams",
-		{{"url", Util::cvt_not_null(url)}},
-		{"name", Util::cvt_not_null(name)},
-		QString("Could not update stream url %1").arg(name)
-	);
-
-	return (!q.has_error());
-}
-
-
-bool DB::Streams::renameStream(const QString& old_name, const QString& new_name)
-{
-	Query q = update("savedstreams",
-		{{"name", Util::cvt_not_null(new_name)}},
-		{"name", Util::cvt_not_null(old_name)},
+		{
+			{"name", Util::convertNotNull(stream.name())},
+			{"url", Util::convertNotNull(stream.url())}
+		},
+		{"name", Util::convertNotNull(old_name)},
 		QString("Could not update stream name %1").arg(old_name)
 	);
 
-	return (!q.has_error());
+	return (!q.hasError());
 }
 
 Stream Streams::getStream(const QString& name)
 {
 	QString query = "SELECT name, url FROM savedstreams WHERE name = :name;";
-	Query q = run_query
+	Query q = runQuery
 	(
 		query,
 		{":name", name},
 		QString("Cannot fetch stream %1").arg(name)
 	);
 
-	if(!q.has_error() && q.next())
+	if(!q.hasError() && q.next())
 	{
 		Stream stream;
-		stream.set_name(q.value(0).toString());
-		stream.set_url(q.value(1).toString());
+		stream.setName(q.value(0).toString());
+		stream.setUrl(q.value(1).toString());
 		return stream;
 	}
 

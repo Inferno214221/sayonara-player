@@ -28,14 +28,14 @@ void AlbumArtistTest::run_test(const QString& filename)
 	MetaData md(filename);
     Tagging::Utils::getMetaDataOfFile(md);
 
-	md.set_album_artist(album_artist);
+	md.setAlbumArtist(album_artist);
     Tagging::Utils::setMetaDataOfFile(md);
 
 	MetaData md2(filename);
     Tagging::Utils::getMetaDataOfFile(md2);
 
-	QString md_album_artist = md.album_artist();
-	QString md2_album_artist = md2.album_artist();
+	QString md_album_artist = md.albumArtist();
+	QString md2_album_artist = md2.albumArtist();
 
 	QVERIFY(md_album_artist.compare(album_artist) == 0);
 	QVERIFY(md_album_artist.compare(md2_album_artist) == 0);

@@ -1,6 +1,6 @@
 /* IconProvider.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -52,7 +52,7 @@ QIcon IconProvider::icon(IconType type) const
 
 QIcon IconProvider::icon(const QFileInfo& info) const
 {
-	if(!Style::is_dark())
+	if(!Style::isDark())
 	{
 		return QFileIconProvider::icon(info);
 	}
@@ -70,7 +70,7 @@ QIcon IconProvider::icon(const QFileInfo& info) const
 		return icon;
 	}
 
-	if(info.isFile() && Util::File::is_playlistfile(info.filePath()))
+	if(info.isFile() && Util::File::isPlaylistFile(info.filePath()))
 	{
 		return Gui::Icons::icon(Gui::Icons::PlaylistFile);
 	}

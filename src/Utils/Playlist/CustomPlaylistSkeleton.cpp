@@ -1,6 +1,6 @@
 /* CustomPlaylistSkeleton.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -77,7 +77,7 @@ int CustomPlaylistSkeleton::id() const
     return m->id;
 }
  
-void CustomPlaylistSkeleton::set_id(int id)
+void CustomPlaylistSkeleton::setId(int id)
 {
     m->id = id;
 }
@@ -87,7 +87,7 @@ QString CustomPlaylistSkeleton::name() const
     return m->name;
 }
 
-void CustomPlaylistSkeleton::set_name(const QString& name)
+void CustomPlaylistSkeleton::setName(const QString& name)
 {
     m->name = name;
 }
@@ -98,17 +98,17 @@ bool CustomPlaylistSkeleton::temporary() const
 }
 
 
-void CustomPlaylistSkeleton::set_temporary(bool temporary)
+void CustomPlaylistSkeleton::setTemporary(bool temporary)
 {
     m->is_temporary = temporary;
 }
 
-int CustomPlaylistSkeleton::num_tracks() const
+int CustomPlaylistSkeleton::trackCount() const
 {
     return m->num_tracks;
 }
 
-void CustomPlaylistSkeleton::set_num_tracks(int num_tracks)
+void CustomPlaylistSkeleton::setTrackCount(int num_tracks)
 {
     m->num_tracks = num_tracks;
 }

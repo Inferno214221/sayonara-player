@@ -1,6 +1,6 @@
 /* RawSoundReceiver.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -38,8 +38,8 @@ namespace Engine
 	class LevelReceiver
 	{
 		public:
-		virtual void set_level(float left, float right)=0;
-		virtual bool is_active() const=0;
+		virtual void setLevel(float left, float right)=0;
+		virtual bool isActive() const=0;
 
 		LevelReceiver();
 		virtual ~LevelReceiver();
@@ -51,12 +51,12 @@ namespace Engine
 	 */
 	class SpectrumReceiver
 	{
-	public:
-		virtual void set_spectrum(const SpectrumList& spectrum)=0;
-		virtual bool is_active() const=0;
+		public:
+			SpectrumReceiver();
+			virtual ~SpectrumReceiver();
 
-		SpectrumReceiver();
-		virtual ~SpectrumReceiver();
+			virtual void setSpectrum(const SpectrumList& spectrum)=0;
+			virtual bool isActive() const=0;
 	};
 
 	/**
@@ -65,16 +65,16 @@ namespace Engine
 	 */
 	class RawSoundReceiverInterface
 	{
-	public:
-		RawSoundReceiverInterface();
-		virtual ~RawSoundReceiverInterface();
+		public:
+			RawSoundReceiverInterface();
+			virtual ~RawSoundReceiverInterface();
 
-		/**
-		 * @brief triggered when new audio data is available, has to be reimplentend
-		 * @param data audio data
-		 * @param n_bytes array size
-		 */
-		virtual void new_audio_data(const QByteArray& data)=0;
+			/**
+			 * @brief triggered when new audio data is available, has to be reimplentend
+			 * @param data audio data
+			 * @param n_bytes array size
+			 */
+			virtual void writeAudioData(const QByteArray& data)=0;
 	};
 }
 

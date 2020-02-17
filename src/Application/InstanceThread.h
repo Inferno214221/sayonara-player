@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -32,8 +32,8 @@ class InstanceThread : public QThread
 	PIMPL(InstanceThread)
 
 signals:
-	void sig_player_raise();
-	void sig_create_playlist();
+	void sigPlayerRise();
+	void sigCreatePlaylist();
 
 public:
 	InstanceThread(QObject* parent=nullptr);
@@ -44,7 +44,7 @@ public:
 
 private:
 	void run() override;
-	void parse_memory();
+	void parseMemory();
 };
 
 #endif // INSTANCETHREAD_H

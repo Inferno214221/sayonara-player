@@ -1,6 +1,6 @@
 /* EqualizerSetting.h */
 
-/* Copyright (C) 2011  Lucio Carreras
+/* Copyright (C) 2011 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -65,7 +65,7 @@ public:
 	 * @brief set name of setting
 	 * @param name
 	 */
-	void set_name(const QString& name);
+	void setName(const QString& name);
 
 	/**
 	 * @brief get database values for setting
@@ -85,7 +85,7 @@ public:
 	 * @param idx band index
 	 * @param val database formatted value
 	 */
-	void set_value(int idx, int val);
+	void setValue(int idx, int val);
 
 	/**
 	 * @brief set all values for a specific index.
@@ -93,7 +93,7 @@ public:
 	 * If there are less, the list is filled with zeros
 	 * @param values
 	 */
-	void set_values(const ValueArray& values);
+	void setValues(const ValueArray& values);
 
 	/**
 	 * @brief append a value.
@@ -106,19 +106,19 @@ public:
 	 * @brief checks, if preset is default preset
 	 * @return true if preset is default preset, false else
 	 */
-	bool is_default() const;
+	bool isDefault() const;
 
 	/**
 	 * @brief checks, if the preset name belongs to a default preset
 	 * @return true if preset is default preset, false else
 	 */
-	bool is_default_name() const;
+	bool isDefaultName() const;
 
 	/**
 	 * @brief get default settings
 	 * @return list of default settings
 	 */
-	static QList<EqualizerSetting> get_defaults();
+	static QList<EqualizerSetting> getDefaults();
 
 	/**
 	 * @brief get default values for a specific preset.
@@ -126,14 +126,14 @@ public:
 	 * @param name preset name
 	 * @return value list if name belongs to a default preset. Empty list else
 	 */
-	static ValueArray get_default_values(const QString& name);
+	static ValueArray getDefaultValues(const QString& name);
 
 	/**
 	 * @brief static convenience function for is_default_name()
 	 * @param name preset name
 	 * @return
 	 */
-	static bool is_default_name(const QString& name);
+	static bool isDefaultName(const QString& name);
 
 	/**
 	 * @brief converts a string to a EQ_Setting.

@@ -1,6 +1,6 @@
 /* GUI_Speed.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -31,32 +31,32 @@ class GUI_Speed : public PlayerPlugin::Base
 	UI_CLASS(GUI_Speed)
 
 public:
-	explicit GUI_Speed(QWidget *parent=nullptr);
+	explicit GUI_Speed(QWidget* parent=nullptr);
 	~GUI_Speed() override;
 
-	QString get_name() const override;
-	QString get_display_name() const override;
+	QString name() const override;
+	QString displayName() const override;
 
 private:
-	void retranslate_ui() override;
-	void init_ui() override;
+	void retranslate() override;
+	void initUi() override;
 
 private slots:
-	void speed_changed(int value);
-	void active_changed(bool enabled);
-	void active_toggled(bool enabled);
-	void preserve_pitch_changed(bool enabled);
-	void pitch_changed(int pitch);
+	void speedChanged(int value);
+	void activeChanged(bool enabled);
+	void activeToggled(bool enabled);
+	void preservePitchChanged(bool enabled);
+	void pitchChanged(int pitch);
 
-	void revert_speed_clicked();
-	void revert_pitch_clicked();
+	void revertSpeedClicked();
+	void revertPitchClicked();
 
-	void pitch_hovered(int val);
-	void speed_hovered(int val);
+	void pitchHovered(int val);
+	void speedHovered(int val);
 
-	void current_tab_changed(int idx);
+	void currentTabChanged(int idx);
 
-	void _sl_pitch_found_changed();
+	void pitchFoundChanged();
 };
 
 #endif // GUI_SPEED_H

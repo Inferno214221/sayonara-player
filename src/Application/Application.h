@@ -1,6 +1,6 @@
 /* application.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -40,22 +40,22 @@ public:
 	bool init(const QStringList& files_to_play, bool force_show);
 
 private:
-	void init_single_instance_thread();
-	void init_preferences();
-	void init_libraries();
-	void init_engine();
-	void init_plugins();
-	void init_player(bool force_show);
-	void init_playlist(const QStringList& files_to_play);
+	void initSingleInstanceThread();
+	void initPreferences();
+	void initLibraries();
+	void initEngine();
+	void initPlugins();
+	void initPlayer(bool force_show);
+	void initPlaylist(const QStringList& files_to_play);
 
 	void shutdown();
 
 private slots:
-	void remote_control_activated();
-	void ignore_artist_article_changed();
-	void session_end_requested(QSessionManager& manager);
-	void create_playlist();
-	void skin_changed();
+	void remoteControlActivated();
+	void ignoreArtistArticleChanged();
+	void sessionEndRequested(QSessionManager& manager);
+	void createPlaylist();
+	void skinChanged();
 };
 
 #endif // APPLICATION_H

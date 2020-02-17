@@ -1,6 +1,6 @@
 /* CoverConnector.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -25,15 +25,15 @@
 
 using DB::Query;
 
-DB::Covers::Covers(const QString& connection_name, DbId db_id) :
-	DB::Module(connection_name, db_id)
+DB::Covers::Covers(const QString& connection_name, DbId databaseId) :
+	DB::Module(connection_name, databaseId)
 {}
 
 DB::Covers::~Covers() = default;
 
 bool DB::Covers::exists(const QString& hash)
 {
-	Query q = run_query
+	Query q = runQuery
 	(
 		"SELECT hash FROM covers WHERE hash = :hash;",
 		{
@@ -42,16 +42,16 @@ bool DB::Covers::exists(const QString& hash)
 		"Cannot check cover"
 	);
 
-	if(q.has_error()){
+	if(q.hasError()){
 		return false;
 	}
 
 	return q.next();
 }
 
-bool DB::Covers::get_cover(const QString& hash, QPixmap& pm)
+bool DB::Covers::getCover(const QString& hash, QPixmap& pm)
 {
-	Query q = run_query
+	Query q = runQuery
 	(
 		"SELECT data FROM covers WHERE hash = :hash;",
 		{
@@ -60,14 +60,14 @@ bool DB::Covers::get_cover(const QString& hash, QPixmap& pm)
 		"Cannot fetch cover"
 	);
 
-	if(q.has_error()){
+	if(q.hasError()){
 		return false;
 	}
 
 	if(q.next())
 	{
 		QByteArray data = q.value(0).toByteArray();
-		pm = ::Util::cvt_bytearray_to_pixmap(data);
+		pm = ::Util::convertByteArrayToPixmap(data);
 
 		return true;
 	}
@@ -75,7 +75,7 @@ bool DB::Covers::get_cover(const QString& hash, QPixmap& pm)
 	return false;
 }
 
-bool DB::Covers::set_cover(const QString& hash, const QPixmap& pm)
+bool DB::Covers::setCover(const QString& hash, const QPixmap& pm)
 {
 	if(hash.isEmpty() || pm.isNull()){
 		return false;
@@ -83,18 +83,18 @@ bool DB::Covers::set_cover(const QString& hash, const QPixmap& pm)
 
 	if(this->exists(hash))
 	{
-		return update_cover(hash, pm);
+		return updateCover(hash, pm);
 	}
 
 	else
 	{
-		return insert_cover(hash, pm);
+		return insertCover(hash, pm);
 	}
 }
 
-bool DB::Covers::update_cover(const QString& hash, const QPixmap& pm)
+bool DB::Covers::updateCover(const QString& hash, const QPixmap& pm)
 {
-	QByteArray data = ::Util::cvt_pixmap_to_bytearray(pm);
+	QByteArray data = ::Util::convertPixmapToByteArray(pm);
 
 	Query q = update("covers",
 		{{"data", data}},
@@ -102,12 +102,12 @@ bool DB::Covers::update_cover(const QString& hash, const QPixmap& pm)
 		"Cannot update cover"
 	);
 
-	return (!q.has_error());
+	return (!q.hasError());
 }
 
-bool DB::Covers::insert_cover(const QString& hash, const QPixmap& pm)
+bool DB::Covers::insertCover(const QString& hash, const QPixmap& pm)
 {
-	QByteArray data = ::Util::cvt_pixmap_to_bytearray(pm);
+	QByteArray data = ::Util::convertPixmapToByteArray(pm);
 
 	Query q = insert("covers",
 	{
@@ -115,25 +115,25 @@ bool DB::Covers::insert_cover(const QString& hash, const QPixmap& pm)
 		{"hash", hash}
 	}, "Cannot insert cover");
 
-	return (!q.has_error());
+	return (!q.hasError());
 }
 
-bool DB::Covers::remove_cover(const QString& hash)
+bool DB::Covers::removeCover(const QString& hash)
 {
-	DB::Query q = run_query
+	DB::Query q = runQuery
 	(
 		"DELETE from covers WHERE hash=:hash;",
 		{{":hash", hash}},
 		"Cannot delete cover " + hash
 	);
 
-	return (!q.has_error());
+	return (!q.hasError());
 }
 
-Util::Set<QString> DB::Covers::get_all_hashes()
+Util::Set<QString> DB::Covers::getAllHashes()
 {
-	Query q = run_query("SELECT hash FROM covers;", "Cannot fetch all hashes");
-	if(q.has_error()){
+	Query q = runQuery("SELECT hash FROM covers;", "Cannot fetch all hashes");
+	if(q.hasError()){
 		return Util::Set<QString>();
 	}
 
@@ -146,12 +146,12 @@ Util::Set<QString> DB::Covers::get_all_hashes()
 	return ret;
 }
 
-bool DB::Covers::get_all_covers(QMap<QString, QPixmap>& covers)
+bool DB::Covers::getAllCovers(QMap<QString, QPixmap>& covers)
 {
 	covers.clear();
 
-	Query q = run_query("SELECT hash, data FROM covers;", "Cannot fetch all covers");
-	if(q.has_error()){
+	Query q = runQuery("SELECT hash, data FROM covers;", "Cannot fetch all covers");
+	if(q.hasError()){
 		return false;
 	}
 
@@ -160,7 +160,7 @@ bool DB::Covers::get_all_covers(QMap<QString, QPixmap>& covers)
 		QString hash = q.value(0).toString();
 		QByteArray data = q.value(1).toByteArray();
 
-		covers[hash] = ::Util::cvt_bytearray_to_pixmap(data);
+		covers[hash] = ::Util::convertByteArrayToPixmap(data);
 	}
 
 	return true;
@@ -168,5 +168,5 @@ bool DB::Covers::get_all_covers(QMap<QString, QPixmap>& covers)
 
 void DB::Covers::clear()
 {
-	run_query("DELETE FROM covers;", "Cannot drop all covers");
+	runQuery("DELETE FROM covers;", "Cannot drop all covers");
 }

@@ -1,6 +1,6 @@
 /* ChangeOperations.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -23,9 +23,9 @@
 
 #include <QString>
 
-ChangeOperation::ChangeOperation() {}
+ChangeOperation::ChangeOperation() = default;
 
-ChangeOperation::~ChangeOperation() {}
+ChangeOperation::~ChangeOperation() = default;
 
 Library::Manager* ChangeOperation::manager() const
 {
@@ -46,11 +46,11 @@ MoveOperation::MoveOperation(int from, int to)
 	m = Pimpl::make<Private>(from, to);
 }
 
-MoveOperation::~MoveOperation() {}
+MoveOperation::~MoveOperation() = default;
 
 bool MoveOperation::exec()
 {
-	return manager()->move_library(m->from, m->to);
+	return manager()->moveLibrary(m->from, m->to);
 }
 
 
@@ -70,11 +70,11 @@ RenameOperation::RenameOperation(LibraryId id, const QString& new_name)
 	m = Pimpl::make<Private>(id, new_name);
 }
 
-RenameOperation::~RenameOperation() {}
+RenameOperation::~RenameOperation() = default;
 
 bool RenameOperation::exec()
 {
-	return manager()->rename_library(m->id, m->new_name);
+	return manager()->renameLibrary(m->id, m->new_name);
 }
 
 struct RemoveOperation::Private
@@ -91,11 +91,11 @@ RemoveOperation::RemoveOperation(LibraryId id)
 	m = Pimpl::make<Private>(id);
 }
 
-RemoveOperation::~RemoveOperation() {}
+RemoveOperation::~RemoveOperation() = default;
 
 bool RemoveOperation::exec()
 {
-	return manager()->remove_library(m->id);
+	return manager()->removeLibrary(m->id);
 }
 
 struct AddOperation::Private
@@ -113,11 +113,11 @@ AddOperation::AddOperation(const QString& name, const QString& path)
 	m = Pimpl::make<Private>(name, path);
 }
 
-AddOperation::~AddOperation() {}
+AddOperation::~AddOperation() = default;
 
 bool AddOperation::exec()
 {
-	return (manager()->add_library(m->name, m->path) >= 0);
+	return (manager()->addLibrary(m->name, m->path) >= 0);
 }
 
 struct ChangePathOperation::Private
@@ -136,9 +136,9 @@ ChangePathOperation::ChangePathOperation(LibraryId id, const QString& new_path)
 	m = Pimpl::make<Private>(id, new_path);
 }
 
-ChangePathOperation::~ChangePathOperation() {}
+ChangePathOperation::~ChangePathOperation() = default;
 
 bool ChangePathOperation::exec()
 {
-	return manager()->change_library_path(m->id, m->new_path);
+	return manager()->changeLibraryPath(m->id, m->new_path);
 }

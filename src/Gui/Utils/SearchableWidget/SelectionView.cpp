@@ -1,6 +1,6 @@
 /* SayonaraSelectionView.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -23,6 +23,7 @@
 #include "Utils/Algorithm.h"
 #include "Gui/Utils/Delegates/ComboBoxDelegate.h"
 
+#include <QAbstractItemView>
 #include <QItemSelection>
 #include <QKeyEvent>
 
@@ -30,76 +31,118 @@
 
 struct SelectionViewInterface::Private
 {
-	SelectionViewInterface::SelectionType selection_type;
-	Private() :
-		selection_type(SelectionViewInterface::SelectionType::Rows)
+	QAbstractItemView* view=nullptr;
+	SelectionViewInterface* selectionViewInterface=nullptr;
+
+	Private(SelectionViewInterface* selectionViewInterface, QAbstractItemView* view) :
+		view(view),
+		selectionViewInterface(selectionViewInterface)
 	{}
+
+	void selectRow(int row)
+	{
+		selectionViewInterface->selectRows({row});
+	}
+
+	QItemSelection getSelection() const
+	{
+		auto selModel = view->selectionModel();
+		if(selModel)
+		{
+			return selModel->selection();
+		}
+
+		return QItemSelection();
+	}
+
+	void select(const QItemSelection& selection)
+	{
+		auto selModel = view->selectionModel();
+		if(selModel)
+		{
+			if(selection.isEmpty())
+			{
+				selModel->clear();
+			}
+
+			else
+			{
+				selModel->select(selection, QItemSelectionModel::ClearAndSelect);
+			}
+		}
+	}
+
+	int rowCount()
+	{
+		return view->model()->rowCount();
+	}
+
+	int columnCount()
+	{
+		return view->model()->columnCount();
+	}
+
+	QModelIndex modelIndex(int row, int column)
+	{
+		return view->model()->index(row, column);
+	}
+
+	void setCurrentIndex(int index)
+	{
+//		ModelIndexRange range = mapIndexToModelIndexes(idx);
+//		m->view->setCurrentIndex(range.first);
+
+		view->setCurrentIndex(modelIndex(index, 0));
+	}
 };
 
-SelectionViewInterface::SelectionViewInterface()
+SelectionViewInterface::SelectionViewInterface(QAbstractItemView* view)
 {
-	m = Pimpl::make<Private>();
+	m = Pimpl::make<Private>(this, view);
 }
 
 SelectionViewInterface::~SelectionViewInterface() = default;
 
-void SelectionViewInterface::select_all()
+void SelectionViewInterface::selectAll()
 {
-	QItemSelectionModel* sel_model = this->selection_model();
-	if(!sel_model) {
-		return;
-	}
+	const QModelIndex firstIndex = m->modelIndex(0, 0);
+	const QModelIndex lastIndex = m->modelIndex(m->rowCount() - 1, m->columnCount() - 1);
 
-	int n_rows = row_count();
-	int n_cols = column_count();
-
-	QModelIndex first_idx = model_index(0, 0);
-	QModelIndex last_idx = model_index(n_rows - 1, n_cols - 1);
-
-	QItemSelection sel = sel_model->selection();
-	sel.select(first_idx, last_idx);
-	sel_model->select(sel, QItemSelectionModel::ClearAndSelect);
+	QItemSelection selection;
+	selection.select(firstIndex, lastIndex);
+	m->select(selection);
 }
 
-
-
-void SelectionViewInterface::select_rows(const IndexSet& indexes, int min_col, int max_col)
+SelectionViewInterface::SelectionType SelectionViewInterface::selectionType() const
 {
-	QItemSelectionModel* sel_model = this->selection_model();
-	if(!sel_model){
+	return SelectionViewInterface::SelectionType::Rows;
+}
+
+void SelectionViewInterface::selectRows(const IndexSet& indexes, int minColumn, int maxColumn)
+{
+	if(indexes.empty())
+	{
+		m->select(QItemSelection());
 		return;
 	}
 
-	if(indexes.empty()) {
-		this->clear_selection();
-		return;
+	if(minColumn == -1 || minColumn >= m->columnCount()){
+		minColumn = 0;
 	}
 
-	if(indexes.size() > 0) {
-		int first_index = indexes.first();
-		this->set_current_index(first_index);
+	if(maxColumn == -1 || maxColumn >= m->columnCount()){
+		maxColumn = m->columnCount() - 1;
 	}
 
-	if(min_col == -1 || min_col >= column_count()){
-		min_col = 0;
-	}
-
-	if(max_col == -1 || max_col >= column_count()){
-		max_col = column_count() - 1;
-	}
-
-	QItemSelection sel;
+	QItemSelection selection;
 	if(indexes.size() == 1)
 	{
-		QModelIndex first_idx = model_index(indexes.first(), 0);
-		QModelIndex last_idx = model_index(indexes.first(), column_count() - 1);
-
-		sel.select(first_idx, last_idx);
-		sel_model->select(sel, QItemSelectionModel::ClearAndSelect);
+		ModelIndexRange range = mapIndexToModelIndexes(indexes.first());
+		selection.select(range.first, range.second);
+		m->select(selection);
 
 		return;
 	}
-
 
 	// the goal is: find consecutive ranges.
 	// For every select or merge an overlap is
@@ -122,109 +165,69 @@ void SelectionViewInterface::select_rows(const IndexSet& indexes, int min_col, i
 
 	for(auto it=indexes.begin(); it!=indexes.end(); it++)
 	{
-		auto other_it=it;
-		auto other_predecessor=it;
+		auto otherIt=it;
+		auto otherPredecessor=it;
 
 		do
 		{
-			other_predecessor = other_it;
-			other_it++;
+			otherPredecessor = otherIt;
+			otherIt++;
 
-			if(other_it == indexes.end()){
+			if(otherIt == indexes.end()){
 				break;
 			}
 
-		} while(*other_it - 1 == *other_predecessor);
+		} while(*otherIt - 1 == *otherPredecessor);
 
 		// select the range
 
-		QModelIndex min_idx = model_index(*it, min_col);
-		QModelIndex max_idx = model_index(*other_predecessor, max_col);
-		sel.select(min_idx, max_idx);
+		QModelIndex minIndex = m->modelIndex(*it, minColumn);
+		QModelIndex maxIndex = m->modelIndex(*otherPredecessor, maxColumn);
+		selection.select(minIndex, maxIndex);
 
-		it = other_it;
+		it = otherIt;
 
 		if(it == indexes.end()){
 			break;
 		}
 	}
 
-	sel_model->select(sel, QItemSelectionModel::ClearAndSelect);
+	m->select(selection);
 }
 
 
-void SelectionViewInterface::select_row(int row)
+void SelectionViewInterface::selectColumns(const IndexSet& indexes, int min_row, int max_row)
 {
-	select_rows({row});
-}
-
-void SelectionViewInterface::select_columns(const IndexSet& indexes, int min_row, int max_row)
-{
-	QItemSelectionModel* sel_model = this->selection_model();
-	if(!sel_model){
-		return;
-	}
-
 	QItemSelection sel;
-	for(auto it = indexes.begin(); it != indexes.end(); it++){
-		sel.select(model_index(min_row, *it),
-				   model_index(max_row, *it));
+	for(auto it = indexes.begin(); it != indexes.end(); it++)
+	{
+		sel.select(m->modelIndex(min_row, *it),
+				   m->modelIndex(max_row, *it));
 	}
 
-	sel_model->select(sel, QItemSelectionModel::ClearAndSelect);
+	m->select(sel);
 }
 
-void SelectionViewInterface::select_column(int col)
+void SelectionViewInterface::selectItems(const IndexSet& indexes)
 {
-	IndexSet indexes(col);
-	select_columns(col);
-}
-
-void SelectionViewInterface::select_items(const IndexSet& indexes)
-{
-	if(indexes.isEmpty()){
-		this->clear_selection();
-		return;
-	}
-
-	QItemSelectionModel* sel_model = this->selection_model();
-	if(!sel_model){
-		return;
-	}
-
-	QItemSelection sel;
+	QItemSelection selection;
 	for(int index : indexes)
 	{
-		ModelIndexRange range = model_indexrange_by_index(index);
-		sel.select( range.first, range.second);
+		ModelIndexRange range = mapIndexToModelIndexes(index);
+		selection.select(range.first, range.second);
 	}
 
-	sel_model->select(sel, QItemSelectionModel::ClearAndSelect);
+	m->select(selection);
 }
 
-void SelectionViewInterface::clear_selection()
+IndexSet SelectionViewInterface::selectedItems() const
 {
-	QItemSelectionModel* sel_model = this->selection_model();
-	if(!sel_model){
-		return;
-	}
+	const QModelIndexList indexList = m->getSelection().indexes();
 
-	sel_model->clearSelection();
-}
-
-
-IndexSet SelectionViewInterface::selected_items() const
-{
-	QItemSelectionModel* sel_model = this->selection_model();
-	if(!sel_model) {
-		return IndexSet();
-	}
-
-	QModelIndexList idx_list = sel_model->selectedIndexes();
 	IndexSet ret;
-	for(auto idx : idx_list)
+	for(auto idx : indexList)
 	{
-		int row = index_by_model_index(idx);
+		int row = mapModelIndexToIndex(idx);
 		if(!ret.contains(row))
 		{
 			ret.insert(row);
@@ -234,61 +237,37 @@ IndexSet SelectionViewInterface::selected_items() const
 	return ret;
 }
 
-
-IndexSet SelectionViewInterface::indexes_by_model_indexes(const QModelIndexList& indexes) const
+IndexSet SelectionViewInterface::mapModelIndexesToIndexes(const QModelIndexList& indexes) const
 {
 	IndexSet ret;
 
 	for(const QModelIndex& idx : indexes){
-		ret.insert( index_by_model_index(idx) );
+		ret.insert( mapModelIndexToIndex(idx) );
 	}
 
 	return ret;
 }
 
-
-ModelIndexRanges SelectionViewInterface::model_indexranges_by_indexes(const IndexSet& idxs) const
+ModelIndexRanges SelectionViewInterface::mapIndexesToModelIndexRanges(const IndexSet& idxs) const
 {
 	ModelIndexRanges lst;
 	for(auto it = idxs.begin(); it != idxs.end(); it++){
-		lst << model_indexrange_by_index(*it);
+		lst << mapIndexToModelIndexes(*it);
 	}
 	return lst;
 }
 
-
-int SelectionViewInterface::min_selected_item() const
-{
-	IndexSet selected = selected_items();
-	if(!selected.isEmpty()) {
-		return *(std::min_element(selected.begin(), selected.end()));
-	}
-
-	return -1;
-}
-
-
-void SelectionViewInterface::set_selection_type(SelectionViewInterface::SelectionType type)
-{
-	m->selection_type = type;
-}
-
-SelectionViewInterface::SelectionType SelectionViewInterface::selection_type() const
-{
-	return m->selection_type;
-}
-
-void SelectionViewInterface::handle_key_press(QKeyEvent* e)
+void SelectionViewInterface::handleKeyPress(QKeyEvent* e)
 {
 	e->setAccepted(false);
 
-	if(this->row_count() == 0)
+	if(m->rowCount() == 0)
 	{
 		return;
 	}
 
 	Qt::KeyboardModifiers modifiers = e->modifiers();
-	int blupp = modifiers & (Qt::ControlModifier|Qt::AltModifier|Qt::MetaModifier);
+	auto blupp = modifiers & (Qt::ControlModifier|Qt::AltModifier|Qt::MetaModifier);
 	if(blupp != 0)
 	{
 		return;
@@ -296,7 +275,7 @@ void SelectionViewInterface::handle_key_press(QKeyEvent* e)
 
 	if(e->matches(QKeySequence::SelectAll))
 	{
-		this->select_all();
+		this->selectAll();
 		e->accept();
 		return;
 	}
@@ -304,30 +283,30 @@ void SelectionViewInterface::handle_key_press(QKeyEvent* e)
 	switch(e->key())
 	{
 		case Qt::Key_Up:
-			if(selected_items().empty())
+			if(selectedItems().empty())
 			{
 				e->accept();
-				this->select_row(this->row_count() - 1);
+				m->selectRow(m->rowCount() - 1);
 			}
 
 			return;
 
 		case Qt::Key_Down:
-			if(selected_items().empty())
+			if(selectedItems().empty())
 			{
 				e->accept();
-				this->select_row(0);
+				m->selectRow(0);
 			}
 
 			return;
 
 		case Qt::Key_End:
-			this->select_row(this->row_count() - 1);
+			m->selectRow(m->rowCount() - 1);
 			e->accept();
 			return;
 
 		case Qt::Key_Home:
-			this->select_row(0);
+			m->selectRow(0);
 			e->accept();
 			return;
 

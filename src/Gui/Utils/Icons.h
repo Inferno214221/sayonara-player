@@ -1,6 +1,6 @@
 /* Icons.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -127,24 +127,24 @@ namespace Gui
 		 * @brief set_standard_theme
 		 * @param name
 		 */
-		void set_standard_theme(const QString& name);
+		void setStandardTheme(const QString& name);
 
 		/**
 		 * @brief standard_theme
 		 * @return
 		 */
-		QString standard_theme();
+		QString standardTheme();
 
 		/**
 		 * @brief force_standard_icons
 		 * @param b
 		 */
-		void force_standard_icons(bool b);
+		void forceStandardIcons(bool b);
 
 		/**
 		 * @brief change_theme
 		 */
-		void change_theme();
+		void changeTheme();
 	}
 }
 

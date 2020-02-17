@@ -1,6 +1,6 @@
 /* LyricServer.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "LyricServer.h"
 #include "LyricServerJsonWriter.h"
 #include <QJsonDocument>
@@ -34,17 +32,17 @@ struct Server::Private
 	QString name;
 	QString address;
 	Server::Replacements replacements;
-	QString direct_url_template;
-	Server::StartEndTags start_end_tag;
-	bool is_start_tag_included=false;
-	bool is_end_tag_included=false;
-	bool is_numeric=false;
-	bool is_lowercase=false;
-	QString error_string;
+	QString directUrlTemplate;
+	Server::StartEndTags startEndTag;
+	bool isStartTagIncluded=false;
+	bool isEndTagIncluded=false;
+	bool isNumeric=false;
+	bool isLowercase=false;
+	QString errorString;
 
-	QString search_result_regex;
-	QString search_result_url_template;
-	QString search_url_template;
+	QString searchResultRegex;
+	QString searchResultUrlTemplate;
+	QString searchUrlTemplate;
 };
 
 Server::Server()
@@ -54,14 +52,14 @@ Server::Server()
 
 Server::~Server() = default;
 
-bool Server::can_fetch_directly() const
+bool Server::canFetchDirectly() const
 {
-	return !(m->address.isEmpty() || m->direct_url_template.isEmpty() || m->start_end_tag.isEmpty());
+	return !(m->address.isEmpty() || m->directUrlTemplate.isEmpty() || m->startEndTag.isEmpty());
 }
 
-bool Server::can_search() const
+bool Server::canSearch() const
 {
-	return !(m->address.isEmpty() || m->search_result_regex.isEmpty() || m->search_result_url_template.isEmpty() || m->search_url_template.isEmpty());
+	return !(m->address.isEmpty() || m->searchResultRegex.isEmpty() || m->searchResultUrlTemplate.isEmpty() || m->searchUrlTemplate.isEmpty());
 }
 
 QString Server::name() const
@@ -69,7 +67,7 @@ QString Server::name() const
 	return m->name;
 }
 
-void Server::set_name(const QString& name)
+void Server::setName(const QString& name)
 {
 	m->name = name;
 }
@@ -79,7 +77,7 @@ QString Server::address() const
 	return m->address;
 }
 
-void Server::set_address(const QString& address)
+void Server::setAddress(const QString& address)
 {
 	m->address = address;
 }
@@ -89,122 +87,122 @@ Server::Replacements Server::replacements() const
 	return m->replacements;
 }
 
-void Server::set_replacements(const Server::Replacements& replacements)
+void Server::setReplacements(const Server::Replacements& replacements)
 {
 	m->replacements = replacements;
 }
 
-QString Server::direct_url_template() const
+QString Server::directUrlTemplate() const
 {
-	return m->direct_url_template;
+	return m->directUrlTemplate;
 }
 
-void Server::set_direct_url_template(const QString& direct_url_template)
+void Server::setDirectUrlTemplate(const QString& direct_url_template)
 {
-	m->direct_url_template = direct_url_template;
+	m->directUrlTemplate = direct_url_template;
 }
 
-Server::StartEndTags Server::start_end_tag() const
+Server::StartEndTags Server::startEndTag() const
 {
-	return m->start_end_tag;
+	return m->startEndTag;
 }
 
-void Server::set_start_end_tag(const StartEndTags& start_end_tag)
+void Server::setStartEndTag(const StartEndTags& start_end_tag)
 {
-	m->start_end_tag = start_end_tag;
+	m->startEndTag = start_end_tag;
 }
 
-bool Server::is_start_tag_included() const
+bool Server::isStartTagIncluded() const
 {
-	return m->is_start_tag_included;
+	return m->isStartTagIncluded;
 }
 
-void Server::set_is_start_tag_included(bool is_start_tag_included)
+void Server::setIsStartTagIncluded(bool is_start_tag_included)
 {
-	m->is_start_tag_included = is_start_tag_included;
+	m->isStartTagIncluded = is_start_tag_included;
 }
 
-bool Server::is_end_tag_included() const
+bool Server::isEndTagIncluded() const
 {
-	return m->is_end_tag_included;
+	return m->isEndTagIncluded;
 }
 
-void Server::set_is_end_tag_included(bool is_end_tag_included)
+void Server::setIsEndTagIncluded(bool is_end_tag_included)
 {
-	m->is_end_tag_included = is_end_tag_included;
+	m->isEndTagIncluded = is_end_tag_included;
 }
 
-bool Server::is_numeric() const
+bool Server::isNumeric() const
 {
-	return m->is_numeric;
+	return m->isNumeric;
 }
 
-void Server::set_is_numeric(bool is_numeric)
+void Server::setIsNumeric(bool is_numeric)
 {
-	m->is_numeric = is_numeric;
+	m->isNumeric = is_numeric;
 }
 
-bool Server::is_lowercase() const
+bool Server::isLowercase() const
 {
-	return m->is_lowercase;
+	return m->isLowercase;
 }
 
-void Server::set_is_lowercase(bool is_lowercase)
+void Server::setIsLowercase(bool is_lowercase)
 {
-	m->is_lowercase = is_lowercase;
+	m->isLowercase = is_lowercase;
 }
 
-QString Server::error_string() const
+QString Server::errorString() const
 {
-	return m->error_string;
+	return m->errorString;
 }
 
-void Server::set_error_string(const QString& error_string)
+void Server::setErrorString(const QString& error_string)
 {
-	m->error_string = error_string;
+	m->errorString = error_string;
 }
 
-QString Server::search_result_regex() const
+QString Server::searchResultRegex() const
 {
-	return m->search_result_regex;
+	return m->searchResultRegex;
 }
 
-void Server::set_search_result_regex(const QString& search_result_regex)
+void Server::setSearchResultRegex(const QString& search_result_regex)
 {
-	m->search_result_regex = search_result_regex;
+	m->searchResultRegex = search_result_regex;
 }
 
-QString Server::search_result_url_template() const
+QString Server::searchResultUrlTemplate() const
 {
-	return m->search_result_url_template;
+	return m->searchResultUrlTemplate;
 }
 
-void Server::set_search_result_url_template(const QString& search_result_url_template)
+void Server::setSearchResultUrlTemplate(const QString& search_result_url_template)
 {
-	m->search_result_url_template = search_result_url_template;
+	m->searchResultUrlTemplate = search_result_url_template;
 }
 
-QString Server::search_url_template() const
+QString Server::searchUrlTemplate() const
 {
-	return m->search_url_template;
+	return m->searchUrlTemplate;
 }
 
-QJsonObject Server::to_json()
+void Server::setSearchUrlTemplate(const QString& search_url_template)
 {
-	return Lyrics::ServerJsonWriter::to_json(this);
+	m->searchUrlTemplate = search_url_template;
 }
 
-Server* Server::from_json(const QJsonObject& json)
+QJsonObject Server::toJson()
 {
-	return Lyrics::ServerJsonReader::from_json(json);
+	return Lyrics::ServerJsonWriter::toJson(this);
 }
 
-void Server::set_search_url_template(const QString& search_url_template)
+Server* Server::fromJson(const QJsonObject& json)
 {
-	m->search_url_template = search_url_template;
+	return Lyrics::ServerJsonReader::fromJson(json);
 }
 
-QString Server::apply_replacements(const QString& str, const Server::Replacements& replacements)
+QString Server::applyReplacements(const QString& str, const Server::Replacements& replacements)
 {
 	QString ret(str);
 
@@ -219,7 +217,7 @@ QString Server::apply_replacements(const QString& str, const Server::Replacement
 	return ret;
 }
 
-QString Server::apply_replacements(const QString& str) const
+QString Server::applyReplacements(const QString& str) const
 {
-	return apply_replacements(str, this->replacements());
+	return applyReplacements(str, this->replacements());
 }

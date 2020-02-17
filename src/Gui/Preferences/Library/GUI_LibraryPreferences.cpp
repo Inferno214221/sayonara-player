@@ -1,6 +1,6 @@
 /* GUI_LibraryPreferences.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -53,34 +53,34 @@ GUI_LibraryPreferences::~GUI_LibraryPreferences()
 	}
 }
 
-void GUI_LibraryPreferences::init_ui()
+void GUI_LibraryPreferences::initUi()
 {
-	setup_parent(this, &ui);
+	setupParent(this, &ui);
 
-	m->model = new LibraryListModel(ui->lv_libs);
+	m->model = new LibraryListModel(ui->lvLibs);
 
-	ui->lv_libs->setModel(m->model);
-	ui->lv_libs->setItemDelegate(
-				new Gui::StyledItemDelegate(ui->lv_libs)
+	ui->lvLibs->setModel(m->model);
+	ui->lvLibs->setItemDelegate(
+				new Gui::StyledItemDelegate(ui->lvLibs)
 	);
 
 	ui->tab_widget->setCurrentIndex(0);
 
-	QItemSelectionModel* sel_model = ui->lv_libs->selectionModel();
-	connect(sel_model, &QItemSelectionModel::currentChanged, this, &GUI_LibraryPreferences::current_index_changed);
+	QItemSelectionModel* sel_model = ui->lvLibs->selectionModel();
+	connect(sel_model, &QItemSelectionModel::currentChanged, this, &GUI_LibraryPreferences::selectedIndexChanged);
 
-	connect(ui->btn_new, &QPushButton::clicked, this, &GUI_LibraryPreferences::new_clicked);
-	connect(ui->btn_edit, &QPushButton::clicked, this, &GUI_LibraryPreferences::edit_clicked);
-	connect(ui->btn_delete, &QPushButton::clicked, this, &GUI_LibraryPreferences::delete_clicked);
-	connect(ui->btn_up, &QPushButton::clicked, this, &GUI_LibraryPreferences::up_clicked);
-	connect(ui->btn_down, &QPushButton::clicked, this, &GUI_LibraryPreferences::down_clicked);
+	connect(ui->btnNew, &QPushButton::clicked, this, &GUI_LibraryPreferences::newClicked);
+	connect(ui->btnEdit, &QPushButton::clicked, this, &GUI_LibraryPreferences::editClicked);
+	connect(ui->btnDelete, &QPushButton::clicked, this, &GUI_LibraryPreferences::deleteClicked);
+	connect(ui->btnUp, &QPushButton::clicked, this, &GUI_LibraryPreferences::upClicked);
+	connect(ui->btnDown, &QPushButton::clicked, this, &GUI_LibraryPreferences::downClicked);
 
 	revert();
 
-	current_index_changed(m->model->index(current_row()));
+	selectedIndexChanged(m->model->index(currentRow()));
 }
 
-QString GUI_LibraryPreferences::action_name() const
+QString GUI_LibraryPreferences::actionName() const
 {
 	return Lang::get(Lang::Library);
 }
@@ -88,50 +88,50 @@ QString GUI_LibraryPreferences::action_name() const
 
 bool GUI_LibraryPreferences::commit()
 {
-	SetSetting(Set::Lib_DC_DoNothing, ui->rb_dc_do_nothing->isChecked());
-	SetSetting(Set::Lib_DC_PlayIfStopped, ui->rb_dc_play_if_stopped->isChecked());
-	SetSetting(Set::Lib_DC_PlayImmediately, ui->rb_dc_play_immediately->isChecked());
-	SetSetting(Set::Lib_DD_DoNothing, ui->rb_dd_do_nothing->isChecked());
-	SetSetting(Set::Lib_DD_PlayIfStoppedAndEmpty, ui->rb_dd_start_if_stopped_and_empty->isChecked());
-	SetSetting(Set::Lib_UseViewClearButton, ui->cb_show_clear_buttons->isChecked());
-	SetSetting(Set::Lib_SortIgnoreArtistArticle, ui->cb_ignore_article->isChecked());
+	SetSetting(Set::Lib_DC_DoNothing, ui->rbDcDoNothing->isChecked());
+	SetSetting(Set::Lib_DC_PlayIfStopped, ui->rbDcPlayIfStopped->isChecked());
+	SetSetting(Set::Lib_DC_PlayImmediately, ui->rbDcPlayImmediatly->isChecked());
+	SetSetting(Set::Lib_DD_DoNothing, ui->rbDdDoNothing->isChecked());
+	SetSetting(Set::Lib_DD_PlayIfStoppedAndEmpty, ui->rbDdStartIfStopped->isChecked());
+	SetSetting(Set::Lib_UseViewClearButton, ui->cbShowClearSelectionButton->isChecked());
+	SetSetting(Set::Lib_SortIgnoreArtistArticle, ui->cbIgnoreArticle->isChecked());
 
 	return m->model->commit();
 }
 
 void GUI_LibraryPreferences::revert()
 {
-	ui->rb_dc_do_nothing->setChecked(GetSetting(Set::Lib_DC_DoNothing));
-	ui->rb_dc_play_if_stopped->setChecked(GetSetting(Set::Lib_DC_PlayIfStopped));
-	ui->rb_dc_play_immediately->setChecked(GetSetting(Set::Lib_DC_PlayImmediately));
-	ui->rb_dd_do_nothing->setChecked(GetSetting(Set::Lib_DD_DoNothing));
-	ui->rb_dd_start_if_stopped_and_empty->setChecked(GetSetting(Set::Lib_DD_PlayIfStoppedAndEmpty));
-	ui->cb_show_clear_buttons->setChecked(GetSetting(Set::Lib_UseViewClearButton));
-	ui->cb_ignore_article->setChecked(GetSetting(Set::Lib_SortIgnoreArtistArticle));
+	ui->rbDcDoNothing->setChecked(GetSetting(Set::Lib_DC_DoNothing));
+	ui->rbDcPlayIfStopped->setChecked(GetSetting(Set::Lib_DC_PlayIfStopped));
+	ui->rbDcPlayImmediatly->setChecked(GetSetting(Set::Lib_DC_PlayImmediately));
+	ui->rbDdDoNothing->setChecked(GetSetting(Set::Lib_DD_DoNothing));
+	ui->rbDdStartIfStopped->setChecked(GetSetting(Set::Lib_DD_PlayIfStoppedAndEmpty));
+	ui->cbShowClearSelectionButton->setChecked(GetSetting(Set::Lib_UseViewClearButton));
+	ui->cbIgnoreArticle->setChecked(GetSetting(Set::Lib_SortIgnoreArtistArticle));
 
 	m->model->reset();
 }
 
-void GUI_LibraryPreferences::retranslate_ui()
+void GUI_LibraryPreferences::retranslate()
 {
 	ui->retranslateUi(this);
 
-	ui->btn_new->setText(Lang::get(Lang::New));
-	ui->btn_edit->setText(Lang::get(Lang::Edit));
-	ui->btn_delete->setText(Lang::get(Lang::Remove));
-	ui->btn_down->setText(Lang::get(Lang::MoveDown));
-	ui->btn_up->setText(Lang::get(Lang::MoveUp));
+	ui->btnNew->setText(Lang::get(Lang::New));
+	ui->btnEdit->setText(Lang::get(Lang::Edit));
+	ui->btnDelete->setText(Lang::get(Lang::Remove));
+	ui->btnDown->setText(Lang::get(Lang::MoveDown));
+	ui->btnUp->setText(Lang::get(Lang::MoveUp));
 }
 
-void GUI_LibraryPreferences::skin_changed()
+void GUI_LibraryPreferences::skinChanged()
 {
 	if(!ui){
 		return;
 	}
 
-	ui->btn_new->setIcon(Gui::Icons::icon(Gui::Icons::New));
-	ui->btn_edit->setIcon(Gui::Icons::icon(Gui::Icons::Edit));
-	ui->btn_delete->setIcon(Gui::Icons::icon(Gui::Icons::Remove));
+	ui->btnNew->setIcon(Gui::Icons::icon(Gui::Icons::New));
+	ui->btnEdit->setIcon(Gui::Icons::icon(Gui::Icons::Edit));
+	ui->btnDelete->setIcon(Gui::Icons::icon(Gui::Icons::Remove));
 }
 
 void GUI_LibraryPreferences::showEvent(QShowEvent* e)
@@ -141,30 +141,30 @@ void GUI_LibraryPreferences::showEvent(QShowEvent* e)
 }
 
 
-QString GUI_LibraryPreferences::error_string() const
+QString GUI_LibraryPreferences::errorString() const
 {
 	return tr("Cannot edit library");
 }
 
 
-int GUI_LibraryPreferences::current_row() const
+int GUI_LibraryPreferences::currentRow() const
 {
-	return ui->lv_libs->selectionModel()->currentIndex().row();
+	return ui->lvLibs->selectionModel()->currentIndex().row();
 }
 
 
-void GUI_LibraryPreferences::new_clicked()
+void GUI_LibraryPreferences::newClicked()
 {
 	GUI_EditLibrary* edit_dialog = new GUI_EditLibrary(this);
 
-	connect(edit_dialog, &GUI_EditLibrary::sig_accepted, this, &GUI_LibraryPreferences::edit_dialog_accepted);
+	connect(edit_dialog, &GUI_EditLibrary::sigAccepted, this, &GUI_LibraryPreferences::editDialogAccepted);
 
 	edit_dialog->show();
 }
 
-void GUI_LibraryPreferences::edit_clicked()
+void GUI_LibraryPreferences::editClicked()
 {
-	int cur_row = current_row();
+	int cur_row = currentRow();
 	if(cur_row < 0){
 		return;
 	}
@@ -174,44 +174,44 @@ void GUI_LibraryPreferences::edit_clicked()
 
 	GUI_EditLibrary* edit_dialog = new GUI_EditLibrary(name, path, this);
 
-	connect(edit_dialog, &GUI_EditLibrary::sig_accepted, this, &GUI_LibraryPreferences::edit_dialog_accepted);
+	connect(edit_dialog, &GUI_EditLibrary::sigAccepted, this, &GUI_LibraryPreferences::editDialogAccepted);
 
 	edit_dialog->show();
 }
 
-void GUI_LibraryPreferences::delete_clicked()
+void GUI_LibraryPreferences::deleteClicked()
 {
-	QModelIndex idx = ui->lv_libs->currentIndex();
+	QModelIndex idx = ui->lvLibs->currentIndex();
 	if(!idx.isValid()){
 		return;
 	}
 
-	m->model->remove_row(idx.row());
+	m->model->removeRow(idx.row());
 }
 
 
-void GUI_LibraryPreferences::up_clicked()
+void GUI_LibraryPreferences::upClicked()
 {
-	int row = ui->lv_libs->currentIndex().row();
+	int row = ui->lvLibs->currentIndex().row();
 
-	m->model->move_row(row, row-1);
-	ui->lv_libs->setCurrentIndex(m->model->index(row - 1));
+	m->model->moveRow(row, row-1);
+	ui->lvLibs->setCurrentIndex(m->model->index(row - 1));
 }
 
-void GUI_LibraryPreferences::down_clicked()
+void GUI_LibraryPreferences::downClicked()
 {
-	int row = ui->lv_libs->currentIndex().row();
+	int row = ui->lvLibs->currentIndex().row();
 
-	m->model->move_row(row, row+1);
-	ui->lv_libs->setCurrentIndex(m->model->index(row + 1));
+	m->model->moveRow(row, row+1);
+	ui->lvLibs->setCurrentIndex(m->model->index(row + 1));
 }
 
 
-void GUI_LibraryPreferences::edit_dialog_accepted()
+void GUI_LibraryPreferences::editDialogAccepted()
 {
 	auto* edit_dialog = static_cast<GUI_EditLibrary*>(sender());
 
-	GUI_EditLibrary::EditMode edit_mode = edit_dialog->edit_mode();
+	GUI_EditLibrary::EditMode edit_mode = edit_dialog->editMode();
 
 	QString name = edit_dialog->name();
 	QString path = edit_dialog->path();
@@ -221,7 +221,7 @@ void GUI_LibraryPreferences::edit_dialog_accepted()
 	case GUI_EditLibrary::EditMode::New:
 	{
 		if(!name.isEmpty() && !path.isEmpty()) {
-			m->model->append_row(name, path);
+			m->model->appendRow(name, path);
 		}
 
 	} break;
@@ -229,14 +229,14 @@ void GUI_LibraryPreferences::edit_dialog_accepted()
 	case GUI_EditLibrary::EditMode::Edit:
 	{
 		if(!name.isEmpty()) {
-			if(edit_dialog->has_name_changed()){
-				m->model->rename_row(current_row(), name);
+			if(edit_dialog->hasNameChanged()){
+				m->model->renameRow(currentRow(), name);
 			}
 		}
 
 		if(!path.isEmpty()) {
-			if(edit_dialog->has_path_changed())	{
-				m->model->change_path(current_row(), path);
+			if(edit_dialog->hasPathChanged())	{
+				m->model->changePath(currentRow(), path);
 			}
 		}
 
@@ -249,22 +249,22 @@ void GUI_LibraryPreferences::edit_dialog_accepted()
 	edit_dialog->deleteLater();
 }
 
-void GUI_LibraryPreferences::current_index_changed(const QModelIndex& idx)
+void GUI_LibraryPreferences::selectedIndexChanged(const QModelIndex& idx)
 {
-	int cur_row = idx.row();
-	int row_count = ui->lv_libs->model()->rowCount();
+	int curentRow = idx.row();
+	int rowCount = ui->lvLibs->model()->rowCount();
 
-	ui->btn_up->setDisabled(cur_row <= 0 || cur_row >= row_count);
-	ui->btn_down->setDisabled(cur_row < 0 || cur_row >= row_count - 1);
-	ui->btn_delete->setDisabled(cur_row < 0 || cur_row >= row_count);
-	ui->btn_edit->setDisabled(cur_row < 0 || cur_row >= row_count);
+	ui->btnUp->setDisabled(curentRow <= 0 || curentRow >= rowCount);
+	ui->btnDown->setDisabled(curentRow < 0 || curentRow >= rowCount - 1);
+	ui->btnDelete->setDisabled(curentRow < 0 || curentRow >= rowCount);
+	ui->btnEdit->setDisabled(curentRow < 0 || curentRow >= rowCount);
 
-	ui->lab_current_path->setVisible(cur_row >= 0 || cur_row < row_count);
-	if(cur_row < 0 || cur_row >= row_count){
+	ui->labCurrentPath->setVisible(curentRow >= 0 || curentRow < rowCount);
+	if(curentRow < 0 || curentRow >= rowCount){
 		return;
 	}
 
-	QString path = m->model->path(cur_row);
-	ui->lab_current_path->setText(path);
+	QString path = m->model->path(curentRow);
+	ui->labCurrentPath->setText(path);
 }
 

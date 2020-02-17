@@ -45,12 +45,12 @@ DB::LibraryDatabase* AlbumTest::init()
 
 	for(int i=0; i<100; i++)
 	{
-		m_album_names << Util::random_string(Util::random_number(5, 20));
+		m_album_names << Util::randomString(Util::randomNumber(5, 20));
 	}
 
 	auto* db = DB::Connector::instance();
-	db->register_library_db(0);
-	m_lib_db = db->library_db(0, 0);
+	db->registerLibraryDatabase(0);
+	m_lib_db = db->libraryDatabase(0, 0);
 
 	for(const QString& album_name : m_album_names)
 	{

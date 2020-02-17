@@ -1,6 +1,6 @@
 /* InfoDialogContainer.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -44,10 +44,10 @@ class InfoDialogContainerAsyncHandler : public QObject
 		~InfoDialogContainerAsyncHandler();
 
 		bool start();
-		bool is_running() const;
+		bool isRunning() const;
 
 	private slots:
-		void scanner_finished();
+		void scannerFinished();
 };
 
 
@@ -74,11 +74,11 @@ class InfoDialogContainer
 		 * @brief this function should not be called from outside.
 		 * This function is triggered when the info dialog was closed.
 		 */
-		void info_dialog_closed();
+		void infoDialogClosed();
 
 	private:
-		void check_info_dialog();
-		bool init_dialog(OpenMode open_mode);
+		void checkInfoDialog();
+		bool initDialog(OpenMode open_mode);
 
 		void go(OpenMode open_mode, const MetaDataList& v_md);
 
@@ -96,21 +96,21 @@ class InfoDialogContainer
 		 * considered as tracks
 		 * @return interpretation of metadata
 		 */
-		virtual MD::Interpretation metadata_interpretation() const=0;
+		virtual MD::Interpretation metadataInterpretation() const=0;
 
 		/**
 		 * @brief get the metadata that should be used for the info dialog
 		 * So for lists, the selected tracks are used here
 		 * @return MetaDataList
 		 */
-		virtual MetaDataList info_dialog_data() const=0;
+		virtual MetaDataList infoDialogData() const=0;
 
 		/**
 		 * @brief returns, if the widget can provide metadata instantly
 		 * If false, the info dialog will the pathlist
 		 * @return true in the basic implementation
 		 */
-		virtual bool has_metadata() const;
+		virtual bool hasMetadata() const;
 
 		/**
 		 * @brief Returns a list of paths. This is only used
@@ -119,23 +119,25 @@ class InfoDialogContainer
 		 */
 		virtual QStringList pathlist() const;
 
-
 		/**
 		 * @brief Show the Info dialogs' info tab
 		 */
-		virtual void show_info();
+		virtual void showInfo();
 
 		/**
 		 * @brief Show the Info dialogs' lyrics tab
 		 */
-		virtual void show_lyrics();
+		virtual void showLyrics();
 
 		/**
 		 * @brief Show the tag editor
 		 */
-		virtual void show_edit();
+		virtual void showEdit();
 
-		virtual void show_cover_edit();
+		/**
+		 * @brief Show the cover tab withing the tag editor
+		 */
+		virtual void showCoverEdit();
 };
 
 #endif

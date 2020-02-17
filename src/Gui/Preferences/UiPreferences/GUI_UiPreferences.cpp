@@ -1,6 +1,6 @@
 /* GUI_UiPreferences.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -21,6 +21,7 @@
 #include "GUI_UiPreferences.h"
 #include "GUI_FontPreferences.h"
 #include "GUI_IconPreferences.h"
+#include "GUI_CssEditor.h"
 #include "Gui/Utils/Style.h"
 #include "Gui/Preferences/ui_GUI_UiPreferences.h"
 
@@ -30,8 +31,8 @@
 
 struct GUI_UiPreferences::Private
 {
-	GUI_FontPreferences* font_config=nullptr;
-	GUI_IconPreferences* icon_config=nullptr;
+	GUI_FontPreferences* fontConfig=nullptr;
+	GUI_IconPreferences* iconConfig=nullptr;
 };
 
 GUI_UiPreferences::GUI_UiPreferences(const QString& identifier) :
@@ -40,21 +41,21 @@ GUI_UiPreferences::GUI_UiPreferences(const QString& identifier) :
 	m = Pimpl::make<Private>();
 }
 
-GUI_UiPreferences::~GUI_UiPreferences() {}
+GUI_UiPreferences::~GUI_UiPreferences() = default;
 
-QString GUI_UiPreferences::action_name() const
+QString GUI_UiPreferences::actionName() const
 {
 	return tr("User Interface");
 }
 
 bool GUI_UiPreferences::commit()
 {
-	m->font_config->commit();
-	m->icon_config->commit();
+	m->fontConfig->commit();
+	m->iconConfig->commit();
 
-	SetSetting(Set::Player_ControlStyle, ui->cb_big_cover->isChecked() ? 1 : 0);
-	SetSetting(Set::Player_Style, ui->cb_dark_mode->isChecked() ? 1 : 0);
-	SetSetting(Set::Player_FadingCover, ui->cb_fading_cover->isChecked());
+	SetSetting(Set::Player_ControlStyle, ui->cb_bigCover->isChecked() ? 1 : 0);
+	SetSetting(Set::Player_Style, ui->cb_darkMode->isChecked() ? 1 : 0);
+	SetSetting(Set::Player_FadingCover, ui->cb_fadingCover->isChecked());
 
 	Set::shout<SetNoDB::Player_MetaStyle>();
 
@@ -63,53 +64,61 @@ bool GUI_UiPreferences::commit()
 
 void GUI_UiPreferences::revert()
 {
-	m->font_config->revert();
-	m->icon_config->revert();
+	m->fontConfig->revert();
+	m->iconConfig->revert();
 
-	ui->cb_fading_cover->setChecked(GetSetting(Set::Player_FadingCover));
+	ui->cb_fadingCover->setChecked(GetSetting(Set::Player_FadingCover));
 
-	style_changed();
+	styleChanged();
 }
 
-void GUI_UiPreferences::init_ui()
+void GUI_UiPreferences::initUi()
 {
-	if(is_ui_initialized()){
+	if(isUiInitialized()){
 		return;
 	}
 
-	setup_parent(this, &ui);
+	setupParent(this, &ui);
 
-	m->font_config = new GUI_FontPreferences(ui->tabWidget);
-	m->icon_config = new GUI_IconPreferences(ui->tabWidget);
+	m->fontConfig = new GUI_FontPreferences(ui->tabWidget);
+	m->iconConfig = new GUI_IconPreferences(ui->tabWidget);
 
-	ui->tabWidget->addTab(m->font_config, m->font_config->action_name());
-	ui->tabWidget->addTab(m->icon_config, m->icon_config->action_name());
+	ui->tabWidget->addTab(m->fontConfig, m->fontConfig->actionName());
+	ui->tabWidget->addTab(m->iconConfig, m->iconConfig->actionName());
 
-	ListenSetting(Set::Player_ControlStyle, GUI_UiPreferences::style_changed);
-	ListenSetting(Set::Player_Style, GUI_UiPreferences::style_changed);
+	connect(ui->btn_editCss, &QPushButton::clicked, this, &GUI_UiPreferences::editCssClicked);
 
-	retranslate_ui();
+	ListenSetting(Set::Player_ControlStyle, GUI_UiPreferences::styleChanged);
+	ListenSetting(Set::Player_Style, GUI_UiPreferences::styleChanged);
+
+	retranslate();
 	revert();
 }
 
-void GUI_UiPreferences::style_changed()
+void GUI_UiPreferences::styleChanged()
 {
-	ui->cb_big_cover->setChecked(GetSetting(Set::Player_ControlStyle) == 1);
-	ui->cb_dark_mode->setChecked(Style::is_dark());
+	ui->cb_bigCover->setChecked(GetSetting(Set::Player_ControlStyle) == 1);
+	ui->cb_darkMode->setChecked(Style::isDark());
 }
 
-void GUI_UiPreferences::retranslate_ui()
+void GUI_UiPreferences::editCssClicked()
+{
+	GUI_CssEditor* editor = new GUI_CssEditor(this);
+	editor->show();
+}
+
+void GUI_UiPreferences::retranslate()
 {
 	ui->tabWidget->setTabText(0, tr("General"));
-	ui->cb_big_cover->setText(tr("Show large cover"));
-	ui->cb_dark_mode->setText(Lang::get(Lang::DarkMode));
+	ui->cb_bigCover->setText(tr("Show large cover"));
+	ui->cb_darkMode->setText(Lang::get(Lang::DarkMode));
 
-	if(m->font_config){
-		ui->tabWidget->setTabText(1, m->font_config->action_name());
+	if(m->fontConfig){
+		ui->tabWidget->setTabText(1, m->fontConfig->actionName());
 	}
 
-	if(m->icon_config){
-		ui->tabWidget->setTabText(2, m->icon_config->action_name());
+	if(m->iconConfig){
+		ui->tabWidget->setTabText(2, m->iconConfig->actionName());
 	}
 
 	ui->retranslateUi(this);

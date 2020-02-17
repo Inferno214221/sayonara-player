@@ -1,6 +1,6 @@
 /* CoverConnector.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -36,20 +36,20 @@ namespace DB
 		private DB::Module
 	{
 		public:
-			Covers(const QString& connection_name, DbId db_id);
+			Covers(const QString& connectionName, DbId databaseId);
 			~Covers();
 
 			bool exists(const QString& hash);
-			bool get_cover(const QString& hash, QPixmap& data);
-			bool set_cover(const QString& hash, const QPixmap& data);
+			bool getCover(const QString& hash, QPixmap& data);
+			bool setCover(const QString& hash, const QPixmap& data);
 
-			bool update_cover(const QString& hash, const QPixmap& data);
-			bool insert_cover(const QString& hash, const QPixmap& data);
-			bool remove_cover(const QString& hash);
+			bool updateCover(const QString& hash, const QPixmap& data);
+			bool insertCover(const QString& hash, const QPixmap& data);
+			bool removeCover(const QString& hash);
 
-			Util::Set<QString> get_all_hashes();
+			Util::Set<QString> getAllHashes();
 
-			bool get_all_covers(QMap<QString, QPixmap>& covers);
+			bool getAllCovers(QMap<QString, QPixmap>& covers);
 			void clear();
 	};
 }

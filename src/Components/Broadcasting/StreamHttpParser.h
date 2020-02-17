@@ -1,6 +1,6 @@
 /* StreamHttpParser.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -54,10 +54,10 @@ public:
 
 	HttpAnswer parse(const QByteArray& data);
 
-	QString		get_host() const;
-	bool		is_icy() const;
+	QString		host() const;
+	bool		isIcyStream() const;
 
-	static QString answer_string(HttpAnswer answer);
+	static QString answerString(HttpAnswer answer);
 };
 
 #endif // STREAMHTTPPARSER_H

@@ -1,6 +1,6 @@
 /* CoverView.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -54,45 +54,46 @@ namespace Library
 		QStyleOptionViewItem viewOptions() const override;
 
 		//SayonaraSelectionView
-		int index_by_model_index(const QModelIndex& idx) const override;
-		ModelIndexRange model_indexrange_by_index(int idx) const override;
+		int mapModelIndexToIndex(const QModelIndex& idx) const override;
+		ModelIndexRange mapIndexToModelIndexes(int idx) const override;
+		SelectionViewInterface::SelectionType selectionType() const override;
 
-		void change_zoom(int zoom=-1);
-		void change_sortorder(SortOrder so);
+		void changeZoom(int zoom=-1);
+		void changeSortorder(SortOrder so);
 
-		static QList<ActionPair> sorting_actions();
-		static QStringList zoom_actions();
+		static QList<ActionPair> sortingActions();
+		static QStringList zoomActions();
 
 	public slots:
 		void reload();
-		void clear_cache();
+		void clearCache();
 
 	protected:
 		void fill() override;
-		void init_context_menu() override;
+		void initContextMenu() override;
 
-		void language_changed() override;
+		void languageChanged() override;
 		void wheelEvent(QWheelEvent* e) override;
 		void resizeEvent(QResizeEvent* e) override;
 		void hideEvent(QHideEvent* e) override;
 
 		// ItemView
-		bool is_mergeable() const override;
-		MD::Interpretation metadata_interpretation() const override;
+		bool isMergeable() const override;
+		MD::Interpretation metadataInterpretation() const override;
 
 		int sizeHintForColumn(int) const override;
 
 	private:
-		void resize_sections();
+		void resizeSections();
 
 		// Library::ItemView
-		void play_clicked() override;
-		void play_new_tab_clicked() override;
-		void play_next_clicked() override;
-		void append_clicked() override;
-		void selection_changed(const IndexSet& indexes) override;
-		void refresh_clicked() override;
-		void run_merge_operation(const Library::MergeData& mergedata) override;
+		void playClicked() override;
+		void playNewTabClicked() override;
+		void playNextClicked() override;
+		void appendClicked() override;
+		void selectedItemsChanged(const IndexSet& indexes) override;
+		void refreshClicked() override;
+		void runMergeOperation(const Library::MergeData& mergedata) override;
 	};
 }
 

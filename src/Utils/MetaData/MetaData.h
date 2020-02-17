@@ -1,6 +1,6 @@
 /* MetaData.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -22,7 +22,7 @@
  * MetaData.h
  *
  *  Created on: Mar 10, 2011
- *      Author: Lucio Carreras
+ *      Author: Michael Lugmair (Lucio Carreras)
  */
 
 #ifndef METADATA_H_
@@ -58,106 +58,106 @@ public:
 	~MetaData();
 
 	QString title() const;
-	void set_title(const QString& title);
+	void setTitle(const QString& title);
 
 	QString artist() const;
-	void set_artist(const QString& artist);
-	ArtistId artist_id() const;
-	void set_artist_id(ArtistId id);
+	void setArtist(const QString& artist);
+	ArtistId artistId() const;
+	void setArtistId(ArtistId id);
 
 	QString album() const;
-	void set_album(const QString& album);
-	AlbumId album_id() const;
-	void set_album_id(AlbumId id);
+	void setAlbum(const QString& album);
+	AlbumId albumId() const;
+	void setAlbumId(AlbumId id);
 
 	const QString& comment() const;
-	void set_comment(const QString& comment);
+	void setComment(const QString& comment);
 
 	QString filepath() const;
-	QString set_filepath(QString filepath, RadioMode mode=RadioMode::Undefined);
+	QString setFilepath(QString filepath, RadioMode mode=RadioMode::Undefined);
 
-	ArtistId album_artist_id() const;
-	QString album_artist() const;
-	bool has_album_artist() const;
+	ArtistId albumArtistId() const;
+	QString albumArtist() const;
+	bool hasAlbumArtist() const;
 
-	void set_album_artist(const QString& album_artist, ArtistId id=-1);
-	void set_album_artist_id(ArtistId id);
+	void setAlbumArtist(const QString& albumArtist, ArtistId id=-1);
+	void setAlbumArtistId(ArtistId id);
 
-	void set_radio_station(const QString& name);
-	QString radio_station() const;
+	void setRadioStation(const QString& name);
+	QString radioStation() const;
 
-	RadioMode radio_mode() const;
-	void change_radio_mode(RadioMode mode);
+	RadioMode radioMode() const;
+	void changeRadioMode(RadioMode mode);
 
-	bool is_valid() const;
+	bool isValid() const;
 
 	bool operator==(const MetaData& md) const;
 	bool operator!=(const MetaData& md) const;
-	bool is_equal(const MetaData& md) const;
-	bool is_equal_deep(const MetaData& md) const;
+	bool isEqual(const MetaData& md) const;
+	bool isEqualDeep(const MetaData& md) const;
 
-	const Util::Set<GenreID>& genre_ids() const;
+	const Util::Set<GenreID>& genreIds() const;
 	Util::Set<Genre> genres() const;
-	bool has_genre(const Genre& genre) const;
-	bool remove_genre(const Genre& genre);
-	bool add_genre(const Genre& genre);
-	void set_genres(const Util::Set<Genre>& genres);
-	void set_genres(const QStringList& genres);
+	bool hasGenre(const Genre& genre) const;
+	bool removeGenre(const Genre& genre);
+	bool addGenre(const Genre& genre);
+	void setGenres(const Util::Set<Genre>& genres);
+	void setGenres(const QStringList& genres);
 
-	void set_createdate(uint64_t t);
-	uint64_t createdate() const;
-	QDateTime createdate_datetime() const;
+	void setCreatedDate(uint64_t t);
+	uint64_t createdDate() const;
+	QDateTime createdDateTime() const;
 
-	void set_modifydate(uint64_t t);
-	uint64_t modifydate() const;
-	QDateTime modifydate_datetime() const;
+	void setModifiedDate(uint64_t t);
+	uint64_t modifiedDate() const;
+	QDateTime modifiedDateTime() const;
 
-	QString genres_to_string() const;
-	QStringList genres_to_list() const;
+	QString genresToString() const;
+	QStringList genresToList() const;
 
-	QString to_string() const;
+	QString toString() const;
 
 	static QVariant toVariant(const MetaData& md);
 	static bool fromVariant(const QVariant& v, MetaData& md);
 
 	Disc discnumber() const;
-	void set_discnumber(const Disc& value);
+	void setDiscnumber(const Disc& value);
 
-	Disc disc_count() const;
-	void set_disc_count(const Disc& value);
+	Disc discCount() const;
+	void setDiscCount(const Disc& value);
 
 	Bitrate bitrate() const;
-	void set_bitrate(const Bitrate& value);
+	void setBitrate(const Bitrate& value);
 
-	TrackNum track_number() const;
-	void set_track_number(const uint16_t& value);
+	TrackNum trackNumber() const;
+	void setTrackNumber(const uint16_t& value);
 
 	Year year() const;
-	void set_year(const uint16_t& value);
+	void setYear(const uint16_t& value);
 
 	Filesize filesize() const;
-	void set_filesize(const Filesize& value);
+	void setFilesize(const Filesize& value);
 
 	Rating rating() const;
-	void set_rating(const Rating& value);
+	void setRating(const Rating& value);
 
-	MilliSeconds duration_ms() const;
-	void set_duration_ms(const MilliSeconds& value);
+	MilliSeconds durationMs() const;
+	void setDurationMs(const MilliSeconds& value);
 
-	bool is_extern() const;
-	void set_extern(bool value);
+	bool isExtern() const;
+	void setExtern(bool value);
 
-	bool is_disabled() const;
-	void set_disabled(bool value);
+	bool isDisabled() const;
+	void setDisabled(bool value);
 
-	LibraryId library_id() const;
-	void set_library_id(const LibraryId& value);
+	LibraryId libraryId() const;
+	void setLibraryid(const LibraryId& value);
 
 	TrackID id() const;
-	void set_id(const TrackID& value);
+	void setId(const TrackID& value);
 
 private:
-	QHash<GenreID, Genre>& genre_pool() const;
+	QHash<GenreID, Genre>& genrePool() const;
 };
 
 #ifndef MetaDataDeclared

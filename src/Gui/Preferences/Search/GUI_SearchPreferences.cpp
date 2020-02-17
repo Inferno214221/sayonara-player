@@ -1,6 +1,6 @@
 /* GUI_SearchPreferences.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -29,9 +29,7 @@
 
 GUI_SearchPreferences::GUI_SearchPreferences(const QString& identifier) :
 	Preferences::Base (identifier)
-{
-
-}
+{}
 
 GUI_SearchPreferences::~GUI_SearchPreferences()
 {
@@ -40,7 +38,7 @@ GUI_SearchPreferences::~GUI_SearchPreferences()
 	}
 }
 
-QString GUI_SearchPreferences::action_name() const
+QString GUI_SearchPreferences::actionName() const
 {
 	return Lang::get(Lang::SearchNoun);
 }
@@ -49,15 +47,15 @@ bool GUI_SearchPreferences::commit()
 {
 	Library::SearchModeMask mask = 0;
 
-	if(ui->cb_case_insensitive->isChecked()){
+	if(ui->cbCaseInsensitive->isChecked()){
 		mask |= Library::CaseInsensitve;
 	}
 
-	if(ui->cb_no_special_chars->isChecked()){
+	if(ui->cbNoSpecialChars->isChecked()){
 		mask |= Library::NoSpecialChars;
 	}
 
-	if(ui->cb_no_accents->isChecked()){
+	if(ui->cbNoAccents->isChecked()){
 		mask |= Library::NoDiacriticChars;
 	}
 
@@ -70,19 +68,19 @@ void GUI_SearchPreferences::revert()
 {
 	Library::SearchModeMask mask = GetSetting(Set::Lib_SearchMode);
 
-	ui->cb_case_insensitive->setChecked(mask & Library::CaseInsensitve);
-	ui->cb_no_special_chars->setChecked(mask & Library::NoSpecialChars);
-	ui->cb_no_accents->setChecked(mask & Library::NoDiacriticChars);
+	ui->cbCaseInsensitive->setChecked(mask & Library::CaseInsensitve);
+	ui->cbNoSpecialChars->setChecked(mask & Library::NoSpecialChars);
+	ui->cbNoAccents->setChecked(mask & Library::NoDiacriticChars);
 }
 
-void GUI_SearchPreferences::init_ui()
+void GUI_SearchPreferences::initUi()
 {
-	setup_parent(this, &ui);
+	setupParent(this, &ui);
 
 	revert();
 }
 
-void GUI_SearchPreferences::retranslate_ui()
+void GUI_SearchPreferences::retranslate()
 {
 	ui->retranslateUi(this);
 }

@@ -1,6 +1,6 @@
 /* GUI_PlaylistChooser.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -37,25 +37,22 @@ class GUI_PlaylistChooser :
 	PIMPL(GUI_PlaylistChooser)
 
 public:
-	explicit GUI_PlaylistChooser(QWidget *parent=nullptr);
-	virtual ~GUI_PlaylistChooser();
+	explicit GUI_PlaylistChooser(QWidget* parent=nullptr);
+	~GUI_PlaylistChooser() override;
 
-	QString get_name() const override;
-	QString get_display_name() const override;
+	QString name() const override;
+	QString displayName() const override;
 
 private slots:
-	void playlists_changed();
-	void rename_triggered();
-	void rename_dialog_closed();
-
-	void delete_triggered();
+	void playlistsChanged();
+	void deleteTriggered();
+	void renameTriggered();
+	void renameDialogClosed();
+	void playlistSelected(int index);
 
 private:
-	void retranslate_ui() override;
-	void init_ui() override;
-
-private slots:
-	void playlist_selected(int index);
+	void retranslate() override;
+	void initUi() override;
 };
 
 #endif /* GUIPLAYLISTCHOOSER_H_ */

@@ -1,6 +1,6 @@
 /* GUI_ShortcutPreferences.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -44,16 +44,16 @@ public:
 	void revert() override;
 	bool commit() override;
 
-	QString action_name() const override;
+	QString actionName() const override;
 
 protected:
-	void init_ui() override;
-	void retranslate_ui() override;
-	QString error_string() const override;
+	void initUi() override;
+	void retranslate() override;
+	QString errorString() const override;
 
 private slots:
-	void test_pressed(const QList<QKeySequence>& sequences);
-	void sequence_entered();
+	void testPressed(const QList<QKeySequence>& sequences);
+	void sequenceEntered();
 };
 
 #endif // GUI_ShortcutPreferences_H

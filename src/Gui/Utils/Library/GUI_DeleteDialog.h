@@ -1,6 +1,6 @@
 /* LibraryDeleteDialog.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -43,19 +43,19 @@ class GUI_DeleteDialog :
 
 public:
 	GUI_DeleteDialog(int n_tracks, QWidget* parent=nullptr);
-	virtual ~GUI_DeleteDialog();
+	~GUI_DeleteDialog() override;
 
-	void set_num_tracks(int n_tracks);
+	void setTrackCount(int trackCount);
 
 	Library::TrackDeletionMode answer() const;
 
 private slots:
-	void yes_clicked();
-	void only_from_library_clicked();
-	void no_clicked();
+	void yesClicked();
+	void noClicked();
+	void onlyFromLibraryclicked();
 
 protected:
-	void showEvent(QShowEvent* e);
+	void showEvent(QShowEvent* e) override;
 };
 
 

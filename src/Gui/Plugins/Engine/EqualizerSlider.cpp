@@ -1,6 +1,6 @@
 /* EqualizerSlider.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -28,14 +28,14 @@ using Gui::EqualizerSlider;
 struct EqualizerSlider::Private
 {
 	QLabel* label=nullptr;
-	int		idx;
+	int		index;
 
 	Private() :
-		idx(-1)
+		index(-1)
 	{}
 };
 
-EqualizerSlider::EqualizerSlider(QWidget *parent) :
+EqualizerSlider::EqualizerSlider(QWidget* parent) :
 	Gui::Slider(parent)
 {
 	m = Pimpl::make<Private>();
@@ -44,15 +44,15 @@ EqualizerSlider::EqualizerSlider(QWidget *parent) :
 	this->setMinimum(-24);
 	this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::MinimumExpanding);
 
-	new QShortcut(QKeySequence(Qt::Key_0), this, SLOT(set_zero()), nullptr, Qt::WidgetShortcut);
+	new QShortcut(QKeySequence(Qt::Key_0), this, SLOT(setZero()), nullptr, Qt::WidgetShortcut);
 }
 
-EqualizerSlider::~EqualizerSlider() {}
+EqualizerSlider::~EqualizerSlider() = default;
 
-void EqualizerSlider::set_label(int idx, QLabel* label)
+void EqualizerSlider::setLabel(int idx, QLabel* label)
 {
 	m->label = label;
-	m->idx = idx;
+	m->index = idx;
 }
 
 QLabel* EqualizerSlider::label() const
@@ -62,7 +62,7 @@ QLabel* EqualizerSlider::label() const
 
 int EqualizerSlider::index() const
 {
-	return m->idx;
+	return m->index;
 }
 
 void EqualizerSlider::sliderChange(SliderChange change)
@@ -71,12 +71,12 @@ void EqualizerSlider::sliderChange(SliderChange change)
 
 	if(change == QAbstractSlider::SliderValueChange)
 	{
-		emit sig_value_changed(m->idx, eq_value());
+		emit sigValueChanged(m->index, equalizerValue());
 	}
 }
 
 
-double EqualizerSlider::eq_value() const
+double EqualizerSlider::equalizerValue() const
 {
 	int val = this->value();
 	if( val > 0 ){
@@ -88,10 +88,10 @@ double EqualizerSlider::eq_value() const
 	}
 }
 
-void EqualizerSlider::set_zero()
+void EqualizerSlider::setZero()
 {
 	this->setValue(0);
-	emit sig_value_changed(m->idx, eq_value());
+	emit sigValueChanged(m->index, equalizerValue());
 }
 
 QSize EqualizerSlider::minimumSizeHint() const

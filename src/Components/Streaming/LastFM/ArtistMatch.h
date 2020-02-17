@@ -1,6 +1,6 @@
 /* ArtistMatch.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -34,10 +34,10 @@ namespace LastFM
 
 		struct ArtistDesc
 		{
-			QString artist_name;
+			QString artistName;
 			QString mbid;
 
-			ArtistDesc(const QString& artist_name, const QString& mbid);
+			ArtistDesc(const QString& artistName, const QString& mbid);
 
 			bool operator ==(const ArtistDesc& other) const;
 			bool operator <(const ArtistDesc& other) const;
@@ -67,7 +67,7 @@ namespace LastFM
 		 * @brief checks, if structure is valid.
 		 * @return false, if all bins are empty. True else
 		 */
-		bool is_valid() const;
+		bool isValid() const;
 
 		/**
 		 * @brief Compares two ArtistMatch structures
@@ -95,13 +95,13 @@ namespace LastFM
 		 * @brief get the corresponding artist name of the ArtistMatch structure
 		 * @return artist name
 		 */
-		QString get_artist_name() const;
+		QString artistName() const;
 
 		/**
 		 * @brief converts the artist match to string
 		 * @return string representation
 		 */
-		QString to_string() const;
+		QString toString() const;
 	};
 }
 

@@ -20,7 +20,7 @@ private slots:
 
 void CryptTest::crypttest()
 {
-	QByteArray key = Util::random_string(32).toLocal8Bit();
+	QByteArray key = Util::randomString(32).toLocal8Bit();
 
 	QStringList sources
 	{

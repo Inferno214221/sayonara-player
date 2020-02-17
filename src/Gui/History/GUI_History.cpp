@@ -17,10 +17,10 @@ using Session::Timecode;
 struct GUI_History::Private
 {
 	Session::Manager* session=nullptr;
-	int last_page;
+	int lastPage;
 
 	Private() :
-		last_page(10000)
+		lastPage(10000)
 	{
 		session = Session::Manager::instance();
 	}
@@ -34,10 +34,10 @@ GUI_History::GUI_History(QWidget* parent) :
 	ui = new Ui::GUI_History();
 	ui->setupUi(this);
 
-	change_page(0);
+	changePage(0);
 
-	connect(ui->btn_older, &QPushButton::clicked, this, &GUI_History::older_clicked);
-	connect(ui->btn_newer, &QPushButton::clicked, this, &GUI_History::newer_clicked);
+	connect(ui->btn_older, &QPushButton::clicked, this, &GUI_History::olderClicked);
+	connect(ui->btn_newer, &QPushButton::clicked, this, &GUI_History::newerClicked);
 }
 
 GUI_History::~GUI_History()
@@ -50,20 +50,20 @@ QFrame* GUI_History::header() const
 	return ui->header;
 }
 
-void GUI_History::older_clicked()
+void GUI_History::olderClicked()
 {
-	bool b = change_page(ui->stackedWidget->currentIndex() + 1);
+	bool b = changePage(ui->stackedWidget->currentIndex() + 1);
 	if(!b){
 		ui->btn_older->setEnabled(false);
 	}
 }
 
-void GUI_History::newer_clicked()
+void GUI_History::newerClicked()
 {
-	change_page(ui->stackedWidget->currentIndex() - 1);
+	changePage(ui->stackedWidget->currentIndex() - 1);
 }
 
-QWidget* GUI_History::add_new_page()
+QWidget* GUI_History::addNewPage()
 {
 	auto* page = new QWidget();
 	auto* page_layout = new QVBoxLayout(page);
@@ -83,23 +83,23 @@ QWidget* GUI_History::add_new_page()
 	return scrollarea_content;
 }
 
-bool GUI_History::change_page(int index)
+bool GUI_History::changePage(int index)
 {
 	if(index >= ui->stackedWidget->count())
 	{
-		const Session::EntryListMap history = m->session->history_entries(index * 5, 5);
+		const Session::EntryListMap history = m->session->historyEntries(index * 5, 5);
 		if(history.isEmpty()){
 			return false;
 		}
 
-		QWidget* page = add_new_page();
+		QWidget* page = addNewPage();
 
 		QList<Timecode> session_ids = history.keys();
 
 		 // insert today if neccessary
 		const Timecode now = Session::now();
-		const Timecode today_begin = Session::day_begin(now);
-		const Timecode today_end = Session::day_end(now);
+		const Timecode today_begin = Session::dayBegin(now);
+		const Timecode today_end = Session::dayEnd(now);
 		bool contains_today = Util::Algorithm::contains(session_ids, [today_begin, today_end](auto tc){
 			return (tc >= today_begin && tc <= today_end);
 		});
@@ -116,7 +116,7 @@ bool GUI_History::change_page(int index)
 
 		for(Timecode timecode : session_ids)
 		{
-			const Timecode day_begin = Session::day_begin(timecode);
+			const Timecode day_begin = Session::dayBegin(timecode);
 			if(timecodes.contains(day_begin)){
 				continue;
 			}
@@ -129,7 +129,7 @@ bool GUI_History::change_page(int index)
 		}
 
 		if(timecodes.count() < 5){
-			m->last_page = index;
+			m->lastPage = index;
 		}
 	}
 
@@ -139,7 +139,7 @@ bool GUI_History::change_page(int index)
 	}
 
 	ui->btn_newer->setEnabled(index > 0);
-	ui->btn_older->setEnabled(index < m->last_page);
+	ui->btn_older->setEnabled(index < m->lastPage);
 
 	ui->stackedWidget->setCurrentIndex(index);
 

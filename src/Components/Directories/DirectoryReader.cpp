@@ -1,6 +1,6 @@
 /* DirectoryReader.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -58,19 +58,19 @@ DirectoryReader::DirectoryReader() :
 
 DirectoryReader::~DirectoryReader() = default;
 
-void DirectoryReader::set_filter(const QStringList & filter)
+void DirectoryReader::setFilter(const QStringList & filter)
 {
 	m->name_filters = filter;
 }
 
-void DirectoryReader::set_filter(const QString& filter)
+void DirectoryReader::setFilter(const QString& filter)
 {
 	m->name_filters.clear();
 	m->name_filters << filter;
 }
 
 
-void DirectoryReader::scan_files_recursive(const QDir& base_dir_orig, QStringList& files) const
+void DirectoryReader::scanFilesRecursive(const QDir& base_dir_orig, QStringList& files) const
 {
 	QDir base_dir(base_dir_orig);
 
@@ -80,7 +80,7 @@ void DirectoryReader::scan_files_recursive(const QDir& base_dir_orig, QStringLis
 	for(const QString& dir : dirs)
 	{
 		base_dir.cd(dir);
-		scan_files_recursive(base_dir, files);
+		scanFilesRecursive(base_dir, files);
 		base_dir.cdUp();
 	}
 
@@ -89,7 +89,7 @@ void DirectoryReader::scan_files_recursive(const QDir& base_dir_orig, QStringLis
 	}
 }
 
-void DirectoryReader::scan_files(const QDir& base_dir, QStringList& files) const
+void DirectoryReader::scanFiles(const QDir& base_dir, QStringList& files) const
 {
 	const QStringList tmp_files = base_dir.entryList
 	(
@@ -104,17 +104,17 @@ void DirectoryReader::scan_files(const QDir& base_dir, QStringList& files) const
 }
 
 
-MetaDataList DirectoryReader::scan_metadata(const QStringList& lst)
+MetaDataList DirectoryReader::scanMetadata(const QStringList& lst)
 {
 	MetaDataList v_md;
 	QStringList sound_files, playlist_files;
 
 	// fetch sound and playlist files
 	QStringList filter;
-	filter << Util::soundfile_extensions();
-	filter << Util::playlist_extensions();
+	filter << Util::soundfileExtensions();
+	filter << Util::playlistExtensions();
 
-	set_filter(filter);
+	setFilter(filter);
 
 	for( const QString& str : lst)
 	{
@@ -122,31 +122,31 @@ MetaDataList DirectoryReader::scan_metadata(const QStringList& lst)
 			continue;
 		}
 
-		if(Util::File::is_dir(str))
+		if(Util::File::isDir(str))
 		{
 			QDir dir(str);
 			dir.cd(str);
 
 			QStringList files;
-			scan_files_recursive(dir, files);
+			scanFilesRecursive(dir, files);
 			for(const QString& file : Algorithm::AsConst(files)){
-				if(Util::File::is_soundfile(file)){
+				if(Util::File::isSoundFile(file)){
 					sound_files << file;
 				}
 			}
 		}
 
-		else if(Util::File::is_soundfile(str)){
+		else if(Util::File::isSoundFile(str)){
 			sound_files << str;
 		}
 
-		else if(Util::File::is_playlistfile(str)) {
+		else if(Util::File::isPlaylistFile(str)) {
 			playlist_files << str;
 		}
 	}
 
 	auto* db = DB::Connector::instance();
-	DB::LibraryDatabase* lib_db = db->library_db(-1, 0);
+	DB::LibraryDatabase* lib_db = db->libraryDatabase(-1, 0);
 
 	lib_db->getMultipleTracksByPath(sound_files, v_md);
 
@@ -157,24 +157,24 @@ MetaDataList DirectoryReader::scan_metadata(const QStringList& lst)
 				continue;
 		}
 
-		it->set_extern(true);
+		it->setExtern(true);
 		if(!Tagging::Utils::getMetaDataOfFile(*it))
 		{
-			it->set_title(it->filepath());
+			it->setTitle(it->filepath());
 			continue;
 		}
 	}
 
 	for(const QString& playlist_file : Algorithm::AsConst(playlist_files))
 	{
-		v_md << PlaylistParser::parse_playlist(playlist_file);
+		v_md << PlaylistParser::parsePlaylist(playlist_file);
 	}
 
 	return v_md;
 }
 
 
-QStringList DirectoryReader::find_files_rec(const QDir& dir_orig, const QString& filename)
+QStringList DirectoryReader::findFilesRecursive(const QDir& dir_orig, const QString& filename)
 {
 	if(dir_orig.canonicalPath().isEmpty()){
 		return QStringList();
@@ -197,7 +197,7 @@ QStringList DirectoryReader::find_files_rec(const QDir& dir_orig, const QString&
 		}
 
 		if(dir.cd(d)) {
-			ret += find_files_rec(dir, filename);
+			ret += findFilesRecursive(dir, filename);
 			dir.cdUp();
 		}
 	}

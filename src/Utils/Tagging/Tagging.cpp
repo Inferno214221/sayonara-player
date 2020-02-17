@@ -1,6 +1,6 @@
 /* id3.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -56,7 +56,7 @@
 using namespace Tagging::Utils;
 namespace FileUtils=::Util::File;
 
-bool Tagging::Utils::is_valid_file(const TagLib::FileRef& f)
+bool Tagging::Utils::isValidFile(const TagLib::FileRef& f)
 {
 	if( f.isNull() ||
 		!f.tag() ||
@@ -74,7 +74,7 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 	bool success;
 
 	QFileInfo fi(md.filepath());
-	md.set_filesize(Filesize(fi.size()));
+	md.setFilesize(Filesize(fi.size()));
 	if(fi.size() <= 0){
 		return false;
 	}
@@ -105,12 +105,12 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 			read_style
 	);
 
-	if(!is_valid_file(f)){
-		sp_log(Log::Warning, "Tagging") << "Cannot open tags for " << md.filepath() << ": Err 1";
+	if(!isValidFile(f)){
+		spLog(Log::Warning, "Tagging") << "Cannot open tags for " << md.filepath() << ": Err 1";
 		return false;
 	}
 
-	ParsedTag parsed_tag = tag_type_from_fileref(f);
+	ParsedTag parsed_tag = getTagTypeFromFileref(f);
 	TagLib::Tag* tag = parsed_tag.tag;
 
 	QString artist = QString::fromUtf8(tag->artist().toCString(true));
@@ -125,73 +125,73 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 	Models::Popularimeter popularimeter;
 	if(parsed_tag.type == TagType::ID3v2)
 	{
-		auto id3v2 = parsed_tag.id3_tag();
+		auto id3v2 = parsed_tag.id3Tag();
 		ID3v2::AlbumArtistFrame album_artist_frame(id3v2);
 		success = album_artist_frame.read(album_artist);
 		if(success){
-			md.set_album_artist(album_artist);
+			md.setAlbumArtist(album_artist);
 		}
 
 		ID3v2::PopularimeterFrame popularimeter_frame(id3v2);
 		success = popularimeter_frame.read(popularimeter);
 		if(success){
-			md.set_rating(popularimeter.get_rating());
+			md.setRating(popularimeter.get_rating());
 		}
 
 		ID3v2::DiscnumberFrame discnumber_frame(id3v2);
 		success = discnumber_frame.read(discnumber);
 		if(success){
-			md.set_discnumber(discnumber.disc);
-			md.set_disc_count(discnumber.disccount);
+			md.setDiscnumber(discnumber.disc);
+			md.setDiscCount(discnumber.disccount);
 		}
 	}
 
 	else if(parsed_tag.type == TagType::Xiph)
 	{
-		auto xiph = parsed_tag.xiph_tag();
+		auto xiph = parsed_tag.xiphTag();
 
 		Xiph::AlbumArtistFrame album_artist_frame(xiph);
 		success = album_artist_frame.read(album_artist);
 		if(success){
-			md.set_album_artist(album_artist);
+			md.setAlbumArtist(album_artist);
 		}
 
 		Xiph::PopularimeterFrame popularimeter_frame(xiph);
 		success = popularimeter_frame.read(popularimeter);
 		if(success){
-			md.set_rating(popularimeter.get_rating());
+			md.setRating(popularimeter.get_rating());
 		}
 
 		Xiph::DiscnumberFrame discnumber_frame(xiph);
 		success = discnumber_frame.read(discnumber);
 		if(success){
-			md.set_discnumber(discnumber.disc);
-			md.set_disc_count(discnumber.disccount);
+			md.setDiscnumber(discnumber.disc);
+			md.setDiscCount(discnumber.disccount);
 		}
 	}
 
 	else if(parsed_tag.type == TagType::MP4)
 	{
-		auto mp4 = parsed_tag.mp4_tag();
+		auto mp4 = parsed_tag.mp4Tag();
 
 		MP4::AlbumArtistFrame album_artist_frame(mp4);
 		success = album_artist_frame.read(album_artist);
 		if(success){
-			md.set_album_artist(album_artist);
+			md.setAlbumArtist(album_artist);
 		}
 
 		MP4::DiscnumberFrame discnumber_frame(mp4);
 		success = discnumber_frame.read(discnumber);
 		if(success){
-			md.set_discnumber(discnumber.disc);
-			md.set_disc_count(discnumber.disccount);
+			md.setDiscnumber(discnumber.disc);
+			md.setDiscCount(discnumber.disccount);
 		}
 
 		MP4::PopularimeterFrame popularimeter_frame(mp4);
 
 		success = popularimeter_frame.read(popularimeter);
 		if(success){
-			md.set_rating(popularimeter.get_rating());
+			md.setRating(popularimeter.get_rating());
 		}
 
 		//sp_log(Log::Debug, this) << "Read rating " << (int) md.rating << ": " << success;
@@ -209,7 +209,7 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 	}
 
 	QStringList genres;
-	QString genre_str = ::Util::cvt_str_to_first_upper(genre);
+	QString genre_str = ::Util::stringToFirstUpper(genre);
 	genres = genre_str.split(QRegExp(",|/|;"));
 	for(int i=0; i<genres.size(); i++) {
 		genres[i] = genres[i].trimmed();
@@ -218,30 +218,30 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 	genres.removeDuplicates();
 	genres.removeAll("");
 
-	md.set_album(album);
-	md.set_artist(artist);
-	md.set_title(title);
-	md.set_duration_ms(length);
-	md.set_year(Year(year));
-	md.set_track_number(TrackNum(track));
-	md.set_bitrate(Bitrate(bitrate));
-	md.set_genres(genres);
-	md.set_discnumber(discnumber.disc);
-	md.set_disc_count(discnumber.disccount);
-	md.set_rating(popularimeter.get_rating());
-	md.set_comment(comment);
-	md.add_custom_field("has_album_art", "", QString::number(Tagging::Covers::has_cover(parsed_tag)));
+	md.setAlbum(album);
+	md.setArtist(artist);
+	md.setTitle(title);
+	md.setDurationMs(length);
+	md.setYear(Year(year));
+	md.setTrackNumber(TrackNum(track));
+	md.setBitrate(Bitrate(bitrate));
+	md.setGenres(genres);
+	md.setDiscnumber(discnumber.disc);
+	md.setDiscCount(discnumber.disccount);
+	md.setRating(popularimeter.get_rating());
+	md.setComment(comment);
+	md.addCustomField("has_album_art", "", QString::number(Tagging::Covers::hasCover(parsed_tag)));
 
 	if(md.title().length() == 0)
 	{
 		QString dir, filename;
-		FileUtils::split_filename(md.filepath(), dir, filename);
+		FileUtils::splitFilename(md.filepath(), dir, filename);
 
 		if(filename.size() > 4){
 			filename = filename.left(filename.length() - 4);
 		}
 
-		md.set_title(filename);
+		md.setTitle(filename);
 	}
 
 	return true;
@@ -258,18 +258,18 @@ bool Tagging::Utils::setMetaDataOfFile(const MetaData& md)
 
 	TagLib::FileRef f(TagLib::FileName(filepath.toUtf8()));
 
-	if(!is_valid_file(f)){
-		sp_log(Log::Warning, "Tagging") << "Cannot open tags for " << md.filepath() << ": Err 2";
+	if(!isValidFile(f)){
+		spLog(Log::Warning, "Tagging") << "Cannot open tags for " << md.filepath() << ": Err 2";
 		return false;
 	}
 
 	TagLib::String album(md.album().toUtf8().data(), TagLib::String::UTF8);
 	TagLib::String artist(md.artist().toUtf8().data(), TagLib::String::UTF8);
 	TagLib::String title(md.title().toUtf8().data(), TagLib::String::UTF8);
-	TagLib::String genre(md.genres_to_string().toUtf8().data(), TagLib::String::UTF8);
+	TagLib::String genre(md.genresToString().toUtf8().data(), TagLib::String::UTF8);
 	TagLib::String comment(md.comment().toUtf8().data(), TagLib::String::UTF8);
 
-	ParsedTag parsed_tag = tag_type_from_fileref(f);
+	ParsedTag parsed_tag = getTagTypeFromFileref(f);
 	TagLib::Tag* tag = parsed_tag.tag;
 
 	tag->setAlbum(album);
@@ -277,16 +277,16 @@ bool Tagging::Utils::setMetaDataOfFile(const MetaData& md)
 	tag->setTitle(title);
 	tag->setGenre(genre);
 	tag->setYear(md.year());
-	tag->setTrack(md.track_number());
+	tag->setTrack(md.trackNumber());
 	tag->setComment(comment);
 
 	Models::Popularimeter popularimeter("sayonara player", Rating::Zero, 0);
 	popularimeter.set_rating(md.rating());
-	Models::Discnumber discnumber(md.discnumber(), md.disc_count());
+	Models::Discnumber discnumber(md.discnumber(), md.discCount());
 
 	if(parsed_tag.type == TagType::ID3v2)
 	{
-		auto id3v2 = parsed_tag.id3_tag();
+		auto id3v2 = parsed_tag.id3Tag();
 		ID3v2::PopularimeterFrame popularimeter_frame(id3v2);
 		popularimeter_frame.write(popularimeter);
 
@@ -294,7 +294,7 @@ bool Tagging::Utils::setMetaDataOfFile(const MetaData& md)
 		discnumber_frame.write(discnumber);
 
 		ID3v2::AlbumArtistFrame album_artist_frame(id3v2);
-		album_artist_frame.write(md.album_artist());
+		album_artist_frame.write(md.albumArtist());
 	}
 
 	else if(parsed_tag.type == TagType::Xiph)
@@ -309,7 +309,7 @@ bool Tagging::Utils::setMetaDataOfFile(const MetaData& md)
 		}
 #endif
 
-		auto xiph = parsed_tag.xiph_tag();
+		auto xiph = parsed_tag.xiphTag();
 		Xiph::PopularimeterFrame popularimeter_frame(xiph);
 		popularimeter_frame.write(popularimeter);
 
@@ -317,14 +317,14 @@ bool Tagging::Utils::setMetaDataOfFile(const MetaData& md)
 		discnumber_frame.write(discnumber);
 
 		Xiph::AlbumArtistFrame album_artist_frame(xiph);
-		album_artist_frame.write(md.album_artist());
+		album_artist_frame.write(md.albumArtist());
 	}
 
 	else if(parsed_tag.type == TagType::MP4)
 	{
-		auto mp4 = parsed_tag.mp4_tag();
+		auto mp4 = parsed_tag.mp4Tag();
 		MP4::AlbumArtistFrame album_artist_frame(mp4);
-		album_artist_frame.write(md.album_artist());
+		album_artist_frame.write(md.albumArtist());
 
 		MP4::DiscnumberFrame discnumber_frame(mp4);
 		discnumber_frame.write(discnumber);
@@ -335,14 +335,14 @@ bool Tagging::Utils::setMetaDataOfFile(const MetaData& md)
 
 	bool success = f.save();
 	if(!success){
-		sp_log(Log::Warning, "Tagging") << "Could not save " << md.filepath();
+		spLog(Log::Warning, "Tagging") << "Could not save " << md.filepath();
 
 	}
 
 	return success;
 }
 
-Tagging::ParsedTag Tagging::Utils::tag_type_from_fileref(const TagLib::FileRef& f)
+Tagging::ParsedTag Tagging::Utils::getTagTypeFromFileref(const TagLib::FileRef& f)
 {
 	ParsedTag ret;
 
@@ -416,18 +416,18 @@ Tagging::ParsedTag Tagging::Utils::tag_type_from_fileref(const TagLib::FileRef& 
 }
 
 
-Tagging::TagType Tagging::Utils::get_tag_type(const QString &filepath)
+Tagging::TagType Tagging::Utils::getTagType(const QString& filepath)
 {
 	TagLib::FileRef f(TagLib::FileName(filepath.toUtf8()));
-	if(!is_valid_file(f)){
+	if(!isValidFile(f)){
 		return TagType::Unknown;
 	}
 
-	ParsedTag parsed = tag_type_from_fileref(f);
+	ParsedTag parsed = getTagTypeFromFileref(f);
 	return parsed.type;
 }
 
-QString Tagging::Utils::tag_type_to_string(TagType type)
+QString Tagging::Utils::tagTypeToString(TagType type)
 {
 	switch(type){
 		case TagType::ID3v1:

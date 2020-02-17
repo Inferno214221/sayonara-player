@@ -2,7 +2,7 @@
 
 /* Icons.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -115,7 +115,7 @@ QIcon Icons::icon(Icons::IconName spec, Icons::IconMode mode)
 	};
 
 	int index = 0;
-	bool is_dark = Style::is_dark();
+	bool is_dark = Style::isDark();
 
 	if(mode == Icons::IconMode::ForceStdIcon)
 	{
@@ -153,7 +153,7 @@ QIcon Icons::icon(Icons::IconName spec, Icons::IconMode mode)
 
 QIcon Icons::icon(IconName spec)
 {
-	change_theme();
+	changeTheme();
 
 	if(s_force_standard_icons){
 		return icon(spec, IconMode::ForceStdIcon);
@@ -164,7 +164,7 @@ QIcon Icons::icon(IconName spec)
 	}
 }
 
-void Icons::change_theme()
+void Icons::changeTheme()
 {
 	QString theme = GetSetting(Set::Icon_Theme);
 
@@ -217,7 +217,7 @@ QPixmap Icons::pixmap(Icons::IconName spec, Icons::IconMode mode)
 
 	if(pm.isNull())
 	{
-		if(!Style::is_dark())
+		if(!Style::isDark())
 		{
 	#ifdef Q_OS_WIN
 			pm = QIcon(get_win_icon_name(std_name)).pixmap(QSize(32,32));
@@ -244,17 +244,17 @@ QPixmap Icons::pixmap(Icons::IconName spec, Icons::IconMode mode)
 	return Gui::Util::pixmap(dark_name, Gui::Util::NoTheme);
 }
 
-void Icons::set_standard_theme(const QString& name)
+void Icons::setStandardTheme(const QString& name)
 {
 	s_standard_theme = strdup(name.toLocal8Bit().data());
 }
 
-QString Icons::standard_theme()
+QString Icons::standardTheme()
 {
 	return QString(s_standard_theme);
 }
 
-void Icons::force_standard_icons(bool b)
+void Icons::forceStandardIcons(bool b)
 {
 	s_force_standard_icons = b;
 }

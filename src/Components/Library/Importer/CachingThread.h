@@ -1,6 +1,6 @@
 /* ImportFolderThread.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -40,39 +40,40 @@ namespace Library
 		PIMPL(CachingThread)
 
 		signals:
-			void			sig_progress(int);
+			void			sigCachedFilesChanged();
 
 		public:
-			explicit CachingThread(const QStringList& file_list, const QString& library_path, QObject *parent=nullptr);
+			explicit CachingThread(const QStringList& fileList, const QString& libraryPath, QObject* parent=nullptr);
 			~CachingThread() override;
 
 			Library::ImportCachePtr	cache() const;
 			void			cancel();
-			bool			is_cancelled() const;
-			QStringList		temporary_files() const;
+			bool			isCancelled() const;
+			QStringList		temporaryFiles() const;
+			int				cachedFileCount() const;
+			int				soundfileCount() const;
+
 
 		private:
 			void run() override;
 
-			void update_progress();
-			void scan_dir(const QString& dir);
-			bool scan_rar(const QString& rar);
-			bool scan_zip(const QString& zip);
-			bool scan_tgz(const QString& tgz);
-			void add_file(const QString& filename, const QString& relative_dir=QString());
+			void scanDirectory(const QString& dir);
+			bool scanRarArchive(const QString& rar);
+			bool scanZipArchive(const QString& zip);
+			bool scanTgzArchive(const QString& tgz);
+			void addFile(const QString& filename, const QString& relativeDir=QString());
 
-
-			QString create_temp_dir();
-			bool scan_archive
+			QString createTempDirectory();
+			bool scanArchive
 			(
-				const QString& temp_dir,
+				const QString& tempDirectory,
 				const QString& binary,
 				const QStringList& args,
-				const QList<int>& success_codes=QList<int>{0}
+				const QList<int>& successCodes=QList<int>{0}
 			);
 
 		private slots:
-			void metadata_changed();
+			void metadataChanged();
 	};
 }
 

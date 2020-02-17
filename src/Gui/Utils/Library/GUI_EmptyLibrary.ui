@@ -39,7 +39,7 @@
          </widget>
         </item>
         <item row="4" column="2" colspan="2">
-         <widget class="QLineEdit" name="le_name"/>
+         <widget class="QLineEdit" name="leName"/>
         </item>
         <item row="8" column="1">
          <spacer name="verticalSpacer_2">
@@ -55,14 +55,14 @@
          </spacer>
         </item>
         <item row="3" column="3">
-         <widget class="QPushButton" name="btn_choose_dir">
+         <widget class="QPushButton" name="btnChooseDir">
           <property name="text">
            <string notr="true">≡</string>
           </property>
          </widget>
         </item>
         <item row="3" column="2">
-         <widget class="QLineEdit" name="le_path">
+         <widget class="QLineEdit" name="lePath">
           <property name="focusPolicy">
            <enum>Qt::ClickFocus</enum>
           </property>
@@ -72,21 +72,21 @@
          </widget>
         </item>
         <item row="7" column="1" colspan="3">
-         <widget class="QPushButton" name="btn_ok">
+         <widget class="QPushButton" name="btnOk">
           <property name="text">
            <string notr="true">Ok</string>
           </property>
          </widget>
         </item>
         <item row="4" column="1">
-         <widget class="QLabel" name="lab_name">
+         <widget class="QLabel" name="labName">
           <property name="text">
            <string notr="true">Name</string>
           </property>
          </widget>
         </item>
         <item row="3" column="1">
-         <widget class="QLabel" name="lab_path">
+         <widget class="QLabel" name="labPath">
           <property name="text">
            <string notr="true">Path</string>
           </property>
@@ -113,7 +113,7 @@
          </spacer>
         </item>
         <item row="1" column="1" colspan="3">
-         <widget class="QLabel" name="lab_title">
+         <widget class="QLabel" name="labTitle">
           <property name="font">
            <font>
             <weight>75</weight>
@@ -139,12 +139,21 @@
          </spacer>
         </item>
         <item row="6" column="1" colspan="3">
-         <widget class="QLabel" name="lab_error">
+         <widget class="QLabel" name="labError">
           <property name="text">
            <string notr="true">Error</string>
           </property>
+          <property name="textFormat">
+           <enum>Qt::RichText</enum>
+          </property>
           <property name="wordWrap">
-           <bool>true</bool>
+           <bool>false</bool>
+          </property>
+          <property name="margin">
+           <number>10</number>
+          </property>
+          <property name="indent">
+           <number>0</number>
           </property>
          </widget>
         </item>
@@ -167,7 +176,7 @@
     </layout>
    </item>
    <item row="0" column="0">
-    <widget class="QFrame" name="header_frame">
+    <widget class="QFrame" name="headerFrame">
      <property name="minimumSize">
       <size>
        <width>0</width>
@@ -185,10 +194,10 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>btn_choose_dir</tabstop>
-  <tabstop>le_name</tabstop>
-  <tabstop>btn_ok</tabstop>
-  <tabstop>le_path</tabstop>
+  <tabstop>btnChooseDir</tabstop>
+  <tabstop>leName</tabstop>
+  <tabstop>btnOk</tabstop>
+  <tabstop>lePath</tabstop>
  </tabstops>
  <resources/>
  <connections/>

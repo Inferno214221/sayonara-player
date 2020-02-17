@@ -1,6 +1,6 @@
 /* LocalLibraryMenu.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -46,48 +46,48 @@ namespace Library
 		Q_OBJECT
 		PIMPL(LocalLibraryMenu)
 
-	signals:
-		void sig_reload_library();
-		void sig_import_file();
-		void sig_import_folder();
-		void sig_info();
+		signals:
+			void sigReloadLibrary();
+			void sigImportFile();
+			void sigImportFolder();
+			void sigInfo();
 
-		void sig_name_changed(const QString& name);
-		void sig_path_changed(const QString& path);
+			void sigNameChanged(const QString& name);
+			void sigPathChanged(const QString& path);
 
-	public:
-		explicit LocalLibraryMenu(const QString& name, const QString& path, QWidget* parent=nullptr);
-		~LocalLibraryMenu() override;
+		public:
+			explicit LocalLibraryMenu(const QString& name, const QString& path, QWidget* parent=nullptr);
+			~LocalLibraryMenu() override;
 
-		void refresh_name(const QString& name);
-		void refresh_path(const QString& path);
+			void refreshName(const QString& name);
+			void refreshPath(const QString& path);
 
-		void set_show_album_covers_checked(bool checked);
-		void set_library_busy(bool b);
-		void set_library_empty(bool b);
+			void setShowAlbumCoversChecked(bool checked);
+			void setLibraryBusy(bool b);
+			void setLibraryEmpty(bool b);
 
-		void add_preference_action(Gui::PreferenceAction* action);
+			void addPreferenceAction(Gui::PreferenceAction* action);
 
-	private:
-		void init_menu();
+		private:
+			void initMenu();
+			void shortcutChanged(ShortcutIdentifier identifier);
 
-	protected:
-		void language_changed() override;
-		void skin_changed() override;
-		void shortcut_changed(ShortcutIdentifier identifier);
+		private slots:
+			void showAlbumCoversChanged();
+			void showAlbumCoversTriggered(bool b);
 
-	private slots:
-		void show_album_covers_changed();
-		void show_album_covers_triggered(bool b);
+			void showAlbumArtistsChanged();
+			void showAlbumArtistsTriggered(bool b);
 
-		void show_album_artists_changed();
-		void show_album_artists_triggered(bool b);
+			void livesearchTriggered();
+			void setLiveSearchEnabled(bool b);
 
-		void realtime_search_changed();
-		void realtime_search_triggered(bool b);
+			void editClicked();
+			void editAccepted();
 
-		void edit_clicked();
-		void edit_accepted();
+		protected:
+			void languageChanged() override;
+			void skinChanged() override;
 	};
 }
 

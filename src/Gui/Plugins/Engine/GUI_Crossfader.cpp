@@ -1,6 +1,6 @@
 /* GUI_Crossfader.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -24,7 +24,7 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language/Language.h"
 
-GUI_Crossfader::GUI_Crossfader(QWidget *parent) :
+GUI_Crossfader::GUI_Crossfader(QWidget* parent) :
 	PlayerPlugin::Base(parent) {}
 
 GUI_Crossfader::~GUI_Crossfader()
@@ -36,39 +36,39 @@ GUI_Crossfader::~GUI_Crossfader()
 }
 
 
-void GUI_Crossfader::init_ui()
+void GUI_Crossfader::initUi()
 {
-	setup_parent(this, &ui);
+	setupParent(this, &ui);
 
 	Playlist::Mode mode = GetSetting(Set::PL_Mode);
 
-	bool gapless_active = Playlist::Mode::isActive(mode.gapless());
-	bool crossfader_active = GetSetting(Set::Engine_CrossFaderActive);
+	bool gaplessActive = Playlist::Mode::isActive(mode.gapless());
+	bool crossfaderActive = GetSetting(Set::Engine_CrossFaderActive);
 
 	int val = GetSetting(Set::Engine_CrossFaderTime);
 
-	if(gapless_active && crossfader_active){
-		gapless_active = false;
+	if(gaplessActive && crossfaderActive){
+		gaplessActive = false;
 	}
 
-	ui->cb_gapless->setChecked(gapless_active);
-	ui->cb_crossfader->setChecked(crossfader_active);
+	ui->cb_gapless->setChecked(gaplessActive);
+	ui->cb_crossfader->setChecked(crossfaderActive);
 	ui->sli_crossfader->setValue(val);
 	ui->lab_crossfader->setText(QString::number(val) + " ms");
 
-	crossfader_active_changed(crossfader_active);
-	gapless_active_changed(gapless_active);
+	crossfaderActiveChanged(crossfaderActive);
+	gaplessActiveChanged(gaplessActive);
 
-	connect(ui->cb_crossfader, &QCheckBox::clicked, this, &GUI_Crossfader::crossfader_active_changed);
-	connect(ui->cb_gapless, &QCheckBox::clicked, this, &GUI_Crossfader::gapless_active_changed);
-	connect(ui->sli_crossfader, &QSlider::valueChanged, this, &GUI_Crossfader::slider_changed);
+	connect(ui->cb_crossfader, &QCheckBox::clicked, this, &GUI_Crossfader::crossfaderActiveChanged);
+	connect(ui->cb_gapless, &QCheckBox::clicked, this, &GUI_Crossfader::gaplessActiveChanged);
+	connect(ui->sli_crossfader, &QSlider::valueChanged, this, &GUI_Crossfader::sliderChanged);
 
 	/** No crossfader with alsa **/
-	ListenSetting(Set::Engine_Sink, GUI_Crossfader::sl_engine_changed);
+	ListenSetting(Set::Engine_Sink, GUI_Crossfader::engineChanged);
 }
 
 
-void GUI_Crossfader::retranslate_ui()
+void GUI_Crossfader::retranslate()
 {
 	ui->retranslateUi(this);
 
@@ -76,12 +76,12 @@ void GUI_Crossfader::retranslate_ui()
 	ui->cb_gapless->setText(Lang::get(Lang::GaplessPlayback));
 }
 
-QString GUI_Crossfader::get_name() const
+QString GUI_Crossfader::name() const
 {
 	return "Crossfader";
 }
 
-QString GUI_Crossfader::get_display_name() const
+QString GUI_Crossfader::displayName() const
 {
 	QString g = Lang::get(Lang::GaplessPlayback);
 	QString c = tr("Crossfader");
@@ -92,7 +92,7 @@ QString GUI_Crossfader::get_display_name() const
 }
 
 
-void GUI_Crossfader::slider_changed(int val)
+void GUI_Crossfader::sliderChanged(int val)
 {
 	SetSetting(Set::Engine_CrossFaderTime, val);
 
@@ -105,12 +105,12 @@ void GUI_Crossfader::slider_changed(int val)
 	}
 }
 
-void GUI_Crossfader::crossfader_active_changed(bool b)
+void GUI_Crossfader::crossfaderActiveChanged(bool b)
 {
 	if(b)
 	{
 		ui->cb_gapless->setChecked(false);
-		gapless_active_changed(!b);
+		gaplessActiveChanged(!b);
 	}
 
 	ui->cb_crossfader->setChecked(b);
@@ -121,7 +121,7 @@ void GUI_Crossfader::crossfader_active_changed(bool b)
 }
 
 
-void GUI_Crossfader::gapless_active_changed(bool b)
+void GUI_Crossfader::gaplessActiveChanged(bool b)
 {
 	if(b)
 	{
@@ -129,7 +129,7 @@ void GUI_Crossfader::gapless_active_changed(bool b)
 		ui->lab_crossfader->setEnabled(false);
 		ui->sli_crossfader->setEnabled(false);
 
-		crossfader_active_changed(!b);
+		crossfaderActiveChanged(!b);
 	}
 
 	ui->cb_gapless->setChecked(b);
@@ -140,7 +140,7 @@ void GUI_Crossfader::gapless_active_changed(bool b)
 	SetSetting(Set::PL_Mode, plm);
 }
 
-void GUI_Crossfader::sl_engine_changed()
+void GUI_Crossfader::engineChanged()
 {
 	if(!ui)
 	{

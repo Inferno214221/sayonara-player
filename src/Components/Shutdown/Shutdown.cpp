@@ -1,6 +1,6 @@
 /* Shutdown.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -49,7 +49,7 @@ struct Shutdown::Private
 	DB::Settings*	db=nullptr;
 	QTimer*			timer=nullptr;
 	QTimer*			timer_countdown=nullptr;
-	PlayManager*	play_manager=nullptr;
+	PlayManager*	playManager=nullptr;
 
 	MilliSeconds	msecs2go;
 	bool			is_running;
@@ -60,8 +60,8 @@ struct Shutdown::Private
 		is_running(false)
 	{
 
-		db = DB::Connector::instance()->settings_connector();
-		play_manager = PlayManager::instance();
+		db = DB::Connector::instance()->settingsConnector();
+		playManager = PlayManager::instance();
 
 		timer = new QTimer(parent);
 		timer_countdown = new QTimer(parent);
@@ -85,13 +85,13 @@ Shutdown::Shutdown(QObject* parent) :
 	m = Pimpl::make<Private>(this);
 
 	connect(m->timer, &QTimer::timeout, this, &Shutdown::timeout);
-	connect(m->timer_countdown, &QTimer::timeout, this, &Shutdown::countdown_timeout);
-	connect(m->play_manager, &PlayManager::sig_playlist_finished, this, &Shutdown::playlist_finished);
+	connect(m->timer_countdown, &QTimer::timeout, this, &Shutdown::countdownTimeout);
+	connect(m->playManager, &PlayManager::sigPlaylistFinished, this, &Shutdown::playlistFinished);
 }
 
 Shutdown::~Shutdown() = default;
 
-void Shutdown::shutdown_after_end()
+void Shutdown::shutdownAfterSessionEnd()
 {
 	m->is_running = true;
 
@@ -120,7 +120,7 @@ void Shutdown::shutdown(MilliSeconds ms)
 	m->msecs2go = ms;
 	m->timer->start((int) ms);
 	m->timer_countdown->start(1000);
-	emit sig_started(ms);
+	emit sigStarted(ms);
 
 	int minutes = ms / 60000;
 
@@ -134,17 +134,17 @@ void Shutdown::shutdown(MilliSeconds ms)
 
 void Shutdown::stop()
 {
-	sp_log(Log::Info, this) << "Shutdown cancelled";
+	spLog(Log::Info, this) << "Shutdown cancelled";
 	m->is_running = false;
 	m->timer->stop();
 	m->timer_countdown->stop();
 	m->msecs2go = 0;
 
-	emit sig_stopped();
+	emit sigStopped();
 }
 
 
-void Shutdown::countdown_timeout()
+void Shutdown::countdownTimeout()
 {
 	if(m->msecs2go >= 1000){
 		m->msecs2go -= 1000;
@@ -152,8 +152,8 @@ void Shutdown::countdown_timeout()
 
 	m->timer_countdown->start(1000);
 
-	emit sig_time_to_go(m->msecs2go);
-	sp_log(Log::Debug, this) << "Time to go: " << m->msecs2go;
+	emit sigTimeToGoChanged(m->msecs2go);
+	spLog(Log::Debug, this) << "Time to go: " << m->msecs2go;
 
 
 	if(m->msecs2go % 60000 == 0)
@@ -171,7 +171,7 @@ void Shutdown::countdown_timeout()
 void Shutdown::timeout()
 {
 	m->is_running = false;
-	m->db->store_settings();
+	m->db->storeSettings();
 
 #ifdef Q_OS_WIN
 	//ExitWindowsEx(
@@ -277,13 +277,13 @@ void Shutdown::timeout()
 		return;
 	}
 
-	sp_log(Log::Warning, this) << "Sorry, power off is not possible";
+	spLog(Log::Warning, this) << "Sorry, power off is not possible";
 
 #endif
 }
 
 
-void Shutdown::playlist_finished()
+void Shutdown::playlistFinished()
 {
 	if( m->is_running ){
 		timeout();

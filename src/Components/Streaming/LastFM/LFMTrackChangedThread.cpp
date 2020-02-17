@@ -1,6 +1,6 @@
 /* LFMTrackChangedThread.cpp
 
- * Copyright (C) 2011-2020 Lucio Carreras
+ * Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara-player
  *
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * created by Lucio Carreras,
+ * created by Michael Lugmair (Lucio Carreras),
  * Jul 18, 2012
  *
  */
@@ -53,7 +53,7 @@ struct TrackChangedThread::Private
 {
 	QString						artist;
 
-	QHash<QString, ArtistMatch>  sim_artists_cache;
+	QHash<QString, ArtistMatch>  similarArtistsCache;
 
 #ifdef SMART_COMPARE
 	SmartCompare*				_smart_comparison=nullptr;
@@ -67,7 +67,7 @@ TrackChangedThread::TrackChangedThread(QObject* parent) :
 
 	ArtistList artists;
 	auto* db = DB::Connector::instance();
-	DB::LibraryDatabase* lib_db = db->library_db(-1, 0);
+	DB::LibraryDatabase* lib_db = db->libraryDatabase(-1, 0);
 
 	lib_db->getAllArtists(artists, false);
 
@@ -79,17 +79,17 @@ TrackChangedThread::TrackChangedThread(QObject* parent) :
 
 TrackChangedThread::~TrackChangedThread() = default;
 
-void TrackChangedThread::update_now_playing(const QString& session_key, const MetaData& md)
+void TrackChangedThread::updateNowPlaying(const QString& session_key, const MetaData& md)
 {
 	if(md.title().trimmed().isEmpty() || md.artist().trimmed().isEmpty()){
 		return;
 	}
 
-	sp_log(Log::Debug, this) << "Update current_track " << md.title() + " by " << md.artist();
+	spLog(Log::Debug, this) << "Update current_track " << md.title() + " by " << md.artist();
 
 	auto* lfm_wa = new WebAccess();
-	connect(lfm_wa, &WebAccess::sig_response, this, &TrackChangedThread::response_update);
-	connect(lfm_wa, &WebAccess::sig_error, this, &TrackChangedThread::error_update);
+	connect(lfm_wa, &WebAccess::sigResponse, this, &TrackChangedThread::updateResponseReceived);
+	connect(lfm_wa, &WebAccess::sigError, this, &TrackChangedThread::updateErrorReceived);
 
 	QString artist = md.artist();
 	artist.replace("&", "&amp;");
@@ -97,24 +97,24 @@ void TrackChangedThread::update_now_playing(const QString& session_key, const Me
 	UrlParams sig_data;
 	sig_data["api_key"] =	LFM_API_KEY;
 	sig_data["artist"] =	artist.toLocal8Bit();
-	sig_data["duration"] =	QString::number(md.duration_ms() / 1000).toLocal8Bit();
+	sig_data["duration"] =	QString::number(md.durationMs() / 1000).toLocal8Bit();
 	sig_data["method"] =	QString("track.updatenowplaying").toLocal8Bit();
 	sig_data["sk"] =		session_key.toLocal8Bit();
 	sig_data["track"] =		md.title().toLocal8Bit();
 
-	sig_data.append_signature();
+	sig_data.appendSignature();
 
 	QByteArray post_data;
-	QString url = lfm_wa->create_std_url_post(
+	QString url = lfm_wa->createPostUrl(
 				QString("http://ws.audioscrobbler.com/2.0/"),
 				sig_data,
 				post_data);
 
-	lfm_wa->call_post_url(url, post_data);
+	lfm_wa->callPostUrl(url, post_data);
 }
 
 
-void TrackChangedThread::response_update(const QByteArray& data)
+void TrackChangedThread::updateResponseReceived(const QByteArray& data)
 {
 	Q_UNUSED(data)
 	if(sender()){
@@ -123,10 +123,10 @@ void TrackChangedThread::response_update(const QByteArray& data)
 }
 
 
-void TrackChangedThread::error_update(const QString& error)
+void TrackChangedThread::updateErrorReceived(const QString& error)
 {
-	sp_log(Log::Warning, this) << "Last.fm: Cannot update track";
-	sp_log(Log::Warning, this) << "Last.fm: " << error;
+	spLog(Log::Warning, this) << "Last.fm: Cannot update track";
+	spLog(Log::Warning, this) << "Last.fm: " << error;
 
 	if(sender()){
 		sender()->deleteLater();
@@ -134,9 +134,9 @@ void TrackChangedThread::error_update(const QString& error)
 }
 
 
-void TrackChangedThread::search_similar_artists(const MetaData& md)
+void TrackChangedThread::searchSimilarArtists(const MetaData &md)
 {
-	if(md.db_id() != 0) {
+	if(md.databaseId() != 0) {
 		return;
 	}
 
@@ -144,21 +144,21 @@ void TrackChangedThread::search_similar_artists(const MetaData& md)
 		return;
 	}
 
-	sp_log(Log::Debug, this) << "Search similar artists";
+	spLog(Log::Debug, this) << "Search similar artists";
 
 	// check if already in cache
-	if(m->sim_artists_cache.contains(md.artist()))
+	if(m->similarArtistsCache.contains(md.artist()))
 	{
-		const ArtistMatch& artist_match = m->sim_artists_cache.value(md.artist());
-		evaluate_artist_match(artist_match);
+		const ArtistMatch& artistMatch = m->similarArtistsCache.value(md.artist());
+		evaluateArtistMatch(artistMatch);
 		return;
 	}
 
 	m->artist = md.artist();
 
 	auto* lfm_wa = new WebAccess();
-	connect(lfm_wa, &WebAccess::sig_response, this, &TrackChangedThread::response_sim_artists);
-	connect(lfm_wa, &WebAccess::sig_error, this, &TrackChangedThread::error_sim_artists);
+	connect(lfm_wa, &WebAccess::sigResponse, this, &TrackChangedThread::similarArtistResponseReceived);
+	connect(lfm_wa, &WebAccess::sigError, this, &TrackChangedThread::similarArtistsErrorReceived);
 
 	QString url = 	QString("http://ws.audioscrobbler.com/2.0/?");
 	QString encoded = QUrl::toPercentEncoding(md.artist());
@@ -166,24 +166,24 @@ void TrackChangedThread::search_similar_artists(const MetaData& md)
 	url += QString("artist=") + encoded + QString("&");
 	url += QString("api_key=") + LFM_API_KEY;
 
-	lfm_wa->call_url(url);
+	lfm_wa->callUrl(url);
 }
 
 
-void TrackChangedThread::evaluate_artist_match(const ArtistMatch& artist_match)
+void TrackChangedThread::evaluateArtistMatch(const ArtistMatch& artistMatch)
 {
-	if(!artist_match.is_valid()){
+	if(!artistMatch.isValid()){
 		return;
 	}
 
-	QByteArray arr = Compressor::compress(artist_match.to_string().toLocal8Bit());
-	Util::File::create_directories(Util::sayonara_path() + "/similar_artists/");
-	Util::File::write_file(arr, Util::sayonara_path() + "/similar_artists/" + artist_match.get_artist_name() + ".comp");
+	QByteArray arr = Compressor::compress(artistMatch.toString().toLocal8Bit());
+	Util::File::createDirectories(Util::sayonaraPath() + "/similar_artists/");
+	Util::File::writeFile(arr, Util::sayonaraPath() + "/similar_artists/" + artistMatch.artistName() + ".comp");
 
 	// if we always take the best, it's boring
 	ArtistMatch::Quality quality, quality_org;
 
-	int rnd_number = Util::random_number(1, 999);
+	int rnd_number = Util::randomNumber(1, 999);
 
 	if(rnd_number > 350) {
 		quality = ArtistMatch::Quality::Very_Good;	// [250-999]
@@ -202,7 +202,7 @@ void TrackChangedThread::evaluate_artist_match(const ArtistMatch& artist_match)
 
 	while(possible_artists.isEmpty())
 	{
-		possible_artists = filter_available_artists(artist_match, quality);
+		possible_artists = filterAvailableArtists(artistMatch, quality);
 
 		switch(quality){
 			case ArtistMatch::Quality::Poor:
@@ -233,24 +233,24 @@ void TrackChangedThread::evaluate_artist_match(const ArtistMatch& artist_match)
 		chosen_ids << it.value();
 	}
 
-	emit sig_similar_artists_available(chosen_ids);
+	emit sigSimilarArtistsAvailable(chosen_ids);
 }
 
 
-QMap<QString, int> TrackChangedThread::filter_available_artists(const ArtistMatch& artist_match, ArtistMatch::Quality quality)
+QMap<QString, int> TrackChangedThread::filterAvailableArtists(const ArtistMatch& artistMatch, ArtistMatch::Quality quality)
 {
-	QMap<ArtistMatch::ArtistDesc, double> bin = artist_match.get(quality);
+	QMap<ArtistMatch::ArtistDesc, double> bin = artistMatch.get(quality);
 	QMap<QString, int> possible_artists;
 
 	auto* db = DB::Connector::instance();
-	DB::LibraryDatabase* lib_db = db->library_db(-1, 0);
+	DB::LibraryDatabase* lib_db = db->libraryDatabase(-1, 0);
 
 	for(auto it = bin.cbegin(); it != bin.cend(); it++)
 	{
-		ArtistId artist_id = lib_db->getArtistID(it.key().artist_name);
-		if(artist_id >= 0 )
+		ArtistId artistId = lib_db->getArtistID(it.key().artistName);
+		if(artistId >= 0 )
 		{
-			possible_artists[it.key().artist_name] = artist_id;
+			possible_artists[it.key().artistName] = artistId;
 		}
 	}
 
@@ -258,22 +258,22 @@ QMap<QString, int> TrackChangedThread::filter_available_artists(const ArtistMatc
 }
 
 
-void TrackChangedThread::response_sim_artists(const QByteArray& data)
+void TrackChangedThread::similarArtistResponseReceived(const QByteArray& data)
 {
 	SimArtistsParser parser(m->artist, data);
 
-	ArtistMatch artist_match = parser.artist_match();
+	ArtistMatch artistMatch = parser.artistMatch();
 
-	if(artist_match.is_valid()){
-		QString artist_name = artist_match.get_artist_name();
-		m->sim_artists_cache[artist_name] = artist_match;
+	if(artistMatch.isValid()){
+		QString artist_name = artistMatch.artistName();
+		m->similarArtistsCache[artist_name] = artistMatch;
 	}
 
-	evaluate_artist_match(artist_match);
+	evaluateArtistMatch(artistMatch);
 }
 
 
-void TrackChangedThread::error_sim_artists(const QString& error)
+void TrackChangedThread::similarArtistsErrorReceived(const QString& error)
 {
-	sp_log(Log::Warning, this) << "Last.fm: Search similar artists" << error;
+	spLog(Log::Warning, this) << "Last.fm: Search similar artists" << error;
 }

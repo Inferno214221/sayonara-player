@@ -1,6 +1,6 @@
 /* DatabaseArtists.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -32,7 +32,7 @@ using DB::Query;
 Artists::Artists() = default;
 Artists::~Artists() = default;
 
-QString Artists::fetch_query_artists(bool also_empty) const
+QString Artists::fetchQueryArtists(bool also_empty) const
 {
 	QStringList fields
 	{
@@ -51,7 +51,7 @@ QString Artists::fetch_query_artists(bool also_empty) const
 	query += join + " %1 ON %1.%2 = artists.artistID ";			// join with tracks
 	query += join + " albums ON %1.albumID = albums.albumID ";	// join with albums
 
-	return query.arg(track_view()).arg(artistid_field());
+	return query.arg(trackView()).arg(artistIdField());
 }
 
 
@@ -60,7 +60,7 @@ bool Artists::db_fetch_artists(Query& q, ArtistList& result) const
 	result.clear();
 
 	if (!q.exec()) {
-		q.show_error("Could not get all artists from database");
+		q.showError("Could not get all artists from database");
 		return false;
 	}
 
@@ -68,10 +68,10 @@ bool Artists::db_fetch_artists(Query& q, ArtistList& result) const
 	{
 		Artist artist;
 
-		artist.set_id(		q.value(0).value<ArtistId>());
-		artist.set_name(	q.value(1).toString());
-		artist.set_songcount(q.value(2).value<uint16_t>());
-		artist.set_db_id(	module()->db_id());
+		artist.setId(		q.value(0).value<ArtistId>());
+		artist.setName(	q.value(1).toString());
+		artist.setSongcount(q.value(2).value<uint16_t>());
+		artist.setDatabaseId(	module()->databaseId());
 
 		result << artist;
 	}
@@ -90,7 +90,7 @@ bool Artists::getArtistByID(ArtistId id, Artist& artist, bool also_empty) const
 		return false;
 	}
 
-	QString query = fetch_query_artists(also_empty) + " WHERE artists.artistID = ?;";
+	QString query = fetchQueryArtists(also_empty) + " WHERE artists.artistID = ?;";
 
 	Query q(module());
 	q.prepare(query);
@@ -109,14 +109,14 @@ bool Artists::getArtistByID(ArtistId id, Artist& artist, bool also_empty) const
 
 ArtistId Artists::getArtistID(const QString& artist) const
 {
-	Query q = module()->run_query
+	Query q = module()->runQuery
 	(
 		"SELECT artistID FROM artists WHERE name = :name;",
-		{":name", Util::cvt_not_null(artist)},
+		{":name", Util::convertNotNull(artist)},
 		QString("Cannot fetch artistID for artist %1").arg(artist)
 	);
 
-	if (q.has_error()) {
+	if (q.hasError()) {
 		return -1;
 	}
 
@@ -129,7 +129,7 @@ ArtistId Artists::getArtistID(const QString& artist) const
 
 bool Artists::getAllArtists(ArtistList& result, bool also_empty) const
 {
-	QString query = fetch_query_artists(also_empty);
+	QString query = fetchQueryArtists(also_empty);
 	query += "GROUP BY artists.artistID, artists.name; ";
 
 	Query q(module());
@@ -141,23 +141,23 @@ bool Artists::getAllArtists(ArtistList& result, bool also_empty) const
 bool Artists::getAllArtistsBySearchString(const Library::Filter& filter, ArtistList& result) const
 {
 	QStringList filters = filter.filtertext(true);
-	QStringList search_filters = filter.search_mode_filtertext(true);
+	QStringList search_filters = filter.searchModeFiltertext(true);
 	for(int i=0; i<filters.size(); i++)
 	{
 		Query q(module());
 
 		QString query = "SELECT " +
-						 artistid_field() + ", " +
-						 artistname_field() + ", " +
+						 artistIdField() + ", " +
+						 artistNameField() + ", " +
 						 "COUNT(DISTINCT trackID) AS trackCount "
-						 "FROM " + track_search_view() + " ";
+						 "FROM " + trackSearchView() + " ";
 
 		query += " WHERE ";
 
 		switch(filter.mode())
 		{
 			case Library::Filter::Genre:
-				if(filter.is_invalid_genre()){
+				if(filter.isInvalidGenre()){
 					query += "genre = ''";
 				}
 				else {
@@ -176,12 +176,12 @@ bool Artists::getAllArtistsBySearchString(const Library::Filter& filter, ArtistL
 		}
 
 		query += QString(" GROUP BY %1, %2;")
-						.arg(artistid_field())
-						.arg(artistname_field());
+						.arg(artistIdField())
+						.arg(artistNameField());
 
 		q.prepare(query);
-		q.bindValue(":searchterm",	Util::cvt_not_null(filters[i]));
-		q.bindValue(":cissearch",	Util::cvt_not_null(search_filters[i]));
+		q.bindValue(":searchterm",	Util::convertNotNull(filters[i]));
+		q.bindValue(":cissearch",	Util::convertNotNull(search_filters[i]));
 
 		ArtistList tmp_list;
 		db_fetch_artists(q, tmp_list);
@@ -198,14 +198,14 @@ bool Artists::deleteArtist(ArtistId id)
 		{"id", id}
 	};
 
-	Query q = module()->run_query
+	Query q = module()->runQuery
 	(
 		"delete from artists where artistId=:artistId;",
 		{":artistId", id},
 		QString("Cannot delete artist %1").arg(id)
 	);
 
-	return (!q.has_error());
+	return (!q.hasError());
 }
 
 ArtistId Artists::insertArtistIntoDatabase(const QString& artist)
@@ -215,16 +215,16 @@ ArtistId Artists::insertArtistIntoDatabase(const QString& artist)
 		return id;
 	}
 
-	QString cis = Library::Utils::convert_search_string(artist, search_mode());
+	QString cis = Library::Utils::convertSearchstring(artist, searchMode());
 
 	QMap<QString, QVariant> bindings
 	{
-		{"name", Util::cvt_not_null(artist)},
-		{"cissearch", Util::cvt_not_null(cis)}
+		{"name", Util::convertNotNull(artist)},
+		{"cissearch", Util::convertNotNull(cis)}
 	};
 
 	Query q = module()->insert("artists", bindings, QString("Cannot insert artist %1").arg(artist));
-	if(q.has_error()){
+	if(q.hasError()){
 		return -1;
 	}
 
@@ -238,7 +238,7 @@ ArtistId Artists::insertArtistIntoDatabase(const Artist& artist)
 
 void Artists::updateArtistCissearch()
 {
-	Library::SearchModeMask sm = search_mode();
+	Library::SearchModeMask sm = searchMode();
 
 	ArtistList artists;
 	getAllArtists(artists, true);
@@ -247,12 +247,12 @@ void Artists::updateArtistCissearch()
 
 	for(const Artist& artist : artists)
 	{
-		QString cis = Library::Utils::convert_search_string(artist.name(), sm);
+		QString cis = Library::Utils::convertSearchstring(artist.name(), sm);
 
 		module()->update
 		(
 			"artists",
-			{{"cissearch", Util::cvt_not_null(cis)}},
+			{{"cissearch", Util::convertNotNull(cis)}},
 			{"artistID", artist.id()},
 			"Cannot update artist cissearch"
 		);

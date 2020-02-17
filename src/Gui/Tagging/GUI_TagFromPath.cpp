@@ -1,6 +1,6 @@
 /* TagFromPath.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -33,8 +33,8 @@ using namespace Tagging;
 
 struct GUI_TagFromPath::Private
 {
-	QString							current_filepath;
-	QMap<TagName, ReplacedString>	tag_str_map;
+	QString							currentFilepath;
+	QMap<TagName, ReplacedString>	tagReplaceStringMap;
 };
 
 GUI_TagFromPath::GUI_TagFromPath(QWidget* parent) :
@@ -44,29 +44,29 @@ GUI_TagFromPath::GUI_TagFromPath(QWidget* parent) :
 	ui = new Ui::GUI_TagFromPath();
 	ui->setupUi(this);
 
-	show_error_frame(false);
+	showErrorFrame(false);
 
-	connect(ui->btn_apply_tag, &QPushButton::clicked, this, &GUI_TagFromPath::sig_apply);
-	connect(ui->btn_apply_tag_all, &QPushButton::clicked, this, &GUI_TagFromPath::sig_apply_all);
+	connect(ui->btn_apply_tag, &QPushButton::clicked, this, &GUI_TagFromPath::sigApply);
+	connect(ui->btn_apply_tag_all, &QPushButton::clicked, this, &GUI_TagFromPath::sigApplyAll);
 
-	connect(ui->le_tag, &QLineEdit::textChanged, this, &GUI_TagFromPath::tag_text_changed);
+	connect(ui->le_tag, &QLineEdit::textChanged, this, &GUI_TagFromPath::tagTextChanged);
 
-	connect(ui->btn_title, &QPushButton::toggled, this, &GUI_TagFromPath::btn_title_checked);
-	connect(ui->btn_artist, &QPushButton::toggled, this, &GUI_TagFromPath::btn_artist_checked);
-	connect(ui->btn_album, &QPushButton::toggled, this, &GUI_TagFromPath::btn_album_checked);
-	connect(ui->btn_track_nr, &QPushButton::toggled, this, &GUI_TagFromPath::btn_track_nr_checked);
-	connect(ui->btn_year, &QPushButton::toggled, this, &GUI_TagFromPath::btn_year_checked);
-	connect(ui->btn_disc_nr, &QPushButton::toggled, this, &GUI_TagFromPath::btn_disc_nr_checked);
-	connect(ui->btn_tag_help, &QPushButton::clicked, this, &GUI_TagFromPath::btn_tag_help_clicked);
+	connect(ui->btn_title, &QPushButton::toggled, this, &GUI_TagFromPath::btnTitleChecked);
+	connect(ui->btn_artist, &QPushButton::toggled, this, &GUI_TagFromPath::btnArtistChecked);
+	connect(ui->btn_album, &QPushButton::toggled, this, &GUI_TagFromPath::btnAlbumChecked);
+	connect(ui->btn_track_nr, &QPushButton::toggled, this, &GUI_TagFromPath::btnTrackNrChecked);
+	connect(ui->btn_year, &QPushButton::toggled, this, &GUI_TagFromPath::btnYearChecked);
+	connect(ui->btn_disc_nr, &QPushButton::toggled, this, &GUI_TagFromPath::btnDiscnumberChecked);
+	connect(ui->btn_tag_help, &QPushButton::clicked, this, &GUI_TagFromPath::btnTagHelpClicked);
 
-	language_changed();
+	languageChanged();
 }
 
 GUI_TagFromPath::~GUI_TagFromPath() = default;
 
-void GUI_TagFromPath::set_filepath(const QString& filepath)
+void GUI_TagFromPath::setFilepath(const QString& filepath)
 {
-	m->current_filepath = filepath;
+	m->currentFilepath = filepath;
 
 	if(ui->le_tag->text().isEmpty()){
 		ui->le_tag->setText(filepath);
@@ -84,10 +84,10 @@ void GUI_TagFromPath::set_filepath(const QString& filepath)
 
 	Expression e(ui->le_tag->text(), filepath);
 	bool valid = e.is_valid();
-	set_tag_colors(valid);
+	setTagColors(valid);
 
-	Tagging::TagType tag_type = Tagging::Utils::get_tag_type(filepath);
-	QString tag_type_string = Tagging::Utils::tag_type_to_string(tag_type);
+	Tagging::TagType tag_type = Tagging::Utils::getTagType(filepath);
+	QString tag_type_string = Tagging::Utils::tagTypeToString(tag_type);
 
 	ui->lab_tag_type->setText(tr("Tag") + ": " + tag_type_string);
 }
@@ -97,7 +97,7 @@ void GUI_TagFromPath::reset()
 {
 	ui->le_tag->clear();
 	ui->le_tag->setEnabled(true);
-	ui->lv_tag_from_path_files->clear();
+	ui->lv_invalidFilepaths->clear();
 
 	ui->btn_album->setChecked(false);
 	ui->btn_artist->setChecked(false);
@@ -107,7 +107,7 @@ void GUI_TagFromPath::reset()
 	ui->btn_track_nr->setChecked(false);
 }
 
-void GUI_TagFromPath::set_tag_colors(bool valid)
+void GUI_TagFromPath::setTagColors(bool valid)
 {
 	if( !valid ){
 		ui->le_tag->setStyleSheet("font-family: mono; font-size: 12pt; color: red;");
@@ -122,33 +122,32 @@ void GUI_TagFromPath::set_tag_colors(bool valid)
 }
 
 
-void GUI_TagFromPath::tag_text_changed(const QString& tag_string)
+void GUI_TagFromPath::tagTextChanged(const QString& tag_string)
 {
-	Expression e(tag_string, m->current_filepath);
-	set_tag_colors(e.is_valid());
+	Expression e(tag_string, m->currentFilepath);
+	setTagColors(e.is_valid());
 }
 
 
-void GUI_TagFromPath::clear_invalid_filepaths()
+void GUI_TagFromPath::clearInvalidFilepaths()
 {
-	show_error_frame(false);
-	ui->lv_tag_from_path_files->clear();
+	showErrorFrame(false);
+	ui->lv_invalidFilepaths->clear();
 }
 
-void GUI_TagFromPath::add_invalid_filepath(const QString& filepath)
+void GUI_TagFromPath::addInvalidFilepath(const QString& filepath)
 {
-	show_error_frame(true);
-	ui->lv_tag_from_path_files->addItem(filepath);
+	showErrorFrame(true);
+	ui->lv_invalidFilepaths->addItem(filepath);
 }
 
-
-bool GUI_TagFromPath::replace_selected_tag_text(TagName tag_name, bool b)
+bool GUI_TagFromPath::replaceSelectedTagText(TagName tag_name, bool b)
 {
-	TagLineEdit::TextSelection ts = ui->le_tag->text_selection();
+	TagLineEdit::TextSelection ts = ui->le_tag->textSelection();
 
-	if(ts.selection_start < 0 && b)
+	if(ts.selectionStart < 0 && b)
 	{
-		sp_log(Log::Debug, this) << "Nothing selected...";
+		spLog(Log::Debug, this) << "Nothing selected...";
 
 		Message::info(tr("Please select text first"));
 		return false;
@@ -160,81 +159,81 @@ bool GUI_TagFromPath::replace_selected_tag_text(TagName tag_name, bool b)
 	// replace the string by a tag
 	if(b)
 	{
-		ReplacedString selected_text = text.mid( ts.selection_start, ts.selection_size );
+		ReplacedString selected_text = text.mid( ts.selectionStart, ts.selectionSize );
 
-		text.replace(ts.selection_start, ts.selection_size, tag_string);
+		text.replace(ts.selectionStart, ts.selectionSize, tag_string);
 		ui->le_tag->setText(text);
 
-		m->tag_str_map[tag_name] = selected_text;
+		m->tagReplaceStringMap[tag_name] = selected_text;
 	}
 
 	// replace tag by the original string
 	else
 	{
-		text.replace(tag_string, m->tag_str_map[tag_name]);
+		text.replace(tag_string, m->tagReplaceStringMap[tag_name]);
 		ui->le_tag->setText(text);
 
-		m->tag_str_map.remove(tag_name);
+		m->tagReplaceStringMap.remove(tag_name);
 	}
 
-	Expression e(text, m->current_filepath);
-	set_tag_colors(e.is_valid());
+	Expression e(text, m->currentFilepath);
+	setTagColors(e.is_valid());
 
 	return true;
 }
 
-void GUI_TagFromPath::btn_checked(QPushButton* btn, bool b, TagName tag_name)
+void GUI_TagFromPath::btnChecked(QPushButton* btn, bool b, TagName tag_name)
 {
 	ui->lab_tag_from_path_warning->setVisible(false);
-	ui->lv_tag_from_path_files->setVisible(false);
+	ui->lv_invalidFilepaths->setVisible(false);
 
-	if(!replace_selected_tag_text(tag_name, b)){
+	if(!replaceSelectedTagText(tag_name, b)){
 		btn->setChecked(false);
 	}
 }
 
-void GUI_TagFromPath::show_error_frame(bool b)
+void GUI_TagFromPath::showErrorFrame(bool b)
 {
 	ui->sw_tag_from_path->setCurrentIndex((b == true) ? 0 : 1);
 }
 
-void GUI_TagFromPath::btn_title_checked(bool b)
+void GUI_TagFromPath::btnTitleChecked(bool b)
 {
-	btn_checked(ui->btn_title, b, TagTitle);
+	btnChecked(ui->btn_title, b, TagTitle);
 }
 
-void GUI_TagFromPath::btn_artist_checked(bool b)
+void GUI_TagFromPath::btnArtistChecked(bool b)
 {
-	btn_checked(ui->btn_artist, b, TagArtist);
+	btnChecked(ui->btn_artist, b, TagArtist);
 }
 
-void GUI_TagFromPath::btn_album_checked(bool b)
+void GUI_TagFromPath::btnAlbumChecked(bool b)
 {
-	btn_checked(ui->btn_album, b, TagAlbum);
+	btnChecked(ui->btn_album, b, TagAlbum);
 }
 
-void GUI_TagFromPath::btn_track_nr_checked(bool b)
+void GUI_TagFromPath::btnTrackNrChecked(bool b)
 {
-	btn_checked(ui->btn_track_nr, b, TagTrackNum);
+	btnChecked(ui->btn_track_nr, b, TagTrackNum);
 }
 
-void GUI_TagFromPath::btn_disc_nr_checked(bool b)
+void GUI_TagFromPath::btnDiscnumberChecked(bool b)
 {
-	btn_checked(ui->btn_disc_nr, b, TagDisc);
+	btnChecked(ui->btn_disc_nr, b, TagDisc);
 }
 
-void GUI_TagFromPath::btn_year_checked(bool b)
+void GUI_TagFromPath::btnYearChecked(bool b)
 {
-	btn_checked(ui->btn_year, b, TagYear);
+	btnChecked(ui->btn_year, b, TagYear);
 }
 
-void GUI_TagFromPath::btn_tag_help_clicked()
+void GUI_TagFromPath::btnTagHelpClicked()
 {
 	QUrl url(QString("http://sayonara-player.com/faq.php#tag-edit"));
 	QDesktopServices::openUrl(url);
 }
 
-void GUI_TagFromPath::language_changed()
+void GUI_TagFromPath::languageChanged()
 {
 	ui->retranslateUi(this);
 
@@ -249,7 +248,7 @@ void GUI_TagFromPath::language_changed()
 	ui->btn_apply_tag->setText(Lang::get(Lang::Apply) + ": " + Lang::get(Lang::Title).toFirstUpper());
 }
 
-QString GUI_TagFromPath::get_regex_string() const
+QString GUI_TagFromPath::getRegexString() const
 {
 	return ui->le_tag->text();
 }

@@ -1,6 +1,6 @@
 /* GUI_TargetPlaylistDialog.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -19,49 +19,60 @@
  */
 
 #include "GUI_TargetPlaylistDialog.h"
+#include "Gui/Plugins/ui_GUI_TargetPlaylistDialog.h"
+
+
 #include "Utils/Language/Language.h"
 #include "Components/LibraryManagement/LibraryManager.h"
 
 #include <QFileDialog>
 
-GUI_TargetPlaylistDialog::GUI_TargetPlaylistDialog(QWidget *parent) :
-	Dialog(parent),
-	Ui::GUI_TargetPlaylistDialog()
+GUI_TargetPlaylistDialog::GUI_TargetPlaylistDialog(QWidget* parent) :
+	Dialog(parent)
 {
-	setupUi(this);
+	ui = new Ui::GUI_TargetPlaylistDialog();
+	ui->setupUi(this);
 
-	connect(btn_choose, &QPushButton::clicked, this, &GUI_TargetPlaylistDialog::search_button_clicked);
-	connect(btn_ok, &QPushButton::clicked, this, &GUI_TargetPlaylistDialog::ok_button_clicked);
+	connect(ui->btnChoose, &QPushButton::clicked, this, &GUI_TargetPlaylistDialog::searchButtonClicked);
+	connect(ui->btnOk, &QPushButton::clicked, this, &GUI_TargetPlaylistDialog::okButtonClicked);
 }
 
-GUI_TargetPlaylistDialog::~GUI_TargetPlaylistDialog() {}
-
-
-void GUI_TargetPlaylistDialog::language_changed()
+GUI_TargetPlaylistDialog::~GUI_TargetPlaylistDialog()
 {
-	retranslateUi(this);
+	delete ui;
 }
 
-
-void GUI_TargetPlaylistDialog::search_button_clicked()
+void GUI_TargetPlaylistDialog::languageChanged()
 {
-    QString target_filename = QFileDialog::getSaveFileName(this,
-														   Lang::get(Lang::SaveAs),
-															QDir::homePath(),
-                                                           "*.m3u");
-
-    if(!target_filename.endsWith("m3u", Qt::CaseInsensitive)) target_filename.append(".m3u");
-	le_path->setText(target_filename);
+	ui->retranslateUi(this);
 }
 
 
-void GUI_TargetPlaylistDialog::ok_button_clicked()
+void GUI_TargetPlaylistDialog::searchButtonClicked()
 {
-	QString target_filename = le_path->text();
-	bool checked = cb_relative->isChecked();
+	QString filename =
+		QFileDialog::getSaveFileName(this,
+									Lang::get(Lang::SaveAs),
+									QDir::homePath(),
+									"*.m3u");
 
-    if(target_filename.size() > 0) {
-        emit sig_target_chosen(target_filename, checked);
+	if(!filename.endsWith("m3u", Qt::CaseInsensitive))
+	{
+		filename.append(".m3u");
+	}
+
+	ui->lePath->setText(filename);
+}
+
+
+void GUI_TargetPlaylistDialog::okButtonClicked()
+{
+	QString target_filename = ui->lePath->text();
+	bool checked = ui->cbRelative->isChecked();
+
+	if(target_filename.size() > 0)
+	{
+        emit sigTargetChosen(target_filename, checked);
         close();
     }
 

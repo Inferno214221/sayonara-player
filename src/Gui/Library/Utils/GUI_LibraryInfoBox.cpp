@@ -1,6 +1,6 @@
 /* GUILibraryInfoBox.cpp
 
- * Copyright (C) 2011-2020 Lucio Carreras
+ * Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara-player
  *
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * created by Lucio Carreras,
+ * created by Michael Lugmair (Lucio Carreras),
  * Sep 2, 2012
  *
  */
@@ -49,17 +49,17 @@ using Library::GUI_LibraryInfoBox;
 
 struct GUI_LibraryInfoBox::Private
 {
-	LibraryId library_id;
+	LibraryId libraryId;
 
-	Private(LibraryId library_id) :
-		library_id(library_id)
+	Private(LibraryId libraryId) :
+		libraryId(libraryId)
 	{}
 };
 
-GUI_LibraryInfoBox::GUI_LibraryInfoBox(LibraryId library_id, QWidget* parent) :
+GUI_LibraryInfoBox::GUI_LibraryInfoBox(LibraryId libraryId, QWidget* parent) :
 	Dialog(parent)
 {
-	m = Pimpl::make<Private>(library_id);
+	m = Pimpl::make<Private>(libraryId);
 
 	ui = new Ui::GUI_LibraryInfoBox();
 	ui->setupUi(this);
@@ -72,7 +72,7 @@ GUI_LibraryInfoBox::GUI_LibraryInfoBox(LibraryId library_id, QWidget* parent) :
 
 GUI_LibraryInfoBox::~GUI_LibraryInfoBox() {}
 
-void GUI_LibraryInfoBox::language_changed()
+void GUI_LibraryInfoBox::languageChanged()
 {
 	ui->retranslateUi(this);
 
@@ -84,20 +84,20 @@ void GUI_LibraryInfoBox::language_changed()
 	ui->btn_close->setText(Lang::get(Lang::Close));
 
 	Library::Manager* manager = Library::Manager::instance();
-	Library::Info info = manager->library_info(m->library_id);
+	Library::Info info = manager->libraryInfo(m->libraryId);
 
 	ui->lab_name->setText(Lang::get(Lang::Library) + ": " + info.name());
 
 	this->setWindowTitle(Lang::get(Lang::Info));
 }
 
-void GUI_LibraryInfoBox::skin_changed()
+void GUI_LibraryInfoBox::skinChanged()
 {
 	Library::Manager* manager = Library::Manager::instance();
-	Library::Info info = manager->library_info(m->library_id);
-	bool dark = Style::is_dark();
+	Library::Info info = manager->libraryInfo(m->libraryId);
+	bool dark = Style::isDark();
 
-	ui->lab_path->setText(Util::create_link(info.path(), dark));
+	ui->lab_path->setText(Util::createLink(info.path(), dark));
 	ui->lab_icon->setPixmap(Gui::Icons::pixmap(Gui::Icons::LocalLibrary));
 }
 
@@ -112,7 +112,7 @@ void GUI_LibraryInfoBox::showEvent(QShowEvent *e)
 void GUI_LibraryInfoBox::refresh()
 {
 	auto* db = DB::Connector::instance();
-	DB::LibraryDatabase* lib_db = db->library_db(m->library_id, 0);
+	DB::LibraryDatabase* lib_db = db->libraryDatabase(m->libraryId, 0);
 
 	MetaDataList v_md;
 	AlbumList v_albums;
@@ -125,16 +125,16 @@ void GUI_LibraryInfoBox::refresh()
 	auto n_tracks = v_md.size();
 	auto n_albums = v_albums.size();
 	auto n_artists = v_artists.size();
-	MilliSeconds duration_ms = 0;
+	MilliSeconds durationMs = 0;
 	Filesize filesize = 0;
 
 	for( const MetaData& md : v_md ) {
-		duration_ms += md.duration_ms();
+		durationMs += md.durationMs();
 		filesize += md.filesize();
 	}
 
-	QString duration_string = Util::cvt_ms_to_string(duration_ms, "$De $He $M:$S");
-	QString filesize_str = Util::File::calc_filesize_str(filesize);
+	QString duration_string = Util::msToString(durationMs, "$De $He $M:$S");
+	QString filesize_str = Util::File::getFilesizeString(filesize);
 
 	ui->lab_album_count->setText(QString::number(n_albums));
 	ui->lab_track_count->setText(QString::number(n_tracks));

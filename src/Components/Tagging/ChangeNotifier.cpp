@@ -1,6 +1,6 @@
 /* MetaDataChangeNotifier.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -26,15 +26,15 @@ using namespace Tagging;
 
 struct ChangeNotifier::Private
 {
-	MetaDataList v_md_old;
-	MetaDataList v_md_new;
-	MetaDataList v_md_deleted;
+	MetaDataList oldTracks;
+	MetaDataList newTracks;
+	MetaDataList deletedTracks;
 
-	AlbumList albums_old;
-	AlbumList albums_new;
+	AlbumList oldAlbums;
+	AlbumList newAlbums;
 };
 
-ChangeNotifier::ChangeNotifier(QObject *parent) :
+ChangeNotifier::ChangeNotifier(QObject* parent) :
 	QObject(parent)
 {
 	m = Pimpl::make<Private>();
@@ -42,51 +42,51 @@ ChangeNotifier::ChangeNotifier(QObject *parent) :
 
 ChangeNotifier::~ChangeNotifier() = default;
 
-void ChangeNotifier::change_metadata(const MetaDataList& v_md_old, const MetaDataList& v_md_new)
+void ChangeNotifier::changeMetadata(const MetaDataList& oldTracks, const MetaDataList& newTracks)
 {
-	m->v_md_old = v_md_old;
-	m->v_md_new = v_md_new;
+	m->oldTracks = oldTracks;
+	m->newTracks = newTracks;
 
-	emit sig_metadata_changed();
+	emit sigMetadataChanged();
 }
 
-void ChangeNotifier::delete_metadata(const MetaDataList& v_md_deleted)
+void ChangeNotifier::deleteMetadata(const MetaDataList& deletedTracks)
 {
-	m->v_md_deleted = v_md_deleted;
+	m->deletedTracks = deletedTracks;
 
-	emit sig_metadata_deleted();
+	emit sigMetadataDeleted();
 }
 
-void ChangeNotifier::update_albums(const AlbumList& albums_old, const AlbumList& albums_new)
+void ChangeNotifier::updateAlbums(const AlbumList& oldAlbums, const AlbumList& newAlbums)
 {
-	m->albums_old = albums_old;
-	m->albums_new = albums_new;
+	m->oldAlbums = oldAlbums;
+	m->newAlbums = newAlbums;
 
-	emit sig_albums_changed();
+	emit sigAlbumsChanged();
 }
 
-QPair<MetaDataList, MetaDataList> ChangeNotifier::changed_metadata() const
+QPair<MetaDataList, MetaDataList> ChangeNotifier::changedMetadata() const
 {
 	QPair<MetaDataList, MetaDataList> ret
 	{
-		m->v_md_old,
-		m->v_md_new
+		m->oldTracks,
+		m->newTracks
 	};
 
 	return ret;
 }
 
-MetaDataList ChangeNotifier::deleted_metadata() const
+MetaDataList ChangeNotifier::deletedMetadata() const
 {
-	return m->v_md_deleted;
+	return m->deletedTracks;
 }
 
-QPair<AlbumList, AlbumList> ChangeNotifier::changed_albums() const
+QPair<AlbumList, AlbumList> ChangeNotifier::changedAlbums() const
 {
 	QPair<AlbumList, AlbumList> ret
 	{
-		m->albums_old,
-		m->albums_new
+		m->oldAlbums,
+		m->newAlbums
 	};
 
 	return ret;

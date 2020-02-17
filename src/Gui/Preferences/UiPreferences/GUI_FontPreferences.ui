@@ -53,7 +53,7 @@
         <x>0</x>
         <y>0</y>
         <width>380</width>
-        <height>256</height>
+        <height>254</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
@@ -73,10 +73,10 @@
         <widget class="Gui::ComboBox" name="combo_sizes"/>
        </item>
        <item row="13" column="1">
-        <widget class="Gui::ComboBox" name="combo_pl_size"/>
+        <widget class="Gui::ComboBox" name="combo_plSize"/>
        </item>
        <item row="8" column="1">
-        <widget class="Gui::ComboBox" name="combo_lib_size"/>
+        <widget class="Gui::ComboBox" name="combo_libSize"/>
        </item>
        <item row="13" column="0">
         <widget class="QLabel" name="label_6">
@@ -157,7 +157,7 @@
         </widget>
        </item>
        <item row="9" column="1">
-        <widget class="QCheckBox" name="cb_lib_bold">
+        <widget class="QCheckBox" name="cb_libBold">
          <property name="text">
           <string/>
          </property>
@@ -193,9 +193,9 @@
   <tabstop>scrollArea</tabstop>
   <tabstop>combo_fonts</tabstop>
   <tabstop>combo_sizes</tabstop>
-  <tabstop>combo_lib_size</tabstop>
-  <tabstop>cb_lib_bold</tabstop>
-  <tabstop>combo_pl_size</tabstop>
+  <tabstop>combo_libSize</tabstop>
+  <tabstop>cb_libBold</tabstop>
+  <tabstop>combo_plSize</tabstop>
   <tabstop>btn_default</tabstop>
  </tabstops>
  <resources/>

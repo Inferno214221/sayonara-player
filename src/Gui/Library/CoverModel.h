@@ -1,6 +1,6 @@
 /* CoverModel.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -52,7 +52,8 @@ namespace Library
 			enum Role
 			{
 				AlbumRole=Qt::UserRole,
-				ArtistRole=Qt::UserRole + 1
+				ArtistRole=Qt::UserRole + 1,
+				CoverRole=Qt::UserRole + 2
 			};
 
 			explicit CoverModel(QObject* parent, AbstractLibrary* library);
@@ -62,7 +63,7 @@ namespace Library
 			int				rowCount(const QModelIndex& parent=QModelIndex()) const override;
 			int				columnCount(const QModelIndex& paren=QModelIndex()) const override;
 			QVariant		data(const QModelIndex& index, int role) const override;
-			Qt::ItemFlags	flags(const QModelIndex &index) const override;
+			Qt::ItemFlags	flags(const QModelIndex& index) const override;
 
 			QSize			item_size() const;
 			int				zoom() const;
@@ -70,34 +71,33 @@ namespace Library
 
 		protected:
 			// ItemModel
-			const MetaDataList& mimedata_tracks() const override;
-			const Util::Set<Id>&	selections() const override;
+			const MetaDataList& selectedMetadata() const override;
 
-			QModelIndexList search_results(const QString& substr) override;
+			QModelIndexList searchResults(const QString& substr) override;
 
-			int				searchable_column() const override;
-			QString			searchable_string(int idx) const override;
-			int				id_by_index(int idx) const override;
+			int				searchableColumn() const override;
+			QString			searchableString(int idx) const override;
+			int				mapIndexToId(int idx) const override;
 			Cover::Location	cover(const IndexSet& indexes) const override;
 
 		private:
 			const AlbumList& albums() const;
-			void add_rows(int row, int count);
-			void remove_rows(int row, int count);
-			void add_columns(int column, int count);
-			void remove_columns(int column, int count);
-			void refresh_data();
+			bool insertRows(int row, int count, const QModelIndex& parent=QModelIndex()) override;
+			bool removeRows(int row, int count, const QModelIndex& parent=QModelIndex()) override;
+			bool insertColumns(int column, int count, const QModelIndex& parent=QModelIndex()) override;
+			bool removeColumns(int column, int count, const QModelIndex& parent=QModelIndex()) override;
+			void refreshData();
 
 		public slots:
-			void set_zoom(int zoom, const QSize& view_size);
+			void setZoom(int zoom, const QSize& view_size);
 			void reload();
 			void clear();
 
 		private slots:
-			void cover_ready(const QString& hash);
-			void next_hash();
-			void cover_lookup_finished(bool success);
-			void show_artists_changed();
+			void coverReady(const QString& hash);
+			void nextHash();
+			void coverLookupFinished(bool success);
+			void showArtistsChanged();
 	};
 }
 

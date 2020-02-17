@@ -1,6 +1,6 @@
 /* Genre.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -44,9 +44,9 @@ public:
 	GenreID id() const;
 
 	QString name() const;
-	void set_name(const QString& name);
+	void setName(const QString& name);
 
-	bool is_equal(const Genre& other) const;
+	bool isEqual(const Genre& other) const;
 	bool operator ==(const Genre& other) const;
 	bool operator <(const Genre& other) const;
 	bool operator >(const Genre& other) const;

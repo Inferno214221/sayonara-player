@@ -1,6 +1,6 @@
 /* PlaybackPipeline.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -48,36 +48,36 @@ namespace Engine
 		PIMPL(Pipeline)
 
 		signals:
-			void sig_about_to_finish(MilliSeconds ms);
-			void sig_pos_changed_ms(MilliSeconds ms);
-			void sig_data(const QByteArray& data);
+			void sigAboutToFinishMs(MilliSeconds ms);
+			void sigPositionChangedMs(MilliSeconds ms);
+			void sigDataAvailable(const QByteArray& data);
 
 		public:
-			explicit Pipeline(const QString& name, QObject *parent=nullptr);
+			explicit Pipeline(const QString& name, QObject* parent=nullptr);
 			~Pipeline() override;
 
 			bool init(Engine* engine);
 			bool prepare(const QString& uri);
 
-			void set_raw_data(const QByteArray& data) override; // BroadcastDataReceiver
-			void set_internal_volume(double volume) override; // Crossfader
-			double get_internal_volume() const override;      // Crossfader
+			void setRawData(const QByteArray& data) override; // BroadcastDataReceiver
+			void setInternalVolume(double volume) override; // Crossfader
+			double internalVolume() const override;      // Crossfader
 
-			bool has_element(GstElement* e) const;
+			bool hasElement(GstElement* e) const;
 			GstState state() const;
 
-			void check_position();
-			void check_about_to_finish();
+			void checkPosition();
+			void checkAboutToFinish();
 
-			void enable_visualizer(bool b);
-			void enable_broadcasting(bool b);
+			void enableVisualizer(bool b);
+			void enableBroadcasting(bool b);
 
 			void record(bool b);
-			void set_recording_path(const QString& session_path);
+			void setRecordingPath(const QString& session_path);
 
-			MilliSeconds	duration_ms() const;
-			MilliSeconds	position_ms() const;
-			MilliSeconds	time_to_go() const;
+			MilliSeconds	durationMs() const;
+			MilliSeconds	positionMs() const;
+			MilliSeconds	timeToGo() const;
 
 
 		public slots:
@@ -85,35 +85,35 @@ namespace Engine
 			void stop() override;	// Crossfader
 			void pause();
 
-			void set_equalizer_band(int band_name, int val);
+			void setEqualizerBand(int band_name, int val);
 
-			NanoSeconds seek_rel(double percent, NanoSeconds ref_ns);
-			NanoSeconds seek_abs(NanoSeconds ns );
+			NanoSeconds seekRelative(double percent, NanoSeconds ns);
+			NanoSeconds seekAbsolute(NanoSeconds ns );
 
 
 		protected slots:
-			void s_volume_changed();
-			void s_show_visualizer_changed();
-			void s_mute_changed();
-			void s_speed_active_changed();
-			void s_speed_changed();
-			void s_sink_changed();
+			void volumeChanged();
+			void showVisualizerChanged();
+			void muteChanged();
+			void speedActiveChanged();
+			void sppedChanged();
+			void sinkChanged();
 
 
 		private:
-			bool			create_elements();
-			GstElement*		create_sink(const QString& name);
+			bool			createElements();
+			GstElement*		createSink(const QString& name);
 
-			bool			add_and_link_elements();
-			void			configure_elements();
+			bool			addAndLinkElements();
+			void			configureElements();
 
-			MilliSeconds	get_about_to_finish_time() const;
+			MilliSeconds	getAboutToFinishTime() const;
 
-			void			set_position_element(GstElement* element);
-			GstElement*		position_element();
+			void			setPositionElement(GstElement* element);
+			GstElement*		positionElement();
 
-			void			fade_in_handler() override;		// Crossfader
-			void			fade_out_handler() override;	// Crossfader
+			void			getFadeInHandler() override;		// Crossfader
+			void			getFadeOutHandler() override;	// Crossfader
 	};
 }
 

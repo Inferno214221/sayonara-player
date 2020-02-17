@@ -1,6 +1,6 @@
 /* VersionChecker.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -36,12 +36,12 @@ VersionChecker::VersionChecker(QObject* parent) :
 {
 	AsyncWebAccess* awa = new AsyncWebAccess(this);
 	awa->run("http://sayonara-player.com/current_version");
-	connect(awa, &AsyncWebAccess::sig_finished, this, &VersionChecker::version_check_finished);
+	connect(awa, &AsyncWebAccess::sigFinished, this, &VersionChecker::versionCheckFinished);
 }
 
 VersionChecker::~VersionChecker() = default;
 
-void VersionChecker::version_check_finished()
+void VersionChecker::versionCheckFinished()
 {
 	AsyncWebAccess::Status status = AsyncWebAccess::Status::Error;
 	QByteArray data;
@@ -66,16 +66,16 @@ void VersionChecker::version_check_finished()
 	QString cur_version = GetSetting(Set::Player_Version);
 
 	bool notify_new_version = GetSetting(Set::Player_NotifyNewVersion);
-	bool dark = Style::is_dark();
+	bool dark = Style::isDark();
 
-	sp_log(Log::Info, this) << "Newest Version: " << new_version;
-	sp_log(Log::Info, this) << "This Version:   " << cur_version;
+	spLog(Log::Info, this) << "Newest Version: " << new_version;
+	spLog(Log::Info, this) << "This Version:   " << cur_version;
 
-	QString link = Util::create_link("http://sayonara-player.com", dark);
+	QString link = Util::createLink("http://sayonara-player.com", dark);
 
 	if(new_version > cur_version && notify_new_version) {
 		Message::info(tr("A new version is available!") + "<br />" +  link);
 	}
 
-	emit sig_finished();
+	emit sigFinished();
 }

@@ -49,7 +49,7 @@ void StreamRecorderTest::target_path_template_test()
 	int idx;
 	Settings* s = Settings::instance();
 	QString tpt = s->get<Set::Engine_SR_SessionPathTemplate>();
-	SR::Utils::ErrorCode err = SR::Utils::validate_template(tpt, &idx);
+	SR::Utils::ErrorCode err = SR::Utils::validateTemplate(tpt, &idx);
 
 	QVERIFY(err == SR::Utils::ErrorCode::OK);
 }
@@ -65,14 +65,14 @@ void StreamRecorderTest::www_test()
 		QString filepath = QString("http://path%1.com")
 				.arg(i);
 
-		QVERIFY(Util::File::is_www(filepath) == true);
+		QVERIFY(Util::File::isWWW(filepath) == true);
 
 		MetaData md;
-		md.set_title(QString("title%1").arg(i));
-		md.set_artist( QString("artist%1").arg(i));
-		md.set_filepath( filepath);
+		md.setTitle(QString("title%1").arg(i));
+		md.setArtist( QString("artist%1").arg(i));
+		md.setFilepath( filepath);
 
-		QString filename = sr->change_track(md);
+		QString filename = sr->changeTrack(md);
 
 		QString should_filename =
 				temp_path() + "/" +
@@ -102,10 +102,10 @@ void StreamRecorderTest::www_test()
 		}
 
 		QVERIFY(filename == should_filename);
-		QVERIFY(sr->is_recording());
+		QVERIFY(sr->isRecording());
 	}
 
-	Util::File::delete_files({temp_path()});
+	Util::File::deleteFiles({temp_path()});
 }
 
 
@@ -120,17 +120,17 @@ void StreamRecorderTest::file_test()
 			QString("path%1.mp3").arg(i)
 		);
 
-		QVERIFY(Util::File::is_www(filepath) == false);
+		QVERIFY(Util::File::isWWW(filepath) == false);
 
 		MetaData md;
-		md.set_title(QString("title%1").arg(i));
-		md.set_artist(QString("artist%1").arg(i));
-		md.set_filepath(filepath);
+		md.setTitle(QString("title%1").arg(i));
+		md.setArtist(QString("artist%1").arg(i));
+		md.setFilepath(filepath);
 
-		QString filename = sr->change_track(md);
+		QString filename = sr->changeTrack(md);
 
 		QVERIFY(filename.isEmpty());
-		QVERIFY(!sr->is_recording());
+		QVERIFY(!sr->isRecording());
 	}
 }
 

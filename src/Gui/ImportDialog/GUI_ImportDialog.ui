@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>609</width>
+    <width>509</width>
     <height>257</height>
    </rect>
   </property>
@@ -29,7 +29,7 @@
     </widget>
    </item>
    <item row="2" column="0">
-    <widget class="QLabel" name="lab_target_info">
+    <widget class="QLabel" name="lab_targetInfo">
      <property name="text">
       <string>Select target folder</string>
      </property>
@@ -45,13 +45,6 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="lab_progress">
-       <property name="text">
-        <string notr="true">X Files scanned</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QLabel" name="lab_status">
        <property name="text">
         <string notr="true">X Files Found</string>
@@ -59,7 +52,7 @@
       </widget>
      </item>
      <item>
-      <spacer name="horizontalSpacer">
+      <spacer name="horizontalSpacer_2">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -77,6 +70,19 @@
         <string notr="true">Edit</string>
        </property>
       </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
      </item>
      <item>
       <widget class="QPushButton" name="btn_cancel">
@@ -103,7 +109,7 @@
    <item row="3" column="0" colspan="2">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QLabel" name="lab_target_path">
+      <widget class="QLabel" name="lab_targetPath">
        <property name="text">
         <string notr="true">/music/library</string>
        </property>
@@ -123,7 +129,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_choose_dir">
+      <widget class="QPushButton" name="btn_chooseDirectory">
        <property name="minimumSize">
         <size>
          <width>25</width>

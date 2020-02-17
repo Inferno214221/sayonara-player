@@ -1,6 +1,6 @@
 /* CoverView.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -58,9 +58,9 @@ struct CoverView::Private
 	LocalLibrary*	library=nullptr;
 	CoverModel*		model=nullptr;
 
-	std::atomic_flag zoom_locked = ATOMIC_FLAG_INIT;
+	std::atomic_flag zoomLocked = ATOMIC_FLAG_INIT;
 
-	Private() : zoom_locked(false) {}
+	Private() : zoomLocked(false) {}
 };
 
 CoverView::CoverView(QWidget* parent) :
@@ -68,18 +68,17 @@ CoverView::CoverView(QWidget* parent) :
 {
 	m = Pimpl::make<Private>();
 
-	connect(this, &ItemView::doubleClicked, this, &CoverView::play_clicked);
+	connect(this, &ItemView::doubleClicked, this, &CoverView::playClicked);
 }
 
-CoverView::~CoverView() {}
+CoverView::~CoverView() = default;
 
 void CoverView::init(LocalLibrary* library)
 {
 	m->library = library;
 	m->model = new Library::CoverModel(this, library);
 
-	ItemView::set_selection_type( SelectionViewInterface::SelectionType::Items );
-	ItemView::set_item_model(m->model);
+	ItemView::setItemModel(m->model);
 
 	this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	this->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
@@ -88,7 +87,7 @@ void CoverView::init(LocalLibrary* library)
 	this->setShowGrid(false);
 	this->setAlternatingRowColors(false);
 
-	connect(m->library, &LocalLibrary::sig_all_albums_loaded, this, &CoverView::reload);
+	connect(m->library, &LocalLibrary::sigAllAlbumsLoaded, this, &CoverView::reload);
 
 	if(this->horizontalHeader()){
 		this->horizontalHeader()->hide();
@@ -99,7 +98,7 @@ void CoverView::init(LocalLibrary* library)
 	}
 
 	new QShortcut(QKeySequence(QKeySequence::Refresh), this, SLOT(reload()), nullptr, Qt::WidgetShortcut);
-	new QShortcut(QKeySequence("F7"), this, SLOT(clear_cache()));
+	new QShortcut(QKeySequence("F7"), this, SLOT(clearCache()));
 }
 
 AbstractLibrary* CoverView::library() const
@@ -107,16 +106,16 @@ AbstractLibrary* CoverView::library() const
 	return m->library;
 }
 
-QStringList CoverView::zoom_actions()
+QStringList CoverView::zoomActions()
 {
 	return QStringList{"50", "75", "100", "125", "150", "175", "200"};
 }
 
-void CoverView::change_zoom(int zoom)
+void CoverView::changeZoom(int zoom)
 {
 	bool force_reload = (zoom < 0);
 
-	if(row_count() == 0){
+	if(itemModel()->rowCount() == 0){
 		return;
 	}
 
@@ -144,18 +143,18 @@ void CoverView::change_zoom(int zoom)
 
 	SetSetting(Set::Lib_CoverZoom, zoom);
 
-	if(m->zoom_locked.test_and_set()){
+	if(m->zoomLocked.test_and_set()){
 		return;
 	}
 
-	m->model->set_zoom(zoom, this->size());
-	resize_sections();
-	m->zoom_locked.clear();
+	m->model->setZoom(zoom, this->size());
+	resizeSections();
+	m->zoomLocked.clear();
 }
 
-void CoverView::resize_sections()
+void CoverView::resizeSections()
 {
-	if(this->is_empty()){
+	if(itemModel()->rowCount() == 0){
 		return;
 	}
 
@@ -164,7 +163,7 @@ void CoverView::resize_sections()
 }
 
 
-QList<ActionPair> CoverView::sorting_actions()
+QList<ActionPair> CoverView::sortingActions()
 {
 	using namespace Library;
 
@@ -186,24 +185,24 @@ QList<ActionPair> CoverView::sorting_actions()
 }
 
 
-void CoverView::change_sortorder(Library::SortOrder so)
+void CoverView::changeSortorder(Library::SortOrder so)
 {
-	m->library->change_album_sortorder(so);
+	m->library->changeAlbumSortorder(so);
 }
 
 
-void CoverView::init_context_menu()
+void CoverView::initContextMenu()
 {
 
-	if(context_menu()){
+	if(contextMenu()){
 		return;
 	}
 
 	CoverViewContextMenu* cm = new CoverViewContextMenu(this);
-	ItemView::init_custom_context_menu(cm);
+	ItemView::initCustomContextMenu(cm);
 
-	connect(cm, &CoverViewContextMenu::sig_zoom_changed, this, &CoverView::change_zoom);
-	connect(cm, &CoverViewContextMenu::sig_sorting_changed, this, &CoverView::change_sortorder);
+	connect(cm, &CoverViewContextMenu::sigZoomChanged, this, &CoverView::changeZoom);
+	connect(cm, &CoverViewContextMenu::sigSortingChanged, this, &CoverView::changeSortorder);
 }
 
 void CoverView::reload()
@@ -211,9 +210,9 @@ void CoverView::reload()
 	m->model->reload();
 }
 
-void CoverView::clear_cache()
+void CoverView::clearCache()
 {
-	sp_log(Log::Debug, this) << "Clear cache";
+	spLog(Log::Debug, this) << "Clear cache";
 	m->model->clear();
 }
 
@@ -222,7 +221,7 @@ void CoverView::fill()
 	this->clearSelection();
 }
 
-void CoverView::language_changed() {}
+void CoverView::languageChanged() {}
 
 QStyleOptionViewItem CoverView::viewOptions() const
 {
@@ -242,7 +241,7 @@ void CoverView::wheelEvent(QWheelEvent* e)
 	{
 		int d = (e->delta() > 0) ? 10 : -10;
 
-		change_zoom(m->model->zoom() + d);
+		changeZoom(m->model->zoom() + d);
 	}
 
 	else
@@ -254,7 +253,7 @@ void CoverView::wheelEvent(QWheelEvent* e)
 void CoverView::resizeEvent(QResizeEvent* e)
 {
 	ItemView::resizeEvent(e);
-	change_zoom();
+	changeZoom();
 }
 
 int CoverView::sizeHintForColumn(int c) const
@@ -272,22 +271,22 @@ void CoverView::hideEvent(QHideEvent* e)
 	ItemView::hideEvent(e);
 }
 
-bool CoverView::is_mergeable() const
+bool CoverView::isMergeable() const
 {
 	return true;
 }
 
-MD::Interpretation CoverView::metadata_interpretation() const
+MD::Interpretation CoverView::metadataInterpretation() const
 {
 	return MD::Interpretation::Albums;
 }
 
-int CoverView::index_by_model_index(const QModelIndex& idx) const
+int CoverView::mapModelIndexToIndex(const QModelIndex& idx) const
 {
 	return idx.row() * model()->columnCount() + idx.column();
 }
 
-ModelIndexRange CoverView::model_indexrange_by_index(int idx) const
+ModelIndexRange CoverView::mapIndexToModelIndexes(int idx) const
 {
 	int row = idx / model()->columnCount();
 	int col = idx % model()->columnCount();
@@ -295,42 +294,47 @@ ModelIndexRange CoverView::model_indexrange_by_index(int idx) const
 	return ModelIndexRange(model()->index(row, col), model()->index(row, col));
 }
 
-void CoverView::play_clicked()
+SelectionViewInterface::SelectionType CoverView::selectionType() const
 {
-	m->library->prepare_fetched_tracks_for_playlist(false);
+	return SelectionViewInterface::SelectionType::Items;
 }
 
-void CoverView::play_new_tab_clicked()
+void CoverView::playClicked()
 {
-	m->library->prepare_fetched_tracks_for_playlist(true);
+	m->library->prepareFetchedTracksForPlaylist(false);
 }
 
-void CoverView::play_next_clicked()
+void CoverView::playNewTabClicked()
 {
-	m->library->play_next_fetched_tracks();
+	m->library->prepareFetchedTracksForPlaylist(true);
 }
 
-void CoverView::append_clicked()
+void CoverView::playNextClicked()
 {
-	m->library->append_fetched_tracks();
+	m->library->playNextFetchedTracks();
 }
 
-void CoverView::selection_changed(const IndexSet& indexes)
+void CoverView::appendClicked()
 {
-	m->library->selected_albums_changed(indexes);
+	m->library->appendFetchedTracks();
 }
 
-void CoverView::refresh_clicked()
+void CoverView::selectedItemsChanged(const IndexSet& indexes)
 {
-	m->library->refresh_albums();
+	m->library->selectedAlbumsChanged(indexes);
 }
 
-void CoverView::run_merge_operation(const Library::MergeData& mergedata)
+void CoverView::refreshClicked()
 {
-	Tagging::UserOperations* uto = new Tagging::UserOperations(mergedata.library_id(), this);
+	m->library->refreshAlbums();
+}
 
-	connect(uto, &Tagging::UserOperations::sig_finished, uto, &Tagging::UserOperations::deleteLater);
+void CoverView::runMergeOperation(const Library::MergeData& mergedata)
+{
+	Tagging::UserOperations* uto = new Tagging::UserOperations(mergedata.libraryId(), this);
 
-	uto->merge_albums(mergedata.source_ids(), mergedata.target_id());
+	connect(uto, &Tagging::UserOperations::sigFinished, uto, &Tagging::UserOperations::deleteLater);
+
+	uto->mergeAlbums(mergedata.sourceIds(), mergedata.targetId());
 }
 

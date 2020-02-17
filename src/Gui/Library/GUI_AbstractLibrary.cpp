@@ -1,6 +1,6 @@
 /* GUI_AbstractLibrary.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -44,14 +44,14 @@ using namespace Library;
 struct GUI_AbstractLibrary::Private
 {
 	AbstractLibrary*	library = nullptr;
-	SearchBar*			le_search=nullptr;
+	SearchBar*			leSearch=nullptr;
 
 	Private(AbstractLibrary* library) :
 		library(library)
 	{}
 };
 
-GUI_AbstractLibrary::GUI_AbstractLibrary(AbstractLibrary* library, QWidget *parent) :
+GUI_AbstractLibrary::GUI_AbstractLibrary(AbstractLibrary* library, QWidget* parent) :
 	Widget(parent)
 {
 	m = Pimpl::make<Private>(library);
@@ -61,94 +61,94 @@ GUI_AbstractLibrary::~GUI_AbstractLibrary() = default;
 
 void GUI_AbstractLibrary::init()
 {
-	m->le_search = le_search();
+	m->leSearch = leSearch();
 
-	lv_tracks()->init(m->library);
-	lv_album()->init(m->library);
-	lv_artist()->init(m->library);
+	lvTracks()->init(m->library);
+	lvAlbum()->init(m->library);
+	lvArtist()->init(m->library);
 
-	init_search_bar();
-	init_shortcuts();
+	initSearchBar();
+	initShortcuts();
 
-	connect(m->library, &AbstractLibrary::sig_delete_answer, this, &GUI_AbstractLibrary::show_delete_answer);
+	connect(m->library, &AbstractLibrary::sigDeleteAnswer, this, &GUI_AbstractLibrary::showDeleteAnswer);
 
-	connect(lv_artist(), &ItemView::sig_delete_clicked, this, &GUI_AbstractLibrary::item_delete_clicked);
-	connect(lv_album(), &ItemView::sig_delete_clicked, this, &GUI_AbstractLibrary::item_delete_clicked);
-	connect(lv_tracks(), &ItemView::sig_delete_clicked, this, &GUI_AbstractLibrary::tracks_delete_clicked);
+	connect(lvArtist(), &ItemView::sigDeleteClicked, this, &GUI_AbstractLibrary::itemDeleteClicked);
+	connect(lvAlbum(), &ItemView::sigDeleteClicked, this, &GUI_AbstractLibrary::itemDeleteClicked);
+	connect(lvTracks(), &ItemView::sigDeleteClicked, this, &GUI_AbstractLibrary::tracksDeleteClicked);
 
-	if(m->le_search)
+	if(m->leSearch)
 	{
-		connect(m->le_search, &SearchBar::sig_current_mode_changed, this, &GUI_AbstractLibrary::query_library);
+		connect(m->leSearch, &SearchBar::sigCurrentModeChanged, this, &GUI_AbstractLibrary::queryLibrary);
 	}
 
-	ListenSetting(Set::Lib_LiveSearch, GUI_AbstractLibrary::live_search_changed);
+	ListenSetting(Set::Lib_LiveSearch, GUI_AbstractLibrary::liveSearchChanged);
 }
 
-void GUI_AbstractLibrary::init_search_bar()
+void GUI_AbstractLibrary::initSearchBar()
 {
-	if(!m->le_search){
+	if(!m->leSearch){
 		return;
 	}
 
-	m->le_search->set_modes(this->search_options());
-	m->le_search->set_current_mode(Filter::Fulltext);
+	m->leSearch->setModes(this->searchOptions());
+	m->leSearch->setCurrentMode(Filter::Fulltext);
 
-	connect(m->le_search, &QLineEdit::returnPressed, this, &GUI_AbstractLibrary::search_triggered);
+	connect(m->leSearch, &QLineEdit::returnPressed, this, &GUI_AbstractLibrary::searchTriggered);
 }
 
 
-void GUI_AbstractLibrary::language_changed() {}
+void GUI_AbstractLibrary::languageChanged() {}
 
-void GUI_AbstractLibrary::init_shortcuts()
+void GUI_AbstractLibrary::initShortcuts()
 {
 	auto* kp_filter_lib = new Gui::KeyPressFilter(this);
 	this->installEventFilter(kp_filter_lib);
-	connect(kp_filter_lib, &Gui::KeyPressFilter::sig_key_pressed, this, &GUI_AbstractLibrary::key_pressed);
+	connect(kp_filter_lib, &Gui::KeyPressFilter::setKeyPressed, this, &GUI_AbstractLibrary::keyPressed);
 }
 
 
-void GUI_AbstractLibrary::query_library()
+void GUI_AbstractLibrary::queryLibrary()
 {
 	QString text;
 	Filter::Mode current_mode = Filter::Mode::Fulltext;
 
-	if(m->le_search)
+	if(m->leSearch)
 	{
-		text = m->le_search->text();
-		current_mode = m->le_search->current_mode();
+		text = m->leSearch->text();
+		current_mode = m->leSearch->currentMode();
 	}
 
 	Filter filter = m->library->filter();
-	filter.set_mode(current_mode);
-	filter.set_filtertext(text, GetSetting(Set::Lib_SearchMode));
-	filter.set_invalid_genre(m->le_search->has_invalid_genre_mode());
+	filter.setMode(current_mode);
+	filter.setFiltertext(text, GetSetting(Set::Lib_SearchMode));
+	filter.setInvalidGenre(m->leSearch->hasInvalidGenreMode());
 
-	m->library->change_filter(filter);
+	m->library->changeFilter(filter);
 }
 
-void GUI_AbstractLibrary::search_triggered()
+void GUI_AbstractLibrary::searchTriggered()
 {
-	query_library();
+	queryLibrary();
 }
 
-void GUI_AbstractLibrary::search_edited(const QString& search)
+void GUI_AbstractLibrary::searchEdited(const QString& search)
 {
 	Q_UNUSED(search)
 
 	if(GetSetting(Set::Lib_LiveSearch) || search.isEmpty())
 	{
-		query_library();
+		queryLibrary();
 	}
 }
 
-bool GUI_AbstractLibrary::has_selections() const
+bool GUI_AbstractLibrary::hasSelections() const
 {
-	return (m->library->selected_albums().count() > 0) ||
-	(m->library->selected_artists().count() > 0);
+	return (m->library->selectedAlbums().count() > 0) ||
+	(m->library->selectedArtists().count() > 0);
 }
 
 
-void GUI_AbstractLibrary::key_pressed(int key)
+void GUI_AbstractLibrary::keyPressed(int key)
 {
 	using Library::Filter;
 
@@ -157,66 +157,66 @@ void GUI_AbstractLibrary::key_pressed(int key)
 		return;
 	}
 
-	if(has_selections())
+	if(hasSelections())
 	{
-		clear_selections();
+		clearSelections();
 	}
 
-	else if(m->le_search)
+	else if(m->leSearch)
 	{
-		if(!m->le_search->text().isEmpty())
+		if(!m->leSearch->text().isEmpty())
 		{
-			m->le_search->clear();
+			m->leSearch->clear();
 		}
 
 		else
 		{
-			m->le_search->set_current_mode(Filter::Mode::Fulltext);
+			m->leSearch->setCurrentMode(Filter::Mode::Fulltext);
 			m->library->refetch();
 		}
 	}
 }
 
-void GUI_AbstractLibrary::clear_selections()
+void GUI_AbstractLibrary::clearSelections()
 {
-	lv_album()->clearSelection();
-	lv_artist()->clearSelection();
-	lv_tracks()->clearSelection();
+	lvAlbum()->clearSelection();
+	lvArtist()->clearSelection();
+	lvTracks()->clearSelection();
 }
 
-void GUI_AbstractLibrary::item_delete_clicked()
+void GUI_AbstractLibrary::itemDeleteClicked()
 {
 	int n_tracks = m->library->tracks().count();
 
-	TrackDeletionMode answer = show_delete_dialog(n_tracks);
+	TrackDeletionMode answer = showDeleteDialog(n_tracks);
 	if(answer != TrackDeletionMode::None) {
-		m->library->delete_fetched_tracks(answer);
+		m->library->deleteFetchedTracks(answer);
 	}
 }
 
-void GUI_AbstractLibrary::tracks_delete_clicked()
+void GUI_AbstractLibrary::tracksDeleteClicked()
 {
-	int n_tracks = m->library->current_tracks().count();
+	int n_tracks = m->library->currentTracks().count();
 
-	TrackDeletionMode answer = show_delete_dialog(n_tracks);
+	TrackDeletionMode answer = showDeleteDialog(n_tracks);
 	if(answer != TrackDeletionMode::None) {
-		m->library->delete_current_tracks(answer);
+		m->library->deleteCurrentTracks(answer);
 	}
 }
 
-void GUI_AbstractLibrary::show_delete_answer(QString answer)
+void GUI_AbstractLibrary::showDeleteAnswer(QString answer)
 {
 	Message::info(answer, Lang::get(Lang::Library));
 }
 
-void GUI_AbstractLibrary::live_search_changed()
+void GUI_AbstractLibrary::liveSearchChanged()
 {
 	if(GetSetting(Set::Lib_LiveSearch)) {
-		connect(m->le_search, &QLineEdit::textChanged, this, &GUI_AbstractLibrary::search_edited);
+		connect(m->leSearch, &QLineEdit::textChanged, this, &GUI_AbstractLibrary::searchEdited);
 	}
 
 	else {
-		disconnect(m->le_search, &QLineEdit::textEdited, this, &GUI_AbstractLibrary::search_edited);
+		disconnect(m->leSearch, &QLineEdit::textEdited, this, &GUI_AbstractLibrary::searchEdited);
 	}
 }
 

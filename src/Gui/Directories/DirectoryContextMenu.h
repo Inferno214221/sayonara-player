@@ -1,6 +1,6 @@
 /* DirectoryContextMenu.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -34,12 +34,12 @@ class DirectoryContextMenu :
 	PIMPL(DirectoryContextMenu)
 
 signals:
-	void sig_create_dir_clicked();
-	void sig_rename_clicked();
-	void sig_rename_by_tag_clicked();
-	void sig_collapse_all_clicked();
-	void sig_move_to_lib(LibraryId id);
-	void sig_copy_to_lib(LibraryId id);
+	void sigCreateDirectoryClicked();
+	void sigRenameClicked();
+	void sigRenameByTagClicked();
+	void sigCollapseAllClicked();
+	void sigMoveToLibrary(LibraryId id);
+	void sigCopyToLibrary(LibraryId id);
 
 public:
 	enum Mode
@@ -50,12 +50,12 @@ public:
 
 	enum Entry
 	{
-		EntryCreateDir = Library::ContextMenu::EntryLast,
-		EntryRename = Library::ContextMenu::EntryLast << 1,
-		EntryRenameByTag = Library::ContextMenu::EntryLast << 2,
-		EntryCollapseAll = Library::ContextMenu::EntryLast << 3,
-		EntryMoveToLib = Library::ContextMenu::EntryLast << 4,
-		EntryCopyToLib = Library::ContextMenu::EntryLast << 5
+		EntryCreateDir		= Library::ContextMenu::EntryLast,
+		EntryRename			= Library::ContextMenu::EntryLast << 1,
+		EntryRenameByTag	= Library::ContextMenu::EntryLast << 2,
+		EntryCollapseAll	= Library::ContextMenu::EntryLast << 3,
+		EntryMoveToLib		= Library::ContextMenu::EntryLast << 4,
+		EntryCopyToLib		= Library::ContextMenu::EntryLast << 5
 	};
 
 	DirectoryContextMenu(Mode mode, QWidget* parent);
@@ -63,17 +63,17 @@ public:
 
 	void refresh(int count=0);
 
-	ContextMenu::Entries get_entries() const override;
-	void show_actions(ContextMenu::Entries entries) override;
-	void show_directory_action(DirectoryContextMenu::Entry entry, bool b);
+	ContextMenu::Entries entries() const override;
+	void showActions(ContextMenu::Entries entries) override;
+	void showDirectoryAction(DirectoryContextMenu::Entry entry, bool b);
 
 private slots:
-	void library_move_action_triggered();
-	void library_copy_action_triggered();
+	void libraryMoveActionTriggered();
+	void libraryCopyActionTriggered();
 
 protected:
-	void language_changed() override;
-	void skin_changed() override;
+	void languageChanged() override;
+	void skinChanged() override;
 };
 
 #endif // DIRECTORYCONTEXTMENU_H

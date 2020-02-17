@@ -1,6 +1,6 @@
 /* CopyThread.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -40,6 +40,9 @@ namespace Library
 		Q_OBJECT
 		PIMPL(CopyThread)
 
+		signals:
+			void sigProgress(int);
+
 		public:
 			enum class Mode : uint8_t
 			{
@@ -47,17 +50,16 @@ namespace Library
 				Rollback
 			};
 
-			CopyThread(const QString& target_dir, ImportCachePtr cache, QObject *parent=nullptr);
+			CopyThread(const QString& targetDirectory, ImportCachePtr cache, QObject* parent=nullptr);
 			virtual ~CopyThread();
 
-			int get_n_copied_files() const;
-
-			bool was_cancelled() const;
 			void cancel();
+			bool wasCancelled() const;
 
-			MetaDataList get_copied_metadata() const;
+			MetaDataList copiedMetadata() const;
+			int copiedFileCount() const;
 
-			void set_mode(CopyThread::Mode mode);
+			void setMode(CopyThread::Mode mode);
 
 		private:
 			void clear();
@@ -72,11 +74,7 @@ namespace Library
 			 */
 			void copy();
 			void rollback();
-			void emit_percent();
-
-
-		signals:
-			void sig_progress(int);
+			void emitPercent();
 	};
 }
 

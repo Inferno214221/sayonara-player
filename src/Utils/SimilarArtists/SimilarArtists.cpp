@@ -1,6 +1,6 @@
 /* SimilarArtists.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -30,8 +30,8 @@
 
 static QString get_filename(const QString& artist)
 {
-    QString sayonara_path = Util::sayonara_path() + "/" + "similar_artists/";
-    sayonara_path = Util::File::clean_filename(sayonara_path);
+    QString sayonara_path = Util::sayonaraPath() + "/" + "similar_artists/";
+    sayonara_path = Util::File::cleanFilename(sayonara_path);
     QDir dir(sayonara_path);
 
     QStringList name_filters;
@@ -59,7 +59,7 @@ static QString get_filename(const QString& artist)
 }
 
 QMap<QString, double>
-SimilarArtists::get_similar_artists(const QString& artist)
+SimilarArtists::getSimilarArtists(const QString& artist)
 {
     QMap<QString, double> sim_artist_map;
 	QString filename = get_filename(artist);
@@ -68,7 +68,7 @@ SimilarArtists::get_similar_artists(const QString& artist)
     }
 
     QByteArray content, decomp;
-    bool success = Util::File::read_file_into_byte_arr(filename, content);
+    bool success = Util::File::readFileIntoByteArray(filename, content);
     if(!success){
         return sim_artist_map;
     }
@@ -94,7 +94,7 @@ SimilarArtists::get_similar_artists(const QString& artist)
     return sim_artist_map;
 }
 
-QStringList SimilarArtists::get_similar_artist_names(const QString &artist)
+QStringList SimilarArtists::getSimilarArtistNames(const QString& artist)
 {
-    return QStringList( get_similar_artists(artist).keys() );
+    return QStringList( getSimilarArtists(artist).keys() );
 }

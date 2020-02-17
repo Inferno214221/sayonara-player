@@ -1,6 +1,6 @@
 /* PlaylistStopBehavior.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -29,8 +29,8 @@ using Playlist::StopBehavior;
 
 struct StopBehavior::Private
 {
-	int idx_before_stop;
-	Id	id_before_stop;
+	int indexBeforeStop;
+	Id	idBeforeStop;
 };
 
 Playlist::StopBehavior::StopBehavior()
@@ -40,43 +40,43 @@ Playlist::StopBehavior::StopBehavior()
 
 Playlist::StopBehavior::~StopBehavior() = default;
 
-int Playlist::StopBehavior::restore_track_before_stop()
+int Playlist::StopBehavior::restoreTrackBeforeStop()
 {
 	const MetaDataList& v_md = tracks();
 	auto it = Algorithm::find(v_md, [=](const MetaData& md){
-		return (md.id() == m->id_before_stop);
+		return (md.id() == m->idBeforeStop);
 	});
 
 	if(it == v_md.end()) {
-		set_track_idx_before_stop(-1);
+		setTrackIndexBeforeStop(-1);
 		return -1;
 	}
 
 	else {
-		m->idx_before_stop = std::distance(v_md.begin(), it);
+		m->indexBeforeStop = std::distance(v_md.begin(), it);
 	}
 
-	return m->idx_before_stop;
+	return m->indexBeforeStop;
 }
 
-int Playlist::StopBehavior::track_idx_before_stop() const
+int Playlist::StopBehavior::trackIndexBeforeStop() const
 {
-	return m->idx_before_stop;
+	return m->indexBeforeStop;
 }
 
-void Playlist::StopBehavior::set_track_idx_before_stop(int idx)
+void Playlist::StopBehavior::setTrackIndexBeforeStop(int idx)
 {
 	bool valid = Util::between(idx, tracks().count());
 	if(valid)
 	{
-		m->idx_before_stop = idx;
-		m->id_before_stop = tracks().at(idx).id();
+		m->indexBeforeStop = idx;
+		m->idBeforeStop = tracks().at(idx).id();
 	}
 
 	else {
-		m->idx_before_stop = -1;
-		m->id_before_stop = -1;
+		m->indexBeforeStop = -1;
+		m->idBeforeStop = -1;
 	}
 
-	SetSetting(Set::PL_LastTrackBeforeStop, m->idx_before_stop);
+	SetSetting(Set::PL_LastTrackBeforeStop, m->indexBeforeStop);
 }

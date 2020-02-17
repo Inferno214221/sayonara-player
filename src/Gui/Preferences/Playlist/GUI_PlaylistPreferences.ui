@@ -63,14 +63,14 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout">
           <item>
-           <widget class="QCheckBox" name="cb_load_temporary_playlists">
+           <widget class="QCheckBox" name="cbLoadTemporaryPlaylists">
             <property name="text">
              <string>Load temporary playlists</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="cb_load_saved_playlists">
+           <widget class="QCheckBox" name="cbLoadSavedPlaylists">
             <property name="text">
              <string>Load saved playlists</string>
             </property>
@@ -87,21 +87,21 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="cb_start_playing">
+           <widget class="QCheckBox" name="cbStartPlaying">
             <property name="text">
              <string>Start playing</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="cb_load_last_track">
+           <widget class="QCheckBox" name="cbLoadLastTrack">
             <property name="text">
              <string>Load last track on startup</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="cb_remember_time">
+           <widget class="QCheckBox" name="cbRememberTime">
             <property name="text">
              <string>Remember time of last track</string>
             </property>
@@ -117,7 +117,7 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
-           <widget class="QCheckBox" name="cb_remember_after_stop">
+           <widget class="QCheckBox" name="cbRememberAfterStop">
             <property name="text">
              <string>Load last track after pressing stop</string>
             </property>
@@ -134,14 +134,14 @@
       </attribute>
       <layout class="QGridLayout" name="gridLayout_3">
        <item row="1" column="0" colspan="2">
-        <widget class="QCheckBox" name="cb_show_numbers">
+        <widget class="QCheckBox" name="cbShowNumbers">
          <property name="text">
           <string>Show numbers</string>
          </property>
         </widget>
        </item>
        <item row="4" column="0">
-        <widget class="QLineEdit" name="le_expression"/>
+        <widget class="QLineEdit" name="leExpression"/>
        </item>
        <item row="6" column="0">
         <spacer name="verticalSpacer">
@@ -211,7 +211,7 @@
           </widget>
          </item>
          <item row="0" column="3">
-          <widget class="QLabel" name="lab_trackno">
+          <widget class="QLabel" name="labTrackNumber">
            <property name="text">
             <string notr="true">track number</string>
            </property>
@@ -232,21 +232,21 @@
           </widget>
          </item>
          <item row="1" column="3">
-          <widget class="QLabel" name="lab_title">
+          <widget class="QLabel" name="labTitle">
            <property name="text">
             <string notr="true">title</string>
            </property>
           </widget>
          </item>
          <item row="2" column="3">
-          <widget class="QLabel" name="lab_artist">
+          <widget class="QLabel" name="labArtist">
            <property name="text">
             <string notr="true">artist</string>
            </property>
           </widget>
          </item>
          <item row="3" column="3">
-          <widget class="QLabel" name="lab_album">
+          <widget class="QLabel" name="labAlbum">
            <property name="text">
             <string notr="true">album</string>
            </property>
@@ -276,28 +276,28 @@
         </layout>
        </item>
        <item row="0" column="0">
-        <widget class="QCheckBox" name="cb_show_clear_button">
+        <widget class="QCheckBox" name="cbShowClearButton">
          <property name="text">
           <string>Show clear button</string>
          </property>
         </widget>
        </item>
        <item row="4" column="1">
-        <widget class="QPushButton" name="btn_default">
+        <widget class="QPushButton" name="btnDefault">
          <property name="text">
           <string notr="true">Default</string>
          </property>
         </widget>
        </item>
        <item row="2" column="0">
-        <widget class="QCheckBox" name="cb_show_covers">
+        <widget class="QCheckBox" name="cbShowCovers">
          <property name="text">
           <string>Show covers</string>
          </property>
         </widget>
        </item>
        <item row="3" column="0">
-        <widget class="QCheckBox" name="cb_show_rating">
+        <widget class="QCheckBox" name="cbShowRating">
          <property name="text">
           <string>Show rating</string>
          </property>
@@ -311,17 +311,17 @@
  </widget>
  <tabstops>
   <tabstop>tabWidget</tabstop>
-  <tabstop>cb_load_temporary_playlists</tabstop>
-  <tabstop>cb_load_saved_playlists</tabstop>
-  <tabstop>cb_start_playing</tabstop>
-  <tabstop>cb_load_last_track</tabstop>
-  <tabstop>cb_remember_time</tabstop>
-  <tabstop>cb_remember_after_stop</tabstop>
-  <tabstop>cb_show_clear_button</tabstop>
-  <tabstop>cb_show_numbers</tabstop>
-  <tabstop>cb_show_covers</tabstop>
-  <tabstop>cb_show_rating</tabstop>
-  <tabstop>le_expression</tabstop>
+  <tabstop>cbLoadTemporaryPlaylists</tabstop>
+  <tabstop>cbLoadSavedPlaylists</tabstop>
+  <tabstop>cbStartPlaying</tabstop>
+  <tabstop>cbLoadLastTrack</tabstop>
+  <tabstop>cbRememberTime</tabstop>
+  <tabstop>cbRememberAfterStop</tabstop>
+  <tabstop>cbShowClearButton</tabstop>
+  <tabstop>cbShowNumbers</tabstop>
+  <tabstop>cbShowCovers</tabstop>
+  <tabstop>cbShowRating</tabstop>
+  <tabstop>leExpression</tabstop>
  </tabstops>
  <resources/>
  <connections/>
