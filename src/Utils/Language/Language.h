@@ -1,6 +1,6 @@
 /* Language.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -106,6 +106,7 @@ public:
 		Close,
 		CloseOthers,
 		CloseTab,
+		CreateDirectory,
 		Created,
 		CreateNewLibrary,
 		DarkMode,
@@ -299,14 +300,14 @@ public:
 	 */
 	static LanguageString get(Lang::Term term, bool* ok=nullptr);
 
-	static LanguageString get_with_number(Lang::TermNr term, int param, bool* ok=nullptr);
+	static LanguageString getWithNumber(Lang::TermNr term, int param, bool* ok=nullptr);
 
 	/**
 	 * @brief Converts two letter into four letter
 	 * @param two letter language filename
 	 * @return four letter key if available, en_GB per default
 	 */
-	static QString convert_old_lang(const QString& old_lang);
+	static QString convertOldLanguage(const QString& oldLang);
 
 
 	/**
@@ -314,21 +315,21 @@ public:
 	 * languages in sayonara path
 	 * @return map with four letter key as key and the locale as value
 	 */
-	static QMap<QString, QLocale> available_languages();
+	static QMap<QString, QLocale> availableLanguages();
 
 	/**
 	 * @brief Returns the two letter representation of a language
 	 * @param language_name e.g. ...lang_DE_de.qm.
 	 * @return DE for the example above
 	 */
-	static QString two_letter(const QString& language_name);
+	static QString twoLetter(const QString& languageName);
 
 	/**
 	 * @brief Returns the four letter representation of a language
 	 * @param language_name e.g. ...lang_DE_de.qm.
 	 * @return DE for the example above
 	 */
-	static QString four_letter(const QString& language_name);
+	static QString fourLetter(const QString& languageName);
 };
 
 #endif // LANGUAGE_H

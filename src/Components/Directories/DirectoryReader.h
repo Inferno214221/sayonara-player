@@ -1,6 +1,6 @@
 /* DirectoryReader.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -42,22 +42,22 @@ class DirectoryReader
 		 * @brief set name filters
 		 * @param filter name filters
 		 */
-		void set_filter(const QStringList& filter);
+		void setFilter(const QStringList& filter);
 
 		/**
 		 * @brief set a single name filter
 		 * @param filter name filter
 		 */
-		void set_filter(const QString& filter);
+		void setFilter(const QString& filter);
 
 		/**
 		 * @brief fetch all files recursively for base_dir. Only files matching the name filter will be extracted
 		 * @param base_dir the directory of interest
 		 * @param files this array will be filled with the found absolute file paths
 		 */
-		void scan_files_recursive(const QDir& base_dir, QStringList& files) const;
+		void scanFilesRecursive(const QDir& base_dir, QStringList& files) const;
 
-		void scan_files(const QDir& base_dir, QStringList& files) const;
+		void scanFiles(const QDir& base_dir, QStringList& files) const;
 
 
 		/**
@@ -65,7 +65,7 @@ class DirectoryReader
 		 * @param paths List of filepaths
 		 * @return A list of MetaData extracted from paths
 		 */
-		MetaDataList scan_metadata(const QStringList& paths);
+		MetaDataList scanMetadata(const QStringList& paths);
 
 		/**
 		 * @brief Finds files recursively in the given directory with the given filter
@@ -73,7 +73,7 @@ class DirectoryReader
 		 * @param filename filenames to find
 		 * @return list of all found files
 		 */
-		QStringList find_files_rec(const QDir& dir, const QString& filename);
+		QStringList findFilesRecursive(const QDir& dir, const QString& filename);
 };
 
 #endif

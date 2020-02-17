@@ -1,6 +1,6 @@
 /* AlbumInfo.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -34,15 +34,15 @@ class AlbumInfo :
 	PIMPL(AlbumInfo)
 
 private:
-	void calc_cover_location() override;
-	void calc_header() override;
-	void calc_subheader() override;
+	void calcCoverLocation() override;
+	void calcHeader() override;
+	void calcSubheader() override;
 
 public:
 	explicit AlbumInfo(const MetaDataList& v_md);
-	virtual ~AlbumInfo();
+	~AlbumInfo() override;
 
-	Cover::Location cover_location() const override;
+	Cover::Location coverLocation() const override;
 };
 
 #endif // ALBUMINFO_H

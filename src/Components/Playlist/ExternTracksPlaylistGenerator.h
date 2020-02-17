@@ -1,6 +1,6 @@
 /* ExternTracksPlaylistGenerator.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -37,12 +37,12 @@ class ExternTracksPlaylistGenerator :
 	SINGLETON(ExternTracksPlaylistGenerator)
 
 private:
-	void add_new_playlist(const QString& paths);
+	void addNewPlaylist(const QString& paths);
 
 public:
-	void add_paths(const QStringList& paths);
-	void change_track();
-	bool is_play_allowed() const;
+	void addPaths(const QStringList& paths);
+	void changeTrack();
+	bool isPlayAllowed() const;
 };
 
 #endif // EXTERNTRACKSPLAYLISTGENERATOR_H

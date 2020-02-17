@@ -1,6 +1,6 @@
 /* PlaylistItemModel.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -23,7 +23,7 @@
 * PlaylistItemModel.cpp
  *
  *  Created on: Apr 8, 2011
- *      Author: Lucio Carreras
+ *      Author: Michael Lugmair (Lucio Carreras)
  */
 
 #include "PlaylistModel.h"
@@ -71,16 +71,16 @@ enum class PlaylistSearchMode
 struct Model::Private
 {
 	QHash<AlbumId, QPixmap>	pms;
-	int						old_row_count;
-	int						drag_index;
-	int						row_height;
+	int						oldRowCount;
+	int						dragIndex;
+	int						rowHeight;
 	PlaylistPtr				pl=nullptr;
 	Tagging::UserOperations* uto=nullptr;
 
 	Private(PlaylistPtr pl) :
-		old_row_count(0),
-		drag_index(-1),
-		row_height(20),
+		oldRowCount(0),
+		dragIndex(-1),
+		rowHeight(20),
 		pl(pl)
 	{}
 };
@@ -90,27 +90,40 @@ Model::Model(PlaylistPtr pl, QObject* parent) :
 {
 	m = Pimpl::make<Private>(pl);
 
-	connect(m->pl.get(), &Playlist::Playlist::sig_items_changed, this, &Model::playlist_changed);
+	connect(m->pl.get(), &Playlist::Playlist::sigItemsChanged, this, &Model::playlistChanged);
 
-	ListenSettingNoCall(Set::PL_EntryLook, Model::look_changed);
+	ListenSettingNoCall(Set::PL_EntryLook, Model::lookChanged);
 
-	playlist_changed(0);
+	playlistChanged(0);
 }
 
 Model::~Model() = default;
 
 int Model::rowCount(const QModelIndex& parent) const
 {
-	Q_UNUSED(parent);
+	Q_UNUSED(parent)
 	return m->pl->count();
 }
 
 int Model::columnCount(const QModelIndex& parent) const
 {
-	Q_UNUSED(parent);
+	Q_UNUSED(parent)
 	return int(ColumnName::NumColumns);
 }
 
+static QString convertEntryLook(const QString& entryLook, const MetaData& md)
+{
+	QString ret(entryLook);
+	ret.replace("*", QChar(Model::Bold));
+	ret.replace("'", QChar(Model::Italic));
+
+	ret.replace("%title%", md.title());
+	ret.replace("%nr%", QString::number(md.trackNumber()));
+	ret.replace("%artist%", md.artist());
+	ret.replace("%album%", md.album());
+
+	return ret;
+}
 
 QVariant Model::data(const QModelIndex& index, int role) const
 {
@@ -123,13 +136,18 @@ QVariant Model::data(const QModelIndex& index, int role) const
 
 	if (role == Qt::DisplayRole)
 	{
-		if(col ==  ColumnName::TrackNumber) {
+		if(col == ColumnName::TrackNumber) {
 			return QString("%1.").arg(row + 1);
 		}
 
+		else if(col == ColumnName::Description)
+		{
+			return convertEntryLook(GetSetting(Set::PL_EntryLook), m->pl->track(row));
+		}
+
 		else if(col == ColumnName::Time) {
-			auto l = m->pl->track(row).duration_ms();
-			return Util::cvt_ms_to_string(l, "$M:$S");
+			auto l = m->pl->track(row).durationMs();
+			return Util::msToString(l, "$M:$S");
 		}
 
 		return QVariant();
@@ -142,7 +160,7 @@ QVariant Model::data(const QModelIndex& index, int role) const
 			MetaData md = m->pl->track(row);
 			Rating rating = metadata(row).rating();
 
-			if(md.radio_mode() != RadioMode::Off)
+			if(md.radioMode() != RadioMode::Off)
 			{
 				rating = Rating::Last;
 			}
@@ -160,9 +178,9 @@ QVariant Model::data(const QModelIndex& index, int role) const
 
 	else if (role == Qt::BackgroundRole)
 	{
-		if(m->pl->current_track_index() == row)
+		if(m->pl->currentTrackIndex() == row)
 		{
-			QPalette palette = Gui::Util::main_window()->palette();
+			QPalette palette = Gui::Util::mainWindow()->palette();
 			QColor col_highlight = palette.color(QPalette::Active, QPalette::Highlight);
 			col_highlight.setAlpha(80);
 			return col_highlight;
@@ -171,7 +189,7 @@ QVariant Model::data(const QModelIndex& index, int role) const
 
 	else if(role == Qt::FontRole)
 	{
-		QFont f = Gui::Util::main_window()->font();
+		QFont f = Gui::Util::mainWindow()->font();
 		int point_size = GetSetting(Set::PL_FontSize);
 		if(point_size > 0){
 			f.setPointSize(point_size);
@@ -191,30 +209,40 @@ QVariant Model::data(const QModelIndex& index, int role) const
 		{
 			MetaData md = m->pl->track(row);
 
-			if(!m->pms.contains(md.album_id()))
+			if(!m->pms.contains(md.albumId()))
 			{
-				int height = m->row_height - 6;
+				int height = m->rowHeight - 6;
 
-				Cover::Location cl = Cover::Location::cover_location(md);
-				m->pms[md.album_id()] = QPixmap(cl.preferred_path()).scaled(height, height, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+				Cover::Location cl = Cover::Location::coverLocation(md);
+				m->pms[md.albumId()] = QPixmap(cl.preferredPath()).scaled(height, height, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 			}
 
-			return m->pms[md.album_id()];
+			return m->pms[md.albumId()];
 		}
-	}
-
-	else if(role == Qt::UserRole)
-	{
-		return (row == m->drag_index);
 	}
 
 	else if(role == Qt::SizeHintRole)
 	{
 		if(col == ColumnName::Cover)
 		{
-			int h = m->row_height - 4;
+			int h = m->rowHeight - 4;
 			return QSize(h, h);
 		}
+	}
+
+	else if(role == Model::DragIndexRole)
+	{
+		return (row == m->dragIndex);
+	}
+
+	else if(role == Model::RatingRole)
+	{
+		return QVariant::fromValue<Rating>(m->pl->track(row).rating());
+	}
+
+	else if(role == Model::RadioModeRole)
+	{
+		return int(m->pl->track(row).radioMode());
 	}
 
 	return QVariant();
@@ -226,7 +254,7 @@ bool Model::setData(const QModelIndex& index, const QVariant& value, int role)
 	if(role == Qt::EditRole && index.isValid())
 	{
 		int row = index.row();
-		change_rating({row}, value.value<Rating>());
+		changeRating({row}, value.value<Rating>());
 		return true;
 	}
 
@@ -234,9 +262,10 @@ bool Model::setData(const QModelIndex& index, const QVariant& value, int role)
 }
 
 
-Qt::ItemFlags Model::flags(const QModelIndex &index) const
+Qt::ItemFlags Model::flags(const QModelIndex& index) const
 {
 	int row = index.row();
+
 	if(!index.isValid()){
 		return (Qt::ItemIsEnabled | Qt::ItemIsDropEnabled);
 	}
@@ -244,7 +273,7 @@ Qt::ItemFlags Model::flags(const QModelIndex &index) const
 	if(Util::between(row, m->pl->count()))
 	{
 		const MetaData& md = metadata(row);
-		if(md.is_disabled()){
+		if(md.isDisabled()){
 			return Qt::NoItemFlags;
 		}
 	}
@@ -263,28 +292,27 @@ void Model::clear()
 	m->pl->clear();
 }
 
-void Model::remove_rows(const IndexSet& indexes)
+void Model::removeTracks(const IndexSet& indexes)
 {
-	m->pl->remove_tracks(indexes);
+	m->pl->removeTracks(indexes);
 }
 
-IndexSet Model::move_rows(const IndexSet& indexes, int target_index)
+IndexSet Model::moveTracks(const IndexSet& indexes, int target_index)
 {
-	return m->pl->move_tracks(indexes, target_index);
+	return m->pl->moveTracks(indexes, target_index);
 }
 
-IndexSet Model::move_rows_up(const IndexSet& indexes)
+IndexSet Model::moveTracksUp(const IndexSet& indexes)
 {
 	int min_row = *(std::min_element(indexes.begin(), indexes.end()));
 	if(min_row <= 0){
 		return IndexSet();
 	}
 
-	return move_rows(indexes, min_row - 1);
+	return moveTracks(indexes, min_row - 1);
 }
 
-
-IndexSet Model::move_rows_down(const IndexSet& indexes)
+IndexSet Model::moveTracksDown(const IndexSet& indexes)
 {
 	auto min_max = std::minmax_element(indexes.begin(), indexes.end());
 	int min_row = *(min_max.first);
@@ -294,15 +322,15 @@ IndexSet Model::move_rows_down(const IndexSet& indexes)
 		return IndexSet();
 	}
 
-	return move_rows(indexes, min_row + int(indexes.size()) + 1);
+	return moveTracks(indexes, min_row + int(indexes.size()) + 1);
 }
 
-IndexSet Model::copy_rows(const IndexSet& indexes, int target_index)
+IndexSet Model::copyTracks(const IndexSet& indexes, int target_index)
 {
-	return m->pl->copy_tracks(indexes, target_index);
+	return m->pl->copyTracks(indexes, target_index);
 }
 
-void Model::change_rating(const IndexSet& indexes, Rating rating)
+void Model::changeRating(const IndexSet& indexes, Rating rating)
 {
 	MetaDataList v_md;
 	v_md.reserve(indexes.size());
@@ -313,9 +341,9 @@ void Model::change_rating(const IndexSet& indexes, Rating rating)
 		if(rating != md.rating())
 		{
 			v_md << md;
-			md.set_rating(rating);
+			md.setRating(rating);
 
-			m->pl->replace_track(idx, md);
+			m->pl->replaceTrack(idx, md);
 		}
 
 		emit dataChanged(index(idx, 0), index(idx, int(ColumnName::Description)));
@@ -330,23 +358,23 @@ void Model::change_rating(const IndexSet& indexes, Rating rating)
 		m->uto = new Tagging::UserOperations(-1, this);
 	}
 
-	m->uto->set_track_rating(v_md, rating);
+	m->uto->setTrackRating(v_md, rating);
 }
 
-void Model::insert_tracks(const MetaDataList& v_md, int row)
+void Model::insertTracks(const MetaDataList& v_md, int row)
 {
 	auto* plh = Handler::instance();
-	plh->insert_tracks(v_md, row, m->pl->index());
+	plh->insertTracks(v_md, row, m->pl->index());
 }
 
-int Model::current_track() const
+int Model::currentTrack() const
 {
-	return m->pl->current_track_index();
+	return m->pl->currentTrackIndex();
 }
 
-void Model::set_current_track(int row)
+void Model::setCurrentTrack(int row)
 {
-	m->pl->change_track(row);
+	m->pl->changeTrack(row);
 }
 
 MetaData Model::metadata(int row) const
@@ -367,8 +395,7 @@ MetaDataList Model::metadata(const IndexSet &rows) const
 	return v_md;
 }
 
-
-QModelIndexList Model::search_results(const QString& substr)
+QModelIndexList Model::searchResults(const QString& substr)
 {
 	QModelIndexList ret;
 	QString pure_search_string = substr;
@@ -425,7 +452,7 @@ QModelIndexList Model::search_results(const QString& substr)
 				break;
 		}
 
-		str = Library::Utils::convert_search_string(str, search_mode());
+		str = Library::Utils::convertSearchstring(str, searchMode());
 		if(str.contains(pure_search_string))
 		{
 			ret << this->index(i, 0);
@@ -434,7 +461,6 @@ QModelIndexList Model::search_results(const QString& substr)
 
 	return ret;
 }
-
 using ExtraTriggerMap=SearchableModelInterface::ExtraTriggerMap;
 ExtraTriggerMap Model::getExtraTriggers()
 {
@@ -446,7 +472,6 @@ ExtraTriggerMap Model::getExtraTriggers()
 
 	return map;
 }
-
 
 QMimeData* Model::mimeData(const QModelIndexList& indexes) const
 {
@@ -484,19 +509,19 @@ QMimeData* Model::mimeData(const QModelIndexList& indexes) const
 	}
 
 	auto* mimedata = new Gui::CustomMimeData(this);
-	mimedata->set_metadata(v_md);
-	mimedata->set_playlist_source_index(m->pl->index());
+	mimedata->setMetadata(v_md);
+	mimedata->setPlaylistSourceIndex(m->pl->index());
 
 	return mimedata;
 }
 
-bool Model::has_local_media(const IndexSet& rows) const
+bool Model::hasLocalMedia(const IndexSet& rows) const
 {
 	const  MetaDataList& tracks = m->pl->tracks();
 
 	for(int row : rows)
 	{
-		if(!Util::File::is_www(tracks[row].filepath())){
+		if(!Util::File::isWWW(tracks[row].filepath())){
 			return true;
 		}
 	}
@@ -504,52 +529,52 @@ bool Model::has_local_media(const IndexSet& rows) const
 	return false;
 }
 
-void Model::set_drag_index(int drag_index)
+void Model::setDragIndex(int dragIndex)
 {
-	if(Util::between(m->drag_index, rowCount()))
+	if(Util::between(m->dragIndex, rowCount()))
 	{
-		emit dataChanged(index(m->drag_index, 0), index(m->drag_index, columnCount() - 1));
+		emit dataChanged(index(m->dragIndex, 0), index(m->dragIndex, columnCount() - 1));
 	}
 
-	m->drag_index = drag_index;
+	m->dragIndex = dragIndex;
 
-	if(Util::between(drag_index, rowCount()))
+	if(Util::between(dragIndex, rowCount()))
 	{
-		emit dataChanged(index(drag_index, 0), index(drag_index, columnCount() - 1));
+		emit dataChanged(index(dragIndex, 0), index(dragIndex, columnCount() - 1));
 	}
 }
 
-void Model::set_row_height(int row_height)
+void Model::setRowHeight(int row_height)
 {
-	if(m->row_height != row_height)
+	if(m->rowHeight != row_height)
 	{
 		m->pms.clear();
-		m->row_height = row_height;
+		m->rowHeight = row_height;
 	}
 }
 
-void Model::refresh_data()
+void Model::refreshData()
 {
-	m->pl->enable_all();
+	m->pl->enableAll();
 }
 
-void Model::look_changed()
+void Model::lookChanged()
 {
 	emit dataChanged(index(0,0), index(rowCount() - 1, columnCount() - 1));
 }
 
-void Model::playlist_changed(int pl_idx)
+void Model::playlistChanged(int pl_idx)
 {
 	Q_UNUSED(pl_idx)
 
-	if(m->old_row_count > m->pl->count())
+	if(m->oldRowCount > m->pl->count())
 	{
-		beginRemoveRows(QModelIndex(), m->pl->count(), m->old_row_count - 1);
+		beginRemoveRows(QModelIndex(), m->pl->count(), m->oldRowCount - 1);
 		endRemoveRows();
 	}
 
-	else if(m->pl->count() > m->old_row_count){
-		beginInsertRows(QModelIndex(), m->old_row_count, m->pl->count() - 1);
+	else if(m->pl->count() > m->oldRowCount){
+		beginInsertRows(QModelIndex(), m->oldRowCount, m->pl->count() - 1);
 		endInsertRows();
 	}
 
@@ -559,9 +584,9 @@ void Model::playlist_changed(int pl_idx)
 		endResetModel();
 	}
 
-	m->old_row_count = m->pl->count();
+	m->oldRowCount = m->pl->count();
 
 	emit dataChanged(index(0,0), index(rowCount()-1, columnCount()-1));
-	emit sig_data_ready();
+	emit sigDataReady();
 }
 

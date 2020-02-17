@@ -21,7 +21,7 @@
     <number>5</number>
    </property>
    <item row="0" column="0">
-    <widget class="Gui::ComboBox" name="combo_playlists">
+    <widget class="Gui::ComboBox" name="comboPlaylists">
      <property name="sizePolicy">
       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
        <horstretch>0</horstretch>
@@ -37,7 +37,7 @@
     </widget>
    </item>
    <item row="0" column="1">
-    <widget class="Gui::MenuToolButton" name="btn_actions">
+    <widget class="Gui::MenuToolButton" name="btnActions">
      <property name="text">
       <string notr="true">Menu</string>
      </property>

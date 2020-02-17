@@ -1,6 +1,6 @@
 /* SomaFMLibraryContainer.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -42,7 +42,7 @@ QString SomaFM::LibraryContainer::name() const
 	return "SomaFM";
 }
 
-QString SomaFM::LibraryContainer::display_name() const
+QString SomaFM::LibraryContainer::displayName() const
 {
 	return "SomaFM";
 }
@@ -57,7 +57,7 @@ QMenu* SomaFM::LibraryContainer::menu()
 	return nullptr;
 }
 
-void SomaFM::LibraryContainer::init_ui()
+void SomaFM::LibraryContainer::initUi()
 {
 	ui = new GUI_SomaFM(nullptr);
 }
@@ -69,5 +69,5 @@ QPixmap SomaFM::LibraryContainer::icon() const
 
 QFrame* SomaFM::LibraryContainer::header() const
 {
-	return ui->header_frame();
+	return ui->headerFrame();
 }

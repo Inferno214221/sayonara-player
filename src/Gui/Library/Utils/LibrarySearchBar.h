@@ -1,6 +1,6 @@
 /* LibrarySearchBar.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -35,7 +35,7 @@ namespace Library
 	 * is an empty string. But this wouldn't make any sense
 	 * @ingroup GuiLibrary
 	 */
-	class  SearchBar : public Gui::WidgetTemplate<QLineEdit>
+	class SearchBar : public Gui::WidgetTemplate<QLineEdit>
 	{
 		Q_OBJECT
 		PIMPL(SearchBar)
@@ -43,8 +43,8 @@ namespace Library
 		using Parent=Gui::WidgetTemplate<QLineEdit>;
 
 		signals:
-			void sig_current_mode_changed();
-			void sig_text_changed(const QString& text);
+			void sigCurrentModeChanged();
+			void sigTextChanged(const QString& text);
 
 		public:
 			SearchBar(QWidget* parent=nullptr);
@@ -57,19 +57,19 @@ namespace Library
 			 * This is used to fetch tracks which do not have
 			 * a genre.
 			 */
-			void set_invalid_genre_mode(bool b);
+			void setInvalidGenreMode(bool b);
 
 			/**
 			 * @brief if the current state is the invalid genre
 			 * mode
 			 */
-			bool has_invalid_genre_mode() const;
+			bool hasInvalidGenreMode() const;
 
 			/**
 			 * @brief Sets the supported modes.
 			 * See Library::Filter::Mode
 			 */
-			void set_modes(const QList<Filter::Mode>& modes);
+			void setModes(const QList<Filter::Mode>& modes);
 
 			/**
 			 * @brief returns supported modes.
@@ -81,42 +81,44 @@ namespace Library
 			 * @brief If mode is Filter::Mode::Genre but the
 			 * genre should be empty, also use set_invalid_genre_mode()
 			 */
-			void set_current_mode(Filter::Mode mode);
+			void setCurrentMode(Filter::Mode mode);
 
 			/**
 			 * @brief fast toggling between modes by using
 			 * arrow up key
 			 */
-			void set_previous_mode();
+			void setPreviousMode();
 
 			/**
 			 * @brief fast toggling between modes by using
 			 * arrow down key
 			 */
-			void set_next_mode();
+			void setNextMode();
 
 			/**
 			 * @brief current selected mode
 			 */
-			Filter::Mode current_mode() const;
+			Filter::Mode currentMode() const;
 
 			/**
 			 * @brief Clears the input and sets mode back to Fulltext search
 			 */
 			void reset();
 
-		protected:
-			void init_context_menu();
-			void keyPressEvent(QKeyEvent* e) override;
-			void language_changed() override;
-			void skin_changed() override;
+		private:
+			void initContextMenu();
 
 		private slots:
-			void text_changed(const QString& text);
-			void search_shortcut_pressed();
+			void currentTextChanged(const QString& text);
+			void searchShortcutPressed();
 
-			void livesearch_changed();
-			void livesearch_triggered(bool b);
+			void livesearchChanged();
+			void livesearchTriggered(bool b);
+
+		protected:
+			void keyPressEvent(QKeyEvent* e) override;
+			void languageChanged() override;
+			void skinChanged() override;
 	};
 }
 

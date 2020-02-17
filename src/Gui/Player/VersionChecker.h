@@ -1,6 +1,6 @@
 /* VersionChecker.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -31,15 +31,15 @@ class VersionChecker : public QObject
 {
 	Q_OBJECT
 
-signals:
-	void sig_finished();
+	signals:
+		void sigFinished();
 
-public:
-	explicit VersionChecker(QObject* parent);
-	~VersionChecker();
+	public:
+		explicit VersionChecker(QObject* parent);
+		~VersionChecker();
 
-private slots:
-	void version_check_finished();
+	private slots:
+		void versionCheckFinished();
 };
 
 #endif // VERSIONCHECKER_H

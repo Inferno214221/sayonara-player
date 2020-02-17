@@ -1,6 +1,6 @@
 /* DatabaseBookmarks.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -25,25 +25,25 @@
 using DB::Bookmarks;
 using DB::Query;
 
-Bookmarks::Bookmarks(const QString& connection_name, DbId db_id) :
-	DB::Module(connection_name, db_id) {}
+Bookmarks::Bookmarks(const QString& connection_name, DbId databaseId) :
+	DB::Module(connection_name, databaseId) {}
 
 DB::Bookmarks::~Bookmarks() = default;
 
-bool Bookmarks::searchBookmarks(int track_id, QMap<Seconds, QString>& bookmarks)
+bool Bookmarks::searchBookmarks(int trackId, QMap<Seconds, QString>& bookmarks)
 {
 	bookmarks.clear();
 
-	DB::Query q = this->run_query
+	DB::Query q = this->runQuery
 	(
 		"SELECT name, timeidx FROM savedbookmarks WHERE trackid=:trackid;",
 		{
-			{":trackid", track_id}
+			{":trackid", trackId}
 		},
-		QString("Cannot find bookmark for Track %1").arg(track_id)
+		QString("Cannot find bookmark for Track %1").arg(trackId)
 	);
 
-	if (q.has_error()){
+	if (q.hasError()){
 		return false;
 	}
 
@@ -59,46 +59,46 @@ bool Bookmarks::searchBookmarks(int track_id, QMap<Seconds, QString>& bookmarks)
 }
 
 
-bool Bookmarks::insertBookmark(int track_id, Seconds time, const QString& name)
+bool Bookmarks::insertBookmark(int trackId, Seconds time, const QString& name)
 {
 	DB::Query q = insert("savedbookmarks",
 	{
-		{"trackid",	track_id},
-		{"name",	Util::cvt_not_null(name)},
+		{"trackid",	trackId},
+		{"name",	Util::convertNotNull(name)},
 		{"timeidx",	time}
 	}, "Cannot insert bookmarks");
 
-	return (!q.has_error());
+	return (!q.hasError());
 }
 
 
-bool Bookmarks::removeBookmark(int track_id, Seconds time)
+bool Bookmarks::removeBookmark(int trackId, Seconds time)
 {
-	DB::Query q = run_query
+	DB::Query q = runQuery
 	(
 		"DELETE FROM savedbookmarks WHERE trackid=:trackid AND timeidx=:timeidx;",
 		{
-			{":trackid", track_id},
+			{":trackid", trackId},
 			{":timeidx", time}
 		},
 		"Cannot remove bookmark"
 	);
 
-	return (!q.has_error());
+	return (!q.hasError());
 }
 
 
-bool Bookmarks::removeAllBookmarks(int track_id)
+bool Bookmarks::removeAllBookmarks(int trackId)
 {
-	DB::Query q = run_query
+	DB::Query q = runQuery
 	(
 		"DELETE FROM savedbookmarks WHERE trackid=:trackid;",
 		{
-			{":trackid", track_id}
+			{":trackid", trackId}
 		},
 		"Cannot remove all bookmarks"
 	);
 
-	return (!q.has_error());
+	return (!q.hasError());
 }
 

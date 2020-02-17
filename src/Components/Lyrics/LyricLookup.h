@@ -1,6 +1,6 @@
 /* LyricLookup.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -23,7 +23,7 @@
  * LyricLookup.h
  *
  *  Created on: May 21, 2011
- *      Author: Lucio Carreras
+ *      Author: Michael Lugmair (Lucio Carreras)
  */
 
 #ifndef LYRICLOOKUP_H_
@@ -45,37 +45,36 @@ namespace Lyrics
 			public QObject
 	{
 		Q_OBJECT
+		PIMPL(LookupThread)
 
 	signals:
-		void sig_finished();
+		void sigFinished();
 
 	public:
 		explicit LookupThread(QObject* parent=nullptr);
 		virtual	~LookupThread();
 
-		QString	lyric_data() const;
-		QString lyric_header() const;
+		QString	lyricData() const;
+		QString lyricHeader() const;
 		QStringList servers() const;
 
-		void run(const QString& artist, const QString& title, int server_idx);
-
+		void run(const QString& artist, const QString& title, int serverIndex);
 		void stop();
-		bool has_error() const;
+
+		bool hasError() const;
 
 	private:
-		PIMPL(LookupThread)
+		void initServerList();
+		void initCustomServers();
 
-		void init_server_list();
-		void init_custom_servers();
-
-		void add_server(Server* server);
-		void start_search(const QString& url);
-		void call_website(const QString& url);
+		void addServer(Server* server);
+		void startSearch(const QString& url);
+		void callWebsite(const QString& url);
 
 
 	private slots:
-		void content_fetched();
-		void search_finished();
+		void contentFetched();
+		void searchFinished();
 	};
 }
 

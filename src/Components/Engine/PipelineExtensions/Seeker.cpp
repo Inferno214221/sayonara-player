@@ -1,6 +1,6 @@
 /* SeekHandler.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -45,7 +45,7 @@ namespace Seek
 
 		if(!success)
 		{
-			sp_log(Log::Warning, "SeekHandler") << "seeking not possible";
+			spLog(Log::Warning, "SeekHandler") << "seeking not possible";
 		}
 
 		return success;
@@ -75,9 +75,10 @@ Seeker::Seeker(GstElement* source)
 {
 	m = Pimpl::make<Private>(source);
 }
+
 Seeker::~Seeker() = default;
 
-NanoSeconds Seeker::seek_rel(double percent, NanoSeconds ref_ns)
+NanoSeconds Seeker::seekRelative(double percent, NanoSeconds ref_ns)
 {
 	NanoSeconds new_time_ns;
 
@@ -101,7 +102,7 @@ NanoSeconds Seeker::seek_rel(double percent, NanoSeconds ref_ns)
 }
 
 
-NanoSeconds Seeker::seek_abs(NanoSeconds ns)
+NanoSeconds Seeker::seekAbsolute(NanoSeconds ns)
 {
 	if( Seek::seek_accurate(m->source, ns) ) {
 		return ns;
@@ -110,7 +111,7 @@ NanoSeconds Seeker::seek_abs(NanoSeconds ns)
 	return 0;
 }
 
-NanoSeconds Seeker::seek_nearest(NanoSeconds ns)
+NanoSeconds Seeker::seekNearest(NanoSeconds ns)
 {
 	if( Seek::seek_nearest(m->source, ns) ) {
 		return ns;
@@ -119,19 +120,19 @@ NanoSeconds Seeker::seek_nearest(NanoSeconds ns)
 	return 0;
 }
 
-NanoSeconds Seeker::seek_rel_ms(double percent, MilliSeconds ref_ms)
+NanoSeconds Seeker::seekRelativeMs(double percent, MilliSeconds ref_ms)
 {
-	return seek_rel(percent, ref_ms	* 1000000);
+	return seekRelative(percent, ref_ms	* 1000000);
 }
 
-NanoSeconds Seeker::seek_abs_ms(MilliSeconds ms)
+NanoSeconds Seeker::seekAbsoluteMs(MilliSeconds ms)
 {
-	return seek_abs(ms * 1000000);
+	return seekAbsolute(ms * 1000000);
 }
 
-NanoSeconds Seeker::seek_nearest_ms(MilliSeconds ms)
+NanoSeconds Seeker::seekNearestMs(MilliSeconds ms)
 {
-	return seek_nearest(ms * 1000000);
+	return seekNearest(ms * 1000000);
 }
 
 void Seeker::set_source(GstElement* source)

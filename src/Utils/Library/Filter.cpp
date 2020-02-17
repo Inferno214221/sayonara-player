@@ -1,6 +1,6 @@
 /* Filter.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -58,7 +58,7 @@ Filter::~Filter() = default;
 
 bool Filter::operator ==(const Filter& other)
 {
-	if(!this->is_usable() && !other.is_usable()) {
+	if(!this->isUseable() && !other.isUseable()) {
 		return true;
 	}
 
@@ -78,7 +78,7 @@ bool Filter::operator ==(const Filter& other)
 	(
 		same_filtertext &&
 		(m->mode == other.mode()) &&
-		(m->invalid_genre == other.is_invalid_genre())
+		(m->invalid_genre == other.isInvalidGenre())
 	);
 }
 
@@ -110,14 +110,14 @@ QStringList Filter::filtertext(bool with_percent) const
 	return ret;
 }
 
-QStringList Filter::search_mode_filtertext(bool with_percent) const
+QStringList Filter::searchModeFiltertext(bool with_percent) const
 {
 	QStringList ret;
 	const QStringList tmp = m->filtertext.split(",");
 
 	for(const QString& tmp_str : tmp)
 	{
-		QString str = ::Library::Utils::convert_search_string(tmp_str, m->search_mode);
+		QString str = ::Library::Utils::convertSearchstring(tmp_str, m->search_mode);
 		if(with_percent)
 		{
 			if(!str.startsWith('%')){
@@ -138,7 +138,7 @@ QStringList Filter::search_mode_filtertext(bool with_percent) const
 	return ret;
 }
 
-void Filter::set_filtertext(const QString& str, ::Library::SearchModeMask search_mode)
+void Filter::setFiltertext(const QString& str, ::Library::SearchModeMask search_mode)
 {
 	m->filtertext = str;
 	m->search_mode = search_mode;
@@ -149,7 +149,7 @@ Filter::Mode Filter::mode() const
 	return m->mode;
 }
 
-void Filter::set_mode(Filter::Mode mode)
+void Filter::setMode(Filter::Mode mode)
 {
 	m->mode = mode;
 }
@@ -159,24 +159,24 @@ bool Filter::cleared() const
 	return (m->filtertext.isEmpty() && !m->invalid_genre);
 }
 
-void Filter::set_invalid_genre(bool b)
+void Filter::setInvalidGenre(bool b)
 {
 	m->invalid_genre = b;
 }
 
-bool Filter::is_invalid_genre() const
+bool Filter::isInvalidGenre() const
 {
 	return m->invalid_genre;
 }
 
-bool Filter::is_usable() const
+bool Filter::isUseable() const
 {
 	if(m->mode == Filter::Mode::Invalid)
 	{
 		return false;
 	}
 
-	if(is_invalid_genre()){
+	if(isInvalidGenre()){
 		return true;
 	}
 
@@ -190,7 +190,7 @@ bool Filter::is_usable() const
 }
 
 
-QString Filter::get_text(Filter::Mode mode)
+QString Filter::text(Filter::Mode mode)
 {
 	switch(mode)
 	{

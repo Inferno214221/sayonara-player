@@ -10,15 +10,15 @@ namespace SC
 	class LibraryDatabase : public ::DB::LibraryDatabase
 	{
 	public:
-		LibraryDatabase(const QString& connection_name, DbId db_id, LibraryId library_id);
+		LibraryDatabase(const QString& connectionName, DbId databaseId, LibraryId libraryId);
 		~LibraryDatabase() override;
 
-		QString fetch_query_albums(bool also_empty=false) const override;
-		QString fetch_query_artists(bool also_empty=false) const override;
-		QString fetch_query_tracks() const override;
+		QString fetchQueryAlbums(bool also_empty=false) const override;
+		QString fetchQueryArtists(bool also_empty=false) const override;
+		QString fetchQueryTracks() const override;
 
-		bool db_fetch_tracks(::DB::Query& q, MetaDataList& result) const override;
-		bool db_fetch_albums(::DB::Query& q, AlbumList& result) const override;
+		bool dbFetchTracks(::DB::Query& q, MetaDataList& result) const override;
+		bool dbFetchAlbums(::DB::Query& q, AlbumList& result) const override;
 		bool db_fetch_artists(::DB::Query& q, ArtistList& result) const override;
 
 		ArtistId updateArtist(const Artist& artist);
@@ -30,11 +30,11 @@ namespace SC
 		AlbumId insertAlbumIntoDatabase (const QString& album) override;
 
 		bool updateTrack(const MetaData& md) override;
-		bool store_metadata(const MetaDataList& v_md) override;
-		bool insertTrackIntoDatabase(const MetaData& md, int artist_id, int album_id, int album_artist_id) override;
-		bool insertTrackIntoDatabase(const MetaData& md, int artist_id, int album_id) override;
+		bool storeMetadata(const MetaDataList& v_md) override;
+		bool insertTrackIntoDatabase(const MetaData& md, int artistId, int albumId, int album_artistId) override;
+		bool insertTrackIntoDatabase(const MetaData& md, int artistId, int albumId) override;
 
-		bool search_information(SC::SearchInformationList& list);
+		bool searchInformation(SC::SearchInformationList& list);
 	};
 }
 

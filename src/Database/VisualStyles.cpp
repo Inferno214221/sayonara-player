@@ -1,6 +1,6 @@
 /* DatabaseVisStyles.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -29,8 +29,8 @@
 using DB::VisualStyles;
 using DB::Module;
 
-VisualStyles::VisualStyles(const QString& connection_name, DbId db_id) :
-	Module(connection_name, db_id) {}
+VisualStyles::VisualStyles(const QString& connection_name, DbId databaseId) :
+	Module(connection_name, databaseId) {}
 
 VisualStyles::~VisualStyles() = default;
 
@@ -68,7 +68,7 @@ bool colFromString(const QString& str, QColor& c)
 	return true;
 }
 
-QList<RawColorStyle> VisualStyles::get_raw_color_styles()
+QList<RawColorStyle> VisualStyles::getRawColorStyles()
 {
 	QList<RawColorStyle> ret_val;
 
@@ -76,7 +76,7 @@ QList<RawColorStyle> VisualStyles::get_raw_color_styles()
 	q.prepare("SELECT * FROM VisualStyles;" );
 
 	if(!q.exec()) {
-		q.show_error("Could not fetch color styles");
+		q.showError("Could not fetch color styles");
 		return ret_val;
 	}
 
@@ -114,10 +114,10 @@ QList<RawColorStyle> VisualStyles::get_raw_color_styles()
 }
 
 
-bool VisualStyles::insert_raw_color_style_to_db(const RawColorStyle& rcs)
+bool VisualStyles::insertRawColorStyle(const RawColorStyle& rcs)
 {
-	if(raw_color_style_exists(rcs.col_list.name))
-		return update_raw_color_style(rcs);
+	if(rawColorStyleExists(rcs.col_list.name))
+		return updateRawColorStyle(rcs);
 
 	QString col_str;
 	for(int i=0; i<4; i++) {
@@ -142,7 +142,7 @@ bool VisualStyles::insert_raw_color_style_to_db(const RawColorStyle& rcs)
 			")";
 
 	q.prepare(sql_str);
-	q.bindValue(":name", Util::cvt_not_null(rcs.col_list.name));
+	q.bindValue(":name", Util::convertNotNull(rcs.col_list.name));
 	q.bindValue(":col1", col2String(rcs.col_list.colors[0]));
 	q.bindValue(":col2", col2String(rcs.col_list.colors[1]));
 
@@ -173,7 +173,7 @@ bool VisualStyles::insert_raw_color_style_to_db(const RawColorStyle& rcs)
 
 
 	if(!q.exec()) {
-		q.show_error("Could not insert style");
+		q.showError("Could not insert style");
 		return false;
 	}
 
@@ -181,10 +181,10 @@ bool VisualStyles::insert_raw_color_style_to_db(const RawColorStyle& rcs)
 }
 
 
-bool VisualStyles::update_raw_color_style(const RawColorStyle& rcs)
+bool VisualStyles::updateRawColorStyle(const RawColorStyle& rcs)
 {
-	if(!raw_color_style_exists(rcs.col_list.name)) {
-		return insert_raw_color_style_to_db(rcs);
+	if(!rawColorStyleExists(rcs.col_list.name)) {
+		return insertRawColorStyle(rcs);
 	}
 
 	QString col_str;
@@ -210,9 +210,9 @@ bool VisualStyles::update_raw_color_style(const RawColorStyle& rcs)
 			" WHERE name=:name";
 
 	q.prepare(sql_str);
-	q.bindValue(":name", Util::cvt_not_null(rcs.col_list.name));
-	q.bindValue(":col1", Util::cvt_not_null(col2String(rcs.col_list.colors[0])));
-	q.bindValue(":col2", Util::cvt_not_null(col2String(rcs.col_list.colors[1])));
+	q.bindValue(":name", Util::convertNotNull(rcs.col_list.name));
+	q.bindValue(":col1", Util::convertNotNull(col2String(rcs.col_list.colors[0])));
+	q.bindValue(":col2", Util::convertNotNull(col2String(rcs.col_list.colors[1])));
 
 	if(rcs.col_list.colors.size() > 2) {
 		q.bindValue(":col3", col2String(rcs.col_list.colors[2]));
@@ -241,7 +241,7 @@ bool VisualStyles::update_raw_color_style(const RawColorStyle& rcs)
 
 
 	if(!q.exec()) {
-		q.show_error(QString("Could not update style ") + rcs.col_list.name);
+		q.showError(QString("Could not update style ") + rcs.col_list.name);
 		return false;
 	}
 
@@ -249,14 +249,14 @@ bool VisualStyles::update_raw_color_style(const RawColorStyle& rcs)
 }
 
 
-bool VisualStyles::delete_raw_color_style(QString name)
+bool VisualStyles::deleteRawColorStyle(QString name)
 {
 	Query q(this);
 	q.prepare("DELETE FROM visualstyles WHERE name=:name;");
-	q.bindValue(":name", Util::cvt_not_null(name));
+	q.bindValue(":name", Util::convertNotNull(name));
 
 	if(!q.exec()) {
-		q.show_error(QString("Could not delete Raw color style ") + name);
+		q.showError(QString("Could not delete Raw color style ") + name);
 		return false;
 	}
 
@@ -264,14 +264,14 @@ bool VisualStyles::delete_raw_color_style(QString name)
 }
 
 
-bool VisualStyles::raw_color_style_exists(QString name)
+bool VisualStyles::rawColorStyleExists(QString name)
 {
 	Query q(this);
 	q.prepare("SELECT * FROM visualstyles WHERE name=:name;");
-	q.bindValue(":name", Util::cvt_not_null(name));
+	q.bindValue(":name", Util::convertNotNull(name));
 
 	if(!q.exec()) {
-		q.show_error("Cannot check if raw color style exists");
+		q.showError("Cannot check if raw color style exists");
 		return false;
 	}
 

@@ -1,6 +1,6 @@
 /* LocalLibrary.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -46,198 +46,205 @@
 
 struct LocalLibrary::Private
 {
-	Library::ReloadThread*	reload_thread=nullptr;
-	Library::Importer*		library_importer=nullptr;
+	Library::ReloadThread*	reloadThread=nullptr;
+	Library::Importer*		libraryImporter=nullptr;
 
-	LibraryId				library_id;
+	LibraryId				libraryId;
 
-	Private(LibraryId library_id) :
-		library_id(library_id)
+	Private(LibraryId libraryId) :
+		libraryId(libraryId)
 	{}
 };
 
-LocalLibrary::LocalLibrary(LibraryId library_id, QObject *parent) :
+LocalLibrary::LocalLibrary(LibraryId libraryId, QObject* parent) :
 	AbstractLibrary(parent)
 {
-	m = Pimpl::make<Private>(library_id);
+	m = Pimpl::make<Private>(libraryId);
 
-	apply_db_fixes();
+	applyDatabaseFixes();
 
 	Playlist::Handler* plh = Playlist::Handler::instance();
-	connect(plh, &Playlist::Handler::sig_track_deletion_requested,
-			this, &LocalLibrary::delete_tracks);
+	connect(plh, &Playlist::Handler::sigTrackDeletionRequested,
+			this, &LocalLibrary::deleteTracks);
 
-	connect(plh, &Playlist::Handler::sig_find_track_requested,
-			this, &LocalLibrary::find_track);
+	connect(plh, &Playlist::Handler::sigFindTrackRequested,
+			this, &LocalLibrary::findTrack);
 
 	Library::Manager* manager = Library::Manager::instance();
-	connect(manager, &Library::Manager::sig_renamed, this, &LocalLibrary::renamed);
+	connect(manager, &Library::Manager::sigRenamed, this, &LocalLibrary::renamed);
 
-	ListenSettingNoCall(Set::Lib_SearchMode, LocalLibrary::search_mode_changed);
-	ListenSettingNoCall(Set::Lib_ShowAlbumArtists, LocalLibrary::show_album_artists_changed);
+	ListenSettingNoCall(Set::Lib_SearchMode, LocalLibrary::searchModeChanged);
+	ListenSettingNoCall(Set::Lib_ShowAlbumArtists, LocalLibrary::showAlbumArtistsChanged);
 }
 
 LocalLibrary::~LocalLibrary() = default;
 
-void LocalLibrary::apply_db_fixes() {}
+void LocalLibrary::applyDatabaseFixes() {}
 
-void LocalLibrary::reload_library(bool clear_first, Library::ReloadQuality quality)
+void LocalLibrary::reloadLibrary(bool clearFirst, Library::ReloadQuality quality)
 {
-	if(is_reloading()){
+	if(isReloading()){
 		return;
 	}
 
-	if(!m->reload_thread){
-		init_reload_thread();
+	if(!m->reloadThread){
+		initReloadThread();
 	}
 
-	if(clear_first) {
-		delete_all_tracks();
+	if(clearFirst) {
+		deleteAllTracks();
 	}
 
-	m->reload_thread->set_quality(quality);
-	m->reload_thread->set_library(id(), path());
-	m->reload_thread->start();
+	m->reloadThread->setQuality(quality);
+	m->reloadThread->setLibrary(id(), path());
+	m->reloadThread->start();
 }
 
 
-void LocalLibrary::reload_thread_finished()
+void LocalLibrary::reloadThreadFinished()
 {
 	load();
 
-	emit sig_reloading_library("", -1);
-	emit sig_reloading_library_finished();
+	emit sigReloadingLibrary("", -1);
+	emit sigReloadingLibraryFinished();
 }
 
-void LocalLibrary::search_mode_changed()
+void LocalLibrary::searchModeChanged()
 {
-	sp_log(Log::Debug, this) << "Updating cissearch... " << GetSetting(Set::Lib_SearchMode);
+	spLog(Log::Debug, this) << "Updating cissearch... " << GetSetting(Set::Lib_SearchMode);
 
-	auto* lib_db = DB::Connector::instance()->library_db(m->library_id, 0);
-	lib_db->update_search_mode(GetSetting(Set::Lib_SearchMode));
+	auto* lib_db = DB::Connector::instance()->libraryDatabase(m->libraryId, 0);
+	lib_db->updateSearchMode(GetSetting(Set::Lib_SearchMode));
 
-	sp_log(Log::Debug, this) << "Updating cissearch finished" << GetSetting(Set::Lib_SearchMode);
+	spLog(Log::Debug, this) << "Updating cissearch finished" << GetSetting(Set::Lib_SearchMode);
 }
 
-void LocalLibrary::show_album_artists_changed()
+void LocalLibrary::showAlbumArtistsChanged()
 {
 	bool show_album_artists = GetSetting(Set::Lib_ShowAlbumArtists);
 
-	DB::LibraryDatabases dbs = DB::Connector::instance()->library_dbs();
+	DB::LibraryDatabases dbs = DB::Connector::instance()->libraryDatabases();
 	for(DB::LibraryDatabase* lib_db : dbs)
 	{
-		if(lib_db->db_id() == 0)
+		if(lib_db->databaseId() == 0)
 		{
 			if(show_album_artists)
 			{
-				lib_db->change_artistid_field(DB::LibraryDatabase::ArtistIDField::AlbumArtistID);
+				lib_db->changeArtistIdField(DB::LibraryDatabase::ArtistIDField::AlbumArtistID);
 			}
 
 			else
 			{
-				lib_db->change_artistid_field(DB::LibraryDatabase::ArtistIDField::ArtistID);
+				lib_db->changeArtistIdField(DB::LibraryDatabase::ArtistIDField::ArtistID);
 			}
 		}
 	}
 
-	refresh_current_view();
+	refreshCurrentView();
 }
 
 void LocalLibrary::renamed(LibraryId id)
 {
 	if(id == this->id())
 	{
-		emit sig_renamed( this->name() );
+		emit sigRenamed( this->name() );
 	}
 }
 
-
-void LocalLibrary::reload_thread_new_block()
+void LocalLibrary::importStatusChanged(Library::Importer::ImportStatus status)
 {
-	m->reload_thread->pause();
-
-	refresh_current_view();
-
-	m->reload_thread->goon();
+	if(status == Library::Importer::ImportStatus::Imported)
+	{
+		refreshCurrentView();
+	}
 }
 
-void LocalLibrary::get_all_artists(ArtistList& artists) const
+void LocalLibrary::reloadThreadNewBlock()
 {
-	auto* lib_db = DB::Connector::instance()->library_db(m->library_id, 0);
+	m->reloadThread->pause();
+
+	refreshCurrentView();
+
+	m->reloadThread->goon();
+}
+
+void LocalLibrary::getAllArtists(ArtistList& artists) const
+{
+	auto* lib_db = DB::Connector::instance()->libraryDatabase(m->libraryId, 0);
 	lib_db->getAllArtists(artists, false);
 }
 
-void LocalLibrary::get_all_artists_by_searchstring(Library::Filter filter, ArtistList& artists) const
+void LocalLibrary::getAllArtistsBySearchstring(Library::Filter filter, ArtistList& artists) const
 {
-	auto* lib_db = DB::Connector::instance()->library_db(m->library_id, 0);
+	auto* lib_db = DB::Connector::instance()->libraryDatabase(m->libraryId, 0);
 	lib_db->getAllArtistsBySearchString(filter, artists);
 }
 
-void LocalLibrary::get_all_albums(AlbumList& albums) const
+void LocalLibrary::getAllAlbums(AlbumList& albums) const
 {
-	auto* lib_db = DB::Connector::instance()->library_db(m->library_id, 0);
+	auto* lib_db = DB::Connector::instance()->libraryDatabase(m->libraryId, 0);
 	lib_db->getAllAlbums(albums, false);
 }
 
-void LocalLibrary::get_all_albums_by_artist(IdList artist_ids, AlbumList& albums, Library::Filter filter) const
+void LocalLibrary::getAllAlbumsByArtist(IdList artistIds, AlbumList& albums, Library::Filter filter) const
 {
-	auto* lib_db = DB::Connector::instance()->library_db(m->library_id, 0);
-	lib_db->getAllAlbumsByArtist(artist_ids, albums, filter);
+	auto* lib_db = DB::Connector::instance()->libraryDatabase(m->libraryId, 0);
+	lib_db->getAllAlbumsByArtist(artistIds, albums, filter);
 }
 
-void LocalLibrary::get_all_albums_by_searchstring(Library::Filter filter, AlbumList& albums) const
+void LocalLibrary::getAllAlbumsBySearchstring(Library::Filter filter, AlbumList& albums) const
 {
-	auto* lib_db = DB::Connector::instance()->library_db(m->library_id, 0);
+	auto* lib_db = DB::Connector::instance()->libraryDatabase(m->libraryId, 0);
 	lib_db->getAllAlbumsBySearchString(filter, albums);
 }
 
-int LocalLibrary::get_num_tracks() const
+int LocalLibrary::getTrackCount() const
 {
-	auto* lib_db = DB::Connector::instance()->library_db(m->library_id, 0);
+	auto* lib_db = DB::Connector::instance()->libraryDatabase(m->libraryId, 0);
 	return lib_db->getNumTracks();
 }
 
-void LocalLibrary::get_all_tracks(MetaDataList& v_md) const
+void LocalLibrary::getAllTracks(MetaDataList& v_md) const
 {
-	auto* lib_db = DB::Connector::instance()->library_db(m->library_id, 0);
+	auto* lib_db = DB::Connector::instance()->libraryDatabase(m->libraryId, 0);
 	lib_db->getAllTracks(v_md);
 }
 
-void LocalLibrary::get_all_tracks(const QStringList& paths, MetaDataList& v_md) const
+void LocalLibrary::getAllTracks(const QStringList& paths, MetaDataList& v_md) const
 {
-	auto* lib_db = DB::Connector::instance()->library_db(m->library_id, 0);
+	auto* lib_db = DB::Connector::instance()->libraryDatabase(m->libraryId, 0);
 	lib_db->getMultipleTracksByPath(paths, v_md);
 }
 
-void LocalLibrary::get_all_tracks_by_artist(IdList artist_ids, MetaDataList& v_md, Library::Filter filter) const
+void LocalLibrary::getAllTracksByArtist(IdList artistIds, MetaDataList& v_md, Library::Filter filter) const
 {
-	auto* lib_db = DB::Connector::instance()->library_db(m->library_id, 0);
-	lib_db->getAllTracksByArtist(artist_ids, v_md, filter);
+	auto* lib_db = DB::Connector::instance()->libraryDatabase(m->libraryId, 0);
+	lib_db->getAllTracksByArtist(artistIds, v_md, filter);
 }
 
-void LocalLibrary::get_all_tracks_by_album(IdList album_ids, MetaDataList& v_md, Library::Filter filter) const
+void LocalLibrary::getAllTracksByAlbum(IdList albumIds, MetaDataList& v_md, Library::Filter filter) const
 {
-	auto* lib_db = DB::Connector::instance()->library_db(m->library_id, 0);
-	lib_db->getAllTracksByAlbum(album_ids, v_md, filter, -1);
+	auto* lib_db = DB::Connector::instance()->libraryDatabase(m->libraryId, 0);
+	lib_db->getAllTracksByAlbum(albumIds, v_md, filter, -1);
 }
 
-void LocalLibrary::get_all_tracks_by_searchstring(Library::Filter filter, MetaDataList& v_md) const
+void LocalLibrary::getAllTracksBySearchstring(Library::Filter filter, MetaDataList& v_md) const
 {
-	auto* lib_db = DB::Connector::instance()->library_db(m->library_id, 0);
+	auto* lib_db = DB::Connector::instance()->libraryDatabase(m->libraryId, 0);
 	lib_db->getAllTracksBySearchString(filter, v_md);
 }
 
-void LocalLibrary::get_all_tracks_by_path(const QStringList& paths, MetaDataList& v_md) const
+void LocalLibrary::getAllTracksByPath(const QStringList& paths, MetaDataList& v_md) const
 {
-	auto* lib_db = DB::Connector::instance()->library_db(m->library_id, 0);
+	auto* lib_db = DB::Connector::instance()->libraryDatabase(m->libraryId, 0);
 	lib_db->getAllTracksByPaths(paths, v_md);
 }
 
-void LocalLibrary::get_track_by_id(TrackID track_id, MetaData& md) const
+void LocalLibrary::getTrackById(TrackID trackId, MetaData& md) const
 {
-	auto* lib_db = DB::Connector::instance()->library_db(m->library_id, 0);
-	MetaData md_tmp = lib_db->getTrackById(track_id);
-	if(md_tmp.library_id() == m->library_id) {
+	auto* lib_db = DB::Connector::instance()->libraryDatabase(m->libraryId, 0);
+	MetaData md_tmp = lib_db->getTrackById(trackId);
+	if(md_tmp.libraryId() == m->libraryId) {
 		md = md_tmp;
 	}
 
@@ -246,111 +253,115 @@ void LocalLibrary::get_track_by_id(TrackID track_id, MetaData& md) const
 	}
 }
 
-void LocalLibrary::get_album_by_id(AlbumId album_id, Album& album) const
+void LocalLibrary::getAlbumById(AlbumId albumId, Album& album) const
 {
-	auto* lib_db = DB::Connector::instance()->library_db(m->library_id, 0);
-	lib_db->getAlbumByID(album_id, album);
+	auto* lib_db = DB::Connector::instance()->libraryDatabase(m->libraryId, 0);
+	lib_db->getAlbumByID(albumId, album);
 }
 
-void LocalLibrary::get_artist_by_id(ArtistId artist_id, Artist& artist) const
+void LocalLibrary::getArtistById(ArtistId artistId, Artist& artist) const
 {
-	auto* lib_db = DB::Connector::instance()->library_db(m->library_id, 0);
-	lib_db->getArtistByID(artist_id, artist);
+	auto* lib_db = DB::Connector::instance()->libraryDatabase(m->libraryId, 0);
+	lib_db->getArtistByID(artistId, artist);
 }
 
-void LocalLibrary::init_reload_thread()
+void LocalLibrary::initReloadThread()
 {
-	if(m->reload_thread){
+	if(m->reloadThread){
 		return;
 	}
 
-	m->reload_thread = new Library::ReloadThread(this);
+	m->reloadThread = new Library::ReloadThread(this);
 
-	connect(m->reload_thread, &Library::ReloadThread::sig_reloading_library,
-			this, &LocalLibrary::sig_reloading_library);
+	connect(m->reloadThread, &Library::ReloadThread::sigReloadingLibrary,
+			this, &LocalLibrary::sigReloadingLibrary);
 
-	connect(m->reload_thread, &Library::ReloadThread::sig_new_block_saved,
-			this, &LocalLibrary::reload_thread_new_block);
+	connect(m->reloadThread, &Library::ReloadThread::sigNewBlockSaved,
+			this, &LocalLibrary::reloadThreadNewBlock);
 
-	connect(m->reload_thread, &Library::ReloadThread::finished,
-			this, &LocalLibrary::reload_thread_finished);
+	connect(m->reloadThread, &Library::ReloadThread::finished,
+			this, &LocalLibrary::reloadThreadFinished);
 }
 
-void LocalLibrary::delete_tracks(const MetaDataList &v_md, Library::TrackDeletionMode mode)
+void LocalLibrary::deleteTracks(const MetaDataList &v_md, Library::TrackDeletionMode mode)
 {
-	auto* lib_db = DB::Connector::instance()->library_db(m->library_id, 0);
+	auto* lib_db = DB::Connector::instance()->libraryDatabase(m->libraryId, 0);
 	lib_db->deleteTracks(v_md);
 
-	AbstractLibrary::delete_tracks(v_md, mode);
+	AbstractLibrary::deleteTracks(v_md, mode);
 }
 
-void LocalLibrary::refresh_artist() {}
+void LocalLibrary::refreshArtists() {}
 
-void LocalLibrary::refresh_albums() {}
+void LocalLibrary::refreshAlbums() {}
 
-void LocalLibrary::refresh_tracks() {}
+void LocalLibrary::refreshTracks() {}
 
-void LocalLibrary::import_files(const QStringList& files)
+void LocalLibrary::importFiles(const QStringList& files)
 {
-	import_files_to(files, QString());
+	importFilesTo(files, QString());
 }
 
-void LocalLibrary::import_files_to(const QStringList& files, const QString& target_dir)
+void LocalLibrary::importFilesTo(const QStringList& files, const QString& targetDirectory)
 {
 	if(files.isEmpty()){
 		return;
 	}
 
-	if(!m->library_importer){
-		m->library_importer = new Library::Importer(this);
+	if(!m->libraryImporter)
+	{
+		m->libraryImporter = new Library::Importer(this);
+		connect(m->libraryImporter, &Library::Importer::sigStatusChanged, this, &LocalLibrary::importStatusChanged);
 	}
 
-	m->library_importer->import_files(files, target_dir);
+	m->libraryImporter->importFiles(files, targetDirectory);
 
-	emit sig_import_dialog_requested(target_dir);
+	emit sigImportDialogRequested(targetDirectory);
 }
 
-bool LocalLibrary::set_library_path(const QString& library_path)
+bool LocalLibrary::setLibraryPath(const QString& library_path)
 {
 	Library::Manager* manager = Library::Manager::instance();
-	return manager->change_library_path(m->library_id, library_path);
+	return manager->changeLibraryPath(m->libraryId, library_path);
 }
 
-bool LocalLibrary::set_library_name(const QString& library_name)
+bool LocalLibrary::setLibraryName(const QString& library_name)
 {
 	Library::Manager* manager = Library::Manager::instance();
-	return manager->rename_library(this->id(), library_name);
+	return manager->renameLibrary(this->id(), library_name);
 }
 
 QString LocalLibrary::name() const
 {
 	Library::Manager* manager = Library::Manager::instance();
-	Library::Info info = manager->library_info(this->id());
+	Library::Info info = manager->libraryInfo(this->id());
 	return info.name();
 }
 
 QString LocalLibrary::path() const
 {
 	Library::Manager* manager = Library::Manager::instance();
-	Library::Info info = manager->library_info(this->id());
+	Library::Info info = manager->libraryInfo(this->id());
 	return info.path();
 }
 
 LibraryId LocalLibrary::id() const
 {
-	return m->library_id;
+	return m->libraryId;
 }
 
 Library::Importer* LocalLibrary::importer()
 {
-	if(!m->library_importer){
-		m->library_importer = new Library::Importer(this);
+	if(!m->libraryImporter)
+	{
+		m->libraryImporter = new Library::Importer(this);
+		connect(m->libraryImporter, &Library::Importer::sigStatusChanged, this, &LocalLibrary::importStatusChanged);
 	}
 
-	return m->library_importer;
+	return m->libraryImporter;
 }
 
-bool LocalLibrary::is_reloading() const
+bool LocalLibrary::isReloading() const
 {
-	return (m->reload_thread != nullptr && m->reload_thread->is_running());
+	return (m->reloadThread != nullptr && m->reloadThread->isRunning());
 }

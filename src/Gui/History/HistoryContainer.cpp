@@ -20,7 +20,7 @@ QString HistoryContainer::name() const
 	return "history";
 }
 
-QString HistoryContainer::display_name() const
+QString HistoryContainer::displayName() const
 {
 	return tr("History");
 }
@@ -40,7 +40,7 @@ QPixmap HistoryContainer::icon() const
 	return Gui::Icons::pixmap(Gui::Icons::Edit);
 }
 
-void HistoryContainer::init_ui()
+void HistoryContainer::initUi()
 {
 	m->widget = new GUI_History();
 }

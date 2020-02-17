@@ -1,6 +1,6 @@
 /* FloatingLabel.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -17,8 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-
 
 #ifndef LABEL_H
 #define LABEL_H
@@ -44,7 +42,7 @@ namespace Gui
 
 		public:
 			explicit FloatingLabel(QWidget* parent=nullptr);
-			~FloatingLabel();
+			~FloatingLabel() override;
 
 			/**
 			 * @brief Use this method insteas of using QLabel::setText()
@@ -62,8 +60,8 @@ namespace Gui
 			void updateOffset();
 
 		protected:
-			void paintEvent(QPaintEvent* event);
-			void resizeEvent(QResizeEvent* event);
+			void paintEvent(QPaintEvent* event) override;
+			void resizeEvent(QResizeEvent* event) override;
 	};
 }
 

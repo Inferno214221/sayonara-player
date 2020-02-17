@@ -1,6 +1,6 @@
 /* SomaFMStation.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -55,23 +55,24 @@ namespace SomaFM
 			Station& operator=(const Station& other);
 			~Station();
 
-			QString name() const;
-			QStringList playlists() const;
-			QString description() const;
-			UrlType url_type(const QString& url) const;
-			Cover::Location cover_location() const;
-			bool is_valid() const;
-			MetaDataList metadata() const;
-			void set_metadata(const MetaDataList& v_md);
+			QString			name() const;
+			QStringList		playlists() const;
+			QString			description() const;
+			UrlType			urlType(const QString& url) const;
+			Cover::Location coverLocation() const;
+			bool			isValid() const;
 
-			void set_loved(bool loved);
-			bool is_loved() const;
+			MetaDataList metadata() const;
+			void setMetadata(const MetaDataList& tracks);
+
+			bool isLoved() const;
+			void setLoved(bool loved);
 
 		private:
-			void parse_station_name();
-			void parse_urls();
-			void parse_description();
-			void parse_image();
+			void parseStationName();
+			void parseUrls();
+			void parseDescription();
+			void parseImage();
 	};
 }
 

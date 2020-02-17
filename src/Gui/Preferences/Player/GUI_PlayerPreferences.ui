@@ -7,12 +7,12 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>211</height>
+    <height>221</height>
    </rect>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="7" column="0">
-    <widget class="QLabel" name="lab_warning">
+    <widget class="QLabel" name="labWarning">
      <property name="styleSheet">
       <string notr="true">color: red;</string>
      </property>
@@ -27,26 +27,26 @@
    <item row="9" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QLabel" name="lab_logger">
+      <widget class="QLabel" name="labLogger">
        <property name="text">
         <string notr="true">Logger</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="Gui::ComboBox" name="cb_logger"/>
+      <widget class="Gui::ComboBox" name="cbLogger"/>
      </item>
     </layout>
    </item>
    <item row="0" column="0">
-    <widget class="QCheckBox" name="cb_show_tray_icon">
+    <widget class="QCheckBox" name="cbShowTrayIcon">
      <property name="text">
       <string>Show system tray icon</string>
      </property>
     </widget>
    </item>
    <item row="3" column="0">
-    <widget class="QCheckBox" name="cb_close_to_tray">
+    <widget class="QCheckBox" name="cbCloseToTray">
      <property name="text">
       <string>Hide instead of close</string>
      </property>
@@ -60,14 +60,14 @@
     </widget>
    </item>
    <item row="1" column="0">
-    <widget class="QCheckBox" name="cb_start_in_tray">
+    <widget class="QCheckBox" name="cbStartInTray">
      <property name="text">
       <string>Start hidden</string>
      </property>
     </widget>
    </item>
    <item row="4" column="0">
-    <widget class="QCheckBox" name="cb_update_notifications">
+    <widget class="QCheckBox" name="cbUpdateNotifications">
      <property name="text">
       <string>Update notifications</string>
      </property>
@@ -81,7 +81,7 @@
     </widget>
    </item>
    <item row="6" column="0">
-    <widget class="QLabel" name="lab_warning_header">
+    <widget class="QLabel" name="labWarningHeader">
      <property name="text">
       <string notr="true"/>
      </property>
@@ -97,11 +97,11 @@
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>cb_show_tray_icon</tabstop>
-  <tabstop>cb_start_in_tray</tabstop>
-  <tabstop>cb_close_to_tray</tabstop>
-  <tabstop>cb_update_notifications</tabstop>
-  <tabstop>cb_logger</tabstop>
+  <tabstop>cbShowTrayIcon</tabstop>
+  <tabstop>cbStartInTray</tabstop>
+  <tabstop>cbCloseToTray</tabstop>
+  <tabstop>cbUpdateNotifications</tabstop>
+  <tabstop>cbLogger</tabstop>
  </tabstops>
  <resources/>
  <connections/>

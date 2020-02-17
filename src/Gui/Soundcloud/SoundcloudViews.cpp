@@ -1,6 +1,6 @@
 /* SoundcloudViews.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -35,17 +35,17 @@ static ContextMenu::Entries entry_mask()
 }
 
 
-ContextMenu::Entries SC::TrackView::context_menu_entries() const
+ContextMenu::Entries SC::TrackView::contextMenuEntries() const
 {
 	return entry_mask();
 }
 
-ContextMenu::Entries SC::AlbumView::context_menu_entries() const
+ContextMenu::Entries SC::AlbumView::contextMenuEntries() const
 {
 	return entry_mask();
 }
 
-ContextMenu::Entries SC::ArtistView::context_menu_entries() const
+ContextMenu::Entries SC::ArtistView::contextMenuEntries() const
 {
 	return entry_mask();
 }

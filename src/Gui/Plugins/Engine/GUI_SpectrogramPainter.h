@@ -17,21 +17,21 @@ public:
 	explicit GUI_SpectrogramPainter(QWidget* parent = nullptr);
 	~GUI_SpectrogramPainter() override;
 
-	QString get_name() const override;
-	QString get_display_name() const override;
-	bool is_ui_initialized() const override;
+	QString name() const override;
+	QString displayName() const override;
+	bool isUiInitialized() const override;
 
 private slots:
 	void reset();
-	void spectrum_changed(const QList<float>& spectrum, MilliSeconds ms);
+	void spectrumChanged(const QList<float>& spectrum, MilliSeconds ms);
 	void finished();
 
-	void playstate_changed(PlayState state);
-	void track_changed(const MetaData& md);
+	void playstateChanged(PlayState state);
+	void trackChanged(const MetaData& md);
 
 protected:
-	void retranslate_ui() override;
-	void init_ui() override;
+	void retranslate() override;
+	void initUi() override;
 
 	void paintEvent(QPaintEvent* e) override;
 	void mousePressEvent(QMouseEvent* e) override;
@@ -41,17 +41,16 @@ protected:
 	void closeEvent(QCloseEvent* e) override;
 
 private:
-	void draw_buffer(int percent_step);
-	QString calc_tooltip(float yPercent);
+	void drawBuffer(int percent_step);
+	QString calcTooltip(float yPercent);
 
-	void show_fullsize();
-	void position_clicked(QPoint position);
+	void showFullsize();
+	void positionClicked(QPoint position);
 
-	void start_adp(const MetaData& md);
-	void stop_adp();
+	void startAudioDataProvider(const MetaData& md);
+	void stopAudioDataProvider();
 
 	QSize minimumSizeHint() const override;
-
 };
 
 #endif // GUI_SPECTROGRAMPAINTER_H

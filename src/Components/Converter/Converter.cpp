@@ -1,6 +1,6 @@
 /* Converter.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -39,21 +39,21 @@ struct Converter::Private
 	QStringList log_files;
 	ProcessMap processes;
 	MetaDataList v_md;
-	QString target_dir;
-	QMap<int, QProcess*> running_processes;
+	QString targetDirectory;
+	QMap<int, QProcess*> runningProcesses;
 
-	int current_index;
-	int num_commands;
-	int num_errors;
-	int num_processes;
+	int currentIndex;
+	int commandCount;
+	int errorCount;
+	int processCount;
 	int quality;
 	bool stopped;
 
 	Private(int quality) :
-		current_index(0),
-		num_commands(0),
-		num_errors(0),
-		num_processes(0),
+		currentIndex(0),
+		commandCount(0),
+		errorCount(0),
+		processCount(0),
 		quality(quality),
 		stopped(false)
 	{}
@@ -67,24 +67,24 @@ Converter::Converter(int quality, QObject* parent) :
 
 Converter::~Converter()
 {
-	Util::File::delete_files(m->log_files);
+	Util::File::deleteFiles(m->log_files);
 }
 
-QString Converter::log_directory() const
+QString Converter::logginDirectory() const
 {
-	return Util::File::clean_filename(Util::sayonara_path("encoder-logs"));
+	return Util::File::cleanFilename(Util::sayonaraPath("encoder-logs"));
 }
 
-QString Converter::target_directory() const
+QString Converter::targetDirectory() const
 {
-	return m->target_dir;
+	return m->targetDirectory;
 }
 
-void Converter::add_metadata(const MetaDataList& v_md)
+void Converter::addMetadata(const MetaDataList& v_md)
 {
 	m->v_md.clear();
 
-	QStringList formats = supported_input_formats();
+	QStringList formats = supportedInputFormats();
 	for(const MetaData& md : v_md)
 	{
 		QString filepath = md.filepath();
@@ -98,29 +98,29 @@ void Converter::add_metadata(const MetaDataList& v_md)
 	}
 }
 
-void Converter::start(int num_threads, const QString& target_directory)
+void Converter::start(int num_threads, const QString& targetDirectoryectory)
 {
-	m->num_processes = num_threads;
-	m->target_dir = target_directory;
-	m->running_processes.clear();
-	m->num_errors = 0;
+	m->processCount = num_threads;
+	m->targetDirectory = targetDirectoryectory;
+	m->runningProcesses.clear();
+	m->errorCount = 0;
 	m->processes.clear();
-	m->current_index = 0;
+	m->currentIndex = 0;
 	m->stopped = false;
 
 	for(const MetaData& md : m->v_md)
 	{
-		m->processes << process_entry(md);
+		m->processes << processEntry(md);
 	}
 
-	m->num_commands = m->v_md.count();
+	m->commandCount = m->v_md.count();
 
-	for(int i=0; i<std::min(m->processes.size(), m->num_processes); i++)
+	for(int i=0; i<std::min(m->processes.size(), m->processCount); i++)
 	{
 		QString process_name = binary();
 		QStringList arguments = m->processes.takeFirst();
 
-		start_process(process_name, arguments);
+		startProcess(process_name, arguments);
 	}
 }
 
@@ -128,9 +128,9 @@ void Converter::stop()
 {
 	m->stopped = true;
 
-	for(int key : m->running_processes.keys())
+	for(int key : m->runningProcesses.keys())
 	{
-		QProcess* p = m->running_processes.value(key);
+		QProcess* p = m->runningProcesses.value(key);
 		if(!p){
 			continue;
 		}
@@ -139,9 +139,9 @@ void Converter::stop()
 	}
 }
 
-int Converter::num_errors() const
+int Converter::errorCount() const
 {
-	return m->num_errors;
+	return m->errorCount;
 }
 
 int Converter::quality() const
@@ -149,94 +149,94 @@ int Converter::quality() const
 	return m->quality;
 }
 
-int Converter::num_files() const
+int Converter::fileCount() const
 {
 	return m->v_md.count();
 }
 
-bool Converter::is_available() const
+bool Converter::isAvailable() const
 {
 	return QProcess::startDetached(binary(), {"--version"});
 }
 
 
-QString Converter::target_file(const MetaData& md) const
+QString Converter::targetFile(const MetaData& md) const
 {
 	QString filename, dirname;
-	Util::File::split_filename(md.filepath(), dirname, filename);
+	Util::File::splitFilename(md.filepath(), dirname, filename);
 
-	QString target = Util::File::clean_filename(m->target_dir + "/" + filename);
+	QString target = Util::File::cleanFilename(m->targetDirectory + "/" + filename);
 	target = target.left(target.lastIndexOf(".")) + "." + extension();
 
 	return target;
 }
 
-bool Converter::start_process(const QString& command, const QStringList& arguments)
+bool Converter::startProcess(const QString& command, const QStringList& arguments)
 {
-	m->current_index++;
+	m->currentIndex++;
 
-	Util::File::create_dir(log_directory());
-	QString log_file = log_directory() + "/" + QString("encoder_%1_%2.out")
+	Util::File::createDir(logginDirectory());
+	QString log_file = logginDirectory() + "/" + QString("encoder_%1_%2.out")
 															.arg(binary())
-															.arg(m->current_index);
+															.arg(m->currentIndex);
 
 	m->log_files << log_file;
 
-	int id = Util::random_number(100, 1000000);
+	int id = Util::randomNumber(100, 1000000);
 
 	auto* process = new QProcess(this);
 	process->setStandardOutputFile(log_file);
 	process->setStandardErrorFile(log_file);
 	process->setProperty("id", id);
-	m->running_processes.insert(id, process);
+	m->runningProcesses.insert(id, process);
 
-	connect(process, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), this, &Converter::process_finished);
-	connect(process, &QProcess::errorOccurred, this, &Converter::error_occured);
+	connect(process, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), this, &Converter::processFinished);
+	connect(process, &QProcess::errorOccurred, this, &Converter::errorOccured);
 
-	sp_log(Log::Debug, this) << "Starting: " << command << " " << arguments.join(" ");
+	spLog(Log::Debug, this) << "Starting: " << command << " " << arguments.join(" ");
 	process->start(command, arguments);
 
 	return true;
 }
 
-void Converter::process_finished(int ret, QProcess::ExitStatus exit_status)
+void Converter::processFinished(int ret, QProcess::ExitStatus exit_status)
 {
 	Q_UNUSED(exit_status)
 
 	auto* process = static_cast<QProcess*>(sender());
 
-	sp_log(Log::Debug, this) << "process finished";
+	spLog(Log::Debug, this) << "process finished";
 	if(ret != 0){
-		m->num_errors++;
-		sp_log(Log::Warning, this) << "Encoding process failed with code " << ret << process->program();
+		m->errorCount++;
+		spLog(Log::Warning, this) << "Encoding process failed with code " << ret << process->program();
 	}
 
 	int id = process->property("id").toInt();
-	m->running_processes.remove(id);
+	m->runningProcesses.remove(id);
 
-	emit sig_progress( 100 - (m->processes.size() * 100) / m->num_commands );
+	emit sigProgress( 100 - (m->processes.size() * 100) / m->commandCount );
 
 	if(!m->processes.isEmpty() && !m->stopped)
 	{
 		QStringList arguments = m->processes.takeFirst();
-		start_process(binary(), arguments);
+		startProcess(binary(), arguments);
 	}
 
-	else if(m->running_processes.isEmpty()){
-		emit sig_finished();
+	else if(m->runningProcesses.isEmpty()){
+		emit sigFinished();
 	}
 
 	else {
-		sp_log(Log::Warning, this) << "Something strange happened";
+		spLog(Log::Warning, this) << "Something strange happened";
 	}
 }
 
-void Converter::error_occured(QProcess::ProcessError err)
+void Converter::errorOccured(QProcess::ProcessError err)
 {
 	auto* p = static_cast<QProcess*>(this->sender());
 
-	sp_log(Log::Warning, this) << p->program() << ": " << p->arguments().join(", ");
-	sp_log(Log::Warning, this) << "Error: QProcess:ProcessError " << p->errorString();
+	spLog(Log::Warning, this) << p->program() << ": " << p->arguments().join(", ");
+	spLog(Log::Warning, this) << "Error: QProcess:ProcessError " << p->errorString();
 
-	process_finished(10000 + err, QProcess::ExitStatus::NormalExit);
+	processFinished(10000 + err, QProcess::ExitStatus::NormalExit);
 }

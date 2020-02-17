@@ -1,6 +1,6 @@
 /* DatabaseModule.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -34,16 +34,16 @@ namespace DB
 		PIMPL(Module)
 
 		public:
-			Module(const QString& connection_name, DbId db_id);
+			Module(const QString& connectionName, DbId databaseId);
 			virtual ~Module();
 
 			QSqlDatabase	db() const;
-			DbId			db_id() const;
-			QString			connection_name() const;
+			DbId			databaseId() const;
+			QString			connectionName() const;
 
-			DB::Query		run_query(const QString& query, const QString& error_text) const;
-			DB::Query		run_query(const QString& query, const QPair<QString, QVariant>& bindings, const QString& error_text) const;
-			DB::Query		run_query(const QString& query, const QMap<QString, QVariant>& bindings, const QString& error_text) const;
+			DB::Query		runQuery(const QString& query, const QString& error_text) const;
+			DB::Query		runQuery(const QString& query, const QPair<QString, QVariant>& bindings, const QString& error_text) const;
+			DB::Query		runQuery(const QString& query, const QMap<QString, QVariant>& bindings, const QString& error_text) const;
 
 			/**
 			 * @brief update

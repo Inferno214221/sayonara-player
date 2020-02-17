@@ -1,6 +1,6 @@
 /* ArtistView.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -44,34 +44,34 @@ namespace Library
 		// ItemView interface
 		protected:
 			AbstractLibrary* library() const override;
-			void selection_changed(const IndexSet& indexes) override;
-			void play_next_clicked() override;
-			void append_clicked() override;
-			void refresh_clicked() override;
-			void play_clicked() override;
-			void play_new_tab_clicked() override;
-			void run_merge_operation(const Library::MergeData& mergedata) override;
+			void selectedItemsChanged(const IndexSet& indexes) override;
+			void playNextClicked() override;
+			void appendClicked() override;
+			void refreshClicked() override;
+			void playClicked() override;
+			void playNewTabClicked() override;
+			void runMergeOperation(const Library::MergeData& mergedata) override;
 
-			void init_view(AbstractLibrary* library) override;
-			void init_context_menu() override;
+			void initView(AbstractLibrary* library) override;
+			void initContextMenu() override;
 
-			ColumnHeaderList column_headers() const override;
-			QByteArray column_header_state() const override;
-			void save_column_header_state(const QByteArray& state) override;
+			ColumnHeaderList columnHeaders() const override;
+			QByteArray columnHeaderState() const override;
+			void saveColumnHeaderState(const QByteArray& state) override;
 
 			SortOrder sortorder() const override;
-			void apply_sortorder(SortOrder s) override;
+			void applySortorder(SortOrder s) override;
 
 			// ItemView
-			bool is_mergeable() const override;
-			MD::Interpretation metadata_interpretation() const override;
+			bool isMergeable() const override;
+			MD::Interpretation metadataInterpretation() const override;
 
-			void language_changed() override;
+			void languageChanged() override;
 
 		private slots:
-			void use_clear_button_changed();
-			void album_artists_changed();
-			void album_artists_triggered(bool b);
+			void useClearButtonChanged();
+			void showAlbumArtistsChanged();
+			void albumArtistsTriggered(bool b);
 	};
 }
 

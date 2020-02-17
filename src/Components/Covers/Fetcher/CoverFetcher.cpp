@@ -1,6 +1,6 @@
 /* CoverFetcherInterface.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -26,16 +26,16 @@ Cover::Fetcher::Base::~Base() = default;
 
 QString Cover::Fetcher::Base::identifier() const
 {
-	return this->priv_identifier().toLower();
+	return this->privateIdentifier().toLower();
 }
 
-QString Cover::Fetcher::Base::artist_address(const QString& artist) const
+QString Cover::Fetcher::Base::artistAddress(const QString& artist) const
 {
 	Q_UNUSED(artist)
 	return QString();
 }
 
-QString Cover::Fetcher::Base::album_address(const QString& artist, const QString& album) const
+QString Cover::Fetcher::Base::albumAddress(const QString& artist, const QString& album) const
 {
 	Q_UNUSED(artist)
 	Q_UNUSED(album)
@@ -43,7 +43,7 @@ QString Cover::Fetcher::Base::album_address(const QString& artist, const QString
 	return QString();
 }
 
-QString Cover::Fetcher::Base::search_address(const QString& str) const
+QString Cover::Fetcher::Base::fulltextSearchAddress(const QString& str) const
 {
 	Q_UNUSED(str)
 

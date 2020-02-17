@@ -1,6 +1,6 @@
 /* PlayerPluginHandler.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -37,25 +37,23 @@ namespace PlayerPlugin
 		PIMPL(Handler)
 		SINGLETON(Handler)
 
-	signals:
-		void sig_plugin_added(PlayerPlugin::Base* plugin);
-		void sig_plugin_action_triggered(bool b);
+		signals:
+			void sigPluginAdded(PlayerPlugin::Base* plugin);
+			void sigPluginActionTriggered(bool b);
 
-	private slots:
-		void plugin_action_triggered(bool b);
+		public:
+			void addPlugin(Base* plugin);
+			void showPlugin(const QString& name);
 
-	protected:
-		void language_changed();
+			Base* findPlugin(const QString& name);
+			Base* currentPlugin() const;
+			QList<Base*> allPlugins() const;
 
-	public:
-		void add_plugin(Base* plugin);
-		void show_plugin(const QString& name);
+			void shutdown();
 
-		void shutdown();
-
-		Base*			find_plugin(const QString& name);
-		QList<Base*>	all_plugins() const;
-		Base*			current_plugin() const;
+		private slots:
+			void pluginActionTriggered(bool b);
+			void languageChanged();
 	};
 }
 

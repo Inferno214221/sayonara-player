@@ -1,6 +1,6 @@
 /* GenreView.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -55,9 +55,9 @@ namespace Library
 		PIMPL(GenreView)
 
 	signals:
-		void sig_progress(const QString& name, int progress);
-		void sig_selected_changed(const QStringList& genres);
-		void sig_invalid_genre_selected();
+		void sigProgress(const QString& name, int progress);
+		void sigSelectedChanged(const QStringList& genres);
+		void sigInvalidGenreSelected();
 
 	private:
 		using Parent::activated;
@@ -69,40 +69,38 @@ namespace Library
 		~GenreView() override;
 
 		void init(LocalLibrary* library);
-		void reload_genres();
+		void reloadGenres();
 
-		static QString invalid_genre_name();
+		static QString invalidGenreName();
 
 	private:
-		void set_genres(const Util::Set<Genre>& genres);
-		void build_genre_data_tree(const Util::Set<Genre>& genres);
-		void populate_widget(QTreeWidgetItem* parent_item, GenreNode* node);
+	void initContextMenu();
 
-		QTreeWidgetItem* find_genre(const QString& genre);
+		void setGenres(const Util::Set<Genre>& genres);
+		void buildGenreDataTree(const Util::Set<Genre>& genres);
+		void populateWidget(QTreeWidgetItem* parent_item, GenreNode* node);
 
-		void init_context_menu();
-
+		QTreeWidgetItem* findGenre(const QString& genre);
 
 	private slots:
-		void item_expanded(QTreeWidgetItem* item);
-		void item_collapsed(QTreeWidgetItem* item);
-		void expand_current_item();
+		void itemExpanded(QTreeWidgetItem* item);
+		void itemCollapsed(QTreeWidgetItem* item);
+		void expandCurrentItem();
 
-		void progress_changed(int progress);
-		void update_finished();
+		void progressChanged(int progress);
+		void updateFinished();
 
-		void new_pressed();
-		void rename_pressed();
-		void delete_pressed();
+		void newPressed();
+		void renamePressed();
+		void deletePressed();
 
-		void switch_tree_list();
+		void switchTreeList();
 
-		void selection_changed(const QItemSelection& selected, const QItemSelection& deselected);
-
+		void selectionChanged(const QItemSelection& selected, const QItemSelection& deselected) override;
 
 	protected:
-		void skin_changed() override;
-		void language_changed() override;
+		void skinChanged() override;
+		void languageChanged() override;
 		void dragEnterEvent(QDragEnterEvent* e) override;
 		void dragMoveEvent(QDragMoveEvent* e) override;
 		void dragLeaveEvent(QDragLeaveEvent* e) override;

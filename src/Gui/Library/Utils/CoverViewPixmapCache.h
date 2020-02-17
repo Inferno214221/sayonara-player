@@ -1,6 +1,6 @@
 /* CoverViewPixmapCache.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -41,18 +41,18 @@ namespace Library
 			CoverViewPixmapCache();
 			~CoverViewPixmapCache();
 
-			bool has_pixmap(const Hash& hash) const;
+			bool hasPixmap(const Hash& hash) const;
 
 			QPixmap pixmap(const Hash& hash) const;
-			QPixmap invalid_pixmap() const;
-			void	add_pixmap(const Hash& hash, const QPixmap& pm);
-			int		cache_size() const;
+			QPixmap invalidPixmap() const;
+			void addPixmap(const Hash& hash, const QPixmap& pm);
 
-			bool is_outdated(const Hash& hash) const;
-			void set_outdated(const Hash& hash);
-			void set_all_outdated();
+			bool isOutdated(const Hash& hash) const;
+			void setOutdated(const Hash& hash);
+			void setAllOutdated();
 
-			void set_cache_size(int cache_size);
+			int	cacheSize() const;
+			void setCacheSize(int cacheSize);
 
 			void clear();
 	};

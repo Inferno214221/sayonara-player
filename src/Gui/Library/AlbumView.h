@@ -1,6 +1,6 @@
 /* AlbumView.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -41,50 +41,49 @@ namespace Library
 		PIMPL(AlbumView)
 
 	signals:
-		void sig_disc_pressed(Disc d);
+		void sigDiscPressed(Disc d);
 
 	protected slots:
-		void index_clicked(const QModelIndex& idx);
+		void indexClicked(const QModelIndex& idx);
 
 	public:
-		explicit AlbumView(QWidget *parent=nullptr);
+		explicit AlbumView(QWidget* parent=nullptr);
 		virtual ~AlbumView() override;
 
 	protected:
-		ColumnHeaderList column_headers() const override;
-		QByteArray column_header_state() const override;
-		void save_column_header_state(const QByteArray& state) override;
+		ColumnHeaderList columnHeaders() const override;
+		QByteArray columnHeaderState() const override;
+		void saveColumnHeaderState(const QByteArray& state) override;
 
 	private:
 		// Library::TableView
-		void init_view(AbstractLibrary* library) override;
+		void initView(AbstractLibrary* library) override;
 
 		SortOrder sortorder() const override;
-		void apply_sortorder(SortOrder s) override;
+		void applySortorder(SortOrder s) override;
 
 		// Library::ItemView
-		void play_clicked() override;
-		void play_new_tab_clicked() override;
-		void play_next_clicked() override;
-		void append_clicked() override;
-		void selection_changed(const IndexSet& indexes) override;
-		void refresh_clicked() override;
-		void run_merge_operation(const MergeData& mergedata) override;
-		bool is_mergeable() const override;
-		MD::Interpretation metadata_interpretation() const override;
+		void playClicked() override;
+		void playNewTabClicked() override;
+		void playNextClicked() override;
+		void appendClicked() override;
+		void selectedItemsChanged(const IndexSet& indexes) override;
+		void refreshClicked() override;
+		void runMergeOperation(const MergeData& mergedata) override;
+		bool isMergeable() const override;
+		MD::Interpretation metadataInterpretation() const override;
 
+		void calcDiscmenuPoint(QModelIndex idx);
+		void deleteDiscmenu();
+		void initDiscmenu(QModelIndex idx);
 
-		void calc_discmenu_point(QModelIndex idx);
-		void delete_discmenu();
-		void init_discmenu(QModelIndex idx);
-
-		void show_discmenu();
-		void show_context_menu(const QPoint& p) override;
+		void showDiscmenu();
+		void showContextMenu(const QPoint& p) override;
 
 		AbstractLibrary* library() const override;
 
 	private slots:
-		void use_clear_button_changed();
+		void useClearButtonChanged();
 	};
 }
 

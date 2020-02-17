@@ -1,6 +1,6 @@
 /* GUI_PlayerPreferences.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -38,14 +38,14 @@ public:
 	bool commit() override;
 	void revert() override;
 
-	QString action_name() const override;
+	QString actionName() const override;
 
 protected:
-	void init_ui() override;
-	void retranslate_ui() override;
+	void initUi() override;
+	void retranslate() override;
 
 private slots:
-	void show_tray_icon_toggled(bool b);
+	void showTrayIconToggled(bool b);
 };
 
 #endif // GUI_PLAYERPREFERENCES_H

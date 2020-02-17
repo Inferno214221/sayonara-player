@@ -1,6 +1,6 @@
 /* GUI_LevelPainter.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -36,12 +36,12 @@ class GUI_LevelPainter :
 		PIMPL(GUI_LevelPainter)
 
 	public:
-		explicit GUI_LevelPainter(QWidget *parent=nullptr);
+		explicit GUI_LevelPainter(QWidget* parent=nullptr);
 		~GUI_LevelPainter() override;
 
-		QString get_name() const override;
-		QString get_display_name() const override;
-		bool is_active() const override;
+		QString name() const override;
+		QString displayName() const override;
+		bool isActive() const override;
 
 	public slots:
 		void update_style(int new_index) override;
@@ -51,19 +51,19 @@ class GUI_LevelPainter :
 	   void showEvent(QShowEvent*) override;
 	   void closeEvent(QCloseEvent*) override;
 	   void hideEvent(QHideEvent* e) override;
-	   void init_ui() override;
-	   void retranslate_ui() override;
+	   void initUi() override;
+	   void retranslate() override;
 
 	   QWidget*		widget() override;
-	   bool			has_small_buttons() const override;
-	   ColorStyle	current_style() const override;
-	   int			current_style_index() const override;
-	   void			finalize_initialization() override;
+	   bool			hasSmallButtons() const override;
+	   ColorStyle	currentStyle() const override;
+	   int			currentStyleIndex() const override;
+	   void			finalizeInitialization() override;
 
 
 	protected slots:
-		void do_fadeout_step() override;
-		void set_level(float, float) override;
+		void doFadeoutStep() override;
+		void setLevel(float, float) override;
 
 	private:
 		void reload();

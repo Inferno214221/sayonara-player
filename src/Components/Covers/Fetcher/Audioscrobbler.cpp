@@ -1,6 +1,6 @@
 /* Audioscrobbler.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -33,7 +33,7 @@
 namespace Algorithm=Util::Algorithm;
 using Cover::Fetcher::Audioscrobbler;
 
-bool Audioscrobbler::can_fetch_cover_directly() const
+bool Audioscrobbler::canFetchCoverDirectly() const
 {
 	return false;
 }
@@ -59,7 +59,7 @@ QDomNode find_artist_node(const QDomNode& node, const QString& prefix)
 	}
 }
 
-QStringList Audioscrobbler::parse_addresses(const QByteArray& website) const
+QStringList Audioscrobbler::parseAddresses(const QByteArray& website) const
 {
 	QDomDocument doc("LastFM Cover");
 	doc.setContent(website);
@@ -110,11 +110,11 @@ QStringList Audioscrobbler::parse_addresses(const QByteArray& website) const
 		}
 	}
 
-	sp_log(Log::Debug, this) << "Got " << ret.size() << " addresses";
+	spLog(Log::Debug, this) << "Got " << ret.size() << " addresses";
 	return ret;
 }
 
-QString Audioscrobbler::album_address(const QString& artist, const QString& album) const
+QString Audioscrobbler::albumAddress(const QString& artist, const QString& album) const
 {
 	QString str = QString("http://ws.audioscrobbler.com/2.0/?method=album.getinfo&artist=" +
 						  QUrl::toPercentEncoding(artist) +
@@ -126,12 +126,12 @@ QString Audioscrobbler::album_address(const QString& artist, const QString& albu
 }
 
 
-int Audioscrobbler::estimated_size() const
+int Audioscrobbler::estimatedSize() const
 {
 	return 300;
 }
 
-QString Audioscrobbler::priv_identifier() const
+QString Audioscrobbler::privateIdentifier() const
 {
 	return "audioscrobbler";
 }

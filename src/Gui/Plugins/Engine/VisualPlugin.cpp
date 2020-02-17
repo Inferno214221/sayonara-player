@@ -1,6 +1,6 @@
 /* VisualPlugin.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -55,9 +55,9 @@ VisualPlugin::~VisualPlugin()
 }
 
 
-void VisualPlugin::init_ui()
+void VisualPlugin::initUi()
 {
-	connect(PlayManager::instance(), &PlayManager::sig_playstate_changed, this, &VisualPlugin::playstate_changed);
+	connect(PlayManager::instance(), &PlayManager::sigPlaystateChanged, this, &VisualPlugin::playstate_changed);
 
 	m_ecsc = new VisualColorStyleChooser(minimumWidth(), minimumHeight());
 	m->style_settings = new GUI_StyleSettings(this);
@@ -66,12 +66,12 @@ void VisualPlugin::init_ui()
 	m->timer->setInterval(30);
 	m->timer_stopped = true;
 
-	connect(m->timer, &QTimer::timeout, this, &VisualPlugin::do_fadeout_step);
+	connect(m->timer, &QTimer::timeout, this, &VisualPlugin::doFadeoutStep);
 	connect(m->style_settings, &GUI_StyleSettings::sig_style_update, this, &VisualPlugin::style_changed);
 }
 
 
-bool VisualPlugin::is_title_shown() const
+bool VisualPlugin::hasTitle() const
 {
 	return false;
 }
@@ -84,7 +84,7 @@ void VisualPlugin::set_button_sizes()
 	QFont font = m->btn_config->font();
 
 	QFontMetrics fm = this->fontMetrics();
-	int char_width = Gui::Util::text_width(fm, "W");
+	int char_width = Gui::Util::textWidget(fm, "W");
 
 	int x = 10;
 	int y = 5;
@@ -92,7 +92,7 @@ void VisualPlugin::set_button_sizes()
 	int width =  char_width + 4;
 	int font_size = 6;
 
-	if(!has_small_buttons())
+	if(!hasSmallButtons())
 	{
 		y = 5;
 		height = fm.height() * 2;
@@ -159,7 +159,7 @@ void VisualPlugin::showEvent(QShowEvent* e)
 
 void VisualPlugin::config_clicked()
 {
-	m->style_settings->show(current_style_index());
+	m->style_settings->show(currentStyleIndex());
 }
 
 
@@ -167,7 +167,7 @@ void VisualPlugin::next_clicked()
 {
 	int n_styles = m_ecsc->get_num_color_schemes();
 
-	int new_index = (current_style_index() + 1) % n_styles;
+	int new_index = (currentStyleIndex() + 1) % n_styles;
 
 	update_style(new_index);
 }
@@ -177,7 +177,7 @@ void VisualPlugin::prev_clicked()
 {
 	int n_styles = m_ecsc->get_num_color_schemes();
 
-	int new_index = (current_style_index() - 1);
+	int new_index = (currentStyleIndex() - 1);
 	if(new_index < 0){
 		new_index = n_styles - 1;
 	}
@@ -190,7 +190,7 @@ void VisualPlugin::update()
 {
 	QWidget::update();
 
-	if(!is_ui_initialized()){
+	if(!isUiInitialized()){
 		return;
 	}
 }
@@ -219,7 +219,7 @@ void VisualPlugin::paused() {}
 
 void VisualPlugin::stopped()
 {
-	if(!is_ui_initialized()){
+	if(!isUiInitialized()){
 		return;
 	}
 
@@ -239,11 +239,11 @@ void VisualPlugin::resizeEvent(QResizeEvent* e)
 {
 	PlayerPlugin::Base::resizeEvent(e);
 
-	if(!is_ui_initialized()){
+	if(!isUiInitialized()){
 		return;
 	}
 
-	update_style(current_style_index());
+	update_style(currentStyleIndex());
 	set_button_sizes();
 }
 
@@ -263,7 +263,7 @@ void VisualPlugin::mousePressEvent(QMouseEvent *e)
 			break;
 
 		case Qt::RightButton:
-			m->style_settings->show(current_style_index());
+			m->style_settings->show(currentStyleIndex());
 			break;
 		default:
 			break;
@@ -302,6 +302,6 @@ void VisualPlugin::stop_fadeout_timer()
 
 void VisualPlugin::style_changed()
 {
-	update_style(current_style_index());
+	update_style(currentStyleIndex());
 }
 

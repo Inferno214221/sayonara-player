@@ -1,6 +1,6 @@
 /* ArtistInfo.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -34,19 +34,18 @@ class ArtistInfo :
 	PIMPL(ArtistInfo)
 
 private:
-	void calc_cover_location() override;
-	void calc_subheader() override;
-	void calc_header() override;
+	void calcCoverLocation() override;
+	void calcSubheader() override;
+	void calcHeader() override;
 
-	void calc_similar_artists(Artist& artist);
+	void calcSimilarArtists(Artist& artist);
 
 public:
-	explicit ArtistInfo(const MetaDataList& v_md);
-	virtual ~ArtistInfo();
+	explicit ArtistInfo(const MetaDataList& tracs);
+	~ArtistInfo() override;
 
-	QString additional_infostring() const override;
-
-	Cover::Location cover_location() const override;
+	QString additionalInfostring() const override;
+	Cover::Location coverLocation() const override;
 };
 
 #endif // ARTISTINFO_H

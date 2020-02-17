@@ -1,6 +1,6 @@
 /* PlaylistChooser.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -39,27 +39,27 @@ namespace Playlist
 		Q_OBJECT
 		PIMPL(Chooser)
 
+		signals:
+			void sigPlaylistsChanged();
+
 		public:
 			Chooser(QObject* parent);
 			~Chooser();
 
-			void load_single_playlist(int id);
-			int find_playlist(const QString& name) const;
+			void loadSinglePlaylist(int id);
+			int findPlaylist(const QString& name) const;
 
 			const CustomPlaylistSkeletons& playlists();
 
-			Util::SaveAsAnswer rename_playlist(int id, const QString& new_name);
-			bool delete_playlist(int id);
-
-		signals:
-			void sig_playlists_changed();
+			Util::SaveAsAnswer renamePlaylist(int id, const QString& newName);
+			bool deletePlaylist(int id);
 
 		private slots:
-			void playlists_changed();
+			void playlistsChanged();
 
-			void playlist_deleted(int id);
-			void playlist_added(int id, const QString& name);
-			void playlist_renamed(int id, const QString& old_name, const QString& new_name);
+			void playlistDeleted(int id);
+			void playlistAdded(int id, const QString& name);
+			void playlistRenamed(int id, const QString& old_name, const QString& new_name);
 	};
 }
 

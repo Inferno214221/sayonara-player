@@ -1,6 +1,6 @@
 /* BookmarksBase.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -41,7 +41,7 @@ BookmarksBase::BookmarksBase(QObject* parent) :
 	QObject(parent)
 {
 	m = Pimpl::make<Private>();
-	m->db = DB::Connector::instance()->bookmark_connector();
+	m->db = DB::Connector::instance()->bookmarkConnector();
 }
 
 BookmarksBase::~BookmarksBase() = default;
@@ -75,7 +75,7 @@ void BookmarksBase::sort()
 
 BookmarksBase::CreationStatus BookmarksBase::create(Seconds timestamp)
 {
-	if(m->md.id() < 0 || m->md.db_id() != 0)
+	if(m->md.id() < 0 || m->md.databaseId() != 0)
 	{
 		return CreationStatus::NoDBTrack;
 	}
@@ -92,7 +92,7 @@ BookmarksBase::CreationStatus BookmarksBase::create(Seconds timestamp)
 		return CreationStatus::AlreadyThere;
 	}
 
-	QString name = Util::cvt_ms_to_string(timestamp * 1000, "$M:$S");
+	QString name = Util::msToString(timestamp * 1000, "$M:$S");
 	bool success = m->db->insertBookmark(m->md.id(), timestamp, name);
 
 	if(success)
@@ -109,13 +109,13 @@ MetaData BookmarksBase::metadata() const
 	return m->md;
 }
 
-void BookmarksBase::set_metadata(const MetaData& md)
+void BookmarksBase::setMetadata(const MetaData& md)
 {
 	m->md = md;
 
 	this->clear();
 
-	if(!md.get_custom_field("Chapter1").isEmpty())
+	if(!md.customField("Chapter1").isEmpty())
 	{
 		int chapter_idx = 1;
 		QString entry;
@@ -124,7 +124,7 @@ void BookmarksBase::set_metadata(const MetaData& md)
 		{
 			QString custom_field_name = QString("Chapter%1").arg(chapter_idx);
 
-			entry = md.get_custom_field(custom_field_name);
+			entry = md.customField(custom_field_name);
 
 			QStringList lst = entry.split(":");
 			Seconds length = lst.takeFirst().toInt();
@@ -157,7 +157,7 @@ const QList<Bookmark> BookmarksBase::bookmarks() const
 	return m->bookmarks;
 }
 
-void BookmarksBase::set_bookmarks(const QList<Bookmark> bookmarks)
+void BookmarksBase::setBookmarks(const QList<Bookmark> bookmarks)
 {
 	m->bookmarks = bookmarks;
 }

@@ -1,6 +1,6 @@
 /* GUI_SoundcloudArtistSearch.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -41,27 +41,29 @@ namespace SC
 		UI_CLASS(GUI_SoundcloudArtistSearch)
 		PIMPL(GUI_ArtistSearch)
 
-	public:
-		explicit GUI_ArtistSearch(SC::Library* library, QWidget *parent=nullptr);
-		~GUI_ArtistSearch();
+		public:
+			explicit GUI_ArtistSearch(SC::Library* library, QWidget* parent=nullptr);
+			~GUI_ArtistSearch() override;
 
-	private slots:
-		void search_clicked();
-		void clear_clicked();
-		void add_clicked();
-		void close_clicked();
+		private slots:
+			void searchClicked();
+			void clearClicked();
+			void addClicked();
+			void closeClicked();
 
-		void artists_fetched(const ArtistList& artists);
-		void artists_ext_fetched(const ArtistList& artists);
-		void albums_fetched(const AlbumList& albums);
-		void tracks_fetched(const MetaDataList& tracks);
+			void artistsFetched(const ArtistList& artists);
+			void artistsExtFetched(const ArtistList& artists);
+			void albumsFetched(const AlbumList& albums);
+			void tracksFetched(const MetaDataList& tracks);
 
-		void artist_selected(int idx);
+			void artistSelected(int idx);
 
-	private:
-		void set_tracks_label(int n_tracks);
-		void set_playlist_label(int n_playlists);
-        void language_changed() override;
+		private:
+			void setTrackCountLabel(int trackCount);
+			void setPlaylistCountLabel(int playlistCount);
+
+		protected:
+			void languageChanged() override;
 	};
 }
 #endif // GUI_SOUNDCLOUDARTISTSEARCH_H

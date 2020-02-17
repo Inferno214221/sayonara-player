@@ -1,6 +1,6 @@
 /* DirChooserDialog.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -33,9 +33,9 @@ namespace Library
 	{
 		Q_OBJECT
 
-	public:
-		explicit DirChooserDialog(QWidget* parent=nullptr);
-		~DirChooserDialog();
+		public:
+			explicit DirChooserDialog(QWidget* parent=nullptr);
+			~DirChooserDialog();
 	};
 }
 

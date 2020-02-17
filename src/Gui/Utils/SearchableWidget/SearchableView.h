@@ -1,6 +1,6 @@
 /* SearchableView.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -45,19 +45,19 @@ class MiniSearcherViewConnector : public QObject
 	Q_OBJECT
 	PIMPL(MiniSearcherViewConnector)
 
-public:
-	MiniSearcherViewConnector(SearchableViewInterface* parent);
-	~MiniSearcherViewConnector();
+	public:
+		MiniSearcherViewConnector(SearchableViewInterface* parent);
+		~MiniSearcherViewConnector();
 
-	void init();
-	bool is_active() const;
-	void set_extra_triggers(const QMap<QChar, QString>& map);
-	void handle_key_press(QKeyEvent* e);
+		void init();
+		bool isActive() const;
+		void setExtraTriggers(const QMap<QChar, QString>& map);
+		void handleKeyPress(QKeyEvent* e);
 
-private slots:
-	void edit_changed(const QString& str);
-	void select_next();
-	void select_previous();
+	private slots:
+		void lineEditChanged(const QString& str);
+		void selectNext();
+		void selectPrevious();
 };
 
 
@@ -80,33 +80,22 @@ protected:
 
 	public:
 		explicit SearchableViewInterface(QAbstractItemView* view);
-		virtual ~SearchableViewInterface();
-
-		virtual void set_search_model(SearchableModelInterface* model);
-
-		virtual QModelIndex model_index(int row, int col, const QModelIndex& parent=QModelIndex()) const override final;
-		virtual int			row_count(const QModelIndex& parent=QModelIndex()) const override final;
-		virtual int			column_count(const QModelIndex& parent=QModelIndex()) const override final;
-		bool				is_empty(const QModelIndex& parent=QModelIndex()) const;
-		bool				has_rows(const QModelIndex& parent=QModelIndex()) const;
-
-		virtual QItemSelectionModel*	selection_model() const override final;
-		virtual void					set_current_index(int idx) override final;
-
-		bool			is_minisearcher_active() const;
-		virtual int		viewport_height() const;
-		virtual int		viewport_width() const;
+		virtual ~SearchableViewInterface() override;
 
 		QAbstractItemView* view() const;
+		virtual int	viewportHeight() const;
+		virtual int	viewportWidth() const;
 
-		int set_searchstring(const QString& str);
-		void select_next_match(const QString& str);
-		void select_previous_match(const QString& str);
+		int setSearchstring(const QString& str);
+		void selectNextMatch(const QString& str);
+		void selectPreviousMatch(const QString& str);
+		bool isMinisearcherActive() const;
 
 	protected:
-		virtual QModelIndex match_index(const QString& str, SearchDirection direction) const;
-		virtual void	select_match(const QString& str, SearchDirection direction);
-		void			handle_key_press(QKeyEvent* e) override;
+		virtual void setSearchModel(SearchableModelInterface* model);
+		virtual QModelIndex matchIndex(const QString& str, SearchDirection direction) const;
+		virtual void selectMatch(const QString& str, SearchDirection direction);
+		void handleKeyPress(QKeyEvent* e) override;
 };
 
 
@@ -117,19 +106,25 @@ class SearchableView :
 {
 	private:
 		using View::setModel;
-		using SearchableViewInterface::set_search_model;
+		using SearchableViewInterface::setSearchModel;
 
 	public:
 		SearchableView(QWidget* parent=nullptr) :
 			View(parent),
-			SearchableViewInterface(this) {}
+			SearchableViewInterface(this)
+		{}
 
 		virtual ~SearchableView() = default;
 
-		virtual void set_model(Model* model)
+		virtual void setSearchableModel(Model* model)
 		{
-			setModel(model);
-			set_search_model(model);
+			View::setModel(model);
+			SearchableViewInterface::setSearchModel(model);
+		}
+
+		int rowCount() const
+		{
+			return (View::model() == nullptr) ? 0 : View::model()->rowCount();
 		}
 
 	protected:
@@ -137,7 +132,7 @@ class SearchableView :
 		{
 			if(!e->isAccepted())
 			{
-				handle_key_press(e);
+				handleKeyPress(e);
 				if(e->isAccepted()){
 					return;
 				}

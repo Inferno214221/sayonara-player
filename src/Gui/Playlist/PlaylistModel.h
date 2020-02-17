@@ -1,6 +1,6 @@
 /* PlaylistItemModel.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -23,7 +23,7 @@
  * PlaylistItemModel.h
  *
  *  Created on: Apr 8, 2011
- *      Author: Lucio Carreras
+ *      Author: Michael Lugmair (Lucio Carreras)
  */
 
 #ifndef PLAYLISTITEMMODEL_H_
@@ -49,63 +49,74 @@ namespace Playlist
 
 		using SearchableModelInterface::ExtraTriggerMap;
 
-	signals:
-		void sig_data_ready();
+		signals:
+			void sigDataReady();
 
-	public:
-		enum ColumnName
-		{
-			TrackNumber=0,
-			Cover,
-			Description,
-			Time,
-			NumColumns
-		};
+		public:
+			enum StyleElement
+			{
+				Italic=0x2110,
+				Bold=0x212C
+			};
 
-		explicit Model(PlaylistPtr pl, QObject* parent=nullptr);
-		~Model() override;
+			enum ColumnName
+			{
+				TrackNumber=0,
+				Cover,
+				Description,
+				Time,
+				NumColumns
+			};
 
-		int rowCount(const QModelIndex& parent=QModelIndex()) const override;
-		int columnCount(const QModelIndex& parent=QModelIndex()) const override;
+			enum Roles
+			{
+				RatingRole=Qt::UserRole + 1,
+				RadioModeRole=Qt::UserRole + 2,
+				DragIndexRole=Qt::UserRole + 3
+			};
 
-		Qt::ItemFlags	flags(const QModelIndex& index=QModelIndex()) const override;
-		QVariant		data(const QModelIndex& index, int role=Qt::DisplayRole) const override;
-		bool			setData(const QModelIndex &index, const QVariant &value, int role) override;
+			explicit Model(PlaylistPtr pl, QObject* parent=nullptr);
+			~Model() override;
 
+			void clear();
+			void removeTracks(const IndexSet& rows);
+			IndexSet moveTracks(const IndexSet& rows, int target_index);
+			IndexSet moveTracksUp(const IndexSet& rows);
+			IndexSet moveTracksDown(const IndexSet& rows);
+			IndexSet copyTracks(const IndexSet& rows, int target_index);
+			void insertTracks(const MetaDataList& tracks, int row);
 
-		SearchableModelInterface::ExtraTriggerMap	getExtraTriggers() override;
-		QModelIndex		getRowIndexOf(const QString& substr, int row, bool is_forward);
-		QModelIndexList	search_results(const QString& substr) override;
+			int	currentTrack() const;
+			void setCurrentTrack(int row);
 
-		void		clear();
-		void		remove_rows(const IndexSet& rows);
-		IndexSet	move_rows(const IndexSet& rows, int target_index);
-		IndexSet	move_rows_up(const IndexSet& rows);
-		IndexSet	move_rows_down(const IndexSet& rows);
-		IndexSet	copy_rows(const IndexSet& rows, int target_index);
-		void		change_rating(const IndexSet& rows, Rating rating);
-		void		insert_tracks(const MetaDataList& v_md, int row);
+			MetaData metadata(int row) const;
+			MetaDataList metadata(const IndexSet& rows) const;
 
-		void		set_current_track(int row);
-		int			current_track() const;
+			bool hasLocalMedia(const IndexSet& rows) const;
+			void setDragIndex(int dragIndex);
+			void setRowHeight(int rowHeight);
+			void changeRating(const IndexSet& rows, Rating rating);
 
-		MetaData		metadata(int row) const;
-		MetaDataList	metadata(const IndexSet& rows) const;
+			QModelIndex	getRowIndexOf(const QString& substr, int row, bool is_forward);
 
-		QMimeData*		mimeData(const QModelIndexList& indexes) const override;
+			Qt::ItemFlags flags(const QModelIndex& index=QModelIndex()) const override;
+			QVariant data(const QModelIndex& index, int role=Qt::DisplayRole) const override;
+			bool setData(const QModelIndex& index, const QVariant &value, int role) override;
+			int rowCount(const QModelIndex& parent=QModelIndex()) const override;
+			int columnCount(const QModelIndex& parent=QModelIndex()) const override;
 
-		bool			has_local_media(const IndexSet& rows) const;
-		void			set_drag_index(int drag_index);
-		void			set_row_height(int row_height);
+			SearchableModelInterface::ExtraTriggerMap getExtraTriggers() override;
+			QMimeData* mimeData(const QModelIndexList& indexes) const override;
+			QModelIndexList	searchResults(const QString& substr) override;
 
-	public slots:
-		void			refresh_data();
+		public slots:
+			void refreshData();
 
-	private:
-		void			look_changed();
+		private slots:
+			void playlistChanged(int playlistIndex);
 
-	private slots:
-		void			playlist_changed(int pl_idx);
+		private:
+			void lookChanged();
 	};
 }
 

@@ -1,6 +1,6 @@
 /* GUI_EnginePreferences.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -32,7 +32,7 @@
 
 struct GUI_EnginePreferences::Private
 {
-	QString alsa_buffer;
+	QString alsaBuffer;
 };
 
 GUI_EnginePreferences::GUI_EnginePreferences(const QString& identifier) :
@@ -48,20 +48,20 @@ GUI_EnginePreferences::~GUI_EnginePreferences()
 	}
 }
 
-QString GUI_EnginePreferences::action_name() const
+QString GUI_EnginePreferences::actionName() const
 {
 	return tr("Audio");
 }
 
 bool GUI_EnginePreferences::commit()
 {
-	if(ui->rb_pulse->isChecked()){
+	if(ui->rbPulse->isChecked()){
 		SetSetting(Set::Engine_Sink, QString("pulse"));
 	}
 
-	else if(ui->rb_alsa->isChecked())
+	else if(ui->rbAlsa->isChecked())
 	{
-		QString card = ui->combo_alsa_devices->currentData().toString();
+		QString card = ui->comboAlsaDevices->currentData().toString();
 		SetSetting(Set::Engine_AlsaDevice, card);
 		SetSetting(Set::Engine_Sink, QString("alsa"));
 
@@ -82,35 +82,35 @@ bool GUI_EnginePreferences::commit()
 
 void GUI_EnginePreferences::revert()
 {
-	QString engine_name = GetSetting(Set::Engine_Sink);
-	if(engine_name == "pulse"){
-		ui->rb_pulse->setChecked(true);
+	QString engineName = GetSetting(Set::Engine_Sink);
+	if(engineName == "pulse"){
+		ui->rbPulse->setChecked(true);
 	}
 
-	else if(engine_name == "alsa"){
-		ui->rb_alsa->setChecked(true);
+	else if(engineName == "alsa"){
+		ui->rbAlsa->setChecked(true);
 	}
 
 	else{
-		ui->rb_auto->setChecked(true);
+		ui->rbAuto->setChecked(true);
 	}
 }
 
-void GUI_EnginePreferences::init_ui()
+void GUI_EnginePreferences::initUi()
 {
 	if(ui){
 		return;
 	}
 
-	setup_parent(this, &ui);
+	setupParent(this, &ui);
 
-	connect(ui->rb_alsa, &QRadioButton::toggled, this, &GUI_EnginePreferences::radio_button_changed);
-	connect(ui->rb_pulse, &QRadioButton::toggled, this, &GUI_EnginePreferences::radio_button_changed);
+	connect(ui->rbAlsa, &QRadioButton::toggled, this, &GUI_EnginePreferences::radioButtonChanged);
+	connect(ui->rbPulse, &QRadioButton::toggled, this, &GUI_EnginePreferences::radioButtonChanged);
 
 	revert();
 
-	radio_button_changed(ui->rb_alsa->isChecked());
-	ui->combo_alsa_devices->setVisible(false);
+	radioButtonChanged(ui->rbAlsa->isChecked());
+	ui->comboAlsaDevices->setVisible(false);
 
 /*
 	auto* process = new QProcess(this);
@@ -129,17 +129,17 @@ void GUI_EnginePreferences::init_ui()
 */
 }
 
-void GUI_EnginePreferences::retranslate_ui()
+void GUI_EnginePreferences::retranslate()
 {
 	ui->retranslateUi(this);
 
-	ui->rb_auto->setText(Lang::get(Lang::Automatic));
+	ui->rbAuto->setText(Lang::get(Lang::Automatic));
 }
 
-void GUI_EnginePreferences::radio_button_changed(bool b)
+void GUI_EnginePreferences::radioButtonChanged(bool b)
 {
 	Q_UNUSED(b)
-	ui->combo_alsa_devices->setVisible(false);
+	ui->comboAlsaDevices->setVisible(false);
 }
 
 struct SubDevice
@@ -149,18 +149,18 @@ struct SubDevice
 };
 
 
-void GUI_EnginePreferences::alsa_process_finished(int exit_code, QProcess::ExitStatus exit_status)
+void GUI_EnginePreferences::alsaProcessFinished(int exit_code, QProcess::ExitStatus exit_status)
 {
 	Q_UNUSED(exit_code)
 	Q_UNUSED(exit_status)
 
 	auto* process = static_cast<QProcess*>(sender());
-	m->alsa_buffer.append
+	m->alsaBuffer.append
 	(
 		QString::fromLocal8Bit(process->readAllStandardOutput())
 	);
 
-	ui->combo_alsa_devices->clear();
+	ui->comboAlsaDevices->clear();
 
 	if(exit_code != 0){
 		return;
@@ -168,7 +168,7 @@ void GUI_EnginePreferences::alsa_process_finished(int exit_code, QProcess::ExitS
 
 	QMap <int, QList<SubDevice>> device_map;
 
-	const QStringList splitted = m->alsa_buffer.split("\n");
+	const QStringList splitted = m->alsaBuffer.split("\n");
 	for(const QString& line : splitted)
 	{
 		QRegExp re("card ([0-9]+): (.+device ([0-9]+).+)");
@@ -207,21 +207,21 @@ void GUI_EnginePreferences::alsa_process_finished(int exit_code, QProcess::ExitS
 				device_identifier += QString(",%1").arg(subdevice.id);
 			}
 
-			ui->combo_alsa_devices->addItem(subdevice.name, device_identifier);
+			ui->comboAlsaDevices->addItem(subdevice.name, device_identifier);
 		}
 	}
 }
 
-void GUI_EnginePreferences::alsa_process_error_occured(QProcess::ProcessError error)
+void GUI_EnginePreferences::alsaProcessErrorOccured(QProcess::ProcessError error)
 {
 	Q_UNUSED(error)
 }
 
-void GUI_EnginePreferences::alsa_stdout_written()
+void GUI_EnginePreferences::alsaStdoutWritten()
 {
 	auto* process = static_cast<QProcess*>(sender());
 
-	m->alsa_buffer.append
+	m->alsaBuffer.append
 	(
 		QString::fromLocal8Bit(process->readAllStandardOutput())
 	);

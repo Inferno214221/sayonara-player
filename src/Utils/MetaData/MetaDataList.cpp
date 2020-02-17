@@ -1,6 +1,6 @@
 /* MetaDataList.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -83,7 +83,7 @@ MetaDataList& MetaDataList::operator=(MetaDataList&& other) noexcept
 }
 
 
-MetaDataList& MetaDataList::insert_track(const MetaData& md, int tgt_idx)
+MetaDataList& MetaDataList::insertTrack(const MetaData& md, int tgt_idx)
 {
 	if(tgt_idx >= this->count())
 	{
@@ -93,10 +93,10 @@ MetaDataList& MetaDataList::insert_track(const MetaData& md, int tgt_idx)
 	tgt_idx = std::max(tgt_idx, 0);
 
 	MetaDataList v_md{md};
-	return insert_tracks(v_md, tgt_idx);
+	return insertTracks(v_md, tgt_idx);
 }
 
-MetaDataList& MetaDataList::insert_tracks(const MetaDataList& v_md, int tgt_idx)
+MetaDataList& MetaDataList::insertTracks(const MetaDataList& v_md, int tgt_idx)
 {
 	if(tgt_idx >= this->count())
 	{
@@ -110,28 +110,28 @@ MetaDataList& MetaDataList::insert_tracks(const MetaDataList& v_md, int tgt_idx)
 	return *this;
 }
 
-MetaDataList& MetaDataList::copy_tracks(const IndexSet& indexes, int tgt_idx)
+MetaDataList& MetaDataList::copyTracks(const IndexSet& indexes, int tgt_idx)
 {
 	tgt_idx = std::max<int>(0, std::min<int>(tgt_idx, this->count() - 1));
 
-	MetaDataList v_md; v_md.reserve(indexes.size());
+	MetaDataList tracks; tracks.reserve(indexes.size());
 
 	for(int idx : indexes)
 	{
-		v_md << this->at( size_t(idx) );
+		tracks << this->at( size_t(idx) );
 	}
 
-	return insert_tracks(v_md, tgt_idx);
+	return insertTracks(tracks, tgt_idx);
 }
 
 
-MetaDataList& MetaDataList::move_tracks(const IndexSet& indexes, int tgt_idx) noexcept
+MetaDataList& MetaDataList::moveTracks(const IndexSet& indexes, int tgt_idx) noexcept
 {
 	tgt_idx = std::max<int>(0, std::min<int>(tgt_idx, this->count()));
 
-	MetaDataList v_md_to_move; 		v_md_to_move.reserve(indexes.size());
-	MetaDataList v_md_before_tgt; 	v_md_before_tgt.reserve(size());
-	MetaDataList v_md_after_tgt; 	v_md_after_tgt.reserve(size());
+	MetaDataList tracksToMove; 		tracksToMove.reserve(indexes.size());
+	MetaDataList tracksBeforeTgt; 	tracksBeforeTgt.reserve(size());
+	MetaDataList tracksAfterTgt; 	tracksAfterTgt.reserve(size());
 
 	int i=0;
 
@@ -141,38 +141,38 @@ MetaDataList& MetaDataList::move_tracks(const IndexSet& indexes, int tgt_idx) no
 
 		if(indexes.contains(i))
 		{
-			v_md_to_move << std::move( md );
+			tracksToMove << std::move( md );
 		}
 
 		else if(i < tgt_idx)
 		{
-			v_md_before_tgt << std::move( md );
+			tracksBeforeTgt << std::move( md );
 		}
 
 		else
 		{
-			v_md_after_tgt << std::move( md );
+			tracksAfterTgt << std::move( md );
 		}
 	}
 
 	auto it = this->begin();
-	std::move(v_md_before_tgt.begin(), v_md_before_tgt.end(), it);
-	it += v_md_before_tgt.count();
+	std::move(tracksBeforeTgt.begin(), tracksBeforeTgt.end(), it);
+	it += tracksBeforeTgt.count();
 
-	std::move(v_md_to_move.begin(), v_md_to_move.end(), it);
-	it += v_md_to_move.count();
+	std::move(tracksToMove.begin(), tracksToMove.end(), it);
+	it += tracksToMove.count();
 
-	std::move(v_md_after_tgt.begin(), v_md_after_tgt.end(), it);
+	std::move(tracksAfterTgt.begin(), tracksAfterTgt.end(), it);
 
 	return *this;
 }
 
-MetaDataList& MetaDataList::remove_track(int idx)
+MetaDataList& MetaDataList::removeTrack(int idx)
 {
-	return remove_tracks(idx, idx);
+	return removeTracks(idx, idx);
 }
 
-MetaDataList& MetaDataList::remove_tracks(int first, int last)
+MetaDataList& MetaDataList::removeTracks(int first, int last)
 {
 	if( !Util::between(first, this) ||
 		!Util::between(last, this))
@@ -185,13 +185,13 @@ MetaDataList& MetaDataList::remove_tracks(int first, int last)
 	return *this;
 }
 
-MetaDataList& MetaDataList::remove_tracks(std::function<bool (const MetaData&)> attr)
+MetaDataList& MetaDataList::removeTracks(std::function<bool (const MetaData&)> attr)
 {
 	this->erase( std::remove_if(this->begin(), this->end(), attr), this->end() );
 	return *this;
 }
 
-MetaDataList& MetaDataList::remove_tracks(const IndexSet& indexes)
+MetaDataList& MetaDataList::removeTracks(const IndexSet& indexes)
 {
 	for(auto it=indexes.rbegin(); it != indexes.rend(); it++)
 	{
@@ -208,7 +208,7 @@ MetaDataList& MetaDataList::remove_tracks(const IndexSet& indexes)
 bool MetaDataList::contains(const MetaData& md) const
 {
 	auto it = std::find_if(this->begin(), this->end(), [&md](const MetaData& md_tmp){
-		return md.is_equal(md_tmp);
+		return md.isEqual(md_tmp);
 	});
 
 	return (it != this->end());
@@ -341,8 +341,9 @@ MetaDataList& MetaDataList::append(MetaData&& md) noexcept
 QList<UniqueId> MetaDataList::unique_ids() const
 {
 	QList<UniqueId> ret;
-	for(auto it=this->begin(); it != this->end(); it++){
-		ret << it->unique_id();
+	for(auto it=this->begin(); it != this->end(); it++)
+	{
+		ret << it->uniqueId();
 	}
 
 	return ret;
@@ -357,7 +358,7 @@ bool MetaDataList::contains(TrackID id) const
 	return (it != this->end());
 }
 
-void MetaDataList::remove_duplicates()
+void MetaDataList::removeDuplicates()
 {
 	for(auto it=this->begin(); it != this->end(); it++)
 	{
@@ -375,7 +376,7 @@ bool MetaDataList::isEmpty() const
 	return this->empty();
 }
 
-MetaDataList& MetaDataList::append_unique(const MetaDataList& other)
+MetaDataList& MetaDataList::appendUnique(const MetaDataList& other)
 {
 	std::copy_if(other.begin(), other.end(), std::back_inserter(*this), [=](const MetaData& md)
 	{
@@ -404,7 +405,7 @@ int MetaDataList::count() const
 }
 
 
-MetaData MetaDataList::take_at(int idx)
+MetaData MetaDataList::takeAt(int idx)
 {
 	MetaData md(std::move(this->at( size_t(idx) )));
 	this->erase(this->begin() + idx);
@@ -419,7 +420,7 @@ void MetaDataList::sort(Library::SortOrder so)
 		return;
 	}
 
-	MetaDataSorting::sort_metadata(*this, so);
+	MetaDataSorting::sortMetadata(*this, so);
 }
 
 void MetaDataList::reserve(size_t items)

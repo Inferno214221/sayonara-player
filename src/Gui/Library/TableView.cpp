@@ -1,6 +1,6 @@
 /* LibraryTableView.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -47,95 +47,85 @@ TableView::~TableView() = default;
 
 void TableView::init(AbstractLibrary* library)
 {
-	init_view(library);
+	initView(library);
 
-	const ColumnHeaderList headers = column_headers();
-
-	{ // register names at model
-		QStringList header_names;
-		for(ColumnHeaderPtr header : headers)
-		{
-			header_names << header->title();
-		}
-
-		ItemModel* model = item_model();
-		model->set_header_data(header_names);
+	const ColumnHeaderList headers = columnHeaders();
+	for(int i=0; i<headers.size(); i++)
+	{
+		itemModel()->setHeaderData(i, Qt::Horizontal, headers[i]->title(), Qt::DisplayRole);
 	}
 
 	// do this initialization here after the model knows about
 	// the number of columns. Otherwise the resize column method
 	// won't work
-	m->header->init(headers, column_header_state(), sortorder());
+	m->header->init(headers, columnHeaderState(), sortorder());
 
-	language_changed();
+	languageChanged();
 
-	connect(this, &ItemView::doubleClicked, this, &TableView::play_clicked);
+	connect(this, &ItemView::doubleClicked, this, &TableView::playClicked);
 
-	connect(m->header, &HeaderView::sig_columns_changed, this, &TableView::header_actions_triggered);
-	connect(m->header, &QHeaderView::sectionClicked, this, &TableView::sort_by_column);
-	connect(m->header, &QHeaderView::sectionResized, this, &TableView::section_resized);
-	connect(m->header, &QHeaderView::sectionMoved, this, &TableView::section_moved);
+	connect(m->header, &HeaderView::sigColumnsChanged, this, &TableView::headerActionsTriggered);
+	connect(m->header, &QHeaderView::sectionClicked, this, &TableView::sortByColumn);
+	connect(m->header, &QHeaderView::sectionResized, this, &TableView::sectionResized);
+	connect(m->header, &QHeaderView::sectionMoved, this, &TableView::sectionMoved);
 }
 
-void TableView::header_actions_triggered()
+void TableView::headerActionsTriggered()
 {
-	const IndexSet sel_indexes = selected_items();
+	const IndexSet selectedIndexes = selectedItems();
+	for(int index : selectedIndexes)
+	{
+		this->selectRow(index);
+	}
 
-	std::for_each(sel_indexes.begin(), sel_indexes.end(), [this](int row){
-		this->selectRow(row);
-	});
-
-	save_column_header_state(m->header->saveState());
+	saveColumnHeaderState(m->header->saveState());
 }
 
-void TableView::sort_by_column(int column_idx)
+void TableView::sortByColumn(int column_idx)
 {
-	Library::SortOrder sortorder = m->header->switch_sortorder(column_idx);
+	Library::SortOrder sortorder = m->header->switchSortorder(column_idx);
 
-	apply_sortorder(sortorder);
+	applySortorder(sortorder);
 }
 
-void TableView::section_resized()
+void TableView::sectionResized()
 {
 	if(!this->isVisible()){
 		return;
 	}
 
-	save_column_header_state(m->header->saveState());
+	saveColumnHeaderState(m->header->saveState());
 }
 
-void TableView::section_moved(int logical_index, int old_visual_index, int new_visual_index)
+void TableView::sectionMoved(int logical_index, int old_visual_index, int new_visual_index)
 {
 	Q_UNUSED(logical_index)
 	Q_UNUSED(old_visual_index)
 	Q_UNUSED(new_visual_index)
 
-	save_column_header_state(m->header->saveState());
+	saveColumnHeaderState(m->header->saveState());
 }
 
-void TableView::language_changed()
+void TableView::languageChanged()
 {
-	ItemModel* model = item_model();
+	ItemModel* model = itemModel();
 
-	QStringList header_names;
 	for(int i=0; i<model->columnCount(); i++)
 	{
 		ColumnHeaderPtr header = m->header->column(i);
-		if(header){
-			header_names << header->title();
+		if(header) {
+			model->setHeaderData(i, Qt::Horizontal, header->title(), Qt::DisplayRole);
 		}
 	}
-
-	model->set_header_data(header_names);
 }
 
-int TableView::index_by_model_index(const QModelIndex& idx) const
+int TableView::mapModelIndexToIndex(const QModelIndex& idx) const
 {
 	return idx.row();
 }
 
-ModelIndexRange TableView::model_indexrange_by_index(int idx) const
+ModelIndexRange TableView::mapIndexToModelIndexes(int idx) const
 {
-	return ModelIndexRange(item_model()->index(idx, 0),
-						   item_model()->index(idx, item_model()->columnCount() - 1));
+	return ModelIndexRange(itemModel()->index(idx, 0),
+						   itemModel()->index(idx, itemModel()->columnCount() - 1));
 }

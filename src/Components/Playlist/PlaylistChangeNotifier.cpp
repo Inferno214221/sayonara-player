@@ -1,6 +1,6 @@
 /* PlaylistChangeNotifier.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -25,19 +25,19 @@
 PlaylistChangeNotifier::PlaylistChangeNotifier() : QObject()
 {}
 
-PlaylistChangeNotifier::~PlaylistChangeNotifier() {}
+PlaylistChangeNotifier::~PlaylistChangeNotifier() = default;
 
-void PlaylistChangeNotifier::delete_playlist(int id)
+void PlaylistChangeNotifier::deletePlaylist(int id)
 {
-	emit sig_playlist_deleted(id);
+	emit sigPlaylistDeleted(id);
 }
 
-void PlaylistChangeNotifier::add_playlist(int id, const QString& name)
+void PlaylistChangeNotifier::addPlaylist(int id, const QString& name)
 {
-	emit sig_playlist_added(id, name);
+	emit sigPlaylistAdded(id, name);
 }
 
-void PlaylistChangeNotifier::rename_playlist(int id, const QString& old_name, const QString& new_name)
+void PlaylistChangeNotifier::renamePlaylist(int id, const QString& old_name, const QString& new_name)
 {
-	emit sig_playlist_renamed(id, old_name, new_name);
+	emit sigPlaylistRenamed(id, old_name, new_name);
 }

@@ -1,6 +1,6 @@
 /* Dragable.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -44,13 +44,13 @@ namespace Gui
 
 		private:
 			DragableConnector(QAbstractItemView* widget, Dragable* dragable);
-			~DragableConnector();
+			~DragableConnector() override;
 
 		private slots:
-			void mouse_pressed(QMouseEvent* e);
-			void mouse_moved(QMouseEvent* e);
+			void mousePressed(QMouseEvent* e);
+			void mouseMoved(QMouseEvent* e);
 
-			void drag_destroyed();
+			void dragDestroyed();
 	};
 
 	/**
@@ -74,16 +74,16 @@ namespace Gui
 		private:
 			PIMPL(Dragable)
 
-			void	start_drag(const QPoint& p);
-			QDrag*	move_drag(const QPoint& p);
-			void	release_drag(ReleaseReason reason);
+			void	startDrag(const QPoint& p);
+			QDrag*	moveDrag(const QPoint& p);
+			void	releaseDrag(ReleaseReason reason);
 
 		protected:
-			virtual QMimeData*	dragable_mimedata() const=0;
-			virtual bool		is_valid_drag_position(const QPoint& p) const;
-			virtual QPixmap		drag_pixmap() const;
-			virtual bool		has_drag_label() const;
-			virtual QString		drag_label() const;
+			virtual QMimeData*	dragableMimedata() const=0;
+			virtual bool		isValidDragPosition(const QPoint& p) const;
+			virtual QPixmap		dragPixmap() const;
+			virtual bool		hasDragLabel() const;
+			virtual QString		dragLabel() const;
 	};
 }
 

@@ -1,6 +1,6 @@
 /* GUI_CoverPreferences.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -38,26 +38,26 @@ public:
 	bool commit() override;
 	void revert() override;
 
-	QString action_name() const override;
+	QString actionName() const override;
 
 protected:
-	void init_ui() override;
-	void retranslate_ui() override;
-	void skin_changed() override;
+	void initUi() override;
+	void retranslate() override;
+	void skinChanged() override;
 
 private slots:
-	void up_clicked();
-	void down_clicked();
-	void add_clicked();
-	void remove_clicked();
+	void upClicked();
+	void downClicked();
+	void addClicked();
+	void removeClicked();
 
-	void current_row_changed(int row);
-	void delete_covers_from_db();
-	void delete_cover_files();
-	void fetch_covers_www_triggered(bool b);
+	void currentRowChanged(int row);
+	void deleteCoversFromDb();
+	void deleteCoverFiles();
+	void fetchCoversFromWWWTriggered(bool b);
 
-	void cb_save_to_library_toggled(bool b);
-	void le_cover_template_edited(const QString& text);
+	void saveCoverToLibraryToggled(bool b);
+	void coverTemplateEdited(const QString& text);
 };
 
 

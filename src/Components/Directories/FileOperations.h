@@ -1,6 +1,6 @@
 /* FileOperations.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -23,46 +23,8 @@
 
 #include "Utils/Pimpl.h"
 
-#include <QThread>
-
-class FileOperationThread : public QThread
-{
-	Q_OBJECT
-	PIMPL(FileOperationThread)
-
-	public:
-		enum Mode
-		{
-			Copy=0,
-			Move,
-			Rename
-		};
-
-		FileOperationThread(QObject* parent, LibraryId target_library_id, const QStringList& source_paths, const QString& target_dir, Mode mode);
-		~FileOperationThread() override;
-
-		LibraryId target_library() const;
-		QList<StringPair> successful_paths() const;
-
-	protected:
-		void run() override;
-};
-
-class FileDeleteThread : public QThread
-{
-	Q_OBJECT
-	PIMPL(FileDeleteThread)
-
-	public:
-		FileDeleteThread(QObject* parent, const QStringList& source_paths);
-		~FileDeleteThread() override;
-
-		QStringList paths() const;
-
-	protected:
-		void run() override;
-};
-
+#include <QObject>
+#include <QStringList>
 
 class FileOperations :
 	public QObject
@@ -70,24 +32,24 @@ class FileOperations :
 	Q_OBJECT
 
 	signals:
-		void sig_finished();
-		void sig_started();
+		void sigFinished();
+		void sigStarted();
 
 	public:
-		explicit FileOperations(QObject *parent=nullptr);
+		explicit FileOperations(QObject* parent=nullptr);
 		~FileOperations() override;
 
-		bool rename_path(const QString& path, const QString& new_name);
-		bool rename_by_expression(const QString& old_name, const QString& expression);
-		bool move_paths(const QStringList& paths, const QString& target_dir);
-		bool copy_paths(const QStringList& paths, const QString& target_dir);
-		bool delete_paths(const QStringList& paths);
-		static QStringList supported_tag_replacements();
+		bool renamePath(const QString& path, const QString& newName);
+		bool renameByExpression(const QString& oldName, const QString& expression);
+		bool movePaths(const QStringList& paths, const QString& targetDir);
+		bool copyPaths(const QStringList& paths, const QString& targetDir);
+		bool deletePaths(const QStringList& paths);
+		static QStringList supportedReplacementTags();
 
 	private slots:
-		void copy_thread_finished();
-		void move_thread_finished();
-		void delete_thread_finished();
+		void copyThreadFinished();
+		void moveThreadFinished();
+		void deleteThreadFinished();
 };
 
 #endif // FILEOPERATIONS_H

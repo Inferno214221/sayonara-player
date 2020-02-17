@@ -1,6 +1,6 @@
 /* CoverHelper.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -53,20 +53,19 @@ namespace Cover
 		 * @param album album name
 		 * @return hash of cover name
 		 */
-		QString calc_cover_token(const QString& artist, const QString& album);
+		QString calcCoverToken(const QString& artist, const QString& album);
 
-		bool add_temp_cover(const QPixmap& pm, const QString& hash);
-		void delete_temp_covers();
+		bool addTemporaryCover(const QPixmap& pm, const QString& hash);
+		void deleteTemporaryCovers();
 
-		QString cover_directory();
-		QString cover_directory(const QString& append_filename);
-		QString cover_temp_directory();
+		QString coverDirectory();
+		QString coverDirectory(const QString& append_filename);
+		QString coverTempDirectory();
 
-		void write_cover_to_sayonara_dir(const Cover::Location& cl, const QPixmap& pm);
-		void write_cover_to_db(const Cover::Location& cl, const QPixmap& pm);
-		void write_cover_to_db(const Cover::Location& cl, const QPixmap& pm, DB::Connector* db);
-		void write_cover_to_library(const Cover::Location& cl, const QPixmap& pm);
-
+		void writeCoverToSayonaraDirectory(const Cover::Location& cl, const QPixmap& pm);
+		void writeCoverIntoDatabase(const Cover::Location& cl, const QPixmap& pm);
+		void writeCoverIntoDatabase(const Cover::Location& cl, const QPixmap& pm, DB::Connector* db);
+		void writeCoverToLibrary(const Cover::Location& cl, const QPixmap& pm);
 	}
 }
 

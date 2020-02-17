@@ -1,6 +1,6 @@
 /* PreferenceAction.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -45,20 +45,20 @@ PreferenceAction::PreferenceAction(const QString& text, const QString& identifie
 	this->setIcon(Gui::Icons::icon(Gui::Icons::Preferences));
 
 	connect(this, &QAction::triggered, [=](){
-		PreferenceRegistry::instance()->show_preference(this->identifier());
+		PreferenceRegistry::instance()->showPreference(this->identifier());
 	});
 
 	ListenSettingNoCall(Set::Player_Language, PreferenceAction::language_changed);
 }
 
-PreferenceAction::~PreferenceAction() {}
+PreferenceAction::~PreferenceAction() = default;
 
 QString PreferenceAction::label() const
 {
-	return Lang::get(Lang::Preferences) + ": " + display_name();
+	return Lang::get(Lang::Preferences) + ": " + displayName();
 }
 
-QPushButton* PreferenceAction::create_button(QWidget* parent)
+QPushButton* PreferenceAction::createButton(QWidget* parent)
 {
 	QPushButton* btn = new QPushButton(parent);
 	btn->setText(this->label());
@@ -82,9 +82,9 @@ LibraryPreferenceAction::LibraryPreferenceAction(QWidget* parent) :
 	PreferenceAction(Lang::get(Lang::Library), identifier(), parent)
 {}
 
-LibraryPreferenceAction::~LibraryPreferenceAction() {}
+LibraryPreferenceAction::~LibraryPreferenceAction() = default;
 
-QString LibraryPreferenceAction::display_name() const
+QString LibraryPreferenceAction::displayName() const
 {
 	return Lang::get(Lang::Library);
 }
@@ -98,10 +98,10 @@ PlaylistPreferenceAction::PlaylistPreferenceAction(QWidget* parent) :
 	PreferenceAction(Lang::get(Lang::Playlist), identifier(), parent)
 {}
 
-PlaylistPreferenceAction::~PlaylistPreferenceAction() {}
+PlaylistPreferenceAction::~PlaylistPreferenceAction() = default;
 
 
-QString PlaylistPreferenceAction::display_name() const
+QString PlaylistPreferenceAction::displayName() const
 {
 	return Lang::get(Lang::Playlist);
 }
@@ -115,9 +115,9 @@ SearchPreferenceAction::SearchPreferenceAction(QWidget* parent) :
 	PreferenceAction(Lang::get(Lang::SearchNoun), identifier(), parent)
 {}
 
-SearchPreferenceAction::~SearchPreferenceAction() {}
+SearchPreferenceAction::~SearchPreferenceAction() = default;
 
-QString SearchPreferenceAction::display_name() const
+QString SearchPreferenceAction::displayName() const
 {
 	return Lang::get(Lang::SearchNoun);
 }
@@ -131,9 +131,9 @@ CoverPreferenceAction::CoverPreferenceAction(QWidget* parent) :
 	PreferenceAction(Lang::get(Lang::Covers), identifier(), parent)
 {}
 
-CoverPreferenceAction::~CoverPreferenceAction() {}
+CoverPreferenceAction::~CoverPreferenceAction() = default;
 
-QString CoverPreferenceAction::display_name() const
+QString CoverPreferenceAction::displayName() const
 {
 	return Lang::get(Lang::Covers);
 }
@@ -147,9 +147,9 @@ PlayerPreferencesAction::PlayerPreferencesAction(QWidget* parent) :
 	PreferenceAction(Lang::get(Lang::Application), identifier(), parent)
 {}
 
-PlayerPreferencesAction::~PlayerPreferencesAction() {}
+PlayerPreferencesAction::~PlayerPreferencesAction() = default;
 
-QString PlayerPreferencesAction::display_name() const
+QString PlayerPreferencesAction::displayName() const
 {
 	return Lang::get(Lang::Application);
 }
@@ -163,9 +163,9 @@ StreamRecorderPreferenceAction::StreamRecorderPreferenceAction(QWidget* parent) 
 	PreferenceAction(tr("Stream Recorder"), identifier(), parent)
 {}
 
-StreamRecorderPreferenceAction::~StreamRecorderPreferenceAction() {}
+StreamRecorderPreferenceAction::~StreamRecorderPreferenceAction() = default;
 
-QString StreamRecorderPreferenceAction::display_name() const
+QString StreamRecorderPreferenceAction::displayName() const
 {
 	return tr("Stream Recorder");
 }

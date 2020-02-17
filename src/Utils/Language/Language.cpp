@@ -1,6 +1,6 @@
 /* Language.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -140,6 +140,8 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Covers");
 		case Created:
 			return l.tr("Created");
+		case CreateDirectory:
+			return l.tr("Create new directory");
 		case CreateNewLibrary:
 			return l.tr("Create a new library");
 		case DarkMode:
@@ -492,7 +494,7 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 }
 
 
-LanguageString Lang::get_with_number(TermNr term, int param, bool* ok)
+LanguageString Lang::getWithNumber(TermNr term, int param, bool* ok)
 {
 	if(ok){
 		*ok = true;
@@ -546,16 +548,16 @@ LanguageString Lang::get_with_number(TermNr term, int param, bool* ok)
 	}
 }
 
-QString Lang::convert_old_lang(const QString& old_lang)
+QString Lang::convertOldLanguage(const QString& old_lang)
 {
-	QString tl = two_letter(old_lang);
+	QString tl = twoLetter(old_lang);
 	if(tl.count() >= 2)
 	{
-		QMap<QString, QLocale> languages = available_languages();
-		for(const QString& four_letter : languages.keys())
+		QMap<QString, QLocale> languages = availableLanguages();
+		for(const QString& fourLetter : languages.keys())
 		{
-			if(four_letter.startsWith(tl)){
-				return four_letter;
+			if(fourLetter.startsWith(tl)){
+				return fourLetter;
 			}
 		}
 	}
@@ -565,14 +567,14 @@ QString Lang::convert_old_lang(const QString& old_lang)
 
 
 
-QMap<QString, QLocale> Lang::available_languages()
+QMap<QString, QLocale> Lang::availableLanguages()
 {
 	QMap<QString, QLocale> ret;
 
 	const QList<QDir> directories
 	{
-		QDir(Util::share_path("translations")),
-		QDir(Util::sayonara_path("translations"))
+		QDir(Util::sharePath("translations")),
+		QDir(Util::sayonaraPath("translations"))
 	};
 
 	for(const QDir& d : directories)
@@ -584,7 +586,7 @@ QMap<QString, QLocale> Lang::available_languages()
 		QStringList entries = d.entryList(QStringList{"*.qm"}, QDir::Files);
 		for(const QString& entry : entries)
 		{
-			QString fl = four_letter(entry);
+			QString fl = fourLetter(entry);
 			if(!fl.isEmpty()){
 				ret[fl] = QLocale(fl);
 			}
@@ -597,7 +599,7 @@ QMap<QString, QLocale> Lang::available_languages()
 }
 
 
-QString Lang::two_letter(const QString& language_name)
+QString Lang::twoLetter(const QString& language_name)
 {
 	QRegExp re(".*lang_(.+)(_.*)?.qm");
 	int idx = re.indexIn(language_name);
@@ -609,7 +611,7 @@ QString Lang::two_letter(const QString& language_name)
 	return re.cap(1);
 }
 
-QString Lang::four_letter(const QString& language_name)
+QString Lang::fourLetter(const QString& language_name)
 {
 	QRegExp re(".*lang_(.+).qm");
 	int idx = re.indexIn(language_name);

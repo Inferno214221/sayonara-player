@@ -1,6 +1,6 @@
 /* DatabaseBookmarks.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -30,13 +30,13 @@ namespace DB
 			private Module
 	{
 	public:
-		Bookmarks(const QString& connection_name, DbId db_id);
+		Bookmarks(const QString& connectionName, DbId databaseId);
 		~Bookmarks() override;
 
-		bool searchBookmarks(int track_id, QMap<Seconds, QString>& bookmarks);
-		bool insertBookmark(int track_id, Seconds time, const QString& text);
-		bool removeBookmark(int track_id, Seconds time);
-		bool removeAllBookmarks(int track_id);
+		bool searchBookmarks(int trackId, QMap<Seconds, QString>& bookmarks);
+		bool insertBookmark(int trackId, Seconds time, const QString& text);
+		bool removeBookmark(int trackId, Seconds time);
+		bool removeAllBookmarks(int trackId);
 	};
 }
 

@@ -1,6 +1,6 @@
 /* CoverViewContextMenu.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -42,41 +42,40 @@ namespace Library
 		Q_OBJECT
 		PIMPL(CoverViewContextMenu)
 
-	signals:
-		void sig_zoom_changed(int zoom);
-		void sig_sorting_changed(Library::SortOrder sortorder);
+		signals:
+			void sigZoomChanged(int zoom);
+			void sigSortingChanged(Library::SortOrder sortorder);
 
-	public:
-		enum Entry
-		{
-			EntryShowUtils=(Library::ContextMenu::EntryLast << 1),
-			EntrySorting=(EntryShowUtils << 1),
-			EntryZoom=(EntrySorting << 1),
-			EntryShowArtist=(EntryZoom << 1)
-		};
+		public:
+			enum Entry
+			{
+				EntryShowUtils=(Library::ContextMenu::EntryLast << 1),
+				EntrySorting=(EntryShowUtils << 1),
+				EntryZoom=(EntrySorting << 1),
+				EntryShowArtist=(EntryZoom << 1)
+			};
 
-		explicit CoverViewContextMenu(QWidget* parent);
-		~CoverViewContextMenu() override;
+			explicit CoverViewContextMenu(QWidget* parent);
+			~CoverViewContextMenu() override;
 
-		CoverViewContextMenu::Entries get_entries() const override;
-		void show_actions(CoverViewContextMenu::Entries entries) override;
+			CoverViewContextMenu::Entries entries() const override;
+			void showActions(CoverViewContextMenu::Entries entries) override;
 
-	protected:
-		void showEvent(QShowEvent* e) override;
+		private:
+			void init();
+			void initSortingActions();
+			void initZoomActions();
 
-	private:
-		void language_changed() override;
+			void setZoom(int zoom);
+			void setSorting(Library::SortOrder so);
 
-		void init();
-		void init_sorting_actions();
-		void init_zoom_actions();
+		private slots:
+			void actionZoomTriggered(bool b);
+			void actionSortingTriggered(bool b);
 
-		void set_zoom(int zoom);
-		void set_sorting(Library::SortOrder so);
-
-	private slots:
-		void action_zoom_triggered(bool b);
-		void action_sorting_triggered(bool b);
+		protected:
+			void languageChanged() override;
+			void showEvent(QShowEvent* e) override;
 	};
 }
 #endif // COVERVIEWCONTEXTMENU_H

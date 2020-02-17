@@ -1,6 +1,6 @@
 /* GUI_StationSearcher.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -41,34 +41,34 @@ signals:
 
 public:
 	GUI_StationSearcher(QWidget* parent=nullptr);
-	~GUI_StationSearcher();
+	~GUI_StationSearcher() override;
 
 private:
-	void init_line_edit();
-	void check_listen_button();
-	void clear_stations();
-	void clear_streams();
-	void change_mode(StationSearcher::Mode mode);
+	void initLineEdit();
+	void checkListenButton();
+	void clearStations();
+	void clearStreams();
+	void changeMode(StationSearcher::Mode mode);
 
 
 private slots:
-	void search_clicked();
-	void search_prev_clicked();
-	void search_next_clicked();
-	void listen_clicked();
+	void searchClicked();
+	void searchPreviousClicked();
+	void searchNextClicked();
+	void listenClicked();
 
-	void search_text_changed(const QString& text);
-	void stations_fetched();
+	void searchTextChanged(const QString& text);
+	void stationsFetched();
 
-	void station_changed();
-	void stream_changed();
+	void stationsChanged();
+	void streamChanged();
 
 protected:
 	void showEvent(QShowEvent* e) override;
 	void closeEvent(QCloseEvent* e) override;
 
-	void language_changed() override;
-	void skin_changed() override;
+	void languageChanged() override;
+	void skinChanged() override;
 };
 
 

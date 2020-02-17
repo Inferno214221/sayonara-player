@@ -12,7 +12,7 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="2" column="1">
-    <widget class="QSpinBox" name="sb_buffer_size">
+    <widget class="QSpinBox" name="sbBufferSize">
      <property name="suffix">
       <string> ms</string>
      </property>
@@ -41,21 +41,21 @@
     </spacer>
    </item>
    <item row="2" column="0">
-    <widget class="QLabel" name="lab_buffer_size">
+    <widget class="QLabel" name="labBufferSize">
      <property name="text">
       <string>Buffer size</string>
      </property>
     </widget>
    </item>
    <item row="1" column="0">
-    <widget class="QCheckBox" name="cb_show_history">
+    <widget class="QCheckBox" name="cbShowHistory">
      <property name="text">
       <string>Show history</string>
      </property>
     </widget>
    </item>
    <item row="0" column="0">
-    <widget class="QCheckBox" name="cb_new_tab">
+    <widget class="QCheckBox" name="cbNewTab">
      <property name="text">
       <string>Open Streams in new tab</string>
      </property>
@@ -64,9 +64,9 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>cb_new_tab</tabstop>
-  <tabstop>cb_show_history</tabstop>
-  <tabstop>sb_buffer_size</tabstop>
+  <tabstop>cbNewTab</tabstop>
+  <tabstop>cbShowHistory</tabstop>
+  <tabstop>sbBufferSize</tabstop>
  </tabstops>
  <resources/>
  <connections/>

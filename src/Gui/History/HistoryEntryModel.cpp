@@ -13,7 +13,7 @@ struct HistoryEntryModel::Private
 {
 	Session::Manager* session=nullptr;
 	Session::EntryList history;
-	Session::Entry invalid_entry;
+	Session::Entry invalidEntry;
 
 	Session::Timecode timecode;
 
@@ -21,8 +21,7 @@ struct HistoryEntryModel::Private
 		timecode(timecode)
 	{
 		session = Session::Manager::instance();
-
-		invalid_entry.timecode = 0;
+		invalidEntry.timecode = 0;
 
 		calc_history();
 	}
@@ -31,8 +30,8 @@ struct HistoryEntryModel::Private
 	{
 		history.clear();
 
-		const QDateTime dt = Util::int_to_date(this->timecode);
-		const Session::EntryListMap map = session->history_for_day(dt);
+		const QDateTime dt = Util::intToDate(this->timecode);
+		const Session::EntryListMap map = session->historyForDay(dt);
 		const QList<Session::Timecode> keys = map.keys();
 
 		for(Session::Timecode t : keys)
@@ -49,7 +48,7 @@ const Session::Entry& HistoryEntryModel::entry(int row) const
 {
 	int index = (m->history.size() - 1) - row;
 	if(index < 0 || index >= m->history.size()){
-		return m->invalid_entry;
+		return m->invalidEntry;
 	}
 
 	return m->history[index];
@@ -60,9 +59,9 @@ HistoryEntryModel::HistoryEntryModel(Session::Timecode timecode, QObject* parent
 {
 	m = Pimpl::make<Private>(timecode);
 
-	connect(m->session, &Session::Manager::sig_changed, this, &HistoryEntryModel::history_changed);
+	connect(m->session, &Session::Manager::sigSessionChanged, this, &HistoryEntryModel::historyChanged);
 
-	ListenSetting(Set::Player_Language, HistoryEntryModel::language_changed);
+	ListenSetting(Set::Player_Language, HistoryEntryModel::languageChanged);
 }
 
 HistoryEntryModel::~HistoryEntryModel() = default;
@@ -94,7 +93,7 @@ QVariant HistoryEntryModel::data(const QModelIndex& index, int role) const
 	{
 		case 0:
 		{
-			QDateTime dt = Util::int_to_date(e.timecode);
+			QDateTime dt = Util::intToDate(e.timecode);
 			return " " + dt.time().toString() + " ";
 		}
 
@@ -109,15 +108,15 @@ QVariant HistoryEntryModel::data(const QModelIndex& index, int role) const
 	}
 }
 
-void HistoryEntryModel::language_changed()
+void HistoryEntryModel::languageChanged()
 {
 	emit headerDataChanged(Qt::Orientation::Horizontal, 0, columnCount());
 }
 
-void HistoryEntryModel::history_changed(Session::Id id)
+void HistoryEntryModel::historyChanged(Session::Id id)
 {
-	Session::Timecode min_id = Session::day_begin(id);
-	Session::Timecode max_id = Session::day_end(id);
+	Session::Timecode min_id = Session::dayBegin(id);
+	Session::Timecode max_id = Session::dayEnd(id);
 
 	if(id >= min_id && id <= max_id)
 	{
@@ -131,7 +130,7 @@ void HistoryEntryModel::history_changed(Session::Id id)
 			this->insertRows(old_rowcount, (rowCount() - old_rowcount));
 			endInsertRows();
 
-			emit sig_rows_added();
+			emit sigRowsAdded();
 		}
 
 		emit dataChanged(index(old_rowcount, 0), index(rowCount(), columnCount()), {Qt::DisplayRole});
@@ -200,7 +199,7 @@ QMimeData* HistoryEntryModel::mimeData(const QModelIndexList& indexes) const
 		}
 	}
 
-	data->set_metadata(tracks);
+	data->setMetadata(tracks);
 
 	return data;
 }

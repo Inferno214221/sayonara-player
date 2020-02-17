@@ -1,6 +1,6 @@
 /* ComboBoxDelegate.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -24,18 +24,18 @@
 
 using Gui::ComboBoxDelegate;
 
-ComboBoxDelegate::ComboBoxDelegate(QObject *parent) :
+ComboBoxDelegate::ComboBoxDelegate(QObject* parent) :
 	QStyledItemDelegate(parent) {}
 
 ComboBoxDelegate::~ComboBoxDelegate() {}
 
-void ComboBoxDelegate::paint(QPainter *painter, const QStyleOptionViewItem & option, const QModelIndex & index) const
+void ComboBoxDelegate::paint(QPainter *painter, const QStyleOptionViewItem & option, const QModelIndex&  index) const
 {
 	QStyledItemDelegate::paint(painter, option, index);
 }
 
 
-QSize ComboBoxDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
+QSize ComboBoxDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex& index) const
 {
 	Q_UNUSED(index)
 

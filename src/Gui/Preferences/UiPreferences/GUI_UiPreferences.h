@@ -1,6 +1,6 @@
 /* GUI_UiPreferences.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -36,16 +36,19 @@ public:
 	GUI_UiPreferences(const QString& identifier);
 	virtual ~GUI_UiPreferences();
 
-	QString action_name() const override;
+	QString actionName() const override;
 
 protected:
-	void retranslate_ui() override;
+	void retranslate() override;
 	bool commit() override;
 	void revert() override;
-	void init_ui() override;
+	void initUi() override;
 
 private:
-	void style_changed();
+	void styleChanged();
+
+private slots:
+	void editCssClicked();
 
 };
 

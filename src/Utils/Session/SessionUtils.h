@@ -24,8 +24,8 @@ namespace Session
 	using EntryList=QList<Entry>;
 	using EntryListMap=QMap<Session::Id, EntryList>;
 
-	Session::Timecode day_begin(Session::Id id);
-	Session::Timecode day_end(Session::Id id);
+	Session::Timecode dayBegin(Session::Id id);
+	Session::Timecode dayEnd(Session::Id id);
 	Session::Timecode now();
 }
 

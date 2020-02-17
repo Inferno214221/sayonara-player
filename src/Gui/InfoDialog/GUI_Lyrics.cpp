@@ -1,6 +1,6 @@
 /* GUI_Lyrics.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -53,7 +53,7 @@ struct GUI_Lyrics::Private
 	}
 };
 
-GUI_Lyrics::GUI_Lyrics(QWidget *parent) :
+GUI_Lyrics::GUI_Lyrics(QWidget* parent) :
 	Widget(parent)
 {
 	m = Pimpl::make<Private>(this);
@@ -82,7 +82,7 @@ void GUI_Lyrics::init()
 	ui->te_lyrics->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 
 	m->loading_bar = new ProgressBar(ui->te_lyrics);
-	m->loading_bar->set_position(ProgressBar::Position::Bottom);
+	m->loading_bar->setPosition(ProgressBar::Position::Bottom);
 	m->loading_bar->setVisible(false);
 
 	QString server = GetSetting(Set::Lyrics_Server);
@@ -105,27 +105,27 @@ void GUI_Lyrics::init()
 
 	zoom( (zoom_factor * m->initial_font_size) / 100.0 );
 
-	connect(ui->combo_servers, combo_activated_int, this, &GUI_Lyrics::lyric_server_changed);
-	connect(ui->btn_search, &QPushButton::clicked, this, &GUI_Lyrics::prepare_lyrics);
-	connect(ui->btn_close, &QPushButton::clicked, this, &GUI_Lyrics::sig_closed);
+	connect(ui->combo_servers, combo_activated_int, this, &GUI_Lyrics::lyricServerChanged);
+	connect(ui->btn_search, &QPushButton::clicked, this, &GUI_Lyrics::prepareLyrics);
+	connect(ui->btn_close, &QPushButton::clicked, this, &GUI_Lyrics::sigClosed);
 	connect(ui->btn_close, &QPushButton::clicked, this, &GUI_Lyrics::close);
-	connect(ui->btn_switch, &QPushButton::clicked, this, &GUI_Lyrics::switch_pressed);
+	connect(ui->btn_switch, &QPushButton::clicked, this, &GUI_Lyrics::switchPressed);
 	connect(ui->sb_zoom, spinbox_value_changed_int, this, [=](int percent){
 		zoom( (percent * m->initial_font_size) / 100.0 );
 	});
 
-	connect(ui->btn_save_lyrics, &QPushButton::clicked, this, &GUI_Lyrics::save_lyrics_clicked);
-	connect(m->lyrics, &Lyrics::Lyrics::sig_lyrics_fetched, this, &GUI_Lyrics::lyrics_fetched);
+	connect(ui->btn_save_lyrics, &QPushButton::clicked, this, &GUI_Lyrics::saveLyricsClicked);
+	connect(m->lyrics, &Lyrics::Lyrics::sigLyricsFetched, this, &GUI_Lyrics::lyricsFetched);
 
-	setup_sources();
-	prepare_lyrics();
+	setupSources();
+	prepareLyrics();
 
-	new QShortcut(QKeySequence(QKeySequence::ZoomIn), this, SLOT(zoom_in()), nullptr, Qt::WidgetWithChildrenShortcut);
-	new QShortcut(QKeySequence(QKeySequence::ZoomOut), this, SLOT(zoom_out()), nullptr, Qt::WidgetWithChildrenShortcut);
+	new QShortcut(QKeySequence(QKeySequence::ZoomIn), this, SLOT(zoomIn()), nullptr, Qt::WidgetWithChildrenShortcut);
+	new QShortcut(QKeySequence(QKeySequence::ZoomOut), this, SLOT(zoomOut()), nullptr, Qt::WidgetWithChildrenShortcut);
 }
 
 
-void GUI_Lyrics::lyric_server_changed(int idx)
+void GUI_Lyrics::lyricServerChanged(int idx)
 {
 	Q_UNUSED(idx)
 
@@ -133,18 +133,18 @@ void GUI_Lyrics::lyric_server_changed(int idx)
 		SetSetting(Set::Lyrics_Server, ui->combo_servers->currentText());
 	}
 
-	prepare_lyrics();
+	prepareLyrics();
 }
 
-void GUI_Lyrics::save_lyrics_clicked()
+void GUI_Lyrics::saveLyricsClicked()
 {
-	m->lyrics->save_lyrics(ui->te_lyrics->toPlainText());
+	m->lyrics->saveLyrics(ui->te_lyrics->toPlainText());
 
-	setup_sources();
-	set_save_button_text();
+	setupSources();
+	setSaveButtonText();
 }
 
-void GUI_Lyrics::prepare_lyrics()
+void GUI_Lyrics::prepareLyrics()
 {
 	if(!ui){
 		return;
@@ -154,12 +154,12 @@ void GUI_Lyrics::prepare_lyrics()
 
 	int current_server_index = ui->combo_servers->currentData().toInt();
 	if(current_server_index < 0) {
-		show_local_lyrics();
+		showLocalLyrics();
 	}
 
 	else
 	{
-		bool running = m->lyrics->fetch_lyrics
+		bool running = m->lyrics->fetchLyrics
 		(
 					ui->le_artist->text(),
 					ui->le_title->text(),
@@ -177,7 +177,7 @@ void GUI_Lyrics::prepare_lyrics()
 	}
 }
 
-void GUI_Lyrics::show_lyrics(const QString& lyrics, const QString& header, bool rich)
+void GUI_Lyrics::showLyrics(const QString& lyrics, const QString& header, bool rich)
 {
 	if(!ui){
 		return;
@@ -193,27 +193,27 @@ void GUI_Lyrics::show_lyrics(const QString& lyrics, const QString& header, bool 
 	ui->lab_header->setText(header);
 	ui->btn_search->setEnabled(true);
 	ui->combo_servers->setEnabled(true);
-	ui->btn_save_lyrics->setEnabled(m->lyrics->is_lyric_tag_supported());
+	ui->btn_save_lyrics->setEnabled(m->lyrics->isLyricTagSupported());
 	m->loading_bar->setVisible(false);
 }
 
-void GUI_Lyrics::show_local_lyrics()
+void GUI_Lyrics::showLocalLyrics()
 {
-	show_lyrics(m->lyrics->local_lyrics(), m->lyrics->local_lyric_header(), false);
+	showLyrics(m->lyrics->localLyrics(), m->lyrics->localLyricHeader(), false);
 }
 
-void GUI_Lyrics::lyrics_fetched()
+void GUI_Lyrics::lyricsFetched()
 {
-	show_lyrics(m->lyrics->lyrics(), m->lyrics->lyric_header(), true);
+	showLyrics(m->lyrics->lyrics(), m->lyrics->lyricHeader(), true);
 }
 
-void GUI_Lyrics::set_metadata(const MetaData& md)
+void GUI_Lyrics::setTrack(const MetaData& md)
 {
 	if(md.filepath().isEmpty()){
 		return;
 	}
 
-	m->lyrics->set_metadata(md);
+	m->lyrics->setMetadata(md);
 
 	if(!ui){
 		return;
@@ -223,7 +223,7 @@ void GUI_Lyrics::set_metadata(const MetaData& md)
 	ui->le_title->setText(m->lyrics->title());
 
 	QStringList completer_entries;
-	completer_entries << md.artist() << md.album_artist();
+	completer_entries << md.artist() << md.albumArtist();
 	completer_entries.removeDuplicates();
 
 	if(ui->le_artist->completer() != nullptr){
@@ -232,12 +232,12 @@ void GUI_Lyrics::set_metadata(const MetaData& md)
 
 	ui->le_artist->setCompleter( new Gui::Completer(completer_entries, ui->le_artist) );
 
-	setup_sources();
-	prepare_lyrics();
-	set_save_button_text();
+	setupSources();
+	prepareLyrics();
+	setSaveButtonText();
 }
 
-void GUI_Lyrics::switch_pressed()
+void GUI_Lyrics::switchPressed()
 {
 	QString artist = ui->le_artist->text();
 	QString title = ui->le_title->text();
@@ -255,11 +255,11 @@ void GUI_Lyrics::zoom(qreal font_size)
 	SetSetting(Set::Lyrics_Zoom, ui->sb_zoom->value());
 }
 
-void GUI_Lyrics::setup_sources()
+void GUI_Lyrics::setupSources()
 {
 	ui->combo_servers->clear();
 
-	if(m->lyrics->is_lyric_tag_available()){
+	if(m->lyrics->isLyricTagAvailable()){
 		ui->combo_servers->addItem(Lang::get(Lang::File), -1);
 	}
 
@@ -269,14 +269,14 @@ void GUI_Lyrics::setup_sources()
 		ui->combo_servers->addItem(str, i++);
 	}
 
-	choose_source();
+	chooseSource();
 }
 
-void GUI_Lyrics::choose_source()
+void GUI_Lyrics::chooseSource()
 {
 	int new_index = 0;
 
-	if(!m->lyrics->is_lyric_tag_available())
+	if(!m->lyrics->isLyricTagAvailable())
 	{
 		QString last_server = GetSetting(Set::Lyrics_Server);
 		new_index = std::max(0, ui->combo_servers->findText(last_server));
@@ -285,25 +285,25 @@ void GUI_Lyrics::choose_source()
 	ui->combo_servers->setCurrentIndex(new_index);
 }
 
-void GUI_Lyrics::zoom_in()
+void GUI_Lyrics::zoomIn()
 {
 	zoom(m->font_size + 1.0);
 }
 
-void GUI_Lyrics::zoom_out()
+void GUI_Lyrics::zoomOut()
 {
 	zoom(m->font_size - 1.0);
 }
 
-void GUI_Lyrics::set_save_button_text()
+void GUI_Lyrics::setSaveButtonText()
 {
-	if(!m->lyrics->is_lyric_tag_supported())
+	if(!m->lyrics->isLyricTagSupported())
 	{
 		ui->btn_save_lyrics->setEnabled(false);
 		ui->btn_save_lyrics->setText(tr("Save lyrics not supported"));
 	}
 
-	else if(m->lyrics->is_lyric_tag_available()) {
+	else if(m->lyrics->isLyricTagAvailable()) {
 		ui->btn_save_lyrics->setText(tr("Overwrite lyrics"));
 	}
 
@@ -313,7 +313,7 @@ void GUI_Lyrics::set_save_button_text()
 }
 
 
-void GUI_Lyrics::language_changed()
+void GUI_Lyrics::languageChanged()
 {
 	if(!ui){
 		return;
@@ -326,8 +326,8 @@ void GUI_Lyrics::language_changed()
 	ui->btn_close->setText(Lang::get(Lang::Close));
 	ui->btn_search->setText(Lang::get(Lang::SearchVerb));
 
-	setup_sources();
-	set_save_button_text();
+	setupSources();
+	setSaveButtonText();
 }
 
 void GUI_Lyrics::showEvent(QShowEvent* e)

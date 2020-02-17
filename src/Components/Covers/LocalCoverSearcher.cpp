@@ -1,6 +1,6 @@
 /* LocalCoverSearcher.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -81,22 +81,22 @@ static double calc_rating(const QPixmap& pixmap, const QString& name)
 	double square_factor = calc_square_factor(pixmap.width(), pixmap.height());
 	double name_factor = calc_name_factor(name);
 
-	sp_log(Log::Develop, ClassName) << "  Coverfile " << name << " has square factor " << QString::number(square_factor, 'g', 2);
-	sp_log(Log::Develop, ClassName) << "  Coverfile " << name << " has name factor " << QString::number(name_factor, 'g', 2);
+	spLog(Log::Develop, ClassName) << "  Coverfile " << name << " has square factor " << QString::number(square_factor, 'g', 2);
+	spLog(Log::Develop, ClassName) << "  Coverfile " << name << " has name factor " << QString::number(name_factor, 'g', 2);
 
 	return square_factor * name_factor;
 }
 
-QStringList LocalSearcher::cover_paths_from_path_hint(const QString& filepath_hint)
+QStringList LocalSearcher::coverPathsFromPathHint(const QString& filepath_hint)
 {
-	sp_log(Log::Develop, ClassName) << "Search for covers. Hint: " << filepath_hint;
+	spLog(Log::Develop, ClassName) << "Search for covers. Hint: " << filepath_hint;
 
 	QString filepath = filepath_hint;
 	QFileInfo info(filepath);
 	if(!info.isDir())
 	{
-		filepath = Util::File::get_parent_directory(filepath_hint);
-		sp_log(Log::Develop, ClassName) << filepath_hint << " is not a directory. Try using " << filepath << " instead";
+		filepath = Util::File::getParentDirectory(filepath_hint);
+		spLog(Log::Develop, ClassName) << filepath_hint << " is not a directory. Try using " << filepath << " instead";
 
 		info = QFileInfo(filepath);
 		if(!info.isDir() || !info.exists())	{
@@ -104,7 +104,7 @@ QStringList LocalSearcher::cover_paths_from_path_hint(const QString& filepath_hi
 		}
 	}
 
-	QStringList filters = Util::image_extensions();
+	QStringList filters = Util::imageExtensions();
 	QStringList upper_filters;
 
 	Util::Algorithm::transform(filters, upper_filters, [](const QString& filter){
@@ -128,7 +128,7 @@ QStringList LocalSearcher::cover_paths_from_path_hint(const QString& filepath_hi
 		QPixmap pm(f + "/" + entry);
 		double rating = calc_rating(pm, entry);
 
-		sp_log(Log::Develop, ClassName) << "  Coverfile " << f << " has final rating " << QString::number(rating, 'g', 2)  << " (Lower is better)";
+		spLog(Log::Develop, ClassName) << "  Coverfile " << f << " has final rating " << QString::number(rating, 'g', 2)  << " (Lower is better)";
 
 		size_map[f] = rating;
 		ret << f;
@@ -139,7 +139,7 @@ QStringList LocalSearcher::cover_paths_from_path_hint(const QString& filepath_hi
 		return (size_map[f1] < size_map[f2]);
 	});
 
-	sp_log(Log::Develop, ClassName) << "  Sorted cover files " << ret;
+	spLog(Log::Develop, ClassName) << "  Sorted cover files " << ret;
 
 	return ret;
 }

@@ -1,6 +1,6 @@
 /* StreamParser.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -32,33 +32,29 @@ class StreamParser : public QObject
 	PIMPL(StreamParser)
 
 	signals:
-		void sig_finished(bool);
-		void sig_stopped();
-		void sig_too_many_urls_found(int n_urls, int n_max_urls);
+		void sigFinished(bool success);
+		void sigStopped();
+		void sigUrlCountExceeded(int urlCount, int maxUrlCount);
 
 	public:
-		explicit StreamParser(const QString& station_name=QString(), QObject* parent=nullptr);
+		StreamParser(QObject* parent=nullptr);
 		~StreamParser();
 
-		void parse_stream(const QString& url);
-		void parse_streams(const QStringList& urls);
-		void set_cover_url(const QString& cover_url);
-		void stop();
+		void parse(const QString& stationName, const QString& stationUrl);
+		void parse(const QStringList& urls);
 
-		MetaDataList metadata() const;
+		void setCoverUrl(const QString& coverUrl);
+
+		void stop();
+		bool isStopped() const;
+
+		MetaDataList tracks() const;
 
 	private slots:
-		void awa_finished();
-		void icy_finished();
+		void awaFinished();
+		void icyFinished();
 
 	private:
-		/**
-		 * @brief Writes a temporary playlist file into the file system which is parsed later
-		 * @param data Raw data extracted from the website
-		 * @return filename where the playlist has been written at
-		 */
-		QString write_playlist_file(const QByteArray& data) const;
-
 		/**
 		 * @brief Parse content out of website data.
 		 * First, check if the data is podcast data.\n
@@ -69,28 +65,28 @@ class StreamParser : public QObject
 		 * @return list of tracks found in the website data
 		 */
 
-		QPair<MetaDataList, PlaylistFiles> parse_content(const QByteArray& data) const;
+		QPair<MetaDataList, PlaylistFiles> parseContent(const QByteArray& data) const;
 
 		/**
 		 * @brief Parse website for playlist files and streams
 		 * @param arr website data
 		 * @return metadata list of found streams and a list of urls with playlist files
 		 */
-		QPair<MetaDataList, PlaylistFiles> parse_website(const QByteArray& arr) const;
+		QPair<MetaDataList, PlaylistFiles> parseWebsite(const QByteArray& arr) const;
 
 		/**
 		 * @brief Sset up missing fields in metadata: album, artist, title and filepath\n
 		 * @param md reference to a MetaData structure
 		 * @param stream_url url used to fill album/artist/filepath
 		 */
-		void tag_metadata(MetaData& md, const QString& stream_url, const QString& cover_url=QString()) const;
+		void setMetadataTag(MetaData& md, const QString& streamUrl, const QString& coverUrl=QString()) const;
 
 		/**
 		 * @brief Parse the next Url in the queue. These urls may come from
 		 * parsed playlist files or by using parse_streams(const QStringList& urls)
 		 * @return
 		 */
-		bool parse_next_url();
+		bool parseNextUrl();
 };
 
 #endif

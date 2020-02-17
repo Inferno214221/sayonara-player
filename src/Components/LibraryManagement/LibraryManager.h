@@ -1,6 +1,6 @@
 /* LibraryManager.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -41,32 +41,32 @@ namespace Library
 		friend class LocalLibrary;
 
 	signals:
-		void sig_path_changed(LibraryId id);
-		void sig_added(LibraryId id);
-		void sig_renamed(LibraryId id);
-		void sig_moved(LibraryId id, int from, int to);
-		void sig_removed(LibraryId id);
+		void sigPathChanged(LibraryId id);
+		void sigAdded(LibraryId id);
+		void sigRenamed(LibraryId id);
+		void sigMoved(LibraryId id, int from, int to);
+		void sigRemoved(LibraryId id);
 
 	private:
 		void reset();
 
 	public:
-		LibraryId add_library(const QString& name, const QString& path);
-		bool rename_library(LibraryId id, const QString& name);
-		bool remove_library(LibraryId id);
-		bool move_library(int old_row, int new_row);
-		bool change_library_path(LibraryId id, const QString& path);
+		LibraryId addLibrary(const QString& name, const QString& path);
+		bool renameLibrary(LibraryId id, const QString& name);
+		bool removeLibrary(LibraryId id);
+		bool moveLibrary(int old_row, int new_row);
+		bool changeLibraryPath(LibraryId id, const QString& path);
 
-		QList<Info> all_libraries() const;
+		QList<Info> allLibraries() const;
 
-		Info library_info(LibraryId id) const;
-		Info library_info_by_path(const QString& path) const;
+		Info libraryInfo(LibraryId id) const;
+		Info libraryInfoByPath(const QString& path) const;
 
 		int count() const;
 
-		LocalLibrary* library_instance(LibraryId id);
+		LocalLibrary* libraryInstance(LibraryId id);
 
-		static QString request_library_name(const QString& path);
+		static QString requestLibraryName(const QString& path);
 	};
 }
 

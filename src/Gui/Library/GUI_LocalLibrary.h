@@ -1,6 +1,6 @@
 /* GUI_LocalLibrary.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -23,7 +23,7 @@
  * GUI_LocalLibrary.h
  *
  *  Created on: Apr 24, 2011
- *      Author: Lucio Carreras
+ *      Author: Michael Lugmair (Lucio Carreras)
  */
 
 #ifndef GUI_LOCAL_LIBRARY_H_
@@ -53,61 +53,60 @@ namespace Library
 		virtual ~GUI_LocalLibrary() override;
 
 		QMenu*		menu() const;
-		QFrame*		header_frame() const;
+		QFrame*		headerFrame() const;
 
 	protected:
-
-		bool has_selections() const override;
+		bool hasSelections() const override;
 		void showEvent(QShowEvent* e) override;
 
-		TableView* lv_artist() const override;
-		TableView* lv_album() const override;
-		TableView* lv_tracks() const override;
+		TableView* lvArtist() const override;
+		TableView* lvAlbum() const override;
+		TableView* lvTracks() const override;
 
-		SearchBar* le_search() const override;
-		QList<Filter::Mode> search_options() const override;
+		SearchBar* leSearch() const override;
+		QList<Filter::Mode> searchOptions() const override;
 
-		void language_changed() override;
-		void skin_changed() override;
+		void languageChanged() override;
+		void skinChanged() override;
 
 	private:
-		void check_view_state();
-		void check_reload_status();
-		void check_file_extension_bar();
+		void checkViewState();
+		void checkReloadStatus();
+		void checkFileExtensionBar();
 
 	private slots:
-		void tracks_loaded();
-		void switch_album_view();
+		void tracksLoaded();
+		void switchAlbumView();
 
-		void progress_changed(const QString& type, int progress);
+		void progressChanged(const QString& type, int progress);
 
-		void genre_selection_changed(const QStringList& genres);
-		void invalid_genre_selected();
+		void genreSelectionChanged(const QStringList& genres);
+		void invalidGenreSelected();
 
-		void reload_library_deep_requested();
-		void reload_library_requested();
-		void reload_library_requested_with_quality(ReloadQuality quality);
-		void reload_library_accepted(ReloadQuality quality);
-		void reload_library(ReloadQuality quality);
-		void reload_finished();
+		void reloadLibraryDeepRequested();
+		void reloadLibraryRequested();
+		void reloadLibraryRequestedWithQuality(ReloadQuality quality);
+		void reloadLibraryAccepted(ReloadQuality quality);
+		void reloadLibrary(ReloadQuality quality);
+		void reloadFinished();
 
-		void import_dirs_requested();
-		void import_files_requested();
-		void name_changed(LibraryId id);
-		void path_changed(LibraryId id);
+		void importDirsRequested();
+		void importFilesRequested();
+		void nameChanged(LibraryId id);
+		void pathChanged(LibraryId id);
 
 		// importer requests dialog
-		void import_dialog_requested(const QString& target_dir);
+		void importDialogRequested(const QString& targetDirectory);
 
-		void splitter_artist_moved(int pos, int idx);
-		void splitter_tracks_moved(int pos, int idx);
-		void splitter_genre_moved(int pos, int idx);
+		void splitterArtistMoved(int pos, int idx);
+		void splitterTracksMoved(int pos, int idx);
+		void splitterGenreMoved(int pos, int idx);
 
 		// reimplemented from Abstract Library
-		TrackDeletionMode show_delete_dialog(int track_count) override;
-		void clear_selections() override;
+		TrackDeletionMode showDeleteDialog(int track_count) override;
+		void clearSelections() override;
 
-		void show_info_box();
+		void showInfoBox();
 	};
 }
 

@@ -51,7 +51,7 @@ QString Stream::name() const
 	return m->name;
 }
 
-void Stream::set_name(const QString& name)
+void Stream::setName(const QString& name)
 {
 	m->name = name;
 }
@@ -61,7 +61,7 @@ QString Stream::url() const
 	return m->url;
 }
 
-void Stream::set_url(const QString& url)
+void Stream::setUrl(const QString& url)
 {
 	m->url = url;
 }
@@ -102,7 +102,7 @@ QString Podcast::name() const
 	return m->name;
 }
 
-void Podcast::set_name(const QString& name)
+void Podcast::setName(const QString& name)
 {
 	m->name = name;
 }
@@ -112,7 +112,7 @@ QString Podcast::url() const
 	return m->url;
 }
 
-void Podcast::set_url(const QString& url)
+void Podcast::setUrl(const QString& url)
 {
 	m->url = url;
 }
@@ -122,7 +122,7 @@ bool Podcast::reversed() const
 	return m->reversed;
 }
 
-void Podcast::set_reversed(bool b)
+void Podcast::setReversed(bool b)
 {
 	m->reversed = b;
 }

@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -87,19 +87,19 @@ TabMenu::TabMenu(QWidget* parent) :
 
 	this->addActions(actions);
 
-	connect(m->action_open_file, &QAction::triggered, this, &TabMenu::sig_open_file_clicked);
-	connect(m->action_open_dir, &QAction::triggered, this, &TabMenu::sig_open_dir_clicked);
-	connect(m->action_reset, &QAction::triggered, this, &TabMenu::sig_reset_clicked);
-	connect(m->action_rename, &QAction::triggered, this, &TabMenu::sig_rename_clicked);
-	connect(m->action_delete, &QAction::triggered, this, &TabMenu::sig_delete_clicked);
-	connect(m->action_save, &QAction::triggered, this, &TabMenu::sig_save_clicked);
-	connect(m->action_save_as, &QAction::triggered, this, &TabMenu::sig_save_as_clicked);
-	connect(m->action_save_to_file, &QAction::triggered, this, &TabMenu::sig_save_to_file_clicked);
-	connect(m->action_clear, &QAction::triggered, this, &TabMenu::sig_clear_clicked);
-	connect(m->action_close, &QAction::triggered, this, &TabMenu::sig_close_clicked);
-	connect(m->action_close_others, &QAction::triggered, this, &TabMenu::sig_close_others_clicked);
+	connect(m->action_open_file, &QAction::triggered, this, &TabMenu::sigOpenFileClicked);
+	connect(m->action_open_dir, &QAction::triggered, this, &TabMenu::sigOpenDirClicked);
+	connect(m->action_reset, &QAction::triggered, this, &TabMenu::sigResetClicked);
+	connect(m->action_rename, &QAction::triggered, this, &TabMenu::sigRenameClicked);
+	connect(m->action_delete, &QAction::triggered, this, &TabMenu::sigDeleteClicked);
+	connect(m->action_save, &QAction::triggered, this, &TabMenu::sigSaveClicked);
+	connect(m->action_save_as, &QAction::triggered, this, &TabMenu::sigSaveAsClicked);
+	connect(m->action_save_to_file, &QAction::triggered, this, &TabMenu::sigSaveToFileClicked);
+	connect(m->action_clear, &QAction::triggered, this, &TabMenu::sigClearClicked);
+	connect(m->action_close, &QAction::triggered, this, &TabMenu::sigCloseClicked);
+	connect(m->action_close_others, &QAction::triggered, this, &TabMenu::sigCloseOthersClicked);
 
-	add_preference_action(new PlaylistPreferenceAction(this));
+	addPreferenceAction(new PlaylistPreferenceAction(this));
 }
 
 TabMenu::~TabMenu()
@@ -107,7 +107,7 @@ TabMenu::~TabMenu()
 	this->clear();
 }
 
-void TabMenu::language_changed()
+void TabMenu::languageChanged()
 {
 	m->action_open_file->setText(Lang::get(Lang::OpenFile).triplePt());
 	m->action_open_dir->setText(Lang::get(Lang::OpenDir).triplePt());
@@ -130,7 +130,7 @@ void TabMenu::language_changed()
 	m->action_open_dir->setShortcut(QKeySequence("Shift+" + ks.toString()));
 }
 
-void TabMenu::skin_changed()
+void TabMenu::skinChanged()
 {
 	m->action_open_file->setIcon(Icons::icon(Icons::Open) );
 	m->action_open_dir->setIcon(Icons::icon(Icons::Open) );
@@ -146,7 +146,7 @@ void TabMenu::skin_changed()
 	m->action_close_others->setIcon(Icons::icon(Icons::Close));
 }
 
-void TabMenu::show_menu_items(Playlist::MenuEntries entries)
+void TabMenu::showMenuItems(Playlist::MenuEntries entries)
 {
 	m->action_open_file->setVisible(entries & MenuEntry::OpenFile);
 	m->action_open_dir->setVisible(entries & MenuEntry::OpenDir);
@@ -162,13 +162,13 @@ void TabMenu::show_menu_items(Playlist::MenuEntries entries)
 }
 
 
-void TabMenu::show_close(bool b)
+void TabMenu::showClose(bool b)
 {
 	m->action_close->setVisible(b);
 	m->action_close_others->setVisible(b);
 }
 
-void TabMenu::add_preference_action(Gui::PreferenceAction* action)
+void TabMenu::addPreferenceAction(Gui::PreferenceAction* action)
 {
 	QList<QAction*> actions;
 

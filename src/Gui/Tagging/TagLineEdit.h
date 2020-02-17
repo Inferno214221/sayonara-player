@@ -1,6 +1,6 @@
 /* TagLineEdit.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -41,8 +41,8 @@ class TagLineEdit :
 		 */
 		struct TextSelection
 		{
-			int selection_start;
-			int selection_size;
+			int selectionStart;
+			int selectionSize;
 
 			TextSelection();
 		};
@@ -55,7 +55,7 @@ class TagLineEdit :
 		 * @brief Retrieve the current TextSelection
 		 * @return The current TextSelection object
 		 */
-		TextSelection text_selection() const;
+		TextSelection textSelection() const;
 };
 
 #endif // TAGLINEEDIT_H

@@ -29,24 +29,24 @@
       <number>1</number>
      </property>
      <item>
-      <widget class="QLineEdit" name="le_search"/>
+      <widget class="QLineEdit" name="leSearch"/>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_search_prev">
+      <widget class="QPushButton" name="btnSearchPrev">
        <property name="text">
         <string notr="true">Search previous</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_search_next">
+      <widget class="QPushButton" name="btnSearchNext">
        <property name="text">
         <string notr="true">Search next</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_search">
+      <widget class="QPushButton" name="btnSearch">
        <property name="text">
         <string notr="true">Search</string>
        </property>
@@ -62,7 +62,7 @@
     </widget>
    </item>
    <item row="6" column="0" colspan="2">
-    <widget class="QLabel" name="lab_from_to">
+    <widget class="QLabel" name="labFromTo">
      <property name="text">
       <string notr="true"/>
      </property>
@@ -73,7 +73,7 @@
      <property name="orientation">
       <enum>Qt::Vertical</enum>
      </property>
-     <widget class="QTableWidget" name="tw_stations">
+     <widget class="QTableWidget" name="twStations">
       <property name="alternatingRowColors">
        <bool>true</bool>
       </property>
@@ -96,7 +96,7 @@
        <bool>false</bool>
       </attribute>
      </widget>
-     <widget class="QTableWidget" name="tw_streams">
+     <widget class="QTableWidget" name="twStreams">
       <property name="alternatingRowColors">
        <bool>true</bool>
       </property>
@@ -136,7 +136,7 @@
       <number>1</number>
      </property>
      <item>
-      <widget class="QProgressBar" name="pb_progress">
+      <widget class="QProgressBar" name="pbProgress">
        <property name="maximum">
         <number>0</number>
        </property>
@@ -159,14 +159,14 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_close">
+      <widget class="QPushButton" name="btnClose">
        <property name="text">
         <string notr="true">Close</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_listen">
+      <widget class="QPushButton" name="btnListen">
        <property name="text">
         <string notr="true">Add</string>
        </property>
@@ -209,7 +209,7 @@
       </spacer>
      </item>
      <item>
-      <widget class="QLabel" name="lab_link">
+      <widget class="QLabel" name="labLink">
        <property name="text">
         <string notr="true">&lt;a href=&quot;http://fmstream.org&quot;&gt;fmstream.org&lt;/a&gt;</string>
        </property>
@@ -227,14 +227,14 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>le_search</tabstop>
-  <tabstop>btn_search_prev</tabstop>
-  <tabstop>btn_search_next</tabstop>
-  <tabstop>btn_search</tabstop>
-  <tabstop>tw_stations</tabstop>
-  <tabstop>tw_streams</tabstop>
-  <tabstop>btn_close</tabstop>
-  <tabstop>btn_listen</tabstop>
+  <tabstop>leSearch</tabstop>
+  <tabstop>btnSearchPrev</tabstop>
+  <tabstop>btnSearchNext</tabstop>
+  <tabstop>btnSearch</tabstop>
+  <tabstop>twStations</tabstop>
+  <tabstop>twStreams</tabstop>
+  <tabstop>btnClose</tabstop>
+  <tabstop>btnListen</tabstop>
  </tabstops>
  <resources/>
  <connections/>

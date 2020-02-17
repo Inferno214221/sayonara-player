@@ -1,6 +1,6 @@
 /* GUI_InfoDialog.h
 
- * Copyright (C) 2011-2020 Lucio Carreras
+ * Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara-player
  *
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * created by Lucio Carreras,
+ * created by Michael Lugmair (Lucio Carreras),
  * Jul 19, 2012
  *
  */
@@ -35,7 +35,6 @@ namespace Cover
 {
 	class Location;
 }
-
 
 UI_FWD(InfoDialog)
 
@@ -61,36 +60,35 @@ public:
 	explicit GUI_InfoDialog(InfoDialogContainer* container, QWidget* parent=nullptr);
 	~GUI_InfoDialog() override;
 
-	void set_metadata(const MetaDataList& vd, MD::Interpretation interpretation);
-	bool has_metadata() const;
+	void setMetadata(const MetaDataList& tracks, MD::Interpretation interpretation);
+	bool hasMetadata() const;
 
 	GUI_InfoDialog::Tab show(GUI_InfoDialog::Tab tab);
-	void show_cover_edit_tab();
+	void showCoverEditTab();
 
-	void set_busy(bool b);
+	void setBusy(bool b);
 
 protected:
-	void skin_changed() override;
-	void language_changed() override;
+	void skinChanged() override;
+	void languageChanged() override;
 
 private slots:
-	void tab_index_changed_int(int idx);
-	void tab_index_changed(GUI_InfoDialog::Tab idx);
-	void write_cover_to_tracks_clicked();
-	void cover_changed();
+	void tabIndexChangedInt(int idx);
+	void tabIndexChanged(GUI_InfoDialog::Tab idx);
+	void writeCoversToTracksClicked();
+	void coverChanged();
 
 private:
 	void init();
+	void initTagEdit();
+	void initLyrics();
 
-	void init_tag_edit();
-	void init_lyrics();
+	void shoInfoTab();
+	void showLyricsTab();
+	void showTagEditTab();
 
-	void show_info_tab();
-	void show_lyrics_tab();
-	void show_tag_edit_tab();
-
-	void prepare_cover(const Cover::Location& cover_path);
-	void prepare_info(MD::Interpretation mode);
+	void prepareCover(const Cover::Location& cover_path);
+	void prepareInfo(MD::Interpretation mode);
 
 	void closeEvent(QCloseEvent *e) override;
 	void showEvent(QShowEvent *e) override;

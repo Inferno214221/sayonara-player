@@ -1,6 +1,6 @@
 /* Sorting.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -33,9 +33,9 @@ namespace SC
 {
 	namespace Sorting
 	{
-		void sort_artists(ArtistList& artists, ::Library::SortOrder so);
-		void sort_albums(AlbumList& albums, ::Library::SortOrder so);
-		void sort_tracks(MetaDataList& v_md, ::Library::SortOrder so);
+		void sortArtists(ArtistList& artists, ::Library::SortOrder so);
+		void sortAlbums(AlbumList& albums, ::Library::SortOrder so);
+		void sortTracks(MetaDataList& v_md, ::Library::SortOrder so);
 	}
 }
 

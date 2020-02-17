@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -42,19 +42,7 @@ namespace Library
 		PIMPL(HeaderView)
 
 		signals:
-			void sig_columns_changed();
-
-		private:
-			QString resize_text() const;
-			int calc_header_width() const;
-
-		private slots:
-			void action_triggered(bool b);
-			void action_resize_triggered();
-
-		protected:
-			void language_changed() override;
-			void resizeEvent(QResizeEvent* e) override;
+			void sigColumnsChanged();
 
 		public:
 			HeaderView(Qt::Orientation orientation, QWidget* parent=nullptr);
@@ -62,10 +50,22 @@ namespace Library
 
 			void init(const ColumnHeaderList& column_headers, const QByteArray& state, Library::SortOrder sorting);
 
-			Library::SortOrder	switch_sortorder(int column_index);
+			Library::SortOrder	switchSortorder(int column_index);
 			ColumnHeaderPtr		column(int idx);
 
 			QSize sizeHint() const override;
+
+		private:
+			QString resizeText() const;
+			int calcHeaderWidth() const;
+
+		private slots:
+			void actionTriggered(bool b);
+			void actionResizeTriggered();
+
+		protected:
+			void languageChanged() override;
+			void resizeEvent(QResizeEvent* e) override;
 	};
 }
 

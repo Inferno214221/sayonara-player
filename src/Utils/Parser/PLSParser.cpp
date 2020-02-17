@@ -1,6 +1,6 @@
 /* PLSParser.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -30,11 +30,11 @@ struct LineEntry
 {
 	QString key;
 	QString value;
-	int track_idx;
+	int trackIdx;
 
 	LineEntry()
 	{
-		track_idx = -1;
+		trackIdx = -1;
 	}
 };
 
@@ -55,13 +55,13 @@ static LineEntry split_line(const QString& line)
 	if(pos_idx < 0){
 		ret.key = splitted[0];
 		ret.value = splitted[1];
-		ret.track_idx = 1;
+		ret.trackIdx = 1;
 	}
 
 	else {
 		ret.key = re_idx.cap(1).toLower();
 		ret.value = splitted[1];
-		ret.track_idx = re_idx.cap(2).toInt();
+		ret.trackIdx = re_idx.cap(2).toInt();
 	}
 
 	return ret;
@@ -78,7 +78,7 @@ void PLSParser::parse()
 	QStringList lines = content().split("\n");
 
 	MetaData md;
-	int cur_track_idx = -1;
+	int cur_trackIdx = -1;
 
 	for(QString line : lines) {
 		line = line.trimmed();
@@ -88,33 +88,33 @@ void PLSParser::parse()
 
 		LineEntry line_entry = split_line(line);
 
-		if(line_entry.track_idx < 0){
+		if(line_entry.trackIdx < 0){
 			continue;
 		}
 
-		if(line_entry.track_idx != cur_track_idx){
+		if(line_entry.trackIdx != cur_trackIdx){
 
-			if(cur_track_idx > 0){
-				add_track(md);
+			if(cur_trackIdx > 0){
+				addTrack(md);
 			}
 
 			md = MetaData();
-			cur_track_idx = line_entry.track_idx;
+			cur_trackIdx = line_entry.trackIdx;
 		}
 
 
-		md.set_track_number(TrackNum(line_entry.track_idx));
+		md.setTrackNumber(TrackNum(line_entry.trackIdx));
 
 		if(line_entry.key.startsWith("file", Qt::CaseInsensitive))
 		{
-			QString filepath = get_absolute_filename(line_entry.value);
-			md.set_filepath(filepath);
-			md.set_artist(filepath);
+			QString filepath = getAbsoluteFilename(line_entry.value);
+			md.setFilepath(filepath);
+			md.setArtist(filepath);
 		}
 
 		else if(line_entry.key.startsWith("title", Qt::CaseInsensitive))
 		{
-			md.set_title(line_entry.value);
+			md.setTitle(line_entry.value);
 		}
 
 		else if(line_entry.key.startsWith("length", Qt::CaseInsensitive))
@@ -122,12 +122,12 @@ void PLSParser::parse()
 			int len = line_entry.value.toInt();
 
 			len = std::max(0, len);
-			md.set_duration_ms(len * 1000);
+			md.setDurationMs(len * 1000);
 		}
 	}
 
 	if(!md.filepath().isEmpty()){
-		add_track(md);
+		addTrack(md);
 	}
 }
 

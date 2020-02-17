@@ -1,6 +1,6 @@
 /* EngineUtils.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -33,25 +33,25 @@ struct TeeProbeData
 };
 
 static GstPadProbeReturn
-tee_probe_blocked(GstPad* pad, GstPadProbeInfo* info, gpointer p)
+teeProbleBlocked(GstPad* pad, GstPadProbeInfo* info, gpointer p)
 {
 	TeeProbeData* data = static_cast<TeeProbeData*>(p);
 	GstElement* queue = data->element;
 
-	if(!Engine::Utils::test_and_error(queue, "Connect to tee: Element is not GstElement")){
+	if(!Engine::Utils::testAndError(queue, "Connect to tee: Element is not GstElement")){
 		delete data; data = nullptr;
 		return GST_PAD_PROBE_DROP;
 	}
 
 	GstPad* queue_pad = gst_element_get_static_pad(queue, "sink");
-	if(!Engine::Utils::test_and_error(queue_pad, "Connect to tee: No valid pad from GstElement")){
+	if(!Engine::Utils::testAndError(queue_pad, "Connect to tee: No valid pad from GstElement")){
 		delete data; data = nullptr;
 		return GST_PAD_PROBE_DROP;
 	}
 
 	GstPadLinkReturn s = gst_pad_link(pad, queue_pad);
 	if(s != GST_PAD_LINK_OK) {
-		sp_log(Log::Warning, "AbstractPipeline") << "Could not dynamically connect tee";
+		spLog(Log::Warning, "AbstractPipeline") << "Could not dynamically connect tee";
 	}
 
 
@@ -62,13 +62,13 @@ tee_probe_blocked(GstPad* pad, GstPadProbeInfo* info, gpointer p)
 	return GST_PAD_PROBE_DROP;
 }
 
-bool Engine::Utils::tee_connect(GstElement* tee, GstElement* queue, const QString& queue_name)
+bool Engine::Utils::connectTee(GstElement* tee, GstElement* queue, const QString& queue_name)
 {
-	if(!test_and_error(tee, "tee connect: tee is null")){
+	if(!testAndError(tee, "tee connect: tee is null")){
 		return false;
 	}
 
-	if(!test_and_error(queue, "tee connect: queue is null")){
+	if(!testAndError(queue, "tee connect: queue is null")){
 		return false;
 	}
 
@@ -77,16 +77,16 @@ bool Engine::Utils::tee_connect(GstElement* tee, GstElement* queue, const QStrin
 	QString error_3 = QString("Engine: Cannot link tee with ") + queue_name;
 
 	GstPadTemplate* tee_src_pad_template = gst_element_class_get_pad_template(GST_ELEMENT_GET_CLASS(tee), "src_%u");
-	if(!test_and_error(tee_src_pad_template, "Engine: _tee_src_pad_template is nullptr")) {
+	if(!testAndError(tee_src_pad_template, "Engine: _tee_src_pad_template is nullptr")) {
 		return false;
 	}
 
 	GstPad* tee_queue_pad = gst_element_request_pad(tee, tee_src_pad_template, nullptr, nullptr);
-	if(!test_and_error(tee_queue_pad, error_1)){
+	if(!testAndError(tee_queue_pad, error_1)){
 		return false;
 	}
 
-	GstState state	= Engine::Utils::get_state(tee);
+	GstState state	= Engine::Utils::getState(tee);
 
 	if(state == GST_STATE_PLAYING || state == GST_STATE_PAUSED)
 	{
@@ -96,7 +96,7 @@ bool Engine::Utils::tee_connect(GstElement* tee, GstElement* queue, const QStrin
 
 		gulong id = gst_pad_add_probe(tee_queue_pad,
 				GST_PAD_PROBE_TYPE_IDLE,
-				tee_probe_blocked,
+				teeProbleBlocked,
 				data,
 				nullptr);
 
@@ -106,16 +106,16 @@ bool Engine::Utils::tee_connect(GstElement* tee, GstElement* queue, const QStrin
 	}
 
 	GstPad* queue_pad = gst_element_get_static_pad(queue, "sink");
-	if(!test_and_error(queue_pad, error_2)) {
+	if(!testAndError(queue_pad, error_2)) {
 		return false;
 	}
 
 	GstPadLinkReturn s = gst_pad_link (tee_queue_pad, queue_pad);
-	if(!test_and_error_bool((s == GST_PAD_LINK_OK), error_3)) {
+	if(!testAndErrorBool((s == GST_PAD_LINK_OK), error_3)) {
 		return false;
 	}
 
-	set_state(queue, get_state(tee));
+	setState(queue, getState(tee));
 
 	gst_object_unref(tee_queue_pad);
 	gst_object_unref(queue_pad);
@@ -123,7 +123,7 @@ bool Engine::Utils::tee_connect(GstElement* tee, GstElement* queue, const QStrin
 }
 
 
-bool Engine::Utils::has_element(GstBin* bin, GstElement* element)
+bool Engine::Utils::hasElement(GstBin* bin, GstElement* element)
 {
 	if(!bin || !element){
 		return true;
@@ -166,32 +166,32 @@ bool Engine::Utils::has_element(GstBin* bin, GstElement* element)
 
 
 
-bool Engine::Utils::test_and_error(void* element, const QString& errorstr)
+bool Engine::Utils::testAndError(void* element, const QString& errorstr)
 {
 	if(!element) {
-		sp_log(Log::Error, "Engine::Utils") << errorstr;
+		spLog(Log::Error, "Engine::Utils") << errorstr;
 		return false;
 	}
 
 	return true;
 }
 
-bool Engine::Utils::test_and_error_bool(bool b, const QString& errorstr)
+bool Engine::Utils::testAndErrorBool(bool b, const QString& errorstr)
 {
 	if(!b) {
-		sp_log(Log::Error, "Engine::Utils") << errorstr;
+		spLog(Log::Error, "Engine::Utils") << errorstr;
 		return false;
 	}
 
 	return true;
 }
 
-bool Engine::Utils::create_element(GstElement** elem, const QString& elem_name)
+bool Engine::Utils::createElement(GstElement** elem, const QString& elem_name)
 {
-	return create_element(elem, elem_name, QString());
+	return createElement(elem, elem_name, QString());
 }
 
-bool Engine::Utils::create_element(GstElement** elem, const QString& elem_name, const QString& prefix)
+bool Engine::Utils::createElement(GstElement** elem, const QString& elem_name, const QString& prefix)
 {
 	gchar* g_elem_name = g_strdup(elem_name.toLocal8Bit().data());
 
@@ -211,14 +211,14 @@ bool Engine::Utils::create_element(GstElement** elem, const QString& elem_name, 
 		error_msg = QString("Engine: ") + elem_name + " creation failed";
 	}
 
-	set_state(*elem, GST_STATE_NULL);
+	setState(*elem, GST_STATE_NULL);
 
 	g_free(g_elem_name);
 
-	return test_and_error(*elem, error_msg);
+	return testAndError(*elem, error_msg);
 }
 
-MilliSeconds Engine::Utils::get_duration_ms(GstElement* element)
+MilliSeconds Engine::Utils::getDurationMs(GstElement* element)
 {
 	if(!element){
 		return -1;
@@ -233,7 +233,7 @@ MilliSeconds Engine::Utils::get_duration_ms(GstElement* element)
 	return GST_TIME_AS_MSECONDS(pos);
 }
 
-MilliSeconds Engine::Utils::get_position_ms(GstElement* element)
+MilliSeconds Engine::Utils::getPositionMs(GstElement* element)
 {
 	if(!element){
 		return -1;
@@ -249,18 +249,18 @@ MilliSeconds Engine::Utils::get_position_ms(GstElement* element)
 }
 
 
-MilliSeconds Engine::Utils::get_time_to_go(GstElement* element)
+MilliSeconds Engine::Utils::getTimeToGo(GstElement* element)
 {
 	if(!element){
 		return -1;
 	}
 
-	MilliSeconds pos = get_position_ms(element);
+	MilliSeconds pos = getPositionMs(element);
 	if(pos < 0){
-		return get_duration_ms(element);
+		return getDurationMs(element);
 	}
 
-	MilliSeconds dur = get_duration_ms(element);
+	MilliSeconds dur = getDurationMs(element);
 	if(dur < 0){
 		return -1;
 	}
@@ -272,7 +272,7 @@ MilliSeconds Engine::Utils::get_time_to_go(GstElement* element)
 	return dur - pos;
 }
 
-GstState Engine::Utils::get_state(GstElement* element)
+GstState Engine::Utils::getState(GstElement* element)
 {
 	if(!element){
 		return GST_STATE_NULL;
@@ -283,7 +283,7 @@ GstState Engine::Utils::get_state(GstElement* element)
 	return state;
 }
 
-bool Engine::Utils::set_state(GstElement* element, GstState state)
+bool Engine::Utils::setState(GstElement* element, GstState state)
 {
 	if(!element){
 		return false;
@@ -294,7 +294,7 @@ bool Engine::Utils::set_state(GstElement* element, GstState state)
 }
 
 
-bool Engine::Utils::check_plugin_available(const gchar* str)
+bool Engine::Utils::isPluginAvailable(const gchar* str)
 {
 	GstRegistry* reg = gst_registry_get();
 	GstPlugin* plugin = gst_registry_find_plugin(reg, str);
@@ -305,31 +305,31 @@ bool Engine::Utils::check_plugin_available(const gchar* str)
 	return success;
 }
 
-bool Engine::Utils::check_pitch_available()
+bool Engine::Utils::isPitchAvailable()
 {
-	return check_plugin_available("soundtouch");
+	return isPluginAvailable("soundtouch");
 }
 
-bool Engine::Utils::check_lame_available()
+bool Engine::Utils::isLameAvailable()
 {
-	return check_plugin_available("lame");
+	return isPluginAvailable("lame");
 }
 
-bool Engine::Utils::create_ghost_pad(GstBin* bin, GstElement* e)
+bool Engine::Utils::createGhostPad(GstBin* bin, GstElement* e)
 {
 	GstPad* pad = gst_element_get_static_pad(e, "sink");
-	if(!test_and_error(pad, "CreateGhostPad: Cannot get static pad")){
+	if(!testAndError(pad, "CreateGhostPad: Cannot get static pad")){
 		return false;
 	}
 
 	GstPad* ghost_pad = gst_ghost_pad_new("sink", pad);
-	if(!test_and_error(ghost_pad, "CreateGhostPad: Cannot create ghost pad")){
+	if(!testAndError(ghost_pad, "CreateGhostPad: Cannot create ghost pad")){
 		return false;
 	}
 
 	gst_pad_set_active(ghost_pad, true);
 	bool success = gst_element_add_pad(GST_ELEMENT(bin), ghost_pad);
-	if(!test_and_error_bool(success, "CreateGhostPad: Cannot add ghost pad")){
+	if(!testAndErrorBool(success, "CreateGhostPad: Cannot add ghost pad")){
 		return false;
 	}
 
@@ -337,28 +337,28 @@ bool Engine::Utils::create_ghost_pad(GstBin* bin, GstElement* e)
 	return true;
 }
 
-bool Engine::Utils::create_bin(GstElement** bin, const QList<GstElement*>& elements, const QString& prefix)
+bool Engine::Utils::createBin(GstElement** bin, const QList<GstElement*>& elements, const QString& prefix)
 {
 	QString prefixed = prefix + "bin";
 	gchar* g_name = g_strdup(prefixed.toLocal8Bit().data());
 	*bin = gst_bin_new(g_name);
-	if(!test_and_error(*bin, "Cannot create bin " + prefixed)){
+	if(!testAndError(*bin, "Cannot create bin " + prefixed)){
 		return false;
 	}
 
-	add_elements(GST_BIN(*bin), elements);
-	bool success = link_elements(elements);
+	addElements(GST_BIN(*bin), elements);
+	bool success = linkElements(elements);
 	if(!success) {
-		unref_elements(elements);
+		unrefElements(elements);
 		gst_object_unref(bin);
 		*bin = nullptr;
 		return false;
 	}
 
 	GstElement* e = elements.first();
-	success = create_ghost_pad(GST_BIN(*bin), e);
+	success = createGhostPad(GST_BIN(*bin), e);
 	if(!success){
-		unref_elements(elements);
+		unrefElements(elements);
 		gst_object_unref(bin);
 		*bin = nullptr;
 		return false;
@@ -369,7 +369,7 @@ bool Engine::Utils::create_bin(GstElement** bin, const QList<GstElement*>& eleme
 	return true;
 }
 
-bool Engine::Utils::link_elements(const QList<GstElement*>& elements)
+bool Engine::Utils::linkElements(const QList<GstElement*>& elements)
 {
 	bool success = true;
 	for(int i=0; i<elements.size() - 1; i++)
@@ -384,12 +384,12 @@ bool Engine::Utils::link_elements(const QList<GstElement*>& elements)
 		gchar* n1 = gst_element_get_name(e1);
 		gchar* n2 = gst_element_get_name(e2);
 
-		sp_log(Log::Debug, "Engine::Utils") << "Try to link " << n1 << " with " << n2;
+		spLog(Log::Debug, "Engine::Utils") << "Try to link " << n1 << " with " << n2;
 
 		bool b = gst_element_link(e1, e2);
 		if(!b)
 		{
-			test_and_error_bool(b, QString("Cannot link element %1 with %2").arg(n1, n2));
+			testAndErrorBool(b, QString("Cannot link element %1 with %2").arg(n1, n2));
 			g_free(n1);
 			g_free(n2);
 			success = false;
@@ -400,7 +400,7 @@ bool Engine::Utils::link_elements(const QList<GstElement*>& elements)
 	return success;
 }
 
-void Engine::Utils::unlink_elements(const Engine::Utils::Elements& elements)
+void Engine::Utils::unlinkElements(const Engine::Utils::Elements& elements)
 {
 	for(int i=0; i<elements.size() - 1; i++)
 	{
@@ -415,7 +415,7 @@ void Engine::Utils::unlink_elements(const Engine::Utils::Elements& elements)
 		gchar* n1 = gst_element_get_name(e1);
 		gchar* n2 = gst_element_get_name(e2);
 
-		sp_log(Log::Debug, "Engine::Utils") << "Try to unlink " << n1 << " with " << n2;
+		spLog(Log::Debug, "Engine::Utils") << "Try to unlink " << n1 << " with " << n2;
 
 		gst_element_unlink(e1, e2);
 		g_free(n1);
@@ -424,12 +424,12 @@ void Engine::Utils::unlink_elements(const Engine::Utils::Elements& elements)
 }
 
 
-bool Engine::Utils::add_elements(GstBin* bin, const QList<GstElement*>& elements)
+bool Engine::Utils::addElements(GstBin* bin, const QList<GstElement*>& elements)
 {
 	bool b = true;
 	for(GstElement* e : elements)
 	{
-		if(!e || has_element(bin, e)){
+		if(!e || hasElement(bin, e)){
 			continue;
 		}
 
@@ -444,11 +444,11 @@ bool Engine::Utils::add_elements(GstBin* bin, const QList<GstElement*>& elements
 }
 
 
-void Engine::Utils::remove_elements(GstBin* bin, const Engine::Utils::Elements& elements)
+void Engine::Utils::removeElements(GstBin* bin, const Engine::Utils::Elements& elements)
 {
 	for(GstElement* e : elements)
 	{
-		if(!e || !has_element(bin, e))
+		if(!e || !hasElement(bin, e))
 		{
 			continue;
 		}
@@ -457,50 +457,50 @@ void Engine::Utils::remove_elements(GstBin* bin, const Engine::Utils::Elements& 
 		if(!success)
 		{
 			gchar* name = gst_element_get_name(e);
-			sp_log(Log::Warning, "Engine::Utils") << "Could not remove element " << name;
+			spLog(Log::Warning, "Engine::Utils") << "Could not remove element " << name;
 			g_free(name);
 		}
 	}
 }
 
 
-void Engine::Utils::unref_elements(const QList<GstElement*>& elements)
+void Engine::Utils::unrefElements(const QList<GstElement*>& elements)
 {
 	for(GstElement* e : elements){
 		gst_object_unref(e);
 	}
 }
 
-void Engine::Utils::config_queue(GstElement* queue, guint64 max_time_ms)
+void Engine::Utils::configureQueue(GstElement* queue, guint64 max_time_ms)
 {
-	set_values(queue,
+	setValues(queue,
 		"flush-on-eos", true,
 		"silent", true);
 
-	set_uint64_value(queue,  "max-size-time", guint64(max_time_ms * GST_MSECOND));
+	setUint64Value(queue,  "max-size-time", guint64(max_time_ms * GST_MSECOND));
 }
 
-void Engine::Utils::config_sink(GstElement* sink)
+void Engine::Utils::configureSink(GstElement* sink)
 {
-	set_values(sink,
+	setValues(sink,
 		"sync", true,
 		"async", false);
 }
 
-void Engine::Utils::config_lame(GstElement* lame)
+void Engine::Utils::configureLame(GstElement* lame)
 {
-	set_values(lame,
+	setValues(lame,
 		"perfect-timestamp", true,
 		"cbr", true
 	);
 
-	set_int_value(lame, "bitrate", 128);
-	set_int_value(lame, "target", 1);
-	set_int_value(lame, "encoding-engine-quality", 2);
+	setIntValue(lame, "bitrate", 128);
+	setIntValue(lame, "target", 1);
+	setIntValue(lame, "encoding-engine-quality", 2);
 }
 
 
-void Engine::Utils::set_passthrough(GstElement* e, bool b)
+void Engine::Utils::setPassthrough(GstElement* e, bool b)
 {
 	if(e && GST_IS_BASE_TRANSFORM(e))
 	{
@@ -510,7 +510,7 @@ void Engine::Utils::set_passthrough(GstElement* e, bool b)
 }
 
 
-GValue Engine::Utils::get_int64(gint64 value)
+GValue Engine::Utils::getInt64(gint64 value)
 {
 	GValue ret = G_VALUE_INIT;
 	g_value_init(&ret, G_TYPE_INT64);
@@ -518,7 +518,7 @@ GValue Engine::Utils::get_int64(gint64 value)
 	return ret;
 }
 
-GValue Engine::Utils::get_uint64(guint64 value)
+GValue Engine::Utils::getUint64(guint64 value)
 {
 	GValue ret = G_VALUE_INIT;
 	g_value_init(&ret, G_TYPE_UINT64);
@@ -526,7 +526,7 @@ GValue Engine::Utils::get_uint64(guint64 value)
 	return ret;
 }
 
-GValue Engine::Utils::get_uint(guint value)
+GValue Engine::Utils::getUint(guint value)
 {
 	GValue ret = G_VALUE_INIT;
 	g_value_init(&ret, G_TYPE_UINT);
@@ -534,7 +534,7 @@ GValue Engine::Utils::get_uint(guint value)
 	return ret;
 }
 
-GValue Engine::Utils::get_int(gint value)
+GValue Engine::Utils::getInt(gint value)
 {
 	GValue ret = G_VALUE_INIT;
 	g_value_init(&ret, G_TYPE_INT);
@@ -542,7 +542,7 @@ GValue Engine::Utils::get_int(gint value)
 	return ret;
 }
 
-MilliSeconds Engine::Utils::get_update_interval()
+MilliSeconds Engine::Utils::getUpdateInterval()
 {
 	return 50;
 }

@@ -1,6 +1,6 @@
 /* LibraryItem.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -27,31 +27,31 @@
 
 struct CustomField::Private
 {
-	QString display_name;
+	QString displayName;
 	QString value;
 	QString id;
 
 	Private(const QString& id, const QString& display_name, const QString& value) :
-		display_name(display_name),
+		displayName(display_name),
 		value(value),
 		id(id)
 	{}
 
 	Private(const Private& other) :
-		CASSIGN(display_name),
+		CASSIGN(displayName),
 		CASSIGN(value),
 		CASSIGN(id)
 	{}
 
 	Private(Private&& other) noexcept :
-		CMOVE(display_name),
+		CMOVE(displayName),
 		CMOVE(value),
 		CMOVE(id)
 	{}
 
 	Private& operator=(const Private& other)
 	{
-		ASSIGN(display_name);
+		ASSIGN(displayName);
 		ASSIGN(value);
 		ASSIGN(id);
 
@@ -60,7 +60,7 @@ struct CustomField::Private
 
 	Private& operator=(Private&& other) noexcept
 	{
-		MOVE(display_name);
+		MOVE(displayName);
 		MOVE(value);
 		MOVE(id);
 
@@ -69,9 +69,9 @@ struct CustomField::Private
 };
 
 
-CustomField::CustomField(const QString& id, const QString& display_name, const QString& value)
+CustomField::CustomField(const QString& id, const QString& displayName, const QString& value)
 {
-	m = Pimpl::make<Private>(id, display_name, value);
+	m = Pimpl::make<Private>(id, displayName, value);
 }
 
 CustomField::CustomField(const CustomField &other)
@@ -101,17 +101,17 @@ CustomField& CustomField::operator=(CustomField&& other) noexcept
 
 CustomField::~CustomField() {}
 
-QString CustomField::get_id() const
+QString CustomField::id() const
 {
 	return m->id;
 }
 
-QString CustomField::get_display_name() const
+QString CustomField::displayName() const
 {
-	return m->display_name;
+	return m->displayName;
 }
 
-QString CustomField::get_value() const
+QString CustomField::value() const
 {
 	return m->value;
 }
@@ -120,52 +120,52 @@ static UniqueId static_unique_id=1;
 
 struct LibraryItem::Private
 {
-	CustomFieldList		additional_data;
-	QStringList			cover_download_urls;
-	UniqueId			unique_id;
-	DbId				db_id;
+	CustomFieldList		additionalData;
+	QStringList			coverDownloadUrls;
+	UniqueId			uniqueId;
+	DbId				dbId;
 
 	Private() :
-		db_id(0)
+		dbId(0)
 	{
-		unique_id = (++static_unique_id);
+		uniqueId = (++static_unique_id);
 	}
 
 	Private(const Private& other) :
-		CASSIGN(additional_data),
-		CASSIGN(cover_download_urls),
-		CASSIGN(db_id)
+		CASSIGN(additionalData),
+		CASSIGN(coverDownloadUrls),
+		CASSIGN(dbId)
 	{
-		unique_id = (++static_unique_id);
+		uniqueId = (++static_unique_id);
 
 	}
 
 	Private(Private&& other) noexcept :
-		CMOVE(additional_data),
-		CMOVE(cover_download_urls),
-		CMOVE(unique_id),
-		CMOVE(db_id)
+		CMOVE(additionalData),
+		CMOVE(coverDownloadUrls),
+		CMOVE(uniqueId),
+		CMOVE(dbId)
 	{
-		(void) unique_id;
+		(void) uniqueId;
 	}
 
 	Private& operator=(const Private& other)
 	{
-		ASSIGN(additional_data);
-		ASSIGN(cover_download_urls);
-		ASSIGN(db_id);
+		ASSIGN(additionalData);
+		ASSIGN(coverDownloadUrls);
+		ASSIGN(dbId);
 
-		unique_id = (++static_unique_id);
+		uniqueId = (++static_unique_id);
 
 		return *this;
 	}
 
 	Private& operator=(Private&& other) noexcept
 	{
-		MOVE(additional_data);
-		MOVE(cover_download_urls);
-		MOVE(unique_id);
-		MOVE(db_id);
+		MOVE(additionalData);
+		MOVE(coverDownloadUrls);
+		MOVE(uniqueId);
+		MOVE(dbId);
 
 		return *this;
 	}
@@ -202,42 +202,42 @@ LibraryItem& LibraryItem::operator=(LibraryItem&& other) noexcept
 
 LibraryItem::~LibraryItem() {}
 
-void LibraryItem::add_custom_field(const CustomField& field)
+void LibraryItem::addCustomField(const CustomField& field)
 {
-	m->additional_data.push_back(field);
+	m->additionalData.push_back(field);
 }
 
-void LibraryItem::add_custom_field(const QString& id, const QString& display_name, const QString& value)
+void LibraryItem::addCustomField(const QString& id, const QString& display_name, const QString& value)
 {
-	m->additional_data.push_back(CustomField(id, display_name, value));
+	m->additionalData.push_back(CustomField(id, display_name, value));
 }
 
-void LibraryItem::replace_custom_field(const QString& id, const QString& display_name, const QString& value)
+void LibraryItem::replaceCustomField(const QString& id, const QString& display_name, const QString& value)
 {
-	for(int i=m->additional_data.size()-1; i>=0; i--)
+	for(int i=m->additionalData.size()-1; i>=0; i--)
 	{
-		CustomField field = m->additional_data.at(i);
+		CustomField field = m->additionalData.at(i);
 
-		if(field.get_id() == id){
-			m->additional_data.removeAt(i);
+		if(field.id() == id){
+			m->additionalData.removeAt(i);
 		}
 	}
 
-	this->add_custom_field(id, display_name, value);
+	this->addCustomField(id, display_name, value);
 }
 
-const CustomFieldList& LibraryItem::get_custom_fields() const
+const CustomFieldList& LibraryItem::customFields() const
 {
-	return m->additional_data;
+	return m->additionalData;
 }
 
 
-QString LibraryItem::get_custom_field(const QString& id) const
+QString LibraryItem::customField(const QString& id) const
 {
-	for(const CustomField& field : m->additional_data)
+	for(const CustomField& field : m->additionalData)
 	{
-		if(field.get_id().compare(id, Qt::CaseInsensitive) == 0){
-			return field.get_value();
+		if(field.id().compare(id, Qt::CaseInsensitive) == 0){
+			return field.value();
 		}
 	}
 
@@ -245,49 +245,49 @@ QString LibraryItem::get_custom_field(const QString& id) const
 }
 
 
-QString LibraryItem::get_custom_field(int idx) const
+QString LibraryItem::customField(int idx) const
 {
-	if(idx < 0 || idx >= int(m->additional_data.size())){
+	if(idx < 0 || idx >= int(m->additionalData.size())){
 		return "";
 	}
 
-	return m->additional_data[idx].get_value();
+	return m->additionalData[idx].value();
 }
 
-QStringList LibraryItem::cover_download_urls() const
+QStringList LibraryItem::coverDownloadUrls() const
 {
-	return m->cover_download_urls;
+	return m->coverDownloadUrls;
 }
 
-void LibraryItem::set_cover_download_urls(const QStringList& url)
+void LibraryItem::setCoverDownloadUrls(const QStringList& url)
 {
-	m->cover_download_urls = url;
+	m->coverDownloadUrls = url;
 }
 
-DbId LibraryItem::db_id() const
+DbId LibraryItem::databaseId() const
 {
-	return m->db_id;
+	return m->dbId;
 }
 
-void LibraryItem::set_db_id(DbId id)
+void LibraryItem::setDatabaseId(DbId id)
 {
-	m->db_id = id;
+	m->dbId = id;
 }
 
 void LibraryItem::print() const {}
 
-UniqueId LibraryItem::unique_id() const
+UniqueId LibraryItem::uniqueId() const
 {
-	return m->unique_id;
+	return m->uniqueId;
 }
 
-QHash<HashValue, QString> &LibraryItem::album_pool()
+QHash<HashValue, QString> &LibraryItem::albumPool()
 {
 	static QHash<HashValue, QString> pool;
 	return pool;
 }
 
-QHash<HashValue, QString> &LibraryItem::artist_pool()
+QHash<HashValue, QString> &LibraryItem::artistPool()
 {
 	static QHash<HashValue, QString> pool;
 	return pool;

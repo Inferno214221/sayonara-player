@@ -1,6 +1,6 @@
 /* MetaDataSorting.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -71,11 +71,11 @@ bool MetaDataSorting::TracksByTitleDesc(const MetaData& md1, const MetaData& md2
 
 bool MetaDataSorting::TracksByTrackNumAsc(const MetaData& md1, const MetaData& md2)
 {
-	if(md1.track_number() < md2.track_number()){
+	if(md1.trackNumber() < md2.trackNumber()){
 		return true;
 	}
 
-	if(md1.track_number() == md2.track_number()){
+	if(md1.trackNumber() == md2.trackNumber()){
 		return TracksByTitleAsc(md1, md2);
 	}
 
@@ -84,11 +84,11 @@ bool MetaDataSorting::TracksByTrackNumAsc(const MetaData& md1, const MetaData& m
 
 bool MetaDataSorting::TracksByTrackNumDesc(const MetaData& md1, const MetaData& md2)
 {
-	if(md2.track_number() < md1.track_number()){
+	if(md2.trackNumber() < md1.trackNumber()){
 		return true;
 	}
 
-	if(md1.track_number() == md2.track_number()){
+	if(md1.trackNumber() == md2.trackNumber()){
 		return TracksByTitleDesc(md1, md2);
 	}
 
@@ -205,7 +205,7 @@ bool MetaDataSorting::TracksByArtistDesc(const MetaData& md1, const MetaData& md
 
 bool MetaDataSorting::TracksByAlbumArtistAsc(const MetaData& md1, const MetaData& md2)
 {
-	switch(compare_string(md1.album_artist(), md2.album_artist())){
+	switch(compare_string(md1.albumArtist(), md2.albumArtist())){
 		case Equal:
 			return TracksByAlbumAsc(md1, md2);
 		case Greater:
@@ -218,7 +218,7 @@ bool MetaDataSorting::TracksByAlbumArtistAsc(const MetaData& md1, const MetaData
 
 bool MetaDataSorting::TracksByAlbumArtistDesc(const MetaData& md1, const MetaData& md2)
 {
-	switch(compare_string(md2.album_artist(), md1.album_artist())){
+	switch(compare_string(md2.albumArtist(), md1.albumArtist())){
 		case Equal:
 			return TracksByAlbumDesc(md1, md2);
 		case Greater:
@@ -257,11 +257,11 @@ bool MetaDataSorting::TracksByYearDesc(const MetaData& md1, const MetaData& md2)
 
 bool MetaDataSorting::TracksByLengthAsc(const MetaData& md1, const MetaData& md2)
 {
-	if(md1.duration_ms() < md2.duration_ms()){
+	if(md1.durationMs() < md2.durationMs()){
 		return true;
 	}
 
-	if(md1.duration_ms() == md2.duration_ms()){
+	if(md1.durationMs() == md2.durationMs()){
 		return TracksByArtistAsc(md1, md2);
 	}
 
@@ -270,11 +270,11 @@ bool MetaDataSorting::TracksByLengthAsc(const MetaData& md1, const MetaData& md2
 
 bool MetaDataSorting::TracksByLengthDesc(const MetaData& md1, const MetaData& md2)
 {
-	if(md2.duration_ms() < md1.duration_ms()){
+	if(md2.durationMs() < md1.durationMs()){
 		return true;
 	}
 
-	if(md1.duration_ms() == md2.duration_ms()){
+	if(md1.durationMs() == md2.durationMs()){
 		return TracksByArtistAsc(md1, md2);
 	}
 
@@ -335,7 +335,7 @@ bool MetaDataSorting::TracksByFilesizeDesc(const MetaData& md1, const MetaData& 
 
 bool MetaDataSorting::TracksByFiletypeAsc(const MetaData& md1, const MetaData& md2)
 {
-	switch(compare_string(Util::File::get_file_extension(md1.filepath()), Util::File::get_file_extension(md2.filepath()) ))
+	switch(compare_string(Util::File::getFileExtension(md1.filepath()), Util::File::getFileExtension(md2.filepath()) ))
 	{
 		case Equal:
 			return TracksByArtistAsc(md1, md2);
@@ -349,7 +349,7 @@ bool MetaDataSorting::TracksByFiletypeAsc(const MetaData& md1, const MetaData& m
 
 bool MetaDataSorting::TracksByFiletypeDesc(const MetaData& md1, const MetaData& md2)
 {
-	switch(compare_string(Util::File::get_file_extension(md2.filepath()), Util::File::get_file_extension(md1.filepath())))
+	switch(compare_string(Util::File::getFileExtension(md2.filepath()), Util::File::getFileExtension(md1.filepath())))
 	{
 		case Equal:
 			return TracksByArtistDesc(md1, md2);
@@ -471,7 +471,7 @@ bool MetaDataSorting::ArtistByTrackCountDesc(const Artist& artist1, const Artist
 
 bool MetaDataSorting::AlbumByArtistNameAsc(const Album& album1, const Album& album2)
 {
-	Relation rel = compare_string(album1.album_artists().join(","), album2.album_artists().join(","));
+	Relation rel = compare_string(album1.albumArtists().join(","), album2.albumArtists().join(","));
 	if(rel == Equal)
 	{
 		rel = compare_string(album1.artists().join(","), album2.artists().join(","));
@@ -556,11 +556,11 @@ bool MetaDataSorting::AlbumByYearDesc(const Album& album1, const Album& album2)
 
 bool MetaDataSorting::AlbumByDurationAsc(const Album& album1, const Album& album2)
 {
-	if(album1.duration_sec() < album2.duration_sec()){
+	if(album1.durationSec() < album2.durationSec()){
 		return true;
 	}
 
-	if(album1.duration_sec() == album2.duration_sec()){
+	if(album1.durationSec() == album2.durationSec()){
 		return AlbumByNameAsc(album1, album2);
 	}
 
@@ -569,11 +569,11 @@ bool MetaDataSorting::AlbumByDurationAsc(const Album& album1, const Album& album
 
 bool MetaDataSorting::AlbumByDurationDesc(const Album& album1, const Album& album2)
 {
-	if(album2.duration_sec() < album1.duration_sec()){
+	if(album2.durationSec() < album1.durationSec()){
 		return true;
 	}
 
-	if(album1.duration_sec() == album2.duration_sec()){
+	if(album1.durationSec() == album2.durationSec()){
 		return AlbumByNameAsc(album1, album2);
 	}
 
@@ -632,7 +632,7 @@ bool MetaDataSorting::AlbumByRatingDesc(const Album& album1, const Album& album2
 	return false;
 }
 
-void MetaDataSorting::sort_metadata(MetaDataList& v_md, Library::SortOrder so)
+void MetaDataSorting::sortMetadata(MetaDataList& v_md, Library::SortOrder so)
 {
 	using So=Library::SortOrder;
 	switch(so)
@@ -715,7 +715,7 @@ void MetaDataSorting::sort_metadata(MetaDataList& v_md, Library::SortOrder so)
 }
 
 
-void MetaDataSorting::sort_albums(AlbumList& albums, Library::SortOrder so)
+void MetaDataSorting::sortAlbums(AlbumList& albums, Library::SortOrder so)
 {
 	using So=Library::SortOrder;
 	switch(so)
@@ -761,7 +761,7 @@ void MetaDataSorting::sort_albums(AlbumList& albums, Library::SortOrder so)
 	}
 }
 
-void MetaDataSorting::sort_artists(ArtistList& artists, Library::SortOrder so)
+void MetaDataSorting::sortArtists(ArtistList& artists, Library::SortOrder so)
 {
 	using So=Library::SortOrder;
 	switch(so)
@@ -783,7 +783,7 @@ void MetaDataSorting::sort_artists(ArtistList& artists, Library::SortOrder so)
 	}
 }
 
-void MetaDataSorting::set_ignore_article(bool b)
+void MetaDataSorting::setIgnoreArticle(bool b)
 {
 	ignore_article = b;
 }

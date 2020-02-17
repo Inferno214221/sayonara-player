@@ -1,6 +1,6 @@
 /* TagLineEdit.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -28,15 +28,15 @@ TagLineEdit::TagLineEdit(QWidget* parent) :
 
 TagLineEdit::~TagLineEdit() = default;
 
-TagLineEdit::TextSelection TagLineEdit::text_selection() const
+TagLineEdit::TextSelection TagLineEdit::textSelection() const
 {
 	TagLineEdit::TextSelection ts;
 
 	QString selected_text = this->selectedText();
 	if(!selected_text.isEmpty())
 	{
-		ts.selection_start = this->selectionStart();
-		ts.selection_size = selected_text.size();
+		ts.selectionStart = this->selectionStart();
+		ts.selectionSize = selected_text.size();
 	}
 
 	return ts;
@@ -44,6 +44,6 @@ TagLineEdit::TextSelection TagLineEdit::text_selection() const
 
 
 TagLineEdit::TextSelection::TextSelection() :
-	selection_start(-1),
-	selection_size(0)
+	selectionStart(-1),
+	selectionSize(0)
 {}

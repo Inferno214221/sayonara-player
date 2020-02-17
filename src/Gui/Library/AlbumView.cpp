@@ -1,6 +1,6 @@
 /* LibraryViewAlbum.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -55,24 +55,24 @@ AlbumView::AlbumView(QWidget* parent) :
 {
 	m = Pimpl::make<Private>();
 
-	connect(this, &QTableView::clicked, this, &AlbumView::index_clicked);
+	connect(this, &QTableView::clicked, this, &AlbumView::indexClicked);
 }
 
 AlbumView::~AlbumView() = default;
 
-void AlbumView::init_view(AbstractLibrary* library)
+void AlbumView::initView(AbstractLibrary* library)
 {
 	m->library = library;
 
 	auto* model = new AlbumModel(this, m->library);
 	auto* delegate = new RatingDelegate(this, static_cast<int>(ColumnIndex::Album::Rating), true);
 
-	this->set_item_model(model);
+	this->setItemModel(model);
 	this->setItemDelegate(delegate);
 
-	connect(m->library, &AbstractLibrary::sig_all_albums_loaded, this, &AlbumView::fill);
+	connect(m->library, &AbstractLibrary::sigAllAlbumsLoaded, this, &AlbumView::fill);
 
-	ListenSetting(Set::Lib_UseViewClearButton, AlbumView::use_clear_button_changed);
+	ListenSetting(Set::Lib_UseViewClearButton, AlbumView::useClearButtonChanged);
 }
 
 AbstractLibrary* AlbumView::library() const
@@ -81,27 +81,27 @@ AbstractLibrary* AlbumView::library() const
 }
 
 
-ColumnHeaderList AlbumView::column_headers() const
+ColumnHeaderList AlbumView::columnHeaders() const
 {
 	const QFontMetrics fm(this->font());
 
 	return ColumnHeaderList
 	{
-		std::make_shared<ColumnHeader>(ColumnHeader::Sharp, true, SortOrder::NoSorting, SortOrder::NoSorting, Gui::Util::text_width(fm, "MM")),
+		std::make_shared<ColumnHeader>(ColumnHeader::Sharp, true, SortOrder::NoSorting, SortOrder::NoSorting, Gui::Util::textWidget(fm, "MM")),
 		std::make_shared<ColumnHeader>(ColumnHeader::Album, false, SortOrder::AlbumNameAsc, SortOrder::AlbumNameDesc, 160, true),
-		std::make_shared<ColumnHeader>(ColumnHeader::Duration, true, SortOrder::AlbumDurationAsc, SortOrder::AlbumDurationDesc, Gui::Util::text_width(fm, "Duration")),
-		std::make_shared<ColumnHeader>(ColumnHeader::NumTracks, true, SortOrder::AlbumTracksAsc, SortOrder::AlbumTracksDesc, Gui::Util::text_width(fm, "num tracks")),
-		std::make_shared<ColumnHeader>(ColumnHeader::Year, true, SortOrder::AlbumYearAsc, SortOrder::AlbumYearDesc, Gui::Util::text_width(fm, "M 8888")),
+		std::make_shared<ColumnHeader>(ColumnHeader::Duration, true, SortOrder::AlbumDurationAsc, SortOrder::AlbumDurationDesc, Gui::Util::textWidget(fm, "Duration")),
+		std::make_shared<ColumnHeader>(ColumnHeader::NumTracks, true, SortOrder::AlbumTracksAsc, SortOrder::AlbumTracksDesc, Gui::Util::textWidget(fm, "num tracks")),
+		std::make_shared<ColumnHeader>(ColumnHeader::Year, true, SortOrder::AlbumYearAsc, SortOrder::AlbumYearDesc, Gui::Util::textWidget(fm, "M 8888")),
 		std::make_shared<ColumnHeader>(ColumnHeader::Rating, true, SortOrder::AlbumRatingAsc, SortOrder::AlbumRatingDesc, 85)
 	};
 }
 
-QByteArray AlbumView::column_header_state() const
+QByteArray AlbumView::columnHeaderState() const
 {
 	return GetSetting(Set::Lib_ColStateAlbums);
 }
 
-void AlbumView::save_column_header_state(const QByteArray& state)
+void AlbumView::saveColumnHeaderState(const QByteArray& state)
 {
 	SetSetting(Set::Lib_ColStateAlbums, state);
 }
@@ -112,33 +112,33 @@ SortOrder AlbumView::sortorder() const
 	return so.so_albums;
 }
 
-void AlbumView::apply_sortorder(SortOrder s)
+void AlbumView::applySortorder(SortOrder s)
 {
-	m->library->change_album_sortorder(s);
+	m->library->changeAlbumSortorder(s);
 }
 
-void AlbumView::show_context_menu(const QPoint& p)
+void AlbumView::showContextMenu(const QPoint& p)
 {
-	delete_discmenu();
-	TableView::show_context_menu(p);
+	deleteDiscmenu();
+	TableView::showContextMenu(p);
 }
 
 
-void AlbumView::index_clicked(const QModelIndex& idx)
+void AlbumView::indexClicked(const QModelIndex& idx)
 {
 	if(idx.column() == int(ColumnIndex::Album::MultiDisc))
 	{
 		QModelIndexList selections = this->selectionModel()->selectedRows();
 		if(selections.size() == 1){
-			init_discmenu(idx);
-			show_discmenu();
+			initDiscmenu(idx);
+			showDiscmenu();
 		}
 	}
 }
 
 
 /* where to show the popup */
-void AlbumView::calc_discmenu_point(QModelIndex idx)
+void AlbumView::calcDiscmenuPoint(QModelIndex idx)
 {
 	QHeaderView* v_header = this->verticalHeader();
 
@@ -163,10 +163,10 @@ void AlbumView::calc_discmenu_point(QModelIndex idx)
 	}
 }
 
-void AlbumView::init_discmenu(QModelIndex idx)
+void AlbumView::initDiscmenu(QModelIndex idx)
 {
 	int row = idx.row();
-	delete_discmenu();
+	deleteDiscmenu();
 
 	if( !idx.isValid() ||
 		(row >= model()->rowCount()) ||
@@ -180,15 +180,15 @@ void AlbumView::init_discmenu(QModelIndex idx)
 		return;
 	}
 
-	calc_discmenu_point(idx);
+	calcDiscmenuPoint(idx);
 
 	m->discmenu = new DiscPopupMenu(this, album.discnumbers());
 
-	connect(m->discmenu, &DiscPopupMenu::sig_disc_pressed, this, &AlbumView::sig_disc_pressed);
+	connect(m->discmenu, &DiscPopupMenu::sigDiscPressed, this, &AlbumView::sigDiscPressed);
 }
 
 
-void AlbumView::delete_discmenu()
+void AlbumView::deleteDiscmenu()
 {
 	if(!m->discmenu) {
 		return;
@@ -197,14 +197,14 @@ void AlbumView::delete_discmenu()
 	m->discmenu->hide();
 	m->discmenu->close();
 
-	disconnect(m->discmenu, &DiscPopupMenu::sig_disc_pressed, this, &AlbumView::sig_disc_pressed);
+	disconnect(m->discmenu, &DiscPopupMenu::sigDiscPressed, this, &AlbumView::sigDiscPressed);
 
 	m->discmenu->deleteLater();
 	m->discmenu = nullptr;
 }
 
 
-void AlbumView::show_discmenu()
+void AlbumView::showDiscmenu()
 {
 	if(!m->discmenu) return;
 
@@ -212,64 +212,64 @@ void AlbumView::show_discmenu()
 }
 
 
-void AlbumView::play_clicked()
+void AlbumView::playClicked()
 {
-	TableView::play_clicked();
-	m->library->prepare_fetched_tracks_for_playlist(false);
+	TableView::playClicked();
+	m->library->prepareFetchedTracksForPlaylist(false);
 }
 
-void AlbumView::play_new_tab_clicked()
+void AlbumView::playNewTabClicked()
 {
-	TableView::play_new_tab_clicked();
-	m->library->prepare_fetched_tracks_for_playlist(true);
+	TableView::playNewTabClicked();
+	m->library->prepareFetchedTracksForPlaylist(true);
 }
 
-void AlbumView::play_next_clicked()
+void AlbumView::playNextClicked()
 {
-	TableView::play_next_clicked();
-	m->library->play_next_fetched_tracks();
+	TableView::playNextClicked();
+	m->library->playNextFetchedTracks();
 }
 
-void AlbumView::append_clicked()
+void AlbumView::appendClicked()
 {
-	TableView::append_clicked();
-	m->library->append_fetched_tracks();
+	TableView::appendClicked();
+	m->library->appendFetchedTracks();
 }
 
-void AlbumView::selection_changed(const IndexSet& indexes)
+void AlbumView::selectedItemsChanged(const IndexSet& indexes)
 {
-	TableView::selection_changed(indexes);
-	m->library->selected_albums_changed(indexes);
+	TableView::selectedItemsChanged(indexes);
+	m->library->selectedAlbumsChanged(indexes);
 }
 
-void AlbumView::refresh_clicked()
+void AlbumView::refreshClicked()
 {
-	TableView::refresh_clicked();
-	m->library->refresh_albums();
+	TableView::refreshClicked();
+	m->library->refreshAlbums();
 }
 
-void AlbumView::run_merge_operation(const MergeData& mergedata)
+void AlbumView::runMergeOperation(const MergeData& mergedata)
 {
-	Tagging::UserOperations* uto = new Tagging::UserOperations(mergedata.library_id(), this);
+	Tagging::UserOperations* uto = new Tagging::UserOperations(mergedata.libraryId(), this);
 
-	connect(uto, &Tagging::UserOperations::sig_finished, uto, &Tagging::UserOperations::deleteLater);
+	connect(uto, &Tagging::UserOperations::sigFinished, uto, &Tagging::UserOperations::deleteLater);
 
-	uto->merge_albums(mergedata.source_ids(), mergedata.target_id());
+	uto->mergeAlbums(mergedata.sourceIds(), mergedata.targetId());
 }
 
-bool AlbumView::is_mergeable() const
+bool AlbumView::isMergeable() const
 {
 	return true;
 }
 
-MD::Interpretation AlbumView::metadata_interpretation() const
+MD::Interpretation AlbumView::metadataInterpretation() const
 {
 	return MD::Interpretation::Albums;
 }
 
-void AlbumView::use_clear_button_changed()
+void AlbumView::useClearButtonChanged()
 {
 	bool b = GetSetting(Set::Lib_UseViewClearButton);
-	use_clear_button(b);
+	useClearButton(b);
 }
 

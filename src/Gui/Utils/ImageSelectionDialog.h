@@ -1,6 +1,6 @@
 /* ImageSelectionDialog.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -17,8 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-
 
 #ifndef IMAGESELECTIONDIALOG_H
 #define IMAGESELECTIONDIALOG_H
@@ -42,10 +40,10 @@ namespace Gui
 
 	public:
 		ImageSelectionDialog(const QString& dir, QWidget* parent=nullptr);
-		~ImageSelectionDialog();
+		~ImageSelectionDialog() override;
 
 	private slots:
-		void file_selected(const QString& file);
+		void fileSelected(const QString& file);
 
 	protected:
 		void showEvent(QShowEvent* e) override;

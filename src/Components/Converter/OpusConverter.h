@@ -12,12 +12,12 @@ class OpusConverter : public Converter
 		OpusConverter(bool cbr, int quality, QObject* parent);
 		~OpusConverter() override;
 
-		QStringList supported_input_formats() const override;
+		QStringList supportedInputFormats() const override;
 
 		// Converter interface
 	protected:
 		QString binary() const override;
-		QStringList process_entry(const MetaData& md) const override;
+		QStringList processEntry(const MetaData& md) const override;
 		QString extension() const override;
 };
 

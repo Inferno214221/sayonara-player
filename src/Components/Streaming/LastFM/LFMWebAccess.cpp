@@ -1,6 +1,6 @@
 /* WebAccess.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -23,7 +23,7 @@
  * WebAccess.cpp
  *
  *  Created on: Oct 22, 2011
- *      Author: Lucio Carreras
+ *      Author: Michael Lugmair (Lucio Carreras)
  */
 
 #include "LFMGlobals.h"
@@ -36,55 +36,55 @@
 
 using namespace LastFM;
 
-void WebAccess::call_url(const QString& url)
+void WebAccess::callUrl(const QString& url)
 {
 	AsyncWebAccess* awa = new AsyncWebAccess(this);
-	connect(awa, &AsyncWebAccess::sig_finished, this, &WebAccess::awa_finished);
+	connect(awa, &AsyncWebAccess::sigFinished, this, &WebAccess::awaFinished);
 	awa->run(url, 10000);
 }
 
-void WebAccess::call_post_url(const QString& url, const QByteArray& post_data)
+void WebAccess::callPostUrl(const QString& url, const QByteArray& post_data)
 {
 	AsyncWebAccess* awa = new AsyncWebAccess(this);
-	connect(awa, &AsyncWebAccess::sig_finished, this, &WebAccess::awa_finished);
+	connect(awa, &AsyncWebAccess::sigFinished, this, &WebAccess::awaFinished);
 
 	QMap<QByteArray, QByteArray> header;
 	header["Content-Type"] = "application/x-www-form-urlencoded";
 
-	awa->set_raw_header(header);
-	awa->run_post(url, post_data, 10000);
+	awa->setRawHeader(header);
+	awa->runPost(url, post_data, 10000);
 }
 
 
-void WebAccess::awa_finished()
+void WebAccess::awaFinished()
 {
 	auto* awa = static_cast<AsyncWebAccess*>(sender());
 	if(awa->status() != AsyncWebAccess::Status::GotData)
 	{
-		emit sig_error("Cannot get data");
+		emit sigError("Cannot get data");
 	}
 
 	QByteArray data = awa->data();
-	bool error = check_error(data);
+	bool error = checkError(data);
 
 	if(!error)
 	{
-		emit sig_response(data);
+		emit sigResponse(data);
 	}
 }
 
-QString WebAccess::WebAccess::create_std_url(const QString& base_url, const UrlParams& data)
+QString WebAccess::WebAccess::createStandardUrl(const QString& base_url, const UrlParams& data)
 {
 	QByteArray post_data;
 
-	QString url = create_std_url_post(base_url, data, post_data);
+	QString url = createPostUrl(base_url, data, post_data);
 	url += "?";
 	url += QString::fromLocal8Bit(post_data);
 
 	return url;
 }
 
-QString WebAccess::create_std_url_post(const QString& base_url, const UrlParams& sig_data, QByteArray& post_data)
+QString WebAccess::createPostUrl(const QString& base_url, const UrlParams& sig_data, QByteArray& post_data)
 {
 	QString url = base_url;
 
@@ -105,18 +105,18 @@ QString WebAccess::create_std_url_post(const QString& base_url, const UrlParams&
 }
 
 
-bool WebAccess::check_error(const QByteArray& data)
+bool WebAccess::checkError(const QByteArray& data)
 {
-	QString error_str = parse_error_message(data);
+	QString error_str = parseErrorMessage(data);
 	if(!error_str.isEmpty()){
-		emit sig_error(error_str);
+		emit sigError(error_str);
 		return true;
 	}
 
 	return false;
 }
 
-QString WebAccess::parse_error_message(const QString& response)
+QString WebAccess::parseErrorMessage(const QString& response)
 {
 	if(response.isEmpty()){
 		return "";
@@ -133,7 +133,7 @@ QString WebAccess::parse_error_message(const QString& response)
 
 UrlParams::UrlParams() : QMap<QByteArray, QByteArray>() {}
 
-void UrlParams::append_signature()
+void UrlParams::appendSignature()
 {
 	QByteArray signature;
 
@@ -145,7 +145,7 @@ void UrlParams::append_signature()
 
 	signature += LFM_API_SECRET;
 
-	QByteArray hash = Util::calc_hash(signature);
+	QByteArray hash = Util::calcHash(signature);
 
 	this->insert("api_sig", hash);
 }

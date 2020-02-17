@@ -1,6 +1,6 @@
 /* Main.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -22,7 +22,7 @@
  * Main.cpp
  *
  *  Created on: Mar 2, 2011
- *      Author: Lucio Carreras
+ *      Author: Michael Lugmair (Lucio Carreras)
  */
 
 #include "Application/Application.h"
@@ -93,17 +93,17 @@ void segfault_handler(int sig)
 
 bool check_for_other_instance(const CommandLineData& cmd_data, QSharedMemory* memory)
 {
-	sp_log(Log::Debug, "Main") << "Check for another instance";
+	spLog(Log::Debug, "Main") << "Check for another instance";
 	if(memory->create(MemorySize, QSharedMemory::ReadWrite))
 	{
-		sp_log(Log::Debug, "Main") << "Could create memory";
+		spLog(Log::Debug, "Main") << "Could create memory";
 		return false;
 	}
 
 	memory->attach(QSharedMemory::ReadWrite);
 	if(!memory->data())
 	{
-		sp_log(Log::Debug, "Main") << "No shared memory data";
+		spLog(Log::Debug, "Main") << "No shared memory data";
 		return false;
 	}
 
@@ -111,10 +111,10 @@ bool check_for_other_instance(const CommandLineData& cmd_data, QSharedMemory* me
 	int size = MemorySize;
 	Byte* ptr = static_cast<Byte*>(memory->data());
 
-	if(!cmd_data.files_to_play.isEmpty())
+	if(!cmd_data.filesToPlay.isEmpty())
 	{
 		data += 'D';
-		data += cmd_data.files_to_play.join('\n').toUtf8();
+		data += cmd_data.filesToPlay.join('\n').toUtf8();
 
 		size = std::min(data.size(), MemorySize - 1);
 		if(size < data.size()){
@@ -129,22 +129,22 @@ bool check_for_other_instance(const CommandLineData& cmd_data, QSharedMemory* me
 	}
 
 	memory->lock();
-	sp_log(Log::Debug, "Main") << "Sending to shared memory: " << data;
+	spLog(Log::Debug, "Main") << "Sending to shared memory: " << data;
 	memcpy(ptr, data.data(), size_t(data.size()));
 	memory->unlock();
 
-	Util::sleep_ms(500);
+	Util::sleepMs(500);
 
 	if(memcmp(memory->data(), "Ack", 3) == 0)
 	{
-		sp_log(Log::Debug, "Main") << "There's probably another instance running";
+		spLog(Log::Debug, "Main") << "There's probably another instance running";
 		memory->detach();
 
 		return true;
 	}
 
 	else {
-		sp_log(Log::Debug, "Main") << "Other instance not responding";
+		spLog(Log::Debug, "Main") << "Other instance not responding";
 	}
 
 	return false;
@@ -166,7 +166,7 @@ int main(int argc, char *argv[])
 
 	QSharedMemory memory(key);
 
-	if(!cmd_data.multiple_instances)
+	if(!cmd_data.multipleInstances)
 	{
 		bool has_other_instance = check_for_other_instance(cmd_data, &memory);
 		if(has_other_instance){
@@ -176,9 +176,9 @@ int main(int argc, char *argv[])
 		if(memory.data())
 		{
 			bool success = memory.attach(QSharedMemory::ReadWrite);
-			sp_log(Log::Debug, "Main") << "Attach memory " << success;
+			spLog(Log::Debug, "Main") << "Attach memory " << success;
 			if(!success){
-				sp_log(Log::Debug, "Main") << "Cannot attach memory " << memory.error() << ": " << memory.errorString();
+				spLog(Log::Debug, "Main") << "Cannot attach memory " << memory.error() << ": " << memory.errorString();
 			}
 			memory.lock();
 			memcpy(memory.data(), "Sayonara", 8);
@@ -186,16 +186,16 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	QString sayonara_path = Util::sayonara_path();
+	QString sayonara_path = Util::sayonaraPath();
 	if(!QFile::exists(sayonara_path))
 	{
-		sp_log(Log::Error, "Sayonara") << "Cannot find and create Sayonara path '" << Util::sayonara_path() << "'. Leaving now.";
+		spLog(Log::Error, "Sayonara") << "Cannot find and create Sayonara path '" << Util::sayonaraPath() << "'. Leaving now.";
 		return 1;
 	}
 
-	sp_log(Log::Debug, "Sayonara") << "Sayonara home path: " << Util::sayonara_path();
-	sp_log(Log::Debug, "Sayonara") << "Sayonara share path: " << Util::share_path();
-	sp_log(Log::Debug, "Sayonara") << "Sayonara lib path: " << Util::lib_path();
+	spLog(Log::Debug, "Sayonara") << "Sayonara home path: " << Util::sayonaraPath();
+	spLog(Log::Debug, "Sayonara") << "Sayonara share path: " << Util::sharePath();
+	spLog(Log::Debug, "Sayonara") << "Sayonara lib path: " << Util::libPath();
 
 	DB::Connector::instance();
 
@@ -207,11 +207,11 @@ int main(int argc, char *argv[])
 	signal(SIGSEGV, segfault_handler);
 #endif
 
-	if(!FileUtils::exists( Util::sayonara_path() )) {
-		QDir().mkdir( Util::sayonara_path() );
+	if(!FileUtils::exists( Util::sayonaraPath() )) {
+		QDir().mkdir( Util::sayonaraPath() );
 	}
 
-	if(!app.init(cmd_data.files_to_play, cmd_data.force_show)) {
+	if(!app.init(cmd_data.filesToPlay, cmd_data.forceShow)) {
 		return 1;
 	}
 

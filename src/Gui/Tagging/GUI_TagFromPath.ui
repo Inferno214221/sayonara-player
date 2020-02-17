@@ -192,7 +192,7 @@
         </widget>
        </item>
        <item row="1" column="0">
-        <widget class="QListWidget" name="lv_tag_from_path_files"/>
+        <widget class="QListWidget" name="lv_invalidFilepaths"/>
        </item>
       </layout>
      </widget>

@@ -1,6 +1,6 @@
 /* SomaFMStationView.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -29,14 +29,14 @@ class SomaFMStationView :
 {
 public:
 	SomaFMStationView(QWidget* parent=nullptr);
-	~SomaFMStationView();
+	~SomaFMStationView() override;
 
 public:
 	// SayonaraSelectionView interface
-	int index_by_model_index(const QModelIndex& idx) const override;
-	ModelIndexRange model_indexrange_by_index(int idx) const override;
+	int mapModelIndexToIndex(const QModelIndex& idx) const override;
+	ModelIndexRange mapIndexToModelIndexes(int idx) const override;
 
-	int viewport_height() const override;
+	int viewportHeight() const override;
 
 protected:
 	void keyPressEvent(QKeyEvent *e) override;

@@ -1,6 +1,6 @@
 /* Query.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -43,7 +43,7 @@ namespace DB
 		public:
 			explicit Query(const Module* module);
 
-			Query(const QString& connection_name, DbId db_id);
+			Query(const QString& connection_name, DbId databaseId);
 			Query(const Query& other);
 
             explicit Query(QSqlResult* result) = delete;
@@ -54,17 +54,17 @@ namespace DB
 			virtual ~Query();
 
 			bool prepare(const QString& query);
-			void bindValue(const QString & placeholder, const QVariant & val, QSql::ParamType paramType = QSql::In);
+			void bindValue(const QString&  placeholder, const QVariant & val, QSql::ParamType paramType = QSql::In);
 			bool exec();
-			void set_error(bool b);
-			bool has_error() const;
+			void setError(bool b);
+			bool hasError() const;
 
-			QString get_query_string() const;
-			void show_query() const;
-			void show_error(const QString& err_msg) const;
+			QString getQueryString() const;
+			void showQuery() const;
+			void showError(const QString& err_msg) const;
 
 
-			size_t fetched_rows();
+			size_t fetchedRows();
 	};
 }
 

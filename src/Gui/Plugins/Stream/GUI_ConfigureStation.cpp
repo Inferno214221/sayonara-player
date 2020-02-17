@@ -1,6 +1,6 @@
 /* GUI_ConfigureStation.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -28,7 +28,14 @@
 
 struct GUI_ConfigureStation::Private
 {
-	QList<QLabel*> labels;
+	QList<QLabel*>				labels;
+	GUI_ConfigureStation::Mode	mode;
+	bool						isInitialized;
+
+	Private() :
+		mode(GUI_ConfigureStation::Mode::New),
+		isInitialized(false)
+	{}
 };
 
 GUI_ConfigureStation::GUI_ConfigureStation(QWidget* parent) :
@@ -37,59 +44,77 @@ GUI_ConfigureStation::GUI_ConfigureStation(QWidget* parent) :
 	m = Pimpl::make<Private>();
 
 	ui = new Ui::GUI_ConfigureStation();
-	ui->setupUi(this);
-	ui->lab_error->setVisible(false);
-	ui->btn_ok->setFocus();
 
-	connect(ui->btn_ok, &QPushButton::clicked, this, &Gui::Dialog::accept);
-	connect(ui->btn_cancel, &QPushButton::clicked, this, &Gui::Dialog::reject);
+	ui->setupUi(this);
+	ui->labError->setVisible(false);
+	ui->btnOk->setFocus();
+
+	connect(ui->btnOk, &QPushButton::clicked, this, &Gui::Dialog::accept);
+	connect(ui->btnCancel, &QPushButton::clicked, this, &Gui::Dialog::reject);
 }
 
 GUI_ConfigureStation::~GUI_ConfigureStation() = default;
 
-void GUI_ConfigureStation::init_ui(StationPtr station)
+void GUI_ConfigureStation::init_ui()
 {
-	const QList<QWidget*> config_widgets = configuration_widgets(station);
+	if(m->isInitialized){
+		return;
+	}
 
-	auto* layout = dynamic_cast<QGridLayout*>(ui->config_widget->layout());
+	m->isInitialized = true;
+
+	const QList<QWidget*> configWidgets = configurationWidgets();
+
+	auto* layout = dynamic_cast<QGridLayout*>(ui->configWidget->layout());
 
 	int row = 0;
-	for(QWidget* config_widget : config_widgets)
+	for(QWidget* configWidget : configWidgets)
 	{
 		auto* label = new QLabel();
-		label->setText(label_text(row));
+		label->setText(labelText(row));
 		m->labels << label;
 
 		layout->addWidget(label, row, 0, 1, 1);
-		layout->addWidget(config_widget, row, 1, 1, 1);
+		layout->addWidget(configWidget, row, 1, 1, 1);
+
 		row++;
 	}
 }
 
-void GUI_ConfigureStation::set_error_message(const QString& message)
+void GUI_ConfigureStation::setError(const QString& message)
 {
-	ui->lab_error->setText(message);
-	ui->lab_error->setVisible(true);
+	ui->labError->setText(message);
+	ui->labError->setVisible(true);
 }
 
-void GUI_ConfigureStation::set_mode(const QString& type, GUI_ConfigureStation::Mode mode)
+void GUI_ConfigureStation::setMode(const QString& stream_name, GUI_ConfigureStation::Mode mode)
 {
-	QString mode_str;
-	if(mode == GUI_ConfigureStation::Edit){
-		mode_str = Lang::get(Lang::Edit);
+	m->mode = mode;
+
+	QString modeString;
+	if(mode == GUI_ConfigureStation::Edit) {
+		modeString = Lang::get(Lang::Edit);
 	}
 
 	else {
-		mode_str = Lang::get(Lang::New);
+		modeString = Lang::get(Lang::New);
 	}
 
-	QString text = QString("%1: %2").arg(type).arg(mode_str);
+	QString text = QString("%1: %2").arg(stream_name).arg(modeString);
 
-	ui->lab_header->setText(text);
+	ui->labHeader->setText(text);
 	this->setWindowTitle(text);
 }
 
-bool GUI_ConfigureStation::was_accepted() const
+GUI_ConfigureStation::Mode GUI_ConfigureStation::mode() const
 {
-	return (this->result() == QDialog::Accepted);
+	return m->mode;
+}
+
+void GUI_ConfigureStation::languageChanged()
+{
+	for(int i=0; i<m->labels.size(); i++)
+	{
+		m->labels[i]->setText(labelText(i));
+	}
 }

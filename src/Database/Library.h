@@ -1,6 +1,6 @@
 /* DatabaseLibrary.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -41,21 +41,21 @@ namespace DB
 		PIMPL(Library)
 
 		public:
-			Library(const QString& connection_name, DbId db_id);
+			Library(const QString& connectionName, DbId databaseId);
 			~Library() override;
 
 			using LibraryInfo=::Library::Info;
-			QList<LibraryInfo> get_all_libraries();
+			QList<LibraryInfo> getAllLibraries();
 
-			bool insert_library(LibraryId library_id, const QString& library_name, const QString& library_path, int index);
-			bool edit_library(LibraryId library_id, const QString& new_name, const QString& new_path);
-			bool remove_library(LibraryId library_id);
-			bool reorder_libraries(const QMap<LibraryId, int>& order);
+			bool insertLibrary(LibraryId libraryId, const QString& libraryName, const QString& libraryPath, int index);
+			bool editLibrary(LibraryId libraryId, const QString& newName, const QString& newPath);
+			bool removeLibrary(LibraryId libraryId);
+			bool reorderLibraries(const QMap<LibraryId, int>& order);
 
-			virtual void drop_indexes();
-			virtual void create_indexes();
+			virtual void dropIndexes();
+			virtual void createIndexes();
 
-			virtual void add_album_artists();
+			virtual void addAlbumArtists();
 	};
 }
 

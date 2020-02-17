@@ -1,6 +1,6 @@
 /* PlaylistDBInterface.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -31,22 +31,23 @@ using Util::SaveAsAnswer;
 
 struct DBInterface::Private
 {
-	Playlist::DBWrapper*  playlist_db_connector=nullptr;
+	Playlist::DBWrapper*  playlistDatabaseWrapper=nullptr;
 	QString             name;
-	bool                is_temporary;
+	bool                isTemporary;
 	int                 id;
 
 	Private(const QString& name) :
 		name(name),
-		is_temporary(true)
+		isTemporary(true)
 	{
-		playlist_db_connector = new DBWrapper();
-		id = playlist_db_connector->get_playlist_by_name(name).id();
+		playlistDatabaseWrapper = new DBWrapper();
+		id = playlistDatabaseWrapper->getPlaylistByName(name).id();
 	}
 
 	~Private()
 	{
-		delete playlist_db_connector; playlist_db_connector=nullptr;
+		delete playlistDatabaseWrapper;
+		playlistDatabaseWrapper=nullptr;
 	}
 };
 
@@ -57,47 +58,47 @@ DBInterface::DBInterface(const QString& name)
 
 DBInterface::~DBInterface() {}
 
-int DBInterface::get_id() const
+int DBInterface::id() const
 {
 	return m->id;
 }
 
-void DBInterface::set_id(int id)
+void DBInterface::setId(int id)
 {
 	m->id = id;
 }
 
-QString DBInterface::get_name() const
+QString DBInterface::name() const
 {
 	return m->name;
 }
 
-void DBInterface::set_name(const QString& name)
+void DBInterface::setName(const QString& name)
 {
 	m->name = name;
 }
 
-bool DBInterface::is_temporary() const
+bool DBInterface::isTemporary() const
 {
-	return m->is_temporary;
+	return m->isTemporary;
 }
 
-void DBInterface::set_temporary(bool b)
+void DBInterface::setTemporary(bool b)
 {
-	m->is_temporary = b;
+	m->isTemporary = b;
 }
 
 SaveAsAnswer DBInterface::save()
 {
-	if(!is_storable()){
+	if(!isStoreable()){
 		return SaveAsAnswer::NotStorable;
 	}
 
 	if(m->id >= 0)
 	{
-		bool success = m->playlist_db_connector->save_playlist(tracks(), m->id, m->is_temporary);
+		bool success = m->playlistDatabaseWrapper->savePlaylist(tracks(), m->id, m->isTemporary);
 		if(success) {
-			this->set_changed(false);
+			this->setChanged(false);
 			return SaveAsAnswer::Success;
 		}
 
@@ -107,36 +108,36 @@ SaveAsAnswer DBInterface::save()
 	}
 
 	else {
-		return save_as(m->name, true);
+		return saveAs(m->name, true);
 	}
 }
 
-bool DBInterface::insert_temporary_into_db()
+bool DBInterface::insertTemporaryIntoDatabase()
 {
-	if(!m->is_temporary || !is_storable()) {
+	if(!m->isTemporary || !isStoreable()) {
 		return false;
 	}
 
-	bool success = m->playlist_db_connector->save_playlist_temporary(tracks(), m->name);
+	bool success = m->playlistDatabaseWrapper->savePlaylistTemporary(tracks(), m->name);
 	if(success) {
-		m->id = m->playlist_db_connector->get_playlist_by_name(m->name).id();
+		m->id = m->playlistDatabaseWrapper->getPlaylistByName(m->name).id();
 	}
 
 	return success;
 }
 
-SaveAsAnswer DBInterface::save_as(const QString& name, bool force_override)
+SaveAsAnswer DBInterface::saveAs(const QString& name, bool force_override)
 {
 	if(name.isEmpty()) {
 		return Util::SaveAsAnswer::InvalidName;
 	}
 
-	if(!is_storable()){
+	if(!isStoreable()){
 		return Util::InvalidObject;
 	}
 
 	CustomPlaylistSkeletons skeletons;
-	m->playlist_db_connector->get_all_skeletons(skeletons);
+	m->playlistDatabaseWrapper->getAllSkeletons(skeletons);
 
 	// check if name already exists
 	auto it = Util::Algorithm::find(skeletons, [&name](auto skeleton){
@@ -156,31 +157,31 @@ SaveAsAnswer DBInterface::save_as(const QString& name, bool force_override)
 	// Name already exists, override
 	bool success;
 	if(tgt_id >= 0){
-		success = m->playlist_db_connector->save_playlist(this->tracks(), tgt_id, m->is_temporary);
+		success = m->playlistDatabaseWrapper->savePlaylist(this->tracks(), tgt_id, m->isTemporary);
 	}
 
 	// New playlist
 	else
 	{
-		success = m->playlist_db_connector->save_playlist_as(this->tracks(), name);
+		success = m->playlistDatabaseWrapper->savePlaylistAs(this->tracks(), name);
 
-		if(success && this->is_temporary())
+		if(success && this->isTemporary())
 		{
-			int old_id = this->get_id();
-			m->playlist_db_connector->delete_playlist(old_id);
+			int old_id = this->id();
+			m->playlistDatabaseWrapper->deletePlaylist(old_id);
 		}
 	}
 
 	if(success)
 	{
-		int id = m->playlist_db_connector->get_playlist_by_name(name).id();
+		int id = m->playlistDatabaseWrapper->getPlaylistByName(name).id();
 		if(id >= 0){
-			this->set_id(id);
+			this->setId(id);
 		}
 
-		this->set_temporary(false);
-		this->set_name(name);
-		this->set_changed(false);
+		this->setTemporary(false);
+		this->setName(name);
+		this->setChanged(false);
 
 		return SaveAsAnswer::Success;
 	}
@@ -194,12 +195,12 @@ SaveAsAnswer DBInterface::rename(const QString& name)
 		return Util::SaveAsAnswer::InvalidName;
 	}
 
-	if(!is_storable()){
+	if(!isStoreable()){
 		return SaveAsAnswer::NotStorable;
 	}
 
 	CustomPlaylistSkeletons skeletons;
-	m->playlist_db_connector->get_all_skeletons(skeletons);
+	m->playlistDatabaseWrapper->getAllSkeletons(skeletons);
 
 	// check if name already exists
 	bool exists = Util::Algorithm::contains(skeletons, [&name](auto skeleton){
@@ -210,40 +211,40 @@ SaveAsAnswer DBInterface::rename(const QString& name)
 		return SaveAsAnswer::NameAlreadyThere;
 	}
 
-	bool success = m->playlist_db_connector->rename_playlist(m->id, name);
+	bool success = m->playlistDatabaseWrapper->renamePlaylist(m->id, name);
 	if(success){
-		this->set_name(name);
+		this->setName(name);
 		return SaveAsAnswer::Success;
 	}
 
 	return SaveAsAnswer::OtherError;
 }
 
-bool DBInterface::delete_playlist()
+bool DBInterface::deletePlaylist()
 {
-	return m->playlist_db_connector->delete_playlist(m->id);
+	return m->playlistDatabaseWrapper->deletePlaylist(m->id);
 }
 
-bool DBInterface::remove_from_db()
+bool DBInterface::removeFromDatabase()
 {
-	if(!is_storable()){
+	if(!isStoreable()){
 		return false;
 	}
 
 	bool success;
 	if(m->id >= 0){
-		success = m->playlist_db_connector->delete_playlist(m->id);
+		success = m->playlistDatabaseWrapper->deletePlaylist(m->id);
 	}
 
 	else{
-		success = m->playlist_db_connector->delete_playlist(m->name);
+		success = m->playlistDatabaseWrapper->deletePlaylist(m->name);
 	}
 
-	m->is_temporary = true;
+	m->isTemporary = true;
 	return success;
 }
 
-QString DBInterface::request_new_db_name(QString prefix)
+QString DBInterface::requestNewDatabaseName(QString prefix)
 {
 	if(prefix.isEmpty())
 	{
@@ -253,7 +254,7 @@ QString DBInterface::request_new_db_name(QString prefix)
 	CustomPlaylistSkeletons skeletons;
 
 	auto pdw = std::make_shared<DBWrapper>();
-	pdw->get_all_skeletons(skeletons);
+	pdw->getAllSkeletons(skeletons);
 
 	QString target_name;
 

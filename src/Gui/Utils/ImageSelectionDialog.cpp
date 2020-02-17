@@ -1,6 +1,6 @@
 /* ImageSelectionDialog.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -31,16 +31,16 @@ using Gui::ImageSelectionDialog;
 struct ImageSelectionDialog::Private
 {
 	QString start_dir;
-	QLabel* img_label=nullptr;
-	QLabel* res_label=nullptr;
+	QLabel* imageLabel=nullptr;
+	QLabel* resolutionLabel=nullptr;
 
 	Private(QWidget* parent)
 	{
-		img_label = new QLabel(parent);
-		img_label->setMinimumSize(100, 100);
-		img_label->setMaximumSize(100, 100);
+		imageLabel = new QLabel(parent);
+		imageLabel->setMinimumSize(100, 100);
+		imageLabel->setMaximumSize(100, 100);
 
-		res_label = new QLabel(parent);
+		resolutionLabel = new QLabel(parent);
 	}
 };
 
@@ -54,7 +54,7 @@ ImageSelectionDialog::ImageSelectionDialog(const QString& dir, QWidget* parent) 
 	;
 	QStringList filters
 	{
-		tr("Image files") + " (" + Util::image_extensions().join(" ") + ")",
+		tr("Image files") + " (" + Util::imageExtensions().join(" ") + ")",
 		tr("Any files") + " (*)"
 	};
 
@@ -69,27 +69,27 @@ ImageSelectionDialog::ImageSelectionDialog(const QString& dir, QWidget* parent) 
 	QLayout* layout = this->layout();
 	if(layout)
 	{
-		layout->addWidget(m->img_label);
-		layout->addWidget(m->res_label);
+		layout->addWidget(m->imageLabel);
+		layout->addWidget(m->resolutionLabel);
 	}
 
-	connect(this, &QFileDialog::currentChanged, this, &ImageSelectionDialog::file_selected);
+	connect(this, &QFileDialog::currentChanged, this, &ImageSelectionDialog::fileSelected);
 }
 
 ImageSelectionDialog::~ImageSelectionDialog() {}
 
-void ImageSelectionDialog::file_selected(const QString& file)
+void ImageSelectionDialog::fileSelected(const QString& file)
 {
 	QPixmap pm(file);
 	if(pm.isNull()) {
 		return;
 	}
 
-	m->img_label->setPixmap(
-		pm.scaled(m->img_label->size())
+	m->imageLabel->setPixmap(
+		pm.scaled(m->imageLabel->size())
 	);
 
-	m->res_label->setText(
+	m->resolutionLabel->setText(
 		QString("%1x%2").arg(pm.width()).arg(pm.height())
 	);
 }

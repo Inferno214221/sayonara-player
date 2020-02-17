@@ -1,6 +1,6 @@
 /* Broadcaster.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -29,7 +29,7 @@ namespace PipelineExtensions
 	class BroadcastDataReceiver
 	{
 		public:
-			virtual void set_raw_data(const QByteArray& data)=0;
+			virtual void setRawData(const QByteArray& data)=0;
 	};
 }
 
@@ -42,11 +42,11 @@ class Broadcaster
 	PIMPL(Broadcaster)
 
 	public:
-		Broadcaster(PipelineExtensions::BroadcastDataReceiver* broadcast_data_receiver, GstElement* pipeline, GstElement* tee);
+		Broadcaster(PipelineExtensions::BroadcastDataReceiver* broadcastDataReceiver, GstElement* pipeline, GstElement* tee);
 		virtual ~Broadcaster();
 
 		bool init();
-		bool set_enabled(bool b);
+		bool setEnabled(bool b);
 };
 
 #endif // BROADCASTER_H

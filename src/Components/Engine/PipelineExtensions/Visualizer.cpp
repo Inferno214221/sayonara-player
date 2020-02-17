@@ -1,6 +1,6 @@
 /* Visualizer.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -36,20 +36,20 @@ struct Visualizer::Private
 	GstElement* pipeline=nullptr;
 	GstElement* tee=nullptr;
 
-	GstElement*			visualizer_bin=nullptr;
-	GstElement*			visualizer_queue=nullptr;
+	GstElement*			bin=nullptr;
+	GstElement*			queue=nullptr;
 	GstElement*			spectrum=nullptr;
 	GstElement*			level=nullptr;
-	GstElement*			visualizer_sink=nullptr;
+	GstElement*			sink=nullptr;
 
 	gulong				probe;
-	bool				is_running;
+	bool				isRunning;
 
 	Private(GstElement* pipeline, GstElement* tee) :
 		pipeline(pipeline),
 		tee(tee),
 		probe(0),
-		is_running(false)
+		isRunning(false)
 	{}
 };
 
@@ -62,70 +62,70 @@ Visualizer::~Visualizer() = default;
 
 bool Visualizer::init()
 {
-	if(m->visualizer_bin){
+	if(m->bin){
 		return true;
 	}
 
 	{ // create
-		if(	Engine::Utils::create_element(&m->visualizer_queue, "queue", "visualizer") &&
-			Engine::Utils::create_element(&m->level, "level") &&	// in case of renaming, also look in EngineCallbase GST_MESSAGE_EVENT
-			Engine::Utils::create_element(&m->spectrum, "spectrum") &&
-			Engine::Utils::create_element(&m->visualizer_sink,"fakesink", "visualizer"))
+		if(	Engine::Utils::createElement(&m->queue, "queue", "visualizer") &&
+			Engine::Utils::createElement(&m->level, "level") &&	// in case of renaming, also look in EngineCallbase GST_MESSAGE_EVENT
+			Engine::Utils::createElement(&m->spectrum, "spectrum") &&
+			Engine::Utils::createElement(&m->sink,"fakesink", "visualizer"))
 		{
-			Engine::Utils::create_bin(&m->visualizer_bin, {m->visualizer_queue, m->level, m->spectrum, m->visualizer_sink}, "visualizer");
+			Engine::Utils::createBin(&m->bin, {m->queue, m->level, m->spectrum, m->sink}, "visualizer");
 		}
 
-		if(!m->visualizer_bin){
+		if(!m->bin){
 			return false;
 		}
 	}
 
 	{ // link
-		gst_bin_add(GST_BIN(m->pipeline), m->visualizer_bin);
-		bool success = Engine::Utils::tee_connect(m->tee, m->visualizer_bin, "Visualizer");
+		gst_bin_add(GST_BIN(m->pipeline), m->bin);
+		bool success = Engine::Utils::connectTee(m->tee, m->bin, "Visualizer");
 		if(!success)
 		{
-			gst_bin_remove(GST_BIN(m->pipeline), m->visualizer_bin);
-			gst_object_unref(m->visualizer_bin);
-			m->visualizer_bin = nullptr;
+			gst_bin_remove(GST_BIN(m->pipeline), m->bin);
+			gst_object_unref(m->bin);
+			m->bin = nullptr;
 			return false;
 		}
 	}
 
 	{ // configure
-		Engine::Utils::set_values(G_OBJECT(m->level), "post-messages", true);
-		Engine::Utils::set_uint64_value(G_OBJECT(m->level), "interval", 20 * GST_MSECOND);
-		Engine::Utils::set_values(G_OBJECT (m->spectrum),
+		Engine::Utils::setValues(G_OBJECT(m->level), "post-messages", true);
+		Engine::Utils::setUint64Value(G_OBJECT(m->level), "interval", 20 * GST_MSECOND);
+		Engine::Utils::setValues(G_OBJECT (m->spectrum),
 					  "post-messages", true,
 					  "message-phase", false,
 					  "message-magnitude", true,
 					  "multi-channel", false);
 
-		Engine::Utils::set_int_value(G_OBJECT(m->spectrum), "threshold", -75);
-		Engine::Utils::set_uint_value(G_OBJECT(m->spectrum), "bands", GetSetting(Set::Engine_SpectrumBins));
-		Engine::Utils::set_uint64_value(G_OBJECT(m->spectrum), "interval", 20 * GST_MSECOND);
+		Engine::Utils::setIntValue(G_OBJECT(m->spectrum), "threshold", -75);
+		Engine::Utils::setUintValue(G_OBJECT(m->spectrum), "bands", GetSetting(Set::Engine_SpectrumBins));
+		Engine::Utils::setUint64Value(G_OBJECT(m->spectrum), "interval", 20 * GST_MSECOND);
 
-		Engine::Utils::config_queue(m->visualizer_queue, 1000);
-		Engine::Utils::config_sink(m->visualizer_sink);
+		Engine::Utils::configureQueue(m->queue, 1000);
+		Engine::Utils::configureSink(m->sink);
 	}
 
 	return true;
 }
 
-bool Visualizer::set_enabled(bool b)
+bool Visualizer::setEnabled(bool b)
 {
 	if(!init()){
 		return false;
 	}
 
-	m->is_running = b;
-	Probing::handle_probe(&m->is_running, m->visualizer_queue, &m->probe, Probing::spectrum_probed);
+	m->isRunning = b;
+	Probing::handleProbe(&m->isRunning, m->queue, &m->probe, Probing::spectrumProbed);
 
 	bool show_level = GetSetting(Set::Engine_ShowLevel);
 	bool show_spectrum = GetSetting(Set::Engine_ShowSpectrum);
 
-	Engine::Utils::set_value(G_OBJECT(m->level), "post-messages", show_level);
-	Engine::Utils::set_value(G_OBJECT(m->spectrum), "post-messages", show_spectrum);
+	Engine::Utils::setValue(G_OBJECT(m->level), "post-messages", show_level);
+	Engine::Utils::setValue(G_OBJECT(m->spectrum), "post-messages", show_spectrum);
 
 	return true;
 }

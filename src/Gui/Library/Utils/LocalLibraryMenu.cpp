@@ -1,6 +1,6 @@
 /* LocalLibraryMenu.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -29,7 +29,7 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language/Language.h"
 
-using namespace Library;
+using Library::LocalLibraryMenu;
 
 struct LocalLibraryMenu::Private
 {
@@ -37,25 +37,25 @@ struct LocalLibraryMenu::Private
 	QString path;
 
 
-	QAction* reload_library_action=nullptr;
-	QAction* import_file_action=nullptr;
-	QAction* import_folder_action=nullptr;
-	QAction* info_action=nullptr;
-	QAction* edit_action=nullptr;
-	QAction* livesearch_action=nullptr;
-	QAction* show_album_artists_action=nullptr;
-	QAction* show_album_cover_view=nullptr;
+	QAction* reloadLibraryAction=nullptr;
+	QAction* importFileAction=nullptr;
+	QAction* importFolderAction=nullptr;
+	QAction* infoAction=nullptr;
+	QAction* editAction=nullptr;
+	QAction* livesearchAction=nullptr;
+	QAction* showAlbumArtistsAction=nullptr;
+	QAction* showAlbumCoverView=nullptr;
 
-	bool has_preference_action;
-	bool is_initialized;
-	bool is_library_empty;
+	bool hasPreferenceAction;
+	bool isInitialized;
+	bool isLibraryEmpty;
 
 	Private(const QString& name, const QString& path) :
 		name(name),
 		path(path),
-		has_preference_action(false),
-		is_initialized(false),
-		is_library_empty(false)
+		hasPreferenceAction(false),
+		isInitialized(false),
+		isLibraryEmpty(false)
 	{}
 };
 
@@ -64,210 +64,210 @@ LocalLibraryMenu::LocalLibraryMenu(const QString& name, const QString& path, QWi
 {
 	m = Pimpl::make<Private>(name, path);
 
-	init_menu();
+	initMenu();
 }
 
 LocalLibraryMenu::~LocalLibraryMenu() = default;
 
-void LocalLibraryMenu::refresh_name(const QString& name)
+void LocalLibraryMenu::refreshName(const QString& name)
 {
 	m->name = name;
 }
 
-void LocalLibraryMenu::refresh_path(const QString& path)
+void LocalLibraryMenu::refreshPath(const QString& path)
 {
 	m->path = path;
 }
 
-void LocalLibraryMenu::set_show_album_covers_checked(bool checked)
+void LocalLibraryMenu::setShowAlbumCoversChecked(bool checked)
 {
-	if(!m->is_initialized){
+	if(!m->isInitialized){
 		return;
 	}
 
-	m->show_album_cover_view->setChecked(checked);
+	m->showAlbumCoverView->setChecked(checked);
 }
 
-void LocalLibraryMenu::set_library_busy(bool b)
+void LocalLibraryMenu::setLibraryBusy(bool b)
 {
-	if(!m->is_initialized){
+	if(!m->isInitialized){
 		return;
 	}
 
-	m->reload_library_action->setEnabled(!b);
-	m->edit_action->setEnabled(!b);
-	m->import_file_action->setEnabled(!b);
-	m->import_folder_action->setEnabled(!b);
+	m->reloadLibraryAction->setEnabled(!b);
+	m->editAction->setEnabled(!b);
+	m->importFileAction->setEnabled(!b);
+	m->importFolderAction->setEnabled(!b);
 }
 
-void LocalLibraryMenu::set_library_empty(bool b)
+void LocalLibraryMenu::setLibraryEmpty(bool b)
 {
-	m->is_library_empty = b;
-	language_changed();
+	m->isLibraryEmpty = b;
+	languageChanged();
 }
 
-void LocalLibraryMenu::add_preference_action(Gui::PreferenceAction* action)
+void LocalLibraryMenu::addPreferenceAction(Gui::PreferenceAction* action)
 {
 	QList<QAction*> actions;
 
-	if(!m->has_preference_action){
+	if(!m->hasPreferenceAction){
 		actions << this->addSeparator();
 	}
 
 	actions << action;
 
 	this->addActions(actions);
-	m->has_preference_action = true;
+	m->hasPreferenceAction = true;
 }
 
 
-void LocalLibraryMenu::init_menu()
+void LocalLibraryMenu::initMenu()
 {
-	if(m->is_initialized)
+	if(m->isInitialized)
 	{
 		return;
 	}
 
-	m->reload_library_action = new QAction(this);
-	m->import_file_action = new QAction(this);
-	m->import_folder_action = new QAction(this);
-	m->info_action = new QAction(this);
-	m->edit_action = new QAction(this);
+	m->reloadLibraryAction = new QAction(this);
+	m->importFileAction = new QAction(this);
+	m->importFolderAction = new QAction(this);
+	m->infoAction = new QAction(this);
+	m->editAction = new QAction(this);
 
-	m->livesearch_action = new QAction(this);
-	m->livesearch_action->setCheckable(true);
-	m->livesearch_action->setChecked(GetSetting(Set::Lib_LiveSearch));
+	m->livesearchAction = new QAction(this);
+	m->livesearchAction->setCheckable(true);
+	m->livesearchAction->setChecked(GetSetting(Set::Lib_LiveSearch));
 
-	m->show_album_artists_action = new QAction(this);
-	m->show_album_artists_action->setCheckable(true);
-	m->show_album_artists_action->setChecked(GetSetting(Set::Lib_ShowAlbumArtists));
+	m->showAlbumArtistsAction = new QAction(this);
+	m->showAlbumArtistsAction->setCheckable(true);
+	m->showAlbumArtistsAction->setChecked(GetSetting(Set::Lib_ShowAlbumArtists));
 
-	m->show_album_cover_view = new QAction(this);
-	m->show_album_cover_view->setCheckable(true);
-	m->show_album_cover_view->setChecked(GetSetting(Set::Lib_ShowAlbumCovers));
+	m->showAlbumCoverView = new QAction(this);
+	m->showAlbumCoverView->setCheckable(true);
+	m->showAlbumCoverView->setChecked(GetSetting(Set::Lib_ShowAlbumCovers));
 
-	connect(m->reload_library_action, &QAction::triggered, this, &LocalLibraryMenu::sig_reload_library);
-	connect(m->import_file_action, &QAction::triggered, this, &LocalLibraryMenu::sig_import_file);
-	connect(m->import_folder_action, &QAction::triggered, this, &LocalLibraryMenu::sig_import_folder);
-	connect(m->info_action, &QAction::triggered, this, &LocalLibraryMenu::sig_info);
-	connect(m->edit_action, &QAction::triggered, this, &LocalLibraryMenu::edit_clicked);
-	connect(m->livesearch_action, &QAction::triggered, this, &LocalLibraryMenu::realtime_search_triggered);
-	connect(m->show_album_artists_action, &QAction::triggered, this, &LocalLibraryMenu::show_album_artists_triggered);
-	connect(m->show_album_cover_view, &QAction::triggered, this, &LocalLibraryMenu::show_album_covers_triggered);
+	connect(m->reloadLibraryAction, &QAction::triggered, this, &LocalLibraryMenu::sigReloadLibrary);
+	connect(m->importFileAction, &QAction::triggered, this, &LocalLibraryMenu::sigImportFile);
+	connect(m->importFolderAction, &QAction::triggered, this, &LocalLibraryMenu::sigImportFolder);
+	connect(m->infoAction, &QAction::triggered, this, &LocalLibraryMenu::sigInfo);
+	connect(m->editAction, &QAction::triggered, this, &LocalLibraryMenu::editClicked);
+	connect(m->livesearchAction, &QAction::triggered, this, &LocalLibraryMenu::setLiveSearchEnabled);
+	connect(m->showAlbumArtistsAction, &QAction::triggered, this, &LocalLibraryMenu::showAlbumArtistsTriggered);
+	connect(m->showAlbumCoverView, &QAction::triggered, this, &LocalLibraryMenu::showAlbumCoversTriggered);
 
 	QList<QAction*> actions;
 	actions <<
-		m->info_action <<
-		m->edit_action <<
+		m->infoAction <<
+		m->editAction <<
 		this->addSeparator() <<
-		m->import_file_action <<
-		m->import_folder_action <<
-		m->reload_library_action <<
+		m->importFileAction <<
+		m->importFolderAction <<
+		m->reloadLibraryAction <<
 		this->addSeparator() <<
-		m->livesearch_action <<
-		m->show_album_cover_view <<
-		m->show_album_artists_action;
+		m->livesearchAction <<
+		m->showAlbumCoverView <<
+		m->showAlbumArtistsAction;
 
 	this->addActions(actions);
-	this->add_preference_action(new Gui::LibraryPreferenceAction(this));
+	this->addPreferenceAction(new Gui::LibraryPreferenceAction(this));
 
-	m->is_initialized = true;
+	m->isInitialized = true;
 
-	ListenSetting(Set::Lib_ShowAlbumCovers, LocalLibraryMenu::show_album_covers_changed);
-	ListenSetting(Set::Lib_ShowAlbumArtists, LocalLibraryMenu::show_album_artists_changed);
-	ListenSetting(Set::Lib_LiveSearch, LocalLibraryMenu::realtime_search_changed);
+	ListenSetting(Set::Lib_ShowAlbumCovers, LocalLibraryMenu::showAlbumCoversChanged);
+	ListenSetting(Set::Lib_ShowAlbumArtists, LocalLibraryMenu::showAlbumArtistsChanged);
+	ListenSetting(Set::Lib_LiveSearch, LocalLibraryMenu::livesearchTriggered);
 
-	shortcut_changed(ShortcutIdentifier::Invalid);
-	language_changed();
-	skin_changed();
+	shortcutChanged(ShortcutIdentifier::Invalid);
+	languageChanged();
+	skinChanged();
 }
 
-void LocalLibraryMenu::language_changed()
+void LocalLibraryMenu::languageChanged()
 {
-	if(!m->is_initialized){
+	if(!m->isInitialized){
 		return;
 	}
 
-	m->info_action->setText(tr("Statistics"));
-	m->edit_action->setText(tr("Edit library"));
+	m->infoAction->setText(tr("Statistics"));
+	m->editAction->setText(tr("Edit library"));
 
-	m->import_file_action->setText(Lang::get(Lang::ImportFiles));
-	m->import_folder_action->setText(Lang::get(Lang::ImportDir));
+	m->importFileAction->setText(Lang::get(Lang::ImportFiles));
+	m->importFolderAction->setText(Lang::get(Lang::ImportDir));
 
-	m->livesearch_action->setText(Lang::get(Lang::LiveSearch));
-	m->show_album_artists_action->setText(Lang::get(Lang::ShowAlbumArtists));
-	m->show_album_cover_view->setText(Lang::get(Lang::ShowCovers));
+	m->livesearchAction->setText(Lang::get(Lang::LiveSearch));
+	m->showAlbumArtistsAction->setText(Lang::get(Lang::ShowAlbumArtists));
+	m->showAlbumCoverView->setText(Lang::get(Lang::ShowCovers));
 
-	if(m->is_library_empty) {
-		m->reload_library_action->setText(Lang::get(Lang::ScanForFiles));
+	if(m->isLibraryEmpty) {
+		m->reloadLibraryAction->setText(Lang::get(Lang::ScanForFiles));
 	}
 
 	else {
-		m->reload_library_action->setText(Lang::get(Lang::ReloadLibrary));
+		m->reloadLibraryAction->setText(Lang::get(Lang::ReloadLibrary));
 	}
 }
 
-void LocalLibraryMenu::skin_changed()
+void LocalLibraryMenu::skinChanged()
 {
-	if(!m->is_initialized){
+	if(!m->isInitialized){
 		return;
 	}
 
 	using namespace Gui;
-	m->reload_library_action->setIcon(Icons::icon(Icons::Refresh));
-	m->import_file_action->setIcon(Icons::icon(Icons::Open));
-	m->import_folder_action->setIcon(Icons::icon(Icons::Open));
-	m->info_action->setIcon(Icons::icon(Icons::Info));
-	m->edit_action->setIcon(Icons::icon(Icons::Edit));
+	m->reloadLibraryAction->setIcon(Icons::icon(Icons::Refresh));
+	m->importFileAction->setIcon(Icons::icon(Icons::Open));
+	m->importFolderAction->setIcon(Icons::icon(Icons::Open));
+	m->infoAction->setIcon(Icons::icon(Icons::Info));
+	m->editAction->setIcon(Icons::icon(Icons::Edit));
 }
 
-void LocalLibraryMenu::shortcut_changed(ShortcutIdentifier identifier)
+void LocalLibraryMenu::shortcutChanged(ShortcutIdentifier identifier)
 {
 	Q_UNUSED(identifier)
 
-	if(!m->is_initialized){
+	if(!m->isInitialized){
 		return;
 	}
 
 	ShortcutHandler* sch = ShortcutHandler::instance();
 
-	m->show_album_artists_action->setShortcutContext(Qt::WidgetShortcut);
-	m->show_album_artists_action->setShortcut(sch->shortcut(ShortcutIdentifier::AlbumArtists).sequence());
-	m->show_album_cover_view->setShortcutContext(Qt::WidgetShortcut);
-	m->show_album_cover_view->setShortcut(sch->shortcut(ShortcutIdentifier::CoverView).sequence());
-	m->reload_library_action->setShortcutContext(Qt::WidgetShortcut);
-	m->reload_library_action->setShortcut(sch->shortcut(ShortcutIdentifier::ReloadLibrary).sequence());
+	m->showAlbumArtistsAction->setShortcutContext(Qt::WidgetShortcut);
+	m->showAlbumArtistsAction->setShortcut(sch->shortcut(ShortcutIdentifier::AlbumArtists).sequence());
+	m->showAlbumCoverView->setShortcutContext(Qt::WidgetShortcut);
+	m->showAlbumCoverView->setShortcut(sch->shortcut(ShortcutIdentifier::CoverView).sequence());
+	m->reloadLibraryAction->setShortcutContext(Qt::WidgetShortcut);
+	m->reloadLibraryAction->setShortcut(sch->shortcut(ShortcutIdentifier::ReloadLibrary).sequence());
 }
 
-void LocalLibraryMenu::realtime_search_triggered(bool b)
+void LocalLibraryMenu::setLiveSearchEnabled(bool b)
 {
 	SetSetting(Set::Lib_LiveSearch, b);
 }
 
 
-void LocalLibraryMenu::realtime_search_changed()
+void LocalLibraryMenu::livesearchTriggered()
 {
-	if(!m->is_initialized){
+	if(!m->isInitialized){
 		return;
 	}
 
-	m->livesearch_action->setChecked(GetSetting(Set::Lib_LiveSearch) );
+	m->livesearchAction->setChecked(GetSetting(Set::Lib_LiveSearch) );
 }
 
-void LocalLibraryMenu::edit_clicked()
+void LocalLibraryMenu::editClicked()
 {
-	if(!m->is_initialized){
+	if(!m->isInitialized){
 		return;
 	}
 
 	GUI_EditLibrary* edit_dialog = new GUI_EditLibrary(m->name, m->path, this);
 
-	connect(edit_dialog, &GUI_EditLibrary::sig_accepted, this, &LocalLibraryMenu::edit_accepted);
+	connect(edit_dialog, &GUI_EditLibrary::sigAccepted, this, &LocalLibraryMenu::editAccepted);
 
 	edit_dialog->show();
 }
 
-void LocalLibraryMenu::edit_accepted()
+void LocalLibraryMenu::editAccepted()
 {
 	auto* edit_dialog = static_cast<GUI_EditLibrary*>(sender());
 	QString name = edit_dialog->name();
@@ -278,32 +278,32 @@ void LocalLibraryMenu::edit_accepted()
 		return;
 	}
 
-	if(edit_dialog->has_name_changed()){
-		emit sig_name_changed(name);
+	if(edit_dialog->hasNameChanged()){
+		emit sigNameChanged(name);
 	}
 
-	if(edit_dialog->has_path_changed()){
-		emit sig_path_changed(path);
+	if(edit_dialog->hasPathChanged()){
+		emit sigPathChanged(path);
 	}
 }
 
-void LocalLibraryMenu::show_album_covers_triggered(bool b)
+void LocalLibraryMenu::showAlbumCoversTriggered(bool b)
 {
 	SetSetting(Set::Lib_ShowAlbumCovers, b);
 }
 
-void LocalLibraryMenu::show_album_covers_changed()
+void LocalLibraryMenu::showAlbumCoversChanged()
 {
-	m->show_album_cover_view->setChecked(GetSetting(Set::Lib_ShowAlbumCovers));
+	m->showAlbumCoverView->setChecked(GetSetting(Set::Lib_ShowAlbumCovers));
 }
 
-void LocalLibraryMenu::show_album_artists_triggered(bool b)
+void LocalLibraryMenu::showAlbumArtistsTriggered(bool b)
 {
 	SetSetting(Set::Lib_ShowAlbumArtists, b);
 }
 
-void LocalLibraryMenu::show_album_artists_changed()
+void LocalLibraryMenu::showAlbumArtistsChanged()
 {
-	m->show_album_artists_action->setChecked(GetSetting(Set::Lib_ShowAlbumArtists));
+	m->showAlbumArtistsAction->setChecked(GetSetting(Set::Lib_ShowAlbumArtists));
 }
 

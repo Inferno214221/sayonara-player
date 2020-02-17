@@ -1,6 +1,6 @@
 /* Widget.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -40,20 +40,20 @@ namespace Gui
 		Q_OBJECT
 
 	signals:
-		void sig_shown();
-		void sig_closed();
+		void sigShown();
+		void sigClosed();
 
 	public:
 		explicit Widget(QWidget* parent=nullptr);
-		virtual ~Widget();
+		virtual ~Widget() override;
 
-		Dialog* box_into_dialog();
+		Dialog* boxIntoDialog();
 
 	protected:
-		Dialog* _boxed_dialog=nullptr;
+		Dialog* mBoxedDialog=nullptr;
 
-		virtual void showEvent(QShowEvent* e);
-		virtual void closeEvent(QCloseEvent* e);
+		virtual void showEvent(QShowEvent* e) override;
+		virtual void closeEvent(QCloseEvent* e) override;
 	};
 
 	/**
@@ -66,11 +66,11 @@ namespace Gui
 		Q_OBJECT
 
 	signals:
-		void sig_shown();
+		void sigShown();
 
 	public:
 		explicit MainWindow(QWidget* parent=nullptr);
-		virtual ~MainWindow();
+		virtual ~MainWindow() override;
 
 		void raise();
 

@@ -1,6 +1,6 @@
 /* SoundcloudViews.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -33,7 +33,7 @@ namespace SC
 		Q_OBJECT
 		public:
 			using ::Library::TrackView::TrackView;
-			::Library::ContextMenu::Entries context_menu_entries() const override;
+			::Library::ContextMenu::Entries contextMenuEntries() const override;
 	};
 
 	class AlbumView : public ::Library::AlbumView
@@ -41,7 +41,7 @@ namespace SC
 		Q_OBJECT
 		public:
 			using ::Library::AlbumView::AlbumView;
-			::Library::ContextMenu::Entries context_menu_entries() const override;
+			::Library::ContextMenu::Entries contextMenuEntries() const override;
 	};
 
 	class ArtistView : public ::Library::ArtistView
@@ -49,7 +49,7 @@ namespace SC
 		Q_OBJECT
 		public:
 			using ::Library::ArtistView::ArtistView;
-			::Library::ContextMenu::Entries context_menu_entries() const override;
+			::Library::ContextMenu::Entries contextMenuEntries() const override;
 	};
 }
 

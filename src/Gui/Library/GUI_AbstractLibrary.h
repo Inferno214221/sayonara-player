@@ -1,6 +1,6 @@
 /* GUI_AbstractLibrary.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -50,50 +50,50 @@ namespace Library
 
 	public:
 		explicit GUI_AbstractLibrary(AbstractLibrary* library,
-									 QWidget *parent=nullptr);
+									 QWidget* parent=nullptr);
 
 		virtual ~GUI_AbstractLibrary() override;
 
 	private:
 		virtual void init();
-		virtual void init_search_bar();
+		virtual void initSearchBar();
 
 	protected:
-		virtual void language_changed() override;
-		virtual void init_shortcuts();
-		virtual bool has_selections() const;
+		virtual void languageChanged() override;
+		virtual void initShortcuts();
+		virtual bool hasSelections() const;
 
-		virtual TrackDeletionMode show_delete_dialog(int n_tracks)=0;
+		virtual TrackDeletionMode showDeleteDialog(int n_tracks)=0;
 
 	protected slots:
-		virtual void live_search_changed();
+		virtual void liveSearchChanged();
 
-		virtual void clear_selections();
-		virtual void search_triggered();
-		virtual void search_edited(const QString& searchstring);
-		virtual void key_pressed(int key);
-		virtual void query_library();
+		virtual void clearSelections();
+		virtual void searchTriggered();
+		virtual void searchEdited(const QString& searchstring);
+		virtual void keyPressed(int key);
+		virtual void queryLibrary();
 
-		virtual void item_delete_clicked();
-		virtual void show_delete_answer(QString);
+		virtual void itemDeleteClicked();
+		virtual void showDeleteAnswer(QString);
 
-		void tracks_delete_clicked();
+		void tracksDeleteClicked();
 
 	protected:
-		virtual TableView* lv_artist() const=0;
-		virtual TableView* lv_album() const=0;
-		virtual TableView* lv_tracks() const=0;
-		virtual SearchBar* le_search() const=0;
+		virtual TableView* lvArtist() const=0;
+		virtual TableView* lvAlbum() const=0;
+		virtual TableView* lvTracks() const=0;
+		virtual SearchBar* leSearch() const=0;
 
-		virtual QList<Filter::Mode> search_options() const=0;
+		virtual QList<Filter::Mode> searchOptions() const=0;
 
 		template<typename T, typename UI>
-		void setup_parent(T* subclass, UI** ui)
+		void setupParent(T* subclass, UI** ui)
 		{
 			*ui = new UI();
 
-			UI* ui_ptr = *ui;
-			ui_ptr->setupUi(subclass);
+			UI* uiPtr = *ui;
+			uiPtr->setupUi(subclass);
 
 			init();
 		}

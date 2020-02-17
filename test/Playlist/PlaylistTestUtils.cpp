@@ -11,9 +11,9 @@ MetaDataList Test::Playlist::create_v_md(int min, int max)
 		MetaData md;
 		QString p = QString("https://www.bla.com/path/to/%1.mp3").arg(i);
 
-		md.set_id(i);
-		md.set_filepath(p);
-		md.set_duration_ms(i * 10000);
+		md.setId(i);
+		md.setFilepath(p);
+		md.setDurationMs(i * 10000);
 
 		v_md << md;
 	}

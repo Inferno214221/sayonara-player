@@ -1,6 +1,6 @@
 /* DirectoryWidgetContainer.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -27,7 +27,6 @@ class GUI_DirectoryWidget;
 
 namespace Library
 {
-
 	/**
 	 * @brief The DirectoryContainer class
 	 * @ingroup GuiDirectories
@@ -45,12 +44,12 @@ namespace Library
 		explicit DirectoryContainer(QObject* parent=nullptr);
 		~DirectoryContainer() override;
 
-		QString				display_name() const override;
+		QString				displayName() const override;
 		QString				name() const override;
 		QWidget*			widget() const override;
 		QFrame*				header() const override;
 		QPixmap				icon() const override;
-		void				init_ui() override;
+		void				initUi() override;
 	};
 }
 

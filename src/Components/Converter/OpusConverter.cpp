@@ -18,7 +18,7 @@ OpusConverter::OpusConverter(bool cbr, int quality, QObject* parent) :
 
 OpusConverter::~OpusConverter() = default;
 
-QStringList OpusConverter::supported_input_formats() const
+QStringList OpusConverter::supportedInputFormats() const
 {
 	return {"flac", "wav"};
 }
@@ -28,7 +28,7 @@ QString OpusConverter::binary() const
 	return "opusenc";
 }
 
-QStringList OpusConverter::process_entry(const MetaData& md) const
+QStringList OpusConverter::processEntry(const MetaData& md) const
 {
 	QStringList ret
 	{
@@ -52,7 +52,7 @@ QStringList OpusConverter::process_entry(const MetaData& md) const
 	ret << QStringList
 	{
 		QString("%1").arg(md.filepath()),
-		QString("%1").arg(target_file(md))
+		QString("%1").arg(targetFile(md))
 	};
 
 	return ret;

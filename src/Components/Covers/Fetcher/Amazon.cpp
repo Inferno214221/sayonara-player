@@ -1,6 +1,6 @@
 /* AmazonCoverFetcher.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -28,12 +28,12 @@
 
 using Cover::Fetcher::Amazon;
 
-bool Amazon::can_fetch_cover_directly() const
+bool Amazon::canFetchCoverDirectly() const
 {
 	return false;
 }
 
-QStringList Amazon::parse_addresses(const QByteArray& website) const
+QStringList Amazon::parseAddresses(const QByteArray& website) const
 {
 	QRegExp re("<img.*class=\"s-image\".*srcset=\"(.+[0-9]+x)\"");
 	re.setMinimal(true);
@@ -42,7 +42,7 @@ QStringList Amazon::parse_addresses(const QByteArray& website) const
 		return QStringList();
 	}
 
-	sp_log(Log::Info, this) << re.cap(1);
+	spLog(Log::Info, this) << re.cap(1);
 
 	QStringList sources;
 	QMap<QString, double> item_sources;
@@ -86,12 +86,12 @@ QStringList Amazon::parse_addresses(const QByteArray& website) const
 	return sources;
 }
 
-QString Amazon::priv_identifier() const
+QString Amazon::privateIdentifier() const
 {
 	return "amazon";
 }
 
-QString Amazon::album_address(const QString& artist, const QString& album) const
+QString Amazon::albumAddress(const QString& artist, const QString& album) const
 {
 	QString str(artist + "+" + album);
 	str.replace(" ", "+");
@@ -100,7 +100,7 @@ QString Amazon::album_address(const QString& artist, const QString& album) const
 	return QString("https://www.amazon.de/s?k=%1&i=digital-music&ref=nb_sb_noss").arg(str);
 }
 
-QString Amazon::search_address(const QString& search_string) const
+QString Amazon::fulltextSearchAddress(const QString& search_string) const
 {
 	QString str(search_string);
 	str.replace(" ", "+");
@@ -109,7 +109,7 @@ QString Amazon::search_address(const QString& search_string) const
 	return QString("https://www.amazon.de/s?k=%1&i=digital-music&ref=nb_sb_noss").arg(str);
 }
 
-int Amazon::estimated_size() const
+int Amazon::estimatedSize() const
 {
 	return 400;
 }

@@ -1,6 +1,6 @@
 /* WebAccess.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -23,7 +23,7 @@
  * WebAccess.h
  *
  *  Created on: Oct 22, 2011
- *      Author: Lucio Carreras
+ *      Author: Michael Lugmair (Lucio Carreras)
  */
 
 #ifndef WebAccess_H_
@@ -36,10 +36,11 @@ class QByteArray;
 
 namespace LastFM
 {
-    class UrlParams :  public QMap<QByteArray, QByteArray> {
-    public:
-        UrlParams();
-        void append_signature();
+    class UrlParams :  public QMap<QByteArray, QByteArray>
+    {
+		public:
+			UrlParams();
+			void appendSignature();
     };
 
     class WebAccess : public QObject
@@ -47,27 +48,28 @@ namespace LastFM
         Q_OBJECT
 
     signals:
-
-        void sig_response(const QByteArray& response);
-        void sig_error(const QString& error);
+        void sigResponse(const QByteArray& response);
+        void sigError(const QString& error);
 
     public:
-        void call_url(const QString& url);
-        void call_post_url(const QString& url, const QByteArray& post_data);
+        void callUrl(const QString& url);
+        void callPostUrl(const QString& url, const QByteArray& data);
 
-    private slots:
-        void awa_finished();
-
+    public:
+        static QString parseTokenAnswer(const QString& content);
+        static QString createStandardUrl(const QString& base_url, const UrlParams& data);
+        static QString createPostUrl(const QString& base_url, const UrlParams& data, QByteArray& postData);
 
     private:
-        QString parse_error_message(const QString& response);
-        bool check_error(const QByteArray& data);
+        QString parseErrorMessage(const QString& response);
+        bool checkError(const QByteArray& data);
 
-    public:
-        static QString parse_token_answer(const QString& content);
+	private slots:
+        void awaFinished();
 
-        static QString create_std_url(const QString& base_url, const UrlParams& data);
-        static QString create_std_url_post(const QString& base_url, const UrlParams& data, QByteArray& post_data);
+
+
+
     };
 }
 #endif /* WebAccess_H_ */

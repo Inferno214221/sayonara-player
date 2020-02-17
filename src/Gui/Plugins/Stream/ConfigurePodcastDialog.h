@@ -12,10 +12,10 @@ public:
 	ConfigurePodcastDialog(QWidget* parent);
 	~ConfigurePodcastDialog() override;
 
-	StationPtr			configured_station() override;
-	QList<QWidget*>		configuration_widgets(StationPtr station) override;
-	QString				label_text(int i) const override;
-
+	StationPtr			configuredStation() override;
+	QList<QWidget*>		configurationWidgets() override;
+	void				configureWidgets(StationPtr station) override;
+	QString				labelText(int i) const override;
 };
 
 #endif // GUI_CONFIGURESTREAM_H

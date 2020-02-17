@@ -1,6 +1,6 @@
 /* ArtistModel.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -23,7 +23,7 @@
  * LibraryItemModelArtistts.h
  *
  *  Created on: Apr 26, 2011
- *      Author: Lucio Carreras
+ *      Author: Michael Lugmair (Lucio Carreras)
  */
 
 #ifndef LIBRARYITEMMODELARTISTS_H_
@@ -53,13 +53,12 @@ namespace Library
 
 			/** LibraryItemModel **/
 			Cover::Location	cover(const IndexSet& indexes) const override;
-			int				searchable_column() const override;
-			Id				id_by_index(int row) const override;
-			QString			searchable_string(int row) const override;
-			const Util::Set<Id>&		selections() const override;
+			int				searchableColumn() const override;
+			Id				mapIndexToId(int row) const override;
+			QString			searchableString(int row) const override;
 
 		protected:
-			const MetaDataList& mimedata_tracks() const override;
+			const MetaDataList& selectedMetadata() const override;
 	};
 }
 

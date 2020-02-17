@@ -1,6 +1,6 @@
 /* GenreFetcher.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -34,9 +34,9 @@
 
 struct GenreFetcher::Private
 {
-	LocalLibrary*					local_library=nullptr;
+	LocalLibrary*					localLibrary=nullptr;
 	Util::Set<Genre>				genres;
-	Util::Set<Genre>				additional_genres; // empty genres that are inserted
+	Util::Set<Genre>				additionalGenres; // empty genres that are inserted
 	Tagging::UserOperations*		uto=nullptr;
 };
 
@@ -47,17 +47,17 @@ GenreFetcher::GenreFetcher(QObject* parent) :
 
 	Tagging::ChangeNotifier* mcn = Tagging::ChangeNotifier::instance();
 
-	connect(mcn, &Tagging::ChangeNotifier::sig_metadata_changed, this, &GenreFetcher::reload_genres);
-	connect(mcn, &Tagging::ChangeNotifier::sig_metadata_deleted, this, &GenreFetcher::reload_genres);
+	connect(mcn, &Tagging::ChangeNotifier::sigMetadataChanged, this, &GenreFetcher::reloadGenres);
+	connect(mcn, &Tagging::ChangeNotifier::sigMetadataDeleted, this, &GenreFetcher::reloadGenres);
 }
 
-Tagging::UserOperations* GenreFetcher::init_tagging()
+Tagging::UserOperations* GenreFetcher::initTagging()
 {
 	if(!m->uto)
 	{
 		m->uto = new Tagging::UserOperations(-1, this);
-		connect(m->uto, &Tagging::UserOperations::sig_progress, this, &GenreFetcher::sig_progress);
-		connect(m->uto, &Tagging::UserOperations::sig_finished, this, &GenreFetcher::sig_finished);
+		connect(m->uto, &Tagging::UserOperations::sigProgress, this, &GenreFetcher::sigProgress);
+		connect(m->uto, &Tagging::UserOperations::sigFinished, this, &GenreFetcher::sigFinished);
 	}
 
 	return m->uto;
@@ -65,24 +65,24 @@ Tagging::UserOperations* GenreFetcher::init_tagging()
 
 GenreFetcher::~GenreFetcher() = default;
 
-void GenreFetcher::reload_genres()
+void GenreFetcher::reloadGenres()
 {
-	if(!m->local_library){
+	if(!m->localLibrary){
 		return;
 	}
 
-	LibraryId library_id = m->local_library->id();
+	LibraryId libraryId = m->localLibrary->id();
 
-	DB::LibraryDatabase* lib_db = DB::Connector::instance()->library_db(library_id, 0);
+	DB::LibraryDatabase* lib_db = DB::Connector::instance()->libraryDatabase(libraryId, 0);
 	m->genres = lib_db->getAllGenres();
 
-	emit sig_genres_fetched();
+	emit sigGenresFetched();
 }
 
 Util::Set<Genre> GenreFetcher::genres() const
 {
 	Util::Set<Genre> genres(m->genres);
-	for(const Genre& genre : m->additional_genres)
+	for(const Genre& genre : m->additionalGenres)
 	{
 		genres.insert(genre);
 	}
@@ -90,44 +90,43 @@ Util::Set<Genre> GenreFetcher::genres() const
 	return genres;
 }
 
-
-void GenreFetcher::create_genre(const Genre& genre)
+void GenreFetcher::createGenre(const Genre& genre)
 {
-	m->additional_genres << genre;
-	emit sig_genres_fetched();
+	m->additionalGenres << genre;
+	emit sigGenresFetched();
 }
 
-void GenreFetcher::add_genre_to_md(const MetaDataList& v_md, const Genre& genre)
+void GenreFetcher::applyGenreToMetadata(const MetaDataList& v_md, const Genre& genre)
 {
-	Tagging::UserOperations* uto = init_tagging();
-	uto->add_genre_to_md(v_md, genre);
+	Tagging::UserOperations* uto = initTagging();
+	uto->applyGenreToMetadata(v_md, genre);
 }
 
-void GenreFetcher::delete_genre(const Genre& genre)
+void GenreFetcher::deleteGenre(const Genre& genre)
 {
-	Tagging::UserOperations* uto = init_tagging();
-	uto->delete_genre(genre);
+	Tagging::UserOperations* uto = initTagging();
+	uto->deleteGenre(genre);
 }
 
-void GenreFetcher::delete_genres(const Util::Set<Genre>& genres)
+void GenreFetcher::deleteGenres(const Util::Set<Genre>& genres)
 {
 	for(const Genre& genre : genres)
 	{
-		delete_genre(genre);
+		deleteGenre(genre);
 	}
 }
 
-void GenreFetcher::rename_genre(const Genre& old_genre, const Genre& new_genre)
+void GenreFetcher::renameGenre(const Genre& oldGenre, const Genre& newGenre)
 {
-	Tagging::UserOperations* uto = init_tagging();
-	uto->rename_genre(old_genre, new_genre);
+	Tagging::UserOperations* uto = initTagging();
+	uto->renameGenre(oldGenre, newGenre);
 }
 
 void GenreFetcher::set_local_library(LocalLibrary* local_library)
 {
-	m->local_library = local_library;
-	connect(m->local_library, &LocalLibrary::sig_reloading_library_finished,
-			this, &GenreFetcher::reload_genres);
+	m->localLibrary = local_library;
+	connect(m->localLibrary, &LocalLibrary::sigReloadingLibraryFinished,
+			this, &GenreFetcher::reloadGenres);
 
-	QTimer::singleShot(200, this, SLOT(reload_genres()));
+	QTimer::singleShot(200, this, SLOT(reloadGenres()));
 }

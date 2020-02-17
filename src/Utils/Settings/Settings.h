@@ -1,6 +1,6 @@
 /* Settings.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -51,10 +51,10 @@ class Settings
 		const SettingArray& settings();
 
 		/* before you want to access a setting you have to register it */
-		void register_setting(AbstrSetting* s);
+		void registerSetting(AbstrSetting* s);
 
 		/* checks if all settings are registered */
-		bool check_settings();
+		bool checkSettings();
 
 		/* get a setting, defined by a unique, REGISTERED key */
 		template<typename KeyClass>
@@ -72,10 +72,10 @@ class Settings
 			using SettingPtr=Setting<KeyClass>*;
 			SettingPtr s = static_cast<SettingPtr>( setting(KeyClass::key) );
 
-			if( s->assign_value(val))
+			if( s->assignValue(val))
 			{
 				SettingNotifier< KeyClass >* sn = SettingNotifier< KeyClass >::instance();
-				sn->val_changed();
+				sn->valueChanged();
 			}
 		}
 
@@ -84,10 +84,10 @@ class Settings
 		void shout() const
 		{
 			SettingNotifier<KeyClass >* sn = SettingNotifier< KeyClass >::instance();
-			sn->val_changed();
+			sn->valueChanged();
 		}
 
-		void apply_fixes();
+		void applyFixes();
 };
 
 

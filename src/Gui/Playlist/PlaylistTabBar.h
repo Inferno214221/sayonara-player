@@ -1,6 +1,6 @@
 /* PlaylistTabBar.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -38,56 +38,57 @@ namespace Playlist
 		Q_OBJECT
 		PIMPL(TabBar)
 
-	signals:
-		void sig_open_file(int tab_idx);
-		void sig_open_dir(int tab_idx);
+		signals:
+			void sigOpenFile(int tab_idx);
+			void sigOpenDir(int tab_idx);
 
-		void sig_tab_reset(int tab_idx);
-		void sig_tab_save(int tab_idx);
-		void sig_tab_save_as(int tab_idx, const QString& name);
-		void sig_tab_save_to_file(int tab_idx, const QString& filename);
-		void sig_tab_rename(int tab_idx, const QString& name);
-		void sig_tab_clear(int tab_idx);
+			void sigTabReset(int tab_idx);
+			void sigTabSave(int tab_idx);
+			void sigTabSaveAs(int tab_idx, const QString& name);
+			void sigTabSaveToFile(int tab_idx, const QString& filename);
+			void sigTabRename(int tab_idx, const QString& name);
+			void sigTabClear(int tab_idx);
 
-		void sig_tab_delete(int tab_idx);
-		void sig_cur_idx_changed(int tab_idx);
-		void sig_add_tab_clicked();
-		void sig_metadata_dropped(int tab_idx, const MetaDataList& v_md);
-		void sig_files_dropped(int tab_idx, const QStringList& files);
+			void sigTabDelete(int tab_idx);
+			void sigCurrentIndexChanged(int tab_idx);
+			void sigAddTabClicked();
+			void sigMetadataDropped(int tab_idx, const MetaDataList& v_md);
+			void sigFilesDropped(int tab_idx, const QStringList& files);
 
 
-	public:
-		explicit TabBar(QWidget *parent=nullptr);
-		~TabBar() override;
+		public:
+			explicit TabBar(QWidget* parent=nullptr);
+			~TabBar() override;
 
-		void show_menu_items(MenuEntries entries);
-		void setTabsClosable(bool b);
+			void showMenuItems(MenuEntries entries);
+			void setTabsClosable(bool b);
 
-		bool was_drag_from_playlist() const;
-		int get_drag_origin_tab() const;
+			bool wasDragFromPlaylist() const;
+			int getDragOriginTab() const;
 
-	private:
-		void mousePressEvent(QMouseEvent* e) override;
-		void wheelEvent(QWheelEvent* e) override;
-		void dragEnterEvent(QDragEnterEvent* e) override;
-		void dragMoveEvent(QDragMoveEvent* e) override;
-		void dragLeaveEvent(QDragLeaveEvent* e) override;
-		void dropEvent(QDropEvent* e) override;
+		private:
+			void initShortcuts();
 
-		void init_shortcuts();
+		private slots:
+			void openFilePressed();
+			void openDirPressed();
+			void resetPressed();
+			void savePressed();
+			void saveAsPressed();
+			void saveToFilePressed();
+			void clearPressed();
+			void deletePressed();
+			void closePressed();
+			void closeOthersPressed();
+			void renamePressed();
 
-	private slots:
-		void open_file_pressed();
-		void open_dir_pressed();
-		void reset_pressed();
-		void save_pressed();
-		void save_as_pressed();
-		void save_to_file_pressed();
-		void clear_pressed();
-		void delete_pressed();
-		void close_pressed();
-		void close_others_pressed();
-		void rename_pressed();
+		protected:
+			void mousePressEvent(QMouseEvent* e) override;
+			void wheelEvent(QWheelEvent* e) override;
+			void dragEnterEvent(QDragEnterEvent* e) override;
+			void dragMoveEvent(QDragMoveEvent* e) override;
+			void dragLeaveEvent(QDragLeaveEvent* e) override;
+			void dropEvent(QDropEvent* e) override;
 	};
 }
 

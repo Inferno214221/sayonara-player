@@ -1,6 +1,6 @@
 /* VisualPlugin.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -56,9 +56,9 @@ protected:
 	virtual void leaveEvent(QEvent* e) override;
 
 	virtual QWidget*	widget()=0;
-	virtual ColorStyle	current_style() const=0;
-	virtual int			current_style_index() const=0;
-	virtual bool		has_small_buttons() const=0;
+	virtual ColorStyle	currentStyle() const=0;
+	virtual int			currentStyleIndex() const=0;
+	virtual bool		hasSmallButtons() const=0;
 
 	void stop_fadeout_timer();
 
@@ -71,7 +71,7 @@ protected slots:
 	virtual void next_clicked();
 	virtual void prev_clicked();
 
-	virtual void do_fadeout_step()=0;
+	virtual void doFadeoutStep()=0;
 
 	virtual void playstate_changed(PlayState play_state);
 	virtual void played();
@@ -82,14 +82,14 @@ protected slots:
 public slots:
 	virtual void update_style(int new_index)=0;
 	virtual void update();
-	virtual void init_ui() override;
+	virtual void initUi() override;
 
 
 public:
 	explicit VisualPlugin(QWidget* parent=nullptr);
 	virtual ~VisualPlugin();
 
-	virtual bool is_title_shown() const override;
+	virtual bool hasTitle() const override;
 };
 
 #endif // ENGINEPLUGIN_H

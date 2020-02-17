@@ -1,6 +1,6 @@
 /* LocalLibraryContainer.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -51,13 +51,13 @@ LocalLibraryContainer::~LocalLibraryContainer() {}
 
 QString LocalLibraryContainer::name() const
 {
-	QString name = display_name();
+	QString name = displayName();
 	name = name.toLower();
 	name.replace(" ", "-");
 	return name;
 }
 
-QString LocalLibraryContainer::display_name() const
+QString LocalLibraryContainer::displayName() const
 {
 	return m->name;
 }
@@ -76,7 +76,7 @@ QMenu*LocalLibraryContainer::menu()
 	return nullptr;
 }
 
-void LocalLibraryContainer::init_ui()
+void LocalLibraryContainer::initUi()
 {
 	if(m->ui){
 		return;
@@ -85,14 +85,14 @@ void LocalLibraryContainer::init_ui()
 	m->ui = new GUI_LocalLibrary(m->library.id());
 }
 
-bool LocalLibraryContainer::is_local() const
+bool LocalLibraryContainer::isLocal() const
 {
 	return true;
 }
 
 QFrame* LocalLibraryContainer::header() const
 {
-	return m->ui->header_frame();
+	return m->ui->headerFrame();
 }
 
 QPixmap LocalLibraryContainer::icon() const

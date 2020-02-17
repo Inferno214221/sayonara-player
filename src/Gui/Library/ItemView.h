@@ -1,6 +1,6 @@
 /* View.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -23,7 +23,7 @@
  * MyListView.h
  *
  *  Created on: Jun 26, 2011
- *      Author: Lucio Carreras
+ *      Author: Michael Lugmair (Lucio Carreras)
  */
 
 #ifndef ITEM_VIEW_H_
@@ -59,102 +59,98 @@ namespace Library
 		Q_OBJECT
 		PIMPL(ItemView)
 
-	signals:
-		void sig_all_selected();
-		void sig_delete_clicked();
-		void sig_play_clicked();
-		void sig_play_next_clicked();
-		void sig_play_new_tab_clicked();
-		void sig_append_clicked();
-		void sig_refresh_clicked();
-		void sig_reload_clicked();
-		void sig_import_files(const QStringList& files);
-		void sig_sel_changed(const IndexSet& indexes);
-		void sig_merge(const Util::Set<Id>& ids, int target_id);
+		signals:
+			void sigDeleteClicked();
+			void sigPlayClicked();
+			void sigPlayNextClicked();
+			void sigPlayNewTabClicked();
+			void sigAppendClicked();
+			void sigRefreshClicked();
+			void sigReloadClicked();
+			void sigImportFiles(const QStringList& files);
+			void sigSelectionChanged(const IndexSet& indexes);
 
-	private:
-		ItemView(const ItemView& other)=delete;
-		ItemView& operator =(const ItemView& other)=delete;
+		private:
+			ItemView(const ItemView& other)=delete;
+			ItemView& operator =(const ItemView& other)=delete;
 
-		void show_context_menu_actions(Library::ContextMenu::Entries entries);
+			void showContextMenuActions(Library::ContextMenu::Entries entries);
 
-		using SearchableTableView::set_model;
+			using SearchableTableView::setSearchableModel;
 
-	public:
-		explicit ItemView(QWidget* parent=nullptr);
-		virtual ~ItemView() override;
+		public:
+			explicit ItemView(QWidget* parent=nullptr);
+			virtual ~ItemView() override;
 
-		void set_item_model(ItemModel* model);
+			void setItemModel(ItemModel* model);
 
-		virtual Library::ContextMenu::Entries context_menu_entries() const;
+			virtual Library::ContextMenu::Entries contextMenuEntries() const;
 
-		/** Dragable **/
-		QMimeData* dragable_mimedata() const override;
-		QPixmap drag_pixmap() const override;
+			/** Dragable **/
+			QMimeData* dragableMimedata() const override;
+			QPixmap dragPixmap() const override;
 
-		void set_selection_type(SelectionViewInterface::SelectionType type) override;
-		bool is_valid_drag_position(const QPoint &p) const override;
+			bool isValidDragPosition(const QPoint &p) const override;
 
-		void show_clear_button(bool visible);
-		void use_clear_button(bool yesno);
+			void showClearButton(bool visible);
+			void useClearButton(bool yesno);
 
-		void resize_rows_to_contents();
-		void resize_rows_to_contents(int first_row, int count);
+			void resizeRowsToContents();
+			void resizeRowsToContents(int first_row, int count);
 
-	protected:
-		// Events implemented in LibraryViewEvents.cpp
-		virtual void mousePressEvent(QMouseEvent* event) override;
-		virtual void contextMenuEvent(QContextMenuEvent* event) override;
+		protected:
+			// Events implemented in LibraryViewEvents.cpp
+			virtual void mousePressEvent(QMouseEvent* event) override;
+			virtual void contextMenuEvent(QContextMenuEvent* event) override;
 
-		virtual void dragEnterEvent(QDragEnterEvent *event) override;
-		virtual void dragMoveEvent(QDragMoveEvent *event) override;
-		virtual void dropEvent(QDropEvent* event) override;
-		virtual void changeEvent(QEvent* event) override;
-		virtual void keyPressEvent(QKeyEvent* event) override;
-		virtual void resizeEvent(QResizeEvent *event) override;
+			virtual void dragEnterEvent(QDragEnterEvent *event) override;
+			virtual void dragMoveEvent(QDragMoveEvent *event) override;
+			virtual void dropEvent(QDropEvent* event) override;
+			virtual void changeEvent(QEvent* event) override;
+			virtual void keyPressEvent(QKeyEvent* event) override;
+			virtual void resizeEvent(QResizeEvent *event) override;
 
-		virtual void selected_items_changed (const QItemSelection& selected, const QItemSelection& deselected );
+			virtual void selectionChanged(const QItemSelection& selected, const QItemSelection& deselected) override;
 
-		virtual void init_context_menu();
-		virtual void init_custom_context_menu(Library::ContextMenu* menu);
+			Library::ContextMenu* contextMenu() const;
+			virtual void initContextMenu();
+			virtual void initCustomContextMenu(Library::ContextMenu* menu);
 
-		Library::ContextMenu* context_menu() const;
+			ItemModel* itemModel() const;
+			virtual AbstractLibrary* library() const;
 
-		ItemModel* item_model() const;
-		virtual AbstractLibrary* library() const;
+			/**
+			 * @brief indicates if multiple ids can be merged into one. For example if the same
+			 * artist is written in three different ways, they can be merged to one. On the
+			 * other hand, for tracks that does not make sense
+			 * @return
+			 */
+			virtual bool isMergeable() const=0;
 
-		/**
-		 * @brief indicates if multiple ids can be merged into one. For example if the same
-		 * artist is written in three different ways, they can be merged to one. On the
-		 * other hand, for tracks that does not make sense
-		 * @return
-		 */
-		virtual bool is_mergeable() const=0;
+			MetaDataList infoDialogData() const override;
 
-		MetaDataList info_dialog_data() const override;
+			virtual void selectedItemsChanged(const IndexSet& indexes);
+			virtual void importRequested(const QStringList& files);
 
-		virtual void selection_changed(const IndexSet& indexes);
-		virtual void import_requested(const QStringList& files);
+			virtual void runMergeOperation(const Library::MergeData& md);
 
-		virtual void run_merge_operation(const Library::MergeData& md);
-
-		int viewport_height() const override;
+			int viewportHeight() const override;
 
 
-	protected slots:
-		virtual void show_context_menu(const QPoint&);
-		virtual void merge_action_triggered();
-		virtual void play_clicked();
-		virtual void play_new_tab_clicked();
-		virtual void play_next_clicked();
-		virtual void delete_clicked();
-		virtual void append_clicked();
-		virtual void refresh_clicked();
-		virtual void reload_clicked();
-		virtual void cover_view_toggled();
-		virtual void album_artists_toggled();
-		virtual void filter_extensions_triggered(const QString& extension, bool b);
-		virtual void fill();
+		protected slots:
+			virtual void showContextMenu(const QPoint&);
+			virtual void mergeActionTriggered();
+			virtual void playClicked();
+			virtual void playNewTabClicked();
+			virtual void playNextClicked();
+			virtual void deleteClicked();
+			virtual void appendClicked();
+			virtual void refreshClicked();
+			virtual void reloadClicked();
+			virtual void coverViewToggled();
+			virtual void albumArtistsToggled();
+			virtual void filterExtensionsTriggered(const QString& extension, bool b);
+			virtual void fill();
 	};
 }
 

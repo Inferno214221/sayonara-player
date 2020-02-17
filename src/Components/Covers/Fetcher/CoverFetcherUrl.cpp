@@ -36,7 +36,7 @@ Cover::Fetcher::Url& Url::operator=(const Cover::Fetcher::Url& other)
 
 Url::~Url() = default;
 
-void Url::set_identifier(const QString& identifier)
+void Url::setIdentifier(const QString& identifier)
 {
 	m->identifier = identifier;
 }
@@ -46,7 +46,7 @@ QString Url::identifier() const
 	return m->identifier;
 }
 
-void Url::set_url(const QString& url)
+void Url::setUrl(const QString& url)
 {
 	m->url = url;
 }

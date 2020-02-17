@@ -1,6 +1,6 @@
 /* GUI_LastFmPreferences.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -23,7 +23,7 @@
  * GUI_LastFmPreferences.cpp
  *
  *  Created on: Apr 21, 2011
- *      Author: Lucio Carreras
+ *      Author: Michael Lugmair (Lucio Carreras)
  */
 
 #include "GUI_LastFmPreferences.h"
@@ -64,43 +64,43 @@ GUI_LastFmPreferences::~GUI_LastFmPreferences()
 }
 
 
-void GUI_LastFmPreferences::init_ui()
+void GUI_LastFmPreferences::initUi()
 {
-	setup_parent(this, &ui);
+	setupParent(this, &ui);
 
 	revert();
 
-	logged_in(m->lfm->is_logged_in());
+	loginFinished(m->lfm->isLoggedIn());
 
-	connect(ui->btn_login, &QPushButton::clicked, this, &GUI_LastFmPreferences::btn_login_clicked);
-	connect(ui->cb_activate, &QCheckBox::toggled, this, &GUI_LastFmPreferences::active_changed);
-	connect(m->lfm, &LastFM::Base::sig_logged_in, this, &GUI_LastFmPreferences::logged_in);
+	connect(ui->btnLogin, &QPushButton::clicked, this, &GUI_LastFmPreferences::loginClicked);
+	connect(ui->cbActivate, &QCheckBox::toggled, this, &GUI_LastFmPreferences::activeChanged);
+	connect(m->lfm, &LastFM::Base::sigLoggedIn, this, &GUI_LastFmPreferences::loginFinished);
 }
 
 
-QString GUI_LastFmPreferences::action_name() const
+QString GUI_LastFmPreferences::actionName() const
 {
 	return "Last.fm";
 }
 
-void GUI_LastFmPreferences::retranslate_ui()
+void GUI_LastFmPreferences::retranslate()
 {
 	ui->retranslateUi(this);
-	ui->lab_activate->setText(Lang::get(Lang::Active));
-	ui->lab_sec->setText(Lang::get(Lang::Seconds));
+	ui->labActivate->setText(Lang::get(Lang::Active));
+	ui->labSeconds->setText(Lang::get(Lang::Seconds));
 
-	logged_in(m->lfm->is_logged_in());
+	loginFinished(m->lfm->isLoggedIn());
 }
 
 bool GUI_LastFmPreferences::commit()
 {
-	bool active = ui->cb_activate->isChecked();
-	QString username = ui->tf_username->text();
-	QString password = ui->tf_password->text();
+	bool active = ui->cbActivate->isChecked();
+	QString username = ui->leUsername->text();
+	QString password = ui->lePassword->text();
 
 	SetSetting(Set::LFM_Username, username);
 	SetSetting(Set::LFM_Password, Util::Crypt::encrypt(password));
-	SetSetting(Set::LFM_ScrobbleTimeSec, ui->sb_scrobble_time->value());
+	SetSetting(Set::LFM_ScrobbleTimeSec, ui->sbScrobbleTime->value());
 	SetSetting(Set::LFM_Active, active);
 
 	return true;
@@ -113,60 +113,60 @@ void GUI_LastFmPreferences::revert()
 	QString username = GetSetting(Set::LFM_Username);
 	QString password = Util::Crypt::decrypt(GetSetting(Set::LFM_Password));
 
-	active_changed(active);
-	logged_in(m->lfm->is_logged_in());
+	activeChanged(active);
+	loginFinished(m->lfm->isLoggedIn());
 
-	ui->tf_username->setText(username);
-	ui->tf_password->setText(password);
-	ui->sb_scrobble_time->setValue( GetSetting(Set::LFM_ScrobbleTimeSec) );
-	ui->cb_activate->setChecked(active);
+	ui->leUsername->setText(username);
+	ui->lePassword->setText(password);
+	ui->sbScrobbleTime->setValue( GetSetting(Set::LFM_ScrobbleTimeSec) );
+	ui->cbActivate->setChecked(active);
 }
 
 
-void GUI_LastFmPreferences::btn_login_clicked()
+void GUI_LastFmPreferences::loginClicked()
 {
-	if(ui->tf_username->text().length() < 3) {
+	if(ui->leUsername->text().length() < 3) {
 		return;
 	}
 
-	if(ui->tf_password->text().length() < 3) {
+	if(ui->lePassword->text().length() < 3) {
 		return;
 	}
 
-	ui->btn_login->setEnabled(false);
+	ui->btnLogin->setEnabled(false);
 
-	QString username = ui->tf_username->text();
-	QString password = ui->tf_password->text();
+	QString username = ui->leUsername->text();
+	QString password = ui->lePassword->text();
 
 	m->lfm->login(username, password);
 }
 
 
-void GUI_LastFmPreferences::active_changed(bool active)
+void GUI_LastFmPreferences::activeChanged(bool active)
 {
-	if(!is_ui_initialized()){
+	if(!isUiInitialized()){
 		return;
 	}
 
-	ui->tf_username->setEnabled(active);
-	ui->tf_password->setEnabled(active);
+	ui->leUsername->setEnabled(active);
+	ui->lePassword->setEnabled(active);
 }
 
 
-void GUI_LastFmPreferences::logged_in(bool success)
+void GUI_LastFmPreferences::loginFinished(bool success)
 {
-	if(!is_ui_initialized()){
+	if(!isUiInitialized()){
 		return;
 	}
 
 	if(success){
-		ui->lab_status->setText(tr("Logged in"));
+		ui->labStatus->setText(tr("Logged in"));
 	}
 
 	else{
-		ui->lab_status->setText(tr("Not logged in"));
+		ui->labStatus->setText(tr("Not logged in"));
 	}
 
-	ui->btn_login->setEnabled(true);
+	ui->btnLogin->setEnabled(true);
 }
 

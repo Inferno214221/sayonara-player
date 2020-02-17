@@ -19,13 +19,13 @@ RemoteUDPSocket::RemoteUDPSocket(QObject* parent) :
 {
 	m = Pimpl::make<Private>();
 
-	ListenSetting(Set::Remote_Active, RemoteUDPSocket::remote_settings_changed);
-	ListenSetting(Set::Remote_Discoverable, RemoteUDPSocket::remote_settings_changed);
+	ListenSetting(Set::Remote_Active, RemoteUDPSocket::remoteSettingsChanged);
+	ListenSetting(Set::Remote_Discoverable, RemoteUDPSocket::remoteSettingsChanged);
 }
 
 RemoteUDPSocket::~RemoteUDPSocket() = default;
 
-void RemoteUDPSocket::data_received()
+void RemoteUDPSocket::dataReceived()
 {
 	auto* socket = static_cast<QUdpSocket*>(sender());
 
@@ -40,7 +40,7 @@ void RemoteUDPSocket::data_received()
 		const QString data = QString::fromLocal8Bit(raw_data);
 		if(data.size() >= 10 && data.startsWith("sayrc01req"))
 		{
-			QStringList ips = Util::ip_addresses();
+			QStringList ips = Util::ipAddresses();
 			Util::Algorithm::sort(ips, [&address](const QString& ip1, const QString& ip2)
 			{
 				auto ip4addr = address.toIPv4Address();
@@ -86,19 +86,19 @@ void RemoteUDPSocket::data_received()
 
 		else
 		{
-			sp_log(Log::Warning, this) << "Illegal remote control request " << data.size() << ": " << data << " raw data: " << raw_data;
+			spLog(Log::Warning, this) << "Illegal remote control request " << data.size() << ": " << data << " raw data: " << raw_data;
 		}
 
-		sp_log(Log::Info, this) << data << " from " << address.toString() << ":" << port;
+		spLog(Log::Info, this) << data << " from " << address.toString() << ":" << port;
 	}
 }
 
-void RemoteUDPSocket::remote_settings_changed()
+void RemoteUDPSocket::remoteSettingsChanged()
 {
-	set_active(GetSetting(Set::Remote_Active) && GetSetting(Set::Remote_Discoverable));
+	setActive(GetSetting(Set::Remote_Active) && GetSetting(Set::Remote_Discoverable));
 }
 
-void RemoteUDPSocket::set_active(bool b)
+void RemoteUDPSocket::setActive(bool b)
 {
 	if(b)
 	{
@@ -109,7 +109,7 @@ void RemoteUDPSocket::set_active(bool b)
 		m->socket = new QUdpSocket(this);
 		m->socket->bind(QHostAddress::Any, 54056);
 
-		connect(m->socket, &QUdpSocket::readyRead, this, &RemoteUDPSocket::data_received);
+		connect(m->socket, &QUdpSocket::readyRead, this, &RemoteUDPSocket::dataReceived);
 	}
 
 	else

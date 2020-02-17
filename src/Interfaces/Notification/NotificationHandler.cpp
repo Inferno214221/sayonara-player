@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -28,10 +28,10 @@ namespace Algorithm=::Util::Algorithm;
 struct NotificationHandler::Private
 {
 	NotificatonList notificators;
-	int cur_idx;
+	int currentIndex;
 
 	Private() :
-		cur_idx(-1)
+		currentIndex(-1)
 	{}
 };
 
@@ -54,9 +54,9 @@ void NotificationHandler::notify(const QString& title, const QString& message, c
 }
 
 
-void NotificationHandler::register_notificator(NotificationInterface* notificator)
+void NotificationHandler::registerNotificator(NotificationInterface* notificator)
 {
-	sp_log(Log::Info, this) << "Notification handler " << notificator->name() << " registered";
+	spLog(Log::Info, this) << "Notification handler " << notificator->name() << " registered";
 	m->notificators << notificator;
 
 	QString preferred = GetSetting(Set::Notification_Name);
@@ -66,25 +66,25 @@ void NotificationHandler::register_notificator(NotificationInterface* notificato
 	};
 
 	auto it = std::find_if(m->notificators.begin(), m->notificators.end(), lambda);
-	m->cur_idx = (it - m->notificators.begin());
+	m->currentIndex = (it - m->notificators.begin());
 
-	if(m->cur_idx >= m->notificators.size()){
-		m->cur_idx = 0;
+	if(m->currentIndex >= m->notificators.size()){
+		m->currentIndex = 0;
 	}
 
-	emit sig_notifications_changed();
+	emit sigNotificationsChanged();
 }
 
 
-void NotificationHandler::notificator_changed(const QString& name)
+void NotificationHandler::notificatorChanged(const QString& name)
 {
-	m->cur_idx = -1;
+	m->currentIndex = -1;
 	int i = 0;
 
 	for(NotificationInterface* n : Algorithm::AsConst(m->notificators))
 	{
 		if(n->name().compare(name, Qt::CaseInsensitive) == 0){
-			m->cur_idx = i;
+			m->currentIndex = i;
 			break;
 		}
 
@@ -94,13 +94,13 @@ void NotificationHandler::notificator_changed(const QString& name)
 
 NotificationInterface* NotificationHandler::get() const
 {
-	if(m->cur_idx < 0)
+	if(m->currentIndex < 0)
 	{
 		static DummyNotificator dummy;
 		return &dummy;
 	}
 
-	return m->notificators[m->cur_idx];
+	return m->notificators[m->currentIndex];
 }
 
 
@@ -109,16 +109,16 @@ NotificatonList NotificationHandler::notificators() const
 	return m->notificators;
 }
 
-int NotificationHandler::current_index() const
+int NotificationHandler::currentIndex() const
 {
-	return m->cur_idx;
+	return m->currentIndex;
 }
 
 
 DummyNotificator::DummyNotificator() :
 	NotificationInterface() {}
 
-DummyNotificator::~DummyNotificator() {}
+DummyNotificator::~DummyNotificator() = default;
 
 void DummyNotificator::notify(const MetaData &md)
 {
@@ -130,7 +130,7 @@ QString DummyNotificator::name() const
 	return "Dummy";
 }
 
-void DummyNotificator::notify(const QString &title, const QString &message, const QString &image_path)
+void DummyNotificator::notify(const QString& title, const QString& message, const QString& image_path)
 {
 	Q_UNUSED(title)
 	Q_UNUSED(message)

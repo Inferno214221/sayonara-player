@@ -1,6 +1,6 @@
 /* EngineHandler.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -47,26 +47,25 @@ namespace Engine
 		PIMPL(Handler)
 
 		signals:
-			void sig_cover_data(const QByteArray& data, const QString& mimetype);
+			void sigCoverDataAvailable(const QByteArray& data, const QString& mimetype);
 
 		public:
 			void shutdown();
-			bool is_valid() const;
+			bool isValid() const;
 
-			void register_raw_sound_receiver(RawSoundReceiverInterface* receiver);
-			void unregister_raw_sound_receiver(RawSoundReceiverInterface* receiver);
+			void registerRawSoundReceiver(RawSoundReceiverInterface* receiver);
+			void unregisterRawSoundReceiver(RawSoundReceiverInterface* receiver);
 
-			void add_level_receiver(LevelReceiver* receiver);
-			void add_spectrum_receiver(SpectrumReceiver* receiver);
+			void addLevelReceiver(LevelReceiver* receiver);
+			void addSpectrumReceiver(SpectrumReceiver* receiver);
 
-			void set_equalizer(int band, int value);
+			void setEqualizer(int band, int value);
 
 		private slots:
-			void playstate_changed(PlayState state);
-
-			void new_data(const QByteArray& data);
-			void spectrum_changed();
-			void level_changed();
+			void playstateChanged(PlayState state);
+			void newAudioDataAvailable(const QByteArray& data);
+			void spectrumChanged();
+			void levelChanged();
 	};
 }
 

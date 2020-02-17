@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -46,16 +46,15 @@ signals:
 	 * @brief signal is emitted when the test button is pressed
 	 * @param sequences list of sequences mapped to a specific shortcut
 	 */
-	void sig_test_pressed(const QList<QKeySequence>& sequences);
-
-	void sig_sequence_entered();
+	void sigTestPressed(const QList<QKeySequence>& sequences);
+	void sigSequenceEntered();
 
 public:
 	explicit GUI_ShortcutEntry(ShortcutIdentifier identifier, QWidget* parent=nullptr);
 	~GUI_ShortcutEntry();
 
 	QList<QKeySequence> sequences() const;
-	void show_sequence_error();
+	void showSequenceError();
 
 public slots:
 	void commit();
@@ -64,12 +63,12 @@ public slots:
 
 
 private slots:
-	void edit_clicked();
-	void default_clicked();
-	void test_clicked();
+	void editClicked();
+	void defaultClicked();
+	void testClicked();
 
-	void language_changed() override;
-	void skin_changed() override;
+	void languageChanged() override;
+	void skinChanged() override;
 };
 
 #endif // GUI_SHORTCUTENTRY_H

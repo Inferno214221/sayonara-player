@@ -1,6 +1,6 @@
 /* Mergable.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -34,11 +34,11 @@ struct MergeMenu::Private
 	QMenu*				parent=nullptr;
 
 	QMap<Id, QString>	data;
-	Id					target_id;
+	Id					targetId;
 
 	explicit Private(QMenu* parent) :
 		parent(parent),
-		target_id(-1)
+		targetId(-1)
 	{}
 };
 
@@ -54,7 +54,7 @@ MergeMenu::MergeMenu(QMenu* parent) :
 
 MergeMenu::~MergeMenu() = default;
 
-void MergeMenu::set_data(const QMap<Id, QString>& data)
+void MergeMenu::setData(const QMap<Id, QString>& data)
 {
 	this->clear();
 	m->data = data;
@@ -72,9 +72,10 @@ void MergeMenu::set_data(const QMap<Id, QString>& data)
 		action->setData(key);
 		this->addAction(action);
 
-		connect(action, &QAction::triggered, this, [=](){
-			m->target_id = key;
-			emit sig_merge_triggered();
+		connect(action, &QAction::triggered, this, [=]()
+		{
+			m->targetId = key;
+			emit sigMergeTriggered();
 		});
 	}
 }
@@ -84,7 +85,7 @@ QAction* MergeMenu::action() const
 	return m->action;
 }
 
-bool MergeMenu::is_data_valid() const
+bool MergeMenu::isDataValid() const
 {
 	return (m->data.size() > 1);
 }
@@ -96,10 +97,10 @@ Library::MergeData MergeMenu::mergedata() const
 		source_ids << key;
 	}
 
-	return Library::MergeData(source_ids, m->target_id, -1);
+	return Library::MergeData(source_ids, m->targetId, -1);
 }
 
-void MergeMenu::language_changed()
+void MergeMenu::languageChanged()
 {
 	m->action->setText(tr("Merge"));
 }

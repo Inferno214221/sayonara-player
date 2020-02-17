@@ -1,6 +1,6 @@
 /* GenreViewContextMenu.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -45,10 +45,10 @@ namespace Library
 			~GenreViewContextMenu() override;
 
 		private slots:
-			void toggle_tree_triggered();
+			void toggleTreeTriggered();
 
 		protected:
-			void language_changed() override;
+			void languageChanged() override;
 	};
 }
 

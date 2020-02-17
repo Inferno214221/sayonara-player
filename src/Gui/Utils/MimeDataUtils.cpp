@@ -1,6 +1,6 @@
 /* MimeDataUtils.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -63,7 +63,7 @@ QStringList MimeData::playlists(const QMimeData* data)
 
 	for(const QUrl& url : urls)
 	{
-		if(::Util::File::is_playlistfile(url.toString())){
+		if(::Util::File::isPlaylistFile(url.toString())){
 			www_playlists << url.toString();
 		}
 	}
@@ -71,16 +71,16 @@ QStringList MimeData::playlists(const QMimeData* data)
 	return www_playlists;
 }
 
-QString MimeData::cover_url(const QMimeData* data)
+QString MimeData::coverUrl(const QMimeData* data)
 {
 	if(!data){
 		return QString();
 	}
 
 	QString cover_url;
-	const CustomMimeData* cmd = custom_mimedata(data);
+	const CustomMimeData* cmd = customMimedata(data);
 	if(cmd){
-		cover_url = cmd->cover_url();
+		cover_url = cmd->coverUrl();
 	}
 
 	if(cover_url.isEmpty()){
@@ -90,39 +90,39 @@ QString MimeData::cover_url(const QMimeData* data)
 	return cover_url;
 }
 
-void MimeData::set_cover_url(QMimeData* data, const QString &url)
+void MimeData::setCoverUrl(QMimeData* data, const QString& url)
 {
 	if(!data){
 		return;
 	}
 
-	CustomMimeData* cmd = custom_mimedata(data);
+	CustomMimeData* cmd = customMimedata(data);
 	if(cmd){
-		cmd->set_cover_url(url);
+		cmd->setCoverUrl(url);
 	}
 
 	data->setProperty("cover_url", url);
 }
 
-CustomMimeData* MimeData::custom_mimedata(QMimeData* data)
+CustomMimeData* MimeData::customMimedata(QMimeData* data)
 {
 	return dynamic_cast<CustomMimeData*>(data);
 }
 
-const CustomMimeData* MimeData::custom_mimedata(const QMimeData* data)
+const CustomMimeData* MimeData::customMimedata(const QMimeData* data)
 {
 	return dynamic_cast<const CustomMimeData*>(data);
 }
 
 
-bool MimeData::is_inner_drag_drop(const QMimeData* data, int target_playlist_idx)
+bool MimeData::isInnerDragDrop(const QMimeData* data, int target_playlist_idx)
 {
-	const CustomMimeData* cmd = custom_mimedata(data);
+	const CustomMimeData* cmd = customMimedata(data);
 	if(!cmd){
 		return false;
 	}
 
-	int source_idx = cmd->playlist_source_index();
+	int source_idx = cmd->playlistSourceIndex();
 	if(source_idx == -1){
 		return false;
 	}
@@ -130,18 +130,18 @@ bool MimeData::is_inner_drag_drop(const QMimeData* data, int target_playlist_idx
 	return (source_idx == target_playlist_idx);
 }
 
-bool MimeData::is_drag_from_playlist(const QMimeData* data)
+bool MimeData::isDragFromPlaylist(const QMimeData* data)
 {
-	const CustomMimeData* cmd = custom_mimedata(data);
+	const CustomMimeData* cmd = customMimedata(data);
 	if(!cmd){
 		return false;
 	}
 
-	int source_idx = cmd->playlist_source_index();
+	int source_idx = cmd->playlistSourceIndex();
 	return (source_idx != -1);
 }
 
-bool MimeData::is_player_drag(const QMimeData* data)
+bool MimeData::isPlayerDrag(const QMimeData* data)
 {
-	return (custom_mimedata(data) != nullptr);
+	return (customMimedata(data) != nullptr);
 }

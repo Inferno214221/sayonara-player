@@ -1,6 +1,6 @@
 /* PlaylistMode.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -139,7 +139,7 @@ bool Mode::isActiveAndEnabled(Mode::State pl)
 
 void Mode::print()
 {
-	sp_log(Log::Debug, this) << "rep1 = "   << (int) m->rep1 << ", "
+	spLog(Log::Debug, this) << "rep1 = "   << (int) m->rep1 << ", "
 		<< "repAll = "  << (int) m->repAll << ", "
 		<< "append = "  << (int) m->append <<", "
 		<< "dynamic = " << (int) m->dynamic << ","

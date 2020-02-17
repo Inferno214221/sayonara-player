@@ -1,6 +1,6 @@
 /* CoverFetchThread.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -23,7 +23,7 @@
  * CoverFetchThread.cpp
  *
  *  Created on: Jun 28, 2011
- *      Author: Lucio Carreras
+ *      Author: Michael Lugmair (Lucio Carreras)
  */
 
 #include "CoverFetchThread.h"
@@ -48,33 +48,33 @@ using UrlList=QList<Url>;
 
 struct FetchThread::Private
 {
-	QList<AsyncWebAccess*>	active_connections;
+	QList<AsyncWebAccess*>	activeConnections;
 	QList<QPixmap>			pixmaps;
 
 	Fetcher::Base*		acf=nullptr;
 
 	QString				id;
 	QStringList			addresses;
-	UrlList				search_urls;
-	QStringList			found_urls;
-	int					n_covers;
+	UrlList				searchUrls;
+	QStringList			foundUrls;
+	int					coverCount;
 	bool				finished;
-	bool				may_run;
+	bool				mayRun;
 
 	Private(const Location& cl, int n_covers) :
-		id(cl.identifer() + Util::random_string(8)),
-		n_covers(n_covers),
+		id(cl.identifer() + Util::randomString(8)),
+		coverCount(n_covers),
 		finished(false),
-		may_run(true)
+		mayRun(true)
 	{
 		auto* cfm = Cover::Fetcher::Manager::instance();
 
-		const UrlList urls = cl.search_urls();
+		const UrlList urls = cl.searchUrls();
 		for(const Url& url : urls)
 		{
-			if(cfm->is_active(url.identifier()))
+			if(cfm->isActive(url.identifier()))
 			{
-				search_urls << url;
+				searchUrls << url;
 			}
 		}
 	}
@@ -89,26 +89,26 @@ FetchThread::FetchThread(QObject* parent, const Location& cl, const int n_covers
 
 FetchThread::~FetchThread()
 {
-	while(!m->active_connections.isEmpty())
+	while(!m->activeConnections.isEmpty())
 	{
-		AsyncWebAccess* awa = m->active_connections.takeLast();
+		AsyncWebAccess* awa = m->activeConnections.takeLast();
 
 		awa->stop();
 		awa->deleteLater();
 
-		Util::sleep_ms(50);
+		Util::sleepMs(50);
 	}
 }
 
 bool FetchThread::start()
 {
-	m->may_run = true;
+	m->mayRun = true;
 
-	if(m->search_urls.isEmpty()){
+	if(m->searchUrls.isEmpty()){
 		return false;
 	}
 
-	const Url url = m->search_urls.takeFirst();
+	const Url url = m->searchUrls.takeFirst();
 
 	auto* cfm = Fetcher::Manager::instance();
 	m->acf = cfm->coverfetcher(url);
@@ -116,24 +116,24 @@ bool FetchThread::start()
 		return false;
 	}
 
-	sp_log(Log::Debug, this) << "Taking Cover::Fetcher " << m->acf->identifier() << " for " << url.url();
+	spLog(Log::Debug, this) << "Taking Cover::Fetcher " << m->acf->identifier() << " for " << url.url();
 
-	if( m->acf->can_fetch_cover_directly() )
+	if( m->acf->canFetchCoverDirectly() )
 	{
 		m->addresses.clear();
 		m->addresses << url.url();
 
-		fetch_next_cover();
+		fetchNextCover();
 	}
 
 	else
 	{
 		auto* awa = new AsyncWebAccess(this);
 		awa->setObjectName(m->acf->identifier());
-		awa->set_behavior(AsyncWebAccess::Behavior::AsSayonara);
-		connect(awa, &AsyncWebAccess::sig_finished, this, &FetchThread::content_fetched);
+		awa->setBehavior(AsyncWebAccess::Behavior::AsSayonara);
+		connect(awa, &AsyncWebAccess::sigFinished, this, &FetchThread::contentFetched);
 
-		m->active_connections << awa;
+		m->activeConnections << awa;
 		awa->run(url.url(), Timeout);
 	}
 
@@ -141,12 +141,12 @@ bool FetchThread::start()
 }
 
 
-void FetchThread::content_fetched()
+void FetchThread::contentFetched()
 {
 	auto* awa = static_cast<AsyncWebAccess*>(sender());
-	m->active_connections.removeAll(awa);
+	m->activeConnections.removeAll(awa);
 
-	if(!m->may_run){
+	if(!m->mayRun){
 		awa->deleteLater();
 		return;
 	}
@@ -156,29 +156,29 @@ void FetchThread::content_fetched()
 		if(awa->status() == AsyncWebAccess::Status::GotData)
 		{
 			const QByteArray website = awa->data();
-			m->addresses = m->acf->parse_addresses(website);
+			m->addresses = m->acf->parseAddresses(website);
 		}
 	}
 
 	awa->deleteLater();
 
-	if(!fetch_next_cover())
+	if(!fetchNextCover())
 	{
-		sp_log(Log::Warning, this) << "No more adresses available";
+		spLog(Log::Warning, this) << "No more adresses available";
 	}
 }
 
 
-bool FetchThread::fetch_next_cover()
+bool FetchThread::fetchNextCover()
 {
-	if(!m->may_run){
+	if(!m->mayRun){
 		return false;
 	}
 
 	// we have all our covers
-	if(m->n_covers == m->pixmaps.size())
+	if(m->coverCount == m->pixmaps.size())
 	{
-		emit_finished(true);
+		emitFinished(true);
 		return true;
 	}
 
@@ -187,7 +187,7 @@ bool FetchThread::fetch_next_cover()
 	{
 		bool success = start();
 		if(!success) {
-			emit_finished(false);
+			emitFinished(false);
 		}
 
 		return success;
@@ -195,19 +195,19 @@ bool FetchThread::fetch_next_cover()
 
 	const QString address = m->addresses.takeFirst();
 	auto* awa = new AsyncWebAccess(this);
-	awa->set_behavior(AsyncWebAccess::Behavior::AsBrowser);
+	awa->setBehavior(AsyncWebAccess::Behavior::AsBrowser);
 
-	if(m->n_covers == 1) {
-		connect(awa, &AsyncWebAccess::sig_finished, this, &FetchThread::single_image_fetched);
+	if(m->coverCount == 1) {
+		connect(awa, &AsyncWebAccess::sigFinished, this, &FetchThread::singleImageFetched);
 	}
 
 	else {
-		connect(awa, &AsyncWebAccess::sig_finished, this, &FetchThread::multi_image_fetched);
+		connect(awa, &AsyncWebAccess::sigFinished, this, &FetchThread::multiImageFetched);
 	}
 
-	sp_log(Log::Develop, this) << "Fetch cover from " << address;
+	spLog(Log::Develop, this) << "Fetch cover from " << address;
 
-	m->active_connections << awa;
+	m->activeConnections << awa;
 	awa->run(address, Timeout);
 
 	return true;
@@ -215,30 +215,30 @@ bool FetchThread::fetch_next_cover()
 
 void FetchThread::stop()
 {
-	m->may_run = false;
-	emit_finished(false);
+	m->mayRun = false;
+	emitFinished(false);
 }
 
 
-void FetchThread::emit_finished(bool success)
+void FetchThread::emitFinished(bool success)
 {
 	if(!m->finished)
 	{
 		m->finished = true;
-		emit sig_finished(success);
+		emit sigFinished(success);
 	}
 }
 
-void FetchThread::single_image_fetched()
+void FetchThread::singleImageFetched()
 {
 	auto* awa = static_cast<AsyncWebAccess*>(sender());
 	const AsyncWebAccess::Status status = awa->status();
 	const QImage image = awa->image();
 
-	m->active_connections.removeAll(awa);
+	m->activeConnections.removeAll(awa);
 	awa->deleteLater();
 
-	if(!m->may_run){
+	if(!m->mayRun){
 		return;
 	}
 
@@ -248,32 +248,32 @@ void FetchThread::single_image_fetched()
 
 		if(!pm.isNull())
 		{
-			sp_log(Log::Debug, this) << "Found cover in " << m->acf->identifier() << " for " << m->id;
+			spLog(Log::Debug, this) << "Found cover in " << m->acf->identifier() << " for " << m->id;
 
 			m->pixmaps << pm;
-			m->found_urls << awa->url();
+			m->foundUrls << awa->url();
 
-			emit sig_cover_found(m->pixmaps.count() - 1);
-			emit_finished(true);
+			emit sigCoverFound(m->pixmaps.count() - 1);
+			emitFinished(true);
 
 			return;
 		}
 	}
 
-	if(!fetch_next_cover())
+	if(!fetchNextCover())
 	{
-		sp_log(Log::Warning, this) << "Could not fetch cover from " << m->acf->identifier();
+		spLog(Log::Warning, this) << "Could not fetch cover from " << m->acf->identifier();
 	}
 }
 
 
-void FetchThread::multi_image_fetched()
+void FetchThread::multiImageFetched()
 {
 	auto* awa = static_cast<AsyncWebAccess*>(sender());
 
-	m->active_connections.removeAll(awa);
+	m->activeConnections.removeAll(awa);
 
-	if(!m->may_run){
+	if(!m->mayRun){
 		return;
 	}
 
@@ -283,28 +283,28 @@ void FetchThread::multi_image_fetched()
 		if(!pm.isNull())
 		{
 			m->pixmaps << pm;
-			m->found_urls << awa->url();
-			emit sig_cover_found(m->pixmaps.count() - 1);
+			m->foundUrls << awa->url();
+			emit sigCoverFound(m->pixmaps.count() - 1);
 		}
 	}
 
 	else
 	{
-		sp_log(Log::Warning, this) << "Could not fetch multi cover " << m->acf->identifier();
+		spLog(Log::Warning, this) << "Could not fetch multi cover " << m->acf->identifier();
 	}
 
 	awa->deleteLater();
 
-	fetch_next_cover();
+	fetchNextCover();
 }
 
 
 
 QString FetchThread::url(int idx) const
 {
-	if(idx >= 0 && idx < m->found_urls.size())
+	if(idx >= 0 && idx < m->foundUrls.size())
 	{
-		return m->found_urls[idx];
+		return m->foundUrls[idx];
 	}
 
 	return QString();
@@ -320,7 +320,7 @@ QPixmap FetchThread::pixmap(int idx) const
 	return QPixmap();
 }
 
-int FetchThread::found_images() const
+int FetchThread::foundImageCount() const
 {
 	return m->pixmaps.size();
 }

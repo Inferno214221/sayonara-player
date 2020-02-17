@@ -1,6 +1,6 @@
 /* LFMTrackChangedThread.h
 
- * Copyright (C) 2011-2020 Lucio Carreras
+ * Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara-player
  *
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * created by Lucio Carreras,
+ * created by Michael Lugmair (Lucio Carreras),
  * Jul 18, 2012
  *
  */
@@ -41,29 +41,25 @@ namespace LastFM
 		PIMPL(TrackChangedThread)
 
 	signals:
-		void sig_similar_artists_available(const IdList& artist_ids);
-
+		void sigSimilarArtistsAvailable(const IdList& artistIds);
 
 	public:
 		explicit TrackChangedThread(QObject* parent=nullptr);
 		~TrackChangedThread();
 
-		void search_similar_artists(const MetaData& md);
-		void update_now_playing(const QString& session_key, const MetaData& md);
-
+		void searchSimilarArtists(const MetaData& md);
+		void updateNowPlaying(const QString& sessionKey, const MetaData& md);
 
 	private:
-		void evaluate_artist_match(const ArtistMatch& artist_match);
-
-		QMap<QString, int> filter_available_artists(const ArtistMatch& artist_match, ArtistMatch::Quality quality);
-
+		void evaluateArtistMatch(const ArtistMatch& artistMatch);
+		QMap<QString, int> filterAvailableArtists(const ArtistMatch& artistMatch, ArtistMatch::Quality quality);
 
 	private slots:
-		void response_sim_artists(const QByteArray& data);
-		void error_sim_artists(const QString& error);
+		void similarArtistResponseReceived(const QByteArray& data);
+		void similarArtistsErrorReceived(const QString& error);
 
-		void response_update(const QByteArray& response);
-		void error_update(const QString& error);
+		void updateResponseReceived(const QByteArray& response);
+		void updateErrorReceived(const QString& error);
 	};
 }
 #endif /* LFMTRACKCHANGEDTHREAD_H_ */

@@ -1,6 +1,6 @@
 /* MenuTool.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -33,40 +33,40 @@ struct MenuToolButton::Private
 };
 
 
-MenuToolButton::MenuToolButton(QWidget *parent) :
+MenuToolButton::MenuToolButton(QWidget* parent) :
 	MenuButton(parent)
 {
 	m = Pimpl::make<Private>(this);
 
-	connect(m->menu, &ContextMenu::sig_open, this,  &MenuToolButton::sig_open);
-	connect(m->menu, &ContextMenu::sig_new, this, &MenuToolButton::sig_new);
-	connect(m->menu, &ContextMenu::sig_undo, this, &MenuToolButton::sig_undo);
-	connect(m->menu, &ContextMenu::sig_default, this, &MenuToolButton::sig_default);
-	connect(m->menu, &ContextMenu::sig_save, this, &MenuToolButton::sig_save);
-	connect(m->menu, &ContextMenu::sig_save_as, this, &MenuToolButton::sig_save_as);
-	connect(m->menu, &ContextMenu::sig_rename, this, &MenuToolButton::sig_rename);
-	connect(m->menu, &ContextMenu::sig_delete, this, &MenuToolButton::sig_delete);
-	connect(m->menu, &ContextMenu::sig_edit, this, &MenuToolButton::sig_edit);
+	connect(m->menu, &ContextMenu::sigOpen, this,  &MenuToolButton::sigOpen);
+	connect(m->menu, &ContextMenu::sigNew, this, &MenuToolButton::sigNew);
+	connect(m->menu, &ContextMenu::sigUndo, this, &MenuToolButton::sigUndo);
+	connect(m->menu, &ContextMenu::sigDefault, this, &MenuToolButton::sigDefault);
+	connect(m->menu, &ContextMenu::sigSave, this, &MenuToolButton::sigSave);
+	connect(m->menu, &ContextMenu::sigSaveAs, this, &MenuToolButton::sigSaveAs);
+	connect(m->menu, &ContextMenu::sigRename, this, &MenuToolButton::sigRename);
+	connect(m->menu, &ContextMenu::sigDelete, this, &MenuToolButton::sigDelete);
+	connect(m->menu, &ContextMenu::sigEdit, this, &MenuToolButton::sigEdit);
 
-	prove_enabled();
+	proveEnabled();
 }
 
-MenuToolButton::~MenuToolButton() {}
+MenuToolButton::~MenuToolButton() = default;
 
-void MenuToolButton::register_action(QAction *action)
+void MenuToolButton::registerAction(QAction *action)
 {
-	m->menu->register_action(action);
-	prove_enabled();
+	m->menu->registerAction(action);
+	proveEnabled();
 }
 
-void MenuToolButton::register_preference_action(PreferenceAction* action)
+void MenuToolButton::registerPreferenceAction(PreferenceAction* action)
 {
-	m->menu->add_preference_action(action);
+	m->menu->addPreferenceAction(action);
 }
 
-void MenuToolButton::show_menu(QPoint pos)
+void MenuToolButton::showMenu(QPoint pos)
 {
-	MenuButton::show_menu(pos);
+	MenuButton::showMenu(pos);
 
 	this->setDisabled(true);
 	m->menu->popup(pos);
@@ -74,32 +74,32 @@ void MenuToolButton::show_menu(QPoint pos)
 }
 
 
-bool MenuToolButton::prove_enabled()
+bool MenuToolButton::proveEnabled()
 {
-	bool enabled = m->menu->has_actions();
+	bool enabled = m->menu->hasActions();
 	this->setEnabled(enabled);
 	return enabled;
 }
 
-void MenuToolButton::show_all()
+void MenuToolButton::showAll()
 {
-	m->menu->show_all();
-	prove_enabled();
+	m->menu->showAll();
+	proveEnabled();
 }
 
-void MenuToolButton::show_action(ContextMenu::Entry entry, bool visible)
+void MenuToolButton::showAction(ContextMenu::Entry entry, bool visible)
 {
-	m->menu->show_action(entry, visible);
-	prove_enabled();
+	m->menu->showAction(entry, visible);
+	proveEnabled();
 }
 
-void MenuToolButton::show_actions(ContextMenuEntries entries)
+void MenuToolButton::showActions(ContextMenuEntries entries)
 {
-	m->menu->show_actions(entries);
-	prove_enabled();
+	m->menu->showActions(entries);
+	proveEnabled();
 }
 
-Gui::ContextMenuEntries MenuToolButton::get_entries() const
+Gui::ContextMenuEntries MenuToolButton::entries() const
 {
-	return m->menu->get_entries();
+	return m->menu->entries();
 }

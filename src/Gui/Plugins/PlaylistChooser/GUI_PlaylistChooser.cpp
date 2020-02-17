@@ -1,6 +1,6 @@
 /* GUI_PlaylistChooser.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -40,10 +40,10 @@ using Playlist::Chooser;
 
 struct GUI_PlaylistChooser::Private
 {
-	Chooser*	playlist_chooser=nullptr;
+	Chooser*	playlistChooser=nullptr;
 };
 
-GUI_PlaylistChooser::GUI_PlaylistChooser(QWidget *parent) :
+GUI_PlaylistChooser::GUI_PlaylistChooser(QWidget* parent) :
 	PlayerPlugin::Base(parent)
 {
 	m = Pimpl::make<Private>();
@@ -58,107 +58,107 @@ GUI_PlaylistChooser::~GUI_PlaylistChooser()
 }
 
 
-void GUI_PlaylistChooser::init_ui()
+void GUI_PlaylistChooser::initUi()
 {
-	if(!m->playlist_chooser){
-		m->playlist_chooser = new Playlist::Chooser(this);
+	if(!m->playlistChooser){
+		m->playlistChooser = new Playlist::Chooser(this);
 	}
 
-	setup_parent(this, &ui);
+	setupParent(this, &ui);
 
-	ui->btn_actions->show_action(ContextMenu::EntryRename, true);
-	ui->btn_actions->show_action(ContextMenu::EntryDelete, true);
+	ui->btnActions->showAction(ContextMenu::EntryRename, true);
+	ui->btnActions->showAction(ContextMenu::EntryDelete, true);
 
-	connect(ui->btn_actions, &MenuToolButton::sig_rename, this, &GUI_PlaylistChooser::rename_triggered);
-	connect(ui->btn_actions, &MenuToolButton::sig_delete, this, &GUI_PlaylistChooser::delete_triggered);
-	connect(ui->combo_playlists, combo_activated_int, this, &GUI_PlaylistChooser::playlist_selected);
-	connect(m->playlist_chooser, &Chooser::sig_playlists_changed, this, &GUI_PlaylistChooser::playlists_changed);
+	connect(ui->btnActions, &MenuToolButton::sigRename, this, &GUI_PlaylistChooser::renameTriggered);
+	connect(ui->btnActions, &MenuToolButton::sigDelete, this, &GUI_PlaylistChooser::deleteTriggered);
+	connect(ui->comboPlaylists, combo_activated_int, this, &GUI_PlaylistChooser::playlistSelected);
+	connect(m->playlistChooser, &Chooser::sigPlaylistsChanged, this, &GUI_PlaylistChooser::playlistsChanged);
 
-	playlists_changed();
+	playlistsChanged();
 }
 
 
-void GUI_PlaylistChooser::retranslate_ui()
+void GUI_PlaylistChooser::retranslate()
 {
 	ui->retranslateUi(this);
 
 	const CustomPlaylistSkeletons& skeletons =
-			m->playlist_chooser->playlists();
+			m->playlistChooser->playlists();
 
 	if(skeletons.isEmpty())
 	{
-		ui->combo_playlists->clear();
-		ui->combo_playlists->addItem(tr("No playlists found"), -1);
+		ui->comboPlaylists->clear();
+		ui->comboPlaylists->addItem(tr("No playlists found"), -1);
 	}
 }
 
 
-QString GUI_PlaylistChooser::get_name() const
+QString GUI_PlaylistChooser::name() const
 {
 	return "Playlists";
 }
 
 
-QString GUI_PlaylistChooser::get_display_name() const
+QString GUI_PlaylistChooser::displayName() const
 {
 	return Lang::get(Lang::Playlists);
 }
 
 
-void GUI_PlaylistChooser::playlists_changed()
+void GUI_PlaylistChooser::playlistsChanged()
 {
-	if(!is_ui_initialized()){
+	if(!isUiInitialized()){
 		return;
 	}
 
-	QString old_text = ui->combo_playlists->currentText();
+	QString old_text = ui->comboPlaylists->currentText();
 
 	const CustomPlaylistSkeletons& skeletons =
-			m->playlist_chooser->playlists();
+			m->playlistChooser->playlists();
 
-	ui->combo_playlists->clear();
+	ui->comboPlaylists->clear();
 
 	for(const CustomPlaylistSkeleton& skeleton : skeletons)
 	{
-		ui->combo_playlists->addItem(skeleton.name(), skeleton.id());
+		ui->comboPlaylists->addItem(skeleton.name(), skeleton.id());
 	}
 
-	ui->btn_actions->setEnabled(!skeletons.isEmpty());
+	ui->btnActions->setEnabled(!skeletons.isEmpty());
 	if(skeletons.isEmpty())
 	{
-		ui->combo_playlists->addItem(tr("No playlists found"), -1);
+		ui->comboPlaylists->addItem(tr("No playlists found"), -1);
 	}
 
-	int cur_idx = std::max(ui->combo_playlists->findText(old_text), 0);
-	ui->combo_playlists->setCurrentIndex(cur_idx);
+	int cur_idx = std::max(ui->comboPlaylists->findText(old_text), 0);
+	ui->comboPlaylists->setCurrentIndex(cur_idx);
 }
 
-void GUI_PlaylistChooser::rename_triggered()
+void GUI_PlaylistChooser::renameTriggered()
 {
 	auto* dialog = new Gui::LineInputDialog
 	(
 		Lang::get(Lang::Rename),
 		Lang::get(Lang::Rename),
-		ui->combo_playlists->currentText(),
+		ui->comboPlaylists->currentText(),
 		this
 	);
 
-	connect(dialog, &Gui::LineInputDialog::sig_closed, this, &GUI_PlaylistChooser::rename_dialog_closed);
+	connect(dialog, &Gui::LineInputDialog::sigClosed, this, &GUI_PlaylistChooser::renameDialogClosed);
 	dialog->show();
 }
 
-void GUI_PlaylistChooser::rename_dialog_closed()
+void GUI_PlaylistChooser::renameDialogClosed()
 {
 	using Util::SaveAsAnswer;
 	auto* dialog = static_cast<Gui::LineInputDialog*>(sender());
 
-	Gui::LineInputDialog::ReturnValue val = dialog->return_value();
+	Gui::LineInputDialog::ReturnValue val = dialog->returnValue();
 	if(val == Gui::LineInputDialog::ReturnValue::Ok)
 	{
-		int id = ui->combo_playlists->currentData().toInt();
+		int id = ui->comboPlaylists->currentData().toInt();
 		QString new_name = dialog->text();
 
-		SaveAsAnswer answer = m->playlist_chooser->rename_playlist(id, new_name);
+		SaveAsAnswer answer = m->playlistChooser->renamePlaylist(id, new_name);
 		if(answer != SaveAsAnswer::Success)
 		{
 			QString error_msg = tr("Could not rename playlist");
@@ -172,15 +172,15 @@ void GUI_PlaylistChooser::rename_dialog_closed()
 	}
 }
 
-void GUI_PlaylistChooser::delete_triggered()
+void GUI_PlaylistChooser::deleteTriggered()
 {
-	int id = ui->combo_playlists->currentData().toInt();
-	QString name = ui->combo_playlists->currentText();
+	int id = ui->comboPlaylists->currentData().toInt();
+	QString name = ui->comboPlaylists->currentText();
 
 	Message::Answer answer = Message::question_yn(tr("Do you really want to delete %1?").arg(name));
 	if(answer == Message::Answer::Yes)
 	{
-		bool success = m->playlist_chooser->delete_playlist(id);
+		bool success = m->playlistChooser->deletePlaylist(id);
 		if(!success)
 		{
 			Message::error(tr("Could not delete playlist %1").arg(name));
@@ -189,17 +189,17 @@ void GUI_PlaylistChooser::delete_triggered()
 }
 
 
-void GUI_PlaylistChooser::playlist_selected(int idx)
+void GUI_PlaylistChooser::playlistSelected(int idx)
 {
-	int id = m->playlist_chooser->find_playlist(ui->combo_playlists->currentText());
-	int data = ui->combo_playlists->itemData(idx).toInt();
+	int id = m->playlistChooser->findPlaylist(ui->comboPlaylists->currentText());
+	int data = ui->comboPlaylists->itemData(idx).toInt();
 
 	if(data < 0){
 		return;
 	}
 
 	if(id >= 0){
-		m->playlist_chooser->load_single_playlist(id);
+		m->playlistChooser->loadSinglePlaylist(id);
 	}
 }
 

@@ -1,6 +1,6 @@
 /* SearchSlider.h
 
- * Copyright (C) 2011-2020 Lucio Carreras
+ * Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara-player
  *
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * created by Lucio Carreras,
+ * created by Michael Lugmair (Lucio Carreras),
  * Sep 14, 2012
  *
  */
@@ -68,9 +68,9 @@ namespace Gui
 		void mouseMoveEvent(QMouseEvent* e) override;
 		bool event(QEvent *event) override;
 
-		bool has_other_value() const override;
-		int other_value() const override;
-		QColor other_value_color() const override;
+		bool hasAdditionalValue() const override;
+		int additionalValue() const override;
+		QColor additionalValueColor() const override;
 
 
 	private:

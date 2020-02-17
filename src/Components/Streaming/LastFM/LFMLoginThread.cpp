@@ -1,6 +1,6 @@
 /* LoginThread.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -29,10 +29,10 @@ using namespace LastFM;
 
 struct LoginThread::Private
 {
-	LoginStuff login_info;
+	LoginStuff loginInfo;
 };
 
-LoginThread::LoginThread(QObject *parent) :
+LoginThread::LoginThread(QObject* parent) :
 	QObject(parent)
 {
 	m = Pimpl::make<Private>();
@@ -43,12 +43,12 @@ LoginThread::~LoginThread() = default;
 void LoginThread::login(const QString& username, const QString& password)
 {
 	auto* lfm_wa = new WebAccess();
-	connect(lfm_wa, &WebAccess::sig_response, this, &LoginThread::wa_response);
-	connect(lfm_wa, &WebAccess::sig_error, this, &LoginThread::wa_error);
+	connect(lfm_wa, &WebAccess::sigResponse, this, &LoginThread::webaccessResponseReceived);
+	connect(lfm_wa, &WebAccess::sigError, this, &LoginThread::webaccessErrorReceived);
 
-	m->login_info.logged_in = false;
-	m->login_info.session_key = "";
-	m->login_info.subscriber = false;
+	m->loginInfo.loggedIn = false;
+	m->loginInfo.sessionKey = "";
+	m->loginInfo.subscriber = false;
 
 	UrlParams signature_data;
 		signature_data["api_key"] = LFM_API_KEY;
@@ -56,30 +56,29 @@ void LoginThread::login(const QString& username, const QString& password)
 		signature_data["password"] = password.toLocal8Bit();
 		signature_data["username"] = username.toLocal8Bit();
 
-	signature_data.append_signature();
+	signature_data.appendSignature();
 
 	QByteArray post_data;
-	QString url = lfm_wa->create_std_url_post("https://ws.audioscrobbler.com/2.0/", signature_data, post_data);
+	QString url = lfm_wa->createPostUrl("https://ws.audioscrobbler.com/2.0/", signature_data, post_data);
 
-	lfm_wa->call_post_url(url, post_data);
+	lfm_wa->callPostUrl(url, post_data);
 }
 
-
-void LoginThread::wa_response(const QByteArray& data)
+void LoginThread::webaccessResponseReceived(const QByteArray& data)
 {
 	QString str = QString::fromUtf8(data);
 
-	m->login_info.logged_in = true;
-	m->login_info.session_key = Util::easy_tag_finder("lfm.session.key", str);
-	m->login_info.subscriber = (Util::easy_tag_finder("lfm.session.subscriber", str).toInt() == 1);
-	m->login_info.error = str;
+	m->loginInfo.loggedIn = true;
+	m->loginInfo.sessionKey = Util::easyTagFinder("lfm.session.key", str);
+	m->loginInfo.subscriber = (Util::easyTagFinder("lfm.session.subscriber", str).toInt() == 1);
+	m->loginInfo.error = str;
 
-	if(m->login_info.session_key.size() >= 32){
-		emit sig_logged_in(true);
+	if(m->loginInfo.sessionKey.size() >= 32){
+		emit sigLoggedIn(true);
 	}
 
 	else {
-		emit sig_logged_in(false);
+		emit sigLoggedIn(false);
 	}
 
 	if(sender()){
@@ -87,22 +86,20 @@ void LoginThread::wa_response(const QByteArray& data)
 	}
 }
 
-
-void LoginThread::wa_error(const QString& error)
+void LoginThread::webaccessErrorReceived(const QString& error)
 {
-	sp_log(Log::Warning, this) << "LastFM: Cannot login";
-	sp_log(Log::Warning, this) << error;
+	spLog(Log::Warning, this) << "LastFM: Cannot login";
+	spLog(Log::Warning, this) << error;
 
-	emit sig_error(error);
+	emit sigError(error);
 
 	if(sender()){
 		sender()->deleteLater();
 	}
 }
-
 
 LoginStuff LoginThread::getLoginStuff()
 {
-	return m->login_info;
+	return m->loginInfo;
 }
 

@@ -1,6 +1,6 @@
 /* IcyWebAccess.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -36,8 +36,8 @@ class IcyWebAccess :
 	PIMPL(IcyWebAccess)
 
 public:
-	explicit IcyWebAccess(QObject *parent = nullptr);
-	~IcyWebAccess();
+	explicit IcyWebAccess(QObject* parent = nullptr);
+	~IcyWebAccess() override;
 
 	enum class Status : uint8_t
 	{
@@ -54,13 +54,13 @@ public:
 
 
 signals:
-	void sig_finished();
+	void sigFinished();
 
 private slots:
 	void connected();
 	void disconnected();
-	void error_received(QAbstractSocket::SocketError socket_state);
-	void data_available();
+	void errorReceived(QAbstractSocket::SocketError socketState);
+	void dataAvailable();
 
 };
 

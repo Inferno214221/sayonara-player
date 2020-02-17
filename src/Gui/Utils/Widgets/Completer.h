@@ -1,6 +1,6 @@
 /* SayonaraCompleter.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -38,14 +38,14 @@ namespace Gui
 			public QCompleter
 	{
 
-	public:
-		Completer(const QStringList& strings, QObject* parent=nullptr);
-		~Completer();
+		public:
+			Completer(const QStringList& strings, QObject* parent=nullptr);
+			virtual ~Completer() override;
 
-		void set_stringlist(QStringList strings);
+			void setStringList(QStringList strings);
 
-		QStringList splitPath(const QString& path) const override;
-		QString pathFromIndex(const QModelIndex& index) const override;
+			QStringList splitPath(const QString& path) const override;
+			QString pathFromIndex(const QModelIndex& index) const override;
 	};
 }
 

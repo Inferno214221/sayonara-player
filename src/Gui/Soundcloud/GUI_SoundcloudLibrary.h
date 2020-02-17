@@ -1,6 +1,6 @@
 /* GUI_SoundCloudLibrary.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -40,28 +40,28 @@ namespace SC
 		UI_CLASS(GUI_SoundcloudLibrary)
 		PIMPL(GUI_Library)
 
-	public:
-		explicit GUI_Library(SC::Library* library, QWidget *parent=nullptr);
-		~GUI_Library();
+		public:
+			explicit GUI_Library(SC::Library* library, QWidget* parent=nullptr);
+			~GUI_Library() override;
 
-		QMenu*		get_menu() const;
-		QFrame*		header_frame() const;
+			QMenu*		getMenu() const;
+			QFrame*		headerFrame() const;
 
-		QList<::Library::Filter::Mode> search_options() const override;
+			QList<::Library::Filter::Mode> searchOptions() const override;
 
-	protected:
-		::Library::TrackDeletionMode show_delete_dialog(int n_tracks) override;
+		private slots:
+			void btnAddClicked();
 
-		::Library::TableView* lv_artist() const override;
-		::Library::TableView* lv_album() const override;
-		::Library::TableView* lv_tracks() const override;
+		protected:
+			::Library::TrackDeletionMode showDeleteDialog(int n_tracks) override;
 
-		::Library::SearchBar* le_search() const override;
+			::Library::TableView* lvArtist() const override;
+			::Library::TableView* lvAlbum() const override;
+			::Library::TableView* lvTracks() const override;
 
-		void showEvent(QShowEvent *e) override;
+			::Library::SearchBar* leSearch() const override;
 
-	protected slots:
-		void btn_add_clicked();
+			void showEvent(QShowEvent *e) override;
 	};
 }
 #endif // GUI_SOUNDCLOUDLIBRARY_H

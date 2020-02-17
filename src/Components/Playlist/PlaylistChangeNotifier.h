@@ -1,6 +1,6 @@
 /* PlaylistChangeNotifier.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -32,14 +32,14 @@ class PlaylistChangeNotifier : public QObject
 	SINGLETON(PlaylistChangeNotifier)
 
 	signals:
-		void sig_playlist_renamed(int id, const QString& old_name, const QString& new_name);
-		void sig_playlist_added(int id, const QString& name);
-		void sig_playlist_deleted(int id);
+		void sigPlaylistRenamed(int id, const QString& oldName, const QString& newName);
+		void sigPlaylistAdded(int id, const QString& name);
+		void sigPlaylistDeleted(int id);
 
 	public:
-		void delete_playlist(int id);
-		void add_playlist(int id, const QString& name);
-		void rename_playlist(int id, const QString& old_name, const QString& new_name);
+		void deletePlaylist(int id);
+		void addPlaylist(int id, const QString& name);
+		void renamePlaylist(int id, const QString& oldName, const QString& newName);
 };
 
 #endif // PLAYLISTCHANGENOTIFIER_H

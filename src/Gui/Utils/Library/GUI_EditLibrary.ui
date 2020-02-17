@@ -12,21 +12,21 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="3" column="0">
-    <widget class="QLabel" name="lab_path">
+    <widget class="QLabel" name="labPath">
      <property name="text">
       <string notr="true">Path</string>
      </property>
     </widget>
    </item>
    <item row="4" column="0">
-    <widget class="QLabel" name="lab_name">
+    <widget class="QLabel" name="labName">
      <property name="text">
       <string notr="true">Name</string>
      </property>
     </widget>
    </item>
    <item row="0" column="0" colspan="3">
-    <widget class="QLabel" name="lab_title">
+    <widget class="QLabel" name="labTitle">
      <property name="font">
       <font>
        <weight>75</weight>
@@ -53,7 +53,7 @@
     </widget>
    </item>
    <item row="4" column="1" colspan="2">
-    <widget class="QLineEdit" name="le_name">
+    <widget class="QLineEdit" name="leName">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
        <horstretch>0</horstretch>
@@ -78,7 +78,7 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_cancel">
+      <widget class="QPushButton" name="btnCancel">
        <property name="text">
         <string notr="true">Cancel</string>
        </property>
@@ -88,7 +88,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_ok">
+      <widget class="QPushButton" name="btnOk">
        <property name="text">
         <string notr="true">OK</string>
        </property>
@@ -100,7 +100,7 @@
     </layout>
    </item>
    <item row="3" column="1">
-    <widget class="QLineEdit" name="le_path">
+    <widget class="QLineEdit" name="lePath">
      <property name="sizePolicy">
       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
        <horstretch>0</horstretch>
@@ -116,7 +116,7 @@
     </widget>
    </item>
    <item row="3" column="2">
-    <widget class="QPushButton" name="btn_choose_dir">
+    <widget class="QPushButton" name="btnChooseDir">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
        <horstretch>0</horstretch>
@@ -134,11 +134,11 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>le_path</tabstop>
-  <tabstop>btn_choose_dir</tabstop>
-  <tabstop>le_name</tabstop>
-  <tabstop>btn_cancel</tabstop>
-  <tabstop>btn_ok</tabstop>
+  <tabstop>lePath</tabstop>
+  <tabstop>btnChooseDir</tabstop>
+  <tabstop>leName</tabstop>
+  <tabstop>btnCancel</tabstop>
+  <tabstop>btnOk</tabstop>
  </tabstops>
  <resources/>
  <connections/>

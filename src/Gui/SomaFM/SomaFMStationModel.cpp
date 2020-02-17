@@ -1,6 +1,6 @@
 /* SomaFMStationModel.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -48,7 +48,7 @@ struct SomaFM::StationModel::Private
 	SomaFM::StationModel::Status	status;
 };
 
-SomaFM::StationModel::StationModel(QObject *parent) :
+SomaFM::StationModel::StationModel(QObject* parent) :
 	SearchableTableModel(parent)
 {
 	m = Pimpl::make<SomaFM::StationModel::Private>();
@@ -79,7 +79,7 @@ QVariant SomaFM::StationModel::data(const QModelIndex& index, int role) const
 
 	if(!index.isValid())
 	{
-		sp_log(Log::Debug, this) << "Index not valid";
+		spLog(Log::Debug, this) << "Index not valid";
 		return QVariant();
 	}
 
@@ -107,7 +107,7 @@ QVariant SomaFM::StationModel::data(const QModelIndex& index, int role) const
 			return Gui::Icons::icon(Gui::Icons::Undo);
 		}
 
-		if(m->stations[row].is_loved()){
+		if(m->stations[row].isLoved()){
 			return Gui::Icons::icon(Gui::Icons::Star, Gui::Icons::IconMode::ForceSayonaraIcon);
 		}
 
@@ -149,13 +149,7 @@ QVariant SomaFM::StationModel::data(const QModelIndex& index, int role) const
 	return QVariant();
 }
 
-
-bool SomaFM::StationModel::has_items() const
-{
-	return (!m->stations.isEmpty());
-}
-
-QModelIndexList SomaFM::StationModel::search_results(const QString& substr)
+QModelIndexList SomaFM::StationModel::searchResults(const QString& substr)
 {
 	QModelIndexList ret;
 
@@ -176,7 +170,7 @@ QModelIndexList SomaFM::StationModel::search_results(const QString& substr)
 }
 
 
-void SomaFM::StationModel::set_stations(const QList<SomaFM::Station>& stations)
+void SomaFM::StationModel::setStations(const QList<SomaFM::Station>& stations)
 {
 	int n_stations = stations.size();
 
@@ -201,7 +195,7 @@ void SomaFM::StationModel::set_stations(const QList<SomaFM::Station>& stations)
 	emit dataChanged( index(0, 0), index(n_stations - 1, 1));
 }
 
-void SomaFM::StationModel::replace_station(const SomaFM::Station& station)
+void SomaFM::StationModel::replaceStation(const SomaFM::Station& station)
 {
 	for(int i=0; i<m->stations.size(); i++)
 	{
@@ -214,12 +208,12 @@ void SomaFM::StationModel::replace_station(const SomaFM::Station& station)
 	}
 }
 
-bool SomaFM::StationModel::has_stations() const
+bool SomaFM::StationModel::hasStations() const
 {
 	return (m->stations.size() > 0);
 }
 
-void SomaFM::StationModel::set_waiting()
+void SomaFM::StationModel::setWaiting()
 {
 	m->status = Status::Waiting;
 	emit dataChanged( index(0,0), index(0, 1) );
@@ -248,8 +242,8 @@ QMimeData* SomaFM::StationModel::mimeData(const QModelIndexList& indexes) const
 		{
 			urls << QUrl(playlist_url);
 
-			const Cover::Location cl = m->stations[row].cover_location();
-			auto search_urls = cl.search_urls();
+			const Cover::Location cl = m->stations[row].coverLocation();
+			auto search_urls = cl.searchUrls();
 
 			if(!search_urls.isEmpty())
 			{
@@ -260,7 +254,7 @@ QMimeData* SomaFM::StationModel::mimeData(const QModelIndexList& indexes) const
 
 	auto* mime_data = new Gui::CustomMimeData(this);
 
-	mime_data->set_cover_url(cover_url);
+	mime_data->setCoverUrl(cover_url);
 	mime_data->setUrls(urls);
 
 	return mime_data;

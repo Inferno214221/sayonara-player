@@ -1,6 +1,6 @@
 /* GuiUtils.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -66,29 +66,29 @@ static QString best_resolution_path(const QStringList& paths)
 	return max_path;
 }
 
-static QStringList icon_paths(const QString& icon_name, Gui::Util::IconTheme theme)
+static QStringList iconPaths(const QString& iconName, Gui::Util::IconTheme theme)
 {
-	if(icon_name.trimmed().isEmpty()){
+	if(iconName.trimmed().isEmpty()){
 		return QStringList();
 	}
 
-	QString theme_name;
+	QString themeName;
 	if(theme == Gui::Util::MintY)
 	{
-		theme_name = "MintYIcons";
+		themeName = "MintYIcons";
 	}
 
 
 	QStringList paths;
 	if(theme == Gui::Util::MintY)
 	{
-		QString re_string = QString(".*%1/%2-[0-9]+.*")
-			.arg(theme_name)
-			.arg(icon_name);
+		QString reString = QString(".*%1/%2-[0-9]+.*")
+			.arg(themeName)
+			.arg(iconName);
 
-		QRegExp re(re_string);
+		QRegExp re(reString);
 
-		QDirIterator it(":/" + theme_name);
+		QDirIterator it(":/" + themeName);
 		while(it.hasNext())
 		{
 			QString path = it.next();
@@ -101,8 +101,8 @@ static QStringList icon_paths(const QString& icon_name, Gui::Util::IconTheme the
 
 	if(paths.isEmpty())
 	{
-		QString re_string = QString(".*/%1(\\.[a-z][a-z][a-z])*$").arg(icon_name);
-		QRegExp re(re_string);
+		QString reString = QString(".*/%1(\\.[a-z][a-z][a-z])*$").arg(iconName);
+		QRegExp re(reString);
 
 		QDirIterator it(":/Icons");
 		while(it.hasNext())
@@ -120,13 +120,13 @@ static QStringList icon_paths(const QString& icon_name, Gui::Util::IconTheme the
 }
 
 
-QIcon Util::icon(const QString& icon_name, IconTheme theme_name)
+QIcon Util::icon(const QString& iconName, IconTheme themeName)
 {
-	if(icon_name.isEmpty()){
+	if(iconName.isEmpty()){
 		return QIcon();
 	}
 
-	QStringList paths = icon_paths(icon_name, theme_name);
+	QStringList paths = iconPaths(iconName, themeName);
 	if(paths.isEmpty()){
 		return QIcon();
 	}
@@ -147,20 +147,20 @@ QIcon Util::icon(const QString& icon_name, IconTheme theme_name)
 	}
 
 	if(icon.isNull()){
-		sp_log(Log::Warning, "GuiUtils") << "Icon " << icon_name << " does not exist";
+		spLog(Log::Warning, "GuiUtils") << "Icon " << iconName << " does not exist";
 	}
 
 	return icon;
 }
 
-QImage Util::image(const QString& icon_name, IconTheme theme_name)
+QImage Util::image(const QString& iconName, IconTheme themeName)
 {
-	return image(icon_name, theme_name, QSize(0, 0));
+	return image(iconName, themeName, QSize(0, 0));
 }
 
-QImage Util::image(const QString& icon_name, IconTheme theme_name, QSize sz, bool keep_aspect)
+QImage Util::image(const QString& iconName, IconTheme themeName, QSize sz, bool keep_aspect)
 {
-	QStringList paths = icon_paths(icon_name, theme_name);
+	QStringList paths = iconPaths(iconName, themeName);
 	if(paths.isEmpty()){
 		return QImage();
 	}
@@ -169,7 +169,7 @@ QImage Util::image(const QString& icon_name, IconTheme theme_name, QSize sz, boo
 
 	QImage image(path);
 	if(image.isNull()){
-		sp_log(Log::Warning, "GuiUtils") << "Pixmap " << paths.first() << " does not exist";
+		spLog(Log::Warning, "GuiUtils") << "Pixmap " << paths.first() << " does not exist";
 	}
 
 	if(sz.width() == 0){
@@ -189,14 +189,14 @@ QImage Util::image(const QString& icon_name, IconTheme theme_name, QSize sz, boo
 	}
 }
 
-QPixmap Util::pixmap(const QString& icon_name, IconTheme theme_name)
+QPixmap Util::pixmap(const QString& iconName, IconTheme themeName)
 {
-	return pixmap(icon_name, theme_name, QSize(0, 0));
+	return pixmap(iconName, themeName, QSize(0, 0));
 }
 
-QPixmap Util::pixmap(const QString& icon_name, IconTheme theme_name, QSize sz, bool keep_aspect)
+QPixmap Util::pixmap(const QString& iconName, IconTheme themeName, QSize sz, bool keep_aspect)
 {
-	QStringList paths = icon_paths(icon_name, theme_name);
+	QStringList paths = iconPaths(iconName, themeName);
 	if(paths.isEmpty()){
 		return QPixmap();
 	}
@@ -205,7 +205,7 @@ QPixmap Util::pixmap(const QString& icon_name, IconTheme theme_name, QSize sz, b
 
 	QPixmap pixmap(path);
 	if(pixmap.isNull()){
-		sp_log(Log::Warning, "GuiUtils") << "Pixmap " << paths.first() << " does not exist";
+		spLog(Log::Warning, "GuiUtils") << "Pixmap " << paths.first() << " does not exist";
 	}
 
 	if(sz.width() == 0){
@@ -229,17 +229,17 @@ QPixmap Util::pixmap(const QString& icon_name, IconTheme theme_name, QSize sz, b
 
 static QMainWindow* main_window=nullptr;
 
-QMainWindow* Util::main_window()
+QMainWindow* Util::mainWindow()
 {
 	return ::main_window;
 }
 
-void Util::set_main_window(QMainWindow* window)
+void Util::setMainWindow(QMainWindow* window)
 {
 	::main_window = window;
 }
 
-QScreen* Util::get_biggest_screen()
+QScreen* Util::getBiggestScreen()
 {
 	QList<QScreen*> screens = QApplication::screens();
 	auto it = std::max_element(screens.begin(), screens.end(), [](QScreen* s1, QScreen* s2)
@@ -258,9 +258,9 @@ QScreen* Util::get_biggest_screen()
 	return nullptr;
 }
 
-void Util::place_in_screen_center(QWidget* widget, float rel_size_x, float rel_size_y)
+void Util::placeInScreenCenter(QWidget* widget, float relativeSizeX, float relativeSizeY)
 {
-	QScreen* screen = get_biggest_screen();
+	QScreen* screen = getBiggestScreen();
 	if(!screen){
 		return;
 	}
@@ -268,32 +268,32 @@ void Util::place_in_screen_center(QWidget* widget, float rel_size_x, float rel_s
 	int w = screen->size().width();
 	int h = screen->size().height();
 
-	if(rel_size_x < 0.1f || rel_size_y < 0.1f)
+	if(relativeSizeX < 0.1f || relativeSizeY < 0.1f)
 	{
-		rel_size_x = 0.7f;
-		rel_size_y = 0.7f;
+		relativeSizeX = 0.7f;
+		relativeSizeY = 0.7f;
 	}
 
-	float x_remainder = (1.0f - rel_size_x) / 2.0f;
-	float y_remainder = (1.0f - rel_size_y) / 2.0f;
+	float xRemainder = (1.0f - relativeSizeX) / 2.0f;
+	float yRemainder = (1.0f - relativeSizeY) / 2.0f;
 
-	int x_abs = std::max(0, int(w * x_remainder)) + screen->geometry().x();
-	int y_abs = std::max(0, int(h * y_remainder)) + screen->geometry().y();
-	int w_abs = std::max(0, int(w * rel_size_x));
-	int h_abs = std::max(0, int(h * rel_size_y));
+	int xAbs = std::max(0, int(w * xRemainder)) + screen->geometry().x();
+	int yAbs = std::max(0, int(h * yRemainder)) + screen->geometry().y();
+	int wAbs = std::max(0, int(w * relativeSizeX));
+	int hAbs = std::max(0, int(h * relativeSizeY));
 
-	if(w_abs == 0){
-		w_abs = 1200;
+	if(wAbs == 0){
+		wAbs = 1200;
 	}
 
-	if(h_abs == 0){
-		h_abs = 800;
+	if(hAbs == 0){
+		hAbs = 800;
 	}
 
-	widget->setGeometry(x_abs, y_abs, w_abs, h_abs);
+	widget->setGeometry(xAbs, yAbs, wAbs, hAbs);
 }
 
-int Util::text_width(const QFontMetrics& fm, const QString& text)
+int Util::textWidget(const QFontMetrics& fm, const QString& text)
 {
 #if QT_VERSION_MAJOR >= 5 && QT_VERSION_MINOR >= 11
 	return fm.horizontalAdvance(text);

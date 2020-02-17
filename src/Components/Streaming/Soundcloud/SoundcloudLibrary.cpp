@@ -1,6 +1,6 @@
 /* SoundcloudLibrary.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -40,59 +40,59 @@
 
 struct SC::Library::Private
 {
-	QHash<int, int>           md_id_idx_map;
-	QHash<int, IndexSet>      md_artist_id_idx_map;
-	QHash<int, IndexSet>      md_album_id_idx_map;
-	QHash<QString, IndexSet>  md_name_idx_map;
+	QHash<int, int>           mdIdIndexMap;
+	QHash<int, IndexSet>      mdArtistIdIndexMap;
+	QHash<int, IndexSet>      mdAlbumIdIndexMap;
+	QHash<QString, IndexSet>  mdNameIndexMap;
 
-	QHash<int, int>           album_id_idx_map;
-	QHash<QString, IndexSet>  album_name_idx_map;
-	QHash<QString, IndexSet>  artist_name_album_idx_map;
+	QHash<int, int>           albumIdIndexMap;
+	QHash<QString, IndexSet>  albumNameIndexMap;
+	QHash<QString, IndexSet>  artistNameAlbumIndexMap;
 
-	QHash<int, int>         artist_id_idx_map;
-	QHash<QString, IndexSet>  artist_name_idx_map;
+	QHash<int, int>         artistIdIndexMap;
+	QHash<QString, IndexSet>  artistNameIndexMap;
 
-	MetaDataList    v_md;
+	MetaDataList    tracks;
 	AlbumList       albums;
 	ArtistList      artists;
 
 	SC::Database*			db=nullptr;
-	SC::LibraryDatabase*	library_db=nullptr;
+	SC::LibraryDatabase*	libraryDatabase=nullptr;
 	SearchInformationList	search_information;
 
 	Private()
 	{
 		db = new SC::Database();
-		library_db = new SC::LibraryDatabase(db->connection_name(), db->db_id(), -1);
+		libraryDatabase = new SC::LibraryDatabase(db->connectionName(), db->databaseId(), -1);
 	}
 
 	~Private()
 	{
-		db->close_db();
+		db->closeDatabase();
 		delete db; db = nullptr;
-		delete library_db; library_db = nullptr;
+		delete libraryDatabase; libraryDatabase = nullptr;
 	}
 
 	void clear_cache()
 	{
-		v_md.clear();
+		tracks.clear();
 		albums.clear();
 		artists.clear();
 		search_information.clear();
 
-		md_id_idx_map.clear();
-		md_artist_id_idx_map.clear();
-		md_album_id_idx_map.clear();
-		md_name_idx_map.clear();
-		album_id_idx_map.clear();
-		album_name_idx_map.clear();
-		artist_name_album_idx_map.clear();
-		artist_id_idx_map.clear();
-		artist_name_idx_map.clear();
+		mdIdIndexMap.clear();
+		mdArtistIdIndexMap.clear();
+		mdAlbumIdIndexMap.clear();
+		mdNameIndexMap.clear();
+		albumIdIndexMap.clear();
+		albumNameIndexMap.clear();
+		artistNameAlbumIndexMap.clear();
+		artistIdIndexMap.clear();
+		artistNameIndexMap.clear();
 	}
 };
 
-SC::Library::Library(QObject *parent) :
+SC::Library::Library(QObject* parent) :
 	AbstractLibrary(parent)
 {
 	m = Pimpl::make<Private>();
@@ -105,22 +105,22 @@ void SC::Library::load()
 	AbstractLibrary::load();
 
 	ArtistList artists;
-	get_all_artists(artists);
+	getAllArtists(artists);
 }
 
 
-void SC::Library::get_all_artists(ArtistList& artists) const
+void SC::Library::getAllArtists(ArtistList& artists) const
 {
 	if(m->artists.empty())
 	{
-		m->library_db->getAllArtists(artists, false);
+		m->libraryDatabase->getAllArtists(artists, false);
 		m->artists = artists;
 
 		for(int i=0; i<m->artists.count(); i++)
 		{
 			const Artist& artist = artists[ size_t(i) ];
-			m->artist_id_idx_map[artist.id()] = i;
-			m->artist_name_idx_map[artist.name()].insert(i);
+			m->artistIdIndexMap[artist.id()] = i;
+			m->artistNameIndexMap[artist.name()].insert(i);
 		}
 	}
 
@@ -131,29 +131,29 @@ void SC::Library::get_all_artists(ArtistList& artists) const
 	artists.sort(sortorder().so_artists);
 }
 
-void SC::Library::get_all_artists_by_searchstring(::Library::Filter filter, ArtistList& artists) const
+void SC::Library::getAllArtistsBySearchstring(::Library::Filter filter, ArtistList& artists) const
 {
 	if(filter.mode() != ::Library::Filter::Mode::Fulltext){
 		return;
 	}
 
-	if(m->search_information.is_empty()){
-		m->library_db->search_information(m->search_information);
+	if(m->search_information.isEmpty()){
+		m->libraryDatabase->searchInformation(m->search_information);
 	}
 
 	QStringList filtertexts = filter.filtertext(false);
 	for(const QString& filtertext : filtertexts)
 	{
-		IntSet artist_ids = m->search_information.artist_ids(filtertext);
+		IntSet artistIds = m->search_information.artistIds(filtertext);
 
-		for(int artist_id : artist_ids)
+		for(int artistId : artistIds)
 		{
-			int idx = m->artist_id_idx_map[artist_id];
+			int idx = m->artistIdIndexMap[artistId];
 
 			Artist artist = m->artists[ size_t(idx) ];
 
-			auto n_songs = uint16_t(m->md_artist_id_idx_map[artist_id].count());
-			artist.set_songcount(n_songs);
+			auto n_songs = uint16_t(m->mdArtistIdIndexMap[artistId].count());
+			artist.setSongcount(n_songs);
 			if(!artists.contains(artist.id())){
 				artists << artist;
 			}
@@ -163,23 +163,23 @@ void SC::Library::get_all_artists_by_searchstring(::Library::Filter filter, Arti
 	artists.sort(sortorder().so_artists);
 }
 
-void SC::Library::get_all_albums(AlbumList& albums) const
+void SC::Library::getAllAlbums(AlbumList& albums) const
 {
 	if(m->albums.empty())
 	{
-		m->library_db->getAllAlbums(albums, false);
+		m->libraryDatabase->getAllAlbums(albums, false);
 		m->albums = albums;
 
 		for(int i=0; i<albums.count(); i++)
 		{
 			const Album& album = albums[i];
-			m->album_id_idx_map[album.id()] = i;
-			m->album_name_idx_map[album.name()].insert(i);
+			m->albumIdIndexMap[album.id()] = i;
+			m->albumNameIndexMap[album.name()].insert(i);
 
 			const QStringList artists = album.artists();
 			for(const QString& artist : artists)
 			{
-				m->artist_name_album_idx_map[artist].insert(i);
+				m->artistNameAlbumIndexMap[artist].insert(i);
 			}
 		}
 	}
@@ -191,24 +191,24 @@ void SC::Library::get_all_albums(AlbumList& albums) const
 	albums.sort(sortorder().so_albums);
 }
 
-void SC::Library::get_all_albums_by_artist(IdList artist_ids, AlbumList& albums, ::Library::Filter filter) const
+void SC::Library::getAllAlbumsByArtist(IdList artistIds, AlbumList& albums, ::Library::Filter filter) const
 {
 	Q_UNUSED(filter)
 
-	for(int artist_id : artist_ids)
+	for(int artistId : artistIds)
 	{
-		int artist_idx = m->artist_id_idx_map[artist_id];
-		const Artist& artist = m->artists[ size_t(artist_idx) ];
+		int artistIdx = m->artistIdIndexMap[artistId];
+		const Artist& artist = m->artists[ size_t(artistIdx) ];
 
-		IndexSet album_idxs = m->artist_name_album_idx_map[artist.name()];
+		IndexSet albumIdxs = m->artistNameAlbumIndexMap[artist.name()];
 
-		for(int album_idx : album_idxs)
+		for(int albumIdx : albumIdxs)
 		{
-			if(!Util::between(album_idx, m->albums)){
-				sp_log(Log::Warning, this) << __FUNCTION__ << " Invalid index: " << album_idx << " (" << m->albums.size() << ")";
+			if(!Util::between(albumIdx, m->albums)){
+				spLog(Log::Warning, this) << __FUNCTION__ << " Invalid index: " << albumIdx << " (" << m->albums.size() << ")";
 			}
 			else {
-				albums.push_back(m->albums[album_idx]);
+				albums.push_back(m->albums[albumIdx]);
 			}
 		}
 	}
@@ -216,25 +216,25 @@ void SC::Library::get_all_albums_by_artist(IdList artist_ids, AlbumList& albums,
 	albums.sort(sortorder().so_albums);
 }
 
-void SC::Library::get_all_albums_by_searchstring(::Library::Filter filter, AlbumList& albums) const
+void SC::Library::getAllAlbumsBySearchstring(::Library::Filter filter, AlbumList& albums) const
 {
 	if(filter.mode() != ::Library::Filter::Mode::Fulltext){
 		return;
 	}
 
-	if(m->search_information.is_empty()){
-		m->library_db->search_information(m->search_information);
+	if(m->search_information.isEmpty()){
+		m->libraryDatabase->searchInformation(m->search_information);
 	}
 
 	QStringList filtertexts = filter.filtertext(false);
 	for(const QString& filtertext : filtertexts)
 	{
-		IntSet album_ids = m->search_information.album_ids(filtertext);
-		for(int album_id : album_ids)
+		IntSet albumIds = m->search_information.albumIds(filtertext);
+		for(int albumId : albumIds)
 		{
-			int idx = m->album_id_idx_map[album_id];
+			int idx = m->albumIdIndexMap[albumId];
 			if(!Util::between(idx, m->albums)) {
-				sp_log(Log::Warning, this) << __FUNCTION__ << " Invalid index: " << idx << " (" << m->albums.size() << ")";
+				spLog(Log::Warning, this) << __FUNCTION__ << " Invalid index: " << idx << " (" << m->albums.size() << ")";
 				continue;
 			}
 
@@ -249,57 +249,57 @@ void SC::Library::get_all_albums_by_searchstring(::Library::Filter filter, Album
 }
 
 
-int SC::Library::get_num_tracks() const
+int SC::Library::getTrackCount() const
 {
-	return m->v_md.count();
+	return m->tracks.count();
 }
 
-void SC::Library::get_all_tracks(const QStringList& paths, MetaDataList& v_md) const
+void SC::Library::getAllTracks(const QStringList& paths, MetaDataList& v_md) const
 {
 	Q_UNUSED(paths)
 	Q_UNUSED(v_md)
 	return;
 }
 
-void SC::Library::get_all_tracks(MetaDataList& v_md) const
+void SC::Library::getAllTracks(MetaDataList& v_md) const
 {
-	if(m->v_md.isEmpty())
+	if(m->tracks.isEmpty())
 	{
-		m->library_db->getAllTracks(v_md);
-		m->v_md = v_md;
+		m->libraryDatabase->getAllTracks(v_md);
+		m->tracks = v_md;
 
-		for(int i=0; i<m->v_md.count(); i++)
+		for(int i=0; i<m->tracks.count(); i++)
 		{
 			const MetaData& md = v_md[i];
 
-			m->md_id_idx_map[md.id()] = i;
-			m->md_name_idx_map[md.title()].insert(i);
-			m->md_album_id_idx_map[md.album_id()].insert(i);
-			m->md_artist_id_idx_map[md.artist_id()].insert(i);
+			m->mdIdIndexMap[md.id()] = i;
+			m->mdNameIndexMap[md.title()].insert(i);
+			m->mdAlbumIdIndexMap[md.albumId()].insert(i);
+			m->mdArtistIdIndexMap[md.artistId()].insert(i);
 		}
 	}
 
 	else {
-		v_md = m->v_md;
+		v_md = m->tracks;
 	}
 
 	v_md.sort(sortorder().so_tracks);
 }
 
-void SC::Library::get_all_tracks_by_artist(IdList artist_ids, MetaDataList& v_md, ::Library::Filter filter) const
+void SC::Library::getAllTracksByArtist(IdList artistIds, MetaDataList& v_md, ::Library::Filter filter) const
 {
 	Q_UNUSED(filter)
 
-	for(int artist_id : artist_ids)
+	for(int artistId : artistIds)
 	{
-		const IndexSet& idxs = m->md_artist_id_idx_map[artist_id];
+		const IndexSet& idxs = m->mdArtistIdIndexMap[artistId];
 
 		for(int idx : idxs)
 		{
-			if(!Util::between(idx, m->v_md)) {
-				sp_log(Log::Warning, this) << __FUNCTION__ << " Invalid index: " << idx << " (" << m->v_md.size() << ")";
+			if(!Util::between(idx, m->tracks)) {
+				spLog(Log::Warning, this) << __FUNCTION__ << " Invalid index: " << idx << " (" << m->tracks.size() << ")";
 			} else {
-				v_md << m->v_md[idx];
+				v_md << m->tracks[idx];
 			}
 		}
 	}
@@ -307,42 +307,42 @@ void SC::Library::get_all_tracks_by_artist(IdList artist_ids, MetaDataList& v_md
 	v_md.sort(sortorder().so_tracks);
 }
 
-void SC::Library::get_all_tracks_by_album(IdList album_ids, MetaDataList& v_md, ::Library::Filter filter) const
+void SC::Library::getAllTracksByAlbum(IdList albumIds, MetaDataList& v_md, ::Library::Filter filter) const
 {
 	Q_UNUSED(filter)
 
-	for(int album_id : album_ids)
+	for(int albumId : albumIds)
 	{
-		const IndexSet& idxs = m->md_album_id_idx_map[album_id];
+		const IndexSet& idxs = m->mdAlbumIdIndexMap[albumId];
 		for(int idx : idxs) {
-			v_md << m->v_md[idx];
+			v_md << m->tracks[idx];
 		}
 	}
 
 	v_md.sort(sortorder().so_tracks);
 }
 
-void SC::Library::get_all_tracks_by_searchstring(::Library::Filter filter, MetaDataList& v_md) const
+void SC::Library::getAllTracksBySearchstring(::Library::Filter filter, MetaDataList& v_md) const
 {
 	if(filter.mode() != ::Library::Filter::Mode::Fulltext){
 		return;
 	}
 
-	if(m->search_information.is_empty()) {
-		m->library_db->search_information(m->search_information);
+	if(m->search_information.isEmpty()) {
+		m->libraryDatabase->searchInformation(m->search_information);
 	}
 
 	QStringList filtertexts = filter.filtertext(false);
 	for(const QString& filtertext : filtertexts)
 	{
-		IntSet track_ids = m->search_information.track_ids(filtertext);
+		IntSet trackIds = m->search_information.trackIds(filtertext);
 
-		for(int track_id : track_ids)
+		for(int trackId : trackIds)
 		{
-			int idx = m->md_id_idx_map[track_id];
-			if(!v_md.contains(m->v_md[idx].id()))
+			int idx = m->mdIdIndexMap[trackId];
+			if(!v_md.contains(m->tracks[idx].id()))
 			{
-				v_md << m->v_md[idx];
+				v_md << m->tracks[idx];
 			}
 		}
 	}
@@ -350,29 +350,29 @@ void SC::Library::get_all_tracks_by_searchstring(::Library::Filter filter, MetaD
 	v_md.sort(sortorder().so_tracks);
 }
 
-void SC::Library::get_all_tracks_by_path(const QStringList& paths, MetaDataList& v_md) const
+void SC::Library::getAllTracksByPath(const QStringList& paths, MetaDataList& v_md) const
 {
 	Q_UNUSED(paths)
 	Q_UNUSED(v_md)
 }
 
-void SC::Library::update_track(const MetaData& md)
+void SC::Library::updateTrack(const MetaData& md)
 {
-	m->library_db->updateTrack(md);
+	m->libraryDatabase->updateTrack(md);
 	refetch();
 }
 
-void SC::Library::update_album(const Album& album)
+void SC::Library::updateAlbum(const Album& album)
 {
-	m->library_db->updateAlbum(album);
+	m->libraryDatabase->updateAlbum(album);
 	refetch();
 }
 
-void SC::Library::delete_tracks(const MetaDataList& v_md, ::Library::TrackDeletionMode mode)
+void SC::Library::deleteTracks(const MetaDataList& v_md, ::Library::TrackDeletionMode mode)
 {
 	Q_UNUSED(mode)
 
-	m->library_db->deleteTracks(v_md);
+	m->libraryDatabase->deleteTracks(v_md);
 	refetch();
 }
 
@@ -382,10 +382,10 @@ void SC::Library::refetch()
 
 	AbstractLibrary::refetch();
 
-	m->library_db->search_information(m->search_information);
+	m->libraryDatabase->searchInformation(m->search_information);
 }
 
-void SC::Library::reload_library(bool b, ::Library::ReloadQuality quality)
+void SC::Library::reloadLibrary(bool b, ::Library::ReloadQuality quality)
 {
 	Q_UNUSED(b)
 	Q_UNUSED(quality)
@@ -393,39 +393,39 @@ void SC::Library::reload_library(bool b, ::Library::ReloadQuality quality)
 	m->clear_cache();
 }
 
-void SC::Library::refresh_artist()
+void SC::Library::refreshArtists()
 {
-	if(selected_artists().isEmpty()){
+	if(selectedArtists().isEmpty()){
 		return;
 	}
 
-	ArtistId artist_id = selected_artists().first();
+	ArtistId artistId = selectedArtists().first();
 
 	MetaDataList v_md;
-	get_all_tracks_by_artist({artist_id}, v_md, ::Library::Filter());
-	delete_tracks(v_md, ::Library::TrackDeletionMode::None);
+	getAllTracksByArtist({artistId}, v_md, ::Library::Filter());
+	deleteTracks(v_md, ::Library::TrackDeletionMode::None);
 
-	sp_log(Log::Debug, this) << "Deleted " << v_md.size() << " soundcloud tracks";
+	spLog(Log::Debug, this) << "Deleted " << v_md.size() << " soundcloud tracks";
 
 	auto* fetcher = new SC::DataFetcher(this);
-	connect(fetcher, &SC::DataFetcher::sig_artists_fetched,
-			this, &SC::Library::artists_fetched);
+	connect(fetcher, &SC::DataFetcher::sigArtistsFetched,
+			this, &SC::Library::artistsFetched);
 
-	fetcher->get_artist(artist_id);
+	fetcher->getArtist(artistId);
 }
 
 
-void SC::Library::refresh_albums() {}
+void SC::Library::refreshAlbums() {}
 
-void SC::Library::refresh_tracks() {}
+void SC::Library::refreshTracks() {}
 
-void SC::Library::cover_found(const Cover::Location& cl)
+void SC::Library::coverFound(const Cover::Location& cl)
 {
 	Q_UNUSED(cl)
 	//sp_log(Log::Debug, this) << "Saved sound cloud cover: " << cl.toString();
 }
 
-void SC::Library::insert_tracks(const MetaDataList& v_md, const ArtistList& artists, const AlbumList& albums)
+void SC::Library::insertTracks(const MetaDataList& v_md, const ArtistList& artists, const AlbumList& albums)
 {
 
 	QMap<QString, Artist> artist_map;
@@ -433,12 +433,12 @@ void SC::Library::insert_tracks(const MetaDataList& v_md, const ArtistList& arti
 
 	ArtistList tmp_artists;
 	AlbumList tmp_albums;
-	m->library_db->getAllAlbums(tmp_albums, true);
-	m->library_db->getAllArtists(tmp_artists, true);
+	m->libraryDatabase->getAllAlbums(tmp_albums, true);
+	m->libraryDatabase->getAllArtists(tmp_artists, true);
 
 	{ // insert empty artist and empty album
-		Artist artist_tmp; artist_tmp.set_id(0);
-		Album album_tmp; album_tmp.set_id(0);
+		Artist artist_tmp; artist_tmp.setId(0);
+		Album album_tmp; album_tmp.setId(0);
 
 		tmp_albums << album_tmp;
 		tmp_artists << artist_tmp;
@@ -458,8 +458,8 @@ void SC::Library::insert_tracks(const MetaDataList& v_md, const ArtistList& arti
 	{
 		if(!artist_map.contains(artist.name()))
 		{
-			ArtistId id = m->library_db->insertArtistIntoDatabase(artist);
-			artist.set_id(id);
+			ArtistId id = m->libraryDatabase->insertArtistIntoDatabase(artist);
+			artist.setId(id);
 			artist_map.insert(artist.name(), artist);
 		}
 	}
@@ -468,8 +468,8 @@ void SC::Library::insert_tracks(const MetaDataList& v_md, const ArtistList& arti
 	{
 		if(!album_map.contains(album.name()))
 		{
-			AlbumId id = m->library_db->insertAlbumIntoDatabase(album);
-			album.set_id(id);
+			AlbumId id = m->libraryDatabase->insertAlbumIntoDatabase(album);
+			album.setId(id);
 			album_map.insert(album.name(), album);
 		}
 	}
@@ -479,71 +479,71 @@ void SC::Library::insert_tracks(const MetaDataList& v_md, const ArtistList& arti
 	{
 		if(!artist_map.contains(md.artist()))
 		{
-			ArtistId id = m->library_db->insertArtistIntoDatabase(md.artist());
-			md.set_artist_id(id);
+			ArtistId id = m->libraryDatabase->insertArtistIntoDatabase(md.artist());
+			md.setArtistId(id);
 
 			Artist artist;
-			artist.set_id(id);
-			artist.set_name(md.artist());
+			artist.setId(id);
+			artist.setName(md.artist());
 			artist_map.insert(artist.name(), artist);
 		}
 
 		if(!album_map.contains(md.album()))
 		{
-			AlbumId id = m->library_db->insertAlbumIntoDatabase(md.album());
-			md.set_album_id(id);
+			AlbumId id = m->libraryDatabase->insertAlbumIntoDatabase(md.album());
+			md.setAlbumId(id);
 
 			Album album;
-			album.set_id(id);
-			album.set_name(md.album());
+			album.setId(id);
+			album.setName(md.album());
 			album_map.insert(album.name(), album);
 		}
 
 		v_md_corrected << std::move(md);
 	}
 
-	m->library_db->store_metadata(v_md_corrected);
+	m->libraryDatabase->storeMetadata(v_md_corrected);
 
-	AbstractLibrary::refresh_current_view();
+	AbstractLibrary::refreshCurrentView();
 
 	refetch();
 }
 
 
 
-void SC::Library::artists_fetched(const ArtistList& artists)
+void SC::Library::artistsFetched(const ArtistList& artists)
 {
 	for(const Artist& artist : artists)
 	{
-		sp_log(Log::Debug, this) << "Artist " << artist.name() << " fetched";
+		spLog(Log::Debug, this) << "Artist " << artist.name() << " fetched";
 
 		if(artist.id() <= 0) {
 			continue;
 		}
 
-		m->library_db->updateArtist(artist);
+		m->libraryDatabase->updateArtist(artist);
 
 		auto* fetcher = new SC::DataFetcher(this);
 
-		connect(fetcher, &SC::DataFetcher::sig_playlists_fetched,
-				this, &SC::Library::albums_fetched);
+		connect(fetcher, &SC::DataFetcher::sigPlaylistsFetched,
+				this, &SC::Library::albumsFetched);
 
-		connect(fetcher, &SC::DataFetcher::sig_tracks_fetched,
-				this, &SC::Library::tracks_fetched);
+		connect(fetcher, &SC::DataFetcher::sigTracksFetched,
+				this, &SC::Library::tracksFetched);
 
-		fetcher->get_tracks_by_artist(artist.id());
+		fetcher->getTracksByArtist(artist.id());
 	}
 
 	sender()->deleteLater();
 	refetch();
 }
 
-void SC::Library::tracks_fetched(const MetaDataList& v_md)
+void SC::Library::tracksFetched(const MetaDataList& v_md)
 {
 	for(const MetaData& md : v_md)
 	{
 		if(md.id() > 0){
-			m->library_db->insertTrackIntoDatabase(md, md.artist_id(), md.album_id());
+			m->libraryDatabase->insertTrackIntoDatabase(md, md.artistId(), md.albumId());
 		}
 	}
 
@@ -551,12 +551,12 @@ void SC::Library::tracks_fetched(const MetaDataList& v_md)
 	refetch();
 }
 
-void SC::Library::albums_fetched(const AlbumList& albums)
+void SC::Library::albumsFetched(const AlbumList& albums)
 {
 	for(const Album& album : albums)
 	{
 		if(album.id() > 0){
-			m->library_db->insertAlbumIntoDatabase(album);
+			m->libraryDatabase->insertAlbumIntoDatabase(album);
 		}
 	}
 
@@ -565,21 +565,21 @@ void SC::Library::albums_fetched(const AlbumList& albums)
 }
 
 
-void SC::Library::get_track_by_id(TrackID track_id, MetaData& md) const
+void SC::Library::getTrackById(TrackID trackId, MetaData& md) const
 {
-	Q_UNUSED(track_id)
+	Q_UNUSED(trackId)
 	Q_UNUSED(md)
 }
 
-void SC::Library::get_artist_by_id(ArtistId artist_id, Artist& artist) const
+void SC::Library::getArtistById(ArtistId artistId, Artist& artist) const
 {
-	Q_UNUSED(artist_id)
+	Q_UNUSED(artistId)
 	Q_UNUSED(artist)
 }
 
 
-void SC::Library::get_album_by_id(AlbumId album_id, Album& album) const
+void SC::Library::getAlbumById(AlbumId albumId, Album& album) const
 {
-	Q_UNUSED(album_id)
+	Q_UNUSED(albumId)
 	Q_UNUSED(album)
 }

@@ -1,6 +1,6 @@
 /* GlobalMessageReceiverInterface.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -20,15 +20,15 @@
 
 #include "MessageReceiverInterface.h"
 
-MessageReceiverInterface::MessageReceiverInterface(const QString &name)
+MessageReceiverInterface::MessageReceiverInterface(const QString& name)
 {
-	_name = name;
+	mName = name;
 }
 
 MessageReceiverInterface::~MessageReceiverInterface() {}
 
-QString MessageReceiverInterface::get_name() const
+QString MessageReceiverInterface::name() const
 {
-	return _name;
+	return mName;
 }
 

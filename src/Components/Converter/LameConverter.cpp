@@ -1,6 +1,6 @@
 /* LameConverter.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -39,7 +39,7 @@ LameConverter::LameConverter(bool cbr, int quality, QObject* parent) :
 
 LameConverter::~LameConverter() = default;
 
-QStringList LameConverter::supported_input_formats() const
+QStringList LameConverter::supportedInputFormats() const
 {
 	return {"flac", "wav"};
 }
@@ -49,7 +49,7 @@ QString LameConverter::binary() const
 	return "lame";
 }
 
-QStringList LameConverter::process_entry(const MetaData& md) const
+QStringList LameConverter::processEntry(const MetaData& md) const
 {
 	QStringList ret
 	{
@@ -60,8 +60,8 @@ QStringList LameConverter::process_entry(const MetaData& md) const
 		QString("--tl"), QString("%1").arg(md.album()).toUtf8().data(),
 		QString("--ty"), QString("%1").arg(md.year()).toUtf8().data(),
 		QString("--tc"), QString("%1").arg(md.comment()).toUtf8().data(),
-		QString("--tn"), QString("%1").arg(md.track_number()).toUtf8().data(),
-		QString("--tg"), QString("%1").arg(md.genres_to_list().join(",")).toUtf8().data(),
+		QString("--tn"), QString("%1").arg(md.trackNumber()).toUtf8().data(),
+		QString("--tg"), QString("%1").arg(md.genresToList().join(",")).toUtf8().data(),
 	};
 
 	if(m->cbr)
@@ -85,7 +85,7 @@ QStringList LameConverter::process_entry(const MetaData& md) const
 	ret << QStringList
 	{
 		QString("%1").arg(md.filepath()),
-		QString("%1").arg(target_file(md))
+		QString("%1").arg(targetFile(md))
 	};
 
 	return ret;

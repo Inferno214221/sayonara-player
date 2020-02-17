@@ -1,6 +1,6 @@
 /* Session.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -34,18 +34,18 @@ namespace DB
 			private DB::Module
 	{
 		public:
-			Session(const QString& connection_name, DbId db_id);
+			Session(const QString& connectionName, DbId databaseId);
 			~Session();
 
-			::Session::EntryListMap get_sessions(const QDateTime& dt_begin, const QDateTime& dt_end);
-			::Session::EntryList get_session(::Session::Id session_id);
-			QList<::Session::Id> get_session_keys();
+			::Session::EntryListMap getSessions(const QDateTime& dt_begin, const QDateTime& dt_end);
+			::Session::EntryList getSession(::Session::Id session_id);
+			QList<::Session::Id> getSessionKeys();
 
-			::Session::Id create_new_session() const;
-			bool add_track(::Session::Id session_id, const MetaData& md);
+			::Session::Id createNewSession() const;
+			bool addTrack(::Session::Id session_id, const MetaData& md);
 
 			bool clear();
-			bool clear_before(const QDateTime& datetime);
+			bool clearBefore(const QDateTime& datetime);
 	};
 }
 

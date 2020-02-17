@@ -25,12 +25,12 @@
         <x>0</x>
         <y>0</y>
         <width>478</width>
-        <height>429</height>
+        <height>427</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
-        <layout class="QVBoxLayout" name="layout_entries"/>
+        <layout class="QVBoxLayout" name="layoutEntries"/>
        </item>
       </layout>
      </widget>
@@ -39,7 +39,7 @@
    <item row="3" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QCheckBox" name="cb_test">
+      <widget class="QCheckBox" name="cbTest">
        <property name="text">
         <string>Press shortcut</string>
        </property>

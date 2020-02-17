@@ -1,6 +1,6 @@
 /* MenuButton.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -39,7 +39,7 @@ namespace Gui
 		Q_OBJECT
 
 		signals:
-			void sig_triggered(QPoint);
+			void sigTriggered(QPoint);
 
 		protected:
 			virtual void mousePressEvent(QMouseEvent* e) override;
@@ -48,21 +48,21 @@ namespace Gui
 			 * @brief subclasses should call this function and show their menu
 			 * @param pos position of mouse pointer
 			 */
-			virtual void show_menu(QPoint pos);
+			virtual void showMenu(QPoint pos);
 
 			/**
 			 * @brief subclasses should reimplement this function.\n
 			 * This method should return false if the button should be disabled and false else
 			 * @return true if button should be enabled, false else
 			 */
-			virtual bool prove_enabled();
+			virtual bool proveEnabled();
 
-			void skin_changed() override;
-			void language_changed() override;
+			void skinChanged() override;
+			void languageChanged() override;
 
 		public:
 			explicit MenuButton(QWidget* parent=nullptr);
-			virtual ~MenuButton();
+			virtual ~MenuButton() override;
 	};
 }
 

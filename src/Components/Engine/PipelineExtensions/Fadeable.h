@@ -1,6 +1,6 @@
 /* CrossFader.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -48,7 +48,7 @@ namespace PipelineExtensions
 			void stop();
 
 		private slots:
-			void timed_out();
+			void timedOut();
 	};
 
 
@@ -80,21 +80,21 @@ namespace PipelineExtensions
 			 * calculate the beginning of the next track
 			 * @return fading time in ms
 			 */
-			MilliSeconds get_fading_time_ms() const;
+			MilliSeconds fadingTimeMs() const;
 
 			/**
 			 * @brief start to fade in
 			 */
-			void fade_in();
+			void fadeIn();
 
 			/**
 			 * @brief start to fade out
 			 */
-			void fade_out();
+			void fadeOut();
 
 
 		private:
-			bool init_fader(FadeMode mode);
+			bool initFader(FadeMode mode);
 
 		protected:
 			virtual void stop()=0;
@@ -104,35 +104,35 @@ namespace PipelineExtensions
 			 * @brief Some additional stuff the parent class wants to do
 			 * when fading out
 			 */
-			virtual void fade_out_handler()=0;
+			virtual void getFadeOutHandler()=0;
 
 			/**
 			 * @brief Some additional stuff the parent class wants to do
 			 * when fading in
 			 */
-			virtual void fade_in_handler()=0;
+			virtual void getFadeInHandler()=0;
 
 			/**
 			 * @brief get current volume of pipeline
 			 * @return value between 0 and 1.0
 			 */
-			virtual double get_internal_volume() const=0;
+			virtual double internalVolume() const=0;
 
 			/**
 			 * @brief set current volume of pipeline
 			 * @param vol value between 0 and 1.0
 			 */
-			virtual void set_internal_volume(double vol)=0;
+			virtual void setInternalVolume(double vol)=0;
 
 			/**
 			 * @brief Stops the current fader process
 			 */
-			void abort_fader();
+			void abortFader();
 
 
 		private:
 			friend class CrossFadeableTimer;
-			void timed_out();
+			void timedOut();
 	};
 }
 

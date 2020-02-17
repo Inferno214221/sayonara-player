@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -28,14 +28,14 @@
 
 class DummyNotificator : public NotificationInterface
 {
-public:
-	explicit DummyNotificator();
-	virtual ~DummyNotificator();
+	public:
+		explicit DummyNotificator();
+		virtual ~DummyNotificator() override;
 
-	virtual void notify(const MetaData& md) override;
-	virtual void notify(const QString& title, const QString& message, const QString& image_path) override;
+		virtual void notify(const MetaData& md) override;
+		virtual void notify(const QString& title, const QString& message, const QString& imagePath) override;
 
-	QString name() const override;
+		QString name() const override;
 };
 
 class NotificationHandler :
@@ -45,23 +45,23 @@ class NotificationHandler :
 	SINGLETON_QOBJECT(NotificationHandler)
 	PIMPL(NotificationHandler)
 
-signals:
-	// emitted when some AbstractNotifcator registered itself
-	void sig_notifications_changed();
+	signals:
+		// emitted when some AbstractNotifcator registered itself
+		void sigNotificationsChanged();
 
-private:
-	NotificationInterface* get() const;
+	private:
+		NotificationInterface* get() const;
 
-public:
-	void register_notificator(NotificationInterface* notificator);
-	void notificator_changed(const QString& name);
+	public:
+		void registerNotificator(NotificationInterface* notificator);
+		void notificatorChanged(const QString& name);
 
-	int current_index() const;
+		int currentIndex() const;
 
-	NotificatonList notificators() const;
+		NotificatonList notificators() const;
 
-	virtual void notify(const MetaData& md);
-	virtual void notify(const QString& title, const QString& message, const QString& image_path=QString());
+		virtual void notify(const MetaData& md);
+		virtual void notify(const QString& title, const QString& message, const QString& imagePath=QString());
 };
 
 #endif // NOTIFICATIONHANDLER_H

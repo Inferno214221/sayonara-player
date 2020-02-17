@@ -1,6 +1,6 @@
 /* EmptyLibraryContainer.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -48,7 +48,7 @@ QString EmptyLibraryContainer::name() const
 	return "empty-library";
 }
 
-QString EmptyLibraryContainer::display_name() const
+QString EmptyLibraryContainer::displayName() const
 {
 	return Lang::get(Lang::New);
 }
@@ -63,7 +63,7 @@ QMenu*EmptyLibraryContainer::menu()
 	return nullptr;
 }
 
-void EmptyLibraryContainer::init_ui()
+void EmptyLibraryContainer::initUi()
 {
 	m->ui = new GUI_EmptyLibrary();
 }
@@ -71,7 +71,7 @@ void EmptyLibraryContainer::init_ui()
 
 QFrame* EmptyLibraryContainer::header() const
 {
-	return m->ui->header_frame();
+	return m->ui->headerFrame();
 }
 
 QPixmap EmptyLibraryContainer::icon() const

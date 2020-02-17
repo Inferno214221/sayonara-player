@@ -1,6 +1,6 @@
 /* SoundcloudWebAccess.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -27,7 +27,7 @@
 #define sc_main		QString("https://api.soundcloud.com")
 #define sc_users	QString("https://api.soundcloud.com/users")
 
-QString	SC::WebAccess::create_dl_get_artist(const QString& name)
+QString	SC::WebAccess::createLinkGetArtist(const QString& name)
 {
 	if(name.isEmpty()) {
 		return QString("");
@@ -38,46 +38,46 @@ QString	SC::WebAccess::create_dl_get_artist(const QString& name)
 	//QString ret = QString("%1?%2&q=%3").arg(sc_users, client_id_string, name);
 	QString ret = sc_users + "?" + client_id_string + "&q=" + name;
 
-	sp_log(Log::Debug, "SCWA") << "Concat: " << sc_users << ", " << client_id_string << ", " << name;
-	sp_log(Log::Debug, "SCMA") << "Get Artist info from " << ret;
+	spLog(Log::Debug, "SCWA") << "Concat: " << sc_users << ", " << client_id_string << ", " << name;
+	spLog(Log::Debug, "SCMA") << "Get Artist info from " << ret;
 
 	return ret;
 }
 
-QString	SC::WebAccess::create_dl_get_artist(int artist_id)
+QString	SC::WebAccess::createLinkGetArtist(int artistId)
 {
 	QString ret;
 
-	if(artist_id <= 0){
+	if(artistId <= 0){
 		return ret;
 	}
 
-	ret += sc_users + "/" + QString::number(artist_id) + "?" + CLIENT_ID_STR;
+	ret += sc_users + "/" + QString::number(artistId) + "?" + CLIENT_ID_STR;
 
-	sp_log(Log::Debug, "SCMA") << "Get Artist info from " << ret;
+	spLog(Log::Debug, "SCMA") << "Get Artist info from " << ret;
 
 	return ret;
 }
 
-QString	SC::WebAccess::create_dl_get_playlists(int artist_id)
+QString	SC::WebAccess::createLinkGetPlaylists(int artistId)
 {
 	QString ret;
 
-	ret = sc_users + "/" + QString::number(artist_id) + "/playlists?" +
+	ret = sc_users + "/" + QString::number(artistId) + "/playlists?" +
 			CLIENT_ID_STR;
 
-	sp_log(Log::Debug, "Soundcloud") << "Get artist playlists from " << ret;
+	spLog(Log::Debug, "Soundcloud") << "Get artist playlists from " << ret;
 
 	return ret;
 }
 
-QString	SC::WebAccess::create_dl_get_tracks(int artist_id)
+QString	SC::WebAccess::createLinkGetTracks(int artistId)
 {
 	QString ret;
 
-	ret = sc_users + "/" + QString::number(artist_id) + "/tracks?" +	CLIENT_ID_STR;
+	ret = sc_users + "/" + QString::number(artistId) + "/tracks?" +	CLIENT_ID_STR;
 
-	sp_log(Log::Debug, "Soundcloud") << "Get Artist tracks from " << ret;
+	spLog(Log::Debug, "Soundcloud") << "Get Artist tracks from " << ret;
 
 	return ret;
 }

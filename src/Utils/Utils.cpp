@@ -1,6 +1,6 @@
 /* Helper.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -23,7 +23,7 @@
  * Helper.cpp
  *
  *  Created on: Apr 4, 2011
- *      Author: Lucio Carreras
+ *      Author: Michael Lugmair (Lucio Carreras)
  */
 
 #include <QtGlobal>
@@ -75,13 +75,13 @@ QString cvtNum2String(T num, int digits) {
 	return str;
 }
 
-uint64_t Util::date_to_int(const QDateTime& date_time)
+uint64_t Util::dateToInt(const QDateTime& date_time)
 {
 	QString str = date_time.toUTC().toString("yyyyMMddHHmmss");
 	return str.toULongLong();
 }
 
-QDateTime Util::int_to_date(uint64_t date)
+QDateTime Util::intToDate(uint64_t date)
 {
 	QString str = QString::number(qulonglong(date));
 	QDateTime dt;
@@ -105,13 +105,13 @@ QDateTime Util::int_to_date(uint64_t date)
 }
 
 
-uint64_t Util::current_date_to_int()
+uint64_t Util::currentDateToInt()
 {
 	QString str = QDateTime::currentDateTimeUtc().toString("yyyyMMddHHmmss");
 	return str.toULongLong();
 }
 
-QString Util::cvt_str_to_first_upper(const QString& str)
+QString Util::stringToFirstUpper(const QString& str)
 {
 	if(str.isEmpty()){
 		return QString();
@@ -142,7 +142,7 @@ QString Util::cvt_str_to_first_upper(const QString& str)
 	return ret;
 }
 
-QString Util::cvt_str_to_very_first_upper(const QString& str)
+QString Util::stringToVeryFirstUpper(const QString& str)
 {
 	if(str.isEmpty()){
 		return str;
@@ -155,10 +155,10 @@ QString Util::cvt_str_to_very_first_upper(const QString& str)
 }
 
 
-QString Util::sayonara_path() { return sayonara_path(QString()); }
-QString Util::sayonara_path(const QString& append_path)
+QString Util::sayonaraPath() { return sayonaraPath(QString()); }
+QString Util::sayonaraPath(const QString& append_path)
 {
-	QString basepath = Util::File::clean_filename(get_environment("SAYONARA_HOME_DIR"));
+	QString basepath = Util::File::cleanFilename(getEnvironment("SAYONARA_HOME_DIR"));
 	if(basepath.isEmpty())
 	{
 		basepath = QDir::homePath() + "/.Sayonara/";
@@ -169,7 +169,7 @@ QString Util::sayonara_path(const QString& append_path)
 	static bool checked = false;
 	if(!checked && !Util::File::exists(basepath))
 	{
-		bool b = Util::File::create_dir(basepath);
+		bool b = Util::File::createDir(basepath);
 		if(!b) {
 			return QString();
 		}
@@ -177,63 +177,63 @@ QString Util::sayonara_path(const QString& append_path)
 
 	checked = true;
 
-	return Util::File::clean_filename(basepath + "/" + append_path);
+	return Util::File::cleanFilename(basepath + "/" + append_path);
 }
 
-QString Util::share_path() { return share_path(QString()); }
-QString Util::share_path(const QString& append_path)
+QString Util::sharePath() { return sharePath(QString()); }
+QString Util::sharePath(const QString& append_path)
 {
 #ifdef Q_OS_WIN
 	return QCoreApplication::applicationDirPath() + "/share/";
 #else
-	QString base_path(Util::File::clean_filename(get_environment("SAYONARA_SHARE_DIR")));
+	QString base_path(Util::File::cleanFilename(getEnvironment("SAYONARA_SHARE_DIR")));
 	if(!Util::File::exists(base_path)){
 		base_path = SAYONARA_INSTALL_SHARE_PATH;
 	}
 
-	return Util::File::clean_filename(base_path + "/" + append_path);
+	return Util::File::cleanFilename(base_path + "/" + append_path);
 #endif
 }
 
-QString Util::lib_path() { return lib_path(QString()); }
-QString Util::lib_path(const QString& append_path)
+QString Util::libPath() { return libPath(QString()); }
+QString Util::libPath(const QString& append_path)
 {
 #ifdef Q_OS_WIN
 	return QCoreApplication::applicationDirPath() + "/lib/";
 #else
 
-	QString base_path(Util::File::clean_filename(get_environment("SAYONARA_LIB_DIR")));
+	QString base_path(Util::File::cleanFilename(getEnvironment("SAYONARA_LIB_DIR")));
 	if(!Util::File::exists(base_path)){
 		base_path = SAYONARA_INSTALL_LIB_PATH;
 	}
 
-	return Util::File::clean_filename(base_path + "/" + append_path);
+	return Util::File::cleanFilename(base_path + "/" + append_path);
 #endif
 }
 
-QString Util::temp_path()
+QString Util::tempPath()
 {
-	return temp_path(QString());
+	return tempPath(QString());
 }
 
-QString Util::temp_path(const QString& append_path)
+QString Util::tempPath(const QString& append_path)
 {
 	QString simple_temp_path = QDir::temp().absoluteFilePath("sayonara");
 	QString path = simple_temp_path + "/" + append_path;
 
 	if(!QFile::exists(simple_temp_path)) {
-		Util::File::create_dir(simple_temp_path);
+		Util::File::createDir(simple_temp_path);
 	}
 
 	return path;
 }
 
-QString Util::create_link(const QString& name, bool dark, bool underline)
+QString Util::createLink(const QString& name, bool dark, bool underline)
 {
-	return create_link(name, dark, underline, QString());
+	return createLink(name, dark, underline, QString());
 }
 
-QString Util::create_link(const QString& name, bool dark, bool underline, const QString& target)
+QString Util::createLink(const QString& name, bool dark, bool underline, const QString& target)
 {
 	QString new_target;
 	QString content;
@@ -272,30 +272,30 @@ QString Util::create_link(const QString& name, bool dark, bool underline, const 
 	return ret;
 }
 
-QString Util::get_file_filter(Util::Extensions extensions, const QString& name)
+QString Util::getFileFilter(Util::Extensions extensions, const QString& name)
 {
 	QStringList ret;
 	if(extensions | Extension::Soundfile){
-		ret << soundfile_extensions();
+		ret << soundfileExtensions();
 	}
 
 	if(extensions | Extension::Playlist){
-		ret << playlist_extensions();
+		ret << playlistExtensions();
 	}
 
 	if(extensions | Extension::Podcast){
-		ret << podcast_extensions();
+		ret << podcastExtensions();
 	}
 
 	if(extensions | Extension::Haltdeimaul){
-		ret << image_extensions();
+		ret << imageExtensions();
 	}
 
 	return QString("%1 (%2)").arg(name).arg(ret.join(" "));
 }
 
 
-QStringList Util::soundfile_extensions(bool with_asterisk)
+QStringList Util::soundfileExtensions(bool with_asterisk)
 {
 	QStringList filters;
 	filters << "mp3"
@@ -328,13 +328,13 @@ QStringList Util::soundfile_extensions(bool with_asterisk)
 }
 
 
-QString Util::soundfile_filter()
+QString Util::soundfileFilter()
 {
-	QStringList extensions = soundfile_extensions();
+	QStringList extensions = soundfileExtensions();
 	return QString("Soundfiles (") + extensions.join(" ") + ")";
 }
 
-QStringList Util::playlist_extensions(bool with_asterisk)
+QStringList Util::playlistExtensions(bool with_asterisk)
 {
 	QStringList filters;
 
@@ -357,7 +357,7 @@ QStringList Util::playlist_extensions(bool with_asterisk)
 }
 
 
-QStringList Util::podcast_extensions(bool with_asterisk)
+QStringList Util::podcastExtensions(bool with_asterisk)
 {
 	QStringList filters;
 
@@ -377,7 +377,7 @@ QStringList Util::podcast_extensions(bool with_asterisk)
 	return filters;
 }
 
-QStringList Util::image_extensions(bool with_asterisk)
+QStringList Util::imageExtensions(bool with_asterisk)
 {
 	QStringList filters;
 
@@ -403,7 +403,7 @@ QStringList Util::image_extensions(bool with_asterisk)
 }
 
 
-QString Util::easy_tag_finder(const QString& tag, const QString& xml_doc)
+QString Util::easyTagFinder(const QString& tag, const QString& xml_doc)
 {
 	int p = tag.indexOf('.');
 	QString ret = tag;
@@ -415,7 +415,7 @@ QString Util::easy_tag_finder(const QString& tag, const QString& xml_doc)
 		ret = new_tag.left(p);
 		t_rev = tag.right(new_tag.length() - p -1);
 
-		new_xml_doc = easy_tag_finder(ret, new_xml_doc);
+		new_xml_doc = easyTagFinder(ret, new_xml_doc);
 		p = t_rev.indexOf('.');
 		new_tag = t_rev;
 	}
@@ -438,7 +438,7 @@ QString Util::easy_tag_finder(const QString& tag, const QString& xml_doc)
 }
 
 
-QByteArray Util::calc_hash(const QByteArray& data)
+QByteArray Util::calcHash(const QByteArray& data)
 {
 	if(data.isEmpty()){
 		return QByteArray();
@@ -448,7 +448,7 @@ QByteArray Util::calc_hash(const QByteArray& data)
 }
 
 
-void Util::sleep_ms(uint64_t ms)
+void Util::sleepMs(uint64_t ms)
 {
 #ifdef Q_OS_WIN
 	Sleep(ms);
@@ -457,12 +457,12 @@ void Util::sleep_ms(uint64_t ms)
 #endif
 }
 
-int Util::random_number(int min, int max)
+int Util::randomNumber(int min, int max)
 {
-	return RandomGenerator().get_number(min, max);
+	return RandomGenerator().getNumber(min, max);
 }
 
-QStringList Util::ip_addresses()
+QStringList Util::ipAddresses()
 {
 	QStringList ret;
 	QList<QHostAddress> host_list;
@@ -484,7 +484,7 @@ QStringList Util::ip_addresses()
 #include <cstdlib>
 
 
-QString Util::get_environment(const char* key)
+QString Util::getEnvironment(const char* key)
 {
 #ifdef Q_OS_WIN
 	_getenv(key.toLocal8Bit().constData());
@@ -500,7 +500,7 @@ QString Util::get_environment(const char* key)
 }
 
 
-void Util::set_environment(const QString& key, const QString& value)
+void Util::setEnvironment(const QString& key, const QString& value)
 {
 #ifdef Q_OS_WIN
 	QString str = key + "=" + value;
@@ -511,7 +511,7 @@ void Util::set_environment(const QString& key, const QString& value)
 #endif
 }
 
-void Util::unset_environment(const QString& key)
+void Util::unsetEnvironment(const QString& key)
 {
 #ifdef Q_OS_WIN
 	QString str = key + "=";
@@ -524,12 +524,12 @@ void Util::unset_environment(const QString& key)
 
 
 
-QString Util::random_string(int max_chars)
+QString Util::randomString(int max_chars)
 {
 	QString ret;
 	for(int i=0; i<max_chars; i++)
 	{
-		char c = static_cast<char>(random_number(97, 122));
+		char c = static_cast<char>(randomNumber(97, 122));
 		ret.append(QChar(c));
 	}
 
@@ -537,7 +537,7 @@ QString Util::random_string(int max_chars)
 }
 
 
-QString Util::cvt_not_null(const QString& str)
+QString Util::convertNotNull(const QString& str)
 {
 	if(str.isNull()){
 		return QString("");
@@ -546,7 +546,7 @@ QString Util::cvt_not_null(const QString& str)
 	return str;
 }
 
-QByteArray Util::cvt_pixmap_to_bytearray(const QPixmap& pm)
+QByteArray Util::convertPixmapToByteArray(const QPixmap& pm)
 {
 	QByteArray arr;
 	QBuffer buffer(&arr);
@@ -556,7 +556,7 @@ QByteArray Util::cvt_pixmap_to_bytearray(const QPixmap& pm)
 	return arr;
 }
 
-QPixmap Util::cvt_bytearray_to_pixmap(const QByteArray& arr)
+QPixmap Util::convertByteArrayToPixmap(const QByteArray& arr)
 {
 	QPixmap pm;
 	pm.loadFromData(arr, "JPG");
@@ -564,7 +564,7 @@ QPixmap Util::cvt_bytearray_to_pixmap(const QByteArray& arr)
 }
 
 
-QString Util::cvt_ms_to_string(MilliSeconds msec, const QString& format)
+QString Util::msToString(MilliSeconds msec, const QString& format)
 {
 	uint64_t secs = uint64_t(msec / 1000);
 

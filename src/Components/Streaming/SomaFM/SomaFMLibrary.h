@@ -1,6 +1,6 @@
 /* SomaFMLibrary.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -34,35 +34,34 @@ namespace SomaFM
 	class Library : public QObject
 	{
 		Q_OBJECT
-
 		PIMPL(Library)
 
 		signals:
-			void sig_stations_loaded(const QList<SomaFM::Station>& stations);
-			void sig_station_changed(const SomaFM::Station& station);
-			void sig_loading_finished();
-			void sig_loading_started();
+			void sigStationsLoaded(const QList<SomaFM::Station>& stations);
+			void sigStationChanged(const SomaFM::Station& station);
+			void sigLoadingFinished();
+			void sigLoadingStarted();
 
 		public:
 			explicit Library(QObject* parent=nullptr);
 			~Library();
 
 			Station station(const QString& name);
-			void create_playlist_from_station(int idx);
-			bool create_playlist_from_playlist(int idx);
-			void search_stations();
-			void set_station_loved(const QString& station_name, bool loved);
+			void createPlaylistFromStation(int idx);
+			bool createPlaylistFromStreamlist(int idx);
+			void searchStations();
+			void setStationLoved(const QString& stationName, bool loved);
 
-			static void prepare_metadata_for_playlist(MetaDataList& v_md, const SomaFM::Station& station);
-
-		private slots:
-			void soma_website_fetched();
-			void soma_playlist_content_fetched(bool success);
-			void soma_station_playlists_fetched(bool success);
+		public:
+			static void parseMetadataForPlaylist(MetaDataList& tracks, const SomaFM::Station& station);
 
 		private:
-			void sort_stations(QList<Station>& stations);
+			void sortStations(QList<Station>& stations);
 
+		private slots:
+			void websiteFetched();
+			void playlistContentFetched(bool success);
+			void stationStreamsFetched(bool success);
 	};
 }
 

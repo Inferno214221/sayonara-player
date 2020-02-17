@@ -1,6 +1,6 @@
 /* PlaylistContextMenu.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -37,43 +37,41 @@ namespace Playlist
 		Q_OBJECT
 		PIMPL(ContextMenu)
 
-	signals:
-		void sig_rating_changed(Rating rating);
-		void sig_bookmark_pressed(Seconds timestamp);
-		void sig_jump_to_current_track();
-		void sig_find_track_triggered();
-		void sig_reverse_triggered();
+		signals:
+			void sigRatingChanged(Rating rating);
+			void sigBookmarkPressed(Seconds timestamp);
+			void sigJumpToCurrentTrack();
+			void sigFindTrackTriggered();
+			void sigReverseTriggered();
 
-	public:
-		enum Entry
-		{
-			EntryRating			= (Library::ContextMenu::EntryLast << 1),
-			EntryBookmarks		= (Library::ContextMenu::EntryLast << 2),
-			EntryCurrentTrack	= (Library::ContextMenu::EntryLast << 3),
-			EntryFindInLibrary	= (Library::ContextMenu::EntryLast << 4),
-			EntryReverse		= (Library::ContextMenu::EntryLast << 5)
-		};
+		public:
+			enum Entry
+			{
+				EntryRating			= (Library::ContextMenu::EntryLast << 1),
+				EntryBookmarks		= (Library::ContextMenu::EntryLast << 2),
+				EntryCurrentTrack	= (Library::ContextMenu::EntryLast << 3),
+				EntryFindInLibrary	= (Library::ContextMenu::EntryLast << 4),
+				EntryReverse		= (Library::ContextMenu::EntryLast << 5)
+			};
 
-		explicit ContextMenu(QWidget* parent);
-		~ContextMenu() override;
+			explicit ContextMenu(QWidget* parent);
+			~ContextMenu() override;
 
-		ContextMenu::Entries get_entries() const override;
-		void show_actions(ContextMenu::Entries entries) override;
+			ContextMenu::Entries entries() const override;
+			void showActions(ContextMenu::Entries entries) override;
 
-		/**
-		 * @brief set rating for the rating entry
-		 * @param rating from 0 to 5
-		 */
-		void set_rating(Rating rating);
-		void set_metadata(const MetaData& md);
+			void setRating(Rating rating);
+			void setMetadata(const MetaData& md);
 
-	private:
-		QAction* init_rating_action(Rating rating, QObject* parent);
-		void language_changed() override;
-		void skin_changed() override;
+		private:
+			QAction* initRatingAction(Rating rating, QObject* parent);
 
-	private slots:
-		void bookmark_pressed(Seconds timestamp);
+		private slots:
+			void bookmarkPressed(Seconds timestamp);
+
+		protected:
+			void languageChanged() override;
+			void skinChanged() override;
 	};
 }
 

@@ -7,39 +7,20 @@ using Tagging::ChangeInformation;
 
 struct ChangeInformation::Private
 {
-	MetaData md_orig;
-	MetaData md_changed;
+	MetaData originalMetadata;
+	MetaData changedMetadata;
 
-	QPixmap new_cover;
+	QPixmap newCover;
 
-	bool has_changes;
-	bool has_new_cover;
+	bool hasChanges;
+	bool hasNewCover;
 
 	Private(const MetaData& md) :
-		md_orig(md),
-		md_changed(md),
-		has_changes(false),
-		has_new_cover(false)
+		originalMetadata(md),
+		changedMetadata(md),
+		hasChanges(false),
+		hasNewCover(false)
 	{}
-
-	Private(const Private& other) :
-		CASSIGN(md_orig),
-		CASSIGN(md_changed),
-		CASSIGN(new_cover),
-		CASSIGN(has_changes),
-		CASSIGN(has_new_cover)
-	{}
-
-	Private& operator=(const Private& other)
-	{
-		ASSIGN(md_orig);
-		ASSIGN(md_changed);
-		ASSIGN(new_cover);
-		ASSIGN(has_changes);
-		ASSIGN(has_new_cover);
-
-		return *this;
-	}
 };
 
 ChangeInformation::ChangeInformation(const MetaData& md)
@@ -62,76 +43,76 @@ Tagging::ChangeInformation& ChangeInformation::operator=(const Tagging::ChangeIn
 
 void ChangeInformation::update(const MetaData& md)
 {
-	bool is_equal = md.is_equal_deep( m->md_orig );
+	bool is_equal = md.isEqualDeep( m->originalMetadata );
 	if(!is_equal)
 	{
-		m->md_changed = md;
-		m->has_changes = true;
+		m->changedMetadata = md;
+		m->hasChanges = true;
 	}
 }
 
-void ChangeInformation::update_cover(const QPixmap& pm)
+void ChangeInformation::updateCover(const QPixmap& pm)
 {
 	if(pm.isNull()){
-		sp_log(Log::Warning, this) << "Bad cover: Will not update";
+		spLog(Log::Warning, this) << "Bad cover: Will not update";
 		return;
 	}
 
-	m->new_cover = pm;
-	m->has_new_cover = true;
+	m->newCover = pm;
+	m->hasNewCover = true;
 }
 
 void ChangeInformation::apply()
 {
-	m->md_orig = m->md_changed;
-	m->has_changes = false;
-	m->has_new_cover = false;
+	m->originalMetadata = m->changedMetadata;
+	m->hasChanges = false;
+	m->hasNewCover = false;
 }
 
 void ChangeInformation::undo()
 {
-	m->has_changes = false;
-	m->md_changed = m->md_orig;
-	m->new_cover = QPixmap();
-	m->has_new_cover = false;
+	m->hasChanges = false;
+	m->changedMetadata = m->originalMetadata;
+	m->newCover = QPixmap();
+	m->hasNewCover = false;
 }
 
-bool ChangeInformation::has_changes() const
+bool ChangeInformation::hasChanges() const
 {
-	return m->has_changes;
+	return m->hasChanges;
 }
 
-void ChangeInformation::set_changed(bool b)
+void ChangeInformation::setChanged(bool b)
 {
-	m->has_changes = b;
+	m->hasChanges = b;
 }
 
-bool ChangeInformation::has_new_cover() const
+bool ChangeInformation::hasNewCover() const
 {
-	return m->has_new_cover;
+	return m->hasNewCover;
 }
 
 QPixmap ChangeInformation::cover() const
 {
-	return m->new_cover;
+	return m->newCover;
 }
 
-MetaData& ChangeInformation::current_metadata()
+MetaData& ChangeInformation::currentMetadata()
 {
-	return m->md_changed;
+	return m->changedMetadata;
 }
 
-MetaData& ChangeInformation::original_metadata()
+MetaData& ChangeInformation::originalMetadata()
 {
-	return m->md_orig;
+	return m->originalMetadata;
 }
 
-const MetaData& ChangeInformation::current_metadata() const
+const MetaData& ChangeInformation::currentMetadata() const
 {
-	return m->md_changed;
+	return m->changedMetadata;
 }
 
-const MetaData& ChangeInformation::original_metadata() const
+const MetaData& ChangeInformation::originalMetadata() const
 {
-	return m->md_orig;
+	return m->originalMetadata;
 }

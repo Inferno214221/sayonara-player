@@ -1,6 +1,6 @@
 /* GUI_PlaylistPreferences.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -115,21 +115,21 @@ GUI_PlaylistPreferences::~GUI_PlaylistPreferences()
 
 bool GUI_PlaylistPreferences::commit()
 {
-	SetSetting(Set::PL_LoadSavedPlaylists, ui->cb_load_saved_playlists->isChecked() );
-	SetSetting(Set::PL_LoadTemporaryPlaylists, ui->cb_load_temporary_playlists->isChecked() );
-	SetSetting(Set::PL_LoadLastTrack, (ui->cb_load_last_track->isChecked() && ui->cb_load_last_track->isEnabled()) );
-	SetSetting(Set::PL_RememberTime, (ui->cb_remember_time->isChecked() && ui->cb_remember_time->isEnabled()) );
-	SetSetting(Set::PL_StartPlaying, (ui->cb_start_playing->isChecked() && ui->cb_start_playing->isEnabled()) );
+	SetSetting(Set::PL_LoadSavedPlaylists, ui->cbLoadSavedPlaylists->isChecked() );
+	SetSetting(Set::PL_LoadTemporaryPlaylists, ui->cbLoadTemporaryPlaylists->isChecked() );
+	SetSetting(Set::PL_LoadLastTrack, (ui->cbLoadLastTrack->isChecked() && ui->cbLoadLastTrack->isEnabled()) );
+	SetSetting(Set::PL_RememberTime, (ui->cbRememberTime->isChecked() && ui->cbRememberTime->isEnabled()) );
+	SetSetting(Set::PL_StartPlaying, (ui->cbStartPlaying->isChecked() && ui->cbStartPlaying->isEnabled()) );
 
-	SetSetting(Set::PL_ShowNumbers, ui->cb_show_numbers->isChecked());
-	SetSetting(Set::PL_ShowCovers, ui->cb_show_covers->isChecked());
-	SetSetting(Set::PL_ShowRating, ui->cb_show_rating->isChecked());
+	SetSetting(Set::PL_ShowNumbers, ui->cbShowNumbers->isChecked());
+	SetSetting(Set::PL_ShowCovers, ui->cbShowCovers->isChecked());
+	SetSetting(Set::PL_ShowRating, ui->cbShowRating->isChecked());
 
-	SetSetting(Set::PL_ShowClearButton, ui->cb_show_clear_button->isChecked());
-	SetSetting(Set::PL_RememberTrackAfterStop, ui->cb_remember_after_stop->isChecked());
+	SetSetting(Set::PL_ShowClearButton, ui->cbShowClearButton->isChecked());
+	SetSetting(Set::PL_RememberTrackAfterStop, ui->cbRememberAfterStop->isChecked());
 
-	if(evaluate_expression(ui->le_expression->text())){
-		SetSetting(Set::PL_EntryLook, ui->le_expression->text());
+	if(evaluate_expression(ui->leExpression->text())){
+		SetSetting(Set::PL_EntryLook, ui->leExpression->text());
 		return true;
 	}
 
@@ -146,86 +146,86 @@ void GUI_PlaylistPreferences::revert()
 	remember_time = GetSetting(Set::PL_RememberTime);
 	start_playing = GetSetting(Set::PL_StartPlaying);
 
-	ui->cb_load_saved_playlists->setChecked(load_saved_playlists);
-	ui->cb_load_temporary_playlists->setChecked(load_temporary_playlists);
-	ui->cb_load_last_track->setChecked(load_last_track);
-	ui->cb_remember_time->setChecked(remember_time);
-	ui->cb_start_playing->setChecked(start_playing);
+	ui->cbLoadSavedPlaylists->setChecked(load_saved_playlists);
+	ui->cbLoadTemporaryPlaylists->setChecked(load_temporary_playlists);
+	ui->cbLoadLastTrack->setChecked(load_last_track);
+	ui->cbRememberTime->setChecked(remember_time);
+	ui->cbStartPlaying->setChecked(start_playing);
 
-	ui->le_expression->setText(GetSetting(Set::PL_EntryLook));
-	ui->cb_show_numbers->setChecked(GetSetting(Set::PL_ShowNumbers));
-	ui->cb_show_covers->setChecked(GetSetting(Set::PL_ShowCovers));
-	ui->cb_show_rating->setChecked(GetSetting(Set::PL_ShowRating));
-	ui->cb_show_clear_button->setChecked(GetSetting(Set::PL_ShowClearButton));
-	ui->cb_remember_after_stop->setChecked(GetSetting(Set::PL_RememberTrackAfterStop));
+	ui->leExpression->setText(GetSetting(Set::PL_EntryLook));
+	ui->cbShowNumbers->setChecked(GetSetting(Set::PL_ShowNumbers));
+	ui->cbShowCovers->setChecked(GetSetting(Set::PL_ShowCovers));
+	ui->cbShowRating->setChecked(GetSetting(Set::PL_ShowRating));
+	ui->cbShowClearButton->setChecked(GetSetting(Set::PL_ShowClearButton));
+	ui->cbRememberAfterStop->setChecked(GetSetting(Set::PL_RememberTrackAfterStop));
 }
 
 
-void GUI_PlaylistPreferences::init_ui()
+void GUI_PlaylistPreferences::initUi()
 {
-	if(is_ui_initialized()){
+	if(isUiInitialized()){
 		return;
 	}
 
-	setup_parent(this, &ui);
+	setupParent(this, &ui);
 	ui->tabWidget->setCurrentIndex(0);
-	ui->le_expression->setStyleSheet("font-family: mono;");
+	ui->leExpression->setStyleSheet("font-family: mono;");
 
 	revert();
 
-	cb_toggled(true);
+	checkboxToggled(true);
 
-	connect(ui->cb_load_last_track, &QCheckBox::toggled, this, &GUI_PlaylistPreferences::cb_toggled);
-	connect(ui->cb_load_saved_playlists, &QCheckBox::toggled, this, &GUI_PlaylistPreferences::cb_toggled);
-	connect(ui->cb_load_temporary_playlists, &QCheckBox::toggled, this, &GUI_PlaylistPreferences::cb_toggled);
-	connect(ui->cb_remember_time, &QCheckBox::toggled, this, &GUI_PlaylistPreferences::cb_toggled);
-	connect(ui->cb_start_playing, &QCheckBox::toggled, this, &GUI_PlaylistPreferences::cb_toggled);
+	connect(ui->cbLoadLastTrack, &QCheckBox::toggled, this, &GUI_PlaylistPreferences::checkboxToggled);
+	connect(ui->cbLoadSavedPlaylists, &QCheckBox::toggled, this, &GUI_PlaylistPreferences::checkboxToggled);
+	connect(ui->cbLoadTemporaryPlaylists, &QCheckBox::toggled, this, &GUI_PlaylistPreferences::checkboxToggled);
+	connect(ui->cbRememberTime, &QCheckBox::toggled, this, &GUI_PlaylistPreferences::checkboxToggled);
+	connect(ui->cbStartPlaying, &QCheckBox::toggled, this, &GUI_PlaylistPreferences::checkboxToggled);
 
-	connect(ui->btn_default, &QPushButton::clicked, this, [=]()
+	connect(ui->btnDefault, &QPushButton::clicked, this, [=]()
 	{
-		ui->le_expression->setText("*%title%* - %artist%");
+		ui->leExpression->setText("*%title%* - %artist%");
 	});
 }
 
-QString GUI_PlaylistPreferences::action_name() const
+QString GUI_PlaylistPreferences::actionName() const
 {
 	return Lang::get(Lang::Playlist);
 }
 
-void GUI_PlaylistPreferences::retranslate_ui()
+void GUI_PlaylistPreferences::retranslate()
 {
 	ui->retranslateUi(this);
 
-	ui->lab_album->setText(Lang::get(Lang::Album));
-	ui->lab_artist->setText(Lang::get(Lang::Artist));
-	ui->lab_title->setText(Lang::get(Lang::Title));
-	ui->lab_trackno->setText(Lang::get(Lang::TrackNo));
-	ui->btn_default->setText(Lang::get(Lang::Default));
+	ui->labAlbum->setText(Lang::get(Lang::Album));
+	ui->labArtist->setText(Lang::get(Lang::Artist));
+	ui->labTitle->setText(Lang::get(Lang::Title));
+	ui->labTrackNumber->setText(Lang::get(Lang::TrackNo));
+	ui->btnDefault->setText(Lang::get(Lang::Default));
 }
 
-void GUI_PlaylistPreferences::skin_changed()
+void GUI_PlaylistPreferences::skinChanged()
 {
 	if(ui)
 	{
-		ui->btn_default->setIcon(Gui::Icons::icon(Gui::Icons::Undo));
+		ui->btnDefault->setIcon(Gui::Icons::icon(Gui::Icons::Undo));
 	}
 }
 
-QString GUI_PlaylistPreferences::error_string() const
+QString GUI_PlaylistPreferences::errorString() const
 {
 	return tr("Playlist look: Invalid expression");
 }
 
-void GUI_PlaylistPreferences::cb_toggled(bool b)
+void GUI_PlaylistPreferences::checkboxToggled(bool b)
 {
 	Q_UNUSED(b);
 
-	bool load = (ui->cb_load_saved_playlists->isChecked() || ui->cb_load_temporary_playlists->isChecked());
+	bool load = (ui->cbLoadSavedPlaylists->isChecked() || ui->cbLoadTemporaryPlaylists->isChecked());
 
-	ui->cb_load_last_track->setEnabled(load);
-	ui->cb_remember_time->setEnabled(load);
-	ui->cb_start_playing->setEnabled(load);
+	ui->cbLoadLastTrack->setEnabled(load);
+	ui->cbRememberTime->setEnabled(load);
+	ui->cbStartPlaying->setEnabled(load);
 
-	bool cb_load_last_track_checked = ui->cb_load_last_track->isChecked() && ui->cb_load_last_track->isEnabled();
-	ui->cb_remember_time->setEnabled(cb_load_last_track_checked);
+	bool cbLoadLastTrack_checked = ui->cbLoadLastTrack->isChecked() && ui->cbLoadLastTrack->isEnabled();
+	ui->cbRememberTime->setEnabled(cbLoadLastTrack_checked);
 }

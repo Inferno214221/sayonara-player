@@ -1,6 +1,6 @@
 /* RemoteControl.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -91,69 +91,70 @@ class RemoteControl :
 	PIMPL(RemoteControl)
 
 public:
-	explicit RemoteControl(QObject *parent=nullptr);
+	explicit RemoteControl(QObject* parent=nullptr);
 	~RemoteControl() override;
 
-	bool is_connected() const;
-
-private slots:
-	void new_connection();
-	void socket_disconnected();
-	void new_request();
-
-	void pos_changed_ms(MilliSeconds pos);
-	void track_changed(const MetaData& md);
-	void volume_changed(int vol);
-	void volume_timer_timeout();
-	void playstate_changed(PlayState playstate);
-	void active_playlist_changed(int index);
-	void active_playlist_content_changed(int index);
-
-	void cover_found(const QPixmap& pm);
-
-	void _sl_active_changed();
-	void _sl_port_changed();
-	void _sl_broadcast_changed();
-
+	bool isConnected() const;
 
 private:
 	void init();
 
-	void set_volume(int vol);
-	void seek_rel(int pos_percent);
-	void seek_rel_ms(int pos_ms);
-	void seek_abs_ms(int pos_ms);
-	void change_track(int idx);
+	void setVolume(int vol);
+	void seekRelative(int pos_percent);
+	void seekRelativeMs(int pos_ms);
+	void seekAbsoluteMs(int pos_ms);
+	void changeTrack(int idx);
 
-	void show_api();
-	void request_state();
+	void showApi();
+	void requestState();
 
-	int extract_parameter_int(const QByteArray& arr, int cmd_len);
+	int extractParameterInt(const QByteArray& arr, int cmd_len);
 
-	void insert_json_playstate(QJsonObject& o);
-	void write_playstate();
+	void insertJsonPlaystate(QJsonObject& o);
+	void writePlaystate();
 
-	void insert_json_broadcast_info(QJsonObject& o);
-	void write_broadcast_info();
+	void insertJsonBroadcastInfo(QJsonObject& o);
+	void writeBroadcastInfo();
 
-	void insert_json_current_track(QJsonObject& o);
-	void write_current_track();
+	void insertJsonCurrentTrack(QJsonObject& o);
+	void writeCurrentTrack();
 
-	void insert_json_volume(QJsonObject& o) const;
-	void write_volume();
+	void insertJsonVolume(QJsonObject& o) const;
+	void writeVolume();
 
-	void insert_json_current_position(QJsonObject& o) const;
-	void write_current_position();
+	void insertJsonCurrentPosition(QJsonObject& o) const;
+	void writeCurrentPosition();
 
-	void insert_json_playlist(QJsonArray& o) const;
-	void write_playlist();
+	void insertJsonPlaylist(QJsonArray& o) const;
+	void writePlaylist();
 
-	void search_cover();
-	void json_cover(QJsonObject& o, const QPixmap& pm) const;
+	void searchCover();
+	void jsonCover(QJsonObject& o, const QPixmap& pm) const;
 
 	void write(const QByteArray& arr);
 
-	void active_changed();
+	void activeChanged();
+
+
+private slots:
+	void newConnection();
+	void socketDisconnected();
+	void newRequest();
+
+	void currentPositionChangedMs(MilliSeconds pos);
+	void currentTrackChanged(const MetaData& md);
+	void volumeChanged(int vol);
+	void volumeTimerTimeout();
+	void playstateChanged(PlayState playstate);
+	void activePlaylistChanged(int index);
+	void activePlaylistContentChanged(int index);
+
+	void coverFound(const QPixmap& pm);
+
+	void remoteActiveChanged();
+	void remotePortChanged();
+	void broadcastChanged();
+
 };
 
 

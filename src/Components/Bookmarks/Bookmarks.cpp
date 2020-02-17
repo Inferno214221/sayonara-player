@@ -1,6 +1,6 @@
 /* Bookmarks.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -28,46 +28,46 @@
 
 struct Bookmarks::Private
 {
-	PlayManager*	play_manager=nullptr;
+	PlayManager*	playManager=nullptr;
 
-	int				prev_idx;
-	int				next_idx;
+	int				previousIndex;
+	int				nextIndex;
 
-	Seconds			time_offset;
-	Seconds			cur_time;
+	Seconds			timeOffset;
+	Seconds			currentTime;
 
-	Seconds			loop_start;
-	Seconds			loop_end;
+	Seconds			loopStart;
+	Seconds			loopEnd;
 
 	Private() :
-		time_offset(1)
+		timeOffset(1)
 	{
-		play_manager = PlayManager::instance();
+		playManager = PlayManager::instance();
 
 		reset();
 	}
 
 	void reset()
 	{
-		cur_time = 0;
-		prev_idx = -1;
-		next_idx = -1;
-		loop_start = 0;
-		loop_end = 0;
+		currentTime = 0;
+		previousIndex = -1;
+		nextIndex = -1;
+		loopStart = 0;
+		loopEnd = 0;
 	}
 };
 
 
-Bookmarks::Bookmarks(QObject *parent) :
+Bookmarks::Bookmarks(QObject* parent) :
 	BookmarksBase(parent)
 {
 	m = Pimpl::make<Bookmarks::Private>();
 
-	connect(m->play_manager, &PlayManager::sig_track_changed, this, &Bookmarks::track_changed);
-	connect(m->play_manager, &PlayManager::sig_position_changed_ms, this, &Bookmarks::pos_changed_ms);
-	connect(m->play_manager, &PlayManager::sig_playstate_changed, this, &Bookmarks::playstate_changed);
+	connect(m->playManager, &PlayManager::sigCurrentTrackChanged, this, &Bookmarks::currentTrackChanged);
+	connect(m->playManager, &PlayManager::sigPositionChangedMs, this, &Bookmarks::positionChangedMs);
+	connect(m->playManager, &PlayManager::sigPlaystateChanged, this, &Bookmarks::playstateChanged);
 
-	set_metadata(m->play_manager->current_track());
+	setMetadata(m->playManager->currentTrack());
 }
 
 Bookmarks::~Bookmarks() {}
@@ -76,7 +76,7 @@ bool Bookmarks::load()
 {
 	bool success = BookmarksBase::load();
 	if(success){
-		emit sig_bookmarks_changed();
+		emit sigBookmarksChanged();
 	}
 
 	return success;
@@ -84,10 +84,10 @@ bool Bookmarks::load()
 
 BookmarksBase::CreationStatus Bookmarks::create()
 {
-	BookmarksBase::CreationStatus status = BookmarksBase::create(m->play_manager->current_position_ms() / 1000);
+	BookmarksBase::CreationStatus status = BookmarksBase::create(m->playManager->currentPositionMs() / 1000);
 	if(status == BookmarksBase::CreationStatus::Success)
 	{
-		emit sig_bookmarks_changed();
+		emit sigBookmarksChanged();
 	}
 
 	return status;
@@ -98,14 +98,14 @@ bool Bookmarks::remove(int idx)
 {
 	bool success = BookmarksBase::remove(idx);
 	if(success){
-		emit sig_bookmarks_changed();
+		emit sigBookmarksChanged();
 	}
 
 	return success;
 }
 
 
-bool Bookmarks::jump_to(int idx)
+bool Bookmarks::jumpTo(int idx)
 {
 	if(!Util::between(idx, this->count()) )
 	{
@@ -113,54 +113,54 @@ bool Bookmarks::jump_to(int idx)
 	}
 
 	if(idx < 0){
-		m->play_manager->seek_abs_ms(0);
+		m->playManager->seekAbsoluteMs(0);
 	}
 	else
 	{
 		MilliSeconds new_time = bookmark(idx).timestamp() * 1000;
-		m->play_manager->seek_abs_ms(new_time);
+		m->playManager->seekAbsoluteMs(new_time);
 	}
 
 	return true;
 }
 
 
-bool Bookmarks::jump_next()
+bool Bookmarks::jumpNext()
 {
-	if( !Util::between(m->next_idx, this->count()) )
+	if( !Util::between(m->nextIndex, this->count()) )
 	{
-		emit sig_next_changed(Bookmark());
+		emit sigNextChanged(Bookmark());
 		return false;
 	}
 
-	jump_to(m->next_idx);
+	jumpTo(m->nextIndex);
 
 	return true;
 }
 
 
-bool Bookmarks::jump_prev()
+bool Bookmarks::jumpPrevious()
 {
-	if( m->prev_idx >= this->count() )
+	if( m->previousIndex >= this->count() )
 	{
-		emit sig_prev_changed(Bookmark());
+		emit sigPreviousChanged(Bookmark());
 		return false;
 	}
 
-	jump_to(m->prev_idx);
+	jumpTo(m->previousIndex);
 
 	return true;
 }
 
 
-void Bookmarks::pos_changed_ms(MilliSeconds pos_ms)
+void Bookmarks::positionChangedMs(MilliSeconds pos_ms)
 {
-	m->cur_time = (Seconds) (pos_ms / 1000);
+	m->currentTime = (Seconds) (pos_ms / 1000);
 
-	if( m->cur_time >= m->loop_end &&
-		m->loop_end != 0)
+	if( m->currentTime >= m->loopEnd &&
+		m->loopEnd != 0)
 	{
-		jump_prev();
+		jumpPrevious();
 		return;
 	}
 
@@ -168,80 +168,80 @@ void Bookmarks::pos_changed_ms(MilliSeconds pos_ms)
 		return;
 	}
 
-	m->prev_idx=-1;
-	m->next_idx=-1;
+	m->previousIndex=-1;
+	m->nextIndex=-1;
 
 	const QList<Bookmark> bookmarks = this->bookmarks();
 	for(auto it=bookmarks.begin(); it != bookmarks.end(); it++)
 	{
 		Seconds time = it->timestamp();
 
-		if(time + m->time_offset < m->cur_time)
+		if(time + m->timeOffset < m->currentTime)
 		{
-			m->prev_idx = std::distance(bookmarks.begin(), it);
+			m->previousIndex = std::distance(bookmarks.begin(), it);
 		}
 
-		else if(time > m->cur_time)
+		else if(time > m->currentTime)
 		{
-			if(m->next_idx == -1){
-				m->next_idx = std::distance(bookmarks.begin(), it);
+			if(m->nextIndex == -1){
+				m->nextIndex = std::distance(bookmarks.begin(), it);
 				break;
 			}
 		}
 	}
 
-	if( Util::between(m->prev_idx, this->count()) ){
-		emit sig_prev_changed(this->bookmark(m->prev_idx));
+	if( Util::between(m->previousIndex, this->count()) ){
+		emit sigPreviousChanged(this->bookmark(m->previousIndex));
 	}
 	else{
-		emit sig_prev_changed(Bookmark());
+		emit sigPreviousChanged(Bookmark());
 	}
 
-	if( Util::between(m->next_idx, this->count()) ){
-		emit sig_next_changed(this->bookmark(m->next_idx));
+	if( Util::between(m->nextIndex, this->count()) ){
+		emit sigNextChanged(this->bookmark(m->nextIndex));
 	}
 	else{
-		emit sig_next_changed(Bookmark());
+		emit sigNextChanged(Bookmark());
 	}
 }
 
 
-void Bookmarks::track_changed(const MetaData& md)
+void Bookmarks::currentTrackChanged(const MetaData& md)
 {
-	BookmarksBase::set_metadata(md);
+	BookmarksBase::setMetadata(md);
 
-	emit sig_bookmarks_changed();
-	emit sig_prev_changed(Bookmark());
-	emit sig_next_changed(Bookmark());
+	emit sigBookmarksChanged();
+	emit sigPreviousChanged(Bookmark());
+	emit sigNextChanged(Bookmark());
 }
 
 
-void Bookmarks::playstate_changed(PlayState state)
+void Bookmarks::playstateChanged(PlayState state)
 {
 	if(state == PlayState::Stopped)
 	{
 		m->reset();
 
-		emit sig_bookmarks_changed();
-		emit sig_prev_changed(Bookmark());
-		emit sig_next_changed(Bookmark());
+		emit sigBookmarksChanged();
+		emit sigPreviousChanged(Bookmark());
+		emit sigNextChanged(Bookmark());
 	}
 }
 
-bool Bookmarks::set_loop(bool b)
+bool Bookmarks::setLoop(bool b)
 {
 	bool ret = false;
 
-	m->loop_start = 0;
-	m->loop_end = 0;
+	m->loopStart = 0;
+	m->loopEnd = 0;
 
 	if(b)
 	{
-		if( Util::between(m->prev_idx, this->count()) &&
-			Util::between(m->next_idx, this->count()) )
+		if( Util::between(m->previousIndex, this->count()) &&
+			Util::between(m->nextIndex, this->count()) )
 		{
-			m->loop_start = bookmark(m->prev_idx).timestamp();
-			m->loop_end = bookmark(m->next_idx).timestamp();
+			m->loopStart = bookmark(m->previousIndex).timestamp();
+			m->loopEnd = bookmark(m->nextIndex).timestamp();
 			ret = true;
 		}
 	}

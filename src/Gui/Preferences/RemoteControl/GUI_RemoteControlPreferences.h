@@ -1,6 +1,6 @@
 /* GUI_RemoteControlPreferences.h
 
- * Copyright (C) 2011-2020 Lucio Carreras
+ * Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara-player
  *
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * created by Lucio Carreras,
+ * created by Michael Lugmair (Lucio Carreras),
  * Sep 3, 2012
  *
  */
@@ -42,23 +42,23 @@ public:
 	bool commit() override;
 	void revert() override;
 
-	QString action_name() const override;
+	QString actionName() const override;
 
-	bool has_error() const override;
-	QString error_string() const override;
+	bool hasError() const override;
+	QString errorString() const override;
 
 protected:
-	void init_ui() override;
-	void retranslate_ui() override;
+	void initUi() override;
+	void retranslate() override;
 
 private slots:
-	void active_toggled(bool b);
-	void port_changed(int port);
-	void discover_port_changed(int port);
+	void activeToggled(bool b);
+	void portChanged(int port);
+	void discoverPortChanged(int port);
 
 private:
-	QString get_url_string();
-	void refresh_url();
+	QString getUrlString();
+	void refreshUrl();
 };
 
 #endif /* GUI_REMOTECONTROL_PREFERENCES_H */

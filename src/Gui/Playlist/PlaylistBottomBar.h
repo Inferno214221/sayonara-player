@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -45,35 +45,35 @@ namespace Playlist
 		PIMPL(BottomBar)
 
 		signals:
-			void sig_show_numbers_changed(bool active);
-			void sig_playlist_mode_changed(const ::Playlist::Mode& mode);
+			void sigShowNumbersChanged(bool active);
+			void sigPlaylistModeChanged(const ::Playlist::Mode& mode);
 
 		public:
-			explicit BottomBar(QWidget *parent=nullptr);
+			explicit BottomBar(QWidget* parent=nullptr);
 			~BottomBar() override;
 
-			void check_dynamic_play_button();
-
-		protected:
-			void language_changed() override;
-			void skin_changed() override;
-			void showEvent(QShowEvent* e) override;
-			void resizeEvent(QResizeEvent* e) override;
+			void checkDynamicPlayButton();
 
 		private slots:
-			void rep1_checked(bool checked);
-			void rep_all_checked(bool checked);
-			void shuffle_checked(bool checked);
-			void playlist_mode_changed();
-			void gapless_clicked();
+			void rep1Checked(bool checked);
+			void repAllChecked(bool checked);
+			void shuffleChecked(bool checked);
+			void gaplessClicked();
 
-			void s_playlist_mode_changed();
+			void changePlaylistMode();
+			void playlistModeSettingChanged();
 
 		#ifdef SAYONARA_WITH_SHUTDOWN
 			void shutdown_clicked();
 			void shutdown_started(MilliSeconds time2go);
 			void shutdown_closed();
 		#endif
+
+		protected:
+			void languageChanged() override;
+			void skinChanged() override;
+			void showEvent(QShowEvent* e) override;
+			void resizeEvent(QResizeEvent* e) override;
 	};
 }
 

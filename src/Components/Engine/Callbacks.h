@@ -1,6 +1,6 @@
 /* EngineCallbacks.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -44,20 +44,20 @@ namespace Engine
 	#endif
 
 		gboolean
-		bus_state_changed(GstBus* bus, GstMessage* msg, gpointer data);
+		busStateChanged(GstBus* bus, GstMessage* msg, gpointer data);
 
 		gboolean
-		level_handler(GstBus* bus, GstMessage* message, gpointer data);
+		levelHandler(GstBus* bus, GstMessage* message, gpointer data);
 
 		gboolean
-		spectrum_handler(GstBus* bus, GstMessage* message, gpointer data);
+		spectrumHandler(GstBus* bus, GstMessage* message, gpointer data);
 
 
-		void decodebin_ready(GstElement *src, GstPad *new_pad, gpointer data);
-		void source_ready(GstURIDecodeBin* bin, GstElement* source, gpointer user_data);
+		void decodebinReady(GstElement* src, GstPad *new_pad, gpointer data);
+		void sourceReady(GstURIDecodeBin* bin, GstElement* source, gpointer user_data);
 
-		gboolean position_changed(gpointer data);
-		GstFlowReturn new_buffer(GstElement *sink, gpointer data);
+		gboolean positionChanged(gpointer data);
+		GstFlowReturn newBuffer(GstElement* sink, gpointer data);
 	}
 }
 

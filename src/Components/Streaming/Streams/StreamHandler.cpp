@@ -1,6 +1,6 @@
 /* StreamHandlerStreams.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -30,9 +30,9 @@ StreamHandler::StreamHandler(QObject* parent) :
 
 StreamHandler::~StreamHandler() = default;
 
-bool StreamHandler::get_all_streams(QList<StationPtr>& stations)
+bool StreamHandler::getAllStreams(QList<StationPtr>& stations)
 {
-	DB::Streams* db = DB::Connector::instance()->stream_connector();
+	DB::Streams* db = DB::Connector::instance()->streamConnector();
 
 	QList<Stream> streams;
 	bool b = db->getAllStreams(streams);
@@ -40,50 +40,49 @@ bool StreamHandler::get_all_streams(QList<StationPtr>& stations)
 	QList<StationPtr> ret;
 	Util::Algorithm::transform(streams, stations, [this](const Stream& p)
 	{
-		return this->create_stream(p.name(), p.url());
+		return this->createStreamInstance(p.name(), p.url());
 	});
 
 	return b;
 }
 
-bool StreamHandler::add_stream(StationPtr station)
+bool StreamHandler::addNewStream(StationPtr station)
 {
-	DB::Streams* db = DB::Connector::instance()->stream_connector();
+	DB::Streams* db = DB::Connector::instance()->streamConnector();
 
-	auto* s = dynamic_cast<Stream*>(station.get());
-	if(s){
-		return db->addStream(*s);
+	auto* stream = dynamic_cast<Stream*>(station.get());
+	if(!stream) {
+		return false;
 	}
 
-	return false;
+	return db->addStream(*stream);
 }
 
-bool StreamHandler::delete_stream(const QString& station_name)
+bool StreamHandler::deleteStream(const QString& name)
 {
-	DB::Streams* db = DB::Connector::instance()->stream_connector();
-	return db->deleteStream(station_name);
+	DB::Streams* db = DB::Connector::instance()->streamConnector();
+	return db->deleteStream(name);
 }
 
-bool StreamHandler::update_url(const QString& station_name, const QString& url)
+bool StreamHandler::update(const QString& name, StationPtr station)
 {
-	DB::Streams* db = DB::Connector::instance()->stream_connector();
-	return db->updateStreamUrl(station_name, url);
+	DB::Streams* db = DB::Connector::instance()->streamConnector();
+	auto* stream = dynamic_cast<Stream*>(station.get());
+	if(!stream){
+		return false;
+	}
+
+	return db->updateStream(name, *stream);
 }
 
-bool StreamHandler::rename(const QString& old_name, const QString& new_name)
-{
-	DB::Streams* db = DB::Connector::instance()->stream_connector();
-	return db->renameStream(old_name, new_name);
-}
-
-StationPtr StreamHandler::create_stream(const QString& name, const QString& url) const
+StationPtr StreamHandler::createStreamInstance(const QString& name, const QString& url) const
 {
 	return std::make_shared<Stream>(name, url);
 }
 
 StationPtr StreamHandler::station(const QString& name)
 {
-	DB::Streams* db = DB::Connector::instance()->stream_connector();
+	DB::Streams* db = DB::Connector::instance()->streamConnector();
 
 	Stream stream = db->getStream(name);
 	if(stream.name().isEmpty()){

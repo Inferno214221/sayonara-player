@@ -1,6 +1,6 @@
 /* GuiUtils.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -40,7 +40,6 @@ class QList;
 
 namespace Gui
 {
-
 	namespace Util
 	{
 
@@ -57,33 +56,33 @@ namespace Gui
 		/**
 		 * @brief fetch a icon from resources
 		 * @ingroup Gui
-		 * @param icon_name if icon_name ends with png the input string is not modified, else a .svg.png is appended
+		 * @param iconName if iconName ends with png the input string is not modified, else a .svg.png is appended
 		 * @return icon
 		 */
-		QIcon icon(const QString& icon_name, IconTheme theme_name);
+		QIcon icon(const QString& iconName, IconTheme themeName);
 
 
 		/**
 		 * @brief fetch a pixmap from resources
 		 * @ingroup Gui
-		 * @param icon_name if icon_name ends with png the input string is not modified, else a .svg.png is appended
+		 * @param iconName if iconName ends with png the input string is not modified, else a .svg.png is appended
 		 * @param theme name use the MintY theme or the standard theme
 		 * @param sz target size of pixmap
-		 * @param keep_aspect if true, aspect ratio is kept
+		 * @param keepAspect if true, aspect ratio is kept
 		 * @return pixmap
 		 */
-		QPixmap pixmap(const QString& icon_name, IconTheme theme_name);
-		QPixmap pixmap(const QString& icon_name, IconTheme theme_name, QSize sz, bool keep_aspect=true);
+		QPixmap pixmap(const QString& iconName, IconTheme themeName);
+		QPixmap pixmap(const QString& iconName, IconTheme themeName, QSize sz, bool keepAspect=true);
 
 		/**
 		 * @brief see pixmap()
 		 * @ingroup Gui
-		 * @param icon_name
-		 * @param theme_name
+		 * @param iconName
+		 * @param themeName
 		 * @return
 		 */
-		QImage image(const QString& icon_name, IconTheme theme_name);
-		QImage image(const QString& icon_name, IconTheme theme_name, QSize sz, bool keep_aspect=true);
+		QImage image(const QString& iconName, IconTheme themeName);
+		QImage image(const QString& iconName, IconTheme themeName, QSize sz, bool keepAspect=true);
 
 
 		/**
@@ -91,20 +90,20 @@ namespace Gui
 		 * @ingroup Gui
 		 * @param window the new main window
 		 */
-		void set_main_window(QMainWindow* window);
+		void setMainWindow(QMainWindow* window);
 
 		/**
 		 * @brief get the applications' main window
 		 * @ingroup Gui
 		 * @return main window of application
 		 */
-		QMainWindow* main_window();
+		QMainWindow* mainWindow();
 
 		/**
 		 * @brief return the screen with biggest screen
 		 * @return nullptr on error
 		 */
-		QScreen* get_biggest_screen();
+		QScreen* getBiggestScreen();
 
 		/**
 		 * @brief Place the widget in the center of the biggest screen
@@ -112,9 +111,9 @@ namespace Gui
 		 * @param rel_size_x a percentage value between 0 and 1 regarding width of screen
 		 * @param rel_size_y a percentage value between 0 and 1 regarding height of screen
 		 */
-		void place_in_screen_center(QWidget* widget, float rel_size_x, float rel_size_y);
+		void placeInScreenCenter(QWidget* widget, float relativeSizeX, float relativeSizeY);
 
-		int text_width(const QFontMetrics& fm, const QString& text);
+		int textWidget(const QFontMetrics& fm, const QString& text);
 	}
 }
 

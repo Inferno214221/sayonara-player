@@ -1,6 +1,6 @@
 /* id3.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -60,11 +60,11 @@ namespace Tagging
 		 */
 		bool setMetaDataOfFile(const MetaData& md);
 
-		bool is_valid_file(const TagLib::FileRef& f);
+		bool isValidFile(const TagLib::FileRef& f);
 
-		Tagging::TagType get_tag_type(const QString& filepath);
-		QString tag_type_to_string(Tagging::TagType);
-		Tagging::ParsedTag tag_type_from_fileref(const TagLib::FileRef& f);
+		Tagging::TagType getTagType(const QString& filepath);
+		QString tagTypeToString(Tagging::TagType);
+		Tagging::ParsedTag getTagTypeFromFileref(const TagLib::FileRef& f);
 	}
 }
 

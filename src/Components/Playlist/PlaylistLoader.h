@@ -1,6 +1,6 @@
 /* PlaylistLoader.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -45,10 +45,10 @@ namespace Playlist
 			~Loader() override;
 
 
-			CustomPlaylists			get_playlists() const;
-			int						get_last_playlist_idx() const;
-			int						get_last_track_idx() const;
-			int						create_playlists();
+			CustomPlaylists			getPlaylists() const;
+			int						getLastPlaylistIndex() const;
+			int						getLastTrackIndex() const;
+			int						createPlaylists();
 	};
 }
 

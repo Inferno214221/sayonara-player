@@ -1,6 +1,6 @@
 /* Mergable.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -46,20 +46,21 @@ namespace Gui
 		PIMPL(MergeMenu)
 
 		signals:
-			void sig_merge_triggered();
+			void sigMergeTriggered();
 
 		public:
 			MergeMenu(QMenu* parent=nullptr);
-			virtual ~MergeMenu();
+			~MergeMenu() override;
 
-			void set_data(const QMap<Id, QString>& data);
+			void setData(const QMap<Id, QString>& data);
+			bool isDataValid() const;
 
 			QAction* action() const;
-			bool is_data_valid() const;
+
 			::Library::MergeData mergedata() const;
 
 		protected:
-			void language_changed() override;
+			void languageChanged() override;
 	};
 }
 

@@ -1,6 +1,6 @@
 /* StreamRecorderHandler.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -36,23 +36,23 @@ struct StreamRecorderHandler::Private
 	GstElement*			pipeline=nullptr;
 	GstElement*			tee=nullptr;
 
-	GstElement*			sr_bin=nullptr;
-	GstElement*			sr_queue=nullptr;
-	GstElement*			sr_converter=nullptr;
-	GstElement*			sr_sink=nullptr;
-	GstElement*			sr_resampler=nullptr;
-	GstElement*			sr_lame=nullptr;
+	GstElement*			bin=nullptr;
+	GstElement*			queue=nullptr;
+	GstElement*			converter=nullptr;
+	GstElement*			sink=nullptr;
+	GstElement*			resampler=nullptr;
+	GstElement*			lame=nullptr;
 
 	Data*				data=nullptr;
 	QString				path;
-	bool				is_running;
+	bool				isRunning;
 
 
 	Private(GstElement* pipeline, GstElement* tee) :
 		pipeline(pipeline),
 		tee(tee),
 		data(new Data()),
-		is_running(false)
+		isRunning(false)
 	{}
 
 	~Private()
@@ -70,53 +70,53 @@ StreamRecorderHandler::~StreamRecorderHandler() {}
 
 bool StreamRecorderHandler::init()
 {
-	if(m->sr_bin) {
+	if(m->bin) {
 		return true;
 	}
 
 	// stream recorder branch
-	if(	!Engine::Utils::create_element(&m->sr_queue, "queue", "sr_queue") ||
-		!Engine::Utils::create_element(&m->sr_converter, "audioconvert", "sr_converter") ||
-		!Engine::Utils::create_element(&m->sr_resampler, "audioresample", "sr_resample") ||
-		!Engine::Utils::create_element(&m->sr_lame, "lamemp3enc", "sr_lame")  ||
-		!Engine::Utils::create_element(&m->sr_sink, "filesink", "sr_filesink"))
+	if(	!Engine::Utils::createElement(&m->queue, "queue", "sr_queue") ||
+		!Engine::Utils::createElement(&m->converter, "audioconvert", "sr_converter") ||
+		!Engine::Utils::createElement(&m->resampler, "audioresample", "sr_resample") ||
+		!Engine::Utils::createElement(&m->lame, "lamemp3enc", "sr_lame")  ||
+		!Engine::Utils::createElement(&m->sink, "filesink", "sr_filesink"))
 	{
 		return false;
 	}
 
-	m->data->queue = m->sr_queue;
-	m->data->sink = m->sr_sink;
+	m->data->queue = m->queue;
+	m->data->sink = m->sink;
 
 	{ // configure
-		Engine::Utils::config_lame(m->sr_lame);
-		Engine::Utils::config_queue(m->sr_queue);
-		Engine::Utils::config_sink(m->sr_sink);
+		Engine::Utils::configureLame(m->lame);
+		Engine::Utils::configureQueue(m->queue);
+		Engine::Utils::configureSink(m->sink);
 
-		Engine::Utils::set_values(G_OBJECT(m->sr_sink),
-								"location", Util::sayonara_path("bla.mp3").toLocal8Bit().data());
-		Engine::Utils::set_uint_value(G_OBJECT(m->sr_sink), "buffer-size", 8192);
+		Engine::Utils::setValues(G_OBJECT(m->sink),
+								"location", Util::sayonaraPath("bla.mp3").toLocal8Bit().data());
+		Engine::Utils::setUintValue(G_OBJECT(m->sink), "buffer-size", 8192);
 	}
 
 	{ // init bin
-		bool success = Engine::Utils::create_bin(&m->sr_bin, {m->sr_queue, m->sr_converter, m->sr_resampler, m->sr_lame, m->sr_sink}, "sr");
+		bool success = Engine::Utils::createBin(&m->bin, {m->queue, m->converter, m->resampler, m->lame, m->sink}, "sr");
 		if(!success){
 			return false;
 		}
 
-		gst_bin_add(GST_BIN(m->pipeline), m->sr_bin);
+		gst_bin_add(GST_BIN(m->pipeline), m->bin);
 
-		success = Engine::Utils::tee_connect(m->tee, m->sr_bin, "StreamRecorderQueue");
+		success = Engine::Utils::connectTee(m->tee, m->bin, "StreamRecorderQueue");
 		if(!success)
 		{
-			Engine::Utils::set_state(m->sr_bin, GST_STATE_NULL);
-			gst_object_unref(m->sr_bin);
+			Engine::Utils::setState(m->bin, GST_STATE_NULL);
+			gst_object_unref(m->bin);
 		}
 
 		return success;
 	}
 }
 
-bool StreamRecorderHandler::set_enabled(bool b)
+bool StreamRecorderHandler::setEnabled(bool b)
 {
 	if(b){
 		return init();
@@ -126,10 +126,10 @@ bool StreamRecorderHandler::set_enabled(bool b)
 }
 
 
-void StreamRecorderHandler::set_target_path(const QString& path)
+void StreamRecorderHandler::setTargetPath(const QString& path)
 {
-	GstElement* file_sink_element = m->sr_sink;
-	if(!file_sink_element) {
+	GstElement* fileSinkElement = m->sink;
+	if(!fileSinkElement) {
 		return;
 	}
 
@@ -142,14 +142,14 @@ void StreamRecorderHandler::set_target_path(const QString& path)
 	}
 
 	m->path = path;
-	m->is_running = !(path.isEmpty());
+	m->isRunning = !(path.isEmpty());
 
 	gchar* old_filename = m->data->filename;
 
 	m->data->filename = strdup(m->path.toUtf8().data());
-	m->data->active = m->is_running;
+	m->data->active = m->isRunning;
 
-	Probing::handle_stream_recorder_probe(m->data, Probing::stream_recorder_probed);
+	Probing::handleStreamRecorderProbe(m->data, Probing::streamRecorderProbed);
 
 	if(old_filename){
 		free(old_filename);

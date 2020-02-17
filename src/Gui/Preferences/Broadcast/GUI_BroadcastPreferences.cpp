@@ -1,6 +1,6 @@
 /* GUI_BroadcastSetup.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -39,21 +39,21 @@ GUI_BroadcastPreferences::~GUI_BroadcastPreferences()
 	}
 }
 
-void GUI_BroadcastPreferences::init_ui()
+void GUI_BroadcastPreferences::initUi()
 {
-	setup_parent(this, &ui);
+	setupParent(this, &ui);
 
 	revert();
 
-	connect(ui->cb_active, &QCheckBox::toggled, this, &GUI_BroadcastPreferences::active_toggled);
-	connect(ui->sb_port, spinbox_value_changed_int, this, &GUI_BroadcastPreferences::port_changed);
+	connect(ui->cbActive, &QCheckBox::toggled, this, &GUI_BroadcastPreferences::activeToggled);
+	connect(ui->sbPort, spinbox_value_changed_int, this, &GUI_BroadcastPreferences::portChanged);
 }
 
 bool GUI_BroadcastPreferences::commit()
 {
-	bool new_active = ui->cb_active->isChecked();
-	bool new_prompt = ui->cb_prompt->isChecked();
-	int new_port = ui->sb_port->value();
+	bool new_active = ui->cbActive->isChecked();
+	bool new_prompt = ui->cbPrompt->isChecked();
+	int new_port = ui->sbPort->value();
 
 	bool old_active = GetSetting(Set::Broadcast_Active);
 	bool old_prompt = GetSetting(Set::Broadcast_Prompt);
@@ -79,54 +79,54 @@ void GUI_BroadcastPreferences::revert()
 {
 	bool active = GetSetting(Set::Broadcast_Active);
 
-	ui->cb_active->setChecked( active );
-	ui->cb_prompt->setChecked( GetSetting(Set::Broadcast_Prompt) );
-	ui->sb_port->setValue( GetSetting(Set::Broadcast_Port) );
-	ui->le_url->setVisible(active);
-	ui->lab_url_title->setVisible(active);
+	ui->cbActive->setChecked( active );
+	ui->cbPrompt->setChecked( GetSetting(Set::Broadcast_Prompt) );
+	ui->sbPort->setValue( GetSetting(Set::Broadcast_Port) );
+	ui->leUrl->setVisible(active);
+	ui->labUrlTitle->setVisible(active);
 
-	refresh_url();
+	refreshUrl();
 }
 
 
-void GUI_BroadcastPreferences::skin_changed()
+void GUI_BroadcastPreferences::skinChanged()
 {
-	if(!is_ui_initialized()){
+	if(!isUiInitialized()){
 		return;
 	}
 }
 
-void GUI_BroadcastPreferences::retranslate_ui()
+void GUI_BroadcastPreferences::retranslate()
 {
 	ui->retranslateUi(this);
 
-	ui->lab_activate->setText(Lang::get(Lang::Active));
-	ui->lab_url_title->setText(Lang::get(Lang::StreamUrl));
+	ui->labActive->setText(Lang::get(Lang::Active));
+	ui->labUrlTitle->setText(Lang::get(Lang::StreamUrl));
 }
 
 
-QString GUI_BroadcastPreferences::action_name() const
+QString GUI_BroadcastPreferences::actionName() const
 {
 	return Lang::get(Lang::Broadcast);
 }
 
 
-void GUI_BroadcastPreferences::active_toggled(bool b)
+void GUI_BroadcastPreferences::activeToggled(bool b)
 {
 	Q_UNUSED(b);
-	refresh_url();
+	refreshUrl();
 }
 
-void GUI_BroadcastPreferences::port_changed(int new_val)
+void GUI_BroadcastPreferences::portChanged(int new_val)
 {
 	Q_UNUSED(new_val);
-	refresh_url();
+	refreshUrl();
 }
 
-QString GUI_BroadcastPreferences::get_url_string() const
+QString GUI_BroadcastPreferences::urlString() const
 {
-	int port = ui->sb_port->value();
-	QStringList ips = Util::ip_addresses();
+	int port = ui->sbPort->value();
+	QStringList ips = Util::ipAddresses();
 
 	QStringList ret;
 	for(const QString& ip : ips)
@@ -138,25 +138,25 @@ QString GUI_BroadcastPreferences::get_url_string() const
 	return ret.join("; ");
 }
 
-void GUI_BroadcastPreferences::refresh_url()
+void GUI_BroadcastPreferences::refreshUrl()
 {
-	bool active = ui->cb_active->isChecked();
+	bool active = ui->cbActive->isChecked();
 
-	ui->le_url->setVisible(active);
-	ui->lab_url_title->setVisible(active);
-	ui->le_url->setText(get_url_string());
+	ui->leUrl->setVisible(active);
+	ui->leUrl->setText(urlString());
+	ui->labUrlTitle->setVisible(active);
 }
 
-bool GUI_BroadcastPreferences::has_error() const
+bool GUI_BroadcastPreferences::hasError() const
 {
-	int port = ui->sb_port->value();
+	int port = ui->sbPort->value();
 
 	return
 		(port == GetSetting(Set::Remote_Port)) ||
 		(port == GetSetting(Set::Remote_DiscoverPort));
 }
 
-QString GUI_BroadcastPreferences::error_string() const
+QString GUI_BroadcastPreferences::errorString() const
 {
-	return tr("Port %1 already in use").arg(ui->sb_port->value());
+	return tr("Port %1 already in use").arg(ui->sbPort->value());
 }

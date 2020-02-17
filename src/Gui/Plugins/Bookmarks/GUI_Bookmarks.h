@@ -1,6 +1,6 @@
 /* GUI_Bookmarks.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -41,33 +41,32 @@ class GUI_Bookmarks :
 	PIMPL(GUI_Bookmarks)
 
 public:
-	explicit GUI_Bookmarks(QWidget *parent=nullptr);
-	virtual ~GUI_Bookmarks();
+	explicit GUI_Bookmarks(QWidget* parent=nullptr);
+	~GUI_Bookmarks() override;
 
-	QString get_name() const override;
-	QString get_display_name() const override;
-
+	QString name() const override;
+	QString displayName() const override;
 
 private:
-	void retranslate_ui() override;
-	void init_ui() override;
+	void retranslate() override;
+	void initUi() override;
 
 
 private slots:
-	void combo_changed(int new_idx);
-	void next_clicked();
-	void prev_clicked();
-	void new_clicked();
-	void del_clicked();
-	void loop_clicked(bool);
+	void currentIndexChanged(int new_idx);
+	void nextClicked();
+	void previousClicked();
+	void newClicked();
+	void deleteClicked();
+	void loopToggled(bool);
 
-	void prev_changed(const Bookmark& bookmark);
-	void next_changed(const Bookmark& bookmark);
+	void previousChanged(const Bookmark& bookmark);
+	void nextChanged(const Bookmark& bookmark);
 
-	void disable_prev();
-	void disable_next();
+	void disablePrevious();
+	void disableNext();
 
-	void bookmarks_changed();
+	void bookmarksChanged();
 };
 
 #endif // GUI_BOOKMARKS_H

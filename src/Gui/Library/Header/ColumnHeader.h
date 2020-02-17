@@ -1,6 +1,6 @@
 /* MyColumnHeader.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -67,18 +67,19 @@ namespace Library
 			virtual ~ColumnHeader();
 
 			bool stretchable() const;
-			int default_size() const;
-			int preferred_size() const;
-			void set_preferred_size(int size);
+			int defaultSize() const;
 
-			SortOrder sortorder_asc() const;
-			SortOrder sortorder_desc() const;
+			int preferredSize() const;
+			void setPreferredSize(int size);
+
+			SortOrder sortorderAscending() const;
+			SortOrder sortorderDescending() const;
 
 			void retranslate();
 
 			QString	 title() const;
 			QAction* action();
-			bool is_action_checked() const;
+			bool isActionChecked() const;
 	};
 
 	using ColumnHeaderPtr = std::shared_ptr<ColumnHeader>;

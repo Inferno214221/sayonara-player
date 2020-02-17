@@ -1,6 +1,6 @@
 /* MergeData.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -27,23 +27,23 @@ struct MergeData::Private
 {
 	Util::Set<Id>	source_ids;
 	Id				target_id;
-	LibraryId		library_id;
+	LibraryId		libraryId;
 
-	Private(const Util::Set<Id>& source_ids, Id target_id, LibraryId library_id) :
+	Private(const Util::Set<Id>& source_ids, Id target_id, LibraryId libraryId) :
 		source_ids(source_ids),
 		target_id(target_id),
-		library_id(library_id)
+		libraryId(libraryId)
 	{}
 };
 
-MergeData::MergeData(const Util::Set<Id>& source_ids, Id target_id, LibraryId library_id)
+MergeData::MergeData(const Util::Set<Id>& source_ids, Id target_id, LibraryId libraryId)
 {
-	m = Pimpl::make<Private>(source_ids, target_id, library_id);
+	m = Pimpl::make<Private>(source_ids, target_id, libraryId);
 }
 
 MergeData::MergeData(const MergeData& other)
 {
-	m = Pimpl::make<Private>(other.source_ids(), other.target_id(), other.library_id());
+	m = Pimpl::make<Private>(other.sourceIds(), other.targetId(), other.libraryId());
 }
 
 MergeData::~MergeData() = default;
@@ -54,22 +54,22 @@ MergeData& MergeData::operator=(const MergeData& other)
 	return *this;
 }
 
-bool MergeData::is_valid() const
+bool MergeData::isValid() const
 {
-	return ((target_id() >= 0) && (source_ids().count() >= 2) && !(source_ids().contains(-1)));
+	return ((targetId() >= 0) && (sourceIds().count() >= 2) && !(sourceIds().contains(-1)));
 }
 
-Util::Set<Id> MergeData::source_ids() const
+Util::Set<Id> MergeData::sourceIds() const
 {
 	return m->source_ids;
 }
 
-Id MergeData::target_id() const
+Id MergeData::targetId() const
 {
 	return m->target_id;
 }
 
-LibraryId MergeData::library_id() const
+LibraryId MergeData::libraryId() const
 {
-	return m->library_id;
+	return m->libraryId;
 }

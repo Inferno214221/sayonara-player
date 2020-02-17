@@ -1,6 +1,6 @@
 /* LibraryRatingDelegate.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -32,11 +32,11 @@ using namespace Library;
 
 struct RatingDelegate::Private
 {
-	int	rating_column;
+	int	ratingColumn;
 	bool enabled;
 
 	Private(bool enabled, int rating_column) :
-		rating_column(rating_column),
+		ratingColumn(rating_column),
 		enabled(enabled)
 	{}
 };
@@ -57,14 +57,14 @@ void RatingDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option
 
 	Gui::StyledItemDelegate::paint(painter, option, index);
 
-	if(index.column() != m->rating_column) {
+	if(index.column() != m->ratingColumn) {
 		return;
 	}
 
 	Rating rating = index.data(Qt::EditRole).value<Rating>();
 
 	RatingLabel label(nullptr, true);
-	label.set_rating(rating);
+	label.setRating(rating);
 	label.paint(painter, option.rect);
 }
 
@@ -75,14 +75,14 @@ QWidget* RatingDelegate::createEditor(QWidget* parent, const QStyleOptionViewIte
 	Rating rating = index.data(Qt::EditRole).value<Rating>();
 	auto* editor = new RatingEditor(rating, parent);
 
-	connect(editor, &RatingEditor::sig_finished, this, &RatingDelegate::destroy_editor);
+	connect(editor, &RatingEditor::sigFinished, this, &RatingDelegate::deleteEditor);
 
 	editor->setFocus();
 	return editor;
 }
 
 
-void RatingDelegate::destroy_editor(bool save)
+void RatingDelegate::deleteEditor(bool save)
 {
 	Q_UNUSED(save)
 
@@ -91,7 +91,7 @@ void RatingDelegate::destroy_editor(bool save)
 		return;
 	}
 
-	disconnect(editor, &RatingEditor::sig_finished, this, &RatingDelegate::destroy_editor);
+	disconnect(editor, &RatingEditor::sigFinished, this, &RatingDelegate::deleteEditor);
 
 	emit commitData(editor);
 	emit closeEditor(editor);
@@ -106,7 +106,7 @@ void RatingDelegate::setEditorData(QWidget* editor, const QModelIndex& index) co
 	}
 
 	Rating rating = index.data(Qt::EditRole).value<Rating>();
-	rating_editor->set_rating(rating);
+	rating_editor->setRating(rating);
 }
 
 

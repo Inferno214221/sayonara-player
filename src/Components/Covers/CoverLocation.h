@@ -1,6 +1,6 @@
 /* CoverLocation.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -40,25 +40,25 @@ namespace Cover
 		PIMPL(Location)
 
 	private:
-		void set_valid(bool b);
-		void set_identifier(const QString& identifier);
-		void set_cover_path(const QString& cover_path);
-		void set_local_path_hints(const QStringList& local_paths);
+		void setValid(bool b);
+		void setIdentifier(const QString& identifier);
+		void setCoverPath(const QString& coverPath);
+		void setLocalPathHints(const QStringList& localPaths);
 
 		/**
 		 * @brief Set hash manually. You should never call this function
 		 * @param str
 		 */
-		void			set_hash(const QString& str);
+		void			setHash(const QString& str);
 
 		/**
 		 * @brief Set the audio file source manually. You should not
 		 * use this function from the outside
 		 * @param audio_file_source
-		 * @param cover_path
-		 * @return true if everything is alright with audio_filesource oder cover_path (not empty)
+		 * @param coverPath
+		 * @return true if everything is alright with audio_filesource oder coverPath (not empty)
 		 */
-		bool			set_audio_file_source(const QString& audio_filesource, const QString& cover_path);
+		bool			setAudioFileSource(const QString& audio_filesource, const QString& coverPath);
 
 
 	public:
@@ -76,7 +76,7 @@ namespace Cover
 		 * a standard constructed location
 		 * @return
 		 */
-		bool			is_valid() const;
+		bool			isValid() const;
 
 
 		/**
@@ -84,7 +84,7 @@ namespace Cover
 		 * directory
 		 * @return
 		 */
-		QString			cover_path() const;
+		QString			coverPath() const;
 
 		/**
 		 * @brief This identifier may be used in order to check
@@ -97,14 +97,14 @@ namespace Cover
 		 * @brief Retrieve the urls where a new cover can be searched
 		 * @return
 		 */
-		QList<Fetcher::Url> search_urls() const;
+		QList<Fetcher::Url> searchUrls() const;
 
 
 		/**
 		 * @brief Check for existing search urls
 		 * @return
 		 */
-		bool			has_search_urls() const;
+		bool			hasSearchUrls() const;
 
 
 		/**
@@ -112,13 +112,13 @@ namespace Cover
 		 * type that search term into your browser
 		 * @return
 		 */
-		QString			search_term() const;
+		QString			searchTerm() const;
 
 		/**
 		 * @brief Set a new search term
 		 * @param search_term
 		 */
-		void			set_search_term(const QString& search_term);
+		void			setSearchTerm(const QString& searchTerm);
 
 		/**
 		 * @brief Set a new search term for a specific cover fetcher
@@ -128,14 +128,14 @@ namespace Cover
 		 * For example "Master of puppets Metallica"
 		 * @param cover_fetcher_identifier
 		 */
-		void			set_search_term(const QString& search_term,
-										const QString& cover_fetcher_identifier);
+		void			setSearchTerm(const QString& searchTerm,
+										const QString& coverFetcherIdentifier);
 
 		/**
 		 * @brief Set urls where to look for Covers in the internet
 		 * @param urls
 		 */
-		void			set_search_urls(const QList<Fetcher::Url>& urls);
+		void			setSearchUrls(const QList<Fetcher::Url>& urls);
 
 		/**
 		 * @brief When enabling freetext search you specify the
@@ -145,14 +145,14 @@ namespace Cover
 		 * automatically by Sayonara.
 		 * @param b
 		 */
-		void			enable_freetext_search(bool b);
-		bool			is_freetext_search_enabled() const;
+		void			enableFreetextSearch(bool b);
+		bool			isFreetextSearchEnabled() const;
 
 		/**
 		 * @brief to_string
 		 * @return
 		 */
-		QString			to_string() const;
+		QString			toString() const;
 
 		/**
 		 * @brief Every combination of album and artist will result
@@ -168,7 +168,7 @@ namespace Cover
 		 * very often for albums this may end up in poor performance
 		 * @return
 		 */
-		bool			has_audio_file_source() const;
+		bool			hasAudioFileSource() const;
 
 		/**
 		 * @brief Returns the path to the music file where a cover
@@ -176,7 +176,7 @@ namespace Cover
 		 * Tagging::Covers::extract_cover
 		 * @return
 		 */
-		QString			audio_file_source() const;
+		QString			audioFileSource() const;
 
 		/**
 		 * @brief When retrieving the audio_file_source, and you want
@@ -184,7 +184,7 @@ namespace Cover
 		 * this method. So Cover::Lookup will find it. Also see hash()
 		 * @return
 		 */
-		QString			audio_file_target() const;
+		QString			audioFileTarget() const;
 
 
 
@@ -192,14 +192,14 @@ namespace Cover
 		 * @brief Calculates the directory where the cover is located
 		 * @return
 		 */
-		QString			local_path_dir() const;
+		QString			localPathDir() const;
 
 		/**
 		 * @brief Get the paths audio file where a cover is stored
 		 * in the same directory
 		 * @return
 		 */
-		QStringList		local_path_hints() const;
+		QStringList		localPathHints() const;
 
 		/**
 		 * @brief Get the path which is nearest to the audio files.\n
@@ -207,7 +207,7 @@ namespace Cover
 		 * This method does I/O work so handle with care
 		 * @return
 		 */
-		QString			local_path() const;
+		QString			localPath() const;
 
 
 		/**
@@ -215,37 +215,37 @@ namespace Cover
 		 * cover is stored.
 		 * @return
 		 */
-		QString			preferred_path() const;
+		QString			preferredPath() const;
 
 
-		QString			alternative_path() const;
+		QString			alternativePath() const;
 
 
 		/**
-		 * @brief creates CoverLocation by taking the md5 sum between album_name and artist_name
-		 * @param album_name Album name
-		 * @param artist_name Artist name
+		 * @brief creates CoverLocation by taking the md5 sum between albumName and artistName
+		 * @param albumName Album name
+		 * @param artistName Artist name
 		 * @return CoverLocation object
 		 */
-		static Location cover_location(const QString& album_name, const QString& artist_name);
+		static Location coverLocation(const QString& albumName, const QString& artistName);
 
 		/**
 		 * @brief overloaded. Picks major artist out of artists and calls
-		 *   cover_location(const QString& album_name, const QString& artist_name)
-		 * @param album_name Album name
+		 *   coverLocation(const QString& albumName, const QString& artistName)
+		 * @param albumName Album name
 		 * @param artists List of artists
 		 * @return CoverLocation object
 		 */
-		static Location cover_location(const QString& album_name, const QStringList& artists);
+		static Location coverLocation(const QString& albumName, const QStringList& artists);
 
 
 		/**
 		 * @brief overloaded. Calls
-		 *   cover_location(const QString& album_name, const QStringList& artists)
+		 *   coverLocation(const QString& albumName, const QStringList& artists)
 		 * @param album
 		 * @return CoverLocation object
 		 */
-		static Location xcover_location(const Album& album);
+		static Location xcoverLocation(const Album& album);
 
 
 		/**
@@ -253,56 +253,56 @@ namespace Cover
 		 * @param artist Artist name
 		 * @return CoverLocation object
 		 */
-		static Location cover_location(const QString& artist);
-		static Location cover_location_radio(const QString& radio_station);
+		static Location coverLocation(const QString& artist);
+		static Location coverLocationRadio(const QString& radioStation);
 
 
 		/**
 		 * @brief overloaded. extracts artist name and calls
-		 *   cover_location(const QString& artist)
+		 *   coverLocation(const QString& artist)
 		 * @param artist Artist object
 		 * @return CoverLocation object
 		 */
-		static Location cover_location(const Artist& artist);
+		static Location coverLocation(const Artist& artist);
 
 
 		/**
 		 * @brief overloaded.
-		 *   if MetaData::album_id < 0 calls
-		 *     cover_location(const QString& album_name, const QString& artist_name)
+		 *   if MetaData::albumId < 0 calls
+		 *     coverLocation(const QString& albumName, const QString& artistName)
 		 *   else extract Album from database and calls
-		 *     cover_location(const Album& album)
+		 *     coverLocation(const Album& album)
 		 * @param Metadata object
 		 * @return  CoverLocation object
 		 */
-		static Location cover_location(const MetaData& md);
-		static Location cover_location(const MetaData& md, bool check_for_coverart);
+		static Location coverLocation(const MetaData& md);
+		static Location coverLocation(const MetaData& md, bool checkForCoverart);
 
 
 		/**
 		 * @brief fetch a cover from a specific url
 		 * @param url url, the cover has to be fetched from
-		 * @param target_path path where the found image has to be saved
+		 * @param targetPath path where the found image has to be saved
 		 * @return CoverLocation object
 		 */
-		static Location cover_location(const QUrl& url, const QString& target_path);
-		static Location cover_location(const QList<QUrl>& urls, const QString& target_path);
+		static Location coverLocation(const QUrl& url, const QString& targetPath);
+		static Location coverLocation(const QList<QUrl>& urls, const QString& targetPath);
 
 
-		static QString invalid_path();
+		static QString invalidPath();
 
 		/**
 		 * @brief returns an invalid location
 		 * @return  CoverLocation object
 		 */
-		static Location invalid_location();
+		static Location invalidLocation();
 
 
 		/**
 		 * @brief returns the standard cover directory
 		 * @return usually ~/.Sayonara/covers
 		 */
-		static QString get_cover_directory(const QString& append_path);
+		static QString getCoverDirectory(const QString& appendPath);
 	};
 }
 

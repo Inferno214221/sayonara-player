@@ -41,12 +41,12 @@ EditorTest::EditorTest() :
 	Test::Base("EditorTest")
 {
 	auto* db = DB::Connector::instance();
-	db->register_library_db(0);
+	db->registerLibraryDatabase(0);
 
-	auto* lib_db = db->library_db(0, DbId(0));
-	lib_db->store_metadata(create_metadata(2, 2, 10));
+	auto* lib_db = db->libraryDatabase(0, DbId(0));
+	lib_db->storeMetadata(create_metadata(2, 2, 10));
 
-	db->close_db();
+	db->closeDatabase();
 }
 
 MetaDataList EditorTest::create_metadata(int artists, int albums, int tracks)
@@ -74,17 +74,17 @@ MetaDataList EditorTest::create_metadata(int artists, int albums, int tracks)
 			for(int t=0; t<tracks; t++)
 			{
 				MetaData md;
-				md.set_id(TrackID(track_id++));
-				md.set_title(QString("title %1").arg(t));
-				md.set_album(album);
-				md.set_album_id(album_id);
-				md.set_artist(artist);
-				md.set_artist_id(ArtistId(ar));
-				md.set_genres(genres[al]);
-				md.set_track_number(TrackNum(t));
-				md.set_rating(Rating::One);
-				md.set_year(Year(year));
-				md.set_library_id(0);
+				md.setId(TrackID(track_id++));
+				md.setTitle(QString("title %1").arg(t));
+				md.setAlbum(album);
+				md.setAlbumId(album_id);
+				md.setArtist(artist);
+				md.setArtistId(ArtistId(ar));
+				md.setGenres(genres[al]);
+				md.setTrackNumber(TrackNum(t));
+				md.setRating(Rating::One);
+				md.setYear(Year(year));
+				md.setLibraryid(0);
 				QString dir = QString("%1/%2/%3 by %4")
 						.arg(temp_path())
 						.arg(md.year())
@@ -94,14 +94,14 @@ MetaDataList EditorTest::create_metadata(int artists, int albums, int tracks)
 				QString path =
 					QString("%1/%2. %3.mp3")
 						.arg(dir)
-						.arg(md.track_number())
+						.arg(md.trackNumber())
 						.arg(md.title());
 
-				md.set_filepath(path);
+				md.setFilepath(path);
 
 				if(!Util::File::exists(dir))
 				{
-					Util::File::create_directories(dir);
+					Util::File::createDirectories(dir);
 				}
 
 				if(!Util::File::exists(path))
@@ -135,25 +135,25 @@ void EditorTest::test_init()
 	Editor* editor = new Editor(tracks);
 
 	QVERIFY(editor->count() == (5*3*10));
-	QVERIFY(editor->has_changes() == false);
+	QVERIFY(editor->hasChanges() == false);
 
 	// 15 albums here
-	QVERIFY(editor->can_load_entire_album() == false);
+	QVERIFY(editor->canLoadEntireAlbum() == false);
 
 	for(int i=0; i<int(tracks.size()); i++)
 	{
 		const MetaData& md = tracks[i];
 		QVERIFY(QFile::exists(md.filepath()));
 
-		QVERIFY(editor->has_cover_replacement(i) == false);
+		QVERIFY(editor->hasCoverReplacement(i) == false);
 
 		if(i < 10)
 		{
-			QVERIFY(editor->is_cover_supported(i) == true);
+			QVERIFY(editor->isCoverSupported(i) == true);
 		}
 	}
 
-	QVERIFY(editor->failed_files().isEmpty());
+	QVERIFY(editor->failedFiles().isEmpty());
 
 	editor->deleteLater();
 }
@@ -164,22 +164,22 @@ void EditorTest::test_rating()
 	Editor* editor = new Editor(tracks);
 
 	QVERIFY(editor->count() == (1*1*6));
-	QVERIFY(editor->has_changes() == false);
-	QVERIFY(editor->can_load_entire_album() == true);
+	QVERIFY(editor->hasChanges() == false);
+	QVERIFY(editor->canLoadEntireAlbum() == true);
 
-	tracks[0].set_rating(Rating::Zero);
-	tracks[1].set_rating(Rating::One);
-	tracks[2].set_rating(Rating::Two);
-	tracks[3].set_rating(Rating::Three);
-	tracks[4].set_rating(Rating::Four);
-	tracks[5].set_rating(Rating::Five);
+	tracks[0].setRating(Rating::Zero);
+	tracks[1].setRating(Rating::One);
+	tracks[2].setRating(Rating::Two);
+	tracks[3].setRating(Rating::Three);
+	tracks[4].setRating(Rating::Four);
+	tracks[5].setRating(Rating::Five);
 
 	for(int i=0; i<6; i++)
 	{
-		editor->update_track(i, tracks[i]);
+		editor->updateTrack(i, tracks[i]);
 	}
 
-	QVERIFY(editor->has_changes() == true);
+	QVERIFY(editor->hasChanges() == true);
 
 	const MetaDataList updated_tracks = editor->metadata();
 	for(int r=0; r<6; r++)
@@ -193,11 +193,11 @@ void EditorTest::test_one_album()
 {
 	MetaDataList tracks = create_metadata(1, 1, 10);
 	Editor* editor = new Editor();
-	editor->set_metadata(tracks);
+	editor->setMetadata(tracks);
 
 	QVERIFY(editor->count() == 10);
-	QVERIFY(editor->has_changes() == false);
-	QVERIFY(editor->can_load_entire_album() == true);
+	QVERIFY(editor->hasChanges() == false);
+	QVERIFY(editor->canLoadEntireAlbum() == true);
 
 	editor->deleteLater();
 }
@@ -207,18 +207,18 @@ void EditorTest::test_changed_metadata()
 {
 	MetaDataList tracks = create_metadata(1, 1, 2);
 	Editor* editor = new Editor();
-	editor->set_metadata(tracks);
+	editor->setMetadata(tracks);
 
 	QVERIFY(editor->count() == 2);
-	QVERIFY(editor->has_changes() == false);
-	QVERIFY(editor->can_load_entire_album() == true);
+	QVERIFY(editor->hasChanges() == false);
+	QVERIFY(editor->canLoadEntireAlbum() == true);
 
 	tracks = create_metadata(2, 2, 5);
-	editor->set_metadata(tracks);
+	editor->setMetadata(tracks);
 
 	QVERIFY(editor->count() == 2*2*5);
-	QVERIFY(editor->has_changes() == false);
-	QVERIFY(editor->can_load_entire_album() == false);
+	QVERIFY(editor->hasChanges() == false);
+	QVERIFY(editor->canLoadEntireAlbum() == false);
 
 	editor->deleteLater();
 }
@@ -227,11 +227,11 @@ void EditorTest::test_edit()
 {
 	MetaDataList tracks = create_metadata(1, 1, 10);
 	Editor* editor = new Editor();
-	editor->set_metadata(tracks);
+	editor->setMetadata(tracks);
 
 	QVERIFY(editor->count() == 10);
-	QVERIFY(editor->has_changes() == false);
-	QVERIFY(editor->can_load_entire_album() == true);
+	QVERIFY(editor->hasChanges() == false);
+	QVERIFY(editor->canLoadEntireAlbum() == true);
 
 	for(int i=0; i<int(tracks.size()); i++)
 	{
@@ -239,12 +239,12 @@ void EditorTest::test_edit()
 
 		if(i % 3 == 0) // 0, 3, 6, 9
 		{
-			md.set_title( QString("other %1").arg(i) );
-			editor->update_track(i, md);
+			md.setTitle( QString("other %1").arg(i) );
+			editor->updateTrack(i, md);
 		}
 	}
 
-	QVERIFY(editor->has_changes() == true);
+	QVERIFY(editor->hasChanges() == true);
 	MetaDataList editor_tracks = editor->metadata();
 
 	for(int i=0; i<int(tracks.size()); i++)
@@ -254,15 +254,15 @@ void EditorTest::test_edit()
 
 		if(i % 3 == 0)
 		{
-			QVERIFY(md_org.is_equal_deep(md_changed) == false);
+			QVERIFY(md_org.isEqualDeep(md_changed) == false);
 		}
 
 		else
 		{
-			QVERIFY(md_org.is_equal_deep(md_changed) == true);
+			QVERIFY(md_org.isEqualDeep(md_changed) == true);
 		}
 
-		QVERIFY(md_changed.is_equal_deep(editor_tracks[i]) == true);
+		QVERIFY(md_changed.isEqualDeep(editor_tracks[i]) == true);
 	}
 
 	editor->deleteLater();
@@ -273,15 +273,15 @@ void EditorTest::test_cover()
 	MetaDataList tracks;
 
 	auto* db = DB::Connector::instance();
-	db->library_db(0,0)->getAllTracks(tracks);
-	db->close_db();
+	db->libraryDatabase(0,0)->getAllTracks(tracks);
+	db->closeDatabase();
 
 	QVERIFY(tracks.size() == 2*2*10);
 
 	Editor* editor = new Editor();
-	editor->set_metadata(tracks);
+	editor->setMetadata(tracks);
 	QVERIFY(editor->count() == tracks.count());
-	QVERIFY(editor->has_changes() == false);
+	QVERIFY(editor->hasChanges() == false);
 
 	QString name(":/test/logo.png");
 	QPixmap cover(name);
@@ -289,19 +289,19 @@ void EditorTest::test_cover()
 
 	for(int i=0; i<tracks.count(); i++)
 	{
-		QVERIFY(editor->has_cover_replacement(i) == false);
+		QVERIFY(editor->hasCoverReplacement(i) == false);
 	}
 
 	for(int i=0; i<10; i++)
 	{
-		editor->update_cover(i, cover);
+		editor->updateCover(i, cover);
 	}
 
-	QVERIFY(editor->has_changes() == false);
+	QVERIFY(editor->hasChanges() == false);
 
 	for(int i=0; i<tracks.count(); i++)
 	{
-		QVERIFY(editor->has_cover_replacement(i) == (i < 10));
+		QVERIFY(editor->hasCoverReplacement(i) == (i < 10));
 	}
 
 	editor->deleteLater();
@@ -313,28 +313,28 @@ void EditorTest::test_commit()
 	MetaDataList tracks;
 
 	auto* db = DB::Connector::instance();
-	db->library_db(0,0)->getAllTracks(tracks);
-	db->close_db();
+	db->libraryDatabase(0,0)->getAllTracks(tracks);
+	db->closeDatabase();
 
 	QVERIFY(tracks.size() == 2*2*10);
 
 	Editor* editor = new Editor();
-	editor->set_metadata(tracks);
+	editor->setMetadata(tracks);
 
 	auto* mdcn = Tagging::ChangeNotifier::instance();
-	QSignalSpy spy(mdcn, &Tagging::ChangeNotifier::sig_metadata_changed);
+	QSignalSpy spy(mdcn, &Tagging::ChangeNotifier::sigMetadataChanged);
 
 	QVERIFY(editor->count() == tracks.count());
-	QVERIFY(editor->has_changes() == false);
-	QVERIFY(editor->can_load_entire_album() == false);
+	QVERIFY(editor->hasChanges() == false);
+	QVERIFY(editor->canLoadEntireAlbum() == false);
 
 	for(int i=0; i<int(tracks.size()); i++)
 	{
 		if(i % 10 == 0) // 0, 10, 20, 30
 		{
 			MetaData md = tracks[i];
-			md.set_title( QString("other %1").arg(i) );
-			editor->update_track(i, md);
+			md.setTitle( QString("other %1").arg(i) );
+			editor->updateTrack(i, md);
 		}
 	}
 
@@ -342,7 +342,7 @@ void EditorTest::test_commit()
 	editor->moveToThread(t);
 
 	connect(t, &QThread::started, editor, &Editor::commit);
-	connect(editor, &Editor::sig_finished, t, &QThread::quit);
+	connect(editor, &Editor::sigFinished, t, &QThread::quit);
 	connect(t, &QThread::finished, t, &QObject::deleteLater);
 	connect(t, &QThread::finished, editor, &QObject::deleteLater);
 
@@ -352,8 +352,10 @@ void EditorTest::test_commit()
 
 	QCOMPARE(spy.count(), 1);
 
-	MetaDataList old_md = mdcn->changed_metadata().first;
-	MetaDataList new_md = mdcn->changed_metadata().second;
+	auto changedMetaData = mdcn->changedMetadata();
+
+	const MetaDataList& old_md = changedMetaData.first;
+	const MetaDataList& new_md = changedMetaData.second;
 
 	QVERIFY(old_md.size() == 4);
 	QVERIFY(new_md.size() == 4);
@@ -363,7 +365,7 @@ void EditorTest::test_commit()
 	{
 		if(i % 10 == 0) // 0, 10, 20, 30
 		{
-			QVERIFY(old_md[cur_idx].is_equal_deep(tracks[i]));
+			QVERIFY(old_md[cur_idx].isEqualDeep(tracks[i]));
 			QVERIFY(new_md[cur_idx].filepath() == tracks[i].filepath());
 			QVERIFY(new_md[cur_idx].title().startsWith("other"));
 

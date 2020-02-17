@@ -1,6 +1,6 @@
 /* MimeDataUtils.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -17,8 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-
 
 #ifndef MimeDataUtils_H
 #define MimeDataUtils_H
@@ -57,7 +55,7 @@ namespace Gui
 		 * @param data
 		 * @param url
 		 */
-		void set_cover_url(QMimeData* data, const QString& url);
+		void setCoverUrl(QMimeData* data, const QString& url);
 
 		/**
 		 * @brief cover_url
@@ -65,7 +63,7 @@ namespace Gui
 		 * @param data
 		 * @return
 		 */
-		QString cover_url(const QMimeData* data);
+		QString coverUrl(const QMimeData* data);
 
 		/**
 		 * @brief custom_mimedata
@@ -73,7 +71,7 @@ namespace Gui
 		 * @param data
 		 * @return
 		 */
-		CustomMimeData* custom_mimedata(QMimeData* data);
+		CustomMimeData* customMimedata(QMimeData* data);
 
 		/**
 		 * @brief custom_mimedata
@@ -81,7 +79,7 @@ namespace Gui
 		 * @param data
 		 * @return
 		 */
-		const CustomMimeData* custom_mimedata(const QMimeData* data);
+		const CustomMimeData* customMimedata(const QMimeData* data);
 
 		/**
 		 * @brief is_player_drag
@@ -89,7 +87,7 @@ namespace Gui
 		 * @param data
 		 * @return
 		 */
-		bool is_player_drag(const QMimeData* data);
+		bool isPlayerDrag(const QMimeData* data);
 
 		/**
 		 * @brief is_inner_drag_drop
@@ -98,7 +96,7 @@ namespace Gui
 		 * @param target_playlist_idx
 		 * @return
 		 */
-		bool is_inner_drag_drop(const QMimeData* data, int target_playlist_idx);
+		bool isInnerDragDrop(const QMimeData* data, int targetPlaylistIndex);
 
 		/**
 		 * @brief is_drag_from_playlist
@@ -106,7 +104,7 @@ namespace Gui
 		 * @param data
 		 * @return
 		 */
-		bool is_drag_from_playlist(const QMimeData* data);
+		bool isDragFromPlaylist(const QMimeData* data);
 	}
 }
 

@@ -1,6 +1,6 @@
 /* PlaylistTabBar.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -38,6 +38,7 @@
 #include <QDir>
 
 using Playlist::TabBar;
+using Playlist::TabMenu;
 
 struct TabBar::Private
 {
@@ -57,7 +58,7 @@ struct TabBar::Private
 	}
 };
 
-TabBar::TabBar(QWidget *parent) :
+TabBar::TabBar(QWidget* parent) :
 	QTabBar(parent)
 {
 	m = Pimpl::make<Private>(this);
@@ -66,29 +67,29 @@ TabBar::TabBar(QWidget *parent) :
 	this->setAcceptDrops(true);
 	this->setFocusPolicy(Qt::NoFocus);
 
-	init_shortcuts();
+	initShortcuts();
 
-	connect(m->menu, &TabMenu::sig_open_file_clicked, this, &TabBar::open_file_pressed);
-	connect(m->menu, &TabMenu::sig_open_dir_clicked, this, &TabBar::open_dir_pressed);
-	connect(m->menu, &TabMenu::sig_rename_clicked, this, &TabBar::rename_pressed);
-	connect(m->menu, &TabMenu::sig_reset_clicked, this, &TabBar::reset_pressed);
-	connect(m->menu, &TabMenu::sig_save_clicked, this, &TabBar::save_pressed);
-	connect(m->menu, &TabMenu::sig_save_as_clicked, this, &TabBar::save_as_pressed);
-	connect(m->menu, &TabMenu::sig_save_to_file_clicked, this, &TabBar::save_to_file_pressed);
-	connect(m->menu, &TabMenu::sig_clear_clicked, this, &TabBar::clear_pressed);
-	connect(m->menu, &TabMenu::sig_delete_clicked, this, &TabBar::delete_pressed);
-	connect(m->menu, &TabMenu::sig_close_clicked, this, &TabBar::close_pressed);
-	connect(m->menu, &TabMenu::sig_close_others_clicked, this, &TabBar::close_others_pressed);
+	connect(m->menu, &TabMenu::sigOpenFileClicked, this, &TabBar::openFilePressed);
+	connect(m->menu, &TabMenu::sigOpenDirClicked, this, &TabBar::openDirPressed);
+	connect(m->menu, &TabMenu::sigRenameClicked, this, &TabBar::renamePressed);
+	connect(m->menu, &TabMenu::sigResetClicked, this, &TabBar::resetPressed);
+	connect(m->menu, &TabMenu::sigSaveClicked, this, &TabBar::savePressed);
+	connect(m->menu, &TabMenu::sigSaveAsClicked, this, &TabBar::saveAsPressed);
+	connect(m->menu, &TabMenu::sigSaveToFileClicked, this, &TabBar::saveToFilePressed);
+	connect(m->menu, &TabMenu::sigClearClicked, this, &TabBar::clearPressed);
+	connect(m->menu, &TabMenu::sigDeleteClicked, this, &TabBar::deletePressed);
+	connect(m->menu, &TabMenu::sigCloseClicked, this, &TabBar::closePressed);
+	connect(m->menu, &TabMenu::sigCloseOthersClicked, this, &TabBar::closeOthersPressed);
 }
 
 TabBar::~TabBar() = default;
 
-void TabBar::save_pressed()
+void TabBar::savePressed()
 {
-	emit sig_tab_save(currentIndex());
+	emit sigTabSave(currentIndex());
 }
 
-void TabBar::save_as_pressed()
+void TabBar::saveAsPressed()
 {
 	int cur_idx = currentIndex();
 	QString cur_text = tabText(cur_idx);
@@ -100,11 +101,11 @@ void TabBar::save_as_pressed()
 
 	if(!name.isEmpty())
 	{
-		emit sig_tab_save_as(cur_idx, name);
+		emit sigTabSaveAs(cur_idx, name);
 	}
 }
 
-void TabBar::save_to_file_pressed()
+void TabBar::saveToFilePressed()
 {
 	int cur_idx = currentIndex();
 
@@ -118,54 +119,54 @@ void TabBar::save_to_file_pressed()
 		return;
 	}
 
-	m->last_dir = Util::File::get_parent_directory(name);
-	emit sig_tab_save_to_file(cur_idx, name);
+	m->last_dir = Util::File::getParentDirectory(name);
+	emit sigTabSaveToFile(cur_idx, name);
 }
 
-void TabBar::open_file_pressed()
+void TabBar::openFilePressed()
 {
-	emit sig_open_file(currentIndex());
+	emit sigOpenFile(currentIndex());
 }
 
-void TabBar::open_dir_pressed()
+void TabBar::openDirPressed()
 {
-	emit sig_open_dir(currentIndex());
+	emit sigOpenDir(currentIndex());
 }
 
-void TabBar::clear_pressed()
+void TabBar::clearPressed()
 {
-	emit sig_tab_clear(currentIndex());
+	emit sigTabClear(currentIndex());
 }
 
-void TabBar::delete_pressed()
+void TabBar::deletePressed()
 {
-	emit sig_tab_delete(currentIndex());
+	emit sigTabDelete(currentIndex());
 }
 
-void TabBar::close_pressed()
+void TabBar::closePressed()
 {
 	emit tabCloseRequested(this->currentIndex());
 }
 
-void TabBar::reset_pressed()
+void TabBar::resetPressed()
 {
-	emit sig_tab_reset(currentIndex());
+	emit sigTabReset(currentIndex());
 }
 
-void TabBar::rename_pressed()
+void TabBar::renamePressed()
 {
-	int cur_idx = currentIndex();
-	QString cur_text = tabText(cur_idx);
+	int currentIndex = this->currentIndex();
+	QString currentText = tabText(currentIndex);
 
 	Gui::LineInputDialog dialog(
 		Lang::get(Lang::Rename),
 		Lang::get(Lang::Rename),
-		cur_text,
+		currentText,
 		this
 	);
 
 	dialog.exec();
-	if(dialog.return_value() != Gui::LineInputDialog::ReturnValue::Ok) {
+	if(dialog.returnValue() != Gui::LineInputDialog::ReturnValue::Ok) {
 		return;
 	}
 
@@ -174,15 +175,15 @@ void TabBar::rename_pressed()
 		return;
 	}
 
-	if(name.compare(cur_text) == 0){
+	if(name.compare(currentText) == 0){
 		return;
 	}
 
-	emit sig_tab_rename(currentIndex(), name);
+	emit sigTabRename(this->currentIndex(), name);
 }
 
 
-void TabBar::close_others_pressed()
+void TabBar::closeOthersPressed()
 {
 	int my_tab = currentIndex();
 	int i=0;
@@ -207,7 +208,7 @@ void TabBar::mousePressEvent(QMouseEvent* e){
 	int idx = this->tabAt(e->pos());
 
 	if(idx == this->count() - 1){
-		emit sig_add_tab_clicked();
+		emit sigAddTabClicked();
 		return;
 	}
 
@@ -247,46 +248,46 @@ static QShortcut* init_shortcut(QWidget* parent, QKeySequence key)
 }
 
 
-void TabBar::init_shortcuts()
+void TabBar::initShortcuts()
 {
 	ShortcutHandler* sch = ShortcutHandler::instance();
-	sch->shortcut(ShortcutIdentifier::AddTab).connect(this, this, SIGNAL(sig_add_tab_clicked()));
-	sch->shortcut(ShortcutIdentifier::CloseTab).connect(this, this, SLOT(close_pressed()));
+	sch->shortcut(ShortcutIdentifier::AddTab).connect(this, this, SIGNAL(sigAddTabClicked()));
+	sch->shortcut(ShortcutIdentifier::CloseTab).connect(this, this, SLOT(closePressed()));
 
 	QShortcut* sc1 = init_shortcut(this->parentWidget(), QKeySequence::Save);
-	connect(sc1, &QShortcut::activated, this, &TabBar::save_pressed);
+	connect(sc1, &QShortcut::activated, this, &TabBar::savePressed);
 
 	QShortcut* sc2 = init_shortcut(this->parentWidget(), QKeySequence::SaveAs);
-	connect(sc2, &QShortcut::activated, this, &TabBar::save_as_pressed);
+	connect(sc2, &QShortcut::activated, this, &TabBar::saveAsPressed);
 
 	QShortcut* sc3 = init_shortcut(this->parentWidget(), QKeySequence("F2"));
-	connect(sc3, &QShortcut::activated, this, &TabBar::rename_pressed);
+	connect(sc3, &QShortcut::activated, this, &TabBar::renamePressed);
 
 	QShortcut* sc4 = init_shortcut(this->parentWidget(), QKeySequence::Open);
-	connect(sc4, &QShortcut::activated, this, &TabBar::open_file_pressed);
+	connect(sc4, &QShortcut::activated, this, &TabBar::openFilePressed);
 
 	QKeySequence ks(QKeySequence::Open);
 	QShortcut* sc5 = init_shortcut(this->parentWidget(), QKeySequence("Shift+" + ks.toString()));
-	connect(sc5, &QShortcut::activated, this, &TabBar::open_dir_pressed);
+	connect(sc5, &QShortcut::activated, this, &TabBar::openDirPressed);
 }
 
-void TabBar::show_menu_items(Playlist::MenuEntries entries)
+void TabBar::showMenuItems(Playlist::MenuEntries entries)
 {
-	m->menu->show_menu_items(entries);
+	m->menu->showMenuItems(entries);
 }
 
 void TabBar::setTabsClosable(bool b)
 {
 	QTabBar::setTabsClosable(b);
-	m->menu->show_close(b);
+	m->menu->showClose(b);
 }
 
-bool TabBar::was_drag_from_playlist() const
+bool TabBar::wasDragFromPlaylist() const
 {
 	return m->drag_from_playlist;
 }
 
-int TabBar::get_drag_origin_tab() const
+int TabBar::getDragOriginTab() const
 {
 	return m->drag_origin_tab;
 }
@@ -357,7 +358,7 @@ void TabBar::dropEvent(QDropEvent* e)
 	MetaDataList v_md = Gui::MimeData::metadata(mime_data);
 	if(!v_md.isEmpty())
 	{
-		emit sig_metadata_dropped(tab, v_md);
+		emit sigMetadataDropped(tab, v_md);
 	}
 
 	else
@@ -371,7 +372,7 @@ void TabBar::dropEvent(QDropEvent* e)
 
 		if(!files.isEmpty())
 		{
-			emit sig_files_dropped(tab, files);
+			emit sigFilesDropped(tab, files);
 		}
 	}
 }

@@ -92,7 +92,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../../../Gui/Resources/Icons.qrc">
+        <iconset>
          <normaloff>:/Icons/lupe.svg.png</normaloff>:/Icons/lupe.svg.png</iconset>
        </property>
        <property name="iconSize">
@@ -109,7 +109,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../../../Gui/Resources/Icons.qrc">
+        <iconset>
          <normaloff>:/Icons/broom.png</normaloff>:/Icons/broom.png</iconset>
        </property>
        <property name="iconSize">
@@ -123,21 +123,21 @@
     </layout>
    </item>
    <item row="4" column="0">
-    <widget class="QLabel" name="lab_n_artists">
+    <widget class="QLabel" name="lab_artistCount">
      <property name="text">
       <string/>
      </property>
     </widget>
    </item>
    <item row="4" column="1">
-    <widget class="QLabel" name="lab_n_playlists">
+    <widget class="QLabel" name="lab_playlistCount">
      <property name="text">
       <string/>
      </property>
     </widget>
    </item>
    <item row="4" column="2">
-    <widget class="QLabel" name="lab_n_tracks">
+    <widget class="QLabel" name="lab_trackCount">
      <property name="text">
       <string/>
      </property>

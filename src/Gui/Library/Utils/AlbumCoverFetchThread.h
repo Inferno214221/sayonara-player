@@ -1,6 +1,6 @@
 /* AlbumCoverFetchThread.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -17,8 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-
 
 #ifndef ALBUMCOVERFETCHTHREAD_H
 #define ALBUMCOVERFETCHTHREAD_H
@@ -45,13 +43,16 @@ namespace Library
 	 * handled BEFORE old requests. The thread is locked until the done() function
 	 * is called. The thread emits the signal sig_next(). The cover location
 	 * and the hash which should be processed next can be fetched by current_hash()
-	 * and current_cover_location().
+	 * and current_coverLocation().
 	 * @ingroup GuiLibrary
 	 */
 	class AlbumCoverFetchThread : public QThread
 	{
 		Q_OBJECT
 		PIMPL(AlbumCoverFetchThread)
+
+		signals:
+			void sigNext();
 
 		public:
 			using Hash=QString;
@@ -60,8 +61,6 @@ namespace Library
 			using HashLocationPair = QPair<Hash, Cover::Location>;
 			using HashLocationList = QList<HashLocationPair>;
 
-		signals:
-			void sig_next();
 
 		protected:
 			void run() override;
@@ -75,17 +74,21 @@ namespace Library
 			 * @param hash hashed album info
 			 * @param cl Cover Location of the album
 			 */
-			void add_album(const Album& album);
+			void addAlbum(const Album& album);
 
-			bool check_album(const QString& hash);
+			/**
+			 * @brief check if album is already processed or about
+			 * to be processed in the future
+			 * @param hash
+			 * @return
+			 */
+			bool checkAlbum(const QString& hash);
 
-			int lookups_ready() const;
-			int queued_hashes() const;
-			int unprocessed_hashes() const;
+			int lookupsReady() const;
+			int queuedHashes() const;
+			int unprocessedHashes() const;
 
-
-			HashLocationPair take_current_lookup();
-
+			HashLocationPair takeCurrentLookup();
 
 			/**
 			 * @brief stop Stop the thread
@@ -96,7 +99,7 @@ namespace Library
 			void clear();
 			void done(const Hash& hash);
 
-			static Hash get_hash(const Album& album);
+			static Hash getHash(const Album& album);
 	};
 }
 

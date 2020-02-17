@@ -1,6 +1,6 @@
 /* StreamRecorder.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -57,17 +57,17 @@ struct SR::StreamRecorder::Private
 };
 
 
-SR::StreamRecorder::StreamRecorder(QObject *parent) :
+SR::StreamRecorder::StreamRecorder(QObject* parent) :
 	QObject(parent)
 {
 	m = Pimpl::make<StreamRecorder::Private>();
 
 	clear();
 
-	QDir d(Util::sayonara_path());
+	QDir d(Util::sayonaraPath());
 
 	// delete old stream ripper files
-	QStringList lst = d.entryList(Util::soundfile_extensions(), (QDir::Files | QDir::NoDotAndDotDot));
+	QStringList lst = d.entryList(Util::soundfileExtensions(), (QDir::Files | QDir::NoDotAndDotDot));
 
 	for( const QString& str : lst)
 	{
@@ -75,25 +75,25 @@ SR::StreamRecorder::StreamRecorder(QObject *parent) :
 		QFile f(path);
 		f.remove();
 
-		sp_log(Log::Info, this) << "Remove " << path;
+		spLog(Log::Info, this) << "Remove " << path;
 	}
 
-	auto* play_manager = PlayManager::instance();
-	connect(play_manager, &PlayManager::sig_playstate_changed, this, &StreamRecorder::playstate_changed);
+	auto* playManager = PlayManager::instance();
+	connect(playManager, &PlayManager::sigPlaystateChanged, this, &StreamRecorder::playstateChanged);
 }
 
 SR::StreamRecorder::~StreamRecorder() = default;
 
 void SR::StreamRecorder::clear()
 {
-	m->md.set_title("");
+	m->md.setTitle("");
 	m->session_collector.clear();
 	m->sr_recording_dst = "";
 	m->session_playlist_name.clear();
 	m->cur_idx = 1;
 }
 
-void SR::StreamRecorder::new_session()
+void SR::StreamRecorder::newSession()
 {
 	clear();
 
@@ -102,7 +102,7 @@ void SR::StreamRecorder::new_session()
 }
 
 
-QString SR::StreamRecorder::change_track(const MetaData& md)
+QString SR::StreamRecorder::changeTrack(const MetaData& md)
 {
 	QString sr_path = GetSetting(Set::Engine_SR_Path);
 
@@ -120,9 +120,9 @@ QString SR::StreamRecorder::change_track(const MetaData& md)
 		m->cur_idx++;
 	}
 
-	if(!Util::File::is_www(md.filepath()))
+	if(!Util::File::isWWW(md.filepath()))
 	{
-		sp_log(Log::Warning, this) << "Audio Source is not a stream";
+		spLog(Log::Warning, this) << "Audio Source is not a stream";
 		m->sr_recording_dst = "";
 		m->session_playlist_name = "";
 		m->recording = false;
@@ -130,30 +130,30 @@ QString SR::StreamRecorder::change_track(const MetaData& md)
 	}
 
 	m->md = md;
-	m->md.set_year(Year(QDateTime::currentDateTime().date().year()));
-	m->md.set_track_number(TrackNum(m->cur_idx));
+	m->md.setYear(Year(QDateTime::currentDateTime().date().year()));
+	m->md.setTrackNumber(TrackNum(m->cur_idx));
 
 	int i;
 	QString target_path_template = GetSetting(Set::Engine_SR_SessionPathTemplate);
 	bool use_session_path = GetSetting(Set::Engine_SR_SessionPath);
-	bool valid = (Utils::validate_template(target_path_template, &i) == Utils::ErrorCode::OK);
+	bool valid = (Utils::validateTemplate(target_path_template, &i) == Utils::ErrorCode::OK);
 
 	if(!use_session_path || !valid)
 	{
-		target_path_template = Utils::target_path_template_default(use_session_path);
+		target_path_template = Utils::targetPathTemplateDefault(use_session_path);
 	}
 
-	Utils::TargetPaths target_path = Utils::full_target_path(sr_path, target_path_template, m->md, m->date, m->time);
+	Utils::TargetPaths target_path = Utils::fullTargetPath(sr_path, target_path_template, m->md, m->date, m->time);
 	if(target_path.first.isEmpty())
 	{
-		sp_log(Log::Warning, this) << "Cannot determine target path";
+		spLog(Log::Warning, this) << "Cannot determine target path";
 		m->sr_recording_dst = "";
 		m->session_playlist_name = "";
 		m->recording = false;
 		return "";
 	}
 
-	Util::File::create_directories(Util::File::get_parent_directory(target_path.first));
+	Util::File::createDirectories(Util::File::getParentDirectory(target_path.first));
 
 	m->sr_recording_dst = target_path.first;
 	m->session_playlist_name = target_path.second;
@@ -173,23 +173,23 @@ bool SR::StreamRecorder::save()
 		return false;
 	}
 
-	sp_log(Log::Info, this) << "Finalize file " << m->sr_recording_dst;
+	spLog(Log::Info, this) << "Finalize file " << m->sr_recording_dst;
 
-	m->md.set_filepath(m->sr_recording_dst);
+	m->md.setFilepath(m->sr_recording_dst);
 
 	Tagging::Utils::setMetaDataOfFile(m->md);
 	m->session_collector.push_back(m->md);
 
-	PlaylistParser::save_m3u_playlist(m->session_playlist_name, m->session_collector, true);
+	PlaylistParser::saveM3UPlaylist(m->session_playlist_name, m->session_collector, true);
 
 	return true;
 }
 
 
-QString SR::StreamRecorder::check_target_path(const QString& target_path)
+QString SR::StreamRecorder::checkTargetPath(const QString& target_path)
 {
 	if(!FileUtils::exists(target_path)) {
-		Util::File::create_directories(Util::File::get_parent_directory(target_path));
+		Util::File::createDirectories(Util::File::getParentDirectory(target_path));
 	}
 
 	QFileInfo fi(target_path);
@@ -207,10 +207,10 @@ void SR::StreamRecorder::record(bool b)
 		return;
 	}
 
-	sp_log(Log::Debug, this) << "Stream recorder: activate: " << b;
+	spLog(Log::Debug, this) << "Stream recorder: activate: " << b;
 
 	if(b) {
-		new_session();
+		newSession();
 	}
 
 	else {
@@ -222,13 +222,13 @@ void SR::StreamRecorder::record(bool b)
 }
 
 
-bool SR::StreamRecorder::is_recording() const
+bool SR::StreamRecorder::isRecording() const
 {
 	return m->recording;
 }
 
 
-void SR::StreamRecorder::playstate_changed(PlayState state)
+void SR::StreamRecorder::playstateChanged(PlayState state)
 {
 	if(state == PlayState::Stopped)
 	{

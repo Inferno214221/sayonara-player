@@ -1,6 +1,6 @@
 /* StationSearcher.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "StationSearcher.h"
 #include "FMStreamParser.h"
 #include "Utils/WebAccess/AsyncWebAccess.h"
@@ -28,13 +26,13 @@
 
 struct StationSearcher::Private
 {
-	QList<RadioStation> found_stations;
-	QString				search_string;
-	int					current_page;
+	QList<RadioStation> foundStations;
+	QString				searchstring;
+	int					currentPageIndex;
 	StationSearcher::Mode mode;
 
 	Private() :
-		current_page(0),
+		currentPageIndex(0),
 		mode(StationSearcher::NewSearch)
 	{}
 
@@ -43,32 +41,32 @@ struct StationSearcher::Private
 		if(mode == StationSearcher::Style)
 		{
 			return QString("http://fmstream.org/index.php?style=%1")
-					.arg(search_string);
+					.arg(searchstring);
 		}
 
-		else if(current_page == 0)
+		else if(currentPageIndex == 0)
 		{
 			return QString("http://fmstream.org/index.php?s=%1&cm=0")
-					.arg(search_string);
+					.arg(searchstring);
 		}
 
 		else
 		{
 			return QString("http://fmstream.org/index.php?s=%1&n=%2")
-					.arg(search_string)
-					.arg(current_page);
+					.arg(searchstring)
+					.arg(currentPageIndex);
 		}
 	}
 
 
 	void increase_page()
 	{
-		current_page += 200;
+		currentPageIndex += 200;
 	}
 
 	void decrease_page()
 	{
-		current_page = std::max(0, current_page - 200);
+		currentPageIndex = std::max(0, currentPageIndex - 200);
 	}
 };
 
@@ -83,57 +81,57 @@ StationSearcher::~StationSearcher() {}
 
 
 
-void StationSearcher::start_call()
+void StationSearcher::startCall()
 {
 	AsyncWebAccess* wa = new AsyncWebAccess(this);
 
-	connect(wa, &AsyncWebAccess::sig_finished, this, &StationSearcher::search_finished);
+	connect(wa, &AsyncWebAccess::sigFinished, this, &StationSearcher::searchFinished);
 
 	wa->run(m->url());
 }
 
-void StationSearcher::search_style(const QString& style)
+void StationSearcher::searchStyle(const QString& style)
 {
 	m->mode = StationSearcher::Style;
-	m->search_string = style;
+	m->searchstring = style;
 
-	start_call();
+	startCall();
 }
 
 
-void StationSearcher::search_station(const QString& name)
+void StationSearcher::searchStation(const QString& name)
 {
 	m->mode = StationSearcher::NewSearch;
-	m->current_page = 0;
-	m->search_string = name;
+	m->currentPageIndex = 0;
+	m->searchstring = name;
 
-	start_call();
+	startCall();
 }
 
-void StationSearcher::search_previous()
+void StationSearcher::searchPrevious()
 {
 	m->decrease_page();
 	m->mode = StationSearcher::Incremental;
 
-	start_call();
+	startCall();
 }
 
-void StationSearcher::search_next()
+void StationSearcher::searchNext()
 {
 	m->increase_page();
 	m->mode = StationSearcher::Incremental;
 
-	start_call();
+	startCall();
 }
 
-bool StationSearcher::can_search_next() const
+bool StationSearcher::canSearchNext() const
 {
-	return (m->found_stations.size() > 10 && m->mode != StationSearcher::Style);
+	return (m->foundStations.size() > 10 && m->mode != StationSearcher::Style);
 }
 
-bool StationSearcher::can_search_previous() const
+bool StationSearcher::canSearchPrevious() const
 {
-	return (m->current_page >= 200 && m->found_stations.size() > 0 && m->mode != StationSearcher::Style);
+	return (m->currentPageIndex >= 200 && m->foundStations.size() > 0 && m->mode != StationSearcher::Style);
 }
 
 StationSearcher::Mode StationSearcher::mode() const
@@ -141,19 +139,19 @@ StationSearcher::Mode StationSearcher::mode() const
 	return m->mode;
 }
 
-QList<RadioStation> StationSearcher::found_stations() const
+QList<RadioStation> StationSearcher::foundStations() const
 {
-	return m->found_stations;
+	return m->foundStations;
 }
 
-void StationSearcher::search_finished()
+void StationSearcher::searchFinished()
 {
 	auto* wa = static_cast<AsyncWebAccess*>(sender());
 
 	FMStreamParser parser(wa->data());
-	m->found_stations = parser.stations();
+	m->foundStations = parser.stations();
 
 	wa->deleteLater();
 
-	emit sig_stations_found();
+	emit sigStationsFound();
 }

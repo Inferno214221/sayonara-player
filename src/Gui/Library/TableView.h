@@ -1,6 +1,6 @@
 /* TableView.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -40,7 +40,7 @@ namespace Library
 		PIMPL(TableView)
 
 	signals:
-		void sig_sortorder_changed(SortOrder);
+		void sigSortorderChanged(SortOrder);
 
 	private:
 		TableView(const TableView& other)=delete;
@@ -58,7 +58,7 @@ namespace Library
 		 * connections and setting listeners
 		 * @param library
 		 */
-		virtual void init_view(AbstractLibrary* library)=0;
+		virtual void initView(AbstractLibrary* library)=0;
 
 		/**
 		 * @brief returns a list of ColumnHeader objects containing name,
@@ -66,7 +66,7 @@ namespace Library
 		 * fetched as well when the UI is instantiated
 		 * @return
 		 */
-		virtual ColumnHeaderList column_headers() const=0;
+		virtual ColumnHeaderList columnHeaders() const=0;
 
 		/**
 		 * @brief This method returns the SAVED column header sizes as
@@ -74,14 +74,14 @@ namespace Library
 		 * Also see save_column_header_sizes()
 		 * @return a list of widths in pixels
 		 */
-		virtual QByteArray column_header_state() const=0;
+		virtual QByteArray columnHeaderState() const=0;
 
 		/**
 		 * @brief Here, the column headers sizes should be saved somewhere
 		 * @param a list of widths in pixels. The list should be as big as
 		 * there are columns (even if they are not visible)
 		 */
-		virtual void save_column_header_state(const QByteArray& state)=0;
+		virtual void saveColumnHeaderState(const QByteArray& state)=0;
 
 		/**
 		 * @brief returns the current sortorder for the table view
@@ -91,19 +91,19 @@ namespace Library
 		/**
 		 * @brief saves the current sortorder
 		 */
-		virtual void apply_sortorder(SortOrder s)=0;
+		virtual void applySortorder(SortOrder s)=0;
 
-		void language_changed() override;
+		void languageChanged() override;
 
 		// SayonaraSelectionView.h
-		int index_by_model_index(const QModelIndex& idx) const override;
-		ModelIndexRange model_indexrange_by_index(int idx) const override;
+		int mapModelIndexToIndex(const QModelIndex& idx) const override;
+		ModelIndexRange mapIndexToModelIndexes(int idx) const override;
 
 	protected slots:
-		void header_actions_triggered();
-		void sort_by_column(int column_idx);
-		void section_resized();
-		void section_moved(int logical_index, int old_visual_index, int new_visual_index);
+		void headerActionsTriggered();
+		void sortByColumn(int columnIndex);
+		void sectionResized();
+		void sectionMoved(int logicalIndex, int old_visualIndex, int newVisualIndex);
 	};
 }
 

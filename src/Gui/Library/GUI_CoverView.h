@@ -1,6 +1,6 @@
 /* CoverView.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -51,38 +51,38 @@ namespace Library
 		UI_CLASS(GUI_CoverView)
 
 	signals:
-		void sig_sortorder_changed(SortOrder so);
-		void sig_delete_clicked();
-		void sig_reload_clicked();
+		void sigSortorderChanged(SortOrder so);
+		void sigDeleteClicked();
+		void sigReloadClicked();
 
 	public:
 		explicit GUI_CoverView(QWidget* parent=nullptr);
 		virtual ~GUI_CoverView() override;
 
 		void init(LocalLibrary* library);
-		bool is_initialized() const;
+		bool isInitialized() const;
 
-		IndexSet selected_items() const;
-		void clear_selections() const;
+		IndexSet selectedItems() const;
+		void clearSelections() const;
 
 	protected:
-		void init_sorting_actions();
-		void init_zoom_actions();
+		void initSortingActions();
+		void initZoomActions();
 
-		void language_changed() override;
+		void languageChanged() override;
 
 	private:
-		void zoom_changed();
-		void sortorder_changed();
-		void show_artist_changed();
+		void zoomChanged();
+		void sortorderChanged();
+		void showArtistChanged();
 
 	private slots:
-		void combo_sorting_changed(int idx);
-		void combo_zoom_changed(int idx);
-		void close_clicked();
-		void show_artist_triggered(bool b);
+		void comboSortingChanged(int idx);
+		void comboZoomChanged(int idx);
+		void closeClicked();
+		void showArtistTriggered(bool b);
 
-		void show_utils_changed();
+		void showUtilsChanged();
 	};
 }
 

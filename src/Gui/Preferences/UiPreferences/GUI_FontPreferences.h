@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -42,23 +42,23 @@ public:
 	bool commit();
 	void revert();
 
-	QString action_name() const;
+	QString actionName() const;
 
 protected:
-	void language_changed() override;
-	void skin_changed() override;
+	void languageChanged() override;
+	void skinChanged() override;
 	void showEvent(QShowEvent* e) override;
 
 protected slots:
-	void default_clicked();
-	void combo_fonts_changed(const QFont& font);
+	void defaultClicked();
+	void comboFontsChanged(const QFont& font);
 
 private:
-	QStringList available_font_sizes(const QString& font_name, const QString& style=QString());
-	QStringList available_font_sizes(const QFont& font);
+	QStringList availableFontSizes(const QString& fontName, const QString& style=QString());
+	QStringList availableFontSizes(const QFont& font);
 
-	void fill_sizes(const QStringList& sizes);
-	void init_ui();
+	void fillSizes(const QStringList& sizes);
+	void initUi();
 };
 
 #endif // FONTCONFIG_H

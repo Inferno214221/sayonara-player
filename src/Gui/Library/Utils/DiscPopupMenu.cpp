@@ -1,6 +1,6 @@
 /* DiscPopupMenu.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -52,7 +52,7 @@ DiscAction::DiscAction(QWidget* parent, Disc disc) :
 		bool ok = false;
 		int discnumber = data().toInt(&ok);
 		if(ok){
-			emit sig_disc_pressed(discnumber);
+			emit sigDiscPressed(discnumber);
 		}
 	});
 }
@@ -78,7 +78,7 @@ DiscPopupMenu::DiscPopupMenu(QWidget* parent, QList<Disc> discs): QMenu(parent)
 
 		this->addAction(action);
 
-		connect(action, &DiscAction::sig_disc_pressed, this, &DiscPopupMenu::sig_disc_pressed);
+		connect(action, &DiscAction::sigDiscPressed, this, &DiscPopupMenu::sigDiscPressed);
 	}
 }
 

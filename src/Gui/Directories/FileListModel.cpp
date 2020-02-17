@@ -1,6 +1,6 @@
 /* FileListModel.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -59,16 +59,16 @@ namespace Algorithm=Util::Algorithm;
 
 struct FileListModel::Private
 {
-	QString		parent_directory;
+	QString	parentDirectory;
 	QStringList files;
-	QMap<QString, bool> files_in_library;
+	QMap<QString, bool> filesInLibrary;
 
-	int			icon_size;
-	LibraryId	library_id;
+	int	iconSize;
+	LibraryId libraryId;
 
 	Private() :
-		icon_size(24),
-		library_id(-1)
+		iconSize(24),
+		libraryId(-1)
 	{}
 };
 
@@ -81,58 +81,58 @@ FileListModel::FileListModel(QObject* parent) :
 
 FileListModel::~FileListModel() = default;
 
-void FileListModel::set_parent_directory(LibraryId library_id, const QString& dir)
+void FileListModel::setParentDirectory(LibraryId libraryId, const QString& dir)
 {
-	int old_rowcount = rowCount();
+	int oldRowcount = rowCount();
 
 	auto* db = DB::Connector::instance();
-	DB::LibraryDatabase* lib_db = db->library_db(library_id, 0);
+	DB::LibraryDatabase* lib_db = db->libraryDatabase(libraryId, 0);
 
 	MetaDataList tracks;
 	lib_db->getAllTracksByPaths({dir}, tracks);
 
 	m->files.clear();
-	m->parent_directory = dir;
-	m->library_id = library_id;
+	m->parentDirectory = dir;
+	m->libraryId = libraryId;
 
 	QStringList extensions;
-	extensions << Util::soundfile_extensions();
-	extensions << Util::playlist_extensions();
+	extensions << Util::soundfileExtensions();
+	extensions << Util::playlistExtensions();
 	extensions << "*";
 
 	DirectoryReader reader;
-	reader.set_filter(extensions);
-	reader.scan_files(QDir(dir), m->files);
+	reader.setFilter(extensions);
+	reader.scanFiles(QDir(dir), m->files);
 
 	for(const QString& file : m->files)
 	{
-		m->files_in_library[file] = Util::Algorithm::contains(tracks, [&file](const MetaData& md){
-			return Util::File::is_same_path(file, md.filepath());
+		m->filesInLibrary[file] = Util::Algorithm::contains(tracks, [&file](const MetaData& md){
+			return Util::File::isSamePath(file, md.filepath());
 		});
 	}
 
-	if(m->files.size() > old_rowcount)
+	if(m->files.size() > oldRowcount)
 	{
-		beginInsertRows(QModelIndex(), old_rowcount, m->files.size());
+		beginInsertRows(QModelIndex(), oldRowcount, m->files.size());
 		endInsertRows();
 	}
 
-	else if(m->files.size() < old_rowcount)
+	else if(m->files.size() < oldRowcount)
 	{
-		beginRemoveRows(QModelIndex(), m->files.size(), old_rowcount);
+		beginRemoveRows(QModelIndex(), m->files.size(), oldRowcount);
 		endRemoveRows();
 	}
 
 	Algorithm::sort(m->files, [](const QString& f1, const QString& f2)
 	{
-		bool is_soundfile1 = Util::File::is_soundfile(f1);
-		bool is_soundfile2 = Util::File::is_soundfile(f2);
+		bool is_soundfile1 = Util::File::isSoundFile(f1);
+		bool is_soundfile2 = Util::File::isSoundFile(f2);
 
-		bool is_playlistfile1 = Util::File::is_playlistfile(f1);
-		bool is_playlistfile2 = Util::File::is_playlistfile(f2);
+		bool is_playlistfile1 = Util::File::isPlaylistFile(f1);
+		bool is_playlistfile2 = Util::File::isPlaylistFile(f2);
 
-		bool is_imagefile1 = Util::File::is_imagefile(f1);
-		bool is_imagefile2 = Util::File::is_imagefile(f2);
+		bool is_imagefile1 = Util::File::isImageFile(f1);
+		bool is_imagefile2 = Util::File::isImageFile(f2);
 
 		if(is_soundfile1 && is_soundfile2){
 			return (f1.toLower() < f2.toLower());
@@ -180,14 +180,14 @@ void FileListModel::set_parent_directory(LibraryId library_id, const QString& di
 	);
 }
 
-LibraryId FileListModel::library_id() const
+LibraryId FileListModel::libraryId() const
 {
-	return m->library_id;
+	return m->libraryId;
 }
 
-QString FileListModel::parent_directory() const
+QString FileListModel::parentDirectory() const
 {
-	return m->parent_directory;
+	return m->parentDirectory;
 }
 
 QStringList FileListModel::files() const
@@ -195,13 +195,13 @@ QStringList FileListModel::files() const
 	return m->files;
 }
 
-QModelIndexList FileListModel::search_results(const QString& substr)
+QModelIndexList FileListModel::searchResults(const QString& substr)
 {
 	QModelIndexList ret;
 
 	for(int i=0; i<m->files.size(); i++)
 	{
-		if(check_row_for_searchstring(i, substr)){
+		if(checkRowForSearchstring(i, substr)){
 			ret << index(i, 0);
 		}
 	}
@@ -222,7 +222,7 @@ int FileListModel::columnCount(const QModelIndex& parent) const
 	return ColumnCount;
 }
 
-QVariant FileListModel::data(const QModelIndex &index, int role) const
+QVariant FileListModel::data(const QModelIndex& index, int role) const
 {
 	int row = index.row();
 	int col = index.column();
@@ -232,7 +232,7 @@ QVariant FileListModel::data(const QModelIndex &index, int role) const
 	}
 
 	QString filename = m->files[row];
-	bool in_library = m->files_in_library.contains(filename) && (m->files_in_library[filename] == true);
+	bool in_library = m->filesInLibrary.contains(filename) && (m->filesInLibrary[filename] == true);
 
 	using namespace Util;
 
@@ -242,7 +242,7 @@ QVariant FileListModel::data(const QModelIndex &index, int role) const
 			switch(col)
 			{
 				case ColumnName:
-					return File::get_filename_of_path(filename);
+					return File::getFilenameOfPath(filename);
 				case ColumnInLibrary:
 					return (in_library == true) ? Lang::get(Lang::Yes) : Lang::get(Lang::No);
 				default: return QVariant();
@@ -251,16 +251,16 @@ QVariant FileListModel::data(const QModelIndex &index, int role) const
 		case Qt::DecorationRole:
 			if(col == ColumnDecoration)
 			{
-				if(File::is_soundfile(filename))
+				if(File::isSoundFile(filename))
 				{
 					return Gui::Icons::icon(Gui::Icons::AudioFile);
 				}
 
-				if(File::is_playlistfile(filename)){
+				if(File::isPlaylistFile(filename)){
 					return Gui::Icons::icon(Gui::Icons::PlaylistFile);
 				}
 
-				if(File::is_imagefile(filename))
+				if(File::isImageFile(filename))
 				{
 					QIcon icon;
 					icon.addPixmap(QPixmap(filename));
@@ -305,12 +305,12 @@ QVariant FileListModel::headerData(int column, Qt::Orientation orientation, int 
 	return SearchableTableModel::headerData(column, orientation, role);
 }
 
-bool FileListModel::check_row_for_searchstring(int row, const QString& substr) const
+bool FileListModel::checkRowForSearchstring(int row, const QString& substr) const
 {
-	QString converted_string = Library::Utils::convert_search_string(substr, search_mode());
-	QString filename = Util::File::get_filename_of_path(m->files[row]);
+	QString converted_string = Library::Utils::convertSearchstring(substr, searchMode());
+	QString filename = Util::File::getFilenameOfPath(m->files[row]);
 
-	QString converted_filepath = Library::Utils::convert_search_string(filename, search_mode());
+	QString converted_filepath = Library::Utils::convertSearchstring(filename, searchMode());
 	return converted_filepath.contains(converted_string);
 }
 

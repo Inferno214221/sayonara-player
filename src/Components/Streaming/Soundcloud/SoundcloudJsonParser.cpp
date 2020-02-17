@@ -1,6 +1,6 @@
 /* SoundcloudJsonParser.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -37,14 +37,14 @@
 
 struct SC::JsonParser::Private
 {
-	QJsonDocument		json_doc;
+	QJsonDocument		jsonDocument;
 	QByteArray			content;
 	QJsonParseError		error;
 
 	Private(const QByteArray& content) :
 		content(content)
 	{
-		json_doc = QJsonDocument::fromJson(content, &error);
+		jsonDocument = QJsonDocument::fromJson(content, &error);
 	}
 };
 
@@ -52,29 +52,29 @@ SC::JsonParser::JsonParser(const QByteArray& content) :
 	QObject()
 {
 	m = Pimpl::make<Private>(content);
-	QString target_file = Util::sayonara_path() + "/tmp.json";
+	QString targetFile = Util::sayonaraPath() + "/tmp.json";
 
-	Util::File::write_file(
-		m->json_doc.toJson(QJsonDocument::Indented), target_file
+	Util::File::writeFile(
+		m->jsonDocument.toJson(QJsonDocument::Indented), targetFile
 	);
 
 	QJsonParseError::ParseError pe = m->error.error;
 	if(pe != QJsonParseError::NoError){
-		sp_log(Log::Warning, this) << "Cannot parse json document: " << m->error.errorString();
+		spLog(Log::Warning, this) << "Cannot parse json document: " << m->error.errorString();
 	}
 }
 
-SC::JsonParser::~JsonParser() {}
+SC::JsonParser::~JsonParser() = default;
 
-bool SC::JsonParser::parse_artists(ArtistList& artists)
+bool SC::JsonParser::parseArtists(ArtistList& artists)
 {
-	if(m->json_doc.isArray()){
-		return parse_artist_list(artists, m->json_doc.array());
+	if(m->jsonDocument.isArray()){
+		return parseArtistList(artists, m->jsonDocument.array());
 	}
 
-	else if(m->json_doc.isObject()){
+	else if(m->jsonDocument.isObject()){
 		Artist artist;
-		if(parse_artist(artist, m->json_doc.object())){
+		if(parseArtist(artist, m->jsonDocument.object())){
 			artists << artist;
 			return true;
 		}
@@ -84,7 +84,7 @@ bool SC::JsonParser::parse_artists(ArtistList& artists)
 }
 
 
-bool SC::JsonParser::parse_artist_list(ArtistList& artists, QJsonArray arr)
+bool SC::JsonParser::parseArtistList(ArtistList& artists, QJsonArray arr)
 {
 	artists.clear();
 
@@ -92,7 +92,7 @@ bool SC::JsonParser::parse_artist_list(ArtistList& artists, QJsonArray arr)
 		QJsonValueRef ref = *it;
 		if(ref.isObject()){
 			Artist artist;
-			if(parse_artist(artist, ref.toObject())){
+			if(parseArtist(artist, ref.toObject())){
 				artists << artist;
 			}
 		}
@@ -102,59 +102,59 @@ bool SC::JsonParser::parse_artist_list(ArtistList& artists, QJsonArray arr)
 }
 
 
-bool SC::JsonParser::parse_artist(Artist& artist, QJsonObject object)
+bool SC::JsonParser::parseArtist(Artist& artist, QJsonObject object)
 {
 	QString cover_download_url;
 
-	ArtistId artist_id;
-	if(get_int("id", object, artist_id)) {
-		artist.set_id(artist_id);
+	ArtistId artistId;
+	if(getInt("id", object, artistId)) {
+		artist.setId(artistId);
 	}
 
 	QString artist_name;
-	get_string("username", object, artist_name);
-	artist.set_name(artist_name);
+	getString("username", object, artist_name);
+	artist.setName(artist_name);
 
-	get_string("avatar_url", object, cover_download_url);
-	artist.set_cover_download_urls({cover_download_url});
+	getString("avatar_url", object, cover_download_url);
+	artist.setCoverDownloadUrls({cover_download_url});
 
 	QString description, website, permalink;
-	if(get_string("website", object, website)){
-		artist.add_custom_field("website", tr("Website"), website);
+	if(getString("website", object, website)){
+		artist.addCustomField("website", tr("Website"), website);
 	}
 
-	if(get_string("permalink", object, permalink)){
-		artist.add_custom_field("permalink", tr("Permalink Url"), permalink);
+	if(getString("permalink", object, permalink)){
+		artist.addCustomField("permalink", tr("Permalink Url"), permalink);
 	}
 
-	if(get_string("description", object, description)){
-		artist.add_custom_field("description", Lang::get(Lang::About), description);
+	if(getString("description", object, description)){
+		artist.addCustomField("description", Lang::get(Lang::About), description);
 	}
 
 	int followers=-1;
 	int following=-1;
-	get_int("followers_count", object, followers);
-	get_int("followings_count", object, following);
+	getInt("followers_count", object, followers);
+	getInt("followings_count", object, following);
 
 	if(followers != -1 && following != -1){
-		artist.add_custom_field("followers_following", tr("Followers/Following"), QString::number(followers) + "/" + QString::number(following));
+		artist.addCustomField("followers_following", tr("Followers/Following"), QString::number(followers) + "/" + QString::number(following));
 	}
 
 	return (artist.id() > 0);
 }
 
 
-bool SC::JsonParser::parse_tracks(ArtistList& artists, MetaDataList &v_md)
+bool SC::JsonParser::parseTracks(ArtistList& artists, MetaDataList &v_md)
 {
-	if(!m->json_doc.isArray()){
+	if(!m->jsonDocument.isArray()){
 		return false;
 	}
 
-	return parse_track_list(artists, v_md, m->json_doc.array());
+	return parseTrackList(artists, v_md, m->jsonDocument.array());
 }
 
 
-bool SC::JsonParser::parse_track_list(ArtistList& artists, MetaDataList &v_md, QJsonArray arr){
+bool SC::JsonParser::parseTrackList(ArtistList& artists, MetaDataList &v_md, QJsonArray arr){
 	v_md.clear();
 
 	for(auto it = arr.begin(); it != arr.end(); it++)
@@ -164,9 +164,9 @@ bool SC::JsonParser::parse_track_list(ArtistList& artists, MetaDataList &v_md, Q
 		{
 			MetaData md;
 			Artist artist;
-			if(parse_track(artist, md, ref.toObject()))
+			if(parseTrack(artist, md, ref.toObject()))
 			{
-				md.set_track_number(TrackNum(v_md.size() + 1));
+				md.setTrackNumber(TrackNum(v_md.size() + 1));
 
 				v_md << md;
 
@@ -178,7 +178,7 @@ bool SC::JsonParser::parse_track_list(ArtistList& artists, MetaDataList &v_md, Q
 			}
 
 			else{
-				sp_log(Log::Debug, this) << "Invalid md found";
+				spLog(Log::Debug, this) << "Invalid md found";
 			}
 		}
 	}
@@ -186,65 +186,65 @@ bool SC::JsonParser::parse_track_list(ArtistList& artists, MetaDataList &v_md, Q
 	return true;
 }
 
-bool SC::JsonParser::parse_track(Artist& artist, MetaData& md, QJsonObject object)
+bool SC::JsonParser::parseTrack(Artist& artist, MetaData& md, QJsonObject object)
 {
 	QString cover_download_url;
 
 	TrackID id;
-	if(get_int("id", object, id)){
-		md.set_id(id);
+	if(getInt("id", object, id)){
+		md.setId(id);
 	}
 
-	get_string("artwork_url", object, cover_download_url);
-	md.set_cover_download_urls({cover_download_url});
+	getString("artwork_url", object, cover_download_url);
+	md.setCoverDownloadUrls({cover_download_url});
 
 	int length;
-	if(get_int("duration", object, length)){
-		md.set_duration_ms(MilliSeconds(length));
+	if(getInt("duration", object, length)){
+		md.setDurationMs(MilliSeconds(length));
 	}
 
 	int year;
-	if(get_int("release_year", object, year)){
-		md.set_year(Year(year));
+	if(getInt("release_year", object, year)){
+		md.setYear(Year(year));
 	}
 
 	int filesize;
-	if(get_int("original_content_size", object, filesize)){
-		 md.set_filesize(Filesize(filesize));
+	if(getInt("original_content_size", object, filesize)){
+		 md.setFilesize(Filesize(filesize));
 	}
 
 	QString title;
-	if(get_string("title", object, title)){
-		md.set_title(title);
+	if(getString("title", object, title)){
+		md.setTitle(title);
 	}
 
 	QString stream_url;
-	if(get_string("stream_url", object, stream_url)){
-		md.set_filepath(stream_url + '?' + CLIENT_ID_STR);
+	if(getString("stream_url", object, stream_url)){
+		md.setFilepath(stream_url + '?' + CLIENT_ID_STR);
 	}
 
 	QString genre;
-	if(get_string("genre", object, genre)){
-		md.add_genre(Genre(genre));
+	if(getString("genre", object, genre)){
+		md.addGenre(Genre(genre));
 	}
 
 	QString purchase_url;
-	if(get_string("purchase_url", object, purchase_url)){
-		md.add_custom_field("purchase_url", tr("Purchase Url"), create_link(purchase_url, purchase_url));
+	if(getString("purchase_url", object, purchase_url)){
+		md.addCustomField("purchase_url", tr("Purchase Url"), createLink(purchase_url, purchase_url));
 	}
 
 	QJsonObject artist_object;
-	if(get_object("user", object, artist_object))
+	if(getObject("user", object, artist_object))
 	{
-		if( parse_artist(artist, artist_object) )
+		if( parseArtist(artist, artist_object) )
 		{
-			md.set_artist(artist.name());
-			md.set_artist_id(artist.id());
+			md.setArtist(artist.name());
+			md.setArtistId(artist.id());
 
-			if(md.album_id() < 0)
+			if(md.albumId() < 0)
 			{
-				md.set_album_id(0);
-				md.set_album(Lang::get(Lang::UnknownAlbum));
+				md.setAlbumId(0);
+				md.setAlbum(Lang::get(Lang::UnknownAlbum));
 			}
 		}
 	}
@@ -253,15 +253,15 @@ bool SC::JsonParser::parse_track(Artist& artist, MetaData& md, QJsonObject objec
 }
 
 
-bool SC::JsonParser::parse_playlists(ArtistList& artists, AlbumList &albums, MetaDataList &v_md)
+bool SC::JsonParser::parsePlaylists(ArtistList& artists, AlbumList &albums, MetaDataList &v_md)
 {
-	if(m->json_doc.isArray()){
-		return parse_playlist_list(artists, albums, v_md, m->json_doc.array());
+	if(m->jsonDocument.isArray()){
+		return parsePlaylistList(artists, albums, v_md, m->jsonDocument.array());
 	}
 
-	else if(m->json_doc.isObject()){
+	else if(m->jsonDocument.isObject()){
 		Album album;
-		if(parse_playlist(artists, album, v_md, m->json_doc.object())){
+		if(parsePlaylist(artists, album, v_md, m->jsonDocument.object())){
 			albums << album;
 			return true;
 		}
@@ -271,7 +271,7 @@ bool SC::JsonParser::parse_playlists(ArtistList& artists, AlbumList &albums, Met
 }
 
 
-bool SC::JsonParser::parse_playlist_list(ArtistList& artists, AlbumList& albums, MetaDataList& v_md, QJsonArray arr)
+bool SC::JsonParser::parsePlaylistList(ArtistList& artists, AlbumList& albums, MetaDataList& v_md, QJsonArray arr)
 {
 	albums.clear();
 
@@ -282,7 +282,7 @@ bool SC::JsonParser::parse_playlist_list(ArtistList& artists, AlbumList& albums,
 			MetaDataList v_md_tmp;
 			ArtistList artists_tmp;
 
-			if(parse_playlist(artists_tmp, album, v_md_tmp, ref.toObject())){
+			if(parsePlaylist(artists_tmp, album, v_md_tmp, ref.toObject())){
 				v_md << v_md_tmp;
 
 				for(const Artist& artist_tmp : artists_tmp){
@@ -302,47 +302,47 @@ bool SC::JsonParser::parse_playlist_list(ArtistList& artists, AlbumList& albums,
 }
 
 
-bool SC::JsonParser::parse_playlist(ArtistList& artists, Album& album, MetaDataList& v_md, QJsonObject object)
+bool SC::JsonParser::parsePlaylist(ArtistList& artists, Album& album, MetaDataList& v_md, QJsonObject object)
 {
 	Artist pl_artist;
 	QString cover_download_url;
 
-	AlbumId album_id;
-	get_int("id", object, album_id);
-	album.set_id(album_id);
+	AlbumId albumId;
+	getInt("id", object, albumId);
+	album.setId(albumId);
 
 	QString album_name;
-	get_string("title", object, album_name);
-	album.set_name(album_name);
+	getString("title", object, album_name);
+	album.setName(album_name);
 
-	get_string("artwork_url", object, cover_download_url);
-	album.set_cover_download_urls({cover_download_url});
+	getString("artwork_url", object, cover_download_url);
+	album.setCoverDownloadUrls({cover_download_url});
 
 	int num_songs;
-	if(get_int("track_count", object, num_songs)){
-		album.set_songcount(TrackNum(num_songs));
+	if(getInt("track_count", object, num_songs)){
+		album.setSongcount(TrackNum(num_songs));
 	}
 
 	int length;
-	if(get_int("duration", object, length)){
-		album.set_duration_sec(length / 1000);
+	if(getInt("duration", object, length)){
+		album.setDurationSec(length / 1000);
 	}
 
 	QJsonObject artist_object;
-	if(get_object("user", object, artist_object))
+	if(getObject("user", object, artist_object))
 	{
-		parse_artist(pl_artist, artist_object);
+		parseArtist(pl_artist, artist_object);
 		if(!artists.contains(pl_artist.id()) && pl_artist.id() > 0){
 			artists << pl_artist;
 		}
 	}
 
 	QJsonArray track_array;
-	if(get_array("tracks", object, track_array))
+	if(getArray("tracks", object, track_array))
 	{
 		ArtistList tmp_artists;
 		MetaDataList v_md_tmp;
-		parse_track_list(tmp_artists, v_md_tmp, track_array);
+		parseTrackList(tmp_artists, v_md_tmp, track_array);
 		for(const Artist& tmp_artist : tmp_artists)
 		{
 			if(!artists.contains(tmp_artist.id())){
@@ -359,12 +359,12 @@ bool SC::JsonParser::parse_playlist(ArtistList& artists, Album& album, MetaDataL
 	}
 
 	QString permalink, purchase_url;
-	if(get_string("permalink", object, permalink)){
-		album.add_custom_field(permalink, tr("Permalink Url"), create_link("Soundcloud", permalink));
+	if(getString("permalink", object, permalink)){
+		album.addCustomField(permalink, tr("Permalink Url"), createLink("Soundcloud", permalink));
 	}
 
-	if(get_string("purchase_url", object, purchase_url)){
-		album.add_custom_field(purchase_url, tr("Purchase Url"), create_link(purchase_url, purchase_url));
+	if(getString("purchase_url", object, purchase_url)){
+		album.addCustomField(purchase_url, tr("Purchase Url"), createLink(purchase_url, purchase_url));
 	}
 
 	album_name = album.name();
@@ -372,43 +372,43 @@ bool SC::JsonParser::parse_playlist(ArtistList& artists, Album& album, MetaDataL
 	for(int i=0; i<v_md.count(); i++)
 	{
 		MetaData& md = v_md[i];
-		md.set_track_number(TrackNum(i+1));
-		md.set_album(album.name());
-		md.set_album_id(album.id());
+		md.setTrackNumber(TrackNum(i+1));
+		md.setAlbum(album.name());
+		md.setAlbumId(album.id());
 
-		if(md.artist_id() != pl_artist.id() && pl_artist.id() > 0 && md.artist_id() > 0)
+		if(md.artistId() != pl_artist.id() && pl_artist.id() > 0 && md.artistId() > 0)
 		{
-			md.set_album( md.album() + " (by " + pl_artist.name() + ")");
+			md.setAlbum( md.album() + " (by " + pl_artist.name() + ")");
 			album_name = album.name() + " (by " + pl_artist.name() + ")";
 		}
 
-		if(!album.cover_download_urls().isEmpty()){
-			v_md[i].set_cover_download_urls(album.cover_download_urls());
+		if(!album.coverDownloadUrls().isEmpty()){
+			v_md[i].setCoverDownloadUrls(album.coverDownloadUrls());
 		}
 	}
 
-	album.set_name(album_name);
+	album.setName(album_name);
 
 	QStringList lst;
 	for(const Artist& artist : artists){
 		lst << artist.name();
 	}
 
-	album.set_artists(lst);
+	album.setArtists(lst);
 
 	return (album.id() > 0);
 }
 
 
-QString SC::JsonParser::create_link(const QString& name, const QString& target)
+QString SC::JsonParser::createLink(const QString& name, const QString& target)
 {
 	Settings* s = Settings::instance();
 	bool dark = (s->get<Set::Player_Style>() == 0);
-	return Util::create_link(name, dark, true, target);
+	return Util::createLink(name, dark, true, target);
 }
 
 
-bool SC::JsonParser::get_string(const QString& key, const QJsonObject& object, QString& str)
+bool SC::JsonParser::getString(const QString& key, const QJsonObject& object, QString& str)
 {
 	auto it = object.find(key);
 	if(it != object.end()){
@@ -425,7 +425,7 @@ bool SC::JsonParser::get_string(const QString& key, const QJsonObject& object, Q
 	return false;
 }
 
-bool SC::JsonParser::get_int(const QString& key, const QJsonObject& object, int& i)
+bool SC::JsonParser::getInt(const QString& key, const QJsonObject& object, int& i)
 {
 	auto it = object.find(key);
 	if(it != object.end()){
@@ -440,7 +440,7 @@ bool SC::JsonParser::get_int(const QString& key, const QJsonObject& object, int&
 }
 
 
-bool SC::JsonParser::get_array(const QString& key, const QJsonObject& object, QJsonArray& arr)
+bool SC::JsonParser::getArray(const QString& key, const QJsonObject& object, QJsonArray& arr)
 {
 	auto it = object.find(key);
 	if(it != object.end()){
@@ -454,7 +454,7 @@ bool SC::JsonParser::get_array(const QString& key, const QJsonObject& object, QJ
 	return false;
 }
 
-bool SC::JsonParser::get_object(const QString& key, const QJsonObject& object, QJsonObject& o)
+bool SC::JsonParser::getObject(const QString& key, const QJsonObject& object, QJsonObject& o)
 {
 	auto it = object.find(key);
 	if(it != object.end()){

@@ -22,7 +22,7 @@
     </widget>
    </item>
    <item row="0" column="0">
-    <widget class="QLabel" name="lab_activate">
+    <widget class="QLabel" name="labActive">
      <property name="text">
       <string notr="true">Active</string>
      </property>
@@ -36,14 +36,14 @@
     </widget>
    </item>
    <item row="0" column="1">
-    <widget class="QCheckBox" name="cb_active">
+    <widget class="QCheckBox" name="cbActive">
      <property name="text">
       <string/>
      </property>
     </widget>
    </item>
    <item row="2" column="1">
-    <widget class="QSpinBox" name="sb_port">
+    <widget class="QSpinBox" name="sbPort">
      <property name="maximum">
       <number>65535</number>
      </property>
@@ -53,14 +53,14 @@
     </widget>
    </item>
    <item row="1" column="1">
-    <widget class="QCheckBox" name="cb_prompt">
+    <widget class="QCheckBox" name="cbPrompt">
      <property name="text">
       <string/>
      </property>
     </widget>
    </item>
    <item row="4" column="1">
-    <widget class="QLineEdit" name="le_url">
+    <widget class="QLineEdit" name="leUrl">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
        <horstretch>0</horstretch>
@@ -83,7 +83,7 @@
     </widget>
    </item>
    <item row="4" column="0">
-    <widget class="QLabel" name="lab_url_title">
+    <widget class="QLabel" name="labUrlTitle">
      <property name="text">
       <string notr="true">Stream URL:</string>
      </property>
@@ -92,10 +92,10 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>cb_active</tabstop>
-  <tabstop>cb_prompt</tabstop>
-  <tabstop>sb_port</tabstop>
-  <tabstop>le_url</tabstop>
+  <tabstop>cbActive</tabstop>
+  <tabstop>cbPrompt</tabstop>
+  <tabstop>sbPort</tabstop>
+  <tabstop>leUrl</tabstop>
  </tabstops>
  <resources/>
  <connections/>

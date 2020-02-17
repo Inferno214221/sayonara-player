@@ -1,6 +1,6 @@
 /* MetaData.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -64,48 +64,48 @@ struct MetaData::Private
 	Util::Set<GenreID> genres;
 	uint64_t		createdate;
 	uint64_t		modifydate;
-	MilliSeconds	duration_ms;
+	MilliSeconds	durationMs;
 	Filesize		filesize;
 	TrackID			id;
-	LibraryId		library_id;
-	ArtistId		artist_id;
-	AlbumId			album_id;
-	ArtistId		album_artist_id;
-	HashValue		album_artist_idx;
-	HashValue		album_idx;
-	HashValue		artist_idx;
+	LibraryId		libraryId;
+	ArtistId		artistId;
+	AlbumId			albumId;
+	ArtistId		albumArtistId;
+	HashValue		albumArtistIdx;
+	HashValue		albumIdx;
+	HashValue		artistIdx;
 	Bitrate			bitrate;
 	TrackNum		tracknum;
 	Year			year;
 	Disc			discnumber;
-	Disc			disc_count;
+	Disc			discCount;
 	Rating			rating;
-	RadioMode       radio_mode;
-	bool			is_extern;
-	bool			is_disabled;
+	RadioMode       radioMode;
+	bool			isExtern;
+	bool			isDisabled;
 
 	Private() :
 		createdate(0),
 		modifydate(0),
-		duration_ms(0),
+		durationMs(0),
 		filesize(0),
 		id(-1),
-		library_id(-1),
-		artist_id(-1),
-		album_id(-1),
-		album_artist_id(-1),
-		album_artist_idx(0),
-		album_idx(0),
-		artist_idx(0),
+		libraryId(-1),
+		artistId(-1),
+		albumId(-1),
+		albumArtistId(-1),
+		albumArtistIdx(0),
+		albumIdx(0),
+		artistIdx(0),
 		bitrate(0),
 		tracknum(0),
 		year(0),
 		discnumber(0),
-		disc_count(1),
+		discCount(1),
 		rating(Rating::Zero),
-		radio_mode(RadioMode::Off),
-		is_extern(false),
-		is_disabled(false)
+		radioMode(RadioMode::Off),
+		isExtern(false),
+		isDisabled(false)
 	{}
 
 	Private(const Private& other) = default;
@@ -125,27 +125,27 @@ struct MetaData::Private
 			CMP(genres) &&
 			CMP(createdate) &&
 			CMP(modifydate) &&
-			CMP(duration_ms) &&
+			CMP(durationMs) &&
 			CMP(filesize) &&
 			CMP(id) &&
-			CMP(library_id) &&
-			CMP(artist_id) &&
-			CMP(album_id) &&
-			CMP(album_artist_id) &&
-			CMP(album_artist_idx) &&
-			CMP(album_idx) &&
-			CMP(artist_idx) &&
+			CMP(libraryId) &&
+			CMP(artistId) &&
+			CMP(albumId) &&
+			CMP(albumArtistId) &&
+			CMP(albumArtistIdx) &&
+			CMP(albumIdx) &&
+			CMP(artistIdx) &&
 			CMP(comment) &&
 			CMP(filepath) &&
 			CMP(bitrate) &&
 			CMP(tracknum) &&
 			CMP(year) &&
 			CMP(discnumber) &&
-			CMP(disc_count) &&
+			CMP(discCount) &&
 			CMP(rating) &&
-			CMP(radio_mode) &&
-			CMP(is_extern) &&
-			CMP(is_disabled)
+			CMP(radioMode) &&
+			CMP(isExtern) &&
+			CMP(isDisabled)
 		);
 	}
 };
@@ -155,19 +155,19 @@ Disc MetaData::discnumber() const
     return m->discnumber;
 }
 
-void MetaData::set_discnumber(const Disc& d)
+void MetaData::setDiscnumber(const Disc& d)
 {
     m->discnumber = d;
 }
 
-Disc MetaData::disc_count() const
+Disc MetaData::discCount() const
 {
-    return m->disc_count;
+    return m->discCount;
 }
 
-void MetaData::set_disc_count(const Disc& d)
+void MetaData::setDiscCount(const Disc& d)
 {
-    m->disc_count = d;
+    m->discCount = d;
 }
 
 Bitrate MetaData::bitrate() const
@@ -175,17 +175,17 @@ Bitrate MetaData::bitrate() const
 	return m->bitrate;
 }
 
-void MetaData::set_bitrate(const Bitrate& value)
+void MetaData::setBitrate(const Bitrate& value)
 {
 	m->bitrate = value;
 }
 
-TrackNum MetaData::track_number() const
+TrackNum MetaData::trackNumber() const
 {
 	return m->tracknum;
 }
 
-void MetaData::set_track_number(const TrackNum& value)
+void MetaData::setTrackNumber(const TrackNum& value)
 {
 	m->tracknum = value;
 }
@@ -195,7 +195,7 @@ Year MetaData::year() const
 	return m->year;
 }
 
-void MetaData::set_year(const Year& value)
+void MetaData::setYear(const Year& value)
 {
 	m->year = value;
 }
@@ -205,7 +205,7 @@ Filesize MetaData::filesize() const
 	return m->filesize;
 }
 
-void MetaData::set_filesize(const Filesize& value)
+void MetaData::setFilesize(const Filesize& value)
 {
 	m->filesize = value;
 }
@@ -215,49 +215,49 @@ Rating MetaData::rating() const
 	return m->rating;
 }
 
-void MetaData::set_rating(const Rating& value)
+void MetaData::setRating(const Rating& value)
 {
 	m->rating = value;
 }
 
-MilliSeconds MetaData::duration_ms() const
+MilliSeconds MetaData::durationMs() const
 {
-	return m->duration_ms;
+	return m->durationMs;
 }
 
-void MetaData::set_duration_ms(const MilliSeconds& value)
+void MetaData::setDurationMs(const MilliSeconds& value)
 {
-	m->duration_ms = value;
+	m->durationMs = value;
 }
 
-bool MetaData::is_extern() const
+bool MetaData::isExtern() const
 {
-	return m->is_extern;
+	return m->isExtern;
 }
 
-void MetaData::set_extern(bool value)
+void MetaData::setExtern(bool value)
 {
-	m->is_extern = value;
+	m->isExtern = value;
 }
 
-bool MetaData::is_disabled() const
+bool MetaData::isDisabled() const
 {
-	return m->is_disabled;
+	return m->isDisabled;
 }
 
-void MetaData::set_disabled(bool value)
+void MetaData::setDisabled(bool value)
 {
-	m->is_disabled = value;
+	m->isDisabled = value;
 }
 
-LibraryId MetaData::library_id() const
+LibraryId MetaData::libraryId() const
 {
-	return m->library_id;
+	return m->libraryId;
 }
 
-void MetaData::set_library_id(const LibraryId& value)
+void MetaData::setLibraryid(const LibraryId& value)
 {
-	m->library_id = value;
+	m->libraryId = value;
 }
 
 TrackID MetaData::id() const
@@ -265,7 +265,7 @@ TrackID MetaData::id() const
 	return m->id;
 }
 
-void MetaData::set_id(const TrackID& value)
+void MetaData::setId(const TrackID& value)
 {
 	m->id = value;
 }
@@ -306,7 +306,7 @@ MetaData::MetaData(const QString& path) :
 #ifdef COUNT_MD
 	mdc.increase();
 #endif
-	this->set_filepath(path);
+	this->setFilepath(path);
 }
 
 MetaData::~MetaData()
@@ -339,15 +339,15 @@ MetaData& MetaData::operator=(MetaData&& other) noexcept
 
 bool MetaData::operator==(const MetaData& md) const
 {
-	return this->is_equal(md);
+	return this->isEqual(md);
 }
 
 bool MetaData::operator!=(const MetaData& md) const
 {
-	return !(this->is_equal(md));
+	return !(this->isEqual(md));
 }
 
-bool MetaData::is_equal(const MetaData& md) const
+bool MetaData::isEqual(const MetaData& md) const
 {
 	QDir first_path(m->filepath);
 	QDir other_path(md.filepath());
@@ -363,7 +363,7 @@ bool MetaData::is_equal(const MetaData& md) const
 
 }
 
-bool MetaData::is_equal_deep(const MetaData& other) const
+bool MetaData::isEqualDeep(const MetaData& other) const
 {
 	return m->is_equal(*(other.m));
 }
@@ -373,62 +373,62 @@ QString MetaData::title() const
 	return m->title;
 }
 
-void MetaData::set_title(const QString &title)
+void MetaData::setTitle(const QString& title)
 {
 	m->title = title.trimmed();
 }
 
 QString MetaData::artist() const
 {
-	return artist_pool().value(m->artist_idx);
+	return artistPool().value(m->artistIdx);
 }
 
-void MetaData::set_artist(const QString& artist)
+void MetaData::setArtist(const QString& artist)
 {
 	HashValue hashed = qHash(artist);
-	if(!artist_pool().contains(hashed))
+	if(!artistPool().contains(hashed))
 	{
-		artist_pool().insert(hashed, artist);
+		artistPool().insert(hashed, artist);
 	}
 
-	m->artist_idx = hashed;
+	m->artistIdx = hashed;
 }
 
-ArtistId MetaData::artist_id() const
+ArtistId MetaData::artistId() const
 {
-	return m->artist_id;
+	return m->artistId;
 }
 
-void MetaData::set_artist_id(ArtistId id)
+void MetaData::setArtistId(ArtistId id)
 {
-	m->artist_id = id;
+	m->artistId = id;
 }
 
 QString MetaData::album() const
 {
-	return album_pool().value(m->album_idx);
+	return albumPool().value(m->albumIdx);
 }
 
-void MetaData::set_album(const QString& album)
+void MetaData::setAlbum(const QString& album)
 {
 	HashValue hashed = qHash(album);
 
-	if(!album_pool().contains(hashed))
+	if(!albumPool().contains(hashed))
 	{
-		album_pool().insert(hashed, album);
+		albumPool().insert(hashed, album);
 	}
 
-	m->album_idx = hashed;
+	m->albumIdx = hashed;
 }
 
-AlbumId MetaData::album_id() const
+AlbumId MetaData::albumId() const
 {
-	return m->album_id;
+	return m->albumId;
 }
 
-void MetaData::set_album_id(AlbumId id)
+void MetaData::setAlbumId(AlbumId id)
 {
-	m->album_id = id;
+	m->albumId = id;
 }
 
 const QString& MetaData::comment() const
@@ -436,28 +436,28 @@ const QString& MetaData::comment() const
 	return m->comment;
 }
 
-void MetaData::set_comment(const QString& comment)
+void MetaData::setComment(const QString& comment)
 {
 	m->comment = comment;
 }
 
-ArtistId MetaData::album_artist_id() const
+ArtistId MetaData::albumArtistId() const
 {
-	if(m->album_artist_id < 0 || m->album_artist_idx == 0){
-		return m->artist_id;
+	if(m->albumArtistId < 0 || m->albumArtistIdx == 0){
+		return m->artistId;
 	}
 
-	QString str = artist_pool().value(m->album_artist_idx);
+	QString str = artistPool().value(m->albumArtistIdx);
 	if(str.isEmpty()){
-		return m->artist_id;
+		return m->artistId;
 	}
 
-	return m->album_artist_id;
+	return m->albumArtistId;
 }
 
-QString MetaData::album_artist() const
+QString MetaData::albumArtist() const
 {
-	QString str = artist_pool().value(m->album_artist_idx);
+	QString str = artistPool().value(m->albumArtistIdx);
 	if(str.isEmpty()){
 		return artist();
 	}
@@ -465,24 +465,24 @@ QString MetaData::album_artist() const
 	return str;
 }
 
-void MetaData::set_album_artist(const QString& album_artist, ArtistId id)
+void MetaData::setAlbumArtist(const QString& album_artist, ArtistId id)
 {
 	HashValue hashed = qHash(album_artist);
-	if(!artist_pool().contains(hashed))
+	if(!artistPool().contains(hashed))
 	{
-		artist_pool().insert(hashed, album_artist);
+		artistPool().insert(hashed, album_artist);
 	}
 
-	m->album_artist_idx = hashed;
-	m->album_artist_id = id;
+	m->albumArtistIdx = hashed;
+	m->albumArtistId = id;
 }
 
-void MetaData::set_album_artist_id(ArtistId id)
+void MetaData::setAlbumArtistId(ArtistId id)
 {
-	m->album_artist_id = id;
+	m->albumArtistId = id;
 }
 
-void MetaData::set_radio_station(const QString& name)
+void MetaData::setRadioStation(const QString& name)
 {
 	QString radio_station;
 	if(name.contains("://"))
@@ -494,34 +494,34 @@ void MetaData::set_radio_station(const QString& name)
 			radio_station += QString(":%1").arg(url.port());
 		}
 
-		set_artist(radio_station);
-		set_title(url.host());
+		setArtist(radio_station);
+		setTitle(url.host());
 	}
 
 	else
 	{
-		set_artist(name);
-		set_title(name);
+		setArtist(name);
+		setTitle(name);
 	}
 
-	m->album_id = -1;
+	m->albumId = -1;
 }
 
-QString MetaData::radio_station() const
+QString MetaData::radioStation() const
 {
 	return artist();
 }
 
-bool MetaData::has_album_artist() const
+bool MetaData::hasAlbumArtist() const
 {
-	return (m->album_artist_idx > 0);
+	return (m->albumArtistIdx > 0);
 }
 
-QString MetaData::to_string() const
+QString MetaData::toString() const
 {
 	QStringList lst;
 	lst << m->title;
-	lst << "by " << this->artist() << " (" << album_artist() << ")";
+	lst << "by " << this->artist() << " (" << albumArtist() << ")";
 	lst << "on " << this->album();
 	lst << "Rating: " << QString::number( int(rating()) );
 	lst << "Disc: " << QString::number(discnumber());
@@ -549,14 +549,14 @@ bool MetaData::fromVariant(const QVariant& v, MetaData& md)
 	return true;
 }
 
-QHash<GenreID, Genre>& MetaData::genre_pool() const
+QHash<GenreID, Genre>& MetaData::genrePool() const
 {
 	static QHash<GenreID, Genre> pool;
 	return pool;
 }
 
 
-const Util::Set<GenreID>& MetaData::genre_ids() const
+const Util::Set<GenreID>& MetaData::genreIds() const
 {
 	return m->genres;
 }
@@ -566,28 +566,28 @@ Util::Set<Genre> MetaData::genres() const
 	Util::Set<Genre> genres;
 
 	for(GenreID genre_id : m->genres){
-		genres.insert( genre_pool().value(genre_id) );
+		genres.insert( genrePool().value(genre_id) );
 	}
 
 	return genres;
 }
 
-void MetaData::set_genres(const Util::Set<Genre>& genres)
+void MetaData::setGenres(const Util::Set<Genre>& genres)
 {
 	m->genres.clear();
 	for(const Genre& genre : genres)
 	{
 		GenreID id = genre.id();
-		if(!genre_pool().contains(id))
+		if(!genrePool().contains(id))
 		{
-			genre_pool().insert(id, genre);
+			genrePool().insert(id, genre);
 		}
 
 		m->genres << id;
 	}
 }
 
-bool MetaData::has_genre(const Genre& genre) const
+bool MetaData::hasGenre(const Genre& genre) const
 {
 	for(const GenreID& id : m->genres)
 	{
@@ -599,18 +599,18 @@ bool MetaData::has_genre(const Genre& genre) const
 	return false;
 }
 
-bool MetaData::remove_genre(const Genre& genre)
+bool MetaData::removeGenre(const Genre& genre)
 {
 	m->genres.remove(genre.id());
 	return true;
 }
 
-bool MetaData::add_genre(const Genre& genre)
+bool MetaData::addGenre(const Genre& genre)
 {
 	GenreID id = genre.id();
-	if(!genre_pool().contains(id))
+	if(!genrePool().contains(id))
 	{
-		genre_pool().insert(id, genre);
+		genrePool().insert(id, genre);
 	}
 
 	m->genres << id;
@@ -618,27 +618,27 @@ bool MetaData::add_genre(const Genre& genre)
 	return true;
 }
 
-void MetaData::set_genres(const QStringList& new_genres)
+void MetaData::setGenres(const QStringList& new_genres)
 {
 	m->genres.clear();
 	for(const QString& g : new_genres)
 	{
 		Genre genre(g);
-		add_genre(genre);
+		addGenre(genre);
 	}
 }
 
-QString MetaData::genres_to_string() const
+QString MetaData::genresToString() const
 {
-	return genres_to_list().join(",");
+	return genresToList().join(",");
 }
 
-QStringList MetaData::genres_to_list() const
+QStringList MetaData::genresToList() const
 {
 	QStringList new_genres;
 	for(const GenreID& id : m->genres)
 	{
-		new_genres << genre_pool().value(id).name();
+		new_genres << genrePool().value(id).name();
 	}
 
 	return new_genres;
@@ -649,7 +649,7 @@ QString MetaData::filepath() const
 	return m->filepath;
 }
 
-QString MetaData::set_filepath(QString filepath, RadioMode mode)
+QString MetaData::setFilepath(QString filepath, RadioMode mode)
 {
 	bool is_local_path = false;
 
@@ -694,52 +694,52 @@ QString MetaData::set_filepath(QString filepath, RadioMode mode)
 		}
 	}
 
-	m->radio_mode = mode;
+	m->radioMode = mode;
 
 	return m->filepath;
 }
 
-RadioMode MetaData::radio_mode() const
+RadioMode MetaData::radioMode() const
 {
-	return m->radio_mode;
+	return m->radioMode;
 }
 
-void MetaData::change_radio_mode(RadioMode mode)
+void MetaData::changeRadioMode(RadioMode mode)
 {
-	m->radio_mode = mode;
+	m->radioMode = mode;
 }
 
-bool MetaData::is_valid() const
+bool MetaData::isValid() const
 {
 	return (!filepath().isEmpty());
 }
 
-void MetaData::set_createdate(uint64_t t)
+void MetaData::setCreatedDate(uint64_t t)
 {
 	m->createdate = t;
 }
 
-uint64_t MetaData::createdate() const
+uint64_t MetaData::createdDate() const
 {
 	return m->createdate;
 }
 
-QDateTime MetaData::createdate_datetime() const
+QDateTime MetaData::createdDateTime() const
 {
-	return Util::int_to_date(m->createdate);
+	return Util::intToDate(m->createdate);
 }
 
-void MetaData::set_modifydate(uint64_t t)
+void MetaData::setModifiedDate(uint64_t t)
 {
 	m->modifydate = t;
 }
 
-uint64_t MetaData::modifydate() const
+uint64_t MetaData::modifiedDate() const
 {
 	return m->modifydate;
 }
 
-QDateTime MetaData::modifydate_datetime() const
+QDateTime MetaData::modifiedDateTime() const
 {
-	return Util::int_to_date(m->modifydate);
+	return Util::intToDate(m->modifydate);
 }

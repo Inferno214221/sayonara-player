@@ -20,19 +20,19 @@ Cover::Fetcher::Website::Website() :
 
 Website::~Website() = default;
 
-QString Website::priv_identifier() const
+QString Website::privateIdentifier() const
 {
 	return "website";
 }
 
-bool Website::can_fetch_cover_directly() const
+bool Website::canFetchCoverDirectly() const
 {
 	return false;
 }
 
-QStringList Website::parse_addresses(const QByteArray& website) const
+QStringList Website::parseAddresses(const QByteArray& website) const
 {
-	if(!Util::File::is_www(m->website))
+	if(!Util::File::isWWW(m->website))
 	{
 		return QStringList();
 	}
@@ -58,18 +58,18 @@ QStringList Website::parse_addresses(const QByteArray& website) const
 	return images;
 }
 
-int Website::estimated_size() const
+int Website::estimatedSize() const
 {
 	return 1;
 }
 
-QString Website::search_address(const QString& address) const
+QString Website::fulltextSearchAddress(const QString& address) const
 {
 	Q_UNUSED(address)
 	return m->website;
 }
 
-void Website::set_website(const QString& website)
+void Website::setWebsite(const QString& website)
 {
 	m->website = website;
 

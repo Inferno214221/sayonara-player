@@ -1,6 +1,6 @@
 /* GUI_AbstractStream.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -37,28 +37,50 @@
 
 #include <QComboBox>
 #include <QPushButton>
-#include <QLineEdit>
-#include <QLabel>
-#include <QAbstractItemView>
-#include <QVBoxLayout>
-
-namespace Algorithm=Util::Algorithm;
 
 struct Gui::AbstractStationPlugin::Private
 {
-	QList<StationPtr>		stations;
-	QList<StationPtr>		temporary_stations;
-	ProgressBar*			loading_bar=nullptr;
-	QComboBox*				combo_stream=nullptr;
-	QPushButton*			btn_play=nullptr;
-	MenuToolButton*			btn_tool=nullptr;
-	AbstractStationHandler*	stream_handler=nullptr;
+	QStringList				temporaryStations;
+	ProgressBar*			loadingBar=nullptr;
+	QComboBox*				comboStream=nullptr;
+	QPushButton*			btnPlay=nullptr;
+	MenuToolButton*			btnTool=nullptr;
+	AbstractStationHandler*	streamHandler=nullptr;
+	GUI_ConfigureStation*	configDialog=nullptr;
 
 	bool					searching;
 
 	Private() :
 		searching(false)
 	{}
+
+	~Private()
+	{
+		if(configDialog) {
+			configDialog->deleteLater();
+		}
+	}
+
+	QString currentName() const
+	{
+		return comboStream->currentText();
+	}
+
+	QString currentUrl() const
+	{
+		return comboStream->currentData().toString();
+	}
+
+	void setSearching(bool b)
+	{
+		const QString text =
+			(b == true) ? Lang::get(Lang::Stop)	: Lang::get(Lang::Listen);
+
+		btnPlay->setText(text);
+		btnPlay->setDisabled(false);
+		loadingBar->setVisible(b);
+		searching = b;
+	}
 };
 
 Gui::AbstractStationPlugin::AbstractStationPlugin(QWidget* parent) :
@@ -69,375 +91,318 @@ Gui::AbstractStationPlugin::AbstractStationPlugin(QWidget* parent) :
 
 Gui::AbstractStationPlugin::~AbstractStationPlugin() = default;
 
-void Gui::AbstractStationPlugin::init_connections()
+void Gui::AbstractStationPlugin::initConnections()
 {
-	m->btn_play->setFocusPolicy(Qt::StrongFocus);
+	m->btnPlay->setFocusPolicy(Qt::StrongFocus);
 
-	m->btn_tool->show_actions(ContextMenuEntries(ContextMenu::EntryNew));
-	m->btn_tool->register_preference_action(new StreamPreferenceAction(m->btn_tool));
-	m->btn_tool->register_preference_action(new StreamRecorderPreferenceAction(m->btn_tool));
+	m->btnTool->showActions(ContextMenuEntries(ContextMenu::EntryNew));
+	m->btnTool->registerPreferenceAction(new StreamPreferenceAction(m->btnTool));
+	m->btnTool->registerPreferenceAction(new StreamRecorderPreferenceAction(m->btnTool));
 
-	setTabOrder(m->combo_stream, m->btn_play);
+	setTabOrder(m->comboStream, m->btnPlay);
 
-	connect(m->btn_play, &QPushButton::clicked, this, &AbstractStationPlugin::listen_clicked);
-	connect(m->btn_tool, &MenuToolButton::sig_edit, this, &AbstractStationPlugin::edit_clicked);
-	connect(m->btn_tool, &MenuToolButton::sig_delete, this, &AbstractStationPlugin::delete_clicked);
-	connect(m->btn_tool, &MenuToolButton::sig_new, this, &AbstractStationPlugin::new_clicked);
-	connect(m->btn_tool, &MenuToolButton::sig_save, this, &AbstractStationPlugin::save_clicked);
+	connect(m->btnPlay, &QPushButton::clicked, this, &AbstractStationPlugin::listenClicked);
+	connect(m->btnTool, &MenuToolButton::sigEdit, this, &AbstractStationPlugin::editClicked);
+	connect(m->btnTool, &MenuToolButton::sigDelete, this, &AbstractStationPlugin::deleteClicked);
+	connect(m->btnTool, &MenuToolButton::sigNew, this, &AbstractStationPlugin::newClicked);
+	connect(m->btnTool, &MenuToolButton::sigSave, this, &AbstractStationPlugin::saveClicked);
 
-	connect(m->combo_stream, combo_activated_int, this, &AbstractStationPlugin::current_index_changed);
-	connect(m->stream_handler, &AbstractStationHandler::sig_error, this, &AbstractStationPlugin::error);
-	connect(m->stream_handler, &AbstractStationHandler::sig_data_available, this, &AbstractStationPlugin::data_available);
-	connect(m->stream_handler, &AbstractStationHandler::sig_stopped, this, &AbstractStationPlugin::stopped);
+	connect(m->comboStream, combo_activated_int, this, &AbstractStationPlugin::currentIndexChanged);
+	connect(m->streamHandler, &AbstractStationHandler::sigError, this, &AbstractStationPlugin::error);
+	connect(m->streamHandler, &AbstractStationHandler::sigDataAvailable, this, &AbstractStationPlugin::dataAvailable);
+	connect(m->streamHandler, &AbstractStationHandler::sigStopped, this, &AbstractStationPlugin::stopped);
 }
 
-
-void Gui::AbstractStationPlugin::init_ui()
+void Gui::AbstractStationPlugin::initUi()
 {
-	m->stream_handler = stream_handler();
-	connect(m->stream_handler, &AbstractStationHandler::sig_too_many_urls_found,
-			this, &AbstractStationPlugin::too_many_urls_found);
+	m->configDialog = createConfigDialog();
+	m->configDialog->init_ui();
 
-	m->loading_bar = new ProgressBar(this);
+	connect(m->configDialog, &Gui::Dialog::finished, this, &AbstractStationPlugin::configFinished);
 
-	init_connections();
-	setup_stations();
-	skin_changed();
+	m->streamHandler = streamHandler();
+	connect(m->streamHandler, &AbstractStationHandler::sigUrlCountExceeded,
+			this, &AbstractStationPlugin::urlCountExceeded);
 
-	set_searching(false);
+	m->loadingBar = new ProgressBar(this);
 
-	ListenSetting(Set::Player_Style, AbstractStationPlugin::_sl_skin_changed);
+	initConnections();
+	setupStations();
+	skinChanged();
+
+	m->setSearching(false);
 }
 
-
-void Gui::AbstractStationPlugin::setup_stations()
+void Gui::AbstractStationPlugin::setupStations()
 {
-	QString current_name = m->combo_stream->currentText();
+	const QString last_name = m->currentName();
+	const QString last_url = m->currentUrl();
+
 	QList<StationPtr> stations;
 
-	m->btn_play->setEnabled(false);
-	m->combo_stream->clear();
-	m->stream_handler->get_all_streams(stations);
+	m->btnPlay->setEnabled(false);
+	m->comboStream->clear();
+	m->streamHandler->getAllStreams(stations);
 
 	for(StationPtr station : stations)
 	{
-		m->combo_stream->addItem(station->name(), station->url());
+		m->comboStream->addItem(station->name(), station->url());
 	}
 
-	int idx = Util::Algorithm::indexOf(stations, [&current_name](StationPtr station) {
-		return(current_name == station->name() || current_name == station->url());
+	int idx = Util::Algorithm::indexOf(stations, [last_name, last_url](StationPtr station)
+	{
+		return(last_name == station->name() || last_url == station->url());
 	});
 
-	if(m->combo_stream->count() > 0)
+
+	if(m->comboStream->count() > 0)
 	{
 		idx = std::max(0, idx);
 	}
 
 	if(idx >= 0)
 	{
-		m->combo_stream->setCurrentIndex(idx);
-		current_index_changed(m->combo_stream->currentIndex());
+		m->comboStream->setCurrentIndex(idx);
+		currentIndexChanged(m->comboStream->currentIndex());
 	}
 }
 
-
-void Gui::AbstractStationPlugin::current_index_changed(int idx)
+void Gui::AbstractStationPlugin::currentIndexChanged(int idx)
 {
-	QString current_text = m->combo_stream->currentText();
-	bool is_temporary = Util::Algorithm::contains(m->temporary_stations, [&current_text](StationPtr station){
-		return (station->name() == current_text);
-	});
+	const QString current_text = m->currentName();
+	const QString url = m->currentUrl();
 
-	QString url = current_url();
+	bool isTemporary = m->temporaryStations.contains(current_text);
 
-	m->btn_tool->show_action(ContextMenu::EntrySave, is_temporary);
-	m->btn_tool->show_action(ContextMenu::EntryEdit, (idx >= 0) && !is_temporary);
-	m->btn_tool->show_action(ContextMenu::EntryDelete, (idx >= 0));
+	m->btnTool->showAction(ContextMenu::EntrySave, isTemporary);
+	m->btnTool->showAction(ContextMenu::EntryEdit, (idx >= 0) && !isTemporary);
+	m->btnTool->showAction(ContextMenu::EntryDelete, (idx >= 0));
 
-	m->combo_stream->setToolTip(url);
+	m->comboStream->setToolTip(url);
 
 	bool listen_disabled = (url.size() < 8 && !m->searching);
-	m->btn_play->setDisabled(listen_disabled);
+	m->btnPlay->setDisabled(listen_disabled);
 }
 
-
-void Gui::AbstractStationPlugin::data_available()
+void Gui::AbstractStationPlugin::dataAvailable()
 {
-	set_searching(false);
+	m->setSearching(false);
 }
 
-void Gui::AbstractStationPlugin::listen_clicked()
+void Gui::AbstractStationPlugin::listenClicked()
 {
 	if(m->searching)
 	{
-		m->btn_play->setDisabled(true);
-		m->stream_handler->stop();
+		m->btnPlay->setDisabled(true);
+		m->streamHandler->stop();
+
 		return;
 	}
 
-	QString station_name = get_title_fallback_name();
-	if(m->combo_stream->currentIndex() >= 0)
-	{
-		station_name = current_name();
-	}
-
-	QString url = current_url();
+	const QString url = m->currentUrl();
 	if(url.size() > 5)
 	{
-		set_searching(true);
-		play(url, station_name);
+		QString current = m->currentName();
+		QString station_name = current.isEmpty() ? titleFallbackName() : current;
+
+		m->setSearching(true);
+		play(station_name);
 	}
 
 	else {
-		sp_log(Log::Warning, this) << "Url is empty";
+		spLog(Log::Warning, this) << "Url is empty";
 	}
 }
 
-
-void Gui::AbstractStationPlugin::play(QString url, QString station_name)
+void Gui::AbstractStationPlugin::play(const QString& station_name)
 {
-	bool success = m->stream_handler->parse_station(url, station_name);
+	StationPtr station = m->streamHandler->station(station_name);
+	if(!station) {
+		return;
+	}
+
+	bool success = m->streamHandler->parseStation(station);
 	if(!success)
 	{
-		sp_log(Log::Warning, this) << "Stream Handler busy";
-		set_searching(false);
+		spLog(Log::Warning, this) << "Stream Handler busy";
+		m->setSearching(false);
 	}
 }
-
 
 void Gui::AbstractStationPlugin::stopped()
 {
-	set_searching(false);
+	m->setSearching(false);
 }
-
-
-void Gui::AbstractStationPlugin::set_searching(bool searching)
-{
-	QString text = (searching == true) ? Lang::get(Lang::Stop) : Lang::get(Lang::Listen);
-
-	m->btn_play->setText(text);
-	m->btn_play->setDisabled(false);
-	m->loading_bar->setVisible(searching);
-	m->searching = searching;
-}
-
 
 void Gui::AbstractStationPlugin::error()
 {
-	set_searching(false);
+	m->setSearching(false);
 
-	sp_log(Log::Warning, this) << "Stream Handler error";
 	Message::Answer answer = Message::question_yn
 	(
 		tr("Cannot open stream") + "\n" +
-		current_url() + "\n\n" +
+		m->currentUrl() + "\n\n" +
 		Lang::get(Lang::Retry).question()
 	);
 
-	if(answer == Message::Answer::Yes){
-		listen_clicked();
+	if(answer == Message::Answer::Yes) {
+		listenClicked();
 	}
 
 	else
 	{
-		QString current_name = combo_stream()->currentText();
-		auto it = Util::Algorithm::find(m->temporary_stations, [&current_name](StationPtr station){
-			return (station->name() == current_name);
-		});
-
-		if(it != m->temporary_stations.end())
+		bool b = m->temporaryStations.removeOne(m->currentName());
+		if(b)
 		{
-			m->temporary_stations.erase(it);
-			m->combo_stream->removeItem(m->combo_stream->currentIndex());
+			m->comboStream->removeItem(m->comboStream->currentIndex());
 		}
 	}
 }
 
-QString Gui::AbstractStationPlugin::current_name() const
+void Gui::AbstractStationPlugin::addStream(const QString& name, const QString& url)
 {
-	return m->combo_stream->currentText();
+	m->temporaryStations << name;
+	m->comboStream->addItem(name, url);
+	m->comboStream->setCurrentText(name);
+
+	currentIndexChanged(m->comboStream->currentIndex());
 }
 
-QString Gui::AbstractStationPlugin::current_url() const
+void Gui::AbstractStationPlugin::newClicked()
 {
-	return m->combo_stream->currentData().toString();
+	m->configDialog->setMode(titleFallbackName(), GUI_ConfigureStation::Mode::New);
+	m->configDialog->configureWidgets(nullptr);
+	m->configDialog->open();
 }
 
-void Gui::AbstractStationPlugin::add_stream(const QString& name, const QString& url)
+void Gui::AbstractStationPlugin::saveClicked()
 {
-	m->temporary_stations << m->stream_handler->create_stream(name, url);
-	m->combo_stream->addItem(name, url);
-	m->combo_stream->setCurrentText(name);
-	current_index_changed(m->combo_stream->currentIndex());
+	StationPtr station = m->streamHandler->createStreamInstance(m->currentName(), m->currentUrl());
+
+	m->configDialog->setMode(m->currentName(), GUI_ConfigureStation::Mode::Edit);
+	m->configDialog->configureWidgets(station);
+	m->configDialog->open();
 }
 
-void Gui::AbstractStationPlugin::new_clicked()
+void Gui::AbstractStationPlugin::editClicked()
 {
-	GUI_ConfigureStation* cs = create_config_dialog();
-	connect(cs, &Gui::Dialog::finished, this, &AbstractStationPlugin::new_finished);
-
-	cs->set_mode(get_title_fallback_name(), GUI_ConfigureStation::Mode::New);
-	cs->init_ui(nullptr);
-
-	cs->open();
+	StationPtr station = m->streamHandler->station(m->currentName());
+	if(station)
+	{
+		m->configDialog->setMode(station->name(), GUI_ConfigureStation::Mode::Edit);
+		m->configDialog->configureWidgets(station);
+		m->configDialog->open();
+	}
 }
 
-void Gui::AbstractStationPlugin::save_clicked()
-{
-	GUI_ConfigureStation* cs = create_config_dialog();
-	connect(cs, &Gui::Dialog::finished, this, &AbstractStationPlugin::new_finished);
-
-	StationPtr station = m->stream_handler->create_stream(current_name(), current_url());
-
-	cs->set_mode(current_name(), GUI_ConfigureStation::Mode::Edit);
-	cs->init_ui(station);
-	cs->open();
-}
-
-void Gui::AbstractStationPlugin::new_finished()
+void Gui::AbstractStationPlugin::configFinished()
 {
 	auto* cs = static_cast<GUI_ConfigureStation*>(sender());
-
-	bool b = cs->was_accepted();
-	if(!b){
-		cs->deleteLater();
+	if(!cs->isAccepted()) {
 		return;
 	}
 
-	StationPtr station = cs->configured_station();
+	StationPtr station = cs->configuredStation();
 
-	int index = m->combo_stream->findText(station->name());
-	if(index >= 0)
+	GUI_ConfigureStation::Mode mode = cs->mode();
+	if(mode == GUI_ConfigureStation::Mode::New)
 	{
-		sp_log(Log::Warning, this) << "Stream already there";
-		cs->set_error_message(tr("Please choose another name"));
-		cs->open();
+		int index = m->comboStream->findText(station->name());
+		if(index >= 0)
+		{
+			cs->setError(tr("Please choose another name"));
+			cs->open();
+			return;
+		}
 
-		return;
-	}
-
-	bool success = m->stream_handler->add_stream(station);
-	if(success)
-	{
-		int index = Util::Algorithm::indexOf(m->temporary_stations, [station](StationPtr s){
-			return (s->name() == station->name());
-		});
-
-		if(index >= 0) {
-			m->temporary_stations.removeAt(index);
+		bool success = m->streamHandler->addNewStream(station);
+		if(success)
+		{
+			m->temporaryStations.removeAll(station->name());
 		}
 	}
 
-	cs->deleteLater();
-
-	setup_stations();
-}
-
-void Gui::AbstractStationPlugin::edit_clicked()
-{
-	StationPtr station = m->stream_handler->station(current_name());
-	if(!station)
+	else if(mode == GUI_ConfigureStation::Mode::Edit)
 	{
-		return;
+		bool success;
+		if(m->temporaryStations.contains(m->currentName()))
+		{
+			success = m->streamHandler->addNewStream(station);
+			if(success) {
+				m->temporaryStations.removeAll(m->currentName());
+			}
+		}
+
+		else
+		{
+			success = m->streamHandler->update(m->currentName(), station);
+		}
+
+		spLog(Log::Info, this) << "Updated " << m->currentName() << ": " << success;
 	}
 
-	GUI_ConfigureStation* cs = create_config_dialog();
-	connect(cs, &Gui::Dialog::finished, this, &AbstractStationPlugin::edit_finished);
-
-	cs->set_mode(station->name(), GUI_ConfigureStation::Mode::Edit);
-	cs->init_ui(station);
-
-	cs->open();
+	setupStations();
 }
 
-void Gui::AbstractStationPlugin::edit_finished()
+void Gui::AbstractStationPlugin::deleteClicked()
 {
-	auto* cs = static_cast<GUI_ConfigureStation*>(sender());
-
-	int b = cs->was_accepted();
-	if(!b){
-		cs->deleteLater();
-		return;
-	}
-
-	StationPtr station = cs->configured_station();
-
-	if(current_url() != station->url()) {
-		m->stream_handler->update_url(current_name(), station->url());
-	}
-
-	if(current_name() != station->name()) {
-		m->stream_handler->rename(current_name(), station->name());
-	}
-
-	cs->deleteLater();
-	setup_stations();
-}
-
-void Gui::AbstractStationPlugin::delete_clicked()
-{
-	Message::Answer ret = Message::question_yn(tr("Do you really want to delete %1").arg(current_name()) + "?");
-
+	Message::Answer ret = Message::question_yn(tr("Do you really want to delete %1").arg(m->currentName()) + "?");
 	if(ret == Message::Answer::Yes)
 	{
-		bool success = m->stream_handler->delete_stream(current_name());
-		if(success){
-			sp_log(Log::Info, this) << current_name() << "successfully deleted";
-		}
+		bool success = m->streamHandler->deleteStream(m->currentName());
 
-		else {
-			sp_log(Log::Warning, this) << "Cannot delete " << current_name();
-		}
+		spLog(Log::Info, this) << "Delete " << m->currentName() << success;
 	}
 
-	setup_stations();
+	setupStations();
 }
 
-void Gui::AbstractStationPlugin::too_many_urls_found(int n_urls, int n_max_urls)
+void Gui::AbstractStationPlugin::urlCountExceeded(int n_urls, int n_max_urls)
 {
 	Message::error(QString("Found %1 urls").arg(n_urls) + "<br />" +
 				   QString("Maximum number is %1").arg(n_max_urls)
 	);
 
-	set_searching(false);
+	m->setSearching(false);
 }
 
-bool Gui::AbstractStationPlugin::has_loading_bar() const
+bool Gui::AbstractStationPlugin::hasLoadingBar() const
 {
 	return true;
 }
 
-void Gui::AbstractStationPlugin::assign_ui_vars()
+void Gui::AbstractStationPlugin::assignUiVariables()
 {
-	m->combo_stream=combo_stream();
-	m->btn_play=btn_play();
-	m->btn_tool = btn_menu();
+	m->comboStream = comboStream();
+	m->btnPlay = btnPlay();
+	m->btnTool = btnMenu();
 }
 
-void Gui::AbstractStationPlugin::retranslate_ui()
+void Gui::AbstractStationPlugin::retranslate()
 {
-	QString text = (m->searching) ? Lang::get(Lang::Stop) : Lang::get(Lang::Listen);
+	const QString text = (m->searching) ?
+		Lang::get(Lang::Stop) : Lang::get(Lang::Listen);
 
-	m->btn_play->setText(text);
+	m->btnPlay->setText(text);
 }
 
-void Gui::AbstractStationPlugin::_sl_skin_changed()
+void Gui::AbstractStationPlugin::skinChanged()
 {
-	if(!is_ui_initialized()){
+	if(!isUiInitialized()){
 		return;
 	}
 
-	set_searching(m->searching);
-	btn_play()->setIcon(Gui::Icons::icon(Gui::Icons::Play));
+	m->setSearching(m->searching);
+	btnPlay()->setIcon(Gui::Icons::icon(Gui::Icons::Play));
 }
 
 
 Gui::StreamPreferenceAction::StreamPreferenceAction(QWidget* parent) :
 	PreferenceAction(QString(Lang::get(Lang::Streams) + " && " +Lang::get(Lang::Podcasts)), identifier(), parent) {}
 
-Gui::StreamPreferenceAction::~StreamPreferenceAction() {}
+Gui::StreamPreferenceAction::~StreamPreferenceAction() = default;
 
 QString Gui::StreamPreferenceAction::identifier() const { return "streams"; }
 
-QString Gui::StreamPreferenceAction::display_name() const { return Lang::get(Lang::Streams) + " && " + Lang::get(Lang::Podcasts); }
+QString Gui::StreamPreferenceAction::displayName() const { return Lang::get(Lang::Streams) + " && " + Lang::get(Lang::Podcasts); }
 

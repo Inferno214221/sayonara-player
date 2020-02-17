@@ -1,6 +1,6 @@
 /* GUI_Podcasts.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -32,25 +32,23 @@ class GUI_Podcasts :
 	UI_CLASS(GUI_Podcasts)
 
 	public:
-		explicit GUI_Podcasts(QWidget *parent=nullptr);
+		explicit GUI_Podcasts(QWidget* parent=nullptr);
 		virtual ~GUI_Podcasts() override;
 
-		QString get_name() const override;
-		QString get_display_name() const override;
+		QString name() const override;
+		QString displayName() const override;
 
 	private:
-		void init_ui() override;
-		void retranslate_ui() override;
-		QString get_title_fallback_name() const override;
+		void initUi() override;
+		void retranslate() override;
+		QString titleFallbackName() const override;
 
-	// AbstractStationPlugin interface
-	protected:
-		QComboBox* combo_stream() override;
-		QPushButton* btn_play() override;
-		Gui::MenuToolButton* btn_menu() override;
+		QComboBox* comboStream() override;
+		QPushButton* btnPlay() override;
+		Gui::MenuToolButton* btnMenu() override;
 
-		AbstractStationHandler* stream_handler() const override;
-		GUI_ConfigureStation* create_config_dialog() override;
+		AbstractStationHandler* streamHandler() const override;
+		GUI_ConfigureStation* createConfigDialog() override;
 };
 
 #endif // GUI_PODCASTS_H

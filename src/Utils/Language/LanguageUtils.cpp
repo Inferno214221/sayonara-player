@@ -1,6 +1,6 @@
 /* LanguageUtils.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -38,7 +38,7 @@ class LanguageVersionHelper
 
 	LanguageVersionHelper()
 	{
-		QString filepath = Util::sayonara_path("translations/versions");
+		QString filepath = Util::sayonaraPath("translations/versions");
 		if(s_test_mode){
 			filepath = "/tmp/versions";
 		}
@@ -58,23 +58,23 @@ public:
 		return &hlp;
 	}
 
-	void set_language_version(const QString& four_letter, const QString& version)
+	void set_language_version(const QString& fourLetter, const QString& version)
 	{
 		// never allow to downgrade a downloaded version
-		if(is_outdated(four_letter))
+		if(is_outdated(fourLetter))
 		{
-			m_settings->setValue(four_letter, version);
+			m_settings->setValue(fourLetter, version);
 		}
 	}
 
-	QString get_language_version(const QString& four_letter)
+	QString get_language_version(const QString& fourLetter)
 	{
-		return m_settings->value(four_letter).toString();
+		return m_settings->value(fourLetter).toString();
 	}
 
-	bool is_outdated(const QString& four_letter)
+	bool is_outdated(const QString& fourLetter)
 	{
-		QString lv = get_language_version(four_letter);
+		QString lv = get_language_version(fourLetter);
 		QString pv = GetSetting(::Set::Player_Version);
 
 		if(lv.isEmpty()){
@@ -87,80 +87,80 @@ public:
 
 namespace Language=Util::Language;
 
-static bool check_four_letter(const QString& four_letter)
+static bool check_fourLetter(const QString& fourLetter)
 {
 	QRegExp re("^[a-z]{2}_[A-Z]{2}(\\.[A-Z0-9\\-]+[0-9])?$");
-	int idx = re.indexIn(four_letter);
+	int idx = re.indexIn(fourLetter);
 
 	return (idx == 0);
 }
 
-QString Language::get_share_path(const QString& four_letter)
+QString Language::getSharePath(const QString& fourLetter)
 {
-	if(!check_four_letter(four_letter)){
+	if(!check_fourLetter(fourLetter)){
 		return QString();
 	}
-	return Util::share_path("translations") + "/" + QString("sayonara_lang_%1.qm").arg(four_letter);
+	return Util::sharePath("translations") + "/" + QString("sayonara_lang_%1.qm").arg(fourLetter);
 }
 
-QString Language::get_ftp_path(const QString& four_letter)
+QString Language::getFtpPath(const QString& fourLetter)
 {
-	if(!check_four_letter(four_letter)){
+	if(!check_fourLetter(fourLetter)){
 		return QString();
 	}
-	return QString("ftp://sayonara-player.com/translation/sayonara_lang_%1.qm").arg(four_letter);
+	return QString("ftp://sayonara-player.com/translation/sayonara_lang_%1.qm").arg(fourLetter);
 }
 
-QString Language::get_http_path(const QString& four_letter)
+QString Language::getHttpPath(const QString& fourLetter)
 {
-	if(!check_four_letter(four_letter)){
+	if(!check_fourLetter(fourLetter)){
 		return QString();
 	}
 
-	return QString("https://sayonara-player.com/sw/translation/sayonara_lang_%1.qm").arg(four_letter);
+	return QString("https://sayonara-player.com/sw/translation/sayonara_lang_%1.qm").arg(fourLetter);
 }
 
-QString Language::get_checksum_ftp_path()
+QString Language::getChecksumFtpPath()
 {
 	return "ftp://sayonara-player.com/translation/checksum";
 }
 
-QString Language::get_checksum_http_path()
+QString Language::getChecksumHttpPath()
 {
 	return "https://sayonara-player.com/sw/translation/checksum";
 }
 
 
-QString Language::get_home_target_path(const QString& four_letter)
+QString Language::getHomeTargetPath(const QString& fourLetter)
 {
-	if(!check_four_letter(four_letter)){
+	if(!check_fourLetter(fourLetter)){
 		return QString();
 	}
 
-	QString translation_dir = Util::sayonara_path("translations");
+	QString translation_dir = Util::sayonaraPath("translations");
 	if(!Util::File::exists(translation_dir)){
-		Util::File::create_dir(Util::sayonara_path("translations"));
+		Util::File::createDir(Util::sayonaraPath("translations"));
 	}
 
-	return translation_dir + "/" + QString("sayonara_lang_%1.qm").arg(four_letter);
+	return translation_dir + "/" + QString("sayonara_lang_%1.qm").arg(fourLetter);
 }
 
-bool Language::is_outdated(const QString& four_letter)
+bool Language::isOutdated(const QString& fourLetter)
 {
-	return LanguageVersionHelper::instance()->is_outdated(four_letter);
+	return LanguageVersionHelper::instance()->is_outdated(fourLetter);
 }
 
-QString Language::get_similar_language_4(const QString& four_letter)
+QString Language::getSimilarLanguage4(const QString& fourLetter)
 {
-	if(!check_four_letter(four_letter)){
+	if(!check_fourLetter(fourLetter)){
 		return QString();
 	}
 
-	QString two_letter = four_letter.left(2);
+	QString two_letter = fourLetter.left(2);
 	QStringList translations_paths
 	{
-		Util::sayonara_path("translations"),
-		Util::share_path("translations")
+		Util::sayonaraPath("translations"),
+		Util::sharePath("translations")
 	};
 
 	for(const QString& translation_path : translations_paths)
@@ -191,34 +191,34 @@ QString Language::get_similar_language_4(const QString& four_letter)
 }
 
 
-QString Language::get_used_language_file(const QString& four_letter)
+QString Language::getUsedLanguageFile(const QString& fourLetter)
 {
-	if(!check_four_letter(four_letter)){
+	if(!check_fourLetter(fourLetter)){
 		return QString();
 	}
 
 	{ // check if home path or share path version is better or exists
-		if(is_outdated(four_letter)) // not available or older than in share path
+		if(isOutdated(fourLetter)) // not available or older than in share path
 		{
-			const QString language_in_share_path = get_share_path(four_letter);
+			const QString language_in_share_path = getSharePath(fourLetter);
 			if(Util::File::exists(language_in_share_path))
 			{
 				return language_in_share_path;
 			}
 		}
 
-		if(Util::File::exists(get_home_target_path(four_letter)))
+		if(Util::File::exists(getHomeTargetPath(fourLetter)))
 		{
-			return get_home_target_path(four_letter);
+			return getHomeTargetPath(fourLetter);
 		}
 	}
 
 	{ // try to find from other region
-		return get_similar_language_4(four_letter);
+		return getSimilarLanguage4(fourLetter);
 	}
 }
 
-QString Language::extract_four_letter(const QString& language_file)
+QString Language::extractFourLetter(const QString& language_file)
 {
 	QRegExp re(".*sayonara_lang_"
 		"([a-z]{2}_[A-Z]{2}(\\.[A-Z0-9\\-]+[0-9])?)\\.(ts|qm)$"
@@ -229,61 +229,61 @@ QString Language::extract_four_letter(const QString& language_file)
 		return QString();
 	}
 
-	QString four_letter = re.cap(1);
-	if(!check_four_letter(four_letter)){
+	QString fourLetter = re.cap(1);
+	if(!check_fourLetter(fourLetter)){
 		return QString();
 	}
 
-	return four_letter;
+	return fourLetter;
 }
 
-QString Language::get_icon_path(const QString& four_letter)
+QString Language::getIconPath(const QString& fourLetter)
 {
-	return Util::share_path(QString("translations/icons/%1.png").arg(four_letter));
+	return Util::sharePath(QString("translations/icons/%1.png").arg(fourLetter));
 }
 
-QString Language::get_checksum(const QString& four_letter)
+QString Language::getChecksum(const QString& fourLetter)
 {
-	if(!check_four_letter(four_letter)){
+	if(!check_fourLetter(fourLetter)){
 		return QString();
 	}
 
-	QString path = get_used_language_file(four_letter);
-	return QString::fromUtf8(Util::File::calc_md5_sum(path));
+	QString path = getUsedLanguageFile(fourLetter);
+	return QString::fromUtf8(Util::File::getMD5Sum(path));
 }
 
 
-QString Language::get_language_version(const QString& four_letter)
+QString Language::getLanguageVersion(const QString& fourLetter)
 {
-	if(!Util::File::exists(get_home_target_path(four_letter)))
+	if(!Util::File::exists(getHomeTargetPath(fourLetter)))
 	{
-		LanguageVersionHelper::instance()->set_language_version(four_letter, QString());
+		LanguageVersionHelper::instance()->set_language_version(fourLetter, QString());
 		return QString();
 	}
 
-	return LanguageVersionHelper::instance()->get_language_version(four_letter);
+	return LanguageVersionHelper::instance()->get_language_version(fourLetter);
 }
 
-void Language::update_language_version(const QString& four_letter)
+void Language::updateLanguageVersion(const QString& fourLetter)
 {
 	QString version = GetSetting(::Set::Player_Version);
-	if(!Util::File::exists(get_home_target_path(four_letter)))
+	if(!Util::File::exists(getHomeTargetPath(fourLetter)))
 	{
 		version = QString();
 	}
 
-	LanguageVersionHelper::instance()->set_language_version(four_letter, version);
+	LanguageVersionHelper::instance()->set_language_version(fourLetter, version);
 }
 
 #ifdef SAYONARA_WITH_TESTS
-	void Language::set_test_mode()
+	void Language::setTestMode()
 	{
 		s_test_mode = true;
 	}
 
-	void Language::set_language_version(const QString& four_letter, const QString& version)
+	void Language::setLanguageVersion(const QString& fourLetter, const QString& version)
 	{
-		LanguageVersionHelper::instance()->set_language_version(four_letter, version);
+		LanguageVersionHelper::instance()->set_language_version(fourLetter, version);
 	}
 #endif
 

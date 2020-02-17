@@ -1,6 +1,6 @@
 /* MiniSearcher.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -177,7 +177,7 @@ void MiniSearcher::next_result()
 	m->line_edit->setFocus();
 }
 
-void MiniSearcher::language_changed()
+void MiniSearcher::languageChanged()
 {
 	m->reset_tooltip();
 	set_extra_triggers(m->triggers);
@@ -291,8 +291,8 @@ void MiniSearcher::keyPressEvent(QKeyEvent* event)
 
 QRect MiniSearcher::calc_geo() const
 {
-	int par_width = m->svi->viewport_width();
-	int par_height = m->svi->viewport_height();
+	int par_width = m->svi->viewportWidth();
+	int par_height = m->svi->viewportHeight();
 
 	int target_width = m->max_width;
 	int target_height = std::max(35, 10 + m->line_edit->height());
@@ -301,7 +301,7 @@ QRect MiniSearcher::calc_geo() const
 	int new_y = par_height - (target_height + 5);
 
 	QRect r(new_x, new_y, target_width, target_height);
-	sp_log(Log::Develop, this) << "Show Minisearcher at " << r;
+	spLog(Log::Develop, this) << "Show Minisearcher at " << r;
 
 	return r;
 }
@@ -315,7 +315,7 @@ void MiniSearcher::showEvent(QShowEvent* e)
 void MiniSearcher::hideEvent(QHideEvent* e)
 {
 	WidgetTemplate<QFrame>::hideEvent(e);
-	sp_log(Log::Develop, this) << "Hide Minisearcher";
+	spLog(Log::Develop, this) << "Hide Minisearcher";
 }
 
 

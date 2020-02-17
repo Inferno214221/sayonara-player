@@ -1,6 +1,6 @@
 /* ArtistMatch.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -29,7 +29,7 @@ using namespace LastFM;
 
 struct ArtistMatch::Private
 {
-	QMap<ArtistDesc, double> very_good;
+	QMap<ArtistDesc, double> veryGood;
 	QMap<ArtistDesc, double> well;
 	QMap<ArtistDesc, double> poor;
 
@@ -37,12 +37,12 @@ struct ArtistMatch::Private
 
 	Private() {}
 
-	Private(const QString& artist_name) :
-		artist(artist_name)
+	Private(const QString& artistName) :
+		artist(artistName)
 	{}
 
 	Private(const Private& other) :
-		CASSIGN(very_good),
+		CASSIGN(veryGood),
 		CASSIGN(well),
 		CASSIGN(poor),
 		CASSIGN(artist)
@@ -50,7 +50,7 @@ struct ArtistMatch::Private
 
 	Private& operator=(const Private& other)
 	{
-		ASSIGN(very_good);
+		ASSIGN(veryGood);
 		ASSIGN(well);
 		ASSIGN(poor);
 		ASSIGN(artist);
@@ -64,9 +64,9 @@ ArtistMatch::ArtistMatch()
 	m = Pimpl::make<Private>();
 }
 
-ArtistMatch::ArtistMatch(const QString& artist_name)
+ArtistMatch::ArtistMatch(const QString& artistName)
 {
-	m = Pimpl::make<Private>(artist_name);
+	m = Pimpl::make<Private>(artistName);
 }
 
 
@@ -75,11 +75,11 @@ ArtistMatch::ArtistMatch(const ArtistMatch& other)
 	m = Pimpl::make<Private>(*(other.m));
 }
 
-ArtistMatch::~ArtistMatch() {}
+ArtistMatch::~ArtistMatch() = default;
 
-bool ArtistMatch::is_valid() const
+bool ArtistMatch::isValid() const
 {
-	return ( m->very_good.size() > 0 ||
+	return ( m->veryGood.size() > 0 ||
 			 m->well.size() > 0  ||
 			 m->poor.size() > 0 );
 }
@@ -99,7 +99,7 @@ ArtistMatch &ArtistMatch::operator =(const ArtistMatch &other)
 void ArtistMatch::add(const ArtistDesc& artist, double match)
 {
 	if(match > 0.15) {
-		m->very_good[artist] = match;
+		m->veryGood[artist] = match;
 	}
 
 	else if(match > 0.05) {
@@ -119,22 +119,22 @@ QMap<ArtistMatch::ArtistDesc, double> ArtistMatch::get(Quality q) const
 		case Quality::Well:
 			return m->well;
 		case Quality::Very_Good:
-			return m->very_good;
+			return m->veryGood;
 	}
 
-	return m->very_good;
+	return m->veryGood;
 }
 
-QString ArtistMatch::get_artist_name() const
+QString ArtistMatch::artistName() const
 {
 	return m->artist;
 }
 
-QString ArtistMatch::to_string() const
+QString ArtistMatch::toString() const
 {
 	QStringList lst;
 
-	for(auto it=m->very_good.cbegin(); it != m->very_good.cend(); it++)
+	for(auto it=m->veryGood.cbegin(); it != m->veryGood.cend(); it++)
 	{
 		lst << QString::number(it.value()).left(5) + "\t" + it.key().to_string();
 	}
@@ -154,29 +154,29 @@ QString ArtistMatch::to_string() const
 }
 
 
-ArtistMatch::ArtistDesc::ArtistDesc(const QString& artist_name, const QString& mbid)
+ArtistMatch::ArtistDesc::ArtistDesc(const QString& artistName, const QString& mbid)
 {
-	this->artist_name = artist_name;
+	this->artistName = artistName;
 	this->mbid = mbid;
 }
 
 bool ArtistMatch::ArtistDesc::operator ==(const ArtistMatch::ArtistDesc& other) const
 {
-	return (artist_name == other.artist_name);
+	return (artistName == other.artistName);
 }
 
 bool ArtistMatch::ArtistDesc::operator <(const ArtistMatch::ArtistDesc& other) const
 {
-	return (artist_name < other.artist_name);
+	return (artistName < other.artistName);
 }
 
 bool ArtistMatch::ArtistDesc::operator <=(const ArtistMatch::ArtistDesc& other) const
 {
-	return (artist_name <= other.artist_name);
+	return (artistName <= other.artistName);
 }
 
 
 QString ArtistMatch::ArtistDesc::to_string() const
 {
-	return mbid + "\t" + artist_name;
+	return mbid + "\t" + artistName;
 }

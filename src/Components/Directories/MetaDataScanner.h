@@ -15,20 +15,20 @@ namespace Directory
 		PIMPL(MetaDataScanner)
 
 		signals:
-			void sig_finished();
-			void sig_current_path(const QString& path);
+			void sigFinished();
+			void sigCurrentProcessedPathChanged(const QString& path);
 
 		public:
-			explicit MetaDataScanner(const QStringList& files, bool recursive, QObject *parent=nullptr);
+			explicit MetaDataScanner(const QStringList& files, bool recursive, QObject* parent=nullptr);
 			~MetaDataScanner() override;
 
 			MetaDataList metadata() const;
 			QStringList files() const;
 
-			void set_scan_audio_files(bool b);
-			void set_scan_playlist_files(bool b);
+			void setScanAudioFilesEnabled(bool b);
+			void setScanPlaylistFilesEnabled(bool b);
 
-			void set_data(void* data_object);
+			void setData(void* data);
 			void* data() const;
 
 		public slots:

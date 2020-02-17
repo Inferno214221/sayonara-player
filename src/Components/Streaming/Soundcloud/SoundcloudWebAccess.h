@@ -1,6 +1,6 @@
 /* SoundcloudHelper.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -26,10 +26,10 @@ namespace SC
 {
 	namespace WebAccess
 	{
-		QString	create_dl_get_artist(const QString& name);
-		QString	create_dl_get_artist(int artist_id);
-		QString	create_dl_get_playlists(int artist_id);
-		QString	create_dl_get_tracks(int artist_id);
+		QString	createLinkGetArtist(const QString& name);
+		QString	createLinkGetArtist(int artistId);
+		QString	createLinkGetPlaylists(int artistId);
+		QString	createLinkGetTracks(int artistId);
 	}
 }
 

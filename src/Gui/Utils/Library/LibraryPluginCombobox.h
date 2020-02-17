@@ -1,6 +1,6 @@
 /* LibraryPluginCombobox.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -38,18 +38,17 @@ namespace Library
 			explicit PluginCombobox(const QString& text, QWidget* parent=nullptr);
 			~PluginCombobox() override;
 
-		protected:
-			void skin_changed() override;
-			void language_changed() override;
-
 		public slots:
-			void setup_actions();
+			void setupActions();
 
 		private slots:
-			void action_triggered(bool b);
-			void current_library_changed();
-			void current_index_changed(int index);
+			void actionTriggered(bool b);
+			void currentLibraryChanged();
+			void currentIndexChanged(int index);
 
+		protected:
+			void skinChanged() override;
+			void languageChanged() override;
 	};
 }
 

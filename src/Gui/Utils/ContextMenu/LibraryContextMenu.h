@@ -1,6 +1,6 @@
 /* LibraryContextMenu.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -46,101 +46,103 @@ namespace Library
 		Q_OBJECT
 		PIMPL(ContextMenu)
 
-	public:
-		/**
-		 * @brief This enum indicates which entries should be visible
-		 */
-		enum Entry
-		{
-			EntryNone=0,
-			EntryInfo=(1<<0),
-			EntryEdit=(1<<1),
-			EntryLyrics=(1<<2),
-			EntryRemove=(1<<3),
-			EntryDelete=(1<<4),
-			EntryPlayNext=(1<<5),
-			EntryAppend=(1<<6),
-			EntryRefresh=(1<<7),
-			EntryClear=(1<<8),
-			EntryCoverView=(1<<9),
-			EntryPlay=(1<<10),
-			EntryPlayNewTab=(1<<11),
-			EntryFilterExtension=(1<<12),
-			EntryReload=(1<<13),
-			EntryLast=(1<<14)
-		};
-
-		using Entries=uint64_t;
-
-	public:
-		explicit ContextMenu(QWidget *parent=nullptr);
-		virtual ~ContextMenu() override;
-
-		/**
-		 * @brief get all visible entries
-		 * @return all visible entries
-		 */
-		virtual ContextMenu::Entries get_entries() const;
-
-		/**
-		 * @brief show a specific amount of Entries
-		 * @param entries bitwise combination of Entry
-		 */
-		virtual void show_actions(ContextMenu::Entries entries);
-
-		/**
-		 * @brief show/hide a specific Entry
-		 * @param The entry of interest
-		 * @param visible
-		 */
-		virtual void show_action(ContextMenu::Entry entry, bool visible);
-
-		/**
-		 * @brief show all possible entries
-		 */
-		virtual void show_all();
-
-		QAction* get_action(ContextMenu::Entry entry) const;
-		QAction* get_action_after(ContextMenu::Entry entry) const;
-
-		QAction* add_preference_action(Gui::PreferenceAction* action);
-		QAction* before_preference_action() const;
-
-		void set_action_shortcut(ContextMenu::Entry entry, const QString& shortcut);
-
-		void set_extensions(const Gui::ExtensionSet& extensions);
-		void set_selection_count(int num_selections);
-
-		QKeySequence shortcut(ContextMenu::Entry entry) const;
+		signals:
+			void sigInfoClicked();
+			void sigEditClicked();
+			void sigLyricsClicked();
+			void sigRemoveClicked();
+			void sigDeleteClicked();
+			void sigPlayClicked();
+			void sigPlayNewTabClicked();
+			void sigPlayNextClicked();
+			void sigAppendClicked();
+			void sigRefreshClicked();
+			void sigClearClicked();
+			void sigFilterTriggered(const QString& extension, bool b);
+			void sigReloadClicked();
 
 
-	signals:
-		void sig_info_clicked();
-		void sig_edit_clicked();
-		void sig_lyrics_clicked();
-		void sig_remove_clicked();
-		void sig_delete_clicked();
-		void sig_play_clicked();
-		void sig_play_new_tab_clicked();
-		void sig_play_next_clicked();
-		void sig_append_clicked();
-		void sig_refresh_clicked();
-		void sig_clear_clicked();
-		void sig_filter_triggered(const QString& extension, bool b);
-		void sig_reload_clicked();
+		public:
+			/**
+			 * @brief This enum indicates which entries should be visible
+			 */
+			enum Entry
+			{
+				EntryNone=0,
+				EntryInfo=(1<<0),
+				EntryEdit=(1<<1),
+				EntryLyrics=(1<<2),
+				EntryRemove=(1<<3),
+				EntryDelete=(1<<4),
+				EntryPlayNext=(1<<5),
+				EntryAppend=(1<<6),
+				EntryRefresh=(1<<7),
+				EntryClear=(1<<8),
+				EntryCoverView=(1<<9),
+				EntryPlay=(1<<10),
+				EntryPlayNewTab=(1<<11),
+				EntryFilterExtension=(1<<12),
+				EntryReload=(1<<13),
+				EntryLast=(1<<14)
+			};
 
-	private slots:
-		void show_cover_view_changed();
-		void show_filter_ext_bar_changed();
-		void show_cover_triggered(bool b);
-		void shortcut_changed(ShortcutIdentifier identifier);
-		void show_filter_extension_bar_triggered(bool b);
-		void skin_timer_timeout();
+			using Entries=uint64_t;
 
 
-	protected:
-		void skin_changed() override;
-		void language_changed() override;
+		public:
+			explicit ContextMenu(QWidget* parent=nullptr);
+			virtual ~ContextMenu() override;
+
+			/**
+			 * @brief get all visible entries
+			 * @return all visible entries
+			 */
+			virtual ContextMenu::Entries entries() const;
+
+			/**
+			 * @brief show a specific amount of Entries
+			 * @param entries bitwise combination of Entry
+			 */
+			virtual void showActions(ContextMenu::Entries entries);
+
+			/**
+			 * @brief show/hide a specific Entry
+			 * @param The entry of interest
+			 * @param visible
+			 */
+			virtual void showAction(ContextMenu::Entry entry, bool visible);
+
+			/**
+			 * @brief show all possible entries
+			 */
+			virtual void showAll();
+
+			QAction* action(ContextMenu::Entry entry) const;
+			QAction* actionAfter(ContextMenu::Entry entry) const;
+
+			QAction* addPreferenceAction(Gui::PreferenceAction* action);
+			QAction* beforePreferenceAction() const;
+
+			void setActionShortcut(ContextMenu::Entry entry, const QString& shortcut);
+
+			void setExtensions(const Gui::ExtensionSet& extensions);
+			void setSelectionCount(int selectionSount);
+
+			QKeySequence shortcut(ContextMenu::Entry entry) const;
+
+
+		private slots:
+			void showCoverViewChanged();
+			void showFilterExtensionBarChanged();
+			void showFilterExtensionBarTriggered(bool b);
+			void showCoverTriggered(bool b);
+			void shortcutChanged(ShortcutIdentifier identifier);
+			void skinTimerTimeout();
+
+
+		protected:
+			void skinChanged() override;
+			void languageChanged() override;
 	};
 }
 

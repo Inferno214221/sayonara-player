@@ -1,6 +1,6 @@
 /* PlaylistTabWidget.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -38,37 +38,37 @@ namespace Playlist
 		Q_OBJECT
 		PIMPL(TabWidget)
 
-	signals:
-		void sig_open_file(int tab_idx);
-		void sig_open_dir(int tab_idx);
-		void sig_tab_reset(int tab_idx);
-		void sig_tab_save(int tab_idx);
-		void sig_tab_save_as(int tab_idx, const QString& name);
-		void sig_tab_save_to_file(int tab_idx, const QString& filename);
-		void sig_tab_rename(int tab_idx, const QString& name);
-		void sig_tab_delete(int tab_idx);
-		void sig_tab_clear(int tab_idx);
-		void sig_add_tab_clicked();
-		void sig_metadata_dropped(int tab_idx, const MetaDataList& v_md);
-		void sig_files_dropped(int tab_idx, const QStringList& files);
+		signals:
+			void sigOpenFile(int tabIndex);
+			void sigOpenDir(int tabIndex);
+			void sigTabReset(int tabIndex);
+			void sigTabSave(int tabIndex);
+			void sigTabSaveAs(int tabIndex, const QString& name);
+			void sigTabSaveToFile(int tabIndex, const QString& filename);
+			void sigTabRename(int tabIndex, const QString& name);
+			void sigTabDelete(int tabIndex);
+			void sigTabClear(int tabIndex);
+			void sigAddTabClicked();
+			void sigMetadataDropped(int tabIndex, const MetaDataList& tracks);
+			void sigFilesDropped(int tabIndex, const QStringList& files);
 
-	public:
-		explicit TabWidget(QWidget* parent=nullptr);
-		~TabWidget() override;
+		public:
+			explicit TabWidget(QWidget* parent=nullptr);
+			~TabWidget() override;
 
-		void show_menu_items(MenuEntries actions);
+			void showMenuItems(MenuEntries actions);
 
-		void removeTab(int index);
-		void addTab(QWidget* widget, const QIcon& icon, const QString& label);
-		void addTab(QWidget* widget, const QString& label);
-		void insertTab(int index, QWidget* widget, const QString& label);
-		void insertTab(int index, QWidget* widget, const QIcon& icon, const QString& label);
+			void removeTab(int index);
+			void addTab(QWidget* widget, const QIcon& icon, const QString& label);
+			void addTab(QWidget* widget, const QString& label);
+			void insertTab(int index, QWidget* widget, const QString& label);
+			void insertTab(int index, QWidget* widget, const QIcon& icon, const QString& label);
 
-		bool was_drag_from_playlist() const;
-		int get_drag_origin_tab() const;
+			bool wasDragFromPlaylist() const;
+			int getDragOriginTab() const;
 
-	private:
-		void check_last_tab();
+		private:
+			void checkLastTab();
 	};
 }
 

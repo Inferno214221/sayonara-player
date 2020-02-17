@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -31,21 +31,21 @@ using HeaderType=ColumnHeader::HeaderType;
 struct ColumnHeader::Private
 {
 	QAction*		action=nullptr;
-	int 			preferred_size;
-	int				default_size;
+	int 			preferredSize;
+	int				defaultSize;
 
-	SortOrder		sort_asc;
-	SortOrder		sort_desc;
+	SortOrder		sortorderAscending;
+	SortOrder		sortorderDescending;
 	HeaderType		type;
 
 	bool 			switchable;
 	bool			stretchable;
 
-	Private(ColumnHeader* parent, HeaderType type, bool switchable, SortOrder sort_asc, SortOrder sort_desc, int sz) :
-		preferred_size(sz),
-		default_size(sz),
-		sort_asc(sort_asc),
-		sort_desc(sort_desc),
+	Private(ColumnHeader* parent, HeaderType type, bool switchable, SortOrder sortorderAscending, SortOrder sortorderDescending, int sz) :
+		preferredSize(sz),
+		defaultSize(sz),
+		sortorderAscending(sortorderAscending),
+		sortorderDescending(sortorderDescending),
 		type(type),
 		switchable(switchable),
 		stretchable(false)
@@ -58,9 +58,9 @@ struct ColumnHeader::Private
 
 ColumnHeader::~ColumnHeader() = default;
 
-ColumnHeader::ColumnHeader(HeaderType type, bool switchable, SortOrder sort_asc, SortOrder sort_desc, int preferred_size, bool stretchable)
+ColumnHeader::ColumnHeader(HeaderType type, bool switchable, SortOrder sortorderAscending, SortOrder sortorderDescending, int preferredSize, bool stretchable)
 {
-	m = Pimpl::make<Private>(this, type, switchable, sort_asc, sort_desc, preferred_size);
+	m = Pimpl::make<Private>(this, type, switchable, sortorderAscending, sortorderDescending, preferredSize);
 	m->stretchable = stretchable;
 }
 
@@ -69,29 +69,29 @@ bool ColumnHeader::stretchable() const
 	return m->stretchable;
 }
 
-int ColumnHeader::default_size() const
+int ColumnHeader::defaultSize() const
 {
-	return m->default_size;
+	return m->defaultSize;
 }
 
-int ColumnHeader::preferred_size() const
+int ColumnHeader::preferredSize() const
 {
-	return m->preferred_size;
+	return m->preferredSize;
 }
 
-void ColumnHeader::set_preferred_size(int size)
+void ColumnHeader::setPreferredSize(int size)
 {
-	m->preferred_size = size;
+	m->preferredSize = size;
 }
 
-SortOrder ColumnHeader::sortorder_asc() const
+SortOrder ColumnHeader::sortorderAscending() const
 {
-	return	m->sort_asc;
+	return	m->sortorderAscending;
 }
 
-SortOrder ColumnHeader::sortorder_desc() const
+SortOrder ColumnHeader::sortorderDescending() const
 {
-	return m->sort_desc;
+	return m->sortorderDescending;
 }
 
 QAction* ColumnHeader::action()
@@ -100,7 +100,7 @@ QAction* ColumnHeader::action()
 	return m->action;
 }
 
-bool ColumnHeader::is_action_checked() const
+bool ColumnHeader::isActionChecked() const
 {
 	if(!m->switchable){
 		return true;

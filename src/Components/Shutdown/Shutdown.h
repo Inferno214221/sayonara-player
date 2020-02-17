@@ -1,6 +1,6 @@
 /* Shutdown.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -40,20 +40,20 @@ class Shutdown : public QObject
 	PIMPL(Shutdown)
 
 signals:
-	void sig_time_to_go(MilliSeconds ms);
-	void sig_started(MilliSeconds ms);
-	void sig_stopped();
+	void sigTimeToGoChanged(MilliSeconds ms);
+	void sigStarted(MilliSeconds ms);
+	void sigStopped();
 
 private slots:
 	void timeout();
-	void countdown_timeout();
-	void playlist_finished();
+	void countdownTimeout();
+	void playlistFinished();
 
 public:
 	bool is_running() const;
 	void stop();
 	void shutdown(MilliSeconds ms=0);
-	void shutdown_after_end();
+	void shutdownAfterSessionEnd();
 };
 
 #endif // SAYONARA_WITH_SHUTDOWN

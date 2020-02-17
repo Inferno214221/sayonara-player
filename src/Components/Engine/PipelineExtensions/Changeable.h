@@ -1,6 +1,6 @@
 /* ChangeablePipeline.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -38,21 +38,21 @@ namespace PipelineExtensions
 			/**
 			 * @brief Add an element between two elements
 			 * @param element element to add
-			 * @param first_element element, after which new element is inserted
-			 * @param second_element element, before which new element is inserted (may be null)
+			 * @param firstElement element, after which new element is inserted
+			 * @param secondElement element, before which new element is inserted (may be null)
 			 */
-			bool add_element(GstElement* element, GstElement* first_element, GstElement* second_element);
+			bool addElement(GstElement* element, GstElement* firstElement, GstElement* secondElement);
 
 			/**
 			 * @brief remove an element between two elements
 			 * @param element element to remove
-			 * @param first_element element, after which new element is removed
-			 * @param second_element element, before which new element is removed (may be null)
+			 * @param firstElement element, after which new element is removed
+			 * @param secondElement element, before which new element is removed (may be null)
 			 */
-			bool remove_element(GstElement* element, GstElement* first_element, GstElement* second_element);
+			bool removeElement(GstElement* element, GstElement* firstElement, GstElement* secondElement);
 
 
-			bool replace_sink(GstElement* old_sink, GstElement* new_sink, GstElement* element_before, GstElement* pipeline, GstElement* bin);
+			bool replaceSink(GstElement* oldSink, GstElement* newSink, GstElement* element_before, GstElement* pipeline, GstElement* bin);
 	};
 }
 

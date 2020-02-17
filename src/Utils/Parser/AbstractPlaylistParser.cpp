@@ -1,6 +1,6 @@
 /* AbstractPlaylistParser.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -47,8 +47,8 @@ AbstractPlaylistParser::AbstractPlaylistParser(const QString& filename)
 
 	QString pure_file;
 
-	Util::File::split_filename(filename, m->directory, pure_file);
-	Util::File::read_file_into_str(filename, m->file_content);
+	Util::File::splitFilename(filename, m->directory, pure_file);
+	Util::File::readFileIntoString(filename, m->file_content);
 
 }
 
@@ -71,12 +71,12 @@ MetaDataList AbstractPlaylistParser::tracks(bool force_parse)
 	return m->v_md;
 }
 
-void AbstractPlaylistParser::add_track(const MetaData& md)
+void AbstractPlaylistParser::addTrack(const MetaData& md)
 {
 	m->v_md << md;
 }
 
-void AbstractPlaylistParser::add_tracks(const MetaDataList& v_md)
+void AbstractPlaylistParser::addTracks(const MetaDataList& v_md)
 {
 	m->v_md << v_md;
 }
@@ -87,7 +87,7 @@ const QString& AbstractPlaylistParser::content() const
 }
 
 
-QString AbstractPlaylistParser::get_absolute_filename(const QString& filename) const
+QString AbstractPlaylistParser::getAbsoluteFilename(const QString& filename) const
 {
 	QString ret;
 
@@ -95,11 +95,11 @@ QString AbstractPlaylistParser::get_absolute_filename(const QString& filename) c
 		return "";
 	}
 
-	if(Util::File::is_www(filename)){
+	if(Util::File::isWWW(filename)){
 		return filename;
 	}
 
-	if(!Util::File::is_absolute(filename)){
+	if(!Util::File::isAbsolute(filename)){
 		ret = m->directory + "/" + filename;
 	}
 	else{
@@ -110,5 +110,5 @@ QString AbstractPlaylistParser::get_absolute_filename(const QString& filename) c
 		ret = "";
 	}
 
-	return Util::File::clean_filename(ret);
+	return Util::File::cleanFilename(ret);
 }

@@ -1,6 +1,6 @@
 /* LogListener.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -32,7 +32,7 @@ using StrRef=const QString&;
 class LogListener
 {
 	public:
-	virtual void add_log_line(const LogEntry& le)=0;
+	virtual void addLogLine(const LogEntry& le)=0;
 };
 
 

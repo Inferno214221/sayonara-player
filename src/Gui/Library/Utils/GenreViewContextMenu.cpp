@@ -1,6 +1,6 @@
 /* GenreViewContextMenu.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -28,7 +28,7 @@ using Library::GenreViewContextMenu;
 
 struct GenreViewContextMenu::Private
 {
-	QAction* toggle_tree_action=nullptr;
+	QAction* actionToggleTree=nullptr;
 };
 
 GenreViewContextMenu::GenreViewContextMenu(QWidget* parent) :
@@ -37,25 +37,25 @@ GenreViewContextMenu::GenreViewContextMenu(QWidget* parent) :
 	m = Pimpl::make<Private>();
 
 	bool show_tree = GetSetting(Set::Lib_GenreTree);
-	m->toggle_tree_action = new QAction(this);
-	m->toggle_tree_action->setCheckable(true);
-	m->toggle_tree_action->setChecked(show_tree);
-	m->toggle_tree_action->setText(Lang::get(Lang::Tree));
+	m->actionToggleTree = new QAction(this);
+	m->actionToggleTree->setCheckable(true);
+	m->actionToggleTree->setChecked(show_tree);
+	m->actionToggleTree->setText(Lang::get(Lang::Tree));
 
-	this->register_action(m->toggle_tree_action);
+	this->registerAction(m->actionToggleTree);
 
-	connect( m->toggle_tree_action, &QAction::triggered, this, &GenreViewContextMenu::toggle_tree_triggered);
+	connect( m->actionToggleTree, &QAction::triggered, this, &GenreViewContextMenu::toggleTreeTriggered);
 }
 
 GenreViewContextMenu::~GenreViewContextMenu() = default;
 
-void GenreViewContextMenu::toggle_tree_triggered()
+void GenreViewContextMenu::toggleTreeTriggered()
 {
-	SetSetting(Set::Lib_GenreTree, m->toggle_tree_action->isChecked());
+	SetSetting(Set::Lib_GenreTree, m->actionToggleTree->isChecked());
 }
 
-void GenreViewContextMenu::language_changed()
+void GenreViewContextMenu::languageChanged()
 {
-	ContextMenu::language_changed();
-	m->toggle_tree_action->setText(Lang::get(Lang::Tree));
+	ContextMenu::languageChanged();
+	m->actionToggleTree->setText(Lang::get(Lang::Tree));
 }

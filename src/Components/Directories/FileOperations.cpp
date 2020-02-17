@@ -1,6 +1,6 @@
 /* FileOperations.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -19,9 +19,10 @@
  */
 
 #include "FileOperations.h"
+#include "FileOperationWorkerThread.h"
 
-#include "Components/Library/LocalLibrary.h"
 #include "Components/LibraryManagement/LibraryManager.h"
+#include "Components/Library/LocalLibrary.h"
 
 #include "Database/LibraryDatabase.h"
 #include "Database/Connector.h"
@@ -34,258 +35,106 @@
 #include "Utils/Logger/Logger.h"
 #include "Utils/Tagging/Tagging.h"
 
-#include <QDir>
-#include <QFile>
-#include <QString>
 #include <QStringList>
 
 namespace Algorithm=Util::Algorithm;
 
-struct FileOperationThread::Private
-{
-	QList<StringPair> successful_paths;
-
-	QStringList source_paths;
-	QString target;
-
-	FileOperationThread::Mode mode;
-	LibraryId target_library_id;
-
-	Private(LibraryId target_library_id, const QStringList& source_paths_in, const QString& target, FileOperationThread::Mode mode) :
-		target(target),
-		mode(mode),
-		target_library_id(target_library_id)
-	{
-		Algorithm::transform(source_paths_in, this->source_paths, [](const QString& path)
-		{
-			return Util::File::clean_filename(path);
-		});
-	}
-};
-
-FileOperationThread::FileOperationThread(QObject* parent, LibraryId target_library_id, const QStringList& source_dirs, const QString& target, FileOperationThread::Mode mode) :
-	QThread(parent)
-{
-	m = Pimpl::make<Private>(target_library_id, source_dirs, target, mode);
-}
-
-FileOperationThread::~FileOperationThread()
-{
-	auto* db = DB::Connector::instance();
-	db->close_db();
-}
-
-LibraryId FileOperationThread::target_library() const
-{
-	return m->target_library_id;
-}
-
-QList<StringPair> FileOperationThread::successful_paths() const
-{
-	return m->successful_paths;
-}
-
-void FileOperationThread::run()
-{
-	m->successful_paths.clear();
-	if(m->source_paths.isEmpty() || m->target.isEmpty()){
-		return;
-	}
-
-	for(const QString& source_path : Algorithm::AsConst(m->source_paths))
-	{
-		bool b = false;
-		QFileInfo info(source_path);
-		QString new_name;
-		if(info.isDir())
-		{
-			switch(m->mode)
-			{
-				case Mode::Copy:
-					b = Util::File::copy_dir(source_path, m->target, new_name);
-					break;
-				case Mode::Move:
-					b = Util::File::move_dir(source_path, m->target, new_name);
-					break;
-				case Mode::Rename:
-					b = Util::File::rename_dir(source_path, m->target);
-					new_name = m->target;
-					break;
-				default: break;
-			}
-		}
-
-		else if(info.isFile())
-		{
-			switch(m->mode)
-			{
-				case Mode::Copy:
-					b = Util::File::copy_file(source_path, m->target, new_name);
-					break;
-				case Mode::Move:
-					b = Util::File::move_file(source_path, m->target, new_name);
-					break;
-				case Mode::Rename:
-					b = Util::File::rename_file(source_path, m->target);
-					new_name = m->target;
-					break;
-				default: break;
-			}
-		}
-
-		if(b)
-		{
-			m->successful_paths << StringPair(source_path, new_name);
-		}
-	}
-}
-
-
-struct FileDeleteThread::Private
-{
-	QStringList paths;
-
-	Private(const QStringList& paths) :
-		paths(paths)
-	{}
-};
-
-FileDeleteThread::FileDeleteThread(QObject* parent, const QStringList& paths) :
-	QThread(parent)
-{
-	m = Pimpl::make<Private>(paths);
-}
-
-FileDeleteThread::~FileDeleteThread() = default;
-
-QStringList FileDeleteThread::paths() const
-{
-	return m->paths;
-}
-
-void FileDeleteThread::run()
-{
-	Util::File::delete_files(m->paths);
-}
-
-FileOperations::FileOperations(QObject *parent) :
+FileOperations::FileOperations(QObject* parent) :
 	QObject(parent)
 {}
 
 FileOperations::~FileOperations() = default;
 
-bool FileOperations::rename_path(const QString& path, const QString& new_name)
+static void refreshLibraries(const QList<LibraryId>& libraries)
 {
-	Library::Info target_info = Library::Manager::instance()->library_info_by_path(new_name);
-	LibraryId target_id = target_info.id();
-
-	auto* t = new FileOperationThread(this, target_id, {path}, new_name, FileOperationThread::Rename);
-	connect(t, &QThread::started, this, &FileOperations::sig_started);
-	connect(t, &QThread::finished, this, &FileOperations::move_thread_finished);
-
-	t->start();
-
-	return true;
-}
-
-bool FileOperations::move_paths(const QStringList& paths, const QString& target_dir)
-{
-	sp_log(Log::Info, this) << "Move " << paths << " to " << target_dir;
-
-	Library::Info target_info = Library::Manager::instance()->library_info_by_path(target_dir);
-	LibraryId target_id = target_info.id();
-
-	auto* t = new FileOperationThread(this, target_id, paths, target_dir, FileOperationThread::Move);
-	connect(t, &QThread::started, this, &FileOperations::sig_started);
-	connect(t, &QThread::finished, this, &FileOperations::move_thread_finished);
-
-	t->start();
-
-	return true;
-}
-
-void FileOperations::move_thread_finished()
-{
-	auto* thread = static_cast<FileOperationThread*>(sender());
-	const QList<StringPair> moved_paths = thread->successful_paths();
-
-	auto* db = DB::Connector::instance();
-	DB::LibraryDatabase* library_db = db->library_db(-1, db->db_id());
-
-	QMap<QString, QString> path_map;
-	for(const StringPair& path : moved_paths)
+	for(LibraryId id : libraries)
 	{
-		path_map[path.first] = path.second;
-		sp_log(Log::Debug, this) << "Successfully moved " << path.first << " to " << path.second;
+		LocalLibrary* library = Library::Manager::instance()->libraryInstance(id);
+		if(library) {
+			library->refetch();
+		}
 	}
-
-	library_db->renameFilepaths(path_map, thread->target_library());
-
-	thread->deleteLater();
-	emit sig_finished();
 }
 
-bool FileOperations::copy_paths(const QStringList& paths, const QString& target_dir)
+bool FileOperations::renamePath(const QString& path, const QString& newName)
 {
-	sp_log(Log::Info, this) << "Try to copy " << paths << " to " << target_dir;
+	auto* t = new FileRenameThread(path, newName, this);
 
-	Library::Info target_info = Library::Manager::instance()->library_info_by_path(target_dir);
-	LibraryId target_id = target_info.id();
-
-	auto* t = new FileOperationThread(this, target_id, paths, target_dir, FileOperationThread::Copy);
-	connect(t, &QThread::started, this, &FileOperations::sig_started);
-	connect(t, &QThread::finished, this, &FileOperations::copy_thread_finished);
+	connect(t, &QThread::started, this, &FileOperations::sigStarted);
+	connect(t, &QThread::finished, this, &FileOperations::moveThreadFinished);
 
 	t->start();
 
 	return true;
 }
 
-void FileOperations::copy_thread_finished()
+bool FileOperations::movePaths(const QStringList& paths, const QString& targetDir)
+{
+	auto* t = new FileMoveThread(paths, targetDir, this);
+
+	connect(t, &QThread::started, this, &FileOperations::sigStarted);
+	connect(t, &QThread::finished, this, &FileOperations::moveThreadFinished);
+
+	t->start();
+
+	return true;
+}
+
+void FileOperations::moveThreadFinished()
 {
 	auto* thread = static_cast<FileOperationThread*>(sender());
 
-	LibraryId target_id = thread->target_library();
-
-	LocalLibrary* library = Library::Manager::instance()->library_instance(target_id);
-	if(library) {
-		library->reload_library(false, Library::ReloadQuality::Fast);
-	}
+	refreshLibraries(thread->sourceIds());
+	refreshLibraries(thread->targetIds());
 
 	thread->deleteLater();
-	emit sig_finished();
+	emit sigFinished();
 }
 
-bool FileOperations::delete_paths(const QStringList& paths)
+bool FileOperations::copyPaths(const QStringList& paths, const QString& targetDir)
 {
-	sp_log(Log::Info, this) << "Try to delete " << paths;
+	auto* t = new FileCopyThread(paths, targetDir, this);
 
-	auto* t = new FileDeleteThread(this, paths);
-	connect(t, &QThread::started, this, &FileOperations::sig_started);
-	connect(t, &QThread::finished, this, &FileOperations::delete_thread_finished);
+	connect(t, &QThread::started, this, &FileOperations::sigStarted);
+	connect(t, &QThread::finished, this, &FileOperations::copyThreadFinished);
 
 	t->start();
 
 	return true;
 }
 
-void FileOperations::delete_thread_finished()
+void FileOperations::copyThreadFinished()
 {
-	auto* delete_thread = static_cast<FileDeleteThread*>(sender());
+	auto* thread = static_cast<FileOperationThread*>(sender());
+	refreshLibraries(thread->targetIds());
 
-	auto* db = DB::Connector::instance();
-	DB::LibraryDatabase* lib_db = db->library_db(-1, 0);
-
-	MetaDataList v_md;
-	lib_db->getAllTracksByPaths(delete_thread->paths(), v_md);
-	lib_db->deleteTracks(v_md);
-
-	delete_thread->deleteLater();
-	emit sig_finished();
+	thread->deleteLater();
+	emit sigFinished();
 }
 
+bool FileOperations::deletePaths(const QStringList& paths)
+{
+	spLog(Log::Info, this) << "Try to delete " << paths;
 
-QStringList FileOperations::supported_tag_replacements()
+	auto* t = new FileDeleteThread(paths, this);
+	connect(t, &QThread::started, this, &FileOperations::sigStarted);
+	connect(t, &QThread::finished, this, &FileOperations::deleteThreadFinished);
+
+	t->start();
+
+	return true;
+}
+
+void FileOperations::deleteThreadFinished()
+{
+	auto* thread = static_cast<FileOperationThread*>(sender());
+	refreshLibraries(thread->sourceIds());
+
+	thread->deleteLater();
+	emit sigFinished();
+}
+
+QStringList FileOperations::supportedReplacementTags()
 {
 	return QStringList
 	{
@@ -302,8 +151,8 @@ static QString replace_tag(const QString& expression, const MetaData& md)
 	ret.replace("<year>", QString::number(md.year()));
 	ret.replace("<bitrate>", QString::number(md.bitrate() / 1000));
 
-	QString s_track_nr = QString::number(md.track_number());
-	if(md.track_number() < 10)
+	QString s_track_nr = QString::number(md.trackNumber());
+	if(md.trackNumber() < 10)
 	{
 		s_track_nr.prepend("0");
 	}
@@ -314,16 +163,16 @@ static QString replace_tag(const QString& expression, const MetaData& md)
 	return ret;
 }
 
-static QString increment_filename(const QString& filename)
+static QString incrementFilename(const QString& filename)
 {
 	if(!Util::File::exists(filename)){
 		return filename;
 	}
 
 	QString dir, pure_filename;
-	Util::File::split_filename(filename, dir, pure_filename);
+	Util::File::splitFilename(filename, dir, pure_filename);
 
-	const QString ext = Util::File::get_file_extension(filename);
+	const QString ext = Util::File::getFileExtension(filename);
 
 	for(int i=1; i<1000; i++)
 	{
@@ -338,46 +187,46 @@ static QString increment_filename(const QString& filename)
 	return QString();
 }
 
-bool FileOperations::rename_by_expression(const QString& old_name, const QString& expression)
+bool FileOperations::renameByExpression(const QString& old_name, const QString& expression)
 {
 	auto* db = DB::Connector::instance();
-	DB::LibraryDatabase* library_db = db->library_db(-1, db->db_id());
+	DB::LibraryDatabase* library_db = db->libraryDatabase(-1, db->databaseId());
 
-	MetaData md = library_db->getTrackByPath(Util::File::clean_filename(old_name));
+	MetaData md = library_db->getTrackByPath(Util::File::cleanFilename(old_name));
 	if(md.id() < 0) {
 		Tagging::Utils::getMetaDataOfFile(md);
 	}
 
-	const QString pure_filename = replace_tag(expression, md);
-	if(pure_filename.isEmpty()) {
-		sp_log(Log::Error, this) << "Target filename is empty";
+	const QString pureFilename = replace_tag(expression, md);
+	if(pureFilename.isEmpty()) {
+		spLog(Log::Error, this) << "Target filename is empty";
 		return false;
 	}
 
-	if(pure_filename.contains("<") || pure_filename.contains(">")){
-		sp_log(Log::Error, this) << "<, > are not allowed. Maybe an invalid tag was specified?";
+	if(pureFilename.contains("<") || pureFilename.contains(">")){
+		spLog(Log::Error, this) << "<, > are not allowed. Maybe an invalid tag was specified?";
 		return false;
 	}
 
-	const QString dir = Util::File::get_parent_directory(md.filepath());
-	const QString ext = Util::File::get_file_extension(md.filepath());
+	const QString dir = Util::File::getParentDirectory(md.filepath());
+	const QString ext = Util::File::getFileExtension(md.filepath());
 
-	QString full_new_name = dir + "/" + pure_filename + "." + ext;
-	full_new_name = increment_filename(full_new_name);
+	QString fullNewName = dir + "/" + pureFilename + "." + ext;
+	fullNewName = incrementFilename(fullNewName);
 
 	if(md.id() < 0) {
-		return Util::File::rename_file(full_new_name, old_name);
+		return Util::File::renameFile(fullNewName, old_name);
 	}
 
 	else
 	{
-		bool success = Util::File::rename_file(old_name, full_new_name);
+		bool success = Util::File::renameFile(old_name, fullNewName);
 		if(success)
 		{
-			md.set_filepath(full_new_name);
+			md.setFilepath(fullNewName);
 			success = library_db->updateTrack(md);
 			if(!success){
-				Util::File::rename_file(full_new_name, old_name);
+				Util::File::renameFile(fullNewName, old_name);
 			}
 		}
 

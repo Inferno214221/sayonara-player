@@ -1,6 +1,6 @@
 /* PlaylistChooser.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -41,20 +41,20 @@ using Playlist::DBWrapper;
 struct Chooser::Private
 {
 	CustomPlaylistSkeletons	skeletons;
-	int						import_state;
+	int						importState;
 
-	Handler*		playlist_handler=nullptr;
-	DBWrapperPtr	playlist_db_connector=nullptr;
+	Handler*		playlistHandler=nullptr;
+	DBWrapperPtr	playlistDbConnector=nullptr;
 
 	Private()
 	{
-		playlist_handler = Handler::instance();
-		playlist_db_connector = std::make_shared<DBWrapper>();
+		playlistHandler = Handler::instance();
+		playlistDbConnector = std::make_shared<DBWrapper>();
 	}
 
-	CustomPlaylist find_custom_playlist(int id)
+	CustomPlaylist findCustomPlaylist(int id)
 	{
-		CustomPlaylist pl = playlist_db_connector->get_playlist_by_id(id);
+		CustomPlaylist pl = playlistDbConnector->getPlaylistById(id);
 		return pl;
 	}
 };
@@ -64,15 +64,15 @@ Chooser::Chooser(QObject* parent) :
 {
 	m = Pimpl::make<Private>();
 
-	m->playlist_db_connector->get_non_temporary_skeletons(
+	m->playlistDbConnector->getNonTemporarySkeletons(
 		m->skeletons, SortOrder::NameAsc
 	);
 
 	PlaylistChangeNotifier* pcn = PlaylistChangeNotifier::instance();
 
-	connect(pcn, &PlaylistChangeNotifier::sig_playlist_added, this, &Chooser::playlist_added);
-	connect(pcn, &PlaylistChangeNotifier::sig_playlist_renamed, this, &Chooser::playlist_renamed);
-	connect(pcn, &PlaylistChangeNotifier::sig_playlist_deleted, this, &Chooser::playlist_deleted);
+	connect(pcn, &PlaylistChangeNotifier::sigPlaylistAdded, this, &Chooser::playlistAdded);
+	connect(pcn, &PlaylistChangeNotifier::sigPlaylistRenamed, this, &Chooser::playlistRenamed);
+	connect(pcn, &PlaylistChangeNotifier::sigPlaylistDeleted, this, &Chooser::playlistDeleted);
 }
 
 Chooser::~Chooser() = default;
@@ -82,7 +82,7 @@ const CustomPlaylistSkeletons& Chooser::playlists()
 	return m->skeletons;
 }
 
-Util::SaveAsAnswer Chooser::rename_playlist(int id, const QString& new_name)
+Util::SaveAsAnswer Chooser::renamePlaylist(int id, const QString& new_name)
 {
 	using Util::SaveAsAnswer;
 
@@ -108,47 +108,47 @@ Util::SaveAsAnswer Chooser::rename_playlist(int id, const QString& new_name)
 	}
 
 	if(exists) {
-		sp_log(Log::Warning, this) << "Playlist " << new_name << " exists already";
+		spLog(Log::Warning, this) << "Playlist " << new_name << " exists already";
 		return SaveAsAnswer::NameAlreadyThere;
 	}
 
-	bool success = m->playlist_db_connector->rename_playlist(id, new_name);
+	bool success = m->playlistDbConnector->renamePlaylist(id, new_name);
 	if(success)	{
-		PlaylistChangeNotifier::instance()->rename_playlist(id, old_name, new_name);
+		PlaylistChangeNotifier::instance()->renamePlaylist(id, old_name, new_name);
 		return SaveAsAnswer::Success;
 	}
 
 	return SaveAsAnswer::OtherError;
 }
 
-bool Chooser::delete_playlist(int id)
+bool Chooser::deletePlaylist(int id)
 {
 	if(id < 0){
 		return false;
 	}
 
-	bool success = m->playlist_db_connector->delete_playlist(id);
+	bool success = m->playlistDbConnector->deletePlaylist(id);
 	if(success)	{
-		PlaylistChangeNotifier::instance()->delete_playlist(id);
+		PlaylistChangeNotifier::instance()->deletePlaylist(id);
 	}
 
 	return success;
 }
 
-void Chooser::load_single_playlist(int id)
+void Chooser::loadSinglePlaylist(int id)
 {
 	if(id < 0) {
 		return;
 	}
 
-	CustomPlaylist pl = m->find_custom_playlist(id);
+	CustomPlaylist pl = m->findCustomPlaylist(id);
 
-	int idx = m->playlist_handler->create_playlist(pl);
-	m->playlist_handler->set_current_index(idx);
+	int idx = m->playlistHandler->createPlaylist(pl);
+	m->playlistHandler->set_current_index(idx);
 }
 
 
-int Chooser::find_playlist(const QString& name) const
+int Chooser::findPlaylist(const QString& name) const
 {
 	for(const CustomPlaylistSkeleton& skeleton : Algorithm::AsConst(m->skeletons))
 	{
@@ -161,37 +161,37 @@ int Chooser::find_playlist(const QString& name) const
 	return -1;
 }
 
-void Chooser::playlists_changed()
+void Chooser::playlistsChanged()
 {
 	m->skeletons.clear();
-	m->playlist_db_connector->get_non_temporary_skeletons(
+	m->playlistDbConnector->getNonTemporarySkeletons(
 		m->skeletons, SortOrder::NameAsc
 	);
 
-	emit sig_playlists_changed();
+	emit sigPlaylistsChanged();
 }
 
 
-void Chooser::playlist_deleted(int id)
+void Chooser::playlistDeleted(int id)
 {
 	Q_UNUSED(id)
 
-	playlists_changed();
+	playlistsChanged();
 }
 
-void Chooser::playlist_added(int id, const QString& name)
+void Chooser::playlistAdded(int id, const QString& name)
 {
 	Q_UNUSED(id)
 	Q_UNUSED(name)
 
-	playlists_changed();
+	playlistsChanged();
 }
 
-void Chooser::playlist_renamed(int id, const QString& old_name, const QString& new_name)
+void Chooser::playlistRenamed(int id, const QString& old_name, const QString& new_name)
 {
 	Q_UNUSED(id)
 	Q_UNUSED(old_name)
 	Q_UNUSED(new_name)
 
-	playlists_changed();
+	playlistsChanged();
 }

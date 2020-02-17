@@ -1,6 +1,6 @@
 /* application.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -121,13 +121,13 @@ public:
 		m_component(component)
 	{
 		m_start = m_t->elapsed();
-		sp_log(Log::Debug, this) << "Init " << m_component << ": " << m_start << "ms";
+		spLog(Log::Debug, this) << "Init " << m_component << ": " << m_start << "ms";
 	}
 
 	~MeasureApp()
 	{
 		int end = m_t->elapsed();
-		sp_log(Log::Debug, this) << "Init " << m_component << " finished: " << end << "ms (" << end - m_start << "ms)";
+		spLog(Log::Debug, this) << "Init " << m_component << " finished: " << end << "ms (" << end - m_start << "ms)";
 	}
 };
 
@@ -138,42 +138,42 @@ struct Application::Private
 	QTime*				timer=nullptr;
 	GUI_Player*			player=nullptr;
 
-	RemoteControl*		remote_control=nullptr;
+	RemoteControl*		remoteControl=nullptr;
 	DB::Connector*		db=nullptr;
-	InstanceThread*		instance_thread=nullptr;
-	MetaTypeRegistry*	metatype_registry=nullptr;
+	InstanceThread*		instanceThread=nullptr;
+	MetaTypeRegistry*	metatypeRegistry=nullptr;
 	Session::Manager*	session=nullptr;
 
-	bool				was_shut_down;
+	bool				shutdownTriggered;
 
 	Private(Application* app)
 	{
 		Q_UNUSED(app)
 
-		metatype_registry = new MetaTypeRegistry();
+		metatypeRegistry = new MetaTypeRegistry();
 		qRegisterMetaType<uint64_t>("uint64_t");
 
 		/* Tell the settings manager which settings are necessary */
 		db = DB::Connector::instance();
-		db->settings_connector()->load_settings();
+		db->settingsConnector()->loadSettings();
 
 		session = Session::Manager::instance();
 
-		Gui::Icons::set_standard_theme(QIcon::themeName());
-		Gui::Icons::force_standard_icons(GetSetting(Set::Icon_ForceInDarkTheme));
+		Gui::Icons::setStandardTheme(QIcon::themeName());
+		Gui::Icons::forceStandardIcons(GetSetting(Set::Icon_ForceInDarkTheme));
 
-		if( !Settings::instance()->check_settings() )
+		if( !Settings::instance()->checkSettings() )
 		{
-			sp_log(Log::Error, this) << "Cannot initialize settings";
+			spLog(Log::Error, this) << "Cannot initialize settings";
 			return;
 		}
 
-		Settings::instance()->apply_fixes();
+		Settings::instance()->applyFixes();
 
 		init_resources();
 
 		timer = new QTime();
-		was_shut_down = false;
+		shutdownTriggered = false;
 	}
 
 	~Private()
@@ -182,14 +182,14 @@ struct Application::Private
 			delete timer; timer = nullptr;
 		}
 
-		if(instance_thread)
+		if(instanceThread)
 		{
-			instance_thread->stop();
-			while(instance_thread->isRunning()){
-				Util::sleep_ms(100);
+			instanceThread->stop();
+			while(instanceThread->isRunning()){
+				Util::sleepMs(100);
 			}
 
-			instance_thread = nullptr;
+			instanceThread = nullptr;
 		}
 
 		if(player){
@@ -199,14 +199,14 @@ struct Application::Private
 
 		if(db)
 		{
-			db->settings_connector()->store_settings();
-			db->close_db();
+			db->settingsConnector()->storeSettings();
+			db->closeDatabase();
 			db = nullptr;
 		}
 
-		if(metatype_registry)
+		if(metatypeRegistry)
 		{
-			delete metatype_registry; metatype_registry = nullptr;
+			delete metatypeRegistry; metatypeRegistry = nullptr;
 		}
 	}
 
@@ -254,7 +254,7 @@ Application::Application(int & argc, char ** argv) :
 
 Application::~Application()
 {
-	if(!m->was_shut_down){
+	if(!m->shutdownTriggered){
 		shutdown();
 	}
 }
@@ -270,7 +270,7 @@ bool Application::init(const QStringList& files_to_play, bool force_show)
 
 	{
 		measure("Theme")
-		Gui::Icons::change_theme();
+		Gui::Icons::changeTheme();
 	}
 
 	{
@@ -278,8 +278,8 @@ bool Application::init(const QStringList& files_to_play, bool force_show)
 		Proxy::init();
 	}
 
-	init_engine();
-	init_player(force_show);
+	initEngine();
+	initPlayer(force_show);
 
 
 #ifdef SAYONARA_WITH_DBUS
@@ -290,7 +290,7 @@ bool Application::init(const QStringList& files_to_play, bool force_show)
 #endif
 
 	{
-		ListenSetting(Set::Remote_Active, Application::remote_control_activated);
+		ListenSetting(Set::Remote_Active, Application::remoteControlActivated);
 	}
 
 	if(GetSetting(Set::Notification_Show))
@@ -301,19 +301,19 @@ bool Application::init(const QStringList& files_to_play, bool force_show)
 		);
 	}
 
-	init_libraries();
-	init_plugins();
-	init_preferences();
+	initLibraries();
+	initPlugins();
+	initPreferences();
 
-	init_playlist(files_to_play);
-	init_single_instance_thread();
-	sp_log(Log::Debug, this) << "Initialized: " << m->timer->elapsed() << "ms";
+	initPlaylist(files_to_play);
+	initSingleInstanceThread();
+	spLog(Log::Debug, this) << "Initialized: " << m->timer->elapsed() << "ms";
 	delete m->timer; m->timer=nullptr;
 
 	//connect(this, &Application::commitDataRequest, this, &Application::session_end_requested);
 
-	ListenSetting(Set::Lib_SortIgnoreArtistArticle, Application::ignore_artist_article_changed);
-	ListenSetting(SetNoDB::Player_MetaStyle, Application::skin_changed);
+	ListenSetting(Set::Lib_SortIgnoreArtistArticle, Application::ignoreArtistArticleChanged);
+	ListenSetting(SetNoDB::Player_MetaStyle, Application::skinChanged);
 
 	if(!GetSetting(Set::Player_StartInTray)) {
 		m->player->show();
@@ -326,7 +326,7 @@ bool Application::init(const QStringList& files_to_play, bool force_show)
 	return true;
 }
 
-void Application::init_player(bool force_show)
+void Application::initPlayer(bool force_show)
 {
 	measure("Player")
 
@@ -336,61 +336,61 @@ void Application::init_player(bool force_show)
 	}
 
 	m->player = new GUI_Player();
-	Gui::Util::set_main_window(m->player);
+	Gui::Util::setMainWindow(m->player);
 
 	connect(m->player, &GUI_Player::sig_player_closed, this, &QCoreApplication::quit);
 }
 
 
-void Application::init_playlist(const QStringList& files_to_play)
+void Application::initPlaylist(const QStringList& files_to_play)
 {
 	auto* plh = Playlist::Handler::instance();
-	plh->load_old_playlists();
+	plh->loadOldPlaylists();
 
 	if(!files_to_play.isEmpty())
 	{
-		QString playlist_name = plh->request_new_playlist_name();
-		plh->create_playlist(files_to_play, playlist_name);
+		QString playlist_name = plh->requestNewPlaylistName();
+		plh->createPlaylist(files_to_play, playlist_name);
 	}
 }
 
-void Application::init_preferences()
+void Application::initPreferences()
 {
 	measure("Preferences")
 
 	auto* preferences = new GUI_PreferenceDialog(m->player);
 
-	preferences->register_preference_dialog(new GUI_PlayerPreferences("application"));
-	preferences->register_preference_dialog(new GUI_LanguagePreferences("language"));
-	preferences->register_preference_dialog(new GUI_UiPreferences("user-interface"));
-	preferences->register_preference_dialog(new GUI_ShortcutPreferences("shortcuts"));
+	preferences->registerPreferenceDialog(new GUI_PlayerPreferences("application"));
+	preferences->registerPreferenceDialog(new GUI_LanguagePreferences("language"));
+	preferences->registerPreferenceDialog(new GUI_UiPreferences("user-interface"));
+	preferences->registerPreferenceDialog(new GUI_ShortcutPreferences("shortcuts"));
 
-	preferences->register_preference_dialog(new GUI_PlaylistPreferences("playlist"));
-	preferences->register_preference_dialog(new GUI_LibraryPreferences("library"));
-	preferences->register_preference_dialog(new GUI_CoverPreferences("covers"));
-	preferences->register_preference_dialog(new GUI_EnginePreferences("engine"));
-	preferences->register_preference_dialog(new GUI_SearchPreferences("search"));
+	preferences->registerPreferenceDialog(new GUI_PlaylistPreferences("playlist"));
+	preferences->registerPreferenceDialog(new GUI_LibraryPreferences("library"));
+	preferences->registerPreferenceDialog(new GUI_CoverPreferences("covers"));
+	preferences->registerPreferenceDialog(new GUI_EnginePreferences("engine"));
+	preferences->registerPreferenceDialog(new GUI_SearchPreferences("search"));
 
-	preferences->register_preference_dialog(new GUI_ProxyPreferences("proxy"));
-	preferences->register_preference_dialog(new GUI_StreamPreferences("streams"));
-	preferences->register_preference_dialog(new GUI_StreamRecorderPreferences("streamrecorder"));
-	preferences->register_preference_dialog(new GUI_BroadcastPreferences("broadcast"));
-	preferences->register_preference_dialog(new GUI_RemoteControlPreferences("remotecontrol"));
+	preferences->registerPreferenceDialog(new GUI_ProxyPreferences("proxy"));
+	preferences->registerPreferenceDialog(new GUI_StreamPreferences("streams"));
+	preferences->registerPreferenceDialog(new GUI_StreamRecorderPreferences("streamrecorder"));
+	preferences->registerPreferenceDialog(new GUI_BroadcastPreferences("broadcast"));
+	preferences->registerPreferenceDialog(new GUI_RemoteControlPreferences("remotecontrol"));
 
-	preferences->register_preference_dialog(new GUI_NotificationPreferences("notifications"));
-	preferences->register_preference_dialog(new GUI_LastFmPreferences("lastfm", new LastFM::Base()));
+	preferences->registerPreferenceDialog(new GUI_NotificationPreferences("notifications"));
+	preferences->registerPreferenceDialog(new GUI_LastFmPreferences("lastfm", new LastFM::Base()));
 
-	m->player->register_preference_dialog(preferences->action());
+	m->player->registerPreferenceDialog(preferences->action());
 }
 
-void Application::init_libraries()
+void Application::initLibraries()
 {
 	measure("Libraries")
 
 	auto* local_library_watcher = new Library::LocalLibraryWatcher(this);
 	auto* library_plugin_loader = Library::PluginHandler::instance();
 
-	QList<Library::Container*> library_containers = local_library_watcher->get_local_library_containers();
+	QList<Library::Container*> library_containers = local_library_watcher->getLocalLibraryContainers();
 	auto* directory_container = new Library::DirectoryContainer(this);
 	auto* soundcloud_container = new SC::LibraryContainer(this);
 	auto* somafm_container = new SomaFM::LibraryContainer(this);
@@ -404,57 +404,57 @@ void Application::init_libraries()
 	library_plugin_loader->init(library_containers, new EmptyLibraryContainer());
 }
 
-void Application::init_engine()
+void Application::initEngine()
 {
 	measure("Engine")
-	Engine::Handler::instance()->is_valid();
+	Engine::Handler::instance()->isValid();
 }
 
-void Application::init_plugins()
+void Application::initPlugins()
 {
 	measure("Plugins")
 
 	PlayerPlugin::Handler* pph = PlayerPlugin::Handler::instance();
 
-	pph->add_plugin(new GUI_LevelPainter());
-	pph->add_plugin(new GUI_Spectrum());
-	pph->add_plugin(new GUI_Equalizer());
-	pph->add_plugin(new GUI_Stream());
-	pph->add_plugin(new GUI_Podcasts());
-	pph->add_plugin(new GUI_PlaylistChooser());
-	pph->add_plugin(new GUI_AudioConverter());
-	pph->add_plugin(new GUI_Bookmarks());
-	pph->add_plugin(new GUI_Speed());
-	pph->add_plugin(new GUI_Broadcast());
-	pph->add_plugin(new GUI_Crossfader());
-	pph->add_plugin(new GUI_SpectrogramPainter());
+	pph->addPlugin(new GUI_LevelPainter());
+	pph->addPlugin(new GUI_Spectrum());
+	pph->addPlugin(new GUI_Equalizer());
+	pph->addPlugin(new GUI_Stream());
+	pph->addPlugin(new GUI_Podcasts());
+	pph->addPlugin(new GUI_PlaylistChooser());
+	pph->addPlugin(new GUI_AudioConverter());
+	pph->addPlugin(new GUI_Bookmarks());
+	pph->addPlugin(new GUI_Speed());
+	pph->addPlugin(new GUI_Broadcast());
+	pph->addPlugin(new GUI_Crossfader());
+	pph->addPlugin(new GUI_SpectrogramPainter());
 
-	sp_log(Log::Debug, this) << "Plugins finished: " << m->timer->elapsed() << "ms";
+	spLog(Log::Debug, this) << "Plugins finished: " << m->timer->elapsed() << "ms";
 }
 
-void Application::init_single_instance_thread()
+void Application::initSingleInstanceThread()
 {
-	m->instance_thread = new InstanceThread(this);
+	m->instanceThread = new InstanceThread(this);
 
-	connect(m->instance_thread, &InstanceThread::sig_player_raise, m->player, &GUI_Player::raise);
-	connect(m->instance_thread, &InstanceThread::sig_create_playlist, this, &Application::create_playlist);
+	connect(m->instanceThread, &InstanceThread::sigPlayerRise, m->player, &GUI_Player::raise);
+	connect(m->instanceThread, &InstanceThread::sigCreatePlaylist, this, &Application::createPlaylist);
 
-	m->instance_thread->start();
+	m->instanceThread->start();
 }
 
-void Application::session_end_requested(QSessionManager& manager)
+void Application::sessionEndRequested(QSessionManager& manager)
 {
 	Q_UNUSED(manager)
 	shutdown();
 
 	if(m->db){
-		m->db->settings_connector()->store_settings();
-		m->db->close_db();
+		m->db->settingsConnector()->storeSettings();
+		m->db->closeDatabase();
 	}
 
 	if(m->player){
-		m->player->request_shutdown();
-	};
+		m->player->requestShutdown();
+	}
 }
 
 void Application::shutdown()
@@ -464,24 +464,24 @@ void Application::shutdown()
 	Playlist::Handler::instance()->shutdown();
 	PlayManager::instance()->shutdown();
 
-	m->was_shut_down = true;
+	m->shutdownTriggered = true;
 }
 
-void Application::remote_control_activated()
+void Application::remoteControlActivated()
 {
-	if(GetSetting(Set::Remote_Active) && !m->remote_control)
+	if(GetSetting(Set::Remote_Active) && !m->remoteControl)
 	{
-		m->remote_control = new RemoteControl(this);
+		m->remoteControl = new RemoteControl(this);
 	}
 }
 
-void Application::ignore_artist_article_changed()
+void Application::ignoreArtistArticleChanged()
 {
-	MetaDataSorting::set_ignore_article(GetSetting(Set::Lib_SortIgnoreArtistArticle));
+	MetaDataSorting::setIgnoreArticle(GetSetting(Set::Lib_SortIgnoreArtistArticle));
 }
 
 
-void Application::create_playlist()
+void Application::createPlaylist()
 {
 	auto* instance_thread =	static_cast<InstanceThread*>(sender());
 	if(!instance_thread){
@@ -491,13 +491,13 @@ void Application::create_playlist()
 	QStringList paths = instance_thread->paths();
 
 	auto* eplg = ExternTracksPlaylistGenerator::instance();
-	eplg->add_paths(paths);
-	if(eplg->is_play_allowed()) {
-		eplg->change_track();
+	eplg->addPaths(paths);
+	if(eplg->isPlayAllowed()) {
+		eplg->changeTrack();
 	}
 }
 
-void Application::skin_changed()
+void Application::skinChanged()
 {
-	Style::apply_current_style(this);
+	Style::applyCurrentStyle(this);
 }

@@ -1,6 +1,6 @@
 /* GUI_Controls.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -33,34 +33,34 @@ GUI_Controls::~GUI_Controls()
 	delete ui; ui=nullptr;
 }
 
-QLabel* GUI_Controls::lab_sayonara() const {	return ui->lab_sayonara; }
-QLabel* GUI_Controls::lab_title() const { return ui->lab_title; }
-QLabel* GUI_Controls::lab_version() const { return ui->lab_version; }
-QLabel* GUI_Controls::lab_album() const { return ui->lab_album; }
-QLabel* GUI_Controls::lab_artist() const { return ui->lab_artist; }
-QLabel* GUI_Controls::lab_writtenby() const { return ui->lab_writtenby; }
-QLabel* GUI_Controls::lab_bitrate() const { return ui->lab_bitrate; }
-QLabel* GUI_Controls::lab_filesize() const { return ui->lab_filesize; }
-QLabel* GUI_Controls::lab_copyright() const { return ui->lab_copyright; }
-QLabel* GUI_Controls::lab_current_time() const { return ui->lab_cur_time; }
-QLabel* GUI_Controls::lab_max_time() const { return ui->lab_max_time; }
-QWidget* GUI_Controls::widget_details() const { return ui->widget_details; }
-Gui::SearchSlider* GUI_Controls::sli_progress() const { return ui->sli_progress; }
-Gui::SearchSlider* GUI_Controls::sli_volume() const { return ui->sli_volume; }
-QPushButton* GUI_Controls::btn_mute() const { return ui->btn_mute; }
-QPushButton* GUI_Controls::btn_play() const { return ui->btn_ctrl_play; }
-QPushButton* GUI_Controls::btn_rec() const { return ui->btn_ctrl_rec; }
-QPushButton* GUI_Controls::btn_bwd() const { return ui->btn_ctrl_bw; }
-QPushButton* GUI_Controls::btn_fwd() const { return ui->btn_ctrl_fw; }
-QPushButton* GUI_Controls::btn_stop() const { return ui->btn_ctrl_stop; }
-Gui::CoverButton* GUI_Controls::btn_cover() const { return ui->btn_cover; }
+QLabel* GUI_Controls::labSayonara() const {	return ui->lab_sayonara; }
+QLabel* GUI_Controls::labTitle() const { return ui->lab_title; }
+QLabel* GUI_Controls::labVersion() const { return ui->lab_version; }
+QLabel* GUI_Controls::labAlbum() const { return ui->lab_album; }
+QLabel* GUI_Controls::labArtist() const { return ui->lab_artist; }
+QLabel* GUI_Controls::labWrittenBy() const { return ui->lab_writtenby; }
+QLabel* GUI_Controls::labBitrate() const { return ui->lab_bitrate; }
+QLabel* GUI_Controls::labFilesize() const { return ui->lab_filesize; }
+QLabel* GUI_Controls::labCopyright() const { return ui->lab_copyright; }
+QLabel* GUI_Controls::labCurrentTime() const { return ui->lab_cur_time; }
+QLabel* GUI_Controls::labMaxTime() const { return ui->lab_max_time; }
+QWidget* GUI_Controls::widgetDetails() const { return ui->widget_details; }
+Gui::SearchSlider* GUI_Controls::sliProgress() const { return ui->sli_progress; }
+Gui::SearchSlider* GUI_Controls::sliVolume() const { return ui->sli_volume; }
+QPushButton* GUI_Controls::btnMute() const { return ui->btn_mute; }
+QPushButton* GUI_Controls::btnPlay() const { return ui->btn_ctrl_play; }
+QPushButton* GUI_Controls::btnRecord() const { return ui->btn_ctrl_rec; }
+QPushButton* GUI_Controls::btnPrevious() const { return ui->btn_ctrl_bw; }
+QPushButton* GUI_Controls::btnNext() const { return ui->btn_ctrl_fw; }
+QPushButton* GUI_Controls::btnStop() const { return ui->btn_ctrl_stop; }
+Gui::CoverButton* GUI_Controls::btnCover() const { return ui->btn_cover; }
 
-bool GUI_Controls::is_extern_resize_allowed() const
+bool GUI_Controls::isExternResizeAllowed() const
 {
 	return false;
 }
 
-void GUI_Controls::language_changed()
+void GUI_Controls::languageChanged()
 {
 	if(ui){
 		ui->retranslateUi(this);

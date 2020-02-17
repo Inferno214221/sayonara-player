@@ -1,6 +1,6 @@
 /* GUI_TagEdit.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -58,11 +58,11 @@ using namespace Tagging;
 
 struct GUI_TagEdit::Private
 {
-	Tagging::Editor*	tag_edit=nullptr;
-	GUI_TagFromPath*	ui_tag_from_path=nullptr;
-	GUI_CoverEdit*		ui_cover_edit=nullptr;
+	Tagging::Editor*	tagEditor=nullptr;
+	GUI_TagFromPath*	uiTagFromPath=nullptr;
+	GUI_CoverEdit*		uiCoverEdit=nullptr;
 
-	int					cur_idx;
+	int					currentIndex;
 };
 
 GUI_TagEdit::GUI_TagEdit(QWidget* parent) :
@@ -72,18 +72,18 @@ GUI_TagEdit::GUI_TagEdit(QWidget* parent) :
 	ui->setupUi(this);
 
 	m = Pimpl::make<Private>();
-	m->tag_edit = create_editor();
-	m->ui_tag_from_path = new GUI_TagFromPath(ui->tab_from_path);
-	m->ui_cover_edit = new GUI_CoverEdit(this);
+	m->tagEditor = createEditor();
+	m->uiTagFromPath = new GUI_TagFromPath(ui->tab_from_path);
+	m->uiCoverEdit = new GUI_CoverEdit(this);
 
-	ui->tab_from_path->layout()->addWidget(m->ui_tag_from_path);
-	ui->tab_cover->layout()->addWidget(m->ui_cover_edit);
+	ui->tab_from_path->layout()->addWidget(m->uiTagFromPath);
+	ui->tab_cover->layout()->addWidget(m->uiCoverEdit);
 
 	ui->tab_widget->setCurrentIndex(0);
-	ui->widget_rating->set_mousetrackable(false);
+	ui->widget_rating->setMouseTrackable(false);
 
-	connect(ui->btn_next, &QPushButton::clicked, this, &GUI_TagEdit::next_button_clicked);
-	connect(ui->btn_prev, &QPushButton::clicked, this, &GUI_TagEdit::prev_button_clicked);
+	connect(ui->btn_next, &QPushButton::clicked, this, &GUI_TagEdit::nextButtonClicked);
+	connect(ui->btn_prev, &QPushButton::clicked, this, &GUI_TagEdit::prevButtonClicked);
 
 	connect(ui->cb_album_all, &QCheckBox::toggled, ui->le_album, &QWidget::setDisabled);
 	connect(ui->cb_artist_all, &QCheckBox::toggled, ui->le_artist, &QWidget::setDisabled);
@@ -95,40 +95,40 @@ GUI_TagEdit::GUI_TagEdit(QWidget* parent) :
 	connect(ui->cb_comment_all, &QCheckBox::toggled, ui->te_comment, &QWidget::setDisabled);
 
 	connect(ui->btn_save, &QPushButton::clicked, this, &GUI_TagEdit::commit);
-	connect(ui->btn_undo, &QPushButton::clicked, this, &GUI_TagEdit::undo_clicked);
-	connect(ui->btn_undo_all, &QPushButton::clicked, this, &GUI_TagEdit::undo_all_clicked);
-	connect(ui->btn_close, &QPushButton::clicked, this, &GUI_TagEdit::sig_cancelled);
+	connect(ui->btn_undo, &QPushButton::clicked, this, &GUI_TagEdit::undoClicked);
+	connect(ui->btn_undo_all, &QPushButton::clicked, this, &GUI_TagEdit::undoAllClicked);
+	connect(ui->btn_close, &QPushButton::clicked, this, &GUI_TagEdit::sigCancelled);
 
-	connect(ui->btn_load_entire_album, &QPushButton::clicked, this, &GUI_TagEdit::load_entire_album);
+	connect(ui->btn_load_entire_album, &QPushButton::clicked, this, &GUI_TagEdit::loadEntireAlbum);
 
-	connect(m->ui_tag_from_path, &GUI_TagFromPath::sig_apply, this, &GUI_TagEdit::apply_tag_from_path);
-	connect(m->ui_tag_from_path, &GUI_TagFromPath::sig_apply_all, this, &GUI_TagEdit::apply_all_tag_from_path);
+	connect(m->uiTagFromPath, &GUI_TagFromPath::sigApply, this, &GUI_TagEdit::applyTagFromPath);
+	connect(m->uiTagFromPath, &GUI_TagFromPath::sigApplyAll, this, &GUI_TagEdit::applyAllTagFromPath);
 
-	metadata_changed(m->tag_edit->metadata());
+	metadataChanged(m->tagEditor->metadata());
 }
 
 GUI_TagEdit::~GUI_TagEdit() = default;
 
-Editor* GUI_TagEdit::create_editor()
+Editor* GUI_TagEdit::createEditor()
 {
 	auto* editor = new Tagging::Editor();
 
-	connect(editor, &Editor::sig_progress, this, &GUI_TagEdit::progress_changed);
-	connect(editor, &Editor::sig_metadata_received, this, &GUI_TagEdit::metadata_changed);
-	connect(editor, &Editor::sig_started, this, &GUI_TagEdit::commit_started);
-	connect(editor, &Editor::sig_finished, this, &GUI_TagEdit::commit_finished);
+	connect(editor, &Editor::sigProgress, this, &GUI_TagEdit::progressChanged);
+	connect(editor, &Editor::sigMetadataReceived, this, &GUI_TagEdit::metadataChanged);
+	connect(editor, &Editor::sigStarted, this, &GUI_TagEdit::commitStarted);
+	connect(editor, &Editor::sigFinished, this, &GUI_TagEdit::commitFinished);
 
 	return editor;
 }
 
-void GUI_TagEdit::run_editor(Editor* editor)
+void GUI_TagEdit::runEditor(Editor* editor)
 {
 	auto* t = new QThread();
 
 	editor->moveToThread(t);
 
-	connect(editor, &Tagging::Editor::sig_finished, t, &QThread::quit);
-	connect(editor, &Tagging::Editor::sig_finished, editor, [=](){
+	connect(editor, &Tagging::Editor::sigFinished, t, &QThread::quit);
+	connect(editor, &Tagging::Editor::sigFinished, editor, [=](){
 		editor->moveToThread(QApplication::instance()->thread());
 	});
 
@@ -146,7 +146,7 @@ static void set_all_text(QCheckBox* label, int n)
 	label->setText(text);
 }
 
-void GUI_TagEdit::language_changed()
+void GUI_TagEdit::languageChanged()
 {
 	ui->retranslateUi(this);
 
@@ -160,14 +160,14 @@ void GUI_TagEdit::language_changed()
 	ui->lab_comment->setText(Lang::get(Lang::Comment));
 	ui->btn_load_entire_album->setText(tr("Load complete album"));
 
-	set_all_text(ui->cb_album_all, m->tag_edit->count());
-	set_all_text(ui->cb_artist_all, m->tag_edit->count());
-	set_all_text(ui->cb_album_artist_all, m->tag_edit->count());
-	set_all_text(ui->cb_genre_all, m->tag_edit->count());
-	set_all_text(ui->cb_year_all, m->tag_edit->count());
-	set_all_text(ui->cb_discnumber_all, m->tag_edit->count());
-	set_all_text(ui->cb_rating_all, m->tag_edit->count());
-	set_all_text(ui->cb_comment_all, m->tag_edit->count());
+	set_all_text(ui->cb_album_all, m->tagEditor->count());
+	set_all_text(ui->cb_artist_all, m->tagEditor->count());
+	set_all_text(ui->cb_album_artist_all, m->tagEditor->count());
+	set_all_text(ui->cb_genre_all, m->tagEditor->count());
+	set_all_text(ui->cb_year_all, m->tagEditor->count());
+	set_all_text(ui->cb_discnumber_all, m->tagEditor->count());
+	set_all_text(ui->cb_rating_all, m->tagEditor->count());
+	set_all_text(ui->cb_comment_all, m->tagEditor->count());
 
 	ui->btn_undo->setText(Lang::get(Lang::Undo));
 	ui->btn_close->setText(Lang::get(Lang::Close));
@@ -180,34 +180,34 @@ void GUI_TagEdit::language_changed()
 
 int GUI_TagEdit::count() const
 {
-	return m->tag_edit->count();
+	return m->tagEditor->count();
 }
 
 Editor*GUI_TagEdit::editor() const
 {
-	return m->tag_edit;
+	return m->tagEditor;
 }
 
-void GUI_TagEdit::set_metadata(const MetaDataList& v_md)
+void GUI_TagEdit::setMetadata(const MetaDataList& v_md)
 {
-	m->tag_edit->set_metadata(v_md);
+	m->tagEditor->setMetadata(v_md);
 }
 
-void GUI_TagEdit::metadata_changed(const MetaDataList& md)
+void GUI_TagEdit::metadataChanged(const MetaDataList& md)
 {
 	Q_UNUSED(md)
 
 	reset();
-	language_changed();
+	languageChanged();
 
 	QStringList filepaths;
-	const MetaDataList& v_md = m->tag_edit->metadata();
+	const MetaDataList& v_md = m->tagEditor->metadata();
 	for(const MetaData& md : v_md)
 	{
 		filepaths << md.filepath();
 	}
 
-	ui->btn_load_entire_album->setVisible(m->tag_edit->can_load_entire_album());
+	ui->btn_load_entire_album->setVisible(m->tagEditor->canLoadEntireAlbum());
 	ui->btn_load_entire_album->setEnabled(true);
 
 	ui->btn_save->setEnabled(true);
@@ -215,54 +215,54 @@ void GUI_TagEdit::metadata_changed(const MetaDataList& md)
 	ui->btn_undo_all->setEnabled(true);
 
 
-	set_current_index(0);
-	refresh_current_track();
+	setCurrentIndex(0);
+	refreshCurrentTrack();
 }
 
-void GUI_TagEdit::apply_tag_from_path()
+void GUI_TagEdit::applyTagFromPath()
 {
-	m->ui_tag_from_path->clear_invalid_filepaths();
+	m->uiTagFromPath->clearInvalidFilepaths();
 
-	bool success = m->tag_edit->apply_regex(m->ui_tag_from_path->get_regex_string(), m->cur_idx);
+	bool success = m->tagEditor->applyRegularExpression(m->uiTagFromPath->getRegexString(), m->currentIndex);
 	if(success){
 		ui->tab_widget->setCurrentIndex(0);
 	}
 
-	refresh_current_track();
+	refreshCurrentTrack();
 }
 
-void GUI_TagEdit::apply_all_tag_from_path()
+void GUI_TagEdit::applyAllTagFromPath()
 {
-	m->ui_tag_from_path->clear_invalid_filepaths();
+	m->uiTagFromPath->clearInvalidFilepaths();
 
-	int count = m->tag_edit->count();
-	QString regex = m->ui_tag_from_path->get_regex_string();
-	QStringList invalid_filepaths;
+	int count = m->tagEditor->count();
+	QString regex = m->uiTagFromPath->getRegexString();
+	QStringList invalidFilepaths;
 
 	for(int i=0; i<count; i++)
 	{
-		bool success = m->tag_edit->apply_regex(regex, i);
+		bool success = m->tagEditor->applyRegularExpression(regex, i);
 		if(!success)
 		{
-			QString invalid_filepath = m->tag_edit->metadata(i).filepath();
-			invalid_filepaths << invalid_filepath;
-			m->ui_tag_from_path->add_invalid_filepath(invalid_filepath);
+			QString invalid_filepath = m->tagEditor->metadata(i).filepath();
+			invalidFilepaths << invalid_filepath;
+			m->uiTagFromPath->addInvalidFilepath(invalid_filepath);
 		}
 	}
 
-	if(invalid_filepaths.count() > 0)
+	if(invalidFilepaths.count() > 0)
 	{
 		Message::Answer answer = Message::Answer::Yes;
 
 		QStringList err;
-		err << tr("Cannot apply expression to %n track(s)", "", invalid_filepaths.count());
+		err << tr("Cannot apply expression to %n track(s)", "", invalidFilepaths.count());
 		err << "";
 		err << tr("Ignore these tracks?");
 
 		answer = Message::question_yn(err.join("<br>"));
 		if(answer != Message::Answer::Yes)
 		{
-			m->tag_edit->undo_all();
+			m->tagEditor->undoAll();
 		}
 
 		else
@@ -276,63 +276,63 @@ void GUI_TagEdit::apply_all_tag_from_path()
 		ui->tab_widget->setCurrentIndex(0);
 	}
 
-	refresh_current_track();
+	refreshCurrentTrack();
 }
 
-bool GUI_TagEdit::check_idx(int idx) const
+bool GUI_TagEdit::checkIndex(int idx) const
 {
-	return Util::between(idx, m->tag_edit->count());
+	return Util::between(idx, m->tagEditor->count());
 }
 
-void GUI_TagEdit::set_current_index(int index)
+void GUI_TagEdit::setCurrentIndex(int index)
 {
-	m->cur_idx = index;
-	m->ui_cover_edit->set_current_index(index);
+	m->currentIndex = index;
+	m->uiCoverEdit->setCurrentIndex(index);
 }
 
-void GUI_TagEdit::next_button_clicked()
+void GUI_TagEdit::nextButtonClicked()
 {
-	write_changes(m->cur_idx);
+	writeChanges(m->currentIndex);
 
-	set_current_index(m->cur_idx + 1);
+	setCurrentIndex(m->currentIndex + 1);
 
-	refresh_current_track();
+	refreshCurrentTrack();
 }
 
 
-void GUI_TagEdit::prev_button_clicked()
+void GUI_TagEdit::prevButtonClicked()
 {
-	write_changes(m->cur_idx);
+	writeChanges(m->currentIndex);
 
-	set_current_index(m->cur_idx - 1);
+	setCurrentIndex(m->currentIndex - 1);
 
-	refresh_current_track();
+	refreshCurrentTrack();
 }
 
-void GUI_TagEdit::refresh_current_track()
+void GUI_TagEdit::refreshCurrentTrack()
 {
-	int n_tracks = m->tag_edit->count();
+	int n_tracks = m->tagEditor->count();
 
-	ui->btn_next->setEnabled(m->cur_idx >= 0 && m->cur_idx < n_tracks - 1);
-	ui->btn_prev->setEnabled(m->cur_idx > 0 && m->cur_idx < n_tracks);
+	ui->btn_next->setEnabled(m->currentIndex >= 0 && m->currentIndex < n_tracks - 1);
+	ui->btn_prev->setEnabled(m->currentIndex > 0 && m->currentIndex < n_tracks);
 
-	if(!check_idx(m->cur_idx)) {
+	if(!checkIndex(m->currentIndex)) {
 		return;
 	}
 
-	MetaData md = m->tag_edit->metadata(m->cur_idx);
+	MetaData md = m->tagEditor->metadata(m->currentIndex);
 
 	{ // set filepath label
-		QString filepath_link = Util::create_link
+		QString filepath_link = Util::createLink
 		(
 			md.filepath(),
-			Style::is_dark(),
+			Style::isDark(),
 			true,
-			Util::File::get_parent_directory(md.filepath())
+			Util::File::getParentDirectory(md.filepath())
 		);
 
 		ui->lab_filepath->setText(filepath_link);
-		m->ui_tag_from_path->set_filepath(md.filepath());
+		m->uiTagFromPath->setFilepath(md.filepath());
 
 		QFileInfo fi(md.filepath());
 		ui->lab_read_only->setVisible(!fi.isWritable());
@@ -349,11 +349,11 @@ void GUI_TagEdit::refresh_current_track()
 	}
 
 	if(!ui->cb_album_artist_all->isChecked()){
-		ui->le_album_artist->setText(md.album_artist());
+		ui->le_album_artist->setText(md.albumArtist());
 	}
 
 	if(!ui->cb_genre_all->isChecked()){
-		ui->le_genre->setText( md.genres_to_list().join(", ") );
+		ui->le_genre->setText( md.genresToList().join(", ") );
 	}
 
 	if(!ui->cb_year_all->isChecked()){
@@ -365,34 +365,34 @@ void GUI_TagEdit::refresh_current_track()
 	}
 
 	if(!ui->cb_rating_all->isChecked()){
-		ui->widget_rating->set_rating(md.rating());
+		ui->widget_rating->setRating(md.rating());
 	}
 
 	if(!ui->cb_comment_all->isChecked()){
 		ui->te_comment->setPlainText(md.comment());
 	}
 
-	bool is_cover_supported = m->tag_edit->is_cover_supported(m->cur_idx);
+	bool is_cover_supported = m->tagEditor->isCoverSupported(m->currentIndex);
 	ui->tab_cover->setEnabled(is_cover_supported);
 	if(!is_cover_supported){
 		ui->tab_widget->setCurrentIndex(0);
 	}
 
-	m->ui_cover_edit->refresh_current_track();
+	m->uiCoverEdit->refreshCurrentTrack();
 
-	ui->sb_track_num->setValue(md.track_number());
+	ui->sb_track_num->setValue(md.trackNumber());
 	ui->lab_track_index->setText(
 		Lang::get(Lang::Track).toFirstUpper().space() +
-		QString::number(m->cur_idx+1 ) + "/" + QString::number( n_tracks )
+		QString::number(m->currentIndex+1 ) + "/" + QString::number( n_tracks )
 	);
 }
 
 void GUI_TagEdit::reset()
 {
-	set_current_index(-1);
+	setCurrentIndex(-1);
 
-	m->ui_tag_from_path->reset();
-	m->ui_cover_edit->reset();
+	m->uiTagFromPath->reset();
+	m->uiCoverEdit->reset();
 
 	ui->tab_widget->tabBar()->setEnabled(true);
 	ui->cb_album_all->setChecked(false);
@@ -416,7 +416,7 @@ void GUI_TagEdit::reset()
 	ui->te_comment->clear();
 	ui->sb_year->setValue(0);
 	ui->sb_discnumber->setValue(0);
-	ui->widget_rating->set_rating(Rating::Zero);
+	ui->widget_rating->setRating(Rating::Zero);
 	ui->sb_track_num->setValue(0);
 	ui->le_album->setEnabled(true);
 	ui->le_artist->setEnabled(true);
@@ -431,17 +431,17 @@ void GUI_TagEdit::reset()
 
 	ui->btn_load_entire_album->setVisible(false);
 
-	init_completer();
+	initCompleter();
 }
 
-void GUI_TagEdit::init_completer()
+void GUI_TagEdit::initCompleter()
 {
 	AlbumList albums;
 	ArtistList artists;
 	QStringList albumstr, artiststr, genrestr;
 
 	auto* db = DB::Connector::instance();
-	DB::LibraryDatabase* lib_db = db->library_db(-1, 0);
+	DB::LibraryDatabase* lib_db = db->libraryDatabase(-1, 0);
 
 	lib_db->getAllAlbums(albums, true);
 	lib_db->getAllArtists(artists, true);
@@ -494,43 +494,43 @@ void GUI_TagEdit::init_completer()
 	ui->le_genre->setCompleter(genre_completer);
 }
 
-void GUI_TagEdit::undo_clicked()
+void GUI_TagEdit::undoClicked()
 {
-	m->tag_edit->undo(m->cur_idx);
-	refresh_current_track();
+	m->tagEditor->undo(m->currentIndex);
+	refreshCurrentTrack();
 }
 
-void GUI_TagEdit::undo_all_clicked()
+void GUI_TagEdit::undoAllClicked()
 {
-	m->tag_edit->undo_all();
-	refresh_current_track();
+	m->tagEditor->undoAll();
+	refreshCurrentTrack();
 }
 
 
-void GUI_TagEdit::write_changes(int idx)
+void GUI_TagEdit::writeChanges(int idx)
 {
-	if( !check_idx(idx) ) {
+	if( !checkIndex(idx) ) {
 		return;
 	}
 
-	MetaData md = m->tag_edit->metadata(idx);
+	MetaData md = m->tagEditor->metadata(idx);
 
-	md.set_title(ui->le_title->text());
-	md.set_artist(ui->le_artist->text());
-	md.set_album(ui->le_album->text());
-	md.set_album_artist(ui->le_album_artist->text());
-	md.set_genres(ui->le_genre->text().split(", "));
-	md.set_comment(ui->te_comment->toPlainText());
+	md.setTitle(ui->le_title->text());
+	md.setArtist(ui->le_artist->text());
+	md.setAlbum(ui->le_album->text());
+	md.setAlbumArtist(ui->le_album_artist->text());
+	md.setGenres(ui->le_genre->text().split(", "));
+	md.setComment(ui->te_comment->toPlainText());
 
-	md.set_discnumber(Disc(ui->sb_discnumber->value()));
-	md.set_year(Year(ui->sb_year->value()));
-	md.set_track_number(TrackNum(ui->sb_track_num->value()));
-	md.set_rating(ui->widget_rating->rating());
+	md.setDiscnumber(Disc(ui->sb_discnumber->value()));
+	md.setYear(Year(ui->sb_year->value()));
+	md.setTrackNumber(TrackNum(ui->sb_track_num->value()));
+	md.setRating(ui->widget_rating->rating());
 
-	QPixmap cover = m->ui_cover_edit->selected_cover(idx);
+	QPixmap cover = m->uiCoverEdit->selectedCover(idx);
 
-	m->tag_edit->update_track(idx, md);
-	m->tag_edit->update_cover(idx, cover);
+	m->tagEditor->updateTrack(idx, md);
+	m->tagEditor->updateCover(idx, cover);
 }
 
 void GUI_TagEdit::commit()
@@ -539,57 +539,57 @@ void GUI_TagEdit::commit()
 		return;
 	}
 
-	write_changes(m->cur_idx);
+	writeChanges(m->currentIndex);
 
-	for(int i=0; i<m->tag_edit->count(); i++)
+	for(int i=0; i<m->tagEditor->count(); i++)
 	{
-		if(i == m->cur_idx) {
+		if(i == m->currentIndex) {
 			continue;
 		}
 
-		MetaData md =m->tag_edit->metadata(i);
+		MetaData md =m->tagEditor->metadata(i);
 
 		if( ui->cb_album_all->isChecked()){
-			md.set_album(ui->le_album->text());
+			md.setAlbum(ui->le_album->text());
 		}
 		if( ui->cb_artist_all->isChecked()){
-			md.set_artist(ui->le_artist->text());
+			md.setArtist(ui->le_artist->text());
 		}
 		if( ui->cb_album_artist_all->isChecked()){
-			md.set_album_artist(ui->le_album_artist->text());
+			md.setAlbumArtist(ui->le_album_artist->text());
 		}
 		if( ui->cb_genre_all->isChecked())
 		{
 			QStringList genres = ui->le_genre->text().split(", ");
-			md.set_genres(genres);
+			md.setGenres(genres);
 		}
 
 		if( ui->cb_discnumber_all->isChecked() ){
-			md.set_discnumber(Disc(ui->sb_discnumber->value()));
+			md.setDiscnumber(Disc(ui->sb_discnumber->value()));
 		}
 
 		if( ui->cb_rating_all->isChecked()){
-			md.set_rating(ui->widget_rating->rating());
+			md.setRating(ui->widget_rating->rating());
 		}
 
 		if( ui->cb_year_all->isChecked()){
-			md.set_year(Year(ui->sb_year->value()));
+			md.setYear(Year(ui->sb_year->value()));
 		}
 
 		if( ui->cb_comment_all->isChecked() ){
-			md.set_comment(ui->te_comment->toPlainText());
+			md.setComment(ui->te_comment->toPlainText());
 		}
 
-		m->tag_edit->update_track(i, md);
+		m->tagEditor->updateTrack(i, md);
 
-		QPixmap cover = m->ui_cover_edit->selected_cover(i);
-		m->tag_edit->update_cover(i, cover);
+		QPixmap cover = m->uiCoverEdit->selectedCover(i);
+		m->tagEditor->updateCover(i, cover);
 	}
 
-	run_editor(m->tag_edit);
+	runEditor(m->tagEditor);
 }
 
-void GUI_TagEdit::commit_started()
+void GUI_TagEdit::commitStarted()
 {
 	ui->btn_save->setEnabled(false);
 	ui->btn_undo->setEnabled(false);
@@ -603,7 +603,7 @@ void GUI_TagEdit::commit_started()
 	ui->pb_progress->setMaximum(100);
 }
 
-void GUI_TagEdit::progress_changed(int val)
+void GUI_TagEdit::progressChanged(int val)
 {
 	if(val >= 0) {
 		ui->pb_progress->setValue(val);
@@ -615,40 +615,40 @@ void GUI_TagEdit::progress_changed(int val)
 	}
 }
 
-void GUI_TagEdit::commit_finished()
+void GUI_TagEdit::commitFinished()
 {
 	ui->btn_save->setEnabled(true);
-	ui->btn_load_entire_album->setEnabled(m->tag_edit->can_load_entire_album());
+	ui->btn_load_entire_album->setEnabled(m->tagEditor->canLoadEntireAlbum());
 	ui->tab_widget->tabBar()->setEnabled(true);
 	ui->pb_progress->setVisible(false);
 
-	QMap<QString, Editor::FailReason> failed_files = m->tag_edit->failed_files();
+	QMap<QString, Editor::FailReason> failed_files = m->tagEditor->failedFiles();
 	if(!failed_files.isEmpty())
 	{
 		auto* fmb = new GUI_FailMessageBox(this);
-		fmb->set_failed_files(failed_files);
+		fmb->setFailedFiles(failed_files);
 		fmb->setModal(true);
 
-		connect(fmb, &GUI_FailMessageBox::sig_closed, fmb, &QObject::deleteLater);
+		connect(fmb, &GUI_FailMessageBox::sigClosed, fmb, &QObject::deleteLater);
 		fmb->show();
 	}
 
-	metadata_changed(m->tag_edit->metadata());
+	metadataChanged(m->tagEditor->metadata());
 }
 
-void GUI_TagEdit::show_close_button(bool show)
+void GUI_TagEdit::showCloseButton(bool show)
 {
 	ui->btn_close->setVisible(show);
 }
 
-void GUI_TagEdit::show_cover_tab()
+void GUI_TagEdit::showCoverTab()
 {
 	ui->tab_widget->setCurrentIndex(2);
 }
 
-void GUI_TagEdit::load_entire_album()
+void GUI_TagEdit::loadEntireAlbum()
 {
-	if(m->tag_edit->has_changes())
+	if(m->tagEditor->hasChanges())
 	{
 		Message::Answer answer =
 		Message::question(tr("All changes will be lost") + ".\n" + Lang::get(Lang::Continue).question(), "GUI_TagEdit", Message::QuestionType::YesNo);
@@ -658,13 +658,13 @@ void GUI_TagEdit::load_entire_album()
 		}
 	}
 
-	m->tag_edit->load_entire_album();
+	m->tagEditor->loadEntireAlbum();
 }
 
 void GUI_TagEdit::showEvent(QShowEvent *e)
 {
 	Widget::showEvent(e);
-	refresh_current_track();
+	refreshCurrentTrack();
 
 	ui->le_title->setFocus();
 }

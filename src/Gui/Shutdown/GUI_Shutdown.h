@@ -1,6 +1,6 @@
 /* GUI_Shutdown.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -35,18 +35,18 @@ class GUI_Shutdown :
 	Q_OBJECT
 	UI_CLASS(GUI_Shutdown)
 
-	private slots:
-		void ok_clicked();
-		void cancel_clicked();
-		void rb_after_finished_clicked(bool b);
-		void rb_after_minutes_clicked(bool b);
-
 	public:
 		explicit GUI_Shutdown(QWidget* parent=nullptr);
-		~GUI_Shutdown();
+		~GUI_Shutdown() override;
+
+	private slots:
+		void okClicked();
+		void cancelClicked();
+		void afterPlaylistFinishedClicked(bool b);
+		void afterTimespanClicked(bool b);
 
 	protected:
-		void skin_changed();
+		void skinChanged() override;
 };
 
 #endif // SAYONARA_WITH_SHUTDOWN

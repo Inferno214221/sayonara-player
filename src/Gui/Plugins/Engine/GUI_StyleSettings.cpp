@@ -1,6 +1,6 @@
 /* GUI_StyleSettings.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -52,11 +52,11 @@ struct GUI_StyleSettings::Private
 
 	Private()
 	{
-		db = DB::Connector::instance()->visual_style_connector();
+		db = DB::Connector::instance()->visualStyleConnector();
 	}
 };
 
-GUI_StyleSettings::GUI_StyleSettings(QWidget *parent) :
+GUI_StyleSettings::GUI_StyleSettings(QWidget* parent) :
 	Dialog(parent)
 {
 	m = Pimpl::make<Private>();
@@ -84,7 +84,7 @@ GUI_StyleSettings::GUI_StyleSettings(QWidget *parent) :
 
 GUI_StyleSettings::~GUI_StyleSettings() = default;
 
-void GUI_StyleSettings::language_changed()
+void GUI_StyleSettings::languageChanged()
 {
 	ui->retranslateUi(this);
 
@@ -93,7 +93,7 @@ void GUI_StyleSettings::language_changed()
 	ui->btn_close->setText(Lang::get(Lang::Close));
 }
 
-void GUI_StyleSettings::skin_changed()
+void GUI_StyleSettings::skinChanged()
 {
 	ui->btn_save->setIcon(Gui::Icons::icon(Gui::Icons::Save));
 	ui->btn_undo->setIcon(Gui::Icons::icon(Gui::Icons::Undo));
@@ -106,7 +106,7 @@ void GUI_StyleSettings::init()
 	ui->combo_styles->clear();
 
 	m->styles.clear();
-	m->styles = m->db->get_raw_color_styles();
+	m->styles = m->db->getRawColorStyles();
 
 	RawColorStyle style;
 
@@ -311,7 +311,7 @@ void GUI_StyleSettings::save_pressed()
 		style.col_list.colors << m->colors[3];
 	}
 
-	m->db->update_raw_color_style(style);
+	m->db->updateRawColorStyle(style);
 
 	m->styles[m->cur_idx] = style;
 	set_sth_changed(false);
@@ -393,7 +393,7 @@ void GUI_StyleSettings::del_pressed()
 
 	disconnect_combo_idx_changed();
 
-	m->db->delete_raw_color_style(m->cur_text);
+	m->db->deleteRawColorStyle(m->cur_text);
 	init();
 
 	connect_combo_idx_changed();
@@ -476,7 +476,7 @@ void GUI_StyleSettings::col_changed()
 	set_sth_changed(true);
 }
 
-void GUI_StyleSettings::combo_text_changed(const QString & str)
+void GUI_StyleSettings::combo_text_changed(const QString&  str)
 {
 	Q_UNUSED(str)
 	if(m->cur_idx != ui->combo_styles->currentIndex()){

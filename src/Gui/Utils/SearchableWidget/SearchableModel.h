@@ -1,6 +1,6 @@
 /* AbstractSearchModel.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -41,10 +41,9 @@ public:
 	using ExtraTriggerMap=QMap<QChar, QString>;
 
 	virtual ExtraTriggerMap getExtraTriggers();
-	virtual QModelIndexList search_results(const QString& substr)=0;
-	virtual bool has_items() const=0;
+	virtual QModelIndexList searchResults(const QString& substr)=0;
 
-	virtual ::Library::SearchModeMask search_mode() const final;
+	virtual ::Library::SearchModeMask searchMode() const final;
 
 protected:
 	SearchableModelInterface();
@@ -66,11 +65,6 @@ class SearchableModel :
 		virtual ~SearchableModel() = default;
 
 		using Model::rowCount;
-
-		virtual bool has_items() const override
-		{
-			return (rowCount() > 0);
-		}
 };
 
 

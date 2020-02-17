@@ -1,6 +1,6 @@
 /* Image.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -45,7 +45,7 @@ Image::Image(const QPixmap& pm, const QSize& max_size)
 	m = new Private();
 
 	if(pm.isNull()){
-		sp_log(Log::Warning, this) << "Pixmap is null!";
+		spLog(Log::Warning, this) << "Pixmap is null!";
 	}
 
 	else
@@ -65,10 +65,10 @@ Image::Image(const QPixmap& pm, const QSize& max_size)
 			p = pm.scaled(mw, mh, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 		}
 
-		m->img = Util::cvt_pixmap_to_bytearray(p);
+		m->img = Util::convertPixmapToByteArray(p);
 
 		if(m->img.size() == 0){
-			sp_log(Log::Warning, this) << "Could not compress " << m->img.size() << " bytes of image data";
+			spLog(Log::Warning, this) << "Could not compress " << m->img.size() << " bytes of image data";
 		}
 	}
 }
@@ -115,13 +115,13 @@ class Image& Image::operator=(const Image& other)
 QPixmap Image::pixmap() const
 {
 	if(!m){
-		sp_log(Log::Warning, this) << "No data";
+		spLog(Log::Warning, this) << "No data";
 		return QPixmap();
 	}
 
-	QPixmap pm = Util::cvt_bytearray_to_pixmap(m->img);
+	QPixmap pm = Util::convertByteArrayToPixmap(m->img);
 	if(pm.isNull()){
-		sp_log(Log::Warning, this) << "Pixmap is empty after decompressing (" << m->img.size() << "," << m->img.size() << " bytes)";
+		spLog(Log::Warning, this) << "Pixmap is empty after decompressing (" << m->img.size() << "," << m->img.size() << " bytes)";
 	}
 
 	return pm;

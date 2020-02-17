@@ -1,6 +1,6 @@
 /* CommandLineParser.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -25,12 +25,12 @@
 
 struct CommandLineData
 {
-    QStringList	files_to_play;
+    QStringList	filesToPlay;
 	QString language;
 
-    bool multiple_instances;
+    bool multipleInstances;
     bool abort;
-	bool force_show;
+	bool forceShow;
 
     CommandLineData();
 };

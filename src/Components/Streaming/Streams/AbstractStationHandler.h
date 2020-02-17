@@ -1,6 +1,6 @@
 /* AbstractStreamHandler.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -45,10 +45,10 @@ class AbstractStationHandler :
 		virtual ~AbstractStationHandler();
 
 	signals:
-		void sig_stopped();
-		void sig_error();
-		void sig_data_available();
-		void sig_too_many_urls_found(int n_urls, int max_n_urls);
+		void sigStopped();
+		void sigError();
+		void sigDataAvailable();
+		void sigUrlCountExceeded(int urlCount, int maxUrlCount);
 
 	public:
 		/**
@@ -57,7 +57,7 @@ class AbstractStationHandler :
 		 * @param station_name the station name
 		 * @return true, if no other station is parsed atm, false else
 		 */
-		bool parse_station(const QString& url, const QString& station_name);
+		bool parseStation(StationPtr station);
 
 		/**
 		 * @brief Saves the station. Calls the add_stream() method.
@@ -71,7 +71,7 @@ class AbstractStationHandler :
 		 * @param streams target StreamMap
 		 * @return true if successful, false else
 		 */
-		virtual bool get_all_streams(QList<StationPtr>& streams)=0;
+		virtual bool getAllStreams(QList<StationPtr>& streams)=0;
 
 		/**
 		 * @brief This method should add a new station to database. If the station
@@ -80,16 +80,16 @@ class AbstractStationHandler :
 		 * @param url url
 		 * @return true if successful, false else
 		 */
-		virtual bool add_stream(StationPtr station)=0;
+		virtual bool addNewStream(StationPtr station)=0;
 
-		virtual StationPtr create_stream(const QString& name, const QString& url) const=0;
+		virtual StationPtr createStreamInstance(const QString& name, const QString& url) const=0;
 
 		/**
 		 * @brief Delete a station from the database.
 		 * @param station_name the station to be deleted
 		 * @return true if successful, false else
 		 */
-		virtual bool delete_stream(const QString& station_name)=0;
+		virtual bool deleteStream(const QString& name)=0;
 
 		/**
 		 * @brief Update the url of a station
@@ -97,29 +97,21 @@ class AbstractStationHandler :
 		 * @param url the new url
 		 * @return true if successful, false else
 		 */
-		virtual bool update_url(const QString& station_name, const QString& url)=0;
-
-		/**
-		 * @brief Rename station
-		 * @param old_name old station name
-		 * @param new_name new station name
-		 * @return
-		 */
-		virtual bool rename(const QString& old_name, const QString& new_name)=0;
+		virtual bool update(const QString& name, StationPtr station)=0;
 
 		virtual StationPtr station(const QString& name)=0;
 
 		/**
 		 * @brief Clears all station content
 		 */
-		void clear();
 		void stop();
 
-
+	protected:
+		virtual void createPlaylist(StationPtr station, MetaDataList& tracks);
 
 	private slots:
-		void stream_parser_finished(bool success);
-		void stopped();
+		void parserFinished(bool success);
+		void parserStopped();
 };
 
 #endif // AbstractStreamHandler_H

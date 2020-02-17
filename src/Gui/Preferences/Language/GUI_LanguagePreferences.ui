@@ -24,14 +24,14 @@
    <item row="4" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QPushButton" name="btn_check_for_update">
+      <widget class="QPushButton" name="btnCheckForUpdate">
        <property name="text">
         <string>Check for update</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_download">
+      <widget class="QPushButton" name="btnDownload">
        <property name="text">
         <string>Download update</string>
        </property>
@@ -40,7 +40,7 @@
     </layout>
    </item>
    <item row="5" column="0">
-    <widget class="QLabel" name="lab_update_info">
+    <widget class="QLabel" name="labUpdateInfo">
      <property name="text">
       <string notr="true"/>
      </property>
@@ -60,7 +60,7 @@
     </spacer>
    </item>
    <item row="0" column="0">
-    <widget class="Gui::ComboBox" name="combo_lang">
+    <widget class="Gui::ComboBox" name="comboLanguages">
      <property name="currentText">
       <string notr="true">English</string>
      </property>
@@ -79,7 +79,7 @@
     </widget>
    </item>
    <item row="8" column="0">
-    <widget class="QLabel" name="lab_link">
+    <widget class="QLabel" name="labLink">
      <property name="text">
       <string notr="true"/>
      </property>

@@ -20,7 +20,7 @@
       <enum>Qt::NoFocus</enum>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="tab_libraries">
       <attribute name="title">
@@ -30,7 +30,7 @@
        <item row="2" column="1">
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
-          <widget class="QPushButton" name="btn_up">
+          <widget class="QPushButton" name="btnUp">
            <property name="text">
             <string notr="true">Up</string>
            </property>
@@ -50,21 +50,21 @@
           </spacer>
          </item>
          <item>
-          <widget class="QPushButton" name="btn_new">
+          <widget class="QPushButton" name="btnNew">
            <property name="text">
             <string notr="true">New</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="btn_edit">
+          <widget class="QPushButton" name="btnEdit">
            <property name="text">
             <string notr="true">Edit</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="btn_delete">
+          <widget class="QPushButton" name="btnDelete">
            <property name="text">
             <string notr="true">Delete</string>
            </property>
@@ -84,7 +84,7 @@
           </spacer>
          </item>
          <item>
-          <widget class="QPushButton" name="btn_down">
+          <widget class="QPushButton" name="btnDown">
            <property name="text">
             <string notr="true">Down</string>
            </property>
@@ -93,14 +93,14 @@
         </layout>
        </item>
        <item row="2" column="0">
-        <widget class="QListView" name="lv_libs">
+        <widget class="QListView" name="lvLibs">
          <property name="alternatingRowColors">
           <bool>true</bool>
          </property>
         </widget>
        </item>
        <item row="3" column="0" colspan="2">
-        <widget class="QLabel" name="lab_current_path">
+        <widget class="QLabel" name="labCurrentPath">
          <property name="text">
           <string/>
          </property>
@@ -108,7 +108,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_playlist_interaction">
+     <widget class="QWidget" name="tabPlaylistInteraction">
       <attribute name="title">
        <string>Library-Playlist Interaction</string>
       </attribute>
@@ -126,14 +126,14 @@
          </property>
          <layout class="QGridLayout" name="gridLayout_2">
           <item row="0" column="0">
-           <widget class="QRadioButton" name="rb_dd_do_nothing">
+           <widget class="QRadioButton" name="rbDdDoNothing">
             <property name="text">
              <string>do nothing (default)</string>
             </property>
            </widget>
           </item>
           <item row="1" column="0">
-           <widget class="QRadioButton" name="rb_dd_start_if_stopped_and_empty">
+           <widget class="QRadioButton" name="rbDdStartIfStopped">
             <property name="text">
              <string>start if stopped and playlist is empty</string>
             </property>
@@ -162,21 +162,21 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout">
           <item>
-           <widget class="QRadioButton" name="rb_dc_do_nothing">
+           <widget class="QRadioButton" name="rbDcDoNothing">
             <property name="text">
              <string>do nothing (default)</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="rb_dc_play_if_stopped">
+           <widget class="QRadioButton" name="rbDcPlayIfStopped">
             <property name="text">
              <string>start playback if stopped</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="rb_dc_play_immediately">
+           <widget class="QRadioButton" name="rbDcPlayImmediatly">
             <property name="text">
              <string>start playback immediately</string>
             </property>
@@ -201,13 +201,13 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_other">
+     <widget class="QWidget" name="tabOther">
       <attribute name="title">
        <string>Other</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_6">
        <item row="0" column="0">
-        <widget class="QCheckBox" name="cb_show_clear_buttons">
+        <widget class="QCheckBox" name="cbShowClearSelectionButton">
          <property name="text">
           <string>Show &quot;Clear selection&quot; buttons</string>
          </property>
@@ -227,7 +227,7 @@
         </spacer>
        </item>
        <item row="1" column="0">
-        <widget class="QCheckBox" name="cb_ignore_article">
+        <widget class="QCheckBox" name="cbIgnoreArticle">
          <property name="text">
           <string>Ignore English article &quot;The&quot; in artist name</string>
          </property>
@@ -241,19 +241,19 @@
  </widget>
  <tabstops>
   <tabstop>tab_widget</tabstop>
-  <tabstop>lv_libs</tabstop>
-  <tabstop>btn_up</tabstop>
-  <tabstop>btn_new</tabstop>
-  <tabstop>btn_edit</tabstop>
-  <tabstop>btn_delete</tabstop>
-  <tabstop>btn_down</tabstop>
-  <tabstop>rb_dc_do_nothing</tabstop>
-  <tabstop>rb_dc_play_if_stopped</tabstop>
-  <tabstop>rb_dc_play_immediately</tabstop>
-  <tabstop>rb_dd_do_nothing</tabstop>
-  <tabstop>rb_dd_start_if_stopped_and_empty</tabstop>
-  <tabstop>cb_show_clear_buttons</tabstop>
-  <tabstop>cb_ignore_article</tabstop>
+  <tabstop>lvLibs</tabstop>
+  <tabstop>btnUp</tabstop>
+  <tabstop>btnNew</tabstop>
+  <tabstop>btnEdit</tabstop>
+  <tabstop>btnDelete</tabstop>
+  <tabstop>btnDown</tabstop>
+  <tabstop>rbDcDoNothing</tabstop>
+  <tabstop>rbDcPlayIfStopped</tabstop>
+  <tabstop>rbDcPlayImmediatly</tabstop>
+  <tabstop>rbDdDoNothing</tabstop>
+  <tabstop>rbDdStartIfStopped</tabstop>
+  <tabstop>cbShowClearSelectionButton</tabstop>
+  <tabstop>cbIgnoreArticle</tabstop>
  </tabstops>
  <resources/>
  <connections/>

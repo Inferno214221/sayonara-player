@@ -1,6 +1,6 @@
 /* GUI_CoverEdit.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -56,7 +56,7 @@ class GUI_CoverEdit :
 		 * @param parent
 		 */
 		explicit GUI_CoverEdit(GUI_TagEdit* parent);
-		~GUI_CoverEdit();
+		~GUI_CoverEdit() override;
 
 		/**
 		 * @brief Shows the current cover (if there) and offers to replace it
@@ -68,37 +68,37 @@ class GUI_CoverEdit :
 		 * @brief refetches the track from the tag editor
 		 * and sets the cover to the left button
 		 */
-		void refresh_current_track();
+		void refreshCurrentTrack();
 
 		/**
 		 * @brief sets the current index for a track which is currently processed
 		 * @param index
 		 */
-		void set_current_index(int index);
+		void setCurrentIndex(int index);
 
 		/**
 		 * @brief returns the new cover for a current track.
 		 * @param index
 		 * @return empty pixmap if index is invalid, or no new cover is desired a track
 		 */
-		QPixmap selected_cover(int index) const;
+		QPixmap selectedCover(int index) const;
 
 	private:
-		void set_cover(const MetaData& md);
-		void show_replacement_field(bool b);
-		bool is_cover_replacement_active() const;
-
-	protected:
-		void language_changed() override;
+		void setCover(const MetaData& md);
+		void showReplacementField(bool b);
+		bool isCoverReplacementActive() const;
 
 	private slots:
 		/**
 		 * @brief When button has finished setting up its button
 		 */
-		void cover_changed();
-		void replace_toggled(bool b);
-		void cover_all_toggled(bool b);
-		void set_metadata(const MetaDataList& v_md);
+		void coverChanged();
+		void replaceToggled(bool b);
+		void coverAllToggled(bool b);
+		void setMetadata(const MetaDataList& v_md);
+
+	protected:
+		void languageChanged() override;
 };
 
 #endif // GUI_COVEREDIT_H

@@ -1,6 +1,6 @@
 /* GUI_ProxyPreferences.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -37,38 +37,38 @@ GUI_ProxyPreferences::~GUI_ProxyPreferences()
 	}
 }
 
-void GUI_ProxyPreferences::init_ui()
+void GUI_ProxyPreferences::initUi()
 {
-	setup_parent(this, &ui);
+	setupParent(this, &ui);
 
-	connect(ui->cb_active, &QCheckBox::toggled, this, &GUI_ProxyPreferences::active_toggled);
-	connect(ui->btn_autosearch, &QPushButton::clicked, this, &GUI_ProxyPreferences::autosearch_clicked);
+	connect(ui->cbActive, &QCheckBox::toggled, this, &GUI_ProxyPreferences::activeToggled);
+	connect(ui->btnAutosearch, &QPushButton::clicked, this, &GUI_ProxyPreferences::autosearchClicked);
 
 	revert();
 }
 
-void GUI_ProxyPreferences::retranslate_ui()
+void GUI_ProxyPreferences::retranslate()
 {
 	ui->retranslateUi(this);
 }
 
-QString GUI_ProxyPreferences::action_name() const
+QString GUI_ProxyPreferences::actionName() const
 {
 	return tr("Proxy");
 }
 
 bool GUI_ProxyPreferences::commit()
 {
-	SetSetting(Set::Proxy_Active, ui->cb_active->isChecked());
-	SetSetting(Set::Proxy_Username, ui->le_username->text());
+	SetSetting(Set::Proxy_Active, ui->cbActive->isChecked());
+	SetSetting(Set::Proxy_Username, ui->leUsername->text());
 
-	SetSetting(Set::Proxy_Hostname, ui->le_host->text());
-	SetSetting(Set::Proxy_Port, ui->sb_port->value());
-	SetSetting(Set::Proxy_SavePw, ui->cb_save_pw->isChecked());
+	SetSetting(Set::Proxy_Hostname, ui->leHost->text());
+	SetSetting(Set::Proxy_Port, ui->sbPort->value());
+	SetSetting(Set::Proxy_SavePw, ui->cbSavePassword->isChecked());
 
-	if(ui->cb_save_pw->isChecked())
+	if(ui->cbSavePassword->isChecked())
 	{
-		QString pw = ui->le_password->text();
+		QString pw = ui->lePassword->text();
 		QString str = Util::Crypt::encrypt(pw);
 
 		SetSetting(Set::Proxy_Password, str);
@@ -77,7 +77,7 @@ bool GUI_ProxyPreferences::commit()
 		SetSetting(Set::Proxy_Password, QString());
 	}
 
-	Proxy::set_proxy();
+	Proxy::setProxy();
 
 	return true;
 }
@@ -86,39 +86,39 @@ void GUI_ProxyPreferences::revert()
 {
 	bool active = GetSetting(Set::Proxy_Active);
 
-	ui->cb_active->setChecked(active);
+	ui->cbActive->setChecked(active);
 
-	ui->le_host->setText(GetSetting(Set::Proxy_Hostname));
-	ui->sb_port->setValue(GetSetting(Set::Proxy_Port));
-	ui->le_username->setText(GetSetting(Set::Proxy_Username));
+	ui->leHost->setText(GetSetting(Set::Proxy_Hostname));
+	ui->sbPort->setValue(GetSetting(Set::Proxy_Port));
+	ui->leUsername->setText(GetSetting(Set::Proxy_Username));
 
 	QString pw = Util::Crypt::decrypt(GetSetting(Set::Proxy_Password));
-	ui->le_password->setText(pw);
-	ui->cb_save_pw->setChecked(GetSetting(Set::Proxy_SavePw));
+	ui->lePassword->setText(pw);
+	ui->cbSavePassword->setChecked(GetSetting(Set::Proxy_SavePw));
 
-	active_toggled(active);
+	activeToggled(active);
 }
 
-void GUI_ProxyPreferences::active_toggled(bool active)
+void GUI_ProxyPreferences::activeToggled(bool active)
 {
-	ui->le_host->setEnabled(active);
-	ui->le_password->setEnabled(active);
-	ui->sb_port->setEnabled(active);
-	ui->le_username->setEnabled(active);
-	ui->cb_save_pw->setEnabled(active);
+	ui->leHost->setEnabled(active);
+	ui->lePassword->setEnabled(active);
+	ui->sbPort->setEnabled(active);
+	ui->leUsername->setEnabled(active);
+	ui->cbSavePassword->setEnabled(active);
 }
 
-void GUI_ProxyPreferences::autosearch_clicked()
+void GUI_ProxyPreferences::autosearchClicked()
 {
-	QString hostname = Proxy::env_hostname();
-	int port = Proxy::env_port();
+	QString hostname = Proxy::envHostname();
+	int port = Proxy::envPort();
 
 	if(!hostname.isEmpty())
 	{
-		ui->cb_active->setChecked(true);
-		active_toggled(true);
+		ui->cbActive->setChecked(true);
+		activeToggled(true);
 	}
 
-	ui->le_host->setText(hostname);
-	ui->sb_port->setValue(port);
+	ui->leHost->setText(hostname);
+	ui->sbPort->setValue(port);
 }

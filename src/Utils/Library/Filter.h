@@ -1,6 +1,6 @@
 /* Filter.h
 
- * Copyright (C) 2011-2020 Lucio Carreras
+ * Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara-player
  *
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * created by Lucio Carreras,
+ * created by Michael Lugmair (Lucio Carreras),
  * Jul 9, 2012
  *
  */
@@ -73,7 +73,7 @@ namespace Library
 			 * @param with_percent appends and prepends a percent sign to each filtertext
 			 * @return
 			 */
-			QStringList search_mode_filtertext(bool with_percent) const;
+			QStringList searchModeFiltertext(bool with_percent) const;
 
 
 			/**
@@ -82,7 +82,7 @@ namespace Library
 			 * @param str searchstring
 			 * @param search_mode what do we want to search?
 			 */
-			void set_filtertext(const QString& str, SearchModeMask search_mode);
+			void setFiltertext(const QString& str, SearchModeMask search_mode);
 
 			/**
 			 * @brief Returns the filtermode
@@ -94,7 +94,7 @@ namespace Library
 			 * @brief Sets the Filter::Mode.
 			 * @param mode
 			 */
-			void set_mode(Filter::Mode mode);
+			void setMode(Filter::Mode mode);
 
 			/**
 			 * @brief Clear the searchterm. We are not looking for an invalid genre, too
@@ -113,13 +113,13 @@ namespace Library
 			 * meant to fetch all tracks which contains no genre
 			 * @param b
 			 */
-			void set_invalid_genre(bool b);
+			void setInvalidGenre(bool b);
 
 			/**
 			 * @brief Is the invalid genre mode active?
 			 * @return
 			 */
-			bool is_invalid_genre() const;
+			bool isInvalidGenre() const;
 
 			/**
 			 * @brief Invalid mode is not usable.
@@ -129,14 +129,14 @@ namespace Library
 			 * needs at least to be 3 characters
 			 * @return
 			 */
-			bool is_usable() const;
+			bool isUseable() const;
 
 			/**
 			 * @brief Get an human readable string for the mode
 			 * @param mode
 			 * @return
 			 */
-			static QString get_text(Mode mode);
+			static QString text(Mode mode);
 	};
 }
 

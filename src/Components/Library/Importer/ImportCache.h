@@ -1,6 +1,6 @@
 /* ImportCache.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -31,13 +31,10 @@ namespace Library
 	 */
 	class ImportCache
 	{
-		private:
-			PIMPL(ImportCache)
-
-			void			add_soundfile(const QString& filename);
+		PIMPL(ImportCache)
 
 		public:
-			explicit ImportCache(const QString& library_path);
+			explicit ImportCache(const QString& libraryPath);
 			virtual ~ImportCache();
 
 			ImportCache(const ImportCache& other);
@@ -45,16 +42,20 @@ namespace Library
 
 			void			clear();
 
-			void			add_file(const QString& filename);
-			void			add_file(const QString& filename, const QString& parent_dir);
+			void			addFile(const QString& filename);
+			void			addFile(const QString& filename, const QString& parentDirectory);
 
 			QStringList		files() const;
 			MetaDataList	soundfiles() const;
 			int				count() const;
+			int				soundFileCount() const;
 
-			QString			target_filename(const QString& src_filename, const QString& target_directory) const;
+			QString			targetFilename(const QString& srcFilename, const QString& targetDirectory) const;
 			MetaData		metadata(const QString& filename) const;
-			void			change_metadata(const MetaDataList& updated_tracks);
+			void			changeMetadata(const MetaDataList& updatedTracks);
+
+		private:
+			void			addSoundfile(const QString& filename);
 	};
 
 	using ImportCachePtr=std::shared_ptr<ImportCache>;

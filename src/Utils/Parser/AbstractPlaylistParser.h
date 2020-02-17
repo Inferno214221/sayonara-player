@@ -1,6 +1,6 @@
 /* AbstractPlaylistParser.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -45,8 +45,8 @@ public:
 
 
 protected:
-	void add_track(const MetaData& md);
-	void add_tracks(const MetaDataList& v_md);
+	void addTrack(const MetaData& md);
+	void addTracks(const MetaDataList& v_md);
 	const QString& content() const;
 
 	/**
@@ -60,7 +60,7 @@ protected:
 	 * @param filename as seen in the playlist
 	 * @return absolute filename if local file. filename else
 	 */
-	QString get_absolute_filename(const QString& filename) const;
+	QString getAbsoluteFilename(const QString& filename) const;
 };
 
 #endif // ABSTRACTPLAYLISTPARSER_H

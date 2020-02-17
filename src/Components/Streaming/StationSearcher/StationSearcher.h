@@ -1,6 +1,6 @@
 /* StationSearcher.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -31,10 +31,10 @@ class StationSearcher : public QObject
 	PIMPL(StationSearcher)
 
 signals:
-	void sig_stations_found();
+	void sigStationsFound();
 
 private:
-	void start_call();
+	void startCall();
 
 public:
 
@@ -48,19 +48,19 @@ public:
 	StationSearcher(QObject* parent=nullptr);
 	~StationSearcher();
 
-	void search_style(const QString& style);
-	void search_station(const QString& name);
-	void search_previous();
-	void search_next();
+	void searchStyle(const QString& style);
+	void searchStation(const QString& name);
+	void searchPrevious();
+	void searchNext();
 
-	bool can_search_next() const;
-	bool can_search_previous() const;
+	bool canSearchNext() const;
+	bool canSearchPrevious() const;
 	Mode mode() const;
 
-	QList<RadioStation> found_stations() const;
+	QList<RadioStation> foundStations() const;
 
 private slots:
-	void search_finished();
+	void searchFinished();
 };
 
 #endif // STATIONSEARCHER_H

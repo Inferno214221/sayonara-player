@@ -22,29 +22,29 @@ struct GUI_SpectrogramPainter::Private
 {
 	QPixmap pm;
 
-	Line current_line;
+	Line currentLine;
 
-	int promille_values;
-	int current_promille;
+	int promilleValues;
+	int currentPromille;
 
-	AudioDataProvider* adp=nullptr;
+	AudioDataProvider* audioDataProvider=nullptr;
 	QString filename;
 
 	Private() :
-		promille_values(0),
-		current_promille(-1)
+		promilleValues(0),
+		currentPromille(-1)
 	{
 		pm = QPixmap(800, 800);
 	}
 
-	void scale_current_line()
+	void scaleCurrentLine()
 	{
-		for(auto it=current_line.begin(); it != current_line.end(); it++)
+		for(auto it=currentLine.begin(); it != currentLine.end(); it++)
 		{
-			*it /= promille_values;
+			*it /= promilleValues;
 		}
 
-		promille_values = 1;
+		promilleValues = 1;
 	}
 };
 
@@ -52,74 +52,74 @@ GUI_SpectrogramPainter::GUI_SpectrogramPainter(QWidget* parent) :
 	PlayerPlugin::Base(parent)
 {
 	m = Pimpl::make<Private>();
-	m->adp = new AudioDataProvider(this);
+	m->audioDataProvider = new AudioDataProvider(this);
 
 	this->setMouseTracking(true);
 
-	connect(m->adp, &AudioDataProvider::sig_started, this, &GUI_SpectrogramPainter::reset);
-	connect(m->adp, &AudioDataProvider::sig_spectrum, this, &GUI_SpectrogramPainter::spectrum_changed);
-	connect(m->adp, &AudioDataProvider::sig_finished, this, &GUI_SpectrogramPainter::finished);
+	connect(m->audioDataProvider, &AudioDataProvider::sigStarted, this, &GUI_SpectrogramPainter::reset);
+	connect(m->audioDataProvider, &AudioDataProvider::sigSpectrumDataAvailable, this, &GUI_SpectrogramPainter::spectrumChanged);
+	connect(m->audioDataProvider, &AudioDataProvider::sigFinished, this, &GUI_SpectrogramPainter::finished);
 
 	auto* pm = PlayManager::instance();
-	connect(pm, &PlayManager::sig_track_changed, this, &GUI_SpectrogramPainter::track_changed);
-	connect(pm, &PlayManager::sig_playstate_changed, this, &GUI_SpectrogramPainter::playstate_changed);
+	connect(pm, &PlayManager::sigCurrentTrackChanged, this, &GUI_SpectrogramPainter::trackChanged);
+	connect(pm, &PlayManager::sigPlaystateChanged, this, &GUI_SpectrogramPainter::playstateChanged);
 }
 
 GUI_SpectrogramPainter::~GUI_SpectrogramPainter() = default;
 
-QString GUI_SpectrogramPainter::get_name() const
+QString GUI_SpectrogramPainter::name() const
 {
 	return "spectrogram_painter";
 }
 
-QString GUI_SpectrogramPainter::get_display_name() const
+QString GUI_SpectrogramPainter::displayName() const
 {
 	return tr("Spectrogram");
 }
 
-bool GUI_SpectrogramPainter::is_ui_initialized() const
+bool GUI_SpectrogramPainter::isUiInitialized() const
 {
 	return true;
 }
 
-void GUI_SpectrogramPainter::spectrum_changed(const QList<float>& spectrum, MilliSeconds ms)
+void GUI_SpectrogramPainter::spectrumChanged(const QList<float>& spectrum, MilliSeconds ms)
 {
-	double promille = (ms * 1000.0) / PlayManager::instance()->current_track().duration_ms();
+	double promille = (ms * 1000.0) / PlayManager::instance()->currentTrack().durationMs();
 
-	if(m->current_promille == int(promille))
+	if(m->currentPromille == int(promille))
 	{
-		std::transform(	m->current_line.begin(), m->current_line.end(),
-						spectrum.begin(), m->current_line.begin(), std::plus<float>());
+		std::transform(	m->currentLine.begin(), m->currentLine.end(),
+						spectrum.begin(), m->currentLine.begin(), std::plus<float>());
 
-		m->promille_values++;
+		m->promilleValues++;
 	}
 
 	else
 	{
-		if(m->current_promille >= 0) {
-			draw_buffer(int(promille) - m->current_promille);
+		if(m->currentPromille >= 0) {
+			drawBuffer(int(promille) - m->currentPromille);
 		}
 
-		m->current_line = spectrum;
-		m->promille_values = 1;
-		m->current_promille = int(promille);
+		m->currentLine = spectrum;
+		m->promilleValues = 1;
+		m->currentPromille = int(promille);
 	}
 }
 
 
-void GUI_SpectrogramPainter::draw_buffer(int percent_step)
+void GUI_SpectrogramPainter::drawBuffer(int percent_step)
 {
 	QPainter p(&m->pm);
-	m->scale_current_line();
+	m->scaleCurrentLine();
 
-	const int Threshold = m->adp->get_threshold();
-	const int stretch_factor = int((m->pm.height() * 1.0) / m->adp->get_number_bins());
-	const int x = int((m->pm.width() * m->current_promille) / 1000.0);
+	const int Threshold = m->audioDataProvider->threshold();
+	const int stretch_factor = int((m->pm.height() * 1.0) / m->audioDataProvider->binCount());
+	const int x = int((m->pm.width() * m->currentPromille) / 1000.0);
 
 	static const double brightest = (256 + 256 + 512);
 
 	int cur_offset = m->pm.height();
-	for(Dot dot : m->current_line)
+	for(Dot dot : m->currentLine)
 	{
 		if(dot >= 0) {
 			continue;
@@ -156,15 +156,15 @@ void GUI_SpectrogramPainter::draw_buffer(int percent_step)
 	this->repaint();
 }
 
-QString GUI_SpectrogramPainter::calc_tooltip(float yPercent)
+QString GUI_SpectrogramPainter::calcTooltip(float yPercent)
 {
-	int bin = int(m->current_line.count() * yPercent);
+	int bin = int(m->currentLine.count() * yPercent);
 
 	float freq1 = -1;
 	if(bin > 0){
-		freq1 = m->adp->get_frequency(bin-1);
+		freq1 = m->audioDataProvider->frequency(bin-1);
 	};
-	float freq2 = m->adp->get_frequency(bin);
+	float freq2 = m->audioDataProvider->frequency(bin);
 
 	return QString("%1 - %2 Hz").arg(freq1+1.0f).arg(freq2);
 }
@@ -176,30 +176,30 @@ QSize GUI_SpectrogramPainter::minimumSizeHint() const
 
 void GUI_SpectrogramPainter::finished() {}
 
-void GUI_SpectrogramPainter::playstate_changed(PlayState state)
+void GUI_SpectrogramPainter::playstateChanged(PlayState state)
 {
 	if(state == PlayState::Stopped)
 	{
-		m->adp->stop();
+		m->audioDataProvider->stop();
 	}
 }
 
-void GUI_SpectrogramPainter::track_changed(const MetaData& md)
+void GUI_SpectrogramPainter::trackChanged(const MetaData& md)
 {
 	if(this->isVisible())
 	{
-		start_adp(md);
+		startAudioDataProvider(md);
 	}
 }
 
 void GUI_SpectrogramPainter::reset()
 {
 	m->pm.fill(QColor(0, 0, 0, 0));
-	m->current_promille = -1;
+	m->currentPromille = -1;
 }
 
 
-void GUI_SpectrogramPainter::show_fullsize()
+void GUI_SpectrogramPainter::showFullsize()
 {
 	QLabel* label = new QLabel(nullptr);
 	QPoint p = QCursor::pos();
@@ -216,40 +216,40 @@ void GUI_SpectrogramPainter::show_fullsize()
 	label->installEventFilter(gf);
 	label->installEventFilter(mmf);
 
-	connect(gf, &Gui::GenericFilter::sig_event, this, [=](auto unused){
+	connect(gf, &Gui::GenericFilter::sigEvent, this, [=](auto unused){
 		Q_UNUSED(unused);
 		label->deleteLater();
 	});
 
-	connect(mmf, &Gui::MouseMoveFilter::sig_mouse_moved, this, [=](const QMouseEvent* e)
+	connect(mmf, &Gui::MouseMoveFilter::sigMouseMoved, this, [=](const QMouseEvent* e)
 	{
 		QPoint p = e->pos();
 		float yPercent = (1.0f - (p.y() * 1.0f) / label->height());
-		label->setToolTip( calc_tooltip(yPercent) );
+		label->setToolTip( calcTooltip(yPercent) );
 	});
 }
 
-void GUI_SpectrogramPainter::position_clicked(QPoint position)
+void GUI_SpectrogramPainter::positionClicked(QPoint position)
 {
 	double percent = (position.x() * 1.0) / this->width();
-	PlayManager::instance()->seek_rel(percent);
+	PlayManager::instance()->seekRelative(percent);
 }
 
-void GUI_SpectrogramPainter::start_adp(const MetaData& md)
+void GUI_SpectrogramPainter::startAudioDataProvider(const MetaData& md)
 {
-	if(m->adp->is_finished(md.filepath())){
+	if(m->audioDataProvider->isFinished(md.filepath())){
 		return;
 	}
 
-	stop_adp();
+	stopAudioDataProvider();
 
 	m->filename = md.filepath();
-	m->adp->start(md.filepath());
+	m->audioDataProvider->start(md.filepath());
 }
 
-void GUI_SpectrogramPainter::stop_adp()
+void GUI_SpectrogramPainter::stopAudioDataProvider()
 {
-	m->adp->stop();
+	m->audioDataProvider->stop();
 }
 
 void GUI_SpectrogramPainter::showEvent(QShowEvent* e)
@@ -258,13 +258,13 @@ void GUI_SpectrogramPainter::showEvent(QShowEvent* e)
 
 	if(PlayManager::instance()->playstate() != PlayState::Stopped)
 	{
-		start_adp(PlayManager::instance()->current_track());
+		startAudioDataProvider(PlayManager::instance()->currentTrack());
 	}
 }
 
 void GUI_SpectrogramPainter::closeEvent(QCloseEvent* e)
 {
-	stop_adp();
+	stopAudioDataProvider();
 	PlayerPlugin::Base::closeEvent(e);
 }
 
@@ -280,12 +280,12 @@ void GUI_SpectrogramPainter::mousePressEvent(QMouseEvent* e)
 {
 	if(e->button() & Qt::LeftButton)
 	{
-		position_clicked(e->pos());
+		positionClicked(e->pos());
 	}
 
 	else if(e->button() & Qt::MiddleButton)
 	{
-		show_fullsize();
+		showFullsize();
 	}
 
 	PlayerPlugin::Base::mousePressEvent(e);
@@ -294,13 +294,13 @@ void GUI_SpectrogramPainter::mousePressEvent(QMouseEvent* e)
 void GUI_SpectrogramPainter::mouseMoveEvent(QMouseEvent* e)
 {
 	float yPercent = (1.0f - (e->pos().y() * 1.0f) / this->height());
-	this->setToolTip( calc_tooltip(yPercent) );
+	this->setToolTip( calcTooltip(yPercent) );
 
 	PlayerPlugin::Base::mouseMoveEvent(e);
 }
 
-void GUI_SpectrogramPainter::retranslate_ui() {}
+void GUI_SpectrogramPainter::retranslate() {}
 
-void GUI_SpectrogramPainter::init_ui() {}
+void GUI_SpectrogramPainter::initUi() {}
 
 

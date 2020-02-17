@@ -55,7 +55,7 @@
         <number>3</number>
        </property>
        <item row="1" column="0">
-        <widget class="Gui::Slider" name="sli_speed">
+        <widget class="Gui::Slider" name="sliSpeed">
          <property name="minimum">
           <number>50</number>
          </property>
@@ -82,7 +82,7 @@
        <item row="2" column="0" colspan="2">
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
-          <widget class="QCheckBox" name="cb_preserve_pitch">
+          <widget class="QCheckBox" name="cbPreservePitch">
            <property name="text">
             <string>Preserve pitch</string>
            </property>
@@ -104,7 +104,7 @@
         </layout>
        </item>
        <item row="1" column="1">
-        <widget class="QPushButton" name="btn_speed">
+        <widget class="QPushButton" name="btnSpeed">
          <property name="text">
           <string notr="true">1.0</string>
          </property>
@@ -121,7 +121,7 @@
         <number>8</number>
        </property>
        <item row="0" column="0">
-        <widget class="Gui::Slider" name="sli_pitch">
+        <widget class="Gui::Slider" name="sliPitch">
          <property name="minimum">
           <number>4000</number>
          </property>
@@ -146,7 +146,7 @@
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QPushButton" name="btn_pitch">
+        <widget class="QPushButton" name="btnPitch">
          <property name="text">
           <string notr="true">Hz</string>
          </property>
@@ -157,7 +157,7 @@
     </widget>
    </item>
    <item row="0" column="0">
-    <widget class="QCheckBox" name="cb_active">
+    <widget class="QCheckBox" name="cbActive">
      <property name="text">
       <string notr="true">Active</string>
      </property>
@@ -173,12 +173,12 @@
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>cb_active</tabstop>
-  <tabstop>sli_speed</tabstop>
-  <tabstop>btn_speed</tabstop>
-  <tabstop>cb_preserve_pitch</tabstop>
-  <tabstop>sli_pitch</tabstop>
-  <tabstop>btn_pitch</tabstop>
+  <tabstop>cbActive</tabstop>
+  <tabstop>sliSpeed</tabstop>
+  <tabstop>btnSpeed</tabstop>
+  <tabstop>cbPreservePitch</tabstop>
+  <tabstop>sliPitch</tabstop>
+  <tabstop>btnPitch</tabstop>
  </tabstops>
  <resources/>
  <connections/>

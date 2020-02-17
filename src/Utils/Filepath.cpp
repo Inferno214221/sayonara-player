@@ -27,7 +27,7 @@ Filepath::~Filepath() = default;
 
 Filepath& Filepath::operator=(const QString& path)
 {
-	m->path = Util::File::clean_filename(path);
+	m->path = Util::File::cleanFilename(path);
 	return (*this);
 }
 
@@ -39,7 +39,7 @@ Filepath& Filepath::operator=(const Filepath& path)
 
 bool Filepath::operator==(const QString& path) const
 {
-	return (m->path == Util::File::clean_filename(path));
+	return (m->path == Util::File::cleanFilename(path));
 }
 
 bool Filepath::operator==(const Filepath& path) const
@@ -52,17 +52,17 @@ QString Filepath::path() const
 	return m->path;
 }
 
-QString Filepath::filesystem_path() const
+QString Filepath::fileystemPath() const
 {
-	if( is_resource() )
+	if( isResource() )
 	{
 		QString dir, filename;
-		Util::File::split_filename(m->path, dir, filename);
+		Util::File::splitFilename(m->path, dir, filename);
 
-		QString local_path = Util::temp_path(filename);
+		QString local_path = Util::tempPath(filename);
 
 		QString new_name;
-		Util::File::copy_file(m->path, Util::temp_path(), new_name);
+		Util::File::copyFile(m->path, Util::tempPath(), new_name);
 
 		return local_path;
 	}
@@ -70,21 +70,21 @@ QString Filepath::filesystem_path() const
 	return path();
 }
 
-bool Filepath::is_resource() const
+bool Filepath::isResource() const
 {
 	return (m->path.startsWith(":"));
 }
 
-bool Filepath::is_filesystem_path() const
+bool Filepath::isFilesystemPath() const
 {
-	if(is_url() || is_resource()){
+	if(isUrl() || isResource()){
 		return false;
 	}
 
 	return true;
 }
 
-bool Filepath::is_url() const
+bool Filepath::isUrl() const
 {
-	return Util::File::is_www(m->path);
+	return Util::File::isWWW(m->path);
 }

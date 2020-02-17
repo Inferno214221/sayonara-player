@@ -12,20 +12,20 @@ namespace Cover::Fetcher
 		PIMPL(DirectFetcher)
 
 		private:
-			QString priv_identifier() const override;
+			QString privateIdentifier() const override;
 
 		public:
 			DirectFetcher();
 			~DirectFetcher() override;
 
-			bool can_fetch_cover_directly() const override;
-			QStringList parse_addresses(const QByteArray& website) const override;
-			QString artist_address(const QString& artist) const override;
-			QString album_address(const QString& artist, const QString& album) const override;
-			QString search_address(const QString& str) const override;
-			int estimated_size() const override;
+			bool canFetchCoverDirectly() const override;
+			QStringList parseAddresses(const QByteArray& website) const override;
+			QString artistAddress(const QString& artist) const override;
+			QString albumAddress(const QString& artist, const QString& album) const override;
+			QString fulltextSearchAddress(const QString& str) const override;
+			int estimatedSize() const override;
 
-			void set_direct_url(const QString& url);
+			void setDirectUrl(const QString& url);
 	};
 }
 

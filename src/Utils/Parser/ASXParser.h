@@ -1,6 +1,6 @@
 /* ASXParser.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -33,11 +33,11 @@ class ASXParser :
 {
 public:
 	explicit ASXParser(const QString& filename);
-	~ASXParser();
+	~ASXParser() override;
 
 private:
 	void parse() override;
-	QString parse_ref_node(const QDomNode& node);
+	QString parseRefNode(const QDomNode& node);
 };
 
 #endif // ASXPARSER_H

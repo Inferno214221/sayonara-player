@@ -1,6 +1,6 @@
 /* GUI_Stream.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -33,30 +33,30 @@ class GUI_Stream :
 	PIMPL(GUI_Stream)
 
 	public:
-		explicit GUI_Stream(QWidget *parent=nullptr);
-		virtual ~GUI_Stream();
+		explicit GUI_Stream(QWidget* parent=nullptr);
+		~GUI_Stream() override;
 
-		QString get_name() const override;
-		QString get_display_name() const override;
+		QString name() const override;
+		QString displayName() const override;
 
 	private:
-		void init_ui() override;
-		void retranslate_ui() override;
-		QString get_title_fallback_name() const override;
+		void initUi() override;
+		void retranslate() override;
+		QString titleFallbackName() const override;
 
 	// GUI_AbstractStream interface
 	protected:
-		QComboBox* combo_stream() override;
-		QPushButton* btn_play() override;
-		Gui::MenuToolButton* btn_menu() override;
-		AbstractStationHandler* stream_handler() const override;
-		GUI_ConfigureStation* create_config_dialog() override;
+		QComboBox* comboStream() override;
+		QPushButton* btnPlay() override;
+		Gui::MenuToolButton* btnMenu() override;
+		AbstractStationHandler* streamHandler() const override;
+		GUI_ConfigureStation* createConfigDialog() override;
 
-		void skin_changed() override;
+		void skinChanged() override;
 
 	private slots:
-		void search_radio_triggered();
-		void stream_selected(const QString& name, const QString& url);
+		void searchRadioTriggered();
+		void streamSelected(const QString& name, const QString& url);
 };
 
 #endif /* GUI_STREAM_H_ */

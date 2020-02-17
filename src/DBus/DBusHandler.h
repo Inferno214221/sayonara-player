@@ -1,6 +1,6 @@
 /* DBusHandler.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -37,12 +37,12 @@ class DBusHandler :
 	PIMPL(DBusHandler)
 
 public:
-	explicit DBusHandler(QMainWindow* main_window, QObject* parent=nullptr);
+	explicit DBusHandler(QMainWindow* mainWindow, QObject* parent=nullptr);
 	virtual ~DBusHandler();
 
 private slots:
-	void service_registered(const QString& service_name);
-	void service_unregistered(const QString& service_name);
+	void serviceRegistered(const QString& serviceName);
+	void serviceUnregistered(const QString& serviceName);
 };
 
 #endif // DBUSHANDLER_H

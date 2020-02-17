@@ -1,6 +1,6 @@
 /* LibraryContextMenu.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -40,31 +40,31 @@ namespace Algorithm=Util::Algorithm;
 
 struct ContextMenu::Private
 {
-	QMap<ContextMenu::Entry, QAction*> entry_action_map;
+	QMap<ContextMenu::Entry, QAction*> entryActionMap;
 
 	QMenu*		filetype_menu=nullptr;
 
-	QAction*	info_action=nullptr;
-	QAction*	lyrics_action=nullptr;
-	QAction*	edit_action=nullptr;
-	QAction*	remove_action=nullptr;
-	QAction*	delete_action=nullptr;
-	QAction*	play_action=nullptr;
-	QAction*	play_new_tab_action=nullptr;
-	QAction*	play_next_action=nullptr;
-	QAction*	append_action=nullptr;
-	QAction*	refresh_action=nullptr;
-	QAction*	reload_library_action=nullptr;
-	QAction*	clear_action=nullptr;
-	QAction*	cover_view_action=nullptr;
-	QAction*	filetype_action=nullptr;
-	QAction*	show_filetype_bar_action=nullptr;
-	QAction*	preference_separator=nullptr;
+	QAction*	infoAction=nullptr;
+	QAction*	lyricsAction=nullptr;
+	QAction*	editAction=nullptr;
+	QAction*	removeAction=nullptr;
+	QAction*	deleteAction=nullptr;
+	QAction*	playAction=nullptr;
+	QAction*	playNewTabAction=nullptr;
+	QAction*	playNextAction=nullptr;
+	QAction*	appendAction=nullptr;
+	QAction*	refreshAction=nullptr;
+	QAction*	reloadLibraryAction=nullptr;
+	QAction*	clearAction=nullptr;
+	QAction*	coverViewAction=nullptr;
+	QAction*	filetypeAction=nullptr;
+	QAction*	showFiletypeBarAction=nullptr;
+	QAction*	preferenceSeparator=nullptr;
 
-	bool has_preference_actions;
+	bool has_preferenceActions;
 
 	Private() :
-		has_preference_actions(false)
+		has_preferenceActions(false)
 	{}
 };
 
@@ -73,166 +73,166 @@ ContextMenu::ContextMenu(QWidget* parent) :
 {
 	m = Pimpl::make<Private>();
 
-	m->info_action = new QAction(this);
-	m->lyrics_action  = new QAction(this);
-	m->edit_action = new QAction(this);
-	m->remove_action = new QAction(this);
-	m->delete_action = new QAction(this);
-	m->play_action = new QAction(this);
-	m->play_new_tab_action = new QAction(this);
-	m->play_next_action = new QAction(this);
-	m->append_action = new QAction(this);
-	m->refresh_action = new QAction(this);
-	m->reload_library_action = new QAction(this);
-	m->clear_action = new QAction(this);
-	m->cover_view_action = new QAction(this);
-	m->cover_view_action->setCheckable(true);
+	m->infoAction = new QAction(this);
+	m->lyricsAction  = new QAction(this);
+	m->editAction = new QAction(this);
+	m->removeAction = new QAction(this);
+	m->deleteAction = new QAction(this);
+	m->playAction = new QAction(this);
+	m->playNewTabAction = new QAction(this);
+	m->playNextAction = new QAction(this);
+	m->appendAction = new QAction(this);
+	m->refreshAction = new QAction(this);
+	m->reloadLibraryAction = new QAction(this);
+	m->clearAction = new QAction(this);
+	m->coverViewAction = new QAction(this);
+	m->coverViewAction->setCheckable(true);
 	m->filetype_menu = new QMenu(this);
-	m->filetype_action = this->addMenu(m->filetype_menu);
-	m->show_filetype_bar_action = new QAction(this);
-	m->show_filetype_bar_action->setCheckable(true);
+	m->filetypeAction = this->addMenu(m->filetype_menu);
+	m->showFiletypeBarAction = new QAction(this);
+	m->showFiletypeBarAction->setCheckable(true);
 
-	ListenSetting(Set::Lib_ShowAlbumCovers, ContextMenu::show_cover_view_changed);
-	ListenSetting(Set::Lib_ShowFilterExtBar, ContextMenu::show_filter_ext_bar_changed);
+	ListenSetting(Set::Lib_ShowAlbumCovers, ContextMenu::showCoverViewChanged);
+	ListenSetting(Set::Lib_ShowFilterExtBar, ContextMenu::showFilterExtensionBarChanged);
 
 	ShortcutHandler* sch = ShortcutHandler::instance();
-	connect(sch, &ShortcutHandler::sig_shortcut_changed, this, &ContextMenu::shortcut_changed);
+	connect(sch, &ShortcutHandler::sigShortcutChanged, this, &ContextMenu::shortcutChanged);
 
 	QList<QAction*> actions;
-	actions << m->play_action
-			<< m->play_new_tab_action
-			<< m->play_next_action
-			<< m->append_action
+	actions << m->playAction
+			<< m->playNewTabAction
+			<< m->playNextAction
+			<< m->appendAction
 			<< addSeparator()
 
-			<< m->info_action
-			<< m->lyrics_action
-			<< m->edit_action
-			<< m->filetype_action
+			<< m->infoAction
+			<< m->lyricsAction
+			<< m->editAction
+			<< m->filetypeAction
 			<< addSeparator()
 
-			<< m->reload_library_action
-			<< m->refresh_action
-			<< m->remove_action
-			<< m->clear_action
-			<< m->delete_action
+			<< m->reloadLibraryAction
+			<< m->refreshAction
+			<< m->removeAction
+			<< m->clearAction
+			<< m->deleteAction
 			<< addSeparator()
-			<< m->cover_view_action
+			<< m->coverViewAction
 	;
 
 	this->addActions(actions);
 
-	m->entry_action_map[EntryInfo] = m->info_action;
-	m->entry_action_map[EntryEdit] = m->edit_action;
-	m->entry_action_map[EntryLyrics] = m->lyrics_action;
-	m->entry_action_map[EntryRemove] = m->remove_action;
-	m->entry_action_map[EntryDelete] = m->delete_action;
-	m->entry_action_map[EntryPlay] = m->play_action;
-	m->entry_action_map[EntryPlayNewTab] = m->play_new_tab_action;
-	m->entry_action_map[EntryPlayNext] = m->play_next_action;
-	m->entry_action_map[EntryAppend] = m->append_action;
-	m->entry_action_map[EntryRefresh] = m->refresh_action;
-	m->entry_action_map[EntryReload] = m->reload_library_action;
-	m->entry_action_map[EntryClear] = m->clear_action;
-	m->entry_action_map[EntryCoverView] = m->cover_view_action;
-	m->entry_action_map[EntryFilterExtension] = m->filetype_action;
+	m->entryActionMap[EntryInfo] = m->infoAction;
+	m->entryActionMap[EntryEdit] = m->editAction;
+	m->entryActionMap[EntryLyrics] = m->lyricsAction;
+	m->entryActionMap[EntryRemove] = m->removeAction;
+	m->entryActionMap[EntryDelete] = m->deleteAction;
+	m->entryActionMap[EntryPlay] = m->playAction;
+	m->entryActionMap[EntryPlayNewTab] = m->playNewTabAction;
+	m->entryActionMap[EntryPlayNext] = m->playNextAction;
+	m->entryActionMap[EntryAppend] = m->appendAction;
+	m->entryActionMap[EntryRefresh] = m->refreshAction;
+	m->entryActionMap[EntryReload] = m->reloadLibraryAction;
+	m->entryActionMap[EntryClear] = m->clearAction;
+	m->entryActionMap[EntryCoverView] = m->coverViewAction;
+	m->entryActionMap[EntryFilterExtension] = m->filetypeAction;
 
 	for(QAction* action : Algorithm::AsConst(actions))
 	{
 		action->setVisible(action->isSeparator());
 	}
 
-	connect(m->info_action, &QAction::triggered, this, &ContextMenu::sig_info_clicked);
-	connect(m->lyrics_action, &QAction::triggered, this, &ContextMenu::sig_lyrics_clicked);
-	connect(m->edit_action, &QAction::triggered, this, &ContextMenu::sig_edit_clicked);
-	connect(m->remove_action, &QAction::triggered, this, &ContextMenu::sig_remove_clicked);
-	connect(m->delete_action, &QAction::triggered, this, &ContextMenu::sig_delete_clicked);
-	connect(m->play_action, &QAction::triggered, this, &ContextMenu::sig_play_clicked);
-	connect(m->play_new_tab_action, &QAction::triggered, this, &ContextMenu::sig_play_new_tab_clicked);
-	connect(m->play_next_action, &QAction::triggered, this, &ContextMenu::sig_play_next_clicked);
-	connect(m->append_action, &QAction::triggered, this, &ContextMenu::sig_append_clicked);
-	connect(m->refresh_action, &QAction::triggered, this, &ContextMenu::sig_refresh_clicked);
-	connect(m->reload_library_action, &QAction::triggered, this, &ContextMenu::sig_reload_clicked);
-	connect(m->clear_action, &QAction::triggered, this, &ContextMenu::sig_clear_clicked);
-	connect(m->cover_view_action, &QAction::triggered, this, &ContextMenu::show_cover_triggered);
-	connect(m->show_filetype_bar_action, &QAction::triggered, this, &ContextMenu::show_filter_extension_bar_triggered);
+	connect(m->infoAction, &QAction::triggered, this, &ContextMenu::sigInfoClicked);
+	connect(m->lyricsAction, &QAction::triggered, this, &ContextMenu::sigLyricsClicked);
+	connect(m->editAction, &QAction::triggered, this, &ContextMenu::sigEditClicked);
+	connect(m->removeAction, &QAction::triggered, this, &ContextMenu::sigRemoveClicked);
+	connect(m->deleteAction, &QAction::triggered, this, &ContextMenu::sigDeleteClicked);
+	connect(m->playAction, &QAction::triggered, this, &ContextMenu::sigPlayClicked);
+	connect(m->playNewTabAction, &QAction::triggered, this, &ContextMenu::sigPlayNewTabClicked);
+	connect(m->playNextAction, &QAction::triggered, this, &ContextMenu::sigPlayNextClicked);
+	connect(m->appendAction, &QAction::triggered, this, &ContextMenu::sigAppendClicked);
+	connect(m->refreshAction, &QAction::triggered, this, &ContextMenu::sigRefreshClicked);
+	connect(m->reloadLibraryAction, &QAction::triggered, this, &ContextMenu::sigReloadClicked);
+	connect(m->clearAction, &QAction::triggered, this, &ContextMenu::sigClearClicked);
+	connect(m->coverViewAction, &QAction::triggered, this, &ContextMenu::showCoverTriggered);
+	connect(m->showFiletypeBarAction, &QAction::triggered, this, &ContextMenu::showFilterExtensionBarTriggered);
 }
 
 ContextMenu::~ContextMenu() = default;
 
-void ContextMenu::language_changed()
+void ContextMenu::languageChanged()
 {
-	m->info_action->setText(Lang::get(Lang::Info));
-	m->lyrics_action->setText(Lang::get(Lang::Lyrics));
-	m->edit_action->setText(Lang::get(Lang::Edit));
-	m->remove_action->setText(Lang::get(Lang::Remove));
-	m->delete_action->setText(Lang::get(Lang::Delete));
-	m->play_action->setText(Lang::get(Lang::Play));
-	m->play_new_tab_action->setText(tr("Play in new tab"));
-	m->play_next_action->setText(Lang::get(Lang::PlayNext));
-	m->append_action->setText(Lang::get(Lang::Append));
-	m->refresh_action->setText(Lang::get(Lang::Refresh));
-	m->reload_library_action->setText(Lang::get(Lang::ReloadLibrary));
-	m->clear_action->setText(Lang::get(Lang::Clear));
-	m->cover_view_action->setText(tr("Cover view"));
-	m->filetype_action->setText(Lang::get(Lang::Filetype));
-	m->show_filetype_bar_action->setText(Lang::get(Lang::Show) + ": " + tr("Toolbar"));
+	m->infoAction->setText(Lang::get(Lang::Info));
+	m->lyricsAction->setText(Lang::get(Lang::Lyrics));
+	m->editAction->setText(Lang::get(Lang::Edit));
+	m->removeAction->setText(Lang::get(Lang::Remove));
+	m->deleteAction->setText(Lang::get(Lang::Delete));
+	m->playAction->setText(Lang::get(Lang::Play));
+	m->playNewTabAction->setText(tr("Play in new tab"));
+	m->playNextAction->setText(Lang::get(Lang::PlayNext));
+	m->appendAction->setText(Lang::get(Lang::Append));
+	m->refreshAction->setText(Lang::get(Lang::Refresh));
+	m->reloadLibraryAction->setText(Lang::get(Lang::ReloadLibrary));
+	m->clearAction->setText(Lang::get(Lang::Clear));
+	m->coverViewAction->setText(tr("Cover view"));
+	m->filetypeAction->setText(Lang::get(Lang::Filetype));
+	m->showFiletypeBarAction->setText(Lang::get(Lang::Show) + ": " + tr("Toolbar"));
 
-	m->play_action->setShortcut(QKeySequence(Qt::Key_Enter));
-	m->delete_action->setShortcut(QKeySequence(Qt::ControlModifier | Qt::Key_Delete));
-	m->remove_action->setShortcut(QKeySequence(QKeySequence::Delete));
-	m->clear_action->setShortcut(QKeySequence(Qt::Key_Backspace));
+	m->playAction->setShortcut(QKeySequence(Qt::Key_Enter));
+	m->deleteAction->setShortcut(QKeySequence(Qt::ControlModifier | Qt::Key_Delete));
+	m->removeAction->setShortcut(QKeySequence(QKeySequence::Delete));
+	m->clearAction->setShortcut(QKeySequence(Qt::Key_Backspace));
 
-	shortcut_changed(ShortcutIdentifier::Invalid);
+	shortcutChanged(ShortcutIdentifier::Invalid);
 }
 
 
-void ContextMenu::shortcut_changed(ShortcutIdentifier identifier)
+void ContextMenu::shortcutChanged(ShortcutIdentifier identifier)
 {
 	Q_UNUSED(identifier)
 	ShortcutHandler* sch = ShortcutHandler::instance();
 
-	m->play_new_tab_action->setShortcut(sch->shortcut(ShortcutIdentifier::PlayNewTab).sequence());
-	m->play_next_action->setShortcut(sch->shortcut(ShortcutIdentifier::PlayNext).sequence());
-	m->append_action->setShortcut(sch->shortcut(ShortcutIdentifier::Append).sequence());
-	m->cover_view_action->setShortcut(sch->shortcut(ShortcutIdentifier::CoverView).sequence());
-	m->reload_library_action->setShortcut(sch->shortcut(ShortcutIdentifier::ReloadLibrary).sequence());
+	m->playNewTabAction->setShortcut(sch->shortcut(ShortcutIdentifier::PlayNewTab).sequence());
+	m->playNextAction->setShortcut(sch->shortcut(ShortcutIdentifier::PlayNext).sequence());
+	m->appendAction->setShortcut(sch->shortcut(ShortcutIdentifier::Append).sequence());
+	m->coverViewAction->setShortcut(sch->shortcut(ShortcutIdentifier::CoverView).sequence());
+	m->reloadLibraryAction->setShortcut(sch->shortcut(ShortcutIdentifier::ReloadLibrary).sequence());
 }
 
-void ContextMenu::skin_changed()
+void ContextMenu::skinChanged()
 {
 	using namespace Gui;
 
-	QTimer::singleShot(100, this, &ContextMenu::skin_timer_timeout);
+	QTimer::singleShot(100, this, &ContextMenu::skinTimerTimeout);
 }
 
-void ContextMenu::skin_timer_timeout()
+void ContextMenu::skinTimerTimeout()
 {
 	namespace Icons=Gui::Icons;
 
-	m->info_action->setIcon(Icons::icon(Icons::Info));
-	m->lyrics_action->setIcon(Icons::icon(Icons::Lyrics));
-	m->edit_action->setIcon(Icons::icon(Icons::Edit));
-	m->remove_action->setIcon(Icons::icon(Icons::Remove));
-	m->delete_action->setIcon(Icons::icon(Icons::Delete));
-	m->play_action->setIcon(Icons::icon(Icons::PlaySmall));
-	m->play_new_tab_action->setIcon(Icons::icon(Icons::PlaySmall));
-	m->play_next_action->setIcon(Icons::icon(Icons::PlaySmall));
-	m->append_action->setIcon(Icons::icon(Icons::Append));
-	m->refresh_action->setIcon(Icons::icon(Icons::Undo));
-	m->reload_library_action->setIcon(Icons::icon(Icons::Refresh));
-	m->clear_action->setIcon(Icons::icon(Icons::Clear));
+	m->infoAction->setIcon(Icons::icon(Icons::Info));
+	m->lyricsAction->setIcon(Icons::icon(Icons::Lyrics));
+	m->editAction->setIcon(Icons::icon(Icons::Edit));
+	m->removeAction->setIcon(Icons::icon(Icons::Remove));
+	m->deleteAction->setIcon(Icons::icon(Icons::Delete));
+	m->playAction->setIcon(Icons::icon(Icons::PlaySmall));
+	m->playNewTabAction->setIcon(Icons::icon(Icons::PlaySmall));
+	m->playNextAction->setIcon(Icons::icon(Icons::PlaySmall));
+	m->appendAction->setIcon(Icons::icon(Icons::Append));
+	m->refreshAction->setIcon(Icons::icon(Icons::Undo));
+	m->reloadLibraryAction->setIcon(Icons::icon(Icons::Refresh));
+	m->clearAction->setIcon(Icons::icon(Icons::Clear));
 }
 
-ContextMenu::Entries ContextMenu::get_entries() const
+ContextMenu::Entries ContextMenu::entries() const
 {
 	ContextMenu::Entries entries = EntryNone;
 
-	for(auto it=m->entry_action_map.cbegin(); it != m->entry_action_map.cend(); it++)
+	for(auto it=m->entryActionMap.cbegin(); it != m->entryActionMap.cend(); it++)
 	{
 		QAction* action = it.value();
 		if(action->isVisible()){
-			entries |= m->entry_action_map.key(action);
+			entries |= m->entryActionMap.key(action);
 		}
 	}
 
@@ -240,18 +240,18 @@ ContextMenu::Entries ContextMenu::get_entries() const
 }
 
 
-void ContextMenu::show_actions(ContextMenu::Entries entries)
+void ContextMenu::showActions(ContextMenu::Entries entries)
 {
-	for(auto it=m->entry_action_map.cbegin(); it != m->entry_action_map.cend(); it++)
+	for(auto it=m->entryActionMap.cbegin(); it != m->entryActionMap.cend(); it++)
 	{
 		QAction* action = it.value();
-		action->setVisible( entries & m->entry_action_map.key(action) );
+		action->setVisible( entries & m->entryActionMap.key(action) );
 	}
 }
 
-void ContextMenu::show_action(ContextMenu::Entry entry, bool visible)
+void ContextMenu::showAction(ContextMenu::Entry entry, bool visible)
 {
-	ContextMenu::Entries entries = this->get_entries();
+	ContextMenu::Entries entries = this->entries();
 	if(visible){
 		entries |= entry;
 	}
@@ -260,10 +260,10 @@ void ContextMenu::show_action(ContextMenu::Entry entry, bool visible)
 		entries &= ~(entry);
 	}
 
-	show_actions(entries);
+	showActions(entries);
 }
 
-void ContextMenu::show_all()
+void ContextMenu::showAll()
 {
 	const QList<QAction*> actions = this->actions();
 	for(QAction* action : actions)
@@ -272,14 +272,14 @@ void ContextMenu::show_all()
 	}
 }
 
-QAction* ContextMenu::get_action(ContextMenu::Entry entry) const
+QAction* ContextMenu::action(ContextMenu::Entry entry) const
 {
-	return m->entry_action_map[entry];
+	return m->entryActionMap[entry];
 }
 
-QAction* ContextMenu::get_action_after(ContextMenu::Entry entry) const
+QAction* ContextMenu::actionAfter(ContextMenu::Entry entry) const
 {
-	QAction* a = get_action(entry);
+	QAction* a = action(entry);
 	if(!a){
 		return nullptr;
 	}
@@ -299,43 +299,43 @@ QAction* ContextMenu::get_action_after(ContextMenu::Entry entry) const
 	return *it;
 }
 
-QAction* ContextMenu::add_preference_action(Gui::PreferenceAction* action)
+QAction* ContextMenu::addPreferenceAction(Gui::PreferenceAction* action)
 {
 	QList<QAction*> actions;
 
-	if(!m->has_preference_actions){
-		m->preference_separator = this->addSeparator();
-		actions << m->preference_separator;
+	if(!m->has_preferenceActions){
+		m->preferenceSeparator = this->addSeparator();
+		actions << m->preferenceSeparator;
 	}
 
 	actions << action;
 
 	this->addActions(actions);
-	m->has_preference_actions = true;
+	m->has_preferenceActions = true;
 
 	return action;
 }
 
-QAction* ContextMenu::before_preference_action() const
+QAction* ContextMenu::beforePreferenceAction() const
 {
-	return m->preference_separator;
+	return m->preferenceSeparator;
 }
 
-void ContextMenu::set_action_shortcut(ContextMenu::Entry entry, const QString& shortcut)
+void ContextMenu::setActionShortcut(ContextMenu::Entry entry, const QString& shortcut)
 {
-	QAction* action = get_action(entry);
+	QAction* action = this->action(entry);
 	if(action)
 	{
 		action->setShortcut(QKeySequence(shortcut));
 	}
 }
 
-void ContextMenu::set_extensions(const Gui::ExtensionSet& extensions)
+void ContextMenu::setExtensions(const Gui::ExtensionSet& extensions)
 {
 	QMenu* fem = m->filetype_menu;
 	if(fem->isEmpty())
 	{
-		fem->addActions({fem->addSeparator(), m->show_filetype_bar_action});
+		fem->addActions({fem->addSeparator(), m->showFiletypeBarAction});
 	}
 
 	while(fem->actions().count() > 2)
@@ -345,38 +345,38 @@ void ContextMenu::set_extensions(const Gui::ExtensionSet& extensions)
 
 	QAction* sep = fem->actions().at(fem->actions().count() - 2);
 
-	const QStringList ext_list = extensions.extensions();
+	const QStringList extensionList = extensions.extensions();
 
-	for(const QString& ext : ext_list)
+	for(const QString& ext : extensionList)
 	{
 		QAction* a = new QAction(ext, fem);
 		a->setCheckable(true);
-		a->setChecked(extensions.is_enabled(ext));
-		a->setEnabled(ext_list.count() > 1);
+		a->setChecked(extensions.isEnabled(ext));
+		a->setEnabled(extensionList.count() > 1);
 
 		connect(a, &QAction::triggered, this, [=](bool b){
-			emit sig_filter_triggered(a->text(), b);
+			emit sigFilterTriggered(a->text(), b);
 		});
 
 		fem->insertAction(sep, a);
 	}
 }
 
-void ContextMenu::set_selection_count(int num_selections)
+void ContextMenu::setSelectionCount(int num_selections)
 {
 	bool has_selections = (num_selections > 0);
-	for(auto it : m->entry_action_map)
+	for(auto it : m->entryActionMap)
 	{
 		it->setEnabled(has_selections);
 	}
 
-	m->entry_action_map[EntryCoverView]->setEnabled(true);
-	m->entry_action_map[EntryReload]->setEnabled(true);
+	m->entryActionMap[EntryCoverView]->setEnabled(true);
+	m->entryActionMap[EntryReload]->setEnabled(true);
 }
 
 QKeySequence ContextMenu::shortcut(ContextMenu::Entry entry) const
 {
-	QAction* a = get_action(entry);
+	QAction* a = action(entry);
 	if(!a){
 		return QKeySequence();
 	}
@@ -384,24 +384,24 @@ QKeySequence ContextMenu::shortcut(ContextMenu::Entry entry) const
 	return a->shortcut();
 }
 
-void ContextMenu::show_cover_view_changed()
+void ContextMenu::showCoverViewChanged()
 {
-	m->cover_view_action->setChecked(GetSetting(Set::Lib_ShowAlbumCovers));
+	m->coverViewAction->setChecked(GetSetting(Set::Lib_ShowAlbumCovers));
 }
 
-void ContextMenu::show_cover_triggered(bool b)
+void ContextMenu::showCoverTriggered(bool b)
 {
 	Q_UNUSED(b)
 	bool show_covers = GetSetting(Set::Lib_ShowAlbumCovers);
 	SetSetting(Set::Lib_ShowAlbumCovers, !show_covers);
 }
 
-void ContextMenu::show_filter_ext_bar_changed()
+void ContextMenu::showFilterExtensionBarChanged()
 {
-	m->show_filetype_bar_action->setChecked(GetSetting(Set::Lib_ShowFilterExtBar));
+	m->showFiletypeBarAction->setChecked(GetSetting(Set::Lib_ShowFilterExtBar));
 }
 
-void ContextMenu::show_filter_extension_bar_triggered(bool b)
+void ContextMenu::showFilterExtensionBarTriggered(bool b)
 {
 	SetSetting(Set::Lib_ShowFilterExtBar, b);
 

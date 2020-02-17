@@ -1,6 +1,6 @@
 /* AbstractCoverLookup.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -41,9 +41,9 @@ namespace Cover
 		PIMPL(LookupBase)
 
 	signals:
-		void sig_cover_found(const QPixmap& pm);
-		void sig_finished(bool success);
-		void sig_started();
+		void sigCoverFound(const QPixmap& pm);
+		void sigFinished(bool success);
+		void sigStarted();
 
 	public slots:
 		virtual void stop()=0;
@@ -52,8 +52,8 @@ namespace Cover
 		explicit LookupBase(const Location& cl, QObject* parent=nullptr);
 		virtual ~LookupBase();
 
-		Location cover_location() const;
-		void set_cover_location(const Location& cl);
+		Location coverLocation() const;
+		void setCoverLocation(const Location& cl);
 	};
 }
 

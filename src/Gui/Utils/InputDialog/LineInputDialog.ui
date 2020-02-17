@@ -6,30 +6,19 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>401</width>
-    <height>123</height>
+    <width>376</width>
+    <height>135</height>
    </rect>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="1" column="0">
-    <widget class="QLabel" name="lab_info">
-     <property name="text">
-      <string notr="true">Info Text</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0">
-    <widget class="QLineEdit" name="le_input"/>
-   </item>
-   <item row="3" column="0">
-    <widget class="Line" name="line">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
-   </item>
+   <property name="verticalSpacing">
+    <number>7</number>
+   </property>
    <item row="4" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout">
+     <property name="spacing">
+      <number>7</number>
+     </property>
      <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
@@ -44,14 +33,14 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_cancel">
+      <widget class="QPushButton" name="btnCancel">
        <property name="text">
         <string notr="true">Cancel</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_ok">
+      <widget class="QPushButton" name="btnOk">
        <property name="text">
         <string notr="true">Ok</string>
        </property>
@@ -59,8 +48,11 @@
      </item>
     </layout>
    </item>
+   <item row="1" column="0">
+    <widget class="QLineEdit" name="leInput"/>
+   </item>
    <item row="0" column="0">
-    <widget class="QLabel" name="lab_header">
+    <widget class="QLabel" name="labHeader">
      <property name="font">
       <font>
        <weight>75</weight>
@@ -69,6 +61,20 @@
      </property>
      <property name="text">
       <string notr="true">Header Text</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="Line" name="line">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="labInfo">
+     <property name="text">
+      <string/>
      </property>
     </widget>
    </item>

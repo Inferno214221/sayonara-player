@@ -1,6 +1,6 @@
 /* GUI_ControlsNew.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -33,8 +33,8 @@ GUI_ControlsNew::GUI_ControlsNew(QWidget* parent) :
 	ui = new Ui::GUI_ControlsNew();
 	ui->setupUi(this);
 
-	ui->widget_rating->set_mousetrackable(false);
-	connect(ui->widget_rating, &RatingEditor::sig_finished, this, &GUI_ControlsNew::rating_changed_here);
+	ui->widget_rating->setMouseTrackable(false);
+	connect(ui->widget_rating, &RatingEditor::sigFinished, this, &GUI_ControlsNew::rating_changed_here);
 }
 
 GUI_ControlsNew::~GUI_ControlsNew()
@@ -42,51 +42,51 @@ GUI_ControlsNew::~GUI_ControlsNew()
 	delete ui; ui=nullptr;
 }
 
-QLabel* GUI_ControlsNew::lab_sayonara() const {	return ui->lab_sayonara; }
-QLabel* GUI_ControlsNew::lab_title() const { return ui->lab_title; }
-QLabel* GUI_ControlsNew::lab_version() const { return ui->lab_version; }
-QLabel* GUI_ControlsNew::lab_album() const { return ui->lab_album; }
-QLabel* GUI_ControlsNew::lab_artist() const { return ui->lab_artist; }
-QLabel* GUI_ControlsNew::lab_writtenby() const { return ui->lab_writtenby; }
-QLabel* GUI_ControlsNew::lab_bitrate() const { return ui->lab_bitrate; }
-QLabel* GUI_ControlsNew::lab_copyright() const { return ui->lab_copyright; }
-QLabel* GUI_ControlsNew::lab_filesize() const { return ui->lab_filesize; }
-QLabel* GUI_ControlsNew::lab_current_time() const { return ui->lab_cur_time; }
-QLabel* GUI_ControlsNew::lab_max_time() const { return ui->lab_max_time; }
-QWidget* GUI_ControlsNew::widget_details() const { return ui->widget_details; }
-Gui::RatingEditor* GUI_ControlsNew::lab_rating() const { return ui->widget_rating; }
-Gui::SearchSlider* GUI_ControlsNew::sli_progress() const { return ui->sli_progress; }
-Gui::SearchSlider* GUI_ControlsNew::sli_volume() const { return ui->sli_volume; }
-QPushButton* GUI_ControlsNew::btn_mute() const { return ui->btn_mute; }
-QPushButton* GUI_ControlsNew::btn_play() const { return ui->btn_ctrl_play; }
-QPushButton* GUI_ControlsNew::btn_rec() const { return ui->btn_ctrl_rec; }
-QPushButton* GUI_ControlsNew::btn_bwd() const { return ui->btn_ctrl_bw; }
-QPushButton* GUI_ControlsNew::btn_fwd() const { return ui->btn_ctrl_fw; }
-QPushButton* GUI_ControlsNew::btn_stop() const { return ui->btn_ctrl_stop; }
-Gui::CoverButton* GUI_ControlsNew::btn_cover() const { return ui->btn_cover; }
+QLabel* GUI_ControlsNew::labSayonara() const {	return ui->lab_sayonara; }
+QLabel* GUI_ControlsNew::labTitle() const { return ui->lab_title; }
+QLabel* GUI_ControlsNew::labVersion() const { return ui->lab_version; }
+QLabel* GUI_ControlsNew::labAlbum() const { return ui->lab_album; }
+QLabel* GUI_ControlsNew::labArtist() const { return ui->lab_artist; }
+QLabel* GUI_ControlsNew::labWrittenBy() const { return ui->lab_writtenby; }
+QLabel* GUI_ControlsNew::labBitrate() const { return ui->lab_bitrate; }
+QLabel* GUI_ControlsNew::labCopyright() const { return ui->lab_copyright; }
+QLabel* GUI_ControlsNew::labFilesize() const { return ui->lab_filesize; }
+QLabel* GUI_ControlsNew::labCurrentTime() const { return ui->lab_cur_time; }
+QLabel* GUI_ControlsNew::labMaxTime() const { return ui->lab_max_time; }
+QWidget* GUI_ControlsNew::widgetDetails() const { return ui->widget_details; }
+Gui::RatingEditor* GUI_ControlsNew::labRating() const { return ui->widget_rating; }
+Gui::SearchSlider* GUI_ControlsNew::sliProgress() const { return ui->sli_progress; }
+Gui::SearchSlider* GUI_ControlsNew::sliVolume() const { return ui->sli_volume; }
+QPushButton* GUI_ControlsNew::btnMute() const { return ui->btn_mute; }
+QPushButton* GUI_ControlsNew::btnPlay() const { return ui->btn_ctrl_play; }
+QPushButton* GUI_ControlsNew::btnRecord() const { return ui->btn_ctrl_rec; }
+QPushButton* GUI_ControlsNew::btnPrevious() const { return ui->btn_ctrl_bw; }
+QPushButton* GUI_ControlsNew::btnNext() const { return ui->btn_ctrl_fw; }
+QPushButton* GUI_ControlsNew::btnStop() const { return ui->btn_ctrl_stop; }
+Gui::CoverButton* GUI_ControlsNew::btnCover() const { return ui->btn_cover; }
 
 void GUI_ControlsNew::rating_changed_here(bool save)
 {
-	MetaData md = PlayManager::instance()->current_track();
+	MetaData md = PlayManager::instance()->currentTrack();
 
 	if(!save)
 	{
-		ui->widget_rating->set_rating(md.rating());
+		ui->widget_rating->setRating(md.rating());
 		return;
 	}
 
 	Rating rating = ui->widget_rating->rating();
 
-	auto* uto = new Tagging::UserOperations(md.library_id(), this);
-	connect(uto, &Tagging::UserOperations::sig_finished, uto, &QObject::deleteLater);
-	uto->set_track_rating(md, rating);
+	auto* uto = new Tagging::UserOperations(md.libraryId(), this);
+	connect(uto, &Tagging::UserOperations::sigFinished, uto, &QObject::deleteLater);
+	uto->setTrackRating(md, rating);
 }
-bool GUI_ControlsNew::is_extern_resize_allowed() const
+bool GUI_ControlsNew::isExternResizeAllowed() const
 {
 	return true;
 }
 
-void GUI_ControlsNew::language_changed()
+void GUI_ControlsNew::languageChanged()
 {
 	if(ui){
 		ui->retranslateUi(this);

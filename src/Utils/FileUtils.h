@@ -1,6 +1,6 @@
 /* FileUtils.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -21,11 +21,13 @@
 #ifndef FileUtils_H
 #define FileUtils_H
 
+#include <QList>
 #include <cstdint>
 #include <utility>
 
 class QStringList;
 class QString;
+class QChar;
 class QByteArray;
 
 namespace Util
@@ -41,44 +43,37 @@ namespace Util
 		 * @param filename input filename
 		 * @return nicely formatted filename
 		 */
-		QString			clean_filename(const QString& filename);
+		QString			cleanFilename(const QString& filename);
 
-		/**
-		 * @brief calc_file_extension
-		 * @param filename
-		 * @return
-		 */
-		QString			calc_file_extension(const QString& filename);
-
-		QByteArray		calc_md5_sum(const QString& filename);
+		QByteArray		getMD5Sum(const QString& filename);
 
 		/**
 		 * @brief Remove all files from directory
 		 * @param dir_name directory name
 		 * @param filters file name filters
 		 */
-		void			remove_files_in_directory(const QString& dir_name, const QStringList& filters);
-		void			remove_files_in_directory(const QString& dir_name);
+		void			removeFilesInDirectory(const QString& dir_name, const QStringList& filters);
+		void			removeFilesInDirectory(const QString& dir_name);
 
 		/**
 		 * @brief Remove all given files (also directories can be specified)
 		 * @param files list of files
 		 */
-		void			delete_files(const QStringList& files);
+		void			deleteFiles(const QStringList& files);
 
 		/**
 		 * @brief get parent directory of a filepath
 		 * @param path File- or directory path
 		 * @return
 		 */
-		QString			get_parent_directory(const QString& path);
+		QString			getParentDirectory(const QString& path);
 
 		/**
 		 * @brief extract pure filename from a complete file path
 		 * @param path complete file path
 		 * @return pure filename
 		 */
-		QString			get_filename_of_path(const QString& path);
+		QString			getFilenameOfPath(const QString& path);
 
 		/**
 		 * @brief split filename into the dir and filename
@@ -86,42 +81,42 @@ namespace Util
 		 * @param path
 		 * @param filename
 		 */
-		void			split_filename(const QString& src, QString& dir, QString& filename);
-		std::pair<QString, QString> split_filename(const QString& src);
+		void			splitFilename(const QString& src, QString& dir, QString& filename);
+		std::pair<QString, QString> splitFilename(const QString& src);
 
 		/**
 		 * @brief returns all parts of a directory path
 		 * @param path
 		 * @return
 		 */
-		QStringList		split_directories(const QString& path);
+		QStringList		splitDirectories(const QString& path);
 
 		/**
 		 * @brief get file extension
 		 * @param filename filename to get the extension for
 		 * @return extension string
 		 */
-		QString			get_file_extension(const QString& filename);
+		QString			getFileExtension(const QString& filename);
 
 		/**
 		 * @brief extract parent folder of a file list (see also get_parent_directory(const QString& path)
 		 * @param list file list
 		 * @return List of parent folders
 		 */
-		QStringList		get_parent_directories(const QStringList& list);
+		QStringList		getParentDirectories(const QStringList& list);
 
 		/**
 		 * @brief get absolute filename of file
 		 * @param filename
 		 * @return
 		 */
-		QString			get_absolute_filename(const QString& filename);
+		QString			getAbsoluteFilename(const QString& filename);
 
 		/**
 		 * @brief create all directories necessary to access path
 		 * @param path full target path
 		 */
-		bool			create_directories(const QString& path);
+		bool			createDirectories(const QString& path);
 
 		/**
 		 * @brief create_symlink
@@ -129,7 +124,7 @@ namespace Util
 		 * @param target
 		 * @return
 		 */
-		bool			create_symlink(const QString& source, const QString& target);
+		bool			createSymlink(const QString& source, const QString& target);
 
 
 		/**
@@ -137,7 +132,7 @@ namespace Util
 		 * @param filesize in bytes
 		 * @return converted string
 		 */
-		QString			calc_filesize_str(uint64_t filesize);
+		QString			getFilesizeString(uint64_t filesize);
 
 
 		/**
@@ -145,7 +140,10 @@ namespace Util
 		 * @param filename the filename to check
 		 * @return true if filename is absolute, false else
 		 */
-		bool			is_absolute(const QString& filename);
+		bool			isAbsolute(const QString& filename);
+
+
+		QList<QChar>	invalidFilenameChars();
 
 
 		/**
@@ -154,7 +152,7 @@ namespace Util
 		 * @param filename target_filename
 		 * @return true if successful, false else
 		 */
-		bool			write_file(const QByteArray& raw_data, const QString& filename);
+		bool			writeFile(const QByteArray& raw_data, const QString& filename);
 
 		/**
 		 * @brief read a complete file into a string
@@ -162,7 +160,7 @@ namespace Util
 		 * @param content target reference to content
 		 * @return true if file could be read, false else
 		 */
-		bool read_file_into_str(const QString& filename, QString& content);
+		bool readFileIntoString(const QString& filename, QString& content);
 
 		/**
 		 * @brief read a complete file into a byte array
@@ -170,28 +168,28 @@ namespace Util
 		 * @param content target reference to content
 		 * @return true if file could be read, false else
 		 */
-		bool read_file_into_byte_arr(const QString& filename, QByteArray& content);
+		bool readFileIntoByteArray(const QString& filename, QByteArray& content);
 
 		/**
 		 * @brief Check, if file is valid. Web URLs are always valid
 		 * @param filepath path to file or resource
 		 * @return true, if file exists or if Web URL. false else
 		 */
-		bool check_file(const QString& filepath);
+		bool checkFile(const QString& filepath);
 
 		/**
 		 * @brief is_in_sayonara_dir
 		 * @param path
 		 * @return
 		 */
-		bool is_in_sayonara_dir(const QString& path);
+		bool isInSayonaraDir(const QString& path);
 
 		/**
 		 * @brief get_common_directory
 		 * @param paths
 		 * @return
 		 */
-		QString get_common_directory(const QStringList& paths);
+		QString getCommonDirectory(const QStringList& paths);
 
 		/**
 		 * @brief get_common_directory
@@ -199,30 +197,30 @@ namespace Util
 		 * @param dir2
 		 * @return
 		 */
-		QString get_common_directory(QString dir1, QString dir2);
+		QString getCommonDirectory(QString dir1, QString dir2);
 
 		/**
 		 * @brief create_dir
 		 * @param dir_name
 		 * @return
 		 */
-		bool create_dir(const QString& dir_name);
+		bool createDir(const QString& dir_name);
 
 		/**
 		 * @brief copy_dir
 		 * @param src_dir
-		 * @param target_dir
+		 * @param targetDirectory
 		 * @return
 		 */
-		bool copy_dir(const QString& src_dir, const QString& target_dir, QString& new_filename);
+		bool copyDir(const QString& src_dir, const QString& targetDirectory, QString& new_filename);
 
 		/**
 		 * @brief move_dir
 		 * @param src_dir
-		 * @param target_dir
+		 * @param targetDirectory
 		 * @return
 		 */
-		bool move_dir(const QString& src_dir, const QString& target_dir, QString& new_filename);
+		bool moveDir(const QString& src_dir, const QString& targetDirectory, QString& new_filename);
 
 		/**
 		 * @brief rename_dir
@@ -230,15 +228,15 @@ namespace Util
 		 * @param new_name
 		 * @return
 		 */
-		bool rename_dir(const QString& src_dir, const QString& new_name);
+		bool renameDir(const QString& src_dir, const QString& new_name);
 
 		/**
 		 * @brief can_copy_dir
 		 * @param src_dir
-		 * @param target_dir
+		 * @param targetDirectory
 		 * @return
 		 */
-		bool can_copy_dir(const QString& src_dir, const QString& target_dir);
+		bool canCopyDir(const QString& src_dir, const QString& targetDirectory);
 
 		/**
 		 * @brief move_file
@@ -246,7 +244,7 @@ namespace Util
 		 * @param dir
 		 * @return
 		 */
-		bool move_file(const QString& file, const QString& dir, QString& new_name);
+		bool moveFile(const QString& file, const QString& dir, QString& new_name);
 
 		/**
 		 * @brief copy_file
@@ -254,7 +252,7 @@ namespace Util
 		 * @param dir
 		 * @return
 		 */
-		bool copy_file(const QString& file, const QString& dir, QString& new_name);
+		bool copyFile(const QString& file, const QString& dir, QString& new_name);
 
 		/**
 		 * @brief move_files
@@ -262,7 +260,7 @@ namespace Util
 		 * @param dir
 		 * @return
 		 */
-		bool move_files(const QStringList& files, const QString& dir, QStringList& new_names);
+		bool moveFiles(const QStringList& files, const QString& dir, QStringList& new_names);
 
 		/**
 		 * @brief rename_file
@@ -270,7 +268,7 @@ namespace Util
 		 * @param new_name
 		 * @return
 		 */
-		bool rename_file(const QString& old_name, const QString& new_name);
+		bool renameFile(const QString& old_name, const QString& new_name);
 
 		/**
 		 * @brief copy_files
@@ -278,7 +276,7 @@ namespace Util
 		 * @param dir
 		 * @return
 		 */
-		bool copy_files(const QStringList& files, const QString& dir, QStringList& new_files);
+		bool copyFiles(const QStringList& files, const QString& dir, QStringList& new_files);
 
 
 		// Everything clear
@@ -287,49 +285,49 @@ namespace Util
 		 * @param str
 		 * @return
 		 */
-		bool is_url(const QString& str);
+		bool isUrl(const QString& str);
 
 		/**
 		 * @brief is_www
 		 * @param str
 		 * @return
 		 */
-		bool is_www(const QString& str);
+		bool isWWW(const QString& str);
 
 		/**
 		 * @brief is_file
 		 * @param filename
 		 * @return
 		 */
-		bool is_file(const QString& filename);
+		bool isFile(const QString& filename);
 
 		/**
 		 * @brief is_dir
 		 * @param filename
 		 * @return
 		 */
-		bool is_dir(const QString& filename);
+		bool isDir(const QString& filename);
 
 		/**
 		 * @brief is_soundfile
 		 * @param filename
 		 * @return
 		 */
-		bool is_soundfile(const QString& filename);
+		bool isSoundFile(const QString& filename);
 
 		/**
 		 * @brief is_playlistfile
 		 * @param filename
 		 * @return
 		 */
-		bool is_playlistfile(const QString& filename);
+		bool isPlaylistFile(const QString& filename);
 
 		/**
 		 * @brief is_imagefile
 		 * @param filename
 		 * @return
 		 */
-		bool is_imagefile(const QString& filename);
+		bool isImageFile(const QString& filename);
 
 		/**
 		 * @brief exists
@@ -344,7 +342,7 @@ namespace Util
          * @param filename2
 		 * @return
 		 */
-		bool is_same_path(const QString& filename1, const QString& filename2);
+		bool isSamePath(const QString& filename1, const QString& filename2);
 
 		/**
 		 * @brief Checks if dir is a subdir of parent_dir
@@ -352,7 +350,7 @@ namespace Util
 		 * @param other_dir the maybe-parentdir
 		 * @return
 		 */
-		bool is_subdir(const QString& dir, const QString& parent_dir);
+		bool isSubdir(const QString& dir, const QString& parent_dir);
 	}
 }
 

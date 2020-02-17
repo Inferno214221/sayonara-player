@@ -1,6 +1,6 @@
 /* GUI_PlayerPlugin.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -28,10 +28,10 @@
 
 struct GUI_PlayerPlugin::Private
 {
-	PlayerPlugin::Base* current_plugin=nullptr;
+	PlayerPlugin::Base* currentPlugin=nullptr;
 };
 
-GUI_PlayerPlugin::GUI_PlayerPlugin(QWidget *parent) :
+GUI_PlayerPlugin::GUI_PlayerPlugin(QWidget* parent) :
 	Widget(parent)
 {
 	m = Pimpl::make<Private>();
@@ -39,7 +39,7 @@ GUI_PlayerPlugin::GUI_PlayerPlugin(QWidget *parent) :
 	ui = new Ui::GUI_PlayerPlugin();
 	ui->setupUi(this);
 
-	connect(ui->btn_close, &QPushButton::clicked, this, &GUI_PlayerPlugin::close);
+	connect(ui->btnClose, &QPushButton::clicked, this, &GUI_PlayerPlugin::close);
 }
 
 GUI_PlayerPlugin::~GUI_PlayerPlugin()
@@ -47,54 +47,54 @@ GUI_PlayerPlugin::~GUI_PlayerPlugin()
 	delete ui; ui=nullptr;
 }
 
-void GUI_PlayerPlugin::show(PlayerPlugin::Base* player_plugin)
+void GUI_PlayerPlugin::show(PlayerPlugin::Base* plugin)
 {
-	close_current_plugin();
-	m->current_plugin = player_plugin;
+	closeCurrentPlugin();
+	m->currentPlugin = plugin;
 
-	if(!player_plugin){
+	if(!plugin){
 		return;
 	}
 
-	bool show_title = player_plugin->is_title_shown();
+	bool show_title = plugin->hasTitle();
 
-	ui->header_widget->setVisible(show_title);
-	ui->lab_title->setText(player_plugin->get_display_name());
+	ui->headerWidget->setVisible(show_title);
+	ui->labTitle->setText(plugin->displayName());
 
 	ui->verticalLayout->setSpacing(0);
 	ui->verticalLayout->setContentsMargins(0, 0, 0, 0);
-	ui->verticalLayout->insertWidget(1, player_plugin);
+	ui->verticalLayout->insertWidget(1, plugin);
 
-	player_plugin->show();
+	plugin->show();
 
 	Widget::show();
 }
 
-void GUI_PlayerPlugin::show_current_plugin()
+void GUI_PlayerPlugin::showCurrentPlugin()
 {
 	PlayerPlugin::Handler* pph = PlayerPlugin::Handler::instance();
-	show(pph->current_plugin());
+	show(pph->currentPlugin());
 }
 
-void GUI_PlayerPlugin::close_current_plugin()
+void GUI_PlayerPlugin::closeCurrentPlugin()
 {
-	if(m->current_plugin){
-		m->current_plugin->close();
+	if(m->currentPlugin){
+		m->currentPlugin->close();
 	}
 
-	m->current_plugin = nullptr;
+	m->currentPlugin = nullptr;
 }
 
-void GUI_PlayerPlugin::language_changed()
+void GUI_PlayerPlugin::languageChanged()
 {
-	if(m->current_plugin){
-		ui->lab_title->setText(m->current_plugin->get_display_name());
+	if(m->currentPlugin){
+		ui->labTitle->setText(m->currentPlugin->displayName());
 	}
 }
 
 void GUI_PlayerPlugin::closeEvent(QCloseEvent* e)
 {
-	close_current_plugin();
+	closeCurrentPlugin();
 
 	Widget::closeEvent(e);
 }

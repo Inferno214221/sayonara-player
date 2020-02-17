@@ -24,12 +24,17 @@ ConfigurePodcastDialog::ConfigurePodcastDialog(QWidget* parent) :
 
 ConfigurePodcastDialog::~ConfigurePodcastDialog() = default;
 
-StationPtr ConfigurePodcastDialog::configured_station()
+StationPtr ConfigurePodcastDialog::configuredStation()
 {
 	return std::make_shared<Podcast>(m->name->text(), m->url->text(), m->reverse->isChecked());
 }
 
-QList<QWidget*> ConfigurePodcastDialog::configuration_widgets(StationPtr station)
+QList<QWidget*> ConfigurePodcastDialog::configurationWidgets()
+{
+	return {m->name, m->url, m->reverse};
+}
+
+void ConfigurePodcastDialog::configureWidgets(StationPtr station)
 {
 	if(station)
 	{
@@ -40,10 +45,15 @@ QList<QWidget*> ConfigurePodcastDialog::configuration_widgets(StationPtr station
 		m->reverse->setChecked(podcast->reversed());
 	}
 
-	return {m->name, m->url, m->reverse};
+	else
+	{
+		m->name->setText(QString());
+		m->url->setText(QString());
+		m->reverse->setChecked(false);
+	}
 }
 
-QString ConfigurePodcastDialog::label_text(int i) const
+QString ConfigurePodcastDialog::labelText(int i) const
 {
 	if(i == 0){
 		return Lang::get(Lang::Name);

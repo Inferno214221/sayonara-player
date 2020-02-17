@@ -1,6 +1,6 @@
 /* GUI_SomaFM.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -44,27 +44,26 @@ namespace SomaFM
 		UI_CLASS(GUI_SomaFM)
 		PIMPL(GUI_SomaFM)
 
-	public:
-		explicit GUI_SomaFM(QWidget *parent = 0);
-		~GUI_SomaFM();
+		public:
+			explicit GUI_SomaFM(QWidget* parent=nullptr);
+			~GUI_SomaFM() override;
 
-		QFrame* header_frame() const;
+			QFrame* headerFrame() const;
 
-	private slots:
-		void stations_loaded(const QList<SomaFM::Station>& stations);
-		void station_changed(const SomaFM::Station& station);
+		private slots:
+			void stationsLoaded(const QList<SomaFM::Station>& stations);
+			void stationChanged(const SomaFM::Station& station);
 
-		void station_double_clicked(const QModelIndex& idx);
-		void station_clicked(const QModelIndex& idx);
-		void station_index_changed(const QModelIndex& idx);
-		void playlist_double_clicked(const QModelIndex& idx);
-		void cover_found(const QPixmap& cover);
+			void stationDoubleClicked(const QModelIndex& idx);
+			void stationClicked(const QModelIndex& idx);
+			void stationIndexChanged(const QModelIndex& idx);
+			void playlistDoubleClicked(const QModelIndex& idx);
+			void coverFound(const QPixmap& cover);
 
-		void selection_changed(const QModelIndexList& selected);
+			void selectionChanged(const QModelIndexList& selected);
 
-
-	private:
-		SomaFM::Station get_station(int row) const;
+		private:
+			SomaFM::Station getStation(int row) const;
 	};
 }
 

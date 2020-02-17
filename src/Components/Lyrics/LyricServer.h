@@ -1,6 +1,6 @@
 /* LyricServer.h */
 
-/* Copyright (C) 2012  Lucio Carreras
+/* Copyright (C) 2012 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -48,55 +48,55 @@ namespace Lyrics
 			using Replacement=QPair<QString, QString>;
 			using Replacements=QList<Replacement>;
 
-			bool can_fetch_directly() const;
-			bool can_search() const;
+			bool canFetchDirectly() const;
+			bool canSearch() const;
 
 			QString name() const;
-			void set_name(const QString& name);
+			void setName(const QString& name);
 
 			QString address() const;
-			void set_address(const QString& address);
+			void setAddress(const QString& address);
 
 			Replacements replacements() const;
-			void set_replacements(const Replacements& replacements);
+			void setReplacements(const Replacements& replacements);
 
-			QString direct_url_template() const;
-			void set_direct_url_template(const QString& direct_url_template);
+			QString directUrlTemplate() const;
+			void setDirectUrlTemplate(const QString& directUrlTemplate);
 
-			StartEndTags start_end_tag() const;
-			void set_start_end_tag(const StartEndTags& start_end_tag);
+			StartEndTags startEndTag() const;
+			void setStartEndTag(const StartEndTags& startEndTag);
 
-			bool is_start_tag_included() const;
-			void set_is_start_tag_included(bool is_start_tag_included);
+			bool isStartTagIncluded() const;
+			void setIsStartTagIncluded(bool isStartTagIncluded);
 
-			bool is_end_tag_included() const;
-			void set_is_end_tag_included(bool is_end_tag_included);
+			bool isEndTagIncluded() const;
+			void setIsEndTagIncluded(bool isEndTagIncluded);
 
-			bool is_numeric() const;
-			void set_is_numeric(bool is_numeric);
+			bool isNumeric() const;
+			void setIsNumeric(bool isNumeric);
 
-			bool is_lowercase() const;
-			void set_is_lowercase(bool is_lowercase);
+			bool isLowercase() const;
+			void setIsLowercase(bool isLowercase);
 
-			QString error_string() const;
-			void set_error_string(const QString& error_string);
+			QString errorString() const;
+			void setErrorString(const QString& errorString);
 
-			QString search_result_regex() const;
-			void set_search_result_regex(const QString& search_result_regex);
+			QString searchResultRegex() const;
+			void setSearchResultRegex(const QString& searchResultRegex);
 
-			QString search_result_url_template() const;
-			void set_search_result_url_template(const QString& search_result_url_template);
+			QString searchResultUrlTemplate() const;
+			void setSearchResultUrlTemplate(const QString& searchResultUrlTemplate);
 
-			QString search_url_template() const;
-			void set_search_url_template(const QString& search_url_template);
+			QString searchUrlTemplate() const;
+			void setSearchUrlTemplate(const QString& searchUrlTemplate);
 
-			QJsonObject to_json();
-			static Lyrics::Server* from_json(const QJsonObject& json);
+			QJsonObject toJson();
+			static Lyrics::Server* fromJson(const QJsonObject& json);
 
-			static QString apply_replacements(const QString& str, const Server::Replacements& replacements);
+			static QString applyReplacements(const QString& str, const Server::Replacements& replacements);
 
 		private:
-			QString apply_replacements(const QString& str) const;
+			QString applyReplacements(const QString& str) const;
 	};
 }
 

@@ -1,6 +1,6 @@
 /* Sorting.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -42,7 +42,7 @@ namespace Library
 
 		Sortings();
 		Sortings(const Sortings& so);
-		~Sortings();
+		~Sortings() override;
 
 		Sortings& operator=(const Sortings& other);
 		bool operator==(Sortings so);

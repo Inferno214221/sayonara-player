@@ -1,6 +1,6 @@
 /* PlaybackPipeline.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -59,24 +59,24 @@ struct Pipeline::Private
 
 	GstElement*			pipeline=nullptr;
 	GstElement*			source=nullptr;
-	GstElement*			audio_convert=nullptr;
+	GstElement*			audioConvert=nullptr;
 	GstElement*			tee=nullptr;
 
-	GstElement*			pb_bin=nullptr;
-	GstElement*			pb_queue=nullptr;
-	GstElement*			pb_volume=nullptr;
-	GstElement*			pb_sink=nullptr;
+	GstElement*			playbackBin=nullptr;
+	GstElement*			playbackQueue=nullptr;
+	GstElement*			playbackVolume=nullptr;
+	GstElement*			playbackSink=nullptr;
 
-	GstElement*			position_element=nullptr;
+	GstElement*			positionElement=nullptr;
 
 	Pitcher*			pitcher=nullptr;
 	Seeker*				seeker=nullptr;
-	StreamRecorderHandler* stream_recorder=nullptr;
+	StreamRecorderHandler* streamRecorder=nullptr;
 	Broadcaster*		broadcaster=nullptr;
 	Visualizer*			visualizer=nullptr;
 	Equalizer*			equalizer=nullptr;
 
-	QTimer*				progress_timer=nullptr;
+	QTimer*				progressTimer=nullptr;
 
 	Private(const QString& name) :
 		name(name)
@@ -97,7 +97,7 @@ Pipeline::~Pipeline()
 {
 	if(m->pipeline)
 	{
-		EngineUtils::set_state(m->pipeline, GST_STATE_NULL);
+		EngineUtils::setState(m->pipeline, GST_STATE_NULL);
 		gst_object_unref (GST_OBJECT(m->pipeline));
 		m->pipeline = nullptr;
 	}
@@ -111,74 +111,74 @@ bool Pipeline::init(Engine* engine)
 
 	// create equalizer element
 	m->pipeline = gst_pipeline_new(m->name.toStdString().c_str());
-	m->position_element = m->pipeline;
+	m->positionElement = m->pipeline;
 
-	if(!EngineUtils::test_and_error(m->pipeline, "Engine: Pipeline sucks")){
+	if(!EngineUtils::testAndError(m->pipeline, "Engine: Pipeline sucks")){
 		return false;
 	}
 
 	GstBus* bus = gst_pipeline_get_bus(GST_PIPELINE(m->pipeline));
 
-	bool success = create_elements();
+	bool success = createElements();
 	if(!success) {
 		return false;
 	}
 
-	success = add_and_link_elements();
+	success = addAndLinkElements();
 	if(!success) {
 		return false;
 	}
 
-	configure_elements();
-	EngineUtils::set_state(m->pipeline, GST_STATE_NULL);
+	configureElements();
+	EngineUtils::setState(m->pipeline, GST_STATE_NULL);
 
 #ifdef Q_OS_WIN
 	gst_bus_set_sync_handler(bus, Engine::Callbacks::bus_message_received, engine, EngineCallbacks::destroy_notify);
 #else
-	gst_bus_add_watch(bus, Callbacks::bus_state_changed, engine);
+	gst_bus_add_watch(bus, Callbacks::busStateChanged, engine);
 #endif
 
-	m->progress_timer = new QTimer(this);
-	m->progress_timer->setTimerType(Qt::PreciseTimer);
-	m->progress_timer->setInterval( EngineUtils::get_update_interval() );
-	connect(m->progress_timer, &QTimer::timeout, this, [=]()
+	m->progressTimer = new QTimer(this);
+	m->progressTimer->setTimerType(Qt::PreciseTimer);
+	m->progressTimer->setInterval( EngineUtils::getUpdateInterval() );
+	connect(m->progressTimer, &QTimer::timeout, this, [=]()
 	{
-		if(EngineUtils::get_state(m->pipeline) != GST_STATE_NULL){
-			Callbacks::position_changed(this);
+		if(EngineUtils::getState(m->pipeline) != GST_STATE_NULL){
+			Callbacks::positionChanged(this);
 		}
 	});
 
-	m->progress_timer->start();
+	m->progressTimer->start();
 
-	SetSetting(SetNoDB::MP3enc_found, EngineUtils::check_lame_available());
-	SetSetting(SetNoDB::Pitch_found, EngineUtils::check_pitch_available());
+	SetSetting(SetNoDB::MP3enc_found, EngineUtils::isLameAvailable());
+	SetSetting(SetNoDB::Pitch_found, EngineUtils::isPitchAvailable());
 
-	ListenSetting(Set::Engine_Vol, Pipeline::s_volume_changed);
-	ListenSetting(Set::Engine_Mute, Pipeline::s_mute_changed);
-	ListenSettingNoCall(Set::Engine_Sink, Pipeline::s_sink_changed);
+	ListenSetting(Set::Engine_Vol, Pipeline::volumeChanged);
+	ListenSetting(Set::Engine_Mute, Pipeline::muteChanged);
+	ListenSettingNoCall(Set::Engine_Sink, Pipeline::sinkChanged);
 
 	// set by gui, initialized directly in pipeline
-	ListenSetting(Set::Engine_ShowLevel, Pipeline::s_show_visualizer_changed);
-	ListenSettingNoCall(Set::Engine_ShowSpectrum, Pipeline::s_show_visualizer_changed);
-	ListenSettingNoCall(Set::Engine_Pitch, Pipeline::s_speed_changed);
-	ListenSettingNoCall(Set::Engine_Speed, Pipeline::s_speed_changed);
-	ListenSettingNoCall(Set::Engine_PreservePitch, Pipeline::s_speed_changed);
-	ListenSetting(Set::Engine_SpeedActive, Pipeline::s_speed_active_changed);
+	ListenSetting(Set::Engine_ShowLevel, Pipeline::showVisualizerChanged);
+	ListenSettingNoCall(Set::Engine_ShowSpectrum, Pipeline::showVisualizerChanged);
+	ListenSettingNoCall(Set::Engine_Pitch, Pipeline::sppedChanged);
+	ListenSettingNoCall(Set::Engine_Speed, Pipeline::sppedChanged);
+	ListenSettingNoCall(Set::Engine_PreservePitch, Pipeline::sppedChanged);
+	ListenSetting(Set::Engine_SpeedActive, Pipeline::speedActiveChanged);
 
 	return true;
 }
 
 
-bool Pipeline::create_elements()
+bool Pipeline::createElements()
 {
 	// input
-	if(!EngineUtils::create_element(&m->source, "uridecodebin", "src")) return false;
-	if(!EngineUtils::create_element(&m->audio_convert, "audioconvert")) return false;
-	if(!EngineUtils::create_element(&m->tee, "tee")) return false;
-	if(!EngineUtils::create_element(&m->pb_queue, "queue", "playback_queue")) return false;
-	if(!EngineUtils::create_element(&m->pb_volume, "volume")) return false;
+	if(!EngineUtils::createElement(&m->source, "uridecodebin", "src")) return false;
+	if(!EngineUtils::createElement(&m->audioConvert, "audioconvert")) return false;
+	if(!EngineUtils::createElement(&m->tee, "tee")) return false;
+	if(!EngineUtils::createElement(&m->playbackQueue, "queue", "playback_queue")) return false;
+	if(!EngineUtils::createElement(&m->playbackVolume, "volume")) return false;
 
-	m->pb_sink = create_sink(GetSetting(Set::Engine_Sink));
+	m->playbackSink = createSink(GetSetting(Set::Engine_Sink));
 
 	m->seeker = new Seeker(m->source);
 	m->equalizer = new Equalizer();
@@ -186,10 +186,10 @@ bool Pipeline::create_elements()
 	m->visualizer = new Visualizer(m->pipeline, m->tee);
 	m->broadcaster = new Broadcaster(this, m->pipeline, m->tee);
 
-	return (m->pb_sink != nullptr);
+	return (m->playbackSink != nullptr);
 }
 
-GstElement* Pipeline::create_sink(const QString& _name)
+GstElement* Pipeline::createSink(const QString& _name)
 {
 	static int Number=1;
 
@@ -199,16 +199,16 @@ GstElement* Pipeline::create_sink(const QString& _name)
 
 	if(_name == "pulse")
 	{
-		sp_log(Log::Debug, this) << "Create pulseaudio sink";
+		spLog(Log::Debug, this) << "Create pulseaudio sink";
 
-		EngineUtils::create_element(&ret, "pulsesink", name.toLocal8Bit().data());
+		EngineUtils::createElement(&ret, "pulsesink", name.toLocal8Bit().data());
 	}
 
 	else if(_name == "alsa")
 	{
-		sp_log(Log::Debug, this) << "Create alsa sink";
+		spLog(Log::Debug, this) << "Create alsa sink";
 		QString device = GetSetting(Set::Engine_AlsaDevice);
-		EngineUtils::create_element(&ret, "alsasink", name.toLocal8Bit().data());
+		EngineUtils::createElement(&ret, "alsasink", name.toLocal8Bit().data());
 
 		if(device.isEmpty())
 		{
@@ -217,205 +217,205 @@ GstElement* Pipeline::create_sink(const QString& _name)
 
 		//EngineUtils::set_value(ret, "device", device.toLocal8Bit().data());
 
-		sp_log(Log::Info, this) << "Created alsa sink with " << device << " as output";
+		spLog(Log::Info, this) << "Created alsa sink with " << device << " as output";
 	}
 
 	if(ret == nullptr)
 	{
-		sp_log(Log::Debug, this) << "Will create auto audio sink";
-		EngineUtils::create_element(&ret, "autoaudiosink", name.toLocal8Bit().data());
+		spLog(Log::Debug, this) << "Will create auto audio sink";
+		EngineUtils::createElement(&ret, "autoaudiosink", name.toLocal8Bit().data());
 	}
 
 	return ret;
 }
 
 
-bool Pipeline::add_and_link_elements()
+bool Pipeline::addAndLinkElements()
 {
 	{ // before tee
-		EngineUtils::add_elements
+		EngineUtils::addElements
 		(
 			GST_BIN(m->pipeline),
-			{m->source, m->audio_convert, m->equalizer->element(), m->tee}
+			{m->source, m->audioConvert, m->equalizer->element(), m->tee}
 		);
 
-		bool success = EngineUtils::link_elements({
-			m->audio_convert, m->equalizer->element(), m->tee
+		bool success = EngineUtils::linkElements({
+			m->audioConvert, m->equalizer->element(), m->tee
 		});
 
-		if(!EngineUtils::test_and_error_bool(success, "Engine: Cannot link audio convert with tee")){
+		if(!EngineUtils::testAndErrorBool(success, "Engine: Cannot link audio convert with tee")){
 			return false;
 		}
 	}
 
 	{ // Playback Bin
-		m->pb_bin = gst_bin_new("Playback_bin");
-		EngineUtils::add_elements(GST_BIN(m->pb_bin), {m->pb_queue, m->pb_volume, m->pb_sink});
+		m->playbackBin = gst_bin_new("Playback_bin");
+		EngineUtils::addElements(GST_BIN(m->playbackBin), {m->playbackQueue, m->playbackVolume, m->playbackSink});
 
-		bool success = EngineUtils::link_elements({m->pb_queue, m->pb_volume, m->pb_sink});
-		if(!EngineUtils::test_and_error_bool(success, "Engine: Cannot link eq with audio sink")) {
+		bool success = EngineUtils::linkElements({m->playbackQueue, m->playbackVolume, m->playbackSink});
+		if(!EngineUtils::testAndErrorBool(success, "Engine: Cannot link eq with audio sink")) {
 			return false;
 		}
 
-		EngineUtils::add_elements(GST_BIN(m->pipeline), {m->pb_bin});
+		EngineUtils::addElements(GST_BIN(m->pipeline), {m->playbackBin});
 
-		EngineUtils::create_ghost_pad(GST_BIN(m->pb_bin), m->pb_queue);
-		EngineUtils::tee_connect(m->tee, m->pb_bin, "Equalizer");
+		EngineUtils::createGhostPad(GST_BIN(m->playbackBin), m->playbackQueue);
+		EngineUtils::connectTee(m->tee, m->playbackBin, "Equalizer");
 
-		return EngineUtils::test_and_error_bool(success, "Engine: Cannot link eq queue with tee");
+		return EngineUtils::testAndErrorBool(success, "Engine: Cannot link eq queue with tee");
 	}
 }
 
-void Pipeline::configure_elements()
+void Pipeline::configureElements()
 {
-	EngineUtils::set_values(G_OBJECT(m->tee),
+	EngineUtils::setValues(G_OBJECT(m->tee),
 				"silent", true,
 				"allow-not-linked", true);
 
-	EngineUtils::config_queue(m->pb_queue);
+	EngineUtils::configureQueue(m->playbackQueue);
 
-	g_signal_connect (m->source, "pad-added", G_CALLBACK (Callbacks::decodebin_ready), m->audio_convert);
-	g_signal_connect (m->source, "source-setup", G_CALLBACK (Callbacks::source_ready), nullptr);
+	g_signal_connect (m->source, "pad-added", G_CALLBACK (Callbacks::decodebinReady), m->audioConvert);
+	g_signal_connect (m->source, "source-setup", G_CALLBACK (Callbacks::sourceReady), nullptr);
 
-	set_position_element(m->source);
+	setPositionElement(m->source);
 }
 
 
 bool Pipeline::prepare(const QString& uri)
 {
 	stop();
-	EngineUtils::set_values(G_OBJECT(m->source),
-		"use-buffering", Util::File::is_www(uri),
+	EngineUtils::setValues(G_OBJECT(m->source),
+		"use-buffering", Util::File::isWWW(uri),
 		"uri", uri.toUtf8().data()
 	);
 
-	EngineUtils::set_int64_value(G_OBJECT(m->source), "buffer-duration", GetSetting(Set::Engine_BufferSizeMS));
-	EngineUtils::set_state(m->pipeline, GST_STATE_PAUSED);
+	EngineUtils::setInt64Value(G_OBJECT(m->source), "buffer-duration", GetSetting(Set::Engine_BufferSizeMS));
+	EngineUtils::setState(m->pipeline, GST_STATE_PAUSED);
 
-	s_volume_changed();
-	s_mute_changed();
+	volumeChanged();
+	muteChanged();
 
 	return true;
 }
 
 void Pipeline::play()
 {
-	EngineUtils::set_state(m->pipeline, GST_STATE_PLAYING);
+	EngineUtils::setState(m->pipeline, GST_STATE_PLAYING);
 }
 
 void Pipeline::pause()
 {
-	EngineUtils::set_state(m->pipeline, GST_STATE_PAUSED);
+	EngineUtils::setState(m->pipeline, GST_STATE_PAUSED);
 }
 
 
 void Pipeline::stop()
 {
-	if(EngineUtils::get_state(m->pipeline) == GST_STATE_PLAYING)
+	if(EngineUtils::getState(m->pipeline) == GST_STATE_PLAYING)
 	{
 		//gst_element_send_event(m->pipeline, gst_event_new_eos());
 	}
 
-	EngineUtils::set_state(m->pipeline, GST_STATE_NULL);
+	EngineUtils::setState(m->pipeline, GST_STATE_NULL);
 
-	abort_delayed_playing();
-	abort_fader();
+	abortDelayedPlaying();
+	abortFader();
 }
 
-void Pipeline::s_volume_changed()
+void Pipeline::volumeChanged()
 {
 	double vol = GetSetting(Set::Engine_Vol) / 100.0;
-	set_internal_volume(vol);
+	setInternalVolume(vol);
 }
 
-void Pipeline::s_mute_changed()
+void Pipeline::muteChanged()
 {
 	bool muted = GetSetting(Set::Engine_Mute);
-	EngineUtils::set_value(G_OBJECT(m->pb_volume), "mute", muted);
+	EngineUtils::setValue(G_OBJECT(m->playbackVolume), "mute", muted);
 }
 
-void Pipeline::enable_visualizer(bool b)
+void Pipeline::enableVisualizer(bool b)
 {
-	m->visualizer->set_enabled(b);
+	m->visualizer->setEnabled(b);
 }
 
-void Pipeline::s_show_visualizer_changed()
+void Pipeline::showVisualizerChanged()
 {
-	enable_visualizer
+	enableVisualizer
 	(
 		GetSetting(Set::Engine_ShowSpectrum) ||
 		GetSetting(Set::Engine_ShowLevel)
 	);
 }
 
-void Pipeline::enable_broadcasting(bool b)
+void Pipeline::enableBroadcasting(bool b)
 {
-	m->broadcaster->set_enabled(b);
+	m->broadcaster->setEnabled(b);
 }
 
 GstState Pipeline::state() const
 {
-	return EngineUtils::get_state(m->pipeline);
+	return EngineUtils::getState(m->pipeline);
 }
 
-MilliSeconds Pipeline::time_to_go() const
+MilliSeconds Pipeline::timeToGo() const
 {
 	GstElement* element = m->pipeline;
-	MilliSeconds ms = EngineUtils::get_time_to_go(element);
+	MilliSeconds ms = EngineUtils::getTimeToGo(element);
 
 	return std::max<MilliSeconds>(ms - 100, 0);
 }
 
-void Pipeline::set_raw_data(const QByteArray& data)
+void Pipeline::setRawData(const QByteArray& data)
 {
-	emit sig_data(data);
+	emit sigDataAvailable(data);
 }
 
-void Pipeline::set_equalizer_band(int band, int val)
+void Pipeline::setEqualizerBand(int band, int val)
 {
-	m->equalizer->set_band(band, val);
+	m->equalizer->setBand(band, val);
 }
 
 
 void Pipeline::record(bool b)
 {
-	if(!m->stream_recorder)
+	if(!m->streamRecorder)
 	{
-		m->stream_recorder = new StreamRecorderHandler(m->pipeline, m->tee);
-		m->stream_recorder->init();
+		m->streamRecorder = new StreamRecorderHandler(m->pipeline, m->tee);
+		m->streamRecorder->init();
 	}
 
-	m->stream_recorder->set_enabled(b);
+	m->streamRecorder->setEnabled(b);
 }
 
-void Pipeline::set_recording_path(const QString& path)
+void Pipeline::setRecordingPath(const QString& path)
 {
-	m->stream_recorder->set_target_path(path);
+	m->streamRecorder->setTargetPath(path);
 }
 
-NanoSeconds Pipeline::seek_rel(double percent, NanoSeconds ref_ns)
+NanoSeconds Pipeline::seekRelative(double percent, NanoSeconds ref_ns)
 {
-	return m->seeker->seek_rel(percent, ref_ns);
+	return m->seeker->seekRelative(percent, ref_ns);
 }
 
-NanoSeconds Pipeline::seek_abs(NanoSeconds ns)
+NanoSeconds Pipeline::seekAbsolute(NanoSeconds ns)
 {
-	return m->seeker->seek_abs(ns);
+	return m->seeker->seekAbsolute(ns);
 }
 
-void Pipeline::set_internal_volume(double volume)
+void Pipeline::setInternalVolume(double volume)
 {
-	EngineUtils::set_value(G_OBJECT(m->pb_volume), "volume", volume);
+	EngineUtils::setValue(G_OBJECT(m->playbackVolume), "volume", volume);
 }
 
-double Pipeline::get_internal_volume() const
+double Pipeline::internalVolume() const
 {
 	double volume;
-	g_object_get(m->pb_volume, "volume", &volume, nullptr);
+	g_object_get(m->playbackVolume, "volume", &volume, nullptr);
 	return volume;
 }
 
-void Pipeline::s_speed_active_changed()
+void Pipeline::speedActiveChanged()
 {
 	bool active = GetSetting(Set::Engine_SpeedActive);
 
@@ -424,30 +424,30 @@ void Pipeline::s_speed_active_changed()
 		return;
 	}
 
-	MilliSeconds pos_ms = position_ms();
+	MilliSeconds pos_ms = positionMs();
 	if(active)
 	{
-		Changeable::add_element(speed, m->audio_convert, m->equalizer->element());
-		s_speed_changed();
+		Changeable::addElement(speed, m->audioConvert, m->equalizer->element());
+		sppedChanged();
 	}
 
 	else
 	{
-		Changeable::remove_element(speed, m->audio_convert, m->equalizer->element());
+		Changeable::removeElement(speed, m->audioConvert, m->equalizer->element());
 	}
 
-	if(EngineUtils::get_state(m->pipeline) == GST_STATE_PLAYING)
+	if(EngineUtils::getState(m->pipeline) == GST_STATE_PLAYING)
 	{
 		pos_ms = std::max<MilliSeconds>(pos_ms, 0);
-		m->seeker->seek_nearest_ms(pos_ms);
+		m->seeker->seekNearestMs(pos_ms);
 	}
 
-	check_position();
+	checkPosition();
 }
 
-void Pipeline::s_speed_changed()
+void Pipeline::sppedChanged()
 {
-	m->pitcher->set_speed
+	m->pitcher->setSpeed
 	(
 		GetSetting(Set::Engine_Speed),
 		GetSetting(Set::Engine_Pitch) / 440.0,
@@ -455,32 +455,32 @@ void Pipeline::s_speed_changed()
 	);
 }
 
-void Pipeline::s_sink_changed()
+void Pipeline::sinkChanged()
 {
-	GstElement* new_sink = create_sink(GetSetting(Set::Engine_Sink));
+	GstElement* new_sink = createSink(GetSetting(Set::Engine_Sink));
 	if(!new_sink){
 		return;
 	}
 
-	replace_sink(m->pb_sink, new_sink, m->pb_volume, m->pipeline, m->pb_bin);
-	m->pb_sink = new_sink;
+	replaceSink(m->playbackSink, new_sink, m->playbackVolume, m->pipeline, m->playbackBin);
+	m->playbackSink = new_sink;
 }
 
-void Pipeline::check_position()
+void Pipeline::checkPosition()
 {
-	MilliSeconds pos_ms = position_ms();
+	MilliSeconds pos_ms = positionMs();
 	pos_ms = std::max<MilliSeconds>(0, pos_ms);
 
-	emit sig_pos_changed_ms( pos_ms );
+	emit sigPositionChangedMs( pos_ms );
 
-	check_about_to_finish();
+	checkAboutToFinish();
 }
 
-void Pipeline::check_about_to_finish()
+void Pipeline::checkAboutToFinish()
 {
-	MilliSeconds pos_ms = position_ms();
-	MilliSeconds dur_ms = duration_ms();
-	MilliSeconds about_to_finish_time = get_about_to_finish_time();
+	MilliSeconds pos_ms = positionMs();
+	MilliSeconds dur_ms = durationMs();
+	MilliSeconds about_to_finish_time = getAboutToFinishTime();
 
 	static bool about_to_finish = false;
 
@@ -496,51 +496,51 @@ void Pipeline::check_about_to_finish()
 
 	if(about_to_finish)
 	{
-		sp_log(Log::Develop, this) << "About to finish in " << difference << ": Dur: " << dur_ms << ", Pos: " << pos_ms;
+		spLog(Log::Develop, this) << "About to finish in " << difference << ": Dur: " << dur_ms << ", Pos: " << pos_ms;
 
-		emit sig_about_to_finish(difference);
+		emit sigAboutToFinishMs(difference);
 	}
 }
 
 
-MilliSeconds Pipeline::get_about_to_finish_time() const
+MilliSeconds Pipeline::getAboutToFinishTime() const
 {
 	MilliSeconds AboutToFinishTime=300;
-	return std::max(get_fading_time_ms(), AboutToFinishTime);
+	return std::max(fadingTimeMs(), AboutToFinishTime);
 }
 
-void Pipeline::set_position_element(GstElement* element)
+void Pipeline::setPositionElement(GstElement* element)
 {
-	m->position_element = element;
-	m->seeker->set_source(m->position_element);
+	m->positionElement = element;
+	m->seeker->set_source(m->positionElement);
 }
 
-GstElement* Pipeline::position_element()
+GstElement* Pipeline::positionElement()
 {
-	return m->position_element;
+	return m->positionElement;
 }
 
-MilliSeconds Pipeline::duration_ms() const
+MilliSeconds Pipeline::durationMs() const
 {
-	return EngineUtils::get_duration_ms(m->position_element);
+	return EngineUtils::getDurationMs(m->positionElement);
 }
 
-MilliSeconds Pipeline::position_ms() const
+MilliSeconds Pipeline::positionMs() const
 {
-	return EngineUtils::get_position_ms(m->position_element);
+	return EngineUtils::getPositionMs(m->positionElement);
 }
 
-bool Pipeline::has_element(GstElement* e) const
+bool Pipeline::hasElement(GstElement* e) const
 {
-	return EngineUtils::has_element(GST_BIN(m->pipeline), e);
+	return EngineUtils::hasElement(GST_BIN(m->pipeline), e);
 }
 
-void Pipeline::fade_in_handler()
+void Pipeline::getFadeInHandler()
 {
-	s_show_visualizer_changed();
+	showVisualizerChanged();
 }
 
-void Pipeline::fade_out_handler()
+void Pipeline::getFadeOutHandler()
 {
-	enable_visualizer(false);
+	enableVisualizer(false);
 }

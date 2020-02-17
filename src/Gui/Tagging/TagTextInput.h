@@ -1,6 +1,6 @@
 /* TagTextInput.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -40,19 +40,20 @@ class TagTextInput :
 	Q_OBJECT
 	PIMPL(TagTextInput)
 
-public:
-	TagTextInput(QWidget* parent=nullptr);
-	~TagTextInput() override;
+	public:
+		TagTextInput(QWidget* parent=nullptr);
+		~TagTextInput() override;
 
-private slots:
-	void cvt_to_first_upper();
-	void cvt_to_very_first_upper();
+	private slots:
+		void convertToFirstUpper();
+		void convertToVeryFirstUpper();
 
-protected:
-	void contextMenuEvent(QContextMenuEvent* event) override;
-	void keyPressEvent(QKeyEvent* event) override;
-	void init_context_menu();
-    void language_changed() override;
+	protected:
+		void initContextMenu();
+
+		void contextMenuEvent(QContextMenuEvent* event) override;
+		void keyPressEvent(QKeyEvent* event) override;
+		void languageChanged() override;
 };
 
 #endif // TAGTEXTINPUT_H

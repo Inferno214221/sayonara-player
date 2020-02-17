@@ -1,6 +1,6 @@
 /* GUI_EnginePreferences.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -38,19 +38,19 @@ public:
 	virtual ~GUI_EnginePreferences();
 
 	// Base interface
-	QString action_name() const override;
+	QString actionName() const override;
 	bool commit() override;
 	void revert() override;
-	void init_ui() override;
-	void retranslate_ui() override;
+	void initUi() override;
+	void retranslate() override;
 
 private slots:
 
-	void radio_button_changed(bool b);
+	void radioButtonChanged(bool b);
 
-	void alsa_process_finished(int exitCode, QProcess::ExitStatus exitStatus);
-	void alsa_process_error_occured(QProcess::ProcessError error);
-	void alsa_stdout_written();
+	void alsaProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);
+	void alsaProcessErrorOccured(QProcess::ProcessError error);
+	void alsaStdoutWritten();
 };
 
 #endif // GUI_ENGINEPREFERENCES_H

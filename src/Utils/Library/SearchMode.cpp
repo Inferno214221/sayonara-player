@@ -1,6 +1,6 @@
 /* SearchMode.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -104,7 +104,7 @@ static void init_diacritic_chars()
 }
 
 
-QString Library::Utils::convert_search_string(const QString& str, Library::SearchModeMask mode, const QList<QChar>& ignored_chars)
+QString Library::Utils::convertSearchstring(const QString& str, Library::SearchModeMask mode, const QList<QChar>& ignored_chars)
 {
 	if(diacritic_chars->isEmpty()){
 		init_diacritic_chars();
@@ -159,11 +159,11 @@ QString Library::Utils::convert_search_string(const QString& str, Library::Searc
 		ret = cleaned_string;
 	}
 
-	return ::Util::cvt_not_null(ret);
+	return ::Util::convertNotNull(ret);
 }
 
 
-QString Library::Utils::convert_search_string(const QString& str, Library::SearchModeMask mode)
+QString Library::Utils::convertSearchstring(const QString& str, Library::SearchModeMask mode)
 {
-	return convert_search_string(str, mode, QList<QChar>());
+	return convertSearchstring(str, mode, QList<QChar>());
 }

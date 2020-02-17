@@ -1,6 +1,6 @@
 /* AlbumInfo.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -34,38 +34,38 @@
 
 struct AlbumInfo::Private
 {
-	DbId db_id;
-	Cover::Location cover_location;
+	DbId databaseId;
+	Cover::Location coverLocation;
 
-	Private(DbId db_id) :
-		db_id(db_id)
+	Private(DbId databaseId) :
+		databaseId(databaseId)
 	{}
 };
 
-AlbumInfo::AlbumInfo(const MetaDataList& v_md) :
-	MetaDataInfo(v_md)
+AlbumInfo::AlbumInfo(const MetaDataList& tracks) :
+	MetaDataInfo(tracks)
 {
-	DbId db_id = (DbId) -1;
-	if(v_md.size() > 0)
+	DbId databaseId = DbId(-1);
+	if(tracks.size() > 0)
 	{
-		db_id = v_md.first().db_id();
+		databaseId = tracks.first().databaseId();
 	}
 
-	m = Pimpl::make<Private>(db_id);
+	m = Pimpl::make<Private>(databaseId);
 	QString str_sampler;
 
 	// clear, because it's from Metadata. We are not interested in
 	// rather fetch albums' additional data, if there's only one album
-	_additional_info.clear();
+	mAdditionalInfo.clear();
 
 	if(albums().size() > 1)
 	{
-		insert_numeric_info_field(InfoStrings::nAlbums, albums().count());
+		insertNumericInfoField(InfoStrings::nAlbums, albums().count());
 	}
 
 	if(artists().size() > 1)
 	{
-		insert_numeric_info_field(InfoStrings::nArtists, artists().count());
+		insertNumericInfoField(InfoStrings::nArtists, artists().count());
 	}
 
 	if(albums().size() == 1)
@@ -76,22 +76,22 @@ AlbumInfo::AlbumInfo(const MetaDataList& v_md) :
 		if(artists().size() > 1)
 		{
 			str_sampler = Lang::get(Lang::Yes).toLower();
-			_info.insert(InfoStrings::Sampler, str_sampler);
+			mInfo.insert(InfoStrings::Sampler, str_sampler);
 		}
 
 		if(artists().size() == 1)
 		{
 			str_sampler = Lang::get(Lang::No).toLower();
-			_info.insert(InfoStrings::Sampler, str_sampler);
+			mInfo.insert(InfoStrings::Sampler, str_sampler);
 		}
 
-		AlbumId album_id = album_ids().first();
+		AlbumId albumId = albumIds().first();
 
-		DB::LibraryDatabase* lib_db = DB::Connector::instance()->library_db(-1, m->db_id);
+		DB::LibraryDatabase* lib_db = DB::Connector::instance()->libraryDatabase(-1, m->databaseId);
 		if(lib_db)
 		{
 			// BIG TODO FOR SOUNDCLOUD
-			success = lib_db->getAlbumByID(album_id, album);
+			success = lib_db->getAlbumByID(albumId, album);
 		}
 
 		else {
@@ -100,83 +100,83 @@ AlbumInfo::AlbumInfo(const MetaDataList& v_md) :
 
 		if(success)
 		{
-			_additional_info.clear();
+			mAdditionalInfo.clear();
 			// custom fields
-			const CustomFieldList& custom_fields = album.get_custom_fields();
+			const CustomFieldList& custom_fields = album.customFields();
 			for(const CustomField& field : custom_fields)
 			{
-				QString name = field.get_display_name();
-				QString value = field.get_value();
+				QString name = field.displayName();
+				QString value = field.value();
 				if(value.isEmpty()){
 					continue;
 				}
 
-				_additional_info << StringPair(name, field.get_value());
+				mAdditionalInfo << StringPair(name, field.value());
 			}
 		}
 	}
 
-	calc_header();
-	calc_subheader();
-	calc_cover_location();
+	calcHeader();
+	calcSubheader();
+	calcCoverLocation();
 }
 
 AlbumInfo::~AlbumInfo() {}
 
 
-void AlbumInfo::calc_header()
+void AlbumInfo::calcHeader()
 {
-	_header = calc_album_str();
+	mHeader = calcAlbumString();
 }
 
-void AlbumInfo::calc_subheader()
+void AlbumInfo::calcSubheader()
 {
-	_subheader = Lang::get(Lang::By).toLower() + " " + calc_artist_str();
+	mSubheader = Lang::get(Lang::By).toLower() + " " + calcArtistString();
 }
 
-void AlbumInfo::calc_cover_location()
+void AlbumInfo::calcCoverLocation()
 {
-	if(album_ids().size() == 1)
+	if(albumIds().size() == 1)
 	{
-		DB::LibraryDatabase* lib_db = DB::Connector::instance()->library_db(-1, m->db_id);
+		DB::LibraryDatabase* lib_db = DB::Connector::instance()->libraryDatabase(-1, m->databaseId);
 
 		Album album;
-		bool success = lib_db->getAlbumByID(album_ids().first(), album, true);
+		bool success = lib_db->getAlbumByID(albumIds().first(), album, true);
 		if(!success)
 		{
-			album.set_id(album_ids().first());
-			album.set_name(albums().first());
-			album.set_artists(artists().toList());
-			album.set_album_artists(album_artists().toList());
-			album.set_db_id(lib_db->db_id());
+			album.setId(albumIds().first());
+			album.setName(albums().first());
+			album.setArtists(artists().toList());
+			album.setAlbumArtists(albumArtists().toList());
+			album.setDatabaseId(lib_db->databaseId());
 		}
 
-		m->cover_location = Cover::Location::xcover_location(album);
+		m->coverLocation = Cover::Location::xcoverLocation(album);
 	}
 
 	else if( albums().size() == 1)
 	{
 		QString album = albums().first();
 
-		if(!album_artists().isEmpty())
+		if(!albumArtists().isEmpty())
 		{
-			m->cover_location = Cover::Location::cover_location(album, album_artists().toList());
+			m->coverLocation = Cover::Location::coverLocation(album, albumArtists().toList());
 		}
 
 		else
 		{
-			m->cover_location = Cover::Location::cover_location(album, artists().toList());
+			m->coverLocation = Cover::Location::coverLocation(album, artists().toList());
 		}
 	}
 
 	else
 	{
-		m->cover_location = Cover::Location::invalid_location();
+		m->coverLocation = Cover::Location::invalidLocation();
 	}
 }
 
-Cover::Location AlbumInfo::cover_location() const
+Cover::Location AlbumInfo::coverLocation() const
 {
-	return m->cover_location;
+	return m->coverLocation;
 }
 

@@ -1,6 +1,6 @@
 /* DBusMediaKeysInterface.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -33,7 +33,7 @@ class DBusMediaKeysInterface :
 	PIMPL(DBusMediaKeysInterface)
 
 public:
-	explicit DBusMediaKeysInterface(QObject *parent=nullptr);
+	explicit DBusMediaKeysInterface(QObject* parent=nullptr);
 	virtual ~DBusMediaKeysInterface();
 
 	void init();
@@ -41,13 +41,13 @@ public:
 protected:
 	bool initialized() const;
 
-	virtual QString service_name() const=0;
-	virtual QDBusPendingReply<> grab_media_key_reply()=0;
-	virtual void connect_media_keys()=0;
+	virtual QString serviceName() const=0;
+	virtual QDBusPendingReply<> grabMediaKeyReply()=0;
+	virtual void connectMediaKeys()=0;
 
 protected slots:
-	virtual void sl_media_key_pressed(const QString& app_name, const QString& key);
-	virtual void sl_register_finished(QDBusPendingCallWatcher* watcher);
+	virtual void mediaKeyPressed(const QString& appName, const QString& key);
+	virtual void registerFinished(QDBusPendingCallWatcher* watcher);
 };
 
 #endif // DBUSMEDIAKEYSINTERFACE_H

@@ -1,6 +1,6 @@
 /* Connector.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -57,33 +57,33 @@ namespace DB
 			bool updateLostArtists();
 			bool updateLostAlbums();
 
-			virtual bool apply_fixes() override;
+			virtual bool applyFixes() override;
 
 		public:
-			Connector(const QString& source_dir, const QString& target_dir, const QString& db_filename);
+			Connector(const QString& sourceDirectory, const QString& targetDirectory, const QString& databseFilename);
 			~Connector() override;
 
 			static Connector*		instance();
-			static Connector*		instance_custom(QString source_dir, QString target_dir, QString db_filename);
+			static Connector*		instance_custom(QString sourceDirectory, QString targetDirectory, QString databseFilename);
 
-			LibraryDatabases		library_dbs() const;
-			DB::LibraryDatabase*	library_db(LibraryId library_id, DbId db_id);
-			DB::LibraryDatabase*	register_library_db(LibraryId library_id);
-			void					delete_library_db(LibraryId library_id);
+			LibraryDatabases		libraryDatabases() const;
+			DB::LibraryDatabase*	libraryDatabase(LibraryId libraryId, DbId databaseId);
+			DB::LibraryDatabase*	registerLibraryDatabase(LibraryId libraryId);
+			void					deleteLibraryDatabase(LibraryId libraryId);
 
-			DB::Bookmarks*			bookmark_connector();
-			DB::Playlist*			playlist_connector();
-			DB::Podcasts*			podcast_connector();
-			DB::Streams*			stream_connector();
-			DB::VisualStyles*		visual_style_connector();
-			DB::Settings*			settings_connector();
-			DB::Shortcuts*			shortcut_connector();
-			DB::Covers*				cover_connector();
-			DB::Library*			library_connector();
-			DB::Session*			session_connector();
+			DB::Bookmarks*			bookmarkConnector();
+			DB::Playlist*			playlistConnector();
+			DB::Podcasts*			podcastConnector();
+			DB::Streams*			streamConnector();
+			DB::VisualStyles*		visualStyleConnector();
+			DB::Settings*			settingsConnector();
+			DB::Shortcuts*			shortcutConnector();
+			DB::Covers*				coverConnector();
+			DB::Library*			libraryConnector();
+			DB::Session*			sessionConnector();
 
-			static int				get_max_db_version();
-			int						old_db_version() const;
+			static int				highestDatabaseVersion();
+			int						oldDatabaseVersion() const;
 	};
 }
 #endif // DatabaseConnector_H

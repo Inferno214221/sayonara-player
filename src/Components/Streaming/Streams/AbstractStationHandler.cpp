@@ -1,6 +1,6 @@
 /* AbstractStreamHandler.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -20,33 +20,20 @@
 
 #include "AbstractStationHandler.h"
 
-#include "Database/Connector.h"
 #include "Components/Playlist/PlaylistHandler.h"
-#include "Components/PlayManager/PlayManager.h"
 
-#include "Utils/WebAccess/AsyncWebAccess.h"
 #include "Utils/Parser/StreamParser.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Logger/Logger.h"
-#include "Utils/Message/Message.h"
 #include "Utils/Settings/Settings.h"
 
 struct AbstractStationHandler::Private
 {
-	StreamParser*					stream_parser=nullptr;
-	Playlist::Handler*				playlist=nullptr;
-	QMap<QString, MetaDataList>		station_contents;
-	QString							station_name;
-	bool							blocked;
-
-	Private()
-	{
-		playlist = Playlist::Handler::instance();
-		blocked = false;
-	}
+	StreamParser*					streamParser=nullptr;
+	StationPtr						parsedStation;
 };
 
-AbstractStationHandler::AbstractStationHandler(QObject *parent) :
+AbstractStationHandler::AbstractStationHandler(QObject* parent) :
 	QObject(parent)
 {
 	m = Pimpl::make<AbstractStationHandler::Private>();
@@ -54,86 +41,81 @@ AbstractStationHandler::AbstractStationHandler(QObject *parent) :
 
 AbstractStationHandler::~AbstractStationHandler() = default;
 
-void AbstractStationHandler::clear()
+void AbstractStationHandler::createPlaylist(StationPtr station, MetaDataList& tracks)
 {
-	m->station_contents.clear();
-}
+	QString playlistName;
 
-void AbstractStationHandler::stop()
-{
-	if(m->stream_parser && m->blocked) {
-		m->stream_parser->stop();
+	if(GetSetting(Set::Stream_NewTab)) {
+		playlistName = station->name();
 	}
+
+	auto* plh = Playlist::Handler::instance();
+	int index = plh->createPlaylist(tracks, playlistName);
+	plh->changeTrack(0, index);
 }
 
-void AbstractStationHandler::stopped()
+bool AbstractStationHandler::parseStation(StationPtr station)
 {
-	m->blocked = false;
-	emit sig_stopped();
-
-	sender()->deleteLater();
-	m->stream_parser = nullptr;
-}
-
-
-bool AbstractStationHandler::parse_station(const QString& url, const QString& station_name)
-{
-	if(m->blocked) {
+	if(m->streamParser){
 		return false;
 	}
 
-	m->blocked = true;
-	m->station_name = station_name;
+	m->parsedStation = station;
 
-	m->stream_parser = new StreamParser(station_name, this);
-	connect(m->stream_parser, &StreamParser::sig_finished, this, &AbstractStationHandler::stream_parser_finished);
-	connect(m->stream_parser, &StreamParser::sig_too_many_urls_found, this, &AbstractStationHandler::sig_too_many_urls_found);
-	connect(m->stream_parser, &StreamParser::sig_stopped, this, &AbstractStationHandler::stopped);
+	m->streamParser = new StreamParser(this);
 
-	m->stream_parser->parse_stream(url);
+	connect(m->streamParser, &StreamParser::sigFinished, this, &AbstractStationHandler::parserFinished);
+	connect(m->streamParser, &StreamParser::sigUrlCountExceeded, this, &AbstractStationHandler::sigUrlCountExceeded);
+	connect(m->streamParser, &StreamParser::sigStopped, this, &AbstractStationHandler::parserStopped);
+
+	m->streamParser->parse(station->name(), station->url());
 
 	return true;
 }
 
-
-void AbstractStationHandler::stream_parser_finished(bool success)
+void AbstractStationHandler::parserFinished(bool success)
 {
-	auto* stream_parser = static_cast<StreamParser*>(sender());
-
 	if(!success)
 	{
-		sp_log(Log::Warning, this) << "Stream parser finished with error";
-		stream_parser->deleteLater(); m->stream_parser = nullptr;
-
-		m->blocked = false;
-		emit sig_error();
+		emit sigError();
+		spLog(Log::Warning, this) << "Stream parser finished with error";
 	}
 
 	else
 	{
-		MetaDataList v_md = stream_parser->metadata();
-		m->station_contents[m->station_name] = v_md;
+		MetaDataList tracks = m->streamParser->tracks();
 
-		if(!v_md.isEmpty())
-		{
-			QString station_name;
-			if(GetSetting(Set::Stream_NewTab)){
-				station_name = m->station_name;
-			}
-
-			int idx = m->playlist->create_playlist(v_md, station_name, true, Playlist::Type::Stream);
-			m->playlist->change_track(0, idx);
+		if(!tracks.isEmpty()) {
+			createPlaylist(m->parsedStation, tracks);
 		}
 
-		m->blocked = false;
-		emit sig_data_available();
+		emit sigDataAvailable();
 	}
 
-	stream_parser->deleteLater(); m->stream_parser = nullptr;
+	sender()->deleteLater(); // m->stream_parser may be nullptr here
+	m->streamParser = nullptr;
+}
+
+void AbstractStationHandler::stop()
+{
+	if(m->streamParser && !m->streamParser->isStopped())
+	{
+		m->streamParser->stop();
+	}
+
+	m->streamParser = nullptr;
+	emit sigStopped();
+}
+
+void AbstractStationHandler::parserStopped()
+{
+	sender()->deleteLater(); // m->stream_parser may be nullptr here
+	m->streamParser = nullptr;
+
+	emit sigStopped();
 }
 
 bool AbstractStationHandler::save(StationPtr station)
 {
-	return add_stream(station);
+	return addNewStream(station);
 }
-

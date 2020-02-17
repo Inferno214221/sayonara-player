@@ -1,6 +1,6 @@
 /* Dragable.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -45,7 +45,7 @@ using Gui::Dragable;
 
 struct Dragable::Private
 {
-	QPoint		start_drag_pos;
+	QPoint		startDraggingPosition;
 	QWidget*	widget=nullptr;
 	QDrag*		drag=nullptr;
 	bool		valid;
@@ -58,7 +58,7 @@ struct Dragable::Private
 		dragging(false)
 	{}
 
-	QStringList get_strings(const QMimeData* data)
+	QStringList getStrings(const QMimeData* data)
 	{
 		QStringList ret;
 		int playlists, dirs, tracks, other_files;
@@ -69,37 +69,37 @@ struct Dragable::Private
 		for(const QUrl& url : urls)
 		{
 			QString filename = url.toLocalFile();
-			if(FileUtils::is_playlistfile(filename)){
+			if(FileUtils::isPlaylistFile(filename)){
 				playlists++;
 			}
 
-			else if(FileUtils::is_soundfile(filename)){
+			else if(FileUtils::isSoundFile(filename)){
 				tracks++;
 			}
 
-			else if(FileUtils::is_dir(filename)){
+			else if(FileUtils::isDir(filename)){
 				dirs++;
 			}
 
-			else if(FileUtils::is_file(filename)){
+			else if(FileUtils::isFile(filename)){
 				other_files++;
 			}
 		}
 
 		if(tracks > 0){
-			ret << Lang::get_with_number(Lang::NrTracks, tracks);
+			ret << Lang::getWithNumber(Lang::NrTracks, tracks);
 		}
 
 		if(playlists > 0){
-			ret << Lang::get_with_number(Lang::NrPlaylists, playlists);
+			ret << Lang::getWithNumber(Lang::NrPlaylists, playlists);
 		}
 
 		if(dirs > 0){
-			ret << Lang::get_with_number(Lang::NrDirectories, dirs);
+			ret << Lang::getWithNumber(Lang::NrDirectories, dirs);
 		}
 
 		if(other_files > 0){
-			ret << Lang::get_with_number(Lang::NrFiles, other_files);
+			ret << Lang::getWithNumber(Lang::NrFiles, other_files);
 		}
 
 		return ret;
@@ -117,20 +117,20 @@ Dragable::Dragable(QAbstractItemView* widget)
 
 Dragable::~Dragable() = default;
 
-void Dragable::start_drag(const QPoint& p)
+void Dragable::startDrag(const QPoint& p)
 {
-	m->valid = is_valid_drag_position(p);
+	m->valid = isValidDragPosition(p);
 	m->dragging = false;
-	m->start_drag_pos = p;
+	m->startDraggingPosition = p;
 }
 
-QDrag* Dragable::move_drag(const QPoint& p)
+QDrag* Dragable::moveDrag(const QPoint& p)
 {
 	if(!m->valid){
 		return nullptr;
 	}
 
-	int distance = (p - m->start_drag_pos).manhattanLength();
+	int distance = (p - m->startDraggingPosition).manhattanLength();
 
 	if(distance < QApplication::startDragDistance())
 	{
@@ -146,22 +146,22 @@ QDrag* Dragable::move_drag(const QPoint& p)
 	}
 
 	m->dragging = true;
-	m->start_drag_pos = QPoint();
+	m->startDraggingPosition = QPoint();
 	m->drag = new QDrag(m->widget);
 
-	QMimeData* data = dragable_mimedata();
+	QMimeData* data = dragableMimedata();
 	if(data == nullptr) {
 		return m->drag;
 	}
 
 	QStringList strings;
-	if(!has_drag_label()) {
-		strings = m->get_strings(data);
+	if(!hasDragLabel()) {
+		strings = m->getStrings(data);
 	}
 
 	else {
 		strings.clear();
-		strings << drag_label();
+		strings << dragLabel();
 	}
 
 	QFontMetrics fm = m->widget->fontMetrics();
@@ -178,13 +178,13 @@ QDrag* Dragable::move_drag(const QPoint& p)
 
 	for(const QString& str : Algorithm::AsConst(strings))
 	{
-		pm_width = std::max( pm_width, Gui::Util::text_width(fm, str) );
+		pm_width = std::max( pm_width, Gui::Util::textWidget(fm, str) );
 	}
 
 	pm_width += logo_width + 22;
 
 
-	QPixmap cover = drag_pixmap();
+	QPixmap cover = dragPixmap();
 	if(cover.isNull()){
 		cover = Gui::Util::pixmap("logo.png", Gui::Util::NoTheme, logo_size, true);
 	}
@@ -215,7 +215,7 @@ QDrag* Dragable::move_drag(const QPoint& p)
 }
 
 
-void Dragable::release_drag(Dragable::ReleaseReason reason)
+void Dragable::releaseDrag(Dragable::ReleaseReason reason)
 {
 	if(!m){
 		return;
@@ -231,27 +231,27 @@ void Dragable::release_drag(Dragable::ReleaseReason reason)
 	}
 
 	m->dragging = false;
-	m->start_drag_pos = QPoint();
+	m->startDraggingPosition = QPoint();
 }
 
-bool Dragable::is_valid_drag_position(const QPoint &p) const
+bool Dragable::isValidDragPosition(const QPoint &p) const
 {
 	Q_UNUSED(p)
 	return true;
 }
 
 
-QPixmap Dragable::drag_pixmap() const
+QPixmap Dragable::dragPixmap() const
 {
 	return QPixmap();
 }
 
-bool Dragable::has_drag_label() const
+bool Dragable::hasDragLabel() const
 {
 	return false;
 }
 
-QString Dragable::drag_label() const
+QString Dragable::dragLabel() const
 {
 	return QString();
 }
@@ -278,8 +278,8 @@ Gui::DragableConnector::DragableConnector(QAbstractItemView* widget, Gui::Dragab
 	auto* mpef = new Gui::MousePressedFilter(widget->viewport());
 	auto* mmef = new Gui::MouseMoveFilter(widget->viewport());
 
-	connect(mpef, &Gui::MousePressedFilter::sig_mouse_pressed, this, &DragableConnector::mouse_pressed);
-	connect(mmef, &Gui::MouseMoveFilter::sig_mouse_moved, this, &DragableConnector::mouse_moved);
+	connect(mpef, &Gui::MousePressedFilter::sigMousePressed, this, &DragableConnector::mousePressed);
+	connect(mmef, &Gui::MouseMoveFilter::sigMouseMoved, this, &DragableConnector::mouseMoved);
 
 	widget->viewport()->installEventFilter(mpef);
 	widget->viewport()->installEventFilter(mmef);
@@ -287,24 +287,24 @@ Gui::DragableConnector::DragableConnector(QAbstractItemView* widget, Gui::Dragab
 
 Gui::DragableConnector::~DragableConnector() = default;
 
-void Gui::DragableConnector::mouse_pressed(QMouseEvent* e)
+void Gui::DragableConnector::mousePressed(QMouseEvent* e)
 {
 	if(e->buttons() & Qt::LeftButton)
 	{
-		m->dragable->start_drag(e->pos());
+		m->dragable->startDrag(e->pos());
 	}
 }
 
-void DragableConnector::mouse_moved(QMouseEvent* e)
+void DragableConnector::mouseMoved(QMouseEvent* e)
 {
-	QDrag* drag = m->dragable->move_drag(e->pos());
+	QDrag* drag = m->dragable->moveDrag(e->pos());
 	if(drag)
 	{
-		connect(drag, &QDrag::destroyed, this, &DragableConnector::drag_destroyed);
+		connect(drag, &QDrag::destroyed, this, &DragableConnector::dragDestroyed);
 	}
 }
 
-void DragableConnector::drag_destroyed()
+void DragableConnector::dragDestroyed()
 {
-	m->dragable->release_drag(Dragable::ReleaseReason::Destroyed);
+	m->dragable->releaseDrag(Dragable::ReleaseReason::Destroyed);
 }

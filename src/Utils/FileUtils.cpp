@@ -1,6 +1,6 @@
 /* FileUtils.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -31,23 +31,27 @@
 
 namespace Algorithm=::Util::Algorithm;
 
-QString Util::File::clean_filename(const QString& path)
+QString Util::File::cleanFilename(const QString& path)
 {
-	QChar sep = QDir::separator();
+	const QChar sep = QDir::separator();
 	QString ret = path;
-	while(ret.contains("/./") || ret.contains("\\.\\")){
-		ret.replace("/./", sep);
-		ret.replace("\\.\\", sep);
+
+	QStringList forbiddenStrings
+	{
+		"\\",
+		"/./",
+		"//" // this must be at last place
+	};
+
+	for(const QString& forbidden : forbiddenStrings)
+	{
+		while(ret.contains(forbidden))
+		{
+			ret.replace(forbidden, sep);
+		}
 	}
 
-	while(ret.contains("//") || ret.contains("\\\\")){
-		ret.replace("//", sep);
-		ret.replace("\\\\", sep);
-	}
-
-	ret.replace("\\", sep);
-
-	if(ret.endsWith(sep))
+	if(ret.endsWith(sep) && !QDir(ret).isRoot())
 	{
 		ret.remove(ret.size() - 1, 1);
 	}
@@ -55,19 +59,12 @@ QString Util::File::clean_filename(const QString& path)
 	return ret;
 }
 
-
-QString Util::File::calc_file_extension(const QString& filename)
+void Util::File::removeFilesInDirectory(const QString& dir_name)
 {
-	return get_file_extension(filename);
+	removeFilesInDirectory(dir_name, QStringList());
 }
 
-
-void Util::File::remove_files_in_directory(const QString& dir_name)
-{
-	remove_files_in_directory(dir_name, QStringList());
-}
-
-void Util::File::remove_files_in_directory(const QString& dir_name, const QStringList& filters)
+void Util::File::removeFilesInDirectory(const QString& dir_name, const QStringList& filters)
 {
 	if(dir_name.contains("..")){
 		return;
@@ -93,7 +90,7 @@ void Util::File::remove_files_in_directory(const QString& dir_name, const QStrin
 
 		else if(info.isDir())
 		{
-			remove_files_in_directory(path);
+			removeFilesInDirectory(path);
 			QDir().rmdir(path);
 		}
 
@@ -104,23 +101,23 @@ void Util::File::remove_files_in_directory(const QString& dir_name, const QStrin
 	}
 
 	QDir d = QDir::root();
-	if(dir_name.contains(::Util::sayonara_path()))
+	if(dir_name.contains(::Util::sayonaraPath()))
 	{
 		success = d.rmdir(dir_name);
 		if(!success){
-			sp_log(Log::Warning, "FileUtils") << "Could not remove dir " << dir_name;
+			spLog(Log::Warning, "FileUtils") << "Could not remove dir " << dir_name;
 		}
 	}
 }
 
 
-void Util::File::delete_files(const QStringList& paths)
+void Util::File::deleteFiles(const QStringList& paths)
 {
 	if(paths.isEmpty()){
 		return;
 	}
 
-	sp_log(Log::Develop, "Util::File") << "I will delete " << paths;
+	spLog(Log::Develop, "Util::File") << "I will delete " << paths;
 	QStringList sorted_paths = paths;
 	Algorithm::sort(sorted_paths, [](const QString& str1, const QString& str2){
 		return (str1.size() > str2.size());
@@ -145,7 +142,7 @@ void Util::File::delete_files(const QStringList& paths)
 
 		else if(info.isDir())
 		{
-			remove_files_in_directory(path);
+			removeFilesInDirectory(path);
 			QDir().rmdir(path);
 		}
 
@@ -156,22 +153,27 @@ void Util::File::delete_files(const QStringList& paths)
 }
 
 
-QString Util::File::get_parent_directory(const QString& filename)
+QString Util::File::getParentDirectory(const QString& filename)
 {
-	QString ret = clean_filename(filename);
-	int last_idx = ret.lastIndexOf(QDir::separator());
+	QString ret = cleanFilename(filename);
+	int lastIndex = ret.lastIndexOf(QDir::separator());
 
-	if(last_idx >= 0){
-		return ret.left(last_idx);
+	if(lastIndex > 0){
+		return ret.left(lastIndex);
+	}
+
+	else if(lastIndex == 0)
+	{
+		return QDir::rootPath();
 	}
 
 	return ret;
 }
 
 
-QString Util::File::get_filename_of_path(const QString& path)
+QString Util::File::getFilenameOfPath(const QString& path)
 {
-	QString ret = clean_filename(path);
+	QString ret = cleanFilename(path);
 	int last_idx = ret.lastIndexOf(QDir::separator());
 
 	if(last_idx >= 0){
@@ -182,27 +184,27 @@ QString Util::File::get_filename_of_path(const QString& path)
 }
 
 
-void Util::File::split_filename(const QString& src, QString& path, QString& filename)
+void Util::File::splitFilename(const QString& src, QString& path, QString& filename)
 {
-	path = Util::File::get_parent_directory(src);
-	filename = Util::File::get_filename_of_path(src);
+	path = Util::File::getParentDirectory(src);
+	filename = Util::File::getFilenameOfPath(src);
 }
 
-std::pair<QString, QString> Util::File::split_filename(const QString& src)
+std::pair<QString, QString> Util::File::splitFilename(const QString& src)
 {
 	std::pair<QString, QString> ret;
-	split_filename(src, ret.first, ret.second);
+	splitFilename(src, ret.first, ret.second);
 
 	return ret;
 }
 
 
-QStringList Util::File::get_parent_directories(const QStringList& files)
+QStringList Util::File::getParentDirectories(const QStringList& files)
 {
 	QStringList folders;
 	for(const QString& file : files)
 	{
-		QString folder = get_parent_directory(file);
+		QString folder = getParentDirectory(file);
 		if(!folders.contains(folder)){
 			folders << folder;
 		}
@@ -212,7 +214,7 @@ QStringList Util::File::get_parent_directories(const QStringList& files)
 }
 
 
-QString Util::File::get_absolute_filename(const QString& filename)
+QString Util::File::getAbsoluteFilename(const QString& filename)
 {
 	QString f, d;
 	QString re_str = QString("(.*)") + QDir::separator() + "(.+)";
@@ -224,11 +226,11 @@ QString Util::File::get_absolute_filename(const QString& filename)
 		return dir.absoluteFilePath(f);
 	}
 
-	return clean_filename(filename);
+	return cleanFilename(filename);
 }
 
 
-QString Util::File::calc_filesize_str(uint64_t filesize)
+QString Util::File::getFilesizeString(uint64_t filesize)
 {
 	uint64_t kb = 1 << 10;  // 1024
 	uint64_t mb = kb << 10;
@@ -251,12 +253,12 @@ QString Util::File::calc_filesize_str(uint64_t filesize)
 }
 
 
-bool Util::File::is_url(const QString& str)
+bool Util::File::isUrl(const QString& str)
 {
 	QStringList urls = {"file", "smb"};
 	QString l = str.toLower().trimmed();
 
-	if(is_www(str)){
+	if(isWWW(str)){
 		return true;
 	}
 
@@ -266,7 +268,7 @@ bool Util::File::is_url(const QString& str)
 }
 
 
-bool Util::File::is_www(const QString& str)
+bool Util::File::isWWW(const QString& str)
 {
 	QStringList www = {"http", "https", "ftp", "itpc", "feed"};
 	QString l = str.toLower().trimmed();
@@ -276,14 +278,14 @@ bool Util::File::is_www(const QString& str)
 	});
 }
 
-bool Util::File::is_dir(const QString& filename)
+bool Util::File::isDir(const QString& filename)
 {
 	if(!exists(filename)) return false;
 	QFileInfo fileinfo(filename);
 	return fileinfo.isDir();
 }
 
-bool Util::File::is_file(const QString& filename)
+bool Util::File::isFile(const QString& filename)
 {
 	if(!exists(filename)) return false;
 	QFileInfo fileinfo(filename);
@@ -291,9 +293,9 @@ bool Util::File::is_file(const QString& filename)
 }
 
 
-bool Util::File::is_soundfile(const QString& filename)
+bool Util::File::isSoundFile(const QString& filename)
 {
-	QStringList exts = Util::soundfile_extensions(true);
+	QStringList exts = Util::soundfileExtensions(true);
 
 	return Algorithm::contains(exts, [&filename](const QString& ext)
 	{
@@ -302,9 +304,9 @@ bool Util::File::is_soundfile(const QString& filename)
 }
 
 
-bool Util::File::is_playlistfile(const QString& filename)
+bool Util::File::isPlaylistFile(const QString& filename)
 {
-	QStringList exts = Util::playlist_extensions(true);
+	QStringList exts = Util::playlistExtensions(true);
 
 	return Algorithm::contains(exts, [&filename](const QString& ext)
 	{
@@ -312,9 +314,9 @@ bool Util::File::is_playlistfile(const QString& filename)
 	});
 }
 
-bool Util::File::is_imagefile(const QString& filename)
+bool Util::File::isImageFile(const QString& filename)
 {
-	QStringList exts = Util::image_extensions(true);
+	QStringList exts = Util::imageExtensions(true);
 
 	return Algorithm::contains(exts, [&filename](const QString& ext)
 	{
@@ -323,16 +325,16 @@ bool Util::File::is_imagefile(const QString& filename)
 }
 
 
-bool Util::File::create_directories(const QString& path)
+bool Util::File::createDirectories(const QString& path)
 {
 	if(exists(path)){
 		return true;
 	}
 
-	QString cleaned_path = clean_filename(path);
+	QString cleaned_path = cleanFilename(path);
 	const QStringList paths = cleaned_path.split(QDir::separator());
 	QDir dir;
-	if( is_absolute(cleaned_path) ){
+	if( isAbsolute(cleaned_path) ){
 		dir = QDir::root();
 	}
 
@@ -361,14 +363,14 @@ bool Util::File::create_directories(const QString& path)
 }
 
 
-bool Util::File::is_absolute(const QString& filename)
+bool Util::File::isAbsolute(const QString& filename)
 {
 	QDir dir(filename);
 	return dir.isAbsolute();
 }
 
 
-bool Util::File::write_file(const QByteArray& arr, const QString& filename)
+bool Util::File::writeFile(const QByteArray& arr, const QString& filename)
 {
 	QFile f(filename);
 	if(!f.open(QFile::WriteOnly)){
@@ -383,7 +385,7 @@ bool Util::File::write_file(const QByteArray& arr, const QString& filename)
 }
 
 
-bool Util::File::read_file_into_byte_arr(const QString& filename, QByteArray& content)
+bool Util::File::readFileIntoByteArray(const QString& filename, QByteArray& content)
 {
 	QFile file(filename);
 	content.clear();
@@ -404,7 +406,7 @@ bool Util::File::read_file_into_byte_arr(const QString& filename, QByteArray& co
 }
 
 
-bool Util::File::read_file_into_str(const QString& filename, QString& content)
+bool Util::File::readFileIntoString(const QString& filename, QString& content)
 {
 	QFile file(filename);
 	content.clear();
@@ -426,7 +428,7 @@ bool Util::File::read_file_into_str(const QString& filename, QString& content)
 }
 
 
-QString Util::File::get_file_extension(const QString& filename)
+QString Util::File::getFileExtension(const QString& filename)
 {
 	int last_dot = filename.lastIndexOf(".");
 	if(last_dot < 0){
@@ -437,22 +439,22 @@ QString Util::File::get_file_extension(const QString& filename)
 }
 
 
-bool Util::File::check_file(const QString& filepath)
+bool Util::File::checkFile(const QString& filepath)
 {
-	if(is_www(filepath)){
+	if(isWWW(filepath)){
 		return true;
 	}
 
 	return exists(filepath);
 }
 
-bool Util::File::create_symlink(const QString& source, const QString& target)
+bool Util::File::createSymlink(const QString& source, const QString& target)
 {
 	QFile f(source);
 	return f.link(target);
 }
 
-QString Util::File::get_common_directory(QString dir1, QString dir2)
+QString Util::File::getCommonDirectory(QString dir1, QString dir2)
 {
 	while(dir1.compare(dir2) != 0)
 	{
@@ -481,7 +483,7 @@ QString Util::File::get_common_directory(QString dir1, QString dir2)
 	return dir1;
 }
 
-QString Util::File::get_common_directory(const QStringList& paths)
+QString Util::File::getCommonDirectory(const QStringList& paths)
 {
 	if(paths.isEmpty()){
 		return QDir::rootPath();
@@ -495,7 +497,7 @@ QString Util::File::get_common_directory(const QStringList& paths)
 	QStringList absolute_paths;
 	for(const QString& path : paths)
 	{
-		QString filename = get_absolute_filename(path);
+		QString filename = getAbsoluteFilename(path);
 		QFileInfo info(filename);
 		if(info.isFile()){
 			QDir d(filename);
@@ -503,7 +505,7 @@ QString Util::File::get_common_directory(const QStringList& paths)
 		}
 
 		else if(info.isDir()){
-			absolute_paths << get_absolute_filename(filename);
+			absolute_paths << getAbsoluteFilename(filename);
 		}
 
 		else if(info.isRoot()){
@@ -523,41 +525,41 @@ QString Util::File::get_common_directory(const QStringList& paths)
 
 	for(const QString& absolute_path : Algorithm::AsConst(absolute_paths))
 	{
-		ret = get_common_directory(ret, absolute_path);
+		ret = getCommonDirectory(ret, absolute_path);
 	}
 
 	return ret;
 }
 
-QStringList Util::File::split_directories(const QString& path)
+QStringList Util::File::splitDirectories(const QString& path)
 {
 	QStringList ret;
 
-	QString current_dir;
+	QString currentDirectory;
 	QFileInfo fi(path);
 
 	if(fi.isFile()) {
 		QString filename;
-		split_filename(path, current_dir, filename);
+		splitFilename(path, currentDirectory, filename);
 		ret << filename;
 	}
 
 	else {
-		current_dir = path;
+		currentDirectory = path;
 	}
 
-	while(!current_dir.isEmpty())
+	while(!currentDirectory.isEmpty())
 	{
 		QString parent_dir, last_dir;
-		split_filename(current_dir, parent_dir, last_dir);
+		splitFilename(currentDirectory, parent_dir, last_dir);
 
 		if(!last_dir.isEmpty()) {
 			ret.push_front(last_dir);
 		}
 
-		current_dir = parent_dir;
+		currentDirectory = parent_dir;
 
-		if(QDir(current_dir).isRoot()){
+		if(QDir(currentDirectory).isRoot()){
 			break;
 		}
 	}
@@ -566,7 +568,7 @@ QStringList Util::File::split_directories(const QString& path)
 }
 
 
-bool Util::File::create_dir(const QString& dir_name)
+bool Util::File::createDir(const QString& dir_name)
 {
 	if(QDir(dir_name).exists()){
 		return true;
@@ -576,25 +578,25 @@ bool Util::File::create_dir(const QString& dir_name)
 }
 
 
-bool Util::File::copy_dir(const QString& source_dir, const QString& target_dir, QString& new_filename)
+bool Util::File::copyDir(const QString& sourceDirectory, const QString& targetDirectory, QString& new_filename)
 {
 	new_filename.clear();
 
-	if(!can_copy_dir(source_dir, target_dir)){
+	if(!canCopyDir(sourceDirectory, targetDirectory)){
 		return false;
 	}
 
-	sp_log(Log::Debug, "File") << "Copy " << source_dir << " to " << target_dir;
-	sp_log(Log::Debug, "File") << "Create dir: " << target_dir;
-	if(!create_dir(target_dir)){
+	spLog(Log::Debug, "File") << "Copy " << sourceDirectory << " to " << targetDirectory;
+	spLog(Log::Debug, "File") << "Create dir: " << targetDirectory;
+	if(!createDir(targetDirectory)){
 		return false;
 	}
 
-	const QDir src(source_dir);
-	QString copy_to = target_dir + "/" + src.dirName();
+	const QDir src(sourceDirectory);
+	QString copy_to = targetDirectory + "/" + src.dirName();
 
-	sp_log(Log::Debug, "File") << "Create dir: " << copy_to;
-	if(!create_dir(copy_to)) {
+	spLog(Log::Debug, "File") << "Create dir: " << copy_to;
+	if(!createDir(copy_to)) {
 		return false;
 	}
 
@@ -604,7 +606,7 @@ bool Util::File::copy_dir(const QString& source_dir, const QString& target_dir, 
 		if(info.isDir())
 		{
 			QString nf;
-			bool success = copy_dir(info.filePath(), copy_to, nf);
+			bool success = copyDir(info.filePath(), copy_to, nf);
 			if(!success){
 				return false;
 			}
@@ -615,28 +617,28 @@ bool Util::File::copy_dir(const QString& source_dir, const QString& target_dir, 
 			QString old_filename = info.filePath();
 			new_filename = old_filename;
 
-			new_filename.remove(source_dir);
+			new_filename.remove(sourceDirectory);
 			new_filename.prepend(copy_to);
 
 			QFile f(old_filename);
-			sp_log(Log::Debug, "File") << "Copy file " << old_filename << " to " << new_filename;
+			spLog(Log::Debug, "File") << "Copy file " << old_filename << " to " << new_filename;
 			f.copy(new_filename);
 		}
 	}
 
-	new_filename = QDir(target_dir).filePath(src.dirName());
+	new_filename = QDir(targetDirectory).filePath(src.dirName());
 
 	return true;
 }
 
-bool Util::File::move_dir(const QString& source_dir, const QString& target_dir, QString& new_filename)
+bool Util::File::moveDir(const QString& sourceDirectory, const QString& targetDirectory, QString& new_filename)
 {
 	new_filename = QString();
 
-	QDir s(source_dir);
-	QDir t(target_dir);
+	QDir s(sourceDirectory);
+	QDir t(targetDirectory);
 
-	bool success = rename_dir(source_dir, t.filePath(s.dirName()));
+	bool success = renameDir(sourceDirectory, t.filePath(s.dirName()));
 
 	if(success) {
 		new_filename = t.filePath(s.dirName());
@@ -645,17 +647,17 @@ bool Util::File::move_dir(const QString& source_dir, const QString& target_dir, 
 	return success;
 }
 
-bool Util::File::can_copy_dir(const QString& src_dir, const QString& target_dir)
+bool Util::File::canCopyDir(const QString& src_dir, const QString& targetDirectory)
 {
 	if(src_dir.isEmpty()){
 		return false;
 	}
 
-	if(target_dir.isEmpty()){
+	if(targetDirectory.isEmpty()){
 		return false;
 	}
 
-	if(QString(target_dir + "/").startsWith(src_dir + "/")){
+	if(QString(targetDirectory + "/").startsWith(src_dir + "/")){
 		return false;
 	}
 
@@ -666,12 +668,12 @@ bool Util::File::can_copy_dir(const QString& src_dir, const QString& target_dir)
 	return true;
 }
 
-bool Util::File::rename_dir(const QString& src_dir, const QString& new_dir)
+bool Util::File::renameDir(const QString& src_dir, const QString& new_dir)
 {
 	return QDir().rename(src_dir, new_dir);
 }
 
-QByteArray Util::File::calc_md5_sum(const QString& filename)
+QByteArray Util::File::getMD5Sum(const QString& filename)
 {
 	QFile f(filename);
 	if (f.open(QFile::ReadOnly))
@@ -685,13 +687,13 @@ QByteArray Util::File::calc_md5_sum(const QString& filename)
 	return QByteArray();
 }
 
-bool Util::File::move_files(const QStringList& files, const QString& dir, QStringList& new_names)
+bool Util::File::moveFiles(const QStringList& files, const QString& dir, QStringList& new_names)
 {
 	bool success = true;
 	for(const QString& file : files)
 	{
 		QString new_name;
-		success = move_file(file, dir, new_name);
+		success = moveFile(file, dir, new_name);
 		if(!success){
 			continue;
 		}
@@ -702,7 +704,7 @@ bool Util::File::move_files(const QStringList& files, const QString& dir, QStrin
 	return success;
 }
 
-bool Util::File::rename_file(const QString& old_name, const QString& new_name)
+bool Util::File::renameFile(const QString& old_name, const QString& new_name)
 {
 	QFileInfo info(old_name);
 	if(!info.isFile()){
@@ -713,15 +715,15 @@ bool Util::File::rename_file(const QString& old_name, const QString& new_name)
 	return f.rename(new_name);
 }
 
-bool Util::File::copy_files(const QStringList& files, const QString& dir, QStringList& new_names)
+bool Util::File::copyFiles(const QStringList& files, const QString& dir, QStringList& new_names)
 {
 	bool success = true;
 	for(const QString& file : files)
 	{
 		QString new_name;
-		success = copy_file(file, dir, new_name);
+		success = copyFile(file, dir, new_name);
 		if(!success){
-			continue;;
+			continue;
 		}
 
 		new_names << new_name;
@@ -730,9 +732,9 @@ bool Util::File::copy_files(const QStringList& files, const QString& dir, QStrin
 	return success;
 }
 
-bool Util::File::move_file(const QString& file, const QString& dir, QString& new_name)
+bool Util::File::moveFile(const QString& file, const QString& dir, QString& new_name)
 {
-	bool success = copy_file(file, dir, new_name);
+	bool success = copyFile(file, dir, new_name);
 	if(success)
 	{
 		QFile f(file);
@@ -742,7 +744,7 @@ bool Util::File::move_file(const QString& file, const QString& dir, QString& new
 	return false;
 }
 
-bool Util::File::copy_file(const QString& file, const QString& dir, QString& new_name)
+bool Util::File::copyFile(const QString& file, const QString& dir, QString& new_name)
 {
 	new_name.clear();
 
@@ -759,7 +761,7 @@ bool Util::File::copy_file(const QString& file, const QString& dir, QString& new
 	QDir d(dir);
 	QFile f(file);
 
-	QString pure_filename = get_filename_of_path(file);
+	QString pure_filename = getFilenameOfPath(file);
 	new_name = d.absoluteFilePath(pure_filename);
 
 	bool success = f.copy(new_name);
@@ -775,9 +777,9 @@ bool Util::File::exists(const QString& filename)
 	return QFile::exists(filename);
 }
 
-bool Util::File::is_in_sayonara_dir(const QString& path)
+bool Util::File::isInSayonaraDir(const QString& path)
 {
-	QDir sayonara_dir(sayonara_path());
+	QDir sayonara_dir(sayonaraPath());
 	QDir p(path);
 
 	while(!p.isRoot())
@@ -795,27 +797,49 @@ bool Util::File::is_in_sayonara_dir(const QString& path)
 	return false;
 }
 
-bool Util::File::is_same_path(const QString& filename1, const QString& filename2)
+bool Util::File::isSamePath(const QString& filename1, const QString& filename2)
 {
-	return (clean_filename(filename1) == clean_filename(filename2));
+	return (cleanFilename(filename1) == cleanFilename(filename2));
 }
 
-bool Util::File::is_subdir(const QString& dir, const QString& parent_dir)
+bool Util::File::isSubdir(const QString& dir, const QString& parentDir)
 {
-	QDir d1(dir);
-	const QDir d2(parent_dir);
-
-	if(d1 == d2){
+	if(isSamePath(dir, parentDir)){
 		return false;
 	}
 
+	const QString cleanedDir = cleanFilename(dir);
+	const QString cleanedParentDir = cleanFilename(parentDir);
+
+	if(cleanedDir.isEmpty() || cleanedParentDir.isEmpty()){
+		return false;
+	}
+
+	const QFileInfo info(cleanedDir);
+
+	QDir d1(cleanedDir);
+	if(info.exists() && info.isFile()){
+		d1 = QDir(Util::File::getParentDirectory(cleanedDir));
+	}
+
+	const QDir d2(cleanedParentDir);
+
 	while(!d1.isRoot())
 	{
-		d1.cdUp();
-		if(d1 == d2) {
+		d1 = QDir(Util::File::getParentDirectory(d1.absolutePath()));
+		if(isSamePath(d1.absolutePath(), d2.absolutePath()))
+		{
 			return true;
 		}
 	}
 
 	return false;
+}
+
+QList<QChar> Util::File::invalidFilenameChars()
+{
+	return
+	{
+		'*', '?', '/', '\\'
+	};
 }

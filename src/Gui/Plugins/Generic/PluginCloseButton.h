@@ -1,6 +1,6 @@
 /* PluginCloseButton.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -39,25 +39,21 @@ class PluginCloseButton :
 {
 	Q_OBJECT
 
-signals:
-	void sig_triggered(QPoint);
+	protected:
+		virtual void enterEvent(QEvent* e) override;
+		virtual void leaveEvent(QEvent* e) override;
 
-protected:
-	virtual void mouseReleaseEvent(QMouseEvent *e) override;
-	virtual void enterEvent(QEvent* e) override;
-	virtual void leaveEvent(QEvent* e) override;
+		/**
+		 * @brief sets the icon depending on the skin
+		 */
+		void setStandardIcon();
 
-	/**
-	 * @brief sets the icon depending on the skin
-	 */
-	void set_std_icon();
+	public:
+		explicit PluginCloseButton(QWidget* parent=nullptr);
+		~PluginCloseButton() override;
 
-public:
-	explicit PluginCloseButton(QWidget* parent=nullptr);
-	virtual ~PluginCloseButton();
-
-protected:
-	void skin_changed() override;
+	protected:
+		void skinChanged() override;
 };
 
 #endif // PLUGINCLOSEBUTTON_H

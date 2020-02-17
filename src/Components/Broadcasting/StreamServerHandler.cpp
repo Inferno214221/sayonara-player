@@ -1,6 +1,6 @@
 /* StreamServerHandler.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -23,13 +23,13 @@
 
 struct StreamServerHandler::Private
 {
-	StreamServer* stream_server=nullptr;
+	StreamServer* streamServer=nullptr;
 
 	Private() {}
 	~Private()
 	{
-		if(stream_server){
-			delete stream_server;
+		if(streamServer){
+			delete streamServer;
 		}
 	}
 };
@@ -38,14 +38,14 @@ StreamServerHandler::StreamServerHandler()
 {
 	m = Pimpl::make<Private>();
 
-	m->stream_server = new StreamServer();
+	m->streamServer = new StreamServer();
 }
 
 StreamServerHandler::~StreamServerHandler() {}
 
-void StreamServerHandler::active_changed() {}
+void StreamServerHandler::activeChanged() {}
 
-void StreamServerHandler::port_changed()
+void StreamServerHandler::portChanged()
 {
-	m->stream_server->restart();
+	m->streamServer->restart();
 }

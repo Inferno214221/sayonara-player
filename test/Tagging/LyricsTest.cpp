@@ -33,8 +33,8 @@ void LyricsTest::run_test(const QString& filename)
 	MetaData md(filename);
 	Tagging::Utils::getMetaDataOfFile(md);
 
-	bool wrote_lyrics = Tagging::Lyrics::write_lyrics(md, lyrics);
-	bool extracted_lyrics = Tagging::Lyrics::extract_lyrics(md, read_lyrics);
+	bool wrote_lyrics = Tagging::Lyrics::writeLyrics(md, lyrics);
+	bool extracted_lyrics = Tagging::Lyrics::extractLyrics(md, read_lyrics);
 
 	QVERIFY(wrote_lyrics == true);
 	QVERIFY(extracted_lyrics == true);

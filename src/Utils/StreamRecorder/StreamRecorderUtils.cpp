@@ -1,6 +1,6 @@
 /* StreamRecorderUtils.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -32,7 +32,7 @@
 using namespace StreamRecorder;
 namespace FileUtils=::Util::File;
 
-QList<QString> Utils::supported_tags()
+QList<QString> Utils::supportedTags()
 {
 	QList<QString> tags;
 	const QList<QPair<QString, QString>> descs = Utils::descriptions();
@@ -45,7 +45,7 @@ QList<QString> Utils::supported_tags()
 	return tags;
 }
 
-Utils::ErrorCode Utils::validate_template(const QString &target_path_template, int* invalid_idx)
+Utils::ErrorCode Utils::validateTemplate(const QString& target_path_template, int* invalid_idx)
 {
 	if(target_path_template.isEmpty())
 	{
@@ -85,7 +85,7 @@ Utils::ErrorCode Utils::validate_template(const QString &target_path_template, i
 		return Utils::ErrorCode::BracketError;
 	}
 
-	QList<QString> tags = supported_tags();
+	QList<QString> tags = supportedTags();
 
 	QRegExp re("<(.*)>");
 	re.setMinimal(true);
@@ -139,7 +139,7 @@ Utils::ErrorCode Utils::validate_template(const QString &target_path_template, i
 	return Utils::ErrorCode::OK;
 }
 
-QString Utils::target_path_template_default(bool use_session_path)
+QString Utils::targetPathTemplateDefault(bool use_session_path)
 {
 	if(use_session_path)
 	{
@@ -215,7 +215,7 @@ static QString replace_placeholder(const QString& str, const MetaData& md, QDate
 	target_path.replace("<ms>",		loc.dayName(date.month(), QLocale::ShortFormat));
 	target_path.replace("<ml>",		loc.dayName(date.month(), QLocale::LongFormat));
 	target_path.replace("<y>",		QString("%1").arg(date.year()));
-	target_path.replace("<tn>",		QString("%1").arg(md.track_number(), 4, 10, QChar('0')));
+	target_path.replace("<tn>",		QString("%1").arg(md.trackNumber(), 4, 10, QChar('0')));
 
 	QString title = md.title().trimmed();
 	QString artist = md.artist().trimmed();
@@ -239,17 +239,17 @@ static QString replace_placeholder(const QString& str, const MetaData& md, QDate
 	return target_path;
 }
 
-Utils::TargetPaths Utils::full_target_path(const QString& sr_path, const QString& path_template, const MetaData& md, const QDate& date, const QTime& time)
+Utils::TargetPaths Utils::fullTargetPath(const QString& sr_path, const QString& path_template, const MetaData& md, const QDate& date, const QTime& time)
 {
 	int invalid_idx;
 	Utils::TargetPaths ret;
 
-	if(validate_template(path_template, &invalid_idx) != Utils::ErrorCode::OK){
+	if(validateTemplate(path_template, &invalid_idx) != Utils::ErrorCode::OK){
 		return ret;
 	}
 
 	QString dir, filename;
-	FileUtils::split_filename(path_template, dir, filename);
+	FileUtils::splitFilename(path_template, dir, filename);
 
 	dir = replace_placeholder(dir, md, date, time);
 	filename = replace_placeholder(filename, md);
@@ -260,10 +260,10 @@ Utils::TargetPaths Utils::full_target_path(const QString& sr_path, const QString
 		target_path += ".mp3";
 	}
 
-	ret.first = Util::File::clean_filename(sr_path + QDir::separator() + target_path);
-	ret.second =	Util::File::clean_filename
+	ret.first = Util::File::cleanFilename(sr_path + QDir::separator() + target_path);
+	ret.second =	Util::File::cleanFilename
 					(
-						Util::File::get_parent_directory(ret.first) +
+						Util::File::getParentDirectory(ret.first) +
 						QDir::separator() +
 						"playlist-" +
 						date.toString("yyMMdd") +
@@ -275,7 +275,7 @@ Utils::TargetPaths Utils::full_target_path(const QString& sr_path, const QString
 	return ret;
 }
 
-QString Utils::parse_error_code(Utils::ErrorCode err)
+QString Utils::parseErrorCode(Utils::ErrorCode err)
 {
 	QString str = Lang::get(Lang::Error).append(": ");
 	switch(err)

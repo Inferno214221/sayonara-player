@@ -1,6 +1,6 @@
 /* GenreFetcher.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -43,12 +43,9 @@ class GenreFetcher :
 	PIMPL(GenreFetcher)
 
 signals:
-	void sig_genres_fetched();
-	void sig_progress(int progress);
-	void sig_finished();
-
-private:
-	Tagging::UserOperations* init_tagging();
+	void sigGenresFetched();
+	void sigProgress(int progress);
+	void sigFinished();
 
 public:
 	explicit GenreFetcher(QObject* parent=nullptr);
@@ -56,16 +53,20 @@ public:
 
 	Util::Set<Genre> genres() const;
 
-	void add_genre_to_md(const MetaDataList& v_md, const Genre& genre);
-	void create_genre(const Genre& genre);
-	void delete_genre(const Genre& genre);
-	void delete_genres(const Util::Set<Genre>& genres);
-	void rename_genre(const Genre& old_genre, const Genre& new_genre);
+	void applyGenreToMetadata(const MetaDataList& v_md, const Genre& genre);
+	void createGenre(const Genre& genre);
+	void deleteGenre(const Genre& genre);
+	void deleteGenres(const Util::Set<Genre>& genres);
+	void renameGenre(const Genre& oldGenre, const Genre& newGenre);
 
 	void set_local_library(LocalLibrary* local_library);
 
 public slots:
-	void reload_genres();
+	void reloadGenres();
+
+private:
+	Tagging::UserOperations* initTagging();
+
 };
 
 #endif // GENREFETCHER_H

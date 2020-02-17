@@ -1,6 +1,6 @@
 /* Crypt.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -56,20 +56,20 @@ static QByteArray _encrypt(const QByteArray& src, QByteArray key)
 QString Util::Crypt::encrypt(const QString& src, const QByteArray& key)
 {
 	QByteArray enc = _encrypt(src.toUtf8(), key);
-	return SettingConverter::to_string(enc);
+	return SettingConverter::toString(enc);
 }
 
 QString Util::Crypt::encrypt(const QByteArray& src, const QByteArray& key)
 {
 	QByteArray enc = _encrypt(src, key);
-	return SettingConverter::to_string(enc);
+	return SettingConverter::toString(enc);
 }
 
 
 QString Util::Crypt::decrypt(const QString& src, const QByteArray& key)
 {
 	QByteArray srcba;
-	SettingConverter::from_string(src, srcba);
+	SettingConverter::fromString(src, srcba);
 
 	QByteArray dec = _encrypt(srcba, key);
 	return QString::fromUtf8(dec);

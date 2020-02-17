@@ -1,6 +1,6 @@
 /* CoverButton.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -44,7 +44,7 @@ namespace Gui
 		PIMPL(ByteArrayConverter)
 
 		signals:
-			void sig_finished();
+			void sigFinished();
 
 		public:
 			ByteArrayConverter(const QByteArray& data, const QString& mime);
@@ -67,8 +67,8 @@ namespace Gui
 		PIMPL(CoverButton)
 
 		signals:
-			void sig_cover_changed();
-			void sig_rejected();
+			void sigCoverChanged();
+			void sigRejected();
 
 		public:
 			explicit CoverButton(QWidget* parent=nullptr);
@@ -79,14 +79,14 @@ namespace Gui
 			 * Afterwards a search is triggered to find the cover.
 			 * @param cl
 			 */
-			void set_cover_location(const Cover::Location& cl);
+			void setCoverLocation(const Cover::Location& cl);
 
 			/**
 			 * @brief Sets the raw data parsed out of the audio file
 			 * @param data raw data
 			 * @param mimetype jpg, png or something similar
 			 */
-			void set_cover_data(const QByteArray& data, const QString& mimetype);
+			void setCoverData(const QByteArray& data, const QString& mimetype);
 
 
 			/**
@@ -96,14 +96,17 @@ namespace Gui
 			 * trieved by Cover::Location::alternative_path()
 			 * @param silent
 			 */
-			void set_silent(bool silent);
-			bool is_silent() const;
+			void setSilent(bool silent);
+			bool isSilent() const;
 
 			QPixmap pixmap() const;
-			int vertical_padding() const;
+			int verticalPadding() const;
 
-			void set_alternative_search_enabled(bool b);
-			bool is_alternative_search_enabled() const;
+			void setAlternativeSearchEnabled(bool b);
+			bool isAlternativeSearchEnabled() const;
+
+		public slots:
+			void trigger();
 
 		private:
 			using QPushButton::setIcon;
@@ -117,16 +120,13 @@ namespace Gui
 			void resizeEvent(QResizeEvent* e) override;
 
 		private slots:
-			void alternative_cover_fetched(const Cover::Location& cl);
-			void cover_lookup_finished(bool success);
-			void set_cover_image(const QString& path);
-			void set_cover_image_pixmap(const QPixmap& pm);
-			void covers_changed();
-			void timer_timed_out();
-			void byteconverter_finished();
-
-		public slots:
-			void trigger();
+			void alternativeCoverFetched(const Cover::Location& cl);
+			void coverLookupFinished(bool success);
+			void setCoverImage(const QString& path);
+			void setCoverImagePixmap(const QPixmap& pm);
+			void coversChanged();
+			void timerTimedOut();
+			void byteconverterFinished();
 	};
 }
 

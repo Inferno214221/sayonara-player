@@ -1,6 +1,6 @@
 /* GUI_AudioConverter.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -50,14 +50,14 @@ enum StackedWidgetPage
 
 struct GUI_AudioConverter::Private
 {
-	bool				mp3_enc_available;
+	bool				lameAvailable;
 
 	Private() :
-		mp3_enc_available(true)
+		lameAvailable(true)
 	{}
 };
 
-GUI_AudioConverter::GUI_AudioConverter(QWidget *parent) :
+GUI_AudioConverter::GUI_AudioConverter(QWidget* parent) :
 	PlayerPlugin::Base(parent)
 {
 	m = Pimpl::make<Private>();
@@ -73,9 +73,9 @@ GUI_AudioConverter::~GUI_AudioConverter()
 }
 
 
-void GUI_AudioConverter::init_ui()
+void GUI_AudioConverter::initUi()
 {
-	setup_parent(this, &ui);
+	setupParent(this, &ui);
 
 	QString preferred_converter = GetSetting(Set::AudioConvert_PreferredConverter);
 	int idx = std::max(ui->combo_codecs->findText(preferred_converter), 0);
@@ -92,28 +92,28 @@ void GUI_AudioConverter::init_ui()
 	ui->sb_lame_vbr->setValue(GetSetting(Set::AudioConvert_QualityLameVBR));
 	ui->sb_ogg_quality->setValue(GetSetting(Set::AudioConvert_QualityOgg));
 
-	connect(ui->btn_start, &QPushButton::clicked, this, &GUI_AudioConverter::btn_start_clicked);
-	connect(ui->combo_codecs, combo_activated_int, this, &GUI_AudioConverter::combo_codecs_changed);
-	connect(ui->combo_cbr, combo_activated_int, this, &GUI_AudioConverter::combo_cbr_lame_changed);
+	connect(ui->btn_start, &QPushButton::clicked, this, &GUI_AudioConverter::btnStartClicked);
+	connect(ui->combo_codecs, combo_activated_int, this, &GUI_AudioConverter::comboCodecsIndexChanged);
+	connect(ui->combo_cbr, combo_activated_int, this, &GUI_AudioConverter::comboLameCbrIndexChanged);
 
-	connect(ui->sb_ogg_quality, spinbox_value_changed_int, this, &GUI_AudioConverter::ogg_quality_changed);
-	connect(ui->sb_lame_vbr, spinbox_value_changed_int, this, &GUI_AudioConverter::lame_vbr_changed);
-	connect(ui->sb_threads, spinbox_value_changed_int, this, &GUI_AudioConverter::num_threads_changed);
+	connect(ui->sb_ogg_quality, spinbox_value_changed_int, this, &GUI_AudioConverter::oggQualityChanged);
+	connect(ui->sb_lame_vbr, spinbox_value_changed_int, this, &GUI_AudioConverter::comboLameVbrIndexChanged);
+	connect(ui->sb_threads, spinbox_value_changed_int, this, &GUI_AudioConverter::threadCountChanged);
 
-	check_start_button();
+	checkStartButton();
 }
 
-QString GUI_AudioConverter::get_name() const
+QString GUI_AudioConverter::name() const
 {
 	return "Audio Converter";
 }
 
-QString GUI_AudioConverter::get_display_name() const
+QString GUI_AudioConverter::displayName() const
 {
 	return tr("Audio Converter");
 }
 
-void GUI_AudioConverter::retranslate_ui()
+void GUI_AudioConverter::retranslate()
 {
 	int idx_codecs = ui->combo_codecs->currentIndex();
 	int idx_cbr = ui->combo_cbr->currentIndex();
@@ -124,12 +124,12 @@ void GUI_AudioConverter::retranslate_ui()
 	ui->combo_codecs->setCurrentIndex(idx_codecs);
 	ui->combo_cbr->setCurrentIndex(idx_cbr);
 
-	check_start_button();
+	checkStartButton();
 }
 
-void GUI_AudioConverter::btn_start_clicked()
+void GUI_AudioConverter::btnStartClicked()
 {
-	if(!is_ui_initialized()){
+	if(!isUiInitialized()){
 		return;
 	}
 
@@ -138,13 +138,13 @@ void GUI_AudioConverter::btn_start_clicked()
 	PlaylistConstPtr pl = Playlist::Handler::instance()->playlist(Playlist::Handler::instance()->current_index());
 	MetaDataList v_md = pl->tracks();
 
-	Converter* converter = create_converter();
+	Converter* converter = createConverter();
 	{ // create and check converter
 		if(!converter) {
 			return;
 		}
 
-		if(!converter->is_available())
+		if(!converter->isAvailable())
 		{
 			Message::error(tr("Cannot find encoder") + (" '" + converter->binary() + "'") );
 			converter->deleteLater();
@@ -153,14 +153,14 @@ void GUI_AudioConverter::btn_start_clicked()
 	}
 
 	{ // check input files
-		converter->add_metadata(v_md);
-		if(converter->num_files() == 0)
+		converter->addMetadata(v_md);
+		if(converter->fileCount() == 0)
 		{
 			QString error_text = tr("Playlist does not contain tracks which are supported by the converter");
 			Message::error
 			(
 				error_text +
-				QString(" (%1). ").arg(converter->supported_input_formats().join(", ")) +
+				QString(" (%1). ").arg(converter->supportedInputFormats().join(", ")) +
 				tr("No track will be converted.")
 			);
 
@@ -168,13 +168,13 @@ void GUI_AudioConverter::btn_start_clicked()
 			return;
 		}
 
-		if(converter->num_files() < v_md.count())
+		if(converter->fileCount() < v_md.count())
 		{
 			QString error_text = tr("Playlist does not contain tracks which are supported by the converter");
 			Message::warning
 			(
 				error_text +
-				QString(" (%1). ").arg(converter->supported_input_formats().join(", ")) +
+				QString(" (%1). ").arg(converter->supportedInputFormats().join(", ")) +
 				tr("These tracks will be ignored")
 			);
 		}
@@ -191,10 +191,10 @@ void GUI_AudioConverter::btn_start_clicked()
 		SetSetting(Set::Engine_CovertTargetPath, dir);
 	}
 
-	connect(converter, &OggConverter::sig_finished, this, &GUI_AudioConverter::convert_finished);
-	connect(converter, &OggConverter::sig_progress, ui->pb_progress, &QProgressBar::setValue);
+	connect(converter, &OggConverter::sigFinished, this, &GUI_AudioConverter::convertFinished);
+	connect(converter, &OggConverter::sigProgress, ui->pb_progress, &QProgressBar::setValue);
 	connect(ui->btn_stop_encoding, &QPushButton::clicked, converter, &OggConverter::stop);
-	connect(ui->btn_stop_encoding, &QPushButton::clicked, this, &GUI_AudioConverter::reset_buttons);
+	connect(ui->btn_stop_encoding, &QPushButton::clicked, this, &GUI_AudioConverter::resetButtons);
 
 	ui->pb_progress->setValue(0);
 	ui->sw_progress->setCurrentIndex(1);
@@ -202,12 +202,12 @@ void GUI_AudioConverter::btn_start_clicked()
 	converter->start(n_threads, dir);
 }
 
-void GUI_AudioConverter::convert_finished()
+void GUI_AudioConverter::convertFinished()
 {
 	auto* converter = static_cast<OggConverter*>(sender());
 	if(converter)
 	{
-		int num_errors = converter->num_errors();
+		int num_errors = converter->errorCount();
 
 		if(num_errors > 0)
 		{
@@ -215,7 +215,7 @@ void GUI_AudioConverter::convert_finished()
 			{
 				tr("Failed to convert %n track(s)", "", num_errors),
 				tr("Please check the log files") + ".",
-				Util::create_link(converter->log_directory(), Style::is_dark(), true, "file://" + converter->log_directory())
+				Util::createLink(converter->logginDirectory(), Style::isDark(), true, "file://" + converter->logginDirectory())
 			}.join("<br>"));
 		}
 
@@ -225,7 +225,7 @@ void GUI_AudioConverter::convert_finished()
 			{
 				tr("All tracks could be converted"),
 				QString(),
-				Util::create_link(converter->target_directory(), Style::is_dark(), true)
+				Util::createLink(converter->targetDirectory(), Style::isDark(), true)
 			}.join("<br>"));
 		}
 
@@ -236,10 +236,10 @@ void GUI_AudioConverter::convert_finished()
 		Message::info(tr("Successfully finished"));
 	}
 
-	reset_buttons();
+	resetButtons();
 }
 
-void GUI_AudioConverter::combo_codecs_changed(int idx)
+void GUI_AudioConverter::comboCodecsIndexChanged(int idx)
 {
 	if(idx < 0){
 		return;
@@ -250,24 +250,24 @@ void GUI_AudioConverter::combo_codecs_changed(int idx)
 	QString text = ui->combo_codecs->currentText();
 	SetSetting(Set::AudioConvert_PreferredConverter, text);
 
-	check_start_button();
+	checkStartButton();
 }
 
-void GUI_AudioConverter::reset_buttons()
+void GUI_AudioConverter::resetButtons()
 {
 	ui->sw_progress->setCurrentIndex(0);
 }
 
-void GUI_AudioConverter::num_threads_changed(int value)
+void GUI_AudioConverter::threadCountChanged(int value)
 {
 	SetSetting(Set::AudioConvert_NumberThreads, value);
 }
 
-void GUI_AudioConverter::check_start_button()
+void GUI_AudioConverter::checkStartButton()
 {
-	Converter* converter = create_converter();
+	Converter* converter = createConverter();
 
-	if(!converter->is_available()){
+	if(!converter->isAvailable()){
 		ui->btn_start->setEnabled(false);
 		ui->btn_start->setText(tr("Cannot find encoder") + (" '" + converter->binary() + "'"));
 	}
@@ -280,7 +280,7 @@ void GUI_AudioConverter::check_start_button()
 	converter->deleteLater();
 }
 
-Converter* GUI_AudioConverter::create_converter()
+Converter* GUI_AudioConverter::createConverter()
 {
 	Converter* converter=nullptr;
 	switch(ui->sw_preferences->currentIndex())
@@ -305,17 +305,17 @@ Converter* GUI_AudioConverter::create_converter()
 	return converter;
 }
 
-void GUI_AudioConverter::ogg_quality_changed(int value)
+void GUI_AudioConverter::oggQualityChanged(int value)
 {
 	SetSetting(Set::AudioConvert_QualityOgg, value);
 }
 
-void GUI_AudioConverter::lame_vbr_changed(int value)
+void GUI_AudioConverter::comboLameVbrIndexChanged(int value)
 {
 	SetSetting(Set::AudioConvert_QualityLameVBR, value);
 }
 
-void GUI_AudioConverter::combo_cbr_lame_changed(int idx)
+void GUI_AudioConverter::comboLameCbrIndexChanged(int idx)
 {
 	Q_UNUSED(idx)
 	SetSetting(Set::AudioConvert_QualityLameCBR, ui->combo_cbr->currentText().toInt());

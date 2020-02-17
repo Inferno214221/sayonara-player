@@ -1,6 +1,6 @@
 /* GUILibraryInfoBox.h
 
- * Copyright (C) 2011-2020 Lucio Carreras
+ * Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara-player
  *
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * created by Lucio Carreras,
+ * created by Michael Lugmair (Lucio Carreras),
  * Sep 2, 2012
  *
  */
@@ -44,12 +44,12 @@ namespace Library
 		PIMPL(GUI_LibraryInfoBox)
 
 	public:
-		explicit GUI_LibraryInfoBox(LibraryId library_id, QWidget* parent=nullptr);
+		explicit GUI_LibraryInfoBox(LibraryId libraryId, QWidget* parent=nullptr);
 		~GUI_LibraryInfoBox() override;
 
 	protected:
-		void language_changed() override;
-		void skin_changed() override;
+		void languageChanged() override;
+		void skinChanged() override;
 		void showEvent(QShowEvent* e) override;
 		void refresh();
 	};

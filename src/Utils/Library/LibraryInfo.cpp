@@ -1,6 +1,6 @@
 /* LibraryInfo.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -45,7 +45,7 @@ Info::Info(const QString& name, const QString& path, LibraryId id) :
 	Info()
 {
 	m->name = name;
-	m->path = Util::File::clean_filename(path);
+	m->path = Util::File::cleanFilename(path);
 	m->id = id;
 }
 
@@ -105,7 +105,7 @@ bool Info::loadFromString(const QString& str)
 	}
 
 	m->name = name;
-	m->path = Util::File::clean_filename(path);
+	m->path = Util::File::cleanFilename(path);
 	m->id = LibraryId(id);
 
 	return true;

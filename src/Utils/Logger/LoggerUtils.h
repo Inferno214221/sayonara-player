@@ -1,6 +1,6 @@
 /* LoggerUtils.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -32,6 +32,6 @@ enum class Log : unsigned char;
 struct LogEntry
 {
 	Log type;
-	QString class_name;
+	QString className;
 	QString message;
 };

@@ -22,13 +22,13 @@ ConfigureStreamDialog::ConfigureStreamDialog(QWidget* parent) :
 
 ConfigureStreamDialog::~ConfigureStreamDialog() = default;
 
-StationPtr ConfigureStreamDialog::configured_station()
+StationPtr ConfigureStreamDialog::configuredStation()
 {
 	StreamHandler handler;
-	return handler.create_stream(m->name->text(), m->url->text());
+	return handler.createStreamInstance(m->name->text(), m->url->text());
 }
 
-QList<QWidget*> ConfigureStreamDialog::configuration_widgets(StationPtr station)
+void ConfigureStreamDialog::configureWidgets(StationPtr station)
 {
 	if(station)
 	{
@@ -36,10 +36,19 @@ QList<QWidget*> ConfigureStreamDialog::configuration_widgets(StationPtr station)
 		m->url->setText(station->url());
 	}
 
+	else
+	{
+		m->name->setText(QString());
+		m->url->setText(QString());
+	}
+}
+
+QList<QWidget*> ConfigureStreamDialog::configurationWidgets()
+{
 	return {m->name, m->url};
 }
 
-QString ConfigureStreamDialog::label_text(int i) const
+QString ConfigureStreamDialog::labelText(int i) const
 {
 	if(i == 0){
 		return Lang::get(Lang::Name);

@@ -1,6 +1,6 @@
 /* DBusMediaKeysInterface.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -32,16 +32,16 @@ struct DBusMediaKeysInterface::Private
 {
 	QObject*		parent=nullptr;
 	bool            initialized;
-	bool			is_registered;
+	bool			isRegistered;
 
-	Private(QObject *parent) :
+	Private(QObject* parent) :
 		parent(parent),
 		initialized(false),
-		is_registered(false)
+		isRegistered(false)
 	{}
 };
 
-DBusMediaKeysInterface::DBusMediaKeysInterface(QObject *parent) :
+DBusMediaKeysInterface::DBusMediaKeysInterface(QObject* parent) :
 	QObject(parent)
 {
 	m = Pimpl::make<Private>(parent);
@@ -52,18 +52,18 @@ DBusMediaKeysInterface::~DBusMediaKeysInterface() {}
 void DBusMediaKeysInterface::init()
 {
 	QDBusConnectionInterface* dbus_interface = QDBusConnection::sessionBus().interface();
-	if (!dbus_interface->isServiceRegistered( service_name() ))
+	if (!dbus_interface->isServiceRegistered( serviceName() ))
 	{
 		return;
 	}
 
-	sp_log(Log::Info, this) << service_name() << " registered";
+	spLog(Log::Info, this) << serviceName() << " registered";
 
-	QDBusPendingReply<> reply = grab_media_key_reply();
+	QDBusPendingReply<> reply = grabMediaKeyReply();
 	QDBusPendingCallWatcher* watcher = new QDBusPendingCallWatcher(reply, this);
 
 	connect(watcher, &QDBusPendingCallWatcher::finished,
-			this, &DBusMediaKeysInterface::sl_register_finished);
+			this, &DBusMediaKeysInterface::registerFinished);
 
 	m->initialized = true;
 }
@@ -74,7 +74,7 @@ bool DBusMediaKeysInterface::initialized() const
 }
 
 
-void DBusMediaKeysInterface::sl_media_key_pressed(const QString& program_name, const QString& key)
+void DBusMediaKeysInterface::mediaKeyPressed(const QString& program_name, const QString& key)
 {
 	Q_UNUSED(program_name)
 
@@ -83,7 +83,7 @@ void DBusMediaKeysInterface::sl_media_key_pressed(const QString& program_name, c
 
 	if(key.compare("play", Qt::CaseInsensitive) == 0){
 		event = new QKeyEvent ( QEvent::KeyPress, Qt::Key_MediaPlay, Qt::NoModifier);
-		pm->play_pause();
+		pm->playPause();
 	}
 
 	else if(key.compare("pause", Qt::CaseInsensitive) == 0){
@@ -112,17 +112,17 @@ void DBusMediaKeysInterface::sl_media_key_pressed(const QString& program_name, c
 }
 
 
-void DBusMediaKeysInterface::sl_register_finished(QDBusPendingCallWatcher* watcher)
+void DBusMediaKeysInterface::registerFinished(QDBusPendingCallWatcher* watcher)
 {
 	QDBusMessage reply = watcher->reply();
 	watcher->deleteLater();
 
 	if (reply.type() == QDBusMessage::ErrorMessage)
 	{
-		sp_log(Log::Warning, this) << "Cannot grab media keys: "
+		spLog(Log::Warning, this) << "Cannot grab media keys: "
 								   << reply.errorName() << " "
 								   << reply.errorMessage();
 	}
 
-	connect_media_keys();
+	connectMediaKeys();
 }

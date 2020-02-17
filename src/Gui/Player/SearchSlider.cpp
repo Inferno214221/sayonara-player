@@ -1,6 +1,6 @@
 /* SearchSlider.cpp
 
- * Copyright (C) 2011-2020 Lucio Carreras  
+ * Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)  
  *
  * This file is part of sayonara-player
  *
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * created by Lucio Carreras, 
+ * created by Michael Lugmair (Lucio Carreras), 
  * Sep 14, 2012 
  *
  */
@@ -88,17 +88,17 @@ bool SearchSlider::event(QEvent *e)
 	return Gui::Slider::event(e);
 }
 
-bool SearchSlider::has_other_value() const
+bool SearchSlider::hasAdditionalValue() const
 {
 	return (m->buffer_progress >= 0);
 }
 
-int SearchSlider::other_value() const
+int SearchSlider::additionalValue() const
 {
 	return (m->buffer_progress * (this->maximum() - this->minimum())) / 100;
 }
 
-QColor SearchSlider::other_value_color() const
+QColor SearchSlider::additionalValueColor() const
 {
 	return QColor(66, 78, 114);
 }

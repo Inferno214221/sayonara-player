@@ -1,6 +1,6 @@
 /* StreamWriter.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -45,8 +45,8 @@ class StreamWriter :
 	PIMPL(StreamWriter)
 
 	signals:
-		void sig_new_connection(const QString& ip);
-		void sig_disconnected(StreamWriter* sw);
+		void sigNewConnection(const QString& ip);
+		void sigDisconnected(StreamWriter* sw);
 
 
 	public:
@@ -72,53 +72,53 @@ class StreamWriter :
 		 * @brief get client ip address
 		 * @return
 		 */
-		QString get_ip() const;
+		QString ip() const;
 
 		/**
 		 * @brief send new icy data to clients, and send new metadata to remote controls.
 		 * @param md Track structure
 		 */
-		void change_track(const MetaData& md);
+		void changeTrack(const MetaData& md);
 
 
 		/**
 		 * @brief Send a m3u playlist (see StreamDataSender)
 		 * @return
 		 */
-		bool send_playlist();
+		bool sendPlaylist();
 
 		/**
 		 * @brief Send the http favicon (see StreamDataSender)
 		 * @return
 		 */
-		bool send_favicon();
+		bool sendFavicon();
 
 		/**
 		 * @brief Send track information (see StreamDataSender)
 		 * @return
 		 */
-		bool send_metadata();
+		bool sendMetadata();
 
 		/**
 		 * @brief Send website background (see StreamDataSender)
 		 * @return
 		 */
-		bool send_bg();
+		bool sendBackground();
 
 		/**
 		 * @brief send a html5 website (see StreamDataSender)
 		 * @return
 		 */
-		bool send_html5();
+		bool sendHtml5();
 
 		/**
 		 * @brief send a appropriate header based on the type of request  (see StreamDataSender)
 		 * @param reject if true, a reject header is sent.
 		 * @return
 		 */
-		bool send_header(bool reject);
+		bool sendHeader(bool reject);
 
-		StreamHttpParser::HttpAnswer parse_message();
+		StreamHttpParser::HttpAnswer parseMessage();
 
 		/**
 		 * @brief disconnect a client socket
@@ -135,15 +135,15 @@ class StreamWriter :
 		 * @param data
 		 * @param size
 		 */
-		void new_audio_data(const QByteArray& data) override;
+		void writeAudioData(const QByteArray& data) override;
 
 	private:
 		void reset();
 
 	private slots:
-		void socket_disconnected();
-		void data_available();
-		void clear_socket();
+		void socketDisconnected();
+		void dataAvailble();
+		void clearSocket();
 };
 
 using StreamWriterPtr=std::shared_ptr<StreamWriter>;

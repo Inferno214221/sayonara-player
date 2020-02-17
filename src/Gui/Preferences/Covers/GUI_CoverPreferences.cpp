@@ -1,6 +1,6 @@
 /* GUI_CoverPreferences.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -57,13 +57,13 @@ GUI_CoverPreferences::~GUI_CoverPreferences()
 	}
 }
 
-static bool check_cover_template(const QString& cover_template)
+static bool check_cover_template(const QString& coverTemplate)
 {
-	if(cover_template.trimmed().isEmpty()){
+	if(coverTemplate.trimmed().isEmpty()){
 		return false;
 	}
 
-	QString str(cover_template);
+	QString str(coverTemplate);
 	str.remove("<h>");
 
 	QList<QChar> invalid_chars
@@ -85,24 +85,24 @@ bool GUI_CoverPreferences::commit()
 {
 	QStringList active_items;
 
-	for(int i=0; i<ui->lv_cover_searchers->count(); i++)
+	for(int i=0; i<ui->lvCoverSearchers->count(); i++)
 	{
-		QListWidgetItem* item = ui->lv_cover_searchers->item(i);
+		QListWidgetItem* item = ui->lvCoverSearchers->item(i);
 		active_items << item->text().toLower();
 	}
 
 	SetSetting(Set::Cover_Server, active_items);
-	SetSetting(Set::Cover_FetchFromWWW, ui->cb_fetch_from_www->isChecked());
-	SetSetting(Set::Cover_SaveToDB, ui->cb_save_to_db->isChecked());
-	SetSetting(Set::Cover_SaveToLibrary, ui->cb_save_to_library->isChecked() && ui->cb_save_to_library->isEnabled());
-	SetSetting(Set::Cover_SaveToSayonaraDir, ui->cb_save_to_sayonara_dir->isChecked() && ui->cb_save_to_sayonara_dir->isEnabled());
+	SetSetting(Set::Cover_FetchFromWWW, ui->cbFetchFromWWW->isChecked());
+	SetSetting(Set::Cover_SaveToDB, ui->cbSaveToDatabase->isChecked());
+	SetSetting(Set::Cover_SaveToLibrary, ui->cbSaveToLibrary->isChecked() && ui->cbSaveToLibrary->isEnabled());
+	SetSetting(Set::Cover_SaveToSayonaraDir, ui->cbSaveToSayonaraDir->isChecked() && ui->cbSaveToSayonaraDir->isEnabled());
 
-	QString cover_template = ui->le_cover_template->text().trimmed();
+	QString cover_template = ui->leCoverTemplate->text().trimmed();
 	if(check_cover_template(cover_template))
 	{
-		if(!Util::File::is_imagefile(cover_template))
+		if(!Util::File::isImageFile(cover_template))
 		{
-			QString ext = Util::File::get_file_extension(cover_template);
+			QString ext = Util::File::getFileExtension(cover_template);
 			if(ext.isEmpty()){
 				cover_template.append(".jpg");
 				cover_template.replace("..jpg", ".jpg");
@@ -112,7 +112,7 @@ bool GUI_CoverPreferences::commit()
 				cover_template.replace("." + ext, ".jpg");
 			}
 
-			ui->le_cover_template->setText(cover_template);
+			ui->leCoverTemplate->setText(cover_template);
 		}
 
 		SetSetting(Set::Cover_TemplatePath, cover_template);
@@ -120,8 +120,8 @@ bool GUI_CoverPreferences::commit()
 
 	else
 	{
-		ui->le_cover_template->setText(GetSetting(Set::Cover_TemplatePath));
-		ui->lab_template_error->setVisible(false);
+		ui->leCoverTemplate->setText(GetSetting(Set::Cover_TemplatePath));
+		ui->labTemplateError->setVisible(false);
 	}
 
 	return true;
@@ -133,8 +133,8 @@ void GUI_CoverPreferences::revert()
 
 	QStringList cover_servers = GetSetting(Set::Cover_Server);
 
-	ui->lv_cover_searchers->clear();
-	ui->lv_cover_searchers_inactive->clear();
+	ui->lvCoverSearchers->clear();
+	ui->lvInactiveCoverSearchers->clear();
 
 
 	QList<Cover::Fetcher::Base*> cover_fetchers = cfm->coverfetchers();
@@ -149,160 +149,160 @@ void GUI_CoverPreferences::revert()
 
 		if(cover_servers.contains(name))
 		{
-			ui->lv_cover_searchers->addItem(Util::cvt_str_to_very_first_upper(name));
+			ui->lvCoverSearchers->addItem(Util::stringToVeryFirstUpper(name));
 		}
 
 		else {
-			ui->lv_cover_searchers_inactive->addItem(Util::cvt_str_to_very_first_upper(name));
+			ui->lvInactiveCoverSearchers->addItem(Util::stringToVeryFirstUpper(name));
 		}
 	}
 
-	ui->cb_fetch_from_www->setChecked(GetSetting(Set::Cover_FetchFromWWW));
-	ui->cb_save_to_db->setChecked(GetSetting(Set::Cover_SaveToDB));
-	ui->cb_save_to_sayonara_dir->setChecked(GetSetting(Set::Cover_SaveToSayonaraDir));
-	ui->cb_save_to_library->setChecked(GetSetting(Set::Cover_SaveToLibrary));
-	ui->le_cover_template->setText(GetSetting(Set::Cover_TemplatePath));
+	ui->cbFetchFromWWW->setChecked(GetSetting(Set::Cover_FetchFromWWW));
+	ui->cbSaveToDatabase->setChecked(GetSetting(Set::Cover_SaveToDB));
+	ui->cbSaveToSayonaraDir->setChecked(GetSetting(Set::Cover_SaveToSayonaraDir));
+	ui->cbSaveToLibrary->setChecked(GetSetting(Set::Cover_SaveToLibrary));
+	ui->leCoverTemplate->setText(GetSetting(Set::Cover_TemplatePath));
 
-	fetch_covers_www_triggered(GetSetting(Set::Cover_FetchFromWWW));
-	cb_save_to_library_toggled(GetSetting(Set::Cover_SaveToLibrary));
+	fetchCoversFromWWWTriggered(GetSetting(Set::Cover_FetchFromWWW));
+	saveCoverToLibraryToggled(GetSetting(Set::Cover_SaveToLibrary));
 
-	current_row_changed(ui->lv_cover_searchers->currentRow());
+	currentRowChanged(ui->lvCoverSearchers->currentRow());
 }
 
-QString GUI_CoverPreferences::action_name() const
+QString GUI_CoverPreferences::actionName() const
 {
 	return Lang::get(Lang::Covers);
 }
 
-void GUI_CoverPreferences::init_ui()
+void GUI_CoverPreferences::initUi()
 {
 	if(ui){
 		return;
 	}
 
-	setup_parent(this, &ui);
+	setupParent(this, &ui);
 
-	ui->lv_cover_searchers->setItemDelegate(new Gui::StyledItemDelegate(ui->lv_cover_searchers));
-	ui->lv_cover_searchers_inactive->setItemDelegate(new Gui::StyledItemDelegate(ui->lv_cover_searchers_inactive));
-	ui->lab_template_error->setVisible(false);
+	ui->lvCoverSearchers->setItemDelegate(new Gui::StyledItemDelegate(ui->lvCoverSearchers));
+	ui->lvInactiveCoverSearchers->setItemDelegate(new Gui::StyledItemDelegate(ui->lvInactiveCoverSearchers));
+	ui->labTemplateError->setVisible(false);
 
-	connect(ui->btn_up, &QPushButton::clicked, this, &GUI_CoverPreferences::up_clicked);
-	connect(ui->btn_down, &QPushButton::clicked, this, &GUI_CoverPreferences::down_clicked);
-	connect(ui->lv_cover_searchers, &QListWidget::currentRowChanged, this, &GUI_CoverPreferences::current_row_changed);
-	connect(ui->btn_delete_album_covers, &QPushButton::clicked, this, &GUI_CoverPreferences::delete_covers_from_db);
-	connect(ui->btn_delete_files, &QPushButton::clicked, this, &GUI_CoverPreferences::delete_cover_files);
-	connect(ui->cb_fetch_from_www, &QCheckBox::toggled, this, &GUI_CoverPreferences::fetch_covers_www_triggered);
-	connect(ui->btn_add, &QPushButton::clicked, this, &GUI_CoverPreferences::add_clicked);
-	connect(ui->btn_remove, &QPushButton::clicked, this, &GUI_CoverPreferences::remove_clicked);
-	connect(ui->cb_save_to_library, &QCheckBox::toggled, this, &GUI_CoverPreferences::cb_save_to_library_toggled);
-	connect(ui->le_cover_template, &QLineEdit::textEdited, this, &GUI_CoverPreferences::le_cover_template_edited);
+	connect(ui->btnUp, &QPushButton::clicked, this, &GUI_CoverPreferences::upClicked);
+	connect(ui->btnDown, &QPushButton::clicked, this, &GUI_CoverPreferences::downClicked);
+	connect(ui->lvCoverSearchers, &QListWidget::currentRowChanged, this, &GUI_CoverPreferences::currentRowChanged);
+	connect(ui->btnDeleteCovers, &QPushButton::clicked, this, &GUI_CoverPreferences::deleteCoversFromDb);
+	connect(ui->btnDeleteFiles, &QPushButton::clicked, this, &GUI_CoverPreferences::deleteCoverFiles);
+	connect(ui->cbFetchFromWWW, &QCheckBox::toggled, this, &GUI_CoverPreferences::fetchCoversFromWWWTriggered);
+	connect(ui->btnAdd, &QPushButton::clicked, this, &GUI_CoverPreferences::addClicked);
+	connect(ui->btnRemove, &QPushButton::clicked, this, &GUI_CoverPreferences::removeClicked);
+	connect(ui->cbSaveToLibrary, &QCheckBox::toggled, this, &GUI_CoverPreferences::saveCoverToLibraryToggled);
+	connect(ui->leCoverTemplate, &QLineEdit::textEdited, this, &GUI_CoverPreferences::coverTemplateEdited);
 
-	ui->cb_save_to_sayonara_dir->setToolTip(Cover::Utils::cover_directory());
+	ui->cbSaveToSayonaraDir->setToolTip(Cover::Utils::coverDirectory());
 
 	revert();
 }
 
-void GUI_CoverPreferences::retranslate_ui()
+void GUI_CoverPreferences::retranslate()
 {
 	ui->retranslateUi(this);
 
-	ui->btn_up->setText(Lang::get(Lang::MoveUp));
-	ui->btn_down->setText(Lang::get(Lang::MoveDown));
+	ui->btnUp->setText(Lang::get(Lang::MoveUp));
+	ui->btnDown->setText(Lang::get(Lang::MoveDown));
 }
 
-void GUI_CoverPreferences::skin_changed()
+void GUI_CoverPreferences::skinChanged()
 {
 	if(!ui){
 		return;
 	}
 
-	ui->btn_delete_files->setIcon(Gui::Icons::icon(Gui::Icons::Delete));
-	ui->btn_delete_album_covers->setIcon(Gui::Icons::icon(Gui::Icons::Clear));
+	ui->btnDeleteFiles->setIcon(Gui::Icons::icon(Gui::Icons::Delete));
+	ui->btnDeleteCovers->setIcon(Gui::Icons::icon(Gui::Icons::Clear));
 }
 
-void GUI_CoverPreferences::up_clicked()
+void GUI_CoverPreferences::upClicked()
 {
-	int cur_row = ui->lv_cover_searchers->currentRow();
+	int cur_row = ui->lvCoverSearchers->currentRow();
 
-	QListWidgetItem* item = ui->lv_cover_searchers->takeItem(cur_row);
-	ui->lv_cover_searchers->insertItem(cur_row - 1, item);
-	ui->lv_cover_searchers->setCurrentRow(cur_row - 1);
+	QListWidgetItem* item = ui->lvCoverSearchers->takeItem(cur_row);
+	ui->lvCoverSearchers->insertItem(cur_row - 1, item);
+	ui->lvCoverSearchers->setCurrentRow(cur_row - 1);
 }
 
-void GUI_CoverPreferences::down_clicked()
+void GUI_CoverPreferences::downClicked()
 {
-	int cur_row = ui->lv_cover_searchers->currentRow();
+	int cur_row = ui->lvCoverSearchers->currentRow();
 
-	QListWidgetItem* item = ui->lv_cover_searchers->takeItem(cur_row);
-	ui->lv_cover_searchers->insertItem(cur_row + 1, item);
-	ui->lv_cover_searchers->setCurrentRow(cur_row + 1);
+	QListWidgetItem* item = ui->lvCoverSearchers->takeItem(cur_row);
+	ui->lvCoverSearchers->insertItem(cur_row + 1, item);
+	ui->lvCoverSearchers->setCurrentRow(cur_row + 1);
 }
 
-void GUI_CoverPreferences::add_clicked()
+void GUI_CoverPreferences::addClicked()
 {
-	QListWidgetItem* item = ui->lv_cover_searchers_inactive->takeItem(ui->lv_cover_searchers_inactive->currentRow());
+	QListWidgetItem* item = ui->lvInactiveCoverSearchers->takeItem(ui->lvInactiveCoverSearchers->currentRow());
 	if(!item){
 		return;
 	}
 
-	ui->lv_cover_searchers->addItem(item->text());
+	ui->lvCoverSearchers->addItem(item->text());
 	delete item; item=nullptr;
 }
 
-void GUI_CoverPreferences::remove_clicked()
+void GUI_CoverPreferences::removeClicked()
 {
-	QListWidgetItem* item = ui->lv_cover_searchers->takeItem(ui->lv_cover_searchers->currentRow());
+	QListWidgetItem* item = ui->lvCoverSearchers->takeItem(ui->lvCoverSearchers->currentRow());
 	if(!item){
 		return;
 	}
 
-	ui->lv_cover_searchers_inactive->addItem(item->text());
+	ui->lvInactiveCoverSearchers->addItem(item->text());
 	delete item; item=nullptr;
 }
 
-void GUI_CoverPreferences::current_row_changed(int row)
+void GUI_CoverPreferences::currentRowChanged(int row)
 {
-	ui->btn_up->setDisabled(row <= 0 || row >= ui->lv_cover_searchers->count());
-	ui->btn_down->setDisabled(row < 0 || row >= ui->lv_cover_searchers->count() - 1);
+	ui->btnUp->setDisabled(row <= 0 || row >= ui->lvCoverSearchers->count());
+	ui->btnDown->setDisabled(row < 0 || row >= ui->lvCoverSearchers->count() - 1);
 }
 
-void GUI_CoverPreferences::delete_covers_from_db()
+void GUI_CoverPreferences::deleteCoversFromDb()
 {
-	DB::Connector::instance()->cover_connector()->clear();
+	DB::Connector::instance()->coverConnector()->clear();
 	Cover::ChangeNotfier::instance()->shout();
 }
 
-void GUI_CoverPreferences::delete_cover_files()
+void GUI_CoverPreferences::deleteCoverFiles()
 {
-	::Util::File::remove_files_in_directory(Cover::Utils::cover_directory());
+	::Util::File::removeFilesInDirectory(Cover::Utils::coverDirectory());
 }
 
-void GUI_CoverPreferences::fetch_covers_www_triggered(bool b)
+void GUI_CoverPreferences::fetchCoversFromWWWTriggered(bool b)
 {
-	ui->lv_cover_searchers->setEnabled(b);
-	ui->lv_cover_searchers_inactive->setEnabled(b);
-	ui->btn_down->setEnabled(b);
-	ui->btn_up->setEnabled(b);
-	ui->btn_add->setEnabled(b);
-	ui->btn_remove->setEnabled(b);
+	ui->lvCoverSearchers->setEnabled(b);
+	ui->lvInactiveCoverSearchers->setEnabled(b);
+	ui->btnDown->setEnabled(b);
+	ui->btnUp->setEnabled(b);
+	ui->btnAdd->setEnabled(b);
+	ui->btnRemove->setEnabled(b);
 
-	ui->cb_save_to_sayonara_dir->setEnabled(b);
+	ui->cbSaveToSayonaraDir->setEnabled(b);
 
-	ui->cb_save_to_library->setEnabled(b);
-	ui->le_cover_template->setEnabled(b);
-	ui->lab_cover_template->setEnabled(b);
+	ui->cbSaveToLibrary->setEnabled(b);
+	ui->leCoverTemplate->setEnabled(b);
+	ui->labCoverTemplate->setEnabled(b);
 }
 
-void GUI_CoverPreferences::cb_save_to_library_toggled(bool b)
+void GUI_CoverPreferences::saveCoverToLibraryToggled(bool b)
 {
-	ui->le_cover_template->setVisible(b);
-	ui->lab_cover_template->setVisible(b);
+	ui->leCoverTemplate->setVisible(b);
+	ui->labCoverTemplate->setVisible(b);
 }
 
 
-void GUI_CoverPreferences::le_cover_template_edited(const QString& text)
+void GUI_CoverPreferences::coverTemplateEdited(const QString& text)
 {
 	bool valid = check_cover_template(text);
-	ui->lab_template_error->setVisible(!valid);
-	ui->lab_template_error->setText(Lang::get(Lang::Error) + ": " + Lang::get(Lang::InvalidChars));
+	ui->labTemplateError->setVisible(!valid);
+	ui->labTemplateError->setText(Lang::get(Lang::Error) + ": " + Lang::get(Lang::InvalidChars));
 }

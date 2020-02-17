@@ -1,6 +1,6 @@
 /* Logger.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -84,7 +84,7 @@ struct Logger::Private
 		Settings* s = Settings::instance();
 		int logger_level = 0;
 
-		if(s->check_settings()){
+		if(s->checkSettings()){
 			logger_level = GetSetting(Set::Logger_Level);
 		}
 
@@ -149,7 +149,7 @@ struct Logger::Private
 			std::clog << std::endl;
 
 			LogEntry le;
-				le.class_name = class_name;
+				le.className = class_name;
 				le.message = QString::fromStdString(str);
 				le.type = type;
 
@@ -160,7 +160,7 @@ struct Logger::Private
 				LogListener* log_listener = *it;
 				if(log_listener)
 				{
-					log_listener->add_log_line(le);
+					log_listener->addLogLine(le);
 				}
 			}
 		}
@@ -185,11 +185,11 @@ Logger::~Logger()
 }
 
 //static
-void Logger::register_log_listener(LogListener* log_listener)
+void Logger::registerLogListener(LogListener* log_listener)
 {
 	for(auto it=log_buffer->begin(); it != log_buffer->end(); it++)
 	{
-		log_listener->add_log_line(*it);
+		log_listener->addLogLine(*it);
 	}
 
 	log_listeners->push_back(log_listener);
@@ -302,7 +302,7 @@ Logger& Logger::operator << (const std::string& str)
 /*************************
  * Static Log functions
  * ***********************/
-Logger sp_log(const Log& type, const std::string& data)
+Logger spLog(const Log& type, const std::string& data)
 {
 	QString class_name;
 	if(!data.empty())
@@ -326,7 +326,7 @@ Logger sp_log(const Log& type, const std::string& data)
 	return Logger(type, class_name);
 }
 
-Logger sp_log(const Log& type, const char* data)
+Logger spLog(const Log& type, const char* data)
 {
-	return sp_log(type, std::string(data));
+	return spLog(type, std::string(data));
 }

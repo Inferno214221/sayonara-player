@@ -1,6 +1,6 @@
 /* CoverViewContextMenu.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -49,8 +49,8 @@ struct CoverViewContextMenu::Private
 	ActionPairList	sorting_actions;
 
 	Private() :
-		zoom_actions(Library::CoverView::zoom_actions()),
-		sorting_actions(Library::CoverView::sorting_actions())
+		zoom_actions(Library::CoverView::zoomActions()),
+		sorting_actions(Library::CoverView::sortingActions())
 	{}
 };
 
@@ -67,11 +67,11 @@ CoverViewContextMenu::~CoverViewContextMenu() = default;
 
 void CoverViewContextMenu::init()
 {
-	this->add_preference_action(new Gui::CoverPreferenceAction(this));
+	this->addPreferenceAction(new Gui::CoverPreferenceAction(this));
 	this->addSeparator();
 
 	// insert everything before the preferences
-	QAction* sep_before_prefs = this->before_preference_action();
+	QAction* sep_before_prefs = this->beforePreferenceAction();
 	this->insertSeparator(sep_before_prefs);
 
 	m->action_show_artist = new QAction(this);
@@ -94,14 +94,14 @@ void CoverViewContextMenu::init()
 
 	m->menu_sorting = new QMenu(this);
 	m->action_sorting = this->insertMenu(sep_before_prefs, m->menu_sorting);
-	init_sorting_actions();
+	initSortingActions();
 
 	m->menu_zoom  = new QMenu(this);
 	m->action_zoom = this->insertMenu(sep_before_prefs, m->menu_zoom);
-	init_zoom_actions();
+	initZoomActions();
 }
 
-void CoverViewContextMenu::init_sorting_actions()
+void CoverViewContextMenu::initSortingActions()
 {
 	m->menu_sorting->clear();
 	m->action_sorting->setText(Lang::get(Lang::SortBy));
@@ -113,11 +113,11 @@ void CoverViewContextMenu::init_sorting_actions()
 		a->setCheckable(true);
 		a->setData((int) ap.sortorder());
 
-		connect(a, &QAction::triggered, this, &CoverViewContextMenu::action_sorting_triggered);
+		connect(a, &QAction::triggered, this, &CoverViewContextMenu::actionSortingTriggered);
 	}
 }
 
-void CoverViewContextMenu::init_zoom_actions()
+void CoverViewContextMenu::initZoomActions()
 {
 	m->menu_zoom->clear();
 
@@ -127,33 +127,33 @@ void CoverViewContextMenu::init_zoom_actions()
 		action->setData(z.toInt());
 		action->setCheckable(true);
 
-		connect(action, &QAction::triggered, this, &CoverViewContextMenu::action_zoom_triggered);
+		connect(action, &QAction::triggered, this, &CoverViewContextMenu::actionZoomTriggered);
 	}
 }
 
 
-void CoverViewContextMenu::action_zoom_triggered(bool b)
+void CoverViewContextMenu::actionZoomTriggered(bool b)
 {
 	Q_UNUSED(b)
 	auto* action = static_cast<QAction*>(sender());
 
 	int zoom = action->data().toInt();
-	emit sig_zoom_changed(zoom);
+	emit sigZoomChanged(zoom);
 }
 
-void CoverViewContextMenu::action_sorting_triggered(bool b)
+void CoverViewContextMenu::actionSortingTriggered(bool b)
 {
 	Q_UNUSED(b)
 	auto* action = static_cast<QAction*>(sender());
 
 	Library::SortOrder so = Library::SortOrder(action->data().toInt());
-	emit sig_sorting_changed(so);
+	emit sigSortingChanged(so);
 }
 
 
-CoverViewContextMenu::Entries CoverViewContextMenu::get_entries() const
+CoverViewContextMenu::Entries CoverViewContextMenu::entries() const
 {
-	CoverViewContextMenu::Entries entries = Library::ContextMenu::get_entries();
+	CoverViewContextMenu::Entries entries = Library::ContextMenu::entries();
 	entries |= CoverViewContextMenu::EntryShowUtils;
 	entries |= CoverViewContextMenu::EntrySorting;
 	entries |= CoverViewContextMenu::EntryZoom;
@@ -162,9 +162,9 @@ CoverViewContextMenu::Entries CoverViewContextMenu::get_entries() const
 	return entries;
 }
 
-void CoverViewContextMenu::show_actions(CoverViewContextMenu::Entries entries)
+void CoverViewContextMenu::showActions(CoverViewContextMenu::Entries entries)
 {
-	Library::ContextMenu::show_actions(entries);
+	Library::ContextMenu::showActions(entries);
 
 	m->action_show_utils->setVisible(entries & CoverViewContextMenu::EntryShowUtils);
 	m->action_sorting->setVisible(entries & CoverViewContextMenu::EntrySorting);
@@ -172,7 +172,7 @@ void CoverViewContextMenu::show_actions(CoverViewContextMenu::Entries entries)
 	m->action_show_artist->setVisible(entries & CoverViewContextMenu::EntryShowArtist);
 }
 
-void CoverViewContextMenu::set_zoom(int zoom)
+void CoverViewContextMenu::setZoom(int zoom)
 {
 	bool found=false;
 
@@ -187,7 +187,7 @@ void CoverViewContextMenu::set_zoom(int zoom)
 	}
 }
 
-void CoverViewContextMenu::set_sorting(Library::SortOrder so)
+void CoverViewContextMenu::setSorting(Library::SortOrder so)
 {
 	const QList<QAction*> actions = m->menu_sorting->actions();
 	for(QAction* a : actions)
@@ -200,23 +200,23 @@ void CoverViewContextMenu::showEvent(QShowEvent* e)
 {
 	Library::ContextMenu::showEvent(e);
 
-	set_sorting(GetSetting(Set::Lib_Sorting).so_albums);
-	set_zoom(GetSetting(Set::Lib_CoverZoom));
+	setSorting(GetSetting(Set::Lib_Sorting).so_albums);
+	setZoom(GetSetting(Set::Lib_CoverZoom));
 	m->action_show_utils->setChecked(GetSetting(Set::Lib_CoverShowUtils));
 	m->action_show_artist->setChecked(GetSetting(Set::Lib_CoverShowArtist));
 }
 
 
-void CoverViewContextMenu::language_changed()
+void CoverViewContextMenu::languageChanged()
 {
-	Library::ContextMenu::language_changed();
+	Library::ContextMenu::languageChanged();
 
-	init_sorting_actions();
+	initSortingActions();
 
 	m->action_zoom->setText(Lang::get(Lang::Zoom));
 	m->action_show_utils->setText(Lang::get(Lang::Show) + ": " + tr("Toolbar"));
 	m->action_show_artist->setText(Lang::get(Lang::Show) + ": " + Lang::get(Lang::Artist));
 
 	m->menu_sorting->clear();
-	init_sorting_actions();
+	initSortingActions();
 }

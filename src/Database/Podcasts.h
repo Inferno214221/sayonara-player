@@ -1,6 +1,6 @@
 /* DatabasePodcasts.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -30,15 +30,13 @@ namespace DB
 		private Module
 	{
 		public:
-			Podcasts(const QString& connection_name, DbId db_id);
+			Podcasts(const QString& connectionName, DbId databaseId);
 			~Podcasts();
 
 			bool getAllPodcasts(QList<Podcast>& result);
 			bool deletePodcast(const QString& name);
 			bool addPodcast(const Podcast& podcast);
-			bool updatePodcastUrl(const QString& name, const QString& url);
-			bool renamePodcast(const QString& old_name, const QString& new_name);
-
+			bool updatePodcast(const QString& name, const Podcast& podcast);
 			Podcast getPodcast(const QString& name);
 	};
 }

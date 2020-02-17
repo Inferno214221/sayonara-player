@@ -11,7 +11,7 @@
 namespace EngineUtils=::Engine::Utils;
 
 static
-bool run_through_structure(GQuark field_id, const GValue* value, gpointer data)
+bool runThroughSpectrumStructure(GQuark field_id, const GValue* value, gpointer data)
 {
 	if(G_VALUE_HOLDS_INT(value))
 	{
@@ -19,7 +19,7 @@ bool run_through_structure(GQuark field_id, const GValue* value, gpointer data)
 		if(name == "rate" && G_VALUE_HOLDS_INT(value))
 		{
 			auto* adp = static_cast<AudioDataProvider*>(data);
-			adp->set_samplerate(g_value_get_int(value));
+			adp->setSamplerate(g_value_get_int(value));
 		}
 	}
 
@@ -27,12 +27,12 @@ bool run_through_structure(GQuark field_id, const GValue* value, gpointer data)
 }
 
 static
-void adp_decodebin_ready(GstElement* source, GstPad* new_src_pad, gpointer data)
+void adpDecodebinReady(GstElement* source, GstPad* new_src_pad, gpointer data)
 {
 	Q_UNUSED(source)
 
 	auto* adp = static_cast<AudioDataProvider*>(data);
-	GstElement* audioconvert = adp->get_audioconvert();
+	GstElement* audioconvert = adp->getAudioconverter();
 
 	GstPad*	sink_pad = gst_element_get_static_pad(audioconvert, "sink");
 	if(!sink_pad){
@@ -50,29 +50,29 @@ void adp_decodebin_ready(GstElement* source, GstPad* new_src_pad, gpointer data)
 	for(guint i=0; i<gst_caps_get_size(caps); i++)
 	{
 		GstStructure* s = gst_caps_get_structure(caps, i);
-		gst_structure_foreach(s, GstStructureForeachFunc(run_through_structure), data);
+		gst_structure_foreach(s, GstStructureForeachFunc(runThroughSpectrumStructure), data);
 
 	}
 
 	if(gplr != GST_PAD_LINK_OK){
-		sp_log(Log::Warning, "AudioDataProvider") << "Cannot link pads";
+		spLog(Log::Warning, "AudioDataProvider") << "Cannot link pads";
 	}
 
 	else {
-		sp_log(Log::Debug, "AudioDataProvider") << "Pads linked";
+		spLog(Log::Debug, "AudioDataProvider") << "Pads linked";
 	}
 }
 
 
 // spectrum changed
 gboolean
-adp_spectrum_handler(GstBus* bus, GstMessage* message, gpointer data)
+adpSpectrumHandler(GstBus* bus, GstMessage* message, gpointer data)
 {
 	Q_UNUSED(bus);
 	QList<float> spectrum_vals;
 
 	auto* adp = static_cast<AudioDataProvider*>(data);
-	const uint num_bins = adp->get_number_bins();
+	const uint binCount = adp->binCount();
 
 	// do not free structure
 	const GstStructure* structure = gst_message_get_structure(message);
@@ -90,14 +90,14 @@ adp_spectrum_handler(GstBus* bus, GstMessage* message, gpointer data)
 
 	const GValue* magnitudes = gst_structure_get_value(structure, "magnitude");
 
-	for(guint i=0; i<num_bins; ++i)
+	for(guint i=0; i<binCount; ++i)
 	{
 		const GValue* mag = gst_value_list_get_value(magnitudes, i);
 		float f = g_value_get_float(mag);
 		spectrum_vals << (f);
 	}
 
-	adp->set_spectrum(spectrum_vals, NanoSeconds(clock_time_ns));
+	adp->setSpectrum(spectrum_vals, NanoSeconds(clock_time_ns));
 
 	return true;
 }
@@ -105,7 +105,7 @@ adp_spectrum_handler(GstBus* bus, GstMessage* message, gpointer data)
 
 // check messages from bus
 static
-gboolean adp_bus_state_changed(GstBus* bus, GstMessage* msg, gpointer data)
+gboolean adpBusStateChanged(GstBus* bus, GstMessage* msg, gpointer data)
 {
 	auto* adp = static_cast<AudioDataProvider*>(data);
 
@@ -116,14 +116,14 @@ gboolean adp_bus_state_changed(GstBus* bus, GstMessage* msg, gpointer data)
 	{
 		case GST_MESSAGE_ELEMENT:
 			if(msg_src_name.contains("spectrum")){
-				return adp_spectrum_handler(bus, msg, data);
+				return adpSpectrumHandler(bus, msg, data);
 			}
 			break;
 
 		case GST_MESSAGE_STATE_CHANGED:
-			GstState old_state, new_state, pending_state;
-			gst_message_parse_state_changed(msg, &old_state, &new_state, &pending_state);
-			adp->set_running(new_state == GST_STATE_PLAYING);
+			GstState oldSate, newState, pendingState;
+			gst_message_parse_state_changed(msg, &oldSate, &newState, &pendingState);
+			adp->setRunning(newState == GST_STATE_PLAYING);
 			break;
 
 		case GST_MESSAGE_ERROR:
@@ -131,12 +131,12 @@ gboolean adp_bus_state_changed(GstBus* bus, GstMessage* msg, gpointer data)
 			gchar* debug;
 			gst_message_parse_error(msg, &error, &debug);
 
-			sp_log(Log::Error, "AudioDataProvider") << error->message;
+			spLog(Log::Error, "AudioDataProvider") << error->message;
 			adp->stop();
 			break;
 
 		case GST_MESSAGE_EOS:
-			adp->set_finished(true);
+			adp->setFinished(true);
 			adp->stop();
 			break;
 
@@ -156,48 +156,48 @@ struct AudioDataProvider::Private
 	GstElement* fakesink=nullptr;
 
 	QString	filename;
-	MilliSeconds interval_ms;
-	uint num_bins;
+	MilliSeconds intervalMs;
+	uint binCount;
 	int threshold;
 	uint samplerate;
-	bool is_running;
-	bool is_finished;
+	bool isRunning;
+	bool isFinished;
 
 	Private(AudioDataProvider* parent) :
-		interval_ms(50),
-		num_bins(100),
+		intervalMs(50),
+		binCount(100),
 		threshold(-75),
 		samplerate(44100),
-		is_running(false),
-		is_finished(false)
+		isRunning(false),
+		isFinished(false)
 	{
 		pipeline = gst_pipeline_new("adp_pipeline");
 
-		EngineUtils::create_element(&source, "uridecodebin", "adp_source");
-		EngineUtils::create_element(&audioconvert, "audioconvert", "adp_audioconvert");
-		EngineUtils::create_element(&spectrum, "spectrum", "adp_spectrum");
-		EngineUtils::create_element(&fakesink, "fakesink", "adp_fakesink");
+		EngineUtils::createElement(&source, "uridecodebin", "adp_source");
+		EngineUtils::createElement(&audioconvert, "audioconvert", "adp_audioconvert");
+		EngineUtils::createElement(&spectrum, "spectrum", "adp_spectrum");
+		EngineUtils::createElement(&fakesink, "fakesink", "adp_fakesink");
 
-		EngineUtils::add_elements(GST_BIN(pipeline),
+		EngineUtils::addElements(GST_BIN(pipeline),
 			{source, audioconvert, spectrum, fakesink}
 		);
 
-		EngineUtils::link_elements(
+		EngineUtils::linkElements(
 			{audioconvert, spectrum, fakesink}
 		);
 
-		EngineUtils::set_values(spectrum,
+		EngineUtils::setValues(spectrum,
 			"post-messages", true,
 			"message-phase", false,
 			"message-magnitude", true,
 			"multi-channel", false
 		);
 
-		Engine::Utils::set_int_value(spectrum, "threshold", threshold);
-		EngineUtils::set_uint_value(spectrum, "bands", num_bins);
-		Engine::Utils::set_uint64_value(spectrum, "interval", guint64(interval_ms * GST_MSECOND));
+		Engine::Utils::setIntValue(spectrum, "threshold", threshold);
+		EngineUtils::setUintValue(spectrum, "bands", binCount);
+		Engine::Utils::setUint64Value(spectrum, "interval", guint64(intervalMs * GST_MSECOND));
 
-		g_signal_connect (source, "pad-added", G_CALLBACK(adp_decodebin_ready), parent);
+		g_signal_connect (source, "pad-added", G_CALLBACK(adpDecodebinReady), parent);
 	}
 };
 
@@ -207,16 +207,16 @@ AudioDataProvider::AudioDataProvider(QObject* parent) :
 	m = Pimpl::make<Private>(this);
 
 	GstBus* bus = gst_pipeline_get_bus(GST_PIPELINE(m->pipeline));
-	gst_bus_add_watch(bus, adp_bus_state_changed, this);
+	gst_bus_add_watch(bus, adpBusStateChanged, this);
 	gst_object_unref(bus);
 }
 
-void AudioDataProvider::set_spectrum(const QList<float>& spectrum, NanoSeconds ns)
+void AudioDataProvider::setSpectrum(const QList<float>& spectrum, NanoSeconds ns)
 {
-	emit sig_spectrum(spectrum, MilliSeconds(ns / 1000000));
+	emit sigSpectrumDataAvailable(spectrum, MilliSeconds(ns / 1000000));
 }
 
-GstElement* AudioDataProvider::get_audioconvert() const
+GstElement* AudioDataProvider::getAudioconverter() const
 {
 	return m->audioconvert;
 }
@@ -225,88 +225,88 @@ AudioDataProvider::~AudioDataProvider() = default;
 
 void AudioDataProvider::start(const QString& filename)
 {
-	m->is_running = false;
-	m->is_finished = false;
+	m->isRunning = false;
+	m->isFinished = false;
 	m->filename = filename;
 
 	QString local_file = "file://" + filename;
-	EngineUtils::set_value(m->source, "uri", local_file.toLocal8Bit().data());
+	EngineUtils::setValue(m->source, "uri", local_file.toLocal8Bit().data());
 
-	emit sig_started();
-	EngineUtils::set_state(m->pipeline, GST_STATE_PLAYING);
+	emit sigStarted();
+	EngineUtils::setState(m->pipeline, GST_STATE_PLAYING);
 }
 
 void AudioDataProvider::stop()
 {
-	EngineUtils::set_state(m->pipeline, GST_STATE_NULL);
-	emit sig_finished();
+	EngineUtils::setState(m->pipeline, GST_STATE_NULL);
+	emit sigFinished();
 }
 
-uint AudioDataProvider::get_number_bins() const
+uint AudioDataProvider::binCount() const
 {
-	return m->num_bins;
+	return m->binCount;
 }
 
-void AudioDataProvider::set_number_bins(uint num_bins)
+void AudioDataProvider::setBinCount(uint num_bins)
 {
-	m->num_bins = num_bins;
-	EngineUtils::set_uint_value(m->spectrum, "bands", num_bins);
+	m->binCount = num_bins;
+	EngineUtils::setUintValue(m->spectrum, "bands", num_bins);
 }
 
-MilliSeconds AudioDataProvider::get_interval_ms() const
+MilliSeconds AudioDataProvider::intervalMs() const
 {
-	return m->interval_ms;
+	return m->intervalMs;
 }
 
-void AudioDataProvider::set_interval_ms(MilliSeconds ms)
+void AudioDataProvider::setIntervalMs(MilliSeconds ms)
 {
-	m->interval_ms = ms;
-	Engine::Utils::set_uint64_value(m->spectrum, "interval", guint64(ms * GST_MSECOND));
+	m->intervalMs = ms;
+	Engine::Utils::setUint64Value(m->spectrum, "interval", guint64(ms * GST_MSECOND));
 }
 
-int AudioDataProvider::get_threshold() const
+int AudioDataProvider::threshold() const
 {
 	return m->threshold;
 }
 
-void AudioDataProvider::set_threshold(int threshold)
+void AudioDataProvider::setThreshold(int threshold)
 {
 	m->threshold = threshold;
-	Engine::Utils::set_int_value(m->spectrum, "threshold", threshold);
+	Engine::Utils::setIntValue(m->spectrum, "threshold", threshold);
 }
 
-void AudioDataProvider::set_samplerate(uint samplerate)
+void AudioDataProvider::setSamplerate(uint samplerate)
 {
 	m->samplerate = samplerate;
 }
 
-uint AudioDataProvider::get_samplerate() const
+uint AudioDataProvider::samplerate() const
 {
 	return m->samplerate;
 }
 
-float AudioDataProvider::get_frequency(int bin)
+float AudioDataProvider::frequency(int bin)
 {
-	return ((m->samplerate / 2.0f) * bin + m->samplerate / 4.0f) / m->num_bins;
+	return ((m->samplerate / 2.0f) * bin + m->samplerate / 4.0f) / m->binCount;
 }
 
-void AudioDataProvider::set_running(bool b)
+void AudioDataProvider::setRunning(bool b)
 {
-	m->is_running = b;
+	m->isRunning = b;
 }
 
-bool AudioDataProvider::is_running() const
+bool AudioDataProvider::isRunning() const
 {
-	return m->is_running;
+	return m->isRunning;
 }
 
-void AudioDataProvider::set_finished(bool b)
+void AudioDataProvider::setFinished(bool b)
 {
-	m->is_finished = b;
+	m->isFinished = b;
 }
 
-bool AudioDataProvider::is_finished(const QString& filename) const
+bool AudioDataProvider::isFinished(const QString& filename) const
 {
-	return ((m->filename == filename) && m->is_finished);
+	return ((m->filename == filename) && m->isFinished);
 }
 

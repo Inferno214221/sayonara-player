@@ -1,6 +1,6 @@
 /* Proxy.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -27,20 +27,20 @@ class QString;
 namespace Proxy
 {
 	void init();
-	void set_proxy();
-	void unset_proxy();
+	void setProxy();
+	void unsetProxy();
 
 	QString hostname();
 	uint16_t port();
 	QString username();
 	QString password();
 	bool active();
-	bool has_username();
+	bool hasUsername();
 
-	QString full_url();
+	QString fullUrl();
 
-	QString env_hostname();
-	int env_port();
+	QString envHostname();
+	int envPort();
 }
 
 #endif // PROXY_H

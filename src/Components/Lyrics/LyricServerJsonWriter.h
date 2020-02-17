@@ -1,6 +1,6 @@
 /* LyricServerJsonWriter.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -32,13 +32,13 @@ namespace Lyrics
 	class Server;
 	namespace ServerJsonWriter
 	{
-		QJsonObject to_json(Lyrics::Server* server);
+		QJsonObject toJson(Lyrics::Server* server);
 	}
 
 	namespace ServerJsonReader
 	{
-		Server* from_json(const QJsonObject& json);
-		QList<Server*> parse_json_file(const QString& filename);
+		Server* fromJson(const QJsonObject& json);
+		QList<Server*> parseJsonFile(const QString& filename);
 	}
 }
 

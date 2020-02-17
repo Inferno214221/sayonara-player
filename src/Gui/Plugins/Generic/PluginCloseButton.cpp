@@ -1,6 +1,6 @@
 /* PluginCloseButton.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -29,7 +29,7 @@
 
 #include <QEvent>
 
-PluginCloseButton::PluginCloseButton(QWidget *parent) :
+PluginCloseButton::PluginCloseButton(QWidget* parent) :
 	Gui::WidgetTemplate<QPushButton>(parent)
 {
 	this->setFlat(true);
@@ -39,78 +39,80 @@ PluginCloseButton::PluginCloseButton(QWidget *parent) :
 	this->setToolTip(Lang::get(Lang::Close));
 }
 
-PluginCloseButton::~PluginCloseButton() {}
-
-void PluginCloseButton::mouseReleaseEvent(QMouseEvent *e)
-{
-	QPushButton::mouseReleaseEvent(e);
-}
-
+PluginCloseButton::~PluginCloseButton() = default;
 
 void PluginCloseButton::enterEvent(QEvent* e)
 {
+	using namespace Gui;
+
 	QPushButton::enterEvent(e);
 
 	QIcon icon;
 
-	if(Style::is_dark()){
-		icon = Gui::Util::icon("tool_grey", Gui::Util::NoTheme);
+	if(Style::isDark())
+	{
+		icon = Util::icon("tool_grey", Util::NoTheme);
 	}
 
-	else{
-		icon = Gui::Icons::icon(Gui::Icons::Close);
-		if(icon.isNull()){
-			icon = Gui::Icons::icon(Gui::Icons::Exit);
+	else
+	{
+		icon = Icons::icon(Icons::Close);
+		if(icon.isNull())
+		{
+			icon = Icons::icon(Icons::Exit);
 		}
 	}
 
-	if( this->isEnabled() ){
+	if( this->isEnabled() )
+	{
 		this->setIcon(icon);
 		e->accept();
 	}
 }
 
-void PluginCloseButton::leaveEvent(QEvent* e){
+void PluginCloseButton::leaveEvent(QEvent* e)
+{
 	QPushButton::leaveEvent(e);
 
-	set_std_icon();
+	setStandardIcon();
 }
 
 
-void PluginCloseButton::set_std_icon()
+void PluginCloseButton::setStandardIcon()
 {
+	using namespace Gui;
+
 	QIcon icon;
 	QPixmap pixmap;
-	QPixmap pixmap_disabled;
+	QPixmap pixmapDisabled;
 
-	if(Style::is_dark()){
-		pixmap = Gui::Util::pixmap("tool_dark_grey", Gui::Util::NoTheme);
-		pixmap_disabled = Gui::Util::pixmap("tool_disabled", Gui::Util::NoTheme);
+	if(Style::isDark())
+	{
+		pixmap = Util::pixmap("tool_dark_grey", Util::NoTheme);
+		pixmapDisabled = Util::pixmap("tool_disabled", Util::NoTheme);
 		icon.addPixmap(pixmap, QIcon::Normal, QIcon::On);
 		icon.addPixmap(pixmap, QIcon::Normal, QIcon::Off);
-		icon.addPixmap(pixmap_disabled, QIcon::Disabled, QIcon::On);
-		icon.addPixmap(pixmap_disabled, QIcon::Disabled, QIcon::Off);
+		icon.addPixmap(pixmapDisabled, QIcon::Disabled, QIcon::On);
+		icon.addPixmap(pixmapDisabled, QIcon::Disabled, QIcon::Off);
 		icon.addPixmap(pixmap, QIcon::Active, QIcon::On);
 		icon.addPixmap(pixmap, QIcon::Active, QIcon::Off);
 		icon.addPixmap(pixmap, QIcon::Selected, QIcon::On);
 		icon.addPixmap(pixmap, QIcon::Selected, QIcon::Off);
 	}
 
-	else{
-		icon = Gui::Icons::icon(Gui::Icons::Close);
-		if(icon.isNull()){
-			icon = Gui::Icons::icon(Gui::Icons::Exit);
-		}
-	}
+	else
+	{
+		icon = icon.isNull() ? Icons::icon(Icons::Exit) : Icons::icon(Icons::Close);
 
+	}
 
 	this->setIcon(icon);
 	this->update();
 }
 
 
-void PluginCloseButton::skin_changed()
+void PluginCloseButton::skinChanged()
 {
-	set_std_icon();
+	setStandardIcon();
 }
 

@@ -1,6 +1,6 @@
 /* TrackModel.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -23,7 +23,7 @@
  * TrackModel.h
  *
  *  Created on: Apr 24, 2011
- *      Author: Lucio Carreras
+ *      Author: Michael Lugmair (Lucio Carreras)
  */
 
 #ifndef LIBRARYITEMMODELTRACKS_H_
@@ -49,23 +49,22 @@ namespace Library
 			~TrackModel() override;
 
 			/** AbstractSearchTableModel **/
-			Qt::ItemFlags	flags(const QModelIndex &index) const override;
-			QVariant		data(const QModelIndex &index, int role) const override;
-			bool			setData(const QModelIndex &index, const QVariant &value, int role) override;
-			int				rowCount(const QModelIndex &parent) const override;
+			Qt::ItemFlags	flags(const QModelIndex& index) const override;
+			QVariant		data(const QModelIndex& index, int role) const override;
+			bool			setData(const QModelIndex& index, const QVariant &value, int role) override;
+			int				rowCount(const QModelIndex& parent) const override;
 
 			/** ItemModel.h **/
 			Cover::Location cover(const IndexSet& indexes) const override;
-			int				searchable_column() const override;
-			Id				id_by_index(int row) const override;
-			QString			searchable_string(int row) const override;
-			const IdSet&	selections() const override;
+			int				searchableColumn() const override;
+			Id				mapIndexToId(int row) const override;
+			QString			searchableString(int row) const override;
 
 		protected:
-			const MetaDataList& mimedata_tracks() const override;
+			const MetaDataList& selectedMetadata() const override;
 
 		private slots:
-			void track_changed(int row);
+			void trackChanged(int row);
 	};
 }
 

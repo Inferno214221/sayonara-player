@@ -1,6 +1,6 @@
 /* Yandex.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -28,17 +28,17 @@
 
 using Cover::Fetcher::Yandex;
 
-QString Yandex::priv_identifier() const
+QString Yandex::privateIdentifier() const
 {
 	return "yandex";
 }
 
-bool Yandex::can_fetch_cover_directly() const
+bool Yandex::canFetchCoverDirectly() const
 {
 	return false;
 }
 
-QStringList Yandex::parse_addresses(const QByteArray& website) const
+QStringList Yandex::parseAddresses(const QByteArray& website) const
 {
 	QRegExp re("<img.+class=\"serp-item__thumb.+src=\"(.+)\"");
 	re.setMinimal(true);
@@ -63,23 +63,23 @@ QStringList Yandex::parse_addresses(const QByteArray& website) const
 }
 
 
-QString Yandex::artist_address(const QString& artist) const
+QString Yandex::artistAddress(const QString& artist) const
 {
-	return search_address(artist);
+	return fulltextSearchAddress(artist);
 }
 
-QString Yandex::album_address(const QString& artist, const QString& album) const
+QString Yandex::albumAddress(const QString& artist, const QString& album) const
 {
-	return search_address(album + " " + artist);
+	return fulltextSearchAddress(album + " " + artist);
 }
 
-QString Yandex::search_address(const QString& str) const
+QString Yandex::fulltextSearchAddress(const QString& str) const
 {
 	QString pe = QUrl::toPercentEncoding(str);
 	return QString("https://yandex.com/images/search?text=%1&iorient=square&from=tabbar").arg(pe);
 }
 
-int Yandex::estimated_size() const
+int Yandex::estimatedSize() const
 {
 	return 300;
 }

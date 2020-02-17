@@ -1,6 +1,6 @@
 /* GUI_Playlist.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -23,7 +23,7 @@
  * GUI_Playlist.h
  *
  *  Created on: Apr 6, 2011
- *      Author: Lucio Carreras
+ *      Author: Michael Lugmair (Lucio Carreras)
  */
 
 #ifndef GUI_PLAYLIST_H_
@@ -58,65 +58,62 @@ class GUI_Playlist :
 	PIMPL(GUI_Playlist)
 
 public:
-	explicit GUI_Playlist(QWidget *parent=nullptr);
+	explicit GUI_Playlist(QWidget* parent=nullptr);
 	~GUI_Playlist() override;
 
 private:
-	Playlist::View* view_by_index(int idx);
-	Playlist::View* current_view();
+	Playlist::View* viewByIndex(int idx);
+	Playlist::View* currentView();
 
-	void set_total_time_label();
+	void setTotalTimeLabel();
 
-	/** Overridden events **/
-	void language_changed() override;
-	void skin_changed() override;
+private slots:
+
+	// triggered from playlist
+	void playlistCreated(PlaylistPtr pl);
+	void playlistAdded(PlaylistPtr pl);
+	void playlistNameChanged(int playlistIndex);
+	void playlistChanged(int playlistIndex);
+	void playlistIdxChanged(int pld_idx);
+
+	// triggered by GUI
+	void tabClosePlaylistClicked(int playlistIndex); // GUI_PlaylistTabs.cpp
+	void tabSavePlaylistClicked(int playlistIndex); // GUI_PlaylistTabs.cpp
+	void tabSavePlaylistAsClicked(int playlistIndex, const QString& str); // GUI_PlaylistTabs.cpp
+	void tabSavePlaylistToFileClicked(int playlistIndex, const QString& filename); // GUI_PlaylistTabs.cpp
+	void tabRenameClicked(int playlistIndex, const QString& str);
+	void tabDeletePlaylistClicked(int playlistIndex); // GUI_PlaylistTabs.cpp
+	void tabMetadataDropped(int playlistIndex, const MetaDataList& tracks);
+	void tabFilesDropped(int playlistIndex, const QStringList& paths);
+	void openFileClicked(int playlistIndex);
+	void openDirClicked(int playlistIndex);
+	void deleteTracksClicked(const IndexSet& rows);
+
+	void checkTabIcon();
+	void checkPlaylistMenu(PlaylistConstPtr pl);
+	void checkPlaylistName(PlaylistConstPtr pl);
+
+	void doubleClicked(int row);
+
+	void addPlaylistButtonPressed();
+
+	void clearButtonPressed(int playlistIndex);
+	void bookmarkSelected(int idx, Seconds timestamp);
+
+	// called by playmanager
+	void playstateChanged(PlayState state);
+	void playlistFinished();
+
+	void showClearButtonChanged();
+
+protected:
+	void languageChanged() override;
+	void skinChanged() override;
 
 	void dragEnterEvent(QDragEnterEvent* event) override;
 	void dragLeaveEvent(QDragLeaveEvent* event) override;
 	void dropEvent(QDropEvent* event) override;
 	void dragMoveEvent(QDragMoveEvent* event) override;
-
-	Message::Answer show_save_message_box(Util::SaveAsAnswer answer);
-
-
-private slots:
-
-	// triggered from playlist
-	void playlist_created(PlaylistPtr pl);
-	void playlist_added(PlaylistPtr pl);
-	void playlist_name_changed(int pl_idx);
-	void playlist_changed(int pl_idx);
-	void playlist_idx_changed(int pld_idx);
-
-	// triggered by GUI
-	void tab_close_playlist_clicked(int pl_idx); // GUI_PlaylistTabs.cpp
-	void tab_save_playlist_clicked(int pl_idx); // GUI_PlaylistTabs.cpp
-	void tab_save_playlist_as_clicked(int pl_idx, const QString& str); // GUI_PlaylistTabs.cpp
-	void tab_save_playlist_to_file_clicked(int pl_idx, const QString& filename); // GUI_PlaylistTabs.cpp
-	void tab_rename_clicked(int pl_idx, const QString& str);
-	void tab_delete_playlist_clicked(int pl_idx); // GUI_PlaylistTabs.cpp
-	void tab_metadata_dropped(int pl_idx, const MetaDataList& v_md);
-	void tab_files_dropped(int pl_idx, const QStringList& paths);
-	void open_file_clicked(int pl_idx);
-	void open_dir_clicked(int pl_idx);
-	void delete_tracks_clicked(const IndexSet& rows);
-
-	void check_tab_icon();
-	void check_playlist_menu(PlaylistConstPtr pl);
-	void check_playlist_name(PlaylistConstPtr pl);
-
-	void double_clicked(int row);
-
-	void add_playlist_button_pressed();
-
-	void clear_button_pressed(int pl_idx);
-	void bookmark_selected(int idx, Seconds timestamp);
-
-	// called by playmanager
-	void playstate_changed(PlayState state);
-	void playlist_finished();
-
-	void sl_show_clear_button_changed();
 };
 
 #endif /* GUI_PLAYLIST_H_ */

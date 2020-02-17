@@ -1,6 +1,6 @@
 /* SomaFMLibraryContainer.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -45,12 +45,12 @@ namespace SomaFM
 
 		// override from LibraryViewInterface
 		QString			name() const override;
-		QString			display_name() const override;
+		QString			displayName() const override;
 		QWidget*		widget() const override;
 		QPixmap			icon() const override;
 		QMenu*			menu() override;
 		QFrame*			header() const override;
-		void			init_ui() override;
+		void			initUi() override;
 	};
 }
 #endif

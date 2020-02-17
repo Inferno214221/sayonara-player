@@ -1,6 +1,6 @@
 /* Widget.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -33,28 +33,28 @@ Widget::Widget(QWidget* parent) :
 
 Widget::~Widget() {}
 
-Dialog* Widget::box_into_dialog()
+Dialog* Widget::boxIntoDialog()
 {
-	if(!_boxed_dialog){
-		_boxed_dialog = new Dialog(this->parentWidget());
-		QFormLayout* layout = new QFormLayout(_boxed_dialog);
+	if(!mBoxedDialog){
+		mBoxedDialog = new Dialog(this->parentWidget());
+		QFormLayout* layout = new QFormLayout(mBoxedDialog);
 		layout->addWidget(this);
-		this->setParent(_boxed_dialog);
+		this->setParent(mBoxedDialog);
 	}
 
-	return _boxed_dialog;
+	return mBoxedDialog;
 }
 
 void Widget::showEvent(QShowEvent* e)
 {
 	WidgetTemplate<QWidget>::showEvent(e);
-	emit sig_shown();
+	emit sigShown();
 }
 
 void Widget::closeEvent(QCloseEvent* e)
 {
 	WidgetTemplate<QWidget>::closeEvent(e);
-	emit sig_closed();
+	emit sigClosed();
 }
 
 MainWindow::MainWindow(QWidget* parent) :
@@ -92,5 +92,5 @@ void MainWindow::raise()
 void MainWindow::showEvent(QShowEvent* e)
 {
 	WidgetTemplate<QMainWindow>::showEvent(e);
-	emit sig_shown();
+	emit sigShown();
 }

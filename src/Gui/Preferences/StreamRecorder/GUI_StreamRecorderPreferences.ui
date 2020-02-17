@@ -23,7 +23,7 @@
       <enum>Qt::NoFocus</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -54,7 +54,7 @@
         </spacer>
        </item>
        <item row="3" column="2">
-        <widget class="QPushButton" name="btn_path">
+        <widget class="QPushButton" name="btnPath">
          <property name="toolTip">
           <string notr="true"/>
          </property>
@@ -67,7 +67,7 @@
         </widget>
        </item>
        <item row="4" column="0" colspan="3">
-        <widget class="QLabel" name="lab_warning">
+        <widget class="QLabel" name="labWarning">
          <property name="text">
           <string/>
          </property>
@@ -81,14 +81,14 @@
         </widget>
        </item>
        <item row="0" column="0">
-        <widget class="QLabel" name="lab_active">
+        <widget class="QLabel" name="labActive">
          <property name="text">
           <string notr="true">Active</string>
          </property>
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QCheckBox" name="cb_activate">
+        <widget class="QCheckBox" name="cbActivate">
          <property name="focusPolicy">
           <enum>Qt::StrongFocus</enum>
          </property>
@@ -98,21 +98,21 @@
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QCheckBox" name="cb_auto_rec">
+        <widget class="QCheckBox" name="cbAutoRecord">
          <property name="text">
           <string/>
          </property>
         </widget>
        </item>
        <item row="3" column="1">
-        <widget class="QLineEdit" name="le_path">
+        <widget class="QLineEdit" name="lePath">
          <property name="readOnly">
           <bool>false</bool>
          </property>
         </widget>
        </item>
        <item row="2" column="1">
-        <widget class="QCheckBox" name="cb_create_session_path">
+        <widget class="QCheckBox" name="cbCreateSessionPath">
          <property name="text">
           <string/>
          </property>
@@ -142,7 +142,7 @@
          </property>
          <layout class="QGridLayout" name="gridLayout_3">
           <item row="4" column="0">
-           <widget class="QPushButton" name="btn_default">
+           <widget class="QPushButton" name="btnDefault">
             <property name="text">
              <string notr="true">Default</string>
             </property>
@@ -163,7 +163,7 @@
            </widget>
           </item>
           <item row="2" column="0" colspan="3">
-           <widget class="QWidget" name="button_widget" native="true">
+           <widget class="QWidget" name="buttonWidget" native="true">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
               <horstretch>0</horstretch>
@@ -173,7 +173,7 @@
            </widget>
           </item>
           <item row="4" column="2">
-           <widget class="QPushButton" name="btn_undo">
+           <widget class="QPushButton" name="btnUndo">
             <property name="text">
              <string notr="true">Undo</string>
             </property>
@@ -183,7 +183,7 @@
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QLineEdit" name="le_template"/>
+        <widget class="QLineEdit" name="leTemplate"/>
        </item>
        <item row="0" column="0">
         <widget class="QLabel" name="label_5">
@@ -207,7 +207,7 @@
         </widget>
        </item>
        <item row="2" column="1">
-        <widget class="QLineEdit" name="le_result_path"/>
+        <widget class="QLineEdit" name="leResultPath"/>
        </item>
        <item row="2" column="0">
         <widget class="QLabel" name="label_7">
@@ -224,15 +224,15 @@
  </widget>
  <tabstops>
   <tabstop>tabWidget</tabstop>
-  <tabstop>cb_activate</tabstop>
-  <tabstop>cb_auto_rec</tabstop>
-  <tabstop>cb_create_session_path</tabstop>
-  <tabstop>le_path</tabstop>
-  <tabstop>btn_path</tabstop>
-  <tabstop>le_template</tabstop>
-  <tabstop>le_result_path</tabstop>
-  <tabstop>btn_default</tabstop>
-  <tabstop>btn_undo</tabstop>
+  <tabstop>cbActivate</tabstop>
+  <tabstop>cbAutoRecord</tabstop>
+  <tabstop>cbCreateSessionPath</tabstop>
+  <tabstop>lePath</tabstop>
+  <tabstop>btnPath</tabstop>
+  <tabstop>leTemplate</tabstop>
+  <tabstop>leResultPath</tabstop>
+  <tabstop>btnDefault</tabstop>
+  <tabstop>btnUndo</tabstop>
  </tabstops>
  <resources/>
  <connections/>

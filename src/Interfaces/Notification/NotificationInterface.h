@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -29,35 +29,34 @@
 class MetaData;
 class NotificationInterface
 {
-public:
-	/**
-	 * @brief Constructor
-	 * @param name appearing in GUI_Notifications
-	 */
-	explicit NotificationInterface();
+	public:
+		/**
+		 * @brief Constructor
+		 * @param name appearing in GUI_Notifications
+		 */
+		explicit NotificationInterface();
+		virtual ~NotificationInterface();
 
-	virtual ~NotificationInterface();
+		/**
+		 * @brief notify when Metadata has been changed
+		 * @param md
+		 */
+		virtual void notify(const MetaData& md)=0;
 
-	/**
-	 * @brief notify when Metadata has been changed
-	 * @param md
-	 */
-	virtual void notify(const MetaData& md)=0;
+		/**
+		 * @brief show standard notification
+		 * @param title Notification title
+		 * @param message Notification message
+		 * @param image_path Notification image
+		 */
+		virtual void notify(const QString& title, const QString& message, const QString& imagePath=QString())=0;
 
-	/**
-	 * @brief show standard notification
-	 * @param title Notification title
-	 * @param message Notification message
-	 * @param image_path Notification image
-	 */
-	virtual void notify(const QString& title, const QString& message, const QString& image_path=QString())=0;
-
-	/**
-	 * @brief get name of notification interface
-	 * @return
-	 */
-	virtual QString name() const=0;
-	virtual QString display_name() const;
+		/**
+		 * @brief get name of notification interface
+		 * @return
+		 */
+		virtual QString name() const=0;
+		virtual QString displayName() const;
 };
 
 using NotificatonList=QList<NotificationInterface*>;

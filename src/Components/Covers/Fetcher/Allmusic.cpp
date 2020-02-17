@@ -1,6 +1,6 @@
 /* AllMusicCoverFetcher.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -26,12 +26,12 @@
 
 using Cover::Fetcher::Allmusic;
 
-bool Allmusic::can_fetch_cover_directly() const
+bool Allmusic::canFetchCoverDirectly() const
 {
 	return false;
 }
 
-QStringList Allmusic::parse_addresses(const QByteArray& website) const
+QStringList Allmusic::parseAddresses(const QByteArray& website) const
 {
 	QStringList ret;
 
@@ -68,30 +68,30 @@ QStringList Allmusic::parse_addresses(const QByteArray& website) const
 	return ret;
 }
 
-QString Allmusic::priv_identifier() const
+QString Allmusic::privateIdentifier() const
 {
 	return "allmusic";
 }
 
-QString Allmusic::artist_address(const QString& artist) const
+QString Allmusic::artistAddress(const QString& artist) const
 {
 	QString str = QString::fromLocal8Bit(QUrl::toPercentEncoding(artist));
 	return QString("https://www.allmusic.com/search/artists/%1").arg(str);
 }
 
-QString Allmusic::album_address(const QString& artist, const QString& album) const
+QString Allmusic::albumAddress(const QString& artist, const QString& album) const
 {
 	QString str = QString::fromLocal8Bit(QUrl::toPercentEncoding(artist + " " + album));
 	return QString("https://www.allmusic.com/search/albums/%1").arg(str);
 }
 
-QString Allmusic::search_address(const QString& searchstring) const
+QString Allmusic::fulltextSearchAddress(const QString& searchstring) const
 {
 	QString str = QString::fromLocal8Bit(QUrl::toPercentEncoding(searchstring));
 	return QString("https://www.allmusic.com/search/all/%1").arg(str);
 }
 
-int Allmusic::estimated_size() const
+int Allmusic::estimatedSize() const
 {
 	return 500;
 }

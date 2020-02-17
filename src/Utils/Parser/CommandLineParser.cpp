@@ -1,6 +1,6 @@
 /* CommandLineParser.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -25,9 +25,9 @@
 
 CommandLineData::CommandLineData()
 {
-	multiple_instances = false;
+	multipleInstances = false;
 	abort = false;
-	force_show = false;
+	forceShow = false;
 }
 
 
@@ -50,32 +50,32 @@ CommandLineData CommandLineParser::parse(int argc, char** argv)
 
 		if(str.compare("--multi-instances") == 0)
 		{
-			data.multiple_instances = true;
+			data.multipleInstances = true;
 			continue;
 		}
 
 		if(str.compare("--show") == 0)
 		{
-			data.force_show = true;
+			data.forceShow = true;
 			continue;
 		}
 
 		if(re.indexIn(str) >= 0)
 		{
 			data.language = re.cap(1);
-			sp_log(Log::Info, "CommandLineParser") << "Force language to " << data.language;
+			spLog(Log::Info, "CommandLineParser") << "Force language to " << data.language;
 		}
 
 		else
 		{
-			if(Util::File::is_www(str))
+			if(Util::File::isWWW(str))
 			{
 				www_files << str;
 			}
 
-			else if(Util::File::is_soundfile(str) || Util::File::is_playlistfile(str))
+			else if(Util::File::isSoundFile(str) || Util::File::isPlaylistFile(str))
 			{
-				data.files_to_play << Util::File::get_absolute_filename(str);
+				data.filesToPlay << Util::File::getAbsoluteFilename(str);
 			}
 		}
 	}
@@ -84,8 +84,8 @@ CommandLineData CommandLineParser::parse(int argc, char** argv)
 	{
 		QString playlist_filename = QDir::temp().absoluteFilePath("playlist.m3u");
 		QByteArray raw_data = www_files.join("\n").toLocal8Bit();
-		Util::File::write_file(raw_data, playlist_filename);
-		data.files_to_play << playlist_filename;
+		Util::File::writeFile(raw_data, playlist_filename);
+		data.filesToPlay << playlist_filename;
 	}
 
 	return data;
@@ -94,11 +94,11 @@ CommandLineData CommandLineParser::parse(int argc, char** argv)
 
 void CommandLineParser::help()
 {
-	sp_log(Log::Info, "") << "sayonara [options] <list>";
-	sp_log(Log::Info, "") << "<list> can consist of either files or directories or both";
-	sp_log(Log::Info, "") << "Options:";
-	sp_log(Log::Info, "") << "\t--multi-instances      Run more than one instance";
-	sp_log(Log::Info, "") << "\t--lang=<country code>  Force language";
-	sp_log(Log::Info, "") << "\t--help                 Print this help dialog";
-	sp_log(Log::Info, "") << "Bye.";
+	spLog(Log::Info, "") << "sayonara [options] <list>";
+	spLog(Log::Info, "") << "<list> can consist of either files or directories or both";
+	spLog(Log::Info, "") << "Options:";
+	spLog(Log::Info, "") << "\t--multi-instances      Run more than one instance";
+	spLog(Log::Info, "") << "\t--lang=<country code>  Force language";
+	spLog(Log::Info, "") << "\t--help                 Print this help dialog";
+	spLog(Log::Info, "") << "Bye.";
 }

@@ -1,6 +1,6 @@
 /* Bookmarks.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -44,24 +44,24 @@ signals:
 	 * @brief emitted when bookmarks have changed
 	 * @param bookmarks new bookmarks
 	 */
-	void sig_bookmarks_changed();
+	void sigBookmarksChanged();
 
 	/**
 	 * @brief previous bookmark has changed
 	 * @param bm new bookmark. Check for Bookmark::is_valid()
 	 */
-	void sig_prev_changed(const Bookmark& bm);
+	void sigPreviousChanged(const Bookmark& bm);
 
 	/**
 	 * @brief next bookmark has changed
 	 * @param bm new bookmark. Check for Bookmark::is_valid()
 	 */
-	void sig_next_changed(const Bookmark& bm);
+	void sigNextChanged(const Bookmark& bm);
 
 public:
 
-	explicit Bookmarks(QObject *parent);
-	~Bookmarks();
+	explicit Bookmarks(QObject* parent);
+	~Bookmarks() override;
 
 
 	/**
@@ -69,19 +69,19 @@ public:
 	 * @param idx bookmark index
 	 * @return true if index was valid
 	 */
-	bool jump_to(int idx);
+	bool jumpTo(int idx);
 
 	/**
 	 * @brief Jump to next bookmark
 	 * @return true if successful, false else
 	 */
-	bool jump_next();
+	bool jumpNext();
 
 	/**
 	 * @brief Jump to previous bookmark
 	 * @return true if successful, false else
 	 */
-	bool jump_prev();
+	bool jumpPrevious();
 
 
 	/**
@@ -89,7 +89,7 @@ public:
 	 * @param b switch loop on or off
 	 * @return false if the two current indices are invalid or if b == false. True else
 	 */
-	bool set_loop(bool b);
+	bool setLoop(bool b);
 
 	BookmarksBase::CreationStatus create();
 
@@ -102,25 +102,25 @@ private slots:
 	 * @brief track position has changed
 	 * @param pos new position in ms
 	 */
-	void pos_changed_ms(MilliSeconds pos);
+	void positionChangedMs(MilliSeconds pos);
 
 	/**
 	 * @brief current track has changed
 	 * @param md new MetaData object
 	 */
-	void track_changed(const MetaData& md);
+	void currentTrackChanged(const MetaData& md);
 
 	/**
 	 * @brief current playstate has changed
 	 * @param state new playstate
 	 */
-	void playstate_changed(PlayState state);
+	void playstateChanged(PlayState state);
 
 
 private:
 
 	using BookmarksBase::create;
-	using BookmarksBase::set_metadata;
+	using BookmarksBase::setMetadata;
 
 	/**
 	 * @brief fetch bookmarks from db and emit sig_bookmarks_changed signal

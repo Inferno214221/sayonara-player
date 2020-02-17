@@ -1,6 +1,6 @@
 /* GlobalMessage.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -24,10 +24,10 @@
 
 static MessageReceiverInterface* s_receiver=nullptr;
 
-bool Message::register_receiver(MessageReceiverInterface* receiver)
+bool Message::registerReceiver(MessageReceiverInterface* receiver)
 {
 	if(s_receiver != nullptr){
-		sp_log(Log::Warning, "GlobalMessage") << "There's also another receiver: " << s_receiver->get_name();
+		spLog(Log::Warning, "GlobalMessage") << "There's also another receiver: " << s_receiver->name();
 		return false;
 	}
 
@@ -44,7 +44,7 @@ Message::info(const QString& info, const QString& sender_name)
 		return Message::Answer::Undefined;
 	}
 
-	return s_receiver->info_received(info, sender_name);
+	return s_receiver->infoReceived(info, sender_name);
 }
 
 Message::Answer
@@ -54,7 +54,7 @@ Message::warning(const QString& warning, const QString& sender_name)
 		return Message::Answer::Undefined;
 	}
 
-	return s_receiver->warning_received(warning, sender_name);
+	return s_receiver->warningReceived(warning, sender_name);
 }
 
 Message::Answer
@@ -64,7 +64,7 @@ Message::error(const QString& error, const QString& sender_name)
 		return Message::Answer::Undefined;
 	}
 
-	return s_receiver->error_received(error, sender_name);
+	return s_receiver->errorReceived(error, sender_name);
 }
 
 Message::Answer
@@ -74,7 +74,7 @@ Message::question(const QString& question, const QString& sender_name, Message::
 		return Message::Answer::Undefined;
 	}
 
-	return s_receiver->question_received(question, sender_name, type);
+	return s_receiver->questionReceived(question, sender_name, type);
 }
 
 Message::Answer Message::question_yn(const QString& question, const QString& sender_name)

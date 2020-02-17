@@ -1,6 +1,6 @@
 /* GUI_Broadcast.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -39,7 +39,7 @@ class BroadcastAction :
 		QString identifier() const override;
 
 	protected:
-		QString display_name() const override;
+		QString displayName() const override;
 };
 
 BroadcastAction::BroadcastAction(QWidget* parent) :
@@ -48,22 +48,22 @@ BroadcastAction::BroadcastAction(QWidget* parent) :
 
 BroadcastAction::~BroadcastAction() = default;
 QString BroadcastAction::identifier() const { return "broadcast"; }
-QString BroadcastAction::display_name() const { return Lang::get(Lang::Broadcast); }
+QString BroadcastAction::displayName() const { return Lang::get(Lang::Broadcast); }
 
 
 struct GUI_Broadcast::Private
 {
 	StreamServer*   server=nullptr;
-	QAction*        action_dismiss=nullptr;
-	QAction*        action_dismiss_all=nullptr;
+	QAction*        actionDismiss=nullptr;
+	QAction*        actionDismissAll=nullptr;
 };
 
-GUI_Broadcast::GUI_Broadcast(QWidget *parent) :
+GUI_Broadcast::GUI_Broadcast(QWidget* parent) :
 	PlayerPlugin::Base(parent)
 {
 	m = Pimpl::make<GUI_Broadcast::Private>();
 
-	ListenSetting(Set::Broadcast_Active, GUI_Broadcast::start_server);
+	ListenSetting(Set::Broadcast_Active, GUI_Broadcast::startServer);
 }
 
 
@@ -81,73 +81,73 @@ GUI_Broadcast::~GUI_Broadcast()
 }
 
 
-QString GUI_Broadcast::get_name() const
+QString GUI_Broadcast::name() const
 {
 	return "Broadcast";
 }
 
 
-QString GUI_Broadcast::get_display_name() const
+QString GUI_Broadcast::displayName() const
 {
 	return Lang::get(Lang::Broadcast);
 }
 
 
-void GUI_Broadcast::retranslate_ui()
+void GUI_Broadcast::retranslate()
 {
 	ui->retranslateUi(this);
-	set_status_label();
+	setStatusLabel();
 	ui->btn_retry->setText(Lang::get(Lang::Retry));
 
-	if(m->action_dismiss)
+	if(m->actionDismiss)
 	{
-		m->action_dismiss->setText(tr("Dismiss"));
-		m->action_dismiss_all->setText(tr("Dismiss all"));
+		m->actionDismiss->setText(tr("Dismiss"));
+		m->actionDismissAll->setText(tr("Dismiss all"));
 	}
 }
 
 
-void GUI_Broadcast::init_ui()
+void GUI_Broadcast::initUi()
 {
-	if(is_ui_initialized()){
+	if(isUiInitialized()){
 		return;
 	}
 
-	setup_parent(this, &ui);
+	setupParent(this, &ui);
 
 	if(m->server)
 	{
-		const QStringList clients = m->server->connected_clients();
+		const QStringList clients = m->server->connectedClients();
 		for(const QString& client : clients)
 		{
 			ui->combo_clients->addItem(client);
 		}
 	}
 
-	m->action_dismiss = new QAction(ui->btn_menu);
-	m->action_dismiss_all = new QAction(ui->btn_menu);
+	m->actionDismiss = new QAction(ui->btn_menu);
+	m->actionDismissAll = new QAction(ui->btn_menu);
 
-	update_dismiss_buttons();
+	updateDismissButtons();
 
-	ui->btn_menu->register_action(m->action_dismiss);
-	ui->btn_menu->register_action(m->action_dismiss_all);
-	ui->btn_menu->register_action(new BroadcastAction(ui->btn_menu));
+	ui->btn_menu->registerAction(m->actionDismiss);
+	ui->btn_menu->registerAction(m->actionDismissAll);
+	ui->btn_menu->registerAction(new BroadcastAction(ui->btn_menu));
 
-	connect(m->action_dismiss, &QAction::triggered, this, &GUI_Broadcast::dismiss_clicked);
-	connect(m->action_dismiss_all, &QAction::triggered, this, &GUI_Broadcast::dismiss_all_clicked);
-	connect(ui->combo_clients, combo_current_index_changed_int, this, &GUI_Broadcast::combo_changed);
+	connect(m->actionDismiss, &QAction::triggered, this, &GUI_Broadcast::dismissClicked);
+	connect(m->actionDismissAll, &QAction::triggered, this, &GUI_Broadcast::dismissAllClicked);
+	connect(ui->combo_clients, combo_current_index_changed_int, this, &GUI_Broadcast::currentIndexChanged);
 	connect(ui->btn_retry, &QPushButton::clicked, this, &GUI_Broadcast::retry);
 
-	set_status_label();
-	retranslate_ui();
+	setStatusLabel();
+	retranslate();
 
-	ListenSetting(SetNoDB::MP3enc_found, GUI_Broadcast::mp3_enc_found);
+	ListenSetting(SetNoDB::MP3enc_found, GUI_Broadcast::mp3EncoderFound);
 }
 
 
-void GUI_Broadcast::set_status_label()
+void GUI_Broadcast::setStatusLabel()
 {
-	if(!is_ui_initialized()){
+	if(!isUiInitialized()){
 		return;
 	}
 
@@ -160,21 +160,21 @@ void GUI_Broadcast::set_status_label()
 
 
 // finally connection is established
-void GUI_Broadcast::connection_established(const QString& ip)
+void GUI_Broadcast::connectionEstablished(const QString& ip)
 {
-	if(!is_ui_initialized()){
+	if(!isUiInitialized()){
 		return;
 	}
 
 	ui->combo_clients->addItem(ip);
-	set_status_label();
+	setStatusLabel();
 	ui->combo_clients->setCurrentIndex(ui->combo_clients->count() -1);
 }
 
 
-void GUI_Broadcast::connection_closed(const QString& ip)
+void GUI_Broadcast::connectionClosed(const QString& ip)
 {
-	if(!is_ui_initialized()){
+	if(!isUiInitialized()){
 		return;
 	}
 
@@ -182,7 +182,7 @@ void GUI_Broadcast::connection_closed(const QString& ip)
 		return;
 	}
 
-	sp_log(Log::Info, this) << "Connection closed: " << ip;
+	spLog(Log::Info, this) << "Connection closed: " << ip;
 
 	int idx;
 	for(idx=0; idx<ui->combo_clients->count(); idx++){
@@ -197,14 +197,14 @@ void GUI_Broadcast::connection_closed(const QString& ip)
 
 	ui->combo_clients->removeItem(idx);
 
-	update_dismiss_buttons();
+	updateDismissButtons();
 
-	set_status_label();
+	setStatusLabel();
 }
 
-void GUI_Broadcast::can_listen_changed(bool success)
+void GUI_Broadcast::canListenChanged(bool success)
 {
-	if(!is_ui_initialized()){
+	if(!isUiInitialized()){
 		return;
 	}
 
@@ -227,9 +227,9 @@ void GUI_Broadcast::retry()
 }
 
 
-void GUI_Broadcast::dismiss_at(int idx)
+void GUI_Broadcast::dismissAt(int idx)
 {
-	if(!is_ui_initialized()){
+	if(!isUiInitialized()){
 		return;
 	}
 
@@ -245,35 +245,35 @@ void GUI_Broadcast::dismiss_at(int idx)
 
 	m->server->dismiss(idx);
 
-	update_dismiss_buttons();
+	updateDismissButtons();
 }
 
 
-void GUI_Broadcast::dismiss_clicked()
+void GUI_Broadcast::dismissClicked()
 {
 	int idx = ui->combo_clients->currentIndex();
-	dismiss_at(idx);
+	dismissAt(idx);
 }
 
 
-void GUI_Broadcast::dismiss_all_clicked()
+void GUI_Broadcast::dismissAllClicked()
 {
 	for(int idx = 0; idx <ui->combo_clients->count(); idx++){
-		dismiss_at(idx);
+		dismissAt(idx);
 	}
 }
 
 
-void GUI_Broadcast::combo_changed(int idx)
+void GUI_Broadcast::currentIndexChanged(int idx)
 {
 	Q_UNUSED(idx)
-	update_dismiss_buttons();
+	updateDismissButtons();
 }
 
 
-bool GUI_Broadcast::check_dismiss_visible() const
+bool GUI_Broadcast::checkDismissVisible() const
 {
-	if(!is_ui_initialized()){
+	if(!isUiInitialized()){
 		return false;
 	}
 
@@ -289,41 +289,41 @@ bool GUI_Broadcast::check_dismiss_visible() const
 	return false;
 }
 
-bool GUI_Broadcast::check_dismiss_all_visible() const
+bool GUI_Broadcast::checkDismissAllVisible() const
 {
-	if(!is_ui_initialized()){
+	if(!isUiInitialized()){
 		return false;
 	}
 
 	return (ui->combo_clients->count() > 0);
 }
 
-void GUI_Broadcast::update_dismiss_buttons()
+void GUI_Broadcast::updateDismissButtons()
 {
-	if(!is_ui_initialized()){
+	if(!isUiInitialized()){
 		return;
 	}
 
-	m->action_dismiss->setVisible(check_dismiss_visible());
-	m->action_dismiss_all->setVisible(check_dismiss_all_visible());
+	m->actionDismiss->setVisible(checkDismissVisible());
+	m->actionDismissAll->setVisible(checkDismissAllVisible());
 }
 
-void GUI_Broadcast::start_server()
+void GUI_Broadcast::startServer()
 {
 	bool enabled = GetSetting(Set::Broadcast_Active);
 	if(enabled && !m->server)
 	{
 		m->server = new StreamServer(this);
 
-		connect(m->server, &StreamServer::sig_new_connection, this, &GUI_Broadcast::connection_established);
-		connect(m->server, &StreamServer::sig_connection_closed, this, &GUI_Broadcast::connection_closed);
-		connect(m->server, &StreamServer::sig_listening, this, &GUI_Broadcast::can_listen_changed);
+		connect(m->server, &StreamServer::sigNewConnection, this, &GUI_Broadcast::connectionEstablished);
+		connect(m->server, &StreamServer::sigConnectionClosed, this, &GUI_Broadcast::connectionClosed);
+		connect(m->server, &StreamServer::sigListening, this, &GUI_Broadcast::canListenChanged);
 	}
 }
 
-void GUI_Broadcast::mp3_enc_found()
+void GUI_Broadcast::mp3EncoderFound()
 {
-	if(!is_ui_initialized()){
+	if(!isUiInitialized()){
 		return;
 	}
 
@@ -341,5 +341,5 @@ void GUI_Broadcast::mp3_enc_found()
 		ui->btn_retry->hide();
 	}
 
-	update_dismiss_buttons();
+	updateDismissButtons();
 }

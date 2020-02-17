@@ -1,6 +1,6 @@
 /* GUI_ProxyPreferences.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -37,17 +37,17 @@ public:
 
 	// PreferenceInterface interface
 protected:
-	void init_ui() override;
-	void retranslate_ui() override;
+	void initUi() override;
+	void retranslate() override;
 
 public:
-	QString action_name() const override;
+	QString actionName() const override;
 	bool commit() override;
 	void revert() override;
 
 private slots:
-	void active_toggled(bool active);
-	void autosearch_clicked();
+	void activeToggled(bool active);
+	void autosearchClicked();
 };
 
 

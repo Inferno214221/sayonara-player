@@ -1,6 +1,6 @@
 /* PlaylistActionMenu.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -37,22 +37,22 @@ struct ActionMenu::Private
 {
 	Playlist::Mode		plm;
 
-	QAction*		action_rep1=nullptr;
-	QAction*		action_append=nullptr;
-	QAction*		action_repAll=nullptr;
-	QAction*		action_dynamic=nullptr;
-	QAction*		action_shuffle=nullptr;
-	QAction*		action_gapless=nullptr;
+	QAction*		actionRep1=nullptr;
+	QAction*		actionAppend=nullptr;
+	QAction*		actionRepall=nullptr;
+	QAction*		actionDynamic=nullptr;
+	QAction*		actionShuffle=nullptr;
+	QAction*		actionGapless=nullptr;
 
 	QList<QAction*> actions()
 	{
 		return {
-			action_rep1,
-			action_append,
-			action_repAll,
-			action_dynamic,
-			action_shuffle,
-			action_gapless
+			actionRep1,
+			actionAppend,
+			actionRepall,
+			actionDynamic,
+			actionShuffle,
+			actionGapless
 		};
 	}
 };
@@ -64,12 +64,12 @@ ActionMenu::ActionMenu(QWidget* parent) :
 	m = Pimpl::make<Private>();
 
 	using namespace Gui;
-	m->action_rep1 = new QAction(this);
-	m->action_repAll = new QAction(this);
-	m->action_append = new QAction(this);
-	m->action_dynamic = new QAction(this);
-	m->action_shuffle = new QAction(this);
-	m->action_gapless = new QAction(this);
+	m->actionRep1 = new QAction(this);
+	m->actionRepall = new QAction(this);
+	m->actionAppend = new QAction(this);
+	m->actionDynamic = new QAction(this);
+	m->actionShuffle = new QAction(this);
+	m->actionGapless = new QAction(this);
 
 	const auto actions = m->actions();
 	for(auto action : actions)
@@ -77,72 +77,99 @@ ActionMenu::ActionMenu(QWidget* parent) :
 		action->setCheckable(true);
 	}
 
-	m->action_gapless->setCheckable(false);
+	m->actionGapless->setCheckable(false);
 
 	this->addActions(m->actions());
 
-
 	m->plm = GetSetting(Set::PL_Mode);
 
-	m->action_rep1->setChecked(Playlist::Mode::isActive(m->plm.rep1()));
-	m->action_repAll->setChecked(Playlist::Mode::isActive(m->plm.repAll()));
-	m->action_append->setChecked(Playlist::Mode::isActive(m->plm.append()));
-	m->action_dynamic->setChecked(Playlist::Mode::isActive(m->plm.dynamic()));
-	m->action_shuffle->setChecked(Playlist::Mode::isActive(m->plm.shuffle()));
+	m->actionRep1->setChecked(Playlist::Mode::isActive(m->plm.rep1()));
+	m->actionRepall->setChecked(Playlist::Mode::isActive(m->plm.repAll()));
+	m->actionAppend->setChecked(Playlist::Mode::isActive(m->plm.append()));
+	m->actionDynamic->setChecked(Playlist::Mode::isActive(m->plm.dynamic()));
+	m->actionShuffle->setChecked(Playlist::Mode::isActive(m->plm.shuffle()));
 
-	connect(m->action_rep1, &QAction::toggled, this, &ActionMenu::rep1_checked);
-	connect(m->action_repAll, &QAction::toggled, this, &ActionMenu::rep_all_checked);
-	connect(m->action_append, &QAction::toggled, this, &ActionMenu::playlist_mode_changed);
-	connect(m->action_shuffle, &QAction::toggled, this, &ActionMenu::shuffle_checked);
-	connect(m->action_dynamic, &QAction::toggled, this, &ActionMenu::playlist_mode_changed);
-	connect(m->action_gapless, &QAction::triggered, this, &ActionMenu::gapless_clicked);
+	connect(m->actionRep1, &QAction::toggled, this, &ActionMenu::rep1Checked);
+	connect(m->actionRepall, &QAction::toggled, this, &ActionMenu::repAllChecked);
+	connect(m->actionAppend, &QAction::toggled, this, &ActionMenu::changePlaylistMode);
+	connect(m->actionShuffle, &QAction::toggled, this, &ActionMenu::shuffleChecked);
+	connect(m->actionDynamic, &QAction::toggled, this, &ActionMenu::changePlaylistMode);
+	connect(m->actionGapless, &QAction::triggered, this, &ActionMenu::gaplessClicked);
 
-	ListenSetting(Set::PL_Mode, ActionMenu::s_playlist_mode_changed);
+	ListenSetting(Set::PL_Mode, ActionMenu::changePlaylistMode);
 
-	language_changed();
+	languageChanged();
 }
 
 ActionMenu::~ActionMenu() = default;
 
-void ActionMenu::rep1_checked(bool checked)
+void ActionMenu::rep1Checked(bool checked)
 {
 	if(checked){
-		m->action_repAll->setChecked(false);
-		m->action_shuffle->setChecked(false);
+		m->actionRepall->setChecked(false);
+		m->actionShuffle->setChecked(false);
 	}
 
-	playlist_mode_changed();
+	changePlaylistMode();
 }
 
-void ActionMenu::rep_all_checked(bool checked)
+void ActionMenu::repAllChecked(bool checked)
 {
 	if(checked){
-		m->action_rep1->setChecked(false);
+		m->actionRep1->setChecked(false);
 	}
 
-	playlist_mode_changed();
+	changePlaylistMode();
 }
 
-void ActionMenu::shuffle_checked(bool checked)
+void ActionMenu::shuffleChecked(bool checked)
 {
 	if(checked){
-		m->action_rep1->setChecked(false);
+		m->actionRep1->setChecked(false);
 	}
 
-	playlist_mode_changed();
+	changePlaylistMode();
+}
+
+
+// setting slot
+void ActionMenu::playlistModeSettingChanged()
+{
+	Playlist::Mode plm = GetSetting(Set::PL_Mode);
+
+	if(plm == m->plm) {
+		return;
+	}
+
+	m->plm = plm;
+
+	m->actionAppend->setChecked( Playlist::Mode::isActive(m->plm.append()));
+	m->actionRep1->setChecked(Playlist::Mode::isActive(m->plm.rep1()));
+	m->actionRepall->setChecked(Playlist::Mode::isActive(m->plm.repAll()));
+	m->actionShuffle->setChecked(Playlist::Mode::isActive(m->plm.shuffle()));
+	m->actionDynamic->setChecked(Playlist::Mode::isActive(m->plm.dynamic()));
+
+	m->actionRep1->setEnabled(Playlist::Mode::isEnabled(m->plm.rep1()));
+	m->actionAppend->setEnabled(Playlist::Mode::isEnabled(m->plm.append()));
+	m->actionRepall->setEnabled(Playlist::Mode::isEnabled(m->plm.repAll()));
+	m->actionDynamic->setEnabled(Playlist::Mode::isEnabled(m->plm.dynamic()));
+	m->actionShuffle->setEnabled(Playlist::Mode::isEnabled(m->plm.shuffle()));
+	m->actionGapless->setEnabled(Playlist::Mode::isEnabled(m->plm.gapless()));
+
+	checkDynamicPlayButton();
 }
 
 
 // internal gui slot
-void ActionMenu::playlist_mode_changed()
+void ActionMenu::changePlaylistMode()
 {
 	Playlist::Mode plm;
 
-	plm.setAppend(m->action_append->isChecked(), m->action_append->isEnabled());
-	plm.setRep1(m->action_rep1->isChecked(), m->action_rep1->isEnabled());
-	plm.setRepAll(m->action_repAll->isChecked(), m->action_repAll->isEnabled());
-	plm.setShuffle(m->action_shuffle->isChecked(), m->action_shuffle->isEnabled());
-	plm.setDynamic(m->action_dynamic->isChecked(), m->action_dynamic->isEnabled());
+	plm.setAppend(m->actionAppend->isChecked(), m->actionAppend->isEnabled());
+	plm.setRep1(m->actionRep1->isChecked(), m->actionRep1->isEnabled());
+	plm.setRepAll(m->actionRepall->isChecked(), m->actionRepall->isEnabled());
+	plm.setShuffle(m->actionShuffle->isChecked(), m->actionShuffle->isEnabled());
+	plm.setDynamic(m->actionDynamic->isChecked(), m->actionDynamic->isEnabled());
 
 	if(plm == m->plm){
 		return;
@@ -153,64 +180,32 @@ void ActionMenu::playlist_mode_changed()
 	SetSetting(Set::PL_Mode, m->plm);
 }
 
-
-void ActionMenu::gapless_clicked()
+void ActionMenu::gaplessClicked()
 {
-	PlayerPlugin::Handler::instance()->show_plugin("Crossfader");
+	PlayerPlugin::Handler::instance()->showPlugin("Crossfader");
 }
 
-
-void ActionMenu::language_changed()
+void ActionMenu::checkDynamicPlayButton()
 {
-	m->action_append->setText(Lang::get(Lang::Append));
-	m->action_dynamic->setText(Lang::get(Lang::DynamicPlayback));
-	m->action_gapless->setText(Lang::get(Lang::GaplessPlayback));
-	m->action_rep1->setText(Lang::get(Lang::Repeat1));
-	m->action_repAll->setText(Lang::get(Lang::RepeatAll));
-	m->action_shuffle->setText(Lang::get(Lang::Shuffle));
+	int libCount = Library::Manager::instance()->count();
 
-	check_dynamic_play_button();
-}
-
-
-// setting slot
-void ActionMenu::s_playlist_mode_changed()
-{
-	Playlist::Mode plm = GetSetting(Set::PL_Mode);
-
-	if(plm == m->plm) {
-		return;
-	}
-
-	m->plm = plm;
-
-	m->action_append->setChecked( Playlist::Mode::isActive(m->plm.append()));
-	m->action_rep1->setChecked(Playlist::Mode::isActive(m->plm.rep1()));
-	m->action_repAll->setChecked(Playlist::Mode::isActive(m->plm.repAll()));
-	m->action_shuffle->setChecked(Playlist::Mode::isActive(m->plm.shuffle()));
-	m->action_dynamic->setChecked(Playlist::Mode::isActive(m->plm.dynamic()));
-
-	m->action_rep1->setEnabled(Playlist::Mode::isEnabled(m->plm.rep1()));
-	m->action_append->setEnabled(Playlist::Mode::isEnabled(m->plm.append()));
-	m->action_repAll->setEnabled(Playlist::Mode::isEnabled(m->plm.repAll()));
-	m->action_dynamic->setEnabled(Playlist::Mode::isEnabled(m->plm.dynamic()));
-	m->action_shuffle->setEnabled(Playlist::Mode::isEnabled(m->plm.shuffle()));
-	m->action_gapless->setEnabled(Playlist::Mode::isEnabled(m->plm.gapless()));
-
-	check_dynamic_play_button();
-}
-
-
-void ActionMenu::check_dynamic_play_button()
-{
-	int n_libs = Library::Manager::instance()->count();
-
-	if(n_libs == 0) {
-		m->action_dynamic->setToolTip(tr("Please set library path first"));
+	if(libCount == 0) {
+		m->actionDynamic->setToolTip(tr("Please set library path first"));
 	}
 
 	else{
-		m->action_dynamic->setToolTip(Lang::get(Lang::DynamicPlayback));
+		m->actionDynamic->setToolTip(Lang::get(Lang::DynamicPlayback));
 	}
 }
 
+void ActionMenu::languageChanged()
+{
+	m->actionAppend->setText(Lang::get(Lang::Append));
+	m->actionDynamic->setText(Lang::get(Lang::DynamicPlayback));
+	m->actionGapless->setText(Lang::get(Lang::GaplessPlayback));
+	m->actionRep1->setText(Lang::get(Lang::Repeat1));
+	m->actionRepall->setText(Lang::get(Lang::RepeatAll));
+	m->actionShuffle->setText(Lang::get(Lang::Shuffle));
+
+	checkDynamicPlayButton();
+}

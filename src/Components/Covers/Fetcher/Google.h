@@ -1,6 +1,6 @@
 /* GoogleCoverFetcher.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -33,17 +33,17 @@ namespace Cover::Fetcher
         public Cover::Fetcher::Base
     {
 		private:
-			QString priv_identifier() const override;
+			QString privateIdentifier() const override;
 
 		public:
-			bool can_fetch_cover_directly() const override;
-			QStringList parse_addresses(const QByteArray& website) const override;
+			bool canFetchCoverDirectly() const override;
+			QStringList parseAddresses(const QByteArray& website) const override;
 
-			QString artist_address(const QString& artist) const override;
-			QString album_address(const QString& artist, const QString& album) const override;
-			QString search_address(const QString& str) const override;
+			QString artistAddress(const QString& artist) const override;
+			QString albumAddress(const QString& artist, const QString& album) const override;
+			QString fulltextSearchAddress(const QString& str) const override;
 
-			int estimated_size() const override;
+			int estimatedSize() const override;
     };
 } // cover
 

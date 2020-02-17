@@ -1,6 +1,6 @@
 /* Sorting.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -75,7 +75,7 @@ namespace Compare
 	}
 
 	bool albumDurationAsc(const Album& album1, const Album& album2) {
-		return (album1.duration_sec() < album2.duration_sec());
+		return (album1.durationSec() < album2.durationSec());
 	}
 
 	bool albumDurationDesc(const Album& album1, const Album& album2) {
@@ -91,7 +91,7 @@ namespace Compare
 	}
 
 	bool trackNumAsc(const MetaData& md1, const MetaData& md2){
-		return (md1.track_number() < md2.track_number());
+		return (md1.trackNumber() < md2.trackNumber());
 	}
 
 	bool trackNumDesc(const MetaData& md1, const MetaData& md2){
@@ -135,7 +135,7 @@ namespace Compare
 	}
 
 	bool trackLengthAsc(const MetaData& md1, const MetaData& md2){
-		return (md1.duration_ms() < md2.duration_ms());
+		return (md1.durationMs() < md2.durationMs());
 	}
 
 	bool trackLengthDesc(const MetaData& md1, const MetaData& md2){
@@ -155,7 +155,7 @@ namespace Compare
 	}
 }
 
-void SC::Sorting::sort_artists(ArtistList& artists, Library::SortOrder so)
+void SC::Sorting::sortArtists(ArtistList& artists, Library::SortOrder so)
 {
 	using namespace Library;
 	using SortFn=std::function<bool (const Artist&, const Artist&)>;
@@ -172,7 +172,7 @@ void SC::Sorting::sort_artists(ArtistList& artists, Library::SortOrder so)
 	}
 }
 
-void SC::Sorting::sort_albums(AlbumList& albums, Library::SortOrder so)
+void SC::Sorting::sortAlbums(AlbumList& albums, Library::SortOrder so)
 {
 	using namespace Library;
 	using SortFn=std::function<bool (const Album&, const Album&)>;
@@ -192,7 +192,7 @@ void SC::Sorting::sort_albums(AlbumList& albums, Library::SortOrder so)
 }
 
 
-void SC::Sorting::sort_tracks(MetaDataList& tracks, Library::SortOrder so)
+void SC::Sorting::sortTracks(MetaDataList& tracks, Library::SortOrder so)
 {
 	using namespace Library;
 	using SortFn=std::function<bool (const MetaData&, const MetaData&)>;

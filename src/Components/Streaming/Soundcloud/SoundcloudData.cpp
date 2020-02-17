@@ -1,6 +1,6 @@
 /* SoundcloudData.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -33,26 +33,26 @@
 using DB::Query;
 
 SC::Database::Database() :
-	::DB::Base(25, ":/Database", Util::sayonara_path(), "soundcloud.db")
+	::DB::Base(25, ":/Database", Util::sayonaraPath(), "soundcloud.db")
 {
-	this->apply_fixes();
+	this->applyFixes();
 }
 
 SC::Database::~Database()
 {
-	this->close_db();
+	this->closeDatabase();
 }
 
-QString SC::Database::load_setting(const QString& key)
+QString SC::Database::loadSetting(const QString& key)
 {
-	Query q = this->run_query
+	Query q = this->runQuery
 	(
 		"SELECT value FROM Settings WHERE key=:key;",
 		{{":key", key}},
 		QString("Cannot load setting %1").arg(key)
 	);
 
-	if(q.has_error()){
+	if(q.hasError()){
 		return QString();
 	}
 
@@ -63,11 +63,11 @@ QString SC::Database::load_setting(const QString& key)
 	return QString();
 }
 
-bool SC::Database::save_setting(const QString& key, const QString& value)
+bool SC::Database::saveSetting(const QString& key, const QString& value)
 {
-	QString v = load_setting(key);
+	QString v = loadSetting(key);
 	if(v.isNull()){
-		return insert_setting(key, value);
+		return insertSetting(key, value);
 	}
 
 	Query q = this->update
@@ -81,10 +81,10 @@ bool SC::Database::save_setting(const QString& key, const QString& value)
 		QString("Cannot apply setting %1").arg(key)
 	);
 
-	return (q.has_error() == false);
+	return (q.hasError() == false);
 }
 
-bool SC::Database::insert_setting(const QString& key, const QString& value)
+bool SC::Database::insertSetting(const QString& key, const QString& value)
 {
 	Query q = this->insert
 	(
@@ -96,11 +96,11 @@ bool SC::Database::insert_setting(const QString& key, const QString& value)
 		QString("Cannot insert setting %1").arg(key)
 	);
 
-	return (q.has_error() == false);
+	return (q.hasError() == false);
 }
 
 
-bool SC::Database::apply_fixes()
+bool SC::Database::applyFixes()
 {
 	QString creation_string =
 		"CREATE TABLE Settings "
@@ -109,16 +109,16 @@ bool SC::Database::apply_fixes()
 		"  value TEXT "
 		");";
 
-	bool success = check_and_create_table("Settings", creation_string);
+	bool success = checkAndCreateTable("Settings", creation_string);
 	if(!success){
-		sp_log(Log::Error, this) << "Cannot create settings table for soundcloud";
+		spLog(Log::Error, this) << "Cannot create settings table for soundcloud";
 		return false;
 	}
 
 	int version;
-	QString version_string = load_setting("version");
+	QString version_string = loadSetting("version");
 	if(version_string.isEmpty()){
-		save_setting("version", "1");
+		saveSetting("version", "1");
 		version = 1;
 	}
 
@@ -127,24 +127,24 @@ bool SC::Database::apply_fixes()
 	}
 
 	if(version < 2){
-		bool success = check_and_insert_column("tracks", "albumArtistID", "integer", "-1");
+		bool success = checkAndInsertColumn("tracks", "albumArtistID", "integer", "-1");
 		if(success){
-			save_setting("version", "2");
+			saveSetting("version", "2");
 		}
 	}
 
 	if(version < 3) {
-		bool success = check_and_insert_column("tracks", "libraryID", "integer", "0");
+		bool success = checkAndInsertColumn("tracks", "libraryID", "integer", "0");
 		if(success){
-			save_setting("version", "3");
+			saveSetting("version", "3");
 		}
 	}
 
 
 	if(version < 4) {
-		bool success = check_and_insert_column("tracks", "fileCissearch", "varchar(256)", "");
+		bool success = checkAndInsertColumn("tracks", "fileCissearch", "varchar(256)", "");
 		if(success){
-			save_setting("version", "4");
+			saveSetting("version", "4");
 		}
 	}
 

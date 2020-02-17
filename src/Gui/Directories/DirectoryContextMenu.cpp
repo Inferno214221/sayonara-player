@@ -1,6 +1,6 @@
 /* DirectoryContextMenu.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -20,74 +20,74 @@
 
 #include "DirectoryContextMenu.h"
 
+#include "Components/LibraryManagement/LibraryManager.h"
+
 #include "Gui/Utils/Icons.h"
 #include "Gui/Utils/PreferenceAction.h"
 
 #include "Utils/Language/Language.h"
-
-#include "Components/LibraryManagement/LibraryManager.h"
 #include "Utils/Library/LibraryInfo.h"
 
 #include <QAction>
 
 struct DirectoryContextMenu::Private
 {
-	QAction*	action_create_dir=nullptr;
-	QAction*	action_rename=nullptr;
-	QAction*	action_rename_by_tag=nullptr;
-	QAction*	action_collapse_all=nullptr;
+	QAction*	actionCreateDirectory=nullptr;
+	QAction*	actionRename=nullptr;
+	QAction*	actionRenameByTag=nullptr;
+	QAction*	actionCollapseAll=nullptr;
 
-	QMap<DirectoryContextMenu::Entry, QAction*> entry_action_map;
+	QMap<DirectoryContextMenu::Entry, QAction*> entryActionMap;
 
-	QMenu*		menu_move_to_lib=nullptr;
-	QAction*	action_move_to_lib=nullptr;
+	QMenu*		menuMoveToLibrary=nullptr;
+	QAction*	actionMoveToLibrary=nullptr;
 
-	QMenu*		menu_copy_to_lib=nullptr;
-	QAction*	action_copy_to_lib=nullptr;
+	QMenu*		menuCopyToLibrary=nullptr;
+	QAction*	actionCopyToLibrary=nullptr;
 
-	QList<QAction*> library_move_actions, library_copy_actions;
+	QList<QAction*> libraryMoveActions, libraryCopyActions;
 
 	DirectoryContextMenu::Mode mode;
 
 	Private(DirectoryContextMenu::Mode mode, DirectoryContextMenu* parent) :
 		mode(mode)
 	{
-		action_create_dir = new QAction(parent);
-		action_rename = new QAction(parent);
-		action_rename_by_tag = new QAction(parent);
-		action_collapse_all = new QAction(parent);
+		actionCreateDirectory = new QAction(parent);
+		actionRename = new QAction(parent);
+		actionRenameByTag =	new QAction(parent);
+		actionCollapseAll =	new QAction(parent);
 
 		{ // init copy/move to library menus
 			auto* lm = Library::Manager::instance();
-			QList<Library::Info> libraries = lm->all_libraries();
+			const QList<Library::Info> libraries = lm->allLibraries();
 
-			menu_copy_to_lib = new QMenu(parent);
-			menu_move_to_lib = new QMenu(parent);
+			menuCopyToLibrary = new QMenu(parent);
+			menuMoveToLibrary = new QMenu(parent);
 
 			for(const Library::Info& info : libraries)
 			{
-				QAction* action1 = menu_copy_to_lib->addAction(info.name());
-				QAction* action2 = menu_move_to_lib->addAction(info.name());
+				QAction* action1 = menuCopyToLibrary->addAction(info.name());
+				QAction* action2 = menuMoveToLibrary->addAction(info.name());
 
 				action1->setData(info.id());
 				action2->setData(info.id());
 
-				library_copy_actions << action1;
-				library_move_actions << action2;
+				libraryCopyActions << action1;
+				libraryMoveActions << action2;
 			}
 
-			action_copy_to_lib = parent->addMenu(menu_copy_to_lib);
-			action_move_to_lib = parent->addMenu(menu_move_to_lib);
+			actionCopyToLibrary = parent->addMenu(menuCopyToLibrary);
+			actionMoveToLibrary = parent->addMenu(menuMoveToLibrary);
 		}
 
-		entry_action_map =
+		entryActionMap =
 		{
-			{EntryCreateDir, action_create_dir},
-			{EntryRename, action_create_dir},
-			{EntryRenameByTag, action_create_dir},
-			{EntryCollapseAll, action_create_dir},
-			{EntryMoveToLib, action_create_dir},
-			{EntryCopyToLib, action_create_dir}
+			{EntryCreateDir, actionCreateDirectory},
+			{EntryRename, actionRename},
+			{EntryRenameByTag, actionRenameByTag},
+			{EntryCollapseAll, actionCollapseAll},
+			{EntryMoveToLib, actionMoveToLibrary},
+			{EntryCopyToLib, actionCopyToLibrary}
 		};
 	}
 };
@@ -97,7 +97,7 @@ DirectoryContextMenu::DirectoryContextMenu(DirectoryContextMenu::Mode mode, QWid
 {
 	m = Pimpl::make<Private>(mode, this);
 
-	this->show_actions
+	this->showActions
 	(
 		(Library::ContextMenu::EntryPlay |
 		Library::ContextMenu::EntryPlayNewTab |
@@ -109,7 +109,7 @@ DirectoryContextMenu::DirectoryContextMenu(DirectoryContextMenu::Mode mode, QWid
 		Library::ContextMenu::EntryPlayNext)
 	);
 
-	QAction* action	= this->get_action(Library::ContextMenu::EntryDelete);
+	QAction* action	= this->action(Library::ContextMenu::EntryDelete);
 	if(action)
 	{
 		this->insertActions
@@ -117,36 +117,36 @@ DirectoryContextMenu::DirectoryContextMenu(DirectoryContextMenu::Mode mode, QWid
 			action,
 			{
 				this->addSeparator(),
-				m->action_create_dir, m->action_rename, m->action_rename_by_tag,
+				m->actionCreateDirectory, m->actionRename, m->actionRenameByTag,
 			}
 		);
 	}
 
-	connect(m->action_create_dir, &QAction::triggered, this, &DirectoryContextMenu::sig_create_dir_clicked);
-	connect(m->action_rename, &QAction::triggered, this, &DirectoryContextMenu::sig_rename_clicked);
-	connect(m->action_rename_by_tag, &QAction::triggered, this, &DirectoryContextMenu::sig_rename_by_tag_clicked);
-	connect(m->action_collapse_all, &QAction::triggered, this, &DirectoryContextMenu::sig_collapse_all_clicked);
+	connect(m->actionCreateDirectory, &QAction::triggered, this, &DirectoryContextMenu::sigCreateDirectoryClicked);
+	connect(m->actionRename, &QAction::triggered, this, &DirectoryContextMenu::sigRenameClicked);
+	connect(m->actionRenameByTag, &QAction::triggered, this, &DirectoryContextMenu::sigRenameByTagClicked);
+	connect(m->actionCollapseAll, &QAction::triggered, this, &DirectoryContextMenu::sigCollapseAllClicked);
 
-	for(QAction* action : m->library_move_actions)
+	for(QAction* action : m->libraryMoveActions)
 	{
-		connect(action, &QAction::triggered, this, &DirectoryContextMenu::library_move_action_triggered);
+		connect(action, &QAction::triggered, this, &DirectoryContextMenu::libraryMoveActionTriggered);
 	}
 
-	for(QAction* action : m->library_copy_actions)
+	for(QAction* action : m->libraryCopyActions)
 	{
-		connect(action, &QAction::triggered, this, &DirectoryContextMenu::library_copy_action_triggered);
+		connect(action, &QAction::triggered, this, &DirectoryContextMenu::libraryCopyActionTriggered);
 	}
 
-	action = this->add_preference_action(new Gui::LibraryPreferenceAction(this));
+	action = this->addPreferenceAction(new Gui::LibraryPreferenceAction(this));
 
 	this->insertActions
 	(
 		action,
 		{
-			m->action_collapse_all,
+			m->actionCollapseAll,
 			this->addSeparator(),
-			m->action_move_to_lib,
-			m->action_copy_to_lib,
+			m->actionMoveToLibrary,
+			m->actionCopyToLibrary,
 			this->addSeparator()
 		}
 	);
@@ -154,18 +154,18 @@ DirectoryContextMenu::DirectoryContextMenu(DirectoryContextMenu::Mode mode, QWid
 	switch(mode)
 	{
 		case DirectoryContextMenu::Mode::Dir:
-			this->show_action(Library::ContextMenu::EntryLyrics, false);
+			this->showAction(Library::ContextMenu::EntryLyrics, false);
 			break;
 		case DirectoryContextMenu::Mode::File:
-			m->action_create_dir->setVisible(false);
-			m->action_collapse_all->setVisible(false);
+			m->actionCreateDirectory->setVisible(false);
+			m->actionCollapseAll->setVisible(false);
 			break;
 		default:
 			break;
 	}
 
-	skin_changed();
-	language_changed();
+	skinChanged();
+	languageChanged();
 }
 
 DirectoryContextMenu::~DirectoryContextMenu() = default;
@@ -174,19 +174,19 @@ void DirectoryContextMenu::refresh(int count)
 {
 	if((count == 0) && (m->mode == DirectoryContextMenu::Mode::File))
 	{
-		this->show_actions(Library::ContextMenu::EntryDelete);
+		this->showActions(Library::ContextMenu::EntryDelete);
 
-		m->action_create_dir->setVisible(false);
-		m->action_collapse_all->setVisible(false);
-		m->action_move_to_lib->setVisible(false);
-		m->action_copy_to_lib->setVisible(false);
-		m->action_rename_by_tag->setVisible(false);
-		m->action_rename->setVisible(false);
+		m->actionCreateDirectory->setVisible(false);
+		m->actionCollapseAll->setVisible(false);
+		m->actionMoveToLibrary->setVisible(false);
+		m->actionCopyToLibrary->setVisible(false);
+		m->actionRenameByTag->setVisible(false);
+		m->actionRename->setVisible(false);
 	}
 
 	else
 	{
-		this->show_actions
+		this->showActions
 		(
 			(Library::ContextMenu::EntryPlay |
 			Library::ContextMenu::EntryPlayNewTab |
@@ -201,29 +201,30 @@ void DirectoryContextMenu::refresh(int count)
 		switch(m->mode)
 		{
 			case DirectoryContextMenu::Mode::Dir:
-				this->show_action(Library::ContextMenu::EntryLyrics, false);
-				m->action_rename_by_tag->setVisible(false);
+				this->showAction(Library::ContextMenu::EntryLyrics, false);
+				m->actionRenameByTag->setVisible(false);
 				break;
 			case DirectoryContextMenu::Mode::File:
-				m->action_create_dir->setVisible(false);
-				m->action_collapse_all->setVisible(false);
-				m->action_rename_by_tag->setVisible(true);
-				m->action_rename->setVisible(count == 1);
-				this->show_action(Library::ContextMenu::EntryLyrics, (count == 1));
+				m->actionCreateDirectory->setVisible(false);
+				m->actionCollapseAll->setVisible(false);
+				m->actionRenameByTag->setVisible(true);
+				m->actionRename->setVisible(count == 1);
+				m->actionCreateDirectory->setVisible(count == 1);
+				this->showAction(Library::ContextMenu::EntryLyrics, (count == 1));
 				break;
 			default:
 				break;
 		}
 
-		m->action_move_to_lib->setVisible(true);
-		m->action_copy_to_lib->setVisible(true);
+		m->actionMoveToLibrary->setVisible(true);
+		m->actionCopyToLibrary->setVisible(true);
 	}
 }
 
-Library::ContextMenu::Entries DirectoryContextMenu::get_entries() const
+Library::ContextMenu::Entries DirectoryContextMenu::entries() const
 {
-	auto entries = Library::ContextMenu::get_entries();
-	for(auto it=m->entry_action_map.begin(); it != m->entry_action_map.end(); it++)
+	auto entries = Library::ContextMenu::entries();
+	for(auto it=m->entryActionMap.begin(); it != m->entryActionMap.end(); it++)
 	{
 		if(it.value()->isVisible()){
 			entries |= it.key();
@@ -233,18 +234,21 @@ Library::ContextMenu::Entries DirectoryContextMenu::get_entries() const
 	return entries;
 }
 
-void DirectoryContextMenu::show_actions(Library::ContextMenu::Entries entries)
+void DirectoryContextMenu::showActions(Library::ContextMenu::Entries entries)
 {
-	Library::ContextMenu::show_actions(entries);
-	for(auto it=m->entry_action_map.begin(); it != m->entry_action_map.end(); it++)
+	Library::ContextMenu::showActions(entries);
+
+	for(auto it=m->entryActionMap.begin(); it != m->entryActionMap.end(); it++)
 	{
-		it.value()->setVisible(entries & it.key());
+		DirectoryContextMenu::Entry entry = it.key();
+		QAction* action = it.value();
+		action->setVisible(entries & entry);
 	}
 }
 
-void DirectoryContextMenu::show_directory_action(DirectoryContextMenu::Entry entry, bool b)
+void DirectoryContextMenu::showDirectoryAction(DirectoryContextMenu::Entry entry, bool b)
 {
-	Library::ContextMenu::Entries entries = get_entries();
+	Library::ContextMenu::Entries entries = this->entries();
 	if(b)
 	{
 		entries |= entry;
@@ -255,51 +259,50 @@ void DirectoryContextMenu::show_directory_action(DirectoryContextMenu::Entry ent
 		entries &= ~entry;
 	}
 
-	show_actions(entries);
+	showActions(entries);
 }
 
-void DirectoryContextMenu::library_move_action_triggered()
+void DirectoryContextMenu::libraryMoveActionTriggered()
 {
 	auto* action = static_cast<QAction*>(sender());
 
 	LibraryId id = action->data().value<LibraryId>();
-	emit sig_move_to_lib(id);
+	emit sigMoveToLibrary(id);
 }
 
-void DirectoryContextMenu::library_copy_action_triggered()
+void DirectoryContextMenu::libraryCopyActionTriggered()
 {
 	auto* action = static_cast<QAction*>(sender());
 
 	LibraryId id = action->data().value<LibraryId>();
-	emit sig_copy_to_lib(id);
+	emit sigCopyToLibrary(id);
 }
 
-void DirectoryContextMenu::language_changed()
+void DirectoryContextMenu::languageChanged()
 {
-	Library::ContextMenu::language_changed();
+	Library::ContextMenu::languageChanged();
 
-	if(m && m->action_rename)
+	if(m && m->actionRename)
 	{
-		m->action_rename->setText(Lang::get(Lang::Rename));
-		m->action_rename_by_tag->setText(tr("Rename by metadata"));
-		m->action_create_dir->setText(tr("Create directory"));
-		m->action_collapse_all->setText(tr("Collapse all"));
-
-		m->action_move_to_lib->setText(tr("Move to another library"));
-		m->action_copy_to_lib->setText(tr("Copy to another library"));
+		m->actionRename->setText(Lang::get(Lang::Rename));
+		m->actionRenameByTag->setText(tr("Rename by metadata"));
+		m->actionCreateDirectory->setText(Lang::get(Lang::CreateDirectory));
+		m->actionCollapseAll->setText(tr("Collapse all"));
+		m->actionMoveToLibrary->setText(tr("Move to another library"));
+		m->actionCopyToLibrary->setText(tr("Copy to another library"));
 	}
 }
 
-void DirectoryContextMenu::skin_changed()
+void DirectoryContextMenu::skinChanged()
 {
-	Library::ContextMenu::skin_changed();
+	Library::ContextMenu::skinChanged();
 
 	using namespace Gui;
-	if(m && m->action_rename)
+	if(m && m->actionRename)
 	{
-		m->action_rename->setIcon(Icons::icon(Icons::Rename));
-		m->action_rename_by_tag->setIcon(Icons::icon(Icons::Rename));
-		m->action_create_dir->setIcon(Icons::icon(Icons::New));
+		m->actionRename->setIcon(Icons::icon(Icons::Rename));
+		m->actionRenameByTag->setIcon(Icons::icon(Icons::Rename));
+		m->actionCreateDirectory->setIcon(Icons::icon(Icons::New));
 	}
 }
 

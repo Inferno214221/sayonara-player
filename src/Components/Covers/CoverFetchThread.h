@@ -1,6 +1,6 @@
 /* CoverFetchThread.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -23,7 +23,7 @@
  * CoverFetchThread.h
  *
  *  Created on: Jun 28, 2011
- *      Author: Lucio Carreras
+ *      Author: Michael Lugmair (Lucio Carreras)
  */
 
 #ifndef COVERFETCHTHREAD_H_
@@ -55,13 +55,13 @@ namespace Cover
 		 * @brief emitted, when thread has finished
 		 * @param b true, if couvers could be fetched. false else
 		 */
-		void sig_finished(bool b);
+		void sigFinished(bool b);
 
 		/**
 		 * @brief emitted, when covers has been found
 		 * @param cl CoverLocation including the local cover path
 		 */
-		void sig_cover_found(int idx);
+		void sigCoverFound(int idx);
 
 
 	public:
@@ -80,7 +80,7 @@ namespace Cover
 		 * @brief fetch next cover
 		 * @return false, if there are no more covers to fetch
 		 */
-		bool fetch_next_cover();
+		bool fetchNextCover();
 
 		/**
 		 * @brief stops the current search
@@ -93,7 +93,7 @@ namespace Cover
 		 */
 		QString url(int idx) const;
 		QPixmap pixmap(int idx) const;
-		int found_images() const;
+		int foundImageCount() const;
 
 
 	private slots:
@@ -102,23 +102,23 @@ namespace Cover
 		 *   calls save_and_emit_image
 		 * @param success indicates if image could be fetched successfully
 		 */
-		void single_image_fetched();
+		void singleImageFetched();
 
 		/**
 		 * @brief multi_image_fetched (reached when _n_covers was set to > 1),
 		 *   calls save_and_emit_image for first image;
 		 * @param success indicates if images could be fetched successfully
 		 */
-		void multi_image_fetched();
+		void multiImageFetched();
 
 		/**
 		 * @brief The website content has been fetched
 		 * @param success indicates if content could be fetched
 		 */
-		void content_fetched();
+		void contentFetched();
 
 	private:
-		void emit_finished(bool success);
+		void emitFinished(bool success);
 	};
 }
 

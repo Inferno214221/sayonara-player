@@ -1,6 +1,6 @@
 /* LocalLibraryWatcher.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -17,8 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-
 
 #ifndef LIBRARYWATCHER_H
 #define LIBRARYWATCHER_H
@@ -41,13 +39,13 @@ namespace Library
 			explicit LocalLibraryWatcher(QObject* parent=nullptr);
 			~LocalLibraryWatcher();
 
-			QList<Container*> get_local_library_containers() const;
+			QList<Container*> getLocalLibraryContainers() const;
 
 		private slots:
-			void library_added(LibraryId id);
-			void library_moved(LibraryId id, int from, int to);
-			void library_renamed(LibraryId id);
-			void library_removed(LibraryId id);
+			void libraryAdded(LibraryId id);
+			void libraryMoved(LibraryId id, int from, int to);
+			void libraryRenamed(LibraryId id);
+			void libraryRemoved(LibraryId id);
 	};
 }
 

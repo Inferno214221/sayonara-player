@@ -1,6 +1,6 @@
 /* GUI_Logger.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -41,15 +41,15 @@ Q_GLOBAL_STATIC(LogObject, log_object)
 
 struct LogLine
 {
-	QDateTime	date_time;
-	Log			log_type;
-	QString		class_name;
+	QDateTime	dateTime;
+	Log			logType;
+	QString		className;
 	QString	str;
 
 	LogLine(const QDateTime& date_time, Log log_type, const QString& class_name, const QString& str) :
-		date_time(date_time),
-		log_type(log_type),
-		class_name(class_name),
+		dateTime(date_time),
+		logType(log_type),
+		className(class_name),
 		str(str)
 	{}
 
@@ -58,7 +58,7 @@ struct LogLine
 		int log_level = GetSetting(Set::Logger_Level);
 		QString log_line = "<table style=\"font-family: Monospace;\">";
 		QString html_color, type_str;
-		switch(log_type)
+		switch(logType)
 		{
 			case Log::Info:
 				html_color = "#00AA00";
@@ -101,12 +101,12 @@ struct LogLine
 		}
 
 		log_line += "<tr>";
-		log_line += "<td>[" + date_time.toString("hh:mm:ss") + "." + QString::number(date_time.time().msec()) + "]</td>";
+		log_line += "<td>[" + dateTime.toString("hh:mm:ss") + "." + QString::number(dateTime.time().msec()) + "]</td>";
 		log_line += "<td><div style=\"color: " + html_color + ";\">" + type_str + ": </div></td>";
 
-		if(!class_name.isEmpty())
+		if(!className.isEmpty())
 		{
-			log_line += "<td><div style=\"color: #0000FF;\">" + class_name + "</div>:</td>";
+			log_line += "<td><div style=\"color: #0000FF;\">" + className + "</div>:</td>";
 		}
 
 		log_line += "<td>" + str + "</td>";
@@ -124,9 +124,9 @@ LogObject::LogObject(QObject* parent) :
 
 LogObject::~LogObject() {}
 
-void LogObject::add_log_line(const LogEntry& le)
+void LogObject::addLogLine(const LogEntry& le)
 {
-	emit sig_new_log(QDateTime::currentDateTime(), le.type, le.class_name, le.message);
+	emit sigNewLog(QDateTime::currentDateTime(), le.type, le.className, le.message);
 }
 
 #include <QList>
@@ -143,13 +143,13 @@ struct GUI_Logger::Private
 };
 
 
-GUI_Logger::GUI_Logger(QWidget *parent) :
+GUI_Logger::GUI_Logger(QWidget* parent) :
 	Widget(parent)
 {
 	m = Pimpl::make<Private>();
-	connect(log_object (), &LogObject::sig_new_log, this, &GUI_Logger::log_ready, Qt::QueuedConnection);
+	connect(log_object (), &LogObject::sigNewLog, this, &GUI_Logger::logReady, Qt::QueuedConnection);
 
-	Logger::register_log_listener(this->get_log_listener());
+	Logger::registerLogListener(this->logListener());
 }
 
 GUI_Logger::~GUI_Logger()
@@ -160,7 +160,7 @@ GUI_Logger::~GUI_Logger()
 }
 
 
-void GUI_Logger::init_ui()
+void GUI_Logger::initUi()
 {
 	if(ui) {
 		return;
@@ -178,53 +178,53 @@ void GUI_Logger::init_ui()
 		ui->combo_modules->addItem(module);
 	}
 
-	language_changed();
+	languageChanged();
 
 	connect(ui->btn_close, &QPushButton::clicked, this, &QWidget::close);
-	connect(ui->btn_save, &QPushButton::clicked, this, &GUI_Logger::save_clicked);
-	connect(ui->combo_modules, &QComboBox::currentTextChanged, this, &GUI_Logger::current_module_changed);
+	connect(ui->btn_save, &QPushButton::clicked, this, &GUI_Logger::saveClicked);
+	connect(ui->combo_modules, &QComboBox::currentTextChanged, this, &GUI_Logger::currentModuleChanged);
 }
 
-QString GUI_Logger::calc_log_line(const LogLine& log_line)
+QString GUI_Logger::calcLogLine(const LogLine& log_line)
 {
 	m->buffer << log_line;
 
-	if(!m->modules.contains(log_line.class_name))
+	if(!m->modules.contains(log_line.className))
 	{
 		int i=0;
 		for(; i<m->modules.size(); i++)
 		{
-			if(log_line.class_name < m->modules[i]){
+			if(log_line.className < m->modules[i]){
 
 				break;
 			}
 		}
 
-		m->modules.insert(i, log_line.class_name);
+		m->modules.insert(i, log_line.className);
 
 		if(ui)
 		{
-			ui->combo_modules->insertItem(i, log_line.class_name);
+			ui->combo_modules->insertItem(i, log_line.className);
 		}
 	}
 
 	return log_line.to_string();
 }
 
-void GUI_Logger::current_module_changed(const QString& module)
+void GUI_Logger::currentModuleChanged(const QString& module)
 {
 	ui->te_log->clear();
 
 	for(const LogLine& log_line : m->buffer)
 	{
-		if((log_line.class_name == module) || module.isEmpty())
+		if((log_line.className == module) || module.isEmpty())
 		{
 			ui->te_log->append(log_line.to_string());
 		}
 	}
 }
 
-void GUI_Logger::language_changed()
+void GUI_Logger::languageChanged()
 {
 	if(ui)
 	{
@@ -236,16 +236,16 @@ void GUI_Logger::language_changed()
 }
 
 
-LogListener* GUI_Logger::get_log_listener()
+LogListener* GUI_Logger::logListener()
 {
 	return log_object ();
 }
 
 
-void GUI_Logger::log_ready(const QDateTime& t, Log log_type, const QString& class_name, const QString& message)
+void GUI_Logger::logReady(const QDateTime& t, Log log_type, const QString& class_name, const QString& message)
 {
 	LogLine log_line(t, log_type, class_name, message);
-	QString str = calc_log_line(log_line);
+	QString str = calcLogLine(log_line);
 
 	if(ui)
 	{
@@ -253,7 +253,7 @@ void GUI_Logger::log_ready(const QDateTime& t, Log log_type, const QString& clas
 	}
 }
 
-void GUI_Logger::save_clicked()
+void GUI_Logger::saveClicked()
 {
 	QString filename = QFileDialog::getSaveFileName(
 						   this,
@@ -279,7 +279,7 @@ void GUI_Logger::save_clicked()
 
 void GUI_Logger::showEvent(QShowEvent* e)
 {
-	init_ui();
+	initUi();
 
 	Widget::showEvent(e);
 }

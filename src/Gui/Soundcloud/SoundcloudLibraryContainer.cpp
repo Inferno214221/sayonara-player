@@ -1,6 +1,6 @@
 /* SoundcloudLibraryContainer.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -32,7 +32,7 @@ static void sc_init_icons()
 	Q_INIT_RESOURCE(SoundcloudIcons);
 }
 
-SC::LibraryContainer::LibraryContainer(QObject *parent) :
+SC::LibraryContainer::LibraryContainer(QObject* parent) :
 	::Library::ContainerImpl(parent)
 {
 	sc_init_icons();
@@ -45,7 +45,7 @@ QString SC::LibraryContainer::name() const
 	return "soundcloud";
 }
 
-QString SC::LibraryContainer::display_name() const
+QString SC::LibraryContainer::displayName() const
 {
 	return "Soundcloud";
 }
@@ -58,13 +58,13 @@ QWidget* SC::LibraryContainer::widget() const
 QMenu* SC::LibraryContainer::menu()
 {
 	if(ui){
-		return ui->get_menu();
+		return ui->getMenu();
 	}
 
 	return nullptr;
 }
 
-void SC::LibraryContainer::init_ui()
+void SC::LibraryContainer::initUi()
 {
 	SC::Library* library = new SC::Library(this);
 	ui = new SC::GUI_Library(library);
@@ -72,7 +72,7 @@ void SC::LibraryContainer::init_ui()
 
 QFrame* SC::LibraryContainer::header() const
 {
-	return ui->header_frame();
+	return ui->headerFrame();
 }
 
 QPixmap SC::LibraryContainer::icon() const

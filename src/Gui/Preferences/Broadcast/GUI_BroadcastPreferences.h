@@ -1,6 +1,6 @@
 /* GUI_BroadcastSetup.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -38,23 +38,23 @@ public:
 	bool commit() override;
 	void revert() override;
 
-	QString action_name() const override;
+	QString actionName() const override;
 
-	bool has_error() const override;
-	QString error_string() const override;
+	bool hasError() const override;
+	QString errorString() const override;
 
 protected:
-	void init_ui() override;
-	void skin_changed() override;
-	void retranslate_ui() override;
+	void initUi() override;
+	void skinChanged() override;
+	void retranslate() override;
 
 private slots:
-	void active_toggled(bool b);
-	void port_changed(int new_val);
+	void activeToggled(bool b);
+	void portChanged(int new_val);
 
 private:
-	QString get_url_string() const;
-	void refresh_url();
+	QString urlString() const;
+	void refreshUrl();
 };
 
 #endif // GUI_BROADCASTSETUP_H

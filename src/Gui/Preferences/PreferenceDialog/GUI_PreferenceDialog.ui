@@ -31,7 +31,7 @@
      <property name="childrenCollapsible">
       <bool>false</bool>
      </property>
-     <widget class="QListWidget" name="list_preferences">
+     <widget class="QListWidget" name="listPreferences">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
         <horstretch>0</horstretch>
@@ -66,7 +66,7 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QLabel" name="lab_pref_title">
+        <widget class="QLabel" name="labPreferenceTitle">
          <property name="sizePolicy">
           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -93,7 +93,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QWidget" name="widget_preferences" native="true">
+        <widget class="QWidget" name="widgetPreferences" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
            <horstretch>0</horstretch>
@@ -124,7 +124,7 @@
     </widget>
    </item>
    <item row="0" column="0">
-    <widget class="QLabel" name="lab_title">
+    <widget class="QLabel" name="labTitle">
      <property name="font">
       <font>
        <pointsize>11</pointsize>
@@ -170,7 +170,7 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_cancel">
+      <widget class="QPushButton" name="btnCancel">
        <property name="focusPolicy">
         <enum>Qt::TabFocus</enum>
        </property>
@@ -180,7 +180,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_apply">
+      <widget class="QPushButton" name="btnApply">
        <property name="focusPolicy">
         <enum>Qt::TabFocus</enum>
        </property>
@@ -190,7 +190,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_ok">
+      <widget class="QPushButton" name="btnOk">
        <property name="focusPolicy">
         <enum>Qt::TabFocus</enum>
        </property>
@@ -204,11 +204,11 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>list_preferences</tabstop>
-  <tabstop>widget_preferences</tabstop>
-  <tabstop>btn_cancel</tabstop>
-  <tabstop>btn_apply</tabstop>
-  <tabstop>btn_ok</tabstop>
+  <tabstop>listPreferences</tabstop>
+  <tabstop>widgetPreferences</tabstop>
+  <tabstop>btnCancel</tabstop>
+  <tabstop>btnApply</tabstop>
+  <tabstop>btnOk</tabstop>
  </tabstops>
  <resources/>
  <connections/>

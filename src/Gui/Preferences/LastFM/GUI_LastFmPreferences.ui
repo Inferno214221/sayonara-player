@@ -15,7 +15,7 @@
     <number>10</number>
    </property>
    <item row="1" column="0">
-    <widget class="QLabel" name="lab_activate">
+    <widget class="QLabel" name="labActivate">
      <property name="text">
       <string notr="true">Active</string>
      </property>
@@ -36,7 +36,7 @@
     </widget>
    </item>
    <item row="1" column="1">
-    <widget class="QCheckBox" name="cb_activate">
+    <widget class="QCheckBox" name="cbActivate">
      <property name="focusPolicy">
       <enum>Qt::StrongFocus</enum>
      </property>
@@ -56,7 +56,7 @@
     </widget>
    </item>
    <item row="4" column="1">
-    <widget class="QSpinBox" name="sb_scrobble_time">
+    <widget class="QSpinBox" name="sbScrobbleTime">
      <property name="minimum">
       <number>5</number>
      </property>
@@ -66,7 +66,7 @@
     </widget>
    </item>
    <item row="4" column="2">
-    <widget class="QLabel" name="lab_sec">
+    <widget class="QLabel" name="labSeconds">
      <property name="text">
       <string notr="true">sec</string>
      </property>
@@ -75,7 +75,7 @@
    <item row="5" column="0" colspan="3">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QLabel" name="lab_status">
+      <widget class="QLabel" name="labStatus">
        <property name="text">
         <string/>
        </property>
@@ -95,7 +95,7 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_login">
+      <widget class="QPushButton" name="btnLogin">
        <property name="text">
         <string>Login now</string>
        </property>
@@ -104,23 +104,23 @@
     </layout>
    </item>
    <item row="3" column="1" colspan="2">
-    <widget class="QLineEdit" name="tf_password">
+    <widget class="QLineEdit" name="lePassword">
      <property name="echoMode">
       <enum>QLineEdit::Password</enum>
      </property>
     </widget>
    </item>
    <item row="2" column="1" colspan="2">
-    <widget class="QLineEdit" name="tf_username"/>
+    <widget class="QLineEdit" name="leUsername"/>
    </item>
   </layout>
  </widget>
  <tabstops>
-  <tabstop>cb_activate</tabstop>
-  <tabstop>tf_username</tabstop>
-  <tabstop>tf_password</tabstop>
-  <tabstop>sb_scrobble_time</tabstop>
-  <tabstop>btn_login</tabstop>
+  <tabstop>cbActivate</tabstop>
+  <tabstop>leUsername</tabstop>
+  <tabstop>lePassword</tabstop>
+  <tabstop>sbScrobbleTime</tabstop>
+  <tabstop>btnLogin</tabstop>
  </tabstops>
  <resources/>
  <connections/>

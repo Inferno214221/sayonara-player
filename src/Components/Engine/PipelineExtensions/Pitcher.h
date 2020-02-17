@@ -1,6 +1,6 @@
 /* SpeedHandler.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -41,7 +41,7 @@ namespace PipelineExtensions
 			Pitcher();
 			virtual ~Pitcher();
 
-			void set_speed(float speed, double pitch, bool preserve_pitch);
+			void setSpeed(float speed, double pitch, bool preservePitch);
 
 			GstElement* element() const;
 	};

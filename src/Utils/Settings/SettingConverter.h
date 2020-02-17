@@ -1,6 +1,6 @@
 /* SettingConverter.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
 *
 * This file is part of sayonara player
 *
@@ -39,67 +39,67 @@ class SettingConvertible;
 */
 namespace SettingConverter
 {
-	QString to_string(const SettingConvertible& t);
-	bool from_string(const QString& val, SettingConvertible& t);
+	QString toString(const SettingConvertible& t);
+	bool fromString(const QString& val, SettingConvertible& t);
 
-	QString to_string(const bool& val);
-	bool from_string(const QString& val, bool& b);
+	QString toString(const bool& val);
+	bool fromString(const QString& val, bool& b);
 
-	QString to_string(const int& val);
-	bool from_string(const QString& val, int& i);
+	QString toString(const int& val);
+	bool fromString(const QString& val, int& i);
 
-	QString to_string(const float& val);
-	bool from_string(const QString& val, float& i);
+	QString toString(const float& val);
+	bool fromString(const QString& val, float& i);
 
-	QString to_string(const QStringList& val);
-	bool from_string(const QString& val, QStringList& lst);
+	QString toString(const QStringList& val);
+	bool fromString(const QString& val, QStringList& lst);
 
-	QString to_string(const QString& val);
-	bool from_string(const QString& val, QString& b);
+	QString toString(const QString& val);
+	bool fromString(const QString& val, QString& b);
 
-	QString to_string(const QSize& val);
-	bool from_string(const QString& val, QSize& sz);
+	QString toString(const QSize& val);
+	bool fromString(const QString& val, QSize& sz);
 
-	QString to_string(const QPoint& val);
-	bool from_string(const QString& val, QPoint& sz);
+	QString toString(const QPoint& val);
+	bool fromString(const QString& val, QPoint& sz);
 
-	QString to_string(const QByteArray& arr);
-	bool from_string(const QString& str, QByteArray& arr);
+	QString toString(const QByteArray& arr);
+	bool fromString(const QString& str, QByteArray& arr);
 
 	template<typename A, typename B>
-	QString to_string(const QPair<A, B>& arr)
+	QString toString(const QPair<A, B>& arr)
 	{
-		return to_string(arr.first) + "," + to_string(arr.second);
+		return toString(arr.first) + "," + toString(arr.second);
 	}
 
 	template<typename A, typename B>
-	bool from_string(const QString& str, QPair<A, B>& pair)
+	bool fromString(const QString& str, QPair<A, B>& pair)
 	{
 		QStringList lst = str.split(",");
 
 		if(lst.size() >= 2)
 		{
-			from_string(lst[0], pair.first);
-			from_string(lst[1], pair.second);
+			fromString(lst[0], pair.first);
+			fromString(lst[1], pair.second);
 		}
 
 		return (lst.size() >= 2);
 	}
 
 	template<typename T>
-	QString to_string(const QList<T>& val)
+	QString toString(const QList<T>& val)
 	{
 		QStringList lst;
 
 		for(const T& v : val) {
-			lst << to_string(v);
+			lst << toString(v);
 		}
 
 		return lst.join(",");
 	}
 
 	template<typename T>
-	bool from_string(const QString& val, QList<T>& ret)
+	bool fromString(const QString& val, QList<T>& ret)
 	{
 		ret.clear();
 		QStringList lst = val.split(",");
@@ -109,7 +109,7 @@ namespace SettingConverter
 			try
 			{
 				T v;
-				if(from_string(l, v)){
+				if(fromString(l, v)){
 					ret << v;
 				}
 			} catch (std::exception& e) {

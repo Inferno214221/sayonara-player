@@ -1,6 +1,6 @@
 /* Slider.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -41,17 +41,17 @@ namespace Gui
 		PIMPL(Slider)
 
 		signals:
-			void sig_slider_got_focus();
-			void sig_slider_lost_focus();
-			void sig_slider_hovered(int);
+			void sigSliderGotFocus();
+			void sigSliderLostFocus();
+			void sigSliderHovered(int);
 
 		public:
 			explicit Slider(QWidget* parent=nullptr);
-			virtual ~Slider();
+			virtual ~Slider() override;
 
 		protected:
 			void sliderChange(SliderChange change) override;
-			int get_val_from_pos(const QPoint& pos) const;
+			int valueFromPosition(const QPoint& pos) const;
 
 			virtual void focusInEvent(QFocusEvent* e) override;
 			virtual void focusOutEvent(QFocusEvent* e) override;
@@ -59,9 +59,9 @@ namespace Gui
 			virtual void mouseMoveEvent(QMouseEvent* e) override;
 			virtual void mouseReleaseEvent(QMouseEvent* e) override;
 
-			virtual bool has_other_value() const;
-			virtual int other_value() const;
-			virtual QColor other_value_color() const;
+			virtual bool hasAdditionalValue() const;
+			virtual int additionalValue() const;
+			virtual QColor additionalValueColor() const;
 
 			virtual bool event(QEvent* e) override;
 			void paintEvent(QPaintEvent *e) override;

@@ -1,6 +1,6 @@
 /* DirectoryTreeView.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -58,85 +58,83 @@ class DirectoryTreeView :
 	Q_OBJECT
 	PIMPL(DirectoryTreeView)
 
-signals:
-	void sig_info_clicked();
-	void sig_edit_clicked();
-	void sig_lyrics_clicked();
-	void sig_delete_clicked();
-	void sig_play_clicked();
-	void sig_play_new_tab_clicked();
-	void sig_play_next_clicked();
-	void sig_append_clicked();
-	void sig_directory_loaded(const QModelIndex& index);
-	void sig_current_index_changed(const QModelIndex& index);
+	signals:
+		void sigInfoClicked();
+		void sigEditClicked();
+		void sigLyricsClicked();
+		void sigDeleteClicked();
+		void sigPlayClicked();
+		void sigPlayNewTabClicked();
+		void sigPlayNextClicked();
+		void sigAppendClicked();
+		void sigDirectoryLoaded(const QModelIndex& index);
+		void sigCurrentIndexChanged(const QModelIndex& index);
 
-	void sig_enter_pressed();
-	void sig_import_requested(LibraryId lib_id, const QStringList& v_md, const QString& target_dir);
+		void sigEnterPressed();
+		void sigImportRequested(LibraryId lib_id, const QStringList& v_md, const QString& targetDirectory);
 
-	void sig_copy_requested(const QStringList& paths, const QString& target);
-	void sig_move_requested(const QStringList& paths, const QString& target);
-	void sig_rename_requested(const QString& path, const QString& target);
+		void sigCopyRequested(const QStringList& paths, const QString& target);
+		void sigMoveRequested(const QStringList& paths, const QString& target);
+		void sigRenameRequested(const QString& path, const QString& target);
 
-	void sig_copy_to_library_requested(LibraryId library_id);
-	void sig_move_to_library_requested(LibraryId library_id);
+		void sigCopyToLibraryRequested(LibraryId libraryId);
+		void sigMoveToLibraryRequested(LibraryId libraryId);
 
-public:
-	explicit DirectoryTreeView(QWidget* parent=nullptr);
-	~DirectoryTreeView() override;
+	public:
+		explicit DirectoryTreeView(QWidget* parent=nullptr);
+		~DirectoryTreeView() override;
 
-	QModelIndex		search(const QString& search_term);
-	QString			directory_name(const QModelIndex& index);
+		QModelIndex		search(const QString& searchTerm);
+		QString			directoryName(const QModelIndex& index);
 
-	QModelIndexList	selected_indexes() const;
-	QStringList		selected_paths() const;
+		QModelIndexList	selctedRows() const;
+		QStringList		selectedPaths() const;
 
-	QMimeData*		dragable_mimedata() const override;
+		QMimeData*		dragableMimedata() const override;
 
-	void			set_library(const Library::Info& info);
-	void			set_busy(bool b);
+		void			setLibraryInfo(const Library::Info& info);
+		void			setBusy(bool b);
 
-private:
-	enum class DropAction
-	{
-		Copy,
-		Move,
-		Cancel
-	};
+	private:
+		enum class DropAction
+		{
+			Copy,
+			Move,
+			Cancel
+		};
 
-	void init_context_menu();
-	DropAction show_drop_menu(const QPoint& pos);
-
-
-private slots:
-	void selection_changed(const QItemSelection& selected, const QItemSelection& deselected);
-	void create_dir_clicked();
-	void rename_dir_clicked();
-	void drag_timer_timeout();
+		void initContextMenu();
+		DropAction showDropMenu(const QPoint& pos);
+		void handleSayonaraDrop(const Gui::CustomMimeData* mimedata, const QString& targetDirectory);
 
 
-protected:
-	void keyPressEvent(QKeyEvent* event) override;
-	void mousePressEvent(QMouseEvent* event) override;
+	private slots:
+		void createDirectoryClicked();
+		void renameDirectoryClicked();
+		void dragTimerTimeout();
 
-	void dragEnterEvent(QDragEnterEvent *event) override;
-	void dragLeaveEvent(QDragLeaveEvent* event) override;
-	void dragMoveEvent(QDragMoveEvent *event) override;
-	void dropEvent(QDropEvent *event) override;
 
-	// SayonaraSelectionView
-	int index_by_model_index(const QModelIndex& idx) const override;
-	ModelIndexRange model_indexrange_by_index(int idx) const override;
+	protected:
+		// Dragable
+		bool hasDragLabel() const override;
+		QString dragLabel() const override;
 
-	void select_match(const QString& str, SearchDirection direction) override;
+		void skinChanged() override;
 
-	// Dragable
-	bool has_drag_label() const override;
-	QString drag_label() const override;
+		void keyPressEvent(QKeyEvent* event) override;
+		void contextMenuEvent(QContextMenuEvent* event) override;
 
-	void skin_changed() override;
-	void language_changed() override;
+		void dragEnterEvent(QDragEnterEvent *event) override;
+		void dragLeaveEvent(QDragLeaveEvent* event) override;
+		void dragMoveEvent(QDragMoveEvent *event) override;
+		void dropEvent(QDropEvent *event) override;
 
-	void handle_sayonara_drop(const Gui::CustomMimeData* mimedata, const QString& target_dir);
+		// SayonaraSelectionView
+		void selectMatch(const QString& str, SearchDirection direction) override;
+		void selectionChanged(const QItemSelection& selected, const QItemSelection& deselected) override;
+
+		int mapModelIndexToIndex(const QModelIndex& idx) const override;
+		ModelIndexRange mapIndexToModelIndexes(int idx) const override;
 };
 
 #endif // DIRECTORYTREEVIEW_H

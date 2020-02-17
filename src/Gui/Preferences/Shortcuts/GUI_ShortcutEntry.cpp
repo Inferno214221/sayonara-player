@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -46,22 +46,22 @@ GUI_ShortcutEntry::GUI_ShortcutEntry(ShortcutIdentifier identifier, QWidget* par
 	m = Pimpl::make<Private>(identifier);
 	Shortcut sc = m->sch->shortcut(identifier);
 	if(sc.name().trimmed().isEmpty()){
-		sp_log(Log::Warning, this) << "Shortcut name is empty";
+		spLog(Log::Warning, this) << "Shortcut name is empty";
 	}
 
 	ui = new Ui::GUI_ShortcutEntry();
 	ui->setupUi(this);
 
-	ui->le_entry->setPlaceholderText(tr("Enter shortcut"));
-	ui->lab_description->setText(sc.name());
-	ui->le_entry->setText(sc.shortcuts().join(", "));
+	ui->leEntry->setPlaceholderText(tr("Enter shortcut"));
+	ui->labDescription->setText(sc.name());
+	ui->leEntry->setText(sc.shortcuts().join(", "));
 
-	connect(ui->btn_edit, &QPushButton::clicked, this, &GUI_ShortcutEntry::edit_clicked);
-	connect(ui->btn_default, &QPushButton::clicked, this, &GUI_ShortcutEntry::default_clicked);
-	connect(ui->btn_test, &QPushButton::clicked, this, &GUI_ShortcutEntry::test_clicked);
-	connect(ui->le_entry, &ShortcutLineEdit::sig_sequence_entered, this, &GUI_ShortcutEntry::sig_sequence_entered);
+	connect(ui->btnEdit, &QPushButton::clicked, this, &GUI_ShortcutEntry::editClicked);
+	connect(ui->btnDefault, &QPushButton::clicked, this, &GUI_ShortcutEntry::defaultClicked);
+	connect(ui->btnTest, &QPushButton::clicked, this, &GUI_ShortcutEntry::testClicked);
+	connect(ui->leEntry, &ShortcutLineEdit::sigSequenceEntered, this, &GUI_ShortcutEntry::sigSequenceEntered);
 
-	skin_changed();
+	skinChanged();
 }
 
 GUI_ShortcutEntry::~GUI_ShortcutEntry()
@@ -71,86 +71,86 @@ GUI_ShortcutEntry::~GUI_ShortcutEntry()
 
 QList<QKeySequence> GUI_ShortcutEntry::sequences() const
 {
-	return ui->le_entry->get_sequences();
+	return ui->leEntry->sequences();
 }
 
-void GUI_ShortcutEntry::show_sequence_error()
+void GUI_ShortcutEntry::showSequenceError()
 {
-	ui->le_entry->clear();
+	ui->leEntry->clear();
 	QMessageBox::warning(this, Lang::get(Lang::Error), tr("Shortcut already in use"));
 }
 
 void GUI_ShortcutEntry::commit()
 {
-	QStringList lst = ui->le_entry->text().split(",");
+	QStringList lst = ui->leEntry->text().split(",");
 	for(auto it=lst.begin(); it != lst.end(); it++)
 	{
 		*it = it->trimmed();
 	}
 
-	m->sch->set_shortcut(m->identifier, lst);
+	m->sch->setShortcut(m->identifier, lst);
 }
 
 void GUI_ShortcutEntry::clear()
 {
-	ui->le_entry->clear();
+	ui->leEntry->clear();
 }
 
 void GUI_ShortcutEntry::revert()
 {
 	Shortcut sc = m->sch->shortcut(m->identifier);
 
-	ui->le_entry->setText(
+	ui->leEntry->setText(
 		sc.shortcuts().join(", ")
 	);
 }
 
 
-void GUI_ShortcutEntry::default_clicked()
+void GUI_ShortcutEntry::defaultClicked()
 {
 	Shortcut sc = m->sch->shortcut(m->identifier);
 
-	ui->le_entry->setText(
-		sc.default_shorcut().join(", ")
+	ui->leEntry->setText(
+		sc.defaultShortcut().join(", ")
 	);
 }
 
-void GUI_ShortcutEntry::test_clicked()
+void GUI_ShortcutEntry::testClicked()
 {
-	QStringList splitted = ui->le_entry->text().split(", ");
+	QStringList splitted = ui->leEntry->text().split(", ");
 	QList<QKeySequence> sequences;
 
 	for(const QString& str : splitted){
 		sequences << QKeySequence::fromString(str, QKeySequence::NativeText);
 	}
 
-	emit sig_test_pressed(sequences);
+	emit sigTestPressed(sequences);
 }
 
-void GUI_ShortcutEntry::language_changed()
+void GUI_ShortcutEntry::languageChanged()
 {
 	ui->retranslateUi(this);
 
 	Shortcut sc = m->sch->shortcut(m->identifier);
-	ui->lab_description->setText(sc.name());
+	ui->labDescription->setText(sc.name());
 
-	ui->btn_default->setToolTip(Lang::get(Lang::Default));
-	ui->btn_edit->setToolTip(Lang::get(Lang::Edit));
-	ui->btn_test->setToolTip(tr("Test"));
+	ui->btnDefault->setToolTip(Lang::get(Lang::Default));
+	ui->btnEdit->setToolTip(Lang::get(Lang::Edit));
+	ui->btnTest->setToolTip(tr("Test"));
 }
 
-void GUI_ShortcutEntry::skin_changed()
+void GUI_ShortcutEntry::skinChanged()
 {
 	using namespace Gui;
-	ui->btn_default->setIcon(Icons::icon(Icons::Undo));
-	ui->btn_edit->setIcon(Icons::icon(Icons::Edit));
-	ui->btn_test->setIcon(Icons::icon(Icons::Info));
+	ui->btnDefault->setIcon(Icons::icon(Icons::Undo));
+	ui->btnEdit->setIcon(Icons::icon(Icons::Edit));
+	ui->btnTest->setIcon(Icons::icon(Icons::Info));
 }
 
 
-void GUI_ShortcutEntry::edit_clicked()
+void GUI_ShortcutEntry::editClicked()
 {
-	ui->le_entry->clear();
-	ui->le_entry->setFocus();
+	ui->leEntry->clear();
+	ui->leEntry->setFocus();
 }
 

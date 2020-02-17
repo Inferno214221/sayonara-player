@@ -1,6 +1,6 @@
 /* EqualizerHandler.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -36,7 +36,7 @@ struct Equalizer::Private
 
 	Private()
 	{
-		Engine::Utils::create_element(&equalizer, "equalizer-10bands");
+		Engine::Utils::createElement(&equalizer, "equalizer-10bands");
 	}
 };
 
@@ -44,44 +44,44 @@ Equalizer::Equalizer()
 {
 	m = Pimpl::make<Private>();
 
-	int last_idx = GetSetting(Set::Eq_Last);
+	int previousIndex = GetSetting(Set::Eq_Last);
 
 	QList<EqualizerSetting> presets = GetSetting(Set::Eq_List);
 	presets.push_front(EqualizerSetting());
 
-	if( !Util::between(last_idx, presets)){
-		last_idx = 0;
+	if( !Util::between(previousIndex, presets)){
+		previousIndex = 0;
 	}
 
-	EqualizerSetting last_preset = presets[last_idx];
+	EqualizerSetting last_preset = presets[previousIndex];
 	EqualizerSetting::ValueArray values = last_preset.values();
 
 	for(unsigned i=0; i<values.size(); i++)
 	{
-		set_band(i, values[i]);
+		setBand(i, values[i]);
 	}
 }
 
 Equalizer::~Equalizer() {}
 
-void Equalizer::set_band(int band, int val)
+void Equalizer::setBand(int band, int val)
 {
-	QString band_name = QString("band%1").arg(band);
+	QString bandName = QString("band%1").arg(band);
 
 	if(!m->equalizer){
 		return;
 	}
 
-	double new_val;
+	double newValue;
 	if (val > 0) {
-		new_val = val * 0.25;
+		newValue = val * 0.25;
 	}
 
 	else{
-		new_val = val * 0.75;
+		newValue = val * 0.75;
 	}
 
-	Engine::Utils::set_value(m->equalizer, band_name.toUtf8().data(),	new_val);
+	Engine::Utils::setValue(m->equalizer, bandName.toUtf8().data(),	newValue);
 }
 
 GstElement* Equalizer::element() const

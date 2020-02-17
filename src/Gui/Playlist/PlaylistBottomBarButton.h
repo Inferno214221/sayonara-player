@@ -1,6 +1,6 @@
 /* BottomBarButton.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -42,14 +42,13 @@ namespace Playlist
 			BottomBarButton(const QPixmap& pm, QWidget* parent);
 			~BottomBarButton() override;
 
+			void setPixmap(const QPixmap& pm);
+
 		private:
 			using QPushButton::setIcon;
 
 		protected:
 			void paintEvent(QPaintEvent* e) override;
-
-		public:
-			void set_pixmap(const QPixmap& pm);
 	};
 }
 

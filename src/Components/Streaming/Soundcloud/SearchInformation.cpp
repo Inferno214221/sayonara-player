@@ -1,6 +1,6 @@
 /* SearchInformation.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -30,50 +30,50 @@
 
 struct SC::SearchInformation::Private
 {
-    ArtistId artist_id;
-    AlbumId album_id;
-    TrackID track_id;
+    ArtistId artistId;
+    AlbumId albumId;
+    TrackID trackId;
 
-	QString search_string;
+	QString searchstring;
 };
 
 struct SC::SearchInformationList::Private
 {
-    QHash<QString, IdSet> artist_id_map;
-    QHash<QString, IdSet> album_id_map;
-    QHash<QString, IdSet> track_id_map;
+    QHash<QString, IdSet> artistIdMap;
+    QHash<QString, IdSet> albumIdMap;
+    QHash<QString, IdSet> trackIdMap;
 };
 
 
-SC::SearchInformation::SearchInformation(int artist_id, int album_id, int track_id, const QString& search_string)
+SC::SearchInformation::SearchInformation(int artistId, int albumId, int trackId, const QString& search_string)
 {
 	m = Pimpl::make<Private>();
-	m->artist_id = artist_id;
-	m->album_id = album_id;
-	m->track_id = track_id;
-	m->search_string = search_string;
+	m->artistId = artistId;
+	m->albumId = albumId;
+	m->trackId = trackId;
+	m->searchstring = search_string;
 }
 
-SC::SearchInformation::~SearchInformation() {}
+SC::SearchInformation::~SearchInformation() = default;
 
-QString SC::SearchInformation::search_string() const
+QString SC::SearchInformation::searchstring() const
 {
-	return m->search_string;
+	return m->searchstring;
 }
 
-int SC::SearchInformation::artist_id() const
+int SC::SearchInformation::artistId() const
 {
-	return m->artist_id;
+	return m->artistId;
 }
 
-int SC::SearchInformation::album_id() const
+int SC::SearchInformation::albumId() const
 {
-	return m->album_id;
+	return m->albumId;
 }
 
-int SC::SearchInformation::track_id() const
+int SC::SearchInformation::trackId() const
 {
-	return m->track_id;
+	return m->trackId;
 }
 
 
@@ -86,7 +86,7 @@ SC::SearchInformationList::SearchInformationList()
 SC::SearchInformationList::~SearchInformationList(){}
 
 
-static IntSet ids(const QString& search_string, const QHash<QString, IntSet>& id_map)
+static IntSet ids(const QString& search_string, const QHash<QString, IntSet>& idMap)
 {
     IntSet ids;
 	QHash<int, int> results;
@@ -95,7 +95,7 @@ static IntSet ids(const QString& search_string, const QHash<QString, IntSet>& id
 	for(int idx = 0; idx<search_string.size() - 3; idx++)
 	{
 		QString part = search_string.mid(idx, 3);
-        const IntSet& part_ids = id_map[part];
+        const IntSet& part_ids = idMap[part];
 
 		if(part_ids.isEmpty()){
 			break;
@@ -129,45 +129,45 @@ static IntSet ids(const QString& search_string, const QHash<QString, IntSet>& id
 	return ids;
 }
 
-IntSet SC::SearchInformationList::artist_ids(const QString& search_string) const
+IntSet SC::SearchInformationList::artistIds(const QString& search_string) const
 {
-	return ids(search_string, m->artist_id_map);
+	return ids(search_string, m->artistIdMap);
 }
 
-IntSet SC::SearchInformationList::album_ids(const QString& search_string) const
+IntSet SC::SearchInformationList::albumIds(const QString& search_string) const
 {
-	return ids(search_string, m->album_id_map);
+	return ids(search_string, m->albumIdMap);
 }
 
-IntSet SC::SearchInformationList::track_ids(const QString& search_string) const
+IntSet SC::SearchInformationList::trackIds(const QString& search_string) const
 {
-	return ids(search_string, m->track_id_map);
+	return ids(search_string, m->trackIdMap);
 }
 
 SC::SearchInformationList& SC::SearchInformationList::operator<<(const SearchInformation& search_information)
 {
-	QString search_string = search_information.search_string();
+	QString search_string = search_information.searchstring();
 	for(int idx=0; idx<search_string.size() - 5; idx++)
 	{
 		QString part = search_string.mid(idx, 3).toLower();
 
-		m->album_id_map[part].insert(search_information.album_id());
-		m->artist_id_map[part].insert(search_information.artist_id());
-		m->track_id_map[part].insert(search_information.track_id());
+		m->albumIdMap[part].insert(search_information.albumId());
+		m->artistIdMap[part].insert(search_information.artistId());
+		m->trackIdMap[part].insert(search_information.trackId());
 	}
 
 	return *this;
 }
 
-bool SC::SearchInformationList::is_empty() const
+bool SC::SearchInformationList::isEmpty() const
 {
-	return m->album_id_map.isEmpty();
+	return m->albumIdMap.isEmpty();
 }
 
 void SC::SearchInformationList::clear()
 {
-	m->album_id_map.clear();
-	m->artist_id_map.clear();
-	m->track_id_map.clear();
+	m->albumIdMap.clear();
+	m->artistIdMap.clear();
+	m->trackIdMap.clear();
 }
 

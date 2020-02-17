@@ -1,6 +1,6 @@
 /* MetaDataInfo.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -63,31 +63,30 @@ class MetaDataInfo :
 	PIMPL(MetaDataInfo)
 
 	protected:
-		QString						_header;
-		QString						_subheader;
-		QMap<InfoStrings, QString>	_info;
-		QList<StringPair>			_additional_info;
+		QString						mHeader;
+		QString						mSubheader;
+		QMap<InfoStrings, QString>	mInfo;
+		QList<StringPair>			mAdditionalInfo;
 
 
-		QString calc_tracknum_str( uint16_t tracknum );
-		QString calc_artist_str() const;
-		QString calc_album_str();
+		QString calcTracknumString( TrackNum tracknum );
+		QString calcArtistString() const;
+		QString calcAlbumString();
 
-		virtual void calc_cover_location();
-		virtual void calc_subheader();
-		virtual void calc_header();
+		virtual void calcCoverLocation();
+		virtual void calcSubheader();
+		virtual void calcHeader();
 
-		void insert_playing_time(MilliSeconds ms);
-		void insert_genre(const Util::Set<Genre>& genres);
-		void insert_filesize(uint64_t filesize);
-		void insert_filetype(const Util::Set<QString>& filetypes);
-		void insert_comment(const Util::Set<QString>& comments);
-		void insert_createdates(uint64_t min_date, uint64_t max_date);
-		void insert_modifydates(uint64_t min_date, uint64_t max_date);
+		void insertPlayingTime(MilliSeconds ms);
+		void insertGenre(const Util::Set<Genre>& genres);
+		void insertFilesize(uint64_t filesize);
+		void insertFiletype(const Util::Set<QString>& filetypes);
+		void insertComment(const Util::Set<QString>& comments);
+		void insertCreatedates(uint64_t minDate, uint64_t maxDate);
+		void insertModifydates(uint64_t minDate, uint64_t maxDate);
 
-		void insert_interval_info_field(InfoStrings key, int min, int max);
-		void insert_numeric_info_field(InfoStrings key, int number);
-
+		void insertIntervalInfoField(InfoStrings key, int min, int max);
+		void insertNumericInfoField(InfoStrings key, int number);
 
 	public:
 		explicit MetaDataInfo(const MetaDataList& v_md);
@@ -96,29 +95,28 @@ class MetaDataInfo :
 		virtual QString header() const;
 		virtual QString subheader() const;
 		virtual QString infostring() const;
-		virtual QList<StringPair> infostring_map() const;
-		virtual QString additional_infostring() const;
+		virtual QList<StringPair> infostringMap() const;
+		virtual QString additionalInfostring() const;
 
-		virtual Cover::Location cover_location() const;
+		virtual Cover::Location coverLocation() const;
 
 		const Util::Set<QString>& albums() const;
 		const Util::Set<QString>& artists() const;
-		const Util::Set<QString>& album_artists() const;
+		const Util::Set<QString>& albumArtists() const;
 
-		const Util::Set<AlbumId>& album_ids() const;
-		const Util::Set<ArtistId>& artist_ids() const;
-		const Util::Set<ArtistId>& album_artist_ids() const;
+		const Util::Set<AlbumId>& albumIds() const;
+		const Util::Set<ArtistId>& artistIds() const;
+		const Util::Set<ArtistId>& albumArtistIds() const;
 
 		QStringList paths() const;
-		QString pathsstring() const;
-
+		QString pathsString() const;
 
 	private:
-		void calc_cover_location(const MetaDataList& lst);
-		void calc_subheader(quint16 tracknum);
-		void calc_header(const MetaDataList& lst);
+		void calcCoverLocation(const MetaDataList& lst);
+		void calcSubheader(quint16 tracknum);
+		void calcHeader(const MetaDataList& lst);
 
-		QString get_info_string(InfoStrings idx) const;
+		QString getInfoString(InfoStrings idx) const;
 };
 
 #endif // METADATAINFO_H

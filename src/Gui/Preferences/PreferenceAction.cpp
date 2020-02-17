@@ -1,6 +1,6 @@
 /* PreferenceInterface.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -23,7 +23,7 @@
 
 using Preferences::Action;
 
-Action::Action(const QString &text, QWidget *preference_interface) :
+Action::Action(const QString& text, QWidget *preference_interface) :
 	QAction(nullptr)
 {
 	this->setText(text + "...");

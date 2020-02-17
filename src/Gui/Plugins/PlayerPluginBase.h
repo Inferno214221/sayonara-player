@@ -1,6 +1,6 @@
 /* PlayerPlugin.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -46,10 +46,8 @@ namespace PlayerPlugin
 		PIMPL(Base)
 
 	public:
-		explicit Base(QWidget *parent=nullptr);
+		explicit Base(QWidget* parent=nullptr);
 		virtual ~Base() override;
-
-		virtual void skin_changed() override;
 
 	signals:
 		/**
@@ -58,15 +56,15 @@ namespace PlayerPlugin
 		 * @param plugin this pointer to current plugin
 		 * @param checked indicates whether checked or unchecked
 		 */
-		void sig_action_triggered(bool checked);
+		void sigActionTriggered(bool checked);
 
 		/**
 		 * @brief emitted when reloading is requested, after firing this signal
 		 * the plugin will be painted new. Useful, if the size has changed
 		 */
-		void sig_reload(PlayerPlugin::Base* plugin);
+		void sigReload(PlayerPlugin::Base* plugin);
 
-		void sig_opened();
+		void sigOpened();
 
 
 	private slots:
@@ -75,52 +73,53 @@ namespace PlayerPlugin
 		 * also called when closeEvent is fired
 		 * @param checked if action is checked or unchecked
 		 */
-		void action_triggered(bool checked);
+		void actionTriggered(bool checked);
 
 	private:
 
 		/**
 		 * @brief mark ui as initialized
 		 */
-		void set_ui_initialized();
+		void setUiInitialized();
 
 
 		/**
-		 * @brief language_changed. Calls retranslate_ui in subclasses
+		 * @brief languageChanged. Calls retranslate_ui in subclasses
 		 */
-		virtual void language_changed() final override;
+		virtual void languageChanged() final override;
 
 		/**
 		 * @brief GUI will be initialized on first show up. Please use this to make Sayonara starting fast
 		 */
-		virtual void init_ui()=0;
+		virtual void initUi()=0;
 
 
 	protected:
 
-		virtual void finalize_initialization();
+		virtual void finalizeInitialization();
 
 		/**
 		 * @brief Check if ui already was initialized
 		 * @return
 		 */
-		virtual bool is_ui_initialized() const;
-		virtual void assign_ui_vars();
+		virtual bool isUiInitialized() const;
+		virtual void assignUiVariables();
 
-		virtual void retranslate_ui()=0;
+		virtual void skinChanged() override;
+		virtual void retranslate()=0;
 
 		template<typename T, typename UiClass>
-		void setup_parent(T* widget, UiClass** ui)
+		void setupParent(T* widget, UiClass** ui)
 		{
-			if(is_ui_initialized()){
+			if(isUiInitialized()){
 				return;
 			}
 
 			*ui = new UiClass();
 			(*ui)->setupUi(widget);
 
-			assign_ui_vars();
-			finalize_initialization();
+			assignUiVariables();
+			finalizeInitialization();
 		}
 
 		void closeEvent(QCloseEvent* e) override;
@@ -133,33 +132,33 @@ namespace PlayerPlugin
 		 * @brief needed by the player ui, final
 		 * @return action of plugin
 		 */
-		virtual QAction*	get_action() const final;
+		virtual QAction*	pluginAction() const final;
 
 
 		/**
 		 * @brief must be overwritten
 		 * @return the NOT translated name of the plugin
 		 */
-		virtual QString		get_name() const=0;
+		virtual QString		name() const=0;
 
 		/**
 		 * @brief must be overwritten
 		 * @return the translated name of the plugin
 		 */
-		virtual QString		get_display_name() const=0;
+		virtual QString		displayName() const=0;
 
 
 		/**
 		 * @brief indicates if title bar is shown or not
 		 */
-		virtual bool		is_title_shown() const;
+		virtual bool		hasTitle() const;
 
 		/**
 		 * @brief indicates if the widget has a loading bar. If yes, there will be reserved
 		 * some extra space at the bottom of the widget
 		 * @return
 		 */
-		virtual bool		has_loading_bar() const;
+		virtual bool		hasLoadingBar() const;
 	};
 }
 

@@ -1,6 +1,6 @@
 /* GUI_ReloadLibraryDialog.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -27,14 +27,14 @@
 using Library::GUI_LibraryReloadDialog;
 struct GUI_LibraryReloadDialog::Private
 {
-	QString library_name;
+	QString libraryName;
 
 	Private(const QString& library_name) :
-		library_name(library_name)
+		libraryName(library_name)
 	{}
 };
 
-GUI_LibraryReloadDialog::GUI_LibraryReloadDialog(const QString& library_name, QWidget *parent) :
+GUI_LibraryReloadDialog::GUI_LibraryReloadDialog(const QString& library_name, QWidget* parent) :
 	Gui::Dialog(parent),
 	ui(new Ui::GUI_LibraryReloadDialog)
 {
@@ -44,9 +44,9 @@ GUI_LibraryReloadDialog::GUI_LibraryReloadDialog(const QString& library_name, QW
 
 	this->setModal(true);
 
-	connect(ui->btn_ok, &QPushButton::clicked, this, &GUI_LibraryReloadDialog::ok_clicked);
-	connect(ui->btn_cancel, &QPushButton::clicked, this, &GUI_LibraryReloadDialog::cancel_clicked);
-	connect(ui->combo_quality, combo_activated_int, this, &GUI_LibraryReloadDialog::combo_changed);
+	connect(ui->btn_ok, &QPushButton::clicked, this, &GUI_LibraryReloadDialog::okClicked);
+	connect(ui->btn_cancel, &QPushButton::clicked, this, &GUI_LibraryReloadDialog::cancelClicked);
+	connect(ui->combo_quality, combo_activated_int, this, &GUI_LibraryReloadDialog::comboChanged);
 }
 
 
@@ -55,7 +55,7 @@ GUI_LibraryReloadDialog::~GUI_LibraryReloadDialog()
 	delete ui;
 }
 
-void GUI_LibraryReloadDialog::set_quality(Library::ReloadQuality quality)
+void GUI_LibraryReloadDialog::setQuality(Library::ReloadQuality quality)
 {
 	switch(quality)
 	{
@@ -68,45 +68,45 @@ void GUI_LibraryReloadDialog::set_quality(Library::ReloadQuality quality)
 }
 
 
-void GUI_LibraryReloadDialog::language_changed()
+void GUI_LibraryReloadDialog::languageChanged()
 {
 	ui->btn_ok->setText(Lang::get(Lang::OK));
 	ui->btn_cancel->setText(Lang::get(Lang::Cancel));
-	ui->lab_title->setText(Lang::get(Lang::ReloadLibrary) + ": " + m->library_name);
+	ui->lab_title->setText(Lang::get(Lang::ReloadLibrary) + ": " + m->libraryName);
 
 	ui->combo_quality->clear();
 	ui->combo_quality->addItem(tr("Fast scan"));
 	ui->combo_quality->addItem(tr("Deep scan"));
 
-	combo_changed(ui->combo_quality->currentIndex());
+	comboChanged(ui->combo_quality->currentIndex());
 
-	this->setWindowTitle(Lang::get(Lang::ReloadLibrary) + ": " + m->library_name);
+	this->setWindowTitle(Lang::get(Lang::ReloadLibrary) + ": " + m->libraryName);
 }
 
-void GUI_LibraryReloadDialog::ok_clicked()
+void GUI_LibraryReloadDialog::okClicked()
 {
 	int cur_idx = ui->combo_quality->currentIndex();
 	if(cur_idx == 0)
 	{
-		emit sig_accepted(Library::ReloadQuality::Fast);
+		emit sigAccepted(Library::ReloadQuality::Fast);
 	}
 
 	else if(cur_idx == 1)
 	{
-		emit sig_accepted(Library::ReloadQuality::Accurate);
+		emit sigAccepted(Library::ReloadQuality::Accurate);
 	}
 
 	close();
 }
 
-void GUI_LibraryReloadDialog::cancel_clicked()
+void GUI_LibraryReloadDialog::cancelClicked()
 {
 	ui->combo_quality->setCurrentIndex(0);
 
 	close();
 }
 
-void GUI_LibraryReloadDialog::combo_changed(int i)
+void GUI_LibraryReloadDialog::comboChanged(int i)
 {
 	if(i == 0){
 		ui->lab_description->setText(tr("Only scan for new and deleted files"));

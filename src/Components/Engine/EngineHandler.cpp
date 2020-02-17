@@ -1,6 +1,6 @@
 /* EngineHandler.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -34,9 +34,9 @@ namespace Algorithm=Util::Algorithm;
 
 struct Handler::Private
 {
-	QList<RawSoundReceiverInterface*>	raw_sound_receiver;
-	QList<LevelReceiver*>		level_receiver;
-	QList<SpectrumReceiver*>	spectrum_receiver;
+	QList<RawSoundReceiverInterface*>	rawSoundReceiver;
+	QList<LevelReceiver*>				levelReceiver;
+	QList<SpectrumReceiver*>			spectrumReceiver;
 
 	Engine* engine=nullptr;
 };
@@ -55,59 +55,59 @@ Handler::Handler(QObject* parent) :
 	{
 		m->engine = nullptr;
 
-		sp_log(Log::Error, this) << e.what();
+		spLog(Log::Error, this) << e.what();
 		Message::error(QString(e.what()), "Engine");
 		return;
 	}
 
-	auto* play_manager = PlayManager::instance();
-	connect(play_manager, &PlayManager::sig_playstate_changed,
-			this, &Handler::playstate_changed);
+	auto* playManager = PlayManager::instance();
+	connect(playManager, &PlayManager::sigPlaystateChanged,
+			this, &Handler::playstateChanged);
 
-	connect(play_manager, &PlayManager::sig_track_changed,
+	connect(playManager, &PlayManager::sigCurrentTrackChanged,
 			this, [=](const MetaData& md){
-				m->engine->change_track(md);
+				m->engine->changeTrack(md);
 			});
 
-	connect(play_manager, &PlayManager::sig_seeked_abs_ms,
-			m->engine, &Engine::jump_abs_ms);
+	connect(playManager, &PlayManager::sigSeekedAbsoluteMs,
+			m->engine, &Engine::jumpAbsMs);
 
-	connect(play_manager, &PlayManager::sig_seeked_rel,
-			m->engine, &Engine::jump_rel);
+	connect(playManager, &PlayManager::sigSeekedRelative,
+			m->engine, &Engine::jumpRel);
 
-	connect(play_manager, &PlayManager::sig_seeked_rel_ms,
-			m->engine, &Engine::jump_rel_ms);
+	connect(playManager, &PlayManager::sigSeekedRelativeMs,
+			m->engine, &Engine::jumpRelMs);
 
-	connect(play_manager, &PlayManager::sig_record,
-			m->engine, &Engine::set_streamrecorder_recording);
+	connect(playManager, &PlayManager::sigRecording,
+			m->engine, &Engine::setStreamRecorderRecording);
 
-	const MetaData& md = play_manager->current_track();
+	const MetaData& md = playManager->currentTrack();
 	if(!md.filepath().isEmpty()) {
-		m->engine->change_track(md);
+		m->engine->changeTrack(md);
 	}
 
-	connect(m->engine, &Engine::sig_data, this, &Handler::new_data);
-	connect(m->engine, &Engine::sig_cover_data, this, &Handler::sig_cover_data);
-	connect(m->engine, &Engine::sig_error, play_manager, &PlayManager::error);
-	connect(m->engine, &Engine::sig_current_position_changed, play_manager, &PlayManager::set_position_ms);
-	connect(m->engine, &Engine::sig_track_finished, play_manager, &PlayManager::set_track_finished);
-	connect(m->engine, &Engine::sig_track_ready, play_manager, &PlayManager::set_track_ready);
-	connect(m->engine, &Engine::sig_buffering, play_manager, &PlayManager::buffering);
+	connect(m->engine, &Engine::sigDataAvailable, this, &Handler::newAudioDataAvailable);
+	connect(m->engine, &Engine::sigCoverDataAvailable, this, &Handler::sigCoverDataAvailable);
+	connect(m->engine, &Engine::sigError, playManager, &PlayManager::error);
+	connect(m->engine, &Engine::sigCurrentPositionChanged, playManager, &PlayManager::setCurrentPositionMs);
+	connect(m->engine, &Engine::sigTrackFinished, playManager, &PlayManager::setTrackFinished);
+	connect(m->engine, &Engine::sigTrackReady, playManager, &PlayManager::setTrackReady);
+	connect(m->engine, &Engine::sigBuffering, playManager, &PlayManager::buffering);
 
-	connect(m->engine, &Engine::sig_duration_changed, this, [play_manager](const MetaData& md){
-		play_manager->change_duration(md.duration_ms());
+	connect(m->engine, &Engine::sigDurationChanged, this, [playManager](const MetaData& md){
+		playManager->changeDuration(md.durationMs());
 	});
 
-	connect(m->engine, &Engine::sig_bitrate_changed, this, [play_manager](const MetaData& md){
-		play_manager->change_bitrate(md.bitrate());
+	connect(m->engine, &Engine::sigBitrateChanged, this, [playManager](const MetaData& md){
+		playManager->changeBitrate(md.bitrate());
 	});
 
-	connect(m->engine, &Engine::sig_metadata_changed, this, [play_manager](const MetaData& md){
-		play_manager->change_track_metadata(md);
+	connect(m->engine, &Engine::sigMetadataChanged, this, [playManager](const MetaData& md){
+		playManager->changeCurrentMetadata(md);
 	});
 
-	connect(m->engine, &Engine::sig_spectrum_changed, this, &Handler::spectrum_changed);
-	connect(m->engine, &Engine::sig_level_changed, this, &Handler::level_changed);
+	connect(m->engine, &Engine::sigSpectrumChanged, this, &Handler::spectrumChanged);
+	connect(m->engine, &Engine::sigLevelChanged, this, &Handler::levelChanged);
 }
 
 Handler::~Handler() = default;
@@ -119,12 +119,12 @@ void Handler::shutdown()
 	}
 }
 
-bool Handler::is_valid() const
+bool Handler::isValid() const
 {
 	return (m->engine != nullptr);
 }
 
-void Handler::playstate_changed(PlayState state)
+void Handler::playstateChanged(PlayState state)
 {
 	switch(state)
 	{
@@ -145,85 +145,85 @@ void Handler::playstate_changed(PlayState state)
 }
 
 
-void Handler::new_data(const QByteArray& data)
+void Handler::newAudioDataAvailable(const QByteArray& data)
 {
-	for(auto* receiver : Algorithm::AsConst(m->raw_sound_receiver))
+	for(auto* receiver : Algorithm::AsConst(m->rawSoundReceiver))
 	{
-		receiver->new_audio_data(data);
+		receiver->writeAudioData(data);
 	}
 }
 
-void Handler::spectrum_changed()
+void Handler::spectrumChanged()
 {
-	for(SpectrumReceiver* rcv : m->spectrum_receiver)
+	for(SpectrumReceiver* rcv : m->spectrumReceiver)
 	{
-		if(rcv && rcv->is_active())
+		if(rcv && rcv->isActive())
 		{
 			SpectrumList vals = m->engine->spectrum();
-			rcv->set_spectrum(vals);
+			rcv->setSpectrum(vals);
 		}
 	}
 }
 
-void Handler::level_changed()
+void Handler::levelChanged()
 {
-	for(LevelReceiver* rcv : m->level_receiver)
+	for(LevelReceiver* rcv : m->levelReceiver)
 	{
-		if(rcv && rcv->is_active())
+		if(rcv && rcv->isActive())
 		{
 			QPair<float, float> level = m->engine->level();
-			rcv->set_level(level.first, level.second);
+			rcv->setLevel(level.first, level.second);
 		}
 	}
 }
 
-void Handler::register_raw_sound_receiver(RawSoundReceiverInterface* receiver)
+void Handler::registerRawSoundReceiver(RawSoundReceiverInterface* receiver)
 {
 	if(!m->engine){
 		return;
 	}
 
-	if(m->raw_sound_receiver.contains(receiver)){
+	if(m->rawSoundReceiver.contains(receiver)){
 		return;
 	}
 
-	m->raw_sound_receiver << receiver;
-	m->engine->set_broadcast_enabled(!m->raw_sound_receiver.isEmpty());
+	m->rawSoundReceiver << receiver;
+	m->engine->setBroadcastEnabled(!m->rawSoundReceiver.isEmpty());
 }
 
-void Handler::unregister_raw_sound_receiver(RawSoundReceiverInterface* receiver)
+void Handler::unregisterRawSoundReceiver(RawSoundReceiverInterface* receiver)
 {
 	if(!m->engine){
 		return;
 	}
 
-	if(!m->raw_sound_receiver.contains(receiver)){
+	if(!m->rawSoundReceiver.contains(receiver)){
 		return;
 	}
 
-	m->raw_sound_receiver.removeOne(receiver);
-	m->engine->set_broadcast_enabled(!m->raw_sound_receiver.isEmpty());
+	m->rawSoundReceiver.removeOne(receiver);
+	m->engine->setBroadcastEnabled(!m->rawSoundReceiver.isEmpty());
 }
 
-void Handler::add_level_receiver(LevelReceiver* receiver)
+void Handler::addLevelReceiver(LevelReceiver* receiver)
 {
-	if(!m->level_receiver.contains(receiver)) {
-		m->level_receiver.push_back(receiver);
+	if(!m->levelReceiver.contains(receiver)) {
+		m->levelReceiver.push_back(receiver);
 	}
 }
 
-void Handler::add_spectrum_receiver(SpectrumReceiver* receiver)
+void Handler::addSpectrumReceiver(SpectrumReceiver* receiver)
 {
-	if(!m->spectrum_receiver.contains(receiver)) {
-		m->spectrum_receiver.push_back(receiver);
+	if(!m->spectrumReceiver.contains(receiver)) {
+		m->spectrumReceiver.push_back(receiver);
 	}
 }
 
-void Handler::set_equalizer(int band, int value)
+void Handler::setEqualizer(int band, int value)
 {
 	if(!m->engine){
 		return;
 	}
 
-	m->engine->set_equalizer(band, value);
+	m->engine->setEqualizer(band, value);
 }

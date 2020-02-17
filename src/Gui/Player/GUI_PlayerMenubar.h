@@ -1,6 +1,6 @@
 /* GUI_PlayerMenubar.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -44,44 +44,44 @@ class Menubar :
 	PIMPL(Menubar)
 
 signals:
-	void sig_close_clicked();
-	void sig_minimize_clicked();
-	void sig_logger_clicked();
+	void sigCloseClicked();
+	void sigMinimizeClicked();
+	void sigLoggerClicked();
 
 public:
 	explicit Menubar(QWidget* parent=nullptr);
 	~Menubar() override;
 
-	void insert_preference_action(QAction* action);
+	void insertPreferenceAction(QAction* action);
 
-	void show_library_action(bool visible);
-	void set_show_library_action_enabled(bool b);
-	void show_library_menu(bool b);
+	void showLibraryAction(bool visible);
+	void setShowLibraryActionEnabled(bool b);
+	void showLibraryMenu(bool b);
 
 private:
-	void init_connections();
-	void style_changed();
+	void initConnections();
+	void styleChanged();
 
-	QAction* current_library_changed(Library::Container* library);
-
-protected:
-	void language_changed() override;
-	void skin_changed() override;
+	QAction* changeCurrentLibrary(Library::Container* library);
 
 private slots:
-	void open_dir_clicked();
-	void open_files_clicked();
-	void shutdown_clicked();
-	void close_clicked();
-	void minimize_clicked();
-	void skin_toggled(bool b);
-	void big_cover_toggled(bool b);
-	void show_library_toggled(bool b);
-	void show_fullscreen_toggled(bool b);
-	void help_clicked();
-	void about_clicked();
-	void shortcut_changed(ShortcutIdentifier identifier);
-	void plugin_added(PlayerPlugin::Base* plugin);
+	void openDirClicked();
+	void openFilesClicked();
+	void shutdownClicked();
+	void closeClicked();
+	void minimizeClicked();
+	void skinToggled(bool b);
+	void bigCoverToggled(bool b);
+	void showLibraryToggled(bool b);
+	void showFullscreenToggled(bool b);
+	void helpClicked();
+	void aboutClicked();
+	void shortcutChanged(ShortcutIdentifier identifier);
+	void pluginAdded(PlayerPlugin::Base* plugin);
+
+protected:
+	void languageChanged() override;
+	void skinChanged() override;
 };
 
 

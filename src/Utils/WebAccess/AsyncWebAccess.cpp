@@ -1,6 +1,6 @@
 /* AsyncWebAccess.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -73,7 +73,7 @@ struct AsyncWebAccess::Private
 			if(reply->isRunning())
 			{
 				reply->abort();
-				sp_log(Log::Debug, this) << "Request was aborted: " << url;
+				spLog(Log::Debug, this) << "Request was aborted: " << url;
 			}
 
 			delete_reply();
@@ -139,7 +139,7 @@ void AsyncWebAccess::run(const QString& url, int timeout)
 		break;
 
 	case AsyncWebAccess::Behavior::Random:
-		user_agent = Util::random_string(Util::random_number(8, 16));
+		user_agent = Util::randomString(Util::randomNumber(8, 16));
 		break;
 	case AsyncWebAccess::Behavior::None:
 	default:
@@ -148,11 +148,11 @@ void AsyncWebAccess::run(const QString& url, int timeout)
 
 	request.setHeader(QNetworkRequest::UserAgentHeader, user_agent);
 
-	sp_log(Log::Debug, this) << "Call " << request.url().toString();
+	spLog(Log::Debug, this) << "Call " << request.url().toString();
 
 	m->reply = m->nam->get(request);
 
-	connect(m->reply, &QNetworkReply::readyRead, this, &AsyncWebAccess::data_available);
+	connect(m->reply, &QNetworkReply::readyRead, this, &AsyncWebAccess::dataAvailable);
 	connect(m->reply, &QNetworkReply::finished, this, &AsyncWebAccess::finished);
 
 	if(timeout > 0){
@@ -160,7 +160,7 @@ void AsyncWebAccess::run(const QString& url, int timeout)
 	}
 }
 
-void AsyncWebAccess::run_post(const QString &url, const QByteArray &post_data, int timeout)
+void AsyncWebAccess::runPost(const QString& url, const QByteArray &post_data, int timeout)
 {
 	m->status = AsyncWebAccess::Status::NoData;
 	m->header.clear();
@@ -190,9 +190,9 @@ void AsyncWebAccess::run_post(const QString &url, const QByteArray &post_data, i
 	}
 }
 
-void AsyncWebAccess::data_available()
+void AsyncWebAccess::dataAvailable()
 {
-	sp_log(Log::Crazy, this) << "Data available";
+	spLog(Log::Crazy, this) << "Data available";
 	QNetworkReply* reply = static_cast<QNetworkReply*>(sender());
 
 	int content_length = reply->header(QNetworkRequest::ContentLengthHeader).toInt();
@@ -204,11 +204,11 @@ void AsyncWebAccess::data_available()
 
 	if(content_type.contains("audio/", Qt::CaseInsensitive) &&
 			(valid_length == false) &&
-			(Util::File::is_playlistfile(url_file) == false))
+			(Util::File::isPlaylistFile(url_file) == false))
 	{
 		m->abort_request(true);
 		m->status = AsyncWebAccess::Status::AudioStream;
-		emit sig_finished();
+		emit sigFinished();
 	}
 }
 
@@ -231,7 +231,7 @@ void AsyncWebAccess::finished()
 	QNetworkReply::NetworkError err = reply->error();
 	bool success = (err == QNetworkReply::NoError);
 
-	sp_log(Log::Develop, this) << reply->url().toString() << " finished: " << (int) err;
+	spLog(Log::Develop, this) << reply->url().toString() << " finished: " << (int) err;
 	if(success)
 	{
 		QString redirect_url = reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toString();
@@ -239,19 +239,19 @@ void AsyncWebAccess::finished()
 		if( !redirect_url.isEmpty() &&
 				redirect_url != m->url)
 		{
-			redirect_request(redirect_url);
+			redirectRequest(redirect_url);
 			return;
 		}
 
 		if( reply->bytesAvailable() > 0 )
 		{
-			sp_log(Log::Develop, this) << "Got " << reply->bytesAvailable() << " bytes";
+			spLog(Log::Develop, this) << "Got " << reply->bytesAvailable() << " bytes";
 			m->data = reply->readAll();
 			m->status = AsyncWebAccess::Status::GotData;
 		}
 
 		else {
-			sp_log(Log::Develop, this) << "Answer contains no data";
+			spLog(Log::Develop, this) << "Answer contains no data";
 			m->status = AsyncWebAccess::Status::NoData;
 			m->data.clear();
 		}
@@ -261,7 +261,7 @@ void AsyncWebAccess::finished()
 	{
 		if(!m->aborted)
 		{
-			sp_log(Log::Warning, this) << "Cannot open " << m->url << ": "
+			spLog(Log::Warning, this) << "Cannot open " << m->url << ": "
 								   << reply->errorString()
 								   << " (" << (int) err << ")";
 		}
@@ -283,25 +283,25 @@ void AsyncWebAccess::finished()
 
 	m->abort_request();
 
-	emit sig_finished();
+	emit sigFinished();
 }
 
 
 void AsyncWebAccess::timeout()
 {
-	sp_log(Log::Debug, this) << "Timeout reached";
+	spLog(Log::Debug, this) << "Timeout reached";
 	m->abort_request();
 }
 
 
-void AsyncWebAccess::redirect_request(QString redirect_url)
+void AsyncWebAccess::redirectRequest(QString redirect_url)
 {
 	if(redirect_url.startsWith("/")){
 		QUrl new_url(m->url);
 		redirect_url.prepend(new_url.scheme() + "://" + new_url.host());
 	}
 
-	sp_log(Log::Debug, this) << "Redirect from " << m->url << " to " << redirect_url;
+	spLog(Log::Debug, this) << "Redirect from " << m->url << " to " << redirect_url;
 
 	m->abort_request();
 
@@ -329,12 +329,12 @@ QString AsyncWebAccess::url() const
 	return m->url;
 }
 
-void AsyncWebAccess::set_behavior(AsyncWebAccess::Behavior behavior)
+void AsyncWebAccess::setBehavior(AsyncWebAccess::Behavior behavior)
 {
 	m->behavior = behavior;
 }
 
-void AsyncWebAccess::set_raw_header(const QMap<QByteArray, QByteArray>& header)
+void AsyncWebAccess::setRawHeader(const QMap<QByteArray, QByteArray>& header)
 {
 	m->header = header;
 }
@@ -344,12 +344,12 @@ AsyncWebAccess::Status AsyncWebAccess::status() const
 	return m->status;
 }
 
-bool AsyncWebAccess::has_data() const
+bool AsyncWebAccess::hasData() const
 {
 	return (m->status == AsyncWebAccess::Status::GotData);
 }
 
-bool AsyncWebAccess::has_error() const
+bool AsyncWebAccess::hasError() const
 {
 	switch(m->status)
 	{

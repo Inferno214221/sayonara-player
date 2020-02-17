@@ -1,6 +1,6 @@
 /* LibraryFileExtensionBar.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -77,7 +77,7 @@ FileExtensionBar::FileExtensionBar(QWidget* parent) :
 
 	m->btn_close = new QPushButton(this);
 	layout->addWidget(m->btn_close);
-	connect(m->btn_close, &QPushButton::clicked, this, &FileExtensionBar::close_clicked);
+	connect(m->btn_close, &QPushButton::clicked, this, &FileExtensionBar::closeClicked);
 }
 
 FileExtensionBar::~FileExtensionBar()
@@ -120,9 +120,9 @@ void FileExtensionBar::refresh()
 			btn = new QPushButton();
 			btn->setText(ext);
 			btn->setCheckable(true);
-			btn->setChecked(extensions.is_enabled(ext));
+			btn->setChecked(extensions.isEnabled(ext));
 
-			connect(btn, &QPushButton::toggled, this, &FileExtensionBar::button_toggled);
+			connect(btn, &QPushButton::toggled, this, &FileExtensionBar::buttonToggled);
 
 			m->btn_layout->addWidget(btn);
 			m->extension_button_map[ext] = btn;
@@ -140,28 +140,28 @@ void FileExtensionBar::clear()
 	}
 }
 
-bool FileExtensionBar::has_extensions() const
+bool FileExtensionBar::hasExtensions() const
 {
 	return (m->library->extensions().extensions().size() > 1);
 }
 
 
-void FileExtensionBar::button_toggled(bool b)
+void FileExtensionBar::buttonToggled(bool b)
 {
 	auto* btn = static_cast<QPushButton*>(sender());
 
 	Gui::ExtensionSet extensions = m->library->extensions();
-	extensions.set_enabled(btn->text(), b);
+	extensions.setEnabled(btn->text(), b);
 
-	m->library->set_extensions(extensions);
+	m->library->setExtensions(extensions);
 }
 
-void FileExtensionBar::close_clicked()
+void FileExtensionBar::closeClicked()
 {
 	SetSetting(Set::Lib_ShowFilterExtBar, false);
 }
 
-void FileExtensionBar::language_changed()
+void FileExtensionBar::languageChanged()
 {
 	m->btn_close->setText(Lang::get(Lang::Hide));
 	m->lab_filter->setText(Lang::get(Lang::Filetype));

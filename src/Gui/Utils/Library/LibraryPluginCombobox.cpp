@@ -1,6 +1,6 @@
 /* LibraryPluginCombobox.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -59,24 +59,24 @@ PluginCombobox::PluginCombobox(const QString& text, QWidget* parent) :
 	this->setItemDelegate(new PluginComboBoxDelegate(this));
 
 	auto* lph = PluginHandler::instance();
-	connect(lph, &PluginHandler::sig_libraries_changed, this, &PluginCombobox::setup_actions);
-	connect(lph, &PluginHandler::sig_current_library_changed, this, &PluginCombobox::current_library_changed);
+	connect(lph, &PluginHandler::sigLibrariesChanged, this, &PluginCombobox::setupActions);
+	connect(lph, &PluginHandler::sigCurrentLibraryChanged, this, &PluginCombobox::currentLibraryChanged);
 
-	connect(this, combo_activated_int, this, &PluginCombobox::current_index_changed);
+	connect(this, combo_activated_int, this, &PluginCombobox::currentIndexChanged);
 
-	setup_actions();
+	setupActions();
 	setCurrentText(text);
 }
 
 PluginCombobox::~PluginCombobox() = default;
 
-void PluginCombobox::setup_actions()
+void PluginCombobox::setupActions()
 {
 	QFontMetrics fm(this->font());
 
 	this->clear();
 
-	const QList<Container*> libraries = PluginHandler::instance()->get_libraries(true);
+	const QList<Container*> libraries = PluginHandler::instance()->libraries(true);
 	for(const Container* container : libraries)
 	{
 		QPixmap pm = container->icon().scaled(
@@ -85,17 +85,17 @@ void PluginCombobox::setup_actions()
 					Qt::SmoothTransformation
 		);
 
-		QString display_name = fm.elidedText(container->display_name(), Qt::TextElideMode::ElideRight, 200);
+		QString display_name = fm.elidedText(container->displayName(), Qt::TextElideMode::ElideRight, 200);
 		this->addItem(QIcon(pm), display_name, container->name());
 	}
 
 	this->insertSeparator(1);
 	this->setItemIcon(1, QIcon());
 
-	current_library_changed();
+	currentLibraryChanged();
 }
 
-void PluginCombobox::action_triggered(bool b)
+void PluginCombobox::actionTriggered(bool b)
 {
 	if(!b){
 		return;
@@ -104,7 +104,7 @@ void PluginCombobox::action_triggered(bool b)
 	auto* action = static_cast<QAction*>(sender());
 	QString name = action->data().toString();
 
-	PluginHandler::instance()->set_current_library(name);
+	PluginHandler::instance()->setCurrentLibrary(name);
 	for(QAction* library_action : Algorithm::AsConst(m->actions))
 	{
 		if(library_action == action){
@@ -115,14 +115,14 @@ void PluginCombobox::action_triggered(bool b)
 	}
 }
 
-void PluginCombobox::current_library_changed()
+void PluginCombobox::currentLibraryChanged()
 {
-	Container* current_library = PluginHandler::instance()->current_library();
-	if(!current_library) {
+	Container* currentLibrary = PluginHandler::instance()->currentLibrary();
+	if(!currentLibrary) {
 		return;
 	}
 
-	QString name = current_library->name();
+	QString name = currentLibrary->name();
 	for(int i=0; i<this->count(); i++)
 	{
 		if(this->itemData(i).toString().compare(name) == 0)
@@ -137,27 +137,27 @@ void PluginCombobox::current_library_changed()
 	}
 }
 
-void PluginCombobox::current_index_changed(int index)
+void PluginCombobox::currentIndexChanged(int index)
 {
-	PluginHandler::instance()->set_current_library(index - 2);
+	PluginHandler::instance()->setCurrentLibrary(index - 2);
 }
 
-void PluginCombobox::language_changed()
+void PluginCombobox::languageChanged()
 {
 	if(!m){
 		return;
 	}
 
-	setup_actions();
+	setupActions();
 }
 
-void PluginCombobox::skin_changed()
+void PluginCombobox::skinChanged()
 {
 	if(!m){
 		return;
 	}
 
-	const QList<Container*> libraries = PluginHandler::instance()->get_libraries(true);
+	const QList<Container*> libraries = PluginHandler::instance()->libraries(true);
 	int i=0;
 
 	for(const Container* container : libraries)

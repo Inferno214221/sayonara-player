@@ -1,6 +1,6 @@
 /* Setting.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -68,32 +68,32 @@ AbstrSetting& AbstrSetting::operator=(const AbstrSetting& other)
 
 AbstrSetting::~AbstrSetting() = default;
 
-SettingKey AbstrSetting::get_key() const
+SettingKey AbstrSetting::getKey() const
 {
 	return m->key;
 }
 
-QString AbstrSetting::db_key() const
+QString AbstrSetting::dbKey() const
 {
 	return m->db_key;
 }
 
-bool AbstrSetting::is_db_setting() const
+bool AbstrSetting::isDatabaseSetting() const
 {
 	return m->db_setting;
 }
 
-void AbstrSetting::assign_value(const QString& value)
+void AbstrSetting::assignValue(const QString& value)
 {
 	if(!m->db_setting) {
 		return;
 	}
 
-	bool success = load_value_from_string(value);
+	bool success = loadValueFromString(value);
 
 	if(!success)
 	{
-		sp_log(Log::Warning, this) << "Setting " << m->db_key << ": Cannot convert. Use default value...";
-		assign_default_value();
+		spLog(Log::Warning, this) << "Setting " << m->db_key << ": Cannot convert. Use default value...";
+		assignDefaultValue();
 	}
 }

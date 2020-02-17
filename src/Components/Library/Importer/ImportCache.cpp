@@ -1,6 +1,6 @@
 /* ImportCache.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -36,39 +36,39 @@ using Library::ImportCache;
 
 struct ImportCache::Private
 {
-	QString					library_path;
-	MetaDataList			v_md;
-	QHash<QString, int>		src_md_map;
-	QHash<QString, QString>	src_dst_map;
+	QString					libraryPath;
+	MetaDataList			tracks;
+	QHash<QString, int>		pathIndexMap;
+	QHash<QString, QString>	pathTargetMap;
 	QStringList				files;
 
 	Private(const QString& library_path) :
-		library_path(library_path)
+		libraryPath(library_path)
 	{}
 
 	Private(const Private& other) :
-		CASSIGN(library_path),
-		CASSIGN(v_md),
-		CASSIGN(src_md_map),
-		CASSIGN(src_dst_map),
+		CASSIGN(libraryPath),
+		CASSIGN(tracks),
+		CASSIGN(pathIndexMap),
+		CASSIGN(pathTargetMap),
 		CASSIGN(files)
 	{}
 
 	Private& operator=(const Private& other)
 	{
-		ASSIGN(library_path);
-		ASSIGN(v_md);
-		ASSIGN(src_md_map);
-		ASSIGN(src_dst_map);
+		ASSIGN(libraryPath);
+		ASSIGN(tracks);
+		ASSIGN(pathIndexMap);
+		ASSIGN(pathTargetMap);
 		ASSIGN(files);
 
 		return *this;
 	}
 };
 
-ImportCache::ImportCache(const QString& library_path)
+ImportCache::ImportCache(const QString& libraryPath)
 {
-	m = Pimpl::make<Private>(library_path);
+	m = Pimpl::make<Private>(libraryPath);
 }
 
 ImportCache::ImportCache(const ImportCache& other)
@@ -88,54 +88,65 @@ ImportCache& ImportCache::operator=(const ImportCache& other)
 void ImportCache::clear()
 {
 	m->files.clear();
-	m->v_md.clear();
-	m->src_dst_map.clear();
+	m->tracks.clear();
+	m->pathTargetMap.clear();
 }
 
-void ImportCache::add_soundfile(const QString& filename)
+void ImportCache::addSoundfile(const QString& filename)
 {
 	MetaData md(filename);
 	bool success = Tagging::Utils::getMetaDataOfFile(md);
 	if(success)
 	{
-		m->v_md << md;
-		m->src_md_map[md.filepath()] = m->v_md.count() - 1;
+		m->tracks << md;
+		m->pathIndexMap[md.filepath()] = m->tracks.count() - 1;
 	}
 }
 
-void ImportCache::add_file(const QString& filename)
+void ImportCache::addFile(const QString& filename)
 {
-	add_file(filename, QString());
+	addFile(filename, QString());
 }
 
-void ImportCache::add_file(const QString& filename, const QString& parent_dir)
+void ImportCache::addFile(const QString& filename, const QString& parentDirectory)
 {
 	// filename: /path/to/dir/and/further/to/file.mp4
 	// parent_dir: /path/to/dir
 	// remainder: and/further/to/file.mp4
 
-	const QString abs_filename = Util::File::clean_filename(filename);
-	const QString abs_parent_dir = Util::File::clean_filename(parent_dir);
+	const QString absoluteFilename = Util::File::cleanFilename(filename);
+	const QString absoluteParentDir = Util::File::cleanFilename(parentDirectory);
 
-	if(	abs_filename.isEmpty() ||
-		abs_parent_dir.isEmpty() ||
-		(abs_filename == abs_parent_dir) ||
-		!(abs_filename.startsWith(abs_parent_dir)))
-	{
+	if(absoluteFilename.isEmpty()) {
 		return;
 	}
 
-	QString remainder = filename.right(filename.size() - abs_parent_dir.size());
-	if(remainder.startsWith('/') || remainder.startsWith('\\')) {
-		remainder.remove(0, 1);
+	QString remainder;
+	if(!parentDirectory.isEmpty())
+	{
+		if(	(Util::File::isSamePath(absoluteFilename, absoluteParentDir)) ||
+			(!Util::File::isSubdir(absoluteFilename, absoluteParentDir)) )
+		{
+			return;
+		}
+
+		remainder = filename.right(filename.size() - absoluteParentDir.size());
+		while(remainder.startsWith('/') || remainder.startsWith('\\')) {
+			remainder.remove(0, 1);
+		}
 	}
 
-	m->files << abs_filename;
-	if(Util::File::is_soundfile(abs_filename)) {
-		add_soundfile(abs_filename);
+	else {
+		remainder = Util::File::getFilenameOfPath(filename);
 	}
 
-	m->src_dst_map[filename] = remainder;
+	m->pathTargetMap[filename] = remainder;
+
+	m->files << absoluteFilename;
+	if(Util::File::isSoundFile(absoluteFilename))
+	{
+		addSoundfile(absoluteFilename);
+	}
 }
 
 QStringList ImportCache::files() const
@@ -145,7 +156,7 @@ QStringList ImportCache::files() const
 
 MetaDataList ImportCache::soundfiles() const
 {
-	return m->v_md;
+	return m->tracks;
 }
 
 int ImportCache::count() const
@@ -153,46 +164,51 @@ int ImportCache::count() const
 	return m->files.count();
 }
 
-QString ImportCache::target_filename(const QString& src_filename, const QString& target_directory) const
+int ImportCache::soundFileCount() const
 {
-	if(m->library_path.isEmpty()){
+	return m->tracks.count();
+}
+
+QString ImportCache::targetFilename(const QString& src_filename, const QString& targetDirectoryectory) const
+{
+	if(m->libraryPath.isEmpty()){
 		return QString();
 	}
 
-	QString original_path = Util::File::clean_filename(src_filename);
+	QString original_path = Util::File::cleanFilename(src_filename);
 
 	QString path = QString("%1/%2/%3")
-				.arg(m->library_path)
-				.arg(target_directory)
-				.arg(m->src_dst_map[original_path]);
+				.arg(m->libraryPath)
+				.arg(targetDirectoryectory)
+				.arg(m->pathTargetMap[original_path]);
 
-	return Util::File::clean_filename(path);
+	return Util::File::cleanFilename(path);
 }
 
 MetaData ImportCache::metadata(const QString& filename) const
 {
-	if(!m->src_md_map.contains(filename))
+	if(!m->pathIndexMap.contains(filename))
 	{
-		sp_log(Log::Warning, this) << filename  << " is no valid audio file";
+		spLog(Log::Warning, this) << filename  << " is no valid audio file";
 		return MetaData();
 	}
 
-	int index = m->src_md_map[filename];
-	return m->v_md[index];
+	int index = m->pathIndexMap[filename];
+	return m->tracks[index];
 }
 
-void ImportCache::change_metadata(const MetaDataList& updated_tracks)
+void ImportCache::changeMetadata(const MetaDataList& updated_tracks)
 {
 	for(const MetaData& md : updated_tracks)
 	{
-		int index = Util::Algorithm::indexOf(m->v_md, [&md](const MetaData& saved_md) {
-			return Util::File::is_same_path(md.filepath(), saved_md.filepath());
+		int index = Util::Algorithm::indexOf(m->tracks, [&md](const MetaData& saved_md) {
+			return Util::File::isSamePath(md.filepath(), saved_md.filepath());
 		});
 
 		if(index >= 0) {
-			m->v_md[index] = md;
+			m->tracks[index] = md;
 		}
 	}
 
-	sp_log(Log::Develop, this) << "Import cache updated";
+	spLog(Log::Develop, this) << "Import cache updated";
 }

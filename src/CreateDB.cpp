@@ -1,6 +1,6 @@
 /* CreateDB.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -41,42 +41,42 @@ int main(int argc, char** argv)
 
 	Q_INIT_RESOURCE(Database);
 
-	QString source_dir(":/Database");
-	QString target_dir(argv[1]);
-	QString db_filename("player.db");
+	QString sourceDirectory(":/Database");
+	QString targetDirectory(argv[1]);
+	QString databseFilename("player.db");
 
-	Util::File::delete_files({db_filename});
-	DB::Connector* db = DB::Connector::instance_custom(source_dir, target_dir, db_filename);
-	DB::Settings* setting_connector = db->settings_connector();
+	Util::File::deleteFiles({databseFilename});
+	DB::Connector* db = DB::Connector::instance_custom(sourceDirectory, targetDirectory, databseFilename);
+	DB::Settings* setting_connector = db->settingsConnector();
 
 	Settings* settings = Settings::instance();
-	settings->check_settings();
-	QList<SettingKey> invalid_keys = SettingRegistry::undeployable_keys();
+	settings->checkSettings();
+	QList<SettingKey> invalid_keys = SettingRegistry::undeployableKeys();
 	SettingArray arr = settings->settings();
 
 	QList<AbstrSetting*> invalid_settings;
 	for(AbstrSetting* s : arr)
 	{
-		if(!s->is_db_setting()){
+		if(!s->isDatabaseSetting()){
 			continue;
 		}
 
-		if(invalid_keys.contains(s->get_key()))
+		if(invalid_keys.contains(s->getKey()))
 		{
 			invalid_settings << s;
 		}
 
-		s->assign_default_value();
+		s->assignDefaultValue();
 	}
 
-	setting_connector->store_settings();
+	setting_connector->storeSettings();
 
 	for(AbstrSetting* s : invalid_settings)
 	{
-		setting_connector->drop_setting(s->db_key());
+		setting_connector->dropSetting(s->dbKey());
 	}
 
-	std::cout << "Written to " << QDir(target_dir).absoluteFilePath(db_filename).toStdString() << std::endl;
+	std::cout << "Written to " << QDir(targetDirectory).absoluteFilePath(databseFilename).toStdString() << std::endl;
 
 	return 0;
 }

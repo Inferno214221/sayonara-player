@@ -1,6 +1,6 @@
 /* DatabaseTracks.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -41,9 +41,9 @@ namespace DB
 			Tracks();
 			virtual ~Tracks();
 
-			void init_views();
+			void initViews();
 
-			virtual bool db_fetch_tracks(Query& q, MetaDataList& result) const;
+			virtual bool dbFetchTracks(Query& q, MetaDataList& result) const;
 
 			virtual int getNumTracks() const;
 			virtual bool getAllTracks(MetaDataList& result) const;
@@ -62,13 +62,13 @@ namespace DB
 			virtual MetaData	getTrackByPath(const QString& path) const;
 			virtual bool		getMultipleTracksByPath(const QStringList& paths, MetaDataList& v_md) const;
 
-			virtual bool insertTrackIntoDatabase(const MetaData& data, ArtistId artist_id, AlbumId album_id);
-			virtual bool insertTrackIntoDatabase(const MetaData& data, ArtistId artist_id, AlbumId album_id, ArtistId album_artist_id);
+			virtual bool insertTrackIntoDatabase(const MetaData& data, ArtistId artistId, AlbumId albumId);
+			virtual bool insertTrackIntoDatabase(const MetaData& data, ArtistId artistId, AlbumId albumId, ArtistId album_artistId);
 			virtual bool updateTrack(const MetaData& data);
 			virtual bool updateTracks(const MetaDataList& lst);
 
-			virtual bool renameFilepaths(const QMap<QString, QString>& paths, LibraryId library_id);
-			virtual bool renameFilepath(const QString& old_path, const QString& new_path, LibraryId library_id);
+			virtual bool renameFilepaths(const QMap<QString, QString>& paths, LibraryId libraryId);
+			virtual bool renameFilepath(const QString& old_path, const QString& new_path, LibraryId libraryId);
 
 			virtual bool deleteTrack(TrackID id);
 			virtual bool deleteTracks(const MetaDataList&);
@@ -81,19 +81,19 @@ namespace DB
 			// function of LibraryDatabase
 			virtual bool deleteInvalidTracks(const QString& library_path, MetaDataList& double_metadata);
 
-			virtual QString fetch_query_tracks() const;
+			virtual QString fetchQueryTracks() const;
 
 			virtual Util::Set<Genre> getAllGenres() const;
 
 			void deleteAllTracks(bool also_views);
 
 		protected:
-			virtual QString artistid_field() const=0;
-			virtual QString artistname_field() const=0;
-			virtual QString track_view() const=0;
-			virtual QString track_search_view() const=0;
-			virtual ::Library::SearchModeMask search_mode() const=0;
-			virtual LibraryId library_id() const=0;
+			virtual QString artistIdField() const=0;
+			virtual QString artistNameField() const=0;
+			virtual QString trackView() const=0;
+			virtual QString trackSearchView() const=0;
+			virtual ::Library::SearchModeMask searchMode() const=0;
+			virtual LibraryId libraryId() const=0;
 
 			virtual Module* module()=0;
 			virtual const Module* module() const=0;

@@ -1,6 +1,6 @@
 /* LibraryItemModelTracks.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -23,7 +23,7 @@
  * LibraryItemModelTracks.cpp
 	 *
  *  Created on: Apr 24, 2011
- *      Author: Lucio Carreras
+ *      Author: Michael Lugmair (Lucio Carreras)
  */
 
 #include "TrackModel.h"
@@ -48,7 +48,7 @@ using namespace Library;
 
 struct TrackModel::Private
 {
-	QPair<int, Rating>			tmp_rating;
+	QPair<int, Rating>			tmpRating;
 	Tagging::UserOperations*	uto=nullptr;
 };
 
@@ -57,12 +57,12 @@ TrackModel::TrackModel(QObject* parent, AbstractLibrary* library) :
 {
 	m = Pimpl::make<Private>();
 
-	connect(library, &AbstractLibrary::sig_track_changed, this, &TrackModel::track_changed);
+	connect(library, &AbstractLibrary::sigCurrentTrackChanged, this, &TrackModel::trackChanged);
 }
 
 TrackModel::~TrackModel() = default;
 
-QVariant TrackModel::data(const QModelIndex &index, int role) const
+QVariant TrackModel::data(const QModelIndex& index, int role) const
 {
 	int row = index.row();
 	int col = index.column();
@@ -77,24 +77,25 @@ QVariant TrackModel::data(const QModelIndex &index, int role) const
 		return QVariant();
 	}
 
-	auto idx_col = ColumnIndex::Track(col);
+	auto indexColumn = ColumnIndex::Track(col);
 
 	if (role == Qt::TextAlignmentRole)
 	{
 		int alignment = Qt::AlignVCenter;
 
-		if (idx_col == ColumnIndex::Track::TrackNumber ||
-			idx_col == ColumnIndex::Track::Bitrate ||
-			idx_col == ColumnIndex::Track::Length ||
-			idx_col == ColumnIndex::Track::Year ||
-			idx_col == ColumnIndex::Track::Filesize ||
-			idx_col == ColumnIndex::Track::Filetype ||
-			idx_col == ColumnIndex::Track::Discnumber)
+		if (indexColumn == ColumnIndex::Track::TrackNumber ||
+			indexColumn == ColumnIndex::Track::Bitrate ||
+			indexColumn == ColumnIndex::Track::Length ||
+			indexColumn == ColumnIndex::Track::Year ||
+			indexColumn == ColumnIndex::Track::Filesize ||
+			indexColumn == ColumnIndex::Track::Filetype ||
+			indexColumn == ColumnIndex::Track::Discnumber)
 		{
 			alignment |= Qt::AlignRight;
 		}
 
-		else {
+		else
+		{
 			alignment |= Qt::AlignLeft;
 		}
 
@@ -105,10 +106,10 @@ QVariant TrackModel::data(const QModelIndex &index, int role) const
 	{
 		const MetaData& md = tracks[row];
 
-		switch(idx_col)
+		switch(indexColumn)
 		{
 			case ColumnIndex::Track::TrackNumber:
-				return QVariant( md.track_number() );
+				return QVariant( md.trackNumber() );
 
 			case ColumnIndex::Track::Title:
 				return QVariant( md.title() );
@@ -117,7 +118,7 @@ QVariant TrackModel::data(const QModelIndex &index, int role) const
 				return QVariant( md.artist() );
 
 			case ColumnIndex::Track::Length:
-				return QVariant(::Util::cvt_ms_to_string(md.duration_ms(), "$He $M:$S"));
+				return QVariant(::Util::msToString(md.durationMs(), "$He $M:$S"));
 
 			case ColumnIndex::Track::Album:
 				return QVariant(md.album());
@@ -136,10 +137,10 @@ QVariant TrackModel::data(const QModelIndex &index, int role) const
 				return QString::number(md.bitrate() / 1000) + " kBit/s";
 
 			case ColumnIndex::Track::Filesize:
-				return ::Util::File::calc_filesize_str(md.filesize());
+				return ::Util::File::getFilesizeString(md.filesize());
 
 			case ColumnIndex::Track::Filetype:
-				return ::Util::File::get_file_extension(md.filepath());
+				return ::Util::File::getFileExtension(md.filepath());
 
 			case ColumnIndex::Track::Rating:
 			{
@@ -148,9 +149,9 @@ QVariant TrackModel::data(const QModelIndex &index, int role) const
 				}
 
 				Rating rating = md.rating();
-				if(row == m->tmp_rating.first)
+				if(row == m->tmpRating.first)
 				{
-					rating = m->tmp_rating.second;
+					rating = m->tmpRating.second;
 				}
 
 				return QVariant::fromValue(rating);
@@ -165,7 +166,7 @@ QVariant TrackModel::data(const QModelIndex &index, int role) const
 }
 
 
-Qt::ItemFlags TrackModel::flags(const QModelIndex &index = QModelIndex()) const
+Qt::ItemFlags TrackModel::flags(const QModelIndex& index = QModelIndex()) const
 {
 	if (!index.isValid()) {
 		return Qt::ItemIsEnabled;
@@ -197,8 +198,8 @@ bool TrackModel::setData(const QModelIndex& index, const QVariant& value, int ro
 
 		if(md.rating() != rating)
 		{
-			m->tmp_rating.first = row;
-			m->tmp_rating.second = rating;
+			m->tmpRating.first = row;
+			m->tmpRating.second = rating;
 
 			if(!m->uto)
 			{
@@ -211,7 +212,7 @@ bool TrackModel::setData(const QModelIndex& index, const QVariant& value, int ro
 				this->index(row, int(ColumnIndex::Track::Rating))
 			);
 
-			m->uto->set_track_rating(md, rating);
+			m->uto->setTrackRating(md, rating);
 
 			return true;
 		}
@@ -220,9 +221,9 @@ bool TrackModel::setData(const QModelIndex& index, const QVariant& value, int ro
 	return false;
 }
 
-void TrackModel::track_changed(int row)
+void TrackModel::trackChanged(int row)
 {
-	m->tmp_rating.first = -1;
+	m->tmpRating.first = -1;
 
 	emit dataChanged
 	(
@@ -239,7 +240,7 @@ int TrackModel::rowCount(const QModelIndex&) const
 }
 
 
-Id TrackModel::id_by_index(int row) const
+Id TrackModel::mapIndexToId(int row) const
 {
 	const MetaDataList& tracks = library()->tracks();
 
@@ -252,7 +253,7 @@ Id TrackModel::id_by_index(int row) const
 	}
 }
 
-QString TrackModel::searchable_string(int row) const
+QString TrackModel::searchableString(int row) const
 {
 	const MetaDataList& tracks = library()->tracks();
 
@@ -274,7 +275,7 @@ Cover::Location TrackModel::cover(const IndexSet& indexes) const
 	}
 
 	const MetaDataList& tracks = library()->tracks();
-	Util::Set<AlbumId> album_ids;
+	Util::Set<AlbumId> albumIds;
 
 	for(int idx : indexes)
 	{
@@ -282,27 +283,22 @@ Cover::Location TrackModel::cover(const IndexSet& indexes) const
 			continue;
 		}
 
-		album_ids.insert( tracks[idx].album_id() );
-		if(album_ids.size() > 1) {
+		albumIds.insert( tracks[idx].albumId() );
+		if(albumIds.size() > 1) {
 			return Cover::Location();
 		}
 	}
 
-	return Cover::Location::cover_location( tracks.first() );
+	return Cover::Location::coverLocation( tracks.first() );
 }
 
 
-int TrackModel::searchable_column() const
+int TrackModel::searchableColumn() const
 {
 	return int(ColumnIndex::Track::Title);
 }
 
-const Util::Set<Id>& TrackModel::selections() const
+const MetaDataList& Library::TrackModel::selectedMetadata() const
 {
-	return library()->selected_tracks();
-}
-
-const MetaDataList& Library::TrackModel::mimedata_tracks() const
-{
-	return library()->current_tracks();
+	return library()->currentTracks();
 }

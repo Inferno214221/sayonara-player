@@ -1,6 +1,6 @@
 /* PlaylistView.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -23,7 +23,7 @@
  * PlaylistView.h
  *
  *  Created on: Jun 27, 2011
- *      Author: Lucio Carreras
+ *      Author: Michael Lugmair (Lucio Carreras)
  */
 
 #ifndef PLAYLISTVIEW_H_
@@ -55,85 +55,78 @@ namespace Playlist
 		Q_OBJECT
 		PIMPL(View)
 
-	signals:
-		void sig_double_clicked(int row);
-		void sig_delete_tracks(const IndexSet& rows);
-		void sig_bookmark_pressed(int track_idx, Seconds timestamp);
+		signals:
+			void sigDoubleClicked(int row);
+			void sigDeleteTracks(const IndexSet& rows);
+			void sigBookmarkPressed(int trackIdx, Seconds timestamp);
 
-	public:
-		explicit View(PlaylistPtr pl, QWidget* parent=nullptr);
-		~View() override;
+		public:
+			explicit View(PlaylistPtr pl, QWidget* parent=nullptr);
+			~View() override;
 
-		void goto_row(int row);
-		void delete_selected_tracks();
+			void gotoRow(int row);
+			void deleteSelectedTracks();
 
-		/**
-		 * @brief called from GUI_Playlist when data has not been dropped
-		 * directly into the view widget. Insert on first row then
-		 * @param event
-		 */
-		void dropEventFromOutside(QDropEvent* event);
+			/**
+			 * @brief called from GUI_Playlist when data has not been dropped
+			 * directly into the view widget. Insert on first row then
+			 * @param event
+			 */
+			void dropEventFromOutside(QDropEvent* event);
 
+		public slots:
+			void clear();
+			void removeSelectedRows();
 
-	public slots:
-		void clear();
-		void remove_selected_rows();
+		private slots:
+			void refresh();
+			void currentTrackChanged(int track_index, int playlistIndex);
+			void asyncDropFinished(bool success, int dropIndex);
+			void ratingChanged(Rating rating);
+			void columnsChanged();
+			void showRatingChanged();
+			void findTrackTriggered();
+			void reverseTriggered();
+			void bookmarkTriggered(Seconds timestamp);
 
-	private:
-		void init_view();
-		void init_context_menu();
+			void moveSelectedRowsUp();
+			void moveSelectedRowsDown();
+			void playSelectedTrack();
+			void gotoToCurrentTrack();
+			void playlistBusyChanged(bool b);
+			void currentScannedFileChanged(const QString& currentFile);
 
-		// d & d
-		int calc_drag_drop_line(QPoint pos);
-		void handle_drop(QDropEvent* event);
-		void handle_inner_drag_drop(int row, bool copy);
+		private:
+			void initView();
+			void initContextMenu();
 
-		// overloaded stuff
-		void contextMenuEvent(QContextMenuEvent* e) override;
+			// d & d
+			int calcDragDropLine(QPoint pos);
+			void handleDrop(QDropEvent* event);
+			void handleInnerDragDrop(int row, bool copy);
 
-		/**
-		 * @brief we start the drag action, all lines has to be cleared
-		 * @param the event
-		 */
-		void dragLeaveEvent(QDragLeaveEvent* event) override;
-		void dragEnterEvent(QDragEnterEvent* event) override;
-		void dragMoveEvent(QDragMoveEvent* event) override;
-		void dropEvent(QDropEvent* event) override;
+		protected:
+			MD::Interpretation metadataInterpretation() const override;
+			MetaDataList infoDialogData() const override;
+			QMimeData* dragableMimedata() const override;
+			int mapModelIndexToIndex(const QModelIndex& idx) const override;
+			ModelIndexRange mapIndexToModelIndexes(int idx) const override;
 
-		void mousePressEvent(QMouseEvent* event) override;
-		void mouseDoubleClickEvent(QMouseEvent* event) override;
+			void skinChanged() override;
 
-		void keyPressEvent(QKeyEvent *event) override;
-
-		MD::Interpretation metadata_interpretation() const override;
-		MetaDataList info_dialog_data() const override;
-		QMimeData* dragable_mimedata() const override;
-
-	private slots:
-		void refresh();
-		void current_track_changed(int track_index, int playlist_index);
-		void async_drop_finished(bool success, int async_drop_index);
-		void rating_changed(Rating rating);
-		void sl_columns_changed();
-		void sl_show_rating_changed();
-		void find_track_triggered();
-		void reverse_triggered();
-		void bookmark_triggered(Seconds timestamp);
-
-		void move_selected_rows_up();
-		void move_selected_rows_down();
-		void play_selected_track();
-		void goto_to_current_track();
-		void playlist_busy_changed(bool b);
-		void current_scanned_file_changed(const QString& current_file);
-
-	protected:
-		// SayonaraSelectionView interface
-		int index_by_model_index(const QModelIndex& idx) const override;
-		ModelIndexRange model_indexrange_by_index(int idx) const override;
-
-		void skin_changed() override;
-		bool viewportEvent(QEvent *event) override;
+			/**
+			 * @brief we start the drag action, all lines has to be cleared
+			 * @param the event
+			 */
+			void dragLeaveEvent(QDragLeaveEvent* event) override;
+			void dragEnterEvent(QDragEnterEvent* event) override;
+			void dragMoveEvent(QDragMoveEvent* event) override;
+			void dropEvent(QDropEvent* event) override;
+			void mousePressEvent(QMouseEvent* event) override;
+			void mouseDoubleClickEvent(QMouseEvent* event) override;
+			void keyPressEvent(QKeyEvent *event) override;
+			bool viewportEvent(QEvent *event) override;
+			void contextMenuEvent(QContextMenuEvent* e) override;
 	};
 }
 

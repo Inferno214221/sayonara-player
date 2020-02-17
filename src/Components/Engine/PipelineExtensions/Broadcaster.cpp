@@ -1,6 +1,6 @@
 /* Broadcaster.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -34,91 +34,91 @@ using namespace PipelineExtensions;
 
 struct Broadcaster::Private
 {
-	BroadcastDataReceiver* data_receiver=nullptr;
+	BroadcastDataReceiver* dataReceiver=nullptr;
 	GstElement* pipeline=nullptr;
 	GstElement* tee=nullptr;
 
-	GstElement*			bc_bin=nullptr;
-	GstElement*			bc_queue=nullptr;
-	GstElement*			bc_converter=nullptr;
-	GstElement*			bc_resampler=nullptr;
-	GstElement*			bc_lame=nullptr;
-	GstElement*			bc_app_sink=nullptr;
+	GstElement*			bin=nullptr;
+	GstElement*			queue=nullptr;
+	GstElement*			converter=nullptr;
+	GstElement*			resampler=nullptr;
+	GstElement*			lame=nullptr;
+	GstElement*			appSink=nullptr;
 
-	gulong				bc_probe;
+	gulong				probe;
 
-	bool				is_running;
+	bool				isRunning;
 
-	Private(BroadcastDataReceiver* data_receiver, GstElement* pipeline, GstElement* tee) :
-		data_receiver(data_receiver),
+	Private(BroadcastDataReceiver* dataReceiver, GstElement* pipeline, GstElement* tee) :
+		dataReceiver(dataReceiver),
 		pipeline(pipeline),
 		tee(tee),
-		bc_probe(0),
-		is_running(false)
+		probe(0),
+		isRunning(false)
 	{}
 };
 
-Broadcaster::Broadcaster(BroadcastDataReceiver* data_receiver, GstElement* pipeline, GstElement* tee)
+Broadcaster::Broadcaster(BroadcastDataReceiver* dataReceiver, GstElement* pipeline, GstElement* tee)
 {
-	m = Pimpl::make<Private>(data_receiver, pipeline, tee);
+	m = Pimpl::make<Private>(dataReceiver, pipeline, tee);
 }
 
 Broadcaster::~Broadcaster() = default;
 
 bool Broadcaster::init()
 {
-	if(m->bc_bin){
+	if(m->bin){
 		return true;
 	}
 
 	// create
-	if( !Engine::Utils::create_element(&m->bc_queue, "queue", "bc_lame_queue") ||
-		!Engine::Utils::create_element(&m->bc_converter, "audioconvert", "bc_lame_converter") ||
-		!Engine::Utils::create_element(&m->bc_resampler, "audioresample", "bc_lame_resampler") ||
-		!Engine::Utils::create_element(&m->bc_lame, "lamemp3enc", "bc_lamemp3enc") ||
-		!Engine::Utils::create_element(&m->bc_app_sink, "appsink", "bc_lame_appsink"))
+	if( !Engine::Utils::createElement(&m->queue, "queue", "bc_lame_queue") ||
+		!Engine::Utils::createElement(&m->converter, "audioconvert", "bc_lame_converter") ||
+		!Engine::Utils::createElement(&m->resampler, "audioresample", "bc_lame_resampler") ||
+		!Engine::Utils::createElement(&m->lame, "lamemp3enc", "bc_lamemp3enc") ||
+		!Engine::Utils::createElement(&m->appSink, "appsink", "bc_lame_appsink"))
 	{
 		return false;
 	}
 
 	{ // init bin
-		bool success = Engine::Utils::create_bin(&m->bc_bin, {m->bc_queue,  m->bc_converter, m->bc_resampler, m->bc_lame, m->bc_app_sink}, "broadcast");
+		bool success = Engine::Utils::createBin(&m->bin, {m->queue,  m->converter, m->resampler, m->lame, m->appSink}, "broadcast");
 		if(!success){
 			return false;
 		}
 
-		gst_bin_add(GST_BIN(m->pipeline), m->bc_bin);
-		success = Engine::Utils::tee_connect(m->tee, m->bc_bin, "BroadcastQueue");
+		gst_bin_add(GST_BIN(m->pipeline), m->bin);
+		success = Engine::Utils::connectTee(m->tee, m->bin, "BroadcastQueue");
 		if(!success)
 		{
-			Engine::Utils::set_state(m->bc_bin, GST_STATE_NULL);
-			gst_object_unref(m->bc_bin);
+			Engine::Utils::setState(m->bin, GST_STATE_NULL);
+			gst_object_unref(m->bin);
 			return false;
 		}
 	}
 
 	{ // configure
-		gst_object_ref(m->bc_app_sink);
+		gst_object_ref(m->appSink);
 
-		Engine::Utils::config_lame(m->bc_lame);
-		Engine::Utils::config_queue(m->bc_queue);
-		Engine::Utils::config_sink(m->bc_app_sink);
-		Engine::Utils::set_values(G_OBJECT(m->bc_app_sink), "emit-signals", true);
+		Engine::Utils::configureLame(m->lame);
+		Engine::Utils::configureQueue(m->queue);
+		Engine::Utils::configureSink(m->appSink);
+		Engine::Utils::setValues(G_OBJECT(m->appSink), "emit-signals", true);
 
-		g_signal_connect (m->bc_app_sink, "new-sample", G_CALLBACK(Engine::Callbacks::new_buffer), m->data_receiver);
+		g_signal_connect (m->appSink, "new-sample", G_CALLBACK(Engine::Callbacks::newBuffer), m->dataReceiver);
 	}
 
 	return true;
 }
 
-bool Broadcaster::set_enabled(bool b)
+bool Broadcaster::setEnabled(bool b)
 {
 	if(b && !init()){
 		return false;
 	}
 
-	m->is_running = b;
-	Probing::handle_probe(&m->is_running, m->bc_queue, &m->bc_probe, Probing::lame_probed);
+	m->isRunning = b;
+	Probing::handleProbe(&m->isRunning, m->queue, &m->probe, Probing::lameProbed);
 
 	return true;
 }

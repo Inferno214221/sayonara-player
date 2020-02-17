@@ -1,6 +1,6 @@
 /* LibraryItemModel.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -36,15 +36,14 @@ using namespace Library;
 struct ItemModel::Private
 {
 	AbstractLibrary*	library=nullptr;
-	QStringList			header_names;
-	int					old_row_count;
+	QStringList			headerNames;
+	int					oldRowCount;
 
 	Private(AbstractLibrary* library) :
 		library(library),
-		old_row_count(0)
+		oldRowCount(0)
 	{}
 };
-
 
 ItemModel::ItemModel(QObject* parent, AbstractLibrary* library) :
 	SearchableTableModel(parent)
@@ -54,45 +53,45 @@ ItemModel::ItemModel(QObject* parent, AbstractLibrary* library) :
 
 ItemModel::~ItemModel() = default;
 
-QVariant ItemModel::headerData ( int section, Qt::Orientation orientation, int role ) const
+QVariant ItemModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-	if (role != Qt::DisplayRole){
+	if(role != Qt::DisplayRole) {
+		return SearchableTableModel::headerData(section, orientation, role);
+	}
+
+	if(section < 0 || section >= m->headerNames.size()){
 		return QVariant();
 	}
 
-	if(!Util::between(section, m->header_names)){
-		return QVariant();
+	return m->headerNames[section];
+}
+
+bool ItemModel::setHeaderData(int section, Qt::Orientation orientation, const QVariant& value, int role)
+{
+	if(role != Qt::DisplayRole) {
+		return SearchableTableModel::setHeaderData(section, orientation, value, role);
 	}
 
-	if (orientation == Qt::Horizontal){
-		return m->header_names[section];
+	while(section >= m->headerNames.size()) {
+		m->headerNames << QString();
 	}
 
-	return QVariant();
+	m->headerNames[section] = value.toString();
+
+	return true;
 }
 
-bool ItemModel::set_header_data(const QStringList& names)
+int ItemModel::columnCount(const QModelIndex&) const
 {
-   m->header_names = names;
-   emit headerDataChanged(Qt::Horizontal, 0, names.size());
-   return true;
+	return m->headerNames.size();
 }
-
-
-int ItemModel::columnCount(const QModelIndex& parent) const
-{
-	Q_UNUSED(parent);
-
-	return m->header_names.size();
-}
-
 
 bool ItemModel::removeRows(int row, int count, const QModelIndex& index)
 {
 	Q_UNUSED(index)
 
 	beginRemoveRows(QModelIndex(), row, row + count - 1);
-	m->old_row_count -= count;
+	m->oldRowCount -= count;
 	endRemoveRows();
 
 	return true;
@@ -103,73 +102,48 @@ bool ItemModel::insertRows(int row, int count, const QModelIndex& index)
 	Q_UNUSED(index)
 
 	beginInsertRows(QModelIndex(), row, row + count - 1);
-	m->old_row_count += count;
+	m->oldRowCount += count;
 	endInsertRows();
 
 	return true;
 }
 
-
-void ItemModel::refresh_data(int* n_rows_before, int* n_rows_after)
+void ItemModel::refreshData(int* rowCountBefore, int* rowCountNew)
 {
-	int old_size = m->old_row_count;
-	int new_size = rowCount();
+	int oldSize = m->oldRowCount;
+	int newSize = rowCount();
 
-	if(n_rows_before != nullptr){
-		*n_rows_before = old_size;
+	if(rowCountBefore != nullptr){
+		*rowCountBefore = oldSize;
 	}
 
-	if(n_rows_after != nullptr){
-		*n_rows_after = new_size;
+	if(rowCountNew != nullptr){
+		*rowCountNew = newSize;
 	}
 
-	if(old_size > new_size){
-		removeRows(new_size, old_size - new_size);
+	if(oldSize > newSize){
+		removeRows(newSize, oldSize - newSize);
 	}
 
-	else if(old_size < new_size){
-		insertRows(old_size, new_size - old_size);
+	else if(oldSize < newSize){
+		insertRows(oldSize, newSize - oldSize);
 	}
 
 	emit dataChanged(index(0,0), index(rowCount() - 1, columnCount() - 1));
 }
 
 
-Gui::CustomMimeData* ItemModel::custom_mimedata() const
+Gui::CustomMimeData* ItemModel::customMimedata() const
 {
 	auto* mimedata = new Gui::CustomMimeData(this);
 
-	MetaDataList v_md = mimedata_tracks();
-	mimedata->set_metadata(v_md);
+	MetaDataList tracks = selectedMetadata();
+	mimedata->setMetadata(tracks);
 
 	return mimedata;
 }
 
-bool ItemModel::is_selected(int id) const
-{
-	return selections().contains(id);
-}
-
-IndexSet ItemModel::selected_indexes() const
-{
-	IndexSet ret;
-
-	for(int i=0; i<rowCount(); i++)
-	{
-		Id id = id_by_index(i);
-		if(id < 0){
-			continue;
-		}
-
-		if(is_selected(id)){
-			ret << i;
-		}
-	}
-
-	return ret;
-}
-
-QModelIndexList ItemModel::search_results(const QString& substr)
+QModelIndexList ItemModel::searchResults(const QString& substr)
 {
 	QModelIndexList ret;
 
@@ -180,11 +154,11 @@ QModelIndexList ItemModel::search_results(const QString& substr)
 
 	for(int i=0; i<len; i++)
 	{
-		QString title = searchable_string(i);
-		title = Library::Utils::convert_search_string(title, search_mode());
+		QString title = searchableString(i);
+		title = Library::Utils::convertSearchstring(title, searchMode());
 
 		if(title.contains(substr)) {
-			ret << this->index(i, searchable_column());
+			ret << this->index(i, searchableColumn());
 		}
 	}
 

@@ -1,6 +1,6 @@
 /* LineInputDialog.h */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -50,19 +50,19 @@ namespace Gui
 				Cancelled
 			};
 
-			LineInputDialog(const QString& window_title, const QString& info_text, const QString& input_text, QWidget* parent=nullptr);
-			LineInputDialog(const QString& window_title, const QString& info_text, QWidget* parent=nullptr);
-			~LineInputDialog();
+			LineInputDialog(const QString& title, const QString& infoText, const QString& inputText, QWidget* parent=nullptr);
+			LineInputDialog(const QString& title, const QString& infoText, QWidget* parent=nullptr);
+			virtual ~LineInputDialog() override;
 
-			void set_header_text(const QString& text);
-			void set_info_text(const QString& text);
-			void set_completer_text(const QStringList& lst);
+			void setHeaderText(const QString& text);
+			void setInfoText(const QString& text);
+			void setCompleterText(const QStringList& lst);
 
 			/**
 			 * @brief returns if the dialog was closes by cancel or ok button
 			 * @return ReturnValue::Ok if ok button was pressed, ReturnValue::Cancelled else
 			 */
-			ReturnValue return_value() const;
+			ReturnValue returnValue() const;
 
 			/**
 			 * @brief Return the entered text
@@ -74,21 +74,31 @@ namespace Gui
 			 * @brief Prefill the QLineEdit widget
 			 * @param text
 			 */
-			void set_text(const QString& text);
+			void setText(const QString& text);
+
+			void setPlaceholderText(const QString& text);
+
+			void showInfo(bool b, const QString& infoPrefix=QString());
 
 			/**
 			 * @brief Convenience method for return_value() method
 			 * @return
 			 */
-			bool was_accepted() const;
+			bool wasAccepted() const;
+			void setInvalidChars(const QList<QChar>& chars);
 
 		private slots:
-			void ok_clicked();
-			void cancel_clicked();
+			void okClicked();
+			void cancelClicked();
+			void textEdited(const QString& text);
 
 		protected:
 			void showEvent(QShowEvent* e) override;
 			void closeEvent(QCloseEvent* e) override;
+
+		public:
+			static QString getRenameFilename(QWidget* parent, const QString& oldName);
+			static QString getNewFilename(QWidget* parent, const QString& info, const QString& parentPath=QString());
 	};
 }
 

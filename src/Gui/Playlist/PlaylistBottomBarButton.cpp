@@ -1,6 +1,6 @@
 /* BottomBarButton.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -40,7 +40,7 @@ BottomBarButton::BottomBarButton(const QPixmap& pm, QWidget* parent) :
 
 BottomBarButton::~BottomBarButton() = default;
 
-void BottomBarButton::set_pixmap(const QPixmap& pm)
+void BottomBarButton::setPixmap(const QPixmap& pm)
 {
 	m->pixmap = pm;
 }

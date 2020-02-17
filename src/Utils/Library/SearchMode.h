@@ -1,6 +1,6 @@
 /* SearchMode.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -55,7 +55,7 @@ namespace Library
 		 * @param str source string
 		 * @param mode combination of SearchMode values
 		 */
-		QString convert_search_string(const QString& str, SearchModeMask mode);
+		QString convertSearchstring(const QString& str, SearchModeMask mode);
 
 		/**
 		 * @brief Converts a user entered string into a cis-representation.
@@ -67,7 +67,7 @@ namespace Library
 		 * @param mode combination of SearchMode values
 		 * @param ignored_chars chars that are not replaced within that method
 		 */
-		QString convert_search_string(const QString& str, SearchModeMask mode, const QList<QChar>& ignored_chars);
+		QString convertSearchstring(const QString& str, SearchModeMask mode, const QList<QChar>& ignored_chars);
 	}
 }
 

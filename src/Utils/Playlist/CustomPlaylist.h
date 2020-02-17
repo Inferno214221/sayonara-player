@@ -1,6 +1,6 @@
 /* CustomPlaylist.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -36,14 +36,14 @@ public:
 
 	bool valid() const;
 
-	int num_tracks() const override;
+	int trackCount() const override;
 
 	CustomPlaylist();
 	explicit CustomPlaylist(const CustomPlaylistSkeleton& skeleton);
-	virtual ~CustomPlaylist();
+	virtual ~CustomPlaylist() override;
 
 private:
-	void set_num_tracks(int num_tracks) override;
+	void setTrackCount(int trackCount) override;
 };
 
 #endif // CUSTOMPLAYLIST_H

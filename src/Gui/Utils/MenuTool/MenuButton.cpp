@@ -1,6 +1,6 @@
 /* MenuButton.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -29,6 +29,8 @@ using namespace Gui;
 MenuButton::MenuButton(QWidget* parent) :
 	WidgetTemplate<QPushButton>(parent)
 {
+	this->setText(QString::fromUtf8("≡"));
+
 	this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 	this->setIconSize(QSize(10, 10));
 	this->setToolTip(Lang::get(Lang::Menu));
@@ -37,14 +39,14 @@ MenuButton::MenuButton(QWidget* parent) :
 
 MenuButton::~MenuButton() {}
 
-void MenuButton::show_menu(QPoint pos)
+void MenuButton::showMenu(QPoint pos)
 {
 	Q_UNUSED(pos)
 	this->setAttribute( Qt::WA_Hover, false);
 	this->setAttribute( Qt::WA_UnderMouse, false);
 }
 
-bool MenuButton::prove_enabled()
+bool MenuButton::proveEnabled()
 {
 	return true;
 }
@@ -56,19 +58,15 @@ void MenuButton::mousePressEvent(QMouseEvent* e)
 
 	QPoint globalPoint = this->mapToGlobal(this->pos()) - this->pos();
 
-	emit sig_triggered(globalPoint);
+	emit sigTriggered(globalPoint);
 
-	show_menu(globalPoint);
+	showMenu(globalPoint);
 }
 
-void MenuButton::skin_changed() {}
+void MenuButton::skinChanged() {}
 
-void MenuButton::language_changed()
+void MenuButton::languageChanged()
 {
 	this->setToolTip(Lang::get(Lang::Menu));
-
-	if(!this->text().isEmpty())
-	{
-		this->setText(QString::fromUtf8("≡"));
-	}
+	this->setText(QString::fromUtf8("≡"));
 }

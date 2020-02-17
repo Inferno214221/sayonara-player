@@ -1,6 +1,6 @@
 /* AlbumCoverModel.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -60,40 +60,39 @@ private:
 
 public:
 	CoverViewPixmapCache*		cvpc=nullptr;
-	AlbumCoverFetchThread*		cover_thread=nullptr;
+	AlbumCoverFetchThread*		coverThread=nullptr;
 
-	QHash<Hash, QModelIndex>	hash_index_map;
-	HashSet						invalid_hashes;
-	QSize						item_size;
+	QHash<Hash, QModelIndex>	hashIndexMap;
+	HashSet						invalidHashes;
+	QSize						itemSize;
 
-	std::mutex					refresh_mtx;
+	std::mutex					refreshMtx;
 
-	int	old_row_count;
-	int	old_column_count;
+	int	oldRowCount;
+	int	oldColumnCount;
 	int columns;
-	int	clus_running;
+	int	clusRunning;
 	int	zoom;
 
 	Private(QObject* parent) :
-		old_row_count(0),
-		old_column_count(0),
+		oldRowCount(0),
+		oldColumnCount(0),
 		columns(10),
-		clus_running(0),
+		clusRunning(0),
 		zoom(100)
 	{
-		cover_thread = new AlbumCoverFetchThread(parent);
+		coverThread = new AlbumCoverFetchThread(parent);
 	}
 
 	~Private()
 	{
-		if(cover_thread)
+		if(coverThread)
 		{
-			cover_thread->stop();
-			cover_thread->wait();
+			coverThread->stop();
+			coverThread->wait();
 		}
 	}
 };
-
 
 
 CoverModel::CoverModel(QObject* parent, AbstractLibrary* library) :
@@ -103,30 +102,30 @@ CoverModel::CoverModel(QObject* parent, AbstractLibrary* library) :
 	m->cvpc = new CoverViewPixmapCache();
 
 	Cover::ChangeNotfier* ccn = Cover::ChangeNotfier::instance();
-	connect(ccn, &Cover::ChangeNotfier::sig_covers_changed, this, &CoverModel::reload);
+	connect(ccn, &Cover::ChangeNotfier::sigCoversChanged, this, &CoverModel::reload);
 
-	connect(library, &AbstractLibrary::sig_all_albums_loaded, this, &CoverModel::refresh_data);
+	connect(library, &AbstractLibrary::sigAllAlbumsLoaded, this, &CoverModel::refreshData);
 
-	connect(m->cover_thread, &AlbumCoverFetchThread::sig_next, this, &CoverModel::next_hash);
-	connect(m->cover_thread, &QObject::destroyed, this, [=](){
-		m->cover_thread = nullptr;
+	connect(m->coverThread, &AlbumCoverFetchThread::sigNext, this, &CoverModel::nextHash);
+	connect(m->coverThread, &QObject::destroyed, this, [=](){
+		m->coverThread = nullptr;
 	});
 
-	connect(m->cover_thread, &QThread::finished, this, [=](){
-		sp_log(Log::Warning, this) << "Cover Thread finished";
-		m->cover_thread = nullptr;
+	connect(m->coverThread, &QThread::finished, this, [=](){
+		spLog(Log::Warning, this) << "Cover Thread finished";
+		m->coverThread = nullptr;
 	});
 
-	ListenSetting(Set::Lib_CoverShowArtist, CoverModel::show_artists_changed);
+	ListenSetting(Set::Lib_CoverShowArtist, CoverModel::showArtistsChanged);
 
-	m->cover_thread->start();
+	m->coverThread->start();
 }
 
-CoverModel::~CoverModel() {}
+CoverModel::~CoverModel() = default;
 
-static QString get_artist(const Album& album)
+static QString getArtist(const Album& album)
 {
-	QStringList artists = album.album_artists();
+	QStringList artists = album.albumArtists();
 	artists.removeAll("");
 
 	if(artists.isEmpty())
@@ -162,60 +161,60 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 	const Album& album = albums[lin_idx];
 	switch(role)
 	{
-
 		case CoverModel::AlbumRole:
-		case Qt::DisplayRole:
-			{
-				QString name = album.name();
-				if(name.trimmed().isEmpty()){
-					name = Lang::get(Lang::UnknownAlbum);
-				}
-				return name;
+		{
+			QString name = album.name();
+			if(name.trimmed().isEmpty()){
+				name = Lang::get(Lang::UnknownAlbum);
 			}
+			return name;
+		}
+		case Qt::DisplayRole:
+			return QVariant();
 
 		case Qt::TextAlignmentRole:
 			return int(Qt::AlignHCenter | Qt::AlignTop);
 
-		case Qt::DecorationRole:
+		case CoverModel::CoverRole:
 			{
-				Hash hash = AlbumCoverFetchThread::get_hash(album);
-				m->hash_index_map[hash] = index;
+				Hash hash = AlbumCoverFetchThread::getHash(album);
+				m->hashIndexMap[hash] = index;
 
-				if(m->cvpc->has_pixmap(hash))
+				if(m->cvpc->hasPixmap(hash))
 				{
 					QPixmap pm = m->cvpc->pixmap(hash);
-					if(m->cvpc->is_outdated(hash))
+					if(m->cvpc->isOutdated(hash))
 					{
-						m->cover_thread->add_album(album);
+						m->coverThread->addAlbum(album);
 					}
 
 					return pm;
 				}
 
-				if(m->invalid_hashes.contains(hash)){
-					return m->cvpc->invalid_pixmap();
+				if(m->invalidHashes.contains(hash)){
+					return m->cvpc->invalidPixmap();
 				}
 
-				sp_log(Log::Develop, this) << "Need to fetch cover for " << hash;
-				m->cover_thread->add_album(album);
+				spLog(Log::Develop, this) << "Need to fetch cover for " << hash;
+				m->coverThread->addAlbum(album);
 
-				return m->cvpc->invalid_pixmap();
+				return m->cvpc->invalidPixmap();
 			}
 
 		case Qt::SizeHintRole:
-			return m->item_size;
+			return m->itemSize;
 
 		case CoverModel::ArtistRole:
 			if(GetSetting(Set::Lib_CoverShowArtist))
 			{
-				return get_artist(album);
+				return getArtist(album);
 			}
 
 			return QString();
 
 		case Qt::ToolTipRole:
 			return QString("<b>%1</b><br>%2")
-					.arg(get_artist(album))
+					.arg(getArtist(album))
 					.arg(album.name());
 
 		default:
@@ -227,26 +226,26 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 struct CoverLookupUserData
 {
 	Hash hash;
-	Location cl;
+	Location coverLookup;
 	AlbumCoverFetchThread* acft=nullptr;
 };
 
-void CoverModel::next_hash()
+void CoverModel::nextHash()
 {
 	AlbumCoverFetchThread* acft = dynamic_cast<AlbumCoverFetchThread*>(sender());
 	if(!acft){
 		return;
 	}
 
-	AlbumCoverFetchThread::HashLocationPair hlp = acft->take_current_lookup();
-	if(hlp.first.isEmpty() || !hlp.second.is_valid()){
+	AlbumCoverFetchThread::HashLocationPair hlp = acft->takeCurrentLookup();
+	if(hlp.first.isEmpty() || !hlp.second.isValid()){
 		return;
 	}
 
-	sp_log(Log::Crazy, this) << "Status cover fetch thread:";
-	sp_log(Log::Crazy, this) << "  Lookups ready: " << acft->lookups_ready();
-	sp_log(Log::Crazy, this) << "  Unprocessed hashes: " << acft->unprocessed_hashes();
-	sp_log(Log::Crazy, this) << "  Queued hashes: " << acft->queued_hashes();
+	spLog(Log::Crazy, this) << "Status cover fetch thread:";
+	spLog(Log::Crazy, this) << "  Lookups ready: " << acft->lookupsReady();
+	spLog(Log::Crazy, this) << "  Unprocessed hashes: " << acft->unprocessedHashes();
+	spLog(Log::Crazy, this) << "  Queued hashes: " << acft->queuedHashes();
 
 
 	Hash hash = hlp.first;
@@ -257,24 +256,24 @@ void CoverModel::next_hash()
 	CoverLookupUserData* d = new CoverLookupUserData();
 	{
 		d->hash = hash;
-		d->cl = clu->cover_location();
+		d->coverLookup = clu->coverLocation();
 		d->acft = acft;
 	}
 
-	clu->set_user_data(d);
+	clu->setUserData(d);
 
-	connect(clu, &Lookup::sig_finished, this, &CoverModel::cover_lookup_finished);
+	connect(clu, &Lookup::sigFinished, this, &CoverModel::coverLookupFinished);
 
 
-	m->clus_running++;
-	sp_log(Log::Crazy, this) << "CLU started: " << m->clus_running << ", " << d->hash;
+	m->clusRunning++;
+	spLog(Log::Crazy, this) << "CLU started: " << m->clusRunning << ", " << d->hash;
 	clu->start();
 }
 
-void CoverModel::cover_lookup_finished(bool success)
+void CoverModel::coverLookupFinished(bool success)
 {
 	auto* clu = static_cast<Lookup*>(sender());
-	auto* data = static_cast<CoverLookupUserData*>(clu->user_data());
+	auto* data = static_cast<CoverLookupUserData*>(clu->userData());
 	Hash hash = data->hash;
 
 	QList<QPixmap> pixmaps;
@@ -286,32 +285,32 @@ void CoverModel::cover_lookup_finished(bool success)
 	if(!pixmaps.isEmpty())
 	{
 		QPixmap pm(pixmaps.first());
-		m->cvpc->add_pixmap(hash, pm);
+		m->cvpc->addPixmap(hash, pm);
 	}
 
 	else
 	{
-		m->invalid_hashes.insert(hash);
+		m->invalidHashes.insert(hash);
 	}
 
-	m->clus_running--;
-	sp_log(Log::Crazy, this) << "CLU finished: " << m->clus_running << ", " << hash;
+	m->clusRunning--;
+	spLog(Log::Crazy, this) << "CLU finished: " << m->clusRunning << ", " << hash;
 	data->acft->done(hash);
 
-	clu->set_user_data(nullptr);
+	clu->setUserData(nullptr);
 
 	delete clu; clu = nullptr;
 
 	emit dataChanged(index(0, 0), index(rowCount() - 1, columnCount() - 1), {Qt::DecorationRole});
 }
 
-void CoverModel::cover_ready(const QString& hash)
+void CoverModel::coverReady(const QString& hash)
 {
-	QModelIndex index = m->hash_index_map.value(hash);
+	QModelIndex index = m->hashIndexMap.value(hash);
 	emit dataChanged(index, index);
 }
 
-QModelIndexList CoverModel::search_results(const QString& substr)
+QModelIndexList CoverModel::searchResults(const QString& substr)
 {
 	QModelIndexList ret;
 
@@ -320,8 +319,8 @@ QModelIndexList CoverModel::search_results(const QString& substr)
 	int i=0;
 	for(auto it=albums.begin(); it != albums.end(); it++, i++)
 	{
-		QString title = searchable_string(i);
-		title = Library::Utils::convert_search_string(title, search_mode());
+		QString title = searchableString(i);
+		title = Library::Utils::convertSearchstring(title, searchMode());
 
 		if(title.contains(substr))
 		{
@@ -332,7 +331,7 @@ QModelIndexList CoverModel::search_results(const QString& substr)
 		const QStringList artists = it->artists();
 		for(const QString& artist : artists)
 		{
-			QString cvt_artist = Library::Utils::convert_search_string(artist, search_mode());
+			QString cvt_artist = Library::Utils::convertSearchstring(artist, searchMode());
 
 			if(cvt_artist.contains(substr)){
 				ret << this->index(i / columnCount(), i % columnCount());
@@ -344,13 +343,12 @@ QModelIndexList CoverModel::search_results(const QString& substr)
 	return ret;
 }
 
-
-int CoverModel::searchable_column() const
+int CoverModel::searchableColumn() const
 {
 	return 0;
 }
 
-QString CoverModel::searchable_string(int idx) const
+QString CoverModel::searchableString(int idx) const
 {
 	const AlbumList& albums = this->albums();
 	if(idx < 0 || idx >= albums.count())
@@ -361,7 +359,7 @@ QString CoverModel::searchable_string(int idx) const
 	return albums[idx].name();
 }
 
-int CoverModel::id_by_index(int idx) const
+int CoverModel::mapIndexToId(int idx) const
 {
 	const AlbumList& albums = this->albums();
 	if(idx < 0 || idx >= albums.count())
@@ -375,18 +373,18 @@ int CoverModel::id_by_index(int idx) const
 Location CoverModel::cover(const IndexSet& indexes) const
 {
 	if(indexes.size() != 1){
-		return Location::invalid_location();
+		return Location::invalidLocation();
 	}
 
 	const AlbumList& albums = this->albums();
 
 	int idx = indexes.first();
 	if(idx < 0 || idx >= albums.count()){
-		return Location::invalid_location();
+		return Location::invalidLocation();
 	}
 
 	Album album = albums[idx];
-	return Cover::Location::xcover_location(album);
+	return Cover::Location::xcoverLocation(album);
 }
 
 
@@ -413,7 +411,7 @@ Qt::ItemFlags CoverModel::flags(const QModelIndex& index) const
 	return ret;
 }
 
-const MetaDataList& Library::CoverModel::mimedata_tracks() const
+const MetaDataList& Library::CoverModel::selectedMetadata() const
 {
 	return library()->tracks();
 }
@@ -423,15 +421,9 @@ const AlbumList& CoverModel::albums() const
 	return library()->albums();
 }
 
-const Util::Set<Id>& CoverModel::selections() const
-{
-	return library()->selected_albums();
-}
-
-
 QSize CoverModel::item_size() const
 {
-	return m->item_size;
+	return m->itemSize;
 }
 
 int CoverModel::zoom() const
@@ -440,7 +432,7 @@ int CoverModel::zoom() const
 }
 
 
-static QSize calc_item_size(int zoom, QFont font)
+static QSize calcItemSize(int zoom, QFont font)
 {
 	int text_height = QFontMetrics(font).height();
 	bool show_artist = GetSetting(Set::Lib_CoverShowArtist);
@@ -458,31 +450,31 @@ static QSize calc_item_size(int zoom, QFont font)
 }
 
 
-void CoverModel::set_zoom(int zoom, const QSize& view_size)
+void CoverModel::setZoom(int zoom, const QSize& view_size)
 {
 	m->zoom = zoom;
-	m->item_size = calc_item_size(zoom, Gui::Util::main_window()->font());
+	m->itemSize = calcItemSize(zoom, Gui::Util::mainWindow()->font());
 
-	int columns = (view_size.width() / m->item_size.width());
+	int columns = (view_size.width() / m->itemSize.width());
 	if(columns > 0)
 	{
 		m->columns = columns;
 
-		int visible_rows = (view_size.height() / m->item_size.height()) + 1;
-		m->cvpc->set_cache_size(visible_rows * columns * 3);
+		int visible_rows = (view_size.height() / m->itemSize.height()) + 1;
+		m->cvpc->setCacheSize(visible_rows * columns * 3);
 
-		refresh_data();
+		refreshData();
 	}
 }
 
-void CoverModel::show_artists_changed()
+void CoverModel::showArtistsChanged()
 {
-	m->item_size = calc_item_size(m->zoom, Gui::Util::main_window()->font());
+	m->itemSize = calcItemSize(m->zoom, Gui::Util::mainWindow()->font());
 }
 
 void CoverModel::reload()
 {
-	m->cvpc->set_all_outdated();
+	m->cvpc->setAllOutdated();
 	clear();
 
 	emit dataChanged(index(0,0), index(rowCount() - 1, columnCount() - 1));
@@ -490,16 +482,14 @@ void CoverModel::reload()
 
 void CoverModel::clear()
 {
-	m->invalid_hashes.clear();
-	m->cover_thread->clear();
-	m->hash_index_map.clear();
+	m->invalidHashes.clear();
+	m->coverThread->clear();
+	m->hashIndexMap.clear();
 }
 
 
-int CoverModel::rowCount(const QModelIndex& parent) const
+int CoverModel::rowCount(const QModelIndex&) const
 {
-	Q_UNUSED(parent);
-
 	if(columnCount() == 0){
 		return 0;
 	}
@@ -507,70 +497,85 @@ int CoverModel::rowCount(const QModelIndex& parent) const
 	return (albums().count() / columnCount()) + 1;
 }
 
-int CoverModel::columnCount(const QModelIndex& parent) const
+int CoverModel::columnCount(const QModelIndex&) const
 {
-	Q_UNUSED(parent);
 	return m->columns;
 }
 
 
-void CoverModel::refresh_data()
+void CoverModel::refreshData()
 {
-	LOCK_GUARD(m->refresh_mtx);
+	LOCK_GUARD(m->refreshMtx)
 
-	int old_columns = m->old_column_count;
-	int old_rows = m->old_row_count;
+	int oldColumns = m->oldColumnCount;
+	int oldRows = m->oldRowCount;
 
-	int new_rows = rowCount();
-	int new_columns = columnCount();
+	int newRows = rowCount();
+	int newColumns = columnCount();
 
-	if((new_rows == old_rows) && (new_columns == old_columns))
+	if((newRows == oldRows) && (newColumns == oldColumns))
 	{
 		return;
 	}
 
-	if(new_rows > old_rows)	{
-		add_rows(old_rows, new_rows - old_rows);
+	if(newRows > oldRows)	{
+		insertRows(oldRows, newRows - oldRows);
 	}
 
-	if(new_columns > old_columns) {
-		add_columns(old_columns, new_columns - old_columns);
+	if(newColumns > oldColumns) {
+		insertColumns(oldColumns, newColumns - oldColumns);
 	}
 
-	if(new_columns < old_columns) {
-		remove_columns(new_columns, old_columns - new_columns);
+	if(newColumns < oldColumns) {
+		removeColumns(newColumns, oldColumns - newColumns);
 	}
 
-	if(new_rows < old_rows) {
-		remove_rows(new_rows, old_rows - new_rows);
+	if(newRows < oldRows) {
+		removeRows(newRows, oldRows - newRows);
 	}
 }
 
-void CoverModel::add_rows(int row, int count)
+bool CoverModel::insertRows(int row, int count, const QModelIndex& parent)
 {
+	Q_UNUSED(parent)
+
 	beginInsertRows(QModelIndex(), row, row + count - 1);
-	m->old_row_count += count;
+	m->oldRowCount += count;
 	endInsertRows();
+
+	return true;
 }
 
-void CoverModel::remove_rows(int row, int count)
+bool CoverModel::removeRows(int row, int count, const QModelIndex& parent)
 {
+	Q_UNUSED(parent)
+
 	beginRemoveRows(QModelIndex(), row, row + count - 1);
-	m->old_row_count -= count;
+	m->oldRowCount -= count;
 	endRemoveRows();
+
+	return true;
 }
 
-void CoverModel::add_columns(int column, int count)
+bool CoverModel::insertColumns(int column, int count, const QModelIndex& parent)
 {
+	Q_UNUSED(parent)
+
 	beginInsertColumns(QModelIndex(), column, column + count - 1);
-	m->old_column_count += count;
+	m->oldColumnCount += count;
 	endInsertColumns();
+
+	return true;
 }
 
-void CoverModel::remove_columns(int column, int count)
+bool CoverModel::removeColumns(int column, int count, const QModelIndex& parent)
 {
+	Q_UNUSED(parent)
+
 	beginRemoveColumns(QModelIndex(), column, column + count - 1);
-	m->old_column_count -= count;
+	m->oldColumnCount -= count;
 	endRemoveColumns();
+
+	return true;
 }
 

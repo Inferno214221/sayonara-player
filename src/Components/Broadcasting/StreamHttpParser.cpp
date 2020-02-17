@@ -1,6 +1,6 @@
 /* StreamHttpParser.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -38,7 +38,7 @@ struct StreamHttpParser::Private
 	}
 };
 
-QString StreamHttpParser::answer_string(StreamHttpParser::HttpAnswer answer)
+QString StreamHttpParser::answerString(StreamHttpParser::HttpAnswer answer)
 {
 	using Answer=StreamHttpParser::HttpAnswer;
 	switch(answer)
@@ -94,13 +94,13 @@ StreamHttpParser::HttpAnswer StreamHttpParser::parse(const QByteArray& data)
 	m->host = "";
 
 	if(data.isEmpty()) {
-		sp_log(Log::Error, this) << "Fail.. Cannot read from socket";
+		spLog(Log::Error, this) << "Fail.. Cannot read from socket";
 		return HttpAnswer::Fail;
 	}
 
 	lst = qmsg.split("\r\n");
 
-	sp_log(Log::Develop, this) << qmsg;
+	spLog(Log::Develop, this) << qmsg;
 
 	for(const QString& str : Algorithm::AsConst(lst))
 	{
@@ -130,7 +130,7 @@ StreamHttpParser::HttpAnswer StreamHttpParser::parse(const QByteArray& data)
 			continue;
 		}
 
-		sp_log(Log::Debug, this) << "Client asks for MP3? " << str.contains(regex_mp3);
+		spLog(Log::Debug, this) << "Client asks for MP3? " << str.contains(regex_mp3);
 		if(str.contains(regex_mp3)){
 			get_mp3 = true;
 			continue;
@@ -215,12 +215,12 @@ StreamHttpParser::HttpAnswer StreamHttpParser::parse(const QByteArray& data)
 	return HttpAnswer::Fail;
 }
 
-bool StreamHttpParser::is_icy() const
+bool StreamHttpParser::isIcyStream() const
 {
 	return m->icy;
 }
 
-QString StreamHttpParser::get_host() const
+QString StreamHttpParser::host() const
 {
 	return m->host;
 }

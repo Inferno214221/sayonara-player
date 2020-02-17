@@ -1,6 +1,6 @@
 /* PreferenceRegistry.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "PreferenceRegistry.h"
 
 #include <QList>
@@ -28,7 +26,7 @@
 struct PreferenceRegistry::Private
 {
 	QList<QString>	preferences;
-	PreferenceUi*	user_interface=nullptr;
+	PreferenceUi*	preferenceUserInterface=nullptr;
 };
 
 PreferenceRegistry::PreferenceRegistry()
@@ -38,7 +36,7 @@ PreferenceRegistry::PreferenceRegistry()
 
 PreferenceRegistry::~PreferenceRegistry() {}
 
-void PreferenceRegistry::register_preference(const QString& name)
+void PreferenceRegistry::registerPreference(const QString& name)
 {
 	if(!m->preferences.contains(name))
 	{
@@ -46,14 +44,14 @@ void PreferenceRegistry::register_preference(const QString& name)
 	}
 }
 
-void PreferenceRegistry::set_user_interface(PreferenceUi* ui)
+void PreferenceRegistry::setUserInterface(PreferenceUi* ui)
 {
-	m->user_interface = ui;
+	m->preferenceUserInterface = ui;
 }
 
-void PreferenceRegistry::show_preference(const QString& name)
+void PreferenceRegistry::showPreference(const QString& name)
 {
-	if(m->user_interface){
-		m->user_interface->show_preference(name);
+	if(m->preferenceUserInterface){
+		m->preferenceUserInterface->showPreference(name);
 	}
 }

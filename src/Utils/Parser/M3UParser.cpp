@@ -1,6 +1,6 @@
 /* M3UParser.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -49,7 +49,7 @@ void M3UParser::parse()
 
 		if(line.startsWith("#EXTINF:", Qt::CaseInsensitive)) {
 			md = MetaData();
-			parse_first_line(line, md);
+			parseFirstLine(line, md);
 			continue;
 		}
 
@@ -57,29 +57,29 @@ void M3UParser::parse()
 			continue;
 		}
 
-		if(Util::File::is_playlistfile(line)){
-			MetaDataList v_md = PlaylistParser::parse_playlist(line);
-			add_tracks(v_md);
+		if(Util::File::isPlaylistFile(line)){
+			MetaDataList v_md = PlaylistParser::parsePlaylist(line);
+			addTracks(v_md);
 			continue;
 		}
 
-		else if( !Util::File::is_www(line)) {
-			parse_local_file(line, md);
+		else if( !Util::File::isWWW(line)) {
+			parseLocalFile(line, md);
 		}
 
 		else {
-			parse_www_file(line, md);
+			parseWWWFile(line, md);
 		}
 
 		if(!md.filepath().isEmpty()){
-			add_track(md);
+			addTrack(md);
 			md = MetaData();
 		}
 	}
 }
 
 
-bool M3UParser::parse_first_line(const QString& line, MetaData& md)
+bool M3UParser::parseFirstLine(const QString& line, MetaData& md)
 {
 	QRegExp re("^#EXTINF:\\s*([0-9]+)\\s*,\\s*(\\S)+\\s*-\\s*(\\S)+");
 	int idx = re.indexIn(line);
@@ -87,28 +87,28 @@ bool M3UParser::parse_first_line(const QString& line, MetaData& md)
 		return false;
 	}
 
-	md.set_duration_ms(re.cap(1).toInt() * 1000);
-	md.set_artist(re.cap(2));
-	md.set_title(re.cap(3));
+	md.setDurationMs(re.cap(1).toInt() * 1000);
+	md.setArtist(re.cap(2));
+	md.setTitle(re.cap(3));
 
 	return true;
 }
 
 
-void M3UParser::parse_local_file(const QString& line, MetaData& md)
+void M3UParser::parseLocalFile(const QString& line, MetaData& md)
 {
-	QString abs_filename = get_absolute_filename(line);
+	QString abs_filename = getAbsoluteFilename(line);
 	if(abs_filename.isEmpty()){
 		return;
 	}
 
-	md.set_filepath(abs_filename);
+	md.setFilepath(abs_filename);
 	Tagging::Utils::getMetaDataOfFile(md);
 }
 
-void M3UParser::parse_www_file(const QString& line, MetaData& md)
+void M3UParser::parseWWWFile(const QString& line, MetaData& md)
 {
-	md.set_radio_station(line);
-	md.set_filepath(line);
+	md.setRadioStation(line);
+	md.setFilepath(line);
 }
 

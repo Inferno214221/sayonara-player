@@ -1,6 +1,6 @@
 /* VisualColorStyleChooser.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -162,9 +162,9 @@ void VisualColorStyleChooser::reload(int widget_width, int widget_height)
 {
 	LOCK_GUARD(mtx)
 
-	DB::VisualStyles* db = DB::Connector::instance()->visual_style_connector();
+	DB::VisualStyles* db = DB::Connector::instance()->visualStyleConnector();
 
-	QList< RawColorStyle > colors_active = db->get_raw_color_styles();
+	QList< RawColorStyle > colors_active = db->getRawColorStyles();
 
 	_styles_spectrum.clear();
 	_styles_level.clear();
@@ -200,8 +200,8 @@ void VisualColorStyleChooser::reload(int widget_width, int widget_height)
 
 		colors_active << fallback1 << fallback2;
 
-		db->insert_raw_color_style_to_db(fallback1);
-		db->insert_raw_color_style_to_db(fallback2);
+		db->insertRawColorStyle(fallback1);
+		db->insertRawColorStyle(fallback2);
 	}
 
 

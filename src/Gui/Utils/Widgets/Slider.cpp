@@ -1,6 +1,6 @@
 /* Slider.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -36,7 +36,7 @@ struct Slider::Private
 	{}
 };
 
-Slider::Slider(QWidget *parent) :
+Slider::Slider(QWidget* parent) :
 	QSlider(parent)
 {
 	m = Pimpl::make<Private>();
@@ -56,13 +56,13 @@ bool Slider::event(QEvent *e){
 	{
 		case QEvent::HoverEnter:
 			m->hovered = true;
-			emit sig_slider_got_focus();
+			emit sigSliderGotFocus();
 			break;
 
 		case QEvent::HoverLeave:
 			m->hovered = false;
 			if(!this->hasFocus()){
-				emit sig_slider_lost_focus();
+				emit sigSliderLostFocus();
 			}
 
 			break;
@@ -77,48 +77,48 @@ bool Slider::event(QEvent *e){
 
 void Slider::focusInEvent(QFocusEvent* e){
 	QSlider::focusInEvent(e);
-	emit sig_slider_got_focus();
+	emit sigSliderGotFocus();
 }
 
 void Slider::focusOutEvent(QFocusEvent* e){
 	QSlider::focusOutEvent(e);
-	emit sig_slider_lost_focus();
+	emit sigSliderLostFocus();
 }
 
 void Slider::mousePressEvent(QMouseEvent* e)
 {
 	this->setSliderDown(true);
 
-	int new_val = get_val_from_pos(e->pos());
+	int new_val = valueFromPosition(e->pos());
 	setValue(new_val);
 }
 
 void Slider::mouseReleaseEvent(QMouseEvent* e)
 {
-	int new_val = get_val_from_pos(e->pos());
+	int new_val = valueFromPosition(e->pos());
 	setValue(new_val);
 
 	this->setSliderDown(false);
 }
 
-bool Slider::has_other_value() const
+bool Slider::hasAdditionalValue() const
 {
 	return false;
 }
 
-int Slider::other_value() const
+int Slider::additionalValue() const
 {
 	return -1;
 }
 
-QColor Slider::other_value_color() const
+QColor Slider::additionalValueColor() const
 {
 	return QColor(0, 0, 0);
 }
 
 void Slider::mouseMoveEvent(QMouseEvent* e)
 {
-	int new_val = get_val_from_pos(e->pos());
+	int new_val = valueFromPosition(e->pos());
 
 	if(this->isSliderDown())
 	{
@@ -127,7 +127,7 @@ void Slider::mouseMoveEvent(QMouseEvent* e)
 
 	else
 	{
-		emit sig_slider_hovered(new_val);
+		emit sigSliderHovered(new_val);
 	}
 }
 
@@ -135,7 +135,7 @@ void Slider::sliderChange(SliderChange change){
 	QSlider::sliderChange(change);
 }
 
-int Slider::get_val_from_pos(const QPoint& pos) const
+int Slider::valueFromPosition(const QPoint& pos) const
 {
 	int percent;
 	if(this->orientation() == Qt::Vertical){
@@ -154,7 +154,7 @@ static QRect calc_rect(QSlider* slider, int value, bool is_horizontal)
 {
 	int long_side = slider->width();
 	int short_side = slider->height();	
-	int rect_thickness = Gui::Util::text_width(slider->fontMetrics(), "m") / 4;
+	int rect_thickness = Gui::Util::textWidget(slider->fontMetrics(), "m") / 4;
 
 	if(!is_horizontal){
 		long_side = slider->height();
@@ -184,7 +184,7 @@ static QRect calc_rect(QSlider* slider, int value, bool is_horizontal)
 #include "Utils/Logger/Logger.h"
 void Slider::paintEvent(QPaintEvent* e)
 {
-	if(!Style::is_dark())
+	if(!Style::isDark())
 	{
 		QSlider::paintEvent(e);
 		return;
@@ -198,13 +198,13 @@ void Slider::paintEvent(QPaintEvent* e)
 	QRect rect_dark = calc_rect(this, this->maximum(), is_horizontal);
 	rects << RectColorPair(rect_dark, QColor(42, 42, 42));
 
-	if(this->has_other_value())
+	if(this->hasAdditionalValue())
 	{
-		int other_value = this->other_value();
+		int other_value = this->additionalValue();
 
-		sp_log(Log::Info, this) << "value: " << this->value() << " buffer: " << this->other_value();
+		spLog(Log::Info, this) << "value: " << this->value() << " buffer: " << this->additionalValue();
 		QRect rect = calc_rect(this, other_value, is_horizontal);
-		rects << RectColorPair(rect, this->other_value_color());
+		rects << RectColorPair(rect, this->additionalValueColor());
 	}
 
 	QRect rect_orange = calc_rect(this, this->value(), is_horizontal);

@@ -1,6 +1,6 @@
 /* Style.cpp */
 
-/* Copyright (C) 2011-2020 Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -23,7 +23,7 @@
  * Style.cpp
  *
  *  Created on: Oct 27, 2011
- *      Author: Lucio Carreras
+ *      Author: Michael Lugmair (Lucio Carreras)
  */
 
 #include "Style.h"
@@ -74,20 +74,20 @@ QString Style::style(bool dark)
 	if(!dark)
 	{
 		path = ":/Style/standard.css";
-		additional_path = Util::sayonara_path("standard.css");
+		additional_path = Util::sayonaraPath("standard.css");
 	}
 
 	else
 	{
 		path = ":/Style/dark.css";
-		additional_path = Util::sayonara_path("dark.css");
+		additional_path = Util::sayonaraPath("dark.css");
 	}
 
-	Util::File::read_file_into_str(path, style );
+	Util::File::readFileIntoString(path, style );
 	if(Util::File::exists(additional_path))
 	{
 		QString additional_style;
-		Util::File::read_file_into_str(additional_path, additional_style);
+		Util::File::readFileIntoString(additional_path, additional_style);
 		style += "\n" + additional_style.trimmed();
 	}
 
@@ -100,7 +100,7 @@ QString Style::style(bool dark)
 	return style;
 }
 
-QFont Style::current_font()
+QFont Style::currentFont()
 {
 	QFont std_font = QApplication::font();
 
@@ -131,36 +131,36 @@ QFont Style::current_font()
 	return QFont(font_family, font_size);
 }
 
-QString Style::current_style()
+QString Style::currentStyle()
 {
-	return style( is_dark() );
+	return style( isDark() );
 }
 
-int Style::recommended_height()
+int Style::recommendedHeight()
 {
-	QFontMetrics fm(current_font());
+	QFontMetrics fm(currentFont());
 	int h = fm.height();
 	return h;
 }
 
-bool Style::is_dark()
+bool Style::isDark()
 {
 	return (GetSetting(Set::Player_Style) == 1);
 }
 
-void Style::set_dark(bool dark)
+void Style::setDark(bool dark)
 {
 	SetSetting(Set::Player_Style, dark ? 1 : 0);
 	Set::shout<SetNoDB::Player_MetaStyle>();
 }
 
-void Style::apply_current_style(QApplication* app)
+void Style::applyCurrentStyle(QApplication* app)
 {
-	app->setStyleSheet(current_style());
+	app->setStyleSheet(currentStyle());
 
 	QPalette palette;
 
-	if(Style::is_dark())
+	if(Style::isDark())
 	{
 		palette = QToolTip::palette();
 		palette.setBrush(QPalette::ColorGroup::Inactive, QPalette::ColorRole::ToolTipBase, QColor(66, 78, 114));

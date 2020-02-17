@@ -1,6 +1,6 @@
 /* GUI_AbstractStream.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -52,7 +52,7 @@ namespace Gui
 			QString identifier() const override;
 
 		protected:
-			QString display_name() const override;
+			QString displayName() const override;
 	};
 
 	class AbstractStationPlugin :
@@ -66,61 +66,53 @@ namespace Gui
 			virtual ~AbstractStationPlugin() override;
 
 		protected:
-			virtual void		retranslate_ui() override;
-			virtual void		play(QString url, QString station_name);
+			virtual void		retranslate() override;
+			virtual void		play(const QString& station_name);
 
-			bool				has_loading_bar() const override;
+			bool				hasLoadingBar() const override;
 
 			template<typename T, typename UiType>
 			void setup_parent(T* subclass, UiType** uiptr)
 			{
-				PlayerPlugin::Base::setup_parent(subclass, uiptr);
-				AbstractStationPlugin::init_ui();
+				PlayerPlugin::Base::setupParent(subclass, uiptr);
+				AbstractStationPlugin::initUi();
 			}
 
-		private slots:
-			void edit_finished();
-			void new_finished();
-
 		protected slots:
-			void listen_clicked();
-			void current_index_changed(int idx);
+			void listenClicked();
+			void currentIndexChanged(int idx);
 
-			void new_clicked();
-			void save_clicked();
-			void edit_clicked();
-			void delete_clicked();
+			void newClicked();
+			void saveClicked();
+			void editClicked();
+			void deleteClicked();
 
-			void too_many_urls_found(int n_urls, int n_max_urls);
+			void urlCountExceeded(int urlCount, int maxUrlCount);
 
 			void stopped();
 			void error();
-			void data_available();
-			void _sl_skin_changed();
+			void dataAvailable();
 
+		private slots:
+			void configFinished();
 
 		protected:
-			virtual QComboBox* combo_stream()=0;
-			virtual QPushButton* btn_play()=0;
-			virtual MenuToolButton* btn_menu()=0;
-			virtual AbstractStationHandler* stream_handler() const=0;
-			virtual QString	get_title_fallback_name() const=0;
-			virtual GUI_ConfigureStation* create_config_dialog()=0;
+			virtual QComboBox* comboStream()=0;
+			virtual QPushButton* btnPlay()=0;
+			virtual MenuToolButton* btnMenu()=0;
+			virtual AbstractStationHandler* streamHandler() const=0;
+			virtual QString	titleFallbackName() const=0;
+			virtual GUI_ConfigureStation* createConfigDialog()=0;
 
-			virtual QString current_name() const;
-			virtual QString current_url() const;
+			virtual void addStream(const QString& name, const QString& url);
 
-			void add_stream(const QString& name, const QString& url);
+			virtual void initUi() override;
+			virtual void assignUiVariables() override;
+			virtual void skinChanged() override;
 
 		private:
-			void assign_ui_vars() override;
-
-			void init_connections();
-			void setup_stations();
-
-			void set_searching(bool searching);
-
-			virtual void init_ui() override;
+			void initConnections();
+			void setupStations();
 	};
 }
 

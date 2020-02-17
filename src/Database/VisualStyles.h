@@ -1,6 +1,6 @@
 /* DatabaseVisualStyles.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -31,14 +31,14 @@ namespace DB
 	class VisualStyles : private Module
 	{
 		public:
-			VisualStyles(const QString& connection_name, DbId db_id);
+			VisualStyles(const QString& connectionName, DbId databaseId);
 			~VisualStyles();
 
-			QList<RawColorStyle> get_raw_color_styles();
-			bool insert_raw_color_style_to_db(const RawColorStyle& rcs);
-			bool update_raw_color_style(const RawColorStyle& rcs);
-			bool raw_color_style_exists(QString name);
-			bool delete_raw_color_style(QString name);
+			QList<RawColorStyle> getRawColorStyles();
+			bool insertRawColorStyle(const RawColorStyle& rcs);
+			bool updateRawColorStyle(const RawColorStyle& rcs);
+			bool rawColorStyleExists(QString name);
+			bool deleteRawColorStyle(QString name);
 	};
 }
 

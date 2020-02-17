@@ -16,30 +16,30 @@ DirectFetcher::DirectFetcher() :
 
 DirectFetcher::~DirectFetcher() = default;
 
-QString DirectFetcher::priv_identifier() const
+QString DirectFetcher::privateIdentifier() const
 {
 	return "direct";
 }
 
-bool DirectFetcher::can_fetch_cover_directly() const
+bool DirectFetcher::canFetchCoverDirectly() const
 {
 	return true;
 }
 
-QStringList DirectFetcher::parse_addresses(const QByteArray& website) const
+QStringList DirectFetcher::parseAddresses(const QByteArray& website) const
 {
 	Q_UNUSED(website);
 	return QStringList();
 }
 
-QString DirectFetcher::artist_address(const QString& artist) const
+QString DirectFetcher::artistAddress(const QString& artist) const
 {
 	Q_UNUSED(artist)
 
 	return m->url;
 }
 
-QString DirectFetcher::album_address(const QString& artist, const QString& album) const
+QString DirectFetcher::albumAddress(const QString& artist, const QString& album) const
 {
 	Q_UNUSED(artist)
 	Q_UNUSED(album)
@@ -47,19 +47,19 @@ QString DirectFetcher::album_address(const QString& artist, const QString& album
 	return m->url;
 }
 
-QString DirectFetcher::search_address(const QString& str) const
+QString DirectFetcher::fulltextSearchAddress(const QString& str) const
 {
 	Q_UNUSED(str)
 
 	return m->url;
 }
 
-int DirectFetcher::estimated_size() const
+int DirectFetcher::estimatedSize() const
 {
 	return 1;
 }
 
-void Cover::Fetcher::DirectFetcher::set_direct_url(const QString& url)
+void Cover::Fetcher::DirectFetcher::setDirectUrl(const QString& url)
 {
 	m->url = url;
 }

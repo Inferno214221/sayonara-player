@@ -1,6 +1,6 @@
 /* PreferenceAction.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -42,16 +42,16 @@ namespace Gui
 		PIMPL(PreferenceAction)
 
 		public:
-			PreferenceAction(const QString& display_name, const QString& identifier, QWidget* parent);
+			PreferenceAction(const QString& displayName, const QString& identifier, QWidget* parent);
 			virtual ~PreferenceAction();
 
 			virtual QString label() const;
 			virtual QString identifier() const=0;
 
-			virtual QPushButton* create_button(QWidget* parent);
+			virtual QPushButton* createButton(QWidget* parent);
 
 		protected:
-			virtual QString display_name() const=0;
+			virtual QString displayName() const=0;
 			void language_changed();
 	};
 
@@ -65,9 +65,9 @@ namespace Gui
 		Q_OBJECT
 		public:
 			LibraryPreferenceAction(QWidget* parent);
-			~LibraryPreferenceAction();
+			~LibraryPreferenceAction() override;
 
-			QString display_name() const override;
+			QString displayName() const override;
 			QString identifier() const override;
 	};
 
@@ -81,9 +81,9 @@ namespace Gui
 		Q_OBJECT
 		public:
 			PlaylistPreferenceAction(QWidget* parent);
-			~PlaylistPreferenceAction();
+			~PlaylistPreferenceAction() override;
 
-			QString display_name() const override;
+			QString displayName() const override;
 			QString identifier() const override;
 	};
 
@@ -97,9 +97,9 @@ namespace Gui
 		Q_OBJECT
 		public:
 			SearchPreferenceAction(QWidget* parent);
-			~SearchPreferenceAction();
+			~SearchPreferenceAction() override;
 
-			QString display_name() const override;
+			QString displayName() const override;
 			QString identifier() const override;
 	};
 
@@ -113,9 +113,9 @@ namespace Gui
 		Q_OBJECT
 		public:
 			CoverPreferenceAction(QWidget* parent);
-			~CoverPreferenceAction();
+			~CoverPreferenceAction() override;
 
-			QString display_name() const override;
+			QString displayName() const override;
 			QString identifier() const override;
 	};
 
@@ -129,9 +129,9 @@ namespace Gui
 		Q_OBJECT
 		public:
 			PlayerPreferencesAction(QWidget* parent);
-			~PlayerPreferencesAction();
+			~PlayerPreferencesAction() override;
 
-			QString display_name() const override;
+			QString displayName() const override;
 			QString identifier() const override;
 	};
 
@@ -145,9 +145,9 @@ namespace Gui
 		Q_OBJECT
 		public:
 			StreamRecorderPreferenceAction(QWidget* parent);
-			~StreamRecorderPreferenceAction();
+			~StreamRecorderPreferenceAction() override;
 
-			QString display_name() const override;
+			QString displayName() const override;
 			QString identifier() const override;
 	};
 }

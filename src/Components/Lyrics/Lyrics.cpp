@@ -1,6 +1,6 @@
 /* Lyrics.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -60,7 +60,7 @@ LyricsImpl::Lyrics(QObject* parent) :
 
 LyricsImpl::~Lyrics() {}
 
-bool LyricsImpl::fetch_lyrics(const QString& artist, const QString& title, int server_index)
+bool LyricsImpl::fetchLyrics(const QString& artist, const QString& title, int server_index)
 {
 	if(artist.isEmpty() || title.isEmpty()) {
 		return false;
@@ -71,13 +71,13 @@ bool LyricsImpl::fetch_lyrics(const QString& artist, const QString& title, int s
 	}
 
 	auto* lyric_thread = new ::Lyrics::LookupThread(this);
-	connect(lyric_thread, &::Lyrics::LookupThread::sig_finished, this, &LyricsImpl::lyrics_fetched);
+	connect(lyric_thread, &::Lyrics::LookupThread::sigFinished, this, &LyricsImpl::lyricsFetched);
 
 	lyric_thread->run(artist, title, server_index);
 	return true;
 }
 
-bool LyricsImpl::save_lyrics(const QString& plain_text)
+bool LyricsImpl::saveLyrics(const QString& plain_text)
 {
 	if(plain_text.isEmpty()){
 		return false;
@@ -87,7 +87,7 @@ bool LyricsImpl::save_lyrics(const QString& plain_text)
 		return false;
 	}
 
-	bool success = Tagging::Lyrics::write_lyrics(m->md, plain_text);
+	bool success = Tagging::Lyrics::writeLyrics(m->md, plain_text);
 	if(success){
 		m->is_valid = true;
 		m->lyric_tag_content = plain_text;
@@ -101,18 +101,18 @@ QStringList LyricsImpl::servers() const
 	return m->servers;
 }
 
-void LyricsImpl::set_metadata(const MetaData& md)
+void LyricsImpl::setMetadata(const MetaData& md)
 {
 	m->md = md;
 	m->guess_artist_and_title();
 
-	bool has_lyrics = Tagging::Lyrics::extract_lyrics(md, m->lyric_tag_content);
+	bool has_lyrics = Tagging::Lyrics::extractLyrics(md, m->lyric_tag_content);
 	if(!has_lyrics){
-		sp_log(Log::Debug, this) << "Could not find lyrics in " << md.filepath();
+		spLog(Log::Debug, this) << "Could not find lyrics in " << md.filepath();
 	}
 
 	else {
-		sp_log(Log::Debug, this) << "Lyrics found in " << md.filepath();
+		spLog(Log::Debug, this) << "Lyrics found in " << md.filepath();
 	}
 }
 
@@ -126,12 +126,12 @@ QString LyricsImpl::title() const
 	return m->title;
 }
 
-QString LyricsImpl::lyric_header() const
+QString LyricsImpl::lyricHeader() const
 {
 	return m->lyric_header;
 }
 
-QString LyricsImpl::local_lyric_header() const
+QString LyricsImpl::localLyricHeader() const
 {
 	return "<b>" + artist() + " - " + title() + "</b>";
 }
@@ -141,48 +141,48 @@ QString LyricsImpl::lyrics() const
 	return m->lyrics.trimmed();
 }
 
-QString LyricsImpl::local_lyrics() const
+QString LyricsImpl::localLyrics() const
 {
-	if(is_lyric_tag_available()){
+	if(isLyricTagAvailable()){
 		return m->lyric_tag_content.trimmed();
 	}
 
 	return QString();
 }
 
-bool LyricsImpl::is_lyric_valid() const
+bool LyricsImpl::isLyricValid() const
 {
 	return m->is_valid;
 }
 
-bool LyricsImpl::is_lyric_tag_available() const
+bool LyricsImpl::isLyricTagAvailable() const
 {
 	return (!m->lyric_tag_content.isEmpty());
 }
 
-bool LyricsImpl::is_lyric_tag_supported() const
+bool LyricsImpl::isLyricTagSupported() const
 {
-	return Tagging::Lyrics::is_lyrics_supported(m->md.filepath());
+	return Tagging::Lyrics::isLyricsSupported(m->md.filepath());
 }
 
-void LyricsImpl::lyrics_fetched()
+void LyricsImpl::lyricsFetched()
 {
 	auto* lyric_thread = static_cast<::Lyrics::LookupThread*>(sender());
 
-	m->lyrics = lyric_thread->lyric_data();
-	m->lyric_header = lyric_thread->lyric_header();
-	m->is_valid = (!lyric_thread->has_error());
+	m->lyrics = lyric_thread->lyricData();
+	m->lyric_header = lyric_thread->lyricHeader();
+	m->is_valid = (!lyric_thread->hasError());
 
 	lyric_thread->deleteLater();
 
-	emit sig_lyrics_fetched();
+	emit sigLyricsFetched();
 }
 
 void LyricsImpl::Private::guess_artist_and_title()
 {
 	bool guessed = false;
 
-	if(	md.radio_mode() == RadioMode::Station &&
+	if(	md.radioMode() == RadioMode::Station &&
 		md.artist().contains("://"))
 	{
 		if(md.title().contains("-")){
@@ -206,8 +206,8 @@ void LyricsImpl::Private::guess_artist_and_title()
 			title = md.title();
 		}
 
-		else if(!md.album_artist().isEmpty()) {
-			artist = md.album_artist();
+		else if(!md.albumArtist().isEmpty()) {
+			artist = md.albumArtist();
 			title = md.title();
 		}
 

@@ -15,7 +15,7 @@
     <number>10</number>
    </property>
    <item row="0" column="0" colspan="2">
-    <widget class="QCheckBox" name="cb_also_use_in_dark_style">
+    <widget class="QCheckBox" name="cb_alsoUseInDarkStyle">
      <property name="text">
       <string>Also apply this icon theme to the dark style</string>
      </property>
@@ -92,7 +92,7 @@
     </layout>
    </item>
    <item row="1" column="0" rowspan="2" colspan="2">
-    <widget class="QScrollArea" name="scroll_standard_style">
+    <widget class="QScrollArea" name="scroll_standardStyle">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
        <horstretch>0</horstretch>
@@ -102,13 +102,13 @@
      <property name="widgetResizable">
       <bool>true</bool>
      </property>
-     <widget class="QWidget" name="scroll_area_widget">
+     <widget class="QWidget" name="scroll_areaWidget">
       <property name="geometry">
        <rect>
         <x>0</x>
         <y>0</y>
         <width>570</width>
-        <height>186</height>
+        <height>185</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2"/>

@@ -28,28 +28,28 @@ private slots:
 static MetaData create_md()
 {
 	MetaData md("/path/to/my/file.mp3");
-	md.set_title("Title");
-	md.set_artist("Artist");
-	md.set_album("Album");
-	md.set_duration_ms(100000);
-	md.set_filesize(1234567);
-	md.set_id(5);
-	md.set_artist_id(6);
-	md.set_album_id(7);
-	md.set_bitrate(320000);
-	md.set_track_number(17);
-	md.set_year(2014);
-	md.set_extern(true);
-	md.set_disabled(true);
-	md.set_rating(Rating::Four);
-	md.set_discnumber(2);
-	md.set_disc_count(5);
-	md.set_library_id(2);
-	md.set_disabled(true);
+	md.setTitle("Title");
+	md.setArtist("Artist");
+	md.setAlbum("Album");
+	md.setDurationMs(100000);
+	md.setFilesize(1234567);
+	md.setId(5);
+	md.setArtistId(6);
+	md.setAlbumId(7);
+	md.setBitrate(320000);
+	md.setTrackNumber(17);
+	md.setYear(2014);
+	md.setExtern(true);
+	md.setDisabled(true);
+	md.setRating(Rating::Four);
+	md.setDiscnumber(2);
+	md.setDiscCount(5);
+	md.setLibraryid(2);
+	md.setDisabled(true);
 
-	md.add_genre(Genre("Metal"));
-	md.add_genre(Genre("Rock"));
-	md.set_album_artist("Album artist", 14);
+	md.addGenre(Genre("Metal"));
+	md.addGenre(Genre("Rock"));
+	md.setAlbumArtist("Album artist", 14);
 
 	return md;
 }
@@ -59,41 +59,41 @@ void MetaDataTest::copy_test()
 	MetaData md = create_md();
 	MetaData md2 = md;
 	{
-		QVERIFY(md2.is_equal(create_md()));
-		QVERIFY(md2.is_equal_deep(create_md()));
-		QVERIFY(md2.unique_id() != md.unique_id());
+		QVERIFY(md2.isEqual(create_md()));
+		QVERIFY(md2.isEqualDeep(create_md()));
+		QVERIFY(md2.uniqueId() != md.uniqueId());
 	}
 
 	MetaData md3(md2);
 	{
-		QVERIFY(md3.is_equal(create_md()));
-		QVERIFY(md3.is_equal_deep(create_md()));
-		QVERIFY(md3.unique_id() != md2.unique_id());
+		QVERIFY(md3.isEqual(create_md()));
+		QVERIFY(md3.isEqualDeep(create_md()));
+		QVERIFY(md3.uniqueId() != md2.uniqueId());
 	}
 }
 
 void MetaDataTest::genre_test()
 {
 	MetaData md = create_md();
-	QVERIFY( md.has_genre(Genre("Metal")));
-	QVERIFY( md.has_genre(Genre("Rock")));
+	QVERIFY( md.hasGenre(Genre("Metal")));
+	QVERIFY( md.hasGenre(Genre("Rock")));
 }
 
 void MetaDataTest::private_test()
 {
 	MetaData md = create_md();
-	QVERIFY( md.album_artist_id() == 14);
-	QVERIFY( md.album_artist().compare("Album artist") == 0);
+	QVERIFY( md.albumArtistId() == 14);
+	QVERIFY( md.albumArtist().compare("Album artist") == 0);
 }
 
 void MetaDataTest::stream_test()
 {
 	MetaData md = create_md();
 
-	QVERIFY( md.radio_mode() == RadioMode::Off );
+	QVERIFY( md.radioMode() == RadioMode::Off );
 
-	md.set_filepath("http://path.to/my/stream");
-	QVERIFY( md.radio_mode() == RadioMode::Station );
+	md.setFilepath("http://path.to/my/stream");
+	QVERIFY( md.radioMode() == RadioMode::Station );
 }
 
 void MetaDataTest::move_test()
@@ -101,17 +101,17 @@ void MetaDataTest::move_test()
 	MetaData md_orig = create_md();
 
 	MetaData md1 = md_orig;
-	UniqueId uid = md1.unique_id();
+	UniqueId uid = md1.uniqueId();
 
 	// move md1 to md2
 	MetaData md2(std::move(md1));
-	QVERIFY(md2.is_equal_deep(md_orig));
-	QVERIFY(md2.unique_id() == uid);
+	QVERIFY(md2.isEqualDeep(md_orig));
+	QVERIFY(md2.uniqueId() == uid);
 
 	// move md2 to md3
 	MetaData md3 = std::move(md2);
-	QVERIFY(md3.is_equal_deep(md_orig));
-	QVERIFY(md3.unique_id() == uid);
+	QVERIFY(md3.isEqualDeep(md_orig));
+	QVERIFY(md3.uniqueId() == uid);
 }
 
 QTEST_GUILESS_MAIN(MetaDataTest)

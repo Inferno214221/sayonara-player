@@ -17,22 +17,22 @@ static void init_resources()
 
 Test::Base::Base(const QString& test_name) :
 	QObject(),
-	mTmpPath(Util::temp_path(test_name))
+	mTmpPath(Util::tempPath(test_name))
 {
-	Util::File::create_directories(mTmpPath);
+	Util::File::createDirectories(mTmpPath);
 
 	init_resources();
 
 	DB::Connector::instance_custom("", mTmpPath, "");
 	Settings* s = Settings::instance();
-	s->check_settings();
+	s->checkSettings();
 
 	this->setObjectName(test_name);
 }
 
 Test::Base::~Base()
 {
-	Util::File::delete_files({mTmpPath});
+	Util::File::deleteFiles({mTmpPath});
 }
 
 QString Test::Base::temp_path() const

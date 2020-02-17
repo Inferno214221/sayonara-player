@@ -1,6 +1,6 @@
 /* DatabaseSettings.cpp */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -26,12 +26,12 @@
 
 using DB::Query;
 
-DB::Settings::Settings(const QString& connection_name, DbId db_id) :
-	DB::Module(connection_name, db_id) {}
+DB::Settings::Settings(const QString& connection_name, DbId databaseId) :
+	DB::Module(connection_name, databaseId) {}
 
 DB::Settings::~Settings() {}
 
-bool DB::Settings::load_settings(QList<SettingKey>& found_keys)
+bool DB::Settings::loadSettings(QList<SettingKey>& found_keys)
 {
 	found_keys.clear();
 
@@ -39,37 +39,37 @@ bool DB::Settings::load_settings(QList<SettingKey>& found_keys)
 
 	for(AbstrSetting* s : settings)
 	{
-		if(!s || !s->is_db_setting()) {
+		if(!s || !s->isDatabaseSetting()) {
 			continue;
 		}
 
 		QString value;
-		QString db_key = s->db_key();
+		QString db_key = s->dbKey();
 
-		bool success = load_setting(db_key, value);
+		bool success = loadSetting(db_key, value);
 		if(success) {
-			s->assign_value(value);
-			found_keys << s->get_key();
+			s->assignValue(value);
+			found_keys << s->getKey();
 		}
 
 		else {
 
-			sp_log(Log::Debug, this) << "Setting " << db_key << ": Not found. Use default value...";
-			s->assign_default_value();
-			sp_log(Log::Debug, this) << "Load Setting " << db_key << ": " << s->value_to_string();
+			spLog(Log::Debug, this) << "Setting " << db_key << ": Not found. Use default value...";
+			s->assignDefaultValue();
+			spLog(Log::Debug, this) << "Load Setting " << db_key << ": " << s->valueToString();
 		}
 	}
 
 	return true;
 }
 
-bool DB::Settings::load_settings()
+bool DB::Settings::loadSettings()
 {
 	QList<SettingKey> keys;
-	return load_settings(keys);
+	return loadSettings(keys);
 }
 
-bool DB::Settings::store_settings()
+bool DB::Settings::storeSettings()
 {
 	const SettingArray& settings = ::Settings::instance()->settings();
 
@@ -81,11 +81,11 @@ bool DB::Settings::store_settings()
 			continue;
 		}
 
-		if(s->is_db_setting())
+		if(s->isDatabaseSetting())
 		{
-			store_setting(
-				s->db_key(),
-				s->value_to_string()
+			storeSetting(
+				s->dbKey(),
+				s->valueToString()
 			);
 		}
 	}
@@ -96,16 +96,16 @@ bool DB::Settings::store_settings()
 }
 
 
-bool DB::Settings::load_setting(QString key, QString& tgt_value)
+bool DB::Settings::loadSetting(QString key, QString& tgt_value)
 {
-	Query q = run_query
+	Query q = runQuery
 	(
 		"SELECT value FROM settings WHERE key = :key;",
 		{":key", key},
 		QString("Cannot load setting %1").arg(key)
 	);
 
-	if (q.has_error()) {
+	if (q.hasError()) {
 		return false;
 	}
 
@@ -119,16 +119,16 @@ bool DB::Settings::load_setting(QString key, QString& tgt_value)
 }
 
 
-bool DB::Settings::store_setting(QString key, const QVariant& value)
+bool DB::Settings::storeSetting(QString key, const QVariant& value)
 {
-	Query q = run_query
+	Query q = runQuery
 	(
 		"SELECT value FROM settings WHERE key = :key;",
 		{":key", key},
 		QString("Store setting: Cannot fetch setting %1").arg(key)
 	);
 
-	if (q.has_error()) {
+	if (q.hasError()) {
 		return false;
 	}
 
@@ -140,11 +140,11 @@ bool DB::Settings::store_setting(QString key, const QVariant& value)
 			{"value", value}
 		}, QString("Store setting: Cannot insert setting %1").arg(key));
 
-		if (q2.has_error()) {
+		if (q2.hasError()) {
 			return false;
 		}
 
-		sp_log(Log::Debug, this) << "Inserted " << key << " first time";
+		spLog(Log::Debug, this) << "Inserted " << key << " first time";
 	}
 
 	else
@@ -154,7 +154,7 @@ bool DB::Settings::store_setting(QString key, const QVariant& value)
 			{"key", key}
 		, QString("Store setting: Cannot update setting %1").arg(key));
 
-		if (q2.has_error()) {
+		if (q2.hasError()) {
 			return false;
 		}
 	}
@@ -162,15 +162,15 @@ bool DB::Settings::store_setting(QString key, const QVariant& value)
 	return true;
 }
 
-bool DB::Settings::drop_setting(const QString& key)
+bool DB::Settings::dropSetting(const QString& key)
 {
-	Query q = run_query
+	Query q = runQuery
 	(
 		"DELETE FROM settings WHERE key = :key;",
 		{":key", key},
 		QString("Drop setting: Cannot drop setting %1").arg(key)
 	);
 
-	return (!q.has_error());
+	return (!q.hasError());
 }
 

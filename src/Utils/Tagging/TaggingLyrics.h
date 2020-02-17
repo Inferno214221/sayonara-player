@@ -1,6 +1,6 @@
 /* TaggingLyrics.h */
 
-/* Copyright (C) 2011-2020  Lucio Carreras
+/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -30,9 +30,9 @@ namespace Tagging
 {
 	namespace Lyrics
 	{
-		bool write_lyrics(const MetaData& md, const QString& lyrics);
-		bool extract_lyrics(const MetaData& md, QString& lyrics);
-		bool is_lyrics_supported(const QString& filepath);
+		bool writeLyrics(const MetaData& md, const QString& lyrics);
+		bool extractLyrics(const MetaData& md, QString& lyrics);
+		bool isLyricsSupported(const QString& filepath);
 	}
 }
 
