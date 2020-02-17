@@ -33,9 +33,7 @@ using Library::LocalLibraryMenu;
 
 struct LocalLibraryMenu::Private
 {
-	QString name;
-	QString path;
-
+	QString name, path;
 
 	QAction* reloadLibraryAction=nullptr;
 	QAction* importFileAction=nullptr;
@@ -44,7 +42,6 @@ struct LocalLibraryMenu::Private
 	QAction* editAction=nullptr;
 	QAction* livesearchAction=nullptr;
 	QAction* showAlbumArtistsAction=nullptr;
-	QAction* showAlbumCoverView=nullptr;
 
 	bool hasPreferenceAction;
 	bool isInitialized;
@@ -77,15 +74,6 @@ void LocalLibraryMenu::refreshName(const QString& name)
 void LocalLibraryMenu::refreshPath(const QString& path)
 {
 	m->path = path;
-}
-
-void LocalLibraryMenu::setShowAlbumCoversChecked(bool checked)
-{
-	if(!m->isInitialized){
-		return;
-	}
-
-	m->showAlbumCoverView->setChecked(checked);
 }
 
 void LocalLibraryMenu::setLibraryBusy(bool b)
@@ -142,10 +130,6 @@ void LocalLibraryMenu::initMenu()
 	m->showAlbumArtistsAction->setCheckable(true);
 	m->showAlbumArtistsAction->setChecked(GetSetting(Set::Lib_ShowAlbumArtists));
 
-	m->showAlbumCoverView = new QAction(this);
-	m->showAlbumCoverView->setCheckable(true);
-	m->showAlbumCoverView->setChecked(GetSetting(Set::Lib_ShowAlbumCovers));
-
 	connect(m->reloadLibraryAction, &QAction::triggered, this, &LocalLibraryMenu::sigReloadLibrary);
 	connect(m->importFileAction, &QAction::triggered, this, &LocalLibraryMenu::sigImportFile);
 	connect(m->importFolderAction, &QAction::triggered, this, &LocalLibraryMenu::sigImportFolder);
@@ -153,7 +137,6 @@ void LocalLibraryMenu::initMenu()
 	connect(m->editAction, &QAction::triggered, this, &LocalLibraryMenu::editClicked);
 	connect(m->livesearchAction, &QAction::triggered, this, &LocalLibraryMenu::setLiveSearchEnabled);
 	connect(m->showAlbumArtistsAction, &QAction::triggered, this, &LocalLibraryMenu::showAlbumArtistsTriggered);
-	connect(m->showAlbumCoverView, &QAction::triggered, this, &LocalLibraryMenu::showAlbumCoversTriggered);
 
 	QList<QAction*> actions;
 	actions <<
@@ -165,7 +148,6 @@ void LocalLibraryMenu::initMenu()
 		m->reloadLibraryAction <<
 		this->addSeparator() <<
 		m->livesearchAction <<
-		m->showAlbumCoverView <<
 		m->showAlbumArtistsAction;
 
 	this->addActions(actions);
@@ -173,7 +155,6 @@ void LocalLibraryMenu::initMenu()
 
 	m->isInitialized = true;
 
-	ListenSetting(Set::Lib_ShowAlbumCovers, LocalLibraryMenu::showAlbumCoversChanged);
 	ListenSetting(Set::Lib_ShowAlbumArtists, LocalLibraryMenu::showAlbumArtistsChanged);
 	ListenSetting(Set::Lib_LiveSearch, LocalLibraryMenu::livesearchTriggered);
 
@@ -196,7 +177,6 @@ void LocalLibraryMenu::languageChanged()
 
 	m->livesearchAction->setText(Lang::get(Lang::LiveSearch));
 	m->showAlbumArtistsAction->setText(Lang::get(Lang::ShowAlbumArtists));
-	m->showAlbumCoverView->setText(Lang::get(Lang::ShowCovers));
 
 	if(m->isLibraryEmpty) {
 		m->reloadLibraryAction->setText(Lang::get(Lang::ScanForFiles));
@@ -233,8 +213,6 @@ void LocalLibraryMenu::shortcutChanged(ShortcutIdentifier identifier)
 
 	m->showAlbumArtistsAction->setShortcutContext(Qt::WidgetShortcut);
 	m->showAlbumArtistsAction->setShortcut(sch->shortcut(ShortcutIdentifier::AlbumArtists).sequence());
-	m->showAlbumCoverView->setShortcutContext(Qt::WidgetShortcut);
-	m->showAlbumCoverView->setShortcut(sch->shortcut(ShortcutIdentifier::CoverView).sequence());
 	m->reloadLibraryAction->setShortcutContext(Qt::WidgetShortcut);
 	m->reloadLibraryAction->setShortcut(sch->shortcut(ShortcutIdentifier::ReloadLibrary).sequence());
 }
@@ -285,16 +263,6 @@ void LocalLibraryMenu::editAccepted()
 	if(edit_dialog->hasPathChanged()){
 		emit sigPathChanged(path);
 	}
-}
-
-void LocalLibraryMenu::showAlbumCoversTriggered(bool b)
-{
-	SetSetting(Set::Lib_ShowAlbumCovers, b);
-}
-
-void LocalLibraryMenu::showAlbumCoversChanged()
-{
-	m->showAlbumCoverView->setChecked(GetSetting(Set::Lib_ShowAlbumCovers));
 }
 
 void LocalLibraryMenu::showAlbumArtistsTriggered(bool b)

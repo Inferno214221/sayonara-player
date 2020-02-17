@@ -70,7 +70,8 @@ enum GenreWidgetIndex
 enum AlbumViewIndex
 {
 	ArtistAlbumTableView=0,
-	AlbumCoverView=1
+	AlbumCoverView=1,
+	DirectoryView=2
 };
 
 enum ReloadWidgetIndex
@@ -138,8 +139,9 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 
 	ui->extension_bar->init(m->library);
 	ui->lv_genres->init(m->library);
+	ui->directory_view->setCurrentLibrary(m->library->id());
 
-	ListenSetting(Set::Lib_ShowAlbumCovers, GUI_LocalLibrary::switchAlbumView);
+	ListenSetting(Set::Lib_ViewType, GUI_LocalLibrary::switchViewType);
 	ListenSetting(Set::Lib_ShowFilterExtBar, GUI_LocalLibrary::tracksLoaded);
 
 	m->library->load();	
@@ -436,29 +438,35 @@ void GUI_LocalLibrary::splitterGenreMoved(int pos, int idx)
 }
 
 
-void GUI_LocalLibrary::switchAlbumView()
+void GUI_LocalLibrary::switchViewType()
 {
-	bool show_covers = GetSetting(Set::Lib_ShowAlbumCovers);
-	if(!show_covers)
+	Library::ViewType viewType = GetSetting(Set::Lib_ViewType);
+	switch(viewType)
 	{
-		ui->sw_albumCovers->setCurrentIndex(AlbumViewIndex::ArtistAlbumTableView);
-	}
+		case Library::ViewType::CoverView:
+			if(!ui->cover_view->isInitialized())
+			{
+				ui->cover_view->init(m->library);
+				connect(ui->cover_view, &GUI_CoverView::sigDeleteClicked, this, &GUI_LocalLibrary::itemDeleteClicked);
+				connect(ui->cover_view, &GUI_CoverView::sigReloadClicked, this, &GUI_LocalLibrary::reloadLibraryRequested);
+			}
 
-	else
-	{
-		if(!ui->cover_view->isInitialized())
-		{
-			ui->cover_view->init(m->library);
-			connect(ui->cover_view, &GUI_CoverView::sigDeleteClicked, this, &GUI_LocalLibrary::itemDeleteClicked);
-			connect(ui->cover_view, &GUI_CoverView::sigReloadClicked, this, &GUI_LocalLibrary::reloadLibraryRequested);
-		}
+			if(m->library->isLoaded() && (!m->library->selectedArtists().isEmpty()))
+			{
+				m->library->selectedArtistsChanged(IndexSet());
+			}
 
-		if(m->library->isLoaded() && (!m->library->selectedArtists().isEmpty()))
-		{
-			m->library->selectedArtistsChanged(IndexSet());
-		}
+			ui->sw_albumCovers->setCurrentIndex(AlbumViewIndex::AlbumCoverView);
+			break;
 
-		ui->sw_albumCovers->setCurrentIndex(AlbumViewIndex::AlbumCoverView);
+		case Library::ViewType::FileView:
+			ui->sw_albumCovers->setCurrentIndex(AlbumViewIndex::DirectoryView);
+			break;
+
+		case Library::ViewType::Standard:
+		default:
+			ui->sw_albumCovers->setCurrentIndex(AlbumViewIndex::ArtistAlbumTableView);
+			break;
 	}
 }
 

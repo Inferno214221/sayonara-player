@@ -210,15 +210,13 @@ QStringList FileListView::selectedPaths() const
 	QStringList ret;
 	for(const QModelIndex& idx : selections)
 	{
-		if(idx.column() != 0){
-			continue;
-		}
-
 		int row = idx.row();
 		if(Util::between(row, paths)){
 			ret << paths[row];
 		}
 	}
+
+	ret.removeDuplicates();
 
 	return ret;
 }

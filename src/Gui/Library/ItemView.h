@@ -147,7 +147,7 @@ namespace Library
 			virtual void appendClicked();
 			virtual void refreshClicked();
 			virtual void reloadClicked();
-			virtual void coverViewToggled();
+			virtual void viewTypeTriggered();
 			virtual void albumArtistsToggled();
 			virtual void filterExtensionsTriggered(const QString& extension, bool b);
 			virtual void fill();

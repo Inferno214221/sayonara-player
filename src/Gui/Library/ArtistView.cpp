@@ -58,7 +58,7 @@ using namespace Library;
 struct ArtistView::Private
 {
 	AbstractLibrary*	library=nullptr;
-	QAction*			album_artist_action=nullptr;
+	QAction*			albumArtistAction=nullptr;
 };
 
 ArtistView::ArtistView(QWidget* parent) :
@@ -96,17 +96,17 @@ void ArtistView::initContextMenu()
 
 	Library::ContextMenu* menu = contextMenu();
 
-	m->album_artist_action = new QAction(menu);
-	m->album_artist_action->setCheckable(true);
-	m->album_artist_action->setChecked(GetSetting(Set::Lib_ShowAlbumArtists));
-	m->album_artist_action->setShortcut(sch->shortcut(ShortcutIdentifier::AlbumArtists).sequence());
+	m->albumArtistAction = new QAction(menu);
+	m->albumArtistAction->setCheckable(true);
+	m->albumArtistAction->setChecked(GetSetting(Set::Lib_ShowAlbumArtists));
+	m->albumArtistAction->setShortcut(sch->shortcut(ShortcutIdentifier::AlbumArtists).sequence());
 
-	ListenSetting(Set::Lib_ShowAlbumCovers, ArtistView::showAlbumArtistsChanged);
+	ListenSetting(Set::Lib_ShowAlbumArtists, ArtistView::showAlbumArtistsChanged);
 
-	connect(m->album_artist_action, &QAction::triggered, this, &ArtistView::albumArtistsTriggered);
+	connect(m->albumArtistAction, &QAction::triggered, this, &ArtistView::albumArtistsTriggered);
 
-	QAction* action = menu->action(Library::ContextMenu::EntryCoverView);
-	menu->insertAction(action, m->album_artist_action);
+	QAction* action = menu->action(Library::ContextMenu::EntryStandardView);
+	menu->insertAction(action, m->albumArtistAction);
 
 	languageChanged();
 }
@@ -150,11 +150,11 @@ void ArtistView::languageChanged()
 {
 	TableView::languageChanged();
 
-	if(m->album_artist_action)
+	if(m->albumArtistAction)
 	{
 		ShortcutHandler* sch = ShortcutHandler::instance();
-		m->album_artist_action->setText(Lang::get(Lang::ShowAlbumArtists));
-		m->album_artist_action->setShortcut(sch->shortcut(ShortcutIdentifier::AlbumArtists).sequence());
+		m->albumArtistAction->setText(Lang::get(Lang::ShowAlbumArtists));
+		m->albumArtistAction->setShortcut(sch->shortcut(ShortcutIdentifier::AlbumArtists).sequence());
 	}
 }
 
@@ -214,7 +214,7 @@ void ArtistView::useClearButtonChanged()
 void ArtistView::albumArtistsTriggered(bool b)
 {
 	Q_UNUSED(b)
-	SetSetting(Set::Lib_ShowAlbumArtists, m->album_artist_action->isChecked());
+	SetSetting(Set::Lib_ShowAlbumArtists, m->albumArtistAction->isChecked());
 }
 
 void ArtistView::runMergeOperation(const Library::MergeData& mergedata)
@@ -229,5 +229,5 @@ void ArtistView::runMergeOperation(const Library::MergeData& mergedata)
 
 void ArtistView::showAlbumArtistsChanged()
 {
-	m->album_artist_action->setChecked(GetSetting(Set::Lib_ShowAlbumArtists));
+	m->albumArtistAction->setChecked(GetSetting(Set::Lib_ShowAlbumArtists));
 }

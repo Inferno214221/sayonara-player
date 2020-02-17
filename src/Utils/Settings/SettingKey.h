@@ -62,6 +62,7 @@ enum class SettingKey : unsigned short
 	Lib_AutoUpdate,
 	Lib_ShowAlbumArtists,
 	Lib_ShowAlbumCovers,
+	Lib_ViewType,
 	Lib_CoverZoom,
 	Lib_CoverShowUtils,
 	Lib_CoverShowArtist,
@@ -185,8 +186,6 @@ enum class SettingKey : unsigned short
 	Num_Setting_Keys
 };
 
-
-
 class QString;
 class QStringList;
 class QPoint;
@@ -205,6 +204,7 @@ namespace Library
 {
 	class Sortings;
 	class Info;
+	enum class ViewType : quint8;
 }
 
 template<typename DataType, SettingKey keyIndex>
@@ -270,6 +270,7 @@ class SettingIdentifier
 	INST(bool,				Lib_AutoUpdate)			/* Automatic update of library */
 	INST(bool,				Lib_ShowAlbumArtists)		/* Show album artists instead of artists */
 	INST(bool,				Lib_ShowAlbumCovers)		/* Show album cover view */
+	INST(::Library::ViewType,	Lib_ViewType)		/* Standard view, CoverView, LibraryView */
 	INST(int,				Lib_CoverZoom)				/* Zoom of album cover view */
 	INST(int,				Lib_CoverOrigPMCache)		/* Original sized pixmap cache */
 	INST(int,				Lib_CoverScaledPMCache)		/* Scaled sized pixmap cache */

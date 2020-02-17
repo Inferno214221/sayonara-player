@@ -208,7 +208,7 @@ void DirectoryTreeView::contextMenuEvent(QContextMenuEvent* event)
 		initContextMenu();
 	}
 
-	m->contextMenu->refresh(0);
+	m->contextMenu->refresh(selectedPaths().size());
 
 	QPoint pos = QWidget::mapToGlobal(event->pos());
 	m->contextMenu->exec(pos);

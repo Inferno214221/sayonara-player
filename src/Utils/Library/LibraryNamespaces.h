@@ -50,6 +50,13 @@ namespace Library
 	    Accurate,
 	    Unknown
     };
+
+	enum class ViewType : quint8
+	{
+		Standard=0,
+		CoverView,
+		FileView
+	};
 }
 
 #endif // LIBRARYNAMESPACES_H

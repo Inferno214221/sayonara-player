@@ -77,6 +77,8 @@ private slots:
 	void helpClicked();
 	void aboutClicked();
 	void shortcutChanged(ShortcutIdentifier identifier);
+	void libraryViewTypeToggled(bool b);
+	void libraryViewTypeChanged();
 	void pluginAdded(PlayerPlugin::Base* plugin);
 
 protected:

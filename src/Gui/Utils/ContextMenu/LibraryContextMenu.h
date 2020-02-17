@@ -68,22 +68,24 @@ namespace Library
 			 */
 			enum Entry
 			{
-				EntryNone=0,
-				EntryInfo=(1<<0),
-				EntryEdit=(1<<1),
-				EntryLyrics=(1<<2),
-				EntryRemove=(1<<3),
-				EntryDelete=(1<<4),
-				EntryPlayNext=(1<<5),
-				EntryAppend=(1<<6),
-				EntryRefresh=(1<<7),
-				EntryClear=(1<<8),
-				EntryCoverView=(1<<9),
-				EntryPlay=(1<<10),
-				EntryPlayNewTab=(1<<11),
-				EntryFilterExtension=(1<<12),
-				EntryReload=(1<<13),
-				EntryLast=(1<<14)
+				EntryNone			= 0,
+				EntryInfo			= (1<<0),
+				EntryEdit			= (1<<1),
+				EntryLyrics			= (1<<2),
+				EntryRemove			= (1<<3),
+				EntryDelete			= (1<<4),
+				EntryPlayNext		= (1<<5),
+				EntryAppend			= (1<<6),
+				EntryRefresh		= (1<<7),
+				EntryClear			= (1<<8),
+				EntryStandardView	= (1<<9),
+				EntryCoverView		= (1<<10),
+				EntryDirectoryView	= (1<<11),
+				EntryPlay			= (1<<12),
+				EntryPlayNewTab		= (1<<13),
+				EntryFilterExtension= (1<<14),
+				EntryReload			= (1<<15),
+				EntryLast			= (1<<16)
 			};
 
 			using Entries=uint64_t;
@@ -132,10 +134,10 @@ namespace Library
 
 
 		private slots:
-			void showCoverViewChanged();
 			void showFilterExtensionBarChanged();
 			void showFilterExtensionBarTriggered(bool b);
-			void showCoverTriggered(bool b);
+			void libraryViewTypeChanged();
+			void libraryViewTypeTriggered(bool b);
 			void shortcutChanged(ShortcutIdentifier identifier);
 			void skinTimerTimeout();
 

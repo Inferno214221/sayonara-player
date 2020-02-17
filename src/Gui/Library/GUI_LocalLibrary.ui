@@ -35,7 +35,7 @@
    <item row="1" column="0">
     <widget class="QStackedWidget" name="sw_reload">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="page">
       <layout class="QGridLayout" name="gridLayout_2">
@@ -68,7 +68,7 @@
           </property>
           <widget class="QStackedWidget" name="sw_albumCovers">
            <property name="currentIndex">
-            <number>0</number>
+            <number>2</number>
            </property>
            <widget class="QWidget" name="page_7">
             <layout class="QGridLayout" name="gridLayout_8">
@@ -230,6 +230,7 @@
             </layout>
            </widget>
            <widget class="Library::GUI_CoverView" name="cover_view"/>
+           <widget class="GUI_DirectoryView" name="directory_view"/>
           </widget>
           <widget class="QWidget" name="verticalLayoutWidget_2">
            <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -483,6 +484,12 @@
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QFrame" name="header_frame">
+       <property name="minimumSize">
+        <size>
+         <width>10</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="frameShape">
         <enum>QFrame::StyledPanel</enum>
        </property>
@@ -603,6 +610,12 @@
    <class>Library::FileExtensionBar</class>
    <extends>QWidget</extends>
    <header>Gui/Library/LibraryFileExtensionBar.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>GUI_DirectoryView</class>
+   <extends>QWidget</extends>
+   <header>Gui/Library/GUI_DirectoryView.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

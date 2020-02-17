@@ -31,6 +31,7 @@
 #include "Utils/Language/Language.h"
 #include "Utils/ExtensionSet.h"
 #include "Utils/Message/Message.h"
+#include "Utils/Library/LibraryNamespaces.h"
 
 #include <QMap>
 #include <QTimer>
@@ -56,7 +57,9 @@ struct ContextMenu::Private
 	QAction*	refreshAction=nullptr;
 	QAction*	reloadLibraryAction=nullptr;
 	QAction*	clearAction=nullptr;
+	QAction*	standardViewAction=nullptr;
 	QAction*	coverViewAction=nullptr;
+	QAction*	directoryViewAction=nullptr;
 	QAction*	filetypeAction=nullptr;
 	QAction*	showFiletypeBarAction=nullptr;
 	QAction*	preferenceSeparator=nullptr;
@@ -68,31 +71,49 @@ struct ContextMenu::Private
 	{}
 };
 
+
+#include <QActionGroup>
+
 ContextMenu::ContextMenu(QWidget* parent) :
 	WidgetTemplate<QMenu>(parent)
 {
 	m = Pimpl::make<Private>();
 
-	m->infoAction = new QAction(this);
-	m->lyricsAction  = new QAction(this);
-	m->editAction = new QAction(this);
-	m->removeAction = new QAction(this);
-	m->deleteAction = new QAction(this);
-	m->playAction = new QAction(this);
+	m->infoAction		= new QAction(this);
+	m->lyricsAction		= new QAction(this);
+	m->editAction		= new QAction(this);
+	m->removeAction		= new QAction(this);
+	m->deleteAction		= new QAction(this);
+	m->playAction		= new QAction(this);
 	m->playNewTabAction = new QAction(this);
-	m->playNextAction = new QAction(this);
-	m->appendAction = new QAction(this);
-	m->refreshAction = new QAction(this);
+	m->playNextAction	= new QAction(this);
+	m->appendAction		= new QAction(this);
+	m->refreshAction	= new QAction(this);
 	m->reloadLibraryAction = new QAction(this);
-	m->clearAction = new QAction(this);
-	m->coverViewAction = new QAction(this);
-	m->coverViewAction->setCheckable(true);
+	m->clearAction		= new QAction(this);
+
+	{
+		m->standardViewAction = new QAction(this);
+		m->standardViewAction->setCheckable(true);
+
+		m->coverViewAction = new QAction(this);
+		m->coverViewAction->setCheckable(true);
+
+		m->directoryViewAction = new QAction(this);
+		m->directoryViewAction->setCheckable(true);
+
+		auto* actionGroup = new QActionGroup(this);
+		actionGroup->addAction(m->standardViewAction);
+		actionGroup->addAction(m->coverViewAction);
+		actionGroup->addAction(m->directoryViewAction);
+	}
+
 	m->filetype_menu = new QMenu(this);
 	m->filetypeAction = this->addMenu(m->filetype_menu);
 	m->showFiletypeBarAction = new QAction(this);
 	m->showFiletypeBarAction->setCheckable(true);
 
-	ListenSetting(Set::Lib_ShowAlbumCovers, ContextMenu::showCoverViewChanged);
+	ListenSetting(Set::Lib_ViewType, ContextMenu::libraryViewTypeChanged);
 	ListenSetting(Set::Lib_ShowFilterExtBar, ContextMenu::showFilterExtensionBarChanged);
 
 	ShortcutHandler* sch = ShortcutHandler::instance();
@@ -117,24 +138,29 @@ ContextMenu::ContextMenu(QWidget* parent) :
 			<< m->clearAction
 			<< m->deleteAction
 			<< addSeparator()
+
+			<< m->standardViewAction
 			<< m->coverViewAction
+			<< m->directoryViewAction
 	;
 
 	this->addActions(actions);
 
-	m->entryActionMap[EntryInfo] = m->infoAction;
-	m->entryActionMap[EntryEdit] = m->editAction;
-	m->entryActionMap[EntryLyrics] = m->lyricsAction;
-	m->entryActionMap[EntryRemove] = m->removeAction;
-	m->entryActionMap[EntryDelete] = m->deleteAction;
-	m->entryActionMap[EntryPlay] = m->playAction;
-	m->entryActionMap[EntryPlayNewTab] = m->playNewTabAction;
-	m->entryActionMap[EntryPlayNext] = m->playNextAction;
-	m->entryActionMap[EntryAppend] = m->appendAction;
-	m->entryActionMap[EntryRefresh] = m->refreshAction;
-	m->entryActionMap[EntryReload] = m->reloadLibraryAction;
-	m->entryActionMap[EntryClear] = m->clearAction;
-	m->entryActionMap[EntryCoverView] = m->coverViewAction;
+	m->entryActionMap[EntryInfo]		= m->infoAction;
+	m->entryActionMap[EntryEdit]		= m->editAction;
+	m->entryActionMap[EntryLyrics]		= m->lyricsAction;
+	m->entryActionMap[EntryRemove]		= m->removeAction;
+	m->entryActionMap[EntryDelete]		= m->deleteAction;
+	m->entryActionMap[EntryPlay]		= m->playAction;
+	m->entryActionMap[EntryPlayNewTab]	= m->playNewTabAction;
+	m->entryActionMap[EntryPlayNext]	= m->playNextAction;
+	m->entryActionMap[EntryAppend]		= m->appendAction;
+	m->entryActionMap[EntryRefresh]		= m->refreshAction;
+	m->entryActionMap[EntryReload]		= m->reloadLibraryAction;
+	m->entryActionMap[EntryClear]		= m->clearAction;
+	m->entryActionMap[EntryStandardView] = m->standardViewAction;
+	m->entryActionMap[EntryCoverView]	= m->coverViewAction;
+	m->entryActionMap[EntryDirectoryView] = m->directoryViewAction;
 	m->entryActionMap[EntryFilterExtension] = m->filetypeAction;
 
 	for(QAction* action : Algorithm::AsConst(actions))
@@ -154,7 +180,9 @@ ContextMenu::ContextMenu(QWidget* parent) :
 	connect(m->refreshAction, &QAction::triggered, this, &ContextMenu::sigRefreshClicked);
 	connect(m->reloadLibraryAction, &QAction::triggered, this, &ContextMenu::sigReloadClicked);
 	connect(m->clearAction, &QAction::triggered, this, &ContextMenu::sigClearClicked);
-	connect(m->coverViewAction, &QAction::triggered, this, &ContextMenu::showCoverTriggered);
+	connect(m->standardViewAction, &QAction::triggered, this, &ContextMenu::libraryViewTypeTriggered);
+	connect(m->coverViewAction, &QAction::triggered, this, &ContextMenu::libraryViewTypeTriggered);
+	connect(m->directoryViewAction, &QAction::triggered, this, &ContextMenu::libraryViewTypeTriggered);
 	connect(m->showFiletypeBarAction, &QAction::triggered, this, &ContextMenu::showFilterExtensionBarTriggered);
 }
 
@@ -174,7 +202,9 @@ void ContextMenu::languageChanged()
 	m->refreshAction->setText(Lang::get(Lang::Refresh));
 	m->reloadLibraryAction->setText(Lang::get(Lang::ReloadLibrary));
 	m->clearAction->setText(Lang::get(Lang::Clear));
+	m->standardViewAction->setText(tr("Standard view"));
 	m->coverViewAction->setText(tr("Cover view"));
+	m->directoryViewAction->setText(tr("Directory view"));
 	m->filetypeAction->setText(Lang::get(Lang::Filetype));
 	m->showFiletypeBarAction->setText(Lang::get(Lang::Show) + ": " + tr("Toolbar"));
 
@@ -231,8 +261,10 @@ ContextMenu::Entries ContextMenu::entries() const
 	for(auto it=m->entryActionMap.cbegin(); it != m->entryActionMap.cend(); it++)
 	{
 		QAction* action = it.value();
-		if(action->isVisible()){
-			entries |= m->entryActionMap.key(action);
+		if(action->isVisible())
+		{
+			ContextMenu::Entry entry = m->entryActionMap.key(action);
+			entries |= entry;
 		}
 	}
 
@@ -245,7 +277,10 @@ void ContextMenu::showActions(ContextMenu::Entries entries)
 	for(auto it=m->entryActionMap.cbegin(); it != m->entryActionMap.cend(); it++)
 	{
 		QAction* action = it.value();
-		action->setVisible( entries & m->entryActionMap.key(action) );
+		Entry entry = m->entryActionMap.key(action);
+
+		bool isVisible = (entries & entry);
+		action->setVisible(isVisible);
 	}
 }
 
@@ -362,12 +397,12 @@ void ContextMenu::setExtensions(const Gui::ExtensionSet& extensions)
 	}
 }
 
-void ContextMenu::setSelectionCount(int num_selections)
+void ContextMenu::setSelectionCount(int selectionCount)
 {
-	bool has_selections = (num_selections > 0);
+	bool hasSelections = (selectionCount > 0);
 	for(auto it : m->entryActionMap)
 	{
-		it->setEnabled(has_selections);
+		it->setEnabled(hasSelections);
 	}
 
 	m->entryActionMap[EntryCoverView]->setEnabled(true);
@@ -384,16 +419,29 @@ QKeySequence ContextMenu::shortcut(ContextMenu::Entry entry) const
 	return a->shortcut();
 }
 
-void ContextMenu::showCoverViewChanged()
+void ContextMenu::libraryViewTypeChanged()
 {
-	m->coverViewAction->setChecked(GetSetting(Set::Lib_ShowAlbumCovers));
+	Library::ViewType viewType = GetSetting(Set::Lib_ViewType);
+
+	m->standardViewAction->setChecked(viewType == Library::ViewType::Standard);
+	m->coverViewAction->setChecked(viewType == Library::ViewType::CoverView);
+	m->directoryViewAction->setChecked(viewType == Library::ViewType::FileView);
 }
 
-void ContextMenu::showCoverTriggered(bool b)
+void ContextMenu::libraryViewTypeTriggered(bool b)
 {
 	Q_UNUSED(b)
-	bool show_covers = GetSetting(Set::Lib_ShowAlbumCovers);
-	SetSetting(Set::Lib_ShowAlbumCovers, !show_covers);
+
+	Library::ViewType viewType = Library::ViewType::Standard;
+	if(m->coverViewAction->isChecked()) {
+		viewType = Library::ViewType::CoverView;
+	}
+
+	else if(m->directoryViewAction->isChecked()) {
+		viewType = Library::ViewType::FileView;
+	}
+
+	SetSetting(Set::Lib_ViewType, viewType);
 }
 
 void ContextMenu::showFilterExtensionBarChanged()

@@ -188,34 +188,42 @@ void DirectoryContextMenu::refresh(int count)
 	{
 		this->showActions
 		(
-			(Library::ContextMenu::EntryPlay |
+			Library::ContextMenu::EntryPlay |
 			Library::ContextMenu::EntryPlayNewTab |
 			Library::ContextMenu::EntryDelete |
 			Library::ContextMenu::EntryInfo |
 			Library::ContextMenu::EntryEdit |
 			Library::ContextMenu::EntryLyrics |
 			Library::ContextMenu::EntryAppend |
-			Library::ContextMenu::EntryPlayNext)
+			Library::ContextMenu::EntryPlayNext
+//			Library::ContextMenu::EntryStandardView |
+//			Library::ContextMenu::EntryCoverView |
+//			Library::ContextMenu::EntryDirectoryView
 		);
 
 		switch(m->mode)
 		{
 			case DirectoryContextMenu::Mode::Dir:
 				this->showAction(Library::ContextMenu::EntryLyrics, false);
+				m->actionCreateDirectory->setVisible(count == 1);
+				m->actionCollapseAll->setVisible(true);
 				m->actionRenameByTag->setVisible(false);
+
+				this->showAction(Library::ContextMenu::EntryLyrics, false);
+
 				break;
 			case DirectoryContextMenu::Mode::File:
 				m->actionCreateDirectory->setVisible(false);
 				m->actionCollapseAll->setVisible(false);
 				m->actionRenameByTag->setVisible(true);
-				m->actionRename->setVisible(count == 1);
-				m->actionCreateDirectory->setVisible(count == 1);
+
 				this->showAction(Library::ContextMenu::EntryLyrics, (count == 1));
 				break;
 			default:
 				break;
 		}
 
+		m->actionRename->setVisible(count == 1);
 		m->actionMoveToLibrary->setVisible(true);
 		m->actionCopyToLibrary->setVisible(true);
 	}
