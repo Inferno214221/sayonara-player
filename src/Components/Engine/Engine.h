@@ -101,6 +101,7 @@ namespace Engine
 			void setLevel(float left, float right);
 			QPair<float, float> level() const;
 
+			void setVisualizerEnabled(bool b);
 			void setBroadcastEnabled(bool b);
 			void setEqualizer(int band, int value);
 
