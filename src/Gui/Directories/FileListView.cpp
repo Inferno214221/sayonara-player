@@ -177,9 +177,9 @@ void FileListView::initContextMenu()
 
 	m->contextMenu = new DirectoryContextMenu(DirectoryContextMenu::Mode::File, this);
 
-	connect(m->contextMenu, &DirectoryContextMenu::sigInfoClicked, this, &FileListView::sigInfoClicked);
-	connect(m->contextMenu, &DirectoryContextMenu::sigLyricsClicked, this, &FileListView::sigLyricsClicked);
-	connect(m->contextMenu, &DirectoryContextMenu::sigEditClicked, this, &FileListView::sigEditClicked);
+	connect(m->contextMenu, &DirectoryContextMenu::sigInfoClicked, this, [this](){ this->showInfo(); });
+	connect(m->contextMenu, &DirectoryContextMenu::sigLyricsClicked, this, [this](){ this->showLyrics(); });
+	connect(m->contextMenu, &DirectoryContextMenu::sigEditClicked, this, [this](){ this->showEdit(); });
 	connect(m->contextMenu, &DirectoryContextMenu::sigDeleteClicked, this, &FileListView::sigDeleteClicked);
 	connect(m->contextMenu, &DirectoryContextMenu::sigPlayClicked, this, &FileListView::sigPlayClicked);
 	connect(m->contextMenu, &DirectoryContextMenu::sigPlayNewTabClicked, this, &FileListView::sigPlayNewTabClicked);
@@ -373,3 +373,22 @@ void FileListView::renameFileByTagClicked()
 	}
 }
 
+MD::Interpretation FileListView::metadataInterpretation() const
+{
+	return MD::Interpretation::Tracks;
+}
+
+MetaDataList FileListView::infoDialogData() const
+{
+	return MetaDataList();
+}
+
+bool FileListView::hasMetadata() const
+{
+	return false;
+}
+
+QStringList FileListView::pathlist() const
+{
+	return this->selectedPaths();
+}

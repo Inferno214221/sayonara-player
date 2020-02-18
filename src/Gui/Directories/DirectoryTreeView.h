@@ -22,6 +22,8 @@
 #define DIRECTORYTREEVIEW_H
 
 #include "DirectoryModel.h"
+#include "Gui/InfoDialog/InfoDialogContainer.h"
+
 #include "Gui/Utils/SearchableWidget/SearchableView.h"
 #include "Gui/Utils/Widgets/WidgetTemplate.h"
 #include "Gui/Utils/Widgets/Dragable.h"
@@ -53,15 +55,13 @@ using SearchableTreeView=Gui::WidgetTemplate<SearchableView<QTreeView, Directory
  */
 class DirectoryTreeView :
 		public SearchableTreeView,
+		public InfoDialogContainer,
 		protected Gui::Dragable
 {
 	Q_OBJECT
 	PIMPL(DirectoryTreeView)
 
 	signals:
-		void sigInfoClicked();
-		void sigEditClicked();
-		void sigLyricsClicked();
 		void sigDeleteClicked();
 		void sigPlayClicked();
 		void sigPlayNewTabClicked();
@@ -107,12 +107,10 @@ class DirectoryTreeView :
 		DropAction showDropMenu(const QPoint& pos);
 		void handleSayonaraDrop(const Gui::CustomMimeData* mimedata, const QString& targetDirectory);
 
-
 	private slots:
 		void createDirectoryClicked();
 		void renameDirectoryClicked();
 		void dragTimerTimeout();
-
 
 	protected:
 		// Dragable
@@ -135,6 +133,12 @@ class DirectoryTreeView :
 
 		int mapModelIndexToIndex(const QModelIndex& idx) const override;
 		ModelIndexRange mapIndexToModelIndexes(int idx) const override;
+
+		// InfoDialogContainer interface
+		MD::Interpretation metadataInterpretation() const override;
+		MetaDataList infoDialogData() const override;
+		bool hasMetadata() const override;
+		QStringList pathlist() const override;
 };
 
 #endif // DIRECTORYTREEVIEW_H

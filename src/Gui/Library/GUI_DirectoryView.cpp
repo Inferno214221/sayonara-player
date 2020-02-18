@@ -31,24 +31,11 @@ static void showImageLabel(const QString& filename);
 
 struct GUI_DirectoryView::Private
 {
-	QAction* actionNewDirectory=nullptr;
-	QAction* actionViewInFileManager=nullptr;
-
 	DirectorySelectionHandler* dsh=nullptr;
-	enum SelectedWidget
-	{
-		None=0,
-		Dirs,
-		Files
-	} selectedWidget;
 
-	Private() :
-		selectedWidget(None)
+	Private()
 	{
 		dsh = new DirectorySelectionHandler();
-
-		actionNewDirectory = new QAction();
-		actionViewInFileManager = new QAction();
 	}
 
 	Library::Info currentLibrary() const
@@ -58,8 +45,7 @@ struct GUI_DirectoryView::Private
 };
 
 GUI_DirectoryView::GUI_DirectoryView(QWidget* parent) :
-	Gui::Widget(parent),
-	InfoDialogContainer()
+	Gui::Widget(parent)
 {
 	m = Pimpl::make<Private>();
 
@@ -86,25 +72,6 @@ GUI_DirectoryView::GUI_DirectoryView(QWidget* parent) :
 	connect(ui->tv_dirs, &DirectoryTreeView::sigCopyToLibraryRequested, this, &GUI_DirectoryView::dirCopyToLibRequested);
 	connect(ui->tv_dirs, &DirectoryTreeView::sigMoveToLibraryRequested, this, &GUI_DirectoryView::dirMoveToLibRequested);
 
-	connect(ui->tv_dirs, &DirectoryTreeView::sigInfoClicked, this, [=]()
-	{
-		m->selectedWidget = Private::SelectedWidget::Dirs;
-		showInfo();
-	});
-
-	connect(ui->tv_dirs, &DirectoryTreeView::sigEditClicked, this, [=]()
-	{
-		m->selectedWidget = Private::SelectedWidget::Dirs;
-		showEdit();
-	});
-
-	connect(ui->tv_dirs, &DirectoryTreeView::sigLyricsClicked, this, [=]()
-	{
-		m->selectedWidget = Private::SelectedWidget::Dirs;
-		showLyrics();
-	});
-
-
 	connect(ui->lv_files, &QListView::pressed, this, &GUI_DirectoryView::filePressed);
 	connect(ui->lv_files, &QListView::doubleClicked, this, &GUI_DirectoryView::fileDoubleClicked);
 	connect(ui->lv_files, &FileListView::sigImportRequested, this, &GUI_DirectoryView::importRequested);
@@ -119,23 +86,8 @@ GUI_DirectoryView::GUI_DirectoryView(QWidget* parent) :
 	connect(ui->lv_files, &FileListView::sigCopyToLibraryRequested, this, &GUI_DirectoryView::fileCopyToLibraryRequested);
 	connect(ui->lv_files, &FileListView::sigMoveToLibraryRequested, this, &GUI_DirectoryView::fileMoveToLibraryRequested);
 
-	connect(ui->lv_files, &FileListView::sigInfoClicked, this, [=]()
-	{
-		m->selectedWidget = Private::SelectedWidget::Files;
-		showInfo();
-	});
-
-	connect(ui->lv_files, &FileListView::sigEditClicked, this, [=]()
-	{
-		m->selectedWidget = Private::SelectedWidget::Files;
-		showEdit();
-	});
-
-	connect(ui->lv_files, &FileListView::sigLyricsClicked, this, [=]()
-	{
-		m->selectedWidget = Private::SelectedWidget::Files;
-		showLyrics();
-	});
+	connect(ui->splitter, &QSplitter::splitterMoved, this, &GUI_DirectoryView::splitterMoved);
+	connect(ui->btn_createDir, &QPushButton::clicked, this, &GUI_DirectoryView::createDirectoryClicked);
 }
 
 void GUI_DirectoryView::setCurrentLibrary(LibraryId libraryId)
@@ -167,16 +119,6 @@ void GUI_DirectoryView::importDialogRequested(const QString& targetDirectory)
 
 	importer->setTargetDirectory(targetDirectory);
 	importer->show();
-}
-
-
-void GUI_DirectoryView::initMenuButton()
-{
-//	ui->btn_menu->registerAction(m->actionNewDirectory);
-//	ui->btn_menu->registerAction(m->actionViewInFileManager);
-
-	connect(m->actionNewDirectory, &QAction::triggered, this, &GUI_DirectoryView::newDirectoryClicked);
-	connect(m->actionViewInFileManager, &QAction::triggered, this, &GUI_DirectoryView::viewInFileManagerClicked);
 }
 
 void GUI_DirectoryView::newDirectoryClicked()
@@ -426,35 +368,36 @@ void GUI_DirectoryView::fileOperationFinished()
 	ui->lv_files->setParentDirectory(m->dsh->libraryId(), ui->lv_files->parentDirectory());
 }
 
-
-
 void GUI_DirectoryView::splitterMoved(int pos, int index)
 {
 	Q_UNUSED(pos)
 	Q_UNUSED(index)
 
-//	SetSetting(Set::Dir_SplitterDirFile, ui->splitter_dirs->saveState());
-//	SetSetting(Set::Dir_SplitterTracks, ui->splitter_tracks->saveState());
+	SetSetting(Set::Dir_SplitterDirFile, ui->splitter->saveState());
 }
 
+void GUI_DirectoryView::createDirectoryClicked()
+{
+	const QString libraryPath = m->dsh->libraryInfo().path();
+	QString text = Gui::LineInputDialog::getNewFilename(this, Lang::get(Lang::CreateDirectory), libraryPath);
 
+	if(!text.isEmpty())
+	{
+		Util::File::createDir(m->dsh->libraryInfo().path() + "/" + text);
+	}
+}
 
 void GUI_DirectoryView::languageChanged()
 {
-	ui->retranslateUi(this);
-
-	m->actionNewDirectory->setText(Lang::get(Lang::CreateDirectory) + "...");
-	m->actionViewInFileManager->setText(tr("Show in file manager"));
+	ui->retranslateUi(this);	
+	ui->btn_createDir->setText(Lang::get(Lang::CreateDirectory));
 }
 
 void GUI_DirectoryView::skinChanged()
 {
 	using namespace Gui;
-
-	m->actionNewDirectory->setIcon(Gui::Icons::icon(Gui::Icons::New));
-	m->actionViewInFileManager->setIcon(Gui::Icons::icon(Gui::Icons::Folder));
+	ui->btn_createDir->setIcon(Gui::Icons::icon(Gui::Icons::Folder));
 }
-
 
 QString copyOrMoveLibraryRequested(const QStringList& paths, LibraryId id, QWidget* parent)
 {
@@ -500,15 +443,4 @@ void showImageLabel(const QString& filename)
 	);
 
 	label->show();
-}
-
-
-MD::Interpretation GUI_DirectoryView::metadataInterpretation() const
-{
-	return MD::Interpretation::Tracks;
-}
-
-MetaDataList GUI_DirectoryView::infoDialogData() const
-{
-	return MetaDataList();
 }

@@ -86,6 +86,7 @@ struct DirectoryTreeView::Private
 
 DirectoryTreeView::DirectoryTreeView(QWidget* parent) :
 	SearchableTreeView(parent),
+	InfoDialogContainer(),
 	Gui::Dragable(this)
 {
 	m = Pimpl::make<Private>(this);
@@ -116,9 +117,6 @@ void DirectoryTreeView::initContextMenu()
 
 	m->contextMenu = new DirectoryContextMenu(DirectoryContextMenu::Mode::Dir, this);
 
-	connect(m->contextMenu, &DirectoryContextMenu::sigInfoClicked, this, &DirectoryTreeView::sigInfoClicked);
-	connect(m->contextMenu, &DirectoryContextMenu::sigLyricsClicked, this, &DirectoryTreeView::sigInfoClicked);
-	connect(m->contextMenu, &DirectoryContextMenu::sigEditClicked, this, &DirectoryTreeView::sigInfoClicked);
 	connect(m->contextMenu, &DirectoryContextMenu::sigDeleteClicked, this, &DirectoryTreeView::sigDeleteClicked);
 	connect(m->contextMenu, &DirectoryContextMenu::sigPlayClicked, this, &DirectoryTreeView::sigPlayClicked);
 	connect(m->contextMenu, &DirectoryContextMenu::sigPlayNewTabClicked, this, &DirectoryTreeView::sigPlayNewTabClicked);
@@ -129,6 +127,9 @@ void DirectoryTreeView::initContextMenu()
 	connect(m->contextMenu, &DirectoryContextMenu::sigCollapseAllClicked, this, &DirectoryTreeView::collapseAll);
 	connect(m->contextMenu, &DirectoryContextMenu::sigCopyToLibrary, this, &DirectoryTreeView::sigCopyToLibraryRequested);
 	connect(m->contextMenu, &DirectoryContextMenu::sigMoveToLibrary, this, &DirectoryTreeView::sigMoveToLibraryRequested);
+
+	connect(m->contextMenu, &DirectoryContextMenu::sigInfoClicked, this, [this](){ this->showInfo(); });
+	connect(m->contextMenu, &DirectoryContextMenu::sigEditClicked, this, [this](){ this->showEdit(); });
 }
 
 QString DirectoryTreeView::directoryName(const QModelIndex& index)
@@ -535,6 +536,27 @@ void DirectoryTreeView::setLibraryInfo(const Library::Info& info)
 
 	const QModelIndex index = m->model->index(info.path());
 	this->setRootIndex(index);
+}
+
+
+MD::Interpretation DirectoryTreeView::metadataInterpretation() const
+{
+	return MD::Interpretation::Tracks;
+}
+
+MetaDataList DirectoryTreeView::infoDialogData() const
+{
+	return MetaDataList();
+}
+
+bool DirectoryTreeView::hasMetadata() const
+{
+	return false;
+}
+
+QStringList DirectoryTreeView::pathlist() const
+{
+	return this->selectedPaths();
 }
 
 int DirectoryTreeView::mapModelIndexToIndex(const QModelIndex& idx) const

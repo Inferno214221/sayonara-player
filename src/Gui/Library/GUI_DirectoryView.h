@@ -2,28 +2,22 @@
 #define GUI_DIRECTORYVIEW_H
 
 #include "Gui/Utils/Widgets/Widget.h"
-#include "Gui/InfoDialog/InfoDialogContainer.h"
 #include "Utils/Pimpl.h"
 
 UI_FWD(GUI_DirectoryView)
 
 class GUI_DirectoryView :
-	public Gui::Widget,
-	public InfoDialogContainer
+	public Gui::Widget
 {
 	Q_OBJECT
 	PIMPL(GUI_DirectoryView)
 	UI_CLASS(GUI_DirectoryView)
 
 	public:
-		GUI_DirectoryView(QWidget* parent=nullptr);
+		explicit GUI_DirectoryView(QWidget* parent=nullptr);
 		~GUI_DirectoryView() override;
 
 		void setCurrentLibrary(LibraryId id);
-
-	private:
-		void initMenuButton();
-
 
 	private slots:
 		void importRequested(LibraryId id, const QStringList& paths, const QString& targetDirectory);
@@ -64,16 +58,11 @@ class GUI_DirectoryView :
 		void fileOperationFinished();
 
 		void splitterMoved(int pos, int index);
+		void createDirectoryClicked();
 
-
-
+	protected:		
 		void languageChanged() override;
 		void skinChanged() override;
-
-		// InfoDialogContainer interface
-	protected:
-		virtual MD::Interpretation metadataInterpretation() const override;
-		virtual MetaDataList infoDialogData() const override;
 };
 
 #endif // GUI_DIRECTORYVIEW_H
