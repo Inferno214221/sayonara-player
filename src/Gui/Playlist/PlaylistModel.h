@@ -72,7 +72,8 @@ namespace Playlist
 			{
 				RatingRole=Qt::UserRole + 1,
 				RadioModeRole=Qt::UserRole + 2,
-				DragIndexRole=Qt::UserRole + 3
+				DragIndexRole=Qt::UserRole + 3,
+				EntryLookRole=Qt::UserRole + 4
 			};
 
 			explicit Model(PlaylistPtr pl, QObject* parent=nullptr);

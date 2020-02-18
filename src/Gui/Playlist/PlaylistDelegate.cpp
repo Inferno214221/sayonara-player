@@ -112,9 +112,7 @@ void Delegate::paint(QPainter* painter, const QStyleOptionViewItem &option, cons
 	QPalette palette = option.palette;
 	QRect rect(option.rect);
 
-	if(index.column() != Model::ColumnName::Description) {
-		StyledItemDelegate::paint(painter, option, index);
-	}
+	StyledItemDelegate::paint(painter, option, index);
 
 	// drag and drop active
 	if(index.data(Model::DragIndexRole).toBool() == true)
@@ -177,7 +175,7 @@ void Delegate::paint(QPainter* painter, const QStyleOptionViewItem &option, cons
 	int xOffset = 4;
 	int standardWeight = font.weight();
 
-	const QString entryLook = index.data().toString();
+	const QString entryLook = index.data(Model::EntryLookRole).toString();
 	QList<PlaylistStyleItem> styleItems = parseEntryLookString(entryLook);
 	for(const PlaylistStyleItem& item : styleItems)
 	{
