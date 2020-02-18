@@ -47,19 +47,19 @@ namespace Library
 	class Info;
 }
 
-using SearchableTreeView=Gui::WidgetTemplate<SearchableView<QTreeView, DirectoryModel>>;
-
 /**
  * @brief The DirectoryTreeView class
  * @ingroup GuiDirectories
  */
 class DirectoryTreeView :
-		public SearchableTreeView,
+		public Gui::WidgetTemplate<QTreeView>,
 		public InfoDialogContainer,
 		protected Gui::Dragable
 {
 	Q_OBJECT
 	PIMPL(DirectoryTreeView)
+
+	using Parent=Gui::WidgetTemplate<QTreeView>;
 
 	signals:
 		void sigDeleteClicked();
@@ -93,6 +93,7 @@ class DirectoryTreeView :
 		QMimeData*		dragableMimedata() const override;
 
 		void			setLibraryInfo(const Library::Info& info);
+		void			setFilterTerm(const QString& filter);
 		void			setBusy(bool b);
 
 	private:
@@ -127,12 +128,7 @@ class DirectoryTreeView :
 		void dragMoveEvent(QDragMoveEvent* event) override;
 		void dropEvent(QDropEvent* event) override;
 
-		// SayonaraSelectionView
-		void selectMatch(const QString& str, SearchDirection direction) override;
 		void selectionChanged(const QItemSelection& selected, const QItemSelection& deselected) override;
-
-		int mapModelIndexToIndex(const QModelIndex& idx) const override;
-		ModelIndexRange mapIndexToModelIndexes(int idx) const override;
 
 		// InfoDialogContainer interface
 		MD::Interpretation metadataInterpretation() const override;

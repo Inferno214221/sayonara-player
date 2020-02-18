@@ -100,6 +100,11 @@ void GUI_DirectoryView::setCurrentLibrary(LibraryId libraryId)
 	ui->lv_files->setParentDirectory(info.id(), info.path());
 }
 
+void GUI_DirectoryView::setFilterTerm(const QString& filter)
+{
+	ui->tv_dirs->setFilterTerm(filter);
+}
+
 GUI_DirectoryView::~GUI_DirectoryView() = default;
 
 void GUI_DirectoryView::importRequested(LibraryId id, const QStringList& paths, const QString& targetDirectory)

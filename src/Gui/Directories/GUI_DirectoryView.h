@@ -18,6 +18,7 @@ class GUI_DirectoryView :
 		~GUI_DirectoryView() override;
 
 		void setCurrentLibrary(LibraryId id);
+		void setFilterTerm(const QString& filter);
 
 	private slots:
 		void importRequested(LibraryId id, const QStringList& paths, const QString& targetDirectory);
@@ -37,7 +38,7 @@ class GUI_DirectoryView :
 		void dirDeleteClicked();
 		void dirCopyRequested(const QStringList& files, const QString& target);
 		void dirMoveRequested(const QStringList& files, const QString& target);
-		void dirRenameRequested(const QString& oldName, const QString& new_name);
+		void dirRenameRequested(const QString& oldName, const QString& newName);
 		void dirCopyToLibRequested(LibraryId libraryId);
 		void dirMoveToLibRequested(LibraryId libraryId);
 
@@ -49,7 +50,7 @@ class GUI_DirectoryView :
 		void filePlayNextClicked();
 		void filePlayNewTabClicked();
 		void fileDeleteClicked();
-		void fileRenameRequested(const QString& oldName, const QString& new_name);
+		void fileRenameRequested(const QString& oldName, const QString& newName);
 		void fileRenameByExpressionRequested(const QString& oldName, const QString& expression);
 		void fileCopyToLibraryRequested(LibraryId libraryId);
 		void fileMoveToLibraryRequested(LibraryId libraryId);

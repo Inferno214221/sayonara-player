@@ -25,6 +25,7 @@
 
 #include <QTreeView>
 #include <QFileSystemModel>
+#include <QSortFilterProxyModel>
 
 namespace Library
 {
@@ -36,7 +37,7 @@ namespace Library
  * @ingroup GuiDirectories
  */
 class DirectoryModel :
-	public SearchableModel<QFileSystemModel>
+	public QSortFilterProxyModel
 {
 	Q_OBJECT
 	PIMPL(DirectoryModel)
@@ -45,17 +46,19 @@ public:
 	explicit DirectoryModel(QObject* parent=nullptr);
 	~DirectoryModel() override;
 
-	void setSearchOnlyDirectories(bool b);
-	void setLibraryInfo(const Library::Info& info);
-	Library::Info libraryInfo() const;
+	QModelIndex setDataSource(LibraryId libraryId);
+	QModelIndex setDataSource(const QString& path);
 
-private:
-	using QFileSystemModel::setRootPath;
-	void createFileList(const QString& substr);
+	LibraryId libraryDataSource() const;
 
-public:
-	QModelIndexList searchResults(const QString& substr) override;
-	Qt::ItemFlags	flags(const QModelIndex& index) const override;
+	QString filePath(const QModelIndex& index);
+	QModelIndex indexOfPath(const QString& path) const;
+
+
+	// QSortFilterProxyModel interface
+	protected:
+	bool filterAcceptsRow(int sourceRow, const QModelIndex& sourceParent) const override;
 };
+
 
 #endif // SEARCHABLEFileTreeView_H

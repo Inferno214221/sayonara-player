@@ -19,7 +19,6 @@
  */
 
 #include "DirectoryTreeView.h"
-#include "DirectoryIconProvider.h"
 #include "DirectoryModel.h"
 #include "DirectoryContextMenu.h"
 
@@ -54,7 +53,6 @@ struct DirectoryTreeView::Private
 
 	DirectoryContextMenu*	contextMenu=nullptr;
 	DirectoryModel*		model=nullptr;
-	IconProvider*		iconProvider=nullptr;
 	Gui::ProgressBar*	progressBar=nullptr;
 	int					lastFoundIndex;
 
@@ -64,16 +62,9 @@ struct DirectoryTreeView::Private
 	Private(QObject* parent) :
 		lastFoundIndex(-1)
 	{
-		iconProvider = new IconProvider();
-
 		dragTimer = new QTimer(parent);
 		dragTimer->setSingleShot(true);
 		dragTimer->setInterval(750);
-	}
-
-	~Private()
-	{
-		delete iconProvider; iconProvider = nullptr;
 	}
 
 	void resetDrag()
@@ -85,16 +76,14 @@ struct DirectoryTreeView::Private
 
 
 DirectoryTreeView::DirectoryTreeView(QWidget* parent) :
-	SearchableTreeView(parent),
+	Gui::WidgetTemplate<QTreeView>(parent),
 	InfoDialogContainer(),
 	Gui::Dragable(this)
 {
 	m = Pimpl::make<Private>(this);
 
 	m->model = new DirectoryModel(this);
-	m->model->setFilter(QDir::NoDotAndDotDot | QDir::Dirs);
-	m->model->setIconProvider(m->iconProvider);
-	this->setSearchableModel(m->model);
+	this->setModel(m->model);
 
 	connect(m->dragTimer, &QTimer::timeout, this, &DirectoryTreeView::dragTimerTimeout);
 	this->setItemDelegate(new Gui::StyledItemDelegate(this));
@@ -105,6 +94,10 @@ DirectoryTreeView::DirectoryTreeView(QWidget* parent) :
 	action->setShortcutContext(Qt::WidgetShortcut);
 	connect(action, &QAction::triggered, this, &DirectoryTreeView::renameDirectoryClicked);
 	this->addAction(action);
+
+//	connect(this, &QTreeView::expanded, this, [this](auto ignored){
+//		m->model->invalidate();
+//	});
 }
 
 DirectoryTreeView::~DirectoryTreeView() = default;
@@ -156,53 +149,13 @@ QStringList DirectoryTreeView::selectedPaths() const
 	return paths;
 }
 
-QModelIndex DirectoryTreeView::search(const QString& search_term)
+QModelIndex DirectoryTreeView::search(const QString& searchTerm)
 {
-	m->model->setSearchOnlyDirectories(false);
 
-	const QModelIndexList found_indexes = m->model->searchResults(search_term);
-	if(found_indexes.isEmpty())
-	{
-		m->lastFoundIndex = 0;
-		return QModelIndex();
-	}
+	return QModelIndex();
 
-	if(m->lastSearchTerm == search_term)
-	{
-		m->lastFoundIndex++;
-		if(m->lastFoundIndex >= found_indexes.count()){
-			m->lastFoundIndex = 0;
-		}
-	}
-
-	else {
-		m->lastFoundIndex = 0;
-		m->lastSearchTerm = search_term;
-	}
-
-	QModelIndex found_idx = found_indexes[m->lastFoundIndex];
-
-	scrollTo(found_idx, QAbstractItemView::PositionAtCenter);
-	selectionModel()->select(found_idx, QItemSelectionModel::ClearAndSelect);
-	expand(found_idx);
-
-	emit sigDirectoryLoaded(found_idx);
-
-	return found_idx;
 }
 
-void DirectoryTreeView::selectMatch(const QString& str, SearchDirection direction)
-{
-	QModelIndex idx = matchIndex(str, direction);
-	if(!idx.isValid()){
-		return;
-	}
-
-	selectionModel()->select(idx, QItemSelectionModel::ClearAndSelect);
-	//setCurrentIndex(idx);
-	expand(idx);
-	scrollTo(idx, QAbstractItemView::PositionAtCenter);
-}
 
 void DirectoryTreeView::contextMenuEvent(QContextMenuEvent* event)
 {
@@ -223,10 +176,11 @@ void DirectoryTreeView::createDirectoryClicked()
 		return;
 	}
 
-	QString newName = Gui::LineInputDialog::getNewFilename(this, Lang::get(Lang::CreateDirectory), selectedPaths()[0]);
+	QString parentDirectory = selectedPaths()[0];
+	QString newName = Gui::LineInputDialog::getNewFilename(this, Lang::get(Lang::CreateDirectory), parentDirectory);
 	if(!newName.isEmpty())
 	{
-		m->model->mkdir(indexes.first(), newName);
+		Util::File::createDir(parentDirectory + "/" + newName);
 		this->expand(indexes.first());
 	}
 }
@@ -320,7 +274,7 @@ void DirectoryTreeView::dragEnterEvent(QDragEnterEvent* event)
 
 void DirectoryTreeView::dragMoveEvent(QDragMoveEvent* event)
 {
-	SearchableTreeView::dragMoveEvent(event);
+	Parent::dragMoveEvent(event);
 
 	const QMimeData* mimeData = event->mimeData();
 	if(!mimeData) {
@@ -363,7 +317,7 @@ void DirectoryTreeView::dragLeaveEvent(QDragLeaveEvent* event)
 	m->resetDrag();
 	event->accept();
 
-	SearchableTreeView::dragLeaveEvent(event);
+	Parent::dragLeaveEvent(event);
 }
 
 void DirectoryTreeView::dropEvent(QDropEvent* event)
@@ -403,8 +357,11 @@ void DirectoryTreeView::dropEvent(QDropEvent* event)
 			}
 		}
 
-		LibraryId id = m->model->libraryInfo().id();
-		emit sigImportRequested(id, files, targetDirectory);
+		LibraryId id = m->model->libraryDataSource();
+		if(id >= 0)
+		{
+			emit sigImportRequested(id, files, targetDirectory);
+		}
 	}
 }
 
@@ -512,10 +469,10 @@ void DirectoryTreeView::selectionChanged(const QItemSelection& selected, const Q
 
 QMimeData* DirectoryTreeView::dragableMimedata() const
 {
-	const QModelIndexList selected_items = this->selctedRows();
+	const QModelIndexList selectedItems = this->selctedRows();
 
 	QList<QUrl> urls;
-	for(const QModelIndex& index : selected_items)
+	for(const QModelIndex& index : selectedItems)
 	{
 		const QString path = m->model->filePath(index);
 		urls << QUrl::fromLocalFile(path);
@@ -530,15 +487,21 @@ QMimeData* DirectoryTreeView::dragableMimedata() const
 
 void DirectoryTreeView::setLibraryInfo(const Library::Info& info)
 {
-	m->model->setLibraryInfo(info);
+	QModelIndex index = m->model->setDataSource(info.id());
+	if(index.isValid())
+	{
+		this->setRootIndex(index);
+	}
+
 	for(int i=1; i<m->model->columnCount(); i++) {
 		this->hideColumn(i);
 	}
-
-	const QModelIndex index = m->model->index(info.path());
-	this->setRootIndex(index);
 }
 
+void DirectoryTreeView::setFilterTerm(const QString& filter)
+{
+	m->model->setFilterFixedString(filter);
+}
 
 MD::Interpretation DirectoryTreeView::metadataInterpretation() const
 {
@@ -560,25 +523,8 @@ QStringList DirectoryTreeView::pathlist() const
 	return this->selectedPaths();
 }
 
-int DirectoryTreeView::mapModelIndexToIndex(const QModelIndex& idx) const
-{
-	Q_UNUSED(idx)
-	return -1;
-}
-
-ModelIndexRange DirectoryTreeView::mapIndexToModelIndexes(int idx) const
-{
-	Q_UNUSED(idx)
-	return ModelIndexRange(QModelIndex(), QModelIndex());
-}
-
-
 void DirectoryTreeView::skinChanged()
 {
-	if(m) {
-		m->model->setIconProvider(m->iconProvider);
-	}
-
 	const QFontMetrics fm = this->fontMetrics();
 	this->setIconSize(QSize(fm.height(), fm.height()));
 	this->setIndentation(fm.height());
@@ -600,7 +546,5 @@ void DirectoryTreeView::keyPressEvent(QKeyEvent* event)
 		default: break;
 	}
 
-	m->model->setSearchOnlyDirectories(true);
-
-	SearchableTreeView::keyPressEvent(event);
+	Parent::keyPressEvent(event);
 }

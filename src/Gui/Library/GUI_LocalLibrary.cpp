@@ -482,6 +482,12 @@ QList<Filter::Mode> GUI_LocalLibrary::searchOptions() const
 	return { Filter::Fulltext, Filter::Filename, Filter::Genre };
 }
 
+void GUI_LocalLibrary::queryLibrary()
+{
+	GUI_AbstractLibrary::queryLibrary();
+	ui->directory_view->setFilterTerm(m->library->filter().filtertext(false).join(""));
+}
+
 void GUI_LocalLibrary::showEvent(QShowEvent* e)
 {
 	GUI_AbstractLibrary::showEvent(e);

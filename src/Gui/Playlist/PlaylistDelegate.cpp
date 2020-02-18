@@ -143,8 +143,6 @@ void Delegate::paint(QPainter* painter, const QStyleOptionViewItem &option, cons
 		}
 	}
 
-	//painter->translate(-4, 0);
-
 	QFont font = option.font;
 	{ // set the font
 		if(GetSetting(Set::PL_FontSize) > 0) {
@@ -157,8 +155,6 @@ void Delegate::paint(QPainter* painter, const QStyleOptionViewItem &option, cons
 
 		painter->setFont(font);
 	}
-
-	//painter->translate(4, 0);
 
 	int alignment = int(Qt::AlignLeft);
 	{ // set alignment

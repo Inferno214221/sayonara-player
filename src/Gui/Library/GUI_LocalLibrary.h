@@ -66,8 +66,12 @@ namespace Library
 		SearchBar* leSearch() const override;
 		QList<Filter::Mode> searchOptions() const override;
 
+		void queryLibrary() override;
+
 		void languageChanged() override;
 		void skinChanged() override;
+
+
 
 	private:
 		void checkViewState();
