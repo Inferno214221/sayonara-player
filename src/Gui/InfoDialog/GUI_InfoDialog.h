@@ -90,8 +90,8 @@ private:
 	void prepareCover(const Cover::Location& cover_path);
 	void prepareInfo(MD::Interpretation mode);
 
-	void closeEvent(QCloseEvent *e) override;
-	void showEvent(QShowEvent *e) override;
+	void closeEvent(QCloseEvent* e) override;
+	void showEvent(QShowEvent* e) override;
 
 	using Gui::Dialog::show;
 };

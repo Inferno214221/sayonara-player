@@ -245,7 +245,7 @@ void Gui::RatingEditor::focusOutEvent(QFocusEvent* e)
 	QWidget::focusOutEvent(e);
 }
 
-void Gui::RatingEditor::mousePressEvent(QMouseEvent *e)
+void Gui::RatingEditor::mousePressEvent(QMouseEvent* e)
 {
 	Rating rating = m->label->ratingAt(e->pos());
 	m->label->setRating(rating);

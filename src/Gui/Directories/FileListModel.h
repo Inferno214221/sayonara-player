@@ -26,7 +26,27 @@
 
 #include <QModelIndex>
 
+class QPixmap;
 class QVariant;
+
+class IconWorkerThread : public QObject
+{
+	Q_OBJECT
+	PIMPL(IconWorkerThread)
+
+	signals:
+		void sigFinished(const QString& path);
+
+	public:
+		IconWorkerThread(const QSize& targetSize, const QString& filename);
+		~IconWorkerThread();
+
+		QPixmap pixmap() const;
+
+	public slots:
+		void start();
+};
+
 
 /**
  * @brief The FileListModel class
@@ -37,7 +57,6 @@ class FileListModel :
 {
 	Q_OBJECT
 	PIMPL(FileListModel)
-
 
 	public:
 		explicit FileListModel(QObject* parent=nullptr);
@@ -60,9 +79,11 @@ class FileListModel :
 		QMimeData* mimeData(const QModelIndexList &indexes) const override;
 		Qt::ItemFlags flags(const QModelIndex& index) const override;
 
-
 	private:
 		bool checkRowForSearchstring(int row, const QString& substr) const;
+
+	private slots:
+		void pixmapFetched(const QString& path);
 };
 
 #endif

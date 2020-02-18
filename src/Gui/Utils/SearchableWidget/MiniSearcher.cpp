@@ -240,7 +240,7 @@ void MiniSearcher::set_number_results(int results)
 	m->label->show();
 }
 
-void MiniSearcher::handle_key_press(QKeyEvent *e)
+void MiniSearcher::handle_key_press(QKeyEvent* e)
 {
 	bool was_initialized = isVisible();
 	bool initialized = check_and_init(e);

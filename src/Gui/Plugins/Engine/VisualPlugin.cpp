@@ -228,7 +228,7 @@ void VisualPlugin::stopped()
 }
 
 
-void VisualPlugin::closeEvent(QCloseEvent *e)
+void VisualPlugin::closeEvent(QCloseEvent* e)
 {
 	PlayerPlugin::Base::closeEvent(e);
 	update();
@@ -248,7 +248,7 @@ void VisualPlugin::resizeEvent(QResizeEvent* e)
 }
 
 
-void VisualPlugin::mousePressEvent(QMouseEvent *e)
+void VisualPlugin::mousePressEvent(QMouseEvent* e)
 {
 	switch(e->button())
 	{

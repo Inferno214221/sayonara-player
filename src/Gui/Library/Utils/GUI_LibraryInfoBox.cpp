@@ -102,7 +102,7 @@ void GUI_LibraryInfoBox::skinChanged()
 }
 
 
-void GUI_LibraryInfoBox::showEvent(QShowEvent *e)
+void GUI_LibraryInfoBox::showEvent(QShowEvent* e)
 {
 	refresh();
 	Dialog::showEvent(e);

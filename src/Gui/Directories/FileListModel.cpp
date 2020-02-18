@@ -46,19 +46,33 @@
 #include <QDir>
 #include <QMap>
 #include <QPixmap>
+#include <QThread>
+#include <QPixmapCache>
 
 enum ColumnName
 {
 	ColumnDecoration=0,
 	ColumnName,
-	ColumnInLibrary,
 	ColumnCount
 };
 
 namespace Algorithm=Util::Algorithm;
 
+struct IconWorkerThread::Private
+{
+	QString filename;
+	QPixmap pixmap;
+	QSize targetSize;
+
+	Private(const QSize& targetSize, const QString& filename) :
+		filename(filename),
+		targetSize(targetSize)
+	{}
+};
+
 struct FileListModel::Private
 {
+	QPixmapCache cache;
 	QString	parentDirectory;
 	QStringList files;
 	QMap<QString, bool> filesInLibrary;
@@ -125,48 +139,48 @@ void FileListModel::setParentDirectory(LibraryId libraryId, const QString& dir)
 
 	Algorithm::sort(m->files, [](const QString& f1, const QString& f2)
 	{
-		bool is_soundfile1 = Util::File::isSoundFile(f1);
-		bool is_soundfile2 = Util::File::isSoundFile(f2);
+		bool isSoundfile1 = Util::File::isSoundFile(f1);
+		bool isSoundfile2 = Util::File::isSoundFile(f2);
 
-		bool is_playlistfile1 = Util::File::isPlaylistFile(f1);
-		bool is_playlistfile2 = Util::File::isPlaylistFile(f2);
+		bool isPlaylistfile1 = Util::File::isPlaylistFile(f1);
+		bool isPlaylistfile2 = Util::File::isPlaylistFile(f2);
 
-		bool is_imagefile1 = Util::File::isImageFile(f1);
-		bool is_imagefile2 = Util::File::isImageFile(f2);
+		bool isImagefile1 = Util::File::isImageFile(f1);
+		bool isImagefile2 = Util::File::isImageFile(f2);
 
-		if(is_soundfile1 && is_soundfile2){
+		if(isSoundfile1 && isSoundfile2){
 			return (f1.toLower() < f2.toLower());
 		}
 
-		if(is_soundfile1 && !is_soundfile2){
+		if(isSoundfile1 && !isSoundfile2){
 			return true;
 		}
 
-		if(!is_soundfile1 && is_soundfile2){
+		if(!isSoundfile1 && isSoundfile2){
 			return false;
 		}
 
-		if(is_playlistfile1 && is_playlistfile2){
+		if(isPlaylistfile1 && isPlaylistfile2){
 			return (f1.toLower() < f2.toLower());
 		}
 
-		if(is_playlistfile1 && !is_playlistfile2){
+		if(isPlaylistfile1 && !isPlaylistfile2){
 			return true;
 		}
 
-		if(!is_playlistfile1 && is_playlistfile2){
+		if(!isPlaylistfile1 && isPlaylistfile2){
 			return false;
 		}
 
-		if(is_imagefile1 && is_imagefile2){
+		if(isImagefile1 && isImagefile2){
 			return (f1.toLower() < f2.toLower());
 		}
 
-		if(is_imagefile1 && !is_imagefile2){
+		if(isImagefile1 && !isImagefile2){
 			return true;
 		}
 
-		if(!is_imagefile1 && is_imagefile2){
+		if(!isImagefile1 && isImagefile2){
 			return false;
 		}
 
@@ -224,6 +238,8 @@ int FileListModel::columnCount(const QModelIndex& parent) const
 
 QVariant FileListModel::data(const QModelIndex& index, int role) const
 {
+	using namespace Util;
+
 	int row = index.row();
 	int col = index.column();
 
@@ -231,58 +247,76 @@ QVariant FileListModel::data(const QModelIndex& index, int role) const
 		return QVariant();
 	}
 
-	QString filename = m->files[row];
-	bool in_library = m->filesInLibrary.contains(filename) && (m->filesInLibrary[filename] == true);
-
-	using namespace Util;
-
-	switch(role)
+	const QString& filename = m->files[row];
+	if((role == Qt::DisplayRole) && (col == ColumnName))
 	{
-		case Qt::DisplayRole:
-			switch(col)
-			{
-				case ColumnName:
-					return File::getFilenameOfPath(filename);
-				case ColumnInLibrary:
-					return (in_library == true) ? Lang::get(Lang::Yes) : Lang::get(Lang::No);
-				default: return QVariant();
-			}
-
-		case Qt::DecorationRole:
-			if(col == ColumnDecoration)
-			{
-				if(File::isSoundFile(filename))
-				{
-					return Gui::Icons::icon(Gui::Icons::AudioFile);
-				}
-
-				if(File::isPlaylistFile(filename)){
-					return Gui::Icons::icon(Gui::Icons::PlaylistFile);
-				}
-
-				if(File::isImageFile(filename))
-				{
-					QIcon icon;
-					icon.addPixmap(QPixmap(filename));
-					return icon;
-				}
-			}
-
-			return QIcon();
-
-		case Qt::TextAlignmentRole:
-			if(col == ColumnInLibrary){
-				return int(Qt::AlignCenter | Qt::AlignVCenter);
-			}
-
-			return QVariant();
-
-		case Qt::UserRole:
-			return filename;
-
-		default:
-			return QVariant();
+		return File::getFilenameOfPath(filename);
 	}
+
+	else if((role == Qt::DecorationRole) && (col == ColumnDecoration))
+	{
+		if(File::isSoundFile(filename))
+		{
+			return Gui::Icons::icon(Gui::Icons::AudioFile);
+		}
+
+		if(File::isPlaylistFile(filename)){
+			return Gui::Icons::icon(Gui::Icons::PlaylistFile);
+		}
+
+		if(File::isImageFile(filename))
+		{
+			QPixmap* pm = m->cache.find(filename);
+			if(!pm || pm->isNull())
+			{
+				m->cache.insert(filename, Gui::Icons::pixmap(Gui::Icons::ImageFile));
+
+				auto* worker = new IconWorkerThread(QSize(32,32), filename);
+				auto* t = new QThread();
+				worker->moveToThread(t);
+
+				connect(worker, &IconWorkerThread::sigFinished, this, &FileListModel::pixmapFetched);
+				connect(worker, &IconWorkerThread::sigFinished, this, [t](const QString&){
+					t->quit();
+				});
+
+				connect(t, &QThread::started, worker, &IconWorkerThread::start);
+				connect(t, &QThread::finished, t, &QObject::deleteLater);
+
+				t->start();
+
+				return Gui::Icons::icon(Gui::Icons::ImageFile);
+			}
+
+			else
+			{
+				QIcon icon;
+				icon.addPixmap(*pm);
+				return icon;
+			}
+		}
+	}
+
+	else if(role == Qt::UserRole)
+	{
+		return filename;
+	}
+
+	return QVariant();
+}
+
+void FileListModel::pixmapFetched(const QString& path)
+{
+	auto* worker = static_cast<IconWorkerThread*>(sender());
+
+	QPixmap pm = worker->pixmap();
+	if(!pm.isNull())
+	{
+		m->cache.insert(path, pm);
+		emit dataChanged(index(0,0), index(rowCount() - 1, columnCount() - 1));
+	}
+
+	worker->deleteLater();
 }
 
 QVariant FileListModel::headerData(int column, Qt::Orientation orientation, int role) const
@@ -295,10 +329,6 @@ QVariant FileListModel::headerData(int column, Qt::Orientation orientation, int 
 
 		else if(column == ColumnName){
 			return Lang::get(Lang::Filename);
-		}
-
-		else if(column == ColumnInLibrary){
-			return Lang::get(Lang::Library);
 		}
 	}
 
@@ -340,7 +370,6 @@ QMimeData* FileListModel::mimeData(const QModelIndexList& indexes) const
 	return data;
 }
 
-
 Qt::ItemFlags FileListModel::flags(const QModelIndex& index) const
 {
 	if(index.isValid())
@@ -349,4 +378,26 @@ Qt::ItemFlags FileListModel::flags(const QModelIndex& index) const
 	}
 
 	return Qt::NoItemFlags;
+}
+
+IconWorkerThread::IconWorkerThread(const QSize& targetSize, const QString& filename)
+{
+	m = Pimpl::make<Private>(targetSize, filename);
+}
+
+IconWorkerThread::~IconWorkerThread() = default;
+
+void IconWorkerThread::start()
+{
+	QPixmap pm = QPixmap(m->filename);
+	if(!pm.isNull()) {
+		m->pixmap = pm.scaled(m->targetSize);
+	}
+
+	emit sigFinished(m->filename);
+}
+
+QPixmap IconWorkerThread::pixmap() const
+{
+	return m->pixmap;
 }

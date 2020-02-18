@@ -457,7 +457,7 @@ void GUI_AlternativeCovers::showEvent(QShowEvent* e)
 }
 
 
-void GUI_AlternativeCovers::resizeEvent(QResizeEvent *e)
+void GUI_AlternativeCovers::resizeEvent(QResizeEvent* e)
 {
 	Gui::Dialog::resizeEvent(e);
 

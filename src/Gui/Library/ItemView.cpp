@@ -454,9 +454,9 @@ void ItemView::contextMenuEvent(QContextMenuEvent* event)
 	QTableView::contextMenuEvent(event);
 }
 
-void ItemView::dragEnterEvent(QDragEnterEvent *event) {	event->accept(); }
-void ItemView::dragMoveEvent(QDragMoveEvent *event) { event->accept(); }
-void ItemView::dropEvent(QDropEvent *event)
+void ItemView::dragEnterEvent(QDragEnterEvent* event) {	event->accept(); }
+void ItemView::dragMoveEvent(QDragMoveEvent* event) { event->accept(); }
+void ItemView::dropEvent(QDropEvent* event)
 {
 	event->accept();
 
@@ -509,7 +509,7 @@ void ItemView::keyPressEvent(QKeyEvent* event)
 }
 
 
-void ItemView::resizeEvent(QResizeEvent *event)
+void ItemView::resizeEvent(QResizeEvent* event)
 {
 	SearchableTableView::resizeEvent(event);
 

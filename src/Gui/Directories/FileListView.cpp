@@ -108,12 +108,12 @@ void FileListView::contextMenuEvent(QContextMenuEvent* event)
 	m->contextMenu->exec(pos);
 }
 
-void FileListView::dragEnterEvent(QDragEnterEvent *event)
+void FileListView::dragEnterEvent(QDragEnterEvent* event)
 {
 	event->accept();
 }
 
-void FileListView::dragMoveEvent(QDragMoveEvent *event)
+void FileListView::dragMoveEvent(QDragMoveEvent* event)
 {
 	const QMimeData* mime_data = event->mimeData();
 	const auto* cmd = Gui::MimeData::customMimedata(mime_data);
@@ -126,7 +126,7 @@ void FileListView::dragMoveEvent(QDragMoveEvent *event)
 	}
 }
 
-void FileListView::dropEvent(QDropEvent *event)
+void FileListView::dropEvent(QDropEvent* event)
 {
 	event->accept();
 
@@ -294,9 +294,15 @@ ModelIndexRange FileListView::mapIndexToModelIndexes(int idx) const
 	);
 }
 
-void FileListView::keyPressEvent(QKeyEvent *event)
+void FileListView::keyPressEvent(QKeyEvent* event)
 {
 	event->setAccepted(false);
+
+	if(event->key() == Qt::Key_Escape)
+	{
+		this->clearSelection();
+	}
+
 	SearchableTableView::keyPressEvent(event);
 }
 

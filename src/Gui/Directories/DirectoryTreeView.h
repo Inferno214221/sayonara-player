@@ -124,10 +124,10 @@ class DirectoryTreeView :
 		void keyPressEvent(QKeyEvent* event) override;
 		void contextMenuEvent(QContextMenuEvent* event) override;
 
-		void dragEnterEvent(QDragEnterEvent *event) override;
+		void dragEnterEvent(QDragEnterEvent* event) override;
 		void dragLeaveEvent(QDragLeaveEvent* event) override;
-		void dragMoveEvent(QDragMoveEvent *event) override;
-		void dropEvent(QDropEvent *event) override;
+		void dragMoveEvent(QDragMoveEvent* event) override;
+		void dropEvent(QDropEvent* event) override;
 
 		// SayonaraSelectionView
 		void selectMatch(const QString& str, SearchDirection direction) override;

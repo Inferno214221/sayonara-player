@@ -571,7 +571,9 @@ void DirectoryTreeView::keyPressEvent(QKeyEvent* event)
 		case Qt::Key_Return:
 			emit sigEnterPressed();
 			return;
-
+		case Qt::Key_Escape:
+			this->clearSelection();
+			return;
 		default: break;
 	}
 

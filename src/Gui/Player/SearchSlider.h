@@ -66,7 +66,7 @@ namespace Gui
 		void mousePressEvent(QMouseEvent* e) override;
 		void mouseReleaseEvent(QMouseEvent* e) override;
 		void mouseMoveEvent(QMouseEvent* e) override;
-		bool event(QEvent *event) override;
+		bool event(QEvent* event) override;
 
 		bool hasAdditionalValue() const override;
 		int additionalValue() const override;

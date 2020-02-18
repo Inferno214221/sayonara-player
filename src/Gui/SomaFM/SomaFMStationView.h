@@ -39,7 +39,7 @@ public:
 	int viewportHeight() const override;
 
 protected:
-	void keyPressEvent(QKeyEvent *e) override;
+	void keyPressEvent(QKeyEvent* e) override;
 };
 
 #endif // SOMAFMSTATIONVIEW_H

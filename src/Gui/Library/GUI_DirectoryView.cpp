@@ -321,7 +321,16 @@ void GUI_DirectoryView::filePressed(QModelIndex idx)
 	}
 
 	QStringList selectedPaths = ui->lv_files->selectedPaths();
-	m->dsh->libraryInstance()->fetchTracksByPath(selectedPaths);
+	auto lastIt = std::remove_if(selectedPaths.begin(), selectedPaths.end(), [](const QString& path){
+		return( !Util::File::isSoundFile(path) && !Util::File::isPlaylistFile(path) );
+	});
+
+	selectedPaths.erase(lastIt, selectedPaths.end());
+
+	if(!selectedPaths.isEmpty())
+	{ // may happen if an invalid path is clicked
+		m->dsh->libraryInstance()->fetchTracksByPath(selectedPaths);
+	}
 }
 
 void GUI_DirectoryView::fileDoubleClicked(QModelIndex idx)

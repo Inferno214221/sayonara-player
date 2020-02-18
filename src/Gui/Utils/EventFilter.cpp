@@ -31,7 +31,7 @@ KeyPressFilter::KeyPressFilter(QObject* parent) :
 {}
 
 
-bool KeyPressFilter::eventFilter(QObject *o, QEvent *e)
+bool KeyPressFilter::eventFilter(QObject *o, QEvent* e)
 {
 	if(e->type() == QEvent::KeyPress)
 	{
@@ -49,7 +49,7 @@ ContextMenuFilter::ContextMenuFilter(QObject* parent) :
 	QObject(parent)
 {}
 
-bool ContextMenuFilter::eventFilter(QObject *o, QEvent *e)
+bool ContextMenuFilter::eventFilter(QObject *o, QEvent* e)
 {
 	if(e->type() == QEvent::ContextMenu)
 	{
@@ -69,7 +69,7 @@ MouseMoveFilter::MouseMoveFilter(QObject* parent) :
 	QObject(parent)
 {}
 
-bool MouseMoveFilter::eventFilter(QObject *o, QEvent *e)
+bool MouseMoveFilter::eventFilter(QObject *o, QEvent* e)
 {
 	if(e->type() == QEvent::MouseMove)
 	{
@@ -103,7 +103,7 @@ MouseEnterFilter::MouseEnterFilter(QObject* parent) :
 	QObject(parent)
 {}
 
-bool MouseEnterFilter::eventFilter(QObject *o, QEvent *e)
+bool MouseEnterFilter::eventFilter(QObject *o, QEvent* e)
 {
 	if(e->type() == QEvent::Enter)
 	{
@@ -120,7 +120,7 @@ MouseLeaveFilter::MouseLeaveFilter(QObject* parent) :
 	QObject(parent)
 {}
 
-bool MouseLeaveFilter::eventFilter(QObject *o, QEvent *e)
+bool MouseLeaveFilter::eventFilter(QObject *o, QEvent* e)
 {
 	if(e->type() == QEvent::Leave)
 	{

@@ -49,7 +49,7 @@ SearchSlider::SearchSlider(QWidget* parent) :
 SearchSlider::~SearchSlider() {}
 
 
-bool SearchSlider::event(QEvent *e)
+bool SearchSlider::event(QEvent* e)
 {
 	QWheelEvent* we;
 	int delta_val = 5;
@@ -125,7 +125,7 @@ void SearchSlider::mouseReleaseEvent(QMouseEvent* e)
 }
 
 
-void SearchSlider::mouseMoveEvent(QMouseEvent *e)
+void SearchSlider::mouseMoveEvent(QMouseEvent* e)
 {
 	Gui::Slider::mouseMoveEvent(e);
 	if(this->isSliderDown()){
