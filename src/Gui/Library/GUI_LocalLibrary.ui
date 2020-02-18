@@ -615,7 +615,7 @@
   <customwidget>
    <class>GUI_DirectoryView</class>
    <extends>QWidget</extends>
-   <header>Gui/Library/GUI_DirectoryView.h</header>
+   <header>Gui/Directories/GUI_DirectoryView.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

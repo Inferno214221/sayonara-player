@@ -248,6 +248,7 @@ QVariant FileListModel::data(const QModelIndex& index, int role) const
 	}
 
 	const QString& filename = m->files[row];
+
 	if((role == Qt::DisplayRole) && (col == ColumnName))
 	{
 		return File::getFilenameOfPath(filename);
@@ -294,6 +295,15 @@ QVariant FileListModel::data(const QModelIndex& index, int role) const
 				icon.addPixmap(*pm);
 				return icon;
 			}
+		}
+	}
+
+	else if((role == Qt::TextColorRole) && Util::File::isSoundFile(filename))
+	{
+		bool inLibrary = m->filesInLibrary[filename];
+		if(!inLibrary)
+		{
+			return QColor(214, 68, 45);
 		}
 	}
 

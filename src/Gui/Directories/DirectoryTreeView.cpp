@@ -98,6 +98,7 @@ DirectoryTreeView::DirectoryTreeView(QWidget* parent) :
 
 	connect(m->dragTimer, &QTimer::timeout, this, &DirectoryTreeView::dragTimerTimeout);
 	this->setItemDelegate(new Gui::StyledItemDelegate(this));
+	this->setDragDropMode(QAbstractItemView::DragDrop);
 
 	auto* action = new QAction(this);
 	action->setShortcut(QKeySequence("F2"));

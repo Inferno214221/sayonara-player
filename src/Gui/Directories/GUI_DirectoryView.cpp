@@ -1,16 +1,16 @@
 #include "GUI_DirectoryView.h"
-#include "Gui/Library/ui_GUI_DirectoryView.h"
-
+#include "Gui/Directories/ui_GUI_DirectoryView.h"
 #include "Gui/Directories/DirectoryTreeView.h"
 #include "Gui/Directories/FileListView.h"
-#include "Gui/ImportDialog/GUI_ImportDialog.h"
 
-#include "Gui/Utils/Icons.h"
-#include "Gui/Utils/InputDialog/LineInputDialog.h"
+#include "Gui/ImportDialog/GUI_ImportDialog.h"
 
 #include "Components/LibraryManagement/LibraryManager.h"
 #include "Components/Library/LocalLibrary.h"
 #include "Components/Directories/DirectorySelectionHandler.h"
+
+#include "Gui/Utils/Icons.h"
+#include "Gui/Utils/InputDialog/LineInputDialog.h"
 
 #include "Utils/Algorithm.h"
 #include "Utils/Settings/Settings.h"

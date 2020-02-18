@@ -69,7 +69,7 @@ FileListView::FileListView(QWidget* parent) :
 	this->setSearchableModel(m->model);
 	this->setItemDelegate(new Gui::StyledItemDelegate(this));
 	this->setSelectionMode(QAbstractItemView::ExtendedSelection);
-	this->setIconSize(QSize(16, 16));
+	this->setDragDropMode(QAbstractItemView::DragOnly);
 
 	this->horizontalHeader()->resizeSection(0, this->fontMetrics().height());
 	this->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
