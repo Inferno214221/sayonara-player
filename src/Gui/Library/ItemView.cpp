@@ -138,7 +138,7 @@ ContextMenu::Entries ItemView::contextMenuEntries() const
 //		ContextMenu::EntryStandardView |
 //		ContextMenu::EntryCoverView |
 //		ContextMenu::EntryDirectoryView |
-		ContextMenu::EntryFilterExtension |
+//		ContextMenu::EntryFilterExtension |
 		ContextMenu::EntryReload
 	);
 

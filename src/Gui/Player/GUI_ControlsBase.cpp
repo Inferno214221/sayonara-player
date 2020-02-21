@@ -34,7 +34,7 @@
 
 static void setIcon(QPushButton* btn, QIcon icon)
 {
-	int width = Gui::Util::textWidget(btn->fontMetrics(), "MMn");
+	int width = Gui::Util::textWidth(btn->fontMetrics(), "MMn");
 
 	QSize sz(width, width);
 	btn->setFixedSize(sz);

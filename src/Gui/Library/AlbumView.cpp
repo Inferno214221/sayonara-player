@@ -47,7 +47,7 @@ struct AlbumView::Private
 {
 	AbstractLibrary*		library=nullptr;
 	DiscPopupMenu*			discmenu=nullptr;
-	QPoint					discmenu_point;
+	QPoint					discmenuPoint;
 };
 
 AlbumView::AlbumView(QWidget* parent) :
@@ -87,11 +87,11 @@ ColumnHeaderList AlbumView::columnHeaders() const
 
 	return ColumnHeaderList
 	{
-		std::make_shared<ColumnHeader>(ColumnHeader::Sharp, true, SortOrder::NoSorting, SortOrder::NoSorting, Gui::Util::textWidget(fm, "MM")),
+		std::make_shared<ColumnHeader>(ColumnHeader::Sharp, true, SortOrder::NoSorting, SortOrder::NoSorting, Gui::Util::textWidth(fm, "MM")),
 		std::make_shared<ColumnHeader>(ColumnHeader::Album, false, SortOrder::AlbumNameAsc, SortOrder::AlbumNameDesc, 160, true),
-		std::make_shared<ColumnHeader>(ColumnHeader::Duration, true, SortOrder::AlbumDurationAsc, SortOrder::AlbumDurationDesc, Gui::Util::textWidget(fm, "Duration")),
-		std::make_shared<ColumnHeader>(ColumnHeader::NumTracks, true, SortOrder::AlbumTracksAsc, SortOrder::AlbumTracksDesc, Gui::Util::textWidget(fm, "num tracks")),
-		std::make_shared<ColumnHeader>(ColumnHeader::Year, true, SortOrder::AlbumYearAsc, SortOrder::AlbumYearDesc, Gui::Util::textWidget(fm, "M 8888")),
+		std::make_shared<ColumnHeader>(ColumnHeader::Duration, true, SortOrder::AlbumDurationAsc, SortOrder::AlbumDurationDesc, Gui::Util::textWidth(fm, "Duration")),
+		std::make_shared<ColumnHeader>(ColumnHeader::NumTracks, true, SortOrder::AlbumTracksAsc, SortOrder::AlbumTracksDesc, Gui::Util::textWidth(fm, "num tracks")),
+		std::make_shared<ColumnHeader>(ColumnHeader::Year, true, SortOrder::AlbumYearAsc, SortOrder::AlbumYearDesc, Gui::Util::textWidth(fm, "M 8888")),
 		std::make_shared<ColumnHeader>(ColumnHeader::Rating, true, SortOrder::AlbumRatingAsc, SortOrder::AlbumRatingDesc, 85)
 	};
 }
@@ -142,15 +142,15 @@ void AlbumView::calcDiscmenuPoint(QModelIndex idx)
 {
 	QHeaderView* v_header = this->verticalHeader();
 
-	m->discmenu_point = QCursor::pos();
+	m->discmenuPoint = QCursor::pos();
 
 	QRect box = this->geometry();
 	box.moveTopLeft(this->parentWidget()->mapToGlobal(box.topLeft()));
 
-	if(!box.contains(m->discmenu_point))
+	if(!box.contains(m->discmenuPoint))
 	{
-		m->discmenu_point.setX(box.x() + (box.width() * 2) / 3);
-		m->discmenu_point.setY(box.y());
+		m->discmenuPoint.setX(box.x() + (box.width() * 2) / 3);
+		m->discmenuPoint.setY(box.y());
 
 		QPoint dmp_tmp = parentWidget()->pos();
 		dmp_tmp.setY(dmp_tmp.y() - v_header->sizeHint().height());
@@ -158,7 +158,7 @@ void AlbumView::calcDiscmenuPoint(QModelIndex idx)
 		while(idx.row() != indexAt(dmp_tmp).row())
 		{
 			  dmp_tmp.setY(dmp_tmp.y() + 10);
-			  m->discmenu_point.setY(m->discmenu_point.y() + 10);
+			  m->discmenuPoint.setY(m->discmenuPoint.y() + 10);
 		}
 	}
 }
@@ -208,7 +208,7 @@ void AlbumView::showDiscmenu()
 {
 	if(!m->discmenu) return;
 
-	m->discmenu->popup(m->discmenu_point);
+	m->discmenu->popup(m->discmenuPoint);
 }
 
 

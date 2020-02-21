@@ -183,7 +183,7 @@ void Delegate::paint(QPainter* painter, const QStyleOptionViewItem &option, cons
 		painter->translate(xOffset, 0);
 		painter->drawText(rect, alignment, fm.elidedText(item.text, Qt::ElideRight, rect.width()));
 
-		xOffset = Gui::Util::textWidget(fm, item.text);
+		xOffset = Gui::Util::textWidth(fm, item.text);
 		rect.setWidth(rect.width() - xOffset);
 	}
 

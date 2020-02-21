@@ -512,6 +512,19 @@
       </spacer>
      </item>
      <item>
+      <widget class="Library::MenuButtonViews" name="btn_view">
+       <property name="text">
+        <string notr="true"/>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="Library::SearchBar" name="le_search"/>
      </item>
     </layout>
@@ -617,6 +630,11 @@
    <extends>QWidget</extends>
    <header>Gui/Directories/GUI_DirectoryView.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Library::MenuButtonViews</class>
+   <extends>QPushButton</extends>
+   <header>Gui/Library/Utils/MenuButtonViews.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

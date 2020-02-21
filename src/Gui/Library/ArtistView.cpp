@@ -119,7 +119,7 @@ ColumnHeaderList ArtistView::columnHeaders() const
 	{
 		std::make_shared<ColumnHeader>(ColumnHeader::Sharp, true, SortOrder::NoSorting, SortOrder::NoSorting, 2),
 		std::make_shared<ColumnHeader>(ColumnHeader::Artist, false, SortOrder::ArtistNameAsc, SortOrder::ArtistNameDesc, 160, true),
-		std::make_shared<ColumnHeader>(ColumnHeader::NumTracks, true, SortOrder::ArtistTrackcountAsc, SortOrder::ArtistTrackcountDesc, Gui::Util::textWidget(fm, "M 8888"))
+		std::make_shared<ColumnHeader>(ColumnHeader::NumTracks, true, SortOrder::ArtistTrackcountAsc, SortOrder::ArtistTrackcountDesc, Gui::Util::textWidth(fm, "M 8888"))
 	};
 
 	return check_vector_size(columns);

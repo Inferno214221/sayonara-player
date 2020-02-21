@@ -71,8 +71,6 @@ namespace Library
 		void languageChanged() override;
 		void skinChanged() override;
 
-
-
 	private:
 		void checkViewState();
 		void checkReloadStatus();

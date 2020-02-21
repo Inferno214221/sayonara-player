@@ -81,9 +81,9 @@ struct Menubar::Private
 	QAction*		actionBigCover=nullptr;
 	QAction*		actionFullscreen=nullptr;
 
-	QAction*		actionStandardView=nullptr;
-	QAction*		actionCoverView=nullptr;
-	QAction*		actionDirectoryView=nullptr;
+//	QAction*		actionStandardView=nullptr;
+//	QAction*		actionCoverView=nullptr;
+//	QAction*		actionDirectoryView=nullptr;
 
 	//plugins
 	QList<QAction*> actionsPlugins;
@@ -131,17 +131,17 @@ struct Menubar::Private
 		actionViewLibrary->setCheckable(true);
 
 		{
-			actionStandardView = new QAction(menuView);
-			actionStandardView->setCheckable(true);
-			actionCoverView = new QAction(menuView);
-			actionCoverView->setCheckable(true);
-			actionDirectoryView = new QAction(menuView);
-			actionDirectoryView->setCheckable(true);
+//			actionStandardView = new QAction(menuView);
+//			actionStandardView->setCheckable(true);
+//			actionCoverView = new QAction(menuView);
+//			actionCoverView->setCheckable(true);
+//			actionDirectoryView = new QAction(menuView);
+//			actionDirectoryView->setCheckable(true);
 
-			auto* actionGroup = new QActionGroup(menuView);
-			actionGroup->addAction(actionStandardView);
-			actionGroup->addAction(actionCoverView);
-			actionGroup->addAction(actionDirectoryView);
+//			auto* actionGroup = new QActionGroup(menuView);
+//			actionGroup->addAction(actionStandardView);
+//			actionGroup->addAction(actionCoverView);
+//			actionGroup->addAction(actionDirectoryView);
 		}
 
 		sepAfterViewLibrary = menuView->addSeparator();
@@ -156,10 +156,10 @@ struct Menubar::Private
 		menuView->insertActions(nullptr,
 		{
 			actionViewLibrary,
-			actionStandardView,
-			actionCoverView,
-			actionDirectoryView,
-			sepAfterViewLibrary,
+//			actionStandardView,
+//			actionCoverView,
+//			actionDirectoryView,
+//			sepAfterViewLibrary,
 			sepAfterPlugins,
 			actionLogger,
 			actionBigCover,
@@ -316,9 +316,9 @@ void Menubar::initConnections()
 	connect(m->actionFullscreen, &QAction::toggled, this, &Menubar::showFullscreenToggled);
 	connect(m->actionLogger, &QAction::triggered, this, &Menubar::sigLoggerClicked);
 
-	connect(m->actionStandardView, &QAction::triggered, this, &Menubar::libraryViewTypeToggled);
-	connect(m->actionCoverView, &QAction::triggered, this, &Menubar::libraryViewTypeToggled);
-	connect(m->actionDirectoryView, &QAction::triggered, this, &Menubar::libraryViewTypeToggled);
+//	connect(m->actionStandardView, &QAction::triggered, this, &Menubar::libraryViewTypeToggled);
+//	connect(m->actionCoverView, &QAction::triggered, this, &Menubar::libraryViewTypeToggled);
+//	connect(m->actionDirectoryView, &QAction::triggered, this, &Menubar::libraryViewTypeToggled);
 
 	// about
 	connect(m->actionAbout, &QAction::triggered, this, &Menubar::aboutClicked);
@@ -359,9 +359,9 @@ void Menubar::languageChanged()
 	m->actionClose->setText(Lang::get(Lang::Quit));
 
 	m->actionViewLibrary->setText(Lang::get(Lang::ShowLibrary));
-	m->actionStandardView->setText(tr("Standard view"));
-	m->actionCoverView->setText(tr("Cover view"));
-	m->actionDirectoryView->setText(tr("Directory view"));
+//	m->actionStandardView->setText(tr("Standard view"));
+//	m->actionCoverView->setText(tr("Cover view"));
+//	m->actionDirectoryView->setText(tr("Directory view"));
 	m->actionLogger->setText(Lang::get(Lang::Logger));
 	m->actionDark->setText(Lang::get(Lang::DarkMode));
 	m->actionBigCover->setText(tr("Show large cover"));
@@ -472,9 +472,9 @@ void Menubar::showLibraryToggled(bool b)
 {
 	m->actionViewLibrary->setChecked(b);
 
-	m->actionStandardView->setEnabled(b);
-	m->actionCoverView->setEnabled(b);
-	m->actionDirectoryView->setEnabled(b);
+//	m->actionStandardView->setEnabled(b);
+//	m->actionCoverView->setEnabled(b);
+//	m->actionDirectoryView->setEnabled(b);
 
 	SetSetting(Set::Lib_Show, b);
 }
@@ -555,23 +555,23 @@ void Menubar::libraryViewTypeToggled(bool b)
 {
 	Q_UNUSED(b)
 
-	Library::ViewType viewType = Library::ViewType::Standard;
-	if(m->actionCoverView->isChecked()) {
-		viewType = Library::ViewType::CoverView;
-	}
+//	Library::ViewType viewType = Library::ViewType::Standard;
+//	if(m->actionCoverView->isChecked()) {
+//		viewType = Library::ViewType::CoverView;
+//	}
 
-	else if(m->actionDirectoryView->isChecked()) {
-		viewType = Library::ViewType::FileView;
-	}
+//	else if(m->actionDirectoryView->isChecked()) {
+//		viewType = Library::ViewType::FileView;
+//	}
 
-	SetSetting(Set::Lib_ViewType, viewType);
+//	SetSetting(Set::Lib_ViewType, viewType);
 }
 
 void Menubar::libraryViewTypeChanged()
 {
-	Library::ViewType viewType = GetSetting(Set::Lib_ViewType);
+//	Library::ViewType viewType = GetSetting(Set::Lib_ViewType);
 
-	m->actionStandardView->setChecked(viewType == Library::ViewType::Standard);
-	m->actionCoverView->setChecked(viewType == Library::ViewType::CoverView);
-	m->actionDirectoryView->setChecked(viewType == Library::ViewType::FileView);
+//	m->actionStandardView->setChecked(viewType == Library::ViewType::Standard);
+//	m->actionCoverView->setChecked(viewType == Library::ViewType::CoverView);
+//	m->actionDirectoryView->setChecked(viewType == Library::ViewType::FileView);
 }

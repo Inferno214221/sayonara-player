@@ -71,6 +71,7 @@ namespace Gui
 			FolderOpen,
 			Forward,
 			Gapless,
+			Grid,
 			ImageFile,
 			Info,
 			LocalLibrary,

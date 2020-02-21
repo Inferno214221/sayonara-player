@@ -57,6 +57,7 @@ static const QMap<Icons::IconName, QPair<QString, QString>> s_icon_map =
 	{Icons::FolderOpen,		P("folder-open", "")},
 	{Icons::Forward,		P("media-skip-forward", "fwd")},
 	{Icons::Gapless,		P("gapless", "gapless")},
+	{Icons::Grid,			P("view-grid", "")},
 	{Icons::ImageFile,		P("image-x-generic", "")},
 	{Icons::Info,			P("dialog-information", "")},
 	{Icons::LocalLibrary,	P("audio-x-generic", "append")},

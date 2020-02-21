@@ -213,7 +213,6 @@ void GUI_LocalLibrary::checkFileExtensionBar()
 	);
 }
 
-
 void GUI_LocalLibrary::tracksLoaded()
 {
 	checkViewState();

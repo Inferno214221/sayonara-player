@@ -84,7 +84,7 @@ void VisualPlugin::set_button_sizes()
 	QFont font = m->btn_config->font();
 
 	QFontMetrics fm = this->fontMetrics();
-	int char_width = Gui::Util::textWidget(fm, "W");
+	int char_width = Gui::Util::textWidth(fm, "W");
 
 	int x = 10;
 	int y = 5;

@@ -19,9 +19,12 @@
  */
 
 #include "MenuToolButton.h"
+#include "Utils/Language/Language.h"
 #include "Gui/Utils/PreferenceAction.h"
+#include "Gui/Utils/GuiUtils.h"
 
 using Gui::MenuToolButton;
+using Gui::ContextMenu;
 
 struct MenuToolButton::Private
 {
@@ -34,7 +37,7 @@ struct MenuToolButton::Private
 
 
 MenuToolButton::MenuToolButton(QWidget* parent) :
-	MenuButton(parent)
+	WidgetTemplate<QPushButton>(parent)
 {
 	m = Pimpl::make<Private>(this);
 
@@ -49,6 +52,12 @@ MenuToolButton::MenuToolButton(QWidget* parent) :
 	connect(m->menu, &ContextMenu::sigEdit, this, &MenuToolButton::sigEdit);
 
 	proveEnabled();
+
+	this->setText(QString::fromUtf8("≡"));
+	this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+	this->setIconSize(QSize(10, 10));
+	this->setToolTip(Lang::get(Lang::Menu));
+	this->setMaximumWidth(Gui::Util::textWidth(this->fontMetrics(), "MMM"));
 }
 
 MenuToolButton::~MenuToolButton() = default;
@@ -63,16 +72,6 @@ void MenuToolButton::registerPreferenceAction(PreferenceAction* action)
 {
 	m->menu->addPreferenceAction(action);
 }
-
-void MenuToolButton::showMenu(QPoint pos)
-{
-	MenuButton::showMenu(pos);
-
-	this->setDisabled(true);
-	m->menu->popup(pos);
-	this->setEnabled(true);
-}
-
 
 bool MenuToolButton::proveEnabled()
 {
@@ -102,4 +101,12 @@ void MenuToolButton::showActions(ContextMenuEntries entries)
 Gui::ContextMenuEntries MenuToolButton::entries() const
 {
 	return m->menu->entries();
+}
+
+void MenuToolButton::mouseReleaseEvent(QMouseEvent* e)
+{
+	QPushButton::mouseReleaseEvent(e);
+
+	QPoint p = this->mapToGlobal(this->pos()) - this->pos();
+	m->menu->exec(p);
 }

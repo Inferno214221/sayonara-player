@@ -134,7 +134,7 @@ void HeaderView::languageChanged()
 
 		header->retranslate();
 
-		int header_text_width = Gui::Util::textWidget(fm, header->title() + "MMM");
+		int header_text_width = Gui::Util::textWidth(fm, header->title() + "MMM");
 		if(this->sectionSize(i) < header_text_width)
 		{
 			this->resizeSection(i, header_text_width);
@@ -168,7 +168,7 @@ static int columnWidth(Library::ColumnHeaderPtr ch, const QFontMetrics& fm)
 	return std::max
 	(
 		ch->defaultSize(),
-		Gui::Util::textWidget(fm, ch->title() + "MMM")
+		Gui::Util::textWidth(fm, ch->title() + "MMM")
 	);
 }
 

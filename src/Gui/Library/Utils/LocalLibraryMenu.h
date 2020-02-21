@@ -72,12 +72,6 @@ namespace Library
 			void shortcutChanged(ShortcutIdentifier identifier);
 
 		private slots:
-			void showAlbumArtistsChanged();
-			void showAlbumArtistsTriggered(bool b);
-
-			void livesearchTriggered();
-			void setLiveSearchEnabled(bool b);
-
 			void editClicked();
 			void editAccepted();
 

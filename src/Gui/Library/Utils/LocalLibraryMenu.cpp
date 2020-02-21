@@ -40,8 +40,6 @@ struct LocalLibraryMenu::Private
 	QAction* importFolderAction=nullptr;
 	QAction* infoAction=nullptr;
 	QAction* editAction=nullptr;
-	QAction* livesearchAction=nullptr;
-	QAction* showAlbumArtistsAction=nullptr;
 
 	bool hasPreferenceAction;
 	bool isInitialized;
@@ -122,21 +120,11 @@ void LocalLibraryMenu::initMenu()
 	m->infoAction = new QAction(this);
 	m->editAction = new QAction(this);
 
-	m->livesearchAction = new QAction(this);
-	m->livesearchAction->setCheckable(true);
-	m->livesearchAction->setChecked(GetSetting(Set::Lib_LiveSearch));
-
-	m->showAlbumArtistsAction = new QAction(this);
-	m->showAlbumArtistsAction->setCheckable(true);
-	m->showAlbumArtistsAction->setChecked(GetSetting(Set::Lib_ShowAlbumArtists));
-
 	connect(m->reloadLibraryAction, &QAction::triggered, this, &LocalLibraryMenu::sigReloadLibrary);
 	connect(m->importFileAction, &QAction::triggered, this, &LocalLibraryMenu::sigImportFile);
 	connect(m->importFolderAction, &QAction::triggered, this, &LocalLibraryMenu::sigImportFolder);
 	connect(m->infoAction, &QAction::triggered, this, &LocalLibraryMenu::sigInfo);
 	connect(m->editAction, &QAction::triggered, this, &LocalLibraryMenu::editClicked);
-	connect(m->livesearchAction, &QAction::triggered, this, &LocalLibraryMenu::setLiveSearchEnabled);
-	connect(m->showAlbumArtistsAction, &QAction::triggered, this, &LocalLibraryMenu::showAlbumArtistsTriggered);
 
 	QList<QAction*> actions;
 	actions <<
@@ -145,18 +133,12 @@ void LocalLibraryMenu::initMenu()
 		this->addSeparator() <<
 		m->importFileAction <<
 		m->importFolderAction <<
-		m->reloadLibraryAction <<
-		this->addSeparator() <<
-		m->livesearchAction <<
-		m->showAlbumArtistsAction;
+		m->reloadLibraryAction;
 
 	this->addActions(actions);
 	this->addPreferenceAction(new Gui::LibraryPreferenceAction(this));
 
 	m->isInitialized = true;
-
-	ListenSetting(Set::Lib_ShowAlbumArtists, LocalLibraryMenu::showAlbumArtistsChanged);
-	ListenSetting(Set::Lib_LiveSearch, LocalLibraryMenu::livesearchTriggered);
 
 	shortcutChanged(ShortcutIdentifier::Invalid);
 	languageChanged();
@@ -174,9 +156,6 @@ void LocalLibraryMenu::languageChanged()
 
 	m->importFileAction->setText(Lang::get(Lang::ImportFiles));
 	m->importFolderAction->setText(Lang::get(Lang::ImportDir));
-
-	m->livesearchAction->setText(Lang::get(Lang::LiveSearch));
-	m->showAlbumArtistsAction->setText(Lang::get(Lang::ShowAlbumArtists));
 
 	if(m->isLibraryEmpty) {
 		m->reloadLibraryAction->setText(Lang::get(Lang::ScanForFiles));
@@ -210,26 +189,8 @@ void LocalLibraryMenu::shortcutChanged(ShortcutIdentifier identifier)
 	}
 
 	ShortcutHandler* sch = ShortcutHandler::instance();
-
-	m->showAlbumArtistsAction->setShortcutContext(Qt::WidgetShortcut);
-	m->showAlbumArtistsAction->setShortcut(sch->shortcut(ShortcutIdentifier::AlbumArtists).sequence());
 	m->reloadLibraryAction->setShortcutContext(Qt::WidgetShortcut);
 	m->reloadLibraryAction->setShortcut(sch->shortcut(ShortcutIdentifier::ReloadLibrary).sequence());
-}
-
-void LocalLibraryMenu::setLiveSearchEnabled(bool b)
-{
-	SetSetting(Set::Lib_LiveSearch, b);
-}
-
-
-void LocalLibraryMenu::livesearchTriggered()
-{
-	if(!m->isInitialized){
-		return;
-	}
-
-	m->livesearchAction->setChecked(GetSetting(Set::Lib_LiveSearch) );
 }
 
 void LocalLibraryMenu::editClicked()
@@ -238,11 +199,11 @@ void LocalLibraryMenu::editClicked()
 		return;
 	}
 
-	GUI_EditLibrary* edit_dialog = new GUI_EditLibrary(m->name, m->path, this);
+	auto* editDialog = new GUI_EditLibrary(m->name, m->path, this);
 
-	connect(edit_dialog, &GUI_EditLibrary::sigAccepted, this, &LocalLibraryMenu::editAccepted);
+	connect(editDialog, &GUI_EditLibrary::sigAccepted, this, &LocalLibraryMenu::editAccepted);
 
-	edit_dialog->show();
+	editDialog->show();
 }
 
 void LocalLibraryMenu::editAccepted()
@@ -264,14 +225,3 @@ void LocalLibraryMenu::editAccepted()
 		emit sigPathChanged(path);
 	}
 }
-
-void LocalLibraryMenu::showAlbumArtistsTriggered(bool b)
-{
-	SetSetting(Set::Lib_ShowAlbumArtists, b);
-}
-
-void LocalLibraryMenu::showAlbumArtistsChanged()
-{
-	m->showAlbumArtistsAction->setChecked(GetSetting(Set::Lib_ShowAlbumArtists));
-}
-
