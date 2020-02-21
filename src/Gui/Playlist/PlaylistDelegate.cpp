@@ -25,6 +25,7 @@
 #include "Utils/MetaData/RadioMode.h"
 
 #include "Gui/Utils/Widgets/RatingLabel.h"
+#include "Gui/Utils/Widgets/SpectrumLabel.h"
 #include "Gui/Utils/Style.h"
 #include "Gui/Utils/GuiUtils.h"
 
@@ -82,6 +83,8 @@ static QList<PlaylistStyleItem> parseEntryLookString(const QString& entryLook)
 
 struct Delegate::Private
 {
+	SpectrumLabel* spectrum=nullptr;
+
 	int			ratingHeight;
 	bool		showRating;
 
@@ -97,6 +100,9 @@ Delegate::Delegate(QTableView* parent) :
 	StyledItemDelegate(parent)
 {
 	m = Pimpl::make<Private>();
+
+//	m->spectrum = new SpectrumLabel(nullptr);
+//	m->spectrum->show();
 
 	ListenSettingNoCall(Set::PL_ShowRating, Delegate::playlistShowRatingChanged);
 }

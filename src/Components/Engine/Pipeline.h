@@ -69,8 +69,8 @@ namespace Engine
 			void checkPosition();
 			void checkAboutToFinish();
 
-			void enableVisualizer(bool b);
-			void enableBroadcasting(bool b);
+			void setVisualizerEnabled(bool b);
+			void setBroadcastingEnabled(bool b);
 
 			void record(bool b);
 			void setRecordingPath(const QString& session_path);
@@ -93,7 +93,6 @@ namespace Engine
 
 		protected slots:
 			void volumeChanged();
-			void showVisualizerChanged();
 			void muteChanged();
 			void speedActiveChanged();
 			void sppedChanged();

@@ -60,13 +60,13 @@ class GUI_LevelPainter :
 	   int			currentStyleIndex() const override;
 	   void			finalizeInitialization() override;
 
-
 	protected slots:
 		void doFadeoutStep() override;
 		void setLevel(float, float) override;
 
 	private:
 		void reload();
+		void activeChanged();
 };
 
 #endif // GUI_LEVELPAINTER_H

@@ -158,8 +158,6 @@ bool Pipeline::init(Engine* engine)
 	ListenSettingNoCall(Set::Engine_Sink, Pipeline::sinkChanged);
 
 	// set by gui, initialized directly in pipeline
-	ListenSetting(Set::Engine_ShowLevel, Pipeline::showVisualizerChanged);
-	ListenSettingNoCall(Set::Engine_ShowSpectrum, Pipeline::showVisualizerChanged);
 	ListenSettingNoCall(Set::Engine_Pitch, Pipeline::sppedChanged);
 	ListenSettingNoCall(Set::Engine_Speed, Pipeline::sppedChanged);
 	ListenSettingNoCall(Set::Engine_PreservePitch, Pipeline::sppedChanged);
@@ -334,21 +332,12 @@ void Pipeline::muteChanged()
 	EngineUtils::setValue(G_OBJECT(m->playbackVolume), "mute", muted);
 }
 
-void Pipeline::enableVisualizer(bool b)
+void Pipeline::setVisualizerEnabled(bool b)
 {
 	m->visualizer->setEnabled(b);
 }
 
-void Pipeline::showVisualizerChanged()
-{
-	enableVisualizer
-	(
-		GetSetting(Set::Engine_ShowSpectrum) ||
-		GetSetting(Set::Engine_ShowLevel)
-	);
-}
-
-void Pipeline::enableBroadcasting(bool b)
+void Pipeline::setBroadcastingEnabled(bool b)
 {
 	m->broadcaster->setEnabled(b);
 }
@@ -537,10 +526,10 @@ bool Pipeline::hasElement(GstElement* e) const
 
 void Pipeline::getFadeInHandler()
 {
-	showVisualizerChanged();
+	//showVisualizerChanged();
 }
 
 void Pipeline::getFadeOutHandler()
 {
-	enableVisualizer(false);
+	setVisualizerEnabled(false);
 }

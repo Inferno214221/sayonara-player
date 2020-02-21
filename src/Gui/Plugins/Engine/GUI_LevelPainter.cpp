@@ -108,6 +108,8 @@ GUI_LevelPainter::GUI_LevelPainter(QWidget* parent) :
 {
 	m = Pimpl::make<Private>();
 	SetSetting(Set::Engine_ShowLevel, false);
+
+	Set::listen<Set::Engine_ShowLevel>(this, &GUI_LevelPainter::activeChanged);
 }
 
 
@@ -140,17 +142,15 @@ void GUI_LevelPainter::finalizeInitialization()
 	m->setLevel(0, 0);
 
 	PlayerPlugin::Base::finalizeInitialization();
-	Engine::Handler::instance()->addLevelReceiver(this);
+	Engine::Handler::instance()->registerLevelReceiver(this);
 
 	reload();
 }
-
 
 QString GUI_LevelPainter::name() const
 {
 	return "Level";
 }
-
 
 QString GUI_LevelPainter::displayName() const
 {
@@ -162,12 +162,15 @@ bool GUI_LevelPainter::isActive() const
 	return this->isVisible();
 }
 
+void GUI_LevelPainter::activeChanged()
+{
+	Engine::Handler::instance()->reloadLevelReceivers();
+}
 
 void GUI_LevelPainter::retranslate()
 {
 	ui->retranslateUi(this);
 }
-
 
 void GUI_LevelPainter::setLevel(float left, float right)
 {
@@ -187,7 +190,6 @@ void GUI_LevelPainter::setLevel(float left, float right)
 
 	m->lock.clear();
 }
-
 
 void GUI_LevelPainter::paintEvent(QPaintEvent* e)
 {
@@ -256,7 +258,6 @@ void GUI_LevelPainter::paintEvent(QPaintEvent* e)
 	}
 }
 
-
 void GUI_LevelPainter::doFadeoutStep()
 {
 	for(float& l : m->level)
@@ -276,7 +277,6 @@ void GUI_LevelPainter::update_style(int new_index)
 
 	update();
 }
-
 
 void GUI_LevelPainter::reload()
 {
@@ -300,7 +300,6 @@ void GUI_LevelPainter::showEvent(QShowEvent* e)
 	VisualPlugin::showEvent(e);
 }
 
-
 void GUI_LevelPainter::closeEvent(QCloseEvent* e)
 {
 	SetSetting(Set::Engine_ShowLevel, false);
@@ -311,7 +310,6 @@ void GUI_LevelPainter::hideEvent(QHideEvent* e)
 {
 	VisualPlugin::hideEvent(e);
 }
-
 
 QWidget *GUI_LevelPainter::widget()
 {
@@ -332,5 +330,3 @@ int GUI_LevelPainter::currentStyleIndex() const
 {
 	return GetSetting(Set::Level_Style);
 }
-
-
