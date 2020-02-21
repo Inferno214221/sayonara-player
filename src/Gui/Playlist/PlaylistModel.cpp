@@ -34,6 +34,7 @@
 
 #include "Gui/Utils/CustomMimeData.h"
 #include "Gui/Utils/GuiUtils.h"
+#include "Gui/Utils/Widgets/SpectrumLabel.h"
 
 #include "Utils/Utils.h"
 #include "Utils/Algorithm.h"
@@ -70,6 +71,7 @@ enum class PlaylistSearchMode
 
 struct Model::Private
 {
+	//SpectrumLabel*			spectrumLabel=nullptr;
 	QHash<AlbumId, QPixmap>	pms;
 	int						oldRowCount;
 	int						dragIndex;
@@ -89,8 +91,12 @@ Model::Model(PlaylistPtr pl, QObject* parent) :
 	SearchableTableModel(parent)
 {
 	m = Pimpl::make<Private>(pl);
+	//m->spectrumLabel = new SpectrumLabel(Gui::Util::mainWindow());
+	//m->spectrumLabel->show();
+	//connect(m->spectrumLabel, &SpectrumLabel::sigPixmapChanged, this, &Model::spectrumChanged);
 
 	connect(m->pl.get(), &Playlist::Playlist::sigItemsChanged, this, &Model::playlistChanged);
+
 
 	ListenSettingNoCall(Set::PL_EntryLook, Model::lookChanged);
 
@@ -214,6 +220,20 @@ QVariant Model::data(const QModelIndex& index, int role) const
 
 			return m->pms[md.albumId()];
 		}
+
+//		if(col == ColumnName::TrackNumber)
+//		{
+//			if(row == m->pl->currentTrackIndex())
+//			{
+//				const QPixmap* pm = m->spectrumLabel->pixmap();
+//				if(pm)
+//				{
+//					QPixmap p(*pm);
+//					return p.scaled(28, m->rowHeight);
+//				}
+
+//			}
+//		}
 	}
 
 	else if(role == Qt::SizeHintRole)
@@ -593,3 +613,14 @@ void Model::playlistChanged(int pl_idx)
 	emit sigDataReady();
 }
 
+void Model::spectrumChanged()
+{
+/*
+	int currentTrackIndex = m->pl->currentTrackIndex();
+	if(currentTrackIndex < 0) {
+		return;
+	}
+
+	emit dataChanged( index(currentTrackIndex, 0), index(currentTrackIndex, columnCount()), QVector<int>(Qt::DecorationRole));
+*/
+}

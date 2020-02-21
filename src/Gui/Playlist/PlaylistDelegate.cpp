@@ -101,8 +101,7 @@ Delegate::Delegate(QTableView* parent) :
 {
 	m = Pimpl::make<Private>();
 
-//	m->spectrum = new SpectrumLabel(nullptr);
-//	m->spectrum->show();
+	m->spectrum = new SpectrumLabel(nullptr);
 
 	ListenSettingNoCall(Set::PL_ShowRating, Delegate::playlistShowRatingChanged);
 }

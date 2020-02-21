@@ -8,12 +8,15 @@ class SpectrumLabel :
 	public QLabel,
 	public Engine::SpectrumReceiver
 {
+	Q_OBJECT
+
+	signals:
+		void sigPixmapChanged();
+
 	public:
 		SpectrumLabel(QWidget* parent);
 		~SpectrumLabel() override;
 
-		// SpectrumReceiver interface
-	public:
 		void setSpectrum(const Engine::SpectrumList& spectrum) override;
 		bool isActive() const override;
 

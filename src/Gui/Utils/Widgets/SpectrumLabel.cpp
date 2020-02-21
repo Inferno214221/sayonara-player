@@ -1,6 +1,7 @@
 #include "SpectrumLabel.h"
 #include "Components/Engine/EngineHandler.h"
 #include "Utils/Logger/Logger.h"
+#include <cmath>
 
 #include <QPixmap>
 #include <QPainter>
@@ -14,7 +15,7 @@ SpectrumLabel::SpectrumLabel(QWidget* parent) :
 
 SpectrumLabel::~SpectrumLabel() = default;
 
-#include <cmath>
+
 void SpectrumLabel::setSpectrum(const Engine::SpectrumList& spectrum)
 {
 	QPixmap pm(this->width(), this->height());
@@ -29,7 +30,7 @@ void SpectrumLabel::setSpectrum(const Engine::SpectrumList& spectrum)
 	double mid =	std::pow(midTmp, 0.5);
 	double high =	std::pow(highTmp, 0.3) * 2.0;
 
-	spLog(Log::Debug, this) << "Spectrum received: " << bass << ", " << mid << ", " << high;
+	//spLog(Log::Debug, this) << "Spectrum received: " << bass << ", " << mid << ", " << high;
 
 	int w = this->width() / 3 - 3;
 	int h = this->height();
@@ -44,10 +45,13 @@ void SpectrumLabel::setSpectrum(const Engine::SpectrumList& spectrum)
 	painter.drawRect(highRect);
 
 	this->setPixmap(pm);
+
+	emit sigPixmapChanged();
 }
 
 bool SpectrumLabel::isActive() const
 {
+	return true;
 	return this->isVisible();
 }
 
@@ -55,7 +59,10 @@ bool SpectrumLabel::event(QEvent* e)
 {
 	bool b = QLabel::event(e);
 
-	if(e->type() == QEvent::Hide || e->type() == QEvent::Show || e->type() == QEvent::Close)
+	if(
+		e->type() == QEvent::Hide ||
+		e->type() == QEvent::Show ||
+		e->type() == QEvent::Close)
 	{
 		Engine::Handler::instance()->reloadSpectrumReceivers();
 	}
