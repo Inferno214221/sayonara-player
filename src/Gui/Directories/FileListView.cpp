@@ -115,8 +115,8 @@ void FileListView::dragEnterEvent(QDragEnterEvent* event)
 
 void FileListView::dragMoveEvent(QDragMoveEvent* event)
 {
-	const QMimeData* mime_data = event->mimeData();
-	const auto* cmd = Gui::MimeData::customMimedata(mime_data);
+	const QMimeData* mimeData = event->mimeData();
+	const auto* cmd = Gui::MimeData::customMimedata(mimeData);
 	if(cmd){
 		event->setAccepted(false);
 	}
@@ -264,21 +264,8 @@ void FileListView::setSearchFilter(const QString& search_string)
 
 QMimeData* FileListView::dragableMimedata() const
 {
-	auto* mimedata = new Gui::CustomMimeData(this);
-	m->model->mimeData(this->selectedIndexes());
-	//mimedata->set_metadata(selected_metadata());
-
-	QList<QUrl> urls;
-	Util::Algorithm::transform(selectedPaths(), urls, [](const QString& path)
-	{
-		return QUrl::fromLocalFile(path);
-	});
-
-	mimedata->setUrls(urls);
-
-	return mimedata;
+	return m->model->mimeData(this->selectedIndexes());
 }
-
 
 int FileListView::mapModelIndexToIndex(const QModelIndex& idx) const
 {

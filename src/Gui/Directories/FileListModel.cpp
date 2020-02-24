@@ -22,6 +22,7 @@
 
 #include "Components/Directories/DirectoryReader.h"
 #include "Components/LibraryManagement/LibraryManager.h"
+#include "Components/Library/LocalLibrary.h"
 
 #include "Database/Connector.h"
 #include "Database/LibraryDatabase.h"
@@ -34,6 +35,7 @@
 #include "Utils/Library/LibraryInfo.h"
 #include "Utils/MetaData/MetaDataList.h"
 
+#include "Gui/Utils/MimeDataUtils.h"
 #include "Gui/Utils/CustomMimeData.h"
 #include "Gui/Utils/MimeDataUtils.h"
 #include "Gui/Utils/Icons.h"
@@ -361,7 +363,7 @@ QMimeData* FileListModel::mimeData(const QModelIndexList& indexes) const
 	for(const QModelIndex& idx : indexes)
 	{
 		int row = idx.row();
-		if(idx.column() != ColumnName){
+		if(idx.column() != ColumnName) {
 			continue;
 		}
 
@@ -370,12 +372,16 @@ QMimeData* FileListModel::mimeData(const QModelIndexList& indexes) const
 		}
 	}
 
-	if(urls.isEmpty()){
+	if(urls.isEmpty()) {
 		return nullptr;
 	}
 
 	auto* data = new Gui::CustomMimeData(this);
 	data->setUrls(urls);
+
+	LocalLibrary* localLibrary = Library::Manager::instance()->libraryInstance(m->libraryId);
+	MetaDataList tracks = localLibrary->currentTracks();
+	data->setMetadata(tracks);
 
 	return data;
 }
