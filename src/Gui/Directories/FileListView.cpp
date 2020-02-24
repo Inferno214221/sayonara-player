@@ -49,9 +49,11 @@
 #include <QShortcut>
 #include <QHeaderView>
 
+using Directory::FileListView;
+
 struct FileListView::Private
 {
-	DirectoryContextMenu*	contextMenu=nullptr;
+	ContextMenu*	contextMenu=nullptr;
 	FileListModel*			model=nullptr;
 
 	Private(FileListView* parent)
@@ -175,20 +177,20 @@ void FileListView::initContextMenu()
 		return;
 	}
 
-	m->contextMenu = new DirectoryContextMenu(DirectoryContextMenu::Mode::File, this);
+	m->contextMenu = new ContextMenu(ContextMenu::Mode::File, this);
 
-	connect(m->contextMenu, &DirectoryContextMenu::sigInfoClicked, this, [this](){ this->showInfo(); });
-	connect(m->contextMenu, &DirectoryContextMenu::sigLyricsClicked, this, [this](){ this->showLyrics(); });
-	connect(m->contextMenu, &DirectoryContextMenu::sigEditClicked, this, [this](){ this->showEdit(); });
-	connect(m->contextMenu, &DirectoryContextMenu::sigDeleteClicked, this, &FileListView::sigDeleteClicked);
-	connect(m->contextMenu, &DirectoryContextMenu::sigPlayClicked, this, &FileListView::sigPlayClicked);
-	connect(m->contextMenu, &DirectoryContextMenu::sigPlayNewTabClicked, this, &FileListView::sigPlayNewTabClicked);
-	connect(m->contextMenu, &DirectoryContextMenu::sigPlayNextClicked, this, &FileListView::sigPlayNextClicked);
-	connect(m->contextMenu, &DirectoryContextMenu::sigAppendClicked, this, &FileListView::sigAppendClicked);
-	connect(m->contextMenu, &DirectoryContextMenu::sigRenameClicked, this, &FileListView::renameFileClicked);
-	connect(m->contextMenu, &DirectoryContextMenu::sigRenameByTagClicked, this, &FileListView::renameFileByTagClicked);
-	connect(m->contextMenu, &DirectoryContextMenu::sigCopyToLibrary, this, &FileListView::sigCopyToLibraryRequested);
-	connect(m->contextMenu, &DirectoryContextMenu::sigMoveToLibrary, this, &FileListView::sigMoveToLibraryRequested);
+	connect(m->contextMenu, &ContextMenu::sigInfoClicked, this, [this](){ this->showInfo(); });
+	connect(m->contextMenu, &ContextMenu::sigLyricsClicked, this, [this](){ this->showLyrics(); });
+	connect(m->contextMenu, &ContextMenu::sigEditClicked, this, [this](){ this->showEdit(); });
+	connect(m->contextMenu, &ContextMenu::sigDeleteClicked, this, &FileListView::sigDeleteClicked);
+	connect(m->contextMenu, &ContextMenu::sigPlayClicked, this, &FileListView::sigPlayClicked);
+	connect(m->contextMenu, &ContextMenu::sigPlayNewTabClicked, this, &FileListView::sigPlayNewTabClicked);
+	connect(m->contextMenu, &ContextMenu::sigPlayNextClicked, this, &FileListView::sigPlayNextClicked);
+	connect(m->contextMenu, &ContextMenu::sigAppendClicked, this, &FileListView::sigAppendClicked);
+	connect(m->contextMenu, &ContextMenu::sigRenameClicked, this, &FileListView::renameFileClicked);
+	connect(m->contextMenu, &ContextMenu::sigRenameByTagClicked, this, &FileListView::renameFileByTagClicked);
+	connect(m->contextMenu, &ContextMenu::sigCopyToLibrary, this, &FileListView::sigCopyToLibraryRequested);
+	connect(m->contextMenu, &ContextMenu::sigMoveToLibrary, this, &FileListView::sigMoveToLibraryRequested);
 }
 
 QModelIndexList FileListView::selectedRows() const

@@ -27,6 +27,9 @@
 #include <QFileDialog>
 #include <QLabel>
 
+using Directory::TreeView;
+using Directory::FileListView;
+
 static QString copyOrMoveLibraryRequested(const QStringList& paths, LibraryId id, QWidget* parent);
 static void showImageLabel(const QString& filename);
 
@@ -69,20 +72,20 @@ void GUI_DirectoryView::initUi()
 	connect(m->dsh, &DirectorySelectionHandler::sigFileOperationFinished, this, &GUI_DirectoryView::fileOperationFinished);
 
 	connect(ui->tv_dirs, &QTreeView::pressed, this, &GUI_DirectoryView::dirPressed);
-	connect(ui->tv_dirs, &DirectoryTreeView::sigCurrentIndexChanged, this, &GUI_DirectoryView::dirClicked);
-	connect(ui->tv_dirs, &DirectoryTreeView::sigImportRequested, this, &GUI_DirectoryView::importRequested);
-	connect(ui->tv_dirs, &DirectoryTreeView::sigEnterPressed, this, &GUI_DirectoryView::dirEnterPressed);
-	connect(ui->tv_dirs, &DirectoryTreeView::sigAppendClicked, this, &GUI_DirectoryView::dirAppendClicked);
-	connect(ui->tv_dirs, &DirectoryTreeView::sigPlayClicked, this, &GUI_DirectoryView::dirPlayClicked);
-	connect(ui->tv_dirs, &DirectoryTreeView::sigPlayNextClicked, this, &GUI_DirectoryView::dirPlayNextClicked);
-	connect(ui->tv_dirs, &DirectoryTreeView::sigPlayNewTabClicked, this, &GUI_DirectoryView::dirPlayInNewTabClicked);
-	connect(ui->tv_dirs, &DirectoryTreeView::sigDeleteClicked, this, &GUI_DirectoryView::dirDeleteClicked);
-	connect(ui->tv_dirs, &DirectoryTreeView::sigDirectoryLoaded, this, &GUI_DirectoryView::dirOpened);
-	connect(ui->tv_dirs, &DirectoryTreeView::sigCopyRequested, this, &GUI_DirectoryView::dirCopyRequested);
-	connect(ui->tv_dirs, &DirectoryTreeView::sigMoveRequested, this, &GUI_DirectoryView::dirMoveRequested);
-	connect(ui->tv_dirs, &DirectoryTreeView::sigRenameRequested, this, &GUI_DirectoryView::dirRenameRequested);
-	connect(ui->tv_dirs, &DirectoryTreeView::sigCopyToLibraryRequested, this, &GUI_DirectoryView::dirCopyToLibRequested);
-	connect(ui->tv_dirs, &DirectoryTreeView::sigMoveToLibraryRequested, this, &GUI_DirectoryView::dirMoveToLibRequested);
+	connect(ui->tv_dirs, &TreeView::sigCurrentIndexChanged, this, &GUI_DirectoryView::dirClicked);
+	connect(ui->tv_dirs, &TreeView::sigImportRequested, this, &GUI_DirectoryView::importRequested);
+	connect(ui->tv_dirs, &TreeView::sigEnterPressed, this, &GUI_DirectoryView::dirEnterPressed);
+	connect(ui->tv_dirs, &TreeView::sigAppendClicked, this, &GUI_DirectoryView::dirAppendClicked);
+	connect(ui->tv_dirs, &TreeView::sigPlayClicked, this, &GUI_DirectoryView::dirPlayClicked);
+	connect(ui->tv_dirs, &TreeView::sigPlayNextClicked, this, &GUI_DirectoryView::dirPlayNextClicked);
+	connect(ui->tv_dirs, &TreeView::sigPlayNewTabClicked, this, &GUI_DirectoryView::dirPlayInNewTabClicked);
+	connect(ui->tv_dirs, &TreeView::sigDeleteClicked, this, &GUI_DirectoryView::dirDeleteClicked);
+	connect(ui->tv_dirs, &TreeView::sigDirectoryLoaded, this, &GUI_DirectoryView::dirOpened);
+	connect(ui->tv_dirs, &TreeView::sigCopyRequested, this, &GUI_DirectoryView::dirCopyRequested);
+	connect(ui->tv_dirs, &TreeView::sigMoveRequested, this, &GUI_DirectoryView::dirMoveRequested);
+	connect(ui->tv_dirs, &TreeView::sigRenameRequested, this, &GUI_DirectoryView::dirRenameRequested);
+	connect(ui->tv_dirs, &TreeView::sigCopyToLibraryRequested, this, &GUI_DirectoryView::dirCopyToLibRequested);
+	connect(ui->tv_dirs, &TreeView::sigMoveToLibraryRequested, this, &GUI_DirectoryView::dirMoveToLibRequested);
 	connect(ui->tv_dirs->selectionModel(), &QItemSelectionModel::selectionChanged, this, [this](auto selected, auto descelected)
 	{
 		Q_UNUSED(descelected)
@@ -105,7 +108,7 @@ void GUI_DirectoryView::initUi()
 
 	connect(ui->splitter, &QSplitter::splitterMoved, this, &GUI_DirectoryView::splitterMoved);
 	connect(ui->btn_createDir, &QPushButton::clicked, this, &GUI_DirectoryView::createDirectoryClicked);
-	connect(ui->btn_clearSelection, &QPushButton::clicked, ui->tv_dirs, &DirectoryTreeView::clearSelection);
+	connect(ui->btn_clearSelection, &QPushButton::clicked, ui->tv_dirs, &TreeView::clearSelection);
 
 	Library::Info info = m->currentLibrary();
 	ui->tv_dirs->setLibraryInfo(info);

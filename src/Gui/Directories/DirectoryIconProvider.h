@@ -25,18 +25,21 @@
 
 class Settings;
 
-/**
- * @brief The IconProvider class
- * @ingroup GuiDirectories
- */
-class IconProvider : public QFileIconProvider
+namespace Directory
 {
-public:
-	IconProvider();
-	~IconProvider() override;
+	/**
+	 * @brief The IconProvider class
+	 * @ingroup GuiDirectories
+	 */
+	class IconProvider : public QFileIconProvider
+	{
+		public:
+			IconProvider();
+			~IconProvider() override;
 
-	QIcon icon(IconType type) const override;
-	QIcon icon(const QFileInfo &info) const override;
-};
+			QIcon icon(IconType type) const override;
+			QIcon icon(const QFileInfo &info) const override;
+	};
+}
 
 #endif // ICONPROVIDER_H

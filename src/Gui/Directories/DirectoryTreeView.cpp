@@ -47,20 +47,20 @@
 #include <algorithm>
 #include <utility> // std::pair
 
-struct DirectoryTreeView::Private
+using Directory::TreeView;
+
+struct TreeView::Private
 {
-	QString				lastSearchTerm;
+	Directory::ContextMenu* contextMenu=nullptr;
+	Directory::Model* model=nullptr;
+	Gui::ProgressBar* progressBar=nullptr;
 
-	DirectoryContextMenu*	contextMenu=nullptr;
-	DirectoryModel*		model=nullptr;
-	Gui::ProgressBar*	progressBar=nullptr;
-	int					lastFoundIndex;
+	QTimer*	dragTimer=nullptr;
+	QModelIndex	dragTargetIndex;
 
-	QTimer*				dragTimer=nullptr;
-	QModelIndex			dragTargetIndex;
+	QString	lastSearchTerm;
 
-	Private(QObject* parent) :
-		lastFoundIndex(-1)
+	Private(QObject* parent)
 	{
 		dragTimer = new QTimer(parent);
 		dragTimer->setSingleShot(true);
@@ -75,63 +75,65 @@ struct DirectoryTreeView::Private
 };
 
 
-DirectoryTreeView::DirectoryTreeView(QWidget* parent) :
+TreeView::TreeView(QWidget* parent) :
 	Gui::WidgetTemplate<QTreeView>(parent),
 	InfoDialogContainer(),
 	Gui::Dragable(this)
 {
 	m = Pimpl::make<Private>(this);
 
-	m->model = new DirectoryModel(this);
+	m->model = new Model(this);
+	connect(m->model, &Model::sigBusy, this, &TreeView::setBusy);
 	this->setModel(m->model);
 
-	connect(m->dragTimer, &QTimer::timeout, this, &DirectoryTreeView::dragTimerTimeout);
+	connect(m->dragTimer, &QTimer::timeout, this, &TreeView::dragTimerTimeout);
+
 	this->setItemDelegate(new Gui::StyledItemDelegate(this));
 	this->setDragDropMode(QAbstractItemView::DragDrop);
 
 	auto* action = new QAction(this);
 	action->setShortcut(QKeySequence("F2"));
 	action->setShortcutContext(Qt::WidgetShortcut);
-	connect(action, &QAction::triggered, this, &DirectoryTreeView::renameDirectoryClicked);
+	connect(action, &QAction::triggered, this, &TreeView::renameDirectoryClicked);
 	this->addAction(action);
 }
 
-DirectoryTreeView::~DirectoryTreeView() = default;
+TreeView::~TreeView() = default;
 
-void DirectoryTreeView::initContextMenu()
+void TreeView::initContextMenu()
 {
 	if(m->contextMenu){
 		return;
 	}
 
-	m->contextMenu = new DirectoryContextMenu(DirectoryContextMenu::Mode::Dir, this);
+	m->contextMenu = new ContextMenu(ContextMenu::Mode::Dir, this);
 
-	connect(m->contextMenu, &DirectoryContextMenu::sigDeleteClicked, this, &DirectoryTreeView::sigDeleteClicked);
-	connect(m->contextMenu, &DirectoryContextMenu::sigPlayClicked, this, &DirectoryTreeView::sigPlayClicked);
-	connect(m->contextMenu, &DirectoryContextMenu::sigPlayNewTabClicked, this, &DirectoryTreeView::sigPlayNewTabClicked);
-	connect(m->contextMenu, &DirectoryContextMenu::sigPlayNextClicked, this, &DirectoryTreeView::sigPlayNextClicked);
-	connect(m->contextMenu, &DirectoryContextMenu::sigAppendClicked, this, &DirectoryTreeView::sigAppendClicked);
-	connect(m->contextMenu, &DirectoryContextMenu::sigCreateDirectoryClicked, this, &DirectoryTreeView::createDirectoryClicked);
-	connect(m->contextMenu, &DirectoryContextMenu::sigRenameClicked, this, &DirectoryTreeView::renameDirectoryClicked);
-	connect(m->contextMenu, &DirectoryContextMenu::sigCollapseAllClicked, this, &DirectoryTreeView::collapseAll);
-	connect(m->contextMenu, &DirectoryContextMenu::sigCopyToLibrary, this, &DirectoryTreeView::sigCopyToLibraryRequested);
-	connect(m->contextMenu, &DirectoryContextMenu::sigMoveToLibrary, this, &DirectoryTreeView::sigMoveToLibraryRequested);
+	connect(m->contextMenu, &ContextMenu::sigDeleteClicked, this, &TreeView::sigDeleteClicked);
+	connect(m->contextMenu, &ContextMenu::sigPlayClicked, this, &TreeView::sigPlayClicked);
+	connect(m->contextMenu, &ContextMenu::sigPlayNewTabClicked, this, &TreeView::sigPlayNewTabClicked);
+	connect(m->contextMenu, &ContextMenu::sigPlayNextClicked, this, &TreeView::sigPlayNextClicked);
+	connect(m->contextMenu, &ContextMenu::sigAppendClicked, this, &TreeView::sigAppendClicked);
+	connect(m->contextMenu, &ContextMenu::sigCreateDirectoryClicked, this, &TreeView::createDirectoryClicked);
+	connect(m->contextMenu, &ContextMenu::sigRenameClicked, this, &TreeView::renameDirectoryClicked);
+	connect(m->contextMenu, &ContextMenu::sigCollapseAllClicked, this, &TreeView::collapseAll);
+	connect(m->contextMenu, &ContextMenu::sigCopyToLibrary, this, &TreeView::sigCopyToLibraryRequested);
+	connect(m->contextMenu, &ContextMenu::sigMoveToLibrary, this, &TreeView::sigMoveToLibraryRequested);
 
-	connect(m->contextMenu, &DirectoryContextMenu::sigInfoClicked, this, [this](){ this->showInfo(); });
-	connect(m->contextMenu, &DirectoryContextMenu::sigEditClicked, this, [this](){ this->showEdit(); });
+	connect(m->contextMenu, &ContextMenu::sigInfoClicked, this, [this](){ this->showInfo(); });
+	connect(m->contextMenu, &ContextMenu::sigEditClicked, this, [this](){ this->showEdit(); });
 }
 
-QString DirectoryTreeView::directoryName(const QModelIndex& index)
+QString TreeView::directoryName(const QModelIndex& index)
 {
 	return m->model->filePath(index);
 }
 
-QModelIndexList DirectoryTreeView::selctedRows() const
+QModelIndexList TreeView::selctedRows() const
 {
 	return this->selectionModel()->selectedRows();
 }
 
-QStringList DirectoryTreeView::selectedPaths() const
+QStringList TreeView::selectedPaths() const
 {
 	QStringList paths;
 
@@ -144,13 +146,7 @@ QStringList DirectoryTreeView::selectedPaths() const
 	return paths;
 }
 
-QModelIndex DirectoryTreeView::search(const QString& searchTerm)
-{
-	Q_UNUSED(searchTerm)
-	return QModelIndex();
-}
-
-void DirectoryTreeView::createDirectoryClicked()
+void TreeView::createDirectoryClicked()
 {
 	QModelIndexList indexes = this->selctedRows();
 	if(indexes.size() != 1){
@@ -166,7 +162,7 @@ void DirectoryTreeView::createDirectoryClicked()
 	}
 }
 
-void DirectoryTreeView::renameDirectoryClicked()
+void TreeView::renameDirectoryClicked()
 {
 	QStringList paths = selectedPaths();
 	if(paths.size() != 1){
@@ -185,14 +181,13 @@ void DirectoryTreeView::renameDirectoryClicked()
 	}
 }
 
-void DirectoryTreeView::setBusy(bool b)
+void TreeView::setBusy(bool b)
 {
 	if(b)
 	{
 		this->setDragDropMode(DragDropMode::NoDragDrop);
 
-		if(!m->progressBar)
-		{
+		if(!m->progressBar) {
 			m->progressBar = new Gui::ProgressBar(this);
 		}
 
@@ -203,14 +198,13 @@ void DirectoryTreeView::setBusy(bool b)
 	{
 		this->setDragDropMode(DragDropMode::DragDrop);
 
-		if(m->progressBar)
-		{
+		if(m->progressBar) {
 			m->progressBar->hide();
 		}
 	}
 }
 
-void DirectoryTreeView::dragTimerTimeout()
+void TreeView::dragTimerTimeout()
 {
 	if(m->dragTargetIndex.isValid())
 	{
@@ -221,12 +215,12 @@ void DirectoryTreeView::dragTimerTimeout()
 	m->resetDrag();
 }
 
-bool DirectoryTreeView::hasDragLabel() const
+bool TreeView::hasDragLabel() const
 {
 	return (!this->selectedPaths().isEmpty());
 }
 
-QString DirectoryTreeView::dragLabel() const
+QString TreeView::dragLabel() const
 {
 	QStringList paths;
 
@@ -241,7 +235,7 @@ QString DirectoryTreeView::dragLabel() const
 	return paths.join(", ");
 }
 
-void DirectoryTreeView::dragEnterEvent(QDragEnterEvent* event)
+void TreeView::dragEnterEvent(QDragEnterEvent* event)
 {
 	m->resetDrag();
 
@@ -255,7 +249,7 @@ void DirectoryTreeView::dragEnterEvent(QDragEnterEvent* event)
 	event->accept();
 }
 
-void DirectoryTreeView::dragMoveEvent(QDragMoveEvent* event)
+void TreeView::dragMoveEvent(QDragMoveEvent* event)
 {
 	Parent::dragMoveEvent(event);
 
@@ -295,7 +289,7 @@ void DirectoryTreeView::dragMoveEvent(QDragMoveEvent* event)
 	}	
 }
 
-void DirectoryTreeView::dragLeaveEvent(QDragLeaveEvent* event)
+void TreeView::dragLeaveEvent(QDragLeaveEvent* event)
 {
 	m->resetDrag();
 	event->accept();
@@ -303,7 +297,7 @@ void DirectoryTreeView::dragLeaveEvent(QDragLeaveEvent* event)
 	Parent::dragLeaveEvent(event);
 }
 
-void DirectoryTreeView::dropEvent(QDropEvent* event)
+void TreeView::dropEvent(QDropEvent* event)
 {
 	event->accept();
 
@@ -348,7 +342,7 @@ void DirectoryTreeView::dropEvent(QDropEvent* event)
 	}
 }
 
-void DirectoryTreeView::handleSayonaraDrop(const Gui::CustomMimeData* cmd, const QString& targetDirectory)
+void TreeView::handleSayonaraDrop(const Gui::CustomMimeData* cmd, const QString& targetDirectory)
 {
 	QList<QUrl> urls = cmd->urls();
 	QStringList sourceFiles, sourceDirectorys;
@@ -374,16 +368,16 @@ void DirectoryTreeView::handleSayonaraDrop(const Gui::CustomMimeData* cmd, const
 		return;
 	}
 
-	DirectoryTreeView::DropAction drop_action = showDropMenu(QCursor::pos());
+	TreeView::DropAction drop_action = showDropMenu(QCursor::pos());
 
 	if(!sourceDirectorys.isEmpty())
 	{
 		switch(drop_action)
 		{
-			case DirectoryTreeView::DropAction::Copy:
+			case TreeView::DropAction::Copy:
 				emit sigCopyRequested(sourceDirectorys, targetDirectory);
 				break;
-			case DirectoryTreeView::DropAction::Move:
+			case TreeView::DropAction::Move:
 				emit sigMoveRequested(sourceDirectorys, targetDirectory);
 				break;
 			default:
@@ -395,10 +389,10 @@ void DirectoryTreeView::handleSayonaraDrop(const Gui::CustomMimeData* cmd, const
 	{
 		switch(drop_action)
 		{
-			case DirectoryTreeView::DropAction::Copy:
+			case TreeView::DropAction::Copy:
 				emit sigCopyRequested(sourceFiles, targetDirectory);
 				break;
-			case DirectoryTreeView::DropAction::Move:
+			case TreeView::DropAction::Move:
 				emit sigMoveRequested(sourceFiles, targetDirectory);
 				break;
 			default:
@@ -407,7 +401,7 @@ void DirectoryTreeView::handleSayonaraDrop(const Gui::CustomMimeData* cmd, const
 	}
 }
 
-DirectoryTreeView::DropAction DirectoryTreeView::showDropMenu(const QPoint& pos)
+TreeView::DropAction TreeView::showDropMenu(const QPoint& pos)
 {
 	auto* menu = new QMenu(this);
 
@@ -422,14 +416,14 @@ DirectoryTreeView::DropAction DirectoryTreeView::showDropMenu(const QPoint& pos)
 	menu->addActions(actions);
 
 	QAction* action = menu->exec(pos);
-	DirectoryTreeView::DropAction dropAction = DirectoryTreeView::DropAction::Cancel;
+	TreeView::DropAction dropAction = TreeView::DropAction::Cancel;
 
 	if(action == actions[0]){
-		dropAction = DirectoryTreeView::DropAction::Copy;
+		dropAction = TreeView::DropAction::Copy;
 	}
 
 	else if(action == actions[1]){
-		dropAction = DirectoryTreeView::DropAction::Move;
+		dropAction = TreeView::DropAction::Move;
 	}
 
 	menu->deleteLater();
@@ -437,7 +431,7 @@ DirectoryTreeView::DropAction DirectoryTreeView::showDropMenu(const QPoint& pos)
 	return dropAction;
 }
 
-void DirectoryTreeView::selectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
+void TreeView::selectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
 {
 	QTreeView::selectionChanged(selected, deselected);
 
@@ -451,7 +445,46 @@ void DirectoryTreeView::selectionChanged(const QItemSelection& selected, const Q
 	}
 }
 
-QMimeData* DirectoryTreeView::dragableMimedata() const
+
+void TreeView::setLibraryInfo(const Library::Info& info)
+{
+	QModelIndex index = m->model->setDataSource(info.id());
+	if(index.isValid())
+	{
+		this->setRootIndex(index);
+	}
+
+	for(int i=1; i<m->model->columnCount(); i++) {
+		this->hideColumn(i);
+	}
+}
+
+void TreeView::setFilterTerm(const QString& filter)
+{
+	m->model->setFilter(filter);
+}
+
+MD::Interpretation TreeView::metadataInterpretation() const
+{
+	return MD::Interpretation::Tracks;
+}
+
+MetaDataList TreeView::infoDialogData() const
+{
+	return MetaDataList();
+}
+
+bool TreeView::hasMetadata() const
+{
+	return false;
+}
+
+QStringList TreeView::pathlist() const
+{
+	return this->selectedPaths();
+}
+
+QMimeData* TreeView::dragableMimedata() const
 {
 	const QModelIndexList selectedItems = this->selctedRows();
 
@@ -469,52 +502,8 @@ QMimeData* DirectoryTreeView::dragableMimedata() const
 	return cmd;
 }
 
-void DirectoryTreeView::setLibraryInfo(const Library::Info& info)
-{
-	QModelIndex index = m->model->setDataSource(info.id());
-	if(index.isValid())
-	{
-		this->setRootIndex(index);
-	}
 
-	for(int i=1; i<m->model->columnCount(); i++) {
-		this->hideColumn(i);
-	}
-}
-
-void DirectoryTreeView::setFilterTerm(const QString& filter)
-{
-	m->model->setFilterFixedString(filter);
-}
-
-MD::Interpretation DirectoryTreeView::metadataInterpretation() const
-{
-	return MD::Interpretation::Tracks;
-}
-
-MetaDataList DirectoryTreeView::infoDialogData() const
-{
-	return MetaDataList();
-}
-
-bool DirectoryTreeView::hasMetadata() const
-{
-	return false;
-}
-
-QStringList DirectoryTreeView::pathlist() const
-{
-	return this->selectedPaths();
-}
-
-void DirectoryTreeView::skinChanged()
-{
-	const QFontMetrics fm = this->fontMetrics();
-	this->setIconSize(QSize(fm.height(), fm.height()));
-	this->setIndentation(fm.height());
-}
-
-void DirectoryTreeView::keyPressEvent(QKeyEvent* event)
+void TreeView::keyPressEvent(QKeyEvent* event)
 {
 	event->setAccepted(false);
 
@@ -533,7 +522,7 @@ void DirectoryTreeView::keyPressEvent(QKeyEvent* event)
 	Parent::keyPressEvent(event);
 }
 
-void DirectoryTreeView::contextMenuEvent(QContextMenuEvent* event)
+void TreeView::contextMenuEvent(QContextMenuEvent* event)
 {
 	if(!m->contextMenu){
 		initContextMenu();
@@ -543,4 +532,12 @@ void DirectoryTreeView::contextMenuEvent(QContextMenuEvent* event)
 
 	QPoint pos = QWidget::mapToGlobal(event->pos());
 	m->contextMenu->exec(pos);
+}
+
+
+void TreeView::skinChanged()
+{
+	const QFontMetrics fm = this->fontMetrics();
+	this->setIconSize(QSize(fm.height(), fm.height()));
+	this->setIndentation(fm.height());
 }

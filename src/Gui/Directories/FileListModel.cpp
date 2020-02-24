@@ -51,6 +51,9 @@
 #include <QThread>
 #include <QPixmapCache>
 
+using Directory::IconWorkerThread;
+using Directory::FileListModel;
+
 enum ColumnName
 {
 	ColumnDecoration=0,

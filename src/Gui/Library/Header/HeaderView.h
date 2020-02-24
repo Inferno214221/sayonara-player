@@ -65,7 +65,6 @@ namespace Library
 
 		protected:
 			void languageChanged() override;
-			void resizeEvent(QResizeEvent* e) override;
 	};
 }
 

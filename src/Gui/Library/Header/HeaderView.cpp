@@ -154,8 +154,8 @@ void HeaderView::actionTriggered(bool b)
 	{
 		ColumnHeaderPtr section = m->columns[i];
 
-		bool is_visible = section->isActionChecked();
-		this->setSectionHidden(i, !is_visible);
+		bool isVisible = section->isActionChecked();
+		this->setSectionHidden(i, !isVisible);
 	}
 
 	actionResizeTriggered();
@@ -220,19 +220,13 @@ void HeaderView::actionResizeTriggered()
 
 int HeaderView::calcHeaderWidth() const
 {
-	int header_width = 0;
+	int headerWidth = 0;
 	for(int i=0; i< m->columns.count(); i++)
 	{
-		header_width += this->sectionSize(i);
+		headerWidth += this->sectionSize(i);
 	}
 
-	return header_width;
-}
-
-void HeaderView::resizeEvent(QResizeEvent* e)
-{
-	Parent::resizeEvent(e);
-	actionResizeTriggered();
+	return headerWidth;
 }
 
 QSize HeaderView::sizeHint() const

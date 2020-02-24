@@ -23,57 +23,60 @@
 
 #include "Gui/Utils/ContextMenu/LibraryContextMenu.h"
 
-/**
- * @brief The DirectoryContextMenu class
- * @ingroup GuiDirectories
- */
-class DirectoryContextMenu :
-		public Library::ContextMenu
+namespace Directory
 {
-	Q_OBJECT
-	PIMPL(DirectoryContextMenu)
-
-signals:
-	void sigCreateDirectoryClicked();
-	void sigRenameClicked();
-	void sigRenameByTagClicked();
-	void sigCollapseAllClicked();
-	void sigMoveToLibrary(LibraryId id);
-	void sigCopyToLibrary(LibraryId id);
-
-public:
-	enum Mode
+	/**
+	 * @brief The DirectoryContextMenu class
+	 * @ingroup GuiDirectories
+	 */
+	class ContextMenu :
+			public Library::ContextMenu
 	{
-		Dir=0,
-		File
+		Q_OBJECT
+		PIMPL(ContextMenu)
+
+		signals:
+			void sigCreateDirectoryClicked();
+			void sigRenameClicked();
+			void sigRenameByTagClicked();
+			void sigCollapseAllClicked();
+			void sigMoveToLibrary(LibraryId id);
+			void sigCopyToLibrary(LibraryId id);
+
+		public:
+			enum Mode
+			{
+				Dir=0,
+				File
+			};
+
+			enum Entry
+			{
+				EntryCreateDir		= Library::ContextMenu::EntryLast,
+				EntryRename			= Library::ContextMenu::EntryLast << 1,
+				EntryRenameByTag	= Library::ContextMenu::EntryLast << 2,
+				EntryCollapseAll	= Library::ContextMenu::EntryLast << 3,
+				EntryMoveToLib		= Library::ContextMenu::EntryLast << 4,
+				EntryCopyToLib		= Library::ContextMenu::EntryLast << 5
+			};
+
+			ContextMenu(Mode mode, QWidget* parent);
+			~ContextMenu() override;
+
+			void refresh(int count=0);
+
+			ContextMenu::Entries entries() const override;
+			void showActions(ContextMenu::Entries entries) override;
+			void showDirectoryAction(ContextMenu::Entry entry, bool b);
+
+		private slots:
+			void libraryMoveActionTriggered();
+			void libraryCopyActionTriggered();
+
+		protected:
+			void languageChanged() override;
+			void skinChanged() override;
 	};
-
-	enum Entry
-	{
-		EntryCreateDir		= Library::ContextMenu::EntryLast,
-		EntryRename			= Library::ContextMenu::EntryLast << 1,
-		EntryRenameByTag	= Library::ContextMenu::EntryLast << 2,
-		EntryCollapseAll	= Library::ContextMenu::EntryLast << 3,
-		EntryMoveToLib		= Library::ContextMenu::EntryLast << 4,
-		EntryCopyToLib		= Library::ContextMenu::EntryLast << 5
-	};
-
-	DirectoryContextMenu(Mode mode, QWidget* parent);
-	~DirectoryContextMenu() override;
-
-	void refresh(int count=0);
-
-	ContextMenu::Entries entries() const override;
-	void showActions(ContextMenu::Entries entries) override;
-	void showDirectoryAction(DirectoryContextMenu::Entry entry, bool b);
-
-private slots:
-	void libraryMoveActionTriggered();
-	void libraryCopyActionTriggered();
-
-protected:
-	void languageChanged() override;
-	void skinChanged() override;
-};
+}
 
 #endif // DIRECTORYCONTEXTMENU_H

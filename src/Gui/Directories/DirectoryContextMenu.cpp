@@ -30,14 +30,16 @@
 
 #include <QAction>
 
-struct DirectoryContextMenu::Private
+using Directory::ContextMenu;
+
+struct ContextMenu::Private
 {
 	QAction*	actionCreateDirectory=nullptr;
 	QAction*	actionRename=nullptr;
 	QAction*	actionRenameByTag=nullptr;
 	QAction*	actionCollapseAll=nullptr;
 
-	QMap<DirectoryContextMenu::Entry, QAction*> entryActionMap;
+	QMap<ContextMenu::Entry, QAction*> entryActionMap;
 
 	QMenu*		menuMoveToLibrary=nullptr;
 	QAction*	actionMoveToLibrary=nullptr;
@@ -47,9 +49,9 @@ struct DirectoryContextMenu::Private
 
 	QList<QAction*> libraryMoveActions, libraryCopyActions;
 
-	DirectoryContextMenu::Mode mode;
+	ContextMenu::Mode mode;
 
-	Private(DirectoryContextMenu::Mode mode, DirectoryContextMenu* parent) :
+	Private(ContextMenu::Mode mode, ContextMenu* parent) :
 		mode(mode)
 	{
 		actionCreateDirectory = new QAction(parent);
@@ -92,7 +94,7 @@ struct DirectoryContextMenu::Private
 	}
 };
 
-DirectoryContextMenu::DirectoryContextMenu(DirectoryContextMenu::Mode mode, QWidget* parent) :
+ContextMenu::ContextMenu(ContextMenu::Mode mode, QWidget* parent) :
 	Library::ContextMenu(parent)
 {
 	m = Pimpl::make<Private>(mode, this);
@@ -122,19 +124,19 @@ DirectoryContextMenu::DirectoryContextMenu(DirectoryContextMenu::Mode mode, QWid
 		);
 	}
 
-	connect(m->actionCreateDirectory, &QAction::triggered, this, &DirectoryContextMenu::sigCreateDirectoryClicked);
-	connect(m->actionRename, &QAction::triggered, this, &DirectoryContextMenu::sigRenameClicked);
-	connect(m->actionRenameByTag, &QAction::triggered, this, &DirectoryContextMenu::sigRenameByTagClicked);
-	connect(m->actionCollapseAll, &QAction::triggered, this, &DirectoryContextMenu::sigCollapseAllClicked);
+	connect(m->actionCreateDirectory, &QAction::triggered, this, &ContextMenu::sigCreateDirectoryClicked);
+	connect(m->actionRename, &QAction::triggered, this, &ContextMenu::sigRenameClicked);
+	connect(m->actionRenameByTag, &QAction::triggered, this, &ContextMenu::sigRenameByTagClicked);
+	connect(m->actionCollapseAll, &QAction::triggered, this, &ContextMenu::sigCollapseAllClicked);
 
 	for(QAction* action : m->libraryMoveActions)
 	{
-		connect(action, &QAction::triggered, this, &DirectoryContextMenu::libraryMoveActionTriggered);
+		connect(action, &QAction::triggered, this, &ContextMenu::libraryMoveActionTriggered);
 	}
 
 	for(QAction* action : m->libraryCopyActions)
 	{
-		connect(action, &QAction::triggered, this, &DirectoryContextMenu::libraryCopyActionTriggered);
+		connect(action, &QAction::triggered, this, &ContextMenu::libraryCopyActionTriggered);
 	}
 
 	action = this->addPreferenceAction(new Gui::LibraryPreferenceAction(this));
@@ -153,10 +155,10 @@ DirectoryContextMenu::DirectoryContextMenu(DirectoryContextMenu::Mode mode, QWid
 
 	switch(mode)
 	{
-		case DirectoryContextMenu::Mode::Dir:
+		case ContextMenu::Mode::Dir:
 			this->showAction(Library::ContextMenu::EntryLyrics, false);
 			break;
-		case DirectoryContextMenu::Mode::File:
+		case ContextMenu::Mode::File:
 			m->actionCreateDirectory->setVisible(false);
 			m->actionCollapseAll->setVisible(false);
 			break;
@@ -168,11 +170,11 @@ DirectoryContextMenu::DirectoryContextMenu(DirectoryContextMenu::Mode mode, QWid
 	languageChanged();
 }
 
-DirectoryContextMenu::~DirectoryContextMenu() = default;
+ContextMenu::~ContextMenu() = default;
 
-void DirectoryContextMenu::refresh(int count)
+void ContextMenu::refresh(int count)
 {
-	if((count == 0) && (m->mode == DirectoryContextMenu::Mode::File))
+	if((count == 0) && (m->mode == ContextMenu::Mode::File))
 	{
 		this->showActions(Library::ContextMenu::EntryDelete);
 
@@ -203,7 +205,7 @@ void DirectoryContextMenu::refresh(int count)
 
 		switch(m->mode)
 		{
-			case DirectoryContextMenu::Mode::Dir:
+			case ContextMenu::Mode::Dir:
 				this->showAction(Library::ContextMenu::EntryLyrics, false);
 				m->actionCreateDirectory->setVisible(count == 1);
 				m->actionCollapseAll->setVisible(true);
@@ -212,7 +214,7 @@ void DirectoryContextMenu::refresh(int count)
 				this->showAction(Library::ContextMenu::EntryLyrics, false);
 
 				break;
-			case DirectoryContextMenu::Mode::File:
+			case ContextMenu::Mode::File:
 				m->actionCreateDirectory->setVisible(false);
 				m->actionCollapseAll->setVisible(false);
 				m->actionRenameByTag->setVisible(true);
@@ -229,7 +231,7 @@ void DirectoryContextMenu::refresh(int count)
 	}
 }
 
-Library::ContextMenu::Entries DirectoryContextMenu::entries() const
+Library::ContextMenu::Entries ContextMenu::entries() const
 {
 	auto entries = Library::ContextMenu::entries();
 	for(auto it=m->entryActionMap.begin(); it != m->entryActionMap.end(); it++)
@@ -242,19 +244,19 @@ Library::ContextMenu::Entries DirectoryContextMenu::entries() const
 	return entries;
 }
 
-void DirectoryContextMenu::showActions(Library::ContextMenu::Entries entries)
+void ContextMenu::showActions(Library::ContextMenu::Entries entries)
 {
 	Library::ContextMenu::showActions(entries);
 
 	for(auto it=m->entryActionMap.begin(); it != m->entryActionMap.end(); it++)
 	{
-		DirectoryContextMenu::Entry entry = it.key();
+		ContextMenu::Entry entry = it.key();
 		QAction* action = it.value();
 		action->setVisible(entries & entry);
 	}
 }
 
-void DirectoryContextMenu::showDirectoryAction(DirectoryContextMenu::Entry entry, bool b)
+void ContextMenu::showDirectoryAction(ContextMenu::Entry entry, bool b)
 {
 	Library::ContextMenu::Entries entries = this->entries();
 	if(b)
@@ -270,7 +272,7 @@ void DirectoryContextMenu::showDirectoryAction(DirectoryContextMenu::Entry entry
 	showActions(entries);
 }
 
-void DirectoryContextMenu::libraryMoveActionTriggered()
+void ContextMenu::libraryMoveActionTriggered()
 {
 	auto* action = static_cast<QAction*>(sender());
 
@@ -278,7 +280,7 @@ void DirectoryContextMenu::libraryMoveActionTriggered()
 	emit sigMoveToLibrary(id);
 }
 
-void DirectoryContextMenu::libraryCopyActionTriggered()
+void ContextMenu::libraryCopyActionTriggered()
 {
 	auto* action = static_cast<QAction*>(sender());
 
@@ -286,7 +288,7 @@ void DirectoryContextMenu::libraryCopyActionTriggered()
 	emit sigCopyToLibrary(id);
 }
 
-void DirectoryContextMenu::languageChanged()
+void ContextMenu::languageChanged()
 {
 	Library::ContextMenu::languageChanged();
 
@@ -301,7 +303,7 @@ void DirectoryContextMenu::languageChanged()
 	}
 }
 
-void DirectoryContextMenu::skinChanged()
+void ContextMenu::skinChanged()
 {
 	Library::ContextMenu::skinChanged();
 

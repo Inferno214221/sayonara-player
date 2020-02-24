@@ -108,8 +108,8 @@ IconThemeScrollWidget
 }
 
 SearchableListView,
-DirectoryTreeView,
-FileListView,
+Directory--TreeView,
+Directory--FileListView,
 Library--View,
 Library--GenreView,
 Library--ItemView
@@ -119,8 +119,8 @@ Library--ItemView
 }
 
 SearchableListView:disabled,
-DirectoryTreeView:disabled,
-FileListView:disabled,
+Directory--TreeView:disabled,
+Directory--FileListView:disabled,
 Library--View:disabled,
 Library--GenreView:disabled,
 Library--ItemView:disabled

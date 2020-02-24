@@ -29,61 +29,63 @@
 class QPixmap;
 class QVariant;
 
-class IconWorkerThread : public QObject
+namespace Directory
 {
-	Q_OBJECT
-	PIMPL(IconWorkerThread)
+	class IconWorkerThread : public QObject
+	{
+		Q_OBJECT
+		PIMPL(IconWorkerThread)
 
-	signals:
-		void sigFinished(const QString& path);
+		signals:
+			void sigFinished(const QString& path);
 
-	public:
-		IconWorkerThread(const QSize& targetSize, const QString& filename);
-		~IconWorkerThread();
+		public:
+			IconWorkerThread(const QSize& targetSize, const QString& filename);
+			~IconWorkerThread();
 
-		QPixmap pixmap() const;
+			QPixmap pixmap() const;
 
-	public slots:
-		void start();
-};
+		public slots:
+			void start();
+	};
 
+	/**
+	 * @brief The FileListModel class
+	 * @ingroup GuiDirectories
+	 */
+	class FileListModel :
+		public SearchableTableModel
+	{
+		Q_OBJECT
+		PIMPL(FileListModel)
 
-/**
- * @brief The FileListModel class
- * @ingroup GuiDirectories
- */
-class FileListModel :
-	public SearchableTableModel
-{
-	Q_OBJECT
-	PIMPL(FileListModel)
+		public:
+			explicit FileListModel(QObject* parent=nullptr);
+			~FileListModel() override;
 
-	public:
-		explicit FileListModel(QObject* parent=nullptr);
-		~FileListModel() override;
+			QString parentDirectory() const;
+			void setParentDirectory(LibraryId libraryId, const QString& dir);
 
-		QString parentDirectory() const;
-		void setParentDirectory(LibraryId libraryId, const QString& dir);
+			LibraryId libraryId() const;
+			QStringList files() const;
 
-		LibraryId libraryId() const;
-		QStringList files() const;
+			QModelIndexList searchResults(const QString& substr) override;
 
-		QModelIndexList searchResults(const QString& substr) override;
+			QVariant data(const QModelIndex& index, int role=Qt::DisplayRole) const override;
+			QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
 
-		QVariant data(const QModelIndex& index, int role=Qt::DisplayRole) const override;
-		QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
+			int rowCount(const QModelIndex& parent=QModelIndex()) const override;
+			int columnCount(const QModelIndex& parent=QModelIndex()) const override;
 
-		int rowCount(const QModelIndex& parent=QModelIndex()) const override;
-		int columnCount(const QModelIndex& parent=QModelIndex()) const override;
+			QMimeData* mimeData(const QModelIndexList &indexes) const override;
+			Qt::ItemFlags flags(const QModelIndex& index) const override;
 
-		QMimeData* mimeData(const QModelIndexList &indexes) const override;
-		Qt::ItemFlags flags(const QModelIndex& index) const override;
+		private:
+			bool checkRowForSearchstring(int row, const QString& substr) const;
 
-	private:
-		bool checkRowForSearchstring(int row, const QString& substr) const;
-
-	private slots:
-		void pixmapFetched(const QString& path);
-};
+		private slots:
+			void pixmapFetched(const QString& path);
+	};
+}
 
 #endif

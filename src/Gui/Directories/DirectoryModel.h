@@ -32,33 +32,47 @@ namespace Library
 	class Info;
 }
 
-/**
- * @brief The SearchableFileTreeModel class
- * @ingroup GuiDirectories
- */
-class DirectoryModel :
-	public QSortFilterProxyModel
+
+namespace Directory
 {
-	Q_OBJECT
-	PIMPL(DirectoryModel)
+	/**
+	 * @brief The SearchableFileTreeModel class
+	 * @ingroup GuiDirectories
+	 */
+	class Model :
+		public QSortFilterProxyModel
+	{
+		Q_OBJECT
+		PIMPL(Model)
 
-public:
-	explicit DirectoryModel(QObject* parent=nullptr);
-	~DirectoryModel() override;
+		signals:
+			void sigBusy(bool b);
 
-	QModelIndex setDataSource(LibraryId libraryId);
-	QModelIndex setDataSource(const QString& path);
+		public:
+			explicit Model(QObject* parent=nullptr);
+			~Model() override;
 
-	LibraryId libraryDataSource() const;
+			QModelIndex setDataSource(LibraryId libraryId);
+			QModelIndex setDataSource(const QString& path);
 
-	QString filePath(const QModelIndex& index);
-	QModelIndex indexOfPath(const QString& path) const;
+			LibraryId libraryDataSource() const;
 
+			QString filePath(const QModelIndex& index);
+			QModelIndex indexOfPath(const QString& path) const;
 
-	// QSortFilterProxyModel interface
-	protected:
-	bool filterAcceptsRow(int sourceRow, const QModelIndex& sourceParent) const override;
-};
+			void setFilter(const QString& filter);
 
+		private slots:
+			void filterTimerTimeout();
+
+			// QSortFilterProxyModel interface
+		protected:
+			using QSortFilterProxyModel::setFilterRegExp;
+			using QSortFilterProxyModel::setFilterWildcard;
+			using QSortFilterProxyModel::setFilterFixedString;
+
+			bool filterAcceptsRow(int sourceRow, const QModelIndex& sourceParent) const override;
+	};
+}
 
 #endif // SEARCHABLEFileTreeView_H

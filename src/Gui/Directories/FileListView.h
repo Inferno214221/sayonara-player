@@ -27,77 +27,78 @@
 
 #include "Utils/Pimpl.h"
 
-class FileListModel;
-class LibraryContextMenu;
-
-/**
- * @brief The FileListView class
- * @ingroup GuiDirectories
- */
-class FileListView :
-		public SearchableTableView,
-		public InfoDialogContainer,
-		private Gui::Dragable
+namespace Directory
 {
-	Q_OBJECT
-	PIMPL(FileListView)
+	class FileListModel;
+	/**
+	 * @brief The FileListView class
+	 * @ingroup GuiDirectories
+	 */
+	class FileListView :
+			public SearchableTableView,
+			public InfoDialogContainer,
+			private Gui::Dragable
+	{
+		Q_OBJECT
+		PIMPL(FileListView)
 
-	signals:
-		void sigDeleteClicked();
-		void sigPlayClicked();
-		void sigPlayNewTabClicked();
-		void sigPlayNextClicked();
-		void sigAppendClicked();
-		void sigEnterPressed();
-		void sigImportRequested(LibraryId lib_id, const QStringList& files, const QString& targetDirectory);
+		signals:
+			void sigDeleteClicked();
+			void sigPlayClicked();
+			void sigPlayNewTabClicked();
+			void sigPlayNextClicked();
+			void sigAppendClicked();
+			void sigEnterPressed();
+			void sigImportRequested(LibraryId lib_id, const QStringList& files, const QString& targetDirectory);
 
-		void sigRenameRequested(const QString& old_name, const QString& newName);
-		void sigRenameByExpressionRequested(const QString& oldName, const QString& expression);
+			void sigRenameRequested(const QString& old_name, const QString& newName);
+			void sigRenameByExpressionRequested(const QString& oldName, const QString& expression);
 
-		void sigCopyToLibraryRequested(LibraryId libraryId);
-		void sigMoveToLibraryRequested(LibraryId libraryId);
+			void sigCopyToLibraryRequested(LibraryId libraryId);
+			void sigMoveToLibraryRequested(LibraryId libraryId);
 
-	public:
-		explicit FileListView(QWidget* parent=nullptr);
-		~FileListView() override;
+		public:
+			explicit FileListView(QWidget* parent=nullptr);
+			~FileListView() override;
 
-		QModelIndexList selectedRows() const;
-		QStringList selectedPaths() const;
+			QModelIndexList selectedRows() const;
+			QStringList selectedPaths() const;
 
-		void setParentDirectory(LibraryId id, const QString& dir);
-		QString parentDirectory() const;
+			void setParentDirectory(LibraryId id, const QString& dir);
+			QString parentDirectory() const;
 
-		void setSearchFilter(const QString& search_string);
+			void setSearchFilter(const QString& search_string);
 
-		QMimeData* dragableMimedata() const override;
+			QMimeData* dragableMimedata() const override;
 
-	private:
-		void initContextMenu();
+		private:
+			void initContextMenu();
 
-	private slots:
-		void renameFileClicked();
-		void renameFileByTagClicked();
+		private slots:
+			void renameFileClicked();
+			void renameFileByTagClicked();
 
-	protected:
-		void keyPressEvent(QKeyEvent* event) override;
-		void contextMenuEvent(QContextMenuEvent* event) override;
+		protected:
+			void keyPressEvent(QKeyEvent* event) override;
+			void contextMenuEvent(QContextMenuEvent* event) override;
 
-		void dragEnterEvent(QDragEnterEvent* event) override;
-		void dragMoveEvent(QDragMoveEvent* event) override;
-		void dropEvent(QDropEvent* event) override;
+			void dragEnterEvent(QDragEnterEvent* event) override;
+			void dragMoveEvent(QDragMoveEvent* event) override;
+			void dropEvent(QDropEvent* event) override;
 
-		void languageChanged() override;
-		void skinChanged() override;
+			void languageChanged() override;
+			void skinChanged() override;
 
-		// SayonaraSelectionView
-		int mapModelIndexToIndex(const QModelIndex& idx) const override;
-		ModelIndexRange mapIndexToModelIndexes(int idx) const override;
+			// SayonaraSelectionView
+			int mapModelIndexToIndex(const QModelIndex& idx) const override;
+			ModelIndexRange mapIndexToModelIndexes(int idx) const override;
 
-		// InfoDialogContainer interface
-		MD::Interpretation metadataInterpretation() const override;
-		MetaDataList infoDialogData() const override;
-		bool hasMetadata() const override;
-		QStringList pathlist() const override;
-};
+			// InfoDialogContainer interface
+			MD::Interpretation metadataInterpretation() const override;
+			MetaDataList infoDialogData() const override;
+			bool hasMetadata() const override;
+			QStringList pathlist() const override;
+	};
+}
 
 #endif // FILELISTVIEW_H

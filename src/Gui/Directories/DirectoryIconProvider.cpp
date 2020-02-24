@@ -26,6 +26,8 @@
 #include "Gui/Utils/Icons.h"
 #include "Gui/Utils/Style.h"
 
+using Directory::IconProvider;
+
 IconProvider::IconProvider() :
 	QFileIconProvider()
 {}

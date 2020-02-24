@@ -33,7 +33,7 @@
 #include <QModelIndexList>
 #include <QTreeView>
 
-class DirectoryModel;
+class Model;
 class IconProvider;
 
 namespace Gui
@@ -47,94 +47,99 @@ namespace Library
 	class Info;
 }
 
-/**
- * @brief The DirectoryTreeView class
- * @ingroup GuiDirectories
- */
-class DirectoryTreeView :
-		public Gui::WidgetTemplate<QTreeView>,
-		public InfoDialogContainer,
-		protected Gui::Dragable
+
+namespace Directory
 {
-	Q_OBJECT
-	PIMPL(DirectoryTreeView)
+	/**
+	 * @brief The DirectoryTreeView class
+	 * @ingroup GuiDirectories
+	 */
+	class TreeView :
+			public Gui::WidgetTemplate<QTreeView>,
+			public InfoDialogContainer,
+			protected Gui::Dragable
+	{
+		Q_OBJECT
+		PIMPL(TreeView)
 
-	using Parent=Gui::WidgetTemplate<QTreeView>;
+		using Parent=Gui::WidgetTemplate<QTreeView>;
 
-	signals:
-		void sigDeleteClicked();
-		void sigPlayClicked();
-		void sigPlayNewTabClicked();
-		void sigPlayNextClicked();
-		void sigAppendClicked();
-		void sigDirectoryLoaded(const QModelIndex& index);
-		void sigCurrentIndexChanged(const QModelIndex& index);
+		signals:
+			void sigDeleteClicked();
+			void sigPlayClicked();
+			void sigPlayNewTabClicked();
+			void sigPlayNextClicked();
+			void sigAppendClicked();
+			void sigDirectoryLoaded(const QModelIndex& index);
+			void sigCurrentIndexChanged(const QModelIndex& index);
 
-		void sigEnterPressed();
-		void sigImportRequested(LibraryId lib_id, const QStringList& v_md, const QString& targetDirectory);
+			void sigEnterPressed();
+			void sigImportRequested(LibraryId lib_id, const QStringList& v_md, const QString& targetDirectory);
 
-		void sigCopyRequested(const QStringList& paths, const QString& target);
-		void sigMoveRequested(const QStringList& paths, const QString& target);
-		void sigRenameRequested(const QString& path, const QString& target);
+			void sigCopyRequested(const QStringList& paths, const QString& target);
+			void sigMoveRequested(const QStringList& paths, const QString& target);
+			void sigRenameRequested(const QString& path, const QString& target);
 
-		void sigCopyToLibraryRequested(LibraryId libraryId);
-		void sigMoveToLibraryRequested(LibraryId libraryId);
+			void sigCopyToLibraryRequested(LibraryId libraryId);
+			void sigMoveToLibraryRequested(LibraryId libraryId);
 
-	public:
-		explicit DirectoryTreeView(QWidget* parent=nullptr);
-		~DirectoryTreeView() override;
+		public:
+			explicit TreeView(QWidget* parent=nullptr);
+			~TreeView() override;
 
-		QModelIndex		search(const QString& searchTerm);
-		QString			directoryName(const QModelIndex& index);
+			QString			directoryName(const QModelIndex& index);
 
-		QModelIndexList	selctedRows() const;
-		QStringList		selectedPaths() const;
+			QModelIndexList	selctedRows() const;
+			QStringList		selectedPaths() const;
 
-		QMimeData*		dragableMimedata() const override;
+			void			setLibraryInfo(const Library::Info& info);
+			void			setFilterTerm(const QString& filter);
 
-		void			setLibraryInfo(const Library::Info& info);
-		void			setFilterTerm(const QString& filter);
-		void			setBusy(bool b);
+		public slots:
+			void			setBusy(bool b);
 
-	private:
-		enum class DropAction
-		{
-			Copy,
-			Move,
-			Cancel
-		};
+		private:
+			enum class DropAction
+			{
+				Copy,
+				Move,
+				Cancel
+			};
 
-		void initContextMenu();
-		DropAction showDropMenu(const QPoint& pos);
-		void handleSayonaraDrop(const Gui::CustomMimeData* mimedata, const QString& targetDirectory);
+			void initContextMenu();
+			DropAction showDropMenu(const QPoint& pos);
+			void handleSayonaraDrop(const Gui::CustomMimeData* mimedata, const QString& targetDirectory);
 
-	private slots:
-		void createDirectoryClicked();
-		void renameDirectoryClicked();
-		void dragTimerTimeout();
+		private slots:
+			void createDirectoryClicked();
+			void renameDirectoryClicked();
+			void dragTimerTimeout();
 
-	protected:
-		// Dragable
-		bool hasDragLabel() const override;
-		QString dragLabel() const override;
 
-		void skinChanged() override;
+		protected:
+			// Dragable
+			QMimeData*		dragableMimedata() const override;
+			bool hasDragLabel() const override;
+			QString dragLabel() const override;
 
-		void keyPressEvent(QKeyEvent* event) override;
-		void contextMenuEvent(QContextMenuEvent* event) override;
+			void skinChanged() override;
 
-		void dragEnterEvent(QDragEnterEvent* event) override;
-		void dragLeaveEvent(QDragLeaveEvent* event) override;
-		void dragMoveEvent(QDragMoveEvent* event) override;
-		void dropEvent(QDropEvent* event) override;
+			void keyPressEvent(QKeyEvent* event) override;
+			void contextMenuEvent(QContextMenuEvent* event) override;
 
-		void selectionChanged(const QItemSelection& selected, const QItemSelection& deselected) override;
+			void dragEnterEvent(QDragEnterEvent* event) override;
+			void dragLeaveEvent(QDragLeaveEvent* event) override;
+			void dragMoveEvent(QDragMoveEvent* event) override;
+			void dropEvent(QDropEvent* event) override;
 
-		// InfoDialogContainer interface
-		MD::Interpretation metadataInterpretation() const override;
-		MetaDataList infoDialogData() const override;
-		bool hasMetadata() const override;
-		QStringList pathlist() const override;
-};
+			void selectionChanged(const QItemSelection& selected, const QItemSelection& deselected) override;
+
+			// InfoDialogContainer interface
+			MD::Interpretation metadataInterpretation() const override;
+			MetaDataList infoDialogData() const override;
+			bool hasMetadata() const override;
+			QStringList pathlist() const override;
+	};
+}
 
 #endif // DIRECTORYTREEVIEW_H

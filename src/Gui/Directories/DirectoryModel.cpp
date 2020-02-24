@@ -10,10 +10,16 @@
 #include "Utils/MetaData/MetaDataList.h"
 
 #include <QFileSystemModel>
+#include <QTimer>
 
-struct DirectoryModel::Private
+using Directory::Model;
+
+struct Model::Private
 {
 	QFileSystemModel* model=nullptr;
+	QTimer*	filterTimer=nullptr;
+	QString	filter;
+
 	LibraryId libraryId;
 
 	Private() :
@@ -21,7 +27,7 @@ struct DirectoryModel::Private
 	{}
 };
 
-DirectoryModel::DirectoryModel(QObject* parent) :
+Model::Model(QObject* parent) :
 	QSortFilterProxyModel(parent)
 {
 	m = Pimpl::make<Private>();
@@ -33,9 +39,9 @@ DirectoryModel::DirectoryModel(QObject* parent) :
 	this->setSourceModel(m->model);
 }
 
-DirectoryModel::~DirectoryModel() = default;
+Model::~Model() = default;
 
-QModelIndex DirectoryModel::setDataSource(LibraryId libraryId)
+QModelIndex Model::setDataSource(LibraryId libraryId)
 {
 	Library::Info info = Library::Manager::instance()->libraryInfo(libraryId);
 	QModelIndex index = setDataSource(info.path());
@@ -45,7 +51,7 @@ QModelIndex DirectoryModel::setDataSource(LibraryId libraryId)
 	return index;
 }
 
-QModelIndex DirectoryModel::setDataSource(const QString& path)
+QModelIndex Model::setDataSource(const QString& path)
 {
 	m->libraryId = -1;
 	m->model->setRootPath(path);
@@ -54,29 +60,52 @@ QModelIndex DirectoryModel::setDataSource(const QString& path)
 	return this->mapFromSource(sourceIndex);
 }
 
-LibraryId DirectoryModel::libraryDataSource() const
+LibraryId Model::libraryDataSource() const
 {
 	return m->libraryId;
 }
 
-QString DirectoryModel::filePath(const QModelIndex& index)
+QString Model::filePath(const QModelIndex& index)
 {
 	return m->model->filePath( mapToSource(index) );
 }
 
-QModelIndex DirectoryModel::indexOfPath(const QString& path) const
+QModelIndex Model::indexOfPath(const QString& path) const
 {
 	return mapFromSource(m->model->index(path));
 }
 
-bool DirectoryModel::filterAcceptsRow(int sourceRow, const QModelIndex& sourceParent) const
+void Model::setFilter(const QString& filter)
+{
+	if(!m->filterTimer)
+	{
+		m->filterTimer = new QTimer();
+		m->filterTimer->setInterval(333);
+		m->filterTimer->setSingleShot(true);
+
+		connect(m->filterTimer, &QTimer::timeout, this, &Model::filterTimerTimeout);
+	}
+
+	m->filter = filter;
+	m->filterTimer->start();
+
+	emit sigBusy(true);
+}
+
+void Model::filterTimerTimeout()
+{
+	this->setFilterFixedString(m->filter);
+	emit sigBusy(false);
+}
+
+bool Model::filterAcceptsRow(int sourceRow, const QModelIndex& sourceParent) const
 {
 	if(this->filterRegExp().pattern().isEmpty()){
 		return true;
 	}
 
-	QModelIndex index = m->model->index(sourceRow, 0, sourceParent);
-	QString path = m->model->filePath(index);
+	const QModelIndex index = m->model->index(sourceRow, 0, sourceParent);
+	const QString path = m->model->filePath(index);
 	if(Util::File::isSubdir(m->model->rootPath(), path) || Util::File::isSamePath(m->model->rootPath(), path))
 	{
 		return true;

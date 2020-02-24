@@ -91,6 +91,10 @@ void TableView::sortByColumn(int column_idx)
 
 void TableView::sectionResized(int logicalIndex, int oldSize, int newSize)
 {
+	Q_UNUSED(logicalIndex)
+	Q_UNUSED(oldSize)
+	Q_UNUSED(newSize)
+
 	if(!this->isVisible()){
 		return;
 	}

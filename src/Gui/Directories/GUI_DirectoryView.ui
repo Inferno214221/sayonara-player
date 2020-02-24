@@ -31,7 +31,7 @@
      <widget class="QWidget" name="verticalLayoutWidget">
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <widget class="DirectoryTreeView" name="tv_dirs">
+        <widget class="Directory::TreeView" name="tv_dirs">
          <property name="alternatingRowColors">
           <bool>true</bool>
          </property>
@@ -66,7 +66,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="FileListView" name="lv_files">
+     <widget class="Directory::FileListView" name="lv_files">
       <property name="alternatingRowColors">
        <bool>true</bool>
       </property>
@@ -95,12 +95,12 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>DirectoryTreeView</class>
+   <class>Directory::TreeView</class>
    <extends>QTreeView</extends>
    <header>Gui/Directories/DirectoryTreeView.h</header>
   </customwidget>
   <customwidget>
-   <class>FileListView</class>
+   <class>Directory::FileListView</class>
    <extends>QTableView</extends>
    <header>Gui/Directories/FileListView.h</header>
   </customwidget>
