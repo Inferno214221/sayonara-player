@@ -1,4 +1,4 @@
-/* EqualizerHandler.h */
+/* SeekHandler.h */
 
 /* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
@@ -18,30 +18,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef EQUALIZERHANDLER_H
-#define EQUALIZERHANDLER_H
+#ifndef SEEKHANDLER_H
+#define SEEKHANDLER_H
 
 #include "Components/Engine/gstfwd.h"
+#include "Utils/typedefs.h"
 #include "Utils/Pimpl.h"
 
 namespace PipelineExtensions
 {
 	/**
-	 * @brief The Equalizer class
+	 * @brief The Seeker class
 	 * @ingroup EngineInterfaces
 	 */
-	class Equalizer
+	class PositionAccessible
 	{
-		PIMPL(Equalizer)
-
 		public:
-			Equalizer();
-			virtual ~Equalizer();
+			PositionAccessible();
+			virtual ~PositionAccessible();
 
-			void setBand(int idx, int val);
+			NanoSeconds seekRelative(double percent, NanoSeconds ns);
+			NanoSeconds seekAbsolute(NanoSeconds ns);
+			NanoSeconds seekNearest(NanoSeconds ns);
 
-			GstElement* element() const;
+			NanoSeconds seekRelativeMs(double percent, MilliSeconds ms);
+			NanoSeconds seekAbsoluteMs(MilliSeconds ms);
+			NanoSeconds seekNearestMs(MilliSeconds ms);
+
+			virtual MilliSeconds positionMs() const;
+			virtual MilliSeconds durationMs() const;
+
+		protected:
+			virtual GstElement* positionElement() const = 0;
 	};
 }
 
-#endif // EQUALIZERHANDLER_H
+#endif // SEEKHANDLER_H

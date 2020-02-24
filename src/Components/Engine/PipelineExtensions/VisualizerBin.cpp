@@ -18,9 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
-#include "Visualizer.h"
+#include "VisualizerBin.h"
 #include "Probing.h"
 #include "Components/Engine/EngineUtils.h"
 
@@ -31,7 +29,7 @@
 
 using namespace PipelineExtensions;
 
-struct Visualizer::Private
+struct VisualizerBin::Private
 {
 	GstElement* pipeline=nullptr;
 	GstElement* tee=nullptr;
@@ -53,14 +51,14 @@ struct Visualizer::Private
 	{}
 };
 
-Visualizer::Visualizer(GstElement* pipeline, GstElement* tee)
+VisualizerBin::VisualizerBin(GstElement* pipeline, GstElement* tee)
 {
 	m = Pimpl::make<Private>(pipeline, tee);
 }
 
-Visualizer::~Visualizer() = default;
+VisualizerBin::~VisualizerBin() {}
 
-bool Visualizer::init()
+bool VisualizerBin::init()
 {
 	if(m->bin){
 		return true;
@@ -112,20 +110,17 @@ bool Visualizer::init()
 	return true;
 }
 
-bool Visualizer::setEnabled(bool b)
+bool VisualizerBin::setEnabled(bool levelEnabled, bool spectrumEnabled)
 {
 	if(!init()){
 		return false;
 	}
 
-	m->isRunning = b;
+	m->isRunning = (levelEnabled || spectrumEnabled);
 	Probing::handleProbe(&m->isRunning, m->queue, &m->probe, Probing::spectrumProbed);
 
-	bool show_level = GetSetting(Set::Engine_ShowLevel);
-	bool show_spectrum = GetSetting(Set::Engine_ShowSpectrum);
-
-	Engine::Utils::setValue(G_OBJECT(m->level), "post-messages", show_level);
-	Engine::Utils::setValue(G_OBJECT(m->spectrum), "post-messages", show_spectrum);
+	Engine::Utils::setValue(G_OBJECT(m->level), "post-messages", levelEnabled);
+	Engine::Utils::setValue(G_OBJECT(m->spectrum), "post-messages", spectrumEnabled);
 
 	return true;
 }

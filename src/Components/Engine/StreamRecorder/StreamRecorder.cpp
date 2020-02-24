@@ -82,7 +82,7 @@ SR::StreamRecorder::StreamRecorder(QObject* parent) :
 	connect(playManager, &PlayManager::sigPlaystateChanged, this, &StreamRecorder::playstateChanged);
 }
 
-SR::StreamRecorder::~StreamRecorder() = default;
+SR::StreamRecorder::~StreamRecorder() {}
 
 void SR::StreamRecorder::clear()
 {

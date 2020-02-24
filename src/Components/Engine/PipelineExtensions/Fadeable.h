@@ -74,7 +74,6 @@ namespace PipelineExtensions
 
 			virtual ~Fadeable();
 
-		public:
 			/**
 			 * @brief get fading time in ms. This is useful to
 			 * calculate the beginning of the next track
@@ -101,16 +100,16 @@ namespace PipelineExtensions
 			virtual void play()=0;
 
 			/**
-			 * @brief Some additional stuff the parent class wants to do
+			 * @brief Some additional stuff the implementation class wants to do
 			 * when fading out
 			 */
-			virtual void getFadeOutHandler()=0;
+			virtual void postProcessFadeOut()=0;
 
 			/**
-			 * @brief Some additional stuff the parent class wants to do
+			 * @brief Some additional stuff the implementation class wants to do
 			 * when fading in
 			 */
-			virtual void getFadeInHandler()=0;
+			virtual void postProcessFadeIn()=0;
 
 			/**
 			 * @brief get current volume of pipeline

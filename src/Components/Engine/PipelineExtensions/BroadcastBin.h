@@ -1,4 +1,4 @@
-/* Visualizer.h */
+/* Broadcaster.h */
 
 /* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
@@ -18,31 +18,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
-#ifndef VISUALIZER_H
-#define VISUALIZER_H
+#ifndef BROADCASTER_H
+#define BROADCASTER_H
 
 #include "Utils/Pimpl.h"
 #include <gst/gst.h>
 
 namespace PipelineExtensions
 {
-	/**
-	 * @brief The Visualizer class
-	 * @ingroup EngineInterfaces
-	 */
-	class Visualizer
+	class BroadcastDataReceiver
 	{
-		PIMPL(Visualizer)
-
-	public:
-		Visualizer(GstElement* pipeline, GstElement* tee);
-		~Visualizer();
-
-		bool init();
-		bool setEnabled(bool b);
+		public:
+			virtual void setRawData(const QByteArray& data)=0;
 	};
 }
 
-#endif // VISUALIZER_H
+/**
+ * @brief The Broadcaster class
+ * @ingroup EngineInterfaces
+ */
+class BroadcastBin
+{
+	PIMPL(BroadcastBin)
+
+	public:
+		BroadcastBin(PipelineExtensions::BroadcastDataReceiver* broadcastDataReceiver, GstElement* pipeline, GstElement* tee);
+		virtual ~BroadcastBin();
+
+		bool init();
+		bool setEnabled(bool b);
+};
+
+#endif // BROADCASTER_H

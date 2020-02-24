@@ -62,7 +62,7 @@ Fadeable::Fadeable()
 	m = Pimpl::make<Private>(this);
 }
 
-Fadeable::~Fadeable() = default;
+Fadeable::~Fadeable() {}
 
 bool Fadeable::initFader(Fadeable::FadeMode mode)
 {
@@ -110,7 +110,7 @@ void Fadeable::fadeIn()
 	}
 
 	play();
-	getFadeInHandler();
+	postProcessFadeIn();
 }
 
 void Fadeable::fadeOut()
@@ -120,7 +120,7 @@ void Fadeable::fadeOut()
 		return;
 	}
 
-	getFadeOutHandler();
+	postProcessFadeOut();
 }
 
 void Fadeable::timedOut()
@@ -203,7 +203,7 @@ CrossFadeableTimer::CrossFadeableTimer(Fadeable* parent) :
 	connect(m->timer, &QTimer::timeout, this, &CrossFadeableTimer::timedOut);
 }
 
-CrossFadeableTimer::~CrossFadeableTimer() = default;
+CrossFadeableTimer::~CrossFadeableTimer() {}
 
 void CrossFadeableTimer::start(MilliSeconds ms)
 {

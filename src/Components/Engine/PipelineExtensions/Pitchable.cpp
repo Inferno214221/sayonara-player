@@ -18,42 +18,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Pitcher.h"
+#include "Pitchable.h"
 #include "Components/Engine/EngineUtils.h"
 #include "Utils/Settings/Settings.h"
 
 using namespace PipelineExtensions;
 
-struct Pitcher::Private
-{
-	GstElement* pitch=nullptr;
+Pitchable::Pitchable() {}
+Pitchable::~Pitchable() {}
 
-	Private()
-	{
-		Engine::Utils::createElement(&pitch, "pitch");
-	}
-};
-
-Pitcher::Pitcher()
-{
-	m = Pimpl::make<Private>();
-}
-
-Pitcher::~Pitcher() {}
-
-void Pitcher::setSpeed(float speed, double pitch, bool preservePitch)
+void Pitchable::setSpeed(float speed, double pitch, bool preservePitch)
 {
 	if(!GetSetting(Set::Engine_SpeedActive)) {
 		return;
 	}
 
-	if(!m->pitch) {
+	GstElement* pitchElement = this->pitchElement();
+	if(!pitchElement) {
 		return;
 	}
 
 	if(preservePitch)
 	{
-		Engine::Utils::setValues(m->pitch,
+		Engine::Utils::setValues(pitchElement,
 					 "tempo", speed,
 					 "rate", 1.0,
 					 "pitch", pitch);
@@ -61,14 +48,9 @@ void Pitcher::setSpeed(float speed, double pitch, bool preservePitch)
 
 	else
 	{
-		Engine::Utils::setValues(m->pitch,
+		Engine::Utils::setValues(pitchElement,
 					 "tempo", 1.0,
 					 "rate", speed,
 					 "pitch", pitch);
 	}
-}
-
-GstElement* Pitcher::element() const
-{
-	return m->pitch;
 }

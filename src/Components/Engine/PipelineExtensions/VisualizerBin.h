@@ -1,4 +1,4 @@
-/* StreamRecorderHandler.h */
+/* Visualizer.h */
 
 /* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
@@ -20,33 +20,29 @@
 
 
 
-#ifndef STREAMRECORDERHANDLER_H
-#define STREAMRECORDERHANDLER_H
+#ifndef VISUALIZER_H
+#define VISUALIZER_H
 
 #include "Utils/Pimpl.h"
-#include "Components/Engine/gstfwd.h"
-
-namespace StreamRecorder
-{
-	struct Data;
-}
+#include <gst/gst.h>
 
 namespace PipelineExtensions
 {
-	class StreamRecorderHandler
+	/**
+	 * @brief The Visualizer class
+	 * @ingroup EngineInterfaces
+	 */
+	class VisualizerBin
 	{
-		PIMPL(StreamRecorderHandler)
+		PIMPL(VisualizerBin)
 
 	public:
-		StreamRecorderHandler(GstElement* pipeline, GstElement* tee);
-		virtual ~StreamRecorderHandler();
-
+		VisualizerBin(GstElement* pipeline, GstElement* tee);
+		~VisualizerBin();
 
 		bool init();
-		bool setEnabled(bool b);
-
-		void setTargetPath(const QString& path);
+		bool setEnabled(bool levelEnabled, bool spectrumEnabled);
 	};
 }
 
-#endif // STREAMRECORDERHANDLER_H
+#endif // VISUALIZER_H

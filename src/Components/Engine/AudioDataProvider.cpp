@@ -221,7 +221,7 @@ GstElement* AudioDataProvider::getAudioconverter() const
 	return m->audioconvert;
 }
 
-AudioDataProvider::~AudioDataProvider() = default;
+AudioDataProvider::~AudioDataProvider() {}
 
 void AudioDataProvider::start(const QString& filename)
 {

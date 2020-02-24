@@ -110,7 +110,7 @@ Handler::Handler(QObject* parent) :
 	connect(m->engine, &Engine::sigLevelChanged, this, &Handler::levelChanged);
 }
 
-Handler::~Handler() = default;
+Handler::~Handler() {}
 
 void Handler::shutdown()
 {
@@ -187,7 +187,7 @@ void Handler::reloadReceivers()
 		return (levelReceiver->isActive());
 	});
 
-	m->engine->setVisualizerEnabled(s || l);
+	m->engine->setVisualizerEnabled(l, s);
 }
 
 void Handler::registerRawSoundReceiver(RawSoundReceiverInterface* receiver)

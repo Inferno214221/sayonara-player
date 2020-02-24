@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef SPEEDHANDLER_H
 #define SPEEDHANDLER_H
 
@@ -28,22 +26,20 @@
 
 namespace PipelineExtensions
 {
-
 	/**
 	 * @brief The Pitcher class
 	 * @ingroup EngineInterfaces
 	 */
-	class Pitcher
+	class Pitchable
 	{
-		PIMPL(Pitcher)
-
 		public:
-			Pitcher();
-			virtual ~Pitcher();
+			Pitchable();
+			virtual ~Pitchable();
 
 			void setSpeed(float speed, double pitch, bool preservePitch);
 
-			GstElement* element() const;
+		protected:
+			virtual GstElement* pitchElement() const=0;
 	};
 }
 

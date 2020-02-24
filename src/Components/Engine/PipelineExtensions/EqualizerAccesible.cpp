@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Equalizer.h"
+#include "EqualizerAccesible.h"
 #include "Components/Engine/EngineUtils.h"
 
 #include "Utils/globals.h"
@@ -30,20 +30,12 @@
 
 using namespace PipelineExtensions;
 
-struct Equalizer::Private
+EqualizerAccessible::EqualizerAccessible() {}
+
+EqualizerAccessible::~EqualizerAccessible() {}
+
+void EqualizerAccessible::initEqualizer()
 {
-	GstElement* equalizer=nullptr;
-
-	Private()
-	{
-		Engine::Utils::createElement(&equalizer, "equalizer-10bands");
-	}
-};
-
-Equalizer::Equalizer()
-{
-	m = Pimpl::make<Private>();
-
 	int previousIndex = GetSetting(Set::Eq_Last);
 
 	QList<EqualizerSetting> presets = GetSetting(Set::Eq_List);
@@ -53,39 +45,33 @@ Equalizer::Equalizer()
 		previousIndex = 0;
 	}
 
-	EqualizerSetting last_preset = presets[previousIndex];
-	EqualizerSetting::ValueArray values = last_preset.values();
+	EqualizerSetting lastPreset = presets[previousIndex];
+	EqualizerSetting::ValueArray values = lastPreset.values();
 
-	for(unsigned i=0; i<values.size(); i++)
+	for(int i=0; i<values.size(); i++)
 	{
-		setBand(i, values[i]);
+		setEqualizerBand(i, values[i]);
 	}
 }
 
-Equalizer::~Equalizer() {}
-
-void Equalizer::setBand(int band, int val)
+void EqualizerAccessible::setEqualizerBand(int bandIndex, int value)
 {
-	QString bandName = QString("band%1").arg(band);
+	QString bandName = QString("band%1").arg(bandIndex);
 
-	if(!m->equalizer){
+	GstElement* element = this->equalizerElement();
+	if(!element){
 		return;
 	}
 
 	double newValue;
-	if (val > 0) {
-		newValue = val * 0.25;
+	if (value > 0) {
+		newValue = value * 0.25;
 	}
 
 	else{
-		newValue = val * 0.75;
+		newValue = value * 0.75;
 	}
 
-	Engine::Utils::setValue(m->equalizer, bandName.toUtf8().data(),	newValue);
-}
-
-GstElement* Equalizer::element() const
-{
-	return m->equalizer;
+	Engine::Utils::setValue(element, bandName.toUtf8().data(),	newValue);
 }
 
