@@ -19,7 +19,7 @@
  */
 
 #include "StreamRecorderData.h"
-#include "StreamRecorderHandler.h"
+#include "StreamRecorderBin.h"
 
 #include "Components/Engine/EngineUtils.h"
 #include "Components/Engine/PipelineExtensions/Probing.h"
@@ -31,7 +31,7 @@
 using StreamRecorder::Data;
 using namespace PipelineExtensions;
 
-struct StreamRecorderHandler::Private
+struct StreamRecorderBin::Private
 {
 	GstElement*			pipeline=nullptr;
 	GstElement*			tee=nullptr;
@@ -61,14 +61,14 @@ struct StreamRecorderHandler::Private
 	}
 };
 
-StreamRecorderHandler::StreamRecorderHandler(GstElement* pipeline, GstElement* tee)
+StreamRecorderBin::StreamRecorderBin(GstElement* pipeline, GstElement* tee)
 {
 	m = Pimpl::make<Private>(pipeline, tee);
 }
 
 StreamRecorderHandler::~StreamRecorderHandler() {}
 
-bool StreamRecorderHandler::init()
+bool StreamRecorderBin::init()
 {
 	if(m->bin) {
 		return true;
@@ -116,7 +116,7 @@ bool StreamRecorderHandler::init()
 	}
 }
 
-bool StreamRecorderHandler::setEnabled(bool b)
+bool StreamRecorderBin::setEnabled(bool b)
 {
 	if(b){
 		return init();
@@ -126,7 +126,7 @@ bool StreamRecorderHandler::setEnabled(bool b)
 }
 
 
-void StreamRecorderHandler::setTargetPath(const QString& path)
+void StreamRecorderBin::setTargetPath(const QString& path)
 {
 	GstElement* fileSinkElement = m->sink;
 	if(!fileSinkElement) {

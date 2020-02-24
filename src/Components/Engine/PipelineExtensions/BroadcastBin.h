@@ -1,4 +1,4 @@
-/* StreamRecorderHandler.h */
+/* Broadcaster.h */
 
 /* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
@@ -18,35 +18,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
-#ifndef STREAMRECORDERHANDLER_H
-#define STREAMRECORDERHANDLER_H
+#ifndef BROADCASTER_H
+#define BROADCASTER_H
 
 #include "Utils/Pimpl.h"
-#include "Components/Engine/gstfwd.h"
-
-namespace StreamRecorder
-{
-	struct Data;
-}
+#include <gst/gst.h>
 
 namespace PipelineExtensions
 {
-	class StreamRecorderHandler
+	class BroadcastDataReceiver
 	{
-		PIMPL(StreamRecorderHandler)
-
-	public:
-		StreamRecorderHandler(GstElement* pipeline, GstElement* tee);
-		virtual ~StreamRecorderHandler();
-
-
-		bool init();
-		bool setEnabled(bool b);
-
-		void setTargetPath(const QString& path);
+		public:
+			virtual void setRawData(const QByteArray& data)=0;
 	};
 }
 
-#endif // STREAMRECORDERHANDLER_H
+/**
+ * @brief The Broadcaster class
+ * @ingroup EngineInterfaces
+ */
+class BroadcastBin
+{
+	PIMPL(BroadcastBin)
+
+	public:
+		BroadcastBin(PipelineExtensions::BroadcastDataReceiver* broadcastDataReceiver, GstElement* pipeline, GstElement* tee);
+		virtual ~BroadcastBin();
+
+		bool init();
+		bool setEnabled(bool b);
+};
+
+#endif // BROADCASTER_H

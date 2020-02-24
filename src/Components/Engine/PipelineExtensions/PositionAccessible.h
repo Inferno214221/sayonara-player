@@ -1,4 +1,4 @@
-/* Broadcaster.h */
+/* SeekHandler.h */
 
 /* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
@@ -18,35 +18,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef BROADCASTER_H
-#define BROADCASTER_H
+#ifndef SEEKHANDLER_H
+#define SEEKHANDLER_H
 
+#include "Components/Engine/gstfwd.h"
+#include "Utils/typedefs.h"
 #include "Utils/Pimpl.h"
-#include <gst/gst.h>
 
 namespace PipelineExtensions
 {
-	class BroadcastDataReceiver
+	/**
+	 * @brief The Seeker class
+	 * @ingroup EngineInterfaces
+	 */
+	class PositionAccessible
 	{
 		public:
-			virtual void setRawData(const QByteArray& data)=0;
+			PositionAccessible() = default;
+			virtual ~PositionAccessible();
+
+			NanoSeconds seekRelative(double percent, NanoSeconds ns);
+			NanoSeconds seekAbsolute(NanoSeconds ns);
+			NanoSeconds seekNearest(NanoSeconds ns);
+
+			NanoSeconds seekRelativeMs(double percent, MilliSeconds ms);
+			NanoSeconds seekAbsoluteMs(MilliSeconds ms);
+			NanoSeconds seekNearestMs(MilliSeconds ms);
+
+			virtual MilliSeconds positionMs() const;
+			virtual MilliSeconds durationMs() const;
+
+		protected:
+			virtual GstElement* positionElement() const = 0;
 	};
 }
 
-/**
- * @brief The Broadcaster class
- * @ingroup EngineInterfaces
- */
-class Broadcaster
-{
-	PIMPL(Broadcaster)
-
-	public:
-		Broadcaster(PipelineExtensions::BroadcastDataReceiver* broadcastDataReceiver, GstElement* pipeline, GstElement* tee);
-		virtual ~Broadcaster();
-
-		bool init();
-		bool setEnabled(bool b);
-};
-
-#endif // BROADCASTER_H
+#endif // SEEKHANDLER_H

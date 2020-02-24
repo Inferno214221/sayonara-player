@@ -67,9 +67,7 @@ struct ProbeData
 	}
 };
 
-Changeable::Changeable() = default;
 Changeable::~Changeable() = default;
-
 
 static GstPadProbeReturn
 src_blocked_add(GstPad* pad, GstPadProbeInfo* info, gpointer data)

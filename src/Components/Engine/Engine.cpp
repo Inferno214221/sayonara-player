@@ -559,14 +559,13 @@ QPair<float, float> Engine::Engine::level() const
 	return m->levelValues;
 }
 
-void Engine::Engine::setVisualizerEnabled(bool b)
+void Engine::Engine::setVisualizerEnabled(bool levelEnabled, bool spectrumEnabled)
 {
-	m->pipeline->setVisualizerEnabled(b);
+	m->pipeline->setVisualizerEnabled(levelEnabled, spectrumEnabled);
 	if(m->otherPipeline){
-		m->otherPipeline->setVisualizerEnabled(b);
+		m->otherPipeline->setVisualizerEnabled(levelEnabled, spectrumEnabled);
 	}
 }
-
 
 void EngineClass::error(const QString& error, const QString& element_name)
 {

@@ -1,4 +1,4 @@
-/* SeekHandler.h */
+/* SpeedHandler.cpp */
 
 /* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
@@ -18,40 +18,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "Pitchable.h"
+#include "Components/Engine/EngineUtils.h"
+#include "Utils/Settings/Settings.h"
 
+using namespace PipelineExtensions;
 
-#ifndef SEEKHANDLER_H
-#define SEEKHANDLER_H
+Pitchable::~Pitchable() = default;
 
-#include "Components/Engine/gstfwd.h"
-#include "Utils/typedefs.h"
-#include "Utils/Pimpl.h"
-
-namespace PipelineExtensions
+void Pitchable::setSpeed(float speed, double pitch, bool preservePitch)
 {
+	if(!GetSetting(Set::Engine_SpeedActive)) {
+		return;
+	}
 
-	/**
-	 * @brief The Seeker class
-	 * @ingroup EngineInterfaces
-	 */
-	class Seeker
+	GstElement* pitchElement = this->pitchElement();
+	if(!pitchElement) {
+		return;
+	}
+
+	if(preservePitch)
 	{
-		PIMPL(Seeker)
+		Engine::Utils::setValues(pitchElement,
+					 "tempo", speed,
+					 "rate", 1.0,
+					 "pitch", pitch);
+	}
 
-		public:
-			Seeker(GstElement* source);
-			virtual ~Seeker();
-
-			NanoSeconds seekRelative(double percent, NanoSeconds ns);
-			NanoSeconds seekAbsolute(NanoSeconds ns);
-			NanoSeconds seekNearest(NanoSeconds ns);
-
-			NanoSeconds seekRelativeMs(double percent, MilliSeconds ms);
-			NanoSeconds seekAbsoluteMs(MilliSeconds ms);
-			NanoSeconds seekNearestMs(MilliSeconds ms);
-
-			void set_source(GstElement* source);
-	};
+	else
+	{
+		Engine::Utils::setValues(pitchElement,
+					 "tempo", 1.0,
+					 "rate", speed,
+					 "pitch", pitch);
+	}
 }
-
-#endif // SEEKHANDLER_H

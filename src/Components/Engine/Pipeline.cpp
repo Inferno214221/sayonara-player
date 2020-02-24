@@ -25,13 +25,10 @@
 #include "Components/Engine/Callbacks.h"
 
 #include "PipelineExtensions/Probing.h"
-#include "PipelineExtensions/Pitcher.h"
-#include "PipelineExtensions/Equalizer.h"
-#include "PipelineExtensions/Seeker.h"
-#include "PipelineExtensions/Broadcaster.h"
-#include "PipelineExtensions/Visualizer.h"
 
-#include "StreamRecorder/StreamRecorderHandler.h"
+#include "PipelineExtensions/VisualizerBin.h"
+#include "PipelineExtensions/BroadcastBin.h"
+#include "StreamRecorder/StreamRecorderBin.h"
 
 #include "Utils/globals.h"
 #include "Utils/Utils.h"
@@ -60,21 +57,20 @@ struct Pipeline::Private
 	GstElement*			pipeline=nullptr;
 	GstElement*			source=nullptr;
 	GstElement*			audioConvert=nullptr;
+	GstElement*			pitch=nullptr;
+	GstElement*			equalizer=nullptr;
 	GstElement*			tee=nullptr;
+
+	GstElement*			positionElement=nullptr;
 
 	GstElement*			playbackBin=nullptr;
 	GstElement*			playbackQueue=nullptr;
 	GstElement*			playbackVolume=nullptr;
 	GstElement*			playbackSink=nullptr;
 
-	GstElement*			positionElement=nullptr;
-
-	Pitcher*			pitcher=nullptr;
-	Seeker*				seeker=nullptr;
-	StreamRecorderHandler* streamRecorder=nullptr;
-	Broadcaster*		broadcaster=nullptr;
-	Visualizer*			visualizer=nullptr;
-	Equalizer*			equalizer=nullptr;
+	StreamRecorderBin* streamRecorder=nullptr;
+	BroadcastBin*		broadcaster=nullptr;
+	VisualizerBin*			visualizer=nullptr;
 
 	QTimer*				progressTimer=nullptr;
 
@@ -88,7 +84,10 @@ Pipeline::Pipeline(const QString& name, QObject* parent) :
 	Fadeable(),
 	Changeable(),
 	DelayedPlayable(),
-	BroadcastDataReceiver()
+	BroadcastDataReceiver(),
+	PositionAccessible(),
+	Pitchable(),
+	EqualizerAccessible()
 {
 	m = Pimpl::make<Private>(name);
 }
@@ -109,15 +108,12 @@ bool Pipeline::init(Engine* engine)
 		return true;
 	}
 
-	// create equalizer element
 	m->pipeline = gst_pipeline_new(m->name.toStdString().c_str());
 	m->positionElement = m->pipeline;
 
 	if(!EngineUtils::testAndError(m->pipeline, "Engine: Pipeline sucks")){
 		return false;
 	}
-
-	GstBus* bus = gst_pipeline_get_bus(GST_PIPELINE(m->pipeline));
 
 	bool success = createElements();
 	if(!success) {
@@ -132,6 +128,7 @@ bool Pipeline::init(Engine* engine)
 	configureElements();
 	EngineUtils::setState(m->pipeline, GST_STATE_NULL);
 
+	GstBus* bus = gst_pipeline_get_bus(GST_PIPELINE(m->pipeline));
 #ifdef Q_OS_WIN
 	gst_bus_set_sync_handler(bus, Engine::Callbacks::bus_message_received, engine, EngineCallbacks::destroy_notify);
 #else
@@ -176,33 +173,36 @@ bool Pipeline::createElements()
 	if(!EngineUtils::createElement(&m->playbackQueue, "queue", "playback_queue")) return false;
 	if(!EngineUtils::createElement(&m->playbackVolume, "volume")) return false;
 
+	// optional pitch
+	EngineUtils::createElement(&m->pitch, "pitch");
+
+	EngineUtils::createElement(&m->equalizer, "equalizer-10bands");
+	EqualizerAccessible::initEqualizer();
+
 	m->playbackSink = createSink(GetSetting(Set::Engine_Sink));
 
-	m->seeker = new Seeker(m->source);
-	m->equalizer = new Equalizer();
-	m->pitcher = new Pitcher();
-	m->visualizer = new Visualizer(m->pipeline, m->tee);
-	m->broadcaster = new Broadcaster(this, m->pipeline, m->tee);
+	m->visualizer = new VisualizerBin(m->pipeline, m->tee);
+	m->broadcaster = new BroadcastBin(this, m->pipeline, m->tee);
 
 	return (m->playbackSink != nullptr);
 }
 
-GstElement* Pipeline::createSink(const QString& _name)
+GstElement* Pipeline::createSink(const QString& sinkName)
 {
 	static int Number=1;
 
 	GstElement* ret=nullptr;
 
-	QString name = _name + QString::number(Number);
+	QString name = sinkName + QString::number(Number);
 
-	if(_name == "pulse")
+	if(sinkName == "pulse")
 	{
 		spLog(Log::Debug, this) << "Create pulseaudio sink";
 
 		EngineUtils::createElement(&ret, "pulsesink", name.toLocal8Bit().data());
 	}
 
-	else if(_name == "alsa")
+	else if(sinkName == "alsa")
 	{
 		spLog(Log::Debug, this) << "Create alsa sink";
 		QString device = GetSetting(Set::Engine_AlsaDevice);
@@ -234,11 +234,11 @@ bool Pipeline::addAndLinkElements()
 		EngineUtils::addElements
 		(
 			GST_BIN(m->pipeline),
-			{m->source, m->audioConvert, m->equalizer->element(), m->tee}
+			{m->source, m->audioConvert, m->equalizer, m->tee}
 		);
 
 		bool success = EngineUtils::linkElements({
-			m->audioConvert, m->equalizer->element(), m->tee
+			m->audioConvert, m->equalizer, m->tee
 		});
 
 		if(!EngineUtils::testAndErrorBool(success, "Engine: Cannot link audio convert with tee")){
@@ -275,7 +275,7 @@ void Pipeline::configureElements()
 	g_signal_connect (m->source, "pad-added", G_CALLBACK (Callbacks::decodebinReady), m->audioConvert);
 	g_signal_connect (m->source, "source-setup", G_CALLBACK (Callbacks::sourceReady), nullptr);
 
-	setPositionElement(m->source);
+	m->positionElement = m->source;
 }
 
 
@@ -306,14 +306,8 @@ void Pipeline::pause()
 	EngineUtils::setState(m->pipeline, GST_STATE_PAUSED);
 }
 
-
 void Pipeline::stop()
 {
-	if(EngineUtils::getState(m->pipeline) == GST_STATE_PLAYING)
-	{
-		//gst_element_send_event(m->pipeline, gst_event_new_eos());
-	}
-
 	EngineUtils::setState(m->pipeline, GST_STATE_NULL);
 
 	abortDelayedPlaying();
@@ -332,9 +326,9 @@ void Pipeline::muteChanged()
 	EngineUtils::setValue(G_OBJECT(m->playbackVolume), "mute", muted);
 }
 
-void Pipeline::setVisualizerEnabled(bool b)
+void Pipeline::setVisualizerEnabled(bool levelEnabled, bool spectrumEnabled)
 {
-	m->visualizer->setEnabled(b);
+	m->visualizer->setEnabled(levelEnabled, spectrumEnabled);
 }
 
 void Pipeline::setBroadcastingEnabled(bool b)
@@ -360,17 +354,11 @@ void Pipeline::setRawData(const QByteArray& data)
 	emit sigDataAvailable(data);
 }
 
-void Pipeline::setEqualizerBand(int band, int val)
-{
-	m->equalizer->setBand(band, val);
-}
-
-
 void Pipeline::record(bool b)
 {
 	if(!m->streamRecorder)
 	{
-		m->streamRecorder = new StreamRecorderHandler(m->pipeline, m->tee);
+		m->streamRecorder = new StreamRecorderBin(m->pipeline, m->tee);
 		m->streamRecorder->init();
 	}
 
@@ -380,16 +368,6 @@ void Pipeline::record(bool b)
 void Pipeline::setRecordingPath(const QString& path)
 {
 	m->streamRecorder->setTargetPath(path);
-}
-
-NanoSeconds Pipeline::seekRelative(double percent, NanoSeconds ref_ns)
-{
-	return m->seeker->seekRelative(percent, ref_ns);
-}
-
-NanoSeconds Pipeline::seekAbsolute(NanoSeconds ns)
-{
-	return m->seeker->seekAbsolute(ns);
 }
 
 void Pipeline::setInternalVolume(double volume)
@@ -404,31 +382,31 @@ double Pipeline::internalVolume() const
 	return volume;
 }
 
+
 void Pipeline::speedActiveChanged()
 {
 	bool active = GetSetting(Set::Engine_SpeedActive);
 
-	GstElement* speed = m->pitcher->element();
-	if(!speed){
+	if(!m->pitch){
 		return;
 	}
 
-	MilliSeconds pos_ms = positionMs();
+	MilliSeconds positionMs = this->positionMs();
 	if(active)
 	{
-		Changeable::addElement(speed, m->audioConvert, m->equalizer->element());
+		Changeable::addElement(m->pitch, m->audioConvert, m->equalizer);
 		sppedChanged();
 	}
 
 	else
 	{
-		Changeable::removeElement(speed, m->audioConvert, m->equalizer->element());
+		Changeable::removeElement(m->pitch, m->audioConvert, m->equalizer);
 	}
 
 	if(EngineUtils::getState(m->pipeline) == GST_STATE_PLAYING)
 	{
-		pos_ms = std::max<MilliSeconds>(pos_ms, 0);
-		m->seeker->seekNearestMs(pos_ms);
+		positionMs = std::max<MilliSeconds>(positionMs, 0);
+		this->seekNearestMs(positionMs);
 	}
 
 	checkPosition();
@@ -436,7 +414,7 @@ void Pipeline::speedActiveChanged()
 
 void Pipeline::sppedChanged()
 {
-	m->pitcher->setSpeed
+	Pitchable::setSpeed
 	(
 		GetSetting(Set::Engine_Speed),
 		GetSetting(Set::Engine_Pitch) / 440.0,
@@ -457,40 +435,38 @@ void Pipeline::sinkChanged()
 
 void Pipeline::checkPosition()
 {
-	MilliSeconds pos_ms = positionMs();
-	pos_ms = std::max<MilliSeconds>(0, pos_ms);
+	MilliSeconds positionMs = this->positionMs();
+	positionMs = std::max<MilliSeconds>(0, positionMs);
 
-	emit sigPositionChangedMs( pos_ms );
+	emit sigPositionChangedMs( positionMs );
 
 	checkAboutToFinish();
 }
 
 void Pipeline::checkAboutToFinish()
 {
-	MilliSeconds pos_ms = positionMs();
-	MilliSeconds dur_ms = durationMs();
-	MilliSeconds about_to_finish_time = getAboutToFinishTime();
+	MilliSeconds positionMs = this->positionMs();
+	MilliSeconds durationMs = this->durationMs();
+	MilliSeconds aboutToFinishMs = getAboutToFinishTime();
 
-	static bool about_to_finish = false;
+	static bool aboutToFinish = false;
 
-	if(dur_ms < pos_ms || (dur_ms <= about_to_finish_time) || (pos_ms <= 0))
+	if(durationMs < positionMs || (durationMs <= aboutToFinishMs ) || (positionMs <= 0))
 	{
-		about_to_finish = false;
+		aboutToFinish = false;
 		return;
 	}
 
-	MilliSeconds difference = dur_ms - pos_ms;
+	MilliSeconds difference = durationMs - positionMs;
 
-	about_to_finish = (difference < about_to_finish_time);
+	aboutToFinish = (difference < aboutToFinishMs);
 
-	if(about_to_finish)
+	if(aboutToFinish)
 	{
-		spLog(Log::Develop, this) << "About to finish in " << difference << ": Dur: " << dur_ms << ", Pos: " << pos_ms;
-
+		spLog(Log::Develop, this) << "About to finish in " << difference << ": Dur: " << durationMs << ", Pos: " << positionMs;
 		emit sigAboutToFinishMs(difference);
 	}
 }
-
 
 MilliSeconds Pipeline::getAboutToFinishTime() const
 {
@@ -498,38 +474,29 @@ MilliSeconds Pipeline::getAboutToFinishTime() const
 	return std::max(fadingTimeMs(), AboutToFinishTime);
 }
 
-void Pipeline::setPositionElement(GstElement* element)
-{
-	m->positionElement = element;
-	m->seeker->set_source(m->positionElement);
-}
-
-GstElement* Pipeline::positionElement()
-{
-	return m->positionElement;
-}
-
-MilliSeconds Pipeline::durationMs() const
-{
-	return EngineUtils::getDurationMs(m->positionElement);
-}
-
-MilliSeconds Pipeline::positionMs() const
-{
-	return EngineUtils::getPositionMs(m->positionElement);
-}
-
 bool Pipeline::hasElement(GstElement* e) const
 {
 	return EngineUtils::hasElement(GST_BIN(m->pipeline), e);
 }
 
-void Pipeline::getFadeInHandler()
+GstElement* Pipeline::positionElement() const
 {
-	//showVisualizerChanged();
+	return m->positionElement;
 }
 
-void Pipeline::getFadeOutHandler()
+GstElement* Pipeline::pitchElement() const
 {
-	setVisualizerEnabled(false);
+	return m->pitch;
+}
+
+GstElement* Pipeline::equalizerElement() const
+{
+	return m->equalizer;
+}
+
+void Pipeline::postProcessFadeIn() {}
+
+void Pipeline::postProcessFadeOut()
+{
+	setVisualizerEnabled(false, false);
 }

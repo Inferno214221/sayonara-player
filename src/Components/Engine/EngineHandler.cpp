@@ -187,7 +187,7 @@ void Handler::reloadReceivers()
 		return (levelReceiver->isActive());
 	});
 
-	m->engine->setVisualizerEnabled(s || l);
+	m->engine->setVisualizerEnabled(l, s);
 }
 
 void Handler::registerRawSoundReceiver(RawSoundReceiverInterface* receiver)
