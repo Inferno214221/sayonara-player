@@ -35,6 +35,7 @@
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Set.h"
 #include "Utils/FileUtils.h"
+#include "Utils/Language/Language.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/ExtensionSet.h"
 
@@ -254,7 +255,7 @@ void ItemView::showClearButton(bool visible)
 		});
 	}
 
-	m->buttonClearSelection->setText(tr("Clear selection"));
+	m->buttonClearSelection->setText(Lang::get(Lang::ClearSelection));
 	m->buttonClearSelection->setIcon(Gui::Icons::icon(Gui::Icons::Delete));
 
 	{ // little hack to use vieport_height() and ..width() method

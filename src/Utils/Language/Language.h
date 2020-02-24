@@ -103,6 +103,7 @@ public:
 		Continue,
 		Covers,
 		Clear,
+		ClearSelection,
 		Close,
 		CloseOthers,
 		CloseTab,

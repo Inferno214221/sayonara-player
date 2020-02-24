@@ -423,19 +423,20 @@ void GUI_DirectoryView::createDirectoryClicked()
 
 void GUI_DirectoryView::languageChanged()
 {
-	if(!ui)
+	if(ui)
 	{
 		ui->retranslateUi(this);
 		ui->btn_createDir->setText(Lang::get(Lang::CreateDirectory));
-		ui->btn_clearSelection->setText(tr("Clear selection"));
+		ui->btn_clearSelection->setText(Lang::get(Lang::ClearSelection));
 	}
 }
 
 void GUI_DirectoryView::skinChanged()
 {
-	using namespace Gui;
-	if(ui) {
+	if(ui)
+	{
 		ui->btn_createDir->setIcon(Gui::Icons::icon(Gui::Icons::Folder));
+		ui->btn_clearSelection->setIcon(Gui::Icons::icon(Gui::Icons::Clear));
 	}
 }
 

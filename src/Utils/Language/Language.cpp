@@ -126,6 +126,8 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Cannot find Lame MP3 encoder");
 		case Clear:
 			return l.tr("Clear");
+		case ClearSelection:
+			return l.tr("Clear selection");
 		case Close:
 			return l.tr("Close");
 		case CloseOthers:
