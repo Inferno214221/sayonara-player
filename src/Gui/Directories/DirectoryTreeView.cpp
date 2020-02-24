@@ -94,14 +94,9 @@ DirectoryTreeView::DirectoryTreeView(QWidget* parent) :
 	action->setShortcutContext(Qt::WidgetShortcut);
 	connect(action, &QAction::triggered, this, &DirectoryTreeView::renameDirectoryClicked);
 	this->addAction(action);
-
-//	connect(this, &QTreeView::expanded, this, [this](auto ignored){
-//		m->model->invalidate();
-//	});
 }
 
 DirectoryTreeView::~DirectoryTreeView() = default;
-
 
 void DirectoryTreeView::initContextMenu()
 {
@@ -151,22 +146,8 @@ QStringList DirectoryTreeView::selectedPaths() const
 
 QModelIndex DirectoryTreeView::search(const QString& searchTerm)
 {
-
+	Q_UNUSED(searchTerm)
 	return QModelIndex();
-
-}
-
-
-void DirectoryTreeView::contextMenuEvent(QContextMenuEvent* event)
-{
-	if(!m->contextMenu){
-		initContextMenu();
-	}
-
-	m->contextMenu->refresh(selectedPaths().size());
-
-	QPoint pos = QWidget::mapToGlobal(event->pos());
-	m->contextMenu->exec(pos);
 }
 
 void DirectoryTreeView::createDirectoryClicked()
@@ -231,8 +212,10 @@ void DirectoryTreeView::setBusy(bool b)
 
 void DirectoryTreeView::dragTimerTimeout()
 {
-	if(m->dragTargetIndex.isValid()) {
+	if(m->dragTargetIndex.isValid())
+	{
 		this->expand(m->dragTargetIndex);
+		emit sigCurrentIndexChanged(m->dragTargetIndex);
 	}
 
 	m->resetDrag();
@@ -459,13 +442,14 @@ void DirectoryTreeView::selectionChanged(const QItemSelection& selected, const Q
 	QTreeView::selectionChanged(selected, deselected);
 
 	QModelIndex index;
-	if(!selected.indexes().isEmpty()){
+	if(!selected.indexes().isEmpty()) {
 		index = selected.indexes().first();
 	}
 
-	emit sigCurrentIndexChanged(index);
+	if(!m->dragTimer->isActive()) {
+		emit sigCurrentIndexChanged(index);
+	}
 }
-
 
 QMimeData* DirectoryTreeView::dragableMimedata() const
 {
@@ -547,4 +531,16 @@ void DirectoryTreeView::keyPressEvent(QKeyEvent* event)
 	}
 
 	Parent::keyPressEvent(event);
+}
+
+void DirectoryTreeView::contextMenuEvent(QContextMenuEvent* event)
+{
+	if(!m->contextMenu){
+		initContextMenu();
+	}
+
+	m->contextMenu->refresh(selectedPaths().size());
+
+	QPoint pos = QWidget::mapToGlobal(event->pos());
+	m->contextMenu->exec(pos);
 }

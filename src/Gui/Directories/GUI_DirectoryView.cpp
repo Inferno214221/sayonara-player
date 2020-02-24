@@ -23,6 +23,7 @@
 
 #include <QAction>
 #include <QDesktopServices>
+#include <QItemSelectionModel>
 #include <QFileDialog>
 #include <QLabel>
 
@@ -82,6 +83,11 @@ void GUI_DirectoryView::initUi()
 	connect(ui->tv_dirs, &DirectoryTreeView::sigRenameRequested, this, &GUI_DirectoryView::dirRenameRequested);
 	connect(ui->tv_dirs, &DirectoryTreeView::sigCopyToLibraryRequested, this, &GUI_DirectoryView::dirCopyToLibRequested);
 	connect(ui->tv_dirs, &DirectoryTreeView::sigMoveToLibraryRequested, this, &GUI_DirectoryView::dirMoveToLibRequested);
+	connect(ui->tv_dirs->selectionModel(), &QItemSelectionModel::selectionChanged, this, [this](auto selected, auto descelected)
+	{
+		Q_UNUSED(descelected)
+		ui->btn_clearSelection->setVisible(selected.size() > 0);
+	});
 
 	connect(ui->lv_files, &QListView::pressed, this, &GUI_DirectoryView::filePressed);
 	connect(ui->lv_files, &QListView::doubleClicked, this, &GUI_DirectoryView::fileDoubleClicked);
@@ -99,11 +105,13 @@ void GUI_DirectoryView::initUi()
 
 	connect(ui->splitter, &QSplitter::splitterMoved, this, &GUI_DirectoryView::splitterMoved);
 	connect(ui->btn_createDir, &QPushButton::clicked, this, &GUI_DirectoryView::createDirectoryClicked);
+	connect(ui->btn_clearSelection, &QPushButton::clicked, ui->tv_dirs, &DirectoryTreeView::clearSelection);
 
 	Library::Info info = m->currentLibrary();
 	ui->tv_dirs->setLibraryInfo(info);
 	ui->tv_dirs->setFilterTerm(m->filterTerm);
 	ui->lv_files->setParentDirectory(info.id(), info.path());
+	ui->btn_clearSelection->setVisible(false);
 }
 
 void GUI_DirectoryView::setCurrentLibrary(LibraryId libraryId)
@@ -419,6 +427,7 @@ void GUI_DirectoryView::languageChanged()
 	{
 		ui->retranslateUi(this);
 		ui->btn_createDir->setText(Lang::get(Lang::CreateDirectory));
+		ui->btn_clearSelection->setText(tr("Clear selection"));
 	}
 }
 
