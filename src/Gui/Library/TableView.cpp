@@ -47,6 +47,7 @@ TableView::~TableView() = default;
 
 void TableView::init(AbstractLibrary* library)
 {
+	QByteArray headerState = columnHeaderState();
 	initView(library);
 
 	const ColumnHeaderList headers = columnHeaders();
@@ -54,11 +55,6 @@ void TableView::init(AbstractLibrary* library)
 	{
 		itemModel()->setHeaderData(i, Qt::Horizontal, headers[i]->title(), Qt::DisplayRole);
 	}
-
-	// do this initialization here after the model knows about
-	// the number of columns. Otherwise the resize column method
-	// won't work
-	m->header->init(headers, columnHeaderState(), sortorder());
 
 	languageChanged();
 
@@ -68,6 +64,11 @@ void TableView::init(AbstractLibrary* library)
 	connect(m->header, &QHeaderView::sectionClicked, this, &TableView::sortByColumn);
 	connect(m->header, &QHeaderView::sectionResized, this, &TableView::sectionResized);
 	connect(m->header, &QHeaderView::sectionMoved, this, &TableView::sectionMoved);
+
+	// do this initialization here after the model knows about
+	// the number of columns. Otherwise the resize column method
+	// won't work
+	m->header->init(headers, headerState, sortorder());
 }
 
 void TableView::headerActionsTriggered()
@@ -88,7 +89,7 @@ void TableView::sortByColumn(int column_idx)
 	applySortorder(sortorder);
 }
 
-void TableView::sectionResized()
+void TableView::sectionResized(int logicalIndex, int oldSize, int newSize)
 {
 	if(!this->isVisible()){
 		return;
@@ -97,11 +98,11 @@ void TableView::sectionResized()
 	saveColumnHeaderState(m->header->saveState());
 }
 
-void TableView::sectionMoved(int logical_index, int old_visual_index, int new_visual_index)
+void TableView::sectionMoved(int logicalIndex, int oldVisualIndex, int newVisualIndex)
 {
-	Q_UNUSED(logical_index)
-	Q_UNUSED(old_visual_index)
-	Q_UNUSED(new_visual_index)
+	Q_UNUSED(logicalIndex)
+	Q_UNUSED(oldVisualIndex)
+	Q_UNUSED(newVisualIndex)
 
 	saveColumnHeaderState(m->header->saveState());
 }

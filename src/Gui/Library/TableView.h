@@ -102,7 +102,7 @@ namespace Library
 	protected slots:
 		void headerActionsTriggered();
 		void sortByColumn(int columnIndex);
-		void sectionResized();
+		void sectionResized(int logicalIndex, int oldSize, int newSize);
 		void sectionMoved(int logicalIndex, int old_visualIndex, int newVisualIndex);
 	};
 }
