@@ -56,7 +56,7 @@ VisualizerBin::VisualizerBin(GstElement* pipeline, GstElement* tee)
 	m = Pimpl::make<Private>(pipeline, tee);
 }
 
-VisualizerBin::~VisualizerBin() {}
+VisualizerBin::~VisualizerBin() = default;
 
 bool VisualizerBin::init()
 {
