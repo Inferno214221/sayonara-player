@@ -32,7 +32,6 @@ namespace Library
 	class Info;
 }
 
-
 namespace Directory
 {
 	/**
@@ -54,7 +53,6 @@ namespace Directory
 
 			QModelIndex setDataSource(LibraryId libraryId);
 			QModelIndex setDataSource(const QString& path);
-
 			LibraryId libraryDataSource() const;
 
 			QString filePath(const QModelIndex& index);
@@ -62,10 +60,11 @@ namespace Directory
 
 			void setFilter(const QString& filter);
 
+			int columnCount(const QModelIndex& parent) const override;
+
 		private slots:
 			void filterTimerTimeout();
 
-			// QSortFilterProxyModel interface
 		protected:
 			using QSortFilterProxyModel::setFilterRegExp;
 			using QSortFilterProxyModel::setFilterWildcard;

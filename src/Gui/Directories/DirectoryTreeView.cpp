@@ -445,17 +445,12 @@ void TreeView::selectionChanged(const QItemSelection& selected, const QItemSelec
 	}
 }
 
-
 void TreeView::setLibraryInfo(const Library::Info& info)
 {
 	QModelIndex index = m->model->setDataSource(info.id());
 	if(index.isValid())
 	{
 		this->setRootIndex(index);
-	}
-
-	for(int i=1; i<m->model->columnCount(); i++) {
-		this->hideColumn(i);
 	}
 }
 

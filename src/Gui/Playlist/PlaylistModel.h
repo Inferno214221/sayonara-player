@@ -115,7 +115,6 @@ namespace Playlist
 
 		private slots:
 			void playlistChanged(int playlistIndex);
-			void spectrumChanged();
 
 		private:
 			void lookChanged();

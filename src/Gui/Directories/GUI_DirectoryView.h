@@ -24,6 +24,8 @@ class GUI_DirectoryView :
 		void initUi();
 
 	private slots:
+		void load();
+
 		void importRequested(LibraryId id, const QStringList& paths, const QString& targetDirectory);
 		void importDialogRequested(const QString& targetDirectory);
 

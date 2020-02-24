@@ -26,6 +26,7 @@
 #include <QItemSelectionModel>
 #include <QFileDialog>
 #include <QLabel>
+#include <QTimer>
 
 using Directory::TreeView;
 using Directory::FileListView;
@@ -110,11 +111,22 @@ void GUI_DirectoryView::initUi()
 	connect(ui->btn_createDir, &QPushButton::clicked, this, &GUI_DirectoryView::createDirectoryClicked);
 	connect(ui->btn_clearSelection, &QPushButton::clicked, ui->tv_dirs, &TreeView::clearSelection);
 
+	ui->tv_dirs->setEnabled(false);
+	ui->tv_dirs->setBusy(true);
+
+	QTimer::singleShot(200, this, &GUI_DirectoryView::load);
+}
+
+void GUI_DirectoryView::load()
+{
 	Library::Info info = m->currentLibrary();
 	ui->tv_dirs->setLibraryInfo(info);
 	ui->tv_dirs->setFilterTerm(m->filterTerm);
 	ui->lv_files->setParentDirectory(info.id(), info.path());
 	ui->btn_clearSelection->setVisible(false);
+
+	ui->tv_dirs->setEnabled(true);
+	ui->tv_dirs->setBusy(false);
 }
 
 void GUI_DirectoryView::setCurrentLibrary(LibraryId libraryId)

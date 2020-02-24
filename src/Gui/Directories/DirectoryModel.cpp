@@ -127,3 +127,9 @@ bool Model::filterAcceptsRow(int sourceRow, const QModelIndex& sourceParent) con
 
 	return true;
 }
+
+
+int Model::columnCount(const QModelIndex& /*parent*/) const
+{
+	return 1;
+}

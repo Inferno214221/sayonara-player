@@ -75,15 +75,9 @@ struct Menubar::Private
 
 	// view
 	QAction*		actionViewLibrary=nullptr;
-	QAction*		sepAfterViewLibrary=nullptr;
-	QAction*		sepAfterPlugins=nullptr;
 	QAction*		actionDark=nullptr;
 	QAction*		actionBigCover=nullptr;
 	QAction*		actionFullscreen=nullptr;
-
-//	QAction*		actionStandardView=nullptr;
-//	QAction*		actionCoverView=nullptr;
-//	QAction*		actionDirectoryView=nullptr;
 
 	//plugins
 	QList<QAction*> actionsPlugins;
@@ -130,22 +124,6 @@ struct Menubar::Private
 		actionViewLibrary = new QAction(menuView);
 		actionViewLibrary->setCheckable(true);
 
-		{
-//			actionStandardView = new QAction(menuView);
-//			actionStandardView->setCheckable(true);
-//			actionCoverView = new QAction(menuView);
-//			actionCoverView->setCheckable(true);
-//			actionDirectoryView = new QAction(menuView);
-//			actionDirectoryView->setCheckable(true);
-
-//			auto* actionGroup = new QActionGroup(menuView);
-//			actionGroup->addAction(actionStandardView);
-//			actionGroup->addAction(actionCoverView);
-//			actionGroup->addAction(actionDirectoryView);
-		}
-
-		sepAfterViewLibrary = menuView->addSeparator();
-		sepAfterPlugins = menuView->addSeparator();
 		actionDark = new QAction(menuView);
 		actionDark->setCheckable(true);
 		actionBigCover = new QAction(menuView);
@@ -156,12 +134,6 @@ struct Menubar::Private
 		menuView->insertActions(nullptr,
 		{
 			actionViewLibrary,
-//			actionStandardView,
-//			actionCoverView,
-//			actionDirectoryView,
-//			sepAfterViewLibrary,
-			sepAfterPlugins,
-			actionLogger,
 			actionBigCover,
 			actionDark,
 			actionFullscreen
@@ -232,21 +204,21 @@ QAction* Menubar::changeCurrentLibrary(Library::Container* library)
 		return nullptr;
 	}
 
-	QMenu* new_library_menu = library->menu();
+	QMenu* newLibraryMenu = library->menu();
 
 	if(m->currentLibraryMenuAction) {
 		this->removeAction(m->currentLibraryMenuAction);
 	}
 
-	m->currentLibraryMenu = new_library_menu;
+	m->currentLibraryMenu = newLibraryMenu;
 	m->currentLibraryMenuAction = nullptr;
 
-	if(!new_library_menu) {
+	if(!newLibraryMenu) {
 		showLibraryAction(false);
 		return nullptr;
 	}
 
-	m->currentLibraryMenuAction = this->insertMenu(m->menuHelpAction, new_library_menu);
+	m->currentLibraryMenuAction = this->insertMenu(m->menuHelpAction, newLibraryMenu);
 
 	if(library->isLocal())
 	{
