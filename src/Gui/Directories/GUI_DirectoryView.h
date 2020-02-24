@@ -20,6 +20,9 @@ class GUI_DirectoryView :
 		void setCurrentLibrary(LibraryId id);
 		void setFilterTerm(const QString& filter);
 
+	private:
+		void initUi();
+
 	private slots:
 		void importRequested(LibraryId id, const QStringList& paths, const QString& targetDirectory);
 		void importDialogRequested(const QString& targetDirectory);
@@ -64,6 +67,7 @@ class GUI_DirectoryView :
 	protected:		
 		void languageChanged() override;
 		void skinChanged() override;
+		void showEvent(QShowEvent* event) override;
 };
 
 #endif // GUI_DIRECTORYVIEW_H

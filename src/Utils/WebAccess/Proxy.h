@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PROXY_H
-#define PROXY_H
+#ifndef SAYONARA_PROXY_H
+#define SAYONARA_PROXY_H
 
 #include "Utils/typedefs.h"
 class QString;
@@ -43,4 +43,4 @@ namespace Proxy
 	int envPort();
 }
 
-#endif // PROXY_H
+#endif // SAYONARA_PROXY_H

@@ -32,6 +32,7 @@ static void showImageLabel(const QString& filename);
 struct GUI_DirectoryView::Private
 {
 	DirectorySelectionHandler* dsh=nullptr;
+	QString filterTerm;
 
 	Private()
 	{
@@ -48,6 +49,16 @@ GUI_DirectoryView::GUI_DirectoryView(QWidget* parent) :
 	Gui::Widget(parent)
 {
 	m = Pimpl::make<Private>();
+	ui = nullptr;
+}
+
+GUI_DirectoryView::~GUI_DirectoryView() = default;
+
+void GUI_DirectoryView::initUi()
+{
+	if(ui) {
+		return;
+	}
 
 	ui = new Ui::GUI_DirectoryView();
 	ui->setupUi(this);
@@ -88,6 +99,11 @@ GUI_DirectoryView::GUI_DirectoryView(QWidget* parent) :
 
 	connect(ui->splitter, &QSplitter::splitterMoved, this, &GUI_DirectoryView::splitterMoved);
 	connect(ui->btn_createDir, &QPushButton::clicked, this, &GUI_DirectoryView::createDirectoryClicked);
+
+	Library::Info info = m->currentLibrary();
+	ui->tv_dirs->setLibraryInfo(info);
+	ui->tv_dirs->setFilterTerm(m->filterTerm);
+	ui->lv_files->setParentDirectory(info.id(), info.path());
 }
 
 void GUI_DirectoryView::setCurrentLibrary(LibraryId libraryId)
@@ -96,16 +112,21 @@ void GUI_DirectoryView::setCurrentLibrary(LibraryId libraryId)
 
 	Library::Info info = m->currentLibrary();
 
-	ui->tv_dirs->setLibraryInfo(info);
-	ui->lv_files->setParentDirectory(info.id(), info.path());
+	if(ui)
+	{
+		ui->tv_dirs->setLibraryInfo(info);
+		ui->lv_files->setParentDirectory(info.id(), info.path());
+	}
 }
 
 void GUI_DirectoryView::setFilterTerm(const QString& filter)
 {
-	ui->tv_dirs->setFilterTerm(filter);
-}
+	m->filterTerm = filter;
 
-GUI_DirectoryView::~GUI_DirectoryView() = default;
+	if(ui) {
+		ui->tv_dirs->setFilterTerm(filter);
+	}
+}
 
 void GUI_DirectoryView::importRequested(LibraryId id, const QStringList& paths, const QString& targetDirectory)
 {
@@ -394,14 +415,19 @@ void GUI_DirectoryView::createDirectoryClicked()
 
 void GUI_DirectoryView::languageChanged()
 {
-	ui->retranslateUi(this);	
-	ui->btn_createDir->setText(Lang::get(Lang::CreateDirectory));
+	if(!ui)
+	{
+		ui->retranslateUi(this);
+		ui->btn_createDir->setText(Lang::get(Lang::CreateDirectory));
+	}
 }
 
 void GUI_DirectoryView::skinChanged()
 {
 	using namespace Gui;
-	ui->btn_createDir->setIcon(Gui::Icons::icon(Gui::Icons::Folder));
+	if(ui) {
+		ui->btn_createDir->setIcon(Gui::Icons::icon(Gui::Icons::Folder));
+	}
 }
 
 QString copyOrMoveLibraryRequested(const QStringList& paths, LibraryId id, QWidget* parent)
@@ -448,4 +474,10 @@ void showImageLabel(const QString& filename)
 	);
 
 	label->show();
+}
+
+void GUI_DirectoryView::showEvent(QShowEvent* event)
+{
+	initUi();
+	Gui::Widget::showEvent(event);
 }

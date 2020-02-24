@@ -85,12 +85,12 @@ using namespace Library;
 struct GUI_LocalLibrary::Private
 {
 	LocalLibrary*			library = nullptr;
-	LocalLibraryMenu*		library_menu = nullptr;
+	LocalLibraryMenu*		libraryMenu = nullptr;
 
 	Private(LibraryId id, GUI_LocalLibrary* parent)
 	{
 		library = Manager::instance()->libraryInstance(id);
-		library_menu = new LocalLibraryMenu(library->name(), library->path(), parent);
+		libraryMenu = new LocalLibraryMenu(library->name(), library->path(), parent);
 	}
 };
 
@@ -119,12 +119,12 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 	connect(ui->lv_genres, &GenreView::sigInvalidGenreSelected, this, &GUI_LocalLibrary::invalidGenreSelected);
 	connect(ui->lv_genres, &GenreView::sigProgress, this, &GUI_LocalLibrary::progressChanged);
 
-	connect(m->library_menu, &LocalLibraryMenu::sigPathChanged, m->library, &LocalLibrary::setLibraryPath);
-	connect(m->library_menu, &LocalLibraryMenu::sigNameChanged, m->library, &LocalLibrary::setLibraryName);
-	connect(m->library_menu, &LocalLibraryMenu::sigImportFile, this, &GUI_LocalLibrary::importFilesRequested);
-	connect(m->library_menu, &LocalLibraryMenu::sigImportFolder, this, &GUI_LocalLibrary::importDirsRequested);
-	connect(m->library_menu, &LocalLibraryMenu::sigInfo, this, &GUI_LocalLibrary::showInfoBox);
-	connect(m->library_menu, &LocalLibraryMenu::sigReloadLibrary, this, &GUI_LocalLibrary::reloadLibraryRequested);
+	connect(m->libraryMenu, &LocalLibraryMenu::sigPathChanged, m->library, &LocalLibrary::setLibraryPath);
+	connect(m->libraryMenu, &LocalLibraryMenu::sigNameChanged, m->library, &LocalLibrary::setLibraryName);
+	connect(m->libraryMenu, &LocalLibraryMenu::sigImportFile, this, &GUI_LocalLibrary::importFilesRequested);
+	connect(m->libraryMenu, &LocalLibraryMenu::sigImportFolder, this, &GUI_LocalLibrary::importDirsRequested);
+	connect(m->libraryMenu, &LocalLibraryMenu::sigInfo, this, &GUI_LocalLibrary::showInfoBox);
+	connect(m->libraryMenu, &LocalLibraryMenu::sigReloadLibrary, this, &GUI_LocalLibrary::reloadLibraryRequested);
 
 	connect(ui->btn_scanForFiles, &QPushButton::clicked, this, &GUI_LocalLibrary::reloadLibraryDeepRequested);
 	connect(ui->btn_importDirectories, &QPushButton::clicked, this, &GUI_LocalLibrary::importDirsRequested);
@@ -200,7 +200,7 @@ void GUI_LocalLibrary::checkReloadStatus()
 	ui->btn_scanForFiles->setVisible(!inLibraryState);
 	ui->btn_importDirectories->setVisible(!inLibraryState);
 
-	m->library_menu->setLibraryEmpty(isLibraryEmpty);
+	m->libraryMenu->setLibraryEmpty(isLibraryEmpty);
 }
 
 void GUI_LocalLibrary::checkFileExtensionBar()
@@ -322,14 +322,14 @@ void GUI_LocalLibrary::reloadLibraryAccepted(ReloadQuality quality)
 
 void GUI_LocalLibrary::reloadLibrary(ReloadQuality quality)
 {
-	m->library_menu->setLibraryBusy(true);
+	m->libraryMenu->setLibraryBusy(true);
 	m->library->reloadLibrary(false, quality);
 }
 
 
 void GUI_LocalLibrary::reloadFinished()
 {
-	m->library_menu->setLibraryBusy(false);
+	m->libraryMenu->setLibraryBusy(false);
 
 	checkViewState();
 }
@@ -374,7 +374,7 @@ void GUI_LocalLibrary::nameChanged(LibraryId id)
 	Info info = Manager::instance()->libraryInfo(id);
 	if(info.valid())
 	{
-		m->library_menu->refreshName(info.name());
+		m->libraryMenu->refreshName(info.name());
 		ui->lab_libraryName->setText(info.name());
 	}
 }
@@ -389,7 +389,7 @@ void GUI_LocalLibrary::pathChanged(LibraryId id)
 	Info info = Manager::instance()->libraryInfo(id);
 	if(info.valid())
 	{
-		m->library_menu->refreshPath(info.path());
+		m->libraryMenu->refreshPath(info.path());
 
 		if(this->isVisible())
 		{
@@ -519,5 +519,5 @@ TableView* GUI_LocalLibrary::lvTracks() const { return ui->tv_tracks; }
 SearchBar* GUI_LocalLibrary::leSearch() const { return ui->le_search; }
 
 // LocalLibraryContainer
-QMenu* GUI_LocalLibrary::menu() const {	return m->library_menu; }
+QMenu* GUI_LocalLibrary::menu() const {	return m->libraryMenu; }
 QFrame* GUI_LocalLibrary::headerFrame() const { return ui->header_frame; }

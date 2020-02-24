@@ -75,7 +75,7 @@ private:
 	void reloadCombobox();
 	void initSaveToLibrary();
 
-	private slots:
+private slots:
 	void okClicked();
 	void applyClicked();
 	void searchClicked();

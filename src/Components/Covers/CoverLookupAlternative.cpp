@@ -48,16 +48,16 @@ using UrlList=QList<Url>;
 struct AlternativeLookup::Private
 {
 	Lookup*		lookup=nullptr;
-	int			n_covers;
+	int			coverCount;
 	bool		running;
 	bool		silent;
 
-	Private(const Cover::Location& cl, int n_covers, bool silent, AlternativeLookup* parent) :
-		n_covers(n_covers),
+	Private(const Cover::Location& cl, int coverCount, bool silent, AlternativeLookup* parent) :
+		coverCount(coverCount),
 		running(false),
 		silent(silent)
 	{
-		lookup = new Lookup(cl, n_covers, parent);
+		lookup = new Lookup(cl, coverCount, parent);
 	}
 
 	~Private()
@@ -66,16 +66,16 @@ struct AlternativeLookup::Private
 	}
 };
 
-AlternativeLookup::AlternativeLookup(const Cover::Location& cl, int n_covers, bool silent, QObject* parent) :
+AlternativeLookup::AlternativeLookup(const Cover::Location& cl, int coverCount, bool silent, QObject* parent) :
 	LookupBase(cl, parent)
 {
-	m = Pimpl::make<Private>(cl, n_covers, silent, this);
+	m = Pimpl::make<Private>(cl, coverCount, silent, this);
 
 	connect(m->lookup, &Lookup::sigStarted, this, &AlternativeLookup::started);
-	connect(m->lookup, &Lookup::sigCoverFound, this, &AlternativeLookup::cover_found);
+	connect(m->lookup, &Lookup::sigCoverFound, this, &AlternativeLookup::coverFound);
 	connect(m->lookup, &Lookup::sigFinished, this, &AlternativeLookup::finished);
 
-	ListenSettingNoCall(Set::Cover_Server, AlternativeLookup::coverfetchers_changed);
+	ListenSettingNoCall(Set::Cover_Server, AlternativeLookup::coverfetchersChanged);
 }
 
 AlternativeLookup::~AlternativeLookup() = default;
@@ -91,7 +91,6 @@ void AlternativeLookup::reset()
 	stop();
 	Cover::Utils::deleteTemporaryCovers();
 }
-
 
 bool AlternativeLookup::save(const QPixmap& cover, bool save_to_library)
 {
@@ -117,22 +116,22 @@ bool AlternativeLookup::save(const QPixmap& cover, bool save_to_library)
 		cover.save(cl.alternativePath());
 	}
 
-	emit sig_cover_changed(cl);
+	emit sigCoverChanged(cl);
 
 	return true;
 }
 
-bool AlternativeLookup::is_running() const
+bool AlternativeLookup::isRunning() const
 {
 	return m->running;
 }
 
-bool AlternativeLookup::is_silent() const
+bool AlternativeLookup::isSilent() const
 {
 	return m->silent;
 }
 
-QStringList AlternativeLookup::active_coverfetchers(AlternativeLookup::SearchMode mode) const
+QStringList AlternativeLookup::activeCoverfetchers(AlternativeLookup::SearchMode mode) const
 {
 	using CoverFetcher=Cover::Fetcher::Base;
 
@@ -183,14 +182,14 @@ void AlternativeLookup::finished(bool success)
 	emit sigFinished(success);
 }
 
-void AlternativeLookup::cover_found(const QPixmap& pm)
+void AlternativeLookup::coverFound(const QPixmap& pm)
 {
 	emit sigCoverFound(pm);
 }
 
-void AlternativeLookup::coverfetchers_changed()
+void AlternativeLookup::coverfetchersChanged()
 {
-	emit sig_coverfetchers_changed();
+	emit sigCoverfetchersChanged();
 }
 
 void AlternativeLookup::go(const Cover::Location& cl)
@@ -226,7 +225,7 @@ void AlternativeLookup::start(const QString& identifier)
 	go(cl);
 }
 
-void AlternativeLookup::start_text_search(const QString& search_term)
+void AlternativeLookup::startTextSearch(const QString& search_term)
 {
 	Location cl = coverLocation();
 	cl.setSearchTerm(search_term);
@@ -234,7 +233,7 @@ void AlternativeLookup::start_text_search(const QString& search_term)
 	go(cl);
 }
 
-void AlternativeLookup::start_text_search(const QString& search_term, const QString& cover_fetcher_identifier)
+void AlternativeLookup::startTextSearch(const QString& search_term, const QString& cover_fetcher_identifier)
 {
 	Location cl = coverLocation();
 	cl.setSearchTerm(search_term, cover_fetcher_identifier);
