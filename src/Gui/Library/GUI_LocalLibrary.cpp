@@ -40,6 +40,8 @@
 #include "Gui/Utils/GuiUtils.h"
 #include "Gui/Utils/Icons.h"
 #include "Gui/Utils/Style.h"
+#include "Gui/Utils/Shortcuts/ShortcutHandler.h"
+#include "Gui/Utils/Shortcuts/Shortcut.h"
 
 #include "Components/Library/LocalLibrary.h"
 #include "Components/LibraryManagement/LibraryManager.h"
@@ -50,6 +52,7 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/Library/LibraryInfo.h"
 #include "Utils/Logger/Logger.h"
+
 
 #include <QDir>
 #include <QFileDialog>
@@ -145,28 +148,17 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 	ListenSetting(Set::Lib_ShowFilterExtBar, GUI_LocalLibrary::tracksLoaded);
 
 	m->library->load();	
+
+	auto* sch = ShortcutHandler::instance();
+	Shortcut sc = sch->shortcut(ShortcutIdentifier::CoverView);
+	sc.connect(this, [this]() {
+		this->selectNextViewType();
+	});
 }
 
 GUI_LocalLibrary::~GUI_LocalLibrary()
 {
 	delete ui; ui = nullptr;
-}
-
-void GUI_LocalLibrary::languageChanged()
-{
-	ui->retranslateUi(this);
-	ui->gb_genres->setTitle(Lang::get(Lang::Genres));
-	ui->btn_scanForFiles->setText(Lang::get(Lang::ScanForFiles));
-	ui->btn_importDirectories->setText(Lang::get(Lang::ImportDir));
-
-	GUI_AbstractLibrary::languageChanged();
-}
-
-void GUI_LocalLibrary::skinChanged()
-{
-	GUI_AbstractLibrary::skinChanged();
-
-	checkViewState();
 }
 
 void GUI_LocalLibrary::checkViewState()
@@ -469,6 +461,13 @@ void GUI_LocalLibrary::switchViewType()
 	}
 }
 
+void GUI_LocalLibrary::selectNextViewType()
+{
+	int vt = int(GetSetting(Set::Lib_ViewType));
+	vt = (vt + 1) % 3;
+	SetSetting(Set::Lib_ViewType, ViewType(vt));
+}
+
 bool GUI_LocalLibrary::hasSelections() const
 {
 	return GUI_AbstractLibrary::hasSelections() ||
@@ -508,6 +507,23 @@ void GUI_LocalLibrary::showEvent(QShowEvent* e)
 			it.key()->restoreState(it.value());
 		}
 	}
+
+	checkViewState();
+}
+
+void GUI_LocalLibrary::languageChanged()
+{
+	ui->retranslateUi(this);
+	ui->gb_genres->setTitle(Lang::get(Lang::Genres));
+	ui->btn_scanForFiles->setText(Lang::get(Lang::ScanForFiles));
+	ui->btn_importDirectories->setText(Lang::get(Lang::ImportDir));
+
+	GUI_AbstractLibrary::languageChanged();
+}
+
+void GUI_LocalLibrary::skinChanged()
+{
+	GUI_AbstractLibrary::skinChanged();
 
 	checkViewState();
 }

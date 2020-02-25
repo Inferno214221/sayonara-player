@@ -502,10 +502,8 @@ void ItemView::changeEvent(QEvent* event)
 	}
 }
 
-
 void ItemView::keyPressEvent(QKeyEvent* event)
 {
-	event->setAccepted(false);
 	SearchableTableView::keyPressEvent(event);
 }
 

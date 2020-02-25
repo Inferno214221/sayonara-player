@@ -79,6 +79,7 @@ namespace Library
 	private slots:
 		void tracksLoaded();
 		void switchViewType();
+		void selectNextViewType();
 
 		void progressChanged(const QString& type, int progress);
 

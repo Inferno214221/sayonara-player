@@ -257,27 +257,22 @@ ModelIndexRanges SelectionViewInterface::mapIndexesToModelIndexRanges(const Inde
 	return lst;
 }
 
-void SelectionViewInterface::handleKeyPress(QKeyEvent* e)
+bool SelectionViewInterface::handleKeyPress(QKeyEvent* e)
 {
-	e->setAccepted(false);
-
-	if(m->rowCount() == 0)
-	{
-		return;
+	if(m->rowCount() == 0) {
+		return false;
 	}
 
 	Qt::KeyboardModifiers modifiers = e->modifiers();
-	auto blupp = modifiers & (Qt::ControlModifier|Qt::AltModifier|Qt::MetaModifier);
-	if(blupp != 0)
-	{
-		return;
+	auto mod = modifiers & (Qt::ControlModifier|Qt::AltModifier|Qt::MetaModifier);
+	if(mod != 0) {
+		return false;
 	}
 
 	if(e->matches(QKeySequence::SelectAll))
 	{
 		this->selectAll();
-		e->accept();
-		return;
+		return true;
 	}
 
 	switch(e->key())
@@ -285,32 +280,30 @@ void SelectionViewInterface::handleKeyPress(QKeyEvent* e)
 		case Qt::Key_Up:
 			if(selectedItems().empty())
 			{
-				e->accept();
 				m->selectRow(m->rowCount() - 1);
+				return true;
 			}
 
-			return;
+			return false;
 
 		case Qt::Key_Down:
 			if(selectedItems().empty())
 			{
-				e->accept();
 				m->selectRow(0);
+				return true;
 			}
 
-			return;
+			return false;
 
 		case Qt::Key_End:
 			m->selectRow(m->rowCount() - 1);
-			e->accept();
-			return;
+			return true;
 
 		case Qt::Key_Home:
 			m->selectRow(0);
-			e->accept();
-			return;
+			return true;
 
 		default:
-			break;
+			return false;
 	}
 }

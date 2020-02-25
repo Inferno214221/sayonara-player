@@ -68,7 +68,7 @@ protected:
 	ModelIndexRanges mapIndexesToModelIndexRanges(const IndexSet& indexes) const;
 
 protected:
-	virtual void handleKeyPress(QKeyEvent* e);
+	virtual bool handleKeyPress(QKeyEvent* e);
 };
 
 #endif // SAYONARASELECTIONVIEW_H

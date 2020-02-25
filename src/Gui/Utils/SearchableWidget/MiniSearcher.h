@@ -64,20 +64,32 @@ namespace Gui
 		PIMPL(MiniSearcher)
 
 		signals:
-			void sig_reset();
-			void sig_text_changed(const QString&);
-			void sig_find_next_row();
-			void sig_find_prev_row();
+			void sigReset();
+			void sigTextChanged(const QString&);
+			void sigFindNextRow();
+			void sigFindPrevRow();
+
+		public:
+			MiniSearcher(SearchableViewInterface* parent);
+			~MiniSearcher() override;
+
+			bool    handleKeyPress(QKeyEvent* e);
+			void    setExtraTriggers(const QMap<QChar, QString>& triggers);
+			QString currentText();
+			void    setNumberResults(int results);
+
+		public slots:
+			void reset();
 
 		private slots:
-			void prev_result();
-			void next_result();
+			void previousResult();
+			void nextResult();
 
 		private:
-			bool is_initiator(QKeyEvent* event) const;
+			bool isInitiator(QKeyEvent* event) const;
 			void init(const QString& text);
-			bool check_and_init(QKeyEvent* event);
-			QRect calc_geo() const;
+			bool checkAndInit(QKeyEvent* event);
+			QRect calcGeometry() const;
 
 		protected:
 			void languageChanged() override;
@@ -86,18 +98,6 @@ namespace Gui
 			void showEvent(QShowEvent* e) override;
 			void hideEvent(QHideEvent* e) override;
 			void focusOutEvent(QFocusEvent* e) override;
-
-		public:
-			MiniSearcher(SearchableViewInterface* parent);
-			virtual ~MiniSearcher();
-
-			void    handle_key_press(QKeyEvent* e);
-			void    set_extra_triggers(const QMap<QChar, QString>& triggers);
-			QString current_text();
-			void    set_number_results(int results);
-
-		public slots:
-			void reset();
 	};
 }
 

@@ -69,7 +69,7 @@ struct MiniSearcher::Private
 	QMap<QChar, QString>    triggers;
 
 	SearchableViewInterface*	svi=nullptr;
-	QLineEdit*              line_edit=nullptr;
+	QLineEdit*              lineEdit=nullptr;
 	QLabel*					label=nullptr;
 
 	int						max_width;
@@ -79,15 +79,15 @@ struct MiniSearcher::Private
 		max_width(150)
 	{
 		label = new QLabel(parent);
-		line_edit = new QLineEdit(parent);
-		line_edit->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+		lineEdit = new QLineEdit(parent);
+		lineEdit->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
 		reset_tooltip();
 	}
 
 	void reset_tooltip()
 	{
-		line_edit->setToolTip(
+		lineEdit->setToolTip(
 			"<b>" + tr("Arrow up") + "</b> = " + tr("Previous search result") + "<br/>" +
 			"<b>" + tr("Arrow down") + "</b> = " + tr("Next search result") + "<br/>" +
 			"<b>" + Lang::get(Lang::Key_Escape) + "</b> = " + Lang::get(Lang::Close)
@@ -100,9 +100,9 @@ struct MiniSearcher::Private
 			return;
 		}
 
-		QString tooltip = line_edit->toolTip();
+		QString tooltip = lineEdit->toolTip();
 		tooltip += "<br /><br />" + str;
-		line_edit->setToolTip(tooltip);
+		lineEdit->setToolTip(tooltip);
 	}
 };
 
@@ -114,17 +114,17 @@ MiniSearcher::MiniSearcher(SearchableViewInterface* parent) :
 
 	QLayout* layout = new QBoxLayout(QBoxLayout::LeftToRight, this);
 	layout->setContentsMargins(5, 5, 5, 5);
-	layout->addWidget(m->line_edit);
+	layout->addWidget(m->lineEdit);
 	layout->addWidget(m->label);
 	setLayout(layout);
 
 	MiniSearchEventFilter* msef = new MiniSearchEventFilter(this);
-	m->line_edit->installEventFilter(msef);
+	m->lineEdit->installEventFilter(msef);
 
-	connect(msef, &MiniSearchEventFilter::sig_tab_pressed, this, &MiniSearcher::next_result);
+	connect(msef, &MiniSearchEventFilter::sig_tab_pressed, this, &MiniSearcher::nextResult);
 	connect(msef, &MiniSearchEventFilter::sig_focus_lost, this, &MiniSearcher::hide);
 
-	connect(m->line_edit, &QLineEdit::textChanged, this, &MiniSearcher::sig_text_changed);
+	connect(m->lineEdit, &QLineEdit::textChanged, this, &MiniSearcher::sigTextChanged);
 
 	this->setMaximumWidth(m->max_width);
 	hide();
@@ -135,18 +135,21 @@ MiniSearcher::~MiniSearcher() {}
 
 void MiniSearcher::init(const QString& text)
 {
-	m->line_edit->setFocus();
-	m->line_edit->setText(text);
+	m->lineEdit->setFocus();
+	m->lineEdit->setText(text);
 
 	this->show();
 }
 
 
-bool MiniSearcher::is_initiator(QKeyEvent* event) const
+bool MiniSearcher::isInitiator(QKeyEvent* event) const
 {
 	QString text = event->text();
+	auto mod =	(event->modifiers() & Qt::ControlModifier) |
+				(event->modifiers() & Qt::MetaModifier) |
+				(event->modifiers() & Qt::AltModifier);
 
-	if(event->modifiers() & Qt::ControlModifier){
+	if(mod != 0){
 		return false;
 	}
 
@@ -165,31 +168,27 @@ bool MiniSearcher::is_initiator(QKeyEvent* event) const
 	return false;
 }
 
-void MiniSearcher::prev_result()
+void MiniSearcher::previousResult()
 {
-	emit sig_find_prev_row();
-	m->line_edit->setFocus();
+	emit sigFindPrevRow();
+	m->lineEdit->setFocus();
 }
 
-void MiniSearcher::next_result()
+void MiniSearcher::nextResult()
 {
-	emit sig_find_next_row();
-	m->line_edit->setFocus();
+	emit sigFindNextRow();
+	m->lineEdit->setFocus();
 }
 
-void MiniSearcher::languageChanged()
-{
-	m->reset_tooltip();
-	set_extra_triggers(m->triggers);
-}
 
-bool MiniSearcher::check_and_init(QKeyEvent* event)
+bool MiniSearcher::checkAndInit(QKeyEvent* event)
 {
-	if(!is_initiator(event)) {
+	if(!isInitiator(event)) {
 		return false;
 	}
 
-	if(!this->isVisible()) {
+	if(!this->isVisible())
+	{
 		init(event->text());
 		return true;
 	}
@@ -199,7 +198,7 @@ bool MiniSearcher::check_and_init(QKeyEvent* event)
 
 void MiniSearcher::reset()
 {
-	m->line_edit->clear();
+	m->lineEdit->clear();
 
 	if(this->isVisible() && this->parentWidget()){
 		parentWidget()->setFocus();
@@ -208,7 +207,7 @@ void MiniSearcher::reset()
 	this->hide();
 }
 
-void MiniSearcher::set_extra_triggers(const QMap<QChar, QString>& triggers)
+void MiniSearcher::setExtraTriggers(const QMap<QChar, QString>& triggers)
 {
 	m->reset_tooltip();
 
@@ -223,12 +222,12 @@ void MiniSearcher::set_extra_triggers(const QMap<QChar, QString>& triggers)
 	m->add_tooltip_text(tooltips.join("<br/>"));
 }
 
-QString MiniSearcher::current_text()
+QString MiniSearcher::currentText()
 {
-	return m->line_edit->text();
+	return m->lineEdit->text();
 }
 
-void MiniSearcher::set_number_results(int results)
+void MiniSearcher::setNumberResults(int results)
 {
 	if(results < 0){
 		m->label->hide();
@@ -240,15 +239,36 @@ void MiniSearcher::set_number_results(int results)
 	m->label->show();
 }
 
-void MiniSearcher::handle_key_press(QKeyEvent* e)
-{
-	bool was_initialized = isVisible();
-	bool initialized = check_and_init(e);
 
-	if(initialized || was_initialized)
+QRect MiniSearcher::calcGeometry() const
+{
+	int parentWidth = m->svi->viewportWidth();
+	int parentHeight = m->svi->viewportHeight();
+
+	int targetWidth = m->max_width;
+	int targetHeight = std::max(35, 10 + m->lineEdit->height());
+
+	int newX = parentWidth - (targetWidth + 5);
+	int newY = parentHeight - (targetHeight + 5);
+
+	QRect r(newX, newY, targetWidth, targetHeight);
+	spLog(Log::Develop, this) << "Show Minisearcher at " << r;
+
+	return r;
+}
+
+bool MiniSearcher::handleKeyPress(QKeyEvent* e)
+{
+	bool wasInitialized = isVisible();
+	bool initialized = checkAndInit(e);
+
+	if(initialized || wasInitialized)
 	{
 		keyPressEvent(e);
+		return true;
 	}
+
+	return false;
 }
 
 void MiniSearcher::keyPressEvent(QKeyEvent* event)
@@ -270,7 +290,7 @@ void MiniSearcher::keyPressEvent(QKeyEvent* event)
 		case Qt::Key_Down:
 			if(this->isVisible())
 			{
-				next_result();
+				nextResult();
 				event->accept();
 			}
 			break;
@@ -278,7 +298,7 @@ void MiniSearcher::keyPressEvent(QKeyEvent* event)
 		case Qt::Key_Up:
 			if(this->isVisible())
 			{
-				prev_result();
+				previousResult();
 				event->accept();
 			}
 			break;
@@ -289,27 +309,10 @@ void MiniSearcher::keyPressEvent(QKeyEvent* event)
 	}
 }
 
-QRect MiniSearcher::calc_geo() const
-{
-	int par_width = m->svi->viewportWidth();
-	int par_height = m->svi->viewportHeight();
-
-	int target_width = m->max_width;
-	int target_height = std::max(35, 10 + m->line_edit->height());
-
-	int new_x = par_width - (target_width + 5);
-	int new_y = par_height - (target_height + 5);
-
-	QRect r(new_x, new_y, target_width, target_height);
-	spLog(Log::Develop, this) << "Show Minisearcher at " << r;
-
-	return r;
-}
-
 void MiniSearcher::showEvent(QShowEvent* e)
 {
 	WidgetTemplate<QFrame>::showEvent(e);
-	this->setGeometry(calc_geo());
+	this->setGeometry(calcGeometry());
 }
 
 void MiniSearcher::hideEvent(QHideEvent* e)
@@ -324,4 +327,10 @@ void MiniSearcher::focusOutEvent(QFocusEvent* e)
 	this->reset();
 
 	WidgetTemplate<QFrame>::focusOutEvent(e);
+}
+
+void MiniSearcher::languageChanged()
+{
+	m->reset_tooltip();
+	setExtraTriggers(m->triggers);
 }
