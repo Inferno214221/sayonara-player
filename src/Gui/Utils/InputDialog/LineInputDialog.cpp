@@ -36,8 +36,12 @@ struct LineInputDialog::Private
 	QString infoPrefix;
 	QList<QChar> invalidChars;
 	LineInputDialog::ReturnValue returnValue;
+	bool showPrefix;
 
-	Private() : returnValue(LineInputDialog::Ok) {}
+	Private() :
+		returnValue(LineInputDialog::Ok),
+		showPrefix(false)
+	{}
 };
 
 LineInputDialog::LineInputDialog(const QString& windowTitle, const QString& infoText, QWidget* parent) :
@@ -71,10 +75,11 @@ LineInputDialog::~LineInputDialog()
 	delete ui; ui=nullptr;
 }
 
-QString LineInputDialog::getRenameFilename(QWidget* parent, const QString& oldName)
+QString LineInputDialog::getRenameFilename(QWidget* parent, const QString& oldName, const QString& parentPath)
 {
 	LineInputDialog dialog(Lang::get(Lang::Rename), tr("Please enter new name"), oldName, parent);
 	dialog.setInvalidChars(Util::File::invalidFilenameChars());
+	dialog.showInfo(!parentPath.isEmpty(), parentPath + "/");
 	dialog.exec();
 
 	return dialog.text();
@@ -127,6 +132,7 @@ void LineInputDialog::setPlaceholderText(const QString& text)
 
 void LineInputDialog::showInfo(bool b, const QString& infoPrefix)
 {
+	m->showPrefix = b;
 	m->infoPrefix = infoPrefix;
 
 	ui->labInfo->setVisible(b);
@@ -187,6 +193,9 @@ void LineInputDialog::showEvent(QShowEvent* e)
 	ui->btnCancel->setText(Lang::get(Lang::Cancel));
 	ui->leInput->setFocus();
 	ui->btnOk->setDefault(true);
+
+	ui->labInfo->setVisible(m->showPrefix);
+	ui->labInfo->setText(m->infoPrefix + ui->leInput->text());
 
 	m->returnValue = LineInputDialog::Cancelled;
 }

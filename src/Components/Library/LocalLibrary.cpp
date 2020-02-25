@@ -292,9 +292,7 @@ void LocalLibrary::deleteTracks(const MetaDataList &v_md, Library::TrackDeletion
 }
 
 void LocalLibrary::refreshArtists() {}
-
 void LocalLibrary::refreshAlbums() {}
-
 void LocalLibrary::refreshTracks() {}
 
 void LocalLibrary::importFiles(const QStringList& files)

@@ -56,7 +56,6 @@ MenuButtonViews::MenuButtonViews(QWidget* parent) :
 	this->addAction(m->menu->addSeparator());
 
 	this->registerPreferenceAction(m->preferenceAction);
-	m->preferenceAction->setText(ShortcutHandler::instance()->shortcut_text(ShortcutIdentifier::CoverView));
 
 	viewTypeChanged();
 
@@ -131,7 +130,6 @@ void MenuButtonViews::languageChanged()
 	m->directoryViewAction->setText(Lang::get(Lang::Directories));
 
 	checkIcon(this);
-	m->preferenceAction->setText(ShortcutHandler::instance()->shortcut(ShortcutIdentifier::CoverView).sequence().toString());
 }
 
 void MenuButtonViews::skinChanged()

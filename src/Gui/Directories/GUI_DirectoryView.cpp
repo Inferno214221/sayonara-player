@@ -87,11 +87,7 @@ void GUI_DirectoryView::initUi()
 	connect(ui->tv_dirs, &TreeView::sigRenameRequested, this, &GUI_DirectoryView::dirRenameRequested);
 	connect(ui->tv_dirs, &TreeView::sigCopyToLibraryRequested, this, &GUI_DirectoryView::dirCopyToLibRequested);
 	connect(ui->tv_dirs, &TreeView::sigMoveToLibraryRequested, this, &GUI_DirectoryView::dirMoveToLibRequested);
-	connect(ui->tv_dirs->selectionModel(), &QItemSelectionModel::selectionChanged, this, [this](auto selected, auto descelected)
-	{
-		Q_UNUSED(descelected)
-		ui->btn_clearSelection->setVisible(selected.size() > 0);
-	});
+	connect(ui->tv_dirs->selectionModel(), &QItemSelectionModel::selectionChanged, this, &GUI_DirectoryView::dirSelectionChanged);
 
 	connect(ui->lv_files, &QListView::pressed, this, &GUI_DirectoryView::filePressed);
 	connect(ui->lv_files, &QListView::doubleClicked, this, &GUI_DirectoryView::fileDoubleClicked);
@@ -106,6 +102,7 @@ void GUI_DirectoryView::initUi()
 	connect(ui->lv_files, &FileListView::sigRenameByExpressionRequested, this, &GUI_DirectoryView::fileRenameByExpressionRequested);
 	connect(ui->lv_files, &FileListView::sigCopyToLibraryRequested, this, &GUI_DirectoryView::fileCopyToLibraryRequested);
 	connect(ui->lv_files, &FileListView::sigMoveToLibraryRequested, this, &GUI_DirectoryView::fileMoveToLibraryRequested);
+	connect(ui->lv_files->selectionModel(), &QItemSelectionModel::selectionChanged, this, &GUI_DirectoryView::fileSelectionChanged);
 
 	connect(ui->splitter, &QSplitter::splitterMoved, this, &GUI_DirectoryView::splitterMoved);
 	connect(ui->btn_createDir, &QPushButton::clicked, this, &GUI_DirectoryView::createDirectoryClicked);
@@ -235,6 +232,13 @@ void GUI_DirectoryView::dirPressed(QModelIndex idx)
 	}
 }
 
+
+void GUI_DirectoryView::dirSelectionChanged(const QItemSelection& selected, const QItemSelection& /*deselected*/)
+{
+	ui->btn_clearSelection->setVisible(selected.size() > 0);
+}
+
+
 void GUI_DirectoryView::dirClicked(QModelIndex idx)
 {
 	ui->lv_files->clearSelection();
@@ -312,7 +316,10 @@ void GUI_DirectoryView::filePressed(QModelIndex idx)
 	{
 		m->dsh->prepareTracksForPlaylist(ui->lv_files->selectedPaths(), true);
 	}
+}
 
+void GUI_DirectoryView::fileSelectionChanged(const QItemSelection& /*selected*/, const QItemSelection& /*deselected*/)
+{
 	QStringList selectedPaths = ui->lv_files->selectedPaths();
 	auto lastIt = std::remove_if(selectedPaths.begin(), selectedPaths.end(), [](const QString& path){
 		return( !Util::File::isSoundFile(path) && !Util::File::isPlaylistFile(path) );
@@ -324,7 +331,18 @@ void GUI_DirectoryView::filePressed(QModelIndex idx)
 	{ // may happen if an invalid path is clicked
 		m->dsh->libraryInstance()->fetchTracksByPath(selectedPaths);
 	}
+
+	else if(!ui->tv_dirs->selectedPaths().isEmpty())
+	{
+		m->dsh->libraryInstance()->fetchTracksByPath( ui->tv_dirs->selectedPaths() );
+	}
+
+	else
+	{
+		m->dsh->libraryInstance()->refetch();
+	}
 }
+
 
 void GUI_DirectoryView::fileDoubleClicked(QModelIndex idx)
 {

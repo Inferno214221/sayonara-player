@@ -97,7 +97,7 @@ namespace Gui
 			void closeEvent(QCloseEvent* e) override;
 
 		public:
-			static QString getRenameFilename(QWidget* parent, const QString& oldName);
+			static QString getRenameFilename(QWidget* parent, const QString& oldName, const QString& parentPath=QString());
 			static QString getNewFilename(QWidget* parent, const QString& info, const QString& parentPath=QString());
 	};
 }

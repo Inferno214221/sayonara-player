@@ -6,6 +6,8 @@
 
 UI_FWD(GUI_DirectoryView)
 
+class QItemSelection;
+
 class GUI_DirectoryView :
 	public Gui::Widget
 {
@@ -46,6 +48,7 @@ class GUI_DirectoryView :
 		void dirRenameRequested(const QString& oldName, const QString& newName);
 		void dirCopyToLibRequested(LibraryId libraryId);
 		void dirMoveToLibRequested(LibraryId libraryId);
+		void dirSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
 
 		void fileDoubleClicked(QModelIndex idx);
 		void fileEnterPressed();
@@ -59,6 +62,7 @@ class GUI_DirectoryView :
 		void fileRenameByExpressionRequested(const QString& oldName, const QString& expression);
 		void fileCopyToLibraryRequested(LibraryId libraryId);
 		void fileMoveToLibraryRequested(LibraryId libraryId);
+		void fileSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
 
 		void fileOperationStarted();
 		void fileOperationFinished();

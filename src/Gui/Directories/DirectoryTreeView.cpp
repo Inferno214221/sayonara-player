@@ -148,35 +148,35 @@ QStringList TreeView::selectedPaths() const
 
 void TreeView::createDirectoryClicked()
 {
-	QModelIndexList indexes = this->selctedRows();
-	if(indexes.size() != 1){
+	const QStringList paths = selectedPaths();
+	if(paths.size() != 1){
 		return;
 	}
 
-	QString parentDirectory = selectedPaths()[0];
-	QString newName = Gui::LineInputDialog::getNewFilename(this, Lang::get(Lang::CreateDirectory), parentDirectory);
+	QString newName = Gui::LineInputDialog::getNewFilename(this, Lang::get(Lang::CreateDirectory), paths[0]);
 	if(!newName.isEmpty())
 	{
-		Util::File::createDir(parentDirectory + "/" + newName);
-		this->expand(indexes.first());
+		Util::File::createDir(paths[0] + "/" + newName);
+		this->expand(m->model->indexOfPath(paths[0]));
 	}
 }
 
 void TreeView::renameDirectoryClicked()
 {
-	QStringList paths = selectedPaths();
+	const QStringList paths = selectedPaths();
 	if(paths.size() != 1){
 		return;
 	}
 
-	const QString dir = paths[0];
-	QDir d(dir);
-	QString newName = Gui::LineInputDialog::getRenameFilename(this, d.dirName());
-	if(!newName.isEmpty())
+	QDir originalDir(paths[0]);
+	QDir parentDir(originalDir);
+
+	if(parentDir.cdUp())
 	{
-		if(d.cdUp())
+		QString newName = Gui::LineInputDialog::getRenameFilename(this, originalDir.dirName(), parentDir.absolutePath());
+		if(!newName.isEmpty())
 		{
-			emit sigRenameRequested(dir, d.filePath(newName));
+			emit sigRenameRequested(originalDir.absolutePath(), parentDir.absoluteFilePath(newName));
 		}
 	}
 }

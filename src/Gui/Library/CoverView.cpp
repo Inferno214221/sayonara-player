@@ -324,10 +324,7 @@ void CoverView::selectedItemsChanged(const IndexSet& indexes)
 	m->library->selectedAlbumsChanged(indexes);
 }
 
-void CoverView::refreshClicked()
-{
-	m->library->refreshAlbums();
-}
+void CoverView::refreshClicked() {}
 
 void CoverView::runMergeOperation(const Library::MergeData& mergedata)
 {
