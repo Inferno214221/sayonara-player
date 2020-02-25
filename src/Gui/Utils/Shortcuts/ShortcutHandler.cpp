@@ -223,7 +223,7 @@ QString ShortcutHandler::shortcut_text(ShortcutIdentifier identifier) const
 		case ShortcutIdentifier::CloseTab:
 			return Lang::get(Lang::CloseTab);
 		case ShortcutIdentifier::CoverView:
-			return Lang::get(Lang::ShowCovers);
+			return Lang::get(Lang::LibraryView);
 		case ShortcutIdentifier::Minimize:
 			return Lang::get(Lang::Application) + ": " + Lang::get(Lang::Minimize);
 		case ShortcutIdentifier::Next:

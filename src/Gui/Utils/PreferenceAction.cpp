@@ -175,3 +175,19 @@ QString StreamRecorderPreferenceAction::identifier() const
 	return "streamrecorder";
 }
 
+
+ShortcutPreferenceAction::ShortcutPreferenceAction(QWidget* parent) :
+	PreferenceAction(tr("Shortcuts"), identifier(), parent)
+{}
+
+ShortcutPreferenceAction::~ShortcutPreferenceAction() = default;
+
+QString ShortcutPreferenceAction::identifier() const
+{
+	return "shortcuts";
+}
+
+QString ShortcutPreferenceAction::displayName() const
+{
+	return tr("Shortcuts");
+}

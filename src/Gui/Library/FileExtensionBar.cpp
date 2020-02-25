@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "LibraryFileExtensionBar.h"
+#include "FileExtensionBar.h"
 #include "Components/Library/AbstractLibrary.h"
 
 #include "Utils/Language/Language.h"
@@ -34,11 +34,11 @@ using Library::FileExtensionBar;
 
 struct FileExtensionBar::Private
 {
-	QLayout*				btn_layout=nullptr;
-	QLabel*					lab_filter=nullptr;
-	QPushButton*			btn_close=nullptr;
+	QLayout*				btnLayout=nullptr;
+	QLabel*					labFilter=nullptr;
+	QPushButton*			btnClose=nullptr;
 
-	QMap<QString, QPushButton*> extension_button_map;
+	QMap<QString, QPushButton*> extensionButtonMap;
 
 	AbstractLibrary*		library=nullptr;
 };
@@ -54,37 +54,38 @@ FileExtensionBar::FileExtensionBar(QWidget* parent) :
 	layout->setSpacing(10);
 	this->setLayout(layout);
 
-	m->lab_filter = new QLabel(this);
+	m->labFilter = new QLabel(this);
 
-	QFont font = m->lab_filter->font();
+	QFont font = m->labFilter->font();
 	font.setBold(true);
-	m->lab_filter->setFont(font);
-	layout->addWidget(m->lab_filter);
+	m->labFilter->setFont(font);
+	layout->addWidget(m->labFilter);
 
 
 	auto* btn_widget = new QWidget();
 
-	m->btn_layout = new QHBoxLayout(btn_widget);
-	m->btn_layout->setContentsMargins(0, 0, 0, 0);
-	m->btn_layout->setSpacing(10);
-	m->btn_layout->setSizeConstraint(QLayout::SetMinimumSize);
+	m->btnLayout = new QHBoxLayout(btn_widget);
+	m->btnLayout->setContentsMargins(0, 0, 0, 0);
+	m->btnLayout->setSpacing(10);
+	m->btnLayout->setSizeConstraint(QLayout::SetMinimumSize);
 
-	btn_widget->setLayout(m->btn_layout);
+	btn_widget->setLayout(m->btnLayout);
 	layout->addWidget(btn_widget);
 
 	auto* spacer = new QSpacerItem(10, 10, QSizePolicy::MinimumExpanding, QSizePolicy::Maximum);
 	layout->addSpacerItem(spacer);
 
-	m->btn_close = new QPushButton(this);
-	layout->addWidget(m->btn_close);
-	connect(m->btn_close, &QPushButton::clicked, this, &FileExtensionBar::closeClicked);
+	m->btnClose = new QPushButton(this);
+	m->btnClose->setFocusPolicy(Qt::NoFocus);
+	layout->addWidget(m->btnClose);
+	connect(m->btnClose, &QPushButton::clicked, this, &FileExtensionBar::closeClicked);
 }
 
 FileExtensionBar::~FileExtensionBar()
 {
-	for(QPushButton* btn : m->extension_button_map)
+	for(QPushButton* btn : m->extensionButtonMap)
 	{
-		m->btn_layout->removeWidget(btn);
+		m->btnLayout->removeWidget(btn);
 		btn->setParent(nullptr);
 		btn->deleteLater();
 	}
@@ -98,34 +99,35 @@ void FileExtensionBar::init(AbstractLibrary* library)
 void FileExtensionBar::refresh()
 {
 	Gui::ExtensionSet extensions = m->library->extensions();
-	const QStringList extension_strings = extensions.extensions();
+	const QStringList extensionStrings = extensions.extensions();
 
 	clear();
 
-	bool has_multiple_extensions = (extension_strings.size() > 1);
-	if(!has_multiple_extensions){
+	bool hasMultipleExtensions = (extensionStrings.size() > 1);
+	if(!hasMultipleExtensions){
 		return;
 	}
 
-	for(const QString& ext : extension_strings)
+	for(const QString& ext : extensionStrings)
 	{
 		QPushButton* btn = nullptr;
-		if(m->extension_button_map.contains(ext))
+		if(m->extensionButtonMap.contains(ext))
 		{
-			btn = m->extension_button_map[ext];
+			btn = m->extensionButtonMap[ext];
 		}
 
 		else
 		{
 			btn = new QPushButton();
+			btn->setFocusPolicy(Qt::NoFocus);
 			btn->setText(ext);
 			btn->setCheckable(true);
 			btn->setChecked(extensions.isEnabled(ext));
 
 			connect(btn, &QPushButton::toggled, this, &FileExtensionBar::buttonToggled);
 
-			m->btn_layout->addWidget(btn);
-			m->extension_button_map[ext] = btn;
+			m->btnLayout->addWidget(btn);
+			m->extensionButtonMap[ext] = btn;
 		}
 
 		btn->setVisible(true);
@@ -134,7 +136,7 @@ void FileExtensionBar::refresh()
 
 void FileExtensionBar::clear()
 {
-	for(QPushButton* btn : m->extension_button_map)
+	for(QPushButton* btn : m->extensionButtonMap)
 	{
 		btn->setVisible(false);
 	}
@@ -163,6 +165,6 @@ void FileExtensionBar::closeClicked()
 
 void FileExtensionBar::languageChanged()
 {
-	m->btn_close->setText(Lang::get(Lang::Hide));
-	m->lab_filter->setText(Lang::get(Lang::Filetype));
+	m->btnClose->setText(Lang::get(Lang::Hide));
+	m->labFilter->setText(Lang::get(Lang::Filetype));
 }

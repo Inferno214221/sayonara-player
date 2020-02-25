@@ -257,6 +257,8 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Library");
 		case LibraryPath:
 			return l.tr("Library path");
+		case LibraryView:
+			return l.tr("Library view type");
 		case Listen:
 			return l.tr("Listen");
 		case LiveSearch:

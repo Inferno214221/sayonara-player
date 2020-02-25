@@ -283,18 +283,6 @@ ModelIndexRange FileListView::mapIndexToModelIndexes(int idx) const
 	);
 }
 
-void FileListView::keyPressEvent(QKeyEvent* event)
-{
-	event->setAccepted(false);
-
-	if(event->key() == Qt::Key_Escape)
-	{
-		this->clearSelection();
-	}
-
-	SearchableTableView::keyPressEvent(event);
-}
-
 void FileListView::renameFileClicked()
 {
 	const QModelIndexList indexes = this->selectedRows();

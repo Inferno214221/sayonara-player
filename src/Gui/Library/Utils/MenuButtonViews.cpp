@@ -4,6 +4,10 @@
 #include "Utils/Language/Language.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Library/LibraryNamespaces.h"
+#include "Gui/Utils/Shortcuts/ShortcutHandler.h"
+#include "Gui/Utils/Shortcuts/Shortcut.h"
+
+#include "Gui/Utils/PreferenceAction.h"
 
 #include <QMenu>
 #include <QAction>
@@ -17,6 +21,8 @@ struct MenuButtonViews::Private
 	QAction* coverViewAction=nullptr;
 	QAction* directoryViewAction=nullptr;
 
+	Gui::PreferenceAction* preferenceAction=nullptr;
+
 	Private(QWidget* parent)
 	{
 		menu = new QMenu(parent);
@@ -29,6 +35,8 @@ struct MenuButtonViews::Private
 
 		directoryViewAction = new QAction();
 		directoryViewAction->setCheckable(true);
+
+		preferenceAction = new Gui::ShortcutPreferenceAction(menu);
 
 		auto* actionGroup = new QActionGroup(parent);
 		actionGroup->addAction(tableViewAction);
@@ -45,6 +53,10 @@ MenuButtonViews::MenuButtonViews(QWidget* parent) :
 	this->registerAction(m->tableViewAction);
 	this->registerAction(m->coverViewAction);
 	this->registerAction(m->directoryViewAction);
+	this->addAction(m->menu->addSeparator());
+
+	this->registerPreferenceAction(m->preferenceAction);
+	m->preferenceAction->setText(ShortcutHandler::instance()->shortcut_text(ShortcutIdentifier::CoverView));
 
 	viewTypeChanged();
 
@@ -119,6 +131,7 @@ void MenuButtonViews::languageChanged()
 	m->directoryViewAction->setText(Lang::get(Lang::Directories));
 
 	checkIcon(this);
+	m->preferenceAction->setText(ShortcutHandler::instance()->shortcut(ShortcutIdentifier::CoverView).sequence().toString());
 }
 
 void MenuButtonViews::skinChanged()

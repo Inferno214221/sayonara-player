@@ -67,6 +67,9 @@
       </layout>
      </widget>
      <widget class="Directory::FileListView" name="lv_files">
+      <property name="tabKeyNavigation">
+       <bool>false</bool>
+      </property>
       <property name="alternatingRowColors">
        <bool>true</bool>
       </property>

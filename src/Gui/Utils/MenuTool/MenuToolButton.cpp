@@ -109,4 +109,14 @@ void MenuToolButton::mouseReleaseEvent(QMouseEvent* e)
 
 	QPoint p = this->mapToGlobal(this->pos()) - this->pos();
 	m->menu->exec(p);
+
+	{	// when menu is visible and triggered outside
+		// the button's border the button does not
+		// recognize the mouseLeave event. So, the
+		// hover state still persists and the
+		// orange border stays visible.
+
+		this->setEnabled(false);
+		this->setEnabled(true);
+	}
 }

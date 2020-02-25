@@ -105,9 +105,6 @@ void ArtistView::initContextMenu()
 
 	connect(m->albumArtistAction, &QAction::triggered, this, &ArtistView::albumArtistsTriggered);
 
-	QAction* action = menu->action(Library::ContextMenu::EntryStandardView);
-	menu->insertAction(action, m->albumArtistAction);
-
 	languageChanged();
 }
 

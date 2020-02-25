@@ -100,7 +100,6 @@ ItemView::ItemView(QWidget* parent) :
 	sch->shortcut(ShortcutIdentifier::PlayNewTab).connect(this, this, SLOT(playNewTabClicked()), ctx);
 	sch->shortcut(ShortcutIdentifier::PlayNext).connect(this, this, SLOT(playNextClicked()), ctx);
 	sch->shortcut(ShortcutIdentifier::Append).connect(this, this, SLOT(appendClicked()), ctx);
-	sch->shortcut(ShortcutIdentifier::CoverView).connect(this, this, SLOT(viewTypeTriggered()), ctx);
 	sch->shortcut(ShortcutIdentifier::AlbumArtists).connect(this, this, SLOT(albumArtistsToggled()), ctx);
 	sch->shortcut(ShortcutIdentifier::ReloadLibrary).connect(this, this, SLOT(reloadClicked()), ctx);
 
@@ -136,10 +135,6 @@ ContextMenu::Entries ItemView::contextMenuEntries() const
 		ContextMenu::EntryDelete |
 		ContextMenu::EntryPlayNext |
 		ContextMenu::EntryAppend |
-//		ContextMenu::EntryStandardView |
-//		ContextMenu::EntryCoverView |
-//		ContextMenu::EntryDirectoryView |
-//		ContextMenu::EntryFilterExtension |
 		ContextMenu::EntryReload
 	);
 
@@ -314,14 +309,6 @@ void ItemView::appendClicked() { emit sigAppendClicked(); }
 void ItemView::refreshClicked() { emit sigRefreshClicked(); }
 void ItemView::reloadClicked() { emit sigReloadClicked(); }
 
-void ItemView::viewTypeTriggered()
-{
-	Library::ViewType viewType = GetSetting(Set::Lib_ViewType);
-	int i = static_cast<int>(viewType) + 1 % 3;
-
-	SetSetting(Set::Lib_ViewType, static_cast<Library::ViewType>(i));
-}
-
 void ItemView::albumArtistsToggled()
 {
 	bool b = GetSetting(Set::Lib_ShowAlbumArtists);
@@ -491,7 +478,6 @@ void ItemView::dropEvent(QDropEvent* event)
 	importRequested(filelist);
 }
 
-
 void ItemView::changeEvent(QEvent* event)
 {
 	SearchableTableView::changeEvent(event);
@@ -502,21 +488,14 @@ void ItemView::changeEvent(QEvent* event)
 	}
 }
 
-void ItemView::keyPressEvent(QKeyEvent* event)
-{
-	SearchableTableView::keyPressEvent(event);
-}
-
-
 void ItemView::resizeEvent(QResizeEvent* event)
 {
 	SearchableTableView::resizeEvent(event);
 
-	if(m->buttonClearSelection){
+	if(m->buttonClearSelection) {
 		showClearButton(m->buttonClearSelection->isVisible());
 	}
 }
-
 
 int ItemView::viewportHeight() const
 {

@@ -303,6 +303,14 @@ bool SelectionViewInterface::handleKeyPress(QKeyEvent* e)
 			m->selectRow(0);
 			return true;
 
+		case Qt::Key_Escape:
+			if(!selectedItems().empty()) {
+				m->view->clearSelection();
+				return true;
+			}
+
+			return false;
+
 		default:
 			return false;
 	}

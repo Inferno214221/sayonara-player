@@ -10,9 +10,6 @@
     <height>569</height>
    </rect>
   </property>
-  <property name="focusPolicy">
-   <enum>Qt::ClickFocus</enum>
-  </property>
   <property name="acceptDrops">
    <bool>true</bool>
   </property>
@@ -66,9 +63,9 @@
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
-          <widget class="QStackedWidget" name="sw_albumCovers">
+          <widget class="QStackedWidget" name="sw_viewType">
            <property name="currentIndex">
-            <number>1</number>
+            <number>0</number>
            </property>
            <widget class="QWidget" name="page_7">
             <layout class="QGridLayout" name="gridLayout_8">
@@ -90,9 +87,6 @@
                 <enum>Qt::Horizontal</enum>
                </property>
                <widget class="Library::ArtistView" name="tv_artists">
-                <property name="focusPolicy">
-                 <enum>Qt::StrongFocus</enum>
-                </property>
                 <property name="acceptDrops">
                  <bool>true</bool>
                 </property>
@@ -158,9 +152,6 @@
                 </attribute>
                </widget>
                <widget class="Library::AlbumView" name="tv_albums">
-                <property name="focusPolicy">
-                 <enum>Qt::StrongFocus</enum>
-                </property>
                 <property name="acceptDrops">
                  <bool>true</bool>
                 </property>
@@ -236,9 +227,6 @@
            <layout class="QVBoxLayout" name="verticalLayout_4">
             <item>
              <widget class="Library::TrackView" name="tv_tracks">
-              <property name="focusPolicy">
-               <enum>Qt::StrongFocus</enum>
-              </property>
               <property name="acceptDrops">
                <bool>true</bool>
               </property>
@@ -340,9 +328,6 @@
                <weight>75</weight>
                <bold>true</bold>
               </font>
-             </property>
-             <property name="focusPolicy">
-              <enum>Qt::StrongFocus</enum>
              </property>
              <property name="dragDropMode">
               <enum>QAbstractItemView::DropOnly</enum>
@@ -462,6 +447,9 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="text">
             <string notr="true">Scan for files</string>
            </property>
@@ -469,6 +457,9 @@
          </item>
          <item>
           <widget class="QPushButton" name="btn_importDirectories">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="text">
             <string notr="true">Import directory</string>
            </property>
@@ -513,6 +504,9 @@
      </item>
      <item>
       <widget class="Library::MenuButtonViews" name="btn_view">
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
        <property name="text">
         <string notr="true"/>
        </property>
@@ -525,7 +519,11 @@
       </widget>
      </item>
      <item>
-      <widget class="Library::SearchBar" name="le_search"/>
+      <widget class="Library::SearchBar" name="le_search">
+       <property name="focusPolicy">
+        <enum>Qt::StrongFocus</enum>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
@@ -622,7 +620,7 @@
   <customwidget>
    <class>Library::FileExtensionBar</class>
    <extends>QWidget</extends>
-   <header>Gui/Library/LibraryFileExtensionBar.h</header>
+   <header>Gui/Library/FileExtensionBar.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -637,6 +635,13 @@
    <header>Gui/Library/Utils/MenuButtonViews.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>le_search</tabstop>
+  <tabstop>tv_artists</tabstop>
+  <tabstop>tv_albums</tabstop>
+  <tabstop>tv_tracks</tabstop>
+  <tabstop>lv_genres</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

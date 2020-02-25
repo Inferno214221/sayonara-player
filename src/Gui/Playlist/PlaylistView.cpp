@@ -103,6 +103,7 @@ View::View(PlaylistPtr pl, QWidget* parent) :
 	this->setObjectName("playlist_view" + QString::number(pl->index()));
 	this->setSearchableModel(m->model);
 	this->setItemDelegate(new Pl::Delegate(this));
+	this->setTabKeyNavigation(false);
 	this->horizontalHeader()->setMinimumSectionSize(10);
 
 	initView();

@@ -79,7 +79,7 @@ enum AlbumViewIndex
 
 enum ReloadWidgetIndex
 {
-	StandardView=0,
+	TableView=0,
 	ReloadView=1
 };
 
@@ -104,7 +104,6 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 	m = Pimpl::make<Private>(id, this);
 
 	setupParent(this, &ui);
-
 	this->setFocusProxy(ui->le_search);
 
 	connect(m->library, &LocalLibrary::sigReloadingLibrary, this, &GUI_LocalLibrary::progressChanged);
@@ -179,8 +178,8 @@ void GUI_LocalLibrary::checkReloadStatus()
 	bool isReloading = m->library->isReloading();
 	bool isLibraryEmpty = m->library->isEmpty();
 
-	ReloadWidgetIndex index = (isLibraryEmpty == false) ? ReloadWidgetIndex::StandardView : ReloadWidgetIndex::ReloadView;
-	bool inLibraryState = (index == ReloadWidgetIndex::StandardView);
+	ReloadWidgetIndex index = (isLibraryEmpty == false) ? ReloadWidgetIndex::TableView : ReloadWidgetIndex::ReloadView;
+	bool inLibraryState = (index == ReloadWidgetIndex::TableView);
 
 	ui->sw_reload->setCurrentIndex( int(index) );
 
@@ -447,18 +446,23 @@ void GUI_LocalLibrary::switchViewType()
 				m->library->selectedArtistsChanged(IndexSet());
 			}
 
-			ui->sw_albumCovers->setCurrentIndex(AlbumViewIndex::AlbumCoverView);
+			//ui->sw_viewType->setFocusProxy(ui->cover_view);
+			ui->sw_viewType->setCurrentIndex(AlbumViewIndex::AlbumCoverView);
 			break;
 
 		case Library::ViewType::FileView:
-			ui->sw_albumCovers->setCurrentIndex(AlbumViewIndex::DirectoryView);
+			//ui->sw_viewType->setFocusProxy(ui->directory_view);
+			ui->sw_viewType->setCurrentIndex(AlbumViewIndex::DirectoryView);
 			break;
 
 		case Library::ViewType::Standard:
 		default:
-			ui->sw_albumCovers->setCurrentIndex(AlbumViewIndex::ArtistAlbumTableView);
+			//ui->sw_viewType->setFocusProxy(ui->tv_artists);
+			ui->sw_viewType->setCurrentIndex(AlbumViewIndex::ArtistAlbumTableView);
 			break;
 	}
+
+	ui->sw_viewType->setFocus();
 }
 
 void GUI_LocalLibrary::selectNextViewType()
@@ -529,10 +533,10 @@ void GUI_LocalLibrary::skinChanged()
 }
 
 // GUI_AbstractLibrary
-TableView* GUI_LocalLibrary::lvArtist() const { return ui->tv_artists; }
-TableView* GUI_LocalLibrary::lvAlbum() const { return ui->tv_albums; }
-TableView* GUI_LocalLibrary::lvTracks() const { return ui->tv_tracks; }
-SearchBar* GUI_LocalLibrary::leSearch() const { return ui->le_search; }
+Library::TableView* GUI_LocalLibrary::lvArtist() const { return ui->tv_artists; }
+Library::TableView* GUI_LocalLibrary::lvAlbum() const { return ui->tv_albums; }
+Library::TableView* GUI_LocalLibrary::lvTracks() const { return ui->tv_tracks; }
+Library::SearchBar* GUI_LocalLibrary::leSearch() const { return ui->le_search; }
 
 // LocalLibraryContainer
 QMenu* GUI_LocalLibrary::menu() const {	return m->libraryMenu; }

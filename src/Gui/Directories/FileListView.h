@@ -79,7 +79,6 @@ namespace Directory
 			void renameFileByTagClicked();
 
 		protected:
-			void keyPressEvent(QKeyEvent* event) override;
 			void contextMenuEvent(QContextMenuEvent* event) override;
 
 			void dragEnterEvent(QDragEnterEvent* event) override;

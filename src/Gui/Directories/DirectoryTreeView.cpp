@@ -497,11 +497,8 @@ QMimeData* TreeView::dragableMimedata() const
 	return cmd;
 }
 
-
 void TreeView::keyPressEvent(QKeyEvent* event)
 {
-	event->setAccepted(false);
-
 	switch(event->key())
 	{
 		case Qt::Key_Enter:

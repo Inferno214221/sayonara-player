@@ -162,6 +162,7 @@ public:
 		Key_Tab,
 		Library,
 		LibraryPath,
+		LibraryView,
 		Listen,
 		LiveSearch,
 		Loading,

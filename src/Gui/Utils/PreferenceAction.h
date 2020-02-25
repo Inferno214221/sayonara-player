@@ -150,6 +150,19 @@ namespace Gui
 			QString displayName() const override;
 			QString identifier() const override;
 	};
+
+
+	class ShortcutPreferenceAction : public Gui::PreferenceAction
+	{
+		Q_OBJECT
+
+		public:
+			ShortcutPreferenceAction(QWidget* parent);
+			~ShortcutPreferenceAction() override;
+
+			QString identifier() const override;
+			QString displayName() const override;
+	};
 }
 
 #endif // PREFERENCEACTION_H

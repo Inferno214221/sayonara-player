@@ -78,14 +78,11 @@ namespace Library
 				EntryAppend			= (1<<6),
 				EntryRefresh		= (1<<7),
 				EntryClear			= (1<<8),
-				EntryStandardView	= (1<<9),
-				EntryCoverView		= (1<<10),
-				EntryDirectoryView	= (1<<11),
-				EntryPlay			= (1<<12),
-				EntryPlayNewTab		= (1<<13),
-				EntryFilterExtension= (1<<14),
-				EntryReload			= (1<<15),
-				EntryLast			= (1<<16)
+				EntryPlay			= (1<<9),
+				EntryPlayNewTab		= (1<<10),
+				EntryFilterExtension= (1<<11),
+				EntryReload			= (1<<12),
+				EntryLast			= (1<<13)
 			};
 
 			using Entries=uint64_t;

@@ -203,14 +203,12 @@ void AlbumView::deleteDiscmenu()
 	m->discmenu = nullptr;
 }
 
-
 void AlbumView::showDiscmenu()
 {
 	if(!m->discmenu) return;
 
 	m->discmenu->popup(m->discmenuPoint);
 }
-
 
 void AlbumView::playClicked()
 {

@@ -10,9 +10,6 @@
     <height>681</height>
    </rect>
   </property>
-  <property name="focusPolicy">
-   <enum>Qt::ClickFocus</enum>
-  </property>
   <property name="windowTitle">
    <string>Sayonara Player</string>
   </property>
@@ -43,6 +40,9 @@
        <bool>false</bool>
       </property>
       <widget class="Gui::Splitter" name="splitterControls">
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
@@ -99,9 +99,6 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
-           <property name="focusPolicy">
-            <enum>Qt::ClickFocus</enum>
-           </property>
           </widget>
          </item>
          <item>
@@ -111,9 +108,6 @@
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
-           </property>
-           <property name="focusPolicy">
-            <enum>Qt::NoFocus</enum>
            </property>
           </widget>
          </item>

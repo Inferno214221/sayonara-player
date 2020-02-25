@@ -158,9 +158,6 @@ ContextMenu::ContextMenu(QWidget* parent) :
 	m->entryActionMap[EntryRefresh]		= m->refreshAction;
 	m->entryActionMap[EntryReload]		= m->reloadLibraryAction;
 	m->entryActionMap[EntryClear]		= m->clearAction;
-	m->entryActionMap[EntryStandardView] = m->standardViewAction;
-	m->entryActionMap[EntryCoverView]	= m->coverViewAction;
-	m->entryActionMap[EntryDirectoryView] = m->directoryViewAction;
 	m->entryActionMap[EntryFilterExtension] = m->filetypeAction;
 
 	for(QAction* action : Algorithm::AsConst(actions))
@@ -405,7 +402,6 @@ void ContextMenu::setSelectionCount(int selectionCount)
 		it->setEnabled(hasSelections);
 	}
 
-	m->entryActionMap[EntryCoverView]->setEnabled(true);
 	m->entryActionMap[EntryReload]->setEnabled(true);
 }
 

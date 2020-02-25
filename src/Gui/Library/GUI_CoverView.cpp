@@ -54,6 +54,7 @@ void GUI_CoverView::init(LocalLibrary* library)
 	ui->setupUi(this);
 
 	ui->tb_view->init(library);
+	this->setFocusProxy(ui->tb_view);
 
 	ui->topbar->setVisible(GetSetting(Set::Lib_CoverShowUtils));
 	ui->cb_show_artist->setChecked(GetSetting(Set::Lib_CoverShowArtist));

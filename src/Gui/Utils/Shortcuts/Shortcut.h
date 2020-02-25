@@ -40,7 +40,6 @@ class QWidget;
  */
 class Shortcut
 {
-
 	private:
 		PIMPL(Shortcut)
 

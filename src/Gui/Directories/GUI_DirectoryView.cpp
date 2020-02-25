@@ -114,6 +114,8 @@ void GUI_DirectoryView::initUi()
 	ui->tv_dirs->setEnabled(false);
 	ui->tv_dirs->setBusy(true);
 
+	this->setFocusProxy(ui->tv_dirs);
+
 	QTimer::singleShot(200, this, &GUI_DirectoryView::load);
 }
 
