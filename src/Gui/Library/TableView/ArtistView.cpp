@@ -39,19 +39,6 @@
 #include "Utils/Language/Language.h"
 #include "Utils/Set.h"
 
-
-template<typename T>
-auto check_vector_size(const T& t) -> T
-{
-	T copy = t;
-	if(copy.size() > 2)
-	{
-		copy.removeFirst();
-	}
-
-	return copy;
-}
-
 using namespace Library;
 
 struct ArtistView::Private
@@ -114,12 +101,11 @@ ColumnHeaderList ArtistView::columnHeaders() const
 
 	ColumnHeaderList columns
 	{
-		std::make_shared<ColumnHeaderArtist>(Artist::Undefined, true, SortOrder::NoSorting, SortOrder::NoSorting, 2),
 		std::make_shared<ColumnHeaderArtist>(Artist::Name, false, SortOrder::ArtistNameAsc, SortOrder::ArtistNameDesc, 160, true),
 		std::make_shared<ColumnHeaderArtist>(Artist::Tracks, true, SortOrder::ArtistTrackcountAsc, SortOrder::ArtistTrackcountDesc, Gui::Util::textWidth(fm, "M 8888"))
 	};
 
-	return check_vector_size(columns);
+	return columns;
 }
 
 QByteArray ArtistView::columnHeaderState() const

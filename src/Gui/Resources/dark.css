@@ -83,11 +83,16 @@ QSplitter:handle:horizontal
 	image: url(:/Icons/splitter_hor.svg);
 }
 
-MiniSearcher
+Gui--MiniSearcher
 {
 	background-color: rgba(50, 50, 50, 216);
 	border: 1px solid #1a1a1a;
 	border-radius: 2px;
+}
+
+Gui--MiniSearcher QLineEdit
+{
+	min-width: 1em;
 }
 
 QListView, 

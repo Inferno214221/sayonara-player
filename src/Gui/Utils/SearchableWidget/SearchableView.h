@@ -132,7 +132,7 @@ class SearchableView :
 		{
 			bool processed = handleKeyPress(e);
 			if(processed){
-					return;
+				return;
 			}
 
 			View::keyPressEvent(e);

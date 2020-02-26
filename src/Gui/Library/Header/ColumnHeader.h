@@ -46,14 +46,15 @@ namespace Library
 		PIMPL(ColumnHeader)
 
 		protected:
-			ColumnHeader(ColumnIndex::IntegerType columnIndex, bool switchable, SortOrder sortAsc, SortOrder sortDesc, int preferredWidth, bool stretchable=false);
+			ColumnHeader(ColumnIndex::IntegerType columnIndex, bool switchable, SortOrder sortAsc, SortOrder sortDesc, int preferredWidth, bool isStretchable=false);
 
 		public:
 			virtual ~ColumnHeader();
 
 			virtual QString title() const=0;
 
-			bool stretchable() const;
+			bool isStretchable() const;
+			bool isSwitchable() const;
 			int defaultSize() const;
 
 			int preferredSize() const;
@@ -70,7 +71,7 @@ namespace Library
 		Q_OBJECT
 
 		public:
-			ColumnHeaderTrack(ColumnIndex::Track columnIndex, bool switchable, SortOrder sortAsc, SortOrder sortDesc, int preferredWidth, bool stretchable=false);
+			ColumnHeaderTrack(ColumnIndex::Track columnIndex, bool switchable, SortOrder sortAsc, SortOrder sortDesc, int preferredWidth, bool isStretchable=false);
 			QString title() const override;
 	};
 
@@ -79,7 +80,7 @@ namespace Library
 		Q_OBJECT
 
 		public:
-			ColumnHeaderAlbum(ColumnIndex::Album columnIndex, bool switchable, SortOrder sortAsc, SortOrder sortDesc, int preferredWidth, bool stretchable=false);
+			ColumnHeaderAlbum(ColumnIndex::Album columnIndex, bool switchable, SortOrder sortAsc, SortOrder sortDesc, int preferredWidth, bool isStretchable=false);
 			QString title() const override;
 	};
 
@@ -88,7 +89,7 @@ namespace Library
 		Q_OBJECT
 
 		public:
-			ColumnHeaderArtist(ColumnIndex::Artist columnIndex, bool switchable, SortOrder sortAsc, SortOrder sortDesc, int preferredWidth, bool stretchable=false);
+			ColumnHeaderArtist(ColumnIndex::Artist columnIndex, bool switchable, SortOrder sortAsc, SortOrder sortDesc, int preferredWidth, bool isStretchable=false);
 			QString title() const override;
 	};
 

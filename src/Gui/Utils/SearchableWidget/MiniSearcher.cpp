@@ -43,7 +43,7 @@ bool MiniSearchEventFilter::eventFilter(QObject* o, QEvent* e)
 				auto* ke = static_cast<QKeyEvent*>(e);
 				if(ke->key() == Qt::Key_Tab)
 				{
-					emit sig_tab_pressed();
+					emit sigTabPressed();
 
 					// Accept + true = EAT the event. No one else should see the event
 					e->accept();
@@ -53,7 +53,7 @@ bool MiniSearchEventFilter::eventFilter(QObject* o, QEvent* e)
 			break;
 
 		case QEvent::FocusOut:
-			emit sig_focus_lost();
+			emit sigFocusLost();
 			break;
 
 		default:
@@ -72,20 +72,21 @@ struct MiniSearcher::Private
 	QLineEdit*              lineEdit=nullptr;
 	QLabel*					label=nullptr;
 
-	int						max_width;
+	int						maxWidth;
 
 	Private(MiniSearcher* parent, SearchableViewInterface* svi) :
 		svi(svi),
-		max_width(150)
+		maxWidth(150)
 	{
 		label = new QLabel(parent);
 		lineEdit = new QLineEdit(parent);
+		lineEdit->setObjectName("MiniSearcherLineEdit");
 		lineEdit->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
-		reset_tooltip();
+		resetToolTip();
 	}
 
-	void reset_tooltip()
+	void resetToolTip()
 	{
 		lineEdit->setToolTip(
 			"<b>" + tr("Arrow up") + "</b> = " + tr("Previous search result") + "<br/>" +
@@ -94,7 +95,7 @@ struct MiniSearcher::Private
 		);
 	}
 
-	void add_tooltip_text(const QString& str)
+	void addToolTipText(const QString& str)
 	{
 		if(str.isEmpty()){
 			return;
@@ -112,26 +113,24 @@ MiniSearcher::MiniSearcher(SearchableViewInterface* parent) :
 {
 	m = Pimpl::make<Private>(this, parent);
 
-	QLayout* layout = new QBoxLayout(QBoxLayout::LeftToRight, this);
+	auto* layout = new QHBoxLayout(this);
 	layout->setContentsMargins(5, 5, 5, 5);
 	layout->addWidget(m->lineEdit);
 	layout->addWidget(m->label);
 	setLayout(layout);
 
-	MiniSearchEventFilter* msef = new MiniSearchEventFilter(this);
+	auto* msef = new MiniSearchEventFilter(this);
+	connect(msef, &MiniSearchEventFilter::sigTabPressed, this, &MiniSearcher::nextResult);
+	connect(msef, &MiniSearchEventFilter::sigFocusLost, this, &MiniSearcher::hide);
 	m->lineEdit->installEventFilter(msef);
-
-	connect(msef, &MiniSearchEventFilter::sig_tab_pressed, this, &MiniSearcher::nextResult);
-	connect(msef, &MiniSearchEventFilter::sig_focus_lost, this, &MiniSearcher::hide);
 
 	connect(m->lineEdit, &QLineEdit::textChanged, this, &MiniSearcher::sigTextChanged);
 
-	this->setMaximumWidth(m->max_width);
+	this->setMaximumWidth(m->maxWidth);
 	hide();
 }
 
-MiniSearcher::~MiniSearcher() {}
-
+MiniSearcher::~MiniSearcher() = default;
 
 void MiniSearcher::init(const QString& text)
 {
@@ -140,7 +139,6 @@ void MiniSearcher::init(const QString& text)
 
 	this->show();
 }
-
 
 bool MiniSearcher::isInitiator(QKeyEvent* event) const
 {
@@ -180,7 +178,6 @@ void MiniSearcher::nextResult()
 	m->lineEdit->setFocus();
 }
 
-
 bool MiniSearcher::checkAndInit(QKeyEvent* event)
 {
 	if(!isInitiator(event)) {
@@ -209,7 +206,7 @@ void MiniSearcher::reset()
 
 void MiniSearcher::setExtraTriggers(const QMap<QChar, QString>& triggers)
 {
-	m->reset_tooltip();
+	m->resetToolTip();
 
 	m->triggers = triggers;
 
@@ -219,7 +216,7 @@ void MiniSearcher::setExtraTriggers(const QMap<QChar, QString>& triggers)
 		tooltips << "<b>" + QString(it.key()) + "</b> = " + it.value();
 	}
 
-	m->add_tooltip_text(tooltips.join("<br/>"));
+	m->addToolTipText(tooltips.join("<br/>"));
 }
 
 QString MiniSearcher::currentText()
@@ -245,7 +242,7 @@ QRect MiniSearcher::calcGeometry() const
 	int parentWidth = m->svi->viewportWidth();
 	int parentHeight = m->svi->viewportHeight();
 
-	int targetWidth = m->max_width;
+	int targetWidth = m->maxWidth;
 	int targetHeight = std::max(35, 10 + m->lineEdit->height());
 
 	int newX = parentWidth - (targetWidth + 5);
@@ -321,7 +318,6 @@ void MiniSearcher::hideEvent(QHideEvent* e)
 	spLog(Log::Develop, this) << "Hide Minisearcher";
 }
 
-
 void MiniSearcher::focusOutEvent(QFocusEvent* e)
 {
 	this->reset();
@@ -331,6 +327,6 @@ void MiniSearcher::focusOutEvent(QFocusEvent* e)
 
 void MiniSearcher::languageChanged()
 {
-	m->reset_tooltip();
+	m->resetToolTip();
 	setExtraTriggers(m->triggers);
 }

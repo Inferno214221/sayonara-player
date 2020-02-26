@@ -114,6 +114,7 @@ namespace Gui
 		void placeInScreenCenter(QWidget* widget, float relativeSizeX, float relativeSizeY);
 
 		int textWidth(const QFontMetrics& fm, const QString& text);
+		int textWidth(QWidget* widget, const QString& text);
 	}
 }
 

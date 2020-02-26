@@ -222,7 +222,6 @@ void ContextMenu::shortcutChanged(ShortcutIdentifier identifier)
 	m->playNewTabAction->setShortcut(sch->shortcut(ShortcutIdentifier::PlayNewTab).sequence());
 	m->playNextAction->setShortcut(sch->shortcut(ShortcutIdentifier::PlayNext).sequence());
 	m->appendAction->setShortcut(sch->shortcut(ShortcutIdentifier::Append).sequence());
-	//m->coverViewAction->setShortcut(sch->shortcut(ShortcutIdentifier::CoverView).sequence());
 	m->reloadLibraryAction->setShortcut(sch->shortcut(ShortcutIdentifier::ReloadLibrary).sequence());
 }
 

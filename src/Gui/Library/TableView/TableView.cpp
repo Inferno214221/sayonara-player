@@ -49,7 +49,12 @@ void TableView::init(AbstractLibrary* library)
 {
 	initView(library);
 
-	m->header->init(columnHeaders(), columnHeaderState(), sortorder());
+	ColumnHeaderList headers = columnHeaders();
+	Util::Algorithm::sort(headers, [](ColumnHeaderPtr p1, ColumnHeaderPtr p2){
+		return (p1->columnIndex() < p2->columnIndex());
+	});
+
+	m->header->init(headers, columnHeaderState(), sortorder());
 
 	connect(m->header, &QHeaderView::sectionCountChanged, this, &TableView::headerColumnsChanged);
 	connect(m->header, &QHeaderView::sectionResized, this, &TableView::sectionResized);

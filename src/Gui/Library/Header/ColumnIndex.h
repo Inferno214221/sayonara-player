@@ -43,8 +43,8 @@ namespace ColumnIndex
 
 	enum class Artist : IntegerType
 	{
-		Undefined=0,
-		Name,
+		//Undefined=0,
+		Name=0,
 		Tracks
 	};
 

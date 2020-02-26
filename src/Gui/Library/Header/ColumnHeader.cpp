@@ -57,7 +57,12 @@ ColumnHeader::ColumnHeader(ColumnIndex::IntegerType type, bool switchable, SortO
 	m = Pimpl::make<Private>(type, switchable, sortorderAscending, sortorderDescending, preferredSize, stretchable);
 }
 
-bool ColumnHeader::stretchable() const
+bool ColumnHeader::isSwitchable() const
+{
+	return m->switchable;
+}
+
+bool ColumnHeader::isStretchable() const
 {
 	return m->stretchable;
 }

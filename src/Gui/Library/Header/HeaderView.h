@@ -52,10 +52,6 @@ namespace Library
 
 			QSize sizeHint() const override;
 
-		private:
-			QString resizeText() const;
-			int calcHeaderWidth() const;
-
 		private slots:
 			void actionTriggered(bool b);
 			void actionResizeTriggered();

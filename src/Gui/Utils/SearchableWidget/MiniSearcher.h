@@ -46,8 +46,8 @@ namespace Gui
 		Q_OBJECT
 
 		signals:
-			void sig_tab_pressed();
-			void sig_focus_lost();
+			void sigTabPressed();
+			void sigFocusLost();
 
 		public:
 			using QObject::QObject;

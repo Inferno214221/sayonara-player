@@ -301,3 +301,8 @@ int Util::textWidth(const QFontMetrics& fm, const QString& text)
 	return fm.width(text);
 #endif
 }
+
+int Util::textWidth(QWidget* widget, const QString& text)
+{
+	return textWidth(widget->fontMetrics(), text);
+}
