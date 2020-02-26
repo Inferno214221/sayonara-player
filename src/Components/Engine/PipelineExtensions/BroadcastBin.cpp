@@ -1,4 +1,4 @@
-/* Broadcaster.cpp */
+/* BroadcastBin.cpp */
 
 /* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
@@ -18,9 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
-#include "Broadcaster.h"
+#include "BroadcastBin.h"
 #include "Probing.h"
 #include "Components/Engine/EngineUtils.h"
 #include "Components/Engine/Callbacks.h"
@@ -32,7 +30,7 @@
 
 using namespace PipelineExtensions;
 
-struct Broadcaster::Private
+struct BroadcastBin::Private
 {
 	BroadcastDataReceiver* dataReceiver=nullptr;
 	GstElement* pipeline=nullptr;
@@ -58,14 +56,14 @@ struct Broadcaster::Private
 	{}
 };
 
-Broadcaster::Broadcaster(BroadcastDataReceiver* dataReceiver, GstElement* pipeline, GstElement* tee)
+BroadcastBin::BroadcastBin(BroadcastDataReceiver* dataReceiver, GstElement* pipeline, GstElement* tee)
 {
 	m = Pimpl::make<Private>(dataReceiver, pipeline, tee);
 }
 
-Broadcaster::~Broadcaster() = default;
+BroadcastBin::~BroadcastBin() = default;
 
-bool Broadcaster::init()
+bool BroadcastBin::init()
 {
 	if(m->bin){
 		return true;
@@ -111,7 +109,7 @@ bool Broadcaster::init()
 	return true;
 }
 
-bool Broadcaster::setEnabled(bool b)
+bool BroadcastBin::setEnabled(bool b)
 {
 	if(b && !init()){
 		return false;

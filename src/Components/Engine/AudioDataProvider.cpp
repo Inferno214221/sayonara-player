@@ -68,7 +68,7 @@ void adpDecodebinReady(GstElement* source, GstPad* new_src_pad, gpointer data)
 gboolean
 adpSpectrumHandler(GstBus* bus, GstMessage* message, gpointer data)
 {
-	Q_UNUSED(bus);
+	Q_UNUSED(bus)
 	QList<float> spectrum_vals;
 
 	auto* adp = static_cast<AudioDataProvider*>(data);

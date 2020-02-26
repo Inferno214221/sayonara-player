@@ -32,7 +32,7 @@ namespace PipelineExtensions
 	class Changeable
 	{
 		public:
-			Changeable();
+			Changeable() = default;
 			virtual ~Changeable();
 
 			/**

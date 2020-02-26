@@ -24,7 +24,10 @@
 #include "PipelineExtensions/Changeable.h"
 #include "PipelineExtensions/Fadeable.h"
 #include "PipelineExtensions/DelayedPlayable.h"
-#include "PipelineExtensions/Broadcaster.h"
+#include "PipelineExtensions/BroadcastBin.h"
+#include "PipelineExtensions/PositionAccessible.h"
+#include "PipelineExtensions/Pitchable.h"
+#include "PipelineExtensions/EqualizerAccesible.h"
 #include "Utils/Pimpl.h"
 
 #include <QObject>
@@ -42,7 +45,10 @@ namespace Engine
 		public PipelineExtensions::Fadeable,
 		public PipelineExtensions::Changeable,
 		public PipelineExtensions::DelayedPlayable,
-		public PipelineExtensions::BroadcastDataReceiver
+		public PipelineExtensions::BroadcastDataReceiver,
+		public PipelineExtensions::PositionAccessible,
+		public PipelineExtensions::Pitchable,
+		public PipelineExtensions::EqualizerAccessible
 	{
 		Q_OBJECT
 		PIMPL(Pipeline)
@@ -59,46 +65,33 @@ namespace Engine
 			bool init(Engine* engine);
 			bool prepare(const QString& uri);
 
-			void setRawData(const QByteArray& data) override; // BroadcastDataReceiver
-			void setInternalVolume(double volume) override; // Crossfader
-			double internalVolume() const override;      // Crossfader
-
 			bool hasElement(GstElement* e) const;
 			GstState state() const;
 
 			void checkPosition();
 			void checkAboutToFinish();
 
-			void enableVisualizer(bool b);
-			void enableBroadcasting(bool b);
+			void setVisualizerEnabled(bool levelEnabled, bool spectrumEnabled);
+			void setBroadcastingEnabled(bool b);
 
 			void record(bool b);
 			void setRecordingPath(const QString& session_path);
 
-			MilliSeconds	durationMs() const;
-			MilliSeconds	positionMs() const;
 			MilliSeconds	timeToGo() const;
 
+			void setRawData(const QByteArray& data) override;	// BroadcastDataReceiver
 
 		public slots:
 			void play() override;	// Crossfader
 			void stop() override;	// Crossfader
 			void pause();
 
-			void setEqualizerBand(int band_name, int val);
-
-			NanoSeconds seekRelative(double percent, NanoSeconds ns);
-			NanoSeconds seekAbsolute(NanoSeconds ns );
-
-
-		protected slots:
+		private slots:
 			void volumeChanged();
-			void showVisualizerChanged();
 			void muteChanged();
 			void speedActiveChanged();
 			void sppedChanged();
 			void sinkChanged();
-
 
 		private:
 			bool			createElements();
@@ -109,11 +102,14 @@ namespace Engine
 
 			MilliSeconds	getAboutToFinishTime() const;
 
-			void			setPositionElement(GstElement* element);
-			GstElement*		positionElement();
+			void postProcessFadeIn() override;	// Crossfader
+			void postProcessFadeOut() override;	// Crossfader
+			void setInternalVolume(double volume) override;	// Crossfader
+			double internalVolume() const override;			// Crossfader
 
-			void			getFadeInHandler() override;		// Crossfader
-			void			getFadeOutHandler() override;	// Crossfader
+			GstElement* positionElement() const override;
+			GstElement* pitchElement() const override;
+			GstElement* equalizerElement() const override;
 	};
 }
 

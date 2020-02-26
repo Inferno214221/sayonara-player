@@ -110,7 +110,7 @@ void Fadeable::fadeIn()
 	}
 
 	play();
-	getFadeInHandler();
+	postProcessFadeIn();
 }
 
 void Fadeable::fadeOut()
@@ -120,7 +120,7 @@ void Fadeable::fadeOut()
 		return;
 	}
 
-	getFadeOutHandler();
+	postProcessFadeOut();
 }
 
 void Fadeable::timedOut()

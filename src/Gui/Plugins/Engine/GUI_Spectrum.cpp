@@ -103,9 +103,9 @@ GUI_Spectrum::GUI_Spectrum(QWidget* parent) :
 {
 	m = Pimpl::make<Private>();
 
-	SetSetting(Set::Engine_ShowSpectrum, false);
+	SetSetting(Set::Engine_ShowSpectrum, false);	
+	Set::listen<Set::Engine_ShowSpectrum>(this, &GUI_Spectrum::activeChanged);
 }
-
 
 GUI_Spectrum::~GUI_Spectrum()
 {
@@ -114,7 +114,6 @@ GUI_Spectrum::~GUI_Spectrum()
 		delete ui; ui=nullptr;
 	}
 }
-
 
 void GUI_Spectrum::initUi()
 {
@@ -135,7 +134,7 @@ void GUI_Spectrum::finalizeInitialization()
 	m->resizeSteps(bins, currentStyle().n_rects);
 	m->spec.resize((size_t) bins, -100.0f);
 
-	Engine::Handler::instance()->addSpectrumReceiver(this);
+	Engine::Handler::instance()->registerSpectrumReceiver(this);
 	PlayerPlugin::Base::finalizeInitialization();
 
 	update();
@@ -154,6 +153,11 @@ QString GUI_Spectrum::displayName() const
 bool GUI_Spectrum::isActive() const
 {
 	return this->isVisible();
+}
+
+void GUI_Spectrum::activeChanged()
+{
+	Engine::Handler::instance()->reloadSpectrumReceivers();
 }
 
 void GUI_Spectrum::retranslate() {}
@@ -202,13 +206,11 @@ void GUI_Spectrum::update_style(int new_index)
 	m->locked.clear();
 }
 
-
 void GUI_Spectrum::showEvent(QShowEvent* e)
 {
 	SetSetting(Set::Engine_ShowSpectrum, true);
 	VisualPlugin::showEvent(e);
 }
-
 
 void GUI_Spectrum::closeEvent(QCloseEvent* e)
 {

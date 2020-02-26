@@ -177,6 +177,19 @@ void Handler::levelChanged()
 	}
 }
 
+void Handler::reloadReceivers()
+{
+	bool s = Util::Algorithm::contains(m->spectrumReceiver, [](SpectrumReceiver* spectrumReceiver){
+		return (spectrumReceiver->isActive());
+	});
+
+	bool l = Util::Algorithm::contains(m->levelReceiver, [](LevelReceiver* levelReceiver){
+		return (levelReceiver->isActive());
+	});
+
+	m->engine->setVisualizerEnabled(l, s);
+}
+
 void Handler::registerRawSoundReceiver(RawSoundReceiverInterface* receiver)
 {
 	if(!m->engine){
@@ -205,18 +218,32 @@ void Handler::unregisterRawSoundReceiver(RawSoundReceiverInterface* receiver)
 	m->engine->setBroadcastEnabled(!m->rawSoundReceiver.isEmpty());
 }
 
-void Handler::addLevelReceiver(LevelReceiver* receiver)
+void Handler::registerLevelReceiver(LevelReceiver* receiver)
 {
 	if(!m->levelReceiver.contains(receiver)) {
 		m->levelReceiver.push_back(receiver);
 	}
+
+	reloadReceivers();
 }
 
-void Handler::addSpectrumReceiver(SpectrumReceiver* receiver)
+void Handler::reloadLevelReceivers()
+{
+	reloadReceivers();
+}
+
+void Handler::registerSpectrumReceiver(SpectrumReceiver* receiver)
 {
 	if(!m->spectrumReceiver.contains(receiver)) {
 		m->spectrumReceiver.push_back(receiver);
 	}
+
+	reloadReceivers();
+}
+
+void Handler::reloadSpectrumReceivers()
+{
+	reloadReceivers();
 }
 
 void Handler::setEqualizer(int band, int value)

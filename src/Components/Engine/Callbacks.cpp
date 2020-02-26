@@ -581,9 +581,9 @@ GstFlowReturn Callbacks::newBuffer(GstElement *sink, gpointer p)
 	}
 
 	gsize size = gst_buffer_get_size(buffer);
-	gsize size_new = gst_buffer_extract(buffer, 0, data, size);
+	gsize newSize = gst_buffer_extract(buffer, 0, data, size);
 
-	QByteArray bytes(data, int(size_new));
+	QByteArray bytes(data, int(newSize));
 	pipeline->setRawData(bytes);
 
 	gst_sample_unref(sample);
