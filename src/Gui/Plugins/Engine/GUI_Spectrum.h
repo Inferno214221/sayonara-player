@@ -62,6 +62,9 @@ class GUI_Spectrum :
 	public slots:
 		void setSpectrum(const Engine::SpectrumList& spec) override;
 		void update_style(int new_index) override;
+
+	private:
+		void activeChanged();
 };
 
 #endif // GUI_SPECTRUM_H

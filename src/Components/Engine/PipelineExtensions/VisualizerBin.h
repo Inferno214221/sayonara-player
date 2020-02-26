@@ -1,4 +1,4 @@
-/* SpeedHandler.h */
+/* Visualizer.h */
 
 /* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
@@ -18,33 +18,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef VISUALIZER_H
+#define VISUALIZER_H
 
-
-#ifndef SPEEDHANDLER_H
-#define SPEEDHANDLER_H
-
-#include "Components/Engine/gstfwd.h"
 #include "Utils/Pimpl.h"
+#include <gst/gst.h>
 
 namespace PipelineExtensions
 {
-
 	/**
-	 * @brief The Pitcher class
+	 * @brief The Visualizer class
 	 * @ingroup EngineInterfaces
 	 */
-	class Pitcher
+	class VisualizerBin
 	{
-		PIMPL(Pitcher)
+		PIMPL(VisualizerBin)
 
-		public:
-			Pitcher();
-			virtual ~Pitcher();
+	public:
+		VisualizerBin(GstElement* pipeline, GstElement* tee);
+		~VisualizerBin();
 
-			void setSpeed(float speed, double pitch, bool preservePitch);
-
-			GstElement* element() const;
+		bool init();
+		bool setEnabled(bool levelEnabled, bool spectrumEnabled);
 	};
 }
 
-#endif // SPEEDHANDLER_H
+#endif // VISUALIZER_H

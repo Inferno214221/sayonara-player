@@ -56,16 +56,23 @@ namespace Engine
 			void registerRawSoundReceiver(RawSoundReceiverInterface* receiver);
 			void unregisterRawSoundReceiver(RawSoundReceiverInterface* receiver);
 
-			void addLevelReceiver(LevelReceiver* receiver);
-			void addSpectrumReceiver(SpectrumReceiver* receiver);
+			void registerLevelReceiver(LevelReceiver* receiver);
+			void registerSpectrumReceiver(SpectrumReceiver* receiver);
 
 			void setEqualizer(int band, int value);
+
+		public slots:
+			void reloadLevelReceivers();
+			void reloadSpectrumReceivers();
 
 		private slots:
 			void playstateChanged(PlayState state);
 			void newAudioDataAvailable(const QByteArray& data);
 			void spectrumChanged();
 			void levelChanged();
+
+		private:
+			void reloadReceivers();
 	};
 }
 

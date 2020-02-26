@@ -531,9 +531,9 @@ void EngineClass::updateBitrate(Bitrate bitrate, GstElement* src)
 
 void EngineClass::setBroadcastEnabled(bool b)
 {
-	m->pipeline->enableBroadcasting(b);
+	m->pipeline->setBroadcastingEnabled(b);
 	if(m->otherPipeline) {
-		m->otherPipeline->enableBroadcasting(b);
+		m->otherPipeline->setBroadcastingEnabled(b);
 	}
 }
 
@@ -559,6 +559,13 @@ QPair<float, float> Engine::Engine::level() const
 	return m->levelValues;
 }
 
+void Engine::Engine::setVisualizerEnabled(bool levelEnabled, bool spectrumEnabled)
+{
+	m->pipeline->setVisualizerEnabled(levelEnabled, spectrumEnabled);
+	if(m->otherPipeline){
+		m->otherPipeline->setVisualizerEnabled(levelEnabled, spectrumEnabled);
+	}
+}
 
 void EngineClass::error(const QString& error, const QString& element_name)
 {

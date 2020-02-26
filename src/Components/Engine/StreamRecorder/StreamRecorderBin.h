@@ -1,4 +1,4 @@
-/* EqualizerHandler.h */
+/* StreamRecorderHandler.h */
 
 /* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
@@ -18,30 +18,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef EQUALIZERHANDLER_H
-#define EQUALIZERHANDLER_H
+#ifndef STREAMRECORDERHANDLER_H
+#define STREAMRECORDERHANDLER_H
 
-#include "Components/Engine/gstfwd.h"
 #include "Utils/Pimpl.h"
+#include "Components/Engine/gstfwd.h"
+
+namespace StreamRecorder
+{
+	struct Data;
+}
 
 namespace PipelineExtensions
 {
-	/**
-	 * @brief The Equalizer class
-	 * @ingroup EngineInterfaces
-	 */
-	class Equalizer
+	class StreamRecorderBin
 	{
-		PIMPL(Equalizer)
+		PIMPL(StreamRecorderBin)
 
-		public:
-			Equalizer();
-			virtual ~Equalizer();
+	public:
+		StreamRecorderBin(GstElement* pipeline, GstElement* tee);
+		virtual ~StreamRecorderBin();
 
-			void setBand(int idx, int val);
+		bool init();
+		bool setEnabled(bool b);
 
-			GstElement* element() const;
+		void setTargetPath(const QString& path);
 	};
 }
 
-#endif // EQUALIZERHANDLER_H
+#endif // STREAMRECORDERHANDLER_H
