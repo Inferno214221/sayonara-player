@@ -22,7 +22,6 @@
 #include "SearchableModel.h"
 #include "MiniSearcher.h"
 
-#include "Utils/Logger/Logger.h"
 #include "Utils/Library/SearchMode.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Set.h"
@@ -276,11 +275,8 @@ void SearchableViewInterface::selectMatch(const QString& str, SearchDirection di
 
 bool SearchableViewInterface::handleKeyPress(QKeyEvent* e)
 {
-	spLog(Log::Develop, this) << "Key pressed " << e->key() << ", " << uint64_t(e->modifiers());
-
 	bool b = SelectionViewInterface::handleKeyPress(e);
 	if(b) {
-		spLog(Log::Develop, this) << "Accepted by selection interface";
 		return true;
 	}
 
@@ -289,10 +285,5 @@ bool SearchableViewInterface::handleKeyPress(QKeyEvent* e)
 	}
 
 	m->minisearcher->init();
-	b = m->minisearcher->handleKeyPress(e);
-	if(b) {
-		spLog(Log::Develop, this) << "Accepted by minisearcher";
-	}
-
-	return b;
+	return m->minisearcher->handleKeyPress(e);
 }

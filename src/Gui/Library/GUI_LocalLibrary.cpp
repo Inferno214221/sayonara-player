@@ -97,6 +97,8 @@ struct GUI_LocalLibrary::Private
 	}
 };
 
+#include "Gui/Utils/Shortcuts/ShortcutHandler.h"
+#include "Gui/Utils/Shortcuts/Shortcut.h"
 
 GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 	GUI_AbstractLibrary(Manager::instance()->libraryInstance(id), parent)
@@ -142,6 +144,12 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 	ui->extension_bar->init(m->library);
 	ui->lv_genres->init(m->library);
 	ui->directory_view->setCurrentLibrary(m->library->id());
+
+	Shortcut sc = ShortcutHandler::instance()->shortcut(ShortcutIdentifier::CoverView);
+
+	sc.connect(ui->btn_view, [this](){
+		this->activateNextViewType();
+	}, Qt::WindowShortcut);
 
 	ListenSetting(Set::Lib_ViewType, GUI_LocalLibrary::switchViewType);
 	ListenSetting(Set::Lib_ShowFilterExtBar, GUI_LocalLibrary::tracksLoaded);
@@ -427,7 +435,6 @@ void GUI_LocalLibrary::splitterGenreMoved(int pos, int idx)
 	SetSetting(Set::Lib_SplitterStateGenre, arr);
 }
 
-
 void GUI_LocalLibrary::switchViewType()
 {
 	Library::ViewType viewType = GetSetting(Set::Lib_ViewType);
@@ -470,6 +477,15 @@ void GUI_LocalLibrary::selectNextViewType()
 	int vt = int(GetSetting(Set::Lib_ViewType));
 	vt = (vt + 1) % 3;
 	SetSetting(Set::Lib_ViewType, ViewType(vt));
+}
+
+void GUI_LocalLibrary::activateNextViewType()
+{
+
+		int viewType = int(GetSetting(Set::Lib_ViewType));
+		int newViewType = (viewType + 1) % 3;
+		spLog(Log::Info, "ViewType") << "From old to new: " << newViewType;
+		SetSetting(Set::Lib_ViewType, ViewType(newViewType));
 }
 
 bool GUI_LocalLibrary::hasSelections() const

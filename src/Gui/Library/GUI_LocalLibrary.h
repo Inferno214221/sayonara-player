@@ -37,6 +37,7 @@ UI_FWD(GUI_LocalLibrary)
 
 namespace Library
 {
+	enum class ViewType : quint8;
 	/**
 	 * @brief The GUI_LocalLibrary class
 	 * @ingroup GuiLibrary
