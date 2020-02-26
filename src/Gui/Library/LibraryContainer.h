@@ -22,7 +22,7 @@
 #define LIBRARYCONTAINERIMPL_H
 
 #include "Utils/Pimpl.h"
-#include "Interfaces/Library/LibraryContainer.h"
+#include "Components/LibraryManagement/AbstractLibraryContainer.h"
 
 /**
  * @brief An interface class needed when implementing a library plugin
@@ -34,12 +34,12 @@ namespace Library
 {
 	class PluginHandler;
 
-	class ContainerImpl :
+	class Container :
 		public QObject,
-		public Library::Container
+		public Library::AbstractContainer
 	{
 		Q_OBJECT
-		PIMPL(ContainerImpl)
+		PIMPL(Container)
 
 		friend class PluginHandler;
 
@@ -50,8 +50,8 @@ namespace Library
 			virtual void				initUi()=0;
 
 		public:
-			explicit ContainerImpl(QObject* parent=nullptr);
-			virtual ~ContainerImpl() override;
+			explicit Container(QObject* parent=nullptr);
+			virtual ~Container() override;
 
 			void init() override;
 

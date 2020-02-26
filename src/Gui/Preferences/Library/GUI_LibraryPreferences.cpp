@@ -19,12 +19,13 @@
  */
 
 #include "GUI_LibraryPreferences.h"
-#include "Gui/Preferences/ui_GUI_LibraryPreferences.h"
 #include "LibraryListModel.h"
+#include "Gui/Preferences/ui_GUI_LibraryPreferences.h"
+
+#include "Gui/Library/Utils/GUI_EditLibrary.h"
 
 #include "Gui/Utils/Icons.h"
 #include "Gui/Utils/Delegates/StyledItemDelegate.h"
-#include "Gui/Utils/Library/GUI_EditLibrary.h"
 
 #include "Utils/Library/SearchMode.h"
 #include "Utils/Settings/Settings.h"

@@ -11,18 +11,23 @@ class QAction;
 
 namespace Library
 {
-	class Container
+	/**
+	 * @brief This container is only used internally to avoid Ui dependencies
+	 * in the Components. If implementing your own library plugin, use
+	 * Gui/Library/LibraryContainer.h instead
+	 */
+	class AbstractContainer
 	{
 		public:
 
-			virtual ~Container()=default;
+			virtual ~AbstractContainer()=default;
 			/**
 			 * @brief Should return an untranslated name used for identifying this widget
 			 * @return name
 			 */
 			virtual QString				name() const=0;
 
-			virtual void				rename(const QString& new_name)=0;
+			virtual void				rename(const QString& newName)=0;
 
 			/**
 			 * @brief Should return the translated name displayed in the library view combobox
@@ -56,7 +61,9 @@ namespace Library
 			 */
 			virtual QPixmap				icon() const=0;
 
-
+			/**
+			 * @brief init
+			 */
 			virtual void				init()=0;
 
 			/**
@@ -69,7 +76,7 @@ namespace Library
 	};
 }
 
-using LibraryContainerInterface=Library::Container;
+using LibraryContainerInterface=Library::AbstractContainer;
 Q_DECLARE_INTERFACE(LibraryContainerInterface, "com.sayonara-player.library")
 
 #endif // CONTAINERINTERFACE_H

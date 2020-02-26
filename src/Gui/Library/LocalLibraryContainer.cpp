@@ -42,7 +42,7 @@ struct LocalLibraryContainer::Private
 };
 
 LocalLibraryContainer::LocalLibraryContainer(const Library::Info& library, QObject* parent) :
-	ContainerImpl(parent)
+	Container(parent)
 {
 	m = Pimpl::make<Private>(library);
 }

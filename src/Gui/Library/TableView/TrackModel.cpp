@@ -87,12 +87,18 @@ QVariant TrackModel::data(const QModelIndex& index, int role) const
 		if (indexColumn == ColumnIndex::Track::TrackNumber ||
 			indexColumn == ColumnIndex::Track::Bitrate ||
 			indexColumn == ColumnIndex::Track::Length ||
-			indexColumn == ColumnIndex::Track::Year ||
 			indexColumn == ColumnIndex::Track::Filesize ||
-			indexColumn == ColumnIndex::Track::Filetype ||
 			indexColumn == ColumnIndex::Track::Discnumber)
 		{
 			alignment |= Qt::AlignRight;
+		}
+
+		else if(indexColumn == ColumnIndex::Track::Filetype ||
+				indexColumn == ColumnIndex::Track::Year ||
+				indexColumn == ColumnIndex::Track::ModifiedDate ||
+				indexColumn == ColumnIndex::Track::AddedDate)
+		{
+			alignment |= Qt::AlignCenter;
 		}
 
 		else
@@ -135,7 +141,7 @@ QVariant TrackModel::data(const QModelIndex& index, int role) const
 				return md.year();
 
 			case ColumnIndex::Track::Bitrate:
-				return QString::number(md.bitrate() / 1000) + " kBit/s";
+				return QString::number(md.bitrate() / 1000) + " " + tr("kBit/s");
 
 			case ColumnIndex::Track::Filesize:
 				return ::Util::File::getFilesizeString(md.filesize());
@@ -272,8 +278,6 @@ QString TrackModel::searchableString(int row) const
 		return tracks[row].title();
 	}
 }
-
-
 
 Cover::Location TrackModel::cover(const IndexSet& indexes) const
 {

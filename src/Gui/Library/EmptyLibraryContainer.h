@@ -22,14 +22,14 @@
 #define EMPTYLIBRARYCONTAINER_H
 
 #include "Utils/Pimpl.h"
-#include "Gui/Utils/Library/LibraryContainerImpl.h"
+#include "Gui/Library/LibraryContainer.h"
 
 /**
  * @brief The EmptyLibraryContainer class
  * @ingroup Library
  */
 class EmptyLibraryContainer :
-		public Library::ContainerImpl
+		public Library::Container
 {
 	Q_OBJECT
 	PIMPL(EmptyLibraryContainer)

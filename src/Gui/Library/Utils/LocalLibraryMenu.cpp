@@ -19,9 +19,9 @@
  */
 
 #include "LocalLibraryMenu.h"
+#include "GUI_EditLibrary.h"
 
 #include "Gui/Utils/Icons.h"
-#include "Gui/Utils/Library/GUI_EditLibrary.h"
 #include "Gui/Utils/PreferenceAction.h"
 #include "Gui/Utils/Shortcuts/ShortcutHandler.h"
 #include "Gui/Utils/Shortcuts/Shortcut.h"

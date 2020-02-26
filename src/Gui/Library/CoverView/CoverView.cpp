@@ -67,8 +67,6 @@ CoverView::CoverView(QWidget* parent) :
 	Library::ItemView(parent)
 {
 	m = Pimpl::make<Private>();
-
-	connect(this, &ItemView::doubleClicked, this, &CoverView::playClicked);
 }
 
 CoverView::~CoverView() = default;

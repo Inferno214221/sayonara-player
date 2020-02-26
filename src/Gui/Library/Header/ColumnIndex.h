@@ -25,10 +25,13 @@
 #define COL_ARTIST_MACROS
 
 #include <cstdint>
+class QString;
 
 namespace ColumnIndex
 {
-	enum class Album : uint8_t
+	using IntegerType=uint8_t;
+
+	enum class Album : IntegerType
 	{
 		MultiDisc=0,
 		Name=1,
@@ -38,13 +41,14 @@ namespace ColumnIndex
 		Rating=5
 	};
 
-	enum class Artist : uint8_t
+	enum class Artist : IntegerType
 	{
-		Name=0,
-		Tracks=1
+		Undefined=0,
+		Name,
+		Tracks
 	};
 
-	enum class Track : uint8_t
+	enum class Track : IntegerType
 	{
 		TrackNumber=0,
 		Title,
@@ -56,9 +60,9 @@ namespace ColumnIndex
 		Bitrate,
 		Filesize,
 		Filetype,
-		Rating,
 		AddedDate,
-		ModifiedDate
+		ModifiedDate,
+		Rating
 	};
 }
 

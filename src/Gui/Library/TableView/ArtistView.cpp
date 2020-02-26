@@ -110,12 +110,13 @@ void ArtistView::initContextMenu()
 ColumnHeaderList ArtistView::columnHeaders() const
 {
 	const QFontMetrics fm(this->font());
+	using ColumnIndex::Artist;
 
 	ColumnHeaderList columns
 	{
-		std::make_shared<ColumnHeader>(ColumnHeader::Sharp, true, SortOrder::NoSorting, SortOrder::NoSorting, 2),
-		std::make_shared<ColumnHeader>(ColumnHeader::Artist, false, SortOrder::ArtistNameAsc, SortOrder::ArtistNameDesc, 160, true),
-		std::make_shared<ColumnHeader>(ColumnHeader::NumTracks, true, SortOrder::ArtistTrackcountAsc, SortOrder::ArtistTrackcountDesc, Gui::Util::textWidth(fm, "M 8888"))
+		std::make_shared<ColumnHeaderArtist>(Artist::Undefined, true, SortOrder::NoSorting, SortOrder::NoSorting, 2),
+		std::make_shared<ColumnHeaderArtist>(Artist::Name, false, SortOrder::ArtistNameAsc, SortOrder::ArtistNameDesc, 160, true),
+		std::make_shared<ColumnHeaderArtist>(Artist::Tracks, true, SortOrder::ArtistTrackcountAsc, SortOrder::ArtistTrackcountDesc, Gui::Util::textWidth(fm, "M 8888"))
 	};
 
 	return check_vector_size(columns);

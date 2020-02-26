@@ -46,6 +46,8 @@ namespace Library
 		TableView(const TableView& other)=delete;
 		TableView& operator=(const TableView& other)=delete;
 
+		void setupColumnNames();
+
 	public:
 		explicit TableView(QWidget* parent=nullptr);
 		virtual ~TableView() override;
@@ -100,8 +102,8 @@ namespace Library
 		ModelIndexRange mapIndexToModelIndexes(int idx) const override;
 
 	protected slots:
-		void headerActionsTriggered();
-		void sortByColumn(int columnIndex);
+		void headerColumnsChanged(int oldCount, int newCount);
+		void sortorderChanged(int index, Qt::SortOrder sortorder);
 		void sectionResized(int logicalIndex, int oldSize, int newSize);
 		void sectionMoved(int logicalIndex, int old_visualIndex, int newVisualIndex);
 	};

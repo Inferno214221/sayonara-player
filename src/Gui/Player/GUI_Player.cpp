@@ -29,7 +29,7 @@
 
 #include "Components/PlayManager/PlayManager.h"
 #include "Components/LibraryManagement/LibraryPluginHandler.h"
-#include "Interfaces/Library/LibraryContainer.h"
+#include "Components/LibraryManagement/AbstractLibraryContainer.h"
 
 #include "Gui/Covers/CoverButton.h"
 #include "Gui/Player/ui_GUI_Player.h"

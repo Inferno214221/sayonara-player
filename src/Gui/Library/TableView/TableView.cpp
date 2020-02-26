@@ -31,7 +31,7 @@ using namespace Library;
 
 struct TableView::Private
 {
-	HeaderView*			header=nullptr;
+	HeaderView*	header=nullptr;
 };
 
 TableView::TableView(QWidget* parent) :
@@ -47,39 +47,19 @@ TableView::~TableView() = default;
 
 void TableView::init(AbstractLibrary* library)
 {
-	QByteArray headerState = columnHeaderState();
 	initView(library);
 
-	ColumnHeaderList headers = columnHeaders();
+	m->header->init(columnHeaders(), columnHeaderState(), sortorder());
 
-	// make sure that the headers are sorted due to their enum value
-	// otherwise header names are mapped in a wrong way in the model
-	Util::Algorithm::sort(headers, [](ColumnHeaderPtr a1, ColumnHeaderPtr a2)
-	{
-		return (a1->type() < a2->type());
-	});
-
-	for(int i=0; i<headers.size(); i++)
-	{
-		itemModel()->setHeaderData(i, Qt::Horizontal, headers[i]->title(), Qt::DisplayRole);
-	}
-
-	languageChanged();
-
-	connect(this, &ItemView::doubleClicked, this, &TableView::playClicked);
-
-	connect(m->header, &HeaderView::sigColumnsChanged, this, &TableView::headerActionsTriggered);
-	connect(m->header, &QHeaderView::sectionClicked, this, &TableView::sortByColumn);
+	connect(m->header, &QHeaderView::sectionCountChanged, this, &TableView::headerColumnsChanged);
 	connect(m->header, &QHeaderView::sectionResized, this, &TableView::sectionResized);
 	connect(m->header, &QHeaderView::sectionMoved, this, &TableView::sectionMoved);
+	connect(m->header, &QHeaderView::sortIndicatorChanged, this, &TableView::sortorderChanged);
 
-	// do this initialization here after the model knows about
-	// the number of columns. Otherwise the resize column method
-	// won't work
-	m->header->init(headers, headerState, sortorder());
+	languageChanged();
 }
 
-void TableView::headerActionsTriggered()
+void TableView::headerColumnsChanged(int /*oldCount*/, int /*newCount*/)
 {
 	const IndexSet selectedIndexes = selectedItems();
 	for(int index : selectedIndexes)
@@ -87,22 +67,17 @@ void TableView::headerActionsTriggered()
 		this->selectRow(index);
 	}
 
+	setupColumnNames();
 	saveColumnHeaderState(m->header->saveState());
 }
 
-void TableView::sortByColumn(int column_idx)
+void TableView::sortorderChanged(int index, Qt::SortOrder qtSortorder)
 {
-	Library::SortOrder sortorder = m->header->switchSortorder(column_idx);
-
-	applySortorder(sortorder);
+	applySortorder(m->header->sortorder(index, qtSortorder));
 }
 
-void TableView::sectionResized(int logicalIndex, int oldSize, int newSize)
+void TableView::sectionResized(int /*logicalIndex*/, int /*oldSize*/, int /*newSize*/)
 {
-	Q_UNUSED(logicalIndex)
-	Q_UNUSED(oldSize)
-	Q_UNUSED(newSize)
-
 	if(!this->isVisible()){
 		return;
 	}
@@ -110,26 +85,25 @@ void TableView::sectionResized(int logicalIndex, int oldSize, int newSize)
 	saveColumnHeaderState(m->header->saveState());
 }
 
-void TableView::sectionMoved(int logicalIndex, int oldVisualIndex, int newVisualIndex)
+void TableView::sectionMoved(int /*logicalIndex*/, int /*oldVisualIndex*/, int /*newVisualIndex*/)
 {
-	Q_UNUSED(logicalIndex)
-	Q_UNUSED(oldVisualIndex)
-	Q_UNUSED(newVisualIndex)
-
+	setupColumnNames();
 	saveColumnHeaderState(m->header->saveState());
+}
+
+void TableView::setupColumnNames()
+{
+	int count = columnHeaders().count();
+	for(int i=0; i<count; i++)
+	{
+		QString text = m->header->columnText(i);
+		model()->setHeaderData(i, Qt::Horizontal, text, Qt::DisplayRole);
+	}
 }
 
 void TableView::languageChanged()
 {
-	ItemModel* model = itemModel();
-
-	for(int i=0; i<model->columnCount(); i++)
-	{
-		ColumnHeaderPtr header = m->header->column(i);
-		if(header) {
-			model->setHeaderData(i, Qt::Horizontal, header->title(), Qt::DisplayRole);
-		}
-	}
+	setupColumnNames();
 }
 
 int TableView::mapModelIndexToIndex(const QModelIndex& idx) const

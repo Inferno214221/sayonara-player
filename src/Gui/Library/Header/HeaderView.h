@@ -41,17 +41,14 @@ namespace Library
 		Q_OBJECT
 		PIMPL(HeaderView)
 
-		signals:
-			void sigColumnsChanged();
-
 		public:
 			HeaderView(Qt::Orientation orientation, QWidget* parent=nullptr);
 			virtual ~HeaderView() override;
 
 			void init(const ColumnHeaderList& columnHeaders, const QByteArray& state, Library::SortOrder sorting);
 
-			Library::SortOrder	switchSortorder(int column_index);
-			ColumnHeaderPtr		column(int idx);
+			Library::SortOrder sortorder(int index, Qt::SortOrder sortorder);
+			QString columnText(int index) const;
 
 			QSize sizeHint() const override;
 

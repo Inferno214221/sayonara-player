@@ -25,14 +25,14 @@
 #define SOUNDCLOUD_LIBRARY_CONTAINER
 
 #include <QtGlobal>
-#include "Gui/Utils/Library/LibraryContainerImpl.h"
+#include "Gui/Library/LibraryContainer.h"
 
 namespace SC
 {
 	class GUI_Library;
 
 	class LibraryContainer :
-		public ::Library::ContainerImpl
+		public ::Library::Container
 	{
 		Q_OBJECT
 

@@ -79,19 +79,19 @@ AbstractLibrary* AlbumView::library() const
 	return m->library;
 }
 
-
 ColumnHeaderList AlbumView::columnHeaders() const
 {
 	const QFontMetrics fm(this->font());
+	using ColumnIndex::Album;
 
 	return ColumnHeaderList
 	{
-		std::make_shared<ColumnHeader>(ColumnHeader::Sharp, true, SortOrder::NoSorting, SortOrder::NoSorting, Gui::Util::textWidth(fm, "MM")),
-		std::make_shared<ColumnHeader>(ColumnHeader::Album, false, SortOrder::AlbumNameAsc, SortOrder::AlbumNameDesc, 160, true),
-		std::make_shared<ColumnHeader>(ColumnHeader::Duration, true, SortOrder::AlbumDurationAsc, SortOrder::AlbumDurationDesc, Gui::Util::textWidth(fm, "Duration")),
-		std::make_shared<ColumnHeader>(ColumnHeader::NumTracks, true, SortOrder::AlbumTracksAsc, SortOrder::AlbumTracksDesc, Gui::Util::textWidth(fm, "num tracks")),
-		std::make_shared<ColumnHeader>(ColumnHeader::Year, true, SortOrder::AlbumYearAsc, SortOrder::AlbumYearDesc, Gui::Util::textWidth(fm, "M 8888")),
-		std::make_shared<ColumnHeader>(ColumnHeader::Rating, true, SortOrder::AlbumRatingAsc, SortOrder::AlbumRatingDesc, 85)
+		std::make_shared<ColumnHeaderAlbum>(Album::MultiDisc, true, SortOrder::NoSorting, SortOrder::NoSorting, Gui::Util::textWidth(fm, "MM")),
+		std::make_shared<ColumnHeaderAlbum>(Album::Name, false, SortOrder::AlbumNameAsc, SortOrder::AlbumNameDesc, 160, true),
+		std::make_shared<ColumnHeaderAlbum>(Album::Duration, true, SortOrder::AlbumDurationAsc, SortOrder::AlbumDurationDesc, Gui::Util::textWidth(fm, "Duration")),
+		std::make_shared<ColumnHeaderAlbum>(Album::NumSongs, true, SortOrder::AlbumTracksAsc, SortOrder::AlbumTracksDesc, Gui::Util::textWidth(fm, "num tracks")),
+		std::make_shared<ColumnHeaderAlbum>(Album::Year, true, SortOrder::AlbumYearAsc, SortOrder::AlbumYearDesc, Gui::Util::textWidth(fm, "M 8888")),
+		std::make_shared<ColumnHeaderAlbum>(Album::Rating, true, SortOrder::AlbumRatingAsc, SortOrder::AlbumRatingDesc, 85)
 	};
 }
 

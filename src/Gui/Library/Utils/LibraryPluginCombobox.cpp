@@ -21,7 +21,7 @@
 #include "LibraryPluginCombobox.h"
 #include "LibraryPluginComboBoxDelegate.h"
 
-#include "Interfaces/Library/LibraryContainer.h"
+#include "Components/LibraryManagement/AbstractLibraryContainer.h"
 #include "Components/LibraryManagement/LibraryPluginHandler.h"
 
 #include "Utils/Algorithm.h"
@@ -32,7 +32,7 @@
 #include <QSize>
 #include <QFontMetrics>
 
-using Library::Container;
+using Library::AbstractContainer;
 using Library::PluginHandler;
 using Library::PluginCombobox;
 using Library::PluginComboBoxDelegate;
@@ -76,8 +76,8 @@ void PluginCombobox::setupActions()
 
 	this->clear();
 
-	const QList<Container*> libraries = PluginHandler::instance()->libraries(true);
-	for(const Container* container : libraries)
+	const QList<AbstractContainer*> libraries = PluginHandler::instance()->libraries(true);
+	for(const AbstractContainer* container : libraries)
 	{
 		QPixmap pm = container->icon().scaled(
 					this->iconSize(),
@@ -105,19 +105,19 @@ void PluginCombobox::actionTriggered(bool b)
 	QString name = action->data().toString();
 
 	PluginHandler::instance()->setCurrentLibrary(name);
-	for(QAction* library_action : Algorithm::AsConst(m->actions))
+	for(QAction* libraryAction : Algorithm::AsConst(m->actions))
 	{
-		if(library_action == action){
+		if(libraryAction == action){
 			continue;
 		}
 
-		library_action->setChecked(false);
+		libraryAction->setChecked(false);
 	}
 }
 
 void PluginCombobox::currentLibraryChanged()
 {
-	Container* currentLibrary = PluginHandler::instance()->currentLibrary();
+	AbstractContainer* currentLibrary = PluginHandler::instance()->currentLibrary();
 	if(!currentLibrary) {
 		return;
 	}
@@ -157,10 +157,10 @@ void PluginCombobox::skinChanged()
 		return;
 	}
 
-	const QList<Container*> libraries = PluginHandler::instance()->libraries(true);
+	const QList<AbstractContainer*> libraries = PluginHandler::instance()->libraries(true);
 	int i=0;
 
-	for(const Container* container : libraries)
+	for(const AbstractContainer* container : libraries)
 	{
 		QPixmap pm = container->icon().scaled(
 					this->iconSize(),

@@ -18,54 +18,54 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "LibraryContainerImpl.h"
-#include "LibraryPluginCombobox.h"
+#include "LibraryContainer.h"
+#include "Gui/Library/Utils/LibraryPluginCombobox.h"
 
 #include <QWidget>
 #include <QAction>
 #include <QLayout>
 
-using Library::ContainerImpl;
+using Library::Container;
 
-struct ContainerImpl::Private
+struct Container::Private
 {
-	bool		initialized;
+	bool initialized;
 
 	Private() :
 		initialized(false)
 	{}
 };
 
-ContainerImpl::ContainerImpl(QObject* parent) :
+Container::Container(QObject* parent) :
 	QObject(parent),
-	Library::Container()
+	Library::AbstractContainer()
 {
 	m = Pimpl::make<Private>();
 }
 
-void ContainerImpl::rename(const QString& new_name)
+void Container::rename(const QString& newName)
 {
-	Q_UNUSED(new_name);
+	Q_UNUSED(newName)
 }
 
-ContainerImpl::~ContainerImpl() = default;
+Container::~Container() = default;
 
-QString ContainerImpl::displayName() const
+QString Container::displayName() const
 {
 	return name();
 }
 
-QMenu* ContainerImpl::menu()
+QMenu* Container::menu()
 {
 	return nullptr;
 }
 
-bool ContainerImpl::isLocal() const
+bool Container::isLocal() const
 {
 	return false;
 }
 
-void ContainerImpl::init()
+void Container::init()
 {
 	if(m->initialized){
 		return;
@@ -79,21 +79,18 @@ void ContainerImpl::init()
 		layout->setContentsMargins(5, 0, 8, 0);
 	}
 
-	QFrame* header_frame = this->header();
-	if(header_frame)
+	QFrame* headerFrame = this->header();
+	if(headerFrame)
 	{
-		auto* layout = new QVBoxLayout(header_frame);
+		auto* layout = new QVBoxLayout(headerFrame);
 		layout->setContentsMargins(0, 0, 0, 0);
 
-		auto* combo_box = new Library::PluginCombobox(this->displayName(), header_frame);
-		layout->addWidget(combo_box);
+		auto* comboBox = new Library::PluginCombobox(this->displayName(), headerFrame);
+		layout->addWidget(comboBox);
 
-		header_frame->setFrameShape(QFrame::NoFrame);
-		header_frame->setLayout(layout);
+		headerFrame->setFrameShape(QFrame::NoFrame);
+		headerFrame->setLayout(layout);
 	}
 
 	m->initialized = true;
 }
-
-
-

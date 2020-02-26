@@ -28,7 +28,7 @@
 #include "Gui/Shutdown/GUI_Shutdown.h"
 #include "Components/Playlist/PlaylistHandler.h"
 #include "Components/LibraryManagement/LibraryPluginHandler.h"
-#include "Interfaces/Library/LibraryContainer.h"
+#include "Components/LibraryManagement/AbstractLibraryContainer.h"
 
 #include "Gui/Utils/Shortcuts/ShortcutHandler.h"
 #include "Gui/Utils/Shortcuts/Shortcut.h"
@@ -91,7 +91,7 @@ struct Menubar::Private
 	QAction*		currentLibraryMenuAction=nullptr;
 
 	QMessageBox*	aboutBox=nullptr;
-	Library::Container* currentLibrary=nullptr;
+	Library::AbstractContainer* currentLibrary=nullptr;
 
 	const QString SC_ID_VIEW_LIBRARY=QString("view_library");
 
@@ -188,7 +188,7 @@ void Menubar::insertPreferenceAction(QAction* action)
 	m->menuFile->insertAction(m->sepAfterPreferences, action);
 }
 
-QAction* Menubar::changeCurrentLibrary(Library::Container* library)
+QAction* Menubar::changeCurrentLibrary(Library::AbstractContainer* library)
 {
 	showLibraryAction(false);
 	m->currentLibrary = library;

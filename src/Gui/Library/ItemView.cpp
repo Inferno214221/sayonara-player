@@ -25,6 +25,7 @@
 
 #include "ItemView.h"
 #include "ItemModel.h"
+#include "Gui/Library/Utils/MergeMenu.h"
 
 #include "Components/Library/AbstractLibrary.h"
 #include "Components/Covers/CoverLocation.h"
@@ -45,7 +46,6 @@
 #include "Gui/Utils/Shortcuts/ShortcutHandler.h"
 #include "Gui/Utils/Shortcuts/Shortcut.h"
 #include "Gui/Utils/CustomMimeData.h"
-#include "Gui/Utils/Library/MergeMenu.h"
 #include "Gui/Utils/Icons.h"
 
 #include <QKeySequence>
@@ -106,6 +106,8 @@ ItemView::ItemView(QWidget* parent) :
 	new QShortcut(QKeySequence(Qt::Key_Return), this, SLOT(playClicked()), nullptr, Qt::WidgetShortcut);
 	new QShortcut(QKeySequence(Qt::Key_Enter), this, SLOT(playClicked()), nullptr, Qt::WidgetShortcut);
 	new QShortcut(QKeySequence(Qt::Key_Backspace), this, SLOT(clearSelection()), nullptr, Qt::WidgetShortcut);
+
+	connect(this, &QAbstractItemView::doubleClicked, this, &ItemView::playClicked);
 }
 
 ItemView::~ItemView() = default;

@@ -30,7 +30,7 @@ class QMenu;
 namespace Library
 {
 	class Info;
-	class Container;
+	class AbstractContainer;
 
 	/**
 	 * @brief Library Plugin Manager
@@ -49,7 +49,7 @@ namespace Library
 		void sigLibrariesChanged();
 
 	private:
-		void initLibraries(const QList<Container*>& containers);
+		void initLibraries(const QList<AbstractContainer*>& containers);
 		void initDllLibraries();
 
 	public:
@@ -57,18 +57,18 @@ namespace Library
 		 * @brief Search for plugins and add some predefined plugins
 		 * @param containers Some predefined plugins
 		 */
-		void init(const QList<Container*>& containers, Container* fallback_library);
+		void init(const QList<AbstractContainer*>& containers, AbstractContainer* fallback_library);
 
 		/**
 		 * @brief Get a list for all found plugins. The ui is not necessarily initialized
 		 * @return list for all found library plugins
 		 */
-		QList<Container*>	libraries(bool also_empty) const;
+		QList<AbstractContainer*>	libraries(bool also_empty) const;
 
-		Container*			currentLibrary() const;
+		AbstractContainer*			currentLibrary() const;
 		QWidget*			currentLibraryWidget() const;
 
-		void addLocalLibrary(Container* container);
+		void addLocalLibrary(AbstractContainer* container);
 		void renameLocalLibrary(const QString& old_name, const QString& new_name);
 		void removeLocalLibrary(const QString& name);
 		void moveLocalLibrary(int old_local_library_index, int new_local_library_index);
@@ -76,7 +76,7 @@ namespace Library
 	public slots:
 		void setCurrentLibrary(const QString& name);
 		void setCurrentLibrary(int index);
-		void setCurrentLibrary(Container* container);
+		void setCurrentLibrary(AbstractContainer* container);
 	};
 }
 

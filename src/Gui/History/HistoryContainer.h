@@ -1,11 +1,11 @@
 #ifndef HISTORYCONTAINER_H
 #define HISTORYCONTAINER_H
 
-#include "Gui/Utils/Library/LibraryContainerImpl.h"
+#include "Gui/Library/LibraryContainer.h"
 #include "Utils/Pimpl.h"
 
 class HistoryContainer :
-	public Library::ContainerImpl
+	public Library::Container
 {
 	Q_OBJECT
 	PIMPL(HistoryContainer)

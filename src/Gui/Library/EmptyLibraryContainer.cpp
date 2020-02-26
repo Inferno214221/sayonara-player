@@ -36,7 +36,7 @@ struct EmptyLibraryContainer::Private
 };
 
 EmptyLibraryContainer::EmptyLibraryContainer(QObject* parent) :
-	Library::ContainerImpl(parent)
+	Library::Container(parent)
 {
 	m = Pimpl::make<Private>();
 }

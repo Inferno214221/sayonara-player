@@ -74,21 +74,23 @@ ColumnHeaderList TrackView::columnHeaders() const
 {
 	const QFontMetrics fm(this->font());
 
+	using ColumnIndex::Track;
+
 	return ColumnHeaderList
 	{
-		std::make_shared<ColumnHeader>(ColumnHeader::Sharp, true, SortOrder::TrackNumAsc, SortOrder::TrackNumDesc, Gui::Util::textWidth(fm, "M888")),
-		std::make_shared<ColumnHeader>(ColumnHeader::Title, false, SortOrder::TrackTitleAsc, SortOrder::TrackTitleDesc, 200, true),
-		std::make_shared<ColumnHeader>(ColumnHeader::Artist, true, SortOrder::TrackArtistAsc, SortOrder::TrackArtistDesc, 200, true),
-		std::make_shared<ColumnHeader>(ColumnHeader::Album, true, SortOrder::TrackAlbumAsc, SortOrder::TrackAlbumDesc, 200, true),
-		std::make_shared<ColumnHeader>(ColumnHeader::Discnumber, true, SortOrder::TrackDiscnumberAsc, SortOrder::TrackDiscnumberDesc, Gui::Util::textWidth(fm, Lang::get(Lang::Disc) + " M888") ),
-		std::make_shared<ColumnHeader>(ColumnHeader::Year, true, SortOrder::TrackYearAsc, SortOrder::TrackYearDesc, Gui::Util::textWidth(fm, "M8888")),
-		std::make_shared<ColumnHeader>(ColumnHeader::DurationShort, true, SortOrder::TrackLenghtAsc, SortOrder::TrackLengthDesc, Gui::Util::textWidth(fm, "8d 88h 88s")),
-		std::make_shared<ColumnHeader>(ColumnHeader::Bitrate, true, SortOrder::TrackBitrateAsc, SortOrder::TrackBitrateDesc, Gui::Util::textWidth(fm, "M8888 kBit/s")),
-		std::make_shared<ColumnHeader>(ColumnHeader::Filesize, true, SortOrder::TrackSizeAsc, SortOrder::TrackSizeDesc, Gui::Util::textWidth(fm, "M888.88 MB")),
-		std::make_shared<ColumnHeader>(ColumnHeader::Filetype, true, SortOrder::TrackFiletypeAsc, SortOrder::TrackFiletypeDesc, Gui::Util::textWidth(fm, "MFLAC")),
-		std::make_shared<ColumnHeader>(ColumnHeader::AddedDate, true, SortOrder::TrackDateAddedAsc, SortOrder::TrackDateAddedDesc, Gui::Util::textWidth(fm, "234/323/23423")),
-		std::make_shared<ColumnHeader>(ColumnHeader::ModifiedDate, true, SortOrder::TrackDateAddedAsc, SortOrder::TrackDateAddedDesc, Gui::Util::textWidth(fm, "234/323/23423")),
-		std::make_shared<ColumnHeader>(ColumnHeader::Rating, true, SortOrder::TrackRatingAsc, SortOrder::TrackRatingDesc, 85),
+		std::make_shared<ColumnHeaderTrack>(Track::TrackNumber, true, SortOrder::TrackNumAsc, SortOrder::TrackNumDesc, Gui::Util::textWidth(fm, "M888")),
+		std::make_shared<ColumnHeaderTrack>(Track::Title, false, SortOrder::TrackTitleAsc, SortOrder::TrackTitleDesc, 200, true),
+		std::make_shared<ColumnHeaderTrack>(Track::Artist, true, SortOrder::TrackArtistAsc, SortOrder::TrackArtistDesc, 200, true),
+		std::make_shared<ColumnHeaderTrack>(Track::Album, true, SortOrder::TrackAlbumAsc, SortOrder::TrackAlbumDesc, 200, true),
+		std::make_shared<ColumnHeaderTrack>(Track::Discnumber, true, SortOrder::TrackDiscnumberAsc, SortOrder::TrackDiscnumberDesc, Gui::Util::textWidth(fm, Lang::get(Lang::Disc) + " M888") ),
+		std::make_shared<ColumnHeaderTrack>(Track::Year, true, SortOrder::TrackYearAsc, SortOrder::TrackYearDesc, Gui::Util::textWidth(fm, "M8888")),
+		std::make_shared<ColumnHeaderTrack>(Track::Length, true, SortOrder::TrackLenghtAsc, SortOrder::TrackLengthDesc, Gui::Util::textWidth(fm, "8d 88h 88s")),
+		std::make_shared<ColumnHeaderTrack>(Track::Bitrate, true, SortOrder::TrackBitrateAsc, SortOrder::TrackBitrateDesc, Gui::Util::textWidth(fm, "M8888 kBit/s")),
+		std::make_shared<ColumnHeaderTrack>(Track::Filesize, true, SortOrder::TrackSizeAsc, SortOrder::TrackSizeDesc, Gui::Util::textWidth(fm, "M888.88 MB")),
+		std::make_shared<ColumnHeaderTrack>(Track::Filetype, true, SortOrder::TrackFiletypeAsc, SortOrder::TrackFiletypeDesc, Gui::Util::textWidth(fm, "MFLAC")),
+		std::make_shared<ColumnHeaderTrack>(Track::AddedDate, true, SortOrder::TrackDateAddedAsc, SortOrder::TrackDateAddedDesc, Gui::Util::textWidth(fm, "234/323/23423")),
+		std::make_shared<ColumnHeaderTrack>(Track::ModifiedDate, true, SortOrder::TrackDateAddedAsc, SortOrder::TrackDateAddedDesc, Gui::Util::textWidth(fm, "234/323/23423")),
+		std::make_shared<ColumnHeaderTrack>(Track::Rating, true, SortOrder::TrackRatingAsc, SortOrder::TrackRatingDesc, 85),
 	};
 }
 
@@ -126,7 +128,6 @@ void TrackView::selectedItemsChanged(const IndexSet& lst)
 	m->library->selectedTracksChanged(lst);
 }
 
-
 void TrackView::playClicked()
 {
 	m->library->prepareCurrentTracksForPlaylist(false);
@@ -137,7 +138,6 @@ void TrackView::playNewTabClicked()
 	TableView::playNewTabClicked();
 	m->library->prepareCurrentTracksForPlaylist(true);
 }
-
 
 void TrackView::playNextClicked()
 {

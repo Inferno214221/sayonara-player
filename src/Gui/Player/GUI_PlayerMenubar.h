@@ -29,7 +29,7 @@
 
 namespace Library
 {
-	class Container;
+	class AbstractContainer;
 }
 
 namespace PlayerPlugin
@@ -62,7 +62,7 @@ private:
 	void initConnections();
 	void styleChanged();
 
-	QAction* changeCurrentLibrary(Library::Container* library);
+	QAction* changeCurrentLibrary(Library::AbstractContainer* library);
 
 private slots:
 	void openDirClicked();

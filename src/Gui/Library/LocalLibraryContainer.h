@@ -21,7 +21,7 @@
 #ifndef LOCALLIBRARYCONTAINER_H
 #define LOCALLIBRARYCONTAINER_H
 
-#include "Gui/Utils/Library/LibraryContainerImpl.h"
+#include "Gui/Library/LibraryContainer.h"
 #include "Utils/Pimpl.h"
 
 namespace Library
@@ -34,7 +34,7 @@ namespace Library
  * @ingroup GuiLibrary
  */
 class LocalLibraryContainer :
-	public Library::ContainerImpl
+	public Library::Container
 {
 	Q_OBJECT
 	PIMPL(LocalLibraryContainer)
