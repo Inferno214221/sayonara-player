@@ -52,6 +52,7 @@
 #include <QFileInfo>
 #include <QRegExp>
 #include <QStringList>
+#include <QDateTime>
 
 using namespace Tagging::Utils;
 namespace FileUtils=::Util::File;
@@ -75,12 +76,15 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 
 	QFileInfo fi(md.filepath());
 	md.setFilesize(Filesize(fi.size()));
+	md.setCreatedDate(::Util::dateToInt(fi.created()));
+	md.setModifiedDate(Util::dateToInt(fi.lastModified()));
+
 	if(fi.size() <= 0){
 		return false;
 	}
 
 	TagLib::AudioProperties::ReadStyle read_style = TagLib::AudioProperties::Fast;
-	bool read_audio_props=true;
+	bool readAudioProperties=true;
 
 	switch(quality)
 	{
@@ -95,13 +99,13 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 			break;
 		case Quality::Dirty:
 			read_style = TagLib::AudioProperties::Fast;
-			read_audio_props = false;
+			readAudioProperties = false;
 			break;
 	};
 
 	TagLib::FileRef f(
 			TagLib::FileName(md.filepath().toUtf8()),
-			read_audio_props,
+			readAudioProperties,
 			read_style
 	);
 

@@ -61,11 +61,11 @@ void TrackView::initView(AbstractLibrary* library)
 {
 	m->library = library;
 
-	TrackModel* track_model = new TrackModel(this, library);
-	RatingDelegate* track_delegate = new RatingDelegate(this, int(ColumnIndex::Track::Rating), true);
+	auto* trackModel = new TrackModel(this, library);
+	auto* trackDelegate = new RatingDelegate(this, int(ColumnIndex::Track::Rating), true);
 
-	this->setItemModel(track_model);
-	this->setItemDelegate(track_delegate);
+	this->setItemModel(trackModel);
+	this->setItemDelegate(trackDelegate);
 
 	connect(library, &AbstractLibrary::sigAllTracksLoaded, this, &TrackView::fill);
 }
@@ -86,7 +86,9 @@ ColumnHeaderList TrackView::columnHeaders() const
 		std::make_shared<ColumnHeader>(ColumnHeader::Bitrate, true, SortOrder::TrackBitrateAsc, SortOrder::TrackBitrateDesc, Gui::Util::textWidth(fm, "M8888 kBit/s")),
 		std::make_shared<ColumnHeader>(ColumnHeader::Filesize, true, SortOrder::TrackSizeAsc, SortOrder::TrackSizeDesc, Gui::Util::textWidth(fm, "M888.88 MB")),
 		std::make_shared<ColumnHeader>(ColumnHeader::Filetype, true, SortOrder::TrackFiletypeAsc, SortOrder::TrackFiletypeDesc, Gui::Util::textWidth(fm, "MFLAC")),
-		std::make_shared<ColumnHeader>(ColumnHeader::Rating, true, SortOrder::TrackRatingAsc, SortOrder::TrackRatingDesc, 85)
+		std::make_shared<ColumnHeader>(ColumnHeader::AddedDate, true, SortOrder::TrackDateAddedAsc, SortOrder::TrackDateAddedDesc, Gui::Util::textWidth(fm, "234/323/23423")),
+		std::make_shared<ColumnHeader>(ColumnHeader::ModifiedDate, true, SortOrder::TrackDateAddedAsc, SortOrder::TrackDateAddedDesc, Gui::Util::textWidth(fm, "234/323/23423")),
+		std::make_shared<ColumnHeader>(ColumnHeader::Rating, true, SortOrder::TrackRatingAsc, SortOrder::TrackRatingDesc, 85),
 	};
 }
 

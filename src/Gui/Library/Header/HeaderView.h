@@ -48,7 +48,7 @@ namespace Library
 			HeaderView(Qt::Orientation orientation, QWidget* parent=nullptr);
 			virtual ~HeaderView() override;
 
-			void init(const ColumnHeaderList& column_headers, const QByteArray& state, Library::SortOrder sorting);
+			void init(const ColumnHeaderList& columnHeaders, const QByteArray& state, Library::SortOrder sorting);
 
 			Library::SortOrder	switchSortorder(int column_index);
 			ColumnHeaderPtr		column(int idx);

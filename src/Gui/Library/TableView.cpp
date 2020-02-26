@@ -45,12 +45,21 @@ TableView::TableView(QWidget* parent) :
 
 TableView::~TableView() = default;
 
+#include "Utils/Algorithm.h"
 void TableView::init(AbstractLibrary* library)
 {
 	QByteArray headerState = columnHeaderState();
 	initView(library);
 
-	const ColumnHeaderList headers = columnHeaders();
+	ColumnHeaderList headers = columnHeaders();
+
+	// make sure that the headers are sorted due to their enum value
+	// otherwise header names are mapped in a wrong way in the model
+	Util::Algorithm::sort(headers, [](ColumnHeaderPtr a1, ColumnHeaderPtr a2)
+	{
+		return (a1->type() < a2->type());
+	});
+
 	for(int i=0; i<headers.size(); i++)
 	{
 		itemModel()->setHeaderData(i, Qt::Horizontal, headers[i]->title(), Qt::DisplayRole);

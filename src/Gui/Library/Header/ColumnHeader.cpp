@@ -94,6 +94,11 @@ SortOrder ColumnHeader::sortorderDescending() const
 	return m->sortorderDescending;
 }
 
+ColumnHeader::HeaderType ColumnHeader::type() const
+{
+	return m->type;
+}
+
 QAction* ColumnHeader::action()
 {
 	m->action->setText( this->title() );
@@ -144,6 +149,10 @@ QString ColumnHeader::title() const
 			return Lang::get(Lang::Filetype).toFirstUpper();
 		case ColumnHeader::Discnumber:
 			return Lang::get(Lang::Disc);
+		case ColumnHeader::ModifiedDate:
+			return Lang::get(Lang::Modified);
+		case ColumnHeader::AddedDate:
+			return Lang::get(Lang::Created);
 		default:
 			return QString();
 	}

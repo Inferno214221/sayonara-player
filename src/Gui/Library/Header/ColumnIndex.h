@@ -56,7 +56,9 @@ namespace ColumnIndex
 		Bitrate,
 		Filesize,
 		Filetype,
-		Rating
+		Rating,
+		AddedDate,
+		ModifiedDate
 	};
 }
 

@@ -68,10 +68,13 @@ namespace MetaDataSorting
 	bool TracksByFiletypeAsc(const MetaData& md1, const MetaData& md2);
 	bool TracksByFiletypeDesc(const MetaData& md1, const MetaData& md2);
 
-
-
 	bool TracksByRatingAsc(const MetaData& md1, const MetaData& md2);
 	bool TracksByRatingDesc(const MetaData& md1, const MetaData& md2);
+
+	bool TracksByAddedDateAsc(const MetaData& md1, const MetaData& md2);
+	bool TracksByAddedDateDesc(const MetaData& md1, const MetaData& md2);
+	bool TracksByModifiedDateAsc(const MetaData& md1, const MetaData& md2);
+	bool TracksByModifiedDateDesc(const MetaData& md1, const MetaData& md2);
 
 	bool ArtistByNameAsc(const Artist& artist1, const Artist& artist2);
 	bool ArtistByNameDesc(const Artist& artist1, const Artist& artist2);
