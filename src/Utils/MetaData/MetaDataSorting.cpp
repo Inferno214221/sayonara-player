@@ -387,6 +387,59 @@ bool MetaDataSorting::TracksByRatingDesc(const MetaData& md1, const MetaData& md
 	return false;
 }
 
+bool MetaDataSorting::TracksByAddedDateAsc(const MetaData& md1, const MetaData& md2)
+{
+	if(md1.createdDate() < md2.createdDate()){
+		return true;
+	}
+
+	if(md1.rating() == md2.rating()){
+		return TracksByArtistAsc(md1, md2);
+	}
+
+	return false;
+}
+
+bool MetaDataSorting::TracksByAddedDateDesc(const MetaData& md1, const MetaData& md2)
+{
+	if(md2.createdDate() < md1.createdDate()){
+		return true;
+	}
+
+	if(md1.createdDate() == md2.createdDate()){
+		return TracksByArtistDesc(md1, md2);
+	}
+
+	return false;
+}
+
+bool MetaDataSorting::TracksByModifiedDateAsc(const MetaData& md1, const MetaData& md2)
+{
+	if(md1.modifiedDate() < md2.modifiedDate()){
+		return true;
+	}
+
+	if(md1.modifiedDate() == md2.modifiedDate()){
+		return TracksByArtistAsc(md1, md2);
+	}
+
+	return false;
+}
+
+bool MetaDataSorting::TracksByModifiedDateDesc(const MetaData& md1, const MetaData& md2)
+{
+	if(md2.modifiedDate() < md1.modifiedDate()){
+		return true;
+	}
+
+	if(md1.modifiedDate() == md2.modifiedDate()){
+		return TracksByArtistAsc(md1, md2);
+	}
+
+	return false;
+}
+
+
 
 bool MetaDataSorting::ArtistByNameAsc(const Artist& artist1, const Artist& artist2)
 {

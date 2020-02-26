@@ -131,8 +131,8 @@ bool CachingThread::scanRarArchive(const QString& rar_file)
 	return false;
 #endif
 
-	QString temp_dir = createTempDirectory();
-	return scanArchive(temp_dir, "rar", {"x", rar_file, temp_dir});
+	QString tempDirectory = createTempDirectory();
+	return scanArchive(tempDirectory, "rar", {"x", rar_file, tempDirectory});
 }
 
 bool CachingThread::scanZipArchive(const QString& zip_file)
@@ -141,8 +141,8 @@ bool CachingThread::scanZipArchive(const QString& zip_file)
 	return false;
 #endif
 
-	QString temp_dir = createTempDirectory();
-	return scanArchive(temp_dir, "unzip", {zip_file, "-d", temp_dir}, QList<int>{0, 1, 2});
+	QString tempDirectory = createTempDirectory();
+	return scanArchive(tempDirectory, "unzip", {zip_file, "-d", tempDirectory}, QList<int>{0, 1, 2});
 }
 
 bool CachingThread::scanTgzArchive(const QString& tgz)
@@ -151,8 +151,8 @@ bool CachingThread::scanTgzArchive(const QString& tgz)
 	return false;
 #endif
 
-	QString temp_dir = createTempDirectory();
-	return scanArchive(temp_dir, "tar", {"xzf", tgz, "-C", temp_dir});
+	QString tempDirectory = createTempDirectory();
+	return scanArchive(tempDirectory, "tar", {"xzf", tgz, "-C", tempDirectory});
 }
 
 void CachingThread::scanDirectory(const QString& dir)

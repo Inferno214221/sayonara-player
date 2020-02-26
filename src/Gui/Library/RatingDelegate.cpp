@@ -35,16 +35,16 @@ struct RatingDelegate::Private
 	int	ratingColumn;
 	bool enabled;
 
-	Private(bool enabled, int rating_column) :
-		ratingColumn(rating_column),
+	Private(bool enabled, int ratingColumn) :
+		ratingColumn(ratingColumn),
 		enabled(enabled)
 	{}
 };
 
-RatingDelegate::RatingDelegate(QObject* parent, int rating_column, bool enabled) :
+RatingDelegate::RatingDelegate(QObject* parent, int ratingColumn, bool enabled) :
 	StyledItemDelegate(parent)
 {
-	m = Pimpl::make<Private>(enabled, rating_column);
+	m = Pimpl::make<Private>(enabled, ratingColumn);
 }
 
 RatingDelegate::~RatingDelegate() = default;

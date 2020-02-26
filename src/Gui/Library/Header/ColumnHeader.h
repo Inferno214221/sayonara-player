@@ -59,7 +59,9 @@ namespace Library
 				Rating,
 				Bitrate,
 				Filetype,
-				Filesize
+				Filesize,
+				AddedDate,
+				ModifiedDate
 			};
 
 		public:
@@ -74,6 +76,8 @@ namespace Library
 
 			SortOrder sortorderAscending() const;
 			SortOrder sortorderDescending() const;
+
+			HeaderType type() const;
 
 			void retranslate();
 

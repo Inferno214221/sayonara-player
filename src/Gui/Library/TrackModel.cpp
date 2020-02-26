@@ -43,6 +43,7 @@
 
 #include <QSize>
 #include <QPair>
+#include <QDateTime>
 
 using namespace Library;
 
@@ -142,6 +143,12 @@ QVariant TrackModel::data(const QModelIndex& index, int role) const
 			case ColumnIndex::Track::Filetype:
 				return ::Util::File::getFileExtension(md.filepath());
 
+			case ColumnIndex::Track::AddedDate:
+				return md.createdDateTime().date().toString(Qt::DateFormat::SystemLocaleShortDate);
+
+			case ColumnIndex::Track::ModifiedDate:
+				return md.modifiedDateTime().date().toString(Qt::DateFormat::DefaultLocaleShortDate);
+
 			case ColumnIndex::Track::Rating:
 			{
 				if(role == Qt::DisplayRole) {
@@ -172,8 +179,8 @@ Qt::ItemFlags TrackModel::flags(const QModelIndex& index = QModelIndex()) const
 		return Qt::ItemIsEnabled;
 	}
 
-	auto column_index = ColumnIndex::Track(index.column());
-	if(column_index == ColumnIndex::Track::Rating) {
+	auto columnIndex = ColumnIndex::Track(index.column());
+	if(columnIndex == ColumnIndex::Track::Rating) {
 		return (QAbstractTableModel::flags(index) | Qt::ItemIsEditable);
 	}
 
