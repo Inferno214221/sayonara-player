@@ -61,7 +61,7 @@ BroadcastBin::BroadcastBin(BroadcastDataReceiver* dataReceiver, GstElement* pipe
 	m = Pimpl::make<Private>(dataReceiver, pipeline, tee);
 }
 
-BroadcastBin::~BroadcastBin() {}
+BroadcastBin::~BroadcastBin() = default;
 
 bool BroadcastBin::init()
 {
