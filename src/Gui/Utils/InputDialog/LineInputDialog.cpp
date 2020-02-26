@@ -77,7 +77,7 @@ LineInputDialog::~LineInputDialog()
 
 QString LineInputDialog::getRenameFilename(QWidget* parent, const QString& oldName, const QString& parentPath)
 {
-	LineInputDialog dialog(Lang::get(Lang::Rename), tr("Please enter new name"), oldName, parent);
+	LineInputDialog dialog(Lang::get(Lang::Rename), Lang::get(Lang::EnterNewName), oldName, parent);
 	dialog.setInvalidChars(Util::File::invalidFilenameChars());
 	dialog.showInfo(!parentPath.isEmpty(), parentPath + "/");
 	dialog.exec();
@@ -87,7 +87,7 @@ QString LineInputDialog::getRenameFilename(QWidget* parent, const QString& oldNa
 
 QString LineInputDialog::getNewFilename(QWidget* parent, const QString& info, const QString& parentPath)
 {
-	LineInputDialog dialog(info, tr("Please enter new name"), parent);
+	LineInputDialog dialog(info, Lang::get(Lang::EnterNewName), parent);
 	dialog.setInvalidChars(Util::File::invalidFilenameChars());
 	dialog.showInfo(!parentPath.isEmpty(), parentPath + "/");
 	dialog.exec();

@@ -180,6 +180,8 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Empty input");
 		case EnterName:
 			return l.tr("Enter name");
+		case EnterNewName:
+			return l.tr("Please enter new name");
 		case EnterUrl:
 			return l.tr("Enter URL");
 		case Entry:
@@ -375,6 +377,8 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Reset");
 		case Retry:
 			return l.tr("Retry");
+		case ReverseOrder:
+			return l.tr("Reverse order");
 		case Sampler:
 			return l.tr("Sampler");
 		case Shuffle:

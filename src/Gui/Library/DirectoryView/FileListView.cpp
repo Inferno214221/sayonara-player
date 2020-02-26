@@ -305,7 +305,7 @@ void FileListView::renameFileClicked()
 	int lastDot = file.lastIndexOf(".");
 	file = file.left(lastDot);
 
-	QString inputText = Gui::LineInputDialog::getRenameFilename(this, tr("Enter new name"));
+	QString inputText = Gui::LineInputDialog::getRenameFilename(this, Lang::get(Lang::EnterNewName));
 	if(inputText.isEmpty()) {
 		return;
 	}

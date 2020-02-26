@@ -498,7 +498,7 @@ void Menubar::aboutClicked()
 
 		m->aboutBox->setInformativeText( QStringList
 		({
-			tr("Written by Michael Lugmair (Lucio Carreras)"),
+			tr("Written by %1").arg("Michael Lugmair (Lucio Carreras)"),
 			"",
 			tr("License") + ": GPLv3",
 			"Copyright 2011-" + QString::number(QDateTime::currentDateTime().date().year()),

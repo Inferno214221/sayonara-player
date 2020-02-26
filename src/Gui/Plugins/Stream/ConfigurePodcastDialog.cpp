@@ -64,7 +64,7 @@ QString ConfigurePodcastDialog::labelText(int i) const
 	}
 
 	else if(i == 2){
-		return tr("Reverse");
+		return Lang::get(Lang::ReverseOrder);
 	}
 
 	return QString();

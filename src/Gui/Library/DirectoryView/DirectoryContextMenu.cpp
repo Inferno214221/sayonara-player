@@ -198,9 +198,6 @@ void ContextMenu::refresh(int count)
 			Library::ContextMenu::EntryLyrics |
 			Library::ContextMenu::EntryAppend |
 			Library::ContextMenu::EntryPlayNext
-//			Library::ContextMenu::EntryStandardView |
-//			Library::ContextMenu::EntryCoverView |
-//			Library::ContextMenu::EntryDirectoryView
 		);
 
 		switch(m->mode)
