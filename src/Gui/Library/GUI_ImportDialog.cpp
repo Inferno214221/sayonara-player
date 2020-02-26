@@ -19,7 +19,7 @@
  */
 
 #include "GUI_ImportDialog.h"
-#include "Gui/ImportDialog/ui_GUI_ImportDialog.h"
+#include "Gui/Library/ui_GUI_ImportDialog.h"
 #include "Gui/Tagging/GUI_TagEdit.h"
 
 #include "Components/Library/LocalLibrary.h"

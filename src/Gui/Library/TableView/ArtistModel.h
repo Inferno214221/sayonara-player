@@ -29,7 +29,7 @@
 #ifndef LIBRARYITEMMODELARTISTS_H_
 #define LIBRARYITEMMODELARTISTS_H_
 
-#include "ItemModel.h"
+#include "Gui/Library/ItemModel.h"
 
 namespace Library
 {

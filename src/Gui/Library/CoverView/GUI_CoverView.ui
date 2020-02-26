@@ -133,7 +133,7 @@
   <customwidget>
    <class>Library::CoverView</class>
    <extends>QTableView</extends>
-   <header>Gui/Library/CoverView.h</header>
+   <header>Gui/Library/CoverView/CoverView.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

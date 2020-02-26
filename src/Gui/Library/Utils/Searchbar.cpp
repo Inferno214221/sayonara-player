@@ -1,4 +1,4 @@
-/* LibrarySearchBar.cpp */
+/* SearchBar.cpp */
 
 /* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "LibrarySearchBar.h"
+#include "Searchbar.h"
 
 #include "Utils/Algorithm.h"
 #include "Utils/Language/Language.h"

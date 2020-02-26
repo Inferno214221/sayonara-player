@@ -19,8 +19,8 @@
  */
 
 #include "CoverModel.h"
-#include "Utils/AlbumCoverFetchThread.h"
-#include "Utils/CoverViewPixmapCache.h"
+#include "AlbumCoverFetchThread.h"
+#include "CoverViewPixmapCache.h"
 
 #include "Components/Library/AbstractLibrary.h"
 #include "Components/Covers/CoverLocation.h"

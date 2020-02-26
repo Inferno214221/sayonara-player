@@ -100,12 +100,12 @@
   <customwidget>
    <class>Directory::TreeView</class>
    <extends>QTreeView</extends>
-   <header>Gui/Directories/DirectoryTreeView.h</header>
+   <header>Gui/Library/DirectoryView/DirectoryTreeView.h</header>
   </customwidget>
   <customwidget>
    <class>Directory::FileListView</class>
    <extends>QTableView</extends>
-   <header>Gui/Directories/FileListView.h</header>
+   <header>Gui/Library/DirectoryView/FileListView.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -19,10 +19,10 @@
  */
 
 #include "GUI_AbstractLibrary.h"
-#include "TableView.h"
+#include "Gui/Library/TableView/TableView.h"
+#include "Gui/Library/Utils/Searchbar.h"
 
 #include "Components/Library/AbstractLibrary.h"
-#include "Gui/Library/Utils/LibrarySearchBar.h"
 
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Message/Message.h"

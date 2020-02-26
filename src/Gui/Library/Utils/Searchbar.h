@@ -1,4 +1,4 @@
-/* LibrarySearchBar.h */
+/* SearchBar.h */
 
 /* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *

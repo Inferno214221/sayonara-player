@@ -19,10 +19,9 @@
  */
 
 #include "AlbumView.h"
-#include "ItemModel.h"
+#include "AlbumModel.h"
+#include "RatingDelegate.h"
 
-#include "Gui/Library/AlbumModel.h"
-#include "Gui/Library/RatingDelegate.h"
 #include "Gui/Library/Utils/DiscPopupMenu.h"
 #include "Gui/Library/Header/ColumnIndex.h"
 #include "Gui/Library/Header/ColumnHeader.h"

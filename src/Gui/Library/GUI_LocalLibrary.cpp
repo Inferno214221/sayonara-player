@@ -27,15 +27,16 @@
  */
 
 #include "GUI_LocalLibrary.h"
+#include "GUI_ImportDialog.h"
+
 #include "Gui/Library/ui_GUI_LocalLibrary.h"
 
-#include "Gui/Library/GUI_CoverView.h"
+#include "Gui/Library/CoverView/GUI_CoverView.h"
 #include "Gui/Library/Utils/DirChooserDialog.h"
 #include "Gui/Library/Utils/GUI_ReloadLibraryDialog.h"
 #include "Gui/Library/Utils/GUI_LibraryInfoBox.h"
 #include "Gui/Library/Utils/LocalLibraryMenu.h"
 
-#include "Gui/ImportDialog/GUI_ImportDialog.h"
 #include "Gui/Utils/Library/GUI_DeleteDialog.h"
 #include "Gui/Utils/GuiUtils.h"
 #include "Gui/Utils/Icons.h"
@@ -52,7 +53,6 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/Library/LibraryInfo.h"
 #include "Utils/Logger/Logger.h"
-
 
 #include <QDir>
 #include <QFileDialog>

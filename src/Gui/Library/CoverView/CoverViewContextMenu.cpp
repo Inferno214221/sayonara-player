@@ -18,15 +18,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "CoverView.h"
 #include "CoverViewContextMenu.h"
-#include "Gui/Library/CoverView.h"
+#include "Gui/Library/Header/ActionPair.h"
+
 #include "Gui/Utils/PreferenceAction.h"
 
 #include "Utils/Library/Sorting.h"
 #include "Utils/Library/Sortorder.h"
 #include "Utils/Settings/Settings.h"
-
-#include "Gui/Library/Header/ActionPair.h"
 
 #include <QStringList>
 

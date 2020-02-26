@@ -22,8 +22,6 @@
 #ifndef ALBUMCOVERVIEW_H
 #define ALBUMCOVERVIEW_H
 
-#include "ItemView.h"
-
 #include "Utils/Pimpl.h"
 #include "Utils/Library/Sortorder.h"
 

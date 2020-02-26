@@ -21,12 +21,12 @@
 #include "CoverView.h"
 #include "CoverModel.h"
 #include "CoverDelegate.h"
+#include "CoverViewContextMenu.h"
 
 #include "Components/Library/LocalLibrary.h"
 #include "Components/Tagging/UserTaggingOperations.h"
 
 #include "Gui/Library/Header/ActionPair.h"
-#include "Gui/Library/Utils/CoverViewContextMenu.h"
 #include "Gui/Utils/ContextMenu/LibraryContextMenu.h"
 
 #include "Utils/Library/Sorting.h"

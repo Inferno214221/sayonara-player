@@ -22,9 +22,9 @@
 #ifndef SOUNDCLOUDVIEWS_H
 #define SOUNDCLOUDVIEWS_H
 
-#include "Gui/Library/TrackView.h"
-#include "Gui/Library/AlbumView.h"
-#include "Gui/Library/ArtistView.h"
+#include "Gui/Library/TableView/TrackView.h"
+#include "Gui/Library/TableView/AlbumView.h"
+#include "Gui/Library/TableView/ArtistView.h"
 
 namespace SC
 {

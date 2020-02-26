@@ -21,10 +21,10 @@
 #ifndef LIBRARYVIEWALBUM_H
 #define LIBRARYVIEWALBUM_H
 
+#include "TableView.h"
 #include "Utils/MetaData/Album.h"
-#include "Gui/Library/TableView.h"
+
 #include <QList>
-#include <QModelIndex>
 
 namespace Library
 {

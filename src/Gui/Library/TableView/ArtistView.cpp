@@ -19,12 +19,11 @@
  */
 
 #include "ArtistView.h"
-#include "ItemModel.h"
+#include "ArtistModel.h"
 
 #include "Components/Library/AbstractLibrary.h"
 #include "Components/Tagging/UserTaggingOperations.h"
 
-#include "Gui/Library/ArtistModel.h"
 #include "Gui/Library/Header/ColumnIndex.h"
 #include "Gui/Library/Header/ColumnHeader.h"
 

@@ -19,9 +19,9 @@
  */
 
 #include "TrackView.h"
+#include "TrackModel.h"
+#include "RatingDelegate.h"
 
-#include "Gui/Library/TrackModel.h"
-#include "Gui/Library/RatingDelegate.h"
 #include "Gui/Library/Header/ColumnHeader.h"
 #include "Gui/Library/Header/ColumnIndex.h"
 #include "Gui/Utils/GuiUtils.h"

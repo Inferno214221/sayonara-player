@@ -19,13 +19,13 @@
  */
 
 #include "TableView.h"
-#include "ItemModel.h"
 
+#include "Gui/Library/ItemModel.h"
 #include "Gui/Library/Header/ColumnHeader.h"
 #include "Gui/Library/Header/HeaderView.h"
 
 #include "Utils/Set.h"
-#include <algorithm>
+#include "Utils/Algorithm.h"
 
 using namespace Library;
 
@@ -45,7 +45,6 @@ TableView::TableView(QWidget* parent) :
 
 TableView::~TableView() = default;
 
-#include "Utils/Algorithm.h"
 void TableView::init(AbstractLibrary* library)
 {
 	QByteArray headerState = columnHeaderState();

@@ -21,7 +21,7 @@
 #ifndef LIBRARYTABLEVIEW_H
 #define LIBRARYTABLEVIEW_H
 
-#include "ItemView.h"
+#include "Gui/Library/ItemView.h"
 #include "Gui/Library/Header/ColumnHeader.h"
 
 #include "Utils/Pimpl.h"

@@ -65,7 +65,7 @@
           </property>
           <widget class="QStackedWidget" name="sw_viewType">
            <property name="currentIndex">
-            <number>0</number>
+            <number>1</number>
            </property>
            <widget class="QWidget" name="page_7">
             <layout class="QGridLayout" name="gridLayout_8">
@@ -589,7 +589,7 @@
   <customwidget>
    <class>Library::TrackView</class>
    <extends>QTableView</extends>
-   <header>Gui/Library/TrackView.h</header>
+   <header>Gui/Library/TableView/TrackView.h</header>
   </customwidget>
   <customwidget>
    <class>Library::GenreView</class>
@@ -599,23 +599,23 @@
   <customwidget>
    <class>Library::AlbumView</class>
    <extends>QTableView</extends>
-   <header>Gui/Library/AlbumView.h</header>
+   <header>Gui/Library/TableView/AlbumView.h</header>
   </customwidget>
   <customwidget>
    <class>Library::ArtistView</class>
    <extends>QTableView</extends>
-   <header>Gui/Library/ArtistView.h</header>
+   <header>Gui/Library/TableView/ArtistView.h</header>
   </customwidget>
   <customwidget>
    <class>Library::GUI_CoverView</class>
    <extends>QWidget</extends>
-   <header>Gui/Library/GUI_CoverView.h</header>
+   <header>Gui/Library/CoverView/GUI_CoverView.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>Library::SearchBar</class>
    <extends>QLineEdit</extends>
-   <header>Gui/Library/Utils/LibrarySearchBar.h</header>
+   <header>Gui/Library/Utils/Searchbar.h</header>
   </customwidget>
   <customwidget>
    <class>Library::FileExtensionBar</class>
@@ -626,7 +626,7 @@
   <customwidget>
    <class>GUI_DirectoryView</class>
    <extends>QWidget</extends>
-   <header>Gui/Directories/GUI_DirectoryView.h</header>
+   <header>Gui/Library/DirectoryView/GUI_DirectoryView.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
